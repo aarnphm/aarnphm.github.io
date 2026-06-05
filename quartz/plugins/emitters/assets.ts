@@ -2,6 +2,7 @@ import path from 'path'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { Argv, BuildCtx } from '../../util/ctx'
+import { isFlashcardPath } from '../../util/flashcards-path'
 import { glob } from '../../util/glob'
 import { emitOutputAsset, removeOutputAsset, type OutputAssetClaim } from '../../util/output-assets'
 import { FilePath, joinSegments, slugifyFilePath } from '../../util/path'
@@ -9,7 +10,7 @@ import { logBuildSpan, PerfTimer } from '../../util/perf'
 
 function shouldIgnoreAssetFile(argv: Argv, fp: FilePath): boolean {
   const ext = path.extname(fp).toLowerCase()
-  if (ext === '.md' || ext === '.base') return true
+  if (ext === '.md' || ext === '.base' || isFlashcardPath(fp)) return true
   return (process.env.CF_PAGES === '1' || argv.watch) && ['.pdf', '.ddl', '.mat'].includes(ext)
 }
 
@@ -37,7 +38,13 @@ const filesToCopy = async (ctx: BuildCtx): Promise<FilePath[]> => {
     return fps
   }
 
-  const patterns = ['**/*.md', '**/*.base', ...cfg.configuration.ignorePatterns]
+  const patterns = [
+    '**/*.md',
+    '**/*.base',
+    '**/*.fc',
+    '**/*.flashcards',
+    ...cfg.configuration.ignorePatterns,
+  ]
 
   if (process.env.CF_PAGES === '1' || argv.watch) {
     patterns.push('**/*.pdf', '**.ddl', '**.mat')

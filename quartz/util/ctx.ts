@@ -149,7 +149,7 @@ const contentDataCache = new WeakMap<ProcessedContent[], QuartzPluginData[]>()
 export function contentDataFor(content: ProcessedContent[]): QuartzPluginData[] {
   const cached = contentDataCache.get(content)
   if (cached) return cached
-  const data = content.map(([, file]) => file.data)
+  const data = content.map(([, file]) => file.data).filter(file => !file.flashcards)
   contentDataCache.set(content, data)
   return data
 }

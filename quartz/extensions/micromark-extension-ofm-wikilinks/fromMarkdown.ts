@@ -6,6 +6,7 @@
 import type { Element as HastElement, Text as HastText } from 'hast'
 import type { Extension, CompileContext, Token } from 'mdast-util-from-markdown'
 import { Literal } from 'unist'
+import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from '../../util/flashcards-path'
 import {
   FilePath,
   FullSlug,
@@ -616,6 +617,11 @@ function exitWikilink(
               wikilink.alias = anchorText
             }
           }
+        }
+
+        if (isFlashcardPath(url)) {
+          url = flashcardsSlug(sourceSlugForDeck(url))
+          displayAnchor = ''
         }
 
         if (wikilink.embed) {

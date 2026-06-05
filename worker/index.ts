@@ -15,6 +15,7 @@ import {
   MultiplayerComments,
 } from './comments'
 import handleCurius from './curius'
+import { handleFlashcardsReview, handleFlashcardsState } from './flashcards'
 import Garden from './mcp'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
@@ -723,6 +724,14 @@ export default {
       }
       case '/api/stacked-note': {
         const resp = await handleStackedNoteDataRequest(request, env)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/flashcards/state': {
+        const resp = await handleFlashcardsState(request, env)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/flashcards/review': {
+        const resp = await handleFlashcardsReview(request, env)
         return withHeaders(resp, apiHeaders)
       }
       case '/api/arena-embed/capability': {

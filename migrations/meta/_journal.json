@@ -36,6 +36,13 @@
       "when": 1768413229940,
       "tag": "0004_handy_shiver_man",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1780692487346,
+      "tag": "0005_square_norrin_radd",
+      "breakpoints": true
     }
   ]
 }

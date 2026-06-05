@@ -11,6 +11,7 @@ import ContentMeta from './ContentMeta'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
 import Explorer from './Explorer'
+import FlashcardsContent from './FlashcardsContent'
 import Flex from './Flex'
 import Footer from './Footer'
 import Graph from './Graph'
@@ -90,4 +91,5 @@ export {
   CodeCopy,
   SeeAlso,
   BaseViewSelector,
+  FlashcardsContent,
 }

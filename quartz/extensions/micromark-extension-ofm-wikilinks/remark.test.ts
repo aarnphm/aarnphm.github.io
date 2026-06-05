@@ -251,6 +251,42 @@ describe('remarkWikilink integration', () => {
       assert(html.includes('<a href="data/editors">editors</a>'))
     })
 
+    test('maps .fc deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[thoughts/Sets.fc]]', { obsidian: true })
+      assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.fc</a>'))
+    })
+
+    test('maps .flashcards deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[thoughts/Sets.flashcards]]', { obsidian: true })
+      assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.flashcards</a>'))
+    })
+
+    test('maps .fc deck transcludes to the flashcards view slug', () => {
+      const html = processToHTML('![[thoughts/Sets.fc]]', { obsidian: true })
+      assert(html.includes('data-url="thoughts/Sets/flashcards"'))
+      assert(html.includes('<a href="thoughts/Sets/flashcards"'))
+    })
+
+    test('maps .fc.md deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[thoughts/Sets.fc.md]]', { obsidian: true })
+      assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.fc.md</a>'))
+    })
+
+    test('maps .flashcards.md deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[thoughts/Sets.flashcards.md]]', { obsidian: true })
+      assert(html.includes('<a href="thoughts/Sets/flashcards">thoughts/Sets.flashcards.md</a>'))
+    })
+
+    test('maps absolute .fc deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[/thoughts/Sets.fc]]', { obsidian: true })
+      assert(html.includes('href="/thoughts/Sets/flashcards"'))
+    })
+
+    test('maps absolute .fc.md deck links to the flashcards view slug', () => {
+      const html = processToHTML('[[/thoughts/Sets.fc.md]]', { obsidian: true })
+      assert(html.includes('href="/thoughts/Sets/flashcards"'))
+    })
+
     test('strips custom extensions from href', () => {
       const html = processToHTML('[[notes.mdx]]', {
         obsidian: true,

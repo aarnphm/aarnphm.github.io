@@ -15,6 +15,7 @@ import { filterContentResult } from './processors/filter'
 import { parseMarkdown, resetProcessedContentCache } from './processors/parse'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
+import { isFlashcardPath } from './util/flashcards-path'
 import { glob, toPosixPath } from './util/glob'
 import {
   cleanOutputExcept,
@@ -32,11 +33,12 @@ sourceMapSupport.install(options)
 
 const markdownExtensions = new Set(['.md', '.base', '.canvas'])
 
-const isMarkdownPath = (fp: string): boolean => markdownExtensions.has(path.extname(fp))
+const isMarkdownPath = (fp: string): boolean =>
+  markdownExtensions.has(path.extname(fp)) || isFlashcardPath(fp)
 
 const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   ctx.allFiles = allFiles
-  ctx.allSlugs = allFiles.map(fp => slugifyFilePath(fp))
+  ctx.allSlugs = allFiles.filter(fp => !isFlashcardPath(fp)).map(fp => slugifyFilePath(fp))
   delete ctx.trie
   delete ctx.renderData
 }

@@ -170,6 +170,7 @@
     "svg2roughjs": "^3.2.3",
     "to-vfile": "^8.0.0",
     "toml": "^4.1.1",
+    "ts-fsrs": "^5.4.1",
     "turndown": "^7.2.4",
     "unified": "^11.0.5",
     "unist-util-remove": "^4.0.0",

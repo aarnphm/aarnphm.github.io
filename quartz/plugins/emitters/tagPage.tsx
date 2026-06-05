@@ -232,6 +232,7 @@ function computeTagInfo(
 function isTagRelevantChange(changeEvent: ChangeEvent): boolean {
   const current = changeEvent.file?.data
   const previous = changeEvent.previousFile?.data
+  if (current?.flashcards || previous?.flashcards) return false
   if (tagPageTag(current) || tagPageTag(previous)) return true
   if (changeEvent.type !== 'change') return true
   return pageListingChanged(current, previous)

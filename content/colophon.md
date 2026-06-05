@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-06-05 15:08:12 GMT-04:00
+modified: 2026-06-05 18:09:48 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSONCanvas supports]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
+**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSONCanvas supports]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm/status/1884954569341272345) a side panel 😃
 
@@ -195,3 +195,7 @@ _press cmd/ctrl+click on any internal links_
 _inspired by figma multiplayer comments_
 
 I added the ability to leave comments on pages, simply by holding <kbd>Ctrl</kbd> or <kbd>Cmd</kbd> while dragging to add a comment.
+
+### flashcards
+
+credit to [eudoxia0/hashcards](https://github.com/eudoxia0/hashcards). Check out [[thoughts/Sets.fc|an example set of flashcards on sets theory]]

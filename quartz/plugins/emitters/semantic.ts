@@ -138,6 +138,7 @@ export const SemanticIndex: QuartzEmitterPlugin<
 
       const lines: string[] = []
       for (const [_, file] of content) {
+        if (file.data.flashcards) continue
         const slug = file.data.slug!
         const title = file.data.frontmatter?.title ?? slug
         const text = file.data.text

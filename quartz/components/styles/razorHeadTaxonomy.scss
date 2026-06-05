@@ -34,6 +34,10 @@
   height: auto;
   display: block;
   overflow: visible;
+
+  foreignObject {
+    overflow: visible;
+  }
 }
 
 .rht-cell-box {
