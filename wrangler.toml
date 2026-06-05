@@ -64,7 +64,7 @@ pattern = "stream.aarnphm.xyz"
 custom_domain = true
 
 [[routes]]
-pattern = "lyd.aarnphm.xyz"
+pattern = "toronto.aarnphm.xyz"
 custom_domain = true
 
 [assets]
