@@ -1,17 +1,17 @@
 ---
-date: '2026-03-28'
+date: "2026-03-28"
 description: letter updates to investors
 draft: true
 email: true
 emailSent: true
-id: mar-apr-26
+id: mar-apr-may-26
 layout: letter
-modified: 2026-06-05 15:08:10 GMT-04:00
+modified: 2026-06-05 17:06:35 GMT-04:00
 password: finisher-trickle-diffusive-thimble-zoning-suffice-deem-cilantro
 protected: true
 tags:
   - longtermism
-title: GET updates/26/003 updates/26/004
+title: GET updates/26/003 updates/26/004 updates/26/005
 transclude:
   dynalist: false
   title: false

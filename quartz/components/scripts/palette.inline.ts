@@ -14,8 +14,17 @@ import {
 } from '../../util/notebook-kernel-events'
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { notebookLanguageIconSvg } from '../../util/notebook/render/icons'
-import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
-import { populateSearchIndex, querySearchIndex, SearchItem } from './search-index'
+import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import {
+  queryRecentNotes,
+  readRecentNotes,
+  recentNoteFromContent,
+  recentNotesStorageKey,
+  upsertRecentNote,
+  writeRecentNotes,
+  type RecentNote,
+} from '../../util/recent-notes'
+import { populateSearchIndex, querySearchIndex } from './search-index'
 import {
   tokenizeTerm,
   registerEscapeHandler,
@@ -25,13 +34,21 @@ import {
   getOrCreateSidePanel,
 } from './util'
 
-interface Item extends SearchItem {
+interface Item {
+  id: number
+  slug: FullSlug
+  name: string
+  title: string
+  content: string
+  aliases: string[]
   target: string
 }
 
 const numSearchResults = 10
 
-const localStorageKey = 'recent-notes'
+const localStorageKey = recentNotesStorageKey
+let recentNotesCache: RecentNote[] | null = null
+let recentNotesWritePending = false
 
 function appendHighlightedText(parent: HTMLElement, searchTerm: string, text: string) {
   const terms = tokenizeTerm(searchTerm)
@@ -109,14 +126,40 @@ function appendTrustedSvg(parent: HTMLElement, svgMarkup: string) {
   if (svg) parent.append(svg)
 }
 
-function getRecents(): Set<FullSlug> {
-  return new Set(JSON.parse(localStorage.getItem(localStorageKey) ?? '[]'))
+function getRecents(): RecentNote[] {
+  recentNotesCache ??= readRecentNotes(localStorage, localStorageKey)
+  return recentNotesCache
 }
 
-function addToRecents(slug: FullSlug) {
-  const visited = getRecents()
-  visited.add(slug)
-  localStorage.setItem(localStorageKey, JSON.stringify([...visited]))
+function flushRecents() {
+  recentNotesWritePending = false
+  if (!recentNotesCache) return
+  writeRecentNotes(localStorage, recentNotesCache, localStorageKey)
+}
+
+function scheduleRecentsWrite() {
+  if (recentNotesWritePending) return
+  recentNotesWritePending = true
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(flushRecents, { timeout: 1000 })
+  } else {
+    window.setTimeout(flushRecents, 0)
+  }
+}
+
+function setRecents(notes: RecentNote[]) {
+  recentNotesCache = notes
+  scheduleRecentsWrite()
+}
+
+function addToRecents(note: RecentNote) {
+  setRecents(upsertRecentNote(getRecents(), note))
+}
+
+function recentNoteFromCurrentPage(slug: FullSlug): RecentNote {
+  const heading = document.querySelector<HTMLElement>('article h1, h1')
+  const title = heading?.textContent?.trim() || document.title.trim()
+  return { slug, name: title || slug, title, aliases: [] }
 }
 
 const commentAuthorKey = 'comment-author'
@@ -358,34 +401,72 @@ document.addEventListener('nav', e => {
   let currentHover: HTMLDivElement | null = null
   let data: ContentIndex | null = null
   let idDataMap: FullSlug[] = []
+  let idBySlug = new Map<FullSlug, number>()
   let isActive = true
   let queryGeneration = 0
   let commandHistory: CommandLocation[] = []
   let commandHistoryIndex = -1
 
+  addToRecents(recentNoteFromCurrentPage(currentSlug))
+
   window.addCleanup(() => {
     isActive = false
   })
 
-  let dataReady: Promise<ContentIndex> | null = null
+  let contentDataReady: Promise<ContentIndex> | null = null
+  let searchDataReady: Promise<ContentIndex> | null = null
 
-  function ensureData() {
-    dataReady ??= fetchData.then(async resolved => {
+  function hydrateRecentNotes(resolved: ContentIndex) {
+    const notes = getRecents()
+    let changed = false
+    const hydrated = notes.map(note => {
+      const fileData = resolved[note.slug]
+      if (!fileData) return note
+
+      const next = recentNoteFromContent(note.slug, fileData)
+      if (
+        next.name !== note.name ||
+        next.title !== note.title ||
+        next.aliases.join('\u0000') !== note.aliases.join('\u0000')
+      ) {
+        changed = true
+      }
+      return next
+    })
+    if (changed) setRecents(hydrated)
+  }
+
+  function ensureContentData() {
+    contentDataReady ??= fetchData.then(resolved => {
       if (!isActive) return resolved
       data = resolved
-      idDataMap = Object.keys(resolved) as FullSlug[]
+      idDataMap = Object.keys(resolved).filter(isFullSlug)
+      idBySlug = new Map(idDataMap.map((slug, id) => [slug, id]))
+      hydrateRecentNotes(resolved)
+      if (!isActive) return resolved
+      if (
+        actionType === 'quick_open' &&
+        currentSearchTerm === '' &&
+        container?.classList.contains('active')
+      ) {
+        getRecentItems()
+      }
+      return resolved
+    })
+    return contentDataReady
+  }
+
+  function ensureSearchData() {
+    searchDataReady ??= ensureContentData().then(async resolved => {
+      if (!isActive) return resolved
       const searchData =
         typeof fetchSearchData === 'undefined'
           ? resolved
           : await fetchSearchData.catch(() => resolved)
       await fillDocument(searchData)
-      if (!isActive) return resolved
-      if (actionType === 'quick_open' && container?.classList.contains('active')) {
-        getRecentItems()
-      }
       return resolved
     })
-    return dataReady
+    return searchDataReady
   }
 
   function hidePalette() {
@@ -439,12 +520,8 @@ document.addEventListener('nav', e => {
       bar.value = ''
       currentSearchTerm = ''
       syncPaletteHelper()
-      if (data) {
-        getRecentItems()
-      } else if (output) {
-        removeAllChildren(output)
-        void ensureData()
-      }
+      getRecentItems()
+      void ensureContentData()
     }
 
     bar?.focus()
@@ -692,6 +769,7 @@ document.addEventListener('nav', e => {
     if (output) {
       removeAllChildren(output)
     }
+    currentHover = null
     if (acts.length === 0) {
       if (bar.matches(':focus') && currentSearchTerm === '') {
         output.append(
@@ -810,67 +888,62 @@ document.addEventListener('nav', e => {
   }
 
   let recentItems: Item[] = []
-  function getRecentItems() {
-    if (!data) {
-      if (output) {
-        removeAllChildren(output)
-      }
-      return
+  function itemFromRecentNote(note: RecentNote, id: number): Item {
+    return {
+      id,
+      slug: note.slug,
+      name: note.name,
+      title: note.title,
+      content: '',
+      aliases: note.aliases,
+      target: '',
     }
-    const loadedData = data
-    const dataMap = idDataMap
-    const visited = getRecents()
+  }
+
+  function itemFromContent(slug: FullSlug, fileData: ContentIndex[FullSlug], id: number): Item {
+    return {
+      id,
+      slug,
+      name: fileData.fileName,
+      title: fileData.title ?? '',
+      content: fileData.content ?? '',
+      aliases: fileData.aliases,
+      target: '',
+    }
+  }
+
+  function recentNoteItems(query: string) {
+    return queryRecentNotes(getRecents(), query, numSearchResults).map((note, index) => {
+      const fileData = data?.[note.slug]
+      const id = idBySlug.get(note.slug)
+      return fileData && id !== undefined
+        ? itemFromContent(note.slug, fileData, id)
+        : itemFromRecentNote(note, -index - 1)
+    })
+  }
+
+  function getRecentItems() {
+    if (data) hydrateRecentNotes(data)
 
     if (output) {
       removeAllChildren(output)
     }
+    currentHover = null
 
-    const visitedArray = [...visited]
-    const els =
-      visited.size > numSearchResults
-        ? visitedArray.slice(-numSearchResults).reverse()
-        : visitedArray.reverse()
+    recentItems = recentNoteItems('')
+    if (data && recentItems.length < numSearchResults) {
+      const existingSlugs = new Set(recentItems.map(item => item.slug))
+      const availableSlugs = idDataMap.filter(slug => !existingSlugs.has(slug))
+      const needed = numSearchResults - recentItems.length
 
-    // If visited >= 10, then we get the first recent 10 items
-    // Otherwise, we will choose randomly from the set of data
-    els.forEach(slug => {
-      const id = dataMap.findIndex(s => s === slug)
-      if (id !== -1) {
-        //@ts-ignore
-        recentItems.push({
-          id,
-          slug,
-          name: loadedData[slug].fileName,
-          title: loadedData[slug].title ?? '',
-          content: loadedData[slug].content ?? '',
-          aliases: loadedData[slug].aliases,
-          target: '',
-        })
-      }
-    })
-    // Fill with random items from data
-    const needed = numSearchResults - els.length
-    if (needed != 0) {
-      const availableSlugs = dataMap.filter(slug => !els.includes(slug))
-
-      // Then add random items
       for (let i = 0; i < needed && availableSlugs.length > 0; i++) {
         const randomIndex = Math.floor(Math.random() * availableSlugs.length)
         const slug = availableSlugs[randomIndex]
-        const id = dataMap.findIndex(s => s === slug)
-
-        //@ts-ignore
-        recentItems.push({
-          id,
-          slug: slug as FullSlug,
-          name: loadedData[slug].fileName,
-          title: loadedData[slug].title ?? '',
-          content: loadedData[slug].content ?? '',
-          aliases: loadedData[slug].aliases,
-          target: '',
-        })
-
-        // Remove used slug to avoid duplicates
+        const id = idBySlug.get(slug)
+        const fileData = data[slug]
+        if (id !== undefined && fileData) {
+          recentItems.push(itemFromContent(slug, fileData, id))
+        }
         availableSlugs.splice(randomIndex, 1)
       }
     }
@@ -1032,7 +1105,20 @@ document.addEventListener('nav', e => {
   async function querySearch(currentSearchTerm: string, generation = queryGeneration) {
     const queryActionType = actionType
     if (actionType === 'quick_open') {
-      await ensureData()
+      if (currentSearchTerm.trim() === '') {
+        getRecentItems()
+        await ensureContentData()
+        if (generation !== queryGeneration || queryActionType !== actionType) return
+        getRecentItems()
+        return
+      }
+
+      const cachedResults = recentNoteItems(currentSearchTerm)
+      if (cachedResults.length > 0) {
+        displayResults(cachedResults, currentSearchTerm)
+      }
+
+      await ensureSearchData()
       if (generation !== queryGeneration || queryActionType !== actionType) return
       const searchResults = await querySearchIndex(currentSearchTerm, numSearchResults)
       if (generation !== queryGeneration || queryActionType !== actionType) return
@@ -1097,6 +1183,7 @@ document.addEventListener('nav', e => {
     if (!finalResults) return
 
     removeAllChildren(output)
+    currentHover = null
 
     const noMatchEl = document.createElement('div')
     noMatchEl.classList.add('suggestion-item', 'no-match')
@@ -1134,13 +1221,16 @@ document.addEventListener('nav', e => {
   }
 
   function setFocusFirstChild() {
-    // focus on first result, then also dispatch preview immediately
-    const firstChild = output.firstElementChild as HTMLElement
+    const firstChild = output.firstElementChild
+    if (!(firstChild instanceof HTMLDivElement)) {
+      currentHover = null
+      return
+    }
     firstChild.classList.add('focus')
-    currentHover = firstChild as HTMLInputElement
+    currentHover = firstChild
   }
 
-  function toHtml({ name, slug, target }: Item) {
+  function toHtml({ name, slug, target, title: noteTitle, aliases }: Item) {
     const item = document.createElement('div')
     item.classList.add('suggestion-item')
     item.dataset.slug = slug
@@ -1165,7 +1255,7 @@ document.addEventListener('nav', e => {
     item.append(content, aux)
 
     const onClick = () => {
-      addToRecents(slug)
+      addToRecents({ slug, name, title: noteTitle, aliases })
       window.spaNavigate(new URL(resolveRelative(currentSlug, slug), location.toString()))
       hidePalette()
     }
