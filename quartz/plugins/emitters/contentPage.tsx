@@ -34,6 +34,7 @@ const isContentPage = (fileData: QuartzPluginData): boolean => {
     fileData.bases ||
     fileData.jsonCanvas ||
     fileData.streamData ||
+    fileData.flashcards ||
     fileData.frontmatter?.layout === 'masonry' ||
     fileData.frontmatter?.layout === 'triathlon'
   )

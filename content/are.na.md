@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-06-05 19:23:44 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -669,6 +669,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://spruce.world/ -- Spruce world
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [vintage, intraweb]
+    - importance: 8
+    - socials:
+      - more: https://www.willhath.com/
+  - What does it mean to have a healthy and alive internet?
 - https://connie.surf/gallery.html
   - [meta]:
     - date: 06/04/2026
@@ -2464,6 +2472,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/iGF7YcnQkEbwvYLPA/ai-induced-psychosis-a-shallow-investigation -- AI-induced psychosis
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [metabehaviour]
 - https://bigthink.com/high-culture/ken-liu-ai-art/ -- The cinematograph, the “noematograph,” and the future of AI art
   - [meta]:
     - date: 06/04/2026
@@ -4523,6 +4535,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/ioZxrP7BhS5ArK59w/did-claude-3-opus-align-itself-via-gradient-hacking -- Did Claude 3 Opus align itself via gradient hacking?
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [model behaviour, interpretability]
+    - importance: 8
+    - pinned: true
 - https://situational-awareness.ai/ -- Situational Awareness
   - [meta]:
     - date: 06/04/2026
@@ -6143,13 +6161,13 @@ title: are.na
   - [meta]:
     - date: 12/17/2025
     - tags: [life, fiction]
-- https://www.benkuhn.net/impact/ -- Impact, agency, and taste
+- https://www.benkuhn.net/impact/ -- Impact, agency, and taste [**]
   - [meta]:
     - date: 12/18/2025
     - tags: [agency, progress]
-    - later: true
+    - pinned: true
     - notes:
-      - [[thoughts/Agency#agency and taste]]
+      - [[thoughts/Agency#agency and taste|agency and taste]]
 - https://guzey.com/impact/ -- On Impact
   - [meta]:
     - date: 12/17/2025
@@ -7109,6 +7127,12 @@ title: are.na
 
 ## stream
 
+- https://notes.andymatuschak.org/z6sX7ZcYdPiya3SzQ5segaq?stackedNotes=z8kPkXQZ3wVR5DfJ79uhnuz&stackedNotes=zR5H2t4iYJECveXmu1DnYvS&stackedNotes=z3SGU4D3T6unE1YRJgSe1N7&stackedNotes=z2pzGHXwct867CYxcBwUABg -- Andy's implementation of a personal mnemonic medium
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [spaced repetition]
+    - importance: 7
+    - pinned: true
 - https://28-mag.com/ -- 28 Mag
   - [meta]:
     - date: 06/04/2026
@@ -8607,6 +8631,15 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/The_Soul_of_a_New_Machine -- The Soul of a New Machine
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [book]
+    - later: true
+- https://forum.modular.com/t/mojo-bindgen-automatic-c-binding-generation-for-mojo/2998 -- Mojo-bindgen
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [mojo, pl]
 - https://en.wikipedia.org/wiki/TrueSkill -- TrueSkill
   - [meta]:
     - date: 06/04/2026
@@ -9013,6 +9046,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/eudoxia0/hashcards -- Hashcards
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [spaced repetition]
+    - socials:
+      - blog: https://borretti.me/article/effective-spaced-repetition
 - https://github.com/kitft/natural_language_autoencoders -- NLA
   - [meta]:
     - date: 06/03/2026
@@ -9938,6 +9977,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/De_Finetti%27s_theorem -- De Finetti's theorem
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [probability]
+- https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-Algorithm -- FSRS algorithm
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [memory, pedagogy]
+    - socials:
+      - wikipedia: https://en.wikipedia.org/wiki/Spaced_repetition
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - [meta]:
     - date: 06/04/2026

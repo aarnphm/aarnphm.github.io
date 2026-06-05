@@ -10,6 +10,7 @@ import {
 import { inheritComponentSourceNames } from '../../util/component-source'
 import { BuildCtx } from '../../util/ctx'
 import { FileTrieNode } from '../../util/fileTrie'
+import { isFlashcardPath } from '../../util/flashcards-path'
 import { htmlToJsx } from '../../util/jsx'
 import {
   stripSlashes,
@@ -274,6 +275,7 @@ function buildFolderContentIndex(
 
   const fullTrie = new FileTrieNode<{ slug: string; title: string; filePath: string }>([])
   for (const fp of ctx.allFiles) {
+    if (isFlashcardPath(fp)) continue
     if (isFolderPageSourcePath(fp)) {
       for (const folder of folderPageAncestors(folderPageSourceSlug(fp))) {
         navigableFolders.add(folder)

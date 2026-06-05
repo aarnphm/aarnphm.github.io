@@ -70,6 +70,7 @@ export const LLMText: QuartzEmitterPlugin = () => {
 
       const reconstructed: string[] = []
       for (const [, file] of content) {
+        if (file.data.flashcards) continue
         // Skip protected notes
         if (file.data.frontmatter?.protected === true) continue
         yield llmText(ctx, file.data, reconstructed)
@@ -117,6 +118,7 @@ ${reconstructed.join('\n')}`,
       for (const [, file] of content) {
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
+        if (file.data.flashcards) continue
         // Skip protected notes
         if (file.data.frontmatter?.protected === true) continue
 

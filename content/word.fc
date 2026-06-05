@@ -1,0 +1,275 @@
+Q: context transition
+A: An animation that maintains user context by showing how the new state originates from the previous one.
+
+---
+
+Q: drill transition
+A: Used in hierarchical navigation; an animation where the view moves forward into deeper content or backward out of it, often using sliding or scaling.
+
+---
+
+Q: tween/interpoloation
+A: The process of generating intermediate frames (in-betweening) to create the illusion of smooth motion.
+
+---
+
+Q: origin-aware animation
+A: Animations that emanate from the exact interaction point (e.g., where the user tapped or clicked) to reinforce causality.
+
+---
+
+Q: crossfade
+A: A simultaneous transition where one element fades out while another fades in.
+
+---
+
+Q: morph
+A: Seamlessly transforming the shape, size, or properties of one UI element into another.
+
+---
+
+Q: layout animation
+A: Animating the reflow of elements when the DOM structure changes or elements are resized.
+
+---
+
+Q: direction-aware transition
+A: An animation that adapts its directional motion (e.g., slide left vs right) based on the user's trajectory or interaction logic.
+
+---
+
+Q: rubber-banding
+A: An overscroll effect where the UI stretches and snaps back to indicate the end of a scrolling boundary.
+
+---
+
+Q: rippling
+A: A radial expansion effect starting from the point of contact, providing visual feedback for a touch or click.
+
+---
+
+Q: asymmetric easing
+A: Using different easing curves for the enter and exit states (e.g., entering with deceleration, exiting with acceleration).
+
+---
+
+Q: text morph and clip-path
+A: Animating typographic changes or revealing content using CSS clip-path transitions.
+
+---
+
+Q: number ticker
+A: Animating numerical changes by rolling or sliding individual digits, similar to an odometer.
+
+---
+
+Q: Layout thrashing
+A: A performance bottleneck caused by repeatedly reading and writing DOM layout properties in quick succession, forcing the browser to recalculate synchronous layouts.
+
+---
+
+Q: Spatial consistency
+A: Designing transitions so that elements maintain logical spatial relationships, making the interface behave like physical objects.
+
+---
+
+Q: `[&|?]curius=\v\d+(,\s*\d+)*//g`
+A: grepping all curius queries within a HTTP link
+
+---
+
+Q: `\v\((O[^|]*)\)(\s*\|)/$\1$\2/g`
+A: Grepping any text that starts with a capital letter O, followed by some characters, and ends with a vertical bar/pipe character (|)
+
+---
+
+Q: `sudo pmset -b sleep 0; sudo pmset -b disablesleep 1`
+A: disable display sleeping MacOS
+
+---
+
+Q: `sudo pmset -b sleep 5; sudo pmset -b disablesleep 0`
+A: revert sleeping setup on MacOS
+
+---
+
+Q: SAXPY
+A: single-precision a \* x plus y
+
+---
+
+Q: L1 BLAS
+A: scalar,vector,vector-vector ops
+
+---
+
+Q: L2 BLAS
+A: matrix-vector ops
+
+---
+
+Q: L3 BLAS
+A: matrix-matrix ops
+
+---
+
+Q: Big O notation
+A:
+$$\begin{aligned} &\text{Big O(micron)}: O \text{ or } \mathcal{O} \\ &\text{Big Omega}: \Omega \\ &\text{Big Theta}: \Theta \\ &\text{Small O(micron)}: o \\ &\text{Small Omega}: \omega \\ &\text{On the order of}: \sim \end{aligned}$$
+
+---
+
+Q: time complexity of algorithm
+A:
+| Algorithm | Best | Average | Worst | Stable | In-place |
+| -------------- | ------------ | ------------ | ------------ | ------- | -------- |
+| Bubble Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+| Selection Sort | $O(n^2)$ | $O(n^2)$ | $O(n^2)$ | No | Yes |
+| Insertion Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+| Merge Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | Yes | No |
+| Quick Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n^2)$ | No | Yes-ish |
+| Heap Sort | $O(n\log n)$ | $O(n\log n)$ | $O(n\log n)$ | No | Yes |
+| Counting Sort | $O(n+k)$ | $O(n+k)$ | $O(n+k)$ | Yes | No |
+| Radix Sort | $O(d(n+k))$ | $O(d(n+k))$ | $O(d(n+k))$ | Yes | No |
+| Bucket Sort | $O(n+k)$ | $O(n+k)$ | $O(n^2)$ | Depends | Depends |
+| TimSort | $O(n)$ | $O(n\log n)$ | $O(n\log n)$ | Yes | No-ish |
+
+---
+
+Q: saudade
+A: a feeling of longing, melancholy, or nostalgia that is supposedly characteristic of Portuguese temperament
+
+---
+
+Q: fin de siècle
+A: relating to or characteristic of the end of a century, especially the 19th century.
+
+---
+
+Q: quine
+A: is a computer program that takes no input and produces a copy of its own _source code_ as its only output.
+
+---
+
+Q: endogenous
+A: having an internal cause or origin
+
+---
+
+Q: joie de vivre
+A: exuberant enjoyment of life
+
+---
+
+Q: ditering
+A: quantized color on the web
+
+---
+
+Q: gastronomy
+A: art of choosing, cooking, and eating good food.
+
+---
+
+Q: la cuisine nouvelle
+A: characterized by lighter, more delicate dishes and an increased emphasis on presentation
+
+---
+
+Q: haute cuisine
+A: meticulous preparation, elaborate presentation, and the use of high quality ingredients
+
+---
+
+Q: liminal space
+A: the in-between/transition state of being, see also [[thoughts/aesthetic value|aesthetics]]
+
+---
+
+Q: polyphony
+A: a feature of narrative, which includes a diversity of simultaneous points of view and voices
+
+---
+
+Q: row-major memory locations
+A:
+$$x + N_x \cdot y$$
+- Access `A[y][x]`
+
+---
+
+Q: col-major memory locations
+A:
+$$y + N_y \cdot (x-1)$$
+- Access `A(y, x)`
+C: https://en.wikipedia.org/wiki/Row-_and_column-major_order
+
+---
+
+Q: polysyllabic
+A: words with many syllables, often used to define complex terminology
+
+---
+
+Q: triptych
+A: a picture/relief carving on three panels, typically hinged together side by side and used as an altarpiece
+
+---
+
+Q: lex parsimoniae
+A: also known as law of parsimony, circa Occam's razor
+
+---
+
+Q: kalsarikännit
+A: drink alone in your underwear with no intention of going out
+
+---
+
+Q: stork
+A: Baby-bringing bird
+
+---
+
+Q: pesky
+A: annoying to deal with
+
+---
+
+Q: lowkenuinely
+A: lowkey + genuinely
+
+---
+
+Q: a fortiori
+A: mostly used to lead from a less certain proposition to a more evident corollary, i.e. "even more so"
+
+---
+
+Q: passementerie
+A: fancy decorations on clothes
+
+---
+
+Q: claudification
+A: the [[library/Phenomenology of Perception|phenomena]] where Claude Code "harnesses" tasks by attributing a verb describing what it is doing.
+
+---
+
+Q: semiotic
+A: the study of signs
+
+---
+
+Q: chauvinist
+A: a person who displays an aggressive, unreasonable, and fanatical beelif in the superiority of their own group
+
+---
+
+Q: truculent
+A: someone who is aggresively self-assertive, defiant, and easily angered
+
+---
+
+Q: Euler's polyhedron formula
+A: $V-E+F$

@@ -2279,6 +2279,7 @@ export function renderPage(
     (componentData.fileData.frontmatter?.lang ?? componentData.cfg.locale)?.split('-')[0] ?? 'en'
   const pageLayout = componentData.fileData.frontmatter?.pageLayout ?? 'default'
   const isSlides = (componentData.fileData.frontmatter?.slides ?? false) && slug.endsWith('/slides')
+  const isFlashcards = componentData.fileData.flashcards != null && slug.endsWith('/flashcards')
   const isArena = slug === 'arena' || slug.startsWith('arena/')
   const isCurius = slug === 'curius'
   const isArenaSubpage = slug.startsWith('arena/') && slug !== 'arena'
@@ -2298,6 +2299,7 @@ export function renderPage(
           data-language={lang}
           data-menu={isMenu}
           data-slides={isSlides}
+          data-flashcards={isFlashcards}
           data-layout={pageLayout}
           data-is-folder-tag={isFolderTag}
           data-is-base={isBase}
@@ -2311,7 +2313,7 @@ export function renderPage(
             style={
               slug === 'index'
                 ? undefined
-                : isSlides
+                : isSlides || isFlashcards
                   ? { display: 'flex', flexDirection: 'column' }
                   : { display: 'flex', flexDirection: 'column', minHeight: '100vh' }
             }
@@ -2360,7 +2362,7 @@ export function renderPage(
                   </aside>
                 )}
                 <Content {...componentData} />
-                {!isSlides && !isArena && !isCurius && (
+                {!isSlides && !isFlashcards && !isArena && !isCurius && (
                   <>
                     <div id="wc-modal" class="wc-modal">
                       <div class="wc-inner" />

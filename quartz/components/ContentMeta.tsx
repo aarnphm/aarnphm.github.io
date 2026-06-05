@@ -5,8 +5,9 @@ import {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../types/component'
+import { deckPathsForSource, flashcardsSlug } from '../util/flashcards-path'
 import { classNames } from '../util/lang'
-import { FullSlug, joinSegments, resolveRelative } from '../util/path'
+import { FilePath, FullSlug, joinSegments, resolveRelative } from '../util/path'
 import { Date as DateComponent, getDate } from './Date'
 //@ts-ignore
 import script from './scripts/content-meta.inline'
@@ -16,7 +17,12 @@ import { svgOptions } from './svg'
 type MetaProp = { title: string; classes: string[]; item: JSX.Element | JSX.Element[] }
 
 export default (() => {
-  const ContentMeta: QuartzComponent = ({ cfg, fileData, displayClass }: QuartzComponentProps) => {
+  const ContentMeta: QuartzComponent = ({
+    cfg,
+    ctx,
+    fileData,
+    displayClass,
+  }: QuartzComponentProps) => {
     let created: Date | undefined
     let modified: Date | undefined
     const { locale } = cfg
@@ -141,6 +147,32 @@ export default (() => {
             ['home'],
           ),
         ],
+      })
+    }
+
+    if (
+      fileData.slug &&
+      !fileData.flashcards &&
+      fileData.relativePath &&
+      deckPathsForSource(fileData.relativePath).some(deckPath =>
+        ctx.allFiles.includes(deckPath as FilePath),
+      )
+    ) {
+      const deckSlug = flashcardsSlug(fileData.slug)
+      const deckHref = resolveRelative(fileData.slug, deckSlug)
+      meta.push({
+        title: 'flashcards',
+        classes: ['flashcards-links'],
+        item: h(
+          'a',
+          {
+            href: deckHref,
+            class: 'internal content-meta-link',
+            'data-slug': deckSlug,
+            'data-no-popover': true,
+          },
+          ['review'],
+        ),
       })
     }
 

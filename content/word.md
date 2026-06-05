@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-05 15:08:11 GMT-04:00
+modified: 2026-06-05 17:38:08 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -31,6 +31,9 @@ title: lists
 - Vim magic
   - `[&|?]curius=\v\d+(,\s*\d+)*//g`
   - `\v\((O[^|]*)\)(\s*\|)/$\1$\2/g`
+- bash magic
+  - {{sidenotes[`sudo pmset -b sleep 0; sudo pmset -b disablesleep 1`]: disable display sleeping MacOS}}
+  - {{sidenotes[`sudo pmset -b sleep 5; sudo pmset -b disablesleep 0`]: revert sleeping setup on MacOS}}
 - SAXPY: single-precision a \* x plus y
 - BLAS: Basic Linear Algebra Subprograms
   - L1: scalar,vector,vector-vector ops
