@@ -1,0 +1,24 @@
+Q: What does $A \subseteq B$ mean?
+A: Every element of $A$ is also an element of $B$.
+
+---
+
+Q: Define the power set $\mathcal{P}(A)$.
+A: The set of all subsets of $A$, including $\emptyset$ and $A$ itself.
+
+---
+
+Q: State the cartesian product $A \times B$.
+A:
+
+$$
+A \times B = \{(a,b) \mid a \in A \text{ and } b \in B\}
+$$
+
+---
+
+C: De Morgan's law: $A \setminus (B \cup C) = (A \setminus B) [\cap] (A \setminus C)$.
+
+---
+
+C: The [axiom of separation|which axiom] only lets you carve a subset out of an [existing set], which is how ZFC blocks [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]].
