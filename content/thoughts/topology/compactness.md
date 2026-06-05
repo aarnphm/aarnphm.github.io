@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: compactness, connectedness, lindelöf, local compactness aligned with mit 18.901 weeks 6–7.
 id: topology-compactness
-modified: 2026-05-19 18:19:46 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 seealso:
   - '[[thoughts/topology/separation|separation axioms]]'
   - '[[thoughts/topology/fundamental group|fundamental group]]'

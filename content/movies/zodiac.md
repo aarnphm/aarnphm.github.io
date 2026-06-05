@@ -7,7 +7,7 @@ description: meticulous chronicle of the decades-long investigation into the zod
 director:
   - David Fincher
 id: zodiac
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/zodiac.jpg]]'
 rating: 7.7
 status: to watch

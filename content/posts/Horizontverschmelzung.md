@@ -4,7 +4,7 @@ description: fusion of horizon
 id: Horizontverschmelzung
 image: '[[posts/images/time-flies.webp]]'
 layout: letter-nf
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 socials:
   substack: https://livingalonealone.com/p/horizontverschmelzung?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
 tags:

@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: marriage as crime scene with no reliable witnesses—triet refusing to confirm whether it was murder or suicide because the real mystery is whether we ever truly know the people we sleep beside.
 director: Justine Triet
 id: anatomy-of-a-fall
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/anatomy-of-a-fall.jpg]]'
 rating: 7.6
 status: to watch

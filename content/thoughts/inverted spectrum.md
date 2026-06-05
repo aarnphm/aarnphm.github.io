@@ -2,7 +2,7 @@
 date: '2025-11-10'
 description: same function, different phenomenology
 id: inverted spectrum
-modified: 2026-05-15 01:01:20 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/qualia]]'
   - '[[thoughts/functionalism]]'

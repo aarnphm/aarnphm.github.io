@@ -2,7 +2,7 @@
 date: '2024-10-07'
 description: compilation pipelines, intermediate representations, jit strategies, and dataflow analysis, covering lexing, parsing, optimization, and code generation from source to machine code.
 id: Compiler
-modified: 2026-05-24 01:24:01 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 seealso:
   - '[[thoughts/JIT/numba_jit.py|numba jit]]'
   - '[[thoughts/JIT/minimal_jit.py|minimal jit]]'

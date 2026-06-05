@@ -8,7 +8,7 @@ coordinates:
 date: '2025-09-10'
 description: san francisco cafe with warm lighting and good pastries
 id: Loquat SF
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:03 GMT-04:00
 rating: 5
 tags:
   - places

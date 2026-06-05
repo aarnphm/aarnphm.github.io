@@ -5,7 +5,7 @@ date: '2025-10-06'
 description: collection of kundera stories about love, desire, and humiliation, exposing comic cruelty in everyday romantic games.
 id: RISIBLES AMOURS
 language: czech
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 posters: '[[library/posters/risibles-amours.jpg]]'
 status: to read
 subcategory: being

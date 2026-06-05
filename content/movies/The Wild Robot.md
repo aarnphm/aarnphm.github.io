@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: shipwrecked service robot becoming mother to orphaned gosling—sanders filming lupita nyong'o's roz learning kindness from wilderness, dreamworks animation asking what makes someone a parent, proving love rewrites programming.
 director: Chris Sanders
 id: the-wild-robot
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/the-wild-robot.jpg]]'
 rating: 8.3
 status: finished

@@ -6,7 +6,7 @@ description: Sisters Nora and Agnes reunite with their estranged father, Gustav,
 director:
   - Joachim Trier
 id: Sentimental Value
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/sentimental-value.jpg]]'
 rating: 7.5
 status: to watch

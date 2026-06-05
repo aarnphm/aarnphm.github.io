@@ -4,7 +4,7 @@ aliases:
 date: '2024-10-02'
 description: And its implication on how we assess learning. an overview.
 id: chatgpt
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 permalinks:
   - /chatgpt
 tags:

@@ -7,7 +7,7 @@ description: college dropout to apple co-founder - a straight-line biopic tracki
 director:
   - Joshua Michael Stern
 id: Jobs
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/kutcher-jobs.jpg]]'
 rating: 6
 status: to watch

@@ -8,7 +8,7 @@ description: When his wife asks for a divorce, a man runs to his friends for sup
 director:
   - Michael Angelo Covino
 id: Splitsville
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/splitsville.avif]]'
 rating: 6.8
 status: finished

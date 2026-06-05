@@ -2,7 +2,7 @@
 date: '2025-01-03'
 description: and confusion.
 id: her
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 noindex: true
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lf5wpveltc2z

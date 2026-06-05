@@ -2,7 +2,7 @@
 date: '2024-10-23'
 description: midterm review covering entity-relationship models, sql queries, constraints, weak entities, and b-plus tree indexes.
 id: midterm
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - sfwr3db3
 title: databases internals
@@ -518,7 +518,7 @@ note: each node are at least 50% full
   - if not
     - redistribute, borrowing from ==sibling== (adjacent node with same parent of $L$)
     - if fails, ==merge== and sibling
-  - merge occured then delete entry (point to $L$ or sibling) from parent of $L$
+  - merge occurred then delete entry (point to $L$ or sibling) from parent of $L$
 
 > merge propagate root, decrease heights
 

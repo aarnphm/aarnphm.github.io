@@ -3,7 +3,7 @@ date: '2026-03-04'
 description: on growth after death, a quarter of century report
 draft: true
 id: Oanh
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 permalinks:
   - /posts/twenty-five
 tags:

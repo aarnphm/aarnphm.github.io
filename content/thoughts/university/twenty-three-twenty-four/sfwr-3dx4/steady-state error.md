@@ -2,7 +2,7 @@
 date: '2024-03-06'
 description: steady-state error analysis for control systems with system types defined by number of integrators in forward path and error coefficients.
 id: steady-state error
-modified: 2026-05-09 17:51:57 GMT-04:00
+modified: 2026-06-05 15:08:43 GMT-04:00
 tags:
   - sfwr3dx4
 title: steady-state error

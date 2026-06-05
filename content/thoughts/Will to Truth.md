@@ -2,7 +2,7 @@
 date: '2023-10-24'
 description: a moral prejudice, truth-seeking masks will to power and ascetic life
 id: Will to Truth
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - philosophy
 title: Will to Truth

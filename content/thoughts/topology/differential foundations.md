@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: bridge from topological manifolds to smooth manifolds, morse theory, and differential structures.
 id: differential foundations
-modified: 2026-05-19 18:18:35 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - math
   - math/topology

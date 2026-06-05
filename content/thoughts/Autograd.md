@@ -2,7 +2,7 @@
 date: '2021-10-10'
 description: and XLA. also known as auto differentiation.
 id: Autograd
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:27 GMT-04:00
 seealso:
   - '[[thoughts/XLA|XLA]]'
 tags:

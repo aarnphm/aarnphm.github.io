@@ -2,7 +2,7 @@
 date: '2024-02-02'
 description: exoplanet detection through radial velocity measurements calculating semi-amplitude for venus and jupiter with precision analysis.
 id: Exoplanets
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - astron2e03
 title: Expolanets

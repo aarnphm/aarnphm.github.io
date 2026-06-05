@@ -2,7 +2,7 @@
 date: '2024-11-03'
 description: and cross-layers observations. SAE is a special case of sparse crosscoders.
 id: sparse crosscoders
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 socials:
   circuits: https://transformer-circuits.pub/2024/crosscoders/index.html
 tags:

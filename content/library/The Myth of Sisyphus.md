@@ -6,7 +6,7 @@ description: essay on the absurd that asks whether life is worth living, ending 
 finished: 2024
 id: The Myth of Sisyphus
 language: french
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: '[[thoughts/Camus#The Myth of Sisyphus|field notes]]'
 posters: '[[library/posters/the-myth-of-sisyphus.jpg]]'
 status: evergreen

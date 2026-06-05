@@ -9,7 +9,7 @@ description: montmartre builds the moulin rouge - renoir turns spectacle into a 
 director:
   - Jean Renoir
 id: French Cancan
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/french-cancan.jpg]]'
 rating: 7.4
 status: to watch

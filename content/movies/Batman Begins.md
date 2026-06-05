@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: fear weaponized—bruce wayne descending into the cave to confront what terrifies him, then wearing it as armor against a city's corruption.
 director: Christopher Nolan
 id: batman-begins
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/batman-begins.jpg]]'
 rating: 8.2
 status: recurring

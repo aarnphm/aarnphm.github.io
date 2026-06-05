@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: low-rank factorisation of the attention matrix into multiple shared bases, reducing quadratic cost to a series of smaller MMs.
 id: attention-mfa
-modified: 2026-05-28 02:06:43 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MoE]]'

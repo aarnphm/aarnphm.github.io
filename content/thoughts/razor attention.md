@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: training-free, head-wise KV cache compression — keep the full cache on retrieval heads, drop remote tokens on the rest and fold them into a single compensation token.
 id: attention-razor
-modified: 2026-06-04 14:29:08 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/RoPE|RoPE]]'

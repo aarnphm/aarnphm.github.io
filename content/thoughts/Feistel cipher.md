@@ -3,7 +3,7 @@ created: '2025-11-04'
 date: '2025-11-04'
 description: feistel-style block cipher skeletons, their mechanics, guarantees, and notable designs
 id: feistel cipher
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 published: '2003-10-29'
 source: https://en.wikipedia.org/wiki/Feistel_cipher
 tags:

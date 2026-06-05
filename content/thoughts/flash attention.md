@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-06-01 20:58:36 GMT-04:00
+modified: 2026-06-05 15:08:29 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'

@@ -6,7 +6,7 @@ description: Grace, a writer and young mother, is slowly slipping into madness. 
 director:
   - Lynne Ramsay
 id: Die My Love
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/die my love.jpg]]'
 rating: 8.2
 status: finished

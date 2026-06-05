@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: sequence sharded across devices in a ring, K,V blocks circulate so each GPU holds only a slice of the cache.
 id: attention-ring
-modified: 2026-06-01 00:28:32 GMT-04:00
+modified: 2026-06-05 15:08:25 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -14,9 +14,26 @@ tags:
 title: Ring Attention
 ---
 
-RingAttention [@liu2023ringattentionblockwisetransformers] shards long contexts across devices in a ring pipeline. Striped Attention [@brandon2023stripedattentionfasterring] improves load balance with alternating shard ownership.
+idea: shard the sequence length $L$ across $p$ devices, circulate $K,V$ blocks around a ring, and keep only $L/p$ tokens of cache resident on each GPU.
 
-RingAttention shards a long sequence across multiple devices and circulates key/value blocks in a logical ring. Each GPU holds only a slice of the cache, streams neighbouring slices just in time, and discards them after use. The ring topology overlaps communication with computation, so no single device ever needs the full context resident in memory.
+RingAttention [@liu2023ringattentionblockwisetransformers] makes long-context attention a blockwise distributed softmax. Striped Attention [@brandon2023stripedattentionfasterring] keeps the same ring schedule but alternates shard ownership so causal work is more balanced across devices.
+
+Let device $u$ own local blocks $Q^{(u)},K^{(u)},V^{(u)} \in \mathbb{R}^{L/p \times d_h}$. At ring step $s$, device $u$ attends its local queries against the circulating shard $b(u,s) = (u - s) \bmod p$:
+
+$$
+\begin{aligned}
+S^{(u,s)} &= \frac{Q^{(u)} K^{(b(u,s))\top}}{\sqrt{d_h}},\\
+m^{(u,s)}_i &= \max\big(m^{(u,s-1)}_i,\max_j S^{(u,s)}_{ij}\big),\\
+z^{(u,s)}_i &= z^{(u,s-1)}_i e^{m^{(u,s-1)}_i - m^{(u,s)}_i} + \sum_j e^{S^{(u,s)}_{ij} - m^{(u,s)}_i},\\
+y^{(u,s)}_i &= y^{(u,s-1)}_i e^{m^{(u,s-1)}_i - m^{(u,s)}_i} + \sum_j e^{S^{(u,s)}_{ij} - m^{(u,s)}_i} V^{(b(u,s))}_j,\\
+O^{(u)}_i &= y^{(u,p)}_i / z^{(u,p)}_i.
+\end{aligned}
+$$
+
+The running maximum $m$, partition sum $z$, and value accumulator $y$ are the same online-softmax statistics used by [[thoughts/flash attention|FlashAttention]], just merged over remote shards instead of SRAM tiles. Each GPU streams a neighbouring $K,V$ slice just in time, computes against it, forwards it, and drops it after the local rows have absorbed its contribution.
+
+> [!math] ring memory and link traffic
+> With $p$ devices, resident KV cache per GPU falls from $\Theta(L d_h)$ to $\Theta(L d_h / p)$, a $p{:}1$ memory ratio. Each GPU receives the other $p-1$ shards once, so per-device link traffic is $\Theta(2(p-1)Ld_h/p)$ KV elements and the latency depth is $\Theta(p)$ ring hops. For $p=4$, local cache is $25\%$ of the full KV state while the remaining $75\%$ streams through the ring behind compute.
 
 ```tikz
 \usepackage{tikz}

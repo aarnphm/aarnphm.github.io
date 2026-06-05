@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: catholic guilt in little italy—scorsese's breakout, where community is both sanctuary and prison, sin tallied against an accounting that never balances.
 director: Martin Scorsese
 id: mean-streets
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/mean-streets.jpg]]'
 rating: 7.2
 status: recurring

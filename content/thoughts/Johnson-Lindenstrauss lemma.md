@@ -2,7 +2,7 @@
 date: '2024-12-13'
 description: random projections preserve pairwise distances when mapping high-dimensional point sets into logarithmic-dimensional space.
 id: Johnson–Lindenstrauss lemma
-modified: 2026-05-28 12:49:42 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - math
   - ml

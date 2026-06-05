@@ -12,9 +12,9 @@ type Props = { caption?: string; devices?: number }
 const MIN_DEVICES = 2
 const MAX_DEVICES = 8
 const DEFAULT_DEVICES = 4
-const VIEW = 360
+const VIEW = 416
 const RING_R = 118
-const CHIP_R = 162
+const CHIP_R = 174
 const TOKEN_R = 16
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
@@ -180,9 +180,11 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
               <dd>
                 <MathLabel tex="\frac{L}{p} \cdot d" />
                 <span class="rr-readout-eq">=</span>
-                <span data-rr-mem class="rr-readout-val">
-                  L/{initialP} d
-                </span>
+                <span
+                  data-rr-mem
+                  class="rr-readout-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath(`L/${initialP}\\,d`) }}
+                />
               </dd>
             </div>
             <div class="rr-readout-row">
@@ -192,9 +194,13 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
                 <span class="rr-readout-eq">
                   <MathLabel tex="\approx" />
                 </span>
-                <span data-rr-comm class="rr-readout-val">
-                  {initialP - 1} L/{initialP} d
-                </span>
+                <span
+                  data-rr-comm
+                  class="rr-readout-val"
+                  dangerouslySetInnerHTML={{
+                    __html: renderMath(`${initialP - 1}\\,L/${initialP}\\,d`),
+                  }}
+                />
               </dd>
             </div>
             <div class="rr-readout-row">
@@ -202,21 +208,27 @@ const RingRotationImpl: QuartzMdxComponent<Props> = ({ caption, devices = DEFAUL
               <dd>
                 <MathLabel tex="p - 1" />
                 <span class="rr-readout-eq">=</span>
-                <span data-rr-rounds class="rr-readout-val">
-                  {initialP - 1}
-                </span>
+                <span
+                  data-rr-rounds
+                  class="rr-readout-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath(`${initialP - 1}`) }}
+                />
               </dd>
             </div>
             <div class="rr-readout-row">
               <dt>current step</dt>
               <dd>
-                <span data-rr-step class="rr-readout-val rr-readout-val--big">
-                  0
-                </span>
+                <span
+                  data-rr-step
+                  class="rr-readout-val rr-readout-val--big"
+                  dangerouslySetInnerHTML={{ __html: renderMath('0') }}
+                />
                 <span class="rr-readout-eq">/</span>
-                <span data-rr-step-total class="rr-readout-val">
-                  {initialP - 1}
-                </span>
+                <span
+                  data-rr-step-total
+                  class="rr-readout-val"
+                  dangerouslySetInnerHTML={{ __html: renderMath(`${initialP - 1}`) }}
+                />
               </dd>
             </div>
           </dl>

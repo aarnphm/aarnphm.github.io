@@ -5,7 +5,7 @@ claude:
 date: '2026-01-12'
 description: grammar et al.
 id: results
-modified: 2026-05-09 17:51:58 GMT-04:00
+modified: 2026-06-05 15:08:40 GMT-04:00
 seealso:
   - '[[thoughts/NFA]]'
   - '[[thoughts/Context-Free Grammar]]'

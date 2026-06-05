@@ -8,7 +8,7 @@ description: political pamphlet arguing that history is class struggle, and that
 finished: null
 id: The Communist Manifesto
 language: german
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
 posters: '[[library/posters/the-communist-manifesto.avif]]'
 status: to read

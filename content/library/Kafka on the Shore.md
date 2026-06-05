@@ -7,7 +7,7 @@ description: surreal coming of age story with parallel narratives, talking cats,
 finished: 2022
 id: Kafka on the Shore
 language: japanese
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 posters: '[[library/posters/kafka-on-the-shore.jpg]]'
 status: finished
 subcategory: life

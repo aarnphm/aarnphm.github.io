@@ -8,7 +8,7 @@ description: hollywood dream logic where identity splits - lynch turns an auditi
 director:
   - David Lynch
 id: Mulholland Dr
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/mulholland-drive.jpg]]'
 rating: 7.9
 status: to watch

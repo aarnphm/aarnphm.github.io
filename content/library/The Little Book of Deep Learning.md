@@ -7,7 +7,7 @@ description: compact introduction to deep learning theory and practice, emphasiz
 external: https://fleuret.org/public/lbdl.pdf
 finished: 2024
 id: The Little Book of Deep Learning
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/deep learning|omnipotent]]'
 posters: '[[library/posters/the-little-book-of-deep-learning.jpg]]'
 status: finished

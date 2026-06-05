@@ -3,7 +3,7 @@ created: '2025-09-15'
 date: '2025-09-17'
 description: Mathematical construct for Hermitian matrices relating eigenvalues to quadratic forms via ratios.
 id: Rayleigh quotient
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:26 GMT-04:00
 published: '2003-08-27'
 source: https://en.wikipedia.org/wiki/Rayleigh_quotient
 tags:

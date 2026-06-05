@@ -5,7 +5,7 @@ date: '2024-03-23'
 description: atelier with friends deux  - orangeville
 id: dundurn
 menu: true
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - menu
 title: dundurn.

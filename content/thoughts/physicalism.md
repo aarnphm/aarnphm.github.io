@@ -2,7 +2,7 @@
 date: '2026-01-28'
 description: the slim 51.9% majority position in philpapers 2020
 id: physicalism
-modified: 2026-05-15 01:01:20 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/dualism]]'
   - '[[thoughts/functionalism]]'

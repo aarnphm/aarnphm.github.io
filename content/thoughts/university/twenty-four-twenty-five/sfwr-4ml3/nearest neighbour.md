@@ -2,7 +2,7 @@
 date: '2024-10-28'
 description: k-nearest neighbor classification with zero-one loss, linear classifiers, surrogate loss functions, and linear separability.
 id: nearest neighbor
-modified: 2026-05-09 17:51:58 GMT-04:00
+modified: 2026-06-05 15:08:39 GMT-04:00
 tags:
   - sfwr4ml3
   - ml

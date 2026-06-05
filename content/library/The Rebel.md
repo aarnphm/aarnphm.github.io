@@ -7,7 +7,7 @@ description: philosophical essay on rebellion that asks how one can affirm justi
 finished: 2025
 id: The Rebel
 language: french
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 posters: '[[library/posters/the-rebel.jpg]]'
 status: evergreen
 subcategory: existentialism

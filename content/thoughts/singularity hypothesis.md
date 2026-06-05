@@ -2,7 +2,7 @@
 date: '2025-12-23'
 description: and strong longtermism.
 id: singularity hypothesis
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - pattern
   - philosophy

@@ -3,7 +3,7 @@ date: '2024-12-08'
 description: zettelkasten, contact[at]aarnphm[dot]xyz
 id: notes
 layout: technical
-modified: 2026-05-26 17:28:49 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 tags:
   - evergreen
 title: procedural notes.

@@ -4,7 +4,7 @@ description: structural orthogonality in the phenomenology of intimacy
 draft: true
 id: romantic epistemology
 layout: letter
-modified: 2026-05-09 17:51:37 GMT-04:00
+modified: 2026-06-05 15:08:08 GMT-04:00
 tags:
   - philosophy
   - pattern

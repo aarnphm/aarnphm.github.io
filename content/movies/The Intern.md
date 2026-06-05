@@ -4,7 +4,7 @@ date: '2024-02-07'
 description: seventy-year-old widower interning at fashion startup—meyers filming de niro's wisdom meeting hathaway's ambition, generational divide dissolving through mutual respect, nancy meyers comfort where age and experience still matter in the youth-obsessed economy.
 director: Nancy Meyers
 id: the-intern
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/the-intern.jpg]]'
 rating: 7.1
 status: recurring

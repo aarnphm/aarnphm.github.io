@@ -2,7 +2,7 @@
 date: '2024-02-19'
 description: aesthetic judgment shaped by internal value systems rather than outsourced approval from committees and social norms.
 id: taste
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:08:28 GMT-04:00
 tags:
   - pattern
 title: taste

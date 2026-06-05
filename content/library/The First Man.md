@@ -7,7 +7,7 @@ description: unfinished, autobiographical novel about childhood in colonial alge
 finished: 2025
 id: The First Man
 language: french
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/the-first-man.jpg]]'
 status: evergreen
 subcategory: existentialism

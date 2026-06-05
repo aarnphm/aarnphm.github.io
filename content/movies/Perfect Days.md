@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: a tokyo toilet cleaner finding contentment in ritual—wenders filming routine as meditation, each day the same because that sameness is chosen, not endured.
 director: Wim Wenders
 id: perfect-days
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/perfect-days.jpg]]'
 rating: 7.9
 status: to watch

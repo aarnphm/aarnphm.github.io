@@ -7,7 +7,7 @@ description: A woman becomes a competitive swimmer after surviving an abusive ch
 director:
   - Kristen Stewart
 id: The Chronology of Water
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-chronology-of-water.jpg]]'
 rating: 8.4
 status: to watch

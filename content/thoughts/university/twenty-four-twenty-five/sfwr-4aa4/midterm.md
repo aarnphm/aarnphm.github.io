@@ -2,7 +2,7 @@
 date: '2024-10-22'
 description: midterm review on real-time operating systems covering clock drift, kernels, syscalls, scheduling, and rtos versus os differences.
 id: midterm
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - sfwr4aa4
 title: OS as real-time system

@@ -6,7 +6,7 @@ date: '2025-01-01'
 description: An essay in The Idler
 finished: 2025
 id: Very Slender Differences
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/very-slender-differences.jpg]]'
 status: finished
 subcategory: friendship

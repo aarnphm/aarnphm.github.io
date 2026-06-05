@@ -5,7 +5,7 @@ date: '2024-02-07'
 description: aging actress injecting herself to birth younger doppelganger—fargeat filming demi moore's body horror nightmare, society's beauty standards literalized into grotesque splitting, feminist rage expressed through gore proving you can't escape yourself no matter how perfect the replacement.
 director: Coralie Fargeat
 id: the-substance
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/the-substance.jpg]]'
 rating: 7.8
 status: finished

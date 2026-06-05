@@ -2,7 +2,7 @@
 date: '2025-08-20'
 description: a function on a real or complex vector space that returns non-negative reals while satisfying the standard axioms.
 id: norm
-modified: 2026-05-29 11:37:24 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
   - math
 title: norm

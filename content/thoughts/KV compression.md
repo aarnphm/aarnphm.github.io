@@ -2,7 +2,7 @@
 date: '2024-10-10'
 description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers|Tranformers]] model'
 id: KV compression
-modified: 2026-06-02 15:23:28 GMT-04:00
+modified: 2026-06-05 15:08:13 GMT-04:00
 seealso:
   - '[[@li2024snapkvllmknowslooking]]'
   - '[[@ge2024modeltellsdiscardadaptive]]'

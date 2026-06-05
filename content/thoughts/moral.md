@@ -2,7 +2,7 @@
 date: '2024-02-07'
 description: criteria for judging right and wrong actions, encompassing deontological ethics, utilitarianism, and virtue ethics.
 id: moral
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
   - philosophy
 title: Moral

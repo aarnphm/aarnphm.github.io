@@ -6,7 +6,7 @@ description: repressed desire turns violent - haneke makes piano discipline into
 director:
   - Michael Haneke
 id: The Piano Teacher
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/the-piano-teacher.jpg]]'
 rating: 7.5
 status: to watch

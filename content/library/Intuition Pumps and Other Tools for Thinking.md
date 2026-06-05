@@ -4,7 +4,7 @@ category: philosophy
 date: '2025-09-18'
 description: collection of thought experiments and conceptual tools designed to clarify tricky questions in philosophy of mind, evolution, and consciousness.
 id: Intuition Pumps and Other Tools for Thinking
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/intuition-pumps-and-other-tools-for-thinking.jpg]]'
 status: to read
 subcategory: conviviality

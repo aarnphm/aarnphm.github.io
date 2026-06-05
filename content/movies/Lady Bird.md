@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: sacramento senior year filmed with aching specificity—gerwig's directorial debut about wanting to escape your hometown while loving it, mother-daughter fights in the car, learning to appreciate what shaped you only after leaving.
 director: Greta Gerwig
 id: lady-bird
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/lady-bird.jpg]]'
 rating: 7.4
 status: recurring

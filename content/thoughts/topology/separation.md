@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: separation axioms, urysohn lemma, metrization checkpoints for mit 18.901 week 4–5.
 id: topology-separation
-modified: 2026-05-19 18:13:30 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 seealso:
   - '[[thoughts/topology/point set|point-set]]'
   - '[[thoughts/topology/compactness|compactness]]'

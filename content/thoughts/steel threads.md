@@ -2,7 +2,7 @@
 date: '2025-05-27'
 description: thin slice of functionality threading through system boundaries, enabling incremental production deployment of narrow use cases.
 id: steel threads
-modified: 2026-05-09 17:51:50 GMT-04:00
+modified: 2026-06-05 15:08:31 GMT-04:00
 tags:
   - ml
 title: steel threads

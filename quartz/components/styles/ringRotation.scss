@@ -34,7 +34,7 @@
 
 .rr-graph {
   width: 100%;
-  max-width: 380px;
+  max-width: 416px;
   aspect-ratio: 1 / 1;
   display: block;
   margin: 0 auto;
@@ -256,6 +256,11 @@
 
 .rr-readout-val {
   font-weight: 600;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .rr-readout-val--big {
@@ -371,7 +376,7 @@
   }
 
   .rr-graph {
-    max-width: 320px;
+    max-width: 360px;
   }
 
   .rr-matrix-grid {

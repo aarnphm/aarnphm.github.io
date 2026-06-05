@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra
 id: index
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:08:04 GMT-04:00
 tags:
   - ml
   - math/linalg

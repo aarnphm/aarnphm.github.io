@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-04 18:06:24 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/giansegato/status/2061285376548077614 -- Claude restoration of Clipboard
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [events, recollection]
 - https://x.com/iycrtylph/status/2062332680566640666 -- Ted Chiang's AI [[thoughts/Consciousness]]
   - [meta]:
     - date: 06/04/2026
@@ -665,6 +669,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://connie.surf/gallery.html
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [index]
 - https://www.cosmos.so/
   - [meta]:
     - date: 06/03/2026
@@ -1241,6 +1249,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Ernst_Zermelo -- Ernst Zermelo
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [mathematician, logician]
+  - as in Zermelo-Fraenkel axiomatic set theory
 - https://en.wikipedia.org/wiki/Douglas_Hofstadter -- Douglas Hofstadter
   - [meta]:
     - date: 06/04/2026
@@ -2451,6 +2464,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://bigthink.com/high-culture/ken-liu-ai-art/ -- The cinematograph, the “noematograph,” and the future of AI art
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [longtermism, arts, drawing]
 - https://charlesleifer.com/blog/cave-of-forgotten-dreams/ -- Cave of Forgotten Dreams
   - [meta]:
     - date: 06/04/2026
@@ -5706,6 +5723,10 @@ title: are.na
 
 ## opinions
 
+- https://slavoj.substack.com/p/why-artificial-intelligence-is-not -- Why Artificial Intelligence is not a Subject
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [agi]
 - https://www.reddit.com/r/ChatGPT/comments/1mme3ex/why_do_people_assume_we_liked_4o_because_of_the/ -- Why do people assume we liked 4o because of the over the top praise and glazing?
   - [meta]:
     - date: 06/04/2026
@@ -6021,6 +6042,10 @@ title: are.na
 
 ## life is literature
 
+- https://www.sherryning.com/p/to-be-alive-is-to-live-wanting-something -- To be alive is to live wanting something [**]
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [love]
 - https://bird.onethreenine.net/ -- apartment bird
   - [meta]:
     - date: 05/28/2026
@@ -7084,6 +7109,10 @@ title: are.na
 
 ## stream
 
+- https://28-mag.com/ -- 28 Mag
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [arts, digital publication]
 - https://hci-museum.lisn.upsaclay.fr/ -- A Collection of Innovative Interactions
   - [meta]:
     - date: 06/04/2026
@@ -7606,6 +7635,14 @@ title: are.na
 
 ## design
 
+- https://www.are.na/block/58882 -- Paperweight
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [foundry, visual arts]
+- https://modemworks.com/ -- Modem
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [agency, innovation hub]
 - https://ko.culturehub.org/into-uncertain-weathers -- Into uncertain weathers
   - [meta]:
     - date: 06/04/2026
@@ -8570,6 +8607,10 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/TrueSkill -- TrueSkill
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [statistics, rankings]
 - http://www.catb.org/jargon/ -- Jargon file resources
   - [meta]:
     - date: 06/04/2026
@@ -8790,6 +8831,10 @@ title: are.na
 
 ## typography
 
+- https://uncut.wtf/ -- uncut.wtf
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [foundry, sans serif]
 - https://www.swisstypefaces.com/ -- Swiss typeface
   - [meta]:
     - date: 06/02/2026
@@ -9968,7 +10013,7 @@ title: are.na
     - date: 01/13/2026
     - tags: [math]
     - later: true
-- https://en.wikipedia.org/wiki/Bradley–Terry_model -- Bradley–Terry model
+- https://en.wikipedia.org/wiki/Bradley–Terry_model -- Bradley–Terry model [**]
   - [meta]:
     - date: 05/25/2026
     - tags: [bayesian, probability]

@@ -6,7 +6,7 @@ description: collection of pascal fragments on faith, reason, and the human cond
 external: https://www.gutenberg.org/files/18269/18269-h/18269-h.htm
 id: Pensees
 language: french
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/pensees.jpg]]'
 status: to read
 subcategory: being

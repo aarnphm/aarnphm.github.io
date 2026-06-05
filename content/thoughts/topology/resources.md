@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: curated bibliography and resources for topology study from point-set through poincaré conjecture.
 id: topology-resources
-modified: 2026-05-19 18:14:54 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - math
   - math/topology

@@ -1,20 +1,22 @@
 ---
-title: 'chapter 6 lecture notes: nash equilibrium'
-description: 'mit 14.12 chapter 6 lecture notes: nash equilibrium'
-id: 'mit-14-12-fall-2025-resource-resources-mit14-12f12-chapter6-f12-pdf'
-tags:
-  - 'course'
-  - 'mit'
-  - 'ocw'
-  - 'social science'
-  - 'economics'
-  - 'game theory'
-  - 'lecture notes'
 aliases:
-  - 'mit14_12f12_chapter6_f12.pdf'
-layout: 'A|L'
-license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
-license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  - mit14_12f12_chapter6_f12.pdf
+date: '2026-06-05'
+description: 'mit 14.12 chapter 6 lecture notes: nash equilibrium'
+id: mit-14-12-fall-2025-resource-resources-mit14-12f12-chapter6-f12-pdf
+layout: A|L
+license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+modified: 2026-06-05 15:08:35 GMT-04:00
+tags:
+  - course
+  - mit
+  - ocw
+  - social science
+  - economics
+  - game theory
+  - lecture notes
+title: 'chapter 6 lecture notes: nash equilibrium'
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]

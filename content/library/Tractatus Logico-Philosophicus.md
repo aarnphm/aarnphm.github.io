@@ -10,7 +10,7 @@ finished: 2025
 id: Tractatus Logico-Philosophicus
 language: german
 layout: technical-tractatus
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 pdf: https://www.gutenberg.org/files/5740/5740-pdf.pdf
 posters: '[[library/posters/tractatus-logico-philosophicus.jpg]]'
 seealso:

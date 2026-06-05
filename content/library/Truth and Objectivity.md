@@ -10,7 +10,7 @@ description: Philosophy, in seeking after truth, must also grapple with question
 external: https://www.hup.harvard.edu/books/9780674910874
 finished: null
 id: Truth and Objectivity
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: '[[library/TAO/]]'
 pdf: null
 posters: '[[library/posters/truth-and-objectivity.jpeg]]'

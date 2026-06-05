@@ -7,7 +7,7 @@ description: novella about a dying judge confronting the emptiness of his conven
 finished: 2021
 id: The Death of Ivan Ilyich
 language: russian
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/the-death-of-ivan-ilyich.jpg]]'
 status: finished
 subcategory: life

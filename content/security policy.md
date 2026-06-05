@@ -3,7 +3,7 @@ date: '2025-02-21'
 description: How I handle and communicate security issues for aarnphm.xyz and related services
 id: security policy
 layout: technical
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 noindex: true
 permalinks:
   - /security

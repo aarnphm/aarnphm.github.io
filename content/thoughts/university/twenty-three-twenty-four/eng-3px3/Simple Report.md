@@ -2,7 +2,7 @@
 date: '2024-02-05'
 description: net value function for affordable housing project analyzing revenue, labor, energy, materials, r&d costs with environmental and regulatory considerations.
 id: Simple Report
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - eng3px3
 title: NVF for affordable housing

@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2026-06-03 22:44:20 GMT-04:00
+modified: 2026-06-05 15:08:27 GMT-04:00
 seealso:
   - '[[thoughts/topology/point set|point-set topology]]'
   - '[[thoughts/topology/separation|separation]]'

@@ -8,7 +8,7 @@ description: Trying to leave their troubled lives behind, twin brothers return t
 director:
   - Ryan Coogler
 id: Sinners
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/sinners.jpeg]]'
 rating: 8.9
 status: finished

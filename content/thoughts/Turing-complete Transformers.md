@@ -2,7 +2,7 @@
 date: '2024-01-30'
 description: well, here we go again.
 id: Turing-complete Transformers
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - pattern
   - ml

@@ -6,7 +6,7 @@ description: stoic notebook of personal reflections on virtue, duty, and imperma
 finished: 2024
 id: Meditations
 language: ancient greek
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/meditations.jpg]]'
 status: finished
 subcategory: being

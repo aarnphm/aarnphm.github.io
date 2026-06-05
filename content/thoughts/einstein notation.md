@@ -3,7 +3,7 @@ created: '2025-09-17'
 date: '2025-09-17'
 description: Shorthand notation for tensor operations using repeated indices to imply summation
 id: einstein notation
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 published: '2003-03-12'
 source: https://en.wikipedia.org/wiki/Einstein_notation
 tags:

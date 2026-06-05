@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: professional assassin hired to kill charles de gaulle—zinnemann filming meticulous procedural where you know the ending but watch anyway, edward fox's jackal crafting identities and rifles while french detective closes in, thriller proving suspense lives in the how not the what.
 director: Fred Zinnemann
 id: the-day-of-the-jackal
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-day-of-the-jackal.jpg]]'
 rating: 7.8
 status: finished

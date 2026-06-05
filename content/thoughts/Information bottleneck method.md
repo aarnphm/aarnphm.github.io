@@ -2,7 +2,7 @@
 date: '2025-08-28'
 description: bottleneck in theory
 id: Information bottleneck method
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
   - seed
 title: Information bottleneck method

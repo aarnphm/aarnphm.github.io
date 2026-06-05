@@ -2,7 +2,7 @@
 date: '2026-01-26'
 description: and assignment 2
 id: diagram
-modified: 2026-05-18 18:45:32 GMT-04:00
+modified: 2026-06-05 15:08:40 GMT-04:00
 tags:
   - sfwr4tb3
 title: diagram of the EBNF

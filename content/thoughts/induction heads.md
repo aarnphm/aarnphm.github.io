@@ -2,7 +2,7 @@
 date: '2025-01-18'
 description: and mathematical framework of transformers
 id: induction heads
-modified: 2026-05-26 17:06:17 GMT-04:00
+modified: 2026-06-05 15:08:29 GMT-04:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/LLMs|LLMs]]'

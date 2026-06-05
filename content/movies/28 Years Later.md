@@ -7,7 +7,7 @@ description: It's been almost three decades since the rage virus escaped from a 
 director:
   - Danny Boyle
 id: 28 Years Later
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 posters: '[[movies/posters/28-years-later.jpg]]'
 rating: 6.6
 status: finished

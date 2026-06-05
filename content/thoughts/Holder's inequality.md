@@ -3,7 +3,7 @@ created: '2025-09-19'
 date: '2025-09-19'
 description: "bounds dual pairings in \ell_p and integrable spaces"
 id: Holder's inequality
-modified: 2026-05-09 17:51:55 GMT-04:00
+modified: 2026-06-05 15:08:25 GMT-04:00
 source: synthesis
 tags:
   - ml

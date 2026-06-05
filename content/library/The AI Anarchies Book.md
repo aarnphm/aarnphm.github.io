@@ -8,7 +8,7 @@ date: '2025-10-29'
 description: collection of essays and projects on ai, art, and politics, exploring how machine systems unsettle authorship, control, and resistance.
 external: https://www.creativeapplications.net/books/the-ai-anarchies-book
 id: The AI Anarchies Book
-modified: 2026-05-09 17:51:37 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 notebook: '[[thoughts/LLMs|LLMs]]'
 posters: '[[library/posters/ai-anarchy.png]]'
 status: to read

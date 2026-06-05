@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: nicolas cage goes viral for appearing in everyone's dreams—borgli filming fame's psychic invasion, the professor becoming meme then monster, cancel culture as collective nightmare you can't wake from.
 director: Kristoffer Borgli
 id: dream-scenario
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/dream-scenario.jpg]]'
 rating: 6.8
 status: recurring

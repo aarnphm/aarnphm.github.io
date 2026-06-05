@@ -7,7 +7,7 @@ description: kafka tale of gregor samsa waking as an insect, depicting alienatio
 finished: 2024
 id: The metamorphosis
 language: german
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/the-metamorphosis.jpg]]'
 status: finished
 subcategory: Kafka

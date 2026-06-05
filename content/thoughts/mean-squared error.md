@@ -3,7 +3,7 @@ created: '2025-09-11'
 date: '2025-09-11'
 description: statistical measure of estimator quality, bias-variance decomposition, examples, and applications.
 id: mean-squared error
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:25 GMT-04:00
 published: '2003-03-26'
 source: https://en.wikipedia.org/wiki/Mean_squared_error
 tags:

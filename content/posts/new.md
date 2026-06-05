@@ -4,7 +4,7 @@ aliases:
 date: '2024-09-30'
 description: And on perplexity of hackathon.
 id: new
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 socials:
   substack: https://open.substack.com/pub/livingalone/p/i-saw-a-disstrack-dropped-at-a-hackathon?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true
   twitter: https://x.com/aarnphm/status/1841401912815464735

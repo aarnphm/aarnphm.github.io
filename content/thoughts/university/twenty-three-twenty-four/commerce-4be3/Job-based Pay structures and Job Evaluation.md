@@ -2,7 +2,7 @@
 date: '2024-01-31'
 description: job evaluation methods including point method, compensable factors, skill-based and competency-based plans for determining relative job worth.
 id: Job-based Pay structures and Job Evaluation
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - commerce4be3
 title: Job-based Pay structures and Job Evaluation

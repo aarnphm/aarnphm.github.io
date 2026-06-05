@@ -2,7 +2,7 @@
 date: '2025-10-17'
 description: and building a nano inference engine
 id: notes
-modified: 2026-05-27 02:45:38 GMT-04:00
+modified: 2026-06-05 15:08:04 GMT-04:00
 slides: true
 tags:
   - workshop

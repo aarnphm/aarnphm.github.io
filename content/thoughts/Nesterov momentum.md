@@ -2,7 +2,7 @@
 date: '2024-11-11'
 description: accelerated gradient descent using lookahead gradient computation, achieving better convergence rates than standard momentum with optimal parameter assignments.
 id: Nesterov momentum
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 tags:
   - ml
   - optimization

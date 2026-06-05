@@ -2,7 +2,7 @@
 date: '2024-05-22'
 description: study of geometric objects defined by polynomial equations, bridging abstract algebra and geometry through varieties and schemes.
 id: algebraic geometry
-modified: 2026-05-27 14:00:00 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 socials:
   demo: https://stacks.math.columbia.edu/
   github: https://github.com/stacks/stacks-project

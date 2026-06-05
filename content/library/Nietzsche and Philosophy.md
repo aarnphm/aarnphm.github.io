@@ -7,7 +7,7 @@ external: https://antilogicalism.com/wp-content/uploads/2017/07/nietzsche-and-ph
 finished: 2025
 id: Nietzsche and Philosophy
 language: french
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/Philosophy and Nietzsche|Nietzche]]'
 posters: '[[library/posters/nietzsche-and-philosophy.jpg]]'
 status: evergreen

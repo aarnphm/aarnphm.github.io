@@ -2,7 +2,7 @@
 date: '2025-08-28'
 description: and more notes
 id: notes
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
 tags:

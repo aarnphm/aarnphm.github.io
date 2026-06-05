@@ -2,7 +2,7 @@
 date: '2022-12-23'
 description: or accelerated linear algebra
 id: XLA
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - seed
   - ml

@@ -2,7 +2,7 @@
 date: '2024-01-25'
 description: technical design process using decision variables, performance parameters, and optimization methods to determine optimal engineering solutions.
 id: Technical Design
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - eng3px3
 title: Technical Design

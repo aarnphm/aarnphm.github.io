@@ -2,7 +2,7 @@
 date: '2024-02-12'
 description: emotional state when prefrontal cortex goes offline and amygdala takes over, causing anxiety through reaffirming core beliefs and catastrophizing scenarios.
 id: Dysregulation
-modified: 2026-05-09 17:51:57 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - seed
   - r/psychology

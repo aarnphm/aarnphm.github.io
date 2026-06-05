@@ -357,13 +357,20 @@ function exitMetadata(this: CompileContext): undefined {
  * annotate regular link with hast properties.
  * converts `[[target]]`, `[[target|alias]]`, `[[target#anchor]]` to <a> elements.
  */
-function annotateRegularLink(node: Wikilink, wikilink: WikilinkData, url: string): void {
-  const { alias, target, metadataParsed, metadata } = wikilink
+function annotateRegularLink(
+  node: Wikilink,
+  wikilink: WikilinkData,
+  url: string,
+  targetSlug: string,
+): void {
+  const { alias, target, metadataParsed, metadata, anchorSegments, anchorIsBlockRef } = wikilink
 
   const fp = target.trim()
   let displayText = alias ?? fp
 
   if (!node.data) node.data = { wikilink }
+
+  const nested = !anchorIsBlockRef && anchorSegments !== undefined && anchorSegments.length >= 2
 
   node.data.hName = 'a'
   node.data.hProperties = {
@@ -373,6 +380,12 @@ function annotateRegularLink(node: Wikilink, wikilink: WikilinkData, url: string
       : metadata
         ? { 'data-metadata': metadata }
         : {}),
+    ...(nested
+      ? {
+          'data-anchor-path': JSON.stringify(anchorSegments.map(s => slugAnchor(s.trim()))),
+          ...(targetSlug ? { 'data-anchor-target': targetSlug } : {}),
+        }
+      : {}),
   }
   node.data.hChildren = [{ type: 'text', value: displayText }]
 }
@@ -633,7 +646,7 @@ function exitWikilink(
             annotateTransclude(node, wikilink, url, displayAnchor)
           }
         } else {
-          annotateRegularLink(node, wikilink, url + displayAnchor)
+          annotateRegularLink(node, wikilink, url + displayAnchor, url)
         }
       }
       // when obsidian: false, no annotations - raw wikilink nodes only

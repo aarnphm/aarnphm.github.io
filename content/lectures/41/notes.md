@@ -2,7 +2,7 @@
 date: '2025-09-10'
 description: 2/n some more notes on EAGLE and MTP
 id: notes
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
 tags:

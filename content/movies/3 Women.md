@@ -8,7 +8,7 @@ description: identities blur in a desert spa town - altman turns friendship into
 director:
   - Robert Altman
 id: 3 Women
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/3-women.jpg]]'
 rating: 7.7
 status: to watch

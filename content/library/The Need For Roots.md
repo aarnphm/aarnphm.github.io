@@ -6,7 +6,7 @@ description: weil analysis of modern uprootedness, arguing that people require r
 finished: 2025
 id: The Need For Roots
 language: french
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/the-need-for-roots.jpg]]'
 status: finished
 subcategory: being

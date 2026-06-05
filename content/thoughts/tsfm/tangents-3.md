@@ -3,7 +3,7 @@ author: matej
 date: '2025-10-17'
 description: and primitives
 id: tangents-3
-modified: 2026-05-27 02:46:49 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 tags:
   - ml
   - tsfm

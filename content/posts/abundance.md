@@ -3,7 +3,7 @@ date: '2025-11-05'
 description: interpretable functions of love.
 draft: true
 id: abundance
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 socials:
   hiring: https://docs.google.com/document/d/1qQbCMSJDKlMFtX6kdcWKohkFLUy6dypt9REe1gCBUhc/edit?curius=4841&tab=t.0
 tags:

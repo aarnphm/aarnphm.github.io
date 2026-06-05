@@ -3,7 +3,7 @@ category: projets
 date: '2022-01-25'
 description: but for image-gen
 id: constrained decoding imagegen
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 notebook: '[[thoughts/vllm]]'
 status: idea
 subcategory: generative models

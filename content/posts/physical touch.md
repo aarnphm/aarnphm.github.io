@@ -3,7 +3,7 @@ date: '2025-01-22'
 description: and on emboddied experience.
 draft: true
 id: physical touch
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 tags:
   - growth
   - love

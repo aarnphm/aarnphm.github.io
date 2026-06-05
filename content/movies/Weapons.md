@@ -6,7 +6,7 @@ description: When all but one child from the same classroom mysteriously vanish 
 director:
   - Zach Cregger
 id: Weapons
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/weapons.webp]]'
 rating: 7.2
 status: to watch

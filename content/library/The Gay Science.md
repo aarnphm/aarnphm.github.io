@@ -9,7 +9,7 @@ description: aphoristic work where nietzsche plays with song, experiment, and th
 finished: 2025
 id: The Gay Science
 language: german
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 notebook: '[[thoughts/Philosophy and Nietzsche#The Gay Science|field notes on Gay Science]]'
 pdf: '[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]'
 posters: '[[library/posters/the-gay-science.jpg]]'

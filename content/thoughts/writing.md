@@ -2,7 +2,7 @@
 date: '2023-07-29'
 description: a knowledge distillation and learning process
 id: writing
-modified: 2026-06-01 17:19:49 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 seealso:
   - '[[posts|collections of my personal writing]]'
 tags:

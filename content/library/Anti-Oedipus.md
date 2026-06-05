@@ -8,7 +8,7 @@ description: a critique of psychoanalysis and capitalism that reimagines desire 
 finished: 2025
 id: Anti-Oedipus
 language: french
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 posters: '[[library/posters/anti-oedipus.jpg]]'
 status: evergreen
 subcategory: hermeneutics

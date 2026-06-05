@@ -5,7 +5,7 @@ date: '2025-10-07'
 description: uses nietzsche to reflect on joy, resentment, and agency in a tech saturated world, offering practices for more joyful living.
 finished: 2023
 id: In Emergency, Break Glass
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 posters: '[[library/posters/in-emergency-break-glass.jpg]]'
 status: finished
 subcategory: being

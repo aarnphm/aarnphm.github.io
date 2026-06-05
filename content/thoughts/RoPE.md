@@ -2,7 +2,7 @@
 date: '2025-08-07'
 description: rotary position embedding — pairwise rotation of Q/K so inner products encode relative offset, plus context-extension via frequency rescaling.
 id: RoPE
-modified: 2026-06-02 09:30:00 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 seealso:
   - '[[thoughts/positional embeddings|positional embeddings]]'
   - '[[thoughts/Attention|Attention]]'

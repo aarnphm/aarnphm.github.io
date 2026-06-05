@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-06-02 02:27:29 GMT-04:00
+modified: 2026-06-05 15:08:23 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft

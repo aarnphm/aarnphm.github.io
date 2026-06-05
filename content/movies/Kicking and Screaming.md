@@ -8,7 +8,7 @@ description: post-grad drift as a kind of paralysis - baumbach's debut about fri
 director:
   - Noah Baumbach
 id: Kicking and Screaming
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/Kicking and Screaming.jpg]]'
 rating: 6.6
 status: to watch

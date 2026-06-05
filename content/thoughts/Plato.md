@@ -2,7 +2,7 @@
 date: '2023-11-08'
 description: fathers of Western philosophical tradition.
 id: Plato
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/Socrates]]'
 tags:
@@ -177,7 +177,7 @@ Tries to write poetry
 
 - Write to gods of Apollo (Oracle at Delphi)
 - fables of issa
-- Recurring dream accross his life
+- Recurring dream across his life
   -> ends with him hearing a voice: Socrates, practice art
 
 _last day of life_

@@ -5,7 +5,7 @@ date: '2025-10-07'
 description: survey of modern metaphysics that traces how philosophers from leibniz onward make sense of reality, possibility, and existence.
 finished: 2025
 id: The Evolution of Modern Metaphysics
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 posters: '[[library/posters/the-evolution-of-modern-metaphysics.jpg]]'
 status: finished
 subcategory: metaphysics

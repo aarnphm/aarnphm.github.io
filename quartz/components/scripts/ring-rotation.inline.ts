@@ -1,9 +1,11 @@
+import katex from 'katex'
+
 type RingState = { p: number; step: number; playing: boolean }
 
-const VIEW = 360
+const VIEW = 416
 const CENTER = VIEW / 2
 const RING_R = 118
-const CHIP_R = 162
+const CHIP_R = 174
 const TOKEN_R = 16
 const STEP_DURATION_MS = 720
 const PULSE_DURATION_MS = 360
@@ -25,6 +27,19 @@ const mod = (n: number, m: number) => ((n % m) + m) % m
 const rrDeviceHtml = (i: number): string => `<span class="rr-dyn-math">d<sub>${i}</sub></span>`
 const rrSliceHtml = (i: number): string =>
   `<span class="rr-dyn-math">k<sub>${i}</sub>,v<sub>${i}</sub></span>`
+
+const rrTex = (tex: string): string => {
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return tex
+  }
+}
 
 const ringArcPath = (p: number) => {
   const start = polar(deviceAngle(0, p), RING_R)
@@ -164,11 +179,11 @@ const updateReadout = (root: HTMLElement, state: RingState) => {
   const stepTotal = root.querySelector<HTMLElement>('[data-rr-step-total]')
   const sliderVal = root.querySelector<HTMLElement>('[data-rr-devices-value]')
 
-  if (mem) mem.textContent = `L/${state.p} d`
-  if (comm) comm.textContent = `${state.p - 1} L/${state.p} d`
-  if (rounds) rounds.textContent = String(state.p - 1)
-  if (stepEl) stepEl.textContent = String(state.step)
-  if (stepTotal) stepTotal.textContent = String(state.p - 1)
+  if (mem) mem.innerHTML = rrTex(`L/${state.p}\\,d`)
+  if (comm) comm.innerHTML = rrTex(`${state.p - 1}\\,L/${state.p}\\,d`)
+  if (rounds) rounds.innerHTML = rrTex(String(state.p - 1))
+  if (stepEl) stepEl.innerHTML = rrTex(String(state.step))
+  if (stepTotal) stepTotal.innerHTML = rrTex(String(state.p - 1))
   if (sliderVal) sliderVal.textContent = String(state.p)
 }
 

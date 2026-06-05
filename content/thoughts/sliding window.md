@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: each token attends only inside a fixed radius, local pattern dropping cost from $\mathcal{O}(L^2)$ to $\mathcal{O}(Lw)$
 id: attention-sliding-window
-modified: 2026-06-01 19:11:48 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'

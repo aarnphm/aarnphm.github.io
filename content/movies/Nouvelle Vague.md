@@ -7,7 +7,7 @@ description: It follows the shooting of Breathless, one of the first feature fil
 director:
   - Richard Linklater
 id: Nouvelle Vague
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/novelle-vague.jpg]]'
 rating: 7.3
 status: to watch

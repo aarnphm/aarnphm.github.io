@@ -5,7 +5,7 @@ aliases:
 date: '2025-05-21'
 description: draft-and-verify using smaller models to generate a head tokens
 id: Speculative decoding
-modified: 2026-06-01 14:54:50 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:

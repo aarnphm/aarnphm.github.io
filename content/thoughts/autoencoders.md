@@ -2,7 +2,7 @@
 date: '2024-12-14'
 description: feature extraction from neural network
 id: autoencoders
-modified: 2026-05-09 17:51:55 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 seealso:
   - '[[thoughts/autoencoder-diagrams-intuition|diagrams]]'
   - '[[thoughts/latent space|latent space]]'

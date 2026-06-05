@@ -24,6 +24,7 @@ import { clone } from '../util/clone'
 import { BuildCtx, renderDataFor } from '../util/ctx'
 import { htmlToJsx } from '../util/jsx'
 import { classNames } from '../util/lang'
+import { collectHeadingIndex, resolveNestedAnchor } from '../util/nested-anchor'
 import {
   notebookCellRef,
   notebookCellRuntimeNodes,
@@ -674,6 +675,7 @@ type RenderTreeFeatures = {
   hasTranscludeBlockquote: boolean
   hasReferences: boolean
   hasFootnotes: boolean
+  hasNestedAnchor: boolean
 }
 
 function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
@@ -681,6 +683,7 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     hasTranscludeBlockquote: false,
     hasReferences: false,
     hasFootnotes: false,
+    hasNestedAnchor: false,
   }
   visit(root, 'element', node => {
     if (node.tagName === 'blockquote') {
@@ -696,9 +699,18 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
       if (node.properties?.dataFootnotes === '') {
         features.hasFootnotes = true
       }
+    } else if (node.tagName === 'a') {
+      if (typeof node.properties?.dataAnchorPath === 'string') {
+        features.hasNestedAnchor = true
+      }
     }
 
-    if (features.hasTranscludeBlockquote && features.hasReferences && features.hasFootnotes) {
+    if (
+      features.hasTranscludeBlockquote &&
+      features.hasReferences &&
+      features.hasFootnotes &&
+      features.hasNestedAnchor
+    ) {
       return EXIT
     }
   })
@@ -1268,6 +1280,49 @@ export function transcludeFinal(
       node.children = validChildren
     }
     return true
+  }
+
+  if (features.hasNestedAnchor) {
+    const renderData = renderDataFor(componentData.ctx, allFiles)
+    const headingCache = new Map<string, ReturnType<typeof collectHeadingIndex>>()
+    visit(root, { tagName: 'a' }, node => {
+      const pathAttr = node.properties?.dataAnchorPath
+      const targetAttr = node.properties?.dataAnchorTarget
+      if (node.properties) {
+        delete node.properties.dataAnchorPath
+        delete node.properties.dataAnchorTarget
+      }
+      if (typeof pathAttr !== 'string') return
+      let segments: unknown
+      try {
+        segments = JSON.parse(pathAttr)
+      } catch {
+        return
+      }
+      if (!Array.isArray(segments) || segments.length < 2) return
+
+      const cacheKey = typeof targetAttr === 'string' ? targetAttr : ''
+      let headings = headingCache.get(cacheKey)
+      if (!headings) {
+        let tree: Root | undefined
+        if (cacheKey) {
+          const targetSlug = cacheKey.replace(/^\//, '')
+          tree = isFullSlug(targetSlug) ? renderData.bySlug.get(targetSlug)?.htmlAst : undefined
+        } else {
+          tree = root
+        }
+        if (!tree) return
+        headings = collectHeadingIndex(tree)
+        headingCache.set(cacheKey, headings)
+      }
+
+      const resolved = resolveNestedAnchor(segments as string[], headings)
+      if (!resolved) return
+      const href = node.properties?.href
+      if (typeof href === 'string') {
+        node.properties.href = href.replace(/#.*$/, '') + '#' + resolved
+      }
+    })
   }
 
   if (features.hasTranscludeBlockquote) {

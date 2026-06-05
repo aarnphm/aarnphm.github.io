@@ -6,7 +6,7 @@ date: '2026-01-17'
 description: my name is Aaron, and on the virtue of friendship
 id: friends
 layout: technical
-modified: 2026-06-01 17:19:50 GMT-04:00
+modified: 2026-06-05 15:08:36 GMT-04:00
 tags:
   - evergreen
   - friend

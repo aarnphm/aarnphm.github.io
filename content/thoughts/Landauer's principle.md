@@ -3,7 +3,7 @@ created: '2025-09-17'
 date: '2025-09-19'
 description: minimum energy required to erase one bit of information
 id: Landauer's principle
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 published: '2005-11-08'
 source: https://en.wikipedia.org/wiki/Landauer%27s_principle
 tags:

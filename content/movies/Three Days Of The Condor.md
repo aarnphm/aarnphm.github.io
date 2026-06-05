@@ -7,7 +7,7 @@ description: cia analyst's entire office assassinated while he's getting lunchâ€
 director:
   - Sydney Pollack
 id: three-days-of-the-condor
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/three-days-of-the-condor.jpg]]'
 rating: 7.4
 status: to watch

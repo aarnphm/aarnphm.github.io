@@ -287,8 +287,10 @@ describe('remarkWikilink integration', () => {
 
     test('handles nested anchor segments', () => {
       const html = processToHTML('[[file#Parent#Child]]', { obsidian: true })
-      // should use only "child" from nested anchors (lowercased by slugAnchor)
-      assert(html.includes('<a href="file#child">file</a>'))
+      assert(html.includes('href="file#child"'))
+      assert(html.includes('data-anchor-target="file"'))
+      assert(html.includes('parent'))
+      assert(html.includes('child'))
     })
 
     test('slugifies anchor text', () => {

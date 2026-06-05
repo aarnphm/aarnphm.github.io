@@ -2,7 +2,7 @@
 date: '2025-09-06'
 description: on visualisation
 id: notes
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 noindex: true
 tags:
   - seed

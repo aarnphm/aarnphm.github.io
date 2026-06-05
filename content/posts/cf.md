@@ -2,7 +2,7 @@
 date: '2025-08-04'
 description: And maybe you should, or shouldn't.
 id: cf
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 socials:
   hackernews: https://news.ycombinator.com/item?id=44791222
   twitter: https://x.com/aarnphm/status/1952474293654413636

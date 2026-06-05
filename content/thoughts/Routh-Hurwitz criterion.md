@@ -2,7 +2,7 @@
 date: '2024-02-06'
 description: stability condition for linear time-invariant control systems requiring all coefficients in first column of routh array to have same sign.
 id: Routh-Hurwitz criterion
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:23 GMT-04:00
 tags:
   - seed
 title: Routh-Hurwitz criterion

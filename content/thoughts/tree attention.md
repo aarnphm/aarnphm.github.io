@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: softmax reduction over a communication tree, log p stages across p devices instead of linear ring traversal.
 id: attention-tree
-modified: 2026-06-04 15:03:29 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/ring attention|ring attention]]'

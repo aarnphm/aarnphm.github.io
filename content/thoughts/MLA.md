@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: low-rank joint compression of attention K,V (and Q), cache only the latent and RoPE-carrying duplicate.
 id: attention-mla
-modified: 2026-05-28 12:27:47 GMT-04:00
+modified: 2026-06-05 15:08:30 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/GQA|GQA]]'

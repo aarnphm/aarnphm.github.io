@@ -8,7 +8,7 @@ description: schoolgirls vanish during a picnic - weir lets the landscape swallo
 director:
   - Peter Weir
 id: Picnic at Hanging Rock
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/Picnic at Hanging Rock.jpg]]'
 rating: 7.4
 status: to watch

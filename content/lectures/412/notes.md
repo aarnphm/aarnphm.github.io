@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra applications for transformers
 id: notes
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:04 GMT-04:00
 slides: true
 tags:
   - workshop

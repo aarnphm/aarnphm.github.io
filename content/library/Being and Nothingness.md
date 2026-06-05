@@ -4,7 +4,7 @@ category: philosophy
 date: '2025-10-07'
 description: existential analysis of consciousness, freedom, and bad faith, exploring how humans create meaning in a world without given essence.
 id: Being and Nothingness
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:01 GMT-04:00
 posters: '[[library/posters/being-and-nothingness.jpg]]'
 status: current
 subcategory:

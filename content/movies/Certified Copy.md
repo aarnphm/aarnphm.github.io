@@ -8,7 +8,7 @@ description: a day in tuscany where a couple may or may not be a couple - kiaros
 director:
   - Abbas Kiarostami
 id: Certified Copy
-modified: 2026-05-25 00:31:16 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/certified-copy.jpg]]'
 rating: 7.3
 status: to watch

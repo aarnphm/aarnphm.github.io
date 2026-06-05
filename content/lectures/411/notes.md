@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra notes
 id: notes
-modified: 2026-05-27 02:11:33 GMT-04:00
+modified: 2026-06-05 15:08:04 GMT-04:00
 slides: true
 tags:
   - workshop

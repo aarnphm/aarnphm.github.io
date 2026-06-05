@@ -9,7 +9,7 @@ description: 1830s paris theater world - a courtesan is loved by a mime, an acto
 director:
   - Marcel Carné
 id: Children of Paradise
-modified: 2026-05-25 00:31:16 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/children-of-paradise.jpg]]'
 rating: 8.3
 status: to watch

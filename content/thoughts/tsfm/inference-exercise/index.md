@@ -2,7 +2,7 @@
 date: '2025-10-23'
 description: build your own inference engine.
 id: index
-modified: 2026-05-26 22:34:36 GMT-04:00
+modified: 2026-06-05 15:08:33 GMT-04:00
 tags:
   - ml
   - tsfm

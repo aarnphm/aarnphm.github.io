@@ -2,7 +2,7 @@
 date: '2023-09-25'
 description: half step into the oblivion
 id: music theory
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - seed
 title: Music theory

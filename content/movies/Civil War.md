@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: journalists chasing the fall of dc like war tourists—garland filming american collapse while studiously avoiding why it happened, more interested in what we photograph than what we become.
 director: Alex Garland
 id: civil-war
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/civil-war.jpg]]'
 rating: 7.1
 status: finished

@@ -7,7 +7,7 @@ description: childhood in shadow of disney world—baker filming six-year-old mo
 director:
   - Sean Baker
 id: the-florida-project
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/the-florida-project.jpg]]'
 rating: 7.6
 status: to watch

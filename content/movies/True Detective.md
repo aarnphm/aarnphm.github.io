@@ -4,7 +4,7 @@ date: '2024-02-07'
 description: louisiana detectives chasing ritual killer across seventeen years—fukunaga filming mcconaughey's nihilist philosopher and harrelson's everyman, time is a flat circle, yellow king mythology bleeding into swamp, eight episodes proving procedurals can be poetry.
 director: Cary Fukunaga
 id: true-detective
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/true-detective.jpg]]'
 rating: 8.9
 status: recurring

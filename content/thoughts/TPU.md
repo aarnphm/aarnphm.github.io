@@ -2,7 +2,7 @@
 date: '2024-03-04'
 description: google's tensor processing unit, custom asic for accelerating machine learning workloads with xla compilation.
 id: TPU
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:27 GMT-04:00
 tags:
   - hardware
 title: TPU

@@ -2,7 +2,7 @@
 date: '2024-02-25'
 description: manifestation of malleable software where users shape their computational environments.
 id: personal computing
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:23 GMT-04:00
 tags:
   - seed
   - computing

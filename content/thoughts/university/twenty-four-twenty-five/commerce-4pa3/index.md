@@ -2,7 +2,7 @@
 date: '2025-01-06'
 description: commerce capstone
 id: index
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - university
   - commerce4pa3

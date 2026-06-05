@@ -5,7 +5,7 @@ aliases:
 date: '2022-04-22'
 description: my working notes, as a form of a digital garden
 id: _index
-modified: 2026-05-30 22:20:51 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 tags:
   - sapling
   - fruit

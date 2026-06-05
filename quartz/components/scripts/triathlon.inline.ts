@@ -183,7 +183,7 @@ const recoveryRows = (h: ActivityHealth): [string, string][] => {
   if (h.hrv != null) rows.push(['hrv', `${h.hrv} ms`])
   if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
   if (h.tempDeviationC != null)
-    rows.push(['temp Δ', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
+    rows.push(['temp', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
   return rows
 }
 

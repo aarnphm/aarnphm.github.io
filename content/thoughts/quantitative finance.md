@@ -2,7 +2,7 @@
 date: '2025-09-08'
 description: and the bull market
 id: quantitative finance
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 tags:
   - seed
 title: quantitative finance

@@ -7,7 +7,7 @@ description: In 1970, Mooney and two cohorts wander into a museum in broad dayli
 director:
   - Kelly Reichardt
 id: The Mastermind
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/the-mastermind.webp]]'
 rating: 6.2
 status: finished

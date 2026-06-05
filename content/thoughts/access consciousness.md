@@ -2,7 +2,7 @@
 date: '2026-01-28'
 description: information availability, global workspace, what interpretability can actually map
 id: access-consciousness
-modified: 2026-05-15 01:01:20 GMT-04:00
+modified: 2026-06-05 15:08:26 GMT-04:00
 seealso:
   - '[[thoughts/phenomenal consciousness]]'
   - '[[thoughts/dualism]]'

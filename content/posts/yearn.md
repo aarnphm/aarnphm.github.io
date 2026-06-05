@@ -4,7 +4,7 @@ cssclasses:
 date: '2025-10-21'
 description: on yearning.
 id: yearn
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 socials:
   substack: https://livingalonealone.com/p/in-case-i-fall-for-you?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=false
 tags:

@@ -6,7 +6,7 @@ description: Sleeping rough on the streets of London, Mike seems unable to escap
 director:
   - Harris Dickinson
 id: Urchin
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/urchin.jpg]]'
 rating: 7.2
 status: to watch

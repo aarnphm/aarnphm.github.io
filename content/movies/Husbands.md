@@ -8,7 +8,7 @@ description: three friends spiral after a funeral - grief turns into masculine c
 director:
   - John Cassavetes
 id: Husbands
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/husband.jpg]]'
 rating: 7.1
 status: to watch

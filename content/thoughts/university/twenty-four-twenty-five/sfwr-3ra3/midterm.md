@@ -2,7 +2,7 @@
 date: '2024-10-21'
 description: midterm review covering requirements engineering, sson, goals, personas, risk management, and oppression-aware design.
 id: midterm
-modified: 2026-05-09 17:51:57 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - sfwr3ra3
 title: requirements notes

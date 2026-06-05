@@ -2,7 +2,7 @@
 date: '2024-01-23'
 description: conversion factors for economic analysis including cost of labor, time, opportunity cost, environmental impacts, ghg emissions, and health costs.
 id: Conversion Factors
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - eng3px3
 title: Conversion Factors

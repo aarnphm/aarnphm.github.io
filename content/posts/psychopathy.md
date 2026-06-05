@@ -3,7 +3,7 @@ date: '2026-01-06'
 description: and this is the game I wish not to partake
 draft: true
 id: psychopathy
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:08 GMT-04:00
 tags:
   - p/fiction
   - o/relationship

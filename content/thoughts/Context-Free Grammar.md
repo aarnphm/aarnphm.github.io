@@ -2,7 +2,7 @@
 date: '2025-04-22'
 description: formal grammar defined as 4-tuple with non-terminals, terminals, production rules, and start symbol, recognized by pushdown automata.
 id: Context-Free Grammar
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-06-05 15:08:28 GMT-04:00
 tags:
   - math/discrete
 title: Context-Free Grammar

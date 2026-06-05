@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: janitor returning to hometown after brother's death—lonergan revealing through flashbacks the fire that killed his children, grief so complete it erases the possibility of redemption, casey affleck frozen in a past he can't forgive himself for living through.
 director: Kenneth Lonergan
 id: manchester-by-the-sea
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/manchester-by-the-sea.jpg]]'
 rating: 8.6
 status: finished

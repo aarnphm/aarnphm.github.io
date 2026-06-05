@@ -2,7 +2,7 @@
 date: '2024-11-08'
 description: a case study into how surveillance capitalism drives one of the most influential controversy in data privacy of the 21st century
 id: case study
-modified: 2026-05-09 17:51:58 GMT-04:00
+modified: 2026-06-05 15:08:40 GMT-04:00
 tags:
   - engineer4a03
 title: Cambridge Analytica, a case study

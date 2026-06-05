@@ -6,7 +6,7 @@ date: '2024-12-23'
 description: argues for a focused, intentional relationship with technology, stripping away digital clutter to protect time, attention, and solitude.
 finished: 2024
 id: Digital Minimalism
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/digital-minimalism.jpg]]'
 status: finished
 subcategory: productivity

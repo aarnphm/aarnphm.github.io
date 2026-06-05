@@ -6,7 +6,7 @@ description: dialogue that builds an ideal city to explore justice, education, p
 finished: 2023
 id: The Republic
 language: ancient greek
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 posters: '[[library/posters/the-republic.jpg]]'
 status: finished
 subcategory: discourse

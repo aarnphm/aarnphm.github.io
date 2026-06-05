@@ -2,7 +2,7 @@
 date: '2025-11-07'
 description: 18.156 | Spring 2025 | Graduate
 id: projection theory
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 socials:
   ocw: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025/
 tags:

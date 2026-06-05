@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: hamilton's ricci flow and perelman's entropy functionals—the analytic machinery behind geometrization.
 id: ricci-flow
-modified: 2026-05-19 18:14:15 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - math
   - math/topology

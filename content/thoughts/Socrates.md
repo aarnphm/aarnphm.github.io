@@ -2,7 +2,7 @@
 date: '2023-09-25'
 description: philosophy notes on socratic method, wisdom as self-understanding, platonic forms, and the pursuit of knowledge through questioning rather than claiming expertise.
 id: Socrates
-modified: 2026-05-09 17:51:33 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 tags:
   - philosophy
   - philos1aa3

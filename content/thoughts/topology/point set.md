@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: scaffolding (munkres ch. 2–5).
 id: point set
-modified: 2026-05-19 18:12:20 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology hub]]'
   - '[[thoughts/topology/separation|separation axioms]]'

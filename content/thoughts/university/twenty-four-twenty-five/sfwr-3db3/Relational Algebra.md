@@ -2,7 +2,7 @@
 date: '2024-12-13'
 description: and some more annotations
 id: Relational Algebra
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - sfwr3db3
 title: Relational Algebra

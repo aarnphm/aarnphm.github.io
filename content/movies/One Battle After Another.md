@@ -5,7 +5,7 @@ date: '2024-02-07'
 description: ex-revolutionary dragged back into fighting fascist rival—anderson spending blockbuster budget on political satire, dicaprio careening through gunfights and stoner mishaps, the personal colliding with political as authoritarianism reveals itself as pathetic idiocy wearing different masks.
 director: Paul Thomas Anderson
 id: one-battle-after-another
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/one-battle-after-another.jpg]]'
 rating: 7.4
 status: to watch

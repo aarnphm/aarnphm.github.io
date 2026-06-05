@@ -2,7 +2,7 @@
 date: '2024-12-13'
 description: and the manifestation of the dynabook
 id: malleable software
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:25 GMT-04:00
 tags:
   - seed
 title: malleable software

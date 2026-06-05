@@ -2,7 +2,7 @@
 date: '2024-10-29'
 description: archived assignments from discrete mathematics and computation course, revision 1 from 2023-2024 academic year.
 id: index
-modified: 2026-05-09 17:51:58 GMT-04:00
+modified: 2026-06-05 15:08:39 GMT-04:00
 tags:
   - sfwr2fa3
 title: revision 1 of assignments (2023-2024)
