@@ -1,10 +1,12 @@
 ---
-date: '2025-11-08'
+date: "2025-11-08"
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
-id: lyd
+id: toronto
 layout: lydia
-modified: 2026-06-05 15:08:36 GMT-04:00
+modified: 2026-06-05 16:52:41 GMT-04:00
 noindex: true
+permalinks:
+  - /lyd
 tags:
   - postcards
   - evergreen
