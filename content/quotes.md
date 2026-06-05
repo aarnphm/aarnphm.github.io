@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-06-01 18:13:43 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'

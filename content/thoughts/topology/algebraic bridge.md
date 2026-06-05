@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: bridge from point-set topology to algebraic topology (homology/homotopy) ahead of mit 18.906 and beyond.
 id: algebraic bridge
-modified: 2026-05-19 18:21:30 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 seealso:
   - '[[thoughts/topology/fundamental group|fundamental group]]'
   - '[[thoughts/topology/simply connected|simple connectivity]]'

@@ -2,7 +2,7 @@
 date: '2024-03-05'
 description: we study ethics in order to improve our life, or Aristotelian ethics
 id: ethics
-modified: 2026-05-27 02:48:29 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - philosophy
   - seed

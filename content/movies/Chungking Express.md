@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: hong kong loneliness at multiple frame rates—wong kar-wai filming missed connections and pining as the city blurs around people moving too fast and too slow to ever properly meet.
 director: Wong Kar-wai
 id: chungking-express
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/chungking-express.jpg]]'
 rating: 7.9
 status: to watch

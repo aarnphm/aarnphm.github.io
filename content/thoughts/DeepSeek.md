@@ -2,7 +2,7 @@
 date: '2025-01-25'
 description: and OSS AI ftw.
 id: DeepSeek
-modified: 2026-05-27 02:48:12 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 seealso:
   - '[[thoughts/DS32]]'
 socials:

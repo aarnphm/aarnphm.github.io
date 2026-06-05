@@ -2,7 +2,7 @@
 date: '2024-03-25'
 description: set of points in a dynamical system exhibiting chaotic behavior, creating patterns that explain phenomena from weather to migration.
 id: attractor
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - math
   - seed

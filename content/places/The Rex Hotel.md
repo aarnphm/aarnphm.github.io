@@ -8,7 +8,7 @@ coordinates:
 date: '2025-11-22'
 description: great spots for pay-what-you-think-it-is-worth music
 id: The Rex Hotel
-modified: 2026-05-09 17:51:50 GMT-04:00
+modified: 2026-06-05 15:08:11 GMT-04:00
 rating: 5
 tags:
   - places

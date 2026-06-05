@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: prefix-tree caching of KV pages with LRU eviction, shared request prefixes reuse computed K,V.
 id: attention-radix
-modified: 2026-06-04 08:33:45 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/Radix tree|Radix tree]]'

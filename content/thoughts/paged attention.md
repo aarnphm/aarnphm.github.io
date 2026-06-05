@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: block-paged KV cache, virtual-memory-style page tables, hot blocks on device, cold blocks spill to host.
 id: attention-paged
-modified: 2026-05-28 13:08:23 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/radix attention|radix attention]]'

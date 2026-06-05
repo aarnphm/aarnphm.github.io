@@ -2,9 +2,9 @@
 date: '2026-05-26'
 description: or just new thing
 id: Sets
-modified: 2026-06-04 17:08:14 GMT-04:00
+modified: 2026-06-05 15:08:30 GMT-04:00
 seealso:
-  - '[[thoughts/topology]]'
+  - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
 tags:
   - math
@@ -201,7 +201,7 @@ $$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
 >
 > _The complement of the intersection equals the union of the complements_
 
-### Power set
+### power set
 
 > [!IMPORTANT] correct notation
 >
@@ -211,7 +211,7 @@ $$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
 >
 > $a \in A,\;\;\;\;\{a\} \subset A,\;\;\;\; \{a\} \in \mathcal{P}(A)$
 
-### Arbitrary Unions and Intersection
+### arbitrary unions and intersection
 
 _union of the elements of_ $\mathcal{A}$ is defined by
 
@@ -224,6 +224,25 @@ _intersection of the elements of_ $\mathcal{A}$ is defined by
 $$
 \bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
 $$
+
+> [!IMPORTANT]
+> If one of the elements of $\mathcal{A}$ happens to be the empty set then it is reasonable to say that $\bigcup_{A \in  \mathcal{A}} A = \emptyset$ if $\mathcal{A}$ is empty
+>
+> every $x$ vacuously satisfies the defining property for the intersection of the elements $\mathcal{A}$, so that let $\bigcap_{A \in \mathcal{A}} A = X$ when $\mathcal{A}$ is empty
+
+### Cartesian products
+
+_notion of ordered pair_ over to general sets. We define a cartesian product $A \times B$ to be the set of all ordered pairs $(a,b)$ for which $a$ is an element of $A$ and $b$ is an element of $B$.
+
+$$
+A \times B = \{(a,b) \mid\;a \in A \text{ and } b \in B\}
+$$
+
+> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of set]: if $a \neq\; b$ then this definition says that $(a,b)$ is a colleciton containing two sets, one of which is a one-element set and the other a two-element set.<br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
+>
+> The _first coordinate_ of the ordered pair is defined to be the ==element belonging to both sets==
+>
+> The _second coordinate_ is the element belong to only **one of the set**
 
 ## open
 
@@ -248,3 +267,11 @@ A set $C \subseteq X$ is _closed_ if its complement $X \setminus C$ is open. Equ
 Closed and open are not exclusive. In the discrete topology every set is both. In $\mathbb{R}$ with the standard topology, $[a, b]$ is closed, $(a, b)$ is open, and $[a, b)$ is neither. The half-open structure is what makes the lower limit topology distinct from the standard one.
 
 The _closure_ $\overline{A}$ is the smallest closed set containing $A$; the _interior_ $\mathrm{int}(A)$ is the largest open set inside $A$. Their difference $\overline{A} \setminus \mathrm{int}(A)$ is the boundary $\partial A$.
+
+## Zermelo-Fraenkel set theory
+
+The [ZFC](https://en.wikipedia.org/wiki/Zermelo–Fraenkel_set_theory) is an [axiomatic system](https://en.wikipedia.org/wiki/Axiomatic_system) that was proposed to formulate a paradox-free theory of sets to address [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]]. In formally, it is intended to formalize a single primitive notion, that of a [hereditary](https://en.wikipedia.org/wiki/Hereditary_set) [well-founded](https://en.wikipedia.org/wiki/Well-founded_relation) set, so that all _entities_ in the universe of discourse are such set.
+
+> These axioms of ZFC therefore refer only to [pure set](https://en.wikipedia.org/wiki/Hereditary_set) and prevent its models from containing {{sidenotes[urelements]: elements that are not themselves sets}}
+
+Formally, ZFC is a one-sorted theory in [first-order logic](https://en.wikipedia.org/wiki/First-order_logic).

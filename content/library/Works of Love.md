@@ -7,7 +7,7 @@ description: series of deliberations on christian agape versus erotic or prefere
 external: https://sorenkierkegaard.org/works-of-love.html
 finished: null
 id: Works of Love
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 notebook: null
 posters: '[[library/posters/works-of-love.jpeg]]'
 status: current

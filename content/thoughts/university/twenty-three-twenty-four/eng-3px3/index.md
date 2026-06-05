@@ -2,7 +2,7 @@
 date: '2024-01-09'
 description: engineering economics course covering net value functions, economic principles for decision-making, financial metrics, and group project management.
 id: index
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - university
   - eng3px3

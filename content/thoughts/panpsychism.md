@@ -2,7 +2,7 @@
 date: '2026-01-28'
 description: mentality as fundamental, russell's move, the combination problem
 id: panpsychism
-modified: 2026-05-15 01:01:20 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/dualism]]'
   - '[[thoughts/physicalism]]'

@@ -7,7 +7,7 @@ description: wenders translates pina bausch into 3d space - bodies narrate grief
 director:
   - Wim Wenders
 id: Pina
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/Pina.jpg]]'
 rating: 7.6
 status: to watch

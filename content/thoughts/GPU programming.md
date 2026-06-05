@@ -4,7 +4,7 @@ aliases:
 date: '2025-09-08'
 description: bedstone of scaling intelligence
 id: GPU programming
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:27 GMT-04:00
 permalinks:
   - /gpus
 socials:

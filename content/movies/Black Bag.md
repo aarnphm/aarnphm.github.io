@@ -7,7 +7,7 @@ description: Kathryn and George Woodhouse are both top-tier Intelligence Agents.
 director:
   - Steven Soderbergh
 id: Black Bag
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/black-bag.jpg]]'
 rating: 5.4
 status: finished

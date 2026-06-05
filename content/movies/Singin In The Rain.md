@@ -6,7 +6,7 @@ director:
   - Gene Kelly
   - Stanley Donen
 id: singin-in-the-rain
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/singin-in-the-rain.jpg]]'
 rating: 8.3
 status: to watch

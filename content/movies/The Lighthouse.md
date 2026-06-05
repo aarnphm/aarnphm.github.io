@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: two lighthouse keepers descending into madness on isolated island—eggers filming pattinson and dafoe's psychological warfare in black and white, mermaids and mythology bleeding into reality, isolation revealing that the light at the top isn't enlightenment but annihilation.
 director: Robert Eggers
 id: the-lighthouse
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/the-lighthouse.jpg]]'
 rating: 7.4
 status: recurring

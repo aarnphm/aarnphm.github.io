@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: redford at seventy-seven alone against the ocean with almost no dialogue—chandor stripping cinema to image and survival, the sea indifferent to how competently you drown.
 director: J.C. Chandor
 id: all-is-lost
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/all-is-lost.jpg]]'
 rating: 6.9
 status: to watch

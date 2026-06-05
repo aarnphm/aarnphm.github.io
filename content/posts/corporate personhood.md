@@ -5,7 +5,7 @@ date: '2024-11-19'
 description: and moral responsibilities of corporation.
 id: corporate personhood
 lang: en-US
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 tags:
   - engineer4a03
   - fruit

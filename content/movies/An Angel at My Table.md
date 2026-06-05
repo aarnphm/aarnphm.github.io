@@ -7,7 +7,7 @@ description: janet frame's life from isolation to authorship - campion films int
 director:
   - Jane Campion
 id: An Angel at My Table
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/An Angel at My Table.jpg]]'
 rating: 7.4
 status: to watch

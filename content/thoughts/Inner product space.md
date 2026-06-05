@@ -2,7 +2,7 @@
 date: '2025-08-20'
 description: Vector spaces with a generalized dot product that induces length, angles, orthogonality, and projections; the gateway from Euclidean geometry to Hilbert spaces.
 id: Inner product space
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:23 GMT-04:00
 tags:
   - math
 title: Inner product space

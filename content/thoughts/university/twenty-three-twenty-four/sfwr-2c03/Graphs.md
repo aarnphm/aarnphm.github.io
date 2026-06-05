@@ -2,7 +2,7 @@
 date: '2024-02-26'
 description: graph theory covering directed and undirected graphs, adjacency lists, dfs and bfs traversal, connected components, bipartite graphs, shortest paths.
 id: Graphs
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:41 GMT-04:00
 tags:
   - sfwr2c03
 title: Graphs

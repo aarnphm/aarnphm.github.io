@@ -2,7 +2,7 @@
 date: '2024-01-09'
 description: collection of scattered thoughts, ideas, and concepts explored through essays and reflections on philosophy, technology, and writing.
 id: index
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 tags:
   - evergreen
   - fruit

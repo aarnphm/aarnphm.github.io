@@ -5,7 +5,7 @@ date: '2024-02-07'
 description: burroughs' early confessional novel as fever dream—guadagnino filming daniel craig's william lee pursuing beautiful young man through mexico city cantinas, insisting on being queer and masculine simultaneously, ayahuasca hallucinations colliding past and future into broken love story.
 director: Luca Guadagnino
 id: queer
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/queer.jpg]]'
 rating: 7.3
 status: finished

@@ -7,7 +7,7 @@ description: A retail employee infiltrates the inner circle of an artist on the 
 director:
   - Alex Russell
 id: Lurker
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/lurker.jpg]]'
 rating: 6.7
 status: to watch

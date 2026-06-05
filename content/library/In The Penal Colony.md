@@ -7,7 +7,7 @@ date: '2025-11-29'
 description: short story about an elaborate torture machine that carves commandments into condemned prisoners' skin, exploring justice, authority, and devotion to ambiguous law.
 id: In The Penal Colony
 language: german
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
 posters: '[[library/posters/in-the-penal-colony.jpg]]'
 status: to read

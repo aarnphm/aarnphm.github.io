@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: desire in italian sunlight—a summer compressed into the shape of first love, guadagnino filming peaches and statues as classical surrogates for unspoken longing.
 director: Luca Guadagnino
 id: call-me-by-your-name
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/call-me-by-your-name.jpg]]'
 rating: 7.9
 status: finished

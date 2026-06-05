@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: reduce KV heads to a fraction of query heads, share K,V across groups for cheaper decode-time cache reuse
 id: attention-gqa
-modified: 2026-05-28 02:06:34 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MLA|MLA]]'

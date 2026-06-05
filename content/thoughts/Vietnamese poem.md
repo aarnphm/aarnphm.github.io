@@ -6,7 +6,7 @@ date: '2024-11-18'
 description: dedicated to my roots, Vietnamese born.
 id: Vietnamese poem
 lang: vi-VN
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 noindex: true
 permalinks:
   - /vietnam

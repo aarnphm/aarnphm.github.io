@@ -7,7 +7,7 @@ date: '2025-10-07'
 description: latter Wittgenstein
 id: Philosophical Investigation
 language: german
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 pdf: https://static1.squarespace.com/static/54889e73e4b0a2c1f9891289/t/564b61a4e4b04eca59c4d232/1447780772744/Ludwig.Wittgenstein.-.Philosophical.Investigations.pdf
 posters: '[[library/posters/philosophical-investigations.jpg]]'
 seealso:

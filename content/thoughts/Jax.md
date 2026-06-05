@@ -2,7 +2,7 @@
 date: '2022-11-07'
 description: numpy with autograd and xla compilation for accelerators, featuring jit compilation, automatic differentiation, and vectorization with immutable arrays.
 id: Jax
-modified: 2026-05-24 14:11:04 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 tags:
   - seed
   - ml

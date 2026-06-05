@@ -2,7 +2,7 @@
 date: '2024-11-05'
 description: probably the most beautiful equation in all mathematics
 id: Euler's identity
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-06-05 15:08:29 GMT-04:00
 tags:
   - math
 title: Euler's identity

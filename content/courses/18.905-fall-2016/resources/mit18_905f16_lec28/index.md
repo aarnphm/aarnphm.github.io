@@ -1,20 +1,22 @@
 ---
-title: 'algebraic topology i: lecture 27 products in cohomology'
-description: 'mit 18.905 algebraic topology i: lecture 27 products in cohomology'
-id: 'mit-18-905-fall-2016-resource-resources-mit18-905f16-lec28'
-tags:
-  - 'course'
-  - 'mit'
-  - 'ocw'
-  - 'math'
-  - 'topology'
-  - 'geometry'
-  - 'lecture notes'
 aliases:
-  - 'b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf'
-layout: 'A|L'
-license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
-license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  - b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf
+date: '2026-06-05'
+description: 'mit 18.905 algebraic topology i: lecture 27 products in cohomology'
+id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec28
+layout: A|L
+license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+modified: 2026-06-05 15:08:33 GMT-04:00
+tags:
+  - course
+  - mit
+  - ocw
+  - math
+  - topology
+  - geometry
+  - lecture notes
+title: 'algebraic topology i: lecture 27 products in cohomology'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

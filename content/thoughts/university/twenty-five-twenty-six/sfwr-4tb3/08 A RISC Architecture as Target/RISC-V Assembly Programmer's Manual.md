@@ -1,7 +1,7 @@
 ---
 date: '2026-05-09'
 id: RISC-V Assembly Programmer's Manual
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:41 GMT-04:00
 tags:
   - seed
 title: RISC-V Assembly Programmer's Manual

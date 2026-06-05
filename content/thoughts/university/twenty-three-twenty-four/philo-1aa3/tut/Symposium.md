@@ -2,7 +2,7 @@
 date: '2023-09-29'
 description: plato's symposium ladder of beauty progressing from individual beauty to beauty in minds, institutions, and ultimately absolute beauty.
 id: Symposium
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:41 GMT-04:00
 tags:
   - philosophy
   - philos1aa3

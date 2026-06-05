@@ -2,7 +2,7 @@
 date: '2024-10-08'
 description: procedure for solving problems by intuitively effective means, including formation rules for well-formed formulas in propositional calculus.
 id: effective procedure
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:23 GMT-04:00
 tags:
   - math
 title: effective procedure

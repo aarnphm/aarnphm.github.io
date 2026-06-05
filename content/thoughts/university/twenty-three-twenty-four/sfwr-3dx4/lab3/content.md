@@ -2,7 +2,7 @@
 date: '2024-02-28'
 description: lab on voltage-controlled electromechanical systems analyzing dc motor dc gain patterns and linear relationship between input voltage and gain.
 id: content
-modified: 2026-05-09 17:52:00 GMT-04:00
+modified: 2026-06-05 15:08:43 GMT-04:00
 tags:
   - sfwr3dx4
   - lab

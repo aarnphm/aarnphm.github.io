@@ -2,7 +2,7 @@
 date: '2024-10-21'
 description: eigendecomposition of a square normal matrix with an orthonormal eigenbasis to any $m\times n$ matrix
 id: Singular Value Decomposition
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - ml
   - math/linalg

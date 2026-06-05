@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: dreams folding into dreams as a way to talk about grief and the stories we tell ourselves to avoid it.
 director: Christopher Nolan
 id: inception
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/inception.jpg]]'
 rating: 8.8
 status: recurring

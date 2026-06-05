@@ -4,7 +4,7 @@ date: '2024-02-07'
 description: hope as institutional defiance—darabont filming patient escape through king's prison, morgan freeman narrating quiet dignity, redemption measured in decades of tunneling.
 director: Frank Darabont
 id: shawshank-redemption
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/shawshank-redemption.jpg]]'
 rating: 9.3
 status: recurring

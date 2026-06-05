@@ -2,7 +2,7 @@
 date: '2024-12-14'
 description: stateless feed-forward neural networks with universal approximation theorem, backpropagation, and techniques for addressing vanishing gradients through residual connections.
 id: FFN
-modified: 2026-05-09 17:51:55 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 tags:
   - ml
 title: feed-forward neural network

@@ -6,7 +6,7 @@ description: freud text that introduces the structural model of id, ego, and sup
 finished: 2025
 id: The Ego and The Id
 language: german
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 posters: '[[library/posters/the-ego-and-the-id.jpg]]'
 status: finished
 subcategory:

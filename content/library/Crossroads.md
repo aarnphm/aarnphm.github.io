@@ -6,7 +6,7 @@ description: a late poem addressing the body with tenderness at the end of a lif
 external: https://griffinpoetryprize.com/poem/crossroads-gluck
 finished: 2025
 id: Crossroads
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/crossroads.png]]'
 status: finished
 subcategory:

@@ -9,7 +9,7 @@ description: a general's widow drifts through romance and politics - renoir trea
 director:
   - Jean Renoir
 id: Elena and Her Men
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/elena-and-her-men.jpg]]'
 rating: 7
 status: to watch

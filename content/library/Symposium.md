@@ -6,7 +6,7 @@ description: dialogue where guests give speeches on eros, exploring different id
 finished: 2023
 id: Symposium
 language: ancient greek
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/symposium.jpg]]'
 status: finished
 subcategory: love

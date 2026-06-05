@@ -2,7 +2,7 @@
 date: '2026-01-28'
 description: what-it's-like-ness, the hard problem, and why functional explanation keeps missing
 id: phenomenal-consciousness
-modified: 2026-05-15 01:01:20 GMT-04:00
+modified: 2026-06-05 15:08:27 GMT-04:00
 seealso:
   - '[[thoughts/access consciousness]]'
   - '[[thoughts/dualism]]'

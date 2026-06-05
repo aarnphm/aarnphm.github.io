@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: masculinity as psychotic break—fincher filming ikea catalogs and bare-knuckle therapy, the twist obvious if you're paying attention, misread as endorsement anyway.
 director: David Fincher
 id: fight-club
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/fight-club.jpg]]'
 rating: 8.8
 status: recurring

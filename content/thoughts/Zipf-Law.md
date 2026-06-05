@@ -2,7 +2,7 @@
 date: '2024-12-01'
 description: empirical power law where word frequency inversely relates to rank, most common word appearing twice as often as second.
 id: Zipf-Law
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:26 GMT-04:00
 tags:
   - seed
 title: Zipf's Law

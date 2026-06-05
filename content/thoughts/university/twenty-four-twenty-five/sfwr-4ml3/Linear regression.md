@@ -2,7 +2,7 @@
 date: '2024-09-10'
 description: also known as linear predictor functions
 id: Linear regression
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:39 GMT-04:00
 seealso:
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture1.pdf|curve fitting]]'
   - '[[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/lec/Lecture2.pdf|regression]]'

@@ -6,7 +6,7 @@ description: Two conspiracy-obsessed men kidnap the CEO of a major company when 
 director:
   - Yorgos Lanthimos
 id: Bugonia
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/bugonia.webp]]'
 rating: 7.9
 status: to watch

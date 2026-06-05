@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: convert an arbitrary presheaf into a sheaf via locality
 id: sheafification
-modified: 2026-05-27 14:00:00 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 tags:
   - math
 title: sheafification

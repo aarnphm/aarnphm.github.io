@@ -6,7 +6,7 @@ description: Freudian theory of egos within societal contract
 finished: 2023
 id: Civilisation and its Discontents
 language: german
-modified: 2026-05-26 21:59:05 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 posters: '[[library/posters/civilisation-and-its-discontents.jpg]]'
 seealso:
   - '[[thoughts/Freud|Freud]]'

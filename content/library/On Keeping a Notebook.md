@@ -8,7 +8,7 @@ description: part of Slouching Towards Bethlehem (1968)
 external: null
 finished: 2026
 id: On Keeping a Notebook
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 notebook: null
 pdf: '[[thoughts/pdfs/00-On-Keeping-a-Notebook.pdf]]'
 posters: '[[library/posters/Slouching Towards Bethlehem.jpg]]'

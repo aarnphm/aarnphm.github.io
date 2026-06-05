@@ -8,7 +8,7 @@ description: dense philosophical cartography of flows, assemblages, and rhizomes
 finished: 2025
 id: A Thousand Plateaus
 language: french
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 pdf: https://files.libcom.org/files/A%20Thousand%20Plateaus.pdf
 posters: '[[library/posters/a-thousand-plateaus.jpg]]'
 status: evergreen

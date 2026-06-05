@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: profiteer transformed into savior—spielberg filming holocaust in black and white except girl's red coat, oskar schindler using nazi party membership to save jews, "whoever saves one life saves the world entire," neeson's regret for not saving more.
 director: Steven Spielberg
 id: schindlers-list
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/schindlers-list.jpg]]'
 rating: 9
 status: recurring

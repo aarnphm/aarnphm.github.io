@@ -1,17 +1,19 @@
 ---
-title: 'lecture notes'
-description: 'mit 14.12 lecture notes'
-id: 'mit-14-12-fall-2025-collection-resources-lecture-notes'
+date: '2026-06-05'
+description: mit 14.12 lecture notes
+id: mit-14-12-fall-2025-collection-resources-lecture-notes
+layout: A|L
+license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
-  - 'course'
-  - 'mit'
-  - 'ocw'
-  - 'social science'
-  - 'economics'
-  - 'game theory'
-layout: 'A|L'
-license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
-license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  - course
+  - mit
+  - ocw
+  - social science
+  - economics
+  - game theory
+title: lecture notes
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]

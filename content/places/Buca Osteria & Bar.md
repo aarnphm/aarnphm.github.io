@@ -8,7 +8,7 @@ coordinates:
 date: '2025-12-06'
 description: yorkville italian with housemade pasta and serious wine list
 id: Buca Osteria & Bar
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 rating: 5
 tags:
   - places

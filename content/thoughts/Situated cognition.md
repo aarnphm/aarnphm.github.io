@@ -5,7 +5,7 @@ claude:
 date: '2025-12-16'
 description: knowing is inseparable from doing
 id: Situated cognition
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 socials:
   research: '[[hinterland/research/situated-cognition-ethics-research-plan]]'
   wikipedia: https://en.wikipedia.org/wiki/Situated_cognition

@@ -2,7 +2,7 @@
 date: '2024-12-18'
 description: z-transform analysis of discrete-time control systems with zero-order hold, block diagram reduction, and transfer functions.
 id: closed loop system
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - sfwr4aa4
 title: closed loop system

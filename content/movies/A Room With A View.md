@@ -8,7 +8,7 @@ description: edwardian romance cracking open in florence - ivory staging proprie
 director:
   - James Ivory
 id: A Room With A View
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/a-room-with-a-view.jpg]]'
 rating: 7.4
 status: to watch

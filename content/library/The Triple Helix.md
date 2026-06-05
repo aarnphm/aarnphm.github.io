@@ -6,7 +6,7 @@ date: '2025-10-07'
 description: lewontin argues that gene, organism, and environment form an inseparable system, critiquing simple genetic determinism.
 finished: 2024
 id: The Triple Helix
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/the-triple-helix.jpg]]'
 status: finished
 subcategory: progress

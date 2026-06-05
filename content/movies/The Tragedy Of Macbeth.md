@@ -6,7 +6,7 @@ date: '2024-02-07'
 description: shakespeare's scottish play stripped to stark monochrome—coen filming denzel and frances as aging macbeths where ambition feels like last chance, witches and ravens circling while power corrodes, proving murder never stops echoing.
 director: Joel Coen
 id: the-tragedy-of-macbeth
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-tragedy-of-macbeth.jpg]]'
 rating: 7.1
 status: recurring

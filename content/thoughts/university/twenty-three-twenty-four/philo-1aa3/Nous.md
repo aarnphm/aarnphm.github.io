@@ -2,7 +2,7 @@
 date: '2023-12-07'
 description: comprehensive philosophy notes covering socrates, plato's republic and cave allegory, aristotle's causation, epicurus, stoicism, descartes, and spinoza.
 id: Nous
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - philos1aa3
 title: Nous

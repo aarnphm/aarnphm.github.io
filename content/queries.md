@@ -3,7 +3,7 @@ date: '2026-05-25'
 description: "\U0001F9E9 \U0001F6E4️\U0001F6E5️\U0001F698 \U0001F6D5 \U0001F6F7"
 id: queries
 layout: letter
-modified: 2026-05-27 22:34:03 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 seealso:
   - '[[puzzle]]'
   - '[[thoughts/craft]]'

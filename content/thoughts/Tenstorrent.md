@@ -2,7 +2,7 @@
 date: '2025-10-05'
 description: RISC-V based AI accelerators with programmable architecture
 id: Tenstorrent
-modified: 2026-05-24 01:22:26 GMT-04:00
+modified: 2026-06-05 15:08:22 GMT-04:00
 seealso:
   - '[[thoughts/GPU programming]]'
   - '[[thoughts/MLIR]]'

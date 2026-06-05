@@ -7,7 +7,7 @@ aliases:
 date: '2024-10-30'
 description: and reverse engineering neural networks.
 id: mechanistic interpretability
-modified: 2026-05-31 23:37:42 GMT-04:00
+modified: 2026-06-05 15:08:26 GMT-04:00
 permalinks:
   - /mechinterp
   - /interpretability

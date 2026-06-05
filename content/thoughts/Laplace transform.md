@@ -2,7 +2,7 @@
 date: '2024-12-17'
 description: to convert time to frequency domain and vice versa.
 id: Laplace transform
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 tags:
   - math
   - sfwr3dx4

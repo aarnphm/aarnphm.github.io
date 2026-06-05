@@ -7,7 +7,7 @@ description: traumatized freshman finding friendship and first love—chbosky ad
 director:
   - Stephen Chbosky
 id: the-perks-of-being-a-wallflower
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/the-perks-of-being-a-wallflower.jpg]]'
 rating: 7.9
 status: to watch

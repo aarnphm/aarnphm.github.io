@@ -2,7 +2,7 @@
 date: '2025-06-01'
 description: 'tw: addiction'
 id: dundurn
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:09 GMT-04:00
 signature: AP
 socials:
   substack: https://open.substack.com/pub/livingalone/p/apartment-two-twenty?r=1z8i4s&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true

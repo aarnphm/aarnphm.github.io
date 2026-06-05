@@ -2,7 +2,7 @@
 date: '2023-09-13'
 description: plato's allegory of the cave from republic discussing ignorance, enlightenment, journey from shadows to knowledge, and the ladder of beauty.
 id: Republic
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:42 GMT-04:00
 tags:
   - philosophy
   - philos1aa3

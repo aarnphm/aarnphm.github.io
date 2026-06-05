@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: two-stage attention filter, cheap scorer prunes key blocks, expensive exact attention only on survivors.
 id: attention-cascade
-modified: 2026-05-28 13:03:20 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'

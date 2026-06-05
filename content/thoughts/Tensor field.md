@@ -2,7 +2,7 @@
 date: '2024-11-27'
 description: a gentle introduction into tensor analysis
 id: Tensor field
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 tags:
   - math
 title: Tensor field

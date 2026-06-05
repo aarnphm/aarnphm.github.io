@@ -7,7 +7,7 @@ description: a disposable employee is sent on a human expedition to colonise the
 director:
   - Bong Joon Ho
 id: Micky 17
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/mickey-17.jpg]]'
 rating: 6.7
 status: finished

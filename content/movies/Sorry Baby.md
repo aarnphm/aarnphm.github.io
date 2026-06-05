@@ -6,7 +6,7 @@ description: Something terrible happened to Agnes. But life goes on for everyone
 director:
   - Eva Victor
 id: Sorry Baby
-modified: 2026-05-09 17:51:36 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/sorry-baby.jpg]]'
 rating: 7.2
 status: to watch

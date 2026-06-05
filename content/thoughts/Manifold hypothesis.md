@@ -3,7 +3,7 @@ created: '2025-08-28'
 date: '2025-09-15'
 description: 'The manifold hypothesis: high-dimensional real-world data lies on low-dimensional latent manifolds, enabling effective ML through interpolation.'
 id: Manifold hypothesis
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 published: '2021-08-27'
 source: https://en.wikipedia.org/wiki/Manifold_hypothesis
 tags:

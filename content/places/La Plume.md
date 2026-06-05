@@ -7,7 +7,7 @@ coordinates:
   - '-79.3986369'
 date: '2025-12-22'
 id: La Plume
-modified: 2026-05-09 17:51:50 GMT-04:00
+modified: 2026-06-05 15:08:11 GMT-04:00
 rating: 5
 tags:
   - places

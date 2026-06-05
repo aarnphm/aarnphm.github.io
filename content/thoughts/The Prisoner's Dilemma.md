@@ -2,7 +2,7 @@
 date: '2024-04-12'
 description: game theory thought experiment where two rational agents face cooperation versus individual reward.
 id: The Prisoner's Dilemma
-modified: 2026-05-09 17:51:55 GMT-04:00
+modified: 2026-06-05 15:08:25 GMT-04:00
 noindex: true
 tags:
   - seed

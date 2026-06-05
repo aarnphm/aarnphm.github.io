@@ -9,7 +9,7 @@ description: describes google engineering culture, tools, and practices, focusin
 external: https://abseil.io/resources/swe-book/html/toc.html
 finished: null
 id: Software Engineering at Google
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:01 GMT-04:00
 notebook: null
 posters: '[[library/posters/swe-books.jpeg]]'
 status: to read

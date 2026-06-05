@@ -2,7 +2,7 @@
 date: '2025-10-04'
 description: properties in language models.
 id: Polysemantic
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 socials:
   circuits: https://transformer-circuits.pub/2023/monosemantic-features/index.html
 tags:

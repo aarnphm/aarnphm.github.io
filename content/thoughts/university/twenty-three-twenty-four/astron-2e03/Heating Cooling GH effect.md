@@ -2,7 +2,7 @@
 date: '2024-02-26'
 description: greenhouse effect toy model relating surface temperature to atmospheric layers through radiative equilibrium.
 id: Heating Cooling GH effect
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:33 GMT-04:00
 tags:
   - astron2e03
 title: Heating, Cooling, and the Greenhouse Effect

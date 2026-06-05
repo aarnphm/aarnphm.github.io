@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-04 17:58:09 GMT-04:00
+modified: 2026-06-05 15:08:11 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -204,3 +204,5 @@ title: lists
 - fevor
 - {{sidenotes[truculent]: someone who is aggresively self-assertive, defiant, and easily angered}}
 - preclude
+- Euler's polyhedron formula
+  - $V-E+F$

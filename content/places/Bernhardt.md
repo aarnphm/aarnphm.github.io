@@ -8,7 +8,7 @@ coordinates:
 date: '2025-10-27'
 description: little portugal wine bar with small plates and good taste
 id: Bernhardt's
-modified: 2026-05-09 17:51:51 GMT-04:00
+modified: 2026-06-05 15:08:04 GMT-04:00
 rating: 5
 tags:
   - places

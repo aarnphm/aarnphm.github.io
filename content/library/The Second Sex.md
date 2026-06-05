@@ -6,7 +6,7 @@ description: the oppresion of women in society
 finished: 2025
 id: The Second Sex
 language: french
-modified: 2026-05-09 17:51:42 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 posters: '[[library/posters/the-second-sex.jpg]]'
 status: finished
 subcategory: feminism

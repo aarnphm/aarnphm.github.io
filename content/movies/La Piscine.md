@@ -9,7 +9,7 @@ description: summer heat, jealousy, and a poolside triangle on the french rivier
 director:
   - Jacques Deray
 id: La Piscine
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/La piscine.jpg]]'
 rating: 7.1
 status: to watch

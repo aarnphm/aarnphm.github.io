@@ -6,7 +6,7 @@ description: In 1630 New England, panic and despair envelops a farmer, his wife 
 director:
   - Robert Eggers
 id: The Witch
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-witch.jpeg]]'
 rating: 7.9
 status: finished

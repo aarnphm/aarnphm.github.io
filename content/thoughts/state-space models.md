@@ -2,7 +2,7 @@
 date: '2024-02-07'
 description: structured state space sequence models
 id: state-space models
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:06 GMT-04:00
 tags:
   - ml
 title: state-space models

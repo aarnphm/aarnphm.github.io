@@ -2,7 +2,7 @@
 date: '2025-11-10'
 description: syntax, semantics, and why computation is insufficient for understanding
 id: chinese room
-modified: 2026-05-09 17:51:53 GMT-04:00
+modified: 2026-06-05 15:08:07 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/qualia]]'

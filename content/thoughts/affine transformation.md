@@ -2,7 +2,7 @@
 date: '2025-09-15'
 description: linear map plus translation preserving lines, parallelism, and convex combinations through matrix operations and homogeneous coordinates.
 id: affine transformation
-modified: 2026-05-09 17:51:47 GMT-04:00
+modified: 2026-06-05 15:08:28 GMT-04:00
 tags:
   - seed
 title: affine transformation

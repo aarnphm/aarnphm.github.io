@@ -8,7 +8,7 @@ description: a thief studies his craft as a kind of faith - bresson strips crime
 director:
   - Robert Bresson
 id: Pickpocket
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/pickpocket.jpg]]'
 rating: 7.6
 status: to watch

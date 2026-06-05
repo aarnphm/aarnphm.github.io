@@ -7,7 +7,7 @@ description: essay on friendship as rare, equal intimacy, contrasting deep chose
 external: https://www.gutenberg.org/files/3600/3600-h/3600-h.htm
 finished: 2025
 id: On Friendship
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 posters: '[[library/posters/on-friendship.jpg]]'
 status: finished
 tags:

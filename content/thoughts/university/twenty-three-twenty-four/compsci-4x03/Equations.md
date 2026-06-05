@@ -2,7 +2,7 @@
 date: '2023-12-06'
 description: comprehensive equation reference covering machine epsilon, taylor series, polynomial interpolation, numeric integration, least squares, newton\unicode{x2019}s method, and runge-kutta odes.
 id: Equations
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - fruit
   - swfr4x03

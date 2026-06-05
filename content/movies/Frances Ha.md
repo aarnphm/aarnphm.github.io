@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: millennial aimlessness in black and white—gerwig's dancer drifting through brooklyn, baumbach filming the gap between who you dream you'll become and who rent checks force you to be.
 director: Noah Baumbach
 id: frances-ha
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/frances-ha.jpg]]'
 rating: 7.4
 status: finished

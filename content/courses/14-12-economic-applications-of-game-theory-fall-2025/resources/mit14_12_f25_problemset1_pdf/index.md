@@ -1,20 +1,22 @@
 ---
-title: 'problem set 1'
-description: 'mit 14.12 problem set 1'
-id: 'mit-14-12-fall-2025-resource-resources-mit14-12-f25-problem-set1-pdf'
-tags:
-  - 'course'
-  - 'mit'
-  - 'ocw'
-  - 'social science'
-  - 'economics'
-  - 'game theory'
-  - 'problem sets'
 aliases:
-  - 'mit14_12_f25_problemset1.pdf'
-layout: 'A|L'
-license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
-license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
+  - mit14_12_f25_problemset1.pdf
+date: '2026-06-05'
+description: mit 14.12 problem set 1
+id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-problem-set1-pdf
+layout: A|L
+license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+modified: 2026-06-05 15:08:35 GMT-04:00
+tags:
+  - course
+  - mit
+  - ocw
+  - social science
+  - economics
+  - game theory
+  - problem sets
+title: problem set 1
 ---
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]

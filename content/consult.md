@@ -3,7 +3,7 @@ date: '2026-05-23'
 description: Aaron Pham's simulacrum
 id: consult
 layout: letter
-modified: 2026-05-30 22:29:01 GMT-04:00
+modified: 2026-06-05 15:07:56 GMT-04:00
 tags:
   - evergreen
 title: consulting.

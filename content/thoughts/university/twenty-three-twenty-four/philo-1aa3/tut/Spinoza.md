@@ -2,7 +2,7 @@
 date: '2023-10-11'
 description: spinoza's monism where substance equals god equals nature, attributes of thought and extension, principle of sufficient reason.
 id: Arguments regards to Sphinoza
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:41 GMT-04:00
 tags:
   - philos1aa3
   - philosophy

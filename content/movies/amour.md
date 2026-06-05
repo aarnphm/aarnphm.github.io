@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: haneke filming death's slow transformation of the body—retired piano teacher losing autonomy while husband watches, love measured not in romance but how long you can maintain someone's dignity.
 director: Michael Haneke
 id: amour
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/amour.jpg]]'
 rating: 7.9
 status: to watch

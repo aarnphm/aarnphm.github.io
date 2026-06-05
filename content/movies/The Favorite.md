@@ -7,7 +7,7 @@ date: '2024-02-07'
 description: cousins competing for queen anne's affection and political power—lanthimos filming weisz and stone's escalating war through fisheye lenses and candlelight, colman's fragile monarch ping-ponging between them, 18th century court where love and manipulation are the same currency and everyone loses.
 director: Yorgos Lanthimos
 id: the-favorite
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-favorite.jpg]]'
 rating: 7.5
 status: to watch

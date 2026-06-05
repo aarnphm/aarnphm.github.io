@@ -8,7 +8,7 @@ description: depression-era grifters conning a mob boss—hill reuniting newman 
 director:
   - George Roy Hill
 id: the-sting
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/the-sting.jpg]]'
 rating: 8.2
 status: to watch

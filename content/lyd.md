@@ -3,7 +3,7 @@ date: '2025-11-08'
 description: a city of neighborhoods, stories, and endless discovery, a guide, for a friend
 id: lyd
 layout: lydia
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:36 GMT-04:00
 noindex: true
 tags:
   - postcards

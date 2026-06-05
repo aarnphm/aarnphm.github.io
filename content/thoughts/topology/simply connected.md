@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: why simple connectivity is the right condition for poincaré conjecture and why homology alone doesn't suffice.
 id: simply-connected
-modified: 2026-05-27 02:48:40 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 tags:
   - math
   - math/topology

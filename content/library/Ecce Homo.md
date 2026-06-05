@@ -6,7 +6,7 @@ description: late, self reflective book where nietzsche revisits his works, styl
 finished: 2024
 id: Ecce Homo
 language: german
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:01 GMT-04:00
 posters: '[[library/posters/ecce-homo.webp]]'
 status: evergreen
 subcategory: existentialism

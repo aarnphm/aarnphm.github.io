@@ -6,7 +6,7 @@ description: camus essays on political violence, revolt, and solidarity, reflect
 finished: 2025
 id: Resistance, Rebellion, and Death
 language: french
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:58 GMT-04:00
 posters: '[[library/posters/resistance-rebellion-and-death.jpg]]'
 status: finished
 subcategory: existentialism

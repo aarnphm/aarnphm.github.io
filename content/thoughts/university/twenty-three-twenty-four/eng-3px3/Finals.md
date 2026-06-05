@@ -2,7 +2,7 @@
 date: '2024-04-12'
 description: Economics for engineer, a guide.
 id: Finals
-modified: 2026-05-09 17:51:59 GMT-04:00
+modified: 2026-06-05 15:08:34 GMT-04:00
 tags:
   - eng3px3
 title: Economics for engineer, a guide.

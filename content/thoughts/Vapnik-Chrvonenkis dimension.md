@@ -2,7 +2,7 @@
 date: '2024-12-14'
 description: measure of hypothesis class capacity as cardinality of largest set it can shatter into all possible classifications.
 id: Vapnik-Chrvonenkis dimension
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - math
   - ml

@@ -3,7 +3,7 @@ created: '2025-09-18'
 date: '2025-10-29'
 description: Cost advantages enterprises obtain through larger scale operations, reducing per-unit costs via efficiency
 id: economies of scale
-modified: 2026-05-09 17:51:55 GMT-04:00
+modified: 2026-06-05 15:08:24 GMT-04:00
 published: '2002-01-21'
 source: https://en.wikipedia.org/wiki/Economies_of_scale
 tags:

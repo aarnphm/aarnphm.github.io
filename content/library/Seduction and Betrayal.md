@@ -6,7 +6,7 @@ date: '2025-10-07'
 description: literary criticism on famous women and heroines, examining how seduction, marriage, and betrayal are staged in fiction and life.
 external: https://www.penguinrandomhouse.ca/books/643010/seduction-and-betrayal-by-elizabeth-hardwick-introduction-by-joan-didion/9780940322783
 id: Seduction and Betrayal
-modified: 2026-05-09 17:51:39 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/seduction-and-betrayal.jpg]]'
 status: to read
 subcategory: love

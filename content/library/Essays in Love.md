@@ -6,7 +6,7 @@ date: '2024-12-23'
 description: novelistic essay cycle tracing a relationship from first attraction to breakup, dissecting romance, projection, and everyday intimacy.
 finished: 2024
 id: Essays in Love
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/essays-in-love.jpg]]'
 status: finished
 subcategory: love

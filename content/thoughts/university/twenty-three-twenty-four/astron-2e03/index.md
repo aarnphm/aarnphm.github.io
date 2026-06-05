@@ -2,7 +2,7 @@
 date: '2024-01-08'
 description: course on planetary astronomy covering exoplanet discovery, orbital mechanics, atmospheres, interiors, and formation taught by ryan cloutier.
 id: index
-modified: 2026-05-09 17:51:56 GMT-04:00
+modified: 2026-06-05 15:08:33 GMT-04:00
 tags:
   - university
   - astron2e03

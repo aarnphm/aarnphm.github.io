@@ -3,7 +3,7 @@ created: '2025-09-17'
 date: '2025-09-17'
 description: Matrix multiplication algorithm achieving subcubic complexity via recursive divide-and-conquer
 id: Strassen algorithm
-modified: 2026-05-09 17:51:52 GMT-04:00
+modified: 2026-06-05 15:08:05 GMT-04:00
 published: '2004-07-02'
 source: https://en.wikipedia.org/wiki/Strassen_algorithm
 tags:

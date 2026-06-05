@@ -7,7 +7,7 @@ description: Robert Grainier lives all of his years in the forests of the Pacifi
 director:
   - Clint Bentley
 id: Train Dreams
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/train-dreams.jpeg]]'
 rating: 7.8
 status: to watch

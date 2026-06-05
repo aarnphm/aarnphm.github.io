@@ -8,7 +8,7 @@ description: girl trapped in spirit world bathhouse rescuing parents turned to p
 director:
   - Hayao Miyazaki
 id: spirited-away
-modified: 2026-05-09 17:51:43 GMT-04:00
+modified: 2026-06-05 15:08:13 GMT-04:00
 posters: '[[movies/posters/spirited-away.jpg]]'
 rating: 8.6
 status: recurring

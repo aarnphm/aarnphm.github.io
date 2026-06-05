@@ -9,7 +9,7 @@ date: '2025-10-06'
 description: classic computer science text using scheme to teach abstraction, recursion, interpreters, and how to think about programs as building blocks.
 finished: 2024
 id: Structure and Interpretation of Computer Programs
-modified: 2026-05-09 17:51:38 GMT-04:00
+modified: 2026-06-05 15:07:57 GMT-04:00
 pdf: https://web.mit.edu/6.001/6.037/sicp.pdf
 posters: '[[library/posters/structure-and-interpretation-of-computer-programs.jpg]]'
 status: finished

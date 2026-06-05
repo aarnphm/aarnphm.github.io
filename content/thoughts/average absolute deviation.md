@@ -3,7 +3,7 @@ created: '2025-09-18'
 date: '2025-09-18'
 description: Summary statistic of variability
 id: average absolute deviation
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:21 GMT-04:00
 published: '2003-10-18'
 source: https://en.wikipedia.org/wiki/Average_absolute_deviation
 tags:

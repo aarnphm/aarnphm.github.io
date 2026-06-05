@@ -8,7 +8,7 @@ description: or modern day Prometheus
 external: https://www.gutenberg.org/files/42324/42324-h/42324-h.htm
 finished: null
 id: Frankenstein
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 pdf: null
 posters: '[[library/posters/frankenstein.jpg]]'
 status: to read

@@ -6,7 +6,7 @@ description: by Sylvia Plath
 external: https://www.poetryfoundation.org/poems/57419/the-applicant
 finished: 2025
 id: The Applicant
-modified: 2026-05-09 17:51:35 GMT-04:00
+modified: 2026-06-05 15:08:02 GMT-04:00
 posters: '[[library/posters/the-applicant.jpg]]'
 status: finished
 subcategory: love

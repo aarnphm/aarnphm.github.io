@@ -3,7 +3,7 @@ created: '2025-10-29'
 date: '2025-10-29'
 description: Definition, properties, and examples of Lebesgue measure on $R^n$
 id: Lebesgue measure
-modified: 2026-05-09 17:51:48 GMT-04:00
+modified: 2026-06-05 15:08:20 GMT-04:00
 published: '2001-09-30'
 source: https://en.wikipedia.org/wiki/Lebesgue_measure
 tags:

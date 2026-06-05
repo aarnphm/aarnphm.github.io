@@ -6,7 +6,7 @@ description: During the COVID-19 pandemic, a standoff between a small-town sheri
 director:
   - Ari Aster
 id: Eddington
-modified: 2026-05-09 17:51:46 GMT-04:00
+modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/eddington.jpg]]'
 rating: 7.9
 status: to watch

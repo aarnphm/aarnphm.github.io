@@ -6,7 +6,7 @@ date: '2025-11-29'
 description: surrealist poem invoking forces of nature and humanity through repetitive calls, ending with the silence of unrequited love despite the speaker's commanding voice.
 finished: 2025
 id: The Voice of Robert Desnos
-modified: 2026-05-09 17:51:41 GMT-04:00
+modified: 2026-06-05 15:08:00 GMT-04:00
 notebook: null
 posters: '[[library/posters/the-voice-of-robert-desnos.png]]'
 status: finished

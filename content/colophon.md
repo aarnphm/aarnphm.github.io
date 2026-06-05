@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-05-25 01:16:55 GMT-04:00
+modified: 2026-06-05 15:08:12 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:

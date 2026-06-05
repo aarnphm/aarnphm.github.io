@@ -2,7 +2,7 @@
 date: '2024-04-03'
 description: prelab on steady state error analysis with pid controller, static error constants for position, velocity, acceleration, step, ramp, and parabolic inputs.
 id: prelab
-modified: 2026-05-09 17:51:57 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - sfwr3dx4
 title: Steady state error and PID controller

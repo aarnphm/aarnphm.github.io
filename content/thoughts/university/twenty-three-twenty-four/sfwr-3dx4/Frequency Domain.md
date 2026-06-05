@@ -2,7 +2,7 @@
 date: '2024-01-09'
 description: frequency domain analysis using laplace transforms, transfer functions, stability analysis via poles, partial fraction expansion, and impedance calculations.
 id: Frequency Domain
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:43 GMT-04:00
 tags:
   - sfwr3dx4
 title: Frequency Domain and a la carte.

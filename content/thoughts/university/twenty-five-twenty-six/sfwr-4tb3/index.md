@@ -3,7 +3,7 @@ date: '2026-01-07'
 description: and llvm go brr.
 folderSort: natural
 id: index
-modified: 2026-05-22 13:54:14 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 socials:
   site: https://www.cas.mcmaster.ca/~cs4tb3/outline.html
 sort: title

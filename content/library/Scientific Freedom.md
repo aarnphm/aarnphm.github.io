@@ -4,7 +4,7 @@ category: progress
 date: '2025-10-07'
 description: argues that transformative science depends on giving researchers freedom and long horizons, critiquing risk averse funding systems.
 id: Scientific Freedom
-modified: 2026-05-09 17:51:40 GMT-04:00
+modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/scientific-freedom.jpg]]'
 status: to read
 subcategory: progress

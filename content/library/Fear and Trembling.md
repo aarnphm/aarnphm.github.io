@@ -6,7 +6,7 @@ description: philosophical meditation on faith and ethics, using abraham and isa
 finished: 2024
 id: Fear and Trembling
 language: danish
-modified: 2026-05-09 17:51:34 GMT-04:00
+modified: 2026-06-05 15:08:01 GMT-04:00
 posters: '[[library/posters/fear-and-trembling.jpg]]'
 status: finished
 subcategory: theology

@@ -10,7 +10,7 @@ masonry:
   - '[[thoughts/images]]'
   - '[[library/posters]]'
   - '[[movies/posters]]'
-modified: 2026-05-23 17:17:40 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 tags:
   - evergreen
 title: vibes

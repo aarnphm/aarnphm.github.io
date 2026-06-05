@@ -7,7 +7,7 @@ description: a pastor loses faith under winter light - bergman strips belief dow
 director:
   - Ingmar Bergman
 id: Winter Light
-modified: 2026-05-09 17:51:44 GMT-04:00
+modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/winter-light.jpg]]'
 rating: 8.1
 status: to watch

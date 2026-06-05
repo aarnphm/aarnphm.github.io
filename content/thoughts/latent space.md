@@ -2,7 +2,7 @@
 date: '2024-04-03'
 description: lower-dimensional space capturing essential features of input data, where similar pieces of data cluster together in learned representations.
 id: latent space
-modified: 2026-05-09 17:51:49 GMT-04:00
+modified: 2026-06-05 15:08:29 GMT-04:00
 tags:
   - seed
   - ml

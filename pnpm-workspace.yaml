@@ -105,5 +105,5 @@ onlyBuiltDependencies:
 strictPeerDependencies: true
 
 supportedArchitectures:
-  cpu: [ x64, arm64 ]
-  os: [ win32, darwin, current ]
+  cpu: [x64, arm64]
+  os: [win32, darwin, current]

@@ -7,7 +7,7 @@ description: As the Nuremberg trials are set to begin, a U.S. Army psychiatrist 
 director:
   - James Vanderbilt
 id: Nuremberg
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/nuremberg.jpg]]'
 rating: 8.3
 status: finished

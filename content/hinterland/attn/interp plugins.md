@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: proposal for efficient inference support for interp research
 id: interp plugins
-modified: 2026-05-26 17:32:24 GMT-04:00
+modified: 2026-06-05 15:08:10 GMT-04:00
 tags:
   - ml
   - alignment

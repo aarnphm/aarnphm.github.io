@@ -6,7 +6,7 @@ description: nietzsche early work contrasting apollonian and dionysian art, read
 finished: 2024
 id: The Birth of Tragedy
 language: german
-modified: 2026-05-09 17:51:45 GMT-04:00
+modified: 2026-06-05 15:08:01 GMT-04:00
 posters: '[[library/posters/the-birth-of-tragedy.jpg]]'
 status: finished
 subcategory: presocratic

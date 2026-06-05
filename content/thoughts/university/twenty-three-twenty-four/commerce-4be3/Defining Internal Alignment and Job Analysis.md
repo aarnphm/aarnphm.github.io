@@ -2,7 +2,7 @@
 date: '2024-01-24'
 description: internal pay structure, job analysis, pay differentials, and criteria for job-based versus person-based organizational structures.
 id: Defining Internal Alignment and Job Analysis
-modified: 2026-05-09 17:51:54 GMT-04:00
+modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - commerce4be3
 title: Defining Internal Alignment & Job Analysis
