@@ -162,6 +162,7 @@ const buildTrace = (
   const s = svg('svg', { class: 'tri-elev', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' })
   s.appendChild(svg('path', { d: area, class: 'tri-elev-area' }))
   s.appendChild(svg('path', { d: line, class: 'tri-elev-line' }))
+  s.appendChild(svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = el('div', 'tri-elev-wrap')
   const cap2 = el('div', 'tri-elev-cap')
   cap2.append(el('span', 'tri-elev-d', title), el('span', 'tri-elev-range', cap(max)))
@@ -200,24 +201,51 @@ const buildRecovery = (h: ActivityHealth): HTMLElement | null => {
   return wrap
 }
 
-const linkElev = (
-  figs: HTMLElement,
-  routeSvg: SVGElement,
-  elevWrap: HTMLElement,
+const gradeAt = (route: StravaActivityDetail['route'], i: number): number => {
+  const j0 = Math.max(0, i - 2)
+  const j1 = Math.min(route.length - 1, i + 2)
+  const dKm = route[j1].d - route[j0].d
+  return dKm > 0 ? ((route[j1].alt - route[j0].alt) / (dKm * 1000)) * 100 : 0
+}
+
+const scrubDist = (km: number, sport: Sport): string =>
+  sport === 'swim'
+    ? `${Math.round(km * 1000).toLocaleString('en-US')} m`
+    : `${(km * KM_TO_MI).toFixed(2)} mi`
+
+type ScrubSurface = {
+  wrap: HTMLElement
+  fmt: (p: StravaActivityDetail['route'][number], i: number) => string
+}
+
+const linkScrub = (
+  act: HTMLElement,
+  marker: SVGElement | null,
+  surfaces: ScrubSurface[],
   route: StravaActivityDetail['route'],
 ): void => {
-  const elevSvg = elevWrap.querySelector<SVGElement>('.tri-elev')
-  const marker = routeSvg.querySelector('.tri-route-cursor')
-  const cursor = elevSvg?.querySelector('.tri-elev-cursor')
-  if (!elevSvg || !marker || !cursor) return
   const maxD = route[route.length - 1].d || 1
   const pad = 6
   const span = 88
-  const readout = el('div', 'tri-fig-readout')
-  figs.appendChild(readout)
-  const onMove = (event: MouseEvent) => {
-    const r = elevSvg.getBoundingClientRect()
-    const frac = Math.min(1, Math.max(0, (event.clientX - r.left) / r.width))
+  const resolved: {
+    wrap: HTMLElement
+    svgEl: SVGElement
+    cursor: SVGElement
+    readout: HTMLElement
+    fmt: ScrubSurface['fmt']
+  }[] = []
+  for (const s of surfaces) {
+    const svgEl = s.wrap.querySelector<SVGElement>('.tri-elev')
+    const cursor = svgEl?.querySelector<SVGElement>('.tri-elev-cursor')
+    if (!svgEl || !cursor) continue
+    const readout = el('div', 'tri-fig-readout')
+    s.wrap.appendChild(readout)
+    resolved.push({ wrap: s.wrap, svgEl, cursor, readout, fmt: s.fmt })
+  }
+  if (resolved.length === 0) return
+  const indexAt = (clientX: number, svgEl: SVGElement): number => {
+    const r = svgEl.getBoundingClientRect()
+    const frac = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
     const targetD = frac * maxD
     let i = 0
     let best = Infinity
@@ -228,25 +256,32 @@ const linkElev = (
         i = k
       }
     }
-    const p = route[i]
-    const x = ((p.d / maxD) * 100).toFixed(2)
-    cursor.setAttribute('x1', x)
-    cursor.setAttribute('x2', x)
-    marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
-    marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
-    const j0 = Math.max(0, i - 2)
-    const j1 = Math.min(route.length - 1, i + 2)
-    const dKm = route[j1].d - route[j0].d
-    const grade = dKm > 0 ? ((route[j1].alt - route[j0].alt) / (dKm * 1000)) * 100 : 0
-    const g = Math.round(grade * 10) / 10
-    readout.textContent =
-      `${(p.d * KM_TO_MI).toFixed(2)} mi · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
-      (p.hr > 0 ? ` · ${p.hr} bpm` : '')
-    figs.classList.add('tri-figs--hover')
+    return i
   }
-  const onLeave = () => figs.classList.remove('tri-figs--hover')
-  elevSvg.addEventListener('mousemove', onMove)
-  elevSvg.addEventListener('mouseleave', onLeave)
+  for (const surf of resolved) {
+    const onMove = (event: MouseEvent) => {
+      const i = indexAt(event.clientX, surf.svgEl)
+      const p = route[i]
+      const x = ((p.d / maxD) * 100).toFixed(2)
+      for (const r of resolved) {
+        r.cursor.setAttribute('x1', x)
+        r.cursor.setAttribute('x2', x)
+      }
+      if (marker) {
+        marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
+        marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
+      }
+      surf.readout.textContent = surf.fmt(p, i)
+      act.classList.add('tri-act--scrub')
+      for (const r of resolved) r.wrap.classList.toggle('tri-elev-wrap--read', r === surf)
+    }
+    const onLeave = () => {
+      act.classList.remove('tri-act--scrub')
+      surf.wrap.classList.remove('tri-elev-wrap--read')
+    }
+    surf.svgEl.addEventListener('mousemove', onMove)
+    surf.svgEl.addEventListener('mouseleave', onLeave)
+  }
 }
 
 const renderDetail = (d: StravaActivityDetail): HTMLElement => {
@@ -266,6 +301,9 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   stats.appendChild(body)
   wrap.appendChild(stats)
 
+  let routeMarker: SVGElement | null = null
+  const surfaces: ScrubSurface[] = []
+
   if (d.sport === 'swim') {
     const figs = el('div', 'tri-act-figs')
     figs.appendChild(buildPool(d))
@@ -275,7 +313,17 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
     const routeSvg = buildRoute(d.route)
     const elev = buildElevation(d)
     figs.append(routeSvg, elev)
-    linkElev(figs, routeSvg, elev, d.route)
+    routeMarker = routeSvg.querySelector<SVGElement>('.tri-route-cursor')
+    surfaces.push({
+      wrap: elev,
+      fmt: (p, i) => {
+        const g = Math.round(gradeAt(d.route, i) * 10) / 10
+        return (
+          `${scrubDist(p.d, d.sport)} · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
+          (p.hr > 0 ? ` · ${p.hr} bpm` : '')
+        )
+      },
+    })
     wrap.appendChild(figs)
   }
 
@@ -306,35 +354,42 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
       mt.appendChild(mb)
       more.appendChild(mt)
     }
-    if (hasHrStream)
-      more.appendChild(
-        buildTrace(
-          d,
-          p => p.hr,
-          'hr',
-          m => `${m} bpm peak`,
-        ),
+    if (hasHrStream) {
+      const t = buildTrace(
+        d,
+        p => p.hr,
+        'hr',
+        m => `${m} bpm peak`,
       )
-    if (hasPowerStream)
-      more.appendChild(
-        buildTrace(
-          d,
-          p => p.w,
-          'power',
-          m => `${m} W peak`,
-        ),
+      more.appendChild(t)
+      surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
+    }
+    if (hasPowerStream) {
+      const t = buildTrace(
+        d,
+        p => p.w,
+        'power',
+        m => `${m} W peak`,
       )
-    if (hasCadStream)
-      more.appendChild(
-        buildTrace(
-          d,
-          p => p.cad,
-          'cadence',
-          m => `${m} ${d.sport === 'run' ? 'spm' : 'rpm'} peak`,
-        ),
+      more.appendChild(t)
+      surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
+    }
+    if (hasCadStream) {
+      const t = buildTrace(
+        d,
+        p => p.cad,
+        'cadence',
+        m => `${m} ${d.sport === 'run' ? 'spm' : 'rpm'} peak`,
       )
+      more.appendChild(t)
+      surfaces.push({
+        wrap: t,
+        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad} ${d.sport === 'run' ? 'spm' : 'rpm'}`,
+      })
+    }
     wrap.append(toggle, more)
   }
+  if (surfaces.length > 0 && d.route.length >= 2) linkScrub(wrap, routeMarker, surfaces, d.route)
   return wrap
 }
 

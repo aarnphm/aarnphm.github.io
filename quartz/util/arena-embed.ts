@@ -64,6 +64,19 @@ export function arenaPdfFilenameFromUrl(rawUrl: string): string {
   }
 }
 
+export function arenaPdfViewerSource(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl)
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      return `/api/pdf-proxy?url=${encodeURIComponent(rawUrl)}`
+    }
+  } catch {
+    return rawUrl
+  }
+
+  return rawUrl
+}
+
 export function arenaEmbedHtmlPath(rawUrl: string): string {
   return `/api/arena-embed/html?url=${encodeURIComponent(rawUrl)}`
 }

@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-06 04:44:07 GMT-04:00
+modified: 2026-06-06 12:53:52 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -689,7 +689,10 @@ A set is _countably infinite_ if it bijects with $\mathbb{N}$. The integers and 
 
 > [!math] diagonal argument
 >
-> The set $\{0,1\}^{\mathbb{N}}$ of infinite binary sequences is uncountable. If a list claimed to contain every such sequence, construct a new sequence $b$ by setting $b_n = 1 - a_{n,n}$, where $a_{n,n}$ is the $n$th bit of the $n$th listed sequence. Then $b$ differs from row $n$ at bit $n$, so it is missing from the list.
+> The set $\{0,1\}^{\mathbb{N}}$ of infinite binary sequences is _uncountable_.
+>
+> If a list claimed to contain every such sequence, construct a new sequence $b$ by setting $b_n = 1 - a_{n,n}$, where $a_{n,n}$ is the $n$th bit of the $n$th listed sequence.
+> Then $b$ differs from row $n$ at bit $n$, so it is missing from the list.
 
 ## open
 

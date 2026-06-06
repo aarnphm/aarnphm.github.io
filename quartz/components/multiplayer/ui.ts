@@ -11,6 +11,7 @@ import {
   recoverFromStructuralAnchor,
 } from './anchor'
 import { getAuthor, getAvatarUrl, getCommentPageId } from './identity'
+import { isStructuralAnchor } from './model'
 
 let markdownEditorModule: Promise<typeof import('../scripts/markdown-editor')> | null = null
 
@@ -969,7 +970,7 @@ export function createCommentsUi({ getState, dispatch, canResolveComment }: UiDe
       if (!offsetsValid && comment.anchorText) {
         let recovered = false
 
-        if (comment.anchor) {
+        if (isStructuralAnchor(comment.anchor)) {
           const structuralResult = recoverFromStructuralAnchor(
             comment.anchor,
             comment.anchorText,

@@ -36,6 +36,7 @@ import {
   splitAnchor,
   transformLink,
 } from '../../util/path'
+import { transformResourceUrl } from '../../util/resource-url'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
 import { parseWikipediaTarget } from '../../util/wikipedia'
 import { extractArxivId } from '../stores/citations'
@@ -99,6 +100,17 @@ function metadataDisablesPopover(metadata?: Record<string, unknown>): boolean {
     return FALSE_LIKE_STRINGS.has(value.trim().toLowerCase())
   }
   return false
+}
+
+function transformResourceProperty(
+  node: Element,
+  property: string,
+  fileSlug: FullSlug,
+  transformOptions: TransformOptions,
+) {
+  const value = node.properties[property]
+  if (typeof value !== 'string') return
+  node.properties[property] = transformResourceUrl(fileSlug, value, transformOptions)
 }
 
 interface LinkContext {
@@ -509,26 +521,20 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
             })
 
             const shouldTransformResources = ({ tagName, properties }: Element) =>
-              ['img', 'video', 'audio', 'iframe'].includes(tagName) &&
-              Boolean(properties.src) &&
-              typeof properties.src === 'string'
+              (['img', 'video', 'audio', 'iframe'].includes(tagName) &&
+                Boolean(properties.src) &&
+                typeof properties.src === 'string') ||
+              (tagName === 'div' &&
+                Boolean(properties['data-pdf-src']) &&
+                typeof properties['data-pdf-src'] === 'string')
 
-            // transform all other resources that may use links
             visit(
               tree,
               node => shouldTransformResources(node as Element),
               node => {
                 if (opts.lazyLoad) node.properties.loading = 'lazy'
-
-                if (!isAbsoluteUrl(node.properties.src, { httpOnly: false })) {
-                  let dest = node.properties.src as RelativeURL
-                  dest = node.properties.src = transformLink(
-                    file.data.slug!,
-                    dest,
-                    transformOptions,
-                  )
-                  node.properties.src = dest
-                }
+                transformResourceProperty(node, 'src', file.data.slug!, transformOptions)
+                transformResourceProperty(node, 'data-pdf-src', file.data.slug!, transformOptions)
               },
             )
 

@@ -6,13 +6,19 @@ import { isRecord } from './type-guards'
 
 type DbComment = typeof comments.$inferSelect
 
-type Anchor = {
+type StructuralAnchor = {
   headingId: string | null
   blockId: string | null
   paragraphIndex: number
   localOffset: number
   contextWords: [string, string]
 }
+
+type PdfAnchorRect = { page: number; left: number; top: number; width: number; height: number }
+
+type PdfAnchor = { kind: 'pdf'; src: string; rects: PdfAnchorRect[] }
+
+type Anchor = StructuralAnchor | PdfAnchor
 
 type Comment = Omit<DbComment, 'anchor'> & { anchor: Anchor | null }
 
@@ -75,6 +81,23 @@ export class MultiplayerComments extends DurableObject<Env> {
     `)
   }
 
+  private parsePdfAnchorRect(value: unknown): PdfAnchorRect | null {
+    if (!isRecord(value)) return null
+    const page = value['page']
+    const left = value['left']
+    const top = value['top']
+    const width = value['width']
+    const height = value['height']
+
+    if (typeof page !== 'number' || !Number.isInteger(page) || page < 1) return null
+    if (typeof left !== 'number' || !Number.isFinite(left)) return null
+    if (typeof top !== 'number' || !Number.isFinite(top)) return null
+    if (typeof width !== 'number' || !Number.isFinite(width) || width <= 0) return null
+    if (typeof height !== 'number' || !Number.isFinite(height) || height <= 0) return null
+
+    return { page, left, top, width, height }
+  }
+
   private parseAnchor(value: unknown): Anchor | null {
     if (value === null || value === undefined) return null
     let raw: unknown = value
@@ -86,6 +109,22 @@ export class MultiplayerComments extends DurableObject<Env> {
       }
     }
     if (!isRecord(raw)) return null
+    if (raw['kind'] === 'pdf') {
+      const src = raw['src']
+      const rects = raw['rects']
+      if (typeof src !== 'string') return null
+      if (!Array.isArray(rects) || rects.length === 0) return null
+
+      const parsedRects: PdfAnchorRect[] = []
+      for (const rect of rects) {
+        const parsed = this.parsePdfAnchorRect(rect)
+        if (!parsed) return null
+        parsedRects.push(parsed)
+      }
+
+      return { kind: 'pdf', src, rects: parsedRects }
+    }
+
     const headingId = raw['headingId']
     const blockId = raw['blockId']
     const paragraphIndex = raw['paragraphIndex']

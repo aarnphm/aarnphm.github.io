@@ -125,3 +125,488 @@
 .transclude-inner {
   display: none;
 }
+
+.pdf-embed {
+  --pdf-embed-height: min(78dvh, 820px);
+  --pdf-annotation-rail-width: 17rem;
+  width: 100%;
+  height: var(--pdf-embed-height);
+  min-height: 24rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  background: var(--lightgray);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  margin: 1rem 0;
+}
+
+.pdf-embed[data-pdf-selected='true'] {
+  border-color: var(--secondary);
+}
+
+.pdf-embed:not([data-pdf-annotations='true']) {
+  --pdf-annotation-rail-width: 0px;
+
+  .pdf-embed-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdf-annotation-rail {
+    display: none;
+  }
+}
+
+.pdf-embed-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.pdf-embed-control-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pdf-embed-zoom-controls {
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.pdf-embed-button,
+.pdf-embed-page-input,
+.pdf-embed-fit {
+  height: 28px;
+  color: var(--dark);
+  background: transparent;
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+  font: inherit;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.pdf-embed-button {
+  width: 30px;
+  padding: 6px 8px;
+  display: inline-flex !important;
+  border: 1px solid var(--lightgray) !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer !important;
+  line-height: 1;
+  text-decoration: none;
+  flex: 0 0 30px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+  }
+}
+
+.pdf-embed-button:hover:not(:disabled),
+.pdf-embed-button:active,
+.pdf-embed-button:focus-visible {
+  color: var(--dark);
+  background: transparent;
+  border-color: var(--dark);
+}
+
+.pdf-embed-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pdf-embed-page-input {
+  width: 32px;
+  padding: 4px 6px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  background: var(--light);
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    outline: 2px solid var(--secondary);
+    outline-offset: 1px;
+  }
+}
+
+.pdf-embed-page-total,
+.pdf-embed-zoom {
+  color: var(--dark);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  line-height: 28px;
+  min-width: max-content;
+}
+
+.pdf-embed-zoom {
+  min-width: 42px;
+  text-align: center;
+}
+
+.pdf-embed-fit {
+  padding: 0 0.375rem;
+}
+
+.pdf-embed-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--pdf-annotation-rail-width);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--light);
+}
+
+.pdf-viewer-container {
+  outline: none;
+  overflow: auto;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  scroll-padding: 0;
+  overscroll-behavior: contain;
+  background: var(--light);
+}
+
+.pdf-viewer-shell {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  min-width: max-content;
+  padding: 0;
+  background: var(--light);
+  box-sizing: border-box;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: max-content;
+  padding: 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.pdf-annotation-rail {
+  position: relative;
+  width: var(--pdf-annotation-rail-width);
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--light);
+}
+
+.pdf-annotation-card {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 94%, var(--secondary));
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  transition:
+    background 120ms linear,
+    border-color 120ms linear;
+
+  &.is-active {
+    border-color: var(--secondary);
+    background: color-mix(in srgb, var(--light) 88%, var(--secondary));
+  }
+}
+
+.pdf-annotation-meta {
+  color: var(--gray);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  margin-bottom: 0.35rem;
+}
+
+.pdf-annotation-quote {
+  color: var(--darkgray);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  margin-bottom: 0.45rem;
+  max-height: 4.05rem;
+  overflow: hidden;
+}
+
+.pdf-annotation-content,
+.pdf-annotation-reply {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.pdf-annotation-content {
+  white-space: pre-wrap;
+}
+
+.pdf-annotation-reply {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--lightgray);
+}
+
+.pdf-annotation-actions,
+.pdf-comment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.pdf-annotation-action,
+.pdf-comment-button {
+  color: var(--dark);
+  background: transparent;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.35rem 0.45rem;
+
+  &:hover {
+    border-color: var(--secondary);
+  }
+}
+
+.pdf-comment-save {
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+.pdf-comment-input {
+  width: 100%;
+  min-height: 3rem;
+  resize: vertical;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  padding: 0.45rem;
+}
+
+.pdf-comment-composer {
+  position: absolute;
+  z-index: var(--z-popover);
+  width: min(18rem, calc(100% - 2rem));
+  padding: 0.65rem;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--secondary);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+}
+
+.pdf-annotation-reply-composer {
+  margin-top: 0.6rem;
+}
+
+.pdf-embed-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--light);
+  border: 0;
+  box-sizing: border-box;
+}
+
+.pdf-embed-highlight-layer,
+.pdf-embed-text-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.pdf-embed-highlight-layer {
+  z-index: 3;
+  pointer-events: none;
+}
+
+.pdf-highlight {
+  position: absolute;
+  display: block;
+  background: rgba(255, 220, 100, 0.32);
+  border: 1px solid var(--secondary);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.pdf-embed-text-layer {
+  z-index: 2;
+  line-height: 1;
+  text-align: initial;
+  text-size-adjust: none;
+  transform-origin: 0 0;
+
+  span,
+  br {
+    color: transparent;
+    position: absolute;
+    white-space: pre;
+    cursor: text;
+    transform-origin: 0% 0%;
+  }
+
+  ::selection {
+    color: transparent;
+    background: rgba(135, 154, 57, 0.28);
+  }
+}
+
+.pdf-embed-page-label {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  color: var(--gray);
+  background: color-mix(in srgb, var(--light) 88%, transparent);
+  border: 0;
+  border-radius: var(--radius-none);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  padding: 0.25rem 0.3125rem;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.pdf-embed-canvas {
+  display: block;
+  max-width: none;
+  background: white;
+}
+
+.pdf-embed-loading,
+.pdf-embed-error {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--gray);
+  min-height: 12rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.pdf-embed-error {
+  flex-direction: column;
+}
+
+.pdf-embed-error a {
+  color: var(--secondary);
+}
+
+[saved-theme='dark'] {
+  .pdf-embed-toolbar {
+    background: var(--dark);
+    border-color: var(--darkgray);
+  }
+
+  .pdf-embed-button {
+    color: var(--light);
+    border-color: var(--lightgray);
+
+    &:hover:not(:disabled),
+    &:active,
+    &:focus-visible {
+      color: var(--light);
+      background: transparent;
+      border-color: var(--light);
+    }
+  }
+
+  .pdf-embed-page-total,
+  .pdf-embed-zoom {
+    color: var(--light);
+  }
+
+  .pdf-embed-page-input {
+    background: var(--darkgray);
+    color: var(--light);
+    border-color: var(--lightgray);
+  }
+
+  .pdf-annotation-card,
+  .pdf-comment-composer,
+  .pdf-comment-input {
+    color: var(--light);
+    background: var(--dark);
+    border-color: var(--darkgray);
+  }
+
+  .pdf-annotation-quote {
+    color: var(--lightgray);
+  }
+
+  .pdf-annotation-action,
+  .pdf-comment-button {
+    color: var(--light);
+    border-color: var(--darkgray);
+  }
+}
+
+@media all and ($mobile) {
+  .pdf-embed {
+    --pdf-embed-height: min(72dvh, 680px);
+    --pdf-annotation-rail-width: min(38vw, 12rem);
+    min-height: 20rem;
+  }
+
+  .pdf-embed-toolbar {
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .pdf-embed-control-group {
+    justify-content: space-between;
+  }
+
+  .pdf-viewer-shell {
+    padding: 0;
+  }
+
+  .pdf-viewer {
+    padding: 0;
+  }
+}

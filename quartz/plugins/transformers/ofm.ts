@@ -70,6 +70,7 @@ export interface Options {
   enableInlineFootnotes: boolean
   enableImageGrid: boolean
   enableMarker: boolean
+  enableCalloutIcon: boolean
 }
 
 const defaultOptions: Options = {
@@ -87,6 +88,7 @@ const defaultOptions: Options = {
   enableInlineFootnotes: true,
   enableImageGrid: true,
   enableMarker: true,
+  enableCalloutIcon: false,
 }
 
 function hasRawHtml(tree: HtmlRoot): boolean {
@@ -704,7 +706,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               const titleChildren = [
                 h('.callout-title-inner', toHast(titleNode, { allowDangerousHtml })),
               ]
-              if (collapse) titleChildren.push(h('.fold-callout-icon'))
+              if (collapse && opts.enableCalloutIcon) titleChildren.push(h('.fold-callout-icon'))
 
               const titleHtml: Html = {
                 type: 'html',

@@ -8,6 +8,18 @@ export type StructuralAnchor = {
   contextWords: [string, string]
 }
 
+export type PdfAnchorRect = {
+  page: number
+  left: number
+  top: number
+  width: number
+  height: number
+}
+
+export type PdfAnchor = { kind: 'pdf'; src: string; rects: PdfAnchorRect[] }
+
+export type CommentAnchor = StructuralAnchor | PdfAnchor
+
 export type MultiplayerComment = {
   id: string
   pageId: string
@@ -22,7 +34,7 @@ export type MultiplayerComment = {
   updatedAt: number | null
   deletedAt: number | null
   resolvedAt: number | null
-  anchor?: StructuralAnchor | null
+  anchor?: CommentAnchor | null
   orphaned?: boolean | null
   lastRecoveredAt?: number | null
 }
@@ -70,6 +82,50 @@ export function parseStructuralAnchor(value: unknown): StructuralAnchor | null {
   }
 }
 
+function parsePdfAnchorRect(value: unknown): PdfAnchorRect | null {
+  if (!isRecord(value)) return null
+  const page = value['page']
+  const left = value['left']
+  const top = value['top']
+  const width = value['width']
+  const height = value['height']
+
+  if (typeof page !== 'number' || !Number.isInteger(page) || page < 1) return null
+  if (typeof left !== 'number' || !Number.isFinite(left)) return null
+  if (typeof top !== 'number' || !Number.isFinite(top)) return null
+  if (typeof width !== 'number' || !Number.isFinite(width) || width <= 0) return null
+  if (typeof height !== 'number' || !Number.isFinite(height) || height <= 0) return null
+
+  return { page, left, top, width, height }
+}
+
+export function parseCommentAnchor(value: unknown): CommentAnchor | null {
+  if (!isRecord(value)) return null
+  if (value['kind'] === 'pdf') {
+    const src = value['src']
+    const rects = value['rects']
+    if (typeof src !== 'string') return null
+    if (!Array.isArray(rects) || rects.length === 0) return null
+
+    const parsedRects: PdfAnchorRect[] = []
+    for (const rect of rects) {
+      const parsed = parsePdfAnchorRect(rect)
+      if (!parsed) return null
+      parsedRects.push(parsed)
+    }
+
+    return { kind: 'pdf', src, rects: parsedRects }
+  }
+
+  return parseStructuralAnchor(value)
+}
+
+export function isStructuralAnchor(
+  value: CommentAnchor | null | undefined,
+): value is StructuralAnchor {
+  return value !== null && value !== undefined && !('kind' in value)
+}
+
 export function parseComment(value: unknown): MultiplayerComment | null {
   if (!isRecord(value)) return null
   const id = value['id']
@@ -110,7 +166,7 @@ export function parseComment(value: unknown): MultiplayerComment | null {
   )
     return null
 
-  const anchor = anchorRaw ? parseStructuralAnchor(anchorRaw) : null
+  const anchor = anchorRaw ? parseCommentAnchor(anchorRaw) : null
 
   return {
     id,

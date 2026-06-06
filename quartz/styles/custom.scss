@@ -21,6 +21,7 @@
 @use './pages/lydia.scss';
 @use './pages/notebook.scss';
 @use './pages/triathlon.scss';
+@use './pages/nytimes.scss';
 
 [role='article']:hover {
   border: 1px solid var(--highlight);
@@ -680,7 +681,7 @@ blockquote.callout:is(
   padding: 0 var(--space-3);
 
   &::before {
-    content: "";
+    content: '';
   }
 
   & > .callout-title {

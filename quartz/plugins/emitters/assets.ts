@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import path from 'path'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
@@ -5,17 +6,64 @@ import { Argv, BuildCtx } from '../../util/ctx'
 import { isFlashcardPath } from '../../util/flashcards-path'
 import { glob } from '../../util/glob'
 import { emitOutputAsset, removeOutputAsset, type OutputAssetClaim } from '../../util/output-assets'
-import { FilePath, joinSegments, slugifyFilePath } from '../../util/path'
+import { FilePath, joinSegments, slugifyFilePath, stripSlashes } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
 
-function shouldIgnoreAssetFile(argv: Argv, fp: FilePath): boolean {
+const heavyWatchAssetExts = new Set(['.ddl', '.mat'])
+const pdfEmbedPattern = /!\[\[([^\]\r\n]+)\]\]/g
+
+function isMarkdownReferenceSource(fp: FilePath): boolean {
   const ext = path.extname(fp).toLowerCase()
-  if (ext === '.md' || ext === '.base' || isFlashcardPath(fp)) return true
-  return (process.env.CF_PAGES === '1' || argv.watch) && ['.pdf', '.ddl', '.mat'].includes(ext)
+  return ext === '.md' || ext === '.base' || isFlashcardPath(fp)
 }
 
-export function contentAssetFiles(ctx: BuildCtx): FilePath[] {
-  return ctx.allFiles.filter(fp => !shouldIgnoreAssetFile(ctx.argv, fp))
+function pdfTargetKey(target: string): string | undefined {
+  const normalized = stripSlashes(target.trim())
+  const pathOnly = normalized.split('#', 1)[0]?.trim()
+  if (!pathOnly || path.extname(pathOnly).toLowerCase() !== '.pdf') return undefined
+  return slugifyFilePath(pathOnly as FilePath)
+}
+
+async function referencedPdfFiles(ctx: BuildCtx, files: FilePath[]): Promise<Set<FilePath>> {
+  if (!ctx.argv.watch || process.env.CF_PAGES === '1') return new Set()
+
+  const pdfBySlug = new Map<string, FilePath>()
+  for (const fp of files) {
+    if (path.extname(fp).toLowerCase() === '.pdf') {
+      pdfBySlug.set(slugifyFilePath(fp), fp)
+    }
+  }
+
+  const referenced = new Set<FilePath>()
+  const sources = files.filter(isMarkdownReferenceSource)
+  await mapConcurrent(sources, defaultIoConcurrency, async fp => {
+    const source = joinSegments(ctx.argv.directory, fp)
+    const body = await readFile(source, 'utf8')
+    for (const match of body.matchAll(pdfEmbedPattern)) {
+      const rawTarget = match[1]?.split('|', 1)[0]
+      const key = rawTarget ? pdfTargetKey(rawTarget) : undefined
+      const pdf = key ? pdfBySlug.get(key) : undefined
+      if (pdf) referenced.add(pdf)
+    }
+  })
+  return referenced
+}
+
+function shouldIgnoreAssetFile(
+  argv: Argv,
+  fp: FilePath,
+  referencedPdfs: ReadonlySet<FilePath>,
+): boolean {
+  const ext = path.extname(fp).toLowerCase()
+  if (ext === '.md' || ext === '.base' || isFlashcardPath(fp)) return true
+  if (process.env.CF_PAGES === '1') return ext === '.pdf' || heavyWatchAssetExts.has(ext)
+  if (argv.watch && ext === '.pdf') return !referencedPdfs.has(fp)
+  return argv.watch && heavyWatchAssetExts.has(ext)
+}
+
+async function contentAssetFilesFrom(ctx: BuildCtx, files: FilePath[]): Promise<FilePath[]> {
+  const referencedPdfs = await referencedPdfFiles(ctx, files)
+  return files.filter(fp => !shouldIgnoreAssetFile(ctx.argv, fp, referencedPdfs))
 }
 
 function contentAssetClaim(argv: Argv, fp: FilePath): OutputAssetClaim {
@@ -25,15 +73,15 @@ function contentAssetClaim(argv: Argv, fp: FilePath): OutputAssetClaim {
   return { owner: 'content-asset', source: src, output }
 }
 
-export function contentAssetClaims(ctx: BuildCtx): OutputAssetClaim[] {
-  return contentAssetFiles(ctx).map(fp => contentAssetClaim(ctx.argv, fp))
+export async function contentAssetClaims(ctx: BuildCtx): Promise<OutputAssetClaim[]> {
+  return (await contentAssetFilesFrom(ctx, ctx.allFiles)).map(fp => contentAssetClaim(ctx.argv, fp))
 }
 
 const filesToCopy = async (ctx: BuildCtx): Promise<FilePath[]> => {
   const { argv, cfg } = ctx
   const perf = new PerfTimer()
   if (ctx.allFiles.length > 0) {
-    const fps = contentAssetFiles(ctx)
+    const fps = await contentAssetFilesFrom(ctx, ctx.allFiles)
     logBuildSpan(argv, 'assets:scan', `${fps.length} files`, perf.elapsedMs())
     return fps
   }
@@ -47,10 +95,11 @@ const filesToCopy = async (ctx: BuildCtx): Promise<FilePath[]> => {
   ]
 
   if (process.env.CF_PAGES === '1' || argv.watch) {
-    patterns.push('**/*.pdf', '**.ddl', '**.mat')
+    patterns.push('**.ddl', '**.mat')
   }
 
-  const fps = await glob('**', argv.directory, patterns)
+  const allFiles = await glob('**', argv.directory, patterns)
+  const fps = await contentAssetFilesFrom(ctx, allFiles)
   logBuildSpan(argv, 'assets:glob', `${fps.length} files`, perf.elapsedMs())
   return fps
 }
@@ -71,15 +120,30 @@ export const Assets: QuartzEmitterPlugin = () => {
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
+      const referencedPdfs = await referencedPdfFiles(ctx, ctx.allFiles)
+      const refreshReferencedPdfs = changeEvents.some(
+        changeEvent =>
+          isMarkdownReferenceSource(changeEvent.path) ||
+          path.extname(changeEvent.path).toLowerCase() === '.pdf',
+      )
+      const emitted = new Set<string>()
       for (const changeEvent of changeEvents) {
-        if (shouldIgnoreAssetFile(ctx.argv, changeEvent.path)) continue
+        if (shouldIgnoreAssetFile(ctx.argv, changeEvent.path, referencedPdfs)) continue
 
         const claim = contentAssetClaim(ctx.argv, changeEvent.path)
 
         if (changeEvent.type === 'add' || changeEvent.type === 'change') {
+          emitted.add(claim.output)
           yield emitOutputAsset(ctx, claim)
         } else if (changeEvent.type === 'delete') {
           await removeOutputAsset(ctx, claim.output)
+        }
+      }
+      if (refreshReferencedPdfs) {
+        for (const fp of referencedPdfs) {
+          const claim = contentAssetClaim(ctx.argv, fp)
+          if (emitted.has(claim.output)) continue
+          yield emitOutputAsset(ctx, claim)
         }
       }
     },

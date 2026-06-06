@@ -70,16 +70,12 @@ import { byDateAndAlphabetical } from './PageList'
 import ContentConstructor from './pages/Content'
 import Content from './pages/Content'
 import Palette from './Palette'
-// @ts-ignore
-import collapseHeaderScript from './scripts/collapse-header.inline'
 //@ts-ignore
 import curiusFriendScript from './scripts/curius-friends.inline'
 //@ts-ignore
 import curiusNavigationScript from './scripts/curius-navigation.inline'
 //@ts-ignore
 import curiusScript from './scripts/curius.inline'
-//@ts-ignore
-import transcludeScript from './scripts/transclude.inline.ts'
 import Search from './Search'
 import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
 import { svgOptions, QuartzIcon } from './svg'
@@ -885,11 +881,16 @@ export const pageResources = (
   ]
   const staticJs: JSResource[] = []
   for (const part of [
-    ...splitJsBundles(staticResources.js, 'beforeDOMReady'),
-    ...splitJsBundles(staticResources.js, 'afterDOMReady', [
-      transcludeScript,
-      collapseHeaderScript,
-    ]),
+    ...splitJsBundles(
+      staticResources.js,
+      'beforeDOMReady',
+      ctx.staticLeadingJs?.beforeDOMReady ?? [],
+    ),
+    ...splitJsBundles(
+      staticResources.js,
+      'afterDOMReady',
+      ctx.staticLeadingJs?.afterDOMReady ?? [],
+    ),
   ]) {
     if (part.type === 'bundle') {
       const resource: JSResource = {

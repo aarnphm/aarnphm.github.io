@@ -5,6 +5,7 @@ import {
   arenaEmbedCapturePath,
   arenaEmbedHtmlPath,
   arenaPdfFilenameFromUrl,
+  arenaPdfViewerSource,
   defaultArenaExternalEmbedMode,
   isArenaPdfUrl,
   readArenaExternalEmbedMode,
@@ -73,5 +74,13 @@ describe('arena embeds', () => {
       'Anderson,+Phenomenology+and+the+Ethics+of+Love+article+Symposium.pdf',
     )
     assert.strictEqual(arenaPdfFilenameFromUrl('https://example.com/'), 'document.pdf')
+  })
+
+  test('routes remote PDF viewer loads through the PDF proxy', () => {
+    assert.strictEqual(
+      arenaPdfViewerSource('https://example.com/a paper.pdf'),
+      '/api/pdf-proxy?url=https%3A%2F%2Fexample.com%2Fa%20paper.pdf',
+    )
+    assert.strictEqual(arenaPdfViewerSource('/local/paper.pdf'), '/local/paper.pdf')
   })
 })

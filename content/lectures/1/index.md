@@ -17,4 +17,3 @@ See also [[lectures/1/infer-0.1.pdf]]
 ![[lectures/1/lstm_toy.py]]
 
 ![[lectures/1/attn_toy.py]]
-

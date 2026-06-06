@@ -1,15 +1,13 @@
-import { build as bundle } from 'esbuild'
-import fs from 'node:fs/promises'
-import path from 'path'
 import type { QuartzMdxComponent } from '../../../components/mdx/registry'
 import type { QuartzComponent } from '../../../types/component'
 import type { BuildCtx } from '../../../util/ctx'
 import { getMdxComponents } from '../../../components/mdx/registry'
 import audioStyle from '../../../components/styles/audio.scss'
 import clipboardStyle from '../../../components/styles/clipboard.scss'
-import '../../../components/mdx'
 import popoverStyle from '../../../components/styles/popover.scss'
+import '../../../components/mdx'
 import pseudoStyle from '../../../components/styles/pseudocode.scss'
+import { bundleInlineScript } from '../../../util/inline-script-bundler'
 import { notebookRuntimeInlineEntry } from './asset-paths'
 
 const notFoundInlineEntry = 'quartz/components/scripts/404.inline.ts'
@@ -84,29 +82,6 @@ async function refreshNotebookRuntimeInlineResource(componentResources: Componen
   componentResources.afterDOMLoaded[index] = await bundleInlineScript(notebookRuntimeInlineEntry)
 }
 
-export async function bundleInlineScript(scriptPath: string): Promise<string> {
-  let text = await fs.readFile(scriptPath, 'utf8')
-  text = text.replace('export default', '')
-  text = text.replace('export', '')
-
-  const sourcefile = path.relative(path.resolve('.'), scriptPath)
-  const transpiled = await bundle({
-    stdin: {
-      contents: text,
-      loader: path.extname(scriptPath) === '.js' ? 'js' : 'ts',
-      resolveDir: path.dirname(sourcefile),
-      sourcefile,
-    },
-    write: false,
-    bundle: true,
-    minify: true,
-    platform: 'browser',
-    format: 'esm',
-    loader: { '.py': 'text' },
-  })
-  return transpiled.outputFiles[0].text
-}
-
 async function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResourceSet) {
   const cfg = ctx.cfg.configuration
   const [
@@ -158,6 +133,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
       plausibleScript.src = "${plausibleHost}/js/script.outbound-links.manual.js"
       plausibleScript.setAttribute("data-domain", [location.hostname, "stream.aarnphm.xyz"].join(','))
       plausibleScript.setAttribute("data-api", "/_plausible/event")
+      plausibleScript.dataset.persist = "true"
       plausibleScript.defer = true
       plausibleScript.onload = () => {
         window.plausible = window.plausible || function () { (window.plausible.q = window.plausible.q || []).push(arguments); };

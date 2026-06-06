@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-06-05 15:08:02 GMT-04:00
+modified: 2026-06-06 15:34:35 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,14 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> I did disappoint my dad [...] If he had lived a little longer, perhaps he would have realized I hadn't wasted my time. But he had an entire suitcase full of clippings and messages talking about his success. [...] He did not think you wasted your time. A person who feels that way does not even think of saving a clipping in the first place.
+>
+> Alfred Molina, [_interview for his career_](https://www.youtube.com/watch?v=nbhHJ9iLrRA)
+
+> Parents arent against your dreams, they just don't want to see you destitute
+>
+> Somewhere on the internet
 
 > Those who cling to death, live. Those who cling to life, die.
 >

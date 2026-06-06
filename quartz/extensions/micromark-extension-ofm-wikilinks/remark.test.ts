@@ -189,10 +189,22 @@ describe('remarkWikilink integration', () => {
   })
 
   describe('PDF embeds', () => {
-    test('converts PDF embed to iframe', () => {
+    test('converts PDF embed to viewer host', () => {
       const html = processToHTML('![[paper.pdf]]')
-      assert(html.includes('<iframe src="paper.pdf"'))
-      assert(html.includes('class="pdf"'))
+      assert(html.includes('<div class="internal-embed pdf-embed"'))
+      assert(html.includes('data-pdf-src="paper.pdf"'))
+      assert(html.includes('data-pdf-title="paper.pdf"'))
+    })
+
+    test('converts PDF embed options to data attributes', () => {
+      const html = processToHTML(
+        "![[paper.pdf#{page: 3, fit: 'page', scale: '125%', height: 720}|slides]]",
+      )
+      assert(html.includes('data-pdf-title="slides"'))
+      assert(html.includes('data-pdf-page="3"'))
+      assert(html.includes('data-pdf-fit="page"'))
+      assert(html.includes('data-pdf-scale="1.25"'))
+      assert(html.includes('data-pdf-height="720"'))
     })
   })
 

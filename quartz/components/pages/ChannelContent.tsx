@@ -12,6 +12,7 @@ import {
   arenaEmbedCapturePath,
   arenaEmbedHtmlPath,
   arenaPdfFilenameFromUrl,
+  arenaPdfViewerSource,
   isArenaPdfUrl,
   type ArenaExternalEmbedMode,
 } from '../../util/arena-embed'
@@ -76,11 +77,12 @@ const ArenaModalMainContent = ({
   } else if (isPdfCandidate && block.url) {
     content = (
       <div
-        class="arena-modal-embed arena-modal-embed-pdf"
-        data-pdf-url={block.url}
-        data-pdf-filename={arenaPdfFilenameFromUrl(block.url)}
+        class="arena-modal-embed arena-modal-embed-pdf pdf-embed"
+        data-pdf-src={arenaPdfViewerSource(block.url)}
+        data-pdf-title={arenaPdfFilenameFromUrl(block.url)}
+        data-pdf-fit="page"
       >
-        <span class="arena-loading-spinner" role="status" aria-label="Loading PDF viewer" />
+        <span class="pdf-embed-loading">Loading PDF</span>
       </div>
     )
   } else if (externalEmbedMode === 'none' && targetUrl) {

@@ -18,6 +18,7 @@ import {
   registerExtractedStaticResource,
   shouldHashAssets,
 } from '../../../util/asset-manifest'
+import { bundleInlineScript } from '../../../util/inline-script-bundler'
 import {
   splitJsBundles,
   staticJsBundleKey,
@@ -36,7 +37,6 @@ import {
   semanticWorkerPath,
 } from './asset-paths'
 import { assetSlugForContent, staticScriptAssetReference } from './asset-writer'
-import { bundleInlineScript } from './resource-set'
 
 export type ScriptAssetReplacement = { placeholder: string; logicalPath: string }
 
@@ -96,6 +96,8 @@ export async function* writeStaticJsResourceBundles(
 ): AsyncGenerator<FilePath> {
   for (const loadTime of ['beforeDOMReady', 'afterDOMReady'] as const) {
     const leadingInline = await staticJsLeadingInline(loadTime)
+    ctx.staticLeadingJs ??= {}
+    ctx.staticLeadingJs[loadTime] = leadingInline
     let index = 0
     for (const part of splitJsBundles(resources.js, loadTime, leadingInline)) {
       if (part.type !== 'bundle') continue
@@ -117,6 +119,7 @@ export async function* writeStaticJsResourceBundles(
 async function staticJsLeadingInline(loadTime: 'beforeDOMReady' | 'afterDOMReady') {
   if (loadTime === 'beforeDOMReady') return []
   return Promise.all([
+    bundleInlineScript('quartz/components/scripts/pdf.inline.ts'),
     bundleInlineScript('quartz/components/scripts/transclude.inline.ts'),
     bundleInlineScript('quartz/components/scripts/collapse-header.inline.ts'),
   ])

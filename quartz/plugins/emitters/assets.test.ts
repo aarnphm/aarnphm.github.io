@@ -102,6 +102,30 @@ test('watch asset emission writes regular copied files', async () => {
   }
 })
 
+test('watch asset emission copies referenced pdf embeds', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-assets-watch-pdf-'))
+  try {
+    const ctx = testCtx(root)
+    ctx.argv.watch = true
+    await touch(root, 'notes/index.md')
+    await touch(root, 'papers/my-paper.pdf')
+    await touch(root, 'papers/unused.pdf')
+    await writeFile(
+      path.join(ctx.argv.directory, 'notes/index.md'),
+      '![[papers/my paper.pdf#{page: 2}|paper]]',
+    )
+    ctx.allFiles = ['notes/index.md', 'papers/my-paper.pdf', 'papers/unused.pdf'] as FilePath[]
+    const plugin = Assets()
+
+    const emitted = await collectEmitted(plugin.emit(ctx, [], resources))
+
+    assert.deepEqual(emitted.sort(), [path.join(ctx.argv.output, 'papers/my-paper.pdf')])
+    assert.equal((await lstat(path.join(ctx.argv.output, 'papers/my-paper.pdf'))).isFile(), true)
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('production asset emission writes regular files', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-assets-production-'))
   try {

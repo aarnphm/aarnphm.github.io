@@ -29,6 +29,7 @@ const staticStylesheetEntries = new Set([
 
 const staticScriptEntries = new Set([
   'quartz/components/scripts/collapse-header.inline.ts',
+  'quartz/components/scripts/pdf.inline.ts',
   'quartz/components/scripts/transclude.inline.ts',
 ])
 
