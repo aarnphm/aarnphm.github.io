@@ -47,6 +47,7 @@
     "quartz/runtime/native/packs/**/*.mjs",
     "content/stream.md",
     "content/are.na.md",
-    "migrations/"
+    "migrations/",
+    "quartz/static/pdfjs/"
   ]
 }

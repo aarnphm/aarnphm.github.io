@@ -27,12 +27,14 @@ export async function loadMapbox() {
   const token = await getMapboxToken()
   if (!token) return null
 
-  if (!document.querySelector(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)) {
-    const link = document.createElement('link')
+  let link = document.querySelector<HTMLLinkElement>(`link[href="${MAPBOX_STYLESHEET_HREF}"]`)
+  if (!link) {
+    link = document.createElement('link')
     link.rel = 'stylesheet'
     link.href = MAPBOX_STYLESHEET_HREF
     document.head.appendChild(link)
   }
+  link.dataset.persist = 'true'
 
   if (window.mapboxgl) {
     window.mapboxgl.accessToken = token
@@ -41,7 +43,7 @@ export async function loadMapbox() {
 
   if (!mapboxReady) {
     mapboxReady = new Promise(resolve => {
-      let script = document.querySelector(`script[src="${MAPBOX_SCRIPT_SRC}"]`) as HTMLScriptElement
+      let script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
       if (!script) {
         script = document.createElement('script')
         script.src = MAPBOX_SCRIPT_SRC
@@ -49,6 +51,7 @@ export async function loadMapbox() {
         script.defer = true
         document.head.appendChild(script)
       }
+      script.dataset.persist = 'true'
 
       script.addEventListener('load', () => resolve(window.mapboxgl), { once: true })
       script.addEventListener('error', () => resolve(null), { once: true })

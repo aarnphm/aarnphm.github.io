@@ -50,7 +50,7 @@ async function syncOutputAssetClaims(ctx: BuildCtx, refreshStaticFiles = false):
     resetStaticFileCache()
   }
   ctx.outputAssetClaims = [
-    ...contentAssetClaims(ctx),
+    ...(await contentAssetClaims(ctx)),
     ...(await staticAssetClaims(ctx.argv.output, ctx.cfg.configuration.ignorePatterns)),
   ]
 }
@@ -117,6 +117,7 @@ function describeBuildError(err: unknown): string {
 function resetGeneratedResourceState(ctx: BuildCtx): void {
   delete ctx.assetManifest
   delete ctx.extractedStaticResources
+  delete ctx.staticLeadingJs
   delete ctx.pageResourceCacheBuildId
   delete ctx.pageResourceCache
 }

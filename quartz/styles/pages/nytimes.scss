@@ -1,0 +1,67 @@
+@use '../variables.scss' as *;
+
+body[data-slug='nytimes'] {
+  section.collapsible-header#connections {
+    .collapsible-header-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+      gap: 0.75rem;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    figure[data-rehype-pretty-code-figure] {
+      min-width: 0;
+      margin: 0;
+    }
+
+    figure[data-rehype-pretty-code-figure] pre {
+      box-sizing: border-box;
+      height: 100%;
+      margin: 0;
+      padding: 0.65rem 0.75rem;
+      overflow-x: auto;
+      border: 1px solid var(--dark);
+      background: transparent;
+      color: var(--dark);
+    }
+
+    pre > .clipboard-button {
+      display: none;
+    }
+
+    pre > code {
+      gap: 0.12rem;
+      min-width: max-content;
+      overflow: visible;
+      font-size: 0.8125rem;
+      line-height: 1.2;
+      background: transparent;
+      color: var(--dark);
+    }
+
+    pre > code > [data-line] {
+      padding: 0;
+      border: 0;
+    }
+
+    pre > code > [data-line]:hover {
+      background: transparent;
+    }
+
+    pre > code > [data-line]::before {
+      content: none;
+      counter-increment: none;
+      display: none;
+      width: 0;
+      margin: 0;
+    }
+  }
+
+  @media all and ($mobile) {
+    section.collapsible-header#connections .collapsible-header-content {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.75rem), 1fr));
+      gap: 0.6rem;
+    }
+  }
+}

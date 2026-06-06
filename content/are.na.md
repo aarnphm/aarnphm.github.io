@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-06 02:48:29 GMT-04:00
+modified: 2026-06-06 13:19:39 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -9047,10 +9047,6 @@ title: are.na
     - date: 07/13/2025
     - tags: [watch]
 - https://www.youtube.com/watch?v=WxK11RsLqp4&t=2169s -- Linear Realtime Sync
-  - [meta]:
-    - date: 10/03/2025
-    - tags: [watch]
-- https://www.youtube.com/watch?v=Wo2m3jaJixU -- Linear Realtime Sync 2
   - [meta]:
     - date: 10/03/2025
     - tags: [watch]

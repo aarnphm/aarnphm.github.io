@@ -45,6 +45,7 @@ export interface BuildCtx {
   gitCommitSha?: string
   assetManifest?: AssetManifest
   extractedStaticResources?: Map<string, string>
+  staticLeadingJs?: Partial<Record<'beforeDOMReady' | 'afterDOMReady', string[]>>
   renderData?: RenderData
   pageResourceCacheBuildId?: string
   pageResourceCache?: Map<string, StaticResources>

@@ -801,8 +801,9 @@ export default {
               'Cache-Control': 'public, max-age=3600',
             },
           })
-        } catch (err: any) {
-          return new Response(`proxy error: ${err?.message ?? 'unknown'}`, {
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : 'unknown'
+          return new Response(`proxy error: ${message}`, {
             status: 502,
             headers: { ...apiHeaders, 'Content-Type': 'text/plain' },
           })
@@ -1039,6 +1040,38 @@ export default {
     }
 
     if (url.pathname.endsWith('.pdf')) {
+      const assetProbeRequest =
+        request.method === 'HEAD'
+          ? new Request(request.url, { method: 'GET', headers: request.headers })
+          : request
+      const originResp = await env.ASSETS.fetch(
+        requestWithoutStaticAssetCache(assetProbeRequest, url.pathname),
+      )
+      if (originResp.ok) {
+        const info = originResp.body ? await getObjectInfo(originResp.clone()) : null
+        if (!info) {
+          const resp =
+            request.method === 'HEAD'
+              ? new Response(null, {
+                  headers: originResp.headers,
+                  status: originResp.status,
+                  statusText: originResp.statusText,
+                })
+              : originResp
+          return withHeaders(resp, {
+            ...cacheHeadersForStaticAsset(url.pathname, resp.status),
+            ...isolationHeadersForStaticAsset(url.pathname, resp.status),
+          })
+        }
+
+        const resp =
+          env.LFS_BUCKET && env.LFS_BUCKET_URL
+            ? await getObjectFromBucket(ctx, env.LFS_BUCKET, env.LFS_BUCKET_URL, info.oid, request)
+            : await getObjectFromLFS(info, request)
+        const keep = (env.KEEP_HEADERS || KEEP_HEADERS).split(',')
+        return withHeadersFromSource(resp, originResp, keep)
+      }
+
       const rawUrl = `https://raw.githubusercontent.com/aarnphm/aarnphm.github.io/refs/heads/main/content${url.pathname}`
       const upstream = await fetch(new Request(rawUrl, { method: 'GET', headers: request.headers }))
       if (upstream.body) {

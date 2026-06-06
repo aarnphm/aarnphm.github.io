@@ -473,25 +473,92 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
   }
 }
 
-/**
- * annotate PDF embed with hast properties.
- * converts `![[document.pdf]]` to <iframe> elements.
- */
+function pdfMetadataValue(metadata: Record<string, unknown> | undefined, key: string): unknown {
+  return metadata ? metadata[key] : undefined
+}
+
+function readPdfNumber(value: unknown): string | undefined {
+  if (typeof value === 'number' && Number.isFinite(value) && value > 0) return String(value)
+  if (typeof value !== 'string') return undefined
+  const trimmed = value.trim()
+  if (!/^\d+(?:\.\d+)?%?$/.test(trimmed)) return undefined
+  return trimmed.endsWith('%') ? String(Number.parseFloat(trimmed) / 100) : trimmed
+}
+
+function readPdfInteger(value: unknown): string | undefined {
+  const token = readPdfNumber(value)
+  if (!token) return undefined
+  const parsed = Number.parseInt(token, 10)
+  return Number.isInteger(parsed) && parsed > 0 ? String(parsed) : undefined
+}
+
+function readPdfFit(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const normalized = value.trim().toLowerCase()
+  if (normalized === 'width' || normalized === 'fit-width') return 'width'
+  if (normalized === 'page' || normalized === 'fit-page') return 'page'
+  if (normalized === 'actual' || normalized === 'native' || normalized === '100%') return 'actual'
+  return undefined
+}
+
+function readPdfTitle(wikilink: WikilinkData): string {
+  const alias = wikilink.alias?.trim()
+  if (alias) {
+    const parts = alias.split('|').map(part => part.trim())
+    const titleParts = /^\d+(?:x\d+)?$/.test(parts[parts.length - 1] ?? '')
+      ? parts.slice(0, -1)
+      : parts
+    const title = titleParts.join('|').trim()
+    if (title) return title
+  }
+
+  const segments = wikilink.target.split('/').filter(Boolean)
+  return segments[segments.length - 1] || wikilink.target || 'document.pdf'
+}
+
+function pdfPageFromAnchor(wikilink: WikilinkData): string | undefined {
+  const anchor = wikilink.anchorText?.trim() ?? ''
+  const match = /^page=(\d+)$/i.exec(anchor)
+  return match ? match[1] : undefined
+}
+
 function annotatePdfEmbed(node: Wikilink, wikilink: WikilinkData, url: string): void {
   const { metadataParsed, metadata } = wikilink
+  const page =
+    readPdfInteger(pdfMetadataValue(metadataParsed, 'page')) ?? pdfPageFromAnchor(wikilink)
+  const fit = readPdfFit(
+    pdfMetadataValue(metadataParsed, 'fit') ?? pdfMetadataValue(metadataParsed, 'mode'),
+  )
+  const scale = readPdfNumber(pdfMetadataValue(metadataParsed, 'scale'))
+  const height = readPdfInteger(pdfMetadataValue(metadataParsed, 'height'))
+  const overscan = readPdfInteger(pdfMetadataValue(metadataParsed, 'overscan'))
 
   if (!node.data) node.data = { wikilink }
 
-  node.data.hName = 'iframe'
+  node.data.hName = 'div'
   node.data.hProperties = {
-    src: url,
-    class: 'pdf',
+    class: 'internal-embed pdf-embed',
+    'data-pdf-src': url,
+    'data-pdf-title': readPdfTitle(wikilink),
+    ...(page ? { 'data-pdf-page': page } : {}),
+    ...(fit ? { 'data-pdf-fit': fit } : {}),
+    ...(scale ? { 'data-pdf-scale': scale } : {}),
+    ...(height ? { 'data-pdf-height': height } : {}),
+    ...(overscan ? { 'data-pdf-overscan': overscan } : {}),
     ...(metadataParsed
       ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata
         ? { 'data-metadata': metadata }
         : {}),
   }
+  node.data.hChildren = [
+    {
+      type: 'element',
+      tagName: 'span',
+      properties: { class: 'pdf-embed-loading' },
+      children: [{ type: 'text', value: 'Loading PDF' }],
+    },
+  ]
 }
 
 /**

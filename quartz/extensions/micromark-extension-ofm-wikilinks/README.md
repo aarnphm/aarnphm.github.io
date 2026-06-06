@@ -190,6 +190,12 @@ unified().use(remarkWikilink, { obsidian: false }).use(remarkRehype)
 "[[file#Section Title]]" → anchor: "#Section Title"
 ```
 
+**PDF support**: We support options for customizing viewport via metadata parsing here.
+
+```markdown
+![[paper.pdf#{page: 3, fit: 'page', scale: '125%', height: 720, overscan: 4}|slides]]
+```
+
 #### strip extensions
 
 strips file extensions before slugifying paths (only applies when obsidian mode is enabled):

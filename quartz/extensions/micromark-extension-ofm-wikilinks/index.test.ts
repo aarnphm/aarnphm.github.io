@@ -983,9 +983,27 @@ describe('micromark wikilink extension', () => {
         const wikilink = extractWikilink(tree)
 
         assert(wikilink, 'wikilink node should exist')
-        assert.strictEqual(wikilink.data?.hName, 'iframe')
-        assert.strictEqual(wikilink.data?.hProperties?.src, 'paper.pdf')
-        assert.strictEqual(wikilink.data?.hProperties?.class, 'pdf')
+        assert.strictEqual(wikilink.data?.hName, 'div')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-src'], 'paper.pdf')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-title'], 'paper.pdf')
+        assert.strictEqual(wikilink.data?.hProperties?.class, 'internal-embed pdf-embed')
+      })
+
+      test('annotates PDF embed options', () => {
+        const tree = parse(
+          "![[paper.pdf#{page: 3, fit: 'page', height: 720, overscan: 4}|slides]]",
+          { obsidian: true },
+        )
+        const wikilink = extractWikilink(tree)
+
+        assert(wikilink, 'wikilink node should exist')
+        assert.strictEqual(wikilink.data?.hName, 'div')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-src'], 'paper.pdf')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-title'], 'slides')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-page'], '3')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-fit'], 'page')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-height'], '720')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-pdf-overscan'], '4')
       })
     })
 

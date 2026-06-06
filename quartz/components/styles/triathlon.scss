@@ -464,10 +464,6 @@
   gap: 0.6rem;
 }
 
-.tri-act-figs:has(.tri-fig-readout) {
-  padding-top: 1.4rem;
-}
-
 .tri-route-cursor {
   fill: var(--tri-accent);
   stroke: var(--light);
@@ -501,9 +497,12 @@
   transition: opacity 0.1s ease;
 }
 
-.tri-figs--hover .tri-route-cursor,
-.tri-figs--hover .tri-elev-cursor,
-.tri-figs--hover .tri-fig-readout {
+.tri-act--scrub .tri-route-cursor,
+.tri-act--scrub .tri-elev-cursor {
+  opacity: 1;
+}
+
+.tri-elev-wrap--read .tri-fig-readout {
   opacity: 1;
 }
 
@@ -552,6 +551,7 @@
 }
 
 .tri-elev-wrap {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
