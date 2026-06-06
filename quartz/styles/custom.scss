@@ -179,7 +179,7 @@ blockquote {
   position: relative;
   margin: 1.5rem 0 1.5rem 2.5rem;
 
-  &::before {
+  &:not([class~='transclude'])::before {
     content: '\201C';
     position: absolute;
     left: -2.5rem;
@@ -197,7 +197,7 @@ blockquote {
   @media all and ($mobile) {
     margin-left: 1.75rem;
 
-    &::before {
+    &:not([class~='transclude'])::before {
       left: -1.75rem;
       font-size: 2.75rem;
     }

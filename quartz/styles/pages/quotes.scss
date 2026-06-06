@@ -69,4 +69,8 @@ $quote-indent: 1.25em;
 
 blockquote.quotes {
   @include quote-block(0rem);
+
+  &::before {
+    content: '';
+  }
 }

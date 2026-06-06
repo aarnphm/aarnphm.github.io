@@ -7,7 +7,7 @@ id: mit-18-901-fall-2004-resource-resources-notes-i
 layout: A|L
 license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:32 GMT-04:00
+modified: 2026-06-06 04:50:55 GMT-04:00
 tags:
   - course
   - mit
@@ -15,7 +15,6 @@ tags:
   - math
   - math/topology
   - geometry
-  - lecture notes
 title: notes i
 ---
 

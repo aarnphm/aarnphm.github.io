@@ -14,7 +14,7 @@ tags:
   - ocw
   - social science
   - economics
-  - game theory
+  - game-theory
   - exams
 title: 2025 midterm exam
 ---

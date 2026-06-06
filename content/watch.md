@@ -1,12 +1,15 @@
 ---
-date: '2026-03-04'
+cssclasses: nolist
+date: "2026-03-04"
 description: horology nerd.
 id: watch
 layout: technical
-modified: 2026-06-05 15:08:02 GMT-04:00
+modified: 2026-06-06 05:04:34 GMT-04:00
 tags:
   - evergreen
 title: watch
+transclude:
+  title: false
 ---
 
 - JLC Master Ultra Thin ref. Q1368480, [[thoughts/images/7979A093-75C4-4612-B784-48499C664B8F_1_102_o.webp|caliber 925AA]]

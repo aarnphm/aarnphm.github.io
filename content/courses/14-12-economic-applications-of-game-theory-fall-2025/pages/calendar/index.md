@@ -12,7 +12,7 @@ tags:
   - ocw
   - social science
   - economics
-  - game theory
+  - game-theory
 title: calendar
 ---
 
