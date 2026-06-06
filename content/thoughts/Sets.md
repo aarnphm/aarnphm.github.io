@@ -2,14 +2,14 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-05 23:01:39 GMT-04:00
+modified: 2026-06-05 23:55:12 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
+  - '[[thoughts/pdfs/Basic Topology, Amstrong.pdf|Basic Topology, Amstrong]]'
 tags:
-  - math
   - math/sets
-  - topology
+  - math/topology
 title: Sets
 ---
 
@@ -362,13 +362,13 @@ $$
 The symmetric difference keeps elements that appear in exactly one set:
 
 $$
-A \triangle B = (A \setminus B) \cup (B \setminus A)
+A\;\triangle\;B = (A \setminus B) \cup (B \setminus A)
 $$
 
 Equivalently, membership in $A \triangle B$ is exclusive-or:
 
 $$
-x \in A \triangle B \iff (x \in A \land x \notin B) \lor (x \notin A \land x \in B)
+x \in A\;\triangle\;B \iff (x \in A \land x \notin B) \lor (x \notin A \land x \in B)
 $$
 
 ### power set
@@ -407,13 +407,17 @@ If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\
 >
 > For every set $A$, there is no surjection $f: A \to \mathcal{P}(A)$.
 >
-> Proof: for any proposed $f$, form the diagonal set
+> Proof:
+>
+> assume a surjection $f$ exists, and form the diagonal set
 >
 > $$
 > D = \{a \in A \mid a \notin f(a)\}
 > $$
 >
-> If $D = f(d)$ for some $d \in A$, then $d \in D \iff d \notin f(d) \iff d \notin D$, contradiction. Therefore $\mathcal{P}(A)$ has strictly larger cardinality than $A$.
+> Since $f$ is surjective, $D = f(d)$ for some $d \in A$. Then $d \in D \iff d \notin f(d) \iff d \notin D$, contradiction.
+>
+> Therefore $\mathcal{P}(A)$ has strictly larger cardinality than $A$.
 
 ### arbitrary unions and intersection
 
@@ -429,7 +433,7 @@ $$
 \bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
 $$
 
-> [!IMPORTANT]
+> [!IMPORTANT] universality of emptyset
 > If $\emptyset \in \mathcal{A}$, the union is not forced to be empty. The empty set contributes no elements, then the other members still contribute theirs.
 >
 > If $\mathcal{A} = \emptyset$, then $\bigcup_{A \in \mathcal{A}} A = \emptyset$.
@@ -452,7 +456,7 @@ $$
 
 The index set $I$ is bookkeeping; the sets $A_i$ are the mathematical objects. Different indices may name the same subset.
 
-> [!note]
+> [!note] repetition value within a family
 >
 > A family can have repeated values because it is a function out of $I$. A set cannot have repeated elements because extensionality deletes repetitions.
 
@@ -490,9 +494,11 @@ $$
 [a] = \{x \in A \mid x \sim a\}
 $$
 
-The quotient set $A/{\sim}$ is the set of all equivalence classes. This is the set-theoretic skeleton behind quotient spaces in topology.
+The quotient set $A/{\sim}$ is the set of all equivalence classes.
 
-A _partial order_ is reflexive, antisymmetric, and transitive. A _total order_ is a partial order where any two elements are comparable.
+A _partial order_ is reflexive, antisymmetric, and transitive.
+
+A _total order_ is a partial order where any two elements are comparable.
 
 ## functions
 
@@ -551,6 +557,88 @@ Equality holds when $f$ is injective.
 | injective  | $f(a)=f(a') \implies a=a'$                  |
 | surjective | $\forall b \in B\;\exists a \in A,\;f(a)=b$ |
 | bijective  | injective and surjective                    |
+
+```tikz
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\definecolor{flexokired}{HTML}{fdb2a2}
+\definecolor{flexokigreen}{HTML}{cdd597}
+\begin{document}
+\begin{tikzpicture}[
+    scale=0.9,
+    dot/.style={circle, fill=black, inner sep=1.5pt},
+    arrow/.style={-{Stealth[scale=1.2]}, thick, shorten >=2pt, shorten <=2pt}
+  ]
+
+  % --- Injective ---
+  \begin{scope}[shift={(0,0)}]
+    \node[above] at (1, 2) {\textbf{\textsf{injective}}};
+    \draw[thick, flexokigreen] (0,0) ellipse (0.8 and 1.5);
+    \draw[thick, flexokired] (2,0) ellipse (0.8 and 1.5);
+    \node[above] at (0, 1.6) {$A$};
+    \node[above] at (2, 1.6) {$B$};
+
+    \node[dot] (a1) at (0, 0.8) {};
+    \node[dot] (a2) at (0, 0) {};
+    \node[dot] (a3) at (0, -0.8) {};
+
+    \node[dot] (b1) at (2, 1) {};
+    \node[dot] (b2) at (2, 0.3) {};
+    \node[dot] (b3) at (2, -0.4) {};
+    \node[dot] (b4) at (2, -1.1) {};
+
+    \draw[arrow] (a1) -- (b2);
+    \draw[arrow] (a2) -- (b4);
+    \draw[arrow] (a3) -- (b1);
+  \end{scope}
+
+  % --- Surjective ---
+  \begin{scope}[shift={(4.5,0)}]
+    \node[above] at (1, 2) {\textbf{\textsf{surjective}}};
+    \draw[thick, flexokigreen] (0,0) ellipse (0.8 and 1.5);
+    \draw[thick, flexokired] (2,0) ellipse (0.8 and 1.5);
+    \node[above] at (0, 1.6) {$A$};
+    \node[above] at (2, 1.6) {$B$};
+
+    \node[dot] (a1) at (0, 1) {};
+    \node[dot] (a2) at (0, 0.3) {};
+    \node[dot] (a3) at (0, -0.4) {};
+    \node[dot] (a4) at (0, -1.1) {};
+
+    \node[dot] (b1) at (2, 0.8) {};
+    \node[dot] (b2) at (2, 0) {};
+    \node[dot] (b3) at (2, -0.8) {};
+
+    \draw[arrow] (a1) -- (b1);
+    \draw[arrow] (a2) -- (b2);
+    \draw[arrow] (a3) -- (b3);
+    \draw[arrow] (a4) -- (b2);
+  \end{scope}
+
+  % --- Bijective ---
+  \begin{scope}[shift={(9,0)}]
+    \node[above] at (1, 2) {\textbf{\textsf{bijective}}};
+    \draw[thick, flexokigreen] (0,0) ellipse (0.8 and 1.5);
+    \draw[thick, flexokired] (2,0) ellipse (0.8 and 1.5);
+    \node[above] at (0, 1.6) {$A$};
+    \node[above] at (2, 1.6) {$B$};
+
+    \node[dot] (a1) at (0, 0.8) {};
+    \node[dot] (a2) at (0, 0) {};
+    \node[dot] (a3) at (0, -0.8) {};
+
+    \node[dot] (b1) at (2, 0.8) {};
+    \node[dot] (b2) at (2, 0) {};
+    \node[dot] (b3) at (2, -0.8) {};
+
+    \draw[arrow] (a1) -- (b2);
+    \draw[arrow] (a2) -- (b1);
+    \draw[arrow] (a3) -- (b3);
+  \end{scope}
+
+\end{tikzpicture}
+\end{document}
+```
 
 ## cardinality
 

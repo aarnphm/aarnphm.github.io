@@ -47,7 +47,7 @@
     --color: inherit !important;
     --border: inherit !important;
     --bg: inherit !important;
-    border-left: 1px solid var(--tertiary);
+    border: 1px solid var(--tertiary);
     max-height: unset !important;
 
     break-inside: avoid;
@@ -67,5 +67,25 @@
       break-before: avoid;
       page-break-before: avoid;
     }
+  }
+
+  .callout.callout-math,
+  .callout:is(
+    [data-callout='math'],
+    [data-callout='proof'],
+    [data-callout='lemma'],
+    [data-callout='theorem'],
+    [data-callout='theory'],
+    [data-callout='proposition'],
+    [data-callout='propos'],
+    [data-callout='definition'],
+    [data-callout='corollary'],
+    [data-callout='conjecture'],
+    [data-callout='claim'],
+    [data-callout='axiom']
+  ) {
+    background: transparent !important;
+    border: 1px solid var(--dark) !important;
+    padding: 0 0.75rem !important;
   }
 }

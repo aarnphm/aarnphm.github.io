@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 22:41:21 GMT-04:00
+modified: 2026-06-05 23:49:45 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,15 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/deepfates/status/2063016403381424458 -- Bloomer poasting
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [longtermism, life]
+- https://x.com/tomieinlove/status/2009064543239196855 -- virtual memory [**]
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [systems]
+    - pinned: true
 - https://x.com/giansegato/status/2061285376548077614 -- Claude restoration of Clipboard
   - [meta]:
     - date: 06/04/2026

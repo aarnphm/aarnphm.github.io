@@ -8,6 +8,7 @@ import {
   Root,
   Html,
   BlockContent,
+  Blockquote,
   DefinitionContent,
   Paragraph,
   Code,
@@ -40,6 +41,12 @@ import {
   wikilinkFromMarkdown,
 } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import {
+  canonicalizeCallout,
+  isMathCallout,
+  isStandaloneProofLine,
+  italicizeProofLine,
+} from '../../util/callouts'
 import { capitalize } from '../../util/lang'
 // @ts-ignore
 import { FullSlug, pathToRoot, slugTag } from '../../util/path'
@@ -89,36 +96,6 @@ function hasRawHtml(tree: HtmlRoot): boolean {
   })
   return found
 }
-
-const calloutMapping = {
-  note: 'note',
-  abstract: 'abstract',
-  summary: 'abstract',
-  tldr: 'abstract',
-  info: 'info',
-  todo: 'todo',
-  tip: 'tip',
-  hint: 'tip',
-  important: 'tip',
-  success: 'success',
-  check: 'success',
-  done: 'success',
-  question: 'question',
-  help: 'question',
-  faq: 'question',
-  warning: 'warning',
-  attention: 'warning',
-  caution: 'warning',
-  failure: 'failure',
-  missing: 'failure',
-  fail: 'failure',
-  danger: 'danger',
-  error: 'danger',
-  bug: 'bug',
-  example: 'example',
-  quote: 'quote',
-  cite: 'quote',
-} as const
 
 const arrowMapping: Record<string, string> = {
   '->': '&rarr;',
@@ -274,12 +251,6 @@ const parseAltTextAsMarkdown = (altText: string, allowDangerousHtml: boolean): a
   }
 }
 
-function canonicalizeCallout(calloutName: string): keyof typeof calloutMapping {
-  const normalizedCallout = calloutName.toLowerCase() as keyof typeof calloutMapping
-  // if callout is not recognized, make it a custom one
-  return calloutMapping[normalizedCallout] ?? calloutName
-}
-
 export const externalLinkRegex = /^https?:\/\//i
 
 export const arrowRegex = new RegExp(/(-{1,2}>|={1,2}>|<-{1,2}|<={1,2})/g)
@@ -299,6 +270,7 @@ const commentRegex = new RegExp(/%%[\s\S]*?%%/g)
 // from https://github.com/escwxyz/remark-obsidian-callout/blob/main/src/index.ts
 const calloutRegex = new RegExp(/^\[!([\w-]+)\|?(.+?)?\]([+-]?)/)
 const calloutLineRegex = new RegExp(/^> *\[!\w+\|?.*?\][+-]?.*$/gm)
+const proofReasonRegex = /\s+\[([^\]@\n][^\]\n]*)\]\s*$/
 // (?<=^| )             -> a lookbehind assertion, tag should start be separated by a space or be the start of the line
 // #(...)               -> capturing group, tag itself must start with #
 // (?:[-_\p{L}\d\p{Z}])+       -> non-capturing group, non-empty string of (Unicode-aware) alpha-numeric characters and symbols, hyphens and/or underscores
@@ -311,6 +283,100 @@ const blockReferenceRegex = new RegExp(/\^([-_A-Za-z0-9]+)$/g)
 const markerRegex = new RegExp(/::([^:]+?)(?:\{(h[1-7])\})?::/g)
 // bare marker without explicit intensity, defaults to h3
 const bareMarkerRegex = new RegExp(/::([^:{}]+?)::/g)
+
+type CalloutContentNode = BlockContent | DefinitionContent
+
+function setNodeClassName(node: CalloutContentNode, className: string): void {
+  node.data = { ...node.data, hProperties: { ...node.data?.hProperties, className } }
+}
+
+function proofCell(className: string, children: CalloutContentNode[]): Blockquote {
+  return { type: 'blockquote', data: { hName: 'div', hProperties: { className } }, children }
+}
+
+function extractProofReason(node: CalloutContentNode): string | undefined {
+  if (node.type !== 'paragraph') {
+    return undefined
+  }
+
+  const lastChild = node.children.at(-1)
+
+  if (!lastChild || lastChild.type !== 'text') {
+    return undefined
+  }
+
+  const match = lastChild.value.match(proofReasonRegex)
+
+  if (!match || match.index === undefined) {
+    return undefined
+  }
+
+  const reason = match[1].trim()
+  lastChild.value = lastChild.value.slice(0, match.index).trimEnd()
+
+  if (lastChild.value.length === 0) {
+    node.children.pop()
+  }
+
+  return reason
+}
+
+function proofReason(reason: string): Blockquote {
+  return proofCell('math-proof-reason', [
+    { type: 'paragraph', children: [{ type: 'text', value: reason }] },
+  ])
+}
+
+function proofRow(node: CalloutContentNode): Blockquote {
+  const reason = extractProofReason(node)
+  const children = reason
+    ? [proofCell('math-proof-step', [node]), proofReason(reason)]
+    : [proofCell('math-proof-step', [node])]
+
+  return {
+    type: 'blockquote',
+    data: {
+      hName: 'div',
+      hProperties: { className: reason ? 'math-proof-row has-reason' : 'math-proof-row' },
+    },
+    children,
+  }
+}
+
+function formatProofSection(nodes: CalloutContentNode[]): void {
+  for (const [index, node] of nodes.entries()) {
+    if (node.type !== 'paragraph') {
+      continue
+    }
+
+    const standaloneProof = isStandaloneProofLine(node)
+
+    if (!italicizeProofLine(node)) {
+      continue
+    }
+
+    if (!standaloneProof) {
+      continue
+    }
+
+    setNodeClassName(node, 'math-proof-label')
+
+    const proofNodes = nodes.slice(index + 1)
+
+    if (proofNodes.length === 0) {
+      return
+    }
+
+    const proofSection: Blockquote = {
+      type: 'blockquote',
+      data: { hName: 'div', hProperties: { className: 'math-proof' } },
+      children: proofNodes.map(proofRow),
+    }
+
+    nodes.splice(index + 1, proofNodes.length, proofSection)
+    return
+  }
+}
 
 export const checkMermaidCode = ({ tagName, properties }: Element) =>
   tagName === 'code' &&
@@ -605,6 +671,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
             if (match && match.input) {
               const [calloutDirective, typeString, calloutMetaData, collapseChar] = match
               const calloutType = canonicalizeCallout(typeString.toLowerCase())
+              const mathCallout = isMathCallout(calloutType)
               const collapse = collapseChar === '+' || collapseChar === '-'
               const defaultState = collapseChar === '-' ? 'collapsed' : 'expanded'
               const titleContent = match.input.slice(calloutDirective.length).trim()
@@ -634,16 +701,25 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
               const blockquoteContent: (BlockContent | DefinitionContent)[] = [titleHtml]
               if (remainingText.length > 0) {
-                blockquoteContent.push({
+                const remainingParagraph: Paragraph = {
                   type: 'paragraph',
                   children: [{ type: 'text', value: remainingText }],
-                })
+                }
+
+                if (mathCallout) {
+                  italicizeProofLine(remainingParagraph)
+                }
+
+                blockquoteContent.push(remainingParagraph)
               }
 
               // replace first line of blockquote with title and rest of the paragraph text
               node.children.splice(0, 1, ...blockquoteContent)
 
               const classNames = ['callout', calloutType]
+              if (mathCallout) {
+                classNames.push('callout-math')
+              }
               if (collapse) {
                 classNames.push('is-collapsible')
               }
@@ -664,6 +740,10 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
               // Add callout-content class to callout body if it has one.
               if (calloutContent.length > 0) {
+                if (mathCallout) {
+                  formatProofSection(calloutContent)
+                }
+
                 const contentData: BlockContent | DefinitionContent = {
                   data: { hProperties: { className: 'callout-content' }, hName: 'div' },
                   type: 'blockquote',

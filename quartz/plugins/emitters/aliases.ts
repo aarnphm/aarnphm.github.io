@@ -1,18 +1,10 @@
-import { rm } from 'fs/promises'
 import path from 'path'
 import { VFile } from 'vfile'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx } from '../../util/ctx'
-import {
-  FilePath,
-  FullSlug,
-  isRelativeURL,
-  joinSegments,
-  resolveRelative,
-  simplifySlug,
-} from '../../util/path'
-import { write } from './helpers'
+import { FilePath, FullSlug, isRelativeURL, resolveRelative, simplifySlug } from '../../util/path'
+import { write, removeWritten } from './helpers'
 
 function aliasTargetSlug(file: VFile, aliasTarget: string): FullSlug | undefined {
   const ogSlug = simplifySlug(file.data.slug!)
@@ -62,7 +54,7 @@ async function deleteAliases(ctx: BuildCtx, file: VFile): Promise<void> {
   for (const aliasTarget of file.data.aliases ?? []) {
     const aliasSlug = aliasTargetSlug(file, aliasTarget)
     if (!aliasSlug) continue
-    await rm(joinSegments(ctx.argv.output, `${aliasSlug}.html`) as FilePath, { force: true })
+    await removeWritten(ctx, aliasSlug, '.html')
   }
 }
 

@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
-import { cachedTikzSvg, type TikzRenderOptions } from './tikz'
+import { cachedTikzSvg, normalizeComputerModernText, type TikzRenderOptions } from './tikz'
 
 const options: TikzRenderOptions = {
   showConsole: false,
@@ -68,4 +68,23 @@ test('caches tikz render failures in memory', async t => {
     /cached render failure: render failed 1/,
   )
   assert.strictEqual(renders, 1)
+})
+
+test('normalizes Computer Modern set operators in tikz text', () => {
+  const svg = [
+    '<svg>',
+    '<text font-family="cmsy10">[</text>',
+    '<text font-family="cmsy10">\\</text>',
+    '</svg>',
+  ].join('')
+
+  assert.strictEqual(
+    normalizeComputerModernText(svg),
+    [
+      '<svg>',
+      '<text font-family="serif">∪</text>',
+      '<text font-family="serif">∩</text>',
+      '</svg>',
+    ].join(''),
+  )
 })

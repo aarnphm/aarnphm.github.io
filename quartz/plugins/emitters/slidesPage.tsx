@@ -10,9 +10,15 @@ import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot, joinSegments, FullSlug } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { QuartzPluginData } from '../vfile'
-import { write } from './helpers'
+import { write, removeWritten } from './helpers'
 
 const emitterName = 'SlidesPage'
+
+const slidesSlugFor = (baseSlug: FullSlug): FullSlug => joinSegments(baseSlug, 'slides') as FullSlug
+
+async function deleteSlides(ctx: BuildCtx, baseSlug: FullSlug): Promise<void> {
+  await removeWritten(ctx, slidesSlugFor(baseSlug), '.html')
+}
 
 async function processSlides(
   ctx: BuildCtx,
@@ -22,8 +28,7 @@ async function processSlides(
   opts: FullPageLayout,
   resources: StaticResources,
 ) {
-  const baseSlug = fileData.slug!
-  const slidesSlug = joinSegments(baseSlug, 'slides') as FullSlug
+  const slidesSlug = slidesSlugFor(fileData.slug!)
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slidesSlug), resources, ctx)
   const componentData: QuartzComponentProps = {
@@ -76,8 +81,12 @@ export const SlidesPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          changedSlugs.add(changeEvent.file.data.slug!)
+        if (changeEvent.type !== 'add' && changeEvent.type !== 'change') continue
+        const slug = changeEvent.file.data.slug! as FullSlug
+        if (changeEvent.file.data.frontmatter?.slides) {
+          changedSlugs.add(slug)
+        } else if (changeEvent.previousFile?.data.frontmatter?.slides) {
+          await deleteSlides(ctx, slug)
         }
       }
 

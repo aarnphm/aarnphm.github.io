@@ -128,6 +128,23 @@ describe('parseFlashcards: cloze', () => {
       String.raw`De Morgan's law: $A \setminus (B \cup C) = (A \setminus B) $<span class="cloze-answer">$\cap$</span>$ (A \setminus C)$.`,
     )
   })
+
+  test('deletion spanning a whole math region absorbs the delimiters', () => {
+    const { cards, errors } = parseFlashcards(
+      String.raw`C: The naive set-builder form $[\{x \mid P(x)\}|unsafe form]$ is dangerous.`,
+    )
+
+    assert.equal(errors.length, 0)
+    assert.equal(cards.length, 1)
+    assert.equal(
+      cards[0].front,
+      String.raw`The naive set-builder form <span class="cloze-blank">unsafe form</span> is dangerous.`,
+    )
+    assert.equal(
+      cards[0].back,
+      String.raw`The naive set-builder form <span class="cloze-answer">$\{x \mid P(x)\}$</span> is dangerous.`,
+    )
+  })
 })
 
 describe('content-addressed identity', () => {

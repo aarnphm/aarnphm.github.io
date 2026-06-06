@@ -676,9 +676,14 @@ footer[class~='menu'] {
   stroke: rgb(158, 158, 158);
 }
 
+.callout[data-callout] {
+  background: transparent;
+  border: 1px solid var(--dark);
+}
+
 blockquote.callout {
   .callout-title > .callout-title-inner > p {
-    color: var(--color);
+    color: var(--dark);
   }
   &[data-callout] {
     --color: rgb(var(--callout-info));
@@ -725,6 +730,178 @@ blockquote.callout {
   }
   &[data-callout='quote'] {
     --color: rgb(var(--callout-quote));
+  }
+}
+
+blockquote.callout.callout-math,
+blockquote.callout:is(
+    [data-callout='math'],
+    [data-callout='proof'],
+    [data-callout='lemma'],
+    [data-callout='theorem'],
+    [data-callout='theory'],
+    [data-callout='proposition'],
+    [data-callout='propos'],
+    [data-callout='definition'],
+    [data-callout='corollary'],
+    [data-callout='conjecture'],
+    [data-callout='claim'],
+    [data-callout='axiom']
+  ) {
+  --color: var(--dark);
+  --border: var(--dark);
+  --bg: transparent;
+
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-none);
+  color: var(--dark);
+  margin: 1rem 0;
+  overflow: visible;
+  padding: 0 var(--space-3);
+
+  & > .callout-title {
+    align-items: baseline;
+    color: var(--dark);
+    padding: var(--space-3) 0 0;
+  }
+
+  & > .callout-title:last-child,
+  &.is-collapsed > .callout-title {
+    padding-bottom: var(--space-3);
+  }
+
+  & > .callout-title > .callout-icon {
+    display: none;
+  }
+
+  & > .callout-title > .fold-callout-icon {
+    background-color: var(--darkgray);
+    margin-left: auto;
+  }
+
+  .callout-title > .callout-title-inner {
+    color: var(--dark);
+    font-family: var(--bodyFont);
+    font-style: italic;
+    font-weight: $semiBoldWeight;
+    line-height: 1.6rem;
+  }
+
+  .callout-title > .callout-title-inner > p {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  & > .callout-content {
+    background: transparent;
+    border: 0;
+    color: var(--dark);
+    margin: 0;
+    overflow: visible;
+    padding: var(--space-2) 0 var(--space-3);
+  }
+
+  &.is-collapsed > .callout-content {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  & > .callout-content > * {
+    overflow: visible;
+  }
+
+  & > .callout-content > :first-child {
+    margin-top: 0;
+  }
+
+  & > .callout-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  .math-proof-label {
+    font-style: italic;
+  }
+
+  .math-proof {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0 0;
+  }
+
+  .math-proof-row {
+    align-items: baseline;
+    column-gap: var(--space-4);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, max-content);
+    margin: 0;
+  }
+
+  .math-proof-row:not(.has-reason) > .math-proof-step {
+    grid-column: 1 / -1;
+  }
+
+  .math-proof-step,
+  .math-proof-reason {
+    min-width: 0;
+  }
+
+  .math-proof-step > :first-child,
+  .math-proof-reason > :first-child {
+    margin-top: 0;
+  }
+
+  .math-proof-step > :last-child,
+  .math-proof-reason > :last-child {
+    margin-bottom: 0;
+  }
+
+  .math-proof-reason {
+    color: var(--gray);
+    font-size: 0.95em;
+    text-align: left;
+  }
+
+  .katex-display {
+    margin: var(--space-4) 0;
+  }
+}
+
+@media all and (max-width: 700px) {
+  blockquote.callout.callout-math,
+  blockquote.callout:is(
+      [data-callout='math'],
+      [data-callout='proof'],
+      [data-callout='lemma'],
+      [data-callout='theorem'],
+      [data-callout='theory'],
+      [data-callout='proposition'],
+      [data-callout='propos'],
+      [data-callout='definition'],
+      [data-callout='corollary'],
+      [data-callout='conjecture'],
+      [data-callout='claim'],
+      [data-callout='axiom']
+    ) {
+    .math-proof-row {
+      display: block;
+    }
+
+    .math-proof-reason {
+      margin-top: var(--space-1);
+    }
+  }
+}
+
+blockquote.callout.callout-math[data-callout='proof'],
+blockquote.callout[data-callout='proof'] {
+  .callout-title > .callout-title-inner {
+    font-weight: $normalWeight;
   }
 }
 

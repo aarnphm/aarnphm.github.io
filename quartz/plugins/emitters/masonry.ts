@@ -17,7 +17,7 @@ import { pathToRoot, slugifyFilePath, FilePath, FullSlug } from '../../util/path
 import { StaticResources } from '../../util/resources'
 import { parseWikilink, resolveWikilinkTarget } from '../../util/wikilinks'
 import { QuartzPluginData } from '../vfile'
-import { write } from './helpers'
+import { write, removeWritten } from './helpers'
 
 const MaxInputSize = 512 * 1024
 
@@ -49,6 +49,10 @@ export interface MasonryImage {
 
 const isHastNode = (value: unknown): value is Node =>
   typeof value === 'object' && value !== null && 'type' in value
+
+async function deleteMasonryImages(ctx: BuildCtx, slug: FullSlug): Promise<void> {
+  await removeWritten(ctx, `${slug}.images`, '.json')
+}
 
 export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
   const filteredHeader = sharedPageComponents.header.filter(component => {
@@ -90,8 +94,12 @@ export const Masonry: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts =>
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
-        if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          changedSlugs.add(changeEvent.file.data.slug!)
+        if (changeEvent.type !== 'add' && changeEvent.type !== 'change') continue
+        const slug = changeEvent.file.data.slug! as FullSlug
+        if (changeEvent.file.data.frontmatter?.layout === 'masonry') {
+          changedSlugs.add(slug)
+        } else if (changeEvent.previousFile?.data.frontmatter?.layout === 'masonry') {
+          await deleteMasonryImages(ctx, slug)
         }
       }
 

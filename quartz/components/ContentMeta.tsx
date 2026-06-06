@@ -160,19 +160,21 @@ export default (() => {
     ) {
       const deckSlug = flashcardsSlug(fileData.slug)
       const deckHref = resolveRelative(fileData.slug, deckSlug)
-      meta.push({
-        title: 'flashcards',
-        classes: ['flashcards-links'],
-        item: h(
+      const deckLink = (href: string, label: string) =>
+        h(
           'a',
           {
-            href: deckHref,
+            href,
             class: 'internal content-meta-link',
             'data-slug': deckSlug,
             'data-no-popover': true,
           },
-          ['review'],
-        ),
+          [label],
+        )
+      meta.push({
+        title: 'flashcards',
+        classes: ['flashcards-links'],
+        item: [deckLink(deckHref, 'review'), deckLink(`${deckHref}?n=20`, 'shuffle 20')],
       })
     }
 

@@ -1,4 +1,4 @@
-import { readFile, rm } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { Node } from 'unist'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -21,7 +21,7 @@ import { logBuildSpan, PerfTimer } from '../../util/perf'
 import { StaticResources } from '../../util/resources'
 import { PageTitlePatch, pageTitlePatchEvents } from '../../util/title-patch'
 import { QuartzPluginData } from '../vfile'
-import { write, writeKnownChanged } from './helpers'
+import { write, writeKnownChanged, removeWritten } from './helpers'
 
 const contentPageConcurrency = 32
 
@@ -68,8 +68,7 @@ async function processContent(
 }
 
 async function deleteContent(ctx: BuildCtx, slug: FullSlug): Promise<void> {
-  const dest = joinSegments(ctx.argv.output, `${slug}.html`) as FilePath
-  await rm(dest, { force: true })
+  await removeWritten(ctx, slug, '.html')
 }
 
 function replaceRequired(html: string, search: string, replacement: string): string | undefined {
