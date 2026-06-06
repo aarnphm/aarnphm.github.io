@@ -6,10 +6,12 @@ category: math
 date: '2025-11-09'
 description: introductory textbook on point set topology, building intuition for continuity, connectedness, compactness, and basic constructions.
 id: Basic Topology
-modified: 2026-06-05 15:07:58 GMT-04:00
+modified: 2026-06-05 23:38:07 GMT-04:00
 notebook: '[[thoughts/topology|topology]]'
 pdf: https://math.mit.edu/~hrm/palestine/armstrong-basic-topology.pdf
 posters: '[[library/posters/Basic Topology.png]]'
+seealso:
+  - '[[thoughts/pdfs/Basic Topology, Amstrong.pdf|Basic Topology, Amstrong]]'
 status: current
 subcategory: topology
 tags:

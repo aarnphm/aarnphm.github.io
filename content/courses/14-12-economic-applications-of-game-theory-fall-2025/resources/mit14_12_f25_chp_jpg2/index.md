@@ -1,6 +1,6 @@
 ---
 aliases:
-  - mit14_12_f25_chp.jpg
+  - mit14_12_f25_chp.webp
 date: '2026-06-05'
 description: mit 14.12 mit14 12 f25 chp
 id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-chp-jpg2
@@ -20,10 +20,10 @@ title: mit14 12 f25 chp
 
 up: [[courses/14-12-economic-applications-of-game-theory-fall-2025/|mit 14.12]]
 
-![[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.jpg]]
+![[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.webp]]
 
 ## metadata
 
 - type: image
-- file: [[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.jpg|mit14_12_f25_chp.jpg]]
-- source: [mit opencourseware](https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_chp.jpg)
+- file: [[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.webp|mit14_12_f25_chp.webp]]
+- source: [mit opencourseware](https://ocw.mit.edu/courses/14-12-economic-applications-of-game-theory-fall-2025/mit14_12_f25_chp.webp)

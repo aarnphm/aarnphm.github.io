@@ -240,6 +240,8 @@ document.addEventListener('nav', () => {
       } catch {}
     }
     shuffle(order)
+    const limit = Number(new URLSearchParams(window.location.search).get('n'))
+    if (Number.isInteger(limit) && limit > 0) order = order.slice(0, limit)
     queue = order
     total = queue.length
     startedAt = Date.now()

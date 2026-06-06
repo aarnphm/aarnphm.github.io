@@ -20,7 +20,7 @@ tags:
 title: 'mit 14.12: economic applications of game theory'
 ---
 
-![[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.jpg]]
+![[courses/14-12-economic-applications-of-game-theory-fall-2025/static_resources/mit14_12_f25_chp.webp]]
 
 Game theory is the mathematical analysis of strategic interaction. It is used to analyze situations in which one person's best decision depends on the decisions taken by others. Examples include traditional games such as chess and poker, but also collusion by cartels, political competition, voting, bargaining, auctions, and evolution. This course will introduce the fundamental tools of game theory and use these tools to analyze applications.
 

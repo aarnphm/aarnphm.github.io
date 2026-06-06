@@ -43,6 +43,16 @@ export function resetWriteCache(): void {
   ensuredDirs.clear()
 }
 
+export async function removeWritten(
+  ctx: BuildCtx,
+  slug: FullSlug | string,
+  ext: `.${string}` | '',
+): Promise<void> {
+  const pathToPage = joinSegments(ctx.argv.output, slug + ext) as FilePath
+  writtenContent.delete(pathToPage)
+  await fs.promises.rm(pathToPage, { force: true })
+}
+
 function contentSize(content: WriteOptions['content']): number | undefined {
   if (typeof content === 'string') return Buffer.byteLength(content)
   if (Buffer.isBuffer(content)) return content.byteLength

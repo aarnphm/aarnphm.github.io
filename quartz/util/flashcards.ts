@@ -35,6 +35,8 @@ interface ClozeMatch {
   end: number
   value: string
   mathDelimiter?: MathDelimiter
+  leftMath?: boolean
+  rightMath?: boolean
 }
 
 interface ClozeParts {
@@ -91,14 +93,23 @@ function splitClozeValue(value: string): ClozeParts {
   return { answer: value.slice(0, separator).trim(), hint: value.slice(separator + 1).trim() }
 }
 
+function findMathClose(source: string, from: number, delimiter: MathDelimiter): number {
+  for (let i = from; i < source.length; i++) {
+    if (mathDelimiterAt(source, i) === delimiter) return i
+  }
+  return -1
+}
+
 function findClozeMatches(sentence: string): ClozeMatch[] {
   const matches: ClozeMatch[] = []
   let mathDelimiter: MathDelimiter | undefined
+  let mathOpen = -1
 
   for (let i = 0; i < sentence.length; i++) {
     const delimiter = mathDelimiterAt(sentence, i)
     if (delimiter) {
       mathDelimiter = mathDelimiter === delimiter ? undefined : delimiter
+      if (mathDelimiter === delimiter) mathOpen = i
       i += delimiter.length - 1
       continue
     }
@@ -114,8 +125,22 @@ function findClozeMatches(sentence: string): ClozeMatch[] {
     if (value.length === 0 || value.includes('[')) continue
     if (after === ']' || after === '(' || after === ')') continue
 
-    matches.push({ start: i, end: close + 1, value, mathDelimiter })
-    i = close
+    if (!mathDelimiter) {
+      matches.push({ start: i, end: close + 1, value })
+      i = close
+      continue
+    }
+
+    const region = mathDelimiter
+    const len = region.length
+    const leftMath = sentence.slice(mathOpen + len, i).trim().length > 0
+    const closeIdx = findMathClose(sentence, close + 1, region)
+    const rightMath = closeIdx === -1 || sentence.slice(close + 1, closeIdx).trim().length > 0
+    const start = leftMath ? i : mathOpen
+    const end = rightMath ? close + 1 : closeIdx + len
+    if (!rightMath) mathDelimiter = undefined
+    matches.push({ start, end, value, mathDelimiter: region, leftMath, rightMath })
+    i = end - 1
   }
 
   return matches
@@ -127,17 +152,24 @@ function renderClozeReplacement(
   face: 'front' | 'back',
 ): string {
   const { answer, hint } = splitClozeValue(match.value)
-  if (!target) return answer
-  if (!match.mathDelimiter) {
+  const delimiter = match.mathDelimiter
+  if (!target) {
+    if (!delimiter) return answer
+    const open = match.leftMath ? '' : delimiter
+    const shut = match.rightMath ? '' : delimiter
+    return `${open}${answer}${shut}`
+  }
+  if (!delimiter) {
     return face === 'front'
       ? `<span class="cloze-blank">${hint ?? '[…]'}</span>`
       : `<span class="cloze-answer">${answer}</span>`
   }
 
-  const delimiter = match.mathDelimiter
+  const left = match.leftMath ? delimiter : ''
+  const right = match.rightMath ? delimiter : ''
   return face === 'front'
-    ? `${delimiter}<span class="cloze-blank">${hint ?? '[…]'}</span>${delimiter}`
-    : `${delimiter}<span class="cloze-answer">${delimiter}${answer}${delimiter}</span>${delimiter}`
+    ? `${left}<span class="cloze-blank">${hint ?? '[…]'}</span>${right}`
+    : `${left}<span class="cloze-answer">${delimiter}${answer}${delimiter}</span>${right}`
 }
 
 function renderCloze(

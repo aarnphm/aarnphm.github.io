@@ -77,6 +77,8 @@ const cmSymbolGlyphs = new Map([
   ['g', '}'],
   ['!', '→'],
   ['2', '∈'],
+  ['[', '∪'],
+  ['\\', '∩'],
 ])
 
 const cmBlackboardGlyphs = new Map([
@@ -262,7 +264,7 @@ function escapeSvgText(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
-function normalizeComputerModernText(svg: string): string {
+export function normalizeComputerModernText(svg: string): string {
   return svg.replace(/<text\b([^>]*)>([\s\S]*?)<\/text>/g, (match, attrs: string, text: string) => {
     const font = attrs.match(/\bfont-family="([^"]+)"/)?.[1]
     if (!font) return match

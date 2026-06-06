@@ -82,7 +82,7 @@ $$
 
 ---
 
-Q: What is $A \cup \emptyset$?
+Q: What is $A \cup \emptyset$ ?
 A:
 
 $$
@@ -237,7 +237,7 @@ $$
 
 ---
 
-C: A subset $S \subseteq A$ is equivalent to its characteristic function $\chi_S: A \to \{0,1\}$, where $\chi_S(x)=1$ iff [x \in S].
+C: A subset $S \subseteq A$ is equivalent to its characteristic function $\chi_S: A \to \{0,1\}$, where $\chi_S(x)=1$ iff [$x \in S$].
 
 ---
 
