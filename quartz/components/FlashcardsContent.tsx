@@ -19,7 +19,7 @@ import {
 } from '../util/path'
 import { transcludeFinal } from './renderPage'
 // @ts-ignore
-import flipScript from './scripts/flashcards.inline'
+import drillScript from './scripts/flashcards.inline'
 import style from './styles/flashcards.scss'
 
 export default (() => {
@@ -66,53 +66,80 @@ export default (() => {
 
     const cards = (processed.children as ElementContent[]) || []
     const count = fileData.flashcards!.cards.length
-    const pageTitle = fileData.frontmatter?.title ?? 'flashcards'
+    const deckTitle = fileData.frontmatter?.title ?? 'flashcards'
     const sourceHref = resolveRelative(deckSlug, sourceSlug)
 
     return (
-      <div class="flashcards-root">
-        <nav class="flashcards-header" aria-label="flashcards">
+      <div class="flashcards-root" data-deck={deckSlug} data-total={count}>
+        <header class="flashcards-bar">
           <a
             href={sourceHref}
-            class="flashcards-back internal"
+            class="flashcards-exit internal"
             data-slug={sourceHref}
             data-no-popover
             aria-label="back to note"
           >
             ←
           </a>
-          <p class="flashcards-title">{pageTitle}</p>
-          <p class="flashcards-meta">
-            {count} {count === 1 ? 'card' : 'cards'}
-          </p>
-        </nav>
-        <div class="flashcards-drill" data-deck={deckSlug} hidden>
-          <button type="button" class="flashcards-drill-toggle">
-            start drill
+          <div
+            class="flashcards-progress"
+            role="progressbar"
+            aria-label="drill progress"
+            aria-valuemin={0}
+            aria-valuemax={count}
+            aria-valuenow={0}
+          >
+            <div class="flashcards-progress-fill" />
+          </div>
+          <span class="flashcards-status" aria-live="polite">
+            0 / {count}
+          </span>
+        </header>
+        <div class="flashcards-stage">
+          <article class="flashcards-card">
+            <div class="flashcards-card-head">
+              <h1>{deckTitle}</h1>
+            </div>
+            <div class="flashcards-card-body">
+              {htmlToJsx(filePath!, h('div', { class: 'flashcards-deck', role: 'list' }, cards))}
+            </div>
+          </article>
+        </div>
+        <nav class="flashcards-controls" aria-label="drill controls">
+          <button type="button" class="fc-btn fc-undo" data-action="undo" disabled>
+            undo
           </button>
-          <p class="flashcards-drill-status" aria-live="polite" />
-          <div class="flashcards-grade" hidden>
-            <button type="button" data-grade="1">
-              again
+          <span class="fc-spacer" />
+          <button type="button" class="fc-btn fc-reveal" data-action="reveal">
+            reveal
+          </button>
+          <span class="fc-grades" hidden>
+            <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="1">
+              forgot
             </button>
-            <button type="button" data-grade="2">
+            <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="2">
               hard
             </button>
-            <button type="button" data-grade="3">
+            <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="3">
               good
             </button>
-            <button type="button" data-grade="4">
+            <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="4">
               easy
             </button>
-          </div>
-        </div>
-        <div class="flashcards-deck" role="list">
-          {htmlToJsx(filePath!, h('div', cards))}
-        </div>
+          </span>
+          <span class="fc-spacer" />
+          <button type="button" class="fc-btn fc-end" data-action="end">
+            end
+          </button>
+        </nav>
+        <section class="flashcards-finished" aria-live="polite" hidden>
+          <h1>session complete</h1>
+          <p class="flashcards-summary" />
+        </section>
       </div>
     )
   }
   FlashcardsContent.css = style
-  FlashcardsContent.afterDOMLoaded = flipScript
+  FlashcardsContent.afterDOMLoaded = drillScript
   return FlashcardsContent
 }) satisfies QuartzComponentConstructor

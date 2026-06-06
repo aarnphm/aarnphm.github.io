@@ -32,7 +32,7 @@ export async function handleFlashcardsState(request: Request, env: Env): Promise
   if (!deck) return new Response('deck required', { status: 400 })
   if (!login) return Response.json({ states: [] })
 
-  const db = drizzle(env.COMMENTS_ROOM)
+  const db = drizzle(env.FLASHCARDS)
   const rows = await db
     .select()
     .from(flashcardReviews)
@@ -60,7 +60,7 @@ export async function handleFlashcardsReview(request: Request, env: Env): Promis
     return new Response('invalid grade', { status: 400 })
   }
 
-  const db = drizzle(env.COMMENTS_ROOM)
+  const db = drizzle(env.FLASHCARDS)
   const now = new Date()
   const prior = await db
     .select()

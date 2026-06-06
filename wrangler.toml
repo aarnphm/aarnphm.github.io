@@ -44,6 +44,13 @@ database_id = "a267f69f-5fc0-4fbd-a013-d81c4da2783e"
 migrations_dir = "migrations"
 remote = true
 
+[[d1_databases]]
+binding = "FLASHCARDS"
+database_name = "FLASHCARDS"
+database_id = "4fa538cf-e186-417b-922b-dfd88eb92628"
+migrations_dir = "migrations/flashcards"
+remote = true
+
 [browser]
 binding = "BROWSER"
 

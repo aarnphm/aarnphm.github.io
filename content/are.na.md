@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 19:23:44 GMT-04:00
+modified: 2026-06-05 20:34:10 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2472,6 +2472,14 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://jasminexli.substack.com/p/fieldbuilding-project-ideas-in-ai
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [projects]
+- https://www.avabear.xyz/p/kinks-in-other-people -- kinks in other people
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [love, relationship]
 - https://www.lesswrong.com/posts/iGF7YcnQkEbwvYLPA/ai-induced-psychosis-a-shallow-investigation -- AI-induced psychosis
   - [meta]:
     - date: 06/05/2026
@@ -6626,6 +6634,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Tall_poppy_syndrome -- Tall poppy syndrome
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [life]
+  - notable public success or achievements that are ostracised by others as a form of egalitarianism
 - https://www.rainer-rilling.de/gs-villa07-Dateien/JamesonF86a_CognitiveMapping.pdf -- Cognitive Mapping, Fredric Jameson
   - [meta]:
     - date: 05/25/2026
@@ -8631,6 +8644,10 @@ title: are.na
 
 ## resources
 
+- https://www.csunplugged.org/en/ -- CS Unplugged
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [pedagogy]
 - https://en.wikipedia.org/wiki/The_Soul_of_a_New_Machine -- The Soul of a New Machine
   - [meta]:
     - date: 06/05/2026
