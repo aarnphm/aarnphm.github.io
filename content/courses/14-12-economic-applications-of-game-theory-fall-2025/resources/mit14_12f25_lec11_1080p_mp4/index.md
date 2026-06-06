@@ -14,7 +14,7 @@ tags:
   - ocw
   - social science
   - economics
-  - game theory
+  - game-theory
   - lecture videos
 title: 'lecture 11: one shot deviation principle and bargaining'
 ---

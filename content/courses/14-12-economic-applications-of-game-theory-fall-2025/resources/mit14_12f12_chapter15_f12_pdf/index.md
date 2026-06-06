@@ -7,15 +7,14 @@ id: mit-14-12-fall-2025-resource-resources-mit14-12f12-chapter15-f12-pdf
 layout: A|L
 license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:36 GMT-04:00
+modified: 2026-06-06 04:51:59 GMT-04:00
 tags:
   - course
   - mit
   - ocw
   - social science
   - economics
-  - game theory
-  - lecture notes
+  - game-theory
 title: 'chapter 15 lecture notes: static applications with incomplete information'
 ---
 

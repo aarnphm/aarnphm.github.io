@@ -14,7 +14,7 @@ tags:
   - ocw
   - social science
   - economics
-  - game theory
+  - game-theory
   - problem sets
 title: problem set 10
 ---

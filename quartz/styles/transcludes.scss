@@ -100,9 +100,9 @@
 
 // non-collapsible transclude styling
 .transclude:not(.transclude-collapsible) {
-  border-left: 3px solid var(--secondary);
-  padding-left: 1rem;
-  margin: 1rem 0;
+  border-left: 3px solid var(--secondary) !important;
+  padding-left: 1rem !important;
+  margin: 1rem 0 !important;
 
   & h1 {
     margin-top: 0;

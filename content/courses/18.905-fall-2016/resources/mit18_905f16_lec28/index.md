@@ -7,7 +7,7 @@ id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec28
 layout: A|L
 license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:33 GMT-04:00
+modified: 2026-06-06 04:53:29 GMT-04:00
 tags:
   - course
   - mit
@@ -15,8 +15,7 @@ tags:
   - math
   - math/topology
   - geometry
-  - lecture notes
-title: 'algebraic topology i: lecture 27 products in cohomology'
+title: 'lecture 27 products in cohomology'
 ---
 
 up: [[courses/18.905-fall-2016/|mit 18.905]]

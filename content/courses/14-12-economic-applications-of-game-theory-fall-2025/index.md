@@ -16,7 +16,7 @@ tags:
   - ocw
   - social science
   - economics
-  - game theory
+  - game-theory
 title: 'mit 14.12: economic applications of game theory'
 ---
 

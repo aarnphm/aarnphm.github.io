@@ -7,15 +7,14 @@ id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-chapter5-f12-pdf
 layout: A|L
 license: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
-modified: 2026-06-05 15:08:35 GMT-04:00
+modified: 2026-06-06 04:51:56 GMT-04:00
 tags:
   - course
   - mit
   - ocw
   - social science
   - economics
-  - game theory
-  - lecture notes
+  - game-theory
 title: 'chapter 5 lecture notes: rationalizability'
 ---
 
