@@ -70,10 +70,6 @@ custom_domain = true
 pattern = "stream.aarnphm.xyz"
 custom_domain = true
 
-[[routes]]
-pattern = "toronto.aarnphm.xyz"
-custom_domain = true
-
 [assets]
 directory = "./public/"
 binding = "ASSETS"

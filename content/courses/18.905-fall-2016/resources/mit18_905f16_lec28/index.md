@@ -13,7 +13,7 @@ tags:
   - mit
   - ocw
   - math
-  - topology
+  - math/topology
   - geometry
   - lecture notes
 title: 'algebraic topology i: lecture 27 products in cohomology'

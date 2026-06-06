@@ -22,3 +22,605 @@ C: De Morgan's law: $A \setminus (B \cup C) = (A \setminus B) [\cap] (A \setminu
 ---
 
 C: The [axiom of separation|which axiom] only lets you carve a subset out of an [existing set], which is how ZFC blocks [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]].
+
+---
+
+Q: What is a set?
+A: A collection of distinct objects, called its elements or members.
+
+---
+
+Q: What does $x \in A$ mean?
+A: $x$ is an element of $A$.
+
+---
+
+Q: What does $x \not\in A$ mean?
+A: $x$ is not an element of $A$.
+
+---
+
+Q: What does $A \subsetneq B$ mean?
+A: $A$ is a proper subset of $B$: $A \subseteq B$ and $A \neq B$.
+
+---
+
+Q: What does it mean for two sets $A$ and $B$ to be disjoint?
+A: They have no common elements:
+
+$$
+A \cap B = \emptyset
+$$
+
+---
+
+Q: What is the safe set-builder form in ZFC?
+A:
+
+$$
+\{x \in A \mid P(x)\}
+$$
+
+It carves elements satisfying $P$ from an existing set $A$.
+
+---
+
+C: The naive set-builder form $[\{x \mid P(x)\}|unsafe form]$ is dangerous because it pretends every predicate determines a set.
+
+---
+
+C: Sets are determined by their [elements], so order and repetition do no work.
+
+---
+
+Q: State extensionality for sets.
+A:
+
+$$
+\forall A\;\forall B\;(\forall x\;(x \in A \iff x \in B) \implies A = B)
+$$
+
+---
+
+Q: What is $A \cup \emptyset$?
+A:
+
+$$
+A \cup \emptyset = A
+$$
+
+---
+
+Q: What is $A \cap \emptyset$?
+A:
+
+$$
+A \cap \emptyset = \emptyset
+$$
+
+---
+
+Q: What is the contrapositive of $P \implies Q$?
+A:
+
+$$
+(\text{not } Q) \implies (\text{not } P)
+$$
+
+---
+
+C: A statement and its [contrapositive] are logically equivalent.
+
+---
+
+C: The [converse] of $P \implies Q$ is $Q \implies P$.
+
+---
+
+Q: When does $P \iff Q$ hold in the contrapositive/converse setup?
+A: When both $P \implies Q$ and its converse $Q \implies P$ hold.
+
+---
+
+Q: How does negation flip a universal quantifier over $A$?
+A:
+
+$$
+\neg(\forall x \in A,\;P(x)) \iff \exists x \in A,\;\neg P(x)
+$$
+
+---
+
+Q: How does negation flip an existential quantifier over $A$?
+A:
+
+$$
+\neg(\exists x \in A,\;P(x)) \iff \forall x \in A,\;\neg P(x)
+$$
+
+---
+
+Q: Define the union $A \cup B$.
+A:
+
+$$
+A \cup B = \{x \mid x \in A \text{ or } x \in B\}
+$$
+
+---
+
+Q: Define the intersection $A \cap B$.
+A:
+
+$$
+A \cap B = \{x \mid x \in A \text{ and } x \in B\}
+$$
+
+---
+
+Q: Define the difference $A \setminus B$.
+A:
+
+$$
+A \setminus B = \{x \in A \mid x \notin B\}
+$$
+
+---
+
+C: The difference $A \setminus B$ is the [complement] of $B$ relative to $A$.
+
+---
+
+Q: State the distributive law from [[thoughts/Sets]].
+A:
+
+$$
+A \cap (B \cup C) = (A \cap B) \cup (A \cap C)
+$$
+
+---
+
+Q: State the de Morgan law for $A \setminus (B \cup C)$.
+A:
+
+$$
+A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)
+$$
+
+---
+
+C: de Morgan's law says the complement of the union equals the [intersection] of the complements.
+
+---
+
+C: de Morgan's law says the complement of the intersection equals the [union] of the complements.
+
+---
+
+Q: For a fixed universe $X$, what is $A^c$?
+A:
+
+$$
+A^c = X \setminus A
+$$
+
+---
+
+Q: Express set difference using complement.
+A:
+
+$$
+A \setminus B = A \cap B^c
+$$
+
+---
+
+Q: Define the symmetric difference $A \triangle B$.
+A:
+
+$$
+A \triangle B = (A \setminus B) \cup (B \setminus A)
+$$
+
+---
+
+C: Membership in $A \triangle B$ is [exclusive-or]: the element appears in exactly one of $A$ and $B$.
+
+---
+
+Q: How many elements does $\mathcal{P}(A)$ have when $A$ has $n$ elements?
+A:
+
+$$
+|\mathcal{P}(A)| = 2^n
+$$
+
+---
+
+C: A subset $S \subseteq A$ is equivalent to its characteristic function $\chi_S: A \to \{0,1\}$, where $\chi_S(x)=1$ iff [x \in S].
+
+---
+
+C: For $A=\{a,b,c\}$ with coordinate order $(a,b,c)$, the subset $\{a,c\}$ corresponds to the bit-vector [101].
+
+---
+
+C: The distinction is $a \in A$, but $\{a\} [\subseteq] A$ and $\{a\} [\in] \mathcal{P}(A)$.
+
+---
+
+Q: State Cantor's theorem for a set $A$.
+A: There is no surjection
+
+$$
+f: A \to \mathcal{P}(A)
+$$
+
+so $\mathcal{P}(A)$ has strictly larger cardinality than $A$.
+
+---
+
+Q: What is Cantor's diagonal set for a proposed $f: A \to \mathcal{P}(A)$?
+A:
+
+$$
+D = \{a \in A \mid a \notin f(a)\}
+$$
+
+---
+
+Q: Define the arbitrary union of a collection $\mathcal{A}$.
+A:
+
+$$
+\bigcup_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for at least one } A \in \mathcal{A}\}
+$$
+
+---
+
+Q: Define the arbitrary intersection of a collection $\mathcal{A}$.
+A:
+
+$$
+\bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
+$$
+
+---
+
+Q: What is $\bigcup_{A \in \emptyset} A$?
+A:
+
+$$
+\bigcup_{A \in \emptyset} A = \emptyset
+$$
+
+---
+
+Q: What is $\bigcap_{A \in \emptyset} A$ when working inside a universe $X$?
+A:
+
+$$
+\bigcap_{A \in \emptyset} A = X
+$$
+
+---
+
+C: An indexed family of sets is a [function] $I \to \mathcal{P}(X)$.
+
+---
+
+C: A family can have [repeated values], because it is a function out of the index set $I$.
+
+---
+
+Q: Define an indexed union $\bigcup_{i \in I} A_i$.
+A:
+
+$$
+\bigcup_{i \in I} A_i = \{x \in X \mid \exists i \in I,\;x \in A_i\}
+$$
+
+---
+
+Q: Define an indexed intersection $\bigcap_{i \in I} A_i$.
+A:
+
+$$
+\bigcap_{i \in I} A_i = \{x \in X \mid \forall i \in I,\;x \in A_i\}
+$$
+
+---
+
+Q: What is the [Kuratowski](https://en.wikipedia.org/wiki/Ordered_pair#Kuratowski's_definition) definition of the ordered pair $(a,b)$?
+A:
+
+$$
+(a,b) = \{\{a\}, \{a,b\}\}
+$$
+
+---
+
+Q: What is a binary relation from $A$ to $B$?
+A: A subset
+
+$$
+R \subseteq A \times B
+$$
+
+---
+
+C: An equivalence relation is [reflexive], [symmetric], and [transitive].
+
+---
+
+Q: What is the equivalence class of $a$ under $\sim$?
+A:
+
+$$
+[a] = \{x \in A \mid x \sim a\}
+$$
+
+---
+
+C: The quotient set $A/{\sim}$ is the set of all [equivalence classes].
+
+---
+
+C: A partial order is [reflexive], [antisymmetric], and [transitive].
+
+---
+
+C: A total order is a partial order where any two elements are [comparable].
+
+---
+
+Q: What is a function $f: A \to B$ as a relation?
+A: A relation $f \subseteq A \times B$ such that every $a \in A$ appears exactly once as a first coordinate:
+
+$$
+\forall a \in A\;\exists! b \in B\;(a,b) \in f
+$$
+
+---
+
+Q: Define the image $f(A)$.
+A:
+
+$$
+f(A) = \{b \in B \mid \exists a \in A,\;f(a)=b\}
+$$
+
+---
+
+Q: Define the preimage $f^{-1}(T)$ for $T \subseteq B$.
+A:
+
+$$
+f^{-1}(T) = \{a \in A \mid f(a) \in T\}
+$$
+
+---
+
+C: Preimages preserve Boolean operations [exactly].
+
+---
+
+Q: How does preimage preserve union?
+A:
+
+$$
+f^{-1}(T \cup V) = f^{-1}(T) \cup f^{-1}(V)
+$$
+
+---
+
+Q: How does preimage preserve intersection?
+A:
+
+$$
+f^{-1}(T \cap V) = f^{-1}(T) \cap f^{-1}(V)
+$$
+
+---
+
+Q: How does preimage preserve complement relative to $A$ and $B$?
+A:
+
+$$
+f^{-1}(B \setminus T) = A \setminus f^{-1}(T)
+$$
+
+---
+
+Q: How does image preserve union?
+A:
+
+$$
+f(S \cup U) = f(S) \cup f(U)
+$$
+
+---
+
+Q: What inclusion holds for images of intersections?
+A:
+
+$$
+f(S \cap U) \subseteq f(S) \cap f(U)
+$$
+
+Equality holds when $f$ is injective.
+
+---
+
+C: A function is [injective] when $f(a)=f(a') \implies a=a'$.
+
+---
+
+C: A function is [surjective] when every $b \in B$ is hit by some $a \in A$.
+
+---
+
+C: A function is [bijective] when it is injective and surjective.
+
+---
+
+Q: When do two sets have the same cardinality?
+A: When there exists a bijection between them:
+
+$$
+|A| = |B| \iff \exists f: A \to B \text{ bijective}
+$$
+
+---
+
+Q: State finite inclusion-exclusion for two sets.
+A:
+
+$$
+|A \cup B| = |A| + |B| - |A \cap B|
+$$
+
+---
+
+Q: What is $|A \times B|$ for finite sets?
+A:
+
+$$
+|A \times B| = |A||B|
+$$
+
+---
+
+C: A set is countably infinite if it bijects with [$\mathbb{N}$].
+
+---
+
+C: The integers and rationals are [countable]; the reals are [uncountable].
+
+---
+
+Q: What set does the diagonal argument in [[thoughts/Sets]] use as the clean uncountable example?
+A:
+
+$$
+\{0,1\}^{\mathbb{N}}
+$$
+
+the set of infinite binary sequences.
+
+---
+
+Q: What is a topology on a set $X$?
+A: A collection $\tau \subseteq \mathcal{P}(X)$ whose members are called open sets and which contains $\emptyset$ and $X$, arbitrary unions, and finite intersections.
+
+---
+
+C: A topological space is a pair [$(X,\tau)$].
+
+---
+
+C: The discrete topology on $X$ is [$\mathcal{P}(X)$].
+
+---
+
+C: The indiscrete topology on $X$ is [$\{\emptyset, X\}$].
+
+---
+
+Q: What does it mean for $U \subseteq \mathbb{R}$ to be open in the standard topology?
+A: Every $x \in U$ has some $\varepsilon > 0$ with
+
+$$
+(x-\varepsilon, x+\varepsilon) \subseteq U
+$$
+
+---
+
+C: A set $C \subseteq X$ is closed if its complement $X \setminus C$ is [open].
+
+---
+
+C: In the discrete topology, every set is both [open] and [closed].
+
+---
+
+Q: What is the closure $\overline{A}$?
+A: The smallest closed set containing $A$.
+
+---
+
+Q: What is the interior $\mathrm{int}(A)$?
+A: The largest open set inside $A$.
+
+---
+
+Q: What is the boundary $\partial A$ in terms of closure and interior?
+A:
+
+$$
+\partial A = \overline{A} \setminus \mathrm{int}(A)
+$$
+
+---
+
+C: ZFC is a one-sorted theory in [first-order logic].
+
+---
+
+C: The only nonlogical primitive in ZFC is [membership] $\in$.
+
+---
+
+C: The ZFC axiom of [pairing] forms $\{a,b\}$ from $a,b$.
+
+---
+
+C: The ZFC axiom of [union] forms the set of members of a set of sets.
+
+---
+
+C: The ZFC axiom of [power set] forms $\mathcal{P}(A)$ from $A$.
+
+---
+
+C: The ZFC axiom of [infinity] gives enough material for $\mathbb{N}$.
+
+---
+
+C: The ZFC [replacement schema] says images of sets under definable functions are sets.
+
+---
+
+C: The ZFC axiom of [foundation] rules out infinite descending membership chains.
+
+---
+
+C: The axiom of [choice] says that for a set of nonempty sets, one element can be chosen from each.
+
+---
+
+C: Replacement says "[send each element through a definable rule, then collect the outputs]"; separation says "[filter this set]".
+
+---
+
+C: Most ordinary mathematics uses [choice] quietly.
+
+---
+
+C: $\emptyset [\subseteq] A$ for every set $A$.
+
+---
+
+C: $\emptyset \in A$ is a [separate claim] from $\emptyset \subseteq A$.
+
+---
+
+C: $A \subseteq B$ and $B \subseteq A$ prove $A = B$ by [extensionality].
+
+---
+
+C: Complements need a [universe].
+
+---
+
+C: Open and closed are properties of subsets relative to a [topology] on $X$.

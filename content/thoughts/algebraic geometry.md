@@ -8,7 +8,7 @@ socials:
   github: https://github.com/stacks/stacks-project
 tags:
   - math
-  - topology
+  - math/topology
 title: Algebraic geometry
 ---
 
