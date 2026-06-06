@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: each token attends only inside a fixed radius, local pattern dropping cost from $\mathcal{O}(L^2)$ to $\mathcal{O}(Lw)$
 id: attention-sliding-window
-modified: 2026-06-05 15:08:07 GMT-04:00
+modified: 2026-06-06 01:39:40 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
@@ -44,9 +44,3 @@ In implementation the KV cache is a circular buffer that keeps only the most rec
 ```
 
 Local attention pays off when the relevant context clusters nearby (speech, audio, DNA), where a narrow window already captures most of the signal. The risk is dropping genuine long-range dependencies; Longformer [@beltagy2020longformerlongdocumenttransformer] and BigBird [@zaheer2021bigbirdtransformerslonger] recover them by reserving a handful of global tokens and dilating the window to widen the per-layer receptive field.
-
-> [!todo]+ experiments to run
->
-> - Implement a toy [[thoughts/Autoregressive models|autoregressive]] model with sliding window attention and track perplexity as $w$ varies.
-> - Document hybrid strategies (e.g., dilated windows, stride patterns) and how they impact the receptive field.
-> - Collect references on how models like Longformer or [[thoughts/Transformers|BigBird-style transformers]] mix local and global tokens.

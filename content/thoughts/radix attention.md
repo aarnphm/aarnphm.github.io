@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: prefix-tree caching of KV pages with LRU eviction, shared request prefixes reuse computed K,V.
 id: attention-radix
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-06-06 01:39:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/Radix tree|Radix tree]]'
@@ -48,18 +48,6 @@ The LRU policy keeps the union of active prefixes resident on GPU while evicting
 ```
 
 _dynamic evolution of the radix tree in response to various requests._
-
-> [!abstract]- explanation of RadixAttention with LRU eviction policy
->
-> These requests include two chat sessions, a batch of few-shot learning inquiries, and a self-consistency sampling. Each tree edge carries a label denoting a substring or a sequence of tokens. The nodes are color-coded to reflect different states: green for newly added nodes, blue for cached nodes accessed during the time point, and red for nodes that have been evicted.
->
-> [full explanation](https://lmsys.org/blog/2024-01-17-sglang/#backend-automatic-kv-cache-reuse-with-radixattention)
-
-> [!question]- exercises for deployment engineers
->
-> - [ ] Simulate a workload with replayed prefixes and measure cache-hit rate as you vary the tree eviction threshold; plot how it affects end-to-end throughput.
-> - [ ] Implement instrumentation that surfaces when two requests could share a prefix but fail to because of tokenisation mismatch.
-> - [ ] Extend the scheduling algorithm above with priority weights so latency-sensitive requests pre-empt background sampling without trashing the cache.
 
 ## cache-aware scheduling
 

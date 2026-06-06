@@ -2,7 +2,7 @@
 date: '2023-07-29'
 description: a knowledge distillation and learning process
 id: writing
-modified: 2026-06-05 15:08:22 GMT-04:00
+modified: 2026-06-06 01:41:39 GMT-04:00
 seealso:
   - '[[posts|collections of my personal writing]]'
 tags:
@@ -172,7 +172,11 @@ see also: _https://jsomers.net/blog/more-people-should-write_, _https://newslett
 
 Along these lines where [[thoughts/LLMs]] are [strangely-shaped tool](https://near.blog/llms-are-strangely-shaped-tools/). [Nick](https://x.com/nickcammarata/status/1889762349210362324) did emphasize that this will be "the last humanities project of our time".
 
+<div class="nolist">
+
 - https://x.com/niplav_site/status/1925694385380872405
+- https://x.com/eigenrobot/status/1782957877856018514
 - https://gwern.net/llm-writing
 - https://croissanthology.com/why-write
-- https://x.com/eigenrobot/status/1782957877856018514
+
+</div>

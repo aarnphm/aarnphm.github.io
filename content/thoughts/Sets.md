@@ -2,11 +2,12 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-06 00:40:50 GMT-04:00
+modified: 2026-06-06 04:44:07 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
-  - '[[thoughts/pdfs/Basic Topology, Amstrong.pdf|Basic Topology, Amstrong]]'
+  - '[[thoughts/pdfs/armstrong-basic-topology.pdf|Basic Topology, Amstrong]]'
+  - '[[courses/18.901-fall-2004/static_resources/0162d186ff55f17b25d9c57f6fd211cc_18901.pdf|notes a]]'
 tags:
   - math/sets
   - math/topology
@@ -433,9 +434,7 @@ If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\
 >
 > For every set $A$, there is no surjection $f: A \to \mathcal{P}(A)$.
 >
-> Proof:
->
-> assume a surjection $f$ exists, and form the diagonal set
+> Proof: assume a surjection $f$ exists, and form the diagonal set
 >
 > $$
 > D = \{a \in A \mid a \notin f(a)\}
@@ -482,7 +481,7 @@ $$
 
 The index set $I$ is bookkeeping; the sets $A_i$ are the mathematical objects. Different indices may name the same subset.
 
-> [!note] repetition value within a family
+> [!note]+ repetition value within a family
 >
 > A family can have repeated values because it is a function out of $I$. A set cannot have repeated elements because extensionality deletes repetitions.
 
@@ -494,7 +493,7 @@ $$
 A \times B = \{(a,b) \mid\;a \in A \text{ and } b \in B\}
 $$
 
-> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of sets]: if $a \neq\; b$ then this definition says that $(a,b)$ is a collection containing two sets, one of which is a one-element set and the other a two-element set.<br/><br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
+> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of sets]: if $a \neq\; b$ then $(a,b)$ is a collection containing two sets, one of which is a one-element set and the other a two-element set.<br/><br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
 >
 > The _first coordinate_ of the ordered pair is defined to be the ==element belonging to both sets==
 >
@@ -739,7 +738,10 @@ The only nonlogical primitive is membership $\in$. Equality is governed by exten
 | foundation         | rules out infinite descending membership chains                        |
 | choice             | for a set of nonempty sets, choose one element from each               |
 
-Replacement is stronger than separation. Separation says "filter this set.", whereas Replacement says "send each element through a definable rule, then collect the outputs."
+Replacement is stronger than Separation.
+
+- Separation says "filter this set."
+- Replacement says "send each element through a definable rule, then collect the outputs."
 
 $$
 \forall x \in A\;\exists!y\;\varphi(x,y) \implies \exists B\;\forall y\;(y \in B \iff \exists x \in A\;\varphi(x,y))

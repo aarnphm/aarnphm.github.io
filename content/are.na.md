@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 23:49:45 GMT-04:00
+modified: 2026-06-06 02:48:29 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2481,7 +2481,17 @@ title: are.na
 - [meta]:
   - json: true
 
-- https://jasminexli.substack.com/p/fieldbuilding-project-ideas-in-ai
+- https://home.ubalt.edu/ntygfit/ai_05_mapping_directions/ai_05_see/ad_total_eclipse.htm -- Total Eclipse, Annie Dillard
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [life]
+    - pinned: true
+    - importance: 8
+- https://vladfeinberg.com/2026/05/10/how-to-land-a-job-at-a-frontier-lab.html -- How to Land a Frontier Lab Job
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [jobs, advice]
+- https://jasminexli.substack.com/p/fieldbuilding-project-ideas-in-ai -- Fieldbuilding project ideas in AI safety
   - [meta]:
     - date: 06/05/2026
     - tags: [projects]
@@ -4556,6 +4566,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://huggingface.co/spaces/AdithyaSK/rl-environments-guide -- The ultimate guide to RL environments: building and scaling them in the LLM era
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [engineering, ml]
 - https://www.lesswrong.com/posts/ioZxrP7BhS5ArK59w/did-claude-3-opus-align-itself-via-gradient-hacking -- Did Claude 3 Opus align itself via gradient hacking?
   - [meta]:
     - date: 06/05/2026
@@ -7157,6 +7171,10 @@ title: are.na
 
 ## stream
 
+- https://www.032carchive.com/ -- 032c archive
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [registry]
 - https://notes.andymatuschak.org/z6sX7ZcYdPiya3SzQ5segaq?stackedNotes=z8kPkXQZ3wVR5DfJ79uhnuz&stackedNotes=zR5H2t4iYJECveXmu1DnYvS&stackedNotes=z3SGU4D3T6unE1YRJgSe1N7&stackedNotes=z2pzGHXwct867CYxcBwUABg -- Andy's implementation of a personal mnemonic medium
   - [meta]:
     - date: 06/05/2026

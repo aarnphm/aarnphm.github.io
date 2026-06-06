@@ -170,9 +170,38 @@ a {
   }
 }
 
-blockquote[class='transclude'] {
-  border-left-color: var(--tertiary);
+// Blockquotes: a large decorative opening quotation mark instead of the
+// default left bar. The mark hangs in the left margin so the quote text stays
+// aligned with the surrounding prose.
+blockquote {
+  border-left: none;
+  padding-left: 0;
   position: relative;
+  margin: 1.5rem 0 1.5rem 2.5rem;
+
+  &::before {
+    content: '\201C';
+    position: absolute;
+    left: -2.5rem;
+    top: 0;
+    // pull the glyph's baseline up so the visible top of the quote mark lines
+    // up with the cap height of the first line of the quote
+    transform: translateY(-0.08em);
+    font-family: var(--headerFont);
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--secondary);
+    opacity: 0.4;
+  }
+
+  @media all and ($mobile) {
+    margin-left: 1.75rem;
+
+    &::before {
+      left: -1.75rem;
+      font-size: 2.75rem;
+    }
+  }
 }
 
 .transclude-ref {
@@ -211,7 +240,6 @@ blockquote[class='transclude'] {
 }
 
 blockquote.twitter-tweet {
-  border-left: 1px dashed var(--secondary);
   padding-bottom: 1rem;
   padding-right: 0.2rem;
   position: relative;
@@ -490,11 +518,6 @@ footer[class~='menu'] {
   border-end-start-radius: 0px;
   border-end-end-radius: 0px;
 
-  --callout-icon-math: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='utf-8'%3F%3E%3Csvg width='800px' height='800px' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12.1873 4.14049C11.2229 3.41714 9.84236 4.0695 9.78883 5.27389L9.71211 7H12C12.5523 7 13 7.44772 13 8C13 8.55228 12.5523 9 12 9H9.62322L9.22988 17.8501C9.0996 20.7815 5.63681 22.261 3.42857 20.3287L3.34151 20.2526C2.92587 19.8889 2.88375 19.2571 3.24743 18.8415C3.61112 18.4259 4.24288 18.3837 4.65852 18.7474L4.74558 18.8236C5.69197 19.6517 7.17602 19.0176 7.23186 17.7613L7.62125 9H6C5.44772 9 5 8.55228 5 8C5 7.44772 5.44772 7 6 7H7.71014L7.7908 5.18509C7.9157 2.37483 11.1369 0.852675 13.3873 2.54049L13.6 2.69999C14.0418 3.03136 14.1314 3.65817 13.8 4.09999C13.4686 4.54182 12.8418 4.63136 12.4 4.29999L12.1873 4.14049Z' fill='%23212121'/%3E%3Cpath d='M13.082 13.0462C13.3348 12.9071 13.6525 13.0103 13.7754 13.2714L14.5879 14.9979L11.2928 18.2929C10.9023 18.6834 10.9023 19.3166 11.2928 19.7071C11.6834 20.0977 12.3165 20.0977 12.707 19.7071L15.493 16.9212L16.2729 18.5786C16.9676 20.0548 18.8673 20.4808 20.1259 19.4425L20.6363 19.0214C21.0623 18.6699 21.1228 18.0397 20.7713 17.6136C20.4198 17.1876 19.7896 17.1272 19.3636 17.4787L18.8531 17.8998C18.6014 18.1074 18.2215 18.0222 18.0825 17.727L16.996 15.4182L19.707 12.7071C20.0976 12.3166 20.0976 11.6834 19.707 11.2929C19.3165 10.9024 18.6834 10.9024 18.2928 11.2929L16.0909 13.4948L15.585 12.4198C14.9708 11.1144 13.3822 10.5985 12.1182 11.2937L11.518 11.6238C11.0341 11.89 10.8576 12.498 11.1237 12.982C11.3899 13.4659 11.998 13.6424 12.4819 13.3762L13.082 13.0462Z' fill='%23212121'/%3E%3C/svg%3E");
-  --callout-icon-theorem: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ij48cGF0aCBkPSJNMyAyMWMzIDAgNy0xIDctOFY1YzAtMS4yNS0uNzU2LTIuMDE3LTItMkg0Yy0xLjI1IDAtMiAuNzUtMiAxLjk3MlYxMWMwIDEuMjUuNzUgMiAyIDIgMSAwIDEgMCAxIDF2MWMwIDEtMSAyLTIgMnMtMSAuMDA4LTEgMS4wMzFWMjBjMCAxIDAgMSAxIDF6IiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ii8+PHBhdGggZD0iTTE1IDIxYzMgMCA3LTEgNy04VjVjMC0xLjI1LS43NTctMi4wMTctMi0yaC00Yy0xLjI1IDAtMiAuNzUtMiAxLjk3MlYxMWMwIDEuMjUuNzUgMiAyIDJoLjc1YzAgMi4yNS4yNSA0LTIuNzUgNHYzYzAgMSAwIDEgMSAxeiIvPjwvc3ZnPg==');
-  --callout-icon-abstract: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V7z"></path><path d="M14 3.5V7h3.5"></path><path d="M9.5 13h5"></path><path d="M9.5 16.5h3.5"></path></svg>');
-  --callout-icon-propos: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDBweCIgaGVpZ2h0PSI4MDBweCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHlsZT0icG9pbnRlci1ldmVudHM6IGF1dG87Ij4KPHBhdGggZD0iTTEwIDE2LjU4NFYxOC45OTk2QzEwIDIwLjEwNDIgMTAuODk1NCAyMC45OTk2IDEyIDIwLjk5OTZDMTMuMTA0NiAyMC45OTk2IDE0IDIwLjEwNDIgMTQgMTguOTk5NkwxNCAxNi41ODRNMTIgM1Y0TTE4LjM2NDMgNS42MzU3NEwxNy42NTcyIDYuMzQyODVNNS42MzU3NCA1LjYzNTc0TDYuMzQyODUgNi4zNDI4NU00IDEySDNNMjEgMTJIMjBNMTcgMTJDMTcgMTQuNzYxNCAxNC43NjE0IDE3IDEyIDE3QzkuMjM4NTggMTcgNyAxNC43NjE0IDcgMTJDNyA5LjIzODU4IDkuMjM4NTggNyAxMiA3QzE0Ljc2MTQgNyAxNyA5LjIzODU4IDE3IDEyWiIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=');
-
   &[data-callout] {
     --color: rgba(156, 207, 216, 1);
     --border: rgba(156, 207, 216, 0.46);
@@ -543,19 +566,6 @@ footer[class~='menu'] {
     --border: rgba(180, 99, 122, 0.46);
     --bg: rgba(180, 99, 122, 0.14);
   }
-  &[data-callout='math'] {
-    --callout-icon: var(--callout-icon-math);
-  }
-  &[data-callout='abstract'] {
-    --callout-icon: var(--callout-icon-abstract);
-  }
-  &[data-callout='theorem'] {
-    --callout-icon: var(--callout-icon-theorem);
-  }
-  &[data-callout='proposition'],
-  &[data-callout='propos'] {
-    --callout-icon: var(--callout-icon-propos);
-  }
 }
 
 .callout .callout-title {
@@ -568,11 +578,6 @@ footer[class~='menu'] {
   border-start-end-radius: 0px;
   border-end-start-radius: 0px;
   border-end-end-radius: 0px;
-}
-
-.callout .callout-title .callout-icon {
-  fill: inherit;
-  stroke: inherit;
 }
 
 .callout .callout-title > .callout-title-inner > p {
@@ -588,10 +593,6 @@ footer[class~='menu'] {
 .callout[data-callout] {
   --callout-color: inherit;
   border-radius: var(--radius-none);
-}
-
-.callout[data-callout] .callout-title .callout-icon {
-  fill: none;
 }
 
 .callout[data-callout] {
@@ -678,6 +679,10 @@ blockquote.callout:is(
   overflow: visible;
   padding: 0 var(--space-3);
 
+  &::before {
+    content: "";
+  }
+
   & > .callout-title {
     align-items: baseline;
     color: var(--dark);
@@ -689,12 +694,8 @@ blockquote.callout:is(
     padding-bottom: var(--space-3);
   }
 
-  & > .callout-title > .callout-icon {
-    display: none;
-  }
-
   & > .callout-title > .fold-callout-icon {
-    background-color: var(--darkgray);
+    color: var(--darkgray);
     margin-left: auto;
   }
 

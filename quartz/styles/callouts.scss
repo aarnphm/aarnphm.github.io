@@ -1,5 +1,4 @@
 @use './variables.scss' as *;
-@use 'sass:color';
 
 blockquote:not([class~='is-collapsed']) {
   & > .callout-content {
@@ -11,23 +10,11 @@ blockquote:not([class~='is-collapsed']) {
   border: 1px solid var(--border);
   background-color: var(--bg);
   border-radius: var(--radius-none);
-  padding: 0 1rem;
+  padding: 0 1rem !important;
   overflow-y: hidden;
   box-sizing: border-box;
+  margin-left: 0 !important;
 
-  --callout-icon-note: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20.8 18.4 8.4l-2.6-2.6L4.4 17.4 2 22z"></path><path d="m15.8 5 2.6 2.6"></path></svg>');
-  --callout-icon-abstract: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5H7.5a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V7z"></path><path d="M14 3.5V7h3.5"></path><path d="M9.5 13h5"></path><path d="M9.5 16.5h3.5"></path></svg>');
-  --callout-icon-info: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 11.5v4.5"></path><path d="M12 8.4h.01"></path></svg>');
-  --callout-icon-todo: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="m8.5 12 2.4 2.4 4.6-4.8"></path></svg>');
-  --callout-icon-tip: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 13.7a2 2 0 0 0 2-2c0-1.1-.45-1.65-.9-2.5-.8-1.7-.15-3.1 1.6-4.6.4 2 1.5 3.8 3.1 5.1 1.5 1.3 2.3 2.7 2.3 4.3a5.7 5.7 0 1 1-11.4 0c0-.85.35-1.7.8-2.3a2 2 0 0 0 2 2z"></path></svg>');
-  --callout-icon-success: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 9.5 17 19 7"></path></svg>');
-  --callout-icon-question: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"></circle><path d="M9.6 9.4a2.5 2.5 0 1 1 3.3 2.4c-.7.3-.9.8-.9 1.5"></path><path d="M12 16.4h.01"></path></svg>');
-  --callout-icon-warning: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3 19.5h18z"></path><path d="M12 10v4"></path><path d="M12 16.8h.01"></path></svg>');
-  --callout-icon-failure: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17"></path><path d="m7 7 10 10"></path></svg>');
-  --callout-icon-danger: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 4.5 13.5H11l-1 7.5L19.5 10H13z"></path></svg>');
-  --callout-icon-bug: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 13a4.5 5.5 0 0 1 9 0a4.5 5.5 0 0 1-9 0z"></path><path d="M12 8v10"></path><path d="m9.5 5.5 1.6 2.8"></path><path d="m14.5 5.5-1.6 2.8"></path><path d="M7.6 11 4 9.3"></path><path d="M16.4 11 20 9.3"></path><path d="M7.6 15.5 4 17.2"></path><path d="M16.4 15.5 20 17.2"></path></svg>');
-  --callout-icon-example: url('data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.5h11"></path><path d="M9 12h11"></path><path d="M9 17.5h11"></path><path d="M4.5 6.5h.01"></path><path d="M4.5 12h.01"></path><path d="M4.5 17.5h.01"></path></svg>');
-  --callout-icon-quote: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6.5C6.5 7 5 9 5 12.5h2.8v5H4V12c0-3.5 1.5-5.5 5.5-6z"></path><path d="M19 6.5C16 7 14.5 9 14.5 12.5h2.8v5H13.5V12c0-3.5 1.5-5.5 5.5-6z"></path></svg>');
   --callout-icon-fold: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpolyline points="6 9 12 15 18 9"%3E%3C/polyline%3E%3C/svg%3E');
 
   & > .callout-content {
@@ -49,14 +36,12 @@ blockquote:not([class~='is-collapsed']) {
     --color: #448aff;
     --border: #448aff44;
     --bg: #448aff10;
-    --callout-icon: var(--callout-icon-note);
   }
 
   &[data-callout='abstract'] {
     --color: #00b0ff;
     --border: #00b0ff44;
     --bg: #00b0ff10;
-    --callout-icon: var(--callout-icon-abstract);
   }
 
   &[data-callout='info'],
@@ -64,39 +49,30 @@ blockquote:not([class~='is-collapsed']) {
     --color: #00b8d4;
     --border: #00b8d444;
     --bg: #00b8d410;
-    --callout-icon: var(--callout-icon-info);
-  }
-
-  &[data-callout='todo'] {
-    --callout-icon: var(--callout-icon-todo);
   }
 
   &[data-callout='tip'] {
     --color: #00bfa5;
     --border: #00bfa544;
     --bg: #00bfa510;
-    --callout-icon: var(--callout-icon-tip);
   }
 
   &[data-callout='success'] {
     --color: #09ad7a;
     --border: #09ad7144;
     --bg: #09ad7110;
-    --callout-icon: var(--callout-icon-success);
   }
 
   &[data-callout='question'] {
     --color: #dba642;
     --border: #dba64244;
     --bg: #dba64210;
-    --callout-icon: var(--callout-icon-question);
   }
 
   &[data-callout='warning'] {
     --color: #db8942;
     --border: #db894244;
     --bg: #db894210;
-    --callout-icon: var(--callout-icon-warning);
   }
 
   &[data-callout='failure'],
@@ -105,33 +81,31 @@ blockquote:not([class~='is-collapsed']) {
     --color: #db4242;
     --border: #db424244;
     --bg: #db424210;
-    --callout-icon: var(--callout-icon-failure);
-  }
-
-  &[data-callout='bug'] {
-    --callout-icon: var(--callout-icon-bug);
-  }
-
-  &[data-callout='danger'] {
-    --callout-icon: var(--callout-icon-danger);
   }
 
   &[data-callout='example'] {
     --color: #7a43b5;
     --border: #7a43b544;
     --bg: #7a43b510;
-    --callout-icon: var(--callout-icon-example);
   }
 
   &[data-callout='quote'] {
     --color: var(--secondary);
     --border: var(--lightgray);
-    --callout-icon: var(--callout-icon-quote);
+  }
+
+  &.is-collapsible > .callout-title > .callout-title-inner {
+    font-style: italic;
   }
 
   &.is-collapsed {
     & > .callout-title > .fold-callout-icon {
       transform: rotateZ(-90deg);
+    }
+
+    & > .callout-title > .callout-title-inner {
+      font-style: normal;
+      text-decoration: underline;
     }
 
     & > .callout-content {
@@ -144,39 +118,33 @@ blockquote:not([class~='is-collapsed']) {
 .callout-title {
   display: flex;
   align-items: center;
-  gap: 5px;
   padding: 1rem 0;
   color: var(--color);
 
   --icon-size: 18px;
 
   & .fold-callout-icon {
-    transition: transform 0.15s ease;
-    opacity: 0.8;
+    background-color: currentColor;
     cursor: pointer;
+    display: inline-block;
+    flex: 0 0 var(--icon-size);
     width: var(--icon-size);
     height: var(--icon-size);
-    --callout-icon: var(--callout-icon-fold);
+    opacity: 0.8;
+    transition: transform 0.15s ease;
+    -webkit-mask-image: var(--callout-icon-fold);
+    mask-image: var(--callout-icon-fold);
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: var(--icon-size) var(--icon-size);
+    mask-size: var(--icon-size) var(--icon-size);
   }
 
   & > .callout-title-inner > p {
     color: var(--color);
     margin: 0;
-  }
-
-  .callout-icon,
-  & .fold-callout-icon {
-    width: var(--icon-size);
-    height: var(--icon-size);
-
-    // icon support
-    background-size: var(--icon-size) var(--icon-size);
-    background-position: center;
-    background-color: var(--dark);
-    mask-image: var(--callout-icon);
-    mask-size: var(--icon-size) var(--icon-size);
-    mask-position: center;
-    mask-repeat: no-repeat;
   }
 
   .callout-title-inner {

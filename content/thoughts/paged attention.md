@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: block-paged KV cache, virtual-memory-style page tables, hot blocks on device, cold blocks spill to host.
 id: attention-paged
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 01:38:36 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/radix attention|radix attention]]'
@@ -126,9 +126,3 @@ Block size $B = 4$; logical blocks map to scattered physical blocks through the 
   <PagedKVTable caption="Two sequences share an eight-slot pool through the page table. Click a logical block to trace its mapping, press + token to grow (a new physical block flies in when the last one fills), or evict to free any slot. Internal fragmentation stays near zero because growth never demands contiguous memory." />
 </Zoomable>
 ```
-
-> [!question]- hands-on prompts
->
-> - [ ] Trace how vLLM's block manager migrates pages during a mixed workload (long chat + short tool call); sketch the timeline.
-> - [ ] Experiment with different block sizes $B$ and record the impact on fragmentation and swap frequency.
-> - [ ] Prototype a heuristic that prefetches likely-needed pages based on the query length distribution.
