@@ -13,7 +13,7 @@ tags:
   - mit
   - ocw
   - math
-  - topology
+  - math/topology
   - geometry
   - lecture notes
 title: 'algebraic topology i: lecture 15 cw complexes ii'

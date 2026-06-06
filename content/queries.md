@@ -10,7 +10,7 @@ seealso:
 tags:
   - cs
   - math
-  - topology
+  - math/topology
   - puzzle
 title: queries
 ---

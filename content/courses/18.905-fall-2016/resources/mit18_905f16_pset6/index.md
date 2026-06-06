@@ -13,7 +13,7 @@ tags:
   - mit
   - ocw
   - math
-  - topology
+  - math/topology
   - geometry
   - assignments
 title: algebraic topology i, problem set 6

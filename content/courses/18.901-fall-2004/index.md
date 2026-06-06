@@ -15,7 +15,7 @@ tags:
   - mit
   - ocw
   - math
-  - topology
+  - math/topology
   - geometry
 title: 'mit 18.901: introduction to topology'
 ---

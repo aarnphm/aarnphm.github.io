@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 20:47:24 GMT-04:00
+modified: 2026-06-05 22:41:21 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -5753,6 +5753,10 @@ title: are.na
 
 ## opinions
 
+- https://www.theglobeandmail.com/business/commentary/article-canada-national-ai-strategy-incredible-step-forward/ -- Canada AI Strategy
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [politics]
 - https://slavoj.substack.com/p/why-artificial-intelligence-is-not -- Why Artificial Intelligence is not a Subject
   - [meta]:
     - date: 06/04/2026
