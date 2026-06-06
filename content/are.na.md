@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-05 20:34:10 GMT-04:00
+modified: 2026-06-05 20:47:24 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -4485,8 +4485,8 @@ title: are.na
     - tags: [tool for thoughts]
     - pinned: true
     - importance: 8
+    - seealso: https://notation.app/n/d1VOwqGv5DbHdDLf
   - By Andy Matuschak and Michael Nielsen
-  - https://notation.app/n/d1VOwqGv5DbHdDLf
 
 ## courses
 
@@ -4494,6 +4494,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://mathcs.org/analysis/reals/index.html -- Interactive Real Analysis [**]
+  - [meta]:
+    - date: 06/05/2026
+    - tags: [math, topology]
 - https://www.math.toronto.edu/ivan/mat327/?resources -- MATH327 Topology
   - [meta]:
     - date: 05/29/2026

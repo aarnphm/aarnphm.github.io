@@ -5,7 +5,7 @@ import { registerEscapeHandler } from './util'
 let ag: RoughAnnotation | null = null
 
 interface HeadingInfo {
-  element: HTMLDivElement
+  element: HTMLElement
   level: number
   text: string
   uniqueText: string
@@ -75,6 +75,24 @@ function getVisibleHeadings(): HeadingInfo[] {
     : allHeadings
 }
 
+function normalizeHeadingText(text: string): string {
+  return text.replace(/\s+/g, ' ').trim()
+}
+
+function visibleHeadingText(node: Node): string {
+  if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? ''
+  if (!(node instanceof Element)) return ''
+  if (node.getAttribute('aria-hidden') === 'true') return ''
+  if (node.tagName.toLowerCase() === 'annotation') return ''
+
+  return Array.from(node.childNodes).map(visibleHeadingText).join('')
+}
+
+function headingDisplayText(el: Element): string {
+  const alias = normalizeHeadingText(el.getAttribute('data-heading-alias') ?? '')
+  return alias.length > 0 ? alias : normalizeHeadingText(visibleHeadingText(el))
+}
+
 function updateFilteredHeadings() {
   const query = searchQuery.trim().toLowerCase()
   if (query.length === 0) {
@@ -103,7 +121,7 @@ function extractHeadings(): HeadingInfo[] {
   return elements
     .map((el, index) => {
       const level = parseInt(el.tagName.charAt(1))
-      const text = el.textContent?.trim() || ''
+      const text = headingDisplayText(el)
 
       if (text.length === 0) {
         return null

@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-05 19:53:27 GMT-04:00
+modified: 2026-06-05 20:46:59 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -210,3 +210,4 @@ title: lists
 - Euler's polyhedron formula
   - $V-E+F$
 - {{sidenotes[mnestics]: see also [lesswrong](https://www.lesswrong.com/s/YshDJ9ECCgkwoNsBc/p/ksatPnddyZjHwZWwG), but largely this term comes from the book [[library/There is No Antimemetics Division|There is No Antimemetics Division]] by qntm}}
+- {{sidenotes[portmanteau]: In literature, also known in linguistics and lexicography as a blend word, lexical blend, or simply a blend, is a word formed by combining the meanings and parts of the sounds of two or more words.}}

@@ -2,7 +2,6 @@ import type { Element as HastElement, Root as HastRoot } from 'hast'
 import type { Heading, Root } from 'mdast'
 import Slugger from 'github-slugger'
 import { headingRank } from 'hast-util-heading-rank'
-import { toText } from 'hast-util-to-text'
 import { toString } from 'mdast-util-to-string'
 import { visit } from 'unist-util-visit'
 import type { Wikilink } from '../../extensions/micromark-extension-ofm-wikilinks'
@@ -115,12 +114,31 @@ function headingId(node: HastElement): string | undefined {
   return typeof id === 'string' && id.length > 0 ? id : undefined
 }
 
+function isHidden(node: HastElement): boolean {
+  const ariaHidden = node.properties?.ariaHidden ?? node.properties?.['aria-hidden']
+  return ariaHidden === true || ariaHidden === 'true'
+}
+
 function hasClass(node: HastElement, name: string): boolean {
   const className = node.properties?.className
   if (typeof className === 'string') {
     return className.split(/\s+/).includes(name)
   }
   return Array.isArray(className) && className.includes(name)
+}
+
+function extractHtmlHeadingText(node: HastElement | HastRoot): string {
+  const textParts: string[] = []
+
+  for (const child of node.children) {
+    if (child.type === 'text') {
+      textParts.push(child.value)
+    } else if (child.type === 'element' && child.tagName !== 'annotation' && !isHidden(child)) {
+      textParts.push(extractHtmlHeadingText(child))
+    }
+  }
+
+  return normalizeHeadingText(textParts.join(''))
 }
 
 export function collectHtmlTocData(
@@ -138,13 +156,12 @@ export function collectHtmlTocData(
       const childInsideBaseEmbed = insideBaseEmbed || hasClass(child, 'base-embed')
       const depth = headingRank(child)
       if (!childInsideBaseEmbed && depth !== undefined && depth <= opts.maxDepth) {
-        const text = normalizeHeadingText(toText(child))
+        const text = extractHtmlHeadingText(child)
         if (text.length > 0) {
           const fallbackSlug = slugAnchor.slug(text)
-          const slug = headingId(child) ?? fallbackSlug
-          if (!headingId(child)) {
-            child.properties = { ...child.properties, id: slug }
-          }
+          const existingId = headingId(child)
+          const slug = existingId ?? fallbackSlug
+          child.properties = { ...child.properties, id: slug, dataHeadingAlias: text }
 
           highestDepth = Math.min(highestDepth, depth)
           toc.push({ depth, text, slug })
