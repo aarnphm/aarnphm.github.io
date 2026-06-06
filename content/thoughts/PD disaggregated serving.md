@@ -137,7 +137,7 @@ where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
 
 ### formal definitions
 
-> [!math] Definition 1 (Arithmetic Intensity)
+> [!definition] 1 (Arithmetic Intensity)
 >
 > For operation $\mathcal{O}$:
 >
@@ -151,7 +151,7 @@ $$
 \text{Arithmetic Intensity} = \frac{\text{Computation FLOPs}}{\text{Communication Bytes}}
 $$
 
-> [!math] Definition 2 (Machine Intensity)
+> [!definition] 2 (Machine Intensity)
 >
 > $$
 > \text{MI} = \frac{C}{\beta}
@@ -159,11 +159,11 @@ $$
 >
 > where $C$ is peak compute (FLOPs/s), $\beta$ is memory bandwidth.
 
-> [!math] Definition 3 (Bound Classification)
+> [!definition] 3 (Bound Classification)
 >
 > Operation $\mathcal{O}$ is **compute-bound** iff $\text{AI}(\mathcal{O}) > \text{MI}$, else **memory-bound**.
 
-> [!math] Definition 4 (Pool Utilization)
+> [!definition] 4 (Pool Utilization)
 >
 > $$
 > U_p = \frac{\lambda \cdot \mathbb{E}[S_p]}{m_p}, \quad U_d = \frac{\lambda \cdot \mathbb{E}[S_d]}{m_d}
@@ -171,7 +171,7 @@ $$
 >
 > where $\lambda$ is arrival rate, $S_p, S_d$ are service times, $m_p, m_d$ are worker counts.
 
-> [!math] Definition 5 (Goodput)
+> [!definition] 5 (Goodput)
 >
 > $$
 > G(\lambda) = \lambda \cdot \Pr[\text{TTFT} \leq \tau_p] \cdot \Pr[\text{ITL} \leq \tau_d]
@@ -181,7 +181,7 @@ $$
 
 ### lemmas
 
-> [!math] Lemma 1 (Prefill Compute-Bound)
+> [!lemma] 1 (Prefill Compute-Bound)
 >
 > For input sequence $T_{\text{in}} > T^*$, prefill is compute-bound, where:
 >
@@ -205,7 +205,7 @@ Setting $\text{AI} = \text{MI}$: $2T + 2T^2 n_h d L / P_{\text{active}} = \text{
 
 Solving the quadratic and taking the attention-dominated regime gives $T^* \approx \sqrt{P_{\text{active}} \cdot \text{MI} / (2 n_h d L)}$. $\square$
 
-> [!math] Lemma 2 (Decode Memory-Bound)
+> [!lemma] 2 (Decode Memory-Bound)
 >
 > For batch $B < B^*$, decode is memory-bound, where:
 >
@@ -225,7 +225,7 @@ Setting $\text{AI} = \text{MI}$ and solving gives the threshold.
 
 For short contexts where $T M_{\text{kv}} \ll P_{\text{active}}$, simplifies to $B^* \approx \text{MI}/2$. $\square$
 
-> [!math] Lemma 3 (MoE Expert Activation)
+> [!lemma] 3 (MoE Expert Activation)
 >
 > Expected number of remote nodes requiring communication:
 >
@@ -243,7 +243,7 @@ Probability no expert lands on remote node $j$: $(1-1/N)^k$.
 
 Expected count over $N-1$ remote nodes by linearity. $\square$
 
-> [!math] Lemma 4 (TTFT Queueing Bound)
+> [!lemma] 4 (TTFT Queueing Bound)
 >
 > Under M/G/1 arrivals:
 >
@@ -255,7 +255,7 @@ Expected count over $N-1$ remote nodes by linearity. $\square$
 
 ### MoE propositions
 
-> [!math] Proposition 1 (Communication Crossover)
+> [!proposition] 1 (Communication Crossover)
 >
 > IB becomes bottleneck when batch size exceeds:
 >
@@ -265,19 +265,19 @@ Expected count over $N-1$ remote nodes by linearity. $\square$
 
 _Derivation:_ Set $T_{\text{IB}} = T_{\text{HBM}}$ and solve for $B$.
 
-> [!math] Proposition 2 (Shared Expert Overlap)
+> [!proposition] 2 (Shared Expert Overlap)
 >
 > When $T_{\text{shared}} \leq T_{\text{combine}}$, shared expert compute is "free" (hidden behind combine latency).
 
 This is the DeepSeek-style optimization where shared experts run concurrently with the combine all-to-all.
 
-> [!math] Proposition 3 (Node Coalescing Bound)
+> [!proposition] 3 (Node Coalescing Bound)
 >
 > DeepSeek's $\min(\cdot, 4)$ cap bounds inter-node messages regardless of $k$ or cluster size.
 
 _collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
 
-> [!math] Proposition 4 (DBO Overlap Efficiency) [Empirical]
+> [!proposition] 4 (DBO Overlap Efficiency) [Empirical]
 >
 > $$
 > \eta_{\text{DBO}}(B) \approx 1 - \frac{1}{1 + L_{\text{MoE}} \cdot T_{\text{compute}} / T_{\text{comm}}}
@@ -632,7 +632,7 @@ $$
 
 #### optimal ratio
 
-> [!math] Theorem 1 (Optimal P/D Ratio)
+> [!theorem] 1 (Optimal P/D Ratio)
 >
 > Under steady-state balanced utilization:
 >
@@ -646,7 +646,7 @@ $$
 
 Rearranging: $\frac{m_p}{m_d} = \frac{\mathbb{E}[S_p]}{\mathbb{E}[S_d]} = \frac{1/\lambda_p}{1/\lambda_d} = \frac{\lambda_d}{\lambda_p}$. $\square$
 
-> [!math] Theorem 2 (Capacity Constraint)
+> [!theorem] 2 (Capacity Constraint)
 >
 > $$
 > cc_d \leq \left\lfloor \frac{\text{VRAM} - W - A}{(T_{\text{in}} + T_{\text{out}}) \cdot M_{\text{kv}}} \right\rfloor
@@ -688,7 +688,7 @@ $$
 
 #### comparison
 
-> [!math] Conjecture 1 (Disaggregation Gain)
+> [!conjecture] 1 (Disaggregation Gain)
 >
 > Throughput ratio:
 >
@@ -698,7 +698,7 @@ $$
 >
 > _Motivation:_ From Pollaczek-Khinchine (Lemma 4), waiting time scales with $c_v^2$. Monolithic has high $c_v$ (prefill: 3.5ms–732ms). Disaggregation reduces per-pool $c_v$. The bound form is plausible but $\alpha$ remains uncharacterized from production traces—requires empirical calibration.
 
-> [!math] Theorem 4 (Cache Sensitivity)
+> [!theorem] 4 (Cache Sensitivity)
 >
 > $$t_p(h) = \frac{2P_{\text{active}}(1-h)T + 2(1-h)^2 T^2 n_h d L}{C \cdot U}$$
 >

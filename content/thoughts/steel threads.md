@@ -2,7 +2,7 @@
 date: '2025-05-27'
 description: thin slice of functionality threading through system boundaries, enabling incremental production deployment of narrow use cases.
 id: steel threads
-modified: 2026-06-05 15:08:31 GMT-04:00
+modified: 2026-06-06 00:11:53 GMT-04:00
 tags:
   - ml
 title: steel threads
@@ -10,7 +10,7 @@ title: steel threads
 
 > a very thin slice of functionality that threads through a software system.
 
-> [!NOTE]
+> [!note]
 >
 > The idea is that you build the thinnest possible version that crosses the boundaries of the system and covers an important use case.
 
@@ -25,7 +25,7 @@ Usage:
 3. Build out the new API in a new service.
 4. Make it work for just that narrow use case.
    - For any other use case, use the old code path. Get it out to production, into full use.
-     > [!TIP]
+     > [!tip] A/B testing
      >
      > you could even do both the new AND old code path, and compare!
 

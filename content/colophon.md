@@ -3,7 +3,7 @@ date: '2024-12-10'
 description: nobby designer word for "the design of the current site"
 id: colophon
 lang: en
-modified: 2026-06-05 18:09:48 GMT-04:00
+modified: 2026-06-06 00:12:22 GMT-04:00
 socials:
   twitter: https://x.com/aarnphm/status/1861550609834402129
 tags:
@@ -178,7 +178,7 @@ inspired by https://dynalist.io/
 
 inspired by https://press.stripe.com
 
-> [!NOTE]
+> [!note] browser compatibility
 >
 > Currently, this only works on Chrome and on Desktop.
 

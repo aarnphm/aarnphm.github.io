@@ -30,7 +30,7 @@ bagging but with random subspace methods [^random-subspace]
 
 - handle categorical features
 
-> [!NOTE]
+> [!note]
 >
 > can overfit easily with deeper tree.
 

@@ -46,7 +46,7 @@ think of open set or interior.
 
 intuition: a set of point containing that point where one can move some amount in any direction away from that point without leaving the set.
 
-> [!math] definition
+> [!definition]
 >
 > if $X$ is a topological space and $p$ is a point in $X$, then a **neighbourhood** of $p$ is a subset $V$ of $X$ that includes an ==open set== $U$ containing $p$:
 >

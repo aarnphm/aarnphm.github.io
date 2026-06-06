@@ -13,7 +13,7 @@ alias: _topological isomorphism_, _bicontinuous function_
 
 > bijective and continuous function between topological spaces that has a continuous inverse functions.
 
-> [!math] definition
+> [!definition]
 >
 > a function $f: X \rightarrow Y$ between two topological space is a **homeomorphism** if it has the following properties:
 >
@@ -21,7 +21,7 @@ alias: _topological isomorphism_, _bicontinuous function_
 > - $f$ is continuous
 > - $f^{-1}$ as the inverse function is continuous (or $f$ is an open mapping)
 
-> [!IMPORTANT] $3^{\text{rd}}$ requirements
+> [!important] $3^{\text{rd}}$ requirements
 >
 > $f^{-1}$ is continuous is ==essential==. Consider the following example:
 >

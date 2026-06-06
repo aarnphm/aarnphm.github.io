@@ -10,6 +10,7 @@ import { oCaml } from '@codemirror/legacy-modes/mode/mllike'
 import { shell } from '@codemirror/legacy-modes/mode/shell'
 import { wast } from '@codemirror/legacy-modes/mode/wast'
 import { zig } from 'codemirror-lang-zig'
+import { leanStreamParser } from './codemirror-lean'
 
 export function codemirrorCodeLanguage(language: string | undefined): Extension {
   const name = (language ?? '').trim().toLowerCase()
@@ -40,6 +41,7 @@ export function codemirrorCodeLanguage(language: string | undefined): Extension 
     return StreamLanguage.define(oCaml)
   }
   if (name === 'zig') return zig()
+  if (name === 'lean' || name === 'lean4') return StreamLanguage.define(leanStreamParser)
   if (name === 'python' || name === 'py' || name === 'python3' || name === 'mojo') return python()
   return python()
 }

@@ -13,7 +13,7 @@ title: Lipschitzness
 
 Let $(\mathcal{X},\|\cdot\|)$ be a [[thoughts/norm|normed]] space and $f:\mathcal{X}\to(-\infty,+\infty]$
 
-> [!definition]
+> [!definition] $L$-Lipschitz
 >
 > $f$ is **$L$-Lipschitz (w\.r.t. $\|\cdot\|$)** if
 >

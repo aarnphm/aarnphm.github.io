@@ -2,7 +2,7 @@
 date: '2024-02-07'
 description: phenomenon where observer's prejudices and expectations unconsciously influence the behavior of subjects being observed.
 id: observer-expectancy effect
-modified: 2026-06-05 15:08:26 GMT-04:00
+modified: 2026-06-06 00:09:56 GMT-04:00
 tags:
   - seed
 title: observer-expectancy effect
@@ -12,7 +12,7 @@ The observer's prejudices influence towards the people she/he is observing.
 
 There is also an idea of observer-independent (mountain) versus observer-relative (Google, money), which should be distinguished when arguing about [[thoughts/Epistemology|epistemology]] or [[thoughts/Ontology|ontology]]
 
-> [!IMPORTANT]
+> [!important] distinction
 >
 > syntax is observer-relative, whereas semantics is observer-independent, therefore syntax is not semantic.
 

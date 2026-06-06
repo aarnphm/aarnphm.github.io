@@ -287,7 +287,7 @@ Explanation why Kernel PCA doesn't work as well:
 
 ## question 2.
 
-> [!NOTE] problem statement
+> [!note] problem statement
 >
 > "Driving high" s prohibited in the city, and the police have started using a tester that shows whether a driver is high on cannabis.
 > The tester is a binary classifier (1 for positive result, and 0 for negative result) which is not accurate all the time:

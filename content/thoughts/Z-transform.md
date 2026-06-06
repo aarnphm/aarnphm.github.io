@@ -77,7 +77,7 @@ $$
 
 Let $z = e^{sT}$, we have the following definition:
 
-> [!math] z-transform
+> [!definition] z-transform
 >
 > $$
 > Z \{r(t)\}  = F(z) = Z(r^{*}(t)) = \sum_{k=0}^{\infty} r(kT)z^{-k}

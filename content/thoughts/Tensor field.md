@@ -10,7 +10,7 @@ title: Tensor field
 
 > a function assign a tensor to each point of a region of a mathematical space (typically a ==Euclidean space== or a [[thoughts/manifold]])
 
-> [!math] Definition
+> [!definition]
 >
 > Let $M$ be a manifold, for instance the Euclidean plane $\mathbb{R}^n$
 >
@@ -42,7 +42,7 @@ A tensor product of $V \otimes W$ of two [[thoughts/Vector space]] $V$ and $W$ o
 
 a non-degenerate, smooth, symmetric bilinear map that assigns a real number to pairs of tangent vectors at each tangent space of the manifold.
 
-> [!math] metric tensor $g$
+> [!definition] metric tensor $g$
 >
 > $$
 > g: T_p M \times T_p M \to \mathbb{R}
@@ -73,7 +73,7 @@ _Möbius strip_
 
 > to every point $x$ of the space $X$ we "attach" a vector space $V(x)$ in such a way that these vector space fits together to form another space of the same kind as $X$
 
-> [!math] definition
+> [!definition]
 >
 > A **real vector bundle** consists of
 >
@@ -108,7 +108,7 @@ _Möbius strip_
 >
 > if $k_x$ is equal to constant $k$ on all of $X$, then $k$ is the rank of the vector bundle, and $E$ is a **vector bundle of rank** $k$
 
-> [!math] trivial bundle
+> [!definition] trivial bundle
 >
 > The Cartesian product $X \times \mathbb{R}^k$ equipped with the projection $X \times \mathbb{R}^k \to X$ is considered as the _trivial bundle_ of rank $k$ over $X$
 
@@ -116,7 +116,7 @@ _Möbius strip_
 
 operations on vector bundle extending the operation of duality for vector space.
 
-> [!math] definition
+> [!definition]
 >
 > a _dual bundle_ of a vector bundle $\pi : E \rightarrow X$ is the vector bundle $\pi^{*}: E^{*} \rightarrow X$ whose fiber are the dual spaces to fibers of $E$
 
@@ -126,7 +126,7 @@ Equivalently, $E^{*}$ can be defined as the Hom bundle $\text{Hom}(E, \mathbb{R}
 
 _a space that is ==locally== a product space, but ==globally== may have different topological structure_
 
-> [!math] definition
+> [!definition]
 >
 > A fiber bundle is a structure $(E, B, \pi, F)$ where:
 >
@@ -173,7 +173,7 @@ Therefore, for any $p \in B$, the _preimage_ $\pi^{-1}(\{p\})$ is _homeomorphic_
 
 Suppose that $M$ and $N$ are base space, and $\pi_E: E \to M$ and $\pi_F: F \to N$ are fiber bundles over $M$ and $N$ respectively.
 
-> [!math] definition
+> [!definition]
 >
 > **bundle map/morphism** consists of a pair of continuous functions
 >

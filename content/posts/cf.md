@@ -2,7 +2,7 @@
 date: '2025-08-04'
 description: And maybe you should, or shouldn't.
 id: cf
-modified: 2026-06-05 15:08:09 GMT-04:00
+modified: 2026-06-06 00:12:35 GMT-04:00
 socials:
   hackernews: https://news.ycombinator.com/item?id=44791222
   twitter: https://x.com/aarnphm/status/1952474293654413636
@@ -106,7 +106,7 @@ Cloudflare is good for you if:
 - static sites
 - free plan
 
-> [!NOTE]
+> [!note] AI-related supports
 >
 > They both have AI-related products, but I'm not going to compare it here given that I don't use them extensively.
 

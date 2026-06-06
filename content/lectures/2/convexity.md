@@ -45,7 +45,7 @@ At optimality $\alpha_i>0$ so $\mu_i=0$; exponentiating yields $\alpha_i\propto 
 
 > [!abstract] Corollary 3 (temperature limits).
 >
-> As $\tau\downarrow 0$, $\alpha^*(s,\tau)\to e_k$ for any $k\in\arg\max_i s_i$ (extreme point/argmax). As $\tau\uparrow\infty$, $\alpha^*\to \tfrac{1}{n}\mathbf{1}$.
+> As $\tau\downarrow 0$, $\alpha^*(s,\tau)$ converges to the uniform distribution over the set of maximizers $\arg\max_i s_i$ (which is the standard basis vector $e_k$ if the maximizer is unique). As $\tau\uparrow\infty$, $\alpha^*\to \tfrac{1}{n}\mathbf{1}$.
 
 ## Fenchel–Young view
 

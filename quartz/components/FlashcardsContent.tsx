@@ -108,28 +108,35 @@ export default (() => {
         <nav class="flashcards-controls" aria-label="drill controls">
           <button type="button" class="fc-btn fc-undo" data-action="undo" disabled>
             undo
+            <kbd class="fc-key" aria-hidden="true">u</kbd>
           </button>
           <span class="fc-spacer" />
           <button type="button" class="fc-btn fc-reveal" data-action="reveal">
             reveal
+            <kbd class="fc-key" aria-hidden="true">space</kbd>
           </button>
           <span class="fc-grades" hidden>
             <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="1">
               forgot
+              <kbd class="fc-key" aria-hidden="true">1</kbd>
             </button>
             <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="2">
               hard
+              <kbd class="fc-key" aria-hidden="true">2</kbd>
             </button>
             <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="3">
               good
+              <kbd class="fc-key" aria-hidden="true">3</kbd>
             </button>
             <button type="button" class="fc-btn fc-grade" data-action="grade" data-grade="4">
               easy
+              <kbd class="fc-key" aria-hidden="true">4</kbd>
             </button>
           </span>
           <span class="fc-spacer" />
           <button type="button" class="fc-btn fc-end" data-action="end">
             end
+            <kbd class="fc-key" aria-hidden="true">e</kbd>
           </button>
         </nav>
         <section class="flashcards-finished" aria-live="polite" hidden>

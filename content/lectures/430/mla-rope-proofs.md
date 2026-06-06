@@ -2,7 +2,7 @@
 date: '2025-10-17'
 description: a basic theorem proof
 id: mla-rope-proofs
-modified: 2026-06-05 15:08:04 GMT-04:00
+modified: 2026-06-06 01:10:23 GMT-04:00
 tags:
   - ml
 title: proof for MLA RoPE
@@ -10,7 +10,7 @@ title: proof for MLA RoPE
 
 ### motivation
 
-standard multi-head attention (MHA) stores separate key-value pairs for each attention head during inference, creating a memory bottleneck. for a model with $n_h = 128$ heads, $d_h = 128$ dimensions per head, the KV cache size per token is $2 \times n_h \times d_h = 32{,}768$ values. MLA compresses this dramatically.
+standard multi-head attention (MHA) stores separate key-value pairs for each attention head during inference, creating a memory bottleneck. for a model with $n_h = 128$ heads, $d_h = 128$ dimensions per head, the KV cache size per token is $2 \times n_h \times d_h = 32{,}768$ values. [[thoughts/MLA|MLA]] compresses this dramatically.
 
 ### core formulation
 
@@ -60,7 +60,7 @@ where $W^{DQ} \in \mathbb{R}^{d_c' \times d}$ and $W_i^{UQ} \in \mathbb{R}^{d_h 
 
 > [!theorem] 1.1
 >
-> MLA reduces KV cache size by a factor of $\frac{n_h \cdot d_h}{d_c}$.
+> MLA reduces KV cache size by a factor of $\frac{2 n_h \cdot d_h}{d_c}$.
 
 _proof:_
 
@@ -121,13 +121,13 @@ $$
 \end{aligned}
 $$
 
-when $d = n_h \cdot d_h$, the ratio is:
+when $d = n_h \cdot d_h$, the ratio of KV projection FLOPs is:
 
 $$
-\frac{\text{MLA FLOPs}}{\text{MHA FLOPs}} = \frac{d_c + n_h d_h}{n_h d_h} = 1 + \frac{d_c}{n_h d_h}
+\frac{\text{MLA KV Projection FLOPs}}{\text{MHA KV Projection FLOPs}} = \frac{2 d_c}{n_h d_h}
 $$
 
-for DeepSeek-V3: $1 + \frac{512}{128 \times 128} \approx 1.03$ (3% more FLOPs).
+for DeepSeek-V3: $\frac{2 \times 512}{128 \times 128} = 0.0625$ (MLA reduces projection FLOPs by ~93.75%).
 
 however, memory-bound operations dominate inference. MLA reads $512$ values vs $32{,}768$ values per token, achieving $\approx 64\times$ bandwidth reduction. $\square$
 
@@ -191,7 +191,7 @@ the key insight: MLA enforces this low-rank constraint explicitly, enabling comp
 
 ### motivation and requirements
 
-transformers are position-agnostic—attention mechanism treats sequences as sets. we need position encoding $f(\mathbf{x}, m)$ that:
+transformers are position-agnostic (the attention mechanism treats sequences as sets). we need position encoding $f(\mathbf{x}, m)$ that:
 
 1. encodes absolute position $m$
 2. induces relative position information in attention scores
@@ -294,7 +294,7 @@ where $\text{base} = 10{,}000$ (standard) or $\text{base} = 5 \times 10^6$ (Deep
 
 _proof:_
 
-queries and keys at positions $m, n$ after RoPE:
+queries and keys at positions $m, n$ after [[thoughts/RoPE|RoPE]]:
 
 $$
 \mathbf{q}_m = R_\Theta(m) \mathbf{q}, \quad \mathbf{k}_n = R_\Theta(n) \mathbf{k}
@@ -323,7 +323,7 @@ thus the score depends only on $\Delta = n - m$, not absolute positions $m$ or $
 
 **element-wise formulation:**
 
-rather than matrix multiplication, RoPE is computed element-wise:
+RoPE is computed element-wise:
 
 $$
 \begin{pmatrix} q_0 \\ q_1 \end{pmatrix}_m = \begin{pmatrix} q_0 \cos(m\theta) - q_1 \sin(m\theta) \\ q_0 \sin(m\theta) + q_1 \cos(m\theta) \end{pmatrix}
@@ -530,21 +530,3 @@ optimal performance requires custom CUDA kernels fusing:
 3. attention score computation
 
 avoiding intermediate materialization of full $\mathbf{k}_t^{(i)}, \mathbf{v}_t^{(i)}$ tensors.
-
-## references
-
-- DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model (2024)
-- DeepSeek-V3 Technical Report (2024)
-- RoFormer: Enhanced Transformer with Rotary Position Embedding, Su et al. (2021)
-
-## further reading
-
-for implementation details:
-
-- [[thoughts/attention|attention mechanisms]]
-- [[thoughts/structured outputs|structured outputs and constrained generation]]
-
-for theoretical foundations:
-
-- [[thoughts/autoencoder-diagrams-intuition/index|autoencoder diagrams and intuition]]
-- low-rank matrix approximation and SVD decomposition

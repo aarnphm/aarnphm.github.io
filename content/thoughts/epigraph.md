@@ -8,7 +8,7 @@ tags:
 title: epigraph
 ---
 
-> [!math] definition
+> [!definition]
 >
 > A epigraph or _supergraph_ of a function $f: X \to [-\infty, \infty]$ valued in the extended real numbers $[-\infty, \infty]=\mathbb{R} \cup \{\pm \infty\}$ is the following set:
 >

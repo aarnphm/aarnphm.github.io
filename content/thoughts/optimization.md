@@ -193,7 +193,7 @@ $$
 
 If we set different curvature ($f(x) = 2x^2$) thus $x_{t+1} = x_t - 4 \alpha x_t = (1-4 \alpha)x_t$
 
-> [!IMPORTANT] step size
+> [!important] step size
 >
 > step size depends on curvature for one-dimensional quadratics
 >

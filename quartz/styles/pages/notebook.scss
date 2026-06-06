@@ -149,7 +149,7 @@ article:has(.notebook-runtime),
     grid-template-columns: var(--notebook-gutter-width) minmax(0, 1fr);
     column-gap: var(--notebook-code-gap);
     align-items: start;
-    margin: 0.2rem 0 1.4rem;
+    margin: 1rem 0 1.4rem;
     padding: var(--notebook-shell-padding);
     border: 1px solid color-mix(in srgb, var(--lightgray) 78%, transparent);
     border-radius: var(--radius-none);

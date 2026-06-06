@@ -24,7 +24,7 @@ title: Convex function
 
 ELI5: a convex function graph is shaped like a cup $\cup$, where as a concave function graph is shaped like a cap $\cap$
 
-> [!math] formal definition
+> [!definition] formal definition
 >
 > Let $X$ be a convex subset of a real [[thoughts/Vector space|vector space]] and let $f: X \to \mathbb{R}$ be a function.
 >

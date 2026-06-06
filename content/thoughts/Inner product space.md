@@ -57,7 +57,7 @@ A norm comes from an inner product **iff** it satisfies the parallelogram law (J
 - **Parseval (finite orthogonal families):** for pairwise orthogonal $\{x_k\}$, $\big\|\sum_k x_k\big\|^{2}=\sum_k\|x_k\|^{2}$.
   In Hilbert spaces (complete inner‑product spaces), the series version holds for infinite orthogonal families.
 
-> [!math] Orthogonal projection onto a subspace
+> [!theorem] Orthogonal projection onto a subspace
 >
 > If $Q=[q_1\,\cdots\,q_k]$ has orthonormal columns spanning $S\subseteq V$, then $P_S=QQ^{\!*}$ is the projector and $\operatorname{argmin}_{s\in S}\|x-s\|=P_S x$.
 

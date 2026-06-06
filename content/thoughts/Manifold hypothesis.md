@@ -35,7 +35,7 @@ The argument for reasoning about information geometry on latent distribution spa
 
 ## Fisher information
 
-> [!math] definition (score and Fisher)
+> [!definition] score and Fisher
 >
 > For a parametric family $\{p(x\mid\theta):\theta\in\Theta\subset\mathbb{R}^d\}$, the ==score== is $\nabla_\theta \log p(x\mid\theta)$ and the **Fisher information matrix** is
 >

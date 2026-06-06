@@ -1,4 +1,5 @@
 import '../javascript/backend'
+import '../lean/backend'
 import '../native/backend'
 import '../python/backend'
 

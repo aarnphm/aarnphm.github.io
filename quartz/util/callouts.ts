@@ -34,7 +34,7 @@ const calloutMapping = {
   theorem: 'theorem',
   theory: 'theory',
   proposition: 'proposition',
-  propos: 'propos',
+  propos: 'proposition',
   definition: 'definition',
   corollary: 'corollary',
   conjecture: 'conjecture',
@@ -59,10 +59,29 @@ const mathCalloutTypes = new Set<string>([
   'axiom',
 ])
 
+const mathCalloutTitlePrefixes = {
+  proof: 'Proof',
+  lemma: 'Lemma',
+  theorem: 'Theorem',
+  theory: 'Theory',
+  proposition: 'Proposition',
+  definition: 'Definition',
+  corollary: 'Corollary',
+  conjecture: 'Conjecture',
+  claim: 'Claim',
+  axiom: 'Axiom',
+}
+
 const proofLineRegex = /^(\s*)(proof)([:.])(\s*)/i
 
 function isCalloutMappingKey(value: string): value is keyof typeof calloutMapping {
   return Object.hasOwn(calloutMapping, value)
+}
+
+function isMathCalloutTitlePrefixKey(
+  value: string,
+): value is keyof typeof mathCalloutTitlePrefixes {
+  return Object.hasOwn(mathCalloutTitlePrefixes, value)
 }
 
 export function canonicalizeCallout(calloutName: string): string {
@@ -72,6 +91,73 @@ export function canonicalizeCallout(calloutName: string): string {
 
 export function isMathCallout(calloutType: string): boolean {
   return mathCalloutTypes.has(canonicalizeCallout(calloutType))
+}
+
+export function mathCalloutTitlePrefix(calloutType: string, title: string): string | undefined {
+  const canonicalType = canonicalizeCallout(calloutType)
+
+  if (!isMathCalloutTitlePrefixKey(canonicalType)) {
+    return undefined
+  }
+
+  const prefix = mathCalloutTitlePrefixes[canonicalType]
+  return title.toLowerCase().includes(prefix.toLowerCase()) ? undefined : prefix
+}
+
+function trimMathCalloutTitlePrefix(title: string, prefix: string): string {
+  return title.replace(new RegExp(`^${prefix}\\b\\s*`, 'i'), '').trim()
+}
+
+function unwrapMathCalloutName(name: string): string {
+  const trimmedName = name.trim()
+  const wrappedName = trimmedName.match(/^\(([^)]+)\)(.*)$/)
+  return wrappedName ? `${wrappedName[1]}${wrappedName[2]}`.trim() : trimmedName
+}
+
+function explicitMathCalloutNumberedTitle(
+  title: string,
+  prefix: string,
+): { number: string; name: string } | undefined {
+  const titleWithoutPrefix = trimMathCalloutTitlePrefix(title.trim(), prefix)
+  const match = titleWithoutPrefix.match(/^(\d+(?:\.\d+)*)(?:\s*[.,:]?\s*(.*))?$/)
+
+  if (!match) {
+    return undefined
+  }
+
+  return { number: match[1], name: unwrapMathCalloutName(match[2] ?? '') }
+}
+
+export function formatMathCalloutTitle(
+  calloutType: string,
+  titleContent: string,
+  fullTitle: string,
+  index: number,
+): string | undefined {
+  const canonicalType = canonicalizeCallout(calloutType)
+
+  if (canonicalType === 'math') {
+    const trimmedTitle = titleContent.trim()
+    return trimmedTitle.length > 0 ? `${index}. ${trimmedTitle}` : `${index}.`
+  }
+
+  if (!isMathCalloutTitlePrefixKey(canonicalType)) {
+    return undefined
+  }
+
+  const prefix = mathCalloutTitlePrefixes[canonicalType]
+  const trimmedTitle = titleContent.trim()
+  const trimmedFullTitle = fullTitle.trim()
+  const explicitTitle = explicitMathCalloutNumberedTitle(trimmedFullTitle, prefix)
+
+  if (explicitTitle) {
+    return explicitTitle.name.length > 0
+      ? `${prefix} ${explicitTitle.number}. ${explicitTitle.name}`
+      : `${prefix} ${explicitTitle.number}.`
+  }
+
+  const numberedPrefix = `${prefix} ${index}.`
+  return trimmedTitle.length > 0 ? `${numberedPrefix} ${trimmedTitle}` : numberedPrefix
 }
 
 export function isStandaloneProofLine(paragraph: Paragraph): boolean {

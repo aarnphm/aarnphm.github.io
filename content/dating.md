@@ -7,7 +7,7 @@ aliases:
 date: '2025-08-09'
 description: just another fish in the sea.
 id: dating
-modified: 2026-06-05 15:08:12 GMT-04:00
+modified: 2026-06-06 00:10:07 GMT-04:00
 slides: true
 tags:
   - evergreen
@@ -16,7 +16,7 @@ tags:
 title: dating me.
 ---
 
-> [!IMPORTANT]
+> [!important] before you read this file!
 >
 > i'm no longer actively dating (i.e. i'm actively committed to someone), but I still want to keep this up given that it's still, an _important document_ to me. If you are interested in me as a friend, then I have a [[friends|friends-equivalent]] docs.
 

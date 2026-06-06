@@ -22,7 +22,7 @@ Think of it as "$X \to Y$ holds in $R$"
 
 convention: no braces used for set of attributes, just $ABC$ instead of $\{A,B,C\}$
 
-> [!NOTE] properties
+> [!note] properties
 >
 > - splitting/combining
 > - trival FDs
@@ -206,7 +206,7 @@ counter: $\text{studio} \to \text{studioAddr}$, where `studioAddr` depends on `s
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/three-normal-form.webp|Three normal form counter example]]
 ![[thoughts/university/twenty-four-twenty-five/sfwr-3db3/three-normal-form-decomposition.webp]]
 
-> [!math] theorem
+> [!theorem]
 >
 > It is always possible to convert a schema to lossless join, dependency-preserving 3NF
 
@@ -220,7 +220,7 @@ counter: $\text{studio} \to \text{studioAddr}$, where `studioAddr` depends on `s
 
 > on additional restriction over 3NF where ==all non-trivial FDs have superkey LHS==
 
-> [!math] theorem
+> [!theorem]
 >
 > We say a relation $R$ is in BCNF if $X \to A$ is a ==non-trivial== FD that holds in $R$, and $X$ is a superkey [^nontrivial]
 

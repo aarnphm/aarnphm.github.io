@@ -10,7 +10,7 @@ title: PID controller
 
 ## proportional control
 
-> [!math] definition
+> [!definition]
 >
 > $$
 > K_p e(t) = K_p [u(t) - y(t)]

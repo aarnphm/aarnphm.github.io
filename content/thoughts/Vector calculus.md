@@ -14,7 +14,7 @@ operates on vector field producing a scalar field giving quantity of the gector 
 
 > represents the volume density of the outward flux of a vector field from an infinitesimal volume around a given point.
 
-> [!math] definition
+> [!definition]
 >
 > the divergence of a vector field $\mathbf{F}(\mathbf{x})$ at point $x_{0}$ is defined as ==the limit of the ratio== of the surface integral of $\mathbf{F}$ out of the closed surface of a volume $V$ enclosing $x_0$ to the volume of $V$, as $V$ shrinks to zero
 
@@ -60,7 +60,7 @@ $$
 \end{equation}
 $$
 
-> [!math] Jacobian determinant
+> [!definition] Jacobian determinant
 >
 > When $m = n$, the Jacobian matrix is a square, so its determinant is a well-defined function of $x$ [^conjecture]
 
@@ -84,7 +84,7 @@ $$
 
 where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement $d \mathbf{r}$, and is seen to be maximal when $d \mathbf{r}$ is in the direction of the gradient $\nabla f$
 
-> [!math] definition
+> [!definition]
 >
 > the gradient of $f$ ($\nabla f$) is defined as the unique vector field whose dot product with any vector $\mathbf{v}$ at each point $x$ is the directional derivative of $f$ along $\mathbf{v}$, such that: [^grad-annotation]
 >
@@ -147,7 +147,7 @@ where $df$ is the infinitesimal change in $f$ for an infinitesimal displacement 
 
 > an assignment of vector to each point in a space, most commonly Euclidean space $\mathbb{R}^n$
 
-> [!math] vector fields on subsets of Euclidean space
+> [!definition] vector fields on subsets of Euclidean space
 >
 > Given a subset of $S$ of $\mathbb{R}^n$, a vector field $V: S \to \mathbb{R}^n$ in standard Cartesian coordinates $(x_{1},\ldots,x_{n})$.
 >

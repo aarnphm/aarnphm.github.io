@@ -10,7 +10,7 @@ title: No free lunch
 
 The concept in computer science saying "no such thing as a free lunch", or shortcut for success [@Wolpert1997NoFreeLunch]
 
-> [!math] theorem
+> [!theorem]
 >
 > For any algorithm $a_{1}$ and $a_{2}$ at iteration steps $m$:
 >

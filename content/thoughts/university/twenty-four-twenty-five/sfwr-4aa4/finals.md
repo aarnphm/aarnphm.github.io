@@ -25,7 +25,7 @@ $$
 
 ![[thoughts/Laplace transform]]
 
-> [!IMPORTANT] derivatives and integral
+> [!important] derivatives and integral
 >
 > if $\mathcal{L}[f(t)] = F(s)$ then we have
 >
@@ -73,7 +73,7 @@ $$
 
 $s=0,-5$ are poles and $s=-2$ are zeros
 
-> [!NOTE] poles
+> [!note] poles
 >
 > - at origin, generated **==step function==**
 > - at -5 generate transient response $e^{-5t}$

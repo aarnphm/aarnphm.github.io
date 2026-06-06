@@ -12,7 +12,7 @@ tags:
 title: death cross
 ---
 
-> [!definition]
+> [!definition] death cross
 >
 > The "death cross" market chart pattern refers to the drop of a short-term **moving average** below a longer-term moving average. The most closely watched stock-market moving averages are the **50-day** and the **200-day**.
 

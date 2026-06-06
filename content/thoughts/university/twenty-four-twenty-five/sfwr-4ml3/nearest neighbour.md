@@ -42,7 +42,7 @@ Think of contiguous loss function: margin loss, cross-entropy/negative log-likel
 
 ## linearly separable data
 
-> [!math] linearly separable
+> [!definition] linearly separable
 >
 > A binary classification data set $Z=\{(x^i, y^i)\}_{i=1}^{n}$ is linearly separable if there exists a $W^{*}$ such that:
 >
@@ -114,7 +114,7 @@ $$
 
 See also [@novikoff1962convergence]
 
-> [!math] Theorem
+> [!theorem]
 >
 > Assume there exists some parameter vector $\underline{\theta}^{*}$ such that $\|\underline{\theta}^{*}\| = 1$ and
 > $\exists \space \upgamma > 0 \text{ s.t }$

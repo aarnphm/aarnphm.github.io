@@ -2,7 +2,7 @@
 date: '2025-09-08'
 description: week 1
 id: financial market
-modified: 2026-06-05 15:08:38 GMT-04:00
+modified: 2026-06-06 00:11:31 GMT-04:00
 tags:
   - commerce3fi3
 title: financial market
@@ -87,7 +87,7 @@ where as secondary markets trade securities:
 - Exchanges (Auction market)
 - OTC Over-the-counter (Dealer market)
 
-> [!IMPORTANT]
+> [!important] components of a trading floor
 >
 > trading floor must be **fair, efficient, and liquid**
 
@@ -134,17 +134,17 @@ can roughly classified into:
 
 ### liquidity, depth, width
 
-> [!NOTE] liquidity
+> [!note] liquidity
 >
 > the ability to sell/buy securities quickly
 >
 > function of _depth_ and _width_
 
-> [!NOTE] depth
+> [!note] depth
 >
 > number of shares available (bid/ask size)
 
-> [!NOTE] width
+> [!note] width
 >
 > spread between bid/ask prices
 

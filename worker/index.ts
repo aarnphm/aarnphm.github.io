@@ -16,6 +16,7 @@ import {
 } from './comments'
 import handleCurius from './curius'
 import { handleFlashcardsReview, handleFlashcardsState } from './flashcards'
+import { handleLeanVerify } from './lean'
 import Garden from './mcp'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
@@ -325,6 +326,8 @@ type Env = {
   LFS_BUCKET_URL?: string
   KEEP_HEADERS?: string
   PUBLIC_BASE_URL?: string
+  LEAN_VERIFY_ORIGIN?: string
+  LEAN_VERIFY_TOKEN?: string
 } & Cloudflare.Env
 
 async function htmlAssetResponse(request: Request, env: Env): Promise<Response> {
@@ -737,6 +740,10 @@ export default {
       }
       case '/api/flashcards/review': {
         const resp = await handleFlashcardsReview(request, env)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/lean/verify': {
+        const resp = await handleLeanVerify(request, env)
         return withHeaders(resp, apiHeaders)
       }
       case '/api/arena-embed/capability': {

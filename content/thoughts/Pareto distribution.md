@@ -12,7 +12,7 @@ title: Pareto distribution
 
 in [[thoughts/Machine learning|machine learning]], we can do [[thoughts/mechanistic interpretability#ablation|feature ablation]] based on its Pareto distribution.
 
-> [!math] definition
+> [!definition]
 >
 > if $X$ is a _random variable_ with Pareto distribution (Type I), then the _survival function_ is given by:
 >

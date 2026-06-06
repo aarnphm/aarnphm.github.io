@@ -91,7 +91,7 @@ in a sense, this is the undamped case:
 
 complex poles has real part $\sigma = -\frac{a}{2}$
 
-> [!math] definition
+> [!definition]
 >
 > damping ratio is defined as:
 >

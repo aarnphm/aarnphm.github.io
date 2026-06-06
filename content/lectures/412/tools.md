@@ -12,7 +12,7 @@ title: tools for 0.412
 
 ## scripts
 
-![[content/lectures/412/latent_projection.py]]
+![[lectures/412/latent_projection.py]]
 
 > [!note] usage
 >
@@ -22,7 +22,7 @@ title: tools for 0.412
 >
 > - isolate a head, compute $W_{OV}$, compare to latent dimension.
 > - report spectral decay plus cache reconstruction error.
-> - plug the singular spectrum back into [[lectures/412/notes#multi-head latent attention (mla)]] to quantify cache compression loss.
+> - plug the singular spectrum back into [[lectures/412/notes#mla|MLA]] to quantify cache compression loss.
 > - works with local checkpoints or Hugging Face repos (pass `--hf-repo Qwen/Qwen3-0.6B --auto-infer`).
 > - add `--plot` to save the singular-value and cumulative-energy curves (optionally override path with `--plot-path`).
 > - add `--prompt "The true meaning of life is absurdity, and suffering" --heatmap` to snapshot an attention heatmap for that text (requires Hugging Face repo access).

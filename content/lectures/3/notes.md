@@ -38,7 +38,7 @@ see also [[lectures/3/quantisation basics]]
 
 - **When is KV cache worth it?**
   - Always for autoregressive LLMs: you remove the "recompute all past K/V every step" cost;
-  - the per-step cost still grows with $t$ from the $q_t\!\cdot\!K$ and $V$-mix, but **you turn repeated compute into once-per-token memory**. (That’s why attention can become **memory-bound** at long context/high batch.) ([arXiv][1])
+  - the per-step cost still grows with $t$ from the $q_t\!\cdot\!K$ and $V$-mix, but **you turn repeated compute into once-per-token memory**. (That’s why attention can become **memory-bound** at long context/high batch.) ([arXiv][1], [MartinLwx][2])
 
 - **Heads sharing changes constants**
   - **GQA/MQA** reduce the number of distinct K/V head sets, shrinking memory (and bandwidth) at the same $t$. Llama-2-70B uses **GQA** (8 KV heads vs 64 attention heads). ([Hugging Face][3])
@@ -65,22 +65,22 @@ $$
 Memory usage would be:
 
 $$
-\text{mem} = 2 \cdot b \cdot L \cdot d_{\text{model}} \cdot T \cdot B
+\text{mem} = 2 \cdot b \cdot L \cdot h_{\text{kv}} \cdot d_h \cdot T \cdot B
 $$
 
 FLOPs calculation:
 
-- Given that for K, V matrices, we are multiplying weights with token embeddings $W_k, W_v \in R^{d_{\text{model}} \times d_{\text{model}}}$:
+- Given that for K, V matrices, we are multiplying weights with token embeddings $W_k, W_v \in \mathbb{R}^{d_{\text{model}} \times (h_{\text{kv}} d_h)}$:
 
   $$
   K = t_e \cdot W_k
   $$
 
-  where $t_e$ takes $2 \times d_{\text{model}^2}$ FLOPs
+  where projecting $t_e$ takes $2 \cdot d_{\text{model}} \cdot h_{\text{kv}} \cdot d_h$ FLOPs.
 
-- FLOPs for KV: $2 * b \cdot L \cdot d_{\text{model}}^{2}$
+- FLOPs for KV projections per token: $4 \cdot L \cdot d_{\text{model}} \cdot h_{\text{kv}} \cdot d_h$
 
-### example a — llama-2-70b (uses gqa)
+### example a: llama-2-70b (uses gqa)
 
 Config (HF): **80 layers**, hidden **8192**, **64** attention heads, **8 KV heads (GQA)** $\Rightarrow d_h=8192/64=128$. ([Hugging Face][4])
 
@@ -101,7 +101,7 @@ Config (HF): **80 layers**, hidden **8192**, **64** attention heads, **8 KV head
 
   $\approx \mathbf{2.56\ MB}$ per token; at $T{=}4096$ this would be $\sim$**10+ GB**.
 
-  (This is exactly why GQA/MQA are popular—they slash KV by sharing K/V.) ([NVIDIA Developer][5])
+  (This is exactly why GQA/MQA are popular: they slash KV by sharing K/V.) ([NVIDIA Developer][5])
 
 - **FP8 KV** (same model)
 
@@ -109,7 +109,7 @@ Config (HF): **80 layers**, hidden **8192**, **64** attention heads, **8 KV head
 
   (Modern stacks support FP8/INT8 KV; perf gains come from lower bandwidth & larger batch.) ([NVIDIA Developer][5])
 
-### example b — llama-2-7b (no gqa; 32 layers, 4096 hidden, 32 heads)
+### example b: llama-2-7b (no gqa; 32 layers, 4096 hidden, 32 heads)
 
 Specs summary: **32 layers**, hidden **4096**, **32** heads $\Rightarrow d_h=128$, $h_{\text{kv}}=32$. (Values consistent with LLaMA/Llama-2 family.) ([arXiv][6])
 

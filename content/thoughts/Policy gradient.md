@@ -75,7 +75,7 @@ $$
 \nabla_\theta J(\theta)=\mathbb E_{\pi_\theta}\left[\sum_{t\in 0:T}\nabla_\theta\ln\pi_\theta(A_t\mid S_t)\;\sum_{\tau\in t:T}(\gamma^\tau R_\tau)\;\Big|\;S_0=s_0\right].
 $$
 
-> [!math] Lemma
+> [!lemma]
 >
 > The expectation of the score function is zero, conditional on any present or past state. For any $0\le i\le j\le T$ and any state $s_i$,
 >

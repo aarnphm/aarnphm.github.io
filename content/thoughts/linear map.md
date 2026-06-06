@@ -41,7 +41,7 @@ $$
 \operatorname{im} T\coloneqq\{T(x):x\in V\}.
 $$
 
-> [!math] Rank–Nullity Theorem (finite dimension)
+> [!theorem] Rank–Nullity Theorem (finite dimension)
 >
 > If $\dim V<\infty$, then
 >
@@ -101,7 +101,7 @@ $$
   $\|A\|_\infty=\max_i\sum_j |a_{ij}|$ (max row sum), and
   $\|A\|_2$ equals the largest singular value (see [[thoughts/Singular Value Decomposition]]).
 
-> [!math] Linear maps are Lipschitz (finite dimension)
+> [!proposition] Linear maps are Lipschitz (finite dimension)
 >
 > If $\dim V,\dim W<\infty$, then every linear $T:V\to W$ is globally Lipschitz:
 >
