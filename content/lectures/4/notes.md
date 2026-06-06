@@ -14,7 +14,7 @@ transclude:
 
 ![[thoughts/Speculative decoding#von Neumann acceptance–rejection|von Neumann rejection sampling]]
 
-### historical inspiration & motivation 🚀
+### historical inspiration & motivation
 
 ![[thoughts/Autoregressive models#next token prediction|NTP]]
 

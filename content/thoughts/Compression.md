@@ -40,7 +40,7 @@ compression seeks a compact **generating set** for representing strings.
 - dictionary-based methods find frequently occurring substrings (monoid elements) and use them as generators.
 - grammar-based methods discover a **free algebra** structure, expressing strings through production rules.
 
-> [!math] syntactic monoid
+> [!definition] syntactic monoid
 >
 > for a language $L \subseteq \Sigma^*$, the **syntactic congruence** $\equiv_L$ is defined by:
 >
@@ -155,7 +155,7 @@ compression algorithms operate on formal languages. the [[thoughts/DFA|determini
 
 **algebraic automata theory** studies the connection between automata and monoids:
 
-> [!math] definition: automaton as monoid action
+> [!definition] automaton as monoid action
 > a dfa $(Q, \Sigma, \delta, q_0, F)$ induces an action of the free monoid $\Sigma^*$ on state set $Q$:
 > $$\delta^* : Q \times \Sigma^* \to Q$$
 > where $\delta^*(q, \epsilon) = q$ and $\delta^*(q, wa) = \delta(\delta^*(q, w), a)$.

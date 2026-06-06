@@ -11,7 +11,7 @@ title: Deterministic Finite Automata
 
 ## elements
 
-> [!math] alphabet
+> [!definition] alphabet
 >
 > An alphabet $\Sigma$ is any **finite** set
 >
@@ -248,7 +248,7 @@ $$
 
 ## acceptance
 
-> [!math] definition
+> [!definition]
 >
 > $M$ accepts string $x$ iff $\hat{\delta } (s,x) \in F$
 >

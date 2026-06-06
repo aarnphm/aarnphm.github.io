@@ -139,7 +139,7 @@ tl/dr: Improvement on EAGLE-1 via context-aware dynamic draft tree into this dra
 
 ![[thoughts/images/eagle-3-inference-pipeline.webp]]
 
-> [!NOTE] Qwen3 replication
+> [!note] Qwen3 replication
 >
 > https://mp.weixin.qq.com/s/Dmdg6aLgFHZEcm6TY1vKkA
 
@@ -565,7 +565,7 @@ _Objective_: to use $M_q$ to generate $\gamma \in \mathbb{Z}^{+}$ completions, a
 
 alias: acceptance rate
 
-> [!math] definition 3.1
+> [!definition] 3.1
 >
 > _acceptance rate_ $\beta_{x<t}$ given a prefix $x_{<t}$ is the probability of accepting $x_t \sim q(x_t\mid x_{<t})$ via speculative sampling.
 
@@ -579,7 +579,7 @@ $$
 
 #### calculating $\alpha$
 
-> [!math] definition 3.2
+> [!definition] 3.2
 >
 > Let natural divergence $D_{LK}$ be:
 >
@@ -589,7 +589,7 @@ $$
 >
 > where $M(x) = \frac{p(x) + q(x)}{2}$
 
-> [!math] Lemma 3.3
+> [!lemma] 3.3
 >
 > $D_{LK}(p,q) = 1 - \sum_{x} \min(p(x), q(x))$ [^proof-3-3]
 
@@ -604,7 +604,7 @@ $$
 
     $\boxed{}$
 
-> [!math] Corollary 3.4
+> [!corollary] 3.4
 >
 > $D_{LK}(p,q)$ is a symmetric divergence in $[0,1]$, where
 >
@@ -612,11 +612,11 @@ $$
 >
 > $D_{LK}(p,q)=1 \Longleftrightarrow \text{p and q have disjoint support}$
 
-> [!math] Theorem 3.5
+> [!theorem] 3.5
 >
 > $\beta = 1 - D_{LK}(p,q)$ [^proof-3-5]
 
-> [!math] Corollary 3.6
+> [!corollary] 3.6
 >
 > $\alpha = 1 - E(D_{LK}(p,q)) = E(\min(p,q))$
 
@@ -650,7 +650,7 @@ For wall-time [^definition] analysis, assuming we can run $\gamma +1$ concurrent
 >
 > $c$ is highly dependent on hardware measure. From the paper, $c \approx 0$ to avoid expectancy biases
 
-> [!math] Theorem 3.8
+> [!theorem] 3.8
 >
 > expected improvement factor in total wall-time by $\frac{1-\alpha^{\gamma +1}}{(1-\alpha)(\gamma c + 1)}$ [^proof-3-8]
 >
@@ -666,7 +666,7 @@ For wall-time [^definition] analysis, assuming we can run $\gamma +1$ concurrent
 
     $\boxed{}$
 
-> [!math] Corollary 3.9
+> [!corollary] 3.9
 >
 > $\forall \alpha > c \space \exists \space \gamma \mid \text{ we will get improvement by a factor of } \frac{1+\alpha }{1+c}$
 
@@ -674,13 +674,13 @@ If we get an improvement for $\gamma$, we'd also get improvement for any $0 < \g
 
 ### arithmetic operations
 
-> [!definition] arithmetics operations per token
+> [!definition] arithmetic operations per token
 >
 > let $\hat{c}$ be the ratio of arithmetics operations per tokens of $M_q$ to that of $M_p$
 >
 > Note that the number of operations will then grow by $\gamma +1$, given that we will produce at most $\gamma +1$ tokens per run.
 
-> [!math] Theorem 3.11
+> [!theorem] 3.11
 >
 > The expected factor of increase in number of operations is $\frac{(1-\alpha)(\gamma \hat{c} + \gamma + 1)}{1-\alpha^{\gamma +1}}$ [^proof-3-11]
 

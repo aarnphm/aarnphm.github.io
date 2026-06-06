@@ -16,7 +16,7 @@ depends on two sorts of _objects_:
 - [[thoughts/homeomorphism|morphism]] of the category
   - tl/dr: think of arrow to connect relations between two mathematical objects
 
-> [!math] definition
+> [!definition]
 >
 > a category $\mathcal{C}$ consists of the following entities:
 >

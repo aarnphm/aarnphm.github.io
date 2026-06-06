@@ -10,7 +10,7 @@ title: Helmholtz decomposition
 
 > certain differentiable vector fields can be resolved into sum of an _irrotational_ vector field and _solenoidal_ vector vield
 
-> [!math] definition
+> [!definition]
 >
 > for a vector field $\mathbf{F} \in C^1 (V, \mathbb{R}^n)$ defined on a domain $V \subseteq \mathbb{R}^n$, a Helmholtz decomposition is a pair of vector fields
 > $\mathbf{G} \in C^1 (V, \mathbb{R}^n)$ and $\mathbf{R} \in C^1 (V, \mathbb{R}^n)$ such that:

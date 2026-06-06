@@ -11,7 +11,7 @@ title: Vapnik-Chrvonenkis dimension
 
 fancy name for the measure of size, or the cardinality of the largest sets of points that the algorithm can shatter.
 
-> [!math] definition
+> [!definition]
 >
 > Let $H$ be a set set family and $C$ a set. Thus, their intersection is defined as the following set:
 >

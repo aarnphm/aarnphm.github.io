@@ -7,7 +7,7 @@ tags:
 title: marketing research
 ---
 
-> [!NOTE]
+> [!note]
 >
 > process of planning an executing the conception, pricing promotion, and distribution of ideas, goods, and services to create exchanges that satisfy individual and organization objectives
 

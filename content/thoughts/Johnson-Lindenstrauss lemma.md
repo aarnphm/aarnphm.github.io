@@ -15,7 +15,7 @@ this is the foundational result behind [[thoughts/Embedding|random projections]]
 
 ## formal statement
 
-> [!math] theorem (Johnson, Lindenstrauss 1984)
+> [!lemma] Johnson-Lindenstrauss lemma
 >
 > given $0 < \varepsilon < 1$, a set $X$ of $N$ points in $\mathbb{R}^n$, and an integer
 >
@@ -130,7 +130,7 @@ so a projection satisfying the JL guarantee EXISTS (probabilistic method). more 
 
 the distributional formulation strips away the point set and talks about what happens to a single vector under a random linear map.
 
-> [!math] distributional JL
+> [!lemma] distributional JL
 >
 > for any $0 < \varepsilon, \delta < 1/2$ and positive integer $d$, there exists a distribution over $\mathbb{R}^{k \times d}$ (with $k = O(\varepsilon^{-2} \log(1/\delta))$) such that for any unit vector $x \in \mathbb{R}^d$:
 >

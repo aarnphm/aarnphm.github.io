@@ -73,7 +73,7 @@ where $\Omega$ represents control volume.
 
 [^mat-derivative]: the definition of material derivative are as follow:
 
-    > [!math] definition
+    > [!definition]
     >
     > For any [[thoughts/Tensor field|tensor field]] $y$ that is _macroscopic_, or depends on ly on position and time coordinates $y=y(\mathbf{x}, t)$
     >

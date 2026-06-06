@@ -63,7 +63,7 @@ Columns of $A$ are feature/constraint directions; the column space $\mathcal{C}(
 - Determinant $\det(A)$ (square $A\in\mathbb{R}^{n\times n}$): signed volume scaling of the linear map $x\mapsto Ax$.
   - Invertibility test: $A$ invertible $\iff \det(A)\ne 0$; then $A\mathbf{x}=\mathbf{b}$ has a unique solution for every $\mathbf{b}$.
   - 2×2 case: for $\begin{bmatrix}a&b\\c&d\end{bmatrix}$, $\det=ad-bc$.
-  - Eigen view (when diagonalizable): $\det(A)=\prod_i \lambda_i$ (product of eigenvalues) — consistent with volume scaling along principal directions.
+  - Eigen view (when diagonalizable): $\det(A)=\prod_i \lambda_i$ (product of eigenvalues), consistent with volume scaling along principal directions.
   - > 3B1B: columns of $A$ span a parallelepiped; $|\det(A)|$ is its volume, the sign encodes orientation (whether the map flips orientation).
 
 - Trace $\operatorname{tr}(A)$ (square $A$): sum of diagonal entries, $\operatorname{tr}(A)=\sum_i a_{ii}$.
@@ -220,8 +220,8 @@ $$A^\top A\,x=A^\top b.$$
   \draw[->, thick, blue] (0,0) -- (2,1.5) node[above] {$x$};
   \draw[dashed] (2,0) node[below] {$x_1$} -- (2,1.5);
   \draw[dashed] (0,1.5) node[left] {$x_2$} -- (2,1.5);
-  \node at (1.0,-0.35) {\small $e_1=(0,1)$};
-  \node[rotate=90] at (-0.35,0.9) {\small $e_2=(1,0)$};
+  \node at (1.0,-0.35) {\small $e_1=(1,0)$};
+  \node[rotate=90] at (-0.35,0.9) {\small $e_2=(0,1)$};
 \end{tikzpicture}
 \end{document}
 ```
@@ -232,7 +232,7 @@ _2D demonstration of basis and components_
 
 - Eigenbasis: diagonalises $A$ when possible $A=V\Lambda V^{-1}$; dynamics/powers become easy. Links to [[thoughts/Singular Value Decomposition|SVD]] and eigen methods.
 - Principal axes (SVD/PCA): $X\approx U\Sigma V^\top$ reveals dominant directions; used for compression and denoising.
-- Fourier/wavelet bases: diagonalise convolution and encode locality/frequency — natural for signals and PDEs.
+- Fourier/wavelet bases: diagonalise convolution and encode locality/frequency, making them natural for signals and PDEs.
 - Graph Laplacian eigenbasis: encodes smoothness on graphs; useful for message passing and diffusion.
 - Polynomial orthogonal bases (Legendre/Chebyshev): stable approximations on intervals.
 
@@ -256,7 +256,7 @@ _2D demonstration of basis and components_
 ### intuition and types
 
 - Free vectors (displacements): equivalence classes of directed segments with same magnitude and direction; independent of base point.
-- Position vectors: identify a point $p=(x_1,\dots,x_n)$ with the vector from the origin to $p$ — this depends on a chosen origin.
+- Position vectors: identify a point $p=(x_1,\dots,x_n)$ with the vector from the origin to $p$ (which depends on a chosen origin).
 - Physical vectors: velocity, force, momentum; add and scale following the parallelogram rule.
 - Data/feature vectors: $x\in\mathbb R^n$ encodes $n$ numeric attributes; “direction” often means pattern of co‑variation.
 
@@ -277,7 +277,7 @@ Subspaces are subsets closed under these operations; bases give unique coordinat
 i.e: dual
 
 - Quick summary: vectors live in $V$; covectors (linear functionals) live in $V^*$. The natural pairing is $\langle\varphi,v\rangle=\varphi(v)$ (rows acting on columns as $a^\top x$).
-- For full treatment — dual bases, pullbacks, adjoints, and ML links (gradients as covectors) — see [[lectures/411/notes#dual|dual]].
+- For full treatment (dual bases, pullbacks, adjoints, and ML links with gradients as covectors), see [[lectures/411/notes#dual|dual]].
 
 > [!note] Gradient is a covector
 >
@@ -310,7 +310,7 @@ i.e: dual
 ## vector operations
 
 - Addition and scaling: $\mathbf{u}+\mathbf{v}$, $\alpha\mathbf{u}$. Linear combo: $\sum_i \alpha_i\mathbf{v}_i$; see [[lectures/411/notes#span|span]].
-- Subspaces: sets closed under addition/scaling (e.g., a plane through the origin in $\mathbb{R}^3$); see [[lectures/411/notes#rowspace|rowspace]] and [[lectures/411/notes#nullspace|nullspace]].
+- Subspaces: sets closed under addition/scaling (e.g., a plane through the origin in $\mathbb{R}^3$); see [[lectures/411/notes#columnspace-nullspace-rowspace|rowspace]] and [[lectures/411/notes#columnspace-nullspace-rowspace|nullspace]].
 - Linear independence: $\{\mathbf{v}_i\}$ independent iff $\sum_i \alpha_i\mathbf{v}_i=\mathbf{0}$ implies all $\alpha_i=0$; basis = independent set that spans the space (see [[lectures/411/notes#basis|basis]]).
 
 see also [[thoughts/Vector calculus#gradient|gradient]], [[thoughts/Vector calculus#divergence|divergence]], [[thoughts/Vector calculus#Jacobian matrix|Jacobian]]
@@ -352,7 +352,7 @@ see also [[thoughts/Vector calculus#gradient|gradient]], [[thoughts/Vector calcu
 
 > [!tip] What “parametric” means
 >
-> The parameters (e.g., $t$ or $(s,t)$) are coordinates along intrinsic directions. Varying parameters traces every point in the set. In linear‑algebra terms, parameters correspond to free variables; see [[lectures/411/notes#rank, nullspace, rowspace|rank/nullspace]].
+> The parameters (e.g., $t$ or $(s,t)$) are coordinates along intrinsic directions. Varying parameters traces every point in the set. In linear‑algebra terms, parameters correspond to free variables; see [[lectures/411/notes#rank-nullity|rank/nullspace]].
 
 ### converting between forms
 
@@ -488,7 +488,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 
 - Sum of these = total number of input dimensions. You can’t “lose” or “create” dimensions without paying the price somewhere else.
 
-- In solving $A x = b$ (or the homogeneous version $A x = 0$), this tells you how many degrees of freedom you have (nullity) vs how many constraints (rank) you have—without solving.
+- In solving $A x = b$ (or the homogeneous version $A x = 0$), this tells you how many degrees of freedom you have (nullity) vs how many constraints (rank) you have, without solving.
 
 ### consequences, corollaries, & uses
 
@@ -555,7 +555,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 ### Geometric relevance
 
 - If $A\mathbf{x}=\mathbf{b}$ is consistent, the solution set is an affine translate of the nullspace: $\mathbf{x}=\mathbf{x}_p+\mathcal{N}(A)$; its dimension equals $\operatorname{nullity}(A)=n-r$.
-- Uniqueness occurs exactly when $\mathcal{N}(A)=\{\mathbf{0}\}$, i.e., $r=n$ (see [[lectures/411/notes#uniqueness of solutions|uniqueness]]).
+- Uniqueness occurs exactly when $\mathcal{N}(A)=\{\mathbf{0}\}$, i.e., $r=n$ (see [[lectures/411/notes#uniqueness-of-solutions|uniqueness]]).
 
 ### fundamental subspaces
 
@@ -574,7 +574,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 - Direct sums (Euclidean inner product): $\mathbb R^n=\mathcal{R}(A)\oplus\mathcal{N}(A)$ and $\mathbb R^m=\mathcal{C}(A)\oplus\mathcal{N}(A^\top)$.
 
 > [!tip] Column space in practice
-> Think of $A$ as a linear map $A:\mathbb R^n\to\mathbb R^m$. The column space is the set of all outputs $Ax$ — exactly the set of right‑hand sides $b$ for which $Ax=b$ is solvable. Its dimension is the rank. Use pivot columns of the original $A$ for a basis; use nonzero rows of RREF for the row space.
+> Think of $A$ as a linear map $A:\mathbb R^n\to\mathbb R^m$. The column space is the set of all outputs $Ax$, which is exactly the set of right‑hand sides $b$ for which $Ax=b$ is solvable. Its dimension is the rank. Use pivot columns of the original $A$ for a basis; use nonzero rows of RREF for the row space.
 
 ### Worked RREF (2×3) to extract bases
 
@@ -901,7 +901,7 @@ so $\begin{bmatrix}6&12\\12&26\end{bmatrix}x=\begin{bmatrix}11\\23\end{bmatrix}$
 - Shape and view: $A=[a_{ij}]\in\mathbb{R}^{m\times n}$; columns $\{\mathbf{a}_j\}$ and rows $\{\mathbf{r}_i^\top\}$.
 - Special matrices: identity $I$, zero $0$, diagonal, triangular, symmetric/Hermitian, orthogonal/unitary ($Q^{-1}=Q^\top$ or $Q^{\dagger}$), permutation, projection ($P^2=P$).
 - Transpose/conjugate transpose: $A^\top$ ($A^{\dagger}$ in complex). Inverses exist only if square and full rank.
-- Rank: number of pivots/independent columns; determines image dimension; see [[lectures/411/notes#rank, nullspace, rowspace|rank/nullspace/rowspace]].
+- Rank: number of pivots/independent columns; determines image dimension; see [[lectures/411/notes#columnspace-nullspace-rowspace|rank/nullspace/rowspace]].
 - Determinant (square): volume scaling and invertibility test: $\det(A)\ne 0\iff A^{-1}$ exists.
 
 properties:
@@ -951,9 +951,9 @@ In particular:
 
 Because of those definitional constraints, Hermitian matrices have several special properties:
 
-1. **Real eigenvalues** — All eigenvalues of a Hermitian matrix are real numbers.
+1. **Real eigenvalues** : all eigenvalues of a Hermitian matrix are real numbers.
 
-2. **Diagonalizable by a unitary matrix** — There exists a unitary matrix $U$ (i.e. $U^\ast U = I$) such that
+2. **Diagonalizable by a unitary matrix** : there exists a unitary matrix $U$ (i.e. $U^\ast U = I$) such that
 
    $$
    A = U \Lambda U^\ast
@@ -961,8 +961,8 @@ Because of those definitional constraints, Hermitian matrices have several speci
 
    where $\Lambda$ is real diagonal (containing eigenvalues).
 
-3. **Quadratic forms are real** — For any (complex) vector $v$, $v^\ast A v$ is a real scalar.
-4. **Symmetric as a special case** — If $A$ has _real_ entries, then Hermitian means just symmetric: $A = A^T$.
+3. **Quadratic forms are real** : for any (complex) vector $v$, $v^\ast A v$ is a real scalar.
+4. **Symmetric as a special case** : if $A$ has real entries, then Hermitian means just symmetric: $A = A^T$.
 
 5. **Hermitian plus Hermitian → Hermitian**; **scalar real multiple → Hermitian**; **inverse (if it exists) → Hermitian**.
 
@@ -973,7 +973,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 - In optimization, Hessians of real scalar functions (when defined in complex domain) are Hermitian. Stability, condition numbers, etc., come from those eigenvalues/spectra.
 
 > [!tip] Rationale
-> Hermitian/symmetric structure guarantees real spectra and orthogonal eigenvectors, enabling stable diagonalization, clean energy/quadratic interpretations, and well‑posed algorithms (e.g., eigensolvers, Cholesky when PD).
+> Hermitian/symmetric structure guarantees real spectra and orthogonal eigenvectors, enabling stable diagonalization, clean energy/quadratic interpretations, and well-posed algorithms (e.g., eigensolvers, Cholesky when PD).
 
 ### Block matrices and Schur complement
 
@@ -982,12 +982,12 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 - Solving block systems uses forward/back substitution with Schur complements (common in Gaussian elimination with pivoting).
 
 > [!tip] Rationale
-> Use Schur complements to eliminate block variables, to reason about invertibility/determinants, and to connect with Gaussian conditioning and rank‑k updates (Sherman–Morrison–Woodbury).
+> Use Schur complements to eliminate block variables, to reason about invertibility/determinants, and to connect with Gaussian conditioning and rank-k updates (Sherman–Morrison–Woodbury).
 
 ### Matrix norms and conditioning
 
-- Operator 2‑norm: $\|A\|_2=\max_{\|x\|=1}\|Ax\|=\sigma_{\max}(A)$; Frobenius: $\|A\|_F=\sqrt{\sum_{ij}a_{ij}^2}=\sqrt{\operatorname{tr}(A^\top A)}$.
-- Condition number (2‑norm): $\kappa_2(A)=\|A\|_2\|A^{-1}\|_2=\sigma_{\max}/\sigma_{\min}$ for invertible $A$; high $\kappa$ implies error amplification in $A^{-1}b$ and least squares.
+- Operator 2-norm: $\|A\|_2=\max_{\|x\|=1}\|Ax\|=\sigma_{\max}(A)$; Frobenius: $\|A\|_F=\sqrt{\sum_{ij}a_{ij}^2}=\sqrt{\operatorname{tr}(A^\top A)}$.
+- Condition number (2-norm): $\kappa_2(A)=\|A\|_2\|A^{-1}\|_2=\sigma_{\max}/\sigma_{\min}$ for invertible $A$; high $\kappa$ implies error amplification in $A^{-1}b$ and least squares.
 
 > [!tip] Rationale
 > Norms quantify size; conditioning predicts sensitivity. High $\kappa$ calls for numerically stable methods (QR/regularization) and careful stopping criteria; norms also guide step sizes and error bounds.
@@ -995,14 +995,14 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 ### Decompositions (when and why)
 
 - LU (with partial pivoting): $PA=LU$ (exists for almost all square $A$); efficient for solving many $Ax=b$ with the same $A$.
-- QR (Householder/Givens): $A=QR$ with $Q$ orthogonal, $R$ upper‑triangular; stable least squares via $\min\|Ax-b\| \Rightarrow R x=Q^\top b$.
+- QR (Householder/Givens): $A=QR$ with $Q$ orthogonal, $R$ upper-triangular; stable least squares via $\min\|Ax-b\| \Rightarrow R x=Q^\top b$.
 - Cholesky (SPD): if $A\succ 0$, $A=R^\top R$; fastest solver for SPD systems.
-- SVD (all matrices): $A=U\Sigma V^\top$; reveals rank, range/null spaces, and gives the pseudoinverse and best low‑rank approximations (Eckart–Young). See [[thoughts/Singular Value Decomposition|SVD]].
+- SVD (all matrices): $A=U\Sigma V^\top$; reveals rank, range/null spaces, and gives the pseudoinverse and best low-rank approximations (Eckart–Young). See [[thoughts/Singular Value Decomposition|SVD]].
 
 > [!tip] Rationale
 > Factorizations expose structure and enable efficient, stable solves: LU for repeated $Ax=b$, QR for least squares, Cholesky for SPD, SVD for rank/conditioning and pseudoinverses; they also separate rotations from scalings.
 
-> [!example] Worked micro‑examples (LU and QR)
+> [!example] Worked micro-examples (LU and QR)
 >
 > - LU (no pivot): $A=\begin{bmatrix}2&3\\6&8\end{bmatrix}=\underbrace{\begin{bmatrix}1&0\\3&1\end{bmatrix}}_{L}\underbrace{\begin{bmatrix}2&3\\0&-1\end{bmatrix}}_{U}$. Solve $Ax=b$ via $Ly=c$, then $Ux=c$.
 > - QR (Gram–Schmidt on $\mathbb R^{2\times 2}$): with $A=\begin{bmatrix}1&1\\1&0\end{bmatrix}$,
@@ -1013,10 +1013,10 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 ### Pseudoinverse (least squares solution)
 
 - For $A=U\Sigma V^\top$, the Moore–Penrose pseudoinverse is $A^{+}=V\Sigma^{+}U^\top$ (invert nonzero singular values).
-- Minimum‑norm least squares: $x^{\star}=A^{+} b$ solves $\min_x\|Ax-b\|_2$; if solutions exist, returns the minimum‑norm one.
+- Minimum-norm least squares: $x^{\star}=A^{+} b$ solves $\min_x\|Ax-b\|_2$; if solutions exist, returns the minimum-norm one.
 
 > [!tip] Rationale
-> Pseudoinverse unifies over/under‑determined cases, yields minimum‑norm solutions, and pairs naturally with rank truncation/regularization to mitigate ill‑conditioning and noise.
+> Pseudoinverse unifies over/under-determined cases, yields minimum-norm solutions, and pairs naturally with rank truncation/regularization to mitigate ill-conditioning and noise.
 
 ### Positive (semi)definite (PSD) matrices
 
@@ -1031,10 +1031,10 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 ### Circulant/Toeplitz and convolution
 
 - 1D circular convolution corresponds to multiplication by a circulant matrix $C$, which diagonalizes by the DFT: $C=F^{\!*}\,\Lambda\,F$; convolution becomes elementwise multiplication in frequency.
-- Toeplitz matrices encode linear‑time invariant filters; fast multiplication uses FFT‑based embedding into circulants.
+- Toeplitz matrices encode linear-time invariant filters; fast multiplication uses FFT-based embedding into circulants.
 
 > [!tip] Rationale
-> Diagonalizing convolution via the DFT turns expensive structured multiplications into elementwise products, enabling fast filtering and large‑scale linear solves with FFTs.
+> Diagonalizing convolution via the DFT turns expensive structured multiplications into elementwise products, enabling fast filtering and large-scale linear solves with FFTs.
 
 ## matrix multiplication
 
@@ -1043,20 +1043,20 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 ### Views you should know
 
-- Column view: $AB=[A\mathbf{b}_1\;\cdots\;A\mathbf{b}_p]$ — each column of $C$ is $A$ applied to a column of $B$.
+- Column view: $AB=[A\mathbf{b}_1\;\cdots\;A\mathbf{b}_p]$, where each column of $C$ is $A$ applied to a column of $B$.
 - Row view: rows of $C$ are rows of $A$ times $B$; equivalently $C^\top=B^\top A^\top$.
 - Block view: valid when block shapes match
 
 > [!tip] Rationale
-> The definition $c_{ij}=\sum_k a_{ik}b_{kj}$ is exactly “compose linear maps” in coordinates. It also aligns with the Frobenius inner product via trace cyclicity, making matrix calculus clean and basis‑invariant.
+> The definition $c_{ij}=\sum_k a_{ik}b_{kj}$ is exactly “compose linear maps” in coordinates. It also aligns with the Frobenius inner product via trace cyclicity, making matrix calculus clean and basis-invariant.
 >
 > - Composition: matrices are coordinates of linear maps; $(AB)x=A(Bx)$ forces the summation rule.
-> - Column/row/outer views: the same rule yields multiple, useful mental models (apply to columns, dot rows with columns, sum of rank‑1 outer products).
+> - Column/row/outer views: the same rule yields multiple, useful mental models (apply to columns, dot rows with columns, sum of rank-1 outer products).
 > - Frobenius inner product: $\langle X,AB\rangle=\operatorname{tr}(X^\top AB)=\operatorname{tr}((AX)^\top B)=\langle AX,B\rangle$; gradients and identities follow from this invariance.
 
 ### Decompositions and calculus
 
-- Outer‑product sum (rank‑1 expansion): $\displaystyle AB=\sum_{k=1}^{n} A_{:k}\,B_{k:}$; useful to reason about low‑rank updates and matrix factorizations.
+- Outer-product sum (rank-1 expansion): $\displaystyle AB=\sum_{k=1}^{n} A_{:k}\,B_{k:}$; useful to reason about low-rank updates and matrix factorizations.
 - Bilinearity: linear in each argument separately; supports distributing derivatives: $\mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$.
 - Frobenius inner product: $\langle X,Y\rangle=\operatorname{tr}(X^\top Y)$ with $\|X\|_F^2=\langle X,X\rangle$; note $\operatorname{tr}(X^\top AB)=\operatorname{tr}((AX)^\top B)=\operatorname{tr}(X^\top BA)$ when shapes match.
 - Quick calculus identities (shapes compatible):
@@ -1066,12 +1066,12 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 ### Algebraic properties
 
-- Associative $(AB)C=A(BC)$; distributive $A(B+C)=AB+AC$; generally non‑commutative $AB\ne BA$.
+- Associative $(AB)C=A(BC)$; distributive $A(B+C)=AB+AC$; generally non-commutative $AB\ne BA$.
 - Identity: $AI=A$ and $IB=B$ when shapes are compatible.
 
 > [!tip] Computation note
 >
-> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache‑aware blocking and vectorization; advanced algorithms ([[thoughts/Strassen algorithm|Strassen]], etc.) trade constants for asymptotics.
+> Naive multiplication is $O(n^3)$ for $n\times n$. Libraries use cache-aware blocking and vectorization; advanced algorithms ([[thoughts/Strassen algorithm|Strassen]], etc.) trade constants for asymptotics.
 
 #### how the naive algorithm works
 
@@ -1117,7 +1117,7 @@ This model assumes scalar multiplication and addition are constant-time operatio
 >
 > - Standard product $AB$ composes linear maps; shape $(m\times n)(n\times p)\to(m\times p)$ and mixes rows of $A$ with columns of $B$ by summation.
 > - Hadamard $A\circ B$ multiplies entries independently; same shape as inputs; commutative/associative; interacts with the Frobenius inner product via $\langle A\circ B,\,C\rangle=\sum_{ij} a_{ij}b_{ij}c_{ij}$.
-> - Kronecker $A\otimes B$ builds a larger block matrix; shapes multiply $(mp\times nq)$. Never form $A\otimes B$ explicitly when used as a linear operator — use reshape identities like $\operatorname{vec}(AXB)=(B^\top\otimes A)\operatorname{vec}(X)$.
+> - Kronecker $A\otimes B$ builds a larger block matrix; shapes multiply $(mp\times nq)$. Never form $A\otimes B$ explicitly when used as a linear operator, using instead reshape identities like $\operatorname{vec}(AXB)=(B^\top\otimes A)\operatorname{vec}(X)$.
 
 - Basic properties you’ll use:
   - Hadamard: $(A\circ B)^\top=A^\top\circ B^\top$, $\|A\circ B\|_F\le\|A\|_F\,\|B\|_\infty$, and if $A,B\succeq 0$ then $A\circ B\succeq 0$ (Schur).
@@ -1132,7 +1132,7 @@ This model assumes scalar multiplication and addition are constant-time operatio
 
 #### don’t materialize Kronecker
 
-NumPy (use Fortran order to match the column‑major “vec” in formulas):
+NumPy (use Fortran order to match the column-major “vec” in formulas):
 
 ```python shell
 import numpy as np
@@ -1163,7 +1163,7 @@ y = kron_apply_vec(A, B, x, n=2, p=2)
 assert np.allclose(y, np.kron(B.T, A) @ x)
 ```
 
-PyTorch (emulates column‑major vec via transpose views):
+PyTorch (emulates column-major vec via transpose views):
 
 ```python
 import torch
@@ -1184,15 +1184,15 @@ def kron_apply_vec_torch(
 ```
 
 > [!warning] vec convention
-> The identity $\operatorname{vec}(AXB)=(B^\top\!\otimes A)\operatorname{vec}(X)$ assumes column‑major `vec`. In NumPy, use `order='F'` for reshape/ravel; in PyTorch, transpose before/after `view` as shown.
+> The identity $\operatorname{vec}(AXB)=(B^\top\!\otimes A)\operatorname{vec}(X)$ assumes column-major `vec`. In NumPy, use `order='F'` for reshape/ravel; in PyTorch, transpose before/after `view` as shown.
 
 ### Fast matrix multiplication (GEMM)
 
-- Use a blocked (tiled) algorithm to respect caches and registers. High‑performance libraries pack panels of $A$ and $B$ and compute small “micro‑kernels” that map well to SIMD.
-- Parallelize over outer tiles; keep inner micro‑kernel single‑threaded for cache locality.
-- Prefer library GEMM (BLAS level‑3) over hand‑written triple loops. If implementing, follow the packed‑panel + micro‑kernel pattern below.
+- Use a blocked (tiled) algorithm to respect caches and registers. High-performance libraries pack panels of $A$ and $B$ and compute small “micro-kernels” that map well to SIMD.
+- Parallelize over outer tiles; keep inner micro-kernel single-threaded for cache locality.
+- Prefer library GEMM (BLAS level-3) over hand-written triple loops. If implementing, follow the packed-panel + micro-kernel pattern below.
 
-Pseudo‑code (row‑major, single precision shown conceptually):
+Pseudo-code (row-major, single precision shown conceptually):
 
 ```
 for i in 0..m step Mb:                # block rows of A/C
@@ -1209,30 +1209,30 @@ for i in 0..m step Mb:                # block rows of A/C
 ```
 
 - Chain ordering matters: compute $(AB)C$ vs. $A(BC)$ based on shapes to minimize flops; see “Chain order and blocking”.
-- Subcubic algorithms (Strassen and beyond) reduce asymptotic complexity but have large constants and can amplify numerical error. They’re used selectively for very large, well‑conditioned problems; for most workloads, tuned blocked GEMM wins.
+- Subcubic algorithms (Strassen and beyond) reduce asymptotic complexity but have large constants and can amplify numerical error. They’re used selectively for very large, well-conditioned problems; for most workloads, tuned blocked GEMM wins.
 
 ### BLAS/GEMM notes
 
 - BLAS levels:
-  - Level‑1: vector–vector (dot, axpy).
-  - Level‑2: matrix–vector (gemv) — memory‑bound.
-  - Level‑3: matrix–matrix (gemm) — compute‑bound and where tiling shines.
+  - Level-1: vector–vector (dot, axpy).
+  - Level-2: matrix–vector (gemv) (memory-bound).
+  - Level-3: matrix–matrix (gemm) (compute-bound, where tiling shines).
 - GEMM contract: $C \leftarrow \alpha \cdot \text{op}(A) \cdot \text{op}(B) + \beta C$, where $\text{op}(\cdot)$ is identity or transpose; choose $\beta = 0$ to avoid reading $C$.
-- Leading dimensions: `lda`, `ldb`, `ldc` are the physical row/column strides; mismatching them with layout corrupts results. Classic Fortran BLAS expects column‑major; C/C++ wrappers often accept row‑major flags.
-- Packing: copy tiles of $A, B$ into contiguous, aligned buffers; micro‑kernels use FMA and SIMD. Alignment (e.g., 32–64 bytes) and $mr \times nr$ tile sizes are architecture‑dependent.
+- Leading dimensions: `lda`, `ldb`, `ldc` are the physical row/column strides; mismatching them with layout corrupts results. Classic Fortran BLAS expects column-major; C/C++ wrappers often accept row-major flags.
+- Packing: copy tiles of $A, B$ into contiguous, aligned buffers; micro-kernels use FMA and SIMD. Alignment (e.g., 32–64 bytes) and $mr \times nr$ tile sizes are architecture-dependent.
 - Implementations: OpenBLAS, BLIS, MKL, Accelerate on CPU; cuBLAS/rocBLAS on GPU. Prefer vendor/tuned builds over custom kernels unless you must specialize.
 
 > [!tip] Choosing dimensions
-> Keep $M_b, N_b, K_b$ large enough to amortize packing but small enough to fit L2; choose $mr \times nr$ to saturate registers/FMA (e.g., $8 \times 6$ AVX2, $16 \times 8$ AVX‑512, architecture‑dependent).
+> Keep $M_b, N_b, K_b$ large enough to amortize packing but small enough to fit L2; choose $mr \times nr$ to saturate registers/FMA (e.g., $8 \times 6$ AVX2, $16 \times 8$ AVX-512, architecture-dependent).
 
 ### CUDA/cuBLAS GEMM
 
-- Use cuBLAS for high‑performance GPU GEMM. cuBLAS assumes column‑major storage; treat row‑major by swapping/transposing operands so that you compute `C^T = B^T A^T`.
+- Use cuBLAS for high-performance GPU GEMM. cuBLAS assumes column-major storage; treat row-major by swapping/transposing operands so that you compute `C^T = B^T A^T`.
 - Prefer `cublasGemmEx`/`cublasLtMatmul` to access Tensor Cores (FP16/BF16/TF32 with FP32 accumulation). Set math mode appropriately for your CUDA version/hardware.
 
-> [!example] Basic SGEMM (column‑major)
+> [!example] Basic SGEMM (column-major)
 >
-> Multiplies $C = \alpha A B + \beta C$ with $A \in R^{m\times k},B\in R^{k\times n},C \in R^{m\times n}$. Leading dimension $\text{lda}=m,\text{ldb}=k,\text{ldc}=m$ in column‑major.
+> Multiplies $C = \alpha A B + \beta C$ with $A \in R^{m\times k},B\in R^{k\times n},C \in R^{m\times n}$. Leading dimension $\text{lda}=m,\text{ldb}=k,\text{ldc}=m$ in column-major.
 >
 > ```cpp
 > // g++/nvcc: nvcc -O3 gemm_cublas.cu -lcublas
@@ -1261,8 +1261,8 @@ for i in 0..m step Mb:                # block rows of A/C
 > }
 > ```
 
-> [!tip] Row‑major inputs
-> If `A,B,C` are row‑major in host code, compute $C^T = B^T A^T$ by calling `cublasSgemm(h, CUBLAS_OP_T, CUBLAS_OP_T, n, m, k, ...)` with swapped operands and leading dimensions set to their row‑major strides.
+> [!tip] Row-major inputs
+> If `A,B,C` are row-major in host code, compute $C^T = B^T A^T$ by calling `cublasSgemm(h, CUBLAS_OP_T, CUBLAS_OP_T, n, m, k, ...)` with swapped operands and leading dimensions set to their row-major strides.
 
 > [!example] Tensor Cores via `cublasGemmEx`
 >
@@ -1329,7 +1329,7 @@ for i in 0..m step Mb:                # block rows of A/C
 
 > [!warning] cuBLAS gotchas
 >
-> - Column‑major by default: set `lda/ldb/ldc` to the number of rows; map row‑major via transposes.
+> - Column-major by default: set `lda/ldb/ldc` to the number of rows; map row-major via transposes.
 > - Pointer mode: scalars `alpha`,`beta` live on host by default; switch with `cublasSetPointerMode` if you pass device pointers.
 > - Alignment: Tensor Cores prefer dimensions that are multiples of 8/16 (FP16/BF16); pad or use Lt heuristics.
 > - Streams: associate a CUDA stream with `cublasSetStream` to overlap transfers/compute; ensure lifetime of inputs until the GEMM completes.
@@ -1355,8 +1355,8 @@ for i in 0..m step Mb:                # block rows of A/C
   $$
 - Practical use:
   - Recurse until a threshold (e.g., side length 256–1024), then switch to blocked GEMM.
-  - Pad to powers‑of‑two or handle odd sizes with peeling.
-  - Watch numerical error: extra additions can increase rounding; avoid for ill‑conditioned inputs.
+  - Pad to powers-of-two or handle odd sizes with peeling.
+  - Watch numerical error: extra additions can increase rounding; avoid for ill-conditioned inputs.
   - Memory overhead: temporary buffers for the $M_i$ and sums; reuse/workspace is essential for performance.
 
 Minimal reference implementation (educational; not tuned):
@@ -1412,18 +1412,18 @@ strassen(A, B)
 
 > [!note] when to use strassen
 >
-> Use only for very large dense square-ish matrices, good arithmetic intensity, and when you can tolerate a modest increase in rounding error. Otherwise, high‑quality blocked GEMM is typically faster and more stable.
+> Use only for very large dense square-ish matrices, good arithmetic intensity, and when you can tolerate a modest increase in rounding error. Otherwise, high-quality blocked GEMM is typically faster and more stable.
 
 > [!warning] Common pitfalls
 >
 > - Forming $A\otimes B$ explicitly explodes memory (sizes multiply). Use the vec/Kronecker identities.
 > - Confusing $A\circ B$ with $AB$: elementwise vs. composition. The Frobenius pairing relates them via $\langle A\circ B, C\rangle=\langle A, B\circ C\rangle$ but they are different operations.
-> - Ignoring data layout: mismatched row/column‑major assumptions or unaligned packing can erase SIMD/cache benefits.
+> - Ignoring data layout: mismatched row/column-major assumptions or unaligned packing can erase SIMD/cache benefits.
 
 ### Chain order and blocking
 
-- Matrix‑chain ordering affects cost; dynamic programming finds the cheapest parenthesization for a fixed chain of shapes.
-- Blocking (tiling) yields cache‑friendly performance; BLAS uses blocked algorithms under the hood.
+- Matrix-chain ordering affects cost; dynamic programming finds the cheapest parenthesization for a fixed chain of shapes.
+- Blocking (tiling) yields cache-friendly performance; BLAS uses blocked algorithms under the hood.
 
 ### Worked examples
 
@@ -1441,7 +1441,7 @@ strassen(A, B)
 - Kernel and image: $\ker T=\{x:T(x)=0\}$, $\mathrm{im}\,T=\{T(x)\}$ with $\dim\ker T+\dim\mathrm{im}\,T=\dim V$.
 - Projections and reflections: $P=QQ^\top$ for orthonormal $Q$ (projection onto $\mathrm{span}(Q)$); reflections $R=I-2uu^\top$ for unit $u$.
 - Rotations: in $\mathbb{R}^2$, $R_\theta=\begin{bmatrix}\cos\theta&-\sin\theta\\ \sin\theta&\cos\theta\end{bmatrix}$; in $\mathbb{R}^n$, orthogonal matrices with $R^\top R=I$.
-- Similarity: changing basis in $V$ gives $[T]'=S^{-1}[T]S$; eigenvalues are basis‑invariant.
+- Similarity: changing basis in $V$ gives $[T]'=S^{-1}[T]S$; eigenvalues are basis-invariant.
 
 > [!note] Linearization and Jacobian
 > A differentiable $f:\mathbb{R}^n\to\mathbb{R}^m$ is locally $f(x_0+h)\approx f(x_0)+J_f(x_0)h$, where $J_f$ is the Jacobian; see [[thoughts/Vector calculus#Jacobian matrix|Jacobian]].
@@ -1454,7 +1454,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 - Isomorphism: $T$ is invertible (an isomorphism) iff $\ker T=\{0\}$ and $\dim\mathrm{im}\,T=\dim V$ (square), equivalently $[T]$ has full rank.
 - Adjoint (Euclidean case): $T^\dagger$ satisfies $\langle Tx,y\rangle=\langle x,T^\dagger y\rangle$; with the standard inner product, $[T^\dagger]=[T]^\top$. Symmetric operators ($T=T^\dagger$) admit orthonormal eigenbases; see [[lectures/411/notes#eigenvectors|eigenvectors]].
-- Invariant subspace: $S\subseteq V$ with $T(S)\subseteq S$. Decomposing $V$ into invariant subspaces block‑diagonalizes $[T]$ in a suitable basis (Jordan/Schur for general, orthogonal diagonalization for symmetric).
+- Invariant subspace: $S\subseteq V$ with $T(S)\subseteq S$. Decomposing $V$ into invariant subspaces block-diagonalizes $[T]$ in a suitable basis (Jordan/Schur for general, orthogonal diagonalization for symmetric).
 
 ### Affine maps and change of basis
 
@@ -1463,14 +1463,14 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 ### Operator norm and exponential
 
-- Operator 2‑norm: $\|T\|=\sup_{\|x\|=1}\|Tx\|$ equals the top singular value of $[T]$.
+- Operator 2-norm: $\|T\|=\sup_{\|x\|=1}\|Tx\|$ equals the top singular value of $[T]$.
 - Matrix exponential: $e^{At}=\sum_{k\ge0}\frac{(At)^k}{k!}$; if $A=V\Lambda V^{-1}$ then $e^{At}=V e^{\Lambda t} V^{-1}$. Solves $\dot x=Ax$ (LTI systems), with stability governed by eigenvalues.
 
 ## eigenvectors
 
 > [!abstract] Eigenvalues and eigenvectors
 > For square $A\in\mathbb{R}^{n\times n}$, a nonzero $v$ and scalar $\lambda$ satisfy $Av=\lambda v$. The set of all eigenvectors with eigenvalue $\lambda$ (plus $0$) is the eigenspace $\mathcal{E}_\lambda=\ker(A-\lambda I)$.
-> Left‑eigenvectors satisfy $w^\top A = \lambda\, w^\top$ (equivalently, $A^\top w=\lambda w$); for symmetric/Hermitian $A$, left and right eigenvectors coincide up to transpose/conjugation.
+> Left-eigenvectors satisfy $w^\top A = \lambda\, w^\top$ (equivalently, $A^\top w=\lambda w$); for symmetric/Hermitian $A$, left and right eigenvectors coincide up to transpose/conjugation.
 
 ### Diagonalization and multiplicities
 
@@ -1490,10 +1490,10 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 ### Intuition first (geometry)
 
-- What stays straight: an eigenvector is a direction $v$ that $A$ does not turn — only scales by $\lambda$ (and possibly flips if $\lambda<0$).
+- What stays straight: an eigenvector is a direction $v$ that $A$ does not turn, scaling it only by $\lambda$ (and possibly flipping it if $\lambda<0$).
 - Symmetric picture: for $A=A^\top$, the unit circle becomes an ellipse. The ellipse’s axes are the eigenvectors; their radii are $|\lambda_i|$.
 - Quadratic form view: on the unit circle, $x^\top A x$ measures “how much $A$ prefers direction $x$”; the most preferred directions are the eigenvectors with largest/smallest eigenvalues.
-- Dynamics: repeated application $A^k$ scales components along each eigenvector by $\lambda^k$ — the largest $|\lambda|$ dominates long‑run behavior; see [[lectures/411/notes#linear transformations|linear transformations]].
+- Dynamics: repeated application $A^k$ scales components along each eigenvector by $\lambda^k$. The largest $|\lambda|$ dominates long-run behavior; see [[lectures/411/notes#linear transformations|linear transformations]].
 
 ```tikz
 % Eigen-geometry: unit circle vs. quadratic-form ellipse
@@ -1546,7 +1546,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 ### Rayleigh quotient (why and what)
 
-- Definition (nonzero $x$): $\displaystyle R_A(x)=\frac{x^\top A x}{x^\top x}$ — the quadratic form normalized by length. The denominator removes scaling so the value depends only on direction.
+- Definition (nonzero $x$): $\displaystyle R_A(x)=\frac{x^\top A x}{x^\top x}$, the quadratic form normalized by length. The denominator removes scaling so the value depends only on direction.
 - Why we need it:
   - Optimization lens: for symmetric $A$, maximizing/minimizing $R_A(x)$ over $\|x\|=1$ returns the largest/smallest eigenvalues and their eigenvectors. This underpins PCA, spectral clustering, and stability analysis.
   - Algorithmic lens: power/Lanczos methods track $R_A(x_k)$ as a cheap, monotone estimate of the extremal eigenvalues.
@@ -1658,7 +1658,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 ### motivation and contrast with dot product
 
-- What problem does $\times$ solve? When combining two directions in $\mathbb R^3$, sometimes we want a scalar “how aligned?” measure — that’s the [[lectures/411/notes#dot product, norm, angle, projection|dot product]] $\,\cdot\,$ via $\cos\theta$. Other times we want the axis orthogonal to both together with a size proportional to the spanned area — that’s the cross product $\times$ via $\sin\theta$.
+- What problem does $\times$ solve? When combining two directions in $\mathbb R^3$, sometimes we want a scalar “how aligned?” measure, which is the [[lectures/411/notes#dot product, norm, angle, projection|dot product]] $\,\cdot\,$ via $\cos\theta$. Other times we want the axis orthogonal to both together with a size proportional to the spanned area, which is the cross product $\times$ via $\sin\theta$.
 - Geometric outputs:
   - $\mathbf{u}\cdot\mathbf{v}$: scalar measuring alignment/projection length; zero means perpendicular.
   - $\mathbf{u}\times\mathbf{v}$: vector normal to the plane of $\mathbf{u},\mathbf{v}$ with magnitude equal to the parallelogram area; zero means collinear.
@@ -1807,8 +1807,8 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 | Quantity                                 | Formula                                                                                                | Notes                    |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------ |
-| $\partial/\partial x$ of least squares   | $$\displaystyle \frac{\partial}{\partial x}\,\tfrac12\|Ax-b\|_2^2 = A^\top(Ax-b)$$                     | —                        |
-| $\partial/\partial A$ of Frobenius LS    | $$\displaystyle \frac{\partial}{\partial A}\,\tfrac12\|AX-B\|_F^2 = (AX-B)X^\top$$                     | —                        |
-| $\partial/\partial A$ of trace           | $$\displaystyle \frac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$$                           | —                        |
+| $\partial/\partial x$ of least squares   | $$\displaystyle \frac{\partial}{\partial x}\,\tfrac12\|Ax-b\|_2^2 = A^\top(Ax-b)$$                     | .                        |
+| $\partial/\partial A$ of Frobenius LS    | $$\displaystyle \frac{\partial}{\partial A}\,\tfrac12\|AX-B\|_F^2 = (AX-B)X^\top$$                     | .                        |
+| $\partial/\partial A$ of trace           | $$\displaystyle \frac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$$                           | .                        |
 | $\partial/\partial X$ of quadratic trace | $$\displaystyle \frac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B^\top + A^\top X B$$ | Symmetric $A,B$ → $2AXB$ |
-| Differential product rule                | $$\displaystyle \mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$$                                         | —                        |
+| Differential product rule                | $$\displaystyle \mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$$                                         | .                        |

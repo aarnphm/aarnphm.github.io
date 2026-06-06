@@ -13,7 +13,7 @@ Also known as _Leibniz-Reynolds transport therem_
 
 A three-dimensional generalization of Leibniz integral rule
 
-> [!math] theorem
+> [!theorem]
 >
 > Consider integrating $\mathbf{f} = \mathbf{f}(x, t)$ over time-dependent region $\Omega (t)$ that has boundary $\partial \Omega (t)$ then take derivative w.r.t time:
 >

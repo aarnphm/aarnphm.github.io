@@ -2,7 +2,7 @@
 date: '2025-09-10'
 description: 2/n some more notes on EAGLE and MTP
 id: notes
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-06-06 00:12:57 GMT-04:00
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
 tags:
@@ -174,13 +174,13 @@ Hidden-state sequences are more regular and smooth, whereas token sequences (nat
 - predicting the next hidden state is an easier task than predicting the next token directly.
 - feature-level autoregression achieved higher speedups (e.g. $1.9\times$) than a comparable token-level draft ($1.5\times$).
 
-> Essentially, the draft model "extrapolates" the large model's trajectory in feature space.
+> The draft model "extrapolates" the large model's trajectory in feature space.
 
-[^fact]: In fact, a small model can autoregress through the continuous feature space more effectively, yielding a higher draft accuracy.
+[^fact]: A small model can autoregress through the continuous feature space more effectively, yielding a higher draft accuracy.
 
 ### the uncertainty problem
 
-> [!note]
+> [!note] polarity of results
 >
 > when the large model would normally sample a token, the exact next feature can branch into many possibilities.
 >
@@ -231,7 +231,7 @@ The draft now predicts $f_{t+2}$ (the feature after that token) instead of $f_{t
   \end{aligned}
   $$
 
-  Here’s the clean story on **why EAGLE feeds shifted vs. unshifted tokens into its feature-predictor**—and exactly how the loop runs.
+  Here’s the clean story on **why EAGLE feeds shifted vs. unshifted tokens into its feature-predictor**, and exactly how the loop runs.
 
 ### what "shifted tokens" fix
 
@@ -254,7 +254,7 @@ Regressing to a single point (e.g., Smooth-L1) collapses modes and yields a “b
 >
 > - it feeds the **token sequence advanced by one time step** (the “shifted” tokens) so the predictor targets the _correct branch_ deterministically.
 
-Concretely, **EAGLE predicts $f_{i+1}$ from $(F_{1:i},\,T_{2:i+1})$**—features aligned with **tokens shifted by +1**—thereby including the _actual_ $t_{i+1}$ that was sampled by the target model.
+Concretely, **EAGLE predicts $f_{i+1}$ from $(F_{1:i},\,T_{2:i+1})$** (features aligned with **tokens shifted by +1**), thereby including the _actual_ $t_{i+1}$ that was sampled by the target model.
 
 - In the running example (“I → am/always”), the model predicts $f_{\text{always}}$ using $(f_I,\ t_{\text{always}})$ and $f_{\text{am}}$ using $(f_I,\ t_{\text{am}})$; once the token is sampled, the predictor locks onto the right branch.
 
@@ -367,7 +367,7 @@ Only $\Delta\_{\parallel}$ influences logits: $W\Delta=W\Delta\_{\parallel}$ and
 > - With finite capacity/data, optimizing $\mathcal{L}_{\text{E1}}$ allocates learning budget to drive **both** components small, wasting sample capacity on $\Delta_{\perp}$ (logit‑irrelevant directions).
 > - The effective regression dimension is $d$, not $\mathrm{rank}(W)\le d$; generalization/sample complexity scales with the larger $d$.
 
-> [!propos] 3.1 (sample‑complexity gap)
+> [!proposition] 3.1 (sample‑complexity gap)
 >
 > Suppose locally the CE term is quadratic in the logit error $\delta\ell=W\Delta$ with Hessian $H\succ 0$. Then the joint objective behaves like
 >
@@ -421,7 +421,7 @@ Teacher‑forced training (only ground‑truth contexts) suffers **exposure bias
   - it mixes in the draft's predicted tokens as inputs so training matches test‑time usage.
   - This is the same fix that underlies **scheduled sampling** and **DAgger** in sequence prediction/imitation learning. [@bengio2015scheduledsamplingsequenceprediction]
 
-> [!propos] 3.2 (distribution‑matching reduces compounding error)
+> [!proposition] 3.2 (distribution‑matching reduces compounding error)
 >
 > Let $\rho\_{\text{TF}}$ be the teacher‑forced state distribution and $\rho\_\theta$ the draft’s induced distribution.
 >
@@ -457,7 +457,7 @@ so every bit of CE/KL improvement _provably_ pushes acceptance upward. Over a ch
 
 ### lemma
 
-> [!math] Lemma 3.3, nullspace penalty
+> [!lemma] 3.3, nullspace penalty
 >
 > _(why feature regression throttles scaling)_
 >
@@ -502,7 +502,7 @@ For random‑design least squares, the **minimax excess risk** is $\Theta(d/n)$;
 
 Hence the penalty on $\Delta_{\perp}$ induces the $\Theta((d-r)/n)$ overhead. (See also [minimax risk for linear least squares](https://projecteuclid.org/journals/annals-of-statistics/volume-50/issue-4/Exact-minimax-risk-for-linear-least-squares-and-the-lower/10.1214/22-AOS2181.full), [lecture notes](https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/lectures/review.pdf), [distribution-free robust linear regression](https://jaouadmourtada.github.io/files/slides/robust-linear-slides.pdf)) $\boxed{}$
 
-> [!math] Lemma 3.4, H–M–L features strictly improve Bayes cross-entropy
+> [!lemma] 3.4, H–M–L features strictly improve Bayes cross-entropy
 >
 > _(when informative)_
 >
@@ -533,7 +533,7 @@ $$
 
 i.e., $= \mathbb{E}[H(Y\mid Z)] + \mathbb{E}[\mathrm{KL}(\cdot)]$, minimized at $q=p$. Hence the optimum equals conditional entropy. Monotonicity of conditional entropy gives $H(Y\mid Z_H)\ge H(Y\mid Z_H,Z_M,Z_L)$, with a strict drop whenever the added features convey conditional mutual information about $Y$. (identity) $\boxed{}$
 
-> [!math] Lemma 3.5, acceptance = $1-\mathrm{TV}(p,q)$, hence CE↓ ⇒ TV↓ ⇒ acceptance↑
+> [!lemma] 3.5, acceptance = $1-\mathrm{TV}(p,q)$, hence CE↓ ⇒ TV↓ ⇒ acceptance↑
 >
 > In one‑step lossless speculative decoding that proposes $x\sim q$ and accepts with probability $\alpha(x)=\min\{1,p(x)/q(x)\}$ (the standard correction),
 > the acceptance probability is
@@ -560,15 +560,15 @@ $$
 
 Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL→TV bound. $\boxed{}$
 
-**Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps—exactly what their scaling curve shows.
+**Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps, exactly what their scaling curve shows.
 
-> [!math] Lemma 3.6 Training‑time test (on‑policy rollouts) controls compounding error
+> [!lemma] 3.6 Training‑time test (on‑policy rollouts) controls compounding error
 >
 > Let $\rho_{\mathrm{TF}}$ be the _teacher‑forced_ state distribution and $\rho_\theta$ the _on‑policy_ state distribution induced by the draft.
 >
 > If we minimize CE only under $\rho_{\mathrm{TF}}$, the test loss under $\rho_\theta$ can grow with horizon due to covariate shift (“exposure bias”).
 >
-> If instead we aggregate training data under $\rho_\theta$ (by mixing in the model’s own predictions during training—**training‑time test** / scheduled sampling / DAgger), the on‑policy risk is bounded by the training risk plus no‑regret terms that **do not** scale with horizon; compounding error is controlled.
+> If instead we aggregate training data under $\rho_\theta$ (by mixing in the model’s own predictions during training, i.e., **training‑time test** / scheduled sampling / DAgger), the on‑policy risk is bounded by the training risk plus no‑regret terms that **do not** scale with horizon; compounding error is controlled.
 
 See also @bengio2015scheduledsamplingsequenceprediction
 
@@ -598,7 +598,7 @@ $$
 P_{i+k+1}^{(k)} \;=\; \mathrm{OutHead}\big(h_i{}^{(k)}\big).
 $$
 
-Critically, **$t_{i+k}$** (the teacher token) is fed in, preserving causality across the peek chain.
+**$t_{i+k}$** (the teacher token) is fed in, preserving causality across the peek chain.
 
 > [!note] training loss
 >
@@ -616,7 +616,7 @@ DeepSeek‑V3 trains **$D=1$** (one extra token), reporting consistent benchmark
   - Each position optimizes for $x_{t+1}$ **and** $x_{t+2}$ (for $D=1$), encouraging internal states that are predictive beyond the next step
   - > "densifies the training signals" and improves data efficiency. Ablations show gains across tasks.
 - Shared head consistency.
-  - Using the **same** output head for MTP and main prediction ties auxiliary targets to the true decoding head—no mismatch at verify‑time.
+  - Using the **same** output head for MTP and main prediction ties auxiliary targets to the true decoding head (ensuring no mismatch at verify‑time).
 
 ### discrepancy from EAGLE
 
@@ -658,8 +658,8 @@ speed factor relative to one token/pass. EAGLE‑3's training reduces KL → inc
 
 ### engineering consideration
 
-- **If you _own_ training**: MTP is a near‑free lunch—better quality _and_ an inference “peek” that nets **\~1.8×** with minimal serving complexity.
-- **If you only control serving**: EAGLE‑3 is the scalpel—drop‑in draft with **big upside** (multi‑token acceptance), but you need model‑specific draft weights (or train them).
+- **If you _own_ training**: MTP is a near‑free lunch, offering better quality and an inference “peek” that nets **\~1.8×** with minimal serving complexity.
+- **If you only control serving**: EAGLE‑3 is the scalpel, acting as a drop‑in draft with **big upside** (multi‑token acceptance) but requiring model‑specific draft weights (or train them).
 
 > [!question] MTP rooflines?
 >
@@ -698,8 +698,8 @@ EOF
 
 - **Causality vs. parallel heads.** DeepSeek’s MTP keeps a _sequential_ causal chain across its modules (not parallel independent heads), which empirically improves coherence and acceptance of the peek token. That design choice is explicit in the figure and text.
 - **Upper bound intuition.** If you only ever “peek” one token ahead, your ceiling is **2×**; EAGLE‑3’s ceiling scales with accepted depth. (That’s why its reported maximums are much larger.)
-- **Where EAGLE‑3’s gain comes from.** Removing feature loss eliminates the **nullspace tax**; H–M–L features reduce Bayes CE; training‑time test kills exposure bias—all three lower KL→TV, raising acceptance per Section 4
-- **Draft size.** In practice, EAGLE‑3 drafts are tiny—often a _single_ transformer layer—because the heavy lifting is in the target’s H–M–L features.
+- **Where EAGLE‑3’s gain comes from.** Removing feature loss eliminates the **nullspace tax**; H–M–L features reduce Bayes CE; training‑time test kills exposure bias (all three lower KL→TV, raising acceptance per Section 4).
+- **Draft size.** In practice, EAGLE‑3 drafts are tiny (often a _single_ transformer layer) because the heavy lifting is in the target’s H–M–L features.
 
 ### some notes on training details
 

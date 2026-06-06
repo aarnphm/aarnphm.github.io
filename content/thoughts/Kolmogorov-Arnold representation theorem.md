@@ -10,7 +10,7 @@ title: Kolmogorov–Arnold representation theorem
 
 _every multivariate continuous function_ $f: [0,1]^n \to \mathbb{R}$ can be ==represented== as superposition of continuous single-variable functions
 
-> [!math] definition
+> [!definition]
 >
 > if $f$ is a multivariate continuous function, then $f$ can be written as a finite composition of continuous single-variable functions with binary operation of addition. Formally:
 >

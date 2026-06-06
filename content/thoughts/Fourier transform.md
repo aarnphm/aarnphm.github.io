@@ -10,7 +10,7 @@ title: Fourier transform
 
 _the idea of any signals in time domain can be decomposed into sinusoidal components_
 
-> [!math] definition
+> [!definition]
 >
 > The Fourier transform is given by the following:
 >

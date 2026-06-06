@@ -7,7 +7,7 @@ aliases:
 date: '2024-11-18'
 description: structured generations in vLLM a la carte, or in general
 id: structured outputs
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 00:10:53 GMT-04:00
 tags:
   - ml
   - rfc
@@ -126,7 +126,7 @@ Implemented in [mlc-ai/xgrammar](https://github.com/mlc-ai/xgrammar)
 >
 > calculate adaptive token bit-mask per batch
 
-> [!IMPORTANT]
+> [!important] string and token distinction
 >
 > operating on string level, not `token_id`
 

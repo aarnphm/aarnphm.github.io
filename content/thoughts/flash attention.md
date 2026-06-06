@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-06-05 15:08:29 GMT-04:00
+modified: 2026-06-06 00:10:18 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -321,7 +321,7 @@ FA-3 leverages three kinds of Hopper asynchrony, on top of FlashAttention2:
 
 FP16 forward reaches $\approx 740$ TFLOP/s (75% of the 989-TFLOP dense peak), FP8 close to $1.2$ PFLOP/s with RMSE $2.6\times$ below the per-tensor baseline ($9.1\!\times\!10^{-3}$).
 
-> [!IMPORTANT]
+> [!important] accuracy
 >
 > FP8 error is still $\sim 48\times$ the FP16 error
 

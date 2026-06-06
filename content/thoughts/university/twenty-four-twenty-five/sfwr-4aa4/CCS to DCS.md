@@ -14,7 +14,7 @@ $$
 D(s) = \frac{U(s)}{E(s)} = K_{0} \frac{s+a}{s+b}
 $$
 
-> [!math] difference equation
+> [!definition] difference equation
 >
 > $$
 > u(k) = (1-bT)u(k-1) + K_{0}(aT-1)E(k-1) + K_{0}e(k)

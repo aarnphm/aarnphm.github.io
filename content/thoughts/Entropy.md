@@ -12,7 +12,7 @@ https://x.com/karpathy/status/1632800082679705600
 
 idea: quantifies average level of uncertainty information associated with a variable's potential states or possible outcome.
 
-> [!math] definition
+> [!definition]
 >
 > Given a discrete random variable $\mathcal{X}$, which takes a value in a set $\mathcal{X}$ distributed according to $p : \mathcal{X} \to [0,1]$, the entropy $H(x)$ is defined as
 >
@@ -34,7 +34,7 @@ _measure of uncertainty associated with a set of variables_
 
 namely, the joint _Shannon entropy_,
 
-> [!math] joint _Shannon entropy_
+> [!definition] joint _Shannon entropy_
 >
 > in bits, of two discrete random variable $X$ and $Y$ with images $\mathcal{X}$ and $\mathcal{Y}$ is defined as:
 >

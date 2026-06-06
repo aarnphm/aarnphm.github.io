@@ -137,7 +137,7 @@ If two schedule $S_{1}$ and $S_{2}$ are conflict equivalent then they have the s
 
 Every conflict serialisable schedule is serialisable
 
-> [!NOTE] on conflict serialisable
+> [!note] on conflict serialisable
 >
 > only consider **committed** transaction
 

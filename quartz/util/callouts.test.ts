@@ -3,9 +3,11 @@ import assert from 'node:assert'
 import test, { describe } from 'node:test'
 import {
   canonicalizeCallout,
+  formatMathCalloutTitle,
   isMathCallout,
   isStandaloneProofLine,
   italicizeProofLine,
+  mathCalloutTitlePrefix,
 } from './callouts'
 
 describe('callout helpers', () => {
@@ -15,6 +17,7 @@ describe('callout helpers', () => {
       ['proof', 'proof'],
       ['lemma', 'lemma'],
       ['theory', 'theory'],
+      ['propos', 'proposition'],
       ['thm', 'theorem'],
       ['def', 'definition'],
     ]
@@ -37,6 +40,40 @@ describe('callout helpers', () => {
   test('recognizes math callouts before alias canonicalization', () => {
     assert.strictEqual(isMathCallout('thm'), true)
     assert.strictEqual(isMathCallout('def'), true)
+  })
+
+  test('prefixes formal math callout titles when the type is absent', () => {
+    assert.strictEqual(mathCalloutTitlePrefix('lemma', '3.3 nullspace penalty'), 'Lemma')
+    assert.strictEqual(mathCalloutTitlePrefix('thm', 'Rank-Nullity Theorem'), undefined)
+    assert.strictEqual(mathCalloutTitlePrefix('math', 'grouped cache reuse'), undefined)
+  })
+
+  test('formats numbered math callout titles', () => {
+    assert.strictEqual(
+      formatMathCalloutTitle('lemma', 'nullspace penalty', 'nullspace penalty', 2),
+      'Lemma 2. nullspace penalty',
+    )
+    assert.strictEqual(
+      formatMathCalloutTitle('lemma', '3.3, nullspace penalty', '3.3, nullspace penalty', 2),
+      'Lemma 3.3. nullspace penalty',
+    )
+    assert.strictEqual(
+      formatMathCalloutTitle(
+        'proposition',
+        '3.1 (sample-complexity gap)',
+        '3.1 (sample-complexity gap)',
+        2,
+      ),
+      'Proposition 3.1. sample-complexity gap',
+    )
+    assert.strictEqual(
+      formatMathCalloutTitle('theorem', 'Rank-Nullity Theorem', 'Rank-Nullity Theorem', 1),
+      'Theorem 1. Rank-Nullity Theorem',
+    )
+    assert.strictEqual(
+      formatMathCalloutTitle('math', 'grouped cache reuse', 'grouped cache reuse', 1),
+      '1. grouped cache reuse',
+    )
   })
 
   test('italicizes leading proof labels in paragraphs', () => {

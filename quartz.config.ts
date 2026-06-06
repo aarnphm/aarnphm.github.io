@@ -123,7 +123,7 @@ const config: QuartzConfig = {
       Plugin.TelescopicText(),
       Plugin.Codeblock(),
       // Convert code-file transcludes to code blocks before highlighting
-      Plugin.CodeViewer(),
+      Plugin.CodeViewer({ indexUrls: { lean: '/api/lean/verify' } }),
       Plugin.Twitter(),
       Plugin.SyntaxHighlighting({ keepBackground: true }),
       Plugin.Citations({ bibliography: './content/References.bib' }),

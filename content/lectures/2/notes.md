@@ -2,7 +2,7 @@
 date: '2025-08-21'
 description: attention and math
 id: notes
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-06-06 00:13:54 GMT-04:00
 tags:
   - workshop
 title: supplement to 0.200
@@ -10,8 +10,7 @@ title: supplement to 0.200
 
 supports:
 
-- [[lectures/2/why|reasoning]]
-- [[lectures/2/attention first principle|attention from first principle]]
+- [[lectures/2/afp|attention from first principle]]
 - [[lectures/2/convexity|convexity cases]]
 - [[thoughts/Attention]]
 - [[thoughts/mechanistic interpretability]]
@@ -105,4 +104,4 @@ $$
 
 Maximizer $p=\mathrm{softmax}(z)$; with temperature $T$, use $z/T$ and scale $H$ by $T$. LSE is the convex conjugate of negative entropy (restricted to $\Delta$). [@gao2018propertiessoftmaxfunctionapplication; @blondel2019fenchelyoung]
 
-Proposition. For $\lambda=1/T$, $\nabla\mathrm{lse}_\lambda(z)=\mathrm{softmax}(\lambda z)$ and $\nabla^2\mathrm{lse}_\lambda(z)=\lambda(\operatorname{Diag}(p)-pp^\top)$. The Hessian is PSD and has operator norm $\le \lambda$ (softmax is Lipschitz with constant at most $\lambda$). Shift‑invariance: $J(z)\mathbf{1}=0$.
+Proposition. For $\lambda=1/T$, $\nabla\mathrm{lse}_\lambda(z)=\mathrm{softmax}(\lambda z)$ and $\nabla^2\mathrm{lse}_\lambda(z)=\lambda(\operatorname{Diag}(p)-pp^\top)$. The Hessian is PSD and has operator norm $\le \lambda/2$ (softmax is Lipschitz with constant at most $\lambda/2$). Shift‑invariance: $J(z)\mathbf{1}=0$.

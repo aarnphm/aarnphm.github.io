@@ -43,6 +43,7 @@ import {
 import { QuartzTransformerPlugin } from '../../types/plugin'
 import {
   canonicalizeCallout,
+  formatMathCalloutTitle,
   isMathCallout,
   isStandaloneProofLine,
   italicizeProofLine,
@@ -651,6 +652,8 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.callouts) {
         plugins.push(() => (tree: Root) => {
+          const mathCalloutCounters = new Map<string, number>()
+
           visit(tree, 'blockquote', node => {
             if (node.children.length === 0) {
               return
@@ -672,21 +675,31 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               const [calloutDirective, typeString, calloutMetaData, collapseChar] = match
               const calloutType = canonicalizeCallout(typeString.toLowerCase())
               const mathCallout = isMathCallout(calloutType)
+              const calloutNumber = mathCallout
+                ? (mathCalloutCounters.get(calloutType) ?? 0) + 1
+                : undefined
+              if (calloutNumber !== undefined) {
+                mathCalloutCounters.set(calloutType, calloutNumber)
+              }
               const collapse = collapseChar === '+' || collapseChar === '-'
               const defaultState = collapseChar === '-' ? 'collapsed' : 'expanded'
               const titleContent = match.input.slice(calloutDirective.length).trim()
               const useDefaultTitle = titleContent === '' && restOfTitle.length === 0
+              const titleTextNode: Paragraph = { type: 'paragraph', children: restOfTitle }
+              const visibleTitleContent =
+                mathCallout && calloutNumber !== undefined
+                  ? (formatMathCalloutTitle(
+                      calloutType,
+                      titleContent,
+                      `${titleContent} ${toString(titleTextNode)}`,
+                      calloutNumber,
+                    ) ?? titleContent)
+                  : useDefaultTitle
+                    ? capitalize(typeString).replace(/-/g, ' ')
+                    : titleContent
               const titleNode: Paragraph = {
                 type: 'paragraph',
-                children: [
-                  {
-                    type: 'text',
-                    value: useDefaultTitle
-                      ? capitalize(typeString).replace(/-/g, ' ')
-                      : titleContent + ' ',
-                  },
-                  ...restOfTitle,
-                ],
+                children: [{ type: 'text', value: visibleTitleContent + ' ' }, ...restOfTitle],
               }
               const titleChildren = [
                 h('.callout-icon'),
@@ -735,6 +748,7 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   'data-callout': calloutType,
                   'data-callout-fold': collapse,
                   'data-callout-metadata': calloutMetaData,
+                  ...(calloutNumber === undefined ? {} : { 'data-callout-number': calloutNumber }),
                 },
               }
 

@@ -29,7 +29,7 @@ $$
 
 ## definition
 
-> [!math] Zipf distribution
+> [!definition] Zipf distribution
 >
 > the distribution on $N$ elements assign to element of rank $k$ (counting from 1) the probability:
 >

@@ -211,8 +211,23 @@ document.addEventListener('nav', () => {
       if (!revealed) return
       event.preventDefault()
       void submit(Number(event.key))
+    } else if (event.key === 'e') {
+      if (finished) return
+      event.preventDefault()
+      finish()
     }
   }
+
+  const setHints = (show: boolean) => {
+    root.classList.toggle('fc-hints', show)
+  }
+  const onModDown = (event: KeyboardEvent) => {
+    if (event.key === 'Meta' || event.key === 'Control') setHints(true)
+  }
+  const onModUp = (event: KeyboardEvent) => {
+    if (event.key === 'Meta' || event.key === 'Control') setHints(false)
+  }
+  const onBlur = () => setHints(false)
 
   cardBox?.addEventListener('click', onCardClick)
   revealBtn?.addEventListener('click', onReveal)
@@ -220,6 +235,9 @@ document.addEventListener('nav', () => {
   undoBtn?.addEventListener('click', undo)
   endBtn?.addEventListener('click', onEnd)
   window.addEventListener('keydown', onKey)
+  window.addEventListener('keydown', onModDown)
+  window.addEventListener('keyup', onModUp)
+  window.addEventListener('blur', onBlur)
 
   const start = async () => {
     let order = cards.slice()
@@ -260,5 +278,8 @@ document.addEventListener('nav', () => {
     undoBtn?.removeEventListener('click', undo)
     endBtn?.removeEventListener('click', onEnd)
     window.removeEventListener('keydown', onKey)
+    window.removeEventListener('keydown', onModDown)
+    window.removeEventListener('keyup', onModUp)
+    window.removeEventListener('blur', onBlur)
   })
 })

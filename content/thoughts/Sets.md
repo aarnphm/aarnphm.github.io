@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-05 23:55:12 GMT-04:00
+modified: 2026-06-06 00:40:50 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -41,7 +41,7 @@ Sets are the substrate for [[thoughts/algebraic geometry|algebraic structures]] 
 | $A \times B$     | [[#Cartesian products\|Cartesian products]]                               |
 | $\neg P$         | negation                                                                  |
 
-> [!NOTE]
+> [!note] inclusion
 >
 > $\subseteq$ and $\subsetneq$ are ::inclusion:: and ::proper inclusion{h4}:: respectively
 >
@@ -67,7 +67,7 @@ $$
 \forall\;A\;\exists\;B\;\forall x\;(x \in B \iff x \in A \land P(x))
 $$
 
-> [!math] extensionality
+> [!axiom] extensionality
 >
 > Sets are determined by their elements:
 >
@@ -233,7 +233,7 @@ $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 \end{document}
 ```
 
-> [!NOTE] order of operations
+> [!note] order of operations
 >
 > neither commutative nor associative
 >
@@ -332,7 +332,7 @@ $$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
 \end{document}
 ```
 
-> [!IMPORTANT] de Morgan's laws verbatim
+> [!important] de Morgan's laws verbatim
 >
 > _The complement of the union equals the intersection of the complements_
 >
@@ -359,6 +359,32 @@ $$
 A \setminus B = A \cap B^c
 $$
 
+> [!proof] set difference
+>
+> For arbitrary $x \in X$,
+>
+> $$
+> \begin{aligned}
+>   x \in A \setminus B
+>     &\iff x \in A \land x \notin B \\
+>     &\iff x \in A \land x \in B^c \\
+>     &\iff x \in A \cap B^c
+> \end{aligned}
+> $$
+>
+> Hence $A \setminus B$ and $A \cap B^c$ have the same elements. By extensionality,
+>
+> $$
+> A \setminus B = A \cap B^c.
+> $$
+>
+> ```lean shell
+> import Mathlib
+>
+> example {α : Type*} (A B : Set α) : A \ B = A ∩ Bᶜ := by
+>   rw [Set.diff_eq]
+> ```
+
 The symmetric difference keeps elements that appear in exactly one set:
 
 $$
@@ -373,7 +399,7 @@ $$
 
 ### power set
 
-> [!IMPORTANT] correct notation
+> [!important] correct notation
 >
 > a distinction between object $a$, which is an _element of the set_ $A$, and one-element set $\{a\}$, which is a _subset of_ $A$
 >
@@ -403,7 +429,7 @@ $$
 
 If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\}^n$. Each coordinate answers one membership question, so $n$ yes/no questions give $2^n$ subsets.
 
-> [!math] Cantor's theorem
+> [!theorem] Cantor's theorem
 >
 > For every set $A$, there is no surjection $f: A \to \mathcal{P}(A)$.
 >
@@ -433,7 +459,7 @@ $$
 \bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
 $$
 
-> [!IMPORTANT] universality of emptyset
+> [!important] universality of emptyset
 > If $\emptyset \in \mathcal{A}$, the union is not forced to be empty. The empty set contributes no elements, then the other members still contribute theirs.
 >
 > If $\mathcal{A} = \emptyset$, then $\bigcup_{A \in \mathcal{A}} A = \emptyset$.

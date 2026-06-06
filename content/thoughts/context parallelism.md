@@ -20,7 +20,7 @@ Given different SLO characteristics for [[thoughts/PD disaggregated serving#pref
 
 ## decode context parallel
 
-> [!NOTE] engine kv layout
+> [!note] engine kv layout
 >
 > We will assume that given system implement [[thoughts/Attention#Paged Attention|paged KV cache]]
 

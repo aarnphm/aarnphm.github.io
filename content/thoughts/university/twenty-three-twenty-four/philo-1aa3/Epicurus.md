@@ -2,7 +2,7 @@
 date: '2023-11-09'
 description: epicurus's philosophy on desire, kinetic versus katastematic pleasure, virtues including prudence and friendship, atomism, and challenge to religion.
 id: Epicurus
-modified: 2026-06-05 15:08:41 GMT-04:00
+modified: 2026-06-06 00:11:17 GMT-04:00
 tags:
   - philosophy
   - philos1aa3
@@ -96,7 +96,7 @@ Higher and lower hedonism
 
 ## Virtues
 
-> [!NOTE]
+> [!note]
 > Personal qualities that assist us in the pursuit of happiness
 
 Katastematic
@@ -147,7 +147,7 @@ Human lives without any organisation
 - Why?: Motives is not fear, but the desire for friendship. Unpleasant to prepare to fight at every moment
   -> Violence is not a way of life
 
-> [!IMPORTANT]
+> [!important] blocks
 > Justice and pleasures are fundamental building blocks of society
 
 Saw the needs for more formal definition of contract => Law and Justice

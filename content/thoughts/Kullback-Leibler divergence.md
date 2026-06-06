@@ -13,7 +13,7 @@ title: Kullback-Leibler divergence
 
 _denoted as_ $D_{\text{KL}}(P \parallel Q)$
 
-> [!math] definition
+> [!definition]
 >
 > The ==statistical distance== between a model probability distribution $Q$ difference from a true probability distribution $P$:
 >

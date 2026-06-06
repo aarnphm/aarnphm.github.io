@@ -10,7 +10,7 @@ title: Ramp loss
 
 Usually, the margin-based bound for [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Support Vector Machine|SVM]] rely on the fact that we minimise Hinge loss.
 
-> [!math] definition
+> [!definition]
 >
 > The $\gamma$-ramp loss is given by the following:
 >
