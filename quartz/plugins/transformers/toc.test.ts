@@ -1,4 +1,4 @@
-import type { Root } from 'hast'
+import type { Element, Root } from 'hast'
 import type { Heading, Root as MarkdownRoot } from 'mdast'
 import { h } from 'hastscript'
 import assert from 'node:assert/strict'
@@ -8,6 +8,20 @@ import { collectHtmlToc, collectHtmlTocData, collectMarkdownTocData } from './to
 
 function markdownHeading(depth: Heading['depth'], text: string): Heading {
   return { type: 'heading', depth, children: [{ type: 'text', value: text }] }
+}
+
+function katexInline(tex: string): Element {
+  return h('span.katex', [
+    h('span.katex-mathml', [
+      h('math', [
+        h('semantics', [
+          h('mrow', [h('mi', 'A'), h('mo', '∩'), h('mi', 'B')]),
+          h('annotation', { encoding: 'application/x-tex' }, tex),
+        ]),
+      ]),
+    ]),
+    h('span.katex-html', { ariaHidden: 'true' }, 'A∩B'),
+  ])
 }
 
 test('collects toc entries from final html headings', () => {
@@ -37,6 +51,24 @@ test('collects toc entries from final html headings', () => {
     }
   })
   assert.equal(generatedId, 'generated-remote')
+})
+
+test('uses semantic unicode math text for html toc headings', () => {
+  const tree: Root = {
+    type: 'root',
+    children: [h('h2#intersection', ['(', katexInline('A \\cap B'), ')']), h('h2#next', 'Next')],
+  }
+
+  const toc = collectHtmlToc(tree, { maxDepth: 4, minEntries: 1 })
+
+  assert.deepEqual(toc, [
+    { depth: 0, text: '(A∩B)', slug: 'intersection' },
+    { depth: 0, text: 'Next', slug: 'next' },
+  ])
+
+  const heading = tree.children[0]
+  if (heading.type !== 'element') throw new Error('expected heading')
+  assert.equal(heading.properties?.dataHeadingAlias, '(A∩B)')
 })
 
 test('skips headings rendered inside base embeds', () => {

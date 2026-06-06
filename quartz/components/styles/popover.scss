@@ -18,8 +18,10 @@
 
 .popover {
   --popover-padding: 1rem;
+  --popover-border: 1px;
   --popover-arrow-size: 0.58rem;
   --popover-arrow-leg: calc(var(--popover-arrow-size) * 0.7071);
+  --popover-arrow-overlap: calc(var(--popover-border) / 0.7071);
   --popover-arrow-inset: calc(var(--popover-padding) - var(--popover-arrow-size) / 2);
 
   z-index: var(--z-popover);
@@ -99,10 +101,6 @@
       height: 0;
       border: var(--popover-arrow-leg) solid transparent;
     }
-
-    &::after {
-      border-width: calc(var(--popover-arrow-leg) - 1px);
-    }
   }
 
   &[data-placement^='bottom'] > .popover-arrow {
@@ -114,7 +112,7 @@
     }
 
     &::after {
-      bottom: calc(50% - 1px);
+      bottom: calc(50% - var(--popover-arrow-overlap));
       left: 50%;
       transform: translateX(-50%);
       border-bottom-color: var(--light);
@@ -130,7 +128,7 @@
     }
 
     &::after {
-      top: calc(50% - 1px);
+      top: calc(50% - var(--popover-arrow-overlap));
       left: 50%;
       transform: translateX(-50%);
       border-top-color: var(--light);
@@ -146,7 +144,7 @@
     }
 
     &::after {
-      right: calc(50% - 1px);
+      right: calc(50% - var(--popover-arrow-overlap));
       top: 50%;
       transform: translateY(-50%);
       border-right-color: var(--light);
@@ -162,7 +160,7 @@
     }
 
     &::after {
-      left: calc(50% - 1px);
+      left: calc(50% - var(--popover-arrow-overlap));
       top: 50%;
       transform: translateY(-50%);
       border-left-color: var(--light);
@@ -180,7 +178,7 @@
     line-height: normal;
     font-size: initial;
     font-family: var(--bodyFont);
-    border: 1px solid var(--gray);
+    border: var(--popover-border) solid var(--gray);
     border-radius: var(--radius-none);
     background-color: var(--light);
     overflow: auto;
