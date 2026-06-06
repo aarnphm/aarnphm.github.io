@@ -1,35 +1,57 @@
 import { debounce } from './util'
 
-// viewport calculation constants
-const SIDENOTE_WIDTH = 17 // rem
-const SPACING = 1 // rem
-const GAP = 1 // rem
-const MIN_DESKTOP_WIDTH = 1400 // px - minimum width for side-by-side sidenotes
+const SIDENOTE_WIDTH = 17
+const SPACING = 1
+const SIDENOTE_GUTTER = 1.5
+const GAP = 1
+const MIN_DESKTOP_WIDTH = 1400
 
 const LABEL_ATTRS = ['role', 'tabindex', 'aria-expanded', 'aria-haspopup', 'data-inline'] as const
 const CONTENT_CLASSES = ['sidenote-left', 'sidenote-right', 'sidenote-inline'] as const
 
-// convert rem to pixels
 function remToPx(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
 }
 
-// get actual content width from DOM
-function getContentWidth(): number {
-  const article = document.querySelector('.page-content > article')
-  if (!article) return remToPx(35) // fallback
-  return article.getBoundingClientRect().width
+function getMainColumn(content?: Element): HTMLElement | null {
+  return (
+    content?.closest<HTMLElement>('.main-col') ?? document.querySelector<HTMLElement>('.main-col')
+  )
 }
 
-// calculate viewport thresholds
+function cssPixelValue(value: string): number {
+  const parsed = Number.parseFloat(value)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function getOffsetParentRect(content: HTMLElement): Pick<DOMRect, 'left' | 'right'> {
+  const offsetParent = content.offsetParent
+  if (!offsetParent) return { left: 0, right: window.innerWidth }
+
+  const rect = offsetParent.getBoundingClientRect()
+  const style = getComputedStyle(offsetParent)
+
+  return {
+    left: rect.left + cssPixelValue(style.borderLeftWidth),
+    right: rect.right - cssPixelValue(style.borderRightWidth),
+  }
+}
+
+function getContentWidth(): number {
+  const mainColumn = getMainColumn()
+  if (!mainColumn) return remToPx(35)
+  return mainColumn.getBoundingClientRect().width
+}
+
 function getViewportThresholds() {
   const contentWidth = getContentWidth()
   const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
   const spacing = remToPx(SPACING)
+  const gutter = remToPx(SIDENOTE_GUTTER)
 
   return {
-    ultraWide: contentWidth + 2 * (sidenoteWidth + 4 * spacing), // $sidenote-offset-right + $sidenote-offset-left
-    medium: contentWidth + sidenoteWidth + 4 * spacing,
+    ultraWide: contentWidth + 2 * (sidenoteWidth + gutter + spacing),
+    medium: contentWidth + sidenoteWidth + gutter + spacing,
   }
 }
 
@@ -38,7 +60,6 @@ type LayoutMode = 'double-sided' | 'single-sided' | 'inline'
 function getLayoutMode(): LayoutMode {
   const windowWidth = window.innerWidth
 
-  // enforce minimum desktop width for any side-by-side layout
   if (windowWidth < MIN_DESKTOP_WIDTH) {
     return 'inline'
   }
@@ -171,24 +192,20 @@ class SidenoteManager {
     content.style.display = 'block'
     content.setAttribute('aria-hidden', 'false')
 
-    // check if this sidenote is inside collapse-shell
-    const isInCollapseShell = !!content.closest('.collapse-shell')
+    const mainColumn = getMainColumn(content)
+    if (mainColumn) {
+      const gutter = remToPx(SIDENOTE_GUTTER)
+      const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
+      const mainRect = mainColumn.getBoundingClientRect()
+      const parentRect = getOffsetParentRect(content)
+      const offset =
+        side === 'left'
+          ? mainRect.left - parentRect.left - sidenoteWidth - gutter
+          : parentRect.right - mainRect.right - sidenoteWidth - gutter
 
-    if (!isInCollapseShell) {
-      const article = document.querySelector('.page-content > article') as HTMLElement
-      if (article) {
-        const spacing = remToPx(1)
-        const sidenoteWidth = remToPx(SIDENOTE_WIDTH)
-        const articleRect = article.getBoundingClientRect()
-        const offsetParent = content.offsetParent as HTMLElement
-        const parentRect = offsetParent?.getBoundingClientRect() ?? { left: 0, right: 0 }
-
-        const offset =
-          side === 'left'
-            ? articleRect.left - parentRect.left - sidenoteWidth - 1.5 * spacing
-            : parentRect.right - articleRect.right - sidenoteWidth - spacing
-        content.style[side] = `${offset}px`
-      }
+      content.style.left = ''
+      content.style.right = ''
+      content.style[side] = `${offset}px`
     }
 
     const bottomPosition = topPosition + contentHeight

@@ -702,7 +702,6 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                 children: [{ type: 'text', value: visibleTitleContent + ' ' }, ...restOfTitle],
               }
               const titleChildren = [
-                h('.callout-icon'),
                 h('.callout-title-inner', toHast(titleNode, { allowDangerousHtml })),
               ]
               if (collapse) titleChildren.push(h('.fold-callout-icon'))

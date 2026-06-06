@@ -103,6 +103,10 @@
     }
   }
 
+  &:has(> .popover-inner[data-content-type*='pdf']) > .popover-arrow {
+    display: none;
+  }
+
   &[data-placement^='bottom'] > .popover-arrow {
     &::before {
       bottom: 50%;

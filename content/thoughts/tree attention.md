@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: softmax reduction over a communication tree, log p stages across p devices instead of linear ring traversal.
 id: attention-tree
-modified: 2026-06-05 15:08:20 GMT-04:00
+modified: 2026-06-06 01:40:02 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/ring attention|ring attention]]'
@@ -49,12 +49,6 @@ After $\log p$ levels, the root recovers the exact softmax output $y^{(\log p)}_
   />
 </Zoomable>
 ```
-
-> [!question]- tasks
->
-> - [ ] Implement a tree-reduction decode for a toy sharded KV setup and compare against RingAttention on 2-8 GPUs; measure communication steps and wall-clock latency.
-> - [ ] Profile sensitivity to interconnect bandwidth and block sizes; verify the $N/p + \log p$ scaling predicted in [@shyam2025treeattentiontopologyawaredecoding].
-> - [ ] Explore compatibility with prefix-reuse systems (Paged/RadixAttention) when K/V are paged or cached.
 
 > [!note] related but different
 > Hierarchical token routing or coarse-to-fine attention over document structure is orthogonal to this topology-aware multi-GPU scheduling trick.

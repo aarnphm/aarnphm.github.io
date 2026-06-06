@@ -66,7 +66,6 @@
       <blockquote
         class="callout tip" data-callout="tip">
         <div class="callout-title" dir="auto">
-          <div class="callout-icon" dir="auto"></div>
           <div class="callout-title-inner" dir="auto">
             <p dir="auto">subscribe</p>
           </div>

@@ -33,9 +33,11 @@
 
 .pkt-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(min-content, 0.85fr) minmax(min-content, 1.1fr);
   gap: 1.25rem;
   align-items: start;
+  max-width: 76rem;
+  margin-inline: auto;
 }
 
 .pkt-col {
@@ -77,6 +79,7 @@
 .pkt-seq-blocks {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 0.4rem;
 }
 
@@ -285,11 +288,12 @@
 }
 
 .pkt-side {
-  margin-top: 1.25rem;
+  margin: 1.25rem auto 0;
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
   gap: 0.85rem;
   align-items: stretch;
+  max-width: 76rem;
 }
 
 .pkt-card {
@@ -407,7 +411,8 @@
 }
 
 .pkt-intuition {
-  margin: 1.1rem 0 0;
+  margin: 1.1rem auto 0;
+  max-width: 76rem;
   padding: 0.75rem 0.9rem;
   color: var(--pkt-note-fg);
   font-size: 0.85rem;
@@ -420,6 +425,9 @@
 
 .pkt-caption {
   @include figure-caption;
+  display: block;
+  max-width: 76rem;
+  margin-inline: auto;
 
   .pkt-math {
     @include figure-caption-math-gap;
@@ -468,6 +476,9 @@
   }
   .pkt-side {
     grid-template-columns: 1fr;
+  }
+  .pkt-seq-blocks {
+    align-items: stretch;
   }
   .pkt-lblock {
     grid-template-columns: auto 1fr;

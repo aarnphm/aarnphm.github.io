@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: low-rank factorisation of the attention matrix into multiple shared bases, reducing quadratic cost to a series of smaller MMs.
 id: attention-mfa
-modified: 2026-06-05 15:08:24 GMT-04:00
+modified: 2026-06-06 01:37:33 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MoE]]'
@@ -33,9 +33,3 @@ so the full attention map $A = \sum_i Q_i K_i^{\top}$ is already a sum of low-ra
   <MFAFactorBases caption="Vary $m$ and $r$ to move $\hat{A} = \sum_i U_i V_i^{\top}$ toward $A$. The displayed residual is $\lVert A - \hat{A}\rVert_F$; gated factors let each token choose a subset of bases." />
 </Zoomable>
 ```
-
-> [!question]- further work
->
-> - [ ] Derive the computational complexity of using $m$ factors with rank $r$ and compare it to dense attention for typical $m, r$.
-> - [ ] Implement a small transformer with multi-matrix factors and inspect whether each factor aligns with an interpretable pattern (locality, copying, etc.).
-> - [ ] Investigate how the factorisation interacts with sparsity; can the same bases support both global and local attention if we gate them per token?

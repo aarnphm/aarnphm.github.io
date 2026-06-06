@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: training-free, head-wise KV cache compression — keep the full cache on retrieval heads, drop remote tokens on the rest and fold them into a single compensation token.
 id: attention-razor
-modified: 2026-06-05 15:08:06 GMT-04:00
+modified: 2026-06-06 01:39:16 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/RoPE|RoPE]]'
@@ -96,12 +96,6 @@ $$
 the $N_d$ factor restores the dropped span's share of the normalizer, so the surviving tokens don't get artificially loud.[^jensen]
 
 the headline ratio comes out of two numbers. keep 15% of heads whole and clip the other 85% to a fifth, and the retained fraction is $0.15 + 0.85 \cdot \tfrac{1}{5} \approx 0.32$, a $3.125\times$ compression — "70% off" with no retraining and roughly {{sidenotes[no accuracy cost]: for [[thoughts/GQA|GQA]] models a whole group is promoted to retrieval if any head in it qualifies}} from 8K to 100K tokens.
-
-> [!question]- sharpening intuition
->
-> - [ ] Reproduce the retrieval-head probe: feed a model $2500$ random tokens repeated $4\times$, plot per-head echo and induction scores, and check whether the top-15% set is stable across two checkpoints of the same family.
-> - [ ] Stress the compensation token: compare its attention output against the true dropped-span attention as the dropped keys' variance grows. at what spread does the mean-pool stop being a faithful stand-in?
-> - [ ] RazorAttention is orthogonal to [[thoughts/GQA|GQA]] (head sharing) and to quantization (bit-width). stack all three and see whether the savings multiply or collide on the retrieval heads you are forced to keep in full.
 
 [^bound]: the proof is a one-liner once you bound the content term. since $q = W_{Q_h} x$ and $k = W_{K_h} x$ with $x$ post-LayerNorm, $q k^{\top} \le \lVert W_{Q_h} W_{K_h}\rVert_2 \lVert x\rVert^2 \le \lVert W_{Q_h} W_{K_h}\rVert_2 (2\lVert \gamma\rVert^2 + 2\lVert b\rVert^2)$, a constant. set the bounded content minus the growing penalty below $\log \epsilon$ and solve for $m - n$.
 

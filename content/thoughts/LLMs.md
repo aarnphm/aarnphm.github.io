@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 01:47:46 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -36,7 +36,7 @@ Incredibly hard to scale, mainly due to their [[thoughts/large models|large]] me
 I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this topic and rationale behind building [[thoughts/craft#open source|OpenLLM]]
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
-- [[thoughts/Continuous batching]]: Implementing [[thoughts/Attention#Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
+- [[thoughts/Continuous batching]]: Implementing [[thoughts/paged attention|Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
 - Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of Flash Attention 3, Radix Attention, TreeAttention, etc.)
 - [[thoughts/Transformers#Byte-Latent Transformer]]: idea to use entropy-based sampling to choose next tokens instead of token-level decoding. [^blt]
 
@@ -45,10 +45,10 @@ I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this to
 ### on how we are being [[thoughts/education#teaching|taught]].
 
 > [!question] How would we assess thinking?
-
-Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
-
-We do math to internalise the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help crystalised our ideas, and in the process improve through the act of putting it down.
+>
+> Similar to calculator, it _simplifies_ and increase accessibility to the masses, but in doing so _lost_ the value in the _action of doing_ math.
+>
+> We do math to internalise the concept, and practice to thinking coherently. Similarly, we [[thoughts/writing|write]] to help crystalised our ideas, and in the process improve through the act of putting it down.
 
 The process of rephrasing and arranging sentences poses a challenges for the writer, and in doing so, teach you how to think coherently. Writing essays is an exercise for students to articulate their thoughts, rather than testing the understanding of the materials.
 

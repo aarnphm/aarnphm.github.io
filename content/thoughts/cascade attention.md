@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: two-stage attention filter, cheap scorer prunes key blocks, expensive exact attention only on survivors.
 id: attention-cascade
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-06-06 01:38:05 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/flash attention|FlashAttention]]'
@@ -61,9 +61,3 @@ CascadeAttention builds a two-stage filter for attention scores. A cheap scorer 
   />
 </Zoomable>
 ```
-
-> [!question]- tasks
->
-> - [ ] Implement a toy cascade with random feature hashing as the coarse scorer; report recall of true top-$k$ attention weights.
-> - [ ] Explore how to set the threshold dynamically based on query entropy so we do not over-prune when the model is uncertain.
-> - [ ] Compare latency of the cascade versus FlashAttention when processing prompts containing repetitive boilerplate plus a short critical instruction.

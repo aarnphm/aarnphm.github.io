@@ -303,6 +303,18 @@ function findHashTarget(container: ParentNode, hash: string, prefix = ''): HTMLE
   return container.querySelector<HTMLElement>(`#${CSS.escape(id)}`)
 }
 
+function scrollPopoverToHash(popoverInner: HTMLElement, hash: string) {
+  if (!hash) return
+  const heading = findHashTarget(popoverInner, hash, 'popover-')
+  if (!heading) return
+  const top =
+    heading.getBoundingClientRect().top -
+    popoverInner.getBoundingClientRect().top +
+    popoverInner.scrollTop -
+    12
+  popoverInner.scroll({ top, behavior: 'instant' })
+}
+
 async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) {
   const img = document.createElement('img')
   img.src = targetUrl.toString()
@@ -484,10 +496,7 @@ async function showPopover(
 
   const { hash, popoverInner } = options
   if (hash && hash !== '' && popoverInner) {
-    const heading = findHashTarget(popoverInner, hash, 'popover-')
-    if (heading) {
-      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
-    }
+    scrollPopoverToHash(popoverInner, hash)
   }
 }
 
@@ -982,10 +991,7 @@ async function handleStackedNotes(
   })
 
   if (hash !== '') {
-    const heading = findHashTarget(popoverInner, hash, 'popover-')
-    if (heading) {
-      popoverInner.scroll({ top: heading.offsetTop - 12, behavior: 'instant' })
-    }
+    scrollPopoverToHash(popoverInner, hash)
   }
 
   requestAnimationFrame(() => {

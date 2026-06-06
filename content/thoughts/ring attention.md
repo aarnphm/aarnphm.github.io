@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: sequence sharded across devices in a ring, K,V blocks circulate so each GPU holds only a slice of the cache.
 id: attention-ring
-modified: 2026-06-05 15:08:25 GMT-04:00
+modified: 2026-06-06 01:39:32 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -70,9 +70,3 @@ The running maximum $m$, partition sum $z$, and value accumulator $y$ are the sa
   />
 </Zoomable>
 ```
-
-> [!question]- experiments
->
-> - [ ] Simulate RingAttention with three devices and measure throughput as you vary block size; look for the sweet spot where communication overlaps compute.
-> - [ ] Analyse failure cases when network latency spikes; how resilient is the ring schedule compared to fully sharded data parallelism?
-> - [ ] Derive how gradient checkpointing interacts with the ring; can we reuse streamed activations during backprop?

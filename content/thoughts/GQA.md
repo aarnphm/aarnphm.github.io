@@ -2,7 +2,7 @@
 date: '2026-05-27'
 description: reduce KV heads to a fraction of query heads, share K,V across groups for cheaper decode-time cache reuse
 id: attention-gqa
-modified: 2026-06-05 15:08:05 GMT-04:00
+modified: 2026-06-06 01:37:07 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/MLA|MLA]]'
@@ -87,15 +87,3 @@ Each query head keeps its own projection, so the model retains $n_q$ distinct qu
   />
 </Zoomable>
 ```
-
-> [!question]- explore the design space
->
-> - [ ] Starting from a vanilla transformer decoder, implement grouped keys/values and benchmark the decode tokens-per-second improvement as context length grows.
-> - [ ] Analyse how grouping interacts with rotary or ALiBi positional encodings; does sharing $K/V$ across heads degrade positional resolution?
-> - [ ] Reproduce the ablation table from @ainslie2023gqatraininggeneralizedmultiquery to see how aggressively $n_k^{'}$ can be reduced before accuracy drops on your domain.
-
-> [!todo]+ follow-up questions
->
-> - Derive how the attention matrix factorises when queries are grouped and quantify the approximation error introduced by shared $K,V$ pairs.
-> - Collect empirical results comparing [[thoughts/KV compression|KV cache]] sizes for MHA, Multi-Query, and GQA across popular decoder-only models.
-> - Investigate hardware implications: how does GQA interact with tensor parallelism or speculative decoding pipelines?

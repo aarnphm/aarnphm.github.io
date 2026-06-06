@@ -58,6 +58,10 @@ $quote-indent: 1.25em;
     }
   }
 
+  blockquote::before {
+    content: '';
+  }
+
   .seealso-rail-line {
     background: transparent;
   }
