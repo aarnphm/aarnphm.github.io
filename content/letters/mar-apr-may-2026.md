@@ -1,5 +1,5 @@
 ---
-date: "2026-03-28"
+date: '2026-03-28'
 description: letter updates to investors
 draft: true
 email: true

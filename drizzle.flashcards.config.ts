@@ -1,12 +1,12 @@
 import { defineConfig } from 'drizzle-kit'
 
 export default defineConfig({
-  schema: './worker/schema/comments.ts',
-  out: './migrations',
+  schema: './worker/schema/flashcards.ts',
+  out: './migrations/flashcards',
   dialect: 'sqlite',
   driver: 'd1-http',
   dbCredentials: {
-    databaseId: 'a267f69f-5fc0-4fbd-a013-d81c4da2783e',
+    databaseId: '4fa538cf-e186-417b-922b-dfd88eb92628',
     accountId: process.env.CLOUDFLARE_ACCOUNT_ID!,
     token: process.env.CLOUDFLARE_API_TOKEN!,
   },

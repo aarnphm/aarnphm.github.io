@@ -28,8 +28,21 @@ export interface Deck {
   errors: DeckError[]
 }
 
+type MathDelimiter = '$' | '$$'
+
+interface ClozeMatch {
+  start: number
+  end: number
+  value: string
+  mathDelimiter?: MathDelimiter
+}
+
+interface ClozeParts {
+  answer: string
+  hint?: string
+}
+
 const separatorRe = /^-{3,}\s*$/
-const clozeRe = /(?<!\[)\[(?!\[)([^[\]]+)\](?![\]()])/g
 
 export function hashCard(canonical: string): string {
   return createHash('sha256').update(canonical).digest('hex').slice(0, 8)
@@ -61,38 +74,95 @@ function makeQaCard(front: string, back: string): Card {
   }
 }
 
+function isEscaped(source: string, index: number): boolean {
+  let backslashes = 0
+  for (let i = index - 1; i >= 0 && source[i] === '\\'; i--) backslashes++
+  return backslashes % 2 === 1
+}
+
+function mathDelimiterAt(source: string, index: number): MathDelimiter | undefined {
+  if (source[index] !== '$' || isEscaped(source, index)) return undefined
+  return source[index + 1] === '$' ? '$$' : '$'
+}
+
+function splitClozeValue(value: string): ClozeParts {
+  const separator = value.indexOf('|')
+  if (separator === -1) return { answer: value.trim() }
+  return { answer: value.slice(0, separator).trim(), hint: value.slice(separator + 1).trim() }
+}
+
+function findClozeMatches(sentence: string): ClozeMatch[] {
+  const matches: ClozeMatch[] = []
+  let mathDelimiter: MathDelimiter | undefined
+
+  for (let i = 0; i < sentence.length; i++) {
+    const delimiter = mathDelimiterAt(sentence, i)
+    if (delimiter) {
+      mathDelimiter = mathDelimiter === delimiter ? undefined : delimiter
+      i += delimiter.length - 1
+      continue
+    }
+
+    if (sentence[i] !== '[') continue
+    if (sentence[i - 1] === '[' || sentence[i + 1] === '[') continue
+
+    const close = sentence.indexOf(']', i + 1)
+    if (close === -1) break
+
+    const value = sentence.slice(i + 1, close)
+    const after = sentence[close + 1]
+    if (value.length === 0 || value.includes('[')) continue
+    if (after === ']' || after === '(' || after === ')') continue
+
+    matches.push({ start: i, end: close + 1, value, mathDelimiter })
+    i = close
+  }
+
+  return matches
+}
+
+function renderClozeReplacement(
+  match: ClozeMatch,
+  target: boolean,
+  face: 'front' | 'back',
+): string {
+  const { answer, hint } = splitClozeValue(match.value)
+  if (!target) return answer
+  if (!match.mathDelimiter) {
+    return face === 'front'
+      ? `<span class="cloze-blank">${hint ?? '[…]'}</span>`
+      : `<span class="cloze-answer">${answer}</span>`
+  }
+
+  const delimiter = match.mathDelimiter
+  return face === 'front'
+    ? `${delimiter}<span class="cloze-blank">${hint ?? '[…]'}</span>${delimiter}`
+    : `${delimiter}<span class="cloze-answer">${delimiter}${answer}${delimiter}</span>${delimiter}`
+}
+
 function renderCloze(
   sentence: string,
-  matches: RegExpMatchArray[],
+  matches: ClozeMatch[],
   target: number,
   face: 'front' | 'back',
 ): string {
   let out = ''
   let last = 0
   matches.forEach((match, i) => {
-    const start = match.index ?? 0
-    out += sentence.slice(last, start)
-    const [answer, hint] = match[1].split('|').map(part => part.trim())
-    if (i === target) {
-      out +=
-        face === 'front'
-          ? `<span class="cloze-blank">${hint ?? '[…]'}</span>`
-          : `<span class="cloze-answer">${answer}</span>`
-    } else {
-      out += answer
-    }
-    last = start + match[0].length
+    out += sentence.slice(last, match.start)
+    out += renderClozeReplacement(match, i === target, face)
+    last = match.end
   })
   out += sentence.slice(last)
   return out
 }
 
 function makeClozeCards(sentence: string): Card[] {
-  const matches = [...sentence.matchAll(clozeRe)]
+  const matches = findClozeMatches(sentence)
   if (matches.length === 0) return []
   const groupId = hashCard(`C:${normalize(sentence)}`)
   return matches.map((match, index) => {
-    const [answer, hint] = match[1].split('|').map(part => part.trim())
+    const { answer, hint } = splitClozeValue(match.value)
     return {
       id: hashCard(`C:${normalize(sentence)} ${index}`),
       kind: 'cloze' as const,

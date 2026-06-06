@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-05 17:38:08 GMT-04:00
+modified: 2026-06-05 19:53:27 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -88,13 +88,13 @@ title: lists
 - [amatonormativity](https://elizabethbrake.com/amatonormativity)
 - row-major versus column-{{sidenotes<inline: true>[major]: indicates how we order data in memory for flattened array}}
   - row-major memory locations:
-    $$x + N_x \cdot y$$
+    - $$x + N_x \cdot y$$
     - Access `A[y][x]`
   - col-major memory locations:
-    $$y + N_y \cdot (x-1)$$
+    - $$y + N_y \cdot (x-1)$$
     - Access `A(y, x)`
   - Note that for transpose, we should use col-major instead.
-  - see also: https://en.wikipedia.org/wiki/Row-_and_column-major_order
+    - see also: https://en.wikipedia.org/wiki/Row-_and_column-major_order
 - polysyllabic
   - [[thoughts/Epistemology]] versus [[thoughts/Ontology]]
 - epistolary
@@ -181,7 +181,7 @@ title: lists
 - simmering
 - smooshing
 - spelunking
-- [[thoughts/sheafification]]
+- [[thoughts/sheafification|sheafification]]
 - spinning
 - stewing
 - sussing
@@ -209,3 +209,4 @@ title: lists
 - preclude
 - Euler's polyhedron formula
   - $V-E+F$
+- {{sidenotes[mnestics]: see also [lesswrong](https://www.lesswrong.com/s/YshDJ9ECCgkwoNsBc/p/ksatPnddyZjHwZWwG), but largely this term comes from the book [[library/There is No Antimemetics Division|There is No Antimemetics Division]] by qntm}}

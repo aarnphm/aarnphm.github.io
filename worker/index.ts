@@ -377,6 +377,11 @@ export default {
     const url = new URL(request.url)
     const localRequest = isLocalRequest(request)
 
+    if (url.pathname.endsWith('.fc')) {
+      url.pathname = url.pathname.slice(0, -3) + '/flashcards'
+      request = new Request(url.toString(), request as any) as any
+    }
+
     const provider = new OAuthProvider({
       apiHandlers: {
         '/mcp': Garden.serve('/mcp', { binding: 'MCP_OBJECT' }),

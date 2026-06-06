@@ -19,7 +19,7 @@
 .popover {
   --popover-padding: 1rem;
   --popover-arrow-size: 0.58rem;
-  --popover-arrow-leg: 1px;
+  --popover-arrow-leg: calc(var(--popover-arrow-size) * 0.7071);
   --popover-arrow-inset: calc(var(--popover-padding) - var(--popover-arrow-size) / 2);
 
   z-index: var(--z-popover);
@@ -98,6 +98,10 @@
       width: 0;
       height: 0;
       border: var(--popover-arrow-leg) solid transparent;
+    }
+
+    &::after {
+      border-width: calc(var(--popover-arrow-leg) - 1px);
     }
   }
 

@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: or just new thing
 id: Sets
-modified: 2026-06-05 15:08:30 GMT-04:00
+modified: 2026-06-05 20:26:20 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -238,7 +238,7 @@ $$
 A \times B = \{(a,b) \mid\;a \in A \text{ and } b \in B\}
 $$
 
-> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of set]: if $a \neq\; b$ then this definition says that $(a,b)$ is a colleciton containing two sets, one of which is a one-element set and the other a two-element set.<br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
+> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of set]: if $a \neq\; b$ then this definition says that $(a,b)$ is a colleciton containing two sets, one of which is a one-element set and the other a two-element set.<br/><br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
 >
 > The _first coordinate_ of the ordered pair is defined to be the ==element belonging to both sets==
 >
