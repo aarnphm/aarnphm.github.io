@@ -7,15 +7,9 @@
   "file": "/courses/18-100b-analysis-i-fall-2010/11379f14842a39ab7c538198b5b15f9d_MIT18_100BF10_fin_prac_sol.pdf",
   "file_size": 93553,
   "file_type": "application/pdf",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Exam Solutions"
-  ],
+  "learning_resource_types": ["Exam Solutions"],
   "level": [],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "ocw_type": "OCWFile",
@@ -28,16 +22,10 @@
   "video_files": {
     "archive_url": "",
     "video_captions_file": "",
-    "video_captions_resource": {
-      "content": "",
-      "website": "18-100b-analysis-i-fall-2010"
-    },
+    "video_captions_resource": { "content": "", "website": "18-100b-analysis-i-fall-2010" },
     "video_thumbnail_file": "",
     "video_transcript_file": "",
-    "video_transcript_resource": {
-      "content": "",
-      "website": "18-100b-analysis-i-fall-2010"
-    }
+    "video_transcript_resource": { "content": "", "website": "18-100b-analysis-i-fall-2010" }
   },
   "video_metadata": {
     "source": "",

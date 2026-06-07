@@ -1,19 +1,19 @@
 ---
-title: "exam solutions"
-description: "mit 18.100B exam solutions"
-id: "mit-18-100b-fall-2010-collection-resources-exam-solutions"
+title: 'exam solutions'
+description: 'mit 18.100B exam solutions'
+id: 'mit-18-100b-fall-2010-collection-resources-exam-solutions'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "mathematical analysis"
-  - "differential equations"
-  - "calculus"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'mathematical analysis'
+  - 'differential equations'
+  - 'calculus'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]

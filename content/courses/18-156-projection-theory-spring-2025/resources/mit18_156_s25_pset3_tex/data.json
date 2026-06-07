@@ -6,16 +6,9 @@
   "file": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_pset3.tex",
   "file_size": 7287,
   "file_type": "text/x-tex",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Problem Sets",
-    "Editable Files"
-  ],
+  "learning_resource_types": ["Problem Sets", "Editable Files"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "resourcetype": "Document",
   "title": "18.156 (S25): Problem Set 3 LaTeX Template",

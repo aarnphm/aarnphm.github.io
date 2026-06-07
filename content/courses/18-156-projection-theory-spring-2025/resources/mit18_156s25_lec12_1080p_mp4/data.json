@@ -6,15 +6,9 @@
   "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_360p_16_9.mp4",
   "file_size": 166763995,
   "file_type": "video/mp4",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Lecture Videos"
-  ],
+  "learning_resource_types": ["Lecture Videos"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "resourcetype": "Video",
   "title": "Lecture 12: The Bourgain-Katz-Tao Projection Theorem",

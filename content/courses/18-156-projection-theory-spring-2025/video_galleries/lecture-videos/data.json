@@ -1,4 +1,3 @@
-
 {
   "content": "",
   "content_type": "video_gallery",
@@ -14,15 +13,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec01_1080p_360p_16_9.mp4",
       "file_size": 176314080,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 01: Introduction to Projection Theory",
@@ -48,15 +41,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_360p_16_9.mp4",
       "file_size": 175950787,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 02: Fundamental Methods of Projection Theory",
@@ -82,15 +69,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec03_1080p_360p_16_9.mp4",
       "file_size": 168266451,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 03: Projection Theory in Euclidean Space",
@@ -116,15 +97,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec04_1080p_360p_16_9.mp4",
       "file_size": 173293864,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 04: The Fourier Method in Euclidean Space",
@@ -150,15 +125,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec05_1080p_360p_16_9.mp4",
       "file_size": 163111330,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 05: The Large Sieve",
@@ -184,15 +153,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec06_1080p_360p_16_9.mp4",
       "file_size": 167835293,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 06: Projections and Smoothing",
@@ -218,15 +181,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_360p_16_9.mp4",
       "file_size": 165142831,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 07: Applications of the Large Sieve to Number Theory",
@@ -252,15 +209,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_360p_16_9.mp4",
       "file_size": 172217763,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 08: The Szemeredi-Trotter Theorem",
@@ -286,15 +237,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec09_1080p_360p_16_9.mp4",
       "file_size": 153329767,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 09: Reflections on the Szemeredi-Trotter Theorem",
@@ -320,15 +265,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec10_1080p_360p_16_9.mp4",
       "file_size": 165114150,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 10: Sum-Product Theory",
@@ -354,15 +293,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec11_1080p_360p_16_9.mp4",
       "file_size": 164597043,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 11: Contagious Structure in Projection Theory",
@@ -388,15 +321,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_360p_16_9.mp4",
       "file_size": 166763995,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 12: The Bourgain-Katz-Tao Projection Theorem",
@@ -422,15 +349,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec13_1080p_360p_16_9.mp4",
       "file_size": 160581393,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 13: The Balog-Szemeredi-Gowers Theorem",
@@ -456,15 +377,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec14_1080p_360p_16_9.mp4",
       "file_size": 223057129,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 14: The Bourgain Projection Theorem Part 1 (over the Real Numbers)",
@@ -490,15 +405,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec15_1080p_360p_16_9.mp4",
       "file_size": 198262101,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 15: The Bourgain Projection Theorem, Part 2",
@@ -524,15 +433,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec16_1080p_360p_16_9.mp4",
       "file_size": 184520822,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 16: The Bourgain Projection Theorem, Part 3",
@@ -558,15 +461,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec17_1080p_360p_16_9.mp4",
       "file_size": 170475923,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 17: Random Walks on Finite Groups, Part 1",
@@ -592,15 +489,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec18_1080p_360p_16_9.mp4",
       "file_size": 166115747,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 18: Random Walks on Finite Groups, Part 2",
@@ -626,15 +517,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec19_1080p_360p_16_9.mp4",
       "file_size": 177266729,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 19: Random Walks on Finite Groups, Part 3",
@@ -660,15 +545,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec20_1080p_360p_16_9.mp4",
       "file_size": 193295514,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 20: Homogeneous Dynamics, Part 1",
@@ -694,15 +573,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec21_1080p_360p_16_9.mp4",
       "file_size": 171446728,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 21: Homogeneous Dynamics, Part 2",
@@ -728,15 +601,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec22_1080p_360p_16_9.mp4",
       "file_size": 174225569,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 22: Sharp Projection Theorems, Part 1: Introduction and Beck's Theorem.",
@@ -762,15 +629,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec23_1080p_360p_16_9.mp4",
       "file_size": 183911420,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 23: Sharp Projection Theorems, Part 2: AD Regular Case",
@@ -796,15 +657,9 @@
       "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec24_1080p_360p_16_9.mp4",
       "file_size": 158723209,
       "file_type": "video/mp4",
-      "image_metadata": {
-        "caption": "",
-        "credit": "",
-        "image-alt": ""
-      },
+      "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
       "iscjklanguage": false,
-      "learning_resource_types": [
-        "Lecture Videos"
-      ],
+      "learning_resource_types": ["Lecture Videos"],
       "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
       "resourcetype": "Video",
       "title": "Lecture 24: Sharp Projection Theorems, Part 3: Combining Different Scales",
@@ -825,4 +680,3 @@
     }
   ]
 }
-

@@ -6,16 +6,9 @@
   "file": "/courses/18-156-projection-theory-spring-2025/18156-full-lecture-notes-latex-files.zip",
   "file_size": 5890930,
   "file_type": "application/zip",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Lecture Notes",
-    "Editable Files"
-  ],
+  "learning_resource_types": ["Lecture Notes", "Editable Files"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "resourcetype": "Other",
   "title": "18.156 (S25): Full Lecture Notes LaTeX Files.zip",
