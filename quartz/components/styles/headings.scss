@@ -76,7 +76,6 @@
           padding: 0.5rem 1.5rem;
           cursor: pointer;
           transition: background-color 0.15s ease;
-          border-left: 3px solid transparent;
           font-size: 0.9rem;
           line-height: 1.4;
           color: var(--darkgray);
@@ -90,7 +89,6 @@
 
           &.active {
             background-color: var(--highlight);
-            border-left-color: var(--secondary);
             color: var(--dark);
             font-weight: 500;
           }

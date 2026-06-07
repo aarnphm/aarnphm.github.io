@@ -548,10 +548,6 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       default:
         return (
           <>
-            <article class="folder-layout--article">
-              {content}
-              <SeeAlso {...props} />
-            </article>
             <section class={baseListClass}>
               <PageListSearch {...props} />
               <PageList {...listProps} />
