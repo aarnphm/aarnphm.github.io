@@ -1,0 +1,158 @@
+\documentclass{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+
+\newtheorem{prop}[theorem]{Proposition}
+
+\DeclareMathOperator{\Vol}{\textrm{Vol}}
+
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\del}{\partial}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\Gr}{\textrm{Gr}}
+\newcommand{\Avg}{\textrm{Avg}}
+
+\begin{document}
+
+{\bf  18.156, Projection theory,  problem set 3}
+
+\vskip10pt
+
+ In the first problem,  we study projections from $\FF_q^d$ onto 1-dimensional subspaces.   This is parallel to the discussion in class in Lecture 6 on projections from $\RR^d$ onto 1-dimensional subspaces.
+ 
+ \vskip10pt
+ 
+The setup of our problem involves projections and Fourier transform over finite fields.   This is analogous to the situation in Euclidean space but with some minor differences,  so we take a page to go through the setup carefully.
+
+Define the dot product on $\FF_q^d$ as follows.   If $v,w \in \FF_q^d$,  then $v \cdot w = v_1 w_1 + ... + v_d w_d \in \FF_q$.  
+
+Suppose $V \subset \FF_q^d$ is a subspace.  Define
+
+$$ V^\perp = \{ w |  v \cdot w = 0 \textrm{ for all } v \in V \}.$$
+
+Like in Euclidean space,  we have $\dim V^\perp + \dim V = d$ and like in Euclidean space we have $(V^\perp)^\perp = V$.  But unlike in Euclidean space,  $V \cap V^\perp$ can include non-zero vectors.  (In particular,  a non-zero vector $v$ can be perpendicular to itself.)
+
+Recall that $\FF_q^d / V^\perp$ is the set of cosets of $V^\perp$ in $\FF_q^d$.   We have $\dim ( \FF_q^d / V^\perp) = \dim V$,  even though I don't see any canonical identification between $\FF_q^d / V^\perp$ and $V$.   If $a \in \FF_q^d / V^\perp$,  then $a$ is a subset of $\FF_q^d$,  so we can write $\sum_{x \in a} ...$  Now for any function $f: \FF_q^d \rightarrow \CC$, we define the projection $\pi_V: \FF_q^d / V^\perp \rightarrow \CC$ by 
+
+$$ \pi_V f(a) = \sum_{x \in a} f(x). $$
+
+Recall that $\Gr_q(k,d)$ is the set of all $k$-dimensional subspaces $V \subset \FF_q^d$.   As $V$ varies over $\Gr_q(k,d)$,  $V^\perp$ varies over $\Gr_q(d-k, d)$, and $\pi_V$ varies over the set of all surjective homomorphisms from $\FF_q^d$ onto a $k$-dimensional vector space.
+
+This setup interacts well with the Fourier transform.   Let's recall the setup of the Fourier transform and then see how it interacts with projections.  
+
+Suppose that $e: \FF_q \rightarrow \CC^*$ is a non-trivial homomorphism (from $\FF_q$ with addition to $\CC$ with multiplication).   If $q=p$, then we could take $e(x) = e^{2 \pi i \frac{x}{p}}$.   
+
+Recall that if $f: \FF_q^d \rightarrow \CC$,  then $\hat f: \FF_q^d \rightarrow \CC$ is defined by
+
+$$ \hat f(\xi) = \sum_{x \in \FF_q^d} f(x) e( - x \cdot \xi).$$
+
+We have Fourier inversion and Plancherel:
+
+$$ f(x) = \frac{1}{q^d} \sum_{\xi \in \FF_q^d} \hat f(\xi) e( x \cdot \xi). $$
+
+$$ \sum_{x \in \FF_q^d} |f(x)|^2 = \frac{1}{q^d}  \sum_{\xi \in \FF_q^d} | \hat f(\xi)|^2. $$
+
+Now suppose that $g: \FF_q^d / V^\perp \rightarrow \CC$.   We can define $\hat g: V \rightarrow \CC$ as follows.   First notice that if $\alpha \in V$ and $a \in \FF_q^d / V^\perp$,  then for all $x \in a$,  $x \cdot \alpha \in \FF_q$ is the same.   So we can define $a \cdot \alpha \in \FF_q$.   Then we define
+
+$$ \hat g(\alpha) = \sum_{a \in \FF_q^d/ V^\perp} g(a) e( - a \cdot \alpha).$$
+
+We have Fourier inversion and Plancherel:
+
+$$ g(a) = \frac{1}{q^{\dim V}} \sum_{\alpha \in V} \hat g(\alpha) e( a \cdot \alpha). $$
+
+$$ \sum_{a \in \FF_q^d / V^\perp} |g(a)|^2 = \frac{1}{q^{\dim V}}  \sum_{\alpha \in V} | \hat g(\alpha)|^2. $$
+
+\vskip10pt
+
+1a.  Prove that if $f: \FF_q^d \rightarrow \CC$ and $V \subset \FF_q^d$ is a subpace and $\alpha \in V$,  then
+
+$$\widehat{\pi_V f}(\alpha) = \hat f(\alpha). $$
+
+\vskip10pt
+
+As usual,  write $g = g_0 + g_h$ where $g_0$ is a contant function and $g_h$ has mean zero.
+
+\vskip10pt
+
+1b.  Prove that 
+
+$$ \Avg_{L \in \Gr_q(1,d)} \| (\pi_L f)_h \|_{L^2}^2 \lesssim \| f_h \|_{L^2}^2. $$
+
+\vskip10pt
+
+1c.  Here is an interesting special case of the above that is analogous to probability.   Suppose that $A \subset \FF_2^d$ with $|A| = (1/2) 2^d$.   Show that
+
+$$ \Avg_{L \in \Gr_2(1,d)} \Avg_{a \in \FF_2^d / L^\perp} \left| \pi_L 1_A(a) - \frac{|A|}{2} \right| \lesssim 2^{d/2}. $$
+
+Notice first that most of the functions $\pi_L 1_A$ are nearly constant.  
+
+Also note that the bound in 1c has a flavor of probability,  because if we randomly divide $|A| \sim 2^d$ pebbles between two urns, then with probability $99 \%$,  the number of pebbles in each urn will be $\frac{|A|}{2} + O(2^{d/2})$.
+
+\vskip10pt
+
+Food for thought.  This is the beginning of an interesting interaction between high dimensional projection theory and probability theory.   Notice that if $f$ is the characteristic function of $[0,1]^d \subset \RR^d$,  the projections of $f$ onto the direction $(1,..., 1)$ describes the sum of $d$ independent random variables each uniformly distributed in $[0,1]$.   By the central limit theorem this projection is almost a Gaussian.   So the central limit theorem is related to projection theory. 
+
+Problem 1c suggests that for a general object in high dimensions, most projections behave in a pseudorandom way.    Keith Ball has developed the idea that if $A \subset \RR^d$ is any convex set,  then most of the projections of $1_A$ are almost Gaussian.   For an introduction, see the paper ``The central limit theorem for convex bodies",  or Ball's ICM talk \url{https://www.youtube.com/watch?v=pJ282H9WB_Q}
+
+\vskip10pt
+
+2.  Clustering and projection theory.
+
+Suppose that $f: \RR^2 \rightarrow \RR$ is a probability density function, meaning that $f \ge 0$ and $\int_{\RR^2} f = 1$. 
+
+We will address the following type of question:  if $\pi_L f$ looks like two clusters for each line $L$,  does it follow that $f$ looks like two clusters?  Let's make this question precise.
+
+Recall that for a subspace $V \subset \RR^d$, 
+
+$$ \pi_V f(y) = \int_{V^\perp} f(y + z) dvol_{V^\perp}(z). $$
+
+For each angle $\theta \in S^1$, there is a 1-dimensional subspace $L_\theta$ (equal to the span of $\theta$).  
+
+Suppose that for each $\theta$ in the upper right quarter of $S^1$,  there are two points $y_1, y_2 \in L_\theta$ so that
+
+\begin{itemize}
+
+\item $| y_1 - y_2| > 100$.
+
+\item For each $j = 1,2$,  $\int_{|y - y_j| \le 1} \pi_{L_\theta} f(y) dy \ge 0.49$
+
+\end{itemize}
+
+Does it follow that there are two points $x_1, x_2 \in \RR^2$ so that 
+
+
+\begin{itemize}
+
+\item $| x_1 - x_2| > 50$.
+
+\item For each $j = 1,2$,  $\int_{|x - x_j| \le 10} f(x) dx \ge 0.4$
+
+\end{itemize}
+
+Prove or give a counterexample.
+
+\vskip10pt
+
+Optional exploration.   Generalize the clustering problem above.   What happens in higher dimensions?  What happens if we replace two clusters by $N$ clusters?
+
+
+
+
+
+\end{document}
+
+
+
+
+

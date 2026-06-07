@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problems about one real root between 0 and 1, an open interval and H¨older continuous function is uniformly continuous.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problems about one real root between 0 and 1, an open interval and H¨older continuous function is uniformly continuous.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/30c405d8ad7e7ee3db6dd660437c6d4f_MIT18_100BF10_pset8.pdf",
+  "file_size": 109097,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 8 (2006)",
+  "uid": "30c405d8-ad7e-7ee3-db6d-d660437c6d4f",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

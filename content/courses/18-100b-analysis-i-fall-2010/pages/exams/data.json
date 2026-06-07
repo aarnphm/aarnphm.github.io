@@ -1,0 +1,15 @@
+
+{
+  "content": "<p><table>\n\n<thead>\n\n<tr>\n\n<th>\n</p>\n\n<p></th>\n\n<th>\n\nEXAMS\n</th>\n\n<th>\n\nSOLUTIONS\n</th>\n</p>\n</tr>\n\n<p></thead>\n\n<tr>\n\n<td>\n\n1\n</td>\n\n<td>\n\nPractice quiz 1 (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_practice1/\">PDF</a>)\n</td>\n\n<td>\n</p>\n<p>Practice quiz 1 solutions</p>\n<p>Handwritten (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_practice1sol/\">PDF</a>)</p>\n<p>Typed (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_prac1soltyp/\">PDF</a>)</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n2\n</td>\n\n<td>\n\nPractice quiz 2 (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_practice2/\">PDF</a>)\n</td>\n\n<td>\n</p>\n<p>Practice quiz 2 solutions</p>\n<p>Handwritten (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_practice2sol/\">PDF</a>)</p>\n<p>Typed (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_prac2soltyp/\">PDF</a>)</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n3\n</td>\n\n<td>\n</p>\n<p>Practice quiz 3 </p>\n<p>[not available]</p>\n<p></td>\n\n<td>\n</p>\n<p>Practice quiz 3 solutions</p>\n<p>[not available]</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n4\n</td>\n\n<td>\n\nPractice quiz 4 (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_prac4/\">PDF</a>)\n</td>\n\n<td>\n</p>\n<p>Practice quiz 4 solutions</p>\n<p>Handwritten (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_practice4sol/\">PDF</a>)</p>\n<p>Typed (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_prac4soltyp/\">PDF</a>)</p>\n</td>\n\n<p></tr>\n\n<tr>\n\n<td>\n\n5\n</td>\n\n<td>\n\nPractice final (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_final_prac/\">PDF</a>)\n</td>\n\n<td>\n</p>\n<p>Practice final solutions (<a href=\"/courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_fin_prac_sol/\">PDF</a>)</p>\n</td>\n\n</tr>\n\n</table>\n\n",
+  "content_type": "page",
+  "description": "This section provides practice quizzes, handwritten and typed solutions, a practice final, and practice final solutions.",
+  "draft": false,
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Exams"
+  ],
+  "ocw_type": "CourseSection",
+  "title": "Exams",
+  "uid": "ae754d0f-d11b-9275-5022-41efc9574387"
+}
+

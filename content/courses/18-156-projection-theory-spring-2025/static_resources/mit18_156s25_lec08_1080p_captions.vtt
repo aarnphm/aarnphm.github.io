@@ -1,0 +1,4999 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:00.990 align:middle line:90%
+
+
+00:00:00.990 --> 00:00:02.475 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.475 --> 00:00:04.455 align:middle line:90%
+[RUSTLING]
+
+00:00:04.455 --> 00:00:06.930 align:middle line:90%
+[CLICKING]
+
+00:00:06.930 --> 00:00:11.403 align:middle line:90%
+
+
+00:00:11.403 --> 00:00:13.070 align:middle line:84%
+LAWRENCE GUTH: Today
+we're going to talk
+
+00:00:13.070 --> 00:00:15.680 align:middle line:84%
+about the
+Szemeredi-Trotter theorem.
+
+00:00:15.680 --> 00:00:17.420 align:middle line:84%
+I mentioned the
+Szemeredi-Trotter theorem
+
+00:00:17.420 --> 00:00:20.330 align:middle line:84%
+on the first day,
+and you could think
+
+00:00:20.330 --> 00:00:23.910 align:middle line:84%
+of as a fundamental theorem
+in projection theory.
+
+00:00:23.910 --> 00:00:29.820 align:middle line:84%
+It's one of the rare theorems
+that is completely sharp.
+
+00:00:29.820 --> 00:00:31.910 align:middle line:84%
+It's just the right answer
+for a natural question
+
+00:00:31.910 --> 00:00:32.844 align:middle line:90%
+in projection theory.
+
+00:00:32.844 --> 00:00:36.850 align:middle line:90%
+
+
+00:00:36.850 --> 00:00:37.350 align:middle line:90%
+Yeah.
+
+00:00:37.350 --> 00:00:41.360 align:middle line:84%
+So we're so we're going
+to talk about it and see--
+
+00:00:41.360 --> 00:00:43.610 align:middle line:84%
+yeah, so there's some
+interesting techniques
+
+00:00:43.610 --> 00:00:46.610 align:middle line:90%
+involved in it.
+
+00:00:46.610 --> 00:00:47.720 align:middle line:90%
+Yeah.
+
+00:00:47.720 --> 00:00:50.570 align:middle line:90%
+There, so that's what we'll do.
+
+00:00:50.570 --> 00:00:51.093 align:middle line:90%
+All right.
+
+00:00:51.093 --> 00:00:52.510 align:middle line:84%
+So let me remind
+you what it says.
+
+00:00:52.510 --> 00:00:59.140 align:middle line:90%
+
+
+00:00:59.140 --> 00:01:02.470 align:middle line:84%
+So what we talked
+about on the first day,
+
+00:01:02.470 --> 00:01:05.200 align:middle line:84%
+I called it the
+Szemeredi-Trotter projection
+
+00:01:05.200 --> 00:01:05.700 align:middle line:90%
+theorem.
+
+00:01:05.700 --> 00:01:08.710 align:middle line:90%
+
+
+00:01:08.710 --> 00:01:12.880 align:middle line:84%
+So the setup was that you
+have a finite set in the plane
+
+00:01:12.880 --> 00:01:14.956 align:middle line:84%
+and you have a
+set of directions.
+
+00:01:14.956 --> 00:01:21.190 align:middle line:90%
+
+
+00:01:21.190 --> 00:01:27.160 align:middle line:84%
+And then S equals S of XD
+is the largest projection
+
+00:01:27.160 --> 00:01:29.006 align:middle line:90%
+of X in any of these directions.
+
+00:01:29.006 --> 00:01:34.840 align:middle line:90%
+
+
+00:01:34.840 --> 00:01:37.360 align:middle line:90%
+So that's the if.
+
+00:01:37.360 --> 00:01:41.740 align:middle line:84%
+And then the conclusion is
+that the number of directions
+
+00:01:41.740 --> 00:01:48.280 align:middle line:84%
+is bounded by S
+squared over X plus 1,
+
+00:01:48.280 --> 00:01:50.560 align:middle line:90%
+which we saw in the first.
+
+00:01:50.560 --> 00:01:52.216 align:middle line:90%
+OK.
+
+00:01:52.216 --> 00:01:54.790 align:middle line:84%
+So this theorem is really
+a corollary of the theorem
+
+00:01:54.790 --> 00:01:59.190 align:middle line:84%
+that they proved that is more
+general that I'll state now.
+
+00:01:59.190 --> 00:02:02.100 align:middle line:84%
+And the more general
+theorem is a theorem
+
+00:02:02.100 --> 00:02:04.715 align:middle line:84%
+about how points and lines
+intersect in the plane.
+
+00:02:04.715 --> 00:02:13.320 align:middle line:90%
+
+
+00:02:13.320 --> 00:02:14.535 align:middle line:90%
+OK.
+
+00:02:14.535 --> 00:02:23.400 align:middle line:84%
+So let's say X is a set
+of points in the plane
+
+00:02:23.400 --> 00:02:25.700 align:middle line:84%
+and L is a set of
+lines in the plane.
+
+00:02:25.700 --> 00:02:31.740 align:middle line:90%
+
+
+00:02:31.740 --> 00:02:39.520 align:middle line:84%
+The number of incidences between
+X and L is the number of pairs.
+
+00:02:39.520 --> 00:02:42.400 align:middle line:90%
+So take a point and a line.
+
+00:02:42.400 --> 00:02:46.710 align:middle line:84%
+So that the point
+is in the line.
+
+00:02:46.710 --> 00:02:50.100 align:middle line:90%
+Let me make a picture.
+
+00:02:50.100 --> 00:02:55.650 align:middle line:84%
+So suppose those are our lines
+and these are our points.
+
+00:02:55.650 --> 00:02:59.220 align:middle line:90%
+How many incidences are there?
+
+00:02:59.220 --> 00:03:02.970 align:middle line:84%
+This line has two points
+in it, so that counts two.
+
+00:03:02.970 --> 00:03:06.780 align:middle line:84%
+And that line has one point
+and that line has one point,
+
+00:03:06.780 --> 00:03:08.556 align:middle line:90%
+so that's four incidences.
+
+00:03:08.556 --> 00:03:13.230 align:middle line:90%
+
+
+00:03:13.230 --> 00:03:16.320 align:middle line:84%
+You can also think of
+this as the sum over all
+
+00:03:16.320 --> 00:03:20.160 align:middle line:84%
+the lines in the set of
+lines of the number of points
+
+00:03:20.160 --> 00:03:20.825 align:middle line:90%
+on that line.
+
+00:03:20.825 --> 00:03:24.810 align:middle line:90%
+
+
+00:03:24.810 --> 00:03:29.010 align:middle line:84%
+This is a way of measuring how
+much the points and lines are
+
+00:03:29.010 --> 00:03:32.670 align:middle line:90%
+intersecting with each other.
+
+00:03:32.670 --> 00:03:34.860 align:middle line:90%
+OK.
+
+00:03:34.860 --> 00:03:41.790 align:middle line:84%
+So the general Szemeredi-Trotter
+theorem says that if you have
+
+00:03:41.790 --> 00:03:45.630 align:middle line:84%
+some points and some lines, the
+number of incidences between
+
+00:03:45.630 --> 00:03:50.550 align:middle line:84%
+them is bounded by the number of
+points plus the number of lines
+
+00:03:50.550 --> 00:03:54.733 align:middle line:84%
+plus points to the
+2/3 lines to the 2/3.
+
+00:03:54.733 --> 00:04:02.810 align:middle line:90%
+
+
+00:04:02.810 --> 00:04:03.450 align:middle line:90%
+OK.
+
+00:04:03.450 --> 00:04:07.730 align:middle line:84%
+Let's look at some examples to
+see where this stuff comes from.
+
+00:04:07.730 --> 00:04:09.770 align:middle line:84%
+And the examples
+will also remind us
+
+00:04:09.770 --> 00:04:11.530 align:middle line:84%
+of the connection with
+projection theory.
+
+00:04:11.530 --> 00:04:25.740 align:middle line:90%
+
+
+00:04:25.740 --> 00:04:26.240 align:middle line:90%
+OK.
+
+00:04:26.240 --> 00:04:29.420 align:middle line:84%
+So how could we
+have X incidences?
+
+00:04:29.420 --> 00:04:30.810 align:middle line:90%
+That's not too hard to do.
+
+00:04:30.810 --> 00:04:35.660 align:middle line:84%
+If you have one line and you
+put all the points on it,
+
+00:04:35.660 --> 00:04:37.610 align:middle line:84%
+then the number of
+incidences is around
+
+00:04:37.610 --> 00:04:41.910 align:middle line:84%
+X. How could you
+have L incidences?
+
+00:04:41.910 --> 00:04:44.390 align:middle line:84%
+That's not too
+hard to do either.
+
+00:04:44.390 --> 00:04:47.810 align:middle line:84%
+If you have one point and you
+have all the lines passing
+
+00:04:47.810 --> 00:04:51.490 align:middle line:84%
+through it, then the
+number of incidences
+
+00:04:51.490 --> 00:04:52.740 align:middle line:90%
+is around the number of lines.
+
+00:04:52.740 --> 00:04:55.630 align:middle line:90%
+
+
+00:04:55.630 --> 00:04:56.270 align:middle line:90%
+OK.
+
+00:04:56.270 --> 00:04:58.840 align:middle line:90%
+Now how can you get this?
+
+00:04:58.840 --> 00:05:01.750 align:middle line:84%
+This is the most
+interesting, and it's
+
+00:05:01.750 --> 00:05:06.850 align:middle line:84%
+a fundamentally trickier
+example than the first.
+
+00:05:06.850 --> 00:05:09.710 align:middle line:84%
+So the third example is
+one that we have discussed.
+
+00:05:09.710 --> 00:05:12.280 align:middle line:90%
+It's based on an integer grid.
+
+00:05:12.280 --> 00:05:18.375 align:middle line:84%
+So let's say X is an
+N by N integer grid.
+
+00:05:18.375 --> 00:05:31.240 align:middle line:90%
+
+
+00:05:31.240 --> 00:05:31.820 align:middle line:90%
+OK.
+
+00:05:31.820 --> 00:05:35.050 align:middle line:84%
+And then we're going to try
+to draw some lines that each
+
+00:05:35.050 --> 00:05:36.470 align:middle line:90%
+hit many points.
+
+00:05:36.470 --> 00:05:38.860 align:middle line:84%
+And we observed in
+class on the first day
+
+00:05:38.860 --> 00:05:41.620 align:middle line:84%
+that if you have a line
+at a rational slope, then
+
+00:05:41.620 --> 00:05:43.370 align:middle line:90%
+it will go through many points.
+
+00:05:43.370 --> 00:05:44.475 align:middle line:90%
+So those are our lines.
+
+00:05:44.475 --> 00:05:47.443 align:middle line:90%
+
+
+00:05:47.443 --> 00:05:49.360 align:middle line:84%
+So we have to make this
+a little more precise.
+
+00:05:49.360 --> 00:05:51.580 align:middle line:84%
+So first I'll describe
+the rational slopes.
+
+00:05:51.580 --> 00:05:56.010 align:middle line:84%
+So Q sub M is defined to
+be the fractions a over b
+
+00:05:56.010 --> 00:06:06.090 align:middle line:84%
+where a and b are integers, and
+the a and b have size at most M.
+
+00:06:06.090 --> 00:06:06.890 align:middle line:90%
+OK.
+
+00:06:06.890 --> 00:06:13.925 align:middle line:84%
+Now our set of lines is the
+set of lines with slope in QM.
+
+00:06:13.925 --> 00:06:17.460 align:middle line:90%
+
+
+00:06:17.460 --> 00:06:26.655 align:middle line:84%
+And they pass through
+a point of X. OK.
+
+00:06:26.655 --> 00:06:37.200 align:middle line:90%
+
+
+00:06:37.200 --> 00:06:39.250 align:middle line:84%
+This is a good day
+for colored chalk.
+
+00:06:39.250 --> 00:06:43.900 align:middle line:84%
+So here is a typical line
+from our set of lines.
+
+00:06:43.900 --> 00:06:47.930 align:middle line:84%
+I pick a rational slope and then
+I start at any of the points,
+
+00:06:47.930 --> 00:06:50.230 align:middle line:90%
+and I draw a line at that slope.
+
+00:06:50.230 --> 00:06:56.970 align:middle line:90%
+
+
+00:06:56.970 --> 00:06:57.470 align:middle line:90%
+OK.
+
+00:06:57.470 --> 00:07:04.610 align:middle line:90%
+
+
+00:07:04.610 --> 00:07:05.280 align:middle line:90%
+All right.
+
+00:07:05.280 --> 00:07:09.560 align:middle line:84%
+So now let's try to
+compute how many points
+
+00:07:09.560 --> 00:07:12.040 align:middle line:84%
+and how many lines and how
+many incidences this has.
+
+00:07:12.040 --> 00:07:14.780 align:middle line:90%
+
+
+00:07:14.780 --> 00:07:15.660 align:middle line:90%
+All right.
+
+00:07:15.660 --> 00:07:19.110 align:middle line:90%
+So the size of X is N squared.
+
+00:07:19.110 --> 00:07:20.390 align:middle line:90%
+It's easy to see.
+
+00:07:20.390 --> 00:07:23.300 align:middle line:84%
+How many different slopes
+are we talking about?
+
+00:07:23.300 --> 00:07:26.760 align:middle line:84%
+Well, the number of fractions
+is around M squared.
+
+00:07:26.760 --> 00:07:29.240 align:middle line:90%
+Some of those are reducible.
+
+00:07:29.240 --> 00:07:32.060 align:middle line:84%
+But it turns out that the
+number of distinct fractions
+
+00:07:32.060 --> 00:07:35.510 align:middle line:90%
+is still around M squared.
+
+00:07:35.510 --> 00:07:44.290 align:middle line:84%
+So this is not trivial
+but not difficult.
+
+00:07:44.290 --> 00:07:46.040 align:middle line:84%
+Maybe I'll put a little
+something about it
+
+00:07:46.040 --> 00:07:46.707 align:middle line:90%
+on the homework.
+
+00:07:46.707 --> 00:07:50.880 align:middle line:90%
+
+
+00:07:50.880 --> 00:07:55.710 align:middle line:84%
+So now, how many
+incidences do we have?
+
+00:07:55.710 --> 00:08:00.050 align:middle line:84%
+And we can say that,
+well, each point
+
+00:08:00.050 --> 00:08:03.030 align:middle line:84%
+is in a line of every
+one of these slopes.
+
+00:08:03.030 --> 00:08:04.760 align:middle line:84%
+So the number of
+incidences is the number
+
+00:08:04.760 --> 00:08:07.020 align:middle line:84%
+of points times
+number of slopes.
+
+00:08:07.020 --> 00:08:09.565 align:middle line:84%
+So that's N squared
+times M squared.
+
+00:08:09.565 --> 00:08:13.130 align:middle line:90%
+
+
+00:08:13.130 --> 00:08:13.930 align:middle line:90%
+OK.
+
+00:08:13.930 --> 00:08:20.690 align:middle line:84%
+Now how many different
+lines do we have?
+
+00:08:20.690 --> 00:08:22.713 align:middle line:84%
+Well, we have M
+squared directions,
+
+00:08:22.713 --> 00:08:24.380 align:middle line:84%
+so we have to think
+about how many lines
+
+00:08:24.380 --> 00:08:25.347 align:middle line:90%
+are in each direction.
+
+00:08:25.347 --> 00:08:26.930 align:middle line:84%
+And actually thinking
+about the number
+
+00:08:26.930 --> 00:08:28.820 align:middle line:84%
+of lines in each
+direction, really you
+
+00:08:28.820 --> 00:08:31.700 align:middle line:84%
+can think of it in terms
+of projection theory.
+
+00:08:31.700 --> 00:08:35.720 align:middle line:84%
+So suppose S is one
+of our directions.
+
+00:08:35.720 --> 00:08:38.750 align:middle line:84%
+Let's say pi sub
+S, the projection
+
+00:08:38.750 --> 00:08:46.510 align:middle line:84%
+at slope S of X1 and X2
+is X2 minus SX1, I guess.
+
+00:08:46.510 --> 00:09:02.170 align:middle line:84%
+The projection whose fibers
+are lines of slope S.
+
+00:09:02.170 --> 00:09:03.280 align:middle line:90%
+All right.
+
+00:09:03.280 --> 00:09:10.270 align:middle line:84%
+And so the number of
+lines in direction S
+
+00:09:10.270 --> 00:09:14.666 align:middle line:84%
+is exactly the size
+of this projection.
+
+00:09:14.666 --> 00:09:20.710 align:middle line:90%
+
+
+00:09:20.710 --> 00:09:21.550 align:middle line:90%
+OK.
+
+00:09:21.550 --> 00:09:23.450 align:middle line:90%
+And how big is the projection?
+
+00:09:23.450 --> 00:09:26.530 align:middle line:84%
+Well, so let's make
+a little lemma.
+
+00:09:26.530 --> 00:09:31.940 align:middle line:90%
+So S is in QM and X is as above.
+
+00:09:31.940 --> 00:09:38.110 align:middle line:84%
+Then the size of this projection
+is bounded by M times N.
+
+00:09:38.110 --> 00:09:41.970 align:middle line:90%
+So, proof.
+
+00:09:41.970 --> 00:09:42.520 align:middle line:90%
+OK.
+
+00:09:42.520 --> 00:09:48.480 align:middle line:84%
+So we have X1 and X2 are
+integers between 1 and N,
+
+00:09:48.480 --> 00:09:52.740 align:middle line:90%
+and S is a over b.
+
+00:09:52.740 --> 00:09:58.170 align:middle line:84%
+So if I take pi S of the
+point X1, X2, I have--
+
+00:09:58.170 --> 00:09:58.680 align:middle line:90%
+what is it?
+
+00:09:58.680 --> 00:10:06.450 align:middle line:84%
+X2 minus a over b X1, which I'll
+put over a common denominator.
+
+00:10:06.450 --> 00:10:12.900 align:middle line:90%
+So it's b X2 minus a X1 over b.
+
+00:10:12.900 --> 00:10:18.780 align:middle line:84%
+And this here is an integer
+of size at most, like,
+
+00:10:18.780 --> 00:10:22.120 align:middle line:90%
+M times N. M times n.
+
+00:10:22.120 --> 00:10:24.810 align:middle line:90%
+
+
+00:10:24.810 --> 00:10:26.970 align:middle line:84%
+So there are at most
+M times N choices
+
+00:10:26.970 --> 00:10:29.825 align:middle line:84%
+for what this could
+be up to a constant.
+
+00:10:29.825 --> 00:10:35.970 align:middle line:90%
+
+
+00:10:35.970 --> 00:10:36.520 align:middle line:90%
+OK.
+
+00:10:36.520 --> 00:10:39.530 align:middle line:84%
+So therefore, the
+number of lines
+
+00:10:39.530 --> 00:10:44.720 align:middle line:84%
+is smaller than the
+number of slopes
+
+00:10:44.720 --> 00:10:49.190 align:middle line:90%
+times M times N lines per slope.
+
+00:10:49.190 --> 00:10:57.950 align:middle line:90%
+So that's like M cubed N.
+
+00:10:57.950 --> 00:10:59.582 align:middle line:90%
+OK.
+
+00:10:59.582 --> 00:11:01.740 align:middle line:84%
+These are written
+as upper bounds.
+
+00:11:01.740 --> 00:11:04.700 align:middle line:84%
+There are also
+matching lower bounds,
+
+00:11:04.700 --> 00:11:08.720 align:middle line:84%
+so those upper bounds
+are actually tight.
+
+00:11:08.720 --> 00:11:13.010 align:middle line:84%
+And if you do a little algebra,
+you will see that the incidence
+
+00:11:13.010 --> 00:11:21.161 align:middle line:84%
+is between X and L. So at least
+L to the 2/3, X to the 2/3.
+
+00:11:21.161 --> 00:11:25.220 align:middle line:84%
+Just by plugging in
+that this is L, that's
+
+00:11:25.220 --> 00:11:30.937 align:middle line:84%
+the number of incidences,
+and that's X. So
+
+00:11:30.937 --> 00:11:32.395 align:middle line:84%
+that's where this
+thing comes from.
+
+00:11:32.395 --> 00:11:45.449 align:middle line:90%
+
+
+00:11:45.449 --> 00:11:45.949 align:middle line:90%
+OK.
+
+00:11:45.949 --> 00:11:49.621 align:middle line:90%
+
+
+00:11:49.621 --> 00:11:51.490 align:middle line:84%
+So the two main
+ingredients, we're
+
+00:11:51.490 --> 00:11:53.350 align:middle line:84%
+checking how many
+directions there that
+
+00:11:53.350 --> 00:11:56.290 align:middle line:84%
+have slope-- how many
+rational numbers are there
+
+00:11:56.290 --> 00:12:01.430 align:middle line:84%
+with height up to M and how big
+is each of these projections.
+
+00:12:01.430 --> 00:12:03.310 align:middle line:84%
+And you can take those
+same computations
+
+00:12:03.310 --> 00:12:06.630 align:middle line:84%
+and feed it into the
+projection theory setup here.
+
+00:12:06.630 --> 00:12:09.400 align:middle line:90%
+
+
+00:12:09.400 --> 00:12:12.340 align:middle line:90%
+You would get theorem one.
+
+00:12:12.340 --> 00:12:14.925 align:middle line:84%
+You would get that this is a
+sharp example for theorem one.
+
+00:12:14.925 --> 00:12:22.960 align:middle line:90%
+
+
+00:12:22.960 --> 00:12:25.663 align:middle line:90%
+OK.
+
+00:12:25.663 --> 00:12:27.330 align:middle line:84%
+I will pause for
+questions and comments.
+
+00:12:27.330 --> 00:12:38.110 align:middle line:90%
+
+
+00:12:38.110 --> 00:12:39.110 align:middle line:90%
+OK.
+
+00:12:39.110 --> 00:12:41.890 align:middle line:84%
+So this example,
+you can see from it
+
+00:12:41.890 --> 00:12:44.930 align:middle line:84%
+that theorem one and theorem
+two are related to each other.
+
+00:12:44.930 --> 00:12:47.350 align:middle line:84%
+And theorem two is more
+general because this
+
+00:12:47.350 --> 00:12:49.130 align:middle line:90%
+could be any set of lines.
+
+00:12:49.130 --> 00:12:52.750 align:middle line:84%
+Whereas in theorem one, in
+the projection theory setup,
+
+00:12:52.750 --> 00:12:54.670 align:middle line:84%
+we would have a
+set of directions D
+
+00:12:54.670 --> 00:12:57.520 align:middle line:84%
+and the set of lines would be
+all the lines in direction D
+
+00:12:57.520 --> 00:12:59.860 align:middle line:84%
+that go through a
+point of X. So that's
+
+00:12:59.860 --> 00:13:02.030 align:middle line:84%
+a somewhat specific
+set of lines,
+
+00:13:02.030 --> 00:13:03.240 align:middle line:90%
+and this one is more general.
+
+00:13:03.240 --> 00:13:06.010 align:middle line:90%
+
+
+00:13:06.010 --> 00:13:07.666 align:middle line:90%
+OK.
+
+00:13:07.666 --> 00:13:10.550 align:middle line:84%
+So it's not very difficult
+to get from here to here,
+
+00:13:10.550 --> 00:13:11.857 align:middle line:90%
+and it's not that interesting.
+
+00:13:11.857 --> 00:13:14.190 align:middle line:84%
+So I'm going to leave it as
+an exercise on the homework.
+
+00:13:14.190 --> 00:13:21.100 align:middle line:90%
+
+
+00:13:21.100 --> 00:13:21.960 align:middle line:90%
+OK.
+
+00:13:21.960 --> 00:13:24.520 align:middle line:84%
+Now another question that
+came up on the first day
+
+00:13:24.520 --> 00:13:28.540 align:middle line:84%
+is, are there other examples
+in projection theory
+
+00:13:28.540 --> 00:13:33.510 align:middle line:84%
+besides this square grid
+that also are that also are
+
+00:13:33.510 --> 00:13:35.130 align:middle line:90%
+sharp for Szemeredi-Trotter?
+
+00:13:35.130 --> 00:13:36.940 align:middle line:84%
+And there are very
+few that are known.
+
+00:13:36.940 --> 00:13:40.270 align:middle line:84%
+But since we just did
+this, I can tell you a bit
+
+00:13:40.270 --> 00:13:44.490 align:middle line:84%
+the other ones, and
+it's conceivable
+
+00:13:44.490 --> 00:13:47.200 align:middle line:84%
+that the list I'll
+show you is everything.
+
+00:13:47.200 --> 00:14:00.510 align:middle line:90%
+
+
+00:14:00.510 --> 00:14:02.430 align:middle line:90%
+OK.
+
+00:14:02.430 --> 00:14:08.226 align:middle line:84%
+So what are the sharp examples
+for Szemeredi-Trotter?
+
+00:14:08.226 --> 00:14:14.030 align:middle line:90%
+
+
+00:14:14.030 --> 00:14:14.530 align:middle line:90%
+OK.
+
+00:14:14.530 --> 00:14:18.070 align:middle line:84%
+So we've just seen the
+historically first example,
+
+00:14:18.070 --> 00:14:21.515 align:middle line:90%
+which is a square integer grid.
+
+00:14:21.515 --> 00:14:24.510 align:middle line:90%
+
+
+00:14:24.510 --> 00:14:29.190 align:middle line:84%
+And that goes back to
+Erdos in the '60s, I think.
+
+00:14:29.190 --> 00:14:32.240 align:middle line:84%
+There's a second example, which
+is a rather small variation
+
+00:14:32.240 --> 00:14:33.860 align:middle line:84%
+on it, but we know
+so few examples
+
+00:14:33.860 --> 00:14:35.310 align:middle line:90%
+that it's worth mentioning.
+
+00:14:35.310 --> 00:14:38.370 align:middle line:84%
+It is a rectangular
+integer grid.
+
+00:14:38.370 --> 00:14:43.610 align:middle line:90%
+
+
+00:14:43.610 --> 00:14:47.270 align:middle line:90%
+And that was done by allocation.
+
+00:14:47.270 --> 00:14:51.350 align:middle line:84%
+So instead of N by
+N, just put N1 by N2
+
+00:14:51.350 --> 00:14:55.220 align:middle line:90%
+and then do a similar analysis.
+
+00:14:55.220 --> 00:14:57.470 align:middle line:90%
+OK.
+
+00:14:57.470 --> 00:14:59.970 align:middle line:84%
+Then there is a third
+thing that we can do,
+
+00:14:59.970 --> 00:15:07.190 align:middle line:84%
+which is to replace the integers
+by integers in some other number
+
+00:15:07.190 --> 00:15:07.800 align:middle line:90%
+field.
+
+00:15:07.800 --> 00:15:12.470 align:middle line:84%
+So for example, integers
+adjoin the square root
+
+00:15:12.470 --> 00:15:18.213 align:middle line:90%
+of 2, or perhaps other numbers.
+
+00:15:18.213 --> 00:15:24.410 align:middle line:90%
+
+
+00:15:24.410 --> 00:15:25.234 align:middle line:90%
+OK.
+
+00:15:25.234 --> 00:15:30.408 align:middle line:84%
+So this is in a paper by
+Olivine Silier and myself,
+
+00:15:30.408 --> 00:15:32.200 align:middle line:84%
+and it's actually only
+currently worked out
+
+00:15:32.200 --> 00:15:34.180 align:middle line:84%
+for some special number
+fields, but I suspect
+
+00:15:34.180 --> 00:15:35.900 align:middle line:90%
+it works for any number field.
+
+00:15:35.900 --> 00:15:38.482 align:middle line:84%
+If anybody knows more about
+number fields than me,
+
+00:15:38.482 --> 00:15:39.940 align:middle line:84%
+this could be a
+nice little project
+
+00:15:39.940 --> 00:15:41.240 align:middle line:90%
+to work it out correctly.
+
+00:15:41.240 --> 00:15:41.950 align:middle line:90%
+Yeah?
+
+00:15:41.950 --> 00:15:44.410 align:middle line:84%
+AUDIENCE: One question
+about the rectangular grid.
+
+00:15:44.410 --> 00:15:47.690 align:middle line:84%
+Is there any restriction on
+the aspect ratio of the grid,
+
+00:15:47.690 --> 00:15:51.190 align:middle line:90%
+like a ratio of 1 to 2?
+
+00:15:51.190 --> 00:15:52.875 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+there probably is.
+
+00:15:52.875 --> 00:15:56.260 align:middle line:90%
+
+
+00:15:56.260 --> 00:15:56.840 align:middle line:90%
+Yeah.
+
+00:15:56.840 --> 00:15:59.150 align:middle line:84%
+So it takes a little
+writing and whatever.
+
+00:15:59.150 --> 00:16:03.020 align:middle line:84%
+You see what happens for
+each one, each N1 and N2.
+
+00:16:03.020 --> 00:16:03.520 align:middle line:90%
+Yeah.
+
+00:16:03.520 --> 00:16:06.370 align:middle line:84%
+But there are sharp
+examples that involve
+
+00:16:06.370 --> 00:16:07.650 align:middle line:90%
+grids that are not square.
+
+00:16:07.650 --> 00:16:11.945 align:middle line:90%
+
+
+00:16:11.945 --> 00:16:12.445 align:middle line:90%
+OK.
+
+00:16:12.445 --> 00:16:16.600 align:middle line:84%
+So let me say a little more
+precisely what this means here.
+
+00:16:16.600 --> 00:16:21.730 align:middle line:84%
+So we would have a set in
+our ring of things of height
+
+00:16:21.730 --> 00:16:22.760 align:middle line:90%
+up to N.
+
+00:16:22.760 --> 00:16:27.090 align:middle line:84%
+So that would be the set
+a1 plus square root of 2,
+
+00:16:27.090 --> 00:16:34.170 align:middle line:84%
+a2 and with the property with--
+so with a1 and a2 integers
+
+00:16:34.170 --> 00:16:41.143 align:middle line:84%
+and of size up to
+N. And our new QM.
+
+00:16:41.143 --> 00:16:44.940 align:middle line:90%
+
+
+00:16:44.940 --> 00:16:46.180 align:middle line:90%
+Maybe QRM.
+
+00:16:46.180 --> 00:16:48.540 align:middle line:84%
+So quotients in
+this ring size M.
+
+00:16:48.540 --> 00:16:53.130 align:middle line:84%
+This would be quotients of
+the form a1 plus root 2 a2
+
+00:16:53.130 --> 00:17:01.230 align:middle line:84%
+over b1 plus root 2 b2, where
+the ai and bi are integers
+
+00:17:01.230 --> 00:17:07.480 align:middle line:90%
+and they have norm to M.
+
+00:17:07.480 --> 00:17:07.980 align:middle line:90%
+OK.
+
+00:17:07.980 --> 00:17:10.030 align:middle line:84%
+And now we can do
+the same thing.
+
+00:17:10.030 --> 00:17:19.569 align:middle line:84%
+So L is the set of
+lines with slope in QRM,
+
+00:17:19.569 --> 00:17:27.490 align:middle line:84%
+and they go through a
+point of X. Oh, sorry.
+
+00:17:27.490 --> 00:17:29.190 align:middle line:90%
+So X is just RN by RN.
+
+00:17:29.190 --> 00:17:34.860 align:middle line:90%
+
+
+00:17:34.860 --> 00:17:36.148 align:middle line:90%
+So that's the example.
+
+00:17:36.148 --> 00:17:37.690 align:middle line:84%
+And then if you
+compute a little bit,
+
+00:17:37.690 --> 00:17:39.648 align:middle line:84%
+you'll see that everything
+goes in a way that's
+
+00:17:39.648 --> 00:17:42.930 align:middle line:90%
+analogous to the first example.
+
+00:17:42.930 --> 00:17:47.680 align:middle line:84%
+And I guess I erased the key
+points, which was unwise.
+
+00:17:47.680 --> 00:17:51.150 align:middle line:84%
+But if you think through
+the first example,
+
+00:17:51.150 --> 00:17:52.900 align:middle line:90%
+we used an integer grid.
+
+00:17:52.900 --> 00:17:54.820 align:middle line:90%
+What did we use about integers?
+
+00:17:54.820 --> 00:17:57.540 align:middle line:84%
+Basically we just
+used that integers
+
+00:17:57.540 --> 00:18:00.960 align:middle line:84%
+are closed under taking
+products and taking sums.
+
+00:18:00.960 --> 00:18:02.500 align:middle line:84%
+That was what we
+used in our proof.
+
+00:18:02.500 --> 00:18:05.680 align:middle line:84%
+And this is a ring,
+this is a ring,
+
+00:18:05.680 --> 00:18:08.880 align:middle line:84%
+so these guys are also, in a
+similar way, closed under taking
+
+00:18:08.880 --> 00:18:10.210 align:middle line:90%
+products and taking sums.
+
+00:18:10.210 --> 00:18:11.470 align:middle line:90%
+So it works the same way.
+
+00:18:11.470 --> 00:18:14.560 align:middle line:90%
+
+
+00:18:14.560 --> 00:18:15.060 align:middle line:90%
+Yeah.
+
+00:18:15.060 --> 00:18:20.130 align:middle line:90%
+
+
+00:18:20.130 --> 00:18:21.010 align:middle line:90%
+OK.
+
+00:18:21.010 --> 00:18:24.860 align:middle line:84%
+So it's a big mystery
+in the field to have
+
+00:18:24.860 --> 00:18:27.350 align:middle line:84%
+what's called an inverse
+theorem for Szemeredi-Trotter.
+
+00:18:27.350 --> 00:18:33.770 align:middle line:84%
+An inverse theorem would say
+that if you had a set X and L
+
+00:18:33.770 --> 00:18:37.670 align:middle line:84%
+where this was tight and
+especially where this dominated,
+
+00:18:37.670 --> 00:18:40.580 align:middle line:84%
+then what could you
+say about X and L?
+
+00:18:40.580 --> 00:18:44.360 align:middle line:84%
+Or as a special case,
+if you had a set
+
+00:18:44.360 --> 00:18:47.360 align:middle line:84%
+X and a set of directions
+D where this is tight,
+
+00:18:47.360 --> 00:18:49.090 align:middle line:84%
+what could you
+say about X and D?
+
+00:18:49.090 --> 00:18:51.770 align:middle line:90%
+
+
+00:18:51.770 --> 00:18:53.327 align:middle line:84%
+On the one hand,
+we have a handful
+
+00:18:53.327 --> 00:18:55.160 align:middle line:84%
+of examples where they're
+tight, and they're
+
+00:18:55.160 --> 00:18:57.180 align:middle line:84%
+based on a lot of
+algebraic structure.
+
+00:18:57.180 --> 00:19:00.950 align:middle line:84%
+They're based on the ring of
+integers in some number field.
+
+00:19:00.950 --> 00:19:03.620 align:middle line:84%
+And on the other hand,
+we have very little
+
+00:19:03.620 --> 00:19:04.740 align:middle line:90%
+in the way of theorems.
+
+00:19:04.740 --> 00:19:09.590 align:middle line:84%
+That's about what we can
+definitely say about X and L
+
+00:19:09.590 --> 00:19:10.480 align:middle line:90%
+if this is tight.
+
+00:19:10.480 --> 00:19:15.560 align:middle line:90%
+
+
+00:19:15.560 --> 00:19:17.280 align:middle line:90%
+Yeah?
+
+00:19:17.280 --> 00:19:20.460 align:middle line:84%
+AUDIENCE: From [INAUDIBLE]
+quadratic number field examples,
+
+00:19:20.460 --> 00:19:23.950 align:middle line:84%
+is it important for it to be
+a unique factorization domain?
+
+00:19:23.950 --> 00:19:26.270 align:middle line:84%
+Because it seems
+like if that fails,
+
+00:19:26.270 --> 00:19:29.818 align:middle line:84%
+then you get kind of extra
+collapsing along objections.
+
+00:19:29.818 --> 00:19:31.360 align:middle line:84%
+But I don't know if
+that's a problem.
+
+00:19:31.360 --> 00:19:32.193 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:19:32.193 --> 00:19:33.970 align:middle line:84%
+So the question
+is, is it important
+
+00:19:33.970 --> 00:19:40.000 align:middle line:84%
+whether our ring has
+unique factorization?
+
+00:19:40.000 --> 00:19:42.640 align:middle line:84%
+I don't think it's
+too important.
+
+00:19:42.640 --> 00:19:44.440 align:middle line:84%
+In our proof over
+the integers, I
+
+00:19:44.440 --> 00:19:46.773 align:middle line:84%
+don't think we used unique
+factorization of integers.
+
+00:19:46.773 --> 00:19:50.440 align:middle line:90%
+
+
+00:19:50.440 --> 00:19:52.300 align:middle line:84%
+But there are some
+things we would
+
+00:19:52.300 --> 00:19:54.350 align:middle line:84%
+have to check about
+each number field.
+
+00:19:54.350 --> 00:19:58.480 align:middle line:84%
+Like, we'd have to check that
+how many quotients are there
+
+00:19:58.480 --> 00:19:59.886 align:middle line:90%
+in this thing of quotients.
+
+00:19:59.886 --> 00:20:03.130 align:middle line:90%
+
+
+00:20:03.130 --> 00:20:03.890 align:middle line:90%
+Yeah.
+
+00:20:03.890 --> 00:20:07.120 align:middle line:84%
+So anyway, so I'll
+put something about it
+
+00:20:07.120 --> 00:20:09.310 align:middle line:84%
+on the problem set as an
+optional project for people
+
+00:20:09.310 --> 00:20:11.660 align:middle line:90%
+who want to explore.
+
+00:20:11.660 --> 00:20:12.160 align:middle line:90%
+Yeah?
+
+00:20:12.160 --> 00:20:16.186 align:middle line:90%
+
+
+00:20:16.186 --> 00:20:18.440 align:middle line:84%
+AUDIENCE: For the original
+integer grid case,
+
+00:20:18.440 --> 00:20:22.050 align:middle line:84%
+we required lines that
+have different slopes.
+
+00:20:22.050 --> 00:20:24.990 align:middle line:84%
+Here, do we have
+some requirements
+
+00:20:24.990 --> 00:20:27.093 align:middle line:90%
+on our choice of ai, bi?
+
+00:20:27.093 --> 00:20:30.490 align:middle line:90%
+
+
+00:20:30.490 --> 00:20:31.240 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:20:31.240 --> 00:20:34.900 align:middle line:84%
+So I think the comment is
+that in the original case.
+
+00:20:34.900 --> 00:20:37.535 align:middle line:84%
+I said that the a over b
+should be a reduced fraction.
+
+00:20:37.535 --> 00:20:38.160 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:20:38.160 --> 00:20:39.870 align:middle line:84%
+LAWRENCE GUTH: And do we
+have an analog of that?
+
+00:20:39.870 --> 00:20:40.495 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:20:40.495 --> 00:20:42.240 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:20:42.240 --> 00:20:43.280 align:middle line:90%
+Yeah, we do.
+
+00:20:43.280 --> 00:20:46.080 align:middle line:90%
+
+
+00:20:46.080 --> 00:20:46.690 align:middle line:90%
+Right.
+
+00:20:46.690 --> 00:20:49.630 align:middle line:84%
+So this is the set of all
+the fractions a over b.
+
+00:20:49.630 --> 00:20:53.202 align:middle line:84%
+And if a given real number--
+if a given rational number
+
+00:20:53.202 --> 00:20:54.910 align:middle line:84%
+can be represented in
+two different ways,
+
+00:20:54.910 --> 00:20:57.250 align:middle line:90%
+it still only counts once in QM.
+
+00:20:57.250 --> 00:20:59.580 align:middle line:90%
+And the same thing is true here.
+
+00:20:59.580 --> 00:21:02.670 align:middle line:84%
+So the same number
+here might have
+
+00:21:02.670 --> 00:21:05.400 align:middle line:84%
+more than one representation
+of this flavor, which
+
+00:21:05.400 --> 00:21:10.020 align:middle line:84%
+makes it not trivial to count
+the cardinality of this set.
+
+00:21:10.020 --> 00:21:12.660 align:middle line:84%
+And we do need to know the
+cardinality of this set
+
+00:21:12.660 --> 00:21:14.210 align:middle line:90%
+to correctly analyze things.
+
+00:21:14.210 --> 00:21:20.438 align:middle line:90%
+
+
+00:21:20.438 --> 00:21:22.230 align:middle line:84%
+I guess something like
+unique factorization
+
+00:21:22.230 --> 00:21:23.465 align:middle line:90%
+could come in there.
+
+00:21:23.465 --> 00:21:26.016 align:middle line:90%
+
+
+00:21:26.016 --> 00:21:29.468 align:middle line:84%
+Before, I said put it in lowest
+terms, which is maybe not
+
+00:21:29.468 --> 00:21:31.260 align:middle line:84%
+quite as clear what
+that means if you don't
+
+00:21:31.260 --> 00:21:33.840 align:middle line:90%
+have unique factorization.
+
+00:21:33.840 --> 00:21:35.160 align:middle line:90%
+Yeah?
+
+00:21:35.160 --> 00:21:39.380 align:middle line:84%
+AUDIENCE: So say in the regime,
+X is greater than L squared.
+
+00:21:39.380 --> 00:21:42.750 align:middle line:90%
+
+
+00:21:42.750 --> 00:21:46.270 align:middle line:84%
+Can you see that L squared
+dominates in some way
+
+00:21:46.270 --> 00:21:51.900 align:middle line:84%
+and there's no other examples
+like the square root quotient?
+
+00:21:51.900 --> 00:21:52.800 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:21:52.800 --> 00:21:54.510 align:middle line:90%
+Yeah.
+
+00:21:54.510 --> 00:21:56.340 align:middle line:84%
+Let me say the question
+back and then I'll
+
+00:21:56.340 --> 00:21:57.670 align:middle line:90%
+make sure I understand.
+
+00:21:57.670 --> 00:21:58.462 align:middle line:90%
+OK.
+
+00:21:58.462 --> 00:22:00.750 align:middle line:84%
+So if you look at
+this right-hand side,
+
+00:22:00.750 --> 00:22:03.120 align:middle line:84%
+different terms will
+dominate depending
+
+00:22:03.120 --> 00:22:05.260 align:middle line:84%
+upon the relative
+sizes of X and L.
+
+00:22:05.260 --> 00:22:06.763 align:middle line:90%
+And there's different regimes.
+
+00:22:06.763 --> 00:22:11.430 align:middle line:90%
+
+
+00:22:11.430 --> 00:22:17.180 align:middle line:84%
+So one regime is that X could
+be bigger than L squared.
+
+00:22:17.180 --> 00:22:21.000 align:middle line:84%
+So you have just a ton of
+points and not very many lines.
+
+00:22:21.000 --> 00:22:24.080 align:middle line:84%
+And in that situation,
+this term is bigger
+
+00:22:24.080 --> 00:22:25.950 align:middle line:90%
+than that term and that term.
+
+00:22:25.950 --> 00:22:28.680 align:middle line:84%
+So in this situation,
+the X dominates.
+
+00:22:28.680 --> 00:22:33.080 align:middle line:90%
+
+
+00:22:33.080 --> 00:22:37.790 align:middle line:84%
+So I think the question was,
+can we describe some structure
+
+00:22:37.790 --> 00:22:39.530 align:middle line:90%
+theorem in this case?
+
+00:22:39.530 --> 00:22:40.070 align:middle line:90%
+Yeah.
+
+00:22:40.070 --> 00:22:41.490 align:middle line:90%
+So I think we can.
+
+00:22:41.490 --> 00:22:47.330 align:middle line:84%
+So in that case, the
+example is example one here.
+
+00:22:47.330 --> 00:22:49.550 align:middle line:84%
+And so the structure
+theorem would say
+
+00:22:49.550 --> 00:22:53.780 align:middle line:90%
+that you really have to have--
+
+00:22:53.780 --> 00:23:00.263 align:middle line:90%
+well, there may not--
+
+00:23:00.263 --> 00:23:00.930 align:middle line:90%
+let me say that.
+
+00:23:00.930 --> 00:23:03.990 align:middle line:84%
+So in this regime, I don't think
+there's that much structure.
+
+00:23:03.990 --> 00:23:06.810 align:middle line:84%
+So I have some
+lines, not very many.
+
+00:23:06.810 --> 00:23:11.160 align:middle line:84%
+And then I have a ton of points
+and I want to have x incidences.
+
+00:23:11.160 --> 00:23:14.850 align:middle line:84%
+That means I had better put
+each of my points on a line.
+
+00:23:14.850 --> 00:23:18.320 align:middle line:84%
+So I put each point
+wherever I like,
+
+00:23:18.320 --> 00:23:21.000 align:middle line:84%
+not off in the middle of space,
+but on one of these lines.
+
+00:23:21.000 --> 00:23:23.600 align:middle line:84%
+And then I get this
+many incidences.
+
+00:23:23.600 --> 00:23:25.370 align:middle line:84%
+So there's not that
+much of a structure
+
+00:23:25.370 --> 00:23:27.890 align:middle line:90%
+theorem we could ask for here.
+
+00:23:27.890 --> 00:23:30.210 align:middle line:84%
+And there's not that much
+of a structure theory
+
+00:23:30.210 --> 00:23:32.250 align:middle line:84%
+we could ask for
+when this dominates.
+
+00:23:32.250 --> 00:23:36.330 align:middle line:84%
+But here, if that one dominates,
+there are very few examples
+
+00:23:36.330 --> 00:23:39.290 align:middle line:84%
+and there could be
+a structure theory.
+
+00:23:39.290 --> 00:23:40.310 align:middle line:90%
+Yeah?
+
+00:23:40.310 --> 00:23:43.430 align:middle line:84%
+AUDIENCE: Sharp
+example in theorem two
+
+00:23:43.430 --> 00:23:47.630 align:middle line:84%
+has to be sharp example
+in the projection
+
+00:23:47.630 --> 00:23:49.797 align:middle line:90%
+version of the theorem?
+
+00:23:49.797 --> 00:23:50.630 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:23:50.630 --> 00:23:53.630 align:middle line:84%
+So the question is, how do
+sharp examples in the two things
+
+00:23:53.630 --> 00:23:55.070 align:middle line:90%
+compare?
+
+00:23:55.070 --> 00:23:57.890 align:middle line:84%
+So if you start with a sharp
+example in the projection
+
+00:23:57.890 --> 00:24:02.070 align:middle line:84%
+theorem, then you can
+make a set of lines.
+
+00:24:02.070 --> 00:24:03.860 align:middle line:84%
+That's the set of
+lines that go through X
+
+00:24:03.860 --> 00:24:09.040 align:middle line:84%
+and have directions in D. And
+that will become a sharp example
+
+00:24:09.040 --> 00:24:11.623 align:middle line:90%
+in the general theorem.
+
+00:24:11.623 --> 00:24:14.290 align:middle line:84%
+Now, if you start with the sharp
+example in the general theorem,
+
+00:24:14.290 --> 00:24:16.020 align:middle line:84%
+it may not have the
+special form that
+
+00:24:16.020 --> 00:24:18.220 align:middle line:84%
+makes it relevant for
+the projection theorem,
+
+00:24:18.220 --> 00:24:20.905 align:middle line:90%
+so you can't go the other way.
+
+00:24:20.905 --> 00:24:25.365 align:middle line:84%
+AUDIENCE: So you
+always have to do that.
+
+00:24:25.365 --> 00:24:30.210 align:middle line:84%
+The sharp example, they
+are like the rectangle
+
+00:24:30.210 --> 00:24:35.620 align:middle line:84%
+with the square grid and
+the later one, all of them,
+
+00:24:35.620 --> 00:24:39.960 align:middle line:90%
+they are sharp for both cases.
+
+00:24:39.960 --> 00:24:40.800 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:24:40.800 --> 00:24:43.110 align:middle line:84%
+So all the sharp
+examples we mentioned
+
+00:24:43.110 --> 00:24:45.440 align:middle line:84%
+are sharp examples
+for both cases.
+
+00:24:45.440 --> 00:24:48.270 align:middle line:90%
+
+
+00:24:48.270 --> 00:24:49.270 align:middle line:90%
+That's right.
+
+00:24:49.270 --> 00:24:51.510 align:middle line:84%
+I guess there's one
+more comment about it,
+
+00:24:51.510 --> 00:24:55.920 align:middle line:84%
+that this setup
+is invariant under
+
+00:24:55.920 --> 00:24:57.910 align:middle line:90%
+projective transformations.
+
+00:24:57.910 --> 00:25:01.020 align:middle line:84%
+Projective transformations take
+lines to lines and of course
+
+00:25:01.020 --> 00:25:02.440 align:middle line:90%
+take points to points.
+
+00:25:02.440 --> 00:25:05.110 align:middle line:84%
+And so if you start
+with a sharp example,
+
+00:25:05.110 --> 00:25:07.170 align:middle line:84%
+maybe coming from
+a grid, you can
+
+00:25:07.170 --> 00:25:09.210 align:middle line:84%
+apply a projective
+transformation to it
+
+00:25:09.210 --> 00:25:12.590 align:middle line:84%
+and get a new sharp
+example for this theorem.
+
+00:25:12.590 --> 00:25:14.720 align:middle line:84%
+But it won't any
+longer correspond
+
+00:25:14.720 --> 00:25:15.960 align:middle line:90%
+to the projection set.
+
+00:25:15.960 --> 00:25:18.620 align:middle line:90%
+
+
+00:25:18.620 --> 00:25:20.552 align:middle line:84%
+OK, so the full list
+of sharp examples
+
+00:25:20.552 --> 00:25:22.010 align:middle line:84%
+for this theorem
+that we know about
+
+00:25:22.010 --> 00:25:24.180 align:middle line:84%
+is the ones I just
+wrote on the board, plus
+
+00:25:24.180 --> 00:25:26.310 align:middle line:84%
+you can apply projective
+transformations.
+
+00:25:26.310 --> 00:25:29.950 align:middle line:90%
+
+
+00:25:29.950 --> 00:25:30.450 align:middle line:90%
+Yeah.
+
+00:25:30.450 --> 00:25:32.325 align:middle line:84%
+In terms of proving an
+inverse theorem, which
+
+00:25:32.325 --> 00:25:35.570 align:middle line:84%
+is a big open problem, proving
+an inverse theorem for this
+
+00:25:35.570 --> 00:25:39.170 align:middle line:84%
+would be harder and more general
+than proving an inverse theorem
+
+00:25:39.170 --> 00:25:40.216 align:middle line:90%
+for the projections.
+
+00:25:40.216 --> 00:25:43.250 align:middle line:90%
+
+
+00:25:43.250 --> 00:25:45.300 align:middle line:84%
+The one for projections,
+we don't know either,
+
+00:25:45.300 --> 00:25:46.967 align:middle line:84%
+and that would be a
+good starting point.
+
+00:25:46.967 --> 00:25:48.510 align:middle line:84%
+It might be a little
+more accessible.
+
+00:25:48.510 --> 00:25:56.510 align:middle line:90%
+
+
+00:25:56.510 --> 00:25:57.080 align:middle line:90%
+OK.
+
+00:25:57.080 --> 00:25:59.360 align:middle line:90%
+Let's keep going.
+
+00:25:59.360 --> 00:26:02.660 align:middle line:84%
+So the goal for the
+class is to describe how
+
+00:26:02.660 --> 00:26:06.640 align:middle line:90%
+to prove this theorem right.
+
+00:26:06.640 --> 00:26:09.140 align:middle line:84%
+The first estimate I'd like to
+show you is a double counting
+
+00:26:09.140 --> 00:26:11.405 align:middle line:84%
+estimate for the
+incidences, which
+
+00:26:11.405 --> 00:26:13.280 align:middle line:84%
+is in a similar flavor
+to the double counting
+
+00:26:13.280 --> 00:26:15.150 align:middle line:84%
+estimates we've done
+earlier in the class.
+
+00:26:15.150 --> 00:26:17.668 align:middle line:84%
+But let's just see how much
+double counting tells us
+
+00:26:17.668 --> 00:26:18.460 align:middle line:90%
+about this problem.
+
+00:26:18.460 --> 00:26:43.190 align:middle line:90%
+
+
+00:26:43.190 --> 00:26:43.870 align:middle line:90%
+All right.
+
+00:26:43.870 --> 00:26:46.460 align:middle line:90%
+
+
+00:26:46.460 --> 00:26:48.235 align:middle line:90%
+So double counting.
+
+00:26:48.235 --> 00:26:53.810 align:middle line:90%
+
+
+00:26:53.810 --> 00:26:54.360 align:middle line:90%
+All right.
+
+00:26:54.360 --> 00:26:57.990 align:middle line:84%
+So by double counting we will
+prove the following estimate.
+
+00:26:57.990 --> 00:26:59.390 align:middle line:90%
+I'll call it lemma one.
+
+00:26:59.390 --> 00:27:04.700 align:middle line:84%
+The incidence is between X
+and L are bounded by X times L
+
+00:27:04.700 --> 00:27:11.440 align:middle line:90%
+to the 1/2 plus L. All right.
+
+00:27:11.440 --> 00:27:14.435 align:middle line:90%
+So here's the proof.
+
+00:27:14.435 --> 00:27:14.935 align:middle line:90%
+OK.
+
+00:27:14.935 --> 00:27:20.390 align:middle line:84%
+So the incidences are
+the sum over the lines,
+
+00:27:20.390 --> 00:27:24.610 align:middle line:84%
+and I count how many
+points are on each line.
+
+00:27:24.610 --> 00:27:27.250 align:middle line:84%
+And now I'm going to
+Cauchy-Schwarz that.
+
+00:27:27.250 --> 00:27:37.690 align:middle line:90%
+So it's less than that.
+
+00:27:37.690 --> 00:27:46.750 align:middle line:90%
+
+
+00:27:46.750 --> 00:27:47.450 align:middle line:90%
+OK.
+
+00:27:47.450 --> 00:27:50.530 align:middle line:84%
+So what do I gain by
+Cauchy-Schwarzing it?
+
+00:27:50.530 --> 00:27:58.390 align:middle line:84%
+Well, if you think about
+the number of points
+
+00:27:58.390 --> 00:28:04.410 align:middle line:84%
+on this line squared, it's very
+similar to counting the number
+
+00:28:04.410 --> 00:28:09.300 align:middle line:90%
+of pairs of points on the line.
+
+00:28:09.300 --> 00:28:11.310 align:middle line:84%
+And then we can
+make use of the fact
+
+00:28:11.310 --> 00:28:16.350 align:middle line:84%
+that for any pair of points,
+it only lies on one line.
+
+00:28:16.350 --> 00:28:17.260 align:middle line:90%
+All right.
+
+00:28:17.260 --> 00:28:23.970 align:middle line:84%
+So I'm going to
+bound this by here.
+
+00:28:23.970 --> 00:28:27.220 align:middle line:90%
+OK, so it's not quite true.
+
+00:28:27.220 --> 00:28:28.720 align:middle line:84%
+Let me say something
+in parentheses.
+
+00:28:28.720 --> 00:28:31.530 align:middle line:84%
+It is not quite
+true that the number
+
+00:28:31.530 --> 00:28:34.440 align:middle line:84%
+of points on the line
+squared is smaller
+
+00:28:34.440 --> 00:28:40.920 align:middle line:84%
+than the number of points
+on the line choose two.
+
+00:28:40.920 --> 00:28:43.170 align:middle line:84%
+That would be true if the
+number of points on the line
+
+00:28:43.170 --> 00:28:43.930 align:middle line:90%
+is pretty large.
+
+00:28:43.930 --> 00:28:46.305 align:middle line:84%
+But if there's only one point
+on the line, then this is 1
+
+00:28:46.305 --> 00:28:47.370 align:middle line:90%
+and this is 0.
+
+00:28:47.370 --> 00:28:50.190 align:middle line:90%
+So I have to add here.
+
+00:28:50.190 --> 00:28:51.395 align:middle line:90%
+I guess I can just add one.
+
+00:28:51.395 --> 00:28:56.160 align:middle line:90%
+
+
+00:28:56.160 --> 00:28:56.800 align:middle line:90%
+OK.
+
+00:28:56.800 --> 00:28:59.110 align:middle line:90%
+So now I get two terms.
+
+00:28:59.110 --> 00:29:07.110 align:middle line:84%
+So this one contributes
+number of points on the line
+
+00:29:07.110 --> 00:29:07.975 align:middle line:90%
+choose two.
+
+00:29:07.975 --> 00:29:11.540 align:middle line:90%
+
+
+00:29:11.540 --> 00:29:15.200 align:middle line:84%
+All I'm doing is
+changing this to this,
+
+00:29:15.200 --> 00:29:18.980 align:middle line:84%
+and then I still
+have my L to the 1/2.
+
+00:29:18.980 --> 00:29:23.330 align:middle line:84%
+And then if I put in one
+here, this gives me the number
+
+00:29:23.330 --> 00:29:26.510 align:middle line:84%
+of lines to the 1/2 which groups
+with that and I get the number
+
+00:29:26.510 --> 00:29:27.670 align:middle line:90%
+of lines.
+
+00:29:27.670 --> 00:29:28.525 align:middle line:90%
+This matches that.
+
+00:29:28.525 --> 00:29:31.830 align:middle line:90%
+
+
+00:29:31.830 --> 00:29:32.330 align:middle line:90%
+OK.
+
+00:29:32.330 --> 00:29:34.670 align:middle line:84%
+So this here
+represents lines that
+
+00:29:34.670 --> 00:29:38.090 align:middle line:84%
+contain at least two points,
+and this represents lines
+
+00:29:38.090 --> 00:29:41.210 align:middle line:90%
+that contain only one point.
+
+00:29:41.210 --> 00:29:42.090 align:middle line:90%
+All right.
+
+00:29:42.090 --> 00:29:49.115 align:middle line:84%
+And now the key point that
+that is smaller than that.
+
+00:29:49.115 --> 00:29:54.240 align:middle line:90%
+
+
+00:29:54.240 --> 00:29:55.490 align:middle line:90%
+So what are we counting here?
+
+00:29:55.490 --> 00:30:00.050 align:middle line:84%
+For each line, we're considering
+pairs of points on that line.
+
+00:30:00.050 --> 00:30:03.490 align:middle line:84%
+But you can also think you could
+sum over all the pairs of points
+
+00:30:03.490 --> 00:30:07.750 align:middle line:84%
+and then ask how many
+lines go through that pair.
+
+00:30:07.750 --> 00:30:10.150 align:middle line:84%
+And there are at most
+this many pairs of points
+
+00:30:10.150 --> 00:30:12.325 align:middle line:84%
+and for each one of them,
+there's only one line.
+
+00:30:12.325 --> 00:30:13.575 align:middle line:90%
+So that's the double counting.
+
+00:30:13.575 --> 00:30:18.730 align:middle line:90%
+
+
+00:30:18.730 --> 00:30:24.550 align:middle line:84%
+So this here is the
+number of X1, X2 and L
+
+00:30:24.550 --> 00:30:32.050 align:middle line:84%
+so that X1 and X2 are on L. And
+if you count the lines first
+
+00:30:32.050 --> 00:30:35.660 align:middle line:84%
+and then add up over the
+lines, you get this expression.
+
+00:30:35.660 --> 00:30:38.500 align:middle line:84%
+But if you fix X1
+and X2 first, there
+
+00:30:38.500 --> 00:30:40.830 align:middle line:84%
+will only be one line
+and so you get this.
+
+00:30:40.830 --> 00:30:45.630 align:middle line:90%
+
+
+00:30:45.630 --> 00:30:46.130 align:middle line:90%
+All right.
+
+00:30:46.130 --> 00:30:48.438 align:middle line:90%
+And now this is that.
+
+00:30:48.438 --> 00:30:49.730 align:middle line:90%
+So that's the end of the proof.
+
+00:30:49.730 --> 00:30:54.900 align:middle line:90%
+
+
+00:30:54.900 --> 00:30:55.400 align:middle line:90%
+OK.
+
+00:30:55.400 --> 00:30:58.620 align:middle line:90%
+
+
+00:30:58.620 --> 00:31:02.950 align:middle line:84%
+So let's make some remarks
+about this simple proof, what
+
+00:31:02.950 --> 00:31:06.220 align:middle line:84%
+double counting tells us and
+what double counting doesn't
+
+00:31:06.220 --> 00:31:06.780 align:middle line:90%
+tell us.
+
+00:31:06.780 --> 00:31:15.040 align:middle line:90%
+
+
+00:31:15.040 --> 00:31:16.060 align:middle line:90%
+All right.
+
+00:31:16.060 --> 00:31:26.280 align:middle line:84%
+So first, we only used that
+two points determine a line.
+
+00:31:26.280 --> 00:31:29.350 align:middle line:90%
+
+
+00:31:29.350 --> 00:31:31.610 align:middle line:84%
+The only fact we used is
+that through two points,
+
+00:31:31.610 --> 00:31:33.730 align:middle line:90%
+there's only one line.
+
+00:31:33.730 --> 00:31:37.730 align:middle line:84%
+So that means that it works
+in some more general cases.
+
+00:31:37.730 --> 00:31:41.800 align:middle line:84%
+So for instance, it works
+for points and lines
+
+00:31:41.800 --> 00:31:42.960 align:middle line:90%
+over finite fields.
+
+00:31:42.960 --> 00:31:47.620 align:middle line:90%
+
+
+00:31:47.620 --> 00:31:49.622 align:middle line:84%
+Because over finite
+fields, it's still true
+
+00:31:49.622 --> 00:31:51.705 align:middle line:84%
+that through any two points
+there's only one line.
+
+00:31:51.705 --> 00:31:55.370 align:middle line:90%
+
+
+00:31:55.370 --> 00:31:59.850 align:middle line:84%
+And generality is good, but
+this is a blessing and a curse
+
+00:31:59.850 --> 00:32:05.100 align:middle line:84%
+in this case, because the whole
+Szemeredi-Trotter theorem is not
+
+00:32:05.100 --> 00:32:07.590 align:middle line:90%
+true over finite fields.
+
+00:32:07.590 --> 00:32:09.310 align:middle line:84%
+I'll show you an
+example in a second.
+
+00:32:09.310 --> 00:32:14.280 align:middle line:84%
+And that means that this proof,
+which only uses this fact,
+
+00:32:14.280 --> 00:32:17.850 align:middle line:84%
+cannot really be proving the
+whole Szemeredi-Trotter theorem.
+
+00:32:17.850 --> 00:32:22.230 align:middle line:84%
+So that's remark B. So the
+Szemeredi-Trotter Trotter
+
+00:32:22.230 --> 00:32:26.220 align:middle line:90%
+theorem is false over Fq2.
+
+00:32:26.220 --> 00:32:30.180 align:middle line:90%
+
+
+00:32:30.180 --> 00:32:33.300 align:middle line:90%
+Here's the example.
+
+00:32:33.300 --> 00:32:39.210 align:middle line:84%
+X is the entire plane,
+all the points Fq2,
+
+00:32:39.210 --> 00:32:43.950 align:middle line:90%
+and L is all of the lines.
+
+00:32:43.950 --> 00:32:45.820 align:middle line:84%
+You could take
+literally all the lines,
+
+00:32:45.820 --> 00:32:47.910 align:middle line:84%
+or you could take
+all of the lines y
+
+00:32:47.910 --> 00:32:52.500 align:middle line:84%
+equals mx plus b, where
+m and b are in Fq.
+
+00:32:52.500 --> 00:32:55.610 align:middle line:84%
+It doesn't matter
+very much which one.
+
+00:32:55.610 --> 00:32:56.374 align:middle line:90%
+OK.
+
+00:32:56.374 --> 00:32:59.540 align:middle line:90%
+So size of X is q squared.
+
+00:32:59.540 --> 00:33:02.960 align:middle line:90%
+The size of L is q squared.
+
+00:33:02.960 --> 00:33:05.400 align:middle line:84%
+And how many
+incidences do we have?
+
+00:33:05.400 --> 00:33:08.150 align:middle line:90%
+Well, each line has q points.
+
+00:33:08.150 --> 00:33:17.515 align:middle line:84%
+So incidences between X and L
+is q times L which is q cubed.
+
+00:33:17.515 --> 00:33:20.780 align:middle line:90%
+
+
+00:33:20.780 --> 00:33:22.175 align:middle line:90%
+OK.
+
+00:33:22.175 --> 00:33:26.420 align:middle line:84%
+So this example is
+sharp for lemma one.
+
+00:33:26.420 --> 00:33:30.530 align:middle line:90%
+That's equal to XL to the 1/2.
+
+00:33:30.530 --> 00:33:32.340 align:middle line:90%
+That matches that term up there.
+
+00:33:32.340 --> 00:33:34.910 align:middle line:84%
+And it's much bigger
+than the right-hand side
+
+00:33:34.910 --> 00:33:36.240 align:middle line:90%
+of Szemeredi-Trotter.
+
+00:33:36.240 --> 00:33:39.135 align:middle line:90%
+
+
+00:33:39.135 --> 00:33:39.635 align:middle line:90%
+Right.
+
+00:33:39.635 --> 00:33:40.135 align:middle line:90%
+OK, yeah.
+
+00:33:40.135 --> 00:33:41.370 align:middle line:90%
+So let's do a little algebra.
+
+00:33:41.370 --> 00:33:44.970 align:middle line:84%
+So we have here an X
+times L to the 1/2.
+
+00:33:44.970 --> 00:33:50.030 align:middle line:84%
+In Szemeredi-Trotter, we have
+an X to the 2/3, L to the 2/3.
+
+00:33:50.030 --> 00:33:54.400 align:middle line:84%
+So there are different regimes
+about who dominates there.
+
+00:33:54.400 --> 00:33:57.470 align:middle line:84%
+But this thing is always
+bigger than this thing,
+
+00:33:57.470 --> 00:33:58.770 align:middle line:90%
+and it's usually much bigger.
+
+00:33:58.770 --> 00:34:02.770 align:middle line:90%
+
+
+00:34:02.770 --> 00:34:06.610 align:middle line:84%
+So here, X times L to
+the half is q cubed.
+
+00:34:06.610 --> 00:34:13.750 align:middle line:84%
+X to the 2/3, L to the
+2/3 would be q to the 8/3,
+
+00:34:13.750 --> 00:34:16.750 align:middle line:84%
+which is much less than
+the number of incidences.
+
+00:34:16.750 --> 00:34:20.190 align:middle line:84%
+So the Szemeredi-Trotter bound
+does not hold in this example.
+
+00:34:20.190 --> 00:34:30.815 align:middle line:90%
+
+
+00:34:30.815 --> 00:34:31.315 align:middle line:90%
+OK.
+
+00:34:31.315 --> 00:34:33.429 align:middle line:84%
+So that shows something
+important about
+
+00:34:33.429 --> 00:34:37.179 align:middle line:84%
+the Szemeredi-Trotter theorem,
+that we cannot prove it just
+
+00:34:37.179 --> 00:34:39.889 align:middle line:84%
+by using the fact that two
+points determine a line
+
+00:34:39.889 --> 00:34:43.190 align:middle line:84%
+and doing our double counting in
+a very clever, complicated way.
+
+00:34:43.190 --> 00:34:46.300 align:middle line:90%
+We genuinely need another input.
+
+00:34:46.300 --> 00:34:49.120 align:middle line:84%
+And all of the proofs of
+Szemeredi-Trotter theorem
+
+00:34:49.120 --> 00:34:52.590 align:middle line:84%
+use somehow the
+topology of the plane.
+
+00:34:52.590 --> 00:35:01.050 align:middle line:84%
+So see all proofs of
+Szemeredi-Trotter use
+
+00:35:01.050 --> 00:35:06.510 align:middle line:84%
+the topology of the
+plane in some way.
+
+00:35:06.510 --> 00:35:08.160 align:middle line:84%
+And the topology
+of R2 is kind of
+
+00:35:08.160 --> 00:35:12.270 align:middle line:84%
+different from the topology of
+Fq2, whatever that might mean.
+
+00:35:12.270 --> 00:35:14.220 align:middle line:90%
+OK.
+
+00:35:14.220 --> 00:35:15.040 align:middle line:90%
+OK.
+
+00:35:15.040 --> 00:35:17.070 align:middle line:90%
+Cool.
+
+00:35:17.070 --> 00:35:19.447 align:middle line:84%
+So I know four
+different proofs of--
+
+00:35:19.447 --> 00:35:21.780 align:middle line:84%
+I've seen four different
+proofs of the Szemeredi-Trotter
+
+00:35:21.780 --> 00:35:24.270 align:middle line:84%
+theorem, and they use topology
+in some different ways.
+
+00:35:24.270 --> 00:35:25.930 align:middle line:90%
+I'll show you just one.
+
+00:35:25.930 --> 00:35:28.680 align:middle line:90%
+I think it's probably the one--
+
+00:35:28.680 --> 00:35:31.180 align:middle line:84%
+the proofs are not that
+different from each other.
+
+00:35:31.180 --> 00:35:35.040 align:middle line:84%
+I think this probably
+is the one that
+
+00:35:35.040 --> 00:35:37.530 align:middle line:84%
+is the most convenient for
+thinking about projection
+
+00:35:37.530 --> 00:35:39.250 align:middle line:90%
+theory for balls in R2.
+
+00:35:39.250 --> 00:35:39.750 align:middle line:90%
+Yeah?
+
+00:35:39.750 --> 00:35:41.680 align:middle line:84%
+AUDIENCE: You're saying
+Szemeredi-Trotter,
+
+00:35:41.680 --> 00:35:44.237 align:middle line:84%
+but you always mean this one
+on the lower board, not the--
+
+00:35:44.237 --> 00:35:45.070 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:35:45.070 --> 00:35:45.640 align:middle line:90%
+That's right.
+
+00:35:45.640 --> 00:35:46.530 align:middle line:90%
+That's right.
+
+00:35:46.530 --> 00:35:47.160 align:middle line:90%
+Yeah.
+
+00:35:47.160 --> 00:35:50.267 align:middle line:90%
+So we'll prove this theorem.
+
+00:35:50.267 --> 00:35:52.350 align:middle line:84%
+It's not too hard to see
+that this theorem implies
+
+00:35:52.350 --> 00:35:53.280 align:middle line:90%
+the one on the top.
+
+00:35:53.280 --> 00:35:53.780 align:middle line:90%
+Yeah.
+
+00:35:53.780 --> 00:35:56.115 align:middle line:90%
+
+
+00:35:56.115 --> 00:35:56.615 align:middle line:90%
+OK.
+
+00:35:56.615 --> 00:35:59.490 align:middle line:90%
+
+
+00:35:59.490 --> 00:36:00.330 align:middle line:90%
+Cool.
+
+00:36:00.330 --> 00:36:02.040 align:middle line:84%
+So the proof I'm
+going to show you
+
+00:36:02.040 --> 00:36:06.630 align:middle line:84%
+is based on cutting
+the plane into pieces.
+
+00:36:06.630 --> 00:36:13.560 align:middle line:84%
+And it goes back to work of
+Clarkson, Guibas, Edelsbrunner,
+
+00:36:13.560 --> 00:36:16.320 align:middle line:90%
+Sharir, and Welzl.
+
+00:36:16.320 --> 00:36:18.600 align:middle line:84%
+It's not the very
+first proof, but I
+
+00:36:18.600 --> 00:36:21.000 align:middle line:90%
+think it's a very nice proof.
+
+00:36:21.000 --> 00:36:23.040 align:middle line:84%
+And then it's a
+slightly revised version
+
+00:36:23.040 --> 00:36:26.620 align:middle line:84%
+of that that Nets
+Katz and I worked on.
+
+00:36:26.620 --> 00:36:27.120 align:middle line:90%
+OK.
+
+00:36:27.120 --> 00:36:30.040 align:middle line:84%
+So it's based on cutting
+the plane into pieces.
+
+00:36:30.040 --> 00:36:33.275 align:middle line:84%
+So let me say what I mean
+by that by stating a lemma.
+
+00:36:33.275 --> 00:36:42.780 align:middle line:90%
+
+
+00:36:42.780 --> 00:36:44.160 align:middle line:90%
+All right.
+
+00:36:44.160 --> 00:36:57.560 align:middle line:84%
+So cell decomposition
+lemma says that if X
+
+00:36:57.560 --> 00:37:04.880 align:middle line:84%
+is a finite subset of the plane
+and S is a natural number,
+
+00:37:04.880 --> 00:37:08.810 align:middle line:84%
+then there's a way
+to cut up the plane.
+
+00:37:08.810 --> 00:37:15.440 align:middle line:84%
+So I think of it as a cell
+wall and then a bunch of cells.
+
+00:37:15.440 --> 00:37:20.660 align:middle line:84%
+So each one of these is open,
+and I'll call it a cell.
+
+00:37:20.660 --> 00:37:25.250 align:middle line:84%
+And this set W is
+closed and I'll call it
+
+00:37:25.250 --> 00:37:27.530 align:middle line:90%
+the wall between the cells.
+
+00:37:27.530 --> 00:37:31.760 align:middle line:84%
+So the image here is
+that I have some points.
+
+00:37:31.760 --> 00:37:38.300 align:middle line:84%
+So that's X. And then I
+have something like this.
+
+00:37:38.300 --> 00:37:41.660 align:middle line:84%
+That's W. And this is
+01, 02, 03, and 04.
+
+00:37:41.660 --> 00:37:44.480 align:middle line:90%
+
+
+00:37:44.480 --> 00:37:44.980 align:middle line:90%
+OK.
+
+00:37:44.980 --> 00:37:48.690 align:middle line:90%
+
+
+00:37:48.690 --> 00:37:49.190 align:middle line:90%
+OK.
+
+00:37:49.190 --> 00:37:51.610 align:middle line:90%
+So it has some properties.
+
+00:37:51.610 --> 00:37:53.410 align:middle line:90%
+Number one.
+
+00:37:53.410 --> 00:38:03.280 align:middle line:84%
+Each line intersects
+at most around S cells.
+
+00:38:03.280 --> 00:38:07.000 align:middle line:84%
+And also, the line
+can intersect the wall
+
+00:38:07.000 --> 00:38:09.795 align:middle line:90%
+but in at most around S points.
+
+00:38:09.795 --> 00:38:15.610 align:middle line:90%
+
+
+00:38:15.610 --> 00:38:16.801 align:middle line:90%
+OK.
+
+00:38:16.801 --> 00:38:22.690 align:middle line:84%
+And then each cell in
+the cell decomposition
+
+00:38:22.690 --> 00:38:27.165 align:middle line:84%
+has at most X over
+S squared points.
+
+00:38:27.165 --> 00:38:34.300 align:middle line:90%
+
+
+00:38:34.300 --> 00:38:35.260 align:middle line:90%
+OK.
+
+00:38:35.260 --> 00:38:40.540 align:middle line:84%
+Now it's not very
+obvious yet where
+
+00:38:40.540 --> 00:38:42.050 align:middle line:90%
+all these formulas came from.
+
+00:38:42.050 --> 00:38:44.760 align:middle line:84%
+And it's definitely not
+obvious how to prove this,
+
+00:38:44.760 --> 00:38:47.940 align:middle line:84%
+but it's pretty easy to
+prove this in the example
+
+00:38:47.940 --> 00:38:51.820 align:middle line:84%
+that X is approximately
+like a square grid.
+
+00:38:51.820 --> 00:38:54.270 align:middle line:84%
+So let me just show you
+that as a motivation
+
+00:38:54.270 --> 00:38:55.670 align:middle line:90%
+for where this might come from.
+
+00:38:55.670 --> 00:38:58.740 align:middle line:90%
+
+
+00:38:58.740 --> 00:39:01.685 align:middle line:84%
+And to help digest
+what the lemma says.
+
+00:39:01.685 --> 00:39:05.244 align:middle line:90%
+
+
+00:39:05.244 --> 00:39:08.110 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:39:08.110 --> 00:39:09.942 align:middle line:90%
+
+
+00:39:09.942 --> 00:39:10.860 align:middle line:90%
+LAWRENCE GUTH: Ah.
+
+00:39:10.860 --> 00:39:11.620 align:middle line:90%
+Yeah.
+
+00:39:11.620 --> 00:39:14.760 align:middle line:90%
+So, right.
+
+00:39:14.760 --> 00:39:20.040 align:middle line:84%
+So the comment is I didn't say
+anything about a set of lines.
+
+00:39:20.040 --> 00:39:25.500 align:middle line:84%
+So what this means
+is for every line L.
+
+00:39:25.500 --> 00:39:31.440 align:middle line:84%
+And here, this is for every line
+L. Now if we had a set of lines,
+
+00:39:31.440 --> 00:39:33.690 align:middle line:84%
+all we would really need is
+to have this for the lines
+
+00:39:33.690 --> 00:39:34.617 align:middle line:90%
+from our set of lines.
+
+00:39:34.617 --> 00:39:36.950 align:middle line:84%
+But in practice, it's actually
+just true for every line.
+
+00:39:36.950 --> 00:39:40.740 align:middle line:90%
+
+
+00:39:40.740 --> 00:39:41.240 align:middle line:90%
+OK.
+
+00:39:41.240 --> 00:39:50.840 align:middle line:90%
+
+
+00:39:50.840 --> 00:39:51.630 align:middle line:90%
+All right.
+
+00:39:51.630 --> 00:39:53.750 align:middle line:84%
+So the cell decomposition
+lemma, in general,
+
+00:39:53.750 --> 00:39:56.850 align:middle line:84%
+is somewhat difficult.
+We'll talk about the proof.
+
+00:39:56.850 --> 00:39:59.480 align:middle line:84%
+But let me show you an
+easy case that I hope
+
+00:39:59.480 --> 00:40:01.500 align:middle line:90%
+will motivate the statement.
+
+00:40:01.500 --> 00:40:02.000 align:middle line:90%
+Yeah?
+
+00:40:02.000 --> 00:40:04.850 align:middle line:84%
+AUDIENCE: You want X to
+not intersect the wall?
+
+00:40:04.850 --> 00:40:07.820 align:middle line:84%
+It looks like you just
+put X in the wall.
+
+00:40:07.820 --> 00:40:12.620 align:middle line:84%
+LAWRENCE GUTH: It looks like we
+could just put X in the wall.
+
+00:40:12.620 --> 00:40:13.585 align:middle line:90%
+Let's see here.
+
+00:40:13.585 --> 00:40:17.970 align:middle line:90%
+
+
+00:40:17.970 --> 00:40:18.470 align:middle line:90%
+Yeah.
+
+00:40:18.470 --> 00:40:22.310 align:middle line:84%
+So another comment
+is that X is allowed
+
+00:40:22.310 --> 00:40:24.210 align:middle line:90%
+to be a subset of the wall.
+
+00:40:24.210 --> 00:40:27.650 align:middle line:84%
+And that sounds a
+little suspicious.
+
+00:40:27.650 --> 00:40:32.480 align:middle line:84%
+But we do get something from
+that because every line only
+
+00:40:32.480 --> 00:40:34.650 align:middle line:90%
+hits the wall in S points.
+
+00:40:34.650 --> 00:40:37.170 align:middle line:84%
+So if x were a
+subset of the wall,
+
+00:40:37.170 --> 00:40:40.620 align:middle line:84%
+then every line would
+only hit X in S points,
+
+00:40:40.620 --> 00:40:43.280 align:middle line:84%
+and that would be a
+useful tool for us.
+
+00:40:43.280 --> 00:40:45.960 align:middle line:84%
+Also remember that
+S is a parameter.
+
+00:40:45.960 --> 00:40:49.040 align:middle line:84%
+So for each S, there's
+a way of doing this.
+
+00:40:49.040 --> 00:40:52.040 align:middle line:84%
+We're going to eventually--
+we'll look at our set of points
+
+00:40:52.040 --> 00:40:53.540 align:middle line:84%
+and our set of
+lines, and then we'll
+
+00:40:53.540 --> 00:40:55.610 align:middle line:90%
+pick an S that's strategic.
+
+00:40:55.610 --> 00:40:58.810 align:middle line:84%
+So if S is small, this
+is really quite strong.
+
+00:40:58.810 --> 00:41:02.270 align:middle line:90%
+
+
+00:41:02.270 --> 00:41:05.042 align:middle line:90%
+OK.
+
+00:41:05.042 --> 00:41:16.555 align:middle line:84%
+So here's an example is that
+X is roughly a square grid.
+
+00:41:16.555 --> 00:41:19.070 align:middle line:90%
+
+
+00:41:19.070 --> 00:41:21.030 align:middle line:84%
+So let me make
+that more precise.
+
+00:41:21.030 --> 00:41:24.860 align:middle line:84%
+Let's say X is contained
+in 0 to N squared,
+
+00:41:24.860 --> 00:41:31.135 align:middle line:84%
+and X intersected with a unit
+ball around any center is small.
+
+00:41:31.135 --> 00:41:34.160 align:middle line:90%
+
+
+00:41:34.160 --> 00:41:40.480 align:middle line:84%
+And let's say that there are
+around N squared points in X.
+
+00:41:40.480 --> 00:41:44.080 align:middle line:90%
+So what does this X look like?
+
+00:41:44.080 --> 00:41:45.615 align:middle line:90%
+We have an N by N box.
+
+00:41:45.615 --> 00:41:48.410 align:middle line:90%
+
+
+00:41:48.410 --> 00:41:48.910 align:middle line:90%
+Yeah.
+
+00:41:48.910 --> 00:41:52.785 align:middle line:84%
+Let me imagine cutting it like a
+checkerboard into unit squares.
+
+00:41:52.785 --> 00:41:59.590 align:middle line:90%
+
+
+00:41:59.590 --> 00:42:04.630 align:middle line:84%
+And this tells me that I have
+on the order of 1 point of X
+
+00:42:04.630 --> 00:42:05.715 align:middle line:90%
+in each unit square.
+
+00:42:05.715 --> 00:42:09.880 align:middle line:90%
+
+
+00:42:09.880 --> 00:42:13.510 align:middle line:90%
+So this is a class of sets.
+
+00:42:13.510 --> 00:42:17.380 align:middle line:84%
+So I call this is
+roughly a square grid.
+
+00:42:17.380 --> 00:42:17.930 align:middle line:90%
+OK.
+
+00:42:17.930 --> 00:42:21.250 align:middle line:90%
+So now how would we cut it up?
+
+00:42:21.250 --> 00:42:24.420 align:middle line:90%
+I cut it up like this.
+
+00:42:24.420 --> 00:42:27.310 align:middle line:90%
+
+
+00:42:27.310 --> 00:42:37.920 align:middle line:84%
+I'll do N over S. So the
+wall is S vertical lines
+
+00:42:37.920 --> 00:42:40.295 align:middle line:90%
+union with S horizontal lines.
+
+00:42:40.295 --> 00:42:49.260 align:middle line:90%
+
+
+00:42:49.260 --> 00:42:49.760 align:middle line:90%
+OK.
+
+00:42:49.760 --> 00:42:56.710 align:middle line:90%
+
+
+00:42:56.710 --> 00:43:00.760 align:middle line:84%
+So the wall cuts it
+into S squared pieces,
+
+00:43:00.760 --> 00:43:03.600 align:middle line:84%
+and because my set is
+distributed so evenly,
+
+00:43:03.600 --> 00:43:06.010 align:middle line:84%
+each of these pieces
+has about the same size.
+
+00:43:06.010 --> 00:43:10.200 align:middle line:84%
+So that gives me
+the third bullet.
+
+00:43:10.200 --> 00:43:14.070 align:middle line:84%
+And if we were to make
+a line in this picture,
+
+00:43:14.070 --> 00:43:19.050 align:middle line:84%
+well, it can only cross each
+of these other lines once.
+
+00:43:19.050 --> 00:43:22.950 align:middle line:84%
+So a line will intersect
+the wall at most 2S times.
+
+00:43:22.950 --> 00:43:26.380 align:middle line:84%
+And to go from one
+cell to another cell,
+
+00:43:26.380 --> 00:43:27.520 align:middle line:90%
+it has to cross the wall.
+
+00:43:27.520 --> 00:43:30.290 align:middle line:90%
+So only enter about 2S cells.
+
+00:43:30.290 --> 00:43:33.860 align:middle line:90%
+
+
+00:43:33.860 --> 00:43:34.760 align:middle line:90%
+OK.
+
+00:43:34.760 --> 00:43:40.450 align:middle line:84%
+So the bullets are
+not hard to check.
+
+00:43:40.450 --> 00:43:52.725 align:middle line:90%
+
+
+00:43:52.725 --> 00:43:53.225 align:middle line:90%
+OK.
+
+00:43:53.225 --> 00:43:58.640 align:middle line:90%
+
+
+00:43:58.640 --> 00:43:59.140 align:middle line:90%
+OK.
+
+00:43:59.140 --> 00:44:03.380 align:middle line:90%
+
+
+00:44:03.380 --> 00:44:08.600 align:middle line:84%
+So this decomposition method
+is based on the key observation
+
+00:44:08.600 --> 00:44:12.390 align:middle line:84%
+that it's actually helpful to
+cut up our problem like this,
+
+00:44:12.390 --> 00:44:14.630 align:middle line:84%
+cut up our space like
+this, and then count
+
+00:44:14.630 --> 00:44:17.390 align:middle line:84%
+the incidences in
+each cell separately
+
+00:44:17.390 --> 00:44:20.570 align:middle line:90%
+and the incidences on the wall.
+
+00:44:20.570 --> 00:44:23.900 align:middle line:84%
+And in each of those pieces,
+we can use our double counting
+
+00:44:23.900 --> 00:44:24.570 align:middle line:90%
+argument.
+
+00:44:24.570 --> 00:44:25.950 align:middle line:84%
+But when we add
+it up at the end,
+
+00:44:25.950 --> 00:44:28.367 align:middle line:84%
+we may get something better
+than using the double counting
+
+00:44:28.367 --> 00:44:29.230 align:middle line:90%
+argument globally.
+
+00:44:29.230 --> 00:44:39.950 align:middle line:90%
+
+
+00:44:39.950 --> 00:44:40.450 align:middle line:90%
+OK.
+
+00:44:40.450 --> 00:44:54.040 align:middle line:90%
+
+
+00:44:54.040 --> 00:44:54.590 align:middle line:90%
+All right.
+
+00:44:54.590 --> 00:44:57.345 align:middle line:84%
+So proof of theorem two,
+assuming this lemma.
+
+00:44:57.345 --> 00:45:01.180 align:middle line:90%
+
+
+00:45:01.180 --> 00:45:01.850 align:middle line:90%
+All right.
+
+00:45:01.850 --> 00:45:09.790 align:middle line:84%
+So we're given X and L,
+and S is going to be TBD.
+
+00:45:09.790 --> 00:45:12.970 align:middle line:90%
+And we can apply this thing.
+
+00:45:12.970 --> 00:45:13.970 align:middle line:90%
+OK.
+
+00:45:13.970 --> 00:45:21.490 align:middle line:84%
+So let's say that Xi is
+X intersected with Oi.
+
+00:45:21.490 --> 00:45:25.120 align:middle line:84%
+Then we can say
+that Xi is less than
+
+00:45:25.120 --> 00:45:28.760 align:middle line:84%
+or equal to less sim
+X over S squared.
+
+00:45:28.760 --> 00:45:30.830 align:middle line:84%
+That was given to us
+as a bullet point.
+
+00:45:30.830 --> 00:45:34.840 align:middle line:84%
+And the sum over i
+of Xi is at most X,
+
+00:45:34.840 --> 00:45:37.750 align:middle line:90%
+because these are disjoint sets.
+
+00:45:37.750 --> 00:45:39.526 align:middle line:90%
+OK.
+
+00:45:39.526 --> 00:45:43.900 align:middle line:84%
+Now let's say that Li
+is the set of lines
+
+00:45:43.900 --> 00:45:46.395 align:middle line:90%
+that intersect the cell Oi.
+
+00:45:46.395 --> 00:45:52.450 align:middle line:90%
+
+
+00:45:52.450 --> 00:45:53.310 align:middle line:90%
+OK.
+
+00:45:53.310 --> 00:45:54.710 align:middle line:90%
+Now these are disjoint.
+
+00:45:54.710 --> 00:45:56.740 align:middle line:90%
+Each point is only in one cell.
+
+00:45:56.740 --> 00:46:02.360 align:middle line:84%
+These are not disjoint because
+a line goes through many cells.
+
+00:46:02.360 --> 00:46:05.680 align:middle line:84%
+So this blue line
+belongs to Li for this i
+
+00:46:05.680 --> 00:46:10.690 align:middle line:84%
+and this i and this i, but not
+for this i or this i or that i.
+
+00:46:10.690 --> 00:46:11.604 align:middle line:90%
+OK.
+
+00:46:11.604 --> 00:46:16.630 align:middle line:84%
+So if you add up over
+i, the size of Li,
+
+00:46:16.630 --> 00:46:19.900 align:middle line:84%
+that is bounded by S
+times the size of L,
+
+00:46:19.900 --> 00:46:25.990 align:middle line:84%
+because each line in L
+belongs to at most S cells.
+
+00:46:25.990 --> 00:46:26.900 align:middle line:90%
+All right.
+
+00:46:26.900 --> 00:46:30.810 align:middle line:84%
+So now let's count
+our incidences.
+
+00:46:30.810 --> 00:46:35.735 align:middle line:84%
+So there are incidences
+from each cell.
+
+00:46:35.735 --> 00:46:41.160 align:middle line:90%
+
+
+00:46:41.160 --> 00:46:43.470 align:middle line:84%
+And the incidences
+related to the i-th cell
+
+00:46:43.470 --> 00:46:45.720 align:middle line:84%
+have points from the
+i-th cell and they have
+
+00:46:45.720 --> 00:46:48.540 align:middle line:90%
+lines that enter the i-th cell.
+
+00:46:48.540 --> 00:46:51.840 align:middle line:84%
+There also are incidences
+involving the wall.
+
+00:46:51.840 --> 00:47:00.270 align:middle line:84%
+So add the incidences from X
+intersected with the wall and L.
+
+00:47:00.270 --> 00:47:01.230 align:middle line:90%
+OK.
+
+00:47:01.230 --> 00:47:03.540 align:middle line:84%
+Now we apply our
+double counting lemma
+
+00:47:03.540 --> 00:47:06.480 align:middle line:84%
+to estimate each
+of these things.
+
+00:47:06.480 --> 00:47:15.240 align:middle line:84%
+So that's less than the sum
+on i Xi Li to the 1/2 plus Li.
+
+00:47:15.240 --> 00:47:18.330 align:middle line:90%
+
+
+00:47:18.330 --> 00:47:22.810 align:middle line:84%
+And for the wall, well, each
+line only hits the wall S times.
+
+00:47:22.810 --> 00:47:25.375 align:middle line:84%
+So we have S times
+the number of lines.
+
+00:47:25.375 --> 00:47:34.280 align:middle line:90%
+
+
+00:47:34.280 --> 00:47:34.780 align:middle line:90%
+OK.
+
+00:47:34.780 --> 00:47:38.750 align:middle line:84%
+Now from this point on, we just
+do a little bit of algebra.
+
+00:47:38.750 --> 00:47:41.360 align:middle line:84%
+We just have an expression
+involving these numbers Xi
+
+00:47:41.360 --> 00:47:46.555 align:middle line:84%
+and Li, and we know a few
+inequalities about Xi and Li.
+
+00:47:46.555 --> 00:47:47.763 align:middle line:90%
+We'll just put them together.
+
+00:47:47.763 --> 00:47:51.620 align:middle line:90%
+
+
+00:47:51.620 --> 00:47:54.980 align:middle line:84%
+Here, it's reasonable
+to Cauchy-Schwarz
+
+00:47:54.980 --> 00:47:58.290 align:middle line:84%
+because I know information
+about Xi and Li separately.
+
+00:47:58.290 --> 00:48:05.810 align:middle line:84%
+So that will disentangle this,
+sum on i Xi squared to the 1/2
+
+00:48:05.810 --> 00:48:10.415 align:middle line:90%
+sum on i of Li to the 1/2.
+
+00:48:10.415 --> 00:48:13.460 align:middle line:84%
+This sum on Li, I
+just read that off,
+
+00:48:13.460 --> 00:48:15.085 align:middle line:84%
+and that can be
+grouped with that.
+
+00:48:15.085 --> 00:48:18.680 align:middle line:90%
+
+
+00:48:18.680 --> 00:48:20.384 align:middle line:90%
+OK.
+
+00:48:20.384 --> 00:48:24.530 align:middle line:84%
+And now, what do I do
+with this sum of squares?
+
+00:48:24.530 --> 00:48:28.340 align:middle line:84%
+Well, I know that each Xi
+is bounded by something,
+
+00:48:28.340 --> 00:48:30.640 align:middle line:90%
+so I can pull that out.
+
+00:48:30.640 --> 00:48:34.690 align:middle line:84%
+So I'll have X over
+S squared, and I'll
+
+00:48:34.690 --> 00:48:38.500 align:middle line:90%
+have left the sum of Xi.
+
+00:48:38.500 --> 00:48:41.480 align:middle line:84%
+This sum of Li,
+well, it's just here.
+
+00:48:41.480 --> 00:48:45.470 align:middle line:90%
+So it's SL to the 1/2.
+
+00:48:45.470 --> 00:48:48.670 align:middle line:90%
+And I copy this.
+
+00:48:48.670 --> 00:48:49.570 align:middle line:90%
+OK.
+
+00:48:49.570 --> 00:48:54.340 align:middle line:84%
+This sum of Xi is
+bounded by X. And so then
+
+00:48:54.340 --> 00:48:56.060 align:middle line:90%
+I'll do a little algebra here.
+
+00:48:56.060 --> 00:48:58.240 align:middle line:90%
+This is the important term.
+
+00:48:58.240 --> 00:49:04.990 align:middle line:84%
+I'll have an X squared
+to the 1/2, so X and X.
+
+00:49:04.990 --> 00:49:07.990 align:middle line:90%
+I have an L to the 1/2.
+
+00:49:07.990 --> 00:49:13.330 align:middle line:84%
+And I'll have some powers of S.
+There will be 1 over S coming
+
+00:49:13.330 --> 00:49:16.850 align:middle line:84%
+from here and an S to the
+1/2 coming from there.
+
+00:49:16.850 --> 00:49:21.180 align:middle line:84%
+So altogether I have an
+S to the negative 1/2.
+
+00:49:21.180 --> 00:49:22.770 align:middle line:90%
+And this I'll copy over.
+
+00:49:22.770 --> 00:49:26.570 align:middle line:90%
+
+
+00:49:26.570 --> 00:49:27.070 align:middle line:90%
+OK.
+
+00:49:27.070 --> 00:49:29.345 align:middle line:84%
+Let's pause there for a
+second after the algebra.
+
+00:49:29.345 --> 00:49:39.160 align:middle line:90%
+
+
+00:49:39.160 --> 00:49:39.660 align:middle line:90%
+OK.
+
+00:49:39.660 --> 00:49:42.360 align:middle line:84%
+So let's take stock of
+the bound that we got
+
+00:49:42.360 --> 00:49:47.010 align:middle line:84%
+and how it compares to the
+double counting argument.
+
+00:49:47.010 --> 00:49:49.650 align:middle line:84%
+If you compare this to the
+double counting argument,
+
+00:49:49.650 --> 00:49:51.520 align:middle line:90%
+the terms match up.
+
+00:49:51.520 --> 00:49:54.580 align:middle line:84%
+So the double counting,
+we have XL to the 1/2,
+
+00:49:54.580 --> 00:50:00.450 align:middle line:84%
+and that first term gets
+decreased by S to the minus 1/2
+
+00:50:00.450 --> 00:50:05.400 align:middle line:84%
+when we introduce our cutting
+and then the second term of L
+
+00:50:05.400 --> 00:50:09.900 align:middle line:90%
+gets increased by a factor of S.
+
+00:50:09.900 --> 00:50:13.350 align:middle line:84%
+So if originally the
+first term dominated,
+
+00:50:13.350 --> 00:50:20.190 align:middle line:84%
+then life will get better
+when we do this decomposition.
+
+00:50:20.190 --> 00:50:22.390 align:middle line:84%
+And if originally
+the L dominated,
+
+00:50:22.390 --> 00:50:25.920 align:middle line:84%
+then life will not get better
+when we do this decomposition.
+
+00:50:25.920 --> 00:50:26.490 align:middle line:90%
+Right.
+
+00:50:26.490 --> 00:50:27.190 align:middle line:90%
+OK.
+
+00:50:27.190 --> 00:50:30.930 align:middle line:84%
+So at the end here,
+we just choose
+
+00:50:30.930 --> 00:50:35.300 align:middle line:84%
+S greater than or equal to 1 to
+minimize the right-hand side.
+
+00:50:35.300 --> 00:50:38.880 align:middle line:90%
+
+
+00:50:38.880 --> 00:50:40.930 align:middle line:84%
+And if you do a
+little bit of algebra,
+
+00:50:40.930 --> 00:50:42.815 align:middle line:84%
+you'll get out the
+Szemeredi-Trotter bound.
+
+00:50:42.815 --> 00:50:45.480 align:middle line:90%
+
+
+00:50:45.480 --> 00:50:45.980 align:middle line:90%
+OK.
+
+00:50:45.980 --> 00:50:52.140 align:middle line:90%
+
+
+00:50:52.140 --> 00:50:54.300 align:middle line:84%
+I remember spending
+some time trying
+
+00:50:54.300 --> 00:50:55.920 align:middle line:84%
+to digest why
+things were getting
+
+00:50:55.920 --> 00:50:58.680 align:middle line:90%
+better when we subdivided.
+
+00:50:58.680 --> 00:51:01.260 align:middle line:84%
+And here was one
+thought I had about it.
+
+00:51:01.260 --> 00:51:03.370 align:middle line:84%
+If you look at the
+double counting bound,
+
+00:51:03.370 --> 00:51:05.490 align:middle line:84%
+there are these
+different regimes.
+
+00:51:05.490 --> 00:51:09.850 align:middle line:84%
+So there's a regime where
+the left term dominates.
+
+00:51:09.850 --> 00:51:12.300 align:middle line:84%
+And in that regime, the
+double counting bound
+
+00:51:12.300 --> 00:51:14.370 align:middle line:90%
+is bigger than the truth.
+
+00:51:14.370 --> 00:51:17.910 align:middle line:84%
+And there's a regime where
+the right term dominates,
+
+00:51:17.910 --> 00:51:20.868 align:middle line:84%
+and you can always have L
+incidences, so that's not that--
+
+00:51:20.868 --> 00:51:22.785 align:middle line:84%
+when the right term
+dominates, it's the truth.
+
+00:51:22.785 --> 00:51:25.380 align:middle line:90%
+
+
+00:51:25.380 --> 00:51:26.320 align:middle line:90%
+OK.
+
+00:51:26.320 --> 00:51:28.830 align:middle line:90%
+So what are the regimes?
+
+00:51:28.830 --> 00:51:32.400 align:middle line:84%
+The right term that the L
+dominates if L is bigger than X
+
+00:51:32.400 --> 00:51:34.380 align:middle line:90%
+squared.
+
+00:51:34.380 --> 00:51:35.940 align:middle line:84%
+So you have a lot
+of lines compared
+
+00:51:35.940 --> 00:51:40.320 align:middle line:84%
+to the number of points,
+then double counting already
+
+00:51:40.320 --> 00:51:42.475 align:middle line:90%
+gives a sharp bound.
+
+00:51:42.475 --> 00:51:42.975 align:middle line:90%
+OK.
+
+00:51:42.975 --> 00:51:46.930 align:middle line:84%
+So suppose originally that L
+is not bigger than X squared.
+
+00:51:46.930 --> 00:51:49.230 align:middle line:84%
+So if I just apply double
+counting out of the box,
+
+00:51:49.230 --> 00:51:52.060 align:middle line:84%
+the XL to the 1/2
+would dominate,
+
+00:51:52.060 --> 00:51:54.270 align:middle line:90%
+which I'm not so happy with.
+
+00:51:54.270 --> 00:51:58.150 align:middle line:84%
+Then I try cutting
+things up into cells.
+
+00:51:58.150 --> 00:52:01.170 align:middle line:84%
+I count the incidences
+in each cell.
+
+00:52:01.170 --> 00:52:04.350 align:middle line:90%
+Is life any better?
+
+00:52:04.350 --> 00:52:08.080 align:middle line:90%
+Well, I have S squared cells.
+
+00:52:08.080 --> 00:52:11.140 align:middle line:84%
+So if I look-- and the points
+are kind of evenly distributed.
+
+00:52:11.140 --> 00:52:14.040 align:middle line:84%
+So if I look inside one
+cell, the number of points
+
+00:52:14.040 --> 00:52:17.770 align:middle line:84%
+goes down by S squared,
+which is quite a lot.
+
+00:52:17.770 --> 00:52:19.190 align:middle line:90%
+How about lines?
+
+00:52:19.190 --> 00:52:21.560 align:middle line:84%
+Well, not every line
+goes through this cell,
+
+00:52:21.560 --> 00:52:24.280 align:middle line:84%
+so the number of
+lines also goes down.
+
+00:52:24.280 --> 00:52:27.980 align:middle line:84%
+But because each line
+goes through many cells,
+
+00:52:27.980 --> 00:52:31.240 align:middle line:84%
+each line goes through S
+cells, the fraction of lines
+
+00:52:31.240 --> 00:52:33.310 align:middle line:84%
+that I would expect to
+go through this cell is
+
+00:52:33.310 --> 00:52:37.030 align:middle line:90%
+1 over S of all the lines.
+
+00:52:37.030 --> 00:52:39.200 align:middle line:84%
+So the number of
+points goes down a lot,
+
+00:52:39.200 --> 00:52:42.970 align:middle line:84%
+and the number of lines
+only goes down a little.
+
+00:52:42.970 --> 00:52:44.890 align:middle line:84%
+By doing that,
+I'm tilting things
+
+00:52:44.890 --> 00:52:47.990 align:middle line:84%
+towards having a lot of
+lines and few points.
+
+00:52:47.990 --> 00:52:49.705 align:middle line:90%
+And if you think about--
+
+00:52:49.705 --> 00:52:53.860 align:middle line:84%
+if you track what is the best
+value of this S, what happens
+
+00:52:53.860 --> 00:52:57.040 align:middle line:84%
+is the S is best when
+we cut it in such a way
+
+00:52:57.040 --> 00:52:59.860 align:middle line:84%
+that inside of each
+cell, the number of lines
+
+00:52:59.860 --> 00:53:02.200 align:middle line:90%
+is the number of points squared.
+
+00:53:02.200 --> 00:53:03.700 align:middle line:84%
+And that means the
+double counting
+
+00:53:03.700 --> 00:53:06.255 align:middle line:84%
+is giving the correct
+bound inside of each cell.
+
+00:53:06.255 --> 00:53:16.860 align:middle line:90%
+
+
+00:53:16.860 --> 00:53:18.600 align:middle line:90%
+OK.
+
+00:53:18.600 --> 00:53:19.520 align:middle line:90%
+Questions or comments?
+
+00:53:19.520 --> 00:53:34.180 align:middle line:90%
+
+
+00:53:34.180 --> 00:53:34.680 align:middle line:90%
+OK.
+
+00:53:34.680 --> 00:53:37.740 align:middle line:84%
+So let's talk about how to
+prove the cell decomposition
+
+00:53:37.740 --> 00:53:41.910 align:middle line:84%
+lemma which uses a
+little bit of topology.
+
+00:53:41.910 --> 00:53:44.370 align:middle line:84%
+So in our cell
+decomposition lemma,
+
+00:53:44.370 --> 00:53:49.320 align:middle line:84%
+we want to take our points
+and cut them up in evenly
+
+00:53:49.320 --> 00:53:50.580 align:middle line:90%
+in some way.
+
+00:53:50.580 --> 00:53:53.130 align:middle line:84%
+And that is reminiscent
+of a classical thing
+
+00:53:53.130 --> 00:53:55.570 align:middle line:84%
+in topology called the
+ham sandwich theorem.
+
+00:53:55.570 --> 00:54:00.840 align:middle line:84%
+And the cell decomposition
+lemma is like a variant
+
+00:54:00.840 --> 00:54:02.440 align:middle line:90%
+of the ham sandwich theorem.
+
+00:54:02.440 --> 00:54:04.860 align:middle line:84%
+So I will first recall
+the ham sandwich theorem
+
+00:54:04.860 --> 00:54:10.410 align:middle line:84%
+and how to prove that, and
+then we'll work up to this.
+
+00:54:10.410 --> 00:54:11.450 align:middle line:90%
+All right.
+
+00:54:11.450 --> 00:54:15.260 align:middle line:84%
+So our starting
+point in topology
+
+00:54:15.260 --> 00:54:17.605 align:middle line:84%
+is going to be the
+Borsuk-Ulam theorem.
+
+00:54:17.605 --> 00:54:20.330 align:middle line:90%
+
+
+00:54:20.330 --> 00:54:23.730 align:middle line:84%
+So I'll recall that,
+I'll state that,
+
+00:54:23.730 --> 00:54:25.340 align:middle line:84%
+and then we'll try
+to prove everything
+
+00:54:25.340 --> 00:54:26.786 align:middle line:90%
+else from Borsuk-Ulam.
+
+00:54:26.786 --> 00:54:38.840 align:middle line:90%
+
+
+00:54:38.840 --> 00:54:39.430 align:middle line:90%
+All right.
+
+00:54:39.430 --> 00:54:44.120 align:middle line:90%
+
+
+00:54:44.120 --> 00:54:47.090 align:middle line:84%
+So the Borsuk-Ulam
+theorem says that if you
+
+00:54:47.090 --> 00:54:49.310 align:middle line:84%
+have a function
+from the N sphere
+
+00:54:49.310 --> 00:54:54.810 align:middle line:84%
+to RN, which is continuous,
+and its antipodal.
+
+00:54:54.810 --> 00:54:57.200 align:middle line:84%
+So that means f
+of negative theta
+
+00:54:57.200 --> 00:55:02.300 align:middle line:84%
+is negative f of theta for
+every theta in the sphere.
+
+00:55:02.300 --> 00:55:08.270 align:middle line:84%
+Then the conclusion is that
+0 is in the image of f,
+
+00:55:08.270 --> 00:55:11.425 align:middle line:84%
+there is some point in the
+sphere that got mapped to zero.
+
+00:55:11.425 --> 00:55:19.650 align:middle line:90%
+
+
+00:55:19.650 --> 00:55:20.150 align:middle line:90%
+OK.
+
+00:55:20.150 --> 00:55:25.430 align:middle line:90%
+
+
+00:55:25.430 --> 00:55:26.330 align:middle line:90%
+OK.
+
+00:55:26.330 --> 00:55:29.120 align:middle line:84%
+So as a corollary
+of that, we're going
+
+00:55:29.120 --> 00:55:31.255 align:middle line:90%
+to do the ham sandwich theorem.
+
+00:55:31.255 --> 00:55:36.710 align:middle line:90%
+
+
+00:55:36.710 --> 00:55:39.200 align:middle line:84%
+So one version of the
+ham sandwich theorem
+
+00:55:39.200 --> 00:55:44.960 align:middle line:84%
+says that if O1 up
+to On contained in RN
+
+00:55:44.960 --> 00:55:46.555 align:middle line:90%
+are bounded open sets.
+
+00:55:46.555 --> 00:55:49.790 align:middle line:90%
+
+
+00:55:49.790 --> 00:55:55.380 align:middle line:84%
+Then there exists a hyperplane
+h that bisects them all.
+
+00:55:55.380 --> 00:56:06.620 align:middle line:90%
+
+
+00:56:06.620 --> 00:56:11.450 align:middle line:84%
+So for instance, if I had two
+bounded open sets in the plane,
+
+00:56:11.450 --> 00:56:16.335 align:middle line:84%
+there would be a line somewhere
+that bisects both of these sets.
+
+00:56:16.335 --> 00:56:21.820 align:middle line:90%
+
+
+00:56:21.820 --> 00:56:23.056 align:middle line:90%
+OK.
+
+00:56:23.056 --> 00:56:25.690 align:middle line:90%
+So proof.
+
+00:56:25.690 --> 00:56:29.350 align:middle line:84%
+So first we need to
+parameterize our choice
+
+00:56:29.350 --> 00:56:31.300 align:middle line:90%
+of all the hyperplanes.
+
+00:56:31.300 --> 00:56:33.280 align:middle line:84%
+And a good way to
+think about that
+
+00:56:33.280 --> 00:56:39.280 align:middle line:84%
+is that a hyperplane is
+related to a linear function,
+
+00:56:39.280 --> 00:56:42.200 align:middle line:90%
+so this is a hyperplane.
+
+00:56:42.200 --> 00:56:46.810 align:middle line:84%
+I also am going to want a
+hyperplane and one side of it.
+
+00:56:46.810 --> 00:56:49.180 align:middle line:84%
+I'll pay attention to
+which side is which.
+
+00:56:49.180 --> 00:56:56.980 align:middle line:84%
+So this shaded region would
+be the region a1, x1 plus an,
+
+00:56:56.980 --> 00:57:00.520 align:middle line:90%
+xn is bigger than b.
+
+00:57:00.520 --> 00:57:03.770 align:middle line:84%
+So one side of a hyperplane can
+always be described that way.
+
+00:57:03.770 --> 00:57:07.030 align:middle line:84%
+And we have the
+freedom to scale.
+
+00:57:07.030 --> 00:57:13.120 align:middle line:84%
+So let's say that theta
+is a1 up to an comma b.
+
+00:57:13.120 --> 00:57:16.210 align:middle line:84%
+That could be in the N sphere
+by scaling theta, which
+
+00:57:16.210 --> 00:57:20.080 align:middle line:90%
+doesn't change the hyperplane.
+
+00:57:20.080 --> 00:57:21.976 align:middle line:90%
+OK.
+
+00:57:21.976 --> 00:57:23.720 align:middle line:90%
+So those are my hyperplanes.
+
+00:57:23.720 --> 00:57:25.425 align:middle line:90%
+And now f of theta.
+
+00:57:25.425 --> 00:57:31.420 align:middle line:90%
+
+
+00:57:31.420 --> 00:57:32.720 align:middle line:90%
+Here, let me say it this way.
+
+00:57:32.720 --> 00:57:36.580 align:middle line:84%
+This guy plus b is
+bigger than zero.
+
+00:57:36.580 --> 00:57:49.090 align:middle line:84%
+And this thing here, I will
+call L sub theta of X. OK.
+
+00:57:49.090 --> 00:57:51.130 align:middle line:90%
+So f of theta is--
+
+00:57:51.130 --> 00:57:56.860 align:middle line:84%
+f sub i of theta is the
+volume of Oi intersect L theta
+
+00:57:56.860 --> 00:57:58.810 align:middle line:90%
+is bigger than zero.
+
+00:57:58.810 --> 00:58:05.450 align:middle line:84%
+That's the volume of Oi on this
+side minus the volume of Oi
+
+00:58:05.450 --> 00:58:08.245 align:middle line:84%
+and L sub theta is
+smaller than zero.
+
+00:58:08.245 --> 00:58:11.810 align:middle line:90%
+
+
+00:58:11.810 --> 00:58:15.920 align:middle line:84%
+So fi of theta is the
+volume of this part of Oi
+
+00:58:15.920 --> 00:58:18.020 align:middle line:84%
+minus the volume
+of that part of Oi.
+
+00:58:18.020 --> 00:58:21.290 align:middle line:90%
+
+
+00:58:21.290 --> 00:58:22.070 align:middle line:90%
+OK.
+
+00:58:22.070 --> 00:58:26.660 align:middle line:84%
+So notice that fi
+of theta is zero
+
+00:58:26.660 --> 00:58:32.800 align:middle line:84%
+if and only if the hyperplane
+associated to theta bisects Oi.
+
+00:58:32.800 --> 00:58:38.900 align:middle line:90%
+
+
+00:58:38.900 --> 00:58:40.286 align:middle line:90%
+OK.
+
+00:58:40.286 --> 00:58:45.230 align:middle line:90%
+Also, fi is antipodal.
+
+00:58:45.230 --> 00:58:50.150 align:middle line:84%
+fi of minus theta is
+negative fi of theta.
+
+00:58:50.150 --> 00:58:55.010 align:middle line:84%
+Because if I replace
+theta by minus theta,
+
+00:58:55.010 --> 00:58:57.600 align:middle line:84%
+I take the minus of
+all these coefficients.
+
+00:58:57.600 --> 00:59:01.190 align:middle line:84%
+Then I'm replacing L of
+theta by negative L of theta.
+
+00:59:01.190 --> 00:59:04.490 align:middle line:90%
+And so that switches who--
+
+00:59:04.490 --> 00:59:07.677 align:middle line:84%
+so I have the same zero set,
+the same hyperplane, but now
+
+00:59:07.677 --> 00:59:10.010 align:middle line:84%
+this one will be positive and
+that one will be negative.
+
+00:59:10.010 --> 00:59:12.850 align:middle line:84%
+So I'll switch these two
+things, which reverses
+
+00:59:12.850 --> 00:59:14.520 align:middle line:90%
+the sign of fi of theta.
+
+00:59:14.520 --> 00:59:20.105 align:middle line:90%
+
+
+00:59:20.105 --> 00:59:20.605 align:middle line:90%
+OK.
+
+00:59:20.605 --> 00:59:23.860 align:middle line:90%
+
+
+00:59:23.860 --> 00:59:26.560 align:middle line:90%
+fi is also continuous.
+
+00:59:26.560 --> 00:59:30.340 align:middle line:84%
+So if I adjust
+theta, then I'll make
+
+00:59:30.340 --> 00:59:32.360 align:middle line:90%
+a small motion of this plane.
+
+00:59:32.360 --> 00:59:35.560 align:middle line:84%
+And that will change these
+volumes but only continuously
+
+00:59:35.560 --> 00:59:40.300 align:middle line:84%
+because the sets are
+bounded and open.
+
+00:59:40.300 --> 00:59:41.908 align:middle line:90%
+OK.
+
+00:59:41.908 --> 00:59:47.710 align:middle line:84%
+So finally I'll make f by just
+putting together all these fn's.
+
+00:59:47.710 --> 00:59:52.700 align:middle line:84%
+And so f is a function
+from the N sphere to RN,
+
+00:59:52.700 --> 00:59:55.836 align:middle line:84%
+and it's continuous
+and it's antipodal.
+
+00:59:55.836 --> 00:59:58.540 align:middle line:90%
+
+
+00:59:58.540 --> 01:00:01.480 align:middle line:90%
+So the conclusion is--
+
+01:00:01.480 --> 01:00:04.700 align:middle line:84%
+so then Borsuk-Ulam tells me
+that there exists some theta
+
+01:00:04.700 --> 01:00:07.400 align:middle line:90%
+so that f of theta is zero.
+
+01:00:07.400 --> 01:00:11.415 align:middle line:84%
+And that means that h theta
+bisects all these sets.
+
+01:00:11.415 --> 01:00:18.695 align:middle line:90%
+
+
+01:00:18.695 --> 01:00:19.195 align:middle line:90%
+OK.
+
+01:00:19.195 --> 01:00:25.990 align:middle line:90%
+
+
+01:00:25.990 --> 01:00:26.540 align:middle line:90%
+All right.
+
+01:00:26.540 --> 01:00:31.240 align:middle line:84%
+Now this by itself is not going
+to be super helpful for us.
+
+01:00:31.240 --> 01:00:33.980 align:middle line:84%
+We have a set that
+lives in the plane.
+
+01:00:33.980 --> 01:00:36.880 align:middle line:84%
+So the theorem says,
+I can find a line
+
+01:00:36.880 --> 01:00:40.480 align:middle line:90%
+that bisects any two things.
+
+01:00:40.480 --> 01:00:43.210 align:middle line:84%
+I'm hoping to take
+a complicated set
+
+01:00:43.210 --> 01:00:45.680 align:middle line:84%
+and cut it into
+many even pieces.
+
+01:00:45.680 --> 01:00:47.890 align:middle line:84%
+And so a more
+relevant warm up is
+
+01:00:47.890 --> 01:00:53.290 align:middle line:84%
+some way of bisecting
+many sets, not just two.
+
+01:00:53.290 --> 01:00:54.234 align:middle line:90%
+OK.
+
+01:00:54.234 --> 01:00:58.530 align:middle line:84%
+So if I put more open
+sets here, then there
+
+01:00:58.530 --> 01:01:01.290 align:middle line:84%
+will not be a hyperplane
+that bisects all of them.
+
+01:01:01.290 --> 01:01:07.570 align:middle line:84%
+But I could be more flexible
+about what cut I would allow.
+
+01:01:07.570 --> 01:01:09.010 align:middle line:90%
+So it can't be a hyperplane.
+
+01:01:09.010 --> 01:01:10.900 align:middle line:84%
+It has to be a little
+bit more complicated.
+
+01:01:10.900 --> 01:01:14.430 align:middle line:84%
+And it turns out to be a
+reasonable idea to consider cuts
+
+01:01:14.430 --> 01:01:17.280 align:middle line:90%
+by polynomials of some degree.
+
+01:01:17.280 --> 01:01:21.600 align:middle line:84%
+So there's a natural
+generalization of this.
+
+01:01:21.600 --> 01:01:23.620 align:middle line:84%
+You could do really
+any class of functions,
+
+01:01:23.620 --> 01:01:26.370 align:middle line:84%
+but for this application,
+polynomials are useful.
+
+01:01:26.370 --> 01:01:28.490 align:middle line:84%
+It's called the polynomial
+ham sandwich theorem.
+
+01:01:28.490 --> 01:01:33.450 align:middle line:90%
+
+
+01:01:33.450 --> 01:01:33.950 align:middle line:90%
+All right.
+
+01:01:33.950 --> 01:01:53.190 align:middle line:90%
+
+
+01:01:53.190 --> 01:01:54.210 align:middle line:90%
+All right.
+
+01:01:54.210 --> 01:02:04.220 align:middle line:84%
+So here's a more general
+version polynomial ham sandwich.
+
+01:02:04.220 --> 01:02:04.890 align:middle line:90%
+OK.
+
+01:02:04.890 --> 01:02:09.800 align:middle line:84%
+So let's say polynomials
+of degree D in RN
+
+01:02:09.800 --> 01:02:16.190 align:middle line:84%
+that is the set of polynomials--
+so polynomials in N variables
+
+01:02:16.190 --> 01:02:20.960 align:middle line:84%
+over R so that the
+degree is at most D.
+
+01:02:20.960 --> 01:02:29.510 align:middle line:84%
+And so this is a
+vector space and it
+
+01:02:29.510 --> 01:02:34.510 align:middle line:84%
+has dimension
+approximately D to the N
+
+01:02:34.510 --> 01:02:38.070 align:middle line:84%
+if the dimension N is fixed and
+the degree is going to infinity.
+
+01:02:38.070 --> 01:02:44.540 align:middle line:90%
+
+
+01:02:44.540 --> 01:02:46.290 align:middle line:84%
+The dimension is not
+hard to figure out.
+
+01:02:46.290 --> 01:02:53.620 align:middle line:84%
+You count how many monomials
+are there of degree at most D.
+
+01:02:53.620 --> 01:02:56.410 align:middle line:90%
+OK.
+
+01:02:56.410 --> 01:03:02.350 align:middle line:84%
+So the proposition says that
+if capital n is strictly
+
+01:03:02.350 --> 01:03:08.170 align:middle line:84%
+less than the dimension
+of this space,
+
+01:03:08.170 --> 01:03:15.350 align:middle line:84%
+then there exists a polynomial
+p, the space of polynomials,
+
+01:03:15.350 --> 01:03:20.350 align:middle line:84%
+which is nonzero,
+and the polynomial
+
+01:03:20.350 --> 01:03:22.840 align:middle line:90%
+bisects each of the open sets.
+
+01:03:22.840 --> 01:03:33.340 align:middle line:84%
+So let's say fi of p is
+defined to be the volume of Oi
+
+01:03:33.340 --> 01:03:38.350 align:middle line:84%
+intersect p is positive
+minus the volume
+
+01:03:38.350 --> 01:03:49.150 align:middle line:84%
+of Oi intersect p is negative,
+and fi of p equals 0 for all i
+
+01:03:49.150 --> 01:03:50.190 align:middle line:90%
+from 1 up to n.
+
+01:03:50.190 --> 01:03:53.530 align:middle line:90%
+
+
+01:03:53.530 --> 01:03:55.690 align:middle line:84%
+So that's the statement
+of the proposition.
+
+01:03:55.690 --> 01:03:57.580 align:middle line:84%
+Instead of using
+a hyperplane, we
+
+01:03:57.580 --> 01:04:00.100 align:middle line:84%
+use a degree D zero
+set of a degree D
+
+01:04:00.100 --> 01:04:02.600 align:middle line:90%
+polynomial to bisect our sets.
+
+01:04:02.600 --> 01:04:05.200 align:middle line:84%
+And then we can
+bisect many more sets.
+
+01:04:05.200 --> 01:04:07.390 align:middle line:90%
+This is exactly how many.
+
+01:04:07.390 --> 01:04:12.070 align:middle line:84%
+As D increases, we have more
+degrees of freedom, bigger
+
+01:04:12.070 --> 01:04:14.265 align:middle line:84%
+dimension, and we can
+bisect more things.
+
+01:04:14.265 --> 01:04:18.705 align:middle line:90%
+
+
+01:04:18.705 --> 01:04:20.080 align:middle line:84%
+So at the level
+of intuition, you
+
+01:04:20.080 --> 01:04:22.770 align:middle line:84%
+can think of this in terms
+of degrees of freedom.
+
+01:04:22.770 --> 01:04:25.360 align:middle line:90%
+
+
+01:04:25.360 --> 01:04:29.500 align:middle line:84%
+So the dimension of
+this space tells us
+
+01:04:29.500 --> 01:04:32.240 align:middle line:84%
+how many degrees of freedom
+we have to play with.
+
+01:04:32.240 --> 01:04:34.430 align:middle line:84%
+Each one of these
+is a constraint.
+
+01:04:34.430 --> 01:04:36.700 align:middle line:84%
+And if the number of
+degrees of freedom
+
+01:04:36.700 --> 01:04:39.200 align:middle line:84%
+is at least the
+number of constraints,
+
+01:04:39.200 --> 01:04:42.105 align:middle line:84%
+then the theorem says we can
+actually find a solution.
+
+01:04:42.105 --> 01:04:45.910 align:middle line:90%
+
+
+01:04:45.910 --> 01:04:48.520 align:middle line:90%
+OK.
+
+01:04:48.520 --> 01:04:51.420 align:middle line:84%
+The proof is essentially
+the same as this.
+
+01:04:51.420 --> 01:04:52.920 align:middle line:90%
+So proof.
+
+01:04:52.920 --> 01:04:55.380 align:middle line:90%
+What do I need to check?
+
+01:04:55.380 --> 01:04:56.470 align:middle line:90%
+Well, fi.
+
+01:04:56.470 --> 01:05:01.530 align:middle line:90%
+
+
+01:05:01.530 --> 01:05:09.750 align:middle line:84%
+So I just need to check
+that fi are continuous
+
+01:05:09.750 --> 01:05:14.735 align:middle line:84%
+and fi of negative theta
+is negative fi of theta.
+
+01:05:14.735 --> 01:05:17.610 align:middle line:90%
+
+
+01:05:17.610 --> 01:05:19.300 align:middle line:90%
+So why is it continuous?
+
+01:05:19.300 --> 01:05:22.740 align:middle line:84%
+I won't do a full proof, but
+if you adjust the coefficients
+
+01:05:22.740 --> 01:05:25.110 align:middle line:84%
+of this polynomial a
+little bit, then the
+
+01:05:25.110 --> 01:05:27.970 align:middle line:84%
+set where it's positive
+changes but only a little bit.
+
+01:05:27.970 --> 01:05:30.490 align:middle line:84%
+And so this volume should
+only change a little bit.
+
+01:05:30.490 --> 01:05:32.820 align:middle line:90%
+That's continuity.
+
+01:05:32.820 --> 01:05:34.660 align:middle line:90%
+And why is it antipodal?
+
+01:05:34.660 --> 01:05:39.450 align:middle line:84%
+Well, if I switch
+p to negative p--
+
+01:05:39.450 --> 01:05:40.090 align:middle line:90%
+actually, yeah.
+
+01:05:40.090 --> 01:05:41.030 align:middle line:90%
+Let me put p's here.
+
+01:05:41.030 --> 01:05:46.680 align:middle line:90%
+
+
+01:05:46.680 --> 01:05:49.070 align:middle line:84%
+If I switch p to
+negative p, then it
+
+01:05:49.070 --> 01:05:51.260 align:middle line:90%
+interchanges these two sets.
+
+01:05:51.260 --> 01:05:57.410 align:middle line:84%
+And so it switches
+the sign of fi of p.
+
+01:05:57.410 --> 01:05:59.780 align:middle line:90%
+OK.
+
+01:05:59.780 --> 01:06:01.670 align:middle line:90%
+Cool.
+
+01:06:01.670 --> 01:06:02.610 align:middle line:90%
+All right.
+
+01:06:02.610 --> 01:06:09.200 align:middle line:84%
+And now f is going
+to be f1 up to fn.
+
+01:06:09.200 --> 01:06:11.960 align:middle line:84%
+Now f is a map from
+where to where?
+
+01:06:11.960 --> 01:06:16.890 align:middle line:84%
+f is a map from polynomials
+of degree D on RN,
+
+01:06:16.890 --> 01:06:21.125 align:middle line:90%
+take away zero to RN.
+
+01:06:21.125 --> 01:06:26.540 align:middle line:90%
+
+
+01:06:26.540 --> 01:06:27.305 align:middle line:90%
+Why is that?
+
+01:06:27.305 --> 01:06:30.830 align:middle line:90%
+
+
+01:06:30.830 --> 01:06:32.630 align:middle line:84%
+I was waving my
+hands a little bit
+
+01:06:32.630 --> 01:06:37.100 align:middle line:84%
+when I said that
+fi is continuous
+
+01:06:37.100 --> 01:06:43.400 align:middle line:84%
+and fi is not
+continuous at zero.
+
+01:06:43.400 --> 01:06:47.390 align:middle line:84%
+If the polynomial is zero, then
+both of these sets are empty.
+
+01:06:47.390 --> 01:06:51.460 align:middle line:84%
+So I guess by the definition,
+fi of 0 would be zero.
+
+01:06:51.460 --> 01:06:57.650 align:middle line:84%
+But then if I move p a
+tiny bit so it's not zero,
+
+01:06:57.650 --> 01:07:03.200 align:middle line:84%
+then these sets will appear
+and they take up most of space.
+
+01:07:03.200 --> 01:07:07.120 align:middle line:84%
+So there'll be a jump
+discontinuity in those sets.
+
+01:07:07.120 --> 01:07:08.890 align:middle line:84%
+So the reason we
+had to do this is
+
+01:07:08.890 --> 01:07:12.580 align:middle line:84%
+that fi is only continuous
+on the space of polynomials
+
+01:07:12.580 --> 01:07:13.790 align:middle line:90%
+without zero.
+
+01:07:13.790 --> 01:07:16.000 align:middle line:84%
+So if I take a
+non-zero polynomial
+
+01:07:16.000 --> 01:07:18.072 align:middle line:84%
+and I change the
+coefficients a little bit,
+
+01:07:18.072 --> 01:07:19.905 align:middle line:84%
+then this set will only
+change a little bit.
+
+01:07:19.905 --> 01:07:26.075 align:middle line:90%
+
+
+01:07:26.075 --> 01:07:26.575 align:middle line:90%
+OK.
+
+01:07:26.575 --> 01:07:29.275 align:middle line:90%
+
+
+01:07:29.275 --> 01:07:29.775 align:middle line:90%
+Right.
+
+01:07:29.775 --> 01:07:33.850 align:middle line:90%
+
+
+01:07:33.850 --> 01:07:36.800 align:middle line:84%
+So actually, I should say that
+that's not completely trivial,
+
+01:07:36.800 --> 01:07:38.450 align:middle line:90%
+that fact.
+
+01:07:38.450 --> 01:07:40.125 align:middle line:90%
+It takes a little proving.
+
+01:07:40.125 --> 01:07:47.130 align:middle line:90%
+
+
+01:07:47.130 --> 01:07:51.190 align:middle line:84%
+It's related to the fact that if
+you have a non-zero polynomial,
+
+01:07:51.190 --> 01:07:55.085 align:middle line:84%
+then any of its level sets
+cannot have positive volume.
+
+01:07:55.085 --> 01:07:57.660 align:middle line:90%
+
+
+01:07:57.660 --> 01:08:02.040 align:middle line:84%
+If you have polynomial equals
+3, that defines a hypersurface
+
+01:08:02.040 --> 01:08:04.770 align:middle line:84%
+and it cannot happen that
+that hypersurface has positive
+
+01:08:04.770 --> 01:08:05.785 align:middle line:90%
+volume.
+
+01:08:05.785 --> 01:08:07.410 align:middle line:84%
+That's basically what
+you need to check
+
+01:08:07.410 --> 01:08:08.860 align:middle line:90%
+that this is continuous.
+
+01:08:08.860 --> 01:08:11.610 align:middle line:90%
+
+
+01:08:11.610 --> 01:08:12.756 align:middle line:90%
+OK.
+
+01:08:12.756 --> 01:08:15.100 align:middle line:84%
+So this is a space
+from here to here.
+
+01:08:15.100 --> 01:08:22.050 align:middle line:84%
+And to apply Borsuk-Ulam, I need
+to have a sphere for my domain.
+
+01:08:22.050 --> 01:08:24.779 align:middle line:84%
+So this sphere is
+sitting in here
+
+01:08:24.779 --> 01:08:27.779 align:middle line:84%
+as long as n is strictly
+less than the dimension
+
+01:08:27.779 --> 01:08:30.659 align:middle line:90%
+of this space.
+
+01:08:30.659 --> 01:08:32.576 align:middle line:84%
+This is where we
+use this hypothesis.
+
+01:08:32.576 --> 01:08:39.779 align:middle line:90%
+
+
+01:08:39.779 --> 01:08:40.519 align:middle line:90%
+OK.
+
+01:08:40.519 --> 01:08:43.620 align:middle line:84%
+And then Borsuk-Ulam
+says that zero
+
+01:08:43.620 --> 01:08:46.924 align:middle line:84%
+is in the image of f, which
+is what we're trying to prove.
+
+01:08:46.924 --> 01:09:03.960 align:middle line:90%
+
+
+01:09:03.960 --> 01:09:06.060 align:middle line:90%
+OK.
+
+01:09:06.060 --> 01:09:08.130 align:middle line:90%
+Cool.
+
+01:09:08.130 --> 01:09:08.710 align:middle line:90%
+All right.
+
+01:09:08.710 --> 01:09:10.835 align:middle line:84%
+So we're getting close to
+having a tool that we can
+
+01:09:10.835 --> 01:09:12.960 align:middle line:90%
+use to do this decomposition.
+
+01:09:12.960 --> 01:09:17.170 align:middle line:84%
+Now we have a little technical
+issue or a little mismatch,
+
+01:09:17.170 --> 01:09:21.420 align:middle line:84%
+because what we want is
+to start with a finite set
+
+01:09:21.420 --> 01:09:23.850 align:middle line:84%
+and have a cell decomposition
+that kind of cuts it
+
+01:09:23.850 --> 01:09:27.615 align:middle line:90%
+into even pieces.
+
+01:09:27.615 --> 01:09:29.920 align:middle line:84%
+This proposition
+is about open sets.
+
+01:09:29.920 --> 01:09:32.640 align:middle line:84%
+If we have a bunch of open
+sets, we can simultaneously
+
+01:09:32.640 --> 01:09:34.000 align:middle line:90%
+cut them each in half.
+
+01:09:34.000 --> 01:09:35.910 align:middle line:84%
+So we need a version
+where the open sets
+
+01:09:35.910 --> 01:09:38.220 align:middle line:90%
+are replaced by finite sets.
+
+01:09:38.220 --> 01:09:39.399 align:middle line:90%
+That's not difficult to do.
+
+01:09:39.399 --> 01:09:42.107 align:middle line:90%
+It's just a technical thing.
+
+01:09:42.107 --> 01:09:42.940 align:middle line:90%
+That's how it works.
+
+01:09:42.940 --> 01:10:12.630 align:middle line:90%
+
+
+01:10:12.630 --> 01:10:13.130 align:middle line:90%
+OK.
+
+01:10:13.130 --> 01:10:16.400 align:middle line:90%
+So proposition.
+
+01:10:16.400 --> 01:10:22.110 align:middle line:84%
+If Si contained in R2
+or RN, I guess is OK,
+
+01:10:22.110 --> 01:10:28.430 align:middle line:84%
+our finite sets, i
+equals 1 up to N,
+
+01:10:28.430 --> 01:10:36.200 align:middle line:84%
+and N is less than the
+dimension of poly D of RN,
+
+01:10:36.200 --> 01:10:41.350 align:middle line:84%
+then there exists a non-zero
+polynomial poly D of RN.
+
+01:10:41.350 --> 01:10:46.420 align:middle line:90%
+
+
+01:10:46.420 --> 01:10:48.100 align:middle line:90%
+What does it mean?
+
+01:10:48.100 --> 01:10:53.260 align:middle line:84%
+So in some sense, we'd like this
+polynomial to bisect these sets.
+
+01:10:53.260 --> 01:10:56.080 align:middle line:84%
+But we have to say
+something slightly weaker,
+
+01:10:56.080 --> 01:10:57.430 align:middle line:90%
+and I'll explain why.
+
+01:10:57.430 --> 01:11:03.610 align:middle line:84%
+So that Si intersect p
+positive is less than
+
+01:11:03.610 --> 01:11:08.650 align:middle line:84%
+or equal to Si over
+2 and Si intersect
+
+01:11:08.650 --> 01:11:13.130 align:middle line:84%
+p negative is less
+than Si over 2.
+
+01:11:13.130 --> 01:11:16.723 align:middle line:90%
+
+
+01:11:16.723 --> 01:11:17.630 align:middle line:90%
+OK.
+
+01:11:17.630 --> 01:11:21.110 align:middle line:84%
+So this set could be
+a set of three points.
+
+01:11:21.110 --> 01:11:24.580 align:middle line:84%
+So it's not possible that
+half of them will be positive
+
+01:11:24.580 --> 01:11:26.150 align:middle line:84%
+and half of them
+will be negative.
+
+01:11:26.150 --> 01:11:29.480 align:middle line:84%
+So the best we could hope to
+is that one would be positive,
+
+01:11:29.480 --> 01:11:32.920 align:middle line:84%
+one would be negative,
+and one would be zero.
+
+01:11:32.920 --> 01:11:35.370 align:middle line:90%
+OK.
+
+01:11:35.370 --> 01:11:38.130 align:middle line:90%
+OK.
+
+01:11:38.130 --> 01:11:38.710 align:middle line:90%
+OK.
+
+01:11:38.710 --> 01:11:40.590 align:middle line:90%
+So proof.
+
+01:11:40.590 --> 01:11:42.780 align:middle line:84%
+For any epsilon
+bigger than zero,
+
+01:11:42.780 --> 01:11:49.260 align:middle line:84%
+let's say O epsilon i is the
+epsilon neighborhood of Si.
+
+01:11:49.260 --> 01:11:50.910 align:middle line:90%
+So that's an open set.
+
+01:11:50.910 --> 01:11:56.460 align:middle line:84%
+And so we can apply
+proposition to that set.
+
+01:11:56.460 --> 01:12:04.570 align:middle line:84%
+Apply polynomial ham
+sandwich to O epsilon i.
+
+01:12:04.570 --> 01:12:07.570 align:middle line:84%
+And we output a
+polynomial p epsilon,
+
+01:12:07.570 --> 01:12:11.186 align:middle line:84%
+which is in the unit sphere
+in the space of polynomials.
+
+01:12:11.186 --> 01:12:15.870 align:middle line:90%
+
+
+01:12:15.870 --> 01:12:17.400 align:middle line:90%
+And it bisects.
+
+01:12:17.400 --> 01:12:24.810 align:middle line:84%
+So we know that the
+volume of O epsilon i
+
+01:12:24.810 --> 01:12:28.860 align:middle line:84%
+intersect p bigger
+than zero is half
+
+01:12:28.860 --> 01:12:31.540 align:middle line:90%
+of the volume of O epsilon i.
+
+01:12:31.540 --> 01:12:35.300 align:middle line:90%
+
+
+01:12:35.300 --> 01:12:36.590 align:middle line:90%
+OK.
+
+01:12:36.590 --> 01:12:38.370 align:middle line:84%
+So we have this
+for every epsilon.
+
+01:12:38.370 --> 01:12:40.120 align:middle line:84%
+And now we want to
+take some kind of limit
+
+01:12:40.120 --> 01:12:41.570 align:middle line:90%
+as epsilon goes to zero.
+
+01:12:41.570 --> 01:12:44.040 align:middle line:90%
+And the sphere is compact.
+
+01:12:44.040 --> 01:12:48.860 align:middle line:90%
+So the sphere SN is compact.
+
+01:12:48.860 --> 01:12:54.920 align:middle line:84%
+So we have a
+subsequence p epsilon.
+
+01:12:54.920 --> 01:12:58.490 align:middle line:84%
+Some subsequence of them
+converges to a limit p,
+
+01:12:58.490 --> 01:13:00.940 align:middle line:90%
+which is a polynomial in SN.
+
+01:13:00.940 --> 01:13:07.130 align:middle line:90%
+
+
+01:13:07.130 --> 01:13:07.910 align:middle line:90%
+OK.
+
+01:13:07.910 --> 01:13:10.825 align:middle line:84%
+And the claim is that
+the p does the job.
+
+01:13:10.825 --> 01:13:13.990 align:middle line:90%
+
+
+01:13:13.990 --> 01:13:19.160 align:middle line:84%
+So let's say this is
+the zero set of p.
+
+01:13:19.160 --> 01:13:22.820 align:middle line:84%
+Over here p is positive, and
+down here, p is negative.
+
+01:13:22.820 --> 01:13:28.640 align:middle line:84%
+And suppose a particular Si was
+not split up evenly like this.
+
+01:13:28.640 --> 01:13:30.730 align:middle line:84%
+So more than half of
+that on that side.
+
+01:13:30.730 --> 01:13:34.640 align:middle line:90%
+
+
+01:13:34.640 --> 01:13:35.590 align:middle line:90%
+Here, let me do that.
+
+01:13:35.590 --> 01:13:38.550 align:middle line:90%
+
+
+01:13:38.550 --> 01:13:39.050 align:middle line:90%
+Yeah.
+
+01:13:39.050 --> 01:13:45.200 align:middle line:90%
+
+
+01:13:45.200 --> 01:13:46.100 align:middle line:90%
+There it is.
+
+01:13:46.100 --> 01:13:48.060 align:middle line:90%
+So why can't that happen?
+
+01:13:48.060 --> 01:13:55.130 align:middle line:84%
+Well, think about what p
+epsilon would be doing.
+
+01:13:55.130 --> 01:13:58.165 align:middle line:84%
+So O epsilon i would
+look like this.
+
+01:13:58.165 --> 01:14:04.550 align:middle line:90%
+
+
+01:14:04.550 --> 01:14:06.540 align:middle line:84%
+And what would p
+epsilon look like?
+
+01:14:06.540 --> 01:14:10.640 align:middle line:84%
+Well, it's a little
+perturbation of p.
+
+01:14:10.640 --> 01:14:13.490 align:middle line:90%
+We have some convergence.
+
+01:14:13.490 --> 01:14:17.000 align:middle line:84%
+So that would be the
+zero set of p epsilon.
+
+01:14:17.000 --> 01:14:19.110 align:middle line:90%
+Here is p epsilon is positive.
+
+01:14:19.110 --> 01:14:22.160 align:middle line:90%
+Here is p epsilon is negative.
+
+01:14:22.160 --> 01:14:23.650 align:middle line:90%
+And that violates this.
+
+01:14:23.650 --> 01:14:30.720 align:middle line:90%
+
+
+01:14:30.720 --> 01:14:31.220 align:middle line:90%
+All right.
+
+01:14:31.220 --> 01:14:39.700 align:middle line:84%
+So if Si intersect p is positive
+is strictly greater than 1/2
+
+01:14:39.700 --> 01:14:48.370 align:middle line:84%
+of Si, then we have O epsilon
+i intersect p epsilon positive
+
+01:14:48.370 --> 01:14:53.890 align:middle line:84%
+would be strictly greater
+than 1/2 of O epsilon i
+
+01:14:53.890 --> 01:14:55.184 align:middle line:90%
+contradiction.
+
+01:14:55.184 --> 01:15:00.755 align:middle line:90%
+
+
+01:15:00.755 --> 01:15:01.255 align:middle line:90%
+OK.
+
+01:15:01.255 --> 01:15:05.350 align:middle line:90%
+
+
+01:15:05.350 --> 01:15:05.930 align:middle line:90%
+OK.
+
+01:15:05.930 --> 01:15:08.385 align:middle line:84%
+So now let's prove the
+cell decomposition lemma.
+
+01:15:08.385 --> 01:15:18.820 align:middle line:90%
+
+
+01:15:18.820 --> 01:15:20.650 align:middle line:84%
+So we prove the cell
+decomposition lemma
+
+01:15:20.650 --> 01:15:24.000 align:middle line:84%
+by using the polynomial by using
+this proposition many times.
+
+01:15:24.000 --> 01:15:29.730 align:middle line:90%
+
+
+01:15:29.730 --> 01:15:38.670 align:middle line:84%
+So we have some set
+of points X. And first
+
+01:15:38.670 --> 01:15:46.420 align:middle line:84%
+we use our proposition
+with N equals 1.
+
+01:15:46.420 --> 01:15:50.397 align:middle line:90%
+And so D equals 1.
+
+01:15:50.397 --> 01:15:52.480 align:middle line:84%
+So we're actually an easy
+case of our proposition.
+
+01:15:52.480 --> 01:15:55.450 align:middle line:84%
+We're only bisecting
+this one set of points.
+
+01:15:55.450 --> 01:15:59.460 align:middle line:90%
+So here's p1 equals 0.
+
+01:15:59.460 --> 01:16:05.100 align:middle line:84%
+So the output is a polynomial
+p1 of degree D1 equals 1.
+
+01:16:05.100 --> 01:16:08.100 align:middle line:90%
+And it bisects the set.
+
+01:16:08.100 --> 01:16:15.150 align:middle line:84%
+So we have X plus is the
+set of X and X where p1 of X
+
+01:16:15.150 --> 01:16:19.140 align:middle line:90%
+is positive, et cetera.
+
+01:16:19.140 --> 01:16:20.020 align:middle line:90%
+OK.
+
+01:16:20.020 --> 01:16:23.910 align:middle line:84%
+Then we use our proposition
+with N equals 2,
+
+01:16:23.910 --> 01:16:28.590 align:middle line:84%
+and we get a polynomial
+P2 of degree D2.
+
+01:16:28.590 --> 01:16:31.880 align:middle line:84%
+D2 would probably also
+be 1, but let me just
+
+01:16:31.880 --> 01:16:33.600 align:middle line:90%
+put the general thing.
+
+01:16:33.600 --> 01:16:39.170 align:middle line:84%
+So it would be less
+than our N2 to the 1/2.
+
+01:16:39.170 --> 01:16:46.460 align:middle line:90%
+
+
+01:16:46.460 --> 01:16:48.500 align:middle line:90%
+OK.
+
+01:16:48.500 --> 01:16:54.410 align:middle line:90%
+P2 bisects X plus and X minus.
+
+01:16:54.410 --> 01:16:56.965 align:middle line:90%
+So here's the zero set of P2.
+
+01:16:56.965 --> 01:17:00.560 align:middle line:90%
+
+
+01:17:00.560 --> 01:17:04.880 align:middle line:84%
+And it bisects each half, so now
+I've divided X into quarters.
+
+01:17:04.880 --> 01:17:05.640 align:middle line:90%
+OK.
+
+01:17:05.640 --> 01:17:07.370 align:middle line:90%
+And we keep going.
+
+01:17:07.370 --> 01:17:13.580 align:middle line:84%
+So at step K I use my
+proposition, and I have NK,
+
+01:17:13.580 --> 01:17:19.100 align:middle line:84%
+which is 2 to the K, and
+DK, which is less than NK
+
+01:17:19.100 --> 01:17:20.460 align:middle line:90%
+to the 1/2.
+
+01:17:20.460 --> 01:17:22.390 align:middle line:84%
+So that's like 2
+to the K over 2.
+
+01:17:22.390 --> 01:17:26.150 align:middle line:90%
+
+
+01:17:26.150 --> 01:17:31.300 align:middle line:84%
+I'd output a polynomial
+PK, and it bisects the 2
+
+01:17:31.300 --> 01:17:33.235 align:middle line:90%
+to the K minus 1 previous guys.
+
+01:17:33.235 --> 01:17:34.770 align:middle line:90%
+The 2 to the K previous guys.
+
+01:17:34.770 --> 01:17:41.380 align:middle line:90%
+
+
+01:17:41.380 --> 01:17:42.290 align:middle line:90%
+I'll draw one more.
+
+01:17:42.290 --> 01:17:45.010 align:middle line:84%
+I have four pieces, and
+I find a new polynomial
+
+01:17:45.010 --> 01:17:46.310 align:middle line:90%
+and I bisect all four.
+
+01:17:46.310 --> 01:17:49.720 align:middle line:90%
+
+
+01:17:49.720 --> 01:17:50.700 align:middle line:90%
+OK.
+
+01:17:50.700 --> 01:17:53.260 align:middle line:90%
+So now, when do I stop?
+
+01:17:53.260 --> 01:18:01.180 align:middle line:84%
+I choose the final K. So
+2 to the K is S squared,
+
+01:18:01.180 --> 01:18:05.950 align:middle line:84%
+and that means the final
+DK around 2 to the K over 2
+
+01:18:05.950 --> 01:18:11.890 align:middle line:90%
+is around S. OK.
+
+01:18:11.890 --> 01:18:19.450 align:middle line:84%
+So since I bisect
+at every stage,
+
+01:18:19.450 --> 01:18:24.070 align:middle line:84%
+I get X intersect Oi
+smaller than X over 2
+
+01:18:24.070 --> 01:18:27.980 align:middle line:84%
+to the K, which is
+like X over S squared.
+
+01:18:27.980 --> 01:18:29.235 align:middle line:90%
+So that's my third bullet.
+
+01:18:29.235 --> 01:18:34.600 align:middle line:90%
+
+
+01:18:34.600 --> 01:18:39.520 align:middle line:84%
+So I'm trying to prove
+each cell has only a 1
+
+01:18:39.520 --> 01:18:42.080 align:middle line:84%
+over S squared fraction
+of the original points.
+
+01:18:42.080 --> 01:18:43.040 align:middle line:90%
+We have that.
+
+01:18:43.040 --> 01:18:47.740 align:middle line:84%
+And then I'm trying to think
+about how the lines intersect
+
+01:18:47.740 --> 01:18:49.875 align:middle line:84%
+the cells and how the
+line intersects the walls.
+
+01:18:49.875 --> 01:18:52.780 align:middle line:90%
+
+
+01:18:52.780 --> 01:18:54.950 align:middle line:84%
+So these are the
+different cells.
+
+01:18:54.950 --> 01:18:57.160 align:middle line:90%
+And the red stuff is the walls.
+
+01:18:57.160 --> 01:18:59.070 align:middle line:90%
+So if I draw a line here.
+
+01:18:59.070 --> 01:19:04.825 align:middle line:90%
+
+
+01:19:04.825 --> 01:19:08.620 align:middle line:84%
+The line intersected
+with the wall
+
+01:19:08.620 --> 01:19:15.280 align:middle line:84%
+is smaller than D1 plus
+dot, dot, dot plus DK,
+
+01:19:15.280 --> 01:19:18.850 align:middle line:84%
+because how many times
+does a line intersect
+
+01:19:18.850 --> 01:19:22.140 align:middle line:90%
+the zero set of a polynomial.
+
+01:19:22.140 --> 01:19:23.450 align:middle line:90%
+It's at most the degree.
+
+01:19:23.450 --> 01:19:26.490 align:middle line:90%
+
+
+01:19:26.490 --> 01:19:28.098 align:middle line:90%
+OK.
+
+01:19:28.098 --> 01:19:33.030 align:middle line:84%
+So these degrees are
+bounded by 2 to the k.
+
+01:19:33.030 --> 01:19:33.910 align:middle line:90%
+Over 2.
+
+01:19:33.910 --> 01:19:37.530 align:middle line:90%
+So this is a geometric series.
+
+01:19:37.530 --> 01:19:40.770 align:middle line:84%
+It's bounded by its last
+term 2 to the K over 2,
+
+01:19:40.770 --> 01:19:45.215 align:middle line:84%
+which is around S. So
+that's the second bullet.
+
+01:19:45.215 --> 01:19:47.820 align:middle line:90%
+
+
+01:19:47.820 --> 01:19:51.430 align:middle line:84%
+And every time this line moves
+from one cell to another,
+
+01:19:51.430 --> 01:19:52.660 align:middle line:90%
+it has to cross the wall.
+
+01:19:52.660 --> 01:19:54.690 align:middle line:84%
+So that also bounds
+the number of cells
+
+01:19:54.690 --> 01:19:56.166 align:middle line:90%
+that the line intersects.
+
+01:19:56.166 --> 01:20:02.760 align:middle line:90%
+
+
+01:20:02.760 --> 01:20:07.140 align:middle line:84%
+So that ends the proof or proof
+sketch of the cell decomposition
+
+01:20:07.140 --> 01:20:09.030 align:middle line:90%
+lemma.
+
+01:20:09.030 --> 01:20:11.600 align:middle line:90%
+Any questions or comments?
+
+01:20:11.600 --> 01:20:20.000 align:middle line:90%

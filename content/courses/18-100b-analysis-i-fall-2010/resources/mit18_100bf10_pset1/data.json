@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problems about ordered sets and fields, Rudin.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problems about ordered sets and fields, Rudin.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/de805e384f5ada4ea6f895d74cfda53d_MIT18_100BF10_pset1.pdf",
+  "file_size": 54194,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Assignments",
+  "parent_type": "CourseSection",
+  "parent_uid": "6ac57f27-80f0-7137-088d-250d37c6a15a",
+  "resourcetype": "Document",
+  "title": "Problem Set 1",
+  "uid": "de805e38-4f5a-da4e-a6f8-95d74cfda53d",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

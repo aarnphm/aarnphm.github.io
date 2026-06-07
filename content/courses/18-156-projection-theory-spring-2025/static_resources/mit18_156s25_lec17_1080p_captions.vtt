@@ -1,0 +1,4706 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.992 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.992 --> 00:00:04.482 align:middle line:90%
+[RUSTLING]
+
+00:00:04.482 --> 00:00:07.470 align:middle line:90%
+[CLICKING]
+
+00:00:07.470 --> 00:00:11.287 align:middle line:90%
+
+
+00:00:11.287 --> 00:00:12.120 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:00:12.120 --> 00:00:14.420 align:middle line:84%
+So we're sort of in the
+last part of the class now.
+
+00:00:14.420 --> 00:00:18.920 align:middle line:84%
+And I've been reflecting
+on what to do together.
+
+00:00:18.920 --> 00:00:23.200 align:middle line:84%
+And I asked everybody for
+some input, a little survey
+
+00:00:23.200 --> 00:00:26.540 align:middle line:84%
+about what topics to do
+and how much detail to do.
+
+00:00:26.540 --> 00:00:30.440 align:middle line:84%
+And there was no
+consensus in the survey
+
+00:00:30.440 --> 00:00:34.040 align:middle line:90%
+of what people wanted to do.
+
+00:00:34.040 --> 00:00:37.640 align:middle line:84%
+But I decided I would like
+to do, for a couple of weeks,
+
+00:00:37.640 --> 00:00:41.960 align:middle line:84%
+talk about some applications of
+projection theory in other areas
+
+00:00:41.960 --> 00:00:44.660 align:middle line:84%
+and then, the last
+couple of weeks,
+
+00:00:44.660 --> 00:00:48.600 align:middle line:84%
+try to talk about at least some
+of the main ideas in the proof
+
+00:00:48.600 --> 00:00:49.910 align:middle line:90%
+of the projection theorem.
+
+00:00:49.910 --> 00:00:52.620 align:middle line:90%
+
+
+00:00:52.620 --> 00:00:53.120 align:middle line:90%
+Yeah.
+
+00:00:53.120 --> 00:00:56.720 align:middle line:84%
+- So we recently had been doing
+Bourgain's projection theorem
+
+00:00:56.720 --> 00:00:59.170 align:middle line:84%
+and the Bourgain-Katz-Tao
+projection theorem in finite
+
+00:00:59.170 --> 00:01:00.050 align:middle line:90%
+fields--
+
+00:01:00.050 --> 00:01:04.930 align:middle line:84%
+and so feeling
+that we really had
+
+00:01:04.930 --> 00:01:06.970 align:middle line:84%
+to work pretty hard
+for those things.
+
+00:01:06.970 --> 00:01:09.290 align:middle line:84%
+And it was striking that
+we had to work pretty hard
+
+00:01:09.290 --> 00:01:13.610 align:middle line:84%
+just to get this very
+small improvement.
+
+00:01:13.610 --> 00:01:16.830 align:middle line:84%
+And so in some of what we'll
+do in the rest of the class,
+
+00:01:16.830 --> 00:01:19.613 align:middle line:84%
+I will try to show that
+that small improvement is
+
+00:01:19.613 --> 00:01:20.280 align:middle line:90%
+really valuable.
+
+00:01:20.280 --> 00:01:23.250 align:middle line:90%
+
+
+00:01:23.250 --> 00:01:24.930 align:middle line:90%
+OK.
+
+00:01:24.930 --> 00:01:25.630 align:middle line:90%
+So yeah.
+
+00:01:25.630 --> 00:01:29.470 align:middle line:84%
+So the plan for the rest of the
+class is, for about one week,
+
+00:01:29.470 --> 00:01:31.753 align:middle line:84%
+we'll talk about
+random walks on groups.
+
+00:01:31.753 --> 00:01:33.170 align:middle line:84%
+And then for about
+one week, we'll
+
+00:01:33.170 --> 00:01:36.090 align:middle line:90%
+talk about homogeneous dynamics.
+
+00:01:36.090 --> 00:01:38.650 align:middle line:84%
+And then at the end, we'll
+talk about the sharp projection
+
+00:01:38.650 --> 00:01:40.150 align:middle line:90%
+theorem.
+
+00:01:40.150 --> 00:01:40.650 align:middle line:90%
+OK.
+
+00:01:40.650 --> 00:01:44.290 align:middle line:90%
+
+
+00:01:44.290 --> 00:01:45.290 align:middle line:90%
+Cool.
+
+00:01:45.290 --> 00:01:47.410 align:middle line:84%
+And also, in the
+last few classes,
+
+00:01:47.410 --> 00:01:50.710 align:middle line:84%
+I felt that we were doing
+some very technical things
+
+00:01:50.710 --> 00:01:55.450 align:middle line:84%
+and sometimes a little
+bit of a struggle.
+
+00:01:55.450 --> 00:01:58.030 align:middle line:84%
+So for today, what I
+want to do is to give,
+
+00:01:58.030 --> 00:02:00.860 align:middle line:84%
+I hope, a very friendly
+introduction to random
+
+00:02:00.860 --> 00:02:03.540 align:middle line:84%
+walks on groups
+and then next week,
+
+00:02:03.540 --> 00:02:06.340 align:middle line:84%
+on Tuesday, to explain how
+projection theory helps
+
+00:02:06.340 --> 00:02:09.373 align:middle line:84%
+to figure out some
+interesting things.
+
+00:02:09.373 --> 00:02:09.873 align:middle line:90%
+OK.
+
+00:02:09.873 --> 00:02:19.250 align:middle line:90%
+
+
+00:02:19.250 --> 00:02:20.450 align:middle line:90%
+So I'll talk about.
+
+00:02:20.450 --> 00:02:23.260 align:middle line:90%
+
+
+00:02:23.260 --> 00:02:26.070 align:middle line:90%
+random walks on groups.
+
+00:02:26.070 --> 00:02:32.180 align:middle line:90%
+
+
+00:02:32.180 --> 00:02:32.680 align:middle line:90%
+All right.
+
+00:02:32.680 --> 00:02:37.140 align:middle line:84%
+So suppose that G
+is a finite group.
+
+00:02:37.140 --> 00:02:41.340 align:middle line:84%
+And then mu is a
+probability measure on G.
+
+00:02:41.340 --> 00:02:46.980 align:middle line:84%
+So I'll think of it as
+a function on G which
+
+00:02:46.980 --> 00:02:50.080 align:middle line:90%
+is non-negative and sums to 1.
+
+00:02:50.080 --> 00:02:54.340 align:middle line:90%
+
+
+00:02:54.340 --> 00:02:54.840 align:middle line:90%
+OK.
+
+00:02:54.840 --> 00:02:57.130 align:middle line:84%
+So if you have a probability
+measure like this,
+
+00:02:57.130 --> 00:03:00.490 align:middle line:84%
+you can do a random walk where,
+at each step of the random walk,
+
+00:03:00.490 --> 00:03:03.310 align:middle line:84%
+you pick an element of
+G by this probability,
+
+00:03:03.310 --> 00:03:06.430 align:middle line:84%
+and then you move
+by that element.
+
+00:03:06.430 --> 00:03:08.040 align:middle line:84%
+So here's how the
+random walk works.
+
+00:03:08.040 --> 00:03:13.350 align:middle line:90%
+
+
+00:03:13.350 --> 00:03:18.270 align:middle line:84%
+So you start
+somewhere, say at g0.
+
+00:03:18.270 --> 00:03:27.590 align:middle line:84%
+Then you sample
+a step h from mu.
+
+00:03:27.590 --> 00:03:33.427 align:middle line:84%
+And the next guy,
+g1, is g0 times h.
+
+00:03:33.427 --> 00:03:35.010 align:middle line:84%
+So that's one step
+of the random walk.
+
+00:03:35.010 --> 00:03:36.385 align:middle line:84%
+And then you can
+keep doing this.
+
+00:03:36.385 --> 00:03:41.470 align:middle line:90%
+
+
+00:03:41.470 --> 00:03:42.640 align:middle line:90%
+OK.
+
+00:03:42.640 --> 00:03:47.230 align:middle line:84%
+And so if you do take k
+steps of the random walk,
+
+00:03:47.230 --> 00:03:49.670 align:middle line:84%
+then there will be some
+probability distribution
+
+00:03:49.670 --> 00:03:52.030 align:middle line:84%
+of where you end
+up after k steps.
+
+00:03:52.030 --> 00:03:55.760 align:middle line:84%
+And one main question
+about random walks
+
+00:03:55.760 --> 00:03:59.060 align:middle line:84%
+is, how evenly distributed is
+that probability distribution?
+
+00:03:59.060 --> 00:04:01.720 align:middle line:90%
+
+
+00:04:01.720 --> 00:04:13.320 align:middle line:84%
+So question-- how
+evenly distributed
+
+00:04:13.320 --> 00:04:16.389 align:middle line:84%
+is the random walk
+after k steps?
+
+00:04:16.389 --> 00:04:20.920 align:middle line:90%
+
+
+00:04:20.920 --> 00:04:23.030 align:middle line:84%
+And we'll make this more
+precise in a moment.
+
+00:04:23.030 --> 00:04:26.160 align:middle line:90%
+
+
+00:04:26.160 --> 00:04:27.000 align:middle line:90%
+All right.
+
+00:04:27.000 --> 00:04:35.000 align:middle line:84%
+So it is helpful to describe
+this random walk using
+
+00:04:35.000 --> 00:04:36.020 align:middle line:90%
+convolution.
+
+00:04:36.020 --> 00:04:45.660 align:middle line:90%
+
+
+00:04:45.660 --> 00:04:46.160 align:middle line:90%
+OK.
+
+00:04:46.160 --> 00:04:48.740 align:middle line:84%
+So convolution on a
+group looks like this.
+
+00:04:48.740 --> 00:04:52.080 align:middle line:84%
+We have two functions,
+f1 and f2, on this group.
+
+00:04:52.080 --> 00:04:56.550 align:middle line:84%
+And then if I convolve
+them with each other
+
+00:04:56.550 --> 00:05:00.410 align:middle line:84%
+and I evaluate that
+at g, that's the sum
+
+00:05:00.410 --> 00:05:09.330 align:middle line:84%
+g1 times g2 equals g f of
+g1, f1 of g1, f2 of g2.
+
+00:05:09.330 --> 00:05:11.490 align:middle line:84%
+That's the sum over
+all the g1 and g2
+
+00:05:11.490 --> 00:05:13.630 align:middle line:90%
+that multiply to g of this.
+
+00:05:13.630 --> 00:05:17.330 align:middle line:90%
+
+
+00:05:17.330 --> 00:05:19.495 align:middle line:90%
+OK.
+
+00:05:19.495 --> 00:05:22.850 align:middle line:84%
+And then for mu, we
+can make an operator.
+
+00:05:22.850 --> 00:05:27.250 align:middle line:84%
+And T mu of f is just
+f convolved with mu.
+
+00:05:27.250 --> 00:05:31.850 align:middle line:84%
+And this operator basically
+describes this random walk.
+
+00:05:31.850 --> 00:05:34.130 align:middle line:84%
+So let's say how
+they're related.
+
+00:05:34.130 --> 00:05:37.530 align:middle line:84%
+So suppose I were to
+take T mu and apply it
+
+00:05:37.530 --> 00:05:42.510 align:middle line:84%
+to the delta function at g0
+and evaluate that at some g.
+
+00:05:42.510 --> 00:05:45.970 align:middle line:90%
+
+
+00:05:45.970 --> 00:05:46.470 align:middle line:90%
+OK.
+
+00:05:46.470 --> 00:05:47.970 align:middle line:90%
+So let's see.
+
+00:05:47.970 --> 00:05:51.780 align:middle line:90%
+What's a good way to write this?
+
+00:05:51.780 --> 00:05:55.257 align:middle line:84%
+So that's the sum
+of-- actually, let
+
+00:05:55.257 --> 00:05:56.840 align:middle line:84%
+me look at how I
+wrote it in my notes.
+
+00:05:56.840 --> 00:05:58.632 align:middle line:84%
+I tried writing this
+a few ways, and then I
+
+00:05:58.632 --> 00:06:00.360 align:middle line:84%
+decided there was a
+good way to write it.
+
+00:06:00.360 --> 00:06:03.360 align:middle line:90%
+
+
+00:06:03.360 --> 00:06:04.120 align:middle line:90%
+Yeah.
+
+00:06:04.120 --> 00:06:05.200 align:middle line:90%
+Let's write it this way.
+
+00:06:05.200 --> 00:06:07.820 align:middle line:90%
+
+
+00:06:07.820 --> 00:06:11.940 align:middle line:84%
+So suppose I want to
+evaluate this at g0 times h.
+
+00:06:11.940 --> 00:06:15.740 align:middle line:84%
+So that's the sum
+over g1 times g2
+
+00:06:15.740 --> 00:06:19.900 align:middle line:84%
+equals g0 times h
+of delta function
+
+00:06:19.900 --> 00:06:26.460 align:middle line:90%
+at g0 of g1 times mu of g2.
+
+00:06:26.460 --> 00:06:27.260 align:middle line:90%
+All right.
+
+00:06:27.260 --> 00:06:30.700 align:middle line:84%
+So the only way that this sum
+can be not 0 is if g1 is g0.
+
+00:06:30.700 --> 00:06:33.460 align:middle line:90%
+
+
+00:06:33.460 --> 00:06:36.580 align:middle line:84%
+So there's only one
+term in this sum.
+
+00:06:36.580 --> 00:06:44.980 align:middle line:84%
+That's this g0 times g2
+is g0 times h of mu of g2.
+
+00:06:44.980 --> 00:06:47.640 align:middle line:84%
+There's only one term, and
+it's the term where g2 is h.
+
+00:06:47.640 --> 00:06:52.310 align:middle line:90%
+
+
+00:06:52.310 --> 00:06:53.070 align:middle line:90%
+OK.
+
+00:06:53.070 --> 00:06:56.550 align:middle line:84%
+So this thing is the
+probability distribution
+
+00:06:56.550 --> 00:06:58.210 align:middle line:90%
+of one step of the random walk.
+
+00:06:58.210 --> 00:07:02.310 align:middle line:84%
+The probability if I started at
+g0 that I end up at g0 times h
+
+00:07:02.310 --> 00:07:03.310 align:middle line:90%
+is mu of h.
+
+00:07:03.310 --> 00:07:05.350 align:middle line:84%
+That's the definition
+of my random walk.
+
+00:07:05.350 --> 00:07:09.310 align:middle line:84%
+So this operator is performing
+one step of the random walk.
+
+00:07:09.310 --> 00:07:14.630 align:middle line:84%
+And therefore, if I take
+T mu to the k of delta g0,
+
+00:07:14.630 --> 00:07:20.940 align:middle line:84%
+that's like k steps of the
+random walk, starting at g0.
+
+00:07:20.940 --> 00:07:28.970 align:middle line:90%
+
+
+00:07:28.970 --> 00:07:29.470 align:middle line:90%
+OK.
+
+00:07:29.470 --> 00:07:35.325 align:middle line:90%
+
+
+00:07:35.325 --> 00:07:36.450 align:middle line:90%
+Actually, let me say this--
+
+00:07:36.450 --> 00:07:37.490 align:middle line:90%
+I could say this better.
+
+00:07:37.490 --> 00:07:40.110 align:middle line:90%
+
+
+00:07:40.110 --> 00:07:45.470 align:middle line:84%
+So this is the probability
+that our random walk
+
+00:07:45.470 --> 00:07:50.610 align:middle line:90%
+is at g after k steps.
+
+00:07:50.610 --> 00:07:55.380 align:middle line:90%
+
+
+00:07:55.380 --> 00:07:55.880 align:middle line:90%
+OK.
+
+00:07:55.880 --> 00:07:58.360 align:middle line:84%
+Now we can take this question,
+how evenly distributed
+
+00:07:58.360 --> 00:07:59.420 align:middle line:90%
+is the random walk?
+
+00:07:59.420 --> 00:08:02.000 align:middle line:84%
+We can write that as a
+precise question about this.
+
+00:08:02.000 --> 00:08:03.260 align:middle line:90%
+I'll call it question 1.
+
+00:08:03.260 --> 00:08:05.920 align:middle line:90%
+
+
+00:08:05.920 --> 00:08:14.960 align:middle line:84%
+So I'd like to estimate T
+mu to the k of delta g0.
+
+00:08:14.960 --> 00:08:17.580 align:middle line:84%
+So this is the actual
+probability distribution.
+
+00:08:17.580 --> 00:08:19.840 align:middle line:84%
+And if the probability
+was completely even
+
+00:08:19.840 --> 00:08:23.240 align:middle line:84%
+over the whole group, it would
+be 1 over the size of the group
+
+00:08:23.240 --> 00:08:24.200 align:middle line:90%
+everywhere.
+
+00:08:24.200 --> 00:08:27.840 align:middle line:84%
+So I'm going to see how close
+it is to that by measuring
+
+00:08:27.840 --> 00:08:30.040 align:middle line:90%
+the norm of this difference.
+
+00:08:30.040 --> 00:08:31.720 align:middle line:90%
+So I'd like to estimate that.
+
+00:08:31.720 --> 00:08:32.220 align:middle line:90%
+OK.
+
+00:08:32.220 --> 00:08:36.179 align:middle line:84%
+And L2 is helpful but also
+perhaps a little arbitrary.
+
+00:08:36.179 --> 00:08:39.000 align:middle line:84%
+You could also put other
+norms, so could put
+
+00:08:39.000 --> 00:08:42.340 align:middle line:84%
+or L infinity or
+maybe some other norm.
+
+00:08:42.340 --> 00:08:47.650 align:middle line:90%
+
+
+00:08:47.650 --> 00:08:48.250 align:middle line:90%
+OK.
+
+00:08:48.250 --> 00:08:50.770 align:middle line:84%
+So this is the kind of question
+about random walks on groups
+
+00:08:50.770 --> 00:08:54.610 align:middle line:84%
+that we are going to
+try to understand.
+
+00:08:54.610 --> 00:08:56.010 align:middle line:90%
+All right.
+
+00:08:56.010 --> 00:08:59.330 align:middle line:84%
+So to understand this,
+it is helpful to notice
+
+00:08:59.330 --> 00:09:01.530 align:middle line:90%
+that this is a linear operator.
+
+00:09:01.530 --> 00:09:03.230 align:middle line:90%
+This T mu is a linear operator.
+
+00:09:03.230 --> 00:09:04.730 align:middle line:90%
+It's basically a matrix.
+
+00:09:04.730 --> 00:09:08.670 align:middle line:84%
+And it's helpful to think about
+that in terms of matrix ideas,
+
+00:09:08.670 --> 00:09:11.540 align:middle line:84%
+like the singular values and
+singular vectors of this matrix.
+
+00:09:11.540 --> 00:09:15.370 align:middle line:90%
+
+
+00:09:15.370 --> 00:09:21.490 align:middle line:90%
+So T mu is a linear operator.
+
+00:09:21.490 --> 00:09:26.890 align:middle line:84%
+And we're going to study the
+singular values and singular
+
+00:09:26.890 --> 00:09:32.850 align:middle line:90%
+vectors of T. OK.
+
+00:09:32.850 --> 00:09:40.370 align:middle line:84%
+So there is one simple singular
+value or eigenvalue, I guess,
+
+00:09:40.370 --> 00:09:44.090 align:middle line:90%
+that T mu of 1 is 1.
+
+00:09:44.090 --> 00:09:44.837 align:middle line:90%
+Yeah?
+
+00:09:44.837 --> 00:09:47.420 align:middle line:84%
+AUDIENCE: Are singular values
+and single vectors just the same
+
+00:09:47.420 --> 00:09:51.100 align:middle line:84%
+as eigenvalues and
+eigenvectors [INAUDIBLE]?
+
+00:09:51.100 --> 00:09:54.580 align:middle line:84%
+LAWRENCE GUTH: They
+are closely related.
+
+00:09:54.580 --> 00:09:59.000 align:middle line:84%
+So let me do a quick review of
+singular values and eigenvalues.
+
+00:09:59.000 --> 00:10:05.010 align:middle line:90%
+
+
+00:10:05.010 --> 00:10:05.510 align:middle line:90%
+Right.
+
+00:10:05.510 --> 00:10:09.420 align:middle line:90%
+
+
+00:10:09.420 --> 00:10:12.060 align:middle line:84%
+If you have a
+matrix and you think
+
+00:10:12.060 --> 00:10:15.340 align:middle line:84%
+about what it does
+to the unit ball,
+
+00:10:15.340 --> 00:10:20.980 align:middle line:84%
+it will turn the unit
+ball into an ellipsoid.
+
+00:10:20.980 --> 00:10:24.060 align:middle line:84%
+And the principal
+axes of this ellipsoid
+
+00:10:24.060 --> 00:10:30.718 align:middle line:84%
+are the singular values,
+sigma 1, sigma 2.
+
+00:10:30.718 --> 00:10:34.786 align:middle line:90%
+
+
+00:10:34.786 --> 00:10:35.286 align:middle line:90%
+OK.
+
+00:10:35.286 --> 00:10:46.760 align:middle line:90%
+
+
+00:10:46.760 --> 00:10:49.470 align:middle line:84%
+So if we look at the
+preimages of these things,
+
+00:10:49.470 --> 00:10:50.970 align:middle line:84%
+those will be the
+singular vectors--
+
+00:10:50.970 --> 00:10:54.200 align:middle line:90%
+
+
+00:10:54.200 --> 00:10:55.720 align:middle line:84%
+well, depending on
+the matrix, they
+
+00:10:55.720 --> 00:10:57.840 align:middle line:90%
+could be pointing any which way.
+
+00:10:57.840 --> 00:11:06.160 align:middle line:84%
+But maybe that's
+v2 and that is v1.
+
+00:11:06.160 --> 00:11:06.660 align:middle line:90%
+OK.
+
+00:11:06.660 --> 00:11:09.120 align:middle line:90%
+And they will always be--
+
+00:11:09.120 --> 00:11:25.840 align:middle line:84%
+so we'll have-- so the Vi, or
+orthonormal, and the size of MVi
+
+00:11:25.840 --> 00:11:27.260 align:middle line:90%
+is sigma i.
+
+00:11:27.260 --> 00:11:30.640 align:middle line:90%
+
+
+00:11:30.640 --> 00:11:34.380 align:middle line:84%
+And the MVi are also
+orthonormal also orthogonal.
+
+00:11:34.380 --> 00:11:37.320 align:middle line:90%
+
+
+00:11:37.320 --> 00:11:38.690 align:middle line:90%
+Those are the singular vectors.
+
+00:11:38.690 --> 00:11:43.270 align:middle line:90%
+
+
+00:11:43.270 --> 00:11:43.770 align:middle line:90%
+OK.
+
+00:11:43.770 --> 00:11:47.650 align:middle line:84%
+Now, they are not
+generally eigenvectors,
+
+00:11:47.650 --> 00:11:53.570 align:middle line:84%
+in the sense that MVi will not
+usually be a multiple of Vi.
+
+00:11:53.570 --> 00:11:56.610 align:middle line:84%
+But they are closely
+related to them.
+
+00:11:56.610 --> 00:12:06.990 align:middle line:84%
+The Vi are the eigenvectors of
+M M star-- or M star M, I guess.
+
+00:12:06.990 --> 00:12:09.570 align:middle line:90%
+
+
+00:12:09.570 --> 00:12:17.706 align:middle line:84%
+And the sigma i squared are
+the eigenvalues of M star M
+
+00:12:17.706 --> 00:12:19.840 align:middle line:90%
+equal to lamda i M M star.
+
+00:12:19.840 --> 00:12:27.090 align:middle line:90%
+
+
+00:12:27.090 --> 00:12:31.330 align:middle line:84%
+So in particular, this
+biggest singular vector
+
+00:12:31.330 --> 00:12:36.690 align:middle line:84%
+measures the operator norm
+of the matrix, which is the--
+
+00:12:36.690 --> 00:12:38.810 align:middle line:90%
+so these are ordered like this.
+
+00:12:38.810 --> 00:12:54.824 align:middle line:90%
+And Mv is at most sigma 1 v.
+
+00:12:54.824 --> 00:12:56.152 align:middle line:90%
+OK.
+
+00:12:56.152 --> 00:12:58.340 align:middle line:84%
+So the reason we're talking
+about singular values
+
+00:12:58.340 --> 00:13:01.300 align:middle line:84%
+is, we're going to care
+about stuff like this.
+
+00:13:01.300 --> 00:13:05.520 align:middle line:84%
+And this is naturally
+associated with singular values
+
+00:13:05.520 --> 00:13:06.720 align:middle line:90%
+if M is not symmetric.
+
+00:13:06.720 --> 00:13:09.280 align:middle line:84%
+It's not necessarily the same
+as talking about eigenvalues.
+
+00:13:09.280 --> 00:13:20.620 align:middle line:90%
+
+
+00:13:20.620 --> 00:13:21.120 align:middle line:90%
+OK.
+
+00:13:21.120 --> 00:13:23.780 align:middle line:84%
+So if we take this
+T mu of the function
+
+00:13:23.780 --> 00:13:26.620 align:middle line:84%
+1, the constant function,
+we will just get 1.
+
+00:13:26.620 --> 00:13:31.260 align:middle line:84%
+Because this T mu is like
+an averaging operator.
+
+00:13:31.260 --> 00:13:34.540 align:middle line:84%
+We're averaging T--
+so T mu of f at g
+
+00:13:34.540 --> 00:13:39.870 align:middle line:84%
+is the average value of g at
+some other places around g
+
+00:13:39.870 --> 00:13:41.670 align:middle line:90%
+that are dictated by mu.
+
+00:13:41.670 --> 00:13:43.210 align:middle line:90%
+So T mu of 1 is 1.
+
+00:13:43.210 --> 00:13:50.110 align:middle line:90%
+
+
+00:13:50.110 --> 00:13:54.350 align:middle line:90%
+So that implies that the--
+
+00:13:54.350 --> 00:13:54.850 align:middle line:90%
+OK.
+
+00:13:54.850 --> 00:13:58.430 align:middle line:90%
+So I'll do a little lemma.
+
+00:13:58.430 --> 00:13:59.990 align:middle line:90%
+The largest singular value--
+
+00:13:59.990 --> 00:14:04.750 align:middle line:90%
+
+
+00:14:04.750 --> 00:14:05.330 align:middle line:90%
+yeah, OK.
+
+00:14:05.330 --> 00:14:07.350 align:middle line:90%
+So little lemma is that.
+
+00:14:07.350 --> 00:14:11.750 align:middle line:84%
+T mu of f in L2 is
+at most f in L2.
+
+00:14:11.750 --> 00:14:17.070 align:middle line:84%
+And this is sharp
+because of this example.
+
+00:14:17.070 --> 00:14:17.870 align:middle line:90%
+It could be equal.
+
+00:14:17.870 --> 00:14:23.370 align:middle line:90%
+
+
+00:14:23.370 --> 00:14:23.870 align:middle line:90%
+OK.
+
+00:14:23.870 --> 00:14:26.190 align:middle line:84%
+So proving this will help
+us think a little bit
+
+00:14:26.190 --> 00:14:28.670 align:middle line:90%
+about what convolution means.
+
+00:14:28.670 --> 00:14:35.490 align:middle line:84%
+So T mu of f is f
+convolved with mu--
+
+00:14:35.490 --> 00:14:38.030 align:middle line:90%
+g here.
+
+00:14:38.030 --> 00:14:46.920 align:middle line:84%
+So that's the sum g1 g2
+equals g f of g1 mu of g2.
+
+00:14:46.920 --> 00:14:49.760 align:middle line:84%
+And I'd like to think of
+this as a sum over g2.
+
+00:14:49.760 --> 00:14:52.360 align:middle line:90%
+So it's the sum over g2.
+
+00:14:52.360 --> 00:14:56.080 align:middle line:84%
+Because I'm thinking of it that
+way, I can bring the mu of g2
+
+00:14:56.080 --> 00:14:57.240 align:middle line:90%
+out front.
+
+00:14:57.240 --> 00:15:01.220 align:middle line:84%
+And then what I have
+left is f of g1,
+
+00:15:01.220 --> 00:15:03.610 align:middle line:90%
+which is g times g2 inverse.
+
+00:15:03.610 --> 00:15:06.480 align:middle line:90%
+
+
+00:15:06.480 --> 00:15:10.640 align:middle line:84%
+And I want to think of this as
+a linear combination of a bunch
+
+00:15:10.640 --> 00:15:14.400 align:middle line:90%
+of different functions of g.
+
+00:15:14.400 --> 00:15:14.900 align:middle line:90%
+OK.
+
+00:15:14.900 --> 00:15:16.240 align:middle line:90%
+Let's give them a name.
+
+00:15:16.240 --> 00:15:19.520 align:middle line:84%
+So this function
+of g is sort of f.
+
+00:15:19.520 --> 00:15:21.260 align:middle line:90%
+But we first did this thing.
+
+00:15:21.260 --> 00:15:23.200 align:middle line:84%
+And I want you to
+think of it as taking f
+
+00:15:23.200 --> 00:15:26.400 align:middle line:84%
+and then shifting
+it using the group.
+
+00:15:26.400 --> 00:15:30.880 align:middle line:84%
+So it's the right
+translation by g2 of f of g
+
+00:15:30.880 --> 00:15:35.160 align:middle line:84%
+is defined to be
+this thing here.
+
+00:15:35.160 --> 00:15:38.450 align:middle line:90%
+So we could plug that in.
+
+00:15:38.450 --> 00:15:43.290 align:middle line:84%
+And this shifting operation
+doesn't change the norm of g.
+
+00:15:43.290 --> 00:15:50.360 align:middle line:84%
+So Rg2 of f in L2 is
+the same as f in L2.
+
+00:15:50.360 --> 00:15:52.090 align:middle line:90%
+Ah, I've been mentioning L2.
+
+00:15:52.090 --> 00:15:55.190 align:middle line:90%
+Yeah, I should say--
+
+00:15:55.190 --> 00:15:55.690 align:middle line:90%
+OK.
+
+00:15:55.690 --> 00:15:56.830 align:middle line:90%
+Let me pause for a second.
+
+00:15:56.830 --> 00:15:58.420 align:middle line:84%
+I should have said
+something before.
+
+00:15:58.420 --> 00:16:04.290 align:middle line:90%
+
+
+00:16:04.290 --> 00:16:05.890 align:middle line:84%
+So when we have
+these functions on g,
+
+00:16:05.890 --> 00:16:08.610 align:middle line:84%
+we're going to
+measure their norm.
+
+00:16:08.610 --> 00:16:15.823 align:middle line:84%
+And if I have f L2 of g, this
+is going to be sum g of g?
+
+00:16:15.823 --> 00:16:20.090 align:middle line:90%
+F of g squared to the 1/2.
+
+00:16:20.090 --> 00:16:22.170 align:middle line:90%
+Or I could take inner product.
+
+00:16:22.170 --> 00:16:28.570 align:middle line:84%
+The inner product of f1
+and f2 is the sum g of G f1
+
+00:16:28.570 --> 00:16:31.630 align:middle line:90%
+of g, f2 of g to that.
+
+00:16:31.630 --> 00:16:33.650 align:middle line:84%
+So the functions on
+G are a Hilbert space
+
+00:16:33.650 --> 00:16:35.460 align:middle line:90%
+with this natural measure.
+
+00:16:35.460 --> 00:16:36.240 align:middle line:90%
+OK.
+
+00:16:36.240 --> 00:16:41.740 align:middle line:84%
+So then if I take a function
+and I translate it or do
+
+00:16:41.740 --> 00:16:44.960 align:middle line:84%
+this right translation,
+that just permutes the value
+
+00:16:44.960 --> 00:16:46.860 align:middle line:90%
+so it doesn't change this thing.
+
+00:16:46.860 --> 00:16:47.860 align:middle line:90%
+OK.
+
+00:16:47.860 --> 00:16:56.850 align:middle line:84%
+So now if we look at our
+T mu of f, I have this--
+
+00:16:56.850 --> 00:17:00.520 align:middle line:90%
+
+
+00:17:00.520 --> 00:17:01.020 align:middle line:90%
+yeah.
+
+00:17:01.020 --> 00:17:14.780 align:middle line:84%
+So actually, if I'm interested
+in the norm of T mu of f,
+
+00:17:14.780 --> 00:17:24.060 align:middle line:84%
+this is the norm of the sum
+on g2 mu of g2 R sub g2 of f.
+
+00:17:24.060 --> 00:17:26.920 align:middle line:84%
+It's a linear combination
+of these functions,
+
+00:17:26.920 --> 00:17:29.380 align:middle line:90%
+which are all translates of f.
+
+00:17:29.380 --> 00:17:30.760 align:middle line:90%
+And L2 is a norm.
+
+00:17:30.760 --> 00:17:32.600 align:middle line:84%
+It obeys the
+triangle inequality.
+
+00:17:32.600 --> 00:17:40.510 align:middle line:84%
+So this is less than the sum on
+g2, mu of g2, Rg2 of f in L2.
+
+00:17:40.510 --> 00:17:48.810 align:middle line:84%
+All of these have the same
+norm, which is the L2 norm of f
+
+00:17:48.810 --> 00:17:50.630 align:middle line:90%
+And then this adds up to 1.
+
+00:17:50.630 --> 00:17:52.650 align:middle line:84%
+So this is just
+the L2 norm of f.
+
+00:17:52.650 --> 00:17:56.430 align:middle line:90%
+
+
+00:17:56.430 --> 00:17:58.560 align:middle line:90%
+OK.
+
+00:17:58.560 --> 00:18:03.510 align:middle line:84%
+So this is a basic fact
+about averaging operators.
+
+00:18:03.510 --> 00:18:08.230 align:middle line:84%
+And to understand whether the
+random walk is mixing things up,
+
+00:18:08.230 --> 00:18:12.430 align:middle line:84%
+we have to care about how it
+behaves on the space orthogonal
+
+00:18:12.430 --> 00:18:13.510 align:middle line:90%
+to 1.
+
+00:18:13.510 --> 00:18:16.030 align:middle line:84%
+And the first observation is
+that it preserves the space
+
+00:18:16.030 --> 00:18:17.590 align:middle line:90%
+orthogonal to 1.
+
+00:18:17.590 --> 00:18:21.710 align:middle line:84%
+So let's give that space
+a name, say L2 of G 0
+
+00:18:21.710 --> 00:18:30.910 align:middle line:84%
+is the set of f and L2 of g so
+that some g in G of f of g is 0.
+
+00:18:30.910 --> 00:18:32.520 align:middle line:84%
+This is saying that
+f is orthogonal
+
+00:18:32.520 --> 00:18:35.240 align:middle line:90%
+to the constant function.
+
+00:18:35.240 --> 00:18:35.986 align:middle line:90%
+OK.
+
+00:18:35.986 --> 00:18:41.240 align:middle line:84%
+So another simple lemma is
+that our operator T mu actually
+
+00:18:41.240 --> 00:18:45.120 align:middle line:90%
+takes this space to itself.
+
+00:18:45.120 --> 00:18:47.060 align:middle line:84%
+So it takes the constant
+function to itself,
+
+00:18:47.060 --> 00:18:48.600 align:middle line:84%
+and it takes the
+perpendicular space
+
+00:18:48.600 --> 00:18:51.640 align:middle line:84%
+to itself, which will imply
+that the constant function is
+
+00:18:51.640 --> 00:18:55.800 align:middle line:84%
+one of the singular
+vectors of this operator.
+
+00:18:55.800 --> 00:19:07.280 align:middle line:84%
+OK, so proof-- so I want to
+understand the sum g in G T
+
+00:19:07.280 --> 00:19:09.000 align:middle line:90%
+mu f of g.
+
+00:19:09.000 --> 00:19:11.140 align:middle line:84%
+I'm going to imagine that
+the sum of f of g is 0,
+
+00:19:11.140 --> 00:19:13.520 align:middle line:84%
+and I want to see if
+that's still true.
+
+00:19:13.520 --> 00:19:14.400 align:middle line:90%
+All right.
+
+00:19:14.400 --> 00:19:19.000 align:middle line:84%
+So that's the sum g
+in G. Sum g1 times g2
+
+00:19:19.000 --> 00:19:24.360 align:middle line:90%
+equals g, f of g1 mu of g2.
+
+00:19:24.360 --> 00:19:26.760 align:middle line:84%
+And if you think about
+what we're summing over,
+
+00:19:26.760 --> 00:19:30.440 align:middle line:84%
+we're just summing
+over g1 and g2.
+
+00:19:30.440 --> 00:19:37.650 align:middle line:84%
+So this is the sum over g1
+and g2, of f of g1, mu of G2.
+
+00:19:37.650 --> 00:19:38.720 align:middle line:90%
+And now that factors.
+
+00:19:38.720 --> 00:19:47.770 align:middle line:90%
+
+
+00:19:47.770 --> 00:19:48.910 align:middle line:90%
+So this is 1.
+
+00:19:48.910 --> 00:19:51.520 align:middle line:84%
+And if f was in L2 of
+G 0, this would be 0.
+
+00:19:51.520 --> 00:19:56.250 align:middle line:90%
+
+
+00:19:56.250 --> 00:19:59.130 align:middle line:90%
+This is 0.
+
+00:19:59.130 --> 00:20:04.650 align:middle line:84%
+So if f is in L2 of G 0, then
+so T mu of f will be also.
+
+00:20:04.650 --> 00:20:05.510 align:middle line:90%
+OK, cool.
+
+00:20:05.510 --> 00:20:31.300 align:middle line:90%
+
+
+00:20:31.300 --> 00:20:32.140 align:middle line:90%
+All right.
+
+00:20:32.140 --> 00:20:38.780 align:middle line:84%
+So we've seen that
+T mu of 1 is 1.
+
+00:20:38.780 --> 00:20:43.820 align:middle line:84%
+And T mu takes L2
+of G 0 to itself.
+
+00:20:43.820 --> 00:20:46.940 align:middle line:84%
+So this is the largest
+singular value.
+
+00:20:46.940 --> 00:20:47.760 align:middle line:90%
+So we've seen it.
+
+00:20:47.760 --> 00:20:50.900 align:middle line:84%
+And then here, there's
+something else.
+
+00:20:50.900 --> 00:20:54.580 align:middle line:90%
+So let's say sigma 1 of mu--
+
+00:20:54.580 --> 00:20:56.420 align:middle line:90%
+so this is 1.
+
+00:20:56.420 --> 00:20:58.860 align:middle line:90%
+I'll call it sigma 0 of T mu.
+
+00:20:58.860 --> 00:21:01.040 align:middle line:84%
+Somehow, in this setting,
+the 1 is trivial.
+
+00:21:01.040 --> 00:21:03.180 align:middle line:84%
+And everything else will
+depend on the trace of mu.
+
+00:21:03.180 --> 00:21:10.870 align:middle line:84%
+So sigma 1 of T mu is the
+largest singular value
+
+00:21:10.870 --> 00:21:14.460 align:middle line:90%
+of this part.
+
+00:21:14.460 --> 00:21:16.180 align:middle line:90%
+OK.
+
+00:21:16.180 --> 00:21:17.420 align:middle line:90%
+All right.
+
+00:21:17.420 --> 00:21:25.620 align:middle line:84%
+So question 2 is going to
+be to estimate sigma 1 of t.
+
+00:21:25.620 --> 00:21:28.870 align:middle line:84%
+And these two questions
+are related to each other.
+
+00:21:28.870 --> 00:21:33.830 align:middle line:84%
+This thing helps
+to understand how--
+
+00:21:33.830 --> 00:21:36.530 align:middle line:84%
+it helps a lot to understand
+how this operator behaves
+
+00:21:36.530 --> 00:21:39.030 align:middle line:90%
+and to answer question 1.
+
+00:21:39.030 --> 00:21:41.990 align:middle line:84%
+So let me put up a simple
+proposition, how question 2 is
+
+00:21:41.990 --> 00:21:44.550 align:middle line:90%
+related to question 1.
+
+00:21:44.550 --> 00:21:50.710 align:middle line:84%
+So proposition-- if you look at
+that thing, T mu to the k delta
+
+00:21:50.710 --> 00:21:55.030 align:middle line:84%
+function of g0 minus
+1 over G in L2,
+
+00:21:55.030 --> 00:22:00.890 align:middle line:84%
+this is bounded by sigma
+1 of T mu to the k.
+
+00:22:00.890 --> 00:22:04.310 align:middle line:90%
+
+
+00:22:04.310 --> 00:22:09.910 align:middle line:84%
+OK, so proof-- so we want
+to see what T mu to the k
+
+00:22:09.910 --> 00:22:13.350 align:middle line:84%
+does to a delta
+function at a point.
+
+00:22:13.350 --> 00:22:15.910 align:middle line:84%
+Let's take this delta
+function at a point.
+
+00:22:15.910 --> 00:22:19.070 align:middle line:90%
+And T mu splits up.
+
+00:22:19.070 --> 00:22:21.470 align:middle line:84%
+The constant function is
+an eigenfunction and then
+
+00:22:21.470 --> 00:22:23.510 align:middle line:90%
+the things with mean 0.
+
+00:22:23.510 --> 00:22:26.560 align:middle line:84%
+So let's split up
+this delta function.
+
+00:22:26.560 --> 00:22:31.760 align:middle line:84%
+So the constant part
+of it is like this.
+
+00:22:31.760 --> 00:22:36.480 align:middle line:90%
+And then we have this.
+
+00:22:36.480 --> 00:22:38.520 align:middle line:84%
+So the reason we
+split it up that way
+
+00:22:38.520 --> 00:22:41.640 align:middle line:84%
+is that this part, which in
+the beginning of the class,
+
+00:22:41.640 --> 00:22:45.160 align:middle line:84%
+we would have called
+the high part of this--
+
+00:22:45.160 --> 00:22:47.480 align:middle line:90%
+so I guess I'll do that.
+
+00:22:47.480 --> 00:22:51.360 align:middle line:90%
+That's in L2 of G 0.
+
+00:22:51.360 --> 00:22:52.920 align:middle line:90%
+The 0 part.
+
+00:22:52.920 --> 00:22:53.420 align:middle line:90%
+OK.
+
+00:22:53.420 --> 00:22:55.760 align:middle line:84%
+Now what happens when
+we apply this operator?
+
+00:22:55.760 --> 00:23:00.240 align:middle line:84%
+Well, this operator takes
+constants to constants.
+
+00:23:00.240 --> 00:23:03.600 align:middle line:84%
+It's the identity on
+the constant part.
+
+00:23:03.600 --> 00:23:10.080 align:middle line:84%
+And so if I take T
+mu to the k delta g0,
+
+00:23:10.080 --> 00:23:14.560 align:middle line:84%
+this part will stay
+1 over G inside.
+
+00:23:14.560 --> 00:23:15.780 align:middle line:90%
+I'll take the left-hand side.
+
+00:23:15.780 --> 00:23:17.900 align:middle line:84%
+And then if I subtract
+that, it will disappear.
+
+00:23:17.900 --> 00:23:19.840 align:middle line:84%
+So what I'll be
+left with is T mu
+
+00:23:19.840 --> 00:23:27.630 align:middle line:84%
+to the k on this high
+part of the delta g0.
+
+00:23:27.630 --> 00:23:28.130 align:middle line:90%
+OK.
+
+00:23:28.130 --> 00:23:29.230 align:middle line:90%
+How big is that?
+
+00:23:29.230 --> 00:23:32.050 align:middle line:84%
+Well, this part
+lives in this space.
+
+00:23:32.050 --> 00:23:36.560 align:middle line:84%
+So we can bound the size of this
+thing using the singular vector.
+
+00:23:36.560 --> 00:23:41.610 align:middle line:90%
+
+
+00:23:41.610 --> 00:23:50.650 align:middle line:84%
+So we get T mu to the
+k of delta g0 high to--
+
+00:23:50.650 --> 00:24:01.480 align:middle line:84%
+that's bounded by sigma 1 of T
+mu to k times delta g0 high L2.
+
+00:24:01.480 --> 00:24:07.050 align:middle line:90%
+
+
+00:24:07.050 --> 00:24:07.550 align:middle line:90%
+OK.
+
+00:24:07.550 --> 00:24:10.090 align:middle line:84%
+And now it's also now
+straightforward to check
+
+00:24:10.090 --> 00:24:11.550 align:middle line:90%
+that this is smaller than 1.
+
+00:24:11.550 --> 00:24:26.580 align:middle line:90%
+
+
+00:24:26.580 --> 00:24:29.020 align:middle line:90%
+OK.
+
+00:24:29.020 --> 00:24:34.820 align:middle line:90%
+So it's an application.
+
+00:24:34.820 --> 00:24:40.140 align:middle line:84%
+If we were able to arrange
+that sigma 1 of T mu to the k
+
+00:24:40.140 --> 00:24:47.060 align:middle line:84%
+was less than 1 over 100
+times the size of G, then,
+
+00:24:47.060 --> 00:24:50.380 align:middle line:84%
+well, this L2 norm would be less
+than 1 over 100 times the size
+
+00:24:50.380 --> 00:24:51.420 align:middle line:90%
+of G.
+
+00:24:51.420 --> 00:24:53.700 align:middle line:84%
+And so in particular,
+the L infinity norm
+
+00:24:53.700 --> 00:24:57.180 align:middle line:84%
+would be less than 1 over
+100 times the size of G.
+
+00:24:57.180 --> 00:25:02.380 align:middle line:84%
+So then I would say
+that for every G,
+
+00:25:02.380 --> 00:25:09.140 align:middle line:84%
+T mu k delta g0 of g
+minus 1 over the size of g
+
+00:25:09.140 --> 00:25:12.948 align:middle line:84%
+would be smaller than 1 over
+100 times the size of g.
+
+00:25:12.948 --> 00:25:14.740 align:middle line:84%
+That would tell us,
+say, that this function
+
+00:25:14.740 --> 00:25:18.540 align:middle line:84%
+is pretty close to this
+constant function, within 1%.
+
+00:25:18.540 --> 00:25:24.670 align:middle line:84%
+So that random walk would now
+have mixed pretty thoroughly.
+
+00:25:24.670 --> 00:25:25.870 align:middle line:90%
+OK, great.
+
+00:25:25.870 --> 00:25:30.430 align:middle line:84%
+So if we can get our
+hands on sigma 1 of T mu,
+
+00:25:30.430 --> 00:25:34.230 align:middle line:84%
+then we can figure out how
+long it takes this random walk
+
+00:25:34.230 --> 00:25:35.140 align:middle line:90%
+to mix evenly.
+
+00:25:35.140 --> 00:25:39.570 align:middle line:90%
+
+
+00:25:39.570 --> 00:25:40.070 align:middle line:90%
+Cool.
+
+00:25:40.070 --> 00:25:50.750 align:middle line:90%
+
+
+00:25:50.750 --> 00:25:52.710 align:middle line:90%
+OK.
+
+00:25:52.710 --> 00:25:56.070 align:middle line:84%
+So now let me tell you
+an interesting example
+
+00:25:56.070 --> 00:25:58.550 align:middle line:84%
+of a particular group
+and a particular mu
+
+00:25:58.550 --> 00:26:00.490 align:middle line:84%
+where there's a cool
+estimate for this.
+
+00:26:00.490 --> 00:26:23.800 align:middle line:90%
+
+
+00:26:23.800 --> 00:26:26.480 align:middle line:84%
+So we are going
+to mostly focus--
+
+00:26:26.480 --> 00:26:30.390 align:middle line:84%
+or maybe only focus--
+on the group SL2 of Fp--
+
+00:26:30.390 --> 00:26:33.400 align:middle line:90%
+
+
+00:26:33.400 --> 00:26:38.460 align:middle line:84%
+and could pick many different
+measures for a random walk.
+
+00:26:38.460 --> 00:26:40.960 align:middle line:84%
+But one nice one
+which has been studied
+
+00:26:40.960 --> 00:26:46.160 align:middle line:84%
+is to take the set A to
+be-- so, first of all,
+
+00:26:46.160 --> 00:26:49.440 align:middle line:84%
+if A is a subset of g,
+there's a natural measure
+
+00:26:49.440 --> 00:26:52.920 align:middle line:84%
+on A, which is the uniform
+measure, so measure on A,
+
+00:26:52.920 --> 00:26:55.920 align:middle line:84%
+which is 1 over the
+cardinality of A times
+
+00:26:55.920 --> 00:27:02.320 align:middle line:90%
+the sum a in A of delta A.
+
+00:27:02.320 --> 00:27:02.820 align:middle line:90%
+OK.
+
+00:27:02.820 --> 00:27:06.020 align:middle line:84%
+So there's a nice set,
+A, inside of here,
+
+00:27:06.020 --> 00:27:08.290 align:middle line:84%
+which was studied by
+Selberg, A. Selberg.
+
+00:27:08.290 --> 00:27:12.800 align:middle line:90%
+
+
+00:27:12.800 --> 00:27:15.060 align:middle line:84%
+Well, OK, which is relevant
+to a theorem of Selberg.
+
+00:27:15.060 --> 00:27:16.840 align:middle line:90%
+He set his theorem differently.
+
+00:27:16.840 --> 00:27:21.410 align:middle line:90%
+
+
+00:27:21.410 --> 00:27:22.050 align:middle line:90%
+OK.
+
+00:27:22.050 --> 00:27:25.210 align:middle line:84%
+So there are four
+elements in this set.
+
+00:27:25.210 --> 00:27:28.430 align:middle line:84%
+And these are our generators
+of the group SL2 Fp.
+
+00:27:28.430 --> 00:27:29.930 align:middle line:84%
+There are many ways
+you could choose
+
+00:27:29.930 --> 00:27:31.610 align:middle line:84%
+generators for this group,
+but this is probably
+
+00:27:31.610 --> 00:27:32.590 align:middle line:90%
+the simplest way.
+
+00:27:32.590 --> 00:27:36.850 align:middle line:90%
+
+
+00:27:36.850 --> 00:27:37.350 align:middle line:90%
+OK.
+
+00:27:37.350 --> 00:27:39.810 align:middle line:90%
+And now I can state a theorem.
+
+00:27:39.810 --> 00:27:43.690 align:middle line:84%
+So theorem 1 exists
+a positive c--
+
+00:27:43.690 --> 00:27:46.850 align:middle line:84%
+I think 1 over 100
+should be fine--
+
+00:27:46.850 --> 00:27:51.810 align:middle line:84%
+so that for every
+p prime, if you
+
+00:27:51.810 --> 00:27:57.130 align:middle line:90%
+take A Selberg and SL2 of Fp.
+
+00:27:57.130 --> 00:27:59.530 align:middle line:90%
+You make a random walk.
+
+00:27:59.530 --> 00:28:06.210 align:middle line:84%
+So in this setting, let me
+write TA for T sub mu sub A.
+
+00:28:06.210 --> 00:28:11.490 align:middle line:84%
+Then sigma 1 of
+TA is less than 1
+
+00:28:11.490 --> 00:28:14.560 align:middle line:84%
+minus c, so uniformly
+for all primes.
+
+00:28:14.560 --> 00:28:22.780 align:middle line:90%
+
+
+00:28:22.780 --> 00:28:25.140 align:middle line:90%
+So this is, say, 99/100.
+
+00:28:25.140 --> 00:28:30.300 align:middle line:84%
+Then you can just read
+off high powers of this
+
+00:28:30.300 --> 00:28:31.400 align:middle line:90%
+or bounded by something.
+
+00:28:31.400 --> 00:28:34.340 align:middle line:84%
+And you can plug that into
+the discussion over here.
+
+00:28:34.340 --> 00:28:38.220 align:middle line:84%
+So it says that that random
+walk mixes extremely fast.
+
+00:28:38.220 --> 00:28:38.740 align:middle line:90%
+Yeah?
+
+00:28:38.740 --> 00:28:40.420 align:middle line:84%
+AUDIENCE: How does
+sigma 1 behave
+
+00:28:40.420 --> 00:28:42.200 align:middle line:90%
+as you iterate over the primes?
+
+00:28:42.200 --> 00:28:48.100 align:middle line:84%
+Does it converge to sub 1
+minus c or oscillate a lot ?
+
+00:28:48.100 --> 00:28:50.860 align:middle line:84%
+LAWRENCE GUTH: So the question
+is, how does sigma 1 of to
+
+00:28:50.860 --> 00:28:55.780 align:middle line:90%
+behave as the prime varies?
+
+00:28:55.780 --> 00:28:57.850 align:middle line:84%
+I do not know the
+answer to that question.
+
+00:28:57.850 --> 00:29:03.060 align:middle line:90%
+
+
+00:29:03.060 --> 00:29:09.020 align:middle line:84%
+So let me say that this is
+a corollary of a theorem
+
+00:29:09.020 --> 00:29:13.610 align:middle line:90%
+of Selberg from the late '50s.
+
+00:29:13.610 --> 00:29:17.910 align:middle line:90%
+
+
+00:29:17.910 --> 00:29:22.150 align:middle line:84%
+And Selberg's actual theorem
+is about the first eigenvalue
+
+00:29:22.150 --> 00:29:25.990 align:middle line:84%
+of the Laplacian on a
+hyperbolic surface, which
+
+00:29:25.990 --> 00:29:29.270 align:middle line:90%
+is associated to this group.
+
+00:29:29.270 --> 00:29:30.710 align:middle line:90%
+And you can go back and forth.
+
+00:29:30.710 --> 00:29:32.710 align:middle line:84%
+With modern technology,
+it's considered not very
+
+00:29:32.710 --> 00:29:34.950 align:middle line:84%
+difficult to go back and
+forth between a bound
+
+00:29:34.950 --> 00:29:38.513 align:middle line:84%
+for the eigenvalue of the
+surface and a bound here.
+
+00:29:38.513 --> 00:29:39.930 align:middle line:84%
+But when you do
+go back and forth,
+
+00:29:39.930 --> 00:29:43.310 align:middle line:90%
+you will screw up the constants.
+
+00:29:43.310 --> 00:29:47.270 align:middle line:84%
+Selberg's theorem was that the
+first eigenvalue of that surface
+
+00:29:47.270 --> 00:29:50.270 align:middle line:90%
+was at least 3/16.
+
+00:29:50.270 --> 00:29:52.210 align:middle line:84%
+And that's probably
+not the right answer.
+
+00:29:52.210 --> 00:29:55.470 align:middle line:84%
+And he conjectured that
+it should be a quarter.
+
+00:29:55.470 --> 00:29:59.350 align:middle line:84%
+So for his actual problem,
+there is a beautiful conjecture
+
+00:29:59.350 --> 00:30:01.410 align:middle line:84%
+about what happens as
+p goes to infinity,
+
+00:30:01.410 --> 00:30:06.710 align:middle line:84%
+which is that the eigenvalues
+should converge to a quarter.
+
+00:30:06.710 --> 00:30:08.010 align:middle line:90%
+For this, I'm not sure.
+
+00:30:08.010 --> 00:30:13.310 align:middle line:90%
+
+
+00:30:13.310 --> 00:30:14.280 align:middle line:90%
+OK, cool.
+
+00:30:14.280 --> 00:30:17.890 align:middle line:90%
+
+
+00:30:17.890 --> 00:30:19.210 align:middle line:90%
+Cool.
+
+00:30:19.210 --> 00:30:20.170 align:middle line:90%
+OK.
+
+00:30:20.170 --> 00:30:24.650 align:middle line:84%
+So bounds like this are
+also related to expander
+
+00:30:24.650 --> 00:30:27.930 align:middle line:84%
+graphs, isoperimetric
+inequalities in graphs.
+
+00:30:27.930 --> 00:30:30.770 align:middle line:84%
+And I thought I
+would also show that.
+
+00:30:30.770 --> 00:30:33.210 align:middle line:90%
+And so it shows that--
+
+00:30:33.210 --> 00:30:35.430 align:middle line:84%
+well, OK, so let
+me explain that.
+
+00:30:35.430 --> 00:30:39.590 align:middle line:84%
+So if you have a set of
+generators inside of a group,
+
+00:30:39.590 --> 00:30:41.840 align:middle line:84%
+we can use that to make a
+graph called a Cayley graph.
+
+00:30:41.840 --> 00:30:44.490 align:middle line:90%
+
+
+00:30:44.490 --> 00:30:48.850 align:middle line:84%
+And this mixing inequality
+can be thought of
+
+00:30:48.850 --> 00:30:52.020 align:middle line:84%
+or implies some interesting
+geometric features of the graph.
+
+00:30:52.020 --> 00:31:09.970 align:middle line:90%
+
+
+00:31:09.970 --> 00:31:16.450 align:middle line:90%
+So expansion in graphs--
+
+00:31:16.450 --> 00:31:20.493 align:middle line:90%
+
+
+00:31:20.493 --> 00:31:20.993 align:middle line:90%
+OK.
+
+00:31:20.993 --> 00:31:29.860 align:middle line:84%
+So if G is a finite group And
+A is a set of generators--
+
+00:31:29.860 --> 00:31:31.520 align:middle line:84%
+and i guess that
+to have a graph,
+
+00:31:31.520 --> 00:31:35.060 align:middle line:84%
+maybe we should say that is a
+symmetric set of generators.
+
+00:31:35.060 --> 00:31:36.440 align:middle line:84%
+I don't know if
+that's important.
+
+00:31:36.440 --> 00:31:37.280 align:middle line:90%
+Yeah, let's do it.
+
+00:31:37.280 --> 00:31:40.700 align:middle line:90%
+
+
+00:31:40.700 --> 00:31:44.780 align:middle line:84%
+Then we'll have a Cayley
+graph, Cayley graph of G, A--
+
+00:31:44.780 --> 00:31:46.940 align:middle line:90%
+so is a graph.
+
+00:31:46.940 --> 00:31:55.100 align:middle line:84%
+The vertices are g in
+G. And a pair, g1, g2,
+
+00:31:55.100 --> 00:32:05.940 align:middle line:84%
+is an edge if and only if g2
+is g1 times a or vice versa.
+
+00:32:05.940 --> 00:32:09.260 align:middle line:84%
+Yeah, so I guess we
+should have it symmetric.
+
+00:32:09.260 --> 00:32:14.930 align:middle line:84%
+g2 equals g1 times a,
+where a is in A. OK.
+
+00:32:14.930 --> 00:32:16.750 align:middle line:84%
+And the random walk
+we've been imagining
+
+00:32:16.750 --> 00:32:18.870 align:middle line:84%
+is basically the random
+walk on this graph.
+
+00:32:18.870 --> 00:32:20.830 align:middle line:84%
+You start at a vertex,
+and you move randomly
+
+00:32:20.830 --> 00:32:22.770 align:middle line:84%
+to a neighboring
+along the edges.
+
+00:32:22.770 --> 00:32:23.590 align:middle line:90%
+Yeah?
+
+00:32:23.590 --> 00:32:25.870 align:middle line:84%
+AUDIENCE: How do you identify
+SL2 of a finite field
+
+00:32:25.870 --> 00:32:27.100 align:middle line:90%
+with a hyperbolic surface?
+
+00:32:27.100 --> 00:32:29.750 align:middle line:90%
+
+
+00:32:29.750 --> 00:32:32.370 align:middle line:90%
+LAWRENCE GUTH: Yeah, I will--
+
+00:32:32.370 --> 00:32:32.870 align:middle line:90%
+OK.
+
+00:32:32.870 --> 00:32:35.030 align:middle line:84%
+We'll talk about the connection
+to hyperbolic geometry
+
+00:32:35.030 --> 00:32:37.530 align:middle line:84%
+a little later when we talk
+about the proof of this theorem.
+
+00:32:37.530 --> 00:32:40.390 align:middle line:90%
+Let's do it then.
+
+00:32:40.390 --> 00:32:41.240 align:middle line:90%
+Yeah.
+
+00:32:41.240 --> 00:32:41.740 align:middle line:90%
+OK.
+
+00:32:41.740 --> 00:32:45.790 align:middle line:90%
+
+
+00:32:45.790 --> 00:32:47.370 align:middle line:90%
+So that's the Cayley graph.
+
+00:32:47.370 --> 00:32:51.270 align:middle line:90%
+
+
+00:32:51.270 --> 00:32:54.430 align:middle line:84%
+And in this graph, if
+I have subsets S and T
+
+00:32:54.430 --> 00:32:59.630 align:middle line:84%
+inside of the vertices, E of S
+and T, the edges from S to T,
+
+00:32:59.630 --> 00:33:07.550 align:middle line:84%
+that's going to be the set of
+g1, g2 in S cross T so that g1,
+
+00:33:07.550 --> 00:33:10.756 align:middle line:90%
+g2 is an edge--
+
+00:33:10.756 --> 00:33:14.120 align:middle line:90%
+so the set of edges from S to T.
+
+00:33:14.120 --> 00:33:15.106 align:middle line:90%
+OK.
+
+00:33:15.106 --> 00:33:23.540 align:middle line:84%
+So proposition-- if we
+have C G, A, as above,
+
+00:33:23.540 --> 00:33:26.160 align:middle line:84%
+then the number of
+edges from S to S
+
+00:33:26.160 --> 00:33:29.840 align:middle line:84%
+complement-- so S is going to
+be a subset of the vertices.
+
+00:33:29.840 --> 00:33:32.760 align:middle line:84%
+The number of these
+edges is at least 1
+
+00:33:32.760 --> 00:33:42.520 align:middle line:84%
+minus sigma 1 of t A times
+A times S times S complement
+
+00:33:42.520 --> 00:33:46.980 align:middle line:90%
+over G.
+
+00:33:46.980 --> 00:33:47.480 align:middle line:90%
+OK.
+
+00:33:47.480 --> 00:33:51.480 align:middle line:84%
+So let's digest
+this a little bit.
+
+00:33:51.480 --> 00:33:53.840 align:middle line:84%
+So what does this
+expression mean?
+
+00:33:53.840 --> 00:33:59.800 align:middle line:84%
+Well, this is how many
+points there are in the set,
+
+00:33:59.800 --> 00:34:03.422 align:middle line:84%
+S. From each of those points,
+there are A edges coming out.
+
+00:34:03.422 --> 00:34:04.880 align:middle line:84%
+So this is how many
+edges there are
+
+00:34:04.880 --> 00:34:09.690 align:middle line:84%
+that are leaving points of
+S. How many of them do we
+
+00:34:09.690 --> 00:34:11.465 align:middle line:90%
+think end up in S complement?
+
+00:34:11.465 --> 00:34:12.590 align:middle line:90%
+Well, we don't really know.
+
+00:34:12.590 --> 00:34:16.449 align:middle line:84%
+But as a reference point,
+if everything was random,
+
+00:34:16.449 --> 00:34:19.090 align:middle line:84%
+the fraction of edges that
+ended up in S complement
+
+00:34:19.090 --> 00:34:21.969 align:middle line:90%
+might be S complement over G.
+
+00:34:21.969 --> 00:34:24.810 align:middle line:84%
+So this expression here
+would be the typical number
+
+00:34:24.810 --> 00:34:26.969 align:middle line:84%
+of edges from S to
+S complement if we
+
+00:34:26.969 --> 00:34:32.210 align:middle line:84%
+had a random graph where each
+vertex was in this many edges.
+
+00:34:32.210 --> 00:34:32.790 align:middle line:90%
+OK.
+
+00:34:32.790 --> 00:34:35.248 align:middle line:84%
+And then we're going to say
+that the actual number of edges
+
+00:34:35.248 --> 00:34:38.050 align:middle line:84%
+is at least some
+fraction of that.
+
+00:34:38.050 --> 00:34:42.070 align:middle line:84%
+If sigma 1 of TA were 1, this
+would be a trivial inequality,
+
+00:34:42.070 --> 00:34:43.090 align:middle line:90%
+which is bigger than 0.
+
+00:34:43.090 --> 00:34:46.090 align:middle line:84%
+But if sigma 1 is
+smaller than 1,
+
+00:34:46.090 --> 00:34:47.909 align:middle line:84%
+then this is a
+nontrivial inequality.
+
+00:34:47.909 --> 00:34:49.409 align:middle line:84%
+And it says that
+the number of edges
+
+00:34:49.409 --> 00:34:51.710 align:middle line:84%
+is a definite
+fraction of what you
+
+00:34:51.710 --> 00:34:52.960 align:middle line:90%
+would see in the random model.
+
+00:34:52.960 --> 00:34:55.530 align:middle line:90%
+
+
+00:34:55.530 --> 00:34:57.370 align:middle line:90%
+OK.
+
+00:34:57.370 --> 00:35:00.100 align:middle line:84%
+So let's prove this or at
+least give a proof sketch.
+
+00:35:00.100 --> 00:35:02.890 align:middle line:90%
+
+
+00:35:02.890 --> 00:35:07.220 align:middle line:84%
+So the key point is that we can
+describe this quantity using
+
+00:35:07.220 --> 00:35:08.660 align:middle line:90%
+this operator TA.
+
+00:35:08.660 --> 00:35:10.460 align:middle line:84%
+And then it becomes
+not so surprising
+
+00:35:10.460 --> 00:35:13.700 align:middle line:84%
+that the singular value
+of TA is relevant.
+
+00:35:13.700 --> 00:35:15.420 align:middle line:90%
+How do you do it?
+
+00:35:15.420 --> 00:35:20.980 align:middle line:84%
+The number of edges from S to S
+complement is the inner product,
+
+00:35:20.980 --> 00:35:26.300 align:middle line:84%
+is the inner product of TA of
+the characteristic function
+
+00:35:26.300 --> 00:35:30.180 align:middle line:84%
+of S with the characteristic
+function of S complement.
+
+00:35:30.180 --> 00:35:32.480 align:middle line:84%
+And there's a factor
+of A in front.
+
+00:35:32.480 --> 00:35:36.100 align:middle line:84%
+This is a normalization
+if TA had been just--
+
+00:35:36.100 --> 00:35:37.818 align:middle line:90%
+TA is an averaging operator.
+
+00:35:37.818 --> 00:35:39.360 align:middle line:84%
+But we didn't really
+want to average,
+
+00:35:39.360 --> 00:35:40.625 align:middle line:90%
+we wanted to count edges.
+
+00:35:40.625 --> 00:35:41.750 align:middle line:90%
+So there's an extra factor.
+
+00:35:41.750 --> 00:35:51.300 align:middle line:90%
+
+
+00:35:51.300 --> 00:35:52.206 align:middle line:90%
+OK.
+
+00:35:52.206 --> 00:35:54.980 align:middle line:84%
+Does this look
+plausible to people?
+
+00:35:54.980 --> 00:35:57.660 align:middle line:90%
+Should we write this?
+
+00:35:57.660 --> 00:36:00.660 align:middle line:84%
+Let's write this
+out a little bit.
+
+00:36:00.660 --> 00:36:26.200 align:middle line:84%
+So TA 1S of g is 1 over A sum
+of a in A of 1S of g a inverse.
+
+00:36:26.200 --> 00:36:28.830 align:middle line:90%
+
+
+00:36:28.830 --> 00:36:31.530 align:middle line:84%
+So that's the definition
+of the convolution.
+
+00:36:31.530 --> 00:36:40.430 align:middle line:90%
+
+
+00:36:40.430 --> 00:36:43.030 align:middle line:84%
+So then when we take
+this inner product,
+
+00:36:43.030 --> 00:36:57.710 align:middle line:84%
+we're going to have the sum g in
+G 1 over A sum a in A 1S of ga
+
+00:36:57.710 --> 00:37:03.110 align:middle line:90%
+inverse 1S complement of g.
+
+00:37:03.110 --> 00:37:09.540 align:middle line:84%
+So we'll be counting g's
+that are in S complement
+
+00:37:09.540 --> 00:37:14.280 align:middle line:84%
+but g a inverses in S. And
+that's an edge that starts in S
+
+00:37:14.280 --> 00:37:15.954 align:middle line:90%
+and goes to S complement.
+
+00:37:15.954 --> 00:37:18.640 align:middle line:90%
+
+
+00:37:18.640 --> 00:37:22.520 align:middle line:90%
+So S, S complement.
+
+00:37:22.520 --> 00:37:23.840 align:middle line:90%
+Over here, we have g.
+
+00:37:23.840 --> 00:37:26.480 align:middle line:90%
+Over here, we have g a inverse.
+
+00:37:26.480 --> 00:37:28.308 align:middle line:84%
+And those are
+connected by an edge.
+
+00:37:28.308 --> 00:37:29.850 align:middle line:84%
+That's the thing
+that we're counting.
+
+00:37:29.850 --> 00:37:32.720 align:middle line:90%
+
+
+00:37:32.720 --> 00:37:33.360 align:middle line:90%
+OK.
+
+00:37:33.360 --> 00:37:37.298 align:middle line:84%
+This double sum here means
+going through all the edges.
+
+00:37:37.298 --> 00:37:38.840 align:middle line:84%
+But we're only
+counting an edge if it
+
+00:37:38.840 --> 00:37:41.280 align:middle line:90%
+goes from S to S complement.
+
+00:37:41.280 --> 00:37:43.340 align:middle line:84%
+And we have this, which
+we didn't really want,
+
+00:37:43.340 --> 00:37:46.020 align:middle line:84%
+which is why we multiply
+by this over here.
+
+00:37:46.020 --> 00:37:52.600 align:middle line:90%
+
+
+00:37:52.600 --> 00:37:53.520 align:middle line:90%
+OK.
+
+00:37:53.520 --> 00:37:55.240 align:middle line:90%
+Great.
+
+00:37:55.240 --> 00:37:56.020 align:middle line:90%
+OK.
+
+00:37:56.020 --> 00:38:00.320 align:middle line:84%
+So now remember that this
+operator sort of splits.
+
+00:38:00.320 --> 00:38:02.790 align:middle line:84%
+It takes the constant function
+to the constant functions,
+
+00:38:02.790 --> 00:38:05.250 align:middle line:84%
+and it takes the mean 0
+functions to the mean 0
+
+00:38:05.250 --> 00:38:06.150 align:middle line:90%
+functions.
+
+00:38:06.150 --> 00:38:07.930 align:middle line:84%
+So we should split
+everybody in sight
+
+00:38:07.930 --> 00:38:10.310 align:middle line:84%
+into a constant part
+and a mean 0 part.
+
+00:38:10.310 --> 00:38:13.090 align:middle line:90%
+
+
+00:38:13.090 --> 00:38:16.370 align:middle line:90%
+So we split.
+
+00:38:16.370 --> 00:38:20.530 align:middle line:84%
+1S is S over G-- that's
+the constant part--
+
+00:38:20.530 --> 00:38:28.450 align:middle line:84%
+plus 1S minus S over G. So
+this-- so I'll call it 1S high.
+
+00:38:28.450 --> 00:38:31.770 align:middle line:90%
+And it lives in L2 of G0.
+
+00:38:31.770 --> 00:38:32.270 align:middle line:90%
+OK.
+
+00:38:32.270 --> 00:38:34.290 align:middle line:84%
+Do the same thing
+for S complement.
+
+00:38:34.290 --> 00:38:38.650 align:middle line:84%
+So now the number of edges
+from S to S complement,
+
+00:38:38.650 --> 00:38:43.490 align:middle line:90%
+that is A times--
+
+00:38:43.490 --> 00:38:43.990 align:middle line:90%
+OK.
+
+00:38:43.990 --> 00:38:46.150 align:middle line:84%
+We'll have TA of
+the constant parts.
+
+00:38:46.150 --> 00:38:55.650 align:middle line:84%
+So that's S, G, S complement G
+plus A times the high-frequency
+
+00:38:55.650 --> 00:39:05.100 align:middle line:84%
+parts, the mean 0 parts TA of
+1S high 1S complement high.
+
+00:39:05.100 --> 00:39:18.600 align:middle line:90%
+
+
+00:39:18.600 --> 00:39:19.100 align:middle line:90%
+OK.
+
+00:39:19.100 --> 00:39:22.620 align:middle line:90%
+So let's call this 0.
+
+00:39:22.620 --> 00:39:24.780 align:middle line:90%
+And this is the high part.
+
+00:39:24.780 --> 00:39:31.260 align:middle line:84%
+Or let's call this the constant
+part, and this is the high part.
+
+00:39:31.260 --> 00:39:33.640 align:middle line:84%
+So the rest of it is
+just a computation.
+
+00:39:33.640 --> 00:39:35.640 align:middle line:84%
+And I won't do the
+algebra carefully.
+
+00:39:35.640 --> 00:39:37.180 align:middle line:84%
+But if you do the
+constant part, you
+
+00:39:37.180 --> 00:39:43.380 align:middle line:84%
+get this A S S complement over
+G. The constant part exactly
+
+00:39:43.380 --> 00:39:46.700 align:middle line:84%
+tracks what would happen if
+all the edges were random.
+
+00:39:46.700 --> 00:39:49.197 align:middle line:90%
+And then for the high part--
+
+00:39:49.197 --> 00:39:50.780 align:middle line:84%
+of course, we won't
+compute it exactly
+
+00:39:50.780 --> 00:39:53.420 align:middle line:84%
+because we have to know
+what the operator TA is.
+
+00:39:53.420 --> 00:40:01.670 align:middle line:84%
+But we can bound it by the
+norm of TA, the sigma 1 of TA,
+
+00:40:01.670 --> 00:40:12.290 align:middle line:84%
+times 1S high in L2 times
+1S complement high in L2.
+
+00:40:12.290 --> 00:40:12.790 align:middle line:90%
+OK.
+
+00:40:12.790 --> 00:40:15.230 align:middle line:84%
+And then those things are
+straightforward to compute,
+
+00:40:15.230 --> 00:40:16.170 align:middle line:90%
+those L2 norms.
+
+00:40:16.170 --> 00:40:21.310 align:middle line:84%
+And if you compute them,
+you get that this is A--
+
+00:40:21.310 --> 00:40:23.430 align:middle line:90%
+I'll put the sigma 1 out front.
+
+00:40:23.430 --> 00:40:25.110 align:middle line:90%
+And then it's the same thing--
+
+00:40:25.110 --> 00:40:31.710 align:middle line:90%
+A S S complement over G. OK.
+
+00:40:31.710 --> 00:40:34.550 align:middle line:84%
+So the true answer
+is the constant term
+
+00:40:34.550 --> 00:40:36.870 align:middle line:84%
+plus the high term, which
+is like an error term,
+
+00:40:36.870 --> 00:40:39.310 align:middle line:90%
+and whose size is at most this.
+
+00:40:39.310 --> 00:40:42.430 align:middle line:84%
+And if sigma 1 is
+strictly less than 1,
+
+00:40:42.430 --> 00:40:45.410 align:middle line:84%
+then the error term is strictly
+smaller than the constant term.
+
+00:40:45.410 --> 00:40:46.870 align:middle line:90%
+So something will be left over.
+
+00:40:46.870 --> 00:40:48.130 align:middle line:90%
+And that's the inequality.
+
+00:40:48.130 --> 00:40:52.190 align:middle line:90%
+
+
+00:40:52.190 --> 00:40:52.690 align:middle line:90%
+OK.
+
+00:40:52.690 --> 00:40:54.300 align:middle line:90%
+So let me make a little remark.
+
+00:40:54.300 --> 00:40:57.360 align:middle line:90%
+
+
+00:40:57.360 --> 00:41:03.160 align:middle line:84%
+If S is smaller than G
+over 2, then S complement
+
+00:41:03.160 --> 00:41:04.540 align:middle line:90%
+is bigger than G over 2.
+
+00:41:04.540 --> 00:41:06.900 align:middle line:84%
+So this is more or less
+without loss of generality
+
+00:41:06.900 --> 00:41:09.760 align:middle line:84%
+if you switch the roles
+of S and S complement.
+
+00:41:09.760 --> 00:41:11.640 align:middle line:84%
+But it means S
+complement is at least G
+
+00:41:11.640 --> 00:41:15.760 align:middle line:84%
+over 2, which means that this
+whole fraction has order of 1.
+
+00:41:15.760 --> 00:41:20.800 align:middle line:84%
+So then we get that the number
+of edges from S to S complement
+
+00:41:20.800 --> 00:41:28.640 align:middle line:84%
+is at least 1/2 sigma
+1 of TA A times S.
+
+00:41:28.640 --> 00:41:31.880 align:middle line:84%
+So it's at least a
+definite fraction
+
+00:41:31.880 --> 00:41:36.960 align:middle line:84%
+of all of the possible edges
+that it could be leaving us.
+
+00:41:36.960 --> 00:41:37.460 align:middle line:90%
+OK.
+
+00:41:37.460 --> 00:41:41.130 align:middle line:84%
+So this property here is
+called being an expander graph.
+
+00:41:41.130 --> 00:41:43.880 align:middle line:90%
+
+
+00:41:43.880 --> 00:41:48.400 align:middle line:84%
+Because if you take a set that's
+less than half of the graph
+
+00:41:48.400 --> 00:41:51.960 align:middle line:84%
+and then you add to it all of
+the edges that are leaving it,
+
+00:41:51.960 --> 00:41:53.860 align:middle line:84%
+then it will get
+significantly bigger.
+
+00:41:53.860 --> 00:41:54.820 align:middle line:90%
+It will expand.
+
+00:41:54.820 --> 00:41:56.470 align:middle line:84%
+So it's called an
+expander graph.
+
+00:41:56.470 --> 00:42:00.130 align:middle line:90%
+
+
+00:42:00.130 --> 00:42:00.630 align:middle line:90%
+OK.
+
+00:42:00.630 --> 00:42:02.650 align:middle line:90%
+Cool.
+
+00:42:02.650 --> 00:42:10.650 align:middle line:84%
+So this proposition shows that
+if this sigma 1 is strictly less
+
+00:42:10.650 --> 00:42:13.530 align:middle line:84%
+than 1-- it's something
+like in Selberg's theorem--
+
+00:42:13.530 --> 00:42:16.130 align:middle line:84%
+then the edges in the
+graph behave in this way,
+
+00:42:16.130 --> 00:42:19.490 align:middle line:90%
+that it's an expander graph.
+
+00:42:19.490 --> 00:42:20.390 align:middle line:90%
+OK, cool.
+
+00:42:20.390 --> 00:42:23.180 align:middle line:90%
+
+
+00:42:23.180 --> 00:42:24.410 align:middle line:90%
+OK.
+
+00:42:24.410 --> 00:42:26.590 align:middle line:84%
+So Selberg did not state
+his theorem in this way.
+
+00:42:26.590 --> 00:42:28.330 align:middle line:90%
+So this is slightly ahistorical.
+
+00:42:28.330 --> 00:42:30.410 align:middle line:84%
+But Selberg's
+theorem plus things
+
+00:42:30.410 --> 00:42:33.090 align:middle line:84%
+that are not very
+difficult in hindsight
+
+00:42:33.090 --> 00:42:38.090 align:middle line:84%
+show that this Cayley graph of
+SL2 Fp is an expander graph.
+
+00:42:38.090 --> 00:42:40.093 align:middle line:90%
+And it is in a sense the first--
+
+00:42:40.093 --> 00:42:42.010 align:middle line:84%
+Selberg didn't quite say
+this, but in a sense,
+
+00:42:42.010 --> 00:42:46.930 align:middle line:84%
+this was the first proof that
+any graph was an expander graph.
+
+00:42:46.930 --> 00:42:51.710 align:middle line:84%
+Expander graphs were officially
+defined in 1970 by Pinsker
+
+00:42:51.710 --> 00:42:54.170 align:middle line:84%
+and something pretty close
+by Kolmogorov and Barzdin
+
+00:42:54.170 --> 00:42:55.280 align:middle line:90%
+in the '60s.
+
+00:42:55.280 --> 00:42:58.860 align:middle line:84%
+And all of those people
+realized that random graphs
+
+00:42:58.860 --> 00:42:59.990 align:middle line:90%
+were expander graphs.
+
+00:42:59.990 --> 00:43:04.800 align:middle line:90%
+
+
+00:43:04.800 --> 00:43:05.300 align:middle line:90%
+Yeah.
+
+00:43:05.300 --> 00:43:07.420 align:middle line:84%
+So maybe many people have
+seen, but it's really
+
+00:43:07.420 --> 00:43:08.660 align:middle line:90%
+a remarkable thing.
+
+00:43:08.660 --> 00:43:11.660 align:middle line:84%
+So just for comparison,
+like a simple graph that we
+
+00:43:11.660 --> 00:43:15.220 align:middle line:84%
+might think of that we
+can easily visualize
+
+00:43:15.220 --> 00:43:18.180 align:middle line:90%
+would be an n-by-n grid.
+
+00:43:18.180 --> 00:43:20.760 align:middle line:84%
+And that kind of graph is
+not an expander at all.
+
+00:43:20.760 --> 00:43:23.780 align:middle line:84%
+So an n-by-n grid has
+n squared vertices.
+
+00:43:23.780 --> 00:43:26.460 align:middle line:84%
+But you can cut it in
+half with a vertical line,
+
+00:43:26.460 --> 00:43:29.260 align:middle line:90%
+and you only cut n edges.
+
+00:43:29.260 --> 00:43:30.620 align:middle line:90%
+So the number of edges--
+
+00:43:30.620 --> 00:43:33.080 align:middle line:84%
+so S and S complement are
+each about half of the graph.
+
+00:43:33.080 --> 00:43:37.460 align:middle line:84%
+The number of edges between
+them is much smaller than S.
+
+00:43:37.460 --> 00:43:39.080 align:middle line:90%
+So these are very large graphs.
+
+00:43:39.080 --> 00:43:41.220 align:middle line:84%
+But the number of edges
+it takes to cut it in half
+
+00:43:41.220 --> 00:43:43.580 align:middle line:84%
+is comparable to
+all of the edges.
+
+00:43:43.580 --> 00:43:48.020 align:middle line:90%
+And most graphs are like that.
+
+00:43:48.020 --> 00:43:49.700 align:middle line:84%
+But before people
+realized it, it
+
+00:43:49.700 --> 00:43:51.460 align:middle line:84%
+was surprising and
+counterintuitive
+
+00:43:51.460 --> 00:43:53.310 align:middle line:90%
+that any graphs were like that.
+
+00:43:53.310 --> 00:43:56.390 align:middle line:84%
+And it's a very significant
+fact in many domains
+
+00:43:56.390 --> 00:43:57.380 align:middle line:90%
+of math and science.
+
+00:43:57.380 --> 00:44:03.870 align:middle line:90%
+
+
+00:44:03.870 --> 00:44:04.370 align:middle line:90%
+OK.
+
+00:44:04.370 --> 00:44:05.430 align:middle line:90%
+Let me pause there.
+
+00:44:05.430 --> 00:44:08.950 align:middle line:84%
+And questions about
+Selberg's theorem
+
+00:44:08.950 --> 00:44:11.750 align:middle line:84%
+and this setup, mixing
+and expansion and--
+
+00:44:11.750 --> 00:44:19.277 align:middle line:90%
+
+
+00:44:19.277 --> 00:44:21.110 align:middle line:84%
+AUDIENCE: So the point
+of A being generators
+
+00:44:21.110 --> 00:44:23.990 align:middle line:90%
+is just so that it's connected?
+
+00:44:23.990 --> 00:44:26.030 align:middle line:84%
+LAWRENCE GUTH:
+Yes, that's right.
+
+00:44:26.030 --> 00:44:32.250 align:middle line:84%
+So the question is, what is the
+point of A being generators?
+
+00:44:32.250 --> 00:44:38.590 align:middle line:90%
+
+
+00:44:38.590 --> 00:44:42.270 align:middle line:84%
+So if A did not
+generate the group,
+
+00:44:42.270 --> 00:44:44.510 align:middle line:84%
+then this graph would
+be disconnected,
+
+00:44:44.510 --> 00:44:47.670 align:middle line:90%
+and then it wouldn't mix at all.
+
+00:44:47.670 --> 00:44:51.000 align:middle line:90%
+So make a remark--
+
+00:44:51.000 --> 00:44:56.600 align:middle line:84%
+suppose that A is in a
+finite group and that H--
+
+00:44:56.600 --> 00:45:02.560 align:middle line:84%
+so the subgroup
+generated by A is
+
+00:45:02.560 --> 00:45:05.070 align:middle line:90%
+H, which is a proper subgroup.
+
+00:45:05.070 --> 00:45:09.570 align:middle line:90%
+
+
+00:45:09.570 --> 00:45:10.070 align:middle line:90%
+OK.
+
+00:45:10.070 --> 00:45:15.000 align:middle line:84%
+So then if we take
+TA and we apply it
+
+00:45:15.000 --> 00:45:17.720 align:middle line:84%
+to the characteristic
+function of this subgroup,
+
+00:45:17.720 --> 00:45:19.780 align:middle line:84%
+since all of these guys
+are in the subgroup,
+
+00:45:19.780 --> 00:45:21.900 align:middle line:84%
+we would just stay
+in the subgroup.
+
+00:45:21.900 --> 00:45:23.000 align:middle line:90%
+So this would be 1H.
+
+00:45:23.000 --> 00:45:26.120 align:middle line:90%
+
+
+00:45:26.120 --> 00:45:26.620 align:middle line:90%
+OK.
+
+00:45:26.620 --> 00:45:32.200 align:middle line:84%
+And that implies, with a teeny
+bit of work, that sigma 1 of TA
+
+00:45:32.200 --> 00:45:33.060 align:middle line:90%
+would be 1.
+
+00:45:33.060 --> 00:45:35.260 align:middle line:90%
+
+
+00:45:35.260 --> 00:45:35.760 align:middle line:90%
+OK.
+
+00:45:35.760 --> 00:45:37.427 align:middle line:84%
+One thing we could
+see is that no matter
+
+00:45:37.427 --> 00:45:39.100 align:middle line:84%
+how many times we
+repeat this operation,
+
+00:45:39.100 --> 00:45:41.320 align:middle line:84%
+we will never mix
+over the whole group
+
+00:45:41.320 --> 00:45:42.840 align:middle line:84%
+because we'll
+never get out of H.
+
+00:45:42.840 --> 00:45:47.840 align:middle line:84%
+And so based on what we've
+seen before, this should be 1.
+
+00:45:47.840 --> 00:45:49.000 align:middle line:90%
+Yeah?
+
+00:45:49.000 --> 00:45:50.670 align:middle line:90%
+AUDIENCE: Does it make A big--
+
+00:45:50.670 --> 00:45:57.057 align:middle line:84%
+does it just make the graph
+more likely to be expander?
+
+00:45:57.057 --> 00:45:57.890 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:45:57.890 --> 00:45:59.432 align:middle line:84%
+So the question is,
+if we make A big,
+
+00:45:59.432 --> 00:46:04.130 align:middle line:84%
+is the graph more likely
+to be an expander?
+
+00:46:04.130 --> 00:46:05.210 align:middle line:90%
+Perhaps.
+
+00:46:05.210 --> 00:46:09.130 align:middle line:84%
+So we could take A big,
+and then it would--
+
+00:46:09.130 --> 00:46:11.010 align:middle line:90%
+so we're allowed to take A big.
+
+00:46:11.010 --> 00:46:15.230 align:middle line:84%
+And we will talk in a little
+bit about what we can say.
+
+00:46:15.230 --> 00:46:17.250 align:middle line:84%
+If we just know that A
+is big, what does that
+
+00:46:17.250 --> 00:46:19.490 align:middle line:90%
+tell us about sigma of TA?
+
+00:46:19.490 --> 00:46:21.930 align:middle line:90%
+We'll talk about that.
+
+00:46:21.930 --> 00:46:23.850 align:middle line:90%
+All right.
+
+00:46:23.850 --> 00:46:26.370 align:middle line:84%
+So another remark
+I wanted to make
+
+00:46:26.370 --> 00:46:30.170 align:middle line:84%
+is that the first proof of this
+theorem was very difficult.
+
+00:46:30.170 --> 00:46:33.410 align:middle line:84%
+So the first proof
+depended on-- so it
+
+00:46:33.410 --> 00:46:36.550 align:middle line:84%
+had some interesting analysis
+related to hyperbolic geometry.
+
+00:46:36.550 --> 00:46:38.650 align:middle line:84%
+But then it depended on
+the Riemann hypothesis
+
+00:46:38.650 --> 00:46:40.120 align:middle line:90%
+for curves over finite fields.
+
+00:46:40.120 --> 00:46:43.970 align:middle line:90%
+
+
+00:46:43.970 --> 00:46:46.692 align:middle line:84%
+So that's a beautiful
+and important theorem.
+
+00:46:46.692 --> 00:46:48.900 align:middle line:84%
+But if you wanted to include
+the whole proof of that,
+
+00:46:48.900 --> 00:46:50.775 align:middle line:84%
+then the proof of this
+theorem is effectively
+
+00:46:50.775 --> 00:46:54.780 align:middle line:84%
+several hundred pages long and
+has a lot of algebraic geometry.
+
+00:46:54.780 --> 00:47:00.380 align:middle line:84%
+And in around the early 1990s,
+Sarnak and Xue gave a much
+
+00:47:00.380 --> 00:47:07.130 align:middle line:84%
+simpler proof, which is the
+proof that we'll talk about.
+
+00:47:07.130 --> 00:47:18.180 align:middle line:90%
+
+
+00:47:18.180 --> 00:47:18.680 align:middle line:90%
+OK.
+
+00:47:18.680 --> 00:47:20.138 align:middle line:84%
+So in the rest of
+the class, I will
+
+00:47:20.138 --> 00:47:25.420 align:middle line:84%
+start to describe the
+proof by Sarnak and Xue
+
+00:47:25.420 --> 00:47:29.130 align:middle line:84%
+and introduce the
+first key idea.
+
+00:47:29.130 --> 00:47:32.820 align:middle line:90%
+
+
+00:47:32.820 --> 00:47:33.400 align:middle line:90%
+All right.
+
+00:47:33.400 --> 00:47:38.422 align:middle line:90%
+
+
+00:47:38.422 --> 00:47:38.922 align:middle line:90%
+OK.
+
+00:47:38.922 --> 00:47:41.694 align:middle line:90%
+
+
+00:47:41.694 --> 00:47:47.750 align:middle line:84%
+So the first idea, this idea has
+to do with the representation
+
+00:47:47.750 --> 00:47:52.440 align:middle line:90%
+theory of the group SL2 Fp.
+
+00:47:52.440 --> 00:47:54.950 align:middle line:90%
+
+
+00:47:54.950 --> 00:47:59.390 align:middle line:90%
+So proposition-- OK.
+
+00:47:59.390 --> 00:48:04.070 align:middle line:84%
+So if we have a representation--
+so a representation is a group
+
+00:48:04.070 --> 00:48:08.090 align:middle line:84%
+homomorphism to-- it's a
+unitary representation--
+
+00:48:08.090 --> 00:48:12.830 align:middle line:84%
+so to the unitary
+group in d dimensions.
+
+00:48:12.830 --> 00:48:18.730 align:middle line:84%
+So this is a representation,
+meaning a group homomorphism.
+
+00:48:18.730 --> 00:48:25.030 align:middle line:90%
+
+
+00:48:25.030 --> 00:48:25.530 align:middle line:90%
+OK.
+
+00:48:25.530 --> 00:48:28.095 align:middle line:84%
+And so there's the trivial
+representation, where everything
+
+00:48:28.095 --> 00:48:28.970 align:middle line:90%
+goes to the identity.
+
+00:48:28.970 --> 00:48:32.350 align:middle line:84%
+But let me say it is a
+nontrivial representation.
+
+00:48:32.350 --> 00:48:35.630 align:middle line:84%
+Then actually, d
+needs to be quite big.
+
+00:48:35.630 --> 00:48:38.530 align:middle line:90%
+d is at least p plus 1 over 2.
+
+00:48:38.530 --> 00:48:47.040 align:middle line:90%
+
+
+00:48:47.040 --> 00:48:48.937 align:middle line:90%
+OK.
+
+00:48:48.937 --> 00:48:50.520 align:middle line:84%
+So before we prove
+this theorem, let's
+
+00:48:50.520 --> 00:48:52.560 align:middle line:84%
+try to put it in context
+by trying to think
+
+00:48:52.560 --> 00:48:55.680 align:middle line:90%
+about group representations.
+
+00:48:55.680 --> 00:48:58.640 align:middle line:84%
+Where would we find a
+group representation?
+
+00:48:58.640 --> 00:48:59.160 align:middle line:90%
+OK.
+
+00:48:59.160 --> 00:49:02.280 align:middle line:90%
+Well, SL2 Fp acts on itself.
+
+00:49:02.280 --> 00:49:08.200 align:middle line:84%
+So it acts on the space that
+we started with L2 of G.
+
+00:49:08.200 --> 00:49:14.640 align:middle line:84%
+So any group G acts on
+L2 of G by the action
+
+00:49:14.640 --> 00:49:15.780 align:middle line:90%
+that we wrote down.
+
+00:49:15.780 --> 00:49:19.420 align:middle line:84%
+You take a function, and you
+shift the space under it.
+
+00:49:19.420 --> 00:49:19.920 align:middle line:90%
+OK.
+
+00:49:19.920 --> 00:49:21.860 align:middle line:90%
+That action is not trivial.
+
+00:49:21.860 --> 00:49:24.300 align:middle line:84%
+Only the constant
+functions are fixed.
+
+00:49:24.300 --> 00:49:25.880 align:middle line:90%
+So that's a nontrivial action.
+
+00:49:25.880 --> 00:49:29.360 align:middle line:84%
+And the dimension of this
+space is the cardinality of G.
+
+00:49:29.360 --> 00:49:33.560 align:middle line:84%
+So for this group, that
+would be about p cubed.
+
+00:49:33.560 --> 00:49:40.280 align:middle line:84%
+So cardinality of
+SL2 Fp sub f p cubed.
+
+00:49:40.280 --> 00:49:40.780 align:middle line:90%
+OK.
+
+00:49:40.780 --> 00:49:43.480 align:middle line:90%
+
+
+00:49:43.480 --> 00:49:44.280 align:middle line:90%
+What else?
+
+00:49:44.280 --> 00:49:47.660 align:middle line:84%
+Well, if you have
+a subgroup of G--
+
+00:49:47.660 --> 00:49:51.940 align:middle line:90%
+H is a subgroup of G--
+
+00:49:51.940 --> 00:50:01.280 align:middle line:84%
+then G acts on G mod H. And
+so it acts on this as a set.
+
+00:50:01.280 --> 00:50:07.060 align:middle line:84%
+And so it acts on L2 of G mod
+H by a unitary representation.
+
+00:50:07.060 --> 00:50:13.340 align:middle line:84%
+And so the dimension
+of L2 of G mod H
+
+00:50:13.340 --> 00:50:16.100 align:middle line:84%
+is the cardinality
+of G mod H, which
+
+00:50:16.100 --> 00:50:21.540 align:middle line:84%
+is the cardinality of G divided
+by the cardinality of H. OK.
+
+00:50:21.540 --> 00:50:24.680 align:middle line:84%
+So let's think of some
+subgroups of SL2 Fp.
+
+00:50:24.680 --> 00:50:33.100 align:middle line:90%
+
+
+00:50:33.100 --> 00:50:36.010 align:middle line:84%
+I think of-- the diagonal
+subgroup looks like this.
+
+00:50:36.010 --> 00:50:39.040 align:middle line:90%
+
+
+00:50:39.040 --> 00:50:42.870 align:middle line:84%
+And the size of the diagonal
+subgroup is around p.
+
+00:50:42.870 --> 00:50:47.810 align:middle line:84%
+There's the unipotent
+subgroup, looks like this.
+
+00:50:47.810 --> 00:50:51.030 align:middle line:84%
+Size of the unipotent
+subgroup is p.
+
+00:50:51.030 --> 00:50:53.090 align:middle line:84%
+And you could mix
+these together.
+
+00:50:53.090 --> 00:50:55.715 align:middle line:84%
+So there's the upper
+triangular subgroup.
+
+00:50:55.715 --> 00:50:57.090 align:middle line:84%
+But we already
+used the letter u.
+
+00:50:57.090 --> 00:51:00.390 align:middle line:84%
+So I'm going to call
+this B for Borel.
+
+00:51:00.390 --> 00:51:04.910 align:middle line:90%
+So I'll write it a a inverse t.
+
+00:51:04.910 --> 00:51:05.950 align:middle line:90%
+That's a subgroup.
+
+00:51:05.950 --> 00:51:08.110 align:middle line:84%
+And the size of the
+upper triangular subgroup
+
+00:51:08.110 --> 00:51:10.190 align:middle line:90%
+is around p squared.
+
+00:51:10.190 --> 00:51:13.230 align:middle line:84%
+So that's the biggest one that
+we have come up with here.
+
+00:51:13.230 --> 00:51:16.930 align:middle line:90%
+And if you plug this in here--
+
+00:51:16.930 --> 00:51:24.310 align:middle line:84%
+so if you take SL2 Fp
+modulo rho, that's around p.
+
+00:51:24.310 --> 00:51:27.690 align:middle line:84%
+And so this is the right
+order of magnitude.
+
+00:51:27.690 --> 00:51:32.236 align:middle line:90%
+
+
+00:51:32.236 --> 00:51:32.736 align:middle line:90%
+OK.
+
+00:51:32.736 --> 00:51:35.450 align:middle line:84%
+And this is an interesting
+fact about this group,
+
+00:51:35.450 --> 00:51:37.870 align:middle line:84%
+which is extremely different
+from abelian groups.
+
+00:51:37.870 --> 00:51:42.920 align:middle line:84%
+So for an abelian group, every
+irreducible representation
+
+00:51:42.920 --> 00:51:43.980 align:middle line:90%
+is one-dimensional.
+
+00:51:43.980 --> 00:51:47.080 align:middle line:84%
+So there are lots and lots of
+representations where d is 1.
+
+00:51:47.080 --> 00:51:48.360 align:middle line:90%
+But for SL2 Fp.
+
+00:51:48.360 --> 00:51:49.500 align:middle line:90%
+Life is very different.
+
+00:51:49.500 --> 00:51:52.960 align:middle line:84%
+All of them have
+very large dimension.
+
+00:51:52.960 --> 00:51:55.564 align:middle line:90%
+OK.
+
+00:51:55.564 --> 00:51:57.070 align:middle line:90%
+So let's prove this theorem.
+
+00:51:57.070 --> 00:52:01.160 align:middle line:90%
+
+
+00:52:01.160 --> 00:52:03.800 align:middle line:84%
+So I had heard about
+this theorem years ago.
+
+00:52:03.800 --> 00:52:06.000 align:middle line:84%
+And I always assumed that
+to prove this theorem,
+
+00:52:06.000 --> 00:52:08.500 align:middle line:84%
+one had to study a lot
+of representation theory.
+
+00:52:08.500 --> 00:52:10.450 align:middle line:84%
+And I was a little
+intimidated by it.
+
+00:52:10.450 --> 00:52:12.200 align:middle line:84%
+But then I read the
+proof as I was getting
+
+00:52:12.200 --> 00:52:13.300 align:middle line:90%
+ready to teach this class.
+
+00:52:13.300 --> 00:52:15.800 align:middle line:84%
+And actually, it
+doesn't require anything
+
+00:52:15.800 --> 00:52:19.960 align:middle line:84%
+that's outside of a good
+undergraduate algebra
+
+00:52:19.960 --> 00:52:21.592 align:middle line:90%
+curriculum.
+
+00:52:21.592 --> 00:52:22.550 align:middle line:90%
+And it's quite elegant.
+
+00:52:22.550 --> 00:52:28.400 align:middle line:90%
+
+
+00:52:28.400 --> 00:52:29.520 align:middle line:90%
+All right.
+
+00:52:29.520 --> 00:52:30.570 align:middle line:90%
+So here's the proof.
+
+00:52:30.570 --> 00:52:33.680 align:middle line:90%
+
+
+00:52:33.680 --> 00:52:38.400 align:middle line:84%
+So we're going to focus on
+this matrix for a little while
+
+00:52:38.400 --> 00:52:40.810 align:middle line:84%
+and try to figure out what
+the representation does
+
+00:52:40.810 --> 00:52:43.250 align:middle line:90%
+with this matrix.
+
+00:52:43.250 --> 00:52:48.770 align:middle line:84%
+So let's suppose for now
+that rho of this matrix
+
+00:52:48.770 --> 00:52:50.510 align:middle line:90%
+is not just the identity.
+
+00:52:50.510 --> 00:52:55.730 align:middle line:90%
+
+
+00:52:55.730 --> 00:52:59.650 align:middle line:84%
+Actually, let me say it
+in a different order.
+
+00:52:59.650 --> 00:53:04.370 align:middle line:84%
+So u is that matrix and
+v is this matrix, which
+
+00:53:04.370 --> 00:53:06.730 align:middle line:90%
+is very similar to u.
+
+00:53:06.730 --> 00:53:09.510 align:middle line:90%
+And we'll make the remark that--
+
+00:53:09.510 --> 00:53:12.690 align:middle line:84%
+so exercise-- at this point,
+I won't include the details.
+
+00:53:12.690 --> 00:53:17.230 align:middle line:90%
+u and v generate SL2 of Fp.
+
+00:53:17.230 --> 00:53:20.470 align:middle line:90%
+
+
+00:53:20.470 --> 00:53:20.970 align:middle line:90%
+OK.
+
+00:53:20.970 --> 00:53:24.170 align:middle line:84%
+If you play around a little
+bit, you can see this.
+
+00:53:24.170 --> 00:53:24.670 align:middle line:90%
+All right.
+
+00:53:24.670 --> 00:53:26.930 align:middle line:84%
+So therefore, if we have a
+nontrivial representation,
+
+00:53:26.930 --> 00:53:30.050 align:middle line:84%
+these cannot both
+go to the identity.
+
+00:53:30.050 --> 00:53:33.690 align:middle line:90%
+So rho is nontrivial.
+
+00:53:33.690 --> 00:53:38.780 align:middle line:84%
+So either rho of u or row
+of v is not the identity.
+
+00:53:38.780 --> 00:53:40.800 align:middle line:84%
+And u and v are so
+similar to each other,
+
+00:53:40.800 --> 00:53:42.400 align:middle line:84%
+it doesn't really
+matter which one.
+
+00:53:42.400 --> 00:53:46.000 align:middle line:84%
+So I'm going to say, essentially
+without loss of generality,
+
+00:53:46.000 --> 00:53:51.060 align:middle line:90%
+rho of u is not i lamda
+
+00:53:51.060 --> 00:53:51.560 align:middle line:90%
+All right.
+
+00:53:51.560 --> 00:53:53.360 align:middle line:90%
+Now let's think about rho of u.
+
+00:53:53.360 --> 00:54:03.840 align:middle line:90%
+
+
+00:54:03.840 --> 00:54:08.140 align:middle line:84%
+There's something quite special
+about this matrix, which
+
+00:54:08.140 --> 00:54:18.700 align:middle line:84%
+is that it is conjugate
+to powers of itself.
+
+00:54:18.700 --> 00:54:20.540 align:middle line:90%
+Let me write that down.
+
+00:54:20.540 --> 00:54:25.740 align:middle line:84%
+So suppose take a diagonal
+matrix, a, a inverse.
+
+00:54:25.740 --> 00:54:29.180 align:middle line:84%
+And I put this
+matrix in the middle.
+
+00:54:29.180 --> 00:54:30.640 align:middle line:90%
+And then I want to conjugate it.
+
+00:54:30.640 --> 00:54:33.020 align:middle line:84%
+So now I put on the
+other side the inverse.
+
+00:54:33.020 --> 00:54:38.870 align:middle line:84%
+So this is the conjugate
+of my matrix u.
+
+00:54:38.870 --> 00:54:40.870 align:middle line:90%
+OK.
+
+00:54:40.870 --> 00:54:45.270 align:middle line:90%
+So I multiply this by this.
+
+00:54:45.270 --> 00:54:50.670 align:middle line:84%
+I multiply the top row by a and
+the bottom row by a inverse.
+
+00:54:50.670 --> 00:54:55.310 align:middle line:90%
+So I get a a 0 a inverse.
+
+00:54:55.310 --> 00:54:56.770 align:middle line:90%
+And then I still have this guy.
+
+00:54:56.770 --> 00:55:00.510 align:middle line:90%
+
+
+00:55:00.510 --> 00:55:03.310 align:middle line:84%
+Now, when I multiply
+these matrices together,
+
+00:55:03.310 --> 00:55:07.510 align:middle line:84%
+I multiply the left column by
+a inverse and the right column
+
+00:55:07.510 --> 00:55:09.350 align:middle line:90%
+by a.
+
+00:55:09.350 --> 00:55:11.510 align:middle line:90%
+The diagonals cancel.
+
+00:55:11.510 --> 00:55:14.960 align:middle line:90%
+But I get 1 0 1 a squared.
+
+00:55:14.960 --> 00:55:22.910 align:middle line:90%
+
+
+00:55:22.910 --> 00:55:38.440 align:middle line:84%
+OK, so see that u is conjugate
+tp u to the power a squared.
+
+00:55:38.440 --> 00:55:42.110 align:middle line:84%
+And this is for
+any a in F we saw.
+
+00:55:42.110 --> 00:55:52.520 align:middle line:90%
+
+
+00:55:52.520 --> 00:55:54.720 align:middle line:84%
+So that is a special
+and really interesting
+
+00:55:54.720 --> 00:56:00.040 align:middle line:84%
+feature of this
+element of my group.
+
+00:56:00.040 --> 00:56:02.720 align:middle line:84%
+And so now I have
+a representation.
+
+00:56:02.720 --> 00:56:11.320 align:middle line:84%
+And rho of u is conjugate to
+rho of u of a squared, which
+
+00:56:11.320 --> 00:56:14.880 align:middle line:90%
+is rho of u to the a squared.
+
+00:56:14.880 --> 00:56:16.080 align:middle line:90%
+So now I have a matrix.
+
+00:56:16.080 --> 00:56:17.420 align:middle line:90%
+I have a unitary matrix.
+
+00:56:17.420 --> 00:56:21.900 align:middle line:84%
+And it is conjugate to
+a big power of itself.
+
+00:56:21.900 --> 00:56:22.400 align:middle line:90%
+OK.
+
+00:56:22.400 --> 00:56:24.880 align:middle line:84%
+In the world of
+matrices, it's not
+
+00:56:24.880 --> 00:56:27.280 align:middle line:90%
+so easy to get that to happen.
+
+00:56:27.280 --> 00:56:31.040 align:middle line:84%
+So this group has an
+interesting property
+
+00:56:31.040 --> 00:56:35.130 align:middle line:84%
+that has an element which is
+conjugate to many different
+
+00:56:35.130 --> 00:56:37.450 align:middle line:90%
+powers of itself.
+
+00:56:37.450 --> 00:56:40.570 align:middle line:84%
+And in matrices, it's
+not so easy to find
+
+00:56:40.570 --> 00:56:45.050 align:middle line:84%
+a matrix which is conjugate to
+many different powers of itself.
+
+00:56:45.050 --> 00:56:46.050 align:middle line:90%
+Why?
+
+00:56:46.050 --> 00:56:51.080 align:middle line:84%
+Because of how the
+eigenvalues behave.
+
+00:56:51.080 --> 00:56:54.370 align:middle line:90%
+
+
+00:56:54.370 --> 00:56:55.250 align:middle line:90%
+OK.
+
+00:56:55.250 --> 00:56:57.230 align:middle line:84%
+So now let's think
+about eigenvalues.
+
+00:56:57.230 --> 00:57:36.180 align:middle line:90%
+
+
+00:57:36.180 --> 00:57:37.740 align:middle line:90%
+OK.
+
+00:57:37.740 --> 00:57:42.970 align:middle line:84%
+So rho of u is in
+U of d is a matrix.
+
+00:57:42.970 --> 00:57:47.780 align:middle line:90%
+
+
+00:57:47.780 --> 00:57:57.540 align:middle line:84%
+And if rho of u is conjugate
+to rho of u to the a squared,
+
+00:57:57.540 --> 00:58:02.180 align:middle line:84%
+then that tells us that the
+eigenvalues, the spectrum of rho
+
+00:58:02.180 --> 00:58:08.060 align:middle line:84%
+of u is the same as the
+eigenvalues of rho of u
+
+00:58:08.060 --> 00:58:08.990 align:middle line:90%
+to the a squared.
+
+00:58:08.990 --> 00:58:11.500 align:middle line:90%
+
+
+00:58:11.500 --> 00:58:15.100 align:middle line:84%
+Two conjugate matrices
+have the same eigenvalues.
+
+00:58:15.100 --> 00:58:18.940 align:middle line:84%
+But if you take a matrix
+and raise it to a power,
+
+00:58:18.940 --> 00:58:21.580 align:middle line:84%
+the eigenvalues are
+all raised to a power.
+
+00:58:21.580 --> 00:58:27.290 align:middle line:84%
+So this is the eigenvalues
+of rho of u to the a squared.
+
+00:58:27.290 --> 00:58:34.230 align:middle line:90%
+
+
+00:58:34.230 --> 00:58:34.730 align:middle line:90%
+OK.
+
+00:58:34.730 --> 00:58:36.990 align:middle line:84%
+So for instance, you
+could take a to be 2.
+
+00:58:36.990 --> 00:58:40.910 align:middle line:84%
+And it tells if you have
+an eigenvalue of rho of u,
+
+00:58:40.910 --> 00:58:42.950 align:middle line:84%
+you raise it to the fourth
+power, that will also
+
+00:58:42.950 --> 00:58:44.690 align:middle line:90%
+be an eigenvalue of rho of u.
+
+00:58:44.690 --> 00:58:46.830 align:middle line:90%
+And you can keep doing that.
+
+00:58:46.830 --> 00:58:47.790 align:middle line:90%
+And it's not just 4.
+
+00:58:47.790 --> 00:58:49.280 align:middle line:84%
+We have many choices
+for a squared.
+
+00:58:49.280 --> 00:58:52.750 align:middle line:90%
+
+
+00:58:52.750 --> 00:58:53.950 align:middle line:90%
+OK.
+
+00:58:53.950 --> 00:58:56.630 align:middle line:84%
+So let's think about what
+the eigenvalues of rho of u
+
+00:58:56.630 --> 00:58:58.310 align:middle line:90%
+may be like--
+
+00:58:58.310 --> 00:59:04.750 align:middle line:90%
+so eigenvalues of rho of u.
+
+00:59:04.750 --> 00:59:06.970 align:middle line:84%
+So this is an amazing
+fact about them.
+
+00:59:06.970 --> 00:59:08.390 align:middle line:84%
+And there's a more
+pedestrian fact
+
+00:59:08.390 --> 00:59:09.950 align:middle line:90%
+that we should also observe.
+
+00:59:09.950 --> 00:59:14.150 align:middle line:84%
+We know that u to the
+p is the identity.
+
+00:59:14.150 --> 00:59:18.950 align:middle line:84%
+And therefore, rho of u
+to the p is the identity.
+
+00:59:18.950 --> 00:59:24.110 align:middle line:84%
+So then if lambda is an
+eigenvalue of rho of u,
+
+00:59:24.110 --> 00:59:27.690 align:middle line:84%
+then we get that
+lambda to the p is 1.
+
+00:59:27.690 --> 00:59:28.190 align:middle line:90%
+OK.
+
+00:59:28.190 --> 00:59:31.330 align:middle line:84%
+So the eigenvalues of rho of u,
+they're all p-th roots of unity.
+
+00:59:31.330 --> 00:59:38.040 align:middle line:90%
+
+
+00:59:38.040 --> 00:59:39.380 align:middle line:90%
+So we get the following.
+
+00:59:39.380 --> 00:59:45.880 align:middle line:84%
+If lambda is an eigenvalue of
+rho of u, then lambda to the p
+
+00:59:45.880 --> 00:59:50.280 align:middle line:84%
+is 1 and lambda to
+the a squared is also
+
+00:59:50.280 --> 00:59:52.980 align:middle line:90%
+an eigenvalue of rho of u.
+
+00:59:52.980 --> 01:00:01.120 align:middle line:90%
+
+
+01:00:01.120 --> 01:00:02.640 align:middle line:90%
+OK.
+
+01:00:02.640 --> 01:00:07.640 align:middle line:84%
+So since lambda
+to the p is 1, we
+
+01:00:07.640 --> 01:00:09.800 align:middle line:90%
+only care about a squared mod p.
+
+01:00:09.800 --> 01:00:14.080 align:middle line:90%
+So we could put mod p there.
+
+01:00:14.080 --> 01:00:25.720 align:middle line:84%
+And there are p minus 1 over
+2 quadratic residues mod p.
+
+01:00:25.720 --> 01:00:28.610 align:middle line:84%
+So this a squared mod p, it
+could be any quadratic residue
+
+01:00:28.610 --> 01:00:29.190 align:middle line:90%
+mod p.
+
+01:00:29.190 --> 01:00:31.570 align:middle line:84%
+There are p minus
+1 over 2 of them.
+
+01:00:31.570 --> 01:00:33.290 align:middle line:84%
+And if you take a
+p-th root of unity
+
+01:00:33.290 --> 01:00:36.450 align:middle line:84%
+and you raise it to a power
+that's between 1 and p,
+
+01:00:36.450 --> 01:00:38.010 align:middle line:90%
+you'll change it.
+
+01:00:38.010 --> 01:00:39.930 align:middle line:90%
+So lambda is a primitive.
+
+01:00:39.930 --> 01:00:44.090 align:middle line:84%
+So if lambda is
+not 1, then lambda
+
+01:00:44.090 --> 01:00:46.100 align:middle line:84%
+is a primitive
+p-th root of unity.
+
+01:00:46.100 --> 01:00:50.090 align:middle line:90%
+
+
+01:00:50.090 --> 01:00:54.330 align:middle line:84%
+And that tells us that the
+lambda to the a squared mod p
+
+01:00:54.330 --> 01:01:02.870 align:middle line:84%
+are all distinct for the p minus
+1 over 2 quadratic residues.
+
+01:01:02.870 --> 01:01:03.370 align:middle line:90%
+OK.
+
+01:01:03.370 --> 01:01:06.490 align:middle line:84%
+So we now have
+seen that there are
+
+01:01:06.490 --> 01:01:08.970 align:middle line:84%
+an awful lot of different
+eigenvalues, which
+
+01:01:08.970 --> 01:01:12.890 align:middle line:84%
+can only happen if the matrix
+is in a large dimension.
+
+01:01:12.890 --> 01:01:17.390 align:middle line:84%
+So that gives us that d is
+at least p plus 1 over 2.
+
+01:01:17.390 --> 01:01:20.930 align:middle line:90%
+
+
+01:01:20.930 --> 01:01:22.530 align:middle line:90%
+OK.
+
+01:01:22.530 --> 01:01:24.690 align:middle line:84%
+So how do we know
+that rho of you
+
+01:01:24.690 --> 01:01:27.860 align:middle line:90%
+has an eigenvalue that's not 1?
+
+01:01:27.860 --> 01:01:31.860 align:middle line:84%
+Well, if all the eigenvalues
+were 1, then rho of u
+
+01:01:31.860 --> 01:01:34.340 align:middle line:84%
+is conjugate to a matrix
+with 1's on the diagonals
+
+01:01:34.340 --> 01:01:36.445 align:middle line:90%
+and some upper triangular stuff.
+
+01:01:36.445 --> 01:01:37.820 align:middle line:84%
+And if you raise
+that to a power,
+
+01:01:37.820 --> 01:01:40.940 align:middle line:90%
+you'll never get the identity.
+
+01:01:40.940 --> 01:01:42.560 align:middle line:90%
+There's an exercise.
+
+01:01:42.560 --> 01:01:44.860 align:middle line:84%
+So there's a little
+something more to
+
+01:01:44.860 --> 01:01:51.860 align:middle line:84%
+exercise-- if the
+eigenvalues of rho of u
+
+01:01:51.860 --> 01:01:59.660 align:middle line:84%
+are exactly the set 1 and
+rho of u to the p equals 1,
+
+01:01:59.660 --> 01:02:03.300 align:middle line:90%
+then rho of u is the identity.
+
+01:02:03.300 --> 01:02:06.760 align:middle line:90%
+I'll leave the matrix details.
+
+01:02:06.760 --> 01:02:07.260 align:middle line:90%
+Cool.
+
+01:02:07.260 --> 01:02:14.420 align:middle line:90%
+
+
+01:02:14.420 --> 01:02:16.100 align:middle line:90%
+OK.
+
+01:02:16.100 --> 01:02:20.620 align:middle line:84%
+So all the representations
+of SL2 are really big.
+
+01:02:20.620 --> 01:02:23.100 align:middle line:90%
+Why does that matter?
+
+01:02:23.100 --> 01:02:24.770 align:middle line:90%
+Let's do another proposition.
+
+01:02:24.770 --> 01:02:39.350 align:middle line:90%
+
+
+01:02:39.350 --> 01:02:46.930 align:middle line:84%
+So proposition 2-- you
+take sigma 1 of T mu.
+
+01:02:46.930 --> 01:02:52.250 align:middle line:84%
+So mu is a probability
+measure on SL2 Fp.
+
+01:02:52.250 --> 01:02:56.830 align:middle line:90%
+
+
+01:02:56.830 --> 01:03:01.030 align:middle line:84%
+Then sigma 1 of this guy, if
+you square it and you multiply
+
+01:03:01.030 --> 01:03:10.150 align:middle line:84%
+by d plus 1 over 2, that is at
+most the size of SL2 Fp times mu
+
+01:03:10.150 --> 01:03:13.350 align:middle line:90%
+L2 squared.
+
+01:03:13.350 --> 01:03:18.830 align:middle line:84%
+Simplifying the algebra a little
+bit, sigma 1 of T mu squared
+
+01:03:18.830 --> 01:03:23.430 align:middle line:84%
+is smaller than around 1 over
+p squared times mu L2 squared.
+
+01:03:23.430 --> 01:03:29.500 align:middle line:90%
+
+
+01:03:29.500 --> 01:03:30.000 align:middle line:90%
+OK.
+
+01:03:30.000 --> 01:03:34.160 align:middle line:90%
+
+
+01:03:34.160 --> 01:03:35.003 align:middle line:90%
+All right.
+
+01:03:35.003 --> 01:03:37.420 align:middle line:84%
+So we come back to the question
+from earlier in the class.
+
+01:03:37.420 --> 01:03:41.000 align:middle line:84%
+How are singular values
+related to eigenvalues?
+
+01:03:41.000 --> 01:03:52.920 align:middle line:84%
+So sigma i of T mu squared is
+lambda i of T mu T mu star,
+
+01:03:52.920 --> 01:03:57.520 align:middle line:90%
+i-th eigenvalue of this matrix.
+
+01:03:57.520 --> 01:04:02.440 align:middle line:84%
+And the key observation is that
+the eigenspaces of this matrix
+
+01:04:02.440 --> 01:04:04.560 align:middle line:90%
+have a G action on them.
+
+01:04:04.560 --> 01:04:06.960 align:middle line:84%
+And except for the
+constant functions,
+
+01:04:06.960 --> 01:04:10.280 align:middle line:90%
+the eigenspaces are not trivial.
+
+01:04:10.280 --> 01:04:11.140 align:middle line:90%
+There's the key.
+
+01:04:11.140 --> 01:04:14.040 align:middle line:90%
+
+
+01:04:14.040 --> 01:04:23.730 align:middle line:84%
+Eigenspaces of T mu T mu
+star have the G action.
+
+01:04:23.730 --> 01:04:28.190 align:middle line:84%
+And except for the
+constant functions--
+
+01:04:28.190 --> 01:04:31.830 align:middle line:84%
+so the constant functions are an
+eigenspace of T mu, T mu star.
+
+01:04:31.830 --> 01:04:34.360 align:middle line:84%
+But all the other ones,
+it's a nontrivial action.
+
+01:04:34.360 --> 01:04:42.170 align:middle line:90%
+
+
+01:04:42.170 --> 01:04:44.790 align:middle line:84%
+Let's suppose that for a moment
+and see why it's helpful.
+
+01:04:44.790 --> 01:04:46.970 align:middle line:84%
+And then we can think
+more carefully about what
+
+01:04:46.970 --> 01:04:48.630 align:middle line:90%
+exactly are the eigenspaces.
+
+01:04:48.630 --> 01:04:59.690 align:middle line:90%
+
+
+01:04:59.690 --> 01:05:00.470 align:middle line:90%
+All right.
+
+01:05:00.470 --> 01:05:10.290 align:middle line:90%
+
+
+01:05:10.290 --> 01:05:12.690 align:middle line:90%
+OK.
+
+01:05:12.690 --> 01:05:23.460 align:middle line:84%
+So that tells us that each
+sigma i has a multiplicity which
+
+01:05:23.460 --> 01:05:25.440 align:middle line:90%
+is at least d plus 1 over 2.
+
+01:05:25.440 --> 01:05:28.300 align:middle line:90%
+
+
+01:05:28.300 --> 01:05:31.660 align:middle line:84%
+And we really care about
+the biggest singular vector.
+
+01:05:31.660 --> 01:05:34.200 align:middle line:84%
+There's not just one
+biggest singular vector,
+
+01:05:34.200 --> 01:05:38.700 align:middle line:84%
+but there's a whole singular
+subspace of a big dimension.
+
+01:05:38.700 --> 01:05:43.460 align:middle line:84%
+And all of those vectors have
+this large singular value.
+
+01:05:43.460 --> 01:05:44.780 align:middle line:90%
+OK.
+
+01:05:44.780 --> 01:05:48.500 align:middle line:84%
+So now another fact
+from linear algebra
+
+01:05:48.500 --> 01:05:52.020 align:middle line:84%
+is that if you add up the
+singular values squared
+
+01:05:52.020 --> 01:05:58.380 align:middle line:84%
+of the matrix with
+multiplicity, that
+
+01:05:58.380 --> 01:06:01.060 align:middle line:84%
+is the Hilbert-Schmidt
+norm of the matrix.
+
+01:06:01.060 --> 01:06:03.230 align:middle line:84%
+So it's the sum of the
+entries of the matrix.
+
+01:06:03.230 --> 01:06:12.940 align:middle line:90%
+
+
+01:06:12.940 --> 01:06:15.580 align:middle line:84%
+So this is a matrix where
+the rows and columns
+
+01:06:15.580 --> 01:06:17.260 align:middle line:90%
+are indexed by our group, g.
+
+01:06:17.260 --> 01:06:19.750 align:middle line:90%
+So it has an entry, g1, g2.
+
+01:06:19.750 --> 01:06:21.920 align:middle line:84%
+And it's the sum of
+the entries squared.
+
+01:06:21.920 --> 01:06:30.590 align:middle line:90%
+
+
+01:06:30.590 --> 01:06:32.960 align:middle line:84%
+Does this look familiar to
+people from linear algebra?
+
+01:06:32.960 --> 01:06:36.430 align:middle line:90%
+
+
+01:06:36.430 --> 01:06:37.430 align:middle line:90%
+OK.
+
+01:06:37.430 --> 01:06:41.270 align:middle line:84%
+Now, the entries of our
+matrix, we can read off.
+
+01:06:41.270 --> 01:06:48.570 align:middle line:84%
+It's the sum g1 g2 mu of
+something like g1 g2 inverse.
+
+01:06:48.570 --> 01:06:52.470 align:middle line:84%
+This might not be exactly
+right, but it's the right idea.
+
+01:06:52.470 --> 01:06:54.030 align:middle line:90%
+That's the entry.
+
+01:06:54.030 --> 01:06:57.510 align:middle line:90%
+And then we're squaring it.
+
+01:06:57.510 --> 01:07:02.030 align:middle line:84%
+And so that's the size of
+the group times the sum of mu
+
+01:07:02.030 --> 01:07:02.740 align:middle line:90%
+of g squared.
+
+01:07:02.740 --> 01:07:06.110 align:middle line:90%
+
+
+01:07:06.110 --> 01:07:06.610 align:middle line:90%
+OK.
+
+01:07:06.610 --> 01:07:09.910 align:middle line:90%
+So that's the right-hand side.
+
+01:07:09.910 --> 01:07:13.010 align:middle line:84%
+And over here, we're
+counting with multiplicity.
+
+01:07:13.010 --> 01:07:15.430 align:middle line:84%
+And the multiplicity
+is always large.
+
+01:07:15.430 --> 01:07:18.760 align:middle line:84%
+So this is at least
+d plus 1 over 2
+
+01:07:18.760 --> 01:07:21.870 align:middle line:90%
+times sigma 1 of T mu squared.
+
+01:07:21.870 --> 01:07:30.070 align:middle line:90%
+
+
+01:07:30.070 --> 01:07:32.320 align:middle line:84%
+So there's an important
+difference between the sigma 1
+
+01:07:32.320 --> 01:07:33.300 align:middle line:90%
+and sigma 0.
+
+01:07:33.300 --> 01:07:36.200 align:middle line:84%
+The sigma 0 went with
+the constant functions.
+
+01:07:36.200 --> 01:07:38.600 align:middle line:84%
+That lives in a
+space of dimension 1.
+
+01:07:38.600 --> 01:07:42.000 align:middle line:84%
+But anybody else lives in
+a big dimensional space.
+
+01:07:42.000 --> 01:07:46.760 align:middle line:84%
+And so that gets
+counted many times.
+
+01:07:46.760 --> 01:07:48.740 align:middle line:84%
+And that changes
+the playing field.
+
+01:07:48.740 --> 01:07:55.560 align:middle line:90%
+
+
+01:07:55.560 --> 01:07:58.638 align:middle line:90%
+AUDIENCE: What is d here?
+
+01:07:58.638 --> 01:07:59.680 align:middle line:90%
+LAWRENCE GUTH: What is d?
+
+01:07:59.680 --> 01:08:00.890 align:middle line:90%
+Sorry, d is p.
+
+01:08:00.890 --> 01:08:01.390 align:middle line:90%
+Sorry.
+
+01:08:01.390 --> 01:08:04.720 align:middle line:90%
+
+
+01:08:04.720 --> 01:08:07.360 align:middle line:90%
+Thank you.
+
+01:08:07.360 --> 01:08:09.500 align:middle line:90%
+Is it right up there?
+
+01:08:09.500 --> 01:08:10.000 align:middle line:90%
+Yeah.
+
+01:08:10.000 --> 01:08:12.760 align:middle line:84%
+So d is the dimension
+of the representation.
+
+01:08:12.760 --> 01:08:13.820 align:middle line:90%
+That's why I put it.
+
+01:08:13.820 --> 01:08:16.359 align:middle line:90%
+But it was just a mistake.
+
+01:08:16.359 --> 01:08:17.880 align:middle line:84%
+It's supposed to
+be p plus 1 over 2.
+
+01:08:17.880 --> 01:08:20.420 align:middle line:90%
+
+
+01:08:20.420 --> 01:08:24.479 align:middle line:84%
+So what needs to be
+spelled out more carefully?
+
+01:08:24.479 --> 01:08:26.979 align:middle line:84%
+I think we should just spell
+out a little more carefully why
+
+01:08:26.979 --> 01:08:28.810 align:middle line:84%
+the eigenspaces
+have this G action.
+
+01:08:28.810 --> 01:08:56.819 align:middle line:90%
+
+
+01:08:56.819 --> 01:08:57.319 align:middle line:90%
+OK.
+
+01:08:57.319 --> 01:09:00.100 align:middle line:84%
+So first of all,
+what is T mu star?
+
+01:09:00.100 --> 01:09:04.939 align:middle line:84%
+Let's say mu star of G
+is just mu of G inverse.
+
+01:09:04.939 --> 01:09:07.740 align:middle line:84%
+And if you write down the
+definition of the adjoint
+
+01:09:07.740 --> 01:09:09.580 align:middle line:84%
+and play around a
+little bit, you'll
+
+01:09:09.580 --> 01:09:14.210 align:middle line:84%
+see that T mu star is
+just T of mu new star.
+
+01:09:14.210 --> 01:09:16.790 align:middle line:90%
+
+
+01:09:16.790 --> 01:09:21.689 align:middle line:84%
+So T mu T mu star of
+f is just you take f.
+
+01:09:21.689 --> 01:09:23.390 align:middle line:90%
+You convolve it with mu star.
+
+01:09:23.390 --> 01:09:25.910 align:middle line:84%
+And then you
+convolve it with mu.
+
+01:09:25.910 --> 01:09:29.640 align:middle line:84%
+So it's T of mu
+convolved with mu star.
+
+01:09:29.640 --> 01:09:34.189 align:middle line:90%
+
+
+01:09:34.189 --> 01:09:35.270 align:middle line:90%
+OK.
+
+01:09:35.270 --> 01:09:38.510 align:middle line:84%
+So our operator is still
+just a convolution operator,
+
+01:09:38.510 --> 01:09:41.149 align:middle line:84%
+just convolving by something
+slightly different.
+
+01:09:41.149 --> 01:09:45.470 align:middle line:84%
+And now we want to see
+that convolution commutes
+
+01:09:45.470 --> 01:09:49.689 align:middle line:90%
+with some symmetries of g.
+
+01:09:49.689 --> 01:09:50.189 align:middle line:90%
+OK.
+
+01:09:50.189 --> 01:09:54.870 align:middle line:84%
+So our convolution has been
+defined to be on the right.
+
+01:09:54.870 --> 01:09:57.910 align:middle line:84%
+And so I think it's supposed to
+commute with the symmetries of f
+
+01:09:57.910 --> 01:09:59.430 align:middle line:90%
+on the left.
+
+01:09:59.430 --> 01:10:06.390 align:middle line:84%
+So let's say the left
+action of g on f with h
+
+01:10:06.390 --> 01:10:09.810 align:middle line:90%
+is f of g inverse h.
+
+01:10:09.810 --> 01:10:13.720 align:middle line:90%
+
+
+01:10:13.720 --> 01:10:19.720 align:middle line:84%
+I want to say that convolution
+commutes with this action.
+
+01:10:19.720 --> 01:10:27.720 align:middle line:84%
+So I want to claim that
+for any measure in nu,
+
+01:10:27.720 --> 01:10:33.440 align:middle line:84%
+If I take T nu of
+left action g of f,
+
+01:10:33.440 --> 01:10:36.620 align:middle line:90%
+this is left action g T nu of f.
+
+01:10:36.620 --> 01:10:39.100 align:middle line:90%
+
+
+01:10:39.100 --> 01:10:39.600 align:middle line:90%
+OK.
+
+01:10:39.600 --> 01:10:41.642 align:middle line:84%
+Cross my finger that I
+wrote everything correctly
+
+01:10:41.642 --> 01:10:44.865 align:middle line:90%
+so this is true.
+
+01:10:44.865 --> 01:10:49.950 align:middle line:84%
+T nu of left action
+g of f at some--
+
+01:10:49.950 --> 01:10:52.520 align:middle line:90%
+
+
+01:10:52.520 --> 01:10:55.520 align:middle line:90%
+let's say I evaluate that at x.
+
+01:10:55.520 --> 01:11:00.520 align:middle line:84%
+So I'm going to convolve
+this function with nu.
+
+01:11:00.520 --> 01:11:03.960 align:middle line:84%
+So it's Lgf convolved
+with nu at x.
+
+01:11:03.960 --> 01:11:11.980 align:middle line:84%
+So it's the sum x1 x2 equals
+x Lg f of x1 nu of x2.
+
+01:11:11.980 --> 01:11:15.570 align:middle line:90%
+
+
+01:11:15.570 --> 01:11:24.500 align:middle line:84%
+So that's the sum x1 x2 equals
+x f of g inverse x1 nu of x2.
+
+01:11:24.500 --> 01:11:28.530 align:middle line:90%
+
+
+01:11:28.530 --> 01:11:29.410 align:middle line:90%
+All right.
+
+01:11:29.410 --> 01:11:34.490 align:middle line:84%
+So the product of these
+two guys is g inverse x.
+
+01:11:34.490 --> 01:11:38.730 align:middle line:84%
+So really, the product
+x1 tilde times x2 tilde
+
+01:11:38.730 --> 01:11:49.380 align:middle line:84%
+is g inverse x f of x1
+tilde nu of x2 tilde.
+
+01:11:49.380 --> 01:11:55.010 align:middle line:90%
+
+
+01:11:55.010 --> 01:12:00.930 align:middle line:84%
+So that is T nu of f
+evaluated at g inverse x.
+
+01:12:00.930 --> 01:12:07.006 align:middle line:90%
+So that's Lg of T nu of f of x.
+
+01:12:07.006 --> 01:12:07.506 align:middle line:90%
+Phew.
+
+01:12:07.506 --> 01:12:12.665 align:middle line:90%
+
+
+01:12:12.665 --> 01:12:15.420 align:middle line:84%
+You probably can see that
+I'm not a very algebraically
+
+01:12:15.420 --> 01:12:16.560 align:middle line:90%
+minded person.
+
+01:12:16.560 --> 01:12:20.340 align:middle line:84%
+I think probably a more
+highbrow proof of this
+
+01:12:20.340 --> 01:12:22.340 align:middle line:84%
+says something about
+acting on the left commutes
+
+01:12:22.340 --> 01:12:25.460 align:middle line:90%
+with acting on the right.
+
+01:12:25.460 --> 01:12:28.700 align:middle line:90%
+Anyway, OK.
+
+01:12:28.700 --> 01:12:34.060 align:middle line:84%
+So the group acts on functions,
+and that action commutes
+
+01:12:34.060 --> 01:12:34.960 align:middle line:90%
+with this.
+
+01:12:34.960 --> 01:12:40.420 align:middle line:84%
+So if you have an eigenspace of
+this, the group will act on it.
+
+01:12:40.420 --> 01:12:42.380 align:middle line:90%
+All right.
+
+01:12:42.380 --> 01:12:52.100 align:middle line:84%
+So if T nu of f is lambda
+f, then T nu of Lgf
+
+01:12:52.100 --> 01:12:58.060 align:middle line:84%
+will be Lg T nu of f,
+which is Lg of lambda f,
+
+01:12:58.060 --> 01:13:00.060 align:middle line:90%
+which is lambda Lg of f.
+
+01:13:00.060 --> 01:13:02.580 align:middle line:90%
+
+
+01:13:02.580 --> 01:13:08.610 align:middle line:84%
+So g acts on V lambda,
+the eigenspace.
+
+01:13:08.610 --> 01:13:12.470 align:middle line:90%
+
+
+01:13:12.470 --> 01:13:13.150 align:middle line:90%
+OK.
+
+01:13:13.150 --> 01:13:16.610 align:middle line:90%
+So that fleshes out this.
+
+01:13:16.610 --> 01:13:24.170 align:middle line:90%
+
+
+01:13:24.170 --> 01:13:24.670 align:middle line:90%
+OK.
+
+01:13:24.670 --> 01:13:28.630 align:middle line:90%
+
+
+01:13:28.630 --> 01:13:29.430 align:middle line:90%
+Cool.
+
+01:13:29.430 --> 01:13:33.150 align:middle line:84%
+So let's do a quick
+application of this
+
+01:13:33.150 --> 01:13:36.430 align:middle line:84%
+to see what we have
+learned about mixing.
+
+01:13:36.430 --> 01:13:41.310 align:middle line:84%
+So remember that we already know
+that this thing is bounded by 1.
+
+01:13:41.310 --> 01:13:42.990 align:middle line:84%
+And it's not at all
+clear whether this
+
+01:13:42.990 --> 01:13:44.410 align:middle line:90%
+is bigger or smaller than 1.
+
+01:13:44.410 --> 01:13:46.550 align:middle line:90%
+It depends upon mu.
+
+01:13:46.550 --> 01:13:50.470 align:middle line:84%
+If this is bigger than 1,
+then this is kind of useless.
+
+01:13:50.470 --> 01:13:52.190 align:middle line:84%
+But if this is smaller
+than 1, then it
+
+01:13:52.190 --> 01:13:55.250 align:middle line:90%
+gives us some new information.
+
+01:13:55.250 --> 01:13:55.750 align:middle line:90%
+OK.
+
+01:13:55.750 --> 01:14:05.032 align:middle line:90%
+
+
+01:14:05.032 --> 01:14:06.740 align:middle line:84%
+AUDIENCE: One question
+about proposition.
+
+01:14:06.740 --> 01:14:07.840 align:middle line:90%
+LAWRENCE GUTH: Yeah?
+
+01:14:07.840 --> 01:14:11.280 align:middle line:84%
+AUDIENCE: Does it require the
+existence of the representation
+
+01:14:11.280 --> 01:14:13.220 align:middle line:90%
+of degree p plus 1 over 2?
+
+01:14:13.220 --> 01:14:15.880 align:middle line:90%
+
+
+01:14:15.880 --> 01:14:18.340 align:middle line:90%
+LAWRENCE GUTH: Not exactly.
+
+01:14:18.340 --> 01:14:21.040 align:middle line:84%
+This operator here
+has eigenspaces.
+
+01:14:21.040 --> 01:14:23.060 align:middle line:84%
+And we know that the
+group acts on them.
+
+01:14:23.060 --> 01:14:25.440 align:middle line:84%
+So therefore, there are
+representations of this group.
+
+01:14:25.440 --> 01:14:28.640 align:middle line:90%
+
+
+01:14:28.640 --> 01:14:31.580 align:middle line:90%
+OK, so application.
+
+01:14:31.580 --> 01:14:36.200 align:middle line:90%
+
+
+01:14:36.200 --> 01:14:39.800 align:middle line:84%
+So suppose A is a
+subset of SL2 Fp.
+
+01:14:39.800 --> 01:14:42.960 align:middle line:84%
+It doesn't have to be A
+Selberg, just any subset.
+
+01:14:42.960 --> 01:14:49.746 align:middle line:84%
+And remember that mu of A is
+the uniform measure on A. OK.
+
+01:14:49.746 --> 01:14:53.720 align:middle line:90%
+So what is mu of A L2 squared?
+
+01:14:53.720 --> 01:14:58.200 align:middle line:84%
+Well, we square the amplitude
+of 1 over a squared.
+
+01:14:58.200 --> 01:14:59.520 align:middle line:90%
+And then we add it up.
+
+01:14:59.520 --> 01:15:02.920 align:middle line:84%
+And we'll get a
+contribution from A points.
+
+01:15:02.920 --> 01:15:07.770 align:middle line:84%
+So we get 1 over the
+cardinality of A.
+
+01:15:07.770 --> 01:15:08.570 align:middle line:90%
+Right.
+
+01:15:08.570 --> 01:15:12.650 align:middle line:84%
+So if we just plug
+in our estimate,
+
+01:15:12.650 --> 01:15:18.930 align:middle line:84%
+proposition 2 tells us
+that sigma 1 of TA squared
+
+01:15:18.930 --> 01:15:27.690 align:middle line:84%
+is bounded by p squared
+1 over A. Whoops.
+
+01:15:27.690 --> 01:15:28.750 align:middle line:90%
+I did that wrong.
+
+01:15:28.750 --> 01:15:30.810 align:middle line:90%
+That's not good.
+
+01:15:30.810 --> 01:15:31.950 align:middle line:90%
+This is about p cubed.
+
+01:15:31.950 --> 01:15:35.170 align:middle line:90%
+This is about p.
+
+01:15:35.170 --> 01:15:39.050 align:middle line:84%
+So it's bounded by
+p squared over A.
+
+01:15:39.050 --> 01:15:44.250 align:middle line:84%
+So we can see that if A
+is significantly bigger
+
+01:15:44.250 --> 01:15:51.650 align:middle line:84%
+than p squared, then sigma
+1 of TA is less than 1.
+
+01:15:51.650 --> 01:15:54.690 align:middle line:90%
+So if A is 10 p squared--
+
+01:15:54.690 --> 01:15:57.810 align:middle line:84%
+or, even better, p to
+the 2 plus epsilon--
+
+01:15:57.810 --> 01:16:00.690 align:middle line:84%
+than sigma 1 is quite
+a bit less than 1.
+
+01:16:00.690 --> 01:16:06.540 align:middle line:84%
+And so this random
+walk will mix quickly.
+
+01:16:06.540 --> 01:16:09.580 align:middle line:84%
+In particular,
+corollary of that is
+
+01:16:09.580 --> 01:16:18.820 align:middle line:84%
+that if H is a proper
+subgroup of SL2 Fp--
+
+01:16:18.820 --> 01:16:21.720 align:middle line:84%
+so we saw earlier, if you take
+a proper subgroup and you walk,
+
+01:16:21.720 --> 01:16:24.100 align:middle line:84%
+you just stay in the
+subgroup, it won't mix at all.
+
+01:16:24.100 --> 01:16:26.220 align:middle line:90%
+Sigma 1 would be 1.
+
+01:16:26.220 --> 01:16:29.870 align:middle line:84%
+Then H has size which is
+smaller than around p squared.
+
+01:16:29.870 --> 01:16:33.148 align:middle line:90%
+
+
+01:16:33.148 --> 01:16:34.940 align:middle line:84%
+And we saw earlier that
+there is a subgroup
+
+01:16:34.940 --> 01:16:36.360 align:middle line:90%
+of size about p squared.
+
+01:16:36.360 --> 01:16:37.210 align:middle line:90%
+So this is sharp.
+
+01:16:37.210 --> 01:16:43.440 align:middle line:90%
+
+
+01:16:43.440 --> 01:16:43.940 align:middle line:90%
+OK.
+
+01:16:43.940 --> 01:16:47.180 align:middle line:84%
+So this addresses the question
+that was raised earlier.
+
+01:16:47.180 --> 01:16:48.900 align:middle line:90%
+The set A may be large.
+
+01:16:48.900 --> 01:16:50.740 align:middle line:84%
+If you just know the
+size of A, can you
+
+01:16:50.740 --> 01:16:53.900 align:middle line:90%
+say whether it mixes or not?
+
+01:16:53.900 --> 01:16:56.240 align:middle line:84%
+This is essentially a sharp
+answer to that question.
+
+01:16:56.240 --> 01:16:58.660 align:middle line:84%
+If A is significantly
+bigger than p squared,
+
+01:16:58.660 --> 01:17:01.790 align:middle line:90%
+then the random walk does mix.
+
+01:17:01.790 --> 01:17:03.830 align:middle line:84%
+And if A is smaller
+than p squared,
+
+01:17:03.830 --> 01:17:09.830 align:middle line:84%
+A could live in a subgroup, and
+the random walk may not mix.
+
+01:17:09.830 --> 01:17:12.390 align:middle line:84%
+This whole phenomenon is quite
+different from what would
+
+01:17:12.390 --> 01:17:15.150 align:middle line:90%
+happen in a commutative group.
+
+01:17:15.150 --> 01:17:17.770 align:middle line:84%
+In a commutative group, you
+could take very large subsets,
+
+01:17:17.770 --> 01:17:21.747 align:middle line:84%
+and still, nothing
+might mix, partly
+
+01:17:21.747 --> 01:17:24.330 align:middle line:84%
+because the commutative group
+might have very large subgroups.
+
+01:17:24.330 --> 01:17:27.710 align:middle line:84%
+But even if it doesn't,
+it wouldn't work.
+
+01:17:27.710 --> 01:17:29.710 align:middle line:90%
+Yeah.
+
+01:17:29.710 --> 01:17:31.550 align:middle line:90%
+Cool.
+
+01:17:31.550 --> 01:17:32.050 align:middle line:90%
+OK.
+
+01:17:32.050 --> 01:17:34.350 align:middle line:84%
+So that's all very interesting,
+but it doesn't look
+
+01:17:34.350 --> 01:17:36.670 align:middle line:90%
+very close to this theorem yet.
+
+01:17:36.670 --> 01:17:38.830 align:middle line:84%
+Because this
+theorem says that we
+
+01:17:38.830 --> 01:17:42.630 align:middle line:84%
+get mixing if our subset has
+size larger than p squared.
+
+01:17:42.630 --> 01:17:45.790 align:middle line:90%
+And this is a subset of size 4.
+
+01:17:45.790 --> 01:17:49.910 align:middle line:84%
+So we will have to think some
+more about how to do this.
+
+01:17:49.910 --> 01:17:53.660 align:middle line:84%
+And we will talk
+about that next time.
+
+01:17:53.660 --> 01:18:01.000 align:middle line:90%

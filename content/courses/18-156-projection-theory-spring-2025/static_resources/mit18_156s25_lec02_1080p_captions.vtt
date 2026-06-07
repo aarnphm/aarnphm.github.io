@@ -1,0 +1,4633 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.476 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.476 --> 00:00:02.952 align:middle line:90%
+[RUSTLING]
+
+00:00:02.952 --> 00:00:05.412 align:middle line:90%
+[CLICKING]
+
+00:00:05.412 --> 00:00:11.700 align:middle line:90%
+
+
+00:00:11.700 --> 00:00:12.450 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:00:12.450 --> 00:00:13.680 align:middle line:90%
+Well, we can get started.
+
+00:00:13.680 --> 00:00:17.060 align:middle line:84%
+So in the first class
+we talked about what
+
+00:00:17.060 --> 00:00:19.710 align:middle line:84%
+is a projection estimate and
+what is projection theory.
+
+00:00:19.710 --> 00:00:22.458 align:middle line:84%
+And I tried to give a little
+bit of motivation for it.
+
+00:00:22.458 --> 00:00:24.500 align:middle line:84%
+And today we'll start
+getting our hands on things
+
+00:00:24.500 --> 00:00:27.770 align:middle line:84%
+and looking at examples
+and proving theorems.
+
+00:00:27.770 --> 00:00:31.520 align:middle line:84%
+Now, the cleanest setting
+in which to get started
+
+00:00:31.520 --> 00:00:33.950 align:middle line:90%
+is finite fields.
+
+00:00:33.950 --> 00:00:37.970 align:middle line:84%
+And although most of our
+class will be working in RN,
+
+00:00:37.970 --> 00:00:40.970 align:middle line:84%
+I'm going to start there because
+the proofs are very clean
+
+00:00:40.970 --> 00:00:42.390 align:middle line:90%
+and the examples are very clean.
+
+00:00:42.390 --> 00:00:46.230 align:middle line:84%
+And it is also
+interesting in itself.
+
+00:00:46.230 --> 00:00:46.730 align:middle line:90%
+OK.
+
+00:00:46.730 --> 00:00:55.690 align:middle line:90%
+
+
+00:00:55.690 --> 00:00:56.190 align:middle line:90%
+OK.
+
+00:00:56.190 --> 00:00:57.220 align:middle line:90%
+So here's our setup.
+
+00:00:57.220 --> 00:01:00.530 align:middle line:90%
+
+
+00:01:00.530 --> 00:01:05.870 align:middle line:84%
+So we'll have Fq, the finite
+field with q elements.
+
+00:01:05.870 --> 00:01:12.230 align:middle line:84%
+And then theta, so then
+I'll have a map pi sub
+
+00:01:12.230 --> 00:01:16.640 align:middle line:90%
+theta from Fq squared to Fq.
+
+00:01:16.640 --> 00:01:18.410 align:middle line:84%
+These are the
+different projections
+
+00:01:18.410 --> 00:01:20.070 align:middle line:90%
+from Fq squared to Fq.
+
+00:01:20.070 --> 00:01:25.610 align:middle line:84%
+And it's defined by
+pi theta of X1, X2,
+
+00:01:25.610 --> 00:01:31.960 align:middle line:84%
+is X1 times theta or
+X1 plus X2 times theta.
+
+00:01:31.960 --> 00:01:35.150 align:middle line:90%
+
+
+00:01:35.150 --> 00:01:37.370 align:middle line:90%
+So here theta is also in Fq.
+
+00:01:37.370 --> 00:01:46.760 align:middle line:90%
+
+
+00:01:46.760 --> 00:01:50.600 align:middle line:84%
+So now our setup is that
+we'll have a set of points,
+
+00:01:50.600 --> 00:01:53.340 align:middle line:90%
+X in the plane Fq squared.
+
+00:01:53.340 --> 00:01:55.760 align:middle line:84%
+And we'll think about
+projecting this set of points
+
+00:01:55.760 --> 00:01:57.620 align:middle line:84%
+in a bunch of
+different directions.
+
+00:01:57.620 --> 00:02:01.610 align:middle line:84%
+So then we'll have a set of
+directions, which is called D.
+
+00:02:01.610 --> 00:02:04.500 align:middle line:90%
+So D is a subset of Fq.
+
+00:02:04.500 --> 00:02:06.626 align:middle line:84%
+And you think of it as
+a set of directions.
+
+00:02:06.626 --> 00:02:11.600 align:middle line:90%
+
+
+00:02:11.600 --> 00:02:13.312 align:middle line:84%
+We're going to imagine
+taking this at X
+
+00:02:13.312 --> 00:02:15.770 align:middle line:84%
+and projecting it in all of
+these different directions that
+
+00:02:15.770 --> 00:02:20.490 align:middle line:84%
+are in D. And we'll see how big
+the different projections are.
+
+00:02:20.490 --> 00:02:23.180 align:middle line:84%
+And the thing I'll
+measure, I'll call it
+
+00:02:23.180 --> 00:02:26.570 align:middle line:84%
+S, which depends on
+X And D, is the size
+
+00:02:26.570 --> 00:02:29.300 align:middle line:90%
+of the biggest projection.
+
+00:02:29.300 --> 00:02:41.780 align:middle line:84%
+So it's the maximum theta in D
+of the size of pi theta of X.
+
+00:02:41.780 --> 00:02:43.508 align:middle line:90%
+OK.
+
+00:02:43.508 --> 00:02:45.590 align:middle line:84%
+So one thing we study
+in projection theory is
+
+00:02:45.590 --> 00:02:48.380 align:middle line:84%
+we'd like to understand for
+different sizes of X and D,
+
+00:02:48.380 --> 00:02:59.240 align:middle line:84%
+what can we say
+about S. So let's
+
+00:02:59.240 --> 00:03:01.020 align:middle line:90%
+look at a couple of examples.
+
+00:03:01.020 --> 00:03:04.633 align:middle line:84%
+And then after that, I'll tell
+you some theorems, what we know,
+
+00:03:04.633 --> 00:03:06.050 align:middle line:84%
+and some conjecture,
+what we think
+
+00:03:06.050 --> 00:03:07.550 align:middle line:84%
+might be true based
+on the examples.
+
+00:03:07.550 --> 00:03:13.160 align:middle line:90%
+
+
+00:03:13.160 --> 00:03:20.340 align:middle line:84%
+So the first example is a
+square grid or integer--
+
+00:03:20.340 --> 00:03:23.390 align:middle line:84%
+maybe it's good to
+say integer grid.
+
+00:03:23.390 --> 00:03:25.880 align:middle line:84%
+So for this example,
+let's suppose
+
+00:03:25.880 --> 00:03:27.730 align:middle line:90%
+that q is actually prime.
+
+00:03:27.730 --> 00:03:31.490 align:middle line:90%
+
+
+00:03:31.490 --> 00:03:33.960 align:middle line:84%
+You can do similar
+things if q is not prime.
+
+00:03:33.960 --> 00:03:36.530 align:middle line:84%
+It's just easier
+to write it down.
+
+00:03:36.530 --> 00:03:42.500 align:middle line:84%
+So our set X is going to
+be the set X1, X2 where
+
+00:03:42.500 --> 00:03:46.070 align:middle line:90%
+X1 and X2 go between 1 and n.
+
+00:03:46.070 --> 00:03:47.870 align:middle line:84%
+So even though we're
+over a finite field,
+
+00:03:47.870 --> 00:03:49.915 align:middle line:84%
+you can think of this as
+a square integer grid.
+
+00:03:49.915 --> 00:03:52.470 align:middle line:90%
+
+
+00:03:52.470 --> 00:03:54.530 align:middle line:84%
+And then we were
+saying last time
+
+00:03:54.530 --> 00:03:57.690 align:middle line:84%
+that if you take a square
+grid, an integer grid,
+
+00:03:57.690 --> 00:03:59.690 align:middle line:84%
+and you do a projection
+in a direction, that's
+
+00:03:59.690 --> 00:04:04.050 align:middle line:84%
+kind of a rational angle, then
+you get a small projection.
+
+00:04:04.050 --> 00:04:06.860 align:middle line:84%
+So that's what our set of
+directions is going to be.
+
+00:04:06.860 --> 00:04:13.310 align:middle line:84%
+A set of directions is going
+to be the set of a1 over a2
+
+00:04:13.310 --> 00:04:20.383 align:middle line:84%
+where a1 and a2 go from 1 up to
+some A. So N and A parameters
+
+00:04:20.383 --> 00:04:21.300 align:middle line:90%
+that we can play with.
+
+00:04:21.300 --> 00:04:24.140 align:middle line:84%
+There are many square
+grids, many choices.
+
+00:04:24.140 --> 00:04:24.840 align:middle line:90%
+All right.
+
+00:04:24.840 --> 00:04:27.650 align:middle line:84%
+So now let's figure
+out what is S of X, D.
+
+00:04:27.650 --> 00:04:33.860 align:middle line:84%
+So what happens when I
+perform a projection of X
+
+00:04:33.860 --> 00:04:35.990 align:middle line:90%
+at one of these angles?
+
+00:04:35.990 --> 00:04:42.410 align:middle line:84%
+So if theta is in D,
+I'm going to take pi
+
+00:04:42.410 --> 00:04:53.620 align:middle line:84%
+and if x is in X, so if I
+take pi theta of x1, x2,
+
+00:04:53.620 --> 00:05:01.750 align:middle line:84%
+then I get x1 plus
+a1 over a2 x2.
+
+00:05:01.750 --> 00:05:04.280 align:middle line:84%
+And I'm going to put it
+over a common denominator.
+
+00:05:04.280 --> 00:05:11.025 align:middle line:84%
+So it's a2 x1 plus
+a1 x2 over a2.
+
+00:05:11.025 --> 00:05:13.660 align:middle line:90%
+
+
+00:05:13.660 --> 00:05:14.180 align:middle line:90%
+All right.
+
+00:05:14.180 --> 00:05:17.560 align:middle line:84%
+Now in this situation, we're
+imagining that theta is fixed
+
+00:05:17.560 --> 00:05:20.690 align:middle line:84%
+and we're varying
+little x and big X.
+
+00:05:20.690 --> 00:05:23.870 align:middle line:84%
+So we're going to try to see
+how big is pi theta of big X.
+
+00:05:23.870 --> 00:05:27.080 align:middle line:84%
+So we're going to see if a is
+fixed, and I vary x1 and x2,
+
+00:05:27.080 --> 00:05:29.090 align:middle line:84%
+how many different
+numbers do I have here?
+
+00:05:29.090 --> 00:05:30.677 align:middle line:84%
+So the denominator
+isn't important
+
+00:05:30.677 --> 00:05:31.760 align:middle line:90%
+because it's not changing.
+
+00:05:31.760 --> 00:05:34.190 align:middle line:84%
+And I want to know how many
+different numerators I have.
+
+00:05:34.190 --> 00:05:37.070 align:middle line:84%
+And the numerator is
+going to be an integer.
+
+00:05:37.070 --> 00:05:41.270 align:middle line:84%
+And it has size a times
+n at most plus a times n.
+
+00:05:41.270 --> 00:05:43.570 align:middle line:84%
+So it basically
+has size a times n.
+
+00:05:43.570 --> 00:05:48.340 align:middle line:84%
+So we see that the size
+of the projection of x
+
+00:05:48.340 --> 00:05:51.280 align:middle line:90%
+is at most a times n.
+
+00:05:51.280 --> 00:05:53.530 align:middle line:84%
+So this less than
+with a squiggle here,
+
+00:05:53.530 --> 00:05:55.880 align:middle line:84%
+means there's a constant
+factor that I left out here.
+
+00:05:55.880 --> 00:05:57.085 align:middle line:90%
+It's a factor of 2.
+
+00:05:57.085 --> 00:05:58.960 align:middle line:84%
+But in general, a squiggle
+just means there's
+
+00:05:58.960 --> 00:06:00.530 align:middle line:90%
+some constant factor left out.
+
+00:06:00.530 --> 00:06:03.160 align:middle line:90%
+
+
+00:06:03.160 --> 00:06:05.150 align:middle line:90%
+And S is the biggest of these.
+
+00:06:05.150 --> 00:06:18.280 align:middle line:84%
+So S of X, D is
+around A times N.
+
+00:06:18.280 --> 00:06:22.930 align:middle line:84%
+OK, so then you could
+do a little algebra
+
+00:06:22.930 --> 00:06:26.920 align:middle line:84%
+to see how S and X and
+D relate to each other.
+
+00:06:26.920 --> 00:06:40.090 align:middle line:84%
+And if you do that, you see that
+D is around S squared over X.
+
+00:06:40.090 --> 00:06:42.480 align:middle line:84%
+So that's how it works
+in an integer grid.
+
+00:06:42.480 --> 00:06:47.530 align:middle line:90%
+
+
+00:06:47.530 --> 00:06:51.530 align:middle line:84%
+And there's one more example
+that I thought I would mention,
+
+00:06:51.530 --> 00:06:53.090 align:middle line:84%
+which we also
+mentioned last time.
+
+00:06:53.090 --> 00:06:55.190 align:middle line:84%
+It's an example that
+comes from subfields.
+
+00:06:55.190 --> 00:07:00.490 align:middle line:84%
+So if q is not prime, then Fp
+is an interesting subset of Fq,
+
+00:07:00.490 --> 00:07:03.570 align:middle line:84%
+and Fp squared is an interesting
+subset of Fq squared.
+
+00:07:03.570 --> 00:07:10.420 align:middle line:90%
+
+
+00:07:10.420 --> 00:07:12.660 align:middle line:84%
+So this is called
+the subfield example.
+
+00:07:12.660 --> 00:07:17.620 align:middle line:90%
+
+
+00:07:17.620 --> 00:07:21.490 align:middle line:84%
+So let's say that q is p
+squared, or a similar phenomenon
+
+00:07:21.490 --> 00:07:25.330 align:middle line:84%
+if q is a higher power of
+p, but the computations
+
+00:07:25.330 --> 00:07:26.950 align:middle line:90%
+are a bit different.
+
+00:07:26.950 --> 00:07:30.400 align:middle line:84%
+So if q is p
+squared, our set X is
+
+00:07:30.400 --> 00:07:35.290 align:middle line:84%
+going to be Fp squared
+sitting in Fq squared.
+
+00:07:35.290 --> 00:07:39.220 align:middle line:84%
+So the size of X is p
+squared, which is q.
+
+00:07:39.220 --> 00:07:41.860 align:middle line:84%
+And our set of
+directions is going
+
+00:07:41.860 --> 00:07:44.780 align:middle line:90%
+to be Fp which is sitting in Fq.
+
+00:07:44.780 --> 00:07:46.810 align:middle line:84%
+So the size of our
+set of directions
+
+00:07:46.810 --> 00:07:51.220 align:middle line:90%
+is p which is q to the one half.
+
+00:07:51.220 --> 00:08:05.030 align:middle line:84%
+And then if theta is in D, and
+x1, x2 is in X, pi theta of x1,
+
+00:08:05.030 --> 00:08:08.450 align:middle line:90%
+x2 is x1 plus x2 theta.
+
+00:08:08.450 --> 00:08:11.320 align:middle line:84%
+All those things are
+in the subfield Fp.
+
+00:08:11.320 --> 00:08:12.740 align:middle line:90%
+So this is in Fp.
+
+00:08:12.740 --> 00:08:15.340 align:middle line:90%
+
+
+00:08:15.340 --> 00:08:20.440 align:middle line:84%
+So therefore, the size of
+pi theta of X is at most p.
+
+00:08:20.440 --> 00:08:22.690 align:middle line:90%
+In fact exactly p.
+
+00:08:22.690 --> 00:08:37.419 align:middle line:84%
+And so that's our S. And this
+example coming from subfields
+
+00:08:37.419 --> 00:08:40.840 align:middle line:84%
+is more extreme than the
+example coming from grids.
+
+00:08:40.840 --> 00:08:45.040 align:middle line:84%
+So if you were to take this
+value of X And this value of S,
+
+00:08:45.040 --> 00:08:50.960 align:middle line:84%
+and plug them in here to make
+a fair comparison, in the grids
+
+00:08:50.960 --> 00:08:53.980 align:middle line:84%
+we would have only one
+direction if we did that,
+
+00:08:53.980 --> 00:08:56.230 align:middle line:84%
+but here we have
+many directions.
+
+00:08:56.230 --> 00:08:59.770 align:middle line:84%
+So this thing has
+very small projections
+
+00:08:59.770 --> 00:09:02.655 align:middle line:84%
+in many different directions,
+even more so than a square grid.
+
+00:09:02.655 --> 00:09:14.512 align:middle line:90%
+
+
+00:09:14.512 --> 00:09:15.983 align:middle line:90%
+So those are a few examples.
+
+00:09:15.983 --> 00:09:21.860 align:middle line:90%
+
+
+00:09:21.860 --> 00:09:25.330 align:middle line:84%
+And based on that, I can
+tell you a conjecture
+
+00:09:25.330 --> 00:09:27.170 align:middle line:90%
+that we stated also last time.
+
+00:09:27.170 --> 00:09:29.260 align:middle line:84%
+And also, I can tell
+you some of the things
+
+00:09:29.260 --> 00:09:31.860 align:middle line:84%
+we know about this conjecture,
+some of the main results.
+
+00:09:31.860 --> 00:09:36.010 align:middle line:90%
+
+
+00:09:36.010 --> 00:09:39.820 align:middle line:84%
+So first, I'll say
+the conjecture,
+
+00:09:39.820 --> 00:09:48.970 align:middle line:84%
+so if q equals p which is
+prime and we're in this setup.
+
+00:09:48.970 --> 00:09:54.790 align:middle line:84%
+And S is smaller
+than around X over 2,
+
+00:09:54.790 --> 00:09:57.690 align:middle line:84%
+then we can't do better
+than the square grid.
+
+00:09:57.690 --> 00:10:06.310 align:middle line:90%
+
+
+00:10:06.310 --> 00:10:10.420 align:middle line:84%
+So let's explain all the
+hypotheses in this conjecture.
+
+00:10:10.420 --> 00:10:13.040 align:middle line:90%
+So why do we have this?
+
+00:10:13.040 --> 00:10:17.140 align:middle line:84%
+Well, if you take
+any set D S of X,
+
+00:10:17.140 --> 00:10:21.610 align:middle line:84%
+D is obviously smaller
+than the size of X.
+
+00:10:21.610 --> 00:10:23.890 align:middle line:84%
+So if S was allowed
+to be the size of X
+
+00:10:23.890 --> 00:10:25.670 align:middle line:90%
+then D could be everything.
+
+00:10:25.670 --> 00:10:28.930 align:middle line:84%
+And there would be no
+meaningful upper bound on D.
+
+00:10:28.930 --> 00:10:32.650 align:middle line:84%
+So we have to insist that it's
+somewhat smaller than that.
+
+00:10:32.650 --> 00:10:35.890 align:middle line:84%
+You could ask about the
+range in between here and X,
+
+00:10:35.890 --> 00:10:39.460 align:middle line:84%
+there's something to say but
+I think not super interesting.
+
+00:10:39.460 --> 00:10:42.400 align:middle line:90%
+So we'll look at this version.
+
+00:10:42.400 --> 00:10:44.020 align:middle line:90%
+OK.
+
+00:10:44.020 --> 00:10:45.650 align:middle line:90%
+We have this set up.
+
+00:10:45.650 --> 00:10:48.770 align:middle line:84%
+And why do we also add
+here that q is a prime?
+
+00:10:48.770 --> 00:10:51.650 align:middle line:84%
+Well, we have to add that
+because of example two.
+
+00:10:51.650 --> 00:10:53.557 align:middle line:84%
+If q is not a prime,
+you have that example.
+
+00:10:53.557 --> 00:10:55.015 align:middle line:84%
+And we just saw
+that this is false.
+
+00:10:55.015 --> 00:10:57.640 align:middle line:90%
+
+
+00:10:57.640 --> 00:11:00.040 align:middle line:84%
+And this conjecture is
+plausible in the sense
+
+00:11:00.040 --> 00:11:03.100 align:middle line:84%
+that there's no counterexample,
+that no one has found an example
+
+00:11:03.100 --> 00:11:04.940 align:middle line:90%
+that beats the square grid.
+
+00:11:04.940 --> 00:11:07.330 align:middle line:84%
+And basically, no one
+has found an example that
+
+00:11:07.330 --> 00:11:12.458 align:middle line:84%
+even is, well, OK, there
+are very few examples that
+
+00:11:12.458 --> 00:11:14.000 align:middle line:84%
+are competitive with
+the square grid,
+
+00:11:14.000 --> 00:11:15.800 align:middle line:84%
+and they're all small
+variations on it.
+
+00:11:15.800 --> 00:11:20.170 align:middle line:90%
+
+
+00:11:20.170 --> 00:11:24.880 align:middle line:84%
+You also might wonder what
+happens if q is not a prime.
+
+00:11:24.880 --> 00:11:29.470 align:middle line:84%
+And I haven't seen anyone write
+down a conjecture for that.
+
+00:11:29.470 --> 00:11:31.900 align:middle line:84%
+I think, roughly speaking,
+what people believe
+
+00:11:31.900 --> 00:11:35.560 align:middle line:84%
+is that all of the
+interesting examples
+
+00:11:35.560 --> 00:11:38.210 align:middle line:84%
+should be of this
+type or that type,
+
+00:11:38.210 --> 00:11:40.000 align:middle line:84%
+or maybe you can combine
+them a little bit
+
+00:11:40.000 --> 00:11:44.860 align:middle line:90%
+by taking a grid of subfields.
+
+00:11:44.860 --> 00:11:47.500 align:middle line:84%
+So it would be a
+reasonable little project
+
+00:11:47.500 --> 00:11:51.100 align:middle line:84%
+if anyone is interested to try
+to write down the known examples
+
+00:11:51.100 --> 00:11:53.040 align:middle line:84%
+and make a conjecture
+about what happens.
+
+00:11:53.040 --> 00:11:55.600 align:middle line:90%
+
+
+00:11:55.600 --> 00:11:58.300 align:middle line:84%
+All right, now this
+conjecture is open.
+
+00:11:58.300 --> 00:12:00.830 align:middle line:84%
+But let's start to talk
+about what we know.
+
+00:12:00.830 --> 00:12:03.130 align:middle line:84%
+Well, I'm going to state
+some theorems for you
+
+00:12:03.130 --> 00:12:04.730 align:middle line:90%
+and we'll prove the theorems.
+
+00:12:04.730 --> 00:12:07.060 align:middle line:84%
+And maybe more importantly
+we'll introduce
+
+00:12:07.060 --> 00:12:11.080 align:middle line:84%
+some of the basic techniques
+in projection theory.
+
+00:12:11.080 --> 00:12:14.390 align:middle line:84%
+So we're going to talk
+about two techniques today.
+
+00:12:14.390 --> 00:12:17.290 align:middle line:84%
+One of them is a
+double-counting argument that
+
+00:12:17.290 --> 00:12:19.160 align:middle line:90%
+has a combinatorics flavor.
+
+00:12:19.160 --> 00:12:22.060 align:middle line:84%
+And the other is a
+Fourier analytic argument
+
+00:12:22.060 --> 00:12:24.610 align:middle line:90%
+that's based on orthogonality.
+
+00:12:24.610 --> 00:12:27.730 align:middle line:90%
+And this is what they give.
+
+00:12:27.730 --> 00:12:35.350 align:middle line:84%
+So theorem one which is
+based on double counting,
+
+00:12:35.350 --> 00:12:46.540 align:middle line:84%
+say if we're in this setup and
+S is smaller than X over 2,
+
+00:12:46.540 --> 00:13:06.796 align:middle line:84%
+then the number of directions
+is smaller than around S.
+
+00:13:06.796 --> 00:13:11.603 align:middle line:84%
+Now, if S is around X over
+2, this is actually sharp.
+
+00:13:11.603 --> 00:13:14.790 align:middle line:90%
+
+
+00:13:14.790 --> 00:13:15.290 align:middle line:90%
+Hold on.
+
+00:13:15.290 --> 00:13:16.832 align:middle line:84%
+Let me look at my
+notes for a second.
+
+00:13:16.832 --> 00:13:24.790 align:middle line:90%
+
+
+00:13:24.790 --> 00:13:26.485 align:middle line:84%
+OK, actually I wrote
+that in my notes,
+
+00:13:26.485 --> 00:13:27.860 align:middle line:84%
+but I'm not quite
+sure it's true.
+
+00:13:27.860 --> 00:13:29.818 align:middle line:84%
+Let's just go on and I'll
+tell you theorem two.
+
+00:13:29.818 --> 00:13:33.520 align:middle line:90%
+
+
+00:13:33.520 --> 00:13:35.890 align:middle line:84%
+So theorem 2 is
+based on what I'll
+
+00:13:35.890 --> 00:13:38.380 align:middle line:84%
+call a Fourier method,
+or orthogonality,
+
+00:13:38.380 --> 00:13:39.660 align:middle line:90%
+or something like that.
+
+00:13:39.660 --> 00:13:43.560 align:middle line:84%
+It says, if we have
+this setup and this time
+
+00:13:43.560 --> 00:13:48.810 align:middle line:84%
+if we suppose that's S
+is smaller than q over 2,
+
+00:13:48.810 --> 00:13:58.580 align:middle line:84%
+then D is smaller
+than S times q over X.
+
+00:13:58.580 --> 00:14:03.030 align:middle line:84%
+So let's digest this
+statement a little bit.
+
+00:14:03.030 --> 00:14:06.880 align:middle line:84%
+So the projection is
+always a subset of Fq.
+
+00:14:06.880 --> 00:14:09.840 align:middle line:84%
+So S is always smaller
+than or equal to q.
+
+00:14:09.840 --> 00:14:13.650 align:middle line:84%
+So this hypothesis says that
+it's significantly smaller
+
+00:14:13.650 --> 00:14:14.260 align:middle line:90%
+than that.
+
+00:14:14.260 --> 00:14:18.100 align:middle line:84%
+The projection is significantly
+smaller than the whole space OK.
+
+00:14:18.100 --> 00:14:21.360 align:middle line:84%
+And then we get this
+bound, and this bound
+
+00:14:21.360 --> 00:14:24.000 align:middle line:84%
+is the most interesting
+in the case S was actually
+
+00:14:24.000 --> 00:14:25.740 align:middle line:90%
+close to q over 2.
+
+00:14:25.740 --> 00:14:30.160 align:middle line:84%
+Because in that case this q And
+this S are about the same size.
+
+00:14:30.160 --> 00:14:32.700 align:middle line:84%
+So this is around
+S squared over X,
+
+00:14:32.700 --> 00:14:37.110 align:middle line:90%
+which matches the grid example.
+
+00:14:37.110 --> 00:14:41.760 align:middle line:90%
+So this is actually sharp.
+
+00:14:41.760 --> 00:14:45.460 align:middle line:90%
+if S is around q over 2.
+
+00:14:45.460 --> 00:14:49.320 align:middle line:90%
+
+
+00:14:49.320 --> 00:14:51.740 align:middle line:84%
+OK, I find that quite
+striking and impressive.
+
+00:14:51.740 --> 00:14:52.740 align:middle line:90%
+This is a great example.
+
+00:14:52.740 --> 00:14:54.840 align:middle line:84%
+It has an interesting
+intricate structure.
+
+00:14:54.840 --> 00:14:56.880 align:middle line:84%
+And we're wondering
+whether it was sharp
+
+00:14:56.880 --> 00:15:00.300 align:middle line:84%
+and at least in this
+one regime, this theorem
+
+00:15:00.300 --> 00:15:03.420 align:middle line:90%
+shows that it actually is sharp.
+
+00:15:03.420 --> 00:15:06.430 align:middle line:84%
+On the other hand, S could
+be a lot smaller than q.
+
+00:15:06.430 --> 00:15:08.340 align:middle line:84%
+Then we get some
+bound here and we
+
+00:15:08.340 --> 00:15:14.310 align:middle line:84%
+don't have any example
+that matches that bound.
+
+00:15:14.310 --> 00:15:17.500 align:middle line:84%
+I guess I should also say
+this works over any field.
+
+00:15:17.500 --> 00:15:20.450 align:middle line:84%
+So if you plug-in example
+two it's actually also sharp.
+
+00:15:20.450 --> 00:15:23.580 align:middle line:90%
+
+
+00:15:23.580 --> 00:15:25.955 align:middle line:84%
+And so it's also
+sharp in example two.
+
+00:15:25.955 --> 00:15:33.020 align:middle line:90%
+
+
+00:15:33.020 --> 00:15:33.520 align:middle line:90%
+All right.
+
+00:15:33.520 --> 00:15:35.648 align:middle line:84%
+But there are a bunch of
+choices of the parameter.
+
+00:15:35.648 --> 00:15:37.940 align:middle line:84%
+You could make where it's
+not clear that this is sharp.
+
+00:15:37.940 --> 00:15:43.740 align:middle line:90%
+
+
+00:15:43.740 --> 00:15:45.990 align:middle line:84%
+OK, so the big goal
+of the class is
+
+00:15:45.990 --> 00:15:47.980 align:middle line:84%
+to introduce these
+two techniques really.
+
+00:15:47.980 --> 00:15:50.673 align:middle line:84%
+And we'll use them to
+prove these two theorems.
+
+00:15:50.673 --> 00:15:52.590 align:middle line:84%
+But maybe it's a good
+place to pause and check
+
+00:15:52.590 --> 00:15:54.900 align:middle line:84%
+if people have
+questions or comments.
+
+00:15:54.900 --> 00:15:56.185 align:middle line:90%
+Yeah?
+
+00:15:56.185 --> 00:15:57.810 align:middle line:84%
+AUDIENCE: In the
+first theorem, are you
+
+00:15:57.810 --> 00:15:59.340 align:middle line:90%
+assuming that it's prime?
+
+00:15:59.340 --> 00:16:03.540 align:middle line:84%
+LAWRENCE GUTH: We are not
+assuming that it's prime.
+
+00:16:03.540 --> 00:16:05.540 align:middle line:90%
+Right, that's right.
+
+00:16:05.540 --> 00:16:07.540 align:middle line:84%
+We're not assuming it's
+prime in either theorem.
+
+00:16:07.540 --> 00:16:11.290 align:middle line:84%
+And so where it says setup
+it means we're assuming this.
+
+00:16:11.290 --> 00:16:11.790 align:middle line:90%
+Yeah.
+
+00:16:11.790 --> 00:16:13.050 align:middle line:90%
+That's right.
+
+00:16:13.050 --> 00:16:15.090 align:middle line:84%
+And so that raises
+a point that it
+
+00:16:15.090 --> 00:16:17.880 align:middle line:84%
+appears that the true
+answer to this question
+
+00:16:17.880 --> 00:16:20.470 align:middle line:84%
+depends on whether q
+is prime or not prime.
+
+00:16:20.470 --> 00:16:24.010 align:middle line:84%
+But neither of these
+techniques depend on that.
+
+00:16:24.010 --> 00:16:26.250 align:middle line:84%
+They work for all
+q, and they're not
+
+00:16:26.250 --> 00:16:28.660 align:middle line:84%
+able to notice whether
+q is prime or not prime.
+
+00:16:28.660 --> 00:16:30.160 align:middle line:84%
+That will eventually
+be a big theme.
+
+00:16:30.160 --> 00:16:32.077 align:middle line:84%
+We won't get to it today,
+but eventually we'll
+
+00:16:32.077 --> 00:16:34.800 align:middle line:84%
+try to find some techniques that
+do notice whether q is prime
+
+00:16:34.800 --> 00:16:38.582 align:middle line:90%
+or not prime Yeah?
+
+00:16:38.582 --> 00:16:40.290 align:middle line:84%
+AUDIENCE: For the
+premise, S is less than
+
+00:16:40.290 --> 00:16:42.840 align:middle line:84%
+or equal to the size
+of X divided by 2,
+
+00:16:42.840 --> 00:16:45.883 align:middle line:84%
+how easy is it to construct
+other examples that satisfy
+
+00:16:45.883 --> 00:16:46.925 align:middle line:90%
+that element of the grid?
+
+00:16:46.925 --> 00:16:50.200 align:middle line:90%
+
+
+00:16:50.200 --> 00:16:50.950 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:16:50.950 --> 00:17:01.830 align:middle line:84%
+So the question is, how
+many examples can we
+
+00:17:01.830 --> 00:17:04.829 align:middle line:84%
+find which obey the hypotheses,
+so this theorem says anything
+
+00:17:04.829 --> 00:17:06.990 align:middle line:90%
+about them?
+
+00:17:06.990 --> 00:17:09.960 align:middle line:84%
+Well, I think it's not
+super hard because we're
+
+00:17:09.960 --> 00:17:11.705 align:middle line:90%
+allowed to take D to be small.
+
+00:17:11.705 --> 00:17:21.100 align:middle line:90%
+
+
+00:17:21.100 --> 00:17:24.599 align:middle line:84%
+So if D is just one
+direction, then you
+
+00:17:24.599 --> 00:17:27.599 align:middle line:84%
+could easily arrange the points
+so that their projection in one
+
+00:17:27.599 --> 00:17:29.140 align:middle line:90%
+direction is quite small.
+
+00:17:29.140 --> 00:17:31.330 align:middle line:84%
+And you have a lot more
+flexibility than a grid.
+
+00:17:31.330 --> 00:17:35.310 align:middle line:84%
+And if you'd like the projection
+to be small in two directions,
+
+00:17:35.310 --> 00:17:39.100 align:middle line:84%
+then you would want some
+kind of Cartesian product,
+
+00:17:39.100 --> 00:17:41.850 align:middle line:84%
+but there's still a lot
+more Cartesian products
+
+00:17:41.850 --> 00:17:43.620 align:middle line:90%
+than integer grids.
+
+00:17:43.620 --> 00:17:46.350 align:middle line:84%
+And then as you add more
+directions, it gets more rigid
+
+00:17:46.350 --> 00:17:48.760 align:middle line:84%
+and we can start
+to think about it.
+
+00:17:48.760 --> 00:17:50.650 align:middle line:90%
+We can think about it later on.
+
+00:17:50.650 --> 00:17:54.180 align:middle line:84%
+It's a neat question how many
+examples we can come up with.
+
+00:17:54.180 --> 00:17:55.890 align:middle line:90%
+Yeah.
+
+00:17:55.890 --> 00:17:58.860 align:middle line:90%
+Yeah.
+
+00:17:58.860 --> 00:18:00.400 align:middle line:90%
+OK.
+
+00:18:00.400 --> 00:18:01.600 align:middle line:90%
+Other questions?
+
+00:18:01.600 --> 00:18:04.200 align:middle line:90%
+
+
+00:18:04.200 --> 00:18:09.770 align:middle line:84%
+AUDIENCE: In the example why
+you said q equals p prime.
+
+00:18:09.770 --> 00:18:12.796 align:middle line:90%
+Can be p be a prime?
+
+00:18:12.796 --> 00:18:15.060 align:middle line:90%
+[INAUDIBLE]
+
+00:18:15.060 --> 00:18:17.640 align:middle line:90%
+LAWRENCE GUTH: Yes, right.
+
+00:18:17.640 --> 00:18:19.590 align:middle line:90%
+OK.
+
+00:18:19.590 --> 00:18:22.290 align:middle line:84%
+So the question was
+up in example one,
+
+00:18:22.290 --> 00:18:24.480 align:middle line:90%
+we assume that q is prime.
+
+00:18:24.480 --> 00:18:27.170 align:middle line:84%
+Are there examples similar
+to that if q is not prime?
+
+00:18:27.170 --> 00:18:30.120 align:middle line:90%
+
+
+00:18:30.120 --> 00:18:33.210 align:middle line:84%
+So if N and A are smaller,
+if q is p to the r
+
+00:18:33.210 --> 00:18:34.960 align:middle line:84%
+and you choose N and
+A smaller than p,
+
+00:18:34.960 --> 00:18:38.340 align:middle line:84%
+you can just use what's
+on the board verbatim.
+
+00:18:38.340 --> 00:18:41.080 align:middle line:84%
+If you wanted to choose
+N and A bigger than p,
+
+00:18:41.080 --> 00:18:44.910 align:middle line:84%
+it doesn't really
+make sense in Fq.
+
+00:18:44.910 --> 00:18:46.745 align:middle line:84%
+So I think that
+there's a fix for that.
+
+00:18:46.745 --> 00:18:48.870 align:middle line:84%
+But I didn't have time to
+think through the details
+
+00:18:48.870 --> 00:18:49.640 align:middle line:90%
+before class.
+
+00:18:49.640 --> 00:18:57.390 align:middle line:90%
+
+
+00:18:57.390 --> 00:19:01.325 align:middle line:90%
+Yeah, so homework for one of us.
+
+00:19:01.325 --> 00:19:06.000 align:middle line:90%
+
+
+00:19:06.000 --> 00:19:06.700 align:middle line:90%
+OK.
+
+00:19:06.700 --> 00:19:09.000 align:middle line:84%
+So let's start
+proving some things.
+
+00:19:09.000 --> 00:19:11.570 align:middle line:84%
+So first we'll do
+the double counting.
+
+00:19:11.570 --> 00:19:23.700 align:middle line:90%
+
+
+00:19:23.700 --> 00:19:28.080 align:middle line:84%
+So suppose that you just
+look at one direction
+
+00:19:28.080 --> 00:19:30.100 align:middle line:90%
+where this projection is small.
+
+00:19:30.100 --> 00:19:34.380 align:middle line:84%
+If S is a lot smaller than X, it
+will look something like this.
+
+00:19:34.380 --> 00:19:38.670 align:middle line:84%
+So here is the space
+we're projecting onto
+
+00:19:38.670 --> 00:19:41.353 align:middle line:90%
+and we'll have some points.
+
+00:19:41.353 --> 00:19:43.920 align:middle line:90%
+
+
+00:19:43.920 --> 00:19:45.820 align:middle line:90%
+And this is our projection map.
+
+00:19:45.820 --> 00:19:48.660 align:middle line:84%
+So here, we have
+X, and this arrow
+
+00:19:48.660 --> 00:19:52.980 align:middle line:90%
+is the projection map pi theta.
+
+00:19:52.980 --> 00:20:00.850 align:middle line:84%
+And then down here we
+have pi theta of X. OK.
+
+00:20:00.850 --> 00:20:03.210 align:middle line:84%
+And you'll notice that for
+each point in the projection
+
+00:20:03.210 --> 00:20:05.550 align:middle line:84%
+or at least for most
+points in the projection,
+
+00:20:05.550 --> 00:20:10.080 align:middle line:84%
+we will have many points of X
+that are going on top of it.
+
+00:20:10.080 --> 00:20:12.804 align:middle line:90%
+OK.
+
+00:20:12.804 --> 00:20:16.050 align:middle line:84%
+So we're going to pay
+attention to that.
+
+00:20:16.050 --> 00:20:21.930 align:middle line:84%
+And the first thing we'll
+say is that if S is smaller
+
+00:20:21.930 --> 00:20:25.380 align:middle line:84%
+than x over 2, then we
+have a lot of points
+
+00:20:25.380 --> 00:20:28.620 align:middle line:90%
+going on top of each other.
+
+00:20:28.620 --> 00:20:33.450 align:middle line:84%
+So for every theta in
+our set of directions,
+
+00:20:33.450 --> 00:20:38.580 align:middle line:84%
+the number of pairs x1
+and x2 in X that got
+
+00:20:38.580 --> 00:20:40.205 align:middle line:90%
+projected to the same point.
+
+00:20:40.205 --> 00:20:45.030 align:middle line:90%
+
+
+00:20:45.030 --> 00:20:54.030 align:middle line:84%
+That should be at least around
+S times X over S squared.
+
+00:20:54.030 --> 00:20:55.653 align:middle line:90%
+OK, so let's digest that.
+
+00:20:55.653 --> 00:20:57.820 align:middle line:84%
+First of all, I'll warn you
+that I changed notation.
+
+00:20:57.820 --> 00:21:01.240 align:middle line:84%
+So x1 and x2 are
+each points in X.
+
+00:21:01.240 --> 00:21:05.200 align:middle line:84%
+Those are not the
+components of anything.
+
+00:21:05.200 --> 00:21:07.000 align:middle line:90%
+And so why is this?
+
+00:21:07.000 --> 00:21:12.420 align:middle line:84%
+Well imagine first that
+each point in the projection
+
+00:21:12.420 --> 00:21:14.760 align:middle line:84%
+has the same number
+of preimages.
+
+00:21:14.760 --> 00:21:17.250 align:middle line:84%
+So each of these
+points has about X
+
+00:21:17.250 --> 00:21:21.660 align:middle line:84%
+over S points of X
+sitting above it.
+
+00:21:21.660 --> 00:21:25.620 align:middle line:84%
+And then the number of
+ways to choose two of them
+
+00:21:25.620 --> 00:21:29.340 align:middle line:90%
+would be X over S squared.
+
+00:21:29.340 --> 00:21:31.840 align:middle line:84%
+And that would be true for
+each of these S points.
+
+00:21:31.840 --> 00:21:35.700 align:middle line:90%
+So that would give us this.
+
+00:21:35.700 --> 00:21:37.680 align:middle line:84%
+Now actually, let
+me add here that I'm
+
+00:21:37.680 --> 00:21:40.610 align:middle line:84%
+interested in two different
+points that got projected
+
+00:21:40.610 --> 00:21:41.360 align:middle line:90%
+to the same point.
+
+00:21:41.360 --> 00:21:44.640 align:middle line:90%
+
+
+00:21:44.640 --> 00:21:45.940 align:middle line:90%
+So this is still true.
+
+00:21:45.940 --> 00:21:48.070 align:middle line:84%
+But because I put two
+different points here,
+
+00:21:48.070 --> 00:21:50.846 align:middle line:84%
+that's where I needed
+to use this hypothesis.
+
+00:21:50.846 --> 00:21:53.700 align:middle line:90%
+
+
+00:21:53.700 --> 00:21:56.520 align:middle line:84%
+So that was some intuition
+why it might be true.
+
+00:21:56.520 --> 00:21:58.170 align:middle line:84%
+Then you might
+wonder, well, maybe
+
+00:21:58.170 --> 00:21:59.500 align:middle line:90%
+they're not evenly distributed.
+
+00:21:59.500 --> 00:22:02.170 align:middle line:84%
+Maybe some of these points have
+more preimages than others.
+
+00:22:02.170 --> 00:22:04.450 align:middle line:84%
+It turns out that
+that only helps you.
+
+00:22:04.450 --> 00:22:06.100 align:middle line:84%
+I'm going to make
+it an exercise.
+
+00:22:06.100 --> 00:22:08.920 align:middle line:84%
+It's kind of a standard
+combinatorics exercise.
+
+00:22:08.920 --> 00:22:10.650 align:middle line:84%
+So it's exercise on
+your first problem
+
+00:22:10.650 --> 00:22:13.570 align:middle line:90%
+set using Cauchy-Schwarz.
+
+00:22:13.570 --> 00:22:25.620 align:middle line:90%
+
+
+00:22:25.620 --> 00:22:26.120 align:middle line:90%
+Cool.
+
+00:22:26.120 --> 00:22:28.820 align:middle line:84%
+So there are a lot of points
+getting collapsed together
+
+00:22:28.820 --> 00:22:30.562 align:middle line:84%
+in these different
+projections, and we're
+
+00:22:30.562 --> 00:22:31.770 align:middle line:90%
+going to put it all together.
+
+00:22:31.770 --> 00:22:33.290 align:middle line:84%
+So the key object
+that we're going
+
+00:22:33.290 --> 00:22:39.320 align:middle line:84%
+to count is the number
+of directions theta
+
+00:22:39.320 --> 00:22:45.920 align:middle line:84%
+and distinct points
+in X, so that they
+
+00:22:45.920 --> 00:22:47.190 align:middle line:90%
+have the same projection.
+
+00:22:47.190 --> 00:22:51.500 align:middle line:90%
+
+
+00:22:51.500 --> 00:22:53.420 align:middle line:84%
+And there have to
+be a lot of those
+
+00:22:53.420 --> 00:22:55.620 align:middle line:84%
+because for every direction
+there are a lot of them.
+
+00:22:55.620 --> 00:23:00.650 align:middle line:84%
+So the number of these is at
+least X squared S inverse number
+
+00:23:00.650 --> 00:23:01.530 align:middle line:90%
+of directions.
+
+00:23:01.530 --> 00:23:04.370 align:middle line:84%
+The X squared S inverse
+is just that simplified.
+
+00:23:04.370 --> 00:23:06.690 align:middle line:84%
+And that was how many there
+are in each direction.
+
+00:23:06.690 --> 00:23:08.070 align:middle line:90%
+And there are D directions.
+
+00:23:08.070 --> 00:23:14.852 align:middle line:90%
+
+
+00:23:14.852 --> 00:23:20.450 align:middle line:84%
+So now the point is that it's
+hard to have this many collapses
+
+00:23:20.450 --> 00:23:24.090 align:middle line:84%
+because if you take any
+two pairs of points in X,
+
+00:23:24.090 --> 00:23:26.510 align:middle line:84%
+there is only one direction
+in which they get mapped
+
+00:23:26.510 --> 00:23:29.450 align:middle line:90%
+on top of each other.
+
+00:23:29.450 --> 00:23:34.510 align:middle line:84%
+So that gives us an
+upper bound on this star.
+
+00:23:34.510 --> 00:23:41.580 align:middle line:84%
+But for any points x1 not equal
+to x2, the number of theta
+
+00:23:41.580 --> 00:23:49.310 align:middle line:84%
+so that pi theta of x1
+equals pi theta of x2,
+
+00:23:49.310 --> 00:23:51.020 align:middle line:90%
+there's at most one.
+
+00:23:51.020 --> 00:23:53.690 align:middle line:84%
+And that gives us an
+upper bound for star.
+
+00:23:53.690 --> 00:23:59.480 align:middle line:84%
+Star is upper
+bounded by x squared.
+
+00:23:59.480 --> 00:24:01.430 align:middle line:84%
+Once you choose
+x1 and x2, there's
+
+00:24:01.430 --> 00:24:02.620 align:middle line:90%
+only one choice of theta.
+
+00:24:02.620 --> 00:24:10.950 align:middle line:90%
+
+
+00:24:10.950 --> 00:24:14.240 align:middle line:84%
+So this key quantity is
+sandwiched in between here
+
+00:24:14.240 --> 00:24:22.010 align:middle line:84%
+and here we have X squared S
+inverse D is less than star,
+
+00:24:22.010 --> 00:24:25.370 align:middle line:90%
+is less than x squared.
+
+00:24:25.370 --> 00:24:27.290 align:middle line:84%
+And you simplify
+this a little bit.
+
+00:24:27.290 --> 00:24:31.930 align:middle line:84%
+And we get that D is less
+than S. And that's the proof.
+
+00:24:31.930 --> 00:24:49.790 align:middle line:90%
+
+
+00:24:49.790 --> 00:24:52.490 align:middle line:84%
+Let me summarize it
+without the equations.
+
+00:24:52.490 --> 00:24:55.610 align:middle line:84%
+The key object is
+this object, star.
+
+00:24:55.610 --> 00:24:59.220 align:middle line:84%
+Let's call let's call this
+the set of coincidences.
+
+00:24:59.220 --> 00:25:01.490 align:middle line:84%
+A coincidence is when
+you have two points in X
+
+00:25:01.490 --> 00:25:05.720 align:middle line:84%
+that get mapped to the
+same point by pi theta.
+
+00:25:05.720 --> 00:25:08.160 align:middle line:84%
+And if many
+projections are small,
+
+00:25:08.160 --> 00:25:10.490 align:middle line:90%
+there must be many coincidences.
+
+00:25:10.490 --> 00:25:12.290 align:middle line:84%
+But there can't be that
+many because if you
+
+00:25:12.290 --> 00:25:15.440 align:middle line:84%
+take two points, x1 and x2,
+there's only one direction that
+
+00:25:15.440 --> 00:25:16.530 align:middle line:90%
+makes a coincidence.
+
+00:25:16.530 --> 00:25:17.697 align:middle line:90%
+And that's what we're using.
+
+00:25:17.697 --> 00:25:28.946 align:middle line:90%
+
+
+00:25:28.946 --> 00:25:31.600 align:middle line:84%
+Any questions or comments
+about double counting?
+
+00:25:31.600 --> 00:25:38.900 align:middle line:90%
+
+
+00:25:38.900 --> 00:25:40.010 align:middle line:90%
+OK.
+
+00:25:40.010 --> 00:25:42.500 align:middle line:84%
+Let me show you the
+second approach, which
+
+00:25:42.500 --> 00:25:45.770 align:middle line:84%
+is based on I called
+it a Fourier approach,
+
+00:25:45.770 --> 00:25:50.900 align:middle line:84%
+or based on orthogonality,
+or based on cancelation.
+
+00:25:50.900 --> 00:25:53.720 align:middle line:84%
+So this approach
+begins with an image
+
+00:25:53.720 --> 00:25:57.170 align:middle line:84%
+that I want you to have
+in mind, and that we
+
+00:25:57.170 --> 00:26:00.110 align:middle line:84%
+could try to work on
+this image in many ways.
+
+00:26:00.110 --> 00:26:02.290 align:middle line:84%
+So it's the overlapping
+lines image.
+
+00:26:02.290 --> 00:26:05.810 align:middle line:90%
+
+
+00:26:05.810 --> 00:26:08.870 align:middle line:84%
+So suppose I have
+a bunch of points
+
+00:26:08.870 --> 00:26:13.880 align:middle line:84%
+that have small projections
+in many directions.
+
+00:26:13.880 --> 00:26:17.436 align:middle line:84%
+So if I project this down,
+it has a small projection.
+
+00:26:17.436 --> 00:26:23.210 align:middle line:90%
+
+
+00:26:23.210 --> 00:26:25.860 align:middle line:84%
+So maybe I'll call
+this pi theta 1.
+
+00:26:25.860 --> 00:26:28.890 align:middle line:84%
+If I look at the
+preimages of these,
+
+00:26:28.890 --> 00:26:35.140 align:middle line:84%
+I'll get some lines
+in a certain direction
+
+00:26:35.140 --> 00:26:37.250 align:middle line:90%
+that corresponds to theta 1.
+
+00:26:37.250 --> 00:26:41.310 align:middle line:84%
+And so I've covered my set
+with not too many lines.
+
+00:26:41.310 --> 00:26:43.940 align:middle line:84%
+So down here there
+are at most S points.
+
+00:26:43.940 --> 00:26:47.550 align:middle line:84%
+So over here we have
+at most S lines.
+
+00:26:47.550 --> 00:26:50.725 align:middle line:84%
+And I'll call this set
+of lines L theta 1.
+
+00:26:50.725 --> 00:26:54.530 align:middle line:90%
+
+
+00:26:54.530 --> 00:27:05.400 align:middle line:84%
+So to summarize, if pi theta of
+X is less than or equal to S,
+
+00:27:05.400 --> 00:27:17.450 align:middle line:84%
+then I get a set called L theta
+is a set of at most S lines that
+
+00:27:17.450 --> 00:27:21.080 align:middle line:84%
+are I guess
+perpendicular to theta,
+
+00:27:21.080 --> 00:27:25.525 align:middle line:90%
+and that they cover my set x.
+
+00:27:25.525 --> 00:27:29.150 align:middle line:90%
+
+
+00:27:29.150 --> 00:27:31.500 align:middle line:84%
+So now if I have many
+small projections,
+
+00:27:31.500 --> 00:27:33.240 align:middle line:84%
+I can do this in
+many directions.
+
+00:27:33.240 --> 00:27:36.480 align:middle line:84%
+And so I'll have sets of
+lines in different directions.
+
+00:27:36.480 --> 00:27:39.170 align:middle line:90%
+And I'll cover X many times.
+
+00:27:39.170 --> 00:27:48.065 align:middle line:84%
+So I can do this for every
+theta in my set of directions.
+
+00:27:48.065 --> 00:27:50.300 align:middle line:90%
+So I'll do one more.
+
+00:27:50.300 --> 00:27:52.680 align:middle line:84%
+I was meaning to bring some
+colored chalk, but I didn't.
+
+00:27:52.680 --> 00:27:56.390 align:middle line:84%
+I don't have colored chalk
+today, so I'll do my best.
+
+00:27:56.390 --> 00:27:59.420 align:middle line:84%
+So let's say this is
+a dotted direction.
+
+00:27:59.420 --> 00:28:06.985 align:middle line:84%
+And when I project in the theta
+2 direction, we have this.
+
+00:28:06.985 --> 00:28:13.220 align:middle line:90%
+
+
+00:28:13.220 --> 00:28:17.750 align:middle line:84%
+So this would be L
+theta 2 in dotted lines.
+
+00:28:17.750 --> 00:28:20.250 align:middle line:84%
+And I'm not going to add any
+more directions to the picture,
+
+00:28:20.250 --> 00:28:23.190 align:middle line:84%
+but in your imagination,
+imagine that this set of points,
+
+00:28:23.190 --> 00:28:25.940 align:middle line:84%
+there are lines going
+many different ways that
+
+00:28:25.940 --> 00:28:28.555 align:middle line:90%
+are covering the set of points.
+
+00:28:28.555 --> 00:28:31.280 align:middle line:90%
+
+
+00:28:31.280 --> 00:28:33.860 align:middle line:84%
+So in our second method,
+and maybe in a lot of things
+
+00:28:33.860 --> 00:28:36.860 align:middle line:84%
+that we do, we're going
+to imagine these lines
+
+00:28:36.860 --> 00:28:39.440 align:middle line:84%
+and work with these lines
+as a way of understanding
+
+00:28:39.440 --> 00:28:41.100 align:middle line:90%
+the projection estimates.
+
+00:28:41.100 --> 00:28:46.815 align:middle line:90%
+
+
+00:28:46.815 --> 00:28:49.735 align:middle line:84%
+So let me add a little
+vocabulary about this.
+
+00:28:49.735 --> 00:28:53.090 align:middle line:90%
+
+
+00:28:53.090 --> 00:28:56.630 align:middle line:90%
+So we've defined L theta.
+
+00:28:56.630 --> 00:28:59.150 align:middle line:84%
+L, out whole set of
+lines is the union
+
+00:28:59.150 --> 00:29:02.250 align:middle line:84%
+over all the different
+directions of the lines L theta.
+
+00:29:02.250 --> 00:29:05.240 align:middle line:90%
+So that's a set of lines.
+
+00:29:05.240 --> 00:29:12.050 align:middle line:84%
+And so if L is a line,
+I'm going to write
+
+00:29:12.050 --> 00:29:16.190 align:middle line:84%
+L of x as an abbreviation for
+the characteristic function
+
+00:29:16.190 --> 00:29:20.330 align:middle line:90%
+of that line 1 sub L of x
+
+00:29:20.330 --> 00:29:23.000 align:middle line:84%
+And we think about what
+happens when we add up all
+
+00:29:23.000 --> 00:29:24.810 align:middle line:90%
+these characteristic functions.
+
+00:29:24.810 --> 00:29:30.440 align:middle line:84%
+So f of x is the sum
+over all the lines
+
+00:29:30.440 --> 00:29:33.580 align:middle line:90%
+in my set of lines, of L of x.
+
+00:29:33.580 --> 00:29:39.170 align:middle line:90%
+
+
+00:29:39.170 --> 00:29:41.030 align:middle line:84%
+So take a moment
+to visualize that.
+
+00:29:41.030 --> 00:29:44.960 align:middle line:84%
+I have lines going in
+different directions.
+
+00:29:44.960 --> 00:29:49.395 align:middle line:84%
+Imagine their characteristic
+functions and add them all up.
+
+00:29:49.395 --> 00:29:51.270 align:middle line:84%
+So when I add them all
+up at any given point,
+
+00:29:51.270 --> 00:29:52.937 align:middle line:84%
+it will tell me how
+many different lines
+
+00:29:52.937 --> 00:29:56.990 align:middle line:84%
+to my set of lines went
+through that point.
+
+00:29:56.990 --> 00:30:03.200 align:middle line:84%
+And so if X is in my set
+of points, then f of x
+
+00:30:03.200 --> 00:30:06.260 align:middle line:90%
+is the number of directions.
+
+00:30:06.260 --> 00:30:08.510 align:middle line:84%
+If I take a point in
+my set, this point
+
+00:30:08.510 --> 00:30:11.990 align:middle line:84%
+is going to lie in one
+line in every direction.
+
+00:30:11.990 --> 00:30:15.110 align:middle line:84%
+If I take a point
+that's not in my set,
+
+00:30:15.110 --> 00:30:18.143 align:middle line:84%
+it's not very clear
+what's going to happen.
+
+00:30:18.143 --> 00:30:19.560 align:middle line:84%
+Obviously it will
+be in any lines,
+
+00:30:19.560 --> 00:30:21.478 align:middle line:90%
+but it might be in some lines.
+
+00:30:21.478 --> 00:30:24.020 align:middle line:84%
+We don't know much about what
+f is doing at those points that
+
+00:30:24.020 --> 00:30:27.900 align:middle line:90%
+are not in my set X. OK, great.
+
+00:30:27.900 --> 00:30:30.780 align:middle line:90%
+
+
+00:30:30.780 --> 00:30:33.560 align:middle line:84%
+So we're going to get
+at projection theory
+
+00:30:33.560 --> 00:30:35.490 align:middle line:84%
+by trying to study
+this function,
+
+00:30:35.490 --> 00:30:38.090 align:middle line:84%
+and in particular, trying
+to study the set where
+
+00:30:38.090 --> 00:30:39.570 align:middle line:90%
+the function is big.
+
+00:30:39.570 --> 00:30:42.140 align:middle line:84%
+So that's going to be
+our second approach.
+
+00:30:42.140 --> 00:30:45.350 align:middle line:84%
+And we're going to study the
+set where this function is big
+
+00:30:45.350 --> 00:30:49.350 align:middle line:84%
+using Fourier analysis
+and/or using orthogonality.
+
+00:30:49.350 --> 00:31:20.410 align:middle line:90%
+
+
+00:31:20.410 --> 00:31:21.890 align:middle line:90%
+So orthogonality.
+
+00:31:21.890 --> 00:31:30.280 align:middle line:90%
+
+
+00:31:30.280 --> 00:31:33.250 align:middle line:84%
+So L of x are numbers, the
+characteristic function
+
+00:31:33.250 --> 00:31:34.420 align:middle line:90%
+of a line.
+
+00:31:34.420 --> 00:31:37.140 align:middle line:84%
+And I'm going to
+decompose it into pieces.
+
+00:31:37.140 --> 00:31:40.480 align:middle line:90%
+
+
+00:31:40.480 --> 00:31:43.070 align:middle line:90%
+So there are q points in a line.
+
+00:31:43.070 --> 00:31:45.910 align:middle line:84%
+And there are q squared
+points in my whole plane.
+
+00:31:45.910 --> 00:31:51.760 align:middle line:84%
+And so the average value
+of L of x is 1 over q
+
+00:31:51.760 --> 00:31:54.190 align:middle line:90%
+I'm going to separate that out.
+
+00:31:54.190 --> 00:32:00.170 align:middle line:84%
+That's 1 over q plus a piece
+that I'll call L sub high of x.
+
+00:32:00.170 --> 00:32:01.220 align:middle line:90%
+That h is for high.
+
+00:32:01.220 --> 00:32:03.700 align:middle line:84%
+We'll talk about that
+name more in a sec.
+
+00:32:03.700 --> 00:32:10.430 align:middle line:84%
+So this is the average
+value of our function.
+
+00:32:10.430 --> 00:32:19.190 align:middle line:84%
+And therefore, the
+leftover piece has mean 0,
+
+00:32:19.190 --> 00:32:23.620 align:middle line:84%
+it has average
+value 0, has mean 0.
+
+00:32:23.620 --> 00:32:28.030 align:middle line:84%
+And I also will think of this
+as the zero frequency piece
+
+00:32:28.030 --> 00:32:31.960 align:middle line:84%
+and the high frequency piece
+in terms of Fourier analysis.
+
+00:32:31.960 --> 00:32:33.050 align:middle line:90%
+We can make that precise.
+
+00:32:33.050 --> 00:32:34.425 align:middle line:84%
+We'll do that a
+little bit later.
+
+00:32:34.425 --> 00:32:36.823 align:middle line:90%
+
+
+00:32:36.823 --> 00:32:38.740 align:middle line:84%
+Depending on how much
+Fourier analysis you do,
+
+00:32:38.740 --> 00:32:40.930 align:middle line:84%
+you may or may not
+like this intuition.
+
+00:32:40.930 --> 00:32:44.200 align:middle line:84%
+But this is a constant part,
+and this is a higher frequency
+
+00:32:44.200 --> 00:32:47.030 align:middle line:90%
+oscillating part OK.
+
+00:32:47.030 --> 00:32:48.140 align:middle line:90%
+Those are just words.
+
+00:32:48.140 --> 00:32:50.830 align:middle line:90%
+So we decompose it like this.
+
+00:32:50.830 --> 00:33:00.790 align:middle line:84%
+Now the key observation
+is that, oversimplifying
+
+00:33:00.790 --> 00:33:04.120 align:middle line:84%
+just a little bit, these
+high frequency parts
+
+00:33:04.120 --> 00:33:06.400 align:middle line:90%
+are orthogonal to each other.
+
+00:33:06.400 --> 00:33:08.500 align:middle line:90%
+So here's a precise statement.
+
+00:33:08.500 --> 00:33:13.960 align:middle line:84%
+So if L1 not equal
+to L2, are lines,
+
+00:33:13.960 --> 00:33:15.880 align:middle line:90%
+we have two different lines.
+
+00:33:15.880 --> 00:33:20.890 align:middle line:84%
+Then the sum over
+all of the points
+
+00:33:20.890 --> 00:33:28.995 align:middle line:84%
+in the plane of L1 h of x, L2 h
+of x is less than or equal to 0.
+
+00:33:28.995 --> 00:33:32.770 align:middle line:90%
+
+
+00:33:32.770 --> 00:33:35.660 align:middle line:84%
+Now when we prove this
+lemma in a little bit,
+
+00:33:35.660 --> 00:33:39.020 align:middle line:84%
+we will see that it's
+almost always equal to 0.
+
+00:33:39.020 --> 00:33:41.878 align:middle line:84%
+So these functions are
+almost always orthogonal.
+
+00:33:41.878 --> 00:33:43.670 align:middle line:84%
+And once in a while
+they're not orthogonal.
+
+00:33:43.670 --> 00:33:44.750 align:middle line:90%
+But then it's negative.
+
+00:33:44.750 --> 00:33:47.170 align:middle line:84%
+That part isn't that
+important anyway.
+
+00:33:47.170 --> 00:33:51.520 align:middle line:84%
+So roughly speaking, these
+functions L1h and L2h
+
+00:33:51.520 --> 00:33:53.500 align:middle line:90%
+are orthogonal.
+
+00:33:53.500 --> 00:33:55.845 align:middle line:90%
+Now how does that help us?
+
+00:33:55.845 --> 00:33:58.570 align:middle line:90%
+
+
+00:33:58.570 --> 00:34:03.370 align:middle line:90%
+Well let's think about f of x.
+
+00:34:03.370 --> 00:34:08.260 align:middle line:84%
+f of x, remember, is the
+sum over all the lines
+
+00:34:08.260 --> 00:34:10.510 align:middle line:90%
+in our set of lines of L of x.
+
+00:34:10.510 --> 00:34:12.620 align:middle line:84%
+So we can break it
+up this way also.
+
+00:34:12.620 --> 00:34:15.739 align:middle line:84%
+When we add up the constant
+parts, we just see what we get.
+
+00:34:15.739 --> 00:34:18.370 align:middle line:84%
+We get the number of
+lines divided by q.
+
+00:34:18.370 --> 00:34:21.650 align:middle line:84%
+And then we have to add up
+all the high frequency parts.
+
+00:34:21.650 --> 00:34:28.900 align:middle line:84%
+So plus the sum L in our
+set of lines of Lh of x.
+
+00:34:28.900 --> 00:34:32.830 align:middle line:84%
+So this thing here is the
+high frequency part of f.
+
+00:34:32.830 --> 00:34:34.845 align:middle line:90%
+I'll call it f sub h of x.
+
+00:34:34.845 --> 00:34:36.720 align:middle line:84%
+For now you can think
+of that as just a name.
+
+00:34:36.720 --> 00:34:40.974 align:middle line:90%
+
+
+00:34:40.974 --> 00:34:44.350 align:middle line:84%
+So this part we
+understand quite well.
+
+00:34:44.350 --> 00:34:46.070 align:middle line:90%
+We know exactly what it is.
+
+00:34:46.070 --> 00:34:48.190 align:middle line:84%
+And so understanding
+this function
+
+00:34:48.190 --> 00:34:50.860 align:middle line:84%
+boils down to
+understanding this part.
+
+00:34:50.860 --> 00:34:54.860 align:middle line:84%
+And for understanding this part,
+we can use this orthogonality.
+
+00:34:54.860 --> 00:34:56.320 align:middle line:84%
+We've written it
+as a sum of pieces
+
+00:34:56.320 --> 00:34:57.945 align:middle line:84%
+that are each pretty
+simple and they're
+
+00:34:57.945 --> 00:34:59.210 align:middle line:90%
+orthogonal to each other.
+
+00:34:59.210 --> 00:35:03.280 align:middle line:84%
+And so that lets us figure
+out or estimate quite well
+
+00:35:03.280 --> 00:35:06.430 align:middle line:90%
+the L2 norm of this fh.
+
+00:35:06.430 --> 00:35:10.760 align:middle line:84%
+So after the key lemma, I
+guess there's the L2 estimate.
+
+00:35:10.760 --> 00:35:13.720 align:middle line:90%
+
+
+00:35:13.720 --> 00:35:26.290 align:middle line:84%
+It says this sum x in fq
+squared of fh of x squared,
+
+00:35:26.290 --> 00:35:34.330 align:middle line:84%
+that's the sum L1 L2 in
+L of the sum x and Fq
+
+00:35:34.330 --> 00:35:40.095 align:middle line:90%
+squared L1h of x L2 h of x.
+
+00:35:40.095 --> 00:35:52.354 align:middle line:90%
+
+
+00:35:52.354 --> 00:35:55.760 align:middle line:84%
+And because of my
+orthogonality in the key lemma,
+
+00:35:55.760 --> 00:35:59.260 align:middle line:84%
+almost all of these terms
+are less than or equal to 0.
+
+00:35:59.260 --> 00:36:01.940 align:middle line:84%
+Namely, if L1 is
+different from L2,
+
+00:36:01.940 --> 00:36:05.060 align:middle line:84%
+then this sum is less
+than or equal to 0.
+
+00:36:05.060 --> 00:36:07.083 align:middle line:84%
+So then I'll just
+keep the terms where
+
+00:36:07.083 --> 00:36:08.250 align:middle line:90%
+they're equal to each other.
+
+00:36:08.250 --> 00:36:24.958 align:middle line:90%
+
+
+00:36:24.958 --> 00:36:30.140 align:middle line:84%
+Now this sum here is
+easy to do because I just
+
+00:36:30.140 --> 00:36:32.450 align:middle line:84%
+have to think one
+line at a time,
+
+00:36:32.450 --> 00:36:35.100 align:middle line:84%
+and all the lines will be
+equivalent to each other.
+
+00:36:35.100 --> 00:36:38.990 align:middle line:84%
+So it's just the number of
+lines times whatever this is.
+
+00:36:38.990 --> 00:36:41.870 align:middle line:84%
+This thing also is not
+very hard to compute,
+
+00:36:41.870 --> 00:36:50.300 align:middle line:84%
+but let me say that this is
+actually smaller than if I
+
+00:36:50.300 --> 00:36:53.205 align:middle line:90%
+did the whole L of x squared.
+
+00:36:53.205 --> 00:36:55.830 align:middle line:84%
+I mean, you could just compute
+it and write down what happened.
+
+00:36:55.830 --> 00:36:59.270 align:middle line:84%
+But anyway if you
+take a function
+
+00:36:59.270 --> 00:37:02.600 align:middle line:84%
+and you subtract off its
+mean, then the L2 norm
+
+00:37:02.600 --> 00:37:05.020 align:middle line:84%
+is smaller than for
+the original function.
+
+00:37:05.020 --> 00:37:06.620 align:middle line:90%
+So we could write this.
+
+00:37:06.620 --> 00:37:09.140 align:middle line:84%
+And then we can compute
+this even in our heads.
+
+00:37:09.140 --> 00:37:13.220 align:middle line:84%
+So L of x is 1 at q points,
+and otherwise it's 0.
+
+00:37:13.220 --> 00:37:15.160 align:middle line:90%
+So this thing here is q.
+
+00:37:15.160 --> 00:37:19.720 align:middle line:84%
+So we get the number
+of lines times q.
+
+00:37:19.720 --> 00:37:21.620 align:middle line:90%
+So that's our L2 estimate.
+
+00:37:21.620 --> 00:38:07.600 align:middle line:90%
+
+
+00:38:07.600 --> 00:38:11.690 align:middle line:84%
+OK, so now let's finish
+the proof of theorem two.
+
+00:38:11.690 --> 00:38:13.960 align:middle line:90%
+There's theorem two up there.
+
+00:38:13.960 --> 00:38:18.850 align:middle line:84%
+We have this hypothesis that
+S is a lot smaller than q.
+
+00:38:18.850 --> 00:38:20.500 align:middle line:90%
+How does that matter?
+
+00:38:20.500 --> 00:38:24.010 align:middle line:90%
+That controls this term.
+
+00:38:24.010 --> 00:38:27.940 align:middle line:84%
+So if D was only
+as big as L over q,
+
+00:38:27.940 --> 00:38:31.850 align:middle line:84%
+then this complicated thing
+wouldn't come into play.
+
+00:38:31.850 --> 00:38:34.580 align:middle line:84%
+And f could be that
+big everywhere.
+
+00:38:34.580 --> 00:38:38.560 align:middle line:90%
+
+
+00:38:38.560 --> 00:38:40.550 align:middle line:90%
+So let's see how that works.
+
+00:38:40.550 --> 00:38:43.840 align:middle line:84%
+So the number of lines
+in my set of lines
+
+00:38:43.840 --> 00:38:48.550 align:middle line:84%
+is S times D because I have D
+directions and I have S lines
+
+00:38:48.550 --> 00:38:50.110 align:middle line:90%
+in each direction.
+
+00:38:50.110 --> 00:39:00.970 align:middle line:84%
+So this L over q is
+S times D over q.
+
+00:39:00.970 --> 00:39:04.110 align:middle line:84%
+And I have a hypothesis
+that's S at most q over 2.
+
+00:39:04.110 --> 00:39:06.730 align:middle line:90%
+
+
+00:39:06.730 --> 00:39:12.490 align:middle line:84%
+So that implies that when I
+take this ratio, this L over q,
+
+00:39:12.490 --> 00:39:17.980 align:middle line:90%
+is less than half of D. Yeah?
+
+00:39:17.980 --> 00:39:21.280 align:middle line:84%
+So the quality L
+equals S times D,
+
+00:39:21.280 --> 00:39:28.280 align:middle line:84%
+does that assume that every
+set of lines has the same--
+
+00:39:28.280 --> 00:39:29.540 align:middle line:90%
+every L is the same size?
+
+00:39:29.540 --> 00:39:32.140 align:middle line:84%
+Because I thought that they
+could be different sizes.
+
+00:39:32.140 --> 00:39:33.690 align:middle line:90%
+Yes, right.
+
+00:39:33.690 --> 00:39:34.190 align:middle line:90%
+OK.
+
+00:39:34.190 --> 00:39:35.790 align:middle line:90%
+That's a good technical catch.
+
+00:39:35.790 --> 00:39:40.030 align:middle line:90%
+
+
+00:39:40.030 --> 00:39:45.580 align:middle line:84%
+So in each direction I
+have at most S lines.
+
+00:39:45.580 --> 00:39:49.400 align:middle line:84%
+But it might be OK
+to work with that.
+
+00:39:49.400 --> 00:39:51.920 align:middle line:84%
+But I find it slightly
+confusing to keep track of.
+
+00:39:51.920 --> 00:39:54.770 align:middle line:84%
+And you can always
+add some extra lines.
+
+00:39:54.770 --> 00:40:02.910 align:middle line:84%
+And the lines will
+still cover the set X.
+
+00:40:02.910 --> 00:40:07.320 align:middle line:84%
+So I don't know that this is
+crucial, but what I like to do
+
+00:40:07.320 --> 00:40:10.350 align:middle line:84%
+is to say that there are equal
+to S lines and they cover X,
+
+00:40:10.350 --> 00:40:16.080 align:middle line:84%
+and we can say that, and then
+it makes this computation clean.
+
+00:40:16.080 --> 00:40:16.580 align:middle line:90%
+OK.
+
+00:40:16.580 --> 00:40:19.260 align:middle line:90%
+
+
+00:40:19.260 --> 00:40:21.690 align:middle line:84%
+So this L over q
+is less than half
+
+00:40:21.690 --> 00:40:29.460 align:middle line:84%
+of D. Now remember that at
+each point in X, f of x is D.
+
+00:40:29.460 --> 00:40:33.960 align:middle line:84%
+And f of x breaks up as L over
+q plus the high frequency part.
+
+00:40:33.960 --> 00:40:38.100 align:middle line:84%
+And what we just saw is that L
+over q is less than half of D.
+
+00:40:38.100 --> 00:40:41.610 align:middle line:84%
+So the high frequency
+part is the majority
+
+00:40:41.610 --> 00:40:43.175 align:middle line:90%
+of f at those points.
+
+00:40:43.175 --> 00:40:46.440 align:middle line:90%
+
+
+00:40:46.440 --> 00:40:52.380 align:middle line:84%
+So we conclude that
+for every x in X,
+
+00:40:52.380 --> 00:40:55.620 align:middle line:84%
+the high frequency part
+of X is at least half
+
+00:40:55.620 --> 00:41:01.890 align:middle line:84%
+of D. I'll just
+write greater than D.
+
+00:41:01.890 --> 00:41:07.205 align:middle line:84%
+And now we can compare this
+with our L2 bound there.
+
+00:41:07.205 --> 00:41:12.342 align:middle line:90%
+
+
+00:41:12.342 --> 00:41:20.550 align:middle line:84%
+So we can say that sum
+over all the points
+
+00:41:20.550 --> 00:41:26.010 align:middle line:84%
+of f h of x squared, well,
+that should be at least as
+
+00:41:26.010 --> 00:41:30.550 align:middle line:84%
+big as the points in X times the
+number of directions squared.
+
+00:41:30.550 --> 00:41:33.760 align:middle line:84%
+So in this sum, some of
+these points are in my set x.
+
+00:41:33.760 --> 00:41:36.520 align:middle line:84%
+And each of those points,
+this has size around D.
+
+00:41:36.520 --> 00:41:38.760 align:middle line:90%
+So that contributes this much.
+
+00:41:38.760 --> 00:41:40.740 align:middle line:84%
+Plus there are other
+points which I really
+
+00:41:40.740 --> 00:41:43.725 align:middle line:90%
+don't know what they're doing.
+
+00:41:43.725 --> 00:41:46.320 align:middle line:84%
+And then we have the upper
+bound the L2 estimate
+
+00:41:46.320 --> 00:41:47.950 align:middle line:90%
+that we just proved over there.
+
+00:41:47.950 --> 00:41:52.770 align:middle line:84%
+That is upper bounded by
+the number of lines times
+
+00:41:52.770 --> 00:41:56.890 align:middle line:90%
+q, which is S times D times q.
+
+00:41:56.890 --> 00:42:00.840 align:middle line:90%
+
+
+00:42:00.840 --> 00:42:02.550 align:middle line:84%
+And now we just
+rearrange this and it
+
+00:42:02.550 --> 00:42:08.100 align:middle line:84%
+will give us some information
+about S And D And X and q.
+
+00:42:08.100 --> 00:42:12.250 align:middle line:84%
+So I'm going to get
+the D by itself.
+
+00:42:12.250 --> 00:42:16.050 align:middle line:84%
+So I divide by that
+and I divide by that.
+
+00:42:16.050 --> 00:42:21.270 align:middle line:84%
+And I'm left with D is
+bounded by S times q over x.
+
+00:42:21.270 --> 00:42:22.115 align:middle line:90%
+There it is.
+
+00:42:22.115 --> 00:42:35.250 align:middle line:90%
+
+
+00:42:35.250 --> 00:42:36.330 align:middle line:90%
+Yeah?
+
+00:42:36.330 --> 00:42:38.670 align:middle line:84%
+AUDIENCE: I just am
+going back and forth
+
+00:42:38.670 --> 00:42:39.930 align:middle line:90%
+between that [INAUDIBLE].
+
+00:42:39.930 --> 00:42:41.640 align:middle line:84%
+The mean value
+here is taken over
+
+00:42:41.640 --> 00:42:45.900 align:middle line:84%
+like we're talking about
+the mean over the points x?
+
+00:42:45.900 --> 00:42:48.630 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+when I say the word
+
+00:42:48.630 --> 00:42:50.820 align:middle line:84%
+mean, so the question
+was when we said
+
+00:42:50.820 --> 00:42:52.430 align:middle line:90%
+mean value the mean over what.
+
+00:42:52.430 --> 00:42:56.820 align:middle line:90%
+
+
+00:42:56.820 --> 00:42:59.220 align:middle line:90%
+So let me put that up here.
+
+00:42:59.220 --> 00:43:06.120 align:middle line:84%
+So if I have a function
+g Fq squared to C, then
+
+00:43:06.120 --> 00:43:11.370 align:middle line:84%
+when I say the mean
+value of g, what
+
+00:43:11.370 --> 00:43:19.590 align:middle line:84%
+I mean is 1 over q squared
+sum x in Fq squared of g of x.
+
+00:43:19.590 --> 00:43:22.235 align:middle line:84%
+So it's the mean over
+the whole vector space.
+
+00:43:22.235 --> 00:43:30.420 align:middle line:90%
+
+
+00:43:30.420 --> 00:43:34.170 align:middle line:84%
+Other questions or
+comments about the proof?
+
+00:43:34.170 --> 00:43:34.670 align:middle line:90%
+OK.
+
+00:43:34.670 --> 00:43:37.440 align:middle line:90%
+
+
+00:43:37.440 --> 00:43:40.710 align:middle line:84%
+I am also working on
+digesting the proof.
+
+00:43:40.710 --> 00:43:42.540 align:middle line:84%
+So the proof is all
+about breaking up
+
+00:43:42.540 --> 00:43:46.860 align:middle line:84%
+f as this constant part plus
+this high frequency part.
+
+00:43:46.860 --> 00:43:50.190 align:middle line:84%
+And the proof is saying
+that in a certain sense
+
+00:43:50.190 --> 00:43:52.680 align:middle line:84%
+the high frequency
+part is actually small
+
+00:43:52.680 --> 00:43:54.930 align:middle line:90%
+compared to the constant part.
+
+00:43:54.930 --> 00:43:57.540 align:middle line:84%
+So I wanted to draw
+that out because I
+
+00:43:57.540 --> 00:44:00.455 align:middle line:84%
+feel like it helps my intuition
+about what the proof is saying.
+
+00:44:00.455 --> 00:44:05.430 align:middle line:90%
+
+
+00:44:05.430 --> 00:44:09.730 align:middle line:84%
+So let's look at
+this L2 estimate.
+
+00:44:09.730 --> 00:44:12.720 align:middle line:90%
+
+
+00:44:12.720 --> 00:44:19.830 align:middle line:84%
+Our L2 estimate was
+that the sum of h
+
+00:44:19.830 --> 00:44:24.450 align:middle line:84%
+of x squared x in
+the whole plane
+
+00:44:24.450 --> 00:44:28.880 align:middle line:84%
+was bounded by the
+number of lines times q.
+
+00:44:28.880 --> 00:44:33.030 align:middle line:90%
+
+
+00:44:33.030 --> 00:44:35.110 align:middle line:84%
+So I want to think
+about what this means.
+
+00:44:35.110 --> 00:44:38.500 align:middle line:84%
+And it helps me a little bit to
+replace the sum by an average.
+
+00:44:38.500 --> 00:44:41.730 align:middle line:84%
+So I'm going to divide
+both sides by q squared.
+
+00:44:41.730 --> 00:44:46.800 align:middle line:84%
+So if I take 1 over q
+squared, sum x and Fq
+
+00:44:46.800 --> 00:44:51.060 align:middle line:84%
+squared of h of x
+squared, then that's
+
+00:44:51.060 --> 00:44:53.830 align:middle line:84%
+bounded by the number
+of lines divided by q.
+
+00:44:53.830 --> 00:44:56.430 align:middle line:90%
+
+
+00:44:56.430 --> 00:44:59.590 align:middle line:84%
+So this is an L2
+version of an average.
+
+00:44:59.590 --> 00:45:03.930 align:middle line:84%
+And by Cauchy-Schwarz,
+that controls--
+
+00:45:03.930 --> 00:45:06.600 align:middle line:90%
+let's see.
+
+00:45:06.600 --> 00:45:10.440 align:middle line:84%
+So if I took a square
+root to get an L2 norm,
+
+00:45:10.440 --> 00:45:12.250 align:middle line:84%
+I would have a square
+root over here.
+
+00:45:12.250 --> 00:45:21.185 align:middle line:84%
+And by Cauchy-Schwarz, I would
+get the L1 average has a bound.
+
+00:45:21.185 --> 00:45:24.000 align:middle line:90%
+
+
+00:45:24.000 --> 00:45:29.140 align:middle line:84%
+And the bound is now the square
+root of number of lines over q.
+
+00:45:29.140 --> 00:45:32.763 align:middle line:90%
+
+
+00:45:32.763 --> 00:45:34.180 align:middle line:84%
+Does that look
+right to everybody?
+
+00:45:34.180 --> 00:45:37.650 align:middle line:90%
+
+
+00:45:37.650 --> 00:45:40.860 align:middle line:84%
+So a bit informally,
+there might be some points
+
+00:45:40.860 --> 00:45:41.770 align:middle line:90%
+x that are different.
+
+00:45:41.770 --> 00:45:44.070 align:middle line:84%
+But on average for
+a typical point x,
+
+00:45:44.070 --> 00:45:46.980 align:middle line:84%
+the high frequency part only
+has the size square root
+
+00:45:46.980 --> 00:45:49.680 align:middle line:90%
+of L over q.
+
+00:45:49.680 --> 00:45:52.620 align:middle line:84%
+Whereas the low frequency
+part, the constant part
+
+00:45:52.620 --> 00:45:57.420 align:middle line:84%
+has size L over
+q at every point.
+
+00:45:57.420 --> 00:46:04.560 align:middle line:84%
+Here let's call this constant
+part f0, that 0 frequency part.
+
+00:46:04.560 --> 00:46:08.100 align:middle line:84%
+So for comparison,
+the size of f0
+
+00:46:08.100 --> 00:46:12.630 align:middle line:84%
+of x is always number
+of lines over q.
+
+00:46:12.630 --> 00:46:17.850 align:middle line:84%
+So the conclusion is that
+if the number of lines
+
+00:46:17.850 --> 00:46:25.290 align:middle line:84%
+is much bigger than q, then
+this is way bigger than that.
+
+00:46:25.290 --> 00:46:30.750 align:middle line:84%
+So then the high
+frequency part is
+
+00:46:30.750 --> 00:46:35.200 align:middle line:84%
+much smaller than the
+constant part, on average.
+
+00:46:35.200 --> 00:46:43.740 align:middle line:90%
+
+
+00:46:43.740 --> 00:46:47.745 align:middle line:84%
+So it's telling us that whenever
+I add up a lot of lines,
+
+00:46:47.745 --> 00:46:51.510 align:middle line:84%
+it has to be significantly
+more than a q lines,
+
+00:46:51.510 --> 00:46:56.580 align:middle line:84%
+then that sum is pretty close
+to being a constant function.
+
+00:46:56.580 --> 00:47:00.150 align:middle line:84%
+At a typical point, the
+difference from being constant
+
+00:47:00.150 --> 00:47:02.077 align:middle line:84%
+is extremely small,
+and there may
+
+00:47:02.077 --> 00:47:04.410 align:middle line:84%
+be a few points where the
+difference from being constant
+
+00:47:04.410 --> 00:47:06.950 align:middle line:84%
+is bigger, but there's a
+pretty strong bound on that.
+
+00:47:06.950 --> 00:47:24.270 align:middle line:90%
+
+
+00:47:24.270 --> 00:47:27.905 align:middle line:84%
+Any questions or comments
+about this orthogonality proof?
+
+00:47:27.905 --> 00:47:35.130 align:middle line:90%
+
+
+00:47:35.130 --> 00:47:36.120 align:middle line:90%
+Yeah?
+
+00:47:36.120 --> 00:47:38.880 align:middle line:84%
+AUDIENCE: Could you go over
+again where the inequality h
+
+00:47:38.880 --> 00:47:42.600 align:middle line:90%
+of x is greater than 1/2 D?
+
+00:47:42.600 --> 00:47:46.980 align:middle line:84%
+So how do you get that
+from the previous slide?
+
+00:47:46.980 --> 00:47:47.890 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:47:47.890 --> 00:47:51.870 align:middle line:84%
+So to recap a little
+bit, we have these lines
+
+00:47:51.870 --> 00:47:52.960 align:middle line:90%
+going in each direction.
+
+00:47:52.960 --> 00:47:54.213 align:middle line:90%
+And we have D directions.
+
+00:47:54.213 --> 00:47:56.130 align:middle line:84%
+And we add up all the
+characteristic functions
+
+00:47:56.130 --> 00:47:57.450 align:middle line:90%
+of the lines.
+
+00:47:57.450 --> 00:47:59.130 align:middle line:90%
+So that's called f.
+
+00:47:59.130 --> 00:48:02.860 align:middle line:84%
+And each point of x is in all
+is in a line in every direction.
+
+00:48:02.860 --> 00:48:08.350 align:middle line:84%
+So f of x is D. Now we
+broke up f into two pieces--
+
+00:48:08.350 --> 00:48:11.350 align:middle line:84%
+the constant piece, which
+was number of lines over q,
+
+00:48:11.350 --> 00:48:16.230 align:middle line:84%
+and then the mean 0 piece
+or high frequency piece.
+
+00:48:16.230 --> 00:48:19.450 align:middle line:84%
+And I claim that the
+constant piece is small.
+
+00:48:19.450 --> 00:48:21.228 align:middle line:84%
+The constant piece is
+less than half of D,
+
+00:48:21.228 --> 00:48:23.520 align:middle line:84%
+and that would mean that the
+high frequency part should
+
+00:48:23.520 --> 00:48:27.100 align:middle line:84%
+be more than half of D. And why
+is the constant piece small?
+
+00:48:27.100 --> 00:48:32.820 align:middle line:84%
+Well, this L is the number
+of directions times S.
+
+00:48:32.820 --> 00:48:34.900 align:middle line:90%
+And we plugged it in.
+
+00:48:34.900 --> 00:48:37.540 align:middle line:84%
+And we used the fact,
+that's S at most q over 2.
+
+00:48:37.540 --> 00:48:39.090 align:middle line:90%
+It's one of our hypotheses.
+
+00:48:39.090 --> 00:48:40.300 align:middle line:90%
+That's where it fell out.
+
+00:48:40.300 --> 00:48:48.780 align:middle line:90%
+
+
+00:48:48.780 --> 00:48:49.390 align:middle line:90%
+OK.
+
+00:48:49.390 --> 00:48:53.410 align:middle line:84%
+Now, I called this early
+on the Fourier method.
+
+00:48:53.410 --> 00:48:56.938 align:middle line:84%
+We didn't actually mention the
+Fourier transform or Fourier
+
+00:48:56.938 --> 00:48:57.730 align:middle line:90%
+series of anything.
+
+00:48:57.730 --> 00:48:59.310 align:middle line:90%
+We didn't have to.
+
+00:48:59.310 --> 00:49:02.410 align:middle line:84%
+We did use
+orthogonality crucially,
+
+00:49:02.410 --> 00:49:06.150 align:middle line:84%
+which is an idea that I first
+saw in Fourier analysis.
+
+00:49:06.150 --> 00:49:08.250 align:middle line:84%
+But it is possible
+to rewrite this proof
+
+00:49:08.250 --> 00:49:10.950 align:middle line:90%
+using the Fourier transform.
+
+00:49:10.950 --> 00:49:16.860 align:middle line:84%
+And I think it's worth
+doing even though we didn't
+
+00:49:16.860 --> 00:49:18.000 align:middle line:90%
+need the Fourier transform.
+
+00:49:18.000 --> 00:49:20.790 align:middle line:84%
+For this, as we keep going and
+do more sophisticated things
+
+00:49:20.790 --> 00:49:25.900 align:middle line:84%
+in this spirit, it helps to
+have the Fourier transform.
+
+00:49:25.900 --> 00:49:26.400 align:middle line:90%
+OK.
+
+00:49:26.400 --> 00:49:31.860 align:middle line:90%
+
+
+00:49:31.860 --> 00:49:34.830 align:middle line:84%
+I guess the other thing is we
+didn't prove the key lemma,
+
+00:49:34.830 --> 00:49:36.900 align:middle line:90%
+right?
+
+00:49:36.900 --> 00:49:39.820 align:middle line:84%
+So I'm going to
+prove the key lemma.
+
+00:49:39.820 --> 00:49:41.290 align:middle line:90%
+And I'll show you two proofs.
+
+00:49:41.290 --> 00:49:43.250 align:middle line:84%
+One of them is direct
+and the other one
+
+00:49:43.250 --> 00:49:48.212 align:middle line:84%
+is based on the
+Fourier transform.
+
+00:49:48.212 --> 00:49:50.425 align:middle line:84%
+So I think we can
+erase this board here.
+
+00:49:50.425 --> 00:49:52.300 align:middle line:84%
+We're just going to talk
+about the key lemma.
+
+00:49:52.300 --> 00:50:07.538 align:middle line:90%
+
+
+00:50:07.538 --> 00:50:10.980 align:middle line:84%
+So I'll call this the direct
+proof of the key lemma,
+
+00:50:10.980 --> 00:50:12.940 align:middle line:84%
+and then we'll also
+have a Fourier proof.
+
+00:50:12.940 --> 00:50:18.830 align:middle line:90%
+
+
+00:50:18.830 --> 00:50:21.150 align:middle line:84%
+So actually two
+cases in the lemma.
+
+00:50:21.150 --> 00:50:26.215 align:middle line:84%
+So the main case is that
+L1 and L2 are not parallel.
+
+00:50:26.215 --> 00:50:33.515 align:middle line:90%
+
+
+00:50:33.515 --> 00:50:37.970 align:middle line:84%
+And in this case, the high
+frequency parts are orthogonal.
+
+00:50:37.970 --> 00:50:46.190 align:middle line:84%
+So sum of x L1 h of x L2 h of x,
+in this case, it's exactly zero.
+
+00:50:46.190 --> 00:50:50.150 align:middle line:84%
+The less than 0 comes
+from the parallel case.
+
+00:50:50.150 --> 00:50:53.550 align:middle line:84%
+OK, now there's a lot of
+symmetry in this problem.
+
+00:50:53.550 --> 00:50:56.040 align:middle line:84%
+And so if we have the
+two lines that intersect,
+
+00:50:56.040 --> 00:50:58.663 align:middle line:84%
+we can make a linear change
+of variables in a translation.
+
+00:50:58.663 --> 00:51:00.830 align:middle line:84%
+So that one of them is the
+x1 axis and the other one
+
+00:51:00.830 --> 00:51:03.260 align:middle line:90%
+is the x2 axis.
+
+00:51:03.260 --> 00:51:08.960 align:middle line:84%
+So after change of
+variables, L1 is actually
+
+00:51:08.960 --> 00:51:14.130 align:middle line:84%
+I'm going to say L1 is the x2
+axis and L2 is the x1 axis.
+
+00:51:14.130 --> 00:51:17.510 align:middle line:84%
+I know that looks a little
+silly, but somewhere there's
+
+00:51:17.510 --> 00:51:18.290 align:middle line:90%
+going to be a--
+
+00:51:18.290 --> 00:51:21.590 align:middle line:90%
+it's not important.
+
+00:51:21.590 --> 00:51:25.315 align:middle line:84%
+So over here is L2
+and over here is L1.
+
+00:51:25.315 --> 00:51:28.850 align:middle line:90%
+
+
+00:51:28.850 --> 00:51:29.760 align:middle line:90%
+All right.
+
+00:51:29.760 --> 00:51:39.590 align:middle line:84%
+Now when we do that, if I take
+L1 high of a point x1, x2,
+
+00:51:39.590 --> 00:51:40.873 align:middle line:90%
+it only depends.
+
+00:51:40.873 --> 00:51:44.460 align:middle line:90%
+
+
+00:51:44.460 --> 00:51:48.750 align:middle line:84%
+So the function L1 of
+x only depends upon x1.
+
+00:51:48.750 --> 00:51:50.940 align:middle line:90%
+If x1 is 0, L1 is 1.
+
+00:51:50.940 --> 00:51:53.240 align:middle line:90%
+If x1 is not 0, we get 0.
+
+00:51:53.240 --> 00:51:55.710 align:middle line:84%
+Then we're subtracting a
+constant function from that.
+
+00:51:55.710 --> 00:51:59.120 align:middle line:90%
+So it still only depends on x1.
+
+00:51:59.120 --> 00:52:05.160 align:middle line:84%
+So this is a function
+g of x1 and its mean 0,
+
+00:52:05.160 --> 00:52:10.225 align:middle line:84%
+so the sum over x1 and
+Fq of g of x1 is 0.
+
+00:52:10.225 --> 00:52:14.390 align:middle line:90%
+
+
+00:52:14.390 --> 00:52:21.530 align:middle line:84%
+Similarly, L2 high of x1,
+x2 only depends upon x2
+
+00:52:21.530 --> 00:52:22.885 align:middle line:90%
+and it's g of x2.
+
+00:52:22.885 --> 00:52:28.940 align:middle line:90%
+
+
+00:52:28.940 --> 00:52:30.270 align:middle line:90%
+This is the trickiest bit.
+
+00:52:30.270 --> 00:52:32.570 align:middle line:90%
+Let me make sure that looks OK.
+
+00:52:32.570 --> 00:52:38.300 align:middle line:84%
+So remember L1 is 1 if x0
+is 0, and it's 0 otherwise.
+
+00:52:38.300 --> 00:52:39.315 align:middle line:90%
+And then we subtract.
+
+00:52:39.315 --> 00:52:41.190 align:middle line:84%
+So that's a function
+that only depends on x1.
+
+00:52:41.190 --> 00:52:42.360 align:middle line:90%
+We subtract off its mean.
+
+00:52:42.360 --> 00:52:44.680 align:middle line:84%
+We get a new function
+that only depends on x1.
+
+00:52:44.680 --> 00:52:47.540 align:middle line:90%
+
+
+00:52:47.540 --> 00:52:51.290 align:middle line:84%
+I guess it's 1 minus
+1 over q if x1 is 0.
+
+00:52:51.290 --> 00:52:54.210 align:middle line:84%
+And it's minus 1 over
+q if x1 is not 0.
+
+00:52:54.210 --> 00:52:54.925 align:middle line:90%
+That's what g is.
+
+00:52:54.925 --> 00:52:59.070 align:middle line:90%
+
+
+00:52:59.070 --> 00:53:11.270 align:middle line:84%
+So now when we sum L1 h
+of x1, x2, L2 h of x1, x2.
+
+00:53:11.270 --> 00:53:17.870 align:middle line:84%
+Well, it's the sum over
+x1, x2 of g of x1, g of x2.
+
+00:53:17.870 --> 00:53:21.080 align:middle line:84%
+And now we can just
+break up this sum.
+
+00:53:21.080 --> 00:53:25.100 align:middle line:84%
+So it's the sum
+on x1, of g of x1,
+
+00:53:25.100 --> 00:53:30.185 align:middle line:90%
+times the sum on x2 of g of x2.
+
+00:53:30.185 --> 00:53:31.250 align:middle line:90%
+It's 0 times 0.
+
+00:53:31.250 --> 00:53:50.970 align:middle line:90%
+
+
+00:53:50.970 --> 00:53:52.315 align:middle line:90%
+Does that look OK to people?
+
+00:53:52.315 --> 00:53:58.550 align:middle line:90%
+
+
+00:53:58.550 --> 00:54:01.205 align:middle line:84%
+OK, then there's the minor
+case that they're parallel.
+
+00:54:01.205 --> 00:54:10.100 align:middle line:90%
+
+
+00:54:10.100 --> 00:54:12.140 align:middle line:84%
+I don't have anything
+super instructive to say
+
+00:54:12.140 --> 00:54:13.080 align:middle line:90%
+about this case.
+
+00:54:13.080 --> 00:54:17.150 align:middle line:84%
+They might as well both be
+parallel to the x2 axis.
+
+00:54:17.150 --> 00:54:19.020 align:middle line:84%
+It's not hard to
+compute it by hand,
+
+00:54:19.020 --> 00:54:22.220 align:middle line:84%
+and you'll see
+that it's negative.
+
+00:54:22.220 --> 00:54:24.440 align:middle line:84%
+So I'm going to not
+do it on the board
+
+00:54:24.440 --> 00:54:26.340 align:middle line:84%
+because I think it's
+not very illuminating.
+
+00:54:26.340 --> 00:54:31.490 align:middle line:90%
+
+
+00:54:31.490 --> 00:54:34.970 align:middle line:84%
+So that's one way to
+prove the key lemma.
+
+00:54:34.970 --> 00:54:38.960 align:middle line:84%
+But the whole setup also
+has a nice relationship
+
+00:54:38.960 --> 00:54:40.140 align:middle line:90%
+to Fourier analysis.
+
+00:54:40.140 --> 00:54:44.040 align:middle line:84%
+And we can also use Fourier
+analysis to prove the key lemma.
+
+00:54:44.040 --> 00:54:46.610 align:middle line:84%
+And if we do it that
+way, we can justify
+
+00:54:46.610 --> 00:54:50.270 align:middle line:84%
+in a precise way saying that
+something is the zero frequency
+
+00:54:50.270 --> 00:54:51.730 align:middle line:90%
+part or the high frequency part.
+
+00:54:51.730 --> 00:54:55.155 align:middle line:90%
+
+
+00:54:55.155 --> 00:54:55.655 align:middle line:90%
+OK.
+
+00:54:55.655 --> 00:55:21.300 align:middle line:90%
+
+
+00:55:21.300 --> 00:55:24.470 align:middle line:84%
+So let me remind everybody
+how Fourier analysis works
+
+00:55:24.470 --> 00:55:25.780 align:middle line:90%
+over finite fields.
+
+00:55:25.780 --> 00:55:45.386 align:middle line:90%
+
+
+00:55:45.386 --> 00:55:52.220 align:middle line:84%
+So I have a Fourier
+analysis based
+
+00:55:52.220 --> 00:55:55.790 align:middle line:84%
+on having some group
+homomorphism from your group
+
+00:55:55.790 --> 00:55:57.090 align:middle line:90%
+into C star.
+
+00:55:57.090 --> 00:56:03.020 align:middle line:84%
+So I'm going to call it E. So
+E is a map from Fq to C star.
+
+00:56:03.020 --> 00:56:04.740 align:middle line:90%
+Think of it as Fq with addition.
+
+00:56:04.740 --> 00:56:06.870 align:middle line:84%
+So this is a group,
+an abelian group.
+
+00:56:06.870 --> 00:56:09.420 align:middle line:84%
+That's an abelian group, complex
+numbers with multiplication.
+
+00:56:09.420 --> 00:56:11.696 align:middle line:90%
+This is a homomorphism.
+
+00:56:11.696 --> 00:56:15.530 align:middle line:90%
+
+
+00:56:15.530 --> 00:56:22.590 align:middle line:84%
+And I want it to be non-trivial,
+to not just send everything to 1
+
+00:56:22.590 --> 00:56:28.050 align:middle line:84%
+So for example, if
+q equals p is prime,
+
+00:56:28.050 --> 00:56:33.540 align:middle line:84%
+then it would be e of x is
+e to the 2 PI i x over p.
+
+00:56:33.540 --> 00:56:37.280 align:middle line:90%
+
+
+00:56:37.280 --> 00:56:39.560 align:middle line:84%
+And if q is not prime, it
+takes a little bit more
+
+00:56:39.560 --> 00:56:41.700 align:middle line:84%
+doing to write down
+a homomorphism.
+
+00:56:41.700 --> 00:56:43.240 align:middle line:84%
+But there is one
+that's not true.
+
+00:56:43.240 --> 00:56:47.618 align:middle line:90%
+
+
+00:56:47.618 --> 00:56:50.000 align:middle line:84%
+So now suppose I
+have a function on Fq
+
+00:56:50.000 --> 00:56:54.980 align:middle line:84%
+to the D. It has a
+Fourier transform.
+
+00:56:54.980 --> 00:56:59.510 align:middle line:84%
+So the Fourier transform
+of C is defined
+
+00:56:59.510 --> 00:57:07.430 align:middle line:84%
+to be sum over q and Fq to
+the d, f of x, e of negative
+
+00:57:07.430 --> 00:57:11.910 align:middle line:90%
+x dot C. So there's x.
+
+00:57:11.910 --> 00:57:13.530 align:middle line:90%
+C. This is a dot product.
+
+00:57:13.530 --> 00:57:15.690 align:middle line:90%
+It's just x1c1 plus, x2c2.
+
+00:57:15.690 --> 00:57:19.580 align:middle line:90%
+
+
+00:57:19.580 --> 00:57:21.060 align:middle line:90%
+So that's the Fourier transform.
+
+00:57:21.060 --> 00:57:25.820 align:middle line:84%
+It looks more or less like how
+it looks in Euclidean space.
+
+00:57:25.820 --> 00:57:29.690 align:middle line:90%
+
+
+00:57:29.690 --> 00:57:38.090 align:middle line:90%
+So this C also lives in fq.
+
+00:57:38.090 --> 00:57:40.790 align:middle line:84%
+There are two main really
+fundamental theorems
+
+00:57:40.790 --> 00:57:42.960 align:middle line:90%
+about Fourier transform.
+
+00:57:42.960 --> 00:57:45.770 align:middle line:84%
+One of them is Fourier
+inversion and the other one
+
+00:57:45.770 --> 00:57:48.170 align:middle line:84%
+is Plancherel theorem
+with orthogonality.
+
+00:57:48.170 --> 00:57:50.210 align:middle line:84%
+And in the finite
+field setting, they
+
+00:57:50.210 --> 00:57:51.690 align:middle line:90%
+work out in the following way.
+
+00:57:51.690 --> 00:57:56.240 align:middle line:84%
+So theorem one,
+Fourier inversion f
+
+00:57:56.240 --> 00:58:00.830 align:middle line:84%
+of x is the sum
+xi in Fq to the d.
+
+00:58:00.830 --> 00:58:04.430 align:middle line:84%
+And here we need
+to take an average.
+
+00:58:04.430 --> 00:58:09.740 align:middle line:90%
+f hat of xi e of x dot xi.
+
+00:58:09.740 --> 00:58:13.160 align:middle line:84%
+So it looks like Fourier
+inversion in Euclidean space,
+
+00:58:13.160 --> 00:58:15.770 align:middle line:84%
+although there's
+this average here.
+
+00:58:15.770 --> 00:58:17.510 align:middle line:84%
+Maybe worth saying
+that there are
+
+00:58:17.510 --> 00:58:21.030 align:middle line:84%
+several reasonable conventions
+that you might put about it.
+
+00:58:21.030 --> 00:58:23.540 align:middle line:84%
+Somewhere in this setup,
+we need to divide something
+
+00:58:23.540 --> 00:58:25.995 align:middle line:84%
+by some powers of
+q And there are
+
+00:58:25.995 --> 00:58:27.620 align:middle line:84%
+several reasonable
+conventions, and you
+
+00:58:27.620 --> 00:58:30.590 align:middle line:84%
+see different conventions
+in different places.
+
+00:58:30.590 --> 00:58:32.960 align:middle line:84%
+But anyway, this is
+the one that I picked.
+
+00:58:32.960 --> 00:58:34.920 align:middle line:90%
+And I never remember it.
+
+00:58:34.920 --> 00:58:36.860 align:middle line:84%
+So I always take the
+function 1 and compute
+
+00:58:36.860 --> 00:58:39.038 align:middle line:84%
+its Fourier transform and
+check that this works.
+
+00:58:39.038 --> 00:58:40.830 align:middle line:84%
+And that tells me I
+have this factor right.
+
+00:58:40.830 --> 00:58:43.990 align:middle line:90%
+
+
+00:58:43.990 --> 00:58:47.316 align:middle line:90%
+And theorem two is Plancherel.
+
+00:58:47.316 --> 00:58:51.740 align:middle line:90%
+
+
+00:58:51.740 --> 00:58:56.180 align:middle line:84%
+So that says that if
+I take the sum over Fq
+
+00:58:56.180 --> 00:59:01.520 align:middle line:84%
+to the d of f of x, g
+of x bar, then that's
+
+00:59:01.520 --> 00:59:03.660 align:middle line:84%
+equivalent to a sum
+on the Fourier side.
+
+00:59:03.660 --> 00:59:05.250 align:middle line:84%
+And there's also
+a normalization.
+
+00:59:05.250 --> 00:59:14.726 align:middle line:84%
+So that's 1 over q to the d sum
+x and sum xi and Fq to the d,
+
+00:59:14.726 --> 00:59:20.330 align:middle line:90%
+f hat of xi g hat of xi bar.
+
+00:59:20.330 --> 00:59:23.220 align:middle line:84%
+So again, if you compute
+a simple example,
+
+00:59:23.220 --> 00:59:25.620 align:middle line:84%
+you'll see that this is
+the right normalization.
+
+00:59:25.620 --> 00:59:36.670 align:middle line:90%
+
+
+00:59:36.670 --> 00:59:41.140 align:middle line:84%
+OK, so now if you take the
+characteristic function
+
+00:59:41.140 --> 00:59:44.060 align:middle line:84%
+of the line, you can take
+its Fourier transform.
+
+00:59:44.060 --> 00:59:45.640 align:middle line:84%
+And something
+interesting happens
+
+00:59:45.640 --> 00:59:51.280 align:middle line:84%
+that represents an important
+connection between lines
+
+00:59:51.280 --> 00:59:53.380 align:middle line:84%
+in the Fourier
+transform and therefore
+
+00:59:53.380 --> 00:59:56.950 align:middle line:84%
+between projection theory
+and the Fourier transform.
+
+00:59:56.950 --> 00:59:58.130 align:middle line:90%
+So here is what happens.
+
+00:59:58.130 --> 01:00:07.300 align:middle line:84%
+So suppose L is an affine
+line in Fq squared,
+
+01:00:07.300 --> 01:00:14.150 align:middle line:84%
+or really the characteristic
+function of the affine line
+
+01:00:14.150 --> 01:00:19.480 align:middle line:84%
+So then it has a perp, so
+L perp is the set of xi
+
+01:00:19.480 --> 01:00:29.950 align:middle line:84%
+so that xi dot x1 minus x2 is 0
+for any x1 and x2 in the line L.
+
+01:00:29.950 --> 01:00:32.160 align:middle line:84%
+So in Euclidean space
+this would look like this.
+
+01:00:32.160 --> 01:00:34.711 align:middle line:90%
+
+
+01:00:34.711 --> 01:00:40.330 align:middle line:84%
+To here is my line
+L. This is x space.
+
+01:00:40.330 --> 01:00:47.740 align:middle line:84%
+And then over here in xi
+space I would have L perp.
+
+01:00:47.740 --> 01:00:49.860 align:middle line:84%
+Notice that L perp
+always goes through 0.
+
+01:00:49.860 --> 01:00:52.450 align:middle line:90%
+
+
+01:00:52.450 --> 01:00:58.510 align:middle line:90%
+So here is my x1 and x2.
+
+01:00:58.510 --> 01:01:01.670 align:middle line:84%
+So this direction here is
+a tangent direction to L.
+
+01:01:01.670 --> 01:01:06.160 align:middle line:84%
+And then these are the
+perpendicular directions.
+
+01:01:06.160 --> 01:01:07.330 align:middle line:90%
+All right.
+
+01:01:07.330 --> 01:01:14.260 align:middle line:84%
+So proposition, if
+you take L hat of xi,
+
+01:01:14.260 --> 01:01:16.360 align:middle line:90%
+we take its absolute value.
+
+01:01:16.360 --> 01:01:18.160 align:middle line:90%
+There are two cases.
+
+01:01:18.160 --> 01:01:25.540 align:middle line:84%
+One of them is that you get q
+And that's if xi is in L perp.
+
+01:01:25.540 --> 01:01:27.880 align:middle line:90%
+And the other one is you get 0.
+
+01:01:27.880 --> 01:01:32.440 align:middle line:84%
+And that's if xi
+is not in L pip.
+
+01:01:32.440 --> 01:01:34.660 align:middle line:84%
+So the Fourier transform
+of a line, first of all
+
+01:01:34.660 --> 01:01:36.230 align:middle line:90%
+has is very sparse.
+
+01:01:36.230 --> 01:01:38.230 align:middle line:90%
+It's 0 almost everywhere.
+
+01:01:38.230 --> 01:01:41.415 align:middle line:84%
+The only places where it's not 0
+are on this perpendicular line.
+
+01:01:41.415 --> 01:01:48.624 align:middle line:90%
+
+
+01:01:48.624 --> 01:01:51.700 align:middle line:84%
+So I think it is
+a good experience
+
+01:01:51.700 --> 01:01:55.210 align:middle line:84%
+to compute this out and
+check that it happens.
+
+01:01:55.210 --> 01:02:00.670 align:middle line:84%
+When you write down
+this sum, this sum
+
+01:02:00.670 --> 01:02:03.140 align:middle line:84%
+will reduce to a
+geometric series.
+
+01:02:03.140 --> 01:02:04.850 align:middle line:84%
+And then you can sum
+the geometric series
+
+01:02:04.850 --> 01:02:06.986 align:middle line:84%
+and you can see
+exactly what happens.
+
+01:02:06.986 --> 01:02:11.775 align:middle line:84%
+So this is an exercise
+on the homework.
+
+01:02:11.775 --> 01:02:18.460 align:middle line:90%
+
+
+01:02:18.460 --> 01:02:22.780 align:middle line:84%
+OK, so we'll also do this thing
+of subtracting off the mean.
+
+01:02:22.780 --> 01:02:25.450 align:middle line:84%
+And that has a very
+natural interpretation
+
+01:02:25.450 --> 01:02:26.796 align:middle line:90%
+in Fourier analysis.
+
+01:02:26.796 --> 01:02:30.850 align:middle line:90%
+
+
+01:02:30.850 --> 01:02:32.100 align:middle line:90%
+Let's erase this.
+
+01:02:32.100 --> 01:02:43.210 align:middle line:90%
+
+
+01:02:43.210 --> 01:02:49.250 align:middle line:84%
+So if you have a function g
+from Fq to the d goes to C,
+
+01:02:49.250 --> 01:02:55.270 align:middle line:84%
+then we can write g as 1
+over q to the d sum over xi g
+
+01:02:55.270 --> 01:02:58.270 align:middle line:90%
+hat of xi, E of x dot xi.
+
+01:02:58.270 --> 01:03:01.340 align:middle line:84%
+And one of these frequencies
+is often very special,
+
+01:03:01.340 --> 01:03:03.050 align:middle line:90%
+namely the frequency zero.
+
+01:03:03.050 --> 01:03:05.410 align:middle line:84%
+So I'm just going to
+break up this sum.
+
+01:03:05.410 --> 01:03:11.230 align:middle line:84%
+It's 1 over q to
+the d g hat of 0
+
+01:03:11.230 --> 01:03:17.770 align:middle line:84%
+plus the sum over the
+non-zero xi 1 over q
+
+01:03:17.770 --> 01:03:24.040 align:middle line:90%
+to the d g hat xi of x dot xi.
+
+01:03:24.040 --> 01:03:25.420 align:middle line:90%
+All right.
+
+01:03:25.420 --> 01:03:28.420 align:middle line:84%
+So if you think about
+what this is, g hat of 0
+
+01:03:28.420 --> 01:03:32.140 align:middle line:84%
+is just the sum of the values
+of g, and then I divide by that.
+
+01:03:32.140 --> 01:03:33.890 align:middle line:90%
+I get this formula here.
+
+01:03:33.890 --> 01:03:37.750 align:middle line:90%
+That's the mean value of g.
+
+01:03:37.750 --> 01:03:44.320 align:middle line:84%
+So this is g0 and it's
+the mean value of g.
+
+01:03:44.320 --> 01:03:48.702 align:middle line:84%
+And this thing here
+we'll call g high.
+
+01:03:48.702 --> 01:03:51.410 align:middle line:84%
+g high is g minus
+its mean value.
+
+01:03:51.410 --> 01:03:52.410 align:middle line:90%
+So it has mean 0.
+
+01:03:52.410 --> 01:03:58.150 align:middle line:90%
+
+
+01:03:58.150 --> 01:04:00.020 align:middle line:84%
+So that's what we
+did with our lines.
+
+01:04:00.020 --> 01:04:02.210 align:middle line:84%
+This is the zero
+frequency part of L.
+
+01:04:02.210 --> 01:04:04.490 align:middle line:84%
+And this is the
+nonzero frequency.
+
+01:04:04.490 --> 01:04:06.620 align:middle line:84%
+Or I called it high
+frequency part of L.
+
+01:04:06.620 --> 01:04:09.520 align:middle line:84%
+So from the Fourier
+analysis point
+
+01:04:09.520 --> 01:04:12.570 align:middle line:84%
+of view, that's what these
+things precisely mean.
+
+01:04:12.570 --> 01:04:17.830 align:middle line:90%
+
+
+01:04:17.830 --> 01:04:24.550 align:middle line:84%
+Now we can put this together
+to give a new explanation
+
+01:04:24.550 --> 01:04:26.895 align:middle line:90%
+of the key orthogonality lemma.
+
+01:04:26.895 --> 01:04:30.128 align:middle line:90%
+
+
+01:04:30.128 --> 01:04:31.670 align:middle line:90%
+Where should I put it?
+
+01:04:31.670 --> 01:04:36.730 align:middle line:90%
+
+
+01:04:36.730 --> 01:04:39.910 align:middle line:84%
+Yeah, so we gave one proof
+of the key lemma over here.
+
+01:04:39.910 --> 01:04:41.340 align:middle line:90%
+We can do now another one.
+
+01:04:41.340 --> 01:04:51.810 align:middle line:90%
+
+
+01:04:51.810 --> 01:04:52.310 align:middle line:90%
+All right.
+
+01:04:52.310 --> 01:04:56.310 align:middle line:84%
+So let's give the Fourier
+proof of the key lemma.
+
+01:04:56.310 --> 01:04:59.680 align:middle line:90%
+
+
+01:04:59.680 --> 01:05:05.260 align:middle line:84%
+We'll still do the main case,
+which is that L1 and L2 are not
+
+01:05:05.260 --> 01:05:06.430 align:middle line:90%
+parallel.
+
+01:05:06.430 --> 01:05:09.340 align:middle line:84%
+And that's where we get
+literal orthogonality.
+
+01:05:09.340 --> 01:05:19.990 align:middle line:84%
+Then we get that the sum of
+L1 h of x and L2 h of x is 0.
+
+01:05:19.990 --> 01:05:21.290 align:middle line:90%
+How will we do it?
+
+01:05:21.290 --> 01:05:23.426 align:middle line:84%
+We'll evaluate it
+with Plancherel.
+
+01:05:23.426 --> 01:05:47.170 align:middle line:90%
+
+
+01:05:47.170 --> 01:05:50.020 align:middle line:84%
+So that's Plancherel,
+theorem two.
+
+01:05:50.020 --> 01:05:53.210 align:middle line:84%
+And now I have the
+high part here.
+
+01:05:53.210 --> 01:05:54.440 align:middle line:90%
+What does the high part mean?
+
+01:05:54.440 --> 01:05:58.240 align:middle line:84%
+The high part means I
+crossed out the 0 frequency.
+
+01:05:58.240 --> 01:06:05.980 align:middle line:84%
+So this is 1 over q squared
+times the sum on non-zero xi,
+
+01:06:05.980 --> 01:06:11.200 align:middle line:90%
+L1 hat of xi, L2 hat xi.
+
+01:06:11.200 --> 01:06:15.730 align:middle line:84%
+So if you compare the Fourier
+transform of L1 and L1 high,
+
+01:06:15.730 --> 01:06:18.230 align:middle line:84%
+the only difference
+is the zero frequency.
+
+01:06:18.230 --> 01:06:21.007 align:middle line:84%
+I take the zero frequency
+here and I throw it out.
+
+01:06:21.007 --> 01:06:22.340 align:middle line:90%
+All the other ones are the same.
+
+01:06:22.340 --> 01:06:25.180 align:middle line:90%
+So this is the same as this.
+
+01:06:25.180 --> 01:06:29.500 align:middle line:90%
+OK, now I'll make a picture.
+
+01:06:29.500 --> 01:06:41.080 align:middle line:84%
+So here in x space I have a
+line L1 and I have a line L2.
+
+01:06:41.080 --> 01:06:44.720 align:middle line:84%
+What happens in Fourier
+space, xi space.
+
+01:06:44.720 --> 01:06:50.820 align:middle line:84%
+Well there's a L1 perp
+and then there's L2 perp.
+
+01:06:50.820 --> 01:06:54.370 align:middle line:90%
+
+
+01:06:54.370 --> 01:07:00.340 align:middle line:84%
+And L1 and L2 perp
+intersect only at 0.
+
+01:07:00.340 --> 01:07:03.136 align:middle line:84%
+So here I'm summing over
+non-zero frequencies.
+
+01:07:03.136 --> 01:07:06.670 align:middle line:90%
+
+
+01:07:06.670 --> 01:07:16.800 align:middle line:84%
+So if xi is non-zero then
+either xi is not in L1 perp
+
+01:07:16.800 --> 01:07:22.900 align:middle line:84%
+or xi is not in L2 perp,
+because those two perps,
+
+01:07:22.900 --> 01:07:26.410 align:middle line:84%
+they only intersect
+at the origin.
+
+01:07:26.410 --> 01:07:30.760 align:middle line:84%
+But this function is only
+supported when xi is in L1 perp,
+
+01:07:30.760 --> 01:07:33.870 align:middle line:84%
+and this one is only supported
+when xi is in L2 perp.
+
+01:07:33.870 --> 01:07:36.920 align:middle line:84%
+So at every xi in this sum,
+one of these guys is zero.
+
+01:07:36.920 --> 01:07:43.350 align:middle line:90%
+
+
+01:07:43.350 --> 01:07:45.540 align:middle line:84%
+Or to put it a little
+bit differently,
+
+01:07:45.540 --> 01:07:49.770 align:middle line:84%
+these two functions have
+disjoint Fourier support.
+
+01:07:49.770 --> 01:07:51.130 align:middle line:90%
+So they are orthogonal.
+
+01:07:51.130 --> 01:08:10.140 align:middle line:90%
+
+
+01:08:10.140 --> 01:08:13.562 align:middle line:84%
+So these are the two
+main classical techniques
+
+01:08:13.562 --> 01:08:15.270 align:middle line:84%
+of projection theory,
+the double counting
+
+01:08:15.270 --> 01:08:19.170 align:middle line:84%
+argument, and the Fourier
+orthogonality argument.
+
+01:08:19.170 --> 01:08:24.090 align:middle line:84%
+They're each not that
+difficult, but it actually
+
+01:08:24.090 --> 01:08:27.145 align:middle line:84%
+is really pretty hard
+to go beyond them,
+
+01:08:27.145 --> 01:08:28.770 align:middle line:84%
+even though there's
+a lot of situations
+
+01:08:28.770 --> 01:08:31.050 align:middle line:90%
+where they're not sharp.
+
+01:08:31.050 --> 01:08:34.380 align:middle line:84%
+So that's a theme
+that we'll get to.
+
+01:08:34.380 --> 01:08:38.370 align:middle line:84%
+But before we get to that theme,
+we'll explore these for a while
+
+01:08:38.370 --> 01:08:40.560 align:middle line:84%
+and we'll see that
+a bunch of people
+
+01:08:40.560 --> 01:08:43.109 align:middle line:84%
+have used them, in fact, in
+different areas of math to do
+
+01:08:43.109 --> 01:08:44.790 align:middle line:84%
+some different things,
+and it's things
+
+01:08:44.790 --> 01:08:46.180 align:middle line:90%
+that I think are interesting.
+
+01:08:46.180 --> 01:08:48.720 align:middle line:90%
+
+
+01:08:48.720 --> 01:08:53.700 align:middle line:84%
+So the next thing that we'll
+do is the more analytic setting
+
+01:08:53.700 --> 01:08:57.700 align:middle line:84%
+of working in R2 instead
+of over a finite field,
+
+01:08:57.700 --> 01:09:01.290 align:middle line:84%
+and having balls
+instead of points.
+
+01:09:01.290 --> 01:09:05.970 align:middle line:84%
+And I waved my hands about it
+last class about exactly what
+
+01:09:05.970 --> 01:09:08.920 align:middle line:90%
+we would try to prove.
+
+01:09:08.920 --> 01:09:12.090 align:middle line:84%
+And so in our last
+10 minutes, I'll
+
+01:09:12.090 --> 01:09:13.689 align:middle line:90%
+introduce the setup with balls.
+
+01:09:13.689 --> 01:09:16.740 align:middle line:84%
+And I'll tell you what are
+the analog of theorem one
+
+01:09:16.740 --> 01:09:18.880 align:middle line:84%
+and theorem two and
+this conjecture.
+
+01:09:18.880 --> 01:09:23.189 align:middle line:90%
+
+
+01:09:23.189 --> 01:09:26.558 align:middle line:84%
+And then we'll see the proofs
+of all that next class.
+
+01:09:26.558 --> 01:09:29.100 align:middle line:84%
+And we'll see the proofs are
+morally the same as these proofs
+
+01:09:29.100 --> 01:09:31.290 align:middle line:84%
+in finite fields,
+but with a little bit
+
+01:09:31.290 --> 01:09:37.120 align:middle line:84%
+of extra technical issues from
+working in Euclidean space.
+
+01:09:37.120 --> 01:09:37.620 align:middle line:90%
+OK.
+
+01:09:37.620 --> 01:09:53.580 align:middle line:90%
+
+
+01:09:53.580 --> 01:09:54.750 align:middle line:90%
+All right.
+
+01:09:54.750 --> 01:10:04.115 align:middle line:84%
+So let's do a setup with
+balls, setup in R2 with balls.
+
+01:10:04.115 --> 01:10:08.580 align:middle line:90%
+
+
+01:10:08.580 --> 01:10:09.430 align:middle line:90%
+All right.
+
+01:10:09.430 --> 01:10:16.950 align:middle line:84%
+So our set X is going to
+be a set of disjoint unit
+
+01:10:16.950 --> 01:10:23.400 align:middle line:90%
+balls in a large ball B2R.
+
+01:10:23.400 --> 01:10:26.200 align:middle line:84%
+And then D, our
+set of directions,
+
+01:10:26.200 --> 01:10:28.830 align:middle line:84%
+I'll think of it
+as a subset of S1.
+
+01:10:28.830 --> 01:10:34.530 align:middle line:84%
+So this is a set of directions
+that we'll do projections in.
+
+01:10:34.530 --> 01:10:35.973 align:middle line:90%
+And they will also be disjoint.
+
+01:10:35.973 --> 01:10:37.890 align:middle line:84%
+And what I'm going to
+put here is that they're
+
+01:10:37.890 --> 01:10:41.910 align:middle line:90%
+1 over R separated.
+
+01:10:41.910 --> 01:10:45.790 align:middle line:84%
+So you can think of
+D as a set of angles.
+
+01:10:45.790 --> 01:10:49.210 align:middle line:84%
+And any two angles are at least
+1 over R apart from each other.
+
+01:10:49.210 --> 01:10:51.820 align:middle line:84%
+The reason for that is if they
+are closer together than that,
+
+01:10:51.820 --> 01:10:53.310 align:middle line:84%
+the two projections
+would basically
+
+01:10:53.310 --> 01:10:57.420 align:middle line:84%
+be the same in terms of what
+they do to a set of unit balls
+
+01:10:57.420 --> 01:11:00.210 align:middle line:90%
+in a ball of radius R.
+
+01:11:00.210 --> 01:11:09.510 align:middle line:84%
+OK, so that's X and D.
+And then our S, S of XD
+
+01:11:09.510 --> 01:11:12.120 align:middle line:84%
+is the maximum
+over any direction
+
+01:11:12.120 --> 01:11:16.350 align:middle line:84%
+in our set of directions of
+the size of the projection of X
+
+01:11:16.350 --> 01:11:17.590 align:middle line:90%
+in that direction.
+
+01:11:17.590 --> 01:11:19.030 align:middle line:84%
+So this is a
+one-dimensional set.
+
+01:11:19.030 --> 01:11:20.830 align:middle line:84%
+It's basically a set
+of unit intervals.
+
+01:11:20.830 --> 01:11:23.180 align:middle line:84%
+And this absolute
+value is its length.
+
+01:11:23.180 --> 01:11:30.600 align:middle line:90%
+
+
+01:11:30.600 --> 01:11:31.540 align:middle line:90%
+All right.
+
+01:11:31.540 --> 01:11:35.970 align:middle line:84%
+So we could ask just in terms of
+the size of X and the size of D,
+
+01:11:35.970 --> 01:11:38.760 align:middle line:84%
+what can you say about S
+and how does it compare
+
+01:11:38.760 --> 01:11:40.980 align:middle line:90%
+to the finite field case?
+
+01:11:40.980 --> 01:11:43.410 align:middle line:84%
+And we saw last time
+that it's rather
+
+01:11:43.410 --> 01:11:47.520 align:middle line:84%
+different from the finite field
+case because of an example
+
+01:11:47.520 --> 01:11:51.000 align:middle line:84%
+where X is very
+clumped together.
+
+01:11:51.000 --> 01:11:53.850 align:middle line:84%
+So let me put up here
+a couple of examples
+
+01:11:53.850 --> 01:11:55.565 align:middle line:90%
+in our new geometric setup.
+
+01:11:55.565 --> 01:12:03.330 align:middle line:90%
+
+
+01:12:03.330 --> 01:12:14.840 align:middle line:84%
+So example one is a square
+grid that's spaced out.
+
+01:12:14.840 --> 01:12:18.030 align:middle line:90%
+
+
+01:12:18.030 --> 01:12:19.535 align:middle line:90%
+OK, so it looks like this.
+
+01:12:19.535 --> 01:12:24.990 align:middle line:90%
+
+
+01:12:24.990 --> 01:12:28.890 align:middle line:90%
+It's going to be an n by n grid.
+
+01:12:28.890 --> 01:12:31.960 align:middle line:90%
+And it's inside of an R ball.
+
+01:12:31.960 --> 01:12:34.110 align:middle line:84%
+But I'm going to make it
+as spread out as possible.
+
+01:12:34.110 --> 01:12:37.950 align:middle line:84%
+So the distance here
+is about R over N.
+
+01:12:37.950 --> 01:12:43.540 align:middle line:84%
+So that's my set X. And D
+could be the same as before.
+
+01:12:43.540 --> 01:12:53.280 align:middle line:84%
+It could be the directions
+with slope a1 over a2,
+
+01:12:53.280 --> 01:13:00.960 align:middle line:84%
+where a1 and a2 are integers
+going from 1 up to A.
+
+01:13:00.960 --> 01:13:05.110 align:middle line:84%
+And if you compute how
+big the projection is,
+
+01:13:05.110 --> 01:13:09.792 align:middle line:84%
+it's the same as
+before, A times N.
+
+01:13:09.792 --> 01:13:11.250 align:middle line:84%
+That's the same
+thing we got before
+
+01:13:11.250 --> 01:13:14.670 align:middle line:84%
+at the beginning of class,
+except that the projection is
+
+01:13:14.670 --> 01:13:18.340 align:middle line:84%
+never bigger than R. If you
+direct a whole ball of radius R,
+
+01:13:18.340 --> 01:13:21.970 align:middle line:84%
+you get an interval of length R.
+So it's never bigger than that.
+
+01:13:21.970 --> 01:13:24.610 align:middle line:84%
+So I'll put the
+minimum this thing.
+
+01:13:24.610 --> 01:13:28.545 align:middle line:90%
+
+
+01:13:28.545 --> 01:13:30.010 align:middle line:90%
+So there's one scenario.
+
+01:13:30.010 --> 01:13:32.845 align:middle line:84%
+This is an integer grid, which
+was an important example before.
+
+01:13:32.845 --> 01:13:35.220 align:middle line:84%
+But another thing you can do
+is you can take these points
+
+01:13:35.220 --> 01:13:36.387 align:middle line:90%
+and clump them way together.
+
+01:13:36.387 --> 01:13:40.320 align:middle line:90%
+
+
+01:13:40.320 --> 01:13:47.280 align:middle line:90%
+So example two is a clump.
+
+01:13:47.280 --> 01:13:51.695 align:middle line:84%
+So I take a ball of radius N
+And I fill it with unit balls.
+
+01:13:51.695 --> 01:13:57.030 align:middle line:90%
+
+
+01:13:57.030 --> 01:14:00.010 align:middle line:84%
+So we still have the number
+of balls is around N squared.
+
+01:14:00.010 --> 01:14:03.210 align:middle line:84%
+But they're much more
+clumped together.
+
+01:14:03.210 --> 01:14:08.760 align:middle line:84%
+And when you do that, pi
+theta of X is only around N.
+
+01:14:08.760 --> 01:14:11.080 align:middle line:84%
+You project this set
+X in any direction,
+
+01:14:11.080 --> 01:14:13.050 align:middle line:84%
+it will be an
+interval of length N.
+
+01:14:13.050 --> 01:14:16.350 align:middle line:84%
+And so that's true
+for everything.
+
+01:14:16.350 --> 01:14:17.890 align:middle line:84%
+And if you compare
+these examples,
+
+01:14:17.890 --> 01:14:29.500 align:middle line:84%
+you'll see that this one has
+much smaller S's than this one.
+
+01:14:29.500 --> 01:14:33.900 align:middle line:84%
+This example is much more
+extreme than the grid.
+
+01:14:33.900 --> 01:14:38.860 align:middle line:84%
+OK, so it turns out that
+just asking the question,
+
+01:14:38.860 --> 01:14:40.650 align:middle line:84%
+if you know the
+cardinality of X,
+
+01:14:40.650 --> 01:14:45.720 align:middle line:84%
+and you know the cardinality
+of D, what can you say about S?
+
+01:14:45.720 --> 01:14:47.045 align:middle line:90%
+We'll answer that question.
+
+01:14:47.045 --> 01:14:48.670 align:middle line:84%
+That's a somewhat
+interesting question.
+
+01:14:48.670 --> 01:14:50.340 align:middle line:90%
+And we'll answer it.
+
+01:14:50.340 --> 01:14:52.265 align:middle line:84%
+But it's not the most
+interesting question.
+
+01:14:52.265 --> 01:14:55.795 align:middle line:90%
+
+
+01:14:55.795 --> 01:14:57.670 align:middle line:84%
+There's a phenomenon
+that's more interesting,
+
+01:14:57.670 --> 01:14:59.920 align:middle line:84%
+which is that as the
+points get spread out,
+
+01:14:59.920 --> 01:15:01.346 align:middle line:90%
+you get stronger estimates.
+
+01:15:01.346 --> 01:15:04.020 align:middle line:90%
+
+
+01:15:04.020 --> 01:15:07.110 align:middle line:84%
+So what does it mean that
+the points get spread out?
+
+01:15:07.110 --> 01:15:10.470 align:middle line:84%
+You need to have
+some rules about it.
+
+01:15:10.470 --> 01:15:14.190 align:middle line:84%
+How do we make that precise
+that they're spread out?
+
+01:15:14.190 --> 01:15:16.590 align:middle line:84%
+So being clumped
+together means there
+
+01:15:16.590 --> 01:15:19.800 align:middle line:84%
+are a lot of points
+in a small ball.
+
+01:15:19.800 --> 01:15:23.520 align:middle line:84%
+And we can quantify that
+in the following way.
+
+01:15:23.520 --> 01:15:30.000 align:middle line:84%
+N sub x of r is the maximum
+over any choice of center
+
+01:15:30.000 --> 01:15:35.150 align:middle line:84%
+of the size of X in the ball
+around center c with radius r.
+
+01:15:35.150 --> 01:15:38.520 align:middle line:90%
+
+
+01:15:38.520 --> 01:15:40.860 align:middle line:84%
+So you can see that this
+quantity would be quite large
+
+01:15:40.860 --> 01:15:45.051 align:middle line:84%
+in this example, especially
+if you took little r to be N.
+
+01:15:45.051 --> 01:15:47.800 align:middle line:84%
+And it would be a lot
+smaller in this example.
+
+01:15:47.800 --> 01:15:49.360 align:middle line:84%
+So that point is
+more spread out.
+
+01:15:49.360 --> 01:15:54.921 align:middle line:90%
+
+
+01:15:54.921 --> 01:15:59.670 align:middle line:84%
+And it turns out it doesn't just
+matter how our set of points
+
+01:15:59.670 --> 01:16:00.990 align:middle line:90%
+is spaced.
+
+01:16:00.990 --> 01:16:05.000 align:middle line:84%
+It also matters how our set
+of directions is spaced.
+
+01:16:05.000 --> 01:16:07.020 align:middle line:90%
+So we'll talk about that also.
+
+01:16:07.020 --> 01:16:15.202 align:middle line:84%
+So N sub D of R is
+the maximum over any--
+
+01:16:15.202 --> 01:16:16.910 align:middle line:84%
+actually let me give
+this another letter.
+
+01:16:16.910 --> 01:16:26.120 align:middle line:84%
+I'll call it rho, any
+arc of length rho in S1.
+
+01:16:26.120 --> 01:16:27.830 align:middle line:84%
+So we have the
+directions as a subset
+
+01:16:27.830 --> 01:16:35.960 align:middle line:84%
+of S1 of the number of
+the directions in the arc.
+
+01:16:35.960 --> 01:16:38.180 align:middle line:84%
+So if you pick a
+particular parameter,
+
+01:16:38.180 --> 01:16:42.080 align:middle line:84%
+a size rho, and you ask how
+many directions are there
+
+01:16:42.080 --> 01:16:44.570 align:middle line:90%
+in an arc of size of rho.
+
+01:16:44.570 --> 01:16:45.660 align:middle line:90%
+So that's this thing.
+
+01:16:45.660 --> 01:16:55.575 align:middle line:90%
+
+
+01:16:55.575 --> 01:16:59.240 align:middle line:84%
+So you could describe our
+goal in projection theory
+
+01:16:59.240 --> 01:17:01.610 align:middle line:84%
+in Euclidean space
+in the following way.
+
+01:17:01.610 --> 01:17:04.130 align:middle line:84%
+Given some information
+about this thing
+
+01:17:04.130 --> 01:17:18.980 align:middle line:84%
+and that thing, try to
+estimate S And D And X.
+
+01:17:18.980 --> 01:17:21.140 align:middle line:90%
+You can phrase it that way.
+
+01:17:21.140 --> 01:17:23.512 align:middle line:84%
+And then there's a
+whole world of questions
+
+01:17:23.512 --> 01:17:25.220 align:middle line:84%
+because there's a lot
+of different things
+
+01:17:25.220 --> 01:17:29.030 align:middle line:84%
+you could assume
+about N, X, and D.
+
+01:17:29.030 --> 01:17:31.580 align:middle line:84%
+There is one
+particular scenario,
+
+01:17:31.580 --> 01:17:33.320 align:middle line:84%
+one particular set
+of assumptions that
+
+01:17:33.320 --> 01:17:34.770 align:middle line:90%
+has been investigated a lot.
+
+01:17:34.770 --> 01:17:37.350 align:middle line:84%
+And it's not the
+only interesting one,
+
+01:17:37.350 --> 01:17:43.430 align:middle line:84%
+but it seems to be important
+and a good thing to focus on.
+
+01:17:43.430 --> 01:17:56.960 align:middle line:84%
+So you could say that x is an
+alpha dimensional set of balls
+
+01:17:56.960 --> 01:18:04.910 align:middle line:84%
+if the total number of balls is
+around R to the alpha and N sub
+
+01:18:04.910 --> 01:18:07.890 align:middle line:84%
+r of x is less than
+little r to the alpha.
+
+01:18:07.890 --> 01:18:10.700 align:middle line:90%
+
+
+01:18:10.700 --> 01:18:14.005 align:middle line:84%
+This numerology is consistent
+with how fractals behave.
+
+01:18:14.005 --> 01:18:17.870 align:middle line:90%
+
+
+01:18:17.870 --> 01:18:32.915 align:middle line:84%
+And then you can make a
+similar definition for a D. OK.
+
+01:18:32.915 --> 01:18:41.330 align:middle line:90%
+
+
+01:18:41.330 --> 01:18:43.130 align:middle line:84%
+People might feel
+it's not so clear
+
+01:18:43.130 --> 01:18:45.840 align:middle line:84%
+why to focus on this
+particular set of conditions.
+
+01:18:45.840 --> 01:18:48.020 align:middle line:90%
+We can talk about it.
+
+01:18:48.020 --> 01:18:53.960 align:middle line:84%
+Anyway, so the final
+thing is that if you
+
+01:18:53.960 --> 01:18:56.600 align:middle line:84%
+take this set of
+conditions, then we
+
+01:18:56.600 --> 01:18:59.660 align:middle line:84%
+can do a version in Euclidean
+space of the conjecture
+
+01:18:59.660 --> 01:19:03.410 align:middle line:84%
+in theorem one and theorem two,
+and all the numbers match up,
+
+01:19:03.410 --> 01:19:05.750 align:middle line:84%
+and we can prove a
+version of theorem one
+
+01:19:05.750 --> 01:19:08.512 align:middle line:84%
+that looks just like that
+with this double counting,
+
+01:19:08.512 --> 01:19:10.220 align:middle line:84%
+and we can prove a
+version of theorem two
+
+01:19:10.220 --> 01:19:13.550 align:middle line:84%
+that looks just like that
+with Fourier analysis.
+
+01:19:13.550 --> 01:19:18.200 align:middle line:84%
+And we have a conjecture
+that looks just like that.
+
+01:19:18.200 --> 01:19:23.210 align:middle line:84%
+And the big recent result that
+I hinted at in the first class
+
+01:19:23.210 --> 01:19:28.790 align:middle line:84%
+is the analog of that
+conjecture is proven.
+
+01:19:28.790 --> 01:19:31.620 align:middle line:84%
+So at the beginning
+of class on Tuesday,
+
+01:19:31.620 --> 01:19:35.000 align:middle line:84%
+I will write all
+those things down
+
+01:19:35.000 --> 01:19:37.790 align:middle line:84%
+and then we'll do
+analysis in R2 and we'll
+
+01:19:37.790 --> 01:19:42.470 align:middle line:84%
+prove theorem one prime
+and theorem two prime.
+
+01:19:42.470 --> 01:19:43.710 align:middle line:90%
+OK, great.
+
+01:19:43.710 --> 01:19:44.550 align:middle line:90%
+Let's stop there.
+
+01:19:44.550 --> 01:19:48.250 align:middle line:84%
+Have a great weekend and
+I will see you next week.
+
+01:19:48.250 --> 01:19:56.000 align:middle line:90%

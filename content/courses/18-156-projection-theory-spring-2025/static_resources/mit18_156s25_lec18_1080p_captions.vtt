@@ -1,0 +1,4465 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.400 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.400 --> 00:00:04.320 align:middle line:90%
+[RUSTLING]
+
+00:00:04.320 --> 00:00:07.200 align:middle line:90%
+[CLICKING]
+
+00:00:07.200 --> 00:00:11.360 align:middle line:90%
+
+
+00:00:11.360 --> 00:00:15.170 align:middle line:84%
+LAWRENCE GUTH: So this is the
+second day of our little unit
+
+00:00:15.170 --> 00:00:17.190 align:middle line:90%
+on random walks, on groups.
+
+00:00:17.190 --> 00:00:19.670 align:middle line:84%
+And the first day,
+we introduced it,
+
+00:00:19.670 --> 00:00:24.925 align:middle line:84%
+and the second day, we'll
+describe some more modern stuff.
+
+00:00:24.925 --> 00:00:27.300 align:middle line:84%
+And the second day will be a
+little bit more of a survey.
+
+00:00:27.300 --> 00:00:31.340 align:middle line:84%
+I won't prove everything,
+but I'll try to--
+
+00:00:31.340 --> 00:00:33.230 align:middle line:84%
+and in the second
+day, we'll see how it
+
+00:00:33.230 --> 00:00:36.470 align:middle line:90%
+connects to projection theory.
+
+00:00:36.470 --> 00:00:40.555 align:middle line:84%
+OK, so first, let's recall
+where we're talking about.
+
+00:00:40.555 --> 00:01:03.260 align:middle line:90%
+
+
+00:01:03.260 --> 00:01:06.070 align:middle line:84%
+So we have a finite
+group G. And then we
+
+00:01:06.070 --> 00:01:13.120 align:middle line:84%
+have a probability measure on
+G. And we have an operator T mu.
+
+00:01:13.120 --> 00:01:17.200 align:middle line:84%
+T mu of f is f
+convolved with mu.
+
+00:01:17.200 --> 00:01:20.390 align:middle line:84%
+And so this does a
+step of a random walk.
+
+00:01:20.390 --> 00:01:23.210 align:middle line:84%
+So if f is the probability
+distribution at some moment,
+
+00:01:23.210 --> 00:01:25.060 align:middle line:84%
+then you make a step
+of the random walk,
+
+00:01:25.060 --> 00:01:30.256 align:middle line:84%
+and then T mu f is the new
+probability distribution.
+
+00:01:30.256 --> 00:01:34.810 align:middle line:84%
+So T mu of 1 is 1, the
+constant function 1.
+
+00:01:34.810 --> 00:01:39.020 align:middle line:84%
+And T mu maps the
+functions of mean 0.
+
+00:01:39.020 --> 00:01:42.290 align:middle line:84%
+So these are functions who
+sum to 0 or have mean 0,
+
+00:01:42.290 --> 00:01:44.710 align:middle line:90%
+it maps it to itself.
+
+00:01:44.710 --> 00:01:50.880 align:middle line:84%
+And sigma 1 of T mu is the
+largest singular value of this.
+
+00:01:50.880 --> 00:02:01.560 align:middle line:90%
+
+
+00:02:01.560 --> 00:02:04.500 align:middle line:84%
+And we saw that
+sigma 1 of T mu is
+
+00:02:04.500 --> 00:02:07.570 align:middle line:84%
+related to the mixing
+behavior of this random walk.
+
+00:02:07.570 --> 00:02:12.330 align:middle line:84%
+So we always have
+that sigma 1 of T mu
+
+00:02:12.330 --> 00:02:14.350 align:middle line:90%
+is less than or equal to 1.
+
+00:02:14.350 --> 00:02:17.440 align:middle line:84%
+And we don't use
+a positive number.
+
+00:02:17.440 --> 00:02:21.700 align:middle line:84%
+And sigma 1 of T mu is
+strictly less than 1.
+
+00:02:21.700 --> 00:02:25.098 align:middle line:84%
+Then that gives some kind of
+mixing of the random walk.
+
+00:02:25.098 --> 00:02:26.390 align:middle line:90%
+We made that precise last time.
+
+00:02:26.390 --> 00:02:31.170 align:middle line:90%
+
+
+00:02:31.170 --> 00:02:34.365 align:middle line:84%
+Next, we focused
+on the group SL2Fp.
+
+00:02:34.365 --> 00:02:41.010 align:middle line:90%
+
+
+00:02:41.010 --> 00:02:44.370 align:middle line:84%
+And one special
+feature of this group
+
+00:02:44.370 --> 00:02:46.410 align:middle line:90%
+came from representation theory.
+
+00:02:46.410 --> 00:02:50.790 align:middle line:84%
+So we had a
+proposition that if you
+
+00:02:50.790 --> 00:02:57.260 align:middle line:84%
+have a representation
+of this group,
+
+00:02:57.260 --> 00:03:01.080 align:middle line:84%
+so that's a unitary
+representation,
+
+00:03:01.080 --> 00:03:07.570 align:middle line:84%
+and let's say it's non-trivial,
+then D has to be pretty big.
+
+00:03:07.570 --> 00:03:12.860 align:middle line:90%
+
+
+00:03:12.860 --> 00:03:18.980 align:middle line:84%
+And we use that to
+prove a mixing estimate.
+
+00:03:18.980 --> 00:03:22.610 align:middle line:84%
+Mixing estimate says that
+if mu is a probability
+
+00:03:22.610 --> 00:03:34.550 align:middle line:84%
+measure on this group,
+then sigma 1 of T mu
+
+00:03:34.550 --> 00:03:38.815 align:middle line:84%
+is bounded by p squared
+times mu L2 squared.
+
+00:03:38.815 --> 00:03:41.480 align:middle line:90%
+
+
+00:03:41.480 --> 00:03:45.710 align:middle line:84%
+For example, if A is
+just a subset of SL2Fp,
+
+00:03:45.710 --> 00:03:54.050 align:middle line:84%
+then there's a uniform
+measure on A, mu A.
+
+00:03:54.050 --> 00:03:57.525 align:middle line:84%
+And it's straightforward to
+check that its L2 norm squared,
+
+00:03:57.525 --> 00:04:02.650 align:middle line:84%
+mu A L2 norm squared is
+1 over the size of A.
+
+00:04:02.650 --> 00:04:05.770 align:middle line:84%
+So a corollary is that if
+A is significantly bigger
+
+00:04:05.770 --> 00:04:11.890 align:middle line:84%
+than p squared, then the random
+walk using A mixes rapidly.
+
+00:04:11.890 --> 00:04:20.200 align:middle line:84%
+So corollary, if for instance,
+A is bigger than p to the 2.1,
+
+00:04:20.200 --> 00:04:28.450 align:middle line:84%
+then sigma 1 of TA, so I'll
+write TA is an abbreviation
+
+00:04:28.450 --> 00:04:33.760 align:middle line:84%
+for T mu A, sigma 1 of TA would
+be smaller than something like p
+
+00:04:33.760 --> 00:04:35.590 align:middle line:90%
+to the negative 1/10.
+
+00:04:35.590 --> 00:04:37.065 align:middle line:90%
+So it would mix quite rapidly.
+
+00:04:37.065 --> 00:04:40.750 align:middle line:90%
+
+
+00:04:40.750 --> 00:04:42.980 align:middle line:90%
+So this is a nice proposition.
+
+00:04:42.980 --> 00:04:45.200 align:middle line:84%
+And it's kind of
+sharp of its type.
+
+00:04:45.200 --> 00:04:49.420 align:middle line:84%
+Because if the set A
+is a subgroup of SL2Fp,
+
+00:04:49.420 --> 00:04:54.090 align:middle line:84%
+then the random walk will not
+generate, will not mix at all,
+
+00:04:54.090 --> 00:04:56.630 align:middle line:84%
+and there are subgroups,
+or easy subgroups that
+
+00:04:56.630 --> 00:04:58.530 align:middle line:90%
+have size around p squared.
+
+00:04:58.530 --> 00:05:03.320 align:middle line:90%
+So we can't do better than this.
+
+00:05:03.320 --> 00:05:09.440 align:middle line:84%
+So remark is that this
+corollary is sharp
+
+00:05:09.440 --> 00:05:18.110 align:middle line:84%
+because there exists H, a
+proper subgroup size of H
+
+00:05:18.110 --> 00:05:19.320 align:middle line:90%
+around p squared.
+
+00:05:19.320 --> 00:05:22.590 align:middle line:84%
+So for instance, H is the
+upper triangular matrices.
+
+00:05:22.590 --> 00:05:23.480 align:middle line:90%
+Yeah?
+
+00:05:23.480 --> 00:05:25.410 align:middle line:84%
+AUDIENCE: If you have,
+for a different group,
+
+00:05:25.410 --> 00:05:28.520 align:middle line:84%
+a similar proposition
+where you can lower bound
+
+00:05:28.520 --> 00:05:33.960 align:middle line:84%
+the dimension of the nontrivial
+unitary representation,
+
+00:05:33.960 --> 00:05:38.270 align:middle line:84%
+could you also use that as an
+upper bound for the sigma 1
+
+00:05:38.270 --> 00:05:39.170 align:middle line:90%
+for that group?
+
+00:05:39.170 --> 00:05:40.670 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+so the question
+
+00:05:40.670 --> 00:05:42.890 align:middle line:84%
+is if we had an analog
+of this proposition
+
+00:05:42.890 --> 00:05:48.020 align:middle line:84%
+for some other group,
+say SLDFp, then could we
+
+00:05:48.020 --> 00:05:50.700 align:middle line:84%
+do this whole story for
+all these other groups?
+
+00:05:50.700 --> 00:05:51.800 align:middle line:90%
+Yeah, you could.
+
+00:05:51.800 --> 00:05:55.540 align:middle line:84%
+That's all that
+we've used so far.
+
+00:05:55.540 --> 00:05:58.390 align:middle line:90%
+Yeah, OK, cool.
+
+00:05:58.390 --> 00:06:01.880 align:middle line:84%
+So then also last class,
+we stated an old theorem,
+
+00:06:01.880 --> 00:06:03.160 align:middle line:90%
+which goes rather--
+
+00:06:03.160 --> 00:06:05.980 align:middle line:84%
+it's older than this
+proposition, but it goes rather,
+
+00:06:05.980 --> 00:06:07.920 align:middle line:84%
+it does not obviously
+follow from it.
+
+00:06:07.920 --> 00:06:13.900 align:middle line:90%
+
+
+00:06:13.900 --> 00:06:19.000 align:middle line:84%
+So theorem, this theorem is
+essentially due to Selberg,
+
+00:06:19.000 --> 00:06:22.060 align:middle line:84%
+although he didn't say
+it in quite this way.
+
+00:06:22.060 --> 00:06:30.580 align:middle line:84%
+So here, A, so we pick A is a
+particular list of generators
+
+00:06:30.580 --> 00:06:31.390 align:middle line:90%
+of SL2Fp.
+
+00:06:31.390 --> 00:06:39.880 align:middle line:90%
+
+
+00:06:39.880 --> 00:06:44.060 align:middle line:84%
+So this is perhaps the simplest
+set of generators of SL2Fp.
+
+00:06:44.060 --> 00:06:45.880 align:middle line:84%
+But it is also somewhat
+special in a way
+
+00:06:45.880 --> 00:06:48.340 align:middle line:84%
+that we'll talk about when
+we talk about the proof.
+
+00:06:48.340 --> 00:06:55.350 align:middle line:84%
+So then the conclusion is that
+sigma 1 of TA is less than 1
+
+00:06:55.350 --> 00:06:59.260 align:middle line:84%
+minus c, where c is
+positive and c is--
+
+00:06:59.260 --> 00:07:01.080 align:middle line:90%
+this is true for every p.
+
+00:07:01.080 --> 00:07:04.260 align:middle line:90%
+So c does not depend on p.
+
+00:07:04.260 --> 00:07:09.000 align:middle line:90%
+So these all mix uniformly fast.
+
+00:07:09.000 --> 00:07:12.030 align:middle line:84%
+So this theorem is not
+an immediate corollary
+
+00:07:12.030 --> 00:07:15.930 align:middle line:84%
+of this proposition because
+this is a much smaller set.
+
+00:07:15.930 --> 00:07:21.460 align:middle line:84%
+And so today, a couple
+of goals in this survey.
+
+00:07:21.460 --> 00:07:23.400 align:middle line:84%
+The first goal is
+to sketch a proof
+
+00:07:23.400 --> 00:07:26.650 align:middle line:84%
+of this theorem in which this
+proposition plays a key role.
+
+00:07:26.650 --> 00:07:28.210 align:middle line:90%
+But we'll see some other ideas.
+
+00:07:28.210 --> 00:07:30.570 align:middle line:84%
+And a second goal
+is to discuss what
+
+00:07:30.570 --> 00:07:33.570 align:middle line:84%
+happens if you replace what was
+special about this generating
+
+00:07:33.570 --> 00:07:35.700 align:middle line:84%
+set at all, and what
+happens if we replace it
+
+00:07:35.700 --> 00:07:37.025 align:middle line:90%
+by some other generating set.
+
+00:07:37.025 --> 00:07:44.190 align:middle line:90%
+
+
+00:07:44.190 --> 00:07:51.360 align:middle line:84%
+OK, so the first proof was
+due to Selberg, basically.
+
+00:07:51.360 --> 00:07:53.340 align:middle line:84%
+But that proof was
+quite difficult.
+
+00:07:53.340 --> 00:07:57.650 align:middle line:84%
+It used a bunch of stuff,
+including the Neyman hypothesis
+
+00:07:57.650 --> 00:07:59.840 align:middle line:90%
+for curves over finite fields.
+
+00:07:59.840 --> 00:08:06.890 align:middle line:84%
+We're going to follow
+a later proof which
+
+00:08:06.890 --> 00:08:11.720 align:middle line:84%
+is due to Sarnak and Xua, and
+perhaps simplified or adjusted
+
+00:08:11.720 --> 00:08:14.540 align:middle line:90%
+a bit by various people.
+
+00:08:14.540 --> 00:08:16.690 align:middle line:90%
+OK, cool.
+
+00:08:16.690 --> 00:08:19.250 align:middle line:90%
+
+
+00:08:19.250 --> 00:08:25.170 align:middle line:84%
+All right, so this
+set is symmetric,
+
+00:08:25.170 --> 00:08:29.250 align:middle line:84%
+meaning that if a group
+element is in the set,
+
+00:08:29.250 --> 00:08:31.340 align:middle line:90%
+so is the inverse.
+
+00:08:31.340 --> 00:08:37.250 align:middle line:84%
+And so we could say that
+mu is symmetric if mu of g
+
+00:08:37.250 --> 00:08:45.510 align:middle line:84%
+is equal to mu of g inverse
+for every g in G. And T mu,
+
+00:08:45.510 --> 00:08:50.230 align:middle line:84%
+actually, it's a bit
+nicer if mu is symmetric.
+
+00:08:50.230 --> 00:08:51.530 align:middle line:90%
+And here's why.
+
+00:08:51.530 --> 00:08:54.790 align:middle line:90%
+So remark, mu is symmetric.
+
+00:08:54.790 --> 00:08:57.800 align:middle line:84%
+That is equivalent to
+saying that the operator T
+
+00:08:57.800 --> 00:09:00.675 align:middle line:90%
+mu is symmetric as a matrix.
+
+00:09:00.675 --> 00:09:06.040 align:middle line:90%
+
+
+00:09:06.040 --> 00:09:11.150 align:middle line:84%
+And so because-- so if you
+think of T mu as a matrix,
+
+00:09:11.150 --> 00:09:15.640 align:middle line:84%
+then it has a g1, g2
+entry, and the g1, g2 entry
+
+00:09:15.640 --> 00:09:18.290 align:middle line:90%
+is mu of g1, g2 inverse.
+
+00:09:18.290 --> 00:09:21.860 align:middle line:84%
+So if you switch these, you're
+taking the inverse of that.
+
+00:09:21.860 --> 00:09:25.270 align:middle line:84%
+And if mu is symmetric,
+that doesn't matter.
+
+00:09:25.270 --> 00:09:27.370 align:middle line:90%
+So it's a symmetric matrix.
+
+00:09:27.370 --> 00:09:29.650 align:middle line:84%
+So that's nice because
+a symmetric matrix,
+
+00:09:29.650 --> 00:09:30.950 align:middle line:90%
+you can diagonalize it.
+
+00:09:30.950 --> 00:09:32.830 align:middle line:84%
+And instead of just
+having singular values,
+
+00:09:32.830 --> 00:09:34.840 align:middle line:90%
+it has eigenvalues.
+
+00:09:34.840 --> 00:09:37.580 align:middle line:84%
+So once T mu is a
+symmetric matrix,
+
+00:09:37.580 --> 00:09:41.650 align:middle line:84%
+then the first singular
+value of T mu to the k
+
+00:09:41.650 --> 00:09:46.965 align:middle line:84%
+is the first singular
+value of T mu to the k.
+
+00:09:46.965 --> 00:09:49.120 align:middle line:84%
+It helps to have a
+blackboard to say it.
+
+00:09:49.120 --> 00:09:53.331 align:middle line:90%
+
+
+00:09:53.331 --> 00:09:55.650 align:middle line:90%
+And so that suggests a--
+
+00:09:55.650 --> 00:09:56.498 align:middle line:90%
+this is helpful.
+
+00:09:56.498 --> 00:09:58.290 align:middle line:84%
+This isn't true for
+non-symmetric matrices.
+
+00:09:58.290 --> 00:09:59.832 align:middle line:84%
+But it's true for
+symmetric matrices.
+
+00:09:59.832 --> 00:10:01.800 align:middle line:84%
+And it suggests
+a strategy of how
+
+00:10:01.800 --> 00:10:04.180 align:middle line:84%
+to get a handle on
+sigma 1 of T mu.
+
+00:10:04.180 --> 00:10:06.095 align:middle line:84%
+So we can say the
+following thing.
+
+00:10:06.095 --> 00:10:08.700 align:middle line:90%
+
+
+00:10:08.700 --> 00:10:11.370 align:middle line:90%
+So we have sigma 1.
+
+00:10:11.370 --> 00:10:13.990 align:middle line:84%
+Yeah, let's also think
+about T mu to the k.
+
+00:10:13.990 --> 00:10:18.360 align:middle line:84%
+So T mu to the k of f
+is f convolved with mu
+
+00:10:18.360 --> 00:10:20.880 align:middle line:84%
+and then convolved
+with mu and so
+
+00:10:20.880 --> 00:10:29.010 align:middle line:84%
+on k times, which is f convolved
+with mu convolved with itself
+
+00:10:29.010 --> 00:10:30.750 align:middle line:90%
+k times.
+
+00:10:30.750 --> 00:10:33.430 align:middle line:84%
+So that's an
+operator of our type.
+
+00:10:33.430 --> 00:10:34.950 align:middle line:84%
+But with a new
+measure, the measure
+
+00:10:34.950 --> 00:10:39.640 align:middle line:84%
+is mu convolved
+with itself k times.
+
+00:10:39.640 --> 00:10:46.250 align:middle line:84%
+So therefore, sigma 1 of
+T mu to the k, sigma 1 T
+
+00:10:46.250 --> 00:10:51.505 align:middle line:84%
+mu to the k, which is
+sigma 1 of T mu to the k.
+
+00:10:51.505 --> 00:10:57.335 align:middle line:90%
+
+
+00:10:57.335 --> 00:10:59.460 align:middle line:84%
+So if you try to explain
+this without a blackboard,
+
+00:10:59.460 --> 00:11:03.363 align:middle line:84%
+you have to have really
+good ability to evoke things
+
+00:11:03.363 --> 00:11:04.030 align:middle line:90%
+with your voice.
+
+00:11:04.030 --> 00:11:06.650 align:middle line:90%
+
+
+00:11:06.650 --> 00:11:11.720 align:middle line:84%
+All right, so mu might
+be the uniform measure
+
+00:11:11.720 --> 00:11:15.620 align:middle line:84%
+on this set of four elements A.
+And if we apply this proposition
+
+00:11:15.620 --> 00:11:19.160 align:middle line:84%
+directly to that set of four
+elements, it gives us nothing.
+
+00:11:19.160 --> 00:11:21.180 align:middle line:90%
+But we can use this.
+
+00:11:21.180 --> 00:11:27.290 align:middle line:84%
+And then we can try to apply
+the proposition to mu to the k.
+
+00:11:27.290 --> 00:11:29.810 align:middle line:84%
+So if we put together
+what we have,
+
+00:11:29.810 --> 00:11:34.520 align:middle line:84%
+we can make the following
+corollary, sigma of T mu
+
+00:11:34.520 --> 00:11:35.400 align:middle line:90%
+to the k--
+
+00:11:35.400 --> 00:11:43.330 align:middle line:84%
+so OK, so this is if mu is
+a probability measure on SL2
+
+00:11:43.330 --> 00:11:51.070 align:middle line:84%
+of Fp, then sigma
+1 of T mu to the k
+
+00:11:51.070 --> 00:11:53.480 align:middle line:90%
+is bounded by, well, this thing.
+
+00:11:53.480 --> 00:11:59.230 align:middle line:84%
+And for this thing, we can
+apply our proposition here.
+
+00:11:59.230 --> 00:12:07.125 align:middle line:84%
+So we get p squared times
+mu tensor k L2 squared.
+
+00:12:07.125 --> 00:12:15.350 align:middle line:90%
+
+
+00:12:15.350 --> 00:12:20.860 align:middle line:84%
+So for the original, if you
+take the Selberg measure A then
+
+00:12:20.860 --> 00:12:23.710 align:middle line:84%
+for the original
+mu A, this thing
+
+00:12:23.710 --> 00:12:25.730 align:middle line:84%
+would be much too big
+to be interesting.
+
+00:12:25.730 --> 00:12:28.210 align:middle line:84%
+But perhaps we could
+find a high power k
+
+00:12:28.210 --> 00:12:32.097 align:middle line:84%
+where this L2 norm is actually
+smaller than 1 over p squared.
+
+00:12:32.097 --> 00:12:33.930 align:middle line:84%
+And that would give us
+an interesting bound.
+
+00:12:33.930 --> 00:12:40.860 align:middle line:90%
+
+
+00:12:40.860 --> 00:12:45.330 align:middle line:84%
+Cool, so all of the stuff
+that we'll talk about today
+
+00:12:45.330 --> 00:12:47.670 align:middle line:90%
+is based on this corollary.
+
+00:12:47.670 --> 00:12:49.480 align:middle line:84%
+So you can think
+about it like this,
+
+00:12:49.480 --> 00:12:53.220 align:middle line:84%
+you start off with a probability
+measure mu, and we want to know,
+
+00:12:53.220 --> 00:12:55.410 align:middle line:84%
+does it get really evenly
+mixed if you convolve it
+
+00:12:55.410 --> 00:12:57.240 align:middle line:90%
+with itself a lot of times?
+
+00:12:57.240 --> 00:13:02.550 align:middle line:84%
+And what we'll see here is
+that maybe if you convolve it
+
+00:13:02.550 --> 00:13:08.130 align:middle line:84%
+with itself a bunch of times, it
+will get fairly well mixed, not
+
+00:13:08.130 --> 00:13:11.310 align:middle line:84%
+spectacularly well mixed,
+but just fairly well mixed
+
+00:13:11.310 --> 00:13:14.700 align:middle line:84%
+to guarantee that this L2
+norm is smaller than 1 over p
+
+00:13:14.700 --> 00:13:16.140 align:middle line:90%
+squared.
+
+00:13:16.140 --> 00:13:18.960 align:middle line:84%
+So if it manages to be
+kind of roughly evenly
+
+00:13:18.960 --> 00:13:22.480 align:middle line:84%
+distributed around p to the
+2.1 elements in this group,
+
+00:13:22.480 --> 00:13:26.040 align:middle line:84%
+that would be good enough that
+this would be less than 1.
+
+00:13:26.040 --> 00:13:28.650 align:middle line:84%
+Once that happens, we
+can use this corollary
+
+00:13:28.650 --> 00:13:31.110 align:middle line:90%
+and we can bound sigma 1.
+
+00:13:31.110 --> 00:13:33.180 align:middle line:84%
+And once we bound
+sigma 1, then we'll
+
+00:13:33.180 --> 00:13:36.277 align:middle line:84%
+see that that, in turn, tells us
+what happens as we keep mixing.
+
+00:13:36.277 --> 00:13:38.360 align:middle line:84%
+Then we'll be able to say
+it gets really very well
+
+00:13:38.360 --> 00:13:39.930 align:middle line:90%
+mixed at some later time.
+
+00:13:39.930 --> 00:13:42.530 align:middle line:90%
+
+
+00:13:42.530 --> 00:13:45.690 align:middle line:90%
+OK, but how can we--
+
+00:13:45.690 --> 00:13:46.950 align:middle line:90%
+so how can we bound this?
+
+00:13:46.950 --> 00:13:52.700 align:middle line:84%
+How can we show that mu tensor
+k is decently well mixed, fairly
+
+00:13:52.700 --> 00:13:54.570 align:middle line:90%
+well mixed?
+
+00:13:54.570 --> 00:13:56.270 align:middle line:84%
+So there are two
+different approaches
+
+00:13:56.270 --> 00:13:58.430 align:middle line:90%
+that we'll talk about today.
+
+00:13:58.430 --> 00:14:00.890 align:middle line:84%
+So one approach, which is
+special for this theorem,
+
+00:14:00.890 --> 00:14:05.060 align:middle line:90%
+involves either--
+
+00:14:05.060 --> 00:14:09.800 align:middle line:84%
+let me say it involves
+lifting to SL2Z and/or
+
+00:14:09.800 --> 00:14:11.550 align:middle line:90%
+it involves hyperbolic geometry.
+
+00:14:11.550 --> 00:14:14.095 align:middle line:84%
+I'll describe it in a couple
+of slightly different ways.
+
+00:14:14.095 --> 00:14:16.970 align:middle line:90%
+
+
+00:14:16.970 --> 00:14:23.740 align:middle line:84%
+So first let's talk
+about lifting to SL2Z.
+
+00:14:23.740 --> 00:14:27.290 align:middle line:90%
+
+
+00:14:27.290 --> 00:14:30.650 align:middle line:84%
+So if you reduce mod
+p, it gives a group
+
+00:14:30.650 --> 00:14:33.920 align:middle line:90%
+homomorphism from SL2Z to SL2Fp.
+
+00:14:33.920 --> 00:14:42.186 align:middle line:90%
+
+
+00:14:42.186 --> 00:14:51.420 align:middle line:84%
+So let's suppose that M is a
+probability measure on SL2Z.
+
+00:14:51.420 --> 00:14:55.390 align:middle line:84%
+And mu is the
+pushforward pi p of M.
+
+00:14:55.390 --> 00:14:59.160 align:middle line:84%
+So that's a probability
+measure here.
+
+00:14:59.160 --> 00:15:03.090 align:middle line:84%
+And this setup with group
+homomorphisms commutes,
+
+00:15:03.090 --> 00:15:05.550 align:middle line:90%
+plays nicely with convolution.
+
+00:15:05.550 --> 00:15:12.990 align:middle line:84%
+So if I take the pushforward of
+M convolved with itself k times,
+
+00:15:12.990 --> 00:15:15.935 align:middle line:84%
+I will get mu convolved
+with itself k times.
+
+00:15:15.935 --> 00:15:21.870 align:middle line:90%
+
+
+00:15:21.870 --> 00:15:25.170 align:middle line:84%
+So one approach to try to
+understand mu convolved
+
+00:15:25.170 --> 00:15:28.020 align:middle line:84%
+with itself a bunch of
+times is to first try
+
+00:15:28.020 --> 00:15:31.030 align:middle line:84%
+to understand M convolved
+with itself a bunch of times
+
+00:15:31.030 --> 00:15:33.870 align:middle line:84%
+and then try to understand
+what happens when we perform
+
+00:15:33.870 --> 00:15:35.050 align:middle line:90%
+this push forward.
+
+00:15:35.050 --> 00:15:42.320 align:middle line:90%
+
+
+00:15:42.320 --> 00:15:51.170 align:middle line:84%
+So here's our plan, study M
+convolved with itself k times
+
+00:15:51.170 --> 00:15:55.590 align:middle line:84%
+to study the push
+forward operation.
+
+00:15:55.590 --> 00:15:59.840 align:middle line:90%
+
+
+00:15:59.840 --> 00:16:05.060 align:middle line:84%
+So this is a reasonable
+strategy because of the fact,
+
+00:16:05.060 --> 00:16:08.630 align:middle line:84%
+or to the extent that we
+feel that SL2Z is easier
+
+00:16:08.630 --> 00:16:10.640 align:middle line:90%
+to get our hands on then SL2Fp.
+
+00:16:10.640 --> 00:16:14.880 align:middle line:90%
+
+
+00:16:14.880 --> 00:16:19.220 align:middle line:84%
+And there are a couple of
+reasons that SL2Z is easier
+
+00:16:19.220 --> 00:16:22.940 align:middle line:90%
+to get our hands on then SL2Fp.
+
+00:16:22.940 --> 00:16:31.160 align:middle line:84%
+Let me call this good
+features of SL2Z.
+
+00:16:31.160 --> 00:16:33.860 align:middle line:90%
+
+
+00:16:33.860 --> 00:16:36.800 align:middle line:84%
+We won't necessarily use all of
+these, but let me mention them.
+
+00:16:36.800 --> 00:16:42.750 align:middle line:84%
+So the first feature is
+that SL2Z is virtually free.
+
+00:16:42.750 --> 00:16:46.090 align:middle line:90%
+
+
+00:16:46.090 --> 00:16:47.770 align:middle line:84%
+So that virtually
+means is that there
+
+00:16:47.770 --> 00:16:58.420 align:middle line:84%
+is a subgroup H in SL2Z which
+is a finite index free subgroup.
+
+00:16:58.420 --> 00:17:01.760 align:middle line:84%
+So in general, if you say that
+a group is virtually blah,
+
+00:17:01.760 --> 00:17:06.280 align:middle line:84%
+it means that there's a finite
+index subgroup, which is blah.
+
+00:17:06.280 --> 00:17:08.750 align:middle line:84%
+So it's pretty
+close to being free.
+
+00:17:08.750 --> 00:17:11.560 align:middle line:84%
+That's not true
+at all for SL2Fp.
+
+00:17:11.560 --> 00:17:14.210 align:middle line:84%
+You take SL2Fp, take
+the simplest generators
+
+00:17:14.210 --> 00:17:18.640 align:middle line:84%
+you can think of, try to
+write down all the relations,
+
+00:17:18.640 --> 00:17:19.880 align:middle line:90%
+it's not super easy.
+
+00:17:19.880 --> 00:17:21.880 align:middle line:84%
+I don't personally know
+how to do it, although I
+
+00:17:21.880 --> 00:17:23.172 align:middle line:90%
+think people know how to do it.
+
+00:17:23.172 --> 00:17:28.150 align:middle line:90%
+
+
+00:17:28.150 --> 00:17:37.690 align:middle line:84%
+OK, number two, SL2Z is
+sitting inside of SL2R.
+
+00:17:37.690 --> 00:17:41.680 align:middle line:84%
+It's kind of a discrete
+approximation of SL2R,
+
+00:17:41.680 --> 00:17:46.140 align:middle line:84%
+so it's pretty closely
+related to a Lie group.
+
+00:17:46.140 --> 00:17:47.840 align:middle line:90%
+This is what we'll actually use.
+
+00:17:47.840 --> 00:17:53.520 align:middle line:90%
+
+
+00:17:53.520 --> 00:18:01.680 align:middle line:84%
+And number three is
+that SL2Z acts nicely--
+
+00:18:01.680 --> 00:18:06.240 align:middle line:84%
+maybe I should call it 2B, it's
+quite closely related to two.
+
+00:18:06.240 --> 00:18:08.810 align:middle line:84%
+It acts nicely on
+the hyperbolic plane.
+
+00:18:08.810 --> 00:18:13.950 align:middle line:90%
+
+
+00:18:13.950 --> 00:18:19.365 align:middle line:84%
+So recall that the isometries of
+the hyperbolic plane is PSL2R.
+
+00:18:19.365 --> 00:18:22.350 align:middle line:90%
+
+
+00:18:22.350 --> 00:18:26.250 align:middle line:84%
+So SL2R, basically
+SL2R, not quite.
+
+00:18:26.250 --> 00:18:29.440 align:middle line:84%
+So SL2R acts by isometries
+on the hyperbolic plane.
+
+00:18:29.440 --> 00:18:31.020 align:middle line:84%
+And SL2Z is sitting
+inside there,
+
+00:18:31.020 --> 00:18:35.300 align:middle line:84%
+so it acts by isometries
+on the hyperbolic plane.
+
+00:18:35.300 --> 00:18:39.380 align:middle line:84%
+And that action is
+captures a lot of SL2Z.
+
+00:18:39.380 --> 00:18:43.250 align:middle line:84%
+You can also use this
+to help understand SL2Z.
+
+00:18:43.250 --> 00:18:46.010 align:middle line:84%
+And so all three of these
+things are much more complicated
+
+00:18:46.010 --> 00:18:46.670 align:middle line:90%
+for SL2Fp.
+
+00:18:46.670 --> 00:19:12.080 align:middle line:90%
+
+
+00:19:12.080 --> 00:19:14.660 align:middle line:84%
+All right, so I don't-- so
+one of the things that I
+
+00:19:14.660 --> 00:19:19.460 align:middle line:84%
+won't completely prove is some
+thing about doing convolutions
+
+00:19:19.460 --> 00:19:20.430 align:middle line:90%
+on SL2Z.
+
+00:19:20.430 --> 00:19:22.790 align:middle line:84%
+But I want to give
+some intuition
+
+00:19:22.790 --> 00:19:24.710 align:middle line:90%
+and rough statement about it.
+
+00:19:24.710 --> 00:19:36.150 align:middle line:84%
+So intuition about
+convolution on SL2Z.
+
+00:19:36.150 --> 00:19:40.360 align:middle line:90%
+
+
+00:19:40.360 --> 00:19:50.080 align:middle line:84%
+So as a warm up, I want to
+think about convolution on Z.
+
+00:19:50.080 --> 00:19:56.380 align:middle line:84%
+So let's say nu is a
+probability measure on Z.
+
+00:19:56.380 --> 00:20:00.470 align:middle line:84%
+And I take nu convolved
+with itself k times.
+
+00:20:00.470 --> 00:20:03.830 align:middle line:84%
+So nu is some fixed simple
+probability measure.
+
+00:20:03.830 --> 00:20:11.740 align:middle line:84%
+Maybe let's take nu of x is
+1/2 if x is plus minus 1 and 0
+
+00:20:11.740 --> 00:20:14.680 align:middle line:90%
+otherwise.
+
+00:20:14.680 --> 00:20:19.210 align:middle line:84%
+So what happens when we
+convolve it with itself k times?
+
+00:20:19.210 --> 00:20:22.630 align:middle line:84%
+Well, the central
+limit theorem tells us
+
+00:20:22.630 --> 00:20:24.495 align:middle line:84%
+that this thing is
+almost a Gaussian.
+
+00:20:24.495 --> 00:20:27.300 align:middle line:90%
+
+
+00:20:27.300 --> 00:20:39.620 align:middle line:84%
+Gaussian, also closely related
+to the heat kernel on R.
+
+00:20:39.620 --> 00:20:43.050 align:middle line:84%
+So in analogy with
+this, what might we
+
+00:20:43.050 --> 00:20:45.960 align:middle line:84%
+hope to happen when we
+take a measure on SL2Z
+
+00:20:45.960 --> 00:20:49.110 align:middle line:84%
+and we convolve it
+with itself a lot?
+
+00:20:49.110 --> 00:20:51.690 align:middle line:90%
+So you might hope--
+
+00:20:51.690 --> 00:21:00.630 align:middle line:84%
+so we have M, measure,
+probability measure on SL2Z.
+
+00:21:00.630 --> 00:21:06.120 align:middle line:84%
+So you might hope to have
+some kind of central limit
+
+00:21:06.120 --> 00:21:10.870 align:middle line:90%
+theorem for matrices.
+
+00:21:10.870 --> 00:21:14.970 align:middle line:84%
+And it would say that M
+convolved with itself a lot
+
+00:21:14.970 --> 00:21:22.410 align:middle line:84%
+is sort of like the heat kernel,
+which needs to be defined,
+
+00:21:22.410 --> 00:21:23.205 align:middle line:90%
+on SL2R.
+
+00:21:23.205 --> 00:21:32.990 align:middle line:90%
+
+
+00:21:32.990 --> 00:21:37.400 align:middle line:84%
+OK, so this seems
+like a natural thing
+
+00:21:37.400 --> 00:21:40.070 align:middle line:84%
+in the intersection of
+probability theory and matrix
+
+00:21:40.070 --> 00:21:42.770 align:middle line:84%
+theory and has been
+studied, although I'm not
+
+00:21:42.770 --> 00:21:51.335 align:middle line:84%
+an expert on it, but cf
+work of Furstenberg and.
+
+00:21:51.335 --> 00:21:56.780 align:middle line:90%
+
+
+00:21:56.780 --> 00:22:00.230 align:middle line:84%
+So I believe that I know roughly
+how it works out, although I
+
+00:22:00.230 --> 00:22:01.590 align:middle line:90%
+don't have a precise statement.
+
+00:22:01.590 --> 00:22:04.500 align:middle line:84%
+But let me tell you roughly
+how I think it works out.
+
+00:22:04.500 --> 00:22:05.990 align:middle line:84%
+And then we'll
+see how this would
+
+00:22:05.990 --> 00:22:10.200 align:middle line:90%
+be helpful to understand SL2Fp.
+
+00:22:10.200 --> 00:22:14.180 align:middle line:84%
+So first of all, we'll have
+some kind of balls in SL2R.
+
+00:22:14.180 --> 00:22:21.020 align:middle line:84%
+So BT is the set of
+matrices A, B, C, D
+
+00:22:21.020 --> 00:22:26.530 align:middle line:84%
+in SL2R with the property
+that a squared plus b
+
+00:22:26.530 --> 00:22:31.030 align:middle line:84%
+squared plus c squared plus d
+squared is at most R squared--
+
+00:22:31.030 --> 00:22:31.920 align:middle line:90%
+is at most T squared.
+
+00:22:31.920 --> 00:22:35.746 align:middle line:90%
+
+
+00:22:35.746 --> 00:22:38.290 align:middle line:84%
+So this is some of rough--
+some sort of notion
+
+00:22:38.290 --> 00:22:43.360 align:middle line:90%
+of a ball in the group SL2R.
+
+00:22:43.360 --> 00:22:45.550 align:middle line:84%
+You could imagine
+a fancier notion
+
+00:22:45.550 --> 00:22:47.260 align:middle line:84%
+where you start with
+the Lie algebra,
+
+00:22:47.260 --> 00:22:48.910 align:middle line:84%
+you put a ball in
+the Lie algebra,
+
+00:22:48.910 --> 00:22:50.360 align:middle line:84%
+and you take the
+exponential map.
+
+00:22:50.360 --> 00:22:53.530 align:middle line:84%
+And that's probably a better
+thing to do than this.
+
+00:22:53.530 --> 00:22:56.900 align:middle line:84%
+But this is a very
+low brow definition.
+
+00:22:56.900 --> 00:23:01.610 align:middle line:84%
+And it is approximately
+describes balls.
+
+00:23:01.610 --> 00:23:03.320 align:middle line:84%
+And then if we're
+interested in SL2Z,
+
+00:23:03.320 --> 00:23:05.260 align:middle line:84%
+we would take the
+integer points in this.
+
+00:23:05.260 --> 00:23:10.690 align:middle line:84%
+BT of Z, that's defined to
+be BT intersected with SL2Z.
+
+00:23:10.690 --> 00:23:14.890 align:middle line:90%
+So these are integers.
+
+00:23:14.890 --> 00:23:20.260 align:middle line:84%
+So for reference, what is
+the cardinality of BT of Z?
+
+00:23:20.260 --> 00:23:28.530 align:middle line:84%
+So little lemma, cardinality of
+BT of Z is roughly T squared.
+
+00:23:28.530 --> 00:23:38.060 align:middle line:84%
+Sketch, really choose
+a and d minus T,
+
+00:23:38.060 --> 00:23:42.180 align:middle line:90%
+T. So that's T squared choices.
+
+00:23:42.180 --> 00:23:48.720 align:middle line:84%
+And then we have to solve b
+times c is a times d minus 1.
+
+00:23:48.720 --> 00:23:49.890 align:middle line:90%
+I think I did that right.
+
+00:23:49.890 --> 00:23:53.900 align:middle line:84%
+So here, your SL2R, the
+determinant is 1, so ad minus bc
+
+00:23:53.900 --> 00:23:54.400 align:middle line:90%
+is 1.
+
+00:23:54.400 --> 00:23:57.340 align:middle line:90%
+
+
+00:23:57.340 --> 00:24:00.700 align:middle line:84%
+So we have this integer
+of size around T squared.
+
+00:24:00.700 --> 00:24:03.060 align:middle line:84%
+And we want to know
+how many ways are there
+
+00:24:03.060 --> 00:24:08.290 align:middle line:84%
+to factor it into two
+integers of size around T. OK,
+
+00:24:08.290 --> 00:24:14.260 align:middle line:84%
+so not every integer
+will factor like this.
+
+00:24:14.260 --> 00:24:15.480 align:middle line:90%
+It could be prime.
+
+00:24:15.480 --> 00:24:18.150 align:middle line:84%
+But mostly, they will
+factor like that.
+
+00:24:18.150 --> 00:24:20.260 align:middle line:84%
+And how many ways
+will they factor?
+
+00:24:20.260 --> 00:24:25.430 align:middle line:84%
+Well, not too many ways, at
+most, T to the epsilon ways.
+
+00:24:25.430 --> 00:24:32.330 align:middle line:84%
+So number of choices for b
+and c is on the order of 1.
+
+00:24:32.330 --> 00:24:35.590 align:middle line:84%
+So the level of our back of
+the envelope computation,
+
+00:24:35.590 --> 00:24:40.120 align:middle line:84%
+there should be about T squared
+group elements in there.
+
+00:24:40.120 --> 00:24:50.230 align:middle line:84%
+All right, so there is a vague
+statement that if you fix M,
+
+00:24:50.230 --> 00:25:00.640 align:middle line:84%
+then M star to the k is roughly
+equidistributed on the ball
+
+00:25:00.640 --> 00:25:06.940 align:middle line:84%
+of radius T for T around
+exponential of some constant
+
+00:25:06.940 --> 00:25:10.600 align:middle line:90%
+depending on M times k.
+
+00:25:10.600 --> 00:25:15.670 align:middle line:84%
+So it's not stated precisely,
+but this is roughly
+
+00:25:15.670 --> 00:25:18.600 align:middle line:84%
+what I think the central limit
+theorem should say in SL2Z.
+
+00:25:18.600 --> 00:25:31.068 align:middle line:90%
+
+
+00:25:31.068 --> 00:25:33.690 align:middle line:84%
+In a little bit we'll do the
+hyperbolic geometry point
+
+00:25:33.690 --> 00:25:35.658 align:middle line:84%
+of view, where I'll be
+able to state things
+
+00:25:35.658 --> 00:25:36.950 align:middle line:90%
+a little bit better if we want.
+
+00:25:36.950 --> 00:25:44.130 align:middle line:90%
+
+
+00:25:44.130 --> 00:25:48.570 align:middle line:84%
+OK, so that's step one of our
+plan, study what the convolution
+
+00:25:48.570 --> 00:25:52.710 align:middle line:90%
+looks like in upstairs in SL2Z.
+
+00:25:52.710 --> 00:25:55.740 align:middle line:84%
+Next, we need to think about
+what happens when we project
+
+00:25:55.740 --> 00:25:57.930 align:middle line:90%
+from SL2Z down to SL2Fp.
+
+00:25:57.930 --> 00:26:02.730 align:middle line:90%
+
+
+00:26:02.730 --> 00:26:04.260 align:middle line:84%
+Why don't we pause
+there, actually?
+
+00:26:04.260 --> 00:26:07.510 align:middle line:84%
+I mean, I did some things
+not completely precisely,
+
+00:26:07.510 --> 00:26:09.930 align:middle line:84%
+but let me see if people have
+any questions, or comments,
+
+00:26:09.930 --> 00:26:11.690 align:middle line:90%
+or are bothered by things.
+
+00:26:11.690 --> 00:26:21.530 align:middle line:90%
+
+
+00:26:21.530 --> 00:26:22.730 align:middle line:90%
+Yeah?
+
+00:26:22.730 --> 00:26:25.010 align:middle line:84%
+AUDIENCE: Question about
+[INAUDIBLE] to the existence
+
+00:26:25.010 --> 00:26:28.220 align:middle line:90%
+of the heat kernel that--
+
+00:26:28.220 --> 00:26:31.400 align:middle line:84%
+the heat kernel on
+R, and, in general,
+
+00:26:31.400 --> 00:26:34.790 align:middle line:84%
+kind of Euclidean looking spaces
+is kind of closely related
+
+00:26:34.790 --> 00:26:36.210 align:middle line:90%
+to the Fourier transform.
+
+00:26:36.210 --> 00:26:40.250 align:middle line:84%
+But in a non-abelian group,
+is there anything analogous to
+
+00:26:40.250 --> 00:26:45.182 align:middle line:84%
+that that makes this some sort
+of heat kernel-ish thing work?
+
+00:26:45.182 --> 00:26:46.640 align:middle line:84%
+LAWRENCE GUTH: Yeah
+so the question
+
+00:26:46.640 --> 00:26:52.880 align:middle line:84%
+is, how does the heat kernel
+work in a non-abelian group?
+
+00:26:52.880 --> 00:26:56.790 align:middle line:84%
+Let me punt on that until we get
+to the hyperbolic space version.
+
+00:26:56.790 --> 00:26:58.460 align:middle line:84%
+And we'll talk about
+the heat kernel
+
+00:26:58.460 --> 00:27:01.070 align:middle line:84%
+there, which is a little
+bit easier, at least for me,
+
+00:27:01.070 --> 00:27:04.440 align:middle line:90%
+to make it precise.
+
+00:27:04.440 --> 00:27:08.450 align:middle line:84%
+So let's do the second step,
+where we pass from SL2F--
+
+00:27:08.450 --> 00:27:10.070 align:middle line:90%
+from SL2Z to SL2Fp.
+
+00:27:10.070 --> 00:27:25.060 align:middle line:90%
+
+
+00:27:25.060 --> 00:27:32.440 align:middle line:84%
+So remember our setup that M is
+a probability measure on SL2Z
+
+00:27:32.440 --> 00:27:37.472 align:middle line:84%
+And then mu is the
+pushforward of M, which is
+
+00:27:37.472 --> 00:27:38.680 align:middle line:90%
+probability measure on SL2Fp.
+
+00:27:38.680 --> 00:27:42.130 align:middle line:90%
+
+
+00:27:42.130 --> 00:27:47.420 align:middle line:84%
+Also, let's mention that gamma
+p could be the kernel of pi p.
+
+00:27:47.420 --> 00:27:54.790 align:middle line:84%
+So that's a normal
+subgroup of SL2Z.
+
+00:27:54.790 --> 00:27:57.400 align:middle line:90%
+
+
+00:27:57.400 --> 00:28:06.520 align:middle line:84%
+And it's gamma p is the
+set of a, b, c, d in SL2Z,
+
+00:28:06.520 --> 00:28:15.065 align:middle line:84%
+so that a, d, b, c is congruent
+to the identity mod p.
+
+00:28:15.065 --> 00:28:18.420 align:middle line:90%
+
+
+00:28:18.420 --> 00:28:23.580 align:middle line:84%
+OK, great, so now our goal
+is to understand the L2 norm
+
+00:28:23.580 --> 00:28:26.490 align:middle line:90%
+of some convolution of this.
+
+00:28:26.490 --> 00:28:31.140 align:middle line:84%
+And here's a cute
+trick, little lemma.
+
+00:28:31.140 --> 00:28:37.690 align:middle line:84%
+So if mu is symmetric, so for
+instance, if M is symmetric,
+
+00:28:37.690 --> 00:28:49.500 align:middle line:84%
+then mu tensor k L2 squared is
+mu tensor 2k of the identity.
+
+00:28:49.500 --> 00:28:51.900 align:middle line:90%
+So here's the proof.
+
+00:28:51.900 --> 00:28:53.700 align:middle line:90%
+Let's start on the other side.
+
+00:28:53.700 --> 00:28:58.560 align:middle line:84%
+Mu tensor 2k of the
+identity is, well,
+
+00:28:58.560 --> 00:29:01.653 align:middle line:90%
+mu tensor k convolved with--
+
+00:29:01.653 --> 00:29:03.070 align:middle line:84%
+so I was saying
+the word "tensor."
+
+00:29:03.070 --> 00:29:04.237 align:middle line:90%
+That was not the right word.
+
+00:29:04.237 --> 00:29:05.100 align:middle line:90%
+I mean convolved.
+
+00:29:05.100 --> 00:29:11.340 align:middle line:84%
+Mu convolved k convolved with
+mu convolved k, the identity.
+
+00:29:11.340 --> 00:29:18.020 align:middle line:84%
+So that's the sum over g in our
+group, mu convolved k of g mu
+
+00:29:18.020 --> 00:29:20.610 align:middle line:90%
+convolved k of g inverse.
+
+00:29:20.610 --> 00:29:24.200 align:middle line:84%
+That's how you
+convolve two functions.
+
+00:29:24.200 --> 00:29:27.080 align:middle line:84%
+But what's nice is that mu
+is symmetric is that these
+
+00:29:27.080 --> 00:29:29.300 align:middle line:90%
+are the same as each other.
+
+00:29:29.300 --> 00:29:37.070 align:middle line:84%
+So we just get the sum on g
+mu convolved k of g squared.
+
+00:29:37.070 --> 00:29:38.260 align:middle line:90%
+So that's equal to that.
+
+00:29:38.260 --> 00:29:41.540 align:middle line:90%
+
+
+00:29:41.540 --> 00:29:45.500 align:middle line:84%
+OK, cool, so that's convenient,
+because now we just have
+
+00:29:45.500 --> 00:29:49.340 align:middle line:90%
+to estimate this one thing.
+
+00:29:49.340 --> 00:29:55.640 align:middle line:84%
+And mu convolved 2k
+of the identity is--
+
+00:29:55.640 --> 00:29:57.810 align:middle line:84%
+that's something
+that lives here,
+
+00:29:57.810 --> 00:29:59.970 align:middle line:84%
+but we can relate it to
+something that lives here.
+
+00:29:59.970 --> 00:30:06.090 align:middle line:84%
+It's the sum g in gamma
+p of M convolved 2k of g.
+
+00:30:06.090 --> 00:30:11.251 align:middle line:90%
+
+
+00:30:11.251 --> 00:30:14.600 align:middle line:84%
+So in other words, we want
+to know how much mass--
+
+00:30:14.600 --> 00:30:18.740 align:middle line:84%
+what is the measure, using
+this measure M convolved 2k,
+
+00:30:18.740 --> 00:30:23.320 align:middle line:84%
+what is the measure of
+the subgroup gamma p.
+
+00:30:23.320 --> 00:30:27.640 align:middle line:84%
+All right, now M convolved 2k is
+approximately evenly distributed
+
+00:30:27.640 --> 00:30:28.870 align:middle line:90%
+on some ball.
+
+00:30:28.870 --> 00:30:38.440 align:middle line:84%
+So by the vague
+statement, this is
+
+00:30:38.440 --> 00:30:42.340 align:middle line:84%
+equivalent to estimating
+what fraction of the ball
+
+00:30:42.340 --> 00:30:43.400 align:middle line:90%
+is in gamma p.
+
+00:30:43.400 --> 00:30:47.920 align:middle line:90%
+
+
+00:30:47.920 --> 00:30:49.670 align:middle line:84%
+So we have some big
+ball in our Lie group.
+
+00:30:49.670 --> 00:30:52.460 align:middle line:84%
+What fraction of it is
+in the subgroup gamma p?
+
+00:30:52.460 --> 00:30:55.050 align:middle line:90%
+
+
+00:30:55.050 --> 00:31:02.170 align:middle line:84%
+So remark, the index of
+gamma p is the cardinality
+
+00:31:02.170 --> 00:31:06.260 align:middle line:84%
+of SL2Fp, which
+is around p cubed.
+
+00:31:06.260 --> 00:31:11.100 align:middle line:84%
+So if this were
+evenly distributed,
+
+00:31:11.100 --> 00:31:13.320 align:middle line:84%
+then you would expect this
+quotient to be about 1
+
+00:31:13.320 --> 00:31:15.540 align:middle line:90%
+over p cubed.
+
+00:31:15.540 --> 00:31:17.970 align:middle line:90%
+And that's basically true.
+
+00:31:17.970 --> 00:31:19.175 align:middle line:90%
+So here's another lemma.
+
+00:31:19.175 --> 00:31:22.080 align:middle line:90%
+
+
+00:31:22.080 --> 00:31:26.010 align:middle line:84%
+BT intersected with
+gamma p is bounded
+
+00:31:26.010 --> 00:31:32.010 align:middle line:84%
+by T squared over p cubed, which
+is also like the size of BT
+
+00:31:32.010 --> 00:31:35.820 align:middle line:90%
+of Z over p cubed.
+
+00:31:35.820 --> 00:31:38.140 align:middle line:84%
+So it is pretty
+evenly distributed.
+
+00:31:38.140 --> 00:31:49.380 align:middle line:90%
+
+
+00:31:49.380 --> 00:31:52.080 align:middle line:90%
+All right, so here's the proof.
+
+00:31:52.080 --> 00:31:58.020 align:middle line:84%
+So we're looking for
+a, b, c, d, where
+
+00:31:58.020 --> 00:32:05.040 align:middle line:84%
+each entry is size smaller
+than T. And they're integers.
+
+00:32:05.040 --> 00:32:11.940 align:middle line:84%
+And we want this to be
+congruent to 1, 0, 0, 1, mod p.
+
+00:32:11.940 --> 00:32:24.821 align:middle line:90%
+
+
+00:32:24.821 --> 00:32:28.160 align:middle line:84%
+So first of all, let's try
+to do a back of the envelope
+
+00:32:28.160 --> 00:32:29.106 align:middle line:90%
+calculation.
+
+00:32:29.106 --> 00:32:32.480 align:middle line:90%
+
+
+00:32:32.480 --> 00:32:36.050 align:middle line:84%
+So if I erase this
+congruence condition,
+
+00:32:36.050 --> 00:32:38.870 align:middle line:84%
+then I'm just asking how many
+integer points are there in BT.
+
+00:32:38.870 --> 00:32:41.960 align:middle line:84%
+And we said before,
+that's about T squared.
+
+00:32:41.960 --> 00:32:45.440 align:middle line:84%
+Now, I'd like a to be
+congruent to 1 mod p.
+
+00:32:45.440 --> 00:32:49.490 align:middle line:84%
+So maybe I should
+divide by p for that.
+
+00:32:49.490 --> 00:32:51.930 align:middle line:84%
+And I'd like b to
+be congruent to 0,
+
+00:32:51.930 --> 00:32:54.090 align:middle line:84%
+so maybe I should
+divide by p again.
+
+00:32:54.090 --> 00:32:56.130 align:middle line:90%
+And I have four conditions.
+
+00:32:56.130 --> 00:33:00.230 align:middle line:84%
+So maybe I should
+divide by p four times,
+
+00:33:00.230 --> 00:33:02.050 align:middle line:84%
+T squared divided
+by P to the fourth.
+
+00:33:02.050 --> 00:33:05.000 align:middle line:90%
+
+
+00:33:05.000 --> 00:33:08.110 align:middle line:90%
+Is anybody suspicious?
+
+00:33:08.110 --> 00:33:10.040 align:middle line:90%
+OK, so that's the wrong answer.
+
+00:33:10.040 --> 00:33:12.740 align:middle line:84%
+It should be closer to T
+squared divided by p cubed.
+
+00:33:12.740 --> 00:33:14.878 align:middle line:84%
+And the reason that
+was not really OK to do
+
+00:33:14.878 --> 00:33:16.420 align:middle line:84%
+is that those four
+conditions are not
+
+00:33:16.420 --> 00:33:17.980 align:middle line:90%
+independent of each other.
+
+00:33:17.980 --> 00:33:23.412 align:middle line:84%
+We already know that ad minus
+bc is 1 because we're in--
+
+00:33:23.412 --> 00:33:24.620 align:middle line:90%
+I didn't write this properly.
+
+00:33:24.620 --> 00:33:30.340 align:middle line:84%
+This is supposed to be in SL2Z,
+which means that ad minus bc
+
+00:33:30.340 --> 00:33:32.110 align:middle line:90%
+equals 1.
+
+00:33:32.110 --> 00:33:33.520 align:middle line:84%
+And I think that
+probably implies
+
+00:33:33.520 --> 00:33:35.770 align:middle line:84%
+that once I have three of
+these congruence conditions,
+
+00:33:35.770 --> 00:33:38.150 align:middle line:90%
+then I would get the fourth.
+
+00:33:38.150 --> 00:33:40.210 align:middle line:84%
+But it also brings up the
+point that I shouldn't
+
+00:33:40.210 --> 00:33:42.444 align:middle line:90%
+be too fast and loose.
+
+00:33:42.444 --> 00:33:46.600 align:middle line:84%
+That it's not super obvious
+that all of these things
+
+00:33:46.600 --> 00:33:49.420 align:middle line:90%
+are independent of each other.
+
+00:33:49.420 --> 00:33:52.780 align:middle line:84%
+So there is actually a
+kind of algebra trick
+
+00:33:52.780 --> 00:33:56.170 align:middle line:84%
+to make this work that
+allows us to keep things
+
+00:33:56.170 --> 00:33:57.770 align:middle line:90%
+more independent of each other.
+
+00:33:57.770 --> 00:33:59.535 align:middle line:90%
+And here is the algebra trick.
+
+00:33:59.535 --> 00:34:04.760 align:middle line:90%
+
+
+00:34:04.760 --> 00:34:09.920 align:middle line:90%
+OK, so b is divisible by p.
+
+00:34:09.920 --> 00:34:14.090 align:middle line:90%
+And c is divisible by p.
+
+00:34:14.090 --> 00:34:21.170 align:middle line:84%
+So p divides b, and p divides
+C. Therefore, p divides bc.
+
+00:34:21.170 --> 00:34:24.560 align:middle line:90%
+And bc is ad minus 1--
+
+00:34:24.560 --> 00:34:27.260 align:middle line:90%
+sorry, p squared divides bc.
+
+00:34:27.260 --> 00:34:30.300 align:middle line:84%
+And so p squared
+divides ad minus 1.
+
+00:34:30.300 --> 00:34:32.929 align:middle line:90%
+These are equal to each other.
+
+00:34:32.929 --> 00:34:38.690 align:middle line:84%
+All right, similarly,
+p plus 1 divides a--
+
+00:34:38.690 --> 00:34:40.430 align:middle line:90%
+sorry, p divides a minus 1.
+
+00:34:40.430 --> 00:34:43.010 align:middle line:90%
+
+
+00:34:43.010 --> 00:34:45.139 align:middle line:90%
+So a is congruent to 1 mod p.
+
+00:34:45.139 --> 00:34:48.540 align:middle line:90%
+And p divides d minus 1.
+
+00:34:48.540 --> 00:34:54.980 align:middle line:84%
+So p squared divides a
+minus 1 times d minus 1.
+
+00:34:54.980 --> 00:34:58.560 align:middle line:84%
+All right, the leading term
+here is also a times d.
+
+00:34:58.560 --> 00:35:01.020 align:middle line:84%
+So we can play these
+off against each other.
+
+00:35:01.020 --> 00:35:05.835 align:middle line:84%
+And we conclude that p squared
+divides a plus d minus 2.
+
+00:35:05.835 --> 00:35:10.330 align:middle line:90%
+
+
+00:35:10.330 --> 00:35:14.590 align:middle line:84%
+All right, now let's
+start choosing things.
+
+00:35:14.590 --> 00:35:17.290 align:middle line:90%
+So we're going to choose a.
+
+00:35:17.290 --> 00:35:20.960 align:middle line:84%
+And a has an integer
+of size at most T.
+
+00:35:20.960 --> 00:35:23.500 align:middle line:90%
+And it's congruent to 1 mod p.
+
+00:35:23.500 --> 00:35:27.450 align:middle line:84%
+So I have less than
+T over p choices.
+
+00:35:27.450 --> 00:35:30.700 align:middle line:90%
+
+
+00:35:30.700 --> 00:35:32.925 align:middle line:90%
+Next, I'm going to choose d.
+
+00:35:32.925 --> 00:35:36.130 align:middle line:90%
+
+
+00:35:36.130 --> 00:35:38.210 align:middle line:90%
+I've already chosen a.
+
+00:35:38.210 --> 00:35:42.280 align:middle line:84%
+So I now know the value of
+d modulo p squared because
+
+00:35:42.280 --> 00:35:44.740 align:middle line:90%
+of this sneaky algebra trick.
+
+00:35:44.740 --> 00:35:51.520 align:middle line:84%
+So I get, at most, T
+over p squared choices.
+
+00:35:51.520 --> 00:35:54.170 align:middle line:84%
+This was only really OK if
+T is at least p squared.
+
+00:35:54.170 --> 00:35:56.840 align:middle line:84%
+So let me say T is
+at least p squared.
+
+00:35:56.840 --> 00:36:00.040 align:middle line:90%
+
+
+00:36:00.040 --> 00:36:03.480 align:middle line:84%
+And now, once I've
+chosen a and d,
+
+00:36:03.480 --> 00:36:06.030 align:middle line:90%
+now I have to solve for b and c.
+
+00:36:06.030 --> 00:36:08.920 align:middle line:84%
+And I forget about
+all the congruences,
+
+00:36:08.920 --> 00:36:13.530 align:middle line:84%
+just like above, they're
+at most around 1 choices.
+
+00:36:13.530 --> 00:36:23.310 align:middle line:84%
+And so now, they are less
+than 1 choice, choose b and c.
+
+00:36:23.310 --> 00:36:27.185 align:middle line:84%
+That's because bc is
+ad minus 1 as integers.
+
+00:36:27.185 --> 00:36:30.390 align:middle line:90%
+
+
+00:36:30.390 --> 00:36:31.230 align:middle line:90%
+Yeah?
+
+00:36:31.230 --> 00:36:32.730 align:middle line:84%
+AUDIENCE: When
+you're saying there's
+
+00:36:32.730 --> 00:36:35.350 align:middle line:84%
+kind of at most one
+factorization of ad minus 1,
+
+00:36:35.350 --> 00:36:39.953 align:middle line:84%
+would that actually be
+a log of, to be precise,
+
+00:36:39.953 --> 00:36:40.870 align:middle line:90%
+the number of factors?
+
+00:36:40.870 --> 00:36:42.370 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+so the question
+
+00:36:42.370 --> 00:36:45.570 align:middle line:84%
+is, how many factors are there
+if a number of some size?
+
+00:36:45.570 --> 00:36:50.110 align:middle line:84%
+And it is a little
+super constant.
+
+00:36:50.110 --> 00:36:53.353 align:middle line:84%
+So if this number has size n,
+It's actually more than log n.
+
+00:36:53.353 --> 00:36:55.270 align:middle line:84%
+It could potentially
+could be worse than that.
+
+00:36:55.270 --> 00:36:58.910 align:middle line:84%
+But it's less than n to the
+epsilon for any epsilon.
+
+00:36:58.910 --> 00:37:01.890 align:middle line:84%
+And that's what this
+symbol was supposed to be.
+
+00:37:01.890 --> 00:37:03.795 align:middle line:90%
+
+
+00:37:03.795 --> 00:37:06.170 align:middle line:84%
+AUDIENCE: A whole lot of
+symbols being slightly different
+
+00:37:06.170 --> 00:37:07.323 align:middle line:90%
+versions of [INAUDIBLE].
+
+00:37:07.323 --> 00:37:08.490 align:middle line:90%
+LAWRENCE GUTH: Yeah, I know.
+
+00:37:08.490 --> 00:37:15.260 align:middle line:90%
+
+
+00:37:15.260 --> 00:37:17.470 align:middle line:84%
+So any other questions or
+comments about the lemma?
+
+00:37:17.470 --> 00:37:24.806 align:middle line:90%
+
+
+00:37:24.806 --> 00:37:28.910 align:middle line:84%
+So those are the ingredients
+of the Sarnak-Xua proof
+
+00:37:28.910 --> 00:37:29.790 align:middle line:90%
+of theorem one.
+
+00:37:29.790 --> 00:37:32.010 align:middle line:84%
+All the ingredients are
+rigorous and precise,
+
+00:37:32.010 --> 00:37:34.010 align:middle line:84%
+except for the vague
+statement about how random
+
+00:37:34.010 --> 00:37:36.200 align:middle line:90%
+walks behave on SL2Z.
+
+00:37:36.200 --> 00:37:39.210 align:middle line:84%
+And if we're willing
+to believe that,
+
+00:37:39.210 --> 00:37:41.515 align:middle line:84%
+then we can put them together
+and prove theorem one.
+
+00:37:41.515 --> 00:38:03.970 align:middle line:90%
+
+
+00:38:03.970 --> 00:38:05.850 align:middle line:90%
+OK, so proof of theorem one.
+
+00:38:05.850 --> 00:38:09.820 align:middle line:90%
+
+
+00:38:09.820 --> 00:38:17.230 align:middle line:84%
+So M will be MA for
+this set A SL2Z.
+
+00:38:17.230 --> 00:38:21.130 align:middle line:90%
+
+
+00:38:21.130 --> 00:38:28.960 align:middle line:84%
+Then by the vague
+statement, M convolves
+
+00:38:28.960 --> 00:38:34.600 align:middle line:84%
+k times is roughly
+equidistributed on BT,
+
+00:38:34.600 --> 00:38:38.690 align:middle line:84%
+where T is around x of
+some constant times k.
+
+00:38:38.690 --> 00:38:42.290 align:middle line:90%
+
+
+00:38:42.290 --> 00:38:46.190 align:middle line:90%
+So now, we will choose k.
+
+00:38:46.190 --> 00:38:49.630 align:middle line:84%
+So we'll choose T to be a
+little more than p squared.
+
+00:38:49.630 --> 00:38:52.060 align:middle line:84%
+So that we can use the
+lemma at the end, which
+
+00:38:52.060 --> 00:38:55.120 align:middle line:90%
+means that k is around log p.
+
+00:38:55.120 --> 00:38:56.980 align:middle line:84%
+So take around
+round log p steps,
+
+00:38:56.980 --> 00:39:01.620 align:middle line:84%
+and after that, M convolves k
+is roughly evenly distributed
+
+00:39:01.620 --> 00:39:06.390 align:middle line:90%
+on a ball of size T p squared.
+
+00:39:06.390 --> 00:39:12.000 align:middle line:84%
+And I guess here we
+can put 2k, I guess.
+
+00:39:12.000 --> 00:39:19.440 align:middle line:84%
+So then M star 2k of gamma p
+will be around BT intersect
+
+00:39:19.440 --> 00:39:25.500 align:middle line:84%
+gamma p over BT, which is
+smaller than p to the minus 3
+
+00:39:25.500 --> 00:39:26.640 align:middle line:90%
+by our lemma.
+
+00:39:26.640 --> 00:39:28.420 align:middle line:84%
+And here, we're
+losing a little power.
+
+00:39:28.420 --> 00:39:32.130 align:middle line:84%
+So if I wanted to be more
+clear about what I was saying,
+
+00:39:32.130 --> 00:39:35.345 align:middle line:84%
+that would be
+something like this.
+
+00:39:35.345 --> 00:39:41.100 align:middle line:90%
+
+
+00:39:41.100 --> 00:39:46.510 align:middle line:84%
+Therefore, mu
+tensor k L2 squared,
+
+00:39:46.510 --> 00:39:51.120 align:middle line:84%
+that's the same thing as
+m tensor 2k of gamma p.
+
+00:39:51.120 --> 00:39:55.310 align:middle line:84%
+And so that would be around p
+to the minus 3 plus epsilon.
+
+00:39:55.310 --> 00:40:00.230 align:middle line:84%
+In particular, significantly
+smaller than p to the minus 2.
+
+00:40:00.230 --> 00:40:03.830 align:middle line:90%
+And then we use the corollary.
+
+00:40:03.830 --> 00:40:07.940 align:middle line:90%
+That gives us a bound for this.
+
+00:40:07.940 --> 00:40:12.290 align:middle line:84%
+And we get that sigma 1
+of t mu is less than 1
+
+00:40:12.290 --> 00:40:14.575 align:middle line:84%
+minus c, where the c
+is independent of p.
+
+00:40:14.575 --> 00:40:32.150 align:middle line:90%
+
+
+00:40:32.150 --> 00:40:36.920 align:middle line:84%
+OK, let me tell you just briefly
+about the hyperbolic geometry
+
+00:40:36.920 --> 00:40:38.090 align:middle line:90%
+point of view.
+
+00:40:38.090 --> 00:40:40.896 align:middle line:84%
+And then we'll switch to
+other choices of generators.
+
+00:40:40.896 --> 00:41:01.060 align:middle line:90%
+
+
+00:41:01.060 --> 00:41:13.580 align:middle line:84%
+OK, hyperbolic
+geometry, all right,
+
+00:41:13.580 --> 00:41:17.620 align:middle line:84%
+so we mentioned that
+SL2Z or SL2R acts
+
+00:41:17.620 --> 00:41:21.280 align:middle line:90%
+on the hyperbolic plane H2.
+
+00:41:21.280 --> 00:41:28.120 align:middle line:84%
+Let's say that X of p
+is H2 modulo gamma p.
+
+00:41:28.120 --> 00:41:33.580 align:middle line:84%
+So X of 1 is the hyperbolic
+plane modulo SL2Z.
+
+00:41:33.580 --> 00:41:37.900 align:middle line:90%
+And X of p is a cover of it.
+
+00:41:37.900 --> 00:41:43.570 align:middle line:90%
+X of p is a cover of X of 1.
+
+00:41:43.570 --> 00:41:51.360 align:middle line:84%
+And the group of deck
+transformations is SL2Fp.
+
+00:41:51.360 --> 00:42:01.830 align:middle line:90%
+
+
+00:42:01.830 --> 00:42:04.900 align:middle line:84%
+OK, so I would like to try
+to make a picture of this.
+
+00:42:04.900 --> 00:42:07.930 align:middle line:84%
+So X of 1 is not
+quite a manifold,
+
+00:42:07.930 --> 00:42:09.480 align:middle line:84%
+but it's not super
+important for this
+
+00:42:09.480 --> 00:42:11.890 align:middle line:84%
+except for being a
+technical irritation.
+
+00:42:11.890 --> 00:42:14.280 align:middle line:84%
+So I'm not going to
+try to draw that.
+
+00:42:14.280 --> 00:42:20.770 align:middle line:84%
+So it is almost a non-compact
+manifold of genus 1.
+
+00:42:20.770 --> 00:42:22.000 align:middle line:90%
+It looks sort of like this.
+
+00:42:22.000 --> 00:42:26.700 align:middle line:84%
+The non-compactness is annoying,
+but it's maybe important.
+
+00:42:26.700 --> 00:42:29.940 align:middle line:84%
+So then X of p is
+a cover of this.
+
+00:42:29.940 --> 00:42:37.410 align:middle line:84%
+So it's going to
+look sort of like so.
+
+00:42:37.410 --> 00:42:42.245 align:middle line:84%
+And I guess it has
+a cusp for each.
+
+00:42:42.245 --> 00:42:45.870 align:middle line:90%
+
+
+00:42:45.870 --> 00:42:48.970 align:middle line:84%
+It also has some cusps,
+not sure exactly how many.
+
+00:42:48.970 --> 00:42:51.020 align:middle line:90%
+This is X of p.
+
+00:42:51.020 --> 00:42:53.210 align:middle line:90%
+And this is a cover.
+
+00:42:53.210 --> 00:42:57.380 align:middle line:90%
+So how to make that look nice?
+
+00:42:57.380 --> 00:43:04.430 align:middle line:84%
+Well, you could kind of chop
+this into fundamental domains.
+
+00:43:04.430 --> 00:43:08.390 align:middle line:84%
+And then each fundamental domain
+is a bijection onto X of 1.
+
+00:43:08.390 --> 00:43:11.173 align:middle line:84%
+And if you do this
+nicely, so then
+
+00:43:11.173 --> 00:43:12.590 align:middle line:84%
+the different
+fundamental domains,
+
+00:43:12.590 --> 00:43:15.048 align:middle line:84%
+they correspond to the group
+of deck transformations, which
+
+00:43:15.048 --> 00:43:17.120 align:middle line:90%
+is SL2Fp.
+
+00:43:17.120 --> 00:43:19.940 align:middle line:84%
+And if you do this nicely,
+you could put a dot
+
+00:43:19.940 --> 00:43:21.600 align:middle line:90%
+in each fundamental domain.
+
+00:43:21.600 --> 00:43:24.560 align:middle line:84%
+And you could put an edge
+if the fundamental domains
+
+00:43:24.560 --> 00:43:26.210 align:middle line:90%
+touch each other.
+
+00:43:26.210 --> 00:43:30.620 align:middle line:84%
+And the graph that
+I just drew would
+
+00:43:30.620 --> 00:43:37.010 align:middle line:90%
+be a Cayley graph of SL2Fp.
+
+00:43:37.010 --> 00:43:39.710 align:middle line:90%
+
+
+00:43:39.710 --> 00:43:44.600 align:middle line:84%
+So the geometry of these
+two-dimensional surfaces
+
+00:43:44.600 --> 00:43:47.090 align:middle line:84%
+is closely related to
+the geometry of SL2Fp.
+
+00:43:47.090 --> 00:43:53.172 align:middle line:90%
+
+
+00:43:53.172 --> 00:44:02.130 align:middle line:84%
+So then, we talk about the
+spectrum of the Laplacian On
+
+00:44:02.130 --> 00:44:06.210 align:middle line:90%
+xp, our subject of study.
+
+00:44:06.210 --> 00:44:10.590 align:middle line:84%
+And 0 is in the spectrum, so the
+Laplacian of a constant function
+
+00:44:10.590 --> 00:44:11.135 align:middle line:90%
+is 0.
+
+00:44:11.135 --> 00:44:16.560 align:middle line:90%
+
+
+00:44:16.560 --> 00:44:18.610 align:middle line:90%
+But after 0, there's a gap.
+
+00:44:18.610 --> 00:44:21.900 align:middle line:84%
+So if this is the real
+line, and here's 0,
+
+00:44:21.900 --> 00:44:23.430 align:middle line:90%
+that's part of the spectrum.
+
+00:44:23.430 --> 00:44:25.230 align:middle line:90%
+Then there's a gap.
+
+00:44:25.230 --> 00:44:28.270 align:middle line:84%
+And this is called
+lambda 1 of X of p.
+
+00:44:28.270 --> 00:44:34.960 align:middle line:84%
+And the rest of the spectrum
+lives here, is contained in.
+
+00:44:34.960 --> 00:44:42.600 align:middle line:90%
+
+
+00:44:42.600 --> 00:44:46.310 align:middle line:84%
+So that's what lambda 1 is,
+the smallest non-zero part
+
+00:44:46.310 --> 00:44:47.900 align:middle line:90%
+of the spectrum.
+
+00:44:47.900 --> 00:44:51.170 align:middle line:84%
+All right, so the theorem
+that Selberg actually proved
+
+00:44:51.170 --> 00:45:00.110 align:middle line:84%
+in the 1950s is that lambda 1 of
+X of p is at least 3/16 for all
+
+00:45:00.110 --> 00:45:02.990 align:middle line:90%
+p.
+
+00:45:02.990 --> 00:45:08.840 align:middle line:84%
+And the conjecture is
+that lambda 1 of X of p
+
+00:45:08.840 --> 00:45:12.850 align:middle line:84%
+is at least a quarter,
+maybe minus little o of 1,
+
+00:45:12.850 --> 00:45:14.600 align:middle line:84%
+I'm not sure if you
+need it, but certainly
+
+00:45:14.600 --> 00:45:17.970 align:middle line:84%
+if somebody proved that, that
+would be a big deal, for all p.
+
+00:45:17.970 --> 00:45:22.550 align:middle line:90%
+
+
+00:45:22.550 --> 00:45:25.075 align:middle line:84%
+This may not look immediately
+that it matters very much.
+
+00:45:25.075 --> 00:45:26.450 align:middle line:84%
+A quarter is a
+significant number
+
+00:45:26.450 --> 00:45:28.710 align:middle line:84%
+because it's lambda 1
+of hyperbolic plane.
+
+00:45:28.710 --> 00:45:31.820 align:middle line:90%
+So I would say, it matches that.
+
+00:45:31.820 --> 00:45:34.430 align:middle line:84%
+Anyway, so this is the theorem
+that Selberg actually proved.
+
+00:45:34.430 --> 00:45:36.380 align:middle line:84%
+With modern techniques,
+it's not that
+
+00:45:36.380 --> 00:45:38.527 align:middle line:84%
+difficult to get from this
+theorem to that theorem.
+
+00:45:38.527 --> 00:45:40.735 align:middle line:84%
+It's much more difficult to
+prove either one of them.
+
+00:45:40.735 --> 00:45:45.970 align:middle line:90%
+
+
+00:45:45.970 --> 00:45:49.370 align:middle line:84%
+OK instead of the random
+walk, we could use here,
+
+00:45:49.370 --> 00:45:53.470 align:middle line:90%
+the heat flow on X of p.
+
+00:45:53.470 --> 00:45:57.500 align:middle line:84%
+And there was a question
+earlier, what is the heat flow?
+
+00:45:57.500 --> 00:46:00.763 align:middle line:84%
+So the question earlier was
+what is the heat flow on SL2R?
+
+00:46:00.763 --> 00:46:02.180 align:middle line:84%
+But the analysis
+question here is,
+
+00:46:02.180 --> 00:46:05.050 align:middle line:84%
+what is the heat flow on
+this hyperbolic manifold?
+
+00:46:05.050 --> 00:46:08.040 align:middle line:84%
+Well, you can think of it as
+solving the heat equation.
+
+00:46:08.040 --> 00:46:12.160 align:middle line:90%
+
+
+00:46:12.160 --> 00:46:14.740 align:middle line:84%
+So the heat equation
+would be del t
+
+00:46:14.740 --> 00:46:18.770 align:middle line:90%
+of u equals Laplacian of u.
+
+00:46:18.770 --> 00:46:21.470 align:middle line:84%
+And the Laplacian of k would
+take a while to write down,
+
+00:46:21.470 --> 00:46:24.310 align:middle line:84%
+but it's a second order
+differential operator
+
+00:46:24.310 --> 00:46:26.830 align:middle line:90%
+on your hyperbolic manifold.
+
+00:46:26.830 --> 00:46:34.120 align:middle line:84%
+All right, OK, and the
+solution has a formula
+
+00:46:34.120 --> 00:46:37.570 align:middle line:90%
+using a heat flow operator.
+
+00:46:37.570 --> 00:46:44.740 align:middle line:84%
+So let's say u of dot
+comma t would be Ht of u.
+
+00:46:44.740 --> 00:46:46.830 align:middle line:84%
+So this is now an
+operator Ht, which
+
+00:46:46.830 --> 00:46:50.375 align:middle line:84%
+plays the role of our operator
+T mu or T mu to the k.
+
+00:46:50.375 --> 00:46:59.540 align:middle line:90%
+
+
+00:46:59.540 --> 00:47:03.780 align:middle line:84%
+So everything we talked about
+with a little bit more analysis
+
+00:47:03.780 --> 00:47:06.480 align:middle line:84%
+in PDE to set things up,
+everything we talked about
+
+00:47:06.480 --> 00:47:07.840 align:middle line:90%
+applies here.
+
+00:47:07.840 --> 00:47:16.830 align:middle line:84%
+So for instance, SL2 of Fp
+acts isometrically on X of p.
+
+00:47:16.830 --> 00:47:23.250 align:middle line:84%
+And therefore, it acts
+on the eigenspaces of Ht.
+
+00:47:23.250 --> 00:47:26.400 align:middle line:90%
+
+
+00:47:26.400 --> 00:47:30.150 align:middle line:90%
+They have multiplicity.
+
+00:47:30.150 --> 00:47:34.830 align:middle line:90%
+And also, you can do lifting.
+
+00:47:34.830 --> 00:47:43.620 align:middle line:84%
+So Ht tilde is the heat
+operator on the universal cover,
+
+00:47:43.620 --> 00:47:45.140 align:middle line:90%
+the hyperbolic plane.
+
+00:47:45.140 --> 00:47:52.550 align:middle line:84%
+And then Ht of x1,
+x2 is the sum over g
+
+00:47:52.550 --> 00:48:00.050 align:middle line:84%
+in gamma p of Ht tilde
+x1 tilde gx2 tilde.
+
+00:48:00.050 --> 00:48:02.270 align:middle line:84%
+So, in other words,
+the new heat operator
+
+00:48:02.270 --> 00:48:04.700 align:middle line:84%
+is-- take the heat operator
+on the hyperbolic plane
+
+00:48:04.700 --> 00:48:07.010 align:middle line:90%
+and push it forward.
+
+00:48:07.010 --> 00:48:10.070 align:middle line:84%
+And that follows
+basically because this
+
+00:48:10.070 --> 00:48:11.220 align:middle line:90%
+is a local equation.
+
+00:48:11.220 --> 00:48:13.460 align:middle line:84%
+So solution to the heat
+equation, you pull back,
+
+00:48:13.460 --> 00:48:15.127 align:middle line:84%
+you get a solution
+to the heat equation.
+
+00:48:15.127 --> 00:48:21.290 align:middle line:90%
+
+
+00:48:21.290 --> 00:48:25.410 align:middle line:84%
+And Ht tilde, the heat kernel
+on the hyperbolic plane,
+
+00:48:25.410 --> 00:48:26.815 align:middle line:90%
+it has an explicit formula.
+
+00:48:26.815 --> 00:48:31.700 align:middle line:90%
+
+
+00:48:31.700 --> 00:48:34.460 align:middle line:84%
+And that's the equivalent
+that plays the role
+
+00:48:34.460 --> 00:48:35.940 align:middle line:90%
+of the vague statement.
+
+00:48:35.940 --> 00:48:39.338 align:middle line:90%
+
+
+00:48:39.338 --> 00:48:42.700 align:middle line:84%
+So this hopefully
+is a dictionary
+
+00:48:42.700 --> 00:48:44.650 align:middle line:84%
+of most of the
+elements of our proof.
+
+00:48:44.650 --> 00:48:49.150 align:middle line:84%
+They all have natural analogs
+for this hyperbolic surface.
+
+00:48:49.150 --> 00:48:51.520 align:middle line:84%
+And the one that was
+the most troubling
+
+00:48:51.520 --> 00:48:55.420 align:middle line:84%
+has a less troubling
+analog, or the one that
+
+00:48:55.420 --> 00:48:59.320 align:middle line:84%
+was not stated precisely would
+have a precisely stated analog.
+
+00:48:59.320 --> 00:49:02.140 align:middle line:84%
+So without doing all
+the details, if you then
+
+00:49:02.140 --> 00:49:04.690 align:middle line:84%
+translate the proof that
+we did into the setting
+
+00:49:04.690 --> 00:49:07.600 align:middle line:84%
+of hyperbolic
+surfaces, then that
+
+00:49:07.600 --> 00:49:10.390 align:middle line:84%
+would give a proof of
+a theorem like this one
+
+00:49:10.390 --> 00:49:12.200 align:middle line:84%
+with a constant that's
+not quite as good.
+
+00:49:12.200 --> 00:49:14.020 align:middle line:90%
+But usually, it doesn't matter.
+
+00:49:14.020 --> 00:49:14.920 align:middle line:90%
+Yeah?
+
+00:49:14.920 --> 00:49:16.960 align:middle line:84%
+AUDIENCE: I have a question
+about the heat flow.
+
+00:49:16.960 --> 00:49:20.150 align:middle line:84%
+Since the spaces X
+of p are not compact,
+
+00:49:20.150 --> 00:49:22.390 align:middle line:84%
+does there have to be
+some of decay condition
+
+00:49:22.390 --> 00:49:25.937 align:middle line:84%
+to make the heat flow
+well-defined in these spaces?
+
+00:49:25.937 --> 00:49:26.770 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:49:26.770 --> 00:49:30.170 align:middle line:84%
+So the question is, since
+X of p is not compact,
+
+00:49:30.170 --> 00:49:32.290 align:middle line:84%
+should we have some
+kind of decay condition
+
+00:49:32.290 --> 00:49:34.220 align:middle line:90%
+to make the heat flow work?
+
+00:49:34.220 --> 00:49:36.230 align:middle line:90%
+Yeah, I think the answer is yes.
+
+00:49:36.230 --> 00:49:38.410 align:middle line:84%
+So these spaces
+have finite area.
+
+00:49:38.410 --> 00:49:41.150 align:middle line:84%
+So it's not as bad as it would
+be in some other settings.
+
+00:49:41.150 --> 00:49:43.930 align:middle line:84%
+But I think we should say
+something about the solution
+
+00:49:43.930 --> 00:49:46.310 align:middle line:90%
+not going crazy near infinity.
+
+00:49:46.310 --> 00:49:52.210 align:middle line:90%
+
+
+00:49:52.210 --> 00:49:57.370 align:middle line:84%
+Yeah, so this is the
+end of our discussion
+
+00:49:57.370 --> 00:50:01.310 align:middle line:84%
+of the Selberg theorem for this
+particular set of generators.
+
+00:50:01.310 --> 00:50:02.920 align:middle line:84%
+So take a moment
+to see if you have
+
+00:50:02.920 --> 00:50:04.720 align:middle line:90%
+questions or comments about it.
+
+00:50:04.720 --> 00:50:06.400 align:middle line:84%
+And then we'll
+explore what would
+
+00:50:06.400 --> 00:50:09.276 align:middle line:84%
+happen if we didn't have that
+particular set of generators.
+
+00:50:09.276 --> 00:50:25.540 align:middle line:90%
+
+
+00:50:25.540 --> 00:50:27.970 align:middle line:84%
+Yeah, anything on
+people's minds?
+
+00:50:27.970 --> 00:50:28.570 align:middle line:90%
+Yeah?
+
+00:50:28.570 --> 00:50:30.112 align:middle line:84%
+AUDIENCE: Can you
+give some intuition
+
+00:50:30.112 --> 00:50:34.150 align:middle line:84%
+why the support
+grows exponentially?
+
+00:50:34.150 --> 00:50:37.510 align:middle line:84%
+LAWRENCE GUTH: Yeah, so the
+question was, if we go back to--
+
+00:50:37.510 --> 00:50:41.120 align:middle line:90%
+
+
+00:50:41.120 --> 00:50:45.300 align:middle line:84%
+we were thinking about, we had
+a probability measure on SL2Z,
+
+00:50:45.300 --> 00:50:47.910 align:middle line:84%
+we convolve it with
+itself a lot of times,
+
+00:50:47.910 --> 00:50:52.040 align:middle line:84%
+and then we discovered
+that the support is roughly
+
+00:50:52.040 --> 00:50:54.180 align:middle line:84%
+evenly distributed
+on a ball of size T,
+
+00:50:54.180 --> 00:50:58.520 align:middle line:84%
+But T grows
+exponentially with k.
+
+00:50:58.520 --> 00:51:05.150 align:middle line:84%
+OK, yeah, so this is a kind of
+different behavior from what
+
+00:51:05.150 --> 00:51:07.130 align:middle line:90%
+happens on the real line.
+
+00:51:07.130 --> 00:51:09.000 align:middle line:84%
+And let's think about
+what's going on.
+
+00:51:09.000 --> 00:51:11.540 align:middle line:84%
+So M, let's say, is
+just evenly distributed
+
+00:51:11.540 --> 00:51:14.000 align:middle line:84%
+between a few matrices,
+maybe the matrices
+
+00:51:14.000 --> 00:51:15.410 align:middle line:90%
+in the Selberg thing.
+
+00:51:15.410 --> 00:51:18.000 align:middle line:84%
+So now, I'm going to
+take k of those matrices,
+
+00:51:18.000 --> 00:51:20.090 align:middle line:84%
+and I'm going to
+multiply them together.
+
+00:51:20.090 --> 00:51:23.060 align:middle line:84%
+Now, if I multiply
+k matrices together,
+
+00:51:23.060 --> 00:51:25.550 align:middle line:84%
+the biggest that the
+entries could be at the end
+
+00:51:25.550 --> 00:51:28.400 align:middle line:90%
+is exponential in k.
+
+00:51:28.400 --> 00:51:32.240 align:middle line:84%
+On the other hand, you might
+wonder, is it really that big?
+
+00:51:32.240 --> 00:51:35.480 align:middle line:90%
+Or is there some cancellation?
+
+00:51:35.480 --> 00:51:39.700 align:middle line:84%
+Suppose I had 1 by 1
+matrices, and I had a measure,
+
+00:51:39.700 --> 00:51:43.630 align:middle line:84%
+at 50% I was 1/2,
+and 50%, it was 2.
+
+00:51:43.630 --> 00:51:46.100 align:middle line:84%
+Take k of those, and I
+multiply them together.
+
+00:51:46.100 --> 00:51:47.500 align:middle line:90%
+What would happen?
+
+00:51:47.500 --> 00:51:49.310 align:middle line:84%
+Well, there would a
+lot of cancellation.
+
+00:51:49.310 --> 00:51:52.660 align:middle line:84%
+There are a lot of cancellations
+between the 1/2s and the 2s
+
+00:51:52.660 --> 00:51:54.970 align:middle line:84%
+It would get clearer
+to us if we took
+
+00:51:54.970 --> 00:51:57.220 align:middle line:90%
+the logarithm of everything.
+
+00:51:57.220 --> 00:51:59.470 align:middle line:84%
+And the size of
+that would actually
+
+00:51:59.470 --> 00:52:03.610 align:middle line:84%
+end up being exponential
+of the square root of k.
+
+00:52:03.610 --> 00:52:07.540 align:middle line:84%
+So the 2 by 2 case is
+different from that.
+
+00:52:07.540 --> 00:52:11.230 align:middle line:84%
+The actual size of this is
+typically exponential in k.
+
+00:52:11.230 --> 00:52:14.200 align:middle line:84%
+There's not as much
+cancellation of that kind.
+
+00:52:14.200 --> 00:52:20.582 align:middle line:84%
+And let's see, how could we
+get some intuition about that?
+
+00:52:20.582 --> 00:52:25.141 align:middle line:84%
+AUDIENCE: Is it in some sense
+because of the [INAUDIBLE]
+
+00:52:25.141 --> 00:52:31.368 align:middle line:90%
+
+
+00:52:31.368 --> 00:52:33.160 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+that's a good comment.
+
+00:52:33.160 --> 00:52:37.210 align:middle line:84%
+So the comment was
+SL2Z is virtually free.
+
+00:52:37.210 --> 00:52:42.790 align:middle line:84%
+So it's not very likely to go
+out in SL2Z and then come back.
+
+00:52:42.790 --> 00:52:46.320 align:middle line:90%
+And that's a related fact.
+
+00:52:46.320 --> 00:52:50.230 align:middle line:84%
+Yeah, so it's also related
+to hyperbolic geometry.
+
+00:52:50.230 --> 00:52:54.630 align:middle line:84%
+So you do a random walk in the
+hyperbolic plane, if you take
+
+00:52:54.630 --> 00:52:57.420 align:middle line:84%
+s steps, you'll typically
+be around a distance
+
+00:52:57.420 --> 00:52:59.100 align:middle line:90%
+s from the origin.
+
+00:52:59.100 --> 00:53:01.230 align:middle line:84%
+And that's because
+the hyperbolic plane
+
+00:53:01.230 --> 00:53:03.370 align:middle line:90%
+is branching out.
+
+00:53:03.370 --> 00:53:06.780 align:middle line:84%
+And so at every moment, you're
+not equally likely to be going
+
+00:53:06.780 --> 00:53:10.470 align:middle line:84%
+back towards the origin or
+away, you're kind of 3/4
+
+00:53:10.470 --> 00:53:11.920 align:middle line:90%
+of the directions are away.
+
+00:53:11.920 --> 00:53:15.420 align:middle line:84%
+And that's what life is
+like inside of the matrices.
+
+00:53:15.420 --> 00:53:17.730 align:middle line:90%
+Yeah, great question.
+
+00:53:17.730 --> 00:53:19.370 align:middle line:90%
+Anything else on people's minds?
+
+00:53:19.370 --> 00:53:23.640 align:middle line:90%
+
+
+00:53:23.640 --> 00:53:36.790 align:middle line:84%
+OK, all right, so let's look
+back at this Selberg theorem,
+
+00:53:36.790 --> 00:53:39.040 align:middle line:84%
+now that we
+understand it better.
+
+00:53:39.040 --> 00:53:43.900 align:middle line:84%
+And we had this
+particular A listed here.
+
+00:53:43.900 --> 00:53:45.920 align:middle line:90%
+What did we really use about A?
+
+00:53:45.920 --> 00:53:47.295 align:middle line:90%
+What was special about A?
+
+00:53:47.295 --> 00:53:50.860 align:middle line:90%
+
+
+00:53:50.860 --> 00:53:51.970 align:middle line:90%
+Yeah?
+
+00:53:51.970 --> 00:53:56.170 align:middle line:84%
+AUDIENCE: We used the fact that
+it was a generator of SL2Fp.
+
+00:53:56.170 --> 00:53:57.700 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+so we used that
+
+00:53:57.700 --> 00:54:00.580 align:middle line:90%
+as a generator of SL2 of Fp.
+
+00:54:00.580 --> 00:54:02.050 align:middle line:84%
+And what I'd like
+us all to think
+
+00:54:02.050 --> 00:54:06.760 align:middle line:84%
+about is if we had any set
+of generators of SL2Fp,
+
+00:54:06.760 --> 00:54:08.780 align:middle line:84%
+do we think that this
+would still be true?
+
+00:54:08.780 --> 00:54:11.025 align:middle line:84%
+And do we think that this
+proof would still work?
+
+00:54:11.025 --> 00:54:13.728 align:middle line:90%
+
+
+00:54:13.728 --> 00:54:15.270 align:middle line:84%
+I'll write that down
+while you think.
+
+00:54:15.270 --> 00:54:22.320 align:middle line:90%
+
+
+00:54:22.320 --> 00:54:22.820 align:middle line:90%
+it.
+
+00:54:22.820 --> 00:54:26.710 align:middle line:90%
+
+
+00:54:26.710 --> 00:54:41.970 align:middle line:84%
+So question, can we replace A by
+any set of generators of SL2Fp?
+
+00:54:41.970 --> 00:54:46.540 align:middle line:90%
+
+
+00:54:46.540 --> 00:54:47.040 align:middle line:90%
+Yeah?
+
+00:54:47.040 --> 00:54:50.940 align:middle line:84%
+AUDIENCE: So at minimum, they
+need to be symmetric, right?
+
+00:54:50.940 --> 00:54:54.450 align:middle line:84%
+LAWRENCE GUTH: Yeah, let's
+say they're symmetric.
+
+00:54:54.450 --> 00:54:56.038 align:middle line:84%
+Let's focus on the
+symmetric case.
+
+00:54:56.038 --> 00:54:57.580 align:middle line:84%
+That makes things
+technically easier.
+
+00:54:57.580 --> 00:55:01.390 align:middle line:84%
+And I would be happy with any
+symmetric set of generators.
+
+00:55:01.390 --> 00:55:01.980 align:middle line:90%
+Yeah?
+
+00:55:01.980 --> 00:55:03.730 align:middle line:84%
+AUDIENCE: Well, does
+the set of generators
+
+00:55:03.730 --> 00:55:07.505 align:middle line:84%
+still need to be kind of at
+least close to virtually free?
+
+00:55:07.505 --> 00:55:08.880 align:middle line:84%
+LAWRENCE GUTH:
+Does it still need
+
+00:55:08.880 --> 00:55:12.450 align:middle line:90%
+to be close to virtually free?
+
+00:55:12.450 --> 00:55:14.670 align:middle line:90%
+Yeah, that's a good question.
+
+00:55:14.670 --> 00:55:17.170 align:middle line:84%
+So although I mentioned
+being virtually free,
+
+00:55:17.170 --> 00:55:21.900 align:middle line:84%
+we didn't actually use
+virtually free in the proof.
+
+00:55:21.900 --> 00:55:23.446 align:middle line:90%
+That was for intuition.
+
+00:55:23.446 --> 00:55:26.580 align:middle line:90%
+
+
+00:55:26.580 --> 00:55:29.690 align:middle line:84%
+But we used something
+in the proof.
+
+00:55:29.690 --> 00:55:31.060 align:middle line:90%
+Yeah, well, it's--
+
+00:55:31.060 --> 00:55:33.560 align:middle line:84%
+AUDIENCE: They're conjugate to
+their own powers or something
+
+00:55:33.560 --> 00:55:34.925 align:middle line:90%
+like that, right?
+
+00:55:34.925 --> 00:55:36.300 align:middle line:84%
+LAWRENCE GUTH:
+They're conjugate.
+
+00:55:36.300 --> 00:55:38.275 align:middle line:84%
+So a nifty feature
+of these guys,
+
+00:55:38.275 --> 00:55:39.650 align:middle line:84%
+so the comment
+was these guys are
+
+00:55:39.650 --> 00:55:41.780 align:middle line:90%
+conjugate to their own powers.
+
+00:55:41.780 --> 00:55:43.530 align:middle line:90%
+Yeah, so that's important.
+
+00:55:43.530 --> 00:55:45.540 align:middle line:90%
+But we didn't use that either.
+
+00:55:45.540 --> 00:55:52.110 align:middle line:84%
+So when we proved that every
+representation of SL2Fp is big,
+
+00:55:52.110 --> 00:55:54.150 align:middle line:90%
+we considered these elements.
+
+00:55:54.150 --> 00:55:55.880 align:middle line:84%
+And we used the
+fact that they're
+
+00:55:55.880 --> 00:55:57.360 align:middle line:90%
+conjugate to their own powers.
+
+00:55:57.360 --> 00:56:00.800 align:middle line:84%
+But once we knew abstractly that
+every representation of SL2Fp
+
+00:56:00.800 --> 00:56:04.010 align:middle line:84%
+is big, we just used
+it as a black box.
+
+00:56:04.010 --> 00:56:06.548 align:middle line:84%
+So it's not important
+that these elements
+
+00:56:06.548 --> 00:56:08.090 align:middle line:84%
+in the statement of
+Selberg's theorem
+
+00:56:08.090 --> 00:56:09.923 align:middle line:84%
+are the same elements
+we used in that proof.
+
+00:56:09.923 --> 00:56:13.490 align:middle line:90%
+
+
+00:56:13.490 --> 00:56:15.340 align:middle line:90%
+Yeah, good.
+
+00:56:15.340 --> 00:56:18.890 align:middle line:84%
+But well, so one
+part of the answer
+
+00:56:18.890 --> 00:56:29.020 align:middle line:84%
+is that we used that A is a
+set of generators of SL2Z.
+
+00:56:29.020 --> 00:56:36.890 align:middle line:90%
+
+
+00:56:36.890 --> 00:56:40.310 align:middle line:84%
+So in the proof where we
+lifted things to SL2Z,
+
+00:56:40.310 --> 00:56:44.260 align:middle line:84%
+we took this set A,
+we lifted it to SL2Z,
+
+00:56:44.260 --> 00:56:47.000 align:middle line:84%
+and then we did a
+random walk on SL2Z.
+
+00:56:47.000 --> 00:56:50.120 align:middle line:84%
+And we needed to know that thing
+was kind of evenly distributed.
+
+00:56:50.120 --> 00:56:52.660 align:middle line:84%
+And the only way we could
+hope for that to be true
+
+00:56:52.660 --> 00:56:56.980 align:middle line:84%
+is if this was a set
+of generators of SL2Z.
+
+00:56:56.980 --> 00:56:58.568 align:middle line:90%
+Yeah?
+
+00:56:58.568 --> 00:57:00.610 align:middle line:84%
+AUDIENCE: Are there any
+even straightforward sets
+
+00:57:00.610 --> 00:57:05.230 align:middle line:84%
+of generators of SL2Fp that
+would not be generators of SL2Z?
+
+00:57:05.230 --> 00:57:06.670 align:middle line:84%
+LAWRENCE GUTH: OK,
+so the question
+
+00:57:06.670 --> 00:57:11.650 align:middle line:84%
+is, could it happen that we
+have generators of SL2Fp,
+
+00:57:11.650 --> 00:57:13.750 align:middle line:90%
+but they don't generate SL2Z?
+
+00:57:13.750 --> 00:57:15.620 align:middle line:90%
+And the answer is yes.
+
+00:57:15.620 --> 00:57:17.860 align:middle line:90%
+That happens fairly commonly.
+
+00:57:17.860 --> 00:57:21.435 align:middle line:90%
+And let me show you an example.
+
+00:57:21.435 --> 00:57:33.940 align:middle line:90%
+
+
+00:57:33.940 --> 00:57:36.420 align:middle line:90%
+So here's an example.
+
+00:57:36.420 --> 00:57:40.650 align:middle line:84%
+Maybe we won't prove everything,
+but let's say that Ak--
+
+00:57:40.650 --> 00:57:42.250 align:middle line:84%
+no, I should use a
+different letter.
+
+00:57:42.250 --> 00:57:52.132 align:middle line:84%
+Am is the set of 1 plus or minus
+m, 1, 0, and 1 plus or minus m,
+
+00:57:52.132 --> 00:57:54.900 align:middle line:90%
+1, 0.
+
+00:57:54.900 --> 00:57:57.690 align:middle line:84%
+So this is still a
+set of four elements.
+
+00:57:57.690 --> 00:58:00.180 align:middle line:90%
+Size of A equals 4.
+
+00:58:00.180 --> 00:58:06.420 align:middle line:84%
+And if m is 1 or 2,
+it generates SL2Z.
+
+00:58:06.420 --> 00:58:09.810 align:middle line:84%
+But if m is at
+least 3, it does not
+
+00:58:09.810 --> 00:58:16.500 align:middle line:84%
+generate-- does
+not generate SL2Z.
+
+00:58:16.500 --> 00:58:22.210 align:middle line:84%
+On the other hand, for every
+m, for all almost every p,
+
+00:58:22.210 --> 00:58:37.100 align:middle line:84%
+so for all but finitely many
+p, this Am generates SL2Fp.
+
+00:58:37.100 --> 00:58:43.880 align:middle line:90%
+
+
+00:58:43.880 --> 00:58:45.700 align:middle line:84%
+All right, so why
+does this happen?
+
+00:58:45.700 --> 00:58:54.260 align:middle line:90%
+
+
+00:58:54.260 --> 00:58:59.426 align:middle line:84%
+All right, so notice
+that this guy is 1, 0, 1,
+
+00:58:59.426 --> 00:59:02.800 align:middle line:90%
+1 to the plus or minus m right.
+
+00:59:02.800 --> 00:59:07.280 align:middle line:90%
+
+
+00:59:07.280 --> 00:59:10.080 align:middle line:84%
+So we assume that these
+guys generate SL2Z.
+
+00:59:10.080 --> 00:59:12.050 align:middle line:90%
+It's not that hard to show.
+
+00:59:12.050 --> 00:59:15.860 align:middle line:84%
+Take a word in these
+guys, it's only
+
+00:59:15.860 --> 00:59:19.910 align:middle line:84%
+included in the group
+generated by these guys
+
+00:59:19.910 --> 00:59:26.860 align:middle line:84%
+if it has a rather special
+structure that each letter is
+
+00:59:26.860 --> 00:59:31.000 align:middle line:84%
+raised to the plus or minus
+n-th power, so maybe m is 10.
+
+00:59:31.000 --> 00:59:36.790 align:middle line:84%
+So now it's clear that most
+words do not look like that.
+
+00:59:36.790 --> 00:59:38.590 align:middle line:84%
+Now, it's not
+immediately clear that we
+
+00:59:38.590 --> 00:59:41.200 align:middle line:84%
+don't have the whole group,
+because an element in the group
+
+00:59:41.200 --> 00:59:44.290 align:middle line:84%
+might be represented
+by many words,
+
+00:59:44.290 --> 00:59:47.800 align:middle line:84%
+but we mentioned before that
+there has a finite index
+
+00:59:47.800 --> 00:59:49.250 align:middle line:90%
+subgroup which is free.
+
+00:59:49.250 --> 00:59:53.200 align:middle line:84%
+So there are not that many
+ways to represent most words.
+
+00:59:53.200 --> 00:59:57.830 align:middle line:84%
+So this tiny subset
+of the words,
+
+00:59:57.830 --> 01:00:00.060 align:middle line:84%
+we don't expect it to cover
+very much of the group.
+
+01:00:00.060 --> 01:00:04.684 align:middle line:90%
+
+
+01:00:04.684 --> 01:00:07.480 align:middle line:90%
+And life is different in SL2Fp.
+
+01:00:07.480 --> 01:00:09.250 align:middle line:84%
+And a little later,
+we'll talk about who
+
+01:00:09.250 --> 01:00:11.230 align:middle line:90%
+are the subgroups of SL2Fp.
+
+01:00:11.230 --> 01:00:13.430 align:middle line:84%
+But there aren't a
+whole lot of them.
+
+01:00:13.430 --> 01:00:15.640 align:middle line:84%
+And once you have enough
+elements that they're not
+
+01:00:15.640 --> 01:00:18.270 align:middle line:84%
+trapped in a subgroup, then they
+must generate the whole group.
+
+01:00:18.270 --> 01:00:23.130 align:middle line:90%
+
+
+01:00:23.130 --> 01:00:29.400 align:middle line:84%
+OK, all right, so
+there are other choices
+
+01:00:29.400 --> 01:00:30.862 align:middle line:90%
+of generators for SL2Z.
+
+01:00:30.862 --> 01:00:32.820 align:middle line:84%
+Any choice of generators
+would have worked fine
+
+01:00:32.820 --> 01:00:36.120 align:middle line:84%
+in our argument, but it's
+actually quite common
+
+01:00:36.120 --> 01:00:39.480 align:middle line:84%
+that you have some
+generators for SL2Fp,
+
+01:00:39.480 --> 01:00:40.815 align:middle line:90%
+and they don't generate SL2Z.
+
+01:00:40.815 --> 01:00:45.270 align:middle line:90%
+
+
+01:00:45.270 --> 01:00:51.000 align:middle line:84%
+In this case, our argument
+doesn't work very well.
+
+01:00:51.000 --> 01:00:58.500 align:middle line:84%
+Let's say that Gm is the
+group generated by Am.
+
+01:00:58.500 --> 01:01:04.830 align:middle line:84%
+This group is a lot harder
+to understand than SL2Z.
+
+01:01:04.830 --> 01:01:08.610 align:middle line:84%
+So for instance, if you
+were to write down a matrix
+
+01:01:08.610 --> 01:01:10.800 align:middle line:84%
+and then you'd
+like to know is it
+
+01:01:10.800 --> 01:01:15.900 align:middle line:84%
+in Gm, that's not super
+easy to figure out.
+
+01:01:15.900 --> 01:01:18.980 align:middle line:84%
+SL2Z are all the
+integer matrices
+
+01:01:18.980 --> 01:01:24.020 align:middle line:84%
+where the entries satisfy the
+equation ad minus bc equals 1.
+
+01:01:24.020 --> 01:01:26.030 align:middle line:84%
+Whether or not a
+matrix is in this group
+
+01:01:26.030 --> 01:01:28.580 align:middle line:84%
+does not have a simple
+criterion like that.
+
+01:01:28.580 --> 01:01:30.780 align:middle line:84%
+As far as I know, the
+best thing-- well,
+
+01:01:30.780 --> 01:01:33.560 align:middle line:84%
+I don't know anything faster to
+do than to take the generators
+
+01:01:33.560 --> 01:01:35.393 align:middle line:84%
+and multiply them
+together in different ways
+
+01:01:35.393 --> 01:01:37.080 align:middle line:90%
+and see if you get this matrix.
+
+01:01:37.080 --> 01:01:37.640 align:middle line:90%
+Yeah?
+
+01:01:37.640 --> 01:01:41.090 align:middle line:84%
+AUDIENCE: How close
+is Gm to gamma m?
+
+01:01:41.090 --> 01:01:43.650 align:middle line:90%
+Do they have anything in common?
+
+01:01:43.650 --> 01:01:45.590 align:middle line:84%
+Because at first,
+it sort of look
+
+01:01:45.590 --> 01:01:50.480 align:middle line:84%
+like things congruent
+to the identity mod m.
+
+01:01:50.480 --> 01:01:53.400 align:middle line:84%
+LAWRENCE GUTH: Right,
+so Gm is a subgroup.
+
+01:01:53.400 --> 01:01:56.610 align:middle line:84%
+So OK, so the question was
+how close is Gm to gamma m?
+
+01:01:56.610 --> 01:02:01.970 align:middle line:84%
+Remember that gamma m was the
+subgroup of matrices in SL2Z
+
+01:02:01.970 --> 01:02:05.030 align:middle line:84%
+that are congruent to
+the identity mod m.
+
+01:02:05.030 --> 01:02:07.980 align:middle line:84%
+So these guys are congruent
+to the identity mod m.
+
+01:02:07.980 --> 01:02:11.390 align:middle line:84%
+So therefore, Gm is a
+subgroup of gamma m.
+
+01:02:11.390 --> 01:02:25.780 align:middle line:84%
+However, this group has infinite
+index In SL2Z for m at least 3.
+
+01:02:25.780 --> 01:02:28.090 align:middle line:84%
+Whereas, gamma m
+had finite index
+
+01:02:28.090 --> 01:02:33.070 align:middle line:84%
+because it was the kernel
+of a map to a finite group.
+
+01:02:33.070 --> 01:02:37.570 align:middle line:84%
+So gamma m, which is already
+not a super easy thing
+
+01:02:37.570 --> 01:02:44.450 align:middle line:84%
+to understand if m is
+large, this is well--
+
+01:02:44.450 --> 01:02:47.030 align:middle line:84%
+objectively, this is a
+smaller group than gamma m,
+
+01:02:47.030 --> 01:02:49.450 align:middle line:84%
+and subjectively, I think
+it is a harder group
+
+01:02:49.450 --> 01:02:50.775 align:middle line:90%
+to understand than gamma m.
+
+01:02:50.775 --> 01:02:55.190 align:middle line:90%
+
+
+01:02:55.190 --> 01:02:58.400 align:middle line:84%
+So this whole method
+has not really worked.
+
+01:02:58.400 --> 01:03:01.510 align:middle line:84%
+And in fact, it goes in
+the opposite direction.
+
+01:03:01.510 --> 01:03:06.550 align:middle line:84%
+So namely, for
+generators of SL2Z,
+
+01:03:06.550 --> 01:03:08.810 align:middle line:84%
+we first understand
+SL2Z really well,
+
+01:03:08.810 --> 01:03:10.960 align:middle line:84%
+and then we can use
+that to understand SL2Fp
+
+01:03:10.960 --> 01:03:13.030 align:middle line:90%
+with those generators.
+
+01:03:13.030 --> 01:03:17.320 align:middle line:84%
+And with a situation like
+this, there's some progress.
+
+01:03:17.320 --> 01:03:20.160 align:middle line:84%
+And it goes, first, you
+try to understand SL2Fp
+
+01:03:20.160 --> 01:03:21.900 align:middle line:84%
+with those generators,
+and you use
+
+01:03:21.900 --> 01:03:24.065 align:middle line:84%
+that to try to
+understand G of m.
+
+01:03:24.065 --> 01:03:25.440 align:middle line:84%
+There's actually
+a big literature
+
+01:03:25.440 --> 01:03:26.830 align:middle line:90%
+now about these groups G of m.
+
+01:03:26.830 --> 01:03:29.130 align:middle line:84%
+And first, you try to figure
+out things about SL2Fp
+
+01:03:29.130 --> 01:03:30.330 align:middle line:90%
+with those generators.
+
+01:03:30.330 --> 01:03:35.710 align:middle line:90%
+
+
+01:03:35.710 --> 01:03:38.200 align:middle line:84%
+So that's one part of the
+answer to this question.
+
+01:03:38.200 --> 01:03:41.130 align:middle line:84%
+And what we said so far is
+that our proof doesn't usually
+
+01:03:41.130 --> 01:03:43.330 align:middle line:84%
+work for other
+sets of generators,
+
+01:03:43.330 --> 01:03:45.540 align:middle line:84%
+but that's not an
+answer to the question
+
+01:03:45.540 --> 01:03:47.730 align:middle line:90%
+whether the theorem is true.
+
+01:03:47.730 --> 01:03:50.465 align:middle line:84%
+And as far as we know, the
+theorem may well be true.
+
+01:03:50.465 --> 01:03:51.840 align:middle line:84%
+So there's a
+conjecture you could
+
+01:03:51.840 --> 01:03:54.520 align:middle line:84%
+take any set of
+generators of SL2Fp,
+
+01:03:54.520 --> 01:03:56.105 align:middle line:84%
+you just always have
+a spectral gamma.
+
+01:03:56.105 --> 01:03:58.800 align:middle line:90%
+
+
+01:03:58.800 --> 01:04:00.240 align:middle line:84%
+That's not proven
+yet, but there's
+
+01:04:00.240 --> 01:04:01.510 align:middle line:90%
+some significant progress.
+
+01:04:01.510 --> 01:04:04.050 align:middle line:84%
+And I will tell you
+something about it.
+
+01:04:04.050 --> 01:04:04.830 align:middle line:90%
+Yeah?
+
+01:04:04.830 --> 01:04:08.340 align:middle line:84%
+AUDIENCE: What's the
+equivalent spectral statement?
+
+01:04:08.340 --> 01:04:11.170 align:middle line:84%
+LAWRENCE GUTH: What is the
+equivalent spectral statement?
+
+01:04:11.170 --> 01:04:19.480 align:middle line:90%
+
+
+01:04:19.480 --> 01:04:20.962 align:middle line:90%
+So if you take--
+
+01:04:20.962 --> 01:04:22.670 align:middle line:84%
+so I'm not sure if
+this is your question,
+
+01:04:22.670 --> 01:04:24.720 align:middle line:84%
+but let me say
+something, and then--
+
+01:04:24.720 --> 01:04:28.010 align:middle line:84%
+so if we take another
+set of generators here,
+
+01:04:28.010 --> 01:04:30.340 align:middle line:84%
+we have a different
+operator, and we can
+
+01:04:30.340 --> 01:04:32.510 align:middle line:90%
+ask what is sigma 1 and so on.
+
+01:04:32.510 --> 01:04:34.930 align:middle line:84%
+But so I think what
+you were wondering
+
+01:04:34.930 --> 01:04:37.820 align:middle line:84%
+is if we took another
+set of generators there,
+
+01:04:37.820 --> 01:04:39.940 align:middle line:84%
+would that be related
+to the spectrum
+
+01:04:39.940 --> 01:04:41.800 align:middle line:90%
+of the Laplacian of something?
+
+01:04:41.800 --> 01:04:42.760 align:middle line:90%
+Is that your question?
+
+01:04:42.760 --> 01:04:43.260 align:middle line:90%
+OK.
+
+01:04:43.260 --> 01:04:49.480 align:middle line:90%
+
+
+01:04:49.480 --> 01:04:53.110 align:middle line:90%
+OK, so not as far as I know.
+
+01:04:53.110 --> 01:04:55.990 align:middle line:84%
+And so you might say
+this theorem is great
+
+01:04:55.990 --> 01:04:58.490 align:middle line:84%
+because it connects to
+this hyperbolic geometry,
+
+01:04:58.490 --> 01:05:00.730 align:middle line:84%
+and it tells us really
+interesting estimate
+
+01:05:00.730 --> 01:05:02.500 align:middle line:84%
+for the spectrum
+of some surface.
+
+01:05:02.500 --> 01:05:06.730 align:middle line:84%
+With other generators, maybe
+it doesn't exactly do that.
+
+01:05:06.730 --> 01:05:10.270 align:middle line:84%
+But on the other hand, it
+says some interesting stuff
+
+01:05:10.270 --> 01:05:12.540 align:middle line:84%
+about this group,
+which is interesting
+
+01:05:12.540 --> 01:05:13.505 align:middle line:90%
+in some other problems.
+
+01:05:13.505 --> 01:05:20.932 align:middle line:90%
+
+
+01:05:20.932 --> 01:05:21.890 align:middle line:90%
+Yeah, let's leave that.
+
+01:05:21.890 --> 01:05:53.760 align:middle line:90%
+
+
+01:05:53.760 --> 01:05:57.490 align:middle line:84%
+All right, so suppose we're just
+given any set A inside of SL2Fp,
+
+01:05:57.490 --> 01:06:00.690 align:middle line:84%
+and we'd like to figure out
+if there's a spectral gap.
+
+01:06:00.690 --> 01:06:02.550 align:middle line:84%
+One thing that we
+know could go wrong
+
+01:06:02.550 --> 01:06:05.730 align:middle line:84%
+is that A could be
+contained in a subgroup.
+
+01:06:05.730 --> 01:06:13.100 align:middle line:84%
+So if A is contained in H,
+which is a proper subgroup,
+
+01:06:13.100 --> 01:06:17.290 align:middle line:90%
+then sigma 1 of TA is 1.
+
+01:06:17.290 --> 01:06:21.380 align:middle line:90%
+
+
+01:06:21.380 --> 01:06:25.410 align:middle line:84%
+All right, so that's
+elementary to see.
+
+01:06:25.410 --> 01:06:27.290 align:middle line:84%
+But in order to
+really use this, we
+
+01:06:27.290 --> 01:06:29.750 align:middle line:84%
+would actually-- it
+helps to know what
+
+01:06:29.750 --> 01:06:32.150 align:middle line:90%
+are all the proper subgroups.
+
+01:06:32.150 --> 01:06:43.580 align:middle line:84%
+So let's talk a little bit about
+the classification of subgroups
+
+01:06:43.580 --> 01:06:44.780 align:middle line:90%
+of SL2Fp.
+
+01:06:44.780 --> 01:06:53.100 align:middle line:90%
+
+
+01:06:53.100 --> 01:06:56.960 align:middle line:84%
+So the classification
+was done by someone
+
+01:06:56.960 --> 01:06:59.190 align:middle line:90%
+named Dickson in 1901.
+
+01:06:59.190 --> 01:07:04.790 align:middle line:84%
+And it's not that hard, but
+it's not that easy either.
+
+01:07:04.790 --> 01:07:07.850 align:middle line:84%
+And I was a little
+surprised to learn
+
+01:07:07.850 --> 01:07:12.490 align:middle line:84%
+that if you'd like to classify
+the subgroups of SLDFp,
+
+01:07:12.490 --> 01:07:14.830 align:middle line:90%
+that was only done--
+
+01:07:14.830 --> 01:07:16.670 align:middle line:84%
+first of all, it's only
+done approximately.
+
+01:07:16.670 --> 01:07:20.020 align:middle line:84%
+And it was only done
+around the year 2000.
+
+01:07:20.020 --> 01:07:24.160 align:middle line:84%
+So some of these problems
+actually are really pretty hard.
+
+01:07:24.160 --> 01:07:31.810 align:middle line:90%
+So it's done by Dixon in 1901.
+
+01:07:31.810 --> 01:07:34.390 align:middle line:84%
+OK, well, let's think
+of some subgroups.
+
+01:07:34.390 --> 01:07:37.390 align:middle line:84%
+We could have the diagonal
+subgroup, which is typically
+
+01:07:37.390 --> 01:07:40.060 align:middle line:90%
+called T for torus.
+
+01:07:40.060 --> 01:07:41.080 align:middle line:90%
+There's this guy.
+
+01:07:41.080 --> 01:07:48.460 align:middle line:84%
+We have the upper triangular,
+unipotent subgroup, like that.
+
+01:07:48.460 --> 01:07:50.950 align:middle line:90%
+Let me put a little 0 here.
+
+01:07:50.950 --> 01:07:54.610 align:middle line:84%
+And we have the more
+general upper triangular
+
+01:07:54.610 --> 01:08:00.070 align:middle line:90%
+guys, which have that.
+
+01:08:00.070 --> 01:08:03.370 align:middle line:84%
+Now, if you take a subgroup,
+you can conjugate it,
+
+01:08:03.370 --> 01:08:04.988 align:middle line:84%
+and you can get
+another subgroup.
+
+01:08:04.988 --> 01:08:06.405 align:middle line:84%
+So you can conjugate
+all of these.
+
+01:08:06.405 --> 01:08:13.800 align:middle line:90%
+
+
+01:08:13.800 --> 01:08:18.215 align:middle line:84%
+And so let me write B, that
+means a conjugate of B0.
+
+01:08:18.215 --> 01:08:23.170 align:middle line:90%
+
+
+01:08:23.170 --> 01:08:24.743 align:middle line:84%
+So those are a
+bunch of subgroups.
+
+01:08:24.743 --> 01:08:26.160 align:middle line:84%
+Those are the only
+ones that I was
+
+01:08:26.160 --> 01:08:30.090 align:middle line:90%
+able to think of without effort.
+
+01:08:30.090 --> 01:08:35.830 align:middle line:84%
+There are a few other small
+subgroups, like for instance,
+
+01:08:35.830 --> 01:08:40.979 align:middle line:84%
+apparently the icosahedral group
+appears in SL2Fp for some p's.
+
+01:08:40.979 --> 01:08:43.050 align:middle line:84%
+And the statement of
+the classification
+
+01:08:43.050 --> 01:08:46.569 align:middle line:84%
+is a lot easier if we don't
+say exactly what groups appear,
+
+01:08:46.569 --> 01:08:50.670 align:middle line:84%
+but just kind of roughly
+and ignore small groups.
+
+01:08:50.670 --> 01:08:53.800 align:middle line:90%
+So there's a theorem about this.
+
+01:08:53.800 --> 01:09:05.240 align:middle line:84%
+The rough theorem would say if
+H in SL2Fp is a proper subgroup,
+
+01:09:05.240 --> 01:09:13.580 align:middle line:84%
+then there exists a Borel
+subgroup B, one of these guys,
+
+01:09:13.580 --> 01:09:22.189 align:middle line:84%
+and B intersect H is a large
+fraction of H. So this c
+
+01:09:22.189 --> 01:09:24.295 align:middle line:84%
+bigger than 0 is a
+universal constant.
+
+01:09:24.295 --> 01:09:27.470 align:middle line:90%
+
+
+01:09:27.470 --> 01:09:31.160 align:middle line:84%
+So more or less, H is not
+quite in B, but almost all.
+
+01:09:31.160 --> 01:09:35.359 align:middle line:84%
+H has a very large
+part that's in B.
+
+01:09:35.359 --> 01:09:37.529 align:middle line:90%
+And B is a conjugate of B0.
+
+01:09:37.529 --> 01:09:42.800 align:middle line:84%
+And the fine print is
+conjugate of B0 conjugated
+
+01:09:42.800 --> 01:09:46.920 align:middle line:84%
+by not necessarily
+someone in SL2Fp,
+
+01:09:46.920 --> 01:09:50.420 align:middle line:84%
+but maybe the matrix
+we conjugate by
+
+01:09:50.420 --> 01:09:52.680 align:middle line:84%
+might involve the
+algebraic closure.
+
+01:09:52.680 --> 01:09:53.430 align:middle line:90%
+Anyway, it's fine.
+
+01:09:53.430 --> 01:10:01.160 align:middle line:90%
+
+
+01:10:01.160 --> 01:10:03.710 align:middle line:90%
+Now, let's make a remark.
+
+01:10:03.710 --> 01:10:06.363 align:middle line:90%
+The analog of this is not true.
+
+01:10:06.363 --> 01:10:09.670 align:middle line:90%
+
+
+01:10:09.670 --> 01:10:18.430 align:middle line:84%
+For SL2Fq, q is a prime
+power because SL2Fp
+
+01:10:18.430 --> 01:10:21.820 align:middle line:90%
+is a subgroup of SL2Fq.
+
+01:10:21.820 --> 01:10:25.675 align:middle line:84%
+but SL2Fp is not contained
+in any upper triangular
+
+01:10:25.675 --> 01:10:26.570 align:middle line:90%
+or something.
+
+01:10:26.570 --> 01:10:30.760 align:middle line:90%
+
+
+01:10:30.760 --> 01:10:34.100 align:middle line:84%
+So there's an analogous
+theorem for SL2Fq,
+
+01:10:34.100 --> 01:10:36.610 align:middle line:84%
+but it needs to be stated a
+little bit different way to take
+
+01:10:36.610 --> 01:10:38.770 align:middle line:90%
+account of the subfields.
+
+01:10:38.770 --> 01:10:41.430 align:middle line:84%
+So this may already start
+to remind us of something
+
+01:10:41.430 --> 01:10:43.180 align:middle line:84%
+that we've seen, that
+projection theory is
+
+01:10:43.180 --> 01:10:44.410 align:middle line:90%
+different over Fp and Fq.
+
+01:10:44.410 --> 01:10:58.180 align:middle line:90%
+
+
+01:10:58.180 --> 01:11:02.100 align:middle line:84%
+OK, so now, I can state
+the second main theorem
+
+01:11:02.100 --> 01:11:03.840 align:middle line:84%
+that I wanted to say
+about random walks
+
+01:11:03.840 --> 01:11:08.160 align:middle line:84%
+on groups, which is a
+generalization of Selberg's
+
+01:11:08.160 --> 01:11:08.890 align:middle line:90%
+theorem.
+
+01:11:08.890 --> 01:11:12.270 align:middle line:84%
+And it allows to take
+any set of generators
+
+01:11:12.270 --> 01:11:16.950 align:middle line:84%
+where it's not trapped
+in a Borel subgroup,
+
+01:11:16.950 --> 01:11:19.210 align:middle line:84%
+but it requires a
+little quantification,
+
+01:11:19.210 --> 01:11:21.510 align:middle line:84%
+which is perhaps
+not quite as strong
+
+01:11:21.510 --> 01:11:23.360 align:middle line:90%
+as one might fantasize about.
+
+01:11:23.360 --> 01:11:30.510 align:middle line:90%
+
+
+01:11:30.510 --> 01:11:34.920 align:middle line:84%
+All right, so for every
+epsilon bigger than 0, there
+
+01:11:34.920 --> 01:11:46.620 align:middle line:84%
+are a couple of positive
+constants every p.
+
+01:11:46.620 --> 01:11:53.850 align:middle line:84%
+So if I have a subset of
+SL2Fp, and the subset is not
+
+01:11:53.850 --> 01:11:55.920 align:middle line:84%
+contained in a Borel
+subgroup, and also it
+
+01:11:55.920 --> 01:11:59.010 align:middle line:84%
+doesn't concentrate too
+much in a Borel subgroup,
+
+01:11:59.010 --> 01:12:06.980 align:middle line:84%
+so for every B Borel, if I
+take A intersected with B,
+
+01:12:06.980 --> 01:12:14.990 align:middle line:84%
+this is, at most, p to the
+minus epsilon size of B
+
+01:12:14.990 --> 01:12:17.330 align:middle line:90%
+and with this small constant.
+
+01:12:17.330 --> 01:12:23.390 align:middle line:84%
+So a smallish-- sorry, size of
+A. So only a small fraction of A
+
+01:12:23.390 --> 01:12:26.210 align:middle line:90%
+is in this Borel subgroup.
+
+01:12:26.210 --> 01:12:29.220 align:middle line:84%
+And it's a p to the epsilon
+kind of fraction where you--
+
+01:12:29.220 --> 01:12:30.540 align:middle line:90%
+that's a pretty small fraction.
+
+01:12:30.540 --> 01:12:32.082 align:middle line:84%
+You might hope to
+do a little better,
+
+01:12:32.082 --> 01:12:35.030 align:middle line:90%
+but anyway, that's what it says.
+
+01:12:35.030 --> 01:12:39.170 align:middle line:90%
+And here, I wasn't positive--
+
+01:12:39.170 --> 01:12:42.090 align:middle line:84%
+so when I proved it,
+I needed to say coset,
+
+01:12:42.090 --> 01:12:45.030 align:middle line:84%
+but I'm not sure if it's
+coset or subgroup, anyway.
+
+01:12:45.030 --> 01:12:47.420 align:middle line:84%
+So if it doesn't concentrate
+in something closely related
+
+01:12:47.420 --> 01:12:50.430 align:middle line:90%
+to a subgroup, then it expands.
+
+01:12:50.430 --> 01:12:54.050 align:middle line:84%
+So then it has a mixed
+signal 1 of TA is less than 1
+
+01:12:54.050 --> 01:12:55.080 align:middle line:90%
+minus c of epsilon.
+
+01:12:55.080 --> 01:13:07.170 align:middle line:90%
+
+
+01:13:07.170 --> 01:13:12.870 align:middle line:84%
+So up to a little bit
+of quantification,
+
+01:13:12.870 --> 01:13:15.340 align:middle line:84%
+if A is contained
+in a Borel subgroup,
+
+01:13:15.340 --> 01:13:17.620 align:middle line:84%
+definitely we won't
+have a spectral gap.
+
+01:13:17.620 --> 01:13:22.080 align:middle line:84%
+And if A doesn't intersect
+a Borel subgroup too much,
+
+01:13:22.080 --> 01:13:24.010 align:middle line:84%
+then we will have
+a spectral gap.
+
+01:13:24.010 --> 01:13:26.550 align:middle line:84%
+It's almost if and only
+if, although you might hope
+
+01:13:26.550 --> 01:13:27.785 align:middle line:90%
+to improve this a little bit.
+
+01:13:27.785 --> 01:13:32.094 align:middle line:90%
+
+
+01:13:32.094 --> 01:13:35.710 align:middle line:84%
+So this is kind of its
+own story to talk about.
+
+01:13:35.710 --> 01:13:38.520 align:middle line:84%
+So since we're almost
+done, let me just
+
+01:13:38.520 --> 01:13:41.175 align:middle line:84%
+make a couple of high
+level comments about it.
+
+01:13:41.175 --> 01:13:41.675 align:middle line:90%
+Yeah?
+
+01:13:41.675 --> 01:13:43.800 align:middle line:84%
+AUDIENCE: What's
+a Borel subgroup?
+
+01:13:43.800 --> 01:13:44.880 align:middle line:90%
+LAWRENCE GUTH: A Borel--
+
+01:13:44.880 --> 01:13:47.640 align:middle line:84%
+so I don't know why-- so
+Borel is involved in this.
+
+01:13:47.640 --> 01:13:50.670 align:middle line:84%
+A Borel subgroup
+is these guys B.
+
+01:13:50.670 --> 01:13:54.270 align:middle line:84%
+Take an upper triangular
+matrix, that's a Borel subgroup,
+
+01:13:54.270 --> 01:13:55.370 align:middle line:90%
+or conjugate that.
+
+01:13:55.370 --> 01:13:58.130 align:middle line:90%
+
+
+01:13:58.130 --> 01:14:01.460 align:middle line:84%
+So one comment
+about this theorem
+
+01:14:01.460 --> 01:14:05.455 align:middle line:84%
+is that we had better
+know this theorem.
+
+01:14:05.455 --> 01:14:06.955 align:middle line:84%
+You better know
+something like this.
+
+01:14:06.955 --> 01:14:09.740 align:middle line:90%
+
+
+01:14:09.740 --> 01:14:13.490 align:middle line:84%
+And so the first
+part of this theorem
+
+01:14:13.490 --> 01:14:17.870 align:middle line:84%
+is to prove that if you
+don't have a spectral gap,
+
+01:14:17.870 --> 01:14:20.780 align:middle line:84%
+then there must
+be a subset that's
+
+01:14:20.780 --> 01:14:26.705 align:middle line:84%
+kind of approximately a subgroup
+that intersects A a lot.
+
+01:14:26.705 --> 01:14:28.080 align:middle line:84%
+If you don't have
+a spectral gap,
+
+01:14:28.080 --> 01:14:31.610 align:middle line:84%
+there must be a subset that's
+kind of approximately a subgroup
+
+01:14:31.610 --> 01:14:34.610 align:middle line:84%
+where maybe A convolved
+with itself many times
+
+01:14:34.610 --> 01:14:39.380 align:middle line:84%
+is heavily concentrated in
+this approximate subgroup.
+
+01:14:39.380 --> 01:14:42.480 align:middle line:90%
+And that's a very nice argument.
+
+01:14:42.480 --> 01:14:44.540 align:middle line:84%
+And it turns out
+to use the tools
+
+01:14:44.540 --> 01:14:45.960 align:middle line:90%
+from additive combinatorics.
+
+01:14:45.960 --> 01:14:47.720 align:middle line:84%
+It uses like
+Balog-Szemeredi-Gowers
+
+01:14:47.720 --> 01:14:52.790 align:middle line:84%
+and things like that in a
+non-commutative version.
+
+01:14:52.790 --> 01:14:55.880 align:middle line:84%
+And then the second part
+of the proof is to say,
+
+01:14:55.880 --> 01:14:58.550 align:middle line:84%
+is kind of a robust
+version of this theorem.
+
+01:14:58.550 --> 01:15:01.043 align:middle line:84%
+This is a classification
+of actual subgroups.
+
+01:15:01.043 --> 01:15:02.710 align:middle line:84%
+We want to make it a
+little bit stronger
+
+01:15:02.710 --> 01:15:06.550 align:middle line:84%
+and have a classification
+of approximate subgroups.
+
+01:15:06.550 --> 01:15:09.580 align:middle line:84%
+So not only any
+actual proper subgroup
+
+01:15:09.580 --> 01:15:12.410 align:middle line:84%
+would have to intersect
+a Borel subgroup a lot,
+
+01:15:12.410 --> 01:15:15.590 align:middle line:84%
+but actually, any kind
+of approximate subgroup,
+
+01:15:15.590 --> 01:15:18.340 align:middle line:84%
+so any subset where when you
+multiply it by itself two
+
+01:15:18.340 --> 01:15:21.610 align:middle line:84%
+or three times, it doesn't
+get very much bigger,
+
+01:15:21.610 --> 01:15:26.410 align:middle line:84%
+the only way that can happen
+is if your subset heavily
+
+01:15:26.410 --> 01:15:29.590 align:middle line:90%
+intersects a Borel subgroup.
+
+01:15:29.590 --> 01:15:36.130 align:middle line:84%
+Now, that second part, you'll
+notice, is not true over Fp--
+
+01:15:36.130 --> 01:15:39.670 align:middle line:90%
+sorry, it's not true over Fq.
+
+01:15:39.670 --> 01:15:43.600 align:middle line:84%
+And so the second part will
+draw on some product theory
+
+01:15:43.600 --> 01:15:45.970 align:middle line:84%
+and our theorems
+that we worked very
+
+01:15:45.970 --> 01:15:50.770 align:middle line:84%
+hard on that give a projection
+estimate over Fp that's
+
+01:15:50.770 --> 01:15:52.780 align:middle line:90%
+not true over Fq.
+
+01:15:52.780 --> 01:15:53.645 align:middle line:90%
+We will need that.
+
+01:15:53.645 --> 01:15:56.715 align:middle line:90%
+
+
+01:15:56.715 --> 01:16:00.540 align:middle line:84%
+And so I think this is
+a nice example of how
+
+01:16:00.540 --> 01:16:03.150 align:middle line:84%
+those theorems are
+only an epsilon
+
+01:16:03.150 --> 01:16:04.890 align:middle line:84%
+improvement on a
+trivial estimate where
+
+01:16:04.890 --> 01:16:06.630 align:middle line:90%
+epsilon is very small.
+
+01:16:06.630 --> 01:16:08.752 align:middle line:90%
+But it still is meaningful.
+
+01:16:08.752 --> 01:16:10.710 align:middle line:84%
+There's an important
+difference between epsilon
+
+01:16:10.710 --> 01:16:12.450 align:middle line:90%
+being zero or not zero.
+
+01:16:12.450 --> 01:16:17.400 align:middle line:84%
+And they're used to prove
+kind of this c of epsilon
+
+01:16:17.400 --> 01:16:18.790 align:middle line:90%
+is pretty small.
+
+01:16:18.790 --> 01:16:24.030 align:middle line:84%
+But there's just a really
+important difference
+
+01:16:24.030 --> 01:16:25.570 align:middle line:84%
+between whether
+you had zero here,
+
+01:16:25.570 --> 01:16:27.640 align:middle line:84%
+which is like a completely
+vacuous statement,
+
+01:16:27.640 --> 01:16:30.070 align:middle line:84%
+and whether you had
+1 minus epsilon,
+
+01:16:30.070 --> 01:16:32.470 align:middle line:84%
+which even if epsilon
+is a small constant,
+
+01:16:32.470 --> 01:16:37.230 align:middle line:84%
+is a qualitatively sharp
+statement about how
+
+01:16:37.230 --> 01:16:38.435 align:middle line:90%
+these random walk mixes.
+
+01:16:38.435 --> 01:16:41.580 align:middle line:90%
+
+
+01:16:41.580 --> 01:16:42.550 align:middle line:90%
+OK, cool.
+
+01:16:42.550 --> 01:16:46.310 align:middle line:84%
+So we'll talk more about
+those things on Thursday.
+
+01:16:46.310 --> 01:16:53.000 align:middle line:90%

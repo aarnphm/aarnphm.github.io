@@ -1,0 +1,4745 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.324 align:middle line:84%
+[SQUEAKING]
+[RUSTLING] [CLICKING]
+
+00:00:05.324 --> 00:00:12.900 align:middle line:90%
+
+
+00:00:12.900 --> 00:00:16.140 align:middle line:84%
+LAWRENCE GUTH: OK well, today
+is our last day together.
+
+00:00:16.140 --> 00:00:18.140 align:middle line:84%
+I was remembering the
+first day at the beginning
+
+00:00:18.140 --> 00:00:20.440 align:middle line:84%
+I said to everybody I'm
+excited about projection
+
+00:00:20.440 --> 00:00:22.840 align:middle line:84%
+theory and these basic
+problems we just solved
+
+00:00:22.840 --> 00:00:24.140 align:middle line:90%
+in the last couple years.
+
+00:00:24.140 --> 00:00:28.000 align:middle line:84%
+And we're trying to
+describe the ideas in this.
+
+00:00:28.000 --> 00:00:31.200 align:middle line:84%
+And the beginning of the class
+I say all these things I'm
+
+00:00:31.200 --> 00:00:31.980 align:middle line:90%
+excited to do.
+
+00:00:31.980 --> 00:00:35.220 align:middle line:84%
+And I wonder, am I going-- are
+we going to manage to do this?
+
+00:00:35.220 --> 00:00:37.840 align:middle line:90%
+
+
+00:00:37.840 --> 00:00:38.580 align:middle line:90%
+Yeah, anyway.
+
+00:00:38.580 --> 00:00:40.760 align:middle line:84%
+Now it's at the end and
+we've been working steadily
+
+00:00:40.760 --> 00:00:42.460 align:middle line:90%
+and done some of it.
+
+00:00:42.460 --> 00:00:45.630 align:middle line:90%
+
+
+00:00:45.630 --> 00:00:46.130 align:middle line:90%
+OK.
+
+00:00:46.130 --> 00:00:49.640 align:middle line:90%
+
+
+00:00:49.640 --> 00:00:54.280 align:middle line:84%
+So today we'll try to say the--
+finish the story of proving
+
+00:00:54.280 --> 00:00:58.200 align:middle line:84%
+the sharp projection theorems
+and to say the last couple
+
+00:00:58.200 --> 00:01:00.690 align:middle line:90%
+of ideas that go into it.
+
+00:01:00.690 --> 00:01:03.470 align:middle line:90%
+
+
+00:01:03.470 --> 00:01:07.410 align:middle line:84%
+So the first idea goes back
+to the beginning of the class.
+
+00:01:07.410 --> 00:01:11.190 align:middle line:84%
+It goes back to using
+the Fourier method
+
+00:01:11.190 --> 00:01:14.230 align:middle line:84%
+and getting a little
+bit more out of it
+
+00:01:14.230 --> 00:01:16.900 align:middle line:84%
+than we had realized
+at that time.
+
+00:01:16.900 --> 00:01:19.750 align:middle line:90%
+
+
+00:01:19.750 --> 00:01:22.810 align:middle line:84%
+And then after that-- so this
+thing, I'll do by itself.
+
+00:01:22.810 --> 00:01:25.430 align:middle line:84%
+It's like remembering
+the Fourier method
+
+00:01:25.430 --> 00:01:28.255 align:middle line:84%
+and seeing how much
+we can learn from it.
+
+00:01:28.255 --> 00:01:30.630 align:middle line:84%
+Then I'll remember what was
+the whole big theorem that we
+
+00:01:30.630 --> 00:01:33.790 align:middle line:84%
+wanted to prove, and what are
+all the things we knew about it.
+
+00:01:33.790 --> 00:01:40.390 align:middle line:84%
+And the last idea in the
+class is combining information
+
+00:01:40.390 --> 00:01:42.270 align:middle line:84%
+from many different
+scales, which
+
+00:01:42.270 --> 00:01:45.190 align:middle line:84%
+allows us to combine all
+of the previous ideas
+
+00:01:45.190 --> 00:01:48.190 align:middle line:90%
+into one big argument.
+
+00:01:48.190 --> 00:01:48.880 align:middle line:90%
+Master argument.
+
+00:01:48.880 --> 00:01:52.070 align:middle line:90%
+
+
+00:01:52.070 --> 00:01:55.830 align:middle line:84%
+And this way of combining
+scales has only been--
+
+00:01:55.830 --> 00:01:59.450 align:middle line:84%
+I would say has only been
+around for five years or so,
+
+00:01:59.450 --> 00:02:02.730 align:middle line:84%
+and is also something--
+it's not that complicated.
+
+00:02:02.730 --> 00:02:07.750 align:middle line:84%
+And I think also something
+that might be of value
+
+00:02:07.750 --> 00:02:10.790 align:middle line:84%
+to take with you
+away from the class.
+
+00:02:10.790 --> 00:02:11.290 align:middle line:90%
+OK.
+
+00:02:11.290 --> 00:02:20.110 align:middle line:90%
+
+
+00:02:20.110 --> 00:02:20.610 align:middle line:90%
+All right.
+
+00:02:20.610 --> 00:02:27.120 align:middle line:84%
+So part 1 is the well-spaced
+case and the Fourier method.
+
+00:02:27.120 --> 00:02:38.130 align:middle line:90%
+
+
+00:02:38.130 --> 00:02:39.910 align:middle line:84%
+So all of these
+things that were--
+
+00:02:39.910 --> 00:02:44.990 align:middle line:84%
+these sharp projection theorems,
+there's some kind of geometric
+
+00:02:44.990 --> 00:02:48.750 align:middle line:84%
+measure theory analog of the
+Szemerédi-Trotter theorem.
+
+00:02:48.750 --> 00:02:51.350 align:middle line:84%
+So for reference, let's remember
+first the Szemerédi-Trotter
+
+00:02:51.350 --> 00:02:51.850 align:middle line:90%
+theorem.
+
+00:02:51.850 --> 00:02:55.180 align:middle line:90%
+
+
+00:02:55.180 --> 00:02:59.060 align:middle line:84%
+And here's the version of it
+that will be relevant for us.
+
+00:02:59.060 --> 00:03:03.530 align:middle line:84%
+So if E contained in R2
+is a set of N points.
+
+00:03:03.530 --> 00:03:07.140 align:middle line:90%
+
+
+00:03:07.140 --> 00:03:14.100 align:middle line:84%
+And L sub r of E is the
+set of lines, little l.
+
+00:03:14.100 --> 00:03:19.820 align:middle line:84%
+So that little l
+intersect E is at least r.
+
+00:03:19.820 --> 00:03:21.540 align:middle line:84%
+Then the question is,
+how big could this
+
+00:03:21.540 --> 00:03:24.020 align:middle line:90%
+be in terms of N and r?
+
+00:03:24.020 --> 00:03:28.940 align:middle line:84%
+And the conclusion is
+that the size lr of E
+
+00:03:28.940 --> 00:03:32.060 align:middle line:90%
+is bounded by n squared.
+
+00:03:32.060 --> 00:03:35.800 align:middle line:84%
+Actually, let me do a big R
+to match some other notation.
+
+00:03:35.800 --> 00:03:38.610 align:middle line:90%
+
+
+00:03:38.610 --> 00:03:44.700 align:middle line:84%
+N squared over R
+cubed plus N over R.
+
+00:03:44.700 --> 00:03:48.860 align:middle line:84%
+Is N squared over R cubed
+comes from the grid example.
+
+00:03:48.860 --> 00:03:52.060 align:middle line:84%
+And this N over R comes
+from a very simple example,
+
+00:03:52.060 --> 00:03:54.530 align:middle line:84%
+where you just draw
+a few lines and you
+
+00:03:54.530 --> 00:03:56.110 align:middle line:90%
+put R points on each of them.
+
+00:03:56.110 --> 00:04:00.370 align:middle line:90%
+
+
+00:04:00.370 --> 00:04:01.750 align:middle line:90%
+OK.
+
+00:04:01.750 --> 00:04:04.530 align:middle line:84%
+And we're trying to
+investigate, to what extent
+
+00:04:04.530 --> 00:04:09.370 align:middle line:84%
+this continues to hold if
+we replace our pure points
+
+00:04:09.370 --> 00:04:14.770 align:middle line:84%
+by some little balls and by our
+pure lines by some thin tubes?
+
+00:04:14.770 --> 00:04:17.089 align:middle line:84%
+And here is one clean
+version of that,
+
+00:04:17.089 --> 00:04:18.950 align:middle line:84%
+that if the points
+are quite spread out,
+
+00:04:18.950 --> 00:04:21.610 align:middle line:84%
+they're what's
+called well-spaced,
+
+00:04:21.610 --> 00:04:24.500 align:middle line:90%
+then this holds almost as real.
+
+00:04:24.500 --> 00:04:30.010 align:middle line:90%
+
+
+00:04:30.010 --> 00:04:33.770 align:middle line:84%
+So this is a theorem of Hong
+Wong, Noam Solomon, and me
+
+00:04:33.770 --> 00:04:38.330 align:middle line:90%
+from around 2018 or something.
+
+00:04:38.330 --> 00:04:44.320 align:middle line:84%
+So E contained in R2 is
+a set of N delta balls.
+
+00:04:44.320 --> 00:04:47.210 align:middle line:90%
+
+
+00:04:47.210 --> 00:04:50.350 align:middle line:90%
+E is contained in the unit ball.
+
+00:04:50.350 --> 00:04:52.470 align:middle line:90%
+AND they're well spaced.
+
+00:04:52.470 --> 00:04:54.850 align:middle line:84%
+They're as spread
+out as possible.
+
+00:04:54.850 --> 00:04:59.730 align:middle line:84%
+So they obey the condition that
+if you take E and you intersect
+
+00:04:59.730 --> 00:05:04.050 align:middle line:84%
+it with a ball of radius
+N to the minus 1/2,
+
+00:05:04.050 --> 00:05:07.210 align:middle line:90%
+then that's at most around 1.
+
+00:05:07.210 --> 00:05:13.530 align:middle line:84%
+So in other words, if I take a
+unit square and I subdivide it
+
+00:05:13.530 --> 00:05:19.410 align:middle line:84%
+into squares of side
+length N to the minus 1/2--
+
+00:05:19.410 --> 00:05:22.850 align:middle line:84%
+that's been chosen so that there
+are N squares in this picture.
+
+00:05:22.850 --> 00:05:28.694 align:middle line:84%
+And then I put 1 or roughly 1
+point in each of these squares
+
+00:05:28.694 --> 00:05:32.170 align:middle line:84%
+at one delta ball,
+then this is what?
+
+00:05:32.170 --> 00:05:35.390 align:middle line:84%
+This is our what
+our set looks like.
+
+00:05:35.390 --> 00:05:38.590 align:middle line:90%
+So this is a well-spaced set.
+
+00:05:38.590 --> 00:05:39.090 align:middle line:90%
+Yeah.
+
+00:05:39.090 --> 00:05:41.843 align:middle line:84%
+AUDIENCE: So if the
+size of E intersect B,
+
+00:05:41.843 --> 00:05:44.010 align:middle line:84%
+is that supposed to be a
+delta ball covering number?
+
+00:05:44.010 --> 00:05:44.390 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:05:44.390 --> 00:05:45.057 align:middle line:90%
+Let's make that.
+
+00:05:45.057 --> 00:05:46.370 align:middle line:90%
+Yeah, that's right.
+
+00:05:46.370 --> 00:05:46.870 align:middle line:90%
+Thank you.
+
+00:05:46.870 --> 00:05:50.400 align:middle line:84%
+That's a delta ball
+covering number.
+
+00:05:50.400 --> 00:05:53.360 align:middle line:90%
+OK.
+
+00:05:53.360 --> 00:05:54.120 align:middle line:90%
+All right.
+
+00:05:54.120 --> 00:05:57.600 align:middle line:84%
+And then there's one more
+hypothesis, which is OK,
+
+00:05:57.600 --> 00:06:06.640 align:middle line:84%
+so then we could say what TR of
+E is the set of delta tubes T,
+
+00:06:06.640 --> 00:06:12.760 align:middle line:84%
+so that T intersect E
+delta is at least R.
+
+00:06:12.760 --> 00:06:15.640 align:middle line:84%
+And here, if you take
+such a delta tube
+
+00:06:15.640 --> 00:06:17.720 align:middle line:84%
+and you wiggle it
+imperceptibly, you
+
+00:06:17.720 --> 00:06:19.180 align:middle line:84%
+will have another
+such delta tube.
+
+00:06:19.180 --> 00:06:21.240 align:middle line:84%
+And we want to count
+those as being the same.
+
+00:06:21.240 --> 00:06:23.930 align:middle line:84%
+So I'll put here
+essentially distinct.
+
+00:06:23.930 --> 00:06:28.440 align:middle line:90%
+
+
+00:06:28.440 --> 00:06:29.346 align:middle line:90%
+OK.
+
+00:06:29.346 --> 00:06:32.420 align:middle line:84%
+Now there's one
+other hypothesis,
+
+00:06:32.420 --> 00:06:34.440 align:middle line:84%
+which is that R is
+not too small, which
+
+00:06:34.440 --> 00:06:35.860 align:middle line:90%
+I'll explain in a minute.
+
+00:06:35.860 --> 00:06:39.600 align:middle line:84%
+The hypothesis says R is at
+least a little bit bigger
+
+00:06:39.600 --> 00:06:43.920 align:middle line:90%
+than delta times E delta.
+
+00:06:43.920 --> 00:06:46.880 align:middle line:84%
+And then the conclusion
+is almost the same
+
+00:06:46.880 --> 00:06:57.110 align:middle line:84%
+as before, that TR of E is less
+same same squared over R cubed.
+
+00:06:57.110 --> 00:06:59.590 align:middle line:84%
+This two tildes
+here means that it's
+
+00:06:59.590 --> 00:07:02.830 align:middle line:84%
+hiding something like
+a delta to the epsilon
+
+00:07:02.830 --> 00:07:04.630 align:middle line:90%
+or something like that.
+
+00:07:04.630 --> 00:07:08.710 align:middle line:84%
+But it looks almost
+the same as this.
+
+00:07:08.710 --> 00:07:11.990 align:middle line:84%
+OK, let's compare
+these two theorems.
+
+00:07:11.990 --> 00:07:14.670 align:middle line:84%
+One difference is that
+in the first theorem,
+
+00:07:14.670 --> 00:07:16.750 align:middle line:84%
+we had an extra term
+here, which I have not
+
+00:07:16.750 --> 00:07:19.230 align:middle line:90%
+written in the second theorem.
+
+00:07:19.230 --> 00:07:22.790 align:middle line:84%
+And the reason is that this
+second term is relevant
+
+00:07:22.790 --> 00:07:26.390 align:middle line:84%
+when R is bigger than
+the square root of N.
+
+00:07:26.390 --> 00:07:33.990 align:middle line:84%
+So the second term, this
+dominates if and only
+
+00:07:33.990 --> 00:07:38.070 align:middle line:84%
+if R is bigger than
+square root of N.
+
+00:07:38.070 --> 00:07:40.030 align:middle line:84%
+But in the well
+space case, it's not
+
+00:07:40.030 --> 00:07:43.710 align:middle line:84%
+possible for a tube to have more
+than square root of N points
+
+00:07:43.710 --> 00:07:46.540 align:middle line:84%
+on it, so this
+case never arises.
+
+00:07:46.540 --> 00:07:47.040 align:middle line:90%
+OK.
+
+00:07:47.040 --> 00:07:49.740 align:middle line:84%
+So that's why we
+don't have that.
+
+00:07:49.740 --> 00:07:53.060 align:middle line:84%
+The other difference is that
+we added this lower bound on R.
+
+00:07:53.060 --> 00:07:55.820 align:middle line:84%
+So let me explain
+why we did that.
+
+00:07:55.820 --> 00:07:58.980 align:middle line:90%
+So remark.
+
+00:07:58.980 --> 00:08:09.060 align:middle line:84%
+An average for a
+random delta tube T,
+
+00:08:09.060 --> 00:08:15.620 align:middle line:84%
+the expected size of T
+intersect E, that's covering,
+
+00:08:15.620 --> 00:08:20.100 align:middle line:84%
+that would be delta
+times E delta.
+
+00:08:20.100 --> 00:08:21.785 align:middle line:84%
+This is for each of
+these delta points,
+
+00:08:21.785 --> 00:08:23.160 align:middle line:84%
+each of these
+little delta balls,
+
+00:08:23.160 --> 00:08:25.860 align:middle line:84%
+there are this many of
+them, the probability
+
+00:08:25.860 --> 00:08:28.020 align:middle line:84%
+that a random delta
+tube intersects
+
+00:08:28.020 --> 00:08:29.230 align:middle line:90%
+that point is about delta.
+
+00:08:29.230 --> 00:08:31.759 align:middle line:90%
+
+
+00:08:31.759 --> 00:08:32.259 align:middle line:90%
+OK.
+
+00:08:32.259 --> 00:08:37.059 align:middle line:84%
+SO if you just take any old
+tube, you'll have that many.
+
+00:08:37.059 --> 00:08:39.659 align:middle line:84%
+You'll hit that many
+delta balls from E--
+
+00:08:39.659 --> 00:08:42.640 align:middle line:84%
+tubes that hit this many delta
+balls of E are not special.
+
+00:08:42.640 --> 00:08:45.420 align:middle line:90%
+Any old tube will do.
+
+00:08:45.420 --> 00:08:48.723 align:middle line:84%
+So if R takes that value, this
+upper bound isn't true at all.
+
+00:08:48.723 --> 00:08:50.140 align:middle line:84%
+This could be way
+bigger than that
+
+00:08:50.140 --> 00:08:52.980 align:middle line:84%
+because it could be
+basically all the tubes.
+
+00:08:52.980 --> 00:08:57.980 align:middle line:84%
+But rather remarkably-- there's
+a rather remarkably sharp phase
+
+00:08:57.980 --> 00:09:01.540 align:middle line:84%
+transition that you increase R
+just a little bit beyond this
+
+00:09:01.540 --> 00:09:04.540 align:middle line:84%
+threshold, and then you
+get a bound that matches
+
+00:09:04.540 --> 00:09:06.062 align:middle line:90%
+Szemerédi-Trotter.
+
+00:09:06.062 --> 00:09:10.220 align:middle line:90%
+
+
+00:09:10.220 --> 00:09:11.152 align:middle line:90%
+OK.
+
+00:09:11.152 --> 00:09:15.620 align:middle line:84%
+So that is the statement
+of the theorem.
+
+00:09:15.620 --> 00:09:18.700 align:middle line:84%
+And it says in a nutshell that
+Szemerédi-Trotter basically
+
+00:09:18.700 --> 00:09:22.100 align:middle line:84%
+continues to hold if you
+take a well-spaced set,
+
+00:09:22.100 --> 00:09:24.360 align:middle line:84%
+which is one of the cases
+we mentioned last time.
+
+00:09:24.360 --> 00:09:27.460 align:middle line:90%
+
+
+00:09:27.460 --> 00:09:30.280 align:middle line:84%
+Any questions or comments
+about the statement?
+
+00:09:30.280 --> 00:09:37.940 align:middle line:90%
+
+
+00:09:37.940 --> 00:09:41.070 align:middle line:84%
+So I'm going to do a proof
+sketch of this theorem.
+
+00:09:41.070 --> 00:09:48.490 align:middle line:90%
+
+
+00:09:48.490 --> 00:09:52.850 align:middle line:84%
+So let me first mention the
+tools that will go into it.
+
+00:09:52.850 --> 00:09:56.490 align:middle line:90%
+There's the Fourier method.
+
+00:09:56.490 --> 00:09:58.210 align:middle line:90%
+There's double counting.
+
+00:09:58.210 --> 00:10:01.120 align:middle line:84%
+And then there's-- I guess I'll
+call this playing with different
+
+00:10:01.120 --> 00:10:01.620 align:middle line:90%
+scales.
+
+00:10:01.620 --> 00:10:08.970 align:middle line:90%
+
+
+00:10:08.970 --> 00:10:12.930 align:middle line:84%
+The theme of this last class is
+playing with different scales,
+
+00:10:12.930 --> 00:10:16.570 align:middle line:84%
+which is a simple sounding and
+old idea, which nevertheless,
+
+00:10:16.570 --> 00:10:23.270 align:middle line:84%
+people recently have found a
+lot of new ways of doing it.
+
+00:10:23.270 --> 00:10:23.770 align:middle line:90%
+OK.
+
+00:10:23.770 --> 00:10:26.410 align:middle line:90%
+
+
+00:10:26.410 --> 00:10:26.910 align:middle line:90%
+All right.
+
+00:10:26.910 --> 00:10:29.760 align:middle line:84%
+So let me start with
+the Fourier method.
+
+00:10:29.760 --> 00:10:32.290 align:middle line:90%
+
+
+00:10:32.290 --> 00:10:35.450 align:middle line:84%
+Let me label this
+list of hypotheses.
+
+00:10:35.450 --> 00:10:36.170 align:middle line:90%
+Hypotheses.
+
+00:10:36.170 --> 00:10:43.348 align:middle line:90%
+
+
+00:10:43.348 --> 00:10:47.720 align:middle line:90%
+And Fourier method.
+
+00:10:47.720 --> 00:10:48.440 align:middle line:90%
+OK.
+
+00:10:48.440 --> 00:10:49.860 align:middle line:90%
+So it's been a while.
+
+00:10:49.860 --> 00:10:51.800 align:middle line:84%
+In lectures 3 and
+4 of this class,
+
+00:10:51.800 --> 00:10:54.920 align:middle line:84%
+we developed a Fourier analytic
+method to estimate stuff
+
+00:10:54.920 --> 00:10:56.080 align:middle line:90%
+like this.
+
+00:10:56.080 --> 00:10:58.580 align:middle line:84%
+And if we had kept
+having problem sets,
+
+00:10:58.580 --> 00:11:00.240 align:middle line:84%
+and if I had been
+really clever, I
+
+00:11:00.240 --> 00:11:02.820 align:middle line:84%
+would have had you remember
+it on the last problem set,
+
+00:11:02.820 --> 00:11:05.760 align:middle line:90%
+getting ready for this lecture.
+
+00:11:05.760 --> 00:11:08.280 align:middle line:90%
+Anyway.
+
+00:11:08.280 --> 00:11:10.880 align:middle line:84%
+If you take the method
+exactly the way we did it back
+
+00:11:10.880 --> 00:11:14.400 align:middle line:84%
+at the beginning
+of the class, say
+
+00:11:14.400 --> 00:11:22.840 align:middle line:84%
+that if we have the hypotheses,
+then the size of TR of E
+
+00:11:22.840 --> 00:11:25.330 align:middle line:90%
+will be bounded by delta--
+
+00:11:25.330 --> 00:11:28.600 align:middle line:90%
+
+
+00:11:28.600 --> 00:11:29.860 align:middle line:90%
+OK, I have to actually check.
+
+00:11:29.860 --> 00:11:37.360 align:middle line:90%
+
+
+00:11:37.360 --> 00:11:45.120 align:middle line:84%
+Delta inverse E delta
+R to the minus 2.
+
+00:11:45.120 --> 00:11:48.823 align:middle line:84%
+I considered redoing
+this in the last class
+
+00:11:48.823 --> 00:11:51.240 align:middle line:84%
+to remind us all, because I
+don't expect it really to have
+
+00:11:51.240 --> 00:11:53.760 align:middle line:90%
+it on the tip of your brain.
+
+00:11:53.760 --> 00:11:56.480 align:middle line:84%
+But I decided it was not
+that much fun for a thing
+
+00:11:56.480 --> 00:11:58.600 align:middle line:84%
+to do in the last
+class, and also
+
+00:11:58.600 --> 00:12:01.680 align:middle line:84%
+that I had to manage the time
+to explain the other stuff.
+
+00:12:01.680 --> 00:12:04.020 align:middle line:84%
+So I'd like to take
+this as a black box,
+
+00:12:04.020 --> 00:12:06.560 align:middle line:84%
+that it's something you
+can do with the tools
+
+00:12:06.560 --> 00:12:08.180 align:middle line:90%
+that we've already have.
+
+00:12:08.180 --> 00:12:10.840 align:middle line:90%
+
+
+00:12:10.840 --> 00:12:11.340 align:middle line:90%
+OK.
+
+00:12:11.340 --> 00:12:16.612 align:middle line:90%
+
+
+00:12:16.612 --> 00:12:20.960 align:middle line:84%
+Now how does this
+compare to our goal?
+
+00:12:20.960 --> 00:12:25.920 align:middle line:84%
+This E delta, by the way, is
+N. So this is delta inverse N R
+
+00:12:25.920 --> 00:12:26.940 align:middle line:90%
+to the minus 2.
+
+00:12:26.940 --> 00:12:30.200 align:middle line:90%
+
+
+00:12:30.200 --> 00:12:32.760 align:middle line:84%
+Well, it depends on
+how delta and N and R
+
+00:12:32.760 --> 00:12:34.400 align:middle line:90%
+are related to each other.
+
+00:12:34.400 --> 00:12:37.710 align:middle line:84%
+But there's a particular
+case where it just
+
+00:12:37.710 --> 00:12:41.510 align:middle line:90%
+gives exactly the right thing.
+
+00:12:41.510 --> 00:12:52.670 align:middle line:84%
+In a particular case is that
+if R is the smallest that it's
+
+00:12:52.670 --> 00:12:54.190 align:middle line:90%
+allowed to be--
+
+00:12:54.190 --> 00:12:59.140 align:middle line:84%
+so let's say it is delta to the
+minus epsilon delta E delta.
+
+00:12:59.140 --> 00:13:04.482 align:middle line:90%
+
+
+00:13:04.482 --> 00:13:08.950 align:middle line:84%
+So in this case, if I solve
+for the delta inverse,
+
+00:13:08.950 --> 00:13:18.350 align:middle line:84%
+delta inverse would be around N
+over R. And then I plug in here.
+
+00:13:18.350 --> 00:13:22.270 align:middle line:84%
+And I get the one
+that this is N over R,
+
+00:13:22.270 --> 00:13:25.270 align:middle line:90%
+is N squared over R cubed.
+
+00:13:25.270 --> 00:13:26.940 align:middle line:84%
+And this is
+Szemerédi-Trotter bound.
+
+00:13:26.940 --> 00:13:34.700 align:middle line:90%
+
+
+00:13:34.700 --> 00:13:37.140 align:middle line:84%
+So this Fourier method
+actually gives the right
+
+00:13:37.140 --> 00:13:39.050 align:middle line:90%
+answer in an interesting case.
+
+00:13:39.050 --> 00:13:42.380 align:middle line:90%
+
+
+00:13:42.380 --> 00:13:49.900 align:middle line:84%
+But then if you make R bigger,
+then if you do this computation,
+
+00:13:49.900 --> 00:13:52.220 align:middle line:90%
+this ends up being bigger.
+
+00:13:52.220 --> 00:13:55.590 align:middle line:84%
+And this will be bigger
+than N squared over R cubed.
+
+00:13:55.590 --> 00:14:01.140 align:middle line:90%
+
+
+00:14:01.140 --> 00:14:03.744 align:middle line:90%
+OK.
+
+00:14:03.744 --> 00:14:05.700 align:middle line:84%
+Now another
+interesting basic thing
+
+00:14:05.700 --> 00:14:08.660 align:middle line:84%
+about this that is
+perhaps surprising
+
+00:14:08.660 --> 00:14:13.020 align:middle line:84%
+is that as delta--
+if delta gets bigger,
+
+00:14:13.020 --> 00:14:17.060 align:middle line:84%
+the right-hand
+side gets smaller.
+
+00:14:17.060 --> 00:14:21.490 align:middle line:84%
+So as we make our tubes thicker,
+we actually get a better bound.
+
+00:14:21.490 --> 00:14:26.896 align:middle line:90%
+
+
+00:14:26.896 --> 00:14:33.200 align:middle line:84%
+So if R is bigger-- this
+is the smallest R could be.
+
+00:14:33.200 --> 00:14:35.820 align:middle line:84%
+So the other options that
+R is bigger than this.
+
+00:14:35.820 --> 00:14:41.460 align:middle line:84%
+So delta to the minus epsilon
+delta E delta is less than R.
+
+00:14:41.460 --> 00:14:44.420 align:middle line:84%
+And let's say that R is less
+than the square root of N.
+
+00:14:44.420 --> 00:14:46.460 align:middle line:84%
+Because as we
+mentioned earlier, R
+
+00:14:46.460 --> 00:14:49.420 align:middle line:84%
+can't be any bigger than
+the square root of N.
+
+00:14:49.420 --> 00:14:50.620 align:middle line:90%
+OK.
+
+00:14:50.620 --> 00:15:01.460 align:middle line:84%
+Then I'm going to set a scale
+rho so that rho times N is
+
+00:15:01.460 --> 00:15:15.780 align:middle line:84%
+around R. Rho times N is
+around R. So how big is rho?
+
+00:15:15.780 --> 00:15:19.540 align:middle line:84%
+Well, rho is going
+to be R over N.
+
+00:15:19.540 --> 00:15:23.180 align:middle line:84%
+So it will be smaller
+than N to the minus 1/2.
+
+00:15:23.180 --> 00:15:25.660 align:middle line:84%
+But it will be
+bigger than delta.
+
+00:15:25.660 --> 00:15:30.610 align:middle line:84%
+Because delta N
+was smaller than R.
+
+00:15:30.610 --> 00:15:33.190 align:middle line:84%
+And I'm going to
+increase delta to rho
+
+00:15:33.190 --> 00:15:37.850 align:middle line:84%
+so that rho N will be around
+R. So rho will be around there.
+
+00:15:37.850 --> 00:15:43.370 align:middle line:84%
+And then we're going
+to study E rho, which
+
+00:15:43.370 --> 00:15:52.000 align:middle line:84%
+is the rho neighborhood of
+E. So let's make a picture.
+
+00:15:52.000 --> 00:15:55.530 align:middle line:90%
+
+
+00:15:55.530 --> 00:15:58.690 align:middle line:84%
+Here is the picture of
+our well-spaced set E.
+
+00:15:58.690 --> 00:16:02.170 align:middle line:84%
+And then we're going
+to have a scale rho,
+
+00:16:02.170 --> 00:16:05.570 align:middle line:84%
+which is smaller than this scale
+N to the minus 1/2 but bigger
+
+00:16:05.570 --> 00:16:07.010 align:middle line:90%
+than delta.
+
+00:16:07.010 --> 00:16:14.510 align:middle line:84%
+And we'll look at
+that guy, E rho.
+
+00:16:14.510 --> 00:16:17.770 align:middle line:90%
+
+
+00:16:17.770 --> 00:16:19.860 align:middle line:84%
+And originally, we're
+trying to find--
+
+00:16:19.860 --> 00:16:23.530 align:middle line:90%
+
+
+00:16:23.530 --> 00:16:27.170 align:middle line:84%
+our original problem is to
+understand delta tubes that
+
+00:16:27.170 --> 00:16:29.200 align:middle line:90%
+hit a lot of balls.
+
+00:16:29.200 --> 00:16:33.380 align:middle line:90%
+So this might be one.
+
+00:16:33.380 --> 00:16:36.720 align:middle line:90%
+
+
+00:16:36.720 --> 00:16:42.400 align:middle line:84%
+This is T delta tube
+and TR of E delta.
+
+00:16:42.400 --> 00:16:46.680 align:middle line:84%
+E delta is just E, but I
+put the delta to remind us.
+
+00:16:46.680 --> 00:16:49.630 align:middle line:84%
+But now that we have these
+thicker guys, we could study--
+
+00:16:49.630 --> 00:16:53.640 align:middle line:90%
+
+
+00:16:53.640 --> 00:16:59.960 align:middle line:84%
+I could study a rho tube that
+contains a lot of rho balls.
+
+00:16:59.960 --> 00:17:02.280 align:middle line:90%
+So this might be T rho.
+
+00:17:02.280 --> 00:17:09.720 align:middle line:84%
+That might be a tube that
+intersects E rho a lot.
+
+00:17:09.720 --> 00:17:12.680 align:middle line:84%
+Well, maybe for the same R, but
+also maybe for different R's, we
+
+00:17:12.680 --> 00:17:13.540 align:middle line:90%
+might be interested.
+
+00:17:13.540 --> 00:17:16.520 align:middle line:90%
+
+
+00:17:16.520 --> 00:17:19.060 align:middle line:90%
+So now let's make a definition.
+
+00:17:19.060 --> 00:17:22.960 align:middle line:90%
+
+
+00:17:22.960 --> 00:17:29.790 align:middle line:84%
+So TR of-- TR tilde
+of E rho, this
+
+00:17:29.790 --> 00:17:34.550 align:middle line:90%
+is the set of rho tubes T rho.
+
+00:17:34.550 --> 00:17:38.030 align:middle line:84%
+So that if I take T rho
+intersect it with E rho
+
+00:17:38.030 --> 00:17:41.980 align:middle line:84%
+and I take its rho covering
+number, that's at least R tilde.
+
+00:17:41.980 --> 00:17:47.430 align:middle line:90%
+
+
+00:17:47.430 --> 00:17:50.950 align:middle line:84%
+And now the same
+argument as before
+
+00:17:50.950 --> 00:17:53.350 align:middle line:90%
+gives us a bound for this thing.
+
+00:17:53.350 --> 00:17:58.140 align:middle line:84%
+So if we have our
+hypotheses and if R tilde--
+
+00:17:58.140 --> 00:18:01.190 align:middle line:90%
+
+
+00:18:01.190 --> 00:18:01.890 align:middle line:90%
+let's see.
+
+00:18:01.890 --> 00:18:05.390 align:middle line:90%
+
+
+00:18:05.390 --> 00:18:06.970 align:middle line:84%
+Well, let me not
+keep track of it.
+
+00:18:06.970 --> 00:18:17.330 align:middle line:84%
+If we have our hypotheses and R
+tilde is big enough, then, yeah,
+
+00:18:17.330 --> 00:18:19.830 align:middle line:84%
+I'll just-- yeah, here we can
+put R tilde as at least as big
+
+00:18:19.830 --> 00:18:28.220 align:middle line:84%
+as R, then TR tilde of E
+rho will be bounded by--
+
+00:18:28.220 --> 00:18:32.590 align:middle line:90%
+
+
+00:18:32.590 --> 00:18:38.470 align:middle line:84%
+Well, we'll have rho
+inverse times E delta times
+
+00:18:38.470 --> 00:18:40.150 align:middle line:90%
+R to the minus 2--
+
+00:18:40.150 --> 00:18:41.970 align:middle line:90%
+times R tilde to the minus 2.
+
+00:18:41.970 --> 00:18:48.270 align:middle line:90%
+
+
+00:18:48.270 --> 00:18:57.550 align:middle line:84%
+And this rho
+inverse is N over R.
+
+00:18:57.550 --> 00:19:04.734 align:middle line:84%
+So that's N squared over
+R times R tilde squared.
+
+00:19:04.734 --> 00:19:08.010 align:middle line:84%
+Just by thickening the
+tubes, we get these bounds.
+
+00:19:08.010 --> 00:19:10.950 align:middle line:84%
+And let me mention an
+important special case.
+
+00:19:10.950 --> 00:19:19.720 align:middle line:84%
+So e.g, TR of E rho is bounded
+by N squared over R cubed.
+
+00:19:19.720 --> 00:19:34.620 align:middle line:90%
+
+
+00:19:34.620 --> 00:19:35.160 align:middle line:90%
+All right.
+
+00:19:35.160 --> 00:19:37.820 align:middle line:90%
+
+
+00:19:37.820 --> 00:19:45.420 align:middle line:84%
+So as it's-- it's a surprising
+thing that as we increase rho,
+
+00:19:45.420 --> 00:19:48.560 align:middle line:84%
+we get a better and better
+upper bound for this.
+
+00:19:48.560 --> 00:19:53.220 align:middle line:90%
+
+
+00:19:53.220 --> 00:19:55.860 align:middle line:90%
+Now we can't increase it.
+
+00:19:55.860 --> 00:19:57.920 align:middle line:84%
+There's a limit to how
+much we can increase it.
+
+00:19:57.920 --> 00:19:59.070 align:middle line:90%
+Because we do need--
+
+00:19:59.070 --> 00:20:01.700 align:middle line:90%
+
+
+00:20:01.700 --> 00:20:03.400 align:middle line:90%
+we do need this condition.
+
+00:20:03.400 --> 00:20:06.500 align:middle line:90%
+
+
+00:20:06.500 --> 00:20:11.380 align:middle line:84%
+So this gives some
+upper bound for rho.
+
+00:20:11.380 --> 00:20:14.020 align:middle line:84%
+But taking rho as close as
+you can to that upper bound
+
+00:20:14.020 --> 00:20:15.240 align:middle line:90%
+is a good idea.
+
+00:20:15.240 --> 00:20:18.720 align:middle line:84%
+And when we make rho that
+big, then we get this.
+
+00:20:18.720 --> 00:20:25.450 align:middle line:90%
+
+
+00:20:25.450 --> 00:20:26.725 align:middle line:90%
+OK.
+
+00:20:26.725 --> 00:20:28.900 align:middle line:90%
+Now have we proven the theorem?
+
+00:20:28.900 --> 00:20:31.970 align:middle line:90%
+
+
+00:20:31.970 --> 00:20:33.925 align:middle line:90%
+So what I got-- yeah.
+
+00:20:33.925 --> 00:20:34.550 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:20:34.550 --> 00:20:36.310 align:middle line:84%
+Just a question about
+the bounds there.
+
+00:20:36.310 --> 00:20:38.850 align:middle line:84%
+You apply the same
+Fourier method?
+
+00:20:38.850 --> 00:20:40.690 align:middle line:90%
+LAWRENCE GUTH: Yes.
+
+00:20:40.690 --> 00:20:47.315 align:middle line:84%
+AUDIENCE: But will the E
+delta state not become a rho?
+
+00:20:47.315 --> 00:20:48.190 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:20:48.190 --> 00:20:51.450 align:middle line:90%
+So it would be E rho.
+
+00:20:51.450 --> 00:20:56.290 align:middle line:84%
+But you can maybe
+see from the picture.
+
+00:20:56.290 --> 00:21:00.490 align:middle line:90%
+Where did we introduce E rho?
+
+00:21:00.490 --> 00:21:07.112 align:middle line:84%
+So E rho is equal to E
+delta, is equal to N.
+
+00:21:07.112 --> 00:21:08.570 align:middle line:84%
+Now that's a
+special-- that's where
+
+00:21:08.570 --> 00:21:11.190 align:middle line:84%
+we're using that our set
+is well-spaced right.
+
+00:21:11.190 --> 00:21:13.890 align:middle line:90%
+So that's a great thing to--
+
+00:21:13.890 --> 00:21:15.970 align:middle line:84%
+So the so the question
+was, should this
+
+00:21:15.970 --> 00:21:18.030 align:middle line:84%
+should be a rho
+instead of a delta?
+
+00:21:18.030 --> 00:21:19.770 align:middle line:90%
+And how does that affect things?
+
+00:21:19.770 --> 00:21:21.270 align:middle line:84%
+And the answer is
+yeah, great point.
+
+00:21:21.270 --> 00:21:23.490 align:middle line:84%
+This should be a rho
+instead of a delta.
+
+00:21:23.490 --> 00:21:26.080 align:middle line:84%
+But for our set, it
+doesn't change anything.
+
+00:21:26.080 --> 00:21:30.250 align:middle line:90%
+
+
+00:21:30.250 --> 00:21:33.410 align:middle line:84%
+So if you look at our set, our
+set has only one delta ball
+
+00:21:33.410 --> 00:21:36.690 align:middle line:90%
+in each N to the minus 1/2 ball.
+
+00:21:36.690 --> 00:21:39.090 align:middle line:84%
+So when you thicken
+them a little bit,
+
+00:21:39.090 --> 00:21:42.470 align:middle line:84%
+the number of balls
+you see doesn't change.
+
+00:21:42.470 --> 00:21:47.790 align:middle line:84%
+It's still N. So that is where
+we are using this hypothesis.
+
+00:21:47.790 --> 00:21:56.510 align:middle line:90%
+
+
+00:21:56.510 --> 00:21:58.120 align:middle line:90%
+Yeah, great point.
+
+00:21:58.120 --> 00:22:00.770 align:middle line:90%
+
+
+00:22:00.770 --> 00:22:02.626 align:middle line:90%
+OK.
+
+00:22:02.626 --> 00:22:08.170 align:middle line:84%
+So when I first saw this, I
+thought that we were done.
+
+00:22:08.170 --> 00:22:10.090 align:middle line:90%
+But it's not quite true.
+
+00:22:10.090 --> 00:22:13.250 align:middle line:84%
+So our conclusion
+in the theorem is
+
+00:22:13.250 --> 00:22:18.080 align:middle line:84%
+that we're going to try to
+estimate how many of these guys
+
+00:22:18.080 --> 00:22:23.680 align:middle line:84%
+there are, thin tubes, delta
+tubes that have R balls in them.
+
+00:22:23.680 --> 00:22:26.680 align:middle line:84%
+And we've counted the
+number of thick tubes
+
+00:22:26.680 --> 00:22:30.200 align:middle line:90%
+that have R balls in them.
+
+00:22:30.200 --> 00:22:33.420 align:middle line:84%
+Now, every thin tube with
+R balls, if you thicken it,
+
+00:22:33.420 --> 00:22:35.960 align:middle line:84%
+you get a thick tube
+with at least R balls.
+
+00:22:35.960 --> 00:22:40.280 align:middle line:84%
+But inside of a thick
+tube with R balls,
+
+00:22:40.280 --> 00:22:42.460 align:middle line:84%
+there may be many thin
+tubes with R balls,
+
+00:22:42.460 --> 00:22:46.120 align:middle line:84%
+and we've only
+counted them once.
+
+00:22:46.120 --> 00:22:49.280 align:middle line:84%
+So we do-- we still
+have an issue.
+
+00:22:49.280 --> 00:22:52.340 align:middle line:84%
+That's not super difficult, but
+it's important to recognize it.
+
+00:22:52.340 --> 00:22:56.360 align:middle line:90%
+
+
+00:22:56.360 --> 00:23:16.830 align:middle line:84%
+So issue 1, rho tube may contain
+many tubes of TR of E delta.
+
+00:23:16.830 --> 00:23:20.790 align:middle line:84%
+So what would that
+scenario look like?
+
+00:23:20.790 --> 00:23:25.710 align:middle line:90%
+Well, we have our rho tube here.
+
+00:23:25.710 --> 00:23:30.110 align:middle line:84%
+And inside we would have
+a bunch of delta balls.
+
+00:23:30.110 --> 00:23:35.110 align:middle line:84%
+So at least R of them, but
+maybe more than R of them.
+
+00:23:35.110 --> 00:23:42.590 align:middle line:84%
+So let's say that T rho
+intersected with E, so
+
+00:23:42.590 --> 00:23:47.350 align:middle line:84%
+delta, that would be the same
+as T rho intersected with E rho.
+
+00:23:47.350 --> 00:23:50.450 align:middle line:90%
+Let's say that it's R tilde.
+
+00:23:50.450 --> 00:23:54.830 align:middle line:84%
+Which is at R. Might be R
+but it might also be bigger.
+
+00:23:54.830 --> 00:24:05.190 align:middle line:84%
+And then inside of here we
+may have many delta tubes
+
+00:24:05.190 --> 00:24:18.107 align:middle line:90%
+that each contain R. OK.
+
+00:24:18.107 --> 00:24:22.270 align:middle line:90%
+
+
+00:24:22.270 --> 00:24:25.130 align:middle line:84%
+So now we have some cousin
+of our original problem.
+
+00:24:25.130 --> 00:24:27.770 align:middle line:90%
+We have R tilde delta balls.
+
+00:24:27.770 --> 00:24:31.550 align:middle line:84%
+And we want to count how
+many R-rich tubes there are.
+
+00:24:31.550 --> 00:24:34.630 align:middle line:84%
+We don't know as much
+about how they are spaced,
+
+00:24:34.630 --> 00:24:39.390 align:middle line:84%
+but also we don't need to
+have such an incredible bound.
+
+00:24:39.390 --> 00:24:54.190 align:middle line:90%
+So by induction, we can assume--
+
+00:24:54.190 --> 00:25:08.150 align:middle line:84%
+we can reduce to the case
+that each T and TR of E delta
+
+00:25:08.150 --> 00:25:13.360 align:middle line:84%
+has many delta
+balls at both ends.
+
+00:25:13.360 --> 00:25:17.768 align:middle line:90%
+
+
+00:25:17.768 --> 00:25:25.900 align:middle line:84%
+So what I mean by
+that is here's a tube.
+
+00:25:25.900 --> 00:25:28.940 align:middle line:84%
+So the tube, it has a
+bunch of delta balls in it.
+
+00:25:28.940 --> 00:25:32.740 align:middle line:84%
+So it means that there
+are a bunch at one end
+
+00:25:32.740 --> 00:25:34.200 align:middle line:90%
+and a bunch at the other end.
+
+00:25:34.200 --> 00:25:37.940 align:middle line:84%
+Maybe also a bunch
+in the middle.
+
+00:25:37.940 --> 00:25:39.670 align:middle line:84%
+Maybe it's better to
+draw what it's not.
+
+00:25:39.670 --> 00:25:46.860 align:middle line:90%
+
+
+00:25:46.860 --> 00:25:49.130 align:middle line:84%
+What it's not is like
+they're just all on the left.
+
+00:25:49.130 --> 00:25:53.900 align:middle line:90%
+
+
+00:25:53.900 --> 00:25:54.400 align:middle line:90%
+OK.
+
+00:25:54.400 --> 00:25:56.180 align:middle line:84%
+So in a nutshell,
+how would we do this?
+
+00:25:56.180 --> 00:26:00.300 align:middle line:84%
+If this was the situation
+that all of the delta balls
+
+00:26:00.300 --> 00:26:03.300 align:middle line:84%
+were actually in a much
+shorter tube, well,
+
+00:26:03.300 --> 00:26:07.260 align:middle line:84%
+then in my original
+picture, I could
+
+00:26:07.260 --> 00:26:09.530 align:middle line:84%
+cut my set E into
+separate pieces
+
+00:26:09.530 --> 00:26:13.510 align:middle line:84%
+and just look at R-rich tubes
+on each of those pieces.
+
+00:26:13.510 --> 00:26:17.170 align:middle line:84%
+And that could do
+some induction.
+
+00:26:17.170 --> 00:26:19.912 align:middle line:90%
+OK.
+
+00:26:19.912 --> 00:26:22.180 align:middle line:84%
+So then we do a double
+counting argument.
+
+00:26:22.180 --> 00:26:28.370 align:middle line:90%
+
+
+00:26:28.370 --> 00:26:29.230 align:middle line:90%
+I'm going to do--
+
+00:26:29.230 --> 00:26:32.010 align:middle line:90%
+
+
+00:26:32.010 --> 00:26:37.090 align:middle line:84%
+so we're going to count
+just pairs of delta balls.
+
+00:26:37.090 --> 00:26:51.410 align:middle line:84%
+And so I'll have T of E delta
+intersect tubes in T rho.
+
+00:26:51.410 --> 00:26:54.490 align:middle line:84%
+So the number of yellow
+tubes in this picture.
+
+00:26:54.490 --> 00:26:56.210 align:middle line:90%
+Times R squared.
+
+00:26:56.210 --> 00:27:00.450 align:middle line:84%
+So I take a tube and I
+pick two points in the tube
+
+00:27:00.450 --> 00:27:03.890 align:middle line:90%
+kind of near opposite ends.
+
+00:27:03.890 --> 00:27:08.040 align:middle line:84%
+And for any two points, there is
+only one tube that joins them,
+
+00:27:08.040 --> 00:27:11.883 align:middle line:84%
+so this should be bounded
+by R tilde squared.
+
+00:27:11.883 --> 00:27:12.550 align:middle line:90%
+Double counting.
+
+00:27:12.550 --> 00:27:20.200 align:middle line:90%
+
+
+00:27:20.200 --> 00:27:32.040 align:middle line:84%
+So we're counting-- we're
+counting pairs T, X1, X2, where
+
+00:27:32.040 --> 00:27:37.760 align:middle line:84%
+T is in this set and
+X1 and X2 are in T
+
+00:27:37.760 --> 00:27:40.030 align:middle line:90%
+and they're near opposite ends.
+
+00:27:40.030 --> 00:27:44.360 align:middle line:90%
+
+
+00:27:44.360 --> 00:27:45.620 align:middle line:90%
+So how many are there?
+
+00:27:45.620 --> 00:27:51.640 align:middle line:84%
+Well, for each tube, there are
+R squared choices of X1 and X2.
+
+00:27:51.640 --> 00:27:55.360 align:middle line:84%
+On the other hand,
+there are only R tilde
+
+00:27:55.360 --> 00:27:58.520 align:middle line:90%
+squared choices for X1 and X2.
+
+00:27:58.520 --> 00:28:02.372 align:middle line:84%
+And for each X1 and X2,
+there's only one choice of T.
+
+00:28:02.372 --> 00:28:04.220 align:middle line:90%
+So this is bounded by this.
+
+00:28:04.220 --> 00:28:07.080 align:middle line:90%
+
+
+00:28:07.080 --> 00:28:07.920 align:middle line:90%
+OK.
+
+00:28:07.920 --> 00:28:11.440 align:middle line:84%
+So double counting
+and the Fourier method
+
+00:28:11.440 --> 00:28:13.000 align:middle line:84%
+are the two
+foundational approaches
+
+00:28:13.000 --> 00:28:14.900 align:middle line:84%
+that we did at the
+beginning of the class.
+
+00:28:14.900 --> 00:28:16.567 align:middle line:84%
+This one was short
+enough that I thought
+
+00:28:16.567 --> 00:28:18.940 align:middle line:90%
+I could recall it for us.
+
+00:28:18.940 --> 00:28:23.580 align:middle line:90%
+
+
+00:28:23.580 --> 00:28:24.080 align:middle line:90%
+OK.
+
+00:28:24.080 --> 00:28:30.000 align:middle line:90%
+
+
+00:28:30.000 --> 00:28:30.540 align:middle line:90%
+All right.
+
+00:28:30.540 --> 00:28:46.240 align:middle line:84%
+So now TR of E delta is bounded
+by maybe sum on R tilde bigger
+
+00:28:46.240 --> 00:28:48.680 align:middle line:90%
+than R dyadic.
+
+00:28:48.680 --> 00:28:54.400 align:middle line:84%
+We're going to look
+at TR tilde of E rho.
+
+00:28:54.400 --> 00:28:57.950 align:middle line:84%
+But then we'll multiply
+by R tilde over R squared.
+
+00:28:57.950 --> 00:29:01.200 align:middle line:90%
+
+
+00:29:01.200 --> 00:29:01.910 align:middle line:90%
+All right.
+
+00:29:01.910 --> 00:29:02.910 align:middle line:90%
+Why?
+
+00:29:02.910 --> 00:29:05.790 align:middle line:84%
+So every R-rich
+delta tube, if you
+
+00:29:05.790 --> 00:29:07.910 align:middle line:84%
+thicken it up to
+be a rho tube, it
+
+00:29:07.910 --> 00:29:10.730 align:middle line:84%
+will be an R
+tilde-rich rho tube.
+
+00:29:10.730 --> 00:29:14.550 align:middle line:84%
+And R tilde will be at
+least R. So they're all in
+
+00:29:14.550 --> 00:29:16.750 align:middle line:90%
+here somewhere.
+
+00:29:16.750 --> 00:29:21.150 align:middle line:84%
+And in each one of these
+guys, there's at most
+
+00:29:21.150 --> 00:29:25.950 align:middle line:90%
+this many R-rich delta tubes.
+
+00:29:25.950 --> 00:29:27.550 align:middle line:90%
+This is bounded by this.
+
+00:29:27.550 --> 00:29:30.950 align:middle line:84%
+And then if we plug in our
+bounds, everything will work.
+
+00:29:30.950 --> 00:29:40.270 align:middle line:84%
+So this is bounded by N squared
+over R times R tilde squared.
+
+00:29:40.270 --> 00:29:44.910 align:middle line:84%
+And then we have R tilde
+squared over R squared.
+
+00:29:44.910 --> 00:29:47.910 align:middle line:90%
+Just cancels.
+
+00:29:47.910 --> 00:29:51.755 align:middle line:84%
+And we get N squared
+over R cubed.
+
+00:29:51.755 --> 00:29:53.380 align:middle line:84%
+And that's the end
+of the proof sketch.
+
+00:29:53.380 --> 00:30:05.140 align:middle line:90%
+
+
+00:30:05.140 --> 00:30:05.660 align:middle line:90%
+Yeah.
+
+00:30:05.660 --> 00:30:06.800 align:middle line:90%
+AUDIENCE: What is the sum?
+
+00:30:06.800 --> 00:30:09.820 align:middle line:90%
+
+
+00:30:09.820 --> 00:30:13.100 align:middle line:84%
+LAWRENCE GUTH: The sum has
+logarithmically many terms,
+
+00:30:13.100 --> 00:30:16.060 align:middle line:90%
+and so it gets absorbed.
+
+00:30:16.060 --> 00:30:17.200 align:middle line:90%
+Maybe I should write that.
+
+00:30:17.200 --> 00:30:18.260 align:middle line:90%
+That's right.
+
+00:30:18.260 --> 00:30:20.600 align:middle line:84%
+That's gets absorbed
+in the last step.
+
+00:30:20.600 --> 00:30:33.280 align:middle line:90%
+
+
+00:30:33.280 --> 00:30:33.780 align:middle line:90%
+Yeah.
+
+00:30:33.780 --> 00:30:40.460 align:middle line:84%
+AUDIENCE: So the only part
+where we use that is well space,
+
+00:30:40.460 --> 00:30:45.702 align:middle line:84%
+it's like the delta
+rho [INAUDIBLE]
+
+00:30:45.702 --> 00:30:49.200 align:middle line:90%
+is the only place we're using.
+
+00:30:49.200 --> 00:30:50.700 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+so the question
+
+00:30:50.700 --> 00:30:53.220 align:middle line:84%
+is, where did we
+use its well spaced?
+
+00:30:53.220 --> 00:30:56.220 align:middle line:84%
+And I think it's
+instructive to trace where
+
+00:30:56.220 --> 00:30:58.060 align:middle line:90%
+we used all the hypotheses.
+
+00:30:58.060 --> 00:31:03.940 align:middle line:90%
+So let's label this WS.
+
+00:31:03.940 --> 00:31:05.430 align:middle line:84%
+Well, let's label
+it well spaced.
+
+00:31:05.430 --> 00:31:08.340 align:middle line:90%
+
+
+00:31:08.340 --> 00:31:10.380 align:middle line:90%
+Which we can abbreviate WS.
+
+00:31:10.380 --> 00:31:12.340 align:middle line:84%
+So where did we use
+that as well space?
+
+00:31:12.340 --> 00:31:15.020 align:middle line:90%
+
+
+00:31:15.020 --> 00:31:18.220 align:middle line:90%
+We used it here.
+
+00:31:18.220 --> 00:31:19.350 align:middle line:90%
+And that's the only place.
+
+00:31:19.350 --> 00:31:21.860 align:middle line:90%
+
+
+00:31:21.860 --> 00:31:31.100 align:middle line:84%
+So this guy is N. That's
+the only place that we used.
+
+00:31:31.100 --> 00:31:32.032 align:middle line:90%
+OK.
+
+00:31:32.032 --> 00:31:40.680 align:middle line:84%
+We had another hypothesis
+that R is bigger than average.
+
+00:31:40.680 --> 00:31:45.580 align:middle line:90%
+
+
+00:31:45.580 --> 00:31:47.620 align:middle line:90%
+R bigger than average.
+
+00:31:47.620 --> 00:31:49.620 align:middle line:84%
+I have, unfortunately,
+hidden a little bit
+
+00:31:49.620 --> 00:31:51.980 align:middle line:90%
+where we used that hypothesis.
+
+00:31:51.980 --> 00:31:56.370 align:middle line:84%
+But it was in this
+Fourier estimate.
+
+00:31:56.370 --> 00:32:02.570 align:middle line:84%
+So here we use R big and
+perhaps a little bit--
+
+00:32:02.570 --> 00:32:04.470 align:middle line:84%
+we might use a little
+bit of well, space too.
+
+00:32:04.470 --> 00:32:08.930 align:middle line:84%
+Although we don't need anything
+as strong as what's up there.
+
+00:32:08.930 --> 00:32:10.730 align:middle line:90%
+Where did R big come in?
+
+00:32:10.730 --> 00:32:13.330 align:middle line:84%
+Well, we had all
+these tubes and we
+
+00:32:13.330 --> 00:32:16.330 align:middle line:84%
+took some of the characteristic
+functions of the tubes, smoothed
+
+00:32:16.330 --> 00:32:19.188 align:middle line:84%
+out a little bit and we did
+Fourier analysis with them.
+
+00:32:19.188 --> 00:32:21.730 align:middle line:84%
+And there was a high frequency
+part and a low frequency part,
+
+00:32:21.730 --> 00:32:24.490 align:middle line:90%
+and some middle frequencies.
+
+00:32:24.490 --> 00:32:27.390 align:middle line:84%
+This is the contribution
+of the high frequency part.
+
+00:32:27.390 --> 00:32:28.870 align:middle line:84%
+The high frequency
+part dominates,
+
+00:32:28.870 --> 00:32:31.130 align:middle line:90%
+immediately you get this.
+
+00:32:31.130 --> 00:32:35.170 align:middle line:84%
+The very low frequencies
+corresponds--
+
+00:32:35.170 --> 00:32:36.950 align:middle line:84%
+with the low
+frequency dominated,
+
+00:32:36.950 --> 00:32:41.240 align:middle line:84%
+it would mean that
+R was equal to this.
+
+00:32:41.240 --> 00:32:42.990 align:middle line:84%
+And there are some
+in-between frequencies,
+
+00:32:42.990 --> 00:32:44.930 align:middle line:84%
+so you have to compute a
+little bit to see that they're
+
+00:32:44.930 --> 00:32:46.300 align:middle line:90%
+controlled by those two cases.
+
+00:32:46.300 --> 00:32:50.890 align:middle line:90%
+
+
+00:32:50.890 --> 00:32:52.330 align:middle line:90%
+Good.
+
+00:32:52.330 --> 00:32:53.262 align:middle line:90%
+Yeah.
+
+00:32:53.262 --> 00:32:55.720 align:middle line:84%
+AUDIENCE: Perhaps because the
+Fourier method doesn't really
+
+00:32:55.720 --> 00:32:57.600 align:middle line:84%
+need well-spacing
+condition, but would it
+
+00:32:57.600 --> 00:33:01.360 align:middle line:84%
+be possible to use well-spacing
+condition to put a cap
+
+00:33:01.360 --> 00:33:03.900 align:middle line:90%
+on the high frequency domain?
+
+00:33:03.900 --> 00:33:09.100 align:middle line:84%
+Because it seems like
+if the frequency is
+
+00:33:09.100 --> 00:33:10.920 align:middle line:84%
+corresponding to
+the delta balls,
+
+00:33:10.920 --> 00:33:14.050 align:middle line:84%
+it should be low if the delta
+balls are very small space.
+
+00:33:14.050 --> 00:33:18.187 align:middle line:90%
+
+
+00:33:18.187 --> 00:33:20.520 align:middle line:84%
+LAWRENCE GUTH: So the question
+is about the relationship
+
+00:33:20.520 --> 00:33:24.480 align:middle line:84%
+between the spacing of E and
+the frequencies in the Fourier
+
+00:33:24.480 --> 00:33:26.500 align:middle line:84%
+transform of E. Is
+that the question?
+
+00:33:26.500 --> 00:33:27.000 align:middle line:90%
+Yeah.
+
+00:33:27.000 --> 00:33:33.020 align:middle line:90%
+
+
+00:33:33.020 --> 00:33:37.040 align:middle line:84%
+So if you just took
+one delta ball here
+
+00:33:37.040 --> 00:33:39.313 align:middle line:84%
+and you smoothed out its
+characteristic function,
+
+00:33:39.313 --> 00:33:41.480 align:middle line:84%
+it would have a Fourier
+transform that was supported
+
+00:33:41.480 --> 00:33:44.200 align:middle line:90%
+on a delta inverse bar.
+
+00:33:44.200 --> 00:33:45.920 align:middle line:90%
+Now we have a bunch of them.
+
+00:33:45.920 --> 00:33:47.800 align:middle line:84%
+And so each of them
+has a Fourier transform
+
+00:33:47.800 --> 00:33:49.700 align:middle line:84%
+that's supported on
+a delta inverse ball.
+
+00:33:49.700 --> 00:33:52.270 align:middle line:84%
+And now we're going
+to add them all up.
+
+00:33:52.270 --> 00:33:54.630 align:middle line:84%
+Now when we add them all up,
+what happens is complicated
+
+00:33:54.630 --> 00:33:57.670 align:middle line:84%
+and it depends on exactly
+where we put them all.
+
+00:33:57.670 --> 00:34:00.190 align:middle line:84%
+But absent any
+detailed information
+
+00:34:00.190 --> 00:34:02.030 align:middle line:84%
+about exactly where
+we put them all,
+
+00:34:02.030 --> 00:34:05.190 align:middle line:84%
+you would typically expect that
+they would have maybe square
+
+00:34:05.190 --> 00:34:07.230 align:middle line:84%
+root cancellation and
+that the sum would still
+
+00:34:07.230 --> 00:34:10.370 align:middle line:84%
+be pretty evenly spread
+over a delta inverse point.
+
+00:34:10.370 --> 00:34:16.710 align:middle line:90%
+
+
+00:34:16.710 --> 00:34:17.210 align:middle line:90%
+Yeah.
+
+00:34:17.210 --> 00:34:18.630 align:middle line:84%
+So being well
+spaced, we would see
+
+00:34:18.630 --> 00:34:20.203 align:middle line:90%
+quite a lot of high frequency.
+
+00:34:20.203 --> 00:34:21.870 align:middle line:84%
+But I don't know that
+we could recognize
+
+00:34:21.870 --> 00:34:24.750 align:middle line:90%
+whether we were well spaced.
+
+00:34:24.750 --> 00:34:27.489 align:middle line:84%
+I guess if you had more
+points closer together,
+
+00:34:27.489 --> 00:34:29.320 align:middle line:84%
+you would see more
+low frequency stuff.
+
+00:34:29.320 --> 00:34:36.550 align:middle line:90%
+
+
+00:34:36.550 --> 00:34:37.110 align:middle line:90%
+Good.
+
+00:34:37.110 --> 00:34:38.279 align:middle line:90%
+Other questions or comments?
+
+00:34:38.279 --> 00:34:45.429 align:middle line:90%
+
+
+00:34:45.429 --> 00:34:45.949 align:middle line:90%
+OK.
+
+00:34:45.949 --> 00:34:49.270 align:middle line:84%
+I had, myself, a
+couple comments.
+
+00:34:49.270 --> 00:34:52.270 align:middle line:84%
+So one thing was, it seemed
+kind of magical to me
+
+00:34:52.270 --> 00:34:56.670 align:middle line:84%
+that we ended up with
+the right answer.
+
+00:34:56.670 --> 00:35:02.270 align:middle line:84%
+And looking back, in all the
+proofs of anything related
+
+00:35:02.270 --> 00:35:05.630 align:middle line:84%
+to Szemerédi-Trotter, it seems
+rather magical to me that we get
+
+00:35:05.630 --> 00:35:07.550 align:middle line:90%
+the right answer.
+
+00:35:07.550 --> 00:35:10.772 align:middle line:84%
+So the Szemerédi-Trotter,
+or this theorem,
+
+00:35:10.772 --> 00:35:11.730 align:middle line:90%
+there's a construction.
+
+00:35:11.730 --> 00:35:12.750 align:middle line:90%
+You take a grid.
+
+00:35:12.750 --> 00:35:14.530 align:middle line:84%
+You take some lines
+at rational slopes.
+
+00:35:14.530 --> 00:35:16.613 align:middle line:84%
+You compute a little bit
+and you see what happens.
+
+00:35:16.613 --> 00:35:18.750 align:middle line:84%
+And you get this N
+squared over R cubed.
+
+00:35:18.750 --> 00:35:20.350 align:middle line:84%
+Then independently
+from that, you
+
+00:35:20.350 --> 00:35:24.310 align:middle line:84%
+look at some cell partitions
+or some this or some that,
+
+00:35:24.310 --> 00:35:28.323 align:middle line:84%
+or some Fourier analysis and
+with completely unrelated
+
+00:35:28.323 --> 00:35:29.490 align:middle line:90%
+argument, you get something.
+
+00:35:29.490 --> 00:35:32.410 align:middle line:84%
+And if you're lucky, it's
+N squared over R cubed.
+
+00:35:32.410 --> 00:35:35.730 align:middle line:90%
+And we declare victory.
+
+00:35:35.730 --> 00:35:39.910 align:middle line:84%
+In all the cases, I don't
+really understand why we
+
+00:35:39.910 --> 00:35:43.510 align:middle line:90%
+are getting the right answer.
+
+00:35:43.510 --> 00:35:45.470 align:middle line:84%
+And it's perhaps
+worth mentioning that
+
+00:35:45.470 --> 00:35:48.580 align:middle line:84%
+Szemerédi-Trotter has
+many cousin problems,
+
+00:35:48.580 --> 00:35:50.760 align:middle line:84%
+which are almost
+as simple to state,
+
+00:35:50.760 --> 00:35:53.900 align:middle line:84%
+but no one knows
+the right answer.
+
+00:35:53.900 --> 00:35:57.900 align:middle line:84%
+So for instance, if you replace
+straight lines with circles
+
+00:35:57.900 --> 00:36:01.780 align:middle line:84%
+or degree 2 curves
+or unit circles,
+
+00:36:01.780 --> 00:36:05.980 align:middle line:84%
+or make up your favorite
+class of curves,
+
+00:36:05.980 --> 00:36:08.820 align:middle line:84%
+you get natural questions
+that people have studied hard
+
+00:36:08.820 --> 00:36:13.220 align:middle line:84%
+and almost every one of them we
+cannot prove matching examples
+
+00:36:13.220 --> 00:36:15.380 align:middle line:90%
+and upper bounds.
+
+00:36:15.380 --> 00:36:21.580 align:middle line:84%
+So it is plausible that
+there is no deep reason why
+
+00:36:21.580 --> 00:36:26.020 align:middle line:84%
+this bound matches the example,
+but that we were just lucky.
+
+00:36:26.020 --> 00:36:26.660 align:middle line:90%
+Yeah.
+
+00:36:26.660 --> 00:36:29.200 align:middle line:84%
+AUDIENCE: Most of other
+variations of the problem,
+
+00:36:29.200 --> 00:36:32.300 align:middle line:84%
+is it harder to
+show a similar bound
+
+00:36:32.300 --> 00:36:37.403 align:middle line:84%
+or to find examples analogous to
+the kind of different problem?
+
+00:36:37.403 --> 00:36:38.820 align:middle line:84%
+LAWRENCE GUTH: So
+the question is,
+
+00:36:38.820 --> 00:36:40.820 align:middle line:84%
+for all these other
+variations, is
+
+00:36:40.820 --> 00:36:46.530 align:middle line:84%
+it harder to prove upper bounds
+or harder to find good examples?
+
+00:36:46.530 --> 00:36:50.010 align:middle line:84%
+In all these problems,
+all of the known examples
+
+00:36:50.010 --> 00:36:52.450 align:middle line:84%
+look a lot like
+the grid example.
+
+00:36:52.450 --> 00:36:55.025 align:middle line:84%
+They involve grids
+of points, and you
+
+00:36:55.025 --> 00:36:57.650 align:middle line:84%
+try to intersect it with a lot
+of circles or a lot of parabolas
+
+00:36:57.650 --> 00:36:59.530 align:middle line:90%
+or what have you.
+
+00:36:59.530 --> 00:37:01.913 align:middle line:90%
+And there's some upper bound.
+
+00:37:01.913 --> 00:37:03.330 align:middle line:84%
+And the proofs of
+the upper bounds
+
+00:37:03.330 --> 00:37:06.230 align:middle line:84%
+are not so different from the
+proofs that we have shown.
+
+00:37:06.230 --> 00:37:09.930 align:middle line:84%
+But the numbers that come
+up, they just don't match.
+
+00:37:09.930 --> 00:37:13.690 align:middle line:84%
+And popular opinion
+probably is on the side
+
+00:37:13.690 --> 00:37:15.970 align:middle line:84%
+that the upper bound
+should be improved.
+
+00:37:15.970 --> 00:37:17.750 align:middle line:84%
+But we are talking
+about open problems.
+
+00:37:17.750 --> 00:37:18.500 align:middle line:90%
+So nobody knows.
+
+00:37:18.500 --> 00:37:23.170 align:middle line:90%
+
+
+00:37:23.170 --> 00:37:23.810 align:middle line:90%
+OK.
+
+00:37:23.810 --> 00:37:25.770 align:middle line:90%
+So that's one comment.
+
+00:37:25.770 --> 00:37:28.770 align:middle line:84%
+Another comment is that in
+the context of the Furstenberg
+
+00:37:28.770 --> 00:37:30.650 align:middle line:84%
+problem, there is
+a key difficulty
+
+00:37:30.650 --> 00:37:33.750 align:middle line:84%
+that the Furstenberg problem was
+false over the complex numbers.
+
+00:37:33.750 --> 00:37:34.930 align:middle line:90%
+The Furstenberg conjecture.
+
+00:37:34.930 --> 00:37:36.430 align:middle line:84%
+But it's true over
+the real numbers.
+
+00:37:36.430 --> 00:37:38.130 align:middle line:84%
+So always on the
+lookout for what steps
+
+00:37:38.130 --> 00:37:41.090 align:middle line:84%
+distinguish the real numbers
+from the complex numbers.
+
+00:37:41.090 --> 00:37:43.290 align:middle line:84%
+This argument does
+not distinguish them.
+
+00:37:43.290 --> 00:37:45.090 align:middle line:84%
+This statement can
+be-- you can replace
+
+00:37:45.090 --> 00:37:47.130 align:middle line:84%
+all the R's with C's
+and adjust a few things
+
+00:37:47.130 --> 00:37:48.810 align:middle line:90%
+and it's still true.
+
+00:37:48.810 --> 00:37:53.010 align:middle line:84%
+So this part of the proof is
+not helping with that issue.
+
+00:37:53.010 --> 00:37:53.890 align:middle line:90%
+Yeah.
+
+00:37:53.890 --> 00:37:56.250 align:middle line:90%
+Cool.
+
+00:37:56.250 --> 00:37:56.750 align:middle line:90%
+OK.
+
+00:37:56.750 --> 00:38:00.130 align:middle line:90%
+
+
+00:38:00.130 --> 00:38:03.450 align:middle line:84%
+So that was part 1 of the class,
+the well-spaced case using
+
+00:38:03.450 --> 00:38:06.370 align:middle line:90%
+the Fourier method.
+
+00:38:06.370 --> 00:38:09.930 align:middle line:84%
+Part 2 combining all
+the stuff we've done.
+
+00:38:09.930 --> 00:38:12.930 align:middle line:84%
+Let's start by remembering what
+is the big theorem that we're
+
+00:38:12.930 --> 00:38:14.270 align:middle line:90%
+discussing the proof of.
+
+00:38:14.270 --> 00:38:16.708 align:middle line:84%
+And then what are all the
+things that we've done.
+
+00:38:16.708 --> 00:38:18.250 align:middle line:84%
+In the last part
+we'll talk about how
+
+00:38:18.250 --> 00:38:21.110 align:middle line:90%
+to put the pieces together.
+
+00:38:21.110 --> 00:38:21.610 align:middle line:90%
+OK.
+
+00:38:21.610 --> 00:38:48.000 align:middle line:90%
+
+
+00:38:48.000 --> 00:38:49.080 align:middle line:90%
+All right.
+
+00:38:49.080 --> 00:38:52.470 align:middle line:84%
+So here is the big theorem
+that we would like to prove.
+
+00:38:52.470 --> 00:38:56.080 align:middle line:90%
+
+
+00:38:56.080 --> 00:39:04.110 align:middle line:84%
+So if E is a delta T set
+in the unit ball in R2.
+
+00:39:04.110 --> 00:39:06.720 align:middle line:90%
+
+
+00:39:06.720 --> 00:39:12.280 align:middle line:84%
+And let's say that the size
+of E is delta to the minus T.
+
+00:39:12.280 --> 00:39:25.240 align:middle line:84%
+And then for every point in E,
+TX is a delta S set of tubes
+
+00:39:25.240 --> 00:39:26.720 align:middle line:90%
+through the point x.
+
+00:39:26.720 --> 00:39:28.640 align:middle line:84%
+And there's no
+loss of generality
+
+00:39:28.640 --> 00:39:32.720 align:middle line:84%
+in assuming that this is
+delta E to the minus S.
+
+00:39:32.720 --> 00:39:40.352 align:middle line:84%
+Put them all together to
+make a set of tubes T. OK.
+
+00:39:40.352 --> 00:39:47.150 align:middle line:84%
+And then thinking about how
+these tubes intersect E. So
+
+00:39:47.150 --> 00:39:54.670 align:middle line:84%
+let's say R is the typical
+value of E intersect T delta
+
+00:39:54.670 --> 00:39:58.878 align:middle line:84%
+covering number
+typical over T and T.
+
+00:39:58.878 --> 00:40:00.170 align:middle line:90%
+Could mean average if you like.
+
+00:40:00.170 --> 00:40:04.330 align:middle line:84%
+But after a little
+bit of pigeonholing,
+
+00:40:04.330 --> 00:40:09.190 align:middle line:84%
+we can assume that they're all
+about the same as each other.
+
+00:40:09.190 --> 00:40:10.540 align:middle line:90%
+OK.
+
+00:40:10.540 --> 00:40:16.010 align:middle line:84%
+So then the goal is to
+say that R is not too big.
+
+00:40:16.010 --> 00:40:19.190 align:middle line:84%
+These tubes can't overlap
+the points too much.
+
+00:40:19.190 --> 00:40:22.350 align:middle line:84%
+R is bounded by the maximum
+of three things corresponding
+
+00:40:22.350 --> 00:40:23.730 align:middle line:90%
+to three scenarios.
+
+00:40:23.730 --> 00:40:33.470 align:middle line:90%
+
+
+00:40:33.470 --> 00:40:34.216 align:middle line:90%
+OK.
+
+00:40:34.216 --> 00:40:36.520 align:middle line:90%
+So A is the stars example.
+
+00:40:36.520 --> 00:40:40.070 align:middle line:90%
+
+
+00:40:40.070 --> 00:40:42.170 align:middle line:84%
+These tubes have nothing
+to do with each other.
+
+00:40:42.170 --> 00:40:45.330 align:middle line:84%
+So the number of dots
+on each tube is just 1.
+
+00:40:45.330 --> 00:40:48.770 align:middle line:84%
+That's scenario A. B is
+the really interesting one,
+
+00:40:48.770 --> 00:40:50.550 align:middle line:90%
+it's the integer grid.
+
+00:40:50.550 --> 00:40:53.130 align:middle line:84%
+And so this-- we've written
+things a little differently
+
+00:40:53.130 --> 00:40:58.110 align:middle line:84%
+but this corresponds to the
+numerology in Szemerédi-Trotter.
+
+00:40:58.110 --> 00:41:05.050 align:middle line:84%
+And C is the regime
+where random tubes--
+
+00:41:05.050 --> 00:41:05.550 align:middle line:90%
+No.
+
+00:41:05.550 --> 00:41:07.630 align:middle line:84%
+If this set E is really
+large, random tube
+
+00:41:07.630 --> 00:41:10.630 align:middle line:84%
+will hit a lot of
+points of E. And this
+
+00:41:10.630 --> 00:41:14.830 align:middle line:84%
+set T certainly could be
+made out of random tubes.
+
+00:41:14.830 --> 00:41:16.000 align:middle line:90%
+OK.
+
+00:41:16.000 --> 00:41:18.300 align:middle line:84%
+So that is the theorem
+we're trying to prove.
+
+00:41:18.300 --> 00:41:20.870 align:middle line:90%
+
+
+00:41:20.870 --> 00:41:24.550 align:middle line:84%
+And we have developed
+many techniques and tools
+
+00:41:24.550 --> 00:41:25.690 align:middle line:90%
+to work on this theorem.
+
+00:41:25.690 --> 00:41:27.730 align:middle line:84%
+And we have proven
+many cases of it.
+
+00:41:27.730 --> 00:41:29.980 align:middle line:90%
+And let's document that.
+
+00:41:29.980 --> 00:41:53.460 align:middle line:90%
+
+
+00:41:53.460 --> 00:41:55.060 align:middle line:90%
+OK.
+
+00:41:55.060 --> 00:42:01.160 align:middle line:84%
+So cases we have
+discussed the proof.
+
+00:42:01.160 --> 00:42:08.260 align:middle line:90%
+
+
+00:42:08.260 --> 00:42:09.460 align:middle line:90%
+OK.
+
+00:42:09.460 --> 00:42:13.280 align:middle line:84%
+So there are these A,
+B, and C scenarios.
+
+00:42:13.280 --> 00:42:15.260 align:middle line:84%
+And so we should sort
+this theorem according
+
+00:42:15.260 --> 00:42:18.100 align:middle line:90%
+to who's bigger, A or B or C.
+
+00:42:18.100 --> 00:42:23.980 align:middle line:84%
+So A dominates,
+that's if and only
+
+00:42:23.980 --> 00:42:28.700 align:middle line:84%
+if, S is greater
+than or equal to T.
+
+00:42:28.700 --> 00:42:32.020 align:middle line:84%
+Let me write it
+actually as T is less--
+
+00:42:32.020 --> 00:42:36.070 align:middle line:84%
+S is greater than or equal
+to T. And in this case,
+
+00:42:36.070 --> 00:42:38.900 align:middle line:84%
+it's true by a double
+counting argument.
+
+00:42:38.900 --> 00:42:42.690 align:middle line:90%
+
+
+00:42:42.690 --> 00:42:50.010 align:middle line:84%
+And C dominates if
+and only if S plus T
+
+00:42:50.010 --> 00:42:51.810 align:middle line:90%
+is greater than or equal to 2.
+
+00:42:51.810 --> 00:42:54.780 align:middle line:84%
+And that's also true
+by the Fourier method.
+
+00:42:54.780 --> 00:43:01.375 align:middle line:90%
+
+
+00:43:01.375 --> 00:43:07.130 align:middle line:84%
+So B dominates otherwise,
+and it's actually
+
+00:43:07.130 --> 00:43:09.370 align:middle line:84%
+important to write
+down this otherwise.
+
+00:43:09.370 --> 00:43:11.290 align:middle line:90%
+So S is between--
+
+00:43:11.290 --> 00:43:15.130 align:middle line:84%
+T is between S and 2 minus
+S. That's what's left.
+
+00:43:15.130 --> 00:43:16.830 align:middle line:90%
+And this one we don't know yet.
+
+00:43:16.830 --> 00:43:21.050 align:middle line:90%
+
+
+00:43:21.050 --> 00:43:27.610 align:middle line:84%
+But we do know a couple of
+special cases of this hard case.
+
+00:43:27.610 --> 00:43:35.220 align:middle line:84%
+But we do know if
+E is AD regular.
+
+00:43:35.220 --> 00:43:37.810 align:middle line:90%
+
+
+00:43:37.810 --> 00:43:39.370 align:middle line:84%
+So that was my
+open-ended Shmerkin.
+
+00:43:39.370 --> 00:43:41.250 align:middle line:90%
+We talked about it last time.
+
+00:43:41.250 --> 00:43:47.490 align:middle line:84%
+And we do know so it
+is true E is regular
+
+00:43:47.490 --> 00:43:51.280 align:middle line:84%
+and it is true if
+E is well spaced.
+
+00:43:51.280 --> 00:43:55.490 align:middle line:90%
+
+
+00:43:55.490 --> 00:43:57.910 align:middle line:90%
+We just talked about.
+
+00:43:57.910 --> 00:44:00.930 align:middle line:84%
+And that's striking because
+AD regular and well spaced
+
+00:44:00.930 --> 00:44:04.350 align:middle line:84%
+are the two extremes in the
+way that E could be spaced.
+
+00:44:04.350 --> 00:44:06.230 align:middle line:84%
+And the other stuff
+is in the middle here.
+
+00:44:06.230 --> 00:44:14.150 align:middle line:90%
+
+
+00:44:14.150 --> 00:44:17.050 align:middle line:84%
+So actually, people in the
+field have run into this problem
+
+00:44:17.050 --> 00:44:18.020 align:middle line:90%
+a number of times.
+
+00:44:18.020 --> 00:44:21.210 align:middle line:90%
+
+
+00:44:21.210 --> 00:44:21.710 align:middle line:90%
+OK.
+
+00:44:21.710 --> 00:44:24.450 align:middle line:84%
+So there are several cousin
+problems of this Furstenberg set
+
+00:44:24.450 --> 00:44:24.950 align:middle line:90%
+problem.
+
+00:44:24.950 --> 00:44:27.690 align:middle line:84%
+There's the Kakeya problem,
+which is the most famous.
+
+00:44:27.690 --> 00:44:30.920 align:middle line:84%
+There's also the Falconer
+distance set problem.
+
+00:44:30.920 --> 00:44:32.840 align:middle line:84%
+And in both of those
+problems, there
+
+00:44:32.840 --> 00:44:34.560 align:middle line:84%
+was a period where
+people knew how
+
+00:44:34.560 --> 00:44:37.045 align:middle line:90%
+to do these two extreme cases.
+
+00:44:37.045 --> 00:44:38.920 align:middle line:84%
+And we thought-- we
+hoped maybe we were close
+
+00:44:38.920 --> 00:44:40.712 align:middle line:84%
+and we tried to do the
+stuff in the middle,
+
+00:44:40.712 --> 00:44:44.480 align:middle line:84%
+and it was hard and messy,
+and we couldn't do it.
+
+00:44:44.480 --> 00:44:46.460 align:middle line:84%
+So an open-ended Shmerkin
+wrote their paper.
+
+00:44:46.460 --> 00:44:49.280 align:middle line:84%
+They said we solved
+the AD regular case,
+
+00:44:49.280 --> 00:44:51.200 align:middle line:84%
+and we know that previously
+some people solved
+
+00:44:51.200 --> 00:44:53.160 align:middle line:84%
+the well-spaced case,
+and what's left is
+
+00:44:53.160 --> 00:44:54.840 align:middle line:90%
+to do the stuff in the middle.
+
+00:44:54.840 --> 00:44:58.760 align:middle line:84%
+But we're not sure whether
+that might be very hard.
+
+00:44:58.760 --> 00:45:00.640 align:middle line:90%
+OK.
+
+00:45:00.640 --> 00:45:01.140 align:middle line:90%
+Cool.
+
+00:45:01.140 --> 00:45:10.400 align:middle line:90%
+
+
+00:45:10.400 --> 00:45:13.800 align:middle line:84%
+And so the last
+idea in the proof
+
+00:45:13.800 --> 00:45:15.960 align:middle line:84%
+is an idea from
+Reyn and Wang how
+
+00:45:15.960 --> 00:45:22.360 align:middle line:84%
+to break up the general
+case into pieces that can
+
+00:45:22.360 --> 00:45:25.103 align:middle line:90%
+be handled by these methods.
+
+00:45:25.103 --> 00:45:26.520 align:middle line:84%
+The first part of
+what they did is
+
+00:45:26.520 --> 00:45:30.070 align:middle line:84%
+they souped up this
+well-spaced case a little bit.
+
+00:45:30.070 --> 00:45:33.590 align:middle line:84%
+So they proved
+that it's true if E
+
+00:45:33.590 --> 00:45:35.830 align:middle line:84%
+is something called
+semi well-spaced
+
+00:45:35.830 --> 00:45:39.590 align:middle line:90%
+that I will define for you.
+
+00:45:39.590 --> 00:45:41.880 align:middle line:90%
+Definition soon.
+
+00:45:41.880 --> 00:45:42.380 align:middle line:90%
+OK.
+
+00:45:42.380 --> 00:45:45.310 align:middle line:90%
+
+
+00:45:45.310 --> 00:45:48.230 align:middle line:84%
+It's a mild
+generalization of this.
+
+00:45:48.230 --> 00:45:52.090 align:middle line:84%
+And the proof is fairly--
+a little more complicated
+
+00:45:52.090 --> 00:45:54.950 align:middle line:84%
+but it's similar ideas
+to what I showed you.
+
+00:45:54.950 --> 00:45:57.910 align:middle line:84%
+It doesn't distinguish R
+from C. It's the same tools
+
+00:45:57.910 --> 00:45:59.730 align:middle line:90%
+that I showed you.
+
+00:45:59.730 --> 00:46:00.230 align:middle line:90%
+OK.
+
+00:46:00.230 --> 00:46:02.150 align:middle line:84%
+And then the really
+important thing
+
+00:46:02.150 --> 00:46:05.550 align:middle line:84%
+is how to put all
+these things together.
+
+00:46:05.550 --> 00:46:11.190 align:middle line:84%
+So we're going to put
+all these things together
+
+00:46:11.190 --> 00:46:15.510 align:middle line:84%
+by using a multi-scale
+argument, which
+
+00:46:15.510 --> 00:46:17.890 align:middle line:84%
+is similar to the
+submultiplicative Lemma.
+
+00:46:17.890 --> 00:46:23.310 align:middle line:84%
+That was one of the key
+things in the AD regular case.
+
+00:46:23.310 --> 00:46:26.870 align:middle line:84%
+So let me remind you of that
+and draw the important picture
+
+00:46:26.870 --> 00:46:27.370 align:middle line:90%
+again.
+
+00:46:27.370 --> 00:46:54.260 align:middle line:90%
+
+
+00:46:54.260 --> 00:46:55.000 align:middle line:90%
+All right.
+
+00:46:55.000 --> 00:46:59.810 align:middle line:90%
+So multi-scale argument.
+
+00:46:59.810 --> 00:47:10.260 align:middle line:90%
+
+
+00:47:10.260 --> 00:47:11.100 align:middle line:90%
+OK.
+
+00:47:11.100 --> 00:47:12.680 align:middle line:90%
+So we're going to have delta--
+
+00:47:12.680 --> 00:47:14.180 align:middle line:84%
+we're going to have
+some scale which
+
+00:47:14.180 --> 00:47:16.580 align:middle line:90%
+is in between delta and rho.
+
+00:47:16.580 --> 00:47:19.180 align:middle line:84%
+And we're going to
+visualize E at this scale
+
+00:47:19.180 --> 00:47:20.900 align:middle line:90%
+but also at that scale.
+
+00:47:20.900 --> 00:47:25.670 align:middle line:84%
+So now we have a general
+E. But it's uniform.
+
+00:47:25.670 --> 00:47:28.620 align:middle line:90%
+
+
+00:47:28.620 --> 00:47:32.300 align:middle line:84%
+And so I think of it as
+having some rho balls.
+
+00:47:32.300 --> 00:47:36.700 align:middle line:90%
+So these circles are E rho.
+
+00:47:36.700 --> 00:47:39.170 align:middle line:84%
+Inside of each rho ball,
+we have some delta balls.
+
+00:47:39.170 --> 00:47:44.300 align:middle line:90%
+
+
+00:47:44.300 --> 00:47:48.125 align:middle line:84%
+So those are the delta
+balls in E delta.
+
+00:47:48.125 --> 00:47:48.625 align:middle line:90%
+OK.
+
+00:47:48.625 --> 00:47:51.295 align:middle line:90%
+
+
+00:47:51.295 --> 00:47:53.230 align:middle line:90%
+And we have some fat tubes.
+
+00:47:53.230 --> 00:47:59.540 align:middle line:90%
+
+
+00:47:59.540 --> 00:48:00.700 align:middle line:90%
+Like that.
+
+00:48:00.700 --> 00:48:05.180 align:middle line:84%
+So those are the
+tubes that scale rho.
+
+00:48:05.180 --> 00:48:07.810 align:middle line:84%
+Inside of the fat tubes
+we have some thin tubes.
+
+00:48:07.810 --> 00:48:10.660 align:middle line:90%
+
+
+00:48:10.660 --> 00:48:12.534 align:middle line:84%
+I should draw it a
+little differently.
+
+00:48:12.534 --> 00:48:27.850 align:middle line:90%
+
+
+00:48:27.850 --> 00:48:30.040 align:middle line:90%
+So those are the delta tubes.
+
+00:48:30.040 --> 00:48:33.956 align:middle line:90%
+
+
+00:48:33.956 --> 00:48:36.410 align:middle line:90%
+Now what do we notice?
+
+00:48:36.410 --> 00:48:40.170 align:middle line:84%
+We notice that the
+R that's associated
+
+00:48:40.170 --> 00:48:47.590 align:middle line:84%
+to E delta and T delta can
+be bounded by a coarse scale.
+
+00:48:47.590 --> 00:48:50.130 align:middle line:84%
+So this R is how many
+delta balls are there
+
+00:48:50.130 --> 00:48:53.090 align:middle line:90%
+in an orange tube like this?
+
+00:48:53.090 --> 00:48:56.610 align:middle line:84%
+So first, we can ask,
+how many rho balls
+
+00:48:56.610 --> 00:48:59.210 align:middle line:90%
+does the orange tube have?
+
+00:48:59.210 --> 00:49:05.410 align:middle line:84%
+So that would be
+R of E rho T rho.
+
+00:49:05.410 --> 00:49:08.010 align:middle line:84%
+And then we look inside
+each of those rho balls
+
+00:49:08.010 --> 00:49:10.010 align:middle line:90%
+at this short delta tube.
+
+00:49:10.010 --> 00:49:13.850 align:middle line:84%
+And we ask, how many
+delta balls does it hit?
+
+00:49:13.850 --> 00:49:18.490 align:middle line:84%
+And let's call one of these
+balls B, the typical rho ball.
+
+00:49:18.490 --> 00:49:22.240 align:middle line:90%
+And that will be R of EB TB.
+
+00:49:22.240 --> 00:49:25.200 align:middle line:90%
+
+
+00:49:25.200 --> 00:49:28.400 align:middle line:90%
+What is EB TB?
+
+00:49:28.400 --> 00:49:33.280 align:middle line:84%
+So EB is just E
+intersect B. And then
+
+00:49:33.280 --> 00:49:38.680 align:middle line:84%
+let's rescale it so that
+B becomes a unit ball.
+
+00:49:38.680 --> 00:49:42.200 align:middle line:90%
+And TB is you take T--
+
+00:49:42.200 --> 00:49:47.200 align:middle line:84%
+well, you take T
+intersect B, where
+
+00:49:47.200 --> 00:49:50.760 align:middle line:84%
+T is in T. You take all
+these little pieces of tubes
+
+00:49:50.760 --> 00:49:56.680 align:middle line:84%
+and then again you rescale so
+that B becomes the unit ball.
+
+00:49:56.680 --> 00:50:03.760 align:middle line:84%
+And so EB is a set of
+delta over rho balls.
+
+00:50:03.760 --> 00:50:09.440 align:middle line:84%
+And TB is a set of
+delta over rho tubes.
+
+00:50:09.440 --> 00:50:12.340 align:middle line:84%
+We do this rescaling
+so we can relate this.
+
+00:50:12.340 --> 00:50:14.820 align:middle line:84%
+Think of this as a case
+of our original problem.
+
+00:50:14.820 --> 00:50:17.000 align:middle line:90%
+We can use induction.
+
+00:50:17.000 --> 00:50:17.500 align:middle line:90%
+OK.
+
+00:50:17.500 --> 00:50:20.760 align:middle line:84%
+But this inequality is just
+how many delta balls are there
+
+00:50:20.760 --> 00:50:21.840 align:middle line:90%
+in the orange tube?
+
+00:50:21.840 --> 00:50:24.000 align:middle line:84%
+Well, how many rho
+balls does it hit
+
+00:50:24.000 --> 00:50:26.240 align:middle line:84%
+and how many delta balls
+are in each rho ball?
+
+00:50:26.240 --> 00:50:30.800 align:middle line:90%
+
+
+00:50:30.800 --> 00:50:31.920 align:middle line:90%
+OK, cool.
+
+00:50:31.920 --> 00:50:37.560 align:middle line:84%
+So by this multi-scale argument,
+we can take our original problem
+
+00:50:37.560 --> 00:50:39.360 align:middle line:90%
+and break it up into pieces.
+
+00:50:39.360 --> 00:50:42.400 align:middle line:84%
+We get to choose rho, so we
+have some flexibility there.
+
+00:50:42.400 --> 00:50:43.540 align:middle line:90%
+Then we can repeat that.
+
+00:50:43.540 --> 00:50:46.160 align:middle line:84%
+We can break these up
+into pieces and so on.
+
+00:50:46.160 --> 00:50:50.360 align:middle line:84%
+And we would be very happy
+if all of these pieces
+
+00:50:50.360 --> 00:50:54.400 align:middle line:84%
+are in the list of things
+that we understand.
+
+00:50:54.400 --> 00:50:57.000 align:middle line:84%
+And then we could multiply
+together all those bounds
+
+00:50:57.000 --> 00:50:58.060 align:middle line:90%
+and get a bound.
+
+00:50:58.060 --> 00:51:00.100 align:middle line:84%
+And in some cases, we'll
+get the sharp bound.
+
+00:51:00.100 --> 00:51:02.830 align:middle line:84%
+And then that's how
+they prove the theorem.
+
+00:51:02.830 --> 00:51:05.520 align:middle line:90%
+
+
+00:51:05.520 --> 00:51:07.152 align:middle line:90%
+OK.
+
+00:51:07.152 --> 00:51:10.000 align:middle line:84%
+Now to keep track
+of what happens,
+
+00:51:10.000 --> 00:51:13.360 align:middle line:84%
+everything is described in
+terms of the branching function.
+
+00:51:13.360 --> 00:51:15.760 align:middle line:84%
+And for people's
+intuition, it has
+
+00:51:15.760 --> 00:51:17.510 align:middle line:84%
+been very helpful
+to draw pictures
+
+00:51:17.510 --> 00:51:19.180 align:middle line:84%
+of the graph of the
+branching function.
+
+00:51:19.180 --> 00:51:38.230 align:middle line:90%
+
+
+00:51:38.230 --> 00:51:39.070 align:middle line:90%
+OK.
+
+00:51:39.070 --> 00:51:42.980 align:middle line:84%
+Do graph of the
+branching function.
+
+00:51:42.980 --> 00:51:46.910 align:middle line:90%
+
+
+00:51:46.910 --> 00:51:50.630 align:middle line:84%
+So we're going to suppose
+that E is uniform.
+
+00:51:50.630 --> 00:51:52.350 align:middle line:84%
+And then I'm going
+to draw a graph that
+
+00:51:52.350 --> 00:51:55.230 align:middle line:84%
+encodes the information of
+how many rho balls there
+
+00:51:55.230 --> 00:51:57.910 align:middle line:90%
+are to cover E at every scale.
+
+00:51:57.910 --> 00:52:00.470 align:middle line:84%
+So on this axis,
+I want to put rho.
+
+00:52:00.470 --> 00:52:05.830 align:middle line:84%
+And what I'm going to
+put is log delta of rho.
+
+00:52:05.830 --> 00:52:10.270 align:middle line:84%
+So it's going to be a
+number between 0 and 1.
+
+00:52:10.270 --> 00:52:15.620 align:middle line:84%
+And now on this axis, I want to
+understand the covering number E
+
+00:52:15.620 --> 00:52:16.380 align:middle line:90%
+rho.
+
+00:52:16.380 --> 00:52:19.700 align:middle line:84%
+And what I'm going to put here
+is the logarithm in the base 1
+
+00:52:19.700 --> 00:52:24.060 align:middle line:84%
+over delta of this
+covering number.
+
+00:52:24.060 --> 00:52:26.712 align:middle line:90%
+OK.
+
+00:52:26.712 --> 00:52:36.660 align:middle line:84%
+So if E delta or
+delta to the minus T,
+
+00:52:36.660 --> 00:52:38.500 align:middle line:84%
+then when you plug
+in 1 here, that
+
+00:52:38.500 --> 00:52:40.240 align:middle line:90%
+corresponds to the scale delta.
+
+00:52:40.240 --> 00:52:42.000 align:middle line:84%
+So this is delta
+E to the minus T.
+
+00:52:42.000 --> 00:52:46.140 align:middle line:84%
+So this logarithm
+would be T of this.
+
+00:52:46.140 --> 00:52:48.660 align:middle line:84%
+So I'm going to call
+this variable T--
+
+00:52:48.660 --> 00:52:50.500 align:middle line:84%
+I'm going to call
+this variable X.
+
+00:52:50.500 --> 00:52:55.180 align:middle line:84%
+And this is F of X. F is
+the branching function.
+
+00:52:55.180 --> 00:52:56.580 align:middle line:90%
+So if E of--
+
+00:52:56.580 --> 00:52:59.740 align:middle line:84%
+E delta is delta E to the
+minus T, it means F of 1
+
+00:52:59.740 --> 00:53:13.580 align:middle line:84%
+equals T. If E is a delta T
+set, then it means that F of X
+
+00:53:13.580 --> 00:53:17.660 align:middle line:84%
+is bigger than T
+times X. So here's
+
+00:53:17.660 --> 00:53:26.460 align:middle line:84%
+the straight line with slope
+T. And I'll put this in blue.
+
+00:53:26.460 --> 00:53:30.580 align:middle line:84%
+F of X is bigger than T times
+X. There are many things
+
+00:53:30.580 --> 00:53:33.520 align:middle line:84%
+that we could draw that
+do that, maybe like that.
+
+00:53:33.520 --> 00:53:43.282 align:middle line:90%
+
+
+00:53:43.282 --> 00:53:46.300 align:middle line:84%
+So these pictures
+always start at 1.
+
+00:53:46.300 --> 00:53:49.940 align:middle line:84%
+Because when X is 1, it means
+we're talking about the scale
+
+00:53:49.940 --> 00:53:51.540 align:middle line:90%
+rho equals 1.
+
+00:53:51.540 --> 00:53:54.200 align:middle line:84%
+And this is a subset
+of the unit ball.
+
+00:53:54.200 --> 00:53:58.100 align:middle line:84%
+So that's the covering
+number at scale 1 is 1.
+
+00:53:58.100 --> 00:53:59.320 align:middle line:90%
+So it always starts there.
+
+00:53:59.320 --> 00:54:04.100 align:middle line:90%
+
+
+00:54:04.100 --> 00:54:07.380 align:middle line:84%
+Any questions or
+comments about these,
+
+00:54:07.380 --> 00:54:08.530 align:middle line:90%
+setting this up as a graph?
+
+00:54:08.530 --> 00:54:11.450 align:middle line:90%
+
+
+00:54:11.450 --> 00:54:12.650 align:middle line:90%
+OK.
+
+00:54:12.650 --> 00:54:17.330 align:middle line:84%
+So now what do we know
+about this function F?
+
+00:54:17.330 --> 00:54:21.230 align:middle line:84%
+So F is monotonically
+increasing.
+
+00:54:21.230 --> 00:54:24.490 align:middle line:90%
+
+
+00:54:24.490 --> 00:54:25.490 align:middle line:90%
+Why?
+
+00:54:25.490 --> 00:54:27.590 align:middle line:84%
+As we go this way,
+rho is getting smaller
+
+00:54:27.590 --> 00:54:31.690 align:middle line:84%
+and the rho covering number
+is only going to get bigger.
+
+00:54:31.690 --> 00:54:35.850 align:middle line:84%
+But it doesn't
+increase too quickly.
+
+00:54:35.850 --> 00:54:41.730 align:middle line:84%
+So F of X plus
+delta X is less than
+
+00:54:41.730 --> 00:54:46.190 align:middle line:84%
+or equal to F of X plus 2
+delta X. So F is 2 Lipschitz.
+
+00:54:46.190 --> 00:54:48.770 align:middle line:90%
+
+
+00:54:48.770 --> 00:54:49.450 align:middle line:90%
+Why?
+
+00:54:49.450 --> 00:54:54.650 align:middle line:84%
+Well, if we have a rho ball
+and then we decrease rho,
+
+00:54:54.650 --> 00:54:58.810 align:middle line:84%
+we can always cover that with
+a certain number of rho tilde
+
+00:54:58.810 --> 00:55:00.850 align:middle line:90%
+balls.
+
+00:55:00.850 --> 00:55:07.170 align:middle line:84%
+So B rho is covered by
+rho tilde rho over--
+
+00:55:07.170 --> 00:55:10.520 align:middle line:84%
+so if rho tilde
+is less than rho,
+
+00:55:10.520 --> 00:55:16.080 align:middle line:84%
+then B rho is covered by rho
+over rho tilde squared rho tilde
+
+00:55:16.080 --> 00:55:18.480 align:middle line:90%
+balls.
+
+00:55:18.480 --> 00:55:20.580 align:middle line:84%
+And we may or may
+not need all of them,
+
+00:55:20.580 --> 00:55:22.420 align:middle line:84%
+but the most we could
+need is all of them.
+
+00:55:22.420 --> 00:55:26.560 align:middle line:84%
+And that would correspond
+to equality here.
+
+00:55:26.560 --> 00:55:28.100 align:middle line:90%
+So F is 2 Lipschitz.
+
+00:55:28.100 --> 00:55:30.540 align:middle line:90%
+
+
+00:55:30.540 --> 00:55:31.040 align:middle line:90%
+Yeah.
+
+00:55:31.040 --> 00:55:33.087 align:middle line:84%
+AUDIENCE: So the 2 comes
+from the dimension?
+
+00:55:33.087 --> 00:55:34.920 align:middle line:84%
+LAWRENCE GUTH: Two comes
+from the dimension.
+
+00:55:34.920 --> 00:55:38.240 align:middle line:84%
+This 2 is this 2, which
+comes from the dimension.
+
+00:55:38.240 --> 00:55:38.740 align:middle line:90%
+Yeah, OK.
+
+00:55:38.740 --> 00:55:39.282 align:middle line:90%
+That's right.
+
+00:55:39.282 --> 00:55:43.680 align:middle line:84%
+So let me say E is uniform, E
+is contained in the unit ball,
+
+00:55:43.680 --> 00:55:46.060 align:middle line:90%
+and E is in two dimensions.
+
+00:55:46.060 --> 00:55:48.310 align:middle line:84%
+And if you change this
+2 to a D dimension,
+
+00:55:48.310 --> 00:55:50.560 align:middle line:84%
+the only thing in this
+discussion that would change is
+
+00:55:50.560 --> 00:55:53.000 align:middle line:90%
+that these 2's would become D's.
+
+00:55:53.000 --> 00:55:53.900 align:middle line:90%
+Yeah, thank you.
+
+00:55:53.900 --> 00:55:57.840 align:middle line:90%
+
+
+00:55:57.840 --> 00:55:59.780 align:middle line:90%
+Yeah, good.
+
+00:55:59.780 --> 00:56:00.280 align:middle line:90%
+OK.
+
+00:56:00.280 --> 00:56:04.400 align:middle line:84%
+So to get a feel
+for this, I will
+
+00:56:04.400 --> 00:56:10.870 align:middle line:84%
+draw a few pictures of the
+branching functions for cases
+
+00:56:10.870 --> 00:56:14.150 align:middle line:90%
+that we have considered.
+
+00:56:14.150 --> 00:56:15.320 align:middle line:90%
+OK.
+
+00:56:15.320 --> 00:56:22.630 align:middle line:84%
+So for the AD
+regular set, before I
+
+00:56:22.630 --> 00:56:24.450 align:middle line:84%
+draw it picture in
+your mind's eye,
+
+00:56:24.450 --> 00:56:26.410 align:middle line:84%
+what does the branching
+function look like?
+
+00:56:26.410 --> 00:56:31.990 align:middle line:90%
+
+
+00:56:31.990 --> 00:56:33.580 align:middle line:90%
+It is a straight line.
+
+00:56:33.580 --> 00:56:40.670 align:middle line:90%
+
+
+00:56:40.670 --> 00:56:42.180 align:middle line:90%
+The well-spaced example.
+
+00:56:42.180 --> 00:56:51.390 align:middle line:90%
+
+
+00:56:51.390 --> 00:56:59.710 align:middle line:84%
+So well-spaced example
+looks like this.
+
+00:56:59.710 --> 00:57:06.110 align:middle line:84%
+It's a straight line of
+slope 2 up to the height T,
+
+00:57:06.110 --> 00:57:09.370 align:middle line:90%
+and then it's a horizontal line.
+
+00:57:09.370 --> 00:57:10.810 align:middle line:90%
+It's a flat line after that.
+
+00:57:10.810 --> 00:57:14.950 align:middle line:90%
+
+
+00:57:14.950 --> 00:57:17.310 align:middle line:90%
+Cool.
+
+00:57:17.310 --> 00:57:17.810 align:middle line:90%
+OK.
+
+00:57:17.810 --> 00:57:22.430 align:middle line:84%
+And now I can tell you what
+is the semi well-spaced set.
+
+00:57:22.430 --> 00:57:24.170 align:middle line:90%
+So here's what we do.
+
+00:57:24.170 --> 00:57:26.990 align:middle line:90%
+
+
+00:57:26.990 --> 00:57:30.870 align:middle line:84%
+So semi well-space
+definition is now.
+
+00:57:30.870 --> 00:57:35.050 align:middle line:84%
+So T is going to be in between
+minus S and S. That's good.
+
+00:57:35.050 --> 00:57:39.070 align:middle line:84%
+That's the region we
+don't already understand.
+
+00:57:39.070 --> 00:57:42.910 align:middle line:84%
+So E delta is going to
+be delta to the minus T.
+
+00:57:42.910 --> 00:57:46.750 align:middle line:84%
+So that point there is going to
+be in our branching function.
+
+00:57:46.750 --> 00:57:53.270 align:middle line:84%
+And then what I will do is I
+draw here a line with slope S,
+
+00:57:53.270 --> 00:57:58.870 align:middle line:84%
+and here a line with slope
+2 minus S. By the way,
+
+00:57:58.870 --> 00:58:00.330 align:middle line:90%
+S is between 0 and 1.
+
+00:58:00.330 --> 00:58:02.550 align:middle line:90%
+So 2 minus S is the bigger one.
+
+00:58:02.550 --> 00:58:05.400 align:middle line:84%
+And I extend these
+lines until they meet.
+
+00:58:05.400 --> 00:58:06.400 align:middle line:90%
+They'll meet somewhere.
+
+00:58:06.400 --> 00:58:09.840 align:middle line:90%
+
+
+00:58:09.840 --> 00:58:15.580 align:middle line:84%
+And then the branching
+function F of X
+
+00:58:15.580 --> 00:58:21.260 align:middle line:84%
+has to lie above this stuff,
+and it has to go there.
+
+00:58:21.260 --> 00:58:23.010 align:middle line:84%
+That's the definition
+of semi well spaced.
+
+00:58:23.010 --> 00:58:27.380 align:middle line:90%
+
+
+00:58:27.380 --> 00:58:28.620 align:middle line:90%
+OK.
+
+00:58:28.620 --> 00:58:31.380 align:middle line:84%
+So Reyn and Wang,
+they proved that
+
+00:58:31.380 --> 00:58:36.700 align:middle line:84%
+in the semi well-spaced
+case, this theorem is true.
+
+00:58:36.700 --> 00:58:38.620 align:middle line:90%
+And we won't do the whole proof.
+
+00:58:38.620 --> 00:58:42.220 align:middle line:84%
+But the proof is a variant
+on what we saw here,
+
+00:58:42.220 --> 00:58:44.380 align:middle line:84%
+where you combine
+in a clever way
+
+00:58:44.380 --> 00:58:48.420 align:middle line:84%
+the Fourier method and the
+double counting method.
+
+00:58:48.420 --> 00:58:52.180 align:middle line:84%
+And at a very high
+level, this setup is--
+
+00:58:52.180 --> 00:58:54.300 align:middle line:84%
+this slope 2 minus
+S is the slope
+
+00:58:54.300 --> 00:58:56.740 align:middle line:90%
+where the Fourier method works.
+
+00:58:56.740 --> 00:58:59.220 align:middle line:84%
+And this slope S is the slope
+where the double counting
+
+00:58:59.220 --> 00:59:01.050 align:middle line:90%
+method works.
+
+00:59:01.050 --> 00:59:04.290 align:middle line:84%
+And so this picture turns out to
+be the situation where you can
+
+00:59:04.290 --> 00:59:08.840 align:middle line:90%
+combine those two methods well.
+
+00:59:08.840 --> 00:59:09.340 align:middle line:90%
+OK.
+
+00:59:09.340 --> 00:59:11.850 align:middle line:90%
+
+
+00:59:11.850 --> 00:59:13.090 align:middle line:90%
+All right.
+
+00:59:13.090 --> 00:59:15.570 align:middle line:84%
+So now let's think about
+what happens when we
+
+00:59:15.570 --> 00:59:17.430 align:middle line:90%
+do this multi-scale argument.
+
+00:59:17.430 --> 00:59:19.670 align:middle line:84%
+What happens to the
+branching functions?
+
+00:59:19.670 --> 00:59:22.380 align:middle line:84%
+In other words, I
+start with this setup,
+
+00:59:22.380 --> 00:59:23.630 align:middle line:90%
+I want to understand this guy.
+
+00:59:23.630 --> 00:59:26.450 align:middle line:84%
+And it depends on the
+branching function of E delta.
+
+00:59:26.450 --> 00:59:29.610 align:middle line:84%
+And I get these two
+new smaller problems.
+
+00:59:29.610 --> 00:59:32.530 align:middle line:84%
+What is the relationship
+between this branching function
+
+00:59:32.530 --> 00:59:34.930 align:middle line:90%
+and these branching functions?
+
+00:59:34.930 --> 00:59:37.380 align:middle line:84%
+The relationship
+is really simple.
+
+00:59:37.380 --> 00:59:54.730 align:middle line:90%
+
+
+00:59:54.730 --> 01:00:01.290 align:middle line:84%
+So F of X itself, this is the
+branching function of E delta.
+
+01:00:01.290 --> 01:00:04.610 align:middle line:90%
+And it looks like something.
+
+01:00:04.610 --> 01:00:05.110 align:middle line:90%
+OK.
+
+01:00:05.110 --> 01:00:07.170 align:middle line:90%
+It could be anything.
+
+01:00:07.170 --> 01:00:09.110 align:middle line:90%
+And then we have this scale rho.
+
+01:00:09.110 --> 01:00:13.770 align:middle line:84%
+So over here is
+log delta of rho.
+
+01:00:13.770 --> 01:00:17.530 align:middle line:84%
+And if you think
+about this set E rho,
+
+01:00:17.530 --> 01:00:22.188 align:middle line:84%
+well, it's just the
+branching function of E rho
+
+01:00:22.188 --> 01:00:24.230 align:middle line:84%
+is the same as the branching
+function of E delta.
+
+01:00:24.230 --> 01:00:25.510 align:middle line:90%
+Except it just stops at rho.
+
+01:00:25.510 --> 01:00:28.170 align:middle line:84%
+And we don't look at
+any smaller scales.
+
+01:00:28.170 --> 01:00:37.370 align:middle line:84%
+So this here in orange is
+basically the branching function
+
+01:00:37.370 --> 01:00:38.190 align:middle line:90%
+of E rho.
+
+01:00:38.190 --> 01:00:45.090 align:middle line:90%
+
+
+01:00:45.090 --> 01:00:50.433 align:middle line:84%
+Then we look inside of this
+ball and we look at all of the--
+
+01:00:50.433 --> 01:00:51.850 align:middle line:84%
+start at the scale
+rho and then we
+
+01:00:51.850 --> 01:00:54.530 align:middle line:84%
+look at all of the
+smaller scales of E.
+
+01:00:54.530 --> 01:01:01.560 align:middle line:90%
+So this thing here is--
+
+01:01:01.560 --> 01:01:06.520 align:middle line:90%
+let me say this describes F EB.
+
+01:01:06.520 --> 01:01:08.590 align:middle line:84%
+This is basically the
+branching function of EB.
+
+01:01:08.590 --> 01:01:16.080 align:middle line:90%
+
+
+01:01:16.080 --> 01:01:17.220 align:middle line:90%
+OK, great.
+
+01:01:17.220 --> 01:01:19.832 align:middle line:90%
+
+
+01:01:19.832 --> 01:01:22.360 align:middle line:90%
+So what's the situation?
+
+01:01:22.360 --> 01:01:25.960 align:middle line:84%
+We begin with an arbitrary
+branching function
+
+01:01:25.960 --> 01:01:28.720 align:middle line:90%
+that just obeys this condition.
+
+01:01:28.720 --> 01:01:30.040 align:middle line:90%
+Yeah.
+
+01:01:30.040 --> 01:01:33.920 align:middle line:84%
+AUDIENCE: Going back
+to the multi-scale
+
+01:01:33.920 --> 01:01:39.300 align:middle line:84%
+or the submultiplicative Lemma,
+why is it-- like the second one,
+
+01:01:39.300 --> 01:01:42.990 align:middle line:84%
+the R of EB TB when it's like
+the number of delta balls
+
+01:01:42.990 --> 01:01:45.400 align:middle line:90%
+is the same in the rho ball.
+
+01:01:45.400 --> 01:01:48.245 align:middle line:90%
+They have the same.
+
+01:01:48.245 --> 01:01:49.120 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+01:01:49.120 --> 01:01:49.892 align:middle line:90%
+Right.
+
+01:01:49.892 --> 01:01:55.670 align:middle line:84%
+So this R of EB TB
+is supposed to be
+
+01:01:55.670 --> 01:02:01.230 align:middle line:84%
+counting the number of delta
+balls in a segment like that.
+
+01:02:01.230 --> 01:02:03.330 align:middle line:90%
+Now, why is it counting that?
+
+01:02:03.330 --> 01:02:05.550 align:middle line:90%
+Who is EB?
+
+01:02:05.550 --> 01:02:11.810 align:middle line:84%
+EB are the delta balls in the
+rho ball in B. And TB are--
+
+01:02:11.810 --> 01:02:16.510 align:middle line:84%
+I take the tubes and
+I just take the part
+
+01:02:16.510 --> 01:02:22.230 align:middle line:90%
+of the tube that is in the--
+
+01:02:22.230 --> 01:02:25.388 align:middle line:90%
+that's in the ball.
+
+01:02:25.388 --> 01:02:25.930 align:middle line:90%
+AUDIENCE: OK.
+
+01:02:25.930 --> 01:02:36.290 align:middle line:84%
+So then R E rho, that's the
+number of rho balls in the rho 2
+
+01:02:36.290 --> 01:02:41.550 align:middle line:84%
+based on the product is just
+the number that amounts to 2.
+
+01:02:41.550 --> 01:02:43.470 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+01:02:43.470 --> 01:02:45.670 align:middle line:90%
+Right.
+
+01:02:45.670 --> 01:02:46.370 align:middle line:90%
+Right.
+
+01:02:46.370 --> 01:02:50.470 align:middle line:84%
+So at T rho is this
+blue tube and R of E rho
+
+01:02:50.470 --> 01:02:54.500 align:middle line:84%
+T rho is the number of rho
+balls in the blue tube.
+
+01:02:54.500 --> 01:02:56.200 align:middle line:84%
+And then if we take
+an orange tube,
+
+01:02:56.200 --> 01:03:00.060 align:middle line:84%
+it will go through this
+many of the rho balls.
+
+01:03:00.060 --> 01:03:03.100 align:middle line:84%
+And we want to know how
+many delta balls are there
+
+01:03:03.100 --> 01:03:05.580 align:middle line:90%
+in each of those bits.
+
+01:03:05.580 --> 01:03:08.980 align:middle line:84%
+So now we have some tubes
+at this tubes inside of B
+
+01:03:08.980 --> 01:03:12.060 align:middle line:84%
+and points inside of
+B. And we blow that up.
+
+01:03:12.060 --> 01:03:13.000 align:middle line:90%
+And that's over here.
+
+01:03:13.000 --> 01:03:15.980 align:middle line:90%
+
+
+01:03:15.980 --> 01:03:18.700 align:middle line:90%
+OK, good
+
+01:03:18.700 --> 01:03:19.200 align:middle line:90%
+OK.
+
+01:03:19.200 --> 01:03:21.060 align:middle line:84%
+So here's something
+we might try.
+
+01:03:21.060 --> 01:03:22.800 align:middle line:90%
+We start with E delta T delta.
+
+01:03:22.800 --> 01:03:24.200 align:middle line:90%
+We don't know how to handle it.
+
+01:03:24.200 --> 01:03:25.860 align:middle line:84%
+We look at the
+branching function.
+
+01:03:25.860 --> 01:03:27.700 align:middle line:84%
+I can cut the branching
+function anywhere
+
+01:03:27.700 --> 01:03:30.280 align:middle line:84%
+I like and produce two
+branching functions.
+
+01:03:30.280 --> 01:03:31.820 align:middle line:90%
+And I can repeat that.
+
+01:03:31.820 --> 01:03:34.780 align:middle line:84%
+And then I can take the
+different branching functions
+
+01:03:34.780 --> 01:03:35.480 align:middle line:90%
+I get.
+
+01:03:35.480 --> 01:03:38.540 align:middle line:84%
+And hopefully, I can
+put them into the list
+
+01:03:38.540 --> 01:03:41.260 align:middle line:90%
+that I know how to handle.
+
+01:03:41.260 --> 01:03:43.810 align:middle line:84%
+And then I'll multiply together
+and I'll get an answer.
+
+01:03:43.810 --> 01:03:47.940 align:middle line:90%
+
+
+01:03:47.940 --> 01:03:51.780 align:middle line:84%
+So let me do a couple examples
+of this concatenation method
+
+01:03:51.780 --> 01:03:53.070 align:middle line:90%
+and we'll see how it works.
+
+01:03:53.070 --> 01:04:12.340 align:middle line:90%
+
+
+01:04:12.340 --> 01:04:13.950 align:middle line:90%
+Concatenation method.
+
+01:04:13.950 --> 01:04:18.780 align:middle line:90%
+
+
+01:04:18.780 --> 01:04:19.480 align:middle line:90%
+All right.
+
+01:04:19.480 --> 01:04:23.620 align:middle line:84%
+So let me do the example where
+our graph consists of two lines.
+
+01:04:23.620 --> 01:04:28.660 align:middle line:84%
+So it has a line of
+slope T1 up to somewhere.
+
+01:04:28.660 --> 01:04:31.540 align:middle line:90%
+So here's log delta of rho.
+
+01:04:31.540 --> 01:04:33.600 align:middle line:84%
+And then it has a line
+at a different slope,
+
+01:04:33.600 --> 01:04:35.460 align:middle line:90%
+which let's say is smaller.
+
+01:04:35.460 --> 01:04:41.260 align:middle line:90%
+So here's slope T2 to the end.
+
+01:04:41.260 --> 01:04:42.060 align:middle line:90%
+It's 1.
+
+01:04:42.060 --> 01:04:48.280 align:middle line:84%
+And let's say that
+this final height is T.
+
+01:04:48.280 --> 01:04:49.990 align:middle line:90%
+So how are they related?
+
+01:04:49.990 --> 01:04:53.410 align:middle line:84%
+So delta to the
+minus T is E delta,
+
+01:04:53.410 --> 01:04:56.490 align:middle line:84%
+which I can read off from
+my final branching function.
+
+01:04:56.490 --> 01:05:00.330 align:middle line:84%
+That's the size of E rho
+times the size of EB.
+
+01:05:00.330 --> 01:05:05.210 align:middle line:84%
+Number of rho balls times number
+of delta balls per rho ball.
+
+01:05:05.210 --> 01:05:09.330 align:middle line:90%
+So that is rho to the minus T1.
+
+01:05:09.330 --> 01:05:11.130 align:middle line:90%
+So this is slope T1.
+
+01:05:11.130 --> 01:05:14.460 align:middle line:84%
+Times delta over
+rho to the minus T2.
+
+01:05:14.460 --> 01:05:19.090 align:middle line:90%
+
+
+01:05:19.090 --> 01:05:23.290 align:middle line:90%
+So now let's see what happens.
+
+01:05:23.290 --> 01:05:35.890 align:middle line:84%
+So R of ET is bounded by R
+of E rho T rho R of EB TB.
+
+01:05:35.890 --> 01:05:37.150 align:middle line:90%
+Scenario 1.
+
+01:05:37.150 --> 01:05:40.330 align:middle line:90%
+
+
+01:05:40.330 --> 01:05:46.930 align:middle line:84%
+In this scenario 1, T1 and T2
+are both in this middle range
+
+01:05:46.930 --> 01:05:48.340 align:middle line:90%
+where B dominates.
+
+01:05:48.340 --> 01:05:51.160 align:middle line:90%
+
+
+01:05:51.160 --> 01:05:59.240 align:middle line:84%
+So then this guy will
+give me rho to the S
+
+01:05:59.240 --> 01:06:03.120 align:middle line:84%
+over 2, rho to the
+minus T1 over 2.
+
+01:06:03.120 --> 01:06:07.080 align:middle line:84%
+Because this is
+option B. B dominates.
+
+01:06:07.080 --> 01:06:12.200 align:middle line:84%
+And this guy here will give me
+delta over rho to the S over 2,
+
+01:06:12.200 --> 01:06:16.240 align:middle line:84%
+delta over Rho to
+the minus T2 over 2.
+
+01:06:16.240 --> 01:06:20.340 align:middle line:84%
+Because that's option B.
+This is not B as in ball,
+
+01:06:20.340 --> 01:06:24.960 align:middle line:84%
+this is B as in A, B,
+and C, the three options.
+
+01:06:24.960 --> 01:06:25.740 align:middle line:90%
+All right.
+
+01:06:25.740 --> 01:06:28.640 align:middle line:84%
+When you multiply it out,
+something nice happens.
+
+01:06:28.640 --> 01:06:31.640 align:middle line:84%
+What happens when we
+multiply these together?
+
+01:06:31.640 --> 01:06:35.080 align:middle line:90%
+We get delta to the S over 2.
+
+01:06:35.080 --> 01:06:38.160 align:middle line:84%
+And what happens when we
+multiply those together?
+
+01:06:38.160 --> 01:06:44.350 align:middle line:84%
+At first it looks like an unholy
+mess, but it's the same as this.
+
+01:06:44.350 --> 01:06:48.480 align:middle line:90%
+
+
+01:06:48.480 --> 01:06:52.200 align:middle line:84%
+And so it's delta to
+the minus T over 2,
+
+01:06:52.200 --> 01:06:54.900 align:middle line:84%
+which is B, which is
+what we were hoping for.
+
+01:06:54.900 --> 01:06:59.520 align:middle line:90%
+
+
+01:06:59.520 --> 01:07:03.080 align:middle line:90%
+This is a smiley face.
+
+01:07:03.080 --> 01:07:06.920 align:middle line:84%
+But let me mention
+another scenario.
+
+01:07:06.920 --> 01:07:08.440 align:middle line:90%
+Scenario 2.
+
+01:07:08.440 --> 01:07:13.080 align:middle line:84%
+Maybe T1 is bigger
+than 2 minus S,
+
+01:07:13.080 --> 01:07:16.360 align:middle line:84%
+and maybe T2 is smaller than
+S. So maybe this first one
+
+01:07:16.360 --> 01:07:18.520 align:middle line:90%
+is really quite steep.
+
+01:07:18.520 --> 01:07:22.200 align:middle line:84%
+And then the second
+one is quite shallow.
+
+01:07:22.200 --> 01:07:23.760 align:middle line:90%
+OK.
+
+01:07:23.760 --> 01:07:31.320 align:middle line:84%
+Well, now this first one,
+when I evaluate this,
+
+01:07:31.320 --> 01:07:35.200 align:middle line:90%
+I'm in the C domain.
+
+01:07:35.200 --> 01:07:38.520 align:middle line:90%
+I get rho to the 1 minus T1.
+
+01:07:38.520 --> 01:07:42.520 align:middle line:84%
+And when I evaluate this,
+because this T2 is less than S,
+
+01:07:42.520 --> 01:07:45.490 align:middle line:90%
+I'm in the A domain, which is 1.
+
+01:07:45.490 --> 01:07:49.150 align:middle line:90%
+
+
+01:07:49.150 --> 01:07:51.670 align:middle line:84%
+And that's not what
+I'm hoping for.
+
+01:07:51.670 --> 01:07:56.160 align:middle line:84%
+That's actually much
+bigger than my goal.
+
+01:07:56.160 --> 01:08:02.510 align:middle line:90%
+
+
+01:08:02.510 --> 01:08:04.530 align:middle line:84%
+So actually, let me
+add to scenario 2.
+
+01:08:04.530 --> 01:08:07.430 align:middle line:90%
+But T is in the middle.
+
+01:08:07.430 --> 01:08:09.990 align:middle line:90%
+T is a average of T1 and T2.
+
+01:08:09.990 --> 01:08:12.850 align:middle line:84%
+T1 is bigger-- is quite
+big, T2 is quite small.
+
+01:08:12.850 --> 01:08:15.710 align:middle line:84%
+But this average is going
+to be in the middle.
+
+01:08:15.710 --> 01:08:17.620 align:middle line:84%
+Since T is in the
+middle, this is the goal.
+
+01:08:17.620 --> 01:08:20.310 align:middle line:90%
+
+
+01:08:20.310 --> 01:08:22.130 align:middle line:84%
+How does this
+compare to the goal?
+
+01:08:22.130 --> 01:08:24.510 align:middle line:84%
+Not so obvious,
+but it's actually
+
+01:08:24.510 --> 01:08:25.770 align:middle line:90%
+much bigger than the goal.
+
+01:08:25.770 --> 01:08:27.270 align:middle line:90%
+What went wrong?
+
+01:08:27.270 --> 01:08:30.510 align:middle line:84%
+Remember that at each
+step when I bounded R,
+
+01:08:30.510 --> 01:08:35.710 align:middle line:84%
+my theorem bounds R by a
+maximum of three things.
+
+01:08:35.710 --> 01:08:42.220 align:middle line:84%
+Maximum of A, B,
+and C. So this C
+
+01:08:42.220 --> 01:08:45.740 align:middle line:84%
+is way bigger than
+B in this regime.
+
+01:08:45.740 --> 01:08:49.700 align:middle line:84%
+And this A is way bigger
+than B in this regime.
+
+01:08:49.700 --> 01:08:52.460 align:middle line:90%
+And B times B would be my goal.
+
+01:08:52.460 --> 01:08:53.680 align:middle line:90%
+So this is way too big.
+
+01:08:53.680 --> 01:08:56.460 align:middle line:90%
+So it doesn't work.
+
+01:08:56.460 --> 01:08:57.218 align:middle line:90%
+OK.
+
+01:08:57.218 --> 01:09:01.100 align:middle line:84%
+So lesson that we
+learned here is
+
+01:09:01.100 --> 01:09:12.720 align:middle line:84%
+that we want to break up
+F into pieces so that--
+
+01:09:12.720 --> 01:09:13.800 align:middle line:90%
+OK, I'll say it in words.
+
+01:09:13.800 --> 01:09:17.220 align:middle line:84%
+So first of all, we'd like to
+be able to analyze each piece.
+
+01:09:17.220 --> 01:09:19.540 align:middle line:84%
+So we want each piece to
+be on the list of things
+
+01:09:19.540 --> 01:09:20.317 align:middle line:90%
+we understand.
+
+01:09:20.317 --> 01:09:22.359 align:middle line:84%
+So if you don't have a
+sharp bound for the piece,
+
+01:09:22.359 --> 01:09:24.401 align:middle line:84%
+there's no way you're
+going to have a sharp bound
+
+01:09:24.401 --> 01:09:25.340 align:middle line:90%
+for the whole thing.
+
+01:09:25.340 --> 01:09:28.399 align:middle line:84%
+But also, we're not happy
+with just any of these.
+
+01:09:28.399 --> 01:09:37.269 align:middle line:84%
+We really want them all
+to be in case B. Right.
+
+01:09:37.269 --> 01:09:43.460 align:middle line:90%
+
+
+01:09:43.460 --> 01:09:53.580 align:middle line:84%
+So we really want
+each piece to be
+
+01:09:53.580 --> 01:10:02.300 align:middle line:84%
+either AD regular with T of
+that piece in our middle range,
+
+01:10:02.300 --> 01:10:05.190 align:middle line:84%
+in the B range, or
+semi well spaced.
+
+01:10:05.190 --> 01:10:19.160 align:middle line:90%
+
+
+01:10:19.160 --> 01:10:19.660 align:middle line:90%
+OK.
+
+01:10:19.660 --> 01:10:24.620 align:middle line:90%
+
+
+01:10:24.620 --> 01:10:25.120 align:middle line:90%
+Cool.
+
+01:10:25.120 --> 01:10:32.740 align:middle line:90%
+
+
+01:10:32.740 --> 01:10:36.260 align:middle line:84%
+So the very last idea is
+that indeed, you can do this.
+
+01:10:36.260 --> 01:10:41.330 align:middle line:84%
+You can start with an
+arbitrary branching function,
+
+01:10:41.330 --> 01:10:43.650 align:middle line:84%
+and then you can break
+it up into pieces
+
+01:10:43.650 --> 01:10:47.970 align:middle line:90%
+where each piece is like this.
+
+01:10:47.970 --> 01:10:49.310 align:middle line:90%
+I'll write it down in a second.
+
+01:10:49.310 --> 01:10:49.977 align:middle line:90%
+Draw an example.
+
+01:10:49.977 --> 01:10:53.170 align:middle line:90%
+
+
+01:10:53.170 --> 01:10:55.610 align:middle line:84%
+Probably the most
+important idea behind this
+
+01:10:55.610 --> 01:10:57.770 align:middle line:90%
+is the Rademacher theorem.
+
+01:10:57.770 --> 01:11:01.430 align:middle line:84%
+So the Rademacher theorem says
+that a differentiable function--
+
+01:11:01.430 --> 01:11:03.450 align:middle line:84%
+a Lipschitz function
+is differentiable
+
+01:11:03.450 --> 01:11:05.930 align:middle line:90%
+almost everywhere.
+
+01:11:05.930 --> 01:11:09.110 align:middle line:84%
+And so this function F, we
+don't know a lot about it,
+
+01:11:09.110 --> 01:11:12.170 align:middle line:84%
+but we did see that
+its Lipschitz function.
+
+01:11:12.170 --> 01:11:14.930 align:middle line:84%
+And so it's differentiable
+almost everywhere.
+
+01:11:14.930 --> 01:11:17.570 align:middle line:84%
+So that means that we
+can cut up our interval
+
+01:11:17.570 --> 01:11:20.690 align:middle line:84%
+into little intervals
+where maybe you
+
+01:11:20.690 --> 01:11:21.950 align:middle line:90%
+have to throw out a tiny bit.
+
+01:11:21.950 --> 01:11:23.530 align:middle line:84%
+But on almost every
+little interval,
+
+01:11:23.530 --> 01:11:28.690 align:middle line:84%
+it's approximately a
+constant slope example.
+
+01:11:28.690 --> 01:11:32.410 align:middle line:84%
+So you can reduce everything--
+just by Rademacher theorem,
+
+01:11:32.410 --> 01:11:36.200 align:middle line:84%
+you can reduce everything to
+the AD regular irregular case.
+
+01:11:36.200 --> 01:11:38.080 align:middle line:84%
+And that's an indication
+that AD regular case
+
+01:11:38.080 --> 01:11:38.940 align:middle line:90%
+is really important.
+
+01:11:38.940 --> 01:11:41.560 align:middle line:90%
+It's not just a special case.
+
+01:11:41.560 --> 01:11:44.760 align:middle line:84%
+However, if you do
+that, we would not only
+
+01:11:44.760 --> 01:11:46.640 align:middle line:84%
+have slopes in
+here, we would also
+
+01:11:46.640 --> 01:11:49.120 align:middle line:84%
+have slopes that are
+too small or too large.
+
+01:11:49.120 --> 01:11:51.480 align:middle line:84%
+So we want everybody
+to be in case B.
+
+01:11:51.480 --> 01:11:53.160 align:middle line:84%
+And that's why we
+need some extra stuff
+
+01:11:53.160 --> 01:11:56.000 align:middle line:90%
+like the semi well-spaced.
+
+01:11:56.000 --> 01:11:56.772 align:middle line:90%
+OK.
+
+01:11:56.772 --> 01:12:01.470 align:middle line:84%
+So I will write down
+this last thing.
+
+01:12:01.470 --> 01:12:10.080 align:middle line:90%
+
+
+01:12:10.080 --> 01:12:11.270 align:middle line:90%
+So final Lemma.
+
+01:12:11.270 --> 01:12:14.600 align:middle line:90%
+
+
+01:12:14.600 --> 01:12:19.400 align:middle line:84%
+If F is a function
+from 0, 1 to R,
+
+01:12:19.400 --> 01:12:23.720 align:middle line:84%
+which is 2 Lipschitz
+and increasing,
+
+01:12:23.720 --> 01:12:28.840 align:middle line:84%
+then we can break up 0,
+1 as a disjoint union
+
+01:12:28.840 --> 01:12:33.370 align:middle line:84%
+of some intervals, maybe
+plus tiny leftover.
+
+01:12:33.370 --> 01:12:37.160 align:middle line:90%
+
+
+01:12:37.160 --> 01:12:45.760 align:middle line:84%
+And then on each I,
+either F restricted to I--
+
+01:12:45.760 --> 01:12:55.240 align:middle line:84%
+either F is almost
+linear with slope TI,
+
+01:12:55.240 --> 01:12:56.930 align:middle line:90%
+and TI is in our range.
+
+01:12:56.930 --> 01:13:00.500 align:middle line:90%
+
+
+01:13:00.500 --> 01:13:02.080 align:middle line:90%
+I should say one other thing.
+
+01:13:02.080 --> 01:13:07.480 align:middle line:84%
+Let's say F of 1 is T
+and T is in our range.
+
+01:13:07.480 --> 01:13:08.023 align:middle line:90%
+Oh, yeah.
+
+01:13:08.023 --> 01:13:08.940 align:middle line:90%
+And we should-- sorry.
+
+01:13:08.940 --> 01:13:12.040 align:middle line:84%
+We should have F of X
+is bigger than T of X.
+
+01:13:12.040 --> 01:13:13.020 align:middle line:90%
+So this is our setup.
+
+01:13:13.020 --> 01:13:14.420 align:middle line:90%
+We have a delta T set.
+
+01:13:14.420 --> 01:13:16.920 align:middle line:84%
+We're looking at its
+branching function.
+
+01:13:16.920 --> 01:13:18.920 align:middle line:84%
+So either its almost
+linear and its slope
+
+01:13:18.920 --> 01:13:23.330 align:middle line:84%
+is in the desired range or
+on I, F is semi well spaced.
+
+01:13:23.330 --> 01:13:29.760 align:middle line:90%
+
+
+01:13:29.760 --> 01:13:31.950 align:middle line:90%
+OK.
+
+01:13:31.950 --> 01:13:34.270 align:middle line:84%
+It's not so difficult
+to prove once you think
+
+01:13:34.270 --> 01:13:37.310 align:middle line:84%
+to try to prove it, but I'm
+just going to illustrate it
+
+01:13:37.310 --> 01:13:39.260 align:middle line:90%
+with an example.
+
+01:13:39.260 --> 01:13:44.310 align:middle line:90%
+
+
+01:13:44.310 --> 01:13:48.870 align:middle line:90%
+So suppose F looks like this.
+
+01:13:48.870 --> 01:13:52.010 align:middle line:84%
+And so the slope is
+increasing for a while.
+
+01:13:52.010 --> 01:13:54.790 align:middle line:84%
+I guess it needs to start
+bigger than T. So a bit tricky
+
+01:13:54.790 --> 01:13:57.830 align:middle line:90%
+to draw this picture here.
+
+01:13:57.830 --> 01:14:02.010 align:middle line:84%
+So it needs to stay above
+this dotted line, right?
+
+01:14:02.010 --> 01:14:04.810 align:middle line:84%
+So it's going to start tangent
+to the line, which is OK.
+
+01:14:04.810 --> 01:14:07.030 align:middle line:90%
+The slope increases for a while.
+
+01:14:07.030 --> 01:14:09.690 align:middle line:84%
+Has a maximum slope,
+and the slope decreases.
+
+01:14:09.690 --> 01:14:11.150 align:middle line:90%
+And it goes like that.
+
+01:14:11.150 --> 01:14:13.510 align:middle line:84%
+And as this slope
+increases, there
+
+01:14:13.510 --> 01:14:20.542 align:middle line:84%
+is a key moment where
+the slope gets too big.
+
+01:14:20.542 --> 01:14:26.870 align:middle line:84%
+Over here, slope is 2 minus
+S. And maybe at the end
+
+01:14:26.870 --> 01:14:29.350 align:middle line:90%
+the slope is too small.
+
+01:14:29.350 --> 01:14:34.100 align:middle line:84%
+The slope is less than S.
+OK, so what should we do?
+
+01:14:34.100 --> 01:14:40.900 align:middle line:84%
+Well, this whole thing
+here, this whole thing
+
+01:14:40.900 --> 01:14:42.320 align:middle line:90%
+is semi well-spaced.
+
+01:14:42.320 --> 01:14:47.420 align:middle line:90%
+
+
+01:14:47.420 --> 01:14:52.340 align:middle line:84%
+And at the beginning we can
+take very short intervals.
+
+01:14:52.340 --> 01:14:56.820 align:middle line:84%
+So we'll have this guy and
+this guy, and this guy.
+
+01:14:56.820 --> 01:15:00.580 align:middle line:90%
+And these blue guys are almost--
+
+01:15:00.580 --> 01:15:02.250 align:middle line:84%
+they're short, so
+it's almost linear.
+
+01:15:02.250 --> 01:15:04.980 align:middle line:90%
+
+
+01:15:04.980 --> 01:15:08.580 align:middle line:84%
+And the slope is not yet
+bigger than 2 minus S.
+
+01:15:08.580 --> 01:15:17.980 align:middle line:84%
+So the slope TI is less than
+2 minus S. Bigger than S. OK.
+
+01:15:17.980 --> 01:15:18.960 align:middle line:90%
+This is not a proof.
+
+01:15:18.960 --> 01:15:21.980 align:middle line:84%
+But there are not that many
+ways this function could look.
+
+01:15:21.980 --> 01:15:25.277 align:middle line:84%
+And if you draw five of them,
+you can convince yourself.
+
+01:15:25.277 --> 01:15:26.610 align:middle line:90%
+Then if you want, you can prove.
+
+01:15:26.610 --> 01:15:30.170 align:middle line:90%
+
+
+01:15:30.170 --> 01:15:32.130 align:middle line:90%
+OK.
+
+01:15:32.130 --> 01:15:38.890 align:middle line:84%
+So to summarize, This
+picture, this fact
+
+01:15:38.890 --> 01:15:42.050 align:middle line:84%
+is very powerful because it lets
+us break up our original problem
+
+01:15:42.050 --> 01:15:44.410 align:middle line:90%
+into smaller problems.
+
+01:15:44.410 --> 01:15:47.010 align:middle line:84%
+And the smaller problems in
+terms of the branching functions
+
+01:15:47.010 --> 01:15:48.570 align:middle line:84%
+because the smaller
+problems are just
+
+01:15:48.570 --> 01:15:52.090 align:middle line:84%
+little pieces of the branching
+function of the bigger problem.
+
+01:15:52.090 --> 01:15:53.550 align:middle line:84%
+And when you do
+that, there are--
+
+01:15:53.550 --> 01:15:57.850 align:middle line:90%
+
+
+01:15:57.850 --> 01:16:02.530 align:middle line:84%
+what originally looked like we
+just had a few special cases,
+
+01:16:02.530 --> 01:16:06.610 align:middle line:84%
+now we can take any combination
+of those few special cases.
+
+01:16:06.610 --> 01:16:08.390 align:middle line:90%
+And that turns out to be a lot.
+
+01:16:08.390 --> 01:16:09.710 align:middle line:90%
+And even to be everything.
+
+01:16:09.710 --> 01:16:12.410 align:middle line:90%
+
+
+01:16:12.410 --> 01:16:16.410 align:middle line:90%
+So that's the last idea.
+
+01:16:16.410 --> 01:16:16.910 align:middle line:90%
+The proof.
+
+01:16:16.910 --> 01:16:18.890 align:middle line:84%
+The proof how to put
+the pieces together.
+
+01:16:18.890 --> 01:16:21.950 align:middle line:84%
+And so these pieces were
+not just special cases.
+
+01:16:21.950 --> 01:16:25.250 align:middle line:84%
+They are really the
+fundamental building blocks
+
+01:16:25.250 --> 01:16:28.210 align:middle line:90%
+of the whole story.
+
+01:16:28.210 --> 01:16:32.450 align:middle line:84%
+And it also is striking to me
+that this multi-scale argument
+
+01:16:32.450 --> 01:16:36.370 align:middle line:84%
+was really crucial in both the
+AD regular case and the not
+
+01:16:36.370 --> 01:16:38.930 align:middle line:90%
+the AD regular case.
+
+01:16:38.930 --> 01:16:42.330 align:middle line:84%
+In the AD regular case, these
+problems were all the same.
+
+01:16:42.330 --> 01:16:45.230 align:middle line:84%
+And then seeing that sameness at
+all these different situations,
+
+01:16:45.230 --> 01:16:48.650 align:middle line:84%
+it gave us some extra
+rigidity and structure.
+
+01:16:48.650 --> 01:16:51.410 align:middle line:84%
+In the not AD regular case,
+by definition, these problems
+
+01:16:51.410 --> 01:16:52.430 align:middle line:90%
+are different.
+
+01:16:52.430 --> 01:16:55.130 align:middle line:84%
+And that means that gives
+us a whole menu of problems
+
+01:16:55.130 --> 01:16:56.067 align:middle line:90%
+to choose from.
+
+01:16:56.067 --> 01:16:57.650 align:middle line:84%
+And then we can look
+through this menu
+
+01:16:57.650 --> 01:16:59.790 align:middle line:84%
+and try to find the
+things that we understand.
+
+01:16:59.790 --> 01:17:02.810 align:middle line:90%
+
+
+01:17:02.810 --> 01:17:04.790 align:middle line:90%
+OK, cool.
+
+01:17:04.790 --> 01:17:05.290 align:middle line:90%
+OK.
+
+01:17:05.290 --> 01:17:09.730 align:middle line:84%
+So that was an outline
+of projection theory.
+
+01:17:09.730 --> 01:17:12.070 align:middle line:84%
+Thank you for coming
+with me on this outline.
+
+01:17:12.070 --> 01:17:14.410 align:middle line:84%
+It's been nice
+talking with you all.
+
+01:17:14.410 --> 01:17:17.760 align:middle line:84%
+And yeah, let's stop
+the class there.
+
+01:17:17.760 --> 01:17:25.000 align:middle line:90%

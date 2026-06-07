@@ -1,0 +1,4555 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.440 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.440 --> 00:00:03.904 align:middle line:90%
+[RUSTLING]
+
+00:00:03.904 --> 00:00:11.720 align:middle line:90%
+[CLICKING]
+
+00:00:11.720 --> 00:00:13.680 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:00:13.680 --> 00:00:17.860 align:middle line:84%
+So today we're going to
+talk about the large sieve.
+
+00:00:17.860 --> 00:00:20.640 align:middle line:84%
+So last week, we
+introduced the large sieve.
+
+00:00:20.640 --> 00:00:24.520 align:middle line:84%
+And we explained how it's
+analogous to the projections
+
+00:00:24.520 --> 00:00:26.260 align:middle line:84%
+theorems that we proved
+in finite fields,
+
+00:00:26.260 --> 00:00:29.298 align:middle line:84%
+and the projection theorems that
+we proved in Euclidean space.
+
+00:00:29.298 --> 00:00:30.840 align:middle line:84%
+And today, I wanted
+to explain to you
+
+00:00:30.840 --> 00:00:34.920 align:middle line:84%
+some of the applications of the
+large sieve in number theory.
+
+00:00:34.920 --> 00:00:38.980 align:middle line:84%
+So the original application of
+the large sieve was by Linnik.
+
+00:00:38.980 --> 00:00:41.440 align:middle line:84%
+And he was interested in
+how quadratic residues are
+
+00:00:41.440 --> 00:00:43.000 align:middle line:90%
+distributed.
+
+00:00:43.000 --> 00:00:45.580 align:middle line:84%
+And I wrote that one
+up on the homework.
+
+00:00:45.580 --> 00:00:48.360 align:middle line:84%
+So the homework problem is
+to retrace Linnik's steps
+
+00:00:48.360 --> 00:00:52.960 align:middle line:84%
+proving about how quadratic
+residues are distributed.
+
+00:00:52.960 --> 00:00:58.120 align:middle line:84%
+And then a second important
+influential application
+
+00:00:58.120 --> 00:01:02.430 align:middle line:84%
+has to do with how prime numbers
+are distributed modulo q.
+
+00:01:02.430 --> 00:01:06.950 align:middle line:84%
+So that's what I'm going to
+tell you all about today.
+
+00:01:06.950 --> 00:01:11.830 align:middle line:84%
+So first, we'll do
+some background.
+
+00:01:11.830 --> 00:01:13.870 align:middle line:84%
+First, we'll talk
+about what is known
+
+00:01:13.870 --> 00:01:16.570 align:middle line:84%
+about how prime numbers
+are distributed modulo q.
+
+00:01:16.570 --> 00:01:40.070 align:middle line:90%
+
+
+00:01:40.070 --> 00:01:41.190 align:middle line:90%
+All right.
+
+00:01:41.190 --> 00:01:54.590 align:middle line:84%
+So let's say pi of N is the
+number of primes up to N.
+
+00:01:54.590 --> 00:01:58.130 align:middle line:84%
+And then, we can look at the
+modulo q for some choice q
+
+00:01:58.130 --> 00:02:02.650 align:middle line:84%
+and see how many of those
+primes are in each moduli class.
+
+00:02:02.650 --> 00:02:13.530 align:middle line:84%
+So pi N, q, a is the number
+of p prime, p less than
+
+00:02:13.530 --> 00:02:16.670 align:middle line:84%
+or equal to N. And
+p equals a mod q.
+
+00:02:16.670 --> 00:02:21.850 align:middle line:90%
+
+
+00:02:21.850 --> 00:02:26.370 align:middle line:84%
+Now some of these moduli classes
+will be quite-- some of these
+
+00:02:26.370 --> 00:02:28.570 align:middle line:90%
+will be quite small.
+
+00:02:28.570 --> 00:02:31.170 align:middle line:84%
+If a and q have a common
+factor, then there
+
+00:02:31.170 --> 00:02:34.930 align:middle line:84%
+will be only finitely many
+primes in this moduli class.
+
+00:02:34.930 --> 00:02:39.650 align:middle line:84%
+So the main focus is on the ones
+where the GCD of a and q is 1.
+
+00:02:39.650 --> 00:02:43.220 align:middle line:90%
+So focus on the case.
+
+00:02:43.220 --> 00:02:46.210 align:middle line:90%
+
+
+00:02:46.210 --> 00:02:49.610 align:middle line:84%
+So I'm going to write
+it that a is in Zq star.
+
+00:02:49.610 --> 00:02:53.610 align:middle line:84%
+Zq star is the set of
+a and Z mod q, where
+
+00:02:53.610 --> 00:02:55.470 align:middle line:90%
+a is relatively prime to q.
+
+00:02:55.470 --> 00:02:59.120 align:middle line:90%
+
+
+00:02:59.120 --> 00:03:04.620 align:middle line:84%
+So numerically
+and theoretically,
+
+00:03:04.620 --> 00:03:06.640 align:middle line:84%
+it looks like the
+primes are pretty evenly
+
+00:03:06.640 --> 00:03:10.160 align:middle line:84%
+distributed among all of
+these residue classes.
+
+00:03:10.160 --> 00:03:13.420 align:middle line:84%
+And it is relevant to
+say how many there are,
+
+00:03:13.420 --> 00:03:16.740 align:middle line:90%
+so that's called phi of q.
+
+00:03:16.740 --> 00:03:20.480 align:middle line:84%
+It's the cardinality of Zq star,
+the number of different a that
+
+00:03:20.480 --> 00:03:24.300 align:middle line:90%
+are relatively prime to q.
+
+00:03:24.300 --> 00:03:27.120 align:middle line:84%
+So if the primes were really
+well evenly distributed
+
+00:03:27.120 --> 00:03:30.786 align:middle line:84%
+among the moduli classes,
+then you would expect--
+
+00:03:30.786 --> 00:03:32.220 align:middle line:90%
+so I'll write this way.
+
+00:03:32.220 --> 00:03:37.480 align:middle line:84%
+So we see even
+distribution, and that
+
+00:03:37.480 --> 00:03:42.800 align:middle line:84%
+means that the actual number
+of primes in the moduli class
+
+00:03:42.800 --> 00:03:46.640 align:middle line:84%
+is close to the total
+number of primes
+
+00:03:46.640 --> 00:03:49.030 align:middle line:84%
+divided by the number
+of moduli classes.
+
+00:03:49.030 --> 00:03:53.040 align:middle line:90%
+
+
+00:03:53.040 --> 00:03:59.060 align:middle line:84%
+So how would we
+measure this precisely?
+
+00:03:59.060 --> 00:04:05.420 align:middle line:84%
+We define delta q of N, the
+defect of equidistribution,
+
+00:04:05.420 --> 00:04:08.300 align:middle line:84%
+to be the maximum
+over all the residue
+
+00:04:08.300 --> 00:04:12.100 align:middle line:84%
+classes of the difference
+between the actual number
+
+00:04:12.100 --> 00:04:15.640 align:middle line:84%
+of primes and this
+naive estimate.
+
+00:04:15.640 --> 00:04:22.600 align:middle line:90%
+
+
+00:04:22.600 --> 00:04:25.180 align:middle line:84%
+So when we ask, how
+evenly are primes
+
+00:04:25.180 --> 00:04:28.140 align:middle line:84%
+distributed modulo q,
+quantitatively, that means,
+
+00:04:28.140 --> 00:04:29.360 align:middle line:90%
+how big is this thing?
+
+00:04:29.360 --> 00:04:32.140 align:middle line:90%
+
+
+00:04:32.140 --> 00:04:34.700 align:middle line:84%
+So this question
+was first addressed
+
+00:04:34.700 --> 00:04:38.540 align:middle line:84%
+by Dirichlet, who showed
+that, in a certain sense,
+
+00:04:38.540 --> 00:04:41.020 align:middle line:90%
+that this is close to this.
+
+00:04:41.020 --> 00:04:41.950 align:middle line:90%
+Here's what he proved.
+
+00:04:41.950 --> 00:04:49.100 align:middle line:90%
+
+
+00:04:49.100 --> 00:04:53.140 align:middle line:84%
+He proved that for any q, if
+you take the limit as N goes
+
+00:04:53.140 --> 00:04:59.450 align:middle line:84%
+to infinity of
+delta q of N, it's
+
+00:04:59.450 --> 00:05:02.930 align:middle line:90%
+asymptotically smaller than N/q.
+
+00:05:02.930 --> 00:05:04.350 align:middle line:90%
+So this limit is 0.
+
+00:05:04.350 --> 00:05:08.710 align:middle line:90%
+
+
+00:05:08.710 --> 00:05:10.210 align:middle line:84%
+So actually, let
+me say, when you're
+
+00:05:10.210 --> 00:05:12.330 align:middle line:84%
+talking about these
+being equidistributed,
+
+00:05:12.330 --> 00:05:14.290 align:middle line:84%
+we're going to mean
+that this is small.
+
+00:05:14.290 --> 00:05:16.490 align:middle line:90%
+Small relative to what?
+
+00:05:16.490 --> 00:05:21.570 align:middle line:84%
+Well, this is a good
+approximation of this
+
+00:05:21.570 --> 00:05:26.010 align:middle line:84%
+if this error term is small
+compared to the main term.
+
+00:05:26.010 --> 00:05:33.650 align:middle line:84%
+So equidistribution would
+mean that delta q of N
+
+00:05:33.650 --> 00:05:36.050 align:middle line:84%
+is much smaller than
+the main term, which
+
+00:05:36.050 --> 00:05:44.782 align:middle line:84%
+is on the order of N/q, or
+it could be N over log N q.
+
+00:05:44.782 --> 00:05:48.090 align:middle line:90%
+
+
+00:05:48.090 --> 00:05:54.530 align:middle line:84%
+So Dirichlet's arguments, you
+can make them quantitative.
+
+00:05:54.530 --> 00:05:56.030 align:middle line:84%
+Instead of having
+a limit, you could
+
+00:05:56.030 --> 00:05:58.870 align:middle line:90%
+say, if N is sufficiently big.
+
+00:05:58.870 --> 00:06:02.510 align:middle line:84%
+And they were made quantitative
+by Siegel and Walfisz, which
+
+00:06:02.510 --> 00:06:03.900 align:middle line:90%
+involves some additional ideas.
+
+00:06:03.900 --> 00:06:08.670 align:middle line:90%
+
+
+00:06:08.670 --> 00:06:12.750 align:middle line:84%
+And so this line of thinking
+led to the following theorem.
+
+00:06:12.750 --> 00:06:20.190 align:middle line:84%
+So for any q, delta q
+of N is bounded by--
+
+00:06:20.190 --> 00:06:21.810 align:middle line:90%
+OK, so let me say it this way.
+
+00:06:21.810 --> 00:06:27.710 align:middle line:84%
+So for any A, there's a constant
+C sub A. And delta q of N
+
+00:06:27.710 --> 00:06:40.122 align:middle line:84%
+is bounded by C sub A, N,
+log of N to the minus A.
+
+00:06:40.122 --> 00:06:41.570 align:middle line:90%
+Now when is this useful?
+
+00:06:41.570 --> 00:06:43.430 align:middle line:84%
+When does this tell
+us that delta q of N
+
+00:06:43.430 --> 00:06:45.470 align:middle line:90%
+is much smaller than N/q?
+
+00:06:45.470 --> 00:06:48.750 align:middle line:90%
+Well, q cannot be too big.
+
+00:06:48.750 --> 00:06:53.860 align:middle line:84%
+So delta q N is much
+smaller than N/q
+
+00:06:53.860 --> 00:07:05.157 align:middle line:84%
+if q is smaller than
+a power of log N.
+
+00:07:05.157 --> 00:07:06.740 align:middle line:84%
+I'm not going to
+talk about the proofs
+
+00:07:06.740 --> 00:07:09.420 align:middle line:90%
+of these theorems in the class.
+
+00:07:09.420 --> 00:07:10.907 align:middle line:84%
+So Dirichlet
+invented L-functions,
+
+00:07:10.907 --> 00:07:12.740 align:middle line:84%
+you may have heard of
+Dirichlet L-functions,
+
+00:07:12.740 --> 00:07:14.580 align:middle line:90%
+in order to prove this theorem.
+
+00:07:14.580 --> 00:07:17.040 align:middle line:84%
+And all of this work is
+based on L-functions.
+
+00:07:17.040 --> 00:07:22.500 align:middle line:90%
+
+
+00:07:22.500 --> 00:07:28.260 align:middle line:84%
+So those are nice
+theorems, but they only
+
+00:07:28.260 --> 00:07:31.620 align:middle line:84%
+work when q is pretty
+small compared to N.
+
+00:07:31.620 --> 00:07:34.100 align:middle line:90%
+What happens if q is bigger?
+
+00:07:34.100 --> 00:07:38.180 align:middle line:84%
+Well, experimentally what seems
+to happen is the following.
+
+00:07:38.180 --> 00:07:40.600 align:middle line:84%
+So this is conjectured
+by Montgomery.
+
+00:07:40.600 --> 00:07:43.820 align:middle line:90%
+
+
+00:07:43.820 --> 00:07:48.900 align:middle line:84%
+So for every epsilon
+bigger than 0, delta q of N
+
+00:07:48.900 --> 00:07:52.300 align:middle line:84%
+is bounded by C epsilon
+N to the epsilon.
+
+00:07:52.300 --> 00:07:53.880 align:middle line:90%
+It's like a fudge factor.
+
+00:07:53.880 --> 00:07:57.200 align:middle line:84%
+And then, there's
+N/q to the 1/2.
+
+00:07:57.200 --> 00:08:00.720 align:middle line:90%
+
+
+00:08:00.720 --> 00:08:03.400 align:middle line:84%
+So this is a
+pseudorandom behavior.
+
+00:08:03.400 --> 00:08:07.600 align:middle line:84%
+So a good reference point,
+sometimes people ask,
+
+00:08:07.600 --> 00:08:08.880 align:middle line:90%
+are primes distributed?
+
+00:08:08.880 --> 00:08:11.260 align:middle line:84%
+Does it look random the
+way primes are distributed?
+
+00:08:11.260 --> 00:08:13.440 align:middle line:84%
+So a good reference
+point is there
+
+00:08:13.440 --> 00:08:16.720 align:middle line:84%
+are about N over log N
+primes up to N. So instead,
+
+00:08:16.720 --> 00:08:19.240 align:middle line:84%
+pick N over log
+N random numbers.
+
+00:08:19.240 --> 00:08:21.680 align:middle line:84%
+Reduce the mod q and
+see what happens.
+
+00:08:21.680 --> 00:08:24.500 align:middle line:84%
+So this is what you would see
+if you had random numbers.
+
+00:08:24.500 --> 00:08:29.360 align:middle line:84%
+So this is a
+pseudorandom conjecture.
+
+00:08:29.360 --> 00:08:33.360 align:middle line:84%
+So this is much stronger
+than we could prove.
+
+00:08:33.360 --> 00:08:36.960 align:middle line:84%
+And it implies, incidentally,
+that delta q of N
+
+00:08:36.960 --> 00:08:39.520 align:middle line:84%
+is much smaller than N/q,
+so we have some pretty good
+
+00:08:39.520 --> 00:08:43.120 align:middle line:84%
+equidistribution, as long
+as q is smaller than N
+
+00:08:43.120 --> 00:08:45.560 align:middle line:90%
+to the 1 minus epsilon.
+
+00:08:45.560 --> 00:08:49.770 align:middle line:84%
+So there is a huge gap
+between this and this.
+
+00:08:49.770 --> 00:08:55.750 align:middle line:90%
+
+
+00:08:55.750 --> 00:08:58.510 align:middle line:84%
+So this result, I think,
+was proven in the 1930s.
+
+00:08:58.510 --> 00:09:01.610 align:middle line:84%
+And it is still, today, the
+best result of its kind.
+
+00:09:01.610 --> 00:09:05.400 align:middle line:84%
+So we cannot increase this
+to say N to the epsilon.
+
+00:09:05.400 --> 00:09:08.150 align:middle line:90%
+
+
+00:09:08.150 --> 00:09:10.630 align:middle line:84%
+If we are willing to assume
+the Riemann hypothesis,
+
+00:09:10.630 --> 00:09:14.070 align:middle line:84%
+or this would be the
+generalized Riemann hypothesis,
+
+00:09:14.070 --> 00:09:17.050 align:middle line:84%
+then we get much
+stronger information,
+
+00:09:17.050 --> 00:09:19.230 align:middle line:84%
+although still not
+this conjecture.
+
+00:09:19.230 --> 00:09:23.790 align:middle line:84%
+So it says, for every
+epsilon bigger than 0,
+
+00:09:23.790 --> 00:09:29.190 align:middle line:84%
+delta q of N is bounded by
+C epsilon, N to the epsilon,
+
+00:09:29.190 --> 00:09:31.510 align:middle line:90%
+times N to the 1/2.
+
+00:09:31.510 --> 00:09:35.390 align:middle line:84%
+Looks like this, but with
+no q in the denominator.
+
+00:09:35.390 --> 00:09:38.750 align:middle line:84%
+And that's good enough to
+imply that we get some amount
+
+00:09:38.750 --> 00:09:43.920 align:middle line:84%
+of equidistribution if q is
+smaller than N to the 1/2 minus
+
+00:09:43.920 --> 00:09:44.420 align:middle line:90%
+epsilon.
+
+00:09:44.420 --> 00:09:53.490 align:middle line:90%
+
+
+00:09:53.490 --> 00:09:57.450 align:middle line:84%
+So it gives some idea of how
+difficult this conjecture is
+
+00:09:57.450 --> 00:09:59.190 align:middle line:84%
+that, even with the
+Riemann hypothesis,
+
+00:09:59.190 --> 00:10:00.790 align:middle line:90%
+we're only halfway there.
+
+00:10:00.790 --> 00:10:05.890 align:middle line:90%
+
+
+00:10:05.890 --> 00:10:07.910 align:middle line:84%
+So this is everything
+that is known
+
+00:10:07.910 --> 00:10:10.090 align:middle line:84%
+if you want to have a
+theorem that definitely
+
+00:10:10.090 --> 00:10:12.370 align:middle line:90%
+works for a particular q.
+
+00:10:12.370 --> 00:10:16.690 align:middle line:84%
+And having run into
+a barrier there
+
+00:10:16.690 --> 00:10:19.810 align:middle line:84%
+that has been difficult to
+overcome, people started
+
+00:10:19.810 --> 00:10:22.130 align:middle line:84%
+to think about, well,
+maybe we won't prove
+
+00:10:22.130 --> 00:10:23.690 align:middle line:90%
+a theorem for every single q.
+
+00:10:23.690 --> 00:10:26.730 align:middle line:84%
+But we could prove a
+theorem for most of them.
+
+00:10:26.730 --> 00:10:29.050 align:middle line:84%
+So that's the main
+topic of the class
+
+00:10:29.050 --> 00:10:31.920 align:middle line:90%
+today, so theorems for most q.
+
+00:10:31.920 --> 00:10:35.250 align:middle line:90%
+
+
+00:10:35.250 --> 00:10:39.850 align:middle line:84%
+So this theorem, again,
+I want to credit Rényi
+
+00:10:39.850 --> 00:10:41.875 align:middle line:90%
+and Bombieri-Vinogradov.
+
+00:10:41.875 --> 00:10:46.680 align:middle line:90%
+
+
+00:10:46.680 --> 00:10:49.200 align:middle line:84%
+I read about the
+history yesterday.
+
+00:10:49.200 --> 00:10:52.600 align:middle line:84%
+So this is usually called the
+Bombieri-Vinogradov theorem.
+
+00:10:52.600 --> 00:10:54.920 align:middle line:84%
+The first person to prove
+a theorem of this flavor
+
+00:10:54.920 --> 00:10:56.140 align:middle line:90%
+seems to be Rényi.
+
+00:10:56.140 --> 00:10:58.400 align:middle line:84%
+And then, various people
+improved the parameters
+
+00:10:58.400 --> 00:11:03.220 align:middle line:84%
+in the theorem, building up
+to Bombieri and Vinogradov.
+
+00:11:03.220 --> 00:11:06.430 align:middle line:84%
+So it says the following thing
+for every epsilon bigger than 0.
+
+00:11:06.430 --> 00:11:11.640 align:middle line:90%
+
+
+00:11:11.640 --> 00:11:18.880 align:middle line:84%
+So if I take the sum, epsilon q,
+up to N to the 1/2 minus epsilon
+
+00:11:18.880 --> 00:11:24.170 align:middle line:84%
+of delta q of N, check
+the exact phrasing.
+
+00:11:24.170 --> 00:11:33.240 align:middle line:90%
+
+
+00:11:33.240 --> 00:11:39.920 align:middle line:84%
+A, then, this is
+bounded by constant
+
+00:11:39.920 --> 00:11:49.860 align:middle line:84%
+depending on epsilon and A,
+and log of N to the minus A.
+
+00:11:49.860 --> 00:11:52.020 align:middle line:84%
+So let's digest
+this a little bit.
+
+00:11:52.020 --> 00:11:55.300 align:middle line:84%
+So the job of epsilon is
+that we can almost go up to N
+
+00:11:55.300 --> 00:11:58.900 align:middle line:90%
+to the 1/2, but not quite.
+
+00:11:58.900 --> 00:12:02.410 align:middle line:90%
+And then, the job of A is that--
+
+00:12:02.410 --> 00:12:07.000 align:middle line:90%
+
+
+00:12:07.000 --> 00:12:12.160 align:middle line:84%
+so this tells us that
+for most, not all,
+
+00:12:12.160 --> 00:12:17.700 align:middle line:84%
+but most of the q up to N
+to the 1/2 minus epsilon,
+
+00:12:17.700 --> 00:12:20.420 align:middle line:84%
+delta q of N is
+bounded by, well,
+
+00:12:20.420 --> 00:12:24.060 align:middle line:84%
+I divide both sides by
+the number of terms.
+
+00:12:24.060 --> 00:12:30.260 align:middle line:84%
+And so I could put here,
+N/q log of N to the minus
+
+00:12:30.260 --> 00:12:34.460 align:middle line:84%
+A, so which is indeed
+much smaller than N/q.
+
+00:12:34.460 --> 00:12:38.860 align:middle line:84%
+So informally, for most q,
+we get good equidistribution
+
+00:12:38.860 --> 00:12:40.840 align:middle line:90%
+of the primes modulo q.
+
+00:12:40.840 --> 00:12:54.570 align:middle line:90%
+
+
+00:12:54.570 --> 00:12:59.810 align:middle line:84%
+And it so happens that the size
+of the q's we can get up to here
+
+00:12:59.810 --> 00:13:02.290 align:middle line:84%
+matches the size of the q's
+you can get up to if you
+
+00:13:02.290 --> 00:13:05.130 align:middle line:90%
+knew the Riemann hypothesis.
+
+00:13:05.130 --> 00:13:09.260 align:middle line:84%
+And so this is sometimes
+summarized as being,
+
+00:13:09.260 --> 00:13:11.510 align:middle line:84%
+it's definitely not as good
+as the Riemann hypothesis,
+
+00:13:11.510 --> 00:13:15.890 align:middle line:84%
+but it's for most version
+of what you would learn
+
+00:13:15.890 --> 00:13:17.230 align:middle line:90%
+from the Riemann hypothesis.
+
+00:13:17.230 --> 00:13:31.930 align:middle line:90%
+
+
+00:13:31.930 --> 00:13:37.450 align:middle line:84%
+So my goal today is
+to tell you the ideas
+
+00:13:37.450 --> 00:13:38.803 align:middle line:90%
+of the proof of this theorem.
+
+00:13:38.803 --> 00:13:40.720 align:middle line:84%
+There are certain things
+that are a bit messy.
+
+00:13:40.720 --> 00:13:42.345 align:middle line:84%
+And I won't do all
+of the messy things,
+
+00:13:42.345 --> 00:13:44.720 align:middle line:90%
+so we won't do a complete proof.
+
+00:13:44.720 --> 00:13:46.920 align:middle line:84%
+But I'd like to address
+a couple of questions,
+
+00:13:46.920 --> 00:13:49.360 align:middle line:84%
+like, what does this have to
+do with sieves and projection
+
+00:13:49.360 --> 00:13:50.440 align:middle line:90%
+theory?
+
+00:13:50.440 --> 00:13:53.400 align:middle line:84%
+And another question, what
+does it have to do with primes,
+
+00:13:53.400 --> 00:13:55.270 align:middle line:84%
+or how will we use
+it there, in primes?
+
+00:13:55.270 --> 00:14:04.480 align:middle line:90%
+
+
+00:14:04.480 --> 00:14:07.520 align:middle line:84%
+Since we're only trying to
+prove things for most q,
+
+00:14:07.520 --> 00:14:10.018 align:middle line:84%
+we're looking at all
+of the different q's.
+
+00:14:10.018 --> 00:14:12.560 align:middle line:84%
+So we have one set of primes
+and we're projecting it modulo q
+
+00:14:12.560 --> 00:14:13.890 align:middle line:90%
+for lots of different q's.
+
+00:14:13.890 --> 00:14:15.640 align:middle line:84%
+So that's the setting
+of projection theory
+
+00:14:15.640 --> 00:14:19.520 align:middle line:84%
+where we can bring in
+things like the large sieve.
+
+00:14:19.520 --> 00:14:28.360 align:middle line:84%
+So I wanted to recall,
+so the large sieve
+
+00:14:28.360 --> 00:14:30.800 align:middle line:84%
+allows us to prove the
+following kind of thing.
+
+00:14:30.800 --> 00:14:34.760 align:middle line:84%
+So we have a set x contained
+in the integers up to N.
+
+00:14:34.760 --> 00:14:38.520 align:middle line:90%
+And I look at pi p of 1 x.
+
+00:14:38.520 --> 00:14:42.940 align:middle line:84%
+And I'll take the
+high part of that.
+
+00:14:42.940 --> 00:14:52.600 align:middle line:84%
+And then this thing is
+small for most p in Pm.
+
+00:14:52.600 --> 00:14:57.180 align:middle line:90%
+So this Pm, maybe I'll put it--
+
+00:14:57.180 --> 00:15:04.000 align:middle line:84%
+so Pm is the set of
+p prime, p around m.
+
+00:15:04.000 --> 00:15:07.620 align:middle line:90%
+
+
+00:15:07.620 --> 00:15:11.440 align:middle line:84%
+So this looks, on the
+surface, like a similar thing.
+
+00:15:11.440 --> 00:15:13.020 align:middle line:90%
+We have a set x.
+
+00:15:13.020 --> 00:15:16.700 align:middle line:84%
+We project it modulo p for
+many different primes p.
+
+00:15:16.700 --> 00:15:19.360 align:middle line:84%
+And we throw out
+the constant part
+
+00:15:19.360 --> 00:15:21.980 align:middle line:84%
+and just look at the
+variation from being constant.
+
+00:15:21.980 --> 00:15:24.420 align:middle line:84%
+And this is saying that this
+projection is pretty evenly
+
+00:15:24.420 --> 00:15:29.500 align:middle line:84%
+distributed for
+most of the primes.
+
+00:15:29.500 --> 00:15:30.840 align:middle line:90%
+So it sounds similar to this.
+
+00:15:30.840 --> 00:15:32.673 align:middle line:84%
+And indeed, this will
+be crucially relevant.
+
+00:15:32.673 --> 00:15:35.060 align:middle line:90%
+
+
+00:15:35.060 --> 00:15:40.397 align:middle line:84%
+Now this is a statement
+about every set x.
+
+00:15:40.397 --> 00:15:42.230 align:middle line:84%
+In particular, you could
+put the primes here
+
+00:15:42.230 --> 00:15:44.570 align:middle line:84%
+so you get a theorem
+about primes,
+
+00:15:44.570 --> 00:15:47.290 align:middle line:90%
+but it's true for every set.
+
+00:15:47.290 --> 00:15:51.690 align:middle line:84%
+This theorem is definitely
+not true for every set.
+
+00:15:51.690 --> 00:16:00.290 align:middle line:84%
+So I'll make a remark that
+the theorem is not true
+
+00:16:00.290 --> 00:16:06.490 align:middle line:84%
+if you replace the
+primes by just some set
+
+00:16:06.490 --> 00:16:10.090 align:middle line:84%
+x of numbers up to
+N, with maybe roughly
+
+00:16:10.090 --> 00:16:11.380 align:middle line:90%
+the same size as the primes.
+
+00:16:11.380 --> 00:16:16.650 align:middle line:90%
+
+
+00:16:16.650 --> 00:16:20.550 align:middle line:84%
+So there's a simple example, but
+I think it's instructive to see.
+
+00:16:20.550 --> 00:16:24.290 align:middle line:90%
+
+
+00:16:24.290 --> 00:16:25.850 align:middle line:84%
+So the examples
+like this, I'm going
+
+00:16:25.850 --> 00:16:28.290 align:middle line:84%
+to try to build
+a set where I can
+
+00:16:28.290 --> 00:16:30.250 align:middle line:90%
+reduce it modulo every prime.
+
+00:16:30.250 --> 00:16:33.410 align:middle line:84%
+And whichever prime
+I reduce it by,
+
+00:16:33.410 --> 00:16:35.650 align:middle line:84%
+I will see one
+moduli class which
+
+00:16:35.650 --> 00:16:38.590 align:middle line:90%
+is extremely overrepresented.
+
+00:16:38.590 --> 00:16:40.990 align:middle line:84%
+So here's how we
+build such a set.
+
+00:16:40.990 --> 00:16:44.430 align:middle line:84%
+So for every p in primes
+of size around m, m
+
+00:16:44.430 --> 00:16:52.710 align:middle line:84%
+is just a free parameter here,
+I choose some a and Z mod p.
+
+00:16:52.710 --> 00:16:56.030 align:middle line:84%
+And then, I'll make my
+set x is going to be
+
+00:16:56.030 --> 00:16:58.710 align:middle line:90%
+the union over all the primes.
+
+00:16:58.710 --> 00:17:04.270 align:middle line:84%
+And then, I take
+the set of N up to N
+
+00:17:04.270 --> 00:17:06.650 align:middle line:90%
+so that N is equal to a mod p.
+
+00:17:06.650 --> 00:17:09.390 align:middle line:90%
+
+
+00:17:09.390 --> 00:17:12.150 align:middle line:84%
+So for each prime I
+pick a moduli class.
+
+00:17:12.150 --> 00:17:15.310 align:middle line:84%
+I take all the integers
+in that moduli class,
+
+00:17:15.310 --> 00:17:18.379 align:middle line:84%
+and I take a union over all
+the primes in my set of primes.
+
+00:17:18.379 --> 00:17:22.750 align:middle line:90%
+
+
+00:17:22.750 --> 00:17:29.750 align:middle line:84%
+So if I were to
+take pi p1x of a,
+
+00:17:29.750 --> 00:17:33.150 align:middle line:84%
+well, x contains
+all the integers
+
+00:17:33.150 --> 00:17:36.220 align:middle line:84%
+in this moduli class up
+to N. So this is basically
+
+00:17:36.220 --> 00:17:38.420 align:middle line:90%
+N/p, which is around N/m.
+
+00:17:38.420 --> 00:17:42.540 align:middle line:90%
+
+
+00:17:42.540 --> 00:17:44.400 align:middle line:84%
+And that's much
+bigger than average.
+
+00:17:44.400 --> 00:17:47.860 align:middle line:90%
+
+
+00:17:47.860 --> 00:17:49.800 align:middle line:84%
+The average would be
+the size of-- yes.
+
+00:17:49.800 --> 00:17:52.020 align:middle line:84%
+So actually, let's
+figure out the size of x.
+
+00:17:52.020 --> 00:17:59.940 align:middle line:84%
+So the size of x is, at most,
+there will be about N/m numbers
+
+00:17:59.940 --> 00:18:03.660 align:middle line:90%
+in this moduli class.
+
+00:18:03.660 --> 00:18:08.980 align:middle line:84%
+And then, there are about
+M over log m primes,
+
+00:18:08.980 --> 00:18:10.090 align:middle line:90%
+so something like this.
+
+00:18:10.090 --> 00:18:15.340 align:middle line:90%
+
+
+00:18:15.340 --> 00:18:17.920 align:middle line:90%
+So that is a smallish fraction.
+
+00:18:17.920 --> 00:18:20.620 align:middle line:90%
+It's much less than all of them.
+
+00:18:20.620 --> 00:18:25.900 align:middle line:84%
+So this is way smaller
+than the size of x over p.
+
+00:18:25.900 --> 00:18:28.940 align:middle line:84%
+So this guy is seriously
+overrepresented,
+
+00:18:28.940 --> 00:18:30.520 align:middle line:90%
+and it happens for every p.
+
+00:18:30.520 --> 00:18:36.200 align:middle line:90%
+
+
+00:18:36.200 --> 00:18:37.240 align:middle line:90%
+OK, great.
+
+00:18:37.240 --> 00:18:42.800 align:middle line:84%
+So this theorem is, we
+will see, the large sieve
+
+00:18:42.800 --> 00:18:44.660 align:middle line:84%
+is absolutely crucial
+thing in the proof.
+
+00:18:44.660 --> 00:18:45.680 align:middle line:90%
+It's the main idea.
+
+00:18:45.680 --> 00:18:47.980 align:middle line:84%
+But this is not a theorem
+about arbitrary sets.
+
+00:18:47.980 --> 00:18:50.240 align:middle line:84%
+It's a theorem
+about prime numbers,
+
+00:18:50.240 --> 00:18:54.030 align:middle line:84%
+and so the proof needs to use
+something about prime numbers.
+
+00:18:54.030 --> 00:18:59.800 align:middle line:90%
+
+
+00:18:59.800 --> 00:19:04.960 align:middle line:84%
+So the main character
+is a concept called
+
+00:19:04.960 --> 00:19:07.480 align:middle line:90%
+multiplicative convolution.
+
+00:19:07.480 --> 00:19:10.300 align:middle line:84%
+And I think this is a nice
+concept to know about.
+
+00:19:10.300 --> 00:19:12.880 align:middle line:84%
+It's a cousin of regular
+additive convolution.
+
+00:19:12.880 --> 00:19:15.480 align:middle line:90%
+
+
+00:19:15.480 --> 00:19:18.820 align:middle line:84%
+We'll see that it interacts with
+all the things in our story.
+
+00:19:18.820 --> 00:19:21.440 align:middle line:84%
+So multiplicative
+convolution interacts really
+
+00:19:21.440 --> 00:19:24.080 align:middle line:84%
+nicely with prime
+numbers, describing
+
+00:19:24.080 --> 00:19:27.360 align:middle line:84%
+what our prime numbers,
+it comes up naturally.
+
+00:19:27.360 --> 00:19:30.360 align:middle line:84%
+And it also interacts nicely
+with taking projections.
+
+00:19:30.360 --> 00:19:32.830 align:middle line:84%
+And so it interacts nicely
+with the large sieve,
+
+00:19:32.830 --> 00:19:35.850 align:middle line:84%
+and fitting all those things
+together is how we prove this.
+
+00:19:35.850 --> 00:19:43.690 align:middle line:90%
+
+
+00:19:43.690 --> 00:19:45.650 align:middle line:84%
+So what is multiplicative
+convolution?
+
+00:19:45.650 --> 00:19:58.750 align:middle line:90%
+
+
+00:19:58.750 --> 00:20:04.830 align:middle line:84%
+So suppose f and g are functions
+on the natural numbers.
+
+00:20:04.830 --> 00:20:09.110 align:middle line:84%
+If I take the multiplicative
+convolution of them,
+
+00:20:09.110 --> 00:20:13.270 align:middle line:84%
+it means I add up over
+all the pairs n1 and n2
+
+00:20:13.270 --> 00:20:15.070 align:middle line:90%
+whose product is n.
+
+00:20:15.070 --> 00:20:19.010 align:middle line:84%
+And then, I take
+f of n1, g of n2.
+
+00:20:19.010 --> 00:20:23.390 align:middle line:90%
+
+
+00:20:23.390 --> 00:20:25.570 align:middle line:84%
+So let's compare that
+with regular convolution.
+
+00:20:25.570 --> 00:20:28.390 align:middle line:84%
+So regular convolution,
+say, on the integers,
+
+00:20:28.390 --> 00:20:29.730 align:middle line:90%
+would be the same thing.
+
+00:20:29.730 --> 00:20:32.970 align:middle line:84%
+But I would have the sum
+over all the pairs n1 n2 who
+
+00:20:32.970 --> 00:20:33.770 align:middle line:90%
+add up to n.
+
+00:20:33.770 --> 00:20:37.250 align:middle line:84%
+And the multiplicative version
+is, we replace the sum here
+
+00:20:37.250 --> 00:20:37.860 align:middle line:90%
+by a product.
+
+00:20:37.860 --> 00:20:41.930 align:middle line:90%
+
+
+00:20:41.930 --> 00:20:43.750 align:middle line:84%
+So that's multiplicative
+convolution.
+
+00:20:43.750 --> 00:20:51.810 align:middle line:90%
+
+
+00:20:51.810 --> 00:20:58.210 align:middle line:84%
+So we have to see how
+multiplicative convolution
+
+00:20:58.210 --> 00:21:01.490 align:middle line:90%
+connects with primes.
+
+00:21:01.490 --> 00:21:05.850 align:middle line:84%
+And we have to see how
+multiplicative convolution
+
+00:21:05.850 --> 00:21:07.710 align:middle line:90%
+interacts with projections.
+
+00:21:07.710 --> 00:21:10.530 align:middle line:90%
+
+
+00:21:10.530 --> 00:21:14.530 align:middle line:84%
+We'll put that together and
+that's how we prove the theorem.
+
+00:21:14.530 --> 00:21:16.180 align:middle line:90%
+So let's start with primes.
+
+00:21:16.180 --> 00:21:28.330 align:middle line:90%
+
+
+00:21:28.330 --> 00:21:35.440 align:middle line:84%
+So the large sieve inequality,
+we use this word, sieve.
+
+00:21:35.440 --> 00:21:41.080 align:middle line:84%
+And I will explain
+to you now, where
+
+00:21:41.080 --> 00:21:43.158 align:middle line:90%
+does the word sieve come from?
+
+00:21:43.158 --> 00:21:45.450 align:middle line:84%
+And it comes out naturally
+when you think about primes.
+
+00:21:45.450 --> 00:21:56.680 align:middle line:90%
+
+
+00:21:56.680 --> 00:22:01.900 align:middle line:84%
+So how do you find
+the prime numbers?
+
+00:22:01.900 --> 00:22:04.300 align:middle line:84%
+Suppose I wanted to make a
+list of prime numbers up to n.
+
+00:22:04.300 --> 00:22:05.420 align:middle line:90%
+What would I do?
+
+00:22:05.420 --> 00:22:07.520 align:middle line:84%
+I would start with all
+the natural numbers.
+
+00:22:07.520 --> 00:22:09.880 align:middle line:84%
+Then, I cross off
+the multiples of two.
+
+00:22:09.880 --> 00:22:12.500 align:middle line:84%
+Then, I cross off the
+multiples of 3, and so on.
+
+00:22:12.500 --> 00:22:14.530 align:middle line:84%
+And then, what's left
+are the prime numbers.
+
+00:22:14.530 --> 00:22:17.080 align:middle line:90%
+
+
+00:22:17.080 --> 00:22:18.690 align:middle line:84%
+So that process
+is called sieving.
+
+00:22:18.690 --> 00:22:21.760 align:middle line:90%
+
+
+00:22:21.760 --> 00:22:23.400 align:middle line:84%
+I think sieving
+physically is where
+
+00:22:23.400 --> 00:22:28.180 align:middle line:84%
+you take a thing full of
+sand that somewhere in there
+
+00:22:28.180 --> 00:22:30.320 align:middle line:84%
+has a little gold, or
+diamond, or something.
+
+00:22:30.320 --> 00:22:31.900 align:middle line:84%
+And you shake this
+thing and the sand
+
+00:22:31.900 --> 00:22:33.317 align:middle line:84%
+falls out, until
+eventually you're
+
+00:22:33.317 --> 00:22:34.900 align:middle line:90%
+just left with the diamonds.
+
+00:22:34.900 --> 00:22:37.300 align:middle line:84%
+So the image is you have a
+thing full of sand, which
+
+00:22:37.300 --> 00:22:38.490 align:middle line:90%
+are all the natural numbers.
+
+00:22:38.490 --> 00:22:40.740 align:middle line:84%
+And you shake it, and you
+take out the multiples of 2,
+
+00:22:40.740 --> 00:22:42.000 align:middle line:84%
+and the multiples
+of 3, or whatever.
+
+00:22:42.000 --> 00:22:44.380 align:middle line:84%
+And then, eventually you just
+have the prime numbers left.
+
+00:22:44.380 --> 00:22:45.088 align:middle line:90%
+That's the image.
+
+00:22:45.088 --> 00:22:54.500 align:middle line:90%
+
+
+00:22:54.500 --> 00:23:00.420 align:middle line:84%
+To find the primes, we start
+with the natural numbers.
+
+00:23:00.420 --> 00:23:06.540 align:middle line:84%
+Then, we cross out
+multiples of 2.
+
+00:23:06.540 --> 00:23:14.380 align:middle line:84%
+Then, we cross out multiples
+of 3, and dot, dot, dot.
+
+00:23:14.380 --> 00:23:16.080 align:middle line:90%
+So we can all imagine that.
+
+00:23:16.080 --> 00:23:19.200 align:middle line:84%
+Now, let's try to describe
+this process using formulas.
+
+00:23:19.200 --> 00:23:21.500 align:middle line:84%
+And we'll see that the
+formulas that naturally appear
+
+00:23:21.500 --> 00:23:25.580 align:middle line:84%
+are formulas involving
+multiplicative convolution.
+
+00:23:25.580 --> 00:23:31.250 align:middle line:84%
+So I'm going to write 1 of n to
+be the characteristic function
+
+00:23:31.250 --> 00:23:34.570 align:middle line:90%
+of all the natural numbers.
+
+00:23:34.570 --> 00:23:37.010 align:middle line:84%
+And then, the next
+character I'm going to put
+
+00:23:37.010 --> 00:23:42.410 align:middle line:84%
+is a function called
+difference sub p of n.
+
+00:23:42.410 --> 00:23:49.490 align:middle line:84%
+So it's 1 if n equals 1, and
+it's negative 1 if n is p,
+
+00:23:49.490 --> 00:23:51.030 align:middle line:90%
+and it's 0 otherwise.
+
+00:23:51.030 --> 00:23:54.090 align:middle line:90%
+
+
+00:23:54.090 --> 00:23:57.290 align:middle line:84%
+Now let's think
+what would happen
+
+00:23:57.290 --> 00:23:59.650 align:middle line:84%
+if I took all the
+natural numbers
+
+00:23:59.650 --> 00:24:02.210 align:middle line:84%
+and I did a multiplicative
+convolution with D2.
+
+00:24:02.210 --> 00:24:06.730 align:middle line:90%
+
+
+00:24:06.730 --> 00:24:12.330 align:middle line:84%
+So this would give me, so D2 has
+a positive delta function at 1
+
+00:24:12.330 --> 00:24:15.370 align:middle line:84%
+and a negative
+delta function at 2.
+
+00:24:15.370 --> 00:24:19.610 align:middle line:84%
+So when I do this I'm going
+to get characteristic function
+
+00:24:19.610 --> 00:24:22.450 align:middle line:84%
+of all the natural numbers
+coming from this 1,
+
+00:24:22.450 --> 00:24:25.470 align:middle line:84%
+minus the characteristic
+function of 2 times
+
+00:24:25.470 --> 00:24:27.890 align:middle line:84%
+the natural numbers
+coming from that 1.
+
+00:24:27.890 --> 00:24:33.590 align:middle line:90%
+
+
+00:24:33.590 --> 00:24:34.390 align:middle line:90%
+Let me pause there.
+
+00:24:34.390 --> 00:24:35.530 align:middle line:90%
+Does that make sense?
+
+00:24:35.530 --> 00:24:38.150 align:middle line:84%
+Does that fit with the
+plugging in the definition
+
+00:24:38.150 --> 00:24:41.350 align:middle line:90%
+of multiplicative convolution?
+
+00:24:41.350 --> 00:24:43.230 align:middle line:90%
+Let's do it slowly to be sure.
+
+00:24:43.230 --> 00:24:45.190 align:middle line:90%
+So what's the definition?
+
+00:24:45.190 --> 00:24:51.230 align:middle line:84%
+1 convolved with
+D2 of n is the sum.
+
+00:24:51.230 --> 00:24:58.900 align:middle line:84%
+n1, n2 equals n of 1
+of n1 times D2 of n2.
+
+00:24:58.900 --> 00:25:02.670 align:middle line:90%
+
+
+00:25:02.670 --> 00:25:06.690 align:middle line:84%
+Now D2 is only
+non-vanishing in two cases.
+
+00:25:06.690 --> 00:25:09.830 align:middle line:84%
+So we actually only have
+to consider that n2 is 1
+
+00:25:09.830 --> 00:25:12.750 align:middle line:90%
+or n2 is 2.
+
+00:25:12.750 --> 00:25:16.470 align:middle line:90%
+So the 1 is always there.
+
+00:25:16.470 --> 00:25:22.230 align:middle line:90%
+So that is 1 of n times D2 of 1.
+
+00:25:22.230 --> 00:25:29.480 align:middle line:84%
+And then, if D is even, so this
+is what happens if n is odd.
+
+00:25:29.480 --> 00:25:32.460 align:middle line:90%
+
+
+00:25:32.460 --> 00:25:37.360 align:middle line:84%
+And then, if n is even,
+then n2 could be 2.
+
+00:25:37.360 --> 00:25:40.900 align:middle line:84%
+So we would get 1
+of n, 1 of n over 2.
+
+00:25:40.900 --> 00:25:43.380 align:middle line:90%
+Sorry, we get the--
+
+00:25:43.380 --> 00:25:44.820 align:middle line:90%
+so this is both cases.
+
+00:25:44.820 --> 00:25:54.540 align:middle line:84%
+1 of n, D2 of 1, minus 1 of
+plus 1 of n over 2, D2 of 2.
+
+00:25:54.540 --> 00:25:56.100 align:middle line:90%
+So this is just 1.
+
+00:25:56.100 --> 00:25:58.623 align:middle line:84%
+And this is 1 minus
+1, which is 0.
+
+00:25:58.623 --> 00:26:00.540 align:middle line:84%
+So we're left with the
+characteristic function
+
+00:26:00.540 --> 00:26:03.980 align:middle line:90%
+of the odd numbers.
+
+00:26:03.980 --> 00:26:05.540 align:middle line:90%
+Let's go one further.
+
+00:26:05.540 --> 00:26:08.340 align:middle line:84%
+If I take the characteristic
+function of the naturals,
+
+00:26:08.340 --> 00:26:11.100 align:middle line:84%
+I do a multiplicative
+convolution with D2.
+
+00:26:11.100 --> 00:26:15.620 align:middle line:84%
+Then, I do a multiplicative
+convolution with D3.
+
+00:26:15.620 --> 00:26:16.560 align:middle line:90%
+What happens?
+
+00:26:16.560 --> 00:26:19.100 align:middle line:84%
+Well, this 1 gives me the
+characteristic function
+
+00:26:19.100 --> 00:26:20.780 align:middle line:90%
+of the odd numbers.
+
+00:26:20.780 --> 00:26:22.410 align:middle line:90%
+And then I'm convolving with D3.
+
+00:26:22.410 --> 00:26:25.200 align:middle line:90%
+
+
+00:26:25.200 --> 00:26:27.000 align:middle line:90%
+Now what happens?
+
+00:26:27.000 --> 00:26:28.600 align:middle line:84%
+I get the
+characteristic function
+
+00:26:28.600 --> 00:26:31.840 align:middle line:84%
+of the odd numbers minus
+the characteristic function
+
+00:26:31.840 --> 00:26:34.680 align:middle line:90%
+of 3 times the odd numbers.
+
+00:26:34.680 --> 00:26:35.660 align:middle line:90%
+Then, I do this.
+
+00:26:35.660 --> 00:26:41.200 align:middle line:90%
+
+
+00:26:41.200 --> 00:26:43.320 align:middle line:84%
+So I have the odd
+numbers, but now I'm
+
+00:26:43.320 --> 00:26:47.560 align:middle line:84%
+going to cross out the ones
+that are multiples of 3.
+
+00:26:47.560 --> 00:26:51.400 align:middle line:84%
+And so this is the
+characteristic function of,
+
+00:26:51.400 --> 00:26:56.790 align:middle line:84%
+n is relatively
+prime to 2 and 3.
+
+00:26:56.790 --> 00:27:01.280 align:middle line:90%
+
+
+00:27:01.280 --> 00:27:04.920 align:middle line:84%
+So this shows by example
+that this process, starting
+
+00:27:04.920 --> 00:27:07.300 align:middle line:84%
+with the natural numbers,
+crossing out multiples of 2,
+
+00:27:07.300 --> 00:27:10.640 align:middle line:84%
+crossing out multiples of 3,
+it corresponds to convolving
+
+00:27:10.640 --> 00:27:13.100 align:middle line:90%
+by these D's over and over.
+
+00:27:13.100 --> 00:27:18.428 align:middle line:90%
+
+
+00:27:18.428 --> 00:27:19.970 align:middle line:84%
+So now let me make
+a little notation.
+
+00:27:19.970 --> 00:27:40.630 align:middle line:90%
+
+
+00:27:40.630 --> 00:27:44.280 align:middle line:84%
+So we're going to do sieve
+for primes, general version.
+
+00:27:44.280 --> 00:27:52.690 align:middle line:90%
+
+
+00:27:52.690 --> 00:27:55.580 align:middle line:84%
+So suppose that S
+is a set of primes.
+
+00:27:55.580 --> 00:27:58.110 align:middle line:90%
+
+
+00:27:58.110 --> 00:28:01.830 align:middle line:84%
+And then, RP sub s
+of n, that stands
+
+00:28:01.830 --> 00:28:05.150 align:middle line:90%
+for relatively prime to s.
+
+00:28:05.150 --> 00:28:13.010 align:middle line:84%
+This is 1 if p and n are
+relatively prime for all
+
+00:28:13.010 --> 00:28:14.870 align:middle line:90%
+the primes in my set.
+
+00:28:14.870 --> 00:28:18.780 align:middle line:84%
+So it's 1 if my number n is
+relatively prime to everybody
+
+00:28:18.780 --> 00:28:21.700 align:middle line:90%
+in s, and 0 otherwise.
+
+00:28:21.700 --> 00:28:26.680 align:middle line:84%
+So it's 0 if there exists a
+prime in my set that divides it.
+
+00:28:26.680 --> 00:28:34.080 align:middle line:90%
+
+
+00:28:34.080 --> 00:28:37.300 align:middle line:90%
+So let's make our remark.
+
+00:28:37.300 --> 00:28:43.060 align:middle line:84%
+So if S is the primes that go
+up to the square root of N,
+
+00:28:43.060 --> 00:28:47.260 align:middle line:84%
+and little n is,
+let's say, bigger
+
+00:28:47.260 --> 00:28:49.340 align:middle line:84%
+than the square root
+of N, but at most
+
+00:28:49.340 --> 00:28:55.900 align:middle line:84%
+N, then either n has a
+prime factor from this list
+
+00:28:55.900 --> 00:28:58.100 align:middle line:90%
+or it is prime.
+
+00:28:58.100 --> 00:29:06.300 align:middle line:84%
+So in that case, our relatively
+prime s of n is just P of n
+
+00:29:06.300 --> 00:29:09.660 align:middle line:90%
+whether n is prime.
+
+00:29:09.660 --> 00:29:13.700 align:middle line:84%
+So this thing, if I'm
+interested in the primes
+
+00:29:13.700 --> 00:29:15.940 align:middle line:84%
+in a certain range,
+say, from n over 2 to n,
+
+00:29:15.940 --> 00:29:19.560 align:middle line:84%
+I can detect them
+using this function.
+
+00:29:19.560 --> 00:29:23.480 align:middle line:84%
+And this function we've just
+seen is a big convolution.
+
+00:29:23.480 --> 00:29:34.520 align:middle line:84%
+So lemma, so if my set
+of primes is p1 up to pr,
+
+00:29:34.520 --> 00:29:41.800 align:middle line:84%
+then relatively prime
+sub s of n is 1 convolved
+
+00:29:41.800 --> 00:29:46.360 align:middle line:90%
+with Dp1, convolved with Dpr.
+
+00:29:46.360 --> 00:29:48.980 align:middle line:84%
+These are all
+multiplicative convolutions.
+
+00:29:48.980 --> 00:30:03.560 align:middle line:90%
+
+
+00:30:03.560 --> 00:30:07.590 align:middle line:84%
+AUDIENCE: Can I ask you,
+for the examples there,
+
+00:30:07.590 --> 00:30:14.360 align:middle line:84%
+I wondered why you have
+p of 1x of a is over p,
+
+00:30:14.360 --> 00:30:23.570 align:middle line:84%
+like why it really becomes
+contributions from other teams?
+
+00:30:23.570 --> 00:30:24.570 align:middle line:90%
+LAWRENCE GUTH: Yeah, OK.
+
+00:30:24.570 --> 00:30:27.310 align:middle line:84%
+So the question is coming
+back to this example.
+
+00:30:27.310 --> 00:30:31.470 align:middle line:84%
+We built a set whose
+projection onto every prime
+
+00:30:31.470 --> 00:30:33.170 align:middle line:90%
+has one place that's really big.
+
+00:30:33.170 --> 00:30:36.270 align:middle line:90%
+
+
+00:30:36.270 --> 00:30:41.390 align:middle line:84%
+And x is made as a union
+of arithmetic progressions.
+
+00:30:41.390 --> 00:30:43.130 align:middle line:90%
+Now this x is a set.
+
+00:30:43.130 --> 00:30:44.290 align:middle line:90%
+It's not a function.
+
+00:30:44.290 --> 00:30:47.830 align:middle line:84%
+So these arithmetic
+progressions might overlap.
+
+00:30:47.830 --> 00:30:52.070 align:middle line:84%
+But if they do, the point where
+they overlap in this formulation
+
+00:30:52.070 --> 00:30:55.850 align:middle line:84%
+only counts once, although
+it's not super important.
+
+00:30:55.850 --> 00:31:02.670 align:middle line:84%
+So if you look at pi p of 1x of
+a, that's how many elements of x
+
+00:31:02.670 --> 00:31:05.750 align:middle line:90%
+are congruent to a mod p.
+
+00:31:05.750 --> 00:31:09.430 align:middle line:90%
+And so all of them are already.
+
+00:31:09.430 --> 00:31:11.390 align:middle line:84%
+And some of the
+other p might also
+
+00:31:11.390 --> 00:31:14.290 align:middle line:84%
+contain some of these elements,
+but it doesn't count anymore.
+
+00:31:14.290 --> 00:31:16.750 align:middle line:90%
+AUDIENCE: Oh, OK.
+
+00:31:16.750 --> 00:31:18.750 align:middle line:84%
+LAWRENCE GUTH: Although
+if it did count anymore,
+
+00:31:18.750 --> 00:31:21.330 align:middle line:84%
+it would just make this
+phenomenon even more extreme
+
+00:31:21.330 --> 00:31:22.350 align:middle line:90%
+than it already is.
+
+00:31:22.350 --> 00:31:29.410 align:middle line:90%
+
+
+00:31:29.410 --> 00:31:30.730 align:middle line:90%
+OK, cool.
+
+00:31:30.730 --> 00:31:32.100 align:middle line:90%
+Any other questions or comments?
+
+00:31:32.100 --> 00:31:42.590 align:middle line:90%
+
+
+00:31:42.590 --> 00:31:45.970 align:middle line:84%
+So the characteristic
+function of the primes
+
+00:31:45.970 --> 00:31:48.630 align:middle line:84%
+is a special function,
+probably in lots of ways.
+
+00:31:48.630 --> 00:31:50.650 align:middle line:84%
+And the way that's
+relevant for us today
+
+00:31:50.650 --> 00:31:52.890 align:middle line:84%
+is that the characteristic
+function of the primes
+
+00:31:52.890 --> 00:31:54.890 align:middle line:84%
+is basically this
+function, which
+
+00:31:54.890 --> 00:31:58.170 align:middle line:84%
+is a big convolution, a big
+multiplicative convolution.
+
+00:31:58.170 --> 00:32:01.490 align:middle line:84%
+And so the
+Bombieri-Vinogradov theorem
+
+00:32:01.490 --> 00:32:04.850 align:middle line:84%
+is mostly a theorem
+about functions
+
+00:32:04.850 --> 00:32:07.990 align:middle line:84%
+that have the structure
+that they're convolutions.
+
+00:32:07.990 --> 00:32:13.360 align:middle line:90%
+
+
+00:32:13.360 --> 00:32:15.560 align:middle line:84%
+So that is how
+multiplicative convolution
+
+00:32:15.560 --> 00:32:17.720 align:middle line:90%
+is related to primes.
+
+00:32:17.720 --> 00:32:20.320 align:middle line:84%
+Next, let's think about how
+multiplicative convolution
+
+00:32:20.320 --> 00:32:22.180 align:middle line:90%
+is related to projections.
+
+00:32:22.180 --> 00:33:09.785 align:middle line:90%
+
+
+00:33:09.785 --> 00:33:14.390 align:middle line:84%
+So here there are a bunch of
+different fairly simple lemmas.
+
+00:33:14.390 --> 00:33:21.020 align:middle line:90%
+
+
+00:33:21.020 --> 00:33:27.220 align:middle line:84%
+And all these lemmas
+have the flavor
+
+00:33:27.220 --> 00:33:28.940 align:middle line:84%
+that doing multiplicative
+convolution
+
+00:33:28.940 --> 00:33:31.220 align:middle line:84%
+and doing projections
+fits together
+
+00:33:31.220 --> 00:33:33.300 align:middle line:90%
+as well as you could hope.
+
+00:33:33.300 --> 00:33:35.140 align:middle line:84%
+And I think, basically,
+the reason for that
+
+00:33:35.140 --> 00:33:37.460 align:middle line:84%
+is that the projection
+operation is
+
+00:33:37.460 --> 00:33:43.100 align:middle line:84%
+a ring homomorphism from the
+ring Z to the ring Z mod q.
+
+00:33:43.100 --> 00:33:45.080 align:middle line:84%
+And we'll be talking
+about multiplication.
+
+00:33:45.080 --> 00:33:48.700 align:middle line:84%
+So being a ring homomorphism,
+it means that the projection
+
+00:33:48.700 --> 00:33:51.980 align:middle line:90%
+respects the product operation.
+
+00:33:51.980 --> 00:33:54.500 align:middle line:84%
+And so the multiplicative
+convolution
+
+00:33:54.500 --> 00:33:57.200 align:middle line:84%
+is defined in terms of
+the product operation,
+
+00:33:57.200 --> 00:33:59.900 align:middle line:90%
+so it all fits together.
+
+00:33:59.900 --> 00:34:05.460 align:middle line:84%
+So lemma 1 says that, if
+f and g natural numbers
+
+00:34:05.460 --> 00:34:13.850 align:middle line:84%
+go to C, then if I take the
+projection of f convolved
+
+00:34:13.850 --> 00:34:19.170 align:middle line:84%
+with g, I get the
+projection of f convolved
+
+00:34:19.170 --> 00:34:22.190 align:middle line:90%
+with the projection of g.
+
+00:34:22.190 --> 00:34:26.570 align:middle line:90%
+
+
+00:34:26.570 --> 00:34:29.889 align:middle line:84%
+This one requires
+the definition.
+
+00:34:29.889 --> 00:34:32.170 align:middle line:84%
+If I had been
+savvy in general, I
+
+00:34:32.170 --> 00:34:35.290 align:middle line:84%
+might have defined
+multiplicative convolution
+
+00:34:35.290 --> 00:34:39.570 align:middle line:84%
+in the first place for
+any multiplicative monoid
+
+00:34:39.570 --> 00:34:41.370 align:middle line:90%
+or something.
+
+00:34:41.370 --> 00:34:44.846 align:middle line:84%
+But anyway, let's just say
+what it is for z mod q.
+
+00:34:44.846 --> 00:34:45.679 align:middle line:90%
+It is what we think.
+
+00:34:45.679 --> 00:34:51.290 align:middle line:90%
+
+
+00:34:51.290 --> 00:34:57.810 align:middle line:84%
+If I have maybe capital F and
+capital G functions on Z mod q,
+
+00:34:57.810 --> 00:35:02.850 align:middle line:84%
+then multiplicative
+convolution of a class a
+
+00:35:02.850 --> 00:35:06.610 align:middle line:84%
+is the sum over all
+pairs a1 a2 that
+
+00:35:06.610 --> 00:35:14.410 align:middle line:84%
+multiply to a of capital
+F of a1, capital G of a2.
+
+00:35:14.410 --> 00:35:20.430 align:middle line:90%
+
+
+00:35:20.430 --> 00:35:25.150 align:middle line:90%
+So this is the first lemma.
+
+00:35:25.150 --> 00:35:27.550 align:middle line:84%
+And the proof idea is you
+just start on either side
+
+00:35:27.550 --> 00:35:30.270 align:middle line:84%
+and write down the definition
+and unwind everything.
+
+00:35:30.270 --> 00:35:34.390 align:middle line:84%
+And you use the fact
+that that reduction mod
+
+00:35:34.390 --> 00:35:37.020 align:middle line:84%
+q is a ring homomorphism
+and it all fits together.
+
+00:35:37.020 --> 00:35:41.910 align:middle line:90%
+
+
+00:35:41.910 --> 00:35:45.510 align:middle line:84%
+So I think that my
+saying that is clearer
+
+00:35:45.510 --> 00:35:47.330 align:middle line:90%
+than if I were to write it out.
+
+00:35:47.330 --> 00:35:47.830 align:middle line:90%
+Yeah.
+
+00:35:47.830 --> 00:35:52.870 align:middle line:84%
+AUDIENCE: Do you not get the
+issues from double counting them
+
+00:35:52.870 --> 00:35:55.270 align:middle line:84%
+at the left side
+because you have
+
+00:35:55.270 --> 00:35:58.140 align:middle line:90%
+to make the kernel over them?
+
+00:35:58.140 --> 00:35:58.890 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:35:58.890 --> 00:36:02.310 align:middle line:84%
+So this is a homomorphism
+but with a kernel.
+
+00:36:02.310 --> 00:36:06.070 align:middle line:84%
+Let's write it out and make
+sure that this actually is OK.
+
+00:36:06.070 --> 00:36:08.260 align:middle line:84%
+I'm going to put the
+proofs on this board
+
+00:36:08.260 --> 00:36:11.100 align:middle line:84%
+so that eventually we'll
+just have this list of lemmas
+
+00:36:11.100 --> 00:36:12.200 align:middle line:90%
+that will be handy.
+
+00:36:12.200 --> 00:36:28.160 align:middle line:90%
+
+
+00:36:28.160 --> 00:36:30.400 align:middle line:84%
+So here's how I like to
+think about the proof.
+
+00:36:30.400 --> 00:36:36.860 align:middle line:84%
+I'm going to think of f as a
+sum over n1 of a delta function
+
+00:36:36.860 --> 00:36:38.830 align:middle line:90%
+at n1 weighted by f of n1.
+
+00:36:38.830 --> 00:36:41.700 align:middle line:90%
+
+
+00:36:41.700 --> 00:36:44.340 align:middle line:90%
+And I can do the same with g.
+
+00:36:44.340 --> 00:36:49.900 align:middle line:84%
+Sum over n2 delta
+function of n2, g of n2.
+
+00:36:49.900 --> 00:36:51.960 align:middle line:84%
+What happens when I
+take their convolution?
+
+00:36:51.960 --> 00:36:54.580 align:middle line:90%
+
+
+00:36:54.580 --> 00:36:59.020 align:middle line:84%
+The multiplicative convolution
+is the sum over n1 and n2.
+
+00:36:59.020 --> 00:37:04.610 align:middle line:84%
+I have a delta function at n1,
+n2 weighted by f of n1, g of n2.
+
+00:37:04.610 --> 00:37:09.300 align:middle line:90%
+
+
+00:37:09.300 --> 00:37:12.080 align:middle line:84%
+Let's check that this is the
+same definition as before.
+
+00:37:12.080 --> 00:37:17.120 align:middle line:84%
+So if I want to evaluate
+this at a point n, well,
+
+00:37:17.120 --> 00:37:20.440 align:middle line:84%
+when I evaluate
+this at n it only
+
+00:37:20.440 --> 00:37:23.000 align:middle line:90%
+appears if n1 times n2 is n.
+
+00:37:23.000 --> 00:37:27.560 align:middle line:84%
+So I'm summing over pairs n1
+times n2 that multiply to n.
+
+00:37:27.560 --> 00:37:29.980 align:middle line:84%
+And I'm summing up
+f of n1, g of n2.
+
+00:37:29.980 --> 00:37:37.520 align:middle line:90%
+
+
+00:37:37.520 --> 00:37:40.400 align:middle line:90%
+Does this look OK to people?
+
+00:37:40.400 --> 00:37:45.560 align:middle line:84%
+Maybe let me add, when
+I write delta n1, that's
+
+00:37:45.560 --> 00:37:46.960 align:middle line:90%
+a function of n.
+
+00:37:46.960 --> 00:37:50.800 align:middle line:84%
+And it means it's 1
+if n is equal to n1,
+
+00:37:50.800 --> 00:37:53.160 align:middle line:90%
+and it's 0 otherwise.
+
+00:37:53.160 --> 00:37:56.600 align:middle line:84%
+So this delta is
+a delta function.
+
+00:37:56.600 --> 00:37:59.740 align:middle line:84%
+So f is this, and g is
+this, and f star g is this.
+
+00:37:59.740 --> 00:38:07.130 align:middle line:90%
+
+
+00:38:07.130 --> 00:38:11.910 align:middle line:90%
+So now, what is pi qf of a?
+
+00:38:11.910 --> 00:38:17.950 align:middle line:84%
+It's the sum over n1 of a
+delta function at n1 mod
+
+00:38:17.950 --> 00:38:21.540 align:middle line:90%
+q of a, f of n1.
+
+00:38:21.540 --> 00:38:32.950 align:middle line:90%
+
+
+00:38:32.950 --> 00:38:35.970 align:middle line:84%
+So I like the image of f and
+g as some kind of density.
+
+00:38:35.970 --> 00:38:38.910 align:middle line:84%
+So we think of f as a
+description of some stuff.
+
+00:38:38.910 --> 00:38:44.738 align:middle line:84%
+And there's f of n1 stuff
+located at n1, and same for g.
+
+00:38:44.738 --> 00:38:46.030 align:middle line:90%
+So what does the projection do?
+
+00:38:46.030 --> 00:38:50.750 align:middle line:84%
+It just takes the stuff at n1
+and it moves it to n1 modulo q.
+
+00:38:50.750 --> 00:38:53.550 align:middle line:84%
+And stuff is coming to n1 modulo
+q from several different places
+
+00:38:53.550 --> 00:38:56.350 align:middle line:90%
+and it just adds up.
+
+00:38:56.350 --> 00:38:58.210 align:middle line:90%
+And what does convolution do?
+
+00:38:58.210 --> 00:39:03.050 align:middle line:84%
+It takes every bit of stuff here
+and every bit of stuff here.
+
+00:39:03.050 --> 00:39:06.530 align:middle line:84%
+It takes a bit that's at n1
+here and a bit that's n2 there.
+
+00:39:06.530 --> 00:39:10.570 align:middle line:84%
+Takes those two bits and it
+makes a new bit at n1 times n2.
+
+00:39:10.570 --> 00:39:13.530 align:middle line:84%
+And the weight of the
+new bit is the product.
+
+00:39:13.530 --> 00:39:16.450 align:middle line:84%
+And there may be several new
+bits arriving at the same place,
+
+00:39:16.450 --> 00:39:19.410 align:middle line:90%
+then we add them up.
+
+00:39:19.410 --> 00:39:22.770 align:middle line:84%
+So that's what the
+projection does.
+
+00:39:22.770 --> 00:39:27.850 align:middle line:84%
+So now, if I take the
+projection of f convolved
+
+00:39:27.850 --> 00:39:34.530 align:middle line:84%
+with the projection of g at a,
+it's the sum over n1 and n2,
+
+00:39:34.530 --> 00:39:46.000 align:middle line:84%
+the delta function n1 times n2
+mod q of a, f of n, 1, g of n2.
+
+00:39:46.000 --> 00:40:02.680 align:middle line:90%
+
+
+00:40:02.680 --> 00:40:06.620 align:middle line:84%
+So then that's the same as
+pi q of f convolved with g.
+
+00:40:06.620 --> 00:40:19.880 align:middle line:90%
+
+
+00:40:19.880 --> 00:40:23.440 align:middle line:84%
+So all it boils down
+to is, I have this bit
+
+00:40:23.440 --> 00:40:24.920 align:middle line:90%
+of f and this bit of g.
+
+00:40:24.920 --> 00:40:27.760 align:middle line:84%
+And I could first
+reduce them each mod q
+
+00:40:27.760 --> 00:40:31.760 align:middle line:84%
+and then multiply them together,
+or I could first multiply them
+
+00:40:31.760 --> 00:40:34.160 align:middle line:90%
+together and then reduce mod q.
+
+00:40:34.160 --> 00:40:35.800 align:middle line:84%
+And those are the
+same as each other
+
+00:40:35.800 --> 00:40:40.240 align:middle line:84%
+because reduction mod
+q is a homomorphism.
+
+00:40:40.240 --> 00:40:41.650 align:middle line:90%
+So that's the first lemma.
+
+00:40:41.650 --> 00:40:50.480 align:middle line:90%
+
+
+00:40:50.480 --> 00:40:55.800 align:middle line:84%
+Second lemma says,
+so eventually, we
+
+00:40:55.800 --> 00:40:59.350 align:middle line:84%
+would like some
+L-infinity bounds.
+
+00:40:59.350 --> 00:41:03.590 align:middle line:84%
+But so far in projection theory,
+we've mostly seen L2 bounds.
+
+00:41:03.590 --> 00:41:05.870 align:middle line:84%
+And they're related to
+each other by basically
+
+00:41:05.870 --> 00:41:07.750 align:middle line:90%
+Cauchy-Schwarz.
+
+00:41:07.750 --> 00:41:12.965 align:middle line:84%
+So it says that if
+I have f and g on Z,
+
+00:41:12.965 --> 00:41:18.330 align:middle line:84%
+q, then a multiplicative
+convolution of them,
+
+00:41:18.330 --> 00:41:23.510 align:middle line:84%
+if I take the L-infinity
+norm on Zq star,
+
+00:41:23.510 --> 00:41:28.260 align:middle line:90%
+that is bounded by f L2, g L2.
+
+00:41:28.260 --> 00:41:31.750 align:middle line:90%
+
+
+00:41:31.750 --> 00:41:37.150 align:middle line:84%
+So in lemma 2, I think it's
+important to put this star here,
+
+00:41:37.150 --> 00:41:38.410 align:middle line:90%
+multiplication.
+
+00:41:38.410 --> 00:41:41.470 align:middle line:90%
+
+
+00:41:41.470 --> 00:41:44.630 align:middle line:84%
+So we leave out 0 and we leave
+out things with a common factor
+
+00:41:44.630 --> 00:41:45.310 align:middle line:90%
+with q.
+
+00:41:45.310 --> 00:41:46.750 align:middle line:84%
+If you included
+0, there are a lot
+
+00:41:46.750 --> 00:41:48.690 align:middle line:84%
+of ways to have a
+product that makes 0,
+
+00:41:48.690 --> 00:41:51.750 align:middle line:84%
+and I felt a little worried
+about how that would go.
+
+00:41:51.750 --> 00:41:54.030 align:middle line:84%
+So that's why we
+have this star here.
+
+00:41:54.030 --> 00:41:56.990 align:middle line:90%
+Let's prove lemma 2.
+
+00:41:56.990 --> 00:41:58.290 align:middle line:90%
+Proof of lemma 2.
+
+00:41:58.290 --> 00:42:01.450 align:middle line:90%
+
+
+00:42:01.450 --> 00:42:09.610 align:middle line:84%
+So if a is in Zq star,
+then f convolved g of a
+
+00:42:09.610 --> 00:42:17.720 align:middle line:84%
+is going to be the sum b in Zq
+star, f of b, g of ab inverse.
+
+00:42:17.720 --> 00:42:21.010 align:middle line:90%
+
+
+00:42:21.010 --> 00:42:21.650 align:middle line:90%
+Why?
+
+00:42:21.650 --> 00:42:25.890 align:middle line:84%
+Well, we're adding up over
+pairs that multiply to a.
+
+00:42:25.890 --> 00:42:30.070 align:middle line:84%
+And since a is in Zq
+star, a is invertible.
+
+00:42:30.070 --> 00:42:31.790 align:middle line:84%
+Each of these has
+to be invertible.
+
+00:42:31.790 --> 00:42:36.370 align:middle line:84%
+So b had better also be in
+Zq star, and so we get this.
+
+00:42:36.370 --> 00:42:42.236 align:middle line:84%
+And then, we use Cauchy-Schwarz,
+and we bound that by f L2, g L2.
+
+00:42:42.236 --> 00:42:56.330 align:middle line:90%
+
+
+00:42:56.330 --> 00:43:03.080 align:middle line:84%
+There is a small technical
+issue about Zq or Zq star.
+
+00:43:03.080 --> 00:43:04.600 align:middle line:84%
+So we're going to
+break something up
+
+00:43:04.600 --> 00:43:07.760 align:middle line:84%
+into a constant part and the
+other part, constant part
+
+00:43:07.760 --> 00:43:09.140 align:middle line:90%
+and the high frequency part.
+
+00:43:09.140 --> 00:43:10.765 align:middle line:84%
+And it's slightly
+different whether you
+
+00:43:10.765 --> 00:43:12.760 align:middle line:90%
+do this on Zq or Zq star.
+
+00:43:12.760 --> 00:43:14.960 align:middle line:84%
+It's just a minor
+technical nuisance.
+
+00:43:14.960 --> 00:43:16.820 align:middle line:84%
+q is even usually
+going to be prime,
+
+00:43:16.820 --> 00:43:18.503 align:middle line:84%
+so I'm just going
+to be leaving out 0.
+
+00:43:18.503 --> 00:43:19.920 align:middle line:84%
+But let me just
+write a lemma that
+
+00:43:19.920 --> 00:43:21.700 align:middle line:84%
+says that this isn't
+such a big deal.
+
+00:43:21.700 --> 00:43:24.600 align:middle line:90%
+
+
+00:43:24.600 --> 00:43:25.540 align:middle line:90%
+So a little notation.
+
+00:43:25.540 --> 00:43:28.760 align:middle line:84%
+So suppose I have
+a function f on Zq.
+
+00:43:28.760 --> 00:43:32.200 align:middle line:84%
+I might be interested
+in f just on Zq star.
+
+00:43:32.200 --> 00:43:34.110 align:middle line:84%
+So I'm going to
+call that f star.
+
+00:43:34.110 --> 00:43:37.280 align:middle line:90%
+
+
+00:43:37.280 --> 00:43:46.120 align:middle line:84%
+It's just the restriction
+of f to Zq star.
+
+00:43:46.120 --> 00:43:48.160 align:middle line:84%
+Now I could split
+either one of these
+
+00:43:48.160 --> 00:43:51.840 align:middle line:84%
+up into a constant
+part plus a leftover,
+
+00:43:51.840 --> 00:43:54.480 align:middle line:84%
+but the constants would
+be slightly different.
+
+00:43:54.480 --> 00:44:03.100 align:middle line:84%
+So f is f0 plus f high,
+and f star is f0 star
+
+00:44:03.100 --> 00:44:05.860 align:middle line:90%
+plus f high star.
+
+00:44:05.860 --> 00:44:09.820 align:middle line:90%
+So f0 and f0 star are constant.
+
+00:44:09.820 --> 00:44:11.920 align:middle line:84%
+And the other
+pieces have mean 0,
+
+00:44:11.920 --> 00:44:14.020 align:middle line:90%
+but in slightly different sense.
+
+00:44:14.020 --> 00:44:20.100 align:middle line:84%
+So if I add up fh of a
+over Z mod q, I'd get 0.
+
+00:44:20.100 --> 00:44:28.450 align:middle line:84%
+But if I add up f star
+h over Zq star, I get--
+
+00:44:28.450 --> 00:44:31.700 align:middle line:90%
+
+
+00:44:31.700 --> 00:44:33.300 align:middle line:90%
+OK.
+
+00:44:33.300 --> 00:44:36.200 align:middle line:84%
+So I felt like I had to say
+this to be honest at some point,
+
+00:44:36.200 --> 00:44:38.060 align:middle line:90%
+but it's not really a big deal.
+
+00:44:38.060 --> 00:44:48.900 align:middle line:84%
+And lemma 3 says that the L2
+norm of the high star part
+
+00:44:48.900 --> 00:44:52.580 align:middle line:84%
+is at most the L2 norm
+of the regular high part.
+
+00:44:52.580 --> 00:44:56.140 align:middle line:84%
+So this one lives on Zq star,
+and this one lives on Zq.
+
+00:44:56.140 --> 00:45:11.530 align:middle line:90%
+
+
+00:45:11.530 --> 00:45:21.130 align:middle line:84%
+And then, the last lemma says
+that the high part commutes well
+
+00:45:21.130 --> 00:45:23.810 align:middle line:90%
+with multiplicative convolution.
+
+00:45:23.810 --> 00:45:35.850 align:middle line:84%
+So if f star and g star
+are on Zq star, then--
+
+00:45:35.850 --> 00:45:39.330 align:middle line:84%
+there's going to be a lot
+of stars in this formula--
+
+00:45:39.330 --> 00:45:44.130 align:middle line:84%
+the high part of the
+convolution is the convolution
+
+00:45:44.130 --> 00:45:44.960 align:middle line:90%
+of the high parts.
+
+00:45:44.960 --> 00:45:51.450 align:middle line:90%
+
+
+00:45:51.450 --> 00:45:53.690 align:middle line:84%
+We could prove all these
+things if we feel like it.
+
+00:45:53.690 --> 00:45:56.550 align:middle line:84%
+They're not difficult.
+I think I want
+
+00:45:56.550 --> 00:45:58.870 align:middle line:84%
+to leave it for
+now, because I've
+
+00:45:58.870 --> 00:46:02.070 align:middle line:84%
+put an excessive number
+of details on the board,
+
+00:46:02.070 --> 00:46:04.870 align:middle line:84%
+and try to step back, and
+have a bigger picture,
+
+00:46:04.870 --> 00:46:06.990 align:middle line:90%
+and then pause and check in.
+
+00:46:06.990 --> 00:46:11.170 align:middle line:84%
+So all of these lemmas imply
+the following proposition.
+
+00:46:11.170 --> 00:46:27.910 align:middle line:90%
+
+
+00:46:27.910 --> 00:46:31.630 align:middle line:84%
+So maybe I have
+some convolution,
+
+00:46:31.630 --> 00:46:34.990 align:middle line:84%
+some multiplicative
+convolution, f star g.
+
+00:46:34.990 --> 00:46:39.430 align:middle line:84%
+And I would like to reduce
+it mod q for different q's.
+
+00:46:39.430 --> 00:46:43.430 align:middle line:90%
+So I look at it projected mod q.
+
+00:46:43.430 --> 00:46:50.390 align:middle line:84%
+And then, I'm only going to be
+interested in the star part.
+
+00:46:50.390 --> 00:46:53.220 align:middle line:84%
+I'm going to restrict
+it to Zq star.
+
+00:46:53.220 --> 00:46:55.680 align:middle line:84%
+And I want to know whether
+that's almost constant,
+
+00:46:55.680 --> 00:46:58.020 align:middle line:84%
+so I'll look at the
+high part of that.
+
+00:46:58.020 --> 00:47:01.220 align:middle line:84%
+And I want to know that
+that's small everywhere.
+
+00:47:01.220 --> 00:47:04.300 align:middle line:84%
+This is the kind of estimate
+that we are asking about
+
+00:47:04.300 --> 00:47:06.900 align:middle line:84%
+in the Bombieri-Vinogradov
+theorem
+
+00:47:06.900 --> 00:47:12.300 align:middle line:84%
+because our set of primes
+is morally a multiplicative
+
+00:47:12.300 --> 00:47:13.660 align:middle line:90%
+convolution.
+
+00:47:13.660 --> 00:47:16.580 align:middle line:84%
+And I'm taking the set of
+primes and reducing it mod q,
+
+00:47:16.580 --> 00:47:20.042 align:middle line:84%
+and looking at the different
+classes that I have in Zq star.
+
+00:47:20.042 --> 00:47:21.500 align:middle line:84%
+And I think that
+that's going to be
+
+00:47:21.500 --> 00:47:24.860 align:middle line:84%
+almost constant, so I'm going to
+subtract off the constant part.
+
+00:47:24.860 --> 00:47:26.700 align:middle line:84%
+And now I want to
+know that what's left
+
+00:47:26.700 --> 00:47:30.700 align:middle line:84%
+is very small everywhere, so
+that's an L infinity norm.
+
+00:47:30.700 --> 00:47:32.140 align:middle line:84%
+So the Bombieri-Vinogradov
+theorem
+
+00:47:32.140 --> 00:47:34.660 align:middle line:84%
+is about estimating
+this kind of thing.
+
+00:47:34.660 --> 00:47:38.100 align:middle line:84%
+And the proposition says
+that that is smaller
+
+00:47:38.100 --> 00:47:52.500 align:middle line:84%
+than pi q of f high L2,
+pi q of g high and L2.
+
+00:47:52.500 --> 00:47:58.440 align:middle line:90%
+
+
+00:47:58.440 --> 00:48:03.600 align:middle line:84%
+And it's just assembling
+a bunch of those lemmas.
+
+00:48:03.600 --> 00:48:12.520 align:middle line:84%
+So the projection of the
+convolution high part is the--
+
+00:48:12.520 --> 00:48:19.832 align:middle line:90%
+so proof of proposition.
+
+00:48:19.832 --> 00:48:26.960 align:middle line:84%
+We have the projection
+of the convolution.
+
+00:48:26.960 --> 00:48:27.620 align:middle line:90%
+Restrict it.
+
+00:48:27.620 --> 00:48:29.040 align:middle line:90%
+Take the high part.
+
+00:48:29.040 --> 00:48:34.480 align:middle line:84%
+This is the
+projection, star high
+
+00:48:34.480 --> 00:48:40.120 align:middle line:84%
+convolved with the
+projection of g star high.
+
+00:48:40.120 --> 00:48:46.200 align:middle line:90%
+So that's lemma 4, high parts.
+
+00:48:46.200 --> 00:48:47.940 align:middle line:90%
+No, sorry.
+
+00:48:47.940 --> 00:48:54.630 align:middle line:84%
+This is pi q of f convolved
+with pi q of g, restricted
+
+00:48:54.630 --> 00:48:56.550 align:middle line:90%
+to star high.
+
+00:48:56.550 --> 00:48:59.430 align:middle line:90%
+So that's lemma 1.
+
+00:48:59.430 --> 00:49:02.550 align:middle line:84%
+Convolution plays
+well with projections.
+
+00:49:02.550 --> 00:49:09.190 align:middle line:84%
+And then, lemma 4
+says that that's that.
+
+00:49:09.190 --> 00:49:12.910 align:middle line:84%
+And so now the
+L-infinity norm is
+
+00:49:12.910 --> 00:49:24.150 align:middle line:84%
+bounded by pi q of f star high
+L2, pi q of g star high L2.
+
+00:49:24.150 --> 00:49:25.330 align:middle line:90%
+That's lemma 3.
+
+00:49:25.330 --> 00:49:31.670 align:middle line:90%
+
+
+00:49:31.670 --> 00:49:34.230 align:middle line:90%
+Sorry, that's lemma 2.
+
+00:49:34.230 --> 00:49:44.990 align:middle line:84%
+And then, that's bounded by just
+pi q of f high L2, pi q of g L2,
+
+00:49:44.990 --> 00:49:46.030 align:middle line:90%
+and that's lemma.
+
+00:49:46.030 --> 00:50:06.890 align:middle line:90%
+
+
+00:50:06.890 --> 00:50:12.330 align:middle line:84%
+So let me summarize a little
+bit and then pause to check in.
+
+00:50:12.330 --> 00:50:15.890 align:middle line:84%
+So an issue that
+we're dealing with
+
+00:50:15.890 --> 00:50:18.145 align:middle line:84%
+is L2 norms versus
+L-infinity norms.
+
+00:50:18.145 --> 00:50:19.770 align:middle line:84%
+Because we're trying
+to prove something
+
+00:50:19.770 --> 00:50:22.270 align:middle line:84%
+that's true for
+every moduli class,
+
+00:50:22.270 --> 00:50:23.810 align:middle line:90%
+so it's an L-infinity norm.
+
+00:50:23.810 --> 00:50:26.370 align:middle line:84%
+But our techniques that
+come from Fourier analysis,
+
+00:50:26.370 --> 00:50:29.250 align:middle line:84%
+and so on, it usually
+tells us about L2 norms.
+
+00:50:29.250 --> 00:50:31.290 align:middle line:84%
+So if you have a
+bound like this,
+
+00:50:31.290 --> 00:50:35.570 align:middle line:84%
+it tells you that pi q of f
+is pretty evenly distributed,
+
+00:50:35.570 --> 00:50:38.275 align:middle line:90%
+at most a.
+
+00:50:38.275 --> 00:50:39.650 align:middle line:84%
+And we're trying
+to prove a bound
+
+00:50:39.650 --> 00:50:41.930 align:middle line:84%
+like this that says that
+the projection of this thing
+
+00:50:41.930 --> 00:50:46.560 align:middle line:84%
+is pretty evenly
+distributed at every a.
+
+00:50:46.560 --> 00:50:48.300 align:middle line:84%
+And the point of
+this proposition,
+
+00:50:48.300 --> 00:50:52.160 align:middle line:84%
+it says that if pi
+q of f and pi q of g
+
+00:50:52.160 --> 00:50:55.960 align:middle line:84%
+are pretty evenly
+distributed, just at most a,
+
+00:50:55.960 --> 00:50:58.640 align:middle line:84%
+then the projection
+of their convolution
+
+00:50:58.640 --> 00:51:03.160 align:middle line:84%
+is pretty evenly
+distributed at every a.
+
+00:51:03.160 --> 00:51:06.510 align:middle line:84%
+And so that's why being
+a convolution is helpful.
+
+00:51:06.510 --> 00:51:21.160 align:middle line:90%
+
+
+00:51:21.160 --> 00:51:23.090 align:middle line:84%
+So a little pause for
+questions and comments.
+
+00:51:23.090 --> 00:51:31.400 align:middle line:90%
+
+
+00:51:31.400 --> 00:51:33.260 align:middle line:90%
+OK, cool.
+
+00:51:33.260 --> 00:51:34.920 align:middle line:90%
+So now let's go on.
+
+00:51:34.920 --> 00:51:39.640 align:middle line:84%
+And these two things are
+controlled by the large sieve.
+
+00:51:39.640 --> 00:51:42.540 align:middle line:84%
+The large sieve tells us
+that if f is some function,
+
+00:51:42.540 --> 00:51:46.340 align:middle line:84%
+then this L2 norm
+is small for most q.
+
+00:51:46.340 --> 00:51:48.540 align:middle line:84%
+And so we're going to
+write down that bound
+
+00:51:48.540 --> 00:51:49.900 align:middle line:90%
+and see how small it is.
+
+00:51:49.900 --> 00:51:52.400 align:middle line:84%
+And then, we're going to plug
+it into this proposition.
+
+00:51:52.400 --> 00:51:53.680 align:middle line:90%
+We'll get a bound for this.
+
+00:51:53.680 --> 00:52:13.360 align:middle line:90%
+
+
+00:52:13.360 --> 00:52:14.490 align:middle line:90%
+So large sieve.
+
+00:52:14.490 --> 00:52:17.020 align:middle line:90%
+
+
+00:52:17.020 --> 00:52:25.260 align:middle line:84%
+So remember that Pm is the
+set of p prime, p around m.
+
+00:52:25.260 --> 00:52:29.460 align:middle line:84%
+And so we proved in
+class, and so we'll always
+
+00:52:29.460 --> 00:52:32.680 align:middle line:84%
+have a function which is
+defined on the integers up to N,
+
+00:52:32.680 --> 00:52:36.700 align:middle line:84%
+and it goes to C. And we
+proved in class that if you
+
+00:52:36.700 --> 00:52:41.780 align:middle line:90%
+take the sum p and Pm of--
+
+00:52:41.780 --> 00:52:43.210 align:middle line:84%
+so in class, we
+thought about what
+
+00:52:43.210 --> 00:52:46.370 align:middle line:84%
+happens if M is smaller than
+the square root of N. Then,
+
+00:52:46.370 --> 00:52:52.930 align:middle line:84%
+we got the sum pi q
+of f high L2 squared.
+
+00:52:52.930 --> 00:52:58.540 align:middle line:84%
+And that is bounded by N/M
+times just f L2 squared.
+
+00:52:58.540 --> 00:53:06.010 align:middle line:90%
+
+
+00:53:06.010 --> 00:53:08.690 align:middle line:84%
+M could be bigger than N to
+1/2, and that will be relevant,
+
+00:53:08.690 --> 00:53:10.630 align:middle line:84%
+and this story is
+often relevant.
+
+00:53:10.630 --> 00:53:12.890 align:middle line:84%
+And the proof idea is
+the same, but then it
+
+00:53:12.890 --> 00:53:14.730 align:middle line:84%
+works out a little
+bit differently.
+
+00:53:14.730 --> 00:53:20.290 align:middle line:84%
+So if M is bigger than N to 1/2,
+then this same sum is bounded
+
+00:53:20.290 --> 00:53:24.170 align:middle line:90%
+by M times f L2 squared.
+
+00:53:24.170 --> 00:53:30.010 align:middle line:84%
+So this one was in class, and
+this one is on the homework.
+
+00:53:30.010 --> 00:53:33.030 align:middle line:84%
+So I posted the
+homework for next week,
+
+00:53:33.030 --> 00:53:34.945 align:middle line:84%
+and the first
+problem is to do this
+
+00:53:34.945 --> 00:53:36.570 align:middle line:84%
+mostly as a way of
+thinking through how
+
+00:53:36.570 --> 00:53:38.330 align:middle line:90%
+the large sieve worked.
+
+00:53:38.330 --> 00:53:40.610 align:middle line:84%
+And then the second bit
+is about Linnik's thing
+
+00:53:40.610 --> 00:53:41.730 align:middle line:90%
+about quadratic residues.
+
+00:53:41.730 --> 00:53:51.080 align:middle line:90%
+
+
+00:53:51.080 --> 00:53:58.130 align:middle line:84%
+So now we are going to plug
+these things into here.
+
+00:53:58.130 --> 00:54:00.720 align:middle line:90%
+
+
+00:54:00.720 --> 00:54:03.750 align:middle line:84%
+So we get, all together,
+I'll call it a theorem.
+
+00:54:03.750 --> 00:54:06.800 align:middle line:90%
+
+
+00:54:06.800 --> 00:54:09.320 align:middle line:90%
+Let's say like this.
+
+00:54:09.320 --> 00:54:13.920 align:middle line:84%
+So suppose f is a
+function on N1 up to C,
+
+00:54:13.920 --> 00:54:19.120 align:middle line:84%
+and g is a function
+on numbers up to N2.
+
+00:54:19.120 --> 00:54:22.340 align:middle line:84%
+And so if I take their
+multiplicative convolution,
+
+00:54:22.340 --> 00:54:25.200 align:middle line:84%
+that will be a function
+on the integers up to N,
+
+00:54:25.200 --> 00:54:26.890 align:middle line:90%
+where N is N1 times N2.
+
+00:54:26.890 --> 00:54:31.680 align:middle line:90%
+
+
+00:54:31.680 --> 00:54:45.780 align:middle line:84%
+And then, I can take the sum p
+and Pm of f convolved with g.
+
+00:54:45.780 --> 00:54:49.020 align:middle line:90%
+I project it mod q.
+
+00:54:49.020 --> 00:54:51.435 align:middle line:84%
+I maybe take the high,
+take the star part.
+
+00:54:51.435 --> 00:54:54.060 align:middle line:84%
+That doesn't matter if you do it
+or not, but in our application
+
+00:54:54.060 --> 00:54:57.798 align:middle line:84%
+we'll do it, and then
+subtract off the constant.
+
+00:54:57.798 --> 00:54:59.340 align:middle line:84%
+So the idea is that
+this thing should
+
+00:54:59.340 --> 00:55:01.720 align:middle line:84%
+be pretty close to
+constant much of the time.
+
+00:55:01.720 --> 00:55:03.440 align:middle line:84%
+So we look at the
+non-constant part.
+
+00:55:03.440 --> 00:55:06.380 align:middle line:90%
+
+
+00:55:06.380 --> 00:55:09.180 align:middle line:84%
+And then, that is
+bounded by, there's
+
+00:55:09.180 --> 00:55:11.100 align:middle line:84%
+an expression that's
+slightly messy.
+
+00:55:11.100 --> 00:55:17.860 align:middle line:90%
+And then, we have f L2 and g L2.
+
+00:55:17.860 --> 00:55:23.260 align:middle line:84%
+And the thing that goes in
+here when you work it out is--
+
+00:55:23.260 --> 00:55:24.080 align:middle line:90%
+I'll have to check.
+
+00:55:24.080 --> 00:55:50.810 align:middle line:90%
+
+
+00:55:50.810 --> 00:55:51.330 align:middle line:90%
+Yeah?
+
+00:55:51.330 --> 00:55:54.250 align:middle line:84%
+AUDIENCE: When you're
+defining the convolution of f
+
+00:55:54.250 --> 00:55:58.290 align:middle line:84%
+and g is a function that
+can be integers up to N,
+
+00:55:58.290 --> 00:56:02.650 align:middle line:84%
+how is that defined for
+the product pair 1 times
+
+00:56:02.650 --> 00:56:05.230 align:middle line:90%
+N for N large?
+
+00:56:05.230 --> 00:56:08.942 align:middle line:84%
+Because f and g are individually
+only defined up to N1 and N2,
+
+00:56:08.942 --> 00:56:10.770 align:middle line:90%
+right?
+
+00:56:10.770 --> 00:56:11.728 align:middle line:90%
+LAWRENCE GUTH: Yes.
+
+00:56:11.728 --> 00:56:12.270 align:middle line:90%
+That's right.
+
+00:56:12.270 --> 00:56:15.870 align:middle line:84%
+So you should imagine f and g
+being extended as 0 beyond that.
+
+00:56:15.870 --> 00:56:20.830 align:middle line:90%
+
+
+00:56:20.830 --> 00:56:23.130 align:middle line:84%
+So the question
+was how to define
+
+00:56:23.130 --> 00:56:24.670 align:middle line:90%
+in the definition of this.
+
+00:56:24.670 --> 00:56:27.890 align:middle line:84%
+We'll have all the pairs,
+little n1 times little n2,
+
+00:56:27.890 --> 00:56:29.330 align:middle line:90%
+that multiply to n.
+
+00:56:29.330 --> 00:56:32.090 align:middle line:84%
+And it could happen that
+little n1 or little n2 are
+
+00:56:32.090 --> 00:56:34.710 align:middle line:90%
+too big to lie in this region.
+
+00:56:34.710 --> 00:56:37.130 align:middle line:90%
+And then we just set f to be 0.
+
+00:56:37.130 --> 00:56:44.467 align:middle line:90%
+
+
+00:56:44.467 --> 00:56:45.050 align:middle line:90%
+Oh, and sorry.
+
+00:56:45.050 --> 00:56:46.290 align:middle line:90%
+And this is L infinity.
+
+00:56:46.290 --> 00:56:47.100 align:middle line:90%
+It's not L2.
+
+00:56:47.100 --> 00:56:57.985 align:middle line:90%
+
+
+00:56:57.985 --> 00:57:03.628 align:middle line:84%
+So one thing that
+I find a little
+
+00:57:03.628 --> 00:57:05.670 align:middle line:84%
+difficult about the proof,
+or teaching the proof,
+
+00:57:05.670 --> 00:57:10.230 align:middle line:84%
+is that the formulas are
+a little bit complicated.
+
+00:57:10.230 --> 00:57:14.230 align:middle line:84%
+But the idea of this is to
+just combine the large sieve
+
+00:57:14.230 --> 00:57:15.790 align:middle line:90%
+and this proposition.
+
+00:57:15.790 --> 00:57:20.790 align:middle line:84%
+So if you start with the
+left-hand side and you just
+
+00:57:20.790 --> 00:57:29.870 align:middle line:84%
+apply this proposition,
+then we get--
+
+00:57:29.870 --> 00:57:32.870 align:middle line:84%
+yeah, I guess we
+don't need that.
+
+00:57:32.870 --> 00:57:44.620 align:middle line:84%
+We get a sum, p and Pm of pi
+q of f high L2, pi q of g high
+
+00:57:44.620 --> 00:57:45.130 align:middle line:90%
+and L2.
+
+00:57:45.130 --> 00:57:47.940 align:middle line:90%
+
+
+00:57:47.940 --> 00:57:50.220 align:middle line:84%
+So the proposition just said
+that this L-infinity norm
+
+00:57:50.220 --> 00:57:51.940 align:middle line:90%
+is bounded by this product.
+
+00:57:51.940 --> 00:57:55.100 align:middle line:90%
+I copied down the sum.
+
+00:57:55.100 --> 00:57:58.860 align:middle line:84%
+And then this looks a lot like
+the input of the large sieve.
+
+00:57:58.860 --> 00:58:06.340 align:middle line:84%
+So if I Cauchy-Schwarz it, I
+get the sum pi q of f high L2
+
+00:58:06.340 --> 00:58:19.300 align:middle line:84%
+squared to the 1/2, and then the
+sum pi q of g high L2 squared
+
+00:58:19.300 --> 00:58:19.900 align:middle line:90%
+to the 1/2.
+
+00:58:19.900 --> 00:58:22.460 align:middle line:90%
+
+
+00:58:22.460 --> 00:58:24.320 align:middle line:84%
+And then I apply
+the large sieve.
+
+00:58:24.320 --> 00:58:27.220 align:middle line:90%
+
+
+00:58:27.220 --> 00:58:30.380 align:middle line:84%
+So the large sieve gives a
+bound for each of these things
+
+00:58:30.380 --> 00:58:31.640 align:middle line:90%
+and I plug it in.
+
+00:58:31.640 --> 00:58:33.140 align:middle line:84%
+And what makes it
+a little bit messy
+
+00:58:33.140 --> 00:58:36.000 align:middle line:84%
+is that, because there are
+two cases, the bound for this
+
+00:58:36.000 --> 00:58:39.760 align:middle line:84%
+is a sum of two terms,
+and the bound for this
+
+00:58:39.760 --> 00:58:42.320 align:middle line:90%
+is a sum of two terms.
+
+00:58:42.320 --> 00:58:44.140 align:middle line:84%
+So then, when I
+multiply that together,
+
+00:58:44.140 --> 00:58:47.100 align:middle line:84%
+I get this sum of two terms
+times that sum of two terms.
+
+00:58:47.100 --> 00:59:06.120 align:middle line:90%
+
+
+00:59:06.120 --> 00:59:16.960 align:middle line:84%
+In the setting of our
+main theorem about primes,
+
+00:59:16.960 --> 00:59:19.480 align:middle line:84%
+the theorem of
+Rényi, and Bombieri,
+
+00:59:19.480 --> 00:59:27.000 align:middle line:84%
+and Vinogradov, the size
+of f and the size of g
+
+00:59:27.000 --> 00:59:30.680 align:middle line:84%
+would be around 1
+where they're defined.
+
+00:59:30.680 --> 00:59:39.110 align:middle line:84%
+And so the L2 norms of f and
+g would be around N1 and N2,
+
+00:59:39.110 --> 00:59:43.990 align:middle line:90%
+and squared would be around N2.
+
+00:59:43.990 --> 00:59:47.270 align:middle line:84%
+So if you plug that
+all in, then we'd
+
+00:59:47.270 --> 01:00:05.630 align:middle line:84%
+get our sum L infinity
+would be bounded by N/m,
+
+01:00:05.630 --> 01:00:11.590 align:middle line:84%
+plus the square root of N1, N,
+plus the square root of N2, N,
+
+01:00:11.590 --> 01:00:26.035 align:middle line:90%
+plus M root N.
+
+01:00:26.035 --> 01:00:32.570 align:middle line:84%
+And then, our goal would be that
+this sum is much smaller than N.
+
+01:00:32.570 --> 01:00:39.890 align:middle line:84%
+So it's good as long as M
+is less than N to 1/2 minus
+
+01:00:39.890 --> 01:00:40.670 align:middle line:90%
+epsilon.
+
+01:00:40.670 --> 01:00:44.530 align:middle line:84%
+That's where that condition
+comes from, the range of q,
+
+01:00:44.530 --> 01:00:57.850 align:middle line:84%
+and as long as N1 and N2
+are much smaller than N.
+
+01:00:57.850 --> 01:01:04.063 align:middle line:84%
+So in this part, I redid
+the computation at home
+
+01:01:04.063 --> 01:01:05.230 align:middle line:90%
+and it's a little bit messy.
+
+01:01:05.230 --> 01:01:08.650 align:middle line:84%
+I did spend some
+time trying to think
+
+01:01:08.650 --> 01:01:10.970 align:middle line:84%
+if there's a way of saying
+it without computing
+
+01:01:10.970 --> 01:01:15.370 align:middle line:84%
+to see when it works well and
+when it doesn't work well.
+
+01:01:15.370 --> 01:01:17.930 align:middle line:84%
+I have a couple
+comments about that,
+
+01:01:17.930 --> 01:01:19.570 align:middle line:84%
+although I don't
+feel like I know how
+
+01:01:19.570 --> 01:01:23.050 align:middle line:90%
+to see everything that way yet.
+
+01:01:23.050 --> 01:01:26.530 align:middle line:84%
+So one comment is
+that it doesn't
+
+01:01:26.530 --> 01:01:30.400 align:middle line:84%
+work very well if N1
+or N2 is almost N.
+
+01:01:30.400 --> 01:01:34.480 align:middle line:84%
+And there's a conceptual
+reason for that.
+
+01:01:34.480 --> 01:01:41.040 align:middle line:84%
+So suppose N2 was N.
+That means N1 would be 1.
+
+01:01:41.040 --> 01:01:44.160 align:middle line:84%
+So my f is supported
+just on 1, and my g
+
+01:01:44.160 --> 01:01:46.760 align:middle line:84%
+is supported all
+the way up to N.
+
+01:01:46.760 --> 01:01:49.880 align:middle line:84%
+And when I convolve
+them together,
+
+01:01:49.880 --> 01:01:55.200 align:middle line:84%
+I just get g times
+the value of f at 1.
+
+01:01:55.200 --> 01:01:59.360 align:middle line:84%
+So in that situation
+there's no special structure
+
+01:01:59.360 --> 01:02:00.640 align:middle line:90%
+of this function.
+
+01:02:00.640 --> 01:02:03.800 align:middle line:84%
+It's a totally
+arbitrary function.
+
+01:02:03.800 --> 01:02:05.680 align:middle line:84%
+And since this kind
+of theorem is not
+
+01:02:05.680 --> 01:02:07.680 align:middle line:84%
+true for arbitrary
+functions, it can't
+
+01:02:07.680 --> 01:02:16.545 align:middle line:84%
+work when N1 and N2
+are really close to N.
+
+01:02:16.545 --> 01:02:19.880 align:middle line:84%
+So as long as N1 and
+N2 are kind of even,
+
+01:02:19.880 --> 01:02:23.040 align:middle line:84%
+there's a meaningful
+convolution going on.
+
+01:02:23.040 --> 01:02:25.480 align:middle line:84%
+As long as neither of them is
+close to 1, neither of them
+
+01:02:25.480 --> 01:02:28.500 align:middle line:84%
+is close to N, there's a
+meaningful convolution structure
+
+01:02:28.500 --> 01:02:29.280 align:middle line:90%
+going on.
+
+01:02:29.280 --> 01:02:31.920 align:middle line:84%
+And in that setting,
+these terms are OK.
+
+01:02:31.920 --> 01:02:34.580 align:middle line:90%
+
+
+01:02:34.580 --> 01:02:40.460 align:middle line:84%
+This term here is OK
+as long as M is big.
+
+01:02:40.460 --> 01:02:41.293 align:middle line:90%
+M is reasonably big.
+
+01:02:41.293 --> 01:02:43.835 align:middle line:84%
+We need M to be reasonably big
+so that we're actually looking
+
+01:02:43.835 --> 01:02:45.100 align:middle line:90%
+at many different projections.
+
+01:02:45.100 --> 01:02:46.975 align:middle line:84%
+Because we're just
+looking at one projection,
+
+01:02:46.975 --> 01:02:49.450 align:middle line:84%
+we can never say
+anything about it
+
+01:02:49.450 --> 01:02:52.300 align:middle line:90%
+by just using projection theory
+
+01:02:52.300 --> 01:02:54.780 align:middle line:84%
+And here, we need M
+to be not too much
+
+01:02:54.780 --> 01:03:02.420 align:middle line:84%
+bigger than the square root of
+N. And the reason for that is,
+
+01:03:02.420 --> 01:03:05.400 align:middle line:84%
+so one important case here
+is when N1 and N2 are equal.
+
+01:03:05.400 --> 01:03:08.620 align:middle line:84%
+So they would both be
+the square root of N.
+
+01:03:08.620 --> 01:03:11.160 align:middle line:84%
+And if M is bigger than
+the square root of N,
+
+01:03:11.160 --> 01:03:15.700 align:middle line:84%
+M would be bigger
+than both N1 and N2.
+
+01:03:15.700 --> 01:03:21.020 align:middle line:84%
+And when that happens, the
+theorem might still be true,
+
+01:03:21.020 --> 01:03:23.780 align:middle line:84%
+but the proof doesn't
+work very well.
+
+01:03:23.780 --> 01:03:28.250 align:middle line:84%
+You see, if M is
+bigger than N1 and N2,
+
+01:03:28.250 --> 01:03:31.890 align:middle line:84%
+I have this function f that's
+defined on the numbers up to N1.
+
+01:03:31.890 --> 01:03:37.690 align:middle line:84%
+And then, I tried projecting
+it mod q, where q is around M.
+
+01:03:37.690 --> 01:03:39.470 align:middle line:90%
+So q is actually bigger than N1.
+
+01:03:39.470 --> 01:03:44.170 align:middle line:84%
+So this projection operation
+is extremely uninteresting.
+
+01:03:44.170 --> 01:03:48.040 align:middle line:84%
+The first N1 elements I copied
+down, and the rest I put 0.
+
+01:03:48.040 --> 01:03:50.690 align:middle line:90%
+
+
+01:03:50.690 --> 01:03:55.170 align:middle line:84%
+So since that projection
+operation is trivial,
+
+01:03:55.170 --> 01:03:57.810 align:middle line:84%
+no theorem from
+projection theory
+
+01:03:57.810 --> 01:03:59.870 align:middle line:84%
+is going to say
+anything useful here.
+
+01:03:59.870 --> 01:04:04.770 align:middle line:90%
+
+
+01:04:04.770 --> 01:04:09.890 align:middle line:84%
+The gain that we're getting
+is that as long as--
+
+01:04:09.890 --> 01:04:14.970 align:middle line:84%
+so I need either N1 or N2
+to be bigger than M in order
+
+01:04:14.970 --> 01:04:16.370 align:middle line:90%
+to get off the ground.
+
+01:04:16.370 --> 01:04:22.410 align:middle line:84%
+Once N1 or N2 is bigger than M,
+let's say N2 is bigger than M,
+
+01:04:22.410 --> 01:04:25.390 align:middle line:84%
+then, when I look at these
+projections, most of them
+
+01:04:25.390 --> 01:04:28.343 align:middle line:90%
+are almost constant.
+
+01:04:28.343 --> 01:04:30.010 align:middle line:84%
+That's where the
+mileage is coming from.
+
+01:04:30.010 --> 01:04:32.070 align:middle line:84%
+So these guys are
+almost constant.
+
+01:04:32.070 --> 01:04:34.290 align:middle line:84%
+These guys might or might
+not be almost constant.
+
+01:04:34.290 --> 01:04:36.590 align:middle line:90%
+It's OK either way.
+
+01:04:36.590 --> 01:04:38.370 align:middle line:84%
+And then, when I
+convolve it together,
+
+01:04:38.370 --> 01:04:40.450 align:middle line:84%
+the convolution is
+almost constant.
+
+01:04:40.450 --> 01:04:42.570 align:middle line:84%
+And in a strong
+sense, it's everywhere
+
+01:04:42.570 --> 01:04:45.680 align:middle line:84%
+almost constant, instead of just
+most places almost constant.
+
+01:04:45.680 --> 01:04:54.590 align:middle line:90%
+
+
+01:04:54.590 --> 01:04:56.930 align:middle line:84%
+Actually, another
+visual thing is,
+
+01:04:56.930 --> 01:04:59.970 align:middle line:84%
+so say this guy is almost
+constant but not everywhere.
+
+01:04:59.970 --> 01:05:02.950 align:middle line:84%
+So in most places it's almost
+constant, but a couple of places
+
+01:05:02.950 --> 01:05:04.990 align:middle line:90%
+it has a big bump.
+
+01:05:04.990 --> 01:05:11.030 align:middle line:84%
+When I take this convolution,
+then to evaluate the convolution
+
+01:05:11.030 --> 01:05:14.230 align:middle line:84%
+at any given point, I have to
+look at the contribution of this
+
+01:05:14.230 --> 01:05:15.790 align:middle line:90%
+at every point.
+
+01:05:15.790 --> 01:05:18.810 align:middle line:84%
+And so those couple of places
+only contribute a little.
+
+01:05:18.810 --> 01:05:22.267 align:middle line:84%
+And mostly I see the
+contribution of the places
+
+01:05:22.267 --> 01:05:23.100 align:middle line:90%
+where this is small.
+
+01:05:23.100 --> 01:05:26.540 align:middle line:90%
+
+
+01:05:26.540 --> 01:05:27.880 align:middle line:90%
+So that's what's going on.
+
+01:05:27.880 --> 01:05:30.380 align:middle line:84%
+And then you do have
+to do some algebra
+
+01:05:30.380 --> 01:05:32.840 align:middle line:84%
+to see just how much
+we learned from that.
+
+01:05:32.840 --> 01:05:37.060 align:middle line:90%
+
+
+01:05:37.060 --> 01:05:39.430 align:middle line:84%
+So now let's go
+back to our theorem.
+
+01:05:39.430 --> 01:06:00.860 align:middle line:90%
+
+
+01:06:00.860 --> 01:06:03.940 align:middle line:84%
+And this last part I'm not
+going to do every detail, which
+
+01:06:03.940 --> 01:06:05.560 align:middle line:90%
+even gets a little bit messier.
+
+01:06:05.560 --> 01:06:11.180 align:middle line:84%
+But I'll just say the
+skeleton and then we'll pause.
+
+01:06:11.180 --> 01:06:17.020 align:middle line:84%
+So let's say that S is
+the primes up to N to 1/2.
+
+01:06:17.020 --> 01:06:25.760 align:middle line:84%
+And then, remember that if,
+say, N over 2 is less than p,
+
+01:06:25.760 --> 01:06:31.040 align:middle line:84%
+is less than N, or actually,
+just N to 1/2 is less than N,
+
+01:06:31.040 --> 01:06:38.000 align:middle line:84%
+then R relatively prime
+to S of n is prime.
+
+01:06:38.000 --> 01:06:39.760 align:middle line:84%
+So we can basically
+study this function
+
+01:06:39.760 --> 01:06:42.880 align:middle line:90%
+by studying that function.
+
+01:06:42.880 --> 01:06:47.520 align:middle line:84%
+And then, we also know that
+relatively prime S of N
+
+01:06:47.520 --> 01:06:54.520 align:middle line:84%
+is 1 convolved with
+Dp1, convolved with Dpr.
+
+01:06:54.520 --> 01:06:58.960 align:middle line:84%
+And these are all
+multiplicative convolutions.
+
+01:06:58.960 --> 01:07:02.500 align:middle line:84%
+This whole thing is a ton of
+multiplicative convolutions.
+
+01:07:02.500 --> 01:07:06.040 align:middle line:84%
+But if I just want
+to see two of them,
+
+01:07:06.040 --> 01:07:09.780 align:middle line:84%
+then I could say it's this
+guy convolved with that guy.
+
+01:07:09.780 --> 01:07:13.640 align:middle line:90%
+
+
+01:07:13.640 --> 01:07:19.460 align:middle line:84%
+Now this function, as
+written, it goes on forever,
+
+01:07:19.460 --> 01:07:21.430 align:middle line:84%
+and this function
+goes on forever.
+
+01:07:21.430 --> 01:07:23.870 align:middle line:84%
+But I only want to
+evaluate this up
+
+01:07:23.870 --> 01:07:33.910 align:middle line:84%
+to capital N. So this guy
+at N1 and this guy at N2,
+
+01:07:33.910 --> 01:07:36.970 align:middle line:84%
+after they come together
+in the convolution,
+
+01:07:36.970 --> 01:07:39.230 align:middle line:84%
+they'll only be relevant
+if N1 times N2 is less
+
+01:07:39.230 --> 01:07:43.790 align:middle line:84%
+than capital N.
+So what I'll do is
+
+01:07:43.790 --> 01:07:48.430 align:middle line:84%
+I'll write this as
+a sum on I1 of f
+
+01:07:48.430 --> 01:07:50.950 align:middle line:84%
+times the characteristic
+function of I1.
+
+01:07:50.950 --> 01:07:54.750 align:middle line:84%
+So I'll just divide up the
+numbers into some intervals.
+
+01:07:54.750 --> 01:08:00.230 align:middle line:84%
+And I'm going to convolve
+that with the sum over I2 of g
+
+01:08:00.230 --> 01:08:03.590 align:middle line:90%
+characteristic function of I2.
+
+01:08:03.590 --> 01:08:05.330 align:middle line:84%
+And I can open up
+the parentheses.
+
+01:08:05.330 --> 01:08:15.500 align:middle line:84%
+It's the sum, I1 and I2, of f
+I1, f I1 convolved with g I2.
+
+01:08:15.500 --> 01:08:23.640 align:middle line:90%
+
+
+01:08:23.640 --> 01:08:27.340 align:middle line:84%
+And now if I only want to
+capture this up to capital N,
+
+01:08:27.340 --> 01:08:33.020 align:middle line:84%
+so let me say that N1
+is the maximum of I1,
+
+01:08:33.020 --> 01:08:35.129 align:middle line:90%
+and N2 is the maximum of I2.
+
+01:08:35.129 --> 01:08:38.899 align:middle line:90%
+
+
+01:08:38.899 --> 01:08:44.700 align:middle line:84%
+So for little n less than or
+equal to capital N, R Ps of n
+
+01:08:44.700 --> 01:08:51.939 align:middle line:84%
+will be the sum over I1, I2 of
+f characteristic function of I1
+
+01:08:51.939 --> 01:08:55.620 align:middle line:84%
+convolved with g
+characteristic function of I2.
+
+01:08:55.620 --> 01:09:05.288 align:middle line:84%
+And here, I can assume that N1
+times N2 is less than around N.
+
+01:09:05.288 --> 01:09:06.830 align:middle line:84%
+Maybe I should make
+this the minimum.
+
+01:09:06.830 --> 01:09:11.540 align:middle line:90%
+
+
+01:09:11.540 --> 01:09:14.140 align:middle line:84%
+Yeah, because otherwise the
+product of these two intervals
+
+01:09:14.140 --> 01:09:16.300 align:middle line:84%
+will be bigger than
+capital N, so it
+
+01:09:16.300 --> 01:09:17.939 align:middle line:90%
+won't have any influence here.
+
+01:09:17.939 --> 01:09:26.520 align:middle line:90%
+
+
+01:09:26.520 --> 01:09:38.840 align:middle line:84%
+So then for each of these we
+apply the theorem, theorem A,
+
+01:09:38.840 --> 01:09:40.439 align:middle line:90%
+that theorem there.
+
+01:09:40.439 --> 01:09:43.960 align:middle line:84%
+And it tells me that when I
+reduce these things, mod q,
+
+01:09:43.960 --> 01:09:48.180 align:middle line:84%
+for most q's, the non-constant
+part is small in L infinity.
+
+01:09:48.180 --> 01:09:51.600 align:middle line:90%
+
+
+01:09:51.600 --> 01:09:54.350 align:middle line:84%
+So this works for
+most of the terms.
+
+01:09:54.350 --> 01:09:57.520 align:middle line:90%
+
+
+01:09:57.520 --> 01:10:03.440 align:middle line:84%
+It works as long as N1 and
+N2 are much bigger than 1,
+
+01:10:03.440 --> 01:10:11.560 align:middle line:84%
+and much less than N,
+but it could happen.
+
+01:10:11.560 --> 01:10:17.610 align:middle line:84%
+A piece of this would be this
+guy with I2 very close to 1,
+
+01:10:17.610 --> 01:10:20.550 align:middle line:84%
+or even just the 0.1,
+convolved with that guy.
+
+01:10:20.550 --> 01:10:22.510 align:middle line:90%
+That's in there, too.
+
+01:10:22.510 --> 01:10:24.590 align:middle line:90%
+How do you deal with that?
+
+01:10:24.590 --> 01:10:29.390 align:middle line:84%
+Well, this function f
+is itself a convolution.
+
+01:10:29.390 --> 01:10:34.010 align:middle line:84%
+So then I can take f and I
+split it up, and I keep going.
+
+01:10:34.010 --> 01:10:39.670 align:middle line:90%
+
+
+01:10:39.670 --> 01:10:45.950 align:middle line:84%
+So if N1 is almost N,
+and N2 is almost 1,
+
+01:10:45.950 --> 01:10:51.190 align:middle line:84%
+use f is f1 convolved
+with f2, dot, dot, dot.
+
+01:10:51.190 --> 01:10:54.910 align:middle line:84%
+So this part gets
+a little bit messy.
+
+01:10:54.910 --> 01:10:59.470 align:middle line:84%
+And to be honest,
+I'm not positive
+
+01:10:59.470 --> 01:11:01.355 align:middle line:90%
+whether this exact thing works.
+
+01:11:01.355 --> 01:11:02.480 align:middle line:90%
+This is a possible project.
+
+01:11:02.480 --> 01:11:06.390 align:middle line:90%
+
+
+01:11:06.390 --> 01:11:08.990 align:middle line:84%
+So what I read in analytic
+number theory books
+
+01:11:08.990 --> 01:11:11.830 align:middle line:84%
+is a slightly
+fancier way of taking
+
+01:11:11.830 --> 01:11:14.390 align:middle line:84%
+this function, characteristic
+function of prime numbers,
+
+01:11:14.390 --> 01:11:19.450 align:middle line:84%
+and writing it in terms of some
+multiplicative convolutions.
+
+01:11:19.450 --> 01:11:20.950 align:middle line:84%
+And for the slightly
+fancier way,
+
+01:11:20.950 --> 01:11:22.670 align:middle line:84%
+there end up being
+less terms here,
+
+01:11:22.670 --> 01:11:25.450 align:middle line:90%
+and it works out more cleanly.
+
+01:11:25.450 --> 01:11:28.290 align:middle line:84%
+But it also, at least I had
+a little bit more trouble
+
+01:11:28.290 --> 01:11:30.550 align:middle line:84%
+motivating it and seeing
+how people thought of it.
+
+01:11:30.550 --> 01:11:33.210 align:middle line:90%
+
+
+01:11:33.210 --> 01:11:34.990 align:middle line:90%
+Anyway, so I'm not positive.
+
+01:11:34.990 --> 01:11:39.410 align:middle line:84%
+I think that this may work in
+all details, or maybe not quite.
+
+01:11:39.410 --> 01:11:42.610 align:middle line:84%
+Maybe it requires
+more fidgeting.
+
+01:11:42.610 --> 01:11:44.170 align:middle line:84%
+But nevertheless,
+I think it shows
+
+01:11:44.170 --> 01:11:46.290 align:middle line:84%
+the main ideas that
+go into proving
+
+01:11:46.290 --> 01:11:48.070 align:middle line:90%
+the Bombieri-Vinogradov theorem.
+
+01:11:48.070 --> 01:11:57.850 align:middle line:90%
+
+
+01:11:57.850 --> 01:12:00.110 align:middle line:84%
+AUDIENCE: Sorry, I'm
+still really confused.
+
+01:12:00.110 --> 01:12:04.430 align:middle line:84%
+So what are those
+intervals, I1 and I2?
+
+01:12:04.430 --> 01:12:07.970 align:middle line:84%
+LAWRENCE GUTH: What are
+the intervals I1 and I2?
+
+01:12:07.970 --> 01:12:10.810 align:middle line:84%
+So you might first
+try dyadic intervals.
+
+01:12:10.810 --> 01:12:17.200 align:middle line:90%
+
+
+01:12:17.200 --> 01:12:22.040 align:middle line:84%
+And so modulo technical
+details, that's good.
+
+01:12:22.040 --> 01:12:23.680 align:middle line:84%
+But actually, there's
+a little problem
+
+01:12:23.680 --> 01:12:29.280 align:middle line:84%
+with taking dyadic intervals
+that wherever you stop,
+
+01:12:29.280 --> 01:12:31.880 align:middle line:84%
+this function will be exactly
+the function that we want up
+
+01:12:31.880 --> 01:12:35.840 align:middle line:84%
+to capital N. And then it'll go
+a little bit beyond capital N.
+
+01:12:35.840 --> 01:12:38.560 align:middle line:84%
+And there'll be
+some stuff that's
+
+01:12:38.560 --> 01:12:43.200 align:middle line:84%
+not exactly this function
+anymore, and then it'll die off.
+
+01:12:43.200 --> 01:12:45.880 align:middle line:84%
+And we'd like to prove that
+you just take this function
+
+01:12:45.880 --> 01:12:47.680 align:middle line:84%
+and sharply cut
+it off at capital
+
+01:12:47.680 --> 01:12:50.520 align:middle line:84%
+N. We'd like that to
+be evenly distributed.
+
+01:12:50.520 --> 01:12:55.440 align:middle line:84%
+But we have this
+extra junk at the end.
+
+01:12:55.440 --> 01:12:56.780 align:middle line:90%
+OK, so that's a problem.
+
+01:12:56.780 --> 01:12:58.520 align:middle line:84%
+And the solution
+to that problem is
+
+01:12:58.520 --> 01:13:01.320 align:middle line:84%
+we can greatly reduce
+the amount of junk
+
+01:13:01.320 --> 01:13:03.560 align:middle line:84%
+by replacing dyadic
+intervals by intervals
+
+01:13:03.560 --> 01:13:06.200 align:middle line:90%
+that are somewhat narrower.
+
+01:13:06.200 --> 01:13:11.000 align:middle line:84%
+If we make I1 and I2 narrow,
+then whenever I1 times I2
+
+01:13:11.000 --> 01:13:14.160 align:middle line:84%
+crosses over N, it will only
+cross over a little bit,
+
+01:13:14.160 --> 01:13:16.820 align:middle line:84%
+so we'll have only a
+little bit of junk.
+
+01:13:16.820 --> 01:13:19.758 align:middle line:90%
+So that's who I1 and I2 are.
+
+01:13:19.758 --> 01:13:20.300 align:middle line:90%
+AUDIENCE: OK.
+
+01:13:20.300 --> 01:13:25.627 align:middle line:90%
+
+
+01:13:25.627 --> 01:13:26.460 align:middle line:90%
+LAWRENCE GUTH: Yeah?
+
+01:13:26.460 --> 01:13:31.067 align:middle line:84%
+AUDIENCE: Can you recap what
+properties of R Ps we used?
+
+01:13:31.067 --> 01:13:31.900 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:13:31.900 --> 01:13:36.500 align:middle line:84%
+The question was, can we recap
+what properties of R Ps we used?
+
+01:13:36.500 --> 01:13:41.060 align:middle line:84%
+So the first property is
+that R Ps detects primes.
+
+01:13:41.060 --> 01:13:43.500 align:middle line:84%
+And that property
+is written here.
+
+01:13:43.500 --> 01:13:46.180 align:middle line:84%
+So s is the primes that
+are less than N to 1/2.
+
+01:13:46.180 --> 01:13:49.180 align:middle line:84%
+And on this big
+region, R Ps of n
+
+01:13:49.180 --> 01:13:51.140 align:middle line:84%
+is the same as just
+characteristic function
+
+01:13:51.140 --> 01:13:51.780 align:middle line:90%
+of primes.
+
+01:13:51.780 --> 01:13:55.440 align:middle line:90%
+It tells us who's prime.
+
+01:13:55.440 --> 01:13:59.600 align:middle line:84%
+But this function is nicer than
+this function on the face of it
+
+01:13:59.600 --> 01:14:01.540 align:middle line:84%
+because as a second
+good property,
+
+01:14:01.540 --> 01:14:04.390 align:middle line:84%
+which is that it is a
+multiplicative convolution
+
+01:14:04.390 --> 01:14:05.890 align:middle line:84%
+of a whole bunch
+of things together.
+
+01:14:05.890 --> 01:14:09.540 align:middle line:90%
+
+
+01:14:09.540 --> 01:14:12.150 align:middle line:84%
+And so we, in particular,
+can split it up like this.
+
+01:14:12.150 --> 01:14:14.410 align:middle line:84%
+And we see it has this
+multiplicative convolution
+
+01:14:14.410 --> 01:14:15.070 align:middle line:90%
+structure.
+
+01:14:15.070 --> 01:14:17.810 align:middle line:90%
+
+
+01:14:17.810 --> 01:14:20.090 align:middle line:84%
+I guess another thing that
+I used without saying it
+
+01:14:20.090 --> 01:14:23.490 align:middle line:84%
+as clearly as I should have is
+that we use that, pointwise, f
+
+01:14:23.490 --> 01:14:26.570 align:middle line:90%
+and g are bounded by around 1.
+
+01:14:26.570 --> 01:14:28.890 align:middle line:84%
+And that comes about for
+the following reason.
+
+01:14:28.890 --> 01:14:30.370 align:middle line:84%
+Pointwise, all of
+these functions
+
+01:14:30.370 --> 01:14:34.650 align:middle line:84%
+are bounded by 1
+from the definitions.
+
+01:14:34.650 --> 01:14:38.690 align:middle line:84%
+And then, if you look
+at f at a point N,
+
+01:14:38.690 --> 01:14:41.950 align:middle line:84%
+well, there are different
+ways of factoring N.
+
+01:14:41.950 --> 01:14:45.530 align:middle line:84%
+And so they contribute
+different amounts.
+
+01:14:45.530 --> 01:14:48.190 align:middle line:84%
+And there aren't very many
+ways to factor a number,
+
+01:14:48.190 --> 01:14:50.990 align:middle line:90%
+and so f of N is pretty small.
+
+01:14:50.990 --> 01:14:55.050 align:middle line:90%
+
+
+01:14:55.050 --> 01:14:56.070 align:middle line:90%
+And I think that's it.
+
+01:14:56.070 --> 01:14:58.920 align:middle line:84%
+I think that's all that we used
+about R Ps and about primes.
+
+01:14:58.920 --> 01:15:02.210 align:middle line:90%
+
+
+01:15:02.210 --> 01:15:04.610 align:middle line:84%
+Proving things about
+primes is a funny business
+
+01:15:04.610 --> 01:15:08.450 align:middle line:84%
+because we don't know
+that much about primes.
+
+01:15:08.450 --> 01:15:13.350 align:middle line:84%
+And so you have a theorem,
+something about the primes,
+
+01:15:13.350 --> 01:15:15.350 align:middle line:84%
+you could ask, well, what
+input about the primes
+
+01:15:15.350 --> 01:15:16.990 align:middle line:90%
+did we put into this theorem?
+
+01:15:16.990 --> 01:15:20.390 align:middle line:84%
+And there's not that
+many different things
+
+01:15:20.390 --> 01:15:23.650 align:middle line:84%
+that we know how to
+use as input anyway.
+
+01:15:23.650 --> 01:15:25.530 align:middle line:84%
+And so for today
+it was this thing.
+
+01:15:25.530 --> 01:15:33.430 align:middle line:90%
+
+
+01:15:33.430 --> 01:15:34.070 align:middle line:90%
+Yeah?
+
+01:15:34.070 --> 01:15:36.950 align:middle line:84%
+AUDIENCE: In the
+Cauchy-Schwarz, what
+
+01:15:36.950 --> 01:15:40.070 align:middle line:84%
+about, do we always
+lose something, or are
+
+01:15:40.070 --> 01:15:44.650 align:middle line:84%
+there other situations
+like [INAUDIBLE]?
+
+01:15:44.650 --> 01:15:45.950 align:middle line:90%
+LAWRENCE GUTH: Good.
+
+01:15:45.950 --> 01:15:47.090 align:middle line:90%
+It's a great question.
+
+01:15:47.090 --> 01:15:49.910 align:middle line:84%
+And there is a specific
+question, but the big picture
+
+01:15:49.910 --> 01:15:52.430 align:middle line:84%
+question was, at what
+steps in this argument
+
+01:15:52.430 --> 01:15:54.150 align:middle line:90%
+did we lose something?
+
+01:15:54.150 --> 01:15:57.750 align:middle line:90%
+So we proved a theorem here.
+
+01:15:57.750 --> 01:15:59.930 align:middle line:84%
+It's a nice theorem, but
+it's not the whole truth.
+
+01:15:59.930 --> 01:16:02.347 align:middle line:84%
+We put at the beginning the
+conjectures of what we believe
+
+01:16:02.347 --> 01:16:05.710 align:middle line:84%
+are true, which are way stronger
+than this in several respects.
+
+01:16:05.710 --> 01:16:08.620 align:middle line:84%
+Therefore, we must have lost
+some things in this theorem.
+
+01:16:08.620 --> 01:16:10.220 align:middle line:90%
+Where did we lose them?
+
+01:16:10.220 --> 01:16:12.900 align:middle line:90%
+Let's think through the proof.
+
+01:16:12.900 --> 01:16:15.040 align:middle line:90%
+OK, so this is an equality.
+
+01:16:15.040 --> 01:16:16.760 align:middle line:84%
+The primes really
+are this thing.
+
+01:16:16.760 --> 01:16:18.440 align:middle line:84%
+And this thing really
+is a convolution,
+
+01:16:18.440 --> 01:16:20.540 align:middle line:90%
+so we haven't lost anything yet.
+
+01:16:20.540 --> 01:16:24.060 align:middle line:84%
+We can now break the convolution
+up into pieces, like this.
+
+01:16:24.060 --> 01:16:27.740 align:middle line:84%
+I don't think we
+lost too much here.
+
+01:16:27.740 --> 01:16:30.480 align:middle line:84%
+There is this very annoying
+business about the I1,
+
+01:16:30.480 --> 01:16:34.420 align:middle line:84%
+I2 going over the edge, and
+having to make I1 and I2 small.
+
+01:16:34.420 --> 01:16:38.420 align:middle line:84%
+So there is some loss associated
+to that annoying business.
+
+01:16:38.420 --> 01:16:41.320 align:middle line:90%
+So that's one piece of loss.
+
+01:16:41.320 --> 01:16:45.900 align:middle line:84%
+Then let's just focus
+on one of these pieces.
+
+01:16:45.900 --> 01:16:48.500 align:middle line:84%
+That piece got fed into
+theorem A, so let's
+
+01:16:48.500 --> 01:16:49.470 align:middle line:90%
+switch the two boards.
+
+01:16:49.470 --> 01:16:54.540 align:middle line:90%
+
+
+01:16:54.540 --> 01:16:57.470 align:middle line:84%
+So now we fed our piece
+into this theorem.
+
+01:16:57.470 --> 01:17:02.460 align:middle line:90%
+
+
+01:17:02.460 --> 01:17:05.500 align:middle line:84%
+This theorem is
+not usually sharp.
+
+01:17:05.500 --> 01:17:08.160 align:middle line:84%
+So f and g are two
+particular functions.
+
+01:17:08.160 --> 01:17:12.360 align:middle line:84%
+And for those two functions,
+probably something much stronger
+
+01:17:12.360 --> 01:17:15.040 align:middle line:90%
+is true.
+
+01:17:15.040 --> 01:17:20.420 align:middle line:84%
+Let's think about where
+we lost something.
+
+01:17:20.420 --> 01:17:22.300 align:middle line:84%
+So we wrote down
+the left-hand side.
+
+01:17:22.300 --> 01:17:24.280 align:middle line:90%
+So far, so good.
+
+01:17:24.280 --> 01:17:29.040 align:middle line:84%
+Then, we applied the
+proposition at, basically,
+
+01:17:29.040 --> 01:17:30.620 align:middle line:90%
+we said this is a convolution.
+
+01:17:30.620 --> 01:17:32.960 align:middle line:84%
+And you can bound the L-infinity
+norm of the convolution
+
+01:17:32.960 --> 01:17:36.400 align:middle line:84%
+by the product of the L2
+norms by Cauchy-Schwarz.
+
+01:17:36.400 --> 01:17:41.000 align:middle line:90%
+This step here is a big loser.
+
+01:17:41.000 --> 01:17:46.280 align:middle line:84%
+I didn't bring my red chalk, but
+I would put a big red star here.
+
+01:17:46.280 --> 01:17:47.750 align:middle line:90%
+This is a big lossy step.
+
+01:17:47.750 --> 01:17:53.520 align:middle line:90%
+
+
+01:17:53.520 --> 01:17:58.400 align:middle line:84%
+So remember that this guy is a
+high part, so it has average 0,
+
+01:17:58.400 --> 01:18:00.080 align:middle line:90%
+and this guy has average 0.
+
+01:18:00.080 --> 01:18:02.560 align:middle line:84%
+When we convolve
+them together there
+
+01:18:02.560 --> 01:18:06.110 align:middle line:84%
+are a lot of positive and
+negative signs that appear.
+
+01:18:06.110 --> 01:18:08.470 align:middle line:84%
+Usually there will be
+cancellation there,
+
+01:18:08.470 --> 01:18:12.970 align:middle line:84%
+but we didn't take advantage
+of any of that cancellation.
+
+01:18:12.970 --> 01:18:15.110 align:middle line:84%
+We just used the
+triangle inequality
+
+01:18:15.110 --> 01:18:17.350 align:middle line:90%
+and so we got this upper bound.
+
+01:18:17.350 --> 01:18:21.110 align:middle line:90%
+That's probably very lossy.
+
+01:18:21.110 --> 01:18:23.030 align:middle line:84%
+So for our particular
+functions f and g,
+
+01:18:23.030 --> 01:18:26.270 align:middle line:84%
+that step was
+probably very lossy.
+
+01:18:26.270 --> 01:18:29.990 align:middle line:84%
+Now this more general theorem
+holds for any functions f and g,
+
+01:18:29.990 --> 01:18:31.470 align:middle line:90%
+which is nice.
+
+01:18:31.470 --> 01:18:34.750 align:middle line:84%
+If you could choose any f and
+g, then for one particular q
+
+01:18:34.750 --> 01:18:37.770 align:middle line:90%
+that may well have been correct.
+
+01:18:37.770 --> 01:18:40.830 align:middle line:84%
+You could rig f and g so
+that for one particular q
+
+01:18:40.830 --> 01:18:44.270 align:middle line:90%
+this Cauchy-Schwarz was sharp.
+
+01:18:44.270 --> 01:18:46.350 align:middle line:84%
+But I don't know
+how to rig f and g
+
+01:18:46.350 --> 01:18:52.230 align:middle line:84%
+so that for most of these P's or
+q's something like that happens.
+
+01:18:52.230 --> 01:18:56.070 align:middle line:84%
+It sounds even unlikely
+to me that that is true.
+
+01:18:56.070 --> 01:18:58.030 align:middle line:84%
+So it's plausible
+that without any more
+
+01:18:58.030 --> 01:19:00.032 align:middle line:84%
+input about prime
+numbers, it's plausible
+
+01:19:00.032 --> 01:19:02.240 align:middle line:84%
+that there's a much stronger
+version of this theorem.
+
+01:19:02.240 --> 01:19:04.850 align:middle line:90%
+
+
+01:19:04.850 --> 01:19:07.290 align:middle line:84%
+But I have no idea
+how to prove it.
+
+01:19:07.290 --> 01:19:09.150 align:middle line:84%
+OK, so that was
+our big lossy step.
+
+01:19:09.150 --> 01:19:10.630 align:middle line:84%
+Then, we went on
+to the next step.
+
+01:19:10.630 --> 01:19:12.090 align:middle line:90%
+We did this Cauchy-Schwarz.
+
+01:19:12.090 --> 01:19:14.490 align:middle line:84%
+I don't think this
+one is so bad.
+
+01:19:14.490 --> 01:19:16.190 align:middle line:84%
+For this Cauchy-Schwarz
+to be sharp,
+
+01:19:16.190 --> 01:19:19.970 align:middle line:84%
+we just means that
+it would be sharp
+
+01:19:19.970 --> 01:19:22.850 align:middle line:84%
+if, for the different P's,
+all these L2 norms were
+
+01:19:22.850 --> 01:19:24.290 align:middle line:90%
+about the same as each other.
+
+01:19:24.290 --> 01:19:26.770 align:middle line:90%
+I think that usually happens.
+
+01:19:26.770 --> 01:19:29.930 align:middle line:84%
+And then, we applied
+the large sieve.
+
+01:19:29.930 --> 01:19:35.890 align:middle line:84%
+And the large sieve
+itself is usually not
+
+01:19:35.890 --> 01:19:39.610 align:middle line:90%
+lossy in the key ranges.
+
+01:19:39.610 --> 01:19:42.530 align:middle line:84%
+So this is the really
+important loss here
+
+01:19:42.530 --> 01:19:46.850 align:middle line:84%
+and would require a big,
+new idea to do better.
+
+01:19:46.850 --> 01:19:47.730 align:middle line:90%
+Cool.
+
+01:19:47.730 --> 01:19:49.650 align:middle line:90%
+Nice questions, everybody.
+
+01:19:49.650 --> 01:19:52.170 align:middle line:84%
+Let's break there, but I'll
+also hang out for office hours
+
+01:19:52.170 --> 01:19:55.560 align:middle line:84%
+if there are more things that
+people want to talk about.
+
+01:19:55.560 --> 01:20:03.000 align:middle line:90%

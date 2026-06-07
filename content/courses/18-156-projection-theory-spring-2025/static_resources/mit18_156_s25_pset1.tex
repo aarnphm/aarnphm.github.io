@@ -1,0 +1,198 @@
+\documentclass{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+
+
+\newtheorem{prop}[theorem]{Proposition}
+
+\DeclareMathOperator{\Vol}{\textrm{Vol}}
+
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\del}{\partial}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+
+\begin{document}
+
+{\bf  18.156, Projection theory,  problem set 1}
+
+
+
+\vskip10pt
+
+Please email your work by the morning of Thursday Feb 15 to me.
+
+\vskip10pt
+
+{\bf Letter of introduction.}  So I can start getting to know you, could you send me a letter introducing yourself.   
+
+\begin{itemize}
+
+\item  What math directions are you studying?
+
+\item Tell me about your background in real analysis.  What was your last real analysis class like?  What parts did you find interesting?  What parts did you find confusing or frustrating?
+
+\item Are there any particular topics or themes in the course description that would be interesting or helpful for you?
+
+\item How is the pace of the class for you so far?  
+
+\item Anything else on your mind about the class?
+
+\end{itemize}
+
+\section{Digesting material from class}
+
+Notation.   Recall that we write $A \lesssim B$ to mean that there exists a constant $c$ so that $A \le c B$.
+
+\vskip10pt
+
+
+1.  (Practicing Cauchy-Schwarz and double counting)   Suppose that $X, Y$ are finite sets and $f: X \rightarrow Y$.   If $|Y| \le (1/2) |X|$ prove that
+
+$$ \# \{ x_1, x_2 \in X: f(x_1) = f(x_2) \} \gtrsim |X|^2 |Y|^{-1}. $$
+
+\vskip10pt
+
+We recall the convenitions and basic theorems about the Fourier transform over finite fields.
+
+\vskip10pt
+
+Let $\FF_q$ be the finite field with $q$ elements,  where $q = p^r$ and $p$ prime. 
+
+For $x, \xi \in \FF_q^d$,  we define $x \cdot \xi = x_1 \xi_1 + ... + x_d \xi_d$.
+
+We let $e: \FF_q \rightarrow \CC^*$ be a non-trivial group homomorphism,  from $\FF_q$ with addition to $\CC^*$ with multiplication.  
+
+(If $q =p$ is prime,  then we can define $e(x) = e^{2 \pi i \frac{x}{p}}$.   But any choice of $e$ works equally well.  If $q = p^r$,  the image of $e$ will be the $p^{th}$ roots of unity.)
+
+Suppose $f: \FF_q^d \rightarrow \CC$.   For any $\xi \in \FF_q^d$,  define
+
+$$ \hat f(\xi) = \sum_{x \in \FF_q^d} f(x) e( - x \cdot \xi). $$
+
+\begin{theorem} (Fourier inversion) If $f: \FF_q^d \rightarrow \CC$,  then
+
+$$ f(x) = \frac{1}{q^d} \sum_{\xi \in \FF_q^d}  \hat f(\xi) e(x \cdot \xi). $$
+
+\end{theorem}
+
+
+\begin{theorem} (Plancherel) If $f,  g: \FF_q^d \rightarrow \CC$,  then
+
+$$\sum_{x \in \FF_q^d} f(x) \overline{g(x)} = \frac{1}{q^d} \sum_{\xi \in \FF_q^d}  \hat f(\xi) \overline{\hat g(\xi)}. $$
+
+\end{theorem}
+
+\vskip10pt
+
+2.  On your own,  work through the proof of Theorem 1 and Theorem 2.   (You don't have to turn anything in.)  The proofs are based on linear algebra and on orthogonality.   Here is a sketchy outline.
+
+a.  Because $e: \FF_q \rightarrow \CC^*$ is a non-trivial group homomorphism,  $\sum_{x \in \FF_q} e(x) = 0$.
+
+b.  Building on part a,  show that for any non-zero $\xi$ in $\FF_q^d$,  $\sum_{x \in \FF_q^d} e(x \cdot \xi) = 0$.
+
+c.  Building on part b,  show that for any $\xi_1,  \xi_2 \in \FF_q^d$,
+
+$$ \frac{1}{q^d} \sum_{x \in \FF_q^d} e(x \cdot \xi_1) \overline{ e(x \cdot \xi_2)} = \begin{cases} 1 & \xi_1 = \xi_2 \\ 0 & \textrm{ else }
+\end{cases} $$
+
+d.  Show that the set of functions $\{ \frac{1}{q^{d/2}} e(x \cdot \xi) \}_{\xi \in \FF_q^d}$ forms an orthonormal basis of $\ell^2(\FF_q^d)$.
+
+e.  Theorems 1 and 2 follow from d with a bit of algebra.
+
+\vskip10pt
+
+3.  Suppose that $P \subset \FF_q^d$ is an affine $k$-plane.   Define the perpendicular subspace $P^\perp$ by
+
+$$ P^\perp = \{ \xi \in \FF_q^d: (x_1 - x_2) \cdot \xi = 0 \forall x_1, x_2 \in P \}.  $$
+
+Show that
+
+$$ | \hat 1_P(\xi)| = \begin{cases} q^k & \xi \in P^\perp \\ 0 & \textrm{ else} \\
+\end{cases}$$
+
+\vskip10pt
+
+In class we proved some projection estimates for sets $X \subset \FF_q^2$ using Fourier analysis.  In this problem,  you will generalize these estimates to $X \subset \FF_q^3$
+
+Let $Gr_q(k, d)$ be the set of $k$-dimensional subspaces $W \subset \FF_q^d$.   
+
+For each $W \in Gr_q(d-k,d)$,  let $\pi^W: \FF_q^d \rightarrow \FF_q^k$ be a linear map with kernel $W$.
+
+\vskip10pt
+
+4.  Suppose that $X \subset \FF_q^3$.   Suppose that $D \subset Gr_q(1,3)$.   Let $S = S(X,D) = \max_{W \in D} | \pi^W(X)|$.
+
+If $S \le q^2/2$,  prove that
+
+\begin{equation} \label{falc3} |D| \lesssim \frac{S q^2}{|X|}.
+\end{equation}
+
+Then on your own,  check that this gives sharp bounds in the following two cases.
+
+Case 1.  If $D = Gr_q(1,3)$,  then we get $|X| \lesssim S$,  which is sharp.
+
+Case 2.  If $X$ is a 2-plane in $\FF_q^3$ and $D$ is the set of directions tangent to the 2-plane.
+
+
+\section{Optional exploring futher}
+
+Here are some options for exploring further if you would like to do so.
+
+In each problem set,  I will include some options to explore.   At the end of the class, everyone will do a final project.   One option for a final project is to study one of these further exploration questions and write up what you learn about it.
+
+\vskip10pt
+
+Suppose that $X \subset \FF_p^3$ and $D$ and $S$ are as above.   Given $|X|$ and $S$,  how big could $|D|$ be?  Try out a few examples and see if you can make a plausible conjecture.   If you want,  you could also consider the same problem over $\FF_q$,  where there are more examples based on subfields.
+
+The example where $X$ is a 2-plane plays an important role in the last story.    You could consider sets $X \subset \FF_q^3$ where $|X \cap P| \le B$ for any 2-plane $P \subset \FF_q^3$.   Given $|X|$ and $S$ and $B$, how big could $|D|$ be?  Again you could try some examples.    Can you prove a bound that improves on problem 4 when $B$ is much less than $q^2$?
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+\end{document}
+
+
+3. Suppose that $u$ is a compactly supported smooth function on
+$\mathbb{R}^3$ whose derivatives obey the following $L^p$
+estimates:
+
+$\| \partial_x u \|_{3/2} \le 1; \| \partial_y u \|_{3/2} \le 1;
+\| \partial_z u \|_1 \le 1.$
+
+For what $p$ can you bound $\| u \|_p$?
+
+\vskip10pt
+
+Extra credit. Suppose that $u$ is a compactly supported smooth function on
+$\mathbb{R}^2$ whose derivatives obey the following $L^p$
+estimates.
+
+$\| \partial_x u \|_3 \le 1; \| \partial_y u \|_4 \le 1.$
+
+For what $\alpha$, if any, can you bound the Holder norm $[ u
+]_\alpha$?
+
+\end{document}
+

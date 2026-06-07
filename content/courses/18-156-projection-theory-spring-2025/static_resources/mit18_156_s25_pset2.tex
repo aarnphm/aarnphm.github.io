@@ -1,0 +1,259 @@
+\documentclass{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+
+\newtheorem{prop}[theorem]{Proposition}
+
+\DeclareMathOperator{\Vol}{\textrm{Vol}}
+
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\del}{\partial}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+
+\begin{document}
+
+{\bf  18.156, Projection theory,  problem set 2}
+
+\vskip10pt
+
+The first goal of this problem set is to digest the Fourier analysis method in projection theory in $\RR^2$.   The second goal is to work through some technical details from Fourier analysis that come up in this area.
+
+\vskip10pt
+
+The problem set involves a little background reading.   As you go along,  if there are any Fourier analysis topics you need to brush up on,  I recommend the book Fourier analysis by Stein and Shakarchi.  The first section is just reading.  The second section has two problems.
+
+\section{Background reading}
+
+Smooth bump functions and their (inverse) Fourier transforms play a key role in our analysis.  In particular,  we will construct a smooth bump function $\psi_T$ adapted to a tube $T \subset \RR^d$ and analyze its Fourier transform.   We start by considering smooth bump functions adapted to the unit ball.
+
+\vskip10pt
+
+{\bf Smooth bump adapted to the unit ball}
+
+\vskip10pt
+
+Suppose that $\eta(\xi)$ is a smooth function with compact support in $B_1$.   Then $ \eta^\vee$ is a Schwartz function: it is smooth and rapidly decaying.  The function $ \eta^\vee$ will not be compactly supported.   For many purposes,  $\eta^\vee$ is ``morally'' supported in a ball of radius $\lesssim 1$.   The tail of $\eta^\vee$ is sometimes a nuisance in this field.   Within this course,  the tail rarely matters,  although there are other topics in Fourier analysis where the tail is really important.
+
+We can choose $\eta \ge 0$.   In general $\eta^\vee$ will be complex-valued.   It is convenient to have examples where $\eta$ and $\eta^\vee$ are both real and non-negative.   There is a big supply of such examples coming from a variant of convolution.   This variant of convolution is worth knowing about.
+
+First we recall regular convolution.
+
+\begin{equation} \label{defconv}
+f * g(\xi) = \int f(\omega) g(\xi - \omega) d \omega
+\end{equation}
+
+Regular convolution is related to the (inverse) Fourier transform by
+
+\begin{equation} \label{convfour}
+(f * g)^\vee(x) = f^\vee(x) g^\vee(x)
+\end{equation}
+
+In regular convolution,  we ``add up'' $f(\omega_1) g(\omega_2)$ over all pairs $(\omega_1, \omega_2)$ with $\omega_1 + \omega_2 = \xi$.  In the difference convolution,  we ``add up" $f(\omega_1) g(\omega_2)$ over all pairs $(\omega_1, \omega_2)$ with $\omega_1 - \omega_2 = \xi$:
+
+
+\begin{equation} \label{defconvd}
+f \bar * g(\xi) = \int f(\xi + \omega) g(\omega) d \omega
+\end{equation}
+
+The analogue of (\ref{convfour}) for difference convolution is 
+
+\begin{equation} \label{convfourd}
+(f \bar * \bar g)^\vee(x) = f^\vee(x) \overline{g^\vee(x)}
+\end{equation}
+
+In particular,  if $f$ is real valued,  so $\bar f = f$,  we have
+
+
+\begin{equation} \label{convfourd2}
+(f \bar * f)^\vee(x) = f^\vee(x) \overline{f^\vee(x)} = | f^\vee(x)|^2
+\end{equation}
+
+If $\eta_0(\xi)$ is a smooth non-negative bump function supported on $B_{1/2}$,  then we can define $\eta =  \eta_0 \bar * \eta_0$,  and we see that $\eta$ is a smooth non-negative bump function on $B_1$ and $\eta^\vee$ is a smooth non-negative Schwartz function on $\RR^d$.   So there are lots of examples.
+
+If we make $\eta_0$ supported in a smaller ball, say $B_{1/100}$,  then we can check that $\eta^\vee(x) = |\eta_0^\vee(x)|^2$ is $\sim 1$ on $B_1$.   We see this from the formula
+
+$$ \eta_0^\vee(x) = \int \eta_0(\xi) e^{2 \pi i x \xi} d \xi,  $$
+
+\noindent 
+
+because the real part of $e^{2 \pi i x \xi}$ is positive when $x \in B_1$ and $\xi \in B_{1/100}$.   In fact, $\eta_0^\vee(x)$ is close to constant on $B_1$, and so is $\eta^\vee(x) = |\eta_0^\vee(x)|^2$. 
+
+We define $\psi_{B_1} = \eta^\vee$.   To summarize,  we have proved the following proposition.
+
+\begin{prop} \label{propbump1} There is a Schwartz function $\psi_{B_1}: \RR^d \rightarrow \RR$ with the following properties.
+
+\begin{itemize}
+
+\item $\psi_{B_1}(x) \ge 0$ for all $x$.
+
+\item $\psi_{B_1}(x) \sim 1$ for all $x \in B_1$.
+
+\item For any $N \ge 1$,  $| \psi_{B_1}(x) | \le C_N |x|^{-N}$.
+
+\item $\hat \psi_{B_1}(\xi)$ is supported in the unit ball $B_1$.
+
+\item $\hat \psi_{B_1}(\xi) \ge 0$ for all $\xi$.
+
+\item $|\hat \psi_{B_1}(\xi)| \lesssim 1$ for all $\xi$.  
+
+\end{itemize}
+
+(The implicit constants in this discussion depend on the dimension $d$.)
+
+\end{prop}
+
+\vskip10pt
+
+{\bf Smooth bumps adapted to ellipsoids or rectangular solids}
+
+\vskip10pt
+
+Suppose that $E \subset \RR^d$ is an ellipsoid.   We will now construct a smooth bump $\psi_E$ adapted to $E$ by applying a change of variables to $\psi_{B_1}$ and study its Fourier transform.
+
+Suppose that $E$ is an ellipsoid with center $x_E$.   Then we can find an  affine map $\rho: \RR^d \rightarrow \RR^d$ so that $\rho(E) = B_1$.   We define $\psi_E$ by
+
+\begin{equation} \label{defpsiE}
+\psi_E(x) = \psi_{B_1}(\rho(x))
+\end{equation}
+
+The Fourier transform behaves nicely with respect to rigid motions,  and so we can relate $\hat \psi_E$ to $\hat \psi_{B_1}$. 
+
+Let $E_0$ be the translate of $E$ which is centered at the origin.   Define the dual ellipsoid $E^*$ by
+
+$$ E^* = \{ \xi \in \RR^d: |\xi \cdot x| \le 1 \textrm{ for all } x \in E_0 \}. $$
+
+Note that $E^*$ is centered at 0,  regardless of where $E$ is centered.   We will show the following properties of $\hat \psi_E$.  
+
+
+\begin{prop} \label{propbumpE} For any ellipsoid $E \subset \RR^d$,  the Schwartz function $\psi_{E}: \RR^d \rightarrow \RR$ has the following properties.
+
+\begin{itemize}
+
+\item $\psi_{E}(x) \ge 0$ for all $x$.
+
+\item $\psi_{E}(x) \sim 1$ for all $x \in E$.
+
+\item Let $KE$ denote the concentric ellipsoid with the same center as $E$, magnified by a factor $K$.   For any $N \ge 1$,  there is a constant $C_N$ so that if $x \not in KE$,  then $|\psi_E(x)| \le C_N K^{-N}$.
+
+\item $\hat \psi_{E}(\xi)$ is supported in the dual ellipsoid $E^*$.
+
+\item $|\hat \psi_{B_1}(\xi)| \lesssim |E|$ for all $\xi$.  
+
+\end{itemize}
+
+The implicit constants depend on the dimension $d$ but not the ellipsoid $E$.
+
+\end{prop}
+
+\begin{proof} [Proof sketch]
+
+The first three properties follow from the definition $\psi_E(x) = \psi_{B_1}(\rho(x))$.
+
+To study $\hat \psi_E$,  we first study $\hat \psi_{E_0}$.   Suppose that $x_E$ is the center of $E$.   Then we can write the affine map $\rho$ in the form
+
+$$\rho(x)= L^{-1} ( x- x_E), $$
+
+\noindent where $L$ is a linear map and $L(B_1) = E_0$.    We have $\psi_{E_0}(x) = \psi_{B_1} ( L(x))$.   The Fourier transform plays well with linear changes of variables,  and so we get
+
+$$ \hat \psi_{E_0}(\xi) = \det(L) \hat \psi_{B_1}( L^* \xi). $$
+
+Now $L^* \xi \in B_1$ if and only if $\xi \in E^*$,  and so $\hat \psi_{E_0}$ is supported in $E^*$.   And $\det(L) = |E_0|$ and so $\hat \psi_{E_0}$ obeys the last point.   We also have $\hat \psi_{E_0}(\xi) \ge 0$ for all $\xi$.
+
+Finally,  $\psi_E(x) = \psi_{E_0}(x - x_E)$,  and so
+
+$$ \hat \psi_E(\xi) = e^{-2 \pi i x_E \cdot \xi} \hat \psi_{E_0}(\xi). $$
+
+Therefore,  $\hat \psi_E$ obeys the proposition as well.
+
+\end{proof}
+
+Finally,  if $T$ is a rectangular solid,  then we let $E$ be an ellipsoid so that $c_d E \subset T \subset E$ and we set $\psi_T = \psi_E$ and $T^* = E^*$.  Then Proposition \ref{propbumpE} applies to $\psi_T$ as well.
+
+\section{Main lemmas in the Fourier method}
+
+In this section,  you will rigorously prove the main lemmas in the Fourier method for projection theory that we sketched in class this week (in Lecture 3).
+
+In this section,  we set dimension $d=2$,  although the arguments apply in any dimension.
+
+We need a setup from Littlewood-Paley theory.   For any $R \ge 1$,  we set up a partition of unity in Fourier space:
+
+$$1 = \sum_{1 \le r \le R,  r \textrm{ dyadic}} \eta_r(\xi), $$
+
+\noindent where $\eta_r \ge 0$ and we have
+
+\begin{itemize}
+
+\item For $1 < r < R$,   $\hat \eta_r$ is supported in the annulus $\{ \xi: \frac{1}{10r} \le |\xi| \le \frac{1}{r} \}$.
+
+\item $\hat \eta_R$ is supported in $B(1/R)$
+
+\item $\hat \eta_1$ is supported in $\{ \xi: |\xi| \ge 1/10 \}$.
+
+\end{itemize}
+
+For any function $f$,  we write $f = \sum_r f_r$,  where 
+
+\begin{equation} \label{deffr}
+f_r := \left( \eta_r \hat f \right)^\vee = f * \eta_r^\vee
+\end{equation}
+
+In analogy with our bounds for $\psi$ in the last section,  we have
+
+\begin{equation} \label{etavee1}
+ |\eta_r^\vee(x)| \lesssim r^{-2},  
+\end{equation}
+
+and for any $N \ge 1$ there is a constant $C_N$ so that
+
+\begin{equation} \label{etavee2}
+ |\eta_r^\vee(x)| \lesssim r^{-2} C_N (|x|/r)^{-N}.
+\end{equation}
+
+\vskip10pt
+
+1.  Suppose that $T$ is a $1 \times R$ rectangle,  and let $\psi_T$ be a smooth bump adapted to $T$ as in Section 1.  For any $1 \le r \le R$, 
+prove that $\| \psi_{T, r} \|_{L^2}^2 \sim r^{-1} R$.  
+
+\vskip10pt
+
+2.  Suppose that $T_1,  T_2$ are $1 \times R$ rectangles,  and let $\psi_{T_1}$ and $\psi_{T_2}$ be the associated smooth bump functions.  Prove that for any$\epsilon > 0$,  there is a constant $C_\epsilon$ so that the following holds.  Either
+
+$$ \left|  \int  \psi_{T_1, r}(x) \overline{ \psi_{T_2, r}(x)} dx \right| \le C_\epsilon R^{-1000}, $$
+
+or there exists a rectangle $\tilde T$ with dimensions $R^\epsilon r \times R^{1 + \epsilon}$ so that $T_1,  T_2 \subset \tilde T$.
+
+\section{Optional exploring further}
+
+We have explored projection theory for a set of unit balls in $\RR^2$ with different spacing conditions.   But the simplest case is when we have no spacing conditions.   The set up is as follows.
+
+\begin{itemize}
+\item $X$ is a set of disjoint unit balls in $B_R^2$.
+
+\item $D \subset S^1$ is a $1/R$-separated set.
+
+\item $S = S(X,D) = \max_{\theta \in D} |\pi_\theta(X)|$.
+
+\end{itemize}
+
+Given $|X|$ and $|D|$,  what is the minimum possible value of $S(X,D)$?
+
+Work out some examples,  make a conjecture,  and try to prove it.   The optimal answer is known and it is possible to prove it using double counting arguments.
+
+
+
+\end{document}
+
+
+
+
+

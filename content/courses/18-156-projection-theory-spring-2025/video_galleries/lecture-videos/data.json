@@ -1,0 +1,828 @@
+
+{
+  "content": "",
+  "content_type": "video_gallery",
+  "draft": false,
+  "iscjklanguage": false,
+  "title": "Lecture Videos",
+  "uid": "858e52b2-3639-40c4-97ee-58488f3c2ad4",
+  "videos": [
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec01_1080p_360p_16_9.mp4",
+      "file_size": 176314080,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 01: Introduction to Projection Theory",
+      "uid": "3b3d65b8-d120-465c-93a4-778f47aaa013",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec01_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/1A1kWkxK3QY/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec01_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Projection theory, Marstrand, Kaufman, Furstenberg",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe formulate the main questions and goals of the class, especially the exceptional set problem.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "1A1kWkxK3QY"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_360p_16_9.mp4",
+      "file_size": 175950787,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 02: Fundamental Methods of Projection Theory",
+      "uid": "b8e4f264-0059-402b-a240-8e4a33228f99",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/sEZHGMV2LiI/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Projection theory, Fourier analysis, Kaufman, Falconer, Vinh, finite field",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce two fundamental methods to study projections, developed by Kaufman and Falconer in the 1960s and 70s. The first is based on double counting. The second is based on Fourier analysis.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "sEZHGMV2LiI"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec03_1080p_360p_16_9.mp4",
+      "file_size": 168266451,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 03: Projection Theory in Euclidean Space",
+      "uid": "947cf534-35b1-4b54-a865-2d04fd3eae08",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec03_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/OAI8C20E7R4/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec03_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Projection theory, Marstrand, Kaufman, multiscale analysis, Frostman, Hausdorff",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe adapt the fundamental methods of projection theory to Euclidean space, taking account of multiple scales.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "OAI8C20E7R4"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec04_1080p_360p_16_9.mp4",
+      "file_size": 173293864,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 04: The Fourier Method in Euclidean Space",
+      "uid": "32ddb066-eded-4a55-a0cb-b96d2481b445",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec04_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/X-4how4KkPQ/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec04_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Projection theory, Fourier, Kaufman, Falconer",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe adapt the Fourier method to Euclidean space, taking into account many different scales.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "X-4how4KkPQ"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec05_1080p_360p_16_9.mp4",
+      "file_size": 163111330,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 05: The Large Sieve",
+      "uid": "ecf74b12-e9da-4526-ac96-b29748500b92",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec05_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/i5lpHaGpeaI/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec05_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Large sieve, sieve theory, Linnik, projection theory",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce a classical topic from number theory which is closely related to projection theory.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "i5lpHaGpeaI"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec06_1080p_360p_16_9.mp4",
+      "file_size": 167835293,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 06: Projections and Smoothing",
+      "uid": "052a715d-5eb5-4515-a5dd-e2665c2557e1",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec06_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/iUB_y1OXBo4/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec06_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Projection theory, smoothing, Falconer",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nThe projection of a rough function at a typical angle is usually smoother than the original function.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "iUB_y1OXBo4"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_360p_16_9.mp4",
+      "file_size": 165142831,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 07: Applications of the Large Sieve to Number Theory",
+      "uid": "0a97580f-5f22-48e6-8d15-14dcd79d6eee",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/-UJgxLaFzfM/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Large sieve, projection theory, Bombieri-Vinogradov",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss one of the main applications of the large sieve in number theory: the Bombieri-Vinogradov theorem about the distribution of prime numbers modulo q for different q.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "-UJgxLaFzfM"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_360p_16_9.mp4",
+      "file_size": 172217763,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 08: The Szemeredi-Trotter Theorem",
+      "uid": "188c54f4-39ce-45ee-8135-630457d42d32",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/3h0jvsOnTIc/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Incidence geometry, projection theory, Szemeredi-Trotter",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nThe Szemeredi-Trotter theorem gives the sharp answer to a natural discrete projection problem in the plane. The proof of the theorem is based on topology, and it is completely different from the proofs we have explored earlier.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "3h0jvsOnTIc"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec09_1080p_360p_16_9.mp4",
+      "file_size": 153329767,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 09: Reflections on the Szemeredi-Trotter Theorem",
+      "uid": "e5caafbc-1865-44c7-a39d-f943fc56605a",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec09_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/lvdIUKULiak/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec09_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Szemeredi-Trotter, Furstenberg, Marstrand, projection theory, complex numbers",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss the analogy between the Szemeredi-Trotter theorem and the exceptional set problem. We explain why it is hard to adapt the proof of Szemeredi-Trotter to the exceptional set problem.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "lvdIUKULiak"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec10_1080p_360p_16_9.mp4",
+      "file_size": 165114150,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 10: Sum-Product Theory",
+      "uid": "a5de5f9c-f708-40c5-8be5-842d87edb716",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec10_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/VCOrx2jEKXk/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec10_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Sum-product, Plunnecke, Ruzsa and Edgar-Miller, Bourgain-Katz-Tao",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce sum-product theory and tools from additive number theory.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "VCOrx2jEKXk"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec11_1080p_360p_16_9.mp4",
+      "file_size": 164597043,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 11: Contagious Structure in Projection Theory",
+      "uid": "c2a5d66d-8b40-404e-bc3e-87b7ac78b47d",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec11_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/Uz7aJtbfqkU/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec11_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Bourgain-Katz-Tao, sum-product, projection theory, Plunnecke, Ruzsa, Edgar-Miller",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe study algebraic structure in the set of exceptional directions.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "Uz7aJtbfqkU"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_360p_16_9.mp4",
+      "file_size": 166763995,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 12: The Bourgain-Katz-Tao Projection Theorem",
+      "uid": "59dfab87-5189-4ad6-b939-7800293b43bc",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/aHQxdnufLbg/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Bourgain-Katz-Tao, projection theory, finite field",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nThe Bourgain-Katz-Tao projection theorem, from the early 2000s, is the first result in projection theory that really goes beyond the two fundamental techniques we introduced in Lecture 2.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "aHQxdnufLbg"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec13_1080p_360p_16_9.mp4",
+      "file_size": 160581393,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 13: The Balog-Szemeredi-Gowers Theorem",
+      "uid": "7c2c554f-3aa0-4496-9e05-917e42dd71d6",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec13_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/DGBuM5pEdoo/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec13_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Balog-Szemeredi-Gowers, approximate subgroup, additive energy, additive number theory.",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe develop the last tool in our toolkit from combinatorial number theory.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "DGBuM5pEdoo"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec14_1080p_360p_16_9.mp4",
+      "file_size": 223057129,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 14: The Bourgain Projection Theorem Part 1 (over the Real Numbers)",
+      "uid": "697824c3-0779-4d8f-8a65-b4df9e129a36",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec14_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/0UYCJ0cjG9k/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec14_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Bourgain projection theorem, projection theory, multiscale, Furstenberg",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Pablo Shmerkin\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce Bourgain's projection theorem, a central result in the field. It is the analogue of the Bourgain-Katz-Tao projection theorem over the real numbers.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "0UYCJ0cjG9k"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec15_1080p_360p_16_9.mp4",
+      "file_size": 198262101,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 15: The Bourgain Projection Theorem, Part 2",
+      "uid": "1f92ef58-ddaa-44be-9688-1a575767c7d8",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec15_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/1lql9PGvLG4/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec15_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Bourgain projection theorem, projection theory, multiscale, Furstenberg",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Pablo Shmerkin\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce the key idea of uniform sets and branching functions.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "1lql9PGvLG4"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec16_1080p_360p_16_9.mp4",
+      "file_size": 184520822,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 16: The Bourgain Projection Theorem, Part 3",
+      "uid": "5af38a83-6f38-4e00-b911-2cf42a9a00ad",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec16_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/85YISwhp7MQ/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec16_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Bourgain projection theorem, projection theory, multiscale, Furstenberg",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Pablo Shmerkin\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss the role of robust estimates in multiscale arguments.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "85YISwhp7MQ"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec17_1080p_360p_16_9.mp4",
+      "file_size": 170475923,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 17: Random Walks on Finite Groups, Part 1",
+      "uid": "d33bf84b-ee05-4998-9561-2fd87817c107",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec17_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/QVDLMx0Guiw/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec17_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Random walk, mixing, finite group, Selberg, Sarnak, Bourgain-Gamburd, sum-product",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe give a friendly introduction to the field of random walks on finite groups. We discuss theorems of Selberg and Bourgain-Gamburd.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "QVDLMx0Guiw"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec18_1080p_360p_16_9.mp4",
+      "file_size": 166115747,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 18: Random Walks on Finite Groups, Part 2",
+      "uid": "beb5ad71-c6dc-4339-a4c8-446a07983040",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec18_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/_jSFwF8rMdY/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec18_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Random walk, mixing, finite group, Selberg, Sarnak, Bourgain-Gamburd, sum-product",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe sketch the proof of Selberg's random walk estimate, following the approach of Sarnak-Xue.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "_jSFwF8rMdY"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec19_1080p_360p_16_9.mp4",
+      "file_size": 177266729,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 19: Random Walks on Finite Groups, Part 3",
+      "uid": "b12bcb59-3acb-49b6-9680-e08cc7b27cd6",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec19_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/bBzcaYNAfcI/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec19_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Random walk, mixing, finite group, Selberg, Sarnak, Bourgain-Gamburd, sum-product",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss the results of Bourgain-Gamburd and some of the proof ideas.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "bBzcaYNAfcI"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec20_1080p_360p_16_9.mp4",
+      "file_size": 193295514,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 20: Homogeneous Dynamics, Part 1",
+      "uid": "4aaba445-5177-45f3-829c-aa93dbbf8d8c",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec20_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/rChKr66KG-c/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec20_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Mixing, unipotent orbit, Margulis, Ratner, Lindenstrauss, Oppenheim, projection theory",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe give a friendly introduction to the field of homogeneous dynamics and how projection theory can help understand it.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "rChKr66KG-c"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec21_1080p_360p_16_9.mp4",
+      "file_size": 171446728,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 21: Homogeneous Dynamics, Part 2",
+      "uid": "0556ff93-ad4e-4498-986c-585064b0bb18",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec21_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/5QV8Gr1z16E/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec21_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Mixing, unipotent orbit, Margulis, Ratner, Lindenstrauss, Oppenheim, projection theory",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss the work of Lindenstrauss-Mohammadi on quantitative Ratner theorems, and how projection theory plays a role in the proof.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "5QV8Gr1z16E"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec22_1080p_360p_16_9.mp4",
+      "file_size": 174225569,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 22: Sharp Projection Theorems, Part 1: Introduction and Beck's Theorem.",
+      "uid": "6cf8b782-6bbc-4365-8981-4a33aacf35d4",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec22_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/hBG7nMXTOcw/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec22_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Furstenberg, projection, Wolff, Orponen-Shmerkin, Ren-Wang",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe begin studying the recent breakthrough in projection theory by Orponen-Shmerkin and Ren-Wang. We discuss how to use a non-sharp bound many times to get a sharp bound.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "hBG7nMXTOcw"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec23_1080p_360p_16_9.mp4",
+      "file_size": 183911420,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 23: Sharp Projection Theorems, Part 2: AD Regular Case",
+      "uid": "7f08c191-4505-4221-85a9-6ee0a47519ca",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec23_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/I6ZSrgxiofs/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec23_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Furstenberg, projection, Wolff, Orponen-Shmerkin, Ren-Wang",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nOrponen and Shmerkin proved a sharp projection theorem for sets with self-similar spacing.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "I6ZSrgxiofs"
+      }
+    },
+    {
+      "body": "",
+      "content_type": "resource",
+      "draft": false,
+      "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec24_1080p_360p_16_9.mp4",
+      "file_size": 158723209,
+      "file_type": "video/mp4",
+      "image_metadata": {
+        "caption": "",
+        "credit": "",
+        "image-alt": ""
+      },
+      "iscjklanguage": false,
+      "learning_resource_types": [
+        "Lecture Videos"
+      ],
+      "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "resourcetype": "Video",
+      "title": "Lecture 24: Sharp Projection Theorems, Part 3: Combining Different Scales",
+      "uid": "845503c0-0b4f-4570-ba93-ac8c8930c5f8",
+      "video_files": {
+        "archive_url": "",
+        "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec24_1080p_captions.vtt",
+        "video_thumbnail_file": "https://img.youtube.com/vi/h0Ln82BR4R0/default.jpg",
+        "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec24_1080p_transcript.pdf"
+      },
+      "video_metadata": {
+        "source": "",
+        "video_speakers": "",
+        "video_tags": "Furstenberg, projection, Wolff, Orponen-Shmerkin, Ren-Wang",
+        "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nRen and Wang proved the full Furstenberg conjecture by applying the AD regular case at many different scales.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+        "youtube_id": "h0Ln82BR4R0"
+      }
+    }
+  ]
+}
+

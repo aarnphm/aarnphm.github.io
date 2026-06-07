@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains information about the definition of compactness and A n B is at most\ncountable, using the definition of countability.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains information about the definition of compactness and A n B is at most\r\ncountable, using the definition of countability.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/00a16a14431ed934d646d4a8bada5a82_MIT18_100BF10_Practice1sol.pdf",
+  "file_size": 218311,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Exam Solutions"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Exams",
+  "parent_type": "CourseSection",
+  "parent_uid": "ae754d0f-d11b-9275-5022-41efc9574387",
+  "resourcetype": "Document",
+  "title": "MIT18_100BF10_Practice1sol.pdf",
+  "uid": "00a16a14-431e-d934-d646-d4a8bada5a82",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

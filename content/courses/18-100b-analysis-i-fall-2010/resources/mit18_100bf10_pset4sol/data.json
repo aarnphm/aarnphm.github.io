@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains solutions to PS4.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains solutions to PS4.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/6fb2555b29c7a4f07410f790db38d696_MIT18_100BF10_pset4sol.pdf",
+  "file_size": 146758,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Set Solutions"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 4 Solutions (2006)",
+  "uid": "6fb2555b-29c7-a4f0-7410-f790db38d696",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

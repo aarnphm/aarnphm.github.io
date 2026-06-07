@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains about construction of the real numbers and notes.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains about construction of the real numbers and notes.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/396f95b804282d5e3b30204f22746375_MIT18_100BF10_pset5.pdf",
+  "file_size": 68802,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Assignments",
+  "parent_type": "CourseSection",
+  "parent_uid": "6ac57f27-80f0-7137-088d-250d37c6a15a",
+  "resourcetype": "Document",
+  "title": "Problem Set 5",
+  "uid": "396f95b8-0428-2d5e-3b30-204f22746375",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

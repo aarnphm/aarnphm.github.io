@@ -1,0 +1,4042 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.996 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.996 --> 00:00:04.491 align:middle line:90%
+[RUSTLING]
+
+00:00:04.491 --> 00:00:07.984 align:middle line:90%
+[CLICKING]
+
+00:00:07.984 --> 00:00:11.780 align:middle line:90%
+
+
+00:00:11.780 --> 00:00:16.640 align:middle line:84%
+PROFESSOR: OK, so remember
+that projection theory
+
+00:00:16.640 --> 00:00:18.717 align:middle line:90%
+works differently over--
+
+00:00:18.717 --> 00:00:20.800 align:middle line:84%
+if you look in finite
+fields, it works differently
+
+00:00:20.800 --> 00:00:23.880 align:middle line:84%
+over a prime field
+or a not prime field.
+
+00:00:23.880 --> 00:00:25.370 align:middle line:90%
+And here was the key example.
+
+00:00:25.370 --> 00:00:32.439 align:middle line:90%
+
+
+00:00:32.439 --> 00:00:34.320 align:middle line:84%
+So we're going to
+do projection theory
+
+00:00:34.320 --> 00:00:37.960 align:middle line:90%
+and Fq and q is p squared.
+
+00:00:37.960 --> 00:00:42.040 align:middle line:84%
+And our set of points is
+going to be Fp squared, which
+
+00:00:42.040 --> 00:00:45.200 align:middle line:90%
+is a subset of Fq squared.
+
+00:00:45.200 --> 00:00:47.160 align:middle line:84%
+And our set of
+directions is going
+
+00:00:47.160 --> 00:00:51.440 align:middle line:84%
+to be Fp, which
+is a subset of Fq.
+
+00:00:51.440 --> 00:00:55.560 align:middle line:84%
+So remember that
+if theta is in Fq,
+
+00:00:55.560 --> 00:00:59.730 align:middle line:84%
+then pi theta is going to be
+a projection, a linear map,
+
+00:00:59.730 --> 00:01:06.310 align:middle line:84%
+from Fq squared to Fq, which
+is given by pi theta of x1,
+
+00:01:06.310 --> 00:01:10.890 align:middle line:90%
+x2 is x1 plus theta x2.
+
+00:01:10.890 --> 00:01:13.690 align:middle line:84%
+So this is our
+set of directions.
+
+00:01:13.690 --> 00:01:17.210 align:middle line:84%
+And then S, which
+is the maximum size
+
+00:01:17.210 --> 00:01:22.530 align:middle line:84%
+of the projection of x
+over all these directions
+
+00:01:22.530 --> 00:01:37.930 align:middle line:84%
+is p because pi theta of x
+is just Fp for theta and D.
+
+00:01:37.930 --> 00:01:41.810 align:middle line:84%
+So if you just write down the
+sizes of all the things in this
+
+00:01:41.810 --> 00:01:44.990 align:middle line:84%
+important example,
+x is p squared,
+
+00:01:44.990 --> 00:01:51.810 align:middle line:84%
+which is q and S and D are
+p which is q to the 1/2.
+
+00:01:51.810 --> 00:01:55.130 align:middle line:84%
+So in particular, notice that
+the size of each projection
+
+00:01:55.130 --> 00:01:57.470 align:middle line:84%
+is the square root of
+the size of the set.
+
+00:01:57.470 --> 00:02:04.990 align:middle line:90%
+
+
+00:02:04.990 --> 00:02:09.389 align:middle line:84%
+So nothing like this is
+supposed to happen over Fp.
+
+00:02:09.389 --> 00:02:12.750 align:middle line:84%
+There's a hard open
+conjecture that
+
+00:02:12.750 --> 00:02:16.290 align:middle line:84%
+gives bounds that are much
+stronger than this example.
+
+00:02:16.290 --> 00:02:17.790 align:middle line:84%
+But the techniques
+that we've talked
+
+00:02:17.790 --> 00:02:21.810 align:middle line:84%
+about for most of the class
+do not depend on the field.
+
+00:02:21.810 --> 00:02:24.310 align:middle line:84%
+So the double counting does
+not distinguish prime fields
+
+00:02:24.310 --> 00:02:25.577 align:middle line:90%
+from nonprime fields.
+
+00:02:25.577 --> 00:02:27.910 align:middle line:84%
+And the Fourier method does
+not distinguish prime fields
+
+00:02:27.910 --> 00:02:28.920 align:middle line:90%
+from nonprime fields.
+
+00:02:28.920 --> 00:02:31.990 align:middle line:90%
+
+
+00:02:31.990 --> 00:02:36.550 align:middle line:84%
+The Szemerédi-Trotter theorem
+proves that this numerology
+
+00:02:36.550 --> 00:02:40.870 align:middle line:84%
+cannot happen for a
+set of points in R2,
+
+00:02:40.870 --> 00:02:44.790 align:middle line:84%
+but the proof is very important,
+but it has some limitations
+
+00:02:44.790 --> 00:02:45.810 align:middle line:90%
+in how it could apply.
+
+00:02:45.810 --> 00:02:48.710 align:middle line:84%
+It certainly won't
+apply over Fp.
+
+00:02:48.710 --> 00:02:52.030 align:middle line:84%
+And it also doesn't seem to help
+very much from the point of view
+
+00:02:52.030 --> 00:02:56.358 align:middle line:84%
+of sets of balls in R2 with
+some kind of spacing condition.
+
+00:02:56.358 --> 00:02:57.900 align:middle line:84%
+So it depends what
+spacing condition,
+
+00:02:57.900 --> 00:02:59.858 align:middle line:84%
+but for the most interesting
+spacing condition,
+
+00:02:59.858 --> 00:03:03.000 align:middle line:90%
+it doesn't help very much.
+
+00:03:03.000 --> 00:03:06.690 align:middle line:84%
+Nevertheless, we know that
+this cannot happen over finite
+
+00:03:06.690 --> 00:03:07.190 align:middle line:90%
+fields.
+
+00:03:07.190 --> 00:03:10.120 align:middle line:90%
+
+
+00:03:10.120 --> 00:03:13.000 align:middle line:84%
+And the main theorem that
+we'll-- so this week,
+
+00:03:13.000 --> 00:03:16.200 align:middle line:84%
+we'll prove a theorem that
+says that this cannot happen.
+
+00:03:16.200 --> 00:03:19.020 align:middle line:84%
+So this is the theorem of
+Bourgain, Katz, and Tau.
+
+00:03:19.020 --> 00:03:24.240 align:middle line:90%
+
+
+00:03:24.240 --> 00:03:28.640 align:middle line:84%
+So again, Katz-Tau
+projection theorem--
+
+00:03:28.640 --> 00:03:30.380 align:middle line:90%
+it says the following.
+
+00:03:30.380 --> 00:03:38.440 align:middle line:84%
+So if we have x in Fp squared,
+and let's say that the size of x
+
+00:03:38.440 --> 00:03:46.520 align:middle line:84%
+is p to the S, where S is
+somewhere between 0 and 2.
+
+00:03:46.520 --> 00:03:52.160 align:middle line:84%
+And then we have a set
+of directions in Fp,
+
+00:03:52.160 --> 00:03:56.570 align:middle line:84%
+and set of directions
+will be p to the t.
+
+00:03:56.570 --> 00:03:59.100 align:middle line:90%
+And t is bigger than 0.
+
+00:03:59.100 --> 00:04:03.730 align:middle line:90%
+
+
+00:04:03.730 --> 00:04:11.810 align:middle line:84%
+So then, if you look at the
+maximum size of a projection,
+
+00:04:11.810 --> 00:04:16.089 align:middle line:84%
+it's significantly bigger
+than half over the square root
+
+00:04:16.089 --> 00:04:18.850 align:middle line:90%
+of the size of x.
+
+00:04:18.850 --> 00:04:26.530 align:middle line:84%
+So this is bigger than p to
+the S over 22 plus epsilon
+
+00:04:26.530 --> 00:04:30.570 align:middle line:84%
+where this epsilon only
+depends on S and t.
+
+00:04:30.570 --> 00:04:31.600 align:middle line:90%
+It's bigger than 0.
+
+00:04:31.600 --> 00:04:43.890 align:middle line:90%
+
+
+00:04:43.890 --> 00:04:46.710 align:middle line:84%
+So some remarks
+about the epsilon--
+
+00:04:46.710 --> 00:04:47.990 align:middle line:90%
+it's an explicit function.
+
+00:04:47.990 --> 00:04:50.448 align:middle line:84%
+I just don't write it down
+because it's a little bit messy.
+
+00:04:50.448 --> 00:04:52.250 align:middle line:90%
+For example, it's continuous.
+
+00:04:52.250 --> 00:04:53.870 align:middle line:84%
+It's not that hard
+to write it down,
+
+00:04:53.870 --> 00:04:57.170 align:middle line:84%
+but it is also pretty small,
+pretty disappointingly small.
+
+00:04:57.170 --> 00:05:01.732 align:middle line:90%
+
+
+00:05:01.732 --> 00:05:04.570 align:middle line:84%
+There's also something called
+Bourgain's projection theorem,
+
+00:05:04.570 --> 00:05:07.270 align:middle line:84%
+which is what Pablo Shmerkin is
+going to talk about today, which
+
+00:05:07.270 --> 00:05:11.430 align:middle line:84%
+is the analog of this over in
+the setting of the reel of balls
+
+00:05:11.430 --> 00:05:13.790 align:middle line:90%
+in R2.
+
+00:05:13.790 --> 00:05:18.950 align:middle line:84%
+So there's an analog of this
+example using C2 instead of R2.
+
+00:05:18.950 --> 00:05:21.030 align:middle line:84%
+And then Bourgain's
+projection theorem
+
+00:05:21.030 --> 00:05:24.020 align:middle line:84%
+is the analog of this theorem
+that rules out that example.
+
+00:05:24.020 --> 00:05:33.350 align:middle line:90%
+
+
+00:05:33.350 --> 00:05:42.990 align:middle line:84%
+This is an analogous
+theorem for balls in R2.
+
+00:05:42.990 --> 00:05:48.270 align:middle line:84%
+And these two theorems, in spite
+of the fact that this epsilon is
+
+00:05:48.270 --> 00:05:53.320 align:middle line:84%
+very small, are very
+important landmark results
+
+00:05:53.320 --> 00:05:55.360 align:middle line:84%
+in the field of
+projection theory,
+
+00:05:55.360 --> 00:06:00.360 align:middle line:84%
+and they play a key role
+in many applications.
+
+00:06:00.360 --> 00:06:02.880 align:middle line:84%
+This Bourgain projection
+theorem, it plays a key role
+
+00:06:02.880 --> 00:06:08.000 align:middle line:84%
+in getting the sharp projection
+estimates in R2, the recent work
+
+00:06:08.000 --> 00:06:11.720 align:middle line:84%
+that Pablo Shmerkin and
+others were involved in.
+
+00:06:11.720 --> 00:06:13.400 align:middle line:84%
+This Bourgain
+projection theorem also
+
+00:06:13.400 --> 00:06:18.320 align:middle line:84%
+plays an important role in
+the solution of the k problem.
+
+00:06:18.320 --> 00:06:21.460 align:middle line:84%
+And this finite field projection
+theorem, as well as this one,
+
+00:06:21.460 --> 00:06:24.800 align:middle line:84%
+have an important role in
+some interesting applications
+
+00:06:24.800 --> 00:06:28.880 align:middle line:84%
+about how fast
+different processes mix.
+
+00:06:28.880 --> 00:06:34.760 align:middle line:84%
+If you take some generators of
+a finite group like SL2 or Fp
+
+00:06:34.760 --> 00:06:37.160 align:middle line:84%
+and then they make
+a random walk,
+
+00:06:37.160 --> 00:06:40.080 align:middle line:84%
+how fast does this random
+walk become evenly distributed
+
+00:06:40.080 --> 00:06:41.840 align:middle line:90%
+in SL2 Fp?
+
+00:06:41.840 --> 00:06:44.310 align:middle line:84%
+This is an important
+ingredient in studying that.
+
+00:06:44.310 --> 00:06:49.597 align:middle line:90%
+
+
+00:06:49.597 --> 00:06:51.680 align:middle line:84%
+So in spite of the fact
+that the epsilon is small,
+
+00:06:51.680 --> 00:06:53.193 align:middle line:84%
+these theorems are
+very important,
+
+00:06:53.193 --> 00:06:54.860 align:middle line:84%
+and they're also
+qualitatively different
+
+00:06:54.860 --> 00:06:57.580 align:middle line:84%
+from the other theorems because
+they're sensitive to what kind
+
+00:06:57.580 --> 00:06:59.260 align:middle line:90%
+of field we're working in.
+
+00:06:59.260 --> 00:06:59.820 align:middle line:90%
+Yeah?
+
+00:06:59.820 --> 00:07:04.980 align:middle line:84%
+AUDIENCE: What is the
+analog of p for balls in R2?
+
+00:07:04.980 --> 00:07:06.460 align:middle line:84%
+PROFESSOR: The
+analog of p-- so we
+
+00:07:06.460 --> 00:07:08.220 align:middle line:84%
+would have the
+setting would be you'd
+
+00:07:08.220 --> 00:07:10.860 align:middle line:84%
+have unit balls and
+a ball of radius R.
+
+00:07:10.860 --> 00:07:12.960 align:middle line:90%
+And R is the analog of p.
+
+00:07:12.960 --> 00:07:16.460 align:middle line:90%
+
+
+00:07:16.460 --> 00:07:19.340 align:middle line:84%
+So all the sizes of things,
+we could think of them
+
+00:07:19.340 --> 00:07:21.980 align:middle line:90%
+as powers of R. Yeah?
+
+00:07:21.980 --> 00:07:23.980 align:middle line:84%
+AUDIENCE: Do the proofs
+use similar arguments
+
+00:07:23.980 --> 00:07:25.462 align:middle line:84%
+or are they
+completely different?
+
+00:07:25.462 --> 00:07:27.420 align:middle line:84%
+PROFESSOR: The question
+is, do these two proofs
+
+00:07:27.420 --> 00:07:30.620 align:middle line:84%
+use similar arguments or are
+they completely different?
+
+00:07:30.620 --> 00:07:33.780 align:middle line:84%
+There are multiple proofs of
+this, but at least one of them
+
+00:07:33.780 --> 00:07:38.070 align:middle line:84%
+is very similar to this with
+one layer of additional ideas.
+
+00:07:38.070 --> 00:07:41.080 align:middle line:90%
+
+
+00:07:41.080 --> 00:07:43.380 align:middle line:84%
+So my plan is that
+we'll do this,
+
+00:07:43.380 --> 00:07:45.920 align:middle line:84%
+and then we'll talk about the
+additional ideas to do this.
+
+00:07:45.920 --> 00:07:49.430 align:middle line:90%
+
+
+00:07:49.430 --> 00:07:50.790 align:middle line:90%
+OK, cool.
+
+00:07:50.790 --> 00:07:54.390 align:middle line:84%
+Well, so the key difference
+between Fq and Fp
+
+00:07:54.390 --> 00:07:59.630 align:middle line:84%
+is that Fq has a subfield
+and Fp has no subfield.
+
+00:07:59.630 --> 00:08:02.650 align:middle line:84%
+Now it's elementary to check
+that Fp has no subfield.
+
+00:08:02.650 --> 00:08:05.610 align:middle line:84%
+But because we're proving some
+kind of quantitative estimates,
+
+00:08:05.610 --> 00:08:09.230 align:middle line:84%
+we need some
+quantitative lemma that
+
+00:08:09.230 --> 00:08:11.375 align:middle line:84%
+says that Fp not
+only has no subfield,
+
+00:08:11.375 --> 00:08:13.750 align:middle line:84%
+but it doesn't have anything
+that's kind of approximately
+
+00:08:13.750 --> 00:08:15.750 align:middle line:90%
+a subfield.
+
+00:08:15.750 --> 00:08:24.470 align:middle line:84%
+So the main goal for today will
+be to develop lemmas like that.
+
+00:08:24.470 --> 00:08:28.350 align:middle line:84%
+And let me show you-- so here's
+the first version of lemma
+
+00:08:28.350 --> 00:08:32.875 align:middle line:90%
+like that, lemma 1.
+
+00:08:32.875 --> 00:08:33.750 align:middle line:90%
+Actually, let me do--
+
+00:08:33.750 --> 00:08:35.167 align:middle line:84%
+I think we need a
+little notation.
+
+00:08:35.167 --> 00:08:41.870 align:middle line:90%
+
+
+00:08:41.870 --> 00:08:46.390 align:middle line:84%
+So suppose that A
+is a subset of Fp.
+
+00:08:46.390 --> 00:08:51.160 align:middle line:84%
+If I write A plus A,
+then that means the set
+
+00:08:51.160 --> 00:08:55.120 align:middle line:84%
+of all the sums a1 plus
+a2 where a1 and a2 are
+
+00:08:55.120 --> 00:08:59.120 align:middle line:90%
+in A. We could write A times A.
+
+00:08:59.120 --> 00:09:03.640 align:middle line:84%
+That's the set of all the
+products a1 times a2, a1,
+
+00:09:03.640 --> 00:09:07.180 align:middle line:90%
+and a2 in A, and so on.
+
+00:09:07.180 --> 00:09:09.720 align:middle line:84%
+So you can write a lot of
+similar things like this,
+
+00:09:09.720 --> 00:09:12.840 align:middle line:84%
+and I think it'll be
+clear what they all mean.
+
+00:09:12.840 --> 00:09:15.600 align:middle line:84%
+But if it's not, of course,
+we'll talk about it.
+
+00:09:15.600 --> 00:09:17.140 align:middle line:90%
+So here's the lemma.
+
+00:09:17.140 --> 00:09:23.440 align:middle line:84%
+It's a quantitative lemma that
+says that no subset behaves
+
+00:09:23.440 --> 00:09:26.620 align:middle line:90%
+too much like a subfield.
+
+00:09:26.620 --> 00:09:31.160 align:middle line:84%
+So it says if A
+is a subset of Fp,
+
+00:09:31.160 --> 00:09:40.080 align:middle line:84%
+then either one option is
+that A minus A over A minus A
+
+00:09:40.080 --> 00:09:41.350 align:middle line:90%
+is all of Fp.
+
+00:09:41.350 --> 00:09:45.080 align:middle line:90%
+
+
+00:09:45.080 --> 00:09:56.780 align:middle line:84%
+And the second option is that
+if you multiply and add stuff
+
+00:09:56.780 --> 00:10:00.940 align:middle line:84%
+in and subtract stuff, a lot
+of times, it will get bigger.
+
+00:10:00.940 --> 00:10:02.700 align:middle line:90%
+2, 3, 4, 5, 6--
+
+00:10:02.700 --> 00:10:03.880 align:middle line:90%
+6 might be enough.
+
+00:10:03.880 --> 00:10:04.920 align:middle line:90%
+I think it might be 8.
+
+00:10:04.920 --> 00:10:14.120 align:middle line:90%
+
+
+00:10:14.120 --> 00:10:17.460 align:middle line:84%
+So one possibility is if you
+multiply, add, and subtract
+
+00:10:17.460 --> 00:10:20.220 align:middle line:84%
+elements of A a
+lot of times, then
+
+00:10:20.220 --> 00:10:23.140 align:middle line:84%
+you get a lot more
+stuff than just A.
+
+00:10:23.140 --> 00:10:26.180 align:middle line:84%
+So this says A is not
+too close to a subfield.
+
+00:10:26.180 --> 00:10:30.540 align:middle line:84%
+And the other options is if
+you do this, you get all of Fp.
+
+00:10:30.540 --> 00:10:33.480 align:middle line:84%
+Now, of course, A could have
+been almost all of Fp already.
+
+00:10:33.480 --> 00:10:35.860 align:middle line:84%
+So then it is kind
+of almost a field.
+
+00:10:35.860 --> 00:10:39.060 align:middle line:84%
+But if A was originally
+a lot smaller than Fp,
+
+00:10:39.060 --> 00:10:55.530 align:middle line:84%
+then, in this case, this thing
+is a lot bigger than A. Cool.
+
+00:10:55.530 --> 00:11:06.550 align:middle line:90%
+
+
+00:11:06.550 --> 00:11:08.360 align:middle line:90%
+So here is the proof--
+
+00:11:08.360 --> 00:11:11.110 align:middle line:90%
+
+
+00:11:11.110 --> 00:11:12.530 align:middle line:90%
+observation one.
+
+00:11:12.530 --> 00:11:16.870 align:middle line:90%
+
+
+00:11:16.870 --> 00:11:25.230 align:middle line:84%
+So if c is not in A
+minus A over A minus A,
+
+00:11:25.230 --> 00:11:32.380 align:middle line:84%
+then A plus cA has
+size a squared.
+
+00:11:32.380 --> 00:11:41.878 align:middle line:90%
+
+
+00:11:41.878 --> 00:11:44.580 align:middle line:84%
+Let me make sure it's clear
+what all the notation means.
+
+00:11:44.580 --> 00:11:48.700 align:middle line:84%
+So if I write this thing, I have
+four copies of A. So take a1,
+
+00:11:48.700 --> 00:11:52.980 align:middle line:84%
+a2, a3, a4, any four guys in A,
+and plug them in for the capital
+
+00:11:52.980 --> 00:11:53.480 align:middle line:90%
+A's.
+
+00:11:53.480 --> 00:11:57.360 align:middle line:84%
+All the things you can get,
+that's what this set is.
+
+00:11:57.360 --> 00:11:59.440 align:middle line:84%
+And similarly, over
+here, the lowercase c
+
+00:11:59.440 --> 00:12:01.800 align:middle line:90%
+is a particular element of Fp.
+
+00:12:01.800 --> 00:12:07.320 align:middle line:84%
+And this means take any
+a1 and a2 and do this.
+
+00:12:07.320 --> 00:12:13.800 align:middle line:84%
+So the proof of observation
+one is quite simple.
+
+00:12:13.800 --> 00:12:20.085 align:middle line:84%
+So suppose that I have two
+different elements in here
+
+00:12:20.085 --> 00:12:21.460 align:middle line:84%
+but that are equal
+to each other.
+
+00:12:21.460 --> 00:12:29.800 align:middle line:84%
+So suppose a1 plus a2 is the
+same as a1 prime plus a2 prime.
+
+00:12:29.800 --> 00:12:33.600 align:middle line:84%
+Well, if I do a little algebra,
+I can solve this for c.
+
+00:12:33.600 --> 00:12:41.880 align:middle line:84%
+And I discovered that c is a1
+prime minus a1 divided by a2
+
+00:12:41.880 --> 00:12:49.060 align:middle line:84%
+minus a2 prime, which is an
+A minus A. So if c is not
+
+00:12:49.060 --> 00:12:54.860 align:middle line:84%
+an A minus A-- sorry, which is
+an A minus A over A minus A--
+
+00:12:54.860 --> 00:12:58.140 align:middle line:84%
+so if c is not in
+here, then all of
+
+00:12:58.140 --> 00:13:00.920 align:middle line:84%
+these different representations
+are actually different numbers.
+
+00:13:00.920 --> 00:13:02.530 align:middle line:84%
+So the size of this
+set is A squared.
+
+00:13:02.530 --> 00:13:10.020 align:middle line:90%
+
+
+00:13:10.020 --> 00:13:11.740 align:middle line:84%
+Now if you want to
+be really careful,
+
+00:13:11.740 --> 00:13:15.340 align:middle line:84%
+maybe we should worry about
+whether I have divided by 0.
+
+00:13:15.340 --> 00:13:20.682 align:middle line:84%
+But if a2 is equal to a2
+prime, then the only way
+
+00:13:20.682 --> 00:13:22.140 align:middle line:84%
+that the top equation
+could be true
+
+00:13:22.140 --> 00:13:24.780 align:middle line:84%
+is if also a1 is
+equal to a1 prime.
+
+00:13:24.780 --> 00:13:28.740 align:middle line:84%
+And then I just
+have the same thing.
+
+00:13:28.740 --> 00:13:29.780 align:middle line:90%
+All right, great.
+
+00:13:29.780 --> 00:13:32.900 align:middle line:90%
+
+
+00:13:32.900 --> 00:13:41.590 align:middle line:84%
+So if I can locate some c that
+is in the ring of stuff I can
+
+00:13:41.590 --> 00:13:45.310 align:middle line:84%
+make by adding and multiplying--
+maybe if I can add and subtract
+
+00:13:45.310 --> 00:13:48.590 align:middle line:84%
+and multiply and divide a bunch
+of elements of A and I can
+
+00:13:48.590 --> 00:13:52.030 align:middle line:84%
+locate some c which
+is not in here,
+
+00:13:52.030 --> 00:13:56.070 align:middle line:84%
+then I can use this observation,
+and I can get some--
+
+00:13:56.070 --> 00:13:59.160 align:middle line:84%
+I can show that I can build
+out of A many different things.
+
+00:13:59.160 --> 00:14:01.750 align:middle line:90%
+
+
+00:14:01.750 --> 00:14:03.370 align:middle line:90%
+OK, cool.
+
+00:14:03.370 --> 00:14:07.695 align:middle line:90%
+
+
+00:14:07.695 --> 00:14:09.590 align:middle line:84%
+Now somewhere in
+our proof, we have
+
+00:14:09.590 --> 00:14:13.390 align:middle line:90%
+to use that Fp is a prime field.
+
+00:14:13.390 --> 00:14:16.310 align:middle line:84%
+It wouldn't work in Fq and
+we haven't used it yet.
+
+00:14:16.310 --> 00:14:17.910 align:middle line:84%
+Well, how are we
+going to use it.
+
+00:14:17.910 --> 00:14:19.790 align:middle line:84%
+Well, let's just remember
+how we would prove
+
+00:14:19.790 --> 00:14:23.270 align:middle line:90%
+that Fp is a prime field--
+
+00:14:23.270 --> 00:14:26.518 align:middle line:84%
+sorry, how would we prove
+that Fp has no subfields?
+
+00:14:26.518 --> 00:14:27.810 align:middle line:90%
+How are we going to prove that?
+
+00:14:27.810 --> 00:14:33.670 align:middle line:84%
+Well, if it had a subfield
+it would have to contain 1,
+
+00:14:33.670 --> 00:14:35.170 align:middle line:84%
+and then it would
+have to contain--
+
+00:14:35.170 --> 00:14:36.370 align:middle line:84%
+then it would be
+closed under addition,
+
+00:14:36.370 --> 00:14:38.410 align:middle line:84%
+so it would have to contain
+2 and 3 and 4 and so on.
+
+00:14:38.410 --> 00:14:40.243 align:middle line:84%
+And then it would have
+to contain all of Fp.
+
+00:14:40.243 --> 00:14:44.930 align:middle line:90%
+
+
+00:14:44.930 --> 00:14:48.530 align:middle line:84%
+So we're basically going to use
+that argument in observation
+
+00:14:48.530 --> 00:14:49.030 align:middle line:90%
+two.
+
+00:14:49.030 --> 00:15:17.090 align:middle line:90%
+
+
+00:15:17.090 --> 00:15:26.810 align:middle line:84%
+So observation two, if A minus
+A over A minus A is not Fp,
+
+00:15:26.810 --> 00:15:34.570 align:middle line:84%
+then there exists some B
+in A minus A over A minus A
+
+00:15:34.570 --> 00:15:39.820 align:middle line:84%
+so that B plus 1 is
+not in A minus A over A
+
+00:15:39.820 --> 00:16:04.340 align:middle line:90%
+minus A. Why is it?
+
+00:16:04.340 --> 00:16:08.140 align:middle line:84%
+So 0 is an A minus A
+over A minus A. It's
+
+00:16:08.140 --> 00:16:11.940 align:middle line:90%
+a proof of observation two.
+
+00:16:11.940 --> 00:16:14.532 align:middle line:84%
+0 is in there because you can
+choose these to be the same.
+
+00:16:14.532 --> 00:16:16.240 align:middle line:84%
+And you can choose
+those to be different.
+
+00:16:16.240 --> 00:16:19.100 align:middle line:90%
+
+
+00:16:19.100 --> 00:16:22.650 align:middle line:90%
+If one is not--
+
+00:16:22.650 --> 00:16:26.000 align:middle line:90%
+
+
+00:16:26.000 --> 00:16:28.920 align:middle line:90%
+so then we just--
+
+00:16:28.920 --> 00:16:31.740 align:middle line:84%
+either everybody in Fp
+is in A minus A minus A
+
+00:16:31.740 --> 00:16:34.060 align:middle line:90%
+minus A or somebody is not.
+
+00:16:34.060 --> 00:16:40.590 align:middle line:84%
+And so then we take B
+plus 1 is the smallest
+
+00:16:40.590 --> 00:16:48.410 align:middle line:84%
+number which is not an A minus A
+over A minus A. And there we go.
+
+00:16:48.410 --> 00:16:51.710 align:middle line:90%
+
+
+00:16:51.710 --> 00:16:54.170 align:middle line:84%
+And the special thing
+that we're using about Fp,
+
+00:16:54.170 --> 00:16:56.888 align:middle line:84%
+we've used that we have
+the prime field, which
+
+00:16:56.888 --> 00:16:57.930 align:middle line:90%
+is just we're using that.
+
+00:16:57.930 --> 00:16:59.733 align:middle line:84%
+If you start at 0 and
+you keep adding 1,
+
+00:16:59.733 --> 00:17:00.900 align:middle line:90%
+you get all of the elements.
+
+00:17:00.900 --> 00:17:03.590 align:middle line:90%
+
+
+00:17:03.590 --> 00:17:05.569 align:middle line:84%
+So that's the proof
+of observation two.
+
+00:17:05.569 --> 00:17:08.510 align:middle line:90%
+
+
+00:17:08.510 --> 00:17:11.550 align:middle line:84%
+And so now we are
+basically done.
+
+00:17:11.550 --> 00:17:16.310 align:middle line:84%
+So now we have seen that
+if A minus A over A minus A
+
+00:17:16.310 --> 00:17:24.750 align:middle line:84%
+is not Fp, then if you take
+A and you add this B plus 1.
+
+00:17:24.750 --> 00:17:28.270 align:middle line:84%
+So B is an A minus
+A over A minus A.
+
+00:17:28.270 --> 00:17:30.270 align:middle line:90%
+And I'm going to add 1 to it.
+
+00:17:30.270 --> 00:17:32.630 align:middle line:90%
+So B plus 1 is in here.
+
+00:17:32.630 --> 00:17:34.440 align:middle line:90%
+There is bigger than A squared.
+
+00:17:34.440 --> 00:17:42.850 align:middle line:90%
+
+
+00:17:42.850 --> 00:17:48.050 align:middle line:84%
+So if I take six elements
+of A and I do this,
+
+00:17:48.050 --> 00:17:49.690 align:middle line:84%
+the number of different
+guys I will get
+
+00:17:49.690 --> 00:17:51.270 align:middle line:90%
+is really much bigger then.
+
+00:17:51.270 --> 00:17:54.690 align:middle line:90%
+
+
+00:17:54.690 --> 00:17:58.710 align:middle line:84%
+And then this doesn't
+look exactly like my two,
+
+00:17:58.710 --> 00:18:01.950 align:middle line:84%
+but I just clear the denominator
+and expand things out.
+
+00:18:01.950 --> 00:18:13.890 align:middle line:90%
+
+
+00:18:13.890 --> 00:18:15.930 align:middle line:84%
+So when I clear the
+denominator, I'll
+
+00:18:15.930 --> 00:18:21.050 align:middle line:84%
+get A times A minus A
+times A from this guy,
+
+00:18:21.050 --> 00:18:23.250 align:middle line:84%
+inside of here, I'll
+have A minus A plus A
+
+00:18:23.250 --> 00:18:27.270 align:middle line:84%
+minus A. I'll multiplied by
+A. I have a bunch of stuff.
+
+00:18:27.270 --> 00:18:38.380 align:middle line:90%
+
+
+00:18:38.380 --> 00:18:41.388 align:middle line:84%
+So I know-- So that's Katz
+and I are old collaborators.
+
+00:18:41.388 --> 00:18:43.180 align:middle line:84%
+And I remember talking
+with him about this,
+
+00:18:43.180 --> 00:18:48.778 align:middle line:84%
+and that it took quite a while
+for them to figure out how
+
+00:18:48.778 --> 00:18:50.070 align:middle line:90%
+to get started on this problem.
+
+00:18:50.070 --> 00:18:52.660 align:middle line:90%
+
+
+00:18:52.660 --> 00:18:56.940 align:middle line:84%
+Now, looking back at this,
+this proof is really clean.
+
+00:18:56.940 --> 00:18:59.380 align:middle line:84%
+This lemma is perhaps not--
+the statement of the lemma
+
+00:18:59.380 --> 00:19:01.800 align:middle line:84%
+is perhaps not the nicest
+thing that you might like.
+
+00:19:01.800 --> 00:19:10.660 align:middle line:90%
+
+
+00:19:10.660 --> 00:19:13.780 align:middle line:84%
+So there are kind
+of cleaner things
+
+00:19:13.780 --> 00:19:15.940 align:middle line:84%
+like, for example,
+later today, we'll
+
+00:19:15.940 --> 00:19:18.540 align:middle line:84%
+show that just this
+is significantly
+
+00:19:18.540 --> 00:19:23.560 align:middle line:84%
+bigger than A and
+different variations.
+
+00:19:23.560 --> 00:19:36.172 align:middle line:90%
+
+
+00:19:36.172 --> 00:19:38.110 align:middle line:84%
+So maybe we should
+mention-- we could ask
+
+00:19:38.110 --> 00:19:40.470 align:middle line:90%
+some much simpler questions.
+
+00:19:40.470 --> 00:19:45.310 align:middle line:84%
+We could just say if you
+have a subset of Fp called A,
+
+00:19:45.310 --> 00:19:51.030 align:middle line:84%
+is it true that A plus A is
+always much bigger than A?
+
+00:19:51.030 --> 00:19:53.870 align:middle line:84%
+That's true for most
+subsets, but it's not
+
+00:19:53.870 --> 00:19:55.870 align:middle line:90%
+true for all of them.
+
+00:19:55.870 --> 00:19:59.830 align:middle line:84%
+But thinking about that much
+simpler question is actually--
+
+00:19:59.830 --> 00:20:03.650 align:middle line:84%
+so that's foundational question
+in additive combinatorics,
+
+00:20:03.650 --> 00:20:06.510 align:middle line:84%
+to understand that,
+and understanding
+
+00:20:06.510 --> 00:20:11.080 align:middle line:84%
+that well feeds into being able
+to understand this stuff better.
+
+00:20:11.080 --> 00:20:12.830 align:middle line:84%
+So let me pose this
+on the board and we'll
+
+00:20:12.830 --> 00:20:14.010 align:middle line:90%
+start to talk about it.
+
+00:20:14.010 --> 00:20:20.750 align:middle line:90%
+
+
+00:20:20.750 --> 00:20:30.960 align:middle line:84%
+So my question for us is
+when is A plus A small?
+
+00:20:30.960 --> 00:20:35.210 align:middle line:90%
+
+
+00:20:35.210 --> 00:20:38.610 align:middle line:84%
+So here I have in mind
+that A is a subset of Fp,
+
+00:20:38.610 --> 00:20:41.570 align:middle line:84%
+although we could have a very
+similar conversation if was
+
+00:20:41.570 --> 00:20:46.030 align:middle line:84%
+a subset of E or was A
+subset of R or dot, dot, dot.
+
+00:20:46.030 --> 00:20:49.450 align:middle line:90%
+
+
+00:20:49.450 --> 00:20:52.530 align:middle line:84%
+Can anybody think
+of a subset of Fp
+
+00:20:52.530 --> 00:21:05.650 align:middle line:84%
+where A plus A is only a
+tiny bit bigger than A. Yeah?
+
+00:21:05.650 --> 00:21:12.530 align:middle line:84%
+AUDIENCE: A is some
+set of [INAUDIBLE] that
+
+00:21:12.530 --> 00:21:17.090 align:middle line:84%
+includes numbers and the
+negative values of those numbers
+
+00:21:17.090 --> 00:21:22.130 align:middle line:84%
+in Fp, like only one
+negative 1, two negative 2,
+
+00:21:22.130 --> 00:21:25.250 align:middle line:90%
+or something like that?
+
+00:21:25.250 --> 00:21:25.917 align:middle line:90%
+PROFESSOR: Yeah.
+
+00:21:25.917 --> 00:21:28.000 align:middle line:84%
+So the comment is maybe I
+should have some numbers
+
+00:21:28.000 --> 00:21:29.270 align:middle line:90%
+and negative in those numbers.
+
+00:21:29.270 --> 00:21:31.200 align:middle line:84%
+Let me ask you a more
+precise question.
+
+00:21:31.200 --> 00:21:34.100 align:middle line:84%
+So you have to choose
+L numbers in Fp,
+
+00:21:34.100 --> 00:21:35.860 align:middle line:84%
+and you want to
+choose them to make
+
+00:21:35.860 --> 00:21:38.135 align:middle line:90%
+A plus A as small as possible.
+
+00:21:38.135 --> 00:21:39.010 align:middle line:90%
+Who would you choose?
+
+00:21:39.010 --> 00:21:43.620 align:middle line:90%
+
+
+00:21:43.620 --> 00:21:44.515 align:middle line:90%
+Yeah?
+
+00:21:44.515 --> 00:21:47.222 align:middle line:84%
+AUDIENCE: Could be an
+arithmetic [INAUDIBLE]
+
+00:21:47.222 --> 00:21:49.180 align:middle line:84%
+PROFESSOR: Yeah, you
+could choose an arithmetic
+
+00:21:49.180 --> 00:21:50.740 align:middle line:90%
+progression.
+
+00:21:50.740 --> 00:21:59.140 align:middle line:84%
+So example one-- suppose A was
+just the numbers from 1 up to L.
+
+00:21:59.140 --> 00:22:04.020 align:middle line:84%
+So A plus A will be the
+numbers from negative 2 to 2L.
+
+00:22:04.020 --> 00:22:08.500 align:middle line:84%
+So A plus A is at
+most 2 times A.
+
+00:22:08.500 --> 00:22:10.640 align:middle line:84%
+It's the tiniest
+bit less than that,
+
+00:22:10.640 --> 00:22:12.900 align:middle line:84%
+but not very important
+for our discussion.
+
+00:22:12.900 --> 00:22:19.060 align:middle line:84%
+And this is the smallest that
+A plus A could possibly be.
+
+00:22:19.060 --> 00:22:22.120 align:middle line:84%
+And it doesn't have
+to be one up to L.
+
+00:22:22.120 --> 00:22:25.660 align:middle line:84%
+It would work just as well if it
+was an arithmetic progression.
+
+00:22:25.660 --> 00:22:29.150 align:middle line:90%
+So example one prime--
+
+00:22:29.150 --> 00:22:39.737 align:middle line:84%
+our set A is little a plus nd,
+where n goes from 1 up to L.
+
+00:22:39.737 --> 00:22:41.570 align:middle line:84%
+And then if you think
+about it a little bit,
+
+00:22:41.570 --> 00:22:43.730 align:middle line:84%
+the size of the subset
+behaves just the same.
+
+00:22:43.730 --> 00:22:55.790 align:middle line:90%
+
+
+00:22:55.790 --> 00:22:58.390 align:middle line:84%
+There's another example
+that's a little bit more
+
+00:22:58.390 --> 00:23:00.030 align:middle line:90%
+general than this.
+
+00:23:00.030 --> 00:23:01.590 align:middle line:84%
+So this is an
+arithmetic progression
+
+00:23:01.590 --> 00:23:03.690 align:middle line:84%
+where you have just
+one kind of difference.
+
+00:23:03.690 --> 00:23:07.590 align:middle line:90%
+
+
+00:23:07.590 --> 00:23:12.110 align:middle line:90%
+And you could have something--
+
+00:23:12.110 --> 00:23:16.910 align:middle line:84%
+so you could visualize
+it like this.
+
+00:23:16.910 --> 00:23:19.150 align:middle line:84%
+And you could have
+a similar thing
+
+00:23:19.150 --> 00:23:25.870 align:middle line:84%
+involving a two-dimensional grid
+or a higher-dimensional grid.
+
+00:23:25.870 --> 00:23:30.330 align:middle line:84%
+So example two is
+that A is a plus n1
+
+00:23:30.330 --> 00:23:43.170 align:middle line:84%
+d1 plus dot, dot, dot plus nr dr
+where ni goes from 1 up to Li.
+
+00:23:43.170 --> 00:23:48.570 align:middle line:90%
+
+
+00:23:48.570 --> 00:23:51.610 align:middle line:84%
+So what happens when
+you take A plus A?
+
+00:23:51.610 --> 00:23:58.070 align:middle line:84%
+It is contained in 2a
+plus n1 d1 plus dot, dot,
+
+00:23:58.070 --> 00:24:03.760 align:middle line:84%
+dot plus nr dr where, now,
+the ni go in between 2 and 2L.
+
+00:24:03.760 --> 00:24:09.370 align:middle line:90%
+
+
+00:24:09.370 --> 00:24:12.570 align:middle line:90%
+And so we see from this--
+
+00:24:12.570 --> 00:24:15.810 align:middle line:90%
+well, which is contained in--
+
+00:24:15.810 --> 00:24:17.810 align:middle line:90%
+I could put a 1.
+
+00:24:17.810 --> 00:24:22.630 align:middle line:84%
+So it's contained in something
+that is 2 to the r times bigger.
+
+00:24:22.630 --> 00:24:29.980 align:middle line:84%
+So we get A plus A is bounded
+by 2 to the r times A.
+
+00:24:29.980 --> 00:24:33.100 align:middle line:84%
+So this thing here is called
+a generalized arithmetic
+
+00:24:33.100 --> 00:24:34.180 align:middle line:90%
+progression.
+
+00:24:34.180 --> 00:24:37.420 align:middle line:84%
+It has a dimension,
+little r, and it
+
+00:24:37.420 --> 00:24:43.070 align:middle line:84%
+has a volume or cardinality,
+which is L1 up to Lr.
+
+00:24:43.070 --> 00:24:59.860 align:middle line:90%
+
+
+00:24:59.860 --> 00:25:01.320 align:middle line:90%
+Can anybody think of any others?
+
+00:25:01.320 --> 00:25:09.020 align:middle line:90%
+
+
+00:25:09.020 --> 00:25:11.120 align:middle line:84%
+So it is hard to
+think of other ones.
+
+00:25:11.120 --> 00:25:12.860 align:middle line:84%
+And in some sense,
+and depending on how
+
+00:25:12.860 --> 00:25:17.340 align:middle line:84%
+we quantify it a little bit,
+these sets or maybe these sets
+
+00:25:17.340 --> 00:25:20.220 align:middle line:84%
+and their close cousins appear
+to be the only sets that
+
+00:25:20.220 --> 00:25:22.580 align:middle line:90%
+have a really small subset.
+
+00:25:22.580 --> 00:25:26.080 align:middle line:84%
+And this was investigated
+by Freiman starting
+
+00:25:26.080 --> 00:25:30.308 align:middle line:84%
+in the '60s and '70s, and he
+proved a theorem to that effect
+
+00:25:30.308 --> 00:25:31.350 align:middle line:90%
+called Freiman's theorem.
+
+00:25:31.350 --> 00:25:35.620 align:middle line:90%
+
+
+00:25:35.620 --> 00:25:41.100 align:middle line:84%
+And this is a cornerstone
+of additive combinatorics.
+
+00:25:41.100 --> 00:25:47.200 align:middle line:90%
+
+
+00:25:47.200 --> 00:25:50.660 align:middle line:84%
+Freiman's proof was
+somewhat difficult to read,
+
+00:25:50.660 --> 00:25:53.060 align:middle line:84%
+and Ruzsa thought a lot
+about it and clarified it.
+
+00:25:53.060 --> 00:25:56.360 align:middle line:84%
+And so this is
+now called usually
+
+00:25:56.360 --> 00:25:57.670 align:middle line:90%
+the Freiman-Ruzsa theorem.
+
+00:25:57.670 --> 00:26:04.280 align:middle line:90%
+
+
+00:26:04.280 --> 00:26:07.320 align:middle line:90%
+So it says the following thing--
+
+00:26:07.320 --> 00:26:17.000 align:middle line:90%
+says that if A is in Z--
+
+00:26:17.000 --> 00:26:19.200 align:middle line:84%
+the same thing would
+be true in Z mod p--
+
+00:26:19.200 --> 00:26:25.850 align:middle line:84%
+and A plus A is less
+than or equal to KA,
+
+00:26:25.850 --> 00:26:35.210 align:middle line:84%
+then A is contained in a gap
+with dimension little r that
+
+00:26:35.210 --> 00:26:41.450 align:middle line:84%
+only depends on K
+and volume at most
+
+00:26:41.450 --> 00:26:49.570 align:middle line:84%
+V. That only depends on
+K times the size of A.
+
+00:26:49.570 --> 00:26:52.430 align:middle line:84%
+So it roughly says that
+if A plus A is small,
+
+00:26:52.430 --> 00:26:54.410 align:middle line:84%
+it is because a
+resembles example
+
+00:26:54.410 --> 00:26:58.170 align:middle line:84%
+two, which is a
+generalization of example one.
+
+00:26:58.170 --> 00:27:00.770 align:middle line:84%
+So in some sense these
+are the only sets that
+
+00:27:00.770 --> 00:27:02.060 align:middle line:90%
+have a really small subset.
+
+00:27:02.060 --> 00:27:04.650 align:middle line:90%
+
+
+00:27:04.650 --> 00:27:08.750 align:middle line:84%
+So this is an important theorem
+in additive combinatorics.
+
+00:27:08.750 --> 00:27:11.010 align:middle line:84%
+But there are two
+caveats about it.
+
+00:27:11.010 --> 00:27:14.130 align:middle line:84%
+So one caveat is that it's
+a pretty deep theorem,
+
+00:27:14.130 --> 00:27:17.250 align:middle line:90%
+where the proof is substantial.
+
+00:27:17.250 --> 00:27:21.560 align:middle line:84%
+And the other caveat is that the
+quantitative bounds are weak.
+
+00:27:21.560 --> 00:27:27.100 align:middle line:90%
+
+
+00:27:27.100 --> 00:27:34.580 align:middle line:84%
+So in the original version,
+r of K was quite large.
+
+00:27:34.580 --> 00:27:40.660 align:middle line:84%
+So r of K was something like
+x of K to a power and V of K
+
+00:27:40.660 --> 00:27:45.210 align:middle line:84%
+was even larger, so xp
+of x of K to a power.
+
+00:27:45.210 --> 00:27:51.876 align:middle line:90%
+
+
+00:27:51.876 --> 00:27:59.180 align:middle line:84%
+Now it is a trivial fact
+that any set A is contained
+
+00:27:59.180 --> 00:28:02.060 align:middle line:84%
+in a generalized arithmetic
+progression of dimension
+
+00:28:02.060 --> 00:28:07.860 align:middle line:84%
+equal to the size of A. So this
+is only interesting if r of K
+
+00:28:07.860 --> 00:28:15.140 align:middle line:84%
+is smaller than the size of A.
+So this was only interesting,
+
+00:28:15.140 --> 00:28:21.380 align:middle line:84%
+only meaningful, let's
+say, if k was quite small.
+
+00:28:21.380 --> 00:28:27.240 align:middle line:90%
+
+
+00:28:27.240 --> 00:28:31.000 align:middle line:84%
+There is a big goal in
+additive combinatorics
+
+00:28:31.000 --> 00:28:32.760 align:middle line:84%
+to improve the
+quantitative bounds
+
+00:28:32.760 --> 00:28:37.120 align:middle line:90%
+in Friedman's theorem, and.
+
+00:28:37.120 --> 00:28:41.000 align:middle line:84%
+one benchmark is a conjecture
+called the polynomial frame
+
+00:28:41.000 --> 00:28:44.280 align:middle line:84%
+in Ruzsa conjecture, which would
+say something meaningful even
+
+00:28:44.280 --> 00:28:46.840 align:middle line:90%
+if K was a small power of A.
+
+00:28:46.840 --> 00:28:50.480 align:middle line:84%
+So there's a
+conjecture that they
+
+00:28:50.480 --> 00:28:57.080 align:middle line:84%
+would have a
+meaningful bound if K
+
+00:28:57.080 --> 00:29:06.600 align:middle line:84%
+is A to the delta for some
+small but universal delta
+
+00:29:06.600 --> 00:29:09.720 align:middle line:90%
+bigger than 0.
+
+00:29:09.720 --> 00:29:11.660 align:middle line:84%
+And this is still
+an open conjecture.
+
+00:29:11.660 --> 00:29:13.760 align:middle line:84%
+So it's out of range,
+maybe only a little
+
+00:29:13.760 --> 00:29:18.530 align:middle line:84%
+out of range of
+current techniques.
+
+00:29:18.530 --> 00:29:22.490 align:middle line:84%
+But if K was, say, I
+don't know, A to the 0.1,
+
+00:29:22.490 --> 00:29:25.370 align:middle line:84%
+all this stuff about
+Freiman's theorem,
+
+00:29:25.370 --> 00:29:28.640 align:middle line:84%
+we are very far from being
+able to deal with that.
+
+00:29:28.640 --> 00:29:32.650 align:middle line:90%
+
+
+00:29:32.650 --> 00:29:36.450 align:middle line:84%
+Now, if you look at Freiman's
+theorem, what we're trying to do
+
+00:29:36.450 --> 00:29:40.850 align:middle line:84%
+is to give a complete
+classification of all the sets a
+
+00:29:40.850 --> 00:29:42.650 align:middle line:90%
+that do this.
+
+00:29:42.650 --> 00:29:45.010 align:middle line:84%
+And the complete
+classification is
+
+00:29:45.010 --> 00:29:49.090 align:middle line:84%
+something we only understand
+if K is really, really small.
+
+00:29:49.090 --> 00:29:50.610 align:middle line:84%
+But you could also
+ask for something
+
+00:29:50.610 --> 00:29:53.770 align:middle line:84%
+which is not as strong as
+a complete classification,
+
+00:29:53.770 --> 00:29:56.210 align:middle line:84%
+but just some kind of
+interesting information
+
+00:29:56.210 --> 00:29:58.100 align:middle line:90%
+about sets with small subset.
+
+00:29:58.100 --> 00:30:00.650 align:middle line:90%
+
+
+00:30:00.650 --> 00:30:05.090 align:middle line:84%
+So if you look at
+this example, you'll
+
+00:30:05.090 --> 00:30:08.310 align:middle line:84%
+notice that not only
+it has small subset,
+
+00:30:08.310 --> 00:30:12.250 align:middle line:84%
+but it has also small
+a bunch of other stuff.
+
+00:30:12.250 --> 00:30:14.650 align:middle line:84%
+In these examples,
+A plus A is small.
+
+00:30:14.650 --> 00:30:16.740 align:middle line:90%
+Also, A minus A is small.
+
+00:30:16.740 --> 00:30:18.810 align:middle line:90%
+Also, A plus A plus A is small.
+
+00:30:18.810 --> 00:30:22.100 align:middle line:90%
+
+
+00:30:22.100 --> 00:30:27.840 align:middle line:84%
+And for those things, we
+have much simpler proofs,
+
+00:30:27.840 --> 00:30:30.540 align:middle line:84%
+and the quantitative
+bounds are much better.
+
+00:30:30.540 --> 00:30:33.740 align:middle line:84%
+And they come from some
+lemmas that I think originally
+
+00:30:33.740 --> 00:30:37.380 align:middle line:84%
+were designed as
+lemmas for this theorem
+
+00:30:37.380 --> 00:30:39.880 align:middle line:84%
+but which have lots of
+independent applications.
+
+00:30:39.880 --> 00:30:46.556 align:middle line:90%
+
+
+00:30:46.556 --> 00:30:50.120 align:middle line:84%
+So this theorem, I don't
+plan to prove in the class,
+
+00:30:50.120 --> 00:30:52.640 align:middle line:84%
+but I wanted to mention
+it for historical context.
+
+00:30:52.640 --> 00:30:55.460 align:middle line:84%
+And these lemmas
+are really important
+
+00:30:55.460 --> 00:30:58.860 align:middle line:84%
+and have reasonable short
+proofs and, I think,
+
+00:30:58.860 --> 00:31:02.200 align:middle line:84%
+are worth for a wide range
+of people knowing about them.
+
+00:31:02.200 --> 00:31:18.832 align:middle line:90%
+
+
+00:31:18.832 --> 00:31:22.880 align:middle line:84%
+So the first of the lemmas
+is called the Ruzsa triangle
+
+00:31:22.880 --> 00:31:23.740 align:middle line:90%
+inequality.
+
+00:31:23.740 --> 00:31:29.920 align:middle line:90%
+
+
+00:31:29.920 --> 00:31:39.000 align:middle line:84%
+So it says if Z is an abelian
+group, and A and B and C
+
+00:31:39.000 --> 00:31:47.560 align:middle line:84%
+are subsets of Z, then size of
+A times the size of B minus C
+
+00:31:47.560 --> 00:31:52.000 align:middle line:84%
+is bounded by the size of A
+minus B times the size of A
+
+00:31:52.000 --> 00:31:57.640 align:middle line:90%
+minus C.
+
+00:31:57.640 --> 00:32:01.480 align:middle line:84%
+So this might take
+a little digesting.
+
+00:32:01.480 --> 00:32:05.320 align:middle line:84%
+All of these letters feels a
+little bit like alphabet soup.
+
+00:32:05.320 --> 00:32:08.882 align:middle line:84%
+The fact that we can
+put three different sets
+
+00:32:08.882 --> 00:32:10.340 align:middle line:84%
+makes it a little
+harder to digest.
+
+00:32:10.340 --> 00:32:13.420 align:middle line:84%
+But, of course, it makes it
+more flexible in general.
+
+00:32:13.420 --> 00:32:16.430 align:middle line:84%
+And by plugging in different
+choices for these three sets,
+
+00:32:16.430 --> 00:32:18.370 align:middle line:84%
+you can prove some
+simpler things.
+
+00:32:18.370 --> 00:32:20.180 align:middle line:84%
+Let me illustrate
+this with an example.
+
+00:32:20.180 --> 00:32:23.130 align:middle line:90%
+
+
+00:32:23.130 --> 00:32:26.530 align:middle line:84%
+As a corollary of
+this, we will see
+
+00:32:26.530 --> 00:32:30.460 align:middle line:84%
+that if the sum set is small,
+then the difference set is also
+
+00:32:30.460 --> 00:32:30.960 align:middle line:90%
+small.
+
+00:32:30.960 --> 00:32:43.650 align:middle line:90%
+
+
+00:32:43.650 --> 00:32:55.010 align:middle line:84%
+So corollary-- if A plus A
+is smaller than K times A,
+
+00:32:55.010 --> 00:33:04.530 align:middle line:84%
+then A minus A is smaller than
+K squared K squared times L.
+
+00:33:04.530 --> 00:33:06.370 align:middle line:84%
+So this lemma is
+meaningful as long
+
+00:33:06.370 --> 00:33:10.250 align:middle line:84%
+as K is slightly smaller
+than the square root of A.
+
+00:33:10.250 --> 00:33:16.180 align:middle line:84%
+So in a much wider range than
+the Freiman-Ruzsa theorem.
+
+00:33:16.180 --> 00:33:19.460 align:middle line:90%
+This is a meaningful statement.
+
+00:33:19.460 --> 00:33:23.360 align:middle line:84%
+So proof-- we're just
+going to use Ruzsa,
+
+00:33:23.360 --> 00:33:25.900 align:middle line:84%
+and I have to tell you
+who are A and B and C.
+
+00:33:25.900 --> 00:33:31.010 align:middle line:84%
+So A will be A. And
+then I think B--
+
+00:33:31.010 --> 00:33:36.860 align:middle line:90%
+
+
+00:33:36.860 --> 00:33:37.560 align:middle line:90%
+let me see.
+
+00:33:37.560 --> 00:33:40.900 align:middle line:90%
+
+
+00:33:40.900 --> 00:33:50.900 align:middle line:84%
+Yeah, B and C are both negative
+A. So if you look at B minus C,
+
+00:33:50.900 --> 00:33:52.160 align:middle line:90%
+there's a lot of minus signs.
+
+00:33:52.160 --> 00:33:53.618 align:middle line:84%
+This is a little
+bit silly looking.
+
+00:33:53.618 --> 00:34:00.580 align:middle line:90%
+
+
+00:34:00.580 --> 00:34:10.213 align:middle line:84%
+So that's just A minus A.
+And A minus B or A minus C--
+
+00:34:10.213 --> 00:34:11.880 align:middle line:84%
+they're the same as
+each other because B
+
+00:34:11.880 --> 00:34:19.920 align:middle line:84%
+is the same as C. That's A minus
+negative A. So that's A plus A.
+
+00:34:19.920 --> 00:34:22.679 align:middle line:84%
+So now if we just
+plug in Ruzsa, it
+
+00:34:22.679 --> 00:34:27.199 align:middle line:84%
+says A times this
+guy, A minus A,
+
+00:34:27.199 --> 00:34:30.679 align:middle line:84%
+is less than this
+guy times this guy.
+
+00:34:30.679 --> 00:34:34.040 align:middle line:90%
+That's A plus A squared.
+
+00:34:34.040 --> 00:34:36.360 align:middle line:84%
+And by hypothesis,
+that's smaller
+
+00:34:36.360 --> 00:34:40.480 align:middle line:90%
+than K squared A squared.
+
+00:34:40.480 --> 00:34:43.139 align:middle line:84%
+And if you cancel the
+factor of A, that's it.
+
+00:34:43.139 --> 00:35:00.280 align:middle line:90%
+
+
+00:35:00.280 --> 00:35:03.880 align:middle line:84%
+And this has a very simple proof
+that will fit on this board
+
+00:35:03.880 --> 00:35:06.800 align:middle line:84%
+and which already says something
+interesting and nontrivial
+
+00:35:06.800 --> 00:35:10.210 align:middle line:84%
+about how sums and differences
+and stuff fit together.
+
+00:35:10.210 --> 00:35:12.250 align:middle line:90%
+So here's the proof.
+
+00:35:12.250 --> 00:35:20.890 align:middle line:84%
+We will construct a map phi
+that goes from A cross B minus C
+
+00:35:20.890 --> 00:35:26.510 align:middle line:84%
+into A minus B cross A
+minus C, which is injective.
+
+00:35:26.510 --> 00:35:30.330 align:middle line:90%
+
+
+00:35:30.330 --> 00:35:32.470 align:middle line:84%
+So this is the
+cardinality of this set.
+
+00:35:32.470 --> 00:35:34.810 align:middle line:84%
+And this is the
+cardinality of that set.
+
+00:35:34.810 --> 00:35:37.690 align:middle line:84%
+And the reason that this
+set is bigger than that set
+
+00:35:37.690 --> 00:35:41.890 align:middle line:84%
+is that we have an injection
+from one end to the other.
+
+00:35:41.890 --> 00:35:44.610 align:middle line:90%
+How does the injection work?
+
+00:35:44.610 --> 00:35:49.310 align:middle line:84%
+For every d in B minus
+C, we can choose--
+
+00:35:49.310 --> 00:35:51.330 align:middle line:84%
+so by definition,
+this d can be written
+
+00:35:51.330 --> 00:35:55.090 align:middle line:84%
+as somebody in B minus
+somebody in C. Let's pick them.
+
+00:35:55.090 --> 00:36:01.210 align:middle line:84%
+We choose B of d
+and B C of d and C
+
+00:36:01.210 --> 00:36:07.290 align:middle line:90%
+so that d is B of d minus C of d
+
+00:36:07.290 --> 00:36:10.390 align:middle line:90%
+Now, what's our map?
+
+00:36:10.390 --> 00:36:12.630 align:middle line:90%
+Phi takes an A and a d.
+
+00:36:12.630 --> 00:36:15.190 align:middle line:90%
+A lives here, and d lives there.
+
+00:36:15.190 --> 00:36:17.750 align:middle line:84%
+We need to output
+somebody an A minus
+
+00:36:17.750 --> 00:36:26.670 align:middle line:84%
+so we take A minus B of d
+and then A minus C of d.
+
+00:36:26.670 --> 00:36:30.070 align:middle line:84%
+So that is a map
+from here to here.
+
+00:36:30.070 --> 00:36:33.630 align:middle line:90%
+Why is it injective?
+
+00:36:33.630 --> 00:36:42.230 align:middle line:84%
+So to check that
+it's injective, we're
+
+00:36:42.230 --> 00:36:49.790 align:middle line:84%
+going to suppose that phi
+of A d is given to us as xy.
+
+00:36:49.790 --> 00:37:00.630 align:middle line:84%
+And then we're going to
+find A and d from x and y
+
+00:37:00.630 --> 00:37:02.040 align:middle line:90%
+and from this choice.
+
+00:37:02.040 --> 00:37:11.920 align:middle line:90%
+
+
+00:37:11.920 --> 00:37:13.880 align:middle line:84%
+So the choice we made,
+once and for all, we
+
+00:37:13.880 --> 00:37:15.560 align:middle line:90%
+used it to build the map.
+
+00:37:15.560 --> 00:37:19.040 align:middle line:84%
+And now we have to prove that
+there's only one A and d that
+
+00:37:19.040 --> 00:37:22.400 align:middle line:90%
+give a certain x and y here.
+
+00:37:22.400 --> 00:37:24.720 align:middle line:90%
+So how do we recover them?
+
+00:37:24.720 --> 00:37:30.440 align:middle line:84%
+Well, if this is
+x and this is y,
+
+00:37:30.440 --> 00:37:38.280 align:middle line:84%
+let me see that y minus x is B
+of d minus C of d, which is d.
+
+00:37:38.280 --> 00:37:41.560 align:middle line:90%
+So that's how we find d.
+
+00:37:41.560 --> 00:37:44.360 align:middle line:84%
+And once we find d,
+it's easy to find--
+
+00:37:44.360 --> 00:37:46.980 align:middle line:84%
+once we find d, then we
+know B of d and C of d,
+
+00:37:46.980 --> 00:37:56.080 align:middle line:84%
+and now it's easy to find
+A. So x minus x plus B of d
+
+00:37:56.080 --> 00:38:02.540 align:middle line:90%
+is A. It's very short.
+
+00:38:02.540 --> 00:38:07.130 align:middle line:84%
+It feels a teeny bit
+like a magic trick to me.
+
+00:38:07.130 --> 00:38:08.910 align:middle line:84%
+But on this board
+and this board,
+
+00:38:08.910 --> 00:38:11.230 align:middle line:84%
+we have seen that if
+the sum set is small,
+
+00:38:11.230 --> 00:38:12.860 align:middle line:84%
+then the difference
+set is also small.
+
+00:38:12.860 --> 00:38:23.010 align:middle line:90%
+
+
+00:38:23.010 --> 00:38:25.170 align:middle line:90%
+Yeah?
+
+00:38:25.170 --> 00:38:34.610 align:middle line:84%
+AUDIENCE: Take the log, you get
+something that looks exactly
+
+00:38:34.610 --> 00:38:37.470 align:middle line:84%
+like a triangle inequality
+is there any way
+
+00:38:37.470 --> 00:38:41.930 align:middle line:90%
+to see that it's [INAUDIBLE]?
+
+00:38:41.930 --> 00:38:47.290 align:middle line:90%
+
+
+00:38:47.290 --> 00:38:50.170 align:middle line:84%
+PROFESSOR: Yeah, so the
+question is it's called triangle
+
+00:38:50.170 --> 00:38:51.070 align:middle line:90%
+inequality.
+
+00:38:51.070 --> 00:38:54.350 align:middle line:84%
+And it looks like if we take the
+logarithm and play with this,
+
+00:38:54.350 --> 00:38:56.790 align:middle line:84%
+then something will look
+like the triangle inequality.
+
+00:38:56.790 --> 00:39:00.030 align:middle line:90%
+
+
+00:39:00.030 --> 00:39:02.870 align:middle line:84%
+So Ruzsa did have that in mind
+when he named it that way.
+
+00:39:02.870 --> 00:39:07.270 align:middle line:84%
+So he produced a pseudodistance
+between different sets,
+
+00:39:07.270 --> 00:39:10.030 align:middle line:84%
+say, between A and B
+or B and C or whatever.
+
+00:39:10.030 --> 00:39:15.870 align:middle line:84%
+And this translates into saying
+that the Ruzsa pseudodistance
+
+00:39:15.870 --> 00:39:17.410 align:middle line:90%
+obeys the triangle inequality.
+
+00:39:17.410 --> 00:39:20.270 align:middle line:84%
+The distance from B to C is
+bounded by the distance from A
+
+00:39:20.270 --> 00:39:24.790 align:middle line:84%
+to B plus the different distance
+from B to A plus the distance
+
+00:39:24.790 --> 00:39:27.990 align:middle line:90%
+from A to C.
+
+00:39:27.990 --> 00:39:33.190 align:middle line:84%
+I'm not sure whether
+that is helpful or not.
+
+00:39:33.190 --> 00:39:35.030 align:middle line:84%
+Pseudodistance is
+a little bit funny.
+
+00:39:35.030 --> 00:39:38.310 align:middle line:84%
+It's not true that the
+distance from A to itself is 0.
+
+00:39:38.310 --> 00:39:42.110 align:middle line:84%
+So it's not quite like
+distances that I'm used to.
+
+00:39:42.110 --> 00:39:44.560 align:middle line:84%
+So that intuition, may
+or may not be helpful.
+
+00:39:44.560 --> 00:39:49.190 align:middle line:90%
+
+
+00:39:49.190 --> 00:39:51.270 align:middle line:84%
+I guess we will see tomorrow
+that, sometimes, you
+
+00:39:51.270 --> 00:39:53.270 align:middle line:90%
+use this many times.
+
+00:39:53.270 --> 00:39:55.510 align:middle line:84%
+How would you use the
+triangle inequality?
+
+00:39:55.510 --> 00:39:58.190 align:middle line:84%
+Well, the distance
+from A to Z is
+
+00:39:58.190 --> 00:40:00.510 align:middle line:84%
+bounded by the distance from
+A to B plus the distance
+
+00:40:00.510 --> 00:40:02.350 align:middle line:84%
+from B to C plus the
+distance from C to D,
+
+00:40:02.350 --> 00:40:04.642 align:middle line:84%
+duh, duh, duh, duh, duh, and
+maybe each of those things
+
+00:40:04.642 --> 00:40:05.820 align:middle line:90%
+is easier to understand.
+
+00:40:05.820 --> 00:40:08.320 align:middle line:84%
+And by the triangle inequality,
+we can put them together.
+
+00:40:08.320 --> 00:40:11.880 align:middle line:84%
+So you can use this
+inequality in that way.
+
+00:40:11.880 --> 00:40:14.110 align:middle line:90%
+And we'll see that tomorrow--
+
+00:40:14.110 --> 00:40:14.610 align:middle line:90%
+Thursday.
+
+00:40:14.610 --> 00:40:16.997 align:middle line:90%
+
+
+00:40:16.997 --> 00:40:18.330 align:middle line:90%
+Any other questions or comments?
+
+00:40:18.330 --> 00:40:22.040 align:middle line:90%
+
+
+00:40:22.040 --> 00:40:28.920 align:middle line:84%
+AUDIENCE: Can I ask about
+the movie denominator trick?
+
+00:40:28.920 --> 00:40:33.280 align:middle line:84%
+Just not sure how
+that worked out.
+
+00:40:33.280 --> 00:40:36.420 align:middle line:84%
+Does it require something
+nontrivial like this?
+
+00:40:36.420 --> 00:40:39.458 align:middle line:90%
+
+
+00:40:39.458 --> 00:40:42.000 align:middle line:84%
+PROFESSOR: The question is about
+the removing the denominator
+
+00:40:42.000 --> 00:40:42.960 align:middle line:90%
+trick?
+
+00:40:42.960 --> 00:40:49.200 align:middle line:84%
+AUDIENCE: Can you
+use that [INAUDIBLE]
+
+00:40:49.200 --> 00:40:51.720 align:middle line:84%
+PROFESSOR: Like when we had an
+A minus A in the denominator
+
+00:40:51.720 --> 00:40:53.960 align:middle line:90%
+and we multiplied it out?
+
+00:40:53.960 --> 00:40:58.020 align:middle line:90%
+So that was just algebra.
+
+00:40:58.020 --> 00:41:01.990 align:middle line:90%
+
+
+00:41:01.990 --> 00:41:04.670 align:middle line:84%
+It's not something
+fancy like this.
+
+00:41:04.670 --> 00:41:08.617 align:middle line:90%
+
+
+00:41:08.617 --> 00:41:09.450 align:middle line:90%
+Let me bracket that.
+
+00:41:09.450 --> 00:41:11.117 align:middle line:84%
+We'll see a little
+later, something else
+
+00:41:11.117 --> 00:41:12.770 align:middle line:90%
+with removing denominators.
+
+00:41:12.770 --> 00:41:14.550 align:middle line:90%
+And let's come back to it then.
+
+00:41:14.550 --> 00:41:21.130 align:middle line:90%
+
+
+00:41:21.130 --> 00:41:24.370 align:middle line:84%
+Do you think-- did I
+understand your question or--
+
+00:41:24.370 --> 00:41:30.830 align:middle line:84%
+AUDIENCE: Yeah, I'm just not
+sure how that [INAUDIBLE]
+
+00:41:30.830 --> 00:41:33.730 align:middle line:84%
+AUDIENCE: You only
+need 6 instead of 8
+
+00:41:33.730 --> 00:41:34.770 align:middle line:90%
+because that's the--
+
+00:41:34.770 --> 00:41:39.630 align:middle line:84%
+PROFESSOR: Yeah, let's check in
+about it at the end of class.
+
+00:41:39.630 --> 00:41:43.090 align:middle line:84%
+The other important
+lemma from this field
+
+00:41:43.090 --> 00:41:45.170 align:middle line:84%
+that went into the proof
+of Freiman's theorem
+
+00:41:45.170 --> 00:41:47.070 align:middle line:90%
+is called Plunnecke inequality.
+
+00:41:47.070 --> 00:41:54.850 align:middle line:90%
+
+
+00:41:54.850 --> 00:41:57.050 align:middle line:84%
+Plunnecke inequality
+allows us to say things
+
+00:41:57.050 --> 00:42:00.810 align:middle line:84%
+like if A plus A is small,
+then A plus A plus A is small.
+
+00:42:00.810 --> 00:42:10.550 align:middle line:90%
+
+
+00:42:10.550 --> 00:42:19.430 align:middle line:84%
+So if A and B are subsets
+of Z, an abelian group,
+
+00:42:19.430 --> 00:42:25.540 align:middle line:84%
+and A plus B is bounded
+by K times A, then--
+
+00:42:25.540 --> 00:42:28.390 align:middle line:90%
+
+
+00:42:28.390 --> 00:42:30.470 align:middle line:90%
+let me make a little notation.
+
+00:42:30.470 --> 00:42:36.710 align:middle line:84%
+So sometimes, we might want to
+talk about B plus B many times.
+
+00:42:36.710 --> 00:42:39.390 align:middle line:90%
+So let's say this is n times.
+
+00:42:39.390 --> 00:42:42.510 align:middle line:84%
+This is sometimes
+written as n times B,
+
+00:42:42.510 --> 00:42:46.230 align:middle line:84%
+although I feel like that
+is slightly confusing.
+
+00:42:46.230 --> 00:42:52.640 align:middle line:84%
+So I've decided to adopt this
+notation, B some n times.
+
+00:42:52.640 --> 00:42:56.070 align:middle line:90%
+
+
+00:42:56.070 --> 00:43:04.360 align:middle line:84%
+So I could take B plus m
+times minus B plus n times,
+
+00:43:04.360 --> 00:43:12.720 align:middle line:84%
+and that's bounded by K
+to the m plus n times A.
+
+00:43:12.720 --> 00:43:17.320 align:middle line:84%
+So let's do a few
+corollaries of this.
+
+00:43:17.320 --> 00:43:19.920 align:middle line:84%
+So just by plugging
+in A equals B,
+
+00:43:19.920 --> 00:43:26.400 align:middle line:84%
+we see that if A plus A is
+less than or equal to KA,
+
+00:43:26.400 --> 00:43:31.680 align:middle line:84%
+then A minus A is
+less than K squared A.
+
+00:43:31.680 --> 00:43:34.200 align:middle line:84%
+That's actually the
+corollary we already proved.
+
+00:43:34.200 --> 00:43:37.520 align:middle line:84%
+But also, we could
+say A plus A plus A
+
+00:43:37.520 --> 00:43:45.720 align:middle line:84%
+is bounded by K cubed A. I'm
+just plugging in A equals B,
+
+00:43:45.720 --> 00:43:48.240 align:middle line:90%
+and this is m is 3 and n is 0.
+
+00:43:48.240 --> 00:43:52.120 align:middle line:84%
+And you can see you can
+put higher powers here.
+
+00:43:52.120 --> 00:43:54.560 align:middle line:84%
+Also another
+corollary we can get
+
+00:43:54.560 --> 00:43:56.860 align:middle line:84%
+is we can switch the
+role of these guys
+
+00:43:56.860 --> 00:43:58.580 align:middle line:90%
+in the first corollary.
+
+00:43:58.580 --> 00:44:04.500 align:middle line:84%
+So we can say if A
+minus A is small,
+
+00:44:04.500 --> 00:44:06.650 align:middle line:90%
+then A plus A is also small.
+
+00:44:06.650 --> 00:44:10.700 align:middle line:90%
+
+
+00:44:10.700 --> 00:44:18.300 align:middle line:84%
+So proof is that B is negative
+A. So this is A plus B.
+
+00:44:18.300 --> 00:44:50.780 align:middle line:84%
+And then this is
+basically B plus B.
+
+00:44:50.780 --> 00:44:52.860 align:middle line:90%
+We can also use this.
+
+00:44:52.860 --> 00:44:54.000 align:middle line:90%
+So we'll prove this.
+
+00:44:54.000 --> 00:44:55.870 align:middle line:84%
+That will be our last
+big goal of the class.
+
+00:44:55.870 --> 00:44:59.710 align:middle line:90%
+
+
+00:44:59.710 --> 00:45:01.990 align:middle line:84%
+So this Ruzsa inequality
+and Plunnecke inequality
+
+00:45:01.990 --> 00:45:03.210 align:middle line:90%
+have many, many uses.
+
+00:45:03.210 --> 00:45:06.550 align:middle line:84%
+And one simple use is we can
+use it to clean up and improve
+
+00:45:06.550 --> 00:45:08.990 align:middle line:84%
+the statement of
+our lemma that Fp
+
+00:45:08.990 --> 00:45:12.630 align:middle line:84%
+has no quantitative
+approximate subfields.
+
+00:45:12.630 --> 00:45:14.625 align:middle line:84%
+So let me recall what
+we proved so far,
+
+00:45:14.625 --> 00:45:16.250 align:middle line:84%
+and then we'll improve
+it a little bit.
+
+00:45:16.250 --> 00:45:25.790 align:middle line:90%
+
+
+00:45:25.790 --> 00:45:33.630 align:middle line:84%
+So lemma one was
+if A is in Fp, then
+
+00:45:33.630 --> 00:45:45.230 align:middle line:84%
+either A minus A over
+A minus A is all of Fp
+
+00:45:45.230 --> 00:45:51.810 align:middle line:90%
+or A times A minus A times A--
+
+00:45:51.810 --> 00:45:53.290 align:middle line:90%
+so now I can write this better.
+
+00:45:53.290 --> 00:45:58.520 align:middle line:84%
+We have three or four of
+those minus three or four
+
+00:45:58.520 --> 00:46:04.160 align:middle line:90%
+of those A squared.
+
+00:46:04.160 --> 00:46:07.240 align:middle line:84%
+So we can improve
+this in a way that you
+
+00:46:07.240 --> 00:46:09.840 align:middle line:84%
+don't need to have so many
+different expressions floating
+
+00:46:09.840 --> 00:46:11.120 align:middle line:90%
+around.
+
+00:46:11.120 --> 00:46:16.280 align:middle line:84%
+So we can say that if A
+is in Fp and the size of A
+
+00:46:16.280 --> 00:46:20.880 align:middle line:84%
+is p to the S, where S
+is strictly less than 1,
+
+00:46:20.880 --> 00:46:26.240 align:middle line:84%
+then the size of A
+times A minus A times A
+
+00:46:26.240 --> 00:46:33.012 align:middle line:84%
+is at least p to the S plus
+epsilon of S. And here,
+
+00:46:33.012 --> 00:46:34.470 align:middle line:84%
+you could put either
+plus or minus.
+
+00:46:34.470 --> 00:46:38.840 align:middle line:90%
+
+
+00:46:38.840 --> 00:46:43.400 align:middle line:84%
+And this epsilon of
+S is bigger than 0.
+
+00:46:43.400 --> 00:46:44.740 align:middle line:90%
+So again, it's continuous.
+
+00:46:44.740 --> 00:46:45.640 align:middle line:90%
+It's explicit.
+
+00:46:45.640 --> 00:46:48.190 align:middle line:84%
+But it's a little bit messy,
+and it's a little bit small.
+
+00:46:48.190 --> 00:46:50.760 align:middle line:90%
+
+
+00:46:50.760 --> 00:46:53.060 align:middle line:84%
+You take any subset which
+is significantly smaller
+
+00:46:53.060 --> 00:46:58.000 align:middle line:84%
+than the whole field, if you
+take A times A minus A times A,
+
+00:46:58.000 --> 00:47:00.320 align:middle line:84%
+it will be significantly
+bigger than you started with.
+
+00:47:00.320 --> 00:47:06.900 align:middle line:90%
+
+
+00:47:06.900 --> 00:47:09.167 align:middle line:84%
+So if you just took
+A minus A, that
+
+00:47:09.167 --> 00:47:11.500 align:middle line:84%
+wouldn't be good enough because
+A could be an arithmetic
+
+00:47:11.500 --> 00:47:13.400 align:middle line:90%
+progression.
+
+00:47:13.400 --> 00:47:15.300 align:middle line:84%
+So that might have almost
+the same size as A.
+
+00:47:15.300 --> 00:47:17.380 align:middle line:84%
+If you just took A
+times A, that wouldn't
+
+00:47:17.380 --> 00:47:22.020 align:middle line:84%
+be good enough, because A could
+be a geometric progression--
+
+00:47:22.020 --> 00:47:26.500 align:middle line:84%
+2 to the 1, 2 to the
+2, up to 2 to the L.
+
+00:47:26.500 --> 00:47:29.840 align:middle line:84%
+But if you take both
+sums and products,
+
+00:47:29.840 --> 00:47:32.540 align:middle line:84%
+then you have to end up with
+significantly more stuff
+
+00:47:32.540 --> 00:47:34.740 align:middle line:90%
+than you started with.
+
+00:47:34.740 --> 00:47:36.903 align:middle line:84%
+So that's why this is
+called sum-product theory.
+
+00:47:36.903 --> 00:47:38.820 align:middle line:84%
+If you have both sums
+and products interacting
+
+00:47:38.820 --> 00:47:43.020 align:middle line:84%
+with each other, then
+something happens.
+
+00:47:43.020 --> 00:47:58.590 align:middle line:84%
+So proof-- so there are two
+cases, case 1 and case 2.
+
+00:47:58.590 --> 00:48:00.340 align:middle line:84%
+But I'm actually going
+to do case 2 first.
+
+00:48:00.340 --> 00:48:12.270 align:middle line:90%
+
+
+00:48:12.270 --> 00:48:16.950 align:middle line:84%
+So it could be that A times A
+is already much bigger than A.
+
+00:48:16.950 --> 00:48:18.990 align:middle line:90%
+Then we just declare victory.
+
+00:48:18.990 --> 00:48:25.510 align:middle line:84%
+So if A times A is bigger than
+A to the plus delta and we
+
+00:48:25.510 --> 00:48:26.570 align:middle line:90%
+declare victory.
+
+00:48:26.570 --> 00:48:28.960 align:middle line:84%
+And here, delta is going to
+be much smaller than epsilon.
+
+00:48:28.960 --> 00:48:34.270 align:middle line:90%
+
+
+00:48:34.270 --> 00:48:35.790 align:middle line:90%
+Or maybe we could say that.
+
+00:48:35.790 --> 00:48:47.710 align:middle line:90%
+
+
+00:48:47.710 --> 00:48:53.640 align:middle line:84%
+Otherwise, A times A is
+basically the same size as A.
+
+00:48:53.640 --> 00:49:02.560 align:middle line:84%
+Now, if A times A plus A
+times A is much bigger than A,
+
+00:49:02.560 --> 00:49:03.670 align:middle line:90%
+then we declare victory.
+
+00:49:03.670 --> 00:49:09.120 align:middle line:90%
+
+
+00:49:09.120 --> 00:49:10.020 align:middle line:90%
+Wait a second.
+
+00:49:10.020 --> 00:49:10.520 align:middle line:90%
+Yeah, here.
+
+00:49:10.520 --> 00:49:15.420 align:middle line:84%
+I guess let's just
+put this right here.
+
+00:49:15.420 --> 00:49:23.880 align:middle line:90%
+
+
+00:49:23.880 --> 00:49:26.280 align:middle line:90%
+Then we declare victory.
+
+00:49:26.280 --> 00:49:33.120 align:middle line:84%
+Otherwise, we would
+have A times A plus A
+
+00:49:33.120 --> 00:49:37.880 align:middle line:84%
+times A is smaller
+than K A times A
+
+00:49:37.880 --> 00:49:43.440 align:middle line:84%
+where K is like
+p to the epsilon.
+
+00:49:43.440 --> 00:49:45.260 align:middle line:90%
+And then we can use Plunnecke.
+
+00:49:45.260 --> 00:49:48.100 align:middle line:90%
+
+
+00:49:48.100 --> 00:49:50.460 align:middle line:84%
+And that would tell
+us that A times
+
+00:49:50.460 --> 00:49:58.460 align:middle line:84%
+to A big power minus A
+times to another big power.
+
+00:49:58.460 --> 00:50:02.820 align:middle line:90%
+Here, we could put 4.
+
+00:50:02.820 --> 00:50:08.660 align:middle line:84%
+That would be bounded by
+K to the eighth A times A.
+
+00:50:08.660 --> 00:50:14.020 align:middle line:84%
+And so that would be
+bounded by maybe A times p
+
+00:50:14.020 --> 00:50:16.660 align:middle line:84%
+to the 10 epsilon or
+something like that.
+
+00:50:16.660 --> 00:50:18.700 align:middle line:84%
+And this contradicts
+the fact that this we
+
+00:50:18.700 --> 00:50:19.920 align:middle line:90%
+know this set is big.
+
+00:50:19.920 --> 00:50:27.820 align:middle line:90%
+
+
+00:50:27.820 --> 00:50:30.460 align:middle line:84%
+And case 1 is similar,
+but I think maybe I'll
+
+00:50:30.460 --> 00:50:32.020 align:middle line:90%
+make that an exercise.
+
+00:50:32.020 --> 00:50:34.730 align:middle line:84%
+You can just practice using
+Plunnecke and Ruzsa things.
+
+00:50:34.730 --> 00:50:53.110 align:middle line:90%
+
+
+00:50:53.110 --> 00:50:56.790 align:middle line:90%
+And I do one more corollary.
+
+00:50:56.790 --> 00:50:58.990 align:middle line:84%
+So suppose you
+start with the set A
+
+00:50:58.990 --> 00:51:01.470 align:middle line:84%
+and you start multiplying
+and adding and subtracting
+
+00:51:01.470 --> 00:51:02.870 align:middle line:90%
+and see what you get.
+
+00:51:02.870 --> 00:51:07.070 align:middle line:84%
+And we've proven that after
+you do this operation,
+
+00:51:07.070 --> 00:51:09.590 align:middle line:90%
+it gets a bit bigger.
+
+00:51:09.590 --> 00:51:11.510 align:middle line:90%
+But suppose you don't just--
+
+00:51:11.510 --> 00:51:13.078 align:middle line:90%
+yeah?
+
+00:51:13.078 --> 00:51:13.870 align:middle line:90%
+AUDIENCE: Question.
+
+00:51:13.870 --> 00:51:17.560 align:middle line:84%
+So you said that the idea is
+that if you have some arithmetic
+
+00:51:17.560 --> 00:51:19.810 align:middle line:84%
+progression or geometric
+progression, it can be small,
+
+00:51:19.810 --> 00:51:21.790 align:middle line:90%
+but it has to be learned.
+
+00:51:21.790 --> 00:51:23.390 align:middle line:84%
+Is it possible to
+prove that instead
+
+00:51:23.390 --> 00:51:27.310 align:middle line:84%
+of the difference of A
+times A and A times A,
+
+00:51:27.310 --> 00:51:31.870 align:middle line:84%
+you can just say A times A is
+large or A plus A is large?
+
+00:51:31.870 --> 00:51:33.490 align:middle line:84%
+PROFESSOR: OK, yes,
+great question.
+
+00:51:33.490 --> 00:51:36.630 align:middle line:84%
+So the question is, so
+in the theme of lemma 2
+
+00:51:36.630 --> 00:51:39.670 align:middle line:84%
+is we tried to simplify as
+much as possible the expression
+
+00:51:39.670 --> 00:51:41.030 align:middle line:90%
+that we put here.
+
+00:51:41.030 --> 00:51:45.680 align:middle line:84%
+And there is a suggestion how to
+make it as simple as possible.
+
+00:51:45.680 --> 00:51:49.120 align:middle line:84%
+So then I'm going to erase this
+proof and write that as a--
+
+00:51:49.120 --> 00:51:50.320 align:middle line:90%
+I'll write it as a theorem.
+
+00:51:50.320 --> 00:51:53.160 align:middle line:90%
+
+
+00:51:53.160 --> 00:52:04.560 align:middle line:84%
+So even better, there is a
+theorem Bourgain-Katz-Tao
+
+00:52:04.560 --> 00:52:11.200 align:middle line:84%
+So if A is subset
+of Fp, A equals p
+
+00:52:11.200 --> 00:52:15.560 align:middle line:84%
+to the S 0 less than or
+equal to S less than 1,
+
+00:52:15.560 --> 00:52:27.480 align:middle line:84%
+then you could take the maximum
+of A plus A and A times A,
+
+00:52:27.480 --> 00:52:33.680 align:middle line:84%
+and that is bigger than p
+to the S plus epsilon of S.
+
+00:52:33.680 --> 00:52:36.820 align:middle line:84%
+So this is better than
+this, qualitatively.
+
+00:52:36.820 --> 00:52:41.400 align:middle line:90%
+
+
+00:52:41.400 --> 00:52:44.183 align:middle line:84%
+And actually, the word
+sum product inequality--
+
+00:52:44.183 --> 00:52:45.600 align:middle line:84%
+it could refer to
+a lot of things,
+
+00:52:45.600 --> 00:52:49.940 align:middle line:84%
+but the inequality it most
+often refers to is this one,
+
+00:52:49.940 --> 00:52:53.700 align:middle line:84%
+so either the sums
+or the products grow.
+
+00:52:53.700 --> 00:52:55.300 align:middle line:90%
+Yeah, that's right.
+
+00:52:55.300 --> 00:52:57.820 align:middle line:84%
+So all the stuff
+we've seen are steps
+
+00:52:57.820 --> 00:52:59.600 align:middle line:84%
+towards the proof
+of this theorem,
+
+00:52:59.600 --> 00:53:02.220 align:middle line:84%
+but there is actually still
+some more ideas to get
+
+00:53:02.220 --> 00:53:04.300 align:middle line:90%
+all the way down to here.
+
+00:53:04.300 --> 00:53:06.728 align:middle line:84%
+And we may or may not end
+up doing it in the class.
+
+00:53:06.728 --> 00:53:09.020 align:middle line:84%
+It's unclear to me if getting
+all the way down to there
+
+00:53:09.020 --> 00:53:13.940 align:middle line:84%
+is actually important
+in projection theory.
+
+00:53:13.940 --> 00:53:16.800 align:middle line:90%
+Yeah, cool.
+
+00:53:16.800 --> 00:53:20.340 align:middle line:84%
+So one goal you might have
+in simplifying and clarifying
+
+00:53:20.340 --> 00:53:23.780 align:middle line:84%
+this story is to make this
+expression as simple as possible
+
+00:53:23.780 --> 00:53:26.020 align:middle line:90%
+and get some gain.
+
+00:53:26.020 --> 00:53:28.220 align:middle line:84%
+But another goal
+that you might have
+
+00:53:28.220 --> 00:53:31.740 align:middle line:84%
+is to make this
+gain really large,
+
+00:53:31.740 --> 00:53:34.940 align:middle line:84%
+and perhaps this expression
+will be more complicated.
+
+00:53:34.940 --> 00:53:37.700 align:middle line:90%
+And you can also do that.
+
+00:53:37.700 --> 00:53:39.570 align:middle line:90%
+So let me make some notation.
+
+00:53:39.570 --> 00:53:42.870 align:middle line:90%
+
+
+00:53:42.870 --> 00:53:49.030 align:middle line:84%
+Let's say poly K of some
+polynomials of complexity K,
+
+00:53:49.030 --> 00:53:52.350 align:middle line:84%
+so I take A to the
+K. So that means
+
+00:53:52.350 --> 00:53:57.630 align:middle line:84%
+I multiply K different
+elements of A together.
+
+00:53:57.630 --> 00:54:02.630 align:middle line:84%
+And then I add K things
+like that together.
+
+00:54:02.630 --> 00:54:04.540 align:middle line:84%
+And then maybe I also
+want some minuses.
+
+00:54:04.540 --> 00:54:09.550 align:middle line:90%
+
+
+00:54:09.550 --> 00:54:15.580 align:middle line:84%
+So A to the K is A
+times A times A K times.
+
+00:54:15.580 --> 00:54:19.590 align:middle line:90%
+
+
+00:54:19.590 --> 00:54:23.910 align:middle line:84%
+So these are polynomials
+in of complexity.
+
+00:54:23.910 --> 00:54:27.470 align:middle line:84%
+And another corollary,
+which is at the same level,
+
+00:54:27.470 --> 00:54:30.830 align:middle line:84%
+follows easily from
+this one is that if we
+
+00:54:30.830 --> 00:54:38.610 align:middle line:84%
+have 0 less than S less than
+t less than 1 and A is in Fp,
+
+00:54:38.610 --> 00:54:43.010 align:middle line:84%
+then there exists some K
+that only depends on S and t
+
+00:54:43.010 --> 00:54:50.330 align:middle line:84%
+so that for any set A in
+any Fp, where the size of A
+
+00:54:50.330 --> 00:54:57.470 align:middle line:84%
+is p to the S, the size of poly
+K of A is at least p to the t.
+
+00:54:57.470 --> 00:55:08.290 align:middle line:90%
+
+
+00:55:08.290 --> 00:55:11.050 align:middle line:90%
+And the proof of this is easy.
+
+00:55:11.050 --> 00:55:14.000 align:middle line:84%
+The proof is use
+lemma 2 many times.
+
+00:55:14.000 --> 00:55:17.730 align:middle line:90%
+
+
+00:55:17.730 --> 00:55:21.210 align:middle line:84%
+So I start with the set
+A. A times A minus A times
+
+00:55:21.210 --> 00:55:22.730 align:middle line:90%
+is a bit bigger.
+
+00:55:22.730 --> 00:55:28.490 align:middle line:84%
+Call this B. B times B minus B
+times B is even a bit bigger.
+
+00:55:28.490 --> 00:55:32.050 align:middle line:84%
+And if you think about what B
+times B minus B times B means,
+
+00:55:32.050 --> 00:55:36.350 align:middle line:84%
+it would fit in poly for an
+A, and you keep doing this.
+
+00:55:36.350 --> 00:55:43.740 align:middle line:90%
+
+
+00:55:43.740 --> 00:55:44.760 align:middle line:90%
+OK, cool.
+
+00:55:44.760 --> 00:55:48.620 align:middle line:90%
+
+
+00:55:48.620 --> 00:55:51.320 align:middle line:84%
+So these lemmas,
+theorems, and stuff,
+
+00:55:51.320 --> 00:55:56.380 align:middle line:84%
+they are important
+because-- inequality
+
+00:55:56.380 --> 00:56:01.060 align:middle line:84%
+and Ruzsa's inequality,
+they are important because--
+
+00:56:01.060 --> 00:56:06.860 align:middle line:90%
+
+
+00:56:06.860 --> 00:56:09.160 align:middle line:84%
+so if we see something
+like A plus A is small,
+
+00:56:09.160 --> 00:56:12.660 align:middle line:84%
+then that tells us that
+A has some structure.
+
+00:56:12.660 --> 00:56:14.060 align:middle line:84%
+And all these
+inequalities, then,
+
+00:56:14.060 --> 00:56:16.620 align:middle line:84%
+imply that lots of
+other things are small.
+
+00:56:16.620 --> 00:56:19.680 align:middle line:84%
+So it's like a
+contagious structure.
+
+00:56:19.680 --> 00:56:21.420 align:middle line:84%
+We input some structure,
+but we find out
+
+00:56:21.420 --> 00:56:22.780 align:middle line:90%
+more and more structure.
+
+00:56:22.780 --> 00:56:24.700 align:middle line:90%
+And that's a very useful tool.
+
+00:56:24.700 --> 00:56:28.780 align:middle line:84%
+And so lots of problems that
+we see in projection theory,
+
+00:56:28.780 --> 00:56:31.940 align:middle line:84%
+it seems to be helpful to try
+to phrase them in the form
+
+00:56:31.940 --> 00:56:36.180 align:middle line:84%
+that some subset is
+small because, then, we
+
+00:56:36.180 --> 00:56:39.530 align:middle line:84%
+can use as inequality and we can
+find out lots of other things.
+
+00:56:39.530 --> 00:56:43.670 align:middle line:90%
+
+
+00:56:43.670 --> 00:56:45.210 align:middle line:84%
+So in the last
+part of the class,
+
+00:56:45.210 --> 00:56:46.852 align:middle line:90%
+we will prove this inequality.
+
+00:56:46.852 --> 00:56:49.060 align:middle line:84%
+This is the trickiest thing
+that we will prove today.
+
+00:56:49.060 --> 00:57:12.390 align:middle line:90%
+
+
+00:57:12.390 --> 00:57:15.230 align:middle line:84%
+So the original proof
+of the inequality
+
+00:57:15.230 --> 00:57:18.630 align:middle line:84%
+was somewhat
+difficult. And there
+
+00:57:18.630 --> 00:57:24.600 align:middle line:84%
+was a short proof that was given
+by Georgios Petrides about 10
+
+00:57:24.600 --> 00:57:29.790 align:middle line:84%
+or 15 years ago, which is
+the one that I'll show.
+
+00:57:29.790 --> 00:57:36.260 align:middle line:90%
+So it's based on a key lemma.
+
+00:57:36.260 --> 00:57:40.810 align:middle line:90%
+
+
+00:57:40.810 --> 00:57:49.890 align:middle line:84%
+So the lemma says that if A plus
+B is at most K times A, then
+
+00:57:49.890 --> 00:57:55.250 align:middle line:84%
+there's a subset x contained
+in A so that for any set
+
+00:57:55.250 --> 00:58:08.850 align:middle line:84%
+C, x plus C plus B divided by
+x plus C is also at most K.
+
+00:58:08.850 --> 00:58:10.710 align:middle line:84%
+By the way, this top
+inequality-- of course,
+
+00:58:10.710 --> 00:58:15.850 align:middle line:84%
+we can divide by A. The top
+inequality says A plus B over A
+
+00:58:15.850 --> 00:58:23.970 align:middle line:84%
+is bounded by K. The lemma
+says that if this is true,
+
+00:58:23.970 --> 00:58:26.690 align:middle line:84%
+if it's true for
+the set A, then it's
+
+00:58:26.690 --> 00:58:32.470 align:middle line:84%
+also true for the set x plus
+C, where x is carefully chosen.
+
+00:58:32.470 --> 00:58:34.510 align:middle line:84%
+I'll explain in a
+bit how it's chosen,
+
+00:58:34.510 --> 00:58:36.392 align:middle line:84%
+but C is a totally
+arbitrary set.
+
+00:58:36.392 --> 00:58:38.100 align:middle line:84%
+So there are many
+choices for C. So there
+
+00:58:38.100 --> 00:58:41.280 align:middle line:84%
+are many different-- this
+is many inequalities.
+
+00:58:41.280 --> 00:58:47.320 align:middle line:90%
+
+
+00:58:47.320 --> 00:58:49.940 align:middle line:84%
+Let me tell you
+who x is, which is
+
+00:58:49.940 --> 00:58:51.370 align:middle line:90%
+an important idea in the proof.
+
+00:58:51.370 --> 00:58:54.420 align:middle line:90%
+
+
+00:58:54.420 --> 00:58:58.420 align:middle line:84%
+So first of all, so
+x is a subset of A
+
+00:58:58.420 --> 00:59:07.660 align:middle line:84%
+that we choose in order
+to minimize the ratio x
+
+00:59:07.660 --> 00:59:09.250 align:middle line:90%
+plus B over x.
+
+00:59:09.250 --> 00:59:13.940 align:middle line:90%
+
+
+00:59:13.940 --> 00:59:17.060 align:middle line:84%
+So let me give an
+example that might
+
+00:59:17.060 --> 00:59:22.540 align:middle line:84%
+help to motivate why you
+would want to look at this x.
+
+00:59:22.540 --> 00:59:27.820 align:middle line:84%
+So suppose that A is the
+numbers from 1 up to 100,
+
+00:59:27.820 --> 00:59:31.260 align:middle line:84%
+which has a lot of
+additive structure
+
+00:59:31.260 --> 00:59:33.460 align:middle line:84%
+together with some
+random number.
+
+00:59:33.460 --> 00:59:34.690 align:middle line:90%
+So I put a million.
+
+00:59:34.690 --> 00:59:38.430 align:middle line:90%
+
+
+00:59:38.430 --> 00:59:42.240 align:middle line:84%
+And B is the numbers
+from 1 up to, say, 50.
+
+00:59:42.240 --> 00:59:44.790 align:middle line:90%
+
+
+00:59:44.790 --> 00:59:49.750 align:middle line:84%
+So if you add A and B together,
+this stuff plus this stuff
+
+00:59:49.750 --> 00:59:51.350 align:middle line:90%
+is quite small.
+
+00:59:51.350 --> 00:59:53.203 align:middle line:84%
+There's a lot of
+structure there.
+
+00:59:53.203 --> 00:59:54.870 align:middle line:84%
+Then there's this
+stuff plus this stuff.
+
+00:59:54.870 --> 00:59:57.253 align:middle line:84%
+That doesn't have any
+particular structure.
+
+00:59:57.253 --> 00:59:59.170 align:middle line:84%
+But since there's only
+one stray element here,
+
+00:59:59.170 --> 01:00:01.310 align:middle line:84%
+that's not so many
+of those either.
+
+01:00:01.310 --> 01:00:04.270 align:middle line:90%
+So A plus B is pretty small.
+
+01:00:04.270 --> 01:00:05.590 align:middle line:90%
+Now, who would x be?
+
+01:00:05.590 --> 01:00:08.230 align:middle line:90%
+
+
+01:00:08.230 --> 01:00:12.920 align:middle line:84%
+x was the subset of A which is
+chosen to minimize this ratio.
+
+01:00:12.920 --> 01:00:15.510 align:middle line:90%
+
+
+01:00:15.510 --> 01:00:18.720 align:middle line:84%
+And including this
+guy is not so helpful.
+
+01:00:18.720 --> 01:00:21.950 align:middle line:90%
+
+
+01:00:21.950 --> 01:00:24.070 align:middle line:84%
+So x would actually
+be here, just
+
+01:00:24.070 --> 01:00:31.510 align:middle line:90%
+the numbers from 1 up to 100.
+
+01:00:31.510 --> 01:00:34.390 align:middle line:84%
+So I think perhaps
+that, philosophically,
+
+01:00:34.390 --> 01:00:38.290 align:middle line:84%
+the point of doing this is
+identifying the part of A that
+
+01:00:38.290 --> 01:00:40.290 align:middle line:84%
+really has the
+additive structure
+
+01:00:40.290 --> 01:00:42.650 align:middle line:84%
+and throwing away, possibly,
+some parts of A that
+
+01:00:42.650 --> 01:00:46.050 align:middle line:90%
+are not that relevant.
+
+01:00:46.050 --> 01:00:50.210 align:middle line:84%
+And then, once you have found
+the heart of the matter here,
+
+01:00:50.210 --> 01:00:55.990 align:middle line:84%
+then you can add
+anything else to it.
+
+01:00:55.990 --> 01:00:58.270 align:middle line:84%
+And you still have that
+amount of structure.
+
+01:00:58.270 --> 01:01:22.030 align:middle line:90%
+
+
+01:01:22.030 --> 01:01:23.310 align:middle line:90%
+So let's give a name.
+
+01:01:23.310 --> 01:01:26.150 align:middle line:84%
+Let's say that--
+so that's who x is.
+
+01:01:26.150 --> 01:01:31.300 align:middle line:84%
+And let's say x plus B over x is
+K lower bar, which is at most K.
+
+01:01:31.300 --> 01:01:38.620 align:middle line:84%
+So A plus B over A is at most K.
+And x is allowed to be all of A.
+
+01:01:38.620 --> 01:01:40.420 align:middle line:84%
+But we might choose a
+smaller set if we can
+
+01:01:40.420 --> 01:01:42.900 align:middle line:90%
+make this ratio even smaller.
+
+01:01:42.900 --> 01:01:46.460 align:middle line:84%
+So K bar is less
+than or equal to K.
+
+01:01:46.460 --> 01:01:53.740 align:middle line:84%
+And really, the key claim is
+that x plus C plus B over x
+
+01:01:53.740 --> 01:01:59.430 align:middle line:84%
+plus C is at most K
+lower bar for any x.
+
+01:01:59.430 --> 01:02:06.540 align:middle line:90%
+
+
+01:02:06.540 --> 01:02:11.040 align:middle line:84%
+So now we're going to prove
+the claim by induction.
+
+01:02:11.040 --> 01:02:13.780 align:middle line:90%
+
+
+01:02:13.780 --> 01:02:19.980 align:middle line:84%
+So we're going to prove
+the claim by induction
+
+01:02:19.980 --> 01:02:26.980 align:middle line:84%
+on the cardinality of C. And
+the cardinality of C is 1.
+
+01:02:26.980 --> 01:02:36.710 align:middle line:84%
+Then x plus C plus B is just x
+plus B. And x plus C is just x.
+
+01:02:36.710 --> 01:02:40.290 align:middle line:84%
+So if the cardinality of C is
+1, I'm just shifting this set.
+
+01:02:40.290 --> 01:02:44.230 align:middle line:84%
+And shifting that set doesn't
+change their cardinality.
+
+01:02:44.230 --> 01:02:46.400 align:middle line:84%
+So now we can do
+the inductive step.
+
+01:02:46.400 --> 01:02:59.610 align:middle line:90%
+
+
+01:02:59.610 --> 01:03:03.490 align:middle line:84%
+So let's say that C
+prime is C union--
+
+01:03:03.490 --> 01:03:05.070 align:middle line:90%
+one more guy.
+
+01:03:05.070 --> 01:03:08.510 align:middle line:84%
+And by induction, we know
+that it's true for C.
+
+01:03:08.510 --> 01:03:16.390 align:middle line:84%
+So we know x plus C plus B is
+bounded by K lower bar x plus C.
+
+01:03:16.390 --> 01:03:17.880 align:middle line:84%
+And we want to
+check for C prime.
+
+01:03:17.880 --> 01:03:32.810 align:middle line:90%
+
+
+01:03:32.810 --> 01:03:37.490 align:middle line:84%
+So the key character in this
+argument that Petrides came up
+
+01:03:37.490 --> 01:03:43.490 align:middle line:84%
+with is a set y, which
+is the set of x and X
+
+01:03:43.490 --> 01:03:48.410 align:middle line:84%
+so that x plus little
+C plus B is contained
+
+01:03:48.410 --> 01:03:53.890 align:middle line:84%
+in big X plus big C plus B.
+Let's see how that naturally
+
+01:03:53.890 --> 01:03:54.750 align:middle line:90%
+comes up.
+
+01:03:54.750 --> 01:04:06.490 align:middle line:90%
+
+
+01:04:06.490 --> 01:04:13.250 align:middle line:84%
+So we're thinking about x
+plus C prime plus B. We want
+
+01:04:13.250 --> 01:04:14.930 align:middle line:90%
+to see that it's not too big.
+
+01:04:14.930 --> 01:04:16.110 align:middle line:90%
+And we're using induction.
+
+01:04:16.110 --> 01:04:19.970 align:middle line:84%
+So we want to see how it changes
+when we added this one guy.
+
+01:04:19.970 --> 01:04:30.380 align:middle line:84%
+So this is the previous guy, x
+plus C plus B plus the new ones,
+
+01:04:30.380 --> 01:04:32.280 align:middle line:84%
+and I want them
+to be really new.
+
+01:04:32.280 --> 01:04:37.700 align:middle line:90%
+
+
+01:04:37.700 --> 01:04:40.740 align:middle line:84%
+So here are some new
+elements that live here,
+
+01:04:40.740 --> 01:04:43.550 align:middle line:84%
+and I'm going to take out any
+elements I've already counted.
+
+01:04:43.550 --> 01:04:49.812 align:middle line:90%
+
+
+01:04:49.812 --> 01:04:56.100 align:middle line:84%
+AUDIENCE: Sorry, I don't quite
+understand the definition
+
+01:04:56.100 --> 01:05:05.940 align:middle line:84%
+of how can x plus C plus B not
+be a subset of x plus C plus B.
+
+01:05:05.940 --> 01:05:09.100 align:middle line:84%
+PROFESSOR: So C prime
+is a previous set C
+
+01:05:09.100 --> 01:05:11.740 align:middle line:90%
+union with some little c.
+
+01:05:11.740 --> 01:05:14.940 align:middle line:84%
+And little c is
+not in big C. Now
+
+01:05:14.940 --> 01:05:18.340 align:middle line:84%
+I have to write all the little
+c's and big Cs really carefully.
+
+01:05:18.340 --> 01:05:24.520 align:middle line:84%
+But this is a little c,
+and this is a big C. Cool.
+
+01:05:24.520 --> 01:05:27.440 align:middle line:84%
+So this x is
+automatically in big X,
+
+01:05:27.440 --> 01:05:30.620 align:middle line:84%
+but in a failure of
+functoriality of notation,
+
+01:05:30.620 --> 01:05:45.280 align:middle line:90%
+little c is not in big C.
+
+01:05:45.280 --> 01:05:48.400 align:middle line:84%
+Now, one thing to note
+about this definition that
+
+01:05:48.400 --> 01:05:52.640 align:middle line:84%
+helps to motivate it is that
+y plus little C plus big B
+
+01:05:52.640 --> 01:05:58.920 align:middle line:84%
+is contained in x
+plus big C plus big B
+
+01:05:58.920 --> 01:06:03.160 align:middle line:84%
+because for each element
+of y, little y plus little
+
+01:06:03.160 --> 01:06:05.820 align:middle line:84%
+c plus big B is
+defined to be in here.
+
+01:06:05.820 --> 01:06:08.520 align:middle line:90%
+
+
+01:06:08.520 --> 01:06:17.720 align:middle line:84%
+So this is at most x plus c
+plus B plus x plus c plus B
+
+01:06:17.720 --> 01:06:26.050 align:middle line:90%
+take away y plus c plus B.
+
+01:06:26.050 --> 01:06:28.270 align:middle line:84%
+All of these were
+already counted.
+
+01:06:28.270 --> 01:06:30.420 align:middle line:84%
+So there are at most
+this many new guys.
+
+01:06:30.420 --> 01:06:33.810 align:middle line:90%
+
+
+01:06:33.810 --> 01:06:42.130 align:middle line:84%
+And this is x plus C plus B
+plus x plus B minus y plus B
+
+01:06:42.130 --> 01:06:44.890 align:middle line:84%
+because this is
+a subset of this.
+
+01:06:44.890 --> 01:06:49.010 align:middle line:84%
+And the plus c just
+translates things.
+
+01:06:49.010 --> 01:06:52.390 align:middle line:84%
+So this thing is that big and
+I remove from it this thing,
+
+01:06:52.390 --> 01:06:55.530 align:middle line:90%
+which is that big.
+
+01:06:55.530 --> 01:06:59.550 align:middle line:84%
+So that's the upper
+bound for the numerator.
+
+01:06:59.550 --> 01:07:05.506 align:middle line:90%
+
+
+01:07:05.506 --> 01:07:10.170 align:middle line:84%
+So I'm trying to bound
+this thing with a C prime.
+
+01:07:10.170 --> 01:07:12.290 align:middle line:84%
+I want to prove an upper
+bound, so an upper bound
+
+01:07:12.290 --> 01:07:15.070 align:middle line:84%
+for the numerator and a lower
+bound for the denominator.
+
+01:07:15.070 --> 01:07:39.220 align:middle line:90%
+
+
+01:07:39.220 --> 01:07:45.940 align:middle line:84%
+So the denominator
+is x plus C prime.
+
+01:07:45.940 --> 01:07:54.780 align:middle line:84%
+And so that's x plus C plus
+the set how many x and x.
+
+01:07:54.780 --> 01:07:57.860 align:middle line:84%
+So that little x
+plus little c is not
+
+01:07:57.860 --> 01:08:04.580 align:middle line:84%
+contained in big X
+plus big C. So the guys
+
+01:08:04.580 --> 01:08:07.260 align:middle line:84%
+I already had, and then
+I have guys of the form
+
+01:08:07.260 --> 01:08:09.460 align:middle line:90%
+little x plus little c.
+
+01:08:09.460 --> 01:08:10.840 align:middle line:90%
+And I only want the new ones.
+
+01:08:10.840 --> 01:08:13.460 align:middle line:84%
+The ones that aren't
+already counted.
+
+01:08:13.460 --> 01:08:15.340 align:middle line:90%
+So that's an equality.
+
+01:08:15.340 --> 01:08:23.760 align:middle line:84%
+And I'm going to write it as x
+plus c plus x minus the x and x
+
+01:08:23.760 --> 01:08:27.899 align:middle line:90%
+so that x plus c is in x plus c.
+
+01:08:27.899 --> 01:08:34.359 align:middle line:90%
+
+
+01:08:34.359 --> 01:08:39.500 align:middle line:84%
+And now the key observation is
+that these guys are all in y.
+
+01:08:39.500 --> 01:08:42.880 align:middle line:90%
+
+
+01:08:42.880 --> 01:08:48.080 align:middle line:84%
+This is a subset of y because
+if little x plus little c
+
+01:08:48.080 --> 01:08:51.560 align:middle line:90%
+is In big X plus big C--
+
+01:08:51.560 --> 01:08:56.000 align:middle line:84%
+so if little x plus little
+c is in big X plus big C,
+
+01:08:56.000 --> 01:08:57.540 align:middle line:90%
+then I can add B to both sides.
+
+01:08:57.540 --> 01:09:00.000 align:middle line:90%
+And this is in there.
+
+01:09:00.000 --> 01:09:01.220 align:middle line:90%
+So those are all in y.
+
+01:09:01.220 --> 01:09:04.840 align:middle line:90%
+
+
+01:09:04.840 --> 01:09:07.600 align:middle line:90%
+So this is a subset of y.
+
+01:09:07.600 --> 01:09:10.840 align:middle line:84%
+So the size of this guy
+is at most the size of y.
+
+01:09:10.840 --> 01:09:12.319 align:middle line:84%
+And since I'm
+subtracting here, I
+
+01:09:12.319 --> 01:09:17.380 align:middle line:84%
+can say this is at least
+x plus c plus x minus y.
+
+01:09:17.380 --> 01:09:27.689 align:middle line:90%
+
+
+01:09:27.689 --> 01:09:30.750 align:middle line:84%
+So now we'll just put together
+everything that we know.
+
+01:09:30.750 --> 01:09:36.529 align:middle line:90%
+
+
+01:09:36.529 --> 01:09:45.970 align:middle line:84%
+We know that x plus C plus B
+over x plus C is at most K bar.
+
+01:09:45.970 --> 01:09:47.470 align:middle line:90%
+We know that by induction.
+
+01:09:47.470 --> 01:09:51.370 align:middle line:90%
+
+
+01:09:51.370 --> 01:09:57.250 align:middle line:84%
+We know that x plus B
+over x is equal to K bar.
+
+01:09:57.250 --> 01:09:59.130 align:middle line:90%
+We know that by definition.
+
+01:09:59.130 --> 01:10:00.510 align:middle line:90%
+That's just what K bar was.
+
+01:10:00.510 --> 01:10:03.170 align:middle line:90%
+
+
+01:10:03.170 --> 01:10:08.170 align:middle line:84%
+And we know that
+y plus B over y is
+
+01:10:08.170 --> 01:10:10.650 align:middle line:90%
+greater than or equal to K bar.
+
+01:10:10.650 --> 01:10:13.290 align:middle line:90%
+That was the definition of x.
+
+01:10:13.290 --> 01:10:16.690 align:middle line:84%
+x was chosen to
+minimize this ratio.
+
+01:10:16.690 --> 01:10:18.580 align:middle line:90%
+y might perhaps be equal to x.
+
+01:10:18.580 --> 01:10:20.040 align:middle line:90%
+But that's OK.
+
+01:10:20.040 --> 01:10:21.690 align:middle line:84%
+But it's never going
+to be any smaller.
+
+01:10:21.690 --> 01:10:26.740 align:middle line:90%
+
+
+01:10:26.740 --> 01:10:31.700 align:middle line:84%
+And so therefore, by algebra,
+by how fractions work,
+
+01:10:31.700 --> 01:10:33.680 align:middle line:90%
+x plus C plus B--
+
+01:10:33.680 --> 01:10:34.440 align:middle line:90%
+oh, sorry.
+
+01:10:34.440 --> 01:10:37.180 align:middle line:90%
+So now I can say--
+
+01:10:37.180 --> 01:10:43.120 align:middle line:84%
+I want to say x plus C prime
+plus B over x plus C prime,
+
+01:10:43.120 --> 01:10:46.200 align:middle line:84%
+and I want an upper
+bound for that.
+
+01:10:46.200 --> 01:10:49.780 align:middle line:84%
+So the numerator
+is bounded by 1 x
+
+01:10:49.780 --> 01:10:56.700 align:middle line:84%
+plus C plus B plus x
+plus B minus y plus B.
+
+01:10:56.700 --> 01:11:00.540 align:middle line:84%
+And the denominator is
+lower bounded by part two.
+
+01:11:00.540 --> 01:11:05.080 align:middle line:84%
+And it's x plus
+C plus x minus y.
+
+01:11:05.080 --> 01:11:07.740 align:middle line:90%
+
+
+01:11:07.740 --> 01:11:12.300 align:middle line:84%
+And then because each of these
+ratios has the correct sign,
+
+01:11:12.300 --> 01:11:14.440 align:middle line:90%
+this is at most K lower bar.
+
+01:11:14.440 --> 01:11:21.400 align:middle line:90%
+
+
+01:11:21.400 --> 01:11:22.460 align:middle line:90%
+So this is short.
+
+01:11:22.460 --> 01:11:23.443 align:middle line:90%
+It is a little tricky.
+
+01:11:23.443 --> 01:11:25.360 align:middle line:84%
+And I must admit, I don't
+quite understand how
+
+01:11:25.360 --> 01:11:26.820 align:middle line:90%
+Petrides thought to do this.
+
+01:11:26.820 --> 01:11:59.240 align:middle line:90%
+
+
+01:11:59.240 --> 01:12:04.000 align:middle line:84%
+So from the key lemma, we can
+prove Plunnecke inequality
+
+01:12:04.000 --> 01:12:08.840 align:middle line:90%
+and then see if anybody--
+
+01:12:08.840 --> 01:12:13.280 align:middle line:84%
+if you have room, you can
+turn over in your mind,
+
+01:12:13.280 --> 01:12:16.490 align:middle line:84%
+philosophically, why did
+this work out so nicely?
+
+01:12:16.490 --> 01:12:18.990 align:middle line:84%
+If anybody has thoughts about
+it, I would be happy to hear.
+
+01:12:18.990 --> 01:12:41.330 align:middle line:90%
+
+
+01:12:41.330 --> 01:12:45.920 align:middle line:84%
+So proof-- so say we're
+starting with this.
+
+01:12:45.920 --> 01:12:52.490 align:middle line:90%
+
+
+01:12:52.490 --> 01:12:57.610 align:middle line:84%
+So we use our main
+lemma, so it tells us
+
+01:12:57.610 --> 01:13:00.410 align:middle line:84%
+that there exists
+some x in A, and we
+
+01:13:00.410 --> 01:13:09.770 align:middle line:84%
+have x plus C plus B is at most
+K times x plus C for any C.
+
+01:13:09.770 --> 01:13:10.880 align:middle line:90%
+How might we use this?
+
+01:13:10.880 --> 01:13:16.410 align:middle line:90%
+
+
+01:13:16.410 --> 01:13:18.070 align:middle line:90%
+So C could be empty.
+
+01:13:18.070 --> 01:13:23.422 align:middle line:84%
+So we get x plus B
+is at most K times x.
+
+01:13:23.422 --> 01:13:31.070 align:middle line:84%
+C could be B, so we get x plus
+B plus B. That's at most K times
+
+01:13:31.070 --> 01:13:36.130 align:middle line:84%
+x plus B. And x plus B
+is at most K times x.
+
+01:13:36.130 --> 01:13:38.770 align:middle line:84%
+So that's at most
+K squared times x.
+
+01:13:38.770 --> 01:13:41.710 align:middle line:90%
+
+
+01:13:41.710 --> 01:13:44.330 align:middle line:90%
+And you can see where this goes.
+
+01:13:44.330 --> 01:13:45.410 align:middle line:90%
+So I'll do one more.
+
+01:13:45.410 --> 01:13:46.950 align:middle line:90%
+You'll get the pattern.
+
+01:13:46.950 --> 01:13:49.510 align:middle line:84%
+If I add one more
+B, That's at most
+
+01:13:49.510 --> 01:13:54.450 align:middle line:84%
+K X plus B plus B. Plug in what
+I already know about this--
+
+01:13:54.450 --> 01:13:57.730 align:middle line:90%
+that's at most k cubed times x.
+
+01:13:57.730 --> 01:14:01.670 align:middle line:84%
+So if I add x plus
+m copies of B,
+
+01:14:01.670 --> 01:14:04.210 align:middle line:84%
+that will be at most
+k to the m times x.
+
+01:14:04.210 --> 01:14:10.234 align:middle line:90%
+
+
+01:14:10.234 --> 01:14:16.300 align:middle line:84%
+And then we'll use
+the Ruzsa inequality.
+
+01:14:16.300 --> 01:14:23.680 align:middle line:84%
+So this is already
+pretty good thing.
+
+01:14:23.680 --> 01:14:28.360 align:middle line:84%
+If A equals B here, then
+I could say A to the m
+
+01:14:28.360 --> 01:14:32.520 align:middle line:84%
+is bounded by K to the m
+times A because A to the m
+
+01:14:32.520 --> 01:14:36.240 align:middle line:84%
+is obviously at least as
+big as x plus A to the m.
+
+01:14:36.240 --> 01:14:38.720 align:middle line:84%
+So I get A to the m is
+bounded by K to the m times
+
+01:14:38.720 --> 01:14:41.840 align:middle line:84%
+A. That's a typical
+corollary of Plunnecke.
+
+01:14:41.840 --> 01:14:44.780 align:middle line:84%
+Anyway, to get the
+advertised finale,
+
+01:14:44.780 --> 01:14:47.280 align:middle line:90%
+we use Ruzsa's inequality.
+
+01:14:47.280 --> 01:14:49.260 align:middle line:90%
+Ruzsa was A times--
+
+01:14:49.260 --> 01:14:57.240 align:middle line:90%
+
+
+01:14:57.240 --> 01:15:01.340 align:middle line:90%
+so I can plug in--
+
+01:15:01.340 --> 01:15:08.000 align:middle line:90%
+
+
+01:15:08.000 --> 01:15:14.850 align:middle line:84%
+so x times B plus
+m minus B plus n
+
+01:15:14.850 --> 01:15:22.390 align:middle line:84%
+is bounded by x plus B
+plus m x plus B plus n.
+
+01:15:22.390 --> 01:15:27.090 align:middle line:90%
+
+
+01:15:27.090 --> 01:15:29.850 align:middle line:84%
+And then we plug
+in each of these,
+
+01:15:29.850 --> 01:15:37.800 align:middle line:84%
+and we get a K to the m
+plus n times x squared.
+
+01:15:37.800 --> 01:15:41.570 align:middle line:90%
+
+
+01:15:41.570 --> 01:15:42.690 align:middle line:90%
+Yeah, that's right.
+
+01:15:42.690 --> 01:15:46.130 align:middle line:90%
+So then I get this by itself.
+
+01:15:46.130 --> 01:15:51.410 align:middle line:84%
+So B plus m minus B
+plus n is bounded by K
+
+01:15:51.410 --> 01:15:54.370 align:middle line:84%
+to the m plus n
+times x, which is
+
+01:15:54.370 --> 01:15:57.290 align:middle line:84%
+bounded by K to the
+m plus n times A
+
+01:15:57.290 --> 01:16:23.730 align:middle line:90%
+because x is a subset of A.
+
+01:16:23.730 --> 01:16:25.450 align:middle line:90%
+So this proof is short.
+
+01:16:25.450 --> 01:16:26.950 align:middle line:90%
+It is a little tricky.
+
+01:16:26.950 --> 01:16:28.870 align:middle line:84%
+But I think it is
+well worth spending
+
+01:16:28.870 --> 01:16:32.670 align:middle line:84%
+some time with because
+this inequality is really
+
+01:16:32.670 --> 01:16:33.850 align:middle line:90%
+quite important.
+
+01:16:33.850 --> 01:16:36.710 align:middle line:84%
+I would say that it
+plays really a key role
+
+01:16:36.710 --> 01:16:39.750 align:middle line:84%
+in all the later developments
+in projection theory
+
+01:16:39.750 --> 01:16:44.510 align:middle line:84%
+and the solution to the
+problem in a lot of things.
+
+01:16:44.510 --> 01:16:48.810 align:middle line:84%
+And so as we keep going
+tomorrow or Thursday and so on,
+
+01:16:48.810 --> 01:16:53.350 align:middle line:84%
+we'll reflect more about why
+this is useful and important.
+
+01:16:53.350 --> 01:16:56.470 align:middle line:84%
+And maybe I'll try to
+come up with some homework
+
+01:16:56.470 --> 01:17:00.400 align:middle line:84%
+to try to reflect on how
+this proof got put together.
+
+01:17:00.400 --> 01:17:03.110 align:middle line:90%
+
+
+01:17:03.110 --> 01:17:04.660 align:middle line:90%
+Cool.
+
+01:17:04.660 --> 01:17:09.000 align:middle line:90%
