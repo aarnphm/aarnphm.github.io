@@ -56,6 +56,12 @@ import {
   JSResourceToScriptElement,
   StaticResources,
 } from '../util/resources'
+import {
+  findHeadingSectionBounds,
+  getHastClassNames,
+  hasHastClass,
+  readTranscludeTarget,
+} from '../util/transclude-props'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -683,9 +689,7 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
   }
   visit(root, 'element', node => {
     if (node.tagName === 'blockquote') {
-      const className = node.properties?.className
-      const classes = Array.isArray(className) ? className : className ? [className] : []
-      if (classes.includes('transclude')) {
+      if (hasHastClass(node, 'transclude')) {
         features.hasTranscludeBlockquote = true
       }
     } else if (node.tagName === 'section') {
@@ -1215,13 +1219,13 @@ export function transcludeFinal(
 
     const contentEl = h('.transclude-content', [h('div', children)])
 
-    // add collapsible classes to node
-    const classNames = (node.properties?.className ?? []) as string[]
+    const classNames = getHastClassNames(node)
     classNames.push('transclude-collapsible')
     if (collapsed) {
       classNames.push('is-collapsed')
     }
     node.properties = { ...node.properties, className: classNames }
+    delete node.properties.class
 
     node.children = [titleEl, contentEl]
   }
@@ -1329,25 +1333,16 @@ export function transcludeFinal(
   if (features.hasTranscludeBlockquote) {
     const renderData = renderDataFor(componentData.ctx, allFiles)
     visit(root, { tagName: 'blockquote' }, node => {
-      const classNames = (node.properties?.className ?? []) as string[]
-      const url = node.properties.dataUrl as string
-      const alias = (
-        node.properties?.dataEmbedAlias !== 'undefined'
-          ? node.properties?.dataEmbedAlias
-          : node.properties?.dataBlock
-      ) as string
-
-      if (!classNames.includes('transclude')) {
+      if (!hasHastClass(node, 'transclude')) {
         return
       }
       if (skipTranscludes) {
         return
       }
-      const inner = node.children[0]
-      if (inner?.type !== 'element') return
-      const transcludeTarget = inner.properties['data-slug']
-      if (typeof transcludeTarget !== 'string' || !isFullSlug(transcludeTarget)) return
-      let blockRef = node.properties.dataBlock as string | undefined
+      const transclude = readTranscludeTarget(node)
+      if (!transclude) return
+      const { inner, targetSlug: transcludeTarget, url, alias } = transclude
+      let blockRef = transclude.blockRef
       const visitKey = `${transcludeTarget}${blockRef ?? ''}` as FullSlug
       if (visited.has(visitKey)) return
       visited.add(visitKey)
@@ -1369,7 +1364,7 @@ export function transcludeFinal(
 
       // parse metadata to check for collapsed flag
       let transcludeMetadata: Record<string, unknown> | undefined
-      const rawMetadata = node.properties.dataMetadata as string | undefined
+      const rawMetadata = transclude.rawMetadata
       if (rawMetadata) {
         try {
           transcludeMetadata = JSON.parse(rawMetadata)
@@ -1445,31 +1440,12 @@ export function transcludeFinal(
       } else if (blockRef?.startsWith('#') && page.htmlAst) {
         // header transclude
         blockRef = blockRef.slice(1)
-        let startIdx = undefined
-        let startDepth = undefined
-        let endIdx = undefined
-        for (const [i, el] of page.htmlAst.children.entries()) {
-          // skip non-headers
-          if (!(el.type === 'element' && headingRank(el))) continue
-          const depth = headingRank(el) as number
+        const bounds = findHeadingSectionBounds(page.htmlAst.children, blockRef)
+        if (!bounds) return
 
-          // looking for our blockref
-          if (startIdx === undefined || startDepth === undefined) {
-            // skip until we find the blockref that matches
-            if (el.properties?.id === blockRef) {
-              startIdx = i
-              startDepth = depth
-            }
-          } else if (depth <= startDepth) {
-            // looking for new header that is same level or higher
-            endIdx = i
-            break
-          }
-        }
-
-        if (startIdx === undefined) return
-
-        const normalizedSection = (page.htmlAst.children.slice(startIdx, endIdx) as Element[])
+        const normalizedSection = page.htmlAst.children
+          .slice(bounds.startIdx, bounds.endIdx)
+          .filter((child): child is Element => child.type === 'element')
           .filter(child => !isTrailingNoteSection(child))
           .map(child => normalizeHastElement(child, slug, transcludeTarget) as ElementContent)
 

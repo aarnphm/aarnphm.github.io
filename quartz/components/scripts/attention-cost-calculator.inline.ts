@@ -167,7 +167,7 @@ const accUpdateInputs = (root: HTMLElement, s: AccState) => {
       input.setAttribute('aria-valuenow', String(s[k]))
       input.setAttribute('aria-valuetext', `${accLabels[k]} ${s[k]}`)
     }
-    accSetText(root, `[data-acc-value="${k}"]`, String(s[k]))
+    accSetTex(root, `[data-acc-value="${k}"]`, String(s[k]))
   }
   const dtSelect = root.querySelector<HTMLSelectElement>('[data-acc-input="dt"]')
   if (dtSelect) dtSelect.value = s.dt

@@ -1,6 +1,6 @@
 import katex from 'katex'
 
-const mhaViewH = 420
+const mhaViewH = 560
 const mhaBandTop = 36
 const mhaBandBot = mhaViewH - 36
 const mhaBandH = mhaBandBot - mhaBandTop
@@ -57,6 +57,9 @@ const mhaSetText = (root: HTMLElement, selector: string, text: string) => {
 }
 
 const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
+  const slot = mhaBandH / h
+  const projGap = slot < 56 ? 2 : mhaProjGap
+  const projH = Math.min(mhaProjH, Math.max(9, (slot - 8 - 2 * projGap) / 3))
   const headGroups = root.querySelectorAll<SVGGElement>('[data-mha-head]')
   for (const g of headGroups) {
     const i = Number(g.dataset.mhaHead)
@@ -65,15 +68,17 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
     if (!visible) continue
 
     const mid = mhaHeadMid(i, h)
-    const projTopY = mid - (mhaProjH * 3 + mhaProjGap * 2) / 2
+    const projTopY = mid - (projH * 3 + projGap * 2) / 2
 
     const projs = g.querySelectorAll<SVGGElement>('[data-mha-projs] > g')
     projs.forEach((projGroup, k) => {
-      const py = projTopY + k * (mhaProjH + mhaProjGap)
+      const py = projTopY + k * (projH + projGap)
       const rect = projGroup.querySelector<SVGRectElement>('rect.mha-proj')
       const fo = projGroup.querySelector<SVGForeignObjectElement>('foreignObject')
       mhaSetAttr(rect, 'y', String(py))
+      mhaSetAttr(rect, 'height', String(projH))
       mhaSetAttr(fo, 'y', String(py))
+      mhaSetAttr(fo, 'height', String(projH))
     })
 
     const projLink = g.querySelector<SVGLineElement>('.mha-link--proj-score')
@@ -92,8 +97,6 @@ const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {
         const r = Math.floor(idx / 4)
         cell.setAttribute('y', String(scoreY + r * cellPx))
       })
-      const labelFO = scoreGroup.querySelector<SVGForeignObjectElement>('foreignObject')
-      mhaSetAttr(labelFO, 'y', String(scoreY - 14))
     }
 
     const collapsedGroup = g.querySelector<SVGGElement>('[data-mha-score-collapsed]')
@@ -160,7 +163,14 @@ const mhaSetReadout = (root: HTMLElement, h: number, dm: number, seq: number) =>
   }
 
   const valueEl = root.querySelector<HTMLElement>('[data-mha-heads-value]')
-  if (valueEl) valueEl.textContent = `h=${h}`
+  if (valueEl) {
+    valueEl.innerHTML = katex.renderToString(`h = ${h}`, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  }
 
   const slider = root.querySelector<HTMLInputElement>('[data-mha-heads-input]')
   if (slider) {

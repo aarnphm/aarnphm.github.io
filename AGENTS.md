@@ -11,7 +11,7 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo`.
 - Inspect with `fd` and `rg`.
 - Keep new files in `quartz/util` kebab-case.
-- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites.
+- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites. But don't overused and having to put everything under `quartz/util`
 - Do not run bundle or build. Inspect the running `dev.ts` process when runtime evidence is needed. Oftentimes we will pipe the outputs to `/tmp/quartz-dev.log` for easier inspection.
 - Keep secrets in `.env` locally and Cloudflare Secrets in production.
 - Keep filesystem access out of `@quartz/plugins/transformers`.

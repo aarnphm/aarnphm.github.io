@@ -3,9 +3,10 @@ abstract: The reason for Attention comparing to LSTM is that its ability to enco
 date: '2024-02-07'
 description: and posteriori information retrieval.
 id: Attention
-modified: 2026-06-05 15:08:26 GMT-04:00
+modified: 2026-06-07 00:39:32 GMT-04:00
 seealso:
   - '[[lectures/2/convexity|emperical finding]]'
+  - '[[lectures/2/afp|attention from first principles]]'
 socials:
   efficient: https://www.youtube.com/watch?v=Y-o545eYjXM
 tags:
@@ -41,7 +42,7 @@ First introduced in @vaswani2023attentionneed. One can think of attention for QK
 
 ```jsx imports={Zoomable,AttentionCircuits}
 <Zoomable label="QK/OV circuit decomposition">
-  <AttentionCircuits caption="The same attention layer two ways: textbook softmax on the left, the Anthropic circuit decomposition on the right. Hover a circuit name to see which weights it covers: $QK$ decides where to look, $OV$ decides what to move." />
+  <AttentionCircuits caption="The same attention layer two ways: textbook softmax on the left, the Anthropic circuit decomposition on the right. Hover a circuit name to see which weights it covers: $QK$ sets where to read, $OV$ sets what to write." />
 </Zoomable>
 ```
 
@@ -70,7 +71,7 @@ Each head can specialise on a distinct relational pattern in the same context wi
 
 One may focus on positional offsets (e.g., "next token" dependencies) while another emphasises semantic alignment (e.g., subject $\leftrightarrow$ predicate links). The concatenation and final projection $W^O$ then recombine the perspectives into the [[thoughts/Transformers|transformer]] [[thoughts/mechanistic interpretability#residual stream|residual stream]].
 
-> [!motivation]- why split the model into heads?
+> [!motivation]+ why split the model into heads?
 >
 > Each head learns a slightly different relational probe over the same sequence. One head might focus on syntactic structure,
 > another on long-distance coreference.
@@ -79,13 +80,8 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 > the quadratic cost of a single massive head. Empirically this improves data efficiency because the model can
 > reuse a single context to answer multiple "questions" about it in parallel, rather than re-reading the sequence each time.
 
-> [!question]- internalise multi-head behaviour
+> [!example]- two offset heads vs one big head
 >
-> - [ ] Visualise attention heatmaps from several heads on the same prompt; annotate the linguistic or algorithmic pattern each head locks onto [@voita2019analyzingmha].
-> - [ ] Compare perplexity of a single-head transformer to a multi-head variant while keeping parameter count fixed; relate to redundancy/prunability of heads [@michel2019sixteenheads].
-> - [ ] Derive how residual mixing $W_O$ recombines the per-head outputs and why separate softmax normalisers per head change expressivity [@elhage2021mathematical].
-
-> [!example]- Worked toy: two offset heads vs one big head
 > Consider a length-$L$ sequence with two heads: head 1 attends to the next token $(+1)$ and head 2 attends to the previous token $(-1)$. Let $\beta \gg 0$ so each head's softmax is nearly an argmax on its offset.
 >
 > $$
@@ -139,7 +135,7 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 </Zoomable>
 ```
 
-> [!math]- softmax factorisation barrier
+> [!math] softmax factorisation barrier
 >
 > Let $S_i = QW_{Q,i}(KW_{K,i})^\top/\sqrt{d_h}$ and $P_i = \operatorname{softmax}(S_i)$.
 >
@@ -151,7 +147,7 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 >
 > Hence in one layer, multi-head is strictly more expressive due to independent normalisers. See also [@cordonnier2019relationshipselfattentionconvolution; @yun2019universaltransformers].
 
-> [!note]- Parameter and compute at fixed $d_{\text{model}}$
+> [!note] Parameter and compute at fixed $d_{\text{model}}$
 >
 > - Params (packed projections): $W_Q,W_K,W_V,W_O \in \mathbb{R}^{d_m\times d_m}$ $\Rightarrow$ about $4d_m^2$ weights, essentially independent of head count $h$ (implementation splits the columns into $h$ groups).
 > - FLOPs (naive): $\Theta(L^2 d_m)$ per layer per sequence; choosing $h$ changes per-head tile sizes and kernel efficiency, not asymptotics.
@@ -163,22 +159,6 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 </Zoomable>
 ```
 
-> [!todo]- tasks to deepen multi-head understanding
->
-> - Work through a two-token toy example where one head tracks positional offsets while another tracks part-of-speech, then visualise the resulting attention heatmaps.
-> - Summarise how head specialisation emerges in practice (e.g., induction heads, name mover heads) by referencing case studies in [[thoughts/mathematical framework transformers circuits|Transformer Circuits]].
-> - Compare the compute/memory footprint of doubling the number of heads versus increasing the hidden dimension, highlighting when each trade-off is preferable.
-
-## variants
-
-organised by their main concern:
-
-```jsx imports={Zoomable,AttentionFamilyMap}
-<Zoomable label="attention family map">
-  <AttentionFamilyMap caption="four bottlenecks, four families. hover a chip for the math signature; click to follow." />
-</Zoomable>
-```
-
 ## optimization
 
 > [!note]
@@ -186,10 +166,10 @@ organised by their main concern:
 
 ### Exact, IO-aware kernels
 
-- FlashAttention v1/v2/v3: tile/fuse softmax, read each tile once from HBM; FA-3 exploits FP8 and hardware copy engines for higher throughput [@dao2022flashattentionfastmemoryefficientexact; @dao2023flashattention2fasterattentionbetter; @shah2024flashattention3fastaccurateattention].
-- Flash-Decoding (+ +): specialised kernels for decode that parallelise across KV blocks and fuse reductions.
+- [[thoughts/flash attention|Flash Attention]]: tile/fuse softmax, read each tile once from HBM; FA-3 exploits FP8 and hardware copy engines for higher throughput [@dao2022flashattentionfastmemoryefficientexact; @dao2023flashattention2fasterattentionbetter; @shah2024flashattention3fastaccurateattention].
+- Flash-Decoding (++): specialised kernels for decode that parallelise across KV blocks and fuse reductions.
 
-### Sparse/local attention (exact on a pattern)
+### Sparse/local attention
 
 - Longformer: sliding window with optional global tokens for linear scaling [@beltagy2020longformerlongdocumenttransformer].
 - BigBird: block-sparse (window + random + global) with theoretical guarantees [@zaheer2021bigbirdtransformerslonger].
@@ -203,8 +183,8 @@ organised by their main concern:
 
 ### Multi-device and prefix-aware inference
 
-- Ring/Striped Attention: partition long sequences across devices, overlapping compute and communication [@liu2023ringattentionblockwisetransformers; @brandon2023stripedattentionfasterring].
-- Cascade/Tree-aware kernels: exploit shared prefixes and tree layouts to reuse KV IO [@zheng2024sglangefficientexecutionstructured; @shyam2025treeattentiontopologyawaredecoding].
+- [[thoughts/ring attention|Ring]]/Striped Attention: partition long sequences across devices, overlapping compute and communication [@liu2023ringattentionblockwisetransformers; @brandon2023stripedattentionfasterring].
+- [[thoughts/cascade attention|Cascade]]/Tree-aware kernels: exploit shared prefixes and tree layouts to reuse KV IO [@zheng2024sglangefficientexecutionstructured; @shyam2025treeattentiontopologyawaredecoding].
 
 ## cheatsheet
 

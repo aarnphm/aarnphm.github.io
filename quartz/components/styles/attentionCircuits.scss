@@ -56,37 +56,47 @@
   }
 }
 
+.acir-pill-track {
+  display: inline-flex;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--lightgray) 42%, transparent);
+}
+
 .acir-pill {
   appearance: none;
   cursor: pointer;
   font: inherit;
   font-size: 0.82rem;
-  min-height: 2.5rem;
-  padding: 0.32rem 0.7rem;
+  padding: 0.34rem 0.85rem;
   border-radius: var(--radius-none);
   border: 0;
-  background: var(--light);
-  color: var(--dark);
+  background: transparent;
+  color: var(--acir-note-fg);
   transition:
     background 120ms ease,
-    transform 120ms ease;
+    color 120ms ease;
 
+  &:hover {
+    color: var(--dark);
+  }
   &:focus-visible {
     outline: 2px solid var(--acir-stroke);
     outline-offset: 2px;
   }
-  &:active {
-    transform: scale(0.96);
-  }
 
   &.acir-pill--qk[aria-pressed='true'] {
     background: var(--acir-qk-fill);
+    color: var(--dark);
   }
   &.acir-pill--ov[aria-pressed='true'] {
     background: var(--acir-ov-fill);
+    color: var(--dark);
   }
   &.acir-pill--none[aria-pressed='true'] {
     background: var(--acir-box-soft);
+    color: var(--dark);
   }
 }
 
@@ -160,6 +170,10 @@
   height: auto;
   aspect-ratio: 320 / 460;
   display: block;
+
+  [hidden] {
+    display: none;
+  }
 
   .acir-box {
     fill: var(--acir-box);
@@ -316,41 +330,6 @@
   }
 }
 
-.acir-props {
-  margin: 1.1rem 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.85rem;
-}
-
-.acir-prop {
-  margin: 0;
-  padding: 0.7rem 0;
-  border-radius: 0;
-  border: 0;
-  background: transparent;
-
-  dt {
-    margin: 0 0 0.3rem;
-    font-family: var(--bodyFont);
-    font-size: 0.74rem;
-    color: var(--acir-note-fg);
-  }
-
-  dd {
-    margin: 0;
-    font-size: 0.86rem;
-    color: var(--dark);
-    line-height: 1.5;
-    .katex {
-      font-size: 0.95em;
-    }
-    .katex-display {
-      margin: 0.35rem 0 0;
-    }
-  }
-}
-
 .acir-math {
   @include figure-inline-math;
 }
@@ -398,8 +377,5 @@
   }
   .acir-panel {
     padding: 0.55rem 0;
-  }
-  .acir-props {
-    grid-template-columns: 1fr;
   }
 }

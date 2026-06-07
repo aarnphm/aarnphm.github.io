@@ -38,7 +38,7 @@ Sets are the substrate for [[thoughts/algebraic geometry|algebraic structures]] 
 | $A \cup B$       | [[#($A cup B$)\|union]]: $\{x \mid x \in A \text{ or } x \in B\}$         |
 | $A \cap B$       | [[#($A cap B$)\|intersection]]: $\{x \mid x \in A \text{ and } x \in B\}$ |
 | $A \setminus B$  | [[#difference\|difference]]: $\{x \in A \mid x \notin B\}$                |
-| $\emptyset$      | [[#empty\|emptyset]]                                                      |
+| $\emptyset$      | [[#empty\|empty set]]                                                     |
 | $\mathcal{P}(A)$ | [[#power set\|power set]]: all subsets of $A$                             |
 | $A \times B$     | [[#Cartesian products\|Cartesian products]]                               |
 | $\neg P$         | negation                                                                  |
@@ -476,7 +476,7 @@ $$
 \bigcap_{A \in \mathcal{A}}\; A = \{x \mid x \in A \text{ for every } A \in \mathcal{A}\}
 $$
 
-> [!important] universality of emptyset
+> [!important] universality of $\emptyset$
 > If $\emptyset \in \mathcal{A}$, the union is not forced to be empty. The empty set contributes no elements, then the other members still contribute theirs.
 >
 > If $\mathcal{A} = \emptyset$, then $\bigcup_{A \in \mathcal{A}} A = \emptyset$.

@@ -2,7 +2,7 @@
 date: '2025-09-05'
 description: 1/n of acceptance-rejection
 id: notes
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-06-06 23:29:57 GMT-04:00
 seealso:
   - '[[thoughts/Speculative decoding]]'
 tags:
@@ -12,7 +12,7 @@ transclude:
   title: false
 ---
 
-![[thoughts/Speculative decoding#von Neumann acceptance–rejection|von Neumann rejection sampling]]
+![[thoughts/Speculative decoding#von Neumann acceptance rejection|von Neumann rejection sampling]]
 
 ### historical inspiration & motivation
 
@@ -62,5 +62,5 @@ Self-speculation reuses the same model (or the input context) to draft tokens th
   - Properties:
     - Single-model pipeline that reuses activations;
     - reduced memory and duplicate compute versus two-model drafting.
-    - Reported speedups ~1.8–2.2× with negligible accuracy loss on several tasks.
+    - Reported speedups $\approx 1.8-2.2 \times $ with negligible accuracy loss on several tasks.
   - References: @Elhoushi2024
