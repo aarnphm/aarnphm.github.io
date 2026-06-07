@@ -4,7 +4,7 @@ aliases:
 date: '2025-09-08'
 description: bedstone of scaling intelligence
 id: GPU programming
-modified: 2026-06-05 15:08:27 GMT-04:00
+modified: 2026-06-07 01:19:33 GMT-04:00
 permalinks:
   - /gpus
 socials:
@@ -24,32 +24,28 @@ _https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
 
 ## architecture overview
 
-See [[lectures/420/notes|comprehensive GPU architecture notes]] for detailed coverage of GPU fundamentals, CUDA programming model, and optimization techniques.
-
 > [!info] core terminology
 >
-> | concept                       | summary                                                                                                                                                                                              |
-> | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | gpu vs cpu                    | throughput-optimized accelerator (270k+ resident threads on [[lectures/420/notes#thread count comparison: EPYC vs H100 \| hopper]]) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) |
-> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                                                                            |
-> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                                                                              |
-> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm (≈400) → nvlink fabric                                                                                                  |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                                                                                              |
+> | concept                       | summary                                                                                                                              |
+> | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+> | GPU vs CPU                    | throughput-optimized accelerator (270k+ resident threads on Hopper) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) |
+> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                            |
+> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                              |
+> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm (≈400) → nvlink fabric                                  |
+> | latency hiding                | 64 resident warps per sm swap on stall to cover ≈400-cycle hbm accesses                                                              |
 
 ## execution units
-
-See [[lectures/420/notes#streaming multiprocessor (SM) architecture|execution unit breakdown]] for detailed comparison.
 
 > [!table] sm execution roles (hopper/blackwell)
 >
 > | unit                      | capacity per sm                           | responsibility                        | deeper dive                                            |
 > | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------------ |
-> | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420/notes#1. Warp Scheduler]]               |
-> | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420/notes#2. CUDA Core]]                    |
-> | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420/notes#tensor core operation]]           |
-> | load/store units          | 64b sector loads, cp.async, tma front-end | coalesced global/shared traffic       | [[lectures/420/notes#4. Load/Store Unit (LSU)]]        |
-> | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420/notes#5. Special Function Unit (SFU)]]  |
-> | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420/notes#tensor memory accelerator (TMA)]] |
+> | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420#1. Warp Scheduler]]               |
+> | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420#2. CUDA Core]]                    |
+> | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420#tensor core operation]]           |
+> | load/store units          | 64b sector loads, cp.async, tma front-end | coalesced global/shared traffic       | [[lectures/420#4. Load/Store Unit (LSU)]]        |
+> | special function units    | exp, sin, cos, rsqrt throughput           | transcendental evaluation             | [[lectures/420#5. Special Function Unit (SFU)]]  |
+> | tensor memory accelerator | descriptor-driven dma (sm90+)             | async tensor copies, multicast        | [[lectures/420#tensor memory accelerator (TMA)]] |
 
 ## AMD
 
@@ -81,13 +77,13 @@ i.e: H100 (2022)
 > | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                               |
 > | fp16 peak    | 1,979 tflop/s                                                                        |
 > | fp8 peak     | 3,958 tflop/s                                                                        |
-> | reference    | [[lectures/420/notes#memory hierarchy: the performance bottleneck]] · modal glossary |
+> | reference    | [[lectures/420#memory hierarchy: the performance bottleneck]] · modal glossary |
 
 > [!tip] hopper features
 >
-> - [[lectures/420/notes#thread block clusters and distributed shared memory|thread block clusters]] + dsme fabric
-> - [[lectures/420/notes#tensor memory accelerator (TMA)|tensor memory accelerator]] for descriptor-driven async copies
-> - [[lectures/420/notes#tensor core operation|wgmma]] instructions and mbarrier synchronization
+> - [[lectures/420#thread block clusters and distributed shared memory|thread block clusters]] + dsme fabric
+> - [[lectures/420#tensor memory accelerator (TMA)|tensor memory accelerator]] for descriptor-driven async copies
+> - [[lectures/420#tensor core operation|wgmma]] instructions and mbarrier synchronization
 > - fp8 (e4m3, e5m2) execution paths highlighted in section 11 of the jax scaling book: https://jax-ml.github.io/scaling-book/
 
 ### blackwell
@@ -104,27 +100,27 @@ i.e: b200 (2024)
 > | hbm          | 192 gb hbm3e @ 8 tb/s                                                                            |
 > | fp16 peak    | 2,250 tflop/s                                                                                    |
 > | fp4 peak     | 20,000 tflop/s                                                                                   |
-> | reference    | [[lectures/420/notes#level 1: the GPU chip \| architecture table]] · jax scaling book section 12 |
+> | reference    | [[lectures/420#level 1: the GPU chip \| architecture table]] · jax scaling book section 12 |
 
 > [!tip] blackwell enhancements
 >
-> - [[lectures/420/notes#mixed precision arithmetic|nvfp4 + mxfp8]] pipelines (tensor core fp4)
+> - [[lectures/420#mixed precision arithmetic|nvfp4 + mxfp8]] pipelines (tensor core fp4)
 > - second-generation tma with multicast/reduction shortcuts
 > - nvls fabric for multi-gpu topologies, complements nvlink
 > - guidance in "how to scale your model" (jax scaling book): https://jax-ml.github.io/scaling-book/
 
 ### cutlass and cute dsl
 
-See [[lectures/420/notes#cute dsl mental model|CUTLASS and CuTe DSL section]] for comprehensive coverage.
+See [[lectures/420#cute dsl mental model|CUTLASS and CuTe DSL section]] for comprehensive coverage.
 
 > [!table] templated gemm stack
 >
 > | component                         | focus                                                             | follow-up                                                                                                                          |
 > | --------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420/notes#hierarchical tiling with local_tile]]                                                                         |
-> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420/notes#layout algebra operations]]                                                                                   |
-> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420/notes#swizzling and bank conflict avoidance]]                                                                       |
-> | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420/notes#hierarchical tiling with local_tile]] · [[lectures/420/notes#thread-level partitioning with local_partition]] |
+> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420#hierarchical tiling with local_tile]]                                                                         |
+> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420#layout algebra operations]]                                                                                   |
+> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420#swizzling and bank conflict avoidance]]                                                                       |
+> | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420#hierarchical tiling with local_tile]] · [[lectures/420#thread-level partitioning with local_partition]] |
 
 ### triton linear layout
 
@@ -132,7 +128,7 @@ See also: [post](https://www.lei.chat/posts/triton-linear-layout-concept/) · mo
 
 Triton's layout system provides high-level abstractions similar to CUTe but with Python-based programming model.
 
-![[lectures/420/notes#roofline model|Roofline model section]].
+![[lectures/420#roofline model|Roofline model section]].
 
 > [!abstract] roofline checklist
 >

@@ -1,9 +1,9 @@
 ---
 abstract: The reason for Attention comparing to LSTM is that its ability to encode additional positional data into the inputs, in which it helps with longer context length and better memory retrieval. Note that most LLMs are decoder-only, given its superior benchmark in zero-shot tasks.
-date: '2024-02-07'
+date: "2024-02-07"
 description: and posteriori information retrieval.
 id: Attention
-modified: 2026-06-07 00:39:32 GMT-04:00
+modified: 2026-06-07 00:42:19 GMT-04:00
 seealso:
   - '[[lectures/2/convexity|emperical finding]]'
   - '[[lectures/2/afp|attention from first principles]]'
@@ -30,7 +30,7 @@ First introduced in @vaswani2023attentionneed. One can think of attention for QK
 - K: what information do I have
 - V: what information do I need to share to each other.
 
-> [!note]- equivalent
+> [!note]+ equivalent
 >
 > We can probably arrange the attention function (composed of multiple [[thoughts/induction heads|attention-heads]]) according to @elhage2021mathematical:
 >

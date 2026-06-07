@@ -2,10 +2,10 @@
 date: '2025-08-21'
 description: attention and math
 id: notes
-modified: 2026-06-06 00:13:54 GMT-04:00
+modified: 2026-06-07 01:30:09 GMT-04:00
 tags:
   - workshop
-title: supplement to 0.200
+title: supplement to 0[dot]200
 ---
 
 supports:

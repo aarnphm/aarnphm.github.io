@@ -331,16 +331,16 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                   >
                     <rect
                       class="mha-box mha-box--collapsed"
-                      x={COL_X.score - 30}
+                      x={COL_X.score - SCORE_BOX / 2}
                       y={mid - 11}
-                      width={60}
+                      width={SCORE_BOX}
                       height={22}
                       rx={3}
                     />
                     <MathFO
-                      x={COL_X.score - 30}
+                      x={COL_X.score - SCORE_BOX / 2}
                       y={mid - 11}
-                      w={60}
+                      w={SCORE_BOX}
                       h={22}
                       tex={`\\text{head}_{${i + 1}}\\,\\text{attn}`}
                       cls="mha-fo--collapsed"

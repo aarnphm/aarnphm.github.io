@@ -1061,6 +1061,39 @@ describe('micromark wikilink extension', () => {
         assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '#^block-id')
       })
 
+      test('annotates absolute transclude with block reference', () => {
+        const tree = parse('![[/quotes#^tommy|from tommy]]', { obsidian: true })
+        const wikilink = extractWikilink(tree)
+
+        assert(wikilink, 'wikilink node should exist')
+        assert.strictEqual(wikilink.data?.hName, 'blockquote')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-url'], '/quotes')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '#^tommy')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-embed-alias'], 'from tommy')
+      })
+
+      test('annotates notebook cell transclude anchor', () => {
+        const tree = parse('![[thoughts/Jax#code-cell-1|example]]', { obsidian: true })
+        const wikilink = extractWikilink(tree)
+
+        assert(wikilink, 'wikilink node should exist')
+        assert.strictEqual(wikilink.data?.hName, 'blockquote')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-url'], 'thoughts/Jax')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '#code-cell-1')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-embed-alias'], 'example')
+      })
+
+      test('annotates transclude with metadata', () => {
+        const tree = parse('![[thoughts/Attention#{collapsed: true}]]', { obsidian: true })
+        const wikilink = extractWikilink(tree)
+
+        assert(wikilink, 'wikilink node should exist')
+        assert.strictEqual(wikilink.data?.hName, 'blockquote')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-url'], 'thoughts/Attention')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-block'], '')
+        assert.strictEqual(wikilink.data?.hProperties?.['data-metadata'], '{"collapsed":true}')
+      })
+
       test('annotates transclude with alias', () => {
         const tree = parse('![[notes#summary|see notes]]', { obsidian: true })
         const wikilink = extractWikilink(tree)

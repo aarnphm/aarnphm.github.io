@@ -28,10 +28,6 @@ const Fo: FunctionalComponent<FoProps> = ({ x, y, w, h, t, cls }) => (
   </foreignObject>
 )
 
-const T: FunctionalComponent<{ t: string; d?: boolean; cls?: string }> = ({ t, d, cls }) => (
-  <span class={cls} dangerouslySetInnerHTML={{ __html: tex(t, d) }} />
-)
-
 const STD_ARROW = 'acir-std-arrow'
 const CIR_ARROW = 'acir-cir-arrow'
 
@@ -65,12 +61,6 @@ const Weight: FunctionalComponent<{
 )
 
 const StandardPanel: FunctionalComponent = () => {
-  const inX = 30
-  const splitX = 95
-  const projX = 150
-  const smX = 220
-  const outX = 290
-  const mulX = smX + 33
   const arr = `url(#${STD_ARROW})`
   return (
     <svg
@@ -81,44 +71,32 @@ const StandardPanel: FunctionalComponent = () => {
       aria-label="Standard attention flow: x branches into Q, K, V projections; Q and K feed softmax; weights apply to V; result passes through W_O."
     >
       <ArrowDefs id={STD_ARROW} />
-      <rect class="acir-box acir-box--input" x={inX - 22} y={210} width={44} height={40} rx={4} />
-      <Fo x={inX - 22} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
-      <path class="acir-line" d={`M ${inX + 22} 230 L ${splitX} 230`} />
-      <path
-        class="acir-line"
-        d={`M ${splitX} 230 L ${splitX} 100 L ${projX - 4} 100`}
-        marker-end={arr}
-      />
-      <path class="acir-line" d={`M ${splitX} 230 L ${projX - 4} 230`} marker-end={arr} />
-      <path
-        class="acir-line"
-        d={`M ${splitX} 230 L ${splitX} 360 L ${projX - 4} 360`}
-        marker-end={arr}
-      />
-      <Weight x={projX} y={80} t="W_Q" circuit="qk" k="WQ" />
-      <Weight x={projX} y={210} t="W_K" circuit="qk" k="WK" />
-      <Weight x={projX} y={340} t="W_V" circuit="ov" k="WV" />
+      <rect class="acir-box acir-box--input" x={6} y={210} width={44} height={40} rx={4} />
+      <Fo x={6} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
+      <path class="acir-line" d="M 50 230 L 60 230" />
+      <path class="acir-line" d="M 60 230 L 60 100 L 88 100" marker-end={arr} />
+      <path class="acir-line" d="M 60 230 L 88 230" marker-end={arr} />
+      <path class="acir-line" d="M 60 230 L 60 360 L 88 360" marker-end={arr} />
+      <Weight x={92} y={80} t="W_Q" circuit="qk" k="WQ" />
+      <Weight x={92} y={210} t="W_K" circuit="qk" k="WK" />
+      <Weight x={92} y={340} t="W_V" circuit="ov" k="WV" />
       <g class="acir-circuit-mark" data-acir-circuit="qk">
+        <path class="acir-line acir-line--qk" d="M 148 100 L 180 100" marker-end={arr} />
         <path
           class="acir-line acir-line--qk"
-          d={`M ${projX + 56} 100 L ${smX - 4} 100`}
-          marker-end={arr}
-        />
-        <path
-          class="acir-line acir-line--qk"
-          d={`M ${projX + 56} 230 L ${smX - 30} 230 L ${smX - 30} 150 L ${smX - 4} 150`}
+          d="M 148 230 L 166 230 L 166 140 L 180 140"
           marker-end={arr}
         />
       </g>
-      <rect class="acir-box acir-box--softmax" x={smX} y={75} width={66} height={100} rx={4} />
-      <Fo x={smX} y={75} w={66} h={32} t={math`\frac{QK^\top}{\sqrt{d_h}}`} cls="acir-fo--sm" />
-      <Fo x={smX} y={108} w={66} h={28} t={math`\operatorname{softmax}`} cls="acir-fo--xs" />
+      <rect class="acir-box acir-box--softmax" x={184} y={78} width={64} height={98} rx={4} />
+      <Fo x={184} y={80} w={64} h={30} t={math`\frac{QK^\top}{\sqrt{d_h}}`} cls="acir-fo--sm" />
+      <Fo x={184} y={110} w={64} h={24} t={math`\operatorname{softmax}`} cls="acir-fo--xs" />
       <g class="acir-attn-grid" data-acir-attn-grid>
         {Array.from({ length: 4 }, (_, r) =>
           Array.from({ length: 4 }, (_, c) => (
             <rect
               class="acir-attn-cell"
-              x={smX + 6 + c * 13}
+              x={192 + c * 13}
               y={140 + r * 7}
               width={11}
               height={5}
@@ -129,40 +107,24 @@ const StandardPanel: FunctionalComponent = () => {
         )}
       </g>
       <g class="acir-circuit-mark" data-acir-circuit="ov">
-        <path
-          class="acir-line acir-line--ov"
-          d={`M ${projX + 56} 360 L ${smX - 4} 360`}
-          marker-end={arr}
-        />
+        <path class="acir-line acir-line--ov" d="M 148 360 L 186 360" marker-end={arr} />
       </g>
-      <rect class="acir-box acir-box--value" x={smX} y={340} width={56} height={40} rx={4} />
-      <Fo x={smX} y={340} w={56} h={40} t="V" />
-      <circle class="acir-node" cx={mulX} cy={250} r={9} />
-      <Fo x={mulX - 8} y={242} w={16} h={16} t={math`\times`} cls="acir-fo--sm" />
-      <path class="acir-line acir-line--qk" d={`M ${mulX} 175 L ${mulX} 241`} marker-end={arr} />
-      <path
-        class="acir-line acir-line--ov"
-        d={`M ${smX + 28} 340 L ${smX + 28} 260 L ${mulX + 9} 250`}
-        marker-end={arr}
-      />
-      <Weight x={outX - 28} y={230} t="W_O" circuit="ov" k="WO" />
-      <path
-        class="acir-line acir-line--ov"
-        d={`M ${mulX + 9} 250 L ${outX - 32} 250`}
-        marker-end={arr}
-      />
-      <path class="acir-line" d={`M ${outX} 270 L ${outX} 410`} marker-end={arr} />
-      <rect class="acir-box acir-box--output" x={outX - 22} y={410} width={44} height={36} rx={4} />
-      <Fo x={outX - 22} y={410} w={44} h={36} t={math`\mathrm{out}`} cls="acir-fo--sm" />
+      <rect class="acir-box acir-box--value" x={190} y={340} width={52} height={40} rx={4} />
+      <Fo x={190} y={340} w={52} h={40} t="V" />
+      <circle class="acir-node" cx={216} cy={250} r={9} />
+      <Fo x={208} y={242} w={16} h={16} t={math`\times`} cls="acir-fo--sm" />
+      <path class="acir-line acir-line--qk" d="M 216 176 L 216 241" marker-end={arr} />
+      <path class="acir-line acir-line--ov" d="M 216 340 L 216 259" marker-end={arr} />
+      <path class="acir-line acir-line--ov" d="M 225 250 L 252 250" marker-end={arr} />
+      <Weight x={256} y={230} t="W_O" circuit="ov" k="WO" />
+      <path class="acir-line acir-line--ov" d="M 284 270 L 284 412" marker-end={arr} />
+      <rect class="acir-box acir-box--output" x={262} y={412} width={44} height={36} rx={4} />
+      <Fo x={262} y={412} w={44} h={36} t={math`\mathrm{out}`} cls="acir-fo--sm" />
     </svg>
   )
 }
 
 const CircuitPanel: FunctionalComponent = () => {
-  const tokX = 40
-  const aijX = 110
-  const ovX = 200
-  const outX = 280
   const arr = `url(#${CIR_ARROW})`
   return (
     <svg
@@ -178,33 +140,19 @@ const CircuitPanel: FunctionalComponent = () => {
         const label = idx === 3 ? 'i' : String(idx)
         return (
           <g>
-            <rect
-              class="acir-box acir-box--input"
-              x={tokX - 22}
-              y={y - 14}
-              width={44}
-              height={28}
-              rx={4}
-            />
-            <Fo x={tokX - 22} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
-            <path class="acir-line" d={`M ${tokX + 22} ${y} L ${aijX - 4} ${y}`} marker-end={arr} />
+            <rect class="acir-box acir-box--input" x={18} y={y - 14} width={44} height={28} rx={4} />
+            <Fo x={18} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
+            <path class="acir-line" d={`M 62 ${y} L 106 ${y}`} marker-end={arr} />
           </g>
         )
       })}
       <g class="acir-aij" data-acir-circuit="qk">
-        <rect
-          class="acir-box acir-box--qk-pattern"
-          x={aijX}
-          y={80}
-          width={56}
-          height={250}
-          rx={4}
-        />
-        <Fo x={aijX} y={80} w={56} h={28} t="a^{l,h}_{ij}" cls="acir-fo--sm" />
+        <rect class="acir-box acir-box--qk-pattern" x={110} y={80} width={56} height={250} rx={4} />
+        <Fo x={110} y={82} w={56} h={26} t="a^{l,h}_{ij}" cls="acir-fo--sm" />
         {Array.from({ length: 4 }, (_, idx) => (
           <rect
             class="acir-aij-bar"
-            x={aijX + 12}
+            x={122}
             y={120 + idx * 50}
             width={32}
             height={28}
@@ -212,55 +160,33 @@ const CircuitPanel: FunctionalComponent = () => {
             style={{ opacity: 0.85 - idx * 0.18 }}
           />
         ))}
-        <Fo
-          x={aijX}
-          y={310}
-          w={56}
-          h={24}
-          t={math`\text{QK}`}
-          cls="acir-fo--label acir-fo--qk-label"
-        />
+        <Fo x={110} y={303} w={56} h={22} t={math`\text{QK}`} cls="acir-fo--label acir-fo--qk-label" />
       </g>
       <g data-acir-circuit="ov">
         <g data-acir-ov-split>
-          <rect class="acir-box acir-box--weight" x={ovX} y={155} width={56} height={40} rx={4} />
-          <Fo x={ovX} y={155} w={56} h={40} t="W_V" />
-          <Fo x={ovX + 20} y={200} w={16} h={16} t={math`\cdot`} cls="acir-fo--sm" />
-          <rect class="acir-box acir-box--weight" x={ovX} y={215} width={56} height={40} rx={4} />
-          <Fo x={ovX} y={215} w={56} h={40} t="W_O" />
+          <rect class="acir-box acir-box--weight" x={200} y={165} width={56} height={40} rx={4} />
+          <Fo x={200} y={165} w={56} h={40} t="W_V" />
+          <rect class="acir-box acir-box--weight" x={200} y={205} width={56} height={40} rx={4} />
+          <Fo x={200} y={205} w={56} h={40} t="W_O" />
         </g>
         <g data-acir-ov-rank hidden>
-          <rect
-            class="acir-box acir-box--ov-rank"
-            x={ovX - 8}
-            y={170}
-            width={72}
-            height={70}
-            rx={4}
-          />
-          <Fo x={ovX - 8} y={170} w={72} h={32} t="W_V W_O" cls="acir-fo--sm" />
+          <rect class="acir-box acir-box--ov-rank" x={200} y={170} width={56} height={70} rx={4} />
+          <Fo x={200} y={170} w={56} h={34} t="W_V W_O" cls="acir-fo--xs" />
           <Fo
-            x={ovX - 8}
-            y={204}
-            w={72}
-            h={32}
+            x={200}
+            y={206}
+            w={56}
+            h={30}
             t={math`\mathrm{rank}\le d_h`}
             cls="acir-fo--xs acir-fo--rank"
           />
         </g>
-        <Fo
-          x={ovX - 4}
-          y={270}
-          w={72}
-          h={24}
-          t={math`\text{OV}`}
-          cls="acir-fo--label acir-fo--ov-label"
-        />
+        <Fo x={196} y={252} w={64} h={22} t={math`\text{OV}`} cls="acir-fo--label acir-fo--ov-label" />
       </g>
-      <path class="acir-line" d={`M ${aijX + 56} 205 L ${ovX - 4} 205`} marker-end={arr} />
-      <path class="acir-line" d={`M ${ovX + 64} 205 L ${outX - 4} 205`} marker-end={arr} />
-      <rect class="acir-box acir-box--output" x={outX} y={185} width={36} height={40} rx={4} />
-      <Fo x={outX} y={185} w={36} h={40} t={math`\mathrm{out}`} cls="acir-fo--sm" />
+      <path class="acir-line" d="M 166 205 L 196 205" marker-end={arr} />
+      <path class="acir-line" d="M 256 205 L 276 205" marker-end={arr} />
+      <rect class="acir-box acir-box--output" x={280} y={185} width={36} height={40} rx={4} />
+      <Fo x={280} y={185} w={36} h={40} t={math`\mathrm{out}`} cls="acir-fo--sm" />
       <rect class="acir-sum-bg" x={30} y={380} width={260} height={56} rx={4} />
       <foreignObject x={30} y={380} width={260} height={56}>
         <div

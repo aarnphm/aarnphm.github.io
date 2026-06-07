@@ -2,12 +2,12 @@
 date: '2025-09-12'
 description: linear algebra notes
 id: notes
-modified: 2026-06-05 15:08:04 GMT-04:00
+modified: 2026-06-07 01:29:31 GMT-04:00
 slides: true
 tags:
   - workshop
   - math/linalg
-title: supplement to 0.411
+title: supplement to 0[dot]411
 transclude:
   title: false
 ---

@@ -2,12 +2,12 @@
 date: '2025-08-28'
 description: and more notes
 id: notes
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-06-07 01:30:00 GMT-04:00
 socials:
   youtube: https://youtu.be/DDLlOqQ46HE
 tags:
   - workshop
-title: supplement to 0.300
+title: supplement to 0[dot]300
 transclude:
   title: false
 ---

@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-06-07 00:25:50 GMT-04:00
+modified: 2026-06-07 01:18:37 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -156,7 +156,7 @@ vLLM Blog: Structured Decoding in vLLM: a gentle introduction
       - [[lectures/41/notes|41. EAGLE, and MTP]]
         - [[lectures/411/notes|411. linear algebra]]
         - [[lectures/412/notes|412. linear algebra in transformers]]
-      - [[lectures/420/notes|420. matmul and GPU quirks]]
+      - [[lectures/420|420. matmul and GPU quirks]]
       - [[lectures/430/notes|430. Deploying DeepSeek R1]]
       - [[lectures/440/notes|440. tinyvllm]]
 - vLLM Toronto Meetup, 2025

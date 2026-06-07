@@ -2,7 +2,7 @@
 date: '2024-02-07'
 description: and the backbone of the current language models/ai progress.
 id: Transformers
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-06-07 01:44:41 GMT-04:00
 seealso:
   - '[[thoughts/LLMs|LLMs]]'
   - '[[thoughts/Embedding|embedding]]'
@@ -10,6 +10,7 @@ seealso:
   - '[[thoughts/KV compression]]'
   - '[[thoughts/KV offloading]]'
   - '[[thoughts/mechanistic interpretability]]'
+  - '[[thoughts/Speculative decoding|Speculative decoding]]'
   - '[[thoughts/tsfm|toronto school of foundational modelling]]'
 socials:
   updates: https://magazine.sebastianraschka.com/p/beyond-standard-llms
@@ -58,9 +59,6 @@ where $\mathcal{M}$ indexes non‑padded, shift‑right targets.
 
 Let number of tokens $N$, embedding dim to $d$, we have embeddings $E \in R^{N\times d}$
 
-![[thoughts/Embedding#{collapsed: true}]]
-![[thoughts/Attention#{collapsed: true}]]
-
 ## memory limitations.
 
 https://arxiv.org/abs/2403.14123
@@ -69,13 +67,11 @@ https://x.com/karpathy/status/1691571869051445433
 
 ## inference.
 
-![[thoughts/PD disaggregated serving#prefill/decode]]
-
-![[thoughts/Speculative decoding#{collapsed: true}]]
+A common pattern in production are to [[thoughts/PD disaggregated serving#prefill/decode|disaggregate]] prefill and decode nodes such that each deployments are optimized for its own prefill/decode goals/target.
 
 ### sampling
 
-see also: [vLLM's sampler implementation](https://github.com/vllm-project/vllm/blob/main/vllm/v1/sample/sampler.py)
+![[https://github.com/vllm-project/vllm/blob/main/vllm/v1/sample/sampler.py]]
 
 given logits $z_i$ and base distribution $p_i = \text{softmax}(z)_i$, sampling methods modify this distribution before drawing tokens.
 
@@ -187,21 +183,15 @@ def sample(logits: torch.Tensor, params: SamplingParams) -> torch.Tensor:
   return torch.multinomial(probs, num_samples=1)
 ```
 
-#### rejection sampling
-
-![[thoughts/Speculative decoding#von Neumann acceptance rejection|see also: speculative decoding]]
+[[thoughts/Speculative decoding#von Neumann acceptance rejection|see also: speculative decoding]]
 
 ### KV
-
-![[thoughts/KV offloading#motivation]]
 
 The core "retrieval" bags that contains all previous stored key-value pair or newly added items.
 
 [[thoughts/PD disaggregated serving|Prefill disaggregation]] is pretty interesting in a sense that we can separate prefill stage to a separate nodes [@qin2024mooncakekvcachecentricdisaggregatedarchitecture]
 
 ![[thoughts/images/mooncake-pd.webp|KV-centric optimization]]
-
-![[lectures/3/notes#kvcache ad-hoc implementation]]
 
 ### next-token prediction.
 

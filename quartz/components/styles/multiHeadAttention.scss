@@ -213,7 +213,7 @@
     font-size: 10px;
   }
   .mha-fo--collapsed {
-    font-size: 9px;
+    font-size: 8px;
     color: var(--mha-note);
   }
   .mha-fo--concat {
@@ -466,7 +466,7 @@
   padding: 0.4rem 0.65rem;
   min-height: 2.5rem;
   border-radius: var(--radius-none);
-  border: 0;
+  border: 1px solid var(--lightgray);
   background: color-mix(in srgb, var(--light) 90%, transparent);
   color: var(--mha-note);
   font-size: 0.8rem;

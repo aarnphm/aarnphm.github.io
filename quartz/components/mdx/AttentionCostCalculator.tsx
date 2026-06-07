@@ -221,16 +221,14 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
               data-metric={r.k}
               role="listitem"
             >
-              <header class="acc-card-head">
-                <span class="acc-card-label">{r.label}</span>
-                <FormulaFO t={r.formula} />
-              </header>
+              <span class="acc-card-label">{r.label}</span>
               <div class="acc-card-body">
                 <span class="acc-card-num" data-acc-num={r.k}>
                   {readoutValue(r.k)}
                 </span>
                 <span class="acc-card-delta" data-acc-delta={r.k} aria-live="polite" />
               </div>
+              <FormulaFO t={r.formula} />
             </article>
           ))}
         </div>

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-06 22:56:27 GMT-04:00
+modified: 2026-06-07 01:20:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -5360,12 +5360,12 @@ title: are.na
   - [meta]:
     - date: 10/05/2025
     - tags: [napkin, inference]
-  - see also [[thoughts/Transformers#Inference]], [[thoughts/LLMs]]
+  - see also [[thoughts/Transformers#inference.]], [[thoughts/LLMs]]
 - https://www.youtube.com/watch?v=kLiwvnr4L80&t=868s -- Trends in Deep Learning, Bill Dally (NVIDIA)
   - [meta]:
     - date: 10/05/2025
     - tags: [argumentative, trend]
-  - [[thoughts/GPU programming]], [[lectures/420/notes|NVIDIA architecture notes]]
+  - [[thoughts/GPU programming]], [[lectures/420|NVIDIA architecture notes]]
 - https://x.com/thesephist/status/1895887696268288119 -- AI-centric interface design
   - [meta]:
     - date: 10/03/2025
