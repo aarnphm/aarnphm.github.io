@@ -1,22 +1,22 @@
 ---
-title: "problem set 6"
-description: "This resource contains 5 problems about banach fixed-point theorem, Rudin problem, metric space and telescoping sum."
-id: "mit-18-100b-fall-2010-resource-resources-mit18-100bf10-pset6"
+title: 'problem set 6'
+description: 'This resource contains 5 problems about banach fixed-point theorem, Rudin problem, metric space and telescoping sum.'
+id: 'mit-18-100b-fall-2010-resource-resources-mit18-100bf10-pset6'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "mathematical analysis"
-  - "differential equations"
-  - "calculus"
-  - "problem sets"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'mathematical analysis'
+  - 'differential equations'
+  - 'calculus'
+  - 'problem sets'
 aliases:
-  - "2471b2f2d05355b54e324ff185e47086_MIT18_100BF10_pset6.pdf"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - '2471b2f2d05355b54e324ff185e47086_MIT18_100BF10_pset6.pdf'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]

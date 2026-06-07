@@ -7,15 +7,9 @@
   "file": "/courses/18-100b-analysis-i-fall-2010/6fb2555b29c7a4f07410f790db38d696_MIT18_100BF10_pset4sol.pdf",
   "file_size": 146758,
   "file_type": "application/pdf",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Problem Set Solutions"
-  ],
+  "learning_resource_types": ["Problem Set Solutions"],
   "level": [],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "ocw_type": "OCWFile",
@@ -28,16 +22,10 @@
   "video_files": {
     "archive_url": "",
     "video_captions_file": "",
-    "video_captions_resource": {
-      "content": "",
-      "website": "18-100b-analysis-i-fall-2010"
-    },
+    "video_captions_resource": { "content": "", "website": "18-100b-analysis-i-fall-2010" },
     "video_thumbnail_file": "",
     "video_transcript_file": "",
-    "video_transcript_resource": {
-      "content": "",
-      "website": "18-100b-analysis-i-fall-2010"
-    }
+    "video_transcript_resource": { "content": "", "website": "18-100b-analysis-i-fall-2010" }
   },
   "video_metadata": {
     "source": "",

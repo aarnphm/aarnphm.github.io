@@ -6,16 +6,9 @@
   "file": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_lec_full.tex",
   "file_size": 307025,
   "file_type": "text/x-tex",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Lecture Notes",
-    "Editable Files"
-  ],
+  "learning_resource_types": ["Lecture Notes", "Editable Files"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "resourcetype": "Document",
   "title": "18.156 (S25): Full Lecture Notes: Projection Theory (LaTeX version)",

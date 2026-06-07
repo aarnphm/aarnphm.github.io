@@ -1,22 +1,22 @@
 ---
-title: "problem set 2"
-description: "This resource contains problems about countability, Euclidean spaces, Rudin and metric spaces."
-id: "mit-18-100b-fall-2010-resource-resources-mit18-100bf10-pset2"
+title: 'problem set 2'
+description: 'This resource contains problems about countability, Euclidean spaces, Rudin and metric spaces.'
+id: 'mit-18-100b-fall-2010-resource-resources-mit18-100bf10-pset2'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "mathematical analysis"
-  - "differential equations"
-  - "calculus"
-  - "problem sets"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'mathematical analysis'
+  - 'differential equations'
+  - 'calculus'
+  - 'problem sets'
 aliases:
-  - "a3f194818297a0be395cc4603b37a05c_MIT18_100BF10_pset2.pdf"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'a3f194818297a0be395cc4603b37a05c_MIT18_100BF10_pset2.pdf'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]

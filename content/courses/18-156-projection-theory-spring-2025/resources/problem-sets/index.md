@@ -1,18 +1,18 @@
 ---
-title: "problem sets"
-description: "mit 18.156 problem sets"
-id: "mit-18-156-spring-2025-collection-resources-problem-sets"
+title: 'problem sets'
+description: 'mit 18.156 problem sets'
+id: 'mit-18-156-spring-2025-collection-resources-problem-sets'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "differential equations"
-  - "mathematical analysis"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'differential equations'
+  - 'mathematical analysis'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]

@@ -6,15 +6,9 @@
   "file": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_lec10.pdf",
   "file_size": 485790,
   "file_type": "application/pdf",
-  "image_metadata": {
-    "caption": "",
-    "credit": "",
-    "image-alt": ""
-  },
+  "image_metadata": { "caption": "", "credit": "", "image-alt": "" },
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Lecture Notes"
-  ],
+  "learning_resource_types": ["Lecture Notes"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "resourcetype": "Document",
   "title": "18.156 (S25): Lecture 10: Sum-Product Theory",

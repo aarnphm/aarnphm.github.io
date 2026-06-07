@@ -1,21 +1,21 @@
 ---
-title: "lecture 08: the szemeredi trotter theorem"
-description: "mit 18.156 lecture 08: the szemeredi trotter theorem"
-id: "mit-18-156-spring-2025-resource-resources-mit18-156s25-lec08-1080p-mp4"
+title: 'lecture 08: the szemeredi trotter theorem'
+description: 'mit 18.156 lecture 08: the szemeredi trotter theorem'
+id: 'mit-18-156-spring-2025-resource-resources-mit18-156s25-lec08-1080p-mp4'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "differential equations"
-  - "mathematical analysis"
-  - "lecture videos"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'differential equations'
+  - 'mathematical analysis'
+  - 'lecture videos'
 aliases:
-  - "mit18_156s25_lec08_1080p_360p_16_9.mp4"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'mit18_156s25_lec08_1080p_360p_16_9.mp4'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]

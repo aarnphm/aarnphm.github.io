@@ -38,9 +38,7 @@
     }
   },
   "course_title": "Projection Theory",
-  "department_numbers": [
-    "18"
-  ],
+  "department_numbers": ["18"],
   "extra_course_numbers": "",
   "hide_download": false,
   "image_src": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_v2.jpg",
@@ -63,9 +61,7 @@
     "Editable Files"
   ],
   "legacy_uid": "",
-  "level": [
-    "Graduate"
-  ],
+  "level": ["Graduate"],
   "mit_learn_topics": [],
   "primary_course_number": "18.156",
   "site_short_id": "18.156-spring-2025",
@@ -73,14 +69,8 @@
   "site_url_path": "courses/18-156-projection-theory-spring-2025",
   "term": "Spring",
   "topics": [
-    [
-      "Mathematics",
-      "Differential Equations"
-    ],
-    [
-      "Mathematics",
-      "Mathematical Analysis"
-    ]
+    ["Mathematics", "Differential Equations"],
+    ["Mathematics", "Mathematical Analysis"]
   ],
   "year": "2025"
 }

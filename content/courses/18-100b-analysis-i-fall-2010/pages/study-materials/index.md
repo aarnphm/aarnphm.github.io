@@ -1,27 +1,27 @@
 ---
-title: "study materials"
-description: "This section provides problem sets and solutions from the 2006 version of the course as study materials."
-id: "mit-18-100b-fall-2010-page-pages-study-materials"
+title: 'study materials'
+description: 'This section provides problem sets and solutions from the 2006 version of the course as study materials.'
+id: 'mit-18-100b-fall-2010-page-pages-study-materials'
 tags:
-  - "course"
-  - "mit"
-  - "ocw"
-  - "mathematics"
-  - "math"
-  - "mathematical analysis"
-  - "differential equations"
-  - "calculus"
-layout: "A|L"
-license: "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International"
-license_url: "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  - 'course'
+  - 'mit'
+  - 'ocw'
+  - 'mathematics'
+  - 'math'
+  - 'mathematical analysis'
+  - 'differential equations'
+  - 'calculus'
+layout: 'A|L'
+license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
+license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 ---
 
 up: [[courses/18-100b-analysis-i-fall-2010/|mit 18.100b]]
 
 The problem sets and solutions from 2006 are useful as study materials. The solutions files are courtesy of students from that class, Xiaoguang Ma and Sawyer Tabony, and are used with permission.
 
-| ASSIGNMENTS                                                                                     | SOLUTIONS                                                                         |
-| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| ASSIGNMENTS                                                                                      | SOLUTIONS                                                                          |
+| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | Problem set 1 ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset1-1/\|pdf]])   | ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset1sol/\|pdf]])  |
 | Problem set 2 ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset2-1/\|pdf]])   | ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset2sol/\|pdf]])  |
 | Problem set 3 ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset3-1/\|pdf]])   | ([[courses/18-100b-analysis-i-fall-2010/resources/mit18_100bf10_pset3sol/\|pdf]])  |

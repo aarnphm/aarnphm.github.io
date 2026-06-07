@@ -7,9 +7,7 @@
   "file_size": 201390,
   "file_type": "application/pdf",
   "iscjklanguage": false,
-  "learning_resource_types": [
-    "Readings"
-  ],
+  "learning_resource_types": ["Readings"],
   "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
   "ocw_type": "OCWFile",
   "parent_title": "Readings & Notes",
