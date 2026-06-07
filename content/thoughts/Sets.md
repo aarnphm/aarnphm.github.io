@@ -2,12 +2,13 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-06 22:30:48 GMT-04:00
+modified: 2026-06-06 23:06:14 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
   - '[[thoughts/pdfs/armstrong-basic-topology.pdf|Basic Topology, Amstrong]]'
   - '[[courses/18.901-fall-2004/static_resources/0162d186ff55f17b25d9c57f6fd211cc_18901.pdf|notes a]]'
+  - '[[courses/18.901-fall-2004|Introduction to Topology]]'
 tags:
   - math/sets
   - math/topology

@@ -7,8 +7,10 @@ import {
   QuartzComponentProps,
 } from '../types/component'
 import { getAllSegmentPrefixes, resolveRelative, SimpleSlug, simplifySlug } from '../util/path'
+import { concatenateResources } from '../util/resources'
 //@ts-ignore
 import script from './scripts/evergreen.inline'
+import SeeAlsoComponent from './SeeAlso'
 import style from './styles/evergreen.scss'
 
 type Props = {
@@ -111,6 +113,7 @@ export const EvergreenPermanentNotes = ((userOpts?: EvergreenNotes) =>
 
 export default ((opts?: EvergreenNotes) => {
   const Permanent = EvergreenPermanentNotes(opts)
+  const SeeAlso = SeeAlsoComponent()
   const Evergreen: QuartzComponent = (props: Props) => {
     const { cfg, allFiles, content } = props
     return (
@@ -119,13 +122,14 @@ export default ((opts?: EvergreenNotes) => {
         <article style={{ marginBottom: 0 }}>
           {content}
           <p>{i18n(cfg.locale).pages.folderContent.itemsUnderFolder({ count: allFiles.length })}</p>
+          <SeeAlso {...props} />
         </article>
         <AllTags {...props} opts />
       </div>
     )
   }
 
-  Evergreen.css = style
+  Evergreen.css = concatenateResources(style, SeeAlso.css)
   Evergreen.afterDOMLoaded = script
   return Evergreen
 }) satisfies QuartzComponentConstructor
