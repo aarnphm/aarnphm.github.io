@@ -514,6 +514,7 @@ async function hydrateInternalHost(host: HTMLElement) {
       preview.dataset.pdfSrc = `${urlWithoutHash.pathname}${urlWithoutHash.search}`
       preview.dataset.pdfTitle = filename
       preview.dataset.pdfFit = 'page'
+      preview.tabIndex = 0
       mountPdfEmbeds(preview)
       host.dataset.internalStatus = 'loaded'
       return
@@ -661,6 +662,7 @@ function renderPdfModalHtml(pdfUrl: string): string {
       data-pdf-src="${escapeHtml(arenaPdfViewerSource(pdfUrl))}"
       data-pdf-title="${escapeHtml(arenaPdfFilenameFromUrl(pdfUrl))}"
       data-pdf-fit="page"
+      tabindex="0"
     >
       <span class="pdf-embed-loading">Loading PDF</span>
     </div>

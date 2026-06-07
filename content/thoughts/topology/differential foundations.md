@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: bridge from topological manifolds to smooth manifolds, morse theory, and differential structures.
 id: differential foundations
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 19:42:22 GMT-04:00
 tags:
   - math
   - math/topology
@@ -80,9 +80,7 @@ leads to:
 
 primary: lee "introduction to smooth manifolds" ch 1-15
 
-see [[thoughts/topology/resources#phase 7 differential topology (year 2, fall)|differential topology resources]] for complete bibliography.
-
 ## further reading
 
 - riemannian geometry (lee "riemannian manifolds")
-- parallel study of [[thoughts/topology/3-manifolds|3-manifold topology]]
+- parallel study of [[thoughts/topology/3 manifolds|3-manifold topology]]

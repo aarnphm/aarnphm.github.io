@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: hamilton's ricci flow and perelman's entropy functionals—the analytic machinery behind geometrization.
 id: ricci-flow
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 19:42:33 GMT-04:00
 tags:
   - math
   - math/topology
@@ -175,8 +175,6 @@ primary texts:
 - chow-knopf "the ricci flow: an introduction" (accessible entry)
 - morgan-tian "ricci flow and the poincaré conjecture" (complete proof)
 - hamilton's collected papers (original sources)
-
-see [[thoughts/topology/resources#phase-10-ricci-flow-year-3-4|ricci flow resources]] for complete bibliography.
 
 ## timeline
 

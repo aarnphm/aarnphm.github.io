@@ -624,3 +624,54 @@ C: Complements need a [universe].
 ---
 
 C: Open and closed are properties of subsets relative to a [topology] on $X$.
+
+---
+
+Q: State the set domination laws in universe $X$.
+A:
+
+$$
+A \cup X = X
+$$
+
+$$
+A \cap \emptyset = \emptyset
+$$
+
+---
+
+Q: State the set absorption laws.
+A:
+
+$$
+A \cup (A \cap B) = A
+$$
+
+$$
+A \cap (A \cup B) = A
+$$
+
+---
+
+C: Set operations are [idempotent]: $A \cup A = A$ and $A \cap A = A$.
+
+---
+
+C: The double negative law for sets states [$(A^c)^c = A$].
+
+---
+
+C: In the standard topology on $\mathbb{R}$, $[a, b]$ is [closed], $(a, b)$ is [open], and $[a, b)$ is [neither].
+
+---
+
+C: The [lower limit topology] on $\mathbb{R}$ handles half-open intervals $[a,b)$ differently than the standard topology.
+
+---
+
+Q: State four equivalent forms of the Axiom of Choice.
+A:
+1. Every surjection has a right inverse.
+2. Every vector space has a basis.
+3. Every product of nonempty sets is nonempty.
+4. Every set can be well-ordered.

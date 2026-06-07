@@ -32,6 +32,7 @@ import PageListConstructor, {
   SortFn,
 } from '../PageList'
 import PageListSearchConstructor from '../PageListSearch'
+import SeeAlsoComponent from '../SeeAlso'
 import style from '../styles/listPage.scss'
 
 interface FolderContentOptions {
@@ -319,6 +320,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
   const Evergreen = EvergreenConstructor({ lg, sm, tags })
   const PermanentNotes = EvergreenPermanentNotes({ lg, sm, tags })
   const PageListSearch = PageListSearchConstructor()
+  const SeeAlso = SeeAlsoComponent()
 
   const FolderContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, ctx, cfg } = props
@@ -500,6 +502,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
             </div>
             <article class="folder-layout--article">
               {content}
+              <SeeAlso {...props} />
               <p>
                 {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
                   count: listProps.allFiles.length,
@@ -514,6 +517,7 @@ export default ((opts?: Partial<FolderContentOptions>) => {
           <div class="folder-layout folder-layout--a-l" data-pagelist>
             <article class="folder-layout--article">
               {content}
+              <SeeAlso {...props} />
               <p>
                 {i18n(cfg.locale).pages.folderContent.itemsUnderFolder({
                   count: listProps.allFiles.length,
@@ -530,6 +534,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       case Layout.lovp:
         return (
           <div class="folder-layout folder-layout--l" data-pagelist>
+            <article class="folder-layout--article">
+              {content}
+              <SeeAlso {...props} />
+            </article>
             <section class={listClassName}>
               <PageListSearch {...props} />
               <PageList {...listProps} />
@@ -540,6 +548,10 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       default:
         return (
           <>
+            <article class="folder-layout--article">
+              {content}
+              <SeeAlso {...props} />
+            </article>
             <section class={baseListClass}>
               <PageListSearch {...props} />
               <PageList {...listProps} />
@@ -552,11 +564,12 @@ export default ((opts?: Partial<FolderContentOptions>) => {
     }
   }
 
-  FolderContent.css = concatenateResources(style, Evergreen.css, PageListSearch.css)
+  FolderContent.css = concatenateResources(style, Evergreen.css, PageListSearch.css, SeeAlso.css)
   FolderContent.sourceNames = inheritComponentSourceNames('FolderContent', [
     Evergreen,
     PageList,
     PageListSearch,
+    SeeAlso,
   ])
   FolderContent.afterDOMLoaded = concatenateResources(
     Evergreen.afterDOMLoaded,

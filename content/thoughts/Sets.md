@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-06 12:53:52 GMT-04:00
+modified: 2026-06-06 21:10:49 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -142,7 +142,7 @@ The union contains all elements that are in $A$, or in $B$, or in both.
 \begin{tikzpicture}[scale=1.5]
   \begin{scope}
     \clip (0,0) circle (1) (1.2,0) circle (1);
-    \foreach \x in {-2.2,-1.95,...,2.7} {
+    \foreach \x in {-2.95,-2.7,...,2.7} {
       \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
     }
   \end{scope}
@@ -163,7 +163,7 @@ The intersection contains all elements that are in both $A$ and $B$.
   \begin{scope}
     \clip (0,0) circle (1);
     \clip (1.2,0) circle (1);
-    \foreach \x in {-0.6,-0.35,...,2.7} {
+    \foreach \x in {-1.7,-1.45,...,2.7} {
       \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
     }
   \end{scope}
@@ -188,7 +188,7 @@ It is also known as the _complement_ of $B$ relative to $A$, or the complement o
     \clip (0,0) circle (1);
     \begin{scope}[even odd rule]
       \clip (-1.3,-1.3) rectangle (2.5,1.3) (1.2,0) circle (1);
-      \foreach \x in {-2.2,-1.95,...,1.5} {
+      \foreach \x in {-2.95,-2.7,...,1.5} {
         \draw[line width=0.35pt] (\x,-1.3) -- ++(2.6,2.6);
       }
     \end{scope}
@@ -299,20 +299,13 @@ $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 > \end{document}
 > ```
 
-under the same [[#de Morgan's laws|de Morgan's laws]] we include the _second_ distributive law
-
-$$
-\begin{aligned}
-  A \setminus (B\cup C) &= (A \setminus B) \cap (A \setminus C) \\
-  A \setminus (B\cap C) &= (A \setminus B) \cup (A \setminus C)
-\end{aligned}
-$$
-
 ### de Morgan's laws
 
 For sets $A,B,C$:
 
-$$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
+$$
+A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)
+$$
 
 ```tikz
 \usepackage{tikz}
@@ -324,6 +317,36 @@ $$A \setminus (B \cup C) = (A \setminus B) \cap (A \setminus C)$$
     \begin{scope}
       \clip (330:0.8) circle (1) (-3,-3) rectangle (3,3);
       \fill[flexokired, opacity=0.5] (90:0.8) circle (1);
+    \end{scope}
+  \end{scope}
+  \draw[thick] (90:0.8) circle (1) node[above=2] {$A$};
+  \draw[thick] (210:0.8) circle (1) node[below left=2] {$B$};
+  \draw[thick] (330:0.8) circle (1) node[below right=2] {$C$};
+\end{tikzpicture}
+\end{document}
+```
+
+$$
+A \setminus (B\cap C) = (A \setminus B) \cup (A \setminus C)
+$$
+
+```tikz
+\usepackage{tikz}
+\definecolor{flexokired}{HTML}{fdb2a2}
+\begin{document}
+\begin{tikzpicture}[scale=1.2]
+  \begin{scope}
+    \clip (90:0.8) circle (1);
+    \begin{scope}[even odd rule]
+      \clip (210:0.8) circle (1) (-3,-3) rectangle (3,3);
+      \fill[flexokired, opacity=0.5] (-3,-3) rectangle (3,3);
+    \end{scope}
+    \begin{scope}
+      \clip (210:0.8) circle (1);
+      \begin{scope}[even odd rule]
+        \clip (330:0.8) circle (1) (-3,-3) rectangle (3,3);
+        \fill[flexokired, opacity=0.5] (-3,-3) rectangle (3,3);
+      \end{scope}
     \end{scope}
   \end{scope}
   \draw[thick] (90:0.8) circle (1) node[above=2] {$A$};
@@ -718,6 +741,8 @@ Closed and open are not exclusive. In the discrete topology every set is both. I
 
 The _closure_ $\overline{A}$ is the smallest closed set containing $A$; the _interior_ $\mathrm{int}(A)$ is the largest open set inside $A$. Their difference $\overline{A} \setminus \mathrm{int}(A)$ is the boundary $\partial A$.
 
+Open and closed are properties of subsets relative to a topology on $X$, not absolute properties of the raw set.
+
 ## Zermelo-Fraenkel set theory
 
 ZFC is an [axiomatic system](https://en.wikipedia.org/wiki/Axiomatic_system) that was proposed to formulate a paradox-free theory of sets to address [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]]. Formally, it is intended to formalize a single primitive notion, that of a [hereditary](https://en.wikipedia.org/wiki/Hereditary_set) [well-founded](https://en.wikipedia.org/wiki/Well-founded_relation) set, so that all _entities_ in the universe of discourse are sets.
@@ -746,6 +771,9 @@ Replacement is stronger than Separation.
 - Separation says "filter this set."
 - Replacement says "send each element through a definable rule, then collect the outputs."
 
+> [!note] unversality
+> Complements need a universe. $A^c$ means $X \setminus A$ only after $X$ has been fixed.
+
 $$
 \forall x \in A\;\exists!y\;\varphi(x,y) \implies \exists B\;\forall y\;(y \in B \iff \exists x \in A\;\varphi(x,y))
 $$
@@ -756,13 +784,3 @@ The axiom of choice has many equivalent forms:
 - every vector space has a basis
 - every product of nonempty sets is nonempty
 - every set can be well-ordered
-
-## common fallacy
-
-- $a \in A$ and $\{a\} \subseteq A$ say different things.
-- $\emptyset \subseteq A$ for every set $A$, including $A = \emptyset$.
-- $\emptyset \in A$ is a separate claim. It holds only when the empty set is one of $A$'s elements.
-- $A \subseteq B$ and $B \subseteq A$ prove $A = B$ by extensionality.
-- A family $\{A_i\}_{i \in I}$ remembers the index set $I$; the set $\{A_i \mid i \in I\}$ forgets repeated values.
-- Complements need a universe. $A^c$ means $X \setminus A$ only after $X$ has been fixed.
-- Open and closed are properties of subsets relative to a topology on $X$, not absolute properties of the raw set.

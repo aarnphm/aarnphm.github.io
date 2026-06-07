@@ -540,6 +540,7 @@ function annotatePdfEmbed(node: Wikilink, wikilink: WikilinkData, url: string): 
     class: 'internal-embed pdf-embed',
     'data-pdf-src': url,
     'data-pdf-title': readPdfTitle(wikilink),
+    tabindex: 0,
     ...(page ? { 'data-pdf-page': page } : {}),
     ...(fit ? { 'data-pdf-fit': fit } : {}),
     ...(scale ? { 'data-pdf-scale': scale } : {}),

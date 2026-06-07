@@ -457,15 +457,21 @@ document.addEventListener('nav', e => {
   }
 
   function ensureSearchData() {
-    searchDataReady ??= ensureContentData().then(async resolved => {
-      if (!isActive) return resolved
-      const searchData =
-        typeof fetchSearchData === 'undefined'
-          ? resolved
-          : await fetchSearchData.catch(() => resolved)
-      await fillDocument(searchData)
-      return resolved
-    })
+    if (searchDataReady) return searchDataReady
+
+    const contentData = ensureContentData()
+    const searchData =
+      typeof fetchSearchData === 'undefined'
+        ? contentData
+        : fetchSearchData.catch(() => contentData)
+
+    searchDataReady = Promise.all([contentData, searchData]).then(
+      async ([resolved, searchData]) => {
+        if (!isActive) return resolved
+        await fillDocument(searchData)
+        return resolved
+      },
+    )
     return searchDataReady
   }
 
@@ -521,7 +527,7 @@ document.addEventListener('nav', e => {
       currentSearchTerm = ''
       syncPaletteHelper()
       getRecentItems()
-      void ensureContentData()
+      void ensureSearchData()
     }
 
     bar?.focus()

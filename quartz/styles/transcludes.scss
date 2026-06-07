@@ -129,12 +129,15 @@
 .pdf-embed {
   --pdf-embed-height: min(78dvh, 820px);
   --pdf-annotation-rail-width: 17rem;
+  --pdf-annotation-rail-gap: 0.75rem;
+  --pdf-annotation-rail-top: 0px;
+  --pdf-annotation-rail-height: 100%;
   width: 100%;
   height: var(--pdf-embed-height);
   min-height: 24rem;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   background: var(--lightgray);
   border: 1px solid var(--gray);
@@ -143,17 +146,17 @@
   margin: 1rem 0;
 }
 
-.pdf-embed[data-pdf-selected='true'] {
+.pdf-embed[data-pdf-selected='true'],
+.pdf-embed:focus,
+.pdf-embed:focus-within {
   border-color: var(--secondary);
 }
 
+.pdf-embed:focus {
+  outline: none;
+}
+
 .pdf-embed:not([data-pdf-annotations='true']) {
-  --pdf-annotation-rail-width: 0px;
-
-  .pdf-embed-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .pdf-annotation-rail {
     display: none;
   }
@@ -166,7 +169,8 @@
   gap: 12px;
   padding: 8px 12px;
   background: var(--light);
-  border: 1px solid var(--lightgray);
+  border: 0px solid var(--lightgray);
+  border-bottom-width: 1px;
   border-radius: var(--radius-none);
   flex: 0 0 auto;
   flex-shrink: 0;
@@ -271,8 +275,7 @@
 }
 
 .pdf-embed-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--pdf-annotation-rail-width);
+  display: block;
   flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
@@ -284,6 +287,8 @@
   overflow: auto;
   position: relative;
   flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
   min-height: 0;
   min-width: 0;
   scroll-padding: 0;
@@ -313,13 +318,26 @@
 }
 
 .pdf-annotation-rail {
-  position: relative;
+  position: absolute;
+  top: var(--pdf-annotation-rail-top);
+  left: calc(100% + var(--pdf-annotation-rail-gap));
+  z-index: var(--z-popover);
   width: var(--pdf-annotation-rail-width);
   min-width: 0;
   min-height: 0;
-  height: 100%;
-  overflow: hidden;
+  height: var(--pdf-annotation-rail-height);
+  overflow-x: hidden;
+  overflow-y: auto;
   background: var(--light);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
+}
+
+.pdf-annotation-stack {
+  position: relative;
+  min-height: 100%;
 }
 
 .pdf-annotation-card {
@@ -377,8 +395,7 @@
   border-top: 1px solid var(--lightgray);
 }
 
-.pdf-annotation-actions,
-.pdf-comment-actions {
+.pdf-annotation-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -386,8 +403,7 @@
   margin-top: 0.55rem;
 }
 
-.pdf-annotation-action,
-.pdf-comment-button {
+.pdf-annotation-action {
   color: var(--dark);
   background: transparent;
   border: 1px solid var(--lightgray);
@@ -403,40 +419,128 @@
   }
 }
 
-.pdf-comment-save {
-  color: var(--secondary);
-  border-color: var(--secondary);
-}
-
-.pdf-comment-input {
-  width: 100%;
-  min-height: 3rem;
-  resize: vertical;
-  color: var(--dark);
-  background: var(--light);
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-none);
-  box-sizing: border-box;
-  font: inherit;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  padding: 0.45rem;
-}
-
 .pdf-comment-composer {
   position: absolute;
   z-index: var(--z-popover);
   width: min(18rem, calc(100% - 2rem));
-  padding: 0.65rem;
   color: var(--dark);
   background: var(--light);
-  border: 1px solid var(--secondary);
+  border: 1px solid var(--gray);
   border-radius: var(--radius-none);
   box-sizing: border-box;
 }
 
 .pdf-annotation-reply-composer {
   margin-top: 0.6rem;
+}
+
+.pdf-comment-editor-shell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: min(12rem, 100%);
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  background: var(--light);
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+}
+
+.pdf-comment-editor {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 1.5rem;
+  color: var(--dark);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  user-select: text;
+}
+
+.pdf-comment-input {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 1.5rem;
+  max-height: 10rem;
+  padding: 0;
+  overflow: auto;
+  resize: none;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+  font: inherit;
+  line-height: inherit;
+  outline: none;
+}
+
+.pdf-comment-input::placeholder {
+  color: transparent;
+}
+
+.pdf-comment-placeholder {
+  position: absolute;
+  inset: 0 auto auto 0;
+  color: var(--gray);
+  pointer-events: none;
+  font: inherit;
+  line-height: inherit;
+}
+
+.pdf-comment-placeholder-text {
+  opacity: 0.6;
+}
+
+.pdf-comment-editor-shell:not(.pdf-comment-empty) .pdf-comment-placeholder {
+  display: none;
+}
+
+.pdf-comment-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: var(--light);
+  background: var(--secondary);
+  border: 0;
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.pdf-comment-submit:disabled {
+  color: var(--light);
+  background: var(--gray);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.pdf-comment-submit:not(:disabled):hover {
+  background: var(--tertiary);
+}
+
+.pdf-comment-submit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.pdf-comment-submit-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.pdf-annotation-reply-composer .pdf-comment-editor-shell {
+  min-width: 0;
+  padding-left: 0.65rem;
+  border: 1px solid var(--lightgray);
 }
 
 .pdf-embed-page {
@@ -447,6 +551,7 @@
   background: var(--light);
   border: 0;
   box-sizing: border-box;
+  contain: layout paint;
 }
 
 .pdf-embed-highlight-layer,
@@ -568,19 +673,23 @@
   }
 
   .pdf-annotation-card,
+  .pdf-annotation-rail,
   .pdf-comment-composer,
-  .pdf-comment-input {
+  .pdf-comment-editor-shell {
     color: var(--light);
     background: var(--dark);
     border-color: var(--darkgray);
+  }
+
+  .pdf-comment-editor {
+    color: var(--light);
   }
 
   .pdf-annotation-quote {
     color: var(--lightgray);
   }
 
-  .pdf-annotation-action,
-  .pdf-comment-button {
+  .pdf-annotation-action {
     color: var(--light);
     border-color: var(--darkgray);
   }
@@ -591,6 +700,11 @@
     --pdf-embed-height: min(72dvh, 680px);
     --pdf-annotation-rail-width: min(38vw, 12rem);
     min-height: 20rem;
+  }
+
+  .pdf-annotation-rail {
+    right: 0;
+    left: auto;
   }
 
   .pdf-embed-toolbar {

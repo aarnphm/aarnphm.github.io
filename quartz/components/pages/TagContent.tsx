@@ -9,8 +9,10 @@ import {
 import { inheritComponentSourceNames } from '../../util/component-source'
 import { htmlToJsx } from '../../util/jsx'
 import { FullSlug, getAllSegmentPrefixes, simplifySlug } from '../../util/path'
+import { concatenateResources } from '../../util/resources'
 import PageListConstructor, { SortFn } from '../PageList'
 import PageListSearchConstructor from '../PageListSearch'
+import SeeAlsoComponent from '../SeeAlso'
 import style from '../styles/listPage.scss'
 
 interface TagContentOptions {
@@ -78,6 +80,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
 
   const PageList = PageListConstructor()
   const PageListSearch = PageListSearchConstructor()
+  const SeeAlso = SeeAlsoComponent()
 
   const TagContent: QuartzComponent = (props: QuartzComponentProps) => {
     const { tree, fileData, allFiles, cfg } = props
@@ -104,6 +107,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
           <article>
             <p>{content}</p>
           </article>
+          <SeeAlso {...props} />
           <p>{i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}</p>
           <PageListSearch {...props} allTags />
           <div>
@@ -161,6 +165,7 @@ export default ((opts?: Partial<TagContentOptions>) => {
       return (
         <div class={classes} data-pagelist>
           <article>{content}</article>
+          <SeeAlso {...props} />
           <div class="page-listing">
             <p>{i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}</p>
             <PageListSearch {...props} />
@@ -173,8 +178,12 @@ export default ((opts?: Partial<TagContentOptions>) => {
     }
   }
 
-  TagContent.css = style + PageListSearch.css
-  TagContent.sourceNames = inheritComponentSourceNames('TagContent', [PageList, PageListSearch])
+  TagContent.css = concatenateResources(style, PageListSearch.css, SeeAlso.css)
+  TagContent.sourceNames = inheritComponentSourceNames('TagContent', [
+    PageList,
+    PageListSearch,
+    SeeAlso,
+  ])
   TagContent.afterDOMLoaded = PageListSearch.afterDOMLoaded
   return TagContent
 }) satisfies QuartzComponentConstructor

@@ -21,6 +21,7 @@
   },
   "objectWrap": "collapse",
   "experimentalSortPackageJson": true,
+  "overrides": [{ "files": ["*.fc", "*.flashcards"], "options": { "parser": "markdown" } }],
   "ignorePatterns": [
     "public",
     "node_modules",

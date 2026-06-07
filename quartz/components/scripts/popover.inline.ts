@@ -1,6 +1,7 @@
 import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@floating-ui/dom'
 import { arrow as floatingArrow, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
+import { arenaPdfViewerSource } from '../../util/arena-embed'
 import {
   lessWrongPreviewApiUrl,
   readLessWrongPreview,
@@ -51,41 +52,12 @@ interface Point {
   y: number
 }
 
-const blobCleanupMap = new Map<string, NodeJS.Timeout>()
-const DEFAULT_BLOB_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 const PDF_LOAD_TIMEOUT = 8 * 1000
-const PDF_VIEW_PARAMS = new URLSearchParams({ navpanes: '0', pagemode: 'none', view: 'FitH' })
 
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
 let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
 let stackedPopoverEvents: AbortController | null = null
-
-function createManagedBlobUrl(blob: Blob, timeoutMs: number = DEFAULT_BLOB_TIMEOUT): string {
-  const blobUrl = URL.createObjectURL(blob)
-  const existingTimeout = blobCleanupMap.get(blobUrl)
-
-  if (existingTimeout) {
-    clearTimeout(existingTimeout)
-  }
-
-  const timeoutId = setTimeout(() => {
-    URL.revokeObjectURL(blobUrl)
-    blobCleanupMap.delete(blobUrl)
-  }, timeoutMs)
-
-  blobCleanupMap.set(blobUrl, timeoutId)
-  return blobUrl
-}
-
-function cleanupBlobUrl(blobUrl: string): void {
-  const timeoutId = blobCleanupMap.get(blobUrl)
-  if (timeoutId !== undefined) {
-    clearTimeout(timeoutId)
-    URL.revokeObjectURL(blobUrl)
-    blobCleanupMap.delete(blobUrl)
-  }
-}
 
 function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   const refsAndNotes = element.querySelectorAll<HTMLElement>(
@@ -118,13 +90,47 @@ function arxivPdfUrl(identifier: string): URL {
   return new URL(`https://arxiv.org/pdf/${path}`)
 }
 
-function pdfViewerSrc(blobUrl: string): string {
-  return `${blobUrl}#${PDF_VIEW_PARAMS.toString()}`
+function isPdfUrl(url: URL): boolean {
+  return url.pathname.toLowerCase().endsWith('.pdf')
 }
 
-function createPdfFrame(src?: string): HTMLIFrameElement {
-  const pdf = document.createElement('iframe')
-  if (src) pdf.src = pdfViewerSrc(src)
+function pdfRuntimeSource(rawSrc: string): string {
+  try {
+    const url = new URL(rawSrc, window.location.href)
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      if (url.origin !== window.location.origin) return arenaPdfViewerSource(url.toString())
+      return `${url.pathname}${url.search}`
+    }
+  } catch {
+    return rawSrc
+  }
+
+  return rawSrc
+}
+
+function pdfTitleFromUrl(rawSrc: string): string {
+  try {
+    const url = new URL(rawSrc, window.location.href)
+    const filename = url.pathname.split('/').filter(Boolean).pop()
+    return filename ? decodeURIComponent(filename) : 'document.pdf'
+  } catch {
+    return 'document.pdf'
+  }
+}
+
+function createPdfEmbed(src: string, title = pdfTitleFromUrl(src)): HTMLDivElement {
+  const pdf = document.createElement('div')
+  pdf.classList.add('internal-embed', 'pdf-embed', 'pdf-embed-preview')
+  pdf.dataset.pdfSrc = pdfRuntimeSource(src)
+  pdf.dataset.pdfTitle = title
+  pdf.dataset.pdfFit = 'width'
+  pdf.tabIndex = 0
+
+  const loading = document.createElement('span')
+  loading.className = 'pdf-embed-loading'
+  loading.textContent = 'Loading PDF'
+  pdf.appendChild(loading)
+
   return pdf
 }
 
@@ -133,21 +139,30 @@ function clearPopoverLoading(popoverInner: HTMLDivElement) {
   popoverInner.querySelector<HTMLElement>(':scope > .popover-loading')?.remove()
 }
 
-function loadPdfFrame(
-  pdf: HTMLIFrameElement,
-  src: string,
+function mountPdfPreview(
+  pdf: HTMLElement,
   signal: AbortSignal,
   onReady: () => void,
   onFailed: () => void,
 ) {
+  const runtime = window.quartzPdfEmbeds
+  if (!runtime) {
+    onFailed()
+    return
+  }
+  const pdfRuntime = runtime
+
   let settled = false
   const timeoutId = window.setTimeout(() => ready(), PDF_LOAD_TIMEOUT)
+  const observer = new MutationObserver(() => {
+    if (pdf.dataset.pdfStatus === 'loaded') ready()
+    if (pdf.dataset.pdfStatus === 'error') failed()
+  })
 
   function cleanup() {
     window.clearTimeout(timeoutId)
-    pdf.removeEventListener('load', ready)
-    pdf.removeEventListener('error', failed)
     signal.removeEventListener('abort', aborted)
+    observer.disconnect()
   }
 
   function finish(cb: () => void) {
@@ -166,16 +181,20 @@ function loadPdfFrame(
   }
 
   function aborted() {
-    pdf.removeAttribute('src')
+    pdfRuntime.cleanup(pdf)
+    pdf.remove()
     finish(onFailed)
   }
 
-  pdf.addEventListener('load', ready)
-  pdf.addEventListener('error', failed)
+  observer.observe(pdf, { attributes: true, attributeFilter: ['data-pdf-status'] })
   signal.addEventListener('abort', aborted, { once: true })
-  pdf.src = pdfViewerSrc(src)
+  pdfRuntime.mount(pdf)
 
   if (signal.aborted) aborted()
+}
+
+function mountPdfPreviews(root: ParentNode) {
+  window.quartzPdfEmbeds?.mount(root)
 }
 
 function setPopoverLoading(popoverInner: HTMLDivElement, label: string, contentType?: string) {
@@ -322,11 +341,9 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
   popoverInner.appendChild(img)
 }
 
-async function handlePdfContent(response: Response, popoverInner: HTMLDivElement) {
-  const pdf = createPdfFrame()
-  const blob = await response.blob()
-  const blobUrl = createManagedBlobUrl(blob)
-  pdf.src = pdfViewerSrc(blobUrl)
+async function handlePdfContent(response: Response, targetUrl: URL, popoverInner: HTMLDivElement) {
+  const src = response.url || targetUrl.toString()
+  const pdf = createPdfEmbed(src, pdfTitleFromUrl(targetUrl.toString()))
   popoverInner.appendChild(pdf)
 }
 
@@ -360,8 +377,7 @@ async function handleDefaultContent(
 
 const contentHandlers: Record<string, ContentHandler> = {
   image: async (_, targetUrl, popoverInner) => handleImageContent(targetUrl, popoverInner),
-  'application/pdf': async (response, _targetUrl, popoverInner) =>
-    handlePdfContent(response, popoverInner),
+  'application/pdf': handlePdfContent,
   'application/xml': async (response, _targetUrl, popoverInner) =>
     handleXmlContent(response, popoverInner),
   default: handleDefaultContent,
@@ -982,6 +998,7 @@ async function handleStackedNotes(
 
   column.appendChild(popoverElement)
   hideStackedPopoversOnLeave(stacked, link, popoverElement)
+  mountPdfPreviews(popoverInner)
   notifyProtectedContentLoaded(popoverInner)
   await setPosition(link, popoverElement, {
     clientX: pointer.clientX,
@@ -1063,11 +1080,16 @@ function allowsStackedPopover(link: HTMLAnchorElement): boolean {
   return true
 }
 
+function opensSidePanel(event: MouseEvent): boolean {
+  return event.altKey || event.metaKey || event.ctrlKey
+}
+
 function hideStackedPopovers(stacked: HTMLElement) {
   stacked.querySelectorAll<HTMLElement>('.stacked-popover').forEach(popoverElement => {
     popoverElement.classList.remove('active-popover')
     window.setTimeout(() => {
       if (!popoverElement.classList.contains('active-popover')) {
+        window.quartzPdfEmbeds?.cleanup(popoverElement)
         popoverElement.remove()
       }
     }, 180)
@@ -1216,11 +1238,14 @@ async function mouseEnterHandler(
     document.body.appendChild(popoverElement)
     await showLoadingPopover(link, popoverElement, { clientX, clientY })
 
-    const pdf = createPdfFrame()
+    const arxivUrl = arxivPdfUrl(link.dataset.arxivId)
+    const pdf = createPdfEmbed(
+      arxivUrl.toString(),
+      `${cleanArxivIdentifier(link.dataset.arxivId)}.pdf`,
+    )
     popoverInner.appendChild(pdf)
-    loadPdfFrame(
+    mountPdfPreview(
       pdf,
-      arxivPdfUrl(link.dataset.arxivId).toString(),
       controller.signal,
       () => {
         clearPopoverLoading(popoverInner)
@@ -1242,6 +1267,25 @@ async function mouseEnterHandler(
     notifyProtectedContentLoaded(popoverInner)
     await setPosition(link, popoverElement, { clientX, clientY })
     return
+  } else if (isPdfUrl(targetUrl)) {
+    const { popoverElement, popoverInner } = createPopoverElement()
+    popoverElement.id = popoverId
+    popoverInner.dataset.contentType = 'application/pdf'
+    popoverInner.appendChild(
+      createPdfEmbed(targetUrl.toString(), pdfTitleFromUrl(targetUrl.toString())),
+    )
+
+    if (document.getElementById(popoverId)) return
+
+    document.body.appendChild(popoverElement)
+    mountPdfPreviews(popoverInner)
+    notifyProtectedContentLoaded(popoverInner)
+    if (activeAnchor !== link) {
+      return
+    }
+
+    await showPopover(link, popoverElement, { clientX, clientY }, { hash, popoverInner })
+    return
   } else {
     response = await fetchCanonical(new URL(targetUrl.toString())).catch(error => {
       console.error(error)
@@ -1259,6 +1303,7 @@ async function mouseEnterHandler(
   if (document.getElementById(popoverId)) return
 
   document.body.appendChild(popoverElement)
+  mountPdfPreviews(popoverInner)
   notifyProtectedContentLoaded(popoverInner)
   if (activeAnchor !== link) {
     return
@@ -1287,7 +1332,7 @@ async function mouseClickHandler(evt: MouseEvent) {
     return
   }
 
-  if (evt.altKey && !container?.classList.contains('active')) {
+  if (opensSidePanel(evt) && !container?.classList.contains('active')) {
     evt.preventDefault()
     evt.stopPropagation()
 
@@ -1299,7 +1344,13 @@ async function mouseClickHandler(evt: MouseEvent) {
       asidePanel.dataset.slug = slug
 
       if (link.dataset.arxivId) {
-        createSidePanel(asidePanel, createPdfFrame(arxivPdfUrl(link.dataset.arxivId).toString()))
+        const arxivUrl = arxivPdfUrl(link.dataset.arxivId)
+        const pdf = createPdfEmbed(
+          arxivUrl.toString(),
+          `${cleanArxivIdentifier(link.dataset.arxivId)}.pdf`,
+        )
+        const sideInner = createSidePanel(asidePanel, pdf)
+        mountPdfPreviews(sideInner)
         window.notifyNav(slug as FullSlug)
         return
       }
@@ -1308,6 +1359,15 @@ async function mouseClickHandler(evt: MouseEvent) {
       const fetchUrl = new URL(link.href)
       fetchUrl.hash = ''
       fetchUrl.search = ''
+
+      if (isPdfUrl(fetchUrl)) {
+        const pdf = createPdfEmbed(fetchUrl.toString(), pdfTitleFromUrl(fetchUrl.toString()))
+        const sideInner = createSidePanel(asidePanel, pdf)
+        mountPdfPreviews(sideInner)
+        window.notifyNav(slug as FullSlug)
+        return
+      }
+
       response = await fetchCanonical(fetchUrl).catch(console.error)
 
       if (!response) return
@@ -1318,11 +1378,10 @@ async function mouseClickHandler(evt: MouseEvent) {
         : getContentType(targetUrl)
 
       if (contentType === 'application/pdf') {
-        const pdf = createPdfFrame()
-        const blob = await response.blob()
-        const blobUrl = createManagedBlobUrl(blob)
-        pdf.src = pdfViewerSrc(blobUrl)
-        createSidePanel(asidePanel, pdf)
+        const src = response.url || fetchUrl.toString()
+        const pdf = createPdfEmbed(src, pdfTitleFromUrl(fetchUrl.toString()))
+        const sideInner = createSidePanel(asidePanel, pdf)
+        mountPdfPreviews(sideInner)
       } else {
         const contents = await response.text()
         const html = p.parseFromString(contents, 'text/html')
@@ -1370,10 +1429,6 @@ function setupPopoverLinks(container: Document | HTMLElement = document) {
       link.removeEventListener('mouseenter', mouseEnterHandler)
       link.removeEventListener('mouseleave', mouseLeaveHandler)
       link.removeEventListener('click', mouseClickHandler)
-
-      for (const blobUrl of Array.from(blobCleanupMap.keys())) {
-        cleanupBlobUrl(blobUrl)
-      }
 
       if (activePopoverReq) {
         activePopoverReq.abort()

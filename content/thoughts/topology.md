@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: evergreen hub for topology study anchored on munkres and mit 18.901.
 id: topology
-modified: 2026-06-05 15:08:27 GMT-04:00
+modified: 2026-06-06 19:42:38 GMT-04:00
 seealso:
   - '[[thoughts/topology/point set|point-set topology]]'
   - '[[thoughts/topology/separation|separation]]'
@@ -13,7 +13,6 @@ seealso:
   - '[[thoughts/topology/differential foundations|differential foundations]]'
   - '[[thoughts/topology/3 manifolds|3-manifold topology]]'
   - '[[thoughts/topology/ricci flow|ricci flow]]'
-  - '[[thoughts/topology/resources|resources]]'
 socials:
   ocw: https://ocw.mit.edu/courses/18-901-introduction-to-topology-fall-2004/
 tags:
