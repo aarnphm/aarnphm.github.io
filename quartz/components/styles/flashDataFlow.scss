@@ -153,6 +153,12 @@
     stroke: var(--fig-stroke-soft);
     stroke-dasharray: 4 4;
   }
+  .fdf-tier--ghost {
+    opacity: 0.5;
+  }
+  .fdf-tier--ghost-far {
+    opacity: 0.28;
+  }
   .fdf-tier--ring {
     fill: var(--fdf-ring);
   }

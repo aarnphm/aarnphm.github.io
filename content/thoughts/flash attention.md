@@ -1,8 +1,8 @@
 ---
-date: '2026-05-27'
+date: "2026-05-27"
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
-modified: 2026-06-06 00:10:18 GMT-04:00
+modified: 2026-06-07 11:02:58 GMT-04:00
 seealso:
   - '[[thoughts/Attention|Attention]]'
   - '[[thoughts/tree attention|tree attention]]'
@@ -120,19 +120,36 @@ FlashAttention loads tiles up, runs the whole softmax on-chip, and touches HBM a
 
 ## Deriving the online softmax
 
-The $m/\ell/O$ recurrence computes the same softmax as the batched form per tile, so it is beneficial to look into some of the derivation for the online softmax.
+We will first go into motivation of stable softmax, and the ingenious tricks of using {{sidenotes[online softmax]: $m/\ell/O$ recurrence computes the same softmax as the batched form per tile. This is largely refer to our operations on GPU. We will go in depth each of these terms meant below.}} [@milakov2018onlinenormalizercalculationsoftmax]
 
-With numerically-stable (safe) softmax, for a logit vector $x \in \mathbb{R}^{V}$, exponentiating directly will result in {{sidenotes[overflows]: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$.}}
+> [!definition] softmax
+>
+> $$
+> \operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
+> $$
 
-Subtracting the row maximum $m_V = \max_k x_k$ forces every exponent to be non-positive, so each $e^{(\cdot)} \in (0,1]$:
+Now, with IEEE7554 and quirky computer representation of integer we know that with 32-bit floating point, the maximum representable value is $(2 - 2^{-23})\times 2^{127}$.
 
-$$
-y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}}, \qquad m_V = \max_{k} x_k
-$$
+Since $e^{x} = 2^{x \log_2 e}$, we will very much reach {{sidenotes[overflows]: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$.}} at certain $x_i$ for any logit vector $x \in \mathbb{R}^{V}$!!
 
-Computed this _requires_ three passes over $x$: one for the maximum $m_V$, one for the denominator $\ell_V = \sum_j e^{x_j - m_V}$, one to normalise. The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes.
+A trick to address this overflow is often referred to as the _safe-softmax_ implementation, where we subtract the maximum value vector from every element before expontent
 
-Break it by tracking a _running_ maximum $m_j = \max(m_{j-1}, x_j)$ and defining a surrogate denominator that subtracts $m_j$ rather than $m_V$:
+> [!propos] safe-softmax
+>
+> Subtracting the row maximum $m_V = \max_k x_k$ forces every exponent to be non-positive, so each $e^{(\cdot)} \in (0,1]$:
+>
+> $$
+> y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}},\;\;m_V = \max_{k} x_k
+> $$
+
+Looking at this equation, one might notice that it will takes us ::three passes:: over $x$:
+- for the maximum $m_V$
+- the denominator $\ell_v = \sum_j e^{x_j - m_V}$
+- normalize (the factor)
+
+> The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes.
+
+We can further break it down by tracking a _running_ maximum $m_j = \max(m_{j-1}, x_j)$ and define a [surrogate](https://en.wikipedia.org/wiki/Surrogate_model) denominator that subtracts $m_j$ rather than $m_V$:
 
 $$
 \ell'_j := \sum_{k=1}^{j} e^{x_k - m_j} .

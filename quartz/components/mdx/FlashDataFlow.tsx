@@ -18,6 +18,7 @@ const MODES: readonly Mode[] = [
       '$K,V$ outer, $Q$ inner',
       '$O_i$ read-modify-written $\\times T_c$',
       'serial: no overlap',
+      'grid: batch $\\times$ heads',
     ],
   },
   {
@@ -148,14 +149,29 @@ const Spec = ({ mode }: { mode: Mode }) => (
   </g>
 )
 
+const FA1_SM_STACK = [
+  { dx: 16, dy: -16, cls: 'fdf-tier--ghost fdf-tier--ghost-far' },
+  { dx: 8, dy: -8, cls: 'fdf-tier--ghost' },
+] as const
+
 const SceneFA1 = () => (
   <g class="fdf-scene fdf-scene--fa1">
     <title>FlashAttention-1 serial dataflow</title>
     <HBMTier />
+    {FA1_SM_STACK.map(s => (
+      <rect
+        class={`fdf-tier fdf-tier--chip ${s.cls}`}
+        x={312 + s.dx}
+        y={132 + s.dy}
+        width={296}
+        height={96}
+        rx={7}
+      />
+    ))}
     <rect class="fdf-tier fdf-tier--chip" x={312} y={132} width={296} height={96} rx={7} />
     <FoL
       x={318}
-      cy={122}
+      cy={104}
       w={190}
       tex="\text{on-chip}\,{\cdot}\,\text{one SM}"
       cls="fdf-fo--label"
