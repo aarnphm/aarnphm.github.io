@@ -1,0 +1,21 @@
+{
+  "content": "<p>New image Upload</p>\n",
+  "content_type": "resource",
+  "description": "New image Upload",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/8ed37fdd5b9c12b2594c01c3fb85eae9_18-100bf10-th.jpg",
+  "file_size": 5823,
+  "file_type": "image/jpeg",
+  "image_metadata": {
+    "caption": "Weierstrass' famous function: continuous everywhere, but differentiable nowhere. (Courtesy Claudio Rocchini on {{% resource_link \"af46584f-1194-43d5-9022-9282332cac95\" \"Wikimedia Commons\" %}}.)",
+    "credit": "",
+    "image-alt": "Plot of Weierstrass Function."
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWImage",
+  "resourcetype": "Image",
+  "title": "18-100bf10-th.jpg",
+  "uid": "8ed37fdd-5b9c-12b2-594c-01c3fb85eae9"
+}

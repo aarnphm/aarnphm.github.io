@@ -1,0 +1,35 @@
+{
+  "body": "",
+  "content": "<p>The Bourgain-Katz-Tao projection theorem, from the early 2000s, is the first result in projection theory that really goes beyond the two fundamental techniques we introduced in lecture 2.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_360p_16_9.mp4",
+  "file_size": 166763995,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Videos"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 12: The Bourgain-Katz-Tao Projection Theorem",
+  "uid": "59dfab87-5189-4ad6-b939-7800293b43bc",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/aHQxdnufLbg/default.jpg",
+    "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec12_1080p_transcript.pdf"
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "Bourgain-Katz-Tao, projection theory, finite field",
+    "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nThe Bourgain-Katz-Tao projection theorem, from the early 2000s, is the first result in projection theory that really goes beyond the two fundamental techniques we introduced in Lecture 2.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "aHQxdnufLbg"
+  }
+}

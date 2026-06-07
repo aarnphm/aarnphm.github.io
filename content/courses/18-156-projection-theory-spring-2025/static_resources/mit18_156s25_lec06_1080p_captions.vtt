@@ -1,0 +1,4968 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.996 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.996 --> 00:00:03.493 align:middle line:90%
+[RUSTLING]
+
+00:00:03.493 --> 00:00:05.988 align:middle line:90%
+[CLICKING]
+
+00:00:05.988 --> 00:00:11.427 align:middle line:90%
+
+
+00:00:11.427 --> 00:00:13.760 align:middle line:84%
+LAWRENCE GUTH: So the first
+thing I promised to do today
+
+00:00:13.760 --> 00:00:16.920 align:middle line:84%
+was to do the last problem on
+the first problem set with you
+
+00:00:16.920 --> 00:00:17.760 align:middle line:90%
+all.
+
+00:00:17.760 --> 00:00:21.960 align:middle line:84%
+And so for context, this was
+a pretty difficult problem
+
+00:00:21.960 --> 00:00:25.960 align:middle line:84%
+and a lot of people
+didn't get it fully right
+
+00:00:25.960 --> 00:00:27.095 align:middle line:90%
+or made a mistake.
+
+00:00:27.095 --> 00:00:29.220 align:middle line:84%
+And actually, even the
+people who did get it right,
+
+00:00:29.220 --> 00:00:31.080 align:middle line:84%
+they tended to write
+something that was
+
+00:00:31.080 --> 00:00:34.280 align:middle line:90%
+pretty long and complicated.
+
+00:00:34.280 --> 00:00:36.140 align:middle line:84%
+So I spent a while
+thinking about it.
+
+00:00:36.140 --> 00:00:37.800 align:middle line:84%
+I think I could have
+set up the problem
+
+00:00:37.800 --> 00:00:39.680 align:middle line:90%
+with a little more direction.
+
+00:00:39.680 --> 00:00:40.260 align:middle line:90%
+But anyway.
+
+00:00:40.260 --> 00:00:43.760 align:middle line:84%
+But I will explain
+it to everybody
+
+00:00:43.760 --> 00:00:46.680 align:middle line:84%
+and try to say what
+were the issues
+
+00:00:46.680 --> 00:00:51.120 align:middle line:84%
+and what do you need to
+know to do it cleanly.
+
+00:00:51.120 --> 00:00:51.940 align:middle line:90%
+OK.
+
+00:00:51.940 --> 00:00:54.340 align:middle line:84%
+So the background
+of this problem
+
+00:00:54.340 --> 00:00:55.840 align:middle line:84%
+is that we had done
+a bunch of stuff
+
+00:00:55.840 --> 00:01:00.070 align:middle line:84%
+in class about lines in
+the plane, say, an Fq2.
+
+00:01:00.070 --> 00:01:02.590 align:middle line:84%
+And the problem was to try to
+do something similar for lines
+
+00:01:02.590 --> 00:01:05.390 align:middle line:84%
+in Fq3, but it is a
+little more complicated.
+
+00:01:05.390 --> 00:01:08.582 align:middle line:84%
+So let me first remind everybody
+what we did for lines in Fq2,
+
+00:01:08.582 --> 00:01:10.290 align:middle line:84%
+and then we'll go up
+to three dimensions.
+
+00:01:10.290 --> 00:01:16.476 align:middle line:90%
+
+
+00:01:16.476 --> 00:01:16.976 align:middle line:90%
+OK.
+
+00:01:16.976 --> 00:01:20.420 align:middle line:90%
+So general setup.
+
+00:01:20.420 --> 00:01:23.790 align:middle line:90%
+
+
+00:01:23.790 --> 00:01:30.070 align:middle line:84%
+So first of all, if we have
+a function on Fqd, then f0
+
+00:01:30.070 --> 00:01:32.670 align:middle line:90%
+will be the constant part.
+
+00:01:32.670 --> 00:01:41.510 align:middle line:84%
+So f0 of x is 1 over q to the d
+sum y in Fq to the d of f of y.
+
+00:01:41.510 --> 00:01:44.430 align:middle line:84%
+And then f sub h f high
+will be the rest of it.
+
+00:01:44.430 --> 00:01:46.570 align:middle line:90%
+So f is f0 plus 1.
+
+00:01:46.570 --> 00:01:49.910 align:middle line:90%
+
+
+00:01:49.910 --> 00:01:52.240 align:middle line:90%
+Oh.
+
+00:01:52.240 --> 00:01:54.970 align:middle line:84%
+So first we studied
+lines in Fq2.
+
+00:01:54.970 --> 00:01:59.290 align:middle line:84%
+And this is just going to be a
+recap of what we did in class.
+
+00:01:59.290 --> 00:02:01.730 align:middle line:90%
+So we noticed.
+
+00:02:01.730 --> 00:02:06.450 align:middle line:84%
+So let's say that L1
+and L2 are our lines
+
+00:02:06.450 --> 00:02:09.410 align:middle line:84%
+or characteristic
+function of lines.
+
+00:02:09.410 --> 00:02:11.530 align:middle line:90%
+OK, so there are two cases.
+
+00:02:11.530 --> 00:02:17.330 align:middle line:84%
+If L1 and L2 are
+parallel, then you
+
+00:02:17.330 --> 00:02:19.970 align:middle line:84%
+can easily see that their
+inner product is zero.
+
+00:02:19.970 --> 00:02:21.790 align:middle line:84%
+Parallel means they
+don't intersect.
+
+00:02:21.790 --> 00:02:24.490 align:middle line:90%
+
+
+00:02:24.490 --> 00:02:26.650 align:middle line:90%
+So you get this.
+
+00:02:26.650 --> 00:02:27.150 align:middle line:90%
+OK.
+
+00:02:27.150 --> 00:02:28.910 align:middle line:84%
+And you could also
+look at the high part.
+
+00:02:28.910 --> 00:02:31.750 align:middle line:84%
+And if you look at the high
+part, it will be negative.
+
+00:02:31.750 --> 00:02:36.810 align:middle line:84%
+The inner product will
+be negative L1 h2h will
+
+00:02:36.810 --> 00:02:40.890 align:middle line:90%
+be negative.
+
+00:02:40.890 --> 00:02:42.205 align:middle line:90%
+It's easy to compute.
+
+00:02:42.205 --> 00:02:43.830 align:middle line:84%
+There's something I
+could say out loud.
+
+00:02:43.830 --> 00:02:46.890 align:middle line:90%
+
+
+00:02:46.890 --> 00:02:56.640 align:middle line:84%
+One always has that fg
+is f0 g0 plus f high g.
+
+00:02:56.640 --> 00:02:58.640 align:middle line:84%
+You can see that from the
+Fourier representation
+
+00:02:58.640 --> 00:03:00.160 align:middle line:90%
+of these things.
+
+00:03:00.160 --> 00:03:07.000 align:middle line:84%
+So in this case, the inner
+product of L1 and L2 is 0.
+
+00:03:07.000 --> 00:03:10.320 align:middle line:84%
+L1 0 and L2 0 are both
+positive so their inner product
+
+00:03:10.320 --> 00:03:11.440 align:middle line:90%
+is positive.
+
+00:03:11.440 --> 00:03:13.720 align:middle line:84%
+So for this all to fit
+together, this inner product
+
+00:03:13.720 --> 00:03:16.480 align:middle line:90%
+should be negative.
+
+00:03:16.480 --> 00:03:19.480 align:middle line:84%
+So that's what happens
+if they're parallel.
+
+00:03:19.480 --> 00:03:22.560 align:middle line:84%
+Now at the time, parallel
+felt a special case.
+
+00:03:22.560 --> 00:03:24.260 align:middle line:84%
+Two lines are
+usually not parallel.
+
+00:03:24.260 --> 00:03:25.780 align:middle line:84%
+Once in a while
+they're parallel.
+
+00:03:25.780 --> 00:03:30.040 align:middle line:84%
+So maybe the more important
+case is if they're not parallel.
+
+00:03:30.040 --> 00:03:34.960 align:middle line:90%
+L1 and L2 are not parallel.
+
+00:03:34.960 --> 00:03:37.520 align:middle line:84%
+So if they're not parallel,
+then they intersect.
+
+00:03:37.520 --> 00:03:43.320 align:middle line:84%
+And therefore, the sum
+L1 of x, L2 of x is 1.
+
+00:03:43.320 --> 00:03:51.020 align:middle line:84%
+But if you take the high
+part, L1h, L2h, you get 0.
+
+00:03:51.020 --> 00:03:54.350 align:middle line:84%
+So the high parts
+are orthogonal.
+
+00:03:54.350 --> 00:03:55.030 align:middle line:90%
+OK.
+
+00:03:55.030 --> 00:03:58.190 align:middle line:84%
+And we discussed a couple
+of ways of seeing this.
+
+00:03:58.190 --> 00:04:04.910 align:middle line:84%
+So one way to see it is based
+on the Fourier transform.
+
+00:04:04.910 --> 00:04:10.310 align:middle line:84%
+So if you take L
+hat of ksi, its norm
+
+00:04:10.310 --> 00:04:16.670 align:middle line:84%
+is q times characteristic
+function of L perp.
+
+00:04:16.670 --> 00:04:21.630 align:middle line:84%
+And so in particular,
+the support
+
+00:04:21.630 --> 00:04:27.430 align:middle line:84%
+of L1 hat intersected
+with the support of L2 hat
+
+00:04:27.430 --> 00:04:32.030 align:middle line:84%
+is L1 perp intersected
+with L2 perp, which
+
+00:04:32.030 --> 00:04:38.830 align:middle line:84%
+is just the origin if the lines
+are in different directions.
+
+00:04:38.830 --> 00:04:42.470 align:middle line:84%
+This is all under L1
+and L2 are not parallel.
+
+00:04:42.470 --> 00:04:44.750 align:middle line:84%
+L1 and L2 are not
+parallel, L1 and L2
+
+00:04:44.750 --> 00:04:47.190 align:middle line:84%
+hat also are not parallel,
+and they intersect only
+
+00:04:47.190 --> 00:04:49.310 align:middle line:90%
+at the origin.
+
+00:04:49.310 --> 00:04:53.245 align:middle line:84%
+And then by looking at the high
+part, we leave out the origin.
+
+00:04:53.245 --> 00:04:55.120 align:middle line:84%
+So there's nothing left
+where they intersect.
+
+00:04:55.120 --> 00:04:58.060 align:middle line:84%
+And that gives us
+the orthogonal.
+
+00:04:58.060 --> 00:04:58.560 align:middle line:90%
+OK.
+
+00:04:58.560 --> 00:05:04.260 align:middle line:84%
+So once we had this, we used
+it to prove a proposition.
+
+00:05:04.260 --> 00:05:12.540 align:middle line:84%
+That said, if f is the sum
+over some set of lines of L,
+
+00:05:12.540 --> 00:05:18.260 align:middle line:84%
+then f high L2
+squared is bounded
+
+00:05:18.260 --> 00:05:27.100 align:middle line:84%
+by the sum over the lines of
+L high or not high L2 squared,
+
+00:05:27.100 --> 00:05:29.060 align:middle line:84%
+which then you could
+work out easily
+
+00:05:29.060 --> 00:05:32.340 align:middle line:84%
+as bounded by the
+number of lines times q.
+
+00:05:32.340 --> 00:05:33.880 align:middle line:90%
+This is almost an equality.
+
+00:05:33.880 --> 00:05:36.880 align:middle line:90%
+
+
+00:05:36.880 --> 00:05:37.380 align:middle line:90%
+OK.
+
+00:05:37.380 --> 00:05:40.260 align:middle line:90%
+
+
+00:05:40.260 --> 00:05:43.220 align:middle line:84%
+So this was really
+the key thing.
+
+00:05:43.220 --> 00:05:45.120 align:middle line:84%
+And this came from
+orthogonality.
+
+00:05:45.120 --> 00:05:49.680 align:middle line:84%
+You can think of it as taking
+this sum and expanding it out.
+
+00:05:49.680 --> 00:05:54.200 align:middle line:84%
+So this is the sum
+L1 and L2 in our set
+
+00:05:54.200 --> 00:06:00.200 align:middle line:90%
+of lines of the sum L1h L2h.
+
+00:06:00.200 --> 00:06:02.700 align:middle line:84%
+And for each of these,
+we plugged in that.
+
+00:06:02.700 --> 00:06:08.313 align:middle line:90%
+
+
+00:06:08.313 --> 00:06:08.813 align:middle line:90%
+OK.
+
+00:06:08.813 --> 00:06:12.640 align:middle line:84%
+So now let's go to three
+dimensions, see what's the same
+
+00:06:12.640 --> 00:06:15.900 align:middle line:84%
+and what's different,
+and most importantly,
+
+00:06:15.900 --> 00:06:17.980 align:middle line:84%
+what should be the analog
+of this proposition.
+
+00:06:17.980 --> 00:06:25.940 align:middle line:90%
+
+
+00:06:25.940 --> 00:06:26.440 align:middle line:90%
+OK.
+
+00:06:26.440 --> 00:06:27.520 align:middle line:90%
+So lines in Fq3.
+
+00:06:27.520 --> 00:06:31.800 align:middle line:90%
+
+
+00:06:31.800 --> 00:06:35.160 align:middle line:84%
+So they could still be
+parallel or not parallel.
+
+00:06:35.160 --> 00:06:43.960 align:middle line:84%
+So if L1 and L2 are parallel,
+then everything is still true.
+
+00:06:43.960 --> 00:06:47.640 align:middle line:84%
+They're parallel,
+then this is 0.
+
+00:06:47.640 --> 00:06:54.110 align:middle line:84%
+And if we wanted to take the
+high part, it would be negative.
+
+00:06:54.110 --> 00:06:55.970 align:middle line:90%
+Just the same as before.
+
+00:06:55.970 --> 00:06:56.470 align:middle line:90%
+OK.
+
+00:06:56.470 --> 00:06:57.678 align:middle line:90%
+What if they're not parallel?
+
+00:06:57.678 --> 00:07:01.670 align:middle line:90%
+
+
+00:07:01.670 --> 00:07:06.050 align:middle line:84%
+If they're not parallel, there
+are still two possibilities.
+
+00:07:06.050 --> 00:07:08.750 align:middle line:84%
+They could intersect each
+other or they could not
+
+00:07:08.750 --> 00:07:11.630 align:middle line:90%
+intersect each other.
+
+00:07:11.630 --> 00:07:14.750 align:middle line:90%
+So I guess there's subcases.
+
+00:07:14.750 --> 00:07:20.590 align:middle line:84%
+If they intersect, then
+the sum on X L1, L2
+
+00:07:20.590 --> 00:07:25.070 align:middle line:84%
+would be 1,
+intersecting one point.
+
+00:07:25.070 --> 00:07:26.950 align:middle line:90%
+That looks like before.
+
+00:07:26.950 --> 00:07:28.580 align:middle line:84%
+And then we could
+take the high part.
+
+00:07:28.580 --> 00:07:33.070 align:middle line:90%
+
+
+00:07:33.070 --> 00:07:36.430 align:middle line:90%
+But the high part isn't 0.
+
+00:07:36.430 --> 00:07:38.490 align:middle line:84%
+So this is an important
+thing that's different.
+
+00:07:38.490 --> 00:07:41.590 align:middle line:90%
+
+
+00:07:41.590 --> 00:07:45.270 align:middle line:84%
+So one common mistake was not
+to do this computation carefully
+
+00:07:45.270 --> 00:07:49.180 align:middle line:84%
+and just assume it should be 0
+like it was in two dimensions.
+
+00:07:49.180 --> 00:07:50.040 align:middle line:90%
+But it's not.
+
+00:07:50.040 --> 00:07:54.100 align:middle line:90%
+
+
+00:07:54.100 --> 00:07:57.060 align:middle line:84%
+There's not that much difference
+between 1 and 1 minus 1 over q,
+
+00:07:57.060 --> 00:07:59.780 align:middle line:84%
+so it's not clear that we're
+accomplishing a whole lot
+
+00:07:59.780 --> 00:08:01.210 align:middle line:90%
+by focusing on the high part.
+
+00:08:01.210 --> 00:08:05.580 align:middle line:90%
+
+
+00:08:05.580 --> 00:08:07.780 align:middle line:90%
+Yeah?
+
+00:08:07.780 --> 00:08:09.380 align:middle line:90%
+OK.
+
+00:08:09.380 --> 00:08:11.960 align:middle line:84%
+So to see this, we could
+do this computation.
+
+00:08:11.960 --> 00:08:16.420 align:middle line:84%
+It's elementary but it's
+a little bit tedious.
+
+00:08:16.420 --> 00:08:18.880 align:middle line:84%
+But let me see if I can
+say something conceptual.
+
+00:08:18.880 --> 00:08:23.300 align:middle line:90%
+
+
+00:08:23.300 --> 00:08:25.860 align:middle line:84%
+So the reason that
+this happened here
+
+00:08:25.860 --> 00:08:30.180 align:middle line:84%
+is that the two high parts
+are independent of each other
+
+00:08:30.180 --> 00:08:30.960 align:middle line:90%
+as functions.
+
+00:08:30.960 --> 00:08:35.260 align:middle line:84%
+That's a high brow way of
+saying what's going on.
+
+00:08:35.260 --> 00:08:38.900 align:middle line:90%
+And that's not true anymore.
+
+00:08:38.900 --> 00:08:43.380 align:middle line:84%
+If you have two lines that
+intersect in three space,
+
+00:08:43.380 --> 00:08:45.610 align:middle line:84%
+it's not independent
+of each other.
+
+00:08:45.610 --> 00:08:48.202 align:middle line:84%
+So if you know that
+you're in the first line,
+
+00:08:48.202 --> 00:08:50.410 align:middle line:84%
+then you're much more likely
+to be in the second line
+
+00:08:50.410 --> 00:08:51.952 align:middle line:84%
+than if you were
+just a random point.
+
+00:08:51.952 --> 00:08:56.090 align:middle line:90%
+
+
+00:08:56.090 --> 00:08:57.988 align:middle line:90%
+OK.
+
+00:08:57.988 --> 00:09:00.530 align:middle line:84%
+I don't know if that's helpful,
+but you could also just check
+
+00:09:00.530 --> 00:09:03.510 align:middle line:90%
+that that's how it goes.
+
+00:09:03.510 --> 00:09:07.850 align:middle line:90%
+
+
+00:09:07.850 --> 00:09:10.310 align:middle line:90%
+They could also not intersect.
+
+00:09:10.310 --> 00:09:14.330 align:middle line:90%
+
+
+00:09:14.330 --> 00:09:18.130 align:middle line:84%
+If they don't intersect
+then everything is the same
+
+00:09:18.130 --> 00:09:19.970 align:middle line:90%
+as the parallel case actually.
+
+00:09:19.970 --> 00:09:22.930 align:middle line:90%
+So that's going to be 0.
+
+00:09:22.930 --> 00:09:25.652 align:middle line:84%
+And the sum of the high
+parts, the inner product
+
+00:09:25.652 --> 00:09:27.110 align:middle line:84%
+of the high parts
+will be negative.
+
+00:09:27.110 --> 00:09:29.420 align:middle line:84%
+If you do it carefully,
+it's negative 1 over q.
+
+00:09:29.420 --> 00:09:30.670 align:middle line:90%
+Same thing would be true here.
+
+00:09:30.670 --> 00:09:37.130 align:middle line:90%
+
+
+00:09:37.130 --> 00:09:38.330 align:middle line:90%
+OK.
+
+00:09:38.330 --> 00:09:42.670 align:middle line:84%
+So another direction that
+this suggested to some people
+
+00:09:42.670 --> 00:09:45.830 align:middle line:84%
+is that we ought to try to
+think how many pairs of lines
+
+00:09:45.830 --> 00:09:48.350 align:middle line:84%
+intersect, as opposed
+to the pairs of lines
+
+00:09:48.350 --> 00:09:50.790 align:middle line:90%
+that don't intersect.
+
+00:09:50.790 --> 00:09:53.110 align:middle line:84%
+That is a totally
+reasonable way of thinking
+
+00:09:53.110 --> 00:09:54.510 align:middle line:90%
+about this from the beginning.
+
+00:09:54.510 --> 00:09:58.590 align:middle line:84%
+But it's not obvious
+how to figure that out.
+
+00:09:58.590 --> 00:10:02.350 align:middle line:84%
+It is possible for every
+pair of lines to intersect.
+
+00:10:02.350 --> 00:10:05.390 align:middle line:84%
+There are two significant
+ways that could happen.
+
+00:10:05.390 --> 00:10:08.010 align:middle line:84%
+One way is you could take all
+the lines through the origin.
+
+00:10:08.010 --> 00:10:10.510 align:middle line:84%
+Just pick a point and take all
+the lines through that point.
+
+00:10:10.510 --> 00:10:13.230 align:middle line:84%
+Then every pair of lines
+will intersect at that point,
+
+00:10:13.230 --> 00:10:17.190 align:middle line:90%
+have a porcupine shape.
+
+00:10:17.190 --> 00:10:20.310 align:middle line:84%
+The second way that almost
+all the lines could intersect
+
+00:10:20.310 --> 00:10:22.450 align:middle line:84%
+is to choose them
+all in a plane.
+
+00:10:22.450 --> 00:10:25.090 align:middle line:84%
+So if you fix a plane and then
+you choose lines in the plane,
+
+00:10:25.090 --> 00:10:27.790 align:middle line:84%
+a few of them might be parallel,
+but almost every pair of lines
+
+00:10:27.790 --> 00:10:29.130 align:middle line:90%
+in the plane will intersect.
+
+00:10:29.130 --> 00:10:34.870 align:middle line:90%
+
+
+00:10:34.870 --> 00:10:37.770 align:middle line:84%
+Anyway, so people tried to
+explore this a little bit,
+
+00:10:37.770 --> 00:10:43.900 align:middle line:84%
+but it's not so clear how
+to put a bound about how
+
+00:10:43.900 --> 00:10:47.800 align:middle line:90%
+many pairs will intersect
+
+00:10:47.800 --> 00:10:48.300 align:middle line:90%
+OK.
+
+00:10:48.300 --> 00:10:56.580 align:middle line:84%
+So then another thought is that
+instead of focusing on this,
+
+00:10:56.580 --> 00:10:57.515 align:middle line:90%
+we should focus--
+
+00:10:57.515 --> 00:10:59.140 align:middle line:84%
+we should look at
+the Fourier transform
+
+00:10:59.140 --> 00:11:01.972 align:middle line:84%
+and just see what the
+Fourier transform tells us.
+
+00:11:01.972 --> 00:11:04.180 align:middle line:84%
+So the Fourier transform
+does have a nice description
+
+00:11:04.180 --> 00:11:07.120 align:middle line:84%
+in any dimension, like you did
+on the first part of the problem
+
+00:11:07.120 --> 00:11:07.620 align:middle line:90%
+set.
+
+00:11:07.620 --> 00:11:11.280 align:middle line:90%
+And it tells us something.
+
+00:11:11.280 --> 00:11:14.620 align:middle line:84%
+So let's think about
+the Fourier transform.
+
+00:11:14.620 --> 00:11:16.240 align:middle line:90%
+The Fourier point of view.
+
+00:11:16.240 --> 00:11:19.620 align:middle line:90%
+
+
+00:11:19.620 --> 00:11:20.392 align:middle line:90%
+OK.
+
+00:11:20.392 --> 00:11:24.020 align:middle line:84%
+So if we take the Fourier
+transform of our line
+
+00:11:24.020 --> 00:11:25.860 align:middle line:84%
+and look at its
+absolute value, it
+
+00:11:25.860 --> 00:11:28.780 align:middle line:84%
+will be q times the
+characteristic function
+
+00:11:28.780 --> 00:11:30.820 align:middle line:90%
+of L perp.
+
+00:11:30.820 --> 00:11:33.080 align:middle line:84%
+But notice, so the
+L is still a line.
+
+00:11:33.080 --> 00:11:37.500 align:middle line:84%
+But since we're in
+three dimensions,
+
+00:11:37.500 --> 00:11:39.790 align:middle line:90%
+L perp is two dimensional.
+
+00:11:39.790 --> 00:11:43.083 align:middle line:90%
+
+
+00:11:43.083 --> 00:11:43.583 align:middle line:90%
+OK.
+
+00:11:43.583 --> 00:11:48.690 align:middle line:84%
+So then if we were to look at
+the-- so if L1 and L2 are not
+
+00:11:48.690 --> 00:11:51.290 align:middle line:90%
+parallel.
+
+00:11:51.290 --> 00:11:53.050 align:middle line:90%
+Not parallel.
+
+00:11:53.050 --> 00:11:57.410 align:middle line:84%
+If I look at the support
+of L1 hat intersected
+
+00:11:57.410 --> 00:12:01.610 align:middle line:84%
+with the support of
+L2 hat, well, that's
+
+00:12:01.610 --> 00:12:07.250 align:middle line:84%
+L1 perp intersected
+with L2 perp.
+
+00:12:07.250 --> 00:12:09.930 align:middle line:84%
+So I have a two plane
+and I'm intersecting it
+
+00:12:09.930 --> 00:12:12.210 align:middle line:90%
+with a different two plane.
+
+00:12:12.210 --> 00:12:16.610 align:middle line:90%
+And that will make a line.
+
+00:12:16.610 --> 00:12:17.430 align:middle line:90%
+That's a line.
+
+00:12:17.430 --> 00:12:20.250 align:middle line:90%
+
+
+00:12:20.250 --> 00:12:20.790 align:middle line:90%
+OK.
+
+00:12:20.790 --> 00:12:24.970 align:middle line:84%
+So a third common mistake was
+to not do this so carefully
+
+00:12:24.970 --> 00:12:27.743 align:middle line:84%
+and think that this
+intersection was just zero.
+
+00:12:27.743 --> 00:12:30.410 align:middle line:84%
+And if the intersection was just
+0, when you take the high part,
+
+00:12:30.410 --> 00:12:32.090 align:middle line:84%
+you would get rid
+of the 0 and that
+
+00:12:32.090 --> 00:12:35.090 align:middle line:84%
+would show that L1 and
+L2 were orthogonal,
+
+00:12:35.090 --> 00:12:36.490 align:middle line:90%
+which is not actually--
+
+00:12:36.490 --> 00:12:39.420 align:middle line:84%
+L1 and L2 hat orthogonal,
+which is not actually the case.
+
+00:12:39.420 --> 00:12:42.320 align:middle line:90%
+
+
+00:12:42.320 --> 00:12:44.640 align:middle line:90%
+OK.
+
+00:12:44.640 --> 00:12:45.140 align:middle line:90%
+OK.
+
+00:12:45.140 --> 00:12:47.800 align:middle line:90%
+Cool.
+
+00:12:47.800 --> 00:12:48.580 align:middle line:90%
+All right.
+
+00:12:48.580 --> 00:12:51.080 align:middle line:84%
+So to prove some
+kind of an estimate
+
+00:12:51.080 --> 00:12:53.280 align:middle line:84%
+about how these lines
+intersect, we're
+
+00:12:53.280 --> 00:12:56.840 align:middle line:84%
+going to try to combine
+this information
+
+00:12:56.840 --> 00:12:58.498 align:middle line:90%
+and this information.
+
+00:12:58.498 --> 00:13:00.040 align:middle line:84%
+So if they're
+parallel, they actually
+
+00:13:00.040 --> 00:13:02.280 align:middle line:84%
+are orthogonal,
+which is very good.
+
+00:13:02.280 --> 00:13:06.800 align:middle line:84%
+If they're not parallel,
+they're not fully orthogonal.
+
+00:13:06.800 --> 00:13:09.217 align:middle line:90%
+But the Fourier transform of--
+
+00:13:09.217 --> 00:13:10.800 align:middle line:84%
+the intersection of
+Fourier transforms
+
+00:13:10.800 --> 00:13:12.340 align:middle line:90%
+is kind of small and special.
+
+00:13:12.340 --> 00:13:15.200 align:middle line:90%
+We'll try to use that.
+
+00:13:15.200 --> 00:13:18.008 align:middle line:90%
+OK.
+
+00:13:18.008 --> 00:13:20.257 align:middle line:84%
+So here's the
+analogous proposition.
+
+00:13:20.257 --> 00:13:21.840 align:middle line:84%
+And I think it would
+have been helpful
+
+00:13:21.840 --> 00:13:24.880 align:middle line:84%
+if I had stated this
+in the problem set.
+
+00:13:24.880 --> 00:13:27.100 align:middle line:90%
+So here's how it goes.
+
+00:13:27.100 --> 00:13:37.220 align:middle line:84%
+So if L is a set of lines
+in three dimensions in Fq3
+
+00:13:37.220 --> 00:13:49.540 align:middle line:84%
+and f is the sum of
+these lines, then
+
+00:13:49.540 --> 00:13:53.260 align:middle line:90%
+f L2 squared is bounded by--
+
+00:13:53.260 --> 00:13:58.460 align:middle line:84%
+so what we had before was
+something like orthogonality.
+
+00:13:58.460 --> 00:14:05.660 align:middle line:84%
+Some L and L of fL or-- and
+this is with the high part.
+
+00:14:05.660 --> 00:14:08.580 align:middle line:90%
+The high part L2 squared.
+
+00:14:08.580 --> 00:14:10.240 align:middle line:90%
+And that's not true anymore.
+
+00:14:10.240 --> 00:14:13.280 align:middle line:84%
+But it is true if we put
+an extra factor of q.
+
+00:14:13.280 --> 00:14:16.540 align:middle line:90%
+
+
+00:14:16.540 --> 00:14:17.526 align:middle line:90%
+OK.
+
+00:14:17.526 --> 00:14:23.180 align:middle line:84%
+And so then that is
+around the number of lines
+
+00:14:23.180 --> 00:14:25.120 align:middle line:84%
+times each one of
+these is around q,
+
+00:14:25.120 --> 00:14:27.520 align:middle line:84%
+and there's another factor
+of q which is around there.
+
+00:14:27.520 --> 00:14:33.610 align:middle line:90%
+
+
+00:14:33.610 --> 00:14:35.850 align:middle line:90%
+OK.
+
+00:14:35.850 --> 00:14:38.330 align:middle line:84%
+So if you compare
+these, this is like
+
+00:14:38.330 --> 00:14:40.570 align:middle line:90%
+an orthogonality proposition.
+
+00:14:40.570 --> 00:14:42.690 align:middle line:84%
+This is clearly much
+weaker than orthogonality
+
+00:14:42.690 --> 00:14:45.810 align:middle line:84%
+because we have a
+big factor here.
+
+00:14:45.810 --> 00:14:48.927 align:middle line:84%
+Nevertheless, it's
+stronger than nothing.
+
+00:14:48.927 --> 00:14:50.510 align:middle line:84%
+Even though there's
+a big factor here,
+
+00:14:50.510 --> 00:14:53.550 align:middle line:84%
+this proposition has some
+meaningful information in it.
+
+00:14:53.550 --> 00:14:56.890 align:middle line:90%
+
+
+00:14:56.890 --> 00:14:57.390 align:middle line:90%
+OK.
+
+00:14:57.390 --> 00:15:00.810 align:middle line:84%
+So let me explain how to
+prove this proposition,
+
+00:15:00.810 --> 00:15:03.730 align:middle line:84%
+and then we'll
+digest it and argue
+
+00:15:03.730 --> 00:15:06.170 align:middle line:84%
+that it does tell us
+something interesting,
+
+00:15:06.170 --> 00:15:08.490 align:middle line:84%
+even though it's a lot
+weaker, in some sense,
+
+00:15:08.490 --> 00:15:12.770 align:middle line:84%
+than the two
+dimensional proposition.
+
+00:15:12.770 --> 00:15:13.542 align:middle line:90%
+OK.
+
+00:15:13.542 --> 00:15:15.070 align:middle line:90%
+So how do we prove this?
+
+00:15:15.070 --> 00:15:20.570 align:middle line:90%
+
+
+00:15:20.570 --> 00:15:23.730 align:middle line:90%
+All right.
+
+00:15:23.730 --> 00:15:30.690 align:middle line:84%
+So for parallel lines, we
+have really good information.
+
+00:15:30.690 --> 00:15:33.800 align:middle line:84%
+So let's first think about all
+the lines in a given direction
+
+00:15:33.800 --> 00:15:36.240 align:middle line:90%
+and add those up.
+
+00:15:36.240 --> 00:15:40.440 align:middle line:84%
+And then after that, we'll add
+up the different directions.
+
+00:15:40.440 --> 00:15:43.300 align:middle line:84%
+So we'll label the
+directions by w.
+
+00:15:43.300 --> 00:15:49.680 align:middle line:84%
+So w will be a one dimensional
+subspace direction.
+
+00:15:49.680 --> 00:15:54.920 align:middle line:84%
+And then Lw will be the
+lines in our set of lines
+
+00:15:54.920 --> 00:15:57.290 align:middle line:90%
+that are parallel to w.
+
+00:15:57.290 --> 00:16:00.360 align:middle line:90%
+
+
+00:16:00.360 --> 00:16:03.160 align:middle line:90%
+And we can also make an fw.
+
+00:16:03.160 --> 00:16:07.840 align:middle line:84%
+That's the sum over
+the lines in Lw of L.
+
+00:16:07.840 --> 00:16:11.600 align:middle line:84%
+So f itself is the sum of the
+different directions of fw.
+
+00:16:11.600 --> 00:16:16.612 align:middle line:90%
+
+
+00:16:16.612 --> 00:16:21.000 align:middle line:84%
+So the first thing that we'll
+do is prove some estimates
+
+00:16:21.000 --> 00:16:24.080 align:middle line:90%
+about fw.
+
+00:16:24.080 --> 00:16:26.320 align:middle line:84%
+And this part really
+is not that difficult.
+
+00:16:26.320 --> 00:16:28.940 align:middle line:84%
+We're adding up functions
+with disjoint supports.
+
+00:16:28.940 --> 00:16:32.550 align:middle line:84%
+It's not that
+complicated, what happens.
+
+00:16:32.550 --> 00:16:33.990 align:middle line:90%
+OK.
+
+00:16:33.990 --> 00:16:40.570 align:middle line:84%
+So fw L2 squared
+is the size of w.
+
+00:16:40.570 --> 00:16:41.070 align:middle line:90%
+Sorry.
+
+00:16:41.070 --> 00:16:47.830 align:middle line:90%
+The size of Lw times q.
+
+00:16:47.830 --> 00:16:48.690 align:middle line:90%
+Why is that?
+
+00:16:48.690 --> 00:16:52.710 align:middle line:90%
+
+
+00:16:52.710 --> 00:16:55.440 align:middle line:90%
+Because the-- so proof.
+
+00:16:55.440 --> 00:16:58.150 align:middle line:90%
+
+
+00:16:58.150 --> 00:17:11.349 align:middle line:84%
+So sum fw squared is the sum L
+and Lw sum on x L of x squared.
+
+00:17:11.349 --> 00:17:12.770 align:middle line:90%
+But these lines are parallel.
+
+00:17:12.770 --> 00:17:14.589 align:middle line:84%
+They're disjoint
+from each other.
+
+00:17:14.589 --> 00:17:18.390 align:middle line:84%
+So there's only-- at any
+given x, only one of them
+
+00:17:18.390 --> 00:17:21.270 align:middle line:90%
+is making an appearance.
+
+00:17:21.270 --> 00:17:27.819 align:middle line:84%
+So this is sum L and L
+sum on x out of x squared.
+
+00:17:27.819 --> 00:17:32.810 align:middle line:90%
+
+
+00:17:32.810 --> 00:17:34.590 align:middle line:84%
+And then that's the
+right-hand side.
+
+00:17:34.590 --> 00:17:39.190 align:middle line:90%
+
+
+00:17:39.190 --> 00:17:40.690 align:middle line:84%
+It's not clear yet
+why we would want
+
+00:17:40.690 --> 00:17:42.773 align:middle line:84%
+to look at the high frequency
+part, but if we did,
+
+00:17:42.773 --> 00:17:44.290 align:middle line:90%
+it wouldn't change much.
+
+00:17:44.290 --> 00:17:51.930 align:middle line:84%
+So fw high, L2 squared is
+less than fw L2 squared.
+
+00:17:51.930 --> 00:17:55.020 align:middle line:84%
+And so the proof is that this
+is true for any function.
+
+00:17:55.020 --> 00:17:58.890 align:middle line:90%
+
+
+00:17:58.890 --> 00:18:03.490 align:middle line:90%
+We have it over there.
+
+00:18:03.490 --> 00:18:09.770 align:middle line:84%
+For any function gL2 squared
+is always g0 L2 squared plus g
+
+00:18:09.770 --> 00:18:13.210 align:middle line:90%
+high L2 squared.
+
+00:18:13.210 --> 00:18:16.120 align:middle line:84%
+So it's at least as big
+as g high L2 squared.
+
+00:18:16.120 --> 00:18:19.330 align:middle line:90%
+
+
+00:18:19.330 --> 00:18:20.470 align:middle line:90%
+OK.
+
+00:18:20.470 --> 00:18:23.150 align:middle line:84%
+You can do it with
+Fourier transform.
+
+00:18:23.150 --> 00:18:24.400 align:middle line:90%
+You could also do it by hand.
+
+00:18:24.400 --> 00:18:28.440 align:middle line:90%
+
+
+00:18:28.440 --> 00:18:31.640 align:middle line:90%
+Let's call it an exercise.
+
+00:18:31.640 --> 00:18:34.020 align:middle line:90%
+OK.
+
+00:18:34.020 --> 00:18:37.600 align:middle line:84%
+Now, the more tricky
+and interesting point
+
+00:18:37.600 --> 00:18:41.720 align:middle line:84%
+is what happens when we add
+together the different w.
+
+00:18:41.720 --> 00:18:46.360 align:middle line:84%
+And when we do that, the way
+their Fourier transforms behave
+
+00:18:46.360 --> 00:18:47.620 align:middle line:90%
+will come into play.
+
+00:18:47.620 --> 00:18:53.800 align:middle line:90%
+
+
+00:18:53.800 --> 00:18:54.620 align:middle line:90%
+All right.
+
+00:18:54.620 --> 00:18:57.280 align:middle line:90%
+
+
+00:18:57.280 --> 00:19:00.320 align:middle line:84%
+So I guess that
+this is lemma three.
+
+00:19:00.320 --> 00:19:02.160 align:middle line:84%
+But I'm going to put
+a star because this
+
+00:19:02.160 --> 00:19:03.300 align:middle line:90%
+is the important lemma.
+
+00:19:03.300 --> 00:19:06.520 align:middle line:84%
+This is where the interesting
+stuff is happening.
+
+00:19:06.520 --> 00:19:07.600 align:middle line:90%
+OK.
+
+00:19:07.600 --> 00:19:10.880 align:middle line:84%
+Important lemma says
+that fL2 squared
+
+00:19:10.880 --> 00:19:17.990 align:middle line:84%
+is bounded by q plus 1 times
+the sum on w of fw L2 squared.
+
+00:19:17.990 --> 00:19:21.800 align:middle line:90%
+
+
+00:19:21.800 --> 00:19:22.560 align:middle line:90%
+OK.
+
+00:19:22.560 --> 00:19:23.407 align:middle line:90%
+Here's the proof.
+
+00:19:23.407 --> 00:19:23.990 align:middle line:90%
+Oh, I'm sorry.
+
+00:19:23.990 --> 00:19:26.298 align:middle line:84%
+And now I need to
+put high everywhere.
+
+00:19:26.298 --> 00:19:31.670 align:middle line:90%
+
+
+00:19:31.670 --> 00:19:32.830 align:middle line:90%
+All right.
+
+00:19:32.830 --> 00:19:39.770 align:middle line:84%
+So f high L2 squared
+is, by Plancherel,
+
+00:19:39.770 --> 00:19:45.820 align:middle line:84%
+it's the sum on the nonzero
+ksi f hat of ksi squared.
+
+00:19:45.820 --> 00:19:50.990 align:middle line:90%
+
+
+00:19:50.990 --> 00:19:55.080 align:middle line:84%
+So remember that f0 is the
+zero frequency part of f.
+
+00:19:55.080 --> 00:19:58.310 align:middle line:84%
+f high is all the
+other frequencies in f.
+
+00:19:58.310 --> 00:20:00.570 align:middle line:90%
+And so this is Plancherel.
+
+00:20:00.570 --> 00:20:04.310 align:middle line:90%
+
+
+00:20:04.310 --> 00:20:04.810 align:middle line:90%
+Oh, OK.
+
+00:20:04.810 --> 00:20:07.105 align:middle line:84%
+And I guess because of the
+finite field normalization
+
+00:20:07.105 --> 00:20:08.730 align:middle line:84%
+that I always have
+trouble remembering,
+
+00:20:08.730 --> 00:20:09.605 align:middle line:90%
+there should be this.
+
+00:20:09.605 --> 00:20:13.150 align:middle line:90%
+
+
+00:20:13.150 --> 00:20:13.870 align:middle line:90%
+OK.
+
+00:20:13.870 --> 00:20:17.630 align:middle line:90%
+Now, f is the sum of fw.
+
+00:20:17.630 --> 00:20:23.290 align:middle line:84%
+This is 1 over q cubed times
+the sum and the nonzero ksi,
+
+00:20:23.290 --> 00:20:28.720 align:middle line:84%
+sum on w of fw hat
+of ksi squared.
+
+00:20:28.720 --> 00:20:38.137 align:middle line:90%
+
+
+00:20:38.137 --> 00:20:38.637 align:middle line:90%
+OK.
+
+00:20:38.637 --> 00:20:42.840 align:middle line:90%
+
+
+00:20:42.840 --> 00:20:44.890 align:middle line:84%
+Now, in two dimensions,
+we could have done this
+
+00:20:44.890 --> 00:20:46.570 align:middle line:90%
+and gotten to this point.
+
+00:20:46.570 --> 00:20:50.570 align:middle line:84%
+And then we would have been very
+happy because the different fw
+
+00:20:50.570 --> 00:20:53.070 align:middle line:90%
+hats have different supports.
+
+00:20:53.070 --> 00:20:56.930 align:middle line:84%
+They're supported on different
+lines through the origin.
+
+00:20:56.930 --> 00:21:00.293 align:middle line:90%
+So we would have orthogonality.
+
+00:21:00.293 --> 00:21:02.210 align:middle line:84%
+The way it would have
+worked in two dimensions
+
+00:21:02.210 --> 00:21:04.690 align:middle line:84%
+is that for any
+particular ksi, there
+
+00:21:04.690 --> 00:21:08.970 align:middle line:84%
+is only one w which
+is nonzero in the sum.
+
+00:21:08.970 --> 00:21:11.660 align:middle line:84%
+And so we could take
+the square inside.
+
+00:21:11.660 --> 00:21:14.410 align:middle line:90%
+
+
+00:21:14.410 --> 00:21:15.182 align:middle line:90%
+OK.
+
+00:21:15.182 --> 00:21:17.490 align:middle line:90%
+But that's not true anymore.
+
+00:21:17.490 --> 00:21:22.920 align:middle line:84%
+So fw hat is
+supported on w perp,
+
+00:21:22.920 --> 00:21:28.560 align:middle line:84%
+and in any given
+direction, any given ksi,
+
+00:21:28.560 --> 00:21:34.040 align:middle line:84%
+there are many different two
+planes that contain that ksi.
+
+00:21:34.040 --> 00:21:36.560 align:middle line:90%
+So let's write that down.
+
+00:21:36.560 --> 00:21:46.120 align:middle line:84%
+So we're going to note that the
+support of fw hat is w perp.
+
+00:21:46.120 --> 00:21:57.920 align:middle line:90%
+And so for any ksi, the fw--
+
+00:21:57.920 --> 00:22:04.840 align:middle line:84%
+the set of w so that f
+hat w of ksi is nonzero
+
+00:22:04.840 --> 00:22:10.190 align:middle line:84%
+is contained in the set of
+w so that w is in ksi perp.
+
+00:22:10.190 --> 00:22:14.860 align:middle line:90%
+
+
+00:22:14.860 --> 00:22:16.440 align:middle line:90%
+Yeah?
+
+00:22:16.440 --> 00:22:20.702 align:middle line:84%
+AUDIENCE: We still need
+the high part, right?
+
+00:22:20.702 --> 00:22:22.357 align:middle line:90%
+On the f hat.
+
+00:22:22.357 --> 00:22:23.190 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:22:23.190 --> 00:22:24.023 align:middle line:90%
+So the question is--
+
+00:22:24.023 --> 00:22:26.410 align:middle line:84%
+I think the question is--
+so on the left-hand side,
+
+00:22:26.410 --> 00:22:27.990 align:middle line:90%
+I put the high part of f.
+
+00:22:27.990 --> 00:22:31.150 align:middle line:84%
+And the question is, do we
+need the high part here?
+
+00:22:31.150 --> 00:22:32.050 align:middle line:90%
+Is that the question?
+
+00:22:32.050 --> 00:22:33.050 align:middle line:90%
+AUDIENCE: Just the zero.
+
+00:22:33.050 --> 00:22:33.908 align:middle line:90%
+Not that one.
+
+00:22:33.908 --> 00:22:35.450 align:middle line:84%
+LAWRENCE GUTH: So
+we don't need that,
+
+00:22:35.450 --> 00:22:37.790 align:middle line:84%
+but I should have
+said it clearer.
+
+00:22:37.790 --> 00:22:41.110 align:middle line:84%
+So let's all remember that if
+you take the high part of f hat
+
+00:22:41.110 --> 00:22:47.070 align:middle line:84%
+ksi, what you get is f hat
+of ksi if ksi is nonzero
+
+00:22:47.070 --> 00:22:51.250 align:middle line:90%
+and zero if ksi is zero.
+
+00:22:51.250 --> 00:22:52.970 align:middle line:90%
+This is f high hat.
+
+00:22:52.970 --> 00:22:58.470 align:middle line:90%
+
+
+00:22:58.470 --> 00:22:58.970 align:middle line:90%
+OK.
+
+00:22:58.970 --> 00:23:02.430 align:middle line:84%
+So for any given
+frequency ksi, I only
+
+00:23:02.430 --> 00:23:06.810 align:middle line:84%
+need to include the
+w's in ksi perp.
+
+00:23:06.810 --> 00:23:09.350 align:middle line:90%
+
+
+00:23:09.350 --> 00:23:14.870 align:middle line:90%
+So actually, I can write this.
+
+00:23:14.870 --> 00:23:16.880 align:middle line:90%
+And there aren't as many.
+
+00:23:16.880 --> 00:23:19.180 align:middle line:90%
+There's more than one of them.
+
+00:23:19.180 --> 00:23:21.740 align:middle line:84%
+But there is a
+non-trivial bound how many
+
+00:23:21.740 --> 00:23:23.940 align:middle line:90%
+are terms are in this sum.
+
+00:23:23.940 --> 00:23:29.780 align:middle line:90%
+So the number of w in ksi perp.
+
+00:23:29.780 --> 00:23:31.000 align:middle line:90%
+So this is a two plane.
+
+00:23:31.000 --> 00:23:33.400 align:middle line:84%
+We're talking about how many
+lines through the origin
+
+00:23:33.400 --> 00:23:34.700 align:middle line:90%
+there are in this two plane.
+
+00:23:34.700 --> 00:23:36.360 align:middle line:90%
+That's q plus 1.
+
+00:23:36.360 --> 00:23:43.404 align:middle line:90%
+
+
+00:23:43.404 --> 00:23:47.200 align:middle line:84%
+So there are something like q
+squared different w in total.
+
+00:23:47.200 --> 00:23:49.860 align:middle line:84%
+But for any given ksi, we're
+only including q of them
+
+00:23:49.860 --> 00:23:51.980 align:middle line:90%
+in the sum here.
+
+00:23:51.980 --> 00:23:53.500 align:middle line:84%
+That's not as good
+as orthogonality
+
+00:23:53.500 --> 00:23:56.980 align:middle line:84%
+but it actually is
+helpful information.
+
+00:23:56.980 --> 00:23:59.180 align:middle line:84%
+And the way we can
+exploit that information
+
+00:23:59.180 --> 00:24:01.220 align:middle line:90%
+is by Cauchy-Schwarzing this.
+
+00:24:01.220 --> 00:24:05.780 align:middle line:84%
+So I'm going to think of this as
+the sum of this thing times 1.
+
+00:24:05.780 --> 00:24:07.360 align:middle line:84%
+Of course I didn't
+change anything.
+
+00:24:07.360 --> 00:24:09.280 align:middle line:84%
+And now I can apply
+Cauchy-Schwarz.
+
+00:24:09.280 --> 00:24:12.100 align:middle line:90%
+
+
+00:24:12.100 --> 00:24:16.440 align:middle line:84%
+1 over q cubed sum
+over the nonzero ksi.
+
+00:24:16.440 --> 00:24:24.040 align:middle line:84%
+The first term will be sum
+w in ksi perp f hat of w
+
+00:24:24.040 --> 00:24:25.790 align:middle line:90%
+of ksi norm squared.
+
+00:24:25.790 --> 00:24:28.520 align:middle line:90%
+
+
+00:24:28.520 --> 00:24:34.070 align:middle line:84%
+And the second half will be sum
+w and ksi perp of 1 squared.
+
+00:24:34.070 --> 00:24:40.480 align:middle line:90%
+
+
+00:24:40.480 --> 00:24:41.200 align:middle line:90%
+OK.
+
+00:24:41.200 --> 00:24:44.680 align:middle line:90%
+And this is q plus 1.
+
+00:24:44.680 --> 00:24:47.100 align:middle line:84%
+So we bring that
+out to the front,
+
+00:24:47.100 --> 00:24:49.320 align:middle line:84%
+and after that,
+what we have left
+
+00:24:49.320 --> 00:24:53.720 align:middle line:84%
+is a sum that just involves
+each fw one at a time.
+
+00:24:53.720 --> 00:25:00.220 align:middle line:84%
+So it's q plus 1, 1 over q
+cubed sum on the nonzero ksi.
+
+00:25:00.220 --> 00:25:03.400 align:middle line:90%
+
+
+00:25:03.400 --> 00:25:06.800 align:middle line:84%
+Actually, I could put-- well,
+I'll put the sum on w here.
+
+00:25:06.800 --> 00:25:09.580 align:middle line:90%
+fw hat of ksi squared.
+
+00:25:09.580 --> 00:25:11.490 align:middle line:84%
+But I can switch the
+order of these sums.
+
+00:25:11.490 --> 00:25:14.550 align:middle line:90%
+
+
+00:25:14.550 --> 00:25:16.950 align:middle line:84%
+And now if I
+Plancherel back, I have
+
+00:25:16.950 --> 00:25:24.630 align:middle line:84%
+q plus 1 times the sum
+on w fw high L2 squared.
+
+00:25:24.630 --> 00:25:25.890 align:middle line:90%
+And that's the statement.
+
+00:25:25.890 --> 00:25:32.490 align:middle line:90%
+
+
+00:25:32.490 --> 00:25:32.990 align:middle line:90%
+OK.
+
+00:25:32.990 --> 00:25:34.180 align:middle line:90%
+Any questions or comments?
+
+00:25:34.180 --> 00:25:41.070 align:middle line:90%
+
+
+00:25:41.070 --> 00:25:43.210 align:middle line:84%
+In that case, maybe I
+have a question for you.
+
+00:25:43.210 --> 00:25:46.030 align:middle line:90%
+
+
+00:25:46.030 --> 00:25:49.430 align:middle line:84%
+In this proof what was
+the purpose of taking out
+
+00:25:49.430 --> 00:25:51.390 align:middle line:90%
+the 0 frequency?
+
+00:25:51.390 --> 00:25:53.370 align:middle line:90%
+What did we gain by doing that?
+
+00:25:53.370 --> 00:25:57.110 align:middle line:90%
+
+
+00:25:57.110 --> 00:25:58.590 align:middle line:90%
+Yeah?
+
+00:25:58.590 --> 00:26:02.610 align:middle line:84%
+AUDIENCE: The zero
+frequency is equal to 0
+
+00:26:02.610 --> 00:26:07.910 align:middle line:84%
+every plane contains
+ksi equal to 0.
+
+00:26:07.910 --> 00:26:11.719 align:middle line:84%
+So the output would
+be [INAUDIBLE].
+
+00:26:11.719 --> 00:26:12.552 align:middle line:90%
+LAWRENCE GUTH: Good.
+
+00:26:12.552 --> 00:26:13.140 align:middle line:90%
+Good.
+
+00:26:13.140 --> 00:26:17.820 align:middle line:84%
+So the comment is that ksi
+equals 0 is special because--
+
+00:26:17.820 --> 00:26:20.930 align:middle line:84%
+and when ksi is 0, every
+w perp goes through 0.
+
+00:26:20.930 --> 00:26:25.780 align:middle line:90%
+
+
+00:26:25.780 --> 00:26:30.300 align:middle line:84%
+So there are q squared different
+w's, and every one of them
+
+00:26:30.300 --> 00:26:32.420 align:middle line:90%
+has a contribution at 0.
+
+00:26:32.420 --> 00:26:34.180 align:middle line:84%
+So if we wanted to
+do Cauchy-Schwarz,
+
+00:26:34.180 --> 00:26:37.940 align:middle line:84%
+we would have q
+squared terms here.
+
+00:26:37.940 --> 00:26:42.040 align:middle line:84%
+But at every other ksi, we have
+only q w perps going through it.
+
+00:26:42.040 --> 00:26:44.540 align:middle line:84%
+And so we have to
+pay only q over here.
+
+00:26:44.540 --> 00:26:46.610 align:middle line:84%
+That's what's different
+about 0 and not 0.
+
+00:26:46.610 --> 00:26:49.500 align:middle line:90%
+
+
+00:26:49.500 --> 00:26:52.260 align:middle line:90%
+Good.
+
+00:26:52.260 --> 00:26:53.610 align:middle line:90%
+OK.
+
+00:26:53.610 --> 00:26:55.980 align:middle line:84%
+So now the proof of the
+proposition over there
+
+00:26:55.980 --> 00:26:58.420 align:middle line:90%
+is just assembling these lemmas.
+
+00:26:58.420 --> 00:27:02.060 align:middle line:84%
+So the proposition
+says that I want
+
+00:27:02.060 --> 00:27:05.580 align:middle line:90%
+to bound the L2 norm of f high.
+
+00:27:05.580 --> 00:27:07.500 align:middle line:90%
+How do I do it?
+
+00:27:07.500 --> 00:27:09.750 align:middle line:84%
+Lemma three says the
+L2 norm of f high
+
+00:27:09.750 --> 00:27:13.370 align:middle line:84%
+is bounded by q plus 1
+times the sum on w of those,
+
+00:27:13.370 --> 00:27:15.370 align:middle line:84%
+and lemmas one and
+lemmas two tells me
+
+00:27:15.370 --> 00:27:18.250 align:middle line:90%
+how big each one of these is.
+
+00:27:18.250 --> 00:27:21.190 align:middle line:84%
+If you put that all together,
+you get proposition two.
+
+00:27:21.190 --> 00:27:23.870 align:middle line:90%
+
+
+00:27:23.870 --> 00:27:24.370 align:middle line:90%
+OK.
+
+00:27:24.370 --> 00:27:28.290 align:middle line:90%
+
+
+00:27:28.290 --> 00:27:28.790 align:middle line:90%
+OK.
+
+00:27:28.790 --> 00:27:35.730 align:middle line:90%
+
+
+00:27:35.730 --> 00:27:36.810 align:middle line:90%
+Great.
+
+00:27:36.810 --> 00:27:37.450 align:middle line:90%
+OK.
+
+00:27:37.450 --> 00:27:39.570 align:middle line:84%
+So now let me erase
+this a little bit
+
+00:27:39.570 --> 00:27:42.890 align:middle line:84%
+and let's think about what
+proposition two tells us
+
+00:27:42.890 --> 00:27:44.420 align:middle line:90%
+about lines in three space.
+
+00:27:44.420 --> 00:28:03.530 align:middle line:90%
+
+
+00:28:03.530 --> 00:28:05.386 align:middle line:90%
+OK.
+
+00:28:05.386 --> 00:28:11.630 align:middle line:84%
+So actually, let's first review
+what proposition one tells us
+
+00:28:11.630 --> 00:28:14.630 align:middle line:90%
+about lines in the plane.
+
+00:28:14.630 --> 00:28:18.150 align:middle line:90%
+So f is a sum of lines.
+
+00:28:18.150 --> 00:28:24.070 align:middle line:84%
+f0 is always the number
+of lines divided by q,
+
+00:28:24.070 --> 00:28:28.670 align:middle line:84%
+and so f0 L2 squared
+works out to be
+
+00:28:28.670 --> 00:28:30.050 align:middle line:90%
+the number of lines squared.
+
+00:28:30.050 --> 00:28:32.470 align:middle line:90%
+It's not hard to check.
+
+00:28:32.470 --> 00:28:40.310 align:middle line:84%
+And proposition one, it tells
+us that f high L2 squared
+
+00:28:40.310 --> 00:28:43.430 align:middle line:84%
+is bounded by the
+number of lines times q.
+
+00:28:43.430 --> 00:28:45.470 align:middle line:84%
+So if you put
+these together, you
+
+00:28:45.470 --> 00:28:49.950 align:middle line:84%
+see that if the number of
+lines is much bigger than q,
+
+00:28:49.950 --> 00:28:52.240 align:middle line:90%
+then f is mostly constant.
+
+00:28:52.240 --> 00:28:54.990 align:middle line:90%
+
+
+00:28:54.990 --> 00:29:00.230 align:middle line:84%
+So then L2 norm of f
+high is much smaller
+
+00:29:00.230 --> 00:29:02.630 align:middle line:84%
+than the L2 norm of
+the constant part.
+
+00:29:02.630 --> 00:29:04.670 align:middle line:84%
+The sum of lines
+looks almost constant
+
+00:29:04.670 --> 00:29:08.260 align:middle line:90%
+with some small perturbations.
+
+00:29:08.260 --> 00:29:08.860 align:middle line:90%
+OK.
+
+00:29:08.860 --> 00:29:12.620 align:middle line:84%
+What's the analog of
+that in three dimensions?
+
+00:29:12.620 --> 00:29:13.860 align:middle line:90%
+Lines in Fq3.
+
+00:29:13.860 --> 00:29:20.360 align:middle line:90%
+
+
+00:29:20.360 --> 00:29:20.860 align:middle line:90%
+OK.
+
+00:29:20.860 --> 00:29:23.540 align:middle line:84%
+So in three dimensions,
+f0 is the number
+
+00:29:23.540 --> 00:29:28.780 align:middle line:84%
+of lines over q squared because
+each line occupies a 1 over q
+
+00:29:28.780 --> 00:29:31.260 align:middle line:90%
+squared fraction of space.
+
+00:29:31.260 --> 00:29:35.020 align:middle line:84%
+And so then you can compute
+the L2 norm of f0 squared.
+
+00:29:35.020 --> 00:29:40.300 align:middle line:84%
+It's not difficult. It's
+number of lines squared over q.
+
+00:29:40.300 --> 00:29:43.780 align:middle line:84%
+And on the other
+hand, we know that f
+
+00:29:43.780 --> 00:29:49.820 align:middle line:84%
+high L2 squared is at most the
+number of lines times q squared.
+
+00:29:49.820 --> 00:29:52.100 align:middle line:90%
+So you can put these together.
+
+00:29:52.100 --> 00:29:54.040 align:middle line:84%
+If the number of
+lines is large enough,
+
+00:29:54.040 --> 00:29:56.863 align:middle line:84%
+then this is way
+bigger than this.
+
+00:29:56.863 --> 00:29:58.280 align:middle line:84%
+If you do a little
+bit of algebra,
+
+00:29:58.280 --> 00:30:01.420 align:middle line:84%
+you see that if
+the number of lines
+
+00:30:01.420 --> 00:30:08.130 align:middle line:84%
+is much larger than q cubed,
+then the high frequency part
+
+00:30:08.130 --> 00:30:11.330 align:middle line:84%
+is much smaller than
+the constant part.
+
+00:30:11.330 --> 00:30:14.410 align:middle line:84%
+So if you add up more
+than q cubed lines
+
+00:30:14.410 --> 00:30:16.170 align:middle line:84%
+in three dimensional
+space, you'll
+
+00:30:16.170 --> 00:30:17.850 align:middle line:84%
+get something that's
+mostly constant
+
+00:30:17.850 --> 00:30:21.770 align:middle line:90%
+with some small perturbations.
+
+00:30:21.770 --> 00:30:22.730 align:middle line:90%
+OK.
+
+00:30:22.730 --> 00:30:27.970 align:middle line:84%
+Now these are both the correct
+thresholds for this behavior.
+
+00:30:27.970 --> 00:30:28.930 align:middle line:90%
+Why?
+
+00:30:28.930 --> 00:30:32.810 align:middle line:84%
+So in two dimensions suppose
+I add up less than q lines,
+
+00:30:32.810 --> 00:30:34.610 align:middle line:90%
+say q over two lines.
+
+00:30:34.610 --> 00:30:36.710 align:middle line:84%
+Well, they only
+fill half of space.
+
+00:30:36.710 --> 00:30:40.130 align:middle line:84%
+So there's no way that thing
+is going to look constant.
+
+00:30:40.130 --> 00:30:45.010 align:middle line:84%
+So this will certainly not be
+true with q over two lines.
+
+00:30:45.010 --> 00:30:45.590 align:middle line:90%
+All right.
+
+00:30:45.590 --> 00:30:48.650 align:middle line:84%
+Now in three dimensions
+suppose I add up
+
+00:30:48.650 --> 00:30:53.410 align:middle line:84%
+less than q cubed lines,
+maybe half of q cubed lines.
+
+00:30:53.410 --> 00:30:53.950 align:middle line:90%
+All right.
+
+00:30:53.950 --> 00:30:55.590 align:middle line:90%
+Now this is a trickier wicket.
+
+00:30:55.590 --> 00:30:58.010 align:middle line:90%
+It depends which lines I pick.
+
+00:30:58.010 --> 00:31:00.410 align:middle line:84%
+If you were to pick
+half of q cubed lines
+
+00:31:00.410 --> 00:31:02.760 align:middle line:84%
+randomly and add
+them up, it would
+
+00:31:02.760 --> 00:31:05.480 align:middle line:90%
+be quite close to constant.
+
+00:31:05.480 --> 00:31:07.760 align:middle line:84%
+But if you pick
+them cleverly, you
+
+00:31:07.760 --> 00:31:10.060 align:middle line:84%
+can make it not look
+like a constant.
+
+00:31:10.060 --> 00:31:11.220 align:middle line:90%
+And here's how to do it.
+
+00:31:11.220 --> 00:31:14.280 align:middle line:90%
+
+
+00:31:14.280 --> 00:31:25.220 align:middle line:84%
+So example of 1/2 q
+cubed lines in Fq cubed.
+
+00:31:25.220 --> 00:31:25.720 align:middle line:90%
+OK.
+
+00:31:25.720 --> 00:31:27.400 align:middle line:90%
+Here's what I'm going to do.
+
+00:31:27.400 --> 00:31:41.280 align:middle line:84%
+I'm going to pick 1/2 q
+affine two planes Capital Pj.
+
+00:31:41.280 --> 00:31:48.880 align:middle line:84%
+And then in each
+capital Pj, I pick
+
+00:31:48.880 --> 00:31:55.050 align:middle line:84%
+all the lines, which is
+basically q squared lines.
+
+00:31:55.050 --> 00:31:58.920 align:middle line:90%
+
+
+00:31:58.920 --> 00:32:01.860 align:middle line:84%
+So a two dimensional plane
+has about q squared, q
+
+00:32:01.860 --> 00:32:04.180 align:middle line:90%
+squared plus q.
+
+00:32:04.180 --> 00:32:06.700 align:middle line:84%
+So you put this all
+together, that's about half
+
+00:32:06.700 --> 00:32:10.300 align:middle line:90%
+of q cubed lines.
+
+00:32:10.300 --> 00:32:14.740 align:middle line:84%
+Now f, which is
+the sum of L and L,
+
+00:32:14.740 --> 00:32:20.580 align:middle line:84%
+is supported on the
+union of the Pj.
+
+00:32:20.580 --> 00:32:26.580 align:middle line:84%
+And the size of the Union of
+the Pj is clearly at most half
+
+00:32:26.580 --> 00:32:28.900 align:middle line:90%
+of the space.
+
+00:32:28.900 --> 00:32:33.820 align:middle line:84%
+So the size of the union
+of Pj is at most 1/2 q,
+
+00:32:33.820 --> 00:32:38.380 align:middle line:84%
+the number of j times q squared
+number of points per plane 1/2 q
+
+00:32:38.380 --> 00:32:39.300 align:middle line:90%
+cubed.
+
+00:32:39.300 --> 00:32:42.120 align:middle line:84%
+So this thing is only supported
+on about half of space.
+
+00:32:42.120 --> 00:32:44.470 align:middle line:84%
+There's no way that it's
+approximately constant.
+
+00:32:44.470 --> 00:32:47.980 align:middle line:90%
+
+
+00:32:47.980 --> 00:32:50.900 align:middle line:90%
+Cool.
+
+00:32:50.900 --> 00:32:51.660 align:middle line:90%
+OK.
+
+00:32:51.660 --> 00:32:56.380 align:middle line:84%
+So in a certain sense, this
+is the right threshold,
+
+00:32:56.380 --> 00:32:58.490 align:middle line:84%
+although you could also
+imagine asking some more
+
+00:32:58.490 --> 00:32:59.750 align:middle line:90%
+refined questions.
+
+00:32:59.750 --> 00:33:05.590 align:middle line:90%
+
+
+00:33:05.590 --> 00:33:06.090 align:middle line:90%
+Cool.
+
+00:33:06.090 --> 00:33:11.530 align:middle line:90%
+
+
+00:33:11.530 --> 00:33:12.110 align:middle line:90%
+OK.
+
+00:33:12.110 --> 00:33:14.650 align:middle line:84%
+I guess looking back
+at the homework,
+
+00:33:14.650 --> 00:33:17.690 align:middle line:84%
+I mentioned a few things that
+people tried that didn't work.
+
+00:33:17.690 --> 00:33:20.050 align:middle line:84%
+And I think the
+most common thing
+
+00:33:20.050 --> 00:33:23.090 align:middle line:84%
+that people had a
+tricky time finding
+
+00:33:23.090 --> 00:33:28.330 align:middle line:84%
+was that they should first group
+the lines by their direction
+
+00:33:28.330 --> 00:33:32.770 align:middle line:84%
+and have these fw's, and
+then group the fw's together
+
+00:33:32.770 --> 00:33:34.930 align:middle line:90%
+to make f.
+
+00:33:34.930 --> 00:33:36.330 align:middle line:90%
+Yeah.
+
+00:33:36.330 --> 00:33:40.170 align:middle line:84%
+So I think I could have done
+a better job giving direction
+
+00:33:40.170 --> 00:33:43.210 align:middle line:84%
+to look that way, look
+in that direction.
+
+00:33:43.210 --> 00:33:45.140 align:middle line:84%
+But in hindsight, why
+was that a good idea?
+
+00:33:45.140 --> 00:33:48.570 align:middle line:90%
+
+
+00:33:48.570 --> 00:33:51.950 align:middle line:84%
+There's a saying that I like
+about trying to learn stuff,
+
+00:33:51.950 --> 00:33:54.770 align:middle line:84%
+or trying to figure stuff out
+that I learned from a Tai Chi
+
+00:33:54.770 --> 00:33:55.890 align:middle line:90%
+teacher.
+
+00:33:55.890 --> 00:33:59.600 align:middle line:90%
+They said, do what's easy first.
+
+00:33:59.600 --> 00:34:02.928 align:middle line:84%
+So if you are you trying
+to, in math, for example,
+
+00:34:02.928 --> 00:34:04.720 align:middle line:84%
+add up a whole lot of
+things and understand
+
+00:34:04.720 --> 00:34:07.680 align:middle line:84%
+what the sum is like, if there
+are some pieces that you can add
+
+00:34:07.680 --> 00:34:09.800 align:middle line:84%
+up and you know
+what those are like,
+
+00:34:09.800 --> 00:34:13.520 align:middle line:84%
+it's usually a good
+idea to do that first.
+
+00:34:13.520 --> 00:34:17.020 align:middle line:84%
+And adding up parallel lines
+is fairly easy to understand,
+
+00:34:17.020 --> 00:34:19.699 align:middle line:90%
+and so it won't always help.
+
+00:34:19.699 --> 00:34:22.009 align:middle line:84%
+But sometimes it's helpful
+to do what's easy first.
+
+00:34:22.009 --> 00:34:24.997 align:middle line:90%
+
+
+00:34:24.997 --> 00:34:26.580 align:middle line:84%
+Actually, same thing
+happens in Fubini
+
+00:34:26.580 --> 00:34:28.580 align:middle line:84%
+when I teach analysis
+at various levels.
+
+00:34:28.580 --> 00:34:30.063 align:middle line:84%
+When is it a good
+idea to do Fubini
+
+00:34:30.063 --> 00:34:31.480 align:middle line:84%
+to switch the order
+of integration
+
+00:34:31.480 --> 00:34:33.159 align:middle line:84%
+or switch the
+order of summation?
+
+00:34:33.159 --> 00:34:36.600 align:middle line:84%
+You want to put the sum that
+you do first to be the easy one.
+
+00:34:36.600 --> 00:34:38.820 align:middle line:84%
+That's almost always the
+right way to organize it.
+
+00:34:38.820 --> 00:34:44.639 align:middle line:90%
+
+
+00:34:44.639 --> 00:34:45.139 align:middle line:90%
+OK.
+
+00:34:45.139 --> 00:34:47.589 align:middle line:84%
+So that was the recap
+of the homework.
+
+00:34:47.589 --> 00:34:50.600 align:middle line:90%
+
+
+00:34:50.600 --> 00:34:53.000 align:middle line:90%
+OK.
+
+00:34:53.000 --> 00:34:55.510 align:middle line:90%
+Cool.
+
+00:34:55.510 --> 00:35:00.350 align:middle line:84%
+Now we come to the main
+topic of the day, which
+
+00:35:00.350 --> 00:35:04.310 align:middle line:84%
+is doing some projection
+theory in Euclidean space
+
+00:35:04.310 --> 00:35:06.470 align:middle line:84%
+and thinking about
+how projections
+
+00:35:06.470 --> 00:35:08.490 align:middle line:90%
+makes functions smoother.
+
+00:35:08.490 --> 00:35:10.550 align:middle line:84%
+So if you take a
+function in R to the D
+
+00:35:10.550 --> 00:35:14.670 align:middle line:84%
+and you project it onto
+something lower dimensional,
+
+00:35:14.670 --> 00:35:17.930 align:middle line:84%
+well, if you just pick one
+lower dimensional projection,
+
+00:35:17.930 --> 00:35:19.510 align:middle line:90%
+it might not be very nice.
+
+00:35:19.510 --> 00:35:22.290 align:middle line:84%
+But if you look at all the
+lower dimensional projections,
+
+00:35:22.290 --> 00:35:24.550 align:middle line:90%
+most of them will be smoother.
+
+00:35:24.550 --> 00:35:26.850 align:middle line:84%
+And we're going to
+investigate that phenomenon.
+
+00:35:26.850 --> 00:35:29.710 align:middle line:84%
+And I hope you'll see that it's
+very parallel to the large sieve
+
+00:35:29.710 --> 00:35:31.570 align:middle line:90%
+theory from number theory.
+
+00:35:31.570 --> 00:36:02.370 align:middle line:90%
+
+
+00:36:02.370 --> 00:36:03.110 align:middle line:90%
+All right.
+
+00:36:03.110 --> 00:36:07.350 align:middle line:90%
+Projections and smoothing.
+
+00:36:07.350 --> 00:36:13.010 align:middle line:90%
+
+
+00:36:13.010 --> 00:36:13.530 align:middle line:90%
+All right.
+
+00:36:13.530 --> 00:36:15.730 align:middle line:90%
+So here's our setup.
+
+00:36:15.730 --> 00:36:19.930 align:middle line:84%
+So f is now a function
+on R to the D.
+
+00:36:19.930 --> 00:36:21.780 align:middle line:90%
+And v is going to be a subspace.
+
+00:36:21.780 --> 00:36:25.450 align:middle line:90%
+
+
+00:36:25.450 --> 00:36:29.810 align:middle line:84%
+And recall, by the
+projection of f, what I mean
+
+00:36:29.810 --> 00:36:37.550 align:middle line:84%
+is the integral over V perp f of
+y plus z d volume v perp of ksi.
+
+00:36:37.550 --> 00:36:42.090 align:middle line:90%
+
+
+00:36:42.090 --> 00:36:47.810 align:middle line:84%
+So this is a map from functions
+on R to the D to functions on v.
+
+00:36:47.810 --> 00:36:50.145 align:middle line:90%
+OK.
+
+00:36:50.145 --> 00:36:52.873 align:middle line:90%
+And I'm going to mostly focus--
+
+00:36:52.873 --> 00:36:54.540 align:middle line:84%
+everything works for
+all the dimensions,
+
+00:36:54.540 --> 00:36:56.375 align:middle line:84%
+but for ease of
+notation, whatever,
+
+00:36:56.375 --> 00:36:58.000 align:middle line:84%
+I'm going to mostly
+focus on projecting
+
+00:36:58.000 --> 00:36:59.960 align:middle line:90%
+to one dimensional subspaces.
+
+00:36:59.960 --> 00:37:03.880 align:middle line:84%
+So if theta is a direction
+in the circle pi theta
+
+00:37:03.880 --> 00:37:06.760 align:middle line:90%
+of f is going to mean pi--
+
+00:37:06.760 --> 00:37:10.600 align:middle line:84%
+abbreviation for pi
+span of theta of f.
+
+00:37:10.600 --> 00:37:11.400 align:middle line:90%
+Direction.
+
+00:37:11.400 --> 00:37:12.900 align:middle line:84%
+Look at the line
+in that direction.
+
+00:37:12.900 --> 00:37:16.000 align:middle line:90%
+
+
+00:37:16.000 --> 00:37:16.920 align:middle line:90%
+All right.
+
+00:37:16.920 --> 00:37:19.000 align:middle line:84%
+So here's a theorem
+that says that if you
+
+00:37:19.000 --> 00:37:22.220 align:middle line:84%
+start with a function, there's
+very little regularity.
+
+00:37:22.220 --> 00:37:24.760 align:middle line:84%
+Most of the projections
+are even smooth.
+
+00:37:24.760 --> 00:37:31.120 align:middle line:84%
+So theorem says if f is an
+L2 function on R to the D,
+
+00:37:31.120 --> 00:37:35.520 align:middle line:84%
+and the support of f
+is in the unit ball,
+
+00:37:35.520 --> 00:37:41.120 align:middle line:84%
+then if I integrate
+over this sphere
+
+00:37:41.120 --> 00:37:46.680 align:middle line:84%
+and I take the projection
+onto the line in the theta
+
+00:37:46.680 --> 00:37:53.510 align:middle line:84%
+direction of f and I take
+it CK norm, then that
+
+00:37:53.510 --> 00:37:58.470 align:middle line:84%
+is bounded by the L2 norm of f,
+provided that the dimension is
+
+00:37:58.470 --> 00:37:59.870 align:middle line:90%
+big enough.
+
+00:37:59.870 --> 00:38:03.270 align:middle line:84%
+So I add the hypothesis
+at the dimension,
+
+00:38:03.270 --> 00:38:08.670 align:middle line:84%
+which would be dimension D minus
+1 over 2 should be bigger than
+
+00:38:08.670 --> 00:38:10.170 align:middle line:90%
+1/2 plus k.
+
+00:38:10.170 --> 00:38:12.870 align:middle line:90%
+
+
+00:38:12.870 --> 00:38:14.610 align:middle line:84%
+You can unwind
+that a little bit.
+
+00:38:14.610 --> 00:38:18.230 align:middle line:84%
+It says D is bigger
+than something.
+
+00:38:18.230 --> 00:38:23.550 align:middle line:90%
+So for example, D is 7.
+
+00:38:23.550 --> 00:38:25.670 align:middle line:90%
+Then you can take k equals 2.
+
+00:38:25.670 --> 00:38:29.550 align:middle line:84%
+So in seven dimensions you
+take just an L2 function.
+
+00:38:29.550 --> 00:38:31.470 align:middle line:84%
+If you project it
+down to one dimension
+
+00:38:31.470 --> 00:38:34.500 align:middle line:84%
+in a typical direction, you'll
+get something that's C2.
+
+00:38:34.500 --> 00:38:38.990 align:middle line:90%
+
+
+00:38:38.990 --> 00:38:40.270 align:middle line:90%
+OK.
+
+00:38:40.270 --> 00:38:43.150 align:middle line:84%
+I'm actually not sure to whom
+to attribute this theorem.
+
+00:38:43.150 --> 00:38:45.950 align:middle line:84%
+I'm in the process of doing
+some historical research
+
+00:38:45.950 --> 00:38:49.450 align:middle line:90%
+and maybe I'll know next class.
+
+00:38:49.450 --> 00:38:50.110 align:middle line:90%
+All right.
+
+00:38:50.110 --> 00:38:53.370 align:middle line:90%
+
+
+00:38:53.370 --> 00:38:56.570 align:middle line:84%
+So this theorem is also based
+on the Fourier transform
+
+00:38:56.570 --> 00:38:58.410 align:middle line:84%
+and the way the Fourier
+transform interacts
+
+00:38:58.410 --> 00:39:00.770 align:middle line:90%
+with projections.
+
+00:39:00.770 --> 00:39:02.680 align:middle line:84%
+So now let's think
+about how that works.
+
+00:39:02.680 --> 00:39:21.570 align:middle line:90%
+
+
+00:39:21.570 --> 00:39:25.150 align:middle line:84%
+Fourier transform
+and projections.
+
+00:39:25.150 --> 00:39:33.530 align:middle line:90%
+
+
+00:39:33.530 --> 00:39:34.450 align:middle line:90%
+All right.
+
+00:39:34.450 --> 00:39:38.070 align:middle line:84%
+So f is a function on R to the
+D. It has a Fourier transform.
+
+00:39:38.070 --> 00:39:40.530 align:middle line:84%
+We've talked about
+it pi v of f is
+
+00:39:40.530 --> 00:39:44.510 align:middle line:84%
+a function on v. It also
+has a Fourier transform.
+
+00:39:44.510 --> 00:39:45.980 align:middle line:90%
+I just remind you how it works.
+
+00:39:45.980 --> 00:39:48.760 align:middle line:90%
+So v is a vector space.
+
+00:39:48.760 --> 00:39:53.600 align:middle line:84%
+It basically works the same
+way as on Euclidean space.
+
+00:39:53.600 --> 00:39:54.280 align:middle line:90%
+OK.
+
+00:39:54.280 --> 00:39:59.680 align:middle line:84%
+So suppose I have a
+function g from V to C.
+
+00:39:59.680 --> 00:40:03.560 align:middle line:84%
+Then g hat will also be
+a function from V to C.
+
+00:40:03.560 --> 00:40:11.200 align:middle line:84%
+And g hat of ksi will be the
+integral over v of g of y, e
+
+00:40:11.200 --> 00:40:15.400 align:middle line:90%
+to the minus 2 pi iy dot ksi dy.
+
+00:40:15.400 --> 00:40:19.360 align:middle line:84%
+But dy means with the volume
+form for my vector space V.
+
+00:40:19.360 --> 00:40:23.260 align:middle line:90%
+So that's the Fourier transform.
+
+00:40:23.260 --> 00:40:23.760 align:middle line:90%
+Yeah?
+
+00:40:23.760 --> 00:40:27.240 align:middle line:84%
+AUDIENCE: What do you add
+the 2 pi key factor here?
+
+00:40:27.240 --> 00:40:31.160 align:middle line:84%
+That's normally not include
+a general Fourier transform.
+
+00:40:31.160 --> 00:40:32.327 align:middle line:90%
+Is that just a convention?
+
+00:40:32.327 --> 00:40:33.160 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:40:33.160 --> 00:40:35.302 align:middle line:84%
+So the question is, why
+is there a 2 pi here?
+
+00:40:35.302 --> 00:40:37.760 align:middle line:84%
+There are a couple of different
+conventions for the Fourier
+
+00:40:37.760 --> 00:40:38.720 align:middle line:90%
+transform.
+
+00:40:38.720 --> 00:40:41.120 align:middle line:90%
+One of them has a 2 pi here.
+
+00:40:41.120 --> 00:40:44.870 align:middle line:84%
+The other one has a 1 over
+2 pi to the D in the front.
+
+00:40:44.870 --> 00:40:47.103 align:middle line:84%
+Those are, as far as I
+can tell, equally good.
+
+00:40:47.103 --> 00:40:49.270 align:middle line:84%
+And they both involve some
+slightly annoying factors
+
+00:40:49.270 --> 00:40:50.170 align:middle line:90%
+of 2 pi.
+
+00:40:50.170 --> 00:40:51.670 align:middle line:84%
+There's another
+convention where you
+
+00:40:51.670 --> 00:40:53.380 align:middle line:90%
+write neither of those things.
+
+00:40:53.380 --> 00:40:57.350 align:middle line:84%
+That, strictly speaking, is not
+correct, but it's convenient
+
+00:40:57.350 --> 00:40:58.670 align:middle line:90%
+and it usually is OK.
+
+00:40:58.670 --> 00:41:02.270 align:middle line:90%
+
+
+00:41:02.270 --> 00:41:05.190 align:middle line:90%
+OK.
+
+00:41:05.190 --> 00:41:09.670 align:middle line:84%
+Now we can do Fourier inversion
+where we recover g of y.
+
+00:41:09.670 --> 00:41:10.690 align:middle line:90%
+Do Fourier inversion.
+
+00:41:10.690 --> 00:41:17.190 align:middle line:84%
+That's the integral over V g hat
+of ksi to the 2 pi iy dot ksi
+
+00:41:17.190 --> 00:41:19.170 align:middle line:90%
+d volume V of ksi.
+
+00:41:19.170 --> 00:41:22.910 align:middle line:90%
+
+
+00:41:22.910 --> 00:41:23.410 align:middle line:90%
+OK.
+
+00:41:23.410 --> 00:41:25.780 align:middle line:84%
+So that's how the Fourier
+transform works on a subspace.
+
+00:41:25.780 --> 00:41:29.710 align:middle line:90%
+
+
+00:41:29.710 --> 00:41:33.090 align:middle line:84%
+And now, what does projection
+do to the Fourier transform?
+
+00:41:33.090 --> 00:41:36.270 align:middle line:84%
+There is an elegant
+formula lemma.
+
+00:41:36.270 --> 00:41:38.390 align:middle line:90%
+Call it a dictionary lemma.
+
+00:41:38.390 --> 00:41:43.420 align:middle line:84%
+Translates between
+the projection
+
+00:41:43.420 --> 00:41:46.460 align:middle line:84%
+on the physical side and
+projection on the Fourier side.
+
+00:41:46.460 --> 00:41:49.180 align:middle line:84%
+It's analogous to something that
+I called the dictionary lemma
+
+00:41:49.180 --> 00:41:51.340 align:middle line:90%
+when we were doing large sieve.
+
+00:41:51.340 --> 00:41:51.840 align:middle line:90%
+All right.
+
+00:41:51.840 --> 00:41:53.980 align:middle line:90%
+It says the following thing.
+
+00:41:53.980 --> 00:41:58.100 align:middle line:84%
+If I have a function
+on R to the D,
+
+00:41:58.100 --> 00:42:02.180 align:middle line:84%
+then if I project it to V and
+take its Fourier transform,
+
+00:42:02.180 --> 00:42:10.740 align:middle line:84%
+it's just f hat of
+ksi for all ksi in V.
+
+00:42:10.740 --> 00:42:11.240 align:middle line:90%
+All right.
+
+00:42:11.240 --> 00:42:12.440 align:middle line:90%
+So let's process a second.
+
+00:42:12.440 --> 00:42:15.020 align:middle line:84%
+So this is a function on v.
+Its Fourier transform is only
+
+00:42:15.020 --> 00:42:18.140 align:middle line:84%
+defined on V. So this
+left-hand side only makes sense
+
+00:42:18.140 --> 00:42:21.700 align:middle line:84%
+if ksi is in V. But it's
+equal to f hat of ksi,
+
+00:42:21.700 --> 00:42:27.100 align:middle line:84%
+and f hat makes sense for
+ksi anywhere in R to the D.
+
+00:42:27.100 --> 00:42:28.070 align:middle line:90%
+So here's the proof.
+
+00:42:28.070 --> 00:42:31.460 align:middle line:90%
+
+
+00:42:31.460 --> 00:42:33.940 align:middle line:84%
+Let's just expand out
+what everything means.
+
+00:42:33.940 --> 00:42:40.120 align:middle line:84%
+So the left-hand side is the
+integral over V pi vf of y, e
+
+00:42:40.120 --> 00:42:49.000 align:middle line:84%
+to the minus 2 pi i ksi
+dot y d volume v of y.
+
+00:42:49.000 --> 00:42:51.280 align:middle line:90%
+But what is the projection?
+
+00:42:51.280 --> 00:42:52.500 align:middle line:90%
+Pi vf of y.
+
+00:42:52.500 --> 00:42:56.360 align:middle line:84%
+That's also an integral, and
+it's an integral over V perp.
+
+00:42:56.360 --> 00:43:00.760 align:middle line:84%
+So that's the integral over
+V, integral over V perp,
+
+00:43:00.760 --> 00:43:06.960 align:middle line:84%
+f of y plus z, d
+volume v perp of z.
+
+00:43:06.960 --> 00:43:11.240 align:middle line:84%
+So that was this
+thing, e to the minus 2
+
+00:43:11.240 --> 00:43:15.540 align:middle line:90%
+pi iy dot ksi, d volume v of y.
+
+00:43:15.540 --> 00:43:18.560 align:middle line:90%
+
+
+00:43:18.560 --> 00:43:19.300 align:middle line:90%
+All right.
+
+00:43:19.300 --> 00:43:23.240 align:middle line:84%
+So now notice that altogether,
+if you put this stuff together
+
+00:43:23.240 --> 00:43:29.160 align:middle line:84%
+and that and that together, we
+are integrating over R to the D.
+
+00:43:29.160 --> 00:43:32.880 align:middle line:84%
+And so more precisely, we can do
+of a change of variables here.
+
+00:43:32.880 --> 00:43:41.456 align:middle line:84%
+We can say x is y plus z
+and dx is d volume v of y,
+
+00:43:41.456 --> 00:43:45.870 align:middle line:90%
+d volume v perp of z.
+
+00:43:45.870 --> 00:43:47.390 align:middle line:90%
+So this is f of x.
+
+00:43:47.390 --> 00:43:50.230 align:middle line:90%
+This stuff is just dx.
+
+00:43:50.230 --> 00:43:52.390 align:middle line:90%
+Now who is this?
+
+00:43:52.390 --> 00:44:05.070 align:middle line:84%
+Well, because z is in V perp
+and ksi is in V, z dot ksi is 0.
+
+00:44:05.070 --> 00:44:10.910 align:middle line:84%
+So e to the minus 2 pi iy dot
+ksi is the same thing as e
+
+00:44:10.910 --> 00:44:16.750 align:middle line:84%
+to the minus 2 pi
+i y plus z dot ksi.
+
+00:44:16.750 --> 00:44:20.390 align:middle line:84%
+Changed it by z dot
+ksi, which was 0, which
+
+00:44:20.390 --> 00:44:22.550 align:middle line:90%
+is e to the minus 2 pi ix.
+
+00:44:22.550 --> 00:44:26.230 align:middle line:90%
+
+
+00:44:26.230 --> 00:44:28.150 align:middle line:84%
+So I can rewrite
+everything in terms
+
+00:44:28.150 --> 00:44:36.100 align:middle line:84%
+of x and it's just my integral
+f of x, e to the minus 2 pi
+
+00:44:36.100 --> 00:44:38.080 align:middle line:90%
+x dot ksi dx.
+
+00:44:38.080 --> 00:44:42.700 align:middle line:90%
+
+
+00:44:42.700 --> 00:44:43.200 align:middle line:90%
+All right.
+
+00:44:43.200 --> 00:44:46.560 align:middle line:84%
+So that's f hat x ksi, and
+that's what we wanted to prove.
+
+00:44:46.560 --> 00:44:53.180 align:middle line:90%
+
+
+00:44:53.180 --> 00:44:54.160 align:middle line:90%
+All right.
+
+00:44:54.160 --> 00:44:54.660 align:middle line:90%
+Good.
+
+00:44:54.660 --> 00:45:08.870 align:middle line:90%
+
+
+00:45:08.870 --> 00:45:09.370 align:middle line:90%
+OK.
+
+00:45:09.370 --> 00:45:28.180 align:middle line:90%
+
+
+00:45:28.180 --> 00:45:29.900 align:middle line:90%
+So let's see.
+
+00:45:29.900 --> 00:45:31.120 align:middle line:90%
+How might we use this?
+
+00:45:31.120 --> 00:45:32.320 align:middle line:90%
+What might this tell us?
+
+00:45:32.320 --> 00:45:35.730 align:middle line:90%
+
+
+00:45:35.730 --> 00:45:39.450 align:middle line:84%
+So we're interested in
+this projection thing.
+
+00:45:39.450 --> 00:45:41.370 align:middle line:84%
+And the projection
+plays very nicely
+
+00:45:41.370 --> 00:45:43.370 align:middle line:90%
+with the Fourier transform.
+
+00:45:43.370 --> 00:45:46.210 align:middle line:84%
+And so anything else that
+plays nicely with the Fourier
+
+00:45:46.210 --> 00:45:47.970 align:middle line:84%
+transform, we could
+try to figure out how
+
+00:45:47.970 --> 00:45:50.290 align:middle line:90%
+it interacts with projection.
+
+00:45:50.290 --> 00:45:53.170 align:middle line:84%
+And one of the fundamental
+things that interacts nicely
+
+00:45:53.170 --> 00:45:54.990 align:middle line:84%
+with the Fourier
+transform is the L2 norm,
+
+00:45:54.990 --> 00:45:56.490 align:middle line:90%
+because we have Plancherel.
+
+00:45:56.490 --> 00:46:00.210 align:middle line:84%
+So we can write f L2
+in terms of f hat.
+
+00:46:00.210 --> 00:46:04.170 align:middle line:84%
+And f hat is closely
+related to pi v of f hat.
+
+00:46:04.170 --> 00:46:05.810 align:middle line:90%
+Let's just see what happens.
+
+00:46:05.810 --> 00:46:06.950 align:middle line:90%
+What does that tell us?
+
+00:46:06.950 --> 00:46:11.810 align:middle line:90%
+
+
+00:46:11.810 --> 00:46:23.530 align:middle line:84%
+So I'll call this
+relating f L2 and pi v
+
+00:46:23.530 --> 00:46:26.910 align:middle line:90%
+of f via the Fourier transform.
+
+00:46:26.910 --> 00:46:31.290 align:middle line:90%
+
+
+00:46:31.290 --> 00:46:33.710 align:middle line:84%
+And I'm going to focus on
+pi theta of f, because that
+
+00:46:33.710 --> 00:46:35.060 align:middle line:90%
+will make this the easiest.
+
+00:46:35.060 --> 00:46:38.990 align:middle line:90%
+
+
+00:46:38.990 --> 00:46:39.730 align:middle line:90%
+All right.
+
+00:46:39.730 --> 00:46:46.470 align:middle line:84%
+So f L2 squared is
+f hat L2 squared.
+
+00:46:46.470 --> 00:46:47.590 align:middle line:90%
+Write that out.
+
+00:46:47.590 --> 00:46:55.950 align:middle line:84%
+It's the integral over R to the
+D f hat of ksi squared d ksi.
+
+00:46:55.950 --> 00:46:57.090 align:middle line:90%
+OK.
+
+00:46:57.090 --> 00:47:03.030 align:middle line:84%
+And the different-- if I
+take pi theta of f hat,
+
+00:47:03.030 --> 00:47:05.710 align:middle line:84%
+that will correspond to
+f hat on different lines
+
+00:47:05.710 --> 00:47:08.070 align:middle line:90%
+through the origin.
+
+00:47:08.070 --> 00:47:11.670 align:middle line:84%
+So that suggests-- let's
+separate this out in different
+
+00:47:11.670 --> 00:47:15.750 align:middle line:84%
+directions by writing
+it in polar coordinates.
+
+00:47:15.750 --> 00:47:19.830 align:middle line:84%
+So this is equal to the integral
+over the d minus 1 sphere
+
+00:47:19.830 --> 00:47:27.710 align:middle line:84%
+integral from 0 to infinity,
+f hat of r theta squared
+
+00:47:27.710 --> 00:47:30.890 align:middle line:90%
+r to the d minus 1, dr d theta.
+
+00:47:30.890 --> 00:47:37.620 align:middle line:90%
+
+
+00:47:37.620 --> 00:47:38.120 align:middle line:90%
+OK.
+
+00:47:38.120 --> 00:47:48.220 align:middle line:84%
+And let me do this little trick
+to also include negative r,
+
+00:47:48.220 --> 00:47:51.100 align:middle line:84%
+so that once I fix theta I
+have a nice integral from
+
+00:47:51.100 --> 00:47:54.340 align:middle line:90%
+minus infinity to infinity.
+
+00:47:54.340 --> 00:47:55.780 align:middle line:90%
+All right.
+
+00:47:55.780 --> 00:48:02.130 align:middle line:84%
+So this guy is related to
+pi theta of f by this lemma.
+
+00:48:02.130 --> 00:48:07.300 align:middle line:90%
+
+
+00:48:07.300 --> 00:48:14.000 align:middle line:84%
+So this is 1/2 integral
+over Sd minus 1 d theta.
+
+00:48:14.000 --> 00:48:16.440 align:middle line:84%
+So I'm averaging over all
+the different directions.
+
+00:48:16.440 --> 00:48:18.380 align:middle line:90%
+And what am I averaging?
+
+00:48:18.380 --> 00:48:21.780 align:middle line:84%
+Integrating from minus
+infinity to infinity,
+
+00:48:21.780 --> 00:48:27.860 align:middle line:90%
+pi theta f hat of r theta.
+
+00:48:27.860 --> 00:48:36.850 align:middle line:90%
+r to the d minus 1 dr.
+
+00:48:36.850 --> 00:48:39.470 align:middle line:90%
+What is this thing inside here?
+
+00:48:39.470 --> 00:48:41.130 align:middle line:84%
+At first you might
+have thought you
+
+00:48:41.130 --> 00:48:44.580 align:middle line:84%
+might get the L2 norm of
+pi theta of f squared.
+
+00:48:44.580 --> 00:48:47.170 align:middle line:90%
+
+
+00:48:47.170 --> 00:48:51.610 align:middle line:84%
+So that would be the L2 norm
+of pi theta of f squared.
+
+00:48:51.610 --> 00:48:56.690 align:middle line:84%
+This has this extra
+factor here which
+
+00:48:56.690 --> 00:48:59.130 align:middle line:84%
+heavily weights
+large frequencies
+
+00:48:59.130 --> 00:49:02.410 align:middle line:84%
+and gives a very low weight
+to small frequencies.
+
+00:49:02.410 --> 00:49:03.010 align:middle line:90%
+Yeah?
+
+00:49:03.010 --> 00:49:04.543 align:middle line:90%
+AUDIENCE: That's Sobolev norm.
+
+00:49:04.543 --> 00:49:05.710 align:middle line:90%
+LAWRENCE GUTH: That's right.
+
+00:49:05.710 --> 00:49:08.010 align:middle line:90%
+This thing is a Sobolev norm.
+
+00:49:08.010 --> 00:49:11.530 align:middle line:84%
+So What naturally appears
+here is Sobolev norm.
+
+00:49:11.530 --> 00:49:13.890 align:middle line:84%
+And now let's pause
+and we'll review
+
+00:49:13.890 --> 00:49:17.070 align:middle line:84%
+Sobolev norms and some
+important facts about them.
+
+00:49:17.070 --> 00:49:23.570 align:middle line:90%
+
+
+00:49:23.570 --> 00:49:24.390 align:middle line:90%
+All right.
+
+00:49:24.390 --> 00:49:42.200 align:middle line:90%
+
+
+00:49:42.200 --> 00:49:43.186 align:middle line:90%
+OK.
+
+00:49:43.186 --> 00:49:46.720 align:middle line:90%
+So definition.
+
+00:49:46.720 --> 00:49:52.440 align:middle line:84%
+If I have a function
+g on a vector space,
+
+00:49:52.440 --> 00:49:53.840 align:middle line:90%
+like a subspace of--
+
+00:49:53.840 --> 00:49:56.160 align:middle line:90%
+a space with the Euclidean norm.
+
+00:49:56.160 --> 00:49:57.680 align:middle line:90%
+Yeah?
+
+00:49:57.680 --> 00:49:59.640 align:middle line:84%
+AUDIENCE: This is about
+the dictionary lemma.
+
+00:49:59.640 --> 00:50:02.980 align:middle line:84%
+I'm wondering what class of
+functions that applies to.
+
+00:50:02.980 --> 00:50:08.000 align:middle line:84%
+Because if f is an L2 function
+so f hat is L2 function,
+
+00:50:08.000 --> 00:50:13.687 align:middle line:84%
+how is its value on a measure
+0 subset being meaningful?
+
+00:50:13.687 --> 00:50:14.520 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:50:14.520 --> 00:50:15.500 align:middle line:90%
+OK, great.
+
+00:50:15.500 --> 00:50:18.480 align:middle line:84%
+So the going back to
+the dictionary lemma.
+
+00:50:18.480 --> 00:50:21.720 align:middle line:84%
+The question was, for
+which class of functions
+
+00:50:21.720 --> 00:50:23.765 align:middle line:90%
+does this actually make sense?
+
+00:50:23.765 --> 00:50:25.640 align:middle line:84%
+And if you look at what
+I wrote on the board,
+
+00:50:25.640 --> 00:50:27.020 align:middle line:90%
+it's a little suspicious.
+
+00:50:27.020 --> 00:50:30.137 align:middle line:84%
+It just says that
+f is a function.
+
+00:50:30.137 --> 00:50:31.720 align:middle line:84%
+And if f is just a
+function, actually,
+
+00:50:31.720 --> 00:50:36.580 align:middle line:84%
+none of the sides of this
+equation in general makes sense.
+
+00:50:36.580 --> 00:50:39.180 align:middle line:84%
+One thing that would
+be clearly sufficient
+
+00:50:39.180 --> 00:50:43.220 align:middle line:90%
+is if f was a Schwarz function.
+
+00:50:43.220 --> 00:50:46.338 align:middle line:84%
+If f is a Schwarz function,
+f hat is a Schwarz function,
+
+00:50:46.338 --> 00:50:47.880 align:middle line:84%
+the projection is
+a Schwarz function,
+
+00:50:47.880 --> 00:50:49.005 align:middle line:90%
+this is a Schwarz function.
+
+00:50:49.005 --> 00:50:51.100 align:middle line:90%
+So that's all OK.
+
+00:50:51.100 --> 00:50:54.460 align:middle line:84%
+If f is just L2, it's
+not immediately obvious
+
+00:50:54.460 --> 00:50:58.140 align:middle line:84%
+how all of these things
+would be defined.
+
+00:50:58.140 --> 00:51:01.520 align:middle line:84%
+So let's think about
+this way for now.
+
+00:51:01.520 --> 00:51:05.900 align:middle line:90%
+
+
+00:51:05.900 --> 00:51:07.820 align:middle line:84%
+It's fairly often
+the case that we
+
+00:51:07.820 --> 00:51:10.340 align:middle line:84%
+can prove things about
+general L2 functions
+
+00:51:10.340 --> 00:51:12.640 align:middle line:84%
+by first proving them
+for Schwarz functions,
+
+00:51:12.640 --> 00:51:15.232 align:middle line:90%
+and then proving--
+
+00:51:15.232 --> 00:51:17.690 align:middle line:84%
+then using the fact that Schwarz
+functions are dense in L2.
+
+00:51:17.690 --> 00:51:21.190 align:middle line:90%
+
+
+00:51:21.190 --> 00:51:21.690 align:middle line:90%
+OK.
+
+00:51:21.690 --> 00:51:28.670 align:middle line:90%
+
+
+00:51:28.670 --> 00:51:29.170 align:middle line:90%
+OK.
+
+00:51:29.170 --> 00:51:30.496 align:middle line:90%
+Good.
+
+00:51:30.496 --> 00:51:33.990 align:middle line:84%
+OK, so we were remembering
+what is a Sobolev norm.
+
+00:51:33.990 --> 00:51:40.810 align:middle line:84%
+So if I have a function
+on v, then g HS
+
+00:51:40.810 --> 00:51:46.090 align:middle line:84%
+dot squared is the
+integral over v.
+
+00:51:46.090 --> 00:51:50.490 align:middle line:84%
+I'll take the norm of
+g hat of ksi squared.
+
+00:51:50.490 --> 00:51:54.500 align:middle line:84%
+And then I'll put here
+the norm of ksi to the 2S.
+
+00:51:54.500 --> 00:51:58.450 align:middle line:90%
+
+
+00:51:58.450 --> 00:52:03.050 align:middle line:84%
+This makes sense for
+any real number S,
+
+00:52:03.050 --> 00:52:09.550 align:middle line:84%
+and it has something to do
+with the smoothness of g.
+
+00:52:09.550 --> 00:52:11.667 align:middle line:84%
+And in particular, if
+S is a natural number,
+
+00:52:11.667 --> 00:52:13.250 align:middle line:84%
+then it has an
+interpretation in terms
+
+00:52:13.250 --> 00:52:15.770 align:middle line:90%
+of L2 norms of derivatives.
+
+00:52:15.770 --> 00:52:25.120 align:middle line:84%
+So g H1 dot squared is the sum
+over different directions j
+
+00:52:25.120 --> 00:52:30.560 align:middle line:84%
+of the j-th derivative of g L2
+squared, at least approximately,
+
+00:52:30.560 --> 00:52:36.760 align:middle line:84%
+maybe exactly, and then
+higher values of S--
+
+00:52:36.760 --> 00:52:40.360 align:middle line:84%
+higher values of S correspond
+to taking more derivatives.
+
+00:52:40.360 --> 00:52:41.880 align:middle line:84%
+So I'll just put
+one more and you'll
+
+00:52:41.880 --> 00:52:48.600 align:middle line:84%
+see the pattern H2 dot squared
+is around the sum over j1 and j2
+
+00:52:48.600 --> 00:52:53.280 align:middle line:84%
+of the second derivative in
+the j1 j2 directions of g,
+
+00:52:53.280 --> 00:52:56.680 align:middle line:90%
+L2 squared, and so on.
+
+00:52:56.680 --> 00:52:58.384 align:middle line:90%
+OK.
+
+00:52:58.384 --> 00:53:03.400 align:middle line:84%
+And if S is not an
+integer, then there's
+
+00:53:03.400 --> 00:53:05.940 align:middle line:84%
+not a direct interpretation
+of this form,
+
+00:53:05.940 --> 00:53:07.920 align:middle line:84%
+but it is still
+kind of measuring
+
+00:53:07.920 --> 00:53:11.800 align:middle line:90%
+how smooth the function g is.
+
+00:53:11.800 --> 00:53:13.980 align:middle line:90%
+There is also a regular.
+
+00:53:13.980 --> 00:53:16.280 align:middle line:84%
+So this is the Sobolev
+norm with a dot.
+
+00:53:16.280 --> 00:53:19.430 align:middle line:84%
+It's called the
+homogeneous Sobolev norm.
+
+00:53:19.430 --> 00:53:22.530 align:middle line:84%
+There's a version without the
+dot, which is defined like this.
+
+00:53:22.530 --> 00:53:26.150 align:middle line:90%
+
+
+00:53:26.150 --> 00:53:34.710 align:middle line:84%
+g HS squared is the integral
+over v g hat of ksi squared 1
+
+00:53:34.710 --> 00:53:38.440 align:middle line:84%
+plus the norm of ksi
+squared to the S d
+
+00:53:38.440 --> 00:53:44.550 align:middle line:84%
+ksi, which is roughly the same
+as if you took out the biggest
+
+00:53:44.550 --> 00:53:45.050 align:middle line:90%
+power.
+
+00:53:45.050 --> 00:53:51.030 align:middle line:84%
+So it'd be 1 plus ksi to the
+2s, and the one contributes g L2
+
+00:53:51.030 --> 00:53:55.090 align:middle line:84%
+squared, and the ksi to
+the 2S is this thing.
+
+00:53:55.090 --> 00:53:58.620 align:middle line:84%
+So it contributes
+HS dot squared.
+
+00:53:58.620 --> 00:54:05.690 align:middle line:90%
+
+
+00:54:05.690 --> 00:54:06.190 align:middle line:90%
+OK.
+
+00:54:06.190 --> 00:54:11.990 align:middle line:90%
+
+
+00:54:11.990 --> 00:54:12.790 align:middle line:90%
+Cool.
+
+00:54:12.790 --> 00:54:16.630 align:middle line:84%
+So there's a well-known set
+of theorems called the Sobolev
+
+00:54:16.630 --> 00:54:21.210 align:middle line:84%
+embedding theorems, which
+imply that if g is in a Sobolev
+
+00:54:21.210 --> 00:54:24.330 align:middle line:84%
+space for a big enough
+S, then it is continuous,
+
+00:54:24.330 --> 00:54:28.730 align:middle line:84%
+and if even bigger S,
+then it's C1, and so on.
+
+00:54:28.730 --> 00:54:31.760 align:middle line:90%
+So I will write a summary.
+
+00:54:31.760 --> 00:54:39.010 align:middle line:90%
+
+
+00:54:39.010 --> 00:54:41.890 align:middle line:90%
+Sobolev embedding.
+
+00:54:41.890 --> 00:54:48.490 align:middle line:84%
+If S is bigger than
+1/2 the dimension of V,
+
+00:54:48.490 --> 00:54:54.495 align:middle line:84%
+then g L infinity is
+bounded by g in HS.
+
+00:54:54.495 --> 00:54:57.690 align:middle line:90%
+
+
+00:54:57.690 --> 00:55:00.510 align:middle line:84%
+And if g is in HS,
+then g is continuous.
+
+00:55:00.510 --> 00:55:05.890 align:middle line:90%
+
+
+00:55:05.890 --> 00:55:11.770 align:middle line:84%
+If S is bigger than some k
+plus 1/2 the dimension of V,
+
+00:55:11.770 --> 00:55:18.620 align:middle line:84%
+then the k-th derivatives of
+g are bounded by the HS norm.
+
+00:55:18.620 --> 00:55:21.840 align:middle line:90%
+
+
+00:55:21.840 --> 00:55:23.810 align:middle line:90%
+And if g is in HS, then its CK.
+
+00:55:23.810 --> 00:55:37.912 align:middle line:90%
+
+
+00:55:37.912 --> 00:55:38.412 align:middle line:90%
+OK.
+
+00:55:38.412 --> 00:55:42.348 align:middle line:90%
+
+
+00:55:42.348 --> 00:55:44.810 align:middle line:84%
+Any questions or comments
+about Sobolev spaces?
+
+00:55:44.810 --> 00:55:57.320 align:middle line:90%
+
+
+00:55:57.320 --> 00:55:59.120 align:middle line:90%
+OK.
+
+00:55:59.120 --> 00:56:07.320 align:middle line:84%
+So now that we have recalled
+that, if we look back here,
+
+00:56:07.320 --> 00:56:11.320 align:middle line:84%
+we will recognize what
+appears here as a Sobolev
+
+00:56:11.320 --> 00:56:13.950 align:middle line:90%
+norm of the projection.
+
+00:56:13.950 --> 00:56:17.630 align:middle line:84%
+So the L2 norm square root
+of f is this integral.
+
+00:56:17.630 --> 00:56:24.430 align:middle line:84%
+And this thing here is the
+HS norm of pi theta of f.
+
+00:56:24.430 --> 00:56:33.820 align:middle line:84%
+So this is 1/2 integral over the
+d minus 1 sphere pi theta of f H
+
+00:56:33.820 --> 00:56:40.670 align:middle line:84%
+d minus 1 over 2
+dot squared d theta.
+
+00:56:40.670 --> 00:56:41.190 align:middle line:90%
+OK.
+
+00:56:41.190 --> 00:56:43.550 align:middle line:84%
+Where did this come from,
+and why does it have a dot?
+
+00:56:43.550 --> 00:56:47.630 align:middle line:84%
+This r is the norm
+of my frequency ksi.
+
+00:56:47.630 --> 00:56:52.230 align:middle line:84%
+So this is the norm
+of ksi to the 2S.
+
+00:56:52.230 --> 00:56:55.110 align:middle line:90%
+So S is d minus 1 over 2.
+
+00:56:55.110 --> 00:56:56.210 align:middle line:90%
+And it's homogeneous.
+
+00:56:56.210 --> 00:56:57.570 align:middle line:90%
+We don't have this extra one.
+
+00:56:57.570 --> 00:56:58.490 align:middle line:90%
+So there's a dot.
+
+00:56:58.490 --> 00:57:03.750 align:middle line:90%
+
+
+00:57:03.750 --> 00:57:04.510 align:middle line:90%
+OK.
+
+00:57:04.510 --> 00:57:05.010 align:middle line:90%
+Cool.
+
+00:57:05.010 --> 00:57:10.770 align:middle line:90%
+
+
+00:57:10.770 --> 00:57:11.270 align:middle line:90%
+Cool.
+
+00:57:11.270 --> 00:57:19.020 align:middle line:90%
+
+
+00:57:19.020 --> 00:57:19.940 align:middle line:90%
+OK.
+
+00:57:19.940 --> 00:57:24.020 align:middle line:84%
+So now you can probably
+have a good guess
+
+00:57:24.020 --> 00:57:27.460 align:middle line:84%
+of how we would like
+to prove this theorem.
+
+00:57:27.460 --> 00:57:33.260 align:middle line:84%
+The L2 norm controls an integral
+like this with the Sobolev norm.
+
+00:57:33.260 --> 00:57:35.500 align:middle line:84%
+The Sobolev embedding tells
+us that the Sobolev norm
+
+00:57:35.500 --> 00:57:38.020 align:middle line:90%
+controls the CK norm.
+
+00:57:38.020 --> 00:57:39.020 align:middle line:90%
+So that's the plan.
+
+00:57:39.020 --> 00:57:39.740 align:middle line:90%
+OK.
+
+00:57:39.740 --> 00:57:43.360 align:middle line:84%
+But technically, there is
+a small technical issue,
+
+00:57:43.360 --> 00:57:45.820 align:middle line:84%
+which has to do with
+the dot or the no dot.
+
+00:57:45.820 --> 00:57:48.220 align:middle line:84%
+Dot and no dot,
+homogeneous, not homogeneous
+
+00:57:48.220 --> 00:57:50.380 align:middle line:90%
+are both natural and important.
+
+00:57:50.380 --> 00:57:52.800 align:middle line:84%
+Homogeneous one will occur
+naturally in some places.
+
+00:57:52.800 --> 00:57:54.900 align:middle line:90%
+It naturally occurred here.
+
+00:57:54.900 --> 00:57:56.740 align:middle line:84%
+On the other hand,
+Sobolev embedding
+
+00:57:56.740 --> 00:58:03.480 align:middle line:84%
+is a theorem that requires the
+non-homogeneous Sobolev space.
+
+00:58:03.480 --> 00:58:05.850 align:middle line:84%
+So we need to do a little
+bit of work to get between.
+
+00:58:05.850 --> 00:58:34.520 align:middle line:90%
+
+
+00:58:34.520 --> 00:58:36.760 align:middle line:90%
+OK.
+
+00:58:36.760 --> 00:58:38.450 align:middle line:84%
+So now we can do the
+proof of theorem.
+
+00:58:38.450 --> 00:58:44.440 align:middle line:90%
+
+
+00:58:44.440 --> 00:58:45.840 align:middle line:90%
+All right.
+
+00:58:45.840 --> 00:58:53.200 align:middle line:84%
+So integral SD minus
+1 pi theta f CK d
+
+00:58:53.200 --> 00:59:03.360 align:middle line:84%
+theta is bounded by integral SD
+minus 1 pi theta f H d minus 1
+
+00:59:03.360 --> 00:59:07.760 align:middle line:84%
+over 2 without the
+dot squared d theta.
+
+00:59:07.760 --> 00:59:09.570 align:middle line:90%
+So this is Sobolev embedding.
+
+00:59:09.570 --> 00:59:12.510 align:middle line:90%
+
+
+00:59:12.510 --> 00:59:14.990 align:middle line:84%
+And the hypothesis
+about d up there
+
+00:59:14.990 --> 00:59:17.110 align:middle line:84%
+is just exactly the
+hypothesis that you
+
+00:59:17.110 --> 00:59:21.370 align:middle line:84%
+need for this to be true when
+you plug in Sobolev embedding.
+
+00:59:21.370 --> 00:59:24.190 align:middle line:90%
+
+
+00:59:24.190 --> 00:59:25.050 align:middle line:90%
+All right.
+
+00:59:25.050 --> 00:59:28.150 align:middle line:84%
+Now let's open up the
+definition of this thing.
+
+00:59:28.150 --> 00:59:31.850 align:middle line:84%
+And we'll almost see
+the f L2 norm squared.
+
+00:59:31.850 --> 00:59:34.110 align:middle line:90%
+But not quite.
+
+00:59:34.110 --> 00:59:37.910 align:middle line:84%
+So this is around
+integral of SD minus 1,
+
+00:59:37.910 --> 00:59:42.550 align:middle line:84%
+integral from minus
+infinity to infinity, f hat
+
+00:59:42.550 --> 00:59:44.630 align:middle line:90%
+of r theta squared.
+
+00:59:44.630 --> 00:59:50.280 align:middle line:84%
+And we'll have 1 plus r to
+the d minus 1 dr d theta.
+
+00:59:50.280 --> 00:59:54.230 align:middle line:90%
+
+
+00:59:54.230 --> 00:59:56.430 align:middle line:84%
+So we don't have a
+dot that requires
+
+00:59:56.430 --> 01:00:01.030 align:middle line:84%
+us to put this extra one
+that we didn't have before.
+
+01:00:01.030 --> 01:00:01.770 align:middle line:90%
+All right.
+
+01:00:01.770 --> 01:00:03.830 align:middle line:90%
+So you have a sum of two pieces.
+
+01:00:03.830 --> 01:00:05.870 align:middle line:84%
+In real analysis, we
+usually think about which
+
+01:00:05.870 --> 01:00:08.300 align:middle line:90%
+of the two pieces is bigger.
+
+01:00:08.300 --> 01:00:11.540 align:middle line:84%
+So if r is bigger than
+1, this piece dominates.
+
+01:00:11.540 --> 01:00:16.500 align:middle line:84%
+And if r is smaller than
+1, that piece dominates.
+
+01:00:16.500 --> 01:00:22.220 align:middle line:84%
+So the integral SD
+minus 1 integral r
+
+01:00:22.220 --> 01:00:28.560 align:middle line:84%
+bigger than 1 f hat of r theta
+squared r to the d minus 1 dr
+
+01:00:28.560 --> 01:00:30.300 align:middle line:90%
+d theta.
+
+01:00:30.300 --> 01:00:33.820 align:middle line:84%
+That's called that
+term number one.
+
+01:00:33.820 --> 01:00:39.780 align:middle line:84%
+Plus the integral SD minus
+1 integral r smaller than 1
+
+01:00:39.780 --> 01:00:49.180 align:middle line:84%
+f hat of r theta squared
+1 times 1 dr d theta.
+
+01:00:49.180 --> 01:00:50.520 align:middle line:90%
+Let's call this piece two.
+
+01:00:50.520 --> 01:00:56.100 align:middle line:90%
+
+
+01:00:56.100 --> 01:00:58.530 align:middle line:90%
+OK.
+
+01:00:58.530 --> 01:01:04.340 align:middle line:84%
+So piece one is clearly smaller
+than what we had before,
+
+01:01:04.340 --> 01:01:07.160 align:middle line:90%
+which was f L2 squared.
+
+01:01:07.160 --> 01:01:10.830 align:middle line:84%
+So piece is 1 smaller
+than f L2 squared.
+
+01:01:10.830 --> 01:01:15.840 align:middle line:90%
+
+
+01:01:15.840 --> 01:01:18.840 align:middle line:90%
+Piece two.
+
+01:01:18.840 --> 01:01:19.640 align:middle line:90%
+OK.
+
+01:01:19.640 --> 01:01:22.560 align:middle line:84%
+In piece two, I think it's
+no longer really helpful
+
+01:01:22.560 --> 01:01:25.880 align:middle line:84%
+to think of this as being
+related to polar coordinates.
+
+01:01:25.880 --> 01:01:29.760 align:middle line:84%
+We're integrating over a
+sphere across an interval,
+
+01:01:29.760 --> 01:01:32.920 align:middle line:90%
+and that's a finite volume.
+
+01:01:32.920 --> 01:01:34.760 align:middle line:84%
+And so what I'd
+like to put here is
+
+01:01:34.760 --> 01:01:37.040 align:middle line:84%
+just that it's bounded
+by a constant, which
+
+01:01:37.040 --> 01:01:39.950 align:middle line:84%
+is the volume times the
+biggest possible size of this.
+
+01:01:39.950 --> 01:01:50.040 align:middle line:90%
+
+
+01:01:50.040 --> 01:01:50.720 align:middle line:90%
+OK.
+
+01:01:50.720 --> 01:01:53.360 align:middle line:90%
+So how big is that?
+
+01:01:53.360 --> 01:01:58.360 align:middle line:84%
+So f hat of ksi is bounded
+by the integral f of x,
+
+01:01:58.360 --> 01:02:02.390 align:middle line:84%
+e to the minus 2
+pi i x dot ksi dx.
+
+01:02:02.390 --> 01:02:06.710 align:middle line:84%
+And the most common approach,
+the easiest approach
+
+01:02:06.710 --> 01:02:09.310 align:middle line:84%
+is to use the
+triangle inequality.
+
+01:02:09.310 --> 01:02:12.670 align:middle line:90%
+So we have this.
+
+01:02:12.670 --> 01:02:15.613 align:middle line:90%
+So now we have the L1 norm of f.
+
+01:02:15.613 --> 01:02:16.530 align:middle line:90%
+So we have two pieces.
+
+01:02:16.530 --> 01:02:18.450 align:middle line:84%
+One piece is controlled
+by the L2 norm of f.
+
+01:02:18.450 --> 01:02:22.550 align:middle line:84%
+The other piece is controlled
+by the L1 norm of f.
+
+01:02:22.550 --> 01:02:24.710 align:middle line:84%
+I could have written
+the theorem that way,
+
+01:02:24.710 --> 01:02:26.450 align:middle line:84%
+but I wrote it a
+little bit differently.
+
+01:02:26.450 --> 01:02:27.990 align:middle line:90%
+I thought it was cuter.
+
+01:02:27.990 --> 01:02:30.663 align:middle line:84%
+I had the support of
+f is in the unit ball.
+
+01:02:30.663 --> 01:02:32.330 align:middle line:84%
+If the support of f
+is in the unit ball,
+
+01:02:32.330 --> 01:02:35.910 align:middle line:84%
+then we can control the
+L1 norm by the L2 norm.
+
+01:02:35.910 --> 01:02:41.630 align:middle line:84%
+So since the support of
+f is in the unit ball,
+
+01:02:41.630 --> 01:02:47.430 align:middle line:84%
+integral of f of x
+dx looks like that.
+
+01:02:47.430 --> 01:02:53.190 align:middle line:84%
+It's bounded by the integral of
+f of x squared to the 1/2 times
+
+01:02:53.190 --> 01:02:56.910 align:middle line:84%
+the integral over the
+unit ball of 1 to the 1/2.
+
+01:02:56.910 --> 01:02:58.540 align:middle line:90%
+So that's bounded by f L2.
+
+01:02:58.540 --> 01:03:01.100 align:middle line:90%
+
+
+01:03:01.100 --> 01:03:02.700 align:middle line:90%
+OK.
+
+01:03:02.700 --> 01:03:08.570 align:middle line:84%
+Using the support, I can bound
+both 1 and 2 by f L2 squared.
+
+01:03:08.570 --> 01:03:12.980 align:middle line:90%
+
+
+01:03:12.980 --> 01:03:14.232 align:middle line:90%
+OK.
+
+01:03:14.232 --> 01:03:18.780 align:middle line:84%
+That was what I had thought of
+as the proof of the theorem.
+
+01:03:18.780 --> 01:03:20.380 align:middle line:84%
+But now is a good
+moment to come back
+
+01:03:20.380 --> 01:03:22.420 align:middle line:84%
+to the question that
+was asked earlier.
+
+01:03:22.420 --> 01:03:24.980 align:middle line:84%
+What do you actually have to
+assume about f for all of this
+
+01:03:24.980 --> 01:03:25.590 align:middle line:90%
+to make sense?
+
+01:03:25.590 --> 01:03:28.260 align:middle line:90%
+
+
+01:03:28.260 --> 01:03:29.820 align:middle line:90%
+OK.
+
+01:03:29.820 --> 01:03:34.970 align:middle line:84%
+So let me add some fine print,
+write what we actually proved.
+
+01:03:34.970 --> 01:03:43.180 align:middle line:90%
+
+
+01:03:43.180 --> 01:03:43.800 align:middle line:90%
+All right.
+
+01:03:43.800 --> 01:03:47.580 align:middle line:84%
+So the fine print is
+for the time being,
+
+01:03:47.580 --> 01:03:51.260 align:middle line:84%
+suppose that f is
+a Schwarz function.
+
+01:03:51.260 --> 01:03:52.860 align:middle line:84%
+We needed f as a
+Schwarz function
+
+01:03:52.860 --> 01:03:55.380 align:middle line:84%
+to justify our formula
+about the Fourier
+
+01:03:55.380 --> 01:03:58.260 align:middle line:84%
+transform of the projection,
+and in a few other places
+
+01:03:58.260 --> 01:04:01.490 align:middle line:84%
+to make sure all these
+Fourier transforms make sense.
+
+01:04:01.490 --> 01:04:04.970 align:middle line:84%
+If you assume that f is Schwarz,
+everything we wrote makes sense
+
+01:04:04.970 --> 01:04:08.090 align:middle line:90%
+and we get this estimate.
+
+01:04:08.090 --> 01:04:11.610 align:middle line:90%
+And this is an inequality.
+
+01:04:11.610 --> 01:04:14.550 align:middle line:84%
+And then it is now possible
+to do some extra work.
+
+01:04:14.550 --> 01:04:16.530 align:middle line:84%
+If you have a function
+that's not Schwarz, just
+
+01:04:16.530 --> 01:04:19.690 align:middle line:84%
+a function in L2, you could have
+a sequence of Schwarz functions
+
+01:04:19.690 --> 01:04:23.080 align:middle line:90%
+that approximate it.
+
+01:04:23.080 --> 01:04:25.590 align:middle line:84%
+And for each one of those
+approximating functions,
+
+01:04:25.590 --> 01:04:26.913 align:middle line:90%
+this bound would be true.
+
+01:04:26.913 --> 01:04:28.330 align:middle line:84%
+And then with some
+work, you could
+
+01:04:28.330 --> 01:04:31.230 align:middle line:84%
+show that the bound is also true
+for the limiting function f.
+
+01:04:31.230 --> 01:04:36.290 align:middle line:90%
+
+
+01:04:36.290 --> 01:04:36.790 align:middle line:90%
+OK.
+
+01:04:36.790 --> 01:04:37.800 align:middle line:90%
+So I'll put a remark.
+
+01:04:37.800 --> 01:04:40.770 align:middle line:90%
+
+
+01:04:40.770 --> 01:04:46.200 align:middle line:84%
+Can remove the
+hypothesis of f Schwarz.
+
+01:04:46.200 --> 01:05:02.840 align:middle line:90%
+
+
+01:05:02.840 --> 01:05:03.340 align:middle line:90%
+OK.
+
+01:05:03.340 --> 01:05:06.150 align:middle line:90%
+
+
+01:05:06.150 --> 01:05:08.860 align:middle line:84%
+So any questions or comments
+about the proof of this theorem?
+
+01:05:08.860 --> 01:05:16.350 align:middle line:90%
+
+
+01:05:16.350 --> 01:05:19.750 align:middle line:84%
+AUDIENCE: So it's a condition
+that the support of f
+
+01:05:19.750 --> 01:05:23.957 align:middle line:90%
+is essential to this theorem?
+
+01:05:23.957 --> 01:05:24.790 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:05:24.790 --> 01:05:25.290 align:middle line:90%
+OK.
+
+01:05:25.290 --> 01:05:28.710 align:middle line:84%
+So the question is, is the
+assumption that the support of f
+
+01:05:28.710 --> 01:05:30.610 align:middle line:90%
+is in the unit ball essential?
+
+01:05:30.610 --> 01:05:33.270 align:middle line:84%
+What would happen if we
+removed this assumption?
+
+01:05:33.270 --> 01:05:33.830 align:middle line:90%
+Yeah.
+
+01:05:33.830 --> 01:05:35.920 align:middle line:84%
+So looking at the
+proof, we could--
+
+01:05:35.920 --> 01:05:38.470 align:middle line:90%
+
+
+01:05:38.470 --> 01:05:39.520 align:middle line:90%
+let me get another color.
+
+01:05:39.520 --> 01:05:48.310 align:middle line:90%
+
+
+01:05:48.310 --> 01:05:50.550 align:middle line:84%
+Looking at the proof,
+we could, if we want to,
+
+01:05:50.550 --> 01:05:52.070 align:middle line:90%
+remove this assumption.
+
+01:05:52.070 --> 01:05:55.940 align:middle line:84%
+And then we would need to
+add the L1 norm, as well
+
+01:05:55.940 --> 01:05:58.880 align:middle line:90%
+as the L2 norm to deal with.
+
+01:05:58.880 --> 01:06:01.660 align:middle line:90%
+
+
+01:06:01.660 --> 01:06:04.240 align:middle line:84%
+Due to my brilliant
+neighbor labeling scheme,
+
+01:06:04.240 --> 01:06:06.260 align:middle line:84%
+term one is bounded
+by the L2 norm
+
+01:06:06.260 --> 01:06:08.480 align:middle line:84%
+and term two is
+bounded by the L1 norm.
+
+01:06:08.480 --> 01:06:11.260 align:middle line:90%
+
+
+01:06:11.260 --> 01:06:12.460 align:middle line:90%
+OK.
+
+01:06:12.460 --> 01:06:14.500 align:middle line:84%
+I haven't thought
+about it carefully.
+
+01:06:14.500 --> 01:06:18.900 align:middle line:84%
+You could ask if we did
+this, would it still be true?
+
+01:06:18.900 --> 01:06:22.660 align:middle line:84%
+I suspect that's not true, and
+the natural example to look at
+
+01:06:22.660 --> 01:06:25.880 align:middle line:84%
+is a function on
+a really big ball.
+
+01:06:25.880 --> 01:06:27.660 align:middle line:84%
+I haven't thought it
+through carefully.
+
+01:06:27.660 --> 01:06:31.330 align:middle line:84%
+It's a good little project
+to figure out what happens.
+
+01:06:31.330 --> 01:06:48.340 align:middle line:90%
+
+
+01:06:48.340 --> 01:06:50.100 align:middle line:90%
+OK.
+
+01:06:50.100 --> 01:06:50.600 align:middle line:90%
+OK.
+
+01:06:50.600 --> 01:06:53.930 align:middle line:84%
+So the big picture
+takeaway of this theorem
+
+01:06:53.930 --> 01:06:56.450 align:middle line:84%
+is we take a function in
+high dimensions, which is not
+
+01:06:56.450 --> 01:07:00.230 align:middle line:84%
+very regular, and when we
+project it to low dimensions,
+
+01:07:00.230 --> 01:07:03.250 align:middle line:84%
+most of the projections
+are much more regular.
+
+01:07:03.250 --> 01:07:05.483 align:middle line:84%
+And I was trying
+to think of places
+
+01:07:05.483 --> 01:07:07.650 align:middle line:84%
+that this relates to or we
+might have seen something
+
+01:07:07.650 --> 01:07:09.690 align:middle line:90%
+like this before.
+
+01:07:09.690 --> 01:07:12.770 align:middle line:84%
+And one place where we
+see something like this
+
+01:07:12.770 --> 01:07:15.150 align:middle line:84%
+is the central limit
+theorem in probability.
+
+01:07:15.150 --> 01:07:17.770 align:middle line:90%
+
+
+01:07:17.770 --> 01:07:19.860 align:middle line:84%
+So let me remind
+us how that works.
+
+01:07:19.860 --> 01:07:49.370 align:middle line:90%
+
+
+01:07:49.370 --> 01:07:50.324 align:middle line:90%
+OK.
+
+01:07:50.324 --> 01:07:58.280 align:middle line:84%
+So suppose that Xj are random
+variables which are uniformly
+
+01:07:58.280 --> 01:08:06.260 align:middle line:84%
+distributed in 0, 1 and there
+are a lot of them going up to n.
+
+01:08:06.260 --> 01:08:08.840 align:middle line:90%
+
+
+01:08:08.840 --> 01:08:09.560 align:middle line:90%
+OK.
+
+01:08:09.560 --> 01:08:11.080 align:middle line:84%
+So in the central
+limit theorem, we
+
+01:08:11.080 --> 01:08:13.000 align:middle line:84%
+might think what
+happens if we add up
+
+01:08:13.000 --> 01:08:16.800 align:middle line:90%
+all these random variables.
+
+01:08:16.800 --> 01:08:20.840 align:middle line:84%
+So then we could look
+at the sum of the Xj.
+
+01:08:20.840 --> 01:08:24.080 align:middle line:90%
+This will be a random variable.
+
+01:08:24.080 --> 01:08:26.260 align:middle line:84%
+Actually, let me put
+it-- not that important.
+
+01:08:26.260 --> 01:08:29.100 align:middle line:84%
+But I'm going to
+put minus 1/2, 1/2.
+
+01:08:29.100 --> 01:08:31.100 align:middle line:84%
+The central limit theorem
+is a little bit nicer.
+
+01:08:31.100 --> 01:08:34.159 align:middle line:90%
+
+
+01:08:34.159 --> 01:08:34.659 align:middle line:90%
+OK.
+
+01:08:34.659 --> 01:08:37.600 align:middle line:84%
+So what happens
+when I add them up?
+
+01:08:37.600 --> 01:08:43.200 align:middle line:84%
+When I add them up, the
+central limit theorem
+
+01:08:43.200 --> 01:08:47.560 align:middle line:84%
+says that the sum of
+these random variables
+
+01:08:47.560 --> 01:08:54.819 align:middle line:84%
+is approximately a
+Gaussian with mean 0
+
+01:08:54.819 --> 01:09:00.160 align:middle line:84%
+and a standard deviation,
+something like square root of n.
+
+01:09:00.160 --> 01:09:04.380 align:middle line:90%
+
+
+01:09:04.380 --> 01:09:08.550 align:middle line:84%
+And notice in particular
+that it's quite smooth.
+
+01:09:08.550 --> 01:09:19.500 align:middle line:90%
+
+
+01:09:19.500 --> 01:09:20.740 align:middle line:90%
+OK.
+
+01:09:20.740 --> 01:09:24.340 align:middle line:84%
+So the probability, the joint
+probability density function
+
+01:09:24.340 --> 01:09:25.490 align:middle line:90%
+of these Xj's.
+
+01:09:25.490 --> 01:09:32.700 align:middle line:90%
+
+
+01:09:32.700 --> 01:09:34.260 align:middle line:90%
+Xj.
+
+01:09:34.260 --> 01:09:38.180 align:middle line:90%
+Is f of X1 up to XN.
+
+01:09:38.180 --> 01:09:41.209 align:middle line:84%
+So the characteristic
+function of the cube.
+
+01:09:41.209 --> 01:09:45.020 align:middle line:90%
+
+
+01:09:45.020 --> 01:09:46.920 align:middle line:90%
+So this is a typical--
+
+01:09:46.920 --> 01:09:48.810 align:middle line:84%
+this is an example of
+a function that's in L2
+
+01:09:48.810 --> 01:09:51.890 align:middle line:90%
+but is not continuous.
+
+01:09:51.890 --> 01:09:53.130 align:middle line:90%
+OK.
+
+01:09:53.130 --> 01:09:59.210 align:middle line:84%
+Now what is the probability
+density function of this thing?
+
+01:09:59.210 --> 01:10:01.010 align:middle line:90%
+Well, we have a map.
+
+01:10:01.010 --> 01:10:05.850 align:middle line:84%
+I guess the summation
+map goes from RN to R
+
+01:10:05.850 --> 01:10:10.610 align:middle line:84%
+and it just takes X1
+up to XN and maps it
+
+01:10:10.610 --> 01:10:13.090 align:middle line:84%
+to X1 plus dot,
+dot, dot plus XN.
+
+01:10:13.090 --> 01:10:13.790 align:middle line:90%
+Add them up.
+
+01:10:13.790 --> 01:10:15.970 align:middle line:90%
+It's a linear map.
+
+01:10:15.970 --> 01:10:22.530 align:middle line:84%
+So the probability
+density function
+
+01:10:22.530 --> 01:10:33.210 align:middle line:84%
+of the sum of the Xj's is
+the pushforward of f dx.
+
+01:10:33.210 --> 01:10:35.630 align:middle line:84%
+And this is a slightly
+different language,
+
+01:10:35.630 --> 01:10:38.910 align:middle line:84%
+but up to a small
+change of variables,
+
+01:10:38.910 --> 01:10:42.220 align:middle line:84%
+it's the projection of
+f on the main diagonal.
+
+01:10:42.220 --> 01:10:46.600 align:middle line:90%
+
+
+01:10:46.600 --> 01:10:53.760 align:middle line:84%
+So actually, we can
+make this look nicer
+
+01:10:53.760 --> 01:10:58.360 align:middle line:84%
+if we normalize in the central
+limit theorem, which is a fairly
+
+01:10:58.360 --> 01:10:59.740 align:middle line:90%
+standard way of writing it.
+
+01:10:59.740 --> 01:11:02.060 align:middle line:84%
+So let me write the central
+limit theorem this way.
+
+01:11:02.060 --> 01:11:06.880 align:middle line:90%
+
+
+01:11:06.880 --> 01:11:15.080 align:middle line:90%
+So now my function is that.
+
+01:11:15.080 --> 01:11:22.920 align:middle line:84%
+And let's say that theta is
+1 over square root of N 1, 1,
+
+01:11:22.920 --> 01:11:24.560 align:middle line:90%
+which is a unit vector.
+
+01:11:24.560 --> 01:11:26.920 align:middle line:90%
+So this is just the projection.
+
+01:11:26.920 --> 01:11:30.060 align:middle line:84%
+I'll call it theta 1 in
+the theta 1 direction of f.
+
+01:11:30.060 --> 01:11:33.720 align:middle line:90%
+
+
+01:11:33.720 --> 01:11:39.080 align:middle line:84%
+So I take the characteristic
+function of the cube.
+
+01:11:39.080 --> 01:11:42.280 align:middle line:84%
+If I project it
+in that direction,
+
+01:11:42.280 --> 01:11:45.150 align:middle line:84%
+I get something that
+is almost a Gaussian.
+
+01:11:45.150 --> 01:11:48.830 align:middle line:84%
+And that's the
+central limit theorem.
+
+01:11:48.830 --> 01:11:52.740 align:middle line:84%
+And notice in particular that
+that projection is quite smooth.
+
+01:11:52.740 --> 01:11:55.790 align:middle line:90%
+
+
+01:11:55.790 --> 01:11:57.870 align:middle line:84%
+So if I were to take
+the cube and I were just
+
+01:11:57.870 --> 01:12:01.190 align:middle line:84%
+going to project it
+onto the x1 axis,
+
+01:12:01.190 --> 01:12:03.750 align:middle line:84%
+well, the other variables
+would be irrelevant.
+
+01:12:03.750 --> 01:12:05.750 align:middle line:84%
+And I would just get the
+characteristic function
+
+01:12:05.750 --> 01:12:06.830 align:middle line:90%
+of an interval.
+
+01:12:06.830 --> 01:12:09.750 align:middle line:84%
+It would not be any
+smoother than it was before.
+
+01:12:09.750 --> 01:12:11.537 align:middle line:90%
+Still be discontinuous.
+
+01:12:11.537 --> 01:12:12.370 align:middle line:90%
+And that's the same.
+
+01:12:12.370 --> 01:12:14.130 align:middle line:84%
+I could project it
+onto any of the axes.
+
+01:12:14.130 --> 01:12:15.005 align:middle line:90%
+They're all the same.
+
+01:12:15.005 --> 01:12:18.270 align:middle line:84%
+That would be a characteristic
+function of an interval.
+
+01:12:18.270 --> 01:12:21.287 align:middle line:84%
+But if I project it
+onto the main diagonal,
+
+01:12:21.287 --> 01:12:23.370 align:middle line:84%
+then I get the thing in
+the central limit theorem,
+
+01:12:23.370 --> 01:12:24.790 align:middle line:90%
+which is extremely smooth.
+
+01:12:24.790 --> 01:12:29.350 align:middle line:84%
+And the more I
+increase the dimension,
+
+01:12:29.350 --> 01:12:30.810 align:middle line:84%
+the more it looks
+like a Gaussian.
+
+01:12:30.810 --> 01:12:34.630 align:middle line:84%
+And in particular,
+the smoother it gets.
+
+01:12:34.630 --> 01:12:35.616 align:middle line:90%
+OK.
+
+01:12:35.616 --> 01:12:37.370 align:middle line:84%
+Now in the central
+limit theorem,
+
+01:12:37.370 --> 01:12:39.950 align:middle line:84%
+it actually is not terribly
+important that all of these
+
+01:12:39.950 --> 01:12:41.430 align:middle line:90%
+are exactly 1.
+
+01:12:41.430 --> 01:12:46.810 align:middle line:84%
+It's just important that they're
+roughly equal to each other.
+
+01:12:46.810 --> 01:12:50.050 align:middle line:84%
+So as long as you take
+a direction, which
+
+01:12:50.050 --> 01:12:53.650 align:middle line:84%
+doesn't emphasize any of the
+coordinate axes too much,
+
+01:12:53.650 --> 01:12:55.950 align:middle line:84%
+you'll see something like
+the central limit theorem.
+
+01:12:55.950 --> 01:12:58.090 align:middle line:84%
+So in all of those
+directions, the projection
+
+01:12:58.090 --> 01:12:59.150 align:middle line:90%
+will look quite smooth.
+
+01:12:59.150 --> 01:13:01.150 align:middle line:84%
+And in fact, it will look
+a lot like a Gaussian.
+
+01:13:01.150 --> 01:13:03.570 align:middle line:90%
+
+
+01:13:03.570 --> 01:13:05.930 align:middle line:84%
+But if you were to project
+it in the bad directions,
+
+01:13:05.930 --> 01:13:08.810 align:middle line:84%
+in a coordinate direction
+or a combination of a couple
+
+01:13:08.810 --> 01:13:10.242 align:middle line:84%
+coordinate directions,
+then you'll
+
+01:13:10.242 --> 01:13:11.700 align:middle line:84%
+get something that's
+not so smooth.
+
+01:13:11.700 --> 01:13:14.910 align:middle line:90%
+
+
+01:13:14.910 --> 01:13:15.410 align:middle line:90%
+OK.
+
+01:13:15.410 --> 01:13:18.810 align:middle line:84%
+So that's an example
+of this theorem.
+
+01:13:18.810 --> 01:13:22.010 align:middle line:84%
+And in this special example, we
+can say much more refined things
+
+01:13:22.010 --> 01:13:23.770 align:middle line:84%
+about which directions
+are good and bad
+
+01:13:23.770 --> 01:13:25.890 align:middle line:90%
+and exactly what happens.
+
+01:13:25.890 --> 01:13:27.590 align:middle line:84%
+But this theorem is
+a lot more general,
+
+01:13:27.590 --> 01:13:29.610 align:middle line:84%
+because you don't have to put
+in the characteristic function
+
+01:13:29.610 --> 01:13:30.430 align:middle line:90%
+of a cube.
+
+01:13:30.430 --> 01:13:33.690 align:middle line:84%
+You can put in quite a
+broad range of functions,
+
+01:13:33.690 --> 01:13:35.900 align:middle line:84%
+and qualitatively
+similar things happen.
+
+01:13:35.900 --> 01:13:49.890 align:middle line:90%
+
+
+01:13:49.890 --> 01:13:50.390 align:middle line:90%
+Yeah?
+
+01:13:50.390 --> 01:13:52.720 align:middle line:84%
+AUDIENCE: [INAUDIBLE] but
+this theorem and the theorem
+
+01:13:52.720 --> 01:13:55.260 align:middle line:84%
+you did earlier,
+it's really the same.
+
+01:13:55.260 --> 01:13:56.760 align:middle line:84%
+Like when you
+integrate, you make
+
+01:13:56.760 --> 01:13:59.800 align:middle line:84%
+it smoother because the
+production is an integration,
+
+01:13:59.800 --> 01:14:01.168 align:middle line:90%
+kind of.
+
+01:14:01.168 --> 01:14:01.960 align:middle line:90%
+LAWRENCE GUTH: Yes.
+
+01:14:01.960 --> 01:14:03.860 align:middle line:90%
+Yes.
+
+01:14:03.860 --> 01:14:08.360 align:middle line:84%
+The comment is that
+when we project,
+
+01:14:08.360 --> 01:14:13.120 align:middle line:84%
+we project by integrating
+some of the variables.
+
+01:14:13.120 --> 01:14:15.560 align:middle line:84%
+And so the comment is when
+we integrate something
+
+01:14:15.560 --> 01:14:16.732 align:middle line:90%
+we make it smoother.
+
+01:14:16.732 --> 01:14:17.940 align:middle line:90%
+That's a really nice comment.
+
+01:14:17.940 --> 01:14:22.507 align:middle line:84%
+And it reminds us of something
+more familiar and fundamental,
+
+01:14:22.507 --> 01:14:24.840 align:middle line:84%
+which is like if you had a
+function of one variable that
+
+01:14:24.840 --> 01:14:27.903 align:middle line:84%
+was just an L2 site or
+L1, if you integrated it,
+
+01:14:27.903 --> 01:14:28.820 align:middle line:90%
+it would get smoother.
+
+01:14:28.820 --> 01:14:30.653 align:middle line:84%
+If you integrated it a
+whole bunch of times,
+
+01:14:30.653 --> 01:14:33.020 align:middle line:84%
+then you would get
+something smooth.
+
+01:14:33.020 --> 01:14:33.520 align:middle line:90%
+Yeah.
+
+01:14:33.520 --> 01:14:34.900 align:middle line:90%
+So this is a little bit like--
+
+01:14:34.900 --> 01:14:36.260 align:middle line:90%
+this is a little bit like that.
+
+01:14:36.260 --> 01:14:40.550 align:middle line:84%
+And I guess this smoothness does
+come from doing the integration.
+
+01:14:40.550 --> 01:14:42.790 align:middle line:90%
+In this situation-- yeah?
+
+01:14:42.790 --> 01:14:43.530 align:middle line:90%
+What's that?
+
+01:14:43.530 --> 01:14:45.470 align:middle line:84%
+AUDIENCE: The bounds
+are interesting still.
+
+01:14:45.470 --> 01:14:47.278 align:middle line:84%
+Like how smooth it
+is is interesting.
+
+01:14:47.278 --> 01:14:48.070 align:middle line:90%
+LAWRENCE GUTH: Yes.
+
+01:14:48.070 --> 01:14:49.250 align:middle line:90%
+The bounds are interesting.
+
+01:14:49.250 --> 01:14:49.790 align:middle line:90%
+Yes.
+
+01:14:49.790 --> 01:14:50.290 align:middle line:90%
+Yeah.
+
+01:14:50.290 --> 01:14:51.707 align:middle line:84%
+And I guess one
+of the differences
+
+01:14:51.707 --> 01:14:54.450 align:middle line:84%
+here is this function
+depends on many variables.
+
+01:14:54.450 --> 01:14:58.870 align:middle line:84%
+We're going to integrate
+some of them but not others.
+
+01:14:58.870 --> 01:15:04.630 align:middle line:90%
+And so-- yeah.
+
+01:15:04.630 --> 01:15:05.573 align:middle line:90%
+Anyway.
+
+01:15:05.573 --> 01:15:07.990 align:middle line:84%
+And then it depends which ones
+we integrate whether or not
+
+01:15:07.990 --> 01:15:08.890 align:middle line:90%
+it gets smoother.
+
+01:15:08.890 --> 01:15:10.520 align:middle line:84%
+But it turns out
+that usually it does.
+
+01:15:10.520 --> 01:15:15.950 align:middle line:90%
+
+
+01:15:15.950 --> 01:15:16.450 align:middle line:90%
+Yeah.
+
+01:15:16.450 --> 01:15:19.130 align:middle line:84%
+But yeah, I think that is a
+good way of looking at it.
+
+01:15:19.130 --> 01:15:21.670 align:middle line:90%
+
+
+01:15:21.670 --> 01:15:23.270 align:middle line:90%
+Yeah.
+
+01:15:23.270 --> 01:15:24.950 align:middle line:90%
+Cool.
+
+01:15:24.950 --> 01:15:25.710 align:middle line:90%
+Cool.
+
+01:15:25.710 --> 01:15:26.250 align:middle line:90%
+OK.
+
+01:15:26.250 --> 01:15:27.570 align:middle line:90%
+So let me end by mentioning.
+
+01:15:27.570 --> 01:15:29.028 align:middle line:84%
+So as part of the
+class, I will try
+
+01:15:29.028 --> 01:15:32.470 align:middle line:84%
+to mention different ways that
+projection theory is related
+
+01:15:32.470 --> 01:15:36.150 align:middle line:90%
+to various parts of math.
+
+01:15:36.150 --> 01:15:41.180 align:middle line:84%
+And so this reminds me of
+something I heard about,
+
+01:15:41.180 --> 01:15:44.100 align:middle line:84%
+which is about trying to
+generalize the central limit
+
+01:15:44.100 --> 01:15:44.980 align:middle line:90%
+theorem.
+
+01:15:44.980 --> 01:15:51.000 align:middle line:84%
+So what if the input was not
+independent random variables,
+
+01:15:51.000 --> 01:15:53.300 align:middle line:84%
+but something
+somewhat more general?
+
+01:15:53.300 --> 01:15:56.328 align:middle line:84%
+Would it still be true that when
+we take a projection like this,
+
+01:15:56.328 --> 01:15:57.370 align:middle line:90%
+you would see a Gaussian?
+
+01:15:57.370 --> 01:16:01.540 align:middle line:90%
+
+
+01:16:01.540 --> 01:16:05.460 align:middle line:84%
+And so there's a big
+body of work on that.
+
+01:16:05.460 --> 01:16:07.700 align:middle line:84%
+But one interesting
+direction I heard about
+
+01:16:07.700 --> 01:16:11.340 align:middle line:84%
+is initiated by Keith
+Ball and its connection
+
+01:16:11.340 --> 01:16:14.540 align:middle line:84%
+between probability theory
+and convex geometry.
+
+01:16:14.540 --> 01:16:16.980 align:middle line:84%
+And the point of
+view is that maybe
+
+01:16:16.980 --> 01:16:18.700 align:middle line:84%
+to some extent,
+what's important about
+
+01:16:18.700 --> 01:16:21.620 align:middle line:84%
+the cube is just that
+it's a convex set.
+
+01:16:21.620 --> 01:16:26.500 align:middle line:84%
+So instead of the cube, take
+any convex set in R to the N
+
+01:16:26.500 --> 01:16:28.980 align:middle line:90%
+and it's large.
+
+01:16:28.980 --> 01:16:29.480 align:middle line:90%
+OK.
+
+01:16:29.480 --> 01:16:31.420 align:middle line:84%
+Now there's no
+distinguished-- there's
+
+01:16:31.420 --> 01:16:34.800 align:middle line:84%
+nothing special about the
+coordinate axes anymore.
+
+01:16:34.800 --> 01:16:37.640 align:middle line:84%
+The coordinate axis projections
+aren't necessarily the ones
+
+01:16:37.640 --> 01:16:40.040 align:middle line:84%
+that are bad, but this one
+isn't necessarily good.
+
+01:16:40.040 --> 01:16:42.840 align:middle line:84%
+But the question
+he raised is maybe
+
+01:16:42.840 --> 01:16:46.000 align:middle line:84%
+you take any convex set
+and look at its projections
+
+01:16:46.000 --> 01:16:48.040 align:middle line:90%
+onto one dimensional spaces.
+
+01:16:48.040 --> 01:16:50.410 align:middle line:84%
+Maybe most of them
+are almost Gaussian.
+
+01:16:50.410 --> 01:16:54.366 align:middle line:90%
+
+
+01:16:54.366 --> 01:16:54.866 align:middle line:90%
+OK.
+
+01:16:54.866 --> 01:16:57.020 align:middle line:84%
+And that's a recent
+topic of research,
+
+01:16:57.020 --> 01:17:00.480 align:middle line:84%
+and a significant amount
+like that is true.
+
+01:17:00.480 --> 01:17:02.460 align:middle line:84%
+Keith Ball gave an
+ICM talk about it
+
+01:17:02.460 --> 01:17:04.360 align:middle line:84%
+and I put some references
+in the homework
+
+01:17:04.360 --> 01:17:06.620 align:middle line:84%
+if anybody is interested
+in reading about it.
+
+01:17:06.620 --> 01:17:10.080 align:middle line:90%
+
+
+01:17:10.080 --> 01:17:12.080 align:middle line:90%
+Cool.
+
+01:17:12.080 --> 01:17:12.580 align:middle line:90%
+OK.
+
+01:17:12.580 --> 01:17:16.240 align:middle line:84%
+Well, let's stop
+there for today.
+
+01:17:16.240 --> 01:17:18.000 align:middle line:84%
+The plan for Thursday
+is to come back
+
+01:17:18.000 --> 01:17:19.500 align:middle line:84%
+to the large sieve,
+which is done,
+
+01:17:19.500 --> 01:17:20.667 align:middle line:90%
+which is from number theory.
+
+01:17:20.667 --> 01:17:23.040 align:middle line:84%
+And I'll try to tell you
+some things, what kind
+
+01:17:23.040 --> 01:17:27.030 align:middle line:84%
+of applications in number theory
+does the large sieve have.
+
+01:17:27.030 --> 01:17:34.000 align:middle line:90%

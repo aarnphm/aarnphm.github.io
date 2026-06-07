@@ -1,0 +1,4053 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.437 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.437 --> 00:00:03.832 align:middle line:90%
+[RUSTLING]
+
+00:00:03.832 --> 00:00:06.706 align:middle line:90%
+[CLICKING]
+
+00:00:06.706 --> 00:00:11.265 align:middle line:90%
+
+
+00:00:11.265 --> 00:00:12.890 align:middle line:84%
+LAWRENCE GUTH: So
+today is the last day
+
+00:00:12.890 --> 00:00:16.610 align:middle line:84%
+of our additive combinatorics
+section of the class.
+
+00:00:16.610 --> 00:00:19.490 align:middle line:84%
+And we get to prove one
+of the core theorems
+
+00:00:19.490 --> 00:00:23.750 align:middle line:84%
+of additive combinatorics, the
+Balog-Szemeredi-Gowers theorem.
+
+00:00:23.750 --> 00:00:25.700 align:middle line:84%
+And I think it's
+a wonderful thing
+
+00:00:25.700 --> 00:00:27.990 align:middle line:90%
+and I will try to do it justice.
+
+00:00:27.990 --> 00:00:31.320 align:middle line:90%
+I'm learning myself also.
+
+00:00:31.320 --> 00:00:34.165 align:middle line:84%
+So first let me remind
+everybody what it says.
+
+00:00:34.165 --> 00:00:48.230 align:middle line:90%
+
+
+00:00:48.230 --> 00:00:49.160 align:middle line:90%
+All right.
+
+00:00:49.160 --> 00:00:54.470 align:middle line:84%
+So If A and B are
+in an abelian group,
+
+00:00:54.470 --> 00:01:00.450 align:middle line:84%
+and let's say they
+have size at most N,
+
+00:01:00.450 --> 00:01:06.390 align:middle line:84%
+and we have a subset of A
+cross B, so a subset of pairs,
+
+00:01:06.390 --> 00:01:09.570 align:middle line:84%
+little a little b,
+and it's pretty big.
+
+00:01:09.570 --> 00:01:14.080 align:middle line:84%
+So X is bigger than
+k inverse n squared.
+
+00:01:14.080 --> 00:01:15.610 align:middle line:90%
+So k is a parameter here.
+
+00:01:15.610 --> 00:01:18.060 align:middle line:84%
+But you should think of k as
+being significantly smaller
+
+00:01:18.060 --> 00:01:18.990 align:middle line:90%
+than n.
+
+00:01:18.990 --> 00:01:22.150 align:middle line:84%
+That's the regime where there's
+a meaningful conclusion.
+
+00:01:22.150 --> 00:01:25.932 align:middle line:90%
+
+
+00:01:25.932 --> 00:01:35.400 align:middle line:84%
+And pi 1 of X is at most K
+So remember that pi 1 of X
+
+00:01:35.400 --> 00:01:46.920 align:middle line:84%
+is the set of a plus b
+where a comma b is in X.
+
+00:01:46.920 --> 00:01:50.950 align:middle line:84%
+So this is surprisingly
+small given how large X is.
+
+00:01:50.950 --> 00:01:54.540 align:middle line:84%
+And it means that
+in this set there
+
+00:01:54.540 --> 00:01:58.610 align:middle line:84%
+are many pairs, a1, b1,
+and a2, b2 that they add up
+
+00:01:58.610 --> 00:01:59.550 align:middle line:90%
+to the same number.
+
+00:01:59.550 --> 00:02:02.120 align:middle line:84%
+So there are a lot of additive
+coincidences happening
+
+00:02:02.120 --> 00:02:05.780 align:middle line:90%
+when we add up the pairs in x.
+
+00:02:05.780 --> 00:02:10.160 align:middle line:84%
+Then the conclusion
+is that there
+
+00:02:10.160 --> 00:02:14.360 align:middle line:84%
+is a subset A prime
+in A, a subset B
+
+00:02:14.360 --> 00:02:18.200 align:middle line:84%
+prime in B, which
+are pretty big.
+
+00:02:18.200 --> 00:02:21.710 align:middle line:84%
+So the way we'll say that
+they're pretty big, so we could
+
+00:02:21.710 --> 00:02:23.450 align:middle line:84%
+say the following
+is true that A and B
+
+00:02:23.450 --> 00:02:27.345 align:middle line:84%
+are each at least some
+power of K times N.
+
+00:02:27.345 --> 00:02:28.470 align:middle line:90%
+So they're each pretty big.
+
+00:02:28.470 --> 00:02:29.630 align:middle line:84%
+But actually,
+we'll say something
+
+00:02:29.630 --> 00:02:32.400 align:middle line:84%
+slightly fancier which is what
+we really used in applications.
+
+00:02:32.400 --> 00:02:35.630 align:middle line:84%
+Namely if X prime
+is defined to be
+
+00:02:35.630 --> 00:02:41.390 align:middle line:84%
+the part of X in A
+prime times B prime,
+
+00:02:41.390 --> 00:02:42.955 align:middle line:90%
+then X prime is pretty big.
+
+00:02:42.955 --> 00:02:50.960 align:middle line:90%
+
+
+00:02:50.960 --> 00:02:56.260 align:middle line:84%
+And also when you take sums
+of A prime and B prime,
+
+00:02:56.260 --> 00:02:58.390 align:middle line:84%
+not just the ones in X
+prime, but all of them,
+
+00:02:58.390 --> 00:03:00.810 align:middle line:90%
+those are all pretty small.
+
+00:03:00.810 --> 00:03:07.230 align:middle line:84%
+So A prime plus B
+prime is less than K
+
+00:03:07.230 --> 00:03:19.324 align:middle line:90%
+to the big O of 1 times N.
+
+00:03:19.324 --> 00:03:23.353 align:middle line:84%
+So I guess last time we
+introduced this and talked
+
+00:03:23.353 --> 00:03:24.520 align:middle line:90%
+about examples a little bit.
+
+00:03:24.520 --> 00:03:25.710 align:middle line:84%
+But let me just
+repeat the example
+
+00:03:25.710 --> 00:03:27.880 align:middle line:84%
+because it helps a lot
+to digest the statement.
+
+00:03:27.880 --> 00:03:35.160 align:middle line:84%
+So here is one example, A and
+B are both the numbers up to N
+
+00:03:35.160 --> 00:03:36.283 align:middle line:90%
+with some garbage.
+
+00:03:36.283 --> 00:03:50.980 align:middle line:90%
+
+
+00:03:50.980 --> 00:03:57.830 align:middle line:84%
+And then X could be
+any subset of N cross
+
+00:03:57.830 --> 00:03:59.125 align:middle line:90%
+N, which is pretty big.
+
+00:03:59.125 --> 00:04:07.970 align:middle line:90%
+
+
+00:04:07.970 --> 00:04:12.390 align:middle line:84%
+And so now it's not true
+that A plus B is small,
+
+00:04:12.390 --> 00:04:16.959 align:middle line:84%
+but it is true that a good
+maybe union a little bit.
+
+00:04:16.959 --> 00:04:26.390 align:middle line:90%
+
+
+00:04:26.390 --> 00:04:32.810 align:middle line:84%
+OK, so pi 1 of X is
+small because most of X
+
+00:04:32.810 --> 00:04:36.950 align:middle line:84%
+is contained in here, And
+pi 1 of that is small.
+
+00:04:36.950 --> 00:04:41.545 align:middle line:90%
+So A plus B, it might be large.
+
+00:04:41.545 --> 00:04:45.140 align:middle line:90%
+
+
+00:04:45.140 --> 00:04:49.370 align:middle line:90%
+But pi 1 of X is small.
+
+00:04:49.370 --> 00:04:51.470 align:middle line:84%
+And the only way
+this can happen is
+
+00:04:51.470 --> 00:04:54.840 align:middle line:84%
+that in this case, a big
+chunk of X, most of X
+
+00:04:54.840 --> 00:04:58.590 align:middle line:84%
+is contained in a product that
+actually has a small subset.
+
+00:04:58.590 --> 00:05:05.850 align:middle line:84%
+So A prime equals
+B prime equals N.
+
+00:05:05.850 --> 00:05:07.775 align:middle line:90%
+Does the statement make sense?
+
+00:05:07.775 --> 00:05:12.450 align:middle line:90%
+
+
+00:05:12.450 --> 00:05:17.780 align:middle line:90%
+All right, cool
+
+00:05:17.780 --> 00:05:20.030 align:middle line:84%
+I'll tell you a little bit
+of history of this theorem.
+
+00:05:20.030 --> 00:05:22.680 align:middle line:90%
+
+
+00:05:22.680 --> 00:05:25.260 align:middle line:84%
+So Balog and Szemeredi
+were the first people
+
+00:05:25.260 --> 00:05:26.140 align:middle line:90%
+to think about this.
+
+00:05:26.140 --> 00:05:28.430 align:middle line:84%
+And they proved a
+version of this theorem.
+
+00:05:28.430 --> 00:05:30.700 align:middle line:84%
+But in Balog and
+Szemeredi's theorem,
+
+00:05:30.700 --> 00:05:34.500 align:middle line:84%
+this K to the minus big
+O of one was much worse.
+
+00:05:34.500 --> 00:05:39.930 align:middle line:84%
+So here there was, in
+Balog-Szemereri, there
+
+00:05:39.930 --> 00:05:44.070 align:middle line:84%
+was like 1 over
+some function of K.
+
+00:05:44.070 --> 00:05:46.530 align:middle line:84%
+And over here in
+Balog-Szemeredi,
+
+00:05:46.530 --> 00:05:49.380 align:middle line:84%
+there was some function of
+K. And this function of k
+
+00:05:49.380 --> 00:05:51.550 align:middle line:90%
+was really terrible.
+
+00:05:51.550 --> 00:05:53.870 align:middle line:84%
+It was worse than a
+tower of exponentials.
+
+00:05:53.870 --> 00:05:57.430 align:middle line:90%
+
+
+00:05:57.430 --> 00:06:01.420 align:middle line:84%
+And it followed from something
+called Szemeredi's regularity
+
+00:06:01.420 --> 00:06:04.510 align:middle line:84%
+lemma, which is a really
+important qualitative
+
+00:06:04.510 --> 00:06:06.950 align:middle line:84%
+fact in graph theory
+and combinatorics,
+
+00:06:06.950 --> 00:06:08.450 align:middle line:90%
+which has many consequences.
+
+00:06:08.450 --> 00:06:11.170 align:middle line:84%
+But it's well known that the
+bounds in Szemeredi's regularity
+
+00:06:11.170 --> 00:06:12.380 align:middle line:90%
+lemma are really terrible.
+
+00:06:12.380 --> 00:06:16.390 align:middle line:84%
+And that's where these really
+terrible bounds come from.
+
+00:06:16.390 --> 00:06:18.020 align:middle line:84%
+Now, in Szemeredi's
+regularity lemma,
+
+00:06:18.020 --> 00:06:19.978 align:middle line:84%
+those really terrible
+bounds are the best thing
+
+00:06:19.978 --> 00:06:21.370 align:middle line:90%
+that's true, more or less.
+
+00:06:21.370 --> 00:06:24.230 align:middle line:84%
+But in some of the
+applications they're not.
+
+00:06:24.230 --> 00:06:25.880 align:middle line:90%
+And Gowers revisited this.
+
+00:06:25.880 --> 00:06:28.700 align:middle line:84%
+And he proved that this thing
+with the polynomial dependence.
+
+00:06:28.700 --> 00:06:37.863 align:middle line:90%
+
+
+00:06:37.863 --> 00:06:40.280 align:middle line:84%
+So the proof that I'm going
+to show you is from the 1990s.
+
+00:06:40.280 --> 00:06:42.430 align:middle line:90%
+So it's really not that old.
+
+00:06:42.430 --> 00:06:44.180 align:middle line:90%
+It's been very influential.
+
+00:06:44.180 --> 00:06:46.520 align:middle line:90%
+And it's not that complicated.
+
+00:06:46.520 --> 00:06:49.120 align:middle line:84%
+It's clever, but it's something
+that we can do in a class
+
+00:06:49.120 --> 00:06:52.730 align:middle line:90%
+and this is a significant thing.
+
+00:06:52.730 --> 00:06:58.360 align:middle line:84%
+And I think it's something worth
+seeing and worth knowing about.
+
+00:06:58.360 --> 00:06:59.130 align:middle line:90%
+All right.
+
+00:06:59.130 --> 00:07:02.193 align:middle line:90%
+
+
+00:07:02.193 --> 00:07:04.485 align:middle line:84%
+So any questions or comments
+before we start the proof?
+
+00:07:04.485 --> 00:07:07.790 align:middle line:90%
+
+
+00:07:07.790 --> 00:07:12.250 align:middle line:84%
+So X is a subset of
+A cross B. And we're
+
+00:07:12.250 --> 00:07:17.500 align:middle line:84%
+going to visualize it
+as a bipartite graph,
+
+00:07:17.500 --> 00:07:23.230 align:middle line:84%
+and visualize X, which
+is a subset of A cross B.
+
+00:07:23.230 --> 00:07:25.810 align:middle line:84%
+So over here, I
+have A which I'll
+
+00:07:25.810 --> 00:07:27.820 align:middle line:90%
+visualize as a bunch of dots.
+
+00:07:27.820 --> 00:07:29.830 align:middle line:84%
+Over here I'll
+have B, which I'll
+
+00:07:29.830 --> 00:07:31.870 align:middle line:90%
+visualize as a bunch of dots.
+
+00:07:31.870 --> 00:07:36.730 align:middle line:84%
+And if A comma B is in X,
+then I will visualize that
+
+00:07:36.730 --> 00:07:43.360 align:middle line:84%
+by drawing an edge from
+A to B. So the set X
+
+00:07:43.360 --> 00:07:47.050 align:middle line:90%
+will look something like this.
+
+00:07:47.050 --> 00:07:51.940 align:middle line:84%
+So in this picture,
+A comma B is in X,
+
+00:07:51.940 --> 00:07:53.775 align:middle line:90%
+if and only if, I have an edge.
+
+00:07:53.775 --> 00:08:06.340 align:middle line:90%
+
+
+00:08:06.340 --> 00:08:09.910 align:middle line:84%
+And now it turns out
+to be a nice connection
+
+00:08:09.910 --> 00:08:14.140 align:middle line:84%
+between some graph
+theory things you
+
+00:08:14.140 --> 00:08:17.905 align:middle line:84%
+can see in this graph and the
+additive combinatorics of A
+
+00:08:17.905 --> 00:08:24.400 align:middle line:84%
+and B. So let me make
+a definition that P sub
+
+00:08:24.400 --> 00:08:32.950 align:middle line:84%
+K of a to b is the number
+of paths that have length K
+
+00:08:32.950 --> 00:08:38.570 align:middle line:90%
+and they go from a to b.
+
+00:08:38.570 --> 00:08:42.172 align:middle line:84%
+And their paths are in this
+graph, in the graphics.
+
+00:08:42.172 --> 00:08:49.950 align:middle line:90%
+
+
+00:08:49.950 --> 00:08:52.060 align:middle line:90%
+I had to take P3 of A comma.
+
+00:08:52.060 --> 00:08:53.950 align:middle line:84%
+B is going to be very
+important in our story.
+
+00:08:53.950 --> 00:08:56.920 align:middle line:84%
+How many ways are there to get
+from A to B in three steps?
+
+00:08:56.920 --> 00:09:03.210 align:middle line:84%
+So there may not be any
+in the picture right now.
+
+00:09:03.210 --> 00:09:04.420 align:middle line:90%
+Let me add an edge.
+
+00:09:04.420 --> 00:09:07.980 align:middle line:84%
+So there's one way to get
+from A to B in three steps.
+
+00:09:07.980 --> 00:09:12.040 align:middle line:84%
+And here's another way to get
+from A to B in three steps.
+
+00:09:12.040 --> 00:09:16.920 align:middle line:84%
+P3 of AB is counting how many
+ways there are to do that.
+
+00:09:16.920 --> 00:09:17.770 align:middle line:90%
+All right.
+
+00:09:17.770 --> 00:09:19.715 align:middle line:90%
+So here's a lemma.
+
+00:09:19.715 --> 00:09:26.667 align:middle line:90%
+
+
+00:09:26.667 --> 00:09:28.000 align:middle line:90%
+AUDIENCE: Can I have a question?
+
+00:09:28.000 --> 00:09:28.500 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:09:28.500 --> 00:09:30.570 align:middle line:84%
+AUDIENCE: Are the [INAUDIBLE]
+allowed to repeat notes?
+
+00:09:30.570 --> 00:09:32.350 align:middle line:84%
+LAWRENCE GUTH: They are
+allowed to repeat notes.
+
+00:09:32.350 --> 00:09:33.040 align:middle line:90%
+Yeah, you're right.
+
+00:09:33.040 --> 00:09:35.165 align:middle line:84%
+So they might have been
+some I didn't count before.
+
+00:09:35.165 --> 00:09:38.610 align:middle line:84%
+So that is also a path of
+length 3 from A to B. Yeah.
+
+00:09:38.610 --> 00:09:40.360 align:middle line:90%
+Thank you.
+
+00:09:40.360 --> 00:09:40.860 align:middle line:90%
+Yeah.
+
+00:09:40.860 --> 00:09:43.420 align:middle line:90%
+
+
+00:09:43.420 --> 00:09:51.940 align:middle line:84%
+So if I have A prime
+in A and B prime in B,
+
+00:09:51.940 --> 00:09:54.130 align:middle line:84%
+if you look where
+we want to go, we'd
+
+00:09:54.130 --> 00:09:56.800 align:middle line:84%
+like to eventually
+prove that for some
+
+00:09:56.800 --> 00:10:00.070 align:middle line:84%
+sets that we haven't found
+yet that A prime plus B
+
+00:10:00.070 --> 00:10:01.100 align:middle line:90%
+prime is small.
+
+00:10:01.100 --> 00:10:04.810 align:middle line:84%
+So how are we going
+to prove that?
+
+00:10:04.810 --> 00:10:07.420 align:middle line:84%
+A prime plus B prime, the
+size of A prime plus B prime
+
+00:10:07.420 --> 00:10:11.770 align:middle line:84%
+is going to be related to the
+paths of length 3 in this graph.
+
+00:10:11.770 --> 00:10:17.800 align:middle line:84%
+So if I have this and if for
+every pair A and B, A and A
+
+00:10:17.800 --> 00:10:19.065 align:middle line:90%
+prime, and B and B prime--
+
+00:10:19.065 --> 00:10:22.300 align:middle line:90%
+
+
+00:10:22.300 --> 00:10:24.210 align:middle line:84%
+there are lots of
+paths between them.
+
+00:10:24.210 --> 00:10:29.290 align:middle line:90%
+
+
+00:10:29.290 --> 00:10:32.145 align:middle line:84%
+Then A prime plus B
+prime isn't very big.
+
+00:10:32.145 --> 00:10:35.680 align:middle line:90%
+
+
+00:10:35.680 --> 00:10:40.610 align:middle line:84%
+It's less than pi 1
+of X cubed over p.
+
+00:10:40.610 --> 00:10:46.460 align:middle line:90%
+
+
+00:10:46.460 --> 00:10:49.200 align:middle line:90%
+So let's prove this lemma.
+
+00:10:49.200 --> 00:11:02.120 align:middle line:90%
+
+
+00:11:02.120 --> 00:11:02.760 align:middle line:90%
+All right.
+
+00:11:02.760 --> 00:11:09.620 align:middle line:84%
+So let's visualize a path
+of length 3 from A to B.
+
+00:11:09.620 --> 00:11:11.440 align:middle line:90%
+So it looks like this.
+
+00:11:11.440 --> 00:11:15.800 align:middle line:90%
+
+
+00:11:15.800 --> 00:11:17.540 align:middle line:90%
+There's a path of length 3.
+
+00:11:17.540 --> 00:11:19.320 align:middle line:90%
+And what is this telling us?
+
+00:11:19.320 --> 00:11:25.260 align:middle line:84%
+Well, this edge tells me that
+A comma B1 is in x, right?
+
+00:11:25.260 --> 00:11:29.750 align:middle line:84%
+Hence therefore, A
+plus B1 is in pi 1
+
+00:11:29.750 --> 00:11:37.670 align:middle line:84%
+of X. And this edge tells me
+similarly that A1 plus B1 is
+
+00:11:37.670 --> 00:11:41.740 align:middle line:84%
+in pi 1 of X. And this
+edge tells me similarly
+
+00:11:41.740 --> 00:11:49.720 align:middle line:90%
+that A1 plus B is in pi 1 of X.
+
+00:11:49.720 --> 00:11:54.400 align:middle line:84%
+Now I'm interested in
+A plus B. And A plus B
+
+00:11:54.400 --> 00:12:04.030 align:middle line:84%
+is related to these guys, and
+so we can write A plus B as A
+
+00:12:04.030 --> 00:12:18.730 align:middle line:84%
+plus B1 minus A1 plus B1 plus
+A1 plus B. Did I do this right?
+
+00:12:18.730 --> 00:12:24.010 align:middle line:84%
+So A plus B, the A1's
+cancel and the B1's cancel.
+
+00:12:24.010 --> 00:12:29.770 align:middle line:84%
+And these three characters, they
+correspond to these three edges.
+
+00:12:29.770 --> 00:12:39.900 align:middle line:84%
+So let's call this
+Z1, Z2, and Z3,
+
+00:12:39.900 --> 00:12:45.350 align:middle line:84%
+So we have seen that
+the number of triples--
+
+00:12:45.350 --> 00:12:53.930 align:middle line:84%
+Z1, Z2, Z3, and pi 1 of
+x cubed, so that A plus B
+
+00:12:53.930 --> 00:12:58.970 align:middle line:90%
+is Z1 minus Z2 plus Z3.
+
+00:12:58.970 --> 00:13:18.182 align:middle line:84%
+That number of triples
+is at least P3 A to B.
+
+00:13:18.182 --> 00:13:22.530 align:middle line:84%
+So if there are a lot of
+paths from A to B of length 3,
+
+00:13:22.530 --> 00:13:27.170 align:middle line:84%
+then there are a lot of ways of
+writing A plus B by combining
+
+00:13:27.170 --> 00:13:33.385 align:middle line:90%
+guys in pi 1 of X. All right.
+
+00:13:33.385 --> 00:13:42.340 align:middle line:90%
+
+
+00:13:42.340 --> 00:13:45.460 align:middle line:84%
+And we're supposing that P3
+of a, b is always at least P.
+
+00:13:45.460 --> 00:13:46.510 align:middle line:90%
+So we have this.
+
+00:13:46.510 --> 00:13:50.210 align:middle line:90%
+
+
+00:13:50.210 --> 00:13:52.590 align:middle line:84%
+And then we can
+conclude from this
+
+00:13:52.590 --> 00:14:02.790 align:middle line:84%
+that the size of A plus B times
+P is at most pi 1 of X cubed.
+
+00:14:02.790 --> 00:14:06.310 align:middle line:84%
+Because for every
+sum in A plus B,
+
+00:14:06.310 --> 00:14:11.370 align:middle line:84%
+I can write this sum as Z1
+minus Z2 plus Z3 at least
+
+00:14:11.370 --> 00:14:13.350 align:middle line:90%
+p different ways.
+
+00:14:13.350 --> 00:14:16.350 align:middle line:84%
+And for each Z1,
+Z2, and Z3, this
+
+00:14:16.350 --> 00:14:18.940 align:middle line:84%
+is only going to give
+me one number when I do.
+
+00:14:18.940 --> 00:14:21.862 align:middle line:90%
+
+
+00:14:21.862 --> 00:14:23.700 align:middle line:84%
+AUDIENCE: That's A prime
+and B prime, right?
+
+00:14:23.700 --> 00:14:25.867 align:middle line:84%
+LAWRENCE GUTH: Those are A
+prime and B prime, right.
+
+00:14:25.867 --> 00:14:32.600 align:middle line:90%
+
+
+00:14:32.600 --> 00:14:34.642 align:middle line:84%
+So I'm digesting
+along with all of you.
+
+00:14:34.642 --> 00:14:36.100 align:middle line:84%
+And as I've been
+reading the proof,
+
+00:14:36.100 --> 00:14:37.470 align:middle line:84%
+I've been trying to
+figure out how did people
+
+00:14:37.470 --> 00:14:39.440 align:middle line:84%
+think to do this and do
+these different things.
+
+00:14:39.440 --> 00:14:42.772 align:middle line:90%
+
+
+00:14:42.772 --> 00:14:47.790 align:middle line:84%
+So let's try to give
+some big-picture strategy
+
+00:14:47.790 --> 00:14:51.210 align:middle line:90%
+while we might look at this.
+
+00:14:51.210 --> 00:14:53.590 align:middle line:90%
+So pi 1 of X is small.
+
+00:14:53.590 --> 00:14:56.520 align:middle line:84%
+That tells us that there
+are a lot of coincidences
+
+00:14:56.520 --> 00:14:59.400 align:middle line:84%
+where you can write
+a number as A plus B
+
+00:14:59.400 --> 00:15:02.460 align:middle line:90%
+in a lot of different ways.
+
+00:15:02.460 --> 00:15:04.370 align:middle line:90%
+And how might that be helpful?
+
+00:15:04.370 --> 00:15:15.180 align:middle line:90%
+
+
+00:15:15.180 --> 00:15:17.470 align:middle line:84%
+So the fact that
+pi 1 of X is small,
+
+00:15:17.470 --> 00:15:21.030 align:middle line:84%
+that tells us that there are
+going to be a lot of edges.
+
+00:15:21.030 --> 00:15:21.880 align:middle line:90%
+What do I say?
+
+00:15:21.880 --> 00:15:30.850 align:middle line:90%
+
+
+00:15:30.850 --> 00:15:34.110 align:middle line:84%
+So by assumption there are a
+lot of edges in this graph.
+
+00:15:34.110 --> 00:15:36.240 align:middle line:84%
+That's one of our
+hypotheses that X is big.
+
+00:15:36.240 --> 00:15:37.990 align:middle line:84%
+So there are a lot of
+edges in this graph.
+
+00:15:37.990 --> 00:15:43.830 align:middle line:84%
+And therefore there
+are lots of this paths
+
+00:15:43.830 --> 00:15:44.920 align:middle line:90%
+of length 3 in this graph.
+
+00:15:44.920 --> 00:15:47.400 align:middle line:90%
+We'll figure that out later.
+
+00:15:47.400 --> 00:15:49.770 align:middle line:84%
+And when there are
+many different paths
+
+00:15:49.770 --> 00:15:52.270 align:middle line:84%
+of length 3 between
+these two guys,
+
+00:15:52.270 --> 00:15:54.180 align:middle line:84%
+then it means that
+there are lots
+
+00:15:54.180 --> 00:16:01.200 align:middle line:84%
+of ways of representing A plus B
+by combining guys in pi 1 of X.
+
+00:16:01.200 --> 00:16:03.520 align:middle line:84%
+On the other hand, if
+pi 1 of X is small,
+
+00:16:03.520 --> 00:16:05.765 align:middle line:84%
+then that should make
+this not too large.
+
+00:16:05.765 --> 00:16:09.390 align:middle line:90%
+
+
+00:16:09.390 --> 00:16:10.925 align:middle line:90%
+OK.
+
+00:16:10.925 --> 00:16:12.558 align:middle line:84%
+I don't think that
+really explained
+
+00:16:12.558 --> 00:16:14.350 align:middle line:84%
+how somebody might have
+thought to do this,
+
+00:16:14.350 --> 00:16:17.795 align:middle line:84%
+but it's fairly short,
+let's take a second and see.
+
+00:16:17.795 --> 00:16:21.060 align:middle line:90%
+
+
+00:16:21.060 --> 00:16:23.100 align:middle line:84%
+I'll let you digest
+a little bit and see
+
+00:16:23.100 --> 00:16:25.320 align:middle line:90%
+if people have anything to add.
+
+00:16:25.320 --> 00:16:27.000 align:middle line:90%
+Yeah?
+
+00:16:27.000 --> 00:16:30.940 align:middle line:84%
+AUDIENCE: The idea of the paths
+of three different things,
+
+00:16:30.940 --> 00:16:34.130 align:middle line:84%
+looks kind of like you're
+taking A minus A plus A
+
+00:16:34.130 --> 00:16:38.750 align:middle line:84%
+and being similar to the kind
+of continuous structure idea.
+
+00:16:38.750 --> 00:16:43.530 align:middle line:84%
+Is there a length
+to those theorems?
+
+00:16:43.530 --> 00:16:46.700 align:middle line:84%
+LAWRENCE GUTH: Yeah so the
+question is this felt a little
+
+00:16:46.700 --> 00:16:49.610 align:middle line:84%
+bit like [? plunica ?]
+and is there a link
+
+00:16:49.610 --> 00:16:53.300 align:middle line:90%
+to the [? plunicane ?] equality.
+
+00:16:53.300 --> 00:16:58.978 align:middle line:90%
+Maybe Yeah?
+
+00:16:58.978 --> 00:17:01.520 align:middle line:84%
+AUDIENCE: Is there something
+special about paths of length 3?
+
+00:17:01.520 --> 00:17:05.522 align:middle line:84%
+It seems like this should work
+for any odd number of paths.
+
+00:17:05.522 --> 00:17:06.480 align:middle line:90%
+LAWRENCE GUTH: Yeah OK.
+
+00:17:06.480 --> 00:17:09.000 align:middle line:84%
+So the question is, why did
+we pick paths of length three.
+
+00:17:09.000 --> 00:17:11.990 align:middle line:84%
+There's really nothing special
+about paths of length 3.
+
+00:17:11.990 --> 00:17:16.130 align:middle line:84%
+It would be some similar
+estimate for any length.
+
+00:17:16.130 --> 00:17:20.527 align:middle line:84%
+And 3 is the length where the
+later part of the proof, we
+
+00:17:20.527 --> 00:17:21.610 align:middle line:90%
+managed to get it to work.
+
+00:17:21.610 --> 00:17:29.740 align:middle line:90%
+
+
+00:17:29.740 --> 00:17:30.240 align:middle line:90%
+OK.
+
+00:17:30.240 --> 00:17:33.000 align:middle line:90%
+
+
+00:17:33.000 --> 00:17:37.180 align:middle line:84%
+So next, let's think a
+bit about how many edges
+
+00:17:37.180 --> 00:17:39.180 align:middle line:84%
+there are in this graph
+and how many paths there
+
+00:17:39.180 --> 00:17:41.640 align:middle line:84%
+are of length 2, and how many
+paths there are of length 3,
+
+00:17:41.640 --> 00:17:43.860 align:middle line:90%
+and stuff.
+
+00:17:43.860 --> 00:17:48.090 align:middle line:84%
+Let's just orient
+ourselves to this graph.
+
+00:17:48.090 --> 00:18:03.240 align:middle line:84%
+So OK, I'll call this some basic
+estimates and PK, PK of AB.
+
+00:18:03.240 --> 00:18:04.770 align:middle line:84%
+Actually, let me
+frame it this way.
+
+00:18:04.770 --> 00:18:07.210 align:middle line:84%
+Let me state a lemma
+about paths of length 3.
+
+00:18:07.210 --> 00:18:09.820 align:middle line:84%
+And then we'll start to
+do some things about that.
+
+00:18:09.820 --> 00:18:12.180 align:middle line:84%
+So to finish the proof of
+Balog-Szemeredi-Gowers,
+
+00:18:12.180 --> 00:18:13.920 align:middle line:90%
+there's a key lemma.
+
+00:18:13.920 --> 00:18:17.460 align:middle line:84%
+And it's just a lemma
+in graph theory.
+
+00:18:17.460 --> 00:18:20.820 align:middle line:84%
+So all of the additive
+structure went
+
+00:18:20.820 --> 00:18:24.600 align:middle line:84%
+into writing this and
+noticing that things cancel.
+
+00:18:24.600 --> 00:18:26.220 align:middle line:84%
+And now we have our
+graph theory lemma
+
+00:18:26.220 --> 00:18:28.600 align:middle line:84%
+about paths of
+length 3 in a graph.
+
+00:18:28.600 --> 00:18:32.990 align:middle line:84%
+So the main lemma
+says that if X is in.
+
+00:18:32.990 --> 00:18:38.290 align:middle line:84%
+A cross B that X is bigger
+than K inverse times the size
+
+00:18:38.290 --> 00:18:41.920 align:middle line:90%
+of A times the size of B.
+
+00:18:41.920 --> 00:18:47.220 align:middle line:84%
+Then there are big sets with
+lots of paths between them.
+
+00:18:47.220 --> 00:18:50.290 align:middle line:90%
+
+
+00:18:50.290 --> 00:18:55.840 align:middle line:84%
+So then there exists A
+prime in A and B prime
+
+00:18:55.840 --> 00:19:02.860 align:middle line:84%
+in B so that if
+we define X prime
+
+00:19:02.860 --> 00:19:06.310 align:middle line:84%
+is the part of X in A
+prime cross B prime,
+
+00:19:06.310 --> 00:19:08.040 align:middle line:90%
+then X prime is pretty big.
+
+00:19:08.040 --> 00:19:15.850 align:middle line:90%
+
+
+00:19:15.850 --> 00:19:22.390 align:middle line:84%
+And for every A and
+A prime and B and B
+
+00:19:22.390 --> 00:19:30.390 align:middle line:84%
+prime the number of length 3
+paths from A to B is at least K
+
+00:19:30.390 --> 00:19:39.520 align:middle line:90%
+to the minus O of 1 A B.
+
+00:19:39.520 --> 00:19:42.327 align:middle line:84%
+So if you combine this
+lemma and this key lemma,
+
+00:19:42.327 --> 00:19:44.910 align:middle line:84%
+and just put them together, you
+get the Balog-Szemeredi-Gowers
+
+00:19:44.910 --> 00:19:46.020 align:middle line:90%
+theorem.
+
+00:19:46.020 --> 00:19:49.560 align:middle line:84%
+And the reason
+that 3 appears here
+
+00:19:49.560 --> 00:19:53.315 align:middle line:84%
+is it's the smallest number
+where this key lemma is true.
+
+00:19:53.315 --> 00:20:01.020 align:middle line:90%
+
+
+00:20:01.020 --> 00:20:07.560 align:middle line:84%
+So I'll let you in your mind
+just fill in this is our P,
+
+00:20:07.560 --> 00:20:12.703 align:middle line:84%
+and fill it in for P over here,
+and you do a little algebra,
+
+00:20:12.703 --> 00:20:14.620 align:middle line:84%
+and that's the
+Balog-Szemeredi-Gowers theorem.
+
+00:20:14.620 --> 00:20:35.780 align:middle line:90%
+
+
+00:20:35.780 --> 00:20:37.450 align:middle line:84%
+So if it's OK with
+everybody, I'm
+
+00:20:37.450 --> 00:20:39.470 align:middle line:84%
+going to erase this and
+the rest of the class,
+
+00:20:39.470 --> 00:20:42.143 align:middle line:84%
+we just focus on proving
+this lemma from graph theory,
+
+00:20:42.143 --> 00:20:43.560 align:middle line:84%
+with the rest of
+the proof of BSG.
+
+00:20:43.560 --> 00:20:59.200 align:middle line:90%
+
+
+00:20:59.200 --> 00:21:04.328 align:middle line:84%
+So let's orient ourselves a
+little bit about how many paths
+
+00:21:04.328 --> 00:21:06.370 align:middle line:84%
+there are in this graph
+between different points,
+
+00:21:06.370 --> 00:21:08.380 align:middle line:84%
+and prove some
+simple things first
+
+00:21:08.380 --> 00:21:11.530 align:middle line:90%
+before we prove this lemma.
+
+00:21:11.530 --> 00:21:21.568 align:middle line:84%
+So I'll call this a simple
+bounds about PK a, b.
+
+00:21:21.568 --> 00:21:33.350 align:middle line:90%
+
+
+00:21:33.350 --> 00:21:33.850 align:middle line:90%
+All right.
+
+00:21:33.850 --> 00:21:36.510 align:middle line:84%
+So first let's think
+about how many edges
+
+00:21:36.510 --> 00:21:38.340 align:middle line:90%
+there are in this graph.
+
+00:21:38.340 --> 00:21:43.500 align:middle line:84%
+So the number of
+edges is the size
+
+00:21:43.500 --> 00:21:50.730 align:middle line:84%
+of X, which is at
+least K inverse A B.
+
+00:21:50.730 --> 00:21:53.490 align:middle line:84%
+And then let's think
+about how many paths there
+
+00:21:53.490 --> 00:21:54.670 align:middle line:90%
+are of different lengths.
+
+00:21:54.670 --> 00:21:57.960 align:middle line:84%
+So if I write PK
+without an A or B,
+
+00:21:57.960 --> 00:22:03.120 align:middle line:84%
+this is the number
+of paths of length K,
+
+00:22:03.120 --> 00:22:05.290 align:middle line:84%
+and they could start
+or end anywhere.
+
+00:22:05.290 --> 00:22:07.350 align:middle line:84%
+But I will just
+make the restriction
+
+00:22:07.350 --> 00:22:09.330 align:middle line:84%
+that they start
+in A. It turns out
+
+00:22:09.330 --> 00:22:12.180 align:middle line:84%
+it's in a bipartite
+graph It's simpler
+
+00:22:12.180 --> 00:22:15.600 align:middle line:90%
+to count things like this.
+
+00:22:15.600 --> 00:22:21.260 align:middle line:84%
+So P1 is just the number
+of edges in the graph,
+
+00:22:21.260 --> 00:22:23.510 align:middle line:84%
+paths of length 1 are
+just individual edges.
+
+00:22:23.510 --> 00:22:35.500 align:middle line:84%
+So this is the size of X, which
+is at least K inverse A B. Now
+
+00:22:35.500 --> 00:22:45.110 align:middle line:84%
+a helpful thing to talk about is
+the neighborhood of any vertex.
+
+00:22:45.110 --> 00:22:48.295 align:middle line:84%
+So if I have a
+vertex A over here.
+
+00:22:48.295 --> 00:22:52.250 align:middle line:84%
+This is A and this is B.
+I have vertex A over here.
+
+00:22:52.250 --> 00:22:54.880 align:middle line:84%
+There are some edges
+coming out of it.
+
+00:22:54.880 --> 00:22:59.920 align:middle line:84%
+And this set here is called
+the neighborhood of A.
+
+00:22:59.920 --> 00:23:02.260 align:middle line:84%
+And you can do it in the
+other directions also.
+
+00:23:02.260 --> 00:23:03.220 align:middle line:84%
+It's the neighborhood
+of A. Yeah?
+
+00:23:03.220 --> 00:23:04.690 align:middle line:84%
+AUDIENCE: There's two
+different K's up here, right?
+
+00:23:04.690 --> 00:23:06.470 align:middle line:84%
+LAWRENCE GUTH: There
+are two different K's.
+
+00:23:06.470 --> 00:23:07.845 align:middle line:84%
+Yeah there are
+two different K's.
+
+00:23:07.845 --> 00:23:09.520 align:middle line:90%
+I apologize.
+
+00:23:09.520 --> 00:23:10.060 align:middle line:90%
+Yeah.
+
+00:23:10.060 --> 00:23:11.140 align:middle line:90%
+Yeah.
+
+00:23:11.140 --> 00:23:11.820 align:middle line:90%
+Let's do this.
+
+00:23:11.820 --> 00:23:24.917 align:middle line:90%
+
+
+00:23:24.917 --> 00:23:31.500 align:middle line:90%
+So P2, so that's the size of P1.
+
+00:23:31.500 --> 00:23:40.400 align:middle line:84%
+And then if I were to take
+the average A and A of P1 of A
+
+00:23:40.400 --> 00:23:46.100 align:middle line:84%
+to anywhere, that would be
+P1 divided by the size of A.
+
+00:23:46.100 --> 00:23:50.840 align:middle line:84%
+And so that would be at least
+K inverse times the size of P.
+
+00:23:50.840 --> 00:23:53.780 align:middle line:84%
+So this is the
+average degree of one
+
+00:23:53.780 --> 00:23:55.710 align:middle line:90%
+of these vertices on the left.
+
+00:23:55.710 --> 00:23:58.430 align:middle line:84%
+And it's at least
+a decent fraction
+
+00:23:58.430 --> 00:24:01.730 align:middle line:84%
+of all the vertices
+on the right.
+
+00:24:01.730 --> 00:24:02.550 align:middle line:90%
+All right.
+
+00:24:02.550 --> 00:24:05.900 align:middle line:84%
+Now let's think about
+paths of length 2.
+
+00:24:05.900 --> 00:24:12.850 align:middle line:84%
+So P2, a path of length
+2 looks like this.
+
+00:24:12.850 --> 00:24:18.430 align:middle line:90%
+
+
+00:24:18.430 --> 00:24:21.100 align:middle line:84%
+So there's some guy B
+that it goes through here,
+
+00:24:21.100 --> 00:24:23.590 align:middle line:84%
+and then there
+has to be somebody
+
+00:24:23.590 --> 00:24:25.870 align:middle line:84%
+who goes to B and
+somebody who comes from B.
+
+00:24:25.870 --> 00:24:29.560 align:middle line:84%
+So this is the sum over b
+of the size of neighborhood
+
+00:24:29.560 --> 00:24:30.300 align:middle line:90%
+of b squared.
+
+00:24:30.300 --> 00:24:35.020 align:middle line:90%
+
+
+00:24:35.020 --> 00:24:37.480 align:middle line:84%
+Well, if I just
+were to take the sum
+
+00:24:37.480 --> 00:24:39.440 align:middle line:84%
+over b of the size
+of neighborhood of b,
+
+00:24:39.440 --> 00:24:41.380 align:middle line:90%
+that would count the edges.
+
+00:24:41.380 --> 00:24:44.140 align:middle line:84%
+So whenever I'm interested in
+the sum of somebody squared
+
+00:24:44.140 --> 00:24:46.370 align:middle line:84%
+and I have a nice formula
+for the sum of somebody,
+
+00:24:46.370 --> 00:24:49.690 align:middle line:84%
+then it makes sense to
+apply Cauchy-Schwarz.
+
+00:24:49.690 --> 00:24:51.710 align:middle line:84%
+So if you apply
+Cauchy-Schwarz here,
+
+00:24:51.710 --> 00:24:56.560 align:middle line:84%
+you get the sum of N
+of b quantity squared
+
+00:24:56.560 --> 00:24:59.770 align:middle line:90%
+over the size of b.
+
+00:24:59.770 --> 00:25:05.380 align:middle line:84%
+So that's at least K inverse
+size of A size of B bar
+
+00:25:05.380 --> 00:25:11.080 align:middle line:84%
+all squared over the size of
+B. And that works out to k
+
+00:25:11.080 --> 00:25:18.900 align:middle line:90%
+to the minus 2 A squared B.
+
+00:25:18.900 --> 00:25:20.640 align:middle line:90%
+Now that kind of makes sense.
+
+00:25:20.640 --> 00:25:23.270 align:middle line:84%
+So for reference, if we had
+the complete graph with all
+
+00:25:23.270 --> 00:25:25.670 align:middle line:84%
+the edges, the number
+of paths of length 2
+
+00:25:25.670 --> 00:25:27.950 align:middle line:84%
+would be A squared B.
+You pick somebody in A,
+
+00:25:27.950 --> 00:25:30.650 align:middle line:84%
+you pick somebody in B,
+you pick somebody in A.
+
+00:25:30.650 --> 00:25:33.860 align:middle line:84%
+And so this says that the
+fraction of them is at least K
+
+00:25:33.860 --> 00:25:36.080 align:middle line:90%
+to the minus 2.
+
+00:25:36.080 --> 00:25:38.360 align:middle line:84%
+And that makes sense because
+the fraction of edges
+
+00:25:38.360 --> 00:25:39.750 align:middle line:90%
+is K to the minus 1.
+
+00:25:39.750 --> 00:25:43.010 align:middle line:84%
+And we want two different
+edges to both be in our path.
+
+00:25:43.010 --> 00:25:46.970 align:middle line:84%
+So that makes K to the minus
+2 a good reference point.
+
+00:25:46.970 --> 00:25:48.780 align:middle line:84%
+And it's not necessarily
+equal to that.
+
+00:25:48.780 --> 00:25:50.238 align:middle line:84%
+It's greater than
+or equal to that.
+
+00:25:50.238 --> 00:25:52.950 align:middle line:84%
+And the reason is our edges
+may not be distributed evenly.
+
+00:25:52.950 --> 00:25:56.760 align:middle line:84%
+So if some vertices have
+way more edges than others,
+
+00:25:56.760 --> 00:25:59.290 align:middle line:84%
+that will cause the number of
+paths of length 2 to go up.
+
+00:25:59.290 --> 00:26:02.840 align:middle line:90%
+
+
+00:26:02.840 --> 00:26:05.220 align:middle line:84%
+And again, we can
+take the average.
+
+00:26:05.220 --> 00:26:08.870 align:middle line:84%
+So if I were to take the
+average over A1 and A2
+
+00:26:08.870 --> 00:26:12.450 align:middle line:84%
+of the number of
+paths from a1 to a2,
+
+00:26:12.450 --> 00:26:15.500 align:middle line:84%
+that would be at least I
+would divide by A squared.
+
+00:26:15.500 --> 00:26:22.120 align:middle line:90%
+So K to the minus 2 times B.
+
+00:26:22.120 --> 00:26:27.170 align:middle line:84%
+As an exercise you can keep
+going to longer lengths.
+
+00:26:27.170 --> 00:26:34.546 align:middle line:84%
+So exercise is that P3 is
+at least K to the minus 3
+
+00:26:34.546 --> 00:26:37.780 align:middle line:84%
+A squared B squared, A
+squared B squared would
+
+00:26:37.780 --> 00:26:40.700 align:middle line:84%
+be the number of paths of
+length 3 in the complete graph,
+
+00:26:40.700 --> 00:26:43.300 align:middle line:84%
+and at least K to the
+minus 3, a fraction of them
+
+00:26:43.300 --> 00:26:44.745 align:middle line:90%
+are paths in our smaller graph.
+
+00:26:44.745 --> 00:26:47.440 align:middle line:90%
+
+
+00:26:47.440 --> 00:26:53.080 align:middle line:84%
+And that means that if I
+take the average on A and B
+
+00:26:53.080 --> 00:26:57.610 align:middle line:84%
+of the number of paths of length
+3 from a to b, that's at least K
+
+00:26:57.610 --> 00:27:08.560 align:middle line:84%
+to the minus 3 times A times B.
+So if I pick two random vertices
+
+00:27:08.560 --> 00:27:11.550 align:middle line:84%
+and I count the number of
+paths of length 3, on average,
+
+00:27:11.550 --> 00:27:14.280 align:middle line:90%
+it's at least this big.
+
+00:27:14.280 --> 00:27:17.382 align:middle line:84%
+Now let's compare
+that to the key lemma.
+
+00:27:17.382 --> 00:27:28.410 align:middle line:84%
+The key Lemma says that I can
+find some substantial subsets,
+
+00:27:28.410 --> 00:27:32.420 align:middle line:84%
+so that within these
+substantial subsets,
+
+00:27:32.420 --> 00:27:35.120 align:middle line:84%
+the number of paths
+of length 3 is always
+
+00:27:35.120 --> 00:27:41.300 align:middle line:84%
+K to the minus 100
+size of A size of B.
+
+00:27:41.300 --> 00:27:47.840 align:middle line:84%
+So this number here is a
+small fraction of the average.
+
+00:27:47.840 --> 00:27:50.660 align:middle line:84%
+I'm looking for pairs where
+the number of paths of length 3
+
+00:27:50.660 --> 00:27:53.130 align:middle line:84%
+is at least a small
+fraction of the average.
+
+00:27:53.130 --> 00:27:56.780 align:middle line:90%
+
+
+00:27:56.780 --> 00:27:58.520 align:middle line:84%
+But the thing that
+makes this tricky
+
+00:27:58.520 --> 00:28:02.120 align:middle line:84%
+is I don't want just like
+some A's and B's or most
+
+00:28:02.120 --> 00:28:04.670 align:middle line:84%
+of the A's and B's to be
+at least a small fraction
+
+00:28:04.670 --> 00:28:05.310 align:middle line:90%
+of the average.
+
+00:28:05.310 --> 00:28:09.430 align:middle line:84%
+I want actually, for every
+A and B in our subset,
+
+00:28:09.430 --> 00:28:12.670 align:middle line:84%
+I want them to be at least
+some fraction of the average.
+
+00:28:12.670 --> 00:28:24.510 align:middle line:90%
+
+
+00:28:24.510 --> 00:28:30.430 align:middle line:84%
+So now we're eventually going
+to go up to paths of length 3.
+
+00:28:30.430 --> 00:28:32.460 align:middle line:90%
+Yeah?
+
+00:28:32.460 --> 00:28:36.460 align:middle line:84%
+AUDIENCE: For this one, we don't
+need them to be all of them?
+
+00:28:36.460 --> 00:28:42.540 align:middle line:84%
+If 80% of A cross B had a
+lot of paths between them,
+
+00:28:42.540 --> 00:28:46.380 align:middle line:84%
+then could we still not
+have this [INAUDIBLE] hold
+
+00:28:46.380 --> 00:28:49.140 align:middle line:90%
+for just like a worse bound?
+
+00:28:49.140 --> 00:28:52.500 align:middle line:90%
+LAWRENCE GUTH: Great, OK.
+
+00:28:52.500 --> 00:28:59.830 align:middle line:84%
+So the question is in
+this Lemma as written,
+
+00:28:59.830 --> 00:29:03.970 align:middle line:84%
+we have assumed that for every
+A and B in A prime and B prime,
+
+00:29:03.970 --> 00:29:08.040 align:middle line:84%
+we have a lot of paths, which
+then matches the key lemma.
+
+00:29:08.040 --> 00:29:11.640 align:middle line:84%
+But the question is, did we
+really need that in this lemma?
+
+00:29:11.640 --> 00:29:15.890 align:middle line:84%
+Or could we have relaxed
+a little bit over here?
+
+00:29:15.890 --> 00:29:20.720 align:middle line:84%
+So suppose instead of this lemma
+that we only had this for most
+
+00:29:20.720 --> 00:29:21.490 align:middle line:90%
+A's and B's.
+
+00:29:21.490 --> 00:29:24.110 align:middle line:90%
+
+
+00:29:24.110 --> 00:29:26.330 align:middle line:90%
+So let's do a little experiment.
+
+00:29:26.330 --> 00:29:28.906 align:middle line:84%
+So in blue, I'll
+put an experiment.
+
+00:29:28.906 --> 00:29:35.120 align:middle line:90%
+
+
+00:29:35.120 --> 00:29:37.940 align:middle line:84%
+And the experiment is
+that instead of this, I'm
+
+00:29:37.940 --> 00:29:45.800 align:middle line:84%
+going to say for 90% of
+pairs, a prime, b prime
+
+00:29:45.800 --> 00:29:49.280 align:middle line:90%
+and A prime cross B prime.
+
+00:29:49.280 --> 00:29:49.830 align:middle line:90%
+OK.
+
+00:29:49.830 --> 00:29:51.288 align:middle line:84%
+So now let's see
+what would happen.
+
+00:29:51.288 --> 00:30:13.530 align:middle line:90%
+
+
+00:30:13.530 --> 00:30:21.510 align:middle line:84%
+If I take an element of this
+sum before I knew that--
+
+00:30:21.510 --> 00:30:26.705 align:middle line:84%
+so let's say a prime plus
+b prime is in this sum.
+
+00:30:26.705 --> 00:30:30.540 align:middle line:90%
+
+
+00:30:30.540 --> 00:30:34.910 align:middle line:84%
+And then I can say that then
+I'm going to use this thing.
+
+00:30:34.910 --> 00:30:40.950 align:middle line:90%
+
+
+00:30:40.950 --> 00:30:47.910 align:middle line:84%
+Now if I knew that 99%
+of the guys in this sum
+
+00:30:47.910 --> 00:30:51.930 align:middle line:84%
+could be represented by a
+good pair, a prime, b prime,
+
+00:30:51.930 --> 00:30:54.270 align:middle line:90%
+I would be happy.
+
+00:30:54.270 --> 00:30:58.770 align:middle line:84%
+But that's not what I have
+written in my experiment.
+
+00:30:58.770 --> 00:31:03.130 align:middle line:84%
+So my anxiety is 90% of the a
+primes and b primes are good.
+
+00:31:03.130 --> 00:31:05.440 align:middle line:90%
+They have lots of paths.
+
+00:31:05.440 --> 00:31:06.980 align:middle line:90%
+10% of them are bad.
+
+00:31:06.980 --> 00:31:09.850 align:middle line:84%
+But then I take the
+sum set, and the 90%
+
+00:31:09.850 --> 00:31:13.972 align:middle line:84%
+produce a few sums, but the
+10% produce a ton of sums.
+
+00:31:13.972 --> 00:31:14.805 align:middle line:90%
+I'll make a picture.
+
+00:31:14.805 --> 00:31:18.040 align:middle line:90%
+
+
+00:31:18.040 --> 00:31:22.660 align:middle line:84%
+So here is A prime
+cross B prime.
+
+00:31:22.660 --> 00:31:25.300 align:middle line:90%
+This part of it is good.
+
+00:31:25.300 --> 00:31:29.650 align:middle line:90%
+Good means that.
+
+00:31:29.650 --> 00:31:33.490 align:middle line:90%
+And here's the 10% That's bad.
+
+00:31:33.490 --> 00:31:35.936 align:middle line:90%
+Then I take the sum operation.
+
+00:31:35.936 --> 00:31:39.640 align:middle line:90%
+
+
+00:31:39.640 --> 00:31:41.530 align:middle line:90%
+But now life changes.
+
+00:31:41.530 --> 00:31:43.485 align:middle line:90%
+So pi 1 of good is tiny.
+
+00:31:43.485 --> 00:31:48.850 align:middle line:90%
+
+
+00:31:48.850 --> 00:31:51.015 align:middle line:90%
+Pi one of bad is huge.
+
+00:31:51.015 --> 00:31:57.670 align:middle line:90%
+
+
+00:31:57.670 --> 00:31:58.990 align:middle line:90%
+All right.
+
+00:31:58.990 --> 00:32:01.750 align:middle line:90%
+And now I go down here.
+
+00:32:01.750 --> 00:32:06.880 align:middle line:84%
+And for each of these
+sums, if the sums are good,
+
+00:32:06.880 --> 00:32:08.980 align:middle line:90%
+they get counted many times.
+
+00:32:08.980 --> 00:32:11.190 align:middle line:90%
+If sums are bad, they don't.
+
+00:32:11.190 --> 00:32:15.750 align:middle line:84%
+But this isn't going
+to work if pi 1 is bad.
+
+00:32:15.750 --> 00:32:20.070 align:middle line:84%
+AUDIENCE: At this point, if
+instead of assuming for 90%
+
+00:32:20.070 --> 00:32:21.780 align:middle line:84%
+if we assume that
+the average is bigger
+
+00:32:21.780 --> 00:32:29.550 align:middle line:84%
+than p, then at this step, if
+we added together every p in AB,
+
+00:32:29.550 --> 00:32:32.160 align:middle line:90%
+then would we get the same?
+
+00:32:32.160 --> 00:32:35.490 align:middle line:84%
+Will the sum of the three
+AB over each AB would
+
+00:32:35.490 --> 00:32:38.670 align:middle line:84%
+be less than the guys
+in pi 1 of X cubed,
+
+00:32:38.670 --> 00:32:42.297 align:middle line:84%
+and then the sum of them will be
+the number of times the average?
+
+00:32:42.297 --> 00:32:44.380 align:middle line:84%
+LAWRENCE GUTH: Yeah so
+there's another suggestion,
+
+00:32:44.380 --> 00:32:46.410 align:middle line:90%
+but I think it's similar.
+
+00:32:46.410 --> 00:32:48.700 align:middle line:84%
+The other suggestion
+was instead of a 90%
+
+00:32:48.700 --> 00:32:51.250 align:middle line:84%
+we could take the average
+over a prime b prime.
+
+00:32:51.250 --> 00:32:52.830 align:middle line:90%
+Yeah.
+
+00:32:52.830 --> 00:32:57.030 align:middle line:84%
+But the issue is that when we
+look sometimes at A prime cross
+
+00:32:57.030 --> 00:33:01.060 align:middle line:84%
+B prime and sometimes we
+look at a prime plus b prime
+
+00:33:01.060 --> 00:33:06.520 align:middle line:84%
+and their notions of average
+may be very different
+
+00:33:06.520 --> 00:33:08.470 align:middle line:84%
+from each other,
+because there may
+
+00:33:08.470 --> 00:33:11.080 align:middle line:84%
+be a big chunk of A prime
+cross B prime, which
+
+00:33:11.080 --> 00:33:13.070 align:middle line:84%
+is compressed a
+lot when you add,
+
+00:33:13.070 --> 00:33:14.970 align:middle line:90%
+and another chunk which is not.
+
+00:33:14.970 --> 00:33:21.670 align:middle line:90%
+
+
+00:33:21.670 --> 00:33:24.260 align:middle line:84%
+So when you look at
+a prime plus b prime,
+
+00:33:24.260 --> 00:33:27.800 align:middle line:84%
+we don't need every sum to
+have a lot of representatives.
+
+00:33:27.800 --> 00:33:29.770 align:middle line:90%
+We just need most of them.
+
+00:33:29.770 --> 00:33:33.400 align:middle line:84%
+But it's hard to keep track of
+the way A prime cross B prime is
+
+00:33:33.400 --> 00:33:36.130 align:middle line:84%
+related to a prime
+plus b prime, and it
+
+00:33:36.130 --> 00:33:37.690 align:middle line:84%
+seems to be the case
+that the easiest
+
+00:33:37.690 --> 00:33:41.230 align:middle line:84%
+way to know that most
+of the sums are good
+
+00:33:41.230 --> 00:33:44.400 align:middle line:84%
+is to actually know that all of
+A prime cross B prime is good.
+
+00:33:44.400 --> 00:33:47.170 align:middle line:90%
+
+
+00:33:47.170 --> 00:33:47.740 align:middle line:90%
+Yeah.
+
+00:33:47.740 --> 00:33:48.350 align:middle line:90%
+OK.
+
+00:33:48.350 --> 00:33:49.190 align:middle line:90%
+Great questions.
+
+00:33:49.190 --> 00:33:50.022 align:middle line:90%
+Yeah?
+
+00:33:50.022 --> 00:33:51.730 align:middle line:84%
+AUDIENCE: Could you
+get around this issue
+
+00:33:51.730 --> 00:33:56.090 align:middle line:84%
+by requiring that the bad
+subset is asymptotically small,
+
+00:33:56.090 --> 00:34:00.270 align:middle line:84%
+that the size is 1 over the
+square root of the size of A?
+
+00:34:00.270 --> 00:34:04.930 align:middle line:84%
+Because that way when you
+project down, you'll square it,
+
+00:34:04.930 --> 00:34:08.489 align:middle line:84%
+but it will still
+be relatively small.
+
+00:34:08.489 --> 00:34:09.480 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:34:09.480 --> 00:34:13.830 align:middle line:84%
+OK, so the comment
+was that if we
+
+00:34:13.830 --> 00:34:16.960 align:middle line:84%
+were to replace 90%
+by 1 minus epsilon,
+
+00:34:16.960 --> 00:34:19.659 align:middle line:84%
+and if we tuned epsilon to
+be really, really small,
+
+00:34:19.659 --> 00:34:21.840 align:middle line:90%
+eventually this would work.
+
+00:34:21.840 --> 00:34:25.260 align:middle line:90%
+And that sounds right to me.
+
+00:34:25.260 --> 00:34:27.699 align:middle line:84%
+We'll keep our eye out
+for the rest of the proof.
+
+00:34:27.699 --> 00:34:30.960 align:middle line:84%
+Perhaps, that will allow
+us to simplify things.
+
+00:34:30.960 --> 00:34:32.330 align:middle line:90%
+But it might not.
+
+00:34:32.330 --> 00:34:35.580 align:middle line:90%
+
+
+00:34:35.580 --> 00:34:36.840 align:middle line:90%
+Yeah.
+
+00:34:36.840 --> 00:34:39.880 align:middle line:90%
+OK, great.
+
+00:34:39.880 --> 00:34:41.380 align:middle line:90%
+So let's remember where we are.
+
+00:34:41.380 --> 00:34:43.320 align:middle line:84%
+We're trying to
+prove the key lemma
+
+00:34:43.320 --> 00:34:47.370 align:middle line:84%
+that I can choose big subsets,
+so that for every pair a and b,
+
+00:34:47.370 --> 00:34:49.989 align:middle line:84%
+there are lots of length
+3 paths between them.
+
+00:34:49.989 --> 00:34:53.409 align:middle line:84%
+And for every, maybe we
+could relax to almost every,
+
+00:34:53.409 --> 00:34:55.630 align:middle line:90%
+but anyway, it's not that hard.
+
+00:34:55.630 --> 00:34:59.440 align:middle line:84%
+It's actually not that hard
+to prove these theorems.
+
+00:34:59.440 --> 00:34:59.990 align:middle line:90%
+OK.
+
+00:34:59.990 --> 00:35:04.870 align:middle line:84%
+So the reason we use 3
+here is that, well, I
+
+00:35:04.870 --> 00:35:08.080 align:middle line:84%
+think that this is false with
+2, if we replaced it with 2.
+
+00:35:08.080 --> 00:35:10.270 align:middle line:84%
+I don't quite have
+a counterexample.
+
+00:35:10.270 --> 00:35:13.323 align:middle line:90%
+
+
+00:35:13.323 --> 00:35:15.125 align:middle line:84%
+Buy still we're going
+to warm up by talking
+
+00:35:15.125 --> 00:35:16.750 align:middle line:84%
+about paths of length
+2 because they're
+
+00:35:16.750 --> 00:35:18.260 align:middle line:90%
+simpler than paths of length 3.
+
+00:35:18.260 --> 00:35:21.267 align:middle line:84%
+And we'll prove some weaker
+version for paths of length 2
+
+00:35:21.267 --> 00:35:22.725 align:middle line:84%
+that we'll use as
+a stepping stone.
+
+00:35:22.725 --> 00:35:55.670 align:middle line:90%
+
+
+00:35:55.670 --> 00:36:16.880 align:middle line:84%
+So paths of length 2, so lemma,
+If X is a subset of A cross B
+
+00:36:16.880 --> 00:36:25.040 align:middle line:84%
+and it's pretty big, and we
+have a parameter epsilon bigger
+
+00:36:25.040 --> 00:36:28.983 align:middle line:84%
+than 0, Then I can
+choose subsets.
+
+00:36:28.983 --> 00:36:37.010 align:middle line:90%
+
+
+00:36:37.010 --> 00:36:40.850 align:middle line:84%
+It's actually just one
+subset, just a subset A prime.
+
+00:36:40.850 --> 00:36:57.730 align:middle line:84%
+So that A prime is
+pretty big and P2 of a1,
+
+00:36:57.730 --> 00:37:04.990 align:middle line:84%
+a2, is at least epsilon
+K to the minus 2 times b.
+
+00:37:04.990 --> 00:37:07.610 align:middle line:90%
+Now, not for every pair a1, a2.
+
+00:37:07.610 --> 00:37:09.520 align:middle line:84%
+We're going to weaken
+that a little bit,
+
+00:37:09.520 --> 00:37:14.760 align:middle line:84%
+but with an exceptional set of
+only about an epsilon fraction.
+
+00:37:14.760 --> 00:37:31.498 align:middle line:90%
+
+
+00:37:31.498 --> 00:37:33.190 align:middle line:84%
+So actually the
+people who set this up
+
+00:37:33.190 --> 00:37:35.710 align:middle line:84%
+had the thought that was
+similar to yours, which
+
+00:37:35.710 --> 00:37:40.602 align:middle line:84%
+is that let's allow an
+epsilon fraction of bad pairs,
+
+00:37:40.602 --> 00:37:42.310 align:middle line:84%
+and we'll make that
+a parameter, and then
+
+00:37:42.310 --> 00:37:44.590 align:middle line:90%
+we'll see what we can do.
+
+00:37:44.590 --> 00:37:47.710 align:middle line:84%
+And actually we put an epsilon
+in two different places.
+
+00:37:47.710 --> 00:37:55.220 align:middle line:84%
+And so, all right, so
+let's process this first.
+
+00:37:55.220 --> 00:37:58.890 align:middle line:84%
+Remember that the average
+number of paths from a1 to a2.
+
+00:37:58.890 --> 00:38:00.350 align:middle line:84%
+If we average over
+all the choices
+
+00:38:00.350 --> 00:38:03.170 align:middle line:90%
+a1 and a2 is at least this big.
+
+00:38:03.170 --> 00:38:08.000 align:middle line:84%
+So we're going to be at least an
+epsilon fraction of the average.
+
+00:38:08.000 --> 00:38:11.660 align:middle line:84%
+And that's going to be
+true not all the time but
+
+00:38:11.660 --> 00:38:16.100 align:middle line:84%
+except for about an
+epsilon fraction of pairs.
+
+00:38:16.100 --> 00:38:19.190 align:middle line:90%
+And A prime is a decent size it.
+
+00:38:19.190 --> 00:38:27.920 align:middle line:90%
+
+
+00:38:27.920 --> 00:38:28.530 align:middle line:90%
+All right.
+
+00:38:28.530 --> 00:38:32.780 align:middle line:84%
+So before we try to prove this,
+let me ask a question to people.
+
+00:38:32.780 --> 00:38:39.450 align:middle line:84%
+So question, Can we just
+take A prime to be all of A?
+
+00:38:39.450 --> 00:38:45.200 align:middle line:90%
+
+
+00:38:45.200 --> 00:38:48.170 align:middle line:84%
+So then we would
+just keep this part.
+
+00:38:48.170 --> 00:38:52.390 align:middle line:84%
+Is it plausible that
+the number of paths
+
+00:38:52.390 --> 00:38:56.370 align:middle line:84%
+is at least an epsilon fraction
+of the average most of the time?
+
+00:38:56.370 --> 00:38:59.290 align:middle line:90%
+
+
+00:38:59.290 --> 00:39:01.240 align:middle line:90%
+It doesn't sound so crazy.
+
+00:39:01.240 --> 00:39:03.135 align:middle line:84%
+Is it possible that
+that's always true?
+
+00:39:03.135 --> 00:39:32.320 align:middle line:90%
+
+
+00:39:32.320 --> 00:39:35.870 align:middle line:84%
+Yeah, so the question is, what's
+the maximum that this could be?
+
+00:39:35.870 --> 00:39:37.852 align:middle line:84%
+The maximum it could
+be is B because there
+
+00:39:37.852 --> 00:39:39.310 align:middle line:84%
+are paths that
+start at a1, they'll
+
+00:39:39.310 --> 00:39:40.840 align:middle line:90%
+go across to somebody in b.
+
+00:39:40.840 --> 00:39:42.350 align:middle line:90%
+They'll come back to a2.
+
+00:39:42.350 --> 00:39:44.830 align:middle line:90%
+So they're at most b.
+
+00:39:44.830 --> 00:39:47.300 align:middle line:84%
+So there's a decent
+amount of range there.
+
+00:39:47.300 --> 00:39:48.780 align:middle line:90%
+And that is important.
+
+00:39:48.780 --> 00:39:53.120 align:middle line:90%
+
+
+00:39:53.120 --> 00:39:56.270 align:middle line:84%
+Oh, the answer to
+this question is no.
+
+00:39:56.270 --> 00:39:58.590 align:middle line:90%
+And here's an example.
+
+00:39:58.590 --> 00:40:00.590 align:middle line:90%
+Yeah, was there a comment?
+
+00:40:00.590 --> 00:40:05.420 align:middle line:84%
+AUDIENCE: And then could you
+maybe have two points in A
+
+00:40:05.420 --> 00:40:08.790 align:middle line:84%
+connect them by a
+every point in B,
+
+00:40:08.790 --> 00:40:14.060 align:middle line:84%
+and then every other point
+in a is not very connected?
+
+00:40:14.060 --> 00:40:15.240 align:middle line:90%
+LAWRENCE GUTH: Yeah, OK.
+
+00:40:15.240 --> 00:40:24.200 align:middle line:84%
+So the suggestion was
+I take two points in A
+
+00:40:24.200 --> 00:40:31.430 align:middle line:84%
+and I connect them to
+all the points in B.
+
+00:40:31.430 --> 00:40:37.105 align:middle line:84%
+And then the rest of them
+are not very connected.
+
+00:40:37.105 --> 00:40:38.970 align:middle line:84%
+Now two of them
+might not be enough,
+
+00:40:38.970 --> 00:40:42.740 align:middle line:90%
+but it will take a few of them.
+
+00:40:42.740 --> 00:40:47.640 align:middle line:84%
+Here is B. Here this A.
+This is a small piece.
+
+00:40:47.640 --> 00:40:51.520 align:middle line:84%
+I guess this could
+be a small part of A.
+
+00:40:51.520 --> 00:40:56.220 align:middle line:84%
+And then over here, there are no
+edges going out of there at all,
+
+00:40:56.220 --> 00:40:57.600 align:middle line:90%
+right.
+
+00:40:57.600 --> 00:40:59.440 align:middle line:84%
+So how big would
+this have to be?
+
+00:40:59.440 --> 00:41:03.450 align:middle line:84%
+Well, we need a fraction 1 over
+k of all the edges in our graph.
+
+00:41:03.450 --> 00:41:05.940 align:middle line:84%
+So this small part
+of A would have
+
+00:41:05.940 --> 00:41:10.050 align:middle line:84%
+size 1 over k times all
+of A. And now I have a 1
+
+00:41:10.050 --> 00:41:13.300 align:middle line:84%
+over k fraction
+of all the edges.
+
+00:41:13.300 --> 00:41:16.170 align:middle line:84%
+So if I pick a1
+and a2 in here, I
+
+00:41:16.170 --> 00:41:18.240 align:middle line:84%
+have a ton of
+paths between them.
+
+00:41:18.240 --> 00:41:21.160 align:middle line:84%
+But if either one
+of them is out here,
+
+00:41:21.160 --> 00:41:23.220 align:middle line:90%
+there are no paths between them.
+
+00:41:23.220 --> 00:41:27.430 align:middle line:84%
+And this set is actually
+much bigger than that set.
+
+00:41:27.430 --> 00:41:29.340 align:middle line:84%
+So for almost all
+the pairs in A,
+
+00:41:29.340 --> 00:41:31.030 align:middle line:90%
+there are no paths between them.
+
+00:41:31.030 --> 00:41:34.110 align:middle line:90%
+So this is a counterexample.
+
+00:41:34.110 --> 00:41:35.565 align:middle line:90%
+Good.
+
+00:41:35.565 --> 00:41:38.860 align:middle line:84%
+And there's a second
+counterexample.
+
+00:41:38.860 --> 00:41:41.550 align:middle line:84%
+So in this counterexample,
+the suspicious feature
+
+00:41:41.550 --> 00:41:46.210 align:middle line:84%
+is that these vertices have way
+fewer edges than those vertices.
+
+00:41:46.210 --> 00:41:48.800 align:middle line:90%
+
+
+00:41:48.800 --> 00:41:50.720 align:middle line:84%
+Could I also make
+a counter example
+
+00:41:50.720 --> 00:41:55.970 align:middle line:84%
+where every vertex on both
+sides has the same degree?
+
+00:41:55.970 --> 00:41:57.270 align:middle line:90%
+Yes, you can.
+
+00:41:57.270 --> 00:42:00.360 align:middle line:84%
+And it works by
+dividing into clumps.
+
+00:42:00.360 --> 00:42:02.600 align:middle line:90%
+So I have a first clump.
+
+00:42:02.600 --> 00:42:04.260 align:middle line:90%
+I have all the edges in here.
+
+00:42:04.260 --> 00:42:07.400 align:middle line:90%
+And then I have a second clump.
+
+00:42:07.400 --> 00:42:11.120 align:middle line:90%
+And I have all the edges here.
+
+00:42:11.120 --> 00:42:12.300 align:middle line:90%
+And so on.
+
+00:42:12.300 --> 00:42:15.600 align:middle line:84%
+So if you do this and you have
+k clumps of the same size,
+
+00:42:15.600 --> 00:42:18.830 align:middle line:84%
+then you'll see you have about
+1 over k of all the edges.
+
+00:42:18.830 --> 00:42:22.400 align:middle line:84%
+And then if you pick a1
+and a2, if you pick them
+
+00:42:22.400 --> 00:42:25.250 align:middle line:84%
+in different clumps, then there
+are no paths between them.
+
+00:42:25.250 --> 00:42:28.550 align:middle line:84%
+If you pick them in the same
+clump, there are lots of paths.
+
+00:42:28.550 --> 00:42:30.720 align:middle line:84%
+So because of
+these two examples,
+
+00:42:30.720 --> 00:42:37.705 align:middle line:84%
+we cannot just take A
+prime to be A. All right.
+
+00:42:37.705 --> 00:42:40.830 align:middle line:84%
+So we have to understand,
+we need to pick A prime.
+
+00:42:40.830 --> 00:42:45.570 align:middle line:84%
+And now let's think about how
+are we going to pick A prime.
+
+00:42:45.570 --> 00:42:50.130 align:middle line:84%
+And in both these examples, the
+way to find a plausible A prime
+
+00:42:50.130 --> 00:42:55.590 align:middle line:84%
+is to pick some b and then
+look at its neighborhood.
+
+00:42:55.590 --> 00:42:58.090 align:middle line:84%
+So here I pick some b and
+I look at its neighborhood.
+
+00:42:58.090 --> 00:42:59.160 align:middle line:90%
+That's the set.
+
+00:42:59.160 --> 00:43:00.910 align:middle line:90%
+So this should be A prime right?
+
+00:43:00.910 --> 00:43:04.570 align:middle line:84%
+And here I pick some b anywhere,
+and I look at its neighborhood.
+
+00:43:04.570 --> 00:43:06.515 align:middle line:84%
+And this is a reasonable
+choice for A prime.
+
+00:43:06.515 --> 00:43:14.460 align:middle line:90%
+
+
+00:43:14.460 --> 00:43:20.940 align:middle line:84%
+So we will take A prime
+to be the neighborhood
+
+00:43:20.940 --> 00:43:22.690 align:middle line:90%
+of b for some b.
+
+00:43:22.690 --> 00:43:45.140 align:middle line:90%
+
+
+00:43:45.140 --> 00:43:50.810 align:middle line:84%
+So now, so let me
+make a definition.
+
+00:43:50.810 --> 00:43:56.930 align:middle line:84%
+I'll say a pair a1, a2
+is called epsilon bad
+
+00:43:56.930 --> 00:44:01.640 align:middle line:84%
+if the number of paths
+from a1 to A2 of length 2
+
+00:44:01.640 --> 00:44:03.505 align:middle line:84%
+is smaller than our
+threshold there.
+
+00:44:03.505 --> 00:44:08.210 align:middle line:90%
+
+
+00:44:08.210 --> 00:44:08.940 align:middle line:90%
+All right.
+
+00:44:08.940 --> 00:44:10.820 align:middle line:84%
+So the main thing we
+have to think about
+
+00:44:10.820 --> 00:44:14.240 align:middle line:84%
+is I'm going to pick
+different b's and look
+
+00:44:14.240 --> 00:44:15.420 align:middle line:90%
+at their neighborhoods.
+
+00:44:15.420 --> 00:44:17.000 align:middle line:84%
+And for each
+neighborhood, I want
+
+00:44:17.000 --> 00:44:20.450 align:middle line:84%
+to count how many
+bad pairs there are.
+
+00:44:20.450 --> 00:44:31.631 align:middle line:84%
+So BP epsilon of B is the
+number of pairs a1, a2
+
+00:44:31.631 --> 00:44:35.810 align:middle line:84%
+that are both in the
+neighborhood of b, so that a1,
+
+00:44:35.810 --> 00:44:37.285 align:middle line:90%
+a2 is epsilon bad.
+
+00:44:37.285 --> 00:44:42.710 align:middle line:90%
+
+
+00:44:42.710 --> 00:44:43.210 align:middle line:90%
+All right.
+
+00:44:43.210 --> 00:44:46.810 align:middle line:84%
+So we'd like to know
+about how big that is.
+
+00:44:46.810 --> 00:44:50.850 align:middle line:84%
+And the easiest thing to
+compute is its expectation.
+
+00:44:50.850 --> 00:44:58.080 align:middle line:84%
+So lemma, the expectation over
+B of the size of this thing
+
+00:44:58.080 --> 00:44:59.620 align:middle line:90%
+is not too crazy.
+
+00:44:59.620 --> 00:45:01.220 align:middle line:90%
+So let's see what that means.
+
+00:45:01.220 --> 00:45:08.490 align:middle line:90%
+
+
+00:45:08.490 --> 00:45:12.420 align:middle line:84%
+So this is at most
+epsilon fraction K
+
+00:45:12.420 --> 00:45:15.510 align:middle line:90%
+to the minus 2 A squared.
+
+00:45:15.510 --> 00:45:16.180 align:middle line:90%
+All right.
+
+00:45:16.180 --> 00:45:18.880 align:middle line:90%
+So let's digest this.
+
+00:45:18.880 --> 00:45:20.560 align:middle line:90%
+So we'll prove, of course.
+
+00:45:20.560 --> 00:45:23.220 align:middle line:84%
+But let's digest
+the right-hand side.
+
+00:45:23.220 --> 00:45:25.530 align:middle line:84%
+So these bad pairs,
+they're sitting
+
+00:45:25.530 --> 00:45:27.370 align:middle line:90%
+in just the set of all pairs.
+
+00:45:27.370 --> 00:45:30.180 align:middle line:84%
+So for reference, we
+should think about how big
+
+00:45:30.180 --> 00:45:33.090 align:middle line:90%
+is the set of all pairs.
+
+00:45:33.090 --> 00:45:39.640 align:middle line:84%
+So let's take the expected
+value over b of just the size
+
+00:45:39.640 --> 00:45:41.270 align:middle line:90%
+of its neighborhood squared.
+
+00:45:41.270 --> 00:45:45.100 align:middle line:84%
+That's at least K to
+the minus 2 A squared.
+
+00:45:45.100 --> 00:45:48.160 align:middle line:84%
+This has an easy proof
+that we'll do in a second.
+
+00:45:48.160 --> 00:45:48.740 align:middle line:90%
+All right.
+
+00:45:48.740 --> 00:45:51.430 align:middle line:84%
+So if you compare these,
+you see that the fraction
+
+00:45:51.430 --> 00:45:55.510 align:middle line:84%
+of epsilon bad pairs is
+at most a small fraction
+
+00:45:55.510 --> 00:45:57.880 align:middle line:90%
+of the total pairs.
+
+00:45:57.880 --> 00:46:04.180 align:middle line:84%
+Fraction of epsilon bad pairs
+is at most epsilon, on average.
+
+00:46:04.180 --> 00:46:05.090 align:middle line:90%
+And that's good.
+
+00:46:05.090 --> 00:46:06.583 align:middle line:84%
+That's the thing
+we want to prove.
+
+00:46:06.583 --> 00:46:08.500 align:middle line:84%
+We want to prove there's
+only about an epsilon
+
+00:46:08.500 --> 00:46:09.450 align:middle line:90%
+fraction of bad pairs.
+
+00:46:09.450 --> 00:46:15.130 align:middle line:90%
+
+
+00:46:15.130 --> 00:46:19.610 align:middle line:84%
+So let's call this
+lemma P1 and lemma P2.
+
+00:46:19.610 --> 00:46:21.230 align:middle line:90%
+This one is real easy.
+
+00:46:21.230 --> 00:46:23.180 align:middle line:90%
+So I can keep it on this board.
+
+00:46:23.180 --> 00:46:24.670 align:middle line:84%
+And then we'll
+prove lemma P1 which
+
+00:46:24.670 --> 00:46:25.970 align:middle line:90%
+is the most important thing.
+
+00:46:25.970 --> 00:46:32.940 align:middle line:84%
+So Lemma P2 proof, if I take
+the sum on b of N of b squared.
+
+00:46:32.940 --> 00:46:37.830 align:middle line:90%
+
+
+00:46:37.830 --> 00:46:41.880 align:middle line:84%
+When you see this, what
+does it make you want to do?
+
+00:46:41.880 --> 00:46:45.390 align:middle line:90%
+Actually, we already did it.
+
+00:46:45.390 --> 00:46:50.970 align:middle line:84%
+So this is the sum on b N
+of b quantity squared over
+
+00:46:50.970 --> 00:46:58.830 align:middle line:84%
+the size of B. That's at least
+C inverse A B all squared over
+
+00:46:58.830 --> 00:47:05.940 align:middle line:84%
+the size of B. That's at least
+k to the minus 2 a squared B.
+
+00:47:05.940 --> 00:47:09.750 align:middle line:84%
+And to turn the sum into
+an average, we divide by B,
+
+00:47:09.750 --> 00:47:12.102 align:middle line:90%
+by the size of B [INAUDIBLE].
+
+00:47:12.102 --> 00:47:15.900 align:middle line:90%
+
+
+00:47:15.900 --> 00:47:18.960 align:middle line:84%
+Actually we could say
+an even simpler thing.
+
+00:47:18.960 --> 00:47:22.530 align:middle line:84%
+So what's the average
+size of just N of B?
+
+00:47:22.530 --> 00:47:24.330 align:middle line:84%
+The average size of
+N of B is exactly
+
+00:47:24.330 --> 00:47:29.350 align:middle line:84%
+K inverse times the size of
+A. And so by Cauchy-Schwarz,
+
+00:47:29.350 --> 00:47:37.910 align:middle line:84%
+then if you square
+it, it's at least
+
+00:47:37.910 --> 00:47:40.540 align:middle line:84%
+So the heart of the
+matter for this lemma
+
+00:47:40.540 --> 00:47:43.390 align:middle line:84%
+is that the expected
+number of bad pairs
+
+00:47:43.390 --> 00:47:46.600 align:middle line:84%
+is a lot less than the
+expected number of total pairs.
+
+00:47:46.600 --> 00:47:48.165 align:middle line:90%
+So let's prove this lemma.
+
+00:47:48.165 --> 00:48:16.270 align:middle line:90%
+
+
+00:48:16.270 --> 00:48:17.240 align:middle line:90%
+All right.
+
+00:48:17.240 --> 00:48:26.620 align:middle line:84%
+So proof of Lemma
+P1, so again, let's
+
+00:48:26.620 --> 00:48:33.250 align:middle line:84%
+think about the sum on B of
+the size of BP epsilon of b.
+
+00:48:33.250 --> 00:48:36.140 align:middle line:90%
+
+
+00:48:36.140 --> 00:48:37.910 align:middle line:90%
+All right.
+
+00:48:37.910 --> 00:48:43.550 align:middle line:84%
+So this is a set
+of pairs a1, a2,
+
+00:48:43.550 --> 00:48:46.392 align:middle line:90%
+so this is a number of things.
+
+00:48:46.392 --> 00:48:47.850 align:middle line:84%
+This is a double
+counting argument.
+
+00:48:47.850 --> 00:48:55.640 align:middle line:84%
+It's a number of a1, a2, and
+b, so that a few things hold.
+
+00:48:55.640 --> 00:49:00.895 align:middle line:84%
+So first of all, we have
+this connection pattern.
+
+00:49:00.895 --> 00:49:05.840 align:middle line:90%
+
+
+00:49:05.840 --> 00:49:09.200 align:middle line:84%
+And also a1 and
+a2 are bad, which
+
+00:49:09.200 --> 00:49:12.320 align:middle line:84%
+means the number of
+paths from a1 to a2
+
+00:49:12.320 --> 00:49:23.210 align:middle line:84%
+is at most epsilon
+k to the minus 2 B.
+
+00:49:23.210 --> 00:49:23.760 align:middle line:90%
+All right.
+
+00:49:23.760 --> 00:49:26.570 align:middle line:90%
+So how should we count this?
+
+00:49:26.570 --> 00:49:29.095 align:middle line:84%
+Initially, we put
+the B on the outside.
+
+00:49:29.095 --> 00:49:30.970 align:middle line:84%
+But to count this
+quantity, it's a lot easier
+
+00:49:30.970 --> 00:49:36.500 align:middle line:84%
+to pick a1 and a2 first, because
+then after we fix a1 and a2,
+
+00:49:36.500 --> 00:49:38.690 align:middle line:84%
+we're counting how many
+b's we can put there.
+
+00:49:38.690 --> 00:49:42.250 align:middle line:84%
+And this hypothesis is just a
+bound on the number of b's that
+
+00:49:42.250 --> 00:49:45.160 align:middle line:90%
+go there.
+
+00:49:45.160 --> 00:49:48.430 align:middle line:90%
+So this is less than A squared.
+
+00:49:48.430 --> 00:49:50.330 align:middle line:90%
+Pick any a1 and a2.
+
+00:49:50.330 --> 00:49:54.830 align:middle line:84%
+And then if a1 and a2
+obey this condition,
+
+00:49:54.830 --> 00:50:08.860 align:middle line:84%
+there are at most this many
+choices for B. And that's it.
+
+00:50:08.860 --> 00:50:10.690 align:middle line:84%
+Now I should convert
+this sum to an average
+
+00:50:10.690 --> 00:50:15.190 align:middle line:84%
+by dividing by B. Then what's
+left is epsilon K to the minus 2
+
+00:50:15.190 --> 00:50:15.980 align:middle line:90%
+A squared.
+
+00:50:15.980 --> 00:50:47.780 align:middle line:90%
+
+
+00:50:47.780 --> 00:50:51.710 align:middle line:84%
+So we are now almost
+done proving this lemma
+
+00:50:51.710 --> 00:50:53.370 align:middle line:90%
+about paths of length 2.
+
+00:50:53.370 --> 00:50:57.320 align:middle line:84%
+And I can fit the rest
+of it in the little space
+
+00:50:57.320 --> 00:50:58.950 align:middle line:84%
+under the statement
+of the lemma.
+
+00:50:58.950 --> 00:51:12.270 align:middle line:90%
+
+
+00:51:12.270 --> 00:51:16.430 align:middle line:84%
+So on average, N of b is
+pretty big my lemma 2.
+
+00:51:16.430 --> 00:51:22.010 align:middle line:84%
+On average, N of b
+is bigger than this.
+
+00:51:22.010 --> 00:51:27.190 align:middle line:84%
+So proof, A prime is going
+to be N of n for some b.
+
+00:51:27.190 --> 00:51:34.097 align:middle line:84%
+And on average, this
+true because of lemma P1.
+
+00:51:34.097 --> 00:51:36.430 align:middle line:84%
+So we just need to be a little
+careful about how exactly
+
+00:51:36.430 --> 00:51:39.010 align:middle line:90%
+to combine these two things.
+
+00:51:39.010 --> 00:51:45.190 align:middle line:84%
+And the way to do it is to
+look at the average value of N
+
+00:51:45.190 --> 00:51:51.070 align:middle line:84%
+of b squared minus 1
+over 2 epsilon times
+
+00:51:51.070 --> 00:51:53.340 align:middle line:90%
+the number of bad pairs.
+
+00:51:53.340 --> 00:52:02.320 align:middle line:90%
+
+
+00:52:02.320 --> 00:52:05.720 align:middle line:84%
+So why do we combine things by
+taking a linear combination?
+
+00:52:05.720 --> 00:52:07.300 align:middle line:90%
+We do that because that's nice.
+
+00:52:07.300 --> 00:52:08.950 align:middle line:84%
+Because of linearity
+of expectation,
+
+00:52:08.950 --> 00:52:11.740 align:middle line:84%
+I can compute this directly
+from the two lemmas computing
+
+00:52:11.740 --> 00:52:13.010 align:middle line:90%
+these things individually.
+
+00:52:13.010 --> 00:52:14.770 align:middle line:84%
+So that's why we'd
+want to add them.
+
+00:52:14.770 --> 00:52:16.960 align:middle line:90%
+And what do we get?
+
+00:52:16.960 --> 00:52:19.750 align:middle line:84%
+Well, just plugging in the
+bounds from lemma P1 and lemma
+
+00:52:19.750 --> 00:52:24.515 align:middle line:84%
+P2, we get that this is at
+least 1/2 half K to the minus 2
+
+00:52:24.515 --> 00:52:25.270 align:middle line:90%
+A squared.
+
+00:52:25.270 --> 00:52:30.640 align:middle line:90%
+
+
+00:52:30.640 --> 00:52:43.040 align:middle line:84%
+So now I choose b so that
+N of b squared minus 1
+
+00:52:43.040 --> 00:52:47.990 align:middle line:84%
+over 2 epsilon BP epsilon
+of b is greater than
+
+00:52:47.990 --> 00:52:51.350 align:middle line:90%
+or equal to its mean.
+
+00:52:51.350 --> 00:52:56.840 align:middle line:84%
+And I set A prime
+to be this N of b.
+
+00:52:56.840 --> 00:52:57.360 align:middle line:90%
+All right.
+
+00:52:57.360 --> 00:53:00.270 align:middle line:84%
+And then I claim we can read off
+the two things we care about.
+
+00:53:00.270 --> 00:53:04.070 align:middle line:84%
+The first thing we care about
+is that N of b is pretty big.
+
+00:53:04.070 --> 00:53:06.260 align:middle line:84%
+So we can ignore
+this negative thing.
+
+00:53:06.260 --> 00:53:08.610 align:middle line:84%
+N of b squared is
+at least this big.
+
+00:53:08.610 --> 00:53:10.700 align:middle line:84%
+And so N of b is
+at least around k
+
+00:53:10.700 --> 00:53:15.410 align:middle line:84%
+inverse A. That is
+bullet point one.
+
+00:53:15.410 --> 00:53:20.270 align:middle line:84%
+And bullet point two is that
+there are only a small fraction
+
+00:53:20.270 --> 00:53:23.280 align:middle line:90%
+of bad pairs a1, a2.
+
+00:53:23.280 --> 00:53:27.300 align:middle line:84%
+Well, for this thing
+is positive, so 1
+
+00:53:27.300 --> 00:53:29.700 align:middle line:90%
+over this one I'll write down.
+
+00:53:29.700 --> 00:53:34.230 align:middle line:84%
+So we get the
+number of bad pairs
+
+00:53:34.230 --> 00:53:36.000 align:middle line:84%
+is at most-- bring
+this over here
+
+00:53:36.000 --> 00:53:40.960 align:middle line:84%
+and multiply, 2 epsilon times
+the number of total pairs.
+
+00:53:40.960 --> 00:53:44.200 align:middle line:84%
+Only a 2 epsilon fraction
+of the total pairs are bad.
+
+00:53:44.200 --> 00:53:45.520 align:middle line:90%
+That's this statement.
+
+00:53:45.520 --> 00:53:58.710 align:middle line:90%
+
+
+00:53:58.710 --> 00:54:02.060 align:middle line:84%
+Any questions or comments
+about this lemma?
+
+00:54:02.060 --> 00:54:04.830 align:middle line:90%
+
+
+00:54:04.830 --> 00:54:08.940 align:middle line:84%
+AUDIENCE: So at the
+end, all the A's
+
+00:54:08.940 --> 00:54:12.423 align:middle line:84%
+we choose are the
+neighbors of one b?
+
+00:54:12.423 --> 00:54:13.840 align:middle line:84%
+LAWRENCE GUTH:
+Yeah, that's right.
+
+00:54:13.840 --> 00:54:18.550 align:middle line:84%
+So our set A prime is just
+the set of neighbors of one b.
+
+00:54:18.550 --> 00:54:25.568 align:middle line:90%
+
+
+00:54:25.568 --> 00:54:26.110 align:middle line:90%
+That's right.
+
+00:54:26.110 --> 00:54:36.500 align:middle line:90%
+
+
+00:54:36.500 --> 00:54:40.220 align:middle line:84%
+Yeah, maybe at
+the end, we'll try
+
+00:54:40.220 --> 00:54:42.320 align:middle line:84%
+to look back over the
+Balog-Szemeredi-Gowers
+
+00:54:42.320 --> 00:54:44.730 align:middle line:84%
+theorem and the
+Balog-Szemeredi-Gowers theorem,
+
+00:54:44.730 --> 00:54:47.010 align:middle line:84%
+the conclusion is there
+exists A prime and B prime,
+
+00:54:47.010 --> 00:54:49.020 align:middle line:84%
+so that A prime plus
+B prime is small.
+
+00:54:49.020 --> 00:54:52.190 align:middle line:84%
+And it's a natural
+question, like who
+
+00:54:52.190 --> 00:54:53.490 align:middle line:90%
+are A prime plus B prime.
+
+00:54:53.490 --> 00:54:56.210 align:middle line:90%
+How do we find them?
+
+00:54:56.210 --> 00:54:57.940 align:middle line:84%
+This one I actually
+probably should
+
+00:54:57.940 --> 00:54:59.190 align:middle line:90%
+have name something different.
+
+00:54:59.190 --> 00:55:01.577 align:middle line:84%
+This is not the final
+A prime in the end
+
+00:55:01.577 --> 00:55:02.660 align:middle line:90%
+of Balog-Szemeredi-Gowers.
+
+00:55:02.660 --> 00:55:04.130 align:middle line:90%
+It's a stepping stone.
+
+00:55:04.130 --> 00:55:06.560 align:middle line:84%
+But we can keep track
+of it along the way
+
+00:55:06.560 --> 00:55:09.060 align:middle line:84%
+and see, how do we find
+A prime and B prime.
+
+00:55:09.060 --> 00:55:21.325 align:middle line:90%
+
+
+00:55:21.325 --> 00:55:26.130 align:middle line:84%
+So here, most of
+the pairs are good.
+
+00:55:26.130 --> 00:55:29.020 align:middle line:84%
+And we're going to upgrade
+that in a trivial way.
+
+00:55:29.020 --> 00:55:35.340 align:middle line:84%
+If you fix a1, we could ask
+whether most of the a2 are good.
+
+00:55:35.340 --> 00:55:37.630 align:middle line:84%
+And that's not
+necessarily going to work.
+
+00:55:37.630 --> 00:55:41.230 align:middle line:84%
+There could be a few bad
+a1's where many a2's are bad,
+
+00:55:41.230 --> 00:55:45.670 align:middle line:84%
+but we just cross them out and
+make A prime a bit smaller,
+
+00:55:45.670 --> 00:55:49.690 align:middle line:84%
+and then we could say for every
+a1, most of the a2's are good.
+
+00:55:49.690 --> 00:55:50.900 align:middle line:90%
+So let me write that down.
+
+00:55:50.900 --> 00:55:56.520 align:middle line:90%
+
+
+00:55:56.520 --> 00:55:58.920 align:middle line:84%
+So I think this is the
+best thing that I know how
+
+00:55:58.920 --> 00:56:00.830 align:middle line:90%
+to say about paths of length 2.
+
+00:56:00.830 --> 00:56:14.190 align:middle line:90%
+
+
+00:56:14.190 --> 00:56:19.910 align:middle line:84%
+OK, so let me call this lemma
+2 for paths of length 2.
+
+00:56:19.910 --> 00:56:24.500 align:middle line:84%
+So if x is in A cross
+B, the size of X
+
+00:56:24.500 --> 00:56:30.650 align:middle line:84%
+is at least K inverse A B
+and epsilon is bigger than 0.
+
+00:56:30.650 --> 00:56:38.180 align:middle line:84%
+Then there exists A2 in A
+so that it's pretty big.
+
+00:56:38.180 --> 00:56:41.670 align:middle line:84%
+Not quite as big as
+before, but I don't know,
+
+00:56:41.670 --> 00:56:53.840 align:middle line:84%
+1/4 K inverse A. And for every a
+and a2, a fraction of 1 minus--
+
+00:56:53.840 --> 00:56:57.980 align:middle line:84%
+it won't be 1 minus 2 epsilon,
+but maybe 1 minus 10 epsilon
+
+00:56:57.980 --> 00:57:02.683 align:middle line:90%
+times A2 Of a2.
+
+00:57:02.683 --> 00:57:05.780 align:middle line:90%
+
+
+00:57:05.780 --> 00:57:09.410 align:middle line:90%
+Let me say it this way.
+
+00:57:09.410 --> 00:57:16.740 align:middle line:84%
+At most, 10 epsilon times the
+size of A2 little a2 and A2,
+
+00:57:16.740 --> 00:57:21.240 align:middle line:84%
+there are at most there, so
+that the pair little a1, a2, is
+
+00:57:21.240 --> 00:57:22.085 align:middle line:90%
+epsilon bad.
+
+00:57:22.085 --> 00:57:28.830 align:middle line:90%
+
+
+00:57:28.830 --> 00:57:35.570 align:middle line:84%
+OK, so proof sketch is just
+use the previous lemma.
+
+00:57:35.570 --> 00:57:38.850 align:middle line:90%
+
+
+00:57:38.850 --> 00:57:43.120 align:middle line:90%
+And A2 is a prime.
+
+00:57:43.120 --> 00:57:47.680 align:middle line:84%
+Take away the A's that have
+too many bad neighbors.
+
+00:57:47.680 --> 00:58:25.450 align:middle line:90%
+
+
+00:58:25.450 --> 00:58:28.077 align:middle line:84%
+Yeah, actually, let me
+write this in a better way.
+
+00:58:28.077 --> 00:58:29.660 align:middle line:84%
+And then I can draw
+the picture of it.
+
+00:58:29.660 --> 00:58:34.840 align:middle line:84%
+So for every in A our set,
+we can break up the set
+
+00:58:34.840 --> 00:58:38.835 align:middle line:90%
+as a bad part with a good part.
+
+00:58:38.835 --> 00:58:41.980 align:middle line:90%
+
+
+00:58:41.980 --> 00:58:45.420 align:middle line:84%
+And what's the feature of each
+of these, the bad part is small.
+
+00:58:45.420 --> 00:58:50.380 align:middle line:90%
+
+
+00:58:50.380 --> 00:58:53.070 align:middle line:84%
+And what's good
+about the good part?
+
+00:58:53.070 --> 00:59:04.420 align:middle line:90%
+
+
+00:59:04.420 --> 00:59:06.740 align:middle line:84%
+The good part, there are
+many paths from a to a2
+
+00:59:06.740 --> 00:59:09.190 align:middle line:90%
+in the good part.
+
+00:59:09.190 --> 00:59:10.120 align:middle line:90%
+Yeah?
+
+00:59:10.120 --> 00:59:12.480 align:middle line:84%
+AUDIENCE: a comma
+a2 is epsilon bad?
+
+00:59:12.480 --> 00:59:13.788 align:middle line:90%
+or it's a1?
+
+00:59:13.788 --> 00:59:15.455 align:middle line:84%
+LAWRENCE GUTH: This
+a comma a2, correct.
+
+00:59:15.455 --> 00:59:28.740 align:middle line:90%
+
+
+00:59:28.740 --> 00:59:33.060 align:middle line:84%
+So this is the final
+word in today's story
+
+00:59:33.060 --> 00:59:35.260 align:middle line:84%
+about what we can say
+about paths of length 2.
+
+00:59:35.260 --> 00:59:37.650 align:middle line:84%
+And now we're going to
+bootstrap that and say something
+
+00:59:37.650 --> 00:59:40.580 align:middle line:84%
+even better about paths of
+length 3, which is the main one.
+
+00:59:40.580 --> 01:00:08.580 align:middle line:90%
+
+
+01:00:08.580 --> 01:00:10.630 align:middle line:90%
+Now we can prove the key lemma.
+
+01:00:10.630 --> 01:00:13.480 align:middle line:84%
+OK there's a little
+bit at the beginning.
+
+01:00:13.480 --> 01:00:15.910 align:middle line:84%
+There is one example that was
+mentioned earlier that there
+
+01:00:15.910 --> 01:00:19.990 align:middle line:84%
+might be a few elements
+in A that are in no edges
+
+01:00:19.990 --> 01:00:24.340 align:middle line:84%
+or in very few edges, and it's
+helpful to just eliminate them
+
+01:00:24.340 --> 01:00:25.340 align:middle line:90%
+from the beginning.
+
+01:00:25.340 --> 01:00:28.390 align:middle line:84%
+It's easy to reduce to the
+case that doesn't happen.
+
+01:00:28.390 --> 01:00:36.640 align:middle line:84%
+So step one, so A1 is defined
+to be the set of and a and A
+
+01:00:36.640 --> 01:00:45.860 align:middle line:84%
+so that the number
+of edges from A to B,
+
+01:00:45.860 --> 01:00:47.760 align:middle line:90%
+let me see how I wrote that.
+
+01:00:47.760 --> 01:00:48.260 align:middle line:90%
+Oh Yeah.
+
+01:00:48.260 --> 01:00:50.926 align:middle line:84%
+That's just the size of
+the neighborhood of A.
+
+01:00:50.926 --> 01:00:53.650 align:middle line:84%
+The size of the
+neighborhood of A
+
+01:00:53.650 --> 01:00:58.240 align:middle line:84%
+is at least a small fraction
+of the typical value.
+
+01:00:58.240 --> 01:01:01.280 align:middle line:84%
+This is the average value of
+the size of the neighborhood.
+
+01:01:01.280 --> 01:01:04.510 align:middle line:84%
+We get rid of the
+guys who have way
+
+01:01:04.510 --> 01:01:06.850 align:middle line:84%
+below average
+number of neighbors.
+
+01:01:06.850 --> 01:01:11.110 align:middle line:84%
+And then it's straightforward
+to check that.
+
+01:01:11.110 --> 01:01:18.690 align:middle line:84%
+So if I write X of A
+prime, B prime that's
+
+01:01:18.690 --> 01:01:25.140 align:middle line:84%
+defined to be the set of pairs
+a, b and A prime cross B prime
+
+01:01:25.140 --> 01:01:29.520 align:middle line:90%
+and in X.
+
+01:01:29.520 --> 01:01:34.470 align:middle line:84%
+So if I take the
+edges X from A1 to B,
+
+01:01:34.470 --> 01:01:37.370 align:middle line:90%
+that is still most of the edges.
+
+01:01:37.370 --> 01:01:41.340 align:middle line:90%
+
+
+01:01:41.340 --> 01:01:45.630 align:middle line:90%
+And also since I removed--
+
+01:01:45.630 --> 01:01:48.970 align:middle line:84%
+A1 comma B-- since I
+removed low density edges,
+
+01:01:48.970 --> 01:01:51.040 align:middle line:84%
+now the typical
+density has gone up.
+
+01:01:51.040 --> 01:01:54.420 align:middle line:90%
+So this is still true.
+
+01:01:54.420 --> 01:01:56.350 align:middle line:84%
+So basically, without
+loss of generality,
+
+01:01:56.350 --> 01:01:58.670 align:middle line:84%
+I can assume that all the
+edges have a decent size.
+
+01:01:58.670 --> 01:02:11.500 align:middle line:90%
+
+
+01:02:11.500 --> 01:02:14.260 align:middle line:90%
+All right.
+
+01:02:14.260 --> 01:02:18.700 align:middle line:90%
+So next I use Lemma 2.
+
+01:02:18.700 --> 01:02:24.040 align:middle line:84%
+And it tells me that I
+have this set A2 in A that
+
+01:02:24.040 --> 01:02:26.260 align:middle line:84%
+has this good
+property, and A prime
+
+01:02:26.260 --> 01:02:27.480 align:middle line:90%
+is just going to be this A2.
+
+01:02:27.480 --> 01:02:30.850 align:middle line:90%
+
+
+01:02:30.850 --> 01:02:31.960 align:middle line:90%
+All right.
+
+01:02:31.960 --> 01:02:35.680 align:middle line:90%
+So here's my A2.
+
+01:02:35.680 --> 01:02:37.090 align:middle line:90%
+This is A2.
+
+01:02:37.090 --> 01:02:41.020 align:middle line:84%
+And maybe there's some
+more of A up here.
+
+01:02:41.020 --> 01:02:45.790 align:middle line:84%
+And if I pick a
+particular a in here,
+
+01:02:45.790 --> 01:02:50.680 align:middle line:84%
+then I can break this
+up into a small bad part
+
+01:02:50.680 --> 01:02:52.170 align:middle line:90%
+and a big good part.
+
+01:02:52.170 --> 01:02:57.070 align:middle line:90%
+
+
+01:02:57.070 --> 01:02:58.700 align:middle line:90%
+The bad part is small.
+
+01:02:58.700 --> 01:03:01.960 align:middle line:84%
+And for the good
+part, there are lots
+
+01:03:01.960 --> 01:03:06.805 align:middle line:84%
+of edges to the good part,
+which I'll illustrate like this.
+
+01:03:06.805 --> 01:03:18.440 align:middle line:90%
+
+
+01:03:18.440 --> 01:03:25.670 align:middle line:84%
+So now I would
+like to choose a B.
+
+01:03:25.670 --> 01:03:28.272 align:middle line:84%
+I'd like to choose
+B prime in B. I'm
+
+01:03:28.272 --> 01:03:29.550 align:middle line:90%
+make some more vertices here.
+
+01:03:29.550 --> 01:03:33.180 align:middle line:84%
+So over here is B. Who
+should I include in B prime?
+
+01:03:33.180 --> 01:03:36.110 align:middle line:84%
+And I want to know that
+if I start in any A,
+
+01:03:36.110 --> 01:03:41.900 align:middle line:84%
+I have many paths of length
+3 to everybody in B prime.
+
+01:03:41.900 --> 01:03:47.060 align:middle line:84%
+Now, one thing that's a bit
+tricky is that as I vary A,
+
+01:03:47.060 --> 01:03:49.470 align:middle line:84%
+G of A and B of A
+aren't going to change,
+
+01:03:49.470 --> 01:03:52.130 align:middle line:84%
+and I don't know
+much about them.
+
+01:03:52.130 --> 01:03:55.970 align:middle line:84%
+But it seems like a good
+idea to take vertices B that
+
+01:03:55.970 --> 01:03:57.565 align:middle line:90%
+have a lot of edges to A2.
+
+01:03:57.565 --> 01:04:00.800 align:middle line:90%
+
+
+01:04:00.800 --> 01:04:03.550 align:middle line:84%
+And if vertex B
+has no edges to A2,
+
+01:04:03.550 --> 01:04:05.680 align:middle line:90%
+this is not going to be helpful.
+
+01:04:05.680 --> 01:04:09.280 align:middle line:84%
+So that's how we're
+going to define B prime.
+
+01:04:09.280 --> 01:04:13.630 align:middle line:84%
+B prime is the set of b
+in B with the property
+
+01:04:13.630 --> 01:04:20.380 align:middle line:84%
+that the number of
+edges from B to A prime
+
+01:04:20.380 --> 01:04:24.030 align:middle line:84%
+is at least 20 epsilon
+times the size of A prime.
+
+01:04:24.030 --> 01:04:27.220 align:middle line:90%
+
+
+01:04:27.220 --> 01:04:28.885 align:middle line:90%
+All right.
+
+01:04:28.885 --> 01:04:31.310 align:middle line:84%
+Now, let's compare that with
+what we know about here.
+
+01:04:31.310 --> 01:04:35.950 align:middle line:84%
+We know that the bad set
+of a is at most 10 epsilon
+
+01:04:35.950 --> 01:04:37.550 align:middle line:90%
+times the size of A prime.
+
+01:04:37.550 --> 01:04:40.410 align:middle line:84%
+So this was selected
+to be bigger than that.
+
+01:04:40.410 --> 01:04:43.510 align:middle line:90%
+
+
+01:04:43.510 --> 01:04:51.220 align:middle line:84%
+So now I can say every A and
+A prime and B and B prime,
+
+01:04:51.220 --> 01:04:55.460 align:middle line:84%
+the number of paths of length
+3 from A to B is at least--
+
+01:04:55.460 --> 01:05:02.180 align:middle line:84%
+OK, I start in A.
+Then for every good a,
+
+01:05:02.180 --> 01:05:05.840 align:middle line:84%
+I can have a lot of
+paths to that good a.
+
+01:05:05.840 --> 01:05:10.730 align:middle line:84%
+So it's at least
+that was epsilon K
+
+01:05:10.730 --> 01:05:14.360 align:middle line:84%
+to the minus 2 B. That's
+how many paths I have
+
+01:05:14.360 --> 01:05:22.760 align:middle line:84%
+to a good a times the size of N
+of b intersected with the grid
+
+01:05:22.760 --> 01:05:24.720 align:middle line:84%
+a's, the guys that
+were good for a.
+
+01:05:24.720 --> 01:05:28.790 align:middle line:90%
+
+
+01:05:28.790 --> 01:05:32.660 align:middle line:84%
+So if I look at the guys
+that are good for a,
+
+01:05:32.660 --> 01:05:36.050 align:middle line:90%
+they neighbor b, so here's b.
+
+01:05:36.050 --> 01:05:39.620 align:middle line:84%
+This is good for a,
+and they neighbor b.
+
+01:05:39.620 --> 01:05:41.450 align:middle line:90%
+Actually, let me do this.
+
+01:05:41.450 --> 01:05:43.340 align:middle line:90%
+So this is b.
+
+01:05:43.340 --> 01:05:47.270 align:middle line:84%
+These guys here are good
+for a and they neighbor b.
+
+01:05:47.270 --> 01:05:51.950 align:middle line:84%
+And there are pretty many
+paths to each guy that's good.
+
+01:05:51.950 --> 01:05:54.540 align:middle line:84%
+And then from here,
+I can get to b.
+
+01:05:54.540 --> 01:05:59.430 align:middle line:90%
+
+
+01:05:59.430 --> 01:06:02.250 align:middle line:84%
+And then this is
+bigger than epsilon K
+
+01:06:02.250 --> 01:06:06.210 align:middle line:90%
+to the minus 2 B times--
+
+01:06:06.210 --> 01:06:10.830 align:middle line:84%
+well, there are at least
+20 epsilon A prime guys
+
+01:06:10.830 --> 01:06:14.730 align:middle line:84%
+and N of b intersected
+A. Let's do this.
+
+01:06:14.730 --> 01:06:20.645 align:middle line:84%
+N of b intersected A prime
+minus the number of bad guys.
+
+01:06:20.645 --> 01:06:23.340 align:middle line:90%
+
+
+01:06:23.340 --> 01:06:27.180 align:middle line:84%
+And then this whole thing
+is at least 10 epsilon
+
+01:06:27.180 --> 01:06:31.950 align:middle line:90%
+times the size of A.
+
+01:06:31.950 --> 01:06:35.520 align:middle line:84%
+So the key point
+is that I'm looking
+
+01:06:35.520 --> 01:06:39.960 align:middle line:84%
+at b's that have a lot of edges
+to A prime, many more than the
+
+01:06:39.960 --> 01:06:41.340 align:middle line:90%
+size of the bad set.
+
+01:06:41.340 --> 01:06:43.750 align:middle line:84%
+So there's still lots of
+edges that go to the good set.
+
+01:06:43.750 --> 01:06:47.250 align:middle line:90%
+
+
+01:06:47.250 --> 01:06:48.850 align:middle line:90%
+So I put this together.
+
+01:06:48.850 --> 01:06:54.070 align:middle line:84%
+This is like epsilon squared
+K to the minus to d A.
+
+01:06:54.070 --> 01:06:58.356 align:middle line:84%
+So A prime is also
+about the size of A.
+
+01:06:58.356 --> 01:07:04.243 align:middle line:84%
+A prime is greater
+than k inverse A.
+
+01:07:04.243 --> 01:07:05.410 align:middle line:90%
+We have something like this.
+
+01:07:05.410 --> 01:07:14.330 align:middle line:90%
+
+
+01:07:14.330 --> 01:07:19.670 align:middle line:84%
+We're not done yet because we
+haven't proven that B prime,
+
+01:07:19.670 --> 01:07:21.377 align:middle line:84%
+we haven't proven
+that it's non-empty.
+
+01:07:21.377 --> 01:07:22.960 align:middle line:84%
+We need to prove
+that it's pretty big.
+
+01:07:22.960 --> 01:07:28.130 align:middle line:90%
+
+
+01:07:28.130 --> 01:07:30.410 align:middle line:84%
+But for each a in A
+prime and b and B prime
+
+01:07:30.410 --> 01:07:31.860 align:middle line:90%
+we do have a lot of edges.
+
+01:07:31.860 --> 01:07:33.510 align:middle line:84%
+We do have the right
+number of edges.
+
+01:07:33.510 --> 01:07:35.280 align:middle line:90%
+We also have to choose epsilon.
+
+01:07:35.280 --> 01:07:39.711 align:middle line:84%
+But as long as I choose epsilon
+to be 1 over a power of k,
+
+01:07:39.711 --> 01:07:42.535 align:middle line:84%
+that will fit the bill of
+what we're trying to prove.
+
+01:07:42.535 --> 01:07:52.670 align:middle line:90%
+
+
+01:07:52.670 --> 01:07:55.520 align:middle line:84%
+So the last thing is to
+check that B prime is
+
+01:07:55.520 --> 01:07:57.137 align:middle line:84%
+pretty big, or a
+little more carefully
+
+01:07:57.137 --> 01:07:59.220 align:middle line:84%
+to check that there's still
+a lot of edges between
+
+01:07:59.220 --> 01:08:00.185 align:middle line:90%
+and A prime B prime.
+
+01:08:00.185 --> 01:08:45.810 align:middle line:90%
+
+
+01:08:45.810 --> 01:08:46.390 align:middle line:90%
+OK.
+
+01:08:46.390 --> 01:08:53.760 align:middle line:84%
+So last step, we have to
+check that the number of edges
+
+01:08:53.760 --> 01:08:58.040 align:middle line:84%
+from A prime to B
+prime is at least K
+
+01:08:58.040 --> 01:09:03.109 align:middle line:84%
+to the minus O of 1 times
+the original number of edges.
+
+01:09:03.109 --> 01:09:07.430 align:middle line:84%
+Or you could put times A
+B, but those are the same.
+
+01:09:07.430 --> 01:09:08.340 align:middle line:90%
+All right.
+
+01:09:08.340 --> 01:09:13.490 align:middle line:84%
+So remember we proved earlier
+that A prime is at least around
+
+01:09:13.490 --> 01:09:24.920 align:middle line:84%
+1 over K times A.
+And we also know,
+
+01:09:24.920 --> 01:09:27.656 align:middle line:84%
+so why did we do this
+pruning at the beginning?
+
+01:09:27.656 --> 01:09:30.170 align:middle line:90%
+
+
+01:09:30.170 --> 01:09:32.670 align:middle line:90%
+A prime is contained in A1.
+
+01:09:32.670 --> 01:09:34.319 align:middle line:90%
+We did this initial pruning.
+
+01:09:34.319 --> 01:09:46.160 align:middle line:84%
+So Na is greater than 1/10
+M k inverse B for every
+
+01:09:46.160 --> 01:09:52.470 align:middle line:84%
+a in A prime, which is in A.
+So they're all pretty big.
+
+01:09:52.470 --> 01:09:55.470 align:middle line:84%
+So there are lots of
+edges that leave A prime.
+
+01:09:55.470 --> 01:09:57.930 align:middle line:84%
+So the number of
+edges between A prime
+
+01:09:57.930 --> 01:10:04.390 align:middle line:84%
+and all of B, that's at least
+K to the minus 2 times AB.
+
+01:10:04.390 --> 01:10:11.586 align:middle line:90%
+
+
+01:10:11.586 --> 01:10:15.690 align:middle line:84%
+Now, to make B
+prime, B prime are
+
+01:10:15.690 --> 01:10:20.080 align:middle line:84%
+the guys that have pretty
+many edges to A prime.
+
+01:10:20.080 --> 01:10:22.140 align:middle line:84%
+So we're going to
+cross out the guys that
+
+01:10:22.140 --> 01:10:26.010 align:middle line:90%
+have very few edges to A prime.
+
+01:10:26.010 --> 01:10:33.750 align:middle line:84%
+So if I count edges from A
+prime to B, take away B prime,
+
+01:10:33.750 --> 01:10:38.340 align:middle line:84%
+so each one of these has only
+20 epsilon edges to A prime.
+
+01:10:38.340 --> 01:10:48.720 align:middle line:84%
+So that's at most sorry 20
+epsilon A prime edges times B.
+
+01:10:48.720 --> 01:10:54.290 align:middle line:84%
+So that's less than
+20 epsilon A B. OK,
+
+01:10:54.290 --> 01:10:56.750 align:middle line:84%
+now we have paused about
+when to choose epsilon.
+
+01:10:56.750 --> 01:10:59.720 align:middle line:84%
+We need it to be at
+least some small power,
+
+01:10:59.720 --> 01:11:01.670 align:middle line:90%
+some K to the minus O of 1.
+
+01:11:01.670 --> 01:11:03.700 align:middle line:84%
+But we can make it
+small enough that this
+
+01:11:03.700 --> 01:11:05.980 align:middle line:90%
+is way bigger than this.
+
+01:11:05.980 --> 01:11:11.680 align:middle line:84%
+So we now choose epsilon to
+be, say, 1 over a million times
+
+01:11:11.680 --> 01:11:13.390 align:middle line:90%
+K to the minus 2.
+
+01:11:13.390 --> 01:11:16.540 align:middle line:84%
+And what that tells us is
+that the number of edges
+
+01:11:16.540 --> 01:11:20.260 align:middle line:84%
+from A prime to the
+complement of B prime
+
+01:11:20.260 --> 01:11:28.000 align:middle line:84%
+is way smaller than the number
+of edges from A prime to B.
+
+01:11:28.000 --> 01:11:29.950 align:middle line:84%
+So the conclusion
+is that the number
+
+01:11:29.950 --> 01:11:32.500 align:middle line:84%
+of edges from A
+prime to B prime is
+
+01:11:32.500 --> 01:11:34.930 align:middle line:84%
+about the same as
+the number of edges
+
+01:11:34.930 --> 01:11:39.775 align:middle line:84%
+from A prime to B, which is at
+least K to the minus O of 1.
+
+01:11:39.775 --> 01:11:42.580 align:middle line:90%
+
+
+01:11:42.580 --> 01:11:44.600 align:middle line:84%
+So we have checked
+the last thing.
+
+01:11:44.600 --> 01:11:46.380 align:middle line:90%
+We still have a lot of edges.
+
+01:11:46.380 --> 01:11:53.290 align:middle line:90%
+
+
+01:11:53.290 --> 01:11:53.790 align:middle line:90%
+OK.
+
+01:11:53.790 --> 01:11:57.570 align:middle line:84%
+Do people have any last
+questions or comments
+
+01:11:57.570 --> 01:11:58.325 align:middle line:90%
+about this proof?
+
+01:11:58.325 --> 01:12:10.270 align:middle line:90%
+
+
+01:12:10.270 --> 01:12:10.770 align:middle line:90%
+OK.
+
+01:12:10.770 --> 01:12:12.510 align:middle line:84%
+I have some last picture
+questions or comments
+
+01:12:12.510 --> 01:12:13.218 align:middle line:90%
+about this proof.
+
+01:12:13.218 --> 01:12:15.940 align:middle line:90%
+
+
+01:12:15.940 --> 01:12:20.260 align:middle line:84%
+So this proof is not that
+hard and not that long,
+
+01:12:20.260 --> 01:12:21.250 align:middle line:90%
+but it's clever.
+
+01:12:21.250 --> 01:12:24.460 align:middle line:84%
+And I think it came as
+a surprise to people.
+
+01:12:24.460 --> 01:12:27.990 align:middle line:84%
+And it certainly is
+surprising to me.
+
+01:12:27.990 --> 01:12:31.260 align:middle line:84%
+So first of all, we
+have this problem
+
+01:12:31.260 --> 01:12:34.500 align:middle line:90%
+about additive combinatorics.
+
+01:12:34.500 --> 01:12:39.240 align:middle line:84%
+And there are different
+tools like Fourier analysis
+
+01:12:39.240 --> 01:12:41.830 align:middle line:84%
+is very well suited to
+additive combinatorics.
+
+01:12:41.830 --> 01:12:47.410 align:middle line:84%
+So you can think of it as
+something about convolutions
+
+01:12:47.410 --> 01:12:50.740 align:middle line:84%
+and Fourier analysis
+doesn't seem to help
+
+01:12:50.740 --> 01:12:51.870 align:middle line:90%
+much to prove this thing.
+
+01:12:51.870 --> 01:12:55.070 align:middle line:90%
+
+
+01:12:55.070 --> 01:12:57.490 align:middle line:90%
+And then we have this graph.
+
+01:12:57.490 --> 01:13:04.240 align:middle line:84%
+This graph, you think of
+it as an adjacency matrix.
+
+01:13:04.240 --> 01:13:11.260 align:middle line:84%
+And if you want to count paths
+from a1 to a2 you've taken,
+
+01:13:11.260 --> 01:13:14.620 align:middle line:84%
+so the adjacency matrix
+is A. We took A, A star.
+
+01:13:14.620 --> 01:13:17.380 align:middle line:84%
+If you want to take paths
+of length 3, It's A, A star,
+
+01:13:17.380 --> 01:13:22.670 align:middle line:84%
+A. So this is a theorem
+about powers of a matrix.
+
+01:13:22.670 --> 01:13:24.670 align:middle line:84%
+So you might think that
+linear algebra would be
+
+01:13:24.670 --> 01:13:27.220 align:middle line:90%
+helpful to prove this theorem.
+
+01:13:27.220 --> 01:13:29.468 align:middle line:90%
+I thought about that.
+
+01:13:29.468 --> 01:13:31.010 align:middle line:84%
+I could totally be
+missing something,
+
+01:13:31.010 --> 01:13:32.440 align:middle line:84%
+but as far as I can
+see, linear algebra
+
+01:13:32.440 --> 01:13:33.940 align:middle line:84%
+is not helpful to
+prove this theorem
+
+01:13:33.940 --> 01:13:37.510 align:middle line:90%
+about the powers of a matrix.
+
+01:13:37.510 --> 01:13:41.690 align:middle line:84%
+And on the other hand, this
+elementary double counting,
+
+01:13:41.690 --> 01:13:45.030 align:middle line:84%
+clever, but elementary double
+counting and graph theory
+
+01:13:45.030 --> 01:13:47.930 align:middle line:90%
+really makes it work.
+
+01:13:47.930 --> 01:13:50.820 align:middle line:90%
+
+
+01:13:50.820 --> 01:13:53.260 align:middle line:84%
+So that's something that
+I find rather surprising.
+
+01:13:53.260 --> 01:14:00.300 align:middle line:90%
+
+
+01:14:00.300 --> 01:14:04.660 align:middle line:84%
+I mentioned last time that this
+theorem is really used a lot.
+
+01:14:04.660 --> 01:14:07.290 align:middle line:90%
+It's worth knowing about.
+
+01:14:07.290 --> 01:14:08.500 align:middle line:90%
+It's important.
+
+01:14:08.500 --> 01:14:11.557 align:middle line:84%
+And so hopefully, you've
+seen a little bit of that.
+
+01:14:11.557 --> 01:14:13.140 align:middle line:84%
+But as the class
+goes on, actually, we
+
+01:14:13.140 --> 01:14:14.640 align:middle line:84%
+might have some
+more time to comment
+
+01:14:14.640 --> 01:14:17.620 align:middle line:84%
+on how this
+Balog-Szemeredi-Gowers theorem.
+
+01:14:17.620 --> 01:14:20.040 align:middle line:84%
+When I first saw it, it
+seemed a little bit technical.
+
+01:14:20.040 --> 01:14:24.362 align:middle line:84%
+There's two at first, rather
+similar sounding ways a set
+
+01:14:24.362 --> 01:14:25.570 align:middle line:90%
+of having additive structure.
+
+01:14:25.570 --> 01:14:26.987 align:middle line:84%
+And they're related
+to each other.
+
+01:14:26.987 --> 01:14:29.440 align:middle line:90%
+
+
+01:14:29.440 --> 01:14:33.970 align:middle line:84%
+But this is an extremely
+useful and important thing.
+
+01:14:33.970 --> 01:14:39.260 align:middle line:84%
+And we talked about it, but
+we'll keep talking about it.
+
+01:14:39.260 --> 01:14:44.000 align:middle line:90%

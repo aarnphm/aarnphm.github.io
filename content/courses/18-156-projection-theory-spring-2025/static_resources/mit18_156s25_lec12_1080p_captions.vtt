@@ -1,0 +1,4316 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.458 align:middle line:90%
+
+
+00:00:01.458 --> 00:00:02.430 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.430 --> 00:00:03.888 align:middle line:90%
+[RUSTLING]
+
+00:00:03.888 --> 00:00:05.832 align:middle line:90%
+[CLICKING]
+
+00:00:05.832 --> 00:00:12.160 align:middle line:90%
+
+
+00:00:12.160 --> 00:00:14.780 align:middle line:84%
+PROFESSOR: We have
+seen, I would say,
+
+00:00:14.780 --> 00:00:17.720 align:middle line:84%
+three sets of tools applied
+to the problem of projection
+
+00:00:17.720 --> 00:00:18.373 align:middle line:90%
+theory.
+
+00:00:18.373 --> 00:00:20.040 align:middle line:84%
+So at the beginning
+of the class, first,
+
+00:00:20.040 --> 00:00:22.360 align:middle line:90%
+we talked about double counting.
+
+00:00:22.360 --> 00:00:25.480 align:middle line:84%
+And then we talked about
+methods from Fourier analysis.
+
+00:00:25.480 --> 00:00:28.120 align:middle line:84%
+And then in the last week,
+we started our third set
+
+00:00:28.120 --> 00:00:32.080 align:middle line:84%
+of tools which are tools from
+combinatorial number theory.
+
+00:00:32.080 --> 00:00:36.000 align:middle line:84%
+So this week we're
+going to finish our unit
+
+00:00:36.000 --> 00:00:37.720 align:middle line:84%
+on tools from
+combinatorial number
+
+00:00:37.720 --> 00:00:41.332 align:middle line:90%
+theory in projection theory.
+
+00:00:41.332 --> 00:00:48.240 align:middle line:84%
+So the goal for these two weeks
+is this projection theorem
+
+00:00:48.240 --> 00:00:51.080 align:middle line:90%
+of Bourgain, Katz, and Tao.
+
+00:00:51.080 --> 00:00:53.220 align:middle line:84%
+It takes place
+over finite fields,
+
+00:00:53.220 --> 00:00:55.880 align:middle line:84%
+and the cool thing about it is
+that it distinguishes what's
+
+00:00:55.880 --> 00:00:57.400 align:middle line:84%
+true over prime
+fields from what's
+
+00:00:57.400 --> 00:01:00.370 align:middle line:84%
+true over other fields, which
+none of our previous methods
+
+00:01:00.370 --> 00:01:01.630 align:middle line:90%
+could distinguish.
+
+00:01:01.630 --> 00:01:06.010 align:middle line:90%
+
+
+00:01:06.010 --> 00:01:09.385 align:middle line:90%
+This is our goal.
+
+00:01:09.385 --> 00:01:15.890 align:middle line:84%
+It says that if x is a
+subset of Fp squared,
+
+00:01:15.890 --> 00:01:18.670 align:middle line:90%
+and it has size p to the sx--
+
+00:01:18.670 --> 00:01:21.130 align:middle line:84%
+you can think of sx
+like a dimension--
+
+00:01:21.130 --> 00:01:23.590 align:middle line:90%
+and sx is in between 0 and 2.
+
+00:01:23.590 --> 00:01:26.170 align:middle line:84%
+So it's not too tiny,
+and it's not everything.
+
+00:01:26.170 --> 00:01:29.850 align:middle line:84%
+And we have a set
+of directions in Fp,
+
+00:01:29.850 --> 00:01:33.900 align:middle line:84%
+a set of directions as size p to
+the sd, and it's not too tiny.
+
+00:01:33.900 --> 00:01:38.090 align:middle line:90%
+
+
+00:01:38.090 --> 00:01:41.250 align:middle line:84%
+Then, if I take the
+maximum over all
+
+00:01:41.250 --> 00:01:44.330 align:middle line:84%
+of the directions of the
+size of the projection
+
+00:01:44.330 --> 00:01:48.250 align:middle line:84%
+in that direction,
+it's at least--
+
+00:01:48.250 --> 00:01:51.250 align:middle line:90%
+so the square root of x.
+
+00:01:51.250 --> 00:01:53.770 align:middle line:84%
+So far, that's not
+difficult to do.
+
+00:01:53.770 --> 00:01:56.570 align:middle line:84%
+But then plus-- times
+a little bit more,
+
+00:01:56.570 --> 00:01:58.820 align:middle line:90%
+times p to the epsilon.
+
+00:01:58.820 --> 00:01:59.980 align:middle line:90%
+I'll call it epsilon--
+
+00:01:59.980 --> 00:02:01.320 align:middle line:90%
+p to the epsilon.
+
+00:02:01.320 --> 00:02:08.820 align:middle line:84%
+So this epsilon depends on these
+dimensions, but it's positive.
+
+00:02:08.820 --> 00:02:10.300 align:middle line:90%
+So that's our goal.
+
+00:02:10.300 --> 00:02:14.260 align:middle line:84%
+And it's significant
+that this would not
+
+00:02:14.260 --> 00:02:16.020 align:middle line:90%
+be true in other fields.
+
+00:02:16.020 --> 00:02:26.540 align:middle line:84%
+So this is false in Fq
+squared if q equals p squared.
+
+00:02:26.540 --> 00:02:37.180 align:middle line:84%
+And the example is that x
+is Fp squared, and D is Fp.
+
+00:02:37.180 --> 00:02:39.560 align:middle line:84%
+And so then this
+thing is always Fp.
+
+00:02:39.560 --> 00:02:45.700 align:middle line:90%
+
+
+00:02:45.700 --> 00:02:46.420 align:middle line:90%
+Cool.
+
+00:02:46.420 --> 00:02:51.020 align:middle line:84%
+So even though this epsilon
+is a really tiny number, which
+
+00:02:51.020 --> 00:02:52.920 align:middle line:84%
+we could make explicit
+if we worked hard,
+
+00:02:52.920 --> 00:02:55.180 align:middle line:84%
+but we would then
+be disappointed.
+
+00:02:55.180 --> 00:02:58.590 align:middle line:84%
+Even though it's really
+tiny, this theorem
+
+00:02:58.590 --> 00:03:01.350 align:middle line:84%
+is qualitatively an
+important improvement,
+
+00:03:01.350 --> 00:03:03.910 align:middle line:90%
+and it has lots of applications.
+
+00:03:03.910 --> 00:03:06.192 align:middle line:84%
+This and the version over r
+have lots of applications,
+
+00:03:06.192 --> 00:03:08.150 align:middle line:84%
+and almost everything in
+the rest of the course
+
+00:03:08.150 --> 00:03:11.670 align:middle line:84%
+will be based on that, kind of
+whatever most of the directions
+
+00:03:11.670 --> 00:03:12.490 align:middle line:90%
+we might go in.
+
+00:03:12.490 --> 00:03:18.550 align:middle line:90%
+
+
+00:03:18.550 --> 00:03:23.150 align:middle line:84%
+All right, so last week, we
+introduced combinatorial number
+
+00:03:23.150 --> 00:03:24.890 align:middle line:90%
+theory and some product theory.
+
+00:03:24.890 --> 00:03:29.110 align:middle line:84%
+And we proved a theorem,
+which is in this direction.
+
+00:03:29.110 --> 00:03:30.710 align:middle line:84%
+It's kind of the
+special case when
+
+00:03:30.710 --> 00:03:32.270 align:middle line:90%
+x happens to be a product set--
+
+00:03:32.270 --> 00:03:39.590 align:middle line:84%
+A cross A. So our Theorem 1
+was last time, if A is in Fp,
+
+00:03:39.590 --> 00:03:45.510 align:middle line:84%
+and the size of
+A is p to the sa,
+
+00:03:45.510 --> 00:03:52.270 align:middle line:84%
+and D is the set of directions
+in Fp, and size of D
+
+00:03:52.270 --> 00:03:53.750 align:middle line:90%
+is p to the sd.
+
+00:03:53.750 --> 00:03:57.960 align:middle line:90%
+
+
+00:03:57.960 --> 00:04:04.520 align:middle line:84%
+Then, if you take the
+maximum t and D, of A plus t
+
+00:04:04.520 --> 00:04:09.520 align:middle line:84%
+times A, which would be
+like pi sub t of A cross A,
+
+00:04:09.520 --> 00:04:15.300 align:middle line:84%
+then that's at least the size
+of A times p to the epsilon 1.
+
+00:04:15.300 --> 00:04:21.360 align:middle line:90%
+
+
+00:04:21.360 --> 00:04:22.560 align:middle line:90%
+That's a little bit bigger.
+
+00:04:22.560 --> 00:04:25.640 align:middle line:84%
+And this, again, would
+be false in other fields.
+
+00:04:25.640 --> 00:04:27.960 align:middle line:84%
+So if our field
+had a subfield, you
+
+00:04:27.960 --> 00:04:30.140 align:middle line:84%
+could choose these guys
+to both be the subfield.
+
+00:04:30.140 --> 00:04:31.640 align:middle line:84%
+And this would stay
+in the subfield.
+
+00:04:31.640 --> 00:04:34.640 align:middle line:90%
+
+
+00:04:34.640 --> 00:04:36.080 align:middle line:90%
+Cool.
+
+00:04:36.080 --> 00:04:43.075 align:middle line:84%
+All right, so our goal today
+is to get from here to there.
+
+00:04:43.075 --> 00:04:44.700 align:middle line:84%
+And we were talking
+about it last time,
+
+00:04:44.700 --> 00:04:46.367 align:middle line:84%
+and I wanted to-- so
+at first this looks
+
+00:04:46.367 --> 00:04:48.400 align:middle line:90%
+like a very special case.
+
+00:04:48.400 --> 00:04:50.860 align:middle line:84%
+I'll try to argue that it's
+only a little bit special case,
+
+00:04:50.860 --> 00:04:52.620 align:middle line:90%
+and we'll see what the issue is.
+
+00:04:52.620 --> 00:05:01.970 align:middle line:90%
+
+
+00:05:01.970 --> 00:05:12.030 align:middle line:84%
+We call this an attempt
+at BKT using Theorem 1.
+
+00:05:12.030 --> 00:05:15.010 align:middle line:90%
+
+
+00:05:15.010 --> 00:05:19.970 align:middle line:84%
+So we're going to do a
+proof by contradiction.
+
+00:05:19.970 --> 00:05:23.330 align:middle line:84%
+We're going to say
+epsilon is very small,
+
+00:05:23.330 --> 00:05:27.090 align:middle line:90%
+and it's to be decided.
+
+00:05:27.090 --> 00:05:36.090 align:middle line:84%
+And so then we'll assume
+that pi t of x is less than x
+
+00:05:36.090 --> 00:05:39.990 align:middle line:84%
+to the half times p to the
+epsilon for all the ts in D.
+
+00:05:39.990 --> 00:05:43.210 align:middle line:84%
+So proof by contradiction,
+so we can assume that.
+
+00:05:43.210 --> 00:05:45.910 align:middle line:84%
+And also, without
+loss of generality,
+
+00:05:45.910 --> 00:05:48.090 align:middle line:84%
+we can suppose that
+0 and infinity are
+
+00:05:48.090 --> 00:05:50.790 align:middle line:84%
+in our set of directions,
+D. So in other words,
+
+00:05:50.790 --> 00:05:53.050 align:middle line:84%
+we include the
+horizontal projection
+
+00:05:53.050 --> 00:05:55.850 align:middle line:90%
+and the vertical projection.
+
+00:05:55.850 --> 00:06:00.330 align:middle line:84%
+So then we can make a set,
+A, so that A times A contains
+
+00:06:00.330 --> 00:06:07.570 align:middle line:84%
+x And x is most of A times A. So
+the set A is pi 0 of x, union pi
+
+00:06:07.570 --> 00:06:13.570 align:middle line:84%
+infinity of x, or the size of A
+bounded by size of x to the half
+
+00:06:13.570 --> 00:06:16.050 align:middle line:90%
+times p to the epsilon.
+
+00:06:16.050 --> 00:06:24.730 align:middle line:90%
+And x is contained in A times A.
+
+00:06:24.730 --> 00:06:27.750 align:middle line:84%
+So x is a big
+subset of a product,
+
+00:06:27.750 --> 00:06:29.660 align:middle line:84%
+and we can apply Theorem
+1 to our product.
+
+00:06:29.660 --> 00:06:32.890 align:middle line:90%
+
+
+00:06:32.890 --> 00:06:38.130 align:middle line:84%
+So theorem one tells us
+that the maximum t and D
+
+00:06:38.130 --> 00:06:41.950 align:middle line:90%
+of pi t of A times A is big.
+
+00:06:41.950 --> 00:06:49.700 align:middle line:90%
+
+
+00:06:49.700 --> 00:06:54.180 align:middle line:84%
+And even bigger than that,
+so this could be epsilon 1.
+
+00:06:54.180 --> 00:06:57.400 align:middle line:84%
+And epsilon 1 is much
+bigger than epsilon.
+
+00:06:57.400 --> 00:06:59.720 align:middle line:84%
+So epsilon 1 came from a
+theorem that's already proven.
+
+00:06:59.720 --> 00:07:00.678 align:middle line:90%
+It's some number.
+
+00:07:00.678 --> 00:07:02.720 align:middle line:84%
+And we get to choose
+epsilon as small as we like,
+
+00:07:02.720 --> 00:07:04.470 align:middle line:84%
+so we choose it much
+smaller than epsilon.
+
+00:07:04.470 --> 00:07:09.124 align:middle line:90%
+
+
+00:07:09.124 --> 00:07:13.620 align:middle line:84%
+But this is not yet
+the projection theorem
+
+00:07:13.620 --> 00:07:15.740 align:middle line:90%
+that we're aiming for.
+
+00:07:15.740 --> 00:07:22.980 align:middle line:84%
+And the issue is we would
+like pi t of x to be big.
+
+00:07:22.980 --> 00:07:30.100 align:middle line:84%
+So the issue is, maybe pi t
+of x is much smaller than pi
+
+00:07:30.100 --> 00:07:39.100 align:middle line:84%
+t of A cross A. Even though x
+is a big chunk of A cross A.
+
+00:07:39.100 --> 00:07:41.090 align:middle line:84%
+Let me make a picture
+of this enemy scenario.
+
+00:07:41.090 --> 00:07:44.420 align:middle line:90%
+
+
+00:07:44.420 --> 00:07:46.390 align:middle line:90%
+So here's the enemy scenario.
+
+00:07:46.390 --> 00:07:55.950 align:middle line:90%
+
+
+00:07:55.950 --> 00:08:05.870 align:middle line:84%
+All right, so there's a set x
+which has a small projection.
+
+00:08:05.870 --> 00:08:09.470 align:middle line:84%
+So we're going to be
+doing a projection, say,
+
+00:08:09.470 --> 00:08:10.570 align:middle line:90%
+in this direction.
+
+00:08:10.570 --> 00:08:13.110 align:middle line:90%
+
+
+00:08:13.110 --> 00:08:14.580 align:middle line:90%
+Projection of x is small.
+
+00:08:14.580 --> 00:08:18.070 align:middle line:90%
+
+
+00:08:18.070 --> 00:08:24.910 align:middle line:84%
+And x is a big portion of
+this larger set, A cross A.
+
+00:08:24.910 --> 00:08:28.910 align:middle line:84%
+So in blue, we have
+A cross A without x.
+
+00:08:28.910 --> 00:08:34.220 align:middle line:84%
+And when we project that down,
+then we see a lot of stuff.
+
+00:08:34.220 --> 00:08:38.792 align:middle line:90%
+
+
+00:08:38.792 --> 00:08:42.590 align:middle line:90%
+Pi of t, A cross A without x.
+
+00:08:42.590 --> 00:08:45.110 align:middle line:84%
+So we're worried that
+we may be so unlucky
+
+00:08:45.110 --> 00:08:47.320 align:middle line:84%
+that even though
+pi t of A cross A
+
+00:08:47.320 --> 00:08:52.040 align:middle line:84%
+is quite large, and even though
+x is a big chunk of A cross A,
+
+00:08:52.040 --> 00:08:54.660 align:middle line:84%
+nevertheless, pi
+t of x is small.
+
+00:08:54.660 --> 00:08:55.740 align:middle line:90%
+We're worried about that.
+
+00:08:55.740 --> 00:09:04.220 align:middle line:90%
+
+
+00:09:04.220 --> 00:09:09.200 align:middle line:84%
+So that's where we left
+off before vacation.
+
+00:09:09.200 --> 00:09:11.760 align:middle line:84%
+And now what I'd
+like everyone to do
+
+00:09:11.760 --> 00:09:14.820 align:middle line:84%
+is to try to think of an
+example where this happens.
+
+00:09:14.820 --> 00:09:18.240 align:middle line:84%
+Does this ever actually happen
+that inside of A cross A,
+
+00:09:18.240 --> 00:09:21.240 align:middle line:84%
+you have a large subset
+x, and the projection
+
+00:09:21.240 --> 00:09:27.320 align:middle line:84%
+of x is small, even though the
+projection of A cross A is big?
+
+00:09:27.320 --> 00:09:31.440 align:middle line:84%
+Can you think of an example
+where that actually happens?
+
+00:09:31.440 --> 00:09:32.200 align:middle line:90%
+Yeah.
+
+00:09:32.200 --> 00:09:35.560 align:middle line:84%
+AUDIENCE: You could choose
+x to be like the diagonal--
+
+00:09:35.560 --> 00:09:42.760 align:middle line:84%
+like all the values like, I
+guess, pi I for I is in Fp.
+
+00:09:42.760 --> 00:09:43.580 align:middle line:90%
+PROFESSOR: Right.
+
+00:09:43.580 --> 00:09:48.050 align:middle line:90%
+So here's an example.
+
+00:09:48.050 --> 00:09:51.050 align:middle line:84%
+So x is going to be
+contained in A cross
+
+00:09:51.050 --> 00:09:58.450 align:middle line:84%
+A. X is the set of all
+A comma A in A cross A.
+
+00:09:58.450 --> 00:10:02.170 align:middle line:84%
+And so then if I take
+the projection, I guess,
+
+00:10:02.170 --> 00:10:06.850 align:middle line:84%
+in the direction minus
+1 of x, I just get 0.
+
+00:10:06.850 --> 00:10:08.810 align:middle line:90%
+A minus A is always 0.
+
+00:10:08.810 --> 00:10:14.270 align:middle line:84%
+So this is extremely
+small But in this case,
+
+00:10:14.270 --> 00:10:17.530 align:middle line:84%
+this x is quite a bit
+smaller than the whole
+
+00:10:17.530 --> 00:10:22.100 align:middle line:84%
+A cross A. So let me make
+a more precise question.
+
+00:10:22.100 --> 00:10:25.050 align:middle line:90%
+
+
+00:10:25.050 --> 00:10:32.670 align:middle line:84%
+So let's say A has size N. And
+x is a subset of A cross A,
+
+00:10:32.670 --> 00:10:34.690 align:middle line:90%
+and it's really quite big.
+
+00:10:34.690 --> 00:10:37.250 align:middle line:84%
+So I'm going to say
+x is bigger than--
+
+00:10:37.250 --> 00:10:41.130 align:middle line:84%
+well, we're going to call it for
+now K inverse times N squared.
+
+00:10:41.130 --> 00:10:49.580 align:middle line:84%
+But then maybe K is order
+of N to the 1 over 1,000.
+
+00:10:49.580 --> 00:10:54.780 align:middle line:84%
+So it's really a big
+portion of A cross A.
+
+00:10:54.780 --> 00:11:03.020 align:middle line:84%
+And pi t of x is
+like way smaller
+
+00:11:03.020 --> 00:11:11.740 align:middle line:84%
+than pi t of A cross A. We
+could make that more precise
+
+00:11:11.740 --> 00:11:12.880 align:middle line:90%
+too, if we wanted to.
+
+00:11:12.880 --> 00:11:16.460 align:middle line:90%
+
+
+00:11:16.460 --> 00:11:18.820 align:middle line:84%
+And that's the situation
+we have in our attempt.
+
+00:11:18.820 --> 00:11:22.340 align:middle line:90%
+
+
+00:11:22.340 --> 00:11:25.180 align:middle line:90%
+A is only a bit bigger than x.
+
+00:11:25.180 --> 00:11:29.220 align:middle line:84%
+And so let's say
+the size of A is
+
+00:11:29.220 --> 00:11:31.180 align:middle line:84%
+N. It's just the
+definition of N.
+
+00:11:31.180 --> 00:11:35.020 align:middle line:84%
+And then x would be bigger
+than like p to the minus
+
+00:11:35.020 --> 00:11:40.380 align:middle line:84%
+a few epsilon size of A
+cross A. So it's really
+
+00:11:40.380 --> 00:11:41.890 align:middle line:90%
+a good portion of that.
+
+00:11:41.890 --> 00:11:50.110 align:middle line:90%
+
+
+00:11:50.110 --> 00:11:54.430 align:middle line:84%
+So could it still happen that
+the size of the projection of x
+
+00:11:54.430 --> 00:11:56.750 align:middle line:84%
+is way smaller than the
+size of the projection
+
+00:11:56.750 --> 00:11:57.690 align:middle line:90%
+of the whole thing?
+
+00:11:57.690 --> 00:12:04.110 align:middle line:90%
+
+
+00:12:04.110 --> 00:12:05.310 align:middle line:90%
+AUDIENCE: This is like--
+
+00:12:05.310 --> 00:12:07.570 align:middle line:84%
+can you pigeonhole
+principle somehow,
+
+00:12:07.570 --> 00:12:11.870 align:middle line:84%
+like the fibers of the
+projection of A cross A?
+
+00:12:11.870 --> 00:12:13.387 align:middle line:90%
+PROFESSOR: Yeah.
+
+00:12:13.387 --> 00:12:14.970 align:middle line:84%
+AUDIENCE: And then
+if x is big enough,
+
+00:12:14.970 --> 00:12:21.470 align:middle line:84%
+you know it has to be at
+least some nice number.
+
+00:12:21.470 --> 00:12:22.333 align:middle line:90%
+I don't know.
+
+00:12:22.333 --> 00:12:23.750 align:middle line:84%
+PROFESSOR: So the
+suggestion is we
+
+00:12:23.750 --> 00:12:28.370 align:middle line:84%
+can look at all of the fibers
+of the projection of A cross A,
+
+00:12:28.370 --> 00:12:32.540 align:middle line:84%
+and then we should pick x to
+be the union of the big fibers.
+
+00:12:32.540 --> 00:12:35.110 align:middle line:90%
+
+
+00:12:35.110 --> 00:12:37.150 align:middle line:90%
+Yeah.
+
+00:12:37.150 --> 00:12:38.070 align:middle line:90%
+That's right.
+
+00:12:38.070 --> 00:12:38.810 align:middle line:90%
+That's right.
+
+00:12:38.810 --> 00:12:40.960 align:middle line:84%
+So in this enemy
+scenario, there have
+
+00:12:40.960 --> 00:12:44.040 align:middle line:84%
+to be some very big fibers and
+some much smaller fibers that
+
+00:12:44.040 --> 00:12:46.980 align:middle line:84%
+have to be kind different
+from each other.
+
+00:12:46.980 --> 00:12:47.480 align:middle line:90%
+Yeah.
+
+00:12:47.480 --> 00:12:51.240 align:middle line:90%
+
+
+00:12:51.240 --> 00:12:55.845 align:middle line:84%
+But let's see if we can think of
+an example where this happens.
+
+00:12:55.845 --> 00:12:56.720 align:middle line:90%
+What I should erase--
+
+00:12:56.720 --> 00:13:07.200 align:middle line:90%
+
+
+00:13:07.200 --> 00:13:10.680 align:middle line:90%
+probably still have some space.
+
+00:13:10.680 --> 00:13:15.060 align:middle line:84%
+So I'm just going to
+continue below the line here.
+
+00:13:15.060 --> 00:13:21.680 align:middle line:90%
+
+
+00:13:21.680 --> 00:13:23.880 align:middle line:84%
+So first of all, can we
+even think of an example
+
+00:13:23.880 --> 00:13:29.560 align:middle line:84%
+where the projection of x or of
+something would be small at all?
+
+00:13:29.560 --> 00:13:35.820 align:middle line:84%
+So an example, maybe x could
+be the numbers from 1 up to N
+
+00:13:35.820 --> 00:13:41.130 align:middle line:84%
+cross the numbers from 1
+up to N. And then pi 1 of x
+
+00:13:41.130 --> 00:13:44.010 align:middle line:90%
+is pretty small.
+
+00:13:44.010 --> 00:13:48.090 align:middle line:84%
+It would be basically
+integers from 1 up to 2N,
+
+00:13:48.090 --> 00:13:49.400 align:middle line:90%
+so this would be quite small.
+
+00:13:49.400 --> 00:13:57.596 align:middle line:90%
+
+
+00:13:57.596 --> 00:14:03.370 align:middle line:84%
+So you could make this A. So
+x would be all of A cross A.
+
+00:14:03.370 --> 00:14:06.410 align:middle line:84%
+Then the projection of A
+cross A would be small.
+
+00:14:06.410 --> 00:14:10.330 align:middle line:84%
+But you could also inflate A
+to make it bigger than that.
+
+00:14:10.330 --> 00:14:15.090 align:middle line:84%
+So we could take A to be
+the integers from 1 up to N
+
+00:14:15.090 --> 00:14:17.770 align:middle line:90%
+union, A tilde.
+
+00:14:17.770 --> 00:14:20.670 align:middle line:84%
+Maybe this size of
+A tilde is also N,
+
+00:14:20.670 --> 00:14:22.860 align:middle line:84%
+but A tilde is
+unstructured or random.
+
+00:14:22.860 --> 00:14:31.650 align:middle line:90%
+
+
+00:14:31.650 --> 00:14:38.180 align:middle line:84%
+So now if I take
+pi 1 of A cross A,
+
+00:14:38.180 --> 00:14:43.940 align:middle line:84%
+it's at least as big as pi
+1 of A tilde cross A tilde.
+
+00:14:43.940 --> 00:14:46.980 align:middle line:84%
+And A tilde has nothing to
+do with the numbers from 1
+
+00:14:46.980 --> 00:14:49.320 align:middle line:84%
+up to N. I could build
+some set where that's big.
+
+00:14:49.320 --> 00:14:54.580 align:middle line:90%
+
+
+00:14:54.580 --> 00:15:01.260 align:middle line:84%
+But pi 1 of x is only
+around N. So there could be
+
+00:15:01.260 --> 00:15:02.930 align:middle line:90%
+a big gap between these guys.
+
+00:15:02.930 --> 00:15:08.740 align:middle line:90%
+
+
+00:15:08.740 --> 00:15:12.140 align:middle line:90%
+But this example is not so--
+
+00:15:12.140 --> 00:15:14.320 align:middle line:84%
+not such a problem
+for our strategy.
+
+00:15:14.320 --> 00:15:17.100 align:middle line:84%
+Because in this example,
+we just should have chosen
+
+00:15:17.100 --> 00:15:20.500 align:middle line:90%
+the set A smaller like A to B.
+
+00:15:20.500 --> 00:15:22.000 align:middle line:90%
+We could choose as we like.
+
+00:15:22.000 --> 00:15:24.100 align:middle line:84%
+We could choose a
+smaller set A so
+
+00:15:24.100 --> 00:15:27.820 align:middle line:84%
+that A actually with the smaller
+choice of A, just these guys, x
+
+00:15:27.820 --> 00:15:31.840 align:middle line:84%
+would be A cross A. And
+then we would be happy.
+
+00:15:31.840 --> 00:15:35.176 align:middle line:90%
+
+
+00:15:35.176 --> 00:15:38.910 align:middle line:84%
+So the key to the
+proof of Bougain, Katz,
+
+00:15:38.910 --> 00:15:41.350 align:middle line:84%
+Tao is a theorem
+from combinatorics
+
+00:15:41.350 --> 00:15:43.850 align:middle line:84%
+called the
+Balog-Szemeredi-Gowers theorem.
+
+00:15:43.850 --> 00:15:46.510 align:middle line:84%
+And it says that this
+example is pretty much
+
+00:15:46.510 --> 00:15:50.150 align:middle line:84%
+the only way that pi 1 of x
+could be much smaller than pi1
+
+00:15:50.150 --> 00:16:21.410 align:middle line:90%
+of A cross A.
+
+00:16:21.410 --> 00:16:24.310 align:middle line:84%
+So, this is called the
+Balog-Szemeredi-Gowers theorem.
+
+00:16:24.310 --> 00:16:30.630 align:middle line:84%
+And it's another of the central
+tools in the toolbox of additive
+
+00:16:30.630 --> 00:16:33.800 align:middle line:84%
+combinatorics, along with the
+Plünnecke-Ruzsa inequalities
+
+00:16:33.800 --> 00:16:36.160 align:middle line:90%
+that we talked about last time.
+
+00:16:36.160 --> 00:16:37.020 align:middle line:90%
+All right.
+
+00:16:37.020 --> 00:16:43.520 align:middle line:84%
+So it says, if A and B are
+contained in an abelian group
+
+00:16:43.520 --> 00:16:52.080 align:middle line:84%
+and they have size
+at most, N. And I
+
+00:16:52.080 --> 00:16:59.412 align:middle line:84%
+have a subset of A cross
+B, which is significant--
+
+00:16:59.412 --> 00:17:02.400 align:middle line:90%
+a significant fraction.
+
+00:17:02.400 --> 00:17:07.000 align:middle line:84%
+And the projection of this
+subset in some direction
+
+00:17:07.000 --> 00:17:07.590 align:middle line:90%
+is small.
+
+00:17:07.590 --> 00:17:15.760 align:middle line:90%
+
+
+00:17:15.760 --> 00:17:17.560 align:middle line:90%
+All right.
+
+00:17:17.560 --> 00:17:20.160 align:middle line:84%
+So, here, I want you
+to imagine that K
+
+00:17:20.160 --> 00:17:23.000 align:middle line:84%
+is a lot smaller
+than N. So, this
+
+00:17:23.000 --> 00:17:25.260 align:middle line:84%
+is a big chunk of all
+the pairs, A and B.
+
+00:17:25.260 --> 00:17:28.060 align:middle line:84%
+And the smallest this could
+possibly be is around N,
+
+00:17:28.060 --> 00:17:31.080 align:middle line:84%
+because if you just
+fix one element of B,
+
+00:17:31.080 --> 00:17:33.560 align:middle line:84%
+you'd have around N choices
+for this element of A.
+
+00:17:33.560 --> 00:17:35.960 align:middle line:84%
+So that would already
+give you around N here.
+
+00:17:35.960 --> 00:17:39.960 align:middle line:84%
+So, this is almost
+as small as possible.
+
+00:17:39.960 --> 00:17:44.640 align:middle line:84%
+And then, the conclusion is,
+it's not necessarily the case
+
+00:17:44.640 --> 00:17:47.060 align:middle line:84%
+that pi T of all of
+A cross B is small.
+
+00:17:47.060 --> 00:17:49.040 align:middle line:84%
+We just saw a
+counterexample to that.
+
+00:17:49.040 --> 00:17:53.120 align:middle line:84%
+But we could find
+big pieces of A and B
+
+00:17:53.120 --> 00:17:56.600 align:middle line:84%
+so that the projection of
+the big pieces is small.
+
+00:17:56.600 --> 00:18:00.740 align:middle line:84%
+So, then, there exists
+A prime and B prime,
+
+00:18:00.740 --> 00:18:07.360 align:middle line:84%
+which are subsets of A and B.
+A prime and A, B prime and B,
+
+00:18:07.360 --> 00:18:13.500 align:middle line:84%
+so that, I'll say, x prime is
+defined to be A prime cross
+
+00:18:13.500 --> 00:18:15.120 align:middle line:90%
+B prime, intersect, x.
+
+00:18:15.120 --> 00:18:21.920 align:middle line:84%
+And x prime is still a
+big fraction of N squared.
+
+00:18:21.920 --> 00:18:26.840 align:middle line:84%
+So, K to the minus some
+constant power, times N squared.
+
+00:18:26.840 --> 00:18:32.490 align:middle line:84%
+And if I take pi T
+of A prime cross B
+
+00:18:32.490 --> 00:18:39.810 align:middle line:84%
+prime, that is less than K
+to some power times N. So,
+
+00:18:39.810 --> 00:18:41.140 align:middle line:90%
+this is small.
+
+00:18:41.140 --> 00:18:48.010 align:middle line:90%
+
+
+00:18:48.010 --> 00:18:53.280 align:middle line:84%
+So in this example here,
+where A was like this,
+
+00:18:53.280 --> 00:18:56.050 align:middle line:84%
+this part here would
+be the A prime.
+
+00:18:56.050 --> 00:18:58.250 align:middle line:90%
+And it would be symmetric.
+
+00:18:58.250 --> 00:19:00.070 align:middle line:84%
+B prime and A prime
+would both be this.
+
+00:19:00.070 --> 00:19:06.490 align:middle line:90%
+
+
+00:19:06.490 --> 00:19:08.650 align:middle line:84%
+OK, take a moment to
+digest that statement
+
+00:19:08.650 --> 00:19:10.400 align:middle line:84%
+and see if you have
+questions or comments.
+
+00:19:10.400 --> 00:19:14.450 align:middle line:90%
+
+
+00:19:14.450 --> 00:19:15.914 align:middle line:90%
+OK.
+
+00:19:15.914 --> 00:19:20.110 align:middle line:84%
+So, we will prove this
+probably starting later today,
+
+00:19:20.110 --> 00:19:22.530 align:middle line:90%
+but most of it next class.
+
+00:19:22.530 --> 00:19:25.090 align:middle line:84%
+But for the rest of
+this class, we'll
+
+00:19:25.090 --> 00:19:26.390 align:middle line:90%
+explore why this is useful.
+
+00:19:26.390 --> 00:19:29.840 align:middle line:84%
+And in particular, we'll use it
+to prove the projection theorem,
+
+00:19:29.840 --> 00:19:30.340 align:middle line:90%
+OK?
+
+00:19:30.340 --> 00:19:33.110 align:middle line:90%
+
+
+00:19:33.110 --> 00:19:33.610 align:middle line:90%
+Cool.
+
+00:19:33.610 --> 00:19:59.540 align:middle line:90%
+
+
+00:19:59.540 --> 00:20:00.160 align:middle line:90%
+All right.
+
+00:20:00.160 --> 00:20:05.290 align:middle line:84%
+So, let's do the proof of the
+Bourgain-Katz-Tao projection
+
+00:20:05.290 --> 00:20:05.790 align:middle line:90%
+theorem.
+
+00:20:05.790 --> 00:20:11.620 align:middle line:90%
+
+
+00:20:11.620 --> 00:20:16.835 align:middle line:84%
+So, let's say epsilon
+is small, to be decided.
+
+00:20:16.835 --> 00:20:18.960 align:middle line:84%
+So we're going to prove,
+there's some small epsilon
+
+00:20:18.960 --> 00:20:20.260 align:middle line:90%
+where this is true.
+
+00:20:20.260 --> 00:20:25.020 align:middle line:84%
+And I'm going to write
+C less than tilde, tilde
+
+00:20:25.020 --> 00:20:31.150 align:middle line:84%
+D. It means that C is less
+than p to the big O of epsilon,
+
+00:20:31.150 --> 00:20:35.390 align:middle line:90%
+times D.
+
+00:20:35.390 --> 00:20:37.374 align:middle line:90%
+OK.
+
+00:20:37.374 --> 00:20:40.170 align:middle line:84%
+And, now, we're going to do
+a proof by contradiction.
+
+00:20:40.170 --> 00:20:47.270 align:middle line:84%
+So we can suppose pi T of
+x is less than or equal
+
+00:20:47.270 --> 00:20:55.630 align:middle line:84%
+to p to the epsilon, times x to
+the half, for all the T and D.
+
+00:20:55.630 --> 00:20:56.750 align:middle line:90%
+OK.
+
+00:20:56.750 --> 00:20:58.430 align:middle line:84%
+Without loss of
+generality, I can
+
+00:20:58.430 --> 00:21:01.830 align:middle line:84%
+suppose that 0 or infinity
+are in my directions.
+
+00:21:01.830 --> 00:21:08.190 align:middle line:84%
+And I'll take A to be pi 0
+of x union, pi infinity of x.
+
+00:21:08.190 --> 00:21:13.790 align:middle line:84%
+And so, now, I know that x
+is a subset of A cross A.
+
+00:21:13.790 --> 00:21:17.510 align:middle line:84%
+I'll say, A, the
+size of A could be N.
+
+00:21:17.510 --> 00:21:20.630 align:middle line:84%
+And that is tilde,
+tilde, the square root
+
+00:21:20.630 --> 00:21:24.210 align:middle line:84%
+of x, up to some powers
+of p to the epsilon.
+
+00:21:24.210 --> 00:21:26.660 align:middle line:90%
+
+
+00:21:26.660 --> 00:21:27.160 align:middle line:90%
+OK.
+
+00:21:27.160 --> 00:21:32.960 align:middle line:84%
+And, therefore, x is greater
+tilde, tilde, N squared.
+
+00:21:32.960 --> 00:21:39.320 align:middle line:84%
+So x is a big fraction of
+all of A cross N. Cool.
+
+00:21:39.320 --> 00:21:46.200 align:middle line:84%
+Next, I choose
+some other T1 in D.
+
+00:21:46.200 --> 00:21:58.800 align:middle line:84%
+And I know that pi T1 of x
+is less than tilde, tilde, N.
+
+00:21:58.800 --> 00:22:03.360 align:middle line:84%
+And so, once I know this, the
+Balog-Szemeredi-Gowers theorem
+
+00:22:03.360 --> 00:22:08.920 align:middle line:84%
+tells me that this comes from a
+product, A prime, A prime cross
+
+00:22:08.920 --> 00:22:10.320 align:middle line:90%
+B prime.
+
+00:22:10.320 --> 00:22:19.040 align:middle line:84%
+So, Balog-Szemeredi-Gowers says,
+this A prime in A, B prime in B.
+
+00:22:19.040 --> 00:22:23.250 align:middle line:84%
+And x prime is the part of x
+and its product, A prime cross B
+
+00:22:23.250 --> 00:22:24.050 align:middle line:90%
+prime.
+
+00:22:24.050 --> 00:22:28.050 align:middle line:84%
+So, first of all, x prime
+is still quite substantial.
+
+00:22:28.050 --> 00:22:33.580 align:middle line:84%
+And pi T1 of A prime
+cross B prime is small.
+
+00:22:33.580 --> 00:22:37.570 align:middle line:90%
+
+
+00:22:37.570 --> 00:22:41.850 align:middle line:84%
+And this means, in other
+words, that A prime plus T1 B
+
+00:22:41.850 --> 00:22:43.400 align:middle line:90%
+prime is small.
+
+00:22:43.400 --> 00:22:56.170 align:middle line:90%
+
+
+00:22:56.170 --> 00:22:58.360 align:middle line:90%
+And this here is--
+
+00:22:58.360 --> 00:23:02.810 align:middle line:90%
+
+
+00:23:02.810 --> 00:23:08.470 align:middle line:84%
+this information here is
+strong in a helpful way.
+
+00:23:08.470 --> 00:23:11.090 align:middle line:84%
+It's stronger than
+this, because, here, we
+
+00:23:11.090 --> 00:23:13.910 align:middle line:84%
+can use the Plunnecke-Ruzsa
+inequalities.
+
+00:23:13.910 --> 00:23:16.610 align:middle line:90%
+
+
+00:23:16.610 --> 00:23:22.820 align:middle line:84%
+So, once we know that A prime
+plus T1 B prime is small,
+
+00:23:22.820 --> 00:23:28.140 align:middle line:84%
+then Plünnecke-Ruzsa
+inequalities tell us that lots
+
+00:23:28.140 --> 00:23:29.640 align:middle line:90%
+of other things are small.
+
+00:23:29.640 --> 00:23:35.340 align:middle line:84%
+So, for example, A prime, plus
+or minus A prime, is also small.
+
+00:23:35.340 --> 00:23:39.740 align:middle line:84%
+If I wanted to, I could
+do a triple sum, A prime,
+
+00:23:39.740 --> 00:23:44.620 align:middle line:84%
+plus A prime, plus A prime,
+is also small, dot, dot, dot.
+
+00:23:44.620 --> 00:23:48.420 align:middle line:84%
+You could do the
+same with B prime.
+
+00:23:48.420 --> 00:23:51.100 align:middle line:90%
+OK.
+
+00:23:51.100 --> 00:23:56.940 align:middle line:84%
+So, now, we see that A prime and
+B prime have a lot of structure,
+
+00:23:56.940 --> 00:23:58.038 align:middle line:90%
+have a lot of structure.
+
+00:23:58.038 --> 00:23:59.830 align:middle line:84%
+And, actually, I'll
+use the word, symmetry.
+
+00:23:59.830 --> 00:24:03.140 align:middle line:90%
+
+
+00:24:03.140 --> 00:24:03.760 align:middle line:90%
+All right.
+
+00:24:03.760 --> 00:24:06.973 align:middle line:90%
+
+
+00:24:06.973 --> 00:24:09.340 align:middle line:90%
+OK.
+
+00:24:09.340 --> 00:24:10.900 align:middle line:84%
+Actually, I'll
+draw you a picture
+
+00:24:10.900 --> 00:24:13.980 align:middle line:84%
+in a minute of how
+I visualize this,
+
+00:24:13.980 --> 00:24:16.130 align:middle line:90%
+and why I use the word symmetry.
+
+00:24:16.130 --> 00:24:19.430 align:middle line:90%
+
+
+00:24:19.430 --> 00:24:21.286 align:middle line:90%
+OK.
+
+00:24:21.286 --> 00:24:22.120 align:middle line:90%
+So, next.
+
+00:24:22.120 --> 00:24:29.950 align:middle line:90%
+
+
+00:24:29.950 --> 00:24:31.930 align:middle line:90%
+Sorry, I have to make space.
+
+00:24:31.930 --> 00:24:33.930 align:middle line:84%
+I'm going to erase the
+statement of the theorem.
+
+00:24:33.930 --> 00:24:36.430 align:middle line:84%
+We're going to try to prove
+that one of the projections of x
+
+00:24:36.430 --> 00:24:38.790 align:middle line:90%
+is big.
+
+00:24:38.790 --> 00:24:39.290 align:middle line:90%
+All right.
+
+00:24:39.290 --> 00:24:47.870 align:middle line:90%
+
+
+00:24:47.870 --> 00:24:48.690 align:middle line:90%
+All right.
+
+00:24:48.690 --> 00:24:52.150 align:middle line:90%
+
+
+00:24:52.150 --> 00:24:52.650 align:middle line:90%
+All right.
+
+00:24:52.650 --> 00:24:54.950 align:middle line:84%
+So, now, we have
+a lemma that says,
+
+00:24:54.950 --> 00:24:58.522 align:middle line:84%
+if I have a subset y in
+A prime cross B prime--
+
+00:24:58.522 --> 00:25:00.730 align:middle line:84%
+the subset we're going to
+care about is just x prime.
+
+00:25:00.730 --> 00:25:04.070 align:middle line:90%
+But the lemma is more general.
+
+00:25:04.070 --> 00:25:10.310 align:middle line:84%
+And A prime and B prime
+have these nice properties.
+
+00:25:10.310 --> 00:25:12.410 align:middle line:90%
+So, I'll just copy these two.
+
+00:25:12.410 --> 00:25:17.270 align:middle line:90%
+
+
+00:25:17.270 --> 00:25:21.410 align:middle line:84%
+A prime plus T1
+B prime is small.
+
+00:25:21.410 --> 00:25:24.280 align:middle line:90%
+
+
+00:25:24.280 --> 00:25:27.880 align:middle line:90%
+A prime minus A prime is small.
+
+00:25:27.880 --> 00:25:33.560 align:middle line:84%
+And y itself is fairly
+large, although I don't need
+
+00:25:33.560 --> 00:25:36.680 align:middle line:90%
+to write it in the statement.
+
+00:25:36.680 --> 00:25:39.360 align:middle line:90%
+Then.
+
+00:25:39.360 --> 00:25:42.280 align:middle line:84%
+pi T of y-- so this
+is for any T. So,
+
+00:25:42.280 --> 00:25:45.250 align:middle line:84%
+T is just anybody in
+Fp, different from T1.
+
+00:25:45.250 --> 00:25:47.920 align:middle line:90%
+
+
+00:25:47.920 --> 00:25:53.860 align:middle line:84%
+This guy is bigger
+than, tilde, tilde,
+
+00:25:53.860 --> 00:26:01.280 align:middle line:84%
+y over N squared, times pi
+in a different direction,
+
+00:26:01.280 --> 00:26:05.110 align:middle line:84%
+T over T1, of A
+prime cross A prime.
+
+00:26:05.110 --> 00:26:13.200 align:middle line:90%
+
+
+00:26:13.200 --> 00:26:18.210 align:middle line:84%
+So, we have-- the
+biggest y it could be is,
+
+00:26:18.210 --> 00:26:20.830 align:middle line:84%
+it could have size around
+N squared, in which case
+
+00:26:20.830 --> 00:26:23.890 align:middle line:90%
+this would disappear.
+
+00:26:23.890 --> 00:26:26.890 align:middle line:84%
+And so, I said, if we have a
+large subset of A prime cross B
+
+00:26:26.890 --> 00:26:31.050 align:middle line:84%
+prime, then the projection
+of that large subset y
+
+00:26:31.050 --> 00:26:33.770 align:middle line:84%
+is bigger than the
+projection and related
+
+00:26:33.770 --> 00:26:37.970 align:middle line:84%
+angle of a whole product,
+A prime cross A prime.
+
+00:26:37.970 --> 00:26:43.610 align:middle line:84%
+This is good for us because we
+can apply theorem 1 to this.
+
+00:26:43.610 --> 00:26:51.290 align:middle line:84%
+And, this inequality,
+you're kind of ruling out
+
+00:26:51.290 --> 00:26:52.590 align:middle line:90%
+the enemy scenario.
+
+00:26:52.590 --> 00:26:55.130 align:middle line:84%
+We're ruling out the possibility
+that there's a big chunk
+
+00:26:55.130 --> 00:26:57.542 align:middle line:84%
+of A prime cross B prime
+that got compressed,
+
+00:26:57.542 --> 00:26:59.000 align:middle line:84%
+even though the
+whole thing didn't.
+
+00:26:59.000 --> 00:27:02.730 align:middle line:90%
+
+
+00:27:02.730 --> 00:27:03.850 align:middle line:90%
+OK.
+
+00:27:03.850 --> 00:27:07.390 align:middle line:84%
+Let me put over
+here, some intuition.
+
+00:27:07.390 --> 00:27:11.130 align:middle line:90%
+
+
+00:27:11.130 --> 00:27:19.020 align:middle line:84%
+So, my intuition is that A prime
+cross B prime is very symmetric.
+
+00:27:19.020 --> 00:27:21.920 align:middle line:84%
+And so, let me draw an
+exaggerated version.
+
+00:27:21.920 --> 00:27:24.610 align:middle line:84%
+Suppose that A prime cross B
+prime does look like a lattice.
+
+00:27:24.610 --> 00:27:31.020 align:middle line:90%
+
+
+00:27:31.020 --> 00:27:37.180 align:middle line:84%
+And inside of there, we
+have some substantial but
+
+00:27:37.180 --> 00:27:39.138 align:middle line:90%
+unstructured set, y.
+
+00:27:39.138 --> 00:27:43.440 align:middle line:90%
+
+
+00:27:43.440 --> 00:27:48.380 align:middle line:84%
+So, if there were some angle
+where the projection of y
+
+00:27:48.380 --> 00:27:51.940 align:middle line:84%
+got compressed a lot, I
+claim that compression
+
+00:27:51.940 --> 00:27:55.340 align:middle line:84%
+of the whole lattice should
+get compressed a lot.
+
+00:27:55.340 --> 00:27:56.220 align:middle line:90%
+Why?
+
+00:27:56.220 --> 00:27:59.700 align:middle line:84%
+Because the lattice
+is symmetric.
+
+00:27:59.700 --> 00:28:03.180 align:middle line:84%
+So I can cover the lattice
+by some translates of y.
+
+00:28:03.180 --> 00:28:05.400 align:middle line:84%
+And if each of those
+gets compressed a lot,
+
+00:28:05.400 --> 00:28:10.020 align:middle line:84%
+then the whole lattice
+should be compressed a lot.
+
+00:28:10.020 --> 00:28:18.120 align:middle line:84%
+So, we cover A prime cross B
+prime by a few translates of y.
+
+00:28:18.120 --> 00:28:23.140 align:middle line:90%
+
+
+00:28:23.140 --> 00:28:27.860 align:middle line:84%
+And then we would get that the
+projection of the whole thing
+
+00:28:27.860 --> 00:28:33.240 align:middle line:84%
+should be bounded by a few
+times, the projection of y.
+
+00:28:33.240 --> 00:28:42.180 align:middle line:90%
+
+
+00:28:42.180 --> 00:28:45.060 align:middle line:84%
+So, now, let's carry
+out this intuition.
+
+00:28:45.060 --> 00:28:49.140 align:middle line:84%
+We are going to cover
+y, cover A prime,
+
+00:28:49.140 --> 00:28:52.280 align:middle line:84%
+cover something,
+by translates of y.
+
+00:28:52.280 --> 00:28:59.920 align:middle line:90%
+
+
+00:28:59.920 --> 00:29:07.520 align:middle line:84%
+So, let's consider
+y plus T1, T2.
+
+00:29:07.520 --> 00:29:09.500 align:middle line:84%
+These are some
+translates of y, a set
+
+00:29:09.500 --> 00:29:17.190 align:middle line:84%
+of these guys, where T1
+is an A prime cross A
+
+00:29:17.190 --> 00:29:19.430 align:middle line:90%
+prime, minus A prime.
+
+00:29:19.430 --> 00:29:27.410 align:middle line:84%
+And T2 is in this slightly
+weird-looking thing there.
+
+00:29:27.410 --> 00:29:33.070 align:middle line:90%
+
+
+00:29:33.070 --> 00:29:37.830 align:middle line:84%
+And so, these are a
+bunch of translates of y.
+
+00:29:37.830 --> 00:29:46.430 align:middle line:84%
+And these translates of y
+cover somebody a lot of times.
+
+00:29:46.430 --> 00:29:54.033 align:middle line:90%
+So, for every y1, y2--
+
+00:29:54.033 --> 00:29:54.950 align:middle line:90%
+let me do it this way.
+
+00:29:54.950 --> 00:29:59.470 align:middle line:84%
+For every A1, A2,
+and A prime cross
+
+00:29:59.470 --> 00:30:05.750 align:middle line:84%
+A prime, and for
+every y1, y2, and y,
+
+00:30:05.750 --> 00:30:16.280 align:middle line:84%
+there is a unique T1, T2,
+which is in this list,
+
+00:30:16.280 --> 00:30:24.600 align:middle line:84%
+so that y1, y2, plus
+T1, T2, is a1, a2.
+
+00:30:24.600 --> 00:30:29.640 align:middle line:84%
+So this is easier to prove
+than it is to write down.
+
+00:30:29.640 --> 00:30:31.720 align:middle line:90%
+Just solve for T1.
+
+00:30:31.720 --> 00:30:36.040 align:middle line:90%
+T1 must be a1 minus Y1.
+
+00:30:36.040 --> 00:30:39.340 align:middle line:84%
+And these guys both
+live in A prime.
+
+00:30:39.340 --> 00:30:43.040 align:middle line:90%
+So, T1 is in there.
+
+00:30:43.040 --> 00:30:50.240 align:middle line:90%
+And, ah, wait.
+
+00:30:50.240 --> 00:30:51.100 align:middle line:90%
+Yeah, sorry.
+
+00:30:51.100 --> 00:30:55.380 align:middle line:84%
+So this is going to have to
+be negative 1 over T1a prime.
+
+00:30:55.380 --> 00:30:58.010 align:middle line:90%
+OK, now, how does y2 work?
+
+00:30:58.010 --> 00:31:01.960 align:middle line:90%
+
+
+00:31:01.960 --> 00:31:05.640 align:middle line:84%
+So, T2 is going
+to be a2 minus y2.
+
+00:31:05.640 --> 00:31:13.450 align:middle line:90%
+And the a2 lives in B prime.
+
+00:31:13.450 --> 00:31:41.020 align:middle line:90%
+
+
+00:31:41.020 --> 00:31:41.520 align:middle line:90%
+Yeah.
+
+00:31:41.520 --> 00:31:44.490 align:middle line:90%
+
+
+00:31:44.490 --> 00:31:47.570 align:middle line:90%
+So, the a2 lives here.
+
+00:31:47.570 --> 00:31:52.070 align:middle line:90%
+And the y2 lives here.
+
+00:31:52.070 --> 00:31:54.910 align:middle line:84%
+So the difference lives
+here, where it's supposed to.
+
+00:31:54.910 --> 00:32:06.300 align:middle line:90%
+
+
+00:32:06.300 --> 00:32:14.780 align:middle line:84%
+So, these translates of
+y cover A prime cross
+
+00:32:14.780 --> 00:32:17.860 align:middle line:90%
+negative 1 over T1a prime.
+
+00:32:17.860 --> 00:32:22.540 align:middle line:90%
+They cover it y times.
+
+00:32:22.540 --> 00:32:24.560 align:middle line:84%
+They cover each
+point in here y times
+
+00:32:24.560 --> 00:32:30.220 align:middle line:84%
+because, for each point
+in here, I have norm of y,
+
+00:32:30.220 --> 00:32:33.060 align:middle line:84%
+cardinality of y
+choices for this guy.
+
+00:32:33.060 --> 00:32:37.300 align:middle line:84%
+And then there's
+one in translation,
+
+00:32:37.300 --> 00:32:39.480 align:middle line:84%
+a set of translations
+that lands here.
+
+00:32:39.480 --> 00:32:43.260 align:middle line:90%
+
+
+00:32:43.260 --> 00:32:45.290 align:middle line:90%
+Does this sentence make sense?
+
+00:32:45.290 --> 00:32:49.580 align:middle line:90%
+
+
+00:32:49.580 --> 00:32:53.100 align:middle line:84%
+So we have rigged it, that we've
+taken a bunch of translations
+
+00:32:53.100 --> 00:32:54.820 align:middle line:90%
+of this set, y.
+
+00:32:54.820 --> 00:32:59.100 align:middle line:84%
+And we have covered a
+nice product many times.
+
+00:32:59.100 --> 00:33:01.780 align:middle line:84%
+And the product, we actually
+could have arranged the product
+
+00:33:01.780 --> 00:33:03.020 align:middle line:90%
+to be A prime cross B prime.
+
+00:33:03.020 --> 00:33:05.270 align:middle line:84%
+That would have been a little
+easier than what we did.
+
+00:33:05.270 --> 00:33:07.950 align:middle line:84%
+But we have arranged that the
+product that we've covered
+
+00:33:07.950 --> 00:33:11.697 align:middle line:84%
+is A prime cross a
+dilation of A prime.
+
+00:33:11.697 --> 00:33:13.530 align:middle line:84%
+And that's a little bit
+better, technically,
+
+00:33:13.530 --> 00:33:15.410 align:middle line:84%
+because it's going to
+be closer to theorem 1.
+
+00:33:15.410 --> 00:33:18.790 align:middle line:90%
+
+
+00:33:18.790 --> 00:33:24.750 align:middle line:84%
+Now, notice that this guy
+is small by hypothesis.
+
+00:33:24.750 --> 00:33:28.370 align:middle line:90%
+And this set here is also small.
+
+00:33:28.370 --> 00:33:32.950 align:middle line:90%
+This is just a dilate of this.
+
+00:33:32.950 --> 00:33:35.310 align:middle line:90%
+So these sets are small.
+
+00:33:35.310 --> 00:33:37.870 align:middle line:84%
+So we took a few
+translations of y.
+
+00:33:37.870 --> 00:33:41.950 align:middle line:84%
+And we covered this
+product many times.
+
+00:33:41.950 --> 00:33:43.718 align:middle line:84%
+And that means that,
+at least, typically,
+
+00:33:43.718 --> 00:33:46.260 align:middle line:84%
+each of these translations was
+covering a lot of the product.
+
+00:33:46.260 --> 00:33:49.590 align:middle line:90%
+
+
+00:33:49.590 --> 00:33:53.750 align:middle line:90%
+So that matches this intuition.
+
+00:33:53.750 --> 00:34:01.430 align:middle line:84%
+So, then, we can say that pi
+T of A prime cross minus 1
+
+00:34:01.430 --> 00:34:09.719 align:middle line:84%
+over T, T1a prime, that
+guy is bounded by--
+
+00:34:09.719 --> 00:34:18.639 align:middle line:84%
+OK, so we're going to take
+A prime minus A prime,
+
+00:34:18.639 --> 00:34:25.000 align:middle line:90%
+times A prime plus T1 B prime.
+
+00:34:25.000 --> 00:34:28.280 align:middle line:84%
+This is how many
+copies of y we took.
+
+00:34:28.280 --> 00:34:30.380 align:middle line:84%
+For each one of them,
+we have a projection.
+
+00:34:30.380 --> 00:34:33.960 align:middle line:90%
+So that has the size, pi T of y.
+
+00:34:33.960 --> 00:34:37.199 align:middle line:84%
+And after doing that, we've
+covered every point here
+
+00:34:37.199 --> 00:34:38.260 align:middle line:90%
+y times.
+
+00:34:38.260 --> 00:34:39.540 align:middle line:90%
+So we have this guy.
+
+00:34:39.540 --> 00:34:49.560 align:middle line:90%
+
+
+00:34:49.560 --> 00:34:52.460 align:middle line:84%
+These are hypothesis
+bounded by N.
+
+00:34:52.460 --> 00:34:58.500 align:middle line:84%
+So this is N squared
+over y, pi T of y.
+
+00:34:58.500 --> 00:35:01.090 align:middle line:90%
+
+
+00:35:01.090 --> 00:35:03.750 align:middle line:84%
+And that's basically
+our final inequality.
+
+00:35:03.750 --> 00:35:07.090 align:middle line:90%
+Put the pi T of y by itself.
+
+00:35:07.090 --> 00:35:13.530 align:middle line:84%
+Pi T of y is greater, tilde,
+tilde, y over N squared, times
+
+00:35:13.530 --> 00:35:15.250 align:middle line:84%
+the size of this
+thingy, which is
+
+00:35:15.250 --> 00:35:22.245 align:middle line:84%
+equivalent to pi negative T
+over T1, A prime cross A prime.
+
+00:35:22.245 --> 00:35:55.970 align:middle line:90%
+
+
+00:35:55.970 --> 00:35:57.750 align:middle line:90%
+OK, take a moment with that.
+
+00:35:57.750 --> 00:36:22.940 align:middle line:90%
+
+
+00:36:22.940 --> 00:36:23.440 align:middle line:90%
+OK.
+
+00:36:23.440 --> 00:36:27.940 align:middle line:90%
+
+
+00:36:27.940 --> 00:36:30.990 align:middle line:84%
+So, now, let's finish the
+proof of the BKT theorem.
+
+00:36:30.990 --> 00:36:43.420 align:middle line:90%
+
+
+00:36:43.420 --> 00:36:44.200 align:middle line:90%
+All right.
+
+00:36:44.200 --> 00:36:50.540 align:middle line:90%
+
+
+00:36:50.540 --> 00:36:54.260 align:middle line:84%
+So, we would like to estimate
+the maximum T in our direction
+
+00:36:54.260 --> 00:36:58.150 align:middle line:90%
+set of pi T of x.
+
+00:36:58.150 --> 00:37:01.990 align:middle line:84%
+That's at least the
+maximum T in our direction
+
+00:37:01.990 --> 00:37:06.030 align:middle line:90%
+set of pi T of x prime.
+
+00:37:06.030 --> 00:37:07.490 align:middle line:84%
+We're following
+up from over here.
+
+00:37:07.490 --> 00:37:10.960 align:middle line:84%
+And here's x prime, which is
+a big chunk of A prime cross
+
+00:37:10.960 --> 00:37:11.460 align:middle line:90%
+B prime.
+
+00:37:11.460 --> 00:37:14.190 align:middle line:90%
+
+
+00:37:14.190 --> 00:37:19.270 align:middle line:90%
+And now, we can apply our lemma.
+
+00:37:19.270 --> 00:37:23.990 align:middle line:84%
+The lemma says, that
+is at least as big
+
+00:37:23.990 --> 00:37:29.270 align:middle line:84%
+as the maximum T in our
+direction set, x prime over N
+
+00:37:29.270 --> 00:37:30.350 align:middle line:90%
+squared.
+
+00:37:30.350 --> 00:37:36.500 align:middle line:84%
+And then we have pi negative T
+over T1, A prime cross A prime.
+
+00:37:36.500 --> 00:37:41.950 align:middle line:90%
+
+
+00:37:41.950 --> 00:37:44.590 align:middle line:84%
+Now, x prime, we
+already determined,
+
+00:37:44.590 --> 00:37:46.050 align:middle line:90%
+has a size of about N squared.
+
+00:37:46.050 --> 00:37:48.990 align:middle line:90%
+So this factor disappears.
+
+00:37:48.990 --> 00:37:51.550 align:middle line:84%
+And now, we are
+looking at projections
+
+00:37:51.550 --> 00:37:55.290 align:middle line:84%
+in many different directions
+of A prime cross A prime.
+
+00:37:55.290 --> 00:37:59.120 align:middle line:84%
+That's exactly the thing
+that theorem 1 told us about.
+
+00:37:59.120 --> 00:38:06.584 align:middle line:84%
+So, by theorem 1, this is
+now greater [INAUDIBLE]
+
+00:38:06.584 --> 00:38:11.520 align:middle line:90%
+N times p to the epsilon 1.
+
+00:38:11.520 --> 00:38:13.920 align:middle line:90%
+And that's the proof.
+
+00:38:13.920 --> 00:38:16.360 align:middle line:84%
+So, one of these is
+significantly bigger
+
+00:38:16.360 --> 00:38:22.660 align:middle line:84%
+than the square root of x
+times p to the epsilon 1.
+
+00:38:22.660 --> 00:38:50.340 align:middle line:90%
+
+
+00:38:50.340 --> 00:38:50.840 align:middle line:90%
+OK.
+
+00:38:50.840 --> 00:39:01.080 align:middle line:90%
+
+
+00:39:01.080 --> 00:39:06.120 align:middle line:84%
+Let me put up on here a
+little summary of what we did.
+
+00:39:06.120 --> 00:39:13.400 align:middle line:84%
+And then I'll let you look down
+from above at the whole thing.
+
+00:39:13.400 --> 00:39:19.760 align:middle line:84%
+So, we're trying to get from
+theorem 1 to theorem BKT.
+
+00:39:19.760 --> 00:39:25.680 align:middle line:84%
+And the enemy was that we
+have a set x in A cross A,
+
+00:39:25.680 --> 00:39:29.760 align:middle line:84%
+where x is around the
+same size as A cross A.
+
+00:39:29.760 --> 00:39:33.880 align:middle line:84%
+But the size of
+the projection of x
+
+00:39:33.880 --> 00:39:38.340 align:middle line:84%
+is much smaller than the size
+of the projection of A cross.
+
+00:39:38.340 --> 00:39:41.480 align:middle line:90%
+A. That's our enemy.
+
+00:39:41.480 --> 00:39:44.960 align:middle line:84%
+And we learned two pieces
+of wisdom about this enemy,
+
+00:39:44.960 --> 00:39:49.240 align:middle line:84%
+one in the BSG theorem,
+and one in the lemma.
+
+00:39:49.240 --> 00:39:55.190 align:middle line:84%
+So, wisdom one, in
+the enemy situation,
+
+00:39:55.190 --> 00:39:59.290 align:middle line:90%
+x lives in a smaller product.
+
+00:39:59.290 --> 00:40:01.560 align:middle line:84%
+And the projection of
+the smaller product--
+
+00:40:01.560 --> 00:40:04.290 align:middle line:90%
+
+
+00:40:04.290 --> 00:40:07.300 align:middle line:84%
+the projection of
+the smaller product,
+
+00:40:07.300 --> 00:40:08.550 align:middle line:90%
+well, it doesn't live in that.
+
+00:40:08.550 --> 00:40:10.170 align:middle line:90%
+But it has a--
+
+00:40:10.170 --> 00:40:13.530 align:middle line:84%
+so the enemy situation
+implies that x,
+
+00:40:13.530 --> 00:40:17.310 align:middle line:84%
+intersected with a smaller
+product, is about the same as x.
+
+00:40:17.310 --> 00:40:19.630 align:middle line:84%
+So, a good chunk of x
+lives in a smaller product.
+
+00:40:19.630 --> 00:40:22.410 align:middle line:84%
+And the projection of
+the smaller product
+
+00:40:22.410 --> 00:40:24.750 align:middle line:84%
+is about the same as
+the projection of x.
+
+00:40:24.750 --> 00:40:27.930 align:middle line:90%
+
+
+00:40:27.930 --> 00:40:30.810 align:middle line:90%
+Then we look at that situation.
+
+00:40:30.810 --> 00:40:33.330 align:middle line:84%
+And the second
+piece of wisdom was
+
+00:40:33.330 --> 00:40:39.040 align:middle line:84%
+that, if the projection of a
+smaller product, of a product--
+
+00:40:39.040 --> 00:40:42.690 align:middle line:90%
+
+
+00:40:42.690 --> 00:40:50.360 align:middle line:84%
+if this is small, so if this is
+around the smallest it could be,
+
+00:40:50.360 --> 00:40:54.100 align:middle line:84%
+it would be one of the
+factors for one T1.
+
+00:40:54.100 --> 00:40:57.660 align:middle line:84%
+Then this product
+becomes very symmetrical.
+
+00:40:57.660 --> 00:41:02.220 align:middle line:84%
+And then the conclusion is,
+for any subset, x prime,
+
+00:41:02.220 --> 00:41:08.940 align:middle line:84%
+in this thing, which
+is substantial,
+
+00:41:08.940 --> 00:41:12.380 align:middle line:84%
+then the projection
+of the subset
+
+00:41:12.380 --> 00:41:15.795 align:middle line:84%
+actually is around the
+same as the projection
+
+00:41:15.795 --> 00:41:16.670 align:middle line:90%
+of the whole product.
+
+00:41:16.670 --> 00:41:20.020 align:middle line:90%
+
+
+00:41:20.020 --> 00:41:23.860 align:middle line:84%
+So the enemy situation
+can only really happen
+
+00:41:23.860 --> 00:41:28.180 align:middle line:84%
+because x was mostly in
+a smaller product that
+
+00:41:28.180 --> 00:41:30.820 align:middle line:90%
+had a small projection.
+
+00:41:30.820 --> 00:41:33.940 align:middle line:84%
+And this situation
+is very symmetrical.
+
+00:41:33.940 --> 00:41:37.780 align:middle line:84%
+So if a smaller product has
+one small projection, then when
+
+00:41:37.780 --> 00:41:42.460 align:middle line:84%
+you project it in other
+angles, then the projection
+
+00:41:42.460 --> 00:41:44.895 align:middle line:84%
+of a big piece of it
+can't be way smaller
+
+00:41:44.895 --> 00:41:46.520 align:middle line:84%
+than the projection
+of the whole thing.
+
+00:41:46.520 --> 00:41:49.630 align:middle line:90%
+
+
+00:41:49.630 --> 00:41:51.230 align:middle line:90%
+All right.
+
+00:41:51.230 --> 00:41:54.430 align:middle line:84%
+So, the whole story
+is on these boards.
+
+00:41:54.430 --> 00:41:56.770 align:middle line:84%
+Take a couple of
+moments to look it over.
+
+00:41:56.770 --> 00:41:59.750 align:middle line:90%
+
+
+00:41:59.750 --> 00:42:00.870 align:middle line:90%
+Yeah.
+
+00:42:00.870 --> 00:42:01.830 align:middle line:90%
+AUDIENCE: Professor?
+
+00:42:01.830 --> 00:42:07.674 align:middle line:84%
+So, should it be the case that
+the A prime there depends on T?
+
+00:42:07.674 --> 00:42:10.950 align:middle line:84%
+PROFESSOR: OK, so
+the question is
+
+00:42:10.950 --> 00:42:16.470 align:middle line:84%
+whether A prime
+depends on T. So,
+
+00:42:16.470 --> 00:42:20.390 align:middle line:84%
+let's see where
+A prime appeared.
+
+00:42:20.390 --> 00:42:25.550 align:middle line:84%
+So we have our set with
+many small projections.
+
+00:42:25.550 --> 00:42:28.510 align:middle line:90%
+And, OK.
+
+00:42:28.510 --> 00:42:32.550 align:middle line:84%
+And then, in particular,
+the T1 projection is small.
+
+00:42:32.550 --> 00:42:34.710 align:middle line:84%
+And so, the
+Balog-Szemeredi-Gowers theorem
+
+00:42:34.710 --> 00:42:37.350 align:middle line:84%
+says there's A prime
+in A and B prime in B,
+
+00:42:37.350 --> 00:42:42.230 align:middle line:84%
+so that the T1 projection of A
+prime cross B prime is small.
+
+00:42:42.230 --> 00:42:46.030 align:middle line:90%
+And this A prime depends on T1.
+
+00:42:46.030 --> 00:42:50.180 align:middle line:84%
+Now, later, we're going to look
+at pi T of x for other T's.
+
+00:42:50.180 --> 00:42:52.760 align:middle line:90%
+
+
+00:42:52.760 --> 00:42:56.668 align:middle line:84%
+One could, I guess, apply
+Balog-Szemeredi-Gowers again
+
+00:42:56.668 --> 00:42:57.460 align:middle line:90%
+to those other T's.
+
+00:42:57.460 --> 00:42:59.043 align:middle line:84%
+But that's not what
+we're going to do.
+
+00:42:59.043 --> 00:43:02.193 align:middle line:84%
+We use T1 to find A
+prime and B prime.
+
+00:43:02.193 --> 00:43:04.860 align:middle line:84%
+And then we're going to run with
+these same A prime and B prime,
+
+00:43:04.860 --> 00:43:08.000 align:middle line:90%
+even when we look at other T's.
+
+00:43:08.000 --> 00:43:09.840 align:middle line:90%
+What did we learn?
+
+00:43:09.840 --> 00:43:14.760 align:middle line:84%
+Once we have this one small
+projection, we learned--
+
+00:43:14.760 --> 00:43:17.940 align:middle line:84%
+Balog-Szemeredi-Gowers
+told us this.
+
+00:43:17.940 --> 00:43:19.820 align:middle line:84%
+And then we learned from
+it some other stuff.
+
+00:43:19.820 --> 00:43:21.590 align:middle line:84%
+So, what we actually
+used is this.
+
+00:43:21.590 --> 00:43:24.960 align:middle line:90%
+
+
+00:43:24.960 --> 00:43:27.300 align:middle line:90%
+So, then, we used this stack.
+
+00:43:27.300 --> 00:43:29.920 align:middle line:84%
+So this is telling us
+that A prime cross B
+
+00:43:29.920 --> 00:43:31.425 align:middle line:90%
+prime is quite symmetrical.
+
+00:43:31.425 --> 00:43:33.300 align:middle line:84%
+And that's what's helpful
+in the second part.
+
+00:43:33.300 --> 00:43:34.060 align:middle line:90%
+AUDIENCE: OK, cool.
+
+00:43:34.060 --> 00:43:34.560 align:middle line:90%
+Thanks.
+
+00:43:34.560 --> 00:43:38.353 align:middle line:90%
+
+
+00:43:38.353 --> 00:43:39.020 align:middle line:90%
+PROFESSOR: Good.
+
+00:43:39.020 --> 00:43:40.187 align:middle line:90%
+Other questions or comments?
+
+00:43:40.187 --> 00:44:00.220 align:middle line:90%
+
+
+00:44:00.220 --> 00:44:04.410 align:middle line:84%
+AUDIENCE: Why don't we
+know that A itself is also
+
+00:44:04.410 --> 00:44:05.463 align:middle line:90%
+kind of symmetrical?
+
+00:44:05.463 --> 00:44:08.093 align:middle line:90%
+
+
+00:44:08.093 --> 00:44:10.010 align:middle line:84%
+PROFESSOR: Yeah, the
+question is, why don't we
+
+00:44:10.010 --> 00:44:13.050 align:middle line:84%
+know that A itself is
+also kind of symmetrical?
+
+00:44:13.050 --> 00:44:16.450 align:middle line:84%
+That might depend on exactly
+what we mean by symmetrical.
+
+00:44:16.450 --> 00:44:19.890 align:middle line:84%
+But an important
+thing, an important way
+
+00:44:19.890 --> 00:44:25.730 align:middle line:84%
+that A prime is better than
+A is that, at this moment,
+
+00:44:25.730 --> 00:44:28.490 align:middle line:90%
+A prime minus A prime is small.
+
+00:44:28.490 --> 00:44:33.530 align:middle line:84%
+And we didn't know that about
+A. You can think of A prime
+
+00:44:33.530 --> 00:44:36.930 align:middle line:84%
+as being A prime
+plus some garbage.
+
+00:44:36.930 --> 00:44:40.120 align:middle line:84%
+And the garbage minus
+garbage is not small.
+
+00:44:40.120 --> 00:44:54.540 align:middle line:90%
+
+
+00:44:54.540 --> 00:45:00.020 align:middle line:84%
+AUDIENCE: So, [INAUDIBLE]
+epsilon is different between
+
+00:45:00.020 --> 00:45:05.300 align:middle line:84%
+the two because of the A
+prime plus minus A prime has--
+
+00:45:05.300 --> 00:45:08.380 align:middle line:84%
+there's a hidden
+factor there, right?
+
+00:45:08.380 --> 00:45:11.900 align:middle line:84%
+PROFESSOR: Yes, A prime
+plus, minus, A prime.
+
+00:45:11.900 --> 00:45:13.420 align:middle line:84%
+Here, there's a
+hidden factor, which
+
+00:45:13.420 --> 00:45:15.412 align:middle line:90%
+is p to the order of epsilon.
+
+00:45:15.412 --> 00:45:16.120 align:middle line:90%
+And you're right.
+
+00:45:16.120 --> 00:45:17.700 align:middle line:84%
+It's very important
+that the epsilon
+
+00:45:17.700 --> 00:45:19.330 align:middle line:84%
+is different between
+the two theorems.
+
+00:45:19.330 --> 00:45:21.900 align:middle line:90%
+
+
+00:45:21.900 --> 00:45:25.500 align:middle line:84%
+So, epsilon 1 is the
+epsilon in theorem 1, which
+
+00:45:25.500 --> 00:45:27.300 align:middle line:84%
+was already kind
+of small, if we had
+
+00:45:27.300 --> 00:45:29.660 align:middle line:90%
+unwound the proof of theorem 1.
+
+00:45:29.660 --> 00:45:33.500 align:middle line:84%
+And then, in theorem
+BKT, there's an epsilon.
+
+00:45:33.500 --> 00:45:37.820 align:middle line:84%
+And epsilon in BKT is way
+smaller than the epsilon 1.
+
+00:45:37.820 --> 00:45:40.980 align:middle line:84%
+And the reason we
+need that is, OK, we
+
+00:45:40.980 --> 00:45:44.350 align:middle line:84%
+started with this, where we have
+a factor of p to the epsilon.
+
+00:45:44.350 --> 00:45:46.770 align:middle line:90%
+Then we did some stuff.
+
+00:45:46.770 --> 00:45:49.030 align:middle line:90%
+Most important stuff is BSG.
+
+00:45:49.030 --> 00:45:51.870 align:middle line:90%
+So, BSG, we'll lose--
+
+00:45:51.870 --> 00:45:54.630 align:middle line:84%
+there'll be a factor
+of 10 epsilon here
+
+00:45:54.630 --> 00:45:57.310 align:middle line:84%
+that comes out of the proof
+of Balog-Szemeredi-Gowers.
+
+00:45:57.310 --> 00:45:59.270 align:middle line:84%
+So, here, these things
+will be something
+
+00:45:59.270 --> 00:46:02.510 align:middle line:84%
+like p to the 10 epsilon,
+if you did them carefully.
+
+00:46:02.510 --> 00:46:03.670 align:middle line:90%
+And then you go along.
+
+00:46:03.670 --> 00:46:05.670 align:middle line:90%
+And we're following our proof.
+
+00:46:05.670 --> 00:46:09.767 align:middle line:84%
+So, here, we did a
+little bit more work
+
+00:46:09.767 --> 00:46:10.850 align:middle line:90%
+in the proof of the lemma.
+
+00:46:10.850 --> 00:46:16.830 align:middle line:84%
+So, this is hiding a
+p of 10 or 20 epsilon.
+
+00:46:16.830 --> 00:46:19.510 align:middle line:84%
+But, here, we have a gain
+of p to the epsilon 1.
+
+00:46:19.510 --> 00:46:22.430 align:middle line:84%
+So, the p to the epsilon
+1 needs to dominate the p
+
+00:46:22.430 --> 00:46:24.670 align:middle line:84%
+to the 20 epsilon that
+we lost at various steps
+
+00:46:24.670 --> 00:46:26.310 align:middle line:90%
+in this process.
+
+00:46:26.310 --> 00:46:32.350 align:middle line:84%
+So, epsilon should be 1/20
+of the size of epsilon 1.
+
+00:46:32.350 --> 00:46:35.830 align:middle line:84%
+Yeah, so we have to do a whole
+sequence of clever things
+
+00:46:35.830 --> 00:46:37.890 align:middle line:84%
+to prove
+Bourgain-Katz-Tao theorem.
+
+00:46:37.890 --> 00:46:39.590 align:middle line:84%
+And each time we do
+something clever,
+
+00:46:39.590 --> 00:46:42.000 align:middle line:84%
+epsilon gets smaller
+by a factor of 10,
+
+00:46:42.000 --> 00:46:45.490 align:middle line:84%
+until we're so clever that we
+really can't see the epsilon.
+
+00:46:45.490 --> 00:46:52.640 align:middle line:90%
+
+
+00:46:52.640 --> 00:46:53.200 align:middle line:90%
+Yeah.
+
+00:46:53.200 --> 00:46:55.000 align:middle line:84%
+AUDIENCE: Is there a
+conjectured boundary
+
+00:46:55.000 --> 00:46:59.090 align:middle line:84%
+for what the largest
+possible epsilon could be?
+
+00:46:59.090 --> 00:47:00.782 align:middle line:84%
+PROFESSOR: Ah, that's
+a great question.
+
+00:47:00.782 --> 00:47:02.240 align:middle line:84%
+Yeah, so, the
+question is, is there
+
+00:47:02.240 --> 00:47:04.430 align:middle line:84%
+a conjectured bound
+about the right epsilon?
+
+00:47:04.430 --> 00:47:07.960 align:middle line:90%
+
+
+00:47:07.960 --> 00:47:08.840 align:middle line:90%
+Yes.
+
+00:47:08.840 --> 00:47:10.480 align:middle line:90%
+So, yes.
+
+00:47:10.480 --> 00:47:12.680 align:middle line:84%
+So, the conjecture, so
+we're working right now
+
+00:47:12.680 --> 00:47:14.000 align:middle line:90%
+over finite fields.
+
+00:47:14.000 --> 00:47:17.760 align:middle line:84%
+And the conjecture is that
+the worst case is a lattice.
+
+00:47:17.760 --> 00:47:19.497 align:middle line:90%
+And we wrote it down.
+
+00:47:19.497 --> 00:47:20.580 align:middle line:90%
+Let's write it down again.
+
+00:47:20.580 --> 00:47:22.830 align:middle line:84%
+But we wrote it down at the
+beginning of the course.
+
+00:47:22.830 --> 00:47:25.680 align:middle line:90%
+
+
+00:47:25.680 --> 00:47:29.000 align:middle line:90%
+So I think we're moving on.
+
+00:47:29.000 --> 00:47:30.020 align:middle line:90%
+I'll put it here.
+
+00:47:30.020 --> 00:47:32.960 align:middle line:90%
+
+
+00:47:32.960 --> 00:47:41.050 align:middle line:84%
+So, suppose we have x, which
+is a subset of Fp squared.
+
+00:47:41.050 --> 00:47:49.450 align:middle line:84%
+And then we're going to take the
+maximum t and D of pi t of x.
+
+00:47:49.450 --> 00:47:51.730 align:middle line:90%
+And this is bigger than--
+
+00:47:51.730 --> 00:47:55.160 align:middle line:84%
+I think it was D to
+the 1/2, x to the 1/2.
+
+00:47:55.160 --> 00:48:03.250 align:middle line:90%
+
+
+00:48:03.250 --> 00:48:05.330 align:middle line:84%
+Maybe you should check it
+I don't remember these.
+
+00:48:05.330 --> 00:48:07.690 align:middle line:84%
+I don't quite remember this
+off the top of my head.
+
+00:48:07.690 --> 00:48:10.770 align:middle line:90%
+So, I think.
+
+00:48:10.770 --> 00:48:13.450 align:middle line:84%
+And the way to remember
+it is that the example
+
+00:48:13.450 --> 00:48:15.060 align:middle line:90%
+is that x is a lattice.
+
+00:48:15.060 --> 00:48:17.970 align:middle line:90%
+
+
+00:48:17.970 --> 00:48:26.850 align:middle line:84%
+And then D is the set of
+rational numbers of small slope.
+
+00:48:26.850 --> 00:48:27.882 align:middle line:90%
+That was the case with--
+
+00:48:27.882 --> 00:48:30.590 align:middle line:84%
+the case that we've seen so far,
+where the projections are small.
+
+00:48:30.590 --> 00:48:32.850 align:middle line:84%
+So if you compute with this, you
+can check whether this is true
+
+00:48:32.850 --> 00:48:35.010 align:middle line:84%
+or whether it needs to
+be modified a little bit.
+
+00:48:35.010 --> 00:48:37.500 align:middle line:84%
+And then, if you rewrite
+it in the language of BKT,
+
+00:48:37.500 --> 00:48:41.260 align:middle line:84%
+it gives you an exact
+formula for epsilon.
+
+00:48:41.260 --> 00:48:45.420 align:middle line:84%
+And that is a wide-open
+problem over FP.
+
+00:48:45.420 --> 00:48:47.820 align:middle line:84%
+But the version over
+r has been proven.
+
+00:48:47.820 --> 00:48:53.220 align:middle line:84%
+And I'll try, at least,
+to say at least some
+
+00:48:53.220 --> 00:48:57.300 align:middle line:84%
+of the main ideas of
+the proof in the class.
+
+00:48:57.300 --> 00:49:02.120 align:middle line:90%
+Yeah, OK.
+
+00:49:02.120 --> 00:49:07.040 align:middle line:90%
+
+
+00:49:07.040 --> 00:49:11.900 align:middle line:84%
+So, the ideas that we've just
+been talking about, going
+
+00:49:11.900 --> 00:49:14.780 align:middle line:84%
+back and forth between whether a
+projection of the whole product
+
+00:49:14.780 --> 00:49:17.740 align:middle line:84%
+is small, whether a projection
+of a big chunk of the product
+
+00:49:17.740 --> 00:49:21.720 align:middle line:84%
+is small, that is a theme
+in additive combinatorics.
+
+00:49:21.720 --> 00:49:25.060 align:middle line:84%
+And I want to describe to you
+some of the other key words
+
+00:49:25.060 --> 00:49:28.780 align:middle line:84%
+and ideas behind that theme
+to flesh out the lecture
+
+00:49:28.780 --> 00:49:31.250 align:middle line:84%
+and see how it fits
+in, in general.
+
+00:49:31.250 --> 00:49:35.850 align:middle line:90%
+
+
+00:49:35.850 --> 00:49:36.350 align:middle line:90%
+OK.
+
+00:49:36.350 --> 00:49:54.590 align:middle line:90%
+
+
+00:49:54.590 --> 00:49:56.470 align:middle line:90%
+All right.
+
+00:49:56.470 --> 00:50:02.590 align:middle line:84%
+So, this section is
+called additive energy
+
+00:50:02.590 --> 00:50:09.070 align:middle line:84%
+versus the size of
+A plus B. So, these
+
+00:50:09.070 --> 00:50:11.470 align:middle line:84%
+are two points of
+view about measuring
+
+00:50:11.470 --> 00:50:15.510 align:middle line:84%
+the additive structure involved
+when you add numbers in A
+
+00:50:15.510 --> 00:50:17.310 align:middle line:90%
+to numbers in B.
+
+00:50:17.310 --> 00:50:18.490 align:middle line:90%
+This one, we've already met.
+
+00:50:18.490 --> 00:50:21.550 align:middle line:84%
+Let me tell you what
+additive energy is.
+
+00:50:21.550 --> 00:50:26.590 align:middle line:84%
+So, the definition, if
+A and B are contained
+
+00:50:26.590 --> 00:50:32.470 align:middle line:84%
+in an abelian group,
+the energy of AB
+
+00:50:32.470 --> 00:50:35.790 align:middle line:90%
+is the number of quadruples.
+
+00:50:35.790 --> 00:50:42.430 align:middle line:84%
+A1 and A2 are in A.
+B1 and B2 are in B,
+
+00:50:42.430 --> 00:50:47.160 align:middle line:84%
+so that A1 plus B1 is
+equal to A2 plus B2.
+
+00:50:47.160 --> 00:50:54.230 align:middle line:90%
+
+
+00:50:54.230 --> 00:50:56.150 align:middle line:90%
+OK.
+
+00:50:56.150 --> 00:50:58.050 align:middle line:84%
+So, if you add
+numbers from A and B,
+
+00:50:58.050 --> 00:50:59.890 align:middle line:90%
+how many coincidences are there?
+
+00:50:59.890 --> 00:51:04.110 align:middle line:84%
+Does it frequently happen
+that you get the same number?
+
+00:51:04.110 --> 00:51:06.110 align:middle line:84%
+So, another way of
+thinking about it
+
+00:51:06.110 --> 00:51:11.190 align:middle line:84%
+is we could say, r, AB of z, so
+the number of representations
+
+00:51:11.190 --> 00:51:15.750 align:middle line:84%
+of z as a sum of somebody
+in A and somebody in B.
+
+00:51:15.750 --> 00:51:25.990 align:middle line:84%
+So this is the number of
+AB, so that A plus B is--
+
+00:51:25.990 --> 00:51:33.320 align:middle line:84%
+and the additive energy, AB, is
+also equal to the sum over z,
+
+00:51:33.320 --> 00:51:36.670 align:middle line:90%
+rAB of z, squared.
+
+00:51:36.670 --> 00:51:40.080 align:middle line:90%
+
+
+00:51:40.080 --> 00:51:41.640 align:middle line:84%
+So if this is large,
+it means there
+
+00:51:41.640 --> 00:51:44.320 align:middle line:84%
+are a lot of numbers
+that can be written as A
+
+00:51:44.320 --> 00:51:46.240 align:middle line:90%
+plus B in many different ways.
+
+00:51:46.240 --> 00:51:48.060 align:middle line:84%
+There are many
+additive coincidences.
+
+00:51:48.060 --> 00:51:54.480 align:middle line:90%
+
+
+00:51:54.480 --> 00:52:00.280 align:middle line:84%
+So, for reference, if
+A and B both have size,
+
+00:52:00.280 --> 00:52:04.080 align:middle line:84%
+N, then let's
+think about how big
+
+00:52:04.080 --> 00:52:07.280 align:middle line:84%
+or how small the
+additive energy could be.
+
+00:52:07.280 --> 00:52:10.360 align:middle line:90%
+It's at least N squared.
+
+00:52:10.360 --> 00:52:12.320 align:middle line:84%
+That happens if--
+so, there are N
+
+00:52:12.320 --> 00:52:15.960 align:middle line:84%
+squared obvious solutions to
+this, which are, A1 equals A2.
+
+00:52:15.960 --> 00:52:17.130 align:middle line:90%
+And B1 equals B2.
+
+00:52:17.130 --> 00:52:20.080 align:middle line:90%
+
+
+00:52:20.080 --> 00:52:24.920 align:middle line:84%
+And if you have a
+random set of integers
+
+00:52:24.920 --> 00:52:26.420 align:middle line:84%
+or a random subset
+of a big group,
+
+00:52:26.420 --> 00:52:28.920 align:middle line:84%
+those might be the
+only solutions.
+
+00:52:28.920 --> 00:52:37.570 align:middle line:84%
+So, here, we have only
+trivial quadruples, OK?
+
+00:52:37.570 --> 00:52:41.090 align:middle line:84%
+And energy is at most N
+cubed, because once you've
+
+00:52:41.090 --> 00:52:42.890 align:middle line:84%
+picked three of
+these, the fourth one
+
+00:52:42.890 --> 00:52:44.630 align:middle line:90%
+is determined by this equation.
+
+00:52:44.630 --> 00:52:47.690 align:middle line:84%
+So there's, at most, N cubed
+of these additive quadruples.
+
+00:52:47.690 --> 00:52:58.630 align:middle line:84%
+And this happens if A equals
+B, equals A subgroup of z.
+
+00:52:58.630 --> 00:53:01.670 align:middle line:90%
+A and B are subgroup of z.
+
+00:53:01.670 --> 00:53:03.650 align:middle line:84%
+And there's always
+a choice of B2
+
+00:53:03.650 --> 00:53:05.480 align:middle line:84%
+you can pick to
+solve this equation.
+
+00:53:05.480 --> 00:53:09.330 align:middle line:90%
+
+
+00:53:09.330 --> 00:53:12.490 align:middle line:90%
+OK, cool.
+
+00:53:12.490 --> 00:53:15.010 align:middle line:84%
+So, having large
+energy is having
+
+00:53:15.010 --> 00:53:16.810 align:middle line:90%
+a lot of additive structure.
+
+00:53:16.810 --> 00:53:19.790 align:middle line:84%
+And, before, we were thinking
+that, if A plus B is small,
+
+00:53:19.790 --> 00:53:23.050 align:middle line:84%
+then that would mean there's
+a lot of additive structure.
+
+00:53:23.050 --> 00:53:24.870 align:middle line:84%
+How are those related
+to each other?
+
+00:53:24.870 --> 00:53:44.540 align:middle line:90%
+
+
+00:53:44.540 --> 00:53:47.246 align:middle line:90%
+OK.
+
+00:53:47.246 --> 00:53:53.980 align:middle line:84%
+So, there's a lemma that says,
+A times B, A squared times
+
+00:53:53.980 --> 00:53:57.180 align:middle line:84%
+B squared, is, at most,
+the size of A plus B,
+
+00:53:57.180 --> 00:54:03.140 align:middle line:84%
+times the energy between A
+and B. And the proof of this
+
+00:54:03.140 --> 00:54:05.660 align:middle line:90%
+is just Cauchy-Schwarz.
+
+00:54:05.660 --> 00:54:13.100 align:middle line:84%
+So, if I add up on z, rAB of
+z, I get the size of A times
+
+00:54:13.100 --> 00:54:17.400 align:middle line:84%
+the size of B. This
+is by double counting.
+
+00:54:17.400 --> 00:54:19.920 align:middle line:84%
+So, every time I add somebody
+in A and somebody in B,
+
+00:54:19.920 --> 00:54:20.840 align:middle line:90%
+I get some z.
+
+00:54:20.840 --> 00:54:24.380 align:middle line:84%
+I add this up and
+get all the pairs.
+
+00:54:24.380 --> 00:54:33.390 align:middle line:84%
+So, now, A times B is
+the sum, z, of rAB of z.
+
+00:54:33.390 --> 00:54:37.750 align:middle line:84%
+And in this sum, I only need
+to count the guys in A plus B,
+
+00:54:37.750 --> 00:54:41.530 align:middle line:84%
+because z cannot be
+written as A plus B at all.
+
+00:54:41.530 --> 00:54:44.710 align:middle line:90%
+It means that this was 0.
+
+00:54:44.710 --> 00:54:47.790 align:middle line:90%
+Now, I Cauchy-Schwarz.
+
+00:54:47.790 --> 00:54:54.090 align:middle line:84%
+So I'm going to write it as the
+sum for A plus B of 1 to the 1/2
+
+00:54:54.090 --> 00:55:00.490 align:middle line:84%
+half, and the sum, rAB
+of z squared to the 1/2.
+
+00:55:00.490 --> 00:55:03.710 align:middle line:90%
+
+
+00:55:03.710 --> 00:55:08.230 align:middle line:84%
+So that's the size of
+A plus B to the 1/2,
+
+00:55:08.230 --> 00:55:11.565 align:middle line:90%
+times the energy to the 1/2.
+
+00:55:11.565 --> 00:55:12.440 align:middle line:90%
+And that's the proof.
+
+00:55:12.440 --> 00:55:17.350 align:middle line:90%
+
+
+00:55:17.350 --> 00:55:18.090 align:middle line:90%
+All right.
+
+00:55:18.090 --> 00:55:23.330 align:middle line:84%
+So we see from this that,
+if A plus B is small,
+
+00:55:23.330 --> 00:55:25.230 align:middle line:90%
+then the energy must be large.
+
+00:55:25.230 --> 00:55:27.580 align:middle line:84%
+We could bring the A plus
+B over to the other side.
+
+00:55:27.580 --> 00:55:29.160 align:middle line:90%
+So, people usually write this.
+
+00:55:29.160 --> 00:55:40.200 align:middle line:84%
+The energy is at least A squared
+times B squared, over A plus B.
+
+00:55:40.200 --> 00:55:42.840 align:middle line:84%
+So, for instance, if
+A and B have size, N,
+
+00:55:42.840 --> 00:55:46.040 align:middle line:84%
+and A plus B is almost
+N, then the energy
+
+00:55:46.040 --> 00:55:48.120 align:middle line:84%
+would be at least
+around N cubed,
+
+00:55:48.120 --> 00:55:49.700 align:middle line:90%
+which is as big as it could be.
+
+00:55:49.700 --> 00:55:53.000 align:middle line:90%
+
+
+00:55:53.000 --> 00:55:54.320 align:middle line:90%
+All right.
+
+00:55:54.320 --> 00:56:02.990 align:middle line:84%
+So, A plus B small implies
+that the energy is large.
+
+00:56:02.990 --> 00:56:08.720 align:middle line:90%
+
+
+00:56:08.720 --> 00:56:12.440 align:middle line:84%
+Now, do people think you
+can go the other way?
+
+00:56:12.440 --> 00:56:14.960 align:middle line:84%
+If the energy is
+large, does that
+
+00:56:14.960 --> 00:56:16.690 align:middle line:90%
+imply that A plus B is small?
+
+00:56:16.690 --> 00:56:25.930 align:middle line:90%
+
+
+00:56:25.930 --> 00:56:29.850 align:middle line:84%
+AUDIENCE: No, because of course,
+you can have some garbage.
+
+00:56:29.850 --> 00:56:34.210 align:middle line:84%
+PROFESSOR: Good, no because
+you can have some garbage.
+
+00:56:34.210 --> 00:56:35.010 align:middle line:90%
+Good.
+
+00:56:35.010 --> 00:56:47.210 align:middle line:84%
+So, energy of AB large does not
+imply that A plus B is small.
+
+00:56:47.210 --> 00:56:53.530 align:middle line:84%
+The example is that A
+equals B, equals numbers up
+
+00:56:53.530 --> 00:56:55.970 align:middle line:84%
+to N, somebody with a lot
+of additive structure,
+
+00:56:55.970 --> 00:56:57.320 align:middle line:90%
+union, some garbage.
+
+00:56:57.320 --> 00:57:01.010 align:middle line:90%
+
+
+00:57:01.010 --> 00:57:01.570 align:middle line:90%
+Good.
+
+00:57:01.570 --> 00:57:04.010 align:middle line:84%
+Now, if you look at the
+definition of the energy,
+
+00:57:04.010 --> 00:57:07.110 align:middle line:84%
+if I add some extra
+elements to A or to B,
+
+00:57:07.110 --> 00:57:10.730 align:middle line:84%
+it can only increase the
+energy, perhaps not very much.
+
+00:57:10.730 --> 00:57:12.970 align:middle line:84%
+So the energy of this
+example is at least
+
+00:57:12.970 --> 00:57:16.210 align:middle line:84%
+the energy of this
+example, which is large.
+
+00:57:16.210 --> 00:57:19.810 align:middle line:84%
+On the other hand, the garbage
+can make this a lot bigger.
+
+00:57:19.810 --> 00:57:21.530 align:middle line:84%
+And this is basically
+the same example
+
+00:57:21.530 --> 00:57:24.690 align:middle line:84%
+that we've been
+grappling with all class.
+
+00:57:24.690 --> 00:57:35.940 align:middle line:90%
+
+
+00:57:35.940 --> 00:57:40.700 align:middle line:90%
+OK, cool.
+
+00:57:40.700 --> 00:57:44.320 align:middle line:90%
+So, now, I'll leave that up.
+
+00:57:44.320 --> 00:58:00.020 align:middle line:90%
+
+
+00:58:00.020 --> 00:58:02.140 align:middle line:90%
+All right.
+
+00:58:02.140 --> 00:58:02.640 align:middle line:90%
+OK.
+
+00:58:02.640 --> 00:58:07.593 align:middle line:90%
+
+
+00:58:07.593 --> 00:58:13.860 align:middle line:84%
+Now, if the energy
+of A and B is small,
+
+00:58:13.860 --> 00:58:18.320 align:middle line:84%
+that implies that the
+size of A plus B is large.
+
+00:58:18.320 --> 00:58:21.550 align:middle line:84%
+That's just the contrapositive
+of what we wrote before,
+
+00:58:21.550 --> 00:58:23.470 align:middle line:84%
+or you can see it
+from this formula.
+
+00:58:23.470 --> 00:58:24.370 align:middle line:90%
+This is small.
+
+00:58:24.370 --> 00:58:25.650 align:middle line:90%
+Then this one must be large.
+
+00:58:25.650 --> 00:58:28.550 align:middle line:90%
+
+
+00:58:28.550 --> 00:58:32.510 align:middle line:90%
+Right, OK.
+
+00:58:32.510 --> 00:58:40.670 align:middle line:90%
+Now, all right.
+
+00:58:40.670 --> 00:58:45.830 align:middle line:84%
+Now, suppose I have a set, x,
+in A cross B. And I look at
+
+00:58:45.830 --> 00:58:48.510 align:middle line:90%
+pi1 of x.
+
+00:58:48.510 --> 00:58:52.910 align:middle line:84%
+So remember that
+pi1 of A cross B
+
+00:58:52.910 --> 00:58:58.750 align:middle line:84%
+is just A plus B. So when I take
+pi1 of x, it's like A plus B.
+
+00:58:58.750 --> 00:59:00.050 align:middle line:90%
+But I don't take all the pairs.
+
+00:59:00.050 --> 00:59:01.340 align:middle line:90%
+I just take the pairs in x.
+
+00:59:01.340 --> 00:59:14.510 align:middle line:90%
+
+
+00:59:14.510 --> 00:59:15.050 align:middle line:90%
+All right.
+
+00:59:15.050 --> 00:59:18.470 align:middle line:90%
+
+
+00:59:18.470 --> 00:59:25.600 align:middle line:84%
+So, even if pi1 of x were
+small, if x was a large set
+
+00:59:25.600 --> 00:59:27.880 align:middle line:84%
+and pi1 of x were
+small, that would still
+
+00:59:27.880 --> 00:59:32.640 align:middle line:84%
+produce a lot of energy
+because that would still
+
+00:59:32.640 --> 00:59:37.440 align:middle line:84%
+be a lot of numbers,
+a bunch of numbers,
+
+00:59:37.440 --> 00:59:42.000 align:middle line:84%
+z, that have many
+representations of A plus B.
+
+00:59:42.000 --> 00:59:44.100 align:middle line:84%
+Let me just write it
+down OK, so, yeah.
+
+00:59:44.100 --> 00:59:54.760 align:middle line:84%
+So, actually, so let me recall
+that A plus B large, and x being
+
+00:59:54.760 --> 00:59:59.520 align:middle line:84%
+a big fraction of A
+times B, that does not
+
+00:59:59.520 --> 01:00:03.743 align:middle line:90%
+imply that pi1 of x is large.
+
+01:00:03.743 --> 01:00:05.160 align:middle line:84%
+And this is, again,
+the main thing
+
+01:00:05.160 --> 01:00:07.820 align:middle line:90%
+that we were struggling with.
+
+01:00:07.820 --> 01:00:10.120 align:middle line:90%
+But with energy, this is true.
+
+01:00:10.120 --> 01:00:15.580 align:middle line:84%
+So, lemma, let me check
+exactly what it says.
+
+01:00:15.580 --> 01:00:25.650 align:middle line:90%
+
+
+01:00:25.650 --> 01:00:26.850 align:middle line:90%
+All right.
+
+01:00:26.850 --> 01:00:31.330 align:middle line:84%
+So, lemma, x
+squared is less than
+
+01:00:31.330 --> 01:00:35.540 align:middle line:84%
+or equal to pi 1 of x,
+times the energy of AB.
+
+01:00:35.540 --> 01:00:39.570 align:middle line:90%
+
+
+01:00:39.570 --> 01:00:43.730 align:middle line:84%
+So if the energy
+is small, then pi 1
+
+01:00:43.730 --> 01:00:46.090 align:middle line:84%
+of x is pretty big
+for every subset, x,
+
+01:00:46.090 --> 01:00:47.750 align:middle line:90%
+for every large subset, x.
+
+01:00:47.750 --> 01:00:51.130 align:middle line:90%
+
+
+01:00:51.130 --> 01:00:54.730 align:middle line:84%
+The proof is almost the
+same as the previous proof.
+
+01:00:54.730 --> 01:00:59.490 align:middle line:84%
+So, proof, rx of z
+is the number of ways
+
+01:00:59.490 --> 01:01:06.130 align:middle line:84%
+of writing A plus B equal to
+z, where the pair, AB, is in x.
+
+01:01:06.130 --> 01:01:10.090 align:middle line:84%
+And that's smaller than
+representations of z
+
+01:01:10.090 --> 01:01:12.850 align:middle line:84%
+as a general sum of
+sum between A and B,
+
+01:01:12.850 --> 01:01:18.370 align:middle line:84%
+because we're only taking
+a portion of the sums.
+
+01:01:18.370 --> 01:01:19.490 align:middle line:90%
+OK.
+
+01:01:19.490 --> 01:01:26.430 align:middle line:84%
+So, now, x is the
+sum on z of rx of z.
+
+01:01:26.430 --> 01:01:30.690 align:middle line:90%
+
+
+01:01:30.690 --> 01:01:36.570 align:middle line:84%
+And, here, in this sum, we only
+have to take z's in pi 1 of x.
+
+01:01:36.570 --> 01:01:38.530 align:middle line:84%
+We only have to consider
+those z's that can
+
+01:01:38.530 --> 01:01:43.210 align:middle line:84%
+be written as the form, A plus
+B, where A and B are in x.
+
+01:01:43.210 --> 01:01:45.810 align:middle line:84%
+So, now, we can
+Cauchy-Schwarz this.
+
+01:01:45.810 --> 01:01:53.710 align:middle line:84%
+And we get the size, pi1 of x to
+the 1/2, times an energy thing,
+
+01:01:53.710 --> 01:01:55.970 align:middle line:84%
+which is smaller than
+the standard energy.
+
+01:01:55.970 --> 01:02:00.850 align:middle line:84%
+So we have the sum, rx
+of z squared to the 1/2.
+
+01:02:00.850 --> 01:02:04.797 align:middle line:84%
+That's smaller than the sum
+rAB of z squared to the 1/2,
+
+01:02:04.797 --> 01:02:05.880 align:middle line:90%
+which gives us the energy.
+
+01:02:05.880 --> 01:02:12.210 align:middle line:90%
+
+
+01:02:12.210 --> 01:02:13.390 align:middle line:90%
+OK, cool.
+
+01:02:13.390 --> 01:02:18.060 align:middle line:84%
+So to summarize,
+having small energy
+
+01:02:18.060 --> 01:02:20.580 align:middle line:84%
+implies that the
+sum set is large.
+
+01:02:20.580 --> 01:02:22.360 align:middle line:90%
+But it's stronger than that.
+
+01:02:22.360 --> 01:02:26.780 align:middle line:84%
+And it also implies
+that pi1 of x
+
+01:02:26.780 --> 01:02:31.220 align:middle line:84%
+is large for all substantial
+subsets of A cross B.
+
+01:02:31.220 --> 01:02:33.580 align:middle line:84%
+So it's stronger, in a way,
+which is exactly what we
+
+01:02:33.580 --> 01:02:34.880 align:middle line:90%
+needed in our discussion.
+
+01:02:34.880 --> 01:02:38.380 align:middle line:90%
+
+
+01:02:38.380 --> 01:02:45.500 align:middle line:84%
+So that suggests a better
+version of theorem 1
+
+01:02:45.500 --> 01:02:46.930 align:middle line:84%
+that we could have
+tried to prove.
+
+01:02:46.930 --> 01:02:51.660 align:middle line:90%
+
+
+01:02:51.660 --> 01:02:52.710 align:middle line:90%
+Let's erase this lemma.
+
+01:02:52.710 --> 01:02:56.620 align:middle line:90%
+
+
+01:02:56.620 --> 01:02:59.020 align:middle line:84%
+So, remember, theorem
+1 said that, if we
+
+01:02:59.020 --> 01:03:04.100 align:middle line:84%
+take the projection of A cross A
+in many directions, one of them
+
+01:03:04.100 --> 01:03:07.740 align:middle line:90%
+has a large cardinality.
+
+01:03:07.740 --> 01:03:09.220 align:middle line:84%
+But we could have
+proved, we could
+
+01:03:09.220 --> 01:03:11.700 align:middle line:84%
+have tried to prove something
+stronger, that one of them
+
+01:03:11.700 --> 01:03:13.215 align:middle line:90%
+has a small energy.
+
+01:03:13.215 --> 01:03:14.090 align:middle line:90%
+Let me write it down.
+
+01:03:14.090 --> 01:03:14.730 align:middle line:90%
+It's true.
+
+01:03:14.730 --> 01:03:17.150 align:middle line:90%
+And it's a theorem.
+
+01:03:17.150 --> 01:03:26.310 align:middle line:90%
+Theorem 2 says-- all right.
+
+01:03:26.310 --> 01:03:32.050 align:middle line:84%
+So if A is a subset of Fp,
+size of A is p to the SA,
+
+01:03:32.050 --> 01:03:37.910 align:middle line:84%
+0 less than SA, less
+than 1 D is in Fp.
+
+01:03:37.910 --> 01:03:40.776 align:middle line:90%
+Size of D is p to the SD.
+
+01:03:40.776 --> 01:03:43.950 align:middle line:90%
+0 is less than SD.
+
+01:03:43.950 --> 01:03:49.110 align:middle line:84%
+Then I'm going to consider
+all the directions
+
+01:03:49.110 --> 01:03:50.950 align:middle line:90%
+and pick the best one.
+
+01:03:50.950 --> 01:03:55.430 align:middle line:84%
+And instead of looking
+at the size of A plus TA,
+
+01:03:55.430 --> 01:04:00.270 align:middle line:84%
+I'm going to look at the
+energy of A, comma TA.
+
+01:04:00.270 --> 01:04:04.510 align:middle line:84%
+And I'll take the
+minimum over all the T.
+
+01:04:04.510 --> 01:04:05.070 align:middle line:90%
+OK.
+
+01:04:05.070 --> 01:04:10.190 align:middle line:84%
+So, the biggest this energy
+could be is p to the 3SA.
+
+01:04:10.190 --> 01:04:13.282 align:middle line:84%
+It's the maximum
+possible energy.
+
+01:04:13.282 --> 01:04:15.740 align:middle line:84%
+And we're going to say, it's
+a little bit better than this.
+
+01:04:15.740 --> 01:04:27.560 align:middle line:90%
+
+
+01:04:27.560 --> 01:04:35.480 align:middle line:84%
+Now, because of this
+lemma, we automatically
+
+01:04:35.480 --> 01:04:40.320 align:middle line:84%
+get not only a lower bound
+on pi T of A cross A.
+
+01:04:40.320 --> 01:04:44.480 align:middle line:84%
+But we get a lower bound on pi T
+of any big subset of A cross A.
+
+01:04:44.480 --> 01:04:47.450 align:middle line:84%
+So, this automatically
+gives the BKT theorem.
+
+01:04:47.450 --> 01:04:50.960 align:middle line:90%
+
+
+01:04:50.960 --> 01:04:54.760 align:middle line:84%
+So, in fact, this easily
+implies a strong version
+
+01:04:54.760 --> 01:05:00.200 align:middle line:84%
+of the BKT theorem, which I
+think was also proven by BKT.
+
+01:05:00.200 --> 01:05:03.090 align:middle line:90%
+And it says that--
+
+01:05:03.090 --> 01:05:07.000 align:middle line:90%
+
+
+01:05:07.000 --> 01:05:11.690 align:middle line:90%
+so, sorry.
+
+01:05:11.690 --> 01:05:14.650 align:middle line:90%
+x is p to the sx.
+
+01:05:14.650 --> 01:05:18.650 align:middle line:90%
+And D is as above.
+
+01:05:18.650 --> 01:05:24.620 align:middle line:84%
+So, not only you can say, the
+maximum T and D, pi T of x
+
+01:05:24.620 --> 01:05:25.120 align:middle line:90%
+is large.
+
+01:05:25.120 --> 01:05:30.690 align:middle line:90%
+
+
+01:05:30.690 --> 01:05:34.730 align:middle line:90%
+So, that's the regular theorem.
+
+01:05:34.730 --> 01:05:39.410 align:middle line:84%
+And this follows from theorem
+2, and using our lemma.
+
+01:05:39.410 --> 01:05:41.410 align:middle line:90%
+But we could say that--
+
+01:05:41.410 --> 01:05:46.610 align:middle line:90%
+
+
+01:05:46.610 --> 01:05:48.390 align:middle line:90%
+so, this is true.
+
+01:05:48.390 --> 01:05:59.610 align:middle line:84%
+But, even better, there is
+some T and D so that, if y--
+
+01:05:59.610 --> 01:06:07.020 align:middle line:84%
+so if y is a subset of x and
+it's a substantial subset of x,
+
+01:06:07.020 --> 01:06:12.120 align:middle line:90%
+then pi T of y is big.
+
+01:06:12.120 --> 01:06:19.260 align:middle line:90%
+
+
+01:06:19.260 --> 01:06:20.180 align:middle line:90%
+OK.
+
+01:06:20.180 --> 01:06:24.380 align:middle line:84%
+So, the proof from here to
+here, we observed earlier
+
+01:06:24.380 --> 01:06:29.180 align:middle line:90%
+that we can reduce to the case.
+
+01:06:29.180 --> 01:06:31.820 align:middle line:90%
+Well, OK.
+
+01:06:31.820 --> 01:06:34.200 align:middle line:84%
+Yeah, I guess I should say,
+using Balog-Szemeredi-Gowers,
+
+01:06:34.200 --> 01:06:36.300 align:middle line:84%
+we could reduce
+to the case where
+
+01:06:36.300 --> 01:06:41.720 align:middle line:84%
+x is a big subset of A cross A.
+And then y is a big subset of x.
+
+01:06:41.720 --> 01:06:43.820 align:middle line:84%
+So y is a big
+subset of A cross A.
+
+01:06:43.820 --> 01:06:48.575 align:middle line:84%
+And then you use the
+energy bound to get this.
+
+01:06:48.575 --> 01:06:49.075 align:middle line:90%
+OK.
+
+01:06:49.075 --> 01:06:51.805 align:middle line:90%
+
+
+01:06:51.805 --> 01:07:00.000 align:middle line:84%
+So, then, we say, proof
+of theorem 2 plus BKT2
+
+01:07:00.000 --> 01:07:01.890 align:middle line:84%
+are similar to what
+we did in class.
+
+01:07:01.890 --> 01:07:09.510 align:middle line:90%
+
+
+01:07:09.510 --> 01:07:14.830 align:middle line:84%
+So, they could be good optional
+exercises, or some pieces of it
+
+01:07:14.830 --> 01:07:17.570 align:middle line:90%
+might be required exercises.
+
+01:07:17.570 --> 01:07:27.658 align:middle line:90%
+
+
+01:07:27.658 --> 01:07:29.308 align:middle line:84%
+And I thought I
+should mention this.
+
+01:07:29.308 --> 01:07:31.350 align:middle line:84%
+One of the things that
+Pablo impressed on me when
+
+01:07:31.350 --> 01:07:33.350 align:middle line:84%
+we were talking over
+the vacation week
+
+01:07:33.350 --> 01:07:36.910 align:middle line:84%
+was that this slightly
+stronger version
+
+01:07:36.910 --> 01:07:40.055 align:middle line:90%
+is important in applications.
+
+01:07:40.055 --> 01:07:41.430 align:middle line:84%
+Most of the
+applications actually
+
+01:07:41.430 --> 01:07:44.130 align:middle line:84%
+depend on being able to say
+the slightly stronger thing.
+
+01:07:44.130 --> 01:07:49.630 align:middle line:90%
+
+
+01:07:49.630 --> 01:07:53.810 align:middle line:90%
+OK OK.
+
+01:07:53.810 --> 01:07:59.470 align:middle line:84%
+So, now, you might think,
+you might ask yourself,
+
+01:07:59.470 --> 01:08:02.190 align:middle line:84%
+maybe energy is
+actually a better thing
+
+01:08:02.190 --> 01:08:05.680 align:middle line:84%
+to be talking about because
+a bound for the energy
+
+01:08:05.680 --> 01:08:08.270 align:middle line:84%
+is kind of stable,
+undertaking large subsets.
+
+01:08:08.270 --> 01:08:11.080 align:middle line:90%
+
+
+01:08:11.080 --> 01:08:14.000 align:middle line:84%
+And so, maybe, we should have
+been talking about energy
+
+01:08:14.000 --> 01:08:15.680 align:middle line:90%
+all along.
+
+01:08:15.680 --> 01:08:19.660 align:middle line:84%
+And it's reasonable to ask, if
+you take our proof of theorem 1
+
+01:08:19.660 --> 01:08:22.840 align:middle line:84%
+and you just try to change all
+the cardinalities to energies,
+
+01:08:22.840 --> 01:08:25.990 align:middle line:84%
+could you adapt it and
+prove theorem 2, instead?
+
+01:08:25.990 --> 01:08:28.880 align:middle line:90%
+
+
+01:08:28.880 --> 01:08:32.319 align:middle line:90%
+And you can't do that.
+
+01:08:32.319 --> 01:08:36.300 align:middle line:84%
+And it's a good moment to recap
+the main idea in theorem 1,
+
+01:08:36.300 --> 01:08:41.240 align:middle line:84%
+and also a way of reflecting
+on the different big tools
+
+01:08:41.240 --> 01:08:42.899 align:middle line:84%
+and how they're
+related to each other.
+
+01:08:42.899 --> 01:08:47.560 align:middle line:90%
+
+
+01:08:47.560 --> 01:08:48.800 align:middle line:90%
+All right.
+
+01:08:48.800 --> 01:08:51.279 align:middle line:90%
+Let's look at this.
+
+01:08:51.279 --> 01:08:53.549 align:middle line:84%
+Maybe, now, I can
+erase the BSG theorem.
+
+01:08:53.549 --> 01:09:02.710 align:middle line:90%
+
+
+01:09:02.710 --> 01:09:03.210 align:middle line:90%
+OK.
+
+01:09:03.210 --> 01:09:05.149 align:middle line:84%
+Actually, before I
+erase the BSG theorem,
+
+01:09:05.149 --> 01:09:06.890 align:middle line:84%
+let me make a little
+comment about it.
+
+01:09:06.890 --> 01:09:10.250 align:middle line:84%
+So, there are a couple
+of closely-related forms
+
+01:09:10.250 --> 01:09:10.910 align:middle line:90%
+of the theorem.
+
+01:09:10.910 --> 01:09:14.370 align:middle line:84%
+And another way I often say it
+is that, if the energy of AB
+
+01:09:14.370 --> 01:09:18.310 align:middle line:84%
+is large, then there must
+be A prime and B prime,
+
+01:09:18.310 --> 01:09:21.040 align:middle line:84%
+so that the cardinality of A
+prime plus B prime is small.
+
+01:09:21.040 --> 01:09:24.130 align:middle line:90%
+
+
+01:09:24.130 --> 01:09:25.609 align:middle line:90%
+Maybe I should write it, yeah.
+
+01:09:25.609 --> 01:09:29.316 align:middle line:90%
+
+
+01:09:29.316 --> 01:09:30.790 align:middle line:90%
+Let me put it here.
+
+01:09:30.790 --> 01:09:36.930 align:middle line:90%
+
+
+01:09:36.930 --> 01:09:42.290 align:middle line:90%
+So, theorem BSG variant.
+
+01:09:42.290 --> 01:09:44.750 align:middle line:84%
+This is the way it's
+most commonly said.
+
+01:09:44.750 --> 01:09:48.090 align:middle line:84%
+So I would be a bit remiss
+not to show it to you.
+
+01:09:48.090 --> 01:09:53.250 align:middle line:84%
+So if A and B are
+in an abelian group,
+
+01:09:53.250 --> 01:09:59.130 align:middle line:84%
+and let's say A and B have size,
+at most, N. And the energy of AB
+
+01:09:59.130 --> 01:09:59.660 align:middle line:90%
+is large.
+
+01:09:59.660 --> 01:10:02.460 align:middle line:90%
+
+
+01:10:02.460 --> 01:10:08.700 align:middle line:84%
+Energy of AB is greater
+than A inverse N cubed.
+
+01:10:08.700 --> 01:10:11.740 align:middle line:84%
+Then it may not be
+the case that A plus B
+
+01:10:11.740 --> 01:10:14.420 align:middle line:84%
+is small because of the
+example with garbage.
+
+01:10:14.420 --> 01:10:17.000 align:middle line:84%
+But we can get rid
+of the garbage.
+
+01:10:17.000 --> 01:10:24.920 align:middle line:84%
+So there exists A prime in A and
+B prime in B, so that A prime--
+
+01:10:24.920 --> 01:10:28.300 align:middle line:90%
+
+
+01:10:28.300 --> 01:10:31.100 align:middle line:84%
+yes, so that they
+are substantial.
+
+01:10:31.100 --> 01:10:37.020 align:middle line:84%
+So, A prime and B prime are
+greater than or equal to K
+
+01:10:37.020 --> 01:10:39.460 align:middle line:90%
+to the minus order of 1n.
+
+01:10:39.460 --> 01:10:45.180 align:middle line:84%
+And A prime plus B prime is less
+than or equal to K to the order
+
+01:10:45.180 --> 01:10:47.420 align:middle line:90%
+of 1N.
+
+01:10:47.420 --> 01:10:50.620 align:middle line:84%
+So if we can locate the
+correct structured parts,
+
+01:10:50.620 --> 01:10:53.910 align:middle line:84%
+then their subset is small,
+after we remove some garbage.
+
+01:10:53.910 --> 01:10:56.780 align:middle line:90%
+
+
+01:10:56.780 --> 01:10:58.760 align:middle line:90%
+Yeah, OK.
+
+01:10:58.760 --> 01:11:06.390 align:middle line:90%
+
+
+01:11:06.390 --> 01:11:07.090 align:middle line:90%
+All right.
+
+01:11:07.090 --> 01:11:09.750 align:middle line:84%
+So, now, let me
+remind you of one
+
+01:11:09.750 --> 01:11:12.770 align:middle line:84%
+of the key ideas in
+the proof of theorem 1.
+
+01:11:12.770 --> 01:11:21.670 align:middle line:90%
+
+
+01:11:21.670 --> 01:11:28.430 align:middle line:84%
+Key idea in the
+proof of theorem 1.
+
+01:11:28.430 --> 01:11:32.430 align:middle line:84%
+So, the key idea was based on
+the Plünnecke-Ruzsa inequality.
+
+01:11:32.430 --> 01:11:36.530 align:middle line:84%
+And it was an idea that I
+called, contagious structure.
+
+01:11:36.530 --> 01:11:39.630 align:middle line:90%
+
+
+01:11:39.630 --> 01:11:52.550 align:middle line:84%
+So, it's said, if A plus T1a is
+small and A plus T2a is small,
+
+01:11:52.550 --> 01:12:00.360 align:middle line:84%
+then A plus T1 plus
+T2a is also small--
+
+01:12:00.360 --> 01:12:02.870 align:middle line:84%
+not quite as small,
+but still pretty small.
+
+01:12:02.870 --> 01:12:06.240 align:middle line:90%
+
+
+01:12:06.240 --> 01:12:07.240 align:middle line:90%
+All right.
+
+01:12:07.240 --> 01:12:10.560 align:middle line:90%
+So, this was the key thing.
+
+01:12:10.560 --> 01:12:16.760 align:middle line:84%
+If A plus TA is small
+for a bunch of T and D,
+
+01:12:16.760 --> 01:12:19.440 align:middle line:84%
+then it would have to be small
+for an even bigger set of D
+
+01:12:19.440 --> 01:12:23.800 align:middle line:84%
+by adding D, or by multiplying
+D, or by taking negatives.
+
+01:12:23.800 --> 01:12:25.840 align:middle line:84%
+And then there would be
+a huge set of T's, where
+
+01:12:25.840 --> 01:12:27.400 align:middle line:90%
+A plus TA was small.
+
+01:12:27.400 --> 01:12:31.080 align:middle line:84%
+And then that contradicts
+basic double counting.
+
+01:12:31.080 --> 01:12:32.520 align:middle line:90%
+That was the proof.
+
+01:12:32.520 --> 01:12:33.640 align:middle line:90%
+OK.
+
+01:12:33.640 --> 01:12:37.960 align:middle line:84%
+So, what if we tried to
+work with energy throughout?
+
+01:12:37.960 --> 01:12:42.960 align:middle line:84%
+So, instead of trying to
+prove that A plus TA is big,
+
+01:12:42.960 --> 01:12:46.872 align:middle line:84%
+we're going to try to prove
+that the energy is small.
+
+01:12:46.872 --> 01:12:48.580 align:middle line:84%
+So, we're doing a
+proof by contradiction.
+
+01:12:48.580 --> 01:12:51.160 align:middle line:84%
+So the analogous
+question would be,
+
+01:12:51.160 --> 01:12:56.720 align:middle line:84%
+if the energy between
+A and T1 of A is large,
+
+01:12:56.720 --> 01:13:02.080 align:middle line:84%
+and the energy between
+A and T2 of A is large,
+
+01:13:02.080 --> 01:13:09.360 align:middle line:84%
+then does that imply that the
+energy between A and T1 plus T2A
+
+01:13:09.360 --> 01:13:09.970 align:middle line:90%
+is large?
+
+01:13:09.970 --> 01:13:20.520 align:middle line:90%
+
+
+01:13:20.520 --> 01:13:21.600 align:middle line:90%
+OK.
+
+01:13:21.600 --> 01:13:23.880 align:middle line:90%
+The answer is no.
+
+01:13:23.880 --> 01:13:29.040 align:middle line:84%
+And it is the same issue that
+we saw before, that when we say,
+
+01:13:29.040 --> 01:13:32.940 align:middle line:84%
+the energy is large, it means
+there's at least a piece of A
+
+01:13:32.940 --> 01:13:36.600 align:middle line:84%
+and a piece of T1A that are
+very friendly with each other.
+
+01:13:36.600 --> 01:13:39.120 align:middle line:84%
+But it doesn't have
+to be all of them.
+
+01:13:39.120 --> 01:13:43.480 align:middle line:84%
+So, one piece of A must
+be very friendly with T1A.
+
+01:13:43.480 --> 01:13:48.120 align:middle line:84%
+And one piece of A must
+be very friendly with T2A.
+
+01:13:48.120 --> 01:13:51.900 align:middle line:84%
+But those could be two different
+pieces of A. And in that case,
+
+01:13:51.900 --> 01:13:54.355 align:middle line:84%
+we can't really
+learn anything more.
+
+01:13:54.355 --> 01:13:56.530 align:middle line:84%
+It doesn't mean there's
+any piece of A that's
+
+01:13:56.530 --> 01:13:59.010 align:middle line:90%
+friendly with both of them.
+
+01:13:59.010 --> 01:14:00.430 align:middle line:90%
+So, here's the example.
+
+01:14:00.430 --> 01:14:02.770 align:middle line:90%
+The answer is no.
+
+01:14:02.770 --> 01:14:04.250 align:middle line:90%
+Here's the example.
+
+01:14:04.250 --> 01:14:08.890 align:middle line:84%
+So, A might be the
+numbers up to N, union T1
+
+01:14:08.890 --> 01:14:15.106 align:middle line:84%
+times the numbers up to N, union
+T2 times the numbers up to N.
+
+01:14:15.106 --> 01:14:16.570 align:middle line:90%
+OK.
+
+01:14:16.570 --> 01:14:20.930 align:middle line:84%
+So, then, T1A would
+be T1 numbers up
+
+01:14:20.930 --> 01:14:23.090 align:middle line:90%
+to N union, dot, dot, dot.
+
+01:14:23.090 --> 01:14:28.850 align:middle line:84%
+T2A is T2 numbers up to
+N, union, dot, dot, dot.
+
+01:14:28.850 --> 01:14:32.490 align:middle line:84%
+So, these two guys
+are very friendly,
+
+01:14:32.490 --> 01:14:34.670 align:middle line:84%
+not just because they're
+the same as each other.
+
+01:14:34.670 --> 01:14:36.420 align:middle line:84%
+Not everybody who's
+the same as each other
+
+01:14:36.420 --> 01:14:39.370 align:middle line:84%
+is friends, but
+because they have
+
+01:14:39.370 --> 01:14:41.930 align:middle line:90%
+a lot of additive structures.
+
+01:14:41.930 --> 01:14:47.530 align:middle line:84%
+And, therefore,
+this guy is large.
+
+01:14:47.530 --> 01:14:54.740 align:middle line:84%
+And these two guys
+are very friendly.
+
+01:14:54.740 --> 01:14:59.100 align:middle line:84%
+And therefore,
+this guy is large.
+
+01:14:59.100 --> 01:15:03.360 align:middle line:84%
+But there's nothing
+going on with T1.
+
+01:15:03.360 --> 01:15:05.660 align:middle line:84%
+Plus, T1 and T2 are
+totally arbitrary.
+
+01:15:05.660 --> 01:15:09.360 align:middle line:84%
+T1 plus T2, we would not
+typically have this large.
+
+01:15:09.360 --> 01:15:12.660 align:middle line:90%
+
+
+01:15:12.660 --> 01:15:16.740 align:middle line:90%
+So, all right.
+
+01:15:16.740 --> 01:15:21.790 align:middle line:84%
+If a, T1 plus T2A
+is typically small.
+
+01:15:21.790 --> 01:15:25.620 align:middle line:90%
+
+
+01:15:25.620 --> 01:15:28.460 align:middle line:90%
+OK, cool.
+
+01:15:28.460 --> 01:15:33.060 align:middle line:84%
+So it was actually kind of
+crucial in our proof of theorem
+
+01:15:33.060 --> 01:15:37.060 align:middle line:84%
+1 to talk about the cardinality
+of the subset instead
+
+01:15:37.060 --> 01:15:39.380 align:middle line:84%
+of the energy because,
+in that setting,
+
+01:15:39.380 --> 01:15:41.900 align:middle line:84%
+we have the Plünnecke-Ruzsa
+inequalities.
+
+01:15:41.900 --> 01:15:44.020 align:middle line:84%
+And we get a great
+deal of structure
+
+01:15:44.020 --> 01:15:45.660 align:middle line:84%
+from a single
+subset being small.
+
+01:15:45.660 --> 01:15:48.460 align:middle line:90%
+We get lots of other things.
+
+01:15:48.460 --> 01:15:53.870 align:middle line:84%
+On the other hand, it is nice,
+eventually, to get to theorem 2,
+
+01:15:53.870 --> 01:15:55.910 align:middle line:90%
+because theorem 2 is stable.
+
+01:15:55.910 --> 01:15:57.630 align:middle line:84%
+If you replace the
+actual product,
+
+01:15:57.630 --> 01:16:03.050 align:middle line:84%
+A cross A, by a subset,
+which is almost all of it.
+
+01:16:03.050 --> 01:16:06.550 align:middle line:84%
+So, both looking at cardinality
+and looking at energy
+
+01:16:06.550 --> 01:16:08.830 align:middle line:90%
+have good features.
+
+01:16:08.830 --> 01:16:11.830 align:middle line:84%
+Energy estimates are
+stable, undertaking subsets.
+
+01:16:11.830 --> 01:16:15.190 align:middle line:84%
+And the cardinality estimates
+have this contagious structure
+
+01:16:15.190 --> 01:16:15.913 align:middle line:90%
+thing.
+
+01:16:15.913 --> 01:16:17.080 align:middle line:90%
+Those are both very helpful.
+
+01:16:17.080 --> 01:16:22.710 align:middle line:90%
+
+
+01:16:22.710 --> 01:16:29.070 align:middle line:84%
+And Balog-Szemeredi-Gowers,
+this is important
+
+01:16:29.070 --> 01:16:33.750 align:middle line:84%
+because, even though
+having a big energy
+
+01:16:33.750 --> 01:16:36.430 align:middle line:84%
+is not synonymous with
+having a small subset,
+
+01:16:36.430 --> 01:16:39.350 align:middle line:84%
+Balog-Szemeredi-Gowers says
+they're very closely-related.
+
+01:16:39.350 --> 01:16:41.190 align:middle line:84%
+And so, by using
+Balog-Szemeredi-Gowers,
+
+01:16:41.190 --> 01:16:44.430 align:middle line:84%
+you can often get the
+best of both worlds.
+
+01:16:44.430 --> 01:16:46.190 align:middle line:84%
+So if you were to
+pretend that you
+
+01:16:46.190 --> 01:16:49.920 align:middle line:84%
+could have all the good
+features of an energy bound,
+
+01:16:49.920 --> 01:16:51.970 align:middle line:84%
+and all the good features
+of a cardinality bound
+
+01:16:51.970 --> 01:16:54.040 align:middle line:84%
+to see what you could
+prove, very often,
+
+01:16:54.040 --> 01:16:57.320 align:middle line:84%
+you can prove those things by
+using Balog-Szemeredi-Gowers
+
+01:16:57.320 --> 01:16:58.430 align:middle line:90%
+to move back and forth.
+
+01:16:58.430 --> 01:17:04.040 align:middle line:90%
+
+
+01:17:04.040 --> 01:17:06.843 align:middle line:84%
+Pablo gave the analysis
+seminar a few weeks ago.
+
+01:17:06.843 --> 01:17:08.760 align:middle line:84%
+And he gave an overview
+of recent developments
+
+01:17:08.760 --> 01:17:10.400 align:middle line:90%
+in projection theory.
+
+01:17:10.400 --> 01:17:13.200 align:middle line:84%
+And he made the
+claim, or suggestion,
+
+01:17:13.200 --> 01:17:16.240 align:middle line:84%
+that this theorem might be one
+of the most important or most
+
+01:17:16.240 --> 01:17:20.480 align:middle line:84%
+used theorems in math in
+the last several decades.
+
+01:17:20.480 --> 01:17:24.160 align:middle line:90%
+It was a little provocative.
+
+01:17:24.160 --> 01:17:26.160 align:middle line:90%
+I thought it was interesting.
+
+01:17:26.160 --> 01:17:30.580 align:middle line:84%
+And I have gradually been
+appreciating it more and more.
+
+01:17:30.580 --> 01:17:32.120 align:middle line:90%
+I'm learning about it.
+
+01:17:32.120 --> 01:17:36.040 align:middle line:84%
+Anyway, I've been gradually
+appreciating it more and more.
+
+01:17:36.040 --> 01:17:38.260 align:middle line:84%
+And, yeah, probably,
+as we keep going,
+
+01:17:38.260 --> 01:17:41.890 align:middle line:84%
+we'll see how this
+keeps being important.
+
+01:17:41.890 --> 01:17:48.000 align:middle line:90%

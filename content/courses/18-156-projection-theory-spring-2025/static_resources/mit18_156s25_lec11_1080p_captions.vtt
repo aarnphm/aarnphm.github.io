@@ -1,0 +1,3908 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.410 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.410 --> 00:00:04.338 align:middle line:90%
+[RUSTLING]
+
+00:00:04.338 --> 00:00:05.784 align:middle line:90%
+[CLICKING]
+
+00:00:05.784 --> 00:00:13.293 align:middle line:90%
+
+
+00:00:13.293 --> 00:00:14.460 align:middle line:90%
+PETER KEMPTHORNE: All right.
+
+00:00:14.460 --> 00:00:16.520 align:middle line:90%
+We'll get started.
+
+00:00:16.520 --> 00:00:18.720 align:middle line:84%
+What I wanted to do
+today was to make
+
+00:00:18.720 --> 00:00:23.240 align:middle line:84%
+sure we thoroughly cover
+the theory and application
+
+00:00:23.240 --> 00:00:25.160 align:middle line:90%
+of regression modeling.
+
+00:00:25.160 --> 00:00:30.360 align:middle line:84%
+And so to begin,
+there's a recap,
+
+00:00:30.360 --> 00:00:41.960 align:middle line:84%
+which is the theory for, if
+we have linear regression,
+
+00:00:41.960 --> 00:00:49.560 align:middle line:84%
+and we have, in particular, a
+normal linear regression model,
+
+00:00:49.560 --> 00:00:58.320 align:middle line:84%
+then we have these properties
+of beta hat being distributed
+
+00:00:58.320 --> 00:01:07.560 align:middle line:84%
+as a multinormal random variable
+with mean the true regression
+
+00:01:07.560 --> 00:01:14.520 align:middle line:84%
+parameter and covariance matrix
+given by the X transpose X
+
+00:01:14.520 --> 00:01:17.920 align:middle line:84%
+inverse multiplied
+by sigma squared.
+
+00:01:17.920 --> 00:01:21.400 align:middle line:84%
+And we also have
+that epsilon hat
+
+00:01:21.400 --> 00:01:24.280 align:middle line:90%
+is a multinormal distribution--
+
+00:01:24.280 --> 00:01:29.000 align:middle line:84%
+it's actually not of full rank,
+but it's in n dimensions--
+
+00:01:29.000 --> 00:01:34.520 align:middle line:84%
+with mean 0, a 0 vector,
+and the covariance matrix
+
+00:01:34.520 --> 00:01:40.680 align:middle line:84%
+is sigma squared times the
+identity minus the hat matrix.
+
+00:01:40.680 --> 00:01:46.560 align:middle line:84%
+And with these
+properties, we can
+
+00:01:46.560 --> 00:01:51.440 align:middle line:84%
+show that they are independent
+random variables, if we have
+
+00:01:51.440 --> 00:01:53.640 align:middle line:90%
+the normal model assumption.
+
+00:01:53.640 --> 00:02:01.940 align:middle line:84%
+So these are independent if the
+error vector is multinormal.
+
+00:02:01.940 --> 00:02:05.000 align:middle line:90%
+
+
+00:02:05.000 --> 00:02:12.320 align:middle line:84%
+And with that, we're able to
+get an estimate of the error
+
+00:02:12.320 --> 00:02:18.680 align:middle line:84%
+variance very easily
+from the residual vector.
+
+00:02:18.680 --> 00:02:22.600 align:middle line:84%
+The sum of squares of
+the residual vector
+
+00:02:22.600 --> 00:02:26.760 align:middle line:84%
+can be solved for having
+expectation equal to n minus p
+
+00:02:26.760 --> 00:02:31.240 align:middle line:84%
+sigma squared, and
+that leads to dividing
+
+00:02:31.240 --> 00:02:33.760 align:middle line:84%
+the sum of squared
+residuals by n minus p
+
+00:02:33.760 --> 00:02:35.960 align:middle line:90%
+to get an unbiased estimate.
+
+00:02:35.960 --> 00:02:41.080 align:middle line:84%
+Now, what's interesting
+mathematically
+
+00:02:41.080 --> 00:02:47.360 align:middle line:84%
+is that because this estimate
+of the error variance
+
+00:02:47.360 --> 00:02:52.680 align:middle line:84%
+depends on the residuals, which
+are independent of beta hat,
+
+00:02:52.680 --> 00:02:57.720 align:middle line:84%
+we can then use this information
+to construct t-statistics
+
+00:02:57.720 --> 00:03:02.240 align:middle line:90%
+for the least squares estimates.
+
+00:03:02.240 --> 00:03:16.660 align:middle line:84%
+So we have t-statistics for
+the j-th component of the least
+
+00:03:16.660 --> 00:03:23.160 align:middle line:84%
+squares estimate, so beta hat
+sub j minus beta j divided
+
+00:03:23.160 --> 00:03:36.560 align:middle line:84%
+by sigma hat Cjj where Cjj
+is the j-th diagonal entry
+
+00:03:36.560 --> 00:03:41.080 align:middle line:84%
+of the variance--
+inverse variance.
+
+00:03:41.080 --> 00:03:48.160 align:middle line:84%
+And actually, the Cjj should be
+equal to the square root of X
+
+00:03:48.160 --> 00:03:52.440 align:middle line:90%
+transpose X inverse sub jj.
+
+00:03:52.440 --> 00:03:56.640 align:middle line:84%
+So there's a square
+root missing there.
+
+00:03:56.640 --> 00:04:04.320 align:middle line:84%
+And this distribution, under
+the normal linear model, has--
+
+00:04:04.320 --> 00:04:09.520 align:middle line:84%
+or this formula has
+a t-distribution.
+
+00:04:09.520 --> 00:04:14.560 align:middle line:84%
+So this is distributed
+as a t-distribution
+
+00:04:14.560 --> 00:04:19.440 align:middle line:84%
+with n-minus-p degrees
+of freedom, degrees
+
+00:04:19.440 --> 00:04:22.560 align:middle line:90%
+of freedom equal to n minus p.
+
+00:04:22.560 --> 00:04:30.520 align:middle line:84%
+And this is true if we
+plug in the true beta j.
+
+00:04:30.520 --> 00:04:36.240 align:middle line:84%
+So centering our least
+squares estimate at beta j
+
+00:04:36.240 --> 00:04:38.520 align:middle line:90%
+allows us to write that out.
+
+00:04:38.520 --> 00:04:44.840 align:middle line:84%
+So if we look at
+our beta hat value
+
+00:04:44.840 --> 00:04:49.840 align:middle line:84%
+and consider it around
+the true beta j,
+
+00:04:49.840 --> 00:04:54.840 align:middle line:84%
+we basically have a
+t-distribution for the outcome.
+
+00:04:54.840 --> 00:04:58.280 align:middle line:84%
+And why this becomes
+very useful is
+
+00:04:58.280 --> 00:05:02.320 align:middle line:84%
+that if we want to test the
+hypothesis that beta j is
+
+00:05:02.320 --> 00:05:11.200 align:middle line:84%
+equal to 0, then
+if this is 0, we
+
+00:05:11.200 --> 00:05:20.120 align:middle line:84%
+can basically define
+an interval around 0
+
+00:05:20.120 --> 00:05:26.700 align:middle line:84%
+and consider rejecting
+the null hypothesis
+
+00:05:26.700 --> 00:05:32.840 align:middle line:84%
+if our t hat with beta j
+equaling 0 in magnitude
+
+00:05:32.840 --> 00:05:35.600 align:middle line:84%
+is greater than some
+critical value--
+
+00:05:35.600 --> 00:05:38.040 align:middle line:90%
+say, some constant C.
+
+00:05:38.040 --> 00:05:44.960 align:middle line:84%
+And so this
+t-statistic is commonly
+
+00:05:44.960 --> 00:05:50.080 align:middle line:84%
+applied in judging
+different regression models.
+
+00:05:50.080 --> 00:05:53.590 align:middle line:84%
+Of particular interest
+is whether factors can be
+
+00:05:53.590 --> 00:05:56.750 align:middle line:90%
+excluded from the regression.
+
+00:05:56.750 --> 00:06:00.490 align:middle line:84%
+So if a beta j
+component is equal to 0,
+
+00:06:00.490 --> 00:06:03.790 align:middle line:84%
+that means we can just
+exclude the variable.
+
+00:06:03.790 --> 00:06:08.430 align:middle line:84%
+Now, interestingly,
+if we want to test
+
+00:06:08.430 --> 00:06:14.550 align:middle line:84%
+whether multiple beta
+j's are equal to 0,
+
+00:06:14.550 --> 00:06:18.290 align:middle line:84%
+a special case of
+that is just to say,
+
+00:06:18.290 --> 00:06:25.430 align:middle line:84%
+let's assume that the first
+k beta j's are nonzero.
+
+00:06:25.430 --> 00:06:27.830 align:middle line:84%
+We'll just assume
+that that's true.
+
+00:06:27.830 --> 00:06:33.310 align:middle line:84%
+But let's test whether
+the beta j's for j above k
+
+00:06:33.310 --> 00:06:35.150 align:middle line:90%
+are equal to 0.
+
+00:06:35.150 --> 00:06:41.510 align:middle line:84%
+And what we can do is
+calculate residuals
+
+00:06:41.510 --> 00:06:46.510 align:middle line:90%
+under the two hypotheses.
+
+00:06:46.510 --> 00:06:53.750 align:middle line:84%
+First, assuming that they're
+all nonzero, we get an RSS 1.
+
+00:06:53.750 --> 00:06:57.050 align:middle line:84%
+But if we assume the
+submodel is true,
+
+00:06:57.050 --> 00:07:00.190 align:middle line:84%
+we can get a second
+set of residuals.
+
+00:07:00.190 --> 00:07:07.550 align:middle line:84%
+And because the
+full model is more--
+
+00:07:07.550 --> 00:07:12.230 align:middle line:84%
+sort of, it minimizes the
+sum of squares further, we
+
+00:07:12.230 --> 00:07:16.710 align:middle line:84%
+can look at the difference
+in residual sum of squares,
+
+00:07:16.710 --> 00:07:20.430 align:middle line:84%
+normalize that by p
+minus k, and compare
+
+00:07:20.430 --> 00:07:23.110 align:middle line:84%
+that with the residual
+sum of the squares
+
+00:07:23.110 --> 00:07:26.090 align:middle line:84%
+under the full model
+divided by n minus p.
+
+00:07:26.090 --> 00:07:30.710 align:middle line:84%
+So this is an estimate of sigma
+squared using the full model.
+
+00:07:30.710 --> 00:07:32.910 align:middle line:84%
+This numerator is
+also an estimate
+
+00:07:32.910 --> 00:07:39.390 align:middle line:84%
+of sigma squared based on the
+null hypothesis being true.
+
+00:07:39.390 --> 00:07:43.750 align:middle line:84%
+Now, what's interesting
+to highlight
+
+00:07:43.750 --> 00:07:53.350 align:middle line:84%
+is that the F-test when k, the
+number of nonzero coefficients,
+
+00:07:53.350 --> 00:07:57.630 align:middle line:84%
+is p minus 1, then this
+F-test corresponds to testing
+
+00:07:57.630 --> 00:08:02.030 align:middle line:84%
+whether the p-th
+beta j is equal to 0.
+
+00:08:02.030 --> 00:08:10.550 align:middle line:84%
+And so it turns out that
+if we have t hat p--
+
+00:08:10.550 --> 00:08:16.070 align:middle line:84%
+sorry-- t hat,
+yeah, p, of beta--
+
+00:08:16.070 --> 00:08:20.950 align:middle line:84%
+of the true beta,
+the beta with beta p
+
+00:08:20.950 --> 00:08:26.830 align:middle line:84%
+equal to 0- this
+squared is actually
+
+00:08:26.830 --> 00:08:28.916 align:middle line:90%
+equal to this F-statistic.
+
+00:08:28.916 --> 00:08:33.817 align:middle line:90%
+
+
+00:08:33.817 --> 00:08:35.630 align:middle line:90%
+[LAUGHS] I'm just going to--
+
+00:08:35.630 --> 00:08:40.150 align:middle line:84%
+[LAUGHS] there's a huge
+rumbling in the room right now.
+
+00:08:40.150 --> 00:08:43.950 align:middle line:84%
+And if anyone
+finds out that it's
+
+00:08:43.950 --> 00:08:46.130 align:middle line:84%
+something serious we
+should be thinking about,
+
+00:08:46.130 --> 00:08:50.910 align:middle line:84%
+please let me know, [LAUGHS]
+or let the whole class know.
+
+00:08:50.910 --> 00:08:55.230 align:middle line:84%
+It sort of sounds like an
+earthquake, which I experienced
+
+00:08:55.230 --> 00:08:57.535 align:middle line:90%
+when I was at UC Berkeley.
+
+00:08:57.535 --> 00:09:01.150 align:middle line:84%
+[LAUGHS] Anyway, all
+right, well, we'll
+
+00:09:01.150 --> 00:09:04.030 align:middle line:84%
+continue, unless I get
+warnings from you all.
+
+00:09:04.030 --> 00:09:07.710 align:middle line:84%
+Anyway, it turns out that this
+t-squared statistic is actually
+
+00:09:07.710 --> 00:09:10.610 align:middle line:84%
+equal to the F-test
+formalized here.
+
+00:09:10.610 --> 00:09:13.850 align:middle line:90%
+So F-tests are very useful.
+
+00:09:13.850 --> 00:09:17.830 align:middle line:84%
+In special cases, they're
+equivalent to the square
+
+00:09:17.830 --> 00:09:21.870 align:middle line:90%
+of a t-test statistic.
+
+00:09:21.870 --> 00:09:28.910 align:middle line:84%
+Now, let's see, with the
+notes from last time,
+
+00:09:28.910 --> 00:09:30.950 align:middle line:90%
+we went through these.
+
+00:09:30.950 --> 00:09:39.950 align:middle line:84%
+We highlighted how, with
+generalized least squares--
+
+00:09:39.950 --> 00:09:43.620 align:middle line:84%
+this is another key takeaway
+in regression modeling.
+
+00:09:43.620 --> 00:09:46.430 align:middle line:90%
+
+
+00:09:46.430 --> 00:09:53.710 align:middle line:84%
+So, so generalized
+least squares,
+
+00:09:53.710 --> 00:09:56.350 align:middle line:84%
+with generalized
+least squares, we
+
+00:09:56.350 --> 00:10:02.510 align:middle line:84%
+have an error
+vector, which is not
+
+00:10:02.510 --> 00:10:07.670 align:middle line:84%
+a diagonal identity
+times sigma squared,
+
+00:10:07.670 --> 00:10:17.030 align:middle line:84%
+but it's some base matrix sigma
+times little sigma squared.
+
+00:10:17.030 --> 00:10:20.750 align:middle line:84%
+And with this setup,
+we can actually
+
+00:10:20.750 --> 00:10:27.550 align:middle line:84%
+transform this regression
+model into one which satisfies
+
+00:10:27.550 --> 00:10:30.190 align:middle line:90%
+our Gauss-Markov assumptions.
+
+00:10:30.190 --> 00:10:36.950 align:middle line:84%
+And then, so with x star and y
+star being the model equation
+
+00:10:36.950 --> 00:10:44.150 align:middle line:84%
+multiplied by the inverse
+square root of sigma, then
+
+00:10:44.150 --> 00:10:47.710 align:middle line:84%
+this model satisfies the
+Gauss-Markov assumptions,
+
+00:10:47.710 --> 00:10:53.630 align:middle line:84%
+zero-mean constant variance,
+and so this estimator,
+
+00:10:53.630 --> 00:10:56.830 align:middle line:84%
+with the X stars and Y
+stars but the same beta,
+
+00:10:56.830 --> 00:11:00.450 align:middle line:84%
+gives us our best
+estimate of the beta hat--
+
+00:11:00.450 --> 00:11:04.390 align:middle line:84%
+best in terms of minimum
+being unbiased and having
+
+00:11:04.390 --> 00:11:07.350 align:middle line:90%
+smallest variance.
+
+00:11:07.350 --> 00:11:08.190 align:middle line:90%
+OK.
+
+00:11:08.190 --> 00:11:16.910 align:middle line:84%
+Well, a next important
+aspect of regression modeling
+
+00:11:16.910 --> 00:11:28.270 align:middle line:84%
+is looking at Maximum
+Likelihood Estimation, MLE.
+
+00:11:28.270 --> 00:11:32.710 align:middle line:84%
+And for maximum
+likelihood estimation,
+
+00:11:32.710 --> 00:11:40.310 align:middle line:84%
+we use the probability model
+of the regression-- which,
+
+00:11:40.310 --> 00:11:46.150 align:middle line:84%
+in this case, is normal linear
+regression models, so if we
+
+00:11:46.150 --> 00:11:52.070 align:middle line:90%
+have normal epsilon vector.
+
+00:11:52.070 --> 00:11:58.790 align:middle line:84%
+Then we compute the
+density of our data Y,
+
+00:11:58.790 --> 00:12:02.870 align:middle line:84%
+given the explanatory
+variables in X,
+
+00:12:02.870 --> 00:12:09.310 align:middle line:84%
+and the beta, regression
+parameter beta.
+
+00:12:09.310 --> 00:12:11.110 align:middle line:90%
+That should be a beta there.
+
+00:12:11.110 --> 00:12:16.870 align:middle line:84%
+And we simply identify
+those parameter values
+
+00:12:16.870 --> 00:12:20.950 align:middle line:90%
+that maximize this probability.
+
+00:12:20.950 --> 00:12:22.430 align:middle line:84%
+So we're looking
+at the parameter
+
+00:12:22.430 --> 00:12:28.350 align:middle line:84%
+values that make the data
+we observed the most likely.
+
+00:12:28.350 --> 00:12:33.310 align:middle line:84%
+And intuitively, that's
+maybe a reasonable thing.
+
+00:12:33.310 --> 00:12:37.810 align:middle line:84%
+If you take Mathematical
+Statistics next term,
+
+00:12:37.810 --> 00:12:40.910 align:middle line:84%
+you'll learn that
+that, in fact, is
+
+00:12:40.910 --> 00:12:48.190 align:middle line:84%
+an optimal estimator, in terms
+of having smallest variance
+
+00:12:48.190 --> 00:12:49.350 align:middle line:90%
+in large samples.
+
+00:12:49.350 --> 00:12:54.630 align:middle line:84%
+As the sample size, the
+number of cases n increases,
+
+00:12:54.630 --> 00:12:57.910 align:middle line:84%
+this will lead to
+the best estimator.
+
+00:12:57.910 --> 00:13:02.070 align:middle line:90%
+And this MLE for the best--
+
+00:13:02.070 --> 00:13:04.990 align:middle line:84%
+or the best estimator
+being the MLE
+
+00:13:04.990 --> 00:13:09.230 align:middle line:84%
+will be true for different
+distributions as well.
+
+00:13:09.230 --> 00:13:14.750 align:middle line:84%
+We're going to show what it is
+for the Gaussian distribution.
+
+00:13:14.750 --> 00:13:19.590 align:middle line:84%
+And what we can
+see on this slide
+
+00:13:19.590 --> 00:13:23.310 align:middle line:84%
+is that the log
+of the likelihood
+
+00:13:23.310 --> 00:13:27.510 align:middle line:84%
+is the log of this
+density on the top line.
+
+00:13:27.510 --> 00:13:34.750 align:middle line:84%
+It can be equal to minus n over
+2 log sigma squared minus 1/2
+
+00:13:34.750 --> 00:13:39.310 align:middle line:84%
+sigma squared q of beta, where
+q of beta is our least squares
+
+00:13:39.310 --> 00:13:40.790 align:middle line:90%
+criterion.
+
+00:13:40.790 --> 00:13:45.150 align:middle line:84%
+So maximum likelihood estimation
+for normal linear regression
+
+00:13:45.150 --> 00:13:50.230 align:middle line:90%
+models can proceed in two steps.
+
+00:13:50.230 --> 00:13:57.950 align:middle line:84%
+First, we can see that the beta
+regression coefficient enters in
+
+00:13:57.950 --> 00:14:01.630 align:middle line:84%
+only through a
+factor of Q of beta.
+
+00:14:01.630 --> 00:14:08.270 align:middle line:84%
+So minimizing Q of beta
+gives us the MLE for beta.
+
+00:14:08.270 --> 00:14:11.710 align:middle line:84%
+And then once we have
+the MLE for beta,
+
+00:14:11.710 --> 00:14:17.630 align:middle line:84%
+we can plug that in to the
+likelihood, the log likelihood--
+
+00:14:17.630 --> 00:14:22.990 align:middle line:84%
+or the likelihood, for
+varying sigma squared.
+
+00:14:22.990 --> 00:14:27.630 align:middle line:84%
+And when we do this,
+we actually can just
+
+00:14:27.630 --> 00:14:33.590 align:middle line:84%
+maximize this sort
+of partial likelihood
+
+00:14:33.590 --> 00:14:37.030 align:middle line:90%
+with beta fixed at beta hat.
+
+00:14:37.030 --> 00:14:39.230 align:middle line:84%
+Maximize that over
+sigma squared,
+
+00:14:39.230 --> 00:14:43.310 align:middle line:84%
+and that turns out to be a very
+easy computation, calculating
+
+00:14:43.310 --> 00:14:49.670 align:middle line:84%
+the first-order equation
+for the log likelihood.
+
+00:14:49.670 --> 00:14:53.110 align:middle line:84%
+And we get the maximum
+likelihood estimate is simply
+
+00:14:53.110 --> 00:14:57.750 align:middle line:84%
+the sum of squared
+residuals divided by n.
+
+00:14:57.750 --> 00:15:02.470 align:middle line:84%
+Now, with maximum
+likelihood, in this case,
+
+00:15:02.470 --> 00:15:07.190 align:middle line:84%
+we have, actually, a biased
+estimate of the error variance.
+
+00:15:07.190 --> 00:15:14.270 align:middle line:84%
+And it's important just to
+note that that's the case.
+
+00:15:14.270 --> 00:15:16.110 align:middle line:90%
+All right.
+
+00:15:16.110 --> 00:15:20.710 align:middle line:84%
+Well, what's interesting
+to generalize
+
+00:15:20.710 --> 00:15:27.990 align:middle line:84%
+is to find estimators,
+which minimize
+
+00:15:27.990 --> 00:15:31.870 align:middle line:84%
+a Q function, which may be
+different from least squares--
+
+00:15:31.870 --> 00:15:33.510 align:middle line:90%
+or sum of squares.
+
+00:15:33.510 --> 00:15:38.340 align:middle line:84%
+And so we can
+consider a Q function
+
+00:15:38.340 --> 00:15:47.780 align:middle line:84%
+which minimizes the sum of a
+function h evaluated at case i.
+
+00:15:47.780 --> 00:15:50.740 align:middle line:90%
+So let's see here.
+
+00:15:50.740 --> 00:15:54.740 align:middle line:90%
+Let's pull this down.
+
+00:15:54.740 --> 00:16:09.820 align:middle line:84%
+So, so with generalized
+M-estimators,
+
+00:16:09.820 --> 00:16:14.300 align:middle line:84%
+we think of Q of beta
+being the sum 1 to n
+
+00:16:14.300 --> 00:16:22.230 align:middle line:84%
+of h of y i, the x i beta,
+and sigma squared, I guess.
+
+00:16:22.230 --> 00:16:24.740 align:middle line:90%
+
+
+00:16:24.740 --> 00:16:27.860 align:middle line:84%
+And the choice of h,
+well, if we choose h
+
+00:16:27.860 --> 00:16:35.660 align:middle line:84%
+to just be the square of the
+linear estimate of y given x i,
+
+00:16:35.660 --> 00:16:37.500 align:middle line:90%
+that's least squares.
+
+00:16:37.500 --> 00:16:42.700 align:middle line:84%
+There's no reason, in principle,
+why we should use squares.
+
+00:16:42.700 --> 00:16:47.460 align:middle line:84%
+We could use absolute
+deviations and sum those.
+
+00:16:47.460 --> 00:16:53.660 align:middle line:84%
+And if we wanted maximum
+likelihood estimates,
+
+00:16:53.660 --> 00:16:58.860 align:middle line:84%
+we could choose h to be
+minus the log of the density.
+
+00:16:58.860 --> 00:17:04.780 align:middle line:84%
+And there are robust
+estimators in statistics.
+
+00:17:04.780 --> 00:17:13.540 align:middle line:84%
+And these robust estimators
+consider variations, basically,
+
+00:17:13.540 --> 00:17:20.500 align:middle line:84%
+of least squares and
+mean absolute deviations
+
+00:17:20.500 --> 00:17:25.339 align:middle line:84%
+as special cases, that yield
+estimators that are robust.
+
+00:17:25.339 --> 00:17:30.060 align:middle line:84%
+Now, what's, to me, very
+interesting is that if we were
+
+00:17:30.060 --> 00:17:36.060 align:middle line:84%
+to know what the density
+is of the errors,
+
+00:17:36.060 --> 00:17:40.580 align:middle line:84%
+then maximum likelihood
+estimation would say use that.
+
+00:17:40.580 --> 00:17:44.020 align:middle line:84%
+When we don't know
+the distribution,
+
+00:17:44.020 --> 00:17:50.020 align:middle line:84%
+then these others may be
+very useful as alternatives.
+
+00:17:50.020 --> 00:17:55.820 align:middle line:84%
+And robust estimators
+were originally
+
+00:17:55.820 --> 00:18:01.180 align:middle line:84%
+proposed for models where we
+may have a normal distribution
+
+00:18:01.180 --> 00:18:04.180 align:middle line:84%
+most of the time, but
+some contamination
+
+00:18:04.180 --> 00:18:11.660 align:middle line:84%
+distribution with large errors
+a small percentage of the time.
+
+00:18:11.660 --> 00:18:15.820 align:middle line:84%
+Now, and another
+interesting example
+
+00:18:15.820 --> 00:18:23.020 align:middle line:84%
+of this generalized M-estimator
+is the quantile estimator,
+
+00:18:23.020 --> 00:18:28.220 align:middle line:84%
+where we consider sort of
+mean absolute deviation,
+
+00:18:28.220 --> 00:18:37.020 align:middle line:84%
+but we scale that for positive
+residuals by a factor tau.
+
+00:18:37.020 --> 00:18:41.720 align:middle line:84%
+And for negative
+values of the residual,
+
+00:18:41.720 --> 00:18:46.200 align:middle line:84%
+we scale the absolute
+deviation by 1 minus tau.
+
+00:18:46.200 --> 00:18:50.060 align:middle line:90%
+
+
+00:18:50.060 --> 00:18:55.820 align:middle line:84%
+This h function
+basically is equivalent
+
+00:18:55.820 --> 00:19:05.820 align:middle line:84%
+to the mean absolute deviation
+when tau is equal to 0.5.
+
+00:19:05.820 --> 00:19:10.660 align:middle line:90%
+But when tau is--
+
+00:19:10.660 --> 00:19:14.300 align:middle line:90%
+if we have h--
+
+00:19:14.300 --> 00:19:17.140 align:middle line:90%
+let's see.
+
+00:19:17.140 --> 00:19:25.460 align:middle line:84%
+So h of y, x, when this is
+equal to tau y i minus x i
+
+00:19:25.460 --> 00:19:34.540 align:middle line:90%
+beta when this is positive.
+
+00:19:34.540 --> 00:19:38.840 align:middle line:84%
+And it's equal to 1
+minus tau when this is--
+
+00:19:38.840 --> 00:19:41.620 align:middle line:90%
+
+
+00:19:41.620 --> 00:19:48.820 align:middle line:84%
+actually, it's equal to minus
+this when this is less than 0.
+
+00:19:48.820 --> 00:19:54.400 align:middle line:84%
+Then, for example, when
+tau is equal to 0.9,
+
+00:19:54.400 --> 00:20:01.740 align:middle line:84%
+this turns out to be a quantile
+estimate that is working
+
+00:20:01.740 --> 00:20:07.380 align:middle line:84%
+to estimate the 90th
+percentile of outcomes.
+
+00:20:07.380 --> 00:20:16.780 align:middle line:84%
+So when we have a regression
+model and we are sort of just--
+
+00:20:16.780 --> 00:20:20.420 align:middle line:84%
+if we have a bunch
+of points, and we
+
+00:20:20.420 --> 00:20:23.000 align:middle line:84%
+consider a linear
+regression model,
+
+00:20:23.000 --> 00:20:28.980 align:middle line:90%
+this would be y equal to--
+
+00:20:28.980 --> 00:20:32.740 align:middle line:84%
+or y hat equal to sort of
+the mean absolute deviation
+
+00:20:32.740 --> 00:20:41.420 align:middle line:84%
+estimate, we actually can get
+estimates of the 90th percentile
+
+00:20:41.420 --> 00:20:45.740 align:middle line:84%
+of outcomes of the
+regression model.
+
+00:20:45.740 --> 00:20:53.060 align:middle line:84%
+Now, what's interesting
+mathematically
+
+00:20:53.060 --> 00:20:59.660 align:middle line:84%
+is, How would one calculate sort
+of the mean absolute deviation
+
+00:20:59.660 --> 00:21:03.300 align:middle line:84%
+estimate, or this
+quantile estimator?
+
+00:21:03.300 --> 00:21:11.220 align:middle line:84%
+Well, we would want to minimize
+the sum of these h functions.
+
+00:21:11.220 --> 00:21:15.706 align:middle line:84%
+And these h functions
+actually are convex.
+
+00:21:15.706 --> 00:21:18.220 align:middle line:90%
+
+
+00:21:18.220 --> 00:21:22.700 align:middle line:84%
+So as James Sheppard said, this
+is, like, a bowl-shaped problem.
+
+00:21:22.700 --> 00:21:25.580 align:middle line:84%
+But it's a bowl with
+sort of square--
+
+00:21:25.580 --> 00:21:29.680 align:middle line:84%
+or with straight
+edges around it.
+
+00:21:29.680 --> 00:21:36.540 align:middle line:84%
+And so if we take this
+Q function with this h,
+
+00:21:36.540 --> 00:21:42.460 align:middle line:84%
+we can't minimize it by solving
+the first-order equations.
+
+00:21:42.460 --> 00:21:50.140 align:middle line:84%
+So if we have Q equal to the sum
+1 to n of h of the arguments,
+
+00:21:50.140 --> 00:21:51.650 align:middle line:90%
+we can't solve this--
+
+00:21:51.650 --> 00:21:55.140 align:middle line:90%
+
+
+00:21:55.140 --> 00:21:58.340 align:middle line:84%
+we can't solve for
+this equaling 0.
+
+00:21:58.340 --> 00:22:04.380 align:middle line:84%
+But we can solve for what the
+derivative is at any guesses,
+
+00:22:04.380 --> 00:22:12.580 align:middle line:84%
+and we can move our guess to a
+lower value of the Q function
+
+00:22:12.580 --> 00:22:13.160 align:middle line:90%
+with that.
+
+00:22:13.160 --> 00:22:15.780 align:middle line:84%
+And that's, in
+fact, how we learn
+
+00:22:15.780 --> 00:22:23.060 align:middle line:84%
+that the median of
+a sample is the best
+
+00:22:23.060 --> 00:22:26.580 align:middle line:84%
+estimate of the
+center of the data
+
+00:22:26.580 --> 00:22:31.220 align:middle line:84%
+if we consider mean
+absolute deviations.
+
+00:22:31.220 --> 00:22:33.780 align:middle line:90%
+OK.
+
+00:22:33.780 --> 00:22:40.980 align:middle line:84%
+Well, let's consider another
+extension of regression.
+
+00:22:40.980 --> 00:22:46.060 align:middle line:84%
+It's famous enough to have its
+own name, ridge regression.
+
+00:22:46.060 --> 00:22:52.860 align:middle line:84%
+And so with ridge regression,
+we are estimating the regression
+
+00:22:52.860 --> 00:23:00.300 align:middle line:90%
+parameters where we have--
+
+00:23:00.300 --> 00:23:03.340 align:middle line:84%
+basically, it's sort
+of least squares
+
+00:23:03.340 --> 00:23:10.700 align:middle line:84%
+plus a penalty,
+for our criterion.
+
+00:23:10.700 --> 00:23:18.460 align:middle line:84%
+So the left argument
+of this expression
+
+00:23:18.460 --> 00:23:21.780 align:middle line:84%
+is simply the sum of
+squared residuals,
+
+00:23:21.780 --> 00:23:24.980 align:middle line:84%
+but then we're adding
+to that a penalty
+
+00:23:24.980 --> 00:23:30.140 align:middle line:84%
+depending upon the squared
+length of the beta vector.
+
+00:23:30.140 --> 00:23:40.800 align:middle line:84%
+And so in order for this to
+be a reasonable thing to do,
+
+00:23:40.800 --> 00:23:43.980 align:middle line:90%
+we actually need to--
+
+00:23:43.980 --> 00:23:47.700 align:middle line:84%
+or, we don't need
+to, but it's useful,
+
+00:23:47.700 --> 00:23:55.060 align:middle line:84%
+to consider standardizing
+our independent variables x,
+
+00:23:55.060 --> 00:24:03.340 align:middle line:84%
+making them have mean
+0, and also centering y,
+
+00:24:03.340 --> 00:24:07.380 align:middle line:84%
+and then consider
+the regression where
+
+00:24:07.380 --> 00:24:15.860 align:middle line:84%
+we rescale the columns of the
+predictor matrix as centered
+
+00:24:15.860 --> 00:24:20.900 align:middle line:84%
+with the inverse of the
+covariance matrix between those.
+
+00:24:20.900 --> 00:24:30.060 align:middle line:84%
+So in this formulation,
+this is the statement
+
+00:24:30.060 --> 00:24:35.880 align:middle line:84%
+of how the ridge regression
+parameter estimate is specified.
+
+00:24:35.880 --> 00:24:41.660 align:middle line:84%
+Now, the centering of
+the independent variables
+
+00:24:41.660 --> 00:24:45.260 align:middle line:84%
+and scaling them to
+have unit variance
+
+00:24:45.260 --> 00:24:49.140 align:middle line:84%
+is important because
+it places all
+
+00:24:49.140 --> 00:24:52.020 align:middle line:84%
+of the variables, all of
+the predictor variables,
+
+00:24:52.020 --> 00:24:54.700 align:middle line:90%
+on an equal footing.
+
+00:24:54.700 --> 00:25:02.460 align:middle line:84%
+If we are looking at the sum
+of squared beta j's, then
+
+00:25:02.460 --> 00:25:04.700 align:middle line:84%
+if we just use
+different units, we
+
+00:25:04.700 --> 00:25:11.660 align:middle line:84%
+could make any j beta, beta
+j, as large as we want.
+
+00:25:11.660 --> 00:25:16.500 align:middle line:84%
+But with this
+standardization, we basically
+
+00:25:16.500 --> 00:25:21.100 align:middle line:84%
+eliminate that aspect,
+so there's no dependence
+
+00:25:21.100 --> 00:25:24.540 align:middle line:90%
+on the original units of X.
+
+00:25:24.540 --> 00:25:27.820 align:middle line:90%
+And let's see.
+
+00:25:27.820 --> 00:25:30.540 align:middle line:84%
+With this ridge
+regression, the notes
+
+00:25:30.540 --> 00:25:34.660 align:middle line:90%
+go through how we compute these.
+
+00:25:34.660 --> 00:25:42.380 align:middle line:84%
+I want to highlight, though,
+how this ridge regression is
+
+00:25:42.380 --> 00:25:46.860 align:middle line:84%
+actually related to
+Bayesian models, where
+
+00:25:46.860 --> 00:25:52.380 align:middle line:84%
+we would assume a prior
+distribution on our regression
+
+00:25:52.380 --> 00:25:54.020 align:middle line:90%
+parameters.
+
+00:25:54.020 --> 00:26:06.100 align:middle line:84%
+And so the-- if we consider
+a Bayes prior on beta,
+
+00:26:06.100 --> 00:26:17.010 align:middle line:84%
+and that Bayes prior is
+basically multinormal in p
+
+00:26:17.010 --> 00:26:24.130 align:middle line:84%
+dimensions, with a
+mean vector of 0,
+
+00:26:24.130 --> 00:26:29.520 align:middle line:84%
+and a covariance
+matrix that is--
+
+00:26:29.520 --> 00:26:32.090 align:middle line:90%
+
+
+00:26:32.090 --> 00:26:35.330 align:middle line:84%
+let's see, I'll call
+it omega, and omega
+
+00:26:35.330 --> 00:26:42.770 align:middle line:84%
+is proportional to the identity
+matrix in p dimensions.
+
+00:26:42.770 --> 00:26:50.210 align:middle line:84%
+Then what we've done is
+we have a criterion that
+
+00:26:50.210 --> 00:26:58.930 align:middle line:84%
+corresponds to the exponential
+part of the log likelihood for--
+
+00:26:58.930 --> 00:27:02.850 align:middle line:84%
+plus the log likelihood
+of the prior density.
+
+00:27:02.850 --> 00:27:09.690 align:middle line:84%
+So this ridge regression
+is interpretable as putting
+
+00:27:09.690 --> 00:27:17.370 align:middle line:84%
+a prior distribution on the
+betas that have this form,
+
+00:27:17.370 --> 00:27:21.730 align:middle line:84%
+mean 0, and covariance
+proportional
+
+00:27:21.730 --> 00:27:24.050 align:middle line:90%
+to the identity matrix.
+
+00:27:24.050 --> 00:27:26.890 align:middle line:84%
+And what that
+suggests a priori is
+
+00:27:26.890 --> 00:27:32.530 align:middle line:84%
+that any direction in
+that p-dimensional space
+
+00:27:32.530 --> 00:27:37.570 align:middle line:84%
+is equally likely as any
+other for characterizing
+
+00:27:37.570 --> 00:27:40.330 align:middle line:90%
+the regression parameters.
+
+00:27:40.330 --> 00:27:44.810 align:middle line:84%
+And this beta hat, which
+minimizes this argument,
+
+00:27:44.810 --> 00:27:49.850 align:middle line:84%
+ends up being the mode of
+the posterior distribution.
+
+00:27:49.850 --> 00:27:55.770 align:middle line:84%
+So that's a neat
+connection to be aware of.
+
+00:27:55.770 --> 00:28:00.370 align:middle line:84%
+The notes here go through,
+with ridge regression,
+
+00:28:00.370 --> 00:28:04.370 align:middle line:90%
+how we compute them.
+
+00:28:04.370 --> 00:28:09.850 align:middle line:84%
+The minimization basically
+leads to formulas
+
+00:28:09.850 --> 00:28:13.090 align:middle line:84%
+for the ridge regression
+estimate that look almost
+
+00:28:13.090 --> 00:28:15.050 align:middle line:84%
+like least squares,
+except we have
+
+00:28:15.050 --> 00:28:18.410 align:middle line:84%
+this additional factor,
+lambda times the identity,
+
+00:28:18.410 --> 00:28:22.770 align:middle line:84%
+inside that braces, before
+we take the inverse.
+
+00:28:22.770 --> 00:28:29.690 align:middle line:84%
+And with ridge regression, we
+can look at the singular value
+
+00:28:29.690 --> 00:28:34.930 align:middle line:84%
+decomposition of our
+independent variables
+
+00:28:34.930 --> 00:28:40.650 align:middle line:84%
+that have been centered
+and standardized.
+
+00:28:40.650 --> 00:28:48.530 align:middle line:84%
+And when we do that we basically
+have this final formula
+
+00:28:48.530 --> 00:28:53.890 align:middle line:90%
+for the ridge regression.
+
+00:28:53.890 --> 00:29:04.050 align:middle line:84%
+And we end up basically having
+the fitted values y hat just
+
+00:29:04.050 --> 00:29:12.050 align:middle line:84%
+being equal to a sum
+of factors times cj uj,
+
+00:29:12.050 --> 00:29:20.430 align:middle line:84%
+where these factors
+are 1 when lambda is 0.
+
+00:29:20.430 --> 00:29:25.010 align:middle line:84%
+So when lambda is 0, ridge
+is equal to least squares.
+
+00:29:25.010 --> 00:29:29.650 align:middle line:84%
+And so the least squares
+fitted values are given here.
+
+00:29:29.650 --> 00:29:35.290 align:middle line:84%
+But with ridge regression,
+we have shrinkage.
+
+00:29:35.290 --> 00:29:39.010 align:middle line:84%
+And what's curious
+is that there's
+
+00:29:39.010 --> 00:29:46.210 align:middle line:84%
+less shrinkage for the larger
+squared singular values,
+
+00:29:46.210 --> 00:29:50.490 align:middle line:84%
+and there's more shrinkage
+for the smaller ones.
+
+00:29:50.490 --> 00:29:53.690 align:middle line:84%
+So if we think of the
+independent variables,
+
+00:29:53.690 --> 00:29:58.970 align:middle line:84%
+or predictor variables,
+being in p-dimensional space,
+
+00:29:58.970 --> 00:30:05.850 align:middle line:84%
+then ridge regression
+will not shrink
+
+00:30:05.850 --> 00:30:09.370 align:middle line:84%
+much those regression
+coefficients
+
+00:30:09.370 --> 00:30:15.210 align:middle line:84%
+that correspond to
+regressor variables
+
+00:30:15.210 --> 00:30:19.890 align:middle line:84%
+that are along sort of the
+first principal component axis.
+
+00:30:19.890 --> 00:30:24.210 align:middle line:84%
+And there's much more
+shrinkage in those dimensions
+
+00:30:24.210 --> 00:30:27.150 align:middle line:84%
+where there's very
+little variation.
+
+00:30:27.150 --> 00:30:33.050 align:middle line:84%
+So these are actually connected
+to principal components
+
+00:30:33.050 --> 00:30:35.910 align:middle line:84%
+variables, which
+is actually covered
+
+00:30:35.910 --> 00:30:40.930 align:middle line:90%
+sort of in the next section.
+
+00:30:40.930 --> 00:30:43.850 align:middle line:90%
+So, yeah, it was--
+
+00:30:43.850 --> 00:30:46.850 align:middle line:84%
+we introduced ridge regression
+using the singular value
+
+00:30:46.850 --> 00:30:53.650 align:middle line:84%
+decomposition of X. But we can
+motivate principal components
+
+00:30:53.650 --> 00:30:58.890 align:middle line:84%
+regression using the same
+singular value decomposition.
+
+00:30:58.890 --> 00:31:05.810 align:middle line:84%
+So with our data
+predictor matrix X,
+
+00:31:05.810 --> 00:31:09.170 align:middle line:84%
+we consider the sample
+covariance matrix
+
+00:31:09.170 --> 00:31:12.690 align:middle line:90%
+of those row vectors.
+
+00:31:12.690 --> 00:31:18.370 align:middle line:84%
+And we can compute the
+eigenvalue eigenvector
+
+00:31:18.370 --> 00:31:21.370 align:middle line:90%
+decomposition of that.
+
+00:31:21.370 --> 00:31:25.010 align:middle line:84%
+And with these
+eigenvectors, which
+
+00:31:25.010 --> 00:31:34.650 align:middle line:84%
+are normalized to have length 1,
+we simply multiply our matrix X
+
+00:31:34.650 --> 00:31:39.570 align:middle line:84%
+by the j-th eigenvector, and we
+get our j-th principal component
+
+00:31:39.570 --> 00:31:41.810 align:middle line:90%
+variable.
+
+00:31:41.810 --> 00:31:46.250 align:middle line:84%
+So this is familiar to us
+in, terms of how principal
+
+00:31:46.250 --> 00:31:50.690 align:middle line:84%
+components sort of
+computations work.
+
+00:31:50.690 --> 00:31:57.050 align:middle line:84%
+And with principal
+components regression,
+
+00:31:57.050 --> 00:32:02.070 align:middle line:84%
+one has principal
+component variables
+
+00:32:02.070 --> 00:32:05.890 align:middle line:84%
+which are orthogonal
+to each other,
+
+00:32:05.890 --> 00:32:13.890 align:middle line:84%
+and so the computation of their
+coefficients is very simple.
+
+00:32:13.890 --> 00:32:16.970 align:middle line:84%
+We can calculate
+them separately,
+
+00:32:16.970 --> 00:32:20.330 align:middle line:84%
+and we can consider
+using maybe just
+
+00:32:20.330 --> 00:32:25.930 align:middle line:84%
+the first m principal component
+variables in our regression.
+
+00:32:25.930 --> 00:32:33.570 align:middle line:84%
+And so if we do this, we
+can see some easy formulas
+
+00:32:33.570 --> 00:32:38.050 align:middle line:90%
+for the estimates.
+
+00:32:38.050 --> 00:32:45.170 align:middle line:84%
+Ultimately, we get
+fitted values of y,
+
+00:32:45.170 --> 00:32:46.830 align:middle line:84%
+from principal
+components regression,
+
+00:32:46.830 --> 00:32:53.290 align:middle line:84%
+which are a projection of the
+Y vector onto the space spanned
+
+00:32:53.290 --> 00:32:54.020 align:middle line:90%
+by the first--
+
+00:32:54.020 --> 00:32:56.610 align:middle line:90%
+
+
+00:32:56.610 --> 00:33:03.290 align:middle line:84%
+in this case, the first m
+principal component directions.
+
+00:33:03.290 --> 00:33:09.390 align:middle line:84%
+And what's curious is just
+how these three methods--
+
+00:33:09.390 --> 00:33:11.410 align:middle line:84%
+least squares, ridge,
+and principal components
+
+00:33:11.410 --> 00:33:12.770 align:middle line:90%
+regression--
+
+00:33:12.770 --> 00:33:19.010 align:middle line:84%
+are estimating the response
+variable, or dependent variable,
+
+00:33:19.010 --> 00:33:23.370 align:middle line:84%
+using essentially the
+same fundamental pieces,
+
+00:33:23.370 --> 00:33:30.970 align:middle line:84%
+the cj and uj's, but
+are either skipping
+
+00:33:30.970 --> 00:33:34.570 align:middle line:84%
+the last p minus m for
+principal components,
+
+00:33:34.570 --> 00:33:37.290 align:middle line:84%
+shrinking those
+based on the size
+
+00:33:37.290 --> 00:33:42.430 align:middle line:84%
+of the eigenvalues for
+ridge, or using all of them.
+
+00:33:42.430 --> 00:33:45.850 align:middle line:90%
+
+
+00:33:45.850 --> 00:33:52.410 align:middle line:84%
+Now, as you might
+expect, researchers
+
+00:33:52.410 --> 00:33:58.650 align:middle line:84%
+have extended estimation
+methods beyond these.
+
+00:33:58.650 --> 00:34:04.370 align:middle line:84%
+The LASSO regression model,
+or regression estimate,
+
+00:34:04.370 --> 00:34:10.770 align:middle line:84%
+is one where, instead
+of having the penalty be
+
+00:34:10.770 --> 00:34:16.650 align:middle line:84%
+the sum of squared beta j's
+or the length of the beta j,
+
+00:34:16.650 --> 00:34:19.979 align:middle line:84%
+it's the sum of the
+absolute values.
+
+00:34:19.979 --> 00:34:22.690 align:middle line:90%
+
+
+00:34:22.690 --> 00:34:28.449 align:middle line:84%
+And this penalty is a
+really interesting one.
+
+00:34:28.449 --> 00:34:29.989 align:middle line:90%
+And some of-- let's see.
+
+00:34:29.989 --> 00:34:34.750 align:middle line:84%
+I'm sure some people here have
+perhaps used lasso regression.
+
+00:34:34.750 --> 00:34:38.370 align:middle line:84%
+Has anyone here used
+lasso regression?
+
+00:34:38.370 --> 00:34:39.650 align:middle line:90%
+Nobody?
+
+00:34:39.650 --> 00:34:41.409 align:middle line:90%
+That's fine.
+
+00:34:41.409 --> 00:34:45.489 align:middle line:84%
+That means this isn't sort
+of repeat information.
+
+00:34:45.489 --> 00:34:47.980 align:middle line:90%
+But it turns out that--
+
+00:34:47.980 --> 00:34:50.850 align:middle line:90%
+
+
+00:34:50.850 --> 00:34:53.330 align:middle line:90%
+well, let me just draw this.
+
+00:34:53.330 --> 00:34:58.250 align:middle line:84%
+Suppose we have beta
+1 versus beta 2,
+
+00:34:58.250 --> 00:35:03.142 align:middle line:90%
+and we're considering penalties.
+
+00:35:03.142 --> 00:35:06.050 align:middle line:90%
+
+
+00:35:06.050 --> 00:35:10.570 align:middle line:84%
+So the sum of the beta j
+squareds equal to a constant,
+
+00:35:10.570 --> 00:35:12.600 align:middle line:84%
+this is the sort
+of ridge penalty.
+
+00:35:12.600 --> 00:35:17.490 align:middle line:90%
+
+
+00:35:17.490 --> 00:35:28.190 align:middle line:84%
+So, so if we have a beta
+hat, say, a beta hat here,
+
+00:35:28.190 --> 00:35:31.610 align:middle line:84%
+a point that we
+observe, it basically
+
+00:35:31.610 --> 00:35:34.850 align:middle line:90%
+is sort of shrunk towards zero.
+
+00:35:34.850 --> 00:35:39.970 align:middle line:84%
+Or we have beta hat,
+and the beta-hat ridge
+
+00:35:39.970 --> 00:35:49.090 align:middle line:84%
+will be shrunk towards this
+prior mean some amount.
+
+00:35:49.090 --> 00:35:57.050 align:middle line:84%
+With the lasso penalty,
+we have the sum
+
+00:35:57.050 --> 00:36:02.650 align:middle line:84%
+of the magnitudes of the beta
+j's is equal to a constant.
+
+00:36:02.650 --> 00:36:10.450 align:middle line:84%
+Then we basically
+have diamonds where,
+
+00:36:10.450 --> 00:36:14.090 align:middle line:84%
+along each of these
+diamond edges,
+
+00:36:14.090 --> 00:36:17.650 align:middle line:84%
+the penalty is the
+same magnitude.
+
+00:36:17.650 --> 00:36:22.370 align:middle line:84%
+And so with lasso
+regression, we basically
+
+00:36:22.370 --> 00:36:31.890 align:middle line:84%
+consider finding an estimate
+that minimizes the least squares
+
+00:36:31.890 --> 00:36:37.340 align:middle line:84%
+but also is constrained
+to have sort
+
+00:36:37.340 --> 00:36:42.510 align:middle line:84%
+of sum of absolute
+magnitudes that's smaller.
+
+00:36:42.510 --> 00:36:48.930 align:middle line:84%
+And so this kind of
+penalty ends up actually
+
+00:36:48.930 --> 00:36:54.810 align:middle line:84%
+leading to shrinkage,
+which tends
+
+00:36:54.810 --> 00:37:01.760 align:middle line:84%
+to concentrate at the vertices
+of this penalty function.
+
+00:37:01.760 --> 00:37:05.000 align:middle line:84%
+So what we end up
+getting, often,
+
+00:37:05.000 --> 00:37:10.580 align:middle line:84%
+is a lasso estimate that
+has some null parameters,
+
+00:37:10.580 --> 00:37:12.060 align:middle line:90%
+zero-value parameters.
+
+00:37:12.060 --> 00:37:16.840 align:middle line:84%
+So it's a way of excluding
+variables from the regression,
+
+00:37:16.840 --> 00:37:18.710 align:middle line:90%
+depending on what lambda is.
+
+00:37:18.710 --> 00:37:22.040 align:middle line:90%
+
+
+00:37:22.040 --> 00:37:24.120 align:middle line:90%
+All right.
+
+00:37:24.120 --> 00:37:25.340 align:middle line:90%
+Well, let's see.
+
+00:37:25.340 --> 00:37:32.840 align:middle line:84%
+There's this ETF case
+study that I posted which--
+
+00:37:32.840 --> 00:37:35.640 align:middle line:90%
+
+
+00:37:35.640 --> 00:37:40.000 align:middle line:84%
+and it's sort of a long
+document to sift through,
+
+00:37:40.000 --> 00:37:44.400 align:middle line:84%
+but I guess what's
+important is just
+
+00:37:44.400 --> 00:37:46.480 align:middle line:84%
+to look at the table
+of contents to see
+
+00:37:46.480 --> 00:37:49.360 align:middle line:84%
+what's of interest
+to check out in this.
+
+00:37:49.360 --> 00:37:54.040 align:middle line:84%
+And what I set up
+as a problem was
+
+00:37:54.040 --> 00:38:02.680 align:middle line:84%
+to consider collecting prices
+on exchange-traded funds
+
+00:38:02.680 --> 00:38:07.080 align:middle line:84%
+that correspond to different
+sectors in the US market.
+
+00:38:07.080 --> 00:38:12.720 align:middle line:84%
+And so in the US market,
+there are about 10 sectors--
+
+00:38:12.720 --> 00:38:16.060 align:middle line:84%
+consumer staples,
+energy, financials,
+
+00:38:16.060 --> 00:38:17.640 align:middle line:90%
+health, and so forth.
+
+00:38:17.640 --> 00:38:23.320 align:middle line:84%
+And then there are also
+exchange-traded funds
+
+00:38:23.320 --> 00:38:29.280 align:middle line:84%
+that correspond to market
+indexes, like the S&P 500
+
+00:38:29.280 --> 00:38:35.440 align:middle line:84%
+or the Dow Jones Industrial
+or the NASDAQ market.
+
+00:38:35.440 --> 00:38:45.960 align:middle line:84%
+And I consider regressing a
+sector ETF on the index ETFs.
+
+00:38:45.960 --> 00:38:54.560 align:middle line:84%
+Now, why would we be interested
+in regressing a sector index
+
+00:38:54.560 --> 00:39:03.308 align:middle line:90%
+on these market-index ETFs?
+
+00:39:03.308 --> 00:39:04.754 align:middle line:90%
+AUDIENCE: [INAUDIBLE].
+
+00:39:04.754 --> 00:39:12.000 align:middle line:90%
+
+
+00:39:12.000 --> 00:39:16.160 align:middle line:84%
+PETER KEMPTHORNE: Well, let
+me just go through here.
+
+00:39:16.160 --> 00:39:16.852 align:middle line:90%
+OK.
+
+00:39:16.852 --> 00:39:20.640 align:middle line:84%
+Or, this document goes
+through, listing the symbols
+
+00:39:20.640 --> 00:39:32.760 align:middle line:84%
+for all of these different ETFs,
+plotting them, and actually
+
+00:39:32.760 --> 00:39:39.560 align:middle line:84%
+then converting the
+prices to weekly returns,
+
+00:39:39.560 --> 00:39:43.440 align:middle line:84%
+and then looking at how they're
+correlated with each other.
+
+00:39:43.440 --> 00:39:50.880 align:middle line:84%
+So in this example, I believe it
+was the Consumer Staples Sector
+
+00:39:50.880 --> 00:39:57.280 align:middle line:84%
+Fund, that I'm thinking of
+regressing on the SPY, which
+
+00:39:57.280 --> 00:40:03.280 align:middle line:84%
+corresponds to the S&P 500;
+MDY, which is a mid-cap index;
+
+00:40:03.280 --> 00:40:07.160 align:middle line:90%
+QQQ; and the Diamonds.
+
+00:40:07.160 --> 00:40:10.800 align:middle line:84%
+And if we look at these sort
+of cumulative returns of these
+
+00:40:10.800 --> 00:40:18.320 align:middle line:84%
+different ETFs, here's the
+cumulative return over a 14-year
+
+00:40:18.320 --> 00:40:20.920 align:middle line:90%
+period or something.
+
+00:40:20.920 --> 00:40:25.160 align:middle line:84%
+Well, any other--
+any more thoughts
+
+00:40:25.160 --> 00:40:31.760 align:middle line:84%
+on why we might want to
+regress this, on these indexes?
+
+00:40:31.760 --> 00:40:33.160 align:middle line:90%
+AJ?
+
+00:40:33.160 --> 00:40:35.420 align:middle line:84%
+AUDIENCE: The index
+return should be--
+
+00:40:35.420 --> 00:40:39.600 align:middle line:84%
+the entire variance should be
+explained by their sectors.
+
+00:40:39.600 --> 00:40:41.880 align:middle line:84%
+Assuming everything
+in each index
+
+00:40:41.880 --> 00:40:46.820 align:middle line:84%
+is contained within
+the market index,
+
+00:40:46.820 --> 00:40:50.360 align:middle line:84%
+it should explain perfectly
+the variance in returns.
+
+00:40:50.360 --> 00:40:51.360 align:middle line:90%
+PETER KEMPTHORNE: Right.
+
+00:40:51.360 --> 00:40:53.820 align:middle line:84%
+OK, so that's looking at it
+almost the other way around.
+
+00:40:53.820 --> 00:40:58.280 align:middle line:84%
+If we were looking
+at the index ETF
+
+00:40:58.280 --> 00:41:01.240 align:middle line:84%
+as a function of the
+sectors, we should
+
+00:41:01.240 --> 00:41:04.360 align:middle line:84%
+have almost a
+perfect explanation
+
+00:41:04.360 --> 00:41:07.040 align:middle line:90%
+of that in a regression model.
+
+00:41:07.040 --> 00:41:10.040 align:middle line:84%
+What can be useful
+with this regression
+
+00:41:10.040 --> 00:41:15.360 align:middle line:84%
+is if we wanted to invest
+in consumer staples
+
+00:41:15.360 --> 00:41:19.760 align:middle line:84%
+but we wanted to have
+our investment be
+
+00:41:19.760 --> 00:41:26.660 align:middle line:84%
+hedged against the market
+risk, that is large.
+
+00:41:26.660 --> 00:41:34.120 align:middle line:84%
+And so if we could eliminate
+the dependence on the S&P 500,
+
+00:41:34.120 --> 00:41:39.680 align:middle line:84%
+eliminate the dependence on
+the mid-cap and the QQQs,
+
+00:41:39.680 --> 00:41:45.120 align:middle line:84%
+then our hedged
+investment, we'd be
+
+00:41:45.120 --> 00:41:49.680 align:middle line:84%
+less concerned about
+major drops in the market.
+
+00:41:49.680 --> 00:41:51.820 align:middle line:84%
+So we'd be reducing
+the market risk.
+
+00:41:51.820 --> 00:41:55.960 align:middle line:84%
+So this is where it
+can be very useful.
+
+00:41:55.960 --> 00:42:01.080 align:middle line:84%
+Now, this kind of
+approach has also
+
+00:42:01.080 --> 00:42:06.160 align:middle line:84%
+been used to try and mimic
+hedge fund strategies.
+
+00:42:06.160 --> 00:42:10.200 align:middle line:84%
+And so there's some
+papers out there
+
+00:42:10.200 --> 00:42:17.040 align:middle line:84%
+on hedge fund replication, where
+hedge funds basically maybe
+
+00:42:17.040 --> 00:42:23.280 align:middle line:84%
+have most of their returns
+attributable to liquid market
+
+00:42:23.280 --> 00:42:29.000 align:middle line:84%
+instruments that one can
+trade in a portfolio.
+
+00:42:29.000 --> 00:42:34.000 align:middle line:84%
+And so hedge fund
+replication methods
+
+00:42:34.000 --> 00:42:37.680 align:middle line:84%
+have actually done that
+kind of regression as well.
+
+00:42:37.680 --> 00:42:42.700 align:middle line:84%
+Anyway, with this,
+with this setup,
+
+00:42:42.700 --> 00:42:50.000 align:middle line:84%
+we can just regress this
+XLP on the index ETFs,
+
+00:42:50.000 --> 00:42:57.520 align:middle line:84%
+and we get this regression
+coefficient table here.
+
+00:42:57.520 --> 00:43:04.720 align:middle line:84%
+What's important to see
+is whether the regression
+
+00:43:04.720 --> 00:43:09.160 align:middle line:84%
+coefficients are significantly
+different from zero or not.
+
+00:43:09.160 --> 00:43:16.120 align:middle line:84%
+And the t-value and
+p-value columns basically
+
+00:43:16.120 --> 00:43:20.120 align:middle line:84%
+tell us that all of
+these explanatory factors
+
+00:43:20.120 --> 00:43:23.120 align:middle line:90%
+are useful here.
+
+00:43:23.120 --> 00:43:33.000 align:middle line:84%
+And let's see,
+when we study the--
+
+00:43:33.000 --> 00:43:33.680 align:middle line:90%
+let's see.
+
+00:43:33.680 --> 00:43:37.400 align:middle line:84%
+When we study the
+regression model--
+
+00:43:37.400 --> 00:43:42.520 align:middle line:84%
+OK, we have the R-squared
+of this multiple regression.
+
+00:43:42.520 --> 00:43:47.320 align:middle line:84%
+The correlation of the fitted
+and actual values is given by--
+
+00:43:47.320 --> 00:43:52.000 align:middle line:84%
+or the square of that is
+given by the R-squared.
+
+00:43:52.000 --> 00:43:58.000 align:middle line:84%
+And we can do various regression
+diagnostics which are used here.
+
+00:43:58.000 --> 00:44:01.020 align:middle line:84%
+What-- I'll let you go
+through these details.
+
+00:44:01.020 --> 00:44:03.200 align:middle line:84%
+It's a bit repetitive
+from what we talked about
+
+00:44:03.200 --> 00:44:04.840 align:middle line:90%
+in the last lecture.
+
+00:44:04.840 --> 00:44:07.760 align:middle line:90%
+But let's see.
+
+00:44:07.760 --> 00:44:16.480 align:middle line:84%
+We can also model the
+independent variables,
+
+00:44:16.480 --> 00:44:20.720 align:middle line:84%
+or do a principal components
+analysis of those.
+
+00:44:20.720 --> 00:44:24.720 align:middle line:84%
+And if we compute a
+principal component analysis
+
+00:44:24.720 --> 00:44:27.140 align:middle line:84%
+of our independent
+variables-- in this case,
+
+00:44:27.140 --> 00:44:32.480 align:middle line:84%
+the index sector
+exchange-traded funds--
+
+00:44:32.480 --> 00:44:40.700 align:middle line:84%
+we then have a sort of
+decomposition of variability,
+
+00:44:40.700 --> 00:44:43.440 align:middle line:84%
+which indicates that the
+first principal component
+
+00:44:43.440 --> 00:44:48.360 align:middle line:84%
+variable explains 90% of the
+variability in these data,
+
+00:44:48.360 --> 00:44:51.360 align:middle line:90%
+the first two, 97%.
+
+00:44:51.360 --> 00:44:54.160 align:middle line:84%
+So we're actually explaining
+a lot of variability
+
+00:44:54.160 --> 00:44:56.280 align:middle line:90%
+with just the first two.
+
+00:44:56.280 --> 00:45:07.560 align:middle line:84%
+Now, in looking at the
+regression on the PC variables,
+
+00:45:07.560 --> 00:45:18.320 align:middle line:84%
+let's see, we can
+consider the-- well,
+
+00:45:18.320 --> 00:45:21.240 align:middle line:84%
+each of these PC variables,
+Principal Component variables,
+
+00:45:21.240 --> 00:45:23.480 align:middle line:90%
+are orthogonal to each other.
+
+00:45:23.480 --> 00:45:28.900 align:middle line:84%
+So in estimating the
+regression coefficients,
+
+00:45:28.900 --> 00:45:41.800 align:middle line:84%
+we can do so with simple linear
+regressions of the ETF fund, y
+
+00:45:41.800 --> 00:45:44.340 align:middle line:90%
+on that, on each variable.
+
+00:45:44.340 --> 00:45:48.560 align:middle line:84%
+And so the first principal
+component variable
+
+00:45:48.560 --> 00:45:54.920 align:middle line:90%
+has an R-squared of 0.545.
+
+00:45:54.920 --> 00:45:58.840 align:middle line:84%
+And the second principal
+component variable
+
+00:45:58.840 --> 00:46:01.800 align:middle line:90%
+has almost no correlation.
+
+00:46:01.800 --> 00:46:07.260 align:middle line:84%
+And so it's-- well,
+it's almost none.
+
+00:46:07.260 --> 00:46:11.640 align:middle line:84%
+Its p-value is still 0.0518,
+which is almost statistically
+
+00:46:11.640 --> 00:46:12.520 align:middle line:90%
+significant.
+
+00:46:12.520 --> 00:46:18.320 align:middle line:84%
+With very large samples, we're
+able to judge small correlations
+
+00:46:18.320 --> 00:46:20.480 align:middle line:84%
+as being statistically
+significant,
+
+00:46:20.480 --> 00:46:23.560 align:middle line:84%
+but maybe it's not
+practically significant.
+
+00:46:23.560 --> 00:46:30.560 align:middle line:84%
+And then the third has a
+small R-squared as well,
+
+00:46:30.560 --> 00:46:34.600 align:middle line:84%
+and the fourth,
+again, rather small.
+
+00:46:34.600 --> 00:46:44.830 align:middle line:84%
+But what's of interest
+is whether the--
+
+00:46:44.830 --> 00:46:47.510 align:middle line:84%
+or, it's basically just, How
+statistically significant
+
+00:46:47.510 --> 00:46:50.150 align:middle line:84%
+are the principal
+component variables?
+
+00:46:50.150 --> 00:46:56.890 align:middle line:84%
+And in the sort of
+updated example, the--
+
+00:46:56.890 --> 00:47:01.390 align:middle line:90%
+
+
+00:47:01.390 --> 00:47:03.870 align:middle line:90%
+let's see here.
+
+00:47:03.870 --> 00:47:06.270 align:middle line:84%
+Well, if we consider
+the regression parameter
+
+00:47:06.270 --> 00:47:10.750 align:middle line:84%
+based on only the
+first three variables,
+
+00:47:10.750 --> 00:47:13.970 align:middle line:90%
+we basically get these results.
+
+00:47:13.970 --> 00:47:19.910 align:middle line:84%
+Now, when I did this
+a few years ago,
+
+00:47:19.910 --> 00:47:27.990 align:middle line:84%
+it ended up being the case
+that the p-values for--
+
+00:47:27.990 --> 00:47:31.590 align:middle line:84%
+I think it was the second
+principal component variable,
+
+00:47:31.590 --> 00:47:34.350 align:middle line:90%
+was not significant at all.
+
+00:47:34.350 --> 00:47:42.950 align:middle line:84%
+And so in choosing
+what factors to include
+
+00:47:42.950 --> 00:47:46.790 align:middle line:84%
+in the model, the principal
+components regression
+
+00:47:46.790 --> 00:47:55.390 align:middle line:84%
+approach of basically including
+successive high-eigenvalue
+
+00:47:55.390 --> 00:47:59.750 align:middle line:84%
+principal component
+variables in successively
+
+00:47:59.750 --> 00:48:08.670 align:middle line:84%
+so long as they're significant,
+that actually sort of doesn't
+
+00:48:08.670 --> 00:48:11.910 align:middle line:84%
+include, really,
+necessarily, the important
+
+00:48:11.910 --> 00:48:14.510 align:middle line:90%
+regressors in the model.
+
+00:48:14.510 --> 00:48:18.150 align:middle line:84%
+So we can have
+statistically significant
+
+00:48:18.150 --> 00:48:22.830 align:middle line:84%
+high-order principal
+component variables that
+
+00:48:22.830 --> 00:48:25.410 align:middle line:84%
+don't have much
+variability in them,
+
+00:48:25.410 --> 00:48:30.510 align:middle line:84%
+but they actually are explaining
+significant factors affecting
+
+00:48:30.510 --> 00:48:32.950 align:middle line:90%
+the response variable.
+
+00:48:32.950 --> 00:48:37.470 align:middle line:84%
+So anyway, this
+note goes through
+
+00:48:37.470 --> 00:48:46.630 align:middle line:84%
+and additionally considers ridge
+regression and lasso regression.
+
+00:48:46.630 --> 00:48:53.830 align:middle line:84%
+And so with the ridge
+regression results,
+
+00:48:53.830 --> 00:48:59.030 align:middle line:84%
+the display of
+regression parameters
+
+00:48:59.030 --> 00:49:05.670 align:middle line:84%
+is traced out as we consider
+different constraints
+
+00:49:05.670 --> 00:49:10.190 align:middle line:90%
+on the L1--
+
+00:49:10.190 --> 00:49:14.150 align:middle line:84%
+or on the-- well,
+on the L2 norm.
+
+00:49:14.150 --> 00:49:20.270 align:middle line:84%
+And if we look at the L1
+norm of these estimates,
+
+00:49:20.270 --> 00:49:25.590 align:middle line:84%
+one can see, basically, how
+as one sort of decreases
+
+00:49:25.590 --> 00:49:32.390 align:middle line:84%
+the penalty for the complexity
+of the regression parameters,
+
+00:49:32.390 --> 00:49:39.030 align:middle line:84%
+we get final estimates given
+by these ending values.
+
+00:49:39.030 --> 00:49:42.610 align:middle line:84%
+But if we increase
+the penalty on those,
+
+00:49:42.610 --> 00:49:46.830 align:middle line:84%
+then they basically are
+shrinking towards zero.
+
+00:49:46.830 --> 00:49:50.230 align:middle line:84%
+Although, the shrinkage isn't
+necessarily in a monotone
+
+00:49:50.230 --> 00:49:52.070 align:middle line:90%
+manner.
+
+00:49:52.070 --> 00:49:56.750 align:middle line:84%
+And then if we look at
+the lasso regression,
+
+00:49:56.750 --> 00:50:01.630 align:middle line:84%
+with a same L1-norm
+sort of scaling,
+
+00:50:01.630 --> 00:50:06.630 align:middle line:84%
+one can see how, as that
+lambda parameter associated
+
+00:50:06.630 --> 00:50:13.510 align:middle line:84%
+with the penalty is
+increased, we basically
+
+00:50:13.510 --> 00:50:19.630 align:middle line:84%
+have the L1 norm getting
+smaller, of the resulting
+
+00:50:19.630 --> 00:50:20.790 align:middle line:90%
+estimates.
+
+00:50:20.790 --> 00:50:24.270 align:middle line:90%
+And this shows you how--
+
+00:50:24.270 --> 00:50:27.830 align:middle line:84%
+I guess the third
+variable is the first
+
+00:50:27.830 --> 00:50:36.710 align:middle line:84%
+to be excluded, then the second,
+and then, finally, the fourth.
+
+00:50:36.710 --> 00:50:39.930 align:middle line:90%
+So, all right.
+
+00:50:39.930 --> 00:50:44.030 align:middle line:84%
+So anyway, so this note
+goes through an illustration
+
+00:50:44.030 --> 00:50:48.470 align:middle line:84%
+of lasso and principal
+components regression.
+
+00:50:48.470 --> 00:50:52.150 align:middle line:84%
+And it also provided
+a comparison
+
+00:50:52.150 --> 00:50:56.390 align:middle line:84%
+of different
+coefficients by method.
+
+00:50:56.390 --> 00:51:03.950 align:middle line:84%
+And what this final chart
+shows is the comparison
+
+00:51:03.950 --> 00:51:09.150 align:middle line:90%
+of beta estimates by method.
+
+00:51:09.150 --> 00:51:14.190 align:middle line:84%
+And one can see that most of the
+methods give similar results,
+
+00:51:14.190 --> 00:51:18.270 align:middle line:84%
+but using just the first three
+principal component variables
+
+00:51:18.270 --> 00:51:21.750 align:middle line:84%
+gives us very
+different estimates
+
+00:51:21.750 --> 00:51:23.330 align:middle line:90%
+of regression parameters.
+
+00:51:23.330 --> 00:51:34.150 align:middle line:84%
+So there's sensitivity of
+the estimators to the data.
+
+00:51:34.150 --> 00:51:39.840 align:middle line:90%
+And it's perhaps useful to--
+
+00:51:39.840 --> 00:51:42.550 align:middle line:90%
+
+
+00:51:42.550 --> 00:51:44.150 align:middle line:90%
+let's see.
+
+00:51:44.150 --> 00:51:46.830 align:middle line:84%
+Well, it's useful to
+consider these alternatives.
+
+00:51:46.830 --> 00:51:49.390 align:middle line:84%
+With very large sample
+sizes, you generally
+
+00:51:49.390 --> 00:51:53.630 align:middle line:84%
+don't get much difference in
+the ridge or the Lasso results.
+
+00:51:53.630 --> 00:51:58.750 align:middle line:84%
+It's usually in smaller sample
+sizes that you get differences.
+
+00:51:58.750 --> 00:52:04.530 align:middle line:84%
+With the principal components
+regression, in this example,
+
+00:52:04.530 --> 00:52:08.710 align:middle line:84%
+the first three principal
+component variables
+
+00:52:08.710 --> 00:52:13.190 align:middle line:84%
+end up giving estimates,
+that are in the yellow.
+
+00:52:13.190 --> 00:52:17.150 align:middle line:84%
+But if we chose which principal
+component variables to include
+
+00:52:17.150 --> 00:52:21.830 align:middle line:84%
+based on their
+statistical significance,
+
+00:52:21.830 --> 00:52:28.670 align:middle line:84%
+then the more significant
+principal component variables
+
+00:52:28.670 --> 00:52:35.230 align:middle line:84%
+ended up leading to
+this green values, which
+
+00:52:35.230 --> 00:52:37.590 align:middle line:90%
+are comparable to the others.
+
+00:52:37.590 --> 00:52:43.190 align:middle line:90%
+So this suggests that--
+
+00:52:43.190 --> 00:52:47.430 align:middle line:84%
+well, actually in this
+case, the green values
+
+00:52:47.430 --> 00:52:51.250 align:middle line:84%
+are equal to least
+squares, just because all
+
+00:52:51.250 --> 00:52:52.750 align:middle line:84%
+of the principal
+component variables
+
+00:52:52.750 --> 00:52:56.350 align:middle line:90%
+were statistically significant.
+
+00:52:56.350 --> 00:52:58.870 align:middle line:90%
+All right.
+
+00:52:58.870 --> 00:53:08.430 align:middle line:84%
+Well, the next thing
+I wanted to go through
+
+00:53:08.430 --> 00:53:14.470 align:middle line:84%
+is this linear regression
+modeling for the capital asset
+
+00:53:14.470 --> 00:53:16.350 align:middle line:90%
+pricing model.
+
+00:53:16.350 --> 00:53:23.710 align:middle line:84%
+And in this note, we first
+review what the capital asset
+
+00:53:23.710 --> 00:53:28.710 align:middle line:84%
+pricing model is, how it relates
+to returns on stocks and returns
+
+00:53:28.710 --> 00:53:31.350 align:middle line:90%
+on market index.
+
+00:53:31.350 --> 00:53:39.350 align:middle line:84%
+And what we're going to do is
+go through the computation,
+
+00:53:39.350 --> 00:53:42.950 align:middle line:84%
+computations, involved
+with an empirical analysis
+
+00:53:42.950 --> 00:53:46.550 align:middle line:84%
+of this capital
+asset pricing model,
+
+00:53:46.550 --> 00:53:50.110 align:middle line:84%
+and then consider
+testing hypotheses
+
+00:53:50.110 --> 00:53:54.710 align:middle line:84%
+about individual
+coefficients, and then
+
+00:53:54.710 --> 00:53:59.590 align:middle line:84%
+conclude with actually fitting
+this capital asset pricing
+
+00:53:59.590 --> 00:54:05.470 align:middle line:84%
+model to all stocks
+in the S&P 500 index,
+
+00:54:05.470 --> 00:54:09.630 align:middle line:84%
+and comparing the results
+of the capital asset pricing
+
+00:54:09.630 --> 00:54:12.750 align:middle line:90%
+model parameters for that.
+
+00:54:12.750 --> 00:54:19.790 align:middle line:84%
+So with this, we begin with
+basically a description
+
+00:54:19.790 --> 00:54:23.310 align:middle line:84%
+of what the capital
+asset pricing model is.
+
+00:54:23.310 --> 00:54:26.570 align:middle line:84%
+We went through this, I
+think, in our third lecture,
+
+00:54:26.570 --> 00:54:31.390 align:middle line:84%
+which says that in
+an efficient market,
+
+00:54:31.390 --> 00:54:37.710 align:middle line:84%
+the expected return
+of a stock, asset j,
+
+00:54:37.710 --> 00:54:41.830 align:middle line:84%
+should equal the
+risk-free return
+
+00:54:41.830 --> 00:54:50.230 align:middle line:84%
+plus a beta factor times the
+excess return of the market.
+
+00:54:50.230 --> 00:55:00.270 align:middle line:84%
+And so beta j is sort of
+the market risk factor.
+
+00:55:00.270 --> 00:55:05.750 align:middle line:84%
+And the excess return
+of the market portfolio
+
+00:55:05.750 --> 00:55:10.790 align:middle line:84%
+is simply how much bigger
+that market return is compared
+
+00:55:10.790 --> 00:55:12.750 align:middle line:90%
+with the risk-free rate.
+
+00:55:12.750 --> 00:55:18.550 align:middle line:84%
+Now, with these
+parameters, if we
+
+00:55:18.550 --> 00:55:26.070 align:middle line:84%
+have data consisting of
+empirical returns R for stocks
+
+00:55:26.070 --> 00:55:29.630 align:middle line:84%
+j at different times
+t, different values
+
+00:55:29.630 --> 00:55:33.510 align:middle line:84%
+over t of the
+risk-free rate, and we
+
+00:55:33.510 --> 00:55:38.910 align:middle line:84%
+consider the excess
+return of each asset
+
+00:55:38.910 --> 00:55:42.030 align:middle line:84%
+and the excess
+return of the market,
+
+00:55:42.030 --> 00:55:51.030 align:middle line:84%
+then this data can be used to
+specify a linear regression
+
+00:55:51.030 --> 00:55:59.070 align:middle line:84%
+model where we have an intercept
+alpha j and a slope beta
+
+00:55:59.070 --> 00:56:03.170 align:middle line:90%
+j for the regression.
+
+00:56:03.170 --> 00:56:13.100 align:middle line:84%
+So we're looking here at R star
+market, and this is R star j.
+
+00:56:13.100 --> 00:56:15.750 align:middle line:90%
+
+
+00:56:15.750 --> 00:56:27.830 align:middle line:84%
+And we'll plot values over
+time t of these excess returns.
+
+00:56:27.830 --> 00:56:32.750 align:middle line:84%
+And we can basically
+fit a regression model
+
+00:56:32.750 --> 00:56:34.870 align:middle line:90%
+where we have y hat--
+
+00:56:34.870 --> 00:56:45.230 align:middle line:84%
+or R star jt is equal to
+alpha j plus beta j R star mt.
+
+00:56:45.230 --> 00:56:51.430 align:middle line:84%
+And if the capital asset
+pricing model holds,
+
+00:56:51.430 --> 00:57:00.110 align:middle line:84%
+then the alpha j's should be
+0, because the alpha j's--
+
+00:57:00.110 --> 00:57:03.990 align:middle line:84%
+if we take the expectation
+in this equation
+
+00:57:03.990 --> 00:57:10.470 align:middle line:84%
+with residuals that are
+mean 0 constant variance,
+
+00:57:10.470 --> 00:57:15.030 align:middle line:84%
+then we get the capital
+asset pricing model equation
+
+00:57:15.030 --> 00:57:19.510 align:middle line:90%
+when the alpha j is equal to 0.
+
+00:57:19.510 --> 00:57:25.140 align:middle line:84%
+So what we can do with
+real data is fit this model
+
+00:57:25.140 --> 00:57:29.260 align:middle line:84%
+and then test whether
+alpha j is 0 or not.
+
+00:57:29.260 --> 00:57:35.440 align:middle line:84%
+And if it is consistent
+with a 0 value,
+
+00:57:35.440 --> 00:57:39.940 align:middle line:84%
+then the pricing
+of the asset can
+
+00:57:39.940 --> 00:57:44.460 align:middle line:84%
+be judged to be sort
+of in an equilibrium
+
+00:57:44.460 --> 00:57:48.300 align:middle line:84%
+described by the capital
+asset pricing model.
+
+00:57:48.300 --> 00:57:52.300 align:middle line:90%
+And so let's take a look.
+
+00:57:52.300 --> 00:57:55.660 align:middle line:84%
+I think what's
+perhaps useful is just
+
+00:57:55.660 --> 00:58:01.080 align:middle line:84%
+to see the code for
+doing these computations.
+
+00:58:01.080 --> 00:58:05.740 align:middle line:90%
+It's included in the note here.
+
+00:58:05.740 --> 00:58:11.500 align:middle line:84%
+But if we pick a
+particular stock, GE stock,
+
+00:58:11.500 --> 00:58:17.860 align:middle line:84%
+and fit the regression model,
+we basically-- in this code,
+
+00:58:17.860 --> 00:58:20.820 align:middle line:84%
+the only thing we
+need to do is specify
+
+00:58:20.820 --> 00:58:29.500 align:middle line:84%
+the symbol for the stock, and
+then extract from our data
+
+00:58:29.500 --> 00:58:39.260 align:middle line:84%
+object the excess market return
+and the excess asset return.
+
+00:58:39.260 --> 00:58:41.300 align:middle line:84%
+And then fit that
+regression, and we get
+
+00:58:41.300 --> 00:58:44.020 align:middle line:90%
+these coefficients table here.
+
+00:58:44.020 --> 00:58:50.660 align:middle line:84%
+Now, in this example,
+the intercept coefficient
+
+00:58:50.660 --> 00:58:53.580 align:middle line:90%
+is the estimate of alpha.
+
+00:58:53.580 --> 00:58:58.940 align:middle line:84%
+And if GE is being priced
+consistent with the capital
+
+00:58:58.940 --> 00:59:03.140 align:middle line:84%
+asset pricing model,
+then that estimate
+
+00:59:03.140 --> 00:59:05.460 align:middle line:84%
+should be consistent
+with the null value.
+
+00:59:05.460 --> 00:59:10.060 align:middle line:84%
+And the p-value for testing
+whether that intercept is 0
+
+00:59:10.060 --> 00:59:14.060 align:middle line:84%
+or not gives us evidence
+supporting the capital asset
+
+00:59:14.060 --> 00:59:16.340 align:middle line:90%
+pricing model.
+
+00:59:16.340 --> 00:59:21.580 align:middle line:84%
+Now, the market, the
+excess return of the market
+
+00:59:21.580 --> 00:59:26.360 align:middle line:84%
+has an estimate that's about
+1, with some standard error.
+
+00:59:26.360 --> 00:59:29.580 align:middle line:84%
+It has a huge t-value
+and a huge p-value.
+
+00:59:29.580 --> 00:59:35.100 align:middle line:84%
+Those values being
+large, or a huge t-value
+
+00:59:35.100 --> 00:59:37.740 align:middle line:84%
+and very small p-value,
+are not surprising at all,
+
+00:59:37.740 --> 00:59:40.060 align:middle line:90%
+just because they're correlated.
+
+00:59:40.060 --> 00:59:45.580 align:middle line:84%
+And a 0 value for the slope
+is sort of meaningless here.
+
+00:59:45.580 --> 00:59:51.900 align:middle line:84%
+What could be useful is testing
+whether our beta coefficient
+
+00:59:51.900 --> 00:59:57.660 align:middle line:84%
+is consistent with sort of the
+average market risk of beta
+
+00:59:57.660 --> 01:00:01.340 align:middle line:90%
+equal to 1, or not.
+
+01:00:01.340 --> 01:00:05.540 align:middle line:84%
+But here's basically a plot
+of the linear regression
+
+01:00:05.540 --> 01:00:10.140 align:middle line:84%
+model for GE, and
+a discussion just
+
+01:00:10.140 --> 01:00:16.220 align:middle line:84%
+of getting comfortable
+with R-squared values
+
+01:00:16.220 --> 01:00:21.610 align:middle line:84%
+and calibrating our views of
+scatter plots to those values.
+
+01:00:21.610 --> 01:00:24.860 align:middle line:90%
+
+
+01:00:24.860 --> 01:00:27.640 align:middle line:84%
+And then there's
+residuals analysis,
+
+01:00:27.640 --> 01:00:29.420 align:middle line:90%
+that is very important.
+
+01:00:29.420 --> 01:00:34.820 align:middle line:84%
+As I introduced at the beginning
+of our regression study,
+
+01:00:34.820 --> 01:00:38.340 align:middle line:84%
+we make assumptions
+about our model.
+
+01:00:38.340 --> 01:00:41.340 align:middle line:84%
+And we then, once
+we fit the model,
+
+01:00:41.340 --> 01:00:44.460 align:middle line:84%
+we check our assumptions to
+see whether those are satisfied
+
+01:00:44.460 --> 01:00:45.540 align:middle line:90%
+or not.
+
+01:00:45.540 --> 01:00:53.140 align:middle line:84%
+And in this case, we might
+assume that the residuals
+
+01:00:53.140 --> 01:00:55.620 align:middle line:90%
+are normally distributed.
+
+01:00:55.620 --> 01:01:02.260 align:middle line:84%
+And here's a histogram of
+the residuals from this GE
+
+01:01:02.260 --> 01:01:03.580 align:middle line:90%
+regression.
+
+01:01:03.580 --> 01:01:08.020 align:middle line:84%
+And there actually are two
+bell-shaped curves here.
+
+01:01:08.020 --> 01:01:12.020 align:middle line:84%
+There's one, that's in
+green, that corresponds
+
+01:01:12.020 --> 01:01:15.620 align:middle line:84%
+to the maximum likelihood
+estimate of the mean
+
+01:01:15.620 --> 01:01:19.580 align:middle line:90%
+and variance of that normal.
+
+01:01:19.580 --> 01:01:23.700 align:middle line:84%
+But there's also a
+blue curve, which
+
+01:01:23.700 --> 01:01:27.980 align:middle line:84%
+corresponds to a
+robust estimator
+
+01:01:27.980 --> 01:01:30.940 align:middle line:84%
+of the normal
+distribution parameters.
+
+01:01:30.940 --> 01:01:35.680 align:middle line:84%
+So, and we just talked a bit
+about normal linear regressions
+
+01:01:35.680 --> 01:01:36.900 align:middle line:90%
+and their being optimal.
+
+01:01:36.900 --> 01:01:40.260 align:middle line:84%
+Well, they're optimal so long
+as the normal distribution
+
+01:01:40.260 --> 01:01:41.900 align:middle line:90%
+is applied.
+
+01:01:41.900 --> 01:01:46.780 align:middle line:84%
+And one can calculate
+what's called
+
+01:01:46.780 --> 01:01:51.820 align:middle line:90%
+a QQ plot, of the residuals.
+
+01:01:51.820 --> 01:01:57.140 align:middle line:84%
+Where the theoretical
+distribution is normal,
+
+01:01:57.140 --> 01:02:03.140 align:middle line:84%
+we can think of ordered
+samples of normals,
+
+01:02:03.140 --> 01:02:05.340 align:middle line:84%
+from smallest to
+largest, and pair
+
+01:02:05.340 --> 01:02:07.300 align:middle line:84%
+those with our
+ordered residuals,
+
+01:02:07.300 --> 01:02:09.580 align:middle line:90%
+from smallest to largest.
+
+01:02:09.580 --> 01:02:12.080 align:middle line:84%
+And this plot will look
+like a straight line
+
+01:02:12.080 --> 01:02:16.660 align:middle line:90%
+if the residuals are Gaussian.
+
+01:02:16.660 --> 01:02:25.620 align:middle line:84%
+And the green line corresponds
+to the MLE fit of the Gaussian.
+
+01:02:25.620 --> 01:02:30.260 align:middle line:84%
+Basically, the slope will
+equal the standard deviation
+
+01:02:30.260 --> 01:02:33.820 align:middle line:84%
+of the distribution,
+and the median roughly
+
+01:02:33.820 --> 01:02:38.060 align:middle line:84%
+will correspond
+to the mean value.
+
+01:02:38.060 --> 01:02:43.020 align:middle line:84%
+But what we have is
+a robust estimate
+
+01:02:43.020 --> 01:02:49.380 align:middle line:84%
+of the standard deviation
+of the residuals,
+
+01:02:49.380 --> 01:02:51.500 align:middle line:90%
+gives us this blue line.
+
+01:02:51.500 --> 01:02:56.500 align:middle line:84%
+And the robust estimate
+of the residual variance
+
+01:02:56.500 --> 01:03:00.780 align:middle line:84%
+is based on the interquartile
+range of the residuals.
+
+01:03:00.780 --> 01:03:05.220 align:middle line:84%
+So the middle 50%, what
+kind of standard deviation
+
+01:03:05.220 --> 01:03:11.300 align:middle line:84%
+would match the middle 50%
+range of the residuals?
+
+01:03:11.300 --> 01:03:18.020 align:middle line:84%
+And there's an argument
+that this robust estimate
+
+01:03:18.020 --> 01:03:20.540 align:middle line:90%
+might in fact be better.
+
+01:03:20.540 --> 01:03:24.620 align:middle line:84%
+And another way of
+evaluating the residuals
+
+01:03:24.620 --> 01:03:32.580 align:middle line:84%
+is to compute fitted percentiles
+under the residual model.
+
+01:03:32.580 --> 01:03:38.460 align:middle line:84%
+So if we observe an
+epsilon hat with mean mu
+
+01:03:38.460 --> 01:03:42.900 align:middle line:84%
+hat and standard
+deviation sigma hat,
+
+01:03:42.900 --> 01:03:49.500 align:middle line:84%
+we can do the inverse of the
+probability integral transform
+
+01:03:49.500 --> 01:03:57.340 align:middle line:84%
+and get the percentile
+of that outcome.
+
+01:03:57.340 --> 01:04:03.340 align:middle line:84%
+And so it turns out
+that these percentiles
+
+01:04:03.340 --> 01:04:09.380 align:middle line:84%
+should be uniformly distributed,
+from, like, 1 to 99,
+
+01:04:09.380 --> 01:04:13.780 align:middle line:90%
+if this normal model is correct.
+
+01:04:13.780 --> 01:04:19.060 align:middle line:84%
+And so we can actually consider
+different estimates of sigma
+
+01:04:19.060 --> 01:04:24.500 align:middle line:90%
+hat, from robust to MLE.
+
+01:04:24.500 --> 01:04:27.940 align:middle line:84%
+And with the MLE,
+here's the histogram
+
+01:04:27.940 --> 01:04:33.460 align:middle line:90%
+of the fitted percentiles.
+
+01:04:33.460 --> 01:04:39.220 align:middle line:84%
+It's basically
+underestimating percentiles
+
+01:04:39.220 --> 01:04:41.180 align:middle line:90%
+that are close to the mean--
+
+01:04:41.180 --> 01:04:43.020 align:middle line:90%
+or the median.
+
+01:04:43.020 --> 01:04:49.300 align:middle line:84%
+And so it really isn't fitting
+the residuals very well
+
+01:04:49.300 --> 01:04:51.620 align:middle line:90%
+across the whole range.
+
+01:04:51.620 --> 01:04:55.340 align:middle line:84%
+And if instead we consider
+fitted percentiles
+
+01:04:55.340 --> 01:05:00.340 align:middle line:84%
+from the robust estimate
+of the variance,
+
+01:05:00.340 --> 01:05:06.540 align:middle line:84%
+then the fitted percentiles
+of the residuals
+
+01:05:06.540 --> 01:05:11.860 align:middle line:84%
+is consistent with uniform
+in the middle of the data,
+
+01:05:11.860 --> 01:05:16.700 align:middle line:84%
+except in the top 1%
+and the bottom 1%.
+
+01:05:16.700 --> 01:05:20.540 align:middle line:84%
+So it's very possible
+that our data
+
+01:05:20.540 --> 01:05:24.140 align:middle line:84%
+has a non-normal residual
+distribution or error
+
+01:05:24.140 --> 01:05:26.860 align:middle line:90%
+distribution.
+
+01:05:26.860 --> 01:05:29.700 align:middle line:84%
+And perhaps that
+non-normal distribution
+
+01:05:29.700 --> 01:05:34.580 align:middle line:84%
+could be well modeled
+with a mixture model.
+
+01:05:34.580 --> 01:05:39.540 align:middle line:84%
+Now, OK, there's regression
+diagnostics, which
+
+01:05:39.540 --> 01:05:40.710 align:middle line:90%
+I'll let you read through.
+
+01:05:40.710 --> 01:05:45.860 align:middle line:90%
+
+
+01:05:45.860 --> 01:05:48.620 align:middle line:84%
+And then there's this
+section on testing hypotheses
+
+01:05:48.620 --> 01:05:52.380 align:middle line:84%
+about individual
+model coefficients.
+
+01:05:52.380 --> 01:05:53.140 align:middle line:90%
+Let's see.
+
+01:05:53.140 --> 01:05:56.480 align:middle line:84%
+If you have this
+on your computer,
+
+01:05:56.480 --> 01:05:58.140 align:middle line:84%
+you can probably see
+it a little better
+
+01:05:58.140 --> 01:06:00.200 align:middle line:90%
+than seeing this screen here.
+
+01:06:00.200 --> 01:06:02.900 align:middle line:90%
+But with the normal--
+
+01:06:02.900 --> 01:06:08.420 align:middle line:84%
+or with our testing of
+individual coefficients,
+
+01:06:08.420 --> 01:06:14.460 align:middle line:84%
+we basically use the fact that
+our least squares estimator
+
+01:06:14.460 --> 01:06:19.820 align:middle line:84%
+is multivariate normal with
+mean equal to the true beta
+
+01:06:19.820 --> 01:06:24.340 align:middle line:84%
+vector and covariance
+matrix, given here.
+
+01:06:24.340 --> 01:06:31.340 align:middle line:84%
+So, so we can make various
+tests of different regression
+
+01:06:31.340 --> 01:06:32.420 align:middle line:90%
+parameters.
+
+01:06:32.420 --> 01:06:36.460 align:middle line:84%
+So we have the t-statistics
+for testing whether a parameter
+
+01:06:36.460 --> 01:06:42.820 align:middle line:84%
+value is 0 or not, and
+use the t-distribution
+
+01:06:42.820 --> 01:06:45.940 align:middle line:84%
+to judge how statistically
+significant that is.
+
+01:06:45.940 --> 01:06:48.360 align:middle line:84%
+In our capital asset
+pricing model case,
+
+01:06:48.360 --> 01:06:51.900 align:middle line:84%
+we actually are interested in
+testing whether the alphas are
+
+01:06:51.900 --> 01:06:54.860 align:middle line:90%
+zero or not.
+
+01:06:54.860 --> 01:06:58.700 align:middle line:84%
+And one could also
+consider testing for
+
+01:06:58.700 --> 01:07:01.520 align:middle line:84%
+whether the beta factor
+is equal to 1 or not.
+
+01:07:01.520 --> 01:07:03.660 align:middle line:84%
+1, for the beta,
+is actually what
+
+01:07:03.660 --> 01:07:07.300 align:middle line:84%
+the average beta is across
+all stocks in the market.
+
+01:07:07.300 --> 01:07:13.820 align:middle line:84%
+And so one can consider judging
+whether assets sort of have
+
+01:07:13.820 --> 01:07:18.700 align:middle line:84%
+significantly high risk,
+high betas, or low betas,
+
+01:07:18.700 --> 01:07:25.700 align:middle line:84%
+using a test of whether
+the estimated regression
+
+01:07:25.700 --> 01:07:29.860 align:middle line:84%
+coefficient is significantly
+different from 1 or not.
+
+01:07:29.860 --> 01:07:38.340 align:middle line:84%
+And so with this, I've
+basically computed this for GE.
+
+01:07:38.340 --> 01:07:51.980 align:middle line:84%
+And it turns out that, I
+guess, the t-stat for GE,
+
+01:07:51.980 --> 01:07:57.580 align:middle line:84%
+which corresponds to a beta of
+1.083, that's fairly close to 1,
+
+01:07:57.580 --> 01:08:01.620 align:middle line:84%
+in terms of absolute magnitude,
+but it's actually a bit--
+
+01:08:01.620 --> 01:08:04.140 align:middle line:84%
+it's statistically
+significant, according
+
+01:08:04.140 --> 01:08:07.490 align:middle line:90%
+to the arguments given here.
+
+01:08:07.490 --> 01:08:14.090 align:middle line:84%
+Now, there are many packages
+in R, but one of them
+
+01:08:14.090 --> 01:08:17.090 align:middle line:84%
+is the CAR package,
+which allows one
+
+01:08:17.090 --> 01:08:21.050 align:middle line:84%
+to conduct tests of linear
+hypotheses like these.
+
+01:08:21.050 --> 01:08:25.689 align:middle line:84%
+And so it goes
+through and performs
+
+01:08:25.689 --> 01:08:29.930 align:middle line:84%
+the same kinds of tests for
+whether the intercept is 0
+
+01:08:29.930 --> 01:08:31.450 align:middle line:90%
+or not.
+
+01:08:31.450 --> 01:08:35.210 align:middle line:84%
+And in implementing
+these hypothesis tests,
+
+01:08:35.210 --> 01:08:40.850 align:middle line:84%
+this CAR package uses the
+sort of F-test approach.
+
+01:08:40.850 --> 01:08:46.250 align:middle line:84%
+So one has results that give
+us different residual sum
+
+01:08:46.250 --> 01:08:53.370 align:middle line:84%
+of squares and F-statistics, and
+p-values for the F-statistics
+
+01:08:53.370 --> 01:08:55.770 align:middle line:90%
+corresponding to these.
+
+01:08:55.770 --> 01:08:58.290 align:middle line:90%
+Now, let's see.
+
+01:08:58.290 --> 01:09:01.450 align:middle line:90%
+With-- let's see.
+
+01:09:01.450 --> 01:09:07.090 align:middle line:84%
+Before showing the results for
+all the stocks in the S&P 500,
+
+01:09:07.090 --> 01:09:14.290 align:middle line:84%
+there's another note on
+regression analysis hypothesis
+
+01:09:14.290 --> 01:09:16.609 align:middle line:90%
+testing.
+
+01:09:16.609 --> 01:09:21.649 align:middle line:84%
+And what's interesting
+to think about
+
+01:09:21.649 --> 01:09:28.090 align:middle line:84%
+is we can consider testing
+whether a submodel,
+
+01:09:28.090 --> 01:09:33.609 align:middle line:84%
+a model without as many
+factors in it, is suitable.
+
+01:09:33.609 --> 01:09:36.970 align:middle line:84%
+But one can also test
+for whether there's
+
+01:09:36.970 --> 01:09:42.870 align:middle line:84%
+a change in model
+parameters with a regime,
+
+01:09:42.870 --> 01:09:48.569 align:middle line:84%
+so that maybe there's an initial
+period with a given set of model
+
+01:09:48.569 --> 01:09:53.010 align:middle line:84%
+parameters, and then a
+regime shift following
+
+01:09:53.010 --> 01:09:56.530 align:middle line:84%
+that, where the parameter
+values have changed.
+
+01:09:56.530 --> 01:10:00.850 align:middle line:84%
+And so the mathematical
+theory for this
+
+01:10:00.850 --> 01:10:07.730 align:middle line:84%
+is covered in section 3, and
+one can consider testing--
+
+01:10:07.730 --> 01:10:09.550 align:middle line:84%
+with the capital
+asset pricing model,
+
+01:10:09.550 --> 01:10:12.970 align:middle line:84%
+maybe-- whether there's a
+change in regression parameters
+
+01:10:12.970 --> 01:10:15.530 align:middle line:90%
+over an entire period.
+
+01:10:15.530 --> 01:10:23.230 align:middle line:84%
+And so what I want to
+just go to is the results.
+
+01:10:23.230 --> 01:10:30.170 align:middle line:84%
+Actually, the linear algebra for
+these hypothesis testing methods
+
+01:10:30.170 --> 01:10:34.090 align:middle line:90%
+is very straightforward.
+
+01:10:34.090 --> 01:10:37.130 align:middle line:84%
+And I encourage you
+to read through these,
+
+01:10:37.130 --> 01:10:41.170 align:middle line:90%
+just to see how they play out.
+
+01:10:41.170 --> 01:10:45.110 align:middle line:90%
+But let's see.
+
+01:10:45.110 --> 01:10:50.410 align:middle line:84%
+What's interesting, I guess,
+is, with this change between two
+
+01:10:50.410 --> 01:10:55.990 align:middle line:84%
+periods, if we consider sort of
+an original regression model,
+
+01:10:55.990 --> 01:11:01.250 align:middle line:84%
+y equals X beta plus epsilon
+for a very long period,
+
+01:11:01.250 --> 01:11:03.410 align:middle line:84%
+we might consider
+splitting it up
+
+01:11:03.410 --> 01:11:08.210 align:middle line:84%
+into the first part, period A,
+and the second part, period B,
+
+01:11:08.210 --> 01:11:14.010 align:middle line:84%
+and have two equations for
+the respective sets of data.
+
+01:11:14.010 --> 01:11:21.770 align:middle line:84%
+And in thinking about
+the two periods,
+
+01:11:21.770 --> 01:11:27.210 align:middle line:84%
+we basically can test whether
+the regression parameters
+
+01:11:27.210 --> 01:11:29.730 align:middle line:84%
+for the second period are
+the same as the regression
+
+01:11:29.730 --> 01:11:33.690 align:middle line:90%
+parameters for the first period.
+
+01:11:33.690 --> 01:11:39.210 align:middle line:84%
+And we can write out
+the model equations
+
+01:11:39.210 --> 01:11:40.416 align:middle line:90%
+with appropriate matrices.
+
+01:11:40.416 --> 01:11:43.770 align:middle line:90%
+
+
+01:11:43.770 --> 01:11:48.770 align:middle line:84%
+And then we basically
+have an F-test statistic
+
+01:11:48.770 --> 01:11:54.130 align:middle line:84%
+for seeing whether these
+regression parameters are
+
+01:11:54.130 --> 01:11:56.530 align:middle line:90%
+different or not.
+
+01:11:56.530 --> 01:12:01.970 align:middle line:90%
+And one can also--
+
+01:12:01.970 --> 01:12:08.450 align:middle line:84%
+instead of considering separate
+parameters for each period,
+
+01:12:08.450 --> 01:12:19.270 align:middle line:84%
+one can consider a beta value
+here for the entire period,
+
+01:12:19.270 --> 01:12:23.930 align:middle line:84%
+and then use that
+beta value together
+
+01:12:23.930 --> 01:12:29.890 align:middle line:84%
+with the change in
+parameter values in period B
+
+01:12:29.890 --> 01:12:33.730 align:middle line:84%
+from period A. And
+so one can set up
+
+01:12:33.730 --> 01:12:37.650 align:middle line:84%
+the regression
+model where one is
+
+01:12:37.650 --> 01:12:40.810 align:middle line:84%
+interested in whether
+this change parameter
+
+01:12:40.810 --> 01:12:44.770 align:middle line:90%
+delta is equal to 0 or not.
+
+01:12:44.770 --> 01:12:49.730 align:middle line:84%
+And so, mathematically,
+we get F-test from that.
+
+01:12:49.730 --> 01:12:55.730 align:middle line:84%
+Now, with the GE stock
+I subjectively chose
+
+01:12:55.730 --> 01:13:01.290 align:middle line:84%
+this period split
+for A from B. If we
+
+01:13:01.290 --> 01:13:07.770 align:middle line:84%
+look at the cumulative sum
+of standardized residuals
+
+01:13:07.770 --> 01:13:11.970 align:middle line:84%
+from the regression
+model, then we basically
+
+01:13:11.970 --> 01:13:16.930 align:middle line:84%
+have residuals that are
+consistently negative,
+
+01:13:16.930 --> 01:13:21.450 align:middle line:84%
+cumulating to a lower
+value around 2019,
+
+01:13:21.450 --> 01:13:24.930 align:middle line:84%
+and then later
+expanding beyond that.
+
+01:13:24.930 --> 01:13:31.956 align:middle line:84%
+So this sort of time series
+of accumulated residuals
+
+01:13:31.956 --> 01:13:34.810 align:middle line:84%
+sort of highlights that
+there's strong time
+
+01:13:34.810 --> 01:13:38.450 align:middle line:90%
+dependence in the residuals.
+
+01:13:38.450 --> 01:13:41.810 align:middle line:84%
+But if we fit the
+regression models to these--
+
+01:13:41.810 --> 01:13:44.650 align:middle line:84%
+separate regression models
+to these two periods,
+
+01:13:44.650 --> 01:13:49.090 align:middle line:84%
+we end up getting highly
+significant results
+
+01:13:49.090 --> 01:13:52.990 align:middle line:84%
+for the change in
+the two periods.
+
+01:13:52.990 --> 01:13:55.130 align:middle line:84%
+There's basically
+an intercept, which
+
+01:13:55.130 --> 01:13:59.450 align:middle line:84%
+is the alpha, which changes
+from negative to positive,
+
+01:13:59.450 --> 01:14:05.330 align:middle line:84%
+and the market risk
+basically changes
+
+01:14:05.330 --> 01:14:13.010 align:middle line:84%
+from 0.773 beta in
+the first period,
+
+01:14:13.010 --> 01:14:19.190 align:middle line:84%
+to 0.773 plus 0.3537
+in the second period.
+
+01:14:19.190 --> 01:14:23.970 align:middle line:84%
+So these capital
+asset pricing models
+
+01:14:23.970 --> 01:14:27.210 align:middle line:84%
+are not expected, perhaps,
+to hold over really, really
+
+01:14:27.210 --> 01:14:28.850 align:middle line:90%
+long periods of time.
+
+01:14:28.850 --> 01:14:33.570 align:middle line:84%
+And if we wanted
+to apply them, we'd
+
+01:14:33.570 --> 01:14:37.930 align:middle line:84%
+likely sort of choose a rolling
+window approach perhaps,
+
+01:14:37.930 --> 01:14:39.370 align:middle line:84%
+which then leads
+to questions of,
+
+01:14:39.370 --> 01:14:42.270 align:middle line:84%
+how do we decide on what
+rolling window is appropriate,
+
+01:14:42.270 --> 01:14:45.610 align:middle line:84%
+and opens up other
+issues to study.
+
+01:14:45.610 --> 01:14:51.810 align:middle line:84%
+So anyway, so with
+that background
+
+01:14:51.810 --> 01:14:54.690 align:middle line:84%
+for hypothesis
+testing, let's go back
+
+01:14:54.690 --> 01:14:59.690 align:middle line:84%
+to fitting the capital
+asset pricing model
+
+01:14:59.690 --> 01:15:05.170 align:middle line:90%
+to all stocks in the S&P 500.
+
+01:15:05.170 --> 01:15:06.130 align:middle line:90%
+Let's see.
+
+01:15:06.130 --> 01:15:10.330 align:middle line:84%
+The code here basically fits
+this capital asset pricing model
+
+01:15:10.330 --> 01:15:18.250 align:middle line:84%
+regression for all the stocks
+that have data going back
+
+01:15:18.250 --> 01:15:19.690 align:middle line:90%
+several years.
+
+01:15:19.690 --> 01:15:25.010 align:middle line:84%
+So there were, I think,
+around 380 or 400 stocks.
+
+01:15:25.010 --> 01:15:29.290 align:middle line:90%
+And they're grouped by sector.
+
+01:15:29.290 --> 01:15:35.090 align:middle line:84%
+And we can see how the
+R-squareds of the regressions
+
+01:15:35.090 --> 01:15:39.250 align:middle line:90%
+vary from 0 to 1.
+
+01:15:39.250 --> 01:15:42.530 align:middle line:90%
+They typically are above 0.2.
+
+01:15:42.530 --> 01:15:47.890 align:middle line:84%
+So there's some reasonable
+R-squared relationships
+
+01:15:47.890 --> 01:15:50.970 align:middle line:90%
+that are being explained.
+
+01:15:50.970 --> 01:15:58.250 align:middle line:84%
+And if we look at the
+alphas by sector--
+
+01:15:58.250 --> 01:16:03.730 align:middle line:84%
+here's sort of parallel
+box plots of the alphas,
+
+01:16:03.730 --> 01:16:07.370 align:middle line:84%
+the alpha estimates within
+each of the sectors.
+
+01:16:07.370 --> 01:16:13.040 align:middle line:84%
+And so this
+highlights how some--
+
+01:16:13.040 --> 01:16:16.890 align:middle line:90%
+
+
+01:16:16.890 --> 01:16:22.050 align:middle line:84%
+let's see-- some sectors,
+like, I guess, construction,
+
+01:16:22.050 --> 01:16:27.890 align:middle line:84%
+sort of had positive alphas,
+as did computer technology.
+
+01:16:27.890 --> 01:16:30.570 align:middle line:90%
+
+
+01:16:30.570 --> 01:16:31.110 align:middle line:90%
+Let's see.
+
+01:16:31.110 --> 01:16:36.890 align:middle line:84%
+The conglomerates tended to
+have negative alphas there.
+
+01:16:36.890 --> 01:16:42.850 align:middle line:84%
+And we can calculate
+the p-values
+
+01:16:42.850 --> 01:16:47.970 align:middle line:84%
+for testing whether the alphas
+are consistent with 0 or not.
+
+01:16:47.970 --> 01:16:55.690 align:middle line:84%
+And this graph here
+shows how the p-values
+
+01:16:55.690 --> 01:17:04.610 align:middle line:84%
+for almost all the stocks exceed
+the p-value threshold of 0.05.
+
+01:17:04.610 --> 01:17:14.850 align:middle line:84%
+So if we can't reject the null
+hypothesis of alpha equaling 0,
+
+01:17:14.850 --> 01:17:18.210 align:middle line:90%
+the p-value is above 0.05.
+
+01:17:18.210 --> 01:17:22.290 align:middle line:84%
+And one can see that
+there's basically
+
+01:17:22.290 --> 01:17:25.410 align:middle line:84%
+sort of a handful, or
+a couple of handful,
+
+01:17:25.410 --> 01:17:29.970 align:middle line:84%
+of stocks that have
+a significant alpha.
+
+01:17:29.970 --> 01:17:33.730 align:middle line:84%
+And if we use a 5%
+threshold, well, we'd
+
+01:17:33.730 --> 01:17:38.690 align:middle line:84%
+expect 5% of the results to
+be statistically significant,
+
+01:17:38.690 --> 01:17:41.570 align:middle line:84%
+when there's no
+statistical significance.
+
+01:17:41.570 --> 01:17:46.250 align:middle line:84%
+And so maybe these, in fact,
+are consistent with the capital
+
+01:17:46.250 --> 01:17:49.200 align:middle line:90%
+asset pricing model pretty well.
+
+01:17:49.200 --> 01:17:53.720 align:middle line:90%
+Now, let's see.
+
+01:17:53.720 --> 01:17:59.000 align:middle line:84%
+One can plot the alpha versus
+the beta across all the stocks
+
+01:17:59.000 --> 01:18:02.000 align:middle line:84%
+and get this result,
+which suggests
+
+01:18:02.000 --> 01:18:04.800 align:middle line:84%
+that when you have
+higher beta, you
+
+01:18:04.800 --> 01:18:08.680 align:middle line:90%
+may get higher alpha as well.
+
+01:18:08.680 --> 01:18:12.800 align:middle line:84%
+And when you have very low
+beta, maybe the low beta
+
+01:18:12.800 --> 01:18:18.640 align:middle line:84%
+is partly due to a
+lower alpha potential.
+
+01:18:18.640 --> 01:18:26.400 align:middle line:84%
+But this chart doesn't show
+how alpha varies by sector.
+
+01:18:26.400 --> 01:18:31.640 align:middle line:84%
+And so if we try to
+look at alpha by sector
+
+01:18:31.640 --> 01:18:36.360 align:middle line:84%
+we get different fits
+for different sectors,
+
+01:18:36.360 --> 01:18:40.540 align:middle line:84%
+which is too complex, really,
+to interpret as graphed here.
+
+01:18:40.540 --> 01:18:43.440 align:middle line:84%
+But it serves as a
+first step at trying
+
+01:18:43.440 --> 01:18:48.090 align:middle line:84%
+to understand how alphas might
+vary within different sectors.
+
+01:18:48.090 --> 01:18:51.560 align:middle line:90%
+
+
+01:18:51.560 --> 01:18:59.360 align:middle line:84%
+Perhaps interestingly, here's
+the beta coefficient by sector.
+
+01:18:59.360 --> 01:19:03.020 align:middle line:84%
+And here, one can see
+that certain sectors,
+
+01:19:03.020 --> 01:19:10.280 align:middle line:84%
+like consumer staples, have
+much lower beta values.
+
+01:19:10.280 --> 01:19:14.040 align:middle line:84%
+And other sectors, like
+computer and technology,
+
+01:19:14.040 --> 01:19:16.040 align:middle line:90%
+have very high betas.
+
+01:19:16.040 --> 01:19:18.920 align:middle line:84%
+So in terms of identifying
+those sectors that
+
+01:19:18.920 --> 01:19:23.060 align:middle line:84%
+will have low market
+risk or high market risk,
+
+01:19:23.060 --> 01:19:28.920 align:middle line:84%
+these properties
+play out quite well.
+
+01:19:28.920 --> 01:19:31.160 align:middle line:90%
+And let's see.
+
+01:19:31.160 --> 01:19:38.480 align:middle line:84%
+In terms of looking at the
+top and bottom stocks by beta,
+
+01:19:38.480 --> 01:19:41.240 align:middle line:84%
+well, we have consumer
+discretionary, computer
+
+01:19:41.240 --> 01:19:48.560 align:middle line:84%
+technology sector stocks are
+the sectors where the top 10
+
+01:19:48.560 --> 01:19:49.620 align:middle line:90%
+betas are.
+
+01:19:49.620 --> 01:19:54.840 align:middle line:84%
+And if we look at the lowest
+betas, ranging from 0.37 down
+
+01:19:54.840 --> 01:19:58.430 align:middle line:84%
+to 0.18, most of these
+are in consumer staples.
+
+01:19:58.430 --> 01:20:01.680 align:middle line:90%
+
+
+01:20:01.680 --> 01:20:06.000 align:middle line:84%
+Finally, if we look
+at the top 10 stocks
+
+01:20:06.000 --> 01:20:09.760 align:middle line:84%
+with significant
+alphas, OK, here
+
+01:20:09.760 --> 01:20:14.480 align:middle line:84%
+is the table of alpha
+values that were highest,
+
+01:20:14.480 --> 01:20:21.080 align:middle line:84%
+and one was in oils
+and energy sector ENPH,
+
+01:20:21.080 --> 01:20:27.300 align:middle line:90%
+with the alpha value of 0.003.
+
+01:20:27.300 --> 01:20:27.800 align:middle line:90%
+Let's see.
+
+01:20:27.800 --> 01:20:38.860 align:middle line:84%
+Here's-- so if we have an alpha
+value of 0.003, it's actually--
+
+01:20:38.860 --> 01:20:42.440 align:middle line:90%
+yeah, so 3-- whatever.
+
+01:20:42.440 --> 01:20:43.940 align:middle line:90%
+I won't have the extra.
+
+01:20:43.940 --> 01:20:46.010 align:middle line:90%
+But this is a daily alpha.
+
+01:20:46.010 --> 01:20:52.400 align:middle line:90%
+
+
+01:20:52.400 --> 01:20:59.940 align:middle line:84%
+If we wanted to annualize this
+daily alpha, what would that--
+
+01:20:59.940 --> 01:21:02.730 align:middle line:84%
+how would we compute
+that annualized alpha?
+
+01:21:02.730 --> 01:21:10.600 align:middle line:90%
+
+
+01:21:10.600 --> 01:21:14.840 align:middle line:84%
+If you're earning
+this alpha every day,
+
+01:21:14.840 --> 01:21:17.280 align:middle line:84%
+it sort of is an
+increment of return
+
+01:21:17.280 --> 01:21:22.360 align:middle line:84%
+that you're expecting
+to get every day.
+
+01:21:22.360 --> 01:21:30.000 align:middle line:84%
+And so if we have 1 plus alpha
+hat to the number of days--
+
+01:21:30.000 --> 01:21:35.000 align:middle line:84%
+there's roughly
+252 days per year--
+
+01:21:35.000 --> 01:21:42.040 align:middle line:84%
+and then subtract 1,
+then we end up getting--
+
+01:21:42.040 --> 01:21:44.560 align:middle line:90%
+let's see.
+
+01:21:44.560 --> 01:21:45.780 align:middle line:90%
+I computed this.
+
+01:21:45.780 --> 01:21:47.640 align:middle line:90%
+AUDIENCE: [INAUDIBLE].
+
+01:21:47.640 --> 01:21:52.860 align:middle line:84%
+PETER KEMPTHORNE: It's
+2.12 minus 1, basically.
+
+01:21:52.860 --> 01:21:55.000 align:middle line:84%
+So this is, like,
+a hundred percent.
+
+01:21:55.000 --> 01:21:58.120 align:middle line:84%
+So this stock happened
+to just deliver
+
+01:21:58.120 --> 01:22:01.560 align:middle line:90%
+a huge amount of returns.
+
+01:22:01.560 --> 01:22:03.780 align:middle line:84%
+But what's interesting
+to see, though,
+
+01:22:03.780 --> 01:22:07.520 align:middle line:84%
+is that this relatively simple
+model, the capital asset pricing
+
+01:22:07.520 --> 01:22:11.240 align:middle line:84%
+model, appears to be
+consistent with the stocks
+
+01:22:11.240 --> 01:22:13.360 align:middle line:90%
+over a long period of time.
+
+01:22:13.360 --> 01:22:20.240 align:middle line:84%
+That being said, the more
+complex models are warranted.
+
+01:22:20.240 --> 01:22:26.560 align:middle line:84%
+And the data collection
+phase of this, our project,
+
+01:22:26.560 --> 01:22:30.680 align:middle line:84%
+included importing
+Fama-French factors that
+
+01:22:30.680 --> 01:22:33.680 align:middle line:84%
+are extensions of sort
+of the market risk
+
+01:22:33.680 --> 01:22:37.010 align:middle line:84%
+that can be used in
+these models, so.
+
+01:22:37.010 --> 01:22:43.000 align:middle line:90%

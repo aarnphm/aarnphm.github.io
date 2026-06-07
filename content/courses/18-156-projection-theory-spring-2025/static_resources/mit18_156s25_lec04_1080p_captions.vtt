@@ -1,0 +1,4719 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.965 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.965 --> 00:00:02.465 align:middle line:90%
+
+
+00:00:02.465 --> 00:00:03.937 align:middle line:90%
+[RUSTLING]
+
+00:00:03.937 --> 00:00:04.437 align:middle line:90%
+
+
+00:00:04.437 --> 00:00:07.888 align:middle line:90%
+[CLICKING]
+
+00:00:07.888 --> 00:00:11.360 align:middle line:90%
+
+
+00:00:11.360 --> 00:00:12.800 align:middle line:90%
+LAWRENCE GUTH: All right.
+
+00:00:12.800 --> 00:00:16.200 align:middle line:84%
+Well, last class, we started to
+talk about the Fourier method
+
+00:00:16.200 --> 00:00:18.440 align:middle line:90%
+in Euclidean space in R2.
+
+00:00:18.440 --> 00:00:22.480 align:middle line:84%
+And the big goal for the class
+is to digest the Fourier method,
+
+00:00:22.480 --> 00:00:26.040 align:middle line:84%
+finish that story, but also
+just to digest it in general.
+
+00:00:26.040 --> 00:00:27.860 align:middle line:84%
+And then after that,
+if there's time,
+
+00:00:27.860 --> 00:00:30.040 align:middle line:84%
+we'll start to introduce
+sieve theory, which
+
+00:00:30.040 --> 00:00:32.270 align:middle line:90%
+has a extremely parallel story.
+
+00:00:32.270 --> 00:00:34.520 align:middle line:84%
+But that was developed by a
+different group of people,
+
+00:00:34.520 --> 00:00:36.070 align:middle line:84%
+and with somewhat
+different goals.
+
+00:00:36.070 --> 00:00:38.960 align:middle line:90%
+
+
+00:00:38.960 --> 00:00:40.940 align:middle line:84%
+OK, so to digest
+the Fourier method,
+
+00:00:40.940 --> 00:00:43.520 align:middle line:84%
+I wanted to go back for a
+second to the finite field
+
+00:00:43.520 --> 00:00:46.100 align:middle line:84%
+Fourier method, where everything
+is a little bit cleaner,
+
+00:00:46.100 --> 00:00:47.740 align:middle line:90%
+and to make a point about it.
+
+00:00:47.740 --> 00:00:51.000 align:middle line:90%
+
+
+00:00:51.000 --> 00:01:04.209 align:middle line:84%
+OK, so our main lemma in the
+finite field case was this.
+
+00:01:04.209 --> 00:01:12.730 align:middle line:84%
+If you have a set
+of lines in FQ2
+
+00:01:12.730 --> 00:01:22.450 align:middle line:84%
+and then you add up their
+characteristic functions,
+
+00:01:22.450 --> 00:01:26.050 align:middle line:84%
+then it has a big
+constant part, and then
+
+00:01:26.050 --> 00:01:29.265 align:middle line:90%
+a small, high-frequency part.
+
+00:01:29.265 --> 00:01:35.730 align:middle line:84%
+And then the conclusion is
+that f is f0 plus f high,
+
+00:01:35.730 --> 00:01:39.690 align:middle line:84%
+where f0 is a constant
+function, which
+
+00:01:39.690 --> 00:01:42.370 align:middle line:90%
+is the number of lines over q.
+
+00:01:42.370 --> 00:01:46.730 align:middle line:84%
+And from that, you can
+compute its L2 norm.
+
+00:01:46.730 --> 00:01:51.970 align:middle line:84%
+L2 squared is number
+of lines squared.
+
+00:01:51.970 --> 00:01:56.010 align:middle line:90%
+And f high means 0.
+
+00:01:56.010 --> 00:01:58.520 align:middle line:84%
+And we have a bound
+for its L2 norm.
+
+00:01:58.520 --> 00:02:05.860 align:middle line:90%
+
+
+00:02:05.860 --> 00:02:10.020 align:middle line:84%
+OK, so one thing that
+you can get out of this
+
+00:02:10.020 --> 00:02:12.340 align:middle line:90%
+is a bound for the L2 norm of f.
+
+00:02:12.340 --> 00:02:15.060 align:middle line:84%
+If you add these together,
+you get a bound for the L2
+
+00:02:15.060 --> 00:02:17.140 align:middle line:90%
+norm of f.
+
+00:02:17.140 --> 00:02:20.780 align:middle line:84%
+And it's worth saying that
+that bound for the L2 norm of f
+
+00:02:20.780 --> 00:02:25.780 align:middle line:84%
+has a elementary proof that's
+really simpler than this.
+
+00:02:25.780 --> 00:02:31.080 align:middle line:84%
+Let me show it for comparison
+to help put this in perspective.
+
+00:02:31.080 --> 00:02:45.060 align:middle line:90%
+
+
+00:02:45.060 --> 00:02:49.510 align:middle line:84%
+OK, so let's call this,
+elementary L2 bound.
+
+00:02:49.510 --> 00:02:55.420 align:middle line:90%
+
+
+00:02:55.420 --> 00:02:59.230 align:middle line:84%
+OK, so there's a first
+lemma that if you
+
+00:02:59.230 --> 00:03:02.510 align:middle line:84%
+have two different
+lines, then you
+
+00:03:02.510 --> 00:03:09.790 align:middle line:84%
+take the sum over x, L1 of x,
+L2 of x, this is at most 1.
+
+00:03:09.790 --> 00:03:11.710 align:middle line:90%
+Could do that.
+
+00:03:11.710 --> 00:03:16.030 align:middle line:84%
+It's just saying that two lines
+intersect in at most one point.
+
+00:03:16.030 --> 00:03:19.330 align:middle line:84%
+OK, and we can use this
+to make an L2 estimate.
+
+00:03:19.330 --> 00:03:20.670 align:middle line:90%
+So here's the L2 estimate.
+
+00:03:20.670 --> 00:03:25.670 align:middle line:90%
+
+
+00:03:25.670 --> 00:03:36.750 align:middle line:84%
+If f is the sum L in L, of L of
+x, then f L2 squared is bounded
+
+00:03:36.750 --> 00:03:45.950 align:middle line:84%
+by the number of lines squared
+plus number of lines times q.
+
+00:03:45.950 --> 00:03:48.590 align:middle line:90%
+Here's the proof.
+
+00:03:48.590 --> 00:03:55.000 align:middle line:84%
+So f L2 squared is
+the sum over L1 and L2
+
+00:03:55.000 --> 00:03:58.740 align:middle line:90%
+of sum on x, L1 of x, L2 of x.
+
+00:03:58.740 --> 00:04:02.980 align:middle line:90%
+
+
+00:04:02.980 --> 00:04:07.440 align:middle line:84%
+And now each one of these sums,
+we can control with this lemma.
+
+00:04:07.440 --> 00:04:07.980 align:middle line:90%
+All right.
+
+00:04:07.980 --> 00:04:09.647 align:middle line:84%
+But you have to be a
+little bit careful.
+
+00:04:09.647 --> 00:04:12.300 align:middle line:84%
+If L1 is equal to L2, that's
+a different situation.
+
+00:04:12.300 --> 00:04:14.640 align:middle line:84%
+A line intersects itself
+in a lot of points.
+
+00:04:14.640 --> 00:04:17.279 align:middle line:84%
+So we're going to
+split up this sum.
+
+00:04:17.279 --> 00:04:23.920 align:middle line:84%
+So it's the sum L1 equals
+L2 plus the sum L1 does not
+
+00:04:23.920 --> 00:04:26.880 align:middle line:90%
+equal L2.
+
+00:04:26.880 --> 00:04:33.080 align:middle line:84%
+OK, so here, we have
+only L choices for L1,
+
+00:04:33.080 --> 00:04:35.920 align:middle line:84%
+or only L choices
+appear in this sum.
+
+00:04:35.920 --> 00:04:38.690 align:middle line:84%
+And each one of
+them contributes q.
+
+00:04:38.690 --> 00:04:41.680 align:middle line:90%
+
+
+00:04:41.680 --> 00:04:46.300 align:middle line:84%
+And then over here, we have L
+squared choices for the lines.
+
+00:04:46.300 --> 00:04:48.220 align:middle line:84%
+But each one of
+them contributes 1.
+
+00:04:48.220 --> 00:04:51.880 align:middle line:90%
+
+
+00:04:51.880 --> 00:04:55.050 align:middle line:90%
+So that's the proof.
+
+00:04:55.050 --> 00:04:55.930 align:middle line:90%
+All right.
+
+00:04:55.930 --> 00:04:59.205 align:middle line:84%
+So if you compare
+this with this,
+
+00:04:59.205 --> 00:05:00.830 align:middle line:84%
+something looks kind
+of similar, right?
+
+00:05:00.830 --> 00:05:04.330 align:middle line:84%
+We get an L2 bound up there
+of L squared plus Lq that
+
+00:05:04.330 --> 00:05:07.050 align:middle line:84%
+matches L squared plus Lq that
+we get here with this quite
+
+00:05:07.050 --> 00:05:09.730 align:middle line:90%
+simple argument.
+
+00:05:09.730 --> 00:05:13.670 align:middle line:84%
+OK, but the main lemma has
+more information than that.
+
+00:05:13.670 --> 00:05:16.290 align:middle line:90%
+
+
+00:05:16.290 --> 00:05:19.810 align:middle line:84%
+Well, there's actually
+really two cases.
+
+00:05:19.810 --> 00:05:23.770 align:middle line:84%
+If q is bigger than
+the number of lines,
+
+00:05:23.770 --> 00:05:29.050 align:middle line:84%
+then this term dominates here,
+and this term dominates here.
+
+00:05:29.050 --> 00:05:30.610 align:middle line:84%
+And in that situation,
+the main lemma
+
+00:05:30.610 --> 00:05:33.330 align:middle line:84%
+doesn't really have much
+more information than this,
+
+00:05:33.330 --> 00:05:36.690 align:middle line:84%
+because the function
+fh is not that special.
+
+00:05:36.690 --> 00:05:39.050 align:middle line:84%
+But the other regime is
+that the number of lines
+
+00:05:39.050 --> 00:05:40.350 align:middle line:90%
+is much bigger than q.
+
+00:05:40.350 --> 00:05:43.610 align:middle line:90%
+So this dominates that.
+
+00:05:43.610 --> 00:05:46.930 align:middle line:84%
+And in that situation,
+most of the L2 norm
+
+00:05:46.930 --> 00:05:49.940 align:middle line:84%
+is coming from f0, which is very
+special because it's constant.
+
+00:05:49.940 --> 00:05:55.120 align:middle line:90%
+
+
+00:05:55.120 --> 00:05:57.900 align:middle line:84%
+So the main lemma has an
+important piece of information
+
+00:05:57.900 --> 00:06:00.480 align:middle line:84%
+beyond this that when
+we have many lines,
+
+00:06:00.480 --> 00:06:02.360 align:middle line:90%
+this sum is almost constant.
+
+00:06:02.360 --> 00:06:07.260 align:middle line:84%
+And then it's a constant plus
+something that's much smaller.
+
+00:06:07.260 --> 00:06:13.700 align:middle line:84%
+OK, so that is also true in
+spirit for the main lemma
+
+00:06:13.700 --> 00:06:14.447 align:middle line:90%
+in the real case.
+
+00:06:14.447 --> 00:06:16.780 align:middle line:84%
+But the main lemma in the
+real case is a little bit more
+
+00:06:16.780 --> 00:06:17.440 align:middle line:90%
+complicated.
+
+00:06:17.440 --> 00:06:19.300 align:middle line:84%
+So I wanted to do this
+first, and then we
+
+00:06:19.300 --> 00:06:22.340 align:middle line:84%
+could look for the analogous
+thing in the more complicated
+
+00:06:22.340 --> 00:06:24.460 align:middle line:90%
+real case.
+
+00:06:24.460 --> 00:06:27.410 align:middle line:84%
+OK, so what did the main
+lemma say in the real case?
+
+00:06:27.410 --> 00:06:35.660 align:middle line:90%
+
+
+00:06:35.660 --> 00:06:39.740 align:middle line:90%
+Main lemma in the real case.
+
+00:06:39.740 --> 00:06:43.700 align:middle line:84%
+So now, we have T is a
+set of 1 by R rectangles.
+
+00:06:43.700 --> 00:06:47.940 align:middle line:90%
+
+
+00:06:47.940 --> 00:06:55.086 align:middle line:84%
+And psi T is a
+smooth approximation
+
+00:06:55.086 --> 00:06:58.110 align:middle line:84%
+of the characteristic
+function of t.
+
+00:06:58.110 --> 00:07:00.430 align:middle line:84%
+And the exact meaning
+of that is explained
+
+00:07:00.430 --> 00:07:05.390 align:middle line:84%
+in agonizing detail
+on the homework.
+
+00:07:05.390 --> 00:07:07.390 align:middle line:84%
+OK, and then we have
+a function, which
+
+00:07:07.390 --> 00:07:12.550 align:middle line:84%
+is the sum over all the T and
+T of this smooth characteristic
+
+00:07:12.550 --> 00:07:15.150 align:middle line:90%
+function of T.
+
+00:07:15.150 --> 00:07:18.630 align:middle line:84%
+OK, now our bounds are
+going to depend on how
+
+00:07:18.630 --> 00:07:21.070 align:middle line:90%
+these tubes are clustered.
+
+00:07:21.070 --> 00:07:28.070 align:middle line:84%
+So N sub T of R is the
+maximum over T tilde
+
+00:07:28.070 --> 00:07:33.710 align:middle line:84%
+is a 2 little r by 2 big
+R rectangle, or tube,
+
+00:07:33.710 --> 00:07:36.570 align:middle line:90%
+of the number of tubes in there.
+
+00:07:36.570 --> 00:07:41.030 align:middle line:90%
+
+
+00:07:41.030 --> 00:07:42.430 align:middle line:90%
+So picture this.
+
+00:07:42.430 --> 00:07:45.090 align:middle line:90%
+We have this T tilde.
+
+00:07:45.090 --> 00:07:49.450 align:middle line:84%
+Let me see how many little
+tubes are in T tilde.
+
+00:07:49.450 --> 00:07:53.000 align:middle line:90%
+
+
+00:07:53.000 --> 00:07:57.040 align:middle line:84%
+OK, so those are the
+hypotheses of the main lemma.
+
+00:07:57.040 --> 00:08:01.040 align:middle line:84%
+And then the conclusion
+is that you can write f,
+
+00:08:01.040 --> 00:08:05.400 align:middle line:84%
+you can break it up into pieces
+of different frequencies.
+
+00:08:05.400 --> 00:08:08.080 align:middle line:84%
+So the pieces are labeled by
+a sort of a width parameter,
+
+00:08:08.080 --> 00:08:11.080 align:middle line:84%
+little r, which is a dyadic
+number between scale 1
+
+00:08:11.080 --> 00:08:16.960 align:middle line:84%
+and scale capital R of f sub
+little r, where the f sub
+
+00:08:16.960 --> 00:08:19.020 align:middle line:84%
+little r has two
+good properties.
+
+00:08:19.020 --> 00:08:21.320 align:middle line:90%
+It has a frequency support.
+
+00:08:21.320 --> 00:08:24.360 align:middle line:84%
+The support of f little
+r hat is contained
+
+00:08:24.360 --> 00:08:28.184 align:middle line:90%
+in the ball of radius 1 over r.
+
+00:08:28.184 --> 00:08:32.640 align:middle line:90%
+And it has an L2 norm bound.
+
+00:08:32.640 --> 00:08:41.000 align:middle line:84%
+f sub little r L2 squared is
+bounded by the number of tubes
+
+00:08:41.000 --> 00:08:48.270 align:middle line:84%
+times this packing, clustering,
+parameter at the scale
+
+00:08:48.270 --> 00:08:51.670 align:middle line:84%
+little r times big
+R over little r.
+
+00:08:51.670 --> 00:08:57.870 align:middle line:90%
+
+
+00:08:57.870 --> 00:08:58.370 align:middle line:90%
+OK.
+
+00:08:58.370 --> 00:09:00.892 align:middle line:90%
+
+
+00:09:00.892 --> 00:09:02.850 align:middle line:84%
+OK, now one thing you
+could take away from this
+
+00:09:02.850 --> 00:09:05.130 align:middle line:84%
+is you could take away
+from it a bound for the L2
+
+00:09:05.130 --> 00:09:08.330 align:middle line:84%
+norm of f by just
+adding up all of these.
+
+00:09:08.330 --> 00:09:12.010 align:middle line:84%
+And like before, that
+bound for the L2 norm of f
+
+00:09:12.010 --> 00:09:14.130 align:middle line:90%
+has a simpler proof.
+
+00:09:14.130 --> 00:09:16.110 align:middle line:84%
+And for context for
+understanding this,
+
+00:09:16.110 --> 00:09:19.350 align:middle line:84%
+I'm going to show you
+this simpler proof.
+
+00:09:19.350 --> 00:09:19.850 align:middle line:90%
+Yes.
+
+00:09:19.850 --> 00:09:23.290 align:middle line:84%
+AUDIENCE: Are the
+fr's orthogonal?
+
+00:09:23.290 --> 00:09:27.090 align:middle line:84%
+LAWRENCE GUTH: The
+fr's are orthogonal.
+
+00:09:27.090 --> 00:09:29.170 align:middle line:90%
+Yeah, the fr's are orthogonal.
+
+00:09:29.170 --> 00:09:30.970 align:middle line:84%
+If we didn't know
+they were orthogonal,
+
+00:09:30.970 --> 00:09:32.430 align:middle line:90%
+we would lose a little bit.
+
+00:09:32.430 --> 00:09:36.795 align:middle line:84%
+We'd have to do Cauchy-Schwarz
+to compute the L2 norm of f.
+
+00:09:36.795 --> 00:09:38.170 align:middle line:84%
+But the amount
+that we would lose
+
+00:09:38.170 --> 00:09:42.070 align:middle line:84%
+would be like a log r,
+which is relatively minor.
+
+00:09:42.070 --> 00:09:42.570 align:middle line:90%
+Yeah.
+
+00:09:42.570 --> 00:09:46.060 align:middle line:90%
+
+
+00:09:46.060 --> 00:09:46.560 align:middle line:90%
+OK.
+
+00:09:46.560 --> 00:09:56.860 align:middle line:90%
+
+
+00:09:56.860 --> 00:09:59.530 align:middle line:84%
+OK, so let's do an
+elementary L2 bound.
+
+00:09:59.530 --> 00:10:07.900 align:middle line:90%
+
+
+00:10:07.900 --> 00:10:08.700 align:middle line:90%
+All right.
+
+00:10:08.700 --> 00:10:12.160 align:middle line:84%
+So like before, when we
+expand out the L2 norm,
+
+00:10:12.160 --> 00:10:13.660 align:middle line:84%
+we'll have to
+estimate the integral
+
+00:10:13.660 --> 00:10:16.620 align:middle line:90%
+of 1 tube times another tube.
+
+00:10:16.620 --> 00:10:19.940 align:middle line:84%
+But one tube times another tube
+is a little bit more complicated
+
+00:10:19.940 --> 00:10:22.080 align:middle line:84%
+than one line
+times another line.
+
+00:10:22.080 --> 00:10:24.740 align:middle line:84%
+Two lines always
+intersect in a point,
+
+00:10:24.740 --> 00:10:28.980 align:middle line:84%
+but two tubes intersect in
+a different amount of area
+
+00:10:28.980 --> 00:10:31.260 align:middle line:84%
+depending upon the
+angle between them.
+
+00:10:31.260 --> 00:10:34.700 align:middle line:84%
+So we're going to
+keep track of that.
+
+00:10:34.700 --> 00:10:35.780 align:middle line:90%
+All right.
+
+00:10:35.780 --> 00:10:38.660 align:middle line:90%
+So let's make a definition.
+
+00:10:38.660 --> 00:10:44.030 align:middle line:84%
+The width, r, in
+between T1 and T2
+
+00:10:44.030 --> 00:10:49.510 align:middle line:84%
+is the minimum r,
+so that there exists
+
+00:10:49.510 --> 00:10:54.950 align:middle line:84%
+a 2 little r by 2 big
+R rectangle T tilde
+
+00:10:54.950 --> 00:10:56.330 align:middle line:90%
+that contains them both.
+
+00:10:56.330 --> 00:11:01.430 align:middle line:90%
+
+
+00:11:01.430 --> 00:11:16.190 align:middle line:84%
+OK, so if this is
+T1, and this is T2,
+
+00:11:16.190 --> 00:11:21.630 align:middle line:90%
+then that would be T tilde.
+
+00:11:21.630 --> 00:11:22.930 align:middle line:90%
+And that would be r.
+
+00:11:22.930 --> 00:11:25.950 align:middle line:90%
+
+
+00:11:25.950 --> 00:11:36.350 align:middle line:84%
+OK, so now, if I want to
+integrate T1 of x, T2 of x, dx,
+
+00:11:36.350 --> 00:11:41.070 align:middle line:84%
+that's going to be about big
+R over the little r associated
+
+00:11:41.070 --> 00:11:42.960 align:middle line:90%
+to these two tubes.
+
+00:11:42.960 --> 00:11:43.840 align:middle line:90%
+Why?
+
+00:11:43.840 --> 00:11:47.680 align:middle line:84%
+Well, the integral is the
+area of their overlap.
+
+00:11:47.680 --> 00:11:51.760 align:middle line:84%
+And if I'll sort of sketch
+their overlap over here--
+
+00:11:51.760 --> 00:11:53.680 align:middle line:90%
+it's not a great picture.
+
+00:11:53.680 --> 00:11:57.200 align:middle line:84%
+This is around 1 because it's
+contained in one of the tubes.
+
+00:11:57.200 --> 00:12:03.220 align:middle line:84%
+And this axis here is
+like big R over little r.
+
+00:12:03.220 --> 00:12:05.820 align:middle line:84%
+As little r gets smaller,
+they overlap more and more.
+
+00:12:05.820 --> 00:12:10.040 align:middle line:90%
+
+
+00:12:10.040 --> 00:12:12.840 align:middle line:90%
+OK, good.
+
+00:12:12.840 --> 00:12:14.730 align:middle line:90%
+So now, we can make an L2 bound.
+
+00:12:14.730 --> 00:12:18.200 align:middle line:90%
+
+
+00:12:18.200 --> 00:12:20.840 align:middle line:84%
+Let's say that the
+integral of f squared
+
+00:12:20.840 --> 00:12:32.960 align:middle line:84%
+is bounded by the sum over
+little r dyadic of T times N sub
+
+00:12:32.960 --> 00:12:38.240 align:middle line:84%
+T of little r times
+big R over little r.
+
+00:12:38.240 --> 00:12:40.690 align:middle line:84%
+OK, and the proof
+is that we'll just
+
+00:12:40.690 --> 00:12:45.330 align:middle line:84%
+break up this sum as a bunch
+of integrals like this, group
+
+00:12:45.330 --> 00:12:47.010 align:middle line:84%
+them according to the
+value of little r,
+
+00:12:47.010 --> 00:12:48.270 align:middle line:90%
+and we'll see what happens.
+
+00:12:48.270 --> 00:12:50.570 align:middle line:84%
+This is what's
+going to fall out.
+
+00:12:50.570 --> 00:12:53.530 align:middle line:90%
+So here's the proof.
+
+00:12:53.530 --> 00:12:58.490 align:middle line:84%
+So the integral of f
+squared is the sum T1 and T2
+
+00:12:58.490 --> 00:13:02.550 align:middle line:84%
+in our set of tubes integral
+of T1 of x, T2 of x.
+
+00:13:02.550 --> 00:13:05.130 align:middle line:90%
+
+
+00:13:05.130 --> 00:13:06.610 align:middle line:84%
+Now this integral
+here, it depends
+
+00:13:06.610 --> 00:13:08.050 align:middle line:90%
+on the value of little r.
+
+00:13:08.050 --> 00:13:12.210 align:middle line:84%
+So let's group these by
+the value of little r.
+
+00:13:12.210 --> 00:13:18.970 align:middle line:84%
+So that's the sum over little
+r dyadic sum over T1 and T2
+
+00:13:18.970 --> 00:13:21.970 align:middle line:90%
+with that value.
+
+00:13:21.970 --> 00:13:26.930 align:middle line:84%
+So the R associated to T1
+and T2 would be about this r.
+
+00:13:26.930 --> 00:13:30.610 align:middle line:84%
+And then I have this integral,
+which I can bound by the lemma.
+
+00:13:30.610 --> 00:13:32.670 align:middle line:90%
+So I get big R over little r.
+
+00:13:32.670 --> 00:13:37.010 align:middle line:90%
+
+
+00:13:37.010 --> 00:13:41.940 align:middle line:84%
+OK, now I need to know how many
+pairs of tubes are in this list
+
+00:13:41.940 --> 00:13:43.180 align:middle line:90%
+here.
+
+00:13:43.180 --> 00:13:44.900 align:middle line:90%
+Well, I can choose T1.
+
+00:13:44.900 --> 00:13:47.000 align:middle line:84%
+And T1, as far as I
+know, could be anything.
+
+00:13:47.000 --> 00:13:50.500 align:middle line:84%
+So I have number of
+tubes choices for T1.
+
+00:13:50.500 --> 00:13:53.980 align:middle line:84%
+But once I choose T1, I need
+to choose another tube, T2,
+
+00:13:53.980 --> 00:13:56.980 align:middle line:84%
+that fits into the
+same rectangle with T1.
+
+00:13:56.980 --> 00:13:58.500 align:middle line:84%
+So the number of
+choices for that
+
+00:13:58.500 --> 00:14:00.840 align:middle line:90%
+is about N sub T of little r.
+
+00:14:00.840 --> 00:14:02.780 align:middle line:90%
+That's what it's measuring.
+
+00:14:02.780 --> 00:14:13.180 align:middle line:84%
+So this is bounded by sum over
+r dyadic of number of tubes
+
+00:14:13.180 --> 00:14:16.920 align:middle line:84%
+and N sub T of r
+big R over little r.
+
+00:14:16.920 --> 00:14:20.620 align:middle line:90%
+
+
+00:14:20.620 --> 00:14:22.820 align:middle line:90%
+OK, great.
+
+00:14:22.820 --> 00:14:26.460 align:middle line:90%
+So let's compare this with this.
+
+00:14:26.460 --> 00:14:29.340 align:middle line:84%
+This is exactly what we
+get by just adding up
+
+00:14:29.340 --> 00:14:34.940 align:middle line:84%
+all those L2 norms
+for the f sub r.
+
+00:14:34.940 --> 00:14:41.350 align:middle line:84%
+OK, so this proof
+is a lot easier
+
+00:14:41.350 --> 00:14:45.150 align:middle line:84%
+than the proof of the main
+lemma that we did last time.
+
+00:14:45.150 --> 00:14:47.890 align:middle line:84%
+Let's compare the L2
+bound and the main lemma.
+
+00:14:47.890 --> 00:14:53.590 align:middle line:90%
+
+
+00:14:53.590 --> 00:14:56.990 align:middle line:84%
+If I were to erase this
+information in the main lemma,
+
+00:14:56.990 --> 00:15:00.710 align:middle line:84%
+then all that would be
+left is the L2 bound.
+
+00:15:00.710 --> 00:15:02.870 align:middle line:90%
+But there is this information.
+
+00:15:02.870 --> 00:15:04.010 align:middle line:90%
+And this is helpful.
+
+00:15:04.010 --> 00:15:07.030 align:middle line:84%
+This is telling
+us something more.
+
+00:15:07.030 --> 00:15:10.370 align:middle line:84%
+OK, now depending upon what
+we know about this thing here,
+
+00:15:10.370 --> 00:15:13.710 align:middle line:84%
+different terms might
+dominate this sum.
+
+00:15:13.710 --> 00:15:17.910 align:middle line:84%
+If it so happens that the
+term little r equals 1,
+
+00:15:17.910 --> 00:15:20.242 align:middle line:84%
+has the biggest
+contribution here,
+
+00:15:20.242 --> 00:15:23.710 align:middle line:84%
+then we don't learn very
+much because our information
+
+00:15:23.710 --> 00:15:27.630 align:middle line:84%
+about the support of f1 hat is
+the same as the information we
+
+00:15:27.630 --> 00:15:29.710 align:middle line:84%
+already had about
+the support of f hat.
+
+00:15:29.710 --> 00:15:31.750 align:middle line:90%
+So we'd have nothing new.
+
+00:15:31.750 --> 00:15:35.475 align:middle line:84%
+But it may well happen that
+the term where this is biggest
+
+00:15:35.475 --> 00:15:38.720 align:middle line:90%
+has little r much larger.
+
+00:15:38.720 --> 00:15:43.860 align:middle line:84%
+And then f little r has this
+frequency support condition.
+
+00:15:43.860 --> 00:15:46.520 align:middle line:84%
+It gives it some structure,
+some extra information there
+
+00:15:46.520 --> 00:15:47.700 align:middle line:90%
+that's going to help us.
+
+00:15:47.700 --> 00:15:50.920 align:middle line:90%
+
+
+00:15:50.920 --> 00:15:53.720 align:middle line:84%
+So let's talk
+about, what does it
+
+00:15:53.720 --> 00:15:56.600 align:middle line:84%
+mean about the function f
+little r that its frequency is
+
+00:15:56.600 --> 00:15:57.460 align:middle line:90%
+supported there?
+
+00:15:57.460 --> 00:16:21.040 align:middle line:90%
+
+
+00:16:21.040 --> 00:16:26.240 align:middle line:84%
+So intuition,
+we're going to call
+
+00:16:26.240 --> 00:16:32.836 align:middle line:84%
+this the locally-constant
+intuition,
+
+00:16:32.836 --> 00:16:35.850 align:middle line:84%
+says that if I have
+some function g
+
+00:16:35.850 --> 00:16:38.250 align:middle line:84%
+and the support of
+g hat is contained
+
+00:16:38.250 --> 00:16:45.370 align:middle line:84%
+in the ball of radius 1
+over r, then the function
+
+00:16:45.370 --> 00:16:51.430 align:middle line:84%
+g is approximately constant
+on balls of radius r.
+
+00:16:51.430 --> 00:17:01.679 align:middle line:90%
+
+
+00:17:01.679 --> 00:17:08.530 align:middle line:84%
+So if the support of g hat is
+in the ball of radius 1 over r,
+
+00:17:08.530 --> 00:17:13.210 align:middle line:84%
+then g hat is a combination
+of waves, cosine waves,
+
+00:17:13.210 --> 00:17:17.714 align:middle line:84%
+where all of the cosine waves
+have frequency at most 1 over r.
+
+00:17:17.714 --> 00:17:19.089 align:middle line:84%
+So each one of
+those cosine waves
+
+00:17:19.089 --> 00:17:22.250 align:middle line:84%
+is not changing very much
+on balls of radius r.
+
+00:17:22.250 --> 00:17:23.890 align:middle line:84%
+So it's sort of
+intuitively plausible
+
+00:17:23.890 --> 00:17:25.730 align:middle line:84%
+that after we add
+them up, also, we'll
+
+00:17:25.730 --> 00:17:28.790 align:middle line:84%
+get something that is roughly
+constant on balls of radius r.
+
+00:17:28.790 --> 00:17:31.450 align:middle line:90%
+
+
+00:17:31.450 --> 00:17:33.060 align:middle line:84%
+We'll come back
+in a little while
+
+00:17:33.060 --> 00:17:35.040 align:middle line:84%
+and make a precise
+statement about this.
+
+00:17:35.040 --> 00:17:37.620 align:middle line:90%
+
+
+00:17:37.620 --> 00:17:42.340 align:middle line:84%
+OK, so based on this, let me
+make a picture illustrating
+
+00:17:42.340 --> 00:17:43.360 align:middle line:90%
+main lemma r.
+
+00:17:43.360 --> 00:17:48.580 align:middle line:90%
+
+
+00:17:48.580 --> 00:17:51.570 align:middle line:90%
+Main lemma and the real case.
+
+00:17:51.570 --> 00:17:54.940 align:middle line:90%
+
+
+00:17:54.940 --> 00:18:03.740 align:middle line:90%
+OK, so OK.
+
+00:18:03.740 --> 00:18:10.220 align:middle line:84%
+So this will be, well, this will
+be like each one of those lines
+
+00:18:10.220 --> 00:18:12.260 align:middle line:90%
+is going to be a 1 by r tube.
+
+00:18:12.260 --> 00:18:14.460 align:middle line:84%
+So I may have a
+whole bunch of them
+
+00:18:14.460 --> 00:18:19.820 align:middle line:84%
+over here sort of like this, and
+a whole bunch of them over here
+
+00:18:19.820 --> 00:18:20.650 align:middle line:90%
+sort of like this.
+
+00:18:20.650 --> 00:18:24.780 align:middle line:90%
+
+
+00:18:24.780 --> 00:18:27.560 align:middle line:84%
+And over here in this
+part of the board,
+
+00:18:27.560 --> 00:18:32.073 align:middle line:84%
+I might have some that are not
+so clumped into thick tubes.
+
+00:18:32.073 --> 00:18:33.490 align:middle line:84%
+They might look
+sort of like this.
+
+00:18:33.490 --> 00:18:38.790 align:middle line:90%
+
+
+00:18:38.790 --> 00:18:39.910 align:middle line:90%
+All right.
+
+00:18:39.910 --> 00:18:43.270 align:middle line:84%
+So over here, a picture
+I wanted to give you
+
+00:18:43.270 --> 00:18:46.790 align:middle line:84%
+is that I put so many
+thin strokes of chalk, one
+
+00:18:46.790 --> 00:18:49.470 align:middle line:84%
+by our rectangles, that
+they sort of smooshed
+
+00:18:49.470 --> 00:18:52.380 align:middle line:84%
+on top of each other, and they
+produced, like, a thick stroke.
+
+00:18:52.380 --> 00:18:56.190 align:middle line:90%
+
+
+00:18:56.190 --> 00:19:01.910 align:middle line:84%
+And so this part over here
+might be dominated by f of r.
+
+00:19:01.910 --> 00:19:04.710 align:middle line:84%
+So maybe this scale
+might be r and f
+
+00:19:04.710 --> 00:19:10.500 align:middle line:84%
+sub r be sort of a sum of
+this blob and that blob.
+
+00:19:10.500 --> 00:19:14.110 align:middle line:90%
+
+
+00:19:14.110 --> 00:19:19.670 align:middle line:84%
+And on the other, so this over
+here in blue would be f sub r.
+
+00:19:19.670 --> 00:19:23.970 align:middle line:84%
+And on the other hand, this
+over here would be F sub 1.
+
+00:19:23.970 --> 00:19:27.250 align:middle line:84%
+All of this stuff is
+pretty high frequency.
+
+00:19:27.250 --> 00:19:33.760 align:middle line:90%
+
+
+00:19:33.760 --> 00:19:37.960 align:middle line:84%
+OK, and notice that
+this f sub r is
+
+00:19:37.960 --> 00:19:42.480 align:middle line:84%
+kind of roughly constant
+on any ball of radius r.
+
+00:19:42.480 --> 00:19:55.400 align:middle line:84%
+And so if I were to visualize
+the set where F is big,
+
+00:19:55.400 --> 00:19:59.510 align:middle line:84%
+well, there might be some
+bits in here where F is big.
+
+00:19:59.510 --> 00:20:02.080 align:middle line:90%
+
+
+00:20:02.080 --> 00:20:07.040 align:middle line:84%
+But then there also might
+be some piece in here
+
+00:20:07.040 --> 00:20:07.730 align:middle line:90%
+where F is big.
+
+00:20:07.730 --> 00:20:13.800 align:middle line:90%
+
+
+00:20:13.800 --> 00:20:20.440 align:middle line:84%
+OK, so over here, this
+is where F sub 1 is big.
+
+00:20:20.440 --> 00:20:23.790 align:middle line:84%
+And over here, this is
+where F sub r is big.
+
+00:20:23.790 --> 00:20:29.490 align:middle line:90%
+
+
+00:20:29.490 --> 00:20:30.330 align:middle line:90%
+All right.
+
+00:20:30.330 --> 00:20:32.450 align:middle line:84%
+And now, the kind of
+trade off that happens
+
+00:20:32.450 --> 00:20:37.370 align:middle line:84%
+is we might have a very strong
+bound for the L2 norm of f1.
+
+00:20:37.370 --> 00:20:39.970 align:middle line:84%
+And so that bound tells me
+that this set where f1 is big
+
+00:20:39.970 --> 00:20:40.640 align:middle line:90%
+is small.
+
+00:20:40.640 --> 00:20:43.290 align:middle line:90%
+
+
+00:20:43.290 --> 00:20:46.610 align:middle line:84%
+And then we have a bound
+for the L2 norm of fr.
+
+00:20:46.610 --> 00:20:48.430 align:middle line:84%
+It might not be
+such a good bound.
+
+00:20:48.430 --> 00:20:50.250 align:middle line:90%
+It might be bigger.
+
+00:20:50.250 --> 00:20:53.050 align:middle line:84%
+But on the other hand, fr
+has this nice structure
+
+00:20:53.050 --> 00:20:54.990 align:middle line:90%
+that it is constant on balls.
+
+00:20:54.990 --> 00:20:58.370 align:middle line:84%
+So the set where
+fr is big is group
+
+00:20:58.370 --> 00:21:00.810 align:middle line:90%
+is clumped into these big balls.
+
+00:21:00.810 --> 00:21:02.490 align:middle line:90%
+And so that gives us--
+
+00:21:02.490 --> 00:21:05.370 align:middle line:84%
+So the area might be
+larger than this area.
+
+00:21:05.370 --> 00:21:07.730 align:middle line:84%
+But the fact that
+it's clumped gives us
+
+00:21:07.730 --> 00:21:09.615 align:middle line:84%
+some other geometric
+information about it.
+
+00:21:09.615 --> 00:21:10.490 align:middle line:90%
+It's kind of simpler.
+
+00:21:10.490 --> 00:21:17.130 align:middle line:90%
+
+
+00:21:17.130 --> 00:21:19.790 align:middle line:90%
+OK, so let's pause there.
+
+00:21:19.790 --> 00:21:24.330 align:middle line:84%
+That was recapping the main
+lemma in the real case.
+
+00:21:24.330 --> 00:21:29.540 align:middle line:84%
+And I sort of tried to have a
+picture of what it's telling us.
+
+00:21:29.540 --> 00:21:39.440 align:middle line:90%
+OK, OK.
+
+00:21:39.440 --> 00:21:42.960 align:middle line:84%
+So the next thing that we should
+do is this is sort of nice,
+
+00:21:42.960 --> 00:21:46.020 align:middle line:84%
+but it is not a actual
+precise math statement.
+
+00:21:46.020 --> 00:21:48.960 align:middle line:84%
+So in order to really
+make use of this idea,
+
+00:21:48.960 --> 00:21:51.380 align:middle line:84%
+we need to now
+replace this intuition
+
+00:21:51.380 --> 00:21:54.900 align:middle line:90%
+by an actual precise thing.
+
+00:21:54.900 --> 00:21:56.200 align:middle line:90%
+So let's do that.
+
+00:21:56.200 --> 00:22:14.860 align:middle line:90%
+
+
+00:22:14.860 --> 00:22:23.240 align:middle line:84%
+OK, so here's a precise
+version of the intuition.
+
+00:22:23.240 --> 00:22:29.270 align:middle line:90%
+
+
+00:22:29.270 --> 00:22:44.750 align:middle line:84%
+OK, OK, so how do we use the
+fact that the support of g hat
+
+00:22:44.750 --> 00:22:47.410 align:middle line:84%
+is contained in something
+like B of 1 over r?
+
+00:22:47.410 --> 00:22:50.870 align:middle line:90%
+
+
+00:22:50.870 --> 00:22:57.830 align:middle line:84%
+There's a nice trick for using
+this, which goes like this.
+
+00:22:57.830 --> 00:23:07.350 align:middle line:84%
+So suppose I have a function,
+eta so that eta of c
+
+00:23:07.350 --> 00:23:12.830 align:middle line:84%
+is 1 for all the c in the
+ball of radius 1 over r.
+
+00:23:12.830 --> 00:23:14.710 align:middle line:84%
+There are many
+such functions eta,
+
+00:23:14.710 --> 00:23:17.210 align:middle line:84%
+and probably the
+most useful kind
+
+00:23:17.210 --> 00:23:21.650 align:middle line:84%
+is to suppose that eta is also
+smooth and compactly supported.
+
+00:23:21.650 --> 00:23:25.320 align:middle line:90%
+
+
+00:23:25.320 --> 00:23:32.680 align:middle line:84%
+OK, so g hat is equal
+to g hat times eta,
+
+00:23:32.680 --> 00:23:34.520 align:middle line:84%
+because g hat is
+supported on this ball,
+
+00:23:34.520 --> 00:23:37.880 align:middle line:90%
+and eta is 1 on this ball.
+
+00:23:37.880 --> 00:23:41.520 align:middle line:84%
+And now, I can take the inverse
+Fourier transform of this,
+
+00:23:41.520 --> 00:23:45.980 align:middle line:84%
+and I get that g is g
+convolved with eta check.
+
+00:23:45.980 --> 00:23:50.640 align:middle line:90%
+
+
+00:23:50.640 --> 00:23:58.020 align:middle line:84%
+OK, so this follows from, and
+is almost equivalent to, this.
+
+00:23:58.020 --> 00:24:02.400 align:middle line:84%
+But it's often a little
+bit easier to work with.
+
+00:24:02.400 --> 00:24:04.640 align:middle line:84%
+So next to work with
+this, we should figure out
+
+00:24:04.640 --> 00:24:07.630 align:middle line:84%
+a little bit what this
+function eta check is like.
+
+00:24:07.630 --> 00:24:12.240 align:middle line:90%
+
+
+00:24:12.240 --> 00:24:14.140 align:middle line:90%
+So properties of eta check.
+
+00:24:14.140 --> 00:24:18.120 align:middle line:90%
+
+
+00:24:18.120 --> 00:24:27.530 align:middle line:84%
+OK, so for one thing, eta
+check of x is less than r
+
+00:24:27.530 --> 00:24:29.220 align:middle line:90%
+to the minus 2 in the plane.
+
+00:24:29.220 --> 00:24:32.730 align:middle line:90%
+
+
+00:24:32.730 --> 00:24:34.990 align:middle line:84%
+That just follows from
+the triangle inequality.
+
+00:24:34.990 --> 00:24:36.930 align:middle line:84%
+To compute eta check,
+we integrate eta
+
+00:24:36.930 --> 00:24:39.290 align:middle line:90%
+times the complex exponential.
+
+00:24:39.290 --> 00:24:43.450 align:middle line:84%
+And eta has size 1, and
+it's supported on this ball.
+
+00:24:43.450 --> 00:24:45.770 align:middle line:90%
+So we get this.
+
+00:24:45.770 --> 00:24:50.650 align:middle line:84%
+But in addition to that, if x is
+large, then we get cancelation.
+
+00:24:50.650 --> 00:24:57.490 align:middle line:84%
+So the next thing is that eta
+check of x decays rapidly.
+
+00:24:57.490 --> 00:25:00.170 align:middle line:84%
+So I'll write something
+precise in a second.
+
+00:25:00.170 --> 00:25:06.330 align:middle line:84%
+Decays rapidly if x
+is bigger than that.
+
+00:25:06.330 --> 00:25:08.930 align:middle line:84%
+And so the reason
+for that is eta check
+
+00:25:08.930 --> 00:25:16.610 align:middle line:84%
+of x is the integral eta
+of C e to the 2 pi i xc dc.
+
+00:25:16.610 --> 00:25:21.740 align:middle line:84%
+And we can bound this integral
+by integrating by parts.
+
+00:25:21.740 --> 00:25:24.600 align:middle line:84%
+And this is a nice
+and smooth thing.
+
+00:25:24.600 --> 00:25:27.620 align:middle line:84%
+And if x is bigger than this, we
+integrate by parts many times,
+
+00:25:27.620 --> 00:25:30.580 align:middle line:84%
+we get a strong
+estimate for this.
+
+00:25:30.580 --> 00:25:33.140 align:middle line:84%
+OK, the estimate has
+the following shape.
+
+00:25:33.140 --> 00:25:35.860 align:middle line:84%
+I start with an r
+to the minus 2 just
+
+00:25:35.860 --> 00:25:37.860 align:middle line:90%
+to compare to what I had there.
+
+00:25:37.860 --> 00:25:44.620 align:middle line:90%
+And then I have x over r.
+
+00:25:44.620 --> 00:25:49.280 align:middle line:84%
+And I can put here
+any exponent I like.
+
+00:25:49.280 --> 00:25:51.240 align:middle line:84%
+But negative 1,000
+will be fine for us.
+
+00:25:51.240 --> 00:25:54.460 align:middle line:90%
+
+
+00:25:54.460 --> 00:25:57.700 align:middle line:84%
+So if x is more than a
+teeny bit bigger than r,
+
+00:25:57.700 --> 00:25:59.000 align:middle line:90%
+this thing is very small.
+
+00:25:59.000 --> 00:26:07.360 align:middle line:90%
+
+
+00:26:07.360 --> 00:26:07.860 align:middle line:90%
+OK.
+
+00:26:07.860 --> 00:26:38.870 align:middle line:90%
+
+
+00:26:38.870 --> 00:26:41.670 align:middle line:90%
+All right.
+
+00:26:41.670 --> 00:26:50.070 align:middle line:84%
+So now let me set C sub r
+to be the norm of eta check.
+
+00:26:50.070 --> 00:26:53.990 align:middle line:84%
+And so C sub r has bounds
+that we just computed.
+
+00:26:53.990 --> 00:26:59.430 align:middle line:84%
+So C sub r of x is bounded
+by r to the minus 2.
+
+00:26:59.430 --> 00:27:07.010 align:middle line:84%
+And it's rapidly decaying
+if x is much bigger than r.
+
+00:27:07.010 --> 00:27:09.630 align:middle line:90%
+
+
+00:27:09.630 --> 00:27:12.270 align:middle line:90%
+And now, we can state a lemma.
+
+00:27:12.270 --> 00:27:16.600 align:middle line:84%
+So if the support of
+g hat is contained
+
+00:27:16.600 --> 00:27:22.960 align:middle line:84%
+in the ball of radius
+1 over r, then the norm
+
+00:27:22.960 --> 00:27:31.150 align:middle line:84%
+of g of x is bounded by the
+norm of g convolved with Cr x.
+
+00:27:31.150 --> 00:27:36.680 align:middle line:90%
+
+
+00:27:36.680 --> 00:27:41.800 align:middle line:84%
+And the proof is basically
+just what we have.
+
+00:27:41.800 --> 00:27:45.480 align:middle line:84%
+So we started with g
+hat is g hat times eta.
+
+00:27:45.480 --> 00:27:49.780 align:middle line:84%
+And so g is g convolved
+with eta check.
+
+00:27:49.780 --> 00:27:54.680 align:middle line:90%
+
+
+00:27:54.680 --> 00:27:57.080 align:middle line:84%
+Now take the
+triangle inequality.
+
+00:27:57.080 --> 00:28:01.160 align:middle line:84%
+The norm of g is less than or
+equal to the norm of g convolved
+
+00:28:01.160 --> 00:28:03.545 align:middle line:90%
+with the norm of eta check.
+
+00:28:03.545 --> 00:28:04.420 align:middle line:90%
+And that's the proof.
+
+00:28:04.420 --> 00:28:05.930 align:middle line:84%
+The norm of eta
+check is called Cr.
+
+00:28:05.930 --> 00:28:18.690 align:middle line:90%
+
+
+00:28:18.690 --> 00:28:21.170 align:middle line:84%
+OK, and since we're
+going to eventually
+
+00:28:21.170 --> 00:28:23.770 align:middle line:84%
+be thinking about
+L2 norms, it is
+
+00:28:23.770 --> 00:28:26.090 align:middle line:84%
+helpful to have a tiny
+variant of this lemma,
+
+00:28:26.090 --> 00:28:27.850 align:middle line:84%
+where we have the
+norm of g squared
+
+00:28:27.850 --> 00:28:29.688 align:middle line:90%
+instead of the norm of g.
+
+00:28:29.688 --> 00:28:31.730 align:middle line:84%
+It's sort of convenient
+to prove it ahead of time
+
+00:28:31.730 --> 00:28:34.490 align:middle line:84%
+instead of in the
+middle of what's coming.
+
+00:28:34.490 --> 00:28:36.030 align:middle line:90%
+So lemma 2.
+
+00:28:36.030 --> 00:28:38.970 align:middle line:90%
+
+
+00:28:38.970 --> 00:28:41.970 align:middle line:84%
+If the support of
+g hat is contained
+
+00:28:41.970 --> 00:28:47.730 align:middle line:84%
+in the ball of radius 1 over
+r, then the norm of g squared
+
+00:28:47.730 --> 00:28:51.300 align:middle line:84%
+is bounded by the norm of g
+squared convolved with Cr.
+
+00:28:51.300 --> 00:29:00.170 align:middle line:90%
+
+
+00:29:00.170 --> 00:29:03.110 align:middle line:84%
+OK, so before we do
+the rigorous proof,
+
+00:29:03.110 --> 00:29:06.730 align:middle line:84%
+let me say something about
+how I think about this.
+
+00:29:06.730 --> 00:29:11.570 align:middle line:84%
+So this here says that the
+norm of g is bounded by--
+
+00:29:11.570 --> 00:29:13.683 align:middle line:84%
+this is sort of like
+taking an average.
+
+00:29:13.683 --> 00:29:15.100 align:middle line:84%
+It's like the norm
+of g is bounded
+
+00:29:15.100 --> 00:29:18.600 align:middle line:84%
+by the average value of the
+norm of G on a ball of radius r.
+
+00:29:18.600 --> 00:29:22.730 align:middle line:90%
+
+
+00:29:22.730 --> 00:29:26.080 align:middle line:84%
+And then if you had
+that by Cauchy-Schwarz,
+
+00:29:26.080 --> 00:29:28.580 align:middle line:84%
+you would also have that
+the norm of g squared
+
+00:29:28.580 --> 00:29:33.140 align:middle line:84%
+was bounded by the
+average of the norm of g
+
+00:29:33.140 --> 00:29:35.940 align:middle line:90%
+squared on the ball.
+
+00:29:35.940 --> 00:29:39.100 align:middle line:84%
+OK, so that's what
+we'll write down now.
+
+00:29:39.100 --> 00:29:50.420 align:middle line:84%
+So the norm of g of x squared
+is bounded by the first lemma
+
+00:29:50.420 --> 00:29:58.020 align:middle line:84%
+by the norm of g convolved
+with Cr at x squared.
+
+00:29:58.020 --> 00:30:00.020 align:middle line:84%
+If I write out what
+this convolution is,
+
+00:30:00.020 --> 00:30:09.590 align:middle line:84%
+it's the integral norm of g of x
+minus y, Cr of y dy all squared.
+
+00:30:09.590 --> 00:30:12.110 align:middle line:90%
+
+
+00:30:12.110 --> 00:30:14.710 align:middle line:84%
+And now, I can do
+a Cauchy-Schwarz.
+
+00:30:14.710 --> 00:30:17.550 align:middle line:84%
+I want to do a Cauchy-Schwarz
+to get this guy squared
+
+00:30:17.550 --> 00:30:19.350 align:middle line:90%
+with one of those.
+
+00:30:19.350 --> 00:30:24.390 align:middle line:84%
+So when I do my
+Cauchy-Schwarz, my first factor
+
+00:30:24.390 --> 00:30:29.730 align:middle line:84%
+will be integral norm of g
+squared x minus y Cr of y.
+
+00:30:29.730 --> 00:30:32.550 align:middle line:90%
+
+
+00:30:32.550 --> 00:30:37.280 align:middle line:84%
+And my second factor will just
+be the integral Cr of y dy.
+
+00:30:37.280 --> 00:30:44.350 align:middle line:90%
+
+
+00:30:44.350 --> 00:30:46.810 align:middle line:84%
+So you get to see that this
+is a valid Cauchy-Schwarz.
+
+00:30:46.810 --> 00:30:49.230 align:middle line:84%
+The total number of
+exponents of g is 2.
+
+00:30:49.230 --> 00:30:51.650 align:middle line:84%
+The total number of
+exponents of C is 2.
+
+00:30:51.650 --> 00:30:55.150 align:middle line:84%
+And that matches what's
+on the other side.
+
+00:30:55.150 --> 00:30:59.270 align:middle line:84%
+And now, this thing
+here is bounded
+
+00:30:59.270 --> 00:31:04.070 align:middle line:84%
+by 1, which follows from our
+bounds for how it behaves,
+
+00:31:04.070 --> 00:31:05.710 align:middle line:84%
+and which goes along
+with the intuition
+
+00:31:05.710 --> 00:31:07.930 align:middle line:90%
+that this integral is 1.
+
+00:31:07.930 --> 00:31:11.240 align:middle line:84%
+And so this convolution
+is like doing an average.
+
+00:31:11.240 --> 00:31:13.720 align:middle line:84%
+OK, and this thing here is
+just the right-hand side.
+
+00:31:13.720 --> 00:31:22.720 align:middle line:84%
+This is g squared
+convolved with C. OK,
+
+00:31:22.720 --> 00:31:26.320 align:middle line:84%
+so this is the way we will
+rigorously make use of the fact
+
+00:31:26.320 --> 00:31:29.140 align:middle line:90%
+that fr has frequency in there.
+
+00:31:29.140 --> 00:31:32.960 align:middle line:90%
+
+
+00:31:32.960 --> 00:31:35.160 align:middle line:84%
+And it corresponds
+visually to this picture
+
+00:31:35.160 --> 00:31:41.440 align:middle line:84%
+that I think I'll erase now
+that fr looks of like this.
+
+00:31:41.440 --> 00:31:44.800 align:middle line:84%
+And the places where it's big
+consists of some blobs of balls
+
+00:31:44.800 --> 00:31:47.780 align:middle line:90%
+of radius r.
+
+00:31:47.780 --> 00:31:48.280 align:middle line:90%
+OK.
+
+00:31:48.280 --> 00:31:51.600 align:middle line:90%
+
+
+00:31:51.600 --> 00:31:52.100 align:middle line:90%
+OK.
+
+00:31:52.100 --> 00:31:56.720 align:middle line:90%
+
+
+00:31:56.720 --> 00:31:58.840 align:middle line:84%
+So now, we can
+use our main lemma
+
+00:31:58.840 --> 00:32:01.540 align:middle line:84%
+to prove some projection
+theory estimates.
+
+00:32:01.540 --> 00:32:12.610 align:middle line:90%
+
+
+00:32:12.610 --> 00:32:14.250 align:middle line:90%
+All right.
+
+00:32:14.250 --> 00:32:19.250 align:middle line:84%
+So our setup is
+that we have x is
+
+00:32:19.250 --> 00:32:25.170 align:middle line:84%
+a set of unit balls in
+the two-dimensional ball
+
+00:32:25.170 --> 00:32:26.902 align:middle line:90%
+of radius r.
+
+00:32:26.902 --> 00:32:28.630 align:middle line:90%
+D is the set of directions.
+
+00:32:28.630 --> 00:32:33.210 align:middle line:84%
+So it's a subset of S1,
+which is 1 over r separated.
+
+00:32:33.210 --> 00:32:37.510 align:middle line:84%
+And S measures the size of the
+biggest projection of x in here.
+
+00:32:37.510 --> 00:32:41.850 align:middle line:84%
+So it's the maximum over all
+the thetas in my direction set
+
+00:32:41.850 --> 00:32:43.870 align:middle line:90%
+of the theta projection of x.
+
+00:32:43.870 --> 00:32:46.677 align:middle line:90%
+
+
+00:32:46.677 --> 00:32:47.510 align:middle line:90%
+So that's our setup.
+
+00:32:47.510 --> 00:32:50.850 align:middle line:84%
+And we're going to try to bound
+these different quantities
+
+00:32:50.850 --> 00:32:52.850 align:middle line:84%
+in terms of how the
+directions and how
+
+00:32:52.850 --> 00:32:54.610 align:middle line:90%
+the spheres are clustered.
+
+00:32:54.610 --> 00:33:00.610 align:middle line:84%
+So remember, Nx of r is the
+maximum over all possible center
+
+00:33:00.610 --> 00:33:06.610 align:middle line:84%
+C of the amount of x in the
+ball of center C and radius r.
+
+00:33:06.610 --> 00:33:15.220 align:middle line:84%
+And similarly, N sub d of
+rho is the maximum over arcs
+
+00:33:15.220 --> 00:33:23.817 align:middle line:84%
+and S1 of length rho of the
+number of directions in the arc.
+
+00:33:23.817 --> 00:33:24.650 align:middle line:90%
+So that's our setup.
+
+00:33:24.650 --> 00:33:27.620 align:middle line:90%
+
+
+00:33:27.620 --> 00:33:30.260 align:middle line:84%
+And the projection theory
+estimate that comes from this
+
+00:33:30.260 --> 00:33:34.300 align:middle line:84%
+method, I'll call it theorem
+2R, theorem 2 in the real case,
+
+00:33:34.300 --> 00:33:42.260 align:middle line:84%
+says that if we have this setup,
+then the number of directions is
+
+00:33:42.260 --> 00:34:01.780 align:middle line:84%
+bounded by S big R over x times
+the maximum over little r of Nx
+
+00:34:01.780 --> 00:34:07.080 align:middle line:84%
+of little r ND of little r over
+big R over little r squared.
+
+00:34:07.080 --> 00:34:11.949 align:middle line:90%
+
+
+00:34:11.949 --> 00:34:14.670 align:middle line:84%
+OK, so this is a
+little bit messy.
+
+00:34:14.670 --> 00:34:16.710 align:middle line:84%
+And we'll eventually
+make some hypotheses
+
+00:34:16.710 --> 00:34:19.830 align:middle line:90%
+that allow it to simplify it.
+
+00:34:19.830 --> 00:34:22.909 align:middle line:84%
+But just notice for
+now that this estimate
+
+00:34:22.909 --> 00:34:25.810 align:middle line:84%
+takes account of how the set
+of directions is clustered.
+
+00:34:25.810 --> 00:34:27.489 align:middle line:84%
+And it takes account
+of how-- sorry.
+
+00:34:27.489 --> 00:34:31.370 align:middle line:84%
+It takes account of how the set
+x of unit balls is clustered.
+
+00:34:31.370 --> 00:34:34.050 align:middle line:84%
+And it takes account of how the
+set of directions is clustered.
+
+00:34:34.050 --> 00:34:37.389 align:middle line:90%
+
+
+00:34:37.389 --> 00:34:42.070 align:middle line:84%
+OK, so the proof follows
+the idea of the proof
+
+00:34:42.070 --> 00:34:45.670 align:middle line:84%
+we did in finite fields, and
+makes use of the main lemma.
+
+00:34:45.670 --> 00:34:47.989 align:middle line:90%
+And here is our setup.
+
+00:34:47.989 --> 00:34:51.650 align:middle line:84%
+So for every direction
+in our direction set,
+
+00:34:51.650 --> 00:34:55.989 align:middle line:84%
+let's say T theta,
+is a set of at most,
+
+00:34:55.989 --> 00:35:03.130 align:middle line:84%
+S. We could say exactly S.
+1 by r tubes T that cover x.
+
+00:35:03.130 --> 00:35:07.320 align:middle line:90%
+
+
+00:35:07.320 --> 00:35:09.480 align:middle line:84%
+So this projection
+has size S. Then
+
+00:35:09.480 --> 00:35:11.600 align:middle line:84%
+looking at the fibers
+of the projections,
+
+00:35:11.600 --> 00:35:16.480 align:middle line:84%
+I get S tubes that
+cover my set x.
+
+00:35:16.480 --> 00:35:20.040 align:middle line:84%
+OK, then T, my
+master set of tubes,
+
+00:35:20.040 --> 00:35:22.680 align:middle line:84%
+will be the union over
+all the directions.
+
+00:35:22.680 --> 00:35:23.920 align:middle line:90%
+T theta.
+
+00:35:23.920 --> 00:35:27.080 align:middle line:84%
+And f is going to
+be the sum over all
+
+00:35:27.080 --> 00:35:32.720 align:middle line:84%
+these tubes of the smoothed
+characteristic function
+
+00:35:32.720 --> 00:35:35.640 align:middle line:90%
+of the tube.
+
+00:35:35.640 --> 00:35:39.920 align:middle line:84%
+OK, so we observe
+that for every x
+
+00:35:39.920 --> 00:35:46.220 align:middle line:84%
+in x, f of x is at least
+the number of directions.
+
+00:35:46.220 --> 00:35:55.880 align:middle line:90%
+
+
+00:35:55.880 --> 00:35:57.840 align:middle line:90%
+All right.
+
+00:35:57.840 --> 00:36:02.330 align:middle line:84%
+So now, we use our main lemma
+and we break up f into these
+
+00:36:02.330 --> 00:36:05.165 align:middle line:90%
+different fr's.
+
+00:36:05.165 --> 00:36:06.870 align:middle line:90%
+We use main lemma.
+
+00:36:06.870 --> 00:36:10.850 align:middle line:90%
+
+
+00:36:10.850 --> 00:36:13.530 align:middle line:84%
+And there are only
+logarithmically many different
+
+00:36:13.530 --> 00:36:14.750 align:middle line:90%
+choices of r.
+
+00:36:14.750 --> 00:36:17.730 align:middle line:84%
+And so one of them has to
+make a pretty big contribution
+
+00:36:17.730 --> 00:36:19.370 align:middle line:90%
+at each of these points.
+
+00:36:19.370 --> 00:36:25.170 align:middle line:90%
+And so I can choose r so that--
+
+00:36:25.170 --> 00:36:26.370 align:middle line:90%
+all right.
+
+00:36:26.370 --> 00:36:29.210 align:middle line:90%
+So I have x times D squared.
+
+00:36:29.210 --> 00:36:33.930 align:middle line:84%
+That's smaller than the
+integral over x of f squared.
+
+00:36:33.930 --> 00:36:35.590 align:middle line:84%
+And now, there are
+only a few r's.
+
+00:36:35.590 --> 00:36:38.650 align:middle line:84%
+So that should be
+somewhat smaller
+
+00:36:38.650 --> 00:36:42.840 align:middle line:84%
+than a log times the
+integral over x of r squared.
+
+00:36:42.840 --> 00:36:54.250 align:middle line:90%
+
+
+00:36:54.250 --> 00:37:03.340 align:middle line:84%
+OK, now the first
+thing I might try here
+
+00:37:03.340 --> 00:37:06.120 align:middle line:84%
+is if you look at the
+statement of the main lemma,
+
+00:37:06.120 --> 00:37:08.780 align:middle line:84%
+it has an upper bound
+for the L2 norm of fr.
+
+00:37:08.780 --> 00:37:13.177 align:middle line:84%
+And I could plug in that upper
+bound, and I would bound this.
+
+00:37:13.177 --> 00:37:14.760 align:middle line:84%
+And I would get
+something out of that.
+
+00:37:14.760 --> 00:37:18.580 align:middle line:90%
+
+
+00:37:18.580 --> 00:37:23.257 align:middle line:84%
+But that's not the
+optimal thing to do here.
+
+00:37:23.257 --> 00:37:25.340 align:middle line:84%
+Well, depending on what
+we know about x, depending
+
+00:37:25.340 --> 00:37:27.213 align:middle line:90%
+on what we know about this.
+
+00:37:27.213 --> 00:37:29.380 align:middle line:84%
+So to get some intuition,
+let's look at this picture
+
+00:37:29.380 --> 00:37:31.280 align:middle line:84%
+that I haven't
+managed to erase yet.
+
+00:37:31.280 --> 00:37:36.420 align:middle line:90%
+
+
+00:37:36.420 --> 00:37:37.380 align:middle line:90%
+All right.
+
+00:37:37.380 --> 00:37:40.460 align:middle line:84%
+So we're trying to understand
+this thing, the integral over x
+
+00:37:40.460 --> 00:37:42.380 align:middle line:90%
+of fr squared.
+
+00:37:42.380 --> 00:37:45.747 align:middle line:84%
+So let's add an
+x to our picture.
+
+00:37:45.747 --> 00:37:46.830 align:middle line:90%
+Do I have any more colors?
+
+00:37:46.830 --> 00:37:50.086 align:middle line:90%
+
+
+00:37:50.086 --> 00:37:55.140 align:middle line:84%
+So x in this picture
+is going to be yellow.
+
+00:37:55.140 --> 00:37:57.750 align:middle line:84%
+And x may look
+something like this.
+
+00:37:57.750 --> 00:38:08.550 align:middle line:90%
+
+
+00:38:08.550 --> 00:38:10.750 align:middle line:84%
+It depends a little
+bit on Nx of r.
+
+00:38:10.750 --> 00:38:14.370 align:middle line:84%
+If Nx of r, the biggest that
+Nx of r could be is r squared.
+
+00:38:14.370 --> 00:38:18.510 align:middle line:84%
+If it's that big, then x could
+fill in this whole thing.
+
+00:38:18.510 --> 00:38:20.552 align:middle line:84%
+But if Nx of r is
+smaller than r squared,
+
+00:38:20.552 --> 00:38:22.510 align:middle line:84%
+then it's sort of like
+the picture that I drew,
+
+00:38:22.510 --> 00:38:26.750 align:middle line:84%
+and x is only a small
+fraction of this ball.
+
+00:38:26.750 --> 00:38:30.670 align:middle line:84%
+And in this picture, it would be
+lossy to estimate the integral
+
+00:38:30.670 --> 00:38:34.950 align:middle line:84%
+over just x of fr squared
+by the global integral of fr
+
+00:38:34.950 --> 00:38:37.130 align:middle line:84%
+squared, which would include
+the whole orange ball.
+
+00:38:37.130 --> 00:38:40.430 align:middle line:90%
+
+
+00:38:40.430 --> 00:38:46.590 align:middle line:84%
+OK, so we're going to try to do
+a bit better than that by using
+
+00:38:46.590 --> 00:38:52.070 align:middle line:84%
+our lemmas about the
+locally-constant property
+
+00:38:52.070 --> 00:39:01.460 align:middle line:84%
+of the function fr. All right,
+I'm going to erase this.
+
+00:39:01.460 --> 00:39:01.960 align:middle line:90%
+All right.
+
+00:39:01.960 --> 00:39:04.420 align:middle line:84%
+I'm going to leave this
+picture here for our intuition.
+
+00:39:04.420 --> 00:39:07.600 align:middle line:90%
+
+
+00:39:07.600 --> 00:39:08.600 align:middle line:90%
+All right.
+
+00:39:08.600 --> 00:39:13.120 align:middle line:84%
+So we have integral
+over x of fr squared.
+
+00:39:13.120 --> 00:39:17.870 align:middle line:84%
+I'll just rewrite it as the
+integral of 1x fr squared.
+
+00:39:17.870 --> 00:39:20.880 align:middle line:90%
+
+
+00:39:20.880 --> 00:39:24.680 align:middle line:84%
+OK, now if I want to use the
+locally-constant property of fr
+
+00:39:24.680 --> 00:39:27.820 align:middle line:84%
+squared, it means I
+could use these lemmas.
+
+00:39:27.820 --> 00:39:29.440 align:middle line:84%
+And in particular,
+I can use lemma 2,
+
+00:39:29.440 --> 00:39:32.960 align:middle line:84%
+which is sort of well set
+up to deal with the square.
+
+00:39:32.960 --> 00:39:39.240 align:middle line:84%
+So this is bounded by the
+integral of 1x times fr squared
+
+00:39:39.240 --> 00:39:42.090 align:middle line:90%
+convolved with cr.
+
+00:39:42.090 --> 00:39:48.080 align:middle line:90%
+
+
+00:39:48.080 --> 00:39:52.360 align:middle line:84%
+And if you write out what
+this is and do Fubini,
+
+00:39:52.360 --> 00:39:55.770 align:middle line:84%
+this is the same as
+the integral of fr
+
+00:39:55.770 --> 00:40:00.360 align:middle line:84%
+squared times the characteristic
+function of x convolved with cr.
+
+00:40:00.360 --> 00:40:07.730 align:middle line:90%
+
+
+00:40:07.730 --> 00:40:10.462 align:middle line:90%
+Do you see that?
+
+00:40:10.462 --> 00:40:11.410 align:middle line:90%
+Yeah, OK.
+
+00:40:11.410 --> 00:40:12.270 align:middle line:90%
+Let's do it.
+
+00:40:12.270 --> 00:40:14.450 align:middle line:90%
+So the algebra is like this.
+
+00:40:14.450 --> 00:40:18.090 align:middle line:90%
+I have the integral 1x of x.
+
+00:40:18.090 --> 00:40:19.990 align:middle line:84%
+And then I have
+this convolution,
+
+00:40:19.990 --> 00:40:27.365 align:middle line:84%
+which is the integral fr
+squared of x minus y cr of y dy.
+
+00:40:27.365 --> 00:40:31.944 align:middle line:90%
+
+
+00:40:31.944 --> 00:40:33.550 align:middle line:90%
+No, let me do it the other way.
+
+00:40:33.550 --> 00:40:43.610 align:middle line:90%
+
+
+00:40:43.610 --> 00:40:48.250 align:middle line:84%
+OK, so now what happens
+if I Fubini that?
+
+00:40:48.250 --> 00:40:59.900 align:middle line:84%
+That's the integral fr squared
+of y integral of 1x of x cr of x
+
+00:40:59.900 --> 00:41:01.526 align:middle line:90%
+minus y dy.
+
+00:41:01.526 --> 00:41:04.980 align:middle line:90%
+
+
+00:41:04.980 --> 00:41:07.780 align:middle line:84%
+OK, it doesn't look
+quite right yet.
+
+00:41:07.780 --> 00:41:09.912 align:middle line:84%
+And it actually
+reminds me that there
+
+00:41:09.912 --> 00:41:12.370 align:middle line:84%
+was a little something else
+that's helpful to say about cr.
+
+00:41:12.370 --> 00:41:15.700 align:middle line:90%
+
+
+00:41:15.700 --> 00:41:20.660 align:middle line:84%
+So you can also add
+here that cr is radial.
+
+00:41:20.660 --> 00:41:24.135 align:middle line:90%
+Implies that it's symmetric.
+
+00:41:24.135 --> 00:41:26.260 align:middle line:84%
+Yeah, I should probably
+have mentioned that earlier
+
+00:41:26.260 --> 00:41:27.433 align:middle line:90%
+in my plan.
+
+00:41:27.433 --> 00:41:29.100 align:middle line:84%
+So the reason you can
+do that, remember,
+
+00:41:29.100 --> 00:41:32.260 align:middle line:84%
+cr was the Fourier transform
+of some bump function eta.
+
+00:41:32.260 --> 00:41:33.980 align:middle line:84%
+If your bump function
+eta is radial,
+
+00:41:33.980 --> 00:41:36.620 align:middle line:84%
+its Fourier transform
+will be radial.
+
+00:41:36.620 --> 00:41:38.900 align:middle line:84%
+So this guy is
+radial and symmetric.
+
+00:41:38.900 --> 00:41:44.220 align:middle line:84%
+OK, and then because that's
+symmetric, I can switch those.
+
+00:41:44.220 --> 00:41:49.820 align:middle line:84%
+So that's the integral fr
+squared of y integral 1x of x,
+
+00:41:49.820 --> 00:41:52.830 align:middle line:90%
+cr of y minus x.
+
+00:41:52.830 --> 00:41:54.610 align:middle line:90%
+Sorry, this one is dx.
+
+00:41:54.610 --> 00:41:57.930 align:middle line:90%
+
+
+00:41:57.930 --> 00:41:58.430 align:middle line:90%
+All right.
+
+00:41:58.430 --> 00:42:05.270 align:middle line:84%
+So that's the integral of fr
+squared of y 1x convolved with
+
+00:42:05.270 --> 00:42:07.090 align:middle line:90%
+cr of y.
+
+00:42:07.090 --> 00:42:29.270 align:middle line:90%
+
+
+00:42:29.270 --> 00:42:31.590 align:middle line:84%
+I feel like there also should
+be a nice image of what's
+
+00:42:31.590 --> 00:42:34.350 align:middle line:90%
+going on in this integral.
+
+00:42:34.350 --> 00:42:36.590 align:middle line:84%
+We have this--
+imagine for a second
+
+00:42:36.590 --> 00:42:38.650 align:middle line:84%
+that this was the
+characteristic function a set.
+
+00:42:38.650 --> 00:42:41.150 align:middle line:84%
+It's not quite true, but
+it's not far off either.
+
+00:42:41.150 --> 00:42:44.270 align:middle line:84%
+So I have one set, and
+I have another set.
+
+00:42:44.270 --> 00:42:46.610 align:middle line:84%
+But before I multiply
+them together,
+
+00:42:46.610 --> 00:42:48.630 align:middle line:84%
+which would mean
+intersecting the sets,
+
+00:42:48.630 --> 00:42:52.560 align:middle line:84%
+I fatten out this set
+here by a distance r.
+
+00:42:52.560 --> 00:42:56.920 align:middle line:84%
+So I take this, I call this set
+y, take y, I fatten it out by r,
+
+00:42:56.920 --> 00:42:59.560 align:middle line:90%
+and I intersect it with x.
+
+00:42:59.560 --> 00:43:01.120 align:middle line:84%
+And that's kind
+of the same thing
+
+00:43:01.120 --> 00:43:02.920 align:middle line:84%
+as taking x and
+fattening it out by r,
+
+00:43:02.920 --> 00:43:05.622 align:middle line:84%
+and intersecting it with
+y, because I could describe
+
+00:43:05.622 --> 00:43:06.580 align:middle line:90%
+both of them like this.
+
+00:43:06.580 --> 00:43:09.360 align:middle line:84%
+I'm looking for pairs of
+points, 1 in x and 1 and y.
+
+00:43:09.360 --> 00:43:11.440 align:middle line:84%
+The distance between
+them is at most r.
+
+00:43:11.440 --> 00:43:14.860 align:middle line:84%
+If I say it that
+way, it's symmetric.
+
+00:43:14.860 --> 00:43:16.420 align:middle line:90%
+And that's what's going on here.
+
+00:43:16.420 --> 00:43:19.840 align:middle line:90%
+
+
+00:43:19.840 --> 00:43:23.520 align:middle line:84%
+Yeah, I guess that's
+a fancy way of saying,
+
+00:43:23.520 --> 00:43:27.160 align:middle line:84%
+I just took this integral
+and I wrote it like this.
+
+00:43:27.160 --> 00:43:31.320 align:middle line:84%
+And now, remember that the
+function, cr, is symmetric.
+
+00:43:31.320 --> 00:43:34.580 align:middle line:84%
+Now the whole thing is
+symmetric, symmetric
+
+00:43:34.580 --> 00:43:36.340 align:middle line:84%
+in exchanging these
+two functions.
+
+00:43:36.340 --> 00:43:39.760 align:middle line:90%
+
+
+00:43:39.760 --> 00:43:42.360 align:middle line:90%
+OK, cool.
+
+00:43:42.360 --> 00:43:44.180 align:middle line:84%
+OK, so now, we've
+written it this way.
+
+00:43:44.180 --> 00:43:46.840 align:middle line:84%
+And the intuitive
+meaning of this
+
+00:43:46.840 --> 00:43:49.200 align:middle line:84%
+is I've averaged the
+characteristic function
+
+00:43:49.200 --> 00:43:51.510 align:middle line:90%
+of x over balls of radius r.
+
+00:43:51.510 --> 00:43:54.290 align:middle line:90%
+
+
+00:43:54.290 --> 00:44:02.530 align:middle line:84%
+And so this is bounded by
+Nx of r over r squared.
+
+00:44:02.530 --> 00:44:07.897 align:middle line:84%
+So this is the integral of that
+guy over a ball of radius r.
+
+00:44:07.897 --> 00:44:09.230 align:middle line:90%
+And then I'm taking the average.
+
+00:44:09.230 --> 00:44:13.750 align:middle line:84%
+So I divide by the area
+of the ball of radius r.
+
+00:44:13.750 --> 00:44:14.250 align:middle line:90%
+OK.
+
+00:44:14.250 --> 00:44:17.610 align:middle line:90%
+
+
+00:44:17.610 --> 00:44:20.350 align:middle line:84%
+So to check this a little
+bit more carefully,
+
+00:44:20.350 --> 00:44:23.930 align:middle line:84%
+we have to use the bounds that
+we have for this cr thing, which
+
+00:44:23.930 --> 00:44:24.750 align:middle line:90%
+are over here.
+
+00:44:24.750 --> 00:44:27.610 align:middle line:90%
+
+
+00:44:27.610 --> 00:44:32.210 align:middle line:84%
+So it's bounded by 1 over r
+squared on the ball of radius r.
+
+00:44:32.210 --> 00:44:33.850 align:middle line:90%
+That would give the average.
+
+00:44:33.850 --> 00:44:36.290 align:middle line:84%
+Then it also has this
+rapidly-decaying tail,
+
+00:44:36.290 --> 00:44:38.930 align:middle line:84%
+which to be careful, we
+should take account of.
+
+00:44:38.930 --> 00:44:43.990 align:middle line:84%
+But what it contributes is
+smaller than the first term,
+
+00:44:43.990 --> 00:44:44.670 align:middle line:90%
+the main term.
+
+00:44:44.670 --> 00:44:49.060 align:middle line:90%
+
+
+00:44:49.060 --> 00:44:52.060 align:middle line:90%
+OK, so that's how we bound this.
+
+00:44:52.060 --> 00:44:53.060 align:middle line:90%
+This is now a number.
+
+00:44:53.060 --> 00:44:54.920 align:middle line:84%
+So we can take it
+out of the integral.
+
+00:44:54.920 --> 00:44:57.440 align:middle line:84%
+And we just have left the
+L2 norm of fr squared.
+
+00:44:57.440 --> 00:44:59.860 align:middle line:84%
+So we plug in our
+bound for that.
+
+00:44:59.860 --> 00:45:04.440 align:middle line:84%
+So we have, it's bounded
+by Nx of r over r squared,
+
+00:45:04.440 --> 00:45:08.540 align:middle line:84%
+you can think of this thing as
+the density of x at scale r,
+
+00:45:08.540 --> 00:45:11.800 align:middle line:84%
+times the integral
+of fr squared OK,
+
+00:45:11.800 --> 00:45:16.140 align:middle line:84%
+and then I just plug in the
+bound for the integral of fr
+
+00:45:16.140 --> 00:45:16.860 align:middle line:90%
+squared.
+
+00:45:16.860 --> 00:45:19.180 align:middle line:90%
+And we'll write that out.
+
+00:45:19.180 --> 00:45:22.860 align:middle line:90%
+So OK, we have number of tubes.
+
+00:45:22.860 --> 00:45:25.980 align:middle line:90%
+We have big r over little r.
+
+00:45:25.980 --> 00:45:29.060 align:middle line:90%
+We have Nt of r.
+
+00:45:29.060 --> 00:45:30.780 align:middle line:90%
+That's this thing.
+
+00:45:30.780 --> 00:45:34.300 align:middle line:90%
+Then we have Nx of r.
+
+00:45:34.300 --> 00:45:35.630 align:middle line:90%
+And then we have r squared.
+
+00:45:35.630 --> 00:45:40.740 align:middle line:90%
+
+
+00:45:40.740 --> 00:45:44.380 align:middle line:90%
+OK, we are almost done.
+
+00:45:44.380 --> 00:45:51.910 align:middle line:84%
+But what we have here is number
+of tubes in a little-r-by-big-R
+
+00:45:51.910 --> 00:45:52.510 align:middle line:90%
+guy.
+
+00:45:52.510 --> 00:45:54.670 align:middle line:84%
+And the information
+we want to be using
+
+00:45:54.670 --> 00:45:56.990 align:middle line:90%
+is the number of directions.
+
+00:45:56.990 --> 00:46:01.590 align:middle line:84%
+So the last step is
+that the number of tubes
+
+00:46:01.590 --> 00:46:04.830 align:middle line:84%
+in the little-r-by-big-R
+tube is bounded by the number
+
+00:46:04.830 --> 00:46:09.710 align:middle line:84%
+of directions in a
+little-r-over-big-R angle times
+
+00:46:09.710 --> 00:46:10.630 align:middle line:90%
+little r.
+
+00:46:10.630 --> 00:46:12.990 align:middle line:90%
+So here's a picture.
+
+00:46:12.990 --> 00:46:16.710 align:middle line:84%
+Here's our
+little-r-by-big-R tube.
+
+00:46:16.710 --> 00:46:22.510 align:middle line:84%
+Inside of it, I can fit in some
+tubes in different directions.
+
+00:46:22.510 --> 00:46:26.750 align:middle line:84%
+So if I pick one direction,
+I can pick little r of them.
+
+00:46:26.750 --> 00:46:28.270 align:middle line:90%
+That's this little r.
+
+00:46:28.270 --> 00:46:30.990 align:middle line:84%
+But they don't have
+to go that way.
+
+00:46:30.990 --> 00:46:35.250 align:middle line:84%
+I could also have them go maybe
+the most extreme directions.
+
+00:46:35.250 --> 00:46:39.190 align:middle line:90%
+I could have them go that way.
+
+00:46:39.190 --> 00:46:44.280 align:middle line:90%
+And this angle here is little r.
+
+00:46:44.280 --> 00:46:47.710 align:middle line:84%
+The angle there is
+little r over big.
+
+00:46:47.710 --> 00:46:50.280 align:middle line:90%
+
+
+00:46:50.280 --> 00:46:55.360 align:middle line:84%
+So all of the different
+tubes that appear here,
+
+00:46:55.360 --> 00:46:57.800 align:middle line:84%
+they have to have an
+angle within a range
+
+00:46:57.800 --> 00:47:00.360 align:middle line:84%
+of little r over big R. So
+the number of directions
+
+00:47:00.360 --> 00:47:02.080 align:middle line:90%
+is like that.
+
+00:47:02.080 --> 00:47:03.960 align:middle line:84%
+And then for each
+direction, then the number
+
+00:47:03.960 --> 00:47:07.632 align:middle line:84%
+of possible tubes is
+at most, little r.
+
+00:47:07.632 --> 00:47:11.000 align:middle line:84%
+OK, so if you substitute
+this for that,
+
+00:47:11.000 --> 00:47:14.220 align:middle line:84%
+then this expression becomes the
+right-hand side of theorem two.
+
+00:47:14.220 --> 00:47:31.140 align:middle line:90%
+
+
+00:47:31.140 --> 00:47:31.640 align:middle line:90%
+Yeah.
+
+00:47:31.640 --> 00:47:33.640 align:middle line:84%
+AUDIENCE: I remember
+kind of use the fact
+
+00:47:33.640 --> 00:47:35.350 align:middle line:84%
+that the tubes that
+are at an angle,
+
+00:47:35.350 --> 00:47:38.840 align:middle line:84%
+that you can only
+fit less of them in.
+
+00:47:38.840 --> 00:47:43.690 align:middle line:84%
+Does that change the boundary
+of anything different?
+
+00:47:43.690 --> 00:47:44.830 align:middle line:90%
+LAWRENCE GUTH: Yeah, OK.
+
+00:47:44.830 --> 00:47:50.510 align:middle line:84%
+So the question was if we knew
+that in a given direction,
+
+00:47:50.510 --> 00:47:54.770 align:middle line:84%
+these tubes had to
+have some spacing,
+
+00:47:54.770 --> 00:47:56.970 align:middle line:84%
+so we could also measure
+the clustering of the tubes
+
+00:47:56.970 --> 00:47:58.230 align:middle line:90%
+in a given direction.
+
+00:47:58.230 --> 00:48:01.050 align:middle line:84%
+So we add some information
+about that, then maybe this
+
+00:48:01.050 --> 00:48:02.870 align:middle line:84%
+would have to be
+smaller than little r.
+
+00:48:02.870 --> 00:48:07.090 align:middle line:90%
+
+
+00:48:07.090 --> 00:48:08.750 align:middle line:84%
+So our setup involves
+three things.
+
+00:48:08.750 --> 00:48:11.850 align:middle line:84%
+But we only thought about the
+clustering of two of them.
+
+00:48:11.850 --> 00:48:15.250 align:middle line:84%
+Our setup involves a
+set of unit balls, x,
+
+00:48:15.250 --> 00:48:17.930 align:middle line:84%
+and we looked at how
+it's clustered, Nx of r.
+
+00:48:17.930 --> 00:48:20.330 align:middle line:84%
+Set of directions,
+D. And we look
+
+00:48:20.330 --> 00:48:22.730 align:middle line:84%
+at how it's
+clustered, Nd of rho.
+
+00:48:22.730 --> 00:48:26.428 align:middle line:84%
+And also, a set of projections,
+which each have size
+
+00:48:26.428 --> 00:48:27.970 align:middle line:84%
+at most S. But we
+didn't say anything
+
+00:48:27.970 --> 00:48:30.290 align:middle line:90%
+about how they were clustered.
+
+00:48:30.290 --> 00:48:32.210 align:middle line:84%
+So you could add to
+this setup something
+
+00:48:32.210 --> 00:48:35.250 align:middle line:84%
+about how each
+projection is clustered.
+
+00:48:35.250 --> 00:48:41.300 align:middle line:84%
+And you could then use that
+to improve this thing here.
+
+00:48:41.300 --> 00:48:41.800 align:middle line:90%
+Yeah.
+
+00:48:41.800 --> 00:48:43.550 align:middle line:84%
+So that could be a
+little homework project
+
+00:48:43.550 --> 00:48:45.120 align:middle line:84%
+if anyone is
+interested in doing it.
+
+00:48:45.120 --> 00:48:50.340 align:middle line:90%
+
+
+00:48:50.340 --> 00:48:52.777 align:middle line:90%
+Yeah, OK.
+
+00:48:52.777 --> 00:48:54.110 align:middle line:90%
+Any other questions or comments?
+
+00:48:54.110 --> 00:49:00.580 align:middle line:90%
+
+
+00:49:00.580 --> 00:49:05.750 align:middle line:90%
+OK, OK.
+
+00:49:05.750 --> 00:49:07.660 align:middle line:84%
+So this theorem
+sort of naturally
+
+00:49:07.660 --> 00:49:11.860 align:middle line:84%
+falls out from using
+the Fourier method.
+
+00:49:11.860 --> 00:49:14.060 align:middle line:90%
+But it's a little messy looking.
+
+00:49:14.060 --> 00:49:16.660 align:middle line:84%
+And the thing that's
+particularly messy looking
+
+00:49:16.660 --> 00:49:20.380 align:middle line:84%
+is this maximum over little
+r, and x, and d, da, da, da.
+
+00:49:20.380 --> 00:49:22.500 align:middle line:84%
+And there's a fairly
+general situation
+
+00:49:22.500 --> 00:49:25.460 align:middle line:84%
+that we mentioned last
+time, where that messy bit
+
+00:49:25.460 --> 00:49:27.820 align:middle line:90%
+gets a lot cleaner.
+
+00:49:27.820 --> 00:49:30.120 align:middle line:84%
+I don't know that that's so
+philosophically important,
+
+00:49:30.120 --> 00:49:31.680 align:middle line:84%
+but I think it's
+worth mentioning.
+
+00:49:31.680 --> 00:49:33.860 align:middle line:84%
+And this is the way
+the results usually
+
+00:49:33.860 --> 00:49:35.471 align:middle line:90%
+appear in the literature.
+
+00:49:35.471 --> 00:49:38.060 align:middle line:90%
+
+
+00:49:38.060 --> 00:49:38.800 align:middle line:90%
+All right.
+
+00:49:38.800 --> 00:49:44.270 align:middle line:90%
+
+
+00:49:44.270 --> 00:49:48.350 align:middle line:84%
+And this will allow us to
+finally prove the result
+
+00:49:48.350 --> 00:49:49.690 align:middle line:90%
+that we stated last time.
+
+00:49:49.690 --> 00:50:01.710 align:middle line:90%
+
+
+00:50:01.710 --> 00:50:04.390 align:middle line:90%
+All right.
+
+00:50:04.390 --> 00:50:11.650 align:middle line:84%
+So definition, we say x is
+Hausdorff, or Hausdorff spacing.
+
+00:50:11.650 --> 00:50:14.415 align:middle line:90%
+
+
+00:50:14.415 --> 00:50:19.390 align:middle line:84%
+f and x of r to
+the beta is bounded
+
+00:50:19.390 --> 00:50:27.550 align:middle line:84%
+by around x to the beta for
+all beta between 0 and 1.
+
+00:50:27.550 --> 00:50:31.150 align:middle line:84%
+So when beta is 1,
+this is trivial.
+
+00:50:31.150 --> 00:50:32.170 align:middle line:90%
+This is always true.
+
+00:50:32.170 --> 00:50:34.330 align:middle line:84%
+But this is saying that
+at smaller scales beta,
+
+00:50:34.330 --> 00:50:36.870 align:middle line:84%
+this x is not too
+clumped compared
+
+00:50:36.870 --> 00:50:39.820 align:middle line:90%
+to how it is at the top scale.
+
+00:50:39.820 --> 00:50:41.360 align:middle line:90%
+Yeah.
+
+00:50:41.360 --> 00:50:43.318 align:middle line:84%
+AUDIENCE: How is
+the [INAUDIBLE]?
+
+00:50:43.318 --> 00:50:47.230 align:middle line:90%
+
+
+00:50:47.230 --> 00:50:48.760 align:middle line:90%
+LAWRENCE GUTH: Ah, sorry.
+
+00:50:48.760 --> 00:50:51.440 align:middle line:90%
+Thanks.
+
+00:50:51.440 --> 00:50:56.200 align:middle line:84%
+Yeah, there was one other
+thing I forgot to do.
+
+00:50:56.200 --> 00:50:57.500 align:middle line:90%
+OK, right.
+
+00:50:57.500 --> 00:50:58.000 align:middle line:90%
+Sorry.
+
+00:50:58.000 --> 00:50:58.500 align:middle line:90%
+Thanks.
+
+00:50:58.500 --> 00:51:00.800 align:middle line:84%
+So OK, so the question
+is, how did we
+
+00:51:00.800 --> 00:51:03.080 align:middle line:84%
+actually do all this
+algebra and get the equation
+
+00:51:03.080 --> 00:51:05.597 align:middle line:84%
+that the inequality is
+actually stated in theorem two?
+
+00:51:05.597 --> 00:51:07.680 align:middle line:84%
+And thank you for the
+question, because I left out
+
+00:51:07.680 --> 00:51:10.760 align:middle line:90%
+some of the steps.
+
+00:51:10.760 --> 00:51:15.680 align:middle line:84%
+OK, so now that we have
+done the main ideas,
+
+00:51:15.680 --> 00:51:18.380 align:middle line:84%
+we're just talking about the
+algebra, I will erase this.
+
+00:51:18.380 --> 00:51:22.600 align:middle line:90%
+
+
+00:51:22.600 --> 00:51:25.880 align:middle line:90%
+And so what do we have so far?
+
+00:51:25.880 --> 00:51:28.160 align:middle line:84%
+If you put together the
+inequalities we have so far,
+
+00:51:28.160 --> 00:51:31.540 align:middle line:84%
+we have x times the number
+of directions squared.
+
+00:51:31.540 --> 00:51:33.140 align:middle line:84%
+That's where we
+started over here.
+
+00:51:33.140 --> 00:51:37.250 align:middle line:84%
+Then we did some stuff,
+and we ended up here.
+
+00:51:37.250 --> 00:51:40.610 align:middle line:84%
+So that's bounded
+by number of tubes
+
+00:51:40.610 --> 00:51:52.890 align:middle line:84%
+times big R over little r times
+Nd little r over big R times r.
+
+00:51:52.890 --> 00:51:55.570 align:middle line:90%
+That was this thing for there.
+
+00:51:55.570 --> 00:51:59.010 align:middle line:84%
+And x of r over
+little r squared.
+
+00:51:59.010 --> 00:52:02.650 align:middle line:90%
+And we can cross those guys.
+
+00:52:02.650 --> 00:52:04.810 align:middle line:84%
+Now we still have
+this number of tubes.
+
+00:52:04.810 --> 00:52:06.090 align:middle line:90%
+What's that?
+
+00:52:06.090 --> 00:52:11.050 align:middle line:84%
+Well, we have S tubes in each
+direction, we have D directions.
+
+00:52:11.050 --> 00:52:15.970 align:middle line:84%
+So this is S times
+D. OK, so now,
+
+00:52:15.970 --> 00:52:17.830 align:middle line:84%
+I've gotten rid of
+all the extra letters.
+
+00:52:17.830 --> 00:52:19.450 align:middle line:84%
+And we only have
+left the letters
+
+00:52:19.450 --> 00:52:21.930 align:middle line:84%
+that appear in the
+inequality we want.
+
+00:52:21.930 --> 00:52:24.660 align:middle line:84%
+And then the last thing you
+do is you get D by itself.
+
+00:52:24.660 --> 00:52:28.930 align:middle line:90%
+
+
+00:52:28.930 --> 00:52:31.130 align:middle line:84%
+So I take one factor of D,
+and bring it over there,
+
+00:52:31.130 --> 00:52:32.370 align:middle line:90%
+and cancel the two.
+
+00:52:32.370 --> 00:52:34.620 align:middle line:84%
+Then I take the x and
+bring it over here.
+
+00:52:34.620 --> 00:52:37.320 align:middle line:84%
+And then what's left
+is what's there.
+
+00:52:37.320 --> 00:52:40.540 align:middle line:90%
+
+
+00:52:40.540 --> 00:52:41.260 align:middle line:90%
+Yeah.
+
+00:52:41.260 --> 00:52:43.620 align:middle line:84%
+AUDIENCE: And that's
+inequality be made sharp
+
+00:52:43.620 --> 00:52:46.220 align:middle line:90%
+with any [INAUDIBLE]?
+
+00:52:46.220 --> 00:52:55.707 align:middle line:84%
+Like in any choice of
+S, x, and D [INAUDIBLE]?
+
+00:52:55.707 --> 00:52:56.540 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:52:56.540 --> 00:53:01.940 align:middle line:90%
+
+
+00:53:01.940 --> 00:53:02.680 align:middle line:90%
+Yes.
+
+00:53:02.680 --> 00:53:06.860 align:middle line:84%
+OK, so the question is, is
+this inequality ever sharp?
+
+00:53:06.860 --> 00:53:12.080 align:middle line:84%
+And it is sometimes sharp,
+although not super often.
+
+00:53:12.080 --> 00:53:16.060 align:middle line:84%
+And the cases that I have worked
+out so far when it's sharp
+
+00:53:16.060 --> 00:53:19.060 align:middle line:84%
+are within this
+Hausdorff setting.
+
+00:53:19.060 --> 00:53:20.120 align:middle line:90%
+So let's maybe do that.
+
+00:53:20.120 --> 00:53:21.480 align:middle line:90%
+It'll all get a lot simpler.
+
+00:53:21.480 --> 00:53:23.520 align:middle line:84%
+And then I can say what
+the cases I know are.
+
+00:53:23.520 --> 00:53:26.900 align:middle line:90%
+
+
+00:53:26.900 --> 00:53:32.340 align:middle line:84%
+OK, so the Hausdorff spacing
+is a bound on Nx of little
+
+00:53:32.340 --> 00:53:35.710 align:middle line:84%
+r in terms of the size of
+x that looks like this.
+
+00:53:35.710 --> 00:53:38.710 align:middle line:84%
+And I coined the term,
+Hausdorff spacing,
+
+00:53:38.710 --> 00:53:41.470 align:middle line:84%
+because it comes up naturally
+when you talk about Hausdorff
+
+00:53:41.470 --> 00:53:44.270 align:middle line:90%
+measures and things like that.
+
+00:53:44.270 --> 00:53:46.790 align:middle line:84%
+OK, and it's useful
+in our setting
+
+00:53:46.790 --> 00:53:56.750 align:middle line:84%
+because if x and D have
+Hausdorff spacing, then
+
+00:53:56.750 --> 00:54:03.210 align:middle line:84%
+when you take the maximum of,
+actually many expressions,
+
+00:54:03.210 --> 00:54:11.870 align:middle line:84%
+but the one that comes up for us
+here is this, OK, what happens?
+
+00:54:11.870 --> 00:54:14.890 align:middle line:84%
+So I assume that both x and
+D have Hausdorff spacing.
+
+00:54:14.890 --> 00:54:17.070 align:middle line:84%
+It's important to
+have both of them.
+
+00:54:17.070 --> 00:54:18.910 align:middle line:84%
+Then each one of
+these things get
+
+00:54:18.910 --> 00:54:24.470 align:middle line:84%
+replaced by some
+power of x or D.
+
+00:54:24.470 --> 00:54:31.993 align:middle line:84%
+And once you have a power law,
+so the whole expression will be,
+
+00:54:31.993 --> 00:54:34.160 align:middle line:84%
+or another way to look at
+it is the whole expression
+
+00:54:34.160 --> 00:54:36.010 align:middle line:90%
+will be some power of little r.
+
+00:54:36.010 --> 00:54:37.860 align:middle line:84%
+A power could be
+positive or negative,
+
+00:54:37.860 --> 00:54:43.080 align:middle line:84%
+but the maximum will occur
+either at 1 or at big R.
+
+00:54:43.080 --> 00:54:47.910 align:middle line:84%
+So this guy basically is
+equal to what happens at 1.
+
+00:54:47.910 --> 00:54:49.520 align:middle line:90%
+Nx of 1 is always 1.
+
+00:54:49.520 --> 00:54:52.160 align:middle line:90%
+ND of 1 over r is always 1.
+
+00:54:52.160 --> 00:54:53.880 align:middle line:90%
+So we just get 1.
+
+00:54:53.880 --> 00:54:58.880 align:middle line:84%
+And when little r is big R, and
+x of big r is all the points,
+
+00:54:58.880 --> 00:55:02.620 align:middle line:84%
+MD of 1 is all the
+directions, And we have that.
+
+00:55:02.620 --> 00:55:06.000 align:middle line:90%
+
+
+00:55:06.000 --> 00:55:07.720 align:middle line:90%
+So it's less nasty.
+
+00:55:07.720 --> 00:55:11.920 align:middle line:84%
+And so we get the
+following corollary.
+
+00:55:11.920 --> 00:55:16.040 align:middle line:84%
+So corollary says if
+we have our setup,
+
+00:55:16.040 --> 00:55:23.880 align:middle line:84%
+and x and D have
+Hausdorff spacing,
+
+00:55:23.880 --> 00:55:34.410 align:middle line:84%
+then the number of
+directions is bounded by SR
+
+00:55:34.410 --> 00:55:41.050 align:middle line:84%
+over x times 1 plus SR
+over x times this thing.
+
+00:55:41.050 --> 00:55:45.110 align:middle line:90%
+So SD over r.
+
+00:55:45.110 --> 00:55:49.170 align:middle line:90%
+
+
+00:55:49.170 --> 00:55:51.930 align:middle line:84%
+OK, now this one has
+an interpretation.
+
+00:55:51.930 --> 00:55:55.570 align:middle line:84%
+If this term dominates, you can
+cancel the D's, and it tells you
+
+00:55:55.570 --> 00:55:58.330 align:middle line:90%
+that S is almost r.
+
+00:55:58.330 --> 00:56:02.650 align:middle line:84%
+So we get either
+S is almost as big
+
+00:56:02.650 --> 00:56:04.790 align:middle line:84%
+as R. R is the biggest
+it could possibly be.
+
+00:56:04.790 --> 00:56:08.970 align:middle line:84%
+So S is almost as big
+as it could possibly be.
+
+00:56:08.970 --> 00:56:15.050 align:middle line:90%
+Or D is bounded by SR over x.
+
+00:56:15.050 --> 00:56:17.630 align:middle line:84%
+So that's what we
+stated last time.
+
+00:56:17.630 --> 00:56:21.930 align:middle line:84%
+The formula is not as nasty
+as the general formula.
+
+00:56:21.930 --> 00:56:22.850 align:middle line:90%
+Yeah.
+
+00:56:22.850 --> 00:56:26.610 align:middle line:84%
+AUDIENCE: There's also a factor
+of log [INAUDIBLE] theorem two,
+
+00:56:26.610 --> 00:56:28.108 align:middle line:90%
+because you're choosing R.
+
+00:56:28.108 --> 00:56:28.900 align:middle line:90%
+LAWRENCE GUTH: Yep.
+
+00:56:28.900 --> 00:56:29.400 align:middle line:90%
+Thanks.
+
+00:56:29.400 --> 00:56:32.660 align:middle line:90%
+
+
+00:56:32.660 --> 00:56:35.820 align:middle line:84%
+Yeah, so the point
+from the audience
+
+00:56:35.820 --> 00:56:39.220 align:middle line:84%
+was that there was an
+extra factor of log R
+
+00:56:39.220 --> 00:56:40.800 align:middle line:90%
+that I forgot to write down.
+
+00:56:40.800 --> 00:56:43.100 align:middle line:84%
+So I'll put this
+to represent that.
+
+00:56:43.100 --> 00:56:45.740 align:middle line:90%
+Yeah, thanks.
+
+00:56:45.740 --> 00:56:48.300 align:middle line:90%
+OK.
+
+00:56:48.300 --> 00:56:52.260 align:middle line:84%
+OK, so this relatively
+clean estimate,
+
+00:56:52.260 --> 00:56:56.100 align:middle line:84%
+it exactly matches our
+theorem two in finite fields.
+
+00:56:56.100 --> 00:57:00.060 align:middle line:84%
+I won't write it down, but
+the numerology is the same.
+
+00:57:00.060 --> 00:57:01.960 align:middle line:84%
+And it's a little
+nicer to look at.
+
+00:57:01.960 --> 00:57:04.180 align:middle line:90%
+It still takes some digesting.
+
+00:57:04.180 --> 00:57:08.600 align:middle line:90%
+And this is sharp in some cases.
+
+00:57:08.600 --> 00:57:12.620 align:middle line:84%
+It's sharp in the case that
+S is pretty close to R.
+
+00:57:12.620 --> 00:57:15.340 align:middle line:84%
+So because I need this,
+the smallest I could make
+
+00:57:15.340 --> 00:57:18.300 align:middle line:84%
+S would be something
+like R over log R.
+
+00:57:18.300 --> 00:57:20.940 align:middle line:84%
+And if you take S around
+that, R over log R,
+
+00:57:20.940 --> 00:57:23.540 align:middle line:84%
+or R to the 1 minus
+epsilon, then this
+
+00:57:23.540 --> 00:57:26.740 align:middle line:84%
+is sharp in the example
+of a grid of points,
+
+00:57:26.740 --> 00:57:28.010 align:middle line:90%
+grid of unit balls.
+
+00:57:28.010 --> 00:57:31.190 align:middle line:90%
+
+
+00:57:31.190 --> 00:57:33.870 align:middle line:84%
+Yeah, so that's the main
+interesting example when--
+
+00:57:33.870 --> 00:57:37.230 align:middle line:84%
+that's the main example
+that I know when it's sharp.
+
+00:57:37.230 --> 00:57:40.050 align:middle line:84%
+And there are plenty of
+examples where it's not sharp.
+
+00:57:40.050 --> 00:57:43.590 align:middle line:84%
+But that grid
+example is important.
+
+00:57:43.590 --> 00:57:44.670 align:middle line:90%
+Yeah.
+
+00:57:44.670 --> 00:57:46.850 align:middle line:84%
+OK, I guess it's also
+a natural question,
+
+00:57:46.850 --> 00:57:50.230 align:middle line:84%
+if we go to the regime
+that's not Hausdorff,
+
+00:57:50.230 --> 00:57:54.870 align:middle line:84%
+this theorem added
+some junk here
+
+00:57:54.870 --> 00:57:58.630 align:middle line:84%
+to account for things
+being more clustered.
+
+00:57:58.630 --> 00:58:00.910 align:middle line:84%
+And it's a natural
+question, is there
+
+00:58:00.910 --> 00:58:05.428 align:middle line:84%
+any scenario where this
+junk is exactly sharp?
+
+00:58:05.428 --> 00:58:07.970 align:middle line:84%
+And I wondered about that when
+I was working on this lecture.
+
+00:58:07.970 --> 00:58:09.610 align:middle line:90%
+But I don't know the answer yet.
+
+00:58:09.610 --> 00:58:11.035 align:middle line:84%
+So if anybody wants
+to try, that's
+
+00:58:11.035 --> 00:58:12.160 align:middle line:90%
+also a nice little project.
+
+00:58:12.160 --> 00:58:22.670 align:middle line:90%
+
+
+00:58:22.670 --> 00:58:25.360 align:middle line:90%
+Cool.
+
+00:58:25.360 --> 00:58:28.020 align:middle line:84%
+OK, so that was the
+meat of the class.
+
+00:58:28.020 --> 00:58:35.400 align:middle line:84%
+And that was my discussion that
+I planned about the Fourier
+
+00:58:35.400 --> 00:58:37.160 align:middle line:90%
+method in the real case.
+
+00:58:37.160 --> 00:58:40.520 align:middle line:84%
+So it's another good
+moment to see if you
+
+00:58:40.520 --> 00:58:42.903 align:middle line:90%
+have questions to digest.
+
+00:58:42.903 --> 00:58:44.820 align:middle line:84%
+Then we'll start something
+a little different.
+
+00:58:44.820 --> 00:58:52.560 align:middle line:90%
+
+
+00:58:52.560 --> 00:58:53.960 align:middle line:90%
+Yeah.
+
+00:58:53.960 --> 00:58:58.200 align:middle line:84%
+AUDIENCE: For the maximum term,
+could you explain why it has
+
+00:58:58.200 --> 00:59:01.360 align:middle line:90%
+to be a maximum and it's--
+
+00:59:01.360 --> 00:59:02.920 align:middle line:84%
+the part of the
+proof that requires
+
+00:59:02.920 --> 00:59:06.300 align:middle line:84%
+taking the maximum over,
+or instead of, any given r?
+
+00:59:06.300 --> 00:59:08.910 align:middle line:90%
+
+
+00:59:08.910 --> 00:59:10.660 align:middle line:84%
+LAWRENCE GUTH: So I
+think the question is,
+
+00:59:10.660 --> 00:59:12.920 align:middle line:84%
+why do we have a
+maximum over r instead
+
+00:59:12.920 --> 00:59:14.800 align:middle line:90%
+of maybe like a sum over r?
+
+00:59:14.800 --> 00:59:15.497 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:59:15.497 --> 00:59:16.330 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:59:16.330 --> 00:59:18.400 align:middle line:84%
+AUDIENCE: Just where does
+the maximum come from?
+
+00:59:18.400 --> 00:59:20.960 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:59:20.960 --> 00:59:23.520 align:middle line:84%
+So you could put
+sum over little r.
+
+00:59:23.520 --> 00:59:25.370 align:middle line:84%
+And the difference
+isn't very important,
+
+00:59:25.370 --> 00:59:27.770 align:middle line:84%
+because the number of
+terms is only log of r.
+
+00:59:27.770 --> 00:59:30.530 align:middle line:84%
+And the log of r has
+got absorbed here.
+
+00:59:30.530 --> 00:59:32.530 align:middle line:84%
+But where did this
+come from at all?
+
+00:59:32.530 --> 00:59:35.410 align:middle line:84%
+Well, we had this
+function that's
+
+00:59:35.410 --> 00:59:38.130 align:middle line:84%
+the sum of all these tubes,
+which describes our projection
+
+00:59:38.130 --> 00:59:39.530 align:middle line:90%
+situation.
+
+00:59:39.530 --> 00:59:41.690 align:middle line:90%
+And then we are--
+
+00:59:41.690 --> 00:59:44.663 align:middle line:84%
+the key thing is that we applied
+the main lemma to this function.
+
+00:59:44.663 --> 00:59:46.330 align:middle line:84%
+And the main lemma
+said you can break up
+
+00:59:46.330 --> 00:59:47.730 align:middle line:90%
+this function into a few--
+
+00:59:47.730 --> 00:59:49.170 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:59:49.170 --> 00:59:50.410 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:59:50.410 --> 00:59:52.922 align:middle line:84%
+And so one of those pieces
+is sort of the important one.
+
+00:59:52.922 --> 00:59:54.880 align:middle line:84%
+And that's the one that
+appears in the maximum.
+
+00:59:54.880 --> 00:59:57.750 align:middle line:90%
+
+
+00:59:57.750 --> 00:59:58.250 align:middle line:90%
+OK.
+
+00:59:58.250 --> 01:00:01.250 align:middle line:90%
+
+
+01:00:01.250 --> 01:00:02.250 align:middle line:90%
+Yeah.
+
+01:00:02.250 --> 01:00:03.730 align:middle line:90%
+AUDIENCE: Yeah, I'm wondering.
+
+01:00:03.730 --> 01:00:09.090 align:middle line:84%
+So in the proof, we had to
+keep track of all the r's.
+
+01:00:09.090 --> 01:00:11.570 align:middle line:84%
+In the Hausdorff
+spacing case, it
+
+01:00:11.570 --> 01:00:15.170 align:middle line:84%
+seems like just
+there's only two cases.
+
+01:00:15.170 --> 01:00:17.950 align:middle line:84%
+So I'm wondering if you
+do have cluster spacing,
+
+01:00:17.950 --> 01:00:19.730 align:middle line:90%
+is it really necessary?
+
+01:00:19.730 --> 01:00:25.300 align:middle line:84%
+Is it still important to
+do the static division?
+
+01:00:25.300 --> 01:00:27.300 align:middle line:84%
+LAWRENCE GUTH: OK,
+so the question is,
+
+01:00:27.300 --> 01:00:30.260 align:middle line:84%
+in the Hausdorff spacing
+case, it turned out at the end
+
+01:00:30.260 --> 01:00:33.700 align:middle line:84%
+of the day, that only two
+values of little r mattered
+
+01:00:33.700 --> 01:00:38.380 align:middle line:84%
+in the final inequality,
+namely 1 and capital R.
+
+01:00:38.380 --> 01:00:41.540 align:middle line:84%
+And the question was, would it
+be possible to write the proof
+
+01:00:41.540 --> 01:00:45.420 align:middle line:84%
+so that only those two appeared
+and we didn't have all this
+
+01:00:45.420 --> 01:00:48.340 align:middle line:84%
+rather complicated business
+of keeping track of all
+
+01:00:48.340 --> 01:00:50.900 align:middle line:90%
+the intermediate little r's?
+
+01:00:50.900 --> 01:00:52.440 align:middle line:90%
+I don't know any way to do that.
+
+01:00:52.440 --> 01:00:55.260 align:middle line:84%
+I think the only
+way I understand
+
+01:00:55.260 --> 01:00:57.660 align:middle line:84%
+it is to keep track
+of all the little R's,
+
+01:00:57.660 --> 01:01:01.280 align:middle line:84%
+and then notice that
+under these hypotheses,
+
+01:01:01.280 --> 01:01:05.070 align:middle line:84%
+the intermediate R's are
+bounded by the extreme ones.
+
+01:01:05.070 --> 01:01:14.340 align:middle line:90%
+
+
+01:01:14.340 --> 01:01:16.340 align:middle line:90%
+OK.
+
+01:01:16.340 --> 01:01:19.660 align:middle line:84%
+OK, so I thought I would say
+a little bit about the history
+
+01:01:19.660 --> 01:01:20.480 align:middle line:90%
+of these ideas.
+
+01:01:20.480 --> 01:01:23.510 align:middle line:84%
+I haven't been putting
+names next to the theorems.
+
+01:01:23.510 --> 01:01:26.230 align:middle line:84%
+And the reason is
+that these theorems
+
+01:01:26.230 --> 01:01:29.990 align:middle line:84%
+are small variations of
+theorems from the literature.
+
+01:01:29.990 --> 01:01:32.230 align:middle line:84%
+And there are many kind
+of related theorems
+
+01:01:32.230 --> 01:01:33.365 align:middle line:90%
+from the literature.
+
+01:01:33.365 --> 01:01:35.490 align:middle line:84%
+But let me tell you a little
+bit about the history.
+
+01:01:35.490 --> 01:01:36.250 align:middle line:90%
+I think it's interesting.
+
+01:01:36.250 --> 01:01:38.130 align:middle line:84%
+I think these are kind
+of fundamental ideas.
+
+01:01:38.130 --> 01:01:41.093 align:middle line:84%
+And they were discovered
+independently, or somewhat
+
+01:01:41.093 --> 01:01:42.510 align:middle line:84%
+independently, by
+different people
+
+01:01:42.510 --> 01:01:43.760 align:middle line:90%
+working on different problems.
+
+01:01:43.760 --> 01:01:56.310 align:middle line:90%
+
+
+01:01:56.310 --> 01:02:00.510 align:middle line:84%
+So the thing that we have been
+calling the Fourier method,
+
+01:02:00.510 --> 01:02:06.990 align:middle line:84%
+so let's call this history,
+the thing that we are calling
+
+01:02:06.990 --> 01:02:10.890 align:middle line:84%
+the Fourier method
+appears in a bunch places,
+
+01:02:10.890 --> 01:02:12.750 align:middle line:90%
+including the following.
+
+01:02:12.750 --> 01:02:15.750 align:middle line:84%
+The earliest that I am
+aware of is Linnik's work
+
+01:02:15.750 --> 01:02:21.480 align:middle line:84%
+in sieve theory, which I
+will introduce sieve theory
+
+01:02:21.480 --> 01:02:25.440 align:middle line:84%
+and tell you what
+this work was today.
+
+01:02:25.440 --> 01:02:29.940 align:middle line:90%
+So that was in the 1940s.
+
+01:02:29.940 --> 01:02:35.240 align:middle line:84%
+The second place I'm aware of
+is Roth's work on the Heilbronn
+
+01:02:35.240 --> 01:02:39.840 align:middle line:84%
+triangle problem, which at some
+point in the class probably,
+
+01:02:39.840 --> 01:02:43.810 align:middle line:84%
+we'll talk about a
+little bit, in the '70s.
+
+01:02:43.810 --> 01:02:47.300 align:middle line:90%
+
+
+01:02:47.300 --> 01:02:48.297 align:middle line:90%
+He knew sieve theory.
+
+01:02:48.297 --> 01:02:50.380 align:middle line:84%
+He knew Linnik's work well,
+and he'd worked on it.
+
+01:02:50.380 --> 01:02:52.740 align:middle line:84%
+But in this problem, he
+did something similar
+
+01:02:52.740 --> 01:02:53.860 align:middle line:90%
+that's in Euclidean space.
+
+01:02:53.860 --> 01:02:55.790 align:middle line:84%
+And the setup is
+kind of different.
+
+01:02:55.790 --> 01:02:57.760 align:middle line:90%
+And so I put it on the list.
+
+01:02:57.760 --> 01:03:01.120 align:middle line:84%
+Then it was something like
+this was done by Falconer
+
+01:03:01.120 --> 01:03:02.570 align:middle line:90%
+in geometric measure theory.
+
+01:03:02.570 --> 01:03:08.338 align:middle line:90%
+
+
+01:03:08.338 --> 01:03:08.840 align:middle line:90%
+All right.
+
+01:03:08.840 --> 01:03:12.240 align:middle line:84%
+So Falconer essentially
+proved the corollary
+
+01:03:12.240 --> 01:03:13.880 align:middle line:90%
+that I just erased.
+
+01:03:13.880 --> 01:03:17.320 align:middle line:90%
+And that was around 1980.
+
+01:03:17.320 --> 01:03:21.790 align:middle line:84%
+And then it was done by Vinh in
+the setting of finite fields.
+
+01:03:21.790 --> 01:03:22.780 align:middle line:90%
+So lines in Fq2.
+
+01:03:22.780 --> 01:03:28.730 align:middle line:90%
+
+
+01:03:28.730 --> 01:03:30.490 align:middle line:84%
+And I'm not positive
+about this, but I
+
+01:03:30.490 --> 01:03:33.130 align:middle line:84%
+think that many of these people
+were not fully aware of others
+
+01:03:33.130 --> 01:03:36.330 align:middle line:90%
+of these people.
+
+01:03:36.330 --> 01:03:40.390 align:middle line:84%
+OK, we also mentioned the
+double counting method.
+
+01:03:40.390 --> 01:03:48.498 align:middle line:90%
+
+
+01:03:48.498 --> 01:03:52.030 align:middle line:84%
+And the double counting
+method that we did,
+
+01:03:52.030 --> 01:03:57.250 align:middle line:84%
+so it was done by Kaufman in
+the context of geometric measure
+
+01:03:57.250 --> 01:04:06.050 align:middle line:90%
+theory in the 1960s.
+
+01:04:06.050 --> 01:04:13.290 align:middle line:84%
+And it was done by Gallagher in
+the context of sieve theory I
+
+01:04:13.290 --> 01:04:15.817 align:middle line:90%
+think also in the 1960s.
+
+01:04:15.817 --> 01:04:17.900 align:middle line:84%
+I'm pretty sure that these
+two people did not know
+
+01:04:17.900 --> 01:04:21.020 align:middle line:90%
+what the other one was doing.
+
+01:04:21.020 --> 01:04:23.620 align:middle line:84%
+And I guess it was probably also
+done in the setting of lines
+
+01:04:23.620 --> 01:04:25.840 align:middle line:84%
+in finite fields in
+the '60s or '70s.
+
+01:04:25.840 --> 01:04:27.118 align:middle line:90%
+But I don't know.
+
+01:04:27.118 --> 01:04:28.160 align:middle line:90%
+I don't have a reference.
+
+01:04:28.160 --> 01:04:30.638 align:middle line:90%
+
+
+01:04:30.638 --> 01:04:32.180 align:middle line:84%
+And those people
+probably didn't know
+
+01:04:32.180 --> 01:04:33.400 align:middle line:90%
+about either of these people.
+
+01:04:33.400 --> 01:04:36.620 align:middle line:90%
+
+
+01:04:36.620 --> 01:04:40.900 align:middle line:84%
+OK, so now, let me tell
+you what sieve theory is,
+
+01:04:40.900 --> 01:04:43.480 align:middle line:84%
+and how it is analogous
+to what we've been doing.
+
+01:04:43.480 --> 01:05:07.980 align:middle line:90%
+
+
+01:05:07.980 --> 01:05:19.568 align:middle line:84%
+OK, so sieve theory takes
+place over the integers.
+
+01:05:19.568 --> 01:05:22.110 align:middle line:84%
+And the main character in sieve
+theory is taking the integers
+
+01:05:22.110 --> 01:05:26.905 align:middle line:84%
+and reducing it modulo
+q for different bases q.
+
+01:05:26.905 --> 01:05:29.190 align:middle line:84%
+OK, so z, of course,
+is the integers.
+
+01:05:29.190 --> 01:05:31.830 align:middle line:90%
+I'm going to write zq for--
+
+01:05:31.830 --> 01:05:34.070 align:middle line:90%
+some people write z mod qz.
+
+01:05:34.070 --> 01:05:38.270 align:middle line:90%
+This is the integers modulo q.
+
+01:05:38.270 --> 01:05:44.230 align:middle line:84%
+And there's a basic map pi sub q
+z to zq, which takes an integer
+
+01:05:44.230 --> 01:05:45.850 align:middle line:90%
+and reduces it modulo q.
+
+01:05:45.850 --> 01:05:51.630 align:middle line:90%
+
+
+01:05:51.630 --> 01:05:55.670 align:middle line:84%
+OK, this map is going to play
+the role of our projections.
+
+01:05:55.670 --> 01:05:58.550 align:middle line:84%
+So let me mention
+what is analogous.
+
+01:05:58.550 --> 01:06:03.150 align:middle line:84%
+So we've been talking about maps
+pi theta that go from R2 to R,
+
+01:06:03.150 --> 01:06:08.390 align:middle line:84%
+or one-dimensional
+subspace, or from Fq2 to Fq.
+
+01:06:08.390 --> 01:06:11.230 align:middle line:90%
+
+
+01:06:11.230 --> 01:06:13.800 align:middle line:84%
+And now, we're talking
+about the map pi cubed
+
+01:06:13.800 --> 01:06:16.840 align:middle line:90%
+that goes from z to z mod q.
+
+01:06:16.840 --> 01:06:18.800 align:middle line:84%
+What do all these
+things have in common?
+
+01:06:18.800 --> 01:06:22.630 align:middle line:84%
+They are all group homomorphisms
+between abelian groups.
+
+01:06:22.630 --> 01:06:35.040 align:middle line:90%
+
+
+01:06:35.040 --> 01:06:45.720 align:middle line:84%
+OK, so what we're going
+to do in sieve theory
+
+01:06:45.720 --> 01:06:49.120 align:middle line:84%
+is take a set, which is going
+to be now a set of integers,
+
+01:06:49.120 --> 01:06:51.880 align:middle line:84%
+and think about all the
+different projections
+
+01:06:51.880 --> 01:06:54.097 align:middle line:84%
+of its integer of the
+set, and think about
+
+01:06:54.097 --> 01:06:55.680 align:middle line:84%
+how they're all
+related to each other,
+
+01:06:55.680 --> 01:06:58.988 align:middle line:84%
+and how they're all related
+to the original set.
+
+01:06:58.988 --> 01:07:00.780 align:middle line:84%
+So I have another little
+piece of notation.
+
+01:07:00.780 --> 01:07:04.360 align:middle line:84%
+So this thing is the
+numbers from 1 up to n,
+
+01:07:04.360 --> 01:07:07.640 align:middle line:84%
+which is a subset
+of the integers.
+
+01:07:07.640 --> 01:07:10.633 align:middle line:84%
+And let me illustrate
+projection theory.
+
+01:07:10.633 --> 01:07:13.050 align:middle line:84%
+Let me illustrate sieve theory
+with an interesting example
+
+01:07:13.050 --> 01:07:16.590 align:middle line:84%
+of a set whose projections
+behave in a funny way.
+
+01:07:16.590 --> 01:07:41.210 align:middle line:90%
+
+
+01:07:41.210 --> 01:07:46.490 align:middle line:90%
+OK, so let's do an example.
+
+01:07:46.490 --> 01:07:48.450 align:middle line:84%
+My example is going to
+be basically the set
+
+01:07:48.450 --> 01:07:50.010 align:middle line:90%
+of square numbers.
+
+01:07:50.010 --> 01:07:52.650 align:middle line:84%
+So it's going to be the
+set of little n squared,
+
+01:07:52.650 --> 01:07:56.530 align:middle line:84%
+where little n goes from
+1 up to big N to the 1/2.
+
+01:07:56.530 --> 01:07:59.930 align:middle line:84%
+So it's a subset of the
+integers from 1 to N.
+
+01:07:59.930 --> 01:08:05.770 align:middle line:84%
+And the cardinality is
+about the square root of N.
+
+01:08:05.770 --> 01:08:11.860 align:middle line:84%
+What happens when I
+reduce this set modulo p?
+
+01:08:11.860 --> 01:08:17.440 align:middle line:84%
+So if p is prime,
+when I take pi p of x,
+
+01:08:17.440 --> 01:08:19.819 align:middle line:90%
+I get the quadratic residues.
+
+01:08:19.819 --> 01:08:23.479 align:middle line:84%
+And the number of quadratic
+residues is p plus 1 over 2.
+
+01:08:23.479 --> 01:08:26.380 align:middle line:90%
+So about half.
+
+01:08:26.380 --> 01:08:30.140 align:middle line:84%
+So that's kind of an
+interesting and surprising fact.
+
+01:08:30.140 --> 01:08:32.979 align:middle line:84%
+Of course, if p is bigger
+than square root of N,
+
+01:08:32.979 --> 01:08:36.700 align:middle line:84%
+obviously, the size of this
+projection is smaller than x.
+
+01:08:36.700 --> 01:08:38.859 align:middle line:84%
+So I might not even get
+all the quadratic residues
+
+01:08:38.859 --> 01:08:42.600 align:middle line:84%
+if I take a big P.
+That's not surprising.
+
+01:08:42.600 --> 01:08:46.597 align:middle line:84%
+But I could take p significantly
+less than the square root of N.
+
+01:08:46.597 --> 01:08:50.040 align:middle line:84%
+And then when I do
+this projection,
+
+01:08:50.040 --> 01:08:53.580 align:middle line:84%
+I only hit half of the
+elements in z mod p,
+
+01:08:53.580 --> 01:08:57.006 align:middle line:84%
+and I hit each of
+those many times.
+
+01:08:57.006 --> 01:08:59.800 align:middle line:84%
+That's not something that's
+likely to happen randomly.
+
+01:08:59.800 --> 01:09:02.380 align:middle line:90%
+It's kind of striking.
+
+01:09:02.380 --> 01:09:06.100 align:middle line:84%
+So one sample question
+from sieve theory
+
+01:09:06.100 --> 01:09:13.069 align:middle line:84%
+is, how big could a set x be
+and have all of its projections
+
+01:09:13.069 --> 01:09:15.029 align:middle line:90%
+be small like this?
+
+01:09:15.029 --> 01:09:17.957 align:middle line:90%
+And what examples are there?
+
+01:09:17.957 --> 01:09:19.499 align:middle line:84%
+How many sets like
+this can you find?
+
+01:09:19.499 --> 01:09:22.069 align:middle line:90%
+
+
+01:09:22.069 --> 01:09:23.670 align:middle line:90%
+All right.
+
+01:09:23.670 --> 01:09:26.734 align:middle line:84%
+So using his ideas
+about sieve theory,
+
+01:09:26.734 --> 01:09:28.109 align:middle line:84%
+one of the things
+that Linnik did
+
+01:09:28.109 --> 01:09:31.170 align:middle line:84%
+was to answer some
+of this question.
+
+01:09:31.170 --> 01:09:37.430 align:middle line:84%
+So theorem of Linnik
+in the 1940s says,
+
+01:09:37.430 --> 01:09:40.883 align:middle line:84%
+if I have a subset of
+the integers from 1 to N,
+
+01:09:40.883 --> 01:09:48.622 align:middle line:84%
+and if pi p of x is at most,
+p plus 1 over 2 for every P.
+
+01:09:48.622 --> 01:09:50.330 align:middle line:84%
+So there's nothing so
+special about this.
+
+01:09:50.330 --> 01:09:52.163 align:middle line:84%
+We could put other
+things here, but I'm just
+
+01:09:52.163 --> 01:09:55.470 align:middle line:84%
+using this to compare
+with the squares.
+
+01:09:55.470 --> 01:10:00.310 align:middle line:84%
+Then the conclusion is that the
+size of x is at most around N
+
+01:10:00.310 --> 01:10:00.850 align:middle line:90%
+to the 1/2.
+
+01:10:00.850 --> 01:10:05.710 align:middle line:90%
+
+
+01:10:05.710 --> 01:10:07.800 align:middle line:84%
+So it says that the
+square numbers are just
+
+01:10:07.800 --> 01:10:09.510 align:middle line:84%
+about the biggest set
+with this property.
+
+01:10:09.510 --> 01:10:15.180 align:middle line:90%
+
+
+01:10:15.180 --> 01:10:15.680 align:middle line:90%
+Cool.
+
+01:10:15.680 --> 01:10:17.138 align:middle line:84%
+So we will give
+two proofs of this.
+
+01:10:17.138 --> 01:10:18.940 align:middle line:84%
+We'll give a proof
+using double counting,
+
+01:10:18.940 --> 01:10:20.940 align:middle line:84%
+and we'll give a proof
+using the Fourier method.
+
+01:10:20.940 --> 01:10:24.640 align:middle line:90%
+
+
+01:10:24.640 --> 01:10:27.460 align:middle line:84%
+There are lots of hard open
+problems in sieve theory.
+
+01:10:27.460 --> 01:10:31.560 align:middle line:84%
+And one of them is to understand
+what the examples are.
+
+01:10:31.560 --> 01:10:41.340 align:middle line:84%
+So the only known examples,
+only known examples
+
+01:10:41.340 --> 01:10:47.600 align:middle line:84%
+where this theorem
+is roughly tight
+
+01:10:47.600 --> 01:10:50.190 align:middle line:84%
+are the square numbers
+and close cousins.
+
+01:10:50.190 --> 01:11:00.280 align:middle line:90%
+
+
+01:11:00.280 --> 01:11:02.140 align:middle line:90%
+So sorry.
+
+01:11:02.140 --> 01:11:02.740 align:middle line:90%
+It's messy.
+
+01:11:02.740 --> 01:11:07.370 align:middle line:84%
+The square numbers, and close
+cousins of the square numbers.
+
+01:11:07.370 --> 01:11:10.530 align:middle line:84%
+You could replace this
+with another degree 2
+
+01:11:10.530 --> 01:11:12.250 align:middle line:90%
+polynomial in little n.
+
+01:11:12.250 --> 01:11:14.468 align:middle line:84%
+And it's not hard to see
+it's kind of equivalent.
+
+01:11:14.468 --> 01:11:15.760 align:middle line:90%
+And those are all the examples.
+
+01:11:15.760 --> 01:11:19.530 align:middle line:90%
+
+
+01:11:19.530 --> 01:11:23.090 align:middle line:84%
+OK, but people know
+basically nothing
+
+01:11:23.090 --> 01:11:24.560 align:middle line:90%
+about classifying the examples.
+
+01:11:24.560 --> 01:11:28.390 align:middle line:90%
+
+
+01:11:28.390 --> 01:11:28.890 align:middle line:90%
+Cool.
+
+01:11:28.890 --> 01:11:33.450 align:middle line:90%
+
+
+01:11:33.450 --> 01:11:34.050 align:middle line:90%
+Cool.
+
+01:11:34.050 --> 01:11:38.868 align:middle line:84%
+OK, so we'll give
+two proofs of this,
+
+01:11:38.868 --> 01:11:40.410 align:middle line:84%
+one based on double
+counting, and one
+
+01:11:40.410 --> 01:11:41.750 align:middle line:90%
+based on the Fourier method.
+
+01:11:41.750 --> 01:11:43.570 align:middle line:84%
+Double counting, I
+think, we can do today.
+
+01:11:43.570 --> 01:11:46.730 align:middle line:84%
+And the Fourier method, we'll
+do next time, next week.
+
+01:11:46.730 --> 01:11:51.490 align:middle line:84%
+And first of all, I think that
+these results are pretty cool.
+
+01:11:51.490 --> 01:11:54.330 align:middle line:84%
+But I also hope that you see
+that they're really extremely
+
+01:11:54.330 --> 01:11:57.050 align:middle line:84%
+parallel to the results in
+geometric measure theory
+
+01:11:57.050 --> 01:11:58.550 align:middle line:84%
+that we've just
+been talking about.
+
+01:11:58.550 --> 01:12:03.280 align:middle line:90%
+
+
+01:12:03.280 --> 01:12:03.780 align:middle line:90%
+OK.
+
+01:12:03.780 --> 01:12:26.460 align:middle line:90%
+
+
+01:12:26.460 --> 01:12:30.060 align:middle line:84%
+OK, let me make a little
+remark before we start.
+
+01:12:30.060 --> 01:12:33.060 align:middle line:84%
+So I'm going to focus
+on projections mod p,
+
+01:12:33.060 --> 01:12:34.580 align:middle line:90%
+where p is a prime.
+
+01:12:34.580 --> 01:12:37.740 align:middle line:84%
+You could also reduce mod
+q, where q is not a prime.
+
+01:12:37.740 --> 01:12:40.283 align:middle line:90%
+And all of the ideas still work.
+
+01:12:40.283 --> 01:12:41.700 align:middle line:84%
+It's a little bit
+more complicated
+
+01:12:41.700 --> 01:12:45.140 align:middle line:84%
+because if you take two
+numbers, q1 and q2 that share
+
+01:12:45.140 --> 01:12:48.940 align:middle line:84%
+a common factor, then reducing
+mod q1 and reducing mod q2
+
+01:12:48.940 --> 01:12:50.420 align:middle line:84%
+are kind of related
+to each other.
+
+01:12:50.420 --> 01:12:51.920 align:middle line:84%
+And so if you write
+everything down,
+
+01:12:51.920 --> 01:12:53.320 align:middle line:90%
+you have to keep track of that.
+
+01:12:53.320 --> 01:12:55.660 align:middle line:84%
+That's just an extra
+thing to keep track of.
+
+01:12:55.660 --> 01:12:58.878 align:middle line:84%
+And not so difficult,
+but it makes
+
+01:12:58.878 --> 01:13:00.920 align:middle line:84%
+everything a little longer,
+and more complicated.
+
+01:13:00.920 --> 01:13:04.010 align:middle line:84%
+And sometimes, you might want
+to do that, but in applications.
+
+01:13:04.010 --> 01:13:09.170 align:middle line:84%
+But just to show the ideas,
+I'm going to focus on mod p.
+
+01:13:09.170 --> 01:13:09.670 align:middle line:90%
+OK.
+
+01:13:09.670 --> 01:13:31.830 align:middle line:90%
+
+
+01:13:31.830 --> 01:13:33.470 align:middle line:90%
+All right.
+
+01:13:33.470 --> 01:13:35.340 align:middle line:84%
+So here's the double
+counting method.
+
+01:13:35.340 --> 01:13:42.870 align:middle line:90%
+
+
+01:13:42.870 --> 01:13:44.700 align:middle line:90%
+So I'll call it theorem 1S.
+
+01:13:44.700 --> 01:13:47.270 align:middle line:90%
+
+
+01:13:47.270 --> 01:13:51.830 align:middle line:84%
+So it says if x is a subset
+of the numbers from 1 to N,
+
+01:13:51.830 --> 01:14:05.000 align:middle line:84%
+and D is a set of primes
+less than or equal to N,
+
+01:14:05.000 --> 01:14:08.920 align:middle line:84%
+and for every p in
+our set of primes,
+
+01:14:08.920 --> 01:14:13.280 align:middle line:84%
+pi sub p of x is less
+than or equal to S,
+
+01:14:13.280 --> 01:14:15.140 align:middle line:90%
+then we get a conclusion.
+
+01:14:15.140 --> 01:14:20.240 align:middle line:90%
+
+
+01:14:20.240 --> 01:14:27.400 align:middle line:84%
+Either x is bounded by 2S, or
+the number of directions is
+
+01:14:27.400 --> 01:14:36.720 align:middle line:84%
+bounded roughly by S. So I
+guess this is most interesting
+
+01:14:36.720 --> 01:14:40.800 align:middle line:84%
+if the number of directions is
+significantly bigger than S.
+
+01:14:40.800 --> 01:14:45.920 align:middle line:84%
+So if we look at the squares, so
+suppose I know that pi p of x is
+
+01:14:45.920 --> 01:14:49.020 align:middle line:90%
+bounded by p plus 1 over 2.
+
+01:14:49.020 --> 01:14:56.600 align:middle line:84%
+So that's my S. And
+I need to do this--
+
+01:14:56.600 --> 01:14:57.816 align:middle line:90%
+yeah, let's see.
+
+01:14:57.816 --> 01:15:04.490 align:middle line:90%
+
+
+01:15:04.490 --> 01:15:06.190 align:middle line:84%
+Well, this may not
+quite work for this.
+
+01:15:06.190 --> 01:15:10.530 align:middle line:90%
+
+
+01:15:10.530 --> 01:15:12.312 align:middle line:90%
+Right.
+
+01:15:12.312 --> 01:15:14.770 align:middle line:84%
+Actually, I'm not sure if this
+will imply Linnik's theorem.
+
+01:15:14.770 --> 01:15:18.330 align:middle line:84%
+Linnik proved his theorem
+with the Fourier method.
+
+01:15:18.330 --> 01:15:19.950 align:middle line:84%
+Let's come back
+to that next time.
+
+01:15:19.950 --> 01:15:23.010 align:middle line:84%
+I think we have just enough time
+to do the nice double counting
+
+01:15:23.010 --> 01:15:28.490 align:middle line:84%
+argument and then do
+the Fourier next time.
+
+01:15:28.490 --> 01:15:34.810 align:middle line:84%
+OK, so proof, we're going
+to count coincidences.
+
+01:15:34.810 --> 01:15:39.170 align:middle line:84%
+That's the set of
+x1, and x2, and x,
+
+01:15:39.170 --> 01:15:43.710 align:middle line:84%
+and p in our set of
+directions, or a set of primes
+
+01:15:43.710 --> 01:15:48.660 align:middle line:84%
+so that pi p of x1
+equals pi p of x2.
+
+01:15:48.660 --> 01:15:53.250 align:middle line:90%
+
+
+01:15:53.250 --> 01:15:55.810 align:middle line:84%
+OK, so we'll count this
+two different ways.
+
+01:15:55.810 --> 01:15:58.060 align:middle line:90%
+One is a lower bound.
+
+01:15:58.060 --> 01:16:02.660 align:middle line:84%
+So star is at least for
+every direction, when
+
+01:16:02.660 --> 01:16:05.660 align:middle line:84%
+I do this projection,
+there are only S images.
+
+01:16:05.660 --> 01:16:09.300 align:middle line:84%
+So a typical image has
+x over S preimages.
+
+01:16:09.300 --> 01:16:12.020 align:middle line:84%
+Square that for my
+choice of x1 and x2,
+
+01:16:12.020 --> 01:16:14.580 align:middle line:84%
+and then multiply
+by S for the number
+
+01:16:14.580 --> 01:16:16.980 align:middle line:90%
+of choices of the projection.
+
+01:16:16.980 --> 01:16:23.100 align:middle line:90%
+So that's x squared D S inverse.
+
+01:16:23.100 --> 01:16:24.670 align:middle line:90%
+OK, now what's our upper bound?
+
+01:16:24.670 --> 01:16:28.460 align:middle line:90%
+
+
+01:16:28.460 --> 01:16:31.240 align:middle line:84%
+So now, imagine
+fixing x1 and x2.
+
+01:16:31.240 --> 01:16:33.920 align:middle line:84%
+And think about how many
+P's can satisfy this.
+
+01:16:33.920 --> 01:16:38.540 align:middle line:90%
+
+
+01:16:38.540 --> 01:16:50.020 align:middle line:84%
+OK, so if I have pi p of
+x1 is equal to pi p of x2,
+
+01:16:50.020 --> 01:16:54.410 align:middle line:84%
+that tells us that p
+divides x2 minus x1.
+
+01:16:54.410 --> 01:16:57.630 align:middle line:90%
+
+
+01:16:57.630 --> 01:16:59.790 align:middle line:84%
+And there can't be that
+many different primes
+
+01:16:59.790 --> 01:17:01.990 align:middle line:90%
+that divide x2 minus x1.
+
+01:17:01.990 --> 01:17:05.270 align:middle line:90%
+x2 minus x1 has size n.
+
+01:17:05.270 --> 01:17:08.910 align:middle line:84%
+So it could be, at most,
+log of N that do this.
+
+01:17:08.910 --> 01:17:15.230 align:middle line:84%
+So star is upper
+bounded by, OK, so there
+
+01:17:15.230 --> 01:17:17.750 align:middle line:90%
+is a case where x1 equals x2.
+
+01:17:17.750 --> 01:17:22.070 align:middle line:84%
+So that gives me x times
+the number of directions.
+
+01:17:22.070 --> 01:17:24.830 align:middle line:84%
+And then if x1 is
+not equal to x2,
+
+01:17:24.830 --> 01:17:26.970 align:middle line:84%
+I have x squared
+choices for x1 and x2.
+
+01:17:26.970 --> 01:17:30.530 align:middle line:84%
+But I have only log of N
+choices for the direction.
+
+01:17:30.530 --> 01:17:39.750 align:middle line:90%
+
+
+01:17:39.750 --> 01:17:42.370 align:middle line:84%
+OK, and now, I'll compare
+these to each other.
+
+01:17:42.370 --> 01:17:56.520 align:middle line:90%
+
+
+01:17:56.520 --> 01:18:03.440 align:middle line:84%
+OK, so I have x squared
+times D times S inverse is
+
+01:18:03.440 --> 01:18:11.120 align:middle line:84%
+less than x times D plus
+x squared times log N.
+
+01:18:11.120 --> 01:18:12.960 align:middle line:90%
+So there are two cases.
+
+01:18:12.960 --> 01:18:17.720 align:middle line:84%
+If this one dominates, then I
+would have that x is bounded
+
+01:18:17.720 --> 01:18:20.120 align:middle line:90%
+by 2S.
+
+01:18:20.120 --> 01:18:24.720 align:middle line:84%
+Or if this one dominates,
+then the x's disappear,
+
+01:18:24.720 --> 01:18:31.000 align:middle line:84%
+and I get that D is bounded
+by log of N times S.
+
+01:18:31.000 --> 01:18:33.150 align:middle line:90%
+And that's the theorem.
+
+01:18:33.150 --> 01:18:40.600 align:middle line:90%
+
+
+01:18:40.600 --> 01:18:43.720 align:middle line:84%
+OK, so let me give
+you an example of this
+
+01:18:43.720 --> 01:18:45.613 align:middle line:90%
+and argue that this is--
+
+01:18:45.613 --> 01:18:47.280 align:middle line:84%
+well, I'll give you
+an example, a flavor
+
+01:18:47.280 --> 01:18:48.760 align:middle line:90%
+of what this is telling us.
+
+01:18:48.760 --> 01:18:58.770 align:middle line:84%
+So suppose that pi p of x is
+bounded by N to the 2/3 for 10
+
+01:18:58.770 --> 01:19:03.190 align:middle line:84%
+log n times n to
+the 2/3 different p.
+
+01:19:03.190 --> 01:19:06.930 align:middle line:90%
+
+
+01:19:06.930 --> 01:19:12.330 align:middle line:84%
+So if that's true, then the
+theorem tells us that x is
+
+01:19:12.330 --> 01:19:13.740 align:middle line:90%
+bounded by N to the 2/3.
+
+01:19:13.740 --> 01:19:23.934 align:middle line:90%
+
+
+01:19:23.934 --> 01:19:27.130 align:middle line:84%
+So these primes might
+have size around this big,
+
+01:19:27.130 --> 01:19:28.430 align:middle line:90%
+or a bit bigger.
+
+01:19:28.430 --> 01:19:32.090 align:middle line:84%
+So these primes are much less
+than N. So each projection,
+
+01:19:32.090 --> 01:19:34.730 align:middle line:84%
+the fact that each projection
+one at a time is small,
+
+01:19:34.730 --> 01:19:37.220 align:middle line:84%
+it's not that convincing
+in terms of x being small.
+
+01:19:37.220 --> 01:19:38.970 align:middle line:84%
+But knowing that all
+of these projections,
+
+01:19:38.970 --> 01:19:41.190 align:middle line:84%
+or this large number of
+projections is small,
+
+01:19:41.190 --> 01:19:44.000 align:middle line:84%
+it means that x is
+really that small.
+
+01:19:44.000 --> 01:19:52.000 align:middle line:90%

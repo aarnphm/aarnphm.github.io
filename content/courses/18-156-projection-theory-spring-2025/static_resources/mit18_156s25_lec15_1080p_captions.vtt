@@ -1,0 +1,4433 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.952 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.952 --> 00:00:03.904 align:middle line:90%
+[RUSTLING]
+
+00:00:03.904 --> 00:00:05.368 align:middle line:90%
+[CLICKING]
+
+00:00:05.368 --> 00:00:11.540 align:middle line:90%
+
+
+00:00:11.540 --> 00:00:13.640 align:middle line:84%
+PABLO SHMERKIN: OK,
+so let's continue
+
+00:00:13.640 --> 00:00:16.340 align:middle line:84%
+discussing the proof of
+Bourgain's projection theorem
+
+00:00:16.340 --> 00:00:18.410 align:middle line:84%
+and how it's similar
+and different
+
+00:00:18.410 --> 00:00:22.340 align:middle line:84%
+from the corresponding statement
+in the finite field setting.
+
+00:00:22.340 --> 00:00:24.440 align:middle line:84%
+So just as a quick
+review because we
+
+00:00:24.440 --> 00:00:27.680 align:middle line:84%
+are going to keep
+working with this concept
+
+00:00:27.680 --> 00:00:41.000 align:middle line:84%
+a delta, S, C, d set is
+a subset of, let's say,
+
+00:00:41.000 --> 00:00:45.480 align:middle line:84%
+the unit ball or
+maybe the unit cube.
+
+00:00:45.480 --> 00:00:46.530 align:middle line:90%
+It doesn't really matter.
+
+00:00:46.530 --> 00:00:49.400 align:middle line:84%
+So it has to live in some
+bounded region of space,
+
+00:00:49.400 --> 00:00:57.920 align:middle line:84%
+such that, if we
+intersect X with the ball
+
+00:00:57.920 --> 00:01:00.090 align:middle line:84%
+and look at the
+delta-covering number,
+
+00:01:00.090 --> 00:01:03.080 align:middle line:84%
+this is controlled
+by, well, first
+
+00:01:03.080 --> 00:01:05.209 align:middle line:84%
+of all, this
+tolerance constant C,
+
+00:01:05.209 --> 00:01:10.910 align:middle line:84%
+then the radius of the
+ball to the power S,
+
+00:01:10.910 --> 00:01:17.670 align:middle line:84%
+and then the size of all of X.
+So it is a spacing condition,
+
+00:01:17.670 --> 00:01:22.040 align:middle line:84%
+and although this is not
+part of the definition,
+
+00:01:22.040 --> 00:01:25.100 align:middle line:84%
+it is convenient to
+imagine that the size of X
+
+00:01:25.100 --> 00:01:28.140 align:middle line:84%
+is maybe delta to the minus S,
+although it doesn't have to be.
+
+00:01:28.140 --> 00:01:31.220 align:middle line:84%
+But it is in the setting of
+Bourgain's projection theorem,
+
+00:01:31.220 --> 00:01:33.980 align:middle line:90%
+as I stated it.
+
+00:01:33.980 --> 00:01:36.800 align:middle line:84%
+And speaking of Bourgain's
+projection theorem
+
+00:01:36.800 --> 00:01:40.093 align:middle line:84%
+as I stated it, let
+me state the version--
+
+00:01:40.093 --> 00:01:41.510 align:middle line:84%
+well, not the
+version, it's really
+
+00:01:41.510 --> 00:01:43.920 align:middle line:84%
+exactly the same theorem
+I stated last time,
+
+00:01:43.920 --> 00:01:45.740 align:middle line:90%
+but using this language.
+
+00:01:45.740 --> 00:01:49.890 align:middle line:84%
+So Bourgain's projection
+theorem, again,
+
+00:01:49.890 --> 00:01:52.160 align:middle line:84%
+so it's really exactly
+the same statement,
+
+00:01:52.160 --> 00:01:56.800 align:middle line:84%
+just using this
+language and rescaling--
+
+00:01:56.800 --> 00:02:04.120 align:middle line:84%
+suppose that X is in the unit
+ball of R2 and is a delta--
+
+00:02:04.120 --> 00:02:05.920 align:middle line:90%
+oh, sorry, quantifiers.
+
+00:02:05.920 --> 00:02:14.960 align:middle line:84%
+So given t between 0 and
+2, S strictly positive,
+
+00:02:14.960 --> 00:02:20.650 align:middle line:84%
+at most, 1, there exist
+two parameters, epsilon
+
+00:02:20.650 --> 00:02:24.400 align:middle line:84%
+and eta positive,
+depending on t and S,
+
+00:02:24.400 --> 00:02:26.710 align:middle line:90%
+so that the following happens.
+
+00:02:26.710 --> 00:02:36.460 align:middle line:84%
+If X is a delta t delta
+to the minus eta set in R2
+
+00:02:36.460 --> 00:02:47.710 align:middle line:84%
+with size delta to the minus t,
+and D the set of directions--
+
+00:02:47.710 --> 00:02:48.876 align:middle line:90%
+let's say in 0, 1--
+
+00:02:48.876 --> 00:02:51.580 align:middle line:90%
+
+
+00:02:51.580 --> 00:02:59.680 align:middle line:84%
+is a delta S, delta
+to the minus eta set,
+
+00:02:59.680 --> 00:03:07.870 align:middle line:84%
+then there exists a direction in
+our set of directions such that,
+
+00:03:07.870 --> 00:03:14.710 align:middle line:84%
+if you look at the minimum
+over all subsets of X,
+
+00:03:14.710 --> 00:03:19.480 align:middle line:84%
+which are dense in the sense
+that the delta-covering number
+
+00:03:19.480 --> 00:03:24.850 align:middle line:84%
+is at least delta to the eta,
+this tolerance parameter times
+
+00:03:24.850 --> 00:03:32.090 align:middle line:84%
+the delta-covering number of X,
+and we project the subset, then,
+
+00:03:32.090 --> 00:03:34.520 align:middle line:84%
+no matter how I
+choose the subset,
+
+00:03:34.520 --> 00:03:38.690 align:middle line:84%
+we get a gain over the, between
+quotes, "trivial bound,"
+
+00:03:38.690 --> 00:03:40.550 align:middle line:84%
+which is less trivial
+in this setting.
+
+00:03:40.550 --> 00:03:44.140 align:middle line:84%
+But nevertheless, this is
+at least delta to the minus
+
+00:03:44.140 --> 00:03:46.660 align:middle line:90%
+t over 2 minus epsilon.
+
+00:03:46.660 --> 00:03:48.920 align:middle line:90%
+So epsilon is how much we gain.
+
+00:03:48.920 --> 00:03:52.010 align:middle line:84%
+And delta 2 to the minus
+eta is our tolerance.
+
+00:03:52.010 --> 00:03:55.745 align:middle line:90%
+
+
+00:03:55.745 --> 00:03:57.620 align:middle line:84%
+This is really the same
+theorem as last time.
+
+00:03:57.620 --> 00:04:00.370 align:middle line:84%
+Last time, X was in
+the ball of radius R,
+
+00:04:00.370 --> 00:04:02.180 align:middle line:90%
+and it was a unit of unit balls.
+
+00:04:02.180 --> 00:04:05.140 align:middle line:84%
+But we just scaled it down
+by a scale of 1 over R.
+
+00:04:05.140 --> 00:04:08.410 align:middle line:84%
+And by the equivalences
+for measuring
+
+00:04:08.410 --> 00:04:10.820 align:middle line:84%
+the delta-covering number
+that I mentioned last time,
+
+00:04:10.820 --> 00:04:12.590 align:middle line:84%
+this is really the
+same statement.
+
+00:04:12.590 --> 00:04:23.240 align:middle line:90%
+
+
+00:04:23.240 --> 00:04:25.370 align:middle line:84%
+So last time, we saw that
+the following is true,
+
+00:04:25.370 --> 00:04:27.405 align:middle line:84%
+even though we didn't
+actually prove all of it.
+
+00:04:27.405 --> 00:04:31.012 align:middle line:90%
+
+
+00:04:31.012 --> 00:04:32.470 align:middle line:84%
+Last time, we saw
+that there exists
+
+00:04:32.470 --> 00:04:39.280 align:middle line:84%
+a polynomial, which is just
+X1, X2, X3 minus X4, X5, X6.
+
+00:04:39.280 --> 00:04:40.660 align:middle line:90%
+That works.
+
+00:04:40.660 --> 00:04:43.660 align:middle line:84%
+So it exists a
+polynomial such that,
+
+00:04:43.660 --> 00:04:52.620 align:middle line:90%
+for every S between 0 and 1 on--
+
+00:04:52.620 --> 00:04:54.670 align:middle line:84%
+OK, I didn't say it
+this way last time,
+
+00:04:54.670 --> 00:04:57.690 align:middle line:84%
+but maybe let's introduce
+also the two parameters here.
+
+00:04:57.690 --> 00:04:59.680 align:middle line:84%
+Last time, I stated
+with just one parameter.
+
+00:04:59.680 --> 00:05:01.860 align:middle line:84%
+Of course, you can just
+take epsilon and eta
+
+00:05:01.860 --> 00:05:03.940 align:middle line:84%
+to be the same by
+taking the minimum.
+
+00:05:03.940 --> 00:05:07.620 align:middle line:84%
+So the whole statement, if
+you replace epsilon and/or eta
+
+00:05:07.620 --> 00:05:09.875 align:middle line:84%
+by a smaller number,
+is still true.
+
+00:05:09.875 --> 00:05:11.250 align:middle line:84%
+So we could just
+take the minimum
+
+00:05:11.250 --> 00:05:12.700 align:middle line:90%
+and have just one parameter.
+
+00:05:12.700 --> 00:05:15.180 align:middle line:84%
+But I sort of want to
+distinguish them because they
+
+00:05:15.180 --> 00:05:17.145 align:middle line:90%
+play different roles.
+
+00:05:17.145 --> 00:05:19.410 align:middle line:84%
+So there exists
+epsilon and eta such
+
+00:05:19.410 --> 00:05:31.340 align:middle line:84%
+that if A is a delta S
+delta to the minus eta set,
+
+00:05:31.340 --> 00:05:35.040 align:middle line:90%
+it may be contained in 0, 1.
+
+00:05:35.040 --> 00:05:39.090 align:middle line:84%
+And maybe let's assume
+also that the size of A
+
+00:05:39.090 --> 00:05:43.230 align:middle line:84%
+is delta to the minus
+S. Then the size
+
+00:05:43.230 --> 00:05:45.556 align:middle line:84%
+grows by applying
+this polynomial.
+
+00:05:45.556 --> 00:05:52.610 align:middle line:90%
+
+
+00:05:52.610 --> 00:05:55.990 align:middle line:84%
+And we discussed that this
+is not enough to iterate,
+
+00:05:55.990 --> 00:05:58.500 align:middle line:84%
+because in order to iterate,
+we need to know that Q of A set
+
+00:05:58.500 --> 00:06:00.310 align:middle line:84%
+also satisfies
+these assumptions.
+
+00:06:00.310 --> 00:06:01.930 align:middle line:90%
+And this is not clear at all.
+
+00:06:01.930 --> 00:06:03.720 align:middle line:90%
+And in fact, it's not true.
+
+00:06:03.720 --> 00:06:05.453 align:middle line:90%
+So we need to improve.
+
+00:06:05.453 --> 00:06:13.020 align:middle line:90%
+
+
+00:06:13.020 --> 00:06:21.090 align:middle line:84%
+To Q of A contains A
+delta S plus epsilon delta
+
+00:06:21.090 --> 00:06:25.200 align:middle line:90%
+to the minus eta set.
+
+00:06:25.200 --> 00:06:29.560 align:middle line:84%
+If we knew this, then we could
+iterate and keep growing,
+
+00:06:29.560 --> 00:06:31.320 align:middle line:90%
+so keep adding epsilon.
+
+00:06:31.320 --> 00:06:33.550 align:middle line:84%
+And because epsilon
+is continuous in S,
+
+00:06:33.550 --> 00:06:38.460 align:middle line:84%
+we can get as close to delta
+to the minus 1 as we want.
+
+00:06:38.460 --> 00:06:40.990 align:middle line:84%
+So today, we will
+discuss how to do this.
+
+00:06:40.990 --> 00:06:42.420 align:middle line:84%
+So let me say that
+it's not going
+
+00:06:42.420 --> 00:06:44.110 align:middle line:90%
+to be the same epsilon and eta.
+
+00:06:44.110 --> 00:06:46.110 align:middle line:90%
+So they're going to--
+
+00:06:46.110 --> 00:06:52.040 align:middle line:84%
+I mean, they will become
+much smaller, but same order
+
+00:06:52.040 --> 00:06:52.830 align:middle line:90%
+of quantifiers.
+
+00:06:52.830 --> 00:06:54.470 align:middle line:90%
+So there exists S--
+
+00:06:54.470 --> 00:06:58.250 align:middle line:84%
+sorry, for every S, there
+will exist eta and epsilon
+
+00:06:58.250 --> 00:07:01.260 align:middle line:90%
+so that this is true.
+
+00:07:01.260 --> 00:07:03.110 align:middle line:84%
+So this is what we
+are going to mostly
+
+00:07:03.110 --> 00:07:06.440 align:middle line:84%
+discuss today and, hopefully,
+then go briefly over how
+
+00:07:06.440 --> 00:07:08.760 align:middle line:90%
+to finish the proof.
+
+00:07:08.760 --> 00:07:11.870 align:middle line:84%
+But I will say, this is the
+main difference with respect
+
+00:07:11.870 --> 00:07:14.750 align:middle line:84%
+to the finite field
+setting, where we don't have
+
+00:07:14.750 --> 00:07:17.100 align:middle line:90%
+to worry about any of these.
+
+00:07:17.100 --> 00:07:19.280 align:middle line:84%
+So before coming back to
+this, we'll take a detour,
+
+00:07:19.280 --> 00:07:22.080 align:middle line:90%
+and then we'll come back.
+
+00:07:22.080 --> 00:07:28.520 align:middle line:84%
+So let me state a lemma with
+some basic properties of delta
+
+00:07:28.520 --> 00:07:30.740 align:middle line:90%
+S, C sets.
+
+00:07:30.740 --> 00:07:39.606 align:middle line:84%
+Suppose that X is a delta
+S, C set in any dimension.
+
+00:07:39.606 --> 00:07:44.840 align:middle line:90%
+
+
+00:07:44.840 --> 00:07:47.960 align:middle line:84%
+Then we make the following
+two fairly easy but important
+
+00:07:47.960 --> 00:07:48.940 align:middle line:90%
+observations.
+
+00:07:48.940 --> 00:07:50.690 align:middle line:84%
+So maybe I should have
+done this last time
+
+00:07:50.690 --> 00:07:54.290 align:middle line:84%
+to get some intuition about
+what this concept does.
+
+00:07:54.290 --> 00:07:58.710 align:middle line:84%
+First of all, X is
+large at all scales.
+
+00:07:58.710 --> 00:08:02.840 align:middle line:84%
+So the rho-covering number of
+X is at least C to the minus 1
+
+00:08:02.840 --> 00:08:07.810 align:middle line:84%
+rho to the minus S for every
+rho between delta and one.
+
+00:08:07.810 --> 00:08:11.000 align:middle line:90%
+
+
+00:08:11.000 --> 00:08:13.430 align:middle line:84%
+I mentioned in passing
+last time that this is true
+
+00:08:13.430 --> 00:08:14.790 align:middle line:90%
+for rho equals delta.
+
+00:08:14.790 --> 00:08:19.190 align:middle line:84%
+But in fact, it's
+true for every rho.
+
+00:08:19.190 --> 00:08:22.860 align:middle line:84%
+And two, this concept is robust
+under passing to subsets.
+
+00:08:22.860 --> 00:08:27.980 align:middle line:84%
+So if X or maybe
+Y is a subset of X
+
+00:08:27.980 --> 00:08:31.460 align:middle line:84%
+and the delta-covering
+number is,
+
+00:08:31.460 --> 00:08:37.100 align:middle line:84%
+let's say, 1 over K times the
+delta covering number of X,
+
+00:08:37.100 --> 00:08:43.809 align:middle line:84%
+then Y is a delta
+S C times K set.
+
+00:08:43.809 --> 00:08:46.490 align:middle line:90%
+
+
+00:08:46.490 --> 00:08:51.440 align:middle line:84%
+So the constant C gets
+worse by the parameter
+
+00:08:51.440 --> 00:08:54.020 align:middle line:84%
+measuring how dense
+Y is in X, always
+
+00:08:54.020 --> 00:08:55.390 align:middle line:90%
+using delta-covering numbers.
+
+00:08:55.390 --> 00:09:05.765 align:middle line:90%
+
+
+00:09:05.765 --> 00:09:08.460 align:middle line:84%
+So the proof of this
+is fairly simple.
+
+00:09:08.460 --> 00:09:09.360 align:middle line:90%
+So let's do it.
+
+00:09:09.360 --> 00:09:10.770 align:middle line:90%
+We have to prove something.
+
+00:09:10.770 --> 00:09:13.430 align:middle line:84%
+Well, we need to show that
+the rho-covering number is
+
+00:09:13.430 --> 00:09:13.980 align:middle line:90%
+something.
+
+00:09:13.980 --> 00:09:15.440 align:middle line:84%
+So the definition of
+the rho-covering number
+
+00:09:15.440 --> 00:09:18.210 align:middle line:84%
+is the smallest number of rho
+balls needed to cover the set.
+
+00:09:18.210 --> 00:09:22.370 align:middle line:84%
+So let's cover the
+set by rho balls.
+
+00:09:22.370 --> 00:09:24.300 align:middle line:84%
+And let's see how
+many balls we need.
+
+00:09:24.300 --> 00:09:26.245 align:middle line:84%
+So let's say we
+cover the set by.
+
+00:09:26.245 --> 00:09:29.390 align:middle line:90%
+
+
+00:09:29.390 --> 00:09:32.570 align:middle line:90%
+M balls of radius rho.
+
+00:09:32.570 --> 00:09:36.110 align:middle line:84%
+Well, then the
+delta-covering number of A--
+
+00:09:36.110 --> 00:09:38.480 align:middle line:84%
+so the delta-covering
+number is subadditive,
+
+00:09:38.480 --> 00:09:41.810 align:middle line:84%
+something which will
+come up repeatedly today.
+
+00:09:41.810 --> 00:09:44.720 align:middle line:84%
+And this is just because
+if we have a delta cover--
+
+00:09:44.720 --> 00:09:46.850 align:middle line:84%
+sorry, a rho cover--
+sorry, a delta cover.
+
+00:09:46.850 --> 00:09:48.770 align:middle line:84%
+We are covering by
+[INAUDIBLE] delta now.
+
+00:09:48.770 --> 00:09:51.410 align:middle line:84%
+If you have a delta
+cover of each of these,
+
+00:09:51.410 --> 00:09:54.730 align:middle line:84%
+we can put them together, and
+we get a delta cover of this.
+
+00:09:54.730 --> 00:09:56.620 align:middle line:84%
+So for this reason, the
+delta-covering number
+
+00:09:56.620 --> 00:09:58.640 align:middle line:90%
+is subadditive.
+
+00:09:58.640 --> 00:10:00.430 align:middle line:84%
+So the delta-covering
+number of A
+
+00:10:00.430 --> 00:10:04.390 align:middle line:84%
+is at most the sum
+of the delta covering
+
+00:10:04.390 --> 00:10:06.915 align:middle line:84%
+numbers of A intersected
+with these balls.
+
+00:10:06.915 --> 00:10:12.130 align:middle line:90%
+
+
+00:10:12.130 --> 00:10:14.270 align:middle line:84%
+But by definition of
+delta-covering set,
+
+00:10:14.270 --> 00:10:20.710 align:middle line:84%
+each of these is at most
+C rho to the S times
+
+00:10:20.710 --> 00:10:26.230 align:middle line:84%
+the delta-covering number of A.
+So we have a uniform upper bound
+
+00:10:26.230 --> 00:10:27.730 align:middle line:90%
+that only depends on rho.
+
+00:10:27.730 --> 00:10:29.120 align:middle line:90%
+So the center doesn't matter.
+
+00:10:29.120 --> 00:10:36.140 align:middle line:84%
+So this is just the definition
+of A being a delta S, C set.
+
+00:10:36.140 --> 00:10:42.550 align:middle line:84%
+So this is at most M C rho to
+the S delta-covering number
+
+00:10:42.550 --> 00:10:44.980 align:middle line:84%
+of A. So we see that
+we can cancel out
+
+00:10:44.980 --> 00:10:47.790 align:middle line:84%
+the delta-covering number of
+A, and we get the claim one.
+
+00:10:47.790 --> 00:10:50.380 align:middle line:90%
+
+
+00:10:50.380 --> 00:10:54.820 align:middle line:84%
+So we get that M is at least
+what is on the right-hand side
+
+00:10:54.820 --> 00:10:55.760 align:middle line:90%
+there.
+
+00:10:55.760 --> 00:10:58.010 align:middle line:84%
+But the smallest possible
+M is, by definition,
+
+00:10:58.010 --> 00:10:59.010 align:middle line:90%
+the rho-covering number.
+
+00:10:59.010 --> 00:11:08.855 align:middle line:90%
+
+
+00:11:08.855 --> 00:11:09.355 align:middle line:90%
+OK?
+
+00:11:09.355 --> 00:11:13.280 align:middle line:90%
+
+
+00:11:13.280 --> 00:11:15.370 align:middle line:90%
+And II is even easier.
+
+00:11:15.370 --> 00:11:20.600 align:middle line:84%
+Well, we have to show that Y
+is a delta D, C, of course,
+
+00:11:20.600 --> 00:11:25.210 align:middle line:84%
+would be S. So we
+have to Y satisfies
+
+00:11:25.210 --> 00:11:28.580 align:middle line:84%
+the definition of delta-covering
+number, so of delta, S set.
+
+00:11:28.580 --> 00:11:33.600 align:middle line:84%
+So we intersect with
+the ball of radius rho.
+
+00:11:33.600 --> 00:11:36.790 align:middle line:90%
+
+
+00:11:36.790 --> 00:11:42.490 align:middle line:84%
+Well, Y is contained in X. So
+this is at most the same thing
+
+00:11:42.490 --> 00:11:46.300 align:middle line:90%
+with X instead of rho.
+
+00:11:46.300 --> 00:11:49.190 align:middle line:90%
+But X is a delta S, C set.
+
+00:11:49.190 --> 00:11:54.250 align:middle line:84%
+So this is at most
+C times rho to the S
+
+00:11:54.250 --> 00:11:57.430 align:middle line:84%
+times the delta-covering
+number of X.
+
+00:11:57.430 --> 00:12:00.700 align:middle line:84%
+But the delta-covering number
+of X is at most K times
+
+00:12:00.700 --> 00:12:04.750 align:middle line:84%
+by the delta covering
+number of Y, by assumption.
+
+00:12:04.750 --> 00:12:10.870 align:middle line:84%
+So this is at most CK rho to the
+S delta-covering number of Y.
+
+00:12:10.870 --> 00:12:18.495 align:middle line:84%
+So we have checked that
+Y is a delta, S, CK set.
+
+00:12:18.495 --> 00:12:24.088 align:middle line:90%
+
+
+00:12:24.088 --> 00:12:29.090 align:middle line:84%
+So what information have we
+gained regarding our task?
+
+00:12:29.090 --> 00:12:32.590 align:middle line:84%
+So we need to show that Q of A
+contains a delta S plus epsilon
+
+00:12:32.590 --> 00:12:34.400 align:middle line:90%
+delta to the minus eta set.
+
+00:12:34.400 --> 00:12:37.800 align:middle line:84%
+Well if it contains
+such a set, then Q of A
+
+00:12:37.800 --> 00:12:42.150 align:middle line:84%
+must satisfy the conclusion of
+the first part of the lemma.
+
+00:12:42.150 --> 00:12:45.570 align:middle line:84%
+So the rho-covering number
+of Q of A has to be large.
+
+00:12:45.570 --> 00:12:48.390 align:middle line:84%
+We have proved that the
+delta-covering number is large.
+
+00:12:48.390 --> 00:12:50.980 align:middle line:90%
+
+
+00:12:50.980 --> 00:12:54.180 align:middle line:84%
+It is not sufficient, but it is
+necessary to show that Q of A
+
+00:12:54.180 --> 00:12:56.730 align:middle line:90%
+grows at every scale.
+
+00:12:56.730 --> 00:12:59.070 align:middle line:84%
+We want to show that it
+contains a delta t over 2
+
+00:12:59.070 --> 00:13:02.670 align:middle line:90%
+plus epsilon something set.
+
+00:13:02.670 --> 00:13:04.535 align:middle line:84%
+So it needs to be
+large at all scales.
+
+00:13:04.535 --> 00:13:16.660 align:middle line:90%
+
+
+00:13:16.660 --> 00:13:29.400 align:middle line:84%
+So we see that we need Q of A at
+scale rho to be larger than rho
+
+00:13:29.400 --> 00:13:35.100 align:middle line:84%
+to the minus t over 2
+minus epsilon for every rho
+
+00:13:35.100 --> 00:13:37.770 align:middle line:84%
+between delta and
+1 And a priori,
+
+00:13:37.770 --> 00:13:39.070 align:middle line:90%
+we only know it for delta.
+
+00:13:39.070 --> 00:13:42.020 align:middle line:84%
+So what we discussed last time
+is that this is true for delta.
+
+00:13:42.020 --> 00:13:45.900 align:middle line:90%
+
+
+00:13:45.900 --> 00:13:47.490 align:middle line:84%
+And again, this
+is not sufficient.
+
+00:13:47.490 --> 00:13:47.990 align:middle line:90%
+Yes?
+
+00:13:47.990 --> 00:13:51.570 align:middle line:84%
+AUDIENCE: Does that say, rho
+to the minus S minus epsilon.
+
+00:13:51.570 --> 00:13:53.180 align:middle line:90%
+PABLO SHMERKIN: Rho to the--
+
+00:13:53.180 --> 00:13:56.970 align:middle line:84%
+so now-- OK, so this was a
+general statement about delta S
+
+00:13:56.970 --> 00:13:57.760 align:middle line:90%
+sets.
+
+00:13:57.760 --> 00:14:01.260 align:middle line:84%
+And now I'm going back to
+what we are trying to achieve.
+
+00:14:01.260 --> 00:14:03.810 align:middle line:84%
+Oh, sorry, S--
+yeah, so there is--
+
+00:14:03.810 --> 00:14:04.890 align:middle line:90%
+sorry.
+
+00:14:04.890 --> 00:14:05.670 align:middle line:90%
+Yeah.
+
+00:14:05.670 --> 00:14:07.810 align:middle line:84%
+So this is still not
+Bourgain's projection theorem.
+
+00:14:07.810 --> 00:14:09.880 align:middle line:84%
+We are working with
+just one setting, 0, 1.
+
+00:14:09.880 --> 00:14:10.490 align:middle line:90%
+Thank you.
+
+00:14:10.490 --> 00:14:15.580 align:middle line:90%
+
+
+00:14:15.580 --> 00:14:17.970 align:middle line:90%
+We need this to be true.
+
+00:14:17.970 --> 00:14:22.710 align:middle line:84%
+And OK, so one we could
+think that we have it for
+
+00:14:22.710 --> 00:14:31.560 align:middle line:84%
+free because why can't we just
+apply what we know at scale rho?
+
+00:14:31.560 --> 00:14:33.510 align:middle line:90%
+So this is a question for you.
+
+00:14:33.510 --> 00:14:37.297 align:middle line:84%
+So why-- so again,
+this is necessary.
+
+00:14:37.297 --> 00:14:38.130 align:middle line:90%
+It's not sufficient.
+
+00:14:38.130 --> 00:14:41.710 align:middle line:84%
+But OK, let's try to focus
+on getting this first.
+
+00:14:41.710 --> 00:14:47.550 align:middle line:90%
+So why don't we get it for free?
+
+00:14:47.550 --> 00:14:52.320 align:middle line:84%
+So what is the difference
+between rho and delta?
+
+00:14:52.320 --> 00:14:56.430 align:middle line:84%
+So that's the assumption
+that we have over there.
+
+00:14:56.430 --> 00:14:57.510 align:middle line:90%
+Yes?
+
+00:14:57.510 --> 00:15:03.720 align:middle line:84%
+AUDIENCE: Because we don't know
+that A is rho, S [INAUDIBLE]
+
+00:15:03.720 --> 00:15:04.870 align:middle line:90%
+PABLO SHMERKIN: Well, OK.
+
+00:15:04.870 --> 00:15:07.990 align:middle line:84%
+So the assumption is that A
+is a delta S something set.
+
+00:15:07.990 --> 00:15:09.040 align:middle line:90%
+And you're right.
+
+00:15:09.040 --> 00:15:13.350 align:middle line:84%
+We don't know that A is
+a rho S something set.
+
+00:15:13.350 --> 00:15:16.657 align:middle line:84%
+There is another thing that
+could be a bit worrying--
+
+00:15:16.657 --> 00:15:18.240 align:middle line:84%
+I would say it's
+less worrying-- which
+
+00:15:18.240 --> 00:15:19.657 align:middle line:84%
+is that delta to
+the minus epsilon
+
+00:15:19.657 --> 00:15:22.075 align:middle line:90%
+is not rho to the minus epsilon.
+
+00:15:22.075 --> 00:15:23.700 align:middle line:84%
+We would need rho to
+the minus epsilon.
+
+00:15:23.700 --> 00:15:25.800 align:middle line:84%
+Delta to the minus
+epsilon is much bigger.
+
+00:15:25.800 --> 00:15:32.201 align:middle line:84%
+This last thing is not so
+serious because we can always--
+
+00:15:32.201 --> 00:15:33.927 align:middle line:84%
+the last thing is
+not so serious.
+
+00:15:33.927 --> 00:15:35.760 align:middle line:84%
+Neither of them is so
+serious in some sense.
+
+00:15:35.760 --> 00:15:39.600 align:middle line:84%
+But the second one, maybe we'll
+come back to discussing later.
+
+00:15:39.600 --> 00:15:40.830 align:middle line:90%
+But it is less serious.
+
+00:15:40.830 --> 00:15:43.350 align:middle line:90%
+The main issue is that--
+
+00:15:43.350 --> 00:15:57.560 align:middle line:84%
+so we don't get this for
+free, because A needs not
+
+00:15:57.560 --> 00:16:11.240 align:middle line:84%
+be a delta rho delta to
+the minus epsilon set.
+
+00:16:11.240 --> 00:16:14.120 align:middle line:84%
+And we also would need
+rho here, but let's ignore
+
+00:16:14.120 --> 00:16:15.000 align:middle line:90%
+this for a moment.
+
+00:16:15.000 --> 00:16:16.950 align:middle line:90%
+And my parameters are all wrong.
+
+00:16:16.950 --> 00:16:21.230 align:middle line:84%
+Rho S delta to the
+minus epsilon set.
+
+00:16:21.230 --> 00:16:24.200 align:middle line:84%
+And also, even if
+we did, we still
+
+00:16:24.200 --> 00:16:27.180 align:middle line:84%
+have the issue that this is
+necessary but not sufficient.
+
+00:16:27.180 --> 00:16:38.240 align:middle line:90%
+
+
+00:16:38.240 --> 00:16:41.090 align:middle line:84%
+So this condition is
+necessary, but not sufficient
+
+00:16:41.090 --> 00:16:44.630 align:middle line:84%
+for Q of A to contain
+the delta S plus epsilon
+
+00:16:44.630 --> 00:16:48.365 align:middle line:90%
+delta to the minus eta set.
+
+00:16:48.365 --> 00:16:49.970 align:middle line:84%
+So we are going to
+overcome these two
+
+00:16:49.970 --> 00:16:53.070 align:middle line:84%
+issues by passing to what
+is known as uniform sets.
+
+00:16:53.070 --> 00:16:55.550 align:middle line:84%
+So now we make a new
+detour, and we are
+
+00:16:55.550 --> 00:16:57.330 align:middle line:90%
+going to study uniform sets.
+
+00:16:57.330 --> 00:17:00.350 align:middle line:84%
+And so uniform sets
+and uniformization
+
+00:17:00.350 --> 00:17:03.600 align:middle line:84%
+come up all the time in
+studying these type of problems,
+
+00:17:03.600 --> 00:17:04.859 align:middle line:90%
+not only in this proof.
+
+00:17:04.859 --> 00:17:08.510 align:middle line:84%
+So maybe we will come up
+again later in the course.
+
+00:17:08.510 --> 00:17:10.640 align:middle line:84%
+But it is what we
+are going to use
+
+00:17:10.640 --> 00:17:12.370 align:middle line:90%
+to overcome these two issues.
+
+00:17:12.370 --> 00:17:52.240 align:middle line:90%
+
+
+00:17:52.240 --> 00:17:55.730 align:middle line:84%
+So let's start by defining
+what a uniform set is.
+
+00:17:55.730 --> 00:18:04.390 align:middle line:84%
+So definition-- so maybe
+we've heard definition.
+
+00:18:04.390 --> 00:18:10.210 align:middle line:84%
+Let's do some notation so
+we can write the definition.
+
+00:18:10.210 --> 00:18:11.840 align:middle line:90%
+So this is from last time.
+
+00:18:11.840 --> 00:18:16.150 align:middle line:84%
+But recall that I was
+denoting the delta
+
+00:18:16.150 --> 00:18:18.390 align:middle line:90%
+to be the delta mesh cubes.
+
+00:18:18.390 --> 00:18:26.560 align:middle line:90%
+
+
+00:18:26.560 --> 00:18:32.530 align:middle line:84%
+So we split our D into
+cubes of side length delta,
+
+00:18:32.530 --> 00:18:35.535 align:middle line:84%
+and one of them has a
+vertex at the origin.
+
+00:18:35.535 --> 00:18:38.540 align:middle line:90%
+
+
+00:18:38.540 --> 00:18:44.510 align:middle line:84%
+So let's define D delta
+a set X to be the cubes.
+
+00:18:44.510 --> 00:18:46.420 align:middle line:84%
+This is in any dimension,
+so the cubes that
+
+00:18:46.420 --> 00:18:54.760 align:middle line:84%
+are hit by X. So these are the Q
+cubes of side length delta which
+
+00:18:54.760 --> 00:19:03.220 align:middle line:90%
+hit X.
+
+00:19:03.220 --> 00:19:06.520 align:middle line:84%
+And let's define a
+box-counting version
+
+00:19:06.520 --> 00:19:09.770 align:middle line:84%
+of a delta-covering
+number by looking at this.
+
+00:19:09.770 --> 00:19:16.270 align:middle line:84%
+So let's define x delta
+star to distinguish it
+
+00:19:16.270 --> 00:19:19.450 align:middle line:84%
+from the delta-covering
+number to be
+
+00:19:19.450 --> 00:19:20.865 align:middle line:90%
+the cardinality of this set.
+
+00:19:20.865 --> 00:19:24.550 align:middle line:90%
+
+
+00:19:24.550 --> 00:19:27.830 align:middle line:84%
+How many delta
+cubes the set hits--
+
+00:19:27.830 --> 00:19:32.270 align:middle line:84%
+and we discussed last time that
+up to a multiplicative constant,
+
+00:19:32.270 --> 00:19:35.180 align:middle line:84%
+that could depend on the ambient
+dimension, but we don't care.
+
+00:19:35.180 --> 00:19:37.850 align:middle line:84%
+This is really the same as
+the delta-covering number.
+
+00:19:37.850 --> 00:19:39.800 align:middle line:84%
+So in some sense,
+they are the same.
+
+00:19:39.800 --> 00:19:43.040 align:middle line:84%
+But in order to work
+with uniform sets,
+
+00:19:43.040 --> 00:19:46.170 align:middle line:84%
+this version is
+better, as we will see.
+
+00:19:46.170 --> 00:19:50.330 align:middle line:90%
+
+
+00:19:50.330 --> 00:19:52.900 align:middle line:84%
+So we are counting how many
+of these are hit by the set X.
+
+00:19:52.900 --> 00:19:55.070 align:middle line:84%
+And we can compare
+cubes with balls.
+
+00:19:55.070 --> 00:19:57.340 align:middle line:84%
+And this is why these two
+things are comparable,
+
+00:19:57.340 --> 00:20:00.535 align:middle line:90%
+as we discussed last time.
+
+00:20:00.535 --> 00:20:05.620 align:middle line:84%
+Now we can give a
+definition of uniform sets.
+
+00:20:05.620 --> 00:20:07.870 align:middle line:90%
+So a set X--
+
+00:20:07.870 --> 00:20:11.380 align:middle line:84%
+and now our reference-bounded
+part of space is going to be
+
+00:20:11.380 --> 00:20:12.820 align:middle line:90%
+the unit ball--
+
+00:20:12.820 --> 00:20:14.200 align:middle line:84%
+not the unit ball,
+the unit cube.
+
+00:20:14.200 --> 00:20:16.040 align:middle line:84%
+Not the unit ball,
+the unit cube.
+
+00:20:16.040 --> 00:20:22.953 align:middle line:84%
+So in 0, 1 to the d
+is delta m uniform.
+
+00:20:22.953 --> 00:20:26.340 align:middle line:90%
+
+
+00:20:26.340 --> 00:20:32.200 align:middle line:84%
+What is delta is a parameter in
+0, 1 So it's a number in 0, 1.
+
+00:20:32.200 --> 00:20:32.940 align:middle line:90%
+And what is M?
+
+00:20:32.940 --> 00:20:34.085 align:middle line:90%
+A natural number.
+
+00:20:34.085 --> 00:20:37.830 align:middle line:90%
+
+
+00:20:37.830 --> 00:20:39.360 align:middle line:90%
+And you should think--
+
+00:20:39.360 --> 00:20:40.990 align:middle line:84%
+so I will maybe
+come back to this.
+
+00:20:40.990 --> 00:20:44.500 align:middle line:84%
+But you should think that
+delta is fixed, but M is not.
+
+00:20:44.500 --> 00:20:47.027 align:middle line:84%
+So we fixed delta and
+let M go to infinity,
+
+00:20:47.027 --> 00:20:47.860 align:middle line:90%
+something like this.
+
+00:20:47.860 --> 00:20:51.630 align:middle line:84%
+So we're going to fix
+delta, and then M will grow.
+
+00:20:51.630 --> 00:20:54.134 align:middle line:90%
+But this is just a definition.
+
+00:20:54.134 --> 00:21:10.740 align:middle line:84%
+If the following happens, so for
+every J between 0 and M minus 1,
+
+00:21:10.740 --> 00:21:22.950 align:middle line:84%
+and for every cube of size delta
+to the J that intersects X,
+
+00:21:22.950 --> 00:21:28.560 align:middle line:84%
+we look at how many cubes of
+the next generation hit X.
+
+00:21:28.560 --> 00:21:33.930 align:middle line:84%
+And the next generation is
+delta to the J plus 1 cubes,
+
+00:21:33.930 --> 00:21:37.870 align:middle line:84%
+so for every scale
+delta to the J.
+
+00:21:37.870 --> 00:21:40.420 align:middle line:84%
+So we're going to look
+at scales delta to the J.
+
+00:21:40.420 --> 00:21:44.280 align:middle line:84%
+For every cube of one of these
+scales that intersects the set,
+
+00:21:44.280 --> 00:21:56.850 align:middle line:84%
+we look at how
+many-- sorry, star--
+
+00:21:56.850 --> 00:22:02.100 align:middle line:84%
+how many cubes of the
+next-generation scale
+
+00:22:02.100 --> 00:22:07.930 align:middle line:84%
+hit X. And this is some number
+that depends on the scale J,
+
+00:22:07.930 --> 00:22:10.230 align:middle line:84%
+but it doesn't depend
+on the particular cube
+
+00:22:10.230 --> 00:22:20.440 align:middle line:90%
+Q. Let's draw a picture.
+
+00:22:20.440 --> 00:22:24.020 align:middle line:84%
+So this picture's to
+understand what's going on.
+
+00:22:24.020 --> 00:22:40.620 align:middle line:90%
+
+
+00:22:40.620 --> 00:22:42.630 align:middle line:84%
+And I guess we
+actually want delta
+
+00:22:42.630 --> 00:22:47.530 align:middle line:84%
+to be not just a number in 0, 1,
+but actually, a dyadic number.
+
+00:22:47.530 --> 00:22:48.430 align:middle line:90%
+This is a definition.
+
+00:22:48.430 --> 00:22:50.890 align:middle line:84%
+But in practice, we want
+to get a dyadic number
+
+00:22:50.890 --> 00:22:52.690 align:middle line:90%
+so things are nested.
+
+00:22:52.690 --> 00:22:54.940 align:middle line:84%
+So let's draw a picture to
+understand what's going on.
+
+00:22:54.940 --> 00:23:01.530 align:middle line:84%
+Suppose that delta is 1/2,
+and we are in dimension 2.
+
+00:23:01.530 --> 00:23:03.120 align:middle line:90%
+So we look at--
+
+00:23:03.120 --> 00:23:05.550 align:middle line:84%
+OK, we have a set
+X. Let's say that X
+
+00:23:05.550 --> 00:23:13.750 align:middle line:84%
+hits this 3 dyadic
+squares of first level,
+
+00:23:13.750 --> 00:23:15.330 align:middle line:90%
+but it doesn't hit this one.
+
+00:23:15.330 --> 00:23:17.635 align:middle line:90%
+Then R0 will be 3.
+
+00:23:17.635 --> 00:23:20.930 align:middle line:90%
+
+
+00:23:20.930 --> 00:23:23.570 align:middle line:84%
+There is only one cube
+of first level, which
+
+00:23:23.570 --> 00:23:25.910 align:middle line:84%
+is the unit cube, by
+the assumption that Q
+
+00:23:25.910 --> 00:23:27.300 align:middle line:90%
+lives in the unit cube.
+
+00:23:27.300 --> 00:23:30.140 align:middle line:84%
+So the unit cube has
+size delta to the 0.
+
+00:23:30.140 --> 00:23:33.080 align:middle line:84%
+And X hits just one
+of those because it's
+
+00:23:33.080 --> 00:23:35.330 align:middle line:90%
+contained in the unit cube.
+
+00:23:35.330 --> 00:23:39.230 align:middle line:84%
+Now, we split each of
+the surviving squares,
+
+00:23:39.230 --> 00:23:42.110 align:middle line:90%
+again, dyadically.
+
+00:23:42.110 --> 00:23:45.530 align:middle line:84%
+And what uniformity means
+is that the number in each
+
+00:23:45.530 --> 00:23:47.330 align:middle line:84%
+of these three cubes
+that are hit by X
+
+00:23:47.330 --> 00:23:49.003 align:middle line:90%
+is the same for all three cubes.
+
+00:23:49.003 --> 00:23:50.670 align:middle line:84%
+But the actual cubes
+could be different.
+
+00:23:50.670 --> 00:23:55.680 align:middle line:84%
+So for example, X could hit
+this one, this one, this one,
+
+00:23:55.680 --> 00:23:58.430 align:middle line:84%
+this one, this
+one, and this one.
+
+00:23:58.430 --> 00:24:00.570 align:middle line:90%
+So this is a possibility.
+
+00:24:00.570 --> 00:24:05.270 align:middle line:90%
+And in this case, R1 will be 2.
+
+00:24:05.270 --> 00:24:09.020 align:middle line:84%
+So every of these
+three cubes that
+
+00:24:09.020 --> 00:24:13.680 align:middle line:84%
+survived in the first
+generation hit two cubes
+
+00:24:13.680 --> 00:24:15.490 align:middle line:90%
+of the second generation.
+
+00:24:15.490 --> 00:24:18.570 align:middle line:84%
+And what is important is
+that it is 2, 2, and 2,
+
+00:24:18.570 --> 00:24:20.440 align:middle line:90%
+the same for all the cubes.
+
+00:24:20.440 --> 00:24:23.430 align:middle line:90%
+This is what makes it uniform.
+
+00:24:23.430 --> 00:24:24.430 align:middle line:90%
+Now we could keep going.
+
+00:24:24.430 --> 00:24:27.270 align:middle line:84%
+So maybe in the next
+generation, every one of these
+
+00:24:27.270 --> 00:24:30.330 align:middle line:90%
+will hit just one.
+
+00:24:30.330 --> 00:24:32.980 align:middle line:90%
+It could be anywhere.
+
+00:24:32.980 --> 00:24:35.340 align:middle line:90%
+Then R2 would be 1.
+
+00:24:35.340 --> 00:24:38.315 align:middle line:84%
+Is it clear what
+a uniform set is?
+
+00:24:38.315 --> 00:24:41.290 align:middle line:90%
+
+
+00:24:41.290 --> 00:24:45.060 align:middle line:84%
+So we can see the
+set X as a tree
+
+00:24:45.060 --> 00:24:49.420 align:middle line:84%
+where the root is the unit cube
+the vertices of first level.
+
+00:24:49.420 --> 00:24:53.340 align:middle line:84%
+So the children of the unit
+cube are the squares of size 1/2
+
+00:24:53.340 --> 00:24:59.500 align:middle line:84%
+hitting the set, the
+cubes of size 1/2 squared.
+
+00:24:59.500 --> 00:25:03.810 align:middle line:84%
+So delta squared will be
+the children of the vertices
+
+00:25:03.810 --> 00:25:05.130 align:middle line:90%
+of the first level, and so on.
+
+00:25:05.130 --> 00:25:05.630 align:middle line:90%
+Yes?
+
+00:25:05.630 --> 00:25:07.005 align:middle line:84%
+AUDIENCE: How does
+this work when
+
+00:25:07.005 --> 00:25:08.730 align:middle line:84%
+delta is the reciprocal
+of an integer,
+
+00:25:08.730 --> 00:25:10.130 align:middle line:84%
+and you have this
+kind of [INAUDIBLE]?
+
+00:25:10.130 --> 00:25:12.150 align:middle line:84%
+PABLO SHMERKIN: Otherwise,
+things don't line up exactly.
+
+00:25:12.150 --> 00:25:13.400 align:middle line:90%
+It's not the end of the world.
+
+00:25:13.400 --> 00:25:15.770 align:middle line:84%
+But in practice,
+we will see that we
+
+00:25:15.770 --> 00:25:17.720 align:middle line:84%
+are free to pick delta
+satisfying certain--
+
+00:25:17.720 --> 00:25:20.130 align:middle line:84%
+well, at this stage,
+delta could be anything.
+
+00:25:20.130 --> 00:25:24.470 align:middle line:84%
+But yeah, we are going to
+pick delta dyadic, not just
+
+00:25:24.470 --> 00:25:27.270 align:middle line:84%
+reciprocal of an integer, but
+reciprocal of a power of 2,
+
+00:25:27.270 --> 00:25:29.390 align:middle line:90%
+just in case.
+
+00:25:29.390 --> 00:25:31.530 align:middle line:84%
+Yeah, otherwise, things
+are not exactly nested,
+
+00:25:31.530 --> 00:25:33.570 align:middle line:90%
+and this picture is not as neat.
+
+00:25:33.570 --> 00:25:37.260 align:middle line:84%
+So these numbers are
+J. We call them--
+
+00:25:37.260 --> 00:25:39.078 align:middle line:84%
+so we can view as a
+tree, X as a tree.
+
+00:25:39.078 --> 00:25:41.245 align:middle line:84%
+And for this reason, we
+call them branching numbers.
+
+00:25:41.245 --> 00:25:59.360 align:middle line:90%
+
+
+00:25:59.360 --> 00:26:03.050 align:middle line:84%
+OK, I'm having a very bad
+blackboard management.
+
+00:26:03.050 --> 00:26:06.980 align:middle line:84%
+So let's show this
+again for a second.
+
+00:26:06.980 --> 00:26:12.700 align:middle line:84%
+So in general, if we
+have a rho S delta--
+
+00:26:12.700 --> 00:26:20.450 align:middle line:84%
+sorry, a delta S, C set, it does
+not need to be a rho S, C set.
+
+00:26:20.450 --> 00:26:22.460 align:middle line:84%
+But if the set is
+uniform, it is.
+
+00:26:22.460 --> 00:26:25.940 align:middle line:84%
+So this is one big advantage
+of working with uniform sets.
+
+00:26:25.940 --> 00:26:37.400 align:middle line:84%
+So let's say-- so this
+will overcome this issue
+
+00:26:37.400 --> 00:26:38.930 align:middle line:90%
+and also, actually, this issue.
+
+00:26:38.930 --> 00:26:41.740 align:middle line:84%
+If the set is uniform,
+then this condition
+
+00:26:41.740 --> 00:26:49.210 align:middle line:84%
+is not only necessary, but
+sufficient for the set to be--
+
+00:26:49.210 --> 00:26:52.820 align:middle line:84%
+yeah, so if we knew
+that Q of A is uniform--
+
+00:26:52.820 --> 00:26:54.920 align:middle line:90%
+which we don't, but OK--
+
+00:26:54.920 --> 00:26:58.940 align:middle line:84%
+we have to work a lot to
+actually make this work for us.
+
+00:26:58.940 --> 00:27:01.750 align:middle line:84%
+But if we have a uniform set,
+then both of these issues
+
+00:27:01.750 --> 00:27:02.600 align:middle line:90%
+are overcome.
+
+00:27:02.600 --> 00:27:07.040 align:middle line:84%
+So if the set is uniform,
+and it is a delta S, C set,
+
+00:27:07.040 --> 00:27:11.170 align:middle line:84%
+it is a rho, S,
+slightly worse C set.
+
+00:27:11.170 --> 00:27:14.920 align:middle line:84%
+And if the set satisfies that
+it's large at every scale,
+
+00:27:14.920 --> 00:27:19.040 align:middle line:90%
+then it is a delta S, C set.
+
+00:27:19.040 --> 00:27:21.310 align:middle line:84%
+So both of these
+issues are overcome
+
+00:27:21.310 --> 00:27:24.910 align:middle line:90%
+by working with uniform sets.
+
+00:27:24.910 --> 00:27:30.400 align:middle line:90%
+OK, let me state how it works.
+
+00:27:30.400 --> 00:27:45.315 align:middle line:84%
+So let lemma-- so let
+X be delta M uniform.
+
+00:27:45.315 --> 00:27:48.790 align:middle line:90%
+
+
+00:27:48.790 --> 00:27:56.900 align:middle line:84%
+And let delta be big delta to
+the M. So again, at some point,
+
+00:27:56.900 --> 00:27:58.730 align:middle line:90%
+we are going to fix big delta.
+
+00:27:58.730 --> 00:28:01.210 align:middle line:84%
+And then this is
+not a restriction.
+
+00:28:01.210 --> 00:28:03.220 align:middle line:84%
+This is not a
+restriction because delta
+
+00:28:03.220 --> 00:28:04.370 align:middle line:90%
+will be a constant.
+
+00:28:04.370 --> 00:28:07.380 align:middle line:84%
+So if delta, small delta,
+is not big delta to the M,
+
+00:28:07.380 --> 00:28:10.320 align:middle line:84%
+we sandwich it between big
+delta to the M And big delta
+
+00:28:10.320 --> 00:28:13.300 align:middle line:84%
+to the M plus 1 and
+work with those powers.
+
+00:28:13.300 --> 00:28:15.826 align:middle line:84%
+So this is not a
+big restriction.
+
+00:28:15.826 --> 00:28:18.840 align:middle line:90%
+
+
+00:28:18.840 --> 00:28:35.940 align:middle line:84%
+Then if the size of X is
+large, let's say, 1 over C rho
+
+00:28:35.940 --> 00:28:40.110 align:middle line:84%
+to the minus S, for every
+rho, but in fact, we
+
+00:28:40.110 --> 00:28:41.800 align:middle line:90%
+don't even need every rho.
+
+00:28:41.800 --> 00:28:46.950 align:middle line:84%
+Let's say, for every rho in
+1, delta, delta to the M.
+
+00:28:46.950 --> 00:28:50.400 align:middle line:84%
+So we only need this to be
+true for powers of delta.
+
+00:28:50.400 --> 00:28:53.370 align:middle line:84%
+But the point is, if we
+know that the size of X
+
+00:28:53.370 --> 00:29:03.930 align:middle line:84%
+is large at every scale,
+then X is a delta S
+
+00:29:03.930 --> 00:29:06.376 align:middle line:90%
+and not quite C set, but--
+
+00:29:06.376 --> 00:29:09.360 align:middle line:90%
+
+
+00:29:09.360 --> 00:29:12.970 align:middle line:84%
+well, up to some constant
+that depends on delta.
+
+00:29:12.970 --> 00:29:16.445 align:middle line:84%
+But because delta will be fixed
+at some point, this is harmless.
+
+00:29:16.445 --> 00:29:20.100 align:middle line:90%
+
+
+00:29:20.100 --> 00:29:25.230 align:middle line:84%
+So for uniform sets,
+it is sufficient to be
+
+00:29:25.230 --> 00:29:30.620 align:middle line:84%
+large at all scales for the
+set to be a delta S, C set.
+
+00:29:30.620 --> 00:29:36.465 align:middle line:90%
+
+
+00:29:36.465 --> 00:29:39.493 align:middle line:84%
+And what is the other issue that
+we wanted to overcome with sets?
+
+00:29:39.493 --> 00:29:42.180 align:middle line:90%
+
+
+00:29:42.180 --> 00:29:43.545 align:middle line:90%
+Oh, OK, and this one, as well.
+
+00:29:43.545 --> 00:29:46.818 align:middle line:90%
+
+
+00:29:46.818 --> 00:29:51.580 align:middle line:84%
+And if X-- so X
+is a uniform set.
+
+00:29:51.580 --> 00:30:05.010 align:middle line:84%
+If x is a delta S, C set,
+then X is a rho, S, and again,
+
+00:30:05.010 --> 00:30:06.870 align:middle line:84%
+not quite C, but
+we lose something
+
+00:30:06.870 --> 00:30:10.350 align:middle line:84%
+that depends on
+delta, so we are happy
+
+00:30:10.350 --> 00:30:14.525 align:middle line:84%
+set for every rho
+between delta and one.
+
+00:30:14.525 --> 00:30:18.540 align:middle line:90%
+
+
+00:30:18.540 --> 00:30:20.790 align:middle line:84%
+Maybe an exercise
+for you is to think
+
+00:30:20.790 --> 00:30:24.240 align:middle line:84%
+about why both of these
+claims are false if we don't
+
+00:30:24.240 --> 00:30:25.840 align:middle line:90%
+assume that the set is uniform.
+
+00:30:25.840 --> 00:30:27.220 align:middle line:90%
+It does have to be uniform.
+
+00:30:27.220 --> 00:30:30.060 align:middle line:90%
+It's not true in general.
+
+00:30:30.060 --> 00:30:33.300 align:middle line:90%
+Any questions?
+
+00:30:33.300 --> 00:30:34.210 align:middle line:90%
+Yes?
+
+00:30:34.210 --> 00:30:36.690 align:middle line:84%
+AUDIENCE: I was a
+little bit confused.
+
+00:30:36.690 --> 00:30:41.380 align:middle line:84%
+If X in a ball that was
+covered, like you said,
+
+00:30:41.380 --> 00:30:46.210 align:middle line:84%
+like [INAUDIBLE] X, it's
+not a rho S something set.
+
+00:30:46.210 --> 00:30:48.840 align:middle line:90%
+
+
+00:30:48.840 --> 00:30:54.240 align:middle line:84%
+If X was like rho S
+set, why does that
+
+00:30:54.240 --> 00:31:01.670 align:middle line:90%
+imply Q X as the [INAUDIBLE]?
+
+00:31:01.670 --> 00:31:03.500 align:middle line:84%
+PABLO SHMERKIN: OK,
+so what we showed
+
+00:31:03.500 --> 00:31:08.330 align:middle line:84%
+last time is that, if
+A is a delta S, C set,
+
+00:31:08.330 --> 00:31:15.770 align:middle line:84%
+forget about what is the C, then
+Q of A at scale delta grows.
+
+00:31:15.770 --> 00:31:19.670 align:middle line:84%
+Well, that is true
+for every delta.
+
+00:31:19.670 --> 00:31:25.550 align:middle line:84%
+So if the original
+A was also a rho,
+
+00:31:25.550 --> 00:31:28.730 align:middle line:84%
+S, C set, then we
+could apply what
+
+00:31:28.730 --> 00:31:31.550 align:middle line:84%
+we did last time with
+Rho instead of delta
+
+00:31:31.550 --> 00:31:33.360 align:middle line:90%
+and get this conclusion.
+
+00:31:33.360 --> 00:31:41.930 align:middle line:90%
+
+
+00:31:41.930 --> 00:31:43.790 align:middle line:84%
+AUDIENCE: It looks
+like different rho
+
+00:31:43.790 --> 00:31:48.883 align:middle line:90%
+with different polynomial.
+
+00:31:48.883 --> 00:31:50.550 align:middle line:84%
+PABLO SHMERKIN: The
+polynomial is fixed.
+
+00:31:50.550 --> 00:31:52.560 align:middle line:90%
+So in the order of quantifiers--
+
+00:31:52.560 --> 00:31:55.410 align:middle line:84%
+so maybe this is
+still on some board.
+
+00:31:55.410 --> 00:31:56.060 align:middle line:90%
+Yeah.
+
+00:31:56.060 --> 00:31:58.650 align:middle line:84%
+You see, the
+polynomial comes first.
+
+00:31:58.650 --> 00:31:59.670 align:middle line:90%
+The polynomial is fixed.
+
+00:31:59.670 --> 00:32:02.088 align:middle line:84%
+So it's actually A,
+A, A minus A, A, A.
+
+00:32:02.088 --> 00:32:02.630 align:middle line:90%
+AUDIENCE: Oh.
+
+00:32:02.630 --> 00:32:04.190 align:middle line:84%
+PABLO SHMERKIN: The polynomial
+doesn't depend on S,
+
+00:32:04.190 --> 00:32:05.700 align:middle line:84%
+doesn't depend on rho,
+doesn't depend on C.
+
+00:32:05.700 --> 00:32:06.630 align:middle line:90%
+It doesn't depend on anything.
+
+00:32:06.630 --> 00:32:08.490 align:middle line:84%
+It's a completely
+universal polynomial.
+
+00:32:08.490 --> 00:32:10.770 align:middle line:84%
+So it's really A,
+A, A minus A, A, A.
+
+00:32:10.770 --> 00:32:12.580 align:middle line:90%
+Or there are other options.
+
+00:32:12.580 --> 00:32:13.460 align:middle line:90%
+AUDIENCE: Thank you.
+
+00:32:13.460 --> 00:32:14.335 align:middle line:90%
+PABLO SHMERKIN: Yeah.
+
+00:32:14.335 --> 00:32:18.893 align:middle line:90%
+
+
+00:32:18.893 --> 00:32:19.393 align:middle line:90%
+OK.
+
+00:32:19.393 --> 00:32:22.400 align:middle line:90%
+
+
+00:32:22.400 --> 00:32:24.290 align:middle line:84%
+So now we are seeing
+both the lemma,
+
+00:32:24.290 --> 00:32:28.100 align:middle line:84%
+and you sort of see why
+the lemma will be helpful.
+
+00:32:28.100 --> 00:32:29.820 align:middle line:90%
+Although, one has to be careful.
+
+00:32:29.820 --> 00:32:36.120 align:middle line:84%
+And we will be careful because
+in order to overcome this,
+
+00:32:36.120 --> 00:32:39.960 align:middle line:84%
+we need A to be a
+rho, S, something set.
+
+00:32:39.960 --> 00:32:43.250 align:middle line:84%
+So if A was uniform,
+we would be happy.
+
+00:32:43.250 --> 00:32:47.580 align:middle line:84%
+But for the second one, we
+need Q of A to be uniform--
+
+00:32:47.580 --> 00:32:48.720 align:middle line:90%
+not A, but Q of A.
+
+00:32:48.720 --> 00:32:50.990 align:middle line:84%
+So to overcome one issue,
+we need A to be uniform.
+
+00:32:50.990 --> 00:32:53.990 align:middle line:84%
+To overcome the other issue,
+we need Q of A to be uniform.
+
+00:32:53.990 --> 00:32:56.880 align:middle line:84%
+So we still will
+have work to do.
+
+00:32:56.880 --> 00:33:00.460 align:middle line:84%
+But OK, let's go step by step
+and let's prove this lemma.
+
+00:33:00.460 --> 00:33:04.130 align:middle line:90%
+
+
+00:33:04.130 --> 00:33:05.780 align:middle line:84%
+And the proof of
+the lemma will also
+
+00:33:05.780 --> 00:33:10.165 align:middle line:84%
+help us understand and
+work with uniform sets.
+
+00:33:10.165 --> 00:33:27.750 align:middle line:90%
+
+
+00:33:27.750 --> 00:33:30.110 align:middle line:84%
+So the idea is to
+do everything just
+
+00:33:30.110 --> 00:33:32.150 align:middle line:90%
+at the scales powers of delta.
+
+00:33:32.150 --> 00:33:35.550 align:middle line:84%
+And any other scale we can
+sandwich between powers of delta
+
+00:33:35.550 --> 00:33:37.020 align:middle line:90%
+because delta is a constant.
+
+00:33:37.020 --> 00:33:41.670 align:middle line:84%
+The sandwiching will only lose
+a constant depending on delta.
+
+00:33:41.670 --> 00:33:44.250 align:middle line:90%
+So for the first--
+
+00:33:44.250 --> 00:33:58.390 align:middle line:84%
+OK, maybe let's give
+it the letters A and B.
+
+00:33:58.390 --> 00:34:04.905 align:middle line:84%
+So for A, well, let's consider
+rho, some power of delta.
+
+00:34:04.905 --> 00:34:07.750 align:middle line:90%
+
+
+00:34:07.750 --> 00:34:13.810 align:middle line:84%
+Then what is-- so we have to
+look at the intersection of A
+
+00:34:13.810 --> 00:34:15.620 align:middle line:90%
+with a ball of radius rho.
+
+00:34:15.620 --> 00:34:17.290 align:middle line:84%
+But instead of a
+ball of radius rho,
+
+00:34:17.290 --> 00:34:19.192 align:middle line:90%
+let's use a cube of size rho.
+
+00:34:19.192 --> 00:34:21.400 align:middle line:84%
+And again, we can always
+pass between cubes and balls
+
+00:34:21.400 --> 00:34:22.630 align:middle line:90%
+using only constants.
+
+00:34:22.630 --> 00:34:24.130 align:middle line:84%
+And this makes sense
+because we want
+
+00:34:24.130 --> 00:34:27.020 align:middle line:84%
+to use the assumption
+that the set is uniform.
+
+00:34:27.020 --> 00:34:35.710 align:middle line:84%
+So let's take a Q in delta
+D delta to the J of--
+
+00:34:35.710 --> 00:34:41.170 align:middle line:84%
+I guess I called it X. We
+fix one of the scales delta
+
+00:34:41.170 --> 00:34:44.260 align:middle line:84%
+to the J. We fix a cube
+that intersects the set.
+
+00:34:44.260 --> 00:34:47.469 align:middle line:90%
+And what is this?
+
+00:34:47.469 --> 00:34:52.239 align:middle line:90%
+Delta is delta to the M.
+
+00:34:52.239 --> 00:34:55.270 align:middle line:84%
+So here, we are jumping
+from scale delta to the J
+
+00:34:55.270 --> 00:34:59.020 align:middle line:84%
+to the delta to the M. When we
+jump from scale delta to the J
+
+00:34:59.020 --> 00:35:07.150 align:middle line:84%
+to delta to the J plus 1,
+we have R J plus 1 children.
+
+00:35:07.150 --> 00:35:12.970 align:middle line:84%
+Each of those children has
+R to the J plus 2 children
+
+00:35:12.970 --> 00:35:18.980 align:middle line:84%
+and so on, up to R M
+minus 1, with a star.
+
+00:35:18.980 --> 00:35:20.050 align:middle line:90%
+So you see what I have.
+
+00:35:20.050 --> 00:35:21.440 align:middle line:90%
+I wanted to have this star.
+
+00:35:21.440 --> 00:35:24.620 align:middle line:84%
+Without the star, this would
+be true up to constants.
+
+00:35:24.620 --> 00:35:30.414 align:middle line:90%
+
+
+00:35:30.414 --> 00:35:36.730 align:middle line:84%
+So every time we go down one
+scale, every cube splits into R,
+
+00:35:36.730 --> 00:35:39.260 align:middle line:84%
+depending on the scale
+number of offspring.
+
+00:35:39.260 --> 00:35:41.530 align:middle line:84%
+And the point is,
+it doesn't matter
+
+00:35:41.530 --> 00:35:44.020 align:middle line:84%
+where the set is with
+the number of offspring
+
+00:35:44.020 --> 00:35:48.745 align:middle line:84%
+is fixed, but the assumption
+that the set is uniform.
+
+00:35:48.745 --> 00:35:57.250 align:middle line:84%
+So let's write this as R1, R
+M minus 1, divided by R1, RJ.
+
+00:35:57.250 --> 00:36:00.970 align:middle line:90%
+
+
+00:36:00.970 --> 00:36:02.346 align:middle line:90%
+What is the numerator?
+
+00:36:02.346 --> 00:36:09.040 align:middle line:90%
+
+
+00:36:09.040 --> 00:36:10.160 align:middle line:90%
+Sorry 0.
+
+00:36:10.160 --> 00:36:10.920 align:middle line:90%
+We start at 0.
+
+00:36:10.920 --> 00:36:17.620 align:middle line:90%
+
+
+00:36:17.620 --> 00:36:20.540 align:middle line:90%
+What is the numerator?
+
+00:36:20.540 --> 00:36:21.040 align:middle line:90%
+Yes?
+
+00:36:21.040 --> 00:36:23.350 align:middle line:84%
+AUDIENCE: Is it just a
+delta-covering number of X?
+
+00:36:23.350 --> 00:36:24.910 align:middle line:84%
+PABLO SHMERKIN: The delta
+are not covering number of X,
+
+00:36:24.910 --> 00:36:26.952 align:middle line:84%
+because we start at the
+top and we go all the way
+
+00:36:26.952 --> 00:36:28.720 align:middle line:90%
+down to the bottom.
+
+00:36:28.720 --> 00:36:34.510 align:middle line:84%
+So the numerator is the
+delta covering number of A.
+
+00:36:34.510 --> 00:36:36.206 align:middle line:90%
+And what is the denominator?
+
+00:36:36.206 --> 00:36:52.620 align:middle line:90%
+
+
+00:36:52.620 --> 00:36:55.590 align:middle line:84%
+Sorry, actually, we
+start at J because
+
+00:36:55.590 --> 00:36:57.010 align:middle line:90%
+of the way we define things.
+
+00:36:57.010 --> 00:36:58.950 align:middle line:90%
+So we stop at J minus 1.
+
+00:36:58.950 --> 00:37:03.325 align:middle line:84%
+So J, J plus 1, I
+think, now is correct.
+
+00:37:03.325 --> 00:37:03.825 align:middle line:90%
+Yes?
+
+00:37:03.825 --> 00:37:08.100 align:middle line:84%
+AUDIENCE: Is the denominator
+just a capital delta to the J
+
+00:37:08.100 --> 00:37:09.210 align:middle line:90%
+covering of A?
+
+00:37:09.210 --> 00:37:10.210 align:middle line:90%
+PABLO SHMERKIN: Exactly.
+
+00:37:10.210 --> 00:37:14.710 align:middle line:84%
+This is the delta to
+the J covering number,
+
+00:37:14.710 --> 00:37:17.940 align:middle line:90%
+I guess with star--
+
+00:37:17.940 --> 00:37:23.200 align:middle line:84%
+because we split into R0
+children, then R1 and so on.
+
+00:37:23.200 --> 00:37:26.190 align:middle line:84%
+And if we stop here, we
+stopped at the scale delta
+
+00:37:26.190 --> 00:37:28.410 align:middle line:90%
+to the J, big delta to the J.
+
+00:37:28.410 --> 00:37:30.450 align:middle line:90%
+And now we use the assumption.
+
+00:37:30.450 --> 00:37:33.480 align:middle line:84%
+In part A, the
+assumption is that--
+
+00:37:33.480 --> 00:37:37.200 align:middle line:84%
+sorry, I keep switching
+around A and X.
+
+00:37:37.200 --> 00:37:40.020 align:middle line:84%
+The assumption is
+that this is large.
+
+00:37:40.020 --> 00:37:41.620 align:middle line:90%
+So the fraction is small.
+
+00:37:41.620 --> 00:37:46.652 align:middle line:84%
+So the assumption is that, so
+this is smaller up to a constant
+
+00:37:46.652 --> 00:37:49.110 align:middle line:84%
+because now I'm going to go
+back to standard delta-covering
+
+00:37:49.110 --> 00:37:50.640 align:middle line:90%
+numbers.
+
+00:37:50.640 --> 00:37:58.250 align:middle line:84%
+This is C, rho to the S
+delta-covering number of A--
+
+00:37:58.250 --> 00:38:01.410 align:middle line:90%
+X, sorry.
+
+00:38:01.410 --> 00:38:04.140 align:middle line:90%
+So we are done.
+
+00:38:04.140 --> 00:38:13.960 align:middle line:84%
+So we took a cube of size delta
+to the J. Sorry, delta to the J.
+
+00:38:13.960 --> 00:38:15.660 align:middle line:90%
+So this is rho S.
+
+00:38:15.660 --> 00:38:20.730 align:middle line:84%
+So we took a cube of size delta
+to the J. So delta to the J
+
+00:38:20.730 --> 00:38:21.970 align:middle line:90%
+is our Rho.
+
+00:38:21.970 --> 00:38:25.080 align:middle line:84%
+And we show that the
+delta-covering number of that
+
+00:38:25.080 --> 00:38:32.046 align:middle line:84%
+is a constant, rho to the S, and
+the delta-covering number of X.
+
+00:38:32.046 --> 00:38:52.770 align:middle line:84%
+So this shows X is a delta,
+S, C set at scales 1, delta,
+
+00:38:52.770 --> 00:38:55.560 align:middle line:90%
+delta to the M.
+
+00:38:55.560 --> 00:39:01.290 align:middle line:84%
+So it satisfies the condition
+of being a delta S, maybe 0, 1--
+
+00:39:01.290 --> 00:39:04.930 align:middle line:84%
+sorry, 0 of C, 0 of 1
+times C at these scales.
+
+00:39:04.930 --> 00:39:17.555 align:middle line:84%
+But then we sandwich a scale rho
+in delta 1 between two of these.
+
+00:39:17.555 --> 00:39:25.350 align:middle line:90%
+
+
+00:39:25.350 --> 00:39:29.460 align:middle line:84%
+And we are going to
+lose some power of delta
+
+00:39:29.460 --> 00:39:31.350 align:middle line:90%
+by the sandwiching.
+
+00:39:31.350 --> 00:39:34.090 align:middle line:84%
+We are going to lose a power
+of delta in the constant.
+
+00:39:34.090 --> 00:39:37.220 align:middle line:84%
+So this is why the constant
+in the claim depends on delta.
+
+00:39:37.220 --> 00:39:52.160 align:middle line:90%
+
+
+00:39:52.160 --> 00:39:54.780 align:middle line:84%
+An exercise is to
+fill in these details.
+
+00:39:54.780 --> 00:40:00.020 align:middle line:84%
+But hopefully, this convinces
+you that the claim is true.
+
+00:40:00.020 --> 00:40:01.320 align:middle line:90%
+Any questions?
+
+00:40:01.320 --> 00:40:08.255 align:middle line:90%
+
+
+00:40:08.255 --> 00:40:10.070 align:middle line:84%
+And the second part
+of the lemma says
+
+00:40:10.070 --> 00:40:12.320 align:middle line:84%
+that, if the original
+set was a delta S,
+
+00:40:12.320 --> 00:40:18.835 align:middle line:84%
+C set, then it is also a
+rho, S, slightly worse C set.
+
+00:40:18.835 --> 00:40:25.730 align:middle line:90%
+
+
+00:40:25.730 --> 00:40:27.025 align:middle line:90%
+It is a very similar argument.
+
+00:40:27.025 --> 00:40:43.510 align:middle line:90%
+
+
+00:40:43.510 --> 00:40:45.570 align:middle line:84%
+So it's really
+the same argument.
+
+00:40:45.570 --> 00:40:47.780 align:middle line:84%
+So we do exactly the
+same thing again,
+
+00:40:47.780 --> 00:40:51.900 align:middle line:84%
+except that now, instead of
+delta, we have to write rho.
+
+00:40:51.900 --> 00:40:54.715 align:middle line:84%
+OK, let's do it again, but it's
+basically the same argument.
+
+00:40:54.715 --> 00:41:10.490 align:middle line:90%
+
+
+00:41:10.490 --> 00:41:17.810 align:middle line:84%
+b, so assume that rho is
+delta to the J. Otherwise,
+
+00:41:17.810 --> 00:41:19.060 align:middle line:90%
+we sandwich as before.
+
+00:41:19.060 --> 00:41:30.860 align:middle line:90%
+
+
+00:41:30.860 --> 00:41:32.653 align:middle line:90%
+Maybe delta to the J 0.
+
+00:41:32.653 --> 00:41:36.200 align:middle line:90%
+
+
+00:41:36.200 --> 00:41:39.860 align:middle line:84%
+And then we have to
+look at X intersection--
+
+00:41:39.860 --> 00:41:45.610 align:middle line:84%
+so now we take a
+J which is at most
+
+00:41:45.610 --> 00:41:49.210 align:middle line:84%
+J 0 because we have to
+see what happens when
+
+00:41:49.210 --> 00:41:52.480 align:middle line:84%
+we intersect X with
+cubes or balls of size
+
+00:41:52.480 --> 00:41:56.410 align:middle line:90%
+larger than rho now.
+
+00:41:56.410 --> 00:42:02.250 align:middle line:84%
+And let's pick a cube, well,
+of size larger than rho.
+
+00:42:02.250 --> 00:42:06.400 align:middle line:90%
+
+
+00:42:06.400 --> 00:42:09.820 align:middle line:84%
+Then we intersect
+X with Q. And now
+
+00:42:09.820 --> 00:42:15.520 align:middle line:84%
+we look at the
+rho-covering number.
+
+00:42:15.520 --> 00:42:17.900 align:middle line:84%
+But it is exactly the
+same story as before.
+
+00:42:17.900 --> 00:42:18.980 align:middle line:90%
+So what is this?
+
+00:42:18.980 --> 00:42:24.450 align:middle line:84%
+This is R J0, blah,
+blah, blah, R J minus 1.
+
+00:42:24.450 --> 00:42:28.150 align:middle line:90%
+
+
+00:42:28.150 --> 00:42:33.097 align:middle line:84%
+AUDIENCE: Does it start at
+RJ and goes to R J0 minus 1?
+
+00:42:33.097 --> 00:42:33.930 align:middle line:90%
+PABLO SHMERKIN: Yes.
+
+00:42:33.930 --> 00:42:47.800 align:middle line:90%
+
+
+00:42:47.800 --> 00:42:48.440 align:middle line:90%
+OK.
+
+00:42:48.440 --> 00:42:54.070 align:middle line:90%
+And this is R1 R J0 minus 1--
+
+00:42:54.070 --> 00:42:59.205 align:middle line:84%
+sorry, R 0, R 0,
+R 0 R J minus 1.
+
+00:42:59.205 --> 00:43:01.960 align:middle line:90%
+
+
+00:43:01.960 --> 00:43:07.960 align:middle line:84%
+And this is the covering
+number at scale delta
+
+00:43:07.960 --> 00:43:16.960 align:middle line:84%
+to the J0 divided by the
+delta-covering number at scale
+
+00:43:16.960 --> 00:43:26.080 align:middle line:90%
+delta to the J.
+
+00:43:26.080 --> 00:43:33.940 align:middle line:84%
+And because the set is a delta
+S, C set, this is at most--
+
+00:43:33.940 --> 00:43:39.010 align:middle line:84%
+I'll do a constant because I'm
+going to now delete the star.
+
+00:43:39.010 --> 00:43:45.220 align:middle line:90%
+This is at most C--
+
+00:43:45.220 --> 00:43:48.370 align:middle line:90%
+let's write it like rho to the--
+
+00:43:48.370 --> 00:43:48.870 align:middle line:90%
+sorry.
+
+00:43:48.870 --> 00:44:06.220 align:middle line:90%
+
+
+00:44:06.220 --> 00:44:07.700 align:middle line:90%
+Let's try to do this correctly.
+
+00:44:07.700 --> 00:44:08.690 align:middle line:90%
+So what is this.
+
+00:44:08.690 --> 00:44:10.990 align:middle line:84%
+So here, we start
+at the top and go up
+
+00:44:10.990 --> 00:44:14.240 align:middle line:84%
+to scale delta to
+the J0, which is rho.
+
+00:44:14.240 --> 00:44:22.330 align:middle line:84%
+So this is actually A the
+original set at scale rho.
+
+00:44:22.330 --> 00:44:23.540 align:middle line:90%
+We start at the top.
+
+00:44:23.540 --> 00:44:26.810 align:middle line:84%
+We go down to scale
+delta to the J0
+
+00:44:26.810 --> 00:44:28.043 align:middle line:90%
+AUDIENCE: So is this A or X?
+
+00:44:28.043 --> 00:44:28.960 align:middle line:90%
+PABLO SHMERKIN: Sorry.
+
+00:44:28.960 --> 00:44:33.255 align:middle line:84%
+[LAUGHS] Sorry about that,
+X. I should just call it A
+
+00:44:33.255 --> 00:44:35.460 align:middle line:84%
+and then-- but if I call
+it in the statement,
+
+00:44:35.460 --> 00:44:37.990 align:middle line:84%
+then I will write X. So
+it's not going to work.
+
+00:44:37.990 --> 00:44:41.910 align:middle line:84%
+It's X. There is just
+one set which is X.
+
+00:44:41.910 --> 00:44:47.430 align:middle line:84%
+And the denominator is a
+delta to the J covering
+
+00:44:47.430 --> 00:44:51.840 align:middle line:84%
+number of X. The
+numerator I just
+
+00:44:51.840 --> 00:44:56.820 align:middle line:84%
+write the rho-covering
+number of X without the star.
+
+00:44:56.820 --> 00:44:59.710 align:middle line:84%
+And for the denominator,
+we use the previous lemma.
+
+00:44:59.710 --> 00:45:04.240 align:middle line:84%
+So we previously see I think
+it's not in any board anymore.
+
+00:45:04.240 --> 00:45:05.370 align:middle line:90%
+Or maybe it is.
+
+00:45:05.370 --> 00:45:06.370 align:middle line:90%
+It is there.
+
+00:45:06.370 --> 00:45:09.532 align:middle line:84%
+We saw that, if
+we have a delta S,
+
+00:45:09.532 --> 00:45:12.780 align:middle line:84%
+C set, then the
+rho-covering number is
+
+00:45:12.780 --> 00:45:16.860 align:middle line:84%
+at least rho to the
+minus S divided by C.
+
+00:45:16.860 --> 00:45:18.880 align:middle line:90%
+So we use that at this scale.
+
+00:45:18.880 --> 00:45:32.520 align:middle line:90%
+So this is our R.
+
+00:45:32.520 --> 00:45:37.200 align:middle line:84%
+So this has size R
+equals delta to the J.
+
+00:45:37.200 --> 00:45:39.900 align:middle line:90%
+So we have shown what we wanted.
+
+00:45:39.900 --> 00:45:43.860 align:middle line:84%
+So now, if we replace
+cubes by balls,
+
+00:45:43.860 --> 00:45:48.090 align:middle line:84%
+and we interpolate scales, so
+we use just powers of delta,
+
+00:45:48.090 --> 00:45:56.940 align:middle line:84%
+we get that X intersection a
+ball of radius R rho-covering
+
+00:45:56.940 --> 00:46:01.140 align:middle line:84%
+number is at most a constant,
+at most a constant that
+
+00:46:01.140 --> 00:46:04.710 align:middle line:84%
+depends on delta that
+comes from the sandwiching.
+
+00:46:04.710 --> 00:46:07.770 align:middle line:84%
+The original constant
+that is here.
+
+00:46:07.770 --> 00:46:12.510 align:middle line:84%
+Then this is actually rho to the
+minus S in the denominator, R
+
+00:46:12.510 --> 00:46:14.020 align:middle line:84%
+to the minus S in
+the denominator.
+
+00:46:14.020 --> 00:46:19.480 align:middle line:84%
+So we get R to the S and then
+the rho-covering number of X.
+
+00:46:19.480 --> 00:46:25.560 align:middle line:84%
+And that's the definition of
+being a rho, S, slightly worse C
+
+00:46:25.560 --> 00:46:26.060 align:middle line:90%
+set.
+
+00:46:26.060 --> 00:46:31.560 align:middle line:90%
+
+
+00:46:31.560 --> 00:46:32.260 align:middle line:90%
+Questions?
+
+00:46:32.260 --> 00:46:38.170 align:middle line:90%
+
+
+00:46:38.170 --> 00:46:41.530 align:middle line:84%
+So we have seen that uniform
+sets are much better behaved.
+
+00:46:41.530 --> 00:46:46.990 align:middle line:84%
+We can first of all, if it
+is a good set of scale delta,
+
+00:46:46.990 --> 00:46:49.060 align:middle line:84%
+it is a good set at
+coarser scales as well.
+
+00:46:49.060 --> 00:46:51.780 align:middle line:84%
+And also, it's enough
+to know that the set is
+
+00:46:51.780 --> 00:46:55.390 align:middle line:84%
+large at all scales to know that
+it has this spacing condition.
+
+00:46:55.390 --> 00:46:58.210 align:middle line:90%
+So how do we find uniform sets?
+
+00:46:58.210 --> 00:47:01.350 align:middle line:84%
+So this is the content
+of the next lemma, which
+
+00:47:01.350 --> 00:47:04.110 align:middle line:84%
+is simple but
+extremely important
+
+00:47:04.110 --> 00:47:06.780 align:middle line:84%
+and has lots and
+lots of applications
+
+00:47:06.780 --> 00:47:07.640 align:middle line:90%
+all over the place--
+
+00:47:07.640 --> 00:47:11.250 align:middle line:90%
+
+
+00:47:11.250 --> 00:47:13.820 align:middle line:84%
+but in particular, for
+what we are trying to do.
+
+00:47:13.820 --> 00:47:39.440 align:middle line:90%
+
+
+00:47:39.440 --> 00:47:39.940 align:middle line:90%
+Let.
+
+00:47:39.940 --> 00:47:43.850 align:middle line:90%
+
+
+00:47:43.850 --> 00:47:50.270 align:middle line:84%
+little delta be big delta to the
+M. And let X be a subset of 0, 1
+
+00:47:50.270 --> 00:47:52.040 align:middle line:90%
+to the d.
+
+00:47:52.040 --> 00:47:56.690 align:middle line:84%
+So we assume nothing about X.
+And what the lemma says is that
+
+00:47:56.690 --> 00:48:01.333 align:middle line:84%
+x contains a "dense" which
+encodes a uniform subset.
+
+00:48:01.333 --> 00:48:04.742 align:middle line:90%
+
+
+00:48:04.742 --> 00:48:07.080 align:middle line:90%
+So what does "dense" mean?
+
+00:48:07.080 --> 00:48:09.330 align:middle line:84%
+Well, it means different
+things in different settings,
+
+00:48:09.330 --> 00:48:11.900 align:middle line:84%
+so I'm going to prove a
+slightly more general version.
+
+00:48:11.900 --> 00:48:21.066 align:middle line:84%
+So let mu be a subadditive
+set function finitely--
+
+00:48:21.066 --> 00:48:29.750 align:middle line:90%
+
+
+00:48:29.750 --> 00:48:33.350 align:middle line:84%
+set function, like a measure,
+but the only axiom I assume
+
+00:48:33.350 --> 00:48:35.370 align:middle line:84%
+is that mu of a
+plus B is less than
+
+00:48:35.370 --> 00:48:39.380 align:middle line:84%
+or equal than mu of A plus
+mu of B, nothing else.
+
+00:48:39.380 --> 00:48:43.517 align:middle line:84%
+And a very good example
+to keep in mind,
+
+00:48:43.517 --> 00:48:45.600 align:middle line:84%
+which is one of the examples
+where this is useful,
+
+00:48:45.600 --> 00:48:48.058 align:middle line:84%
+but not the only one-- this is
+why I state the more general
+
+00:48:48.058 --> 00:48:48.600 align:middle line:90%
+version--
+
+00:48:48.600 --> 00:48:54.650 align:middle line:84%
+is that mu of B can be the
+delta-covering number of B.
+
+00:48:54.650 --> 00:48:57.930 align:middle line:84%
+So this is not a measure,
+because it is not additive.
+
+00:48:57.930 --> 00:49:00.930 align:middle line:84%
+It is extremely far from
+additive, but it is subadditive.
+
+00:49:00.930 --> 00:49:04.180 align:middle line:90%
+
+
+00:49:04.180 --> 00:49:12.410 align:middle line:84%
+Then there exists Y, which
+is contained in X, which is--
+
+00:49:12.410 --> 00:49:13.590 align:middle line:90%
+well, two things happen.
+
+00:49:13.590 --> 00:49:17.620 align:middle line:84%
+One is that Y is
+delta M uniform.
+
+00:49:17.620 --> 00:49:21.830 align:middle line:90%
+
+
+00:49:21.830 --> 00:49:26.990 align:middle line:84%
+And the second thing is that
+Y is large measured by mu.
+
+00:49:26.990 --> 00:49:30.650 align:middle line:84%
+Mu of Y is large
+compared to what?
+
+00:49:30.650 --> 00:49:32.720 align:middle line:90%
+Compared to mu of X.
+
+00:49:32.720 --> 00:49:34.170 align:middle line:90%
+So mu of X could be anything.
+
+00:49:34.170 --> 00:49:35.212 align:middle line:90%
+We don't know what it is.
+
+00:49:35.212 --> 00:49:36.970 align:middle line:90%
+Mu is something very general.
+
+00:49:36.970 --> 00:49:39.000 align:middle line:90%
+And we do lose something.
+
+00:49:39.000 --> 00:49:44.700 align:middle line:84%
+We lose something like 2
+delta log 1 over big delta 2d.
+
+00:49:44.700 --> 00:49:50.150 align:middle line:84%
+Sorry, 2d is the ambient
+dimension to the n,
+
+00:49:50.150 --> 00:49:51.130 align:middle line:90%
+to the minus n.
+
+00:49:51.130 --> 00:50:00.050 align:middle line:90%
+
+
+00:50:00.050 --> 00:50:03.570 align:middle line:84%
+So here, the point is that
+the scale is delta to the M.
+
+00:50:03.570 --> 00:50:06.980 align:middle line:84%
+And here, we have log of
+1 over delta to the M.
+
+00:50:06.980 --> 00:50:08.850 align:middle line:84%
+So we lose something
+exponential.
+
+00:50:08.850 --> 00:50:14.630 align:middle line:84%
+But if delta is small, it's
+a very small exponential.
+
+00:50:14.630 --> 00:50:18.410 align:middle line:84%
+Maybe let's write it
+in this equivalent way.
+
+00:50:18.410 --> 00:50:24.550 align:middle line:84%
+This is delta to the
+minus sigma M mu of X,
+
+00:50:24.550 --> 00:50:34.210 align:middle line:84%
+where sigma is logarithm of
+2d logarithm of 1 over delta--
+
+00:50:34.210 --> 00:50:37.300 align:middle line:90%
+so it's a double log--
+
+00:50:37.300 --> 00:50:39.000 align:middle line:90%
+divided by log of 1 over delta.
+
+00:50:39.000 --> 00:50:42.340 align:middle line:90%
+
+
+00:50:42.340 --> 00:50:44.330 align:middle line:84%
+So if we make
+delta small enough,
+
+00:50:44.330 --> 00:50:47.500 align:middle line:84%
+we can make sigma,
+arbitrarily, close to 0.
+
+00:50:47.500 --> 00:50:49.320 align:middle line:84%
+So in practice,
+at some point, we
+
+00:50:49.320 --> 00:50:52.420 align:middle line:84%
+are going to choose this
+delta so that this is
+
+00:50:52.420 --> 00:50:54.140 align:middle line:90%
+small enough for our purposes.
+
+00:50:54.140 --> 00:50:58.280 align:middle line:84%
+And from that point on, delta
+will be fixed, but M will not.
+
+00:50:58.280 --> 00:50:59.990 align:middle line:90%
+So M will go to infinity.
+
+00:50:59.990 --> 00:51:06.520 align:middle line:90%
+
+
+00:51:06.520 --> 00:51:09.580 align:middle line:90%
+Proof of the lemma--
+
+00:51:09.580 --> 00:51:12.850 align:middle line:84%
+AUDIENCE: Where it says
+delta to the minus sigma M,
+
+00:51:12.850 --> 00:51:14.800 align:middle line:84%
+is it just delta
+to the minus sigma?
+
+00:51:14.800 --> 00:51:18.070 align:middle line:84%
+PABLO SHMERKIN:
+Plus sigma M, sorry.
+
+00:51:18.070 --> 00:51:20.110 align:middle line:90%
+Yeah.
+
+00:51:20.110 --> 00:51:22.370 align:middle line:90%
+Yeah, so the measure--
+
+00:51:22.370 --> 00:51:24.820 align:middle line:84%
+it doesn't have to be a
+measure, but the measure of Y
+
+00:51:24.820 --> 00:51:27.910 align:middle line:84%
+is not much smaller
+than the measure of X.
+
+00:51:27.910 --> 00:51:31.520 align:middle line:84%
+But not much smaller depends
+on your point of view.
+
+00:51:31.520 --> 00:51:34.370 align:middle line:84%
+So we do lose some
+exponential thing.
+
+00:51:34.370 --> 00:51:36.790 align:middle line:84%
+But the sigma is as
+small as you want
+
+00:51:36.790 --> 00:51:39.980 align:middle line:90%
+by choosing delta small enough.
+
+00:51:39.980 --> 00:51:40.480 align:middle line:90%
+Yes?
+
+00:51:40.480 --> 00:51:43.660 align:middle line:84%
+AUDIENCE: So you said, we
+fix sigma, that is in delta,
+
+00:51:43.660 --> 00:51:45.400 align:middle line:84%
+and then we let
+M go to infinity.
+
+00:51:45.400 --> 00:51:47.233 align:middle line:90%
+So does that blow up?
+
+00:51:47.233 --> 00:51:48.650 align:middle line:84%
+PABLO SHMERKIN:
+Yeah, it blows up.
+
+00:51:48.650 --> 00:51:51.530 align:middle line:84%
+So it's not a--
+yeah, it blows up.
+
+00:51:51.530 --> 00:51:53.480 align:middle line:90%
+But it blows up like a power.
+
+00:51:53.480 --> 00:51:55.670 align:middle line:84%
+But the power is
+arbitrarily small.
+
+00:51:55.670 --> 00:51:56.170 align:middle line:90%
+Sorry.
+
+00:51:56.170 --> 00:51:57.460 align:middle line:90%
+Ah.
+
+00:51:57.460 --> 00:52:00.790 align:middle line:90%
+Sorry, bad day with typos.
+
+00:52:00.790 --> 00:52:03.070 align:middle line:90%
+Delta to the sigma.
+
+00:52:03.070 --> 00:52:06.870 align:middle line:84%
+So small delta is
+big delta to the M.
+
+00:52:06.870 --> 00:52:14.150 align:middle line:84%
+So small delta is big
+delta to the M. So this--
+
+00:52:14.150 --> 00:52:16.090 align:middle line:90%
+OK, sorry about this.
+
+00:52:16.090 --> 00:52:21.770 align:middle line:84%
+So this is delta to the
+sigma by definition of sigma.
+
+00:52:21.770 --> 00:52:24.390 align:middle line:90%
+
+
+00:52:24.390 --> 00:52:26.915 align:middle line:84%
+And actually, it is
+delta to the minus sigma.
+
+00:52:26.915 --> 00:52:28.980 align:middle line:90%
+[LAUGHS] Sorry.
+
+00:52:28.980 --> 00:52:30.640 align:middle line:84%
+This is delta to
+the minus sigma.
+
+00:52:30.640 --> 00:52:32.860 align:middle line:84%
+By definition, this is
+the definition of sigma.
+
+00:52:32.860 --> 00:52:36.570 align:middle line:84%
+So this is big delta
+to the sigma M. Big
+
+00:52:36.570 --> 00:52:39.540 align:middle line:84%
+delta to the sigma M is
+small delta to the sigma.
+
+00:52:39.540 --> 00:52:42.220 align:middle line:84%
+So yes, as M goes to
+infinity, delta goes to 0.
+
+00:52:42.220 --> 00:52:46.110 align:middle line:84%
+This goes to 0, but it goes to 0
+as a power, which is arbitrarily
+
+00:52:46.110 --> 00:52:46.780 align:middle line:90%
+small.
+
+00:52:46.780 --> 00:52:49.740 align:middle line:84%
+So this is the way we
+should think about this.
+
+00:52:49.740 --> 00:52:52.110 align:middle line:90%
+Sorry.
+
+00:52:52.110 --> 00:52:55.920 align:middle line:90%
+Is it correct now?
+
+00:52:55.920 --> 00:52:57.880 align:middle line:90%
+OK.
+
+00:52:57.880 --> 00:53:00.930 align:middle line:84%
+So the proof is some
+clever, clever pigeonholing,
+
+00:53:00.930 --> 00:53:03.750 align:middle line:84%
+starting from the
+bottom of the tree.
+
+00:53:03.750 --> 00:53:06.905 align:middle line:84%
+So the proof is trim the tree
+starting from the bottom.
+
+00:53:06.905 --> 00:53:49.200 align:middle line:90%
+
+
+00:53:49.200 --> 00:53:53.760 align:middle line:84%
+So we have this at X,
+and let's call it XM.
+
+00:53:53.760 --> 00:53:56.276 align:middle line:90%
+And we are going to construct--
+
+00:53:56.276 --> 00:54:00.120 align:middle line:90%
+
+
+00:54:00.120 --> 00:54:01.790 align:middle line:84%
+by pigeonholing
+from the bottom, we
+
+00:54:01.790 --> 00:54:07.410 align:middle line:84%
+are going to construct a
+nested sequence of sets
+
+00:54:07.410 --> 00:54:09.580 align:middle line:90%
+all the way down to X0.
+
+00:54:09.580 --> 00:54:14.430 align:middle line:84%
+And this is going to be our
+Y that we are looking for.
+
+00:54:14.430 --> 00:54:15.998 align:middle line:90%
+OK, so let's explain.
+
+00:54:15.998 --> 00:54:18.040 align:middle line:84%
+I'm going to explain how
+to construct XM minus 1,
+
+00:54:18.040 --> 00:54:21.480 align:middle line:84%
+and then we just continue
+the same way by induction.
+
+00:54:21.480 --> 00:54:24.680 align:middle line:84%
+So we have XM,
+which is X, really.
+
+00:54:24.680 --> 00:54:30.600 align:middle line:90%
+
+
+00:54:30.600 --> 00:54:34.650 align:middle line:84%
+So we have all the
+cubes of size delta
+
+00:54:34.650 --> 00:54:37.330 align:middle line:84%
+to the M minus 1 that
+intersect the set.
+
+00:54:37.330 --> 00:54:39.280 align:middle line:84%
+But the branching numbers
+could be different.
+
+00:54:39.280 --> 00:54:40.780 align:middle line:84%
+So this could be
+4, this could be 1,
+
+00:54:40.780 --> 00:54:43.360 align:middle line:90%
+this could be 2, 2, and so on.
+
+00:54:43.360 --> 00:54:45.700 align:middle line:84%
+And we want we want
+them all to be the same.
+
+00:54:45.700 --> 00:54:47.280 align:middle line:84%
+So we are just
+going to pigeonhole
+
+00:54:47.280 --> 00:54:50.153 align:middle line:90%
+the most popular value.
+
+00:54:50.153 --> 00:54:51.570 align:middle line:84%
+Because there are
+too many values,
+
+00:54:51.570 --> 00:54:53.400 align:middle line:84%
+we are going to
+do it dyadically.
+
+00:54:53.400 --> 00:54:55.630 align:middle line:90%
+So that's basically the proof.
+
+00:54:55.630 --> 00:54:58.170 align:middle line:90%
+So let's write it down.
+
+00:54:58.170 --> 00:55:09.590 align:middle line:84%
+So let XM minus 1 l be the
+union of all the queues
+
+00:55:09.590 --> 00:55:15.740 align:middle line:84%
+which are squares
+of level M minus 1
+
+00:55:15.740 --> 00:55:21.270 align:middle line:84%
+that intersects the original set
+such that the branching numbers,
+
+00:55:21.270 --> 00:55:24.440 align:middle line:84%
+or the number of
+descendants of generation
+
+00:55:24.440 --> 00:55:31.250 align:middle line:84%
+M, so Q intersection X delta
+to the M star covering number
+
+00:55:31.250 --> 00:55:33.655 align:middle line:90%
+is roughly 2 to the l.
+
+00:55:33.655 --> 00:55:43.190 align:middle line:90%
+
+
+00:55:43.190 --> 00:55:45.510 align:middle line:84%
+And what are the
+possible values of l?
+
+00:55:45.510 --> 00:55:48.170 align:middle line:84%
+Well, it could be 0 because
+there is at least one--
+
+00:55:48.170 --> 00:55:50.870 align:middle line:84%
+because the cube
+intersects X, there
+
+00:55:50.870 --> 00:55:52.410 align:middle line:90%
+is at least one descendant.
+
+00:55:52.410 --> 00:55:55.200 align:middle line:84%
+And the largest it
+could possibly be--
+
+00:55:55.200 --> 00:56:02.480 align:middle line:84%
+so the largest 2 to the l can
+be is delta to the minus D.
+
+00:56:02.480 --> 00:56:05.720 align:middle line:84%
+So each time we go
+down one generation,
+
+00:56:05.720 --> 00:56:08.480 align:middle line:84%
+we subdivide into relative
+scale 1 over delta,
+
+00:56:08.480 --> 00:56:10.160 align:middle line:90%
+and we have D dimensions.
+
+00:56:10.160 --> 00:56:19.700 align:middle line:84%
+So l ranges from 0
+to the logarithm of--
+
+00:56:19.700 --> 00:56:22.930 align:middle line:84%
+well, D logarithm
+of 1 over delta.
+
+00:56:22.930 --> 00:56:26.960 align:middle line:90%
+
+
+00:56:26.960 --> 00:56:29.010 align:middle line:90%
+So we pigeonhole.
+
+00:56:29.010 --> 00:56:29.910 align:middle line:90%
+Mu is subadditive.
+
+00:56:29.910 --> 00:56:31.410 align:middle line:84%
+So you see that
+this is what we use.
+
+00:56:31.410 --> 00:56:33.780 align:middle line:90%
+So mu of X is this.
+
+00:56:33.780 --> 00:56:36.170 align:middle line:90%
+These sets cover X.
+
+00:56:36.170 --> 00:56:42.440 align:middle line:84%
+So mu of X is at most
+the sum over l of mu XM.
+
+00:56:42.440 --> 00:56:45.120 align:middle line:84%
+So it is X, but
+let's write it as XM
+
+00:56:45.120 --> 00:56:50.660 align:middle line:84%
+so it's clear how to continue
+inductively, X minus 1 l,
+
+00:56:50.660 --> 00:56:56.180 align:middle line:84%
+and l takes D log 1 over
+delta possible values.
+
+00:56:56.180 --> 00:57:07.610 align:middle line:84%
+So there exists some l such that
+mu of x minus 1 l has measured
+
+00:57:07.610 --> 00:57:10.710 align:middle line:84%
+at least-- maybe let's
+put a tilde just in case--
+
+00:57:10.710 --> 00:57:21.590 align:middle line:84%
+1 over the log of 1 over
+delta times the measure of X.
+
+00:57:21.590 --> 00:57:23.205 align:middle line:90%
+And so what the situation now?
+
+00:57:23.205 --> 00:57:25.220 align:middle line:84%
+Now we know that the
+number of offspring
+
+00:57:25.220 --> 00:57:27.480 align:middle line:90%
+is constant up to a factor of 2.
+
+00:57:27.480 --> 00:57:28.863 align:middle line:90%
+So here there could be 7.
+
+00:57:28.863 --> 00:57:29.780 align:middle line:90%
+Here there could be 8.
+
+00:57:29.780 --> 00:57:31.310 align:middle line:90%
+Here there could be five.
+
+00:57:31.310 --> 00:57:34.430 align:middle line:84%
+Well, in that case, we are going
+to keep the 4 with the largest
+
+00:57:34.430 --> 00:57:38.500 align:middle line:84%
+mass, which, again, we can
+do by subadditivity of mu.
+
+00:57:38.500 --> 00:57:41.300 align:middle line:90%
+
+
+00:57:41.300 --> 00:57:54.540 align:middle line:84%
+So inside each Q which
+is a subset of these,
+
+00:57:54.540 --> 00:58:02.843 align:middle line:84%
+so the ones that survived,
+keep 2 to the l cubes--
+
+00:58:02.843 --> 00:58:06.550 align:middle line:90%
+
+
+00:58:06.550 --> 00:58:07.490 align:middle line:90%
+exactly 2 to the l.
+
+00:58:07.490 --> 00:58:09.740 align:middle line:84%
+So there are between 2 to
+the l and 2 to the l plus 1.
+
+00:58:09.740 --> 00:58:15.820 align:middle line:84%
+We give exactly 2 to the l
+cubes of size delta to the M.
+
+00:58:15.820 --> 00:58:18.500 align:middle line:84%
+By doing this, we lose
+another factor of 2.
+
+00:58:18.500 --> 00:58:21.530 align:middle line:84%
+So this is why we have
+2d log of 1 over delta.
+
+00:58:21.530 --> 00:58:24.345 align:middle line:84%
+Maybe it should be 4
+or something like this.
+
+00:58:24.345 --> 00:58:25.720 align:middle line:84%
+But of course, it
+doesn't matter.
+
+00:58:25.720 --> 00:58:28.930 align:middle line:90%
+
+
+00:58:28.930 --> 00:58:34.170 align:middle line:84%
+Let X M minus 1 be the
+union of all of those.
+
+00:58:34.170 --> 00:58:39.175 align:middle line:90%
+
+
+00:58:39.175 --> 00:58:41.670 align:middle line:84%
+So first, we do
+dyadic pigeonholing
+
+00:58:41.670 --> 00:58:43.420 align:middle line:84%
+because in dyadic
+pigeonholing, things are
+
+00:58:43.420 --> 00:58:44.990 align:middle line:90%
+constant up to a factor of 2.
+
+00:58:44.990 --> 00:58:47.300 align:middle line:84%
+Then I trim again to
+make it exactly constant.
+
+00:58:47.300 --> 00:58:49.390 align:middle line:90%
+Then I only lose a factor of 2.
+
+00:58:49.390 --> 00:58:56.980 align:middle line:84%
+So by doing this, now we
+have our set X M minus 1.
+
+00:58:56.980 --> 00:59:00.637 align:middle line:84%
+And the size-- sorry, the
+size in terms of the measure.
+
+00:59:00.637 --> 00:59:02.720 align:middle line:84%
+So the measure could be
+the delta-covering number,
+
+00:59:02.720 --> 00:59:03.928 align:middle line:90%
+but it could be other things.
+
+00:59:03.928 --> 00:59:11.270 align:middle line:84%
+So the measure of X M minus 1 is
+bigger than 1 over to the log 1
+
+00:59:11.270 --> 00:59:17.620 align:middle line:84%
+over delta times the
+measure of X and D
+
+00:59:17.620 --> 00:59:20.090 align:middle line:84%
+set is now uniform
+at the last scale.
+
+00:59:20.090 --> 00:59:35.600 align:middle line:84%
+So every Q that intersects this
+new set has some fixed number--
+
+00:59:35.600 --> 00:59:39.590 align:middle line:84%
+let's call it R minus
+1-- descendants.
+
+00:59:39.590 --> 00:59:46.900 align:middle line:90%
+
+
+00:59:46.900 --> 00:59:50.900 align:middle line:84%
+So this will be 2 to the l
+for the l that we pigeonholed.
+
+00:59:50.900 --> 00:59:54.910 align:middle line:90%
+
+
+00:59:54.910 --> 00:59:56.890 align:middle line:84%
+And now we take X
+M minus 1, and we
+
+00:59:56.890 --> 01:00:02.480 align:middle line:84%
+keep going up until all the way
+up to the top, until we get X0.
+
+01:00:02.480 --> 01:00:05.985 align:middle line:84%
+And then we have to convince
+ourselves that X 0 works.
+
+01:00:05.985 --> 01:00:30.910 align:middle line:90%
+
+
+01:00:30.910 --> 01:00:33.650 align:middle line:90%
+OK, so one thing is clear.
+
+01:00:33.650 --> 01:00:36.320 align:middle line:84%
+Every time we iterate,
+we lose this factor.
+
+01:00:36.320 --> 01:00:38.690 align:middle line:90%
+So we lose this factor M times.
+
+01:00:38.690 --> 01:00:42.375 align:middle line:84%
+And that was the second
+part of the claim.
+
+01:00:42.375 --> 01:00:58.380 align:middle line:90%
+
+
+01:00:58.380 --> 01:01:02.820 align:middle line:84%
+And the second claim is
+that the set Y is uniform.
+
+01:01:02.820 --> 01:01:08.370 align:middle line:84%
+Well, every time we
+do this, it becomes
+
+01:01:08.370 --> 01:01:10.900 align:middle line:84%
+uniform from one
+scale to the next.
+
+01:01:10.900 --> 01:01:12.930 align:middle line:84%
+And the only thing that
+needs to be observed
+
+01:01:12.930 --> 01:01:14.170 align:middle line:90%
+is that this is preserved.
+
+01:01:14.170 --> 01:01:18.910 align:middle line:84%
+So when we go up from scale
+M minus 1 to scale M minus 2,
+
+01:01:18.910 --> 01:01:21.730 align:middle line:84%
+we don't mess up the
+uniformity that we already had.
+
+01:01:21.730 --> 01:01:23.945 align:middle line:84%
+And let me do a
+proof by picture.
+
+01:01:23.945 --> 01:01:30.300 align:middle line:90%
+
+
+01:01:30.300 --> 01:01:32.160 align:middle line:84%
+Let's say that, in
+the first stage,
+
+01:01:32.160 --> 01:01:36.780 align:middle line:90%
+we chose these three cubes.
+
+01:01:36.780 --> 01:01:40.950 align:middle line:84%
+And each of them has the
+same number of descendants.
+
+01:01:40.950 --> 01:01:45.090 align:middle line:84%
+In the next stage, we
+might remove some of these.
+
+01:01:45.090 --> 01:01:46.773 align:middle line:90%
+But it doesn't matter.
+
+01:01:46.773 --> 01:01:48.940 align:middle line:84%
+Let's say that we remove
+this one in the next stage.
+
+01:01:48.940 --> 01:01:51.370 align:middle line:84%
+So the ones we keep still
+have the uniformity.
+
+01:01:51.370 --> 01:01:53.040 align:middle line:84%
+So we don't destroy
+the uniformity
+
+01:01:53.040 --> 01:01:55.920 align:middle line:84%
+that we already obtained
+at finer scale scales
+
+01:01:55.920 --> 01:01:57.520 align:middle line:90%
+when we go to coarser scales.
+
+01:01:57.520 --> 01:01:58.505 align:middle line:90%
+So it is uniform.
+
+01:01:58.505 --> 01:02:07.010 align:middle line:90%
+
+
+01:02:07.010 --> 01:02:13.770 align:middle line:84%
+So this is the proof
+that, given any set,
+
+01:02:13.770 --> 01:02:17.940 align:middle line:84%
+we can find a dense in this set,
+dense up to delta to the sigma
+
+01:02:17.940 --> 01:02:19.870 align:middle line:90%
+such that it is also uniform.
+
+01:02:19.870 --> 01:02:23.170 align:middle line:84%
+And well, by taking mu to be
+the delta-covering number,
+
+01:02:23.170 --> 01:02:25.780 align:middle line:84%
+it is literally dense
+in the standard way.
+
+01:02:25.780 --> 01:02:29.650 align:middle line:84%
+But sometimes it's convenient,
+as we will see or maybe not,
+
+01:02:29.650 --> 01:02:31.050 align:middle line:90%
+depending on time.
+
+01:02:31.050 --> 01:02:32.830 align:middle line:84%
+It is convenient
+to take other mu's.
+
+01:02:32.830 --> 01:02:36.960 align:middle line:84%
+This is why I stated
+it in this way.
+
+01:02:36.960 --> 01:02:38.683 align:middle line:90%
+Any questions?
+
+01:02:38.683 --> 01:02:41.100 align:middle line:84%
+Again, all of the tools that
+we have been discussing today
+
+01:02:41.100 --> 01:02:42.790 align:middle line:84%
+are useful not
+just in this proof,
+
+01:02:42.790 --> 01:02:45.010 align:middle line:84%
+but all over the place
+in projection theory.
+
+01:02:45.010 --> 01:02:45.610 align:middle line:90%
+Yes?
+
+01:02:45.610 --> 01:02:48.810 align:middle line:84%
+AUDIENCE: I'm a bit confused
+by this construction.
+
+01:02:48.810 --> 01:02:57.740 align:middle line:84%
+Yeah, I [INAUDIBLE] on
+level 1, everything's--
+
+01:02:57.740 --> 01:03:00.690 align:middle line:90%
+the degree is the same.
+
+01:03:00.690 --> 01:03:03.360 align:middle line:84%
+But if you do induction
+for each subtree,
+
+01:03:03.360 --> 01:03:06.890 align:middle line:84%
+you can only guarantee that
+the degree inside each subtree
+
+01:03:06.890 --> 01:03:07.680 align:middle line:90%
+are the same.
+
+01:03:07.680 --> 01:03:11.540 align:middle line:84%
+You cannot guarantee the degrees
+between different subtrees are
+
+01:03:11.540 --> 01:03:12.550 align:middle line:90%
+equal, right?
+
+01:03:12.550 --> 01:03:16.340 align:middle line:84%
+PABLO SHMERKIN: What do you
+mean, different subtrees?
+
+01:03:16.340 --> 01:03:19.220 align:middle line:84%
+AUDIENCE: The first cube you
+divide this [INAUDIBLE] cube
+
+01:03:19.220 --> 01:03:22.020 align:middle line:84%
+into four cubes and
+[INAUDIBLE] three yellow ones.
+
+01:03:22.020 --> 01:03:27.260 align:middle line:84%
+And these three yellow
+ones have the same number
+
+01:03:27.260 --> 01:03:28.710 align:middle line:90%
+of smaller boxes.
+
+01:03:28.710 --> 01:03:33.090 align:middle line:84%
+But then-- yeah, as
+my understanding,
+
+01:03:33.090 --> 01:03:35.270 align:middle line:84%
+you kind of do an
+inductive argument
+
+01:03:35.270 --> 01:03:37.665 align:middle line:84%
+for each of those
+three yellow boxes.
+
+01:03:37.665 --> 01:03:39.540 align:middle line:84%
+PABLO SHMERKIN: No, we
+start from the bottom.
+
+01:03:39.540 --> 01:03:40.040 align:middle line:90%
+So--
+
+01:03:40.040 --> 01:03:41.550 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+01:03:41.550 --> 01:03:42.690 align:middle line:84%
+PABLO SHMERKIN: Yeah,
+what is confusing you,
+
+01:03:42.690 --> 01:03:43.970 align:middle line:84%
+you're thinking about
+starting from the top.
+
+01:03:43.970 --> 01:03:45.110 align:middle line:90%
+AUDIENCE: Yeah, yeah, right.
+
+01:03:45.110 --> 01:03:47.027 align:middle line:84%
+PABLO SHMERKIN: You
+cannot start from the top,
+
+01:03:47.027 --> 01:03:49.020 align:middle line:84%
+precisely because of
+what is confusing you.
+
+01:03:49.020 --> 01:03:52.530 align:middle line:84%
+It wouldn't-- I mean,
+you cannot make it work.
+
+01:03:52.530 --> 01:03:53.760 align:middle line:90%
+But we start from the bottom.
+
+01:03:53.760 --> 01:03:55.595 align:middle line:84%
+And this is exactly why
+we start from the bottom.
+
+01:03:55.595 --> 01:03:56.095 align:middle line:90%
+AUDIENCE: OK
+
+01:03:56.095 --> 01:03:57.845 align:middle line:84%
+PABLO SHMERKIN: When
+We go from the bottom
+
+01:03:57.845 --> 01:04:00.080 align:middle line:84%
+to the top, everything,
+every uniformity that we gain
+
+01:04:00.080 --> 01:04:01.990 align:middle line:84%
+is preserved when
+we keep iterating,
+
+01:04:01.990 --> 01:04:03.115 align:middle line:90%
+moving in the up direction.
+
+01:04:03.115 --> 01:04:03.980 align:middle line:84%
+AUDIENCE: OK, yeah,
+that makes sense.
+
+01:04:03.980 --> 01:04:04.520 align:middle line:90%
+Thanks.
+
+01:04:04.520 --> 01:04:05.478 align:middle line:90%
+PABLO SHMERKIN: Mm-hmm.
+
+01:04:05.478 --> 01:04:08.770 align:middle line:90%
+
+
+01:04:08.770 --> 01:04:12.260 align:middle line:84%
+So in the remaining
+14 minutes, let's
+
+01:04:12.260 --> 01:04:14.390 align:middle line:84%
+try to go back and
+see how all of this
+
+01:04:14.390 --> 01:04:17.155 align:middle line:84%
+helps us deal with
+the issue that we had.
+
+01:04:17.155 --> 01:04:32.690 align:middle line:90%
+
+
+01:04:32.690 --> 01:05:06.650 align:middle line:90%
+Maybe let's keep the lemma
+
+01:05:06.650 --> 01:05:07.860 align:middle line:90%
+So let's go back.
+
+01:05:07.860 --> 01:05:09.520 align:middle line:90%
+So now we go back to our goal.
+
+01:05:09.520 --> 01:05:16.850 align:middle line:90%
+
+
+01:05:16.850 --> 01:05:25.980 align:middle line:84%
+So A is a delta S. So this
+C is delta to the minus eta.
+
+01:05:25.980 --> 01:05:28.648 align:middle line:84%
+But that's not where
+the issue lies.
+
+01:05:28.648 --> 01:05:31.190 align:middle line:84%
+On the other hand, if you want
+to write the things correctly,
+
+01:05:31.190 --> 01:05:33.900 align:middle line:84%
+you have to keep track of many
+parameters and how they change.
+
+01:05:33.900 --> 01:05:36.150 align:middle line:84%
+And I'm not going to be
+able to do that today,
+
+01:05:36.150 --> 01:05:37.480 align:middle line:90%
+so let's ignore this.
+
+01:05:37.480 --> 01:05:41.030 align:middle line:90%
+
+
+01:05:41.030 --> 01:05:46.675 align:middle line:84%
+So we know that Q of A has
+large size at scale delta.
+
+01:05:46.675 --> 01:05:53.260 align:middle line:90%
+
+
+01:05:53.260 --> 01:05:59.740 align:middle line:84%
+So the first thing we do
+is we replace-- so Q of A
+
+01:05:59.740 --> 01:06:03.340 align:middle line:84%
+is A, A, A minus A,
+A, A. So by using
+
+01:06:03.340 --> 01:06:05.560 align:middle line:84%
+similar techniques or
+basically the same techniques
+
+01:06:05.560 --> 01:06:08.950 align:middle line:84%
+that you are already used
+in the finite field setting,
+
+01:06:08.950 --> 01:06:11.180 align:middle line:84%
+we can get the
+following conclusion.
+
+01:06:11.180 --> 01:06:17.093 align:middle line:84%
+There exists one A in A, such
+that A plus little A, A grows.
+
+01:06:17.093 --> 01:06:20.395 align:middle line:90%
+
+
+01:06:20.395 --> 01:06:21.532 align:middle line:90%
+It's not the same epsilon.
+
+01:06:21.532 --> 01:06:23.865 align:middle line:84%
+So every time I write epsilon,
+it's a different epsilon.
+
+01:06:23.865 --> 01:06:26.440 align:middle line:90%
+
+
+01:06:26.440 --> 01:06:31.300 align:middle line:84%
+Is that OK, or do you want
+me to write the epsilon 1?
+
+01:06:31.300 --> 01:06:32.270 align:middle line:90%
+We lose a lot.
+
+01:06:32.270 --> 01:06:35.390 align:middle line:90%
+So this epsilon, we lose a lot.
+
+01:06:35.390 --> 01:06:37.940 align:middle line:84%
+So this is similar to
+the finite field setting.
+
+01:06:37.940 --> 01:06:42.730 align:middle line:84%
+This uses a Ruzsa's
+triangle inequality.
+
+01:06:42.730 --> 01:06:45.580 align:middle line:84%
+I guess the main thing it
+uses is Plünnecke-Ruzsa.
+
+01:06:45.580 --> 01:06:47.860 align:middle line:84%
+And as I explained last
+time, all of these things
+
+01:06:47.860 --> 01:06:50.770 align:middle line:84%
+are still true for
+delta-covering numbers.
+
+01:06:50.770 --> 01:06:57.400 align:middle line:84%
+So uses Plünnecke-Ruzsa,
+Ruzsa's triangle inequality,
+
+01:06:57.400 --> 01:07:01.000 align:middle line:84%
+and I guess, maybe
+some double counting.
+
+01:07:01.000 --> 01:07:02.660 align:middle line:84%
+So I'm not saying
+this is trivial,
+
+01:07:02.660 --> 01:07:06.790 align:middle line:84%
+but I hope you did something
+similar in the finite field
+
+01:07:06.790 --> 01:07:08.380 align:middle line:90%
+setting.
+
+01:07:08.380 --> 01:07:09.440 align:middle line:90%
+OK, great.
+
+01:07:09.440 --> 01:07:16.904 align:middle line:90%
+
+
+01:07:16.904 --> 01:07:19.425 align:middle line:84%
+Second, we can assume
+that a is uniform.
+
+01:07:19.425 --> 01:07:22.580 align:middle line:90%
+
+
+01:07:22.580 --> 01:07:24.980 align:middle line:84%
+So first, we assume
+that A is uniform.
+
+01:07:24.980 --> 01:07:26.600 align:middle line:90%
+And second, we do this.
+
+01:07:26.600 --> 01:07:27.620 align:middle line:90%
+Maybe this is better.
+
+01:07:27.620 --> 01:07:29.373 align:middle line:90%
+So A is uniform.
+
+01:07:29.373 --> 01:07:34.010 align:middle line:90%
+
+
+01:07:34.010 --> 01:07:38.415 align:middle line:84%
+So we have to choose, at this
+stage, delta small enough.
+
+01:07:38.415 --> 01:07:44.930 align:middle line:90%
+
+
+01:07:44.930 --> 01:07:50.920 align:middle line:84%
+So here, the mu is just
+the delta-covering number.
+
+01:07:50.920 --> 01:07:53.890 align:middle line:84%
+So we apply the
+uniformization lemma.
+
+01:07:53.890 --> 01:07:57.040 align:middle line:84%
+So we start with
+the delta S, C set.
+
+01:07:57.040 --> 01:07:59.060 align:middle line:90%
+Now we pass to a uniform subset.
+
+01:07:59.060 --> 01:08:01.870 align:middle line:84%
+The uniform subset is
+dense up to a factor delta
+
+01:08:01.870 --> 01:08:02.987 align:middle line:90%
+to the epsilon--
+
+01:08:02.987 --> 01:08:04.570 align:middle line:84%
+not epsilon, delta
+to the sigma, where
+
+01:08:04.570 --> 01:08:06.640 align:middle line:90%
+sigma is as small as I want.
+
+01:08:06.640 --> 01:08:09.670 align:middle line:84%
+Then subsets of delta,
+S sets are still
+
+01:08:09.670 --> 01:08:12.800 align:middle line:84%
+delta, S sets by the
+lemma that we saw before.
+
+01:08:12.800 --> 01:08:14.240 align:middle line:90%
+This is why we can assume this.
+
+01:08:14.240 --> 01:08:16.810 align:middle line:84%
+Now, this constant
+is going to become
+
+01:08:16.810 --> 01:08:20.140 align:middle line:84%
+worse by a factor of
+delta to the minus sigma
+
+01:08:20.140 --> 01:08:22.210 align:middle line:90%
+because that's the density.
+
+01:08:22.210 --> 01:08:30.020 align:middle line:84%
+So C gets worse by delta
+to the minus sigma.
+
+01:08:30.020 --> 01:08:31.935 align:middle line:90%
+But sigma is arbitrarily small.
+
+01:08:31.935 --> 01:08:35.109 align:middle line:90%
+
+
+01:08:35.109 --> 01:08:37.779 align:middle line:90%
+So I'm going to ignore it.
+
+01:08:37.779 --> 01:08:40.460 align:middle line:84%
+So you have to keep track
+of all of these parameters.
+
+01:08:40.460 --> 01:08:42.200 align:middle line:90%
+But they are not the real issue.
+
+01:08:42.200 --> 01:08:43.617 align:middle line:84%
+You have to be
+careful about that.
+
+01:08:43.617 --> 01:08:45.138 align:middle line:90%
+They are not the real issue.
+
+01:08:45.138 --> 01:08:48.090 align:middle line:84%
+Then, this A still
+satisfies the assumptions
+
+01:08:48.090 --> 01:08:49.359 align:middle line:90%
+of what we did last time.
+
+01:08:49.359 --> 01:08:50.950 align:middle line:84%
+So this is really
+the first step.
+
+01:08:50.950 --> 01:08:54.680 align:middle line:84%
+And so we know that a for the
+uniform one A, A, A minus A,
+
+01:08:54.680 --> 01:08:55.750 align:middle line:90%
+A, A grows.
+
+01:08:55.750 --> 01:08:57.380 align:middle line:90%
+So already, this grows.
+
+01:08:57.380 --> 01:09:02.941 align:middle line:90%
+
+
+01:09:02.941 --> 01:09:04.210 align:middle line:90%
+But A is uniform.
+
+01:09:04.210 --> 01:09:09.810 align:middle line:84%
+So in fact, because
+A is uniform,
+
+01:09:09.810 --> 01:09:11.678 align:middle line:84%
+by the lemma that we
+used about uniformity,
+
+01:09:11.678 --> 01:09:12.845 align:middle line:90%
+this is true at every scale.
+
+01:09:12.845 --> 01:09:33.212 align:middle line:90%
+
+
+01:09:33.212 --> 01:09:34.879 align:middle line:84%
+So in fact, we have
+this at every scale.
+
+01:09:34.879 --> 01:09:39.510 align:middle line:90%
+
+
+01:09:39.510 --> 01:09:44.279 align:middle line:84%
+The third thing that is going to
+be important is that, a priori,
+
+01:09:44.279 --> 01:09:47.460 align:middle line:84%
+we only have one A
+in A. But in fact,
+
+01:09:47.460 --> 01:09:51.420 align:middle line:84%
+once we have it for 1A in we
+have it for almost all in a.
+
+01:09:51.420 --> 01:09:55.620 align:middle line:84%
+And maybe you have seen
+this sort of argument
+
+01:09:55.620 --> 01:09:57.040 align:middle line:90%
+in the finite field setting.
+
+01:09:57.040 --> 01:10:05.730 align:middle line:84%
+but this is true for
+almost all a and A
+
+01:10:05.730 --> 01:10:13.800 align:middle line:84%
+because we define A bad
+to be the points in A such
+
+01:10:13.800 --> 01:10:15.340 align:middle line:90%
+that the conclusion we want--
+
+01:10:15.340 --> 01:10:18.090 align:middle line:90%
+so the second step is not true.
+
+01:10:18.090 --> 01:10:18.905 align:middle line:90%
+It doesn't hold.
+
+01:10:18.905 --> 01:10:23.250 align:middle line:90%
+
+
+01:10:23.250 --> 01:10:26.640 align:middle line:84%
+And if the set is large, we
+can apply the same argument
+
+01:10:26.640 --> 01:10:28.600 align:middle line:84%
+to this set and get
+a contradiction.
+
+01:10:28.600 --> 01:10:40.590 align:middle line:90%
+
+
+01:10:40.590 --> 01:10:43.200 align:middle line:84%
+So a dense subset
+of a delta S, C set
+
+01:10:43.200 --> 01:10:45.820 align:middle line:84%
+is a delta S,
+slightly worse C set.
+
+01:10:45.820 --> 01:10:49.270 align:middle line:84%
+How much worse a constant is
+depends on how dense A bad is.
+
+01:10:49.270 --> 01:10:52.030 align:middle line:84%
+So if A bad is too dense,
+we get a contradiction.
+
+01:10:52.030 --> 01:10:53.410 align:middle line:90%
+So it cannot be too dense.
+
+01:10:53.410 --> 01:10:59.250 align:middle line:84%
+And this means that
+very few A's are bad.
+
+01:10:59.250 --> 01:11:00.800 align:middle line:90%
+So almost all A are not bad.
+
+01:11:00.800 --> 01:11:10.560 align:middle line:90%
+
+
+01:11:10.560 --> 01:11:17.650 align:middle line:84%
+Well, the step just 2 to A bad,
+and we get a contradiction.
+
+01:11:17.650 --> 01:11:50.800 align:middle line:90%
+
+
+01:11:50.800 --> 01:11:53.850 align:middle line:84%
+The first step is
+maybe the key step.
+
+01:11:53.850 --> 01:11:57.140 align:middle line:84%
+So we are going to
+upgrade the second step
+
+01:11:57.140 --> 01:12:01.100 align:middle line:84%
+to not just saying that A plus
+little A, A is large, but--
+
+01:12:01.100 --> 01:12:02.900 align:middle line:90%
+so what is A plus little A, A?
+
+01:12:02.900 --> 01:12:05.480 align:middle line:84%
+It's pi A of A
+times A. So we are
+
+01:12:05.480 --> 01:12:08.540 align:middle line:84%
+going to upgrade this to
+say that this is still true
+
+01:12:08.540 --> 01:12:11.810 align:middle line:84%
+if we pass to a dense
+subset of A times A.
+
+01:12:11.810 --> 01:12:21.680 align:middle line:84%
+So first step, if X is contained
+in A plus A, and it is dense,
+
+01:12:21.680 --> 01:12:27.260 align:middle line:84%
+in the sense that the delta
+covering number doesn't--
+
+01:12:27.260 --> 01:12:29.780 align:middle line:84%
+so at some point, there
+should be a parameter eta
+
+01:12:29.780 --> 01:12:31.440 align:middle line:90%
+that I am completely ignoring.
+
+01:12:31.440 --> 01:12:34.653 align:middle line:84%
+Maybe at this step, we want
+something like eta square dense.
+
+01:12:34.653 --> 01:12:40.280 align:middle line:90%
+
+
+01:12:40.280 --> 01:12:44.440 align:middle line:84%
+Then if we project X,
+we still have growth.
+
+01:12:44.440 --> 01:12:47.930 align:middle line:90%
+
+
+01:12:47.930 --> 01:12:52.460 align:middle line:84%
+And in fact, at all scales,
+or almost all scales.
+
+01:12:52.460 --> 01:12:56.040 align:middle line:84%
+Maybe instead of epsilon, the
+growth will be epsilon over 2.
+
+01:12:56.040 --> 01:12:59.580 align:middle line:90%
+But there will still be growth.
+
+01:12:59.580 --> 01:13:01.040 align:middle line:90%
+Let me try to explain.
+
+01:13:01.040 --> 01:13:03.780 align:middle line:84%
+The first step in the
+last five minutes.
+
+01:13:03.780 --> 01:13:08.000 align:middle line:84%
+So this is really, as we will
+see, the absolutely key step.
+
+01:13:08.000 --> 01:13:12.530 align:middle line:84%
+We need to make this estimate in
+the second step robust underpass
+
+01:13:12.530 --> 01:13:13.800 align:middle line:90%
+into dense subsets.
+
+01:13:13.800 --> 01:13:16.220 align:middle line:84%
+And we will see,
+maybe next time,
+
+01:13:16.220 --> 01:13:18.770 align:middle line:84%
+why this is what we
+really need to do in order
+
+01:13:18.770 --> 01:13:20.270 align:middle line:90%
+to conclude what we want.
+
+01:13:20.270 --> 01:13:24.320 align:middle line:84%
+So suppose that one is
+in A, and this is just
+
+01:13:24.320 --> 01:13:25.996 align:middle line:90%
+for notational simplicity.
+
+01:13:25.996 --> 01:13:40.070 align:middle line:90%
+
+
+01:13:40.070 --> 01:13:41.630 align:middle line:90%
+So there are two possibilities.
+
+01:13:41.630 --> 01:13:47.320 align:middle line:84%
+One-- OK, so we want
+to show that there
+
+01:13:47.320 --> 01:13:52.570 align:middle line:84%
+exists an A with this property,
+one a in A with this property.
+
+01:13:52.570 --> 01:13:56.332 align:middle line:84%
+I guess step 3 should
+maybe be a later step.
+
+01:13:56.332 --> 01:13:58.763 align:middle line:84%
+Or maybe we want to
+apply it at many steps.
+
+01:13:58.763 --> 01:14:00.680 align:middle line:84%
+So many steps, we prove
+that something exists.
+
+01:14:00.680 --> 01:14:03.550 align:middle line:84%
+But once something exists,
+actually, almost all elements
+
+01:14:03.550 --> 01:14:05.120 align:middle line:90%
+in A have this property.
+
+01:14:05.120 --> 01:14:06.670 align:middle line:84%
+OK, let's say we
+want to prove that--
+
+01:14:06.670 --> 01:14:09.580 align:middle line:84%
+So at this stage we want
+to get one in little A in A
+
+01:14:09.580 --> 01:14:11.290 align:middle line:90%
+so that this is true.
+
+01:14:11.290 --> 01:14:13.820 align:middle line:90%
+So maybe we are lucky.
+
+01:14:13.820 --> 01:14:15.400 align:middle line:90%
+And the first thing we choose--
+
+01:14:15.400 --> 01:14:17.290 align:middle line:90%
+and let's call it 1-- works.
+
+01:14:17.290 --> 01:14:19.780 align:middle line:90%
+Well, if it works, it works.
+
+01:14:19.780 --> 01:14:21.135 align:middle line:90%
+So first case--
+
+01:14:21.135 --> 01:14:24.430 align:middle line:90%
+
+
+01:14:24.430 --> 01:14:27.130 align:middle line:90%
+A equals 1 works.
+
+01:14:27.130 --> 01:14:29.680 align:middle line:90%
+So it has this property.
+
+01:14:29.680 --> 01:14:31.190 align:middle line:90%
+Well, if it works, it works.
+
+01:14:31.190 --> 01:14:31.960 align:middle line:90%
+We are done.
+
+01:14:31.960 --> 01:14:34.380 align:middle line:84%
+So let's assume
+that 1 doesn't work.
+
+01:14:34.380 --> 01:14:43.780 align:middle line:90%
+
+
+01:14:43.780 --> 01:14:46.250 align:middle line:84%
+What does it mean that
+A equals 1 doesn't work?
+
+01:14:46.250 --> 01:14:51.520 align:middle line:84%
+It means that there exists
+some X in A times A which
+
+01:14:51.520 --> 01:14:56.360 align:middle line:84%
+has size bigger than
+delta to the eta squared
+
+01:14:56.360 --> 01:15:00.490 align:middle line:84%
+or something like this times
+the size of eta times A.
+
+01:15:00.490 --> 01:15:02.475 align:middle line:90%
+But the projection is small.
+
+01:15:02.475 --> 01:15:06.415 align:middle line:90%
+
+
+01:15:06.415 --> 01:15:08.360 align:middle line:84%
+We have to do this
+for every rho.
+
+01:15:08.360 --> 01:15:12.820 align:middle line:84%
+But let's do it one rho at a
+time, and next time, I will--
+
+01:15:12.820 --> 01:15:13.880 align:middle line:90%
+let's do it for delta.
+
+01:15:13.880 --> 01:15:17.620 align:middle line:84%
+Next time, I will explain why
+it's true for every delta,
+
+01:15:17.620 --> 01:15:20.290 align:middle line:90%
+in some sense.
+
+01:15:20.290 --> 01:15:23.950 align:middle line:84%
+OK, let's assume that, for
+the particular scale delta,
+
+01:15:23.950 --> 01:15:25.830 align:middle line:90%
+there is no growth.
+
+01:15:25.830 --> 01:15:28.840 align:middle line:90%
+
+
+01:15:28.840 --> 01:15:33.280 align:middle line:90%
+Well, this reminds you of what?
+
+01:15:33.280 --> 01:15:34.660 align:middle line:84%
+So there is a
+theorem that you've
+
+01:15:34.660 --> 01:15:36.420 align:middle line:84%
+seen before that
+should remind you of.
+
+01:15:36.420 --> 01:15:43.630 align:middle line:90%
+
+
+01:15:43.630 --> 01:15:45.910 align:middle line:90%
+So we are projecting--
+
+01:15:45.910 --> 01:15:47.510 align:middle line:90%
+sorry, an A is 1.
+
+01:15:47.510 --> 01:15:48.290 align:middle line:90%
+Actually, A is 1.
+
+01:15:48.290 --> 01:15:50.740 align:middle line:90%
+So this is just the sum.
+
+01:15:50.740 --> 01:15:53.115 align:middle line:90%
+So we are-- so if 1--
+
+01:15:53.115 --> 01:15:55.490 align:middle line:84%
+we assume one is in A. Either
+it is good-- if it is good,
+
+01:15:55.490 --> 01:15:56.980 align:middle line:84%
+we have proved what we want
+because something is good,
+
+01:15:56.980 --> 01:15:57.730 align:middle line:90%
+or it's not good.
+
+01:15:57.730 --> 01:16:01.390 align:middle line:84%
+If it's not good, this is
+what it means, by definition
+
+01:16:01.390 --> 01:16:04.720 align:middle line:90%
+of not being good.
+
+01:16:04.720 --> 01:16:09.100 align:middle line:84%
+B is G. So this is
+exactly the assumption
+
+01:16:09.100 --> 01:16:12.310 align:middle line:90%
+to apply Balog-Szemeredi-Gowers.
+
+01:16:12.310 --> 01:16:16.930 align:middle line:84%
+So A has size delta
+to the minus S.
+
+01:16:16.930 --> 01:16:21.460 align:middle line:84%
+Here we have a dense
+subset of the product set
+
+01:16:21.460 --> 01:16:23.920 align:middle line:90%
+which has small partial sum set.
+
+01:16:23.920 --> 01:16:25.790 align:middle line:90%
+The pi 1 image is small.
+
+01:16:25.790 --> 01:16:27.150 align:middle line:90%
+It doesn't grow.
+
+01:16:27.150 --> 01:16:28.950 align:middle line:84%
+So these are exactly
+the assumptions
+
+01:16:28.950 --> 01:16:31.390 align:middle line:84%
+that we need to apply
+Balog-Szemeredi-Gowers.
+
+01:16:31.390 --> 01:16:42.570 align:middle line:90%
+
+
+01:16:42.570 --> 01:16:43.540 align:middle line:90%
+I've run out of time.
+
+01:16:43.540 --> 01:16:47.620 align:middle line:84%
+So we are in the middle of
+the most important argument.
+
+01:16:47.620 --> 01:16:51.700 align:middle line:84%
+So maybe on Tuesday, sorry,
+you will see me again.
+
+01:16:51.700 --> 01:16:54.880 align:middle line:84%
+I will start with
+step 4 from the top.
+
+01:16:54.880 --> 01:16:58.750 align:middle line:84%
+But maybe as an exercise,
+you have five days.
+
+01:16:58.750 --> 01:17:01.210 align:middle line:84%
+You can try to imagine
+how this will continue.
+
+01:17:01.210 --> 01:17:03.570 align:middle line:84%
+So at least try to
+well, just write
+
+01:17:03.570 --> 01:17:06.060 align:middle line:84%
+down what is the outcome
+of Balog-Szemeredi-Gowers,
+
+01:17:06.060 --> 01:17:10.050 align:middle line:84%
+and try to think how we can
+use that to eventually get what
+
+01:17:10.050 --> 01:17:12.250 align:middle line:90%
+we want, at least this claim.
+
+01:17:12.250 --> 01:17:14.760 align:middle line:84%
+Then I will explain how
+this claim, together
+
+01:17:14.760 --> 01:17:16.560 align:middle line:84%
+with uniformization
+lemma, allows
+
+01:17:16.560 --> 01:17:19.010 align:middle line:90%
+us to conclude what we want.
+
+01:17:19.010 --> 01:17:26.000 align:middle line:90%

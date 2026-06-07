@@ -1,0 +1,5031 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.922 align:middle line:90%
+[SQUEAKING]
+
+00:00:02.922 --> 00:00:04.383 align:middle line:90%
+[RUSTLING]
+
+00:00:04.383 --> 00:00:06.818 align:middle line:90%
+[CLICKING]
+
+00:00:06.818 --> 00:00:12.458 align:middle line:90%
+
+
+00:00:12.458 --> 00:00:13.500 align:middle line:90%
+LAWRENCE GUTH: All right.
+
+00:00:13.500 --> 00:00:16.200 align:middle line:90%
+Well, we have two more classes.
+
+00:00:16.200 --> 00:00:20.270 align:middle line:84%
+And this is day two
+of trying to grapple
+
+00:00:20.270 --> 00:00:23.370 align:middle line:84%
+with the recent big breakthrough
+in projection theory.
+
+00:00:23.370 --> 00:00:27.050 align:middle line:84%
+So this is sharp projection
+theorems part two.
+
+00:00:27.050 --> 00:00:31.100 align:middle line:84%
+In part two, we're going to
+talk about the AD regular case.
+
+00:00:31.100 --> 00:00:33.110 align:middle line:84%
+So let's first remember
+our goal and remember
+
+00:00:33.110 --> 00:00:34.660 align:middle line:90%
+what is the AD regular case.
+
+00:00:34.660 --> 00:00:37.400 align:middle line:90%
+
+
+00:00:37.400 --> 00:00:38.861 align:middle line:90%
+OK.
+
+00:00:38.861 --> 00:00:42.290 align:middle line:84%
+So our goal is the
+Furstenberg set conjecture,
+
+00:00:42.290 --> 00:00:46.250 align:middle line:84%
+which is a theorem of Orponen,
+Shmerkin, Ren, and Wang.
+
+00:00:46.250 --> 00:00:58.880 align:middle line:84%
+Says if E contained in R2
+is a delta TC set, and then
+
+00:00:58.880 --> 00:01:01.580 align:middle line:84%
+for every point in
+E, there are a bunch
+
+00:01:01.580 --> 00:01:03.830 align:middle line:90%
+of delta tubes going through it.
+
+00:01:03.830 --> 00:01:11.060 align:middle line:84%
+So T sub x is a
+set of delta tubes
+
+00:01:11.060 --> 00:01:17.190 align:middle line:84%
+through x and the
+directions, if you like,
+
+00:01:17.190 --> 00:01:22.540 align:middle line:84%
+of this set of delta
+tubes is a delta SC set.
+
+00:01:22.540 --> 00:01:26.300 align:middle line:90%
+
+
+00:01:26.300 --> 00:01:27.120 align:middle line:90%
+OK.
+
+00:01:27.120 --> 00:01:30.420 align:middle line:84%
+And parenthetically, we can
+assume a couple of things.
+
+00:01:30.420 --> 00:01:36.350 align:middle line:84%
+We can assume that
+this is uniform,
+
+00:01:36.350 --> 00:01:41.390 align:middle line:84%
+and also that the number of them
+is like delta to the minus S.
+
+00:01:41.390 --> 00:01:44.210 align:middle line:90%
+And S should be bigger than 0.
+
+00:01:44.210 --> 00:01:44.730 align:middle line:90%
+OK.
+
+00:01:44.730 --> 00:01:46.272 align:middle line:84%
+So we put all of
+these tubes together
+
+00:01:46.272 --> 00:01:47.785 align:middle line:90%
+to get one big set of tubes.
+
+00:01:47.785 --> 00:01:50.990 align:middle line:90%
+
+
+00:01:50.990 --> 00:01:55.490 align:middle line:84%
+And the question is, how
+many tubes are there?
+
+00:01:55.490 --> 00:02:00.680 align:middle line:84%
+So then the conclusion is
+that the number of tubes
+
+00:02:00.680 --> 00:02:03.340 align:middle line:84%
+is at least a
+little fudge factor.
+
+00:02:03.340 --> 00:02:05.960 align:middle line:90%
+
+
+00:02:05.960 --> 00:02:10.190 align:middle line:84%
+So this whole thing, I'll
+abbreviate like that.
+
+00:02:10.190 --> 00:02:12.340 align:middle line:84%
+And then the minimum
+of a few options.
+
+00:02:12.340 --> 00:02:23.690 align:middle line:90%
+
+
+00:02:23.690 --> 00:02:27.590 align:middle line:84%
+Which we'll call option
+A, option B, and option
+
+00:02:27.590 --> 00:02:32.640 align:middle line:84%
+C. And these exponents
+are hard to remember,
+
+00:02:32.640 --> 00:02:34.580 align:middle line:84%
+but I would prefer to
+remember-- for everyone
+
+00:02:34.580 --> 00:02:37.580 align:middle line:84%
+to think of them in terms of
+three different scenarios.
+
+00:02:37.580 --> 00:02:41.270 align:middle line:84%
+So option A, that
+corresponds to the--
+
+00:02:41.270 --> 00:02:43.140 align:middle line:90%
+I call it the stars scenario.
+
+00:02:43.140 --> 00:02:45.050 align:middle line:84%
+Have a bunch of points,
+and through each, you
+
+00:02:45.050 --> 00:02:46.490 align:middle line:84%
+have a bunch of
+tubes, and they're
+
+00:02:46.490 --> 00:02:50.000 align:middle line:90%
+just unrelated to each other.
+
+00:02:50.000 --> 00:02:52.470 align:middle line:90%
+Option B is more intricate.
+
+00:02:52.470 --> 00:02:54.593 align:middle line:90%
+It's the integer grid scenario.
+
+00:02:54.593 --> 00:02:57.560 align:middle line:90%
+
+
+00:02:57.560 --> 00:03:00.960 align:middle line:84%
+And option C is a kind
+of random scenario.
+
+00:03:00.960 --> 00:03:05.680 align:middle line:84%
+So E is arbitrary
+and T is random.
+
+00:03:05.680 --> 00:03:13.490 align:middle line:90%
+
+
+00:03:13.490 --> 00:03:16.238 align:middle line:90%
+OK.
+
+00:03:16.238 --> 00:03:18.290 align:middle line:84%
+Now it's really a
+good idea to think
+
+00:03:18.290 --> 00:03:21.870 align:middle line:84%
+about this theorem in these
+three different scenarios.
+
+00:03:21.870 --> 00:03:23.870 align:middle line:84%
+So it's good to separate
+out the case where
+
+00:03:23.870 --> 00:03:26.810 align:middle line:84%
+each one of those
+things is the minimum.
+
+00:03:26.810 --> 00:03:29.630 align:middle line:84%
+So let me do that and
+recall for you how much we
+
+00:03:29.630 --> 00:03:31.660 align:middle line:90%
+know about each case so far.
+
+00:03:31.660 --> 00:03:41.073 align:middle line:90%
+
+
+00:03:41.073 --> 00:03:43.490 align:middle line:84%
+And I said something about
+this last time, but what I said
+
+00:03:43.490 --> 00:03:45.920 align:middle line:84%
+wasn't the best
+thing to say, so I
+
+00:03:45.920 --> 00:03:48.590 align:middle line:84%
+wanted to do it again
+and get it right.
+
+00:03:48.590 --> 00:03:49.320 align:middle line:90%
+All right.
+
+00:03:49.320 --> 00:03:55.150 align:middle line:84%
+So there's the case where
+A is the minimum option.
+
+00:03:55.150 --> 00:03:57.190 align:middle line:84%
+And if you do a
+little algebra, that
+
+00:03:57.190 --> 00:04:05.200 align:middle line:84%
+corresponds to S being at least
+as big as T. And in this case--
+
+00:04:05.200 --> 00:04:11.080 align:middle line:84%
+so if S is at least as big as
+T, then the theorem is true.
+
+00:04:11.080 --> 00:04:12.795 align:middle line:90%
+So Furstenberg is true.
+
+00:04:12.795 --> 00:04:17.050 align:middle line:90%
+
+
+00:04:17.050 --> 00:04:19.124 align:middle line:84%
+And it follows just
+by double counting.
+
+00:04:19.124 --> 00:04:22.990 align:middle line:90%
+
+
+00:04:22.990 --> 00:04:27.400 align:middle line:84%
+So we did it very early in the
+course, like on the second day.
+
+00:04:27.400 --> 00:04:28.240 align:middle line:90%
+OK.
+
+00:04:28.240 --> 00:04:31.640 align:middle line:84%
+Then I'll come back to B,
+which is the most interesting.
+
+00:04:31.640 --> 00:04:33.470 align:middle line:90%
+C is the minimal.
+
+00:04:33.470 --> 00:04:39.490 align:middle line:84%
+If you do a little algebra,
+it's if S plus T is at least 2.
+
+00:04:39.490 --> 00:04:44.180 align:middle line:84%
+And in this whole range,
+where S plus T is at least 2,
+
+00:04:44.180 --> 00:04:46.910 align:middle line:90%
+the theorem is also true.
+
+00:04:46.910 --> 00:04:49.330 align:middle line:84%
+And it's true by
+the Fourier method.
+
+00:04:49.330 --> 00:04:52.750 align:middle line:84%
+So it follows from
+the theorem we
+
+00:04:52.750 --> 00:04:55.550 align:middle line:84%
+proved in the second or third
+week using Fourier analysis.
+
+00:04:55.550 --> 00:04:58.825 align:middle line:84%
+So the whole case
+where C is minimal,
+
+00:04:58.825 --> 00:05:01.685 align:middle line:90%
+we also already understand that.
+
+00:05:01.685 --> 00:05:02.185 align:middle line:90%
+OK.
+
+00:05:02.185 --> 00:05:05.650 align:middle line:84%
+And that leaves a case
+where B is minimal.
+
+00:05:05.650 --> 00:05:09.220 align:middle line:84%
+And that's like otherwise,
+if neither of these things
+
+00:05:09.220 --> 00:05:12.100 align:middle line:90%
+are true, then B is minimal.
+
+00:05:12.100 --> 00:05:14.990 align:middle line:84%
+And so that's the
+content of this theorem.
+
+00:05:14.990 --> 00:05:24.080 align:middle line:84%
+So this is the hard new
+thing in the OSW thing.
+
+00:05:24.080 --> 00:05:27.215 align:middle line:90%
+
+
+00:05:27.215 --> 00:05:27.715 align:middle line:90%
+OK.
+
+00:05:27.715 --> 00:05:30.310 align:middle line:90%
+
+
+00:05:30.310 --> 00:05:32.710 align:middle line:90%
+Cool.
+
+00:05:32.710 --> 00:05:36.340 align:middle line:84%
+Another little comment is
+that the number of tubes
+
+00:05:36.340 --> 00:05:39.850 align:middle line:84%
+is not my favorite
+parameter to keep track of.
+
+00:05:39.850 --> 00:05:42.310 align:middle line:84%
+My favorite parameter
+to keep track of
+
+00:05:42.310 --> 00:05:49.210 align:middle line:90%
+is I'll call it R of ET.
+
+00:05:49.210 --> 00:05:54.880 align:middle line:84%
+Which, in words, is
+like the typical number
+
+00:05:54.880 --> 00:06:14.290 align:middle line:84%
+of delta balls of E on a typical
+tube of T. Let's make a picture.
+
+00:06:14.290 --> 00:06:17.860 align:middle line:84%
+So we have some delta
+balls, and then we
+
+00:06:17.860 --> 00:06:21.310 align:middle line:84%
+have some delta tubes
+going through them.
+
+00:06:21.310 --> 00:06:24.460 align:middle line:84%
+And in an interesting
+scenario, each tube
+
+00:06:24.460 --> 00:06:26.060 align:middle line:90%
+will have many balls in it.
+
+00:06:26.060 --> 00:06:32.068 align:middle line:84%
+And R is this number
+of balls in a tube.
+
+00:06:32.068 --> 00:06:36.700 align:middle line:84%
+So algebraically,
+by double counting,
+
+00:06:36.700 --> 00:06:38.620 align:middle line:84%
+the number of balls
+in a tube would
+
+00:06:38.620 --> 00:06:42.700 align:middle line:84%
+be the number of points
+times the number of tubes
+
+00:06:42.700 --> 00:06:47.890 align:middle line:84%
+going through a point divided
+by the number of tubes.
+
+00:06:47.890 --> 00:06:50.390 align:middle line:84%
+So that would be the
+algebraic definition of R.
+
+00:06:50.390 --> 00:06:55.330 align:middle line:84%
+And then it's easy to convert
+bounds for T into bounds for R.
+
+00:06:55.330 --> 00:07:04.630 align:middle line:84%
+So our theorem is equivalent
+to that R is upper bounded
+
+00:07:04.630 --> 00:07:08.440 align:middle line:90%
+by the maximum of three things.
+
+00:07:08.440 --> 00:07:11.110 align:middle line:90%
+Scenario one is A.
+
+00:07:11.110 --> 00:07:14.350 align:middle line:84%
+So scenario one, the
+number of balls per tube
+
+00:07:14.350 --> 00:07:18.640 align:middle line:84%
+is one, which is
+always easy to arrange.
+
+00:07:18.640 --> 00:07:21.320 align:middle line:84%
+B, you have to do a
+little computation.
+
+00:07:21.320 --> 00:07:23.513 align:middle line:90%
+It works out to this.
+
+00:07:23.513 --> 00:07:25.930 align:middle line:84%
+I don't really care what the
+exponent-- it's not important
+
+00:07:25.930 --> 00:07:26.990 align:middle line:90%
+what the exponents are.
+
+00:07:26.990 --> 00:07:33.900 align:middle line:84%
+And C is delta to the
+negative T plus 1.
+
+00:07:33.900 --> 00:07:34.400 align:middle line:90%
+OK.
+
+00:07:34.400 --> 00:07:36.520 align:middle line:84%
+And this delta to
+the negative T plus 1
+
+00:07:36.520 --> 00:07:39.580 align:middle line:84%
+has a nice interpretation which
+might clarify a little bit what
+
+00:07:39.580 --> 00:07:41.720 align:middle line:90%
+we mean by this random case.
+
+00:07:41.720 --> 00:07:45.460 align:middle line:90%
+So if E is a set--
+
+00:07:45.460 --> 00:07:52.942 align:middle line:84%
+is a delta TC set, so the size
+of E is delta to the minus T.
+
+00:07:52.942 --> 00:07:53.900 align:middle line:90%
+Let me say it this way.
+
+00:07:53.900 --> 00:07:58.540 align:middle line:84%
+Suppose that E is a set
+of delta to the minus T
+
+00:07:58.540 --> 00:08:03.040 align:middle line:90%
+delta balls in the unit ball.
+
+00:08:03.040 --> 00:08:08.470 align:middle line:84%
+And then I take the average
+over any choice of delta
+
+00:08:08.470 --> 00:08:14.050 align:middle line:84%
+by 1 rectangles of the
+number of delta balls
+
+00:08:14.050 --> 00:08:16.060 align:middle line:90%
+that the rectangle covers.
+
+00:08:16.060 --> 00:08:21.430 align:middle line:84%
+You would get delta
+to the minus T plus 1.
+
+00:08:21.430 --> 00:08:26.570 align:middle line:84%
+So it's not difficult to locate
+rectangles with that richness.
+
+00:08:26.570 --> 00:08:29.170 align:middle line:84%
+Almost any rectangle
+would do the job.
+
+00:08:29.170 --> 00:08:32.260 align:middle line:84%
+And scenario C is when
+the rectangles just
+
+00:08:32.260 --> 00:08:33.520 align:middle line:90%
+have this average richness.
+
+00:08:33.520 --> 00:08:35.270 align:middle line:84%
+There's really nothing
+special about them.
+
+00:08:35.270 --> 00:08:44.620 align:middle line:90%
+
+
+00:08:44.620 --> 00:08:45.120 align:middle line:90%
+OK.
+
+00:08:45.120 --> 00:08:48.160 align:middle line:84%
+So next, let's remember--
+so our goal today
+
+00:08:48.160 --> 00:08:50.390 align:middle line:84%
+is to talk about
+the AD regular case.
+
+00:08:50.390 --> 00:08:53.220 align:middle line:84%
+So let's remember what
+is the AD regular case.
+
+00:08:53.220 --> 00:09:07.400 align:middle line:90%
+
+
+00:09:07.400 --> 00:09:07.900 align:middle line:90%
+OK.
+
+00:09:07.900 --> 00:09:14.200 align:middle line:84%
+So we're going to suppose
+that E is uniform.
+
+00:09:14.200 --> 00:09:19.510 align:middle line:84%
+So that means that our delta
+is some capital delta to the M,
+
+00:09:19.510 --> 00:09:20.835 align:middle line:90%
+where M is a large number.
+
+00:09:20.835 --> 00:09:23.500 align:middle line:90%
+
+
+00:09:23.500 --> 00:09:26.110 align:middle line:84%
+And the uniformity
+is that if I take E
+
+00:09:26.110 --> 00:09:30.530 align:middle line:84%
+and I intersect it with a cube
+of side length delta to the j,
+
+00:09:30.530 --> 00:09:35.500 align:middle line:84%
+and I ask about its delta to
+the j plus 1 covering number,
+
+00:09:35.500 --> 00:09:47.820 align:middle line:84%
+that's around some beta j
+for all the dyadic Q delta j
+
+00:09:47.820 --> 00:09:49.060 align:middle line:90%
+that intersect.
+
+00:09:49.060 --> 00:09:54.600 align:middle line:90%
+
+
+00:09:54.600 --> 00:09:55.120 align:middle line:90%
+OK.
+
+00:09:55.120 --> 00:09:57.520 align:middle line:84%
+So these beta j are
+the branching numbers.
+
+00:09:57.520 --> 00:10:01.380 align:middle line:84%
+We drew pictures last time
+to illustrate what they mean.
+
+00:10:01.380 --> 00:10:09.760 align:middle line:84%
+And so definition would be that
+E is C alpha is to be regular.
+
+00:10:09.760 --> 00:10:17.910 align:middle line:84%
+So actually let's say it's
+a delta TC AD regular set
+
+00:10:17.910 --> 00:10:22.060 align:middle line:84%
+if has this branching
+structure like above
+
+00:10:22.060 --> 00:10:29.410 align:middle line:84%
+and if I take the product j
+equals 1 to capital J of beta j.
+
+00:10:29.410 --> 00:10:33.240 align:middle line:84%
+So that would be the
+delta j covering number--
+
+00:10:33.240 --> 00:10:35.450 align:middle line:84%
+delta to the j covering
+number of our set.
+
+00:10:35.450 --> 00:10:38.220 align:middle line:90%
+
+
+00:10:38.220 --> 00:10:44.040 align:middle line:84%
+It is at most C times delta
+to the j to the minus t,
+
+00:10:44.040 --> 00:10:47.100 align:middle line:84%
+and it is at least
+1 over C times
+
+00:10:47.100 --> 00:10:49.450 align:middle line:90%
+delta to the j to the minus t.
+
+00:10:49.450 --> 00:10:54.580 align:middle line:90%
+
+
+00:10:54.580 --> 00:10:55.080 align:middle line:90%
+OK.
+
+00:10:55.080 --> 00:11:06.000 align:middle line:90%
+
+
+00:11:06.000 --> 00:11:06.665 align:middle line:90%
+All right.
+
+00:11:06.665 --> 00:11:11.970 align:middle line:90%
+
+
+00:11:11.970 --> 00:11:15.810 align:middle line:84%
+So let's label all these
+hypotheses in our theorem
+
+00:11:15.810 --> 00:11:17.966 align:middle line:90%
+by H, our hypotheses.
+
+00:11:17.966 --> 00:11:21.480 align:middle line:90%
+
+
+00:11:21.480 --> 00:11:24.840 align:middle line:84%
+And what we'd like to understand
+is given these hypotheses,
+
+00:11:24.840 --> 00:11:28.110 align:middle line:90%
+how big could R be?
+
+00:11:28.110 --> 00:11:32.080 align:middle line:84%
+And for today, we're going to
+talk about the AD regular case.
+
+00:11:32.080 --> 00:11:33.520 align:middle line:90%
+So let's give that a name.
+
+00:11:33.520 --> 00:11:44.400 align:middle line:84%
+So RAD of ST delta C. That
+is the maximum over E and T
+
+00:11:44.400 --> 00:11:52.410 align:middle line:84%
+obey our hypotheses,
+and E is a delta TC AD
+
+00:11:52.410 --> 00:12:02.060 align:middle line:84%
+regular of r of E and T. How
+big could it be in this case?
+
+00:12:02.060 --> 00:12:02.860 align:middle line:90%
+OK.
+
+00:12:02.860 --> 00:12:04.600 align:middle line:84%
+It's really a mouthful
+of parameters,
+
+00:12:04.600 --> 00:12:08.640 align:middle line:84%
+so let me just say, to reduce
+a little bit for today,
+
+00:12:08.640 --> 00:12:11.160 align:middle line:90%
+we'll have C equals 1.
+
+00:12:11.160 --> 00:12:13.870 align:middle line:84%
+So that means it's
+really AD regular,
+
+00:12:13.870 --> 00:12:18.360 align:middle line:84%
+and everything we say
+actually will work for small c
+
+00:12:18.360 --> 00:12:25.050 align:middle line:84%
+that are bigger than E. That
+will allow us to not write
+
+00:12:25.050 --> 00:12:28.305 align:middle line:84%
+the letter C. And
+then S and T will not
+
+00:12:28.305 --> 00:12:29.680 align:middle line:84%
+be changing through
+our argument,
+
+00:12:29.680 --> 00:12:31.290 align:middle line:84%
+so I won't write
+them every time.
+
+00:12:31.290 --> 00:12:37.865 align:middle line:84%
+So now I'll just abbreviate
+it as RAD of delta.
+
+00:12:37.865 --> 00:12:40.735 align:middle line:90%
+
+
+00:12:40.735 --> 00:12:41.235 align:middle line:90%
+OK.
+
+00:12:41.235 --> 00:12:46.230 align:middle line:90%
+
+
+00:12:46.230 --> 00:12:47.430 align:middle line:90%
+All right.
+
+00:12:47.430 --> 00:12:53.640 align:middle line:84%
+So the theorem that
+Orponen and Shmerkin proved
+
+00:12:53.640 --> 00:12:57.210 align:middle line:84%
+is that they proved this
+thing in the AD case.
+
+00:12:57.210 --> 00:13:04.900 align:middle line:84%
+So RAD ST delta is
+indeed bounded by that.
+
+00:13:04.900 --> 00:13:15.812 align:middle line:90%
+
+
+00:13:15.812 --> 00:13:19.590 align:middle line:90%
+I'm not sure I copied it right.
+
+00:13:19.590 --> 00:13:20.750 align:middle line:90%
+Got the minus signs wrong.
+
+00:13:20.750 --> 00:13:32.280 align:middle line:90%
+
+
+00:13:32.280 --> 00:13:34.650 align:middle line:84%
+So that's our goal for
+today is to understand
+
+00:13:34.650 --> 00:13:37.440 align:middle line:84%
+this theorem, which is a
+really important special case
+
+00:13:37.440 --> 00:13:38.165 align:middle line:90%
+of that theorem.
+
+00:13:38.165 --> 00:13:43.260 align:middle line:90%
+
+
+00:13:43.260 --> 00:13:45.360 align:middle line:90%
+Cool.
+
+00:13:45.360 --> 00:13:49.230 align:middle line:84%
+So it's clearly a special
+case of that theorem.
+
+00:13:49.230 --> 00:13:51.870 align:middle line:84%
+And at first it might seem
+like a very special case,
+
+00:13:51.870 --> 00:13:54.120 align:middle line:84%
+because these branching
+function basically-- there's
+
+00:13:54.120 --> 00:13:56.410 align:middle line:84%
+a huge range of what the
+branching function could be,
+
+00:13:56.410 --> 00:13:58.830 align:middle line:84%
+and AD regular is just
+one particular choice
+
+00:13:58.830 --> 00:14:00.100 align:middle line:90%
+in this huge range.
+
+00:14:00.100 --> 00:14:02.020 align:middle line:84%
+But it's a particularly
+important case,
+
+00:14:02.020 --> 00:14:05.670 align:middle line:84%
+and we'll see tomorrow or
+next class that this is really
+
+00:14:05.670 --> 00:14:07.230 align:middle line:90%
+a crucial case.
+
+00:14:07.230 --> 00:14:09.240 align:middle line:84%
+It plays a big role in
+understanding the theorem
+
+00:14:09.240 --> 00:14:11.695 align:middle line:90%
+in general.
+
+00:14:11.695 --> 00:14:12.195 align:middle line:90%
+OK.
+
+00:14:12.195 --> 00:14:16.200 align:middle line:90%
+
+
+00:14:16.200 --> 00:14:18.480 align:middle line:90%
+Cool.
+
+00:14:18.480 --> 00:14:19.965 align:middle line:90%
+Yeah.
+
+00:14:19.965 --> 00:14:22.350 align:middle line:84%
+It was a really
+important realization
+
+00:14:22.350 --> 00:14:24.600 align:middle line:84%
+in thinking about this theorem
+that we should break it
+
+00:14:24.600 --> 00:14:25.630 align:middle line:90%
+into cases.
+
+00:14:25.630 --> 00:14:28.560 align:middle line:84%
+The different cases have their
+different things that are useful
+
+00:14:28.560 --> 00:14:32.130 align:middle line:84%
+and their different
+things that are difficult.
+
+00:14:32.130 --> 00:14:34.780 align:middle line:90%
+And so that recognition is key.
+
+00:14:34.780 --> 00:14:36.690 align:middle line:84%
+So the next thing I want
+to try to talk about
+
+00:14:36.690 --> 00:14:40.320 align:middle line:84%
+is what is special
+about AD regular sets
+
+00:14:40.320 --> 00:14:44.340 align:middle line:84%
+that we could use to get a
+handle on them that we couldn't
+
+00:14:44.340 --> 00:14:48.030 align:middle line:90%
+use just for the general setup.
+
+00:14:48.030 --> 00:14:48.700 align:middle line:90%
+All right.
+
+00:14:48.700 --> 00:15:03.780 align:middle line:90%
+
+
+00:15:03.780 --> 00:15:06.550 align:middle line:84%
+So this proof is
+quite difficult.
+
+00:15:06.550 --> 00:15:07.810 align:middle line:90%
+We won't do all of it.
+
+00:15:07.810 --> 00:15:11.490 align:middle line:84%
+But I would like to share
+some key ideas about it, which
+
+00:15:11.490 --> 00:15:16.380 align:middle line:84%
+I think are really cool and
+are worth taking with you away
+
+00:15:16.380 --> 00:15:18.960 align:middle line:90%
+from this class.
+
+00:15:18.960 --> 00:15:19.460 align:middle line:90%
+All right.
+
+00:15:19.460 --> 00:15:41.540 align:middle line:90%
+
+
+00:15:41.540 --> 00:15:42.470 align:middle line:90%
+OK.
+
+00:15:42.470 --> 00:15:46.070 align:middle line:84%
+So in a nutshell, the
+important special thing
+
+00:15:46.070 --> 00:15:49.220 align:middle line:84%
+about AD regular
+sets is in this lemma
+
+00:15:49.220 --> 00:15:52.790 align:middle line:84%
+that has a one board
+proof, which is called
+
+00:15:52.790 --> 00:15:55.150 align:middle line:90%
+the submultiplicative lemma.
+
+00:15:55.150 --> 00:15:58.250 align:middle line:90%
+
+
+00:15:58.250 --> 00:15:59.660 align:middle line:90%
+OK.
+
+00:15:59.660 --> 00:16:04.410 align:middle line:90%
+So it says that RAD of delta--
+
+00:16:04.410 --> 00:16:06.020 align:middle line:90%
+let me put it this way.
+
+00:16:06.020 --> 00:16:09.120 align:middle line:84%
+If delta is delta
+1 times delta 2,
+
+00:16:09.120 --> 00:16:13.100 align:middle line:84%
+then RAD of delta
+is bounded by--
+
+00:16:13.100 --> 00:16:14.760 align:middle line:90%
+and with a little bit of fudge--
+
+00:16:14.760 --> 00:16:19.710 align:middle line:84%
+RAD of delta 1
+times RAD delta 2.
+
+00:16:19.710 --> 00:16:24.380 align:middle line:90%
+
+
+00:16:24.380 --> 00:16:27.710 align:middle line:90%
+That is submultiplicative.
+
+00:16:27.710 --> 00:16:33.050 align:middle line:84%
+And it follows from
+understanding, thinking
+
+00:16:33.050 --> 00:16:38.210 align:middle line:84%
+a lot about a picture
+of an AD regular set.
+
+00:16:38.210 --> 00:16:38.910 align:middle line:90%
+OK.
+
+00:16:38.910 --> 00:16:45.500 align:middle line:84%
+So remember that E is
+a set of delta balls
+
+00:16:45.500 --> 00:16:49.490 align:middle line:84%
+and T is the set of delta
+tubes, and we're going
+
+00:16:49.490 --> 00:16:52.970 align:middle line:90%
+to imagine thickening them.
+
+00:16:52.970 --> 00:16:56.450 align:middle line:84%
+So in this setup
+here, delta is smaller
+
+00:16:56.450 --> 00:17:00.020 align:middle line:84%
+than delta 1 and delta 2,
+which are smaller than 1.
+
+00:17:00.020 --> 00:17:02.640 align:middle line:84%
+So delta 1 and delta 2 are
+each bigger than delta.
+
+00:17:02.640 --> 00:17:07.339 align:middle line:84%
+So I'm going to thicken
+them and I'll get E1,
+
+00:17:07.339 --> 00:17:11.810 align:middle line:84%
+I'll call it, which are
+the delta 1 balls around E,
+
+00:17:11.810 --> 00:17:14.874 align:middle line:90%
+and T1, which are delta 1 tubes.
+
+00:17:14.874 --> 00:17:18.890 align:middle line:90%
+
+
+00:17:18.890 --> 00:17:19.560 align:middle line:90%
+All right.
+
+00:17:19.560 --> 00:17:21.150 align:middle line:90%
+So what does it look like?
+
+00:17:21.150 --> 00:17:32.100 align:middle line:84%
+Let's think about E and
+thickening E. So here is E1.
+
+00:17:32.100 --> 00:17:33.810 align:middle line:90%
+It is a bunch of circles.
+
+00:17:33.810 --> 00:17:37.655 align:middle line:90%
+Each circle has radius delta 1.
+
+00:17:37.655 --> 00:17:41.140 align:middle line:84%
+And inside of those circles,
+there are some delta balls.
+
+00:17:41.140 --> 00:17:50.600 align:middle line:90%
+
+
+00:17:50.600 --> 00:17:59.630 align:middle line:84%
+And those guys are
+my delta balls E. OK.
+
+00:17:59.630 --> 00:18:05.960 align:middle line:90%
+Now, T1 are some delta 1 tubes.
+
+00:18:05.960 --> 00:18:08.605 align:middle line:90%
+So they might look like this.
+
+00:18:08.605 --> 00:18:11.300 align:middle line:90%
+
+
+00:18:11.300 --> 00:18:12.820 align:middle line:90%
+Let's put one more ball up here.
+
+00:18:12.820 --> 00:18:24.890 align:middle line:90%
+
+
+00:18:24.890 --> 00:18:26.160 align:middle line:90%
+That looks like that.
+
+00:18:26.160 --> 00:18:28.915 align:middle line:90%
+So those are my fat tubes, T1.
+
+00:18:28.915 --> 00:18:31.850 align:middle line:90%
+
+
+00:18:31.850 --> 00:18:37.520 align:middle line:84%
+And then inside of them,
+there are some delta tubes T2.
+
+00:18:37.520 --> 00:18:42.095 align:middle line:90%
+So let me draw that.
+
+00:18:42.095 --> 00:18:44.310 align:middle line:84%
+I've got too many, but
+I'll try to give some idea.
+
+00:18:44.310 --> 00:18:49.550 align:middle line:84%
+So through this
+point here, there
+
+00:18:49.550 --> 00:18:52.310 align:middle line:84%
+might be a couple
+of red tubes that
+
+00:18:52.310 --> 00:18:55.460 align:middle line:90%
+are inside of that orange tube.
+
+00:18:55.460 --> 00:19:00.200 align:middle line:84%
+And then there might be
+a couple of red tubes
+
+00:19:00.200 --> 00:19:02.710 align:middle line:84%
+that are inside of
+that orange tube.
+
+00:19:02.710 --> 00:19:05.250 align:middle line:90%
+
+
+00:19:05.250 --> 00:19:05.750 align:middle line:90%
+OK.
+
+00:19:05.750 --> 00:19:08.100 align:middle line:84%
+I just drew the ones
+through this point.
+
+00:19:08.100 --> 00:19:10.470 align:middle line:84%
+Experience has taught
+me that if I draw more,
+
+00:19:10.470 --> 00:19:12.150 align:middle line:90%
+this picture will get too messy.
+
+00:19:12.150 --> 00:19:16.080 align:middle line:84%
+But you should imagine that this
+is happening at every point.
+
+00:19:16.080 --> 00:19:16.580 align:middle line:90%
+OK.
+
+00:19:16.580 --> 00:19:21.410 align:middle line:90%
+
+
+00:19:21.410 --> 00:19:23.750 align:middle line:90%
+All right.
+
+00:19:23.750 --> 00:19:25.163 align:middle line:90%
+OK.
+
+00:19:25.163 --> 00:19:34.490 align:middle line:84%
+So the first observation
+is that E1 and T1 obey
+
+00:19:34.490 --> 00:19:37.120 align:middle line:90%
+the hypotheses of our theorem.
+
+00:19:37.120 --> 00:19:41.210 align:middle line:90%
+
+
+00:19:41.210 --> 00:19:45.230 align:middle line:84%
+Because actually, if you
+take a delta T set of balls
+
+00:19:45.230 --> 00:19:47.400 align:middle line:84%
+and you thicken them
+up to radius delta 1,
+
+00:19:47.400 --> 00:19:50.840 align:middle line:84%
+you get a delta
+1 T set of balls.
+
+00:19:50.840 --> 00:19:53.640 align:middle line:84%
+At least, because
+if it's uniform.
+
+00:19:53.640 --> 00:19:57.590 align:middle line:84%
+And if you look at who's
+going through this point,
+
+00:19:57.590 --> 00:20:02.910 align:middle line:84%
+we have a delta S set of
+directions leaving that point.
+
+00:20:02.910 --> 00:20:05.160 align:middle line:84%
+And if you thicken
+them up a little bit,
+
+00:20:05.160 --> 00:20:07.820 align:middle line:84%
+you get the directions
+corresponding
+
+00:20:07.820 --> 00:20:09.120 align:middle line:90%
+to the orange tubes.
+
+00:20:09.120 --> 00:20:14.360 align:middle line:84%
+And that will be a delta
+1 S set of directions.
+
+00:20:14.360 --> 00:20:16.340 align:middle line:90%
+OK.
+
+00:20:16.340 --> 00:20:16.840 align:middle line:90%
+Great.
+
+00:20:16.840 --> 00:20:21.910 align:middle line:90%
+
+
+00:20:21.910 --> 00:20:22.430 align:middle line:90%
+Yeah.
+
+00:20:22.430 --> 00:20:24.010 align:middle line:90%
+OK.
+
+00:20:24.010 --> 00:20:26.020 align:middle line:84%
+Actually, let me
+put the punch line,
+
+00:20:26.020 --> 00:20:28.600 align:middle line:84%
+and then we'll think
+through why this works.
+
+00:20:28.600 --> 00:20:32.000 align:middle line:90%
+So RAD of delta.
+
+00:20:32.000 --> 00:20:35.410 align:middle line:84%
+That's the number of
+white balls in a red tube.
+
+00:20:35.410 --> 00:20:41.140 align:middle line:84%
+But that's bounded by the
+number of delta 1 balls
+
+00:20:41.140 --> 00:20:42.930 align:middle line:90%
+in a delta 1 tube.
+
+00:20:42.930 --> 00:20:47.080 align:middle line:90%
+
+
+00:20:47.080 --> 00:20:49.750 align:middle line:84%
+So I look in this orange tube,
+I see how many of these balls
+
+00:20:49.750 --> 00:20:59.560 align:middle line:84%
+there are, times the number
+of delta balls in a delta tube
+
+00:20:59.560 --> 00:21:03.890 align:middle line:90%
+within 1 delta 1 bar.
+
+00:21:03.890 --> 00:21:09.010 align:middle line:90%
+
+
+00:21:09.010 --> 00:21:12.200 align:middle line:84%
+So if I'm looking at
+this red tube here,
+
+00:21:12.200 --> 00:21:14.890 align:middle line:84%
+I want to know how many
+delta balls are in it.
+
+00:21:14.890 --> 00:21:18.670 align:middle line:84%
+It's bounded by the
+number of big balls
+
+00:21:18.670 --> 00:21:23.260 align:middle line:84%
+that it enters times the
+number of little balls
+
+00:21:23.260 --> 00:21:24.630 align:middle line:90%
+in each of the big balls.
+
+00:21:24.630 --> 00:21:29.920 align:middle line:90%
+
+
+00:21:29.920 --> 00:21:30.850 align:middle line:90%
+OK.
+
+00:21:30.850 --> 00:21:36.310 align:middle line:84%
+So we'd like to relate these
+two things to our problem
+
+00:21:36.310 --> 00:21:38.830 align:middle line:90%
+at a coarser scale.
+
+00:21:38.830 --> 00:21:44.840 align:middle line:84%
+And this one here, well, E1
+and T1 obey our hypotheses.
+
+00:21:44.840 --> 00:21:49.710 align:middle line:84%
+So this one here is
+bounded by RAD delta 1.
+
+00:21:49.710 --> 00:21:52.750 align:middle line:90%
+
+
+00:21:52.750 --> 00:22:01.210 align:middle line:84%
+Now here, if you take E
+and T and you restrict them
+
+00:22:01.210 --> 00:22:07.180 align:middle line:84%
+to a delta 1 ball,
+and then you magnify
+
+00:22:07.180 --> 00:22:13.930 align:middle line:84%
+it to bring it up to scale one,
+this also obeys our hypotheses.
+
+00:22:13.930 --> 00:22:19.520 align:middle line:84%
+So if you look inside of here,
+you see a little delta TS set.
+
+00:22:19.520 --> 00:22:22.966 align:middle line:90%
+
+
+00:22:22.966 --> 00:22:28.390 align:middle line:84%
+This and these red tubes, that's
+the same situation on a smaller
+
+00:22:28.390 --> 00:22:30.920 align:middle line:90%
+scale or on a coarser scale.
+
+00:22:30.920 --> 00:22:37.430 align:middle line:84%
+So when you blow this
+up, if you blow it up,
+
+00:22:37.430 --> 00:22:45.760 align:middle line:84%
+then you get delta 2 balls and
+delta 2 tubes in the unit ball.
+
+00:22:45.760 --> 00:22:52.245 align:middle line:84%
+So this guy is bounded
+by the RAD of delta 2.
+
+00:22:52.245 --> 00:23:02.530 align:middle line:90%
+
+
+00:23:02.530 --> 00:23:03.130 align:middle line:90%
+OK.
+
+00:23:03.130 --> 00:23:05.760 align:middle line:84%
+Let me call this claim
+one and claim two.
+
+00:23:05.760 --> 00:23:10.270 align:middle line:90%
+
+
+00:23:10.270 --> 00:23:12.520 align:middle line:90%
+All right.
+
+00:23:12.520 --> 00:23:16.300 align:middle line:84%
+So this picture is perhaps
+the most important thing
+
+00:23:16.300 --> 00:23:19.660 align:middle line:84%
+to take away from this
+proof in this class.
+
+00:23:19.660 --> 00:23:23.115 align:middle line:84%
+So take a moment and see if you
+have questions about this proof.
+
+00:23:23.115 --> 00:23:29.820 align:middle line:90%
+
+
+00:23:29.820 --> 00:23:41.447 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:23:41.447 --> 00:23:42.280 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:23:42.280 --> 00:23:42.860 align:middle line:90%
+OK.
+
+00:23:42.860 --> 00:23:45.610 align:middle line:84%
+So the question is,
+do we need to check
+
+00:23:45.610 --> 00:23:47.330 align:middle line:90%
+that everything is AD regular.
+
+00:23:47.330 --> 00:23:47.830 align:middle line:90%
+Yeah.
+
+00:23:47.830 --> 00:23:48.330 align:middle line:90%
+OK.
+
+00:23:48.330 --> 00:23:51.220 align:middle line:84%
+So let me add to these claims,
+and then if we want to,
+
+00:23:51.220 --> 00:23:54.400 align:middle line:84%
+we can add details to the
+proof of these claims.
+
+00:23:54.400 --> 00:23:58.660 align:middle line:84%
+E1 and T1 obey the hypotheses,
+and they're AD regular.
+
+00:23:58.660 --> 00:24:01.880 align:middle line:84%
+And we need that this blow
+up here obeys the hypotheses
+
+00:24:01.880 --> 00:24:03.080 align:middle line:90%
+and it's AD regular.
+
+00:24:03.080 --> 00:24:04.580 align:middle line:84%
+And if you believe
+those two things,
+
+00:24:04.580 --> 00:24:06.830 align:middle line:84%
+then you can plug-- you just
+plug in and you get that.
+
+00:24:06.830 --> 00:24:10.640 align:middle line:90%
+
+
+00:24:10.640 --> 00:24:11.140 align:middle line:90%
+Yeah.
+
+00:24:11.140 --> 00:24:13.473 align:middle line:84%
+And we can talk a little bit
+more about those two things
+
+00:24:13.473 --> 00:24:15.187 align:middle line:90%
+if you want.
+
+00:24:15.187 --> 00:24:16.770 align:middle line:84%
+Are there other
+questions or comments?
+
+00:24:16.770 --> 00:24:27.010 align:middle line:90%
+
+
+00:24:27.010 --> 00:24:27.512 align:middle line:90%
+OK.
+
+00:24:27.512 --> 00:24:28.970 align:middle line:84%
+So I'll probably
+add a little more,
+
+00:24:28.970 --> 00:24:31.870 align:middle line:84%
+but actually, I wanted to
+ask you all a question.
+
+00:24:31.870 --> 00:24:35.830 align:middle line:84%
+In this argument, where did
+we take advantage of the fact
+
+00:24:35.830 --> 00:24:38.190 align:middle line:84%
+that the original
+E was AD regular?
+
+00:24:38.190 --> 00:24:45.970 align:middle line:90%
+
+
+00:24:45.970 --> 00:24:47.240 align:middle line:90%
+Yeah, Jonathan?
+
+00:24:47.240 --> 00:24:52.997 align:middle line:84%
+AUDIENCE: Is it like picking one
+delta 1 ball and magnifying it?
+
+00:24:52.997 --> 00:24:53.830 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:24:53.830 --> 00:24:57.400 align:middle line:84%
+So it's related to when we
+picked this one delta 1 ball
+
+00:24:57.400 --> 00:24:58.940 align:middle line:90%
+and magnified it.
+
+00:24:58.940 --> 00:25:00.980 align:middle line:90%
+Yeah.
+
+00:25:00.980 --> 00:25:01.480 align:middle line:90%
+OK.
+
+00:25:01.480 --> 00:25:04.430 align:middle line:84%
+So let's talk about one and
+two a little more carefully.
+
+00:25:04.430 --> 00:25:11.650 align:middle line:90%
+
+
+00:25:11.650 --> 00:25:12.255 align:middle line:90%
+All right.
+
+00:25:12.255 --> 00:25:23.140 align:middle line:90%
+
+
+00:25:23.140 --> 00:25:29.200 align:middle line:90%
+So let's discuss one and two.
+
+00:25:29.200 --> 00:25:31.090 align:middle line:90%
+OK, so point one.
+
+00:25:31.090 --> 00:25:35.120 align:middle line:90%
+If E and T are uniform--
+
+00:25:35.120 --> 00:25:37.210 align:middle line:84%
+which we can pretty much
+assume from the-- which
+
+00:25:37.210 --> 00:25:41.020 align:middle line:84%
+we can assume from the
+beginning with a little pruning.
+
+00:25:41.020 --> 00:26:01.480 align:middle line:84%
+Then E delta T implies that
+E1 is delta 1T and Tx delta S
+
+00:26:01.480 --> 00:26:06.850 align:middle line:90%
+implies that T1x is delta 1x.
+
+00:26:06.850 --> 00:26:11.340 align:middle line:90%
+
+
+00:26:11.340 --> 00:26:16.120 align:middle line:84%
+And also, if E is
+AD regular, that
+
+00:26:16.120 --> 00:26:19.810 align:middle line:90%
+implies that E1 is AD regular.
+
+00:26:19.810 --> 00:26:22.630 align:middle line:84%
+Because this is saying all
+the branching numbers of E
+
+00:26:22.630 --> 00:26:24.380 align:middle line:90%
+are the same as each other.
+
+00:26:24.380 --> 00:26:26.710 align:middle line:84%
+And this is saying that all
+the branching numbers of E
+
+00:26:26.710 --> 00:26:29.690 align:middle line:84%
+down to the depth of delta 1
+are the same as each other.
+
+00:26:29.690 --> 00:26:32.890 align:middle line:90%
+
+
+00:26:32.890 --> 00:26:34.570 align:middle line:90%
+OK.
+
+00:26:34.570 --> 00:26:41.050 align:middle line:84%
+We didn't need E to be a
+regular to do this or this,
+
+00:26:41.050 --> 00:26:44.620 align:middle line:90%
+but it comes in in part two.
+
+00:26:44.620 --> 00:26:53.260 align:middle line:84%
+So because E is AD
+regular, then we
+
+00:26:53.260 --> 00:26:58.240 align:middle line:84%
+get that if you take E and you
+intersect it with a small ball
+
+00:26:58.240 --> 00:27:05.590 align:middle line:84%
+and magnify it, then
+this is a delta--
+
+00:27:05.590 --> 00:27:08.535 align:middle line:90%
+I guess delta 2T and AD regular.
+
+00:27:08.535 --> 00:27:12.690 align:middle line:90%
+
+
+00:27:12.690 --> 00:27:17.110 align:middle line:84%
+So let me illustrate this with
+pictures instead of equations.
+
+00:27:17.110 --> 00:27:18.610 align:middle line:90%
+So what does it look like?
+
+00:27:18.610 --> 00:27:21.760 align:middle line:84%
+Let's draw an AD regular set
+and a not AD regular set,
+
+00:27:21.760 --> 00:27:23.520 align:middle line:90%
+and we'll look at both of them.
+
+00:27:23.520 --> 00:27:28.895 align:middle line:84%
+So if E is AD
+regular, what do I do?
+
+00:27:28.895 --> 00:27:34.140 align:middle line:90%
+
+
+00:27:34.140 --> 00:27:35.735 align:middle line:90%
+I pick, say, four of them.
+
+00:27:35.735 --> 00:27:42.608 align:middle line:90%
+
+
+00:27:42.608 --> 00:27:43.775 align:middle line:90%
+Let me do this in the color.
+
+00:27:43.775 --> 00:27:52.710 align:middle line:90%
+
+
+00:27:52.710 --> 00:27:55.565 align:middle line:84%
+Then for each one that I
+picked, I subdivide it.
+
+00:27:55.565 --> 00:28:02.250 align:middle line:90%
+
+
+00:28:02.250 --> 00:28:04.085 align:middle line:90%
+And I pick four of them.
+
+00:28:04.085 --> 00:28:09.440 align:middle line:90%
+
+
+00:28:09.440 --> 00:28:09.940 align:middle line:90%
+OK.
+
+00:28:09.940 --> 00:28:10.690 align:middle line:90%
+I'll stop drawing.
+
+00:28:10.690 --> 00:28:12.090 align:middle line:90%
+You get the idea.
+
+00:28:12.090 --> 00:28:12.760 align:middle line:90%
+OK.
+
+00:28:12.760 --> 00:28:14.800 align:middle line:84%
+Now, this is a
+self-similar construction.
+
+00:28:14.800 --> 00:28:18.040 align:middle line:84%
+If I take this thing in
+here and I blow it up,
+
+00:28:18.040 --> 00:28:19.690 align:middle line:84%
+it's just like what
+I started with.
+
+00:28:19.690 --> 00:28:22.770 align:middle line:84%
+So it will be AD regular and
+it will be-- in particular,
+
+00:28:22.770 --> 00:28:28.680 align:middle line:84%
+in delta, there will be a delta
+T set for the appropriate delta.
+
+00:28:28.680 --> 00:28:29.910 align:middle line:90%
+OK.
+
+00:28:29.910 --> 00:28:35.190 align:middle line:84%
+What would it look like
+if E was not AD regular?
+
+00:28:35.190 --> 00:28:42.010 align:middle line:84%
+Well, for example, I might
+do the following thing.
+
+00:28:42.010 --> 00:28:44.680 align:middle line:84%
+I might cut it into
+a four by four grid,
+
+00:28:44.680 --> 00:28:47.290 align:middle line:84%
+and I might take
+all of the boxes.
+
+00:28:47.290 --> 00:28:52.200 align:middle line:84%
+And then I could cut each one
+of them into a four by four grid
+
+00:28:52.200 --> 00:28:55.350 align:middle line:90%
+and pick just one box.
+
+00:28:55.350 --> 00:28:58.870 align:middle line:84%
+So this was the well-spaced
+example that we drew last time.
+
+00:28:58.870 --> 00:29:03.850 align:middle line:90%
+
+
+00:29:03.850 --> 00:29:04.350 align:middle line:90%
+OK.
+
+00:29:04.350 --> 00:29:07.150 align:middle line:84%
+So this whole thing
+is a delta T set.
+
+00:29:07.150 --> 00:29:10.770 align:middle line:84%
+But if I took just one of
+these boxes, what I would see
+
+00:29:10.770 --> 00:29:12.070 align:middle line:90%
+is much more concentrated.
+
+00:29:12.070 --> 00:29:13.860 align:middle line:90%
+This is not a delta T set.
+
+00:29:13.860 --> 00:29:21.720 align:middle line:84%
+So if I were to take
+this guy and take it out
+
+00:29:21.720 --> 00:29:26.520 align:middle line:84%
+here and magnify it, then inside
+of here I would just see this.
+
+00:29:26.520 --> 00:29:35.820 align:middle line:84%
+This here is a blank T set, but
+this here is not a blank T set.
+
+00:29:35.820 --> 00:29:39.960 align:middle line:84%
+Whereas in the AD regular case,
+if I were to take one of these
+
+00:29:39.960 --> 00:29:44.400 align:middle line:84%
+and bring it out and magnify it,
+then what I would see in here
+
+00:29:44.400 --> 00:29:47.130 align:middle line:84%
+would be very similar
+to the original set.
+
+00:29:47.130 --> 00:29:56.850 align:middle line:84%
+This is similar to E. So
+this here is a blank T set
+
+00:29:56.850 --> 00:29:58.530 align:middle line:90%
+and it's AD regular.
+
+00:29:58.530 --> 00:30:01.470 align:middle line:84%
+And that thing in there
+is still a blank T set
+
+00:30:01.470 --> 00:30:02.900 align:middle line:90%
+and it's still AD regular.
+
+00:30:02.900 --> 00:30:06.060 align:middle line:90%
+
+
+00:30:06.060 --> 00:30:06.640 align:middle line:90%
+OK.
+
+00:30:06.640 --> 00:30:09.370 align:middle line:84%
+So this is the special
+feature AD regular.
+
+00:30:09.370 --> 00:30:10.920 align:middle line:84%
+The word regular
+refers to the fact
+
+00:30:10.920 --> 00:30:13.140 align:middle line:84%
+that all the different
+scales look the same.
+
+00:30:13.140 --> 00:30:18.420 align:middle line:84%
+And so when we look
+inside this ball here,
+
+00:30:18.420 --> 00:30:21.570 align:middle line:84%
+we have another example of our
+original problem at a coarser
+
+00:30:21.570 --> 00:30:22.740 align:middle line:90%
+scale.
+
+00:30:22.740 --> 00:30:26.050 align:middle line:84%
+And that feeds into
+an inductive argument.
+
+00:30:26.050 --> 00:30:29.640 align:middle line:84%
+For example, we can say this
+submultiplicative lemma.
+
+00:30:29.640 --> 00:30:30.720 align:middle line:90%
+Yeah?
+
+00:30:30.720 --> 00:30:32.470 align:middle line:84%
+AUDIENCE: The first
+equality over there,
+
+00:30:32.470 --> 00:30:35.490 align:middle line:84%
+do you need some of
+uniformity on the number
+
+00:30:35.490 --> 00:30:38.120 align:middle line:90%
+of the balls from A to C?
+
+00:30:38.120 --> 00:30:40.620 align:middle line:84%
+Because RAD is like the average,
+and you're saying something
+
+00:30:40.620 --> 00:30:43.200 align:middle line:84%
+like the average is less
+than or equal to [INAUDIBLE]
+
+00:30:43.200 --> 00:30:44.460 align:middle line:90%
+the averages.
+
+00:30:44.460 --> 00:30:45.300 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:30:45.300 --> 00:30:46.028 align:middle line:90%
+That's right.
+
+00:30:46.028 --> 00:30:46.570 align:middle line:90%
+That's right.
+
+00:30:46.570 --> 00:30:50.220 align:middle line:90%
+
+
+00:30:50.220 --> 00:30:50.940 align:middle line:90%
+Yes.
+
+00:30:50.940 --> 00:30:51.940 align:middle line:90%
+That is a good point.
+
+00:30:51.940 --> 00:30:57.030 align:middle line:84%
+So the comment is that RAD was
+defined as an average number
+
+00:30:57.030 --> 00:30:58.540 align:middle line:90%
+of delta tubes per delta ball.
+
+00:30:58.540 --> 00:31:02.440 align:middle line:84%
+And here I was pretending that
+all the tubes are average.
+
+00:31:02.440 --> 00:31:06.600 align:middle line:84%
+So let's call this
+a proof sketch.
+
+00:31:06.600 --> 00:31:09.310 align:middle line:90%
+
+
+00:31:09.310 --> 00:31:11.040 align:middle line:90%
+You do need some uniformity.
+
+00:31:11.040 --> 00:31:12.790 align:middle line:84%
+If you think back to
+the original setting,
+
+00:31:12.790 --> 00:31:15.830 align:middle line:84%
+you have this set E and then
+you draw all these tubes.
+
+00:31:15.830 --> 00:31:19.640 align:middle line:84%
+You can sort them by how many
+delta tubes are in each one.
+
+00:31:19.640 --> 00:31:23.500 align:middle line:84%
+And you take the category
+that has the most delta tubes,
+
+00:31:23.500 --> 00:31:25.940 align:middle line:84%
+and that will still
+you can work with that.
+
+00:31:25.940 --> 00:31:27.192 align:middle line:90%
+So you can do--
+
+00:31:27.192 --> 00:31:28.000 align:middle line:90%
+you're correct.
+
+00:31:28.000 --> 00:31:32.800 align:middle line:84%
+We have to uniformize it, and
+it's possible to uniformize it.
+
+00:31:32.800 --> 00:31:33.300 align:middle line:90%
+OK.
+
+00:31:33.300 --> 00:31:35.330 align:middle line:90%
+So let me describe that.
+
+00:31:35.330 --> 00:31:49.510 align:middle line:84%
+So we can do some
+uniformizing so all tubes
+
+00:31:49.510 --> 00:31:51.540 align:middle line:90%
+have the same number of balls.
+
+00:31:51.540 --> 00:32:01.110 align:middle line:90%
+
+
+00:32:01.110 --> 00:32:01.838 align:middle line:90%
+OK.
+
+00:32:01.838 --> 00:32:03.005 align:middle line:90%
+Other questions or comments?
+
+00:32:03.005 --> 00:32:05.760 align:middle line:90%
+
+
+00:32:05.760 --> 00:32:06.540 align:middle line:90%
+OK.
+
+00:32:06.540 --> 00:32:08.460 align:middle line:90%
+Cool.
+
+00:32:08.460 --> 00:32:09.430 align:middle line:90%
+All right.
+
+00:32:09.430 --> 00:32:13.980 align:middle line:84%
+So this little lemma
+is very important.
+
+00:32:13.980 --> 00:32:16.560 align:middle line:84%
+For people who have
+seen some other things
+
+00:32:16.560 --> 00:32:19.230 align:middle line:84%
+in harmonic analysis, there's
+a submultiplicative lemma
+
+00:32:19.230 --> 00:32:21.550 align:middle line:84%
+that's sort of like this
+in decoupling theory.
+
+00:32:21.550 --> 00:32:24.150 align:middle line:84%
+And it's the beginning of
+what's special about decoupling.
+
+00:32:24.150 --> 00:32:25.900 align:middle line:84%
+If those words don't
+mean anything to you,
+
+00:32:25.900 --> 00:32:28.170 align:middle line:90%
+don't worry about it.
+
+00:32:28.170 --> 00:32:31.710 align:middle line:84%
+So let me show you some
+corollaries, some applications
+
+00:32:31.710 --> 00:32:34.470 align:middle line:90%
+of this lemma.
+
+00:32:34.470 --> 00:32:37.560 align:middle line:84%
+And then we'll go in
+earnest into using
+
+00:32:37.560 --> 00:32:39.900 align:middle line:90%
+it to prove this theorem.
+
+00:32:39.900 --> 00:32:40.565 align:middle line:90%
+All right.
+
+00:32:40.565 --> 00:32:57.610 align:middle line:90%
+
+
+00:32:57.610 --> 00:32:58.110 align:middle line:90%
+All right.
+
+00:32:58.110 --> 00:33:01.610 align:middle line:84%
+So the first application
+is sort of tongue in cheek,
+
+00:33:01.610 --> 00:33:06.290 align:middle line:84%
+but also I think it's
+philosophically important.
+
+00:33:06.290 --> 00:33:07.880 align:middle line:90%
+I'm going to call it--
+
+00:33:07.880 --> 00:33:09.096 align:middle line:90%
+so applications.
+
+00:33:09.096 --> 00:33:12.170 align:middle line:90%
+
+
+00:33:12.170 --> 00:33:20.720 align:middle line:84%
+I'm going to call it a brute
+force proof of our theorem,
+
+00:33:20.720 --> 00:33:27.290 align:middle line:84%
+of theorem of the
+AD regular case.
+
+00:33:27.290 --> 00:33:28.645 align:middle line:90%
+So here's how it goes.
+
+00:33:28.645 --> 00:33:31.610 align:middle line:90%
+
+
+00:33:31.610 --> 00:33:44.900 align:middle line:84%
+So for some specific delta
+0, we check by brute force
+
+00:33:44.900 --> 00:33:54.085 align:middle line:84%
+that RAD ST delta is bounded
+by the right-hand side.
+
+00:33:54.085 --> 00:33:56.658 align:middle line:90%
+
+
+00:33:56.658 --> 00:33:58.200 align:middle line:84%
+We won't be able to
+get it perfectly,
+
+00:33:58.200 --> 00:33:59.742 align:middle line:84%
+but we could get
+something like this.
+
+00:33:59.742 --> 00:34:02.680 align:middle line:90%
+
+
+00:34:02.680 --> 00:34:03.180 align:middle line:90%
+OK.
+
+00:34:03.180 --> 00:34:04.222 align:middle line:90%
+So how could you do this?
+
+00:34:04.222 --> 00:34:08.630 align:middle line:84%
+Once you fix a particular
+delta 0, like 1 over a million,
+
+00:34:08.630 --> 00:34:11.690 align:middle line:84%
+there are really only
+finitely many different ways
+
+00:34:11.690 --> 00:34:13.366 align:middle line:84%
+you could arrange
+the delta balls,
+
+00:34:13.366 --> 00:34:15.199 align:middle line:84%
+and there are really
+only finitely many ways
+
+00:34:15.199 --> 00:34:16.199 align:middle line:90%
+you could put the tubes.
+
+00:34:16.199 --> 00:34:18.380 align:middle line:84%
+So there's a giant
+brute force calculation
+
+00:34:18.380 --> 00:34:20.750 align:middle line:84%
+that you couldn't really
+do but we could imagine,
+
+00:34:20.750 --> 00:34:24.050 align:middle line:90%
+and you could just check this.
+
+00:34:24.050 --> 00:34:33.170 align:middle line:84%
+Once you have this, then you
+use the submultiplicative lemma
+
+00:34:33.170 --> 00:34:34.120 align:middle line:90%
+many times.
+
+00:34:34.120 --> 00:34:37.219 align:middle line:90%
+
+
+00:34:37.219 --> 00:34:40.370 align:middle line:84%
+And so when you
+used it once, you
+
+00:34:40.370 --> 00:34:43.880 align:middle line:84%
+would get RAD ST
+delta 0 squared.
+
+00:34:43.880 --> 00:34:47.510 align:middle line:84%
+That would be bounded by
+right-hand side times delta
+
+00:34:47.510 --> 00:34:51.590 align:middle line:90%
+squared to the minus epsilon.
+
+00:34:51.590 --> 00:34:54.750 align:middle line:84%
+Because the right-hand side
+is just the power of delta 0,
+
+00:34:54.750 --> 00:34:55.590 align:middle line:90%
+so it multiplies.
+
+00:34:55.590 --> 00:34:59.155 align:middle line:84%
+Everything fits
+and you keep going.
+
+00:34:59.155 --> 00:35:04.895 align:middle line:90%
+
+
+00:35:04.895 --> 00:35:05.395 align:middle line:90%
+OK.
+
+00:35:05.395 --> 00:35:08.850 align:middle line:90%
+
+
+00:35:08.850 --> 00:35:10.970 align:middle line:84%
+So this brute force
+computation is so large
+
+00:35:10.970 --> 00:35:12.830 align:middle line:84%
+that it's out of the
+question to do it even
+
+00:35:12.830 --> 00:35:15.590 align:middle line:90%
+with a supercomputer, et cetera.
+
+00:35:15.590 --> 00:35:18.710 align:middle line:84%
+Nevertheless, it
+is worth noticing
+
+00:35:18.710 --> 00:35:23.510 align:middle line:84%
+that this very difficult
+theorem has a one blackboard
+
+00:35:23.510 --> 00:35:26.990 align:middle line:84%
+proof up to a brute
+force computation,
+
+00:35:26.990 --> 00:35:28.760 align:middle line:90%
+up to a finite computation.
+
+00:35:28.760 --> 00:35:30.510 align:middle line:90%
+Most difficult theorems in math.
+
+00:35:30.510 --> 00:35:33.217 align:middle line:84%
+It's not obvious how to reduce
+to a finite computation.
+
+00:35:33.217 --> 00:35:34.800 align:middle line:84%
+I wouldn't say this
+is obvious either,
+
+00:35:34.800 --> 00:35:36.210 align:middle line:84%
+but for most difficult
+theorems in math,
+
+00:35:36.210 --> 00:35:38.090 align:middle line:84%
+there's not a half page
+argument to reduce it
+
+00:35:38.090 --> 00:35:39.240 align:middle line:90%
+to a finite computation.
+
+00:35:39.240 --> 00:35:40.380 align:middle line:90%
+For this one, there is.
+
+00:35:40.380 --> 00:35:42.240 align:middle line:84%
+So it shows that this
+is quite important.
+
+00:35:42.240 --> 00:35:48.750 align:middle line:90%
+
+
+00:35:48.750 --> 00:35:49.250 align:middle line:90%
+OK.
+
+00:35:49.250 --> 00:35:53.060 align:middle line:90%
+Let me give another application.
+
+00:35:53.060 --> 00:35:56.930 align:middle line:84%
+Second application
+is the general case.
+
+00:35:56.930 --> 00:36:00.900 align:middle line:84%
+General AD versus
+the projective AD.
+
+00:36:00.900 --> 00:36:04.580 align:middle line:90%
+
+
+00:36:04.580 --> 00:36:07.565 align:middle line:84%
+So the course was called
+projection theory.
+
+00:36:07.565 --> 00:36:09.440 align:middle line:84%
+And at the beginning we
+talked about problems
+
+00:36:09.440 --> 00:36:11.370 align:middle line:90%
+about orthogonal projections.
+
+00:36:11.370 --> 00:36:13.367 align:middle line:84%
+And this theorem is
+really more general.
+
+00:36:13.367 --> 00:36:14.700 align:middle line:90%
+I guess I've erased the theorem.
+
+00:36:14.700 --> 00:36:16.242 align:middle line:84%
+The theorem we're
+talking about today
+
+00:36:16.242 --> 00:36:19.730 align:middle line:84%
+is more general than just
+orthogonal projections.
+
+00:36:19.730 --> 00:36:21.938 align:middle line:84%
+And if you had some
+orthogonal projections,
+
+00:36:21.938 --> 00:36:23.480 align:middle line:84%
+the way you would
+get all these tubes
+
+00:36:23.480 --> 00:36:25.890 align:middle line:84%
+is you would pick a direction
+from your direction set,
+
+00:36:25.890 --> 00:36:27.860 align:middle line:84%
+and then you would
+get a bunch of tubes
+
+00:36:27.860 --> 00:36:30.860 align:middle line:84%
+in that direction
+that cover your set.
+
+00:36:30.860 --> 00:36:34.460 align:middle line:90%
+So I make a definition.
+
+00:36:34.460 --> 00:36:46.010 align:middle line:84%
+Let's say that ET is
+projective if for every x in E,
+
+00:36:46.010 --> 00:36:49.342 align:middle line:84%
+the direction set
+of the tubes Tx--
+
+00:36:49.342 --> 00:36:50.300 align:middle line:90%
+let me put it this way.
+
+00:36:50.300 --> 00:36:53.900 align:middle line:84%
+For every x1 and x2
+in E, the direction
+
+00:36:53.900 --> 00:36:56.090 align:middle line:84%
+of the tubes through
+x1 is the same
+
+00:36:56.090 --> 00:37:01.490 align:middle line:84%
+as the direction of
+the tubes through x2.
+
+00:37:01.490 --> 00:37:04.050 align:middle line:84%
+In other words, you have
+just one set of directions,
+
+00:37:04.050 --> 00:37:09.260 align:middle line:84%
+and Tx is all the tubes through
+x in that set of directions.
+
+00:37:09.260 --> 00:37:09.780 align:middle line:90%
+OK.
+
+00:37:09.780 --> 00:37:12.270 align:middle line:84%
+So if you think about the
+problem that we wrote down,
+
+00:37:12.270 --> 00:37:13.530 align:middle line:90%
+this is a very special case.
+
+00:37:13.530 --> 00:37:15.620 align:middle line:84%
+So it used to be at
+every point you picked
+
+00:37:15.620 --> 00:37:18.510 align:middle line:84%
+your own independent
+set of tubes,
+
+00:37:18.510 --> 00:37:20.962 align:middle line:84%
+but now there's an extra
+rule that the directions have
+
+00:37:20.962 --> 00:37:22.170 align:middle line:90%
+to be the same at each point.
+
+00:37:22.170 --> 00:37:24.740 align:middle line:90%
+So a very special case.
+
+00:37:24.740 --> 00:37:26.072 align:middle line:90%
+OK.
+
+00:37:26.072 --> 00:37:32.570 align:middle line:84%
+So let's say RAD
+projection of delta
+
+00:37:32.570 --> 00:37:37.500 align:middle line:84%
+is the maximum over
+the usual stuff.
+
+00:37:37.500 --> 00:37:41.150 align:middle line:90%
+So ET obeys our hypotheses.
+
+00:37:41.150 --> 00:37:45.690 align:middle line:84%
+E is AD regular, but
+also, ET is projective.
+
+00:37:45.690 --> 00:37:50.710 align:middle line:90%
+
+
+00:37:50.710 --> 00:37:51.210 align:middle line:90%
+All right.
+
+00:37:51.210 --> 00:38:00.220 align:middle line:90%
+
+
+00:38:00.220 --> 00:38:07.070 align:middle line:84%
+So in general, we're
+taking a maximum.
+
+00:38:07.070 --> 00:38:08.840 align:middle line:84%
+And this is a
+restricted maximum,
+
+00:38:08.840 --> 00:38:15.720 align:middle line:84%
+so we clearly have that RAD
+projective is smaller than RAD.
+
+00:38:15.720 --> 00:38:19.570 align:middle line:90%
+
+
+00:38:19.570 --> 00:38:22.670 align:middle line:84%
+But it turns out that they're
+basically equal to each other.
+
+00:38:22.670 --> 00:38:26.110 align:middle line:90%
+So let's make that a lemma.
+
+00:38:26.110 --> 00:38:31.540 align:middle line:84%
+So RAD of delta
+is less than here.
+
+00:38:31.540 --> 00:38:33.040 align:middle line:84%
+There is some fudge
+factors, so I'll
+
+00:38:33.040 --> 00:38:34.900 align:middle line:84%
+write something like
+this C epsilon delta
+
+00:38:34.900 --> 00:38:35.910 align:middle line:90%
+to the minus epsilon.
+
+00:38:35.910 --> 00:38:39.340 align:middle line:90%
+
+
+00:38:39.340 --> 00:38:41.132 align:middle line:90%
+Actually, let me--
+
+00:38:41.132 --> 00:38:42.590 align:middle line:84%
+I won't quite say
+that that's true.
+
+00:38:42.590 --> 00:38:46.660 align:middle line:90%
+But let me just say something.
+
+00:38:46.660 --> 00:38:47.540 align:middle line:90%
+OK.
+
+00:38:47.540 --> 00:38:49.180 align:middle line:84%
+So here's a cool
+observation based
+
+00:38:49.180 --> 00:38:51.820 align:middle line:90%
+on that diagram and that proof.
+
+00:38:51.820 --> 00:39:01.510 align:middle line:84%
+So notice that in the
+submultiplicative lemma
+
+00:39:01.510 --> 00:39:09.910 align:middle line:84%
+if delta 1 equals delta 2 equals
+square root of delta, then
+
+00:39:09.910 --> 00:39:13.570 align:middle line:90%
+the inner--
+
+00:39:13.570 --> 00:39:16.940 align:middle line:84%
+the small ball problems
+are all projective.
+
+00:39:16.940 --> 00:39:27.203 align:middle line:90%
+
+
+00:39:27.203 --> 00:39:27.703 align:middle line:90%
+OK.
+
+00:39:27.703 --> 00:39:31.084 align:middle line:90%
+
+
+00:39:31.084 --> 00:39:37.640 align:middle line:84%
+So in this problem, we have a
+delta scale Furstenberg problem,
+
+00:39:37.640 --> 00:39:39.910 align:middle line:84%
+and we broke it up into
+two pieces, a coarse piece
+
+00:39:39.910 --> 00:39:44.290 align:middle line:84%
+at the large scale and a small
+piece inside each small ball.
+
+00:39:44.290 --> 00:39:46.810 align:middle line:84%
+So I claim that this piece
+inside the small ball
+
+00:39:46.810 --> 00:39:48.940 align:middle line:90%
+is projective.
+
+00:39:48.940 --> 00:39:50.500 align:middle line:90%
+Why is it?
+
+00:39:50.500 --> 00:39:56.110 align:middle line:84%
+Well, so take one
+of these points,
+
+00:39:56.110 --> 00:39:59.500 align:middle line:84%
+and I'm going to look at the
+directions of the red tubes
+
+00:39:59.500 --> 00:40:00.720 align:middle line:90%
+going through this point.
+
+00:40:00.720 --> 00:40:04.330 align:middle line:90%
+
+
+00:40:04.330 --> 00:40:06.560 align:middle line:84%
+Now I'm working
+in this small ball
+
+00:40:06.560 --> 00:40:08.170 align:middle line:84%
+so I can only
+distinguish them up
+
+00:40:08.170 --> 00:40:11.050 align:middle line:84%
+to an angle of the
+square root of delta.
+
+00:40:11.050 --> 00:40:12.920 align:middle line:90%
+So what directions will they be?
+
+00:40:12.920 --> 00:40:15.970 align:middle line:84%
+They'll be the directions of
+these orange tubes going out
+
+00:40:15.970 --> 00:40:17.650 align:middle line:90%
+through here.
+
+00:40:17.650 --> 00:40:21.250 align:middle line:84%
+So there could well
+be two long red tubes
+
+00:40:21.250 --> 00:40:24.770 align:middle line:84%
+going through here that are
+in the same orange tube.
+
+00:40:24.770 --> 00:40:27.250 align:middle line:84%
+But inside of this
+small ball, they'll
+
+00:40:27.250 --> 00:40:28.610 align:middle line:90%
+just be on top of each other.
+
+00:40:28.610 --> 00:40:31.360 align:middle line:84%
+I won't see any
+difference between them.
+
+00:40:31.360 --> 00:40:34.400 align:middle line:84%
+So the directions that I'll
+see within the small ball,
+
+00:40:34.400 --> 00:40:38.500 align:middle line:84%
+they just correspond
+to these orange tubes.
+
+00:40:38.500 --> 00:40:41.960 align:middle line:84%
+And if I look at different
+guys inside the small ball,
+
+00:40:41.960 --> 00:40:43.500 align:middle line:84%
+I have the same set
+of orange tubes.
+
+00:40:43.500 --> 00:40:48.190 align:middle line:90%
+
+
+00:40:48.190 --> 00:40:49.420 align:middle line:90%
+OK.
+
+00:40:49.420 --> 00:40:54.010 align:middle line:90%
+So that gives me an inequality.
+
+00:40:54.010 --> 00:41:03.460 align:middle line:84%
+RAD delta is bounded by RAD
+delta to the 1/2 times RAD
+
+00:41:03.460 --> 00:41:08.455 align:middle line:90%
+projective delta to the 1/2.
+
+00:41:08.455 --> 00:41:08.955 align:middle line:90%
+Yeah?
+
+00:41:08.955 --> 00:41:10.780 align:middle line:84%
+AUDIENCE: I thought
+that you were
+
+00:41:10.780 --> 00:41:12.435 align:middle line:90%
+writing projective [INAUDIBLE].
+
+00:41:12.435 --> 00:41:13.310 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:41:13.310 --> 00:41:14.690 align:middle line:84%
+Only the inner
+one is projective.
+
+00:41:14.690 --> 00:41:16.520 align:middle line:90%
+The outer one is arbitrary.
+
+00:41:16.520 --> 00:41:20.410 align:middle line:90%
+
+
+00:41:20.410 --> 00:41:23.950 align:middle line:90%
+However, we can repeat this.
+
+00:41:23.950 --> 00:41:29.020 align:middle line:84%
+So now that's bounded
+by RAD delta to the 1/4,
+
+00:41:29.020 --> 00:41:37.630 align:middle line:84%
+RAD projective delta to the 1/4,
+RAD projective delta to the 1/2.
+
+00:41:37.630 --> 00:41:41.080 align:middle line:90%
+
+
+00:41:41.080 --> 00:41:44.400 align:middle line:90%
+And now you can keep going.
+
+00:41:44.400 --> 00:41:44.900 align:middle line:90%
+OK.
+
+00:41:44.900 --> 00:41:46.100 align:middle line:90%
+So you do this many times.
+
+00:41:46.100 --> 00:41:48.340 align:middle line:84%
+There will be a T
+appendix left here
+
+00:41:48.340 --> 00:41:53.330 align:middle line:84%
+that still has no projective on
+it, but it will be very minor.
+
+00:41:53.330 --> 00:41:56.300 align:middle line:84%
+And the rest of them
+all have projective.
+
+00:41:56.300 --> 00:42:02.200 align:middle line:84%
+And so the conclusion is
+that to prove the theorem,
+
+00:42:02.200 --> 00:42:04.530 align:middle line:84%
+it suffices to check
+the projective case.
+
+00:42:04.530 --> 00:42:13.600 align:middle line:90%
+
+
+00:42:13.600 --> 00:42:17.240 align:middle line:84%
+So that's a cute application
+of the submultiplicative.
+
+00:42:17.240 --> 00:42:31.690 align:middle line:90%
+
+
+00:42:31.690 --> 00:42:32.190 align:middle line:90%
+OK.
+
+00:42:32.190 --> 00:42:38.522 align:middle line:90%
+
+
+00:42:38.522 --> 00:42:41.750 align:middle line:84%
+So those are a couple of cute
+applications of this lemma.
+
+00:42:41.750 --> 00:42:42.670 align:middle line:90%
+Yeah?
+
+00:42:42.670 --> 00:42:45.700 align:middle line:84%
+AUDIENCE: Is that
+an extra RAD delta
+
+00:42:45.700 --> 00:42:51.580 align:middle line:84%
+to the kind of 1 over epsilon
+where the delta T epsilon error
+
+00:42:51.580 --> 00:42:53.630 align:middle line:90%
+term comes from?
+
+00:42:53.630 --> 00:42:55.600 align:middle line:84%
+Or is it a conditional
+thing as well?
+
+00:42:55.600 --> 00:42:57.700 align:middle line:84%
+LAWRENCE GUTH: There
+are several places where
+
+00:42:57.700 --> 00:43:00.470 align:middle line:84%
+we might incur a delta T
+epsilon in the final thing,
+
+00:43:00.470 --> 00:43:01.550 align:middle line:90%
+and this is one of them.
+
+00:43:01.550 --> 00:43:03.760 align:middle line:90%
+Yeah.
+
+00:43:03.760 --> 00:43:05.680 align:middle line:90%
+Yeah.
+
+00:43:05.680 --> 00:43:08.482 align:middle line:90%
+OK.
+
+00:43:08.482 --> 00:43:12.310 align:middle line:84%
+So let's say something
+big picture about trying
+
+00:43:12.310 --> 00:43:15.370 align:middle line:90%
+to prove this theorem.
+
+00:43:15.370 --> 00:43:19.460 align:middle line:84%
+So we were saying yesterday that
+for a while in this subject,
+
+00:43:19.460 --> 00:43:22.810 align:middle line:84%
+there were only kind of-- there
+were only epsilon improvements
+
+00:43:22.810 --> 00:43:24.410 align:middle line:90%
+on some classical things.
+
+00:43:24.410 --> 00:43:26.590 align:middle line:84%
+And what was very
+striking to me is
+
+00:43:26.590 --> 00:43:29.000 align:middle line:84%
+to go from just making
+epsilon improvements,
+
+00:43:29.000 --> 00:43:32.740 align:middle line:84%
+to go to proving
+the sharp theorem.
+
+00:43:32.740 --> 00:43:35.180 align:middle line:84%
+And while Pablo
+Shmerkin was visiting,
+
+00:43:35.180 --> 00:43:37.450 align:middle line:84%
+I talked with him a lot
+about all this stuff.
+
+00:43:37.450 --> 00:43:40.510 align:middle line:84%
+And he said to me something one
+day that really stuck with me.
+
+00:43:40.510 --> 00:43:46.971 align:middle line:90%
+He said, philosophically that--
+
+00:43:46.971 --> 00:43:48.695 align:middle line:84%
+yeah, here's how I
+would like to put it.
+
+00:43:48.695 --> 00:43:51.450 align:middle line:90%
+
+
+00:43:51.450 --> 00:43:55.560 align:middle line:84%
+That in order to prove this
+theorem, what we need to do
+
+00:43:55.560 --> 00:44:01.890 align:middle line:84%
+is make an epsilon improvement
+on the submultiplicative lemma.
+
+00:44:01.890 --> 00:44:03.390 align:middle line:84%
+So let me write
+that down, because I
+
+00:44:03.390 --> 00:44:07.320 align:middle line:84%
+think it's worth taking
+with you out of this class.
+
+00:44:07.320 --> 00:44:10.266 align:middle line:90%
+So philosophy.
+
+00:44:10.266 --> 00:44:15.960 align:middle line:90%
+
+
+00:44:15.960 --> 00:44:25.890 align:middle line:84%
+To prove the theorem, what we
+need at epsilon improvement
+
+00:44:25.890 --> 00:44:28.955 align:middle line:90%
+on the submultiplicative lemma.
+
+00:44:28.955 --> 00:44:35.760 align:middle line:90%
+
+
+00:44:35.760 --> 00:44:36.720 align:middle line:90%
+OK.
+
+00:44:36.720 --> 00:44:42.420 align:middle line:84%
+So in other words, we'd like to
+say either one possibility is
+
+00:44:42.420 --> 00:44:48.695 align:middle line:84%
+that RAD square root of delta
+already obeys the bound.
+
+00:44:48.695 --> 00:44:52.590 align:middle line:90%
+
+
+00:44:52.590 --> 00:44:53.340 align:middle line:90%
+OK?
+
+00:44:53.340 --> 00:44:54.910 align:middle line:90%
+Well, then we're happy.
+
+00:44:54.910 --> 00:44:58.120 align:middle line:84%
+And by the submultiplicative
+lemma RAD of delta
+
+00:44:58.120 --> 00:44:59.640 align:middle line:90%
+also will obey the bound.
+
+00:44:59.640 --> 00:45:01.530 align:middle line:90%
+So we'll be happy.
+
+00:45:01.530 --> 00:45:08.525 align:middle line:84%
+Or we have-- so I'll write down
+the submultiplicative lemma.
+
+00:45:08.525 --> 00:45:17.040 align:middle line:90%
+
+
+00:45:17.040 --> 00:45:20.940 align:middle line:84%
+So that's the
+submultiplicative lemma.
+
+00:45:20.940 --> 00:45:25.940 align:middle line:84%
+Or we have not this lemma, but
+a little tiny improvement on it.
+
+00:45:25.940 --> 00:45:32.700 align:middle line:90%
+
+
+00:45:32.700 --> 00:45:33.500 align:middle line:90%
+OK.
+
+00:45:33.500 --> 00:45:35.880 align:middle line:84%
+So in this case, of
+course, we're happy.
+
+00:45:35.880 --> 00:45:38.760 align:middle line:84%
+And in this case,
+we can iterate.
+
+00:45:38.760 --> 00:45:41.010 align:middle line:84%
+And so you can think
+of RAD of delta
+
+00:45:41.010 --> 00:45:43.530 align:middle line:90%
+as being some power of delta.
+
+00:45:43.530 --> 00:45:49.170 align:middle line:84%
+And then every time we do
+this, that power goes down,
+
+00:45:49.170 --> 00:45:50.800 align:middle line:90%
+or some negative power of delta.
+
+00:45:50.800 --> 00:45:53.120 align:middle line:84%
+Every time we do this, that
+power is going to go down.
+
+00:45:53.120 --> 00:45:58.140 align:middle line:90%
+
+
+00:45:58.140 --> 00:46:00.400 align:middle line:84%
+It will keep going down
+until we get into this case
+
+00:46:00.400 --> 00:46:01.067 align:middle line:90%
+and we're happy.
+
+00:46:01.067 --> 00:46:03.630 align:middle line:90%
+
+
+00:46:03.630 --> 00:46:05.820 align:middle line:90%
+All right.
+
+00:46:05.820 --> 00:46:08.260 align:middle line:90%
+So let's illustrate that.
+
+00:46:08.260 --> 00:46:13.800 align:middle line:84%
+So if, say, we
+have RAD of delta--
+
+00:46:13.800 --> 00:46:14.970 align:middle line:90%
+let me write it this way.
+
+00:46:14.970 --> 00:46:16.110 align:middle line:90%
+It'll be easier.
+
+00:46:16.110 --> 00:46:18.630 align:middle line:90%
+It's delta to the minus gamma.
+
+00:46:18.630 --> 00:46:25.380 align:middle line:84%
+Then we'd have RAD of delta
+squared would be bounded by--
+
+00:46:25.380 --> 00:46:29.855 align:middle line:84%
+so this would give us delta to
+the minus 2 gamma plus epsilon.
+
+00:46:29.855 --> 00:46:39.300 align:middle line:90%
+
+
+00:46:39.300 --> 00:46:42.240 align:middle line:90%
+Then we would do this again.
+
+00:46:42.240 --> 00:46:47.160 align:middle line:84%
+RAD delta to the 1/4 would be
+bounded by delta to the 1/4
+
+00:46:47.160 --> 00:46:50.430 align:middle line:84%
+to the minus gamma plus
+epsilon plus epsilon.
+
+00:46:50.430 --> 00:46:54.930 align:middle line:84%
+We keep going and this exponent
+keeps getting better and better,
+
+00:46:54.930 --> 00:46:57.340 align:middle line:84%
+until we can't make an
+epsilon improvement anymore.
+
+00:46:57.340 --> 00:47:02.315 align:middle line:84%
+So if we have this dichotomy,
+then we can get the theorem.
+
+00:47:02.315 --> 00:47:05.400 align:middle line:90%
+
+
+00:47:05.400 --> 00:47:07.875 align:middle line:90%
+OK.
+
+00:47:07.875 --> 00:47:08.375 align:middle line:90%
+Cool.
+
+00:47:08.375 --> 00:47:13.280 align:middle line:90%
+
+
+00:47:13.280 --> 00:47:13.780 align:middle line:90%
+All right.
+
+00:47:13.780 --> 00:47:16.350 align:middle line:84%
+So then you might
+reflect, well, why
+
+00:47:16.350 --> 00:47:19.950 align:middle line:84%
+is it easier to make an epsilon
+improvement kind of theorem
+
+00:47:19.950 --> 00:47:24.610 align:middle line:84%
+than it is to prove a really
+sharp bound straight out?
+
+00:47:24.610 --> 00:47:27.450 align:middle line:84%
+Well, there's a thought
+process for that,
+
+00:47:27.450 --> 00:47:29.150 align:middle line:84%
+which is we already
+have a result
+
+00:47:29.150 --> 00:47:31.150 align:middle line:84%
+and then we want to make
+an epsilon improvement.
+
+00:47:31.150 --> 00:47:32.850 align:middle line:84%
+Then we say to
+ourselves, what would it
+
+00:47:32.850 --> 00:47:35.970 align:middle line:84%
+look like if the result
+we have is sharp?
+
+00:47:35.970 --> 00:47:39.168 align:middle line:84%
+And maybe there's a
+lot of specific things
+
+00:47:39.168 --> 00:47:41.460 align:middle line:84%
+that have to happen for the
+result we have to be sharp,
+
+00:47:41.460 --> 00:47:44.440 align:middle line:90%
+so we get a lot of structure.
+
+00:47:44.440 --> 00:47:45.940 align:middle line:84%
+Then we have to get
+a contradiction,
+
+00:47:45.940 --> 00:47:48.010 align:middle line:84%
+and that shows you can do
+just a little bit better.
+
+00:47:48.010 --> 00:47:49.593 align:middle line:84%
+So that's why that
+epsilon improvement
+
+00:47:49.593 --> 00:47:54.330 align:middle line:84%
+result is easier than just
+getting a great bound straight
+
+00:47:54.330 --> 00:47:55.920 align:middle line:90%
+away.
+
+00:47:55.920 --> 00:47:58.530 align:middle line:84%
+So if we go back to
+Bergen's projection theorem
+
+00:47:58.530 --> 00:48:00.000 align:middle line:84%
+and we tried to
+make it an epsilon
+
+00:48:00.000 --> 00:48:02.200 align:middle line:84%
+improvement in a
+projection theorem,
+
+00:48:02.200 --> 00:48:04.510 align:middle line:84%
+well, we didn't say
+this at the time,
+
+00:48:04.510 --> 00:48:06.030 align:middle line:84%
+but it might have
+been good to say.
+
+00:48:06.030 --> 00:48:07.090 align:middle line:90%
+What would it be like?
+
+00:48:07.090 --> 00:48:09.640 align:middle line:84%
+What would it mean if the
+bound we have so far is sharp?
+
+00:48:09.640 --> 00:48:11.620 align:middle line:84%
+It would mean we have this
+structure and that structure,
+
+00:48:11.620 --> 00:48:13.078 align:middle line:84%
+and eventually, we
+have this subset
+
+00:48:13.078 --> 00:48:14.940 align:middle line:84%
+that is almost
+closed under addition
+
+00:48:14.940 --> 00:48:19.380 align:middle line:84%
+and almost closed
+under multiplication.
+
+00:48:19.380 --> 00:48:20.160 align:middle line:90%
+OK.
+
+00:48:20.160 --> 00:48:22.873 align:middle line:84%
+So the idea is we are going
+to try to do the same thing.
+
+00:48:22.873 --> 00:48:24.540 align:middle line:84%
+We're going to think
+about what would it
+
+00:48:24.540 --> 00:48:27.570 align:middle line:84%
+mean if the submultiplicative
+lemma was sharp.
+
+00:48:27.570 --> 00:48:29.460 align:middle line:84%
+We're going to see
+that it just means
+
+00:48:29.460 --> 00:48:31.620 align:middle line:84%
+the set has to have
+a lot of structure,
+
+00:48:31.620 --> 00:48:33.640 align:middle line:90%
+and eventually, we'll get down.
+
+00:48:33.640 --> 00:48:37.680 align:middle line:84%
+Maybe not today, but
+eventually Orponen and Shmerkin
+
+00:48:37.680 --> 00:48:40.230 align:middle line:84%
+got down to the
+structures, got down
+
+00:48:40.230 --> 00:48:47.730 align:middle line:84%
+to the Bergen projection
+theorem and got a contradiction.
+
+00:48:47.730 --> 00:48:49.170 align:middle line:90%
+OK.
+
+00:48:49.170 --> 00:48:49.840 align:middle line:90%
+OK.
+
+00:48:49.840 --> 00:48:51.540 align:middle line:84%
+So let's talk
+about what would it
+
+00:48:51.540 --> 00:48:54.185 align:middle line:84%
+mean if the submultiplicative
+lemma is sharp.
+
+00:48:54.185 --> 00:49:44.430 align:middle line:90%
+
+
+00:49:44.430 --> 00:49:45.160 align:middle line:90%
+OK.
+
+00:49:45.160 --> 00:49:49.000 align:middle line:84%
+So let me draw a couple
+pictures for you.
+
+00:49:49.000 --> 00:49:51.060 align:middle line:84%
+And one of the
+pictures corresponds
+
+00:49:51.060 --> 00:49:54.150 align:middle line:84%
+to the submultiplicative lemma
+is sharp and the other one,
+
+00:49:54.150 --> 00:49:55.220 align:middle line:90%
+it's not.
+
+00:49:55.220 --> 00:50:04.860 align:middle line:90%
+
+
+00:50:04.860 --> 00:50:08.975 align:middle line:84%
+So we'll have some fat
+balls in a fat tube.
+
+00:50:08.975 --> 00:50:14.190 align:middle line:90%
+
+
+00:50:14.190 --> 00:50:19.950 align:middle line:84%
+And then in each fat
+tube, in each fat ball,
+
+00:50:19.950 --> 00:50:23.450 align:middle line:90%
+we have some little balls.
+
+00:50:23.450 --> 00:50:26.410 align:middle line:84%
+And the little balls
+are in little tubes.
+
+00:50:26.410 --> 00:50:32.300 align:middle line:90%
+
+
+00:50:32.300 --> 00:50:36.300 align:middle line:84%
+So there's your typical little
+tube OK, in each of these balls,
+
+00:50:36.300 --> 00:50:37.100 align:middle line:90%
+there are some--
+
+00:50:37.100 --> 00:50:39.595 align:middle line:84%
+in each of these fat balls,
+there are some little balls.
+
+00:50:39.595 --> 00:50:47.060 align:middle line:90%
+
+
+00:50:47.060 --> 00:50:47.560 align:middle line:90%
+OK.
+
+00:50:47.560 --> 00:50:56.119 align:middle line:90%
+
+
+00:50:56.119 --> 00:50:59.060 align:middle line:84%
+So in this scenario,
+in this picture,
+
+00:50:59.060 --> 00:51:04.440 align:middle line:84%
+would the submultiplicative
+lemma be sharp or not sharp?
+
+00:51:04.440 --> 00:51:04.940 align:middle line:90%
+OK.
+
+00:51:04.940 --> 00:51:07.970 align:middle line:90%
+Stand next to the picture.
+
+00:51:07.970 --> 00:51:10.340 align:middle line:84%
+This picture, would the
+submultiplicative lemma
+
+00:51:10.340 --> 00:51:12.190 align:middle line:90%
+be sharp or not sharp?
+
+00:51:12.190 --> 00:51:16.573 align:middle line:90%
+
+
+00:51:16.573 --> 00:51:17.990 align:middle line:84%
+AUDIENCE: I don't
+think it's sharp
+
+00:51:17.990 --> 00:51:24.351 align:middle line:84%
+because there's just one
+tube for the coarser scale.
+
+00:51:24.351 --> 00:51:28.440 align:middle line:84%
+There's several tubes
+for the fine scale.
+
+00:51:28.440 --> 00:51:31.170 align:middle line:90%
+
+
+00:51:31.170 --> 00:51:31.920 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:51:31.920 --> 00:51:34.790 align:middle line:84%
+So let me clarify what
+this is a picture of.
+
+00:51:34.790 --> 00:51:37.950 align:middle line:84%
+So there are many
+coarse scale tubes,
+
+00:51:37.950 --> 00:51:40.490 align:middle line:84%
+but I just drew one
+of them, and I'm just
+
+00:51:40.490 --> 00:51:43.160 align:middle line:84%
+drawing what's happening
+inside of one of them.
+
+00:51:43.160 --> 00:51:46.730 align:middle line:84%
+So inside of that one coarse
+tube, this is what we see.
+
+00:51:46.730 --> 00:51:48.560 align:middle line:90%
+Based on this is the--
+
+00:51:48.560 --> 00:51:51.353 align:middle line:84%
+AUDIENCE: So there's
+only one fine scale tube?
+
+00:51:51.353 --> 00:51:53.520 align:middle line:84%
+LAWRENCE GUTH: There could
+be more fine scale tubes,
+
+00:51:53.520 --> 00:51:55.310 align:middle line:90%
+but this is a typical one.
+
+00:51:55.310 --> 00:51:57.990 align:middle line:84%
+Yeah, so there are many orange
+tubes and many red tubes,
+
+00:51:57.990 --> 00:52:04.200 align:middle line:84%
+but I'm drawing only one of
+each to focus our attention.
+
+00:52:04.200 --> 00:52:09.530 align:middle line:90%
+
+
+00:52:09.530 --> 00:52:10.050 align:middle line:90%
+OK.
+
+00:52:10.050 --> 00:52:11.990 align:middle line:84%
+So let's review for
+a second the proof
+
+00:52:11.990 --> 00:52:15.090 align:middle line:84%
+of the submultiplicative lemma,
+because it's really important.
+
+00:52:15.090 --> 00:52:17.180 align:middle line:84%
+And maybe we'll go
+in a little deeper,
+
+00:52:17.180 --> 00:52:19.640 align:middle line:84%
+and then I'll try
+to show it again.
+
+00:52:19.640 --> 00:52:20.921 align:middle line:90%
+OK.
+
+00:52:20.921 --> 00:52:24.210 align:middle line:84%
+So our goal is to
+estimate RAD of delta,
+
+00:52:24.210 --> 00:52:27.920 align:middle line:84%
+which is the number of
+delta balls per delta tube.
+
+00:52:27.920 --> 00:52:31.440 align:middle line:84%
+So I picked a delta tube
+like this red one here.
+
+00:52:31.440 --> 00:52:33.900 align:middle line:84%
+I'll have to estimate the
+number of delta balls in it.
+
+00:52:33.900 --> 00:52:38.930 align:middle line:84%
+First I estimate the number of
+fat balls that it intersects.
+
+00:52:38.930 --> 00:52:41.600 align:middle line:84%
+Then I multiply that by
+the number of delta balls
+
+00:52:41.600 --> 00:52:45.020 align:middle line:84%
+that it intersects
+within each fat ball.
+
+00:52:45.020 --> 00:52:48.410 align:middle line:90%
+And that was my bound.
+
+00:52:48.410 --> 00:52:51.690 align:middle line:84%
+And then each one of those
+things, I bounded by induction
+
+00:52:51.690 --> 00:52:53.720 align:middle line:90%
+and I got those two numbers.
+
+00:52:53.720 --> 00:52:54.270 align:middle line:90%
+All right.
+
+00:52:54.270 --> 00:52:59.690 align:middle line:84%
+So if I take a particular
+fat tube, and inside of it
+
+00:52:59.690 --> 00:53:02.510 align:middle line:84%
+a particular thin
+tube and I see this,
+
+00:53:02.510 --> 00:53:04.225 align:middle line:90%
+would that argument be sharp?
+
+00:53:04.225 --> 00:53:06.860 align:middle line:90%
+
+
+00:53:06.860 --> 00:53:07.720 align:middle line:90%
+Right.
+
+00:53:07.720 --> 00:53:08.220 align:middle line:90%
+OK.
+
+00:53:08.220 --> 00:53:10.760 align:middle line:84%
+So the suggestion is
+that this is not sharp
+
+00:53:10.760 --> 00:53:16.040 align:middle line:84%
+because inside of this red
+tube, most of the fat balls
+
+00:53:16.040 --> 00:53:18.680 align:middle line:90%
+are contributed nothing.
+
+00:53:18.680 --> 00:53:23.150 align:middle line:84%
+Only this one fat
+ball is contributing.
+
+00:53:23.150 --> 00:53:25.190 align:middle line:84%
+And it would be
+sharp if the number
+
+00:53:25.190 --> 00:53:29.257 align:middle line:84%
+of delta balls in the fat
+ball was the number of--
+
+00:53:29.257 --> 00:53:31.340 align:middle line:84%
+sorry, the number of delta
+balls in the delta tube
+
+00:53:31.340 --> 00:53:34.220 align:middle line:84%
+was the number of fat
+balls times the number
+
+00:53:34.220 --> 00:53:36.860 align:middle line:90%
+of delta balls in one of them.
+
+00:53:36.860 --> 00:53:37.920 align:middle line:90%
+So let me show.
+
+00:53:37.920 --> 00:53:40.530 align:middle line:84%
+So this is not sharp, and let
+me draw the one that's sharp.
+
+00:53:40.530 --> 00:53:41.820 align:middle line:90%
+You'll see the difference.
+
+00:53:41.820 --> 00:53:42.805 align:middle line:90%
+This is not sharp.
+
+00:53:42.805 --> 00:54:10.460 align:middle line:90%
+
+
+00:54:10.460 --> 00:54:14.635 align:middle line:84%
+Delta tube should
+look like this.
+
+00:54:14.635 --> 00:54:20.540 align:middle line:90%
+
+
+00:54:20.540 --> 00:54:21.260 align:middle line:90%
+OK.
+
+00:54:21.260 --> 00:54:25.220 align:middle line:84%
+So the delta tube should
+intersect a bunch of fat balls.
+
+00:54:25.220 --> 00:54:28.380 align:middle line:84%
+It should intersect that many
+fat balls, as many as possible.
+
+00:54:28.380 --> 00:54:31.670 align:middle line:84%
+And inside each one
+of them, it should
+
+00:54:31.670 --> 00:54:34.183 align:middle line:84%
+intersect a lot of delta
+balls, as many as possible.
+
+00:54:34.183 --> 00:54:36.350 align:middle line:84%
+That's what it takes for
+the submultiplicative lemma
+
+00:54:36.350 --> 00:54:38.600 align:middle line:90%
+to be sharp.
+
+00:54:38.600 --> 00:54:40.340 align:middle line:90%
+So it should look like this.
+
+00:54:40.340 --> 00:54:41.560 align:middle line:90%
+So this is sharp.
+
+00:54:41.560 --> 00:54:54.860 align:middle line:90%
+
+
+00:54:54.860 --> 00:54:55.850 align:middle line:90%
+Cool.
+
+00:54:55.850 --> 00:54:58.783 align:middle line:84%
+And this is a kind
+of striking picture.
+
+00:54:58.783 --> 00:55:15.140 align:middle line:90%
+
+
+00:55:15.140 --> 00:55:21.470 align:middle line:84%
+So in this ball, these points
+are in just a few tubes
+
+00:55:21.470 --> 00:55:22.890 align:middle line:90%
+in a certain direction.
+
+00:55:22.890 --> 00:55:25.670 align:middle line:84%
+You could also imagine we're
+in the projective case.
+
+00:55:25.670 --> 00:55:30.800 align:middle line:84%
+And in these other balls, the
+points are in those same tubes.
+
+00:55:30.800 --> 00:55:32.007 align:middle line:90%
+It goes all the way across.
+
+00:55:32.007 --> 00:55:34.340 align:middle line:84%
+Of course, the balls don't
+have to look exactly the same
+
+00:55:34.340 --> 00:55:36.940 align:middle line:84%
+as each other, so maybe a
+better picture might be like so.
+
+00:55:36.940 --> 00:55:40.550 align:middle line:90%
+
+
+00:55:40.550 --> 00:55:42.955 align:middle line:84%
+But the tubes are
+exactly the same.
+
+00:55:42.955 --> 00:55:46.470 align:middle line:90%
+
+
+00:55:46.470 --> 00:55:46.970 align:middle line:90%
+OK.
+
+00:55:46.970 --> 00:55:55.490 align:middle line:90%
+
+
+00:55:55.490 --> 00:55:56.510 align:middle line:90%
+OK.
+
+00:55:56.510 --> 00:56:06.030 align:middle line:90%
+So let me pause.
+
+00:56:06.030 --> 00:56:08.970 align:middle line:84%
+I'm going to erase a little bit
+to make some space around here.
+
+00:56:08.970 --> 00:56:10.430 align:middle line:90%
+Is that OK with everybody?
+
+00:56:10.430 --> 00:56:12.840 align:middle line:84%
+That if the submultiplicative
+lemma is sharp,
+
+00:56:12.840 --> 00:56:16.030 align:middle line:84%
+it has to look like
+this, not like that.
+
+00:56:16.030 --> 00:56:17.170 align:middle line:90%
+OK.
+
+00:56:17.170 --> 00:56:17.713 align:middle line:90%
+All right.
+
+00:56:17.713 --> 00:56:19.380 align:middle line:84%
+So let's erase around
+here a little bit.
+
+00:56:19.380 --> 00:56:28.630 align:middle line:90%
+
+
+00:56:28.630 --> 00:56:29.620 align:middle line:90%
+OK.
+
+00:56:29.620 --> 00:56:33.330 align:middle line:84%
+So we already reduced
+to the projective case.
+
+00:56:33.330 --> 00:56:37.180 align:middle line:90%
+
+
+00:56:37.180 --> 00:56:40.820 align:middle line:84%
+So let's say D is the
+set of directions,
+
+00:56:40.820 --> 00:56:44.050 align:middle line:84%
+which is the same everywhere
+of our projections.
+
+00:56:44.050 --> 00:56:53.920 align:middle line:84%
+And so D is a delta
+S set in S. And here
+
+00:56:53.920 --> 00:56:56.120 align:middle line:90%
+I fixed a typical fat tube.
+
+00:56:56.120 --> 00:57:00.075 align:middle line:84%
+So here's a typical
+root delta tube.
+
+00:57:00.075 --> 00:57:04.060 align:middle line:90%
+
+
+00:57:04.060 --> 00:57:06.610 align:middle line:84%
+And I'm going to look
+at the angles that
+
+00:57:06.610 --> 00:57:08.205 align:middle line:90%
+are within this fat tube.
+
+00:57:08.205 --> 00:57:15.130 align:middle line:90%
+
+
+00:57:15.130 --> 00:57:17.720 align:middle line:90%
+So here's our circle.
+
+00:57:17.720 --> 00:57:20.540 align:middle line:84%
+And there's a little
+range of angles here.
+
+00:57:20.540 --> 00:57:22.450 align:middle line:84%
+This is a delta to the--
+there's theta, which
+
+00:57:22.450 --> 00:57:24.460 align:middle line:90%
+is a delta to the one half arc.
+
+00:57:24.460 --> 00:57:26.640 align:middle line:84%
+That corresponds
+to the fat tube.
+
+00:57:26.640 --> 00:57:35.620 align:middle line:90%
+
+
+00:57:35.620 --> 00:57:37.396 align:middle line:90%
+OK.
+
+00:57:37.396 --> 00:57:43.310 align:middle line:84%
+And so D is some delta
+set, delta SC set in here.
+
+00:57:43.310 --> 00:57:49.400 align:middle line:84%
+And let's say that C is
+D intersected with theta.
+
+00:57:49.400 --> 00:57:51.050 align:middle line:90%
+So it's just these directions.
+
+00:57:51.050 --> 00:57:55.241 align:middle line:90%
+
+
+00:57:55.241 --> 00:57:55.741 align:middle line:90%
+OK.
+
+00:57:55.741 --> 00:57:59.980 align:middle line:90%
+
+
+00:57:59.980 --> 00:58:05.500 align:middle line:84%
+So the red tubes correspond to
+one of the directions in theta.
+
+00:58:05.500 --> 00:58:06.730 align:middle line:90%
+So this one there.
+
+00:58:06.730 --> 00:58:08.740 align:middle line:90%
+Red tube.
+
+00:58:08.740 --> 00:58:13.040 align:middle line:84%
+And so when I project this
+set in the red direction,
+
+00:58:13.040 --> 00:58:14.750 align:middle line:90%
+I just get a small set.
+
+00:58:14.750 --> 00:58:16.490 align:middle line:84%
+But it's not just
+the red direction.
+
+00:58:16.490 --> 00:58:19.340 align:middle line:84%
+I could draw some other
+directions inside of the tube
+
+00:58:19.340 --> 00:58:20.020 align:middle line:90%
+also.
+
+00:58:20.020 --> 00:58:22.000 align:middle line:90%
+Let me do one more.
+
+00:58:22.000 --> 00:58:25.420 align:middle line:84%
+I'll take here a blue
+direction inside of here.
+
+00:58:25.420 --> 00:58:27.590 align:middle line:84%
+So I draw the tubes
+in the blue direction.
+
+00:58:27.590 --> 00:58:28.820 align:middle line:90%
+What would it look like?
+
+00:58:28.820 --> 00:58:31.370 align:middle line:84%
+I think I need to make this
+picture come out nicely.
+
+00:58:31.370 --> 00:58:33.033 align:middle line:90%
+I need to add a few more points.
+
+00:58:33.033 --> 00:58:38.470 align:middle line:90%
+
+
+00:58:38.470 --> 00:58:40.185 align:middle line:90%
+So that'd be one more red tube.
+
+00:58:40.185 --> 00:58:42.485 align:middle line:90%
+
+
+00:58:42.485 --> 00:58:42.985 align:middle line:90%
+Oops.
+
+00:58:42.985 --> 00:58:47.110 align:middle line:90%
+
+
+00:58:47.110 --> 00:58:49.910 align:middle line:84%
+And now I'll draw a
+typical blue tube.
+
+00:58:49.910 --> 00:58:54.520 align:middle line:84%
+The blue tube also manages to
+intersect our points a lot,
+
+00:58:54.520 --> 00:58:56.535 align:middle line:90%
+so it should look like this.
+
+00:58:56.535 --> 00:59:03.255 align:middle line:90%
+
+
+00:59:03.255 --> 00:59:04.630 align:middle line:84%
+I don't think I
+can draw any more
+
+00:59:04.630 --> 00:59:07.830 align:middle line:84%
+without making a complete
+mess, but you get the idea.
+
+00:59:07.830 --> 00:59:10.480 align:middle line:90%
+
+
+00:59:10.480 --> 00:59:13.790 align:middle line:84%
+So the blue tube passes
+through all these balls also,
+
+00:59:13.790 --> 00:59:16.610 align:middle line:84%
+and each time the blue
+tube passes through a ball,
+
+00:59:16.610 --> 00:59:22.060 align:middle line:84%
+it manages to line up
+with one of the red tubes.
+
+00:59:22.060 --> 00:59:22.900 align:middle line:90%
+All right.
+
+00:59:22.900 --> 00:59:24.740 align:middle line:90%
+OK.
+
+00:59:24.740 --> 00:59:28.750 align:middle line:84%
+So we have a kind
+of special situation
+
+00:59:28.750 --> 00:59:31.690 align:middle line:90%
+here with a product structure.
+
+00:59:31.690 --> 00:59:35.110 align:middle line:90%
+So what is our set?
+
+00:59:35.110 --> 00:59:40.570 align:middle line:84%
+So let's say over here
+these dots, the projection
+
+00:59:40.570 --> 00:59:43.420 align:middle line:84%
+in the red direction,
+let's call this A.
+
+00:59:43.420 --> 00:59:47.710 align:middle line:84%
+And then down here,
+we can make a set
+
+00:59:47.710 --> 00:59:51.850 align:middle line:84%
+that illustrates where the
+fat balls are in the fat tube.
+
+00:59:51.850 --> 01:00:03.910 align:middle line:84%
+Let's call that B. And so what
+we see is that for every C in C,
+
+01:00:03.910 --> 01:00:08.140 align:middle line:84%
+the projection in
+the C direction--
+
+01:00:08.140 --> 01:00:09.760 align:middle line:90%
+or I'll write it this way.
+
+01:00:09.760 --> 01:00:15.010 align:middle line:84%
+A plus CB-- that's the
+projection in the C direction--
+
+01:00:15.010 --> 01:00:23.680 align:middle line:90%
+is not much bigger than A.
+
+01:00:23.680 --> 01:00:26.720 align:middle line:84%
+The projection in every one
+of these directions is small.
+
+01:00:26.720 --> 01:00:28.840 align:middle line:84%
+They're all about the
+same as each other.
+
+01:00:28.840 --> 01:00:31.870 align:middle line:84%
+A was the projection
+in the red direction.
+
+01:00:31.870 --> 01:00:33.530 align:middle line:90%
+The blue one is just as good.
+
+01:00:33.530 --> 01:00:43.780 align:middle line:84%
+So A plus CB should be not
+much bigger than A. OK.
+
+01:00:43.780 --> 01:00:47.740 align:middle line:90%
+
+
+01:00:47.740 --> 01:00:48.350 align:middle line:90%
+OK.
+
+01:00:48.350 --> 01:00:51.255 align:middle line:84%
+So let me summarize
+what we have seen here.
+
+01:00:51.255 --> 01:01:17.680 align:middle line:90%
+
+
+01:01:17.680 --> 01:01:19.390 align:middle line:90%
+OK.
+
+01:01:19.390 --> 01:01:28.343 align:middle line:84%
+So f submultiplicative
+lemma is sharp.
+
+01:01:28.343 --> 01:01:32.620 align:middle line:90%
+
+
+01:01:32.620 --> 01:01:39.340 align:middle line:84%
+Then we get sets A
+and B and C, which
+
+01:01:39.340 --> 01:01:42.370 align:middle line:90%
+are subsets of real numbers.
+
+01:01:42.370 --> 01:01:51.315 align:middle line:84%
+And in the main case,
+A is a delta A A set.
+
+01:01:51.315 --> 01:01:54.160 align:middle line:90%
+
+
+01:01:54.160 --> 01:01:56.530 align:middle line:90%
+It's rho A set.
+
+01:01:56.530 --> 01:02:03.510 align:middle line:84%
+Size of A is like rho to the
+minus A. B is a rho B set.
+
+01:02:03.510 --> 01:02:10.260 align:middle line:84%
+Size of B is like rho to the
+minus B. C is a rho C set.
+
+01:02:10.260 --> 01:02:13.830 align:middle line:84%
+Size of C is like
+rho to the minus C.
+
+01:02:13.830 --> 01:02:30.290 align:middle line:84%
+And for every C in C, A plus CB
+is not very much bigger than A.
+
+01:02:30.290 --> 01:02:30.790 align:middle line:90%
+OK.
+
+01:02:30.790 --> 01:02:34.380 align:middle line:84%
+Now the size of A and B and
+C can all be traced back
+
+01:02:34.380 --> 01:02:37.920 align:middle line:90%
+to the numbers in our problem.
+
+01:02:37.920 --> 01:02:47.280 align:middle line:84%
+And we find that if A is
+smaller than B plus C, that's
+
+01:02:47.280 --> 01:02:53.630 align:middle line:84%
+equivalent to saying that RAD
+is square root of delta is good.
+
+01:02:53.630 --> 01:02:54.130 align:middle line:90%
+OK.
+
+01:02:54.130 --> 01:02:54.630 align:middle line:90%
+Sorry.
+
+01:02:54.630 --> 01:02:58.140 align:middle line:84%
+A is larger than B
+plus C, then that means
+
+01:02:58.140 --> 01:02:59.680 align:middle line:90%
+you do a boring computation.
+
+01:02:59.680 --> 01:03:03.540 align:middle line:90%
+
+
+01:03:03.540 --> 01:03:08.040 align:middle line:84%
+So there's an intermediate
+result. Maybe I'll
+
+01:03:08.040 --> 01:03:12.120 align:middle line:84%
+call it a key lemma, which
+is called the ABC sum product
+
+01:03:12.120 --> 01:03:19.350 align:middle line:84%
+lemma, which just goes into
+this paper of Orponen-Shmerkin.
+
+01:03:19.350 --> 01:03:26.190 align:middle line:84%
+And it says if you have all
+of this stuff then, indeed,
+
+01:03:26.190 --> 01:03:42.120 align:middle line:90%
+A is bigger than B plus C. Yeah?
+
+01:03:42.120 --> 01:03:43.680 align:middle line:90%
+AUDIENCE: What does good mean?
+
+01:03:43.680 --> 01:03:46.400 align:middle line:84%
+LAWRENCE GUTH: Good means
+that it obeys the theorem.
+
+01:03:46.400 --> 01:03:53.580 align:middle line:90%
+
+
+01:03:53.580 --> 01:03:54.760 align:middle line:90%
+So the theorem is up there.
+
+01:03:54.760 --> 01:03:59.790 align:middle line:84%
+So it's smaller than
+the maximum of 1
+
+01:03:59.790 --> 01:04:07.110 align:middle line:84%
+and root delta to the minus
+T over 2 plus S over 2
+
+01:04:07.110 --> 01:04:13.410 align:middle line:84%
+and root delta to the 1 minus
+T. So if that's the case,
+
+01:04:13.410 --> 01:04:14.190 align:middle line:90%
+we're happy.
+
+01:04:14.190 --> 01:04:16.670 align:middle line:90%
+And otherwise-- yeah, OK.
+
+01:04:16.670 --> 01:04:21.450 align:middle line:90%
+
+
+01:04:21.450 --> 01:04:24.618 align:middle line:84%
+OK, so let's go back to
+our general strategy,
+
+01:04:24.618 --> 01:04:25.660 align:middle line:90%
+our big picture strategy.
+
+01:04:25.660 --> 01:04:28.500 align:middle line:84%
+We would like to prove this
+theorem, that RAD of delta
+
+01:04:28.500 --> 01:04:30.750 align:middle line:90%
+is always smaller than that.
+
+01:04:30.750 --> 01:04:33.300 align:middle line:84%
+And we considered the
+submultiplicative lemma,
+
+01:04:33.300 --> 01:04:34.960 align:middle line:84%
+which doesn't give
+us the theorem yet,
+
+01:04:34.960 --> 01:04:37.800 align:middle line:90%
+but it's an important tool.
+
+01:04:37.800 --> 01:04:46.980 align:middle line:84%
+And we'd like to say if
+we can have an epsilon
+
+01:04:46.980 --> 01:04:50.100 align:middle line:84%
+improvement in the
+submultiplicative lemma, then
+
+01:04:50.100 --> 01:04:50.920 align:middle line:90%
+that's great.
+
+01:04:50.920 --> 01:04:53.350 align:middle line:84%
+We go to the next scale
+and we have a better bound.
+
+01:04:53.350 --> 01:04:56.550 align:middle line:84%
+So you keep doing
+that until you stop.
+
+01:04:56.550 --> 01:04:59.040 align:middle line:84%
+And we must stop in
+a situation where
+
+01:04:59.040 --> 01:05:01.980 align:middle line:84%
+there's no more, where the
+submultiplicative lemma becomes
+
+01:05:01.980 --> 01:05:03.490 align:middle line:90%
+sharp.
+
+01:05:03.490 --> 01:05:04.990 align:middle line:84%
+Maybe that's a
+better way to say it.
+
+01:05:04.990 --> 01:05:06.532 align:middle line:84%
+We have this
+submultiplicative lemma.
+
+01:05:06.532 --> 01:05:07.890 align:middle line:90%
+We use it.
+
+01:05:07.890 --> 01:05:09.820 align:middle line:90%
+It's either sharp or it's not.
+
+01:05:09.820 --> 01:05:13.590 align:middle line:84%
+If it's not, we get a
+nicer exponent at delta
+
+01:05:13.590 --> 01:05:15.390 align:middle line:90%
+squared than we did at delta.
+
+01:05:15.390 --> 01:05:16.870 align:middle line:90%
+We keep doing that.
+
+01:05:16.870 --> 01:05:19.540 align:middle line:84%
+And the exponent is not going
+to keep getting better forever,
+
+01:05:19.540 --> 01:05:22.123 align:middle line:84%
+so we stop at some moment where
+the submultiplicative lemma is
+
+01:05:22.123 --> 01:05:24.960 align:middle line:90%
+basically sharp.
+
+01:05:24.960 --> 01:05:27.960 align:middle line:84%
+But the fact that the
+submultiplicative lemma is sharp
+
+01:05:27.960 --> 01:05:30.220 align:middle line:90%
+gives us a lot of structure.
+
+01:05:30.220 --> 01:05:34.380 align:middle line:84%
+It gives us the structure
+of being projective,
+
+01:05:34.380 --> 01:05:38.050 align:middle line:84%
+and it gives us this kind
+of product structure.
+
+01:05:38.050 --> 01:05:39.900 align:middle line:84%
+And it leads us to
+this problem, which
+
+01:05:39.900 --> 01:05:41.760 align:middle line:84%
+looks a lot like
+additive combinatorics
+
+01:05:41.760 --> 01:05:44.190 align:middle line:84%
+and which is very
+special problem compared
+
+01:05:44.190 --> 01:05:47.745 align:middle line:90%
+to our original setup.
+
+01:05:47.745 --> 01:05:50.920 align:middle line:84%
+And then the bound we need
+to prove for this problem,
+
+01:05:50.920 --> 01:05:52.770 align:middle line:84%
+if you just unwind
+the computation,
+
+01:05:52.770 --> 01:05:56.160 align:middle line:84%
+we need to prove this
+bound for this problem.
+
+01:05:56.160 --> 01:05:58.020 align:middle line:84%
+If you unwind it,
+it will tell us
+
+01:05:58.020 --> 01:06:01.175 align:middle line:84%
+that RAD obeys
+the desired bound.
+
+01:06:01.175 --> 01:06:04.170 align:middle line:90%
+
+
+01:06:04.170 --> 01:06:04.920 align:middle line:90%
+Yeah.
+
+01:06:04.920 --> 01:06:07.020 align:middle line:90%
+I guess rho is also--
+
+01:06:07.020 --> 01:06:09.565 align:middle line:84%
+rho Here is square
+root of delta.
+
+01:06:09.565 --> 01:06:10.065 align:middle line:90%
+Yeah.
+
+01:06:10.065 --> 01:06:22.710 align:middle line:90%
+
+
+01:06:22.710 --> 01:06:24.810 align:middle line:90%
+OK.
+
+01:06:24.810 --> 01:06:25.870 align:middle line:90%
+OK.
+
+01:06:25.870 --> 01:06:30.840 align:middle line:84%
+So this situation is now
+a lot more structured
+
+01:06:30.840 --> 01:06:32.920 align:middle line:90%
+than what we started with.
+
+01:06:32.920 --> 01:06:37.600 align:middle line:84%
+And it looks reminiscent
+of additive combinatorics,
+
+01:06:37.600 --> 01:06:40.060 align:middle line:84%
+maybe of Bergen projection
+theorem and so on.
+
+01:06:40.060 --> 01:06:44.880 align:middle line:84%
+And indeed, they were able to
+deal with it with that toolkit.
+
+01:06:44.880 --> 01:06:46.850 align:middle line:90%
+I could say a little--
+
+01:06:46.850 --> 01:06:48.580 align:middle line:84%
+I don't want to write
+too many equations,
+
+01:06:48.580 --> 01:06:49.872 align:middle line:90%
+so I won't say the whole thing.
+
+01:06:49.872 --> 01:06:51.510 align:middle line:84%
+I could say a
+little bit about it.
+
+01:06:51.510 --> 01:06:55.350 align:middle line:84%
+But I think that what
+we've done so far
+
+01:06:55.350 --> 01:06:58.740 align:middle line:84%
+is what I feel is
+most worth remembering
+
+01:06:58.740 --> 01:07:00.540 align:middle line:90%
+about the proof of this theorem.
+
+01:07:00.540 --> 01:07:03.840 align:middle line:84%
+So let's pause here and see
+if people have any questions
+
+01:07:03.840 --> 01:07:04.870 align:middle line:90%
+or comments about it.
+
+01:07:04.870 --> 01:07:28.290 align:middle line:90%
+
+
+01:07:28.290 --> 01:07:30.900 align:middle line:90%
+Let me summarize it.
+
+01:07:30.900 --> 01:07:34.170 align:middle line:84%
+So the AD regular
+case is special
+
+01:07:34.170 --> 01:07:37.510 align:middle line:84%
+because all the scales
+are related to each other.
+
+01:07:37.510 --> 01:07:41.490 align:middle line:84%
+And so we can break it up into
+problems at different scales
+
+01:07:41.490 --> 01:07:42.960 align:middle line:90%
+and put them together.
+
+01:07:42.960 --> 01:07:45.210 align:middle line:84%
+And by doing that,
+we get problems
+
+01:07:45.210 --> 01:07:46.570 align:middle line:90%
+that are somewhat nicer.
+
+01:07:46.570 --> 01:07:48.600 align:middle line:84%
+So first of all, if
+we look at the problem
+
+01:07:48.600 --> 01:07:51.120 align:middle line:84%
+in a small ball instead
+of the original problem,
+
+01:07:51.120 --> 01:07:54.530 align:middle line:84%
+it becomes nicer because the
+directions through any point
+
+01:07:54.530 --> 01:07:55.723 align:middle line:90%
+are the same.
+
+01:07:55.723 --> 01:07:57.140 align:middle line:84%
+For any two points,
+the directions
+
+01:07:57.140 --> 01:07:59.000 align:middle line:84%
+are the same because they
+correspond to the directions
+
+01:07:59.000 --> 01:08:00.540 align:middle line:90%
+of the fat tube through there.
+
+01:08:00.540 --> 01:08:04.760 align:middle line:84%
+So this already made
+it a little bit nicer.
+
+01:08:04.760 --> 01:08:09.410 align:middle line:84%
+Then, moreover, in order for
+the submultiplicative lemma
+
+01:08:09.410 --> 01:08:11.160 align:middle line:90%
+to be sharp--
+
+01:08:11.160 --> 01:08:13.320 align:middle line:84%
+so if the submultiplicative
+lemma is not sharp,
+
+01:08:13.320 --> 01:08:15.680 align:middle line:84%
+then you just keep
+going down scales
+
+01:08:15.680 --> 01:08:17.513 align:middle line:84%
+and you keep getting
+better exponents.
+
+01:08:17.513 --> 01:08:20.180 align:middle line:84%
+And eventually that has to stop
+when the submultiplicative lemma
+
+01:08:20.180 --> 01:08:21.649 align:middle line:90%
+is sharp.
+
+01:08:21.649 --> 01:08:23.399 align:middle line:84%
+When the submultiplicative
+lemma is sharp,
+
+01:08:23.399 --> 01:08:26.660 align:middle line:84%
+there's even more structure
+because these different balls
+
+01:08:26.660 --> 01:08:29.090 align:middle line:90%
+have to talk to each other.
+
+01:08:29.090 --> 01:08:34.109 align:middle line:84%
+And so if you see in this
+ball, you see a tube here,
+
+01:08:34.109 --> 01:08:38.569 align:middle line:84%
+then you have to see a tube in
+the same place in that ball.
+
+01:08:38.569 --> 01:08:40.580 align:middle line:84%
+And that means that
+this set of points
+
+01:08:40.580 --> 01:08:43.790 align:middle line:90%
+has kind of a product structure.
+
+01:08:43.790 --> 01:08:46.580 align:middle line:84%
+And in particular,
+what's literally
+
+01:08:46.580 --> 01:08:48.710 align:middle line:90%
+true is if you take these--
+
+01:08:48.710 --> 01:08:50.130 align:middle line:90%
+well, sorry.
+
+01:08:50.130 --> 01:08:53.779 align:middle line:84%
+So if you take the set
+of red tubes in this ball
+
+01:08:53.779 --> 01:08:55.859 align:middle line:84%
+and then in this ball
+and then in this ball,
+
+01:08:55.859 --> 01:08:59.820 align:middle line:84%
+that is a product
+which is very helpful.
+
+01:08:59.820 --> 01:09:00.320 align:middle line:90%
+OK.
+
+01:09:00.320 --> 01:09:02.830 align:middle line:90%
+
+
+01:09:02.830 --> 01:09:03.330 align:middle line:90%
+Cool.
+
+01:09:03.330 --> 01:09:10.609 align:middle line:84%
+So the AD regular case allows us
+to restrict to a situation which
+
+01:09:10.609 --> 01:09:13.700 align:middle line:84%
+has a lot more structure,
+and it restricts
+
+01:09:13.700 --> 01:09:17.390 align:middle line:84%
+to this lemma about
+projections of a product set.
+
+01:09:17.390 --> 01:09:18.761 align:middle line:90%
+OK.
+
+01:09:18.761 --> 01:09:20.300 align:middle line:84%
+AUDIENCE: So in
+the argument, I can
+
+01:09:20.300 --> 01:09:24.830 align:middle line:84%
+continue until the
+submultiplicative lemma
+
+01:09:24.830 --> 01:09:26.180 align:middle line:90%
+is sharp.
+
+01:09:26.180 --> 01:09:28.430 align:middle line:84%
+How do you know that kind
+of sharpness corresponds
+
+01:09:28.430 --> 01:09:33.380 align:middle line:84%
+to the delta T epsilon
+factor, rather than just
+
+01:09:33.380 --> 01:09:36.369 align:middle line:90%
+kind of something much smaller?
+
+01:09:36.369 --> 01:09:38.630 align:middle line:90%
+Because it seems like--
+
+01:09:38.630 --> 01:09:42.470 align:middle line:84%
+I don't understand how you can
+get a quantitative bound out
+
+01:09:42.470 --> 01:09:46.112 align:middle line:84%
+of the more qualitative proof
+by contradiction or-- yeah.
+
+01:09:46.112 --> 01:09:46.945 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:09:46.945 --> 01:09:47.445 align:middle line:90%
+OK.
+
+01:09:47.445 --> 01:09:49.189 align:middle line:84%
+So this question
+is about keeping
+
+01:09:49.189 --> 01:09:51.180 align:middle line:90%
+track of the small parameters.
+
+01:09:51.180 --> 01:09:56.600 align:middle line:84%
+So every time I apply the
+submultiplicative lemma,
+
+01:09:56.600 --> 01:09:59.490 align:middle line:84%
+I was using the word
+sharp or not sharp.
+
+01:09:59.490 --> 01:10:01.650 align:middle line:84%
+But of course, there's
+some kind of a gray zone
+
+01:10:01.650 --> 01:10:03.510 align:middle line:84%
+and I have to decide
+where I'm going to cut.
+
+01:10:03.510 --> 01:10:08.960 align:middle line:84%
+What am I going to consider to
+be sharp and what is not sharp?
+
+01:10:08.960 --> 01:10:13.676 align:middle line:90%
+And then, in this analysis--
+
+01:10:13.676 --> 01:10:18.440 align:middle line:90%
+
+
+01:10:18.440 --> 01:10:19.310 align:middle line:90%
+yeah, OK.
+
+01:10:19.310 --> 01:10:21.350 align:middle line:84%
+Actually, so in order
+for this to stop
+
+01:10:21.350 --> 01:10:23.210 align:middle line:84%
+in a reasonable
+amount of time, I'm
+
+01:10:23.210 --> 01:10:27.260 align:middle line:84%
+going to have to have a cutoff
+that's a tiny power of delta.
+
+01:10:27.260 --> 01:10:32.780 align:middle line:84%
+Otherwise this would go on
+too long, wouldn't work.
+
+01:10:32.780 --> 01:10:41.210 align:middle line:84%
+So I would say, so what would
+the definition of sharp be?
+
+01:10:41.210 --> 01:10:41.935 align:middle line:90%
+Let's do that.
+
+01:10:41.935 --> 01:10:49.220 align:middle line:90%
+
+
+01:10:49.220 --> 01:10:49.910 align:middle line:90%
+All right.
+
+01:10:49.910 --> 01:10:53.330 align:middle line:90%
+Let's get rid of this set.
+
+01:10:53.330 --> 01:10:59.450 align:middle line:84%
+So we're going to use the
+submultiplicative lemma
+
+01:10:59.450 --> 01:11:00.316 align:middle line:90%
+repeatedly.
+
+01:11:00.316 --> 01:11:04.070 align:middle line:90%
+
+
+01:11:04.070 --> 01:11:08.900 align:middle line:84%
+And so if our AD
+of delta is bigger
+
+01:11:08.900 --> 01:11:14.850 align:middle line:84%
+than, I need to put something
+here, RAD of root delta squared.
+
+01:11:14.850 --> 01:11:18.320 align:middle line:84%
+And here I'm going to put
+delta to the epsilon 0
+
+01:11:18.320 --> 01:11:20.900 align:middle line:84%
+where epsilon 0 is
+a tiny parameter.
+
+01:11:20.900 --> 01:11:23.960 align:middle line:84%
+Then I'm going to
+call this sharp
+
+01:11:23.960 --> 01:11:26.776 align:middle line:84%
+and I'm going to
+stop and analyze.
+
+01:11:26.776 --> 01:11:29.450 align:middle line:90%
+
+
+01:11:29.450 --> 01:11:32.930 align:middle line:84%
+And the other possibility
+is that RAD of delta
+
+01:11:32.930 --> 01:11:36.020 align:middle line:84%
+is less than delta
+to the epsilon 0
+
+01:11:36.020 --> 01:11:40.050 align:middle line:90%
+RAD of root delta squared.
+
+01:11:40.050 --> 01:11:43.910 align:middle line:84%
+And here I'm making
+progress, so I'll keep going.
+
+01:11:43.910 --> 01:11:47.300 align:middle line:90%
+So this is the not sharp case.
+
+01:11:47.300 --> 01:11:48.550 align:middle line:90%
+So now I'll keep going.
+
+01:11:48.550 --> 01:11:52.790 align:middle line:90%
+
+
+01:11:52.790 --> 01:11:53.780 align:middle line:90%
+OK.
+
+01:11:53.780 --> 01:11:56.930 align:middle line:84%
+So that's if we're more
+careful about what is sharp
+
+01:11:56.930 --> 01:11:58.430 align:middle line:90%
+and not sharp.
+
+01:11:58.430 --> 01:11:59.220 align:middle line:90%
+All right.
+
+01:11:59.220 --> 01:12:04.310 align:middle line:84%
+So here, if I keep going every
+time I make a definite amount
+
+01:12:04.310 --> 01:12:07.940 align:middle line:84%
+of progress, and so this
+actually cannot keep going
+
+01:12:07.940 --> 01:12:10.520 align:middle line:84%
+forever because eventually the
+exponents would be negative
+
+01:12:10.520 --> 01:12:11.400 align:middle line:90%
+instead of positive.
+
+01:12:11.400 --> 01:12:14.120 align:middle line:84%
+So it will stop, so
+we will end up here.
+
+01:12:14.120 --> 01:12:16.560 align:middle line:84%
+Once we end up here, we have
+to analyze the sharp case.
+
+01:12:16.560 --> 01:12:19.860 align:middle line:84%
+And we do have to remember,
+it wasn't perfectly sharp,
+
+01:12:19.860 --> 01:12:23.630 align:middle line:84%
+but we had a fudge factor
+of a tiny power of delta.
+
+01:12:23.630 --> 01:12:27.470 align:middle line:84%
+And that complicates all the
+pictures that we have drawn.
+
+01:12:27.470 --> 01:12:31.640 align:middle line:84%
+So in this picture
+here, this tube
+
+01:12:31.640 --> 01:12:33.480 align:middle line:90%
+goes through many fat tubes.
+
+01:12:33.480 --> 01:12:37.760 align:middle line:84%
+It doesn't have to have many
+delta balls in all of them.
+
+01:12:37.760 --> 01:12:40.790 align:middle line:84%
+It has to have many delta
+balls in a fraction, like delta
+
+01:12:40.790 --> 01:12:42.740 align:middle line:90%
+to the epsilon fraction of them.
+
+01:12:42.740 --> 01:12:45.920 align:middle line:84%
+So it makes the picture a
+little bit more complicated.
+
+01:12:45.920 --> 01:12:51.890 align:middle line:84%
+And actually, because of
+that, in this theorem,
+
+01:12:51.890 --> 01:12:54.420 align:middle line:84%
+if we were honest, it's a
+little bit more complicated.
+
+01:12:54.420 --> 01:12:59.000 align:middle line:90%
+
+
+01:12:59.000 --> 01:13:03.540 align:middle line:84%
+This would actually
+be pi C of x,
+
+01:13:03.540 --> 01:13:07.010 align:middle line:84%
+where x is a subset
+of A cross B and it's
+
+01:13:07.010 --> 01:13:08.995 align:middle line:84%
+like a delta to
+the epsilon subset.
+
+01:13:08.995 --> 01:13:12.080 align:middle line:90%
+
+
+01:13:12.080 --> 01:13:15.600 align:middle line:84%
+So we wouldn't have to
+fill the whole product.
+
+01:13:15.600 --> 01:13:16.100 align:middle line:90%
+OK.
+
+01:13:16.100 --> 01:13:18.553 align:middle line:84%
+So that's how we would
+be careful about sharp
+
+01:13:18.553 --> 01:13:20.470 align:middle line:84%
+and how we would have
+to be more careful here.
+
+01:13:20.470 --> 01:13:23.840 align:middle line:90%
+
+
+01:13:23.840 --> 01:13:25.340 align:middle line:90%
+OK.
+
+01:13:25.340 --> 01:13:27.590 align:middle line:84%
+Let me tell you
+just the first idea
+
+01:13:27.590 --> 01:13:31.750 align:middle line:90%
+of the proof of this key lemma.
+
+01:13:31.750 --> 01:13:36.890 align:middle line:90%
+
+
+01:13:36.890 --> 01:13:41.550 align:middle line:90%
+So we have step proof.
+
+01:13:41.550 --> 01:13:44.380 align:middle line:90%
+
+
+01:13:44.380 --> 01:13:50.230 align:middle line:84%
+So we have A plus CB is only a
+little bit bigger than A. That
+
+01:13:50.230 --> 01:13:52.340 align:middle line:90%
+reminds us of Plünnecke-Ruzsa.
+
+01:13:52.340 --> 01:13:56.160 align:middle line:84%
+So an appropriate version
+of Plünnecke-Ruzsa.
+
+01:13:56.160 --> 01:13:56.660 align:middle line:90%
+Well, OK.
+
+01:13:56.660 --> 01:13:57.890 align:middle line:90%
+We have this big subset x.
+
+01:13:57.890 --> 01:14:02.260 align:middle line:84%
+We might want to get rid of that
+by doing Balog-Szemerédi-Gowers.
+
+01:14:02.260 --> 01:14:10.210 align:middle line:84%
+So a Balog-Szemerédi-Gowers
+would reduce to A prime plus CB
+
+01:14:10.210 --> 01:14:13.480 align:middle line:90%
+prime smaller than A prime.
+
+01:14:13.480 --> 01:14:15.070 align:middle line:84%
+We actually have
+all of it instead
+
+01:14:15.070 --> 01:14:17.350 align:middle line:90%
+of just a big piece of it.
+
+01:14:17.350 --> 01:14:23.420 align:middle line:84%
+And then Plünnecke-Ruzsa
+would give us--
+
+01:14:23.420 --> 01:14:28.990 align:middle line:84%
+so this would be
+true for many C in C.
+
+01:14:28.990 --> 01:14:34.460 align:middle line:84%
+And that would give us A prime
+plus C1, B prime plus C2,
+
+01:14:34.460 --> 01:14:39.610 align:middle line:84%
+B prime plus C3, B prime would
+still be smaller than A prime.
+
+01:14:39.610 --> 01:14:43.285 align:middle line:84%
+You could get that
+from Plünnecke-Ruzsa.
+
+01:14:43.285 --> 01:14:45.580 align:middle line:84%
+And so now we're not
+done yet, but you
+
+01:14:45.580 --> 01:14:48.663 align:middle line:84%
+have the feeling
+that we keep using
+
+01:14:48.663 --> 01:14:50.330 align:middle line:84%
+these tools from
+additive combinatorics,
+
+01:14:50.330 --> 01:14:54.160 align:middle line:84%
+and we keep having stronger and
+stronger sounding information
+
+01:14:54.160 --> 01:14:59.170 align:middle line:84%
+about A and B, more
+and more suspicious.
+
+01:14:59.170 --> 01:14:59.670 align:middle line:90%
+OK.
+
+01:14:59.670 --> 01:15:04.150 align:middle line:84%
+And it definitely takes some
+skill and some good ideas
+
+01:15:04.150 --> 01:15:05.503 align:middle line:90%
+to finish from here.
+
+01:15:05.503 --> 01:15:08.170 align:middle line:84%
+But we're in a setting where the
+tools of additive combinatorics
+
+01:15:08.170 --> 01:15:11.175 align:middle line:84%
+are quite powerful and they're
+able to analyze what happens.
+
+01:15:11.175 --> 01:15:18.070 align:middle line:90%
+
+
+01:15:18.070 --> 01:15:19.250 align:middle line:90%
+OK, good.
+
+01:15:19.250 --> 01:15:22.750 align:middle line:90%
+
+
+01:15:22.750 --> 01:15:25.120 align:middle line:90%
+Any final questions or comments?
+
+01:15:25.120 --> 01:15:25.990 align:middle line:90%
+Yeah?
+
+01:15:25.990 --> 01:15:28.982 align:middle line:84%
+AUDIENCE: How did you reduce
+to the projective case here?
+
+01:15:28.982 --> 01:15:30.940 align:middle line:84%
+LAWRENCE GUTH: We reduce
+to the projective case
+
+01:15:30.940 --> 01:15:32.080 align:middle line:90%
+at the beginning.
+
+01:15:32.080 --> 01:15:35.420 align:middle line:90%
+
+
+01:15:35.420 --> 01:15:39.080 align:middle line:84%
+So after we had the
+submultiplicative lemma,
+
+01:15:39.080 --> 01:15:40.960 align:middle line:84%
+we reduced to the
+projective case
+
+01:15:40.960 --> 01:15:46.990 align:middle line:84%
+by saying that this ball
+is in the projective case.
+
+01:15:46.990 --> 01:15:51.280 align:middle line:84%
+And so using that,
+we were able to show
+
+01:15:51.280 --> 01:15:55.148 align:middle line:84%
+that it suffices to prove
+it for the projective case.
+
+01:15:55.148 --> 01:15:57.190 align:middle line:84%
+AUDIENCE: But then how do
+you chain that argument
+
+01:15:57.190 --> 01:16:00.040 align:middle line:90%
+in the projective case?
+
+01:16:00.040 --> 01:16:01.233 align:middle line:90%
+LAWRENCE GUTH: What's that?
+
+01:16:01.233 --> 01:16:02.650 align:middle line:84%
+AUDIENCE: Like, I
+don't understand
+
+01:16:02.650 --> 01:16:07.840 align:middle line:84%
+how you use that kind of
+argument and the reduction
+
+01:16:07.840 --> 01:16:10.450 align:middle line:90%
+to projective at the same time.
+
+01:16:10.450 --> 01:16:13.197 align:middle line:90%
+LAWRENCE GUTH: Ah.
+
+01:16:13.197 --> 01:16:15.280 align:middle line:84%
+The question is about how
+we put together reducing
+
+01:16:15.280 --> 01:16:18.040 align:middle line:84%
+to the projective case with all
+the other things that we did.
+
+01:16:18.040 --> 01:16:18.540 align:middle line:90%
+Yeah.
+
+01:16:18.540 --> 01:16:22.120 align:middle line:90%
+
+
+01:16:22.120 --> 01:16:22.730 align:middle line:90%
+OK.
+
+01:16:22.730 --> 01:16:26.920 align:middle line:84%
+So using this lemma,
+we had an argument
+
+01:16:26.920 --> 01:16:30.170 align:middle line:84%
+that if you could prove a good
+bound for the projective case,
+
+01:16:30.170 --> 01:16:32.290 align:middle line:84%
+then combining it
+with this lemma
+
+01:16:32.290 --> 01:16:34.590 align:middle line:84%
+and noticing that
+this is projective,
+
+01:16:34.590 --> 01:16:37.220 align:middle line:84%
+then we get a good bound
+for the general case.
+
+01:16:37.220 --> 01:16:38.810 align:middle line:84%
+So now we just
+imagine we're trying
+
+01:16:38.810 --> 01:16:42.500 align:middle line:84%
+to prove the theorem
+in the projective case.
+
+01:16:42.500 --> 01:16:46.070 align:middle line:84%
+So we can assume that we're
+in the projective case.
+
+01:16:46.070 --> 01:16:49.330 align:middle line:84%
+And then we start applying
+the submultiplicative lemma.
+
+01:16:49.330 --> 01:16:52.410 align:middle line:90%
+
+
+01:16:52.410 --> 01:16:52.910 align:middle line:90%
+Ah.
+
+01:16:52.910 --> 01:16:54.790 align:middle line:84%
+So you're wondering,
+when we do this--
+
+01:16:54.790 --> 01:16:58.430 align:middle line:90%
+
+
+01:16:58.430 --> 01:16:59.310 align:middle line:90%
+yeah.
+
+01:16:59.310 --> 01:17:01.940 align:middle line:84%
+So you can think
+of in this picture
+
+01:17:01.940 --> 01:17:08.000 align:middle line:84%
+where, over here we have
+not just some abstract thing
+
+01:17:08.000 --> 01:17:10.850 align:middle line:84%
+but this would be the
+R in the small ball
+
+01:17:10.850 --> 01:17:13.130 align:middle line:90%
+and the R for the fat tubes.
+
+01:17:13.130 --> 01:17:18.380 align:middle line:84%
+So we look at those, and if the
+R is better than multiplying
+
+01:17:18.380 --> 01:17:20.310 align:middle line:84%
+the small balls
+times the fat tubes,
+
+01:17:20.310 --> 01:17:22.430 align:middle line:90%
+then we keep breaking things up.
+
+01:17:22.430 --> 01:17:25.380 align:middle line:84%
+We can take the small balls and
+break them into smaller balls.
+
+01:17:25.380 --> 01:17:28.110 align:middle line:84%
+And otherwise, if
+they're comparable,
+
+01:17:28.110 --> 01:17:32.230 align:middle line:84%
+then we look at
+what's happening.
+
+01:17:32.230 --> 01:17:33.100 align:middle line:90%
+Yeah.
+
+01:17:33.100 --> 01:17:34.310 align:middle line:90%
+That's a good question.
+
+01:17:34.310 --> 01:17:35.590 align:middle line:90%
+Yeah?
+
+01:17:35.590 --> 01:17:38.720 align:middle line:84%
+AUDIENCE: So I understand
+what's going on.
+
+01:17:38.720 --> 01:17:43.270 align:middle line:84%
+Is this example supposed
+to be similar to the case B
+
+01:17:43.270 --> 01:17:45.700 align:middle line:84%
+that we had at the
+beginning where--
+
+01:17:45.700 --> 01:17:49.900 align:middle line:84%
+for instance, if we started
+with tubes and points on a grid,
+
+01:17:49.900 --> 01:17:53.180 align:middle line:84%
+we kind of immediately fall
+just into the situation.
+
+01:17:53.180 --> 01:17:57.017 align:middle line:84%
+And what we're doing is blowing
+things up until we get there.
+
+01:17:57.017 --> 01:17:57.850 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:17:57.850 --> 01:17:58.350 align:middle line:90%
+OK.
+
+01:17:58.350 --> 01:18:02.590 align:middle line:84%
+So the question is how these
+pictures and these examples
+
+01:18:02.590 --> 01:18:04.810 align:middle line:84%
+relate to the three
+examples that we
+
+01:18:04.810 --> 01:18:07.060 align:middle line:90%
+had in mind at the beginning.
+
+01:18:07.060 --> 01:18:09.400 align:middle line:84%
+So the three examples we
+had in mind at the beginning
+
+01:18:09.400 --> 01:18:11.840 align:middle line:84%
+were there was a simple
+one, the stars example.
+
+01:18:11.840 --> 01:18:13.850 align:middle line:84%
+There was the grid
+that was interesting,
+
+01:18:13.850 --> 01:18:16.570 align:middle line:84%
+and there was the
+random example.
+
+01:18:16.570 --> 01:18:19.675 align:middle line:84%
+And a funny thing is that
+none of those is AD regular.
+
+01:18:19.675 --> 01:18:22.540 align:middle line:90%
+
+
+01:18:22.540 --> 01:18:26.410 align:middle line:84%
+Now, the random
+one, we could fidget
+
+01:18:26.410 --> 01:18:29.110 align:middle line:84%
+to make it AD regular
+if we wanted to.
+
+01:18:29.110 --> 01:18:32.050 align:middle line:84%
+And the stars, we could make
+it AD regular if we wanted to.
+
+01:18:32.050 --> 01:18:35.910 align:middle line:84%
+But the grid is actually
+is really not AD regular.
+
+01:18:35.910 --> 01:18:38.010 align:middle line:84%
+And so that is a
+little bit funny
+
+01:18:38.010 --> 01:18:41.700 align:middle line:84%
+that in the most important
+example it's not in this case,
+
+01:18:41.700 --> 01:18:46.890 align:middle line:84%
+even though this case is very
+important in the final proof.
+
+01:18:46.890 --> 01:18:49.745 align:middle line:84%
+So you can't really
+start with the grid.
+
+01:18:49.745 --> 01:18:55.120 align:middle line:90%
+
+
+01:18:55.120 --> 01:18:56.970 align:middle line:84%
+At least until
+recently, it was not
+
+01:18:56.970 --> 01:19:03.060 align:middle line:84%
+known what is the actual worst
+behavior in the AD regular case.
+
+01:19:03.060 --> 01:19:09.420 align:middle line:84%
+So it may be that RAD
+is much smaller than R,
+
+01:19:09.420 --> 01:19:12.360 align:middle line:84%
+but the argument so
+far doesn't prove that.
+
+01:19:12.360 --> 01:19:14.190 align:middle line:84%
+And it's a little
+bit funny because it
+
+01:19:14.190 --> 01:19:15.780 align:middle line:84%
+means there's not
+an example that you
+
+01:19:15.780 --> 01:19:20.910 align:middle line:84%
+can keep in mind when you go
+through the AD regular case.
+
+01:19:20.910 --> 01:19:22.440 align:middle line:90%
+Yeah?
+
+01:19:22.440 --> 01:19:25.410 align:middle line:84%
+AUDIENCE: What goes wrong
+with trying to construct an AD
+
+01:19:25.410 --> 01:19:27.460 align:middle line:84%
+regular grid where you
+just kind of have a grid,
+
+01:19:27.460 --> 01:19:31.117 align:middle line:84%
+and each point has some
+nested subgrids within it?
+
+01:19:31.117 --> 01:19:31.950 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:19:31.950 --> 01:19:33.550 align:middle line:84%
+So the question is, could
+you make an AD-- yeah,
+
+01:19:33.550 --> 01:19:34.383 align:middle line:90%
+I guess that's true.
+
+01:19:34.383 --> 01:19:36.180 align:middle line:84%
+You could make a
+roughly somewhat
+
+01:19:36.180 --> 01:19:39.580 align:middle line:84%
+AD regular grid by
+taking a grid of balls,
+
+01:19:39.580 --> 01:19:42.210 align:middle line:84%
+and then in each one of those
+balls, you put a grid of balls
+
+01:19:42.210 --> 01:19:43.295 align:middle line:90%
+and you repeat like this.
+
+01:19:43.295 --> 01:19:47.670 align:middle line:90%
+
+
+01:19:47.670 --> 01:19:51.960 align:middle line:84%
+Since the grid itself is not
+AD regular, this is only--
+
+01:19:51.960 --> 01:19:57.700 align:middle line:84%
+it's only AD regular with
+the big C. Could you do that?
+
+01:19:57.700 --> 01:19:59.540 align:middle line:90%
+Yeah, I guess you could do that.
+
+01:19:59.540 --> 01:20:04.830 align:middle line:90%
+
+
+01:20:04.830 --> 01:20:05.390 align:middle line:90%
+Yeah.
+
+01:20:05.390 --> 01:20:05.890 align:middle line:90%
+Yeah.
+
+01:20:05.890 --> 01:20:07.510 align:middle line:90%
+So you could do that.
+
+01:20:07.510 --> 01:20:10.350 align:middle line:84%
+And then what would happen
+here, the A, B, and C
+
+01:20:10.350 --> 01:20:13.440 align:middle line:84%
+would be like sets of
+integers except they would
+
+01:20:13.440 --> 01:20:15.160 align:middle line:90%
+have this AD regular structure.
+
+01:20:15.160 --> 01:20:18.270 align:middle line:84%
+So A would be, take an
+arithmetic progression
+
+01:20:18.270 --> 01:20:21.060 align:middle line:84%
+of intervals, and
+in each one of them,
+
+01:20:21.060 --> 01:20:24.070 align:middle line:84%
+put an arithmetic progression
+of small intervals and so on.
+
+01:20:24.070 --> 01:20:25.920 align:middle line:84%
+That's what A and B
+and C would look like.
+
+01:20:25.920 --> 01:20:27.378 align:middle line:84%
+AUDIENCE: Like a
+Cantor set looked?
+
+01:20:27.378 --> 01:20:27.450 align:middle line:90%
+
+
+01:20:27.450 --> 01:20:27.970 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:20:27.970 --> 01:20:28.762 align:middle line:90%
+It's kind of like--
+
+01:20:28.762 --> 01:20:31.620 align:middle line:84%
+it's like a Cantor
+set, but in order
+
+01:20:31.620 --> 01:20:34.455 align:middle line:84%
+to make the numbers
+come out well,
+
+01:20:34.455 --> 01:20:37.140 align:middle line:84%
+you need to have a lot of
+intervals in an arithmetic
+
+01:20:37.140 --> 01:20:39.600 align:middle line:90%
+progression in each step.
+
+01:20:39.600 --> 01:20:43.320 align:middle line:84%
+Here, I'll draw it, and then
+I'm over, so I'm going to stop.
+
+01:20:43.320 --> 01:20:48.210 align:middle line:90%
+So the example is a big line.
+
+01:20:48.210 --> 01:20:50.550 align:middle line:84%
+You make an
+arithmetic progression
+
+01:20:50.550 --> 01:20:52.396 align:middle line:90%
+with a lot of intervals.
+
+01:20:52.396 --> 01:20:58.500 align:middle line:90%
+
+
+01:20:58.500 --> 01:20:59.220 align:middle line:90%
+OK.
+
+01:20:59.220 --> 01:21:01.560 align:middle line:84%
+Then you look inside of
+each one of these intervals
+
+01:21:01.560 --> 01:21:03.960 align:middle line:90%
+and you repeat what I just did.
+
+01:21:03.960 --> 01:21:08.080 align:middle line:84%
+And for this to be a kind of
+sharp, interesting example,
+
+01:21:08.080 --> 01:21:11.040 align:middle line:84%
+it needs to be a
+lot of intervals.
+
+01:21:11.040 --> 01:21:12.120 align:middle line:90%
+OK.
+
+01:21:12.120 --> 01:21:12.910 align:middle line:90%
+OK, good.
+
+01:21:12.910 --> 01:21:15.120 align:middle line:84%
+Sorry for going a
+little bit over.
+
+01:21:15.120 --> 01:21:16.450 align:middle line:90%
+Those are great questions.
+
+01:21:16.450 --> 01:21:19.910 align:middle line:84%
+Let's stop there and I
+will see you next week.
+
+01:21:19.910 --> 01:21:26.000 align:middle line:90%

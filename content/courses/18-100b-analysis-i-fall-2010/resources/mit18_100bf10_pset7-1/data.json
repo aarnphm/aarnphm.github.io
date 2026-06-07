@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problems about consider an infinite series with alternating signs, positive integers with no common factor and continuous mappings of a metric space.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problems about consider an infinite series with alternating signs, positive integers with no common factor and continuous mappings of a metric space.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/b9e8a0bf816b0e883cff98884a512132_MIT18_100BF10_pset7.pdf",
+  "file_size": 107408,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 7 (2006)",
+  "uid": "b9e8a0bf-816b-0e88-3cff-98884a512132",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

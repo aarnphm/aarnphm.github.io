@@ -1,0 +1,86 @@
+{
+  "course_description": "The class studies projection theory, starting from the first questions and building up to recent developments. Projection theory studies how a set *X* behaves under different orthogonal projections. Questions of this type aren't usually emphasized in the graduate analysis curriculum, but they come up in many areas of math, including harmonic analysis, analytic number theory, additive combinatorics, and homogeneous dynamics.\n\nWe will survey several applications of projection theory. For each topic, we will introduce and motivate the topic and see how it connects with projection theory. We will prove something about each topic but not necessarily the strongest results.",
+  "course_description_html": "<p>The class studies projection theory, starting from the first questions and building up to recent developments. Projection theory studies how a set <em>X</em> behaves under different orthogonal projections. Questions of this type aren&rsquo;t usually emphasized in the graduate analysis curriculum, but they come up in many areas of math, including harmonic analysis, analytic number theory, additive combinatorics, and homogeneous dynamics.</p>\n<p>We will survey several applications of projection theory. For each topic, we will introduce and motivate the topic and see how it connects with projection theory. We will prove something about each topic but not necessarily the strongest results.</p>\n",
+  "course_image": {
+    "content": "1623f898-4f47-4699-a24d-38e72529769e",
+    "website": "projection-theory"
+  },
+  "course_image_metadata": {
+    "body": "",
+    "content_type": "resource",
+    "draft": false,
+    "file": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_v2.jpg",
+    "file_size": 181887,
+    "file_type": "image/jpeg",
+    "image_metadata": {
+      "caption": "Proof sketch for the projection estimate (from Lecture 21). (Image courtesy of Jacob Reznikov. Used with permission.)",
+      "credit": "",
+      "image-alt": "A diagram showing projections from three different geometric shapes."
+    },
+    "iscjklanguage": false,
+    "learning_resource_types": [],
+    "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "resourcetype": "Image",
+    "title": "mit18_156_s25_v2.jpg",
+    "uid": "1623f898-4f47-4699-a24d-38e72529769e",
+    "video_files": {
+      "archive_url": "",
+      "video_captions_file": "",
+      "video_thumbnail_file": "",
+      "video_transcript_file": ""
+    },
+    "video_metadata": {
+      "source": "",
+      "video_speakers": "",
+      "video_tags": "",
+      "youtube_description": "",
+      "youtube_id": ""
+    }
+  },
+  "course_title": "Projection Theory",
+  "department_numbers": [
+    "18"
+  ],
+  "extra_course_numbers": "",
+  "hide_download": false,
+  "image_src": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_v2.jpg",
+  "instructors": [
+    {
+      "first_name": "Lawrence",
+      "last_name": "Guth",
+      "middle_initial": "D",
+      "salutation": "Prof.",
+      "title": "Prof. Lawrence D Guth",
+      "uid": "2f17c7a3-7591-ca71-e169-9bebd5088368",
+      "url": "/search/?q=Prof.+Lawrence+D+Guth"
+    }
+  ],
+  "learning_resource_types": [
+    "Lecture Videos",
+    "Lecture Notes",
+    "Problem Sets",
+    "Projects",
+    "Editable Files"
+  ],
+  "legacy_uid": "",
+  "level": [
+    "Graduate"
+  ],
+  "mit_learn_topics": [],
+  "primary_course_number": "18.156",
+  "site_short_id": "18.156-spring-2025",
+  "site_uid": "e5b39f98-2e79-4820-8e81-af10a745f48d",
+  "site_url_path": "courses/18-156-projection-theory-spring-2025",
+  "term": "Spring",
+  "topics": [
+    [
+      "Mathematics",
+      "Differential Equations"
+    ],
+    [
+      "Mathematics",
+      "Mathematical Analysis"
+    ]
+  ],
+  "year": "2025"
+}

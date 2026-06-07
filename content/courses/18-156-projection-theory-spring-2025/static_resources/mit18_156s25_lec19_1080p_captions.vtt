@@ -1,0 +1,4973 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.458 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.458 --> 00:00:02.916 align:middle line:90%
+[RUSTLING]
+
+00:00:02.916 --> 00:00:05.832 align:middle line:90%
+[CLICKING]
+
+00:00:05.832 --> 00:00:11.415 align:middle line:90%
+
+
+00:00:11.415 --> 00:00:13.040 align:middle line:84%
+LAWRENCE GUTH: So
+today is the last day
+
+00:00:13.040 --> 00:00:16.000 align:middle line:84%
+of our unit about
+random walks on groups.
+
+00:00:16.000 --> 00:00:20.140 align:middle line:84%
+And the goal of the
+day is to digest,
+
+00:00:20.140 --> 00:00:26.440 align:middle line:84%
+think about the Bourgain-Gamburd
+theorem about mixing on SL2(Fp).
+
+00:00:26.440 --> 00:00:28.820 align:middle line:84%
+So we stated it at the
+end of last time-- first,
+
+00:00:28.820 --> 00:00:31.530 align:middle line:84%
+I'll remember to remind
+everybody what it says.
+
+00:00:31.530 --> 00:00:57.200 align:middle line:90%
+
+
+00:00:57.200 --> 00:01:01.870 align:middle line:84%
+OK, so it's about
+mixing on SL2(Fp).
+
+00:01:01.870 --> 00:01:13.057 align:middle line:84%
+So it says if mu is a
+probability measure, SL2(Fp).
+
+00:01:13.057 --> 00:01:14.890 align:middle line:84%
+Actually, maybe it
+doesn't matter that much.
+
+00:01:14.890 --> 00:01:17.060 align:middle line:84%
+But maybe we set it
+in terms of subsets.
+
+00:01:17.060 --> 00:01:23.924 align:middle line:90%
+
+
+00:01:23.924 --> 00:01:27.470 align:middle line:84%
+OK, so the question is,
+when does the random walk
+
+00:01:27.470 --> 00:01:29.260 align:middle line:90%
+coming from A mix?
+
+00:01:29.260 --> 00:01:32.915 align:middle line:90%
+
+
+00:01:32.915 --> 00:01:38.670 align:middle line:84%
+So then the conclusion will be,
+the singular value of this walk
+
+00:01:38.670 --> 00:01:41.030 align:middle line:84%
+is less than 1
+minus C of epsilon,
+
+00:01:41.030 --> 00:01:43.470 align:middle line:90%
+meaning that it does mix.
+
+00:01:43.470 --> 00:01:45.510 align:middle line:90%
+OK.
+
+00:01:45.510 --> 00:01:48.550 align:middle line:84%
+And to see that this
+happens, we need
+
+00:01:48.550 --> 00:01:51.210 align:middle line:84%
+to know that A doesn't
+lie in any subgroup.
+
+00:01:51.210 --> 00:01:53.830 align:middle line:84%
+And so we have a hypothesis
+that's related to that.
+
+00:01:53.830 --> 00:02:05.460 align:middle line:84%
+It says that for any Borel
+subgroup B, A intersect gB--
+
+00:02:05.460 --> 00:02:06.850 align:middle line:90%
+so any g in our group.
+
+00:02:06.850 --> 00:02:11.420 align:middle line:90%
+
+
+00:02:11.420 --> 00:02:14.900 align:middle line:84%
+This guy is bounded
+by K of epsilon p
+
+00:02:14.900 --> 00:02:19.700 align:middle line:84%
+to the minus epsilon times A.
+So only a small fraction of A
+
+00:02:19.700 --> 00:02:24.220 align:middle line:84%
+lies in any coset
+of a Borel group.
+
+00:02:24.220 --> 00:02:26.380 align:middle line:90%
+OK.
+
+00:02:26.380 --> 00:02:28.940 align:middle line:84%
+And we put in parentheses
+that A is symmetric.
+
+00:02:28.940 --> 00:02:32.300 align:middle line:84%
+We don't really need it, but it
+also doesn't matter that much.
+
+00:02:32.300 --> 00:02:35.180 align:middle line:84%
+And it will make things
+a little cleaner.
+
+00:02:35.180 --> 00:02:35.740 align:middle line:90%
+Yeah.
+
+00:02:35.740 --> 00:02:37.740 align:middle line:84%
+AUDIENCE: I have a question
+about the difference
+
+00:02:37.740 --> 00:02:42.160 align:middle line:84%
+between using a subset
+versus a measure.
+
+00:02:42.160 --> 00:02:44.620 align:middle line:84%
+Is it possible to pass
+between the two cases
+
+00:02:44.620 --> 00:02:47.583 align:middle line:84%
+by weighting by
+different subgroup sets?
+
+00:02:47.583 --> 00:02:49.000 align:middle line:84%
+LAWRENCE GUTH:
+Yeah, that's right.
+
+00:02:49.000 --> 00:02:51.375 align:middle line:84%
+So the question was, what's
+the difference between taking
+
+00:02:51.375 --> 00:02:52.892 align:middle line:90%
+a subset or taking a measure?
+
+00:02:52.892 --> 00:02:54.600 align:middle line:84%
+I think there's not
+that much difference.
+
+00:02:54.600 --> 00:02:56.540 align:middle line:84%
+I think if you can use
+this as a black box
+
+00:02:56.540 --> 00:02:58.068 align:middle line:84%
+and prove things
+about measures, I
+
+00:02:58.068 --> 00:03:00.610 align:middle line:84%
+think we also could just use
+measures through the whole proof
+
+00:03:00.610 --> 00:03:03.410 align:middle line:90%
+and it would work fine.
+
+00:03:03.410 --> 00:03:04.650 align:middle line:90%
+OK.
+
+00:03:04.650 --> 00:03:08.510 align:middle line:84%
+So the proof of this theorem
+breaks into two important pieces
+
+00:03:08.510 --> 00:03:10.010 align:middle line:84%
+which are both
+interesting and which
+
+00:03:10.010 --> 00:03:12.510 align:middle line:84%
+are both connected in different
+ways to themes of our class.
+
+00:03:12.510 --> 00:03:22.203 align:middle line:90%
+
+
+00:03:22.203 --> 00:03:22.703 align:middle line:90%
+OK.
+
+00:03:22.703 --> 00:03:26.154 align:middle line:90%
+
+
+00:03:26.154 --> 00:03:30.690 align:middle line:84%
+So the first part says that
+if you just have pretty much
+
+00:03:30.690 --> 00:03:33.590 align:middle line:84%
+any set and you do
+this random walk,
+
+00:03:33.590 --> 00:03:36.090 align:middle line:84%
+the only way it
+can fail to mix is
+
+00:03:36.090 --> 00:03:38.850 align:middle line:84%
+if it gets stuck
+in something which
+
+00:03:38.850 --> 00:03:42.750 align:middle line:90%
+is approximately a subgroup.
+
+00:03:42.750 --> 00:03:44.450 align:middle line:84%
+So it can fail to
+mix if it's literally
+
+00:03:44.450 --> 00:03:45.450 align:middle line:90%
+contained in a subgroup.
+
+00:03:45.450 --> 00:03:47.170 align:middle line:84%
+And a little bit
+more generally, it
+
+00:03:47.170 --> 00:03:50.050 align:middle line:84%
+can only fail to mix if
+there's a set which is a lot
+
+00:03:50.050 --> 00:03:54.530 align:middle line:84%
+like a subgroup which contains a
+lot of the mass of the measure.
+
+00:03:54.530 --> 00:03:56.370 align:middle line:90%
+So let's try to write this down.
+
+00:03:56.370 --> 00:04:02.310 align:middle line:90%
+
+
+00:04:02.310 --> 00:04:05.510 align:middle line:84%
+So this is probably
+true for any group.
+
+00:04:05.510 --> 00:04:08.013 align:middle line:84%
+I'm going to write it
+for SL2(Fp) for now.
+
+00:04:08.013 --> 00:04:09.430 align:middle line:84%
+And then as we
+talk about it more,
+
+00:04:09.430 --> 00:04:11.890 align:middle line:84%
+let's keep our eyes open
+of what we actually used.
+
+00:04:11.890 --> 00:04:16.470 align:middle line:90%
+
+
+00:04:16.470 --> 00:04:20.149 align:middle line:90%
+This is symmetric.
+
+00:04:20.149 --> 00:04:26.560 align:middle line:84%
+And sigma 1 TA is
+bigger than 1 minus--
+
+00:04:26.560 --> 00:04:30.370 align:middle line:90%
+
+
+00:04:30.370 --> 00:04:30.870 align:middle line:90%
+sorry.
+
+00:04:30.870 --> 00:04:35.540 align:middle line:90%
+Here I'll put 1 minus epsilon.
+
+00:04:35.540 --> 00:04:42.950 align:middle line:84%
+And then there exists some kind
+of approximate subgroup called
+
+00:04:42.950 --> 00:04:53.610 align:middle line:90%
+H. Yeah, hold on.
+
+00:04:53.610 --> 00:04:55.860 align:middle line:90%
+Let me adjust it a little bit.
+
+00:04:55.860 --> 00:04:59.860 align:middle line:84%
+Let me also say that
+A is pretty big.
+
+00:04:59.860 --> 00:05:03.020 align:middle line:90%
+It is not too tiny.
+
+00:05:03.020 --> 00:05:11.540 align:middle line:84%
+Then there exists some H so that
+mu tensored to some power of H
+
+00:05:11.540 --> 00:05:12.370 align:middle line:90%
+is pretty big.
+
+00:05:12.370 --> 00:05:18.220 align:middle line:90%
+
+
+00:05:18.220 --> 00:05:22.990 align:middle line:84%
+And this H is sort of like a
+subgroup in the following sense.
+
+00:05:22.990 --> 00:05:28.180 align:middle line:90%
+
+
+00:05:28.180 --> 00:05:31.600 align:middle line:84%
+So H, if you multiply it
+by itself many times--
+
+00:05:31.600 --> 00:05:32.340 align:middle line:90%
+for example, 5.
+
+00:05:32.340 --> 00:05:34.060 align:middle line:90%
+You could do more.
+
+00:05:34.060 --> 00:05:37.380 align:middle line:84%
+This is less than p to
+the O of delta times
+
+00:05:37.380 --> 00:05:40.280 align:middle line:90%
+H. And H also is not too big.
+
+00:05:40.280 --> 00:05:44.980 align:middle line:90%
+
+
+00:05:44.980 --> 00:05:46.740 align:middle line:84%
+OK, so if you had
+another group, you
+
+00:05:46.740 --> 00:05:48.280 align:middle line:84%
+would have to
+adjust these things.
+
+00:05:48.280 --> 00:05:49.877 align:middle line:90%
+But I think that that's minor.
+
+00:05:49.877 --> 00:05:51.710 align:middle line:84%
+I think that's all you
+would have to change.
+
+00:05:51.710 --> 00:05:54.410 align:middle line:90%
+
+
+00:05:54.410 --> 00:05:55.110 align:middle line:90%
+OK.
+
+00:05:55.110 --> 00:05:58.010 align:middle line:84%
+So if you have a set which
+is a decent sized fraction
+
+00:05:58.010 --> 00:06:01.490 align:middle line:84%
+of our group-- and let's
+say it's symmetric--
+
+00:06:01.490 --> 00:06:08.210 align:middle line:84%
+then either that random walks
+mixes or there is some subset
+
+00:06:08.210 --> 00:06:10.490 align:middle line:90%
+which is sort of like a group.
+
+00:06:10.490 --> 00:06:15.030 align:middle line:84%
+And when you take K steps
+of your random walk,
+
+00:06:15.030 --> 00:06:19.610 align:middle line:84%
+you have a high probability
+of being in this set.
+
+00:06:19.610 --> 00:06:22.600 align:middle line:84%
+And this set is sort of
+like a group in this sense.
+
+00:06:22.600 --> 00:06:28.410 align:middle line:90%
+
+
+00:06:28.410 --> 00:06:28.910 align:middle line:90%
+OK.
+
+00:06:28.910 --> 00:06:33.570 align:middle line:90%
+
+
+00:06:33.570 --> 00:06:34.530 align:middle line:90%
+All right.
+
+00:06:34.530 --> 00:06:36.890 align:middle line:84%
+And so there's
+delta and epsilon.
+
+00:06:36.890 --> 00:06:40.050 align:middle line:84%
+Maybe at the beginning
+I should say this.
+
+00:06:40.050 --> 00:06:43.270 align:middle line:90%
+And delta depends on epsilon.
+
+00:06:43.270 --> 00:06:44.110 align:middle line:90%
+And it's positive.
+
+00:06:44.110 --> 00:07:03.160 align:middle line:90%
+
+
+00:07:03.160 --> 00:07:04.360 align:middle line:90%
+All right.
+
+00:07:04.360 --> 00:07:07.190 align:middle line:84%
+Any questions or
+comments about theorem 1?
+
+00:07:07.190 --> 00:07:10.536 align:middle line:84%
+That's theorem 1, is Bourgain
+and Gamburd, essentially.
+
+00:07:10.536 --> 00:07:19.100 align:middle line:90%
+
+
+00:07:19.100 --> 00:07:19.600 align:middle line:90%
+Yeah.
+
+00:07:19.600 --> 00:07:23.487 align:middle line:84%
+AUDIENCE: Where does the
+A to the 2.5 come from?
+
+00:07:23.487 --> 00:07:24.320 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:07:24.320 --> 00:07:31.000 align:middle line:84%
+So what's significant
+here is just
+
+00:07:31.000 --> 00:07:38.760 align:middle line:84%
+that this is significantly
+smaller than the whole group.
+
+00:07:38.760 --> 00:07:45.160 align:middle line:90%
+And if we-- yeah.
+
+00:07:45.160 --> 00:07:47.600 align:middle line:84%
+AUDIENCE: Does it equal
+kind of a power on the side
+
+00:07:47.600 --> 00:07:48.440 align:middle line:90%
+of [INAUDIBLE]?
+
+00:07:48.440 --> 00:07:56.315 align:middle line:90%
+
+
+00:07:56.315 --> 00:07:57.190 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:07:57.190 --> 00:07:57.690 align:middle line:90%
+OK.
+
+00:07:57.690 --> 00:07:59.370 align:middle line:84%
+So this comes last
+time from this--
+
+00:07:59.370 --> 00:08:02.230 align:middle line:90%
+
+
+00:08:02.230 --> 00:08:04.730 align:middle line:84%
+so actually, it's also important
+that this is bigger than 2.
+
+00:08:04.730 --> 00:08:12.920 align:middle line:84%
+So we had this important
+property of SL2(Fp), that it's--
+
+00:08:12.920 --> 00:08:15.170 align:middle line:84%
+ah yeah, so actually this
+wouldn't work for any group.
+
+00:08:15.170 --> 00:08:16.587 align:middle line:84%
+So we have this
+important property
+
+00:08:16.587 --> 00:08:20.030 align:middle line:84%
+for SL2(Fp) from last time, that
+every non-trivial representation
+
+00:08:20.030 --> 00:08:21.870 align:middle line:90%
+has a large dimension.
+
+00:08:21.870 --> 00:08:26.710 align:middle line:84%
+And that had the property that
+if this thing had a small L2
+
+00:08:26.710 --> 00:08:29.990 align:middle line:84%
+norm, so it was kind of
+decently well mixed, then
+
+00:08:29.990 --> 00:08:31.333 align:middle line:90%
+we would get a spectral gap.
+
+00:08:31.333 --> 00:08:33.750 align:middle line:84%
+And then if you kept going,
+it would become really, really
+
+00:08:33.750 --> 00:08:35.070 align:middle line:90%
+well-mixed.
+
+00:08:35.070 --> 00:08:38.669 align:middle line:84%
+And that's crucially
+being used here.
+
+00:08:38.669 --> 00:08:43.070 align:middle line:84%
+And so here you could put
+anything bigger than 2.
+
+00:08:43.070 --> 00:08:47.070 align:middle line:84%
+And the point is
+that it can only
+
+00:08:47.070 --> 00:08:50.300 align:middle line:84%
+go wrong by getting stuck in
+something of size really smaller
+
+00:08:50.300 --> 00:08:51.220 align:middle line:90%
+than p squared.
+
+00:08:51.220 --> 00:08:53.580 align:middle line:84%
+Because we know once it's
+spread over something of size
+
+00:08:53.580 --> 00:08:55.747 align:middle line:84%
+bigger than p squared, then
+it's going to keep going
+
+00:08:55.747 --> 00:08:57.340 align:middle line:90%
+and spread all the way.
+
+00:08:57.340 --> 00:08:59.460 align:middle line:90%
+Yeah, thanks.
+
+00:08:59.460 --> 00:09:01.620 align:middle line:90%
+Yeah.
+
+00:09:01.620 --> 00:09:02.660 align:middle line:90%
+OK.
+
+00:09:02.660 --> 00:09:03.340 align:middle line:90%
+OK.
+
+00:09:03.340 --> 00:09:06.140 align:middle line:84%
+Well, this theorem
+raises a question.
+
+00:09:06.140 --> 00:09:09.420 align:middle line:84%
+Who are all the subsets
+H that are like this?
+
+00:09:09.420 --> 00:09:11.220 align:middle line:84%
+It becomes a much
+nicer theorem when
+
+00:09:11.220 --> 00:09:14.540 align:middle line:84%
+we can write them
+all down, or at least
+
+00:09:14.540 --> 00:09:17.260 align:middle line:84%
+say something
+meaningful about them.
+
+00:09:17.260 --> 00:09:19.760 align:middle line:84%
+So theorem 2' says
+something about that.
+
+00:09:19.760 --> 00:09:22.380 align:middle line:90%
+
+
+00:09:22.380 --> 00:09:26.260 align:middle line:84%
+So this theorem is
+due to Helfgott.
+
+00:09:26.260 --> 00:09:30.780 align:middle line:90%
+And it builds on Hrushovski.
+
+00:09:30.780 --> 00:09:35.140 align:middle line:90%
+
+
+00:09:35.140 --> 00:09:35.640 align:middle line:90%
+OK.
+
+00:09:35.640 --> 00:09:44.660 align:middle line:84%
+So it says if H is
+a subset of SL2(Fp)
+
+00:09:44.660 --> 00:09:53.120 align:middle line:84%
+and it has these two
+properties, so all of this stuff
+
+00:09:53.120 --> 00:10:00.120 align:middle line:84%
+is smaller than p to
+the delta H. And H
+
+00:10:00.120 --> 00:10:02.540 align:middle line:90%
+is at least p to the epsilon.
+
+00:10:02.540 --> 00:10:04.140 align:middle line:90%
+You can read that off from here.
+
+00:10:04.140 --> 00:10:07.480 align:middle line:84%
+It's not going to get stuck
+in something smaller than A.
+
+00:10:07.480 --> 00:10:11.120 align:middle line:90%
+And at most, p to the 2.5.
+
+00:10:11.120 --> 00:10:15.760 align:middle line:84%
+Then the conclusion is that H is
+concentrated in a Borel subgroup
+
+00:10:15.760 --> 00:10:17.280 align:middle line:90%
+or Borel coset.
+
+00:10:17.280 --> 00:10:23.080 align:middle line:84%
+So then there exists
+a Borel subgroup B
+
+00:10:23.080 --> 00:10:28.240 align:middle line:84%
+of an element g in our
+group, so that H intersect
+
+00:10:28.240 --> 00:10:34.720 align:middle line:84%
+B is bigger than some
+small constant times H.
+
+00:10:34.720 --> 00:10:38.000 align:middle line:84%
+So our approximate
+subgroups basically have
+
+00:10:38.000 --> 00:10:40.360 align:middle line:90%
+to sit in a Borel subgroup.
+
+00:10:40.360 --> 00:10:42.040 align:middle line:84%
+This isn't a complete
+classification
+
+00:10:42.040 --> 00:10:45.460 align:middle line:84%
+because some of the subsets of
+B are approximate subgroups,
+
+00:10:45.460 --> 00:10:48.190 align:middle line:84%
+and many of them aren't,
+but it's a meaningful piece
+
+00:10:48.190 --> 00:10:49.090 align:middle line:90%
+of information.
+
+00:10:49.090 --> 00:10:52.590 align:middle line:90%
+
+
+00:10:52.590 --> 00:10:53.790 align:middle line:90%
+OK, cool.
+
+00:10:53.790 --> 00:10:57.110 align:middle line:84%
+So you put these two
+theorems together, you
+
+00:10:57.110 --> 00:11:00.150 align:middle line:84%
+can prove that theorem
+pretty quickly.
+
+00:11:00.150 --> 00:11:02.030 align:middle line:90%
+Yeah.
+
+00:11:02.030 --> 00:11:04.310 align:middle line:84%
+AUDIENCE: This C, does
+it depend on anything,
+
+00:11:04.310 --> 00:11:05.870 align:middle line:90%
+or is it a universe?
+
+00:11:05.870 --> 00:11:08.270 align:middle line:84%
+LAWRENCE GUTH: Does
+it depend on anything?
+
+00:11:08.270 --> 00:11:09.370 align:middle line:90%
+Let's put this here.
+
+00:11:09.370 --> 00:11:12.590 align:middle line:90%
+
+
+00:11:12.590 --> 00:11:13.330 align:middle line:90%
+Let's see.
+
+00:11:13.330 --> 00:11:15.080 align:middle line:84%
+I have all these
+epsilons and deltas.
+
+00:11:15.080 --> 00:11:18.910 align:middle line:90%
+
+
+00:11:18.910 --> 00:11:21.070 align:middle line:84%
+I don't think it
+depends on anything.
+
+00:11:21.070 --> 00:11:26.110 align:middle line:84%
+So I guess here,
+there should be this.
+
+00:11:26.110 --> 00:11:27.870 align:middle line:90%
+So we can do this.
+
+00:11:27.870 --> 00:11:30.510 align:middle line:84%
+So this is getting stronger
+as epsilon is getting smaller.
+
+00:11:30.510 --> 00:11:34.630 align:middle line:84%
+Epsilon is telling us that
+our thing is not too small.
+
+00:11:34.630 --> 00:11:39.452 align:middle line:84%
+And then I think that
+this is just a constant.
+
+00:11:39.452 --> 00:11:41.910 align:middle line:84%
+I guess that does suggest that
+we could have said something
+
+00:11:41.910 --> 00:11:43.090 align:middle line:90%
+stronger up there.
+
+00:11:43.090 --> 00:11:48.080 align:middle line:90%
+
+
+00:11:48.080 --> 00:11:48.580 align:middle line:90%
+Yeah.
+
+00:11:48.580 --> 00:11:55.855 align:middle line:90%
+
+
+00:11:55.855 --> 00:12:04.100 align:middle line:84%
+Oh, this is definitely H,
+not B. I think it's right.
+
+00:12:04.100 --> 00:12:05.340 align:middle line:90%
+Yeah.
+
+00:12:05.340 --> 00:12:07.400 align:middle line:84%
+AUDIENCE: It's a question
+about the choice of g.
+
+00:12:07.400 --> 00:12:11.260 align:middle line:84%
+If the H is a symmetric
+subset, would that kind of
+
+00:12:11.260 --> 00:12:13.820 align:middle line:84%
+imply that the
+optimal g is always
+
+00:12:13.820 --> 00:12:15.240 align:middle line:90%
+going to just be the identity?
+
+00:12:15.240 --> 00:12:17.340 align:middle line:84%
+Because you think of
+H is kind of being
+
+00:12:17.340 --> 00:12:18.966 align:middle line:90%
+centered in some way around.
+
+00:12:18.966 --> 00:12:24.260 align:middle line:84%
+There would be some shifting
+subgroup by kind of an identity
+
+00:12:24.260 --> 00:12:26.947 align:middle line:84%
+element, wouldn't
+change the intersection?
+
+00:12:26.947 --> 00:12:27.780 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+00:12:27.780 --> 00:12:31.480 align:middle line:84%
+So the question is, maybe
+if H were itself symmetric,
+
+00:12:31.480 --> 00:12:34.420 align:middle line:84%
+which in fact, I think
+will happen in this setup,
+
+00:12:34.420 --> 00:12:36.840 align:middle line:84%
+then maybe you
+don't need this g.
+
+00:12:36.840 --> 00:12:39.660 align:middle line:84%
+And maybe it's actually
+only actual subgroups.
+
+00:12:39.660 --> 00:12:41.000 align:middle line:90%
+I think that may be.
+
+00:12:41.000 --> 00:12:44.990 align:middle line:84%
+So let me just scribe that
+I'm not sure we need g.
+
+00:12:44.990 --> 00:13:07.810 align:middle line:90%
+
+
+00:13:07.810 --> 00:13:08.676 align:middle line:90%
+Right.
+
+00:13:08.676 --> 00:13:11.210 align:middle line:84%
+Yeah, so a good
+example to think about
+
+00:13:11.210 --> 00:13:15.050 align:middle line:84%
+is if you just take a
+coset of a Borel subgroup.
+
+00:13:15.050 --> 00:13:18.730 align:middle line:84%
+And in the abelian world,
+a coset of a subgroup
+
+00:13:18.730 --> 00:13:22.490 align:middle line:84%
+will be very small when
+you add it to itself.
+
+00:13:22.490 --> 00:13:26.810 align:middle line:84%
+But in the non-abelian
+world it's not so clear.
+
+00:13:26.810 --> 00:13:29.090 align:middle line:90%
+So I'll make a remark.
+
+00:13:29.090 --> 00:13:34.570 align:middle line:84%
+If H is a coset of
+a Borel group, then
+
+00:13:34.570 --> 00:13:37.090 align:middle line:90%
+how big is just H times H?
+
+00:13:37.090 --> 00:13:42.480 align:middle line:84%
+Well, it's g times
+B times g times B.
+
+00:13:42.480 --> 00:13:44.220 align:middle line:84%
+And because it's
+not commutative,
+
+00:13:44.220 --> 00:13:47.320 align:middle line:90%
+I can't bring this across.
+
+00:13:47.320 --> 00:13:50.220 align:middle line:84%
+So it's not obvious
+that this is small.
+
+00:13:50.220 --> 00:13:51.820 align:middle line:84%
+So I think this
+is, in fact, large.
+
+00:13:51.820 --> 00:13:59.840 align:middle line:90%
+
+
+00:13:59.840 --> 00:14:04.000 align:middle line:84%
+So based on that, I think it's
+likely that we don't need this.
+
+00:14:04.000 --> 00:14:06.890 align:middle line:84%
+But it makes the proof
+a little shorter.
+
+00:14:06.890 --> 00:14:10.200 align:middle line:90%
+
+
+00:14:10.200 --> 00:14:11.720 align:middle line:90%
+OK, cool.
+
+00:14:11.720 --> 00:14:15.800 align:middle line:84%
+So I have a couple of
+big-picture comments about this.
+
+00:14:15.800 --> 00:14:20.480 align:middle line:84%
+One comment is let's compare
+to the perhaps simpler
+
+00:14:20.480 --> 00:14:22.600 align:middle line:90%
+setting of an abelian group.
+
+00:14:22.600 --> 00:14:24.880 align:middle line:84%
+So maybe you have
+the group of integers
+
+00:14:24.880 --> 00:14:27.320 align:middle line:84%
+or the group of
+integers modulo p.
+
+00:14:27.320 --> 00:14:29.360 align:middle line:84%
+Suppose we had a
+subset in there that
+
+00:14:29.360 --> 00:14:33.320 align:middle line:84%
+had this property
+and this property.
+
+00:14:33.320 --> 00:14:35.560 align:middle line:84%
+So when you add it
+to itself, many times
+
+00:14:35.560 --> 00:14:38.240 align:middle line:84%
+it expands, but only by a
+little bit by a small power
+
+00:14:38.240 --> 00:14:40.080 align:middle line:90%
+of the size of the set.
+
+00:14:40.080 --> 00:14:43.150 align:middle line:84%
+Then what can we say about
+the structure of such things?
+
+00:14:43.150 --> 00:14:47.190 align:middle line:84%
+That's a big open problem
+in additive combinatorics.
+
+00:14:47.190 --> 00:14:50.430 align:middle line:84%
+That's the
+Freiman-Ruzsa problem.
+
+00:14:50.430 --> 00:14:55.070 align:middle line:84%
+If you have something even
+smaller here, like log p or so,
+
+00:14:55.070 --> 00:14:56.630 align:middle line:84%
+then there would
+be a classification
+
+00:14:56.630 --> 00:14:58.870 align:middle line:84%
+that would have to look like
+a generalized arithmetic
+
+00:14:58.870 --> 00:14:59.650 align:middle line:90%
+progression.
+
+00:14:59.650 --> 00:15:02.363 align:middle line:84%
+But in this range,
+there's not a whole lot.
+
+00:15:02.363 --> 00:15:04.030 align:middle line:84%
+There's nothing like
+a structure theorem
+
+00:15:04.030 --> 00:15:06.310 align:middle line:84%
+that currently
+exists in this range.
+
+00:15:06.310 --> 00:15:10.350 align:middle line:84%
+So in a certain sense, this
+is stronger information
+
+00:15:10.350 --> 00:15:11.910 align:middle line:84%
+in the non-commutative
+world than we
+
+00:15:11.910 --> 00:15:13.232 align:middle line:90%
+have in the commutative world.
+
+00:15:13.232 --> 00:15:15.190 align:middle line:84%
+Of course, you might
+point out that this is not
+
+00:15:15.190 --> 00:15:17.390 align:middle line:84%
+a complete structure
+theorem either.
+
+00:15:17.390 --> 00:15:18.950 align:middle line:84%
+But this is a
+really strong piece
+
+00:15:18.950 --> 00:15:21.330 align:middle line:90%
+of information about our group.
+
+00:15:21.330 --> 00:15:23.430 align:middle line:84%
+And I think in some
+ways, it's stronger
+
+00:15:23.430 --> 00:15:27.230 align:middle line:84%
+than any of what we in
+the commutative work.
+
+00:15:27.230 --> 00:15:29.350 align:middle line:90%
+Yeah.
+
+00:15:29.350 --> 00:15:31.110 align:middle line:90%
+Another comment.
+
+00:15:31.110 --> 00:15:31.850 align:middle line:90%
+So I'm not sure.
+
+00:15:31.850 --> 00:15:34.630 align:middle line:84%
+So Hrushovski and Heathcote
+both worked on this.
+
+00:15:34.630 --> 00:15:36.750 align:middle line:90%
+Hrushovski came from logic.
+
+00:15:36.750 --> 00:15:40.330 align:middle line:84%
+And I think that he was
+interested in the idea
+
+00:15:40.330 --> 00:15:44.450 align:middle line:84%
+from the point of view of logic
+of an approximate subgroup,
+
+00:15:44.450 --> 00:15:46.210 align:middle line:84%
+like a basic thing
+we have axioms
+
+00:15:46.210 --> 00:15:48.450 align:middle line:84%
+for is that the
+axioms for a group
+
+00:15:48.450 --> 00:15:51.870 align:middle line:84%
+and what happens if you relax
+those axioms a little bit?
+
+00:15:51.870 --> 00:15:52.782 align:middle line:90%
+What can you say?
+
+00:15:52.782 --> 00:15:55.240 align:middle line:84%
+So an interesting question from
+the point of view of logic.
+
+00:15:55.240 --> 00:15:58.090 align:middle line:90%
+
+
+00:15:58.090 --> 00:15:59.650 align:middle line:90%
+OK, cool.
+
+00:15:59.650 --> 00:16:00.150 align:middle line:90%
+All right.
+
+00:16:00.150 --> 00:16:02.890 align:middle line:84%
+So the goal for the class is
+to discuss each of these things
+
+00:16:02.890 --> 00:16:06.560 align:middle line:84%
+in moderate depth, probably
+without giving complete proofs.
+
+00:16:06.560 --> 00:16:09.450 align:middle line:90%
+
+
+00:16:09.450 --> 00:16:12.710 align:middle line:84%
+And they have quite
+different ideas.
+
+00:16:12.710 --> 00:16:17.870 align:middle line:84%
+But in both cases, the ideas are
+related to stuff in our class.
+
+00:16:17.870 --> 00:16:19.990 align:middle line:84%
+So first, let's talk
+about theorem 1.
+
+00:16:19.990 --> 00:16:25.050 align:middle line:90%
+
+
+00:16:25.050 --> 00:16:26.990 align:middle line:90%
+So theorem 1.
+
+00:16:26.990 --> 00:16:29.870 align:middle line:90%
+
+
+00:16:29.870 --> 00:16:31.970 align:middle line:84%
+So we start with the
+measure mu, which
+
+00:16:31.970 --> 00:16:39.160 align:middle line:84%
+is mu A. And we notice
+that mu L2 squared is
+
+00:16:39.160 --> 00:16:40.800 align:middle line:90%
+1 over the size of a.
+
+00:16:40.800 --> 00:16:45.080 align:middle line:84%
+So that's is at most p
+to the minus epsilon.
+
+00:16:45.080 --> 00:16:47.760 align:middle line:84%
+Because it was built
+into our assumptions here
+
+00:16:47.760 --> 00:16:51.160 align:middle line:84%
+that A is at least
+p to the epsilon.
+
+00:16:51.160 --> 00:16:53.920 align:middle line:84%
+Now, let's start
+convolving mu with itself.
+
+00:16:53.920 --> 00:16:55.920 align:middle line:84%
+And we want to see if we
+convolve it with itself
+
+00:16:55.920 --> 00:17:00.200 align:middle line:84%
+enough times is what will
+happen to the L2 norm.
+
+00:17:00.200 --> 00:17:03.360 align:middle line:90%
+So let's say mu 2--
+
+00:17:03.360 --> 00:17:05.359 align:middle line:90%
+so that's called this mu 1.
+
+00:17:05.359 --> 00:17:08.560 align:middle line:84%
+Mu 2 is mu 1
+convolved with mu 1.
+
+00:17:08.560 --> 00:17:13.060 align:middle line:84%
+And in general, mu k plus 1
+is mu k convolved with mu k.
+
+00:17:13.060 --> 00:17:15.579 align:middle line:84%
+So we're convolving with this
+thing with itself many times.
+
+00:17:15.579 --> 00:17:18.900 align:middle line:84%
+And we're going to see what
+happens to the L2 norm.
+
+00:17:18.900 --> 00:17:25.200 align:middle line:84%
+So recall that if
+at some point mu k
+
+00:17:25.200 --> 00:17:31.000 align:middle line:84%
+L2 squared were to be smaller
+than 1 over p to the 2.1, then
+
+00:17:31.000 --> 00:17:43.830 align:middle line:84%
+we would get that sigma 1 of
+T mu k was bounded by this.
+
+00:17:43.830 --> 00:17:48.950 align:middle line:84%
+And then we would get
+that sigma 1 of T mu.
+
+00:17:48.950 --> 00:17:53.630 align:middle line:84%
+So mu k is mu convolved with
+itself 2 to the k times.
+
+00:17:53.630 --> 00:17:59.390 align:middle line:84%
+So that would be p to the minus
+1 over 10 times 2 to the k.
+
+00:17:59.390 --> 00:18:02.790 align:middle line:84%
+So if k is not too big, we
+would get a spectral gap.
+
+00:18:02.790 --> 00:18:03.670 align:middle line:90%
+So that's our plan.
+
+00:18:03.670 --> 00:18:06.175 align:middle line:90%
+
+
+00:18:06.175 --> 00:18:07.550 align:middle line:84%
+We keep doing
+these convolutions,
+
+00:18:07.550 --> 00:18:10.070 align:middle line:84%
+and we watch what
+happens to the L2 norm.
+
+00:18:10.070 --> 00:18:13.750 align:middle line:84%
+At every step, maybe the L2
+norm goes down significantly.
+
+00:18:13.750 --> 00:18:16.030 align:middle line:90%
+In that case, we're happy.
+
+00:18:16.030 --> 00:18:17.810 align:middle line:90%
+Or maybe it doesn't go down.
+
+00:18:17.810 --> 00:18:19.670 align:middle line:90%
+In that case, we're stuck.
+
+00:18:19.670 --> 00:18:22.950 align:middle line:84%
+The stuck situation, we'll try
+to analyze it carefully, and see
+
+00:18:22.950 --> 00:18:25.950 align:middle line:84%
+that the stuck situation
+only arises because
+
+00:18:25.950 --> 00:18:29.110 align:middle line:90%
+of this structure, this setup.
+
+00:18:29.110 --> 00:18:32.070 align:middle line:90%
+So let me write that out.
+
+00:18:32.070 --> 00:18:35.070 align:middle line:84%
+So let's say G
+stands for our goal
+
+00:18:35.070 --> 00:18:41.900 align:middle line:84%
+all, which is that mu k
+L2 squared is less than 1
+
+00:18:41.900 --> 00:18:43.480 align:middle line:90%
+over p to the 2.1.
+
+00:18:43.480 --> 00:18:45.060 align:middle line:90%
+If we get there, we're happy.
+
+00:18:45.060 --> 00:18:48.900 align:middle line:90%
+p will stand for progress.
+
+00:18:48.900 --> 00:18:54.540 align:middle line:84%
+We're not necessarily there,
+but mu k plus 1 L2 squared
+
+00:18:54.540 --> 00:18:59.190 align:middle line:84%
+is bounded by p to the
+minus delta mu k L2 squared.
+
+00:18:59.190 --> 00:19:03.960 align:middle line:90%
+
+
+00:19:03.960 --> 00:19:08.100 align:middle line:84%
+And then S stands
+for stuck, which
+
+00:19:08.100 --> 00:19:10.320 align:middle line:90%
+means we're not at our goal.
+
+00:19:10.320 --> 00:19:13.340 align:middle line:90%
+And we are not making progress.
+
+00:19:13.340 --> 00:19:14.690 align:middle line:90%
+Not goal and not progress.
+
+00:19:14.690 --> 00:19:18.420 align:middle line:90%
+
+
+00:19:18.420 --> 00:19:20.180 align:middle line:90%
+OK.
+
+00:19:20.180 --> 00:19:20.680 align:middle line:90%
+Cool.
+
+00:19:20.680 --> 00:19:23.712 align:middle line:90%
+
+
+00:19:23.712 --> 00:19:26.280 align:middle line:84%
+So as long as we
+don't get stuck,
+
+00:19:26.280 --> 00:19:30.620 align:middle line:84%
+we will reach our goal in
+about over delta steps.
+
+00:19:30.620 --> 00:19:40.650 align:middle line:84%
+So if S never happens,
+we reach the goal
+
+00:19:40.650 --> 00:19:44.290 align:middle line:90%
+and thus the over delta steps.
+
+00:19:44.290 --> 00:19:47.550 align:middle line:84%
+And no matter what delta is,
+delta is just a large constant.
+
+00:19:47.550 --> 00:19:51.570 align:middle line:84%
+And that is enough to
+give the conclusion.
+
+00:19:51.570 --> 00:19:55.250 align:middle line:84%
+So then if you do a little
+calculation using this,
+
+00:19:55.250 --> 00:19:56.340 align:middle line:90%
+you'll get a spectrum.
+
+00:19:56.340 --> 00:20:06.010 align:middle line:90%
+
+
+00:20:06.010 --> 00:20:09.610 align:middle line:84%
+So suppose we do get
+stuck, let's think
+
+00:20:09.610 --> 00:20:10.640 align:middle line:90%
+about what that means.
+
+00:20:10.640 --> 00:20:28.130 align:middle line:90%
+
+
+00:20:28.130 --> 00:20:30.970 align:middle line:84%
+So there was a comment at
+the beginning of the class
+
+00:20:30.970 --> 00:20:32.760 align:middle line:84%
+that perhaps there's
+not a big difference
+
+00:20:32.760 --> 00:20:35.688 align:middle line:84%
+between a set and a measure,
+because if you have a set,
+
+00:20:35.688 --> 00:20:36.980 align:middle line:90%
+you can turn it into a measure.
+
+00:20:36.980 --> 00:20:39.640 align:middle line:84%
+If you have a measure,
+you can look at the points
+
+00:20:39.640 --> 00:20:43.480 align:middle line:84%
+where the measure is pretty
+big, and you get a set.
+
+00:20:43.480 --> 00:20:46.840 align:middle line:84%
+And that's actually
+what we're going to do.
+
+00:20:46.840 --> 00:20:53.240 align:middle line:84%
+So let's say that
+A lambda of mu k
+
+00:20:53.240 --> 00:20:56.440 align:middle line:84%
+is the set of group
+elements for our group
+
+00:20:56.440 --> 00:21:02.840 align:middle line:84%
+SL2 Fp, where mu k of g
+is approximately lambda.
+
+00:21:02.840 --> 00:21:05.640 align:middle line:84%
+So we can decompose
+our group into pieces
+
+00:21:05.640 --> 00:21:07.680 align:middle line:90%
+where mu k has various sizes.
+
+00:21:07.680 --> 00:21:10.280 align:middle line:84%
+And one of these sizes
+must have a decent fraction
+
+00:21:10.280 --> 00:21:11.520 align:middle line:90%
+of the measure.
+
+00:21:11.520 --> 00:21:23.320 align:middle line:84%
+So we choose lambda so that
+mu k of A lambda is around 1.
+
+00:21:23.320 --> 00:21:26.120 align:middle line:84%
+So we've cut our whole group
+into maybe logarithmically
+
+00:21:26.120 --> 00:21:27.120 align:middle line:90%
+many pieces.
+
+00:21:27.120 --> 00:21:28.660 align:middle line:90%
+Their total measure is 1.
+
+00:21:28.660 --> 00:21:30.840 align:middle line:84%
+So one of them has
+to be pretty big.
+
+00:21:30.840 --> 00:21:31.780 align:middle line:90%
+All right.
+
+00:21:31.780 --> 00:21:35.640 align:middle line:84%
+Now let's say Ak is
+defined to be this set.
+
+00:21:35.640 --> 00:21:39.460 align:middle line:90%
+
+
+00:21:39.460 --> 00:21:43.980 align:middle line:84%
+So what we've learned is that
+mu k is roughly uniform on Ak.
+
+00:21:43.980 --> 00:21:48.420 align:middle line:84%
+And Ak has a good fraction
+of the total measure of mu.
+
+00:21:48.420 --> 00:21:49.170 align:middle line:90%
+OK, great.
+
+00:21:49.170 --> 00:21:54.600 align:middle line:90%
+
+
+00:21:54.600 --> 00:21:58.060 align:middle line:84%
+So more or less, you could
+imagine that mu k is just
+
+00:21:58.060 --> 00:22:01.220 align:middle line:90%
+the uniform measure on Ak.
+
+00:22:01.220 --> 00:22:01.720 align:middle line:90%
+All right.
+
+00:22:01.720 --> 00:22:03.700 align:middle line:84%
+So now what would we
+learn algebraically
+
+00:22:03.700 --> 00:22:07.820 align:middle line:84%
+about Ak from the fact
+that we are stuck?
+
+00:22:07.820 --> 00:22:09.460 align:middle line:84%
+It actually has a
+nice interpretation
+
+00:22:09.460 --> 00:22:12.220 align:middle line:84%
+in terms of a previous
+character in our course, which
+
+00:22:12.220 --> 00:22:14.820 align:middle line:90%
+was the idea of energy.
+
+00:22:14.820 --> 00:22:17.180 align:middle line:84%
+So let's recall what
+energy means and put it
+
+00:22:17.180 --> 00:22:19.120 align:middle line:90%
+in a non-commutative context.
+
+00:22:19.120 --> 00:22:22.000 align:middle line:84%
+And we'll see that
+it exactly fits here.
+
+00:22:22.000 --> 00:22:24.900 align:middle line:90%
+
+
+00:22:24.900 --> 00:22:31.330 align:middle line:84%
+So let's say if we
+have two subsets
+
+00:22:31.330 --> 00:22:37.050 align:middle line:84%
+A and B in our group,
+the energy of A, B
+
+00:22:37.050 --> 00:22:43.352 align:middle line:90%
+is the number of a1, a2, b1, b2.
+
+00:22:43.352 --> 00:22:44.810 align:middle line:84%
+These guys are in
+A, and these guys
+
+00:22:44.810 --> 00:22:51.540 align:middle line:84%
+are in B, so that a1 times b1
+is the same as a2 times b2.
+
+00:22:51.540 --> 00:22:57.610 align:middle line:90%
+
+
+00:22:57.610 --> 00:23:00.610 align:middle line:84%
+Energy A, B. Now this
+is the same definition
+
+00:23:00.610 --> 00:23:03.850 align:middle line:84%
+that we saw before in the
+context of a commutative group.
+
+00:23:03.850 --> 00:23:05.810 align:middle line:84%
+Our group is now
+not commutative,
+
+00:23:05.810 --> 00:23:10.010 align:middle line:84%
+which means that it matters what
+order I wrote those things in.
+
+00:23:10.010 --> 00:23:12.790 align:middle line:84%
+And so it matters what order
+I wrote those things in.
+
+00:23:12.790 --> 00:23:16.850 align:middle line:84%
+So E A, B is not actually
+the same as E B, A.
+
+00:23:16.850 --> 00:23:19.630 align:middle line:84%
+But at least, otherwise it's a
+very similar-looking definition.
+
+00:23:19.630 --> 00:23:27.330 align:middle line:90%
+
+
+00:23:27.330 --> 00:23:31.080 align:middle line:84%
+We can relate this
+to this setup.
+
+00:23:31.080 --> 00:23:34.760 align:middle line:90%
+We can notice that E A, B is--
+
+00:23:34.760 --> 00:23:36.920 align:middle line:84%
+I take the characteristic
+function of A,
+
+00:23:36.920 --> 00:23:40.520 align:middle line:84%
+and I convolve it with the
+characteristic function of B.
+
+00:23:40.520 --> 00:23:43.060 align:middle line:84%
+When I do that, If I
+evaluate this at G,
+
+00:23:43.060 --> 00:23:45.400 align:middle line:84%
+it will tell me how many
+ways are there to write G
+
+00:23:45.400 --> 00:23:48.120 align:middle line:90%
+as little a times little b.
+
+00:23:48.120 --> 00:23:50.080 align:middle line:84%
+Now I'm going to
+square it because I
+
+00:23:50.080 --> 00:23:51.920 align:middle line:90%
+want to have how many ways--
+
+00:23:51.920 --> 00:23:53.520 align:middle line:84%
+I have that many
+choices for this
+
+00:23:53.520 --> 00:23:58.920 align:middle line:84%
+and that many choices for that,
+and sum over B. So this is this.
+
+00:23:58.920 --> 00:24:04.360 align:middle line:90%
+
+
+00:24:04.360 --> 00:24:05.620 align:middle line:90%
+OK.
+
+00:24:05.620 --> 00:24:08.580 align:middle line:90%
+So notice I took something.
+
+00:24:08.580 --> 00:24:11.760 align:middle line:84%
+I convolved it by something
+else, and I took its L2 norm.
+
+00:24:11.760 --> 00:24:15.190 align:middle line:84%
+That's the character that's
+involved in being stuck.
+
+00:24:15.190 --> 00:24:21.240 align:middle line:90%
+
+
+00:24:21.240 --> 00:24:22.910 align:middle line:90%
+So something we can say.
+
+00:24:22.910 --> 00:24:28.350 align:middle line:90%
+
+
+00:24:28.350 --> 00:24:32.990 align:middle line:84%
+Actually, before we do that, let
+me make a little normalization.
+
+00:24:32.990 --> 00:24:33.640 align:middle line:90%
+So remark.
+
+00:24:33.640 --> 00:24:36.550 align:middle line:90%
+
+
+00:24:36.550 --> 00:24:44.390 align:middle line:84%
+E A is in between A
+cubed and A squared.
+
+00:24:44.390 --> 00:24:46.190 align:middle line:90%
+The A squared comes from--
+
+00:24:46.190 --> 00:24:48.190 align:middle line:84%
+I could take these
+to be equal, and I
+
+00:24:48.190 --> 00:24:50.590 align:middle line:90%
+could take those to be equal.
+
+00:24:50.590 --> 00:24:53.670 align:middle line:84%
+And A cubed upper bound
+comes from once I've
+
+00:24:53.670 --> 00:24:55.950 align:middle line:84%
+chosen these three,
+there's at most
+
+00:24:55.950 --> 00:24:59.670 align:middle line:90%
+one choice for the last one.
+
+00:24:59.670 --> 00:25:03.090 align:middle line:84%
+So these ones have a lot
+of additive structure.
+
+00:25:03.090 --> 00:25:05.910 align:middle line:84%
+And the typical example
+is an actual subgroup.
+
+00:25:05.910 --> 00:25:12.310 align:middle line:84%
+And these have very little
+additive structure Now
+
+00:25:12.310 --> 00:25:15.430 align:middle line:90%
+let's relate to being stuck.
+
+00:25:15.430 --> 00:25:25.860 align:middle line:84%
+So if we are in the stuck case
+for mu k, then we could see--
+
+00:25:25.860 --> 00:25:27.560 align:middle line:84%
+all right, I don't
+want to write this.
+
+00:25:27.560 --> 00:25:36.900 align:middle line:90%
+
+
+00:25:36.900 --> 00:25:40.620 align:middle line:84%
+So mu k is
+essentially 1 over Ak,
+
+00:25:40.620 --> 00:25:43.417 align:middle line:84%
+its characteristic
+function of Ak.
+
+00:25:43.417 --> 00:25:45.000 align:middle line:84%
+And if we want to
+be rigorous, I guess
+
+00:25:45.000 --> 00:25:46.720 align:middle line:84%
+we could say
+something like this.
+
+00:25:46.720 --> 00:25:49.580 align:middle line:90%
+
+
+00:25:49.580 --> 00:25:57.740 align:middle line:84%
+If we say mu k convolved
+with mu k is larger than p
+
+00:25:57.740 --> 00:26:06.660 align:middle line:84%
+to the minus delta mu k,
+this is equivalent to saying
+
+00:26:06.660 --> 00:26:12.980 align:middle line:84%
+that the energy, Ak with
+Ak, is smaller than some p
+
+00:26:12.980 --> 00:26:16.070 align:middle line:90%
+to the delta times Ak cubed.
+
+00:26:16.070 --> 00:26:18.900 align:middle line:90%
+
+
+00:26:18.900 --> 00:26:23.460 align:middle line:84%
+Claim if we unwind
+this, we'll get this.
+
+00:26:23.460 --> 00:26:28.890 align:middle line:84%
+So we unwind this, we'll see
+an energy, the energy of Ak.
+
+00:26:28.890 --> 00:26:32.270 align:middle line:84%
+This is almost the minimum
+possible value of the L2 norm.
+
+00:26:32.270 --> 00:26:34.690 align:middle line:90%
+And so it's almost the--
+
+00:26:34.690 --> 00:26:37.354 align:middle line:90%
+sorry, it's almost the--
+
+00:26:37.354 --> 00:26:39.210 align:middle line:90%
+this goes the other way.
+
+00:26:39.210 --> 00:26:42.390 align:middle line:90%
+So let me say that again.
+
+00:26:42.390 --> 00:26:44.490 align:middle line:90%
+So this is encoding this energy.
+
+00:26:44.490 --> 00:26:46.190 align:middle line:90%
+It's a lower bound for it.
+
+00:26:46.190 --> 00:26:52.610 align:middle line:84%
+And the lower bound is almost
+the biggest it could be.
+
+00:26:52.610 --> 00:26:55.410 align:middle line:84%
+So this energy is almost
+the biggest it could be.
+
+00:26:55.410 --> 00:26:56.130 align:middle line:90%
+Yes.
+
+00:26:56.130 --> 00:26:59.570 align:middle line:84%
+AUDIENCE: There could be a k
+squared if it's a lower bound
+
+00:26:59.570 --> 00:27:01.935 align:middle line:90%
+for energy.
+
+00:27:01.935 --> 00:27:02.810 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:27:02.810 --> 00:27:04.610 align:middle line:90%
+No, it's Ak cubed.
+
+00:27:04.610 --> 00:27:05.910 align:middle line:90%
+And this is a minus sign.
+
+00:27:05.910 --> 00:27:06.910 align:middle line:90%
+So this is possible.
+
+00:27:06.910 --> 00:27:08.150 align:middle line:90%
+Yeah.
+
+00:27:08.150 --> 00:27:12.410 align:middle line:90%
+So this just got copied there.
+
+00:27:12.410 --> 00:27:13.410 align:middle line:90%
+All right.
+
+00:27:13.410 --> 00:27:15.250 align:middle line:84%
+OK, so if you look
+at this L2 norm,
+
+00:27:15.250 --> 00:27:17.170 align:middle line:90%
+these are probability measures.
+
+00:27:17.170 --> 00:27:21.730 align:middle line:84%
+So this L2 norm is
+at most that L2 norm.
+
+00:27:21.730 --> 00:27:23.670 align:middle line:84%
+So when you look
+at this inequality,
+
+00:27:23.670 --> 00:27:26.710 align:middle line:90%
+this L2 norm is really pinched.
+
+00:27:26.710 --> 00:27:29.530 align:middle line:90%
+It's at least a small fraction.
+
+00:27:29.530 --> 00:27:31.790 align:middle line:84%
+It's at least a large
+fraction of mu L2 squared
+
+00:27:31.790 --> 00:27:34.150 align:middle line:90%
+and it's at most mu L2 squared.
+
+00:27:34.150 --> 00:27:36.350 align:middle line:84%
+So it's just about as
+big as it could be.
+
+00:27:36.350 --> 00:27:39.050 align:middle line:84%
+So this energy is just
+about as big as it could be.
+
+00:27:39.050 --> 00:27:42.510 align:middle line:90%
+
+
+00:27:42.510 --> 00:27:43.230 align:middle line:90%
+OK.
+
+00:27:43.230 --> 00:27:44.790 align:middle line:90%
+Cool.
+
+00:27:44.790 --> 00:27:45.630 align:middle line:90%
+All right.
+
+00:27:45.630 --> 00:27:53.070 align:middle line:84%
+So if we get stuck, there must
+be a subset of very high energy.
+
+00:27:53.070 --> 00:27:59.050 align:middle line:84%
+And that is a step towards
+being an approximate subgroup.
+
+00:27:59.050 --> 00:28:01.900 align:middle line:84%
+But it's not as strong as
+the conclusion of theorem 1.
+
+00:28:01.900 --> 00:28:04.470 align:middle line:90%
+
+
+00:28:04.470 --> 00:28:07.707 align:middle line:84%
+So at this point, the story
+connects to some characters
+
+00:28:07.707 --> 00:28:09.790 align:middle line:84%
+that we talked about when
+we were doing projection
+
+00:28:09.790 --> 00:28:12.190 align:middle line:90%
+theory over finite fields.
+
+00:28:12.190 --> 00:28:15.190 align:middle line:84%
+It relates to the
+Balog-Szemerédi-Gowers theorem
+
+00:28:15.190 --> 00:28:17.430 align:middle line:84%
+and the Plünnecke-Ruzsa
+inequality.
+
+00:28:17.430 --> 00:28:19.830 align:middle line:84%
+So first of all, let me
+just recall what they
+
+00:28:19.830 --> 00:28:22.253 align:middle line:90%
+said in the commutative case.
+
+00:28:22.253 --> 00:28:23.920 align:middle line:84%
+And then this is a
+non-commutative case.
+
+00:28:23.920 --> 00:28:25.700 align:middle line:84%
+So then we'll have
+to talk about what's
+
+00:28:25.700 --> 00:28:27.480 align:middle line:84%
+actually true in the
+non-commutative case.
+
+00:28:27.480 --> 00:28:31.100 align:middle line:90%
+
+
+00:28:31.100 --> 00:28:38.300 align:middle line:84%
+So recall that if we
+have A contained in Z,
+
+00:28:38.300 --> 00:28:48.980 align:middle line:84%
+a commutative group, then we
+have two important theorems,
+
+00:28:48.980 --> 00:28:50.980 align:middle line:90%
+Balog-Szemerédi-Gowers.
+
+00:28:50.980 --> 00:28:58.660 align:middle line:84%
+Balog-Szemerédi-Gowers says
+that if A has a lot of energy,
+
+00:28:58.660 --> 00:29:00.470 align:middle line:90%
+then it has a large subset.
+
+00:29:00.470 --> 00:29:07.340 align:middle line:90%
+
+
+00:29:07.340 --> 00:29:11.690 align:middle line:84%
+And the large subset
+actually has a small subset.
+
+00:29:11.690 --> 00:29:18.220 align:middle line:90%
+
+
+00:29:18.220 --> 00:29:23.730 align:middle line:84%
+So this set has added a
+structure in one sense,
+
+00:29:23.730 --> 00:29:25.650 align:middle line:84%
+but it has a large
+subset which has added
+
+00:29:25.650 --> 00:29:28.770 align:middle line:90%
+structure in a stronger sense.
+
+00:29:28.770 --> 00:29:31.250 align:middle line:90%
+And then once we have this--
+
+00:29:31.250 --> 00:29:35.050 align:middle line:84%
+so another important theorem,
+the Plünnecke-Ruzsa theorem that
+
+00:29:35.050 --> 00:29:40.810 align:middle line:84%
+says if A prime plus A prime,
+smaller than L times A prime--
+
+00:29:40.810 --> 00:29:43.450 align:middle line:90%
+so L will be this--
+
+00:29:43.450 --> 00:29:46.270 align:middle line:84%
+then you can also look at
+the sum of three of them,
+
+00:29:46.270 --> 00:29:47.850 align:middle line:90%
+or four of them, or whatever.
+
+00:29:47.850 --> 00:29:58.065 align:middle line:84%
+So I'll just write this guy
+is bounded by L to the 5th.
+
+00:29:58.065 --> 00:29:59.190 align:middle line:90%
+You could put other things.
+
+00:29:59.190 --> 00:29:59.990 align:middle line:90%
+You get the idea.
+
+00:29:59.990 --> 00:30:04.690 align:middle line:90%
+
+
+00:30:04.690 --> 00:30:06.810 align:middle line:84%
+This sequence of
+theorems is important
+
+00:30:06.810 --> 00:30:10.650 align:middle line:84%
+because it gives
+amplification of structure.
+
+00:30:10.650 --> 00:30:14.930 align:middle line:84%
+So this assumption is that A
+has some additive structure
+
+00:30:14.930 --> 00:30:18.170 align:middle line:90%
+and some fairly weak sense.
+
+00:30:18.170 --> 00:30:21.400 align:middle line:84%
+And that implies that a big
+subset has additive structure
+
+00:30:21.400 --> 00:30:23.160 align:middle line:90%
+in a stronger sense.
+
+00:30:23.160 --> 00:30:25.120 align:middle line:84%
+And then therefore, it
+has additive structure
+
+00:30:25.120 --> 00:30:26.190 align:middle line:90%
+in even stronger sense.
+
+00:30:26.190 --> 00:30:30.800 align:middle line:90%
+
+
+00:30:30.800 --> 00:30:33.880 align:middle line:84%
+So if we were allowed to just
+apply these two theorems, then
+
+00:30:33.880 --> 00:30:36.740 align:middle line:84%
+from this moment, we would get
+the conclusion of theorem 1.
+
+00:30:36.740 --> 00:30:38.532 align:middle line:84%
+Conclusion of theorem
+1 would be that there
+
+00:30:38.532 --> 00:30:44.740 align:middle line:84%
+is some set H, which could
+have been Ak, which obeys this.
+
+00:30:44.740 --> 00:30:51.520 align:middle line:90%
+
+
+00:30:51.520 --> 00:30:54.258 align:middle line:84%
+We can't do that because this
+is for a commutative group.
+
+00:30:54.258 --> 00:30:55.800 align:middle line:84%
+So we need to talk
+about what happens
+
+00:30:55.800 --> 00:30:57.960 align:middle line:90%
+in a non-commutative group.
+
+00:30:57.960 --> 00:31:00.343 align:middle line:90%
+But I thought it was--
+
+00:31:00.343 --> 00:31:01.260 align:middle line:90%
+we'll talk about that.
+
+00:31:01.260 --> 00:31:04.120 align:middle line:84%
+But I also thought it was a nice
+moment to recall these theorems
+
+00:31:04.120 --> 00:31:08.080 align:middle line:84%
+and really appreciate that
+they're important and useful
+
+00:31:08.080 --> 00:31:09.780 align:middle line:90%
+and do something kind of neat.
+
+00:31:09.780 --> 00:31:15.240 align:middle line:90%
+
+
+00:31:15.240 --> 00:31:17.440 align:middle line:84%
+Halfway through the
+course, check-in email.
+
+00:31:17.440 --> 00:31:20.610 align:middle line:84%
+When I asked people
+what things that we did,
+
+00:31:20.610 --> 00:31:23.310 align:middle line:84%
+do you feel like they really
+sunk in and you understood them
+
+00:31:23.310 --> 00:31:26.110 align:middle line:84%
+and what things would feel
+it was maybe hard to remember
+
+00:31:26.110 --> 00:31:28.030 align:middle line:90%
+what actually was happening?
+
+00:31:28.030 --> 00:31:30.990 align:middle line:84%
+this theorem in particular
+was cited as something
+
+00:31:30.990 --> 00:31:32.030 align:middle line:90%
+where it was hard--
+
+00:31:32.030 --> 00:31:34.870 align:middle line:84%
+people did not feel like they
+remembered very well what
+
+00:31:34.870 --> 00:31:37.950 align:middle line:90%
+actually happened.
+
+00:31:37.950 --> 00:31:41.010 align:middle line:84%
+OK, so we get to
+talk about it again.
+
+00:31:41.010 --> 00:31:41.510 align:middle line:90%
+Cool.
+
+00:31:41.510 --> 00:31:43.950 align:middle line:90%
+
+
+00:31:43.950 --> 00:31:44.450 align:middle line:90%
+Yeah.
+
+00:31:44.450 --> 00:31:46.650 align:middle line:84%
+Oh, I guess another thing
+you might wonder is,
+
+00:31:46.650 --> 00:31:49.050 align:middle line:84%
+OK, this logically is
+stronger than this,
+
+00:31:49.050 --> 00:31:50.290 align:middle line:90%
+but does it really matter.
+
+00:31:50.290 --> 00:31:52.850 align:middle line:84%
+Later when we look at theorem
+2, we'll have a good example.
+
+00:31:52.850 --> 00:31:55.812 align:middle line:84%
+Theorem 2 really requires
+this as an input.
+
+00:31:55.812 --> 00:31:57.270 align:middle line:84%
+So we'll see an
+interesting example
+
+00:31:57.270 --> 00:31:58.530 align:middle line:90%
+of why you might want this.
+
+00:31:58.530 --> 00:32:06.350 align:middle line:90%
+
+
+00:32:06.350 --> 00:32:09.260 align:middle line:84%
+Let's talk about the
+Balog-Szemerédi-Gowers theorem.
+
+00:32:09.260 --> 00:32:12.750 align:middle line:90%
+
+
+00:32:12.750 --> 00:32:13.848 align:middle line:90%
+So I will tell you--
+
+00:32:13.848 --> 00:32:15.390 align:middle line:84%
+yeah, I guess first
+I should tell you
+
+00:32:15.390 --> 00:32:17.460 align:middle line:84%
+what is true in the
+non-commutative world, which
+
+00:32:17.460 --> 00:32:20.060 align:middle line:84%
+really looks pretty
+similar to this.
+
+00:32:20.060 --> 00:32:23.700 align:middle line:84%
+And then we'll actually
+remember the proof a little bit
+
+00:32:23.700 --> 00:32:26.650 align:middle line:84%
+to see if we can get the proof
+to sink in a little bit deeper.
+
+00:32:26.650 --> 00:32:34.760 align:middle line:90%
+
+
+00:32:34.760 --> 00:32:35.260 align:middle line:90%
+OK.
+
+00:32:35.260 --> 00:32:37.960 align:middle line:90%
+
+
+00:32:37.960 --> 00:32:39.560 align:middle line:90%
+So I'm going to erase this.
+
+00:32:39.560 --> 00:32:42.300 align:middle line:84%
+And what I want us to remember
+is just that to finish theorem
+
+00:32:42.300 --> 00:32:44.460 align:middle line:84%
+1, what we need
+is a good version
+
+00:32:44.460 --> 00:32:47.340 align:middle line:84%
+of Balog-Szemerédi-Gowers
+and Plünnecke-Ruzsa
+
+00:32:47.340 --> 00:32:48.800 align:middle line:90%
+in the non-commutative world.
+
+00:32:48.800 --> 00:33:10.700 align:middle line:90%
+
+
+00:33:10.700 --> 00:33:13.460 align:middle line:90%
+All right.
+
+00:33:13.460 --> 00:33:15.740 align:middle line:90%
+So theorem.
+
+00:33:15.740 --> 00:33:21.400 align:middle line:84%
+Non-commutative
+Balog-Szemerédi-Gowers.
+
+00:33:21.400 --> 00:33:29.000 align:middle line:84%
+It says if A is a subset of
+a group, G, and the energy
+
+00:33:29.000 --> 00:33:35.720 align:middle line:84%
+A A is at least k
+inverse A cubed,
+
+00:33:35.720 --> 00:33:40.200 align:middle line:84%
+then there exists a
+subset A prime in A
+
+00:33:40.200 --> 00:33:41.700 align:middle line:90%
+so that it's pretty big.
+
+00:33:41.700 --> 00:33:46.920 align:middle line:90%
+
+
+00:33:46.920 --> 00:33:49.160 align:middle line:84%
+And there are a few
+different things
+
+00:33:49.160 --> 00:33:53.810 align:middle line:84%
+we could write, but actually,
+let me call this A tilde.
+
+00:33:53.810 --> 00:33:56.600 align:middle line:90%
+
+
+00:33:56.600 --> 00:34:00.460 align:middle line:84%
+A tilde times A tilde
+inverse is not too big.
+
+00:34:00.460 --> 00:34:12.679 align:middle line:90%
+
+
+00:34:12.679 --> 00:34:14.340 align:middle line:90%
+It looks very little different.
+
+00:34:14.340 --> 00:34:24.870 align:middle line:90%
+
+
+00:34:24.870 --> 00:34:27.150 align:middle line:84%
+But let's take this
+opportunity to remember
+
+00:34:27.150 --> 00:34:29.949 align:middle line:84%
+how the proof worked, and
+see if we can get it to sink
+
+00:34:29.949 --> 00:34:32.870 align:middle line:90%
+in a little bit more deeply.
+
+00:34:32.870 --> 00:34:34.139 align:middle line:90%
+All right, so proof sketch.
+
+00:34:34.139 --> 00:34:39.429 align:middle line:90%
+
+
+00:34:39.429 --> 00:34:41.310 align:middle line:90%
+All right.
+
+00:34:41.310 --> 00:34:47.150 align:middle line:84%
+So remember that the energy A A
+is the sum over all of our group
+
+00:34:47.150 --> 00:34:55.909 align:middle line:84%
+elements of r A A of G
+squared, where r A A of G
+
+00:34:55.909 --> 00:35:03.810 align:middle line:84%
+is the number of pairs a1, a2
+squared so that a1 a2 is g.
+
+00:35:03.810 --> 00:35:06.350 align:middle line:90%
+
+
+00:35:06.350 --> 00:35:07.350 align:middle line:90%
+That's the energy.
+
+00:35:07.350 --> 00:35:09.870 align:middle line:84%
+So for the energy
+to be large, there
+
+00:35:09.870 --> 00:35:14.140 align:middle line:84%
+must be a lot of group elements
+g, where this is pretty large.
+
+00:35:14.140 --> 00:35:16.150 align:middle line:84%
+We'll call those
+popular products.
+
+00:35:16.150 --> 00:35:24.820 align:middle line:90%
+
+
+00:35:24.820 --> 00:35:30.320 align:middle line:84%
+So p, the set of
+popular products.
+
+00:35:30.320 --> 00:35:35.500 align:middle line:84%
+This is the set of g, where
+r A A of G is greater than k
+
+00:35:35.500 --> 00:35:40.035 align:middle line:84%
+to the minus something times
+the size of A. So the size of A
+
+00:35:40.035 --> 00:35:41.160 align:middle line:90%
+is the biggest it could be.
+
+00:35:41.160 --> 00:35:43.388 align:middle line:84%
+And so they're almost
+as big as it could be.
+
+00:35:43.388 --> 00:35:44.430 align:middle line:90%
+So they're quite popular.
+
+00:35:44.430 --> 00:35:48.780 align:middle line:90%
+
+
+00:35:48.780 --> 00:35:49.280 align:middle line:90%
+All right.
+
+00:35:49.280 --> 00:35:52.460 align:middle line:84%
+So it's an exercise to see that
+if the energy is really big,
+
+00:35:52.460 --> 00:35:55.110 align:middle line:84%
+most of the energy actually
+comes from popular products.
+
+00:35:55.110 --> 00:35:59.260 align:middle line:90%
+
+
+00:35:59.260 --> 00:36:03.620 align:middle line:90%
+Energy A A is pretty much as--
+
+00:36:03.620 --> 00:36:06.220 align:middle line:90%
+it's more than 1/2 comes from.
+
+00:36:06.220 --> 00:36:10.540 align:middle line:84%
+So 1/2 of the energy of A
+is less than the sum over g
+
+00:36:10.540 --> 00:36:18.090 align:middle line:84%
+in the popular
+products of r A A of G.
+
+00:36:18.090 --> 00:36:19.610 align:middle line:84%
+If this is having
+popular products,
+
+00:36:19.610 --> 00:36:21.852 align:middle line:84%
+that's almost equivalent
+to having a lot of energy.
+
+00:36:21.852 --> 00:36:23.310 align:middle line:84%
+Those are basically
+the same thing.
+
+00:36:23.310 --> 00:36:25.850 align:middle line:90%
+
+
+00:36:25.850 --> 00:36:27.250 align:middle line:90%
+All right.
+
+00:36:27.250 --> 00:36:29.610 align:middle line:84%
+So then we'll do a little
+thought experiment.
+
+00:36:29.610 --> 00:36:33.370 align:middle line:84%
+Suppose that every
+product was popular.
+
+00:36:33.370 --> 00:36:35.530 align:middle line:84%
+Every product in
+the product set of A
+
+00:36:35.530 --> 00:36:38.630 align:middle line:84%
+had the same number
+of representations.
+
+00:36:38.630 --> 00:36:40.130 align:middle line:84%
+Well, that number
+of representations
+
+00:36:40.130 --> 00:36:43.250 align:middle line:84%
+would have to be pretty large
+because there's a lot of energy.
+
+00:36:43.250 --> 00:36:45.900 align:middle line:84%
+And that would tell us
+that A times A was small.
+
+00:36:45.900 --> 00:36:50.020 align:middle line:90%
+
+
+00:36:50.020 --> 00:36:53.450 align:middle line:84%
+So then we would be done,
+and A tilde could just be A.
+
+00:36:53.450 --> 00:36:55.890 align:middle line:84%
+But that's not true
+because it's not true
+
+00:36:55.890 --> 00:36:58.010 align:middle line:84%
+that every element
+can be written
+
+00:36:58.010 --> 00:37:00.070 align:middle line:84%
+as a product in the
+same number of ways.
+
+00:37:00.070 --> 00:37:03.090 align:middle line:90%
+
+
+00:37:03.090 --> 00:37:04.970 align:middle line:84%
+So what we want to
+do, we're hoping
+
+00:37:04.970 --> 00:37:08.450 align:middle line:84%
+to find a subset, A
+tilde, so that all
+
+00:37:08.450 --> 00:37:10.360 align:middle line:90%
+the products in A tilde--
+
+00:37:10.360 --> 00:37:12.520 align:middle line:84%
+A tilde times A
+tilde-- they all can
+
+00:37:12.520 --> 00:37:17.080 align:middle line:84%
+be written as a product
+in lots of ways,
+
+00:37:17.080 --> 00:37:20.540 align:middle line:90%
+or something in that sphere.
+
+00:37:20.540 --> 00:37:23.570 align:middle line:84%
+So now let's make the
+popular product to graph.
+
+00:37:23.570 --> 00:37:32.000 align:middle line:90%
+
+
+00:37:32.000 --> 00:37:34.880 align:middle line:84%
+So the vertices are
+G cross G, there's
+
+00:37:34.880 --> 00:37:40.240 align:middle line:84%
+a copy of G.
+There's a copy of G.
+
+00:37:40.240 --> 00:37:47.240 align:middle line:84%
+And we put an edge
+from A to B. So
+
+00:37:47.240 --> 00:37:53.570 align:middle line:84%
+edge from A to B if a times
+B is a popular product.
+
+00:37:53.570 --> 00:37:59.960 align:middle line:90%
+
+
+00:37:59.960 --> 00:38:01.700 align:middle line:84%
+Actually, this is
+not a G by G graph.
+
+00:38:01.700 --> 00:38:04.680 align:middle line:84%
+This is an A by A graph,
+taking elements of our set
+
+00:38:04.680 --> 00:38:07.400 align:middle line:90%
+and looking at their products.
+
+00:38:07.400 --> 00:38:09.730 align:middle line:84%
+Not every pair is
+a popular product.
+
+00:38:09.730 --> 00:38:13.483 align:middle line:84%
+They might not all be popular,
+but there are by hypothesis,
+
+00:38:13.483 --> 00:38:15.150 align:middle line:84%
+because there's a lot
+of energy, there's
+
+00:38:15.150 --> 00:38:16.990 align:middle line:90%
+a lot of popular products.
+
+00:38:16.990 --> 00:38:19.540 align:middle line:84%
+So the number of
+edges is at least--
+
+00:38:19.540 --> 00:38:22.190 align:middle line:90%
+
+
+00:38:22.190 --> 00:38:23.810 align:middle line:84%
+there are lots of
+edges in this graph.
+
+00:38:23.810 --> 00:38:35.150 align:middle line:90%
+
+
+00:38:35.150 --> 00:38:39.390 align:middle line:84%
+A tilde is going to be
+some subset over here.
+
+00:38:39.390 --> 00:38:47.750 align:middle line:84%
+And the good feature of A tilde
+is that for every a1 and a2
+
+00:38:47.750 --> 00:38:51.370 align:middle line:84%
+both in A tilde,
+there are many edges--
+
+00:38:51.370 --> 00:38:52.490 align:middle line:90%
+there are many paths.
+
+00:38:52.490 --> 00:38:53.850 align:middle line:90%
+So let me draw it.
+
+00:38:53.850 --> 00:39:00.390 align:middle line:90%
+
+
+00:39:00.390 --> 00:39:04.110 align:middle line:84%
+So let's say this is
+a1 and this is a2.
+
+00:39:04.110 --> 00:39:07.930 align:middle line:84%
+And then we're going to
+think of paths of length 4
+
+00:39:07.930 --> 00:39:11.950 align:middle line:90%
+that go from a1 to a2.
+
+00:39:11.950 --> 00:39:14.890 align:middle line:90%
+
+
+00:39:14.890 --> 00:39:25.930 align:middle line:84%
+So there are many or more than
+something paths of length 4
+
+00:39:25.930 --> 00:39:28.680 align:middle line:84%
+that go from a1 to
+a2 in our graph.
+
+00:39:28.680 --> 00:39:32.920 align:middle line:90%
+
+
+00:39:32.920 --> 00:39:34.250 align:middle line:90%
+And how many?
+
+00:39:34.250 --> 00:39:37.930 align:middle line:84%
+Well, from a
+typical point, there
+
+00:39:37.930 --> 00:39:45.050 align:middle line:84%
+are about maybe 1 over
+k times A edges out.
+
+00:39:45.050 --> 00:39:51.710 align:middle line:84%
+And so we have A choices,
+A choices, A choices.
+
+00:39:51.710 --> 00:39:53.070 align:middle line:90%
+And then we have to go to a2.
+
+00:39:53.070 --> 00:40:06.090 align:middle line:90%
+
+
+00:40:06.090 --> 00:40:08.760 align:middle line:84%
+There was a graph
+theory lemma that we
+
+00:40:08.760 --> 00:40:11.920 align:middle line:84%
+can choose a substantial
+set, A tilde, here that
+
+00:40:11.920 --> 00:40:14.200 align:middle line:90%
+has all of these edges.
+
+00:40:14.200 --> 00:40:16.240 align:middle line:84%
+That was the hardest
+part of the proof,
+
+00:40:16.240 --> 00:40:17.940 align:middle line:84%
+but it's exactly
+the same as before.
+
+00:40:17.940 --> 00:40:20.480 align:middle line:84%
+It had nothing to do with
+anything being commutative.
+
+00:40:20.480 --> 00:40:25.080 align:middle line:90%
+So at that part, I won't repeat.
+
+00:40:25.080 --> 00:40:33.000 align:middle line:84%
+So there was a lemma that
+we can choose A tilde.
+
+00:40:33.000 --> 00:40:35.360 align:middle line:90%
+So this is true.
+
+00:40:35.360 --> 00:40:37.060 align:middle line:90%
+And A tilde is pretty big.
+
+00:40:37.060 --> 00:40:46.020 align:middle line:90%
+
+
+00:40:46.020 --> 00:40:46.520 align:middle line:90%
+OK.
+
+00:40:46.520 --> 00:40:50.800 align:middle line:90%
+
+
+00:40:50.800 --> 00:40:52.680 align:middle line:90%
+Cool.
+
+00:40:52.680 --> 00:40:56.310 align:middle line:84%
+So let's name everybody
+in the middle here.
+
+00:40:56.310 --> 00:40:59.800 align:middle line:90%
+
+
+00:40:59.800 --> 00:41:01.400 align:middle line:90%
+I name these.
+
+00:41:01.400 --> 00:41:03.190 align:middle line:90%
+Let me actually rename these.
+
+00:41:03.190 --> 00:41:07.390 align:middle line:90%
+
+
+00:41:07.390 --> 00:41:14.350 align:middle line:84%
+I'll call these
+A. A and A prime.
+
+00:41:14.350 --> 00:41:20.870 align:middle line:84%
+And then we go over
+here to a1 to a2 to a3.
+
+00:41:20.870 --> 00:41:23.630 align:middle line:90%
+So we know a a1 is popular.
+
+00:41:23.630 --> 00:41:25.890 align:middle line:90%
+We know a2 times a1 is popular.
+
+00:41:25.890 --> 00:41:28.890 align:middle line:84%
+We know a2 times a3
+is popular, and so on.
+
+00:41:28.890 --> 00:41:34.510 align:middle line:90%
+
+
+00:41:34.510 --> 00:41:39.630 align:middle line:84%
+What this allows us to do
+is to write A over A prime
+
+00:41:39.630 --> 00:41:40.820 align:middle line:90%
+in many different ways.
+
+00:41:40.820 --> 00:41:45.910 align:middle line:90%
+
+
+00:41:45.910 --> 00:41:48.725 align:middle line:84%
+a over-- I have to be
+careful because I'm
+
+00:41:48.725 --> 00:41:49.850 align:middle line:90%
+in a non-commutative group.
+
+00:41:49.850 --> 00:41:51.590 align:middle line:90%
+I think I want to write a.
+
+00:41:51.590 --> 00:41:58.750 align:middle line:84%
+Let's call this a tilde
+a times a tilde inverse.
+
+00:41:58.750 --> 00:42:02.470 align:middle line:90%
+So that's a times a1.
+
+00:42:02.470 --> 00:42:07.660 align:middle line:84%
+And now I'll put a2
+times a1 inverse.
+
+00:42:07.660 --> 00:42:11.340 align:middle line:90%
+And now I'll put a2 times a3.
+
+00:42:11.340 --> 00:42:16.710 align:middle line:84%
+And then I'll put a
+tilde times a3 inverse.
+
+00:42:16.710 --> 00:42:19.940 align:middle line:90%
+
+
+00:42:19.940 --> 00:42:23.380 align:middle line:90%
+So if we do this out--
+
+00:42:23.380 --> 00:42:28.740 align:middle line:84%
+so this guy here is
+a1 inverse a2 inverse.
+
+00:42:28.740 --> 00:42:32.980 align:middle line:84%
+You can see cancelation,
+cancelation.
+
+00:42:32.980 --> 00:42:37.780 align:middle line:84%
+And this guy here is a3
+inverse, a tilde inverse.
+
+00:42:37.780 --> 00:42:39.020 align:middle line:90%
+Cancel that.
+
+00:42:39.020 --> 00:42:40.160 align:middle line:90%
+So that's this equality.
+
+00:42:40.160 --> 00:42:43.620 align:middle line:84%
+It's not difficult.
+But we've written it
+
+00:42:43.620 --> 00:42:46.070 align:middle line:84%
+in terms of four guys
+that are popular.
+
+00:42:46.070 --> 00:42:48.620 align:middle line:90%
+
+
+00:42:48.620 --> 00:42:54.120 align:middle line:84%
+So this a2 times a1 is
+not just a2 times a1,
+
+00:42:54.120 --> 00:42:55.520 align:middle line:90%
+it's a popular product.
+
+00:42:55.520 --> 00:42:58.820 align:middle line:84%
+It can be written in
+many different ways.
+
+00:42:58.820 --> 00:43:12.370 align:middle line:84%
+So a times a tilde inverse can
+be written as z1, z2 inverse--
+
+00:43:12.370 --> 00:43:21.260 align:middle line:84%
+or maybe p1, p2 inverse, p3, p4
+inverse, where pi are popular.
+
+00:43:21.260 --> 00:43:33.370 align:middle line:90%
+
+
+00:43:33.370 --> 00:43:35.280 align:middle line:84%
+This can be done in
+many different ways.
+
+00:43:35.280 --> 00:43:40.630 align:middle line:90%
+
+
+00:43:40.630 --> 00:43:48.860 align:middle line:84%
+And the number of choices for
+the pi is at least A cubed.
+
+00:43:48.860 --> 00:43:51.470 align:middle line:90%
+
+
+00:43:51.470 --> 00:43:53.650 align:middle line:84%
+So the conclusion
+is that the size
+
+00:43:53.650 --> 00:43:58.370 align:middle line:84%
+of A tilde times A tilde
+inverse is bounded by--
+
+00:43:58.370 --> 00:44:00.710 align:middle line:84%
+I'm going to choose
+four popular guys.
+
+00:44:00.710 --> 00:44:02.960 align:middle line:90%
+So that's p to the 4th.
+
+00:44:02.960 --> 00:44:07.320 align:middle line:84%
+And then I have overcounted,
+because each person has now
+
+00:44:07.320 --> 00:44:10.520 align:middle line:84%
+been represented A
+cubed different ways,
+
+00:44:10.520 --> 00:44:14.520 align:middle line:90%
+and ignoring some factors of k.
+
+00:44:14.520 --> 00:44:27.080 align:middle line:90%
+And so that's A. OK.
+
+00:44:27.080 --> 00:44:36.093 align:middle line:90%
+
+
+00:44:36.093 --> 00:44:37.760 align:middle line:84%
+So I remember the
+first time I taught it
+
+00:44:37.760 --> 00:44:41.760 align:middle line:84%
+I struggled a little bit
+with the intuition of this.
+
+00:44:41.760 --> 00:44:45.360 align:middle line:84%
+The first thing you might hope
+to do is to choose A tilde,
+
+00:44:45.360 --> 00:44:49.965 align:middle line:84%
+so that every product in
+A tilde can be is popular.
+
+00:44:49.965 --> 00:44:51.840 align:middle line:84%
+They all can be written
+in many ways, just as
+
+00:44:51.840 --> 00:44:53.640 align:middle line:84%
+a product of two
+things in A. And then
+
+00:44:53.640 --> 00:44:55.800 align:middle line:84%
+there are clearly
+not so many of those.
+
+00:44:55.800 --> 00:44:58.260 align:middle line:84%
+But I think it's not
+possible to do that.
+
+00:44:58.260 --> 00:44:59.965 align:middle line:84%
+It's not possible
+to choose A tilde
+
+00:44:59.965 --> 00:45:01.340 align:middle line:84%
+where every one
+of these products
+
+00:45:01.340 --> 00:45:04.380 align:middle line:90%
+is popular in that sense.
+
+00:45:04.380 --> 00:45:07.960 align:middle line:84%
+But by being a little
+bit more flexible,
+
+00:45:07.960 --> 00:45:12.020 align:middle line:84%
+we've chosen A tilde so
+that every quotient can
+
+00:45:12.020 --> 00:45:15.300 align:middle line:84%
+be written in many
+ways, not just
+
+00:45:15.300 --> 00:45:16.740 align:middle line:84%
+as a quotient of
+two things in A,
+
+00:45:16.740 --> 00:45:21.080 align:middle line:84%
+but many ways in this slightly
+more flexible framework.
+
+00:45:21.080 --> 00:45:24.580 align:middle line:90%
+
+
+00:45:24.580 --> 00:45:26.170 align:middle line:90%
+Any questions or comments?
+
+00:45:26.170 --> 00:45:30.740 align:middle line:90%
+
+
+00:45:30.740 --> 00:45:32.580 align:middle line:90%
+Yeah.
+
+00:45:32.580 --> 00:45:37.780 align:middle line:84%
+AUDIENCE: So why can't you get
+the same result for A times A
+
+00:45:37.780 --> 00:45:40.123 align:middle line:84%
+if you just choose
+paths of length 3?
+
+00:45:40.123 --> 00:45:42.540 align:middle line:84%
+LAWRENCE GUTH: Yeah, I think
+you could get the same result
+
+00:45:42.540 --> 00:45:44.980 align:middle line:84%
+for A times A if you
+choose paths of length 3
+
+00:45:44.980 --> 00:45:48.520 align:middle line:90%
+or A times B. Yeah.
+
+00:45:48.520 --> 00:45:50.860 align:middle line:84%
+Sorry, I maybe was not
+transparent about--
+
+00:45:50.860 --> 00:45:54.820 align:middle line:84%
+so the thing with paths
+of length 3 still works.
+
+00:45:54.820 --> 00:45:58.690 align:middle line:84%
+I think that might produce
+two different subsets.
+
+00:45:58.690 --> 00:46:00.470 align:middle line:84%
+Actually, maybe in
+the commutative case,
+
+00:46:00.470 --> 00:46:02.512 align:middle line:84%
+I actually should have
+had two different subsets.
+
+00:46:02.512 --> 00:46:05.130 align:middle line:90%
+
+
+00:46:05.130 --> 00:46:06.850 align:middle line:90%
+At least initially.
+
+00:46:06.850 --> 00:46:08.570 align:middle line:90%
+It works fine.
+
+00:46:08.570 --> 00:46:11.030 align:middle line:84%
+The reason that I have A
+tilde times A tilde inverse,
+
+00:46:11.030 --> 00:46:13.408 align:middle line:84%
+the motivation for that is
+going to come in a moment.
+
+00:46:13.408 --> 00:46:15.450 align:middle line:84%
+And actually, I'm going
+to try to argue that this
+
+00:46:15.450 --> 00:46:18.730 align:middle line:90%
+is better than A times A.
+
+00:46:18.730 --> 00:46:20.670 align:middle line:84%
+AUDIENCE: And just
+to clarify anything,
+
+00:46:20.670 --> 00:46:23.250 align:middle line:84%
+the way you stated it before
+the popular products here
+
+00:46:23.250 --> 00:46:28.890 align:middle line:84%
+is the subset of A times A,
+with the small projection.
+
+00:46:28.890 --> 00:46:32.530 align:middle line:84%
+Because it was stated in
+terms of a subset having
+
+00:46:32.530 --> 00:46:36.730 align:middle line:84%
+a large projection,
+then that leads to--
+
+00:46:36.730 --> 00:46:43.013 align:middle line:84%
+you can choose A subset of
+such that the subset is small.
+
+00:46:43.013 --> 00:46:44.430 align:middle line:84%
+LAWRENCE GUTH:
+Yeah, that's right.
+
+00:46:44.430 --> 00:46:44.972 align:middle line:90%
+That's right.
+
+00:46:44.972 --> 00:46:46.650 align:middle line:84%
+So in the projection
+theory version,
+
+00:46:46.650 --> 00:46:49.190 align:middle line:84%
+this would be the
+small projection.
+
+00:46:49.190 --> 00:46:52.970 align:middle line:84%
+And there'd be some big piece
+of A cross A that projects here.
+
+00:46:52.970 --> 00:46:55.250 align:middle line:90%
+Yeah, thanks.
+
+00:46:55.250 --> 00:46:56.410 align:middle line:90%
+Yeah.
+
+00:46:56.410 --> 00:46:57.680 align:middle line:90%
+OK.
+
+00:46:57.680 --> 00:46:59.060 align:middle line:90%
+Cool.
+
+00:46:59.060 --> 00:47:00.960 align:middle line:84%
+So this is the
+non-commutative analog
+
+00:47:00.960 --> 00:47:02.880 align:middle line:90%
+of Balog-Szemerédi-Gowers.
+
+00:47:02.880 --> 00:47:05.640 align:middle line:84%
+It really looks a lot like
+Balog-Szemerédi-Gowers.
+
+00:47:05.640 --> 00:47:08.100 align:middle line:84%
+And this inverse is
+because we want it.
+
+00:47:08.100 --> 00:47:11.080 align:middle line:84%
+We probably could also have
+had A tilde times B tilde
+
+00:47:11.080 --> 00:47:11.780 align:middle line:90%
+if we wanted.
+
+00:47:11.780 --> 00:47:14.512 align:middle line:90%
+
+
+00:47:14.512 --> 00:47:16.960 align:middle line:84%
+The situation with
+Plünnecke-Ruzsa is actually
+
+00:47:16.960 --> 00:47:18.780 align:middle line:90%
+a little bit more complicated.
+
+00:47:18.780 --> 00:47:38.120 align:middle line:90%
+
+
+00:47:38.120 --> 00:47:40.245 align:middle line:90%
+So non-commutative.
+
+00:47:40.245 --> 00:47:44.000 align:middle line:90%
+
+
+00:47:44.000 --> 00:47:44.920 align:middle line:90%
+All right.
+
+00:47:44.920 --> 00:47:46.860 align:middle line:90%
+So let's ask a question.
+
+00:47:46.860 --> 00:47:50.080 align:middle line:84%
+Suppose we have is A
+as a subset of a group,
+
+00:47:50.080 --> 00:47:52.030 align:middle line:90%
+and A times A is small.
+
+00:47:52.030 --> 00:47:55.160 align:middle line:90%
+
+
+00:47:55.160 --> 00:47:59.180 align:middle line:84%
+Does it imply that A
+times A times A is small?
+
+00:47:59.180 --> 00:48:04.710 align:middle line:90%
+
+
+00:48:04.710 --> 00:48:06.550 align:middle line:84%
+So this would be
+that natural analog
+
+00:48:06.550 --> 00:48:08.350 align:middle line:90%
+of Plünnecke's inequality.
+
+00:48:08.350 --> 00:48:10.880 align:middle line:90%
+And the answer to this is no.
+
+00:48:10.880 --> 00:48:13.910 align:middle line:90%
+
+
+00:48:13.910 --> 00:48:17.070 align:middle line:90%
+OK, here's the example.
+
+00:48:17.070 --> 00:48:21.270 align:middle line:84%
+So let's say H contained
+in G is a subgroup.
+
+00:48:21.270 --> 00:48:25.450 align:middle line:84%
+And A is H union
+one other element,
+
+00:48:25.450 --> 00:48:27.910 align:middle line:90%
+which is not in the subgroup.
+
+00:48:27.910 --> 00:48:31.760 align:middle line:84%
+Now what happens when
+I take A times A?
+
+00:48:31.760 --> 00:48:36.920 align:middle line:84%
+A times A is H times
+H-- that's good--
+
+00:48:36.920 --> 00:48:44.830 align:middle line:84%
+plus, or union, H times g union
+g times H union g times g.
+
+00:48:44.830 --> 00:48:46.370 align:middle line:84%
+There's nothing
+special about these.
+
+00:48:46.370 --> 00:48:48.670 align:middle line:84%
+But because g is only one
+element, all of this stuff
+
+00:48:48.670 --> 00:48:50.430 align:middle line:90%
+is small.
+
+00:48:50.430 --> 00:48:54.070 align:middle line:84%
+So we can see that A
+times A is smaller than--
+
+00:48:54.070 --> 00:48:57.700 align:middle line:84%
+1, 2, 3-- it's smaller
+than 4A, probably 3A.
+
+00:48:57.700 --> 00:49:01.620 align:middle line:90%
+
+
+00:49:01.620 --> 00:49:07.460 align:middle line:84%
+But now what happens when
+I take A times A times A?
+
+00:49:07.460 --> 00:49:09.620 align:middle line:90%
+OK, now I have three factors.
+
+00:49:09.620 --> 00:49:16.900 align:middle line:84%
+And so that concludes
+H times g times H.
+
+00:49:16.900 --> 00:49:21.260 align:middle line:84%
+In the non-commutative world,
+I cannot slide this over.
+
+00:49:21.260 --> 00:49:23.040 align:middle line:90%
+And this is not so good.
+
+00:49:23.040 --> 00:49:25.940 align:middle line:84%
+There is no reason
+for this to be small.
+
+00:49:25.940 --> 00:49:30.860 align:middle line:84%
+And so the size of
+H times g times H
+
+00:49:30.860 --> 00:49:34.910 align:middle line:84%
+could well be the
+size of H squared.
+
+00:49:34.910 --> 00:49:40.860 align:middle line:90%
+
+
+00:49:40.860 --> 00:49:41.740 align:middle line:90%
+OK.
+
+00:49:41.740 --> 00:49:43.850 align:middle line:90%
+So that didn't work very well.
+
+00:49:43.850 --> 00:49:48.820 align:middle line:90%
+
+
+00:49:48.820 --> 00:49:51.740 align:middle line:90%
+What to do about it.
+
+00:49:51.740 --> 00:49:56.410 align:middle line:84%
+There is a theorem that if
+A times A times A is small,
+
+00:49:56.410 --> 00:49:59.450 align:middle line:84%
+then A times A times
+A times A is small.
+
+00:49:59.450 --> 00:50:00.350 align:middle line:90%
+Yeah.
+
+00:50:00.350 --> 00:50:01.850 align:middle line:84%
+AUDIENCE: This is
+the counterexample
+
+00:50:01.850 --> 00:50:07.250 align:middle line:84%
+that you have an
+example in SL2 Fp?
+
+00:50:07.250 --> 00:50:09.050 align:middle line:90%
+LAWRENCE GUTH: Yeah, it does.
+
+00:50:09.050 --> 00:50:13.690 align:middle line:84%
+So H could be any subgroup,
+say a Borel subgroup,
+
+00:50:13.690 --> 00:50:15.410 align:middle line:90%
+and G is not in there.
+
+00:50:15.410 --> 00:50:17.850 align:middle line:90%
+Yeah, this will happen.
+
+00:50:17.850 --> 00:50:19.630 align:middle line:90%
+So this could happen in SL2 Fp.
+
+00:50:19.630 --> 00:50:27.158 align:middle line:90%
+
+
+00:50:27.158 --> 00:50:29.130 align:middle line:84%
+So here's a theorem
+that if you assume
+
+00:50:29.130 --> 00:50:32.370 align:middle line:84%
+that a product of three
+copies of A is small,
+
+00:50:32.370 --> 00:50:37.010 align:middle line:84%
+then the product of four
+copies of A is also small.
+
+00:50:37.010 --> 00:50:39.330 align:middle line:84%
+But that theorem is not
+immediately useful to us
+
+00:50:39.330 --> 00:50:42.260 align:middle line:84%
+because we don't have any input
+that a product of three things
+
+00:50:42.260 --> 00:50:42.760 align:middle line:90%
+is small.
+
+00:50:42.760 --> 00:50:47.050 align:middle line:90%
+
+
+00:50:47.050 --> 00:50:49.210 align:middle line:90%
+There's another fix to this--
+
+00:50:49.210 --> 00:50:51.370 align:middle line:84%
+let's just suppose
+think about this example
+
+00:50:51.370 --> 00:50:52.850 align:middle line:90%
+and how we might fix it.
+
+00:50:52.850 --> 00:50:56.910 align:middle line:90%
+
+
+00:50:56.910 --> 00:51:01.350 align:middle line:84%
+So this example has a lot
+of algebraic structure.
+
+00:51:01.350 --> 00:51:03.550 align:middle line:84%
+This is the algebraically
+structured part,
+
+00:51:03.550 --> 00:51:05.830 align:middle line:90%
+and this is garbage.
+
+00:51:05.830 --> 00:51:11.550 align:middle line:84%
+And it would be
+helpful to separate A
+
+00:51:11.550 --> 00:51:15.390 align:middle line:84%
+into the structured
+part and the garbage.
+
+00:51:15.390 --> 00:51:19.150 align:middle line:90%
+So how might we do that?
+
+00:51:19.150 --> 00:51:21.050 align:middle line:90%
+So let's look at--
+
+00:51:21.050 --> 00:51:24.350 align:middle line:90%
+
+
+00:51:24.350 --> 00:51:26.480 align:middle line:84%
+so this is the continuing
+in the example.
+
+00:51:26.480 --> 00:51:31.430 align:middle line:90%
+
+
+00:51:31.430 --> 00:51:36.470 align:middle line:90%
+Let's look at A times A inverse.
+
+00:51:36.470 --> 00:51:39.270 align:middle line:84%
+You could do a times-- anyway,
+it works a little bit better
+
+00:51:39.270 --> 00:51:40.990 align:middle line:90%
+for A times A inverse.
+
+00:51:40.990 --> 00:51:43.110 align:middle line:90%
+So what do we have?
+
+00:51:43.110 --> 00:51:49.930 align:middle line:84%
+We have H times
+H. Actually, yeah,
+
+00:51:49.930 --> 00:51:52.520 align:middle line:84%
+so we will eventually
+look at A times A inverse,
+
+00:51:52.520 --> 00:51:58.100 align:middle line:84%
+but let's think about how
+we might separate this.
+
+00:51:58.100 --> 00:52:03.260 align:middle line:84%
+So this set has
+different pieces.
+
+00:52:03.260 --> 00:52:07.580 align:middle line:84%
+And if we want to separate
+the algebraic part
+
+00:52:07.580 --> 00:52:11.178 align:middle line:90%
+from the garbage--
+
+00:52:11.178 --> 00:52:13.220 align:middle line:84%
+so we'd like to find this
+part and distinguish it
+
+00:52:13.220 --> 00:52:14.740 align:middle line:90%
+from that part.
+
+00:52:14.740 --> 00:52:16.380 align:middle line:84%
+How are they different
+from each other?
+
+00:52:16.380 --> 00:52:19.900 align:middle line:84%
+Well, let's think about
+how many representations
+
+00:52:19.900 --> 00:52:23.260 align:middle line:84%
+there are for each product
+in this product set.
+
+00:52:23.260 --> 00:52:27.620 align:middle line:84%
+Any product in here has
+many, many representations,
+
+00:52:27.620 --> 00:52:32.740 align:middle line:84%
+and the products here have
+only one representation.
+
+00:52:32.740 --> 00:52:36.900 align:middle line:84%
+So this guy here is the
+set of popular products.
+
+00:52:36.900 --> 00:52:39.700 align:middle line:84%
+And actually, once
+we identified it,
+
+00:52:39.700 --> 00:52:43.840 align:middle line:84%
+the popular product set
+then is an actual subgroup.
+
+00:52:43.840 --> 00:52:47.460 align:middle line:84%
+It has a lot of
+algebraic structure.
+
+00:52:47.460 --> 00:52:51.390 align:middle line:84%
+Now let that motivate the
+following proposition,
+
+00:52:51.390 --> 00:52:53.930 align:middle line:90%
+which is an analog of p.
+
+00:52:53.930 --> 00:53:02.730 align:middle line:84%
+So it says if A times A inverse
+is less than or equal to KA--
+
+00:53:02.730 --> 00:53:04.890 align:middle line:84%
+so A inverse, that means
+take each element of
+
+00:53:04.890 --> 00:53:05.920 align:middle line:90%
+and take its inverse.
+
+00:53:05.920 --> 00:53:10.590 align:middle line:90%
+
+
+00:53:10.590 --> 00:53:18.650 align:middle line:84%
+And then if Q is the set of
+popular quotients, so it's
+
+00:53:18.650 --> 00:53:26.170 align:middle line:84%
+the set of g so that r A A
+inverse of g is bigger than K
+
+00:53:26.170 --> 00:53:36.230 align:middle line:84%
+to the something A. Then you can
+raise Q to any power you like.
+
+00:53:36.230 --> 00:53:38.260 align:middle line:90%
+Q, let's say, we do it L times.
+
+00:53:38.260 --> 00:53:52.800 align:middle line:90%
+
+
+00:53:52.800 --> 00:53:55.320 align:middle line:84%
+Q has a lot of
+algebraic structure,
+
+00:53:55.320 --> 00:53:58.040 align:middle line:84%
+and the proof has a similar
+idea of writing things
+
+00:53:58.040 --> 00:53:59.050 align:middle line:90%
+in many different ways.
+
+00:53:59.050 --> 00:54:12.600 align:middle line:90%
+
+
+00:54:12.600 --> 00:54:14.110 align:middle line:90%
+So proof.
+
+00:54:14.110 --> 00:54:19.940 align:middle line:90%
+
+
+00:54:19.940 --> 00:54:20.440 align:middle line:90%
+OK.
+
+00:54:20.440 --> 00:54:26.662 align:middle line:90%
+
+
+00:54:26.662 --> 00:54:28.620 align:middle line:84%
+Oh, actually, I think
+it's a little bit tricky.
+
+00:54:28.620 --> 00:54:29.780 align:middle line:90%
+I think it should be that.
+
+00:54:29.780 --> 00:54:34.040 align:middle line:90%
+
+
+00:54:34.040 --> 00:54:42.680 align:middle line:84%
+So the proof is let's look at
+A times Q times Q is Q. Say,
+
+00:54:42.680 --> 00:54:45.160 align:middle line:84%
+I'll illustrate the
+proof, and L2 equals 4.
+
+00:54:45.160 --> 00:54:46.690 align:middle line:84%
+Let's illustrate
+with L equals 3.
+
+00:54:46.690 --> 00:54:49.500 align:middle line:84%
+That'll give you the
+idea, times A inverse.
+
+00:54:49.500 --> 00:54:53.950 align:middle line:90%
+
+
+00:54:53.950 --> 00:54:59.110 align:middle line:84%
+So somebody in here can
+be written as little a.
+
+00:54:59.110 --> 00:55:01.830 align:middle line:84%
+And now this is a
+popular quotient.
+
+00:55:01.830 --> 00:55:06.470 align:middle line:84%
+So this is little a2
+inverse little a3.
+
+00:55:06.470 --> 00:55:07.600 align:middle line:90%
+And there are many choices.
+
+00:55:07.600 --> 00:55:12.030 align:middle line:90%
+
+
+00:55:12.030 --> 00:55:16.710 align:middle line:84%
+And then actually let's
+illustrate with L equals 2.
+
+00:55:16.710 --> 00:55:24.270 align:middle line:84%
+And then here, we'll have
+little a4 inverse little a5.
+
+00:55:24.270 --> 00:55:26.690 align:middle line:90%
+We have many choices here.
+
+00:55:26.690 --> 00:55:33.010 align:middle line:84%
+How many choices we have, about
+A choices, of about A choices.
+
+00:55:33.010 --> 00:55:36.230 align:middle line:90%
+
+
+00:55:36.230 --> 00:55:40.550 align:middle line:84%
+And then at the
+end, I'll do this.
+
+00:55:40.550 --> 00:55:46.620 align:middle line:90%
+a6 inverse a7 about A traces.
+
+00:55:46.620 --> 00:55:48.190 align:middle line:90%
+And then a8 inverse.
+
+00:55:48.190 --> 00:55:52.380 align:middle line:90%
+
+
+00:55:52.380 --> 00:55:53.260 align:middle line:90%
+All right.
+
+00:55:53.260 --> 00:55:56.740 align:middle line:84%
+So to say more better
+what I'm saying,
+
+00:55:56.740 --> 00:56:00.900 align:middle line:84%
+suppose that I have an
+element of this set.
+
+00:56:00.900 --> 00:56:04.060 align:middle line:84%
+Then I can write the
+element this way.
+
+00:56:04.060 --> 00:56:13.980 align:middle line:84%
+And so I can say that x
+belongs to A A inverse.
+
+00:56:13.980 --> 00:56:23.020 align:middle line:90%
+So x can be written as--
+
+00:56:23.020 --> 00:56:23.900 align:middle line:90%
+all right.
+
+00:56:23.900 --> 00:56:27.700 align:middle line:84%
+So x can be written in
+many different ways.
+
+00:56:27.700 --> 00:56:31.820 align:middle line:84%
+And for each way of
+writing it, we'll
+
+00:56:31.820 --> 00:56:34.160 align:middle line:84%
+notice that this guy
+lives in A A inverse,
+
+00:56:34.160 --> 00:56:37.780 align:middle line:84%
+that guy lives in A
+A inverse and so on.
+
+00:56:37.780 --> 00:56:48.040 align:middle line:84%
+So it can be written in around a
+cubed ways is as b1, b2, b3, b4,
+
+00:56:48.040 --> 00:56:50.810 align:middle line:90%
+where the bi are in A A inverse.
+
+00:56:50.810 --> 00:56:54.320 align:middle line:90%
+
+
+00:56:54.320 --> 00:56:55.440 align:middle line:90%
+OK.
+
+00:56:55.440 --> 00:57:03.640 align:middle line:84%
+So the size of this set,
+this is bounded by the size
+
+00:57:03.640 --> 00:57:07.720 align:middle line:90%
+of A A inverse to the fourth.
+
+00:57:07.720 --> 00:57:09.200 align:middle line:90%
+So I get to choose these B's.
+
+00:57:09.200 --> 00:57:12.560 align:middle line:84%
+And now I've overcounted
+because for each x,
+
+00:57:12.560 --> 00:57:14.760 align:middle line:84%
+there are around A cubed
+different choices of how
+
+00:57:14.760 --> 00:57:16.840 align:middle line:90%
+I could write it.
+
+00:57:16.840 --> 00:57:18.680 align:middle line:90%
+Divided by A cubed.
+
+00:57:18.680 --> 00:57:48.410 align:middle line:90%
+And that is smaller than A.
+
+00:57:48.410 --> 00:57:48.910 align:middle line:90%
+OK.
+
+00:57:48.910 --> 00:57:52.230 align:middle line:84%
+There's one thing I
+hid at the beginning.
+
+00:57:52.230 --> 00:57:55.550 align:middle line:84%
+Let me do it properly and then
+pause and see what people think.
+
+00:57:55.550 --> 00:58:01.230 align:middle line:84%
+So we were given A times
+A inverse is small.
+
+00:58:01.230 --> 00:58:07.590 align:middle line:84%
+And that implies that the
+energy of A A inverse is large.
+
+00:58:07.590 --> 00:58:09.990 align:middle line:90%
+This is stronger than this.
+
+00:58:09.990 --> 00:58:12.750 align:middle line:84%
+And now I'd like
+to switch these.
+
+00:58:12.750 --> 00:58:18.870 align:middle line:84%
+And this is actually
+the same as this.
+
+00:58:18.870 --> 00:58:22.690 align:middle line:84%
+So even though I don't know
+A inverse times A is small,
+
+00:58:22.690 --> 00:58:25.990 align:middle line:84%
+I do know that A inverse
+A has a lot of energy.
+
+00:58:25.990 --> 00:58:31.150 align:middle line:84%
+And the reason I can switch
+them is if I have a1 a2 inverse
+
+00:58:31.150 --> 00:58:35.030 align:middle line:84%
+equals a3 a4 inverse,
+that's a quadruple that's
+
+00:58:35.030 --> 00:58:37.190 align:middle line:90%
+being counted in this energy.
+
+00:58:37.190 --> 00:58:41.500 align:middle line:84%
+Let's just rearrange things
+a little bit divide by a3.
+
+00:58:41.500 --> 00:58:46.620 align:middle line:84%
+a3 inverse a1, a2 inverse
+equals a4 inverse.
+
+00:58:46.620 --> 00:58:49.890 align:middle line:84%
+Then I will multiply
+on the right by a2.
+
+00:58:49.890 --> 00:58:54.980 align:middle line:90%
+
+
+00:58:54.980 --> 00:58:57.980 align:middle line:84%
+So that's a quadruple
+that's being counted here.
+
+00:58:57.980 --> 00:58:59.028 align:middle line:90%
+Yeah.
+
+00:58:59.028 --> 00:59:00.820 align:middle line:84%
+AUDIENCE: Did you know
+that A inverse A has
+
+00:59:00.820 --> 00:59:03.980 align:middle line:84%
+to be small because it's
+just the inverse of element
+
+00:59:03.980 --> 00:59:06.120 align:middle line:90%
+in A inverse or A A inverse?
+
+00:59:06.120 --> 00:59:09.420 align:middle line:90%
+
+
+00:59:09.420 --> 00:59:11.580 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+maybe that's true.
+
+00:59:11.580 --> 00:59:14.140 align:middle line:84%
+Yeah, maybe I made
+this too complicated.
+
+00:59:14.140 --> 00:59:15.740 align:middle line:84%
+So these are equal,
+but you claim
+
+00:59:15.740 --> 00:59:22.300 align:middle line:84%
+that actually A inverse
+times A is A times A inverse.
+
+00:59:22.300 --> 00:59:25.500 align:middle line:84%
+So over here, I
+have a1 a2 inverse.
+
+00:59:25.500 --> 00:59:31.380 align:middle line:84%
+If I invert it, if I
+invert that, I get--
+
+00:59:31.380 --> 00:59:33.140 align:middle line:90%
+what's the inverse of this?
+
+00:59:33.140 --> 00:59:34.520 align:middle line:90%
+So invert this one.
+
+00:59:34.520 --> 00:59:36.170 align:middle line:90%
+I don't think this quite works.
+
+00:59:36.170 --> 00:59:37.540 align:middle line:90%
+AUDIENCE: No, you didn't.
+
+00:59:37.540 --> 00:59:38.915 align:middle line:84%
+LAWRENCE GUTH: So
+I didn't manage
+
+00:59:38.915 --> 00:59:40.970 align:middle line:84%
+to switch the order
+when I did that,
+
+00:59:40.970 --> 00:59:45.450 align:middle line:84%
+but I can switch the order
+when I look at the quadruple.
+
+00:59:45.450 --> 00:59:46.670 align:middle line:90%
+OK, good try.
+
+00:59:46.670 --> 00:59:51.490 align:middle line:90%
+
+
+00:59:51.490 --> 00:59:53.410 align:middle line:90%
+This is large.
+
+00:59:53.410 --> 00:59:58.490 align:middle line:84%
+So therefore, there are
+lots of popular quotients.
+
+00:59:58.490 --> 01:00:03.150 align:middle line:84%
+So Q is large, which
+is what we used here.
+
+01:00:03.150 --> 01:00:08.730 align:middle line:90%
+
+
+01:00:08.730 --> 01:00:12.810 align:middle line:84%
+Both of these proofs have
+following high-level idea.
+
+01:00:12.810 --> 01:00:14.355 align:middle line:90%
+There's a lot of energy around.
+
+01:00:14.355 --> 01:00:15.730 align:middle line:84%
+So it frequently
+happens that you
+
+01:00:15.730 --> 01:00:20.210 align:middle line:84%
+can write a product or a
+quotient in many different ways.
+
+01:00:20.210 --> 01:00:24.170 align:middle line:84%
+If you could arrange a set where
+every product could be written
+
+01:00:24.170 --> 01:00:27.490 align:middle line:84%
+in many ways, then you
+could get a clean estimate
+
+01:00:27.490 --> 01:00:31.050 align:middle line:90%
+for the size of the product set.
+
+01:00:31.050 --> 01:00:36.950 align:middle line:84%
+By playing around with the sort
+of products that you consider
+
+01:00:36.950 --> 01:00:40.020 align:middle line:84%
+and by some experience
+and craft and skill,
+
+01:00:40.020 --> 01:00:41.460 align:middle line:90%
+we can get that to happen.
+
+01:00:41.460 --> 01:00:45.240 align:middle line:90%
+
+
+01:00:45.240 --> 01:00:49.480 align:middle line:84%
+OK, so this is the analog
+of Plünnecke's inequality.
+
+01:00:49.480 --> 01:00:54.200 align:middle line:84%
+The reason that it was desirable
+to put A tilde A tilde inverse
+
+01:00:54.200 --> 01:00:58.040 align:middle line:84%
+in Balog-Szemerédi-Gowers is
+that that thing is designed
+
+01:00:58.040 --> 01:00:59.980 align:middle line:90%
+to fit into this thing.
+
+01:00:59.980 --> 01:01:04.960 align:middle line:90%
+
+
+01:01:04.960 --> 01:01:08.560 align:middle line:84%
+So this Q is the
+approximate subgroup
+
+01:01:08.560 --> 01:01:14.580 align:middle line:84%
+that we were looking for, which
+is, the conclusion of theorem 1.
+
+01:01:14.580 --> 01:01:19.240 align:middle line:90%
+
+
+01:01:19.240 --> 01:01:22.100 align:middle line:84%
+So this finishes the
+discussion of theorem 1.
+
+01:01:22.100 --> 01:01:25.200 align:middle line:84%
+There's a pretty
+detailed proof sketch.
+
+01:01:25.200 --> 01:01:30.200 align:middle line:84%
+And it is a somewhat
+different setup that shows
+
+01:01:30.200 --> 01:01:33.260 align:middle line:84%
+the significance of the idea
+of Balog-Szemerédi-Gowers
+
+01:01:33.260 --> 01:01:35.570 align:middle line:84%
+and Plünnecke-Ruzsa in
+these combinatorial methods.
+
+01:01:35.570 --> 01:01:44.430 align:middle line:90%
+
+
+01:01:44.430 --> 01:01:48.430 align:middle line:84%
+OK, so now in the 15
+minutes that's left,
+
+01:01:48.430 --> 01:01:51.270 align:middle line:84%
+I'm going to try to say a little
+bit about the proof of theorem
+
+01:01:51.270 --> 01:01:52.350 align:middle line:90%
+2.
+
+01:01:52.350 --> 01:01:57.230 align:middle line:84%
+The proof of theorem
+2, it also connects
+
+01:01:57.230 --> 01:02:01.190 align:middle line:84%
+with themes of the
+class, and especially
+
+01:02:01.190 --> 01:02:03.950 align:middle line:84%
+with how some estimates
+are different in the case
+
+01:02:03.950 --> 01:02:07.020 align:middle line:84%
+of a prime field or the
+case of a non-prime field.
+
+01:02:07.020 --> 01:02:41.970 align:middle line:90%
+
+
+01:02:41.970 --> 01:02:44.070 align:middle line:90%
+OK.
+
+01:02:44.070 --> 01:02:47.550 align:middle line:84%
+So let's have some let's
+do discussion of theorem 2.
+
+01:02:47.550 --> 01:02:53.250 align:middle line:90%
+
+
+01:02:53.250 --> 01:02:56.670 align:middle line:84%
+All right, I'd like to put us
+in the following framework.
+
+01:02:56.670 --> 01:03:00.170 align:middle line:84%
+We're going to look
+at SL2 of k, bar
+
+01:03:00.170 --> 01:03:03.650 align:middle line:84%
+where k bar is an
+algebraically closed field.
+
+01:03:03.650 --> 01:03:08.010 align:middle line:84%
+You could imagine it's the
+algebraic closure of Fp.
+
+01:03:08.010 --> 01:03:10.330 align:middle line:84%
+All right, and
+we're going to look
+
+01:03:10.330 --> 01:03:15.870 align:middle line:90%
+at subgroups of SL2 of k bar.
+
+01:03:15.870 --> 01:03:19.930 align:middle line:90%
+
+
+01:03:19.930 --> 01:03:24.450 align:middle line:90%
+Let's remember some easy ones.
+
+01:03:24.450 --> 01:03:28.930 align:middle line:84%
+A subgroup like this where A
+and A inverse are in this field.
+
+01:03:28.930 --> 01:03:33.250 align:middle line:90%
+We have the Borel subgroup.
+
+01:03:33.250 --> 01:03:37.000 align:middle line:90%
+So that's A A inverse t.
+
+01:03:37.000 --> 01:03:39.730 align:middle line:84%
+And we have the
+unitary subgroup.
+
+01:03:39.730 --> 01:03:47.320 align:middle line:90%
+
+
+01:03:47.320 --> 01:03:49.720 align:middle line:90%
+So those are some subgroups.
+
+01:03:49.720 --> 01:03:52.140 align:middle line:90%
+We can take conjugates of them.
+
+01:03:52.140 --> 01:03:53.780 align:middle line:84%
+Actually, let me
+come back to that.
+
+01:03:53.780 --> 01:03:56.100 align:middle line:84%
+So then we could do
+two general things.
+
+01:03:56.100 --> 01:03:57.386 align:middle line:90%
+We can look at subfields.
+
+01:03:57.386 --> 01:04:00.520 align:middle line:90%
+
+
+01:04:00.520 --> 01:04:06.160 align:middle line:84%
+So I can take SL2 k,
+where k contained in k bar
+
+01:04:06.160 --> 01:04:08.720 align:middle line:90%
+is a subfield.
+
+01:04:08.720 --> 01:04:12.320 align:middle line:84%
+Or you could take this
+any of with a subfield.
+
+01:04:12.320 --> 01:04:13.520 align:middle line:90%
+Those are subgroups.
+
+01:04:13.520 --> 01:04:16.280 align:middle line:90%
+And you could take conjugates.
+
+01:04:16.280 --> 01:04:21.180 align:middle line:84%
+So conjugate any subgroup
+you get, another subgroup.
+
+01:04:21.180 --> 01:04:23.040 align:middle line:84%
+So that is a bunch
+of subgroups that we
+
+01:04:23.040 --> 01:04:24.960 align:middle line:84%
+can identify without
+too much trouble that
+
+01:04:24.960 --> 01:04:26.820 align:middle line:90%
+sit inside of SL2 of k bar.
+
+01:04:26.820 --> 01:04:29.640 align:middle line:90%
+
+
+01:04:29.640 --> 01:04:33.810 align:middle line:84%
+There is a theorem that says
+that this is not exactly,
+
+01:04:33.810 --> 01:04:37.220 align:middle line:84%
+but reasonably close
+to the fullest.
+
+01:04:37.220 --> 01:04:44.630 align:middle line:90%
+
+
+01:04:44.630 --> 01:04:49.230 align:middle line:84%
+Dickson in 1901 gave
+a full classification
+
+01:04:49.230 --> 01:04:52.910 align:middle line:90%
+of these subgroups.
+
+01:04:52.910 --> 01:04:54.090 align:middle line:90%
+It's a little bit messy.
+
+01:04:54.090 --> 01:04:57.010 align:middle line:84%
+It includes a variety of finite
+subgroups in certain cases
+
+01:04:57.010 --> 01:04:59.270 align:middle line:90%
+and so on.
+
+01:04:59.270 --> 01:05:06.230 align:middle line:84%
+His theorem implies that
+if H is an actual subgroup,
+
+01:05:06.230 --> 01:05:19.190 align:middle line:84%
+then either H is contained in
+a conjugate of SL2 k, where
+
+01:05:19.190 --> 01:05:41.073 align:middle line:84%
+k is a subfield, or most of H is
+contained in a conjugate of L.
+
+01:05:41.073 --> 01:05:42.740 align:middle line:84%
+If we know from the
+beginning that we're
+
+01:05:42.740 --> 01:05:46.800 align:middle line:84%
+talking about a subgroup of SL2
+of Fp, a proper subgroup of SL2,
+
+01:05:46.800 --> 01:05:48.760 align:middle line:84%
+Fp, it eliminates
+the first case.
+
+01:05:48.760 --> 01:05:52.100 align:middle line:84%
+So we must be in
+the second case.
+
+01:05:52.100 --> 01:05:52.720 align:middle line:90%
+All right.
+
+01:05:52.720 --> 01:05:56.140 align:middle line:90%
+
+
+01:05:56.140 --> 01:05:58.620 align:middle line:90%
+But Dickson's methods are--
+
+01:05:58.620 --> 01:06:00.880 align:middle line:84%
+some of them, at least,
+are not very robust
+
+01:06:00.880 --> 01:06:03.020 align:middle line:84%
+if you replace the
+hypothesis of being
+
+01:06:03.020 --> 01:06:06.700 align:middle line:84%
+an actual subgroup by something
+like H times H times H times H
+
+01:06:06.700 --> 01:06:09.620 align:middle line:90%
+times H is pretty small.
+
+01:06:09.620 --> 01:06:11.820 align:middle line:84%
+So here's a common
+example of a technique
+
+01:06:11.820 --> 01:06:14.020 align:middle line:84%
+that we use to
+classify subgroups
+
+01:06:14.020 --> 01:06:16.260 align:middle line:84%
+that does not do very
+well if we replace it
+
+01:06:16.260 --> 01:06:18.020 align:middle line:90%
+by approximate subgroups.
+
+01:06:18.020 --> 01:06:21.780 align:middle line:84%
+Example is there's the
+order of the subgroup
+
+01:06:21.780 --> 01:06:24.220 align:middle line:90%
+divides the order of the group.
+
+01:06:24.220 --> 01:06:27.100 align:middle line:90%
+That's really useful in 18.701.
+
+01:06:27.100 --> 01:06:29.420 align:middle line:84%
+You want to classify the
+subgroups of subgroup
+
+01:06:29.420 --> 01:06:31.410 align:middle line:90%
+with eight elements.
+
+01:06:31.410 --> 01:06:34.370 align:middle line:84%
+But something like
+that is not going
+
+01:06:34.370 --> 01:06:39.330 align:middle line:84%
+to survive an approximate
+subgroup in any useful way.
+
+01:06:39.330 --> 01:06:41.010 align:middle line:90%
+OK.
+
+01:06:41.010 --> 01:06:43.850 align:middle line:84%
+So the proof of
+theorem 2 is based
+
+01:06:43.850 --> 01:06:49.670 align:middle line:84%
+on a rather different strategy
+for this classification.
+
+01:06:49.670 --> 01:06:51.350 align:middle line:90%
+That's due to Larsen and Pink.
+
+01:06:51.350 --> 01:06:54.730 align:middle line:90%
+
+
+01:06:54.730 --> 01:07:00.680 align:middle line:84%
+So let me say part A, which is
+the Larsen and Pink strategy.
+
+01:07:00.680 --> 01:07:05.130 align:middle line:90%
+
+
+01:07:05.130 --> 01:07:06.650 align:middle line:90%
+All right.
+
+01:07:06.650 --> 01:07:14.410 align:middle line:84%
+So we're going to think about
+how a subgroup intersects
+
+01:07:14.410 --> 01:07:17.810 align:middle line:90%
+these subgroups.
+
+01:07:17.810 --> 01:07:23.810 align:middle line:84%
+So if you take SL2 k and you
+intersect it with one of these,
+
+01:07:23.810 --> 01:07:28.170 align:middle line:84%
+it will either be empty, or
+just be identity or something
+
+01:07:28.170 --> 01:07:32.580 align:middle line:84%
+like that, or it will be a
+subgroup that's like T0 of k.
+
+01:07:32.580 --> 01:07:35.720 align:middle line:90%
+
+
+01:07:35.720 --> 01:07:46.480 align:middle line:84%
+So we're going to study H
+intersected with T of k bar,
+
+01:07:46.480 --> 01:07:54.120 align:middle line:84%
+H intersected with B of k bar,
+H intersected with U of k bar.
+
+01:07:54.120 --> 01:07:56.920 align:middle line:84%
+And we'll see the
+following behavior.
+
+01:07:56.920 --> 01:08:04.280 align:middle line:84%
+The H intersected with T of
+k bar is roughly H to the 1/3
+
+01:08:04.280 --> 01:08:05.940 align:middle line:90%
+or big O of 1.
+
+01:08:05.940 --> 01:08:14.480 align:middle line:90%
+
+
+01:08:14.480 --> 01:08:17.880 align:middle line:84%
+So if I take SL2 Fp and
+I intersect it with this,
+
+01:08:17.880 --> 01:08:19.740 align:middle line:90%
+I'll get T0 of Fp.
+
+01:08:19.740 --> 01:08:22.120 align:middle line:84%
+It'll be about p of those,
+which is about the cube
+
+01:08:22.120 --> 01:08:25.000 align:middle line:90%
+root of the size of SL2 Fp.
+
+01:08:25.000 --> 01:08:28.620 align:middle line:84%
+If I take some crazy torus
+in the algebraic closure
+
+01:08:28.620 --> 01:08:32.380 align:middle line:84%
+that may not intersect
+except at the identity.
+
+01:08:32.380 --> 01:08:36.060 align:middle line:84%
+So these are the two
+things that could happen.
+
+01:08:36.060 --> 01:08:37.720 align:middle line:90%
+And then similarly with these.
+
+01:08:37.720 --> 01:08:56.640 align:middle line:90%
+
+
+01:08:56.640 --> 01:08:59.939 align:middle line:84%
+So they first proved that if
+you take an arbitrary group
+
+01:08:59.939 --> 01:09:02.060 align:middle line:84%
+and you consider
+how it intersects
+
+01:09:02.060 --> 01:09:05.300 align:middle line:84%
+these kind of fundamental
+algebraic subgroups,
+
+01:09:05.300 --> 01:09:10.779 align:middle line:84%
+then it behaves a lot like
+it were SL2 of a subfield.
+
+01:09:10.779 --> 01:09:13.460 align:middle line:84%
+And then building
+from this, they
+
+01:09:13.460 --> 01:09:15.859 align:middle line:84%
+were able to see that
+actually, it would
+
+01:09:15.859 --> 01:09:19.020 align:middle line:90%
+have to be SL2 of a subfield.
+
+01:09:19.020 --> 01:09:21.520 align:middle line:84%
+So that's their approach to
+the rough classification.
+
+01:09:21.520 --> 01:09:24.180 align:middle line:90%
+
+
+01:09:24.180 --> 01:09:29.147 align:middle line:84%
+Yeah, so this was a cool
+paper in pure group.
+
+01:09:29.147 --> 01:09:31.189 align:middle line:84%
+They weren't interested
+in approximate subgroups.
+
+01:09:31.189 --> 01:09:33.970 align:middle line:84%
+They were interested in
+pure group theory problem,
+
+01:09:33.970 --> 01:09:37.463 align:middle line:84%
+classifying subgroups
+of SLD of k,
+
+01:09:37.463 --> 01:09:40.879 align:middle line:84%
+or other like groups
+over finite fields.
+
+01:09:40.879 --> 01:09:43.450 align:middle line:90%
+
+
+01:09:43.450 --> 01:09:45.370 align:middle line:84%
+The complete classification
+is clearly hard
+
+01:09:45.370 --> 01:09:48.930 align:middle line:84%
+because any finite group embeds
+in a permutation group which
+
+01:09:48.930 --> 01:09:51.649 align:middle line:90%
+embeds an SLD of Fp.
+
+01:09:51.649 --> 01:09:56.250 align:middle line:84%
+So all finite groups occur
+as subgroups of SLD of Fp
+
+01:09:56.250 --> 01:09:59.290 align:middle line:90%
+for some D and some p.
+
+01:09:59.290 --> 01:10:01.970 align:middle line:84%
+And so it's not really
+plausible to give
+
+01:10:01.970 --> 01:10:04.240 align:middle line:84%
+a complete classification,
+or anyway, it
+
+01:10:04.240 --> 01:10:06.490 align:middle line:84%
+would be at least as hard
+as classifying finite groups
+
+01:10:06.490 --> 01:10:08.490 align:middle line:84%
+to give a complete
+classification,
+
+01:10:08.490 --> 01:10:10.850 align:middle line:84%
+but they were able
+to classify, I
+
+01:10:10.850 --> 01:10:14.290 align:middle line:84%
+think it's subgroups
+of SLD of Fp, which
+
+01:10:14.290 --> 01:10:17.250 align:middle line:84%
+have at least some size,
+like p to the epsilon
+
+01:10:17.250 --> 01:10:20.130 align:middle line:84%
+or epsilon times D or something
+like this, the ones that
+
+01:10:20.130 --> 01:10:21.170 align:middle line:90%
+are decently large.
+
+01:10:21.170 --> 01:10:23.930 align:middle line:90%
+
+
+01:10:23.930 --> 01:10:25.780 align:middle line:90%
+That Was in around 2000.
+
+01:10:25.780 --> 01:10:28.000 align:middle line:90%
+So this really is a hard thing.
+
+01:10:28.000 --> 01:10:32.000 align:middle line:84%
+But it also turns out that
+their method interacts
+
+01:10:32.000 --> 01:10:35.200 align:middle line:84%
+well with just assuming that
+H times H times H times H
+
+01:10:35.200 --> 01:10:37.080 align:middle line:90%
+is small.
+
+01:10:37.080 --> 01:10:42.000 align:middle line:84%
+So here, this whole
+argument works
+
+01:10:42.000 --> 01:10:51.509 align:middle line:84%
+if we just assume that H times
+H times H times H times H
+
+01:10:51.509 --> 01:10:55.840 align:middle line:90%
+is equal to H. OK.
+
+01:10:55.840 --> 01:10:57.720 align:middle line:84%
+I may or may not
+have two minutes
+
+01:10:57.720 --> 01:11:00.840 align:middle line:84%
+to try to describe what they
+did, how this part works.
+
+01:11:00.840 --> 01:11:03.380 align:middle line:84%
+AUDIENCE: Significance
+of the algebraic closure.
+
+01:11:03.380 --> 01:11:08.640 align:middle line:84%
+If we only care about
+subgroups of SL2 Fp,
+
+01:11:08.640 --> 01:11:12.053 align:middle line:84%
+what information are you
+gaining from intersecting with--
+
+01:11:12.053 --> 01:11:13.720 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+so the question is,
+
+01:11:13.720 --> 01:11:16.000 align:middle line:84%
+Why bring into play
+the algebraic closure?
+
+01:11:16.000 --> 01:11:18.628 align:middle line:84%
+AUDIENCE: Also, what is the
+algebraic closure of Fp?
+
+01:11:18.628 --> 01:11:20.920 align:middle line:84%
+LAWRENCE GUTH: And what is
+the algebraic closure of Fp?
+
+01:11:20.920 --> 01:11:21.420 align:middle line:90%
+Yeah.
+
+01:11:21.420 --> 01:11:34.250 align:middle line:90%
+
+
+01:11:34.250 --> 01:11:38.270 align:middle line:84%
+You do need this for the
+following reason that
+
+01:11:38.270 --> 01:11:41.990 align:middle line:84%
+should be familiar to
+us even as analysts.
+
+01:11:41.990 --> 01:11:46.110 align:middle line:84%
+So suppose you have
+a matrix in SL2 r,
+
+01:11:46.110 --> 01:11:48.370 align:middle line:84%
+and you would like
+to diagonalize it.
+
+01:11:48.370 --> 01:11:50.670 align:middle line:84%
+You'd like to look at its
+eigenvalues, or whatever.
+
+01:11:50.670 --> 01:11:57.510 align:middle line:84%
+Well, you can't necessarily
+do that in SL2 r,
+
+01:11:57.510 --> 01:11:59.770 align:middle line:84%
+because the eigenvalues
+could be complex.
+
+01:11:59.770 --> 01:12:03.070 align:middle line:84%
+So in order to diagonalize it,
+you might want to move to SL2 c.
+
+01:12:03.070 --> 01:12:05.310 align:middle line:84%
+And diagonalizing
+matrices is useful
+
+01:12:05.310 --> 01:12:10.510 align:middle line:84%
+because you can
+classify matrices
+
+01:12:10.510 --> 01:12:12.130 align:middle line:90%
+by their Jordan canonical form.
+
+01:12:12.130 --> 01:12:14.990 align:middle line:84%
+And this is a convenient
+way to organize things.
+
+01:12:14.990 --> 01:12:17.270 align:middle line:84%
+That's the same thing
+that's going on here.
+
+01:12:17.270 --> 01:12:19.670 align:middle line:84%
+AUDIENCE: The intersections
+look the same, though.
+
+01:12:19.670 --> 01:12:23.540 align:middle line:84%
+The intersection of if H is
+just a subgroup of SL2 of k,
+
+01:12:23.540 --> 01:12:25.740 align:middle line:84%
+then the intersection
+with T k bar
+
+01:12:25.740 --> 01:12:27.660 align:middle line:84%
+is the same as the
+intersection of T k.
+
+01:12:27.660 --> 01:12:29.160 align:middle line:84%
+LAWRENCE GUTH: Yeah,
+that's correct.
+
+01:12:29.160 --> 01:12:30.080 align:middle line:90%
+That's correct.
+
+01:12:30.080 --> 01:12:36.140 align:middle line:84%
+But OK, so the
+comment was that if--
+
+01:12:36.140 --> 01:12:43.140 align:middle line:84%
+so what did this--
+so if H is in SL2 k,
+
+01:12:43.140 --> 01:12:47.900 align:middle line:84%
+then H intersected
+with T0 of k bar
+
+01:12:47.900 --> 01:12:53.720 align:middle line:84%
+is the same thing as H
+intersected with T0 of k.
+
+01:12:53.720 --> 01:12:54.220 align:middle line:90%
+Yeah.
+
+01:12:54.220 --> 01:12:54.720 align:middle line:90%
+OK.
+
+01:12:54.720 --> 01:12:56.180 align:middle line:84%
+I think the problem
+with is that I
+
+01:12:56.180 --> 01:12:58.220 align:middle line:84%
+forgot to say something about
+what's written on the board
+
+01:12:58.220 --> 01:12:58.820 align:middle line:90%
+here.
+
+01:12:58.820 --> 01:13:02.460 align:middle line:90%
+This T is not T0.
+
+01:13:02.460 --> 01:13:04.840 align:middle line:84%
+The conjugates are
+really important.
+
+01:13:04.840 --> 01:13:12.420 align:middle line:84%
+So T of k bar is a
+conjugate of T0 of k bar.
+
+01:13:12.420 --> 01:13:13.220 align:middle line:90%
+Yeah.
+
+01:13:13.220 --> 01:13:16.940 align:middle line:84%
+AUDIENCE: Are the elements
+that are being diagonalized
+
+01:13:16.940 --> 01:13:20.980 align:middle line:84%
+just elements of SL2 or
+bigger linear operators
+
+01:13:20.980 --> 01:13:23.850 align:middle line:90%
+responding to SL2?
+
+01:13:23.850 --> 01:13:28.610 align:middle line:84%
+I think if it's just SL2, you
+only need a degree-2 extension.
+
+01:13:28.610 --> 01:13:29.730 align:middle line:90%
+LAWRENCE GUTH: Yeah.
+
+01:13:29.730 --> 01:13:31.210 align:middle line:84%
+So the comment is
+that if we just
+
+01:13:31.210 --> 01:13:34.370 align:middle line:84%
+want to diagonalize
+matrices in SL2 Fp,
+
+01:13:34.370 --> 01:13:38.570 align:middle line:84%
+we probably only need a degree-2
+extension of Fp, which we might
+
+01:13:38.570 --> 01:13:40.370 align:middle line:90%
+feel more comfortable with.
+
+01:13:40.370 --> 01:13:41.630 align:middle line:90%
+I think that's probably right.
+
+01:13:41.630 --> 01:13:44.088 align:middle line:84%
+I think we could probably work
+with the degree-2 extension.
+
+01:13:44.088 --> 01:13:46.910 align:middle line:90%
+
+
+01:13:46.910 --> 01:13:47.410 align:middle line:90%
+OK.
+
+01:13:47.410 --> 01:14:17.290 align:middle line:90%
+
+
+01:14:17.290 --> 01:14:18.410 align:middle line:90%
+All right.
+
+01:14:18.410 --> 01:14:29.770 align:middle line:84%
+So the output of the Larsen-Pink
+argument is after conjugating.
+
+01:14:29.770 --> 01:14:32.910 align:middle line:84%
+Yeah, so first of
+all, we can arrange
+
+01:14:32.910 --> 01:14:39.650 align:middle line:84%
+that our H intersected with
+some unitary guy, is pretty big.
+
+01:14:39.650 --> 01:14:43.630 align:middle line:90%
+
+
+01:14:43.630 --> 01:14:49.070 align:middle line:84%
+After conjugating, we can
+arrange that this is U0 of k.
+
+01:14:49.070 --> 01:15:00.590 align:middle line:84%
+So H contains some guys like
+this, where T is in some subset
+
+01:15:00.590 --> 01:15:03.450 align:middle line:84%
+that I'll call E.
+And E is pretty big.
+
+01:15:03.450 --> 01:15:12.150 align:middle line:90%
+
+
+01:15:12.150 --> 01:15:15.230 align:middle line:84%
+Moreover, this part
+should not expand
+
+01:15:15.230 --> 01:15:18.780 align:middle line:90%
+too much when we take products.
+
+01:15:18.780 --> 01:15:25.720 align:middle line:84%
+So here, let's call this
+thing a unitary piece of H.
+
+01:15:25.720 --> 01:15:29.552 align:middle line:84%
+UH times UH, also, this
+isn't completely obvious,
+
+01:15:29.552 --> 01:15:31.260 align:middle line:84%
+but it's not that
+difficult. It shouldn't
+
+01:15:31.260 --> 01:15:33.340 align:middle line:90%
+be that much bigger than.
+
+01:15:33.340 --> 01:15:37.100 align:middle line:84%
+And that tells us that E
+plus E shouldn't be that much
+
+01:15:37.100 --> 01:15:45.820 align:middle line:84%
+bigger than E.
+Also, we should have
+
+01:15:45.820 --> 01:15:53.200 align:middle line:84%
+this U is in some B, and
+H intersect B of k bar.
+
+01:15:53.200 --> 01:15:56.300 align:middle line:90%
+
+
+01:15:56.300 --> 01:15:59.360 align:middle line:84%
+So we've already
+conjugated so that U is U0.
+
+01:15:59.360 --> 01:16:01.580 align:middle line:90%
+So this is going to be B0.
+
+01:16:01.580 --> 01:16:04.830 align:middle line:84%
+And this should be
+around H to the 2/3.
+
+01:16:04.830 --> 01:16:11.020 align:middle line:90%
+
+
+01:16:11.020 --> 01:16:16.220 align:middle line:84%
+Inside of there, we'll have a T.
+And H intersect that should be
+
+01:16:16.220 --> 01:16:19.250 align:middle line:90%
+like H to the 1/3.
+
+01:16:19.250 --> 01:16:22.850 align:middle line:90%
+So H intersect T0 k bar.
+
+01:16:22.850 --> 01:16:25.000 align:middle line:84%
+That's going to be some
+guys that look like this.
+
+01:16:25.000 --> 01:16:27.850 align:middle line:90%
+
+
+01:16:27.850 --> 01:16:30.570 align:middle line:84%
+And these A's live
+in some set that I'll
+
+01:16:30.570 --> 01:16:37.090 align:middle line:84%
+call F. So then if you think
+about how these matrices act
+
+01:16:37.090 --> 01:16:41.890 align:middle line:84%
+on these matrices,
+we should get--
+
+01:16:41.890 --> 01:16:51.890 align:middle line:84%
+so T0-- so let's called this
+guy the T part of H. And U,
+
+01:16:51.890 --> 01:16:52.510 align:middle line:90%
+say, here.
+
+01:16:52.510 --> 01:16:55.850 align:middle line:90%
+
+
+01:16:55.850 --> 01:16:58.330 align:middle line:90%
+Well, OK.
+
+01:16:58.330 --> 01:17:02.850 align:middle line:84%
+This thing here is
+the B part of H.
+
+01:17:02.850 --> 01:17:05.970 align:middle line:84%
+So the B part of H
+times the B part of H
+
+01:17:05.970 --> 01:17:11.490 align:middle line:84%
+should be not that much
+bigger than the B part of H.
+
+01:17:11.490 --> 01:17:16.800 align:middle line:84%
+And if you unwind what that
+means, you multiply these,
+
+01:17:16.800 --> 01:17:23.720 align:middle line:84%
+you'll have things like a a
+inverse at, where a is an F,
+
+01:17:23.720 --> 01:17:30.200 align:middle line:84%
+t is an E. So the conclusion
+is that E times F is also not
+
+01:17:30.200 --> 01:17:46.200 align:middle line:90%
+that much bigger than E or F.
+
+01:17:46.200 --> 01:17:50.280 align:middle line:84%
+So in other words, once you
+have a unipotent piece where
+
+01:17:50.280 --> 01:17:54.080 align:middle line:84%
+you have these guys, then
+this multiplication operation
+
+01:17:54.080 --> 01:17:56.760 align:middle line:84%
+just gives you addition
+of the numbers in here.
+
+01:17:56.760 --> 01:17:59.240 align:middle line:90%
+So you have a simpler thing.
+
+01:17:59.240 --> 01:18:04.200 align:middle line:84%
+And then once you have a bunch
+of upper triangular guys,
+
+01:18:04.200 --> 01:18:16.150 align:middle line:84%
+then this matrix
+multiplication induces
+
+01:18:16.150 --> 01:18:18.920 align:middle line:84%
+this regular multiplication,
+and we have small products.
+
+01:18:18.920 --> 01:18:22.950 align:middle line:90%
+
+
+01:18:22.950 --> 01:18:25.030 align:middle line:84%
+This is consistent
+with the possibility
+
+01:18:25.030 --> 01:18:28.630 align:middle line:84%
+that E and F could both
+be just some subfield k
+
+01:18:28.630 --> 01:18:31.310 align:middle line:90%
+or some approximate subfield.
+
+01:18:31.310 --> 01:18:33.270 align:middle line:84%
+But the sum product
+theorem says that Fp
+
+01:18:33.270 --> 01:18:35.530 align:middle line:90%
+has no approximate subfields.
+
+01:18:35.530 --> 01:18:37.942 align:middle line:84%
+And so the subproduct theorem
+rules out the possibility
+
+01:18:37.942 --> 01:18:38.900 align:middle line:90%
+that this could happen.
+
+01:18:38.900 --> 01:18:41.550 align:middle line:90%
+
+
+01:18:41.550 --> 01:18:47.670 align:middle line:84%
+So the conclusion is
+the sum product theorem
+
+01:18:47.670 --> 01:18:49.760 align:middle line:90%
+applies that this can't happen.
+
+01:18:49.760 --> 01:19:07.750 align:middle line:90%
+
+
+01:19:07.750 --> 01:19:08.770 align:middle line:90%
+What's on the board?
+
+01:19:08.770 --> 01:19:10.530 align:middle line:90%
+Let me I should add one thing.
+
+01:19:10.530 --> 01:19:16.530 align:middle line:84%
+So we're going to assume that H
+is not contained in a Borel guy.
+
+01:19:16.530 --> 01:19:23.620 align:middle line:90%
+
+
+01:19:23.620 --> 01:19:26.180 align:middle line:84%
+So this whole
+thing that wouldn't
+
+01:19:26.180 --> 01:19:28.340 align:middle line:90%
+be true for the Borel subgroup.
+
+01:19:28.340 --> 01:19:29.400 align:middle line:90%
+It's only true.
+
+01:19:29.400 --> 01:19:33.000 align:middle line:84%
+Once we assume that our subgroup
+is not contained in Borel,
+
+01:19:33.000 --> 01:19:34.300 align:middle line:90%
+and then we get this.
+
+01:19:34.300 --> 01:19:40.700 align:middle line:84%
+And that tells us that the
+intersection sizes have
+
+01:19:40.700 --> 01:19:43.580 align:middle line:90%
+to match SL2 of a subfield.
+
+01:19:43.580 --> 01:19:45.820 align:middle line:84%
+And then if you
+look more carefully
+
+01:19:45.820 --> 01:19:49.120 align:middle line:84%
+at the matrices that appear
+in the intersections,
+
+01:19:49.120 --> 01:19:51.180 align:middle line:84%
+you see that the
+entries there have
+
+01:19:51.180 --> 01:19:53.302 align:middle line:90%
+to be kind of like a subfield.
+
+01:19:53.302 --> 01:19:55.260 align:middle line:84%
+And then it becomes a
+question of whether there
+
+01:19:55.260 --> 01:19:56.760 align:middle line:90%
+are approximate subfields.
+
+01:19:56.760 --> 01:20:01.960 align:middle line:90%
+
+
+01:20:01.960 --> 01:20:02.460 align:middle line:90%
+OK.
+
+01:20:02.460 --> 01:20:06.300 align:middle line:84%
+Let me say it one more time, and
+then we will break for the week.
+
+01:20:06.300 --> 01:20:10.580 align:middle line:84%
+So the theorem says that if you
+have a subgroup, which is not
+
+01:20:10.580 --> 01:20:13.120 align:middle line:84%
+pretty much contained in
+a Borel subgroup, then
+
+01:20:13.120 --> 01:20:15.970 align:middle line:90%
+it must be SL2 of a subfield.
+
+01:20:15.970 --> 01:20:21.000 align:middle line:90%
+
+
+01:20:21.000 --> 01:20:23.100 align:middle line:84%
+It's going to be
+true for subgroups,
+
+01:20:23.100 --> 01:20:25.360 align:middle line:84%
+but it's also true for
+approximate subgroups.
+
+01:20:25.360 --> 01:20:27.340 align:middle line:84%
+So imagine we have an
+approximate subgroup,
+
+01:20:27.340 --> 01:20:29.040 align:middle line:84%
+we're going to
+gradually prove that it
+
+01:20:29.040 --> 01:20:33.160 align:middle line:84%
+has more and more properties
+of SL2 over a finite field.
+
+01:20:33.160 --> 01:20:35.360 align:middle line:84%
+So the first property
+we will consider
+
+01:20:35.360 --> 01:20:39.880 align:middle line:84%
+is how it intersects
+various algebraic subgroups
+
+01:20:39.880 --> 01:20:42.440 align:middle line:90%
+of SL2 of k bar.
+
+01:20:42.440 --> 01:20:44.440 align:middle line:84%
+The sizes of those
+intersections behave
+
+01:20:44.440 --> 01:20:46.240 align:middle line:84%
+in a way that matches
+what you would
+
+01:20:46.240 --> 01:20:49.840 align:middle line:90%
+expect from SL2 of a subfield.
+
+01:20:49.840 --> 01:20:53.160 align:middle line:84%
+There's a substantial thing
+to say about this proof
+
+01:20:53.160 --> 01:20:56.880 align:middle line:84%
+that we won't have time
+to do in this class.
+
+01:20:56.880 --> 01:21:00.360 align:middle line:84%
+But once you know
+that, these subgroups
+
+01:21:00.360 --> 01:21:02.720 align:middle line:84%
+are useful because
+the matrices in here
+
+01:21:02.720 --> 01:21:05.600 align:middle line:84%
+are simpler than
+general 2 by 2 matrices.
+
+01:21:05.600 --> 01:21:09.290 align:middle line:84%
+So the unitary subgroup has
+matrices that look like this.
+
+01:21:09.290 --> 01:21:10.790 align:middle line:84%
+And when you multiply
+them, you just
+
+01:21:10.790 --> 01:21:12.510 align:middle line:90%
+add the upper right hand corner.
+
+01:21:12.510 --> 01:21:15.330 align:middle line:84%
+And so now if you just look at
+these upper right-hand corners,
+
+01:21:15.330 --> 01:21:17.190 align:middle line:84%
+you see that adding
+those numbers
+
+01:21:17.190 --> 01:21:18.450 align:middle line:90%
+doesn't change very much.
+
+01:21:18.450 --> 01:21:20.470 align:middle line:90%
+That's a property of a subfield.
+
+01:21:20.470 --> 01:21:22.230 align:middle line:84%
+So it's behaving
+like a subfield.
+
+01:21:22.230 --> 01:21:28.630 align:middle line:84%
+And the upper diagonal matrices,
+the multiplication rule
+
+01:21:28.630 --> 01:21:30.370 align:middle line:84%
+is only a little bit
+more complicated.
+
+01:21:30.370 --> 01:21:33.510 align:middle line:84%
+It's a pretty simple mix of
+multiplication and addition.
+
+01:21:33.510 --> 01:21:36.610 align:middle line:84%
+So you could see that
+these diagonal entries,
+
+01:21:36.610 --> 01:21:39.630 align:middle line:84%
+they should be almost
+closed under multiplication.
+
+01:21:39.630 --> 01:21:41.210 align:middle line:84%
+And they interact
+with each other.
+
+01:21:41.210 --> 01:21:43.242 align:middle line:84%
+And so you would get
+something like this.
+
+01:21:43.242 --> 01:21:44.950 align:middle line:84%
+Anyway, all those
+things being consistent
+
+01:21:44.950 --> 01:21:48.510 align:middle line:84%
+algebraically with
+being a subfield.
+
+01:21:48.510 --> 01:21:49.450 align:middle line:90%
+OK, yeah.
+
+01:21:49.450 --> 01:21:50.615 align:middle line:90%
+AUDIENCE: Could we use 2.5?
+
+01:21:50.615 --> 01:21:53.776 align:middle line:90%
+
+
+01:21:53.776 --> 01:21:55.276 align:middle line:84%
+LAWRENCE GUTH: Where
+did we use 2.5?
+
+01:21:55.276 --> 01:22:11.060 align:middle line:90%
+
+
+01:22:11.060 --> 01:22:13.740 align:middle line:90%
+Yeah, that's a good question.
+
+01:22:13.740 --> 01:22:16.080 align:middle line:84%
+Actually, I don't see
+where we used that here.
+
+01:22:16.080 --> 01:22:21.100 align:middle line:90%
+
+
+01:22:21.100 --> 01:22:24.400 align:middle line:90%
+Yeah, we used that here.
+
+01:22:24.400 --> 01:22:27.620 align:middle line:84%
+So at the end, we have to say
+E and F cannot be approximately
+
+01:22:27.620 --> 01:22:29.060 align:middle line:90%
+a subfield.
+
+01:22:29.060 --> 01:22:33.860 align:middle line:84%
+And that requires that they're
+significantly smaller than Fp.
+
+01:22:33.860 --> 01:22:37.040 align:middle line:84%
+So if you take Fp and you
+remove two or three elements,
+
+01:22:37.040 --> 01:22:39.760 align:middle line:84%
+it is almost closed under
+addition and multiplication.
+
+01:22:39.760 --> 01:22:42.860 align:middle line:84%
+So this could happen
+then if you were allowed
+
+01:22:42.860 --> 01:22:46.880 align:middle line:84%
+to take a really large subset of
+Fp, a really large subset of SL2
+
+01:22:46.880 --> 01:22:47.380 align:middle line:90%
+Fp.
+
+01:22:47.380 --> 01:22:54.020 align:middle line:90%
+
+
+01:22:54.020 --> 01:22:54.920 align:middle line:90%
+OK, cool.
+
+01:22:54.920 --> 01:22:56.200 align:middle line:90%
+I apologize for going over.
+
+01:22:56.200 --> 01:22:57.820 align:middle line:90%
+Thanks for your patience.
+
+01:22:57.820 --> 01:22:59.080 align:middle line:90%
+Have a good weekend.
+
+01:22:59.080 --> 01:23:01.370 align:middle line:90%
+I will see you next week.
+
+01:23:01.370 --> 01:23:09.000 align:middle line:90%

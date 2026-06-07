@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problem Set 3 solutions.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problem Set 3 solutions.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/b3aa2982a337943934e6f1fc2cb22065_MIT18_100BF10_pset3sol.pdf",
+  "file_size": 144955,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Set Solutions"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 3 Solutions (2006)",
+  "uid": "b3aa2982-a337-9439-34e6-f1fc2cb22065",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

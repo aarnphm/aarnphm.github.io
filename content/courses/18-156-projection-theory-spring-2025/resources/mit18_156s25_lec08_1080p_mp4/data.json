@@ -1,0 +1,35 @@
+{
+  "body": "",
+  "content": "<p>The Szemeredi-Trotter theorem gives the sharp answer to a natural discrete projection problem in the plane. The proof of the theorem is based on topology, and it is completely different from the proofs we have explored earlier.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_360p_16_9.mp4",
+  "file_size": 172217763,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Videos"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 08: The Szemeredi-Trotter Theorem",
+  "uid": "188c54f4-39ce-45ee-8135-630457d42d32",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/3h0jvsOnTIc/default.jpg",
+    "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec08_1080p_transcript.pdf"
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "Incidence geometry, projection theory, Szemeredi-Trotter",
+    "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nThe Szemeredi-Trotter theorem gives the sharp answer to a natural discrete projection problem in the plane. The proof of the theorem is based on topology, and it is completely different from the proofs we have explored earlier.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "3h0jvsOnTIc"
+  }
+}

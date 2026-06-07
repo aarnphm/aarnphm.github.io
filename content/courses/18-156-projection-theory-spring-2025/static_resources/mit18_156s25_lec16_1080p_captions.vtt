@@ -1,0 +1,4663 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.905 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.905 --> 00:00:02.405 align:middle line:90%
+
+
+00:00:02.405 --> 00:00:03.829 align:middle line:90%
+[RUSTLING]
+
+00:00:03.829 --> 00:00:04.329 align:middle line:90%
+
+
+00:00:04.329 --> 00:00:07.696 align:middle line:90%
+[CLICKING]
+
+00:00:07.696 --> 00:00:12.040 align:middle line:90%
+
+
+00:00:12.040 --> 00:00:16.340 align:middle line:84%
+PABLO SHMERKIN: So let's
+recall where we were last time.
+
+00:00:16.340 --> 00:00:18.960 align:middle line:84%
+So we are trying to prove
+Bourgain's projection theorem.
+
+00:00:18.960 --> 00:00:22.120 align:middle line:84%
+I guess I will state
+it again later.
+
+00:00:22.120 --> 00:00:26.560 align:middle line:84%
+But last time, we hopefully
+accepted the following fact
+
+00:00:26.560 --> 00:00:28.840 align:middle line:90%
+as true.
+
+00:00:28.840 --> 00:00:45.280 align:middle line:84%
+OK, so maybe if a
+subset of 0, 1 is--
+
+00:00:45.280 --> 00:00:56.280 align:middle line:84%
+OK, so given S is 0, 1, there
+exists eta epsilon positive
+
+00:00:56.280 --> 00:01:02.850 align:middle line:84%
+depending on S. And if we have
+a set, which is an S delta,
+
+00:01:02.850 --> 00:01:07.690 align:middle line:84%
+delta to the minus
+eta set, then there
+
+00:01:07.690 --> 00:01:12.810 align:middle line:84%
+exists a little A in the set
+such that the size of A plus
+
+00:01:12.810 --> 00:01:18.730 align:middle line:84%
+little a, a grows by
+delta to the minus epsilon
+
+00:01:18.730 --> 00:01:20.190 align:middle line:90%
+compared to the size of a.
+
+00:01:20.190 --> 00:01:23.090 align:middle line:90%
+
+
+00:01:23.090 --> 00:01:26.370 align:middle line:84%
+So Larry pointed out,
+OK, so initially,
+
+00:01:26.370 --> 00:01:29.450 align:middle line:84%
+instead of this, we have
+some polynomial q of A,
+
+00:01:29.450 --> 00:01:31.490 align:middle line:90%
+such as aA minus aA.
+
+00:01:31.490 --> 00:01:34.650 align:middle line:84%
+So Larry pointed out to me that
+if you follow exactly what you
+
+00:01:34.650 --> 00:01:38.450 align:middle line:84%
+did in the finite-field setting
+to go from q of a to this,
+
+00:01:38.450 --> 00:01:40.770 align:middle line:84%
+you need to use the
+non-concentration condition
+
+00:01:40.770 --> 00:01:42.690 align:middle line:90%
+that we are trying to prove.
+
+00:01:42.690 --> 00:01:46.150 align:middle line:84%
+But it is possible to do it in
+a way, which is not circular.
+
+00:01:46.150 --> 00:01:50.050 align:middle line:84%
+So OK, so I said,
+I was not going
+
+00:01:50.050 --> 00:01:51.750 align:middle line:90%
+to cover all of the details.
+
+00:01:51.750 --> 00:01:53.690 align:middle line:84%
+So using Plunnecke-Ruzsa--
+so Plunnecke-Ruzsa
+
+00:01:53.690 --> 00:01:57.130 align:middle line:84%
+is the main tool, and
+suitable double counting,
+
+00:01:57.130 --> 00:02:00.220 align:middle line:84%
+one can really prove this
+without using something
+
+00:02:00.220 --> 00:02:02.860 align:middle line:90%
+that we haven't proved yet.
+
+00:02:02.860 --> 00:02:05.860 align:middle line:84%
+OK, and the goal
+is to improve this
+
+00:02:05.860 --> 00:02:09.340 align:middle line:84%
+by showing that A
+plus aA satisfies
+
+00:02:09.340 --> 00:02:11.060 align:middle line:84%
+a better non-concentration
+condition that
+
+00:02:11.060 --> 00:02:12.900 align:middle line:90%
+will allow us to iterate.
+
+00:02:12.900 --> 00:02:16.340 align:middle line:84%
+So the goal is to show
+that A plus aA actually
+
+00:02:16.340 --> 00:02:20.660 align:middle line:84%
+contains because it is not
+true that it always is, but it
+
+00:02:20.660 --> 00:02:28.660 align:middle line:84%
+contains a delta S plus
+epsilon delta to the minus
+
+00:02:28.660 --> 00:02:35.380 align:middle line:84%
+maybe let's call
+it eta prime set.
+
+00:02:35.380 --> 00:02:39.260 align:middle line:84%
+So the eta can get
+worse when one iterates.
+
+00:02:39.260 --> 00:02:41.080 align:middle line:84%
+But one iterates
+finitely many times.
+
+00:02:41.080 --> 00:02:43.340 align:middle line:90%
+So this is not serious.
+
+00:02:43.340 --> 00:02:45.380 align:middle line:90%
+OK.
+
+00:02:45.380 --> 00:02:47.460 align:middle line:90%
+OK, maybe for a different.
+
+00:02:47.460 --> 00:02:49.130 align:middle line:84%
+So the epsilon is
+also going to change.
+
+00:02:49.130 --> 00:02:59.230 align:middle line:90%
+
+
+00:02:59.230 --> 00:03:06.310 align:middle line:84%
+OK, so I'm basically
+going back to what
+
+00:03:06.310 --> 00:03:07.650 align:middle line:90%
+I did at the end of last time.
+
+00:03:07.650 --> 00:03:08.810 align:middle line:90%
+But I was rushing a bit.
+
+00:03:08.810 --> 00:03:12.310 align:middle line:84%
+So I'm going to be a bit
+more precise, hopefully.
+
+00:03:12.310 --> 00:03:19.600 align:middle line:84%
+Suppose that A is delta S delta
+to the minus eta square set.
+
+00:03:19.600 --> 00:03:24.270 align:middle line:90%
+
+
+00:03:24.270 --> 00:03:27.020 align:middle line:84%
+Well, in particular, it is an
+S delta, delta to the minus--
+
+00:03:27.020 --> 00:03:30.430 align:middle line:90%
+
+
+00:03:30.430 --> 00:03:33.190 align:middle line:90%
+so I guess delta goes first.
+
+00:03:33.190 --> 00:03:35.350 align:middle line:84%
+In particular, it
+is a delta S delta
+
+00:03:35.350 --> 00:03:37.850 align:middle line:84%
+to the minus eta set because
+eta is a very small number.
+
+00:03:37.850 --> 00:03:39.510 align:middle line:90%
+But why did I square it?
+
+00:03:39.510 --> 00:03:45.610 align:middle line:90%
+Because then, it is OK.
+
+00:03:45.610 --> 00:03:48.310 align:middle line:84%
+And as we saw last
+time, if we take
+
+00:03:48.310 --> 00:03:50.990 align:middle line:84%
+a subset of a which
+is uniform, delta m
+
+00:03:50.990 --> 00:03:54.980 align:middle line:84%
+uniform for some
+good choice of delta,
+
+00:03:54.980 --> 00:03:58.240 align:middle line:84%
+delta will have to be chosen
+small enough in terms of eta,
+
+00:03:58.240 --> 00:03:59.090 align:middle line:90%
+but nothing else.
+
+00:03:59.090 --> 00:04:01.840 align:middle line:90%
+
+
+00:04:01.840 --> 00:04:11.350 align:middle line:84%
+Then, so we may assume
+let's call it delta uniform.
+
+00:04:11.350 --> 00:04:14.160 align:middle line:90%
+
+
+00:04:14.160 --> 00:04:19.079 align:middle line:90%
+Or delta depends on eta.
+
+00:04:19.079 --> 00:04:21.060 align:middle line:84%
+So that basically,
+this doesn't change.
+
+00:04:21.060 --> 00:04:23.680 align:middle line:90%
+Maybe one has to multiply by 2.
+
+00:04:23.680 --> 00:04:27.120 align:middle line:84%
+But essentially,
+it doesn't change.
+
+00:04:27.120 --> 00:04:30.840 align:middle line:84%
+Well then, this set,
+because it's uniform now,
+
+00:04:30.840 --> 00:04:34.640 align:middle line:84%
+is also rho, is
+delta to the minus
+
+00:04:34.640 --> 00:04:37.670 align:middle line:90%
+eta squared z for every who.
+
+00:04:37.670 --> 00:04:46.240 align:middle line:90%
+
+
+00:04:46.240 --> 00:04:49.440 align:middle line:84%
+And then this implies
+that it is also
+
+00:04:49.440 --> 00:04:52.690 align:middle line:90%
+a row is rho to the minus eta.
+
+00:04:52.690 --> 00:04:54.790 align:middle line:84%
+So the problem here is
+that now, we have rho here,
+
+00:04:54.790 --> 00:04:56.850 align:middle line:90%
+but we still have delta here.
+
+00:04:56.850 --> 00:05:00.210 align:middle line:84%
+But we replace eta
+by eta squared so
+
+00:05:00.210 --> 00:05:03.290 align:middle line:90%
+that we can have also rho here.
+
+00:05:03.290 --> 00:05:07.810 align:middle line:84%
+And this will be for every
+who between delta and delta
+
+00:05:07.810 --> 00:05:13.808 align:middle line:90%
+to the eta, right?
+
+00:05:13.808 --> 00:05:16.100 align:middle line:84%
+Because we started with delta
+to the minus eta squared.
+
+00:05:16.100 --> 00:05:19.490 align:middle line:90%
+
+
+00:05:19.490 --> 00:05:22.770 align:middle line:84%
+OK, we don't go all the
+way to 1, but almost.
+
+00:05:22.770 --> 00:05:24.650 align:middle line:90%
+Eta is very, very small.
+
+00:05:24.650 --> 00:05:27.230 align:middle line:90%
+So morally, this is almost 1.
+
+00:05:27.230 --> 00:05:34.810 align:middle line:90%
+
+
+00:05:34.810 --> 00:05:37.730 align:middle line:84%
+So from here to here,
+we use the uniformity.
+
+00:05:37.730 --> 00:05:41.770 align:middle line:84%
+So one consequence of uniformity
+that I explained last time
+
+00:05:41.770 --> 00:05:48.650 align:middle line:84%
+is that a uniform delta z is
+also a rho set for every rho.
+
+00:05:48.650 --> 00:05:53.890 align:middle line:84%
+And this is just
+trivial inequality
+
+00:05:53.890 --> 00:05:56.240 align:middle line:84%
+using that rho is at
+most delta to the eta.
+
+00:05:56.240 --> 00:06:02.690 align:middle line:90%
+
+
+00:06:02.690 --> 00:06:06.010 align:middle line:84%
+OK, so this means that we
+can apply what we've already
+
+00:06:06.010 --> 00:06:09.570 align:middle line:84%
+know for every scale rho
+between delta and delta
+
+00:06:09.570 --> 00:06:12.110 align:middle line:84%
+to the eta, because it
+satisfies the assumptions.
+
+00:06:12.110 --> 00:06:17.250 align:middle line:90%
+
+
+00:06:17.250 --> 00:06:19.330 align:middle line:84%
+And another thing that
+I explained last time
+
+00:06:19.330 --> 00:06:22.050 align:middle line:84%
+is that even though
+a priori, we only
+
+00:06:22.050 --> 00:06:27.250 align:middle line:84%
+know that there exists an
+A so that A plus aA grows,
+
+00:06:27.250 --> 00:06:29.910 align:middle line:84%
+by applying that to
+the set of exceptions,
+
+00:06:29.910 --> 00:06:32.650 align:middle line:84%
+we get that this
+is true for almost
+
+00:06:32.650 --> 00:06:35.610 align:middle line:90%
+every A in a strong sense.
+
+00:06:35.610 --> 00:06:40.220 align:middle line:84%
+So if we put all of these
+together, what we get is that--
+
+00:06:40.220 --> 00:06:44.770 align:middle line:90%
+
+
+00:06:44.770 --> 00:06:47.810 align:middle line:84%
+OK, so maybe let's
+recall what I just said.
+
+00:06:47.810 --> 00:06:54.700 align:middle line:84%
+So in fact, the set
+of A. OK, so let's
+
+00:06:54.700 --> 00:06:59.020 align:middle line:84%
+work with some finite set of
+rhos, which are powers of delta
+
+00:06:59.020 --> 00:06:59.940 align:middle line:90%
+again.
+
+00:06:59.940 --> 00:07:04.340 align:middle line:84%
+So we have delta, delta
+squared, up to delta,
+
+00:07:04.340 --> 00:07:08.740 align:middle line:90%
+to some maybe m prime.
+
+00:07:08.740 --> 00:07:12.860 align:middle line:84%
+So that this is equal
+to delta to the eta.
+
+00:07:12.860 --> 00:07:16.900 align:middle line:84%
+And recall that little
+delta is delta to the m.
+
+00:07:16.900 --> 00:07:20.040 align:middle line:84%
+So m prime is less than
+m, but it is close to m.
+
+00:07:20.040 --> 00:07:23.420 align:middle line:90%
+
+
+00:07:23.420 --> 00:07:28.780 align:middle line:84%
+And again, this is a finite
+set of scales, but not really
+
+00:07:28.780 --> 00:07:30.540 align:middle line:90%
+finite, because OK.
+
+00:07:30.540 --> 00:07:33.140 align:middle line:84%
+It is finite, but
+it grows with delta.
+
+00:07:33.140 --> 00:07:35.620 align:middle line:84%
+But it grows
+logarithmically with delta.
+
+00:07:35.620 --> 00:07:41.560 align:middle line:84%
+So m is logarithm of little
+delta in base, big delta.
+
+00:07:41.560 --> 00:07:42.980 align:middle line:90%
+Big delta is fixed.
+
+00:07:42.980 --> 00:07:45.740 align:middle line:90%
+So it's logarithmic in delta.
+
+00:07:45.740 --> 00:07:46.760 align:middle line:90%
+And m prime is smaller.
+
+00:07:46.760 --> 00:07:48.950 align:middle line:84%
+So it's also
+logarithmic in delta.
+
+00:07:48.950 --> 00:08:01.510 align:middle line:84%
+OK, so for each rho, we
+know that the set of A's
+
+00:08:01.510 --> 00:08:05.950 align:middle line:84%
+so that A plus rho
+A doesn't grow.
+
+00:08:05.950 --> 00:08:06.710 align:middle line:90%
+Sorry.
+
+00:08:06.710 --> 00:08:11.310 align:middle line:84%
+little a, but measurable
+scale rho doesn't
+
+00:08:11.310 --> 00:08:20.150 align:middle line:84%
+grow by rho to the
+minus epsilon has
+
+00:08:20.150 --> 00:08:29.990 align:middle line:84%
+size at most rho to the
+eta times the size of A.
+
+00:08:29.990 --> 00:08:31.090 align:middle line:90%
+And why is this true?
+
+00:08:31.090 --> 00:08:37.789 align:middle line:84%
+Because if this was
+not true, then we
+
+00:08:37.789 --> 00:08:45.230 align:middle line:84%
+could apply the statement
+above to the scale rho
+
+00:08:45.230 --> 00:08:48.998 align:middle line:84%
+to the set of exceptions to this
+set, and get a contradiction.
+
+00:08:48.998 --> 00:09:13.920 align:middle line:90%
+
+
+00:09:13.920 --> 00:09:17.620 align:middle line:84%
+OK, and this is very
+small in terms of delta.
+
+00:09:17.620 --> 00:09:20.830 align:middle line:84%
+So rho to the eta is, at
+most, delta to eta squared.
+
+00:09:20.830 --> 00:09:32.760 align:middle line:90%
+
+
+00:09:32.760 --> 00:09:33.280 align:middle line:90%
+Sorry.
+
+00:09:33.280 --> 00:09:38.200 align:middle line:90%
+Here, OK.
+
+00:09:38.200 --> 00:09:41.320 align:middle line:84%
+OK, so here, we are
+counting a set of A's.
+
+00:09:41.320 --> 00:09:44.450 align:middle line:84%
+So the only way in which we can
+really count a set of A's is
+
+00:09:44.450 --> 00:09:46.290 align:middle line:90%
+by measuring some scale.
+
+00:09:46.290 --> 00:09:47.710 align:middle line:90%
+Otherwise, it could be infinite.
+
+00:09:47.710 --> 00:09:49.240 align:middle line:84%
+So we always have
+to choose a scale.
+
+00:09:49.240 --> 00:09:52.010 align:middle line:90%
+
+
+00:09:52.010 --> 00:09:53.210 align:middle line:90%
+So scale rho.
+
+00:09:53.210 --> 00:09:56.000 align:middle line:84%
+OK, rho to the eta is, at
+most, delta to the eta squared.
+
+00:09:56.000 --> 00:10:00.130 align:middle line:90%
+
+
+00:10:00.130 --> 00:10:01.220 align:middle line:90%
+And this means that--
+
+00:10:01.220 --> 00:10:11.210 align:middle line:90%
+
+
+00:10:11.210 --> 00:10:11.830 align:middle line:90%
+sorry.
+
+00:10:11.830 --> 00:10:13.970 align:middle line:90%
+This is wrong.
+
+00:10:13.970 --> 00:10:15.390 align:middle line:90%
+Let's go back and fix it.
+
+00:10:15.390 --> 00:10:17.390 align:middle line:90%
+So delta is too large.
+
+00:10:17.390 --> 00:10:18.590 align:middle line:90%
+So delta is a constant.
+
+00:10:18.590 --> 00:10:23.270 align:middle line:84%
+So I want to be away from 1, not
+away from 0, but away from 1.
+
+00:10:23.270 --> 00:10:25.370 align:middle line:84%
+So the rhos that we
+consider are delta
+
+00:10:25.370 --> 00:10:30.510 align:middle line:84%
+to the m, which is little
+delta, delta to the minus 1.
+
+00:10:30.510 --> 00:10:35.630 align:middle line:84%
+And then we stop at
+delta to the eta.
+
+00:10:35.630 --> 00:10:38.450 align:middle line:90%
+
+
+00:10:38.450 --> 00:10:39.470 align:middle line:90%
+Sorry about that.
+
+00:10:39.470 --> 00:10:43.420 align:middle line:90%
+
+
+00:10:43.420 --> 00:10:48.620 align:middle line:84%
+OK, because we are only looking
+at logarithmically many values
+
+00:10:48.620 --> 00:10:54.020 align:middle line:84%
+of delta, OK, one has to work
+a little bit more because here,
+
+00:10:54.020 --> 00:10:56.260 align:middle line:84%
+we are measuring
+things at scale rho.
+
+00:10:56.260 --> 00:11:00.943 align:middle line:90%
+But rho is far away from 1.
+
+00:11:00.943 --> 00:11:02.860 align:middle line:84%
+And there are only
+logarithmically many values
+
+00:11:02.860 --> 00:11:03.820 align:middle line:90%
+of rho.
+
+00:11:03.820 --> 00:11:06.900 align:middle line:84%
+So putting all
+together, what we get
+
+00:11:06.900 --> 00:11:31.140 align:middle line:84%
+is that for all A outside
+of a small set, maybe
+
+00:11:31.140 --> 00:11:41.590 align:middle line:84%
+something like a set of size
+delta to the eta, I don't know,
+
+00:11:41.590 --> 00:11:53.710 align:middle line:84%
+cubed times the size of A. We
+get that A plus little aA grows
+
+00:11:53.710 --> 00:11:56.580 align:middle line:90%
+for every scale in this family.
+
+00:11:56.580 --> 00:12:14.470 align:middle line:90%
+
+
+00:12:14.470 --> 00:12:16.150 align:middle line:84%
+OK, and now, it
+looks like we are
+
+00:12:16.150 --> 00:12:19.750 align:middle line:84%
+getting close
+because, well, we want
+
+00:12:19.750 --> 00:12:29.630 align:middle line:84%
+to show that this contains delta
+S plus epsilon something set.
+
+00:12:29.630 --> 00:12:32.590 align:middle line:84%
+And a necessary condition
+is that we have growth
+
+00:12:32.590 --> 00:12:33.280 align:middle line:90%
+at every scale.
+
+00:12:33.280 --> 00:12:36.950 align:middle line:90%
+
+
+00:12:36.950 --> 00:12:43.440 align:middle line:84%
+So if you have a delta S
+plus epsilon something set,
+
+00:12:43.440 --> 00:12:45.880 align:middle line:90%
+then this will be true.
+
+00:12:45.880 --> 00:12:48.680 align:middle line:84%
+And if we knew that
+this set is uniform,
+
+00:12:48.680 --> 00:12:51.615 align:middle line:84%
+we would be done,
+because for uniform set,
+
+00:12:51.615 --> 00:12:53.240 align:middle line:84%
+the condition of
+growing at every scale
+
+00:12:53.240 --> 00:12:55.600 align:middle line:90%
+is necessary and sufficient.
+
+00:12:55.600 --> 00:12:58.960 align:middle line:84%
+But we don't know that
+this set is uniform.
+
+00:12:58.960 --> 00:13:00.260 align:middle line:90%
+So we are not done yet.
+
+00:13:00.260 --> 00:13:03.960 align:middle line:84%
+So we are getting closer,
+but we are not done yet.
+
+00:13:03.960 --> 00:13:05.520 align:middle line:90%
+Any questions?
+
+00:13:05.520 --> 00:13:09.920 align:middle line:84%
+So this is more or less
+where we were last time.
+
+00:13:09.920 --> 00:13:13.720 align:middle line:84%
+OK, so in order to
+be able to finish,
+
+00:13:13.720 --> 00:13:16.880 align:middle line:90%
+we still have to work a bit.
+
+00:13:16.880 --> 00:13:21.840 align:middle line:84%
+And there was a claim, that
+I was explaining last time,
+
+00:13:21.840 --> 00:13:24.520 align:middle line:90%
+that we can improve this.
+
+00:13:24.520 --> 00:13:27.140 align:middle line:84%
+So here, we are
+projecting A times A.
+
+00:13:27.140 --> 00:13:29.720 align:middle line:84%
+So this is pi A of
+A times A. So we
+
+00:13:29.720 --> 00:13:33.080 align:middle line:84%
+can improve this to project
+an arbitrary dense subset
+
+00:13:33.080 --> 00:13:41.410 align:middle line:84%
+of A times A. So claim, if
+g is contained in A times A.
+
+00:13:41.410 --> 00:13:45.050 align:middle line:90%
+And it has size at scale delta.
+
+00:13:45.050 --> 00:13:49.610 align:middle line:84%
+Let's say delta to the eta
+squared, or something like this,
+
+00:13:49.610 --> 00:14:00.490 align:middle line:84%
+relative to A times A,
+then Pa of G already grows.
+
+00:14:00.490 --> 00:14:07.630 align:middle line:84%
+And in fact, we will also want
+to apply it at many scales.
+
+00:14:07.630 --> 00:14:08.570 align:middle line:90%
+Or maybe not.
+
+00:14:08.570 --> 00:14:09.190 align:middle line:90%
+We'll see.
+
+00:14:09.190 --> 00:14:10.790 align:middle line:84%
+OK, let's start
+with scale delta.
+
+00:14:10.790 --> 00:14:13.330 align:middle line:84%
+Then we'll see what
+we actually need.
+
+00:14:13.330 --> 00:14:16.150 align:middle line:84%
+Then this already grows,
+let's say by epsilon over 2.
+
+00:14:16.150 --> 00:14:23.440 align:middle line:90%
+
+
+00:14:23.440 --> 00:14:27.330 align:middle line:84%
+OK, and I guess
+at this stage, we
+
+00:14:27.330 --> 00:14:30.690 align:middle line:84%
+claim that there
+exists such an A.
+
+00:14:30.690 --> 00:14:32.730 align:middle line:84%
+But once again, if
+there exists an A,
+
+00:14:32.730 --> 00:14:35.450 align:middle line:84%
+then it is true for
+nearly all A by applying
+
+00:14:35.450 --> 00:14:38.620 align:middle line:84%
+the fact that there exists
+an A to the exceptional set.
+
+00:14:38.620 --> 00:14:40.920 align:middle line:84%
+So we can play this game
+as many times as we want.
+
+00:14:40.920 --> 00:14:43.380 align:middle line:84%
+And we want to
+play it many times.
+
+00:14:43.380 --> 00:14:47.780 align:middle line:84%
+OK, so last time, we were in
+the middle of proving this.
+
+00:14:47.780 --> 00:14:49.540 align:middle line:90%
+So let's start again.
+
+00:14:49.540 --> 00:14:54.100 align:middle line:84%
+Assume that 1 is in A.
+This is just to avoid to--
+
+00:14:54.100 --> 00:14:56.260 align:middle line:84%
+OK, just for
+notational simplicity.
+
+00:14:56.260 --> 00:15:01.020 align:middle line:90%
+It's not important.
+
+00:15:01.020 --> 00:15:05.180 align:middle line:84%
+Well, if A equals
+1 works, we are
+
+00:15:05.180 --> 00:15:07.820 align:middle line:84%
+done because we are trying to
+show that some element of A
+
+00:15:07.820 --> 00:15:08.400 align:middle line:90%
+works.
+
+00:15:08.400 --> 00:15:12.780 align:middle line:84%
+So if the element 1 happens
+to work, we are happy.
+
+00:15:12.780 --> 00:15:17.380 align:middle line:90%
+Otherwise, 1 doesn't work.
+
+00:15:17.380 --> 00:15:19.060 align:middle line:84%
+And the fact that 1
+doesn't work means
+
+00:15:19.060 --> 00:15:33.100 align:middle line:84%
+that there exists G, which
+is dense in A times A,
+
+00:15:33.100 --> 00:15:38.280 align:middle line:84%
+and such that pi 1 of G
+doesn't grow too much.
+
+00:15:38.280 --> 00:15:49.980 align:middle line:90%
+
+
+00:15:49.980 --> 00:15:51.940 align:middle line:90%
+And this, OK.
+
+00:15:51.940 --> 00:15:54.100 align:middle line:84%
+So all of these
+together are exactly
+
+00:15:54.100 --> 00:15:56.442 align:middle line:84%
+the assumptions of
+Balog-Szemeredi-Gowers
+
+00:15:56.442 --> 00:15:57.900 align:middle line:84%
+or rather the delta
+covering number
+
+00:15:57.900 --> 00:15:59.160 align:middle line:90%
+of Balog-Szemeredi-Gowers.
+
+00:15:59.160 --> 00:16:01.980 align:middle line:84%
+But as I explained a
+couple of lectures ago,
+
+00:16:01.980 --> 00:16:04.940 align:middle line:84%
+Balog-Szemeredi-Gowers
+works exactly the same
+
+00:16:04.940 --> 00:16:06.190 align:middle line:90%
+for delta covering numbers.
+
+00:16:06.190 --> 00:16:09.500 align:middle line:90%
+
+
+00:16:09.500 --> 00:16:15.340 align:middle line:84%
+So maybe let's recall
+Balog-Szemeredi-Gowers
+
+00:16:15.340 --> 00:16:27.420 align:middle line:84%
+for delta-covering numbers
+if A at scale delta has size
+
+00:16:27.420 --> 00:16:34.350 align:middle line:84%
+N, and there exists G
+contained in A times
+
+00:16:34.350 --> 00:16:43.510 align:middle line:84%
+A such that the size of G at
+scale delta is at least 1 over K
+
+00:16:43.510 --> 00:16:46.950 align:middle line:84%
+times the size of A
+plus A at scale delta.
+
+00:16:46.950 --> 00:16:55.470 align:middle line:84%
+And if we project in
+the direction 1, this G,
+
+00:16:55.470 --> 00:17:00.750 align:middle line:84%
+this doesn't grow a lot compared
+to the size of A. If all of this
+
+00:17:00.750 --> 00:17:05.949 align:middle line:84%
+is true, then there exists a
+set A prime contained in A,
+
+00:17:05.949 --> 00:17:08.150 align:middle line:90%
+which is fairly dense.
+
+00:17:08.150 --> 00:17:12.150 align:middle line:84%
+So the size of at scale
+delta is at least K
+
+00:17:12.150 --> 00:17:18.310 align:middle line:84%
+to minus a constant
+times the size of A.
+
+00:17:18.310 --> 00:17:20.340 align:middle line:90%
+And A prime has a small subset.
+
+00:17:20.340 --> 00:17:28.950 align:middle line:90%
+
+
+00:17:28.950 --> 00:17:32.560 align:middle line:84%
+The doubling constant for
+A prime is, at most, K
+
+00:17:32.560 --> 00:17:36.150 align:middle line:84%
+to a constant power times
+the size of A prime.
+
+00:17:36.150 --> 00:17:40.080 align:middle line:90%
+
+
+00:17:40.080 --> 00:17:44.360 align:middle line:84%
+OK, this is
+Balog-Szemeredi-Gowers.
+
+00:17:44.360 --> 00:17:47.840 align:middle line:84%
+Well, here, we can take
+well, N is just the delta
+
+00:17:47.840 --> 00:17:50.560 align:middle line:84%
+covering number of
+A, and we can take
+
+00:17:50.560 --> 00:17:55.840 align:middle line:84%
+K to be the minimum between eta
+squared, delta to the minus eta
+
+00:17:55.840 --> 00:17:59.080 align:middle line:84%
+squared, and delta to the minus
+epsilon over 2, which is really
+
+00:17:59.080 --> 00:18:00.380 align:middle line:90%
+delta to the minus eta squared.
+
+00:18:00.380 --> 00:18:02.720 align:middle line:84%
+You should imagine that eta
+is smaller than epsilon,
+
+00:18:02.720 --> 00:18:03.710 align:middle line:90%
+even before squaring.
+
+00:18:03.710 --> 00:18:08.000 align:middle line:90%
+
+
+00:18:08.000 --> 00:18:13.800 align:middle line:84%
+OK, so we apply by
+Balog-Szemeredi-Gowers
+
+00:18:13.800 --> 00:18:23.120 align:middle line:84%
+and let A prime be
+the corresponding set.
+
+00:18:23.120 --> 00:18:43.170 align:middle line:90%
+
+
+00:18:43.170 --> 00:18:56.720 align:middle line:84%
+OK, and then A prime is dense
+in A, and has small subset.
+
+00:18:56.720 --> 00:19:22.930 align:middle line:90%
+
+
+00:19:22.930 --> 00:19:28.980 align:middle line:84%
+OK, so A prime is a
+dense subset of A. A
+
+00:19:28.980 --> 00:19:31.680 align:middle line:90%
+is a delta S something set.
+
+00:19:31.680 --> 00:19:34.320 align:middle line:84%
+So A prime is also a
+delta S something set,
+
+00:19:34.320 --> 00:19:36.420 align:middle line:84%
+because we saw that subsets
+of delta A something
+
+00:19:36.420 --> 00:19:39.400 align:middle line:84%
+sets or delta S something
+sets where the constant.
+
+00:19:39.400 --> 00:19:42.500 align:middle line:84%
+So basically, you have to
+multiply the constant by this.
+
+00:19:42.500 --> 00:19:47.500 align:middle line:84%
+But A was a delta S delta
+to the epsilon square set.
+
+00:19:47.500 --> 00:19:50.460 align:middle line:84%
+So this is still a delta
+S delta to the minus
+
+00:19:50.460 --> 00:19:53.380 align:middle line:90%
+O of epsilon squared set.
+
+00:19:53.380 --> 00:19:56.140 align:middle line:84%
+So we can apply what
+we've know to A prime.
+
+00:19:56.140 --> 00:20:04.980 align:middle line:84%
+So A prime is a delta S delta to
+the minus O of eta square set.
+
+00:20:04.980 --> 00:20:07.940 align:middle line:90%
+So there exists A--
+
+00:20:07.940 --> 00:20:14.170 align:middle line:84%
+an A prime, sorry, such that A
+prime plus alpha A prime grows.
+
+00:20:14.170 --> 00:20:22.300 align:middle line:90%
+
+
+00:20:22.300 --> 00:20:27.070 align:middle line:84%
+By applying the fact from
+the beginning to A prime,
+
+00:20:27.070 --> 00:20:28.950 align:middle line:84%
+it still satisfies
+the assumptions.
+
+00:20:28.950 --> 00:20:31.780 align:middle line:84%
+We have lost a constant
+here, but this is harmless.
+
+00:20:31.780 --> 00:20:36.590 align:middle line:90%
+
+
+00:20:36.590 --> 00:20:37.890 align:middle line:90%
+Any questions so far?
+
+00:20:37.890 --> 00:20:42.190 align:middle line:90%
+
+
+00:20:42.190 --> 00:20:44.870 align:middle line:84%
+OK, and now, we apply
+something that you've seen
+
+00:20:44.870 --> 00:20:46.130 align:middle line:90%
+in the finite-field setting.
+
+00:20:46.130 --> 00:20:48.630 align:middle line:84%
+And again, this works
+exactly the same way
+
+00:20:48.630 --> 00:20:50.643 align:middle line:90%
+for delta covering sets.
+
+00:20:50.643 --> 00:20:52.310 align:middle line:84%
+What you saw in the
+finite-field setting
+
+00:20:52.310 --> 00:20:56.890 align:middle line:84%
+is that if you have a set
+with the smallest subset.
+
+00:20:56.890 --> 00:20:59.190 align:middle line:90%
+So small pi 1 projection.
+
+00:20:59.190 --> 00:21:06.150 align:middle line:84%
+And large pi A projection, then
+in fact, the pi A projection
+
+00:21:06.150 --> 00:21:10.110 align:middle line:84%
+remains large if we
+pass to a dense subset
+
+00:21:10.110 --> 00:21:13.470 align:middle line:90%
+of A prime just times A prime.
+
+00:21:13.470 --> 00:21:18.000 align:middle line:84%
+OK, so this is another recall
+from the finite-field story.
+
+00:21:18.000 --> 00:21:21.550 align:middle line:90%
+
+
+00:21:21.550 --> 00:21:26.420 align:middle line:84%
+If A prime plus A
+prime, let's say again,
+
+00:21:26.420 --> 00:21:33.320 align:middle line:84%
+it grows by, at most, K. And
+A prime plus little A prime,
+
+00:21:33.320 --> 00:21:37.260 align:middle line:84%
+let's say, so A prime
+has small doubling.
+
+00:21:37.260 --> 00:21:43.920 align:middle line:84%
+But if you apply projection
+by A, it grows by something.
+
+00:21:43.920 --> 00:21:50.160 align:middle line:84%
+Then in fact, this implies that
+for every G in A prime times
+
+00:21:50.160 --> 00:22:01.480 align:middle line:84%
+A prime, which is dense, let's
+say dense with threshold 1
+
+00:22:01.480 --> 00:22:09.880 align:middle line:84%
+over K, everything measured
+with delta covering numbers,
+
+00:22:09.880 --> 00:22:11.730 align:middle line:90%
+the projection is still large.
+
+00:22:11.730 --> 00:22:18.120 align:middle line:90%
+
+
+00:22:18.120 --> 00:22:21.520 align:middle line:84%
+And I think it's K to
+minus some constant.
+
+00:22:21.520 --> 00:22:23.080 align:middle line:84%
+And the L deal
+basically survives.
+
+00:22:23.080 --> 00:22:37.130 align:middle line:90%
+
+
+00:22:37.130 --> 00:22:39.550 align:middle line:84%
+Does this look like
+something you've seen before?
+
+00:22:39.550 --> 00:22:43.650 align:middle line:90%
+
+
+00:22:43.650 --> 00:22:47.570 align:middle line:84%
+OK, does it look
+like something that--
+
+00:22:47.570 --> 00:22:54.910 align:middle line:84%
+OK, well, go back to your notes,
+or otherwise, just believe me,
+
+00:22:54.910 --> 00:22:57.283 align:middle line:90%
+this is true.
+
+00:22:57.283 --> 00:22:59.450 align:middle line:84%
+Larry told me you've seen
+something like this, maybe
+
+00:22:59.450 --> 00:23:00.692 align:middle line:90%
+with different letters.
+
+00:23:00.692 --> 00:23:02.150 align:middle line:84%
+Very likely with
+different letters.
+
+00:23:02.150 --> 00:23:05.110 align:middle line:84%
+But the point is have a
+set of small doubling,
+
+00:23:05.110 --> 00:23:07.570 align:middle line:90%
+but large pi A projection.
+
+00:23:07.570 --> 00:23:09.750 align:middle line:84%
+Then the pi A
+projection is large,
+
+00:23:09.750 --> 00:23:11.260 align:middle line:84%
+even after passing
+through a subset.
+
+00:23:11.260 --> 00:23:14.570 align:middle line:90%
+
+
+00:23:14.570 --> 00:23:16.890 align:middle line:84%
+OK, so it looks
+like we've almost
+
+00:23:16.890 --> 00:23:23.700 align:middle line:84%
+won because look at the claim,
+and look at what we have here.
+
+00:23:23.700 --> 00:23:25.160 align:middle line:90%
+OK, have we really won?
+
+00:23:25.160 --> 00:23:28.100 align:middle line:90%
+
+
+00:23:28.100 --> 00:23:31.580 align:middle line:84%
+Not exactly, because
+the claim was for A,
+
+00:23:31.580 --> 00:23:35.060 align:middle line:84%
+and we got it for A prime,
+which is a dense subset of A,
+
+00:23:35.060 --> 00:23:41.260 align:middle line:84%
+but it is not A. So one has
+to work a bit to really win.
+
+00:23:41.260 --> 00:23:45.700 align:middle line:84%
+But you will have to trust me
+that one can win from here.
+
+00:23:45.700 --> 00:23:49.340 align:middle line:84%
+So the claim was
+that, what we obtain
+
+00:23:49.340 --> 00:23:54.360 align:middle line:84%
+for A prime is true for A.
+And we got it for A prime,
+
+00:23:54.360 --> 00:23:57.880 align:middle line:84%
+not for A. So we'll briefly
+explain how to get it for A.
+
+00:23:57.880 --> 00:24:00.100 align:middle line:84%
+But I will not do
+all of the details,
+
+00:24:00.100 --> 00:24:04.140 align:middle line:84%
+because otherwise,
+we'll be here forever.
+
+00:24:04.140 --> 00:24:09.310 align:middle line:84%
+Maybe let's keep the
+objective inside.
+
+00:24:09.310 --> 00:24:31.630 align:middle line:90%
+
+
+00:24:31.630 --> 00:24:33.260 align:middle line:90%
+OK, we can upgrade.
+
+00:24:33.260 --> 00:24:38.310 align:middle line:90%
+
+
+00:24:38.310 --> 00:24:40.750 align:middle line:90%
+A prime to A.
+
+00:24:40.750 --> 00:24:46.930 align:middle line:84%
+And the idea is, well, either
+A prime is A, in which case,
+
+00:24:46.930 --> 00:24:48.390 align:middle line:90%
+we win.
+
+00:24:48.390 --> 00:24:52.630 align:middle line:84%
+Or if A prime is not all
+of A, but it is almost all
+
+00:24:52.630 --> 00:24:55.230 align:middle line:84%
+of A, in the sense that A
+minus A prime is really small,
+
+00:24:55.230 --> 00:25:00.750 align:middle line:84%
+we still win because so if the
+difference between A and A prime
+
+00:25:00.750 --> 00:25:03.990 align:middle line:84%
+is really small, you just apply
+trivial bounds on the very
+
+00:25:03.990 --> 00:25:05.990 align:middle line:90%
+small part, and we still win.
+
+00:25:05.990 --> 00:25:16.910 align:middle line:84%
+So if A minus A prime is
+very small, very small maybe,
+
+00:25:16.910 --> 00:25:21.350 align:middle line:84%
+of size less than delta to the
+plus eta, something like this,
+
+00:25:21.350 --> 00:25:25.310 align:middle line:84%
+times the size of
+A, we are fine.
+
+00:25:25.310 --> 00:25:33.610 align:middle line:90%
+Otherwise, do the same.
+
+00:25:33.610 --> 00:25:40.500 align:middle line:84%
+So apply the same argument
+to A minus A prime.
+
+00:25:40.500 --> 00:25:44.150 align:middle line:90%
+
+
+00:25:44.150 --> 00:25:47.550 align:middle line:84%
+If A prime is not very dense
+in A, then A minus A prime
+
+00:25:47.550 --> 00:25:51.310 align:middle line:84%
+is still a delta S delta to
+the minus eta square set.
+
+00:25:51.310 --> 00:25:55.070 align:middle line:84%
+And we can do the same
+and get a new A prime.
+
+00:25:55.070 --> 00:26:00.310 align:middle line:84%
+So maybe the original A prime,
+we can call it A prime 1.
+
+00:26:00.310 --> 00:26:04.030 align:middle line:84%
+And if we apply the same
+thing, we get an A prime 2.
+
+00:26:04.030 --> 00:26:07.350 align:middle line:84%
+Now at the same time, I have to
+play the game that if something
+
+00:26:07.350 --> 00:26:11.470 align:middle line:84%
+is true for 1A, it's true for
+nearly all A because we found
+
+00:26:11.470 --> 00:26:14.670 align:middle line:84%
+that there exists an A, and
+there exists an A prime.
+
+00:26:14.670 --> 00:26:17.240 align:middle line:84%
+But in fact, there
+are lots of A's.
+
+00:26:17.240 --> 00:26:19.647 align:middle line:84%
+But the A prime
+could depend on A.
+
+00:26:19.647 --> 00:26:21.230 align:middle line:84%
+So one has to be a
+little bit careful.
+
+00:26:21.230 --> 00:26:24.864 align:middle line:90%
+
+
+00:26:24.864 --> 00:26:26.880 align:middle line:90%
+But one can play this game.
+
+00:26:26.880 --> 00:26:31.760 align:middle line:84%
+And eventually, one gets,
+so all of these sets
+
+00:26:31.760 --> 00:26:35.390 align:middle line:84%
+have large size because
+they are dense in A prime.
+
+00:26:35.390 --> 00:26:39.720 align:middle line:90%
+
+
+00:26:39.720 --> 00:26:42.960 align:middle line:90%
+Or is it A prime is dense in A?
+
+00:26:42.960 --> 00:26:48.560 align:middle line:84%
+So at some point, and
+they are all disjoint,
+
+00:26:48.560 --> 00:26:52.040 align:middle line:84%
+they are all disjoint because
+we take away the previous ones
+
+00:26:52.040 --> 00:26:53.880 align:middle line:90%
+when we apply this again.
+
+00:26:53.880 --> 00:26:58.440 align:middle line:84%
+So at some point,
+we reach a step
+
+00:26:58.440 --> 00:27:08.440 align:middle line:84%
+where we have exhausted almost
+all of A. Let's say something
+
+00:27:08.440 --> 00:27:09.400 align:middle line:90%
+like this.
+
+00:27:09.400 --> 00:27:11.400 align:middle line:90%
+And then we stop.
+
+00:27:11.400 --> 00:27:15.890 align:middle line:84%
+OK, but I'm cheating
+here because--
+
+00:27:15.890 --> 00:27:16.870 align:middle line:90%
+and then we stop.
+
+00:27:16.870 --> 00:27:20.370 align:middle line:84%
+And then basically, we win
+because if we have a set
+
+00:27:20.370 --> 00:27:23.970 align:middle line:90%
+G which is dense in A times A--
+
+00:27:23.970 --> 00:27:26.150 align:middle line:84%
+OK, we still don't
+really win yet.
+
+00:27:26.150 --> 00:27:28.970 align:middle line:84%
+But if I said G is
+dense in A times A,
+
+00:27:28.970 --> 00:27:34.730 align:middle line:84%
+it will be dense in AI
+prime times AG prime, maybe
+
+00:27:34.730 --> 00:27:36.410 align:middle line:90%
+a different prime.
+
+00:27:36.410 --> 00:27:38.030 align:middle line:90%
+OK, so one still has to work.
+
+00:27:38.030 --> 00:27:39.230 align:middle line:90%
+OK, plus some work.
+
+00:27:39.230 --> 00:27:39.920 align:middle line:90%
+Plus more work.
+
+00:27:39.920 --> 00:27:44.170 align:middle line:90%
+
+
+00:27:44.170 --> 00:27:47.030 align:middle line:84%
+And I'm basically ignoring
+the little a here.
+
+00:27:47.030 --> 00:27:49.810 align:middle line:84%
+But it's OK to ignore the
+little a because everything
+
+00:27:49.810 --> 00:27:53.890 align:middle line:84%
+you prove from one little a is
+true for nearly all little a.
+
+00:27:53.890 --> 00:27:56.023 align:middle line:84%
+Maybe forget what I
+said, but OK, this
+
+00:27:56.023 --> 00:27:57.190 align:middle line:90%
+is one thing you have to do.
+
+00:27:57.190 --> 00:28:00.510 align:middle line:90%
+Just iterate, so iterate this.
+
+00:28:00.510 --> 00:28:02.530 align:middle line:90%
+Here, we get a dense A prime.
+
+00:28:02.530 --> 00:28:04.990 align:middle line:84%
+We want to get all of
+A, not a dense A prime.
+
+00:28:04.990 --> 00:28:09.170 align:middle line:84%
+We iterate, plus
+some double counting.
+
+00:28:09.170 --> 00:28:11.600 align:middle line:90%
+We get that plane.
+
+00:28:11.600 --> 00:28:17.420 align:middle line:90%
+
+
+00:28:17.420 --> 00:28:20.620 align:middle line:90%
+Any questions?
+
+00:28:20.620 --> 00:28:21.760 align:middle line:90%
+So one has to work here.
+
+00:28:21.760 --> 00:28:23.920 align:middle line:90%
+So I haven't proved it.
+
+00:28:23.920 --> 00:28:26.260 align:middle line:84%
+So I don't expect
+you to see the proof.
+
+00:28:26.260 --> 00:28:28.560 align:middle line:84%
+So one thing you have to
+do in the proof is iterate.
+
+00:28:28.560 --> 00:28:33.300 align:middle line:84%
+But you have to do more things,
+and double count carefully.
+
+00:28:33.300 --> 00:28:34.800 align:middle line:90%
+But eventually, one gets that.
+
+00:28:34.800 --> 00:28:38.760 align:middle line:84%
+So one is able to
+upgrade A prime to A. OK,
+
+00:28:38.760 --> 00:28:41.380 align:middle line:90%
+so that claim is true.
+
+00:28:41.380 --> 00:28:43.860 align:middle line:84%
+So that claim says
+that there exists an A.
+
+00:28:43.860 --> 00:28:47.460 align:middle line:84%
+And once there is one A, there
+are many A's, nearly all A's,
+
+00:28:47.460 --> 00:28:50.840 align:middle line:84%
+so that the pi A projection of
+any dense subset of A plus A
+
+00:28:50.840 --> 00:28:51.340 align:middle line:90%
+grows.
+
+00:28:51.340 --> 00:28:56.460 align:middle line:90%
+
+
+00:28:56.460 --> 00:29:02.090 align:middle line:84%
+And now, we are really close
+to the end of that goal.
+
+00:29:02.090 --> 00:29:06.140 align:middle line:90%
+
+
+00:29:06.140 --> 00:29:13.930 align:middle line:84%
+So A plus little aA is
+not necessarily uniform,
+
+00:29:13.930 --> 00:29:17.270 align:middle line:84%
+but we know that it
+contains a uniform subset.
+
+00:29:17.270 --> 00:29:19.430 align:middle line:84%
+And when we pass to
+a uniform subset,
+
+00:29:19.430 --> 00:29:26.830 align:middle line:84%
+we can make it large for any
+subadditive function, set
+
+00:29:26.830 --> 00:29:29.110 align:middle line:90%
+function mu.
+
+00:29:29.110 --> 00:29:32.070 align:middle line:84%
+OK, so this is the mu
+we are going to use now.
+
+00:29:32.070 --> 00:29:35.810 align:middle line:90%
+So mu of B is going to be, OK.
+
+00:29:35.810 --> 00:29:39.980 align:middle line:84%
+So fix little a for
+which the claim holds.
+
+00:29:39.980 --> 00:29:52.710 align:middle line:90%
+
+
+00:29:52.710 --> 00:29:54.630 align:middle line:90%
+So this is the claim star.
+
+00:29:54.630 --> 00:29:59.070 align:middle line:84%
+So we fix a little a
+so that this holds.
+
+00:29:59.070 --> 00:30:03.510 align:middle line:84%
+And then mu of B, and
+here, B is a subset of 0,1,
+
+00:30:03.510 --> 00:30:08.870 align:middle line:84%
+so it's a subset of A really,
+is the delta covering number not
+
+00:30:08.870 --> 00:30:23.070 align:middle line:90%
+of B, but of pi A inverse of B.
+
+00:30:23.070 --> 00:30:24.320 align:middle line:90%
+So this is subadditive, right?
+
+00:30:24.320 --> 00:30:28.800 align:middle line:84%
+Because what is
+mu of B1 union B2?
+
+00:30:28.800 --> 00:30:33.240 align:middle line:84%
+Well, if you take
+primitives, you
+
+00:30:33.240 --> 00:30:37.140 align:middle line:84%
+get something which is contained
+in the union of the primitives.
+
+00:30:37.140 --> 00:30:39.620 align:middle line:84%
+And then the delta covering
+number is subadditive.
+
+00:30:39.620 --> 00:30:44.200 align:middle line:84%
+AUDIENCE: Isn't pi inverse
+of E intersecting cross A?
+
+00:30:44.200 --> 00:30:45.033 align:middle line:90%
+PABLO SHMERKIN: Yes.
+
+00:30:45.033 --> 00:30:46.200 align:middle line:90%
+Sorry.
+
+00:30:46.200 --> 00:30:46.900 align:middle line:90%
+Thank you.
+
+00:30:46.900 --> 00:30:57.440 align:middle line:90%
+
+
+00:30:57.440 --> 00:31:01.425 align:middle line:84%
+So this is finitely subadditive,
+because delta covering number
+
+00:31:01.425 --> 00:31:02.050 align:middle line:90%
+is subadditive.
+
+00:31:02.050 --> 00:31:04.840 align:middle line:84%
+And we are just taking delta
+covering number together
+
+00:31:04.840 --> 00:31:07.580 align:middle line:84%
+with the preimage, which
+is really subadditive.
+
+00:31:07.580 --> 00:31:18.130 align:middle line:90%
+
+
+00:31:18.130 --> 00:31:23.610 align:middle line:84%
+OK, so by lemma from last time,
+by the uniformization lemma
+
+00:31:23.610 --> 00:31:37.210 align:middle line:84%
+from last time, there
+exists on A prime
+
+00:31:37.210 --> 00:31:46.930 align:middle line:84%
+contained in A, which is
+uniform, sorry, not in A. Ah.
+
+00:31:46.930 --> 00:31:52.450 align:middle line:84%
+There exists in B contained
+in a plus little aA.
+
+00:31:52.450 --> 00:31:54.090 align:middle line:84%
+So we are going to
+apply uniformization
+
+00:31:54.090 --> 00:31:55.510 align:middle line:90%
+to a plus little aA.
+
+00:31:55.510 --> 00:31:59.330 align:middle line:90%
+
+
+00:31:59.330 --> 00:32:02.290 align:middle line:84%
+We are trying to show that
+this set contains a delta S
+
+00:32:02.290 --> 00:32:03.650 align:middle line:90%
+plus epsilon set.
+
+00:32:03.650 --> 00:32:06.180 align:middle line:90%
+So this is our ultimate goal.
+
+00:32:06.180 --> 00:32:09.220 align:middle line:84%
+And we know that if
+this set was uniform,
+
+00:32:09.220 --> 00:32:12.140 align:middle line:84%
+it would be enough to show
+that it grows at every scale
+
+00:32:12.140 --> 00:32:13.940 align:middle line:90%
+to reach the conclusion.
+
+00:32:13.940 --> 00:32:16.540 align:middle line:84%
+So we want to make
+it uniform, but we
+
+00:32:16.540 --> 00:32:21.020 align:middle line:84%
+need to know that the uniform
+subset grows at every scale.
+
+00:32:21.020 --> 00:32:24.700 align:middle line:84%
+OK, so by uniformization,
+there exists a B
+
+00:32:24.700 --> 00:32:30.900 align:middle line:84%
+in A plus little aA,
+such that this mu of B
+
+00:32:30.900 --> 00:32:36.580 align:middle line:84%
+is larger than delta to
+the minus eta squared
+
+00:32:36.580 --> 00:32:40.420 align:middle line:90%
+times the measure of A plus aA.
+
+00:32:40.420 --> 00:32:42.500 align:middle line:84%
+And what is the
+measure of A plus aA?
+
+00:32:42.500 --> 00:32:55.380 align:middle line:84%
+This is just the delta
+covering number of A times A.
+
+00:32:55.380 --> 00:33:06.110 align:middle line:84%
+So this is the delta covering
+number of pi A inverse of B. So
+
+00:33:06.110 --> 00:33:07.110 align:middle line:90%
+this is a--
+
+00:33:07.110 --> 00:33:07.990 align:middle line:90%
+sorry.
+
+00:33:07.990 --> 00:33:13.670 align:middle line:84%
+Again, I forgot to
+intersect with A times A.
+
+00:33:13.670 --> 00:33:17.440 align:middle line:84%
+So this is the G to which
+we can apply the claim.
+
+00:33:17.440 --> 00:33:20.070 align:middle line:90%
+
+
+00:33:20.070 --> 00:33:24.230 align:middle line:84%
+So this is a dense
+subset of A times A.
+
+00:33:24.230 --> 00:33:28.070 align:middle line:84%
+And we know that for every dense
+subset of A times A, the pi
+
+00:33:28.070 --> 00:33:30.830 align:middle line:90%
+A projection grows.
+
+00:33:30.830 --> 00:33:34.310 align:middle line:84%
+In particular, the pi A
+projection of this grows.
+
+00:33:34.310 --> 00:33:35.850 align:middle line:90%
+But this is by A inverse.
+
+00:33:35.850 --> 00:33:38.630 align:middle line:84%
+So if we apply pi A
+again, we land in B.
+
+00:33:38.630 --> 00:33:41.537 align:middle line:84%
+And in particular, we
+land in A plus little aA.
+
+00:33:41.537 --> 00:33:43.620 align:middle line:84%
+But in particular, we land
+in B, which is uniform.
+
+00:33:43.620 --> 00:34:05.530 align:middle line:90%
+
+
+00:34:05.530 --> 00:34:14.199 align:middle line:84%
+OK, so I apply claim
+star to G equals
+
+00:34:14.199 --> 00:34:19.480 align:middle line:84%
+pi I inverse of B
+intersection A times A,
+
+00:34:19.480 --> 00:34:21.980 align:middle line:84%
+that satisfies the
+density assumption.
+
+00:34:21.980 --> 00:34:25.360 align:middle line:90%
+
+
+00:34:25.360 --> 00:34:28.679 align:middle line:84%
+And this is because uniform
+sets can be taken dense.
+
+00:34:28.679 --> 00:34:31.480 align:middle line:84%
+So again here, I have to
+choose maybe a different delta
+
+00:34:31.480 --> 00:34:33.920 align:middle line:84%
+than before, although I
+guess the same delta works
+
+00:34:33.920 --> 00:34:36.080 align:middle line:84%
+because it's the
+same numerology.
+
+00:34:36.080 --> 00:34:39.440 align:middle line:90%
+So this is true.
+
+00:34:39.440 --> 00:34:41.639 align:middle line:84%
+We can take uniform
+sets, which are
+
+00:34:41.639 --> 00:34:44.880 align:middle line:84%
+as dense in the exponential
+sense as we want.
+
+00:34:44.880 --> 00:34:48.320 align:middle line:84%
+This is exactly
+what's going on here.
+
+00:34:48.320 --> 00:34:57.424 align:middle line:84%
+OK, and the conclusion is that
+the delta covering number grows.
+
+00:34:57.424 --> 00:35:09.060 align:middle line:90%
+
+
+00:35:09.060 --> 00:35:09.560 align:middle line:90%
+Sorry.
+
+00:35:09.560 --> 00:35:11.140 align:middle line:90%
+Not pi A of B. Ah.
+
+00:35:11.140 --> 00:35:17.040 align:middle line:90%
+
+
+00:35:17.040 --> 00:35:23.670 align:middle line:84%
+Pi A of A times A
+intersected with B, I guess.
+
+00:35:23.670 --> 00:35:57.120 align:middle line:90%
+
+
+00:35:57.120 --> 00:36:03.290 align:middle line:84%
+OK, so we are one step
+closer because now,
+
+00:36:03.290 --> 00:36:06.280 align:middle line:84%
+we have a uniform
+subset of A times aA.
+
+00:36:06.280 --> 00:36:09.490 align:middle line:90%
+
+
+00:36:09.490 --> 00:36:10.980 align:middle line:90%
+And the delta covering number--
+
+00:36:10.980 --> 00:36:18.130 align:middle line:90%
+
+
+00:36:18.130 --> 00:36:20.570 align:middle line:84%
+well, I guess B is
+a subset of these.
+
+00:36:20.570 --> 00:36:24.010 align:middle line:84%
+So here, one will have just B.
+So the delta-covering number
+
+00:36:24.010 --> 00:36:25.890 align:middle line:90%
+grows.
+
+00:36:25.890 --> 00:36:27.530 align:middle line:84%
+We know that if
+a set is uniform,
+
+00:36:27.530 --> 00:36:31.650 align:middle line:84%
+and the rho covering
+number grows for every rho,
+
+00:36:31.650 --> 00:36:33.970 align:middle line:84%
+and in fact, we
+don't need every rho,
+
+00:36:33.970 --> 00:36:37.530 align:middle line:84%
+it's enough to consider rhos,
+which are powers of delta.
+
+00:36:37.530 --> 00:36:46.090 align:middle line:84%
+Then they are delta S
+plus the growth set.
+
+00:36:46.090 --> 00:36:47.370 align:middle line:90%
+So we just repeat.
+
+00:36:47.370 --> 00:36:50.610 align:middle line:84%
+So here, we have
+something for delta.
+
+00:36:50.610 --> 00:36:54.290 align:middle line:90%
+But then, OK.
+
+00:36:54.290 --> 00:36:56.230 align:middle line:84%
+Let's see what is the
+right order to do this.
+
+00:36:56.230 --> 00:36:58.980 align:middle line:84%
+So I want to claim that
+what we did for delta,
+
+00:36:58.980 --> 00:37:00.420 align:middle line:90%
+we can do for any scale.
+
+00:37:00.420 --> 00:37:02.700 align:middle line:84%
+So there is nothing
+special about delta.
+
+00:37:02.700 --> 00:37:06.660 align:middle line:84%
+Because A itself is uniform, all
+of these that we did for delta,
+
+00:37:06.660 --> 00:37:11.020 align:middle line:84%
+we can do it for
+any other scale rho.
+
+00:37:11.020 --> 00:37:16.150 align:middle line:84%
+But the uniform set that we
+get can depend on the scale.
+
+00:37:16.150 --> 00:37:24.340 align:middle line:90%
+
+
+00:37:24.340 --> 00:37:27.060 align:middle line:84%
+So what is the right
+order to do this?
+
+00:37:27.060 --> 00:37:29.740 align:middle line:84%
+So the goal is to use the
+lemma from last time that
+
+00:37:29.740 --> 00:37:33.060 align:middle line:84%
+says that if it is uniform,
+and the rho-covering number is
+
+00:37:33.060 --> 00:37:35.740 align:middle line:84%
+large for every row, and
+in fact, one doesn't need
+
+00:37:35.740 --> 00:37:37.780 align:middle line:84%
+every, every rho, it's
+enough to consider powers
+
+00:37:37.780 --> 00:37:40.500 align:middle line:84%
+of the delta base
+in the uniformity,
+
+00:37:40.500 --> 00:37:44.540 align:middle line:84%
+then it is a delta S
+set, where the S comes
+
+00:37:44.540 --> 00:37:48.186 align:middle line:84%
+from the size of the
+rho-covering numbers.
+
+00:37:48.186 --> 00:37:54.740 align:middle line:84%
+And OK, by using this
+idea for every rho,
+
+00:37:54.740 --> 00:37:57.350 align:middle line:84%
+so we did it for delta,
+but the assumption
+
+00:37:57.350 --> 00:37:59.230 align:middle line:84%
+is called for
+every rho, at least
+
+00:37:59.230 --> 00:38:01.310 align:middle line:84%
+for every rho which is
+not very close to 1.
+
+00:38:01.310 --> 00:38:02.340 align:middle line:90%
+So we can do the same.
+
+00:38:02.340 --> 00:38:05.550 align:middle line:90%
+
+
+00:38:05.550 --> 00:38:08.158 align:middle line:84%
+The only danger is that
+we could get a different B
+
+00:38:08.158 --> 00:38:09.610 align:middle line:90%
+for different rhos.
+
+00:38:09.610 --> 00:38:10.760 align:middle line:90%
+We could get different B's.
+
+00:38:10.760 --> 00:38:30.270 align:middle line:90%
+
+
+00:38:30.270 --> 00:38:31.830 align:middle line:90%
+I'm not very happy about this.
+
+00:38:31.830 --> 00:38:34.890 align:middle line:90%
+So how do we deal with this?
+
+00:38:34.890 --> 00:38:37.750 align:middle line:90%
+
+
+00:38:37.750 --> 00:38:41.750 align:middle line:84%
+One thing one could try to do,
+but I think we lose too much,
+
+00:38:41.750 --> 00:38:45.950 align:middle line:90%
+is OK, delta is delta to the m.
+
+00:38:45.950 --> 00:38:48.910 align:middle line:84%
+Now we want to go to
+delta to the m minus 1.
+
+00:38:48.910 --> 00:38:54.040 align:middle line:84%
+So we could just
+replace A plus aA by B.
+
+00:38:54.040 --> 00:38:56.500 align:middle line:84%
+But then we will have
+another subset of B,
+
+00:38:56.500 --> 00:38:58.640 align:middle line:84%
+and we are going to use
+this factor logarithmically
+
+00:38:58.640 --> 00:38:59.680 align:middle line:90%
+many times.
+
+00:38:59.680 --> 00:39:01.540 align:middle line:90%
+And that is true many times.
+
+00:39:01.540 --> 00:39:02.040 align:middle line:90%
+So yeah.
+
+00:39:02.040 --> 00:39:03.112 align:middle line:90%
+I don't want to do that.
+
+00:39:03.112 --> 00:39:04.070 align:middle line:90%
+It would lose too much.
+
+00:39:04.070 --> 00:39:08.520 align:middle line:90%
+
+
+00:39:08.520 --> 00:39:10.840 align:middle line:84%
+OK, so there is
+something I'm missing.
+
+00:39:10.840 --> 00:39:13.600 align:middle line:84%
+And I'm not going to
+figure it out right now.
+
+00:39:13.600 --> 00:39:17.480 align:middle line:84%
+So because I told
+you that-- yes.
+
+00:39:17.480 --> 00:39:19.840 align:middle line:84%
+AUDIENCE: Can you prove
+the claim simultaneously
+
+00:39:19.840 --> 00:39:23.400 align:middle line:84%
+for all scales, replace
+that delta by rhos,
+
+00:39:23.400 --> 00:39:24.660 align:middle line:90%
+all the different rhos?
+
+00:39:24.660 --> 00:39:28.657 align:middle line:84%
+And then I think
+that would fix it.
+
+00:39:28.657 --> 00:39:30.240 align:middle line:84%
+PABLO SHMERKIN: Yeah,
+you want to have
+
+00:39:30.240 --> 00:39:31.690 align:middle line:90%
+the same G for every scale?
+
+00:39:31.690 --> 00:39:32.440 align:middle line:90%
+AUDIENCE: Yes.
+
+00:39:32.440 --> 00:39:33.320 align:middle line:90%
+PABLO SHMERKIN: Yeah.
+
+00:39:33.320 --> 00:39:35.570 align:middle line:84%
+AUDIENCE: Like if you could
+prove that stronger claim,
+
+00:39:35.570 --> 00:39:37.967 align:middle line:90%
+then it will solve it.
+
+00:39:37.967 --> 00:39:38.800 align:middle line:90%
+PABLO SHMERKIN: Yes.
+
+00:39:38.800 --> 00:39:43.520 align:middle line:84%
+But why can't we get the
+same G for all the scales?
+
+00:39:43.520 --> 00:39:46.360 align:middle line:84%
+OK, because I told you I
+wouldn't give a complete proof,
+
+00:39:46.360 --> 00:39:48.220 align:middle line:84%
+and just a sketch of
+some of the ideas,
+
+00:39:48.220 --> 00:39:50.640 align:middle line:84%
+but here is a sketch
+of some of the ideas.
+
+00:39:50.640 --> 00:39:52.680 align:middle line:84%
+And it's something
+technical that--
+
+00:39:52.680 --> 00:39:55.730 align:middle line:84%
+so really, the ideas
+are what I explained.
+
+00:39:55.730 --> 00:39:58.330 align:middle line:84%
+And we're missing
+something technical.
+
+00:39:58.330 --> 00:40:01.150 align:middle line:90%
+It's not fundamental.
+
+00:40:01.150 --> 00:40:06.610 align:middle line:84%
+I would say just to summarize
+what's been going on,
+
+00:40:06.610 --> 00:40:11.270 align:middle line:84%
+I still have to explain
+once we prove that goal,
+
+00:40:11.270 --> 00:40:15.550 align:middle line:84%
+how to continue with the rest
+of Bourgain's original theorem.
+
+00:40:15.550 --> 00:40:17.930 align:middle line:84%
+But this is really the
+most difficult step
+
+00:40:17.930 --> 00:40:21.370 align:middle line:84%
+where things really change
+from the finite-field setting.
+
+00:40:21.370 --> 00:40:26.170 align:middle line:84%
+OK, so let me sort
+of briefly explain,
+
+00:40:26.170 --> 00:40:28.970 align:middle line:84%
+again, everything
+that's been going on.
+
+00:40:28.970 --> 00:40:31.270 align:middle line:90%
+So we know that A plus aA grows.
+
+00:40:31.270 --> 00:40:34.130 align:middle line:84%
+But we want to show that it
+also satisfies a stronger
+
+00:40:34.130 --> 00:40:36.370 align:middle line:84%
+non-concentration
+assumption, that the S
+
+00:40:36.370 --> 00:40:39.930 align:middle line:84%
+in the non-concentration
+assumption also grows.
+
+00:40:39.930 --> 00:40:42.670 align:middle line:84%
+OK, first, we can
+take A to be uniform.
+
+00:40:42.670 --> 00:40:46.170 align:middle line:84%
+If A is uniform, then
+we know that A itself
+
+00:40:46.170 --> 00:40:48.930 align:middle line:90%
+is a rho S set for every rho.
+
+00:40:48.930 --> 00:40:51.220 align:middle line:84%
+And this allows us
+to reach conclusions
+
+00:40:51.220 --> 00:40:54.900 align:middle line:84%
+for every scale rho, which is
+something that we have to use.
+
+00:40:54.900 --> 00:40:57.160 align:middle line:84%
+In the step that
+I'm missing as well.
+
+00:40:57.160 --> 00:41:01.660 align:middle line:84%
+We used it before, but clearly,
+we have to use it again.
+
+00:41:01.660 --> 00:41:06.500 align:middle line:84%
+And then we know that A plus
+little aA grows at every scale.
+
+00:41:06.500 --> 00:41:11.060 align:middle line:84%
+If it was true that a plus
+little aA was uniform,
+
+00:41:11.060 --> 00:41:13.280 align:middle line:84%
+then we would win,
+because for uniform sets,
+
+00:41:13.280 --> 00:41:15.960 align:middle line:84%
+we saw last time that if they
+are large at every scale,
+
+00:41:15.960 --> 00:41:18.700 align:middle line:84%
+then they satisfy the
+corresponding non-concentration
+
+00:41:18.700 --> 00:41:21.940 align:middle line:90%
+condition.
+
+00:41:21.940 --> 00:41:28.220 align:middle line:84%
+So we have to take a
+large uniform subset of A,
+
+00:41:28.220 --> 00:41:30.040 align:middle line:90%
+but large with respect to what?
+
+00:41:30.040 --> 00:41:31.860 align:middle line:84%
+Well, large with
+respect to this.
+
+00:41:31.860 --> 00:41:37.340 align:middle line:84%
+Because this is what allow us to
+use the fact that if we project
+
+00:41:37.340 --> 00:41:40.533 align:middle line:84%
+something dense in A
+times A, then we grow.
+
+00:41:40.533 --> 00:41:42.700 align:middle line:84%
+And how do we know that if
+we inject something dense
+
+00:41:42.700 --> 00:41:44.940 align:middle line:90%
+in A times A, then we grow?
+
+00:41:44.940 --> 00:41:46.640 align:middle line:90%
+We have to combine two things.
+
+00:41:46.640 --> 00:41:48.260 align:middle line:84%
+The first
+Balog-Szemeredi-Gowers.
+
+00:41:48.260 --> 00:41:50.770 align:middle line:90%
+
+
+00:41:50.770 --> 00:41:52.390 align:middle line:84%
+So for Balog-Szemeredi-Gowers
+we just
+
+00:41:52.390 --> 00:41:55.970 align:middle line:84%
+take an arbitrary element of
+A, in this case, we took 1,
+
+00:41:55.970 --> 00:41:58.870 align:middle line:84%
+but it can be an
+arbitrary element of A,
+
+00:41:58.870 --> 00:42:00.710 align:middle line:90%
+we apply Balog-Szemeredi-Gowers.
+
+00:42:00.710 --> 00:42:02.630 align:middle line:84%
+So either that
+element already works
+
+00:42:02.630 --> 00:42:06.690 align:middle line:84%
+and we are done for the claim
+star, or if it doesn't work,
+
+00:42:06.690 --> 00:42:10.070 align:middle line:84%
+then we are under the assumption
+of Balog-Szemeredi-Gowers.
+
+00:42:10.070 --> 00:42:13.190 align:middle line:84%
+We apply Balog-Szemeredi-Gowers,
+and then we
+
+00:42:13.190 --> 00:42:14.830 align:middle line:84%
+end up with the
+set that satisfies
+
+00:42:14.830 --> 00:42:16.750 align:middle line:84%
+the assumption of
+something else that you've
+
+00:42:16.750 --> 00:42:18.510 align:middle line:84%
+seen in the finite-field
+setting, which
+
+00:42:18.510 --> 00:42:20.270 align:middle line:84%
+is that if you have
+a very small subset,
+
+00:42:20.270 --> 00:42:23.550 align:middle line:84%
+an expansion under pi A, then
+this expansion under pi A
+
+00:42:23.550 --> 00:42:25.550 align:middle line:84%
+is robust under
+pass into subsets.
+
+00:42:25.550 --> 00:42:30.230 align:middle line:84%
+So in either case, we get that
+pi A of dense subset of A times
+
+00:42:30.230 --> 00:42:31.590 align:middle line:90%
+A is large.
+
+00:42:31.590 --> 00:42:36.590 align:middle line:84%
+And this allows us to use
+uniformity with this mu.
+
+00:42:36.590 --> 00:42:43.350 align:middle line:84%
+So that's a bit of a summary of
+the main steps to show the goal.
+
+00:42:43.350 --> 00:42:47.190 align:middle line:90%
+OK, plus technical details.
+
+00:42:47.190 --> 00:42:49.620 align:middle line:84%
+I can recall right
+now, sorry about that.
+
+00:42:49.620 --> 00:42:55.200 align:middle line:90%
+
+
+00:42:55.200 --> 00:42:58.080 align:middle line:90%
+This implies the goal.
+
+00:42:58.080 --> 00:42:58.840 align:middle line:90%
+The goal?
+
+00:42:58.840 --> 00:42:59.350 align:middle line:90%
+That goal.
+
+00:42:59.350 --> 00:43:06.080 align:middle line:90%
+
+
+00:43:06.080 --> 00:43:09.200 align:middle line:84%
+OK, why did you spend so
+much time towards this goal?
+
+00:43:09.200 --> 00:43:11.600 align:middle line:90%
+Because now, we can iterate.
+
+00:43:11.600 --> 00:43:15.980 align:middle line:84%
+We knew that if A is a delta S
+delta to the minus epsilon set,
+
+00:43:15.980 --> 00:43:17.780 align:middle line:90%
+then A plus A grows.
+
+00:43:17.780 --> 00:43:19.480 align:middle line:84%
+But not only it
+grows, it contains
+
+00:43:19.480 --> 00:43:23.860 align:middle line:84%
+the delta S plus epsilon delta
+to the minus eta prime set.
+
+00:43:23.860 --> 00:43:26.080 align:middle line:90%
+And then we can iterate.
+
+00:43:26.080 --> 00:43:35.280 align:middle line:84%
+So A plus little
+aA is our new A.
+
+00:43:35.280 --> 00:43:49.250 align:middle line:84%
+So iterating A goes to A
+plus aA for every epsilon--
+
+00:43:49.250 --> 00:43:50.670 align:middle line:90%
+Maybe let's not call it epsilon.
+
+00:43:50.670 --> 00:43:57.250 align:middle line:84%
+For every tau, there exists a
+polynomial that depends on tau.
+
+00:43:57.250 --> 00:44:02.530 align:middle line:84%
+It's a very large degree
+if tau is close to 0
+
+00:44:02.530 --> 00:44:09.690 align:middle line:84%
+such that Q tau of A
+is a delta 1 minus tau.
+
+00:44:09.690 --> 00:44:15.210 align:middle line:84%
+So the S can become
+arbitrarily close to 1.
+
+00:44:15.210 --> 00:44:18.210 align:middle line:84%
+Delta to the minus
+some eta tilde,
+
+00:44:18.210 --> 00:44:22.290 align:middle line:84%
+that depends on how many
+times you have to iterate set.
+
+00:44:22.290 --> 00:44:23.880 align:middle line:90%
+And by is, I mean, contains.
+
+00:44:23.880 --> 00:44:28.130 align:middle line:90%
+
+
+00:44:28.130 --> 00:44:29.690 align:middle line:90%
+Yes.
+
+00:44:29.690 --> 00:44:31.290 align:middle line:84%
+AUDIENCE: You said
+that the epsilon
+
+00:44:31.290 --> 00:44:36.048 align:middle line:90%
+is going to change [INAUDIBLE].
+
+00:44:36.048 --> 00:44:38.090 align:middle line:84%
+PABLO SHMERKIN: Yeah, I
+think instead of epsilon,
+
+00:44:38.090 --> 00:44:40.283 align:middle line:90%
+it's epsilon over 2.
+
+00:44:40.283 --> 00:44:42.450 align:middle line:84%
+AUDIENCE: So but then if
+the epsilons are shrinking,
+
+00:44:42.450 --> 00:44:44.283 align:middle line:84%
+how are you getting
+arbitrarily [INAUDIBLE]?
+
+00:44:44.283 --> 00:44:46.158 align:middle line:84%
+PABLO SHMERKIN: Yeah,
+that's a good question.
+
+00:44:46.158 --> 00:44:46.753 align:middle line:90%
+So OK.
+
+00:44:46.753 --> 00:44:48.880 align:middle line:84%
+Epsilon, in some
+sense, is shrinking.
+
+00:44:48.880 --> 00:44:52.060 align:middle line:84%
+But OK, so there is
+one epsilon, which
+
+00:44:52.060 --> 00:44:55.500 align:middle line:84%
+is the epsilon for the
+size of A plus little aA.
+
+00:44:55.500 --> 00:44:58.460 align:middle line:84%
+And there is potentially
+a different epsilon
+
+00:44:58.460 --> 00:45:01.060 align:middle line:84%
+if we want to find a
+delta S plus epsilon
+
+00:45:01.060 --> 00:45:03.620 align:middle line:90%
+set inside a plus little aA.
+
+00:45:03.620 --> 00:45:05.680 align:middle line:84%
+Those two epsilons, I
+think one is epsilon,
+
+00:45:05.680 --> 00:45:07.700 align:middle line:90%
+the other is epsilon over 2.
+
+00:45:07.700 --> 00:45:10.400 align:middle line:84%
+But the point is that they
+depend on S continuously,
+
+00:45:10.400 --> 00:45:12.540 align:middle line:90%
+both of them.
+
+00:45:12.540 --> 00:45:15.980 align:middle line:84%
+So they can be taken to be
+continuous functions of S.
+
+00:45:15.980 --> 00:45:18.100 align:middle line:84%
+Because they are
+continuous functions of S
+
+00:45:18.100 --> 00:45:21.900 align:middle line:84%
+as long as S is less
+than 1 minus tau,
+
+00:45:21.900 --> 00:45:24.500 align:middle line:90%
+S is bounded away from 0.
+
+00:45:24.500 --> 00:45:27.390 align:middle line:84%
+So we reach 1 minus tau
+in finitely many steps.
+
+00:45:27.390 --> 00:45:30.540 align:middle line:90%
+
+
+00:45:30.540 --> 00:45:32.960 align:middle line:84%
+Maybe let's write this here
+because it's important.
+
+00:45:32.960 --> 00:45:46.740 align:middle line:84%
+So epsilon is, or can be taken,
+continuous function of S.
+
+00:45:46.740 --> 00:46:01.400 align:middle line:84%
+So remains bounded below as long
+as S is bounded away from 1.
+
+00:46:01.400 --> 00:46:07.100 align:middle line:90%
+
+
+00:46:07.100 --> 00:46:10.480 align:middle line:84%
+So we can achieve this by
+iterating finitely many times.
+
+00:46:10.480 --> 00:46:16.620 align:middle line:90%
+
+
+00:46:16.620 --> 00:46:18.520 align:middle line:90%
+OK, and why is this good?
+
+00:46:18.520 --> 00:46:22.620 align:middle line:84%
+Because this allows us to
+do instead of A plus aA,
+
+00:46:22.620 --> 00:46:27.140 align:middle line:84%
+now we can do x plus aX,
+where x is potentially much
+
+00:46:27.140 --> 00:46:28.240 align:middle line:90%
+bigger than a.
+
+00:46:28.240 --> 00:46:33.540 align:middle line:90%
+
+
+00:46:33.540 --> 00:46:38.220 align:middle line:84%
+So the next step, and I think
+this step is the same as
+
+00:46:38.220 --> 00:46:39.400 align:middle line:90%
+in the finite-field setting.
+
+00:46:39.400 --> 00:46:42.110 align:middle line:84%
+So I'm basically just
+going to state it.
+
+00:46:42.110 --> 00:46:46.870 align:middle line:90%
+If x is a delta t--
+
+00:46:46.870 --> 00:46:48.780 align:middle line:90%
+OK, x is 0, 1 still.
+
+00:46:48.780 --> 00:46:53.150 align:middle line:90%
+
+
+00:46:53.150 --> 00:46:57.950 align:middle line:90%
+And x is a delta.
+
+00:46:57.950 --> 00:46:59.070 align:middle line:90%
+Maybe let's call it u.
+
+00:46:59.070 --> 00:47:02.110 align:middle line:84%
+So u is going to
+be t over tau soon.
+
+00:47:02.110 --> 00:47:13.910 align:middle line:84%
+Delta t to the minus
+epsilon set on A is 0,1.
+
+00:47:13.910 --> 00:47:18.830 align:middle line:84%
+It's delta S. Maybe let's
+write eta here for consistency.
+
+00:47:18.830 --> 00:47:21.230 align:middle line:90%
+Delta to the minus eta set.
+
+00:47:21.230 --> 00:47:24.070 align:middle line:84%
+So now, instead of one set,
+we have two sets potentially
+
+00:47:24.070 --> 00:47:26.070 align:middle line:90%
+of very different sizes.
+
+00:47:26.070 --> 00:47:30.510 align:middle line:84%
+And OK, they are both
+strictly bigger than 0,
+
+00:47:30.510 --> 00:47:32.310 align:middle line:90%
+and strictly less than 1.
+
+00:47:32.310 --> 00:47:38.670 align:middle line:84%
+And the interesting case
+is when S is less than u.
+
+00:47:38.670 --> 00:47:41.260 align:middle line:84%
+So this is the case that
+we don't already know.
+
+00:47:41.260 --> 00:47:46.840 align:middle line:90%
+
+
+00:47:46.840 --> 00:47:53.930 align:middle line:84%
+Then there exists little A in
+A such that x plus little aX
+
+00:47:53.930 --> 00:47:54.430 align:middle line:90%
+grows.
+
+00:47:54.430 --> 00:48:00.800 align:middle line:90%
+
+
+00:48:00.800 --> 00:48:04.620 align:middle line:84%
+It grows by some epsilon
+that depends on S and u.
+
+00:48:04.620 --> 00:48:16.051 align:middle line:90%
+
+
+00:48:16.051 --> 00:48:20.860 align:middle line:84%
+OK, so just briefly,
+so the idea,
+
+00:48:20.860 --> 00:48:22.333 align:middle line:84%
+and again, I think
+you've seen this
+
+00:48:22.333 --> 00:48:23.500 align:middle line:90%
+in the finite-field setting.
+
+00:48:23.500 --> 00:48:31.080 align:middle line:84%
+But the idea is that it's
+true for maybe not for A,
+
+00:48:31.080 --> 00:48:40.930 align:middle line:84%
+but it's true for Q
+tau of A. And here, you
+
+00:48:40.930 --> 00:48:47.210 align:middle line:84%
+have to take tau so that Q
+tau of a is bigger than x.
+
+00:48:47.210 --> 00:48:52.450 align:middle line:84%
+So we can take tau, for
+example, to be 1 minus u over 2.
+
+00:48:52.450 --> 00:48:53.850 align:middle line:90%
+Something like this.
+
+00:48:53.850 --> 00:48:58.300 align:middle line:84%
+Then this is much
+bigger than x in size.
+
+00:48:58.300 --> 00:48:59.050 align:middle line:90%
+So these are sets.
+
+00:48:59.050 --> 00:49:02.330 align:middle line:84%
+But it has size
+much bigger than x.
+
+00:49:02.330 --> 00:49:07.070 align:middle line:84%
+Once the set of directions
+has size much bigger than x,
+
+00:49:07.070 --> 00:49:10.650 align:middle line:84%
+we can do double
+counting and get growth
+
+00:49:10.650 --> 00:49:12.330 align:middle line:90%
+with this instead of this.
+
+00:49:12.330 --> 00:49:14.570 align:middle line:84%
+But once we get growth for
+a polynomial instead of A,
+
+00:49:14.570 --> 00:49:17.050 align:middle line:84%
+we apply Plunnecke-Ruzsa
+one million times,
+
+00:49:17.050 --> 00:49:30.010 align:middle line:84%
+and we go back down
+to A. OK, then apply
+
+00:49:30.010 --> 00:49:36.370 align:middle line:84%
+Plunnecke-Ruzsa triangle
+inequality, double counting.
+
+00:49:36.370 --> 00:49:44.140 align:middle line:90%
+
+
+00:49:44.140 --> 00:49:49.820 align:middle line:90%
+And then it is also true for A.
+
+00:49:49.820 --> 00:49:52.600 align:middle line:84%
+So this part is really
+exactly the same.
+
+00:49:52.600 --> 00:49:58.700 align:middle line:84%
+So we already had to go from
+Q of A to little a before.
+
+00:49:58.700 --> 00:50:02.340 align:middle line:84%
+So initially, we proved that aA
+A minus aA A is bigger than A.
+
+00:50:02.340 --> 00:50:05.700 align:middle line:84%
+And we use that to show that A
+plus little aA is bigger than A.
+
+00:50:05.700 --> 00:50:08.463 align:middle line:90%
+So it's the same reduction here.
+
+00:50:08.463 --> 00:50:10.380 align:middle line:84%
+And I think you've seen
+something very similar
+
+00:50:10.380 --> 00:50:14.100 align:middle line:84%
+in the finite-field setting
+and modulo technical details.
+
+00:50:14.100 --> 00:50:17.740 align:middle line:90%
+This part is the same.
+
+00:50:17.740 --> 00:50:20.300 align:middle line:84%
+But in order to get
+here, it's important
+
+00:50:20.300 --> 00:50:23.420 align:middle line:84%
+that we can make this
+set bigger than x.
+
+00:50:23.420 --> 00:50:25.120 align:middle line:84%
+This is what we
+wanted to iterate.
+
+00:50:25.120 --> 00:50:27.660 align:middle line:90%
+
+
+00:50:27.660 --> 00:50:29.640 align:middle line:84%
+Potentially, x is
+much bigger than A,
+
+00:50:29.640 --> 00:50:32.800 align:middle line:84%
+but we can expand
+A by a polynomial
+
+00:50:32.800 --> 00:50:34.950 align:middle line:84%
+so that it becomes
+bigger than x.
+
+00:50:34.950 --> 00:50:36.530 align:middle line:90%
+And for this, we had to iterate.
+
+00:50:36.530 --> 00:50:39.810 align:middle line:84%
+This is why we worried
+so much about iterating.
+
+00:50:39.810 --> 00:50:42.310 align:middle line:90%
+
+
+00:50:42.310 --> 00:50:42.810 align:middle line:90%
+OK.
+
+00:50:42.810 --> 00:50:47.150 align:middle line:90%
+
+
+00:50:47.150 --> 00:50:52.760 align:middle line:84%
+OK, the next step is to prove
+Bourgain's prediction theorem.
+
+00:50:52.760 --> 00:50:56.470 align:middle line:90%
+
+
+00:50:56.470 --> 00:50:58.450 align:middle line:84%
+OK, I'm not going to
+do the full proof,
+
+00:50:58.450 --> 00:50:59.870 align:middle line:84%
+but just basically
+recall what you
+
+00:50:59.870 --> 00:51:04.310 align:middle line:84%
+did in the finite-field setting,
+and explain, again, where one
+
+00:51:04.310 --> 00:51:06.190 align:middle line:90%
+has to be a little bit careful.
+
+00:51:06.190 --> 00:51:10.030 align:middle line:84%
+But hopefully, by now, you will
+not be so worried about the part
+
+00:51:10.030 --> 00:51:11.810 align:middle line:90%
+where you have to be careful.
+
+00:51:11.810 --> 00:51:13.560 align:middle line:84%
+So proof of Bourgain's
+projection theorem.
+
+00:51:13.560 --> 00:51:17.790 align:middle line:90%
+
+
+00:51:17.790 --> 00:51:20.630 align:middle line:84%
+OK, now I regret
+calling this xx.
+
+00:51:20.630 --> 00:51:24.030 align:middle line:90%
+But it's too late.
+
+00:51:24.030 --> 00:51:33.356 align:middle line:84%
+So let x be in the unit
+ball of R2 delta t delta
+
+00:51:33.356 --> 00:51:37.320 align:middle line:84%
+to the minus eta set, where
+eta is very, very small.
+
+00:51:37.320 --> 00:51:39.220 align:middle line:90%
+And t is between 0 and 2.
+
+00:51:39.220 --> 00:51:43.720 align:middle line:90%
+
+
+00:51:43.720 --> 00:51:54.080 align:middle line:84%
+Let D be a set of directions,
+which is a delta S
+
+00:51:54.080 --> 00:51:55.940 align:middle line:90%
+delta to the minus eta set.
+
+00:51:55.940 --> 00:52:03.240 align:middle line:90%
+
+
+00:52:03.240 --> 00:52:04.330 align:middle line:90%
+And what is the goal?
+
+00:52:04.330 --> 00:52:06.973 align:middle line:90%
+
+
+00:52:06.973 --> 00:52:09.140 align:middle line:84%
+So what is the claim of
+Bourgain projection theorem?
+
+00:52:09.140 --> 00:52:20.080 align:middle line:84%
+It is that there exists some
+a and D such that pi a of G
+
+00:52:20.080 --> 00:52:24.070 align:middle line:84%
+exceeds the trivial
+bound by some epsilon.
+
+00:52:24.070 --> 00:52:28.120 align:middle line:90%
+
+
+00:52:28.120 --> 00:52:33.270 align:middle line:84%
+And the trivial bound is the
+square root of the delta.
+
+00:52:33.270 --> 00:52:34.250 align:middle line:90%
+OK.
+
+00:52:34.250 --> 00:52:34.750 align:middle line:90%
+Sorry.
+
+00:52:34.750 --> 00:52:38.290 align:middle line:84%
+In the version that
+I stated, the size
+
+00:52:38.290 --> 00:52:41.630 align:middle line:90%
+of x is delta to the minus t.
+
+00:52:41.630 --> 00:52:44.190 align:middle line:84%
+So it matches the
+non-concentration condition.
+
+00:52:44.190 --> 00:52:47.210 align:middle line:90%
+
+
+00:52:47.210 --> 00:52:50.410 align:middle line:84%
+So here, we can just write
+delta to the minus t over 2.
+
+00:52:50.410 --> 00:52:52.510 align:middle line:84%
+This is the square
+root of the size of x,
+
+00:52:52.510 --> 00:52:53.790 align:middle line:90%
+which is the trivial bound.
+
+00:52:53.790 --> 00:52:56.890 align:middle line:84%
+And we exceed it by some
+delta to the minus epsilon.
+
+00:52:56.890 --> 00:53:07.850 align:middle line:84%
+And this is true for every G,
+which is dense in A times A.
+
+00:53:07.850 --> 00:53:10.150 align:middle line:84%
+OK, so this is Bourgain's
+projection theorem.
+
+00:53:10.150 --> 00:53:12.096 align:middle line:90%
+This is what we want to prove.
+
+00:53:12.096 --> 00:53:15.010 align:middle line:84%
+OK, so in the
+finite-field setting,
+
+00:53:15.010 --> 00:53:18.210 align:middle line:84%
+I think to prove a
+similar statement,
+
+00:53:18.210 --> 00:53:21.610 align:middle line:84%
+what you did is first
+consider three fix--
+
+00:53:21.610 --> 00:53:26.290 align:middle line:84%
+well, just pick three
+directions in D.
+
+00:53:26.290 --> 00:53:28.470 align:middle line:84%
+In order to apply
+Balog-Szemeredi-Gowers.
+
+00:53:28.470 --> 00:53:30.678 align:middle line:84%
+So again, it's similar
+to what we did before.
+
+00:53:30.678 --> 00:53:32.220 align:middle line:84%
+Either things already
+work, or we can
+
+00:53:32.220 --> 00:53:33.885 align:middle line:90%
+apply Balog-Szemeredi-Gowers.
+
+00:53:33.885 --> 00:53:36.260 align:middle line:84%
+Here, we have to be careful
+about how we choose the three
+
+00:53:36.260 --> 00:53:39.820 align:middle line:84%
+directions, because if the
+three directions that we choose
+
+00:53:39.820 --> 00:53:42.960 align:middle line:84%
+are very close to each other,
+this is going to be bad news.
+
+00:53:42.960 --> 00:53:45.780 align:middle line:90%
+We're going to lose a lot.
+
+00:53:45.780 --> 00:53:49.380 align:middle line:84%
+So well, even
+though this is 0,1,
+
+00:53:49.380 --> 00:54:02.460 align:middle line:84%
+we can sort of change
+coordinates so that 0,1
+
+00:54:02.460 --> 00:54:06.460 align:middle line:90%
+and infinity are in D.
+
+00:54:06.460 --> 00:54:09.460 align:middle line:84%
+And this can be
+done in a way where
+
+00:54:09.460 --> 00:54:15.020 align:middle line:84%
+we don't lose too much
+using that D is spread out.
+
+00:54:15.020 --> 00:54:18.140 align:middle line:84%
+Because of this
+non-concentration conditions,
+
+00:54:18.140 --> 00:54:19.540 align:middle line:84%
+there are three
+points in D which
+
+00:54:19.540 --> 00:54:21.650 align:middle line:90%
+are far apart from each other.
+
+00:54:21.650 --> 00:54:23.900 align:middle line:84%
+And that means that if we
+send these three points that
+
+00:54:23.900 --> 00:54:25.660 align:middle line:84%
+are far apart from
+each other to 0, 1,
+
+00:54:25.660 --> 00:54:28.490 align:middle line:84%
+infinity, so these
+are really the slopes.
+
+00:54:28.490 --> 00:54:29.490 align:middle line:90%
+They are not the angles.
+
+00:54:29.490 --> 00:54:31.410 align:middle line:90%
+They are slopes.
+
+00:54:31.410 --> 00:54:47.990 align:middle line:84%
+So this can be done with a
+linear change of coordinates
+
+00:54:47.990 --> 00:54:49.250 align:middle line:90%
+of distortion.
+
+00:54:49.250 --> 00:54:51.910 align:middle line:90%
+
+
+00:54:51.910 --> 00:54:56.110 align:middle line:84%
+So the distortion is the norm
+of the corresponding matrix
+
+00:54:56.110 --> 00:55:00.350 align:middle line:90%
+delta to the minus O of eta.
+
+00:55:00.350 --> 00:55:02.310 align:middle line:84%
+So this distortion
+is, because eta
+
+00:55:02.310 --> 00:55:04.870 align:middle line:90%
+is much smaller than epsilon.
+
+00:55:04.870 --> 00:55:08.813 align:middle line:84%
+If we have a gain, well, we
+have to decrease the gain
+
+00:55:08.813 --> 00:55:10.730 align:middle line:84%
+by what we lose in this
+change of coordinates.
+
+00:55:10.730 --> 00:55:11.730 align:middle line:90%
+But this is mild.
+
+00:55:11.730 --> 00:55:24.335 align:middle line:90%
+
+
+00:55:24.335 --> 00:55:29.220 align:middle line:84%
+AUDIENCE: [INAUDIBLE] A to be
+pi, 0, union pi infinity of x?
+
+00:55:29.220 --> 00:55:31.372 align:middle line:90%
+
+
+00:55:31.372 --> 00:55:32.330 align:middle line:90%
+PABLO SHMERKIN: We are.
+
+00:55:32.330 --> 00:55:34.630 align:middle line:84%
+We are going to look at
+the vertical and horizontal
+
+00:55:34.630 --> 00:55:38.525 align:middle line:84%
+projections of x
+and the pi 1 of x.
+
+00:55:38.525 --> 00:55:40.150 align:middle line:84%
+AUDIENCE: Yeah, I'm
+just saying there's
+
+00:55:40.150 --> 00:55:42.917 align:middle line:84%
+A cross A in the
+statement of the theorem.
+
+00:55:42.917 --> 00:55:44.000 align:middle line:90%
+PABLO SHMERKIN: Oh, sorry.
+
+00:55:44.000 --> 00:55:48.210 align:middle line:90%
+
+
+00:55:48.210 --> 00:55:48.710 align:middle line:90%
+Sorry.
+
+00:55:48.710 --> 00:55:49.210 align:middle line:90%
+In x.
+
+00:55:49.210 --> 00:55:50.710 align:middle line:90%
+In x.
+
+00:55:50.710 --> 00:55:51.550 align:middle line:90%
+Sorry.
+
+00:55:51.550 --> 00:55:54.230 align:middle line:90%
+AUDIENCE: X cross x?
+
+00:55:54.230 --> 00:55:55.180 align:middle line:90%
+PABLO SHMERKIN: In x.
+
+00:55:55.180 --> 00:55:55.940 align:middle line:90%
+x is in R2.
+
+00:55:55.940 --> 00:55:59.030 align:middle line:90%
+
+
+00:55:59.030 --> 00:56:00.710 align:middle line:90%
+In x.
+
+00:56:00.710 --> 00:56:02.320 align:middle line:90%
+x is a two-dimensional object.
+
+00:56:02.320 --> 00:56:03.778 align:middle line:84%
+AUDIENCE: And the
+point is you want
+
+00:56:03.778 --> 00:56:05.530 align:middle line:84%
+to try to prove this
+using A equals sub pi
+
+00:56:05.530 --> 00:56:08.590 align:middle line:90%
+0, union pi infinity x?
+
+00:56:08.590 --> 00:56:09.710 align:middle line:90%
+PABLO SHMERKIN: Yes.
+
+00:56:09.710 --> 00:56:10.670 align:middle line:90%
+Yeah, that's the point.
+
+00:56:10.670 --> 00:56:11.170 align:middle line:90%
+But yeah.
+
+00:56:11.170 --> 00:56:11.670 align:middle line:90%
+So sorry.
+
+00:56:11.670 --> 00:56:13.270 align:middle line:90%
+There was a typo here.
+
+00:56:13.270 --> 00:56:15.670 align:middle line:90%
+So x is already two dimensional.
+
+00:56:15.670 --> 00:56:18.390 align:middle line:84%
+And what we have been doing,
+we have a Cartesian product.
+
+00:56:18.390 --> 00:56:20.830 align:middle line:90%
+Or here, we have a Cartesian--
+
+00:56:20.830 --> 00:56:21.510 align:middle line:90%
+OK.
+
+00:56:21.510 --> 00:56:24.920 align:middle line:90%
+But [INAUDIBLE].
+
+00:56:24.920 --> 00:56:28.220 align:middle line:84%
+So OK, we want to apply
+this, which unfortunately,
+
+00:56:28.220 --> 00:56:29.520 align:middle line:90%
+is going to be hidden.
+
+00:56:29.520 --> 00:56:33.520 align:middle line:84%
+OK, so x, this x, is going to
+be some-- the projection of x,
+
+00:56:33.520 --> 00:56:35.430 align:middle line:84%
+horizontal projection
+of the x in R2.
+
+00:56:35.430 --> 00:56:39.215 align:middle line:90%
+
+
+00:56:39.215 --> 00:56:41.340 align:middle line:84%
+So it's really similar to
+the finite-field setting.
+
+00:56:41.340 --> 00:56:43.520 align:middle line:90%
+So I'm skipping details.
+
+00:56:43.520 --> 00:56:45.400 align:middle line:84%
+I'm going to continue
+skipping details,
+
+00:56:45.400 --> 00:56:47.145 align:middle line:84%
+mostly focusing on
+the differences.
+
+00:56:47.145 --> 00:56:48.520 align:middle line:84%
+So one difference
+is that we have
+
+00:56:48.520 --> 00:56:51.720 align:middle line:84%
+to be careful with the three
+directions that we take.
+
+00:56:51.720 --> 00:56:53.625 align:middle line:84%
+If they are too
+close to each other,
+
+00:56:53.625 --> 00:56:55.000 align:middle line:84%
+the distortion
+will be too large,
+
+00:56:55.000 --> 00:56:58.820 align:middle line:84%
+and it can be so large
+that we lose all the gain.
+
+00:56:58.820 --> 00:57:01.360 align:middle line:84%
+But because the
+set of directions
+
+00:57:01.360 --> 00:57:03.460 align:middle line:84%
+is spread out by the
+non-concentration condition,
+
+00:57:03.460 --> 00:57:06.140 align:middle line:84%
+we can do it in such a way that
+the distortion is controlled.
+
+00:57:06.140 --> 00:57:20.840 align:middle line:90%
+
+
+00:57:20.840 --> 00:57:25.610 align:middle line:84%
+OK, so now, x is contained
+in x1 times x2, where
+
+00:57:25.610 --> 00:57:28.890 align:middle line:84%
+this is the
+horizontal projection,
+
+00:57:28.890 --> 00:57:30.710 align:middle line:84%
+and this is the
+vertical projection.
+
+00:57:30.710 --> 00:57:35.010 align:middle line:90%
+
+
+00:57:35.010 --> 00:57:44.290 align:middle line:84%
+So if, because we are assuming
+that also one is in D, if one
+
+00:57:44.290 --> 00:57:47.010 align:middle line:90%
+works, we are done.
+
+00:57:47.010 --> 00:57:49.930 align:middle line:84%
+Because we are trying to
+show that something works.
+
+00:57:49.930 --> 00:57:52.170 align:middle line:84%
+So the claim is that
+there exists an A and D
+
+00:57:52.170 --> 00:57:54.130 align:middle line:90%
+with this property.
+
+00:57:54.130 --> 00:57:57.510 align:middle line:84%
+So if we are so lucky that one
+has this property, we are done.
+
+00:57:57.510 --> 00:58:03.130 align:middle line:90%
+
+
+00:58:03.130 --> 00:58:07.050 align:middle line:84%
+If one doesn't work,
+so this is very
+
+00:58:07.050 --> 00:58:09.970 align:middle line:84%
+similar to what we did a
+bit earlier, but somehow,
+
+00:58:09.970 --> 00:58:11.430 align:middle line:90%
+we have to do it twice.
+
+00:58:11.430 --> 00:58:13.670 align:middle line:84%
+Once to do the iteration
+for A plus little aA,
+
+00:58:13.670 --> 00:58:16.490 align:middle line:84%
+and then again, to
+conclude the proof.
+
+00:58:16.490 --> 00:58:21.020 align:middle line:84%
+If one doesn't work,
+then there exists some G,
+
+00:58:21.020 --> 00:58:22.890 align:middle line:90%
+which is dense in x1 times x2.
+
+00:58:22.890 --> 00:58:25.540 align:middle line:90%
+
+
+00:58:25.540 --> 00:58:26.760 align:middle line:90%
+OK, sorry.
+
+00:58:26.760 --> 00:58:29.078 align:middle line:90%
+Why is it dense in x1?
+
+00:58:29.078 --> 00:58:29.578 align:middle line:90%
+Ah.
+
+00:58:29.578 --> 00:58:32.980 align:middle line:90%
+
+
+00:58:32.980 --> 00:58:36.268 align:middle line:90%
+OK, actually, yeah.
+
+00:58:36.268 --> 00:58:37.310 align:middle line:90%
+This is more complicated.
+
+00:58:37.310 --> 00:58:39.320 align:middle line:90%
+So one has to be careful.
+
+00:58:39.320 --> 00:58:39.920 align:middle line:90%
+So OK.
+
+00:58:39.920 --> 00:58:49.720 align:middle line:90%
+So OK.
+
+00:58:49.720 --> 00:58:54.380 align:middle line:84%
+So I want to assume
+that x1 has size
+
+00:58:54.380 --> 00:58:57.980 align:middle line:84%
+roughly square root of the
+size of x with the idea
+
+00:58:57.980 --> 00:59:02.660 align:middle line:84%
+that if it had size bigger than
+the size of x, we would win.
+
+00:59:02.660 --> 00:59:05.295 align:middle line:84%
+But in fact, in order to
+reach this conclusion,
+
+00:59:05.295 --> 00:59:07.420 align:middle line:84%
+we have to apply the
+electromagnetic hours already,
+
+00:59:07.420 --> 00:59:10.260 align:middle line:84%
+because the conclusion
+we want is not
+
+00:59:10.260 --> 00:59:15.160 align:middle line:84%
+only that the
+projection of x grows,
+
+00:59:15.160 --> 00:59:18.260 align:middle line:84%
+but the projection of every
+dense subset of x works.
+
+00:59:18.260 --> 00:59:21.630 align:middle line:90%
+So OK.
+
+00:59:21.630 --> 00:59:24.910 align:middle line:84%
+So one really has to do is apply
+value of electromagnetic hours
+
+00:59:24.910 --> 00:59:25.990 align:middle line:90%
+three times.
+
+00:59:25.990 --> 00:59:30.270 align:middle line:84%
+So maybe for 0, infinity,
+and 1, in this order,
+
+00:59:30.270 --> 00:59:36.950 align:middle line:84%
+either it works or we apply
+Balog-Szemeredi-Gowers
+
+00:59:36.950 --> 00:59:39.710 align:middle line:84%
+to replace x by x prime,
+and then x double prime,
+
+00:59:39.710 --> 00:59:41.790 align:middle line:90%
+and x triple prime.
+
+00:59:41.790 --> 00:59:44.750 align:middle line:84%
+OK, I'm not going to
+do all of the details,
+
+00:59:44.750 --> 00:59:49.803 align:middle line:84%
+but did something
+like this happen
+
+00:59:49.803 --> 00:59:50.970 align:middle line:90%
+in the finite-field setting?
+
+00:59:50.970 --> 00:59:53.150 align:middle line:84%
+I think it also, this
+part has to be done
+
+00:59:53.150 --> 00:59:56.150 align:middle line:90%
+in the finite-field setting.
+
+00:59:56.150 --> 00:59:57.830 align:middle line:90%
+So--
+
+00:59:57.830 --> 01:00:01.192 align:middle line:84%
+AUDIENCE: We didn't do this
+strong version in detail.
+
+01:00:01.192 --> 01:00:02.150 align:middle line:90%
+PABLO SHMERKIN: Oh, OK.
+
+01:00:02.150 --> 01:00:03.900 align:middle line:84%
+We didn't do the strong
+version in detail.
+
+01:00:03.900 --> 01:00:07.190 align:middle line:84%
+OK, also, I'm not going to do
+the strong version in detail
+
+01:00:07.190 --> 01:00:09.550 align:middle line:84%
+because the 20 minutes
+I expected to take
+
+01:00:09.550 --> 01:00:11.790 align:middle line:84%
+are turning into the
+whole lecture again.
+
+01:00:11.790 --> 01:00:13.650 align:middle line:90%
+But I'm leaving today.
+
+01:00:13.650 --> 01:00:16.630 align:middle line:84%
+So now, I really have to finish
+it over the next 20 minutes.
+
+01:00:16.630 --> 01:00:18.720 align:middle line:90%
+So OK.
+
+01:00:18.720 --> 01:00:27.320 align:middle line:84%
+So OK, either 0, 1,
+or infinity, or I
+
+01:00:27.320 --> 01:00:40.600 align:middle line:84%
+guess 0, infinity, or 1
+work, or in each case,
+
+01:00:40.600 --> 01:00:49.560 align:middle line:84%
+we can apply
+Balog-Szemeredi-Gowers and pass
+
+01:00:49.560 --> 01:01:02.160 align:middle line:84%
+to dense subsets of x of x and
+the corresponding projections
+
+01:01:02.160 --> 01:01:02.780 align:middle line:90%
+of x.
+
+01:01:02.780 --> 01:01:07.720 align:middle line:90%
+
+
+01:01:07.720 --> 01:01:09.460 align:middle line:90%
+So Balog-Szemeredi-Gowers-- OK.
+
+01:01:09.460 --> 01:01:11.980 align:middle line:90%
+So let's take 0.
+
+01:01:11.980 --> 01:01:15.850 align:middle line:84%
+If the horizontal projection
+has the property we want,
+
+01:01:15.850 --> 01:01:17.030 align:middle line:90%
+we are done.
+
+01:01:17.030 --> 01:01:19.330 align:middle line:84%
+Otherwise, there exists
+a dense subset of A
+
+01:01:19.330 --> 01:01:21.007 align:middle line:84%
+with a small
+horizontal projection.
+
+01:01:21.007 --> 01:01:23.090 align:middle line:84%
+But you can imagine that
+the horizontal projection
+
+01:01:23.090 --> 01:01:24.470 align:middle line:90%
+is another projection.
+
+01:01:24.470 --> 01:01:29.090 align:middle line:84%
+So it's the same thing we did
+last time, we did a bit earlier.
+
+01:01:29.090 --> 01:01:32.650 align:middle line:84%
+And then we have to replace x by
+some x prime, and then by some
+
+01:01:32.650 --> 01:01:35.490 align:middle line:84%
+x double prime, and then
+by some x triple prime.
+
+01:01:35.490 --> 01:01:40.530 align:middle line:84%
+So I'm not going
+to do it in detail.
+
+01:01:40.530 --> 01:01:41.690 align:middle line:90%
+I'm sorry.
+
+01:01:41.690 --> 01:01:43.790 align:middle line:84%
+Yeah, I see many of
+you are confused.
+
+01:01:43.790 --> 01:01:47.130 align:middle line:84%
+And that's OK because one
+has to do it carefully.
+
+01:01:47.130 --> 01:01:49.970 align:middle line:84%
+It's not obvious how to
+do it, but it can be done.
+
+01:01:49.970 --> 01:02:03.930 align:middle line:84%
+OK, so eventually, after
+renaming the set back to x,
+
+01:02:03.930 --> 01:02:15.660 align:middle line:84%
+we are in the following
+situation, this situation where,
+
+01:02:15.660 --> 01:02:21.340 align:middle line:84%
+OK, let me just
+write it here, where
+
+01:02:21.340 --> 01:02:28.700 align:middle line:84%
+the horizontal and vertical
+projections have size, at most,
+
+01:02:28.700 --> 01:02:33.270 align:middle line:84%
+delta to the minus epsilon,
+t over 2 plus epsilon.
+
+01:02:33.270 --> 01:02:46.500 align:middle line:90%
+
+
+01:02:46.500 --> 01:02:52.740 align:middle line:84%
+OK, I guess let's say we apply
+Balog-Szemeredi-Gowers twice.
+
+01:02:52.740 --> 01:02:55.070 align:middle line:84%
+So we don't apply
+it to pi 1 yet.
+
+01:02:55.070 --> 01:03:04.700 align:middle line:90%
+
+
+01:03:04.700 --> 01:03:07.460 align:middle line:84%
+OK, just to see how
+this goes, so suppose
+
+01:03:07.460 --> 01:03:12.910 align:middle line:84%
+that pi 1, so suppose
+that one doesn't work.
+
+01:03:12.910 --> 01:03:14.710 align:middle line:90%
+Suppose that one doesn't work.
+
+01:03:14.710 --> 01:03:21.630 align:middle line:84%
+And that means that
+pi 1 of G doesn't grow
+
+01:03:21.630 --> 01:03:25.470 align:middle line:90%
+for some dense subset of x.
+
+01:03:25.470 --> 01:03:27.230 align:middle line:84%
+And if it's a dense
+subset of x, it
+
+01:03:27.230 --> 01:03:29.850 align:middle line:84%
+is a dense subset
+of x1 times x2.
+
+01:03:29.850 --> 01:03:30.530 align:middle line:90%
+This is x1.
+
+01:03:30.530 --> 01:03:31.040 align:middle line:90%
+This is x2.
+
+01:03:31.040 --> 01:03:49.430 align:middle line:90%
+
+
+01:03:49.430 --> 01:03:50.490 align:middle line:90%
+So this is x1.
+
+01:03:50.490 --> 01:03:51.000 align:middle line:90%
+This is x2.
+
+01:03:51.000 --> 01:03:56.950 align:middle line:90%
+
+
+01:03:56.950 --> 01:03:59.850 align:middle line:84%
+OK, then we're going to
+apply Balog-Szemeredi-Gowers.
+
+01:03:59.850 --> 01:04:01.710 align:middle line:84%
+So here, you see that
+we are in this setting
+
+01:04:01.710 --> 01:04:02.930 align:middle line:90%
+to apply Balog-Szemeredi-Gowers.
+
+01:04:02.930 --> 01:04:04.888 align:middle line:84%
+So we're going to apply
+Balog-Szemeredi-Gowers.
+
+01:04:04.888 --> 01:04:09.570 align:middle line:84%
+So it looks like after
+applying Balog-Szemeredi-Gowers
+
+01:04:09.570 --> 01:04:12.180 align:middle line:84%
+lots of times, and I
+skipped the details,
+
+01:04:12.180 --> 01:04:14.400 align:middle line:84%
+but you have to trust me
+that this can be done,
+
+01:04:14.400 --> 01:04:19.280 align:middle line:84%
+we are in the setting where
+we can apply this and be done.
+
+01:04:19.280 --> 01:04:22.240 align:middle line:90%
+But not so fast.
+
+01:04:22.240 --> 01:04:23.480 align:middle line:90%
+What's the issue?
+
+01:04:23.480 --> 01:04:24.410 align:middle line:90%
+Why not so fast?
+
+01:04:24.410 --> 01:04:27.240 align:middle line:90%
+
+
+01:04:27.240 --> 01:04:29.760 align:middle line:84%
+So all of the part that
+I'm not explaining here,
+
+01:04:29.760 --> 01:04:32.060 align:middle line:84%
+you also have to do it in
+the finite-field setting
+
+01:04:32.060 --> 01:04:35.880 align:middle line:84%
+if you want to get the stronger
+statement that the projection
+
+01:04:35.880 --> 01:04:39.890 align:middle line:84%
+of a dense subset grows, not a
+dense subset of the given set.
+
+01:04:39.890 --> 01:04:42.140 align:middle line:84%
+If you want to prove that
+in the finite-field setting,
+
+01:04:42.140 --> 01:04:44.660 align:middle line:84%
+you have to do this multiple
+Balog-Szemeredi-Gowers.
+
+01:04:44.660 --> 01:04:46.160 align:middle line:84%
+So this is not a
+difference, OK, you
+
+01:04:46.160 --> 01:04:48.410 align:middle line:84%
+haven't done it in detail
+in the finite-field setting.
+
+01:04:48.410 --> 01:04:50.680 align:middle line:84%
+But this part is
+not a difference
+
+01:04:50.680 --> 01:04:53.960 align:middle line:84%
+between the finite-field setting
+and the Euclidean setting.
+
+01:04:53.960 --> 01:04:56.380 align:middle line:84%
+But there is something
+which is a difference.
+
+01:04:56.380 --> 01:04:57.960 align:middle line:90%
+So what is the issue?
+
+01:04:57.960 --> 01:04:59.820 align:middle line:90%
+Why can't we just apply, oh, OK.
+
+01:04:59.820 --> 01:05:01.100 align:middle line:90%
+We can apply this.
+
+01:05:01.100 --> 01:05:03.700 align:middle line:84%
+But why do we have to be
+careful about applying this?
+
+01:05:03.700 --> 01:05:13.440 align:middle line:90%
+
+
+01:05:13.440 --> 01:05:14.946 align:middle line:90%
+Yes?
+
+01:05:14.946 --> 01:05:17.320 align:middle line:84%
+AUDIENCE: So if we apply
+Balog-Szemeredi-Gowers,
+
+01:05:17.320 --> 01:05:20.320 align:middle line:90%
+we get A prime plus A prime.
+
+01:05:20.320 --> 01:05:25.220 align:middle line:90%
+And then [INAUDIBLE] y cross y.
+
+01:05:25.220 --> 01:05:27.560 align:middle line:84%
+That covers a lot
+of G. And then if I
+
+01:05:27.560 --> 01:05:29.500 align:middle line:84%
+want to apply what's
+on the left board,
+
+01:05:29.500 --> 01:05:32.920 align:middle line:84%
+I would need to know that y
+is a delta u something set.
+
+01:05:32.920 --> 01:05:33.920 align:middle line:90%
+PABLO SHMERKIN: Exactly.
+
+01:05:33.920 --> 01:05:37.340 align:middle line:84%
+So here, we have a
+Cartesian product.
+
+01:05:37.340 --> 01:05:40.080 align:middle line:84%
+OK, so one small issue is
+that instead of x1 times x1,
+
+01:05:40.080 --> 01:05:41.600 align:middle line:90%
+we have x1 times x2.
+
+01:05:41.600 --> 01:05:43.200 align:middle line:90%
+But this is not important.
+
+01:05:43.200 --> 01:05:47.692 align:middle line:84%
+The issue is that x1
+is a projection of x.
+
+01:05:47.692 --> 01:05:51.320 align:middle line:84%
+And we are assuming that the
+size is roughly the square root
+
+01:05:51.320 --> 01:05:53.280 align:middle line:90%
+of the size of x.
+
+01:05:53.280 --> 01:05:55.140 align:middle line:90%
+But why is it not concentrated?
+
+01:05:55.140 --> 01:05:57.200 align:middle line:84%
+In order to apply
+this and conclude,
+
+01:05:57.200 --> 01:05:59.760 align:middle line:84%
+we need to know that
+x is not concentrated
+
+01:05:59.760 --> 01:06:01.660 align:middle line:90%
+with u equals to t over 2.
+
+01:06:01.660 --> 01:06:05.000 align:middle line:90%
+
+
+01:06:05.000 --> 01:06:06.760 align:middle line:84%
+So it's very
+similar to the issue
+
+01:06:06.760 --> 01:06:10.490 align:middle line:84%
+that we had when we
+needed to iterate.
+
+01:06:10.490 --> 01:06:13.170 align:middle line:84%
+So we knew that a plus
+little aA is large.
+
+01:06:13.170 --> 01:06:16.210 align:middle line:84%
+But we didn't know that the
+non-concentration condition also
+
+01:06:16.210 --> 01:06:17.330 align:middle line:90%
+improves.
+
+01:06:17.330 --> 01:06:19.410 align:middle line:90%
+It's a similar issue here.
+
+01:06:19.410 --> 01:06:22.290 align:middle line:84%
+We know something about the
+size of these projections,
+
+01:06:22.290 --> 01:06:23.890 align:middle line:84%
+but a priori, we
+don't know anything
+
+01:06:23.890 --> 01:06:26.930 align:middle line:90%
+about the non-concentrated.
+
+01:06:26.930 --> 01:06:29.730 align:middle line:84%
+We need these projections
+to be non-concentrated.
+
+01:06:29.730 --> 01:06:35.050 align:middle line:84%
+OK, so maybe ignore all of this,
+and just say the following.
+
+01:06:35.050 --> 01:06:38.890 align:middle line:84%
+Using Balog-Szemeredi-Gowers
+many times in a clever way,
+
+01:06:38.890 --> 01:06:43.803 align:middle line:84%
+we can reduce to the case where
+the set x is a product set.
+
+01:06:43.803 --> 01:06:45.970 align:middle line:84%
+You can even assume it's a
+product set of something,
+
+01:06:45.970 --> 01:06:47.530 align:middle line:90%
+a self product set.
+
+01:06:47.530 --> 01:06:49.810 align:middle line:84%
+So using Balog-Szemeredi-Gowers
+as many times,
+
+01:06:49.810 --> 01:06:53.570 align:middle line:84%
+we can assume that
+x is x1 times x2.
+
+01:06:53.570 --> 01:06:58.152 align:middle line:84%
+And then using
+Balog-Szemeredi-Gowers again,
+
+01:06:58.152 --> 01:06:59.610 align:middle line:84%
+so Balog-Szemeredi-Gowers
+allows us
+
+01:06:59.610 --> 01:07:02.250 align:middle line:84%
+to go back and forth between
+dense subsets and just
+
+01:07:02.250 --> 01:07:03.370 align:middle line:90%
+everything.
+
+01:07:03.370 --> 01:07:05.740 align:middle line:90%
+So this is what allows us to do.
+
+01:07:05.740 --> 01:07:11.220 align:middle line:84%
+So we can assume that we are in
+the setting of a product set.
+
+01:07:11.220 --> 01:07:13.700 align:middle line:90%
+And then we want to apply this.
+
+01:07:13.700 --> 01:07:15.820 align:middle line:84%
+But not so fast,
+because we don't
+
+01:07:15.820 --> 01:07:17.620 align:middle line:84%
+know that the
+projections satisfy
+
+01:07:17.620 --> 01:07:19.940 align:middle line:84%
+the non-concentration
+assumption a priori.
+
+01:07:19.940 --> 01:07:21.740 align:middle line:90%
+So we have this problem again.
+
+01:07:21.740 --> 01:07:24.100 align:middle line:84%
+So it's very similar to
+the problem we had before.
+
+01:07:24.100 --> 01:07:26.860 align:middle line:84%
+And it is solved
+in a similar way.
+
+01:07:26.860 --> 01:07:28.340 align:middle line:90%
+But it has to be solved.
+
+01:07:28.340 --> 01:07:33.700 align:middle line:84%
+So in some sense, so you
+can think of it in this way.
+
+01:07:33.700 --> 01:07:37.300 align:middle line:84%
+We say that t over 2 is a
+trivial between [INAUDIBLE]
+
+01:07:37.300 --> 01:07:39.487 align:middle line:90%
+bound for projections.
+
+01:07:39.487 --> 01:07:41.820 align:middle line:84%
+What we have to show is that
+this trivial bound actually
+
+01:07:41.820 --> 01:07:43.670 align:middle line:84%
+holds in the
+non-concentration sense.
+
+01:07:43.670 --> 01:07:48.860 align:middle line:90%
+
+
+01:07:48.860 --> 01:07:53.460 align:middle line:84%
+So here, 0, 1, and infinity
+are just generic projections.
+
+01:07:53.460 --> 01:07:57.700 align:middle line:84%
+In fact, if we pick
+three random points in D,
+
+01:07:57.700 --> 01:08:01.540 align:middle line:84%
+this will work, because three
+random points will be separated.
+
+01:08:01.540 --> 01:08:04.270 align:middle line:84%
+Three random points will not
+be too concentrated because
+
+01:08:04.270 --> 01:08:05.630 align:middle line:90%
+of this.
+
+01:08:05.630 --> 01:08:08.670 align:middle line:84%
+There are not too many
+points in a single ball.
+
+01:08:08.670 --> 01:08:12.670 align:middle line:84%
+So if you randomly
+sample three points in D,
+
+01:08:12.670 --> 01:08:14.550 align:middle line:84%
+the linear map that
+makes these points
+
+01:08:14.550 --> 01:08:16.630 align:middle line:84%
+horizontal, and
+vertical, and diagonal,
+
+01:08:16.630 --> 01:08:19.910 align:middle line:90%
+will have small distortion.
+
+01:08:19.910 --> 01:08:24.750 align:middle line:84%
+So we need to know that
+the random projection of x
+
+01:08:24.750 --> 01:08:27.830 align:middle line:90%
+is a delta T over 2 S set.
+
+01:08:27.830 --> 01:08:29.750 align:middle line:84%
+In some sense, the
+goal is to show
+
+01:08:29.750 --> 01:08:32.410 align:middle line:84%
+that the random projection
+is a delta t over 2
+
+01:08:32.410 --> 01:08:35.413 align:middle line:90%
+plus some gain S set.
+
+01:08:35.413 --> 01:08:36.830 align:middle line:84%
+But to prove that,
+we need to show
+
+01:08:36.830 --> 01:08:39.569 align:middle line:84%
+that it satisfies
+the same thing,
+
+01:08:39.569 --> 01:08:42.350 align:middle line:84%
+but without the epsilon, but
+the non-concentration version
+
+01:08:42.350 --> 01:08:44.109 align:middle line:90%
+of that.
+
+01:08:44.109 --> 01:08:45.170 align:middle line:90%
+And this can be done.
+
+01:08:45.170 --> 01:08:46.990 align:middle line:90%
+It can be done in several ways.
+
+01:08:46.990 --> 01:08:51.149 align:middle line:84%
+One way is a similar thing
+to what we have done today.
+
+01:08:51.149 --> 01:08:53.010 align:middle line:90%
+Well, today and last time.
+
+01:08:53.010 --> 01:08:59.550 align:middle line:84%
+But basically, go from
+growth to non-concentration
+
+01:08:59.550 --> 01:09:03.520 align:middle line:84%
+by uniformizing
+everything carefully.
+
+01:09:03.520 --> 01:09:06.260 align:middle line:84%
+And it can also be done by
+some careful double counting,
+
+01:09:06.260 --> 01:09:09.915 align:middle line:84%
+similar to, but not exactly the
+same that you've done before.
+
+01:09:09.915 --> 01:09:12.040 align:middle line:84%
+So there are several ways
+of doing it, because it's
+
+01:09:12.040 --> 01:09:13.479 align:middle line:90%
+like the easy case.
+
+01:09:13.479 --> 01:09:15.600 align:middle line:90%
+But it has to be done.
+
+01:09:15.600 --> 01:09:18.290 align:middle line:84%
+OK, so maybe let's
+write that down.
+
+01:09:18.290 --> 01:09:33.080 align:middle line:90%
+
+
+01:09:33.080 --> 01:09:35.469 align:middle line:90%
+OK, so we need a last fact.
+
+01:09:35.469 --> 01:09:44.800 align:middle line:90%
+
+
+01:09:44.800 --> 01:09:55.120 align:middle line:84%
+If x and D are as before, as in
+Bourgain's projection theorem,
+
+01:09:55.120 --> 01:10:00.240 align:middle line:84%
+then there exists some A and
+D. And once again, once we know
+
+01:10:00.240 --> 01:10:03.890 align:middle line:84%
+that there is one A and D, that
+means nearly all A and D have
+
+01:10:03.890 --> 01:10:09.890 align:middle line:84%
+this property such
+that pi of x contains
+
+01:10:09.890 --> 01:10:18.880 align:middle line:84%
+a delta t over 2 delta 2, maybe
+O of epsilon, O of eta set.
+
+01:10:18.880 --> 01:10:26.490 align:middle line:90%
+
+
+01:10:26.490 --> 01:10:28.468 align:middle line:84%
+Again, t over 2 is
+like the trivial bound.
+
+01:10:28.468 --> 01:10:30.010 align:middle line:84%
+But it's not so
+trivial in this case,
+
+01:10:30.010 --> 01:10:31.810 align:middle line:84%
+because we are claiming
+some concentration
+
+01:10:31.810 --> 01:10:33.210 align:middle line:90%
+for the projection.
+
+01:10:33.210 --> 01:10:38.030 align:middle line:84%
+But because at the same
+time, for covering number,
+
+01:10:38.030 --> 01:10:39.930 align:middle line:84%
+so for the covering
+number version of this
+
+01:10:39.930 --> 01:10:43.310 align:middle line:84%
+is sort of obvious, because
+again, if we have one set,
+
+01:10:43.310 --> 01:10:45.650 align:middle line:84%
+you look at two projections
+in more or less orthogonal
+
+01:10:45.650 --> 01:10:47.570 align:middle line:84%
+directions, and
+most one of them can
+
+01:10:47.570 --> 01:10:50.490 align:middle line:84%
+drop by more than square
+root of the size of the set.
+
+01:10:50.490 --> 01:10:53.410 align:middle line:90%
+And this is true at every scale.
+
+01:10:53.410 --> 01:10:55.470 align:middle line:84%
+So you see that if we
+knew that this is uniform,
+
+01:10:55.470 --> 01:10:56.450 align:middle line:90%
+we would be done.
+
+01:10:56.450 --> 01:11:00.140 align:middle line:84%
+So it's really very similar to
+what we have been discussing
+
+01:11:00.140 --> 01:11:02.500 align:middle line:90%
+in the rest of the lecture.
+
+01:11:02.500 --> 01:11:18.700 align:middle line:84%
+So this can be proved
+using a similar strategy
+
+01:11:18.700 --> 01:11:22.460 align:middle line:90%
+as for A plus aA.
+
+01:11:22.460 --> 01:11:27.620 align:middle line:84%
+Or it can also be done
+without using uniformization
+
+01:11:27.620 --> 01:11:28.920 align:middle line:90%
+by double counting.
+
+01:11:28.920 --> 01:11:29.980 align:middle line:90%
+So OK.
+
+01:11:29.980 --> 01:11:33.760 align:middle line:90%
+
+
+01:11:33.760 --> 01:11:35.597 align:middle line:90%
+OK, maybe not uniformization.
+
+01:11:35.597 --> 01:11:37.180 align:middle line:84%
+But if one doesn't
+use uniformization,
+
+01:11:37.180 --> 01:11:39.740 align:middle line:84%
+maybe one needs some
+of Ruzsa's lemma.
+
+01:11:39.740 --> 01:11:42.700 align:middle line:90%
+But OK, so it can be done.
+
+01:11:42.700 --> 01:11:45.820 align:middle line:84%
+But I just wanted to
+point out that this is yet
+
+01:11:45.820 --> 01:11:49.040 align:middle line:84%
+another place where we need
+to worry about the fact that,
+
+01:11:49.040 --> 01:11:51.380 align:middle line:84%
+so the difference between
+the Euclidean setting
+
+01:11:51.380 --> 01:11:54.140 align:middle line:90%
+and the finite-field setting.
+
+01:11:54.140 --> 01:11:56.432 align:middle line:90%
+OK.
+
+01:11:56.432 --> 01:11:58.990 align:middle line:84%
+OK, and now, once we
+know this, we are really
+
+01:11:58.990 --> 01:12:02.270 align:middle line:84%
+done, because using
+Balog-Szemeredi-Gowers
+
+01:12:02.270 --> 01:12:05.810 align:middle line:84%
+three times, we can assume
+that x is a Cartesian product.
+
+01:12:05.810 --> 01:12:08.630 align:middle line:84%
+And we just need to know that
+the prediction in a given
+
+01:12:08.630 --> 01:12:11.410 align:middle line:84%
+direction grows, and
+it is given by this.
+
+01:12:11.410 --> 01:12:42.430 align:middle line:90%
+
+
+01:12:42.430 --> 01:12:45.680 align:middle line:90%
+And then we apply double star.
+
+01:12:45.680 --> 01:13:08.640 align:middle line:90%
+
+
+01:13:08.640 --> 01:13:10.780 align:middle line:84%
+OK, so since there
+are five minutes left,
+
+01:13:10.780 --> 01:13:14.000 align:middle line:84%
+let me summarize
+what's been going on.
+
+01:13:14.000 --> 01:13:17.380 align:middle line:84%
+So what is the idea, the
+general idea of the proof,
+
+01:13:17.380 --> 01:13:20.480 align:middle line:84%
+both in the finite-field setting
+and the Euclidean setting,
+
+01:13:20.480 --> 01:13:24.640 align:middle line:84%
+first, we work with the
+set in one dimension,
+
+01:13:24.640 --> 01:13:27.500 align:middle line:84%
+and shows that if the set
+is not already everything,
+
+01:13:27.500 --> 01:13:29.960 align:middle line:84%
+then it's expanded
+by some polynomial.
+
+01:13:29.960 --> 01:13:34.200 align:middle line:84%
+Then we simplify the polynomial
+using Plunnecke-Ruzsa.
+
+01:13:34.200 --> 01:13:35.480 align:middle line:90%
+Then we iterate.
+
+01:13:35.480 --> 01:13:38.440 align:middle line:84%
+In order to iterate, one has to
+be much, much, much more careful
+
+01:13:38.440 --> 01:13:40.520 align:middle line:84%
+in the Euclidean
+setting in order
+
+01:13:40.520 --> 01:13:43.000 align:middle line:84%
+to show that the
+hypothesis of the expansion
+
+01:13:43.000 --> 01:13:46.680 align:middle line:84%
+are satisfied when we
+apply the growth once.
+
+01:13:46.680 --> 01:13:48.060 align:middle line:90%
+So we can iterate.
+
+01:13:48.060 --> 01:13:49.860 align:middle line:90%
+But eventually, we can iterate.
+
+01:13:49.860 --> 01:13:52.600 align:middle line:84%
+That means that we can expand
+the given set A to almost
+
+01:13:52.600 --> 01:13:54.850 align:middle line:90%
+everything by some polynomial.
+
+01:13:54.850 --> 01:13:58.570 align:middle line:84%
+Once we can expand by
+polynomial to almost everything,
+
+01:13:58.570 --> 01:14:00.690 align:middle line:90%
+we get this growth.
+
+01:14:00.690 --> 01:14:02.810 align:middle line:84%
+It is still of
+some product type,
+
+01:14:02.810 --> 01:14:06.690 align:middle line:84%
+but the difference is that x
+now can be much bigger than A.
+
+01:14:06.690 --> 01:14:08.890 align:middle line:84%
+And the fact that x is
+much bigger than A is not
+
+01:14:08.890 --> 01:14:11.330 align:middle line:84%
+an issue, because instead
+of working with A,
+
+01:14:11.330 --> 01:14:15.250 align:middle line:84%
+we work with a polynomial
+applied to A, which has
+
+01:14:15.250 --> 01:14:18.090 align:middle line:90%
+size bigger than the size of x.
+
+01:14:18.090 --> 01:14:21.330 align:middle line:84%
+And finally, we want to
+project something which is not
+
+01:14:21.330 --> 01:14:24.250 align:middle line:84%
+a product, but by looking
+at three projections
+
+01:14:24.250 --> 01:14:27.370 align:middle line:84%
+to begin with, which are
+far away from each other,
+
+01:14:27.370 --> 01:14:28.930 align:middle line:84%
+and applying
+Balog-Szemeredi-Gowers
+
+01:14:28.930 --> 01:14:32.970 align:middle line:84%
+many times, we can go
+back to this setting.
+
+01:14:32.970 --> 01:14:35.070 align:middle line:84%
+So that's the short
+version of the proof.
+
+01:14:35.070 --> 01:14:37.470 align:middle line:84%
+And they are, again, in
+the Euclidean setting,
+
+01:14:37.470 --> 01:14:42.370 align:middle line:84%
+one has to be careful to show
+that the projections satisfy
+
+01:14:42.370 --> 01:14:49.630 align:middle line:84%
+the assumptions needed
+to apply this fact.
+
+01:14:49.630 --> 01:14:52.570 align:middle line:84%
+So really, you need at
+least some concentration
+
+01:14:52.570 --> 01:14:56.930 align:middle line:84%
+on x, because again, if x
+was a small interval, then
+
+01:14:56.930 --> 01:15:01.320 align:middle line:84%
+this never grows for any A. So
+one needs some assumption on x.
+
+01:15:01.320 --> 01:15:03.070 align:middle line:84%
+So one needs to prove
+something like that.
+
+01:15:03.070 --> 01:15:08.650 align:middle line:84%
+But OK, one can prove it, and
+then eventually, one uses this.
+
+01:15:08.650 --> 01:15:10.110 align:middle line:90%
+Any final questions?
+
+01:15:10.110 --> 01:15:15.478 align:middle line:90%
+
+
+01:15:15.478 --> 01:15:18.040 align:middle line:84%
+AUDIENCE: How many
+times have we used BSG?
+
+01:15:18.040 --> 01:15:22.890 align:middle line:90%
+
+
+01:15:22.890 --> 01:15:25.130 align:middle line:84%
+PABLO SHMERKIN: So
+either four or six.
+
+01:15:25.130 --> 01:15:27.630 align:middle line:90%
+I'm not completely sure.
+
+01:15:27.630 --> 01:15:28.130 align:middle line:90%
+No.
+
+01:15:28.130 --> 01:15:30.213 align:middle line:84%
+I think the first time,
+we already have a product.
+
+01:15:30.213 --> 01:15:36.770 align:middle line:84%
+Yeah, I think once, for A plus
+little aA, and then three times
+
+01:15:36.770 --> 01:15:38.000 align:middle line:90%
+to reduce to this setting.
+
+01:15:38.000 --> 01:15:41.250 align:middle line:90%
+
+
+01:15:41.250 --> 01:15:45.570 align:middle line:84%
+AUDIENCE: Is it for when we
+just want the projection of x
+
+01:15:45.570 --> 01:15:47.550 align:middle line:90%
+itself is big in one direction?
+
+01:15:47.550 --> 01:15:53.478 align:middle line:84%
+Or it's like for the
+proof that's [INAUDIBLE]?
+
+01:15:53.478 --> 01:15:54.520 align:middle line:90%
+PABLO SHMERKIN: Yeah, OK.
+
+01:15:54.520 --> 01:15:57.880 align:middle line:84%
+So in the finite-field
+setting, as you are suggesting,
+
+01:15:57.880 --> 01:16:00.660 align:middle line:84%
+it's much easier to prove that
+the projection of x itself
+
+01:16:00.660 --> 01:16:03.660 align:middle line:84%
+is big than proving
+it for dense subsets.
+
+01:16:03.660 --> 01:16:06.580 align:middle line:84%
+But in the Euclidean
+case, even if your goal
+
+01:16:06.580 --> 01:16:08.740 align:middle line:84%
+is proving that the
+projection of x is large,
+
+01:16:08.740 --> 01:16:10.820 align:middle line:84%
+and you don't care
+about dense subsets,
+
+01:16:10.820 --> 01:16:13.580 align:middle line:84%
+you are still forced to
+care about dense subsets
+
+01:16:13.580 --> 01:16:15.620 align:middle line:84%
+because you need the
+dense subsets to prove
+
+01:16:15.620 --> 01:16:19.820 align:middle line:84%
+the non-concentration
+assumption when you iterate.
+
+01:16:19.820 --> 01:16:23.740 align:middle line:84%
+So how did we prove that A plus
+little aA satisfies the stronger
+
+01:16:23.740 --> 01:16:26.100 align:middle line:90%
+non-concentration assumption?
+
+01:16:26.100 --> 01:16:29.340 align:middle line:84%
+By proving that the projection
+of dense subsets of A times A
+
+01:16:29.340 --> 01:16:31.140 align:middle line:90%
+are large.
+
+01:16:31.140 --> 01:16:34.220 align:middle line:84%
+So even if your
+ultimate goal doesn't
+
+01:16:34.220 --> 01:16:35.880 align:middle line:84%
+involve looking
+at dense subsets,
+
+01:16:35.880 --> 01:16:39.300 align:middle line:84%
+you still need to look at
+dense subsets along the proof.
+
+01:16:39.300 --> 01:16:41.420 align:middle line:90%
+And you cannot avoid that.
+
+01:16:41.420 --> 01:16:44.380 align:middle line:84%
+Or maybe you can, but at least
+with this method of proof,
+
+01:16:44.380 --> 01:16:45.680 align:middle line:90%
+you cannot avoid that.
+
+01:16:45.680 --> 01:16:52.207 align:middle line:90%
+
+
+01:16:52.207 --> 01:16:52.870 align:middle line:90%
+Yes.
+
+01:16:52.870 --> 01:16:54.495 align:middle line:84%
+AUDIENCE: Can you
+say a little bit more
+
+01:16:54.495 --> 01:16:57.150 align:middle line:84%
+about how to handle the
+issue that the uniform subset
+
+01:16:57.150 --> 01:17:01.435 align:middle line:84%
+at different scales
+might be different?
+
+01:17:01.435 --> 01:17:02.310 align:middle line:90%
+PABLO SHMERKIN: Yeah.
+
+01:17:02.310 --> 01:17:06.050 align:middle line:84%
+So unfortunately, I didn't
+realize this issue would arise.
+
+01:17:06.050 --> 01:17:08.020 align:middle line:90%
+So I didn't check carefully.
+
+01:17:08.020 --> 01:17:08.790 align:middle line:90%
+AUDIENCE: Oh, OK.
+
+01:17:08.790 --> 01:17:10.310 align:middle line:90%
+That's fine.
+
+01:17:10.310 --> 01:17:13.420 align:middle line:84%
+PABLO SHMERKIN: But yeah,
+it's a very good question.
+
+01:17:13.420 --> 01:17:23.790 align:middle line:90%
+
+
+01:17:23.790 --> 01:17:24.420 align:middle line:90%
+Yeah, OK.
+
+01:17:24.420 --> 01:17:26.710 align:middle line:84%
+So I'm not exactly
+sure, but let me
+
+01:17:26.710 --> 01:17:29.410 align:middle line:84%
+say something that
+might work in this case,
+
+01:17:29.410 --> 01:17:31.590 align:middle line:84%
+but it certainly
+works in other cases.
+
+01:17:31.590 --> 01:17:36.350 align:middle line:84%
+So I explained an
+idea superficially
+
+01:17:36.350 --> 01:17:38.250 align:middle line:90%
+of first getting an A prime.
+
+01:17:38.250 --> 01:17:40.390 align:middle line:84%
+And if that A prime
+doesn't exhaust A,
+
+01:17:40.390 --> 01:17:42.950 align:middle line:84%
+we take it away, and
+find another A prime.
+
+01:17:42.950 --> 01:17:45.310 align:middle line:84%
+One can do something
+similar for uniform sets.
+
+01:17:45.310 --> 01:17:48.580 align:middle line:84%
+So rather than taking
+one uniform subset,
+
+01:17:48.580 --> 01:17:52.480 align:middle line:84%
+so one is given a set, and one
+knows nothing about that set.
+
+01:17:52.480 --> 01:17:55.840 align:middle line:84%
+And we can nearly
+exhaust that set
+
+01:17:55.840 --> 01:17:58.760 align:middle line:84%
+by a finite union
+of uniform subsets.
+
+01:17:58.760 --> 01:18:00.660 align:middle line:84%
+So one finds a
+dense uniform set,
+
+01:18:00.660 --> 01:18:03.640 align:middle line:84%
+takes it away, finds another
+uniform set, takes it away.
+
+01:18:03.640 --> 01:18:06.160 align:middle line:84%
+And in this way, we
+essentially cover the set
+
+01:18:06.160 --> 01:18:09.600 align:middle line:84%
+with a very small error
+by uniform subsets.
+
+01:18:09.600 --> 01:18:11.760 align:middle line:84%
+So this is one way to
+get around the issue
+
+01:18:11.760 --> 01:18:15.128 align:middle line:84%
+that one uniform subset
+itself is maybe too sparse.
+
+01:18:15.128 --> 01:18:17.670 align:middle line:84%
+And then a different scale is
+different, things could happen.
+
+01:18:17.670 --> 01:18:22.040 align:middle line:90%
+
+
+01:18:22.040 --> 01:18:24.100 align:middle line:84%
+So I think that
+could be one way.
+
+01:18:24.100 --> 01:18:26.180 align:middle line:84%
+I don't think that's
+what we do in the paper.
+
+01:18:26.180 --> 01:18:31.920 align:middle line:84%
+But I think that's one thing you
+could do to bypass this issue.
+
+01:18:31.920 --> 01:18:34.560 align:middle line:84%
+AUDIENCE: You said last time
+that there was possibly a way
+
+01:18:34.560 --> 01:18:38.160 align:middle line:90%
+to simplify this [INAUDIBLE].
+
+01:18:38.160 --> 01:18:39.960 align:middle line:84%
+PABLO SHMERKIN: We
+are not sure yet.
+
+01:18:39.960 --> 01:18:41.720 align:middle line:90%
+We are hopeful.
+
+01:18:41.720 --> 01:18:44.160 align:middle line:90%
+Yes.
+
+01:18:44.160 --> 01:18:47.530 align:middle line:90%
+Yeah, again.
+
+01:18:47.530 --> 01:18:52.210 align:middle line:84%
+So Bourgain's original proof
+is different in the sense
+
+01:18:52.210 --> 01:18:57.250 align:middle line:84%
+that he didn't construct an
+expanding polynomial at all.
+
+01:18:57.250 --> 01:19:03.250 align:middle line:84%
+But it is similar in the sense
+that he proves this, and then
+
+01:19:03.250 --> 01:19:08.130 align:middle line:84%
+uses the many
+Balog-Szemeredi-Gowers to get
+
+01:19:08.130 --> 01:19:09.530 align:middle line:90%
+the full statement.
+
+01:19:09.530 --> 01:19:11.810 align:middle line:84%
+But to prove this, he
+did something different.
+
+01:19:11.810 --> 01:19:14.050 align:middle line:90%
+But OK.
+
+01:19:14.050 --> 01:19:16.990 align:middle line:84%
+Other claim is more difficult
+than what I explained.
+
+01:19:16.990 --> 01:19:20.690 align:middle line:90%
+But I don't know.
+
+01:19:20.690 --> 01:19:24.450 align:middle line:84%
+Yeah, now, we have this
+idea from last week
+
+01:19:24.450 --> 01:19:27.610 align:middle line:84%
+that, yeah, might be
+a-- so basically, it
+
+01:19:27.610 --> 01:19:29.810 align:middle line:84%
+would be a much easier
+way of doing this.
+
+01:19:29.810 --> 01:19:31.395 align:middle line:84%
+To go from this to
+the full statement,
+
+01:19:31.395 --> 01:19:32.770 align:middle line:84%
+the only way we
+know how to do it
+
+01:19:32.770 --> 01:19:38.860 align:middle line:84%
+is how Bourgain did it, by doing
+the many Balog-Szemeredi-Gowers.
+
+01:19:38.860 --> 01:19:45.000 align:middle line:90%

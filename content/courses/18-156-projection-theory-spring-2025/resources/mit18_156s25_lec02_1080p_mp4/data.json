@@ -1,0 +1,35 @@
+{
+  "body": "",
+  "content": "<p>We introduce two fundamental methods to study projections, developed by Kaufman and Falconer in the 1960s and 70s. The first is based on double counting. The second is based on Fourier analysis.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_360p_16_9.mp4",
+  "file_size": 175950787,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Videos"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 02: Fundamental Methods of Projection Theory",
+  "uid": "b8e4f264-0059-402b-a240-8e4a33228f99",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/sEZHGMV2LiI/default.jpg",
+    "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec02_1080p_transcript.pdf"
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "Projection theory, Fourier analysis, Kaufman, Falconer, Vinh, finite field",
+    "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe introduce two fundamental methods to study projections, developed by Kaufman and Falconer in the 1960s and 70s. The first is based on double counting. The second is based on Fourier analysis.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "sEZHGMV2LiI"
+  }
+}

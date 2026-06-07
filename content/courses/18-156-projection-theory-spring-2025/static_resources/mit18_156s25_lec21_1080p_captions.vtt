@@ -1,0 +1,4602 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.960 align:middle line:90%
+[SQUEAKING]
+
+00:00:01.960 --> 00:00:02.940 align:middle line:90%
+[RUSTLING]
+
+00:00:02.940 --> 00:00:05.390 align:middle line:90%
+[CLICKING]
+
+00:00:05.390 --> 00:00:12.560 align:middle line:90%
+
+
+00:00:12.560 --> 00:00:15.650 align:middle line:84%
+LAWRENCE GUTH: OK, today is our
+second and probably last day
+
+00:00:15.650 --> 00:00:19.100 align:middle line:84%
+of homogeneous dynamics
+and projection theory.
+
+00:00:19.100 --> 00:00:22.670 align:middle line:84%
+Let's remember where
+we are, and then we're
+
+00:00:22.670 --> 00:00:25.040 align:middle line:84%
+going to try to
+use the things we
+
+00:00:25.040 --> 00:00:29.240 align:middle line:84%
+learned about last time to
+say something about dynamics.
+
+00:00:29.240 --> 00:00:36.360 align:middle line:84%
+So we'll have a Lie group
+G, which so far is SL2R.
+
+00:00:36.360 --> 00:00:43.790 align:middle line:84%
+And we have a discrete subgroup,
+which so far has been SL2Z.
+
+00:00:43.790 --> 00:00:45.745 align:middle line:84%
+And we're interested
+in G mod gamma.
+
+00:00:45.745 --> 00:00:48.470 align:middle line:90%
+
+
+00:00:48.470 --> 00:00:57.510 align:middle line:84%
+We'll have a metric m, which is
+a right invariant metric on G.
+
+00:00:57.510 --> 00:01:03.520 align:middle line:84%
+And then it leads to a
+metric that I'll also
+
+00:01:03.520 --> 00:01:05.115 align:middle line:90%
+call m on G mod gamma.
+
+00:01:05.115 --> 00:01:07.690 align:middle line:90%
+
+
+00:01:07.690 --> 00:01:16.930 align:middle line:84%
+So now G also has a left
+action on G mod gamma.
+
+00:01:16.930 --> 00:01:20.680 align:middle line:84%
+And this left action does
+not preserve the metric,
+
+00:01:20.680 --> 00:01:22.790 align:middle line:84%
+because the metric is
+not left invariant.
+
+00:01:22.790 --> 00:01:25.490 align:middle line:84%
+So this left action
+distorts the metric.
+
+00:01:25.490 --> 00:01:27.410 align:middle line:84%
+And we started to
+study that last time,
+
+00:01:27.410 --> 00:01:29.500 align:middle line:84%
+and it's going to
+continue to be crucial
+
+00:01:29.500 --> 00:01:31.060 align:middle line:90%
+how it distorts the metric.
+
+00:01:31.060 --> 00:01:33.555 align:middle line:90%
+But it preserves the volume.
+
+00:01:33.555 --> 00:01:43.660 align:middle line:90%
+
+
+00:01:43.660 --> 00:01:51.280 align:middle line:84%
+Now, inside of this group,
+we have the unitary group.
+
+00:01:51.280 --> 00:01:52.755 align:middle line:90%
+Sorry, the unipotent group.
+
+00:01:52.755 --> 00:01:57.370 align:middle line:90%
+
+
+00:01:57.370 --> 00:02:01.030 align:middle line:90%
+Let's say UT is 1 1 t.
+
+00:02:01.030 --> 00:02:04.855 align:middle line:84%
+And our goal is to understand
+how the unipotent orbits in G
+
+00:02:04.855 --> 00:02:06.340 align:middle line:90%
+mod gamma look.
+
+00:02:06.340 --> 00:02:13.430 align:middle line:84%
+So we're going to study
+u dot x in G mod gamma.
+
+00:02:13.430 --> 00:02:14.880 align:middle line:90%
+So x is in G mod gamma.
+
+00:02:14.880 --> 00:02:19.390 align:middle line:90%
+
+
+00:02:19.390 --> 00:02:26.380 align:middle line:84%
+And there's an old theorem of
+Hedlund from the '30s, which is
+
+00:02:26.380 --> 00:02:28.840 align:middle line:84%
+the kind of thing about this
+orbit that we're interested
+
+00:02:28.840 --> 00:02:36.850 align:middle line:84%
+in that u dot x is
+either periodic or dense.
+
+00:02:36.850 --> 00:02:38.680 align:middle line:84%
+We won't exactly
+prove that, but we'll
+
+00:02:38.680 --> 00:02:40.680 align:middle line:84%
+prove some things that
+are a little bit related.
+
+00:02:40.680 --> 00:02:44.578 align:middle line:90%
+
+
+00:02:44.578 --> 00:02:47.450 align:middle line:84%
+Now, the unipotent
+group is special.
+
+00:02:47.450 --> 00:02:49.363 align:middle line:84%
+And the one way of
+getting our hands
+
+00:02:49.363 --> 00:02:51.280 align:middle line:84%
+on something special
+about it is to see how it
+
+00:02:51.280 --> 00:02:53.450 align:middle line:90%
+relates to diagonal matrices.
+
+00:02:53.450 --> 00:02:57.330 align:middle line:84%
+So let's say this a
+sub r is that matrix,
+
+00:02:57.330 --> 00:02:59.590 align:middle line:90%
+that diagonal matrix in SL2R.
+
+00:02:59.590 --> 00:03:06.510 align:middle line:84%
+And then acute observation is
+that a sub r UT a sub r inverse
+
+00:03:06.510 --> 00:03:08.657 align:middle line:90%
+is u e to the 2rt.
+
+00:03:08.657 --> 00:03:12.510 align:middle line:90%
+
+
+00:03:12.510 --> 00:03:14.928 align:middle line:84%
+It's just a computation
+with matrices.
+
+00:03:14.928 --> 00:03:16.470 align:middle line:84%
+I've done it a couple
+of times, and I
+
+00:03:16.470 --> 00:03:19.123 align:middle line:84%
+start to-- anyway, doing
+it in front of you,
+
+00:03:19.123 --> 00:03:20.290 align:middle line:90%
+I think, is not very useful.
+
+00:03:20.290 --> 00:03:23.430 align:middle line:84%
+But if you are interested in
+this, if you do it yourself,
+
+00:03:23.430 --> 00:03:24.785 align:middle line:90%
+it starts to make sense.
+
+00:03:24.785 --> 00:03:27.561 align:middle line:90%
+
+
+00:03:27.561 --> 00:03:39.030 align:middle line:84%
+So now let's say that u0t of x,
+that means the set of ut of x t
+
+00:03:39.030 --> 00:03:40.590 align:middle line:90%
+is in 0t.
+
+00:03:40.590 --> 00:03:43.790 align:middle line:84%
+So if capital T is large, this
+is a big piece of an orbit.
+
+00:03:43.790 --> 00:03:45.790 align:middle line:84%
+And that's more or less
+what we'd like to study.
+
+00:03:45.790 --> 00:03:47.950 align:middle line:84%
+What is the shape of a
+big piece of the orbit?
+
+00:03:47.950 --> 00:03:55.830 align:middle line:84%
+And this observation
+tells us that u0t of x
+
+00:03:55.830 --> 00:04:05.490 align:middle line:90%
+is ar u01 ar inverse of x.
+
+00:04:05.490 --> 00:04:09.600 align:middle line:84%
+And this is helpful, because
+this u01 is much less
+
+00:04:09.600 --> 00:04:11.400 align:middle line:90%
+intimidating than u0t.
+
+00:04:11.400 --> 00:04:14.940 align:middle line:84%
+So this here is just a
+little piece of the orbit.
+
+00:04:14.940 --> 00:04:17.970 align:middle line:84%
+And so to understand
+a big orbit,
+
+00:04:17.970 --> 00:04:21.329 align:middle line:84%
+we have to understand how this
+a sub r acts on a little orbit.
+
+00:04:21.329 --> 00:04:23.830 align:middle line:90%
+
+
+00:04:23.830 --> 00:04:27.150 align:middle line:84%
+And another simple
+observation is that ar
+
+00:04:27.150 --> 00:04:32.170 align:middle line:90%
+is like a little r to the j.
+
+00:04:32.170 --> 00:04:37.440 align:middle line:84%
+So if big R is big J times
+little r, then we have this.
+
+00:04:37.440 --> 00:04:47.020 align:middle line:84%
+Oh, in this equation, by the way
+e to the big r is t So this ar,
+
+00:04:47.020 --> 00:04:51.100 align:middle line:84%
+we can think of it as a
+little r applied many times.
+
+00:04:51.100 --> 00:04:53.870 align:middle line:84%
+So therefore, it makes
+sense that we could just
+
+00:04:53.870 --> 00:05:02.395 align:middle line:84%
+try to understand how a little
+r acts on unipotent orbits.
+
+00:05:02.395 --> 00:05:11.474 align:middle line:90%
+
+
+00:05:11.474 --> 00:05:14.150 align:middle line:84%
+So we made a picture of
+this at the end of class
+
+00:05:14.150 --> 00:05:17.820 align:middle line:84%
+last time with models
+and props and everything.
+
+00:05:17.820 --> 00:05:23.330 align:middle line:84%
+And this picture
+is the main tool
+
+00:05:23.330 --> 00:05:26.263 align:middle line:84%
+that we're going to think
+about for homogeneous dynamics.
+
+00:05:26.263 --> 00:05:27.930 align:middle line:84%
+So I'm going to draw
+this picture again,
+
+00:05:27.930 --> 00:05:29.780 align:middle line:84%
+and then we're going
+to talk about why
+
+00:05:29.780 --> 00:05:31.165 align:middle line:90%
+it is the way we drew it.
+
+00:05:31.165 --> 00:05:34.112 align:middle line:90%
+
+
+00:05:34.112 --> 00:05:39.170 align:middle line:84%
+So over here, a
+shape that I'll draw
+
+00:05:39.170 --> 00:05:40.710 align:middle line:90%
+as being kind of a cylinder.
+
+00:05:40.710 --> 00:05:44.150 align:middle line:84%
+And this is a
+fundamental domain.
+
+00:05:44.150 --> 00:05:46.760 align:middle line:84%
+So this is either the whole
+fundamental domain or maybe
+
+00:05:46.760 --> 00:05:51.260 align:middle line:90%
+a tube in f.
+
+00:05:51.260 --> 00:05:58.520 align:middle line:84%
+So f is sitting in the group G,
+and it's a fundamental domain
+
+00:05:58.520 --> 00:06:01.110 align:middle line:90%
+for G mod gamma.
+
+00:06:01.110 --> 00:06:04.060 align:middle line:90%
+
+
+00:06:04.060 --> 00:06:11.430 align:middle line:84%
+And so this length scale is 1,
+and this length scale is also 1.
+
+00:06:11.430 --> 00:06:13.160 align:middle line:84%
+Or we could also make
+it smaller if we'd
+
+00:06:13.160 --> 00:06:16.050 align:middle line:90%
+like to have a thinner tube.
+
+00:06:16.050 --> 00:06:18.350 align:middle line:84%
+And now inside of
+this tube are a bunch
+
+00:06:18.350 --> 00:06:21.595 align:middle line:84%
+of pieces of unipotent orbit
+that I'll draw like this.
+
+00:06:21.595 --> 00:06:32.630 align:middle line:90%
+
+
+00:06:32.630 --> 00:06:37.220 align:middle line:84%
+So each of those is a
+piece of unipotent orbit.
+
+00:06:37.220 --> 00:06:40.930 align:middle line:84%
+Here is t equals 0 and
+here is t equals 1.
+
+00:06:40.930 --> 00:06:44.010 align:middle line:90%
+
+
+00:06:44.010 --> 00:06:47.330 align:middle line:84%
+And now I understand what is
+going to happen to this picture
+
+00:06:47.330 --> 00:06:50.290 align:middle line:90%
+when we apply a sub r.
+
+00:06:50.290 --> 00:06:57.620 align:middle line:84%
+So we're going to apply,
+I guess strictly speaking,
+
+00:06:57.620 --> 00:06:59.120 align:middle line:84%
+we're going to apply
+it on the left.
+
+00:06:59.120 --> 00:07:02.140 align:middle line:84%
+We're going to multiply
+by a sub r on the left.
+
+00:07:02.140 --> 00:07:05.170 align:middle line:90%
+So what's going to happen?
+
+00:07:05.170 --> 00:07:08.110 align:middle line:84%
+So first of all,
+the unipotent orbits
+
+00:07:08.110 --> 00:07:11.350 align:middle line:90%
+are going to stretch that way.
+
+00:07:11.350 --> 00:07:14.922 align:middle line:84%
+And then second of
+all, so if you just
+
+00:07:14.922 --> 00:07:16.630 align:middle line:84%
+think about what
+happens to the cylinder,
+
+00:07:16.630 --> 00:07:18.730 align:middle line:84%
+there's going to be a direction
+where it stretches, there's
+
+00:07:18.730 --> 00:07:20.690 align:middle line:84%
+going to be a direction
+that compresses,
+
+00:07:20.690 --> 00:07:23.140 align:middle line:84%
+and there's going to be a
+direction that stays the same.
+
+00:07:23.140 --> 00:07:25.270 align:middle line:84%
+That would be true
+at every point.
+
+00:07:25.270 --> 00:07:29.350 align:middle line:84%
+But what's important is that
+the direction that compresses
+
+00:07:29.350 --> 00:07:32.750 align:middle line:84%
+is kind of not the same
+everywhere in this picture.
+
+00:07:32.750 --> 00:07:34.390 align:middle line:84%
+And so to illustrate
+that, I'm going
+
+00:07:34.390 --> 00:07:38.170 align:middle line:84%
+to draw what happens at a
+couple of different heights.
+
+00:07:38.170 --> 00:07:52.110 align:middle line:90%
+So at t equals 1, I have this.
+
+00:07:52.110 --> 00:07:55.000 align:middle line:84%
+And there will be some
+direction that compresses.
+
+00:07:55.000 --> 00:07:57.090 align:middle line:90%
+Maybe it's that direction.
+
+00:07:57.090 --> 00:08:00.930 align:middle line:84%
+And so when we
+apply lar inverse,
+
+00:08:00.930 --> 00:08:05.340 align:middle line:84%
+this disk is going to
+be squished vertically.
+
+00:08:05.340 --> 00:08:07.380 align:middle line:84%
+And when it's
+squished vertically,
+
+00:08:07.380 --> 00:08:10.790 align:middle line:84%
+then we'll have a triangle
+that looks sort of like so.
+
+00:08:10.790 --> 00:08:13.830 align:middle line:90%
+
+
+00:08:13.830 --> 00:08:19.050 align:middle line:84%
+And also at t equals 0,
+we have the same disk
+
+00:08:19.050 --> 00:08:20.615 align:middle line:90%
+with the same triangle in it.
+
+00:08:20.615 --> 00:08:25.620 align:middle line:90%
+
+
+00:08:25.620 --> 00:08:29.320 align:middle line:84%
+But there's a compression
+direction, which is different.
+
+00:08:29.320 --> 00:08:32.250 align:middle line:84%
+So maybe down here
+it's this direction.
+
+00:08:32.250 --> 00:08:37.559 align:middle line:84%
+So when we apply
+la sub r inverse,
+
+00:08:37.559 --> 00:08:42.240 align:middle line:84%
+then we will get a pancake
+and get squished this way.
+
+00:08:42.240 --> 00:08:46.600 align:middle line:84%
+And that will affect
+these points differently.
+
+00:08:46.600 --> 00:08:50.520 align:middle line:84%
+After squishing, the green
+point and the orange point
+
+00:08:50.520 --> 00:08:51.980 align:middle line:90%
+will be quite close together.
+
+00:08:51.980 --> 00:08:54.670 align:middle line:90%
+
+
+00:08:54.670 --> 00:08:57.620 align:middle line:84%
+So that's the picture that
+we ended with last time.
+
+00:08:57.620 --> 00:09:00.960 align:middle line:90%
+
+
+00:09:00.960 --> 00:09:06.780 align:middle line:84%
+And what is important
+here, key point,
+
+00:09:06.780 --> 00:09:20.340 align:middle line:84%
+is that the compression
+direction is twisting relative
+
+00:09:20.340 --> 00:09:24.200 align:middle line:90%
+to the unipotent orbits.
+
+00:09:24.200 --> 00:09:29.730 align:middle line:90%
+
+
+00:09:29.730 --> 00:09:32.110 align:middle line:84%
+Meaning that if
+at a given height,
+
+00:09:32.110 --> 00:09:35.590 align:middle line:84%
+two unipotent orbits are being
+compressed towards each other,
+
+00:09:35.590 --> 00:09:38.945 align:middle line:84%
+then at most other
+heights, they won't be.
+
+00:09:38.945 --> 00:09:43.290 align:middle line:90%
+
+
+00:09:43.290 --> 00:09:47.210 align:middle line:84%
+So this is where we
+left off last time.
+
+00:09:47.210 --> 00:09:51.220 align:middle line:84%
+Are there questions or
+comments about this picture?
+
+00:09:51.220 --> 00:10:01.460 align:middle line:90%
+
+
+00:10:01.460 --> 00:10:02.840 align:middle line:90%
+Yeah.
+
+00:10:02.840 --> 00:10:05.400 align:middle line:84%
+AUDIENCE: So in the
+picture you had last week,
+
+00:10:05.400 --> 00:10:07.250 align:middle line:84%
+these [INAUDIBLE]
+things are all kind of
+
+00:10:07.250 --> 00:10:09.410 align:middle line:84%
+stretched out and compressed
+and then mapped back
+
+00:10:09.410 --> 00:10:11.300 align:middle line:90%
+onto the fundamental domain.
+
+00:10:11.300 --> 00:10:15.020 align:middle line:84%
+But if they've been
+twisted around,
+
+00:10:15.020 --> 00:10:17.210 align:middle line:84%
+are they kind of
+mapped back onto f
+
+00:10:17.210 --> 00:10:20.430 align:middle line:84%
+without twisting in some way to
+make it all perfectly line up?
+
+00:10:20.430 --> 00:10:22.880 align:middle line:84%
+Or is there some other
+twisting that happens again
+
+00:10:22.880 --> 00:10:25.880 align:middle line:90%
+as they get back into f?
+
+00:10:25.880 --> 00:10:27.570 align:middle line:90%
+LAWRENCE GUTH: Yeah, yeah.
+
+00:10:27.570 --> 00:10:29.330 align:middle line:90%
+OK, that's a good question.
+
+00:10:29.330 --> 00:10:33.440 align:middle line:84%
+So the question is about
+how this gets mapped back
+
+00:10:33.440 --> 00:10:34.920 align:middle line:90%
+into the fundamental domain.
+
+00:10:34.920 --> 00:10:36.295 align:middle line:90%
+Let's try to draw that also.
+
+00:10:36.295 --> 00:10:39.680 align:middle line:90%
+
+
+00:10:39.680 --> 00:10:45.980 align:middle line:84%
+So here's our
+fundamental domain.
+
+00:10:45.980 --> 00:10:49.650 align:middle line:84%
+First we apply this
+map just in our group,
+
+00:10:49.650 --> 00:10:55.843 align:middle line:84%
+and we get something
+which is tall and flat.
+
+00:10:55.843 --> 00:10:59.900 align:middle line:90%
+
+
+00:10:59.900 --> 00:11:02.810 align:middle line:84%
+And perhaps, it is
+twisted a little bit
+
+00:11:02.810 --> 00:11:04.330 align:middle line:90%
+between the bottom and the top.
+
+00:11:04.330 --> 00:11:08.570 align:middle line:90%
+
+
+00:11:08.570 --> 00:11:13.980 align:middle line:84%
+Anyway, then that is going to
+get mapped back into our domain.
+
+00:11:13.980 --> 00:11:17.700 align:middle line:84%
+So pi is the projection
+from G to G mod gamma.
+
+00:11:17.700 --> 00:11:21.600 align:middle line:84%
+And G mod gamma will identify
+with our fundamental domain.
+
+00:11:21.600 --> 00:11:23.510 align:middle line:84%
+So this thing is
+going to get back
+
+00:11:23.510 --> 00:11:24.900 align:middle line:90%
+into the fundamental domain.
+
+00:11:24.900 --> 00:11:27.710 align:middle line:90%
+What does that look like?
+
+00:11:27.710 --> 00:11:32.810 align:middle line:84%
+So the fundamental domain
+is kind of a unit cube.
+
+00:11:32.810 --> 00:11:35.550 align:middle line:84%
+But this thing is way
+taller than a unit cube.
+
+00:11:35.550 --> 00:11:38.350 align:middle line:84%
+So imagine cutting
+it into pieces
+
+00:11:38.350 --> 00:11:41.980 align:middle line:90%
+whose height is only around 1.
+
+00:11:41.980 --> 00:11:44.420 align:middle line:90%
+And this was only ever around 1.
+
+00:11:44.420 --> 00:11:46.810 align:middle line:84%
+So each of those pieces
+now is small enough
+
+00:11:46.810 --> 00:11:49.360 align:middle line:84%
+to fit in the
+fundamental domain.
+
+00:11:49.360 --> 00:11:55.660 align:middle line:84%
+And let me call it piece
+one, piece two, piece three,
+
+00:11:55.660 --> 00:11:58.490 align:middle line:90%
+and piece four.
+
+00:11:58.490 --> 00:12:01.270 align:middle line:84%
+Now, those are
+going to fold back
+
+00:12:01.270 --> 00:12:04.360 align:middle line:90%
+into the fundamental domain.
+
+00:12:04.360 --> 00:12:07.030 align:middle line:84%
+And at least
+roughly, I think it's
+
+00:12:07.030 --> 00:12:08.700 align:middle line:90%
+good to imagine it like this.
+
+00:12:08.700 --> 00:12:11.290 align:middle line:90%
+
+
+00:12:11.290 --> 00:12:15.280 align:middle line:84%
+So each one of these
+guys corresponds
+
+00:12:15.280 --> 00:12:18.440 align:middle line:90%
+to one of those guys.
+
+00:12:18.440 --> 00:12:20.360 align:middle line:90%
+But they are not in order.
+
+00:12:20.360 --> 00:12:22.760 align:middle line:84%
+So it's not like
+they go 1, 2, 3, 4.
+
+00:12:22.760 --> 00:12:29.200 align:middle line:90%
+They're in some order, 1, 2, 3.
+
+00:12:29.200 --> 00:12:34.442 align:middle line:84%
+So I don't know much
+about this order.
+
+00:12:34.442 --> 00:12:36.525 align:middle line:84%
+I personally don't know
+anything about this order.
+
+00:12:36.525 --> 00:12:47.800 align:middle line:90%
+
+
+00:12:47.800 --> 00:12:50.960 align:middle line:84%
+OK, so now I think
+the question was,
+
+00:12:50.960 --> 00:12:53.650 align:middle line:84%
+how would this picture
+look if this thing were
+
+00:12:53.650 --> 00:12:56.740 align:middle line:90%
+twisted a little bit?
+
+00:12:56.740 --> 00:13:00.160 align:middle line:84%
+So first of all, when we say
+that this thing is twisted
+
+00:13:00.160 --> 00:13:04.450 align:middle line:84%
+a little bit, it's something
+like a change of 90 degrees
+
+00:13:04.450 --> 00:13:07.250 align:middle line:84%
+or 180 degrees between
+the bottom and the top.
+
+00:13:07.250 --> 00:13:09.823 align:middle line:84%
+And there are many steps
+between the bottom and the top.
+
+00:13:09.823 --> 00:13:11.990 align:middle line:84%
+So that means if you just
+look at one of these guys,
+
+00:13:11.990 --> 00:13:15.260 align:middle line:84%
+you don't notice or barely
+notice any twisting.
+
+00:13:15.260 --> 00:13:19.108 align:middle line:84%
+This thing is basically
+a planar slab.
+
+00:13:19.108 --> 00:13:21.650 align:middle line:84%
+And then these planar slabs are
+at slightly different angles.
+
+00:13:21.650 --> 00:13:25.958 align:middle line:84%
+But this map pi, it
+doesn't exactly preserve--
+
+00:13:25.958 --> 00:13:28.000 align:middle line:84%
+I mean, those angles aren't
+exactly well defined,
+
+00:13:28.000 --> 00:13:30.140 align:middle line:84%
+because this is
+not living in R3.
+
+00:13:30.140 --> 00:13:33.070 align:middle line:84%
+So it's actually not
+clear exactly what
+
+00:13:33.070 --> 00:13:35.680 align:middle line:84%
+we mean when we say that
+this slab and this slab,
+
+00:13:35.680 --> 00:13:39.540 align:middle line:84%
+are they parallel or are they
+twisted compared to each other?
+
+00:13:39.540 --> 00:13:43.434 align:middle line:84%
+Anyway, when they
+get mapped back in,
+
+00:13:43.434 --> 00:13:46.660 align:middle line:84%
+I think that imagining
+this is reasonable.
+
+00:13:46.660 --> 00:13:56.710 align:middle line:90%
+
+
+00:13:56.710 --> 00:13:58.410 align:middle line:84%
+Now, that raises a
+bit of a question,
+
+00:13:58.410 --> 00:14:02.340 align:middle line:84%
+coming back to this
+picture that we were
+
+00:14:02.340 --> 00:14:03.780 align:middle line:90%
+trying to digest last time.
+
+00:14:03.780 --> 00:14:07.170 align:middle line:84%
+What exactly do we mean when
+we say that the compression
+
+00:14:07.170 --> 00:14:09.300 align:middle line:90%
+angle is twisting?
+
+00:14:09.300 --> 00:14:12.725 align:middle line:84%
+Because the compression angle
+here lives at one height.
+
+00:14:12.725 --> 00:14:14.850 align:middle line:84%
+It lives over here, and
+the compression angle there
+
+00:14:14.850 --> 00:14:15.640 align:middle line:90%
+lives over there.
+
+00:14:15.640 --> 00:14:17.910 align:middle line:84%
+And how do we compare
+an angle over here
+
+00:14:17.910 --> 00:14:22.810 align:middle line:84%
+with an angle over here
+given that this is not R3,
+
+00:14:22.810 --> 00:14:25.380 align:middle line:84%
+this is living in
+a curved thing?
+
+00:14:25.380 --> 00:14:29.110 align:middle line:84%
+So I actually rethought
+how to state it,
+
+00:14:29.110 --> 00:14:30.780 align:middle line:84%
+and I added some
+words that I don't
+
+00:14:30.780 --> 00:14:33.440 align:middle line:90%
+think I mentioned last time.
+
+00:14:33.440 --> 00:14:35.820 align:middle line:84%
+I think when we talk
+about this twisting,
+
+00:14:35.820 --> 00:14:38.090 align:middle line:84%
+we need to include
+these words relative
+
+00:14:38.090 --> 00:14:39.370 align:middle line:90%
+to the unipotent orbits.
+
+00:14:39.370 --> 00:14:42.000 align:middle line:90%
+
+
+00:14:42.000 --> 00:14:45.860 align:middle line:84%
+So let me try to make a more
+precise statement about what
+
+00:14:45.860 --> 00:14:47.780 align:middle line:84%
+this twisting means,
+and then we'll
+
+00:14:47.780 --> 00:14:50.360 align:middle line:84%
+see how we can do some
+computations in the Lie group
+
+00:14:50.360 --> 00:14:52.450 align:middle line:84%
+with matrices and
+see that it happens.
+
+00:14:52.450 --> 00:15:16.700 align:middle line:90%
+
+
+00:15:16.700 --> 00:15:17.315 align:middle line:90%
+All right.
+
+00:15:17.315 --> 00:15:21.140 align:middle line:90%
+
+
+00:15:21.140 --> 00:15:21.870 align:middle line:90%
+OK.
+
+00:15:21.870 --> 00:15:28.855 align:middle line:84%
+So precise statement
+about what is twisting.
+
+00:15:28.855 --> 00:15:33.410 align:middle line:90%
+
+
+00:15:33.410 --> 00:15:34.360 align:middle line:90%
+What is twisting.
+
+00:15:34.360 --> 00:15:38.000 align:middle line:90%
+
+
+00:15:38.000 --> 00:15:41.570 align:middle line:84%
+So suppose I have a
+piece of unipotent orbit
+
+00:15:41.570 --> 00:15:43.610 align:middle line:90%
+in my fundamental domain.
+
+00:15:43.610 --> 00:15:45.750 align:middle line:90%
+It starts at G0.
+
+00:15:45.750 --> 00:15:47.790 align:middle line:84%
+That's over there,
+some group element,
+
+00:15:47.790 --> 00:15:50.060 align:middle line:90%
+and our fundamental domain.
+
+00:15:50.060 --> 00:15:54.170 align:middle line:84%
+And then over here
+I have UT of G0.
+
+00:15:54.170 --> 00:15:56.450 align:middle line:90%
+And t goes, say, from 0 to 1.
+
+00:15:56.450 --> 00:15:59.130 align:middle line:90%
+
+
+00:15:59.130 --> 00:16:02.480 align:middle line:84%
+Now, at each point
+here, there's going
+
+00:16:02.480 --> 00:16:07.790 align:middle line:84%
+to be a vector that
+compresses when I perform ar.
+
+00:16:07.790 --> 00:16:12.050 align:middle line:90%
+So let's say v compression of t.
+
+00:16:12.050 --> 00:16:18.500 align:middle line:84%
+This is a vector, and
+this is the direction
+
+00:16:18.500 --> 00:16:30.565 align:middle line:84%
+that compresses when we
+apply a left ar inverse.
+
+00:16:30.565 --> 00:16:33.640 align:middle line:90%
+
+
+00:16:33.640 --> 00:16:35.390 align:middle line:90%
+So it's a vector.
+
+00:16:35.390 --> 00:16:42.040 align:middle line:84%
+It lives in the tangent space
+of our group at the given point.
+
+00:16:42.040 --> 00:16:51.580 align:middle line:84%
+And it's the smallest
+singular vector
+
+00:16:51.580 --> 00:16:54.090 align:middle line:90%
+for the derivative of this map.
+
+00:16:54.090 --> 00:16:56.950 align:middle line:90%
+
+
+00:16:56.950 --> 00:17:01.030 align:middle line:84%
+So that's what we mean by
+the compression direction.
+
+00:17:01.030 --> 00:17:05.619 align:middle line:84%
+Now, what does it mean relative
+to the unipotent orbits?
+
+00:17:05.619 --> 00:17:12.280 align:middle line:84%
+So suppose that over here I
+have another unipotent orbit.
+
+00:17:12.280 --> 00:17:15.330 align:middle line:84%
+And this is like a
+nearby unipotent orbit.
+
+00:17:15.330 --> 00:17:24.130 align:middle line:90%
+
+
+00:17:24.130 --> 00:17:31.970 align:middle line:84%
+So this might be G0
+plus epsilon times v0.
+
+00:17:31.970 --> 00:17:34.870 align:middle line:84%
+Epsilon times v0
+is a little vector
+
+00:17:34.870 --> 00:17:38.830 align:middle line:84%
+that goes between these
+starting points of these two
+
+00:17:38.830 --> 00:17:40.780 align:middle line:90%
+nearby unipotent orbits.
+
+00:17:40.780 --> 00:17:49.510 align:middle line:84%
+And up here, or maybe here,
+is UT of G0 plus epsilon v0.
+
+00:17:49.510 --> 00:17:53.860 align:middle line:84%
+And here there's a vector
+that goes between them,
+
+00:17:53.860 --> 00:18:00.220 align:middle line:84%
+I guess, epsilon
+times v orbit of t.
+
+00:18:00.220 --> 00:18:05.710 align:middle line:84%
+So v orbit of t is going in the
+direction from the red orbit
+
+00:18:05.710 --> 00:18:06.675 align:middle line:90%
+to the orange orbit.
+
+00:18:06.675 --> 00:18:10.180 align:middle line:90%
+
+
+00:18:10.180 --> 00:18:19.090 align:middle line:84%
+So the thing that is
+twisting is v compression
+
+00:18:19.090 --> 00:18:22.940 align:middle line:84%
+of t relative to v
+orbit of t is twisting.
+
+00:18:22.940 --> 00:18:25.990 align:middle line:84%
+The angle between those
+two vectors is changing.
+
+00:18:25.990 --> 00:18:30.160 align:middle line:84%
+That's the precise statement
+of what is twisting.
+
+00:18:30.160 --> 00:18:32.980 align:middle line:84%
+And we can check
+what it's happening
+
+00:18:32.980 --> 00:18:34.940 align:middle line:90%
+by computing these two vectors.
+
+00:18:34.940 --> 00:18:35.570 align:middle line:90%
+Yeah?
+
+00:18:35.570 --> 00:18:36.445 align:middle line:90%
+AUDIENCE: [INAUDIBLE]
+
+00:18:36.445 --> 00:19:12.333 align:middle line:90%
+
+
+00:19:12.333 --> 00:19:13.750 align:middle line:84%
+LAWRENCE GUTH: So
+the question has
+
+00:19:13.750 --> 00:19:16.360 align:middle line:84%
+to do with keeping track of
+things, given that they live
+
+00:19:16.360 --> 00:19:18.950 align:middle line:90%
+in different tangent spaces.
+
+00:19:18.950 --> 00:19:22.720 align:middle line:84%
+So the compression
+direction is a vector
+
+00:19:22.720 --> 00:19:27.760 align:middle line:84%
+in the tangent space at the
+given point along the orbit.
+
+00:19:27.760 --> 00:19:28.640 align:middle line:90%
+Is that OK so far?
+
+00:19:28.640 --> 00:19:32.910 align:middle line:90%
+
+
+00:19:32.910 --> 00:19:33.630 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:19:33.630 --> 00:19:35.790 align:middle line:90%
+Yeah, yeah, yeah.
+
+00:19:35.790 --> 00:19:36.730 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:19:36.730 --> 00:19:40.680 align:middle line:84%
+But then the
+comment is if I have
+
+00:19:40.680 --> 00:19:43.120 align:middle line:84%
+a family of vectors
+in one vector space,
+
+00:19:43.120 --> 00:19:44.910 align:middle line:84%
+then I can say that
+they're twisted.
+
+00:19:44.910 --> 00:19:47.130 align:middle line:84%
+But here I have a
+family of vectors
+
+00:19:47.130 --> 00:19:49.270 align:middle line:90%
+in a family of vector spaces.
+
+00:19:49.270 --> 00:19:54.300 align:middle line:84%
+And so it's not so clear what
+it means that they're twisting.
+
+00:19:54.300 --> 00:19:56.550 align:middle line:84%
+One way to do it is to
+pick a reference vector
+
+00:19:56.550 --> 00:19:57.850 align:middle line:90%
+to compare them with.
+
+00:19:57.850 --> 00:20:03.570 align:middle line:84%
+And so that's the job of this
+v orbit vector, which goes
+
+00:20:03.570 --> 00:20:06.180 align:middle line:90%
+from the red vector to this--
+
+00:20:06.180 --> 00:20:08.670 align:middle line:84%
+from the red orbit
+to this orange orbit.
+
+00:20:08.670 --> 00:20:13.590 align:middle line:84%
+And that's like a
+reference vector.
+
+00:20:13.590 --> 00:20:15.250 align:middle line:90%
+And then we'll see that--
+
+00:20:15.250 --> 00:20:19.420 align:middle line:84%
+so at each t, there's an orbit
+vector and a compression vector,
+
+00:20:19.420 --> 00:20:23.455 align:middle line:84%
+and the angle between
+them is changing.
+
+00:20:23.455 --> 00:20:31.910 align:middle line:90%
+
+
+00:20:31.910 --> 00:20:36.620 align:middle line:84%
+So there was a question last
+class that basically was like,
+
+00:20:36.620 --> 00:20:39.510 align:middle line:84%
+how are we sure that this is
+happening in this picture?
+
+00:20:39.510 --> 00:20:46.010 align:middle line:84%
+And the one way to be sure is
+to compute these two vectors
+
+00:20:46.010 --> 00:20:48.420 align:middle line:84%
+and see that they're
+not the same.
+
+00:20:48.420 --> 00:20:55.140 align:middle line:90%
+
+
+00:20:55.140 --> 00:20:56.110 align:middle line:90%
+So let's compute them.
+
+00:20:56.110 --> 00:21:00.980 align:middle line:90%
+
+
+00:21:00.980 --> 00:21:03.540 align:middle line:84%
+Actually, one of them we
+can compute over here.
+
+00:21:03.540 --> 00:21:08.930 align:middle line:90%
+
+
+00:21:08.930 --> 00:21:12.780 align:middle line:90%
+So UT is a matrix.
+
+00:21:12.780 --> 00:21:17.190 align:middle line:84%
+So we can just
+multiply this through.
+
+00:21:17.190 --> 00:21:22.970 align:middle line:84%
+This is UT G0 plus
+epsilon UT of v0.
+
+00:21:22.970 --> 00:21:27.910 align:middle line:84%
+And if we compare sides,
+we see that v orbit of t
+
+00:21:27.910 --> 00:21:36.010 align:middle line:84%
+is u sub t of v.
+Now, let's figure out
+
+00:21:36.010 --> 00:21:37.755 align:middle line:90%
+what v compression of t is.
+
+00:21:37.755 --> 00:22:18.970 align:middle line:90%
+
+
+00:22:18.970 --> 00:22:24.820 align:middle line:84%
+So say we have some
+G0 and we're going
+
+00:22:24.820 --> 00:22:28.610 align:middle line:84%
+to apply the left
+action of ar inverse.
+
+00:22:28.610 --> 00:22:35.860 align:middle line:84%
+And that will move
+us to a sub r of G0.
+
+00:22:35.860 --> 00:22:38.470 align:middle line:84%
+And we want to understand
+how this map is
+
+00:22:38.470 --> 00:22:40.520 align:middle line:90%
+distorting the geometry of G0.
+
+00:22:40.520 --> 00:22:42.230 align:middle line:90%
+The geometry near G0.
+
+00:22:42.230 --> 00:22:43.780 align:middle line:84%
+And in particular,
+figure out which
+
+00:22:43.780 --> 00:22:45.530 align:middle line:90%
+direction is being compressed.
+
+00:22:45.530 --> 00:22:49.552 align:middle line:90%
+
+
+00:22:49.552 --> 00:22:52.480 align:middle line:84%
+So I think the best
+way I could figure out
+
+00:22:52.480 --> 00:22:57.760 align:middle line:84%
+to understand this is to put
+it in a picture connecting
+
+00:22:57.760 --> 00:23:00.460 align:middle line:84%
+this thing that I don't
+understand yet to some maps that
+
+00:23:00.460 --> 00:23:02.860 align:middle line:90%
+are easier to understand.
+
+00:23:02.860 --> 00:23:04.610 align:middle line:90%
+So here's the identity.
+
+00:23:04.610 --> 00:23:07.750 align:middle line:84%
+And from here to here, I could
+apply a right multiplication
+
+00:23:07.750 --> 00:23:09.070 align:middle line:90%
+by G0.
+
+00:23:09.070 --> 00:23:11.860 align:middle line:84%
+And right multiplication is
+much easier to understand,
+
+00:23:11.860 --> 00:23:13.750 align:middle line:90%
+because that's an isometry.
+
+00:23:13.750 --> 00:23:17.670 align:middle line:84%
+And the identity also is kind
+of nicer than other matrices.
+
+00:23:17.670 --> 00:23:22.140 align:middle line:84%
+And then I'm going to
+go back to the identity.
+
+00:23:22.140 --> 00:23:26.040 align:middle line:84%
+So this is right
+multiplication by ar g0
+
+00:23:26.040 --> 00:23:29.340 align:middle line:84%
+all inverse, which
+is also an isometry.
+
+00:23:29.340 --> 00:23:31.440 align:middle line:84%
+So if you put this
+all together, I'm
+
+00:23:31.440 --> 00:23:34.530 align:middle line:84%
+going to have a map from the
+tangent space of the identity
+
+00:23:34.530 --> 00:23:37.200 align:middle line:90%
+to itself.
+
+00:23:37.200 --> 00:23:40.463 align:middle line:84%
+And that map is
+an isometry times
+
+00:23:40.463 --> 00:23:41.880 align:middle line:84%
+the map I want to
+understand times
+
+00:23:41.880 --> 00:23:45.060 align:middle line:84%
+an isometry so that all
+of the metric distortion
+
+00:23:45.060 --> 00:23:46.475 align:middle line:90%
+is going to come from here.
+
+00:23:46.475 --> 00:23:49.626 align:middle line:90%
+
+
+00:23:49.626 --> 00:23:53.350 align:middle line:84%
+Now, this map is not
+so hard to understand.
+
+00:23:53.350 --> 00:23:55.560 align:middle line:90%
+So if I apply--
+
+00:23:55.560 --> 00:23:56.350 align:middle line:90%
+what am I doing?
+
+00:23:56.350 --> 00:23:56.850 align:middle line:90%
+Sorry.
+
+00:23:56.850 --> 00:23:59.430 align:middle line:90%
+I start with some matrix h.
+
+00:23:59.430 --> 00:24:01.480 align:middle line:90%
+Right multiply by G0.
+
+00:24:01.480 --> 00:24:04.210 align:middle line:90%
+Then I left multiply by ar.
+
+00:24:04.210 --> 00:24:09.270 align:middle line:84%
+Then I right multiply
+by the inverse of ar G0.
+
+00:24:09.270 --> 00:24:10.690 align:middle line:90%
+What do I get?
+
+00:24:10.690 --> 00:24:13.050 align:middle line:90%
+Well, I have h.
+
+00:24:13.050 --> 00:24:15.810 align:middle line:90%
+I multiply on the right by G0.
+
+00:24:15.810 --> 00:24:18.930 align:middle line:84%
+Now I multiply on
+the left by ar.
+
+00:24:18.930 --> 00:24:20.600 align:middle line:90%
+I multiply on the right by this.
+
+00:24:20.600 --> 00:24:23.700 align:middle line:90%
+
+
+00:24:23.700 --> 00:24:27.240 align:middle line:84%
+When I invert this,
+I switch those.
+
+00:24:27.240 --> 00:24:29.075 align:middle line:84%
+I get a G0 inverse
+and they cancel.
+
+00:24:29.075 --> 00:24:32.910 align:middle line:90%
+
+
+00:24:32.910 --> 00:24:38.800 align:middle line:84%
+So this operation is none
+other than conjugating by ar.
+
+00:24:38.800 --> 00:24:41.070 align:middle line:84%
+So this is the
+conjugation by arh.
+
+00:24:41.070 --> 00:24:43.660 align:middle line:90%
+
+
+00:24:43.660 --> 00:24:48.310 align:middle line:84%
+So conjugation by ar is a map
+from our new group to itself,
+
+00:24:48.310 --> 00:24:50.440 align:middle line:84%
+takes the identity
+to the identity.
+
+00:24:50.440 --> 00:24:53.820 align:middle line:84%
+And therefore, this map,
+or really its derivative,
+
+00:24:53.820 --> 00:24:58.500 align:middle line:84%
+takes the tangent space
+of the identity to itself.
+
+00:24:58.500 --> 00:24:59.670 align:middle line:90%
+All right.
+
+00:24:59.670 --> 00:25:01.750 align:middle line:90%
+And now you can write this down.
+
+00:25:01.750 --> 00:25:04.740 align:middle line:90%
+This ar is an explicit matrix.
+
+00:25:04.740 --> 00:25:08.310 align:middle line:84%
+A Tangent vector here
+is a matrix ABCD.
+
+00:25:08.310 --> 00:25:14.510 align:middle line:84%
+So this is just
+ABCD goes to DCAR
+
+00:25:14.510 --> 00:25:24.397 align:middle line:84%
+of this is er minus
+r, ABCD e or minus r.
+
+00:25:24.397 --> 00:25:25.980 align:middle line:84%
+So this is a thing
+you can write down.
+
+00:25:25.980 --> 00:25:27.090 align:middle line:90%
+It's not that scary.
+
+00:25:27.090 --> 00:25:30.440 align:middle line:84%
+And we worked out last
+time what it does.
+
+00:25:30.440 --> 00:25:35.070 align:middle line:84%
+So recall from last time
+that we have-- first of all,
+
+00:25:35.070 --> 00:25:39.770 align:middle line:84%
+we have an orthonormal
+basis of Te of G,
+
+00:25:39.770 --> 00:25:43.650 align:middle line:84%
+which are-- there's a
+basis vector n, 0, 1, 0, 0.
+
+00:25:43.650 --> 00:25:45.523 align:middle line:84%
+Last time I called
+this u, but there
+
+00:25:45.523 --> 00:25:46.940 align:middle line:84%
+were so many u's
+on the blackboard
+
+00:25:46.940 --> 00:25:48.750 align:middle line:84%
+that I was worried it
+was not a great idea,
+
+00:25:48.750 --> 00:25:53.630 align:middle line:84%
+so I'm going to call it n. n for
+nilpotent, which is also true.
+
+00:25:53.630 --> 00:25:57.090 align:middle line:84%
+There's n tilde,
+which is 0, 1, 0, 0.
+
+00:25:57.090 --> 00:26:02.060 align:middle line:84%
+And there's a diagonal
+guy, which looks like this.
+
+00:26:02.060 --> 00:26:02.560 align:middle line:90%
+OK.
+
+00:26:02.560 --> 00:26:09.890 align:middle line:84%
+So What we figured out is
+that the conjugation makes
+
+00:26:09.890 --> 00:26:16.700 align:middle line:84%
+n way bigger, it makes
+n tilde way smaller,
+
+00:26:16.700 --> 00:26:18.925 align:middle line:84%
+and it leaves the
+diagonal fixed.
+
+00:26:18.925 --> 00:26:29.390 align:middle line:90%
+
+
+00:26:29.390 --> 00:26:30.380 align:middle line:90%
+OK.
+
+00:26:30.380 --> 00:26:34.740 align:middle line:84%
+So, if I start at the identity
+and I go all the way around,
+
+00:26:34.740 --> 00:26:37.820 align:middle line:84%
+I'm doing this
+conjugation, and n tilde
+
+00:26:37.820 --> 00:26:40.696 align:middle line:84%
+is the vector that's
+going to get compressed.
+
+00:26:40.696 --> 00:26:43.370 align:middle line:90%
+
+
+00:26:43.370 --> 00:26:46.310 align:middle line:84%
+But now, if I want to
+know what vector over here
+
+00:26:46.310 --> 00:26:49.790 align:middle line:84%
+is going to get compressed,
+Well, I start with n tilde,
+
+00:26:49.790 --> 00:26:51.060 align:middle line:90%
+I map it over here.
+
+00:26:51.060 --> 00:26:53.820 align:middle line:84%
+It hasn't gotten any shorter
+yet because this is an isometry.
+
+00:26:53.820 --> 00:26:56.850 align:middle line:84%
+That's the vector that's going
+to be compressed in this step.
+
+00:26:56.850 --> 00:26:59.540 align:middle line:90%
+
+
+00:26:59.540 --> 00:27:01.016 align:middle line:90%
+OK.
+
+00:27:01.016 --> 00:27:08.800 align:middle line:84%
+So, it's the right
+action by g0 of n tilde.
+
+00:27:08.800 --> 00:27:21.280 align:middle line:84%
+This is the singular vector of
+dLar inverse with singular value
+
+00:27:21.280 --> 00:27:22.740 align:middle line:90%
+e to the minus 2r.
+
+00:27:22.740 --> 00:27:26.710 align:middle line:90%
+
+
+00:27:26.710 --> 00:27:29.600 align:middle line:84%
+OK, so that's basically
+the answer to our question.
+
+00:27:29.600 --> 00:27:37.150 align:middle line:84%
+So the compression
+vector at T, that's
+
+00:27:37.150 --> 00:27:40.540 align:middle line:84%
+r at-- so now I'm not
+necessarily at the point g0,
+
+00:27:40.540 --> 00:27:49.090 align:middle line:84%
+but I'm at the point ut g0, so
+it's right by ut g0 of n tilde.
+
+00:27:49.090 --> 00:27:52.800 align:middle line:90%
+So that's n tilde ut g.
+
+00:27:52.800 --> 00:28:01.780 align:middle line:90%
+
+
+00:28:01.780 --> 00:28:02.640 align:middle line:90%
+OK.
+
+00:28:02.640 --> 00:28:07.230 align:middle line:84%
+So now, if you compare how these
+two things are changing with T,
+
+00:28:07.230 --> 00:28:10.620 align:middle line:84%
+you see, it is not the same
+because our group is not
+
+00:28:10.620 --> 00:28:12.630 align:middle line:90%
+commutative.
+
+00:28:12.630 --> 00:28:15.610 align:middle line:84%
+Because when you're
+changing the orbit of T,
+
+00:28:15.610 --> 00:28:18.310 align:middle line:84%
+you're multiplying
+by ut on the left.
+
+00:28:18.310 --> 00:28:21.310 align:middle line:84%
+But when you're changing
+the compression direction,
+
+00:28:21.310 --> 00:28:25.440 align:middle line:84%
+you're multiplying by ut
+over here in the middle.
+
+00:28:25.440 --> 00:28:26.950 align:middle line:84%
+And it's a
+non-commutative group,
+
+00:28:26.950 --> 00:28:29.420 align:middle line:84%
+so those two operations are
+not the same as each other.
+
+00:28:29.420 --> 00:28:49.860 align:middle line:90%
+
+
+00:28:49.860 --> 00:28:50.760 align:middle line:90%
+OK.
+
+00:28:50.760 --> 00:28:54.000 align:middle line:84%
+So I don't necessarily
+think it will
+
+00:28:54.000 --> 00:28:55.570 align:middle line:84%
+be helpful to do
+more computations,
+
+00:28:55.570 --> 00:28:57.540 align:middle line:84%
+but I did some at
+home to be sure,
+
+00:28:57.540 --> 00:29:03.250 align:middle line:84%
+if you imagined that at time 0,
+these two directions coincided,
+
+00:29:03.250 --> 00:29:05.740 align:middle line:84%
+and then you see what
+happens as T changes,
+
+00:29:05.740 --> 00:29:08.970 align:middle line:84%
+you'll see that they
+stop to coincide.
+
+00:29:08.970 --> 00:29:09.488 align:middle line:90%
+Yeah?
+
+00:29:09.488 --> 00:29:12.030 align:middle line:84%
+AUDIENCE: So it can be the inner
+product of the vectors, does
+
+00:29:12.030 --> 00:29:16.840 align:middle line:84%
+it make sense as an operation to
+compare the angles in the space?
+
+00:29:16.840 --> 00:29:18.340 align:middle line:84%
+LAWRENCE GUTH:
+Yeah, that's right.
+
+00:29:18.340 --> 00:29:22.230 align:middle line:84%
+So these are vectors in
+a Riemannian manifold,
+
+00:29:22.230 --> 00:29:24.940 align:middle line:84%
+and so they have a
+well-defined angle,
+
+00:29:24.940 --> 00:29:27.400 align:middle line:84%
+and we can compute it by
+taking inner products.
+
+00:29:27.400 --> 00:29:31.860 align:middle line:90%
+And then-- correct.
+
+00:29:31.860 --> 00:29:46.020 align:middle line:84%
+So I guess we could say that the
+cosine of the angle between v
+
+00:29:46.020 --> 00:29:56.420 align:middle line:84%
+of t and w of t would be v dot
+w over norm of v norm of w.
+
+00:29:56.420 --> 00:29:59.340 align:middle line:90%
+
+
+00:29:59.340 --> 00:30:01.690 align:middle line:84%
+I used to teach
+this a lot in 1802.
+
+00:30:01.690 --> 00:30:03.260 align:middle line:90%
+I think that's right.
+
+00:30:03.260 --> 00:30:07.400 align:middle line:84%
+So we have formulas for v and
+w, so we can compute this.
+
+00:30:07.400 --> 00:30:10.130 align:middle line:84%
+And it'll be a little
+messy, but we'll
+
+00:30:10.130 --> 00:30:15.290 align:middle line:84%
+see that it is not
+constant in T. OK.
+
+00:30:15.290 --> 00:30:19.070 align:middle line:90%
+
+
+00:30:19.070 --> 00:30:20.350 align:middle line:90%
+Other questions or comments?
+
+00:30:20.350 --> 00:30:28.370 align:middle line:90%
+
+
+00:30:28.370 --> 00:30:29.130 align:middle line:90%
+OK.
+
+00:30:29.130 --> 00:30:32.010 align:middle line:84%
+So the first big goal-- that was
+the first chunk of the class.
+
+00:30:32.010 --> 00:30:33.620 align:middle line:84%
+The first big goal
+of the class was
+
+00:30:33.620 --> 00:30:38.660 align:middle line:84%
+to check that this
+picture happens.
+
+00:30:38.660 --> 00:30:40.850 align:middle line:84%
+And then the second
+part of the class, we
+
+00:30:40.850 --> 00:30:43.760 align:middle line:84%
+will discuss how
+to use this picture
+
+00:30:43.760 --> 00:30:48.090 align:middle line:84%
+to figure out stuff about
+along unipotent orbit.
+
+00:30:48.090 --> 00:30:48.590 align:middle line:90%
+OK.
+
+00:30:48.590 --> 00:30:50.065 align:middle line:90%
+So let's switch gears.
+
+00:30:50.065 --> 00:31:17.415 align:middle line:90%
+
+
+00:31:17.415 --> 00:31:17.915 align:middle line:90%
+OK.
+
+00:31:17.915 --> 00:31:30.320 align:middle line:90%
+
+
+00:31:30.320 --> 00:31:30.840 align:middle line:90%
+OK.
+
+00:31:30.840 --> 00:31:37.240 align:middle line:84%
+So let's call this tracking
+the spread of an order.
+
+00:31:37.240 --> 00:31:43.370 align:middle line:90%
+
+
+00:31:43.370 --> 00:31:44.250 align:middle line:90%
+All right.
+
+00:31:44.250 --> 00:31:51.453 align:middle line:84%
+So remember that we had
+this, U0,T of x is aR U0,
+
+00:31:51.453 --> 00:31:56.160 align:middle line:90%
+1 aR inverse x.
+
+00:31:56.160 --> 00:31:58.986 align:middle line:90%
+Let's call this guy x tilde.
+
+00:31:58.986 --> 00:31:59.486 align:middle line:90%
+OK.
+
+00:31:59.486 --> 00:32:02.748 align:middle line:90%
+
+
+00:32:02.748 --> 00:32:06.260 align:middle line:84%
+Now this-- there was a
+discussion last time,
+
+00:32:06.260 --> 00:32:11.350 align:middle line:84%
+what happens if this
+orbit here is periodic?
+
+00:32:11.350 --> 00:32:14.290 align:middle line:84%
+If this orbit here is periodic,
+the special thing that happens
+
+00:32:14.290 --> 00:32:17.900 align:middle line:84%
+is that this point, x tilde,
+will be deep in the cusp.
+
+00:32:17.900 --> 00:32:20.482 align:middle line:84%
+And the deep in the
+cusp is a special case
+
+00:32:20.482 --> 00:32:21.940 align:middle line:84%
+because we were
+imagining that this
+
+00:32:21.940 --> 00:32:24.940 align:middle line:84%
+was a regular nice
+orbit of length 1,
+
+00:32:24.940 --> 00:32:28.150 align:middle line:84%
+but if it's deep in the
+cusp, it's different.
+
+00:32:28.150 --> 00:32:31.830 align:middle line:84%
+So, let's assume that x tilde
+is not deep in the cusp.
+
+00:32:31.830 --> 00:32:37.090 align:middle line:90%
+
+
+00:32:37.090 --> 00:32:41.500 align:middle line:84%
+And that's equivalent
+to saying that Ux is not
+
+00:32:41.500 --> 00:32:42.463 align:middle line:90%
+close to periodic.
+
+00:32:42.463 --> 00:32:47.350 align:middle line:90%
+
+
+00:32:47.350 --> 00:32:48.330 align:middle line:90%
+OK.
+
+00:32:48.330 --> 00:32:53.470 align:middle line:84%
+And let's break up R as
+capital J times little r.
+
+00:32:53.470 --> 00:33:00.670 align:middle line:84%
+And so then I'm going to say
+that Uj is a little r to the j
+
+00:33:00.670 --> 00:33:05.890 align:middle line:90%
+of U0,1 of x tilde.
+
+00:33:05.890 --> 00:33:06.790 align:middle line:90%
+OK.
+
+00:33:06.790 --> 00:33:10.210 align:middle line:84%
+And I want to track how
+this thing is spreading out
+
+00:33:10.210 --> 00:33:12.680 align:middle line:84%
+through my homogeneous
+space, GY gamma.
+
+00:33:12.680 --> 00:33:17.020 align:middle line:84%
+And we're going to track it by
+noticing how many delta balls
+
+00:33:17.020 --> 00:33:18.580 align:middle line:90%
+it takes to cover it.
+
+00:33:18.580 --> 00:33:25.720 align:middle line:84%
+So recall that X delta is
+the minimum number of delta
+
+00:33:25.720 --> 00:33:32.740 align:middle line:90%
+balls needed to cover X.
+
+00:33:32.740 --> 00:33:36.196 align:middle line:84%
+And so our goal is
+going to be to estimate.
+
+00:33:36.196 --> 00:33:38.890 align:middle line:90%
+
+
+00:33:38.890 --> 00:33:46.935 align:middle line:84%
+Uj delta in terms
+of j, delta, and r.
+
+00:33:46.935 --> 00:33:51.550 align:middle line:90%
+
+
+00:33:51.550 --> 00:33:52.490 align:middle line:90%
+Oh.
+
+00:33:52.490 --> 00:33:56.940 align:middle line:84%
+And for context,
+for reference, we
+
+00:33:56.940 --> 00:33:58.450 align:middle line:90%
+have a three-dimensional space.
+
+00:33:58.450 --> 00:33:59.935 align:middle line:84%
+So for the whole
+space, the number
+
+00:33:59.935 --> 00:34:01.560 align:middle line:84%
+of delta balls that
+we need to cover it
+
+00:34:01.560 --> 00:34:02.960 align:middle line:90%
+is delta to the minus 3.
+
+00:34:02.960 --> 00:34:08.364 align:middle line:90%
+
+
+00:34:08.364 --> 00:34:08.864 align:middle line:90%
+OK.
+
+00:34:08.864 --> 00:34:12.570 align:middle line:90%
+
+
+00:34:12.570 --> 00:34:14.400 align:middle line:90%
+Cool.
+
+00:34:14.400 --> 00:34:18.510 align:middle line:84%
+All right, so next
+of all, our Uj
+
+00:34:18.510 --> 00:34:21.522 align:middle line:84%
+is like a bunch of
+these unipotent orbits.
+
+00:34:21.522 --> 00:34:28.050 align:middle line:90%
+
+
+00:34:28.050 --> 00:34:29.489 align:middle line:90%
+Looks like that.
+
+00:34:29.489 --> 00:34:33.750 align:middle line:84%
+And so you might
+notice that it only
+
+00:34:33.750 --> 00:34:36.610 align:middle line:84%
+really matters what the top
+cross-section looks like.
+
+00:34:36.610 --> 00:34:38.980 align:middle line:84%
+All the other
+cross-sections are similar.
+
+00:34:38.980 --> 00:34:41.880 align:middle line:84%
+So let's take that
+top part down.
+
+00:34:41.880 --> 00:34:44.400 align:middle line:90%
+Inside of there, we see this.
+
+00:34:44.400 --> 00:34:46.840 align:middle line:90%
+So let's call that Xj.
+
+00:34:46.840 --> 00:34:55.190 align:middle line:84%
+That's the top
+cross-section of Uj.
+
+00:34:55.190 --> 00:34:59.510 align:middle line:84%
+And then it's not hard
+to check that Uj delta is
+
+00:34:59.510 --> 00:35:03.560 align:middle line:84%
+like delta inverse
+times Xj delta.
+
+00:35:03.560 --> 00:35:08.780 align:middle line:84%
+I have to cut it into
+slabs of thickness delta.
+
+00:35:08.780 --> 00:35:11.120 align:middle line:84%
+For each thickness, the
+number of delta balls
+
+00:35:11.120 --> 00:35:13.740 align:middle line:84%
+that we need to cover
+that slab is Xj delta,
+
+00:35:13.740 --> 00:35:16.267 align:middle line:90%
+and this is the number of slats.
+
+00:35:16.267 --> 00:35:16.767 align:middle line:90%
+OK.
+
+00:35:16.767 --> 00:35:23.390 align:middle line:84%
+So basically, we want to track
+how Xj delta depends on delta.
+
+00:35:23.390 --> 00:35:26.740 align:middle line:90%
+So, fully spread.
+
+00:35:26.740 --> 00:35:29.840 align:middle line:90%
+
+
+00:35:29.840 --> 00:35:32.990 align:middle line:90%
+Or maybe I'll say very spread.
+
+00:35:32.990 --> 00:35:39.020 align:middle line:84%
+That means that Uj delta is
+like delta to the minus 3,
+
+00:35:39.020 --> 00:35:43.640 align:middle line:84%
+and that would be like saying Xj
+delta, so delta to the minus 2
+
+00:35:43.640 --> 00:35:44.570 align:middle line:90%
+at Xj.
+
+00:35:44.570 --> 00:35:46.090 align:middle line:90%
+Really fills a lot of the disc.
+
+00:35:46.090 --> 00:35:50.612 align:middle line:90%
+
+
+00:35:50.612 --> 00:35:57.320 align:middle line:84%
+So now, how does this picture
+help us to study Xj delta?
+
+00:35:57.320 --> 00:36:17.690 align:middle line:90%
+
+
+00:36:17.690 --> 00:36:20.470 align:middle line:90%
+So using the key picture.
+
+00:36:20.470 --> 00:36:24.710 align:middle line:90%
+
+
+00:36:24.710 --> 00:36:25.325 align:middle line:90%
+All right.
+
+00:36:25.325 --> 00:36:31.340 align:middle line:90%
+
+
+00:36:31.340 --> 00:36:37.280 align:middle line:84%
+So let me label these maps pi
+1 and pi minus 0, and somewhere
+
+00:36:37.280 --> 00:36:39.830 align:middle line:84%
+in the middle we
+would have pi t.
+
+00:36:39.830 --> 00:36:45.030 align:middle line:84%
+Pi t is what our map aR is
+doing to the slice at height t.
+
+00:36:45.030 --> 00:36:48.700 align:middle line:90%
+
+
+00:36:48.700 --> 00:36:49.600 align:middle line:90%
+OK.
+
+00:36:49.600 --> 00:36:55.330 align:middle line:84%
+Using the key
+picture, have a lemma.
+
+00:36:55.330 --> 00:37:02.440 align:middle line:84%
+So if e to the
+minus 2r is delta,
+
+00:37:02.440 --> 00:37:16.980 align:middle line:84%
+then Xj plus 1 delta is around a
+sum over t of pi t of xj delta.
+
+00:37:16.980 --> 00:37:21.310 align:middle line:90%
+
+
+00:37:21.310 --> 00:37:23.860 align:middle line:90%
+And which t's do we sum over?
+
+00:37:23.860 --> 00:37:29.510 align:middle line:84%
+The t's are in delta Z,
+and t goes from 0 to 1.
+
+00:37:29.510 --> 00:37:36.430 align:middle line:90%
+
+
+00:37:36.430 --> 00:37:39.490 align:middle line:84%
+This is all-- we can also
+write this as delta inverse
+
+00:37:39.490 --> 00:37:45.100 align:middle line:84%
+times the average
+t between 0 and 1
+
+00:37:45.100 --> 00:37:48.030 align:middle line:90%
+of pi t height of Xj delta.
+
+00:37:48.030 --> 00:37:52.480 align:middle line:90%
+
+
+00:37:52.480 --> 00:37:54.765 align:middle line:90%
+So, proof sketch.
+
+00:37:54.765 --> 00:38:02.176 align:middle line:90%
+
+
+00:38:02.176 --> 00:38:02.676 align:middle line:90%
+OK.
+
+00:38:02.676 --> 00:38:06.224 align:middle line:90%
+
+
+00:38:06.224 --> 00:38:08.660 align:middle line:84%
+So here is our
+fundamental domain.
+
+00:38:08.660 --> 00:38:12.360 align:middle line:84%
+Cut it into slices
+of thickness delta.
+
+00:38:12.360 --> 00:38:16.360 align:middle line:90%
+
+
+00:38:16.360 --> 00:38:20.290 align:middle line:84%
+So here is a slice at height
+t with thickness delta.
+
+00:38:20.290 --> 00:38:20.990 align:middle line:90%
+OK.
+
+00:38:20.990 --> 00:38:27.756 align:middle line:84%
+Now, when we apply Lar, we
+stretch it up vertically.
+
+00:38:27.756 --> 00:38:31.600 align:middle line:90%
+
+
+00:38:31.600 --> 00:38:34.070 align:middle line:84%
+And we compress it in
+some other direction,
+
+00:38:34.070 --> 00:38:36.070 align:middle line:90%
+we get something like this.
+
+00:38:36.070 --> 00:38:43.060 align:middle line:84%
+And then we divide this into
+pieces at different heights.
+
+00:38:43.060 --> 00:38:50.340 align:middle line:84%
+And let me color this
+particular slab in red.
+
+00:38:50.340 --> 00:38:55.620 align:middle line:84%
+So that red one is
+one of them over here.
+
+00:38:55.620 --> 00:38:58.100 align:middle line:90%
+So these are each of height 1.
+
+00:38:58.100 --> 00:39:02.410 align:middle line:90%
+
+
+00:39:02.410 --> 00:39:02.910 align:middle line:90%
+OK.
+
+00:39:02.910 --> 00:39:07.305 align:middle line:90%
+
+
+00:39:07.305 --> 00:39:07.805 align:middle line:90%
+Right.
+
+00:39:07.805 --> 00:39:13.620 align:middle line:90%
+
+
+00:39:13.620 --> 00:39:15.400 align:middle line:90%
+Right.
+
+00:39:15.400 --> 00:39:20.250 align:middle line:84%
+So, in this new picture, there
+will be-- so in the old picture,
+
+00:39:20.250 --> 00:39:25.865 align:middle line:84%
+there were some unipotent orbits
+that went through our slab.
+
+00:39:25.865 --> 00:39:29.340 align:middle line:90%
+
+
+00:39:29.340 --> 00:39:33.000 align:middle line:84%
+So, X describes where
+the unipotent orbits
+
+00:39:33.000 --> 00:39:35.040 align:middle line:90%
+hit the top of our slab.
+
+00:39:35.040 --> 00:39:38.190 align:middle line:84%
+And now, we apply this
+map, and now there
+
+00:39:38.190 --> 00:39:41.920 align:middle line:84%
+will be some points over
+here in the top of this slab.
+
+00:39:41.920 --> 00:39:44.520 align:middle line:90%
+And who will they be?
+
+00:39:44.520 --> 00:39:51.645 align:middle line:84%
+Those points over there
+would be pi t of X.
+
+00:39:51.645 --> 00:39:52.145 align:middle line:90%
+OK.
+
+00:39:52.145 --> 00:39:55.260 align:middle line:84%
+Now we want to cover
+things with delta balls.
+
+00:39:55.260 --> 00:40:00.690 align:middle line:84%
+So this distance here is e to
+the minus 2r, so that's delta.
+
+00:40:00.690 --> 00:40:04.530 align:middle line:84%
+So we want to know how
+many delta balls does
+
+00:40:04.530 --> 00:40:09.180 align:middle line:90%
+it take to cover that?
+
+00:40:09.180 --> 00:40:14.460 align:middle line:84%
+So, that number there is delta
+covering number of pi t of Xj.
+
+00:40:14.460 --> 00:40:20.334 align:middle line:90%
+
+
+00:40:20.334 --> 00:40:23.430 align:middle line:84%
+So over here, we
+started with xj.
+
+00:40:23.430 --> 00:40:28.260 align:middle line:84%
+Now, what happens
+when we apply pi?
+
+00:40:28.260 --> 00:40:31.715 align:middle line:84%
+Each of these slabs
+gets folded back in.
+
+00:40:31.715 --> 00:40:37.530 align:middle line:90%
+
+
+00:40:37.530 --> 00:40:42.750 align:middle line:90%
+And the red one went somewhere.
+
+00:40:42.750 --> 00:40:45.505 align:middle line:84%
+I don't really know where,
+but maybe it went over here.
+
+00:40:45.505 --> 00:40:49.490 align:middle line:90%
+
+
+00:40:49.490 --> 00:40:53.300 align:middle line:84%
+And here in the
+top of it is pi t
+
+00:40:53.300 --> 00:40:58.430 align:middle line:84%
+of Xj and its
+delta-covering number.
+
+00:40:58.430 --> 00:41:06.170 align:middle line:84%
+So the number of delta
+balls in this strip, that
+
+00:41:06.170 --> 00:41:09.530 align:middle line:90%
+would be pi t of Xj.
+
+00:41:09.530 --> 00:41:12.740 align:middle line:90%
+
+
+00:41:12.740 --> 00:41:13.420 align:middle line:90%
+OK.
+
+00:41:13.420 --> 00:41:17.180 align:middle line:90%
+And now, this thing--
+
+00:41:17.180 --> 00:41:22.340 align:middle line:84%
+these dots up here
+are our Xj plus 1.
+
+00:41:22.340 --> 00:41:25.500 align:middle line:84%
+So the set of dots
+on the top face.
+
+00:41:25.500 --> 00:41:28.860 align:middle line:84%
+And so how many delta balls
+do we need to cover them?
+
+00:41:28.860 --> 00:41:33.150 align:middle line:84%
+Well, for these ones, we needed
+pi t Xj delta-covering number,
+
+00:41:33.150 --> 00:41:37.580 align:middle line:84%
+and these other guys, those
+corresponded to different slabs
+
+00:41:37.580 --> 00:41:39.800 align:middle line:84%
+here, so there are
+different terms in this set.
+
+00:41:39.800 --> 00:41:56.862 align:middle line:90%
+
+
+00:41:56.862 --> 00:41:57.362 align:middle line:90%
+OK.
+
+00:41:57.362 --> 00:42:00.014 align:middle line:90%
+
+
+00:42:00.014 --> 00:42:05.800 align:middle line:84%
+So now, we can try to
+use projection theory
+
+00:42:05.800 --> 00:42:08.530 align:middle line:84%
+to study this thing,
+and it will tell us
+
+00:42:08.530 --> 00:42:11.140 align:middle line:84%
+how the covering
+number Xj plus 1 delta
+
+00:42:11.140 --> 00:42:34.871 align:middle line:84%
+evolves as we increase
+J. Any questions-- yeah.
+
+00:42:34.871 --> 00:42:37.840 align:middle line:84%
+AUDIENCE: Why do-- like,
+we have delta balls start
+
+00:42:37.840 --> 00:42:39.760 align:middle line:84%
+to overlap when
+j is large enough
+
+00:42:39.760 --> 00:42:42.680 align:middle line:84%
+and the compression
+is more than delta
+
+00:42:42.680 --> 00:42:46.960 align:middle line:84%
+because delta is the size
+of one round of compression.
+
+00:42:46.960 --> 00:42:48.900 align:middle line:84%
+If you do multiple,
+why do they overlap?
+
+00:42:48.900 --> 00:42:56.830 align:middle line:90%
+
+
+00:42:56.830 --> 00:42:59.170 align:middle line:84%
+LAWRENCE GUTH: So I
+think the question is,
+
+00:42:59.170 --> 00:43:03.010 align:middle line:84%
+suppose at the beginning
+that there happened
+
+00:43:03.010 --> 00:43:07.930 align:middle line:84%
+to be two guys here in X
+whose distance was less
+
+00:43:07.930 --> 00:43:09.865 align:middle line:90%
+than delta, which might happen.
+
+00:43:09.865 --> 00:43:13.695 align:middle line:84%
+And then, what would
+happen to them?
+
+00:43:13.695 --> 00:43:17.440 align:middle line:90%
+
+
+00:43:17.440 --> 00:43:18.290 align:middle line:90%
+Well--
+
+00:43:18.290 --> 00:43:20.120 align:middle line:84%
+AUDIENCE: Not that
+they're less than delta.
+
+00:43:20.120 --> 00:43:28.120 align:middle line:84%
+If slightly more than delta, but
+less than e to the minus 2r or e
+
+00:43:28.120 --> 00:43:34.780 align:middle line:84%
+to the 2r delta, so that in f,
+they're in the same delta ball.
+
+00:43:34.780 --> 00:43:38.910 align:middle line:84%
+Then applying the
+transformation, the [INAUDIBLE]
+
+00:43:38.910 --> 00:43:41.850 align:middle line:84%
+or transformation method,
+then they become [INAUDIBLE]
+
+00:43:41.850 --> 00:43:42.790 align:middle line:90%
+delta ball.
+
+00:43:42.790 --> 00:43:45.502 align:middle line:90%
+
+
+00:43:45.502 --> 00:43:47.460 align:middle line:84%
+But before they're
+not in-- before,
+
+00:43:47.460 --> 00:43:49.170 align:middle line:84%
+there were two separate delta
+balls; after the transformation,
+
+00:43:49.170 --> 00:43:50.473 align:middle line:90%
+there's one delta ball.
+
+00:43:50.473 --> 00:43:51.640 align:middle line:90%
+LAWRENCE GUTH: Right, right.
+
+00:43:51.640 --> 00:43:54.780 align:middle line:84%
+OK, so it could happen
+that we have two guys--
+
+00:43:54.780 --> 00:43:57.670 align:middle line:84%
+like maybe these two guys
+are pretty far apart,
+
+00:43:57.670 --> 00:44:03.570 align:middle line:84%
+but after we perform pi t,
+they got squished together
+
+00:44:03.570 --> 00:44:06.210 align:middle line:84%
+and they're now in the
+same delta ball over here.
+
+00:44:06.210 --> 00:44:08.140 align:middle line:90%
+Yeah, that could happen.
+
+00:44:08.140 --> 00:44:14.640 align:middle line:84%
+And the main thing we have to
+study is how often that happens.
+
+00:44:14.640 --> 00:44:18.643 align:middle line:90%
+But this lemma is still true.
+
+00:44:18.643 --> 00:44:21.450 align:middle line:90%
+
+
+00:44:21.450 --> 00:44:24.630 align:middle line:84%
+This might be a lot
+smaller than Xj delta
+
+00:44:24.630 --> 00:44:30.570 align:middle line:84%
+because many points that
+were far apart in Xj
+
+00:44:30.570 --> 00:44:34.020 align:middle line:84%
+may have gotten squished
+together in pi t of Xj.
+
+00:44:34.020 --> 00:44:36.270 align:middle line:84%
+But this is just the
+number of delta balls
+
+00:44:36.270 --> 00:44:42.140 align:middle line:84%
+that it takes to
+cover the image there.
+
+00:44:42.140 --> 00:44:49.200 align:middle line:90%
+
+
+00:44:49.200 --> 00:44:52.230 align:middle line:90%
+Does that answer your question?
+
+00:44:52.230 --> 00:44:53.350 align:middle line:90%
+AUDIENCE: Yeah.
+
+00:44:53.350 --> 00:45:01.740 align:middle line:84%
+Also, in the third image, why
+is each delta ball containing
+
+00:45:01.740 --> 00:45:04.540 align:middle line:84%
+only the size of
+one of those strips?
+
+00:45:04.540 --> 00:45:06.210 align:middle line:90%
+LAWRENCE GUTH: Ah, OK.
+
+00:45:06.210 --> 00:45:10.600 align:middle line:84%
+So we tuned delta and
+r to play together.
+
+00:45:10.600 --> 00:45:13.950 align:middle line:84%
+So that we picked r so that
+the thickness of this strip
+
+00:45:13.950 --> 00:45:15.420 align:middle line:90%
+is delta.
+
+00:45:15.420 --> 00:45:18.030 align:middle line:84%
+AUDIENCE: I thought if the
+transformation is applied
+
+00:45:18.030 --> 00:45:23.190 align:middle line:84%
+multiple times, then you get
+multiple e to the minus 2rj
+
+00:45:23.190 --> 00:45:26.310 align:middle line:90%
+scale, right?
+
+00:45:26.310 --> 00:45:29.970 align:middle line:84%
+LAWRENCE GUTH: That's not
+wrong, but when we apply it
+
+00:45:29.970 --> 00:45:32.070 align:middle line:84%
+multiple times, we're
+not changing little r,
+
+00:45:32.070 --> 00:45:34.050 align:middle line:90%
+we're just applying a sub r--
+
+00:45:34.050 --> 00:45:36.350 align:middle line:90%
+a sub little r multiple times.
+
+00:45:36.350 --> 00:45:40.430 align:middle line:84%
+So this picture is describing
+what happens in one time,
+
+00:45:40.430 --> 00:45:43.110 align:middle line:84%
+and then you could use
+this in many rounds.
+
+00:45:43.110 --> 00:45:46.580 align:middle line:84%
+So you could use this
+lemma over and over again.
+
+00:45:46.580 --> 00:45:48.870 align:middle line:90%
+Which is what we'll do.
+
+00:45:48.870 --> 00:45:49.370 align:middle line:90%
+OK.
+
+00:45:49.370 --> 00:46:12.890 align:middle line:90%
+
+
+00:46:12.890 --> 00:46:15.070 align:middle line:84%
+Let me change my
+notation a little bit.
+
+00:46:15.070 --> 00:46:17.750 align:middle line:90%
+
+
+00:46:17.750 --> 00:46:20.360 align:middle line:84%
+So I was using the letter pi
+for this maybe a little bit
+
+00:46:20.360 --> 00:46:21.390 align:middle line:90%
+prematurely.
+
+00:46:21.390 --> 00:46:23.760 align:middle line:84%
+What's clear so far
+is that this is a map,
+
+00:46:23.760 --> 00:46:27.980 align:middle line:84%
+so I'm going to call
+it f1, ft, and f0.
+
+00:46:27.980 --> 00:46:29.790 align:middle line:90%
+And so then I'll change this.
+
+00:46:29.790 --> 00:46:34.280 align:middle line:90%
+
+
+00:46:34.280 --> 00:46:34.780 align:middle line:90%
+OK.
+
+00:46:34.780 --> 00:46:42.010 align:middle line:90%
+
+
+00:46:42.010 --> 00:46:42.740 align:middle line:90%
+OK.
+
+00:46:42.740 --> 00:46:45.820 align:middle line:84%
+So now, the next remark
+is that these maps look
+
+00:46:45.820 --> 00:46:48.020 align:middle line:90%
+a lot like linear projections.
+
+00:46:48.020 --> 00:46:53.050 align:middle line:84%
+So remark, ft is
+kind of approximately
+
+00:46:53.050 --> 00:46:58.060 align:middle line:90%
+an orthogonal projection pi t.
+
+00:46:58.060 --> 00:47:00.050 align:middle line:90%
+So let me make a picture.
+
+00:47:00.050 --> 00:47:07.000 align:middle line:84%
+So ft does something like this,
+and this thickness is delta.
+
+00:47:07.000 --> 00:47:09.520 align:middle line:90%
+This is 1.
+
+00:47:09.520 --> 00:47:13.536 align:middle line:84%
+And then pi t would just be an
+actual orthogonal projection.
+
+00:47:13.536 --> 00:47:16.750 align:middle line:90%
+
+
+00:47:16.750 --> 00:47:17.250 align:middle line:90%
+OK.
+
+00:47:17.250 --> 00:47:20.708 align:middle line:90%
+
+
+00:47:20.708 --> 00:47:31.890 align:middle line:84%
+So ft is not perfectly
+linear, but it is smooth.
+
+00:47:31.890 --> 00:47:37.180 align:middle line:90%
+
+
+00:47:37.180 --> 00:47:39.655 align:middle line:90%
+OK.
+
+00:47:39.655 --> 00:47:45.240 align:middle line:84%
+So now, here is a proposition--
+or exercise about projections.
+
+00:47:45.240 --> 00:47:50.200 align:middle line:84%
+It says that if X is in
+the unit ball in a plane,
+
+00:47:50.200 --> 00:47:57.820 align:middle line:84%
+then you take the average over
+all directions, theta and S1,
+
+00:47:57.820 --> 00:48:06.220 align:middle line:84%
+of pi theta of X delta that
+is at least as big as X delta
+
+00:48:06.220 --> 00:48:06.910 align:middle line:90%
+to the 1/2.
+
+00:48:06.910 --> 00:48:09.580 align:middle line:90%
+
+
+00:48:09.580 --> 00:48:12.700 align:middle line:84%
+Here's an example that shows
+where the X delta to the 1/2
+
+00:48:12.700 --> 00:48:13.275 align:middle line:90%
+comes from.
+
+00:48:13.275 --> 00:48:17.200 align:middle line:90%
+
+
+00:48:17.200 --> 00:48:19.720 align:middle line:90%
+So here's the unit ball.
+
+00:48:19.720 --> 00:48:22.930 align:middle line:84%
+And then inside of it,
+I take a smaller ball
+
+00:48:22.930 --> 00:48:31.440 align:middle line:84%
+and I call that X. So, X is the
+ball of some small radius rho
+
+00:48:31.440 --> 00:48:35.640 align:middle line:90%
+inside of the ball of radius 1.
+
+00:48:35.640 --> 00:48:36.520 align:middle line:90%
+OK.
+
+00:48:36.520 --> 00:48:41.730 align:middle line:84%
+Then when I perform an
+orthogonal projection--
+
+00:48:41.730 --> 00:48:44.170 align:middle line:84%
+there is pi theta of
+X, in any direction
+
+00:48:44.170 --> 00:48:48.270 align:middle line:90%
+I'll get a line of length rho.
+
+00:48:48.270 --> 00:48:52.890 align:middle line:84%
+So I see that X delta
+is like rho over delta
+
+00:48:52.890 --> 00:48:59.520 align:middle line:84%
+squared, and pi theta of
+X delta-covering number
+
+00:48:59.520 --> 00:49:05.890 align:middle line:84%
+is like rho over delta, so this
+is the square root of that OK.
+
+00:49:05.890 --> 00:49:08.400 align:middle line:84%
+And this is the
+best thing to do.
+
+00:49:08.400 --> 00:49:10.410 align:middle line:84%
+You could devise
+an example where
+
+00:49:10.410 --> 00:49:13.620 align:middle line:84%
+in one particular direction,
+the compression is much smaller
+
+00:49:13.620 --> 00:49:15.270 align:middle line:90%
+than the square root.
+
+00:49:15.270 --> 00:49:18.558 align:middle line:90%
+Here's an example like that.
+
+00:49:18.558 --> 00:49:19.058 align:middle line:90%
+B1.
+
+00:49:19.058 --> 00:49:21.960 align:middle line:90%
+
+
+00:49:21.960 --> 00:49:25.690 align:middle line:90%
+Here's X. Here's theta.
+
+00:49:25.690 --> 00:49:26.190 align:middle line:90%
+OK.
+
+00:49:26.190 --> 00:49:32.370 align:middle line:84%
+In this example, pi theta
+of X delta is much smaller--
+
+00:49:32.370 --> 00:49:34.050 align:middle line:90%
+I'll call this theta 0--
+
+00:49:34.050 --> 00:49:38.840 align:middle line:84%
+much smaller than X delta
+to the 1/2 for one theta 0.
+
+00:49:38.840 --> 00:49:41.730 align:middle line:90%
+
+
+00:49:41.730 --> 00:49:44.190 align:middle line:84%
+But at least in this picture,
+most of the projections
+
+00:49:44.190 --> 00:49:46.510 align:middle line:90%
+are way bigger.
+
+00:49:46.510 --> 00:49:47.010 align:middle line:90%
+OK.
+
+00:49:47.010 --> 00:49:51.340 align:middle line:84%
+So it's not super difficult
+to check this proposition,
+
+00:49:51.340 --> 00:49:54.240 align:middle line:84%
+and I'm going to
+make it an exercise.
+
+00:49:54.240 --> 00:49:55.840 align:middle line:84%
+I think we're out
+of problem sets,
+
+00:49:55.840 --> 00:49:58.955 align:middle line:84%
+but if we weren't, this is a
+nice one to review the class.
+
+00:49:58.955 --> 00:50:01.800 align:middle line:90%
+
+
+00:50:01.800 --> 00:50:02.370 align:middle line:90%
+OK.
+
+00:50:02.370 --> 00:50:05.700 align:middle line:84%
+Another comment is even though
+these ft's are not exactly
+
+00:50:05.700 --> 00:50:08.310 align:middle line:84%
+linear maps, so that we cannot
+just literally apply this
+
+00:50:08.310 --> 00:50:12.540 align:middle line:84%
+proposition, they are close
+enough that by using the proof
+
+00:50:12.540 --> 00:50:16.080 align:middle line:84%
+of this, you can
+get it for ft, too.
+
+00:50:16.080 --> 00:50:29.490 align:middle line:84%
+So remark, the proof
+applies to ft. OK.
+
+00:50:29.490 --> 00:50:33.740 align:middle line:90%
+
+
+00:50:33.740 --> 00:50:36.900 align:middle line:84%
+So if we put together this
+lemma and this proposition,
+
+00:50:36.900 --> 00:50:39.650 align:middle line:84%
+we'll get an estimate about the
+delta-covering number of Xj.
+
+00:50:39.650 --> 00:50:55.190 align:middle line:90%
+
+
+00:50:55.190 --> 00:50:56.471 align:middle line:90%
+OK.
+
+00:50:56.471 --> 00:50:58.970 align:middle line:84%
+So corollary, if we
+put these together,
+
+00:50:58.970 --> 00:51:05.150 align:middle line:84%
+Xj plus 1 delta-covering number
+is at least around delta inverse
+
+00:51:05.150 --> 00:51:08.060 align:middle line:90%
+times Xj delta to the 1/2.
+
+00:51:08.060 --> 00:51:11.630 align:middle line:90%
+
+
+00:51:11.630 --> 00:51:12.950 align:middle line:90%
+Proof.
+
+00:51:12.950 --> 00:51:22.040 align:middle line:84%
+So Xj plus 1 delta is
+at least, by our lemma,
+
+00:51:22.040 --> 00:51:28.460 align:middle line:84%
+delta inverse times the
+average over t of Xj--
+
+00:51:28.460 --> 00:51:34.610 align:middle line:90%
+of ft of Xj delta.
+
+00:51:34.610 --> 00:51:40.130 align:middle line:84%
+And then by our proposition,
+that's at least delta inverse
+
+00:51:40.130 --> 00:51:44.470 align:middle line:84%
+times Xj delta to the
+1/2, and that's the proof.
+
+00:51:44.470 --> 00:51:47.370 align:middle line:90%
+
+
+00:51:47.370 --> 00:51:47.870 align:middle line:90%
+OK.
+
+00:51:47.870 --> 00:51:50.100 align:middle line:84%
+So then let's just
+track what this means.
+
+00:51:50.100 --> 00:51:53.370 align:middle line:90%
+So X0 delta would be 1.
+
+00:51:53.370 --> 00:51:57.360 align:middle line:84%
+Think about what X0 delta
+means, it's one unipotent orbit.
+
+00:51:57.360 --> 00:52:04.760 align:middle line:84%
+So therefore, X1 delta would be
+at least around delta inverse,
+
+00:52:04.760 --> 00:52:13.430 align:middle line:84%
+X2 delta would be at least
+around delta to the minus 3/2,
+
+00:52:13.430 --> 00:52:19.540 align:middle line:84%
+X3 delta be at least around
+delta to the minus 1 and 3/4,
+
+00:52:19.540 --> 00:52:23.775 align:middle line:84%
+and so on, and you'd get pretty
+close to delta to the minus 2.
+
+00:52:23.775 --> 00:52:27.485 align:middle line:90%
+
+
+00:52:27.485 --> 00:52:27.985 align:middle line:90%
+OK.
+
+00:52:27.985 --> 00:52:31.113 align:middle line:84%
+And delta to the minus 2 would
+be like a definite fraction
+
+00:52:31.113 --> 00:52:31.905 align:middle line:90%
+of the whole space.
+
+00:52:31.905 --> 00:52:35.590 align:middle line:90%
+
+
+00:52:35.590 --> 00:52:38.110 align:middle line:90%
+All right.
+
+00:52:38.110 --> 00:52:41.740 align:middle line:84%
+So this proves that a
+unipotent orbit that's
+
+00:52:41.740 --> 00:52:46.420 align:middle line:84%
+not close to periodic, it
+proves that it fills up
+
+00:52:46.420 --> 00:52:50.200 align:middle line:90%
+a lot of the homogeneous space.
+
+00:52:50.200 --> 00:52:53.020 align:middle line:90%
+And it's not Hedlund's theorem.
+
+00:52:53.020 --> 00:52:53.780 align:middle line:90%
+Hold on a second.
+
+00:52:53.780 --> 00:52:56.960 align:middle line:84%
+So we didn't prove yet
+that the orbit is dense.
+
+00:52:56.960 --> 00:53:00.010 align:middle line:84%
+The orbit could be missing
+an entire ball that's
+
+00:53:00.010 --> 00:53:02.690 align:middle line:84%
+like half the size of the space,
+and this could still be true.
+
+00:53:02.690 --> 00:53:05.570 align:middle line:84%
+But we did prove that the
+orbit goes a lot of places.
+
+00:53:05.570 --> 00:53:07.000 align:middle line:90%
+Yeah?
+
+00:53:07.000 --> 00:53:09.250 align:middle line:90%
+AUDIENCE: In this proof, does--
+
+00:53:09.250 --> 00:53:13.480 align:middle line:84%
+since applying it each time
+loses some of implicit constant,
+
+00:53:13.480 --> 00:53:15.790 align:middle line:84%
+how do we know that it's
+not becoming dense and just,
+
+00:53:15.790 --> 00:53:19.940 align:middle line:84%
+like, an infinitesimally small
+region of this whole space?
+
+00:53:19.940 --> 00:53:25.075 align:middle line:90%
+
+
+00:53:25.075 --> 00:53:25.950 align:middle line:90%
+LAWRENCE GUTH: Right.
+
+00:53:25.950 --> 00:53:28.200 align:middle line:84%
+So I think the question is
+like, we didn't actually
+
+00:53:28.200 --> 00:53:30.760 align:middle line:84%
+get to a constant times
+delta to the minus 2,
+
+00:53:30.760 --> 00:53:33.670 align:middle line:84%
+and if I tried to do this
+infinitely many times,
+
+00:53:33.670 --> 00:53:35.620 align:middle line:84%
+I would be losing a
+constant each time.
+
+00:53:35.620 --> 00:53:36.790 align:middle line:90%
+Yeah, that's right.
+
+00:53:36.790 --> 00:53:40.860 align:middle line:84%
+So imagine doing this 10
+times and we get delta
+
+00:53:40.860 --> 00:53:42.910 align:middle line:90%
+to the minus 1.99.
+
+00:53:42.910 --> 00:53:46.590 align:middle line:84%
+And that's what the
+method proves so far.
+
+00:53:46.590 --> 00:53:49.350 align:middle line:84%
+So stronger things are
+true, but this method
+
+00:53:49.350 --> 00:53:52.740 align:middle line:90%
+doesn't prove them yet.
+
+00:53:52.740 --> 00:54:02.790 align:middle line:84%
+So remark, this doesn't show
+that the orbit is actually
+
+00:54:02.790 --> 00:54:12.290 align:middle line:84%
+dense, and so maybe question,
+could the orbit do this?
+
+00:54:12.290 --> 00:54:14.880 align:middle line:90%
+
+
+00:54:14.880 --> 00:54:17.740 align:middle line:84%
+So here's our homogeneous
+space, there's a cusp,
+
+00:54:17.740 --> 00:54:19.830 align:middle line:90%
+but it's not that important.
+
+00:54:19.830 --> 00:54:24.340 align:middle line:84%
+And then the orbit
+goes around a good bit,
+
+00:54:24.340 --> 00:54:27.750 align:middle line:84%
+but it only ever goes
+around over here,
+
+00:54:27.750 --> 00:54:29.320 align:middle line:90%
+and it never goes over there.
+
+00:54:29.320 --> 00:54:33.180 align:middle line:84%
+So this proof doesn't
+say anything about that.
+
+00:54:33.180 --> 00:54:34.404 align:middle line:90%
+OK.
+
+00:54:34.404 --> 00:54:39.180 align:middle line:84%
+So, as far as I know, to
+finish Hedlund's theorem
+
+00:54:39.180 --> 00:54:42.960 align:middle line:84%
+requires another step that
+is based on different ideas
+
+00:54:42.960 --> 00:54:45.540 align:middle line:90%
+from these ideas.
+
+00:54:45.540 --> 00:54:48.930 align:middle line:84%
+So there's more to homogeneous
+dynamics than this story,
+
+00:54:48.930 --> 00:54:51.400 align:middle line:84%
+but we did still learn
+something interesting.
+
+00:54:51.400 --> 00:54:56.320 align:middle line:90%
+
+
+00:54:56.320 --> 00:54:56.820 align:middle line:90%
+Cool.
+
+00:54:56.820 --> 00:55:02.670 align:middle line:90%
+
+
+00:55:02.670 --> 00:55:03.960 align:middle line:90%
+Yeah?
+
+00:55:03.960 --> 00:55:06.450 align:middle line:84%
+AUDIENCE: Do how
+close as possible
+
+00:55:06.450 --> 00:55:09.240 align:middle line:84%
+to get to the full theorem
+by trying to optimize all
+
+00:55:09.240 --> 00:55:10.630 align:middle line:90%
+the constants in this proof?
+
+00:55:10.630 --> 00:55:13.530 align:middle line:90%
+
+
+00:55:13.530 --> 00:55:14.280 align:middle line:90%
+LAWRENCE GUTH: OK.
+
+00:55:14.280 --> 00:55:16.738 align:middle line:84%
+So there are two things that
+we might like to improve here.
+
+00:55:16.738 --> 00:55:19.520 align:middle line:84%
+So the question is, how close
+can we get to the full theorem
+
+00:55:19.520 --> 00:55:22.760 align:middle line:84%
+by optimizing the argument
+that we've been talking about?
+
+00:55:22.760 --> 00:55:24.440 align:middle line:84%
+So one thing that
+you might like is
+
+00:55:24.440 --> 00:55:29.150 align:middle line:84%
+you might like to actually
+get to delta to the minus 2.
+
+00:55:29.150 --> 00:55:33.390 align:middle line:84%
+That still wouldn't necessarily
+rule out this possibility,
+
+00:55:33.390 --> 00:55:35.840 align:middle line:90%
+but it would be interesting.
+
+00:55:35.840 --> 00:55:43.430 align:middle line:84%
+And if you look at this
+proposition, one thing
+
+00:55:43.430 --> 00:55:46.400 align:middle line:84%
+that you notice, that
+this proposition is
+
+00:55:46.400 --> 00:55:48.540 align:middle line:90%
+sharp in this very clumped case.
+
+00:55:48.540 --> 00:55:51.780 align:middle line:84%
+And if you remember back to
+the early months of our class,
+
+00:55:51.780 --> 00:55:55.550 align:middle line:84%
+if x was not so
+compressed, then there
+
+00:55:55.550 --> 00:55:57.360 align:middle line:90%
+would be even better estimates.
+
+00:55:57.360 --> 00:56:02.160 align:middle line:84%
+So if you knew as an input
+that x is not too clustered,
+
+00:56:02.160 --> 00:56:04.680 align:middle line:84%
+then you could get all the
+way to delta to the minus 2
+
+00:56:04.680 --> 00:56:09.020 align:middle line:84%
+in one step or two
+steps or something.
+
+00:56:09.020 --> 00:56:11.430 align:middle line:84%
+And so you might
+try to track that.
+
+00:56:11.430 --> 00:56:14.040 align:middle line:84%
+You might try to track not
+just the delta-covering number,
+
+00:56:14.040 --> 00:56:16.980 align:middle line:84%
+but also the rho-covering number
+for different delta and rho,
+
+00:56:16.980 --> 00:56:19.470 align:middle line:84%
+and then you could take
+advantage of this clustering.
+
+00:56:19.470 --> 00:56:24.980 align:middle line:84%
+And I am not positive, but I
+think it is a reasonable 18-156
+
+00:56:24.980 --> 00:56:29.870 align:middle line:84%
+project to try to use that
+to get all the way to delta
+
+00:56:29.870 --> 00:56:30.730 align:middle line:90%
+to the minus 2.
+
+00:56:30.730 --> 00:56:33.260 align:middle line:90%
+
+
+00:56:33.260 --> 00:56:34.970 align:middle line:90%
+Oh.
+
+00:56:34.970 --> 00:56:38.780 align:middle line:84%
+Even if you got a constant
+times delta to the minus 2,
+
+00:56:38.780 --> 00:56:42.830 align:middle line:84%
+it would still not
+be obvious to me
+
+00:56:42.830 --> 00:56:44.900 align:middle line:84%
+that you filled
+the entire manifold
+
+00:56:44.900 --> 00:56:46.590 align:middle line:84%
+and that you're
+not missing a ball.
+
+00:56:46.590 --> 00:56:51.060 align:middle line:84%
+And I thought about it
+yesterday and today,
+
+00:56:51.060 --> 00:56:54.650 align:middle line:84%
+and I don't have a good
+understanding yet of what you
+
+00:56:54.650 --> 00:56:57.680 align:middle line:90%
+need to get everywhere.
+
+00:56:57.680 --> 00:57:01.970 align:middle line:84%
+So I would be interested to
+learn if people have thoughts
+
+00:57:01.970 --> 00:57:03.870 align:middle line:90%
+about it or know about it.
+
+00:57:03.870 --> 00:57:07.010 align:middle line:90%
+
+
+00:57:07.010 --> 00:57:09.790 align:middle line:90%
+OK.
+
+00:57:09.790 --> 00:57:11.560 align:middle line:90%
+Cool.
+
+00:57:11.560 --> 00:57:13.180 align:middle line:84%
+So I think that
+there are actually
+
+00:57:13.180 --> 00:57:15.470 align:middle line:84%
+are a bunch of ways to
+prove Hedlund's theorem,
+
+00:57:15.470 --> 00:57:19.360 align:middle line:84%
+and this is not one that I
+have seen in the literature.
+
+00:57:19.360 --> 00:57:24.940 align:middle line:84%
+And all of these problems
+become more difficult and maybe
+
+00:57:24.940 --> 00:57:29.350 align:middle line:84%
+more interesting when you
+go to higher dimensions.
+
+00:57:29.350 --> 00:57:32.560 align:middle line:84%
+So the projection theory also
+becomes more difficult and more
+
+00:57:32.560 --> 00:57:34.040 align:middle line:84%
+interesting in
+higher dimensions,
+
+00:57:34.040 --> 00:57:36.550 align:middle line:84%
+and I wanted, in the
+last part of the class,
+
+00:57:36.550 --> 00:57:38.860 align:middle line:90%
+to just show you what happens.
+
+00:57:38.860 --> 00:57:42.368 align:middle line:84%
+And in particular, we
+will see a new question
+
+00:57:42.368 --> 00:57:44.410 align:middle line:84%
+about projection theory
+that we haven't mentioned
+
+00:57:44.410 --> 00:57:46.300 align:middle line:84%
+so far in this class,
+but which I think
+
+00:57:46.300 --> 00:57:47.610 align:middle line:90%
+is a really cool question.
+
+00:57:47.610 --> 00:57:50.990 align:middle line:90%
+
+
+00:57:50.990 --> 00:57:51.490 align:middle line:90%
+OK.
+
+00:57:51.490 --> 00:58:15.430 align:middle line:90%
+
+
+00:58:15.430 --> 00:58:17.320 align:middle line:90%
+OK.
+
+00:58:17.320 --> 00:58:19.040 align:middle line:90%
+So let me put it this way.
+
+00:58:19.040 --> 00:58:23.400 align:middle line:90%
+What about SLn R?
+
+00:58:23.400 --> 00:58:26.957 align:middle line:90%
+
+
+00:58:26.957 --> 00:58:27.457 align:middle line:90%
+OK.
+
+00:58:27.457 --> 00:58:31.240 align:middle line:90%
+
+
+00:58:31.240 --> 00:58:35.120 align:middle line:84%
+So, I'm going to take a
+somewhat specific example,
+
+00:58:35.120 --> 00:58:37.420 align:middle line:84%
+although I think most
+of what we'll say then
+
+00:58:37.420 --> 00:58:38.600 align:middle line:90%
+would work for any n.
+
+00:58:38.600 --> 00:58:42.160 align:middle line:84%
+So for example, we
+could have SL3 R
+
+00:58:42.160 --> 00:58:48.130 align:middle line:84%
+for our G, gamma
+could be SL3 z, and U
+
+00:58:48.130 --> 00:58:53.490 align:middle line:84%
+could be the unipotent group of
+matrices that look like this.
+
+00:58:53.490 --> 00:58:57.670 align:middle line:90%
+
+
+00:58:57.670 --> 00:59:00.700 align:middle line:84%
+So from what I
+understand, there are
+
+00:59:00.700 --> 00:59:03.610 align:middle line:84%
+several different one-parameter
+unipotent subgroups
+
+00:59:03.610 --> 00:59:06.280 align:middle line:84%
+of SL3 R. They're slightly
+different from each other.
+
+00:59:06.280 --> 00:59:09.210 align:middle line:84%
+And this one is
+particularly well-studied
+
+00:59:09.210 --> 00:59:11.230 align:middle line:84%
+in the homogeneous
+dynamics community
+
+00:59:11.230 --> 00:59:12.690 align:middle line:84%
+because it's the
+one that comes up
+
+00:59:12.690 --> 00:59:17.460 align:middle line:84%
+in the Oppenheim conjecture
+about quadratic forms.
+
+00:59:17.460 --> 00:59:21.030 align:middle line:84%
+But anyway, so we have this
+one-parameter subgroup.
+
+00:59:21.030 --> 00:59:24.780 align:middle line:90%
+And so let's call this u sub t.
+
+00:59:24.780 --> 00:59:25.420 align:middle line:90%
+OK.
+
+00:59:25.420 --> 00:59:28.560 align:middle line:84%
+So our basic setup
+with conjugating
+
+00:59:28.560 --> 00:59:31.150 align:middle line:84%
+by a diagonal
+matrix, that works.
+
+00:59:31.150 --> 00:59:36.540 align:middle line:84%
+And the relevant diagonal
+matrix is this matrix.
+
+00:59:36.540 --> 00:59:37.060 align:middle line:90%
+OK.
+
+00:59:37.060 --> 00:59:41.520 align:middle line:84%
+And then you can check that
+a sub r u sub t a sub r
+
+00:59:41.520 --> 00:59:44.760 align:middle line:90%
+inverse is u sub e to the r t.
+
+00:59:44.760 --> 00:59:47.440 align:middle line:84%
+Turns out to be e to the
+r t, not e to the 2r t,
+
+00:59:47.440 --> 00:59:52.050 align:middle line:90%
+but that's not too big a deal.
+
+00:59:52.050 --> 00:59:53.826 align:middle line:90%
+OK.
+
+00:59:53.826 --> 01:00:02.463 align:middle line:84%
+So now, we have a bunch of
+unipotent orbits like before.
+
+01:00:02.463 --> 01:00:08.960 align:middle line:90%
+
+
+01:00:08.960 --> 01:00:11.060 align:middle line:84%
+It was a bunch of
+unipotent orbits.
+
+01:00:11.060 --> 01:00:17.570 align:middle line:84%
+But the dimension of our
+group is 8 instead of 3.
+
+01:00:17.570 --> 01:00:20.930 align:middle line:84%
+And so we have the
+direction along the orbits,
+
+01:00:20.930 --> 01:00:24.360 align:middle line:84%
+t equals 0 up to t equals 1,
+that's still one-dimensional.
+
+01:00:24.360 --> 01:00:27.080 align:middle line:84%
+So this thing here is a
+seven-dimensional ball
+
+01:00:27.080 --> 01:00:29.360 align:middle line:90%
+instead of a disc.
+
+01:00:29.360 --> 01:00:30.300 align:middle line:90%
+OK.
+
+01:00:30.300 --> 01:00:33.260 align:middle line:90%
+So now, we apply--
+
+01:00:33.260 --> 01:00:41.390 align:middle line:84%
+we study the action
+of Lar inverse.
+
+01:00:41.390 --> 01:00:45.510 align:middle line:84%
+And we'll have a
+picture like this.
+
+01:00:45.510 --> 01:00:46.010 align:middle line:90%
+f1.
+
+01:00:46.010 --> 01:00:49.340 align:middle line:90%
+
+
+01:00:49.340 --> 01:00:51.530 align:middle line:90%
+f0.
+
+01:00:51.530 --> 01:00:55.170 align:middle line:84%
+And, OK, something
+here will happen,
+
+01:00:55.170 --> 01:00:57.145 align:middle line:84%
+and something different
+here will happen.
+
+01:00:57.145 --> 01:01:01.250 align:middle line:90%
+
+
+01:01:01.250 --> 01:01:02.465 align:middle line:90%
+OK.
+
+01:01:02.465 --> 01:01:04.653 align:middle line:84%
+So you can study the
+singular values--
+
+01:01:04.653 --> 01:01:07.910 align:middle line:90%
+
+
+01:01:07.910 --> 01:01:12.630 align:middle line:84%
+the singular values--
+of Lar inverse.
+
+01:01:12.630 --> 01:01:17.630 align:middle line:84%
+And those are equal to the
+singular values of conjugation
+
+01:01:17.630 --> 01:01:18.540 align:middle line:90%
+by ar.
+
+01:01:18.540 --> 01:01:22.470 align:middle line:84%
+So conjugation by ar is a very
+nice operation on matrices,
+
+01:01:22.470 --> 01:01:24.270 align:middle line:84%
+you can write it down
+and see what happens.
+
+01:01:24.270 --> 01:01:26.670 align:middle line:84%
+And you can compute
+these singular values.
+
+01:01:26.670 --> 01:01:29.540 align:middle line:90%
+And they are as follows.
+
+01:01:29.540 --> 01:01:35.490 align:middle line:84%
+e to the minus 2r, e to the
+minus r, e to the minus r, 1, 1,
+
+01:01:35.490 --> 01:01:38.500 align:middle line:84%
+e to the r, e to
+the r, e to the 2.
+
+01:01:38.500 --> 01:01:41.120 align:middle line:90%
+
+
+01:01:41.120 --> 01:01:45.830 align:middle line:84%
+I won't do it on the board,
+but I promise it's not hard.
+
+01:01:45.830 --> 01:01:46.530 align:middle line:90%
+OK.
+
+01:01:46.530 --> 01:01:50.810 align:middle line:84%
+Now one of these singular values
+corresponds to the U-direction.
+
+01:01:50.810 --> 01:01:54.980 align:middle line:84%
+So, little n is
+the vector that's
+
+01:01:54.980 --> 01:02:01.840 align:middle line:84%
+the tangent vector to the
+group u at the identity.
+
+01:02:01.840 --> 01:02:03.850 align:middle line:90%
+And so little n is--
+
+01:02:03.850 --> 01:02:06.140 align:middle line:84%
+it's not super important
+what the formula is,
+
+01:02:06.140 --> 01:02:08.770 align:middle line:84%
+but if you differentiate that,
+you'll see that the tangent
+
+01:02:08.770 --> 01:02:10.210 align:middle line:90%
+vector is that.
+
+01:02:10.210 --> 01:02:14.770 align:middle line:90%
+And that's one of these guys.
+
+01:02:14.770 --> 01:02:19.250 align:middle line:84%
+So as before, the direction
+of the orbits is expanding.
+
+01:02:19.250 --> 01:02:25.010 align:middle line:84%
+And then on the B 7, we have
+the other seven directions.
+
+01:02:25.010 --> 01:02:32.050 align:middle line:84%
+So this thing over here is
+an ellipsoid with axes e
+
+01:02:32.050 --> 01:02:36.250 align:middle line:84%
+to the minus 2r, e to the minus
+r, e to the minus r, 1, 1,
+
+01:02:36.250 --> 01:02:38.580 align:middle line:90%
+e to the r, e to the 2.
+
+01:02:38.580 --> 01:02:42.280 align:middle line:90%
+
+
+01:02:42.280 --> 01:02:43.756 align:middle line:90%
+OK.
+
+01:02:43.756 --> 01:02:47.350 align:middle line:84%
+So, as we go from here
+to here, these maps
+
+01:02:47.350 --> 01:02:49.700 align:middle line:84%
+are not exactly linear, but
+they're close to linear,
+
+01:02:49.700 --> 01:02:52.840 align:middle line:84%
+they're close to linear maps,
+and they stretch some directions
+
+01:02:52.840 --> 01:02:55.185 align:middle line:84%
+and they compress other
+directions by these amounts.
+
+01:02:55.185 --> 01:02:58.030 align:middle line:90%
+
+
+01:02:58.030 --> 01:02:59.998 align:middle line:90%
+OK.
+
+01:02:59.998 --> 01:03:03.435 align:middle line:84%
+So, what is different
+from before?
+
+01:03:03.435 --> 01:03:06.790 align:middle line:90%
+
+
+01:03:06.790 --> 01:03:07.360 align:middle line:90%
+OK.
+
+01:03:07.360 --> 01:03:11.680 align:middle line:84%
+One difference is that
+this thing is not exactly
+
+01:03:11.680 --> 01:03:13.136 align:middle line:90%
+a projection.
+
+01:03:13.136 --> 01:03:30.280 align:middle line:90%
+
+
+01:03:30.280 --> 01:03:32.870 align:middle line:84%
+But that's not the most
+important difference.
+
+01:03:32.870 --> 01:03:36.640 align:middle line:90%
+
+
+01:03:36.640 --> 01:03:38.355 align:middle line:90%
+So differences from last time.
+
+01:03:38.355 --> 01:03:44.390 align:middle line:90%
+
+
+01:03:44.390 --> 01:03:44.890 align:middle line:90%
+Right.
+
+01:03:44.890 --> 01:03:51.100 align:middle line:84%
+So if we had an
+approximate projection that
+
+01:03:51.100 --> 01:03:57.060 align:middle line:84%
+went from the 7 ball to some
+vector space V of dimension
+
+01:03:57.060 --> 01:04:00.180 align:middle line:84%
+three, say-- so four
+dimensions are getting squished
+
+01:04:00.180 --> 01:04:02.670 align:middle line:84%
+and three dimensions
+are staying as they are,
+
+01:04:02.670 --> 01:04:10.800 align:middle line:84%
+that would be approximately a
+linear map with singular values
+
+01:04:10.800 --> 01:04:14.205 align:middle line:84%
+e to the minus r, e to the
+minus r, e to the minus r,
+
+01:04:14.205 --> 01:04:17.220 align:middle line:90%
+e to the minus r, 1, 1, 1.
+
+01:04:17.220 --> 01:04:22.205 align:middle line:84%
+If I had a linear map like
+that, these guys are almost 0.
+
+01:04:22.205 --> 01:04:24.580 align:middle line:84%
+So these are the four directions
+that are being squished,
+
+01:04:24.580 --> 01:04:27.180 align:middle line:84%
+these are the three directions
+that are staying the same.
+
+01:04:27.180 --> 01:04:30.670 align:middle line:84%
+The list of singular values
+here is not quite like that.
+
+01:04:30.670 --> 01:04:33.810 align:middle line:84%
+Some of them are bigger than
+1, we didn't have that before.
+
+01:04:33.810 --> 01:04:36.660 align:middle line:84%
+And the ones that are--
+some of them are equal to 1.
+
+01:04:36.660 --> 01:04:40.050 align:middle line:84%
+The ones that are smaller than
+1 have two different scales.
+
+01:04:40.050 --> 01:04:42.040 align:middle line:84%
+So that's a little
+bit more complicated,
+
+01:04:42.040 --> 01:04:43.925 align:middle line:90%
+but I don't want to focus on it.
+
+01:04:43.925 --> 01:04:46.560 align:middle line:90%
+
+
+01:04:46.560 --> 01:04:51.850 align:middle line:84%
+So, our singular values are
+a little more complicated.
+
+01:04:51.850 --> 01:04:59.040 align:middle line:90%
+
+
+01:04:59.040 --> 01:04:59.820 align:middle line:90%
+OK.
+
+01:04:59.820 --> 01:05:00.965 align:middle line:90%
+Let's ignore that.
+
+01:05:00.965 --> 01:05:02.340 align:middle line:84%
+Suppose each of
+these linear maps
+
+01:05:02.340 --> 01:05:04.200 align:middle line:84%
+actually had those
+singular values,
+
+01:05:04.200 --> 01:05:07.060 align:middle line:84%
+so it was more like what we were
+used to in projection theory.
+
+01:05:07.060 --> 01:05:08.820 align:middle line:84%
+There would be a
+different-- there
+
+01:05:08.820 --> 01:05:12.870 align:middle line:84%
+would be another difference from
+before, which is more important.
+
+01:05:12.870 --> 01:05:14.940 align:middle line:90%
+So number 1.
+
+01:05:14.940 --> 01:05:20.730 align:middle line:84%
+Number 2, we still have
+only a one parameter family
+
+01:05:20.730 --> 01:05:22.013 align:middle line:90%
+of linear maps.
+
+01:05:22.013 --> 01:05:25.650 align:middle line:90%
+
+
+01:05:25.650 --> 01:05:26.910 align:middle line:90%
+OK.
+
+01:05:26.910 --> 01:05:32.640 align:middle line:84%
+So before, when we talked about
+projections from B 7 to V--
+
+01:05:32.640 --> 01:05:36.260 align:middle line:84%
+to the three-dimensional vector
+space, we talked about all
+
+01:05:36.260 --> 01:05:36.760 align:middle line:90%
+of them.
+
+01:05:36.760 --> 01:05:39.330 align:middle line:84%
+If you look at all of
+the projections from B 7
+
+01:05:39.330 --> 01:05:41.080 align:middle line:84%
+to the three-dimensional
+vector spaces,
+
+01:05:41.080 --> 01:05:43.290 align:middle line:84%
+then something nice
+happens most of the time.
+
+01:05:43.290 --> 01:05:45.820 align:middle line:90%
+But we don't have all of them.
+
+01:05:45.820 --> 01:05:49.920 align:middle line:84%
+We just have a very
+thin subfamily.
+
+01:05:49.920 --> 01:05:54.480 align:middle line:84%
+So this is not all
+of the projections.
+
+01:05:54.480 --> 01:05:57.890 align:middle line:90%
+
+
+01:05:57.890 --> 01:05:58.820 align:middle line:90%
+Cool.
+
+01:05:58.820 --> 01:05:59.760 align:middle line:90%
+OK.
+
+01:05:59.760 --> 01:06:02.900 align:middle line:84%
+So there's also a
+cosmetic complication
+
+01:06:02.900 --> 01:06:06.410 align:middle line:84%
+that 7 is a lot of dimensions
+and there are a lot of numbers,
+
+01:06:06.410 --> 01:06:09.030 align:middle line:84%
+but that's not that
+important, it's just a pain.
+
+01:06:09.030 --> 01:06:12.390 align:middle line:84%
+But these are this
+to some extent,
+
+01:06:12.390 --> 01:06:16.730 align:middle line:84%
+and this is a really fundamental
+conceptual difference.
+
+01:06:16.730 --> 01:06:19.940 align:middle line:84%
+So I wanted to show you not
+this problem, but the simplest
+
+01:06:19.940 --> 01:06:23.160 align:middle line:90%
+problem of this type.
+
+01:06:23.160 --> 01:06:25.885 align:middle line:84%
+Which is called the
+restricted projection problem.
+
+01:06:25.885 --> 01:06:49.620 align:middle line:90%
+
+
+01:06:49.620 --> 01:06:50.120 align:middle line:90%
+OK.
+
+01:06:50.120 --> 01:07:00.520 align:middle line:90%
+
+
+01:07:00.520 --> 01:07:01.160 align:middle line:90%
+All right.
+
+01:07:01.160 --> 01:07:04.550 align:middle line:84%
+So this question, which I
+think is a cool question,
+
+01:07:04.550 --> 01:07:09.940 align:middle line:84%
+was raised by Fassler, Katrin
+Fassler, and Tuomas Orponen
+
+01:07:09.940 --> 01:07:13.060 align:middle line:90%
+in 2013.
+
+01:07:13.060 --> 01:07:15.140 align:middle line:90%
+And the question is like this.
+
+01:07:15.140 --> 01:07:19.640 align:middle line:90%
+So here's the 2 sphere.
+
+01:07:19.640 --> 01:07:22.300 align:middle line:84%
+So we're going to be doing
+projection theory in three
+
+01:07:22.300 --> 01:07:24.880 align:middle line:84%
+dimensions, in R 3, so the
+different directions are
+
+01:07:24.880 --> 01:07:26.450 align:middle line:90%
+parametrized by the 2 sphere.
+
+01:07:26.450 --> 01:07:28.550 align:middle line:84%
+But we're not going to
+project in all of them,
+
+01:07:28.550 --> 01:07:33.190 align:middle line:84%
+we're just going to pick
+some curve gamma and project
+
+01:07:33.190 --> 01:07:34.780 align:middle line:90%
+in the directions of gamma.
+
+01:07:34.780 --> 01:07:37.780 align:middle line:84%
+So gamma contained
+in S2 is a curve.
+
+01:07:37.780 --> 01:07:41.470 align:middle line:90%
+
+
+01:07:41.470 --> 01:07:44.680 align:middle line:90%
+The question is like this.
+
+01:07:44.680 --> 01:07:48.590 align:middle line:84%
+If X is contained
+in the unit 3 ball,
+
+01:07:48.590 --> 01:07:52.802 align:middle line:84%
+and let's say x is
+a delta, s, C set--
+
+01:07:52.802 --> 01:07:54.260 align:middle line:84%
+we'll put-- to make
+it interesting,
+
+01:07:54.260 --> 01:07:56.600 align:middle line:84%
+we put some kind of
+non-concentration condition,
+
+01:07:56.600 --> 01:08:00.910 align:middle line:84%
+and this is the one that they
+had in their paper, basically.
+
+01:08:00.910 --> 01:08:01.960 align:middle line:90%
+OK.
+
+01:08:01.960 --> 01:08:10.990 align:middle line:84%
+Then estimate the average
+over all the directions
+
+01:08:10.990 --> 01:08:18.250 align:middle line:84%
+in gamma of the pi theta
+of X delta-covering number.
+
+01:08:18.250 --> 01:08:23.479 align:middle line:84%
+OK, so pi-- so theta is a
+direction, an element of S 2,
+
+01:08:23.479 --> 01:08:27.010 align:middle line:84%
+and pi theta is the
+orthogonal projection
+
+01:08:27.010 --> 01:08:28.939 align:middle line:90%
+from R 3 to theta perp.
+
+01:08:28.939 --> 01:08:33.700 align:middle line:84%
+So from three dimensions
+to two dimensions.
+
+01:08:33.700 --> 01:08:36.460 align:middle line:90%
+So estimate the average of that.
+
+01:08:36.460 --> 01:08:39.490 align:middle line:90%
+So we still have that--
+
+01:08:39.490 --> 01:08:41.350 align:middle line:90%
+I erased the wrong thing.
+
+01:08:41.350 --> 01:08:42.020 align:middle line:90%
+OK.
+
+01:08:42.020 --> 01:08:44.229 align:middle line:84%
+On this very board, not
+two minutes ago, there
+
+01:08:44.229 --> 01:08:47.760 align:middle line:84%
+was a proposition that said
+if you had a set in R 2,
+
+01:08:47.760 --> 01:08:50.260 align:middle line:84%
+and you projected it in
+all the different angles,
+
+01:08:50.260 --> 01:08:52.319 align:middle line:84%
+then on average, the
+delta-covering number
+
+01:08:52.319 --> 01:08:54.600 align:middle line:84%
+of the projection was at
+least something or another.
+
+01:08:54.600 --> 01:08:57.090 align:middle line:84%
+So this is like
+an analog of that
+
+01:08:57.090 --> 01:09:00.490 align:middle line:84%
+in three dimensions for a set
+with the spacing condition,
+
+01:09:00.490 --> 01:09:02.310 align:middle line:84%
+but with the key
+difference that we're not
+
+01:09:02.310 --> 01:09:04.410 align:middle line:84%
+averaging over
+all of them, we're
+
+01:09:04.410 --> 01:09:09.540 align:middle line:84%
+only averaging over the ones
+in a particular curve gamma.
+
+01:09:09.540 --> 01:09:10.300 align:middle line:90%
+OK.
+
+01:09:10.300 --> 01:09:12.750 align:middle line:84%
+Now, an interesting
+thing about this question
+
+01:09:12.750 --> 01:09:15.640 align:middle line:84%
+is that it matters what
+the curve gamma is.
+
+01:09:15.640 --> 01:09:17.520 align:middle line:84%
+And in particular,
+there's a big difference
+
+01:09:17.520 --> 01:09:20.910 align:middle line:84%
+between an equator, which
+is like a straight line
+
+01:09:20.910 --> 01:09:26.310 align:middle line:84%
+on the sphere, and a
+non-degenerate, or curved gamma.
+
+01:09:26.310 --> 01:09:32.609 align:middle line:84%
+So the answer depends
+on whether gamma--
+
+01:09:32.609 --> 01:09:33.899 align:middle line:90%
+gamma is the equator--
+
+01:09:33.899 --> 01:09:39.149 align:middle line:84%
+is one extreme or
+gamma non-degenerate
+
+01:09:39.149 --> 01:09:41.612 align:middle line:90%
+is another extreme.
+
+01:09:41.612 --> 01:09:43.779 align:middle line:84%
+Instead of writing the
+definition of non-degenerate,
+
+01:09:43.779 --> 01:09:46.600 align:middle line:84%
+let me just give you one example
+of a non-degenerate curve.
+
+01:09:46.600 --> 01:09:50.609 align:middle line:84%
+So, an example of a
+non-degenerate curve is gamma is
+
+01:09:50.609 --> 01:09:55.530 align:middle line:84%
+equal to the set of theta in S
+2 so that the third component
+
+01:09:55.530 --> 01:09:56.550 align:middle line:90%
+of theta is 1/2.
+
+01:09:56.550 --> 01:10:01.555 align:middle line:90%
+
+
+01:10:01.555 --> 01:10:02.055 align:middle line:90%
+OK.
+
+01:10:02.055 --> 01:10:07.590 align:middle line:84%
+So it looks like the boundary
+of the spherical cap.
+
+01:10:07.590 --> 01:10:08.260 align:middle line:90%
+OK.
+
+01:10:08.260 --> 01:10:11.495 align:middle line:84%
+So let me show you how these
+are different from each other.
+
+01:10:11.495 --> 01:10:33.565 align:middle line:90%
+
+
+01:10:33.565 --> 01:10:34.065 align:middle line:90%
+OK.
+
+01:10:34.065 --> 01:10:37.080 align:middle line:90%
+So example.
+
+01:10:37.080 --> 01:10:40.480 align:middle line:84%
+Say gamma is the
+equator and S is 2.
+
+01:10:40.480 --> 01:10:42.980 align:middle line:84%
+So we have a, quote unquote,
+"two-dimensional set,"
+
+01:10:42.980 --> 01:10:44.325 align:middle line:90%
+delta 2 set.
+
+01:10:44.325 --> 01:10:44.825 align:middle line:90%
+OK.
+
+01:10:44.825 --> 01:10:51.170 align:middle line:84%
+So our set X is going to
+be a delta-by-1-by-1 slab.
+
+01:10:51.170 --> 01:11:00.740 align:middle line:84%
+So it looks-- and so imagine
+that the two big directions are
+
+01:11:00.740 --> 01:11:03.500 align:middle line:84%
+in the plane of the blackboard,
+and the slab is sticking out
+
+01:11:03.500 --> 01:11:05.900 align:middle line:84%
+of the blackboard by
+a little bit delta.
+
+01:11:05.900 --> 01:11:06.570 align:middle line:90%
+OK.
+
+01:11:06.570 --> 01:11:08.450 align:middle line:84%
+Now, there's an
+equator of directions
+
+01:11:08.450 --> 01:11:10.400 align:middle line:84%
+that we're going to
+project in, and think
+
+01:11:10.400 --> 01:11:14.150 align:middle line:84%
+of that as the equator that's
+like the sphere with center
+
+01:11:14.150 --> 01:11:16.760 align:middle line:84%
+at the blackboard, intersected
+the sphere with the blackboard,
+
+01:11:16.760 --> 01:11:18.440 align:middle line:90%
+you would get a circle.
+
+01:11:18.440 --> 01:11:22.430 align:middle line:90%
+So here's gamma.
+
+01:11:22.430 --> 01:11:30.140 align:middle line:84%
+So now, if theta is in gamma,
+then the projection of X
+
+01:11:30.140 --> 01:11:33.470 align:middle line:90%
+is a delta-by-1 rectangle.
+
+01:11:33.470 --> 01:11:34.850 align:middle line:84%
+So there's a circle
+of directions
+
+01:11:34.850 --> 01:11:37.100 align:middle line:84%
+where if you project
+this slab, you just
+
+01:11:37.100 --> 01:11:39.210 align:middle line:90%
+get a delta-by-1 rectangle.
+
+01:11:39.210 --> 01:11:42.020 align:middle line:90%
+
+
+01:11:42.020 --> 01:11:43.280 align:middle line:90%
+OK.
+
+01:11:43.280 --> 01:11:53.030 align:middle line:84%
+So then we see that the
+average pi theta of x delta
+
+01:11:53.030 --> 01:11:54.700 align:middle line:90%
+is like delta inverse.
+
+01:11:54.700 --> 01:11:59.520 align:middle line:90%
+
+
+01:11:59.520 --> 01:12:00.020 align:middle line:90%
+OK.
+
+01:12:00.020 --> 01:12:05.480 align:middle line:90%
+
+
+01:12:05.480 --> 01:12:06.030 align:middle line:90%
+OK.
+
+01:12:06.030 --> 01:12:09.680 align:middle line:84%
+Now there's no obvious
+version of this example
+
+01:12:09.680 --> 01:12:14.090 align:middle line:84%
+where gamma is that curve
+that's up near the top.
+
+01:12:14.090 --> 01:12:16.040 align:middle line:90%
+And the difference is--
+
+01:12:16.040 --> 01:12:20.540 align:middle line:84%
+so if you're projecting
+in a certain direction,
+
+01:12:20.540 --> 01:12:23.750 align:middle line:84%
+then the fibers are like
+lines in that direction.
+
+01:12:23.750 --> 01:12:26.750 align:middle line:84%
+And so what's special here
+is that all of these lines
+
+01:12:26.750 --> 01:12:30.740 align:middle line:84%
+are coplanar, and so you can
+have a planar object that
+
+01:12:30.740 --> 01:12:32.450 align:middle line:90%
+has a lot that--
+
+01:12:32.450 --> 01:12:34.910 align:middle line:84%
+where these lines
+intersected a lot.
+
+01:12:34.910 --> 01:12:38.210 align:middle line:84%
+And instead, when we
+have those directions,
+
+01:12:38.210 --> 01:12:40.690 align:middle line:84%
+then all of our
+lines make an angle
+
+01:12:40.690 --> 01:12:42.920 align:middle line:84%
+of 45 degrees with
+the horizontal.
+
+01:12:42.920 --> 01:12:45.370 align:middle line:90%
+They're like light cones.
+
+01:12:45.370 --> 01:12:49.780 align:middle line:84%
+And they just don't fit
+together in the same nice way
+
+01:12:49.780 --> 01:12:51.790 align:middle line:84%
+that coplanar
+lines fit together.
+
+01:12:51.790 --> 01:12:53.950 align:middle line:90%
+So it makes a difference.
+
+01:12:53.950 --> 01:12:56.915 align:middle line:84%
+And Fassler and
+Orponen, they proved
+
+01:12:56.915 --> 01:12:58.040 align:middle line:90%
+that it makes a difference.
+
+01:12:58.040 --> 01:13:00.790 align:middle line:84%
+So they proved some bounds for
+that thing that are strictly
+
+01:13:00.790 --> 01:13:01.970 align:middle line:90%
+bigger than this thing.
+
+01:13:01.970 --> 01:13:07.870 align:middle line:84%
+But it took a while to figure
+out what is the sharpest bound.
+
+01:13:07.870 --> 01:13:10.990 align:middle line:84%
+And that was figured
+out some time later
+
+01:13:10.990 --> 01:13:17.830 align:middle line:84%
+in a paper of six authors,
+Shengwen Gan Shaoming Guo me,
+
+01:13:17.830 --> 01:13:22.600 align:middle line:84%
+Terence Harris, Dominique
+Maldague, and Hong Wang,
+
+01:13:22.600 --> 01:13:25.870 align:middle line:84%
+many of whom were here working
+on it at various times.
+
+01:13:25.870 --> 01:13:26.690 align:middle line:90%
+OK.
+
+01:13:26.690 --> 01:13:28.780 align:middle line:90%
+And we proved--
+
+01:13:28.780 --> 01:13:31.060 align:middle line:90%
+I'll just do a special case.
+
+01:13:31.060 --> 01:13:44.820 align:middle line:84%
+So if XCB 3 is a delta, 2, C
+set and gamma is non-degenerate,
+
+01:13:44.820 --> 01:13:49.830 align:middle line:84%
+like this example above,
+then the average theta
+
+01:13:49.830 --> 01:13:54.660 align:middle line:84%
+in gamma of pi theta of
+X delta-covering number
+
+01:13:54.660 --> 01:13:58.925 align:middle line:84%
+is bigger than C epsilon delta
+to the negative 2 plus epsilon.
+
+01:13:58.925 --> 01:14:02.986 align:middle line:90%
+
+
+01:14:02.986 --> 01:14:03.800 align:middle line:90%
+OK.
+
+01:14:03.800 --> 01:14:05.550 align:middle line:84%
+And the best thing you
+could hope for here
+
+01:14:05.550 --> 01:14:08.160 align:middle line:84%
+is delta to the
+minus 2 because x
+
+01:14:08.160 --> 01:14:10.260 align:middle line:84%
+itself probably has
+delta-covering number
+
+01:14:10.260 --> 01:14:12.120 align:middle line:90%
+delta to the minus 2.
+
+01:14:12.120 --> 01:14:16.535 align:middle line:84%
+So up to small issues that--
+this is the Sharpe theorem.
+
+01:14:16.535 --> 01:14:19.380 align:middle line:90%
+
+
+01:14:19.380 --> 01:14:21.060 align:middle line:90%
+OK.
+
+01:14:21.060 --> 01:14:24.240 align:middle line:84%
+This proof is based on some
+version of the Fourier analysis
+
+01:14:24.240 --> 01:14:26.880 align:middle line:84%
+method, but it's a
+more difficult version
+
+01:14:26.880 --> 01:14:28.216 align:middle line:90%
+that involves decoupling.
+
+01:14:28.216 --> 01:14:42.660 align:middle line:90%
+
+
+01:14:42.660 --> 01:14:45.210 align:middle line:90%
+OK.
+
+01:14:45.210 --> 01:14:46.200 align:middle line:90%
+Cool.
+
+01:14:46.200 --> 01:14:50.520 align:middle line:84%
+So this connection between
+projection theory and--
+
+01:14:50.520 --> 01:14:52.890 align:middle line:84%
+between homogeneous dynamics
+and projection theory
+
+01:14:52.890 --> 01:14:55.770 align:middle line:84%
+was discovered by Elon
+Lindenstrauss and Amir
+
+01:14:55.770 --> 01:15:01.410 align:middle line:84%
+Mohammadi, who were working on
+quantitative estimates for how
+
+01:15:01.410 --> 01:15:04.870 align:middle line:84%
+unipotent orbits become
+dense in this setup.
+
+01:15:04.870 --> 01:15:06.780 align:middle line:84%
+And they realized
+this connection
+
+01:15:06.780 --> 01:15:09.670 align:middle line:84%
+with projection theory, and
+they found the literature,
+
+01:15:09.670 --> 01:15:12.090 align:middle line:84%
+they found the paper
+by Fassler and Orponen
+
+01:15:12.090 --> 01:15:13.810 align:middle line:90%
+and all the follow-up papers.
+
+01:15:13.810 --> 01:15:17.370 align:middle line:84%
+And they used those tools to
+prove quantitative estimates
+
+01:15:17.370 --> 01:15:20.760 align:middle line:84%
+about how these
+unipotent orbits mix.
+
+01:15:20.760 --> 01:15:21.308 align:middle line:90%
+Yeah?
+
+01:15:21.308 --> 01:15:23.350 align:middle line:84%
+AUDIENCE: There's a question
+of projection theory
+
+01:15:23.350 --> 01:15:27.540 align:middle line:84%
+where each unipotent element
+induces a different projection.
+
+01:15:27.540 --> 01:15:31.710 align:middle line:84%
+Is that set of projections dense
+in the whole-space projections,
+
+01:15:31.710 --> 01:15:34.020 align:middle line:90%
+or is it some non-dense subset?
+
+01:15:34.020 --> 01:15:36.000 align:middle line:84%
+LAWRENCE GUTH: No, it's
+some non-dense subset.
+
+01:15:36.000 --> 01:15:39.180 align:middle line:84%
+Yeah, so here, t is
+going from 0 to 1.
+
+01:15:39.180 --> 01:15:42.650 align:middle line:84%
+For each t, we have more
+or less a projection.
+
+01:15:42.650 --> 01:15:50.210 align:middle line:84%
+And so we have a smooth curve
+of length 1 in the space of--
+
+01:15:50.210 --> 01:15:54.260 align:middle line:84%
+or not exactly projections,
+but the space of linear maps.
+
+01:15:54.260 --> 01:15:57.500 align:middle line:84%
+And so it is not, in any
+sense, becoming dense
+
+01:15:57.500 --> 01:15:58.680 align:middle line:90%
+in the space of linear maps.
+
+01:15:58.680 --> 01:16:00.660 align:middle line:84%
+It's really just a
+few special ones.
+
+01:16:00.660 --> 01:16:05.810 align:middle line:84%
+And this is a reasonable
+model to picture in your mind.
+
+01:16:05.810 --> 01:16:08.150 align:middle line:84%
+That sphere is like
+all of the projections
+
+01:16:08.150 --> 01:16:11.060 align:middle line:84%
+or all of the linear maps,
+and that orange circle
+
+01:16:11.060 --> 01:16:16.010 align:middle line:84%
+is the ones that come up
+in homogeneous dynamics.
+
+01:16:16.010 --> 01:16:17.240 align:middle line:90%
+Yeah.
+
+01:16:17.240 --> 01:16:17.970 align:middle line:90%
+OK.
+
+01:16:17.970 --> 01:16:21.410 align:middle line:84%
+So in the last two minutes,
+I will write down a theorem
+
+01:16:21.410 --> 01:16:22.180 align:middle line:90%
+that they proved.
+
+01:16:22.180 --> 01:16:43.670 align:middle line:90%
+
+
+01:16:43.670 --> 01:16:46.520 align:middle line:90%
+At least approximately.
+
+01:16:46.520 --> 01:16:53.090 align:middle line:84%
+OK, so this is Lindenstrauss,
+Mohammadi, Wang, and Yang.
+
+01:16:53.090 --> 01:16:56.100 align:middle line:90%
+So setup is on that board.
+
+01:16:56.100 --> 01:17:08.060 align:middle line:84%
+So if G is SL 3, R, gamma
+is SL 3, Z, U as above.
+
+01:17:08.060 --> 01:17:08.760 align:middle line:90%
+OK.
+
+01:17:08.760 --> 01:17:17.000 align:middle line:84%
+We take X and we
+suppose U dot X is not
+
+01:17:17.000 --> 01:17:21.523 align:middle line:84%
+close to a proper
+homogeneous subspace.
+
+01:17:21.523 --> 01:17:26.210 align:middle line:90%
+
+
+01:17:26.210 --> 01:17:30.070 align:middle line:84%
+So this is some analog of
+being not close to periodic.
+
+01:17:30.070 --> 01:17:30.940 align:middle line:90%
+OK.
+
+01:17:30.940 --> 01:17:39.340 align:middle line:84%
+Then the conclusion
+is that U 0, T of X
+
+01:17:39.340 --> 01:17:47.420 align:middle line:84%
+is delta dense in the
+homogeneous space,
+
+01:17:47.420 --> 01:17:49.553 align:middle line:84%
+but so the homogeneous
+space has infinite diameter,
+
+01:17:49.553 --> 01:17:50.720 align:middle line:90%
+so this can't quite be true.
+
+01:17:50.720 --> 01:17:53.930 align:middle line:84%
+But in the-- if you
+cut off the cusp--
+
+01:17:53.930 --> 01:17:58.840 align:middle line:84%
+so you cut off the cusp, so you
+have a compact piece of this.
+
+01:17:58.840 --> 01:18:03.280 align:middle line:90%
+And delta is T to the minus c.
+
+01:18:03.280 --> 01:18:05.610 align:middle line:84%
+c greater than 0 is
+a universal constant.
+
+01:18:05.610 --> 01:18:10.690 align:middle line:90%
+
+
+01:18:10.690 --> 01:18:11.530 align:middle line:90%
+OK.
+
+01:18:11.530 --> 01:18:14.920 align:middle line:84%
+And a key step in
+the proof is to first
+
+01:18:14.920 --> 01:18:18.220 align:middle line:84%
+show an estimate of the kind
+that we were talking about,
+
+01:18:18.220 --> 01:18:22.740 align:middle line:84%
+that the delta-covering number
+of this orbit is pretty big.
+
+01:18:22.740 --> 01:18:28.450 align:middle line:90%
+
+
+01:18:28.450 --> 01:18:31.210 align:middle line:84%
+So the biggest it could possibly
+be would be delta to the minus
+
+01:18:31.210 --> 01:18:32.627 align:middle line:84%
+the dimension of
+the group, that's
+
+01:18:32.627 --> 01:18:34.550 align:middle line:84%
+the delta-covering number
+of the whole space.
+
+01:18:34.550 --> 01:18:36.770 align:middle line:90%
+And it's quite close to that.
+
+01:18:36.770 --> 01:18:37.910 align:middle line:90%
+That's a key step.
+
+01:18:37.910 --> 01:18:40.300 align:middle line:84%
+It's an analogous to the
+proof that we sketched
+
+01:18:40.300 --> 01:18:43.210 align:middle line:90%
+for the simpler SL 2, R case.
+
+01:18:43.210 --> 01:18:45.140 align:middle line:84%
+And there is an
+additional argument,
+
+01:18:45.140 --> 01:18:49.450 align:middle line:84%
+but it seems like the most novel
+and important part of this paper
+
+01:18:49.450 --> 01:18:54.670 align:middle line:84%
+was using projection theory,
+using those kind of theorems,
+
+01:18:54.670 --> 01:18:59.710 align:middle line:84%
+plus some other smart stuff
+to show that the orbit covers
+
+01:18:59.710 --> 01:19:00.465 align:middle line:90%
+a lot of ground.
+
+01:19:00.465 --> 01:19:04.780 align:middle line:90%
+
+
+01:19:04.780 --> 01:19:06.550 align:middle line:90%
+OK.
+
+01:19:06.550 --> 01:19:09.208 align:middle line:84%
+OK, so homogeneous
+dynamics is a big subject,
+
+01:19:09.208 --> 01:19:11.500 align:middle line:84%
+and there are different
+techniques, but in this course,
+
+01:19:11.500 --> 01:19:13.930 align:middle line:84%
+I wanted to show that there's
+a connection to projection
+
+01:19:13.930 --> 01:19:16.120 align:middle line:84%
+theory, which is one
+set of techniques,
+
+01:19:16.120 --> 01:19:19.860 align:middle line:84%
+and which helps to say
+some interesting things.
+
+01:19:19.860 --> 01:19:27.000 align:middle line:90%

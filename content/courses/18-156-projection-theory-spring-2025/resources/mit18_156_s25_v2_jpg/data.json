@@ -1,0 +1,33 @@
+{
+  "body": "",
+  "content": "",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/18-156-projection-theory-spring-2025/mit18_156_s25_v2.jpg",
+  "file_size": 181887,
+  "file_type": "image/jpeg",
+  "image_metadata": {
+    "caption": "Proof sketch for the projection estimate (from Lecture 21). (Image courtesy of Jacob Reznikov. Used with permission.)",
+    "credit": "",
+    "image-alt": "A diagram showing projections from three different geometric shapes."
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Image",
+  "title": "mit18_156_s25_v2.jpg",
+  "uid": "1623f898-4f47-4699-a24d-38e72529769e",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_thumbnail_file": "",
+    "video_transcript_file": ""
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

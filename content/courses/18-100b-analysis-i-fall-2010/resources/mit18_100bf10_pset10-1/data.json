@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problems about the sequence of functions on R, Riemann-integrable and equicontinuous sequence of functions.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problems about the sequence of functions on R, Riemann-integrable and equicontinuous sequence of functions.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/ea88512d08b76fd1cf6577362d1b2e94_MIT18_100BF10_pset10.pdf",
+  "file_size": 122915,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 10 (2006)",
+  "uid": "ea88512d-08b7-6fd1-cf65-77362d1b2e94",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

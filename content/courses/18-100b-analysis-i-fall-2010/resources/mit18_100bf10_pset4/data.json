@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains 5 problems about connected sets, convergence and Rudin.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains 5 problems about connected sets, convergence and Rudin.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/717bf4bf8377e0bf712c3e288d4f7ceb_MIT18_100BF10_pset4.pdf",
+  "file_size": 47031,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Assignments",
+  "parent_type": "CourseSection",
+  "parent_uid": "6ac57f27-80f0-7137-088d-250d37c6a15a",
+  "resourcetype": "Document",
+  "title": "Problem Set 4",
+  "uid": "717bf4bf-8377-e0bf-712c-3e288d4f7ceb",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

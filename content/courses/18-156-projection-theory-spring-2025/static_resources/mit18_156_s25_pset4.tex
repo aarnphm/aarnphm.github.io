@@ -1,0 +1,127 @@
+\documentclass{amsart}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{cor}{Corollary}
+
+\newtheorem{prop}[theorem]{Proposition}
+
+\DeclareMathOperator{\Vol}{\textrm{Vol}}
+
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\del}{\partial}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\Gr}{\textrm{Gr}}
+\newcommand{\Avg}{\textrm{Avg}}
+
+\begin{document}
+
+{\bf  18.156, Projection theory,  problem set 4}
+
+\vskip10pt
+
+In this problem set,  we digest the large sieve and its applications.   First we recall the large sieve from class (Lecture 5).  Recall that $[N] = \{1, ..., N\}$.   If $f: [N] \rightarrow \CC$,  and $q \in \NN$,  we define $\pi_q f: \ZZ_q \rightarrow \CC$ by
+
+$$ \pi_q f(a) = \sum_{n \in a} f(n). $$
+
+We let $P_M:= \{ p \textrm{ prime } | p \sim M \}$.  
+
+\begin{theorem} \label{largesieve} (Linnik large sieve) If $f: [N] \rightarrow \CC$,  and $M \le N^{1/2}$,  then
+
+$$ \sum_{p \in P_M} \| (\pi_p f)_h \|_{L^2}^2 \le C \frac{N}{M} \| f \|_{L^2}^2. $$
+
+\end{theorem}
+
+1.    In order to digest the proof of Theorem \ref{largesieve},  sketch a proof for the following variation when $M > N^{1/2}$.   This variation comes up in applications, like in the Bombieri-Vinogradov theorem.
+
+
+\begin{theorem} \label{largesieve2} (Linnik large sieve) If $f: [N] \rightarrow \CC$,  and $M > N^{1/2}$,  then
+
+$$ \sum_{p \in P_M} \| (\pi_p f)_h \|_{L^2}^2 \le C  M \| f \|_{L^2}^2. $$
+
+\end{theorem}
+
+In your proof sketch,  describe the Fourier analysis technical details in the level of detail that you find most helpful.   Your proof sketch should illustrate why we have a factor $M$ on the right hand side in Theorem \ref{largesieve2} as opposed to a factor of $N/M$ in Theorem \ref{largesieve}.
+
+\vskip10pt
+
+Linnik developed the large sieve to prove an estimate related to the distribution of quadratic residues.  Our second goal for the problem set is to prove Linnik's result.
+
+\vskip10pt
+
+{\bf Background on quadratic residues.}  Suppose that $p$ is a prime.   Recall that a number $a \in \ZZ_p$ is called a quadratic residue if there is a solution to the equation $b^2 = a$ in $\ZZ_p$.    (Here we count 0 as a quadratic residue,  although sometimes one restricts attention to non-zero quadratic residues.)   There are $\frac{p+1}{2}$ quadratic residues in $\ZZ_p$ and $\frac{p-1}{2}$ quadratic non-residues.   Linnik wanted to understand how the quadratic residues are distributed in $\ZZ_p$.   It appears that quadratic residues are distributed fairly randomly.   
+
+Suppose we took a large prime $p$ and colored the quadratic residues in $\ZZ_p$.   Then for comparison suppose we randomly colored $\ZZ_p$ in two colors.   These two colorings would look pretty similar.   In the random coloring,  the longest string of consecutive numbers that are the same color would have length around $\log p$.   Something like this appears to be true for quadratic residues as well. 
+
+Define $q(p)$ to be the smallest $a$ so that $a$ is a quadratic non-residue in $\ZZ_p$.   (The smallest quadratic residue is always 0.)  If $q(p)$ is large, then it means that there are many quadratic non-residues in a row.    Experiments suggest that $q(p)$ is always $\lesssim \log p$ or so.   The general Riemann hypothesis implies that $q(p) \lesssim (\log p)^2$.   However,  the best proven bound is much worse,  roughly $q(p) \lesssim p^{0.15...}$.
+
+Linnik proved that,  while there may be a few primes with $q(p)$ very large,  these primes are quite rare.   Let us make a little notation.  We define
+
+\begin{equation} \label{defP}
+P_{N^{1/2},L} := \{ p \textrm{ prime} | p \sim N^{1/2},  q(p) > L \}
+\end{equation}
+
+Then we define
+
+\begin{equation} \label{defX}
+X_{N,L} := \{ n \in \NN | n \le N, \textrm{ each prime factor of $n$ is at most } L \}
+\end{equation}
+
+\begin{theorem} \label{lqnr} (Linnik) There is a universal constant $C > 0$ so that
+$$|P_{N^{1/2},L}| \le C \frac{N}{X_{N,L}}$$
+\end{theorem}
+
+Number theorists have a good sense of $|X_{N,L}|$.  For instance,  for any $\epsilon > 0$,  as $N \rightarrow \infty$,  $|X_{N, N^\epsilon}| \sim C(\epsilon) N$,  for some $C(\epsilon) > 0$.   So Linnik's theorem implies that $|P_{N^{1/2}, N^\epsilon}| \le C(\epsilon)$ uniformly in $N$.
+
+
+In the rest of the problem set,  you will prove Theorem \ref{lqnr}.
+
+\vskip10pt
+
+2.  Prove that if $p \in P_{N^{1/2}, L}$,  then $| \pi_p(X_{N,L})| \le \frac{p+1}{2}$.
+
+\vskip10pt
+
+3.  Suppose that $X \subset [N]$.   Suppose that for some $p$,  $| \pi_p(X) | \le (0.99) p$.   Prove that there is a constant $c > 0$ so that 
+
+$$ \| ( \pi_p 1_X)_h \|_{L^2}^2 \ge c \frac{|X|^2}{p}. $$
+
+\vskip10pt
+
+4.  Prove Theorem \ref{lqnr} using the large sieve and problems 1,2.
+
+\vskip50pt
+
+{\bf Optional exploration.} To pursue this direction,  it would be helpful to have a little background in restriction theory in Fourier analysis,  but anyone can understand the problem.
+
+In class,  we used the large sieve to prove the following estimate.
+
+\begin{theorem} \label{proj1} If $X \subset [N]$ and $| \pi_p(X) | \le (0.99) p$ for every $p \in P_{N^{1/2}}$,  then $|X| \lessapprox N^{1/2}$
+\end{theorem}
+
+This theorem is essentially sharp when $X$ is the set of squares. 
+
+We could explore what happens if we know $| \pi_p(X) \le (0.99) p$ for every $p \in P_{N^\alpha}$ for some other exponent $\alpha$,  such as $\alpha = 1/4$.
+
+Applying the large sieve as in Theorem \ref{proj1} shows that, if $|\pi_p(X)| \le (0.99)p$ for every $p \in P_{N^{1/4}}$, then $|X| \lessapprox N^{3/4}$.   I don't know any example where this is roughly sharp,  and I suspect there is no such example.   Examining the proof of the large sieve,  we see that if the bound is almost tight,  then $\int_0^1 | \hat 1_X(\xi)|^2 d \xi$ must be dominated by $\xi$ very close to fractions of the form $\frac{a}{p}$,  $p \in P_{N^{1/4}}$,  $a \not= 0$.   The region close to these fractions has a very small measure,  around $N^{-1/2}$,  so it is striking for this region to contribute a large fraction of the integral. 
+
+There is a vague principle in Fourier analysis called the Heisenberg uncertainty principle,  which says that it is difficult for both $f$ and $\hat f$ to concentrate in a small region.   (The uncertainty principle can be made precise in various ways.)   Here,  the set $X \subset [N]$ is a small fraction of $[N]$ (because we already know $|X| \lessapprox N^{3/4}$).   And if the large sieve argument is near tight,  then $\hat 1_X$ concentrates in a small region near to the fractions $a/p$,  with $p \in P_{N^{1/4}}$.   I suspect that there is no such set $X$,  and one might be able to prove it using ideas related to the Heisenberg uncertainty principle or to restriction theory.
+
+
+
+\end{document}
+
+
+
+
+

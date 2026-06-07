@@ -1,0 +1,49 @@
+{
+  "audience": [],
+  "content": "<p>This resource contains problems about natural numbers, consider the function f: and an odd number of ancestors.</p>\n",
+  "content_type": "resource",
+  "description": "This resource contains problems about natural numbers, consider the function f: and an odd number of ancestors.",
+  "draft": false,
+  "file": "/courses/18-100b-analysis-i-fall-2010/526600b661d0c63a195b71798449711b_MIT18_100BF10_pset2.pdf",
+  "file_size": 107548,
+  "file_type": "application/pdf",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Problem Sets"
+  ],
+  "level": [],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "ocw_type": "OCWFile",
+  "parent_title": "Study Materials",
+  "parent_type": "CourseSection",
+  "parent_uid": "3ad89456-ba4e-f1be-74a0-7c7912fb0866",
+  "resourcetype": "Document",
+  "title": "Problem Set 2 (2006)",
+  "uid": "526600b6-61d0-c63a-195b-71798449711b",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "",
+    "video_captions_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    },
+    "video_thumbnail_file": "",
+    "video_transcript_file": "",
+    "video_transcript_resource": {
+      "content": "",
+      "website": "18-100b-analysis-i-fall-2010"
+    }
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "",
+    "youtube_description": "",
+    "youtube_id": ""
+  }
+}

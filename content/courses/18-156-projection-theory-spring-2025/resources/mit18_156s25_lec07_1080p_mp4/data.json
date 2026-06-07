@@ -1,0 +1,35 @@
+{
+  "body": "",
+  "content": "<p>We discuss one of the main applications of the large sieve in number theory: the Bombieri-Vinogradov theorem about the distribution of prime numbers modulo q for different q.</p>\n",
+  "content_type": "resource",
+  "draft": false,
+  "file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_360p_16_9.mp4",
+  "file_size": 165142831,
+  "file_type": "video/mp4",
+  "image_metadata": {
+    "caption": "",
+    "credit": "",
+    "image-alt": ""
+  },
+  "iscjklanguage": false,
+  "learning_resource_types": [
+    "Lecture Videos"
+  ],
+  "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "resourcetype": "Video",
+  "title": "Lecture 07: Applications of the Large Sieve to Number Theory",
+  "uid": "0a97580f-5f22-48e6-8d15-14dcd79d6eee",
+  "video_files": {
+    "archive_url": "",
+    "video_captions_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_captions.vtt",
+    "video_thumbnail_file": "https://img.youtube.com/vi/-UJgxLaFzfM/default.jpg",
+    "video_transcript_file": "/courses/18-156-projection-theory-spring-2025/mit18_156s25_lec07_1080p_transcript.pdf"
+  },
+  "video_metadata": {
+    "source": "",
+    "video_speakers": "",
+    "video_tags": "Large sieve, projection theory, Bombieri-Vinogradov",
+    "youtube_description": "MIT 18.156 Projection Theory, Spring 2025\nInstructor: Lawrence D Guth\nView the complete course: https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025\nYouTube Playlist: https://www.youtube.com/playlist?list=PLUl4u3cNGP62K9_7Pg26ytrAOXwXFpN43\n\nWe discuss one of the main applications of the large sieve in number theory: the Bombieri-Vinogradov theorem about the distribution of prime numbers modulo q for different q.\n\nLicense: Creative Commons BY-NC-SA\nMore information at https://ocw.mit.edu/terms\nMore courses at https://ocw.mit.edu\nSupport OCW at http://ow.ly/a1If50zVRlQ\n\nWe encourage constructive comments and discussion on OCW’s YouTube and other social media channels. Personal attacks, hate speech, trolling, and inappropriate comments are not allowed and may be removed. More details at https://ocw.mit.edu/comments.",
+    "youtube_id": "-UJgxLaFzfM"
+  }
+}
