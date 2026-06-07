@@ -81,6 +81,7 @@ const ArenaModalMainContent = ({
         data-pdf-src={arenaPdfViewerSource(block.url)}
         data-pdf-title={arenaPdfFilenameFromUrl(block.url)}
         data-pdf-fit="page"
+        tabIndex={0}
       >
         <span class="pdf-embed-loading">Loading PDF</span>
       </div>

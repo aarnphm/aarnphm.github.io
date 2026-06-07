@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: bridge from point-set topology to algebraic topology (homology/homotopy) ahead of mit 18.906 and beyond.
 id: algebraic bridge
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 19:42:34 GMT-04:00
 seealso:
   - '[[thoughts/topology/fundamental group|fundamental group]]'
   - '[[thoughts/topology/simply connected|simple connectivity]]'
@@ -211,8 +211,6 @@ primary:
 
 - hatcher "algebraic topology" ch 2 (homology)
 - munkres "elements of algebraic topology"
-
-see [[thoughts/topology/resources#phase 6: homology deep dive (year 1, spring-summer)|homology resources]] for complete list.
 
 ## exercises
 

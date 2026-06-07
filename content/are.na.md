@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-06 13:19:39 GMT-04:00
+modified: 2026-06-06 20:02:55 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,11 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/grantstenger/status/2060812385342963713 -- local minima in strict training regime
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [ml]
+    - seealso: https://www.grantstenger.com/local-minima
 - https://x.com/deepfates/status/2063016403381424458 -- Bloomer poasting
   - [meta]:
     - date: 06/05/2026
@@ -6099,6 +6104,10 @@ title: are.na
 
 ## life is literature
 
+- https://borretti.me/article/effective-spaced-repetition -- Effective spaced repetition
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [pedagogy]
 - https://www.sherryning.com/p/to-be-alive-is-to-live-wanting-something -- To be alive is to live wanting something [**]
   - [meta]:
     - date: 06/04/2026
@@ -7175,7 +7184,7 @@ title: are.na
   - [meta]:
     - date: 06/06/2026
     - tags: [registry]
-- https://notes.andymatuschak.org/z6sX7ZcYdPiya3SzQ5segaq?stackedNotes=z8kPkXQZ3wVR5DfJ79uhnuz&stackedNotes=zR5H2t4iYJECveXmu1DnYvS&stackedNotes=z3SGU4D3T6unE1YRJgSe1N7&stackedNotes=z2pzGHXwct867CYxcBwUABg -- Andy's implementation of a personal mnemonic medium
+- https://notes.andymatuschak.org/z6sX7ZcYdPiya3SzQ5segaq?stackedNotes=z8kPkXQZ3wVR5DfJ79uhnuz&stackedNotes=zR5H2t4iYJECveXmu1DnYvS&stackedNotes=z3SGU4D3T6unE1YRJgSe1N7&stackedNotes=z2pzGHXwct867CYxcBwUABg -- Andy's implementation of a personal mnemonic medium [**]
   - [meta]:
     - date: 06/05/2026
     - tags: [spaced repetition]
@@ -9094,6 +9103,478 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/prosekit/prosekit -- ProseKit
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [editor, framework]
+    - later: true
+- https://github.com/teorth/erdosproblems/wiki/AI-contributions-to-Erd%C5%91s-problems -- AI contributions to Erdős problems
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [math, ai]
+    - later: true
+- https://github.com/facebook/lexical/blob/main/AGENTS.md -- Lexical agent guide
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, editor]
+    - later: true
+- https://github.com/modular/max-llm-book -- Build an LLM from scratch with MAX
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [max, llm]
+    - later: true
+- https://github.com/modular/stack-pr -- stack-pr
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [github, workflow]
+    - later: true
+- https://github.com/anthropics/original_performance_takehome -- Anthropic original performance take-home
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [performance, interview]
+    - later: true
+- https://github.com/NVIDIA/TensorRT-LLM/tree/main/examples/models/core/deepseek_v3#b200-fp4-max-throughput-config -- DeepSeek-V3 B200 FP4 throughput config in TensorRT-LLM
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [inference, blackwell]
+    - later: true
+- https://github.com/perplexityai/pplx-garden -- Perplexity inference garden
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [inference, systems]
+    - later: true
+- https://github.com/deepseek-ai/DeepEP/blob/main/third-party/README.md -- DeepEP third-party dependencies
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [moe, distributed]
+    - later: true
+- https://github.com/NVIDIA/gdrcopy?tab=readme-ov-file#build-and-installation -- GDRCopy build and installation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [gpudirect, rdma]
+    - later: true
+- https://github.com/HazyResearch/cartridges/blob/main/cartridges/cache.py -- Cartridges cache implementation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, long-context]
+    - later: true
+- https://github.com/udecode/plate -- Plate editor
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [editor, react]
+    - later: true
+- https://github.com/20urc3/Astra -- Astra fuzzer
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [fuzzing, rust]
+    - later: true
+- https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/notebooks/elementwise_add.ipynb -- CuTeDSL elementwise add notebook
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [cute, kernel]
+    - later: true
+- https://github.com/cannoneyed/isometric-nyc/blob/main/inference/server.py -- isometric.nyc inference server
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [generative-art, inference]
+    - later: true
+- https://gist.github.com/grahamhelton/f5c8ce265161990b0847ac05a74e466a -- Detection script for nodes/proxy
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [security, script]
+    - later: true
+- https://github.com/deepseek-ai/DeepSeek-OCR-2/blob/main/DeepSeek_OCR2_paper.pdf -- DeepSeek-OCR 2 paper
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [ocr, vlm]
+    - later: true
+- https://github.com/LMCache/LMCache -- LMCache
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/tobi/qmd -- qmd
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [search, notes]
+    - later: true
+- https://github.com/M4THYOU/TokenDagger/blob/main/tokendagger/wrapper.py -- TokenDagger wrapper
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [tokenizer, performance]
+    - later: true
+- https://github.com/sgl-project/sglang/blob/e9d727cb9218f30a7352f2d17614d74ec0577062/python/sglang/bench_serving.py -- SGLang serving benchmark
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [benchmark, inference]
+    - later: true
+- https://github.com/sgl-project/sglang/blob/main/benchmark/mtbench/bench_sglang.py -- SGLang MT-Bench benchmark
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [benchmark, evaluation]
+    - later: true
+- https://github.com/rlplays/PufferLib?tab=readme-ov-file#multithreaded-libtorch-fork-of-pufferlib -- PufferLib multithreaded libtorch fork
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [rl, performance]
+    - later: true
+- https://github.com/deepseek-ai/DeepSeek-V3/tree/main -- DeepSeek-V3
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [models, moe]
+    - later: true
+- https://github.com/modular/mojo-gpu-puzzles/tree/main/book -- Mojo GPU puzzles book
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [mojo, gpu]
+    - later: true
+- https://github.com/excalidraw/excalidraw-mcp -- Excalidraw MCP
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [mcp, drawing]
+    - later: true
+- https://github.com/modular/modular/blob/main/max/CONTRIBUTING.md -- MAX contributor guide
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [max, contributing]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/fault_tolerance/graceful_shutdown.md -- Dynamo graceful shutdown
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [inference, fault-tolerance]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_architecture.md -- Dynamo KVBM architecture
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_components.md -- Dynamo KVBM components
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_design_deepdive.md -- Dynamo KVBM design deep dive
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_integrations.md -- Dynamo KVBM integrations
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_intro.rst -- Dynamo KVBM intro
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_motivation.md -- Dynamo KVBM motivation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/vllm-setup.md -- Dynamo KVBM vLLM setup
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, vllm]
+    - later: true
+- https://gist.github.com/gcr/47a8f2baaa5810087615b4a858619fe5 -- undoing-the-pain.org.md
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [notes, psychology]
+    - later: true
+- https://github.com/NVIDIA/cutlass/blob/main/examples/python/CuTeDSL/blackwell/grouped_blockscaled_gemm.py -- CuTeDSL Blackwell grouped blockscaled GEMM
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [cute, blackwell]
+    - later: true
+- https://github.com/AnswerDotAI/mojokernel/blob/main/mojokernel/engines/server_engine.py -- mojokernel server engine
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [mojo, jupyter]
+    - later: true
+- https://github.com/LMCache/LMCache/blob/dev/lmcache/integration/vllm/vllm_v1_adapter.py -- LMCache vLLM V1 adapter
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, vllm]
+    - later: true
+- https://github.com/can1357/oh-my-pi/tree/main/packages/react-edit-benchmark -- react-edit-benchmark in oh-my-pi
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, benchmark]
+    - later: true
+- https://github.com/jessfraz/dotfiles/commit/8bdbf7f63d9f53d807995b3c41b87b935fb8e7ec -- Jess Frazelle dotfiles commit
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [dotfiles, linux]
+    - later: true
+- https://github.com/orozery/playground/tree/kv-offloading-blog-dec-2025/kvcache/gpu_cpu_benchmark -- GPU/CPU KV-cache benchmark
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kv, benchmark]
+    - later: true
+- https://github.com/EleutherAI/lm-evaluation-harness/blob/98c8a2423b5b2bfdc946585c5f75dd420c57a87b/lm_eval/models/api_models.py -- lm-evaluation-harness API models
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [evaluation, llm]
+    - later: true
+- https://github.com/bentoml/modularcloud/blob/main/dashboard/src/UiApp.tsx -- Modular Cloud dashboard UI
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [frontend, dashboard]
+    - later: true
+- https://github.com/NVIDIA/gdrcopy/issues/315 -- GDR D2H much slower than H2D and cudaMemcpy
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [gpudirect, performance]
+    - later: true
+- https://github.com/eudoxia0/flashcards -- eudoxia0 flashcards
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [flashcards, spaced-repetition]
+    - later: true
+- https://github.com/badlogic/pi-mono/ -- pi-mono
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, cli]
+    - later: true
+- https://github.com/facebookexperimental/triton -- facebookexperimental/triton
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [triton, compiler]
+    - later: true
+- https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95 -- Karpathy gist
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [notes, ai]
+    - later: true
+- https://github.com/Dao-AILab/quack/blob/main/media/2025-07-10-membound-sol.md -- mem-bound solution in QuACK
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [kernel, memory]
+    - later: true
+
+- https://github.com/lucidrains/hyper-connections -- Hyper Connections
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://github.com/tokenbender/mHC-manifold-constrained-hyper-connections -- mHC manifold-constrained hyper-connections
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [architecture, residuals]
+    - later: true
+    - seealso: https://arxiv.org/abs/2512.24880
+- https://gist.github.com/mikasenghaas/f3663a1f26acbb95cc880db12e9547ea -- Dot Product Benchmark (NVIDIA A100-PCIE-40GB)
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [benchmark, gpu]
+    - later: true
+- https://github.com/tokenbender/mHC-manifold-constrained-hyper-connections/tree/feat/vres-mhc-combined -- vres-mhc-combined
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://github.com/NVlabs/alpamayo -- NVlabs/alpamayo
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [models]
+    - later: true
+- https://github.com/fla-org/flash-linear-attention/blob/main/fla/layers/delta_net.py -- DeltaNet layer in Flash Linear Attention
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [architecture, attention]
+    - later: true
+- https://github.com/tile-ai/tilelang -- TileLang
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [gpu, kernel]
+    - later: true
+- https://github.com/NVIDIA/cutlass/blob/v3.5.1/media/docs/cute/01_layout.md -- CuTe layout documentation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [gpu, kernel]
+    - later: true
+- https://github.com/python/cpython/blob/51a56a3a7bd8cf05ceda65e843fb7bae40509799/Python/ceval_gil.c#L88 -- CPython GIL eval loop
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [python, concurrency]
+    - later: true
+- https://github.com/AI-Hypercomputer/JetStream -- JetStream
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [inference, tpu]
+    - later: true
+- https://github.com/python/cpython/blob/main/Objects/genobject.c -- CPython generator object implementation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [python, runtime]
+    - later: true
+- https://github.com/socketteer/Claude-Conversation-Exporter -- Claude Conversation Exporter
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [claude, tools]
+    - later: true
+- https://github.com/deepseek-ai/DeepSeek-V3.2-Exp/blob/main/DeepSeek_V3_2.pdf -- DeepSeek V3.2-Exp technical report
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [models, papers]
+    - later: true
+- https://github.com/repomirrorhq/repomirror/blob/main/repomirror.md -- RepoMirror
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [repository, agents]
+    - later: true
+- https://github.com/jasmineee-li/zap-writing-plugin -- Zap Writing Plugin
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [writing, obsidian]
+    - later: true
+- https://github.com/aarnphm/aarnphm.github.io/blob/main/content/influence.md -- influence.md
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [garden, writing]
+    - later: true
+- https://github.com/Piebald-AI/claude-code-system-prompts -- Claude Code system prompts
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, prompts]
+    - later: true
+- https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum -- Ralph Wiggum plugin for Claude Code
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, orchestration]
+    - later: true
+- https://github.com/ekzhang/jax-js/blob/main/packages/loaders/src/tokenizers.ts -- tokenizers.ts in jax-js
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [tokenizer, webgpu]
+    - later: true
+- https://github.com/anthropics/claude-code/blob/main/plugins/ralph-wiggum/README.md -- Ralph Wiggum plugin README
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, orchestration]
+    - later: true
+- https://github.com/mikeyobrien/ralph-orchestrator/blob/main/PROMPT.md -- Ralph orchestrator prompt
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [agents, orchestration]
+    - later: true
+- https://github.com/drizzle-team/drizzle-orm/discussions/1388 -- Drizzle ORM discussion 1388
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [database, orm]
+    - later: true
+- https://github.com/rough-stuff/rough-notation/blob/main/README.md -- Rough Notation README
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [annotation, design]
+    - later: true
+- https://github.com/rough-stuff/rough-notation/blob/master/src/rough-notation.ts -- rough-notation.ts
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [annotation, design]
+    - later: true
+- https://github.com/ceselder/dreaming-vectors -- dreaming vectors
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [interpretability, steering]
+    - later: true
+- https://github.com/deepseek-ai/Engram -- Engram
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [memory, sparsity]
+    - later: true
+- https://github.com/robert-mcdermott/ai-knowledge-graph -- AI Knowledge Graph
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [knowledge graph, llm]
+    - later: true
+- https://github.com/pygma-tau/reverse-rss-reader -- reverse-rss-reader
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [rss, reader]
+    - later: true
+- https://github.com/patrick-toulme/justabyte/blob/main/tpu_pallas_post/pallas_reference.py -- Pallas reference implementation
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [tpu, pallas]
+    - later: true
+- https://github.com/mixmark-io/turndown -- Turndown
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [markdown, parser]
+    - later: true
+- https://github.com/trailofbits/skills/blob/main/plugins/culture-index/skills/interpreting-culture-index/SKILL.md -- Culture Index skill
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [skills, agents]
+    - later: true
+- https://github.com/NVIDIA/TensorRT-LLM/blob/main/docs/source/blogs/tech_blog/blog2_DeepSeek_R1_MTP_Implementation_and_Optimization.md -- DeepSeek-R1 MTP in TensorRT-LLM
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [inference, optimization]
+    - later: true
+- https://github.com/deepseek-ai/DeepEP/issues/101 -- Why not DeepSeek-V3 choose EP128*PP16 during pretraining
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [moe, distributed]
+    - later: true
+- https://github.com/deepseek-ai/DeepEP -- DeepEP
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [moe, distributed]
+    - later: true
+- https://github.com/uccl-project/uccl/tree/main/ep -- UCCL expert parallelism
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [moe, distributed]
+    - later: true
+- https://github.com/antgroup/DeepXTrace -- DeepXTrace
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [profiling, deepep]
+    - later: true
+- https://github.com/anthropics/skills -- Anthropic Skills
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [skills, agents]
+    - later: true
+- https://github.com/ROCm/mori -- MORI
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [rdma, rocm]
+    - later: true
+- https://github.com/upstash/context7 -- Context7
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [mcp, documentation]
+    - later: true
+- https://github.com/vosen/ZLUDA -- ZLUDA
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [cuda, rocm]
+    - later: true
+- https://github.com/cassidoo/blahg -- blahg
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [blog, astro]
+    - later: true
+- https://github.com/saghen/frizbee -- frizbee
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [fuzzy matching, simd]
+    - later: true
+- https://github.com/PrimeIntellect-ai/prime-rl -- prime-rl
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [rl, training]
+    - later: true
+- https://github.com/trailofbits/skills -- Trail of Bits skills
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [skills, security]
+    - later: true
 - https://github.com/eudoxia0/hashcards -- Hashcards
   - [meta]:
     - date: 06/05/2026

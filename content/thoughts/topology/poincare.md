@@ -2,7 +2,7 @@
 date: '2025-11-01'
 description: point-set topology to understanding perelman's proof of the poincaré conjecture.
 id: poincare
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-06 19:42:22 GMT-04:00
 tags:
   - math
   - math/topology
@@ -343,8 +343,6 @@ _milestone_: comprehend complete proof, could present key ideas to others, under
 _internalization milestone_: could teach the proof, write exposition, understand open questions.
 
 ## resources by phase
-
-see [[thoughts/topology/resources|resources]] for detailed bibliography.
 
 _current (phase 0-5)_:
 

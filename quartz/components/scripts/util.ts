@@ -415,6 +415,7 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   if (!asidePanel || !pageHeader) console.error('asidePanel must not be null')
 
   asidePanel.classList.add('active')
+  window.quartzPdfEmbeds?.cleanup(asidePanel)
   removeAllChildren(asidePanel)
 
   const updateSidepanelOffset = () => {
@@ -455,6 +456,7 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
   closeButton.title = 'close button'
   closeButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width=16 height=16 viewbox="0 0 24 24" fill="currentColor" stroke="currentColor"><use href="#close-button"></svg>`
   function onCloseClick() {
+    window.quartzPdfEmbeds?.cleanup(asidePanel)
     removeAllChildren(asidePanel)
     asidePanel.classList.remove('active')
     asidePanel.style.removeProperty('--sidepanel-top-offset')

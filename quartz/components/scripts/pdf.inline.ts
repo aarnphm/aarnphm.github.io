@@ -5,12 +5,16 @@ const PDF_EMBED_CLEANUP_SELECTOR = '.pdf-embed[data-pdf-status]'
 const PDF_COMMENT_ROOM_ENABLED_KEY = 'garden:comments-room-enabled:v1'
 const PDF_COMMENT_ROOM_TOGGLE_EVENT = 'commentsroomtoggle'
 const DEFAULT_OVERSCAN = 1
+const MAX_RENDER_WINDOW_RADIUS = 4
+const PDF_PRELOAD_PAGE_LIMIT = 12
+const PDF_INTERSECTION_ROOT_MARGIN = '1200px 0px'
 const MIN_SCALE = 0.25
 const MAX_SCALE = 4
 const VIEWER_PADDING_PX = 0
-const PDF_RENDER_WINDOW_RADIUS = 1
-const TEXT_RENDER_IDLE_TIMEOUT_MS = 250
-const TEXT_RENDER_SCROLL_DELAY_MS = 120
+const TEXT_RENDER_IDLE_TIMEOUT_MS = 1000
+const TEXT_RENDER_SCROLL_DELAY_MS = 600
+const PDF_PRELOAD_SCROLL_DELAY_MS = 700
+const PDF_PRUNE_SCROLL_DELAY_MS = 900
 const PDF_ICON_PREV =
   'M8.84182 3.13514C9.04327 3.32401 9.05348 3.64042 8.86462 3.84188L5.43521 7.49991L8.86462 11.1579C9.05348 11.3594 9.04327 11.6758 8.84182 11.8647C8.64036 12.0535 8.32394 12.0433 8.13508 11.8419L4.38508 7.84188C4.20477 7.64955 4.20477 7.35027 4.38508 7.15794L8.13508 3.15794C8.32394 2.95648 8.64036 2.94628 8.84182 3.13514Z'
 const PDF_ICON_NEXT =
@@ -21,6 +25,8 @@ const PDF_ICON_PLUS =
   'M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z'
 const PDF_ICON_DOWNLOAD =
   'M7.50005 1.04999C7.74858 1.04999 7.95005 1.25146 7.95005 1.49999V8.41359L10.1819 6.18179C10.3576 6.00605 10.6425 6.00605 10.8182 6.18179C10.994 6.35753 10.994 6.64245 10.8182 6.81819L7.81825 9.81819C7.64251 9.99392 7.35759 9.99392 7.18185 9.81819L4.18185 6.81819C4.00611 6.64245 4.00611 6.35753 4.18185 6.18179C4.35759 6.00605 4.64251 6.00605 4.81825 6.18179L7.05005 8.41359V1.49999C7.05005 1.25146 7.25152 1.04999 7.50005 1.04999ZM2.5 10C2.77614 10 3 10.2239 3 10.5V12C3 12.5539 3.44565 13 3.99635 13H11.0012C11.5529 13 12 12.5528 12 12V10.5C12 10.2239 12.2239 10 12.5 10C12.7761 10 13 10.2239 13 10.5V12C13 13.1041 12.1062 14 11.0012 14H3.99635C2.89019 14 2 13.103 2 12V10.5C2 10.2239 2.22386 10 2.5 10Z'
+const PDF_ICON_SUBMIT =
+  'M12 16a.5.5 0 0 1-.5-.5V8.707l-3.146 3.147a.5.5 0 0 1-.708-.708l4-4a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1-.708.708L12.5 8.707V15.5a.5.5 0 0 1-.5.5'
 
 type PdfFitMode = 'width' | 'page' | 'actual' | 'custom'
 
@@ -134,11 +140,13 @@ interface PdfState {
   shell: HTMLDivElement
   viewer: HTMLDivElement
   annotationRail: HTMLDivElement
+  annotationStack: HTMLDivElement
   controls: PdfControls
   firstViewport: PdfViewport
   slots: Map<number, PdfPageSlot>
   renderQueue: Set<number>
   textRenderQueue: Set<number>
+  preloadQueue: Set<number>
   visiblePages: Set<number>
   observer: IntersectionObserver
   resizeObserver: ResizeObserver
@@ -150,10 +158,12 @@ interface PdfState {
   currentPage: number
   draining: boolean
   textDraining: boolean
+  preloadDraining: boolean
   destroyed: boolean
   renderEpoch: number
   scrollFrame: number
   resizeFrame: number
+  pruneTimer: number
   lastScrollAt: number
   cleanup: Array<() => void>
   annotations: PdfAnnotationState
@@ -224,10 +234,24 @@ interface PdfSelection {
   anchorRect: DOMRect
 }
 
+interface PdfCommentComposerOptions {
+  className: string
+  placeholder: string
+  submitLabel: string
+  onSubmit(content: string): void | Promise<void>
+  onCancel(): void
+}
+
+interface PdfCommentComposer {
+  element: HTMLDivElement
+  focus(): void
+}
+
 let pdfJsLoad: Promise<PdfJsRuntime> | undefined
 const pdfStates = new WeakMap<HTMLElement, PdfState>()
 const pendingPdfMounts = new WeakSet<HTMLElement>()
 let selectedPdfState: PdfState | null = null
+let selectedPdfRoot: HTMLElement | null = null
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -737,24 +761,156 @@ function formatPdfCommentTime(timestamp: number): string {
   return `${days}d`
 }
 
-function selectPdfState(state: PdfState) {
-  if (selectedPdfState && selectedPdfState !== state) {
-    selectedPdfState.root.removeAttribute('data-pdf-selected')
+function selectPdfRoot(root: HTMLElement) {
+  if (selectedPdfRoot && selectedPdfRoot !== root) {
+    selectedPdfRoot.removeAttribute('data-pdf-selected')
   }
+  selectedPdfRoot = root
+  root.dataset.pdfSelected = 'true'
+  selectedPdfState = pdfStates.get(root) ?? null
+}
+
+function clearSelectedPdfRoot(root: HTMLElement) {
+  if (selectedPdfRoot !== root) return
+  selectedPdfRoot = null
+  selectedPdfState = null
+  root.removeAttribute('data-pdf-selected')
+  if (document.activeElement === root) root.blur()
+}
+
+function selectPdfState(state: PdfState) {
+  selectPdfRoot(state.root)
   selectedPdfState = state
-  state.root.dataset.pdfSelected = 'true'
+  state.lastScrollAt = Date.now()
 }
 
 function clearSelectedPdfState(state: PdfState) {
-  if (selectedPdfState !== state) return
-  selectedPdfState = null
-  state.root.removeAttribute('data-pdf-selected')
+  if (selectedPdfState !== state && selectedPdfRoot !== state.root) return
+  clearSelectedPdfRoot(state.root)
   state.scroller.blur()
 }
 
 function hidePdfComposer(state: PdfState) {
   state.annotations.composer?.remove()
   state.annotations.composer = null
+}
+
+function createPdfCommentSubmitIcon(): SVGSVGElement {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('aria-hidden', 'true')
+  svg.setAttribute('focusable', 'false')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('fill', 'none')
+  const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  pathElement.setAttribute('d', PDF_ICON_SUBMIT)
+  pathElement.setAttribute('fill', 'currentColor')
+  pathElement.setAttribute('fill-rule', 'evenodd')
+  pathElement.setAttribute('clip-rule', 'evenodd')
+  svg.append(pathElement)
+  return svg
+}
+
+function resizePdfCommentInput(input: HTMLTextAreaElement) {
+  input.style.height = 'auto'
+  input.style.height = `${Math.min(input.scrollHeight, 160)}px`
+}
+
+function createPdfCommentComposer(options: PdfCommentComposerOptions): PdfCommentComposer {
+  const element = document.createElement('div')
+  element.className = `${options.className} pdf-comment-editor-composer`
+
+  const shell = document.createElement('div')
+  shell.className = 'pdf-comment-editor-shell pdf-comment-empty'
+
+  const inputContainer = document.createElement('div')
+  inputContainer.className = 'pdf-comment-editor'
+  inputContainer.setAttribute('role', 'textbox')
+  inputContainer.setAttribute('aria-placeholder', options.placeholder)
+
+  const input = document.createElement('textarea')
+  input.className = 'pdf-comment-input'
+  input.placeholder = options.placeholder
+  input.rows = 1
+  input.spellcheck = true
+  input.setAttribute('aria-label', options.placeholder)
+
+  const placeholder = document.createElement('div')
+  placeholder.className = 'pdf-comment-placeholder'
+  placeholder.setAttribute('aria-hidden', 'true')
+  const placeholderText = document.createElement('span')
+  placeholderText.className = 'pdf-comment-placeholder-text'
+  placeholderText.textContent = options.placeholder
+  placeholder.appendChild(placeholderText)
+
+  const submit = document.createElement('button')
+  submit.type = 'button'
+  submit.className = 'pdf-comment-submit'
+  submit.ariaLabel = options.submitLabel
+  submit.disabled = true
+  submit.setAttribute('aria-disabled', 'true')
+  const icon = document.createElement('span')
+  icon.className = 'pdf-comment-submit-icon'
+  icon.appendChild(createPdfCommentSubmitIcon())
+  submit.appendChild(icon)
+
+  const sync = () => {
+    const empty = input.value.trim().length === 0
+    shell.classList.toggle('pdf-comment-empty', empty)
+    submit.disabled = empty
+    submit.setAttribute('aria-disabled', String(empty))
+    resizePdfCommentInput(input)
+  }
+
+  let submitting = false
+  const save = () => {
+    const content = input.value.trim()
+    if (submitting || !content) return
+    submitting = true
+    submit.disabled = true
+    submit.setAttribute('aria-disabled', 'true')
+    Promise.resolve(options.onSubmit(content))
+      .catch(error => {
+        console.error('failed to submit pdf comment:', error)
+      })
+      .finally(() => {
+        submitting = false
+        if (element.isConnected) sync()
+      })
+  }
+
+  element.addEventListener('click', event => event.stopPropagation())
+  input.addEventListener('input', sync)
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+      options.onCancel()
+      return
+    }
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      event.stopPropagation()
+      save()
+      return
+    }
+    event.stopPropagation()
+  })
+  submit.addEventListener('click', event => {
+    event.stopPropagation()
+    save()
+  })
+
+  inputContainer.append(input, placeholder)
+  shell.append(inputContainer, submit)
+  element.appendChild(shell)
+  sync()
+
+  return {
+    element,
+    focus() {
+      input.focus()
+    },
+  }
 }
 
 function rectIntersection(left: DOMRect, right: DOMRect): DOMRect | null {
@@ -803,44 +959,25 @@ function readPdfSelection(state: PdfState): PdfSelection | null {
 function showPdfComposer(state: PdfState, selection: PdfSelection) {
   hidePdfComposer(state)
 
-  const composer = document.createElement('div')
-  composer.className = 'pdf-comment-composer'
-  state.annotations.composer = composer
-
-  const textarea = document.createElement('textarea')
-  textarea.className = 'pdf-comment-input'
-  textarea.placeholder = 'note'
-  textarea.rows = 3
-
-  const actions = document.createElement('div')
-  actions.className = 'pdf-comment-actions'
-
-  const cancel = document.createElement('button')
-  cancel.type = 'button'
-  cancel.className = 'pdf-comment-button'
-  cancel.textContent = 'Cancel'
-  cancel.addEventListener('click', () => {
-    hidePdfComposer(state)
+  const composer = createPdfCommentComposer({
+    className: 'pdf-comment-composer',
+    placeholder: 'Commentaire (compatible markdown)',
+    submitLabel: 'Submit comment',
+    onCancel() {
+      hidePdfComposer(state)
+    },
+    onSubmit(content) {
+      return submitPdfSelectionComment(state, selection, content)
+    },
   })
-
-  const save = document.createElement('button')
-  save.type = 'button'
-  save.className = 'pdf-comment-button pdf-comment-save'
-  save.textContent = 'Save'
-  save.addEventListener('click', () => {
-    void submitPdfSelectionComment(state, selection, textarea.value).catch(error => {
-      console.error('failed to save pdf comment:', error)
-    })
-  })
-
-  actions.append(cancel, save)
-  composer.append(textarea, actions)
-  state.scroller.appendChild(composer)
+  const element = composer.element
+  state.annotations.composer = element
+  state.scroller.appendChild(element)
 
   const scrollerRect = state.scroller.getBoundingClientRect()
-  composer.style.left = `${selection.anchorRect.left - scrollerRect.left + state.scroller.scrollLeft}px`
-  composer.style.top = `${selection.anchorRect.bottom - scrollerRect.top + state.scroller.scrollTop + 8}px`
-  textarea.focus()
+  element.style.left = `${selection.anchorRect.left - scrollerRect.left + state.scroller.scrollLeft}px`
+  element.style.top = `${selection.anchorRect.bottom - scrollerRect.top + state.scroller.scrollTop + 8}px`
+  composer.focus()
 }
 
 async function submitPdfSelectionComment(
@@ -918,46 +1055,31 @@ function renderPdfReply(reply: PdfComment): HTMLDivElement {
 }
 
 function renderPdfReplyComposer(state: PdfState, parent: PdfComment): HTMLDivElement {
-  const wrapper = document.createElement('div')
-  wrapper.className = 'pdf-annotation-reply-composer'
-
-  const textarea = document.createElement('textarea')
-  textarea.className = 'pdf-comment-input'
-  textarea.placeholder = 'reply'
-  textarea.rows = 2
-
-  const actions = document.createElement('div')
-  actions.className = 'pdf-comment-actions'
-
-  const cancel = buildPdfNoteButton('Cancel')
-  cancel.addEventListener('click', event => {
-    event.stopPropagation()
-    state.annotations.activeCommentId = null
-    renderPdfAnnotations(state)
+  const composer = createPdfCommentComposer({
+    className: 'pdf-annotation-reply-composer',
+    placeholder: 'Reply',
+    submitLabel: 'Reply',
+    onCancel() {
+      state.annotations.activeCommentId = null
+      renderPdfAnnotations(state)
+    },
+    onSubmit(content) {
+      const reply: PdfComment = {
+        ...parent,
+        id: crypto.randomUUID(),
+        parentId: parent.id,
+        content,
+        author: getPdfAuthor(),
+        createdAt: Date.now(),
+        updatedAt: null,
+        deletedAt: null,
+        resolvedAt: null,
+      }
+      submitPdfOperation(state, 'new', reply)
+    },
   })
-
-  const save = buildPdfNoteButton('Reply')
-  save.addEventListener('click', event => {
-    event.stopPropagation()
-    const content = textarea.value.trim()
-    if (!content) return
-    const reply: PdfComment = {
-      ...parent,
-      id: crypto.randomUUID(),
-      parentId: parent.id,
-      content,
-      author: getPdfAuthor(),
-      createdAt: Date.now(),
-      updatedAt: null,
-      deletedAt: null,
-      resolvedAt: null,
-    }
-    submitPdfOperation(state, 'new', reply)
-  })
-
-  actions.append(cancel, save)
-  wrapper.append(textarea, actions)
-  return wrapper
+  window.requestAnimationFrame(() => composer.focus())
+  return composer.element
 }
 
 function renderPdfNoteCard(state: PdfState, comment: PdfComment): HTMLDivElement {
@@ -1023,11 +1145,26 @@ function renderPdfNoteCard(state: PdfState, comment: PdfComment): HTMLDivElement
 }
 
 function positionPdfAnnotationCards(state: PdfState) {
-  state.annotationRail.style.height = `${state.scroller.clientHeight}px`
-  for (const card of state.annotationRail.querySelectorAll<HTMLElement>('.pdf-annotation-card')) {
+  const toolbarHeight = state.toolbar.offsetHeight
+  const railHeight = state.scroller.clientHeight
+  state.root.style.setProperty('--pdf-annotation-rail-top', `${toolbarHeight}px`)
+  state.root.style.setProperty('--pdf-annotation-rail-height', `${railHeight}px`)
+
+  let stackHeight = Math.max(
+    railHeight,
+    state.scroller.scrollHeight,
+    state.viewer.scrollHeight,
+    state.annotationStack.scrollHeight,
+  )
+  for (const card of state.annotationStack.querySelectorAll<HTMLElement>('.pdf-annotation-card')) {
     const anchorTop = Number.parseFloat(card.dataset.anchorTop ?? '')
     if (!Number.isFinite(anchorTop)) continue
-    card.style.top = `${anchorTop - state.scroller.scrollTop}px`
+    card.style.top = `${anchorTop}px`
+    stackHeight = Math.max(stackHeight, anchorTop + card.offsetHeight + 8)
+  }
+  state.annotationStack.style.height = `${stackHeight}px`
+  if (Math.abs(state.annotationRail.scrollTop - state.scroller.scrollTop) > 1) {
+    state.annotationRail.scrollTop = state.scroller.scrollTop
   }
 }
 
@@ -1058,15 +1195,14 @@ function renderPdfAnnotations(state: PdfState) {
   for (const slot of state.slots.values()) {
     slot.highlightLayer.replaceChildren()
   }
-  state.annotationRail.replaceChildren()
+  state.annotationStack.replaceChildren()
+  state.annotationStack.style.height = ''
 
   if (!readCommentRoomEnabled()) {
     state.root.removeAttribute('data-pdf-annotations')
     syncPdfEmbedViewport(state)
     return
   }
-  state.root.dataset.pdfAnnotations = 'true'
-  if (syncPdfEmbedViewport(state)) return
 
   const comments = visiblePdfTopLevelComments(state).sort((left, right) => {
     const leftRect = left.anchor?.rects[0]
@@ -1080,6 +1216,15 @@ function renderPdfAnnotations(state: PdfState) {
       (rightSlot?.element.offsetTop ?? 0) + rightRect.top * (rightSlot?.element.offsetHeight ?? 0)
     return leftTop - rightTop
   })
+  if (comments.length === 0) {
+    state.root.removeAttribute('data-pdf-annotations')
+    syncPdfEmbedViewport(state)
+    return
+  }
+
+  state.root.dataset.pdfAnnotations = 'true'
+  if (syncPdfEmbedViewport(state)) return
+
   let nextCardTop = 0
   for (const comment of comments) {
     const rects = comment.anchor?.rects ?? []
@@ -1113,7 +1258,7 @@ function renderPdfAnnotations(state: PdfState) {
       )
     }
     card.dataset.anchorTop = String(Math.max(0, cardTop))
-    state.annotationRail.appendChild(card)
+    state.annotationStack.appendChild(card)
     nextCardTop = cardTop + card.offsetHeight + 8
   }
   positionPdfAnnotationCards(state)
@@ -1336,7 +1481,16 @@ function enqueuePage(state: PdfState, pageNumber: number) {
 }
 
 function pdfRenderWindowRadius(state: PdfState): number {
-  return Math.max(0, Math.min(state.options.overscan, PDF_RENDER_WINDOW_RADIUS))
+  return Math.max(0, Math.min(state.options.overscan, MAX_RENDER_WINDOW_RADIUS))
+}
+
+function shouldPreloadPdfPages(state: PdfState): boolean {
+  return state.document.numPages <= PDF_PRELOAD_PAGE_LIMIT
+}
+
+function shouldRenderTextLayer(state: PdfState, pageNumber: number): boolean {
+  if (state.visiblePages.has(pageNumber)) return true
+  return Math.abs(pageNumber - state.currentPage) <= pdfRenderWindowRadius(state)
 }
 
 function clearTextLayer(slot: PdfPageSlot) {
@@ -1358,7 +1512,8 @@ function clearRenderedPage(slot: PdfPageSlot) {
   clearTextLayer(slot)
 }
 
-function pruneDistantRenderedPages(state: PdfState, centerPage: number) {
+function pruneDistantRenderedPagesNow(state: PdfState, centerPage: number) {
+  if (shouldPreloadPdfPages(state)) return
   const radius = pdfRenderWindowRadius(state)
   for (const slot of state.slots.values()) {
     if (state.visiblePages.has(slot.pageNumber)) continue
@@ -1376,6 +1531,15 @@ function pruneDistantRenderedPages(state: PdfState, centerPage: number) {
   }
 }
 
+function pruneDistantRenderedPages(state: PdfState, centerPage: number) {
+  if (shouldPreloadPdfPages(state)) return
+  if (state.pruneTimer) window.clearTimeout(state.pruneTimer)
+  state.pruneTimer = window.setTimeout(() => {
+    state.pruneTimer = 0
+    pruneDistantRenderedPagesNow(state, centerPage)
+  }, PDF_PRUNE_SCROLL_DELAY_MS)
+}
+
 function enqueueRenderWindow(state: PdfState, centerPage: number = state.currentPage) {
   const radius = pdfRenderWindowRadius(state)
   for (let offset = 0; offset <= radius; offset++) {
@@ -1391,6 +1555,17 @@ function enqueueVisiblePages(state: PdfState) {
     enqueuePage(state, pageNumber)
   }
   enqueueRenderWindow(state)
+}
+
+function enqueuePreloadPages(state: PdfState) {
+  if (!shouldPreloadPdfPages(state)) return
+  for (let pageNumber = 1; pageNumber <= state.document.numPages; pageNumber++) {
+    const slot = state.slots.get(pageNumber)
+    if (!slot) continue
+    if (slot.renderedScale === state.scale || slot.renderingScale === state.scale) continue
+    state.preloadQueue.add(pageNumber)
+  }
+  drainPreloadQueue(state)
 }
 
 function scrollToPage(state: PdfState, pageNumber: number) {
@@ -1437,10 +1612,12 @@ function rerenderVisiblePages(state: PdfState) {
   }
   state.renderQueue.clear()
   state.textRenderQueue.clear()
+  state.preloadQueue.clear()
   invalidatePageMetrics(state)
   updateControls(state)
   renderPdfAnnotations(state)
   enqueueVisiblePages(state)
+  enqueuePreloadPages(state)
 }
 
 async function renderPage(state: PdfState, slot: PdfPageSlot, epoch: number) {
@@ -1512,6 +1689,7 @@ async function renderTextLayer(state: PdfState, slot: PdfPageSlot, epoch: number
 function enqueueTextLayer(state: PdfState, pageNumber: number) {
   const slot = state.slots.get(pageNumber)
   if (!slot) return
+  if (!shouldRenderTextLayer(state, pageNumber)) return
   if (slot.textRenderedScale === state.scale || slot.textRenderingScale === state.scale) return
   state.textRenderQueue.add(pageNumber)
   drainTextLayerQueue(state)
@@ -1524,6 +1702,12 @@ function schedulePdfIdleWork(callback: () => void) {
     return
   }
   window.setTimeout(callback, 32)
+}
+
+function schedulePdfStartup(callback: () => void) {
+  window.requestAnimationFrame(() => {
+    window.setTimeout(callback, 0)
+  })
 }
 
 function takeNextQueuedPage(state: PdfState, queue: Set<number>): number | undefined {
@@ -1560,9 +1744,48 @@ function drainQueue(state: PdfState) {
       }
     }
     state.draining = false
+    if (state.preloadQueue.size > 0) drainPreloadQueue(state)
   }
 
   void run()
+}
+
+function drainPreloadQueue(state: PdfState) {
+  if (state.preloadDraining || state.destroyed || !shouldPreloadPdfPages(state)) return
+  state.preloadDraining = true
+
+  const run = () => {
+    void (async () => {
+      if (state.destroyed) {
+        state.preloadDraining = false
+        return
+      }
+      if (
+        state.renderQueue.size > 0 ||
+        Date.now() - state.lastScrollAt < PDF_PRELOAD_SCROLL_DELAY_MS
+      ) {
+        state.preloadDraining = false
+        window.setTimeout(() => drainPreloadQueue(state), PDF_PRELOAD_SCROLL_DELAY_MS)
+        return
+      }
+
+      const pageNumber = takeNextQueuedPage(state, state.preloadQueue)
+      const slot = pageNumber === undefined ? undefined : state.slots.get(pageNumber)
+      if (slot) {
+        try {
+          await renderPage(state, slot, state.renderEpoch)
+        } catch (error) {
+          slot.renderTask = undefined
+          slot.renderingScale = undefined
+          if (!state.destroyed && !isRenderCancelError(error)) console.error(error)
+        }
+      }
+      state.preloadDraining = false
+      if (state.preloadQueue.size > 0) drainPreloadQueue(state)
+    })()
+  }
+
+  schedulePdfIdleWork(run)
 }
 
 function drainTextLayerQueue(state: PdfState) {
@@ -1582,7 +1805,7 @@ function drainTextLayerQueue(state: PdfState) {
       }
       const pageNumber = takeNextQueuedPage(state, state.textRenderQueue)
       const slot = pageNumber === undefined ? undefined : state.slots.get(pageNumber)
-      if (slot) {
+      if (slot && shouldRenderTextLayer(state, slot.pageNumber)) {
         try {
           await renderTextLayer(state, slot, state.renderEpoch)
         } catch (error) {
@@ -1613,6 +1836,7 @@ function consumePdfNavigationKey(event: KeyboardEvent) {
 }
 
 function setupPdfEvents(state: PdfState) {
+  let syncingAnnotationScroll = false
   const goPrev = () => scrollToPage(state, Math.max(1, state.currentPage - 1))
   const goNext = () => scrollToPage(state, Math.min(state.document.numPages, state.currentPage + 1))
   const setPage = () => scrollToPage(state, readInteger(state.controls.pageInput.value, 1))
@@ -1631,6 +1855,13 @@ function setupPdfEvents(state: PdfState) {
     if (state.scrollFrame) return
     state.scrollFrame = window.requestAnimationFrame(() => {
       state.scrollFrame = 0
+      if (!syncingAnnotationScroll) {
+        syncingAnnotationScroll = true
+        state.annotationRail.scrollTop = state.scroller.scrollTop
+        window.requestAnimationFrame(() => {
+          syncingAnnotationScroll = false
+        })
+      }
       positionPdfAnnotationCards(state)
       const page = currentPageFromScroll(state)
       if (page !== state.currentPage) {
@@ -1639,6 +1870,14 @@ function setupPdfEvents(state: PdfState) {
         pruneDistantRenderedPages(state, page)
         enqueueRenderWindow(state, page)
       }
+    })
+  }
+  const onAnnotationRailScroll = () => {
+    if (syncingAnnotationScroll) return
+    syncingAnnotationScroll = true
+    state.scroller.scrollTop = state.annotationRail.scrollTop
+    window.requestAnimationFrame(() => {
+      syncingAnnotationScroll = false
     })
   }
   const onPointerDown = (event: PointerEvent) => {
@@ -1709,6 +1948,7 @@ function setupPdfEvents(state: PdfState) {
   state.root.querySelector('.pdf-embed-zoom-in')?.addEventListener('click', () => zoomBy(1.1))
   state.controls.fit.addEventListener('change', setFit)
   state.scroller.addEventListener('scroll', onScroll, { passive: true })
+  state.annotationRail.addEventListener('scroll', onAnnotationRailScroll, { passive: true })
   state.root.addEventListener('pointerdown', onPointerDown)
   document.addEventListener('keydown', onKeyDown, true)
   state.scroller.addEventListener('mouseup', onMouseUp)
@@ -1785,10 +2025,13 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
   viewer.className = 'pdf-viewer'
   const annotationRail = document.createElement('div')
   annotationRail.className = 'pdf-annotation-rail'
+  const annotationStack = document.createElement('div')
+  annotationStack.className = 'pdf-annotation-stack'
+  annotationRail.appendChild(annotationStack)
   shell.appendChild(viewer)
   scroller.appendChild(shell)
-  body.append(scroller, annotationRail)
-  root.replaceChildren(toolbar, body)
+  body.appendChild(scroller)
+  root.replaceChildren(toolbar, body, annotationRail)
   updateAutoPdfEmbedHeight(root, toolbar, scroller, firstViewport, options)
 
   const scale = calculateFitScale(scroller, firstViewport, options.fit, options.scale)
@@ -1806,11 +2049,13 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
     shell,
     viewer,
     annotationRail,
+    annotationStack,
     controls,
     firstViewport,
     slots: new Map(),
     renderQueue: new Set(),
     textRenderQueue: new Set(),
+    preloadQueue: new Set(),
     visiblePages: new Set(),
     observer,
     resizeObserver,
@@ -1822,11 +2067,13 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
     currentPage: clampPdfValue(options.page, 1, pdfDocument.numPages),
     draining: false,
     textDraining: false,
+    preloadDraining: false,
     destroyed: false,
     renderEpoch: 0,
     scrollFrame: 0,
     resizeFrame: 0,
-    lastScrollAt: 0,
+    pruneTimer: 0,
+    lastScrollAt: Date.now(),
     cleanup: [],
     annotations: createPdfAnnotationState(options),
   }
@@ -1846,7 +2093,7 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
         }
       }
     },
-    { root: scroller, rootMargin: '0px' },
+    { root: scroller, rootMargin: PDF_INTERSECTION_ROOT_MARGIN },
   )
   state.resizeObserver = new ResizeObserver(() => {
     if (state.resizeFrame) return
@@ -1865,6 +2112,10 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
 
   state.resizeObserver.observe(root)
   setupPdfEvents(state)
+  if (selectedPdfRoot === root) {
+    selectPdfState(state)
+    state.scroller.focus({ preventScroll: true })
+  }
   if (readCommentRoomEnabled()) {
     connectPdfAnnotations(state)
   }
@@ -1872,6 +2123,7 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
   root.dataset.pdfStatus = 'loaded'
   scrollToPage(state, state.currentPage)
   renderPdfAnnotations(state)
+  enqueuePreloadPages(state)
 }
 
 function cleanupPdfEmbed(root: HTMLElement) {
@@ -1882,7 +2134,10 @@ function cleanupPdfEmbed(root: HTMLElement) {
     return
   }
   state.destroyed = true
-  if (selectedPdfState === state) selectedPdfState = null
+  if (selectedPdfState === state || selectedPdfRoot === state.root) {
+    selectedPdfState = null
+    selectedPdfRoot = null
+  }
   state.root.removeAttribute('data-pdf-selected')
   state.observer.disconnect()
   state.resizeObserver.disconnect()
@@ -1892,8 +2147,10 @@ function cleanupPdfEmbed(root: HTMLElement) {
   }
   state.renderQueue.clear()
   state.textRenderQueue.clear()
+  state.preloadQueue.clear()
   if (state.scrollFrame) window.cancelAnimationFrame(state.scrollFrame)
   if (state.resizeFrame) window.cancelAnimationFrame(state.resizeFrame)
+  if (state.pruneTimer) window.clearTimeout(state.pruneTimer)
   closePdfAnnotations(state)
   hidePdfComposer(state)
   for (const cleanup of state.cleanup.splice(0)) {
@@ -1914,8 +2171,9 @@ function mountPdfEmbeds(root: ParentNode = document) {
   const roots = pdfEmbedRoots(root, PDF_EMBED_SELECTOR)
   for (const root of roots) {
     if (pendingPdfMounts.has(root)) continue
+    root.tabIndex = 0
     pendingPdfMounts.add(root)
-    window.requestAnimationFrame(() => {
+    schedulePdfStartup(() => {
       pendingPdfMounts.delete(root)
       if (!root.isConnected || !root.matches(PDF_EMBED_SELECTOR)) return
       const options = readPdfOptions(root)
@@ -1938,6 +2196,32 @@ const pdfEmbeds: QuartzPdfEmbeds = { mount: mountPdfEmbeds, cleanup: cleanupPdfE
 window.quartzPdfEmbeds = pdfEmbeds
 
 document.addEventListener('nav', () => {
+  const onPdfShellPointerDown = (event: PointerEvent) => {
+    if (event.button !== 0) return
+    if (targetAcceptsTextInput(event.target)) return
+    if (!(event.target instanceof Element)) return
+    const root = event.target.closest('.pdf-embed[data-pdf-src]')
+    if (!(root instanceof HTMLElement)) return
+    selectPdfRoot(root)
+    const state = pdfStates.get(root)
+    if (state) {
+      state.scroller.focus({ preventScroll: true })
+      return
+    }
+    root.focus({ preventScroll: true })
+  }
+  const onPdfShellKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') return
+    if (!selectedPdfRoot || selectedPdfState) return
+    consumePdfNavigationKey(event)
+    clearSelectedPdfRoot(selectedPdfRoot)
+  }
+  document.addEventListener('pointerdown', onPdfShellPointerDown, true)
+  document.addEventListener('keydown', onPdfShellKeyDown, true)
   mountPdfEmbeds(document)
-  window.addCleanup(() => cleanupPdfEmbeds(document))
+  window.addCleanup(() => {
+    document.removeEventListener('pointerdown', onPdfShellPointerDown, true)
+    document.removeEventListener('keydown', onPdfShellKeyDown, true)
+    cleanupPdfEmbeds(document)
+  })
 })
