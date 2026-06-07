@@ -2,7 +2,7 @@
 date: '2026-05-26'
 description: basic set theory, operations, cardinality, topology, and ZFC.
 id: Sets
-modified: 2026-06-06 21:10:49 GMT-04:00
+modified: 2026-06-06 22:30:48 GMT-04:00
 seealso:
   - '[[thoughts/topology|topology]]'
   - '[[thoughts/pdfs/munkres-topology.pdf|Topology, by Munkres]]'
@@ -44,7 +44,7 @@ Sets are the substrate for [[thoughts/algebraic geometry|algebraic structures]] 
 
 > [!note] inclusion
 >
-> $\subseteq$ and $\subsetneq$ are ::inclusion:: and ::proper inclusion{h4}:: respectively
+> $\subseteq$ and $\subsetneq$ are _inclusion_ and _proper inclusion_ respectively
 >
 > We can also express the notion that "$A$ and $B$ have no {{sidenotes[common items]: We can also say that $A$ and $B$ are disjoint.}}" via the empty set, or $A \cap B = \emptyset$
 
@@ -56,13 +56,9 @@ $$
 \{x \in A \mid P(x)\} \subseteq A
 $$
 
-> [!caution] naive form
->
-> $\{x \mid P(x)\}$
->
-> _this actually assumes that every predicate determines a set, where Russell's paradox would then choose_ $P(x)$ _to be_ $x \notin x$
+> naive form $\{x \mid P(x)\}$ _assumes that every predicate determines a set, where Russell's paradox would then choose_ $P(x)$ _to be_ $x \notin x$
 
-ZFC solves this via separations:
+ZFC addresses this via separations:
 
 $$
 \forall\;A\;\exists\;B\;\forall x\;(x \in B \iff x \in A \land P(x))
@@ -76,7 +72,7 @@ $$
 > \forall\;A\;\forall\;B\;(\forall x\;(x \in A \iff x \in B) \implies A = B)
 > $$
 >
-> Order and repetition ::does not matter:: when we consider members of {{sidenotes[a set.]: We will consider [surjective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Surjection), [bijective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Bijection), and [injective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Injection) sets afterwards.}}
+> Order and repetition ::does not matter:: when we consider members of {{sidenotes[a set.]: We will consider surjective, bijective, and [injective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Injection) properties of sets [[#surjection, bijection, injection|below]].}}
 >
 > $$
 > \{1,2,3\} = \{3,2,1,1\}\;\; \text{ (axiom of extensionality)}
@@ -412,13 +408,13 @@ $$
 The symmetric difference keeps elements that appear in exactly one set:
 
 $$
-A\;\triangle\;B = (A \setminus B) \cup (B \setminus A)
+A\triangle B = (A \setminus B) \cup (B \setminus A)
 $$
 
 Equivalently, membership in $A \triangle B$ is exclusive-or:
 
 $$
-x \in A\;\triangle\;B \iff (x \in A \land x \notin B) \lor (x \notin A \land x \in B)
+x \in A\triangle B \iff (x \in A \land x \notin B) \lor (x \notin A \land x \in B)
 $$
 
 ### power set
@@ -457,11 +453,9 @@ If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\
 >
 > For every set $A$, there is no surjection $f: A \to \mathcal{P}(A)$.
 >
-> Proof: assume a surjection $f$ exists, and form the diagonal set
+> Proof:
 >
-> $$
-> D = \{a \in A \mid a \notin f(a)\}
-> $$
+> assume a surjection $f$ exists, and form the diagonal set $$D = \{a \in A \mid a \notin f(a)\}$$
 >
 > Since $f$ is surjective, $D = f(d)$ for some $d \in A$. Then $d \in D \iff d \notin f(d) \iff d \notin D$, contradiction.
 >
@@ -550,13 +544,23 @@ A _total order_ is a partial order where any two elements are comparable.
 
 ## functions
 
+> [!math] rule of assignment
+>
+> a subset $r$ of the [[#Cartesian products|cartesian product]] $C\;\times\;D$ of two sets, having the property that _each element of_ $C$ appears as the first coordinate of **at most one** ordered pair belonging to $r$
+>
+> $$
+> [(c,d) \in r \text{ and } (c, d^{'}) \in r] \implies [d = d^{'}]
+> $$
+>
+> for $r$ is assignment, to element $c \in C, d \in D$ for which $(c,d) \in r$
+
 A function $f: A \to B$ is a relation $f \subseteq A \times B$ such that every $a \in A$ appears exactly once as a first coordinate.
 
 $$
 \forall a \in A\;\exists! b \in B\;(a,b) \in f
 $$
 
-The domain is $A$, the codomain is $B$, and the image is
+The ::domain:: is $A$, the codomain is $B$, and the image is
 
 $$
 f(A) = \{b \in B \mid \exists a \in A,\;f(a)=b\}
@@ -597,6 +601,8 @@ Images only preserve intersections one way in general:
 $$
 f(S \cap U) \subseteq f(S) \cap f(U)
 $$
+
+### surjection, bijection, injection
 
 Equality holds when $f$ is injective.
 
@@ -714,8 +720,7 @@ A set is _countably infinite_ if it bijects with $\mathbb{N}$. The integers and 
 >
 > The set $\{0,1\}^{\mathbb{N}}$ of infinite binary sequences is _uncountable_.
 >
-> If a list claimed to contain every such sequence, construct a new sequence $b$ by setting $b_n = 1 - a_{n,n}$, where $a_{n,n}$ is the $n$th bit of the $n$th listed sequence.
-> Then $b$ differs from row $n$ at bit $n$, so it is missing from the list.
+> If a list claimed to contain every such sequence, construct a new sequence $b$ by setting {{sidenotes[$b_n = 1 - a_{n,n}$]: where $a_{n,n}$ is the $n$th bit of the $n$th listed sequence}}. Then $b$ differs from row $n$ at bit $n$, so it is missing from the list.
 
 ## open
 
@@ -771,7 +776,7 @@ Replacement is stronger than Separation.
 - Separation says "filter this set."
 - Replacement says "send each element through a definable rule, then collect the outputs."
 
-> [!note] unversality
+> [!note] universality
 > Complements need a universe. $A^c$ means $X \setminus A$ only after $X$ has been fixed.
 
 $$

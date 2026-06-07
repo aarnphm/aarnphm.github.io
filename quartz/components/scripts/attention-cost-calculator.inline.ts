@@ -1,4 +1,4 @@
-export {}
+import katex from 'katex'
 
 type AccDType = 'bf16' | 'fp16' | 'fp32' | 'int8' | 'int4'
 type AccNumKey = 'dm' | 'nl' | 'nh' | 'sl' | 'bs'
@@ -135,6 +135,28 @@ const accSetText = (root: HTMLElement, sel: string, text: string) => {
   if (el) el.textContent = text
 }
 
+const accTex = (v: string): string => {
+  const m = v.match(/^([+\-\d.,\s]*)(.*)$/)
+  const num = m ? m[1] : v
+  const unit = m ? m[2] : ''
+  const tex = unit ? `${num}\\text{${unit}}` : num
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return v
+  }
+}
+
+const accSetTex = (root: HTMLElement, sel: string, text: string) => {
+  const el = root.querySelector<HTMLElement>(sel)
+  if (el) el.innerHTML = accTex(text)
+}
+
 const accUpdateInputs = (root: HTMLElement, s: AccState) => {
   for (const k of Object.keys(accValueTable) as AccNumKey[]) {
     const opts = accValueTable[k]
@@ -152,12 +174,12 @@ const accUpdateInputs = (root: HTMLElement, s: AccState) => {
 }
 
 const accUpdateCards = (root: HTMLElement, m: AccMetrics, prev: AccMetrics | null) => {
-  accSetText(root, '[data-acc-num="dh"]', m.dhInteger ? m.dh.toString() : m.dh.toFixed(2))
-  accSetText(root, '[data-acc-num="params"]', accFmtCount(m.params))
-  accSetText(root, '[data-acc-num="flops"]', accFmtCount(m.flops))
-  accSetText(root, '[data-acc-num="kvtok"]', accFmtBytes(m.kvtok))
-  accSetText(root, '[data-acc-num="kvtotal"]', accFmtBytes(m.kvtotal))
-  accSetText(root, '[data-acc-num="ratio"]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
+  accSetTex(root, '[data-acc-num="dh"]', m.dhInteger ? m.dh.toString() : m.dh.toFixed(2))
+  accSetTex(root, '[data-acc-num="params"]', accFmtCount(m.params))
+  accSetTex(root, '[data-acc-num="flops"]', accFmtCount(m.flops))
+  accSetTex(root, '[data-acc-num="kvtok"]', accFmtBytes(m.kvtok))
+  accSetTex(root, '[data-acc-num="kvtotal"]', accFmtBytes(m.kvtotal))
+  accSetTex(root, '[data-acc-num="ratio"]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
 
   if (prev) {
     accSetText(
@@ -218,9 +240,9 @@ const accUpdateBar = (root: HTMLElement, m: AccMetrics) => {
   setBar('kv', kvPct)
   setBar('paramBytes', paramBytesPct)
 
-  accSetText(root, '[data-acc-barval="attn"]', accFmtCount(m.params))
-  accSetText(root, '[data-acc-barval="ffn"]', accFmtCount(m.ffnParams))
-  accSetText(root, '[data-acc-barval="kv"]', accFmtBytes(m.kvtotal))
+  accSetTex(root, '[data-acc-barval="attn"]', accFmtCount(m.params))
+  accSetTex(root, '[data-acc-barval="ffn"]', accFmtCount(m.ffnParams))
+  accSetTex(root, '[data-acc-barval="kv"]', accFmtBytes(m.kvtotal))
 }
 
 const accUpdateSummary = (root: HTMLElement, m: AccMetrics) => {

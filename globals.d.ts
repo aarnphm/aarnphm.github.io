@@ -26,6 +26,10 @@ export declare global {
     mermaid: typeof import('mermaid/dist/mermaid').default
     mapboxgl: any
     pdfjsLib: any
-    quartzPdfEmbeds?: { mount(root?: ParentNode): void; cleanup(root?: ParentNode): void }
+    quartzPdfEmbeds?: {
+      mount(root?: ParentNode): void
+      cleanup(root?: ParentNode): void
+      preload(src?: string): Promise<void>
+    }
   }
 }

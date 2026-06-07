@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-06 20:02:55 GMT-04:00
+modified: 2026-06-06 22:42:42 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2486,6 +2486,20 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://idlewords.com/2005/04/dabblers_and_blowhards.htm -- Dabblers And Blowhards
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [productivity, agency, work]
+- https://www.washingtonpost.com/wp-srv/national/longterm/unabomber/manifesto.text.htm -- Industrial society and its future [**]
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [longtermism, transhumanism]
+    - pinned: true
+    - importanct: 8
+- https://www.slackstory.com/p/introduction -- A Slack Story
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [life, family]
 - https://home.ubalt.edu/ntygfit/ai_05_mapping_directions/ai_05_see/ad_total_eclipse.htm -- Total Eclipse, Annie Dillard
   - [meta]:
     - date: 06/06/2026
@@ -4571,6 +4585,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://political-manipulation.ai/ -- Reducing Political Manipulation with Consistency Training
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [alignment]
 - https://huggingface.co/spaces/AdithyaSK/rl-environments-guide -- The ultimate guide to RL environments: building and scaling them in the LLM era
   - [meta]:
     - date: 06/06/2026
@@ -8530,7 +8548,10 @@ title: are.na
     - tags: [solarprotocol]
 
 ## arts
-
+- https://dollarchive.neocities.org -- Doll Archive
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [medival, archaic]
 - https://rothko.joonas.wtf/ -- Rothko
   - [meta]:
     - date: 06/02/2026
@@ -8688,6 +8709,15 @@ title: are.na
 
 ## resources
 
+- https://forum.openai.com/public/videos/event-replay-terence-tao-and-mark-chen-on-ai-and-mathematical-discovery-2026-03-11 -- Terence Tao and Mark Chen on AI and Mathematical Discovery
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [mathematics, longtermism, agi]
+    - importance: 8
+- https://explainshell.com/ -- explainshell
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [tools, pedagogy]
 - https://www.csunplugged.org/en/ -- CS Unplugged
   - [meta]:
     - date: 06/05/2026

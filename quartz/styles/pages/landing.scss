@@ -2,11 +2,14 @@
 
 body[data-slug='index'] {
   overflow-x: hidden;
-  font-size: 1em;
-  text-transform: lowercase;
 
   .landing {
     position: relative;
+  }
+
+  .content-container {
+    text-transform: lowercase;
+    font-size: 1em;
   }
 
   .collapsible-header-hr > .collapse-rail {

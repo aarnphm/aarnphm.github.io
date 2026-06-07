@@ -409,11 +409,6 @@ export function getOrCreateSidePanel(): HTMLDivElement {
 }
 
 export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElement[]) {
-  const pageHeader = document.querySelector<HTMLDivElement>(
-    "main > * > section[class~='page-header']",
-  )
-  if (!asidePanel || !pageHeader) console.error('asidePanel must not be null')
-
   asidePanel.classList.add('active')
   window.quartzPdfEmbeds?.cleanup(asidePanel)
   removeAllChildren(asidePanel)
@@ -439,7 +434,7 @@ export function createSidePanel(asidePanel: HTMLDivElement, ...inner: HTMLElemen
 
   let resizeObserver: ResizeObserver | null = null
   if (typeof ResizeObserver !== 'undefined') {
-    const headerSection = document.querySelector<HTMLElement>('main > * > section[class~="header"')
+    const headerSection = document.querySelector<HTMLElement>('main > section.header')
     if (headerSection) {
       resizeObserver = new ResizeObserver(() => updateSidepanelOffset())
       resizeObserver.observe(headerSection)

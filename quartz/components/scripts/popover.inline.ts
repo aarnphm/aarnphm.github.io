@@ -52,12 +52,32 @@ interface Point {
   y: number
 }
 
+interface PdfEmbedOptions {
+  preload?: boolean
+  annotations?: boolean
+  rootMargin?: string
+  overscan?: number
+  maxPixelRatio?: number
+  textLayer?: boolean
+}
+
 const PDF_LOAD_TIMEOUT = 8 * 1000
+const PDF_IDLE_DOCUMENT_PRELOAD_LIMIT = 1
+const PDF_PREVIEW_OPTIONS: PdfEmbedOptions = {
+  preload: false,
+  annotations: false,
+  rootMargin: '0px',
+  overscan: 0,
+  maxPixelRatio: 2,
+  textLayer: false,
+}
+const PDF_SIDE_PANEL_OPTIONS = PDF_PREVIEW_OPTIONS
 
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
 let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
 let stackedPopoverEvents: AbortController | null = null
+let pdfRuntimePreloadScheduled = false
 
 function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   const refsAndNotes = element.querySelectorAll<HTMLElement>(
@@ -118,12 +138,26 @@ function pdfTitleFromUrl(rawSrc: string): string {
   }
 }
 
-function createPdfEmbed(src: string, title = pdfTitleFromUrl(src)): HTMLDivElement {
+function createPdfEmbed(
+  src: string,
+  title = pdfTitleFromUrl(src),
+  options: PdfEmbedOptions = {},
+): HTMLDivElement {
   const pdf = document.createElement('div')
   pdf.classList.add('internal-embed', 'pdf-embed', 'pdf-embed-preview')
   pdf.dataset.pdfSrc = pdfRuntimeSource(src)
   pdf.dataset.pdfTitle = title
   pdf.dataset.pdfFit = 'width'
+  if (options.preload !== undefined) pdf.dataset.pdfPreload = String(options.preload)
+  if (options.annotations !== undefined) {
+    pdf.dataset.pdfEnableAnnotations = String(options.annotations)
+  }
+  if (options.rootMargin !== undefined) pdf.dataset.pdfRootMargin = options.rootMargin
+  if (options.overscan !== undefined) pdf.dataset.pdfOverscan = String(options.overscan)
+  if (options.maxPixelRatio !== undefined) {
+    pdf.dataset.pdfMaxPixelRatio = String(options.maxPixelRatio)
+  }
+  if (options.textLayer !== undefined) pdf.dataset.pdfTextLayer = String(options.textLayer)
   pdf.tabIndex = 0
 
   const loading = document.createElement('span')
@@ -132,6 +166,56 @@ function createPdfEmbed(src: string, title = pdfTitleFromUrl(src)): HTMLDivEleme
   pdf.appendChild(loading)
 
   return pdf
+}
+
+type IdleCallback = (callback: () => void, options?: { timeout: number }) => number
+
+function isIdleCallback(value: unknown): value is IdleCallback {
+  return typeof value === 'function'
+}
+
+function schedulePdfRuntimePreload(sources: string[]) {
+  if (pdfRuntimePreloadScheduled) return
+  pdfRuntimePreloadScheduled = true
+  const preloadSources = [...new Set(sources)].slice(0, PDF_IDLE_DOCUMENT_PRELOAD_LIMIT)
+
+  const preload = () => {
+    const runtime = window.quartzPdfEmbeds
+    if (!runtime) {
+      pdfRuntimePreloadScheduled = false
+      return
+    }
+
+    void runtime
+      .preload()
+      .then(() => {
+        for (const source of preloadSources) {
+          void runtime.preload(source).catch(console.error)
+        }
+      })
+      .catch(console.error)
+  }
+
+  const requestIdle: unknown = Reflect.get(window, 'requestIdleCallback')
+  if (isIdleCallback(requestIdle)) {
+    requestIdle(preload, { timeout: 1500 })
+    return
+  }
+
+  window.setTimeout(preload, 250)
+}
+
+function pdfPreviewSource(link: HTMLAnchorElement): string | null {
+  if (link.dataset.arxivId) return pdfRuntimeSource(arxivPdfUrl(link.dataset.arxivId).toString())
+
+  try {
+    const targetUrl = new URL(link.href)
+    targetUrl.hash = ''
+    targetUrl.search = ''
+    return isPdfUrl(targetUrl) ? pdfRuntimeSource(targetUrl.toString()) : null
+  } catch {
+    return null
+  }
 }
 
 function clearPopoverLoading(popoverInner: HTMLDivElement) {
@@ -343,7 +427,7 @@ async function handleImageContent(targetUrl: URL, popoverInner: HTMLDivElement) 
 
 async function handlePdfContent(response: Response, targetUrl: URL, popoverInner: HTMLDivElement) {
   const src = response.url || targetUrl.toString()
-  const pdf = createPdfEmbed(src, pdfTitleFromUrl(targetUrl.toString()))
+  const pdf = createPdfEmbed(src, pdfTitleFromUrl(targetUrl.toString()), PDF_PREVIEW_OPTIONS)
   popoverInner.appendChild(pdf)
 }
 
@@ -1242,6 +1326,7 @@ async function mouseEnterHandler(
     const pdf = createPdfEmbed(
       arxivUrl.toString(),
       `${cleanArxivIdentifier(link.dataset.arxivId)}.pdf`,
+      PDF_PREVIEW_OPTIONS,
     )
     popoverInner.appendChild(pdf)
     mountPdfPreview(
@@ -1272,7 +1357,11 @@ async function mouseEnterHandler(
     popoverElement.id = popoverId
     popoverInner.dataset.contentType = 'application/pdf'
     popoverInner.appendChild(
-      createPdfEmbed(targetUrl.toString(), pdfTitleFromUrl(targetUrl.toString())),
+      createPdfEmbed(
+        targetUrl.toString(),
+        pdfTitleFromUrl(targetUrl.toString()),
+        PDF_PREVIEW_OPTIONS,
+      ),
     )
 
     if (document.getElementById(popoverId)) return
@@ -1348,6 +1437,7 @@ async function mouseClickHandler(evt: MouseEvent) {
         const pdf = createPdfEmbed(
           arxivUrl.toString(),
           `${cleanArxivIdentifier(link.dataset.arxivId)}.pdf`,
+          PDF_SIDE_PANEL_OPTIONS,
         )
         const sideInner = createSidePanel(asidePanel, pdf)
         mountPdfPreviews(sideInner)
@@ -1361,7 +1451,11 @@ async function mouseClickHandler(evt: MouseEvent) {
       fetchUrl.search = ''
 
       if (isPdfUrl(fetchUrl)) {
-        const pdf = createPdfEmbed(fetchUrl.toString(), pdfTitleFromUrl(fetchUrl.toString()))
+        const pdf = createPdfEmbed(
+          fetchUrl.toString(),
+          pdfTitleFromUrl(fetchUrl.toString()),
+          PDF_SIDE_PANEL_OPTIONS,
+        )
         const sideInner = createSidePanel(asidePanel, pdf)
         mountPdfPreviews(sideInner)
         window.notifyNav(slug as FullSlug)
@@ -1379,7 +1473,11 @@ async function mouseClickHandler(evt: MouseEvent) {
 
       if (contentType === 'application/pdf') {
         const src = response.url || fetchUrl.toString()
-        const pdf = createPdfEmbed(src, pdfTitleFromUrl(fetchUrl.toString()))
+        const pdf = createPdfEmbed(
+          src,
+          pdfTitleFromUrl(fetchUrl.toString()),
+          PDF_SIDE_PANEL_OPTIONS,
+        )
         const sideInner = createSidePanel(asidePanel, pdf)
         mountPdfPreviews(sideInner)
       } else {
@@ -1419,6 +1517,12 @@ function setupPopoverLinks(container: Document | HTMLElement = document) {
   const links = ([...container.getElementsByClassName('internal')] as HTMLAnchorElement[]).filter(
     link => !link.closest('#stacked-notes-container'),
   )
+
+  const pdfSources = links.flatMap(link => {
+    const source = pdfPreviewSource(link)
+    return source ? [source] : []
+  })
+  if (pdfSources.length > 0) schedulePdfRuntimePreload(pdfSources)
 
   for (const link of links) {
     link.addEventListener('mouseenter', mouseEnterHandler)

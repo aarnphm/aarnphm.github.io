@@ -151,7 +151,6 @@
 
 .acc-card-label {
   font-size: 0.7rem;
-  text-transform: uppercase;
   color: var(--acc-note);
   font-weight: 600;
 }
@@ -180,6 +179,11 @@
   font-variant-numeric: tabular-nums;
   color: var(--dark);
   line-height: 1.1;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .acc-card--salmon .acc-card-num {
@@ -261,6 +265,11 @@
   font-variant-numeric: tabular-nums;
   color: var(--dark);
   font-weight: 600;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .acc-summary {
