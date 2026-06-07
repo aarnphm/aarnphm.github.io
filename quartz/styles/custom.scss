@@ -177,28 +177,31 @@ a {
 blockquote {
   border-left: none;
   padding-left: 0;
-  position: relative;
   margin: 1.5rem 0 1.5rem 2.5rem;
 
-  &:not([class~='transclude'])::before {
-    content: '\201C';
-    position: absolute;
-    left: -2.5rem;
-    top: 0;
-    // pull the glyph's baseline up so the visible top of the quote mark lines
-    // up with the cap height of the first line of the quote
-    transform: translateY(-0.08em);
-    font-family: var(--headerFont);
-    font-size: 3.5rem;
-    line-height: 1;
-    color: var(--secondary);
-    opacity: 0.4;
+  &:not([class~='callout']) {
+    position: relative;
+
+    &:not([class~='transclude'])::before {
+      content: '\201C';
+      position: absolute;
+      left: -2.5rem;
+      top: 0;
+      // pull the glyph's baseline up so the visible top of the quote mark lines
+      // up with the cap height of the first line of the quote
+      transform: translateY(-0.08em);
+      font-family: var(--headerFont);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--secondary);
+      opacity: 0.4;
+    }
   }
 
   @media all and ($mobile) {
     margin-left: 1.75rem;
 
-    &:not([class~='transclude'])::before {
+    &:not([class~='callout']):not([class~='transclude'])::before {
       left: -1.75rem;
       font-size: 2.75rem;
     }

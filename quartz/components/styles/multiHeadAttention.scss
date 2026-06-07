@@ -295,6 +295,11 @@
 
 .mha-readout-val {
   font-weight: 600;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .mha-readout-val--accent {

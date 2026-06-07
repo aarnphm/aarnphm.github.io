@@ -1,32 +1,9 @@
-Q: What does $A \subseteq B$ mean?
-A: Every element of $A$ is also an element of $B$.
-
----
-
-Q: Define the power set $\mathcal{P}(A)$.
-A: The set of all subsets of $A$, including $\emptyset$ and $A$ itself.
-
----
-
-Q: State the cartesian product $A \times B$.
-A:
-
-$$
-A \times B = \{(a,b) \mid a \in A \text{ and } b \in B\}
-$$
-
----
-
-C: De Morgan's law: $A \setminus (B \cup C) = (A \setminus B) [\cap] (A \setminus C)$.
+Q: What is a set?
+A: A collection of distinct objects, called its elements or members.
 
 ---
 
 C: The [axiom of separation|which axiom] only lets you carve a subset out of an [existing set], which is how ZFC blocks [[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]].
-
----
-
-Q: What is a set?
-A: A collection of distinct objects, called its elements or members.
 
 ---
 
@@ -40,103 +17,13 @@ A: $x$ is not an element of $A$.
 
 ---
 
+Q: What does $A \subseteq B$ mean?
+A: Every element of $A$ is also an element of $B$.
+
+---
+
 Q: What does $A \subsetneq B$ mean?
 A: $A$ is a proper subset of $B$: $A \subseteq B$ and $A \neq B$.
-
----
-
-Q: What does it mean for two sets $A$ and $B$ to be disjoint?
-A: They have no common elements:
-
-$$
-A \cap B = \emptyset
-$$
-
----
-
-Q: What is the safe set-builder form in ZFC?
-A:
-
-$$
-\{x \in A \mid P(x)\}
-$$
-
-It carves elements satisfying $P$ from an existing set $A$.
-
----
-
-C: The naive set-builder form $[\{x \mid P(x)\}|unsafe form]$ is dangerous because it pretends every predicate determines a set.
-
----
-
-C: Sets are determined by their [elements], so order and repetition do no work.
-
----
-
-Q: State extensionality for sets.
-A:
-
-$$
-\forall A\;\forall B\;(\forall x\;(x \in A \iff x \in B) \implies A = B)
-$$
-
----
-
-Q: What is $A \cup \emptyset$ ?
-A:
-
-$$
-A \cup \emptyset = A
-$$
-
----
-
-Q: What is $A \cap \emptyset$?
-A:
-
-$$
-A \cap \emptyset = \emptyset
-$$
-
----
-
-Q: What is the contrapositive of $P \implies Q$?
-A:
-
-$$
-(\text{not } Q) \implies (\text{not } P)
-$$
-
----
-
-C: A statement and its [contrapositive] are logically equivalent.
-
----
-
-C: The [converse] of $P \implies Q$ is $Q \implies P$.
-
----
-
-Q: When does $P \iff Q$ hold in the contrapositive/converse setup?
-A: When both $P \implies Q$ and its converse $Q \implies P$ hold.
-
----
-
-Q: How does negation flip a universal quantifier over $A$?
-A:
-
-$$
-\neg(\forall x \in A,\;P(x)) \iff \exists x \in A,\;\neg P(x)
-$$
-
----
-
-Q: How does negation flip an existential quantifier over $A$?
-A:
-
-$$
-\neg(\exists x \in A,\;P(x)) \iff \forall x \in A,\;\neg P(x)
-$$
 
 ---
 
@@ -167,6 +54,127 @@ $$
 
 ---
 
+C: $\emptyset [\subseteq] A$ for every set $A$.
+
+---
+
+C: $\emptyset \in A$ is a [separate claim] from $\emptyset \subseteq A$.
+
+---
+
+Q: Define the power set $\mathcal{P}(A)$.
+A: The set of all subsets of $A$, including $\emptyset$ and $A$ itself.
+
+---
+
+Q: State the cartesian product $A \times B$.
+A:
+
+$$
+A \times B = \{(a,b) \mid a \in A \text{ and } b \in B\}
+$$
+
+---
+
+Q: What does it mean for two sets $A$ and $B$ to be disjoint?
+A: They have no common elements:
+
+$$
+A \cap B = \emptyset
+$$
+
+---
+
+Q: What is the safe set-builder form in ZFC?
+A:
+
+$$
+\{x \in A \mid P(x)\}
+$$
+
+It carves elements satisfying $P$ from an existing set $A$.
+
+---
+
+C: The naive set-builder form $[\{x \mid P(x)\}|unsafe form]$ is dangerous because it pretends every predicate determines a set.
+
+---
+
+Q: State extensionality for sets.
+A:
+
+$$
+\forall A\;\forall B\;(\forall x\;(x \in A \iff x \in B) \implies A = B)
+$$
+
+---
+
+C: $A \subseteq B$ and $B \subseteq A$ prove $A = B$ by [extensionality].
+
+---
+
+C: Sets are determined by their [elements], so order and repetition do no work.
+
+---
+
+Q: What is $A \cup \emptyset$ ?
+A:
+
+$$
+A \cup \emptyset = A
+$$
+
+---
+
+Q: What is $A \cap \emptyset$?
+A:
+
+$$
+A \cap \emptyset = \emptyset
+$$
+
+---
+
+Q: What is the contrapositive of $P \implies Q$?
+A:
+
+$$
+(\text{not } Q) \implies (\text{not } P)
+$$
+
+---
+
+C: The [converse] of $P \implies Q$ is $Q \implies P$.
+
+---
+
+C: A statement and its [contrapositive] are logically equivalent.
+
+---
+
+Q: When does $P \iff Q$ hold in the contrapositive/converse setup?
+A: When both $P \implies Q$ and its converse $Q \implies P$ hold.
+
+---
+
+Q: How does negation flip a universal quantifier over $A$?
+A:
+
+$$
+\neg(\forall x \in A,\;P(x)) \iff \exists x \in A,\;\neg P(x)
+$$
+
+---
+
+Q: How does negation flip an existential quantifier over $A$?
+A:
+
+$$
+\neg(\exists x \in A,\;P(x)) \iff \forall x \in A,\;\neg P(x)
+$$
+
+---
+
 C: The difference $A \setminus B$ is the [complement] of $B$ relative to $A$.
 
 ---
@@ -177,6 +185,10 @@ A:
 $$
 A \cap (B \cup C) = (A \cap B) \cup (A \cap C)
 $$
+
+---
+
+C: De Morgan's law: $A \setminus (B \cup C) = (A \setminus B) [\cap] (A \setminus C)$.
 
 ---
 
@@ -206,6 +218,40 @@ $$
 
 ---
 
+Q: State the set domination laws in universe $X$.
+A:
+
+$$
+A \cup X = X
+$$
+
+$$
+A \cap \emptyset = \emptyset
+$$
+
+---
+
+C: Set operations are [idempotent]: $A \cup A = A$ and $A \cap A = A$.
+
+---
+
+Q: State the set absorption laws.
+A:
+
+$$
+A \cup (A \cap B) = A
+$$
+
+$$
+A \cap (A \cup B) = A
+$$
+
+---
+
+C: The double negative law for sets states [$(A^c)^c = A$].
+
+---
+
 Q: Express set difference using complement.
 A:
 
@@ -228,12 +274,7 @@ C: Membership in $A \triangle B$ is [exclusive-or]: the element appears in exact
 
 ---
 
-Q: How many elements does $\mathcal{P}(A)$ have when $A$ has $n$ elements?
-A:
-
-$$
-|\mathcal{P}(A)| = 2^n
-$$
+C: The distinction is $a \in A$, but $\{a\} [\subseteq] A$ and $\{a\} [\in] \mathcal{P}(A)$.
 
 ---
 
@@ -245,7 +286,12 @@ C: For $A=\{a,b,c\}$ with coordinate order $(a,b,c)$, the subset $\{a,c\}$ corre
 
 ---
 
-C: The distinction is $a \in A$, but $\{a\} [\subseteq] A$ and $\{a\} [\in] \mathcal{P}(A)$.
+Q: How many elements does $\mathcal{P}(A)$ have when $A$ has $n$ elements?
+A:
+
+$$
+|\mathcal{P}(A)| = 2^n
+$$
 
 ---
 
@@ -309,10 +355,6 @@ C: An indexed family of sets is a [function] $I \to \mathcal{P}(X)$.
 
 ---
 
-C: A family can have [repeated values], because it is a function out of the index set $I$.
-
----
-
 Q: Define an indexed union $\bigcup_{i \in I} A_i$.
 A:
 
@@ -328,6 +370,10 @@ A:
 $$
 \bigcap_{i \in I} A_i = \{x \in X \mid \forall i \in I,\;x \in A_i\}
 $$
+
+---
+
+C: A family can have [repeated values], because it is a function out of the index set $I$.
 
 ---
 
@@ -380,6 +426,11 @@ A: A relation $f \subseteq A \times B$ such that every $a \in A$ appears exactly
 $$
 \forall a \in A\;\exists! b \in B\;(a,b) \in f
 $$
+
+---
+
+Q: What is the rules of assignment?
+A: a subset $r$ of the cartesian product $C\;\times\;D$
 
 ---
 
@@ -544,6 +595,14 @@ C: In the discrete topology, every set is both [open] and [closed].
 
 ---
 
+C: In the standard topology on $\mathbb{R}$, $[a, b]$ is [closed], $(a, b)$ is [open], and $[a, b)$ is [neither].
+
+---
+
+C: The [lower limit topology] on $\mathbb{R}$ handles half-open intervals $[a,b)$ differently than the standard topology.
+
+---
+
 Q: What is the closure $\overline{A}$?
 A: The smallest closed set containing $A$.
 
@@ -560,6 +619,10 @@ A:
 $$
 \partial A = \overline{A} \setminus \mathrm{int}(A)
 $$
+
+---
+
+C: Open and closed are properties of subsets relative to a [topology] on $X$.
 
 ---
 
@@ -599,73 +662,15 @@ C: The axiom of [choice] says that for a set of nonempty sets, one element can b
 
 ---
 
-C: Replacement says "[send each element through a definable rule, then collect the outputs]"; separation says "[filter this set]".
-
----
-
 C: Most ordinary mathematics uses [choice] quietly.
 
 ---
 
-C: $\emptyset [\subseteq] A$ for every set $A$.
-
----
-
-C: $\emptyset \in A$ is a [separate claim] from $\emptyset \subseteq A$.
-
----
-
-C: $A \subseteq B$ and $B \subseteq A$ prove $A = B$ by [extensionality].
+C: Replacement says "[send each element through a definable rule, then collect the outputs]"; separation says "[filter this set]".
 
 ---
 
 C: Complements need a [universe].
-
----
-
-C: Open and closed are properties of subsets relative to a [topology] on $X$.
-
----
-
-Q: State the set domination laws in universe $X$.
-A:
-
-$$
-A \cup X = X
-$$
-
-$$
-A \cap \emptyset = \emptyset
-$$
-
----
-
-Q: State the set absorption laws.
-A:
-
-$$
-A \cup (A \cap B) = A
-$$
-
-$$
-A \cap (A \cup B) = A
-$$
-
----
-
-C: Set operations are [idempotent]: $A \cup A = A$ and $A \cap A = A$.
-
----
-
-C: The double negative law for sets states [$(A^c)^c = A$].
-
----
-
-C: In the standard topology on $\mathbb{R}$, $[a, b]$ is [closed], $(a, b)$ is [open], and $[a, b)$ is [neither].
-
----
-
-C: The [lower limit topology] on $\mathbb{R}$ handles half-open intervals $[a,b)$ differently than the standard topology.
 
 ---
 

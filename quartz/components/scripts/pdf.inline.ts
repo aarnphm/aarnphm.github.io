@@ -7,7 +7,9 @@ const PDF_COMMENT_ROOM_TOGGLE_EVENT = 'commentsroomtoggle'
 const DEFAULT_OVERSCAN = 1
 const MAX_RENDER_WINDOW_RADIUS = 4
 const PDF_PRELOAD_PAGE_LIMIT = 12
+const PDF_DOCUMENT_CACHE_TTL_MS = 60 * 1000
 const PDF_INTERSECTION_ROOT_MARGIN = '1200px 0px'
+const DEFAULT_MAX_PIXEL_RATIO = 2
 const MIN_SCALE = 0.25
 const MAX_SCALE = 4
 const VIEWER_PADDING_PX = 0
@@ -87,6 +89,7 @@ interface PdfJsRuntime {
 interface QuartzPdfEmbeds {
   mount(root?: ParentNode): void
   cleanup(root?: ParentNode): void
+  preload(src?: string): Promise<void>
 }
 
 interface PdfOptions {
@@ -97,6 +100,26 @@ interface PdfOptions {
   scale?: number
   height?: number
   overscan: number
+  preload: boolean
+  annotations: boolean
+  rootMargin: string
+  maxPixelRatio: number
+  textLayer: boolean
+}
+
+interface PdfDocumentCacheEntry {
+  key: string
+  loadingTask: PdfLoadingTask
+  promise: Promise<PdfDocument>
+  refs: number
+  destroyTimer: number
+  document?: PdfDocument
+}
+
+interface PdfDocumentHandle {
+  loadingTask: PdfLoadingTask
+  document: PdfDocument
+  release(): void
 }
 
 interface PdfPageSlot {
@@ -135,6 +158,7 @@ interface PdfState {
   pdfjs: PdfJsRuntime
   loadingTask: PdfLoadingTask
   document: PdfDocument
+  releaseDocument: () => void
   toolbar: HTMLDivElement
   scroller: HTMLDivElement
   shell: HTMLDivElement
@@ -248,6 +272,7 @@ interface PdfCommentComposer {
 }
 
 let pdfJsLoad: Promise<PdfJsRuntime> | undefined
+const pdfDocumentCache = new Map<string, PdfDocumentCacheEntry>()
 const pdfStates = new WeakMap<HTMLElement, PdfState>()
 const pendingPdfMounts = new WeakSet<HTMLElement>()
 let selectedPdfState: PdfState | null = null
@@ -344,6 +369,18 @@ function readInteger(value: string | undefined, fallback: number): number {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback
 }
 
+function readNonNegativeInteger(value: string | undefined, fallback: number): number {
+  const parsed = Number.parseInt(value ?? '', 10)
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback
+}
+
+function readBoolean(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined) return fallback
+  if (value === 'true' || value === '1' || value === 'on') return true
+  if (value === 'false' || value === '0' || value === 'off') return false
+  return fallback
+}
+
 function readFit(value: string | undefined): PdfFitMode {
   if (value === 'page' || value === 'actual' || value === 'custom') return value
   return 'width'
@@ -365,7 +402,16 @@ function readPdfOptions(root: HTMLElement): PdfOptions | null {
     fit: scale ? 'custom' : readFit(root.dataset.pdfFit),
     scale,
     height: root.dataset.pdfHeight ? readInteger(root.dataset.pdfHeight, 0) : undefined,
-    overscan: readInteger(root.dataset.pdfOverscan, DEFAULT_OVERSCAN),
+    overscan: readNonNegativeInteger(root.dataset.pdfOverscan, DEFAULT_OVERSCAN),
+    preload: readBoolean(root.dataset.pdfPreload, false),
+    annotations: readBoolean(root.dataset.pdfEnableAnnotations, true),
+    rootMargin: root.dataset.pdfRootMargin || PDF_INTERSECTION_ROOT_MARGIN,
+    maxPixelRatio: clampPdfValue(
+      readNumber(root.dataset.pdfMaxPixelRatio, DEFAULT_MAX_PIXEL_RATIO),
+      1,
+      DEFAULT_MAX_PIXEL_RATIO,
+    ),
+    textLayer: readBoolean(root.dataset.pdfTextLayer, true),
   }
 }
 
@@ -383,6 +429,88 @@ function loadPdfJs(): Promise<PdfJsRuntime> {
   })
 
   return pdfJsLoad
+}
+
+function pdfDocumentCacheKey(src: string): string {
+  try {
+    return normalizePdfSource(src)
+  } catch {
+    return src
+  }
+}
+
+function pdfDocumentOptions(src: string) {
+  return {
+    url: src,
+    cMapUrl: '/static/pdfjs/cmaps/',
+    cMapPacked: true,
+    standardFontDataUrl: '/static/pdfjs/standard_fonts/',
+  }
+}
+
+function releasePdfDocument(key: string) {
+  const entry = pdfDocumentCache.get(key)
+  if (!entry) return
+  entry.refs = Math.max(0, entry.refs - 1)
+  if (entry.refs > 0 || entry.destroyTimer) return
+  entry.destroyTimer = window.setTimeout(() => {
+    if (entry.refs > 0) {
+      entry.destroyTimer = 0
+      return
+    }
+
+    pdfDocumentCache.delete(key)
+    void entry.loadingTask.destroy().catch(() => undefined)
+    void entry.document?.destroy().catch(() => undefined)
+  }, PDF_DOCUMENT_CACHE_TTL_MS)
+}
+
+function loadPdfDocument(pdfjs: PdfJsRuntime, src: string): Promise<PdfDocumentHandle> {
+  const key = pdfDocumentCacheKey(src)
+  let entry = pdfDocumentCache.get(key)
+
+  if (!entry) {
+    const loadingTask = pdfjs.getDocument(pdfDocumentOptions(src))
+    let cacheEntry: PdfDocumentCacheEntry
+    const promise = loadingTask.promise
+      .then(document => {
+        cacheEntry.document = document
+        return document
+      })
+      .catch(error => {
+        pdfDocumentCache.delete(key)
+        throw error
+      })
+    cacheEntry = { key, loadingTask, promise, refs: 0, destroyTimer: 0 }
+    entry = cacheEntry
+    pdfDocumentCache.set(key, entry)
+  }
+
+  if (entry.destroyTimer) {
+    window.clearTimeout(entry.destroyTimer)
+    entry.destroyTimer = 0
+  }
+  entry.refs += 1
+
+  return entry.promise.then(document => {
+    let released = false
+    return {
+      loadingTask: entry.loadingTask,
+      document,
+      release() {
+        if (released) return
+        released = true
+        releasePdfDocument(key)
+      },
+    }
+  })
+}
+
+async function preloadPdfRuntime(src?: string): Promise<void> {
+  const pdfjs = await loadPdfJs()
+  if (!src) return
+  const handle = await loadPdfDocument(pdfjs, src)
+  handle.release()
 }
 
 function normalizePdfSource(src: string): string {
@@ -1198,6 +1326,12 @@ function renderPdfAnnotations(state: PdfState) {
   state.annotationStack.replaceChildren()
   state.annotationStack.style.height = ''
 
+  if (!state.options.annotations) {
+    state.root.removeAttribute('data-pdf-annotations')
+    syncPdfEmbedViewport(state)
+    return
+  }
+
   if (!readCommentRoomEnabled()) {
     state.root.removeAttribute('data-pdf-annotations')
     syncPdfEmbedViewport(state)
@@ -1485,12 +1619,18 @@ function pdfRenderWindowRadius(state: PdfState): number {
 }
 
 function shouldPreloadPdfPages(state: PdfState): boolean {
-  return state.document.numPages <= PDF_PRELOAD_PAGE_LIMIT
+  return state.options.preload && state.document.numPages <= PDF_PRELOAD_PAGE_LIMIT
 }
 
 function shouldRenderTextLayer(state: PdfState, pageNumber: number): boolean {
+  if (!state.options.textLayer) return false
   if (state.visiblePages.has(pageNumber)) return true
   return Math.abs(pageNumber - state.currentPage) <= pdfRenderWindowRadius(state)
+}
+
+function shouldKeepRenderedPage(state: PdfState, pageNumber: number, centerPage: number): boolean {
+  if (state.visiblePages.has(pageNumber)) return true
+  return Math.abs(pageNumber - centerPage) <= pdfRenderWindowRadius(state)
 }
 
 function clearTextLayer(slot: PdfPageSlot) {
@@ -1514,19 +1654,30 @@ function clearRenderedPage(slot: PdfPageSlot) {
 
 function pruneDistantRenderedPagesNow(state: PdfState, centerPage: number) {
   if (shouldPreloadPdfPages(state)) return
-  const radius = pdfRenderWindowRadius(state)
+  cancelDistantRenderWork(state, centerPage)
   for (const slot of state.slots.values()) {
-    if (state.visiblePages.has(slot.pageNumber)) continue
-    if (Math.abs(slot.pageNumber - centerPage) <= radius) continue
+    if (shouldKeepRenderedPage(state, slot.pageNumber, centerPage)) continue
+    if (slot.renderedScale !== undefined || slot.textRenderedScale !== undefined) {
+      clearRenderedPage(slot)
+    }
+  }
+}
+
+function cancelDistantRenderWork(state: PdfState, centerPage: number) {
+  if (shouldPreloadPdfPages(state)) return
+  for (const slot of state.slots.values()) {
+    if (shouldKeepRenderedPage(state, slot.pageNumber, centerPage)) continue
     state.renderQueue.delete(slot.pageNumber)
     state.textRenderQueue.delete(slot.pageNumber)
-    if (
-      slot.renderedScale !== undefined ||
-      slot.renderingScale !== undefined ||
-      slot.textRenderedScale !== undefined ||
-      slot.textRenderingScale !== undefined
-    ) {
-      clearRenderedPage(slot)
+    if (slot.renderingScale !== undefined) {
+      slot.renderTask?.cancel()
+      slot.renderTask = undefined
+      slot.renderingScale = undefined
+    }
+    if (slot.textRenderingScale !== undefined) {
+      slot.textRenderTask?.cancel()
+      slot.textRenderTask = undefined
+      slot.textRenderingScale = undefined
     }
   }
 }
@@ -1573,6 +1724,7 @@ function scrollToPage(state: PdfState, pageNumber: number) {
   if (!slot) return
   state.currentPage = pageNumber
   updateControls(state)
+  cancelDistantRenderWork(state, pageNumber)
   pruneDistantRenderedPages(state, pageNumber)
   const scrollerRect = state.scroller.getBoundingClientRect()
   const slotRect = slot.element.getBoundingClientRect()
@@ -1617,7 +1769,7 @@ function rerenderVisiblePages(state: PdfState) {
   updateControls(state)
   renderPdfAnnotations(state)
   enqueueVisiblePages(state)
-  enqueuePreloadPages(state)
+  if (state.options.preload) enqueuePreloadPages(state)
 }
 
 async function renderPage(state: PdfState, slot: PdfPageSlot, epoch: number) {
@@ -1635,7 +1787,7 @@ async function renderPage(state: PdfState, slot: PdfPageSlot, epoch: number) {
   if (state.destroyed || epoch !== state.renderEpoch) return
 
   const viewport = page.getViewport({ scale: state.scale })
-  const ratio = Math.min(2, Math.max(1, window.devicePixelRatio || 1))
+  const ratio = Math.min(state.options.maxPixelRatio, Math.max(1, window.devicePixelRatio || 1))
   const canvas = slot.canvas
   canvas.width = Math.floor(viewport.width * ratio)
   canvas.height = Math.floor(viewport.height * ratio)
@@ -1867,6 +2019,7 @@ function setupPdfEvents(state: PdfState) {
       if (page !== state.currentPage) {
         state.currentPage = page
         updateControls(state)
+        cancelDistantRenderWork(state, page)
         pruneDistantRenderedPages(state, page)
         enqueueRenderWindow(state, page)
       }
@@ -1922,6 +2075,7 @@ function setupPdfEvents(state: PdfState) {
     }
   }
   const onMouseUp = (event: MouseEvent) => {
+    if (!state.options.annotations) return
     if (event.button !== 0) return
     if (!readCommentRoomEnabled()) return
     if (!event.metaKey && !event.ctrlKey && !event.altKey) return
@@ -1930,6 +2084,7 @@ function setupPdfEvents(state: PdfState) {
     showPdfComposer(state, selection)
   }
   const onCommentRoomToggle = (event: CustomEventMap['commentsroomtoggle']) => {
+    if (!state.options.annotations) return
     const enabled = event.detail.enabled ?? !readCommentRoomEnabled()
     if (enabled) {
       connectPdfAnnotations(state)
@@ -1988,142 +2143,137 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
   loading.textContent = 'Loading PDF'
   root.appendChild(loading)
 
+  let documentHandle: PdfDocumentHandle | undefined
   const pdfjs = await loadPdfJs()
-  if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
-  pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_SRC
-  const loadingTask = pdfjs.getDocument({
-    url: options.src,
-    cMapUrl: '/static/pdfjs/cmaps/',
-    cMapPacked: true,
-    standardFontDataUrl: '/static/pdfjs/standard_fonts/',
-  })
-  const pdfDocument = await loadingTask.promise
-  if (!root.isConnected || root.dataset.pdfStatus !== 'loading') {
-    void loadingTask.destroy().catch(() => undefined)
-    void pdfDocument.destroy().catch(() => undefined)
-    return
-  }
-  const firstPage = await pdfDocument.getPage(1)
-  if (!root.isConnected || root.dataset.pdfStatus !== 'loading') {
-    void loadingTask.destroy().catch(() => undefined)
-    void pdfDocument.destroy().catch(() => undefined)
-    return
-  }
-  const firstViewport = firstPage.getViewport({ scale: 1 })
+  try {
+    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_SRC
+    documentHandle = await loadPdfDocument(pdfjs, options.src)
+    const { loadingTask, document: pdfDocument } = documentHandle
+    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    const firstPage = await pdfDocument.getPage(1)
+    if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
+    const firstViewport = firstPage.getViewport({ scale: 1 })
 
-  const { toolbar, controls } = createControls(options)
-  controls.pageTotal.textContent = `/ ${pdfDocument.numPages}`
+    const { toolbar, controls } = createControls(options)
+    controls.pageTotal.textContent = `/ ${pdfDocument.numPages}`
 
-  const scroller = document.createElement('div')
-  scroller.className = 'pdf-viewer-container'
-  scroller.tabIndex = 0
-  const body = document.createElement('div')
-  body.className = 'pdf-embed-body'
-  const shell = document.createElement('div')
-  shell.className = 'pdf-viewer-shell'
-  const viewer = document.createElement('div')
-  viewer.className = 'pdf-viewer'
-  const annotationRail = document.createElement('div')
-  annotationRail.className = 'pdf-annotation-rail'
-  const annotationStack = document.createElement('div')
-  annotationStack.className = 'pdf-annotation-stack'
-  annotationRail.appendChild(annotationStack)
-  shell.appendChild(viewer)
-  scroller.appendChild(shell)
-  body.appendChild(scroller)
-  root.replaceChildren(toolbar, body, annotationRail)
-  updateAutoPdfEmbedHeight(root, toolbar, scroller, firstViewport, options)
+    const scroller = document.createElement('div')
+    scroller.className = 'pdf-viewer-container'
+    scroller.tabIndex = 0
+    const body = document.createElement('div')
+    body.className = 'pdf-embed-body'
+    const shell = document.createElement('div')
+    shell.className = 'pdf-viewer-shell'
+    const viewer = document.createElement('div')
+    viewer.className = 'pdf-viewer'
+    const annotationRail = document.createElement('div')
+    annotationRail.className = 'pdf-annotation-rail'
+    const annotationStack = document.createElement('div')
+    annotationStack.className = 'pdf-annotation-stack'
+    annotationRail.appendChild(annotationStack)
+    shell.appendChild(viewer)
+    scroller.appendChild(shell)
+    body.appendChild(scroller)
+    root.replaceChildren(toolbar, body, annotationRail)
+    updateAutoPdfEmbedHeight(root, toolbar, scroller, firstViewport, options)
 
-  const scale = calculateFitScale(scroller, firstViewport, options.fit, options.scale)
-  const observer = new IntersectionObserver(() => undefined)
-  const resizeObserver = new ResizeObserver(() => undefined)
+    const scale = calculateFitScale(scroller, firstViewport, options.fit, options.scale)
+    const observer = new IntersectionObserver(() => undefined)
+    const resizeObserver = new ResizeObserver(() => undefined)
 
-  const state: PdfState = {
-    root,
-    options,
-    pdfjs,
-    loadingTask,
-    document: pdfDocument,
-    toolbar,
-    scroller,
-    shell,
-    viewer,
-    annotationRail,
-    annotationStack,
-    controls,
-    firstViewport,
-    slots: new Map(),
-    renderQueue: new Set(),
-    textRenderQueue: new Set(),
-    preloadQueue: new Set(),
-    visiblePages: new Set(),
-    observer,
-    resizeObserver,
-    pageMetrics: [],
-    pageMetricsValid: false,
-    scale,
-    fit: options.fit,
-    layoutWidth: scroller.clientWidth,
-    currentPage: clampPdfValue(options.page, 1, pdfDocument.numPages),
-    draining: false,
-    textDraining: false,
-    preloadDraining: false,
-    destroyed: false,
-    renderEpoch: 0,
-    scrollFrame: 0,
-    resizeFrame: 0,
-    pruneTimer: 0,
-    lastScrollAt: Date.now(),
-    cleanup: [],
-    annotations: createPdfAnnotationState(options),
-  }
-  pdfStates.set(root, state)
-  state.observer.disconnect()
-  state.resizeObserver.disconnect()
-  state.observer = new IntersectionObserver(
-    entries => {
-      for (const entry of entries) {
-        const pageNumber = readInteger(entry.target.getAttribute('data-pdf-page-number') ?? '', 0)
-        if (pageNumber === 0) continue
-        if (entry.isIntersecting) {
-          state.visiblePages.add(pageNumber)
-          enqueuePage(state, pageNumber)
-        } else {
-          state.visiblePages.delete(pageNumber)
+    const state: PdfState = {
+      root,
+      options,
+      pdfjs,
+      loadingTask,
+      document: pdfDocument,
+      releaseDocument: documentHandle.release,
+      toolbar,
+      scroller,
+      shell,
+      viewer,
+      annotationRail,
+      annotationStack,
+      controls,
+      firstViewport,
+      slots: new Map(),
+      renderQueue: new Set(),
+      textRenderQueue: new Set(),
+      preloadQueue: new Set(),
+      visiblePages: new Set(),
+      observer,
+      resizeObserver,
+      pageMetrics: [],
+      pageMetricsValid: false,
+      scale,
+      fit: options.fit,
+      layoutWidth: scroller.clientWidth,
+      currentPage: clampPdfValue(options.page, 1, pdfDocument.numPages),
+      draining: false,
+      textDraining: false,
+      preloadDraining: false,
+      destroyed: false,
+      renderEpoch: 0,
+      scrollFrame: 0,
+      resizeFrame: 0,
+      pruneTimer: 0,
+      lastScrollAt: Date.now(),
+      cleanup: [],
+      annotations: createPdfAnnotationState(options),
+    }
+    pdfStates.set(root, state)
+    state.observer.disconnect()
+    state.resizeObserver.disconnect()
+    state.observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          const pageNumber = readInteger(entry.target.getAttribute('data-pdf-page-number') ?? '', 0)
+          if (pageNumber === 0) continue
+          if (entry.isIntersecting) {
+            state.visiblePages.add(pageNumber)
+            enqueuePage(state, pageNumber)
+          } else {
+            state.visiblePages.delete(pageNumber)
+          }
         }
-      }
-    },
-    { root: scroller, rootMargin: PDF_INTERSECTION_ROOT_MARGIN },
-  )
-  state.resizeObserver = new ResizeObserver(() => {
-    if (state.resizeFrame) return
-    state.resizeFrame = window.requestAnimationFrame(() => {
-      state.resizeFrame = 0
-      syncPdfEmbedViewport(state)
+        cancelDistantRenderWork(state, state.currentPage)
+      },
+      { root: scroller, rootMargin: options.rootMargin },
+    )
+    state.resizeObserver = new ResizeObserver(() => {
+      if (state.resizeFrame) return
+      state.resizeFrame = window.requestAnimationFrame(() => {
+        state.resizeFrame = 0
+        syncPdfEmbedViewport(state)
+      })
     })
-  })
 
-  for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
-    const slot = createPageSlot(pageNumber, firstViewport, scale)
-    state.slots.set(pageNumber, slot)
-    viewer.appendChild(slot.element)
-    state.observer.observe(slot.element)
-  }
+    for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber++) {
+      const slot = createPageSlot(pageNumber, firstViewport, scale)
+      state.slots.set(pageNumber, slot)
+      viewer.appendChild(slot.element)
+      state.observer.observe(slot.element)
+    }
 
-  state.resizeObserver.observe(root)
-  setupPdfEvents(state)
-  if (selectedPdfRoot === root) {
-    selectPdfState(state)
-    state.scroller.focus({ preventScroll: true })
+    state.resizeObserver.observe(root)
+    setupPdfEvents(state)
+    if (selectedPdfRoot === root) {
+      selectPdfState(state)
+      state.scroller.focus({ preventScroll: true })
+    }
+    if (options.annotations && readCommentRoomEnabled()) {
+      connectPdfAnnotations(state)
+    }
+    updateControls(state)
+    root.dataset.pdfStatus = 'loaded'
+    scrollToPage(state, state.currentPage)
+    renderPdfAnnotations(state)
+    if (options.preload) enqueuePreloadPages(state)
+    documentHandle = undefined
+  } finally {
+    documentHandle?.release()
   }
-  if (readCommentRoomEnabled()) {
-    connectPdfAnnotations(state)
-  }
-  updateControls(state)
-  root.dataset.pdfStatus = 'loaded'
-  scrollToPage(state, state.currentPage)
-  renderPdfAnnotations(state)
-  enqueuePreloadPages(state)
 }
 
 function cleanupPdfEmbed(root: HTMLElement) {
@@ -2156,8 +2306,7 @@ function cleanupPdfEmbed(root: HTMLElement) {
   for (const cleanup of state.cleanup.splice(0)) {
     cleanup()
   }
-  void state.loadingTask.destroy().catch(() => undefined)
-  void state.document.destroy().catch(() => undefined)
+  state.releaseDocument()
   pdfStates.delete(root)
 }
 
@@ -2192,7 +2341,11 @@ function cleanupPdfEmbeds(root: ParentNode = document) {
   pdfEmbedRoots(root, PDF_EMBED_CLEANUP_SELECTOR).forEach(cleanupPdfEmbed)
 }
 
-const pdfEmbeds: QuartzPdfEmbeds = { mount: mountPdfEmbeds, cleanup: cleanupPdfEmbeds }
+const pdfEmbeds: QuartzPdfEmbeds = {
+  mount: mountPdfEmbeds,
+  cleanup: cleanupPdfEmbeds,
+  preload: preloadPdfRuntime,
+}
 window.quartzPdfEmbeds = pdfEmbeds
 
 document.addEventListener('nav', () => {

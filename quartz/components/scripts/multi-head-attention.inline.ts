@@ -1,4 +1,4 @@
-export {}
+import katex from 'katex'
 
 const mhaViewH = 420
 const mhaBandTop = 36
@@ -34,9 +34,26 @@ const mhaSetAttr = (el: Element | null, name: string, value: string) => {
   if (el) el.setAttribute(name, value)
 }
 
+const mhaTex = (v: string): string => {
+  const m = v.match(/^([\d.,\s]*)(.*)$/)
+  const num = m ? m[1] : v
+  const unit = m ? m[2] : ''
+  const tex = unit ? `${num}\\text{${unit}}` : num
+  try {
+    return katex.renderToString(tex, {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return v
+  }
+}
+
 const mhaSetText = (root: HTMLElement, selector: string, text: string) => {
   const el = root.querySelector(selector)
-  if (el) el.textContent = text
+  if (el) el.innerHTML = mhaTex(text)
 }
 
 const mhaSetLayout = (root: HTMLElement, h: number, showPattern: boolean) => {

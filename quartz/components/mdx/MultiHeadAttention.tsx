@@ -331,9 +331,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                       <div
                         class="mha-fo mha-fo--score-label"
                         dangerouslySetInnerHTML={{
-                          __html: renderMath(
-                            `\\operatorname{softmax}(Q_{${i + 1}}K_{${i + 1}}^{\\top}/\\sqrt{d_h})`,
-                          ),
+                          __html: renderMath(`\\operatorname{softmax}_{${i + 1}}`),
                         }}
                       />
                     </foreignObject>

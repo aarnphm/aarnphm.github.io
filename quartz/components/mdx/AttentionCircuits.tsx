@@ -81,7 +81,7 @@ const StandardPanel: FunctionalComponent = () => {
       aria-label="Standard attention flow: x branches into Q, K, V projections; Q and K feed softmax; weights apply to V; result passes through W_O."
     >
       <ArrowDefs id={STD_ARROW} />
-      <Fo x={70} y={16} w={180} h={24} t={math`\text{textbook softmax view}`} cls="acir-fo--axis" />
+      <Fo x={70} y={16} w={180} h={24} t={math`\text{softmax view}`} cls="acir-fo--axis" />
       <rect class="acir-box acir-box--input" x={inX - 22} y={210} width={44} height={40} rx={4} />
       <Fo x={inX - 22} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
       <path class="acir-line" d={`M ${inX + 22} 230 L ${splitX} 230`} />

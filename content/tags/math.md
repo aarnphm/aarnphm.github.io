@@ -8,5 +8,8 @@ I do read quite abit of maths during downtime, and this includes some notes I ha
 
 Courses to do:
 
-- [[thoughts/projection theory]]
-- [[thoughts/topology]]
+- [[courses/18-100b-analysis-i-fall-2010|Analysis I]]
+- [[courses/18.901-fall-2004|Introduction to Topology]]
+- [[courses/18.905-fall-2016|Algebraic Topology I]]
+- [[courses/18-156-projection-theory-spring-2025|Projection Theory]]
+- [[courses/14-12-economic-applications-of-game-theory-fall-2025|Economic applications of Game Theory]]

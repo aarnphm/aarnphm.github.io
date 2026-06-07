@@ -112,10 +112,12 @@ class SidenoteManager {
   }
 
   private measureContentHeight(content: HTMLElement): number {
-    const original = content.style.cssText
-    content.style.cssText = 'display:block;visibility:hidden;position:absolute'
-    const height = content.getBoundingClientRect().height
-    content.style.cssText = original
+    const probe = content.cloneNode(true) as HTMLElement
+    probe.removeAttribute('id')
+    probe.style.cssText = 'display:block;visibility:hidden;position:absolute;left:0;top:0'
+    content.parentElement?.appendChild(probe)
+    const height = probe.getBoundingClientRect().height
+    probe.remove()
     return height
   }
 

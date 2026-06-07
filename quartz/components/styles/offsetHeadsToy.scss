@@ -185,6 +185,11 @@
 .oht-stat-val {
   font-weight: 600;
 
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
+
   &.oht-stat-val--big {
     font-size: 1.05rem;
     color: var(--dark);

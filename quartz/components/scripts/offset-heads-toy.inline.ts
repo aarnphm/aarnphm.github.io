@@ -1,4 +1,4 @@
-export {}
+import katex from 'katex'
 
 type OhtMatrix = number[][]
 
@@ -219,6 +219,19 @@ const ohtFmt = (v: number, digits = 3): string => {
   return v.toFixed(digits)
 }
 
+const ohtTex = (v: string): string => {
+  try {
+    return katex.renderToString(v.replace(/%/g, '\\%'), {
+      displayMode: false,
+      output: 'html',
+      throwOnError: false,
+      strict: false,
+    })
+  } catch {
+    return v
+  }
+}
+
 const ohtPaintPanel = (root: HTMLElement, key: string, matrix: OhtMatrix, L: number) => {
   let max = 0
   for (const row of matrix) for (const v of row) if (v > max) max = v
@@ -243,16 +256,16 @@ const ohtRender = (root: HTMLElement, state: OhtState) => {
   ohtPaintPanel(root, 'sh', state.Ps, state.L)
 
   const normEl = root.querySelector('[data-oht-stat="norm"]')
-  if (normEl) normEl.textContent = ohtFmt(state.norm)
+  if (normEl) normEl.innerHTML = ohtTex(ohtFmt(state.norm))
   const refEl = root.querySelector('[data-oht-stat="ref"]')
-  if (refEl) refEl.textContent = ohtFmt(state.ref)
+  if (refEl) refEl.innerHTML = ohtTex(ohtFmt(state.ref))
   const relEl = root.querySelector('[data-oht-stat="rel"]')
   if (relEl) {
     const ratio = state.ref > 1e-9 ? (state.norm / state.ref) * 100 : 0
-    relEl.textContent = `${ratio.toFixed(1)}%`
+    relEl.innerHTML = ohtTex(`${ratio.toFixed(1)}%`)
   }
   const seedEl = root.querySelector('[data-oht-stat="seed"]')
-  if (seedEl) seedEl.textContent = String(state.seed)
+  if (seedEl) seedEl.innerHTML = ohtTex(String(state.seed))
 
   const betaValue = root.querySelector('[data-oht-beta-value]')
   if (betaValue) betaValue.textContent = state.beta.toFixed(1)
