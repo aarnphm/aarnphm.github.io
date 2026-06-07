@@ -212,9 +212,11 @@
     }
 
     &[data-content-type*='pdf'] {
+      --popover-pdf-background: var(--light);
+
       width: min(var(--popover-pdf-width, 30rem), calc(100vw - 2rem));
       height: min(var(--popover-pdf-height, 20rem), calc(100vh - 2rem));
-      background: var(--light);
+      background: var(--popover-pdf-background);
       overflow: hidden;
 
       .pdf-embed-preview {
@@ -225,7 +227,23 @@
         margin: 0;
         padding: 0;
         border: 0;
-        background: var(--light);
+        background: var(--popover-pdf-background);
+      }
+
+      .pdf-embed-toolbar,
+      .pdf-embed-body,
+      .pdf-viewer-container,
+      .pdf-viewer-shell,
+      .pdf-embed-page {
+        background: var(--popover-pdf-background);
+      }
+
+      .popover-loading {
+        background: var(--popover-pdf-background);
+      }
+
+      .popover-loading-dots span {
+        background: var(--gray);
       }
 
       .pdf-annotation-rail {

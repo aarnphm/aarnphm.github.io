@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-06-07 00:25:50 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -36,6 +36,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
       - source: [[thoughts/structured outputs#jump-forward decoding|design docs]] ^[In practice, jump-forward decoding doesn't add a lot of value given that the overhead of detokenization overweighs the actual benefits of skipping forward a few FSM state.]
   - Source: [github](https://github.com/vllm-project/vllm), [docs](https://docs.vllm.ai), [[thoughts/vllm|notes]]
 
+<!-- prettier-ignore -->
 - **Quartz** - :seedling: a fast, batteries-included static-site generator that transforms Markdown content into fully functional websites (2023-) ^quartz
   - A set of [[colophon|tools]] that helps you publish your [[thoughts/Digital garden|digital garden]] and notes as a website for free.
   - Improved performance of graph interaction with Canvas https://github.com/jackyzha0/quartz/pull/1328
@@ -46,6 +47,7 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
   - Added [LLM-readable source](https://x.com/aarnphm/status/1857955302110376342)
   - Added Jupyter notebook transpilation and [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|executions]] (think of it as a scuffed Modal notebook)
     <div class="nolist">
+
     - ![[thoughts/Jax#code-cell-1|example if per-block transclusion runtime]]
 
     </div>

@@ -2,7 +2,7 @@
 date: '2024-10-10'
 description: '[[thoughts/Compression|compression]] of key-value in [[thoughts/Transformers|Tranformers]] model'
 id: KV compression
-modified: 2026-06-05 15:08:13 GMT-04:00
+modified: 2026-06-06 23:33:08 GMT-04:00
 seealso:
   - '[[@li2024snapkvllmknowslooking]]'
   - '[[@ge2024modeltellsdiscardadaptive]]'
@@ -31,7 +31,7 @@ NHD/HND
 - `NHD` -> `(seq_len, num_heads, head_dim)`
 - `HND` -> `(num_heads, seq_len, head_dim)`
 
-## idea.
+## idea
 
 Look at past attention weights for each pair of key and value vectors
 (a measure of the degree with which that KV’s representation has been queried during past attention operations)
@@ -42,7 +42,7 @@ Think of LFU (least frequency used) cache management policy
 
 the KV cache for each sequence in a particular layer is allocated on the GPU as a _# attention heads $X$ sequence length_ tensor.
 
-> [!important]
+> [!important] scaling
 >
 > total memory allocation scales with the _maximum_ sequence length for all attention heads of the KV cache
 
@@ -124,8 +124,6 @@ link: [github](https://github.com/jy-yuan/KIVI)
 _variable compression rates per attention head_
 
 source: [github](https://github.com/IsaacRe/vllm-kvcompress)
-
-![[thoughts/KV compression#idea.|idea for kv cache]]
 
 > [!notes]
 >

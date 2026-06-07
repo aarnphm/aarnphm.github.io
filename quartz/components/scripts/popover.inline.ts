@@ -584,7 +584,7 @@ async function showPopover(
   pointer: { clientX: number; clientY: number },
   options: ShowPopoverOptions = {},
 ) {
-  clearActivePopover()
+  clearActivePopover(popoverElement)
   popoverElement.classList.add('active-popover')
 
   await setPosition(link, popoverElement, {
@@ -605,16 +605,32 @@ async function showLoadingPopover(
   popoverElement: HTMLElement,
   pointer: { clientX: number; clientY: number },
 ) {
-  clearActivePopover()
+  clearActivePopover(popoverElement)
   activeAnchor = link
   popoverElement.classList.add('active-popover')
   await setPosition(link, popoverElement, { clientX: pointer.clientX, clientY: pointer.clientY })
 }
 
-function clearActivePopover() {
+function removePopoverElement(popoverElement: HTMLElement) {
+  window.quartzPdfEmbeds?.cleanup(popoverElement)
+  popoverElement.remove()
+}
+
+function blurPopoverFocus(popoverElement: HTMLElement) {
+  const activeElement = document.activeElement
+  if (activeElement instanceof HTMLElement && popoverElement.contains(activeElement)) {
+    activeElement.blur()
+  }
+}
+
+function clearActivePopover(except?: HTMLElement) {
   activeAnchor = null
-  const allPopoverElements = document.querySelectorAll('.popover')
-  allPopoverElements.forEach(popoverElement => popoverElement.classList.remove('active-popover'))
+  const allPopoverElements = document.querySelectorAll<HTMLElement>('.popover')
+  allPopoverElements.forEach(popoverElement => {
+    if (popoverElement === except) return
+    blurPopoverFocus(popoverElement)
+    popoverElement.classList.remove('active-popover')
+  })
 }
 
 function notifyProtectedContentLoaded(container: ParentNode) {
@@ -1039,7 +1055,7 @@ async function handleStackedNotes(
 
   column
     .querySelectorAll<HTMLDivElement>('div[class~="stacked-popover"]')
-    .forEach(popover => popover.remove())
+    .forEach(removePopoverElement)
 
   const targetUrl = new URL(link.href)
   const hash = decodeURIComponent(targetUrl.hash)
@@ -1053,7 +1069,7 @@ async function handleStackedNotes(
   if (isNoteDocumentUrl(targetUrl)) {
     const payload = await fetchStackedNotePayload(targetUrl, controller.signal)
     if (!payload || activeAnchor !== link) {
-      popoverElement.remove()
+      removePopoverElement(popoverElement)
       activePopoverReq = null
       return
     }
@@ -1067,7 +1083,7 @@ async function handleStackedNotes(
     })
 
     if (!response || activeAnchor !== link) {
-      popoverElement.remove()
+      removePopoverElement(popoverElement)
       activePopoverReq = null
       return
     }
@@ -1075,7 +1091,7 @@ async function handleStackedNotes(
   }
 
   if (popoverInner.childElementCount === 0) {
-    popoverElement.remove()
+    removePopoverElement(popoverElement)
     activePopoverReq = null
     return
   }
@@ -1173,8 +1189,7 @@ function hideStackedPopovers(stacked: HTMLElement) {
     popoverElement.classList.remove('active-popover')
     window.setTimeout(() => {
       if (!popoverElement.classList.contains('active-popover')) {
-        window.quartzPdfEmbeds?.cleanup(popoverElement)
-        popoverElement.remove()
+        removePopoverElement(popoverElement)
       }
     }, 180)
   })
@@ -1337,7 +1352,7 @@ async function mouseEnterHandler(
         if (activePopoverReq?.link === link) activePopoverReq = null
       },
       () => {
-        popoverElement.remove()
+        removePopoverElement(popoverElement)
         if (activePopoverReq?.link === link) activePopoverReq = null
       },
     )
@@ -1345,7 +1360,7 @@ async function mouseEnterHandler(
     if (activeAnchor !== link) {
       controller.abort()
       activePopoverReq = null
-      popoverElement.remove()
+      removePopoverElement(popoverElement)
       return
     }
 
@@ -1370,6 +1385,7 @@ async function mouseEnterHandler(
     mountPdfPreviews(popoverInner)
     notifyProtectedContentLoaded(popoverInner)
     if (activeAnchor !== link) {
+      removePopoverElement(popoverElement)
       return
     }
 
@@ -1395,6 +1411,7 @@ async function mouseEnterHandler(
   mountPdfPreviews(popoverInner)
   notifyProtectedContentLoaded(popoverInner)
   if (activeAnchor !== link) {
+    removePopoverElement(popoverElement)
     return
   }
 

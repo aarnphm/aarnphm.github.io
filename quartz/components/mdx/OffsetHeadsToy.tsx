@@ -108,7 +108,7 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
             </header>
             <svg
               class="oht-grid"
-              viewBox={`0 0 ${viewSize} ${viewSize}`}
+              viewBox={`-0.9 0 ${viewSize + 0.9} ${viewSize}`}
               preserveAspectRatio="xMidYMid meet"
               role="img"
               aria-label={`${panel.title} probability matrix, ${L} rows by ${L} columns; brighter cells carry more attention mass.`}
@@ -160,7 +160,7 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
                 h={0.85}
                 tex="\text{key } j"
               />
-              <foreignObject x={-0.1} y={cellPad + L / 2 - 1.6} width={0.85} height={3.2}>
+              <foreignObject x={-0.9} y={cellPad + L / 2 - 1.6} width={0.85} height={3.2}>
                 <div class="oht-fo oht-fo--center oht-fo--vert">
                   <div
                     dangerouslySetInnerHTML={{ __html: renderMath('\\text{query } i', false) }}

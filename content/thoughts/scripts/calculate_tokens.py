@@ -14,7 +14,13 @@ import tiktoken
 
 def fetch_content(source: str) -> str:
   if source.startswith('http://') or source.startswith('https://'):
-    with urllib.request.urlopen(source) as resp:
+    req = urllib.request.Request(
+      source,
+      headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      },
+    )
+    with urllib.request.urlopen(req) as resp:
       return resp.read().decode('utf-8')
   return Path(source).read_text(encoding='utf-8')
 
@@ -47,6 +53,7 @@ def main():
   }
 
   out_path = Path(__file__).parent.parent.parent / 'txts' / 'stats.json'
+  out_path.parent.mkdir(parents=True, exist_ok=True)
   out_path.write_text(json.dumps(stats, indent=2) + '\n')
   print(json.dumps(stats, indent=2))
 

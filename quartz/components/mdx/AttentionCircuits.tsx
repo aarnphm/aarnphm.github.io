@@ -81,7 +81,6 @@ const StandardPanel: FunctionalComponent = () => {
       aria-label="Standard attention flow: x branches into Q, K, V projections; Q and K feed softmax; weights apply to V; result passes through W_O."
     >
       <ArrowDefs id={STD_ARROW} />
-      <Fo x={70} y={16} w={180} h={24} t={math`\text{softmax view}`} cls="acir-fo--axis" />
       <rect class="acir-box acir-box--input" x={inX - 22} y={210} width={44} height={40} rx={4} />
       <Fo x={inX - 22} y={210} w={44} h={40} t="x" cls="acir-fo--big" />
       <path class="acir-line" d={`M ${inX + 22} 230 L ${splitX} 230`} />
@@ -174,7 +173,6 @@ const CircuitPanel: FunctionalComponent = () => {
       aria-label="Circuit decomposition: x_j weighted by a_ij (QK circuit) then transformed by W_V W_O (OV circuit)."
     >
       <ArrowDefs id={CIR_ARROW} />
-      <Fo x={70} y={16} w={180} h={24} t={math`\text{circuit decomposition}`} cls="acir-fo--axis" />
       {Array.from({ length: 4 }, (_, idx) => {
         const y = 90 + idx * 60
         const label = idx === 3 ? 'i' : String(idx)
@@ -296,17 +294,20 @@ const Controls: FunctionalComponent = () => (
   <div class="acir-controls">
     <fieldset class="acir-circuit-toggle" aria-label="highlight a circuit">
       <legend>circuit highlight</legend>
-      {PILLS.map(p => (
-        <button
-          type="button"
-          class={`acir-pill acir-pill--${p.id}`}
-          data-acir-pill={p.id}
-          aria-pressed={p.pressed ? 'true' : 'false'}
-          aria-label={p.aria}
-        >
-          {p.label}
-        </button>
-      ))}
+      <div class="acir-pill-track" role="tablist">
+        {PILLS.map(p => (
+          <button
+            type="button"
+            class={`acir-pill acir-pill--${p.id}`}
+            data-acir-pill={p.id}
+            role="tab"
+            aria-pressed={p.pressed ? 'true' : 'false'}
+            aria-label={p.aria}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
     </fieldset>
     <label class="acir-toggle">
       <input type="checkbox" data-acir-rank-toggle aria-label="show OV as one low-rank rectangle" />
@@ -315,57 +316,19 @@ const Controls: FunctionalComponent = () => (
   </div>
 )
 
-const Props_: FunctionalComponent = () => (
-  <dl class="acir-props">
-    <div class="acir-prop">
-      <dt>what moves</dt>
-      <dd>
-        OV circuit: <T t={math`W_V W_O \in \mathbb{R}^{d \times d}`} /> with{' '}
-        <T t={math`\mathrm{rank} \le d_h`} />.
-      </dd>
-    </div>
-    <div class="acir-prop">
-      <dt>where to read</dt>
-      <dd>
-        QK circuit: <T t={math`W_Q^{\!\top} W_K \in \mathbb{R}^{d \times d}`} /> with{' '}
-        <T t={math`\mathrm{rank} \le d_h`} />.
-      </dd>
-    </div>
-    <div class="acir-prop">
-      <dt>full head</dt>
-      <dd>
-        <T
-          d
-          t={math`\mathrm{Attn}^{l,h}(X_{\le i}) = \sum_{j \le i} a^{l,h}_{ij}\, x_j\, W^{l,h}_V W^{l,h}_O`}
-        />
-        <T
-          d
-          t={math`a^{l,h}_{ij} = \operatorname{softmax}_j\!\Big(\tfrac{(xW_Q)(xW_K)^{\!\top}}{\sqrt{d_h}}\Big)`}
-        />
-      </dd>
-    </div>
-  </dl>
-)
-
 const AttentionCircuitsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
   <figure class="attention-circuits" data-attention-circuits>
     <Controls />
     <div class="acir-panels">
       <section class="acir-panel" data-acir-panel="standard">
         <h4 class="acir-panel-title">standard view</h4>
-        <p class="acir-panel-sub">one head, split into three projections, recombined.</p>
         <StandardPanel />
       </section>
       <section class="acir-panel" data-acir-panel="circuit">
         <h4 class="acir-panel-title">circuit decomposition</h4>
-        <p class="acir-panel-sub">
-          multiply through; <T t="W_V W_O" /> and the attention pattern fall out as independent
-          low-rank channels.
-        </p>
         <CircuitPanel />
       </section>
     </div>
-    <Props_ />
     {caption ? (
       <figcaption class="acir-caption">
         <MathText text={caption} mathClass="acir-math" />

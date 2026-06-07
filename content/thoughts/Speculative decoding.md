@@ -175,7 +175,7 @@ https://github.com/FasterDecoding/Medusa
 
 The idea is pretty interesting, if we add $\textbf{LM\_Head}$ to understand how to speculative certain tokens, then uses [[thoughts/Attention|Tree Attention]] to create a masks for certain future prediction tokens.
 
-Instead of [[#von Neumann acceptance–rejection|rejection sampling]], they propose ==typical acceptance== to select plausible candidates, inspired by @hewitt2022truncationsamplinglanguagemodel. This is to circumvent greedy-decoding when using in conjunction with other sampling parameters (such as top-p, top-k, temperature)
+Instead of [[#von Neumann acceptance rejection|rejection sampling]], they propose ==typical acceptance== to select plausible candidates, inspired by @hewitt2022truncationsamplinglanguagemodel. This is to circumvent greedy-decoding when using in conjunction with other sampling parameters (such as top-p, top-k, temperature)
 
 > [!note] typical acceptance
 >
@@ -270,7 +270,7 @@ where it takes the probability vectors of draft models $y_i^D$ for token positio
 
 https://arxiv.org/abs/2302.01318
 
-## von Neumann acceptance–rejection
+## von Neumann acceptance rejection
 
 see also: von Neumann (1951), foundational statement of the acceptance–rejection method.
 

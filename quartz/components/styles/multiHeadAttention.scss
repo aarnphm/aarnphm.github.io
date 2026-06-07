@@ -3,7 +3,7 @@
 @use './figure.scss' as *;
 
 .multi-head-attention {
-  @include figure-frame('mha-figure', 42rem);
+  @include figure-frame('mha-figure', 54rem);
 
   --mha-line: color-mix(in srgb, var(--gray) 24%, transparent);
   --mha-surface-shadow:
@@ -48,7 +48,7 @@
 .mha-graph {
   width: 100%;
   height: auto;
-  aspect-ratio: 760 / 420;
+  aspect-ratio: 760 / 560;
   display: block;
 
   .mha-arrowhead {
@@ -218,20 +218,13 @@
   }
   .mha-fo--concat {
     font-size: 9px;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
     color: var(--mha-note);
+    .katex {
+      transform: rotate(-90deg);
+    }
   }
   .mha-fo--wo {
     font-size: 14px;
-  }
-  .mha-fo--score-label {
-    font-size: 7.5px;
-    color: var(--mha-note);
-    align-items: end;
-    .katex {
-      font-size: 0.95em;
-    }
   }
   .mha-fo--residual-label {
     font-size: 11px;
@@ -426,6 +419,11 @@
   min-width: 3.5ch;
   text-align: right;
   color: var(--dark);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .mha-tick-strip {

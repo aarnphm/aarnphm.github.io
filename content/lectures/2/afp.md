@@ -2,7 +2,7 @@
 date: '2025-08-21'
 description: Self-attention from first principles, formal properties, and efficiency bounds.
 id: attention
-modified: 2026-06-06 00:04:40 GMT-04:00
+modified: 2026-06-06 23:22:35 GMT-04:00
 tags:
   - ml
 title: attention primer
@@ -44,8 +44,14 @@ $$
 > $$
 > \mathrm{Attn}(PQ,PK,PV)=P\,\mathrm{Attn}(Q,K,V).
 > $$
-
-Proof. $PQ(PK)^\top=PQK^\top P^\top$. Row-wise softmax satisfies $\sigma_{\text{row}}(PZP^\top)=P\,\sigma_{\text{row}}(Z)\,P^\top$ because $P$ is orthogonal ($P^\top P = I$) and permuting both rows and columns preserves row-wise sums. Right-multiply by $PV$ to yield $P \sigma_{\text{row}}(Z) P^\top P V = P \mathrm{Attn}(Q,K,V)$.
+>
+> Proof:
+>
+> $PQ(PK)^\top=PQK^\top P^\top$
+>
+> Row-wise softmax satisfies $\sigma_{\text{row}}(PZP^\top)=P\,\sigma_{\text{row}}(Z)\,P^\top$ because $P$ is orthogonal ($P^\top P = I$) and permuting both rows and columns preserves row-wise sums.
+>
+> Right-multiply by $PV$ to yield $P \sigma_{\text{row}}(Z) P^\top P V = P \mathrm{Attn}(Q,K,V)$
 
 > [!proposition] Variance Scaling
 > Assume $q,k\in\mathbb{R}^d$ are statistically independent at initialization. Let $\mathbb{E}[q]=\mathbb{E}[k]=0$, $\mathrm{Cov}(q)=\Sigma_q$, $\mathrm{Cov}(k)=\Sigma_k$. For $S=q^\top k$ and $Z=S/\sqrt{d}$:
@@ -55,25 +61,41 @@ Proof. $PQ(PK)^\top=PQK^\top P^\top$. Row-wise softmax satisfies $\sigma_{\text{
 > $$
 >
 > Under isotropy $\Sigma_q=\Sigma_k=I_d$, $\mathrm{Var}(S)=d$ and $\mathrm{Var}(Z)=1$. [@vaswani2023attentionneed]
-
-Proof. Use $\mathbb{E}[S]=0$. By iterated expectation (relying strictly on the independence of $q$ and $k$), $\mathbb{E}[S^2] = \mathbb{E}_q[\mathbb{E}_k[q^\top k k^\top q \mid q]] = \mathbb{E}_q[q^\top \Sigma_k q]$. Since this is a scalar, we apply the trace trick: $\mathbb{E}_q[\operatorname{tr}(q^\top \Sigma_k q)] = \operatorname{tr}(\Sigma_k \mathbb{E}[q q^\top]) = \operatorname{tr}(\Sigma_k \Sigma_q)$. Scale the result by $1/d$.
-
-_Note_: In real models, $q$ and $k$ are derived from the same residual stream, so this independence assumption only loosely holds post-initialization.
+>
+> Proof:
+>
+> Use $\mathbb{E}[S]=0$
+>
+> By iterated expectation (relying strictly on the independence of $q$ and $k$), $\mathbb{E}[S^2] = \mathbb{E}_q[\mathbb{E}_k[q^\top k k^\top q \mid q]] = \mathbb{E}_q[q^\top \Sigma_k q]$.
+>
+> Since this is a scalar, we apply the trace trick: $\mathbb{E}_q[\operatorname{tr}(q^\top \Sigma_k q)] = \operatorname{tr}(\Sigma_k \mathbb{E}[q q^\top]) = \operatorname{tr}(\Sigma_k \Sigma_q)$. Scale the result by $1/d$
+>
+> _Note_: In real models, $q$ and $k$ are derived from the same residual stream, so this independence assumption only loosely holds post-initialization.
 
 ## kernel regression
 
 > [!proposition] RBF Weights under Strict Normalization
-> Fix $q\in\mathbb{R}^d$ and keys $\{k_j\}_{j=1}^n$. If key norms are strictly uniform such that $\|k_j\|=\beta$ for all $j$, then scaled dot-product attention at temperature $T$ exactly mirrors Nadaraya-Watson Gaussian kernel regression:
+> Fix $q\in\mathbb{R}^d$ and keys $\{k_j\}_{j=1}^n$. If key norms are strictly uniform such that $\|k_j\|=\beta$ for all $j$, then scaled dot-product attention at temperature $T$ exactly mirrors Nadaraya-Watson Gaussian kernel regression[^tweet]:
 >
 > $$
 > w_j(q)=\frac{\exp(-\|q-k_j\|^2/(2\sigma^2))}{\sum_{\ell}\exp(-\|q-k_\ell\|^2/(2\sigma^2))}\quad\text{with}\quad \sigma^2=T\sqrt{d}.
 > $$
 >
-> [^tweet]
+> Proof:
+>
+> Expand squared distance: $\|q-k_j\|^2 = \|q\|^2+\|k_j\|^2-2\langle q,k_j\rangle$
+>
+> The $\|q\|^2$ term is constant across all $j$ and cancels in the softmax fraction.
+>
+> The $\|k_j\|^2$ term only cancels if it is a uniform constant $\beta$.
+>
+> If uniform, the kernel weight $\exp(-\|q-k_j\|^2/(2\sigma^2))$ isolates to $\exp(\langle q,k_j\rangle/\sigma^2)$.
+>
+> Equating this to the attention exponent $\langle q,k_j\rangle/(T\sqrt{d})$ forces $\sigma^2=T\sqrt{d}$.
+>
+> Without uniform key norms, standard attention deviates from true Gaussian regression.
 
 [^tweet]: https://x.com/chastronomic/status/1995604876823593374
-
-Proof. Expand squared distance: $\|q-k_j\|^2 = \|q\|^2+\|k_j\|^2-2\langle q,k_j\rangle$. The $\|q\|^2$ term is constant across all $j$ and cancels in the softmax fraction. The $\|k_j\|^2$ term only cancels if it is a uniform constant $\beta$. If uniform, the kernel weight $\exp(-\|q-k_j\|^2/(2\sigma^2))$ isolates to $\exp(\langle q,k_j\rangle/\sigma^2)$. Equating this to the attention exponent $\langle q,k_j\rangle/(T\sqrt{d})$ forces $\sigma^2=T\sqrt{d}$. Without uniform key norms, standard attention deviates from true Gaussian regression.
 
 ## architectural variants
 
@@ -91,15 +113,18 @@ Memory bounds during decoding run into KV cache limits. [[thoughts/GQA|Grouped-Q
 > $$
 > \|\operatorname{softmax}(z+\delta z)-\operatorname{softmax}(z)\|_2\le \frac{\lambda}{2}\,\|\delta z\|_2.
 > $$
-
-Proof. The Jacobian of softmax is $J = \lambda(\operatorname{diag}(\sigma) - \sigma\sigma^\top)$. The maximum eigenvalue (spectral norm) of this matrix is at most $\lambda/2$.
+>
+> Proof:
+>
+> The Jacobian of softmax is $J = \lambda(\operatorname{diag}(\sigma) - \sigma\sigma^\top)$.
+>
+> The maximum eigenvalue (spectral norm) of this matrix is at most $\lambda/2$.
 
 ### Multi-Head Latent Attention (MLA)
 
 DeepSeek's [[thoughts/MLA|MLA]] caches a compressed latent $c^{KV}_t\in\mathbb{R}^{d_c}$ instead of raw heads. To maintain spatial information, [[thoughts/RoPE|RoPE]] requires a decoupled key vector $k_t^R \in\mathbb{R}^{d_h^R}$.
 
-During inference, up-projections $W_U^K$ and $W_U^V$ map the latent back to full dimension. Because matrix multiplication is associative, these projections are absorbed into $W_Q$ and $W_O$:
-$W_Q' = W_{UQ} (W_U^K)^\top$ and $W_O' = W_U^V W_O$.
+During inference, up-projections $W_U^K$ and $W_U^V$ map the latent back to full dimension. Because matrix multiplication is associative, these projections are absorbed into $W_Q$ and $W_O$: $W_Q' = W_{UQ} (W_U^K)^\top$ and $W_O' = W_U^V W_O$
 
 This strips the up-projection from the critical path entirely.
 
@@ -107,8 +132,8 @@ This strips the up-projection from the critical path entirely.
 
 Elements cached per token per layer:
 
-- **MHA**: $2 h d_h$
-- **GQA**: $2 G d_h$
+- [[thoughts/Attention#Multi-head Attention|MHA]]: $2 h d_h$
+- [[thoughts/GQA|GQA]]: $2 G d_h$
 - **MQA**: $2 d_h$
 - **MLA**: $d_c + d_h^R$
 
@@ -116,7 +141,8 @@ _Example:_ At $h=128$, $d_h=128$, MHA caches 32,768 elements. MLA ($d_c=512$, $d
 
 ## reference cuda kernels
 
-> [!note] implementation
+> [!note]+ implementation
+>
 > See reference CUDA kernels for exact score matrices and stable block logic.
 >
 > - Scores: ![[lectures/2/qk_scores.cu]]

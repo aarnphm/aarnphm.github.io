@@ -724,7 +724,7 @@ for i, (p_l, p_d) in enumerate(zip(large_probs, draft_probs)):
     break  # reject and resample from large model
 ```
 
-![[thoughts/Speculative decoding#von Neumann acceptance–rejection]]
+![[thoughts/Speculative decoding#von Neumann acceptance rejection]]
 
 > you always maintain the large model's distribution.
 > the draft model just helps you get there faster.

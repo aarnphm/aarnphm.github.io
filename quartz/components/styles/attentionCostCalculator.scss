@@ -93,6 +93,11 @@
   min-width: 5ch;
   text-align: right;
   color: var(--dark);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .acc-select {
@@ -100,7 +105,7 @@
   font-family: inherit;
   font-size: 0.82rem;
   padding: 0.25rem 0.4rem;
-  border: 0;
+  border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   background: var(--light);
   color: var(--dark);

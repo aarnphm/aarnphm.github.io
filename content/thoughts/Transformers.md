@@ -189,7 +189,7 @@ def sample(logits: torch.Tensor, params: SamplingParams) -> torch.Tensor:
 
 #### rejection sampling
 
-![[thoughts/Speculative decoding#von Neumann acceptance–rejection|see also: speculative decoding]]
+![[thoughts/Speculative decoding#von Neumann acceptance rejection|see also: speculative decoding]]
 
 ### KV
 

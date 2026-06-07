@@ -15,7 +15,7 @@ const DEFAULT_DM = 512
 const SEQ_LEN = 4
 
 const VIEW_W = 760
-const VIEW_H = 420
+const VIEW_H = 560
 const PAD_L = 18
 const PAD_R = 18
 
@@ -322,19 +322,6 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
                         )
                       }),
                     )}
-                    <foreignObject
-                      x={COL_X.score - SCORE_BOX / 2}
-                      y={scoreY - 14}
-                      width={SCORE_BOX}
-                      height={14}
-                    >
-                      <div
-                        class="mha-fo mha-fo--score-label"
-                        dangerouslySetInnerHTML={{
-                          __html: renderMath(`\\operatorname{softmax}_{${i + 1}}`),
-                        }}
-                      />
-                    </foreignObject>
                   </g>
 
                   <g
@@ -458,7 +445,7 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
 
           <path
             class="mha-residual-arc"
-            d={`M ${COL_X.wo + 24} ${VIEW_H / 2} C ${COL_X.wo + 50} ${VIEW_H / 2}, ${COL_X.wo + 30} 22, ${COL_X.wo + 6} 22`}
+            d={`M ${COL_X.wo + 3} ${VIEW_H / 2 - 22} C ${COL_X.wo + 40} ${VIEW_H / 2 - 60}, ${COL_X.wo + 3} 90, ${COL_X.wo + 3} 34`}
             marker-end="url(#mha-arrow-residual)"
           />
           <foreignObject x={COL_X.wo - 14} y={VIEW_H / 2 + 36} width={120} height={18}>
@@ -558,9 +545,11 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
             aria-valuenow={initialH}
             aria-valuetext={`${initialH} heads`}
           />
-          <span class="mha-slider-value" data-mha-heads-value>
-            h={initialH}
-          </span>
+          <span
+            class="mha-slider-value"
+            data-mha-heads-value
+            dangerouslySetInnerHTML={{ __html: renderMath(`h = ${initialH}`) }}
+          />
           <div class="mha-tick-strip" data-mha-tick-strip>
             {HEAD_OPTIONS.map(h => (
               <span

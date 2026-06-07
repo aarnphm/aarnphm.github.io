@@ -15,6 +15,7 @@ import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
+export const sourceWatchRoots = ['quartz.config.ts', 'quartz.layout.ts', 'quartz', 'package.json']
 export const sourceWatchPatterns = [
   'quartz.config.ts',
   'quartz.layout.ts',
@@ -28,12 +29,54 @@ export const sourceWatchPatterns = [
   'package.json',
 ]
 
-const normalizeWatchedPath = fp => fp.split(path.sep).join('/')
+const normalizeWatchedPath = fp => {
+  const rawPath = fp.toString()
+  const relativePath = path.isAbsolute(rawPath) ? path.relative(process.cwd(), rawPath) : rawPath
+  return relativePath.split(path.sep).join('/')
+}
 export const isTestSourcePath = fp => {
   const normalized = normalizeWatchedPath(fp)
   return ['.test.ts', '.test.tsx', '.test.js', '.test.jsx'].some(suffix =>
     normalized.endsWith(suffix),
   )
+}
+
+export const isSourceWatchPath = fp => {
+  const normalized = normalizeWatchedPath(fp)
+  if (isTestSourcePath(normalized)) return false
+  if (
+    normalized === 'quartz.config.ts' ||
+    normalized === 'quartz.layout.ts' ||
+    normalized === 'package.json'
+  ) {
+    return true
+  }
+  if (!normalized.startsWith('quartz/')) return false
+  if (normalized.startsWith('quartz/.quartz-cache/')) return false
+  if (normalized.startsWith('quartz/static/') || normalized.startsWith('quartz/extensions/')) {
+    return true
+  }
+
+  const ext = path.extname(normalized)
+  if (ext === '.ts' || ext === '.tsx' || ext === '.scss' || ext === '.py') return true
+  return normalized.startsWith('quartz/cli/') && ext === '.js'
+}
+
+const isIgnoredSourceWatchPath = (fp, stats) => {
+  const normalized = normalizeWatchedPath(fp)
+  if (
+    normalized === 'node_modules' ||
+    normalized.startsWith('node_modules/') ||
+    normalized === 'public' ||
+    normalized.startsWith('public/') ||
+    normalized === '.quartz-cache' ||
+    normalized.startsWith('.quartz-cache/') ||
+    normalized === 'quartz/.quartz-cache' ||
+    normalized.startsWith('quartz/.quartz-cache/')
+  ) {
+    return true
+  }
+  return stats?.isFile() ? !isSourceWatchPath(normalized) : false
 }
 
 export function formatErrorReason(err) {
@@ -357,14 +400,11 @@ export async function handleBuild(argv) {
       console.log(styleText('yellow', `Detected source ${type}: ${normalizeWatchedPath(fp)}`))
       return build(clientRefresh)
     }
-    const paths = await globby(sourceWatchPatterns, {
-      gitignore: true,
-      ignore: ['.quartz-cache/**', 'node_modules/**', 'public/**'],
-    })
     chokidar
-      .watch(paths, {
+      .watch(sourceWatchRoots, {
         awaitWriteFinish: { stabilityThreshold: sourceWatchWriteStabilityMs },
         ignoreInitial: true,
+        ignored: isIgnoredSourceWatchPath,
       })
       .on('add', fp => sourceChanged('add', fp))
       .on('change', fp => sourceChanged('change', fp))

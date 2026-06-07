@@ -3,7 +3,7 @@ date: '2026-05-23'
 description: Aaron Pham's simulacrum
 id: consult
 layout: letter
-modified: 2026-06-05 15:07:56 GMT-04:00
+modified: 2026-06-06 23:54:26 GMT-04:00
 tags:
   - evergreen
 title: consulting.
@@ -18,4 +18,4 @@ I'm mostly focused kernel optimization for AI-specific workload and metrics-orie
 
 If you would like to work with me, please contact me at [services@aarnphm.xyz](mailto:services@aarnphm.xyz)
 
-![[thoughts/craft#open source#{collapsed: true}|open-source work]]
+![[thoughts/craft#open source|open-source work]]
