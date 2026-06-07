@@ -430,7 +430,13 @@ $$
 ---
 
 Q: What is the rules of assignment?
-A: a subset $r$ of the cartesian product $C\;\times\;D$
+A:
+
+a subset $r$ of the cartesian product $C\;\times\;D$ of two sets
+
+$$
+[(c,d) \in r \text{ and } (c, d^{'}) \in r] \implies [d = d^{'}]
+$$
 
 ---
 
