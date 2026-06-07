@@ -2,7 +2,8 @@
 date: '2025-09-30'
 description: GPUs, CUTLASS, and CuTe
 id: index
-modified: 2026-06-05 15:08:04 GMT-04:00
+layout: A|L
+modified: 2026-06-07 01:29:05 GMT-04:00
 tags:
   - ml
   - math/linalg
@@ -3877,21 +3878,3 @@ Documentation:
 - [CuTe Tutorials](https://github.com/NVIDIA/cutlass/tree/main/examples/cute/tutorial)
 - [NVIDIA Hopper Architecture Whitepaper](https://resources.nvidia.com/en-us-tensor-core)
 - [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
-
-### next lectures
-
-Hands-on exercises:
-
-1. Implement tiled matmul and measure performance progression
-2. Add tensor core support using WMMA
-3. Convert to CuTe DSL and explore layout transformations
-4. Implement paged attention kernel and profile with ncu
-5. Experiment with wgmma on Hopper
-
-Extended topics:
-
-- Conv2D optimization (im2col, implicit GEMM)
-- Sparse matrix multiplication (structured sparsity)
-- Multi-GPU programming (NCCL, NVLink)
-- Kernel fusion with TorchInductor/XLA
-- Custom CUDA graphs for inference serving

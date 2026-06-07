@@ -2,7 +2,7 @@
 date: '2025-09-12'
 description: linear algebra applications for transformers
 id: notes
-modified: 2026-06-06 00:15:43 GMT-04:00
+modified: 2026-06-07 01:29:37 GMT-04:00
 seealso:
   - '[[thoughts/Transformers|Transformers]]'
   - '[[thoughts/Attention|Attention]]'
@@ -12,7 +12,7 @@ slides: true
 tags:
   - workshop
   - math/linalg
-title: supplement to 0.412
+title: supplement to 0[dot]412
 transclude:
   title: false
 ---

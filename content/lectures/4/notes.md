@@ -2,12 +2,12 @@
 date: '2025-09-05'
 description: 1/n of acceptance-rejection
 id: notes
-modified: 2026-06-06 23:29:57 GMT-04:00
+modified: 2026-06-07 01:29:52 GMT-04:00
 seealso:
   - '[[thoughts/Speculative decoding]]'
 tags:
   - workshop
-title: supplement to 0.400
+title: supplement to 0[dot]400
 transclude:
   title: false
 ---

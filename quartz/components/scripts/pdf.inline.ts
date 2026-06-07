@@ -353,6 +353,11 @@ function readPdfJsRuntime(value: unknown): PdfJsRuntime | undefined {
   }
 }
 
+function configurePdfJsRuntime(pdfjs: PdfJsRuntime): PdfJsRuntime {
+  pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_SRC
+  return pdfjs
+}
+
 function isRenderCancelError(error: unknown): boolean {
   const message = error instanceof Error ? `${error.name} ${error.message}` : String(error)
   return message.includes('RenderingCancelledException') || message.includes('AbortException')
@@ -418,14 +423,15 @@ function readPdfOptions(root: HTMLElement): PdfOptions | null {
 function loadPdfJs(): Promise<PdfJsRuntime> {
   ensurePdfJsGlobals()
   const existing = readPdfJsRuntime(window.pdfjsLib)
-  if (existing) return Promise.resolve(existing)
+  if (existing) return Promise.resolve(configurePdfJsRuntime(existing))
   if (pdfJsLoad) return pdfJsLoad
 
   pdfJsLoad = import(PDFJS_SCRIPT_SRC).then(module => {
     const runtime = readPdfJsRuntime(module)
     if (!runtime) throw new Error('PDF.js did not initialize')
-    window.pdfjsLib = runtime
-    return runtime
+    const configured = configurePdfJsRuntime(runtime)
+    window.pdfjsLib = configured
+    return configured
   })
 
   return pdfJsLoad
@@ -2147,7 +2153,6 @@ async function mountPdfEmbed(root: HTMLElement, options: PdfOptions) {
   const pdfjs = await loadPdfJs()
   try {
     if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return
-    pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_SRC
     documentHandle = await loadPdfDocument(pdfjs, options.src)
     const { loadingTask, document: pdfDocument } = documentHandle
     if (!root.isConnected || root.dataset.pdfStatus !== 'loading') return

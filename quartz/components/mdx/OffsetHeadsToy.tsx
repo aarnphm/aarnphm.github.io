@@ -108,7 +108,7 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
             </header>
             <svg
               class="oht-grid"
-              viewBox={`-0.9 0 ${viewSize + 0.9} ${viewSize}`}
+              viewBox={`-1.2 0 ${viewSize + 1.2} ${viewSize}`}
               preserveAspectRatio="xMidYMid meet"
               role="img"
               aria-label={`${panel.title} probability matrix, ${L} rows by ${L} columns; brighter cells carry more attention mass.`}
@@ -116,22 +116,10 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
             >
               <g data-oht-axis>
                 {rows.map(i => (
-                  <MathFO
-                    x={cellPad - 0.62}
-                    y={cellPad + i + 0.18}
-                    w={0.42}
-                    h={0.64}
-                    tex={String(i)}
-                  />
+                  <MathFO x={cellPad - 0.95} y={cellPad + i} w={0.85} h={1} tex={String(i)} />
                 ))}
                 {rows.map(j => (
-                  <MathFO
-                    x={cellPad + j + 0.22}
-                    y={cellPad - 0.62}
-                    w={0.56}
-                    h={0.52}
-                    tex={String(j)}
-                  />
+                  <MathFO x={cellPad + j} y={cellPad - 0.95} w={1} h={0.8} tex={String(j)} />
                 ))}
               </g>
               <g data-oht-cells={panel.key}>
@@ -160,7 +148,7 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
                 h={0.85}
                 tex="\text{key } j"
               />
-              <foreignObject x={-0.9} y={cellPad + L / 2 - 1.6} width={0.85} height={3.2}>
+              <foreignObject x={-1.2} y={cellPad + L / 2 - 1.6} width={1} height={3.2}>
                 <div class="oht-fo oht-fo--center oht-fo--vert">
                   <div
                     dangerouslySetInnerHTML={{ __html: renderMath('\\text{query } i', false) }}

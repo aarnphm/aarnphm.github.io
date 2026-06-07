@@ -18,6 +18,9 @@
   --acir-qk-fill: color-mix(in srgb, #fdb2a2 28%, var(--light));
   --acir-ov: #cdd597;
   --acir-ov-fill: color-mix(in srgb, #cdd597 32%, var(--light));
+  --acir-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --acir-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 70%, var(--light));
 }
 
 :root[saved-theme='dark'] .attention-circuits {
@@ -28,6 +31,9 @@
   --acir-softmax: color-mix(in srgb, var(--lightgray) 65%, var(--dark));
   --acir-qk-fill: color-mix(in srgb, #fdb2a2 22%, var(--lightgray));
   --acir-ov-fill: color-mix(in srgb, #cdd597 22%, var(--lightgray));
+  --acir-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
+  --acir-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
+  --acir-tab-neutral: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
 }
 
 .acir-controls {
@@ -58,32 +64,42 @@
 
 .acir-pill-track {
   display: inline-flex;
-  gap: 0.2rem;
-  padding: 0.25rem;
+  align-items: stretch;
+  height: 1.55rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--acir-tab-border);
   border-radius: var(--radius-none);
-  background: color-mix(in srgb, var(--lightgray) 42%, transparent);
+  background: var(--acir-tab-surface);
 }
 
 .acir-pill {
   appearance: none;
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.82rem;
-  padding: 0.34rem 0.85rem;
-  border-radius: var(--radius-none);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 0.78rem;
   border: 0;
-  background: transparent;
-  color: var(--acir-note-fg);
+  border-radius: 0;
+  background: var(--acir-tab-surface);
+  color: var(--gray);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1;
+  white-space: nowrap;
   transition:
-    background 120ms ease,
-    color 120ms ease;
+    background-color 140ms ease,
+    color 140ms ease;
 
-  &:hover {
+  &:not(:disabled):hover {
     color: var(--dark);
   }
   &:focus-visible {
-    outline: 2px solid var(--acir-stroke);
-    outline-offset: 2px;
+    outline: 2px solid color-mix(in srgb, var(--acir-stroke) 60%, transparent);
+    outline-offset: -2px;
   }
 
   &.acir-pill--qk[aria-pressed='true'] {
@@ -95,7 +111,7 @@
     color: var(--dark);
   }
   &.acir-pill--none[aria-pressed='true'] {
-    background: var(--acir-box-soft);
+    background: var(--acir-tab-neutral);
     color: var(--dark);
   }
 }
@@ -104,28 +120,54 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.82rem;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
   color: var(--acir-note-fg);
   cursor: pointer;
+  user-select: none;
 
   input[type='checkbox'] {
-    width: 1rem;
-    height: 1rem;
-    flex: 0 0 auto;
     appearance: none;
-    border: 0;
+    flex: 0 0 auto;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin: 0 !important;
+    transform: none;
+    vertical-align: middle;
+    position: relative;
+    border: 1px solid var(--acir-tab-border);
     border-radius: var(--radius-none);
-    background: color-mix(in srgb, var(--light) 88%, transparent);
+    background: var(--acir-tab-surface);
     cursor: pointer;
-    transition: transform 120ms ease;
+    transition:
+      background-color 120ms ease,
+      border-color 120ms ease;
+  }
+
+  &:hover input[type='checkbox'] {
+    border-color: var(--acir-stroke);
   }
 
   input[type='checkbox']:checked {
-    background: color-mix(in srgb, var(--darkgray) 82%, var(--light));
+    border-color: color-mix(in srgb, var(--acir-ov) 65%, var(--acir-stroke));
+    background: var(--acir-ov-fill);
   }
 
-  input[type='checkbox']:active {
-    transform: scale(0.96);
+  input[type='checkbox']:checked::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 0.2rem;
+    height: 0.4rem;
+    transform: translate(-50%, -50%) rotate(45deg);
+    border: solid color-mix(in srgb, var(--acir-ov) 70%, var(--dark));
+    border-width: 0 2px 2px 0;
+  }
+
+  input[type='checkbox']:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--acir-stroke) 60%, transparent);
+    outline-offset: 2px;
   }
 }
 
@@ -290,11 +332,6 @@
     .acir-line--qk {
       stroke: color-mix(in srgb, var(--acir-qk) 80%, var(--acir-stroke));
       stroke-width: 1.6;
-      animation: acir-pulse 1.4s ease-in-out infinite;
-    }
-    .acir-attn-cell,
-    .acir-aij-bar {
-      animation: acir-pulse 1.4s ease-in-out infinite;
     }
     .acir-box--qk-pattern {
       stroke: var(--acir-qk);
@@ -311,22 +348,11 @@
     .acir-line--ov {
       stroke: color-mix(in srgb, var(--acir-ov) 80%, var(--acir-stroke));
       stroke-width: 1.6;
-      animation: acir-pulse 1.4s ease-in-out infinite;
     }
     .acir-box--ov-rank {
       stroke: var(--acir-ov);
       stroke-width: 1.6;
     }
-  }
-}
-
-@keyframes acir-pulse {
-  0%,
-  100% {
-    opacity: 0.95;
-  }
-  50% {
-    opacity: 0.55;
   }
 }
 

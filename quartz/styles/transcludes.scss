@@ -2,8 +2,7 @@
 @use 'sass:color';
 
 .transclude-collapsible {
-  border: 1px solid var(--lightgray);
-  border-left: 3px solid var(--secondary);
+  border: 1px solid var(--lightgray) !important;
   background-color: var(--light);
   padding: 0;
   overflow: hidden;

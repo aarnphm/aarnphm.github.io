@@ -5,7 +5,7 @@ aliases:
 date: '2025-06-16'
 description: and inference go distributed
 id: pd disaggregated serving
-modified: 2026-06-05 15:08:13 GMT-04:00
+modified: 2026-06-07 01:17:44 GMT-04:00
 seealso:
   - '[[thoughts/KV offloading]]'
   - '[[thoughts/distributed inference|distributed inference]]'
@@ -137,21 +137,21 @@ where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
 
 ### formal definitions
 
-> [!definition] 1 (Arithmetic Intensity)
+> [!definition] Arithmetic Intensity
 >
 > For operation $\mathcal{O}$:
 >
 > $$
 > \text{AI}(\mathcal{O}) = \frac{\text{FLOPs}(\mathcal{O})}{\text{Bytes}(\mathcal{O})}
 > $$
+>
+> or to speak it plainly:
+>
+> $$
+> \text{Arithmetic Intensity} = \frac{\text{Computation FLOPs}}{\text{Communication Bytes}}
+> $$
 
-or to speak it plainly:
-
-$$
-\text{Arithmetic Intensity} = \frac{\text{Computation FLOPs}}{\text{Communication Bytes}}
-$$
-
-> [!definition] 2 (Machine Intensity)
+> [!definition] Machine Intensity
 >
 > $$
 > \text{MI} = \frac{C}{\beta}
@@ -159,11 +159,11 @@ $$
 >
 > where $C$ is peak compute (FLOPs/s), $\beta$ is memory bandwidth.
 
-> [!definition] 3 (Bound Classification)
+> [!definition] Bound Classification
 >
 > Operation $\mathcal{O}$ is **compute-bound** iff $\text{AI}(\mathcal{O}) > \text{MI}$, else **memory-bound**.
 
-> [!definition] 4 (Pool Utilization)
+> [!definition] Pool Utilization
 >
 > $$
 > U_p = \frac{\lambda \cdot \mathbb{E}[S_p]}{m_p}, \quad U_d = \frac{\lambda \cdot \mathbb{E}[S_d]}{m_d}
@@ -171,7 +171,7 @@ $$
 >
 > where $\lambda$ is arrival rate, $S_p, S_d$ are service times, $m_p, m_d$ are worker counts.
 
-> [!definition] 5 (Goodput)
+> [!definition] Goodput
 >
 > $$
 > G(\lambda) = \lambda \cdot \Pr[\text{TTFT} \leq \tau_p] \cdot \Pr[\text{ITL} \leq \tau_d]
@@ -179,33 +179,31 @@ $$
 >
 > Fraction of requests meeting both TTFT and ITL SLOs. Product form assumes independence of phase latencies (holds for disaggregated systems with separate queues; fails for monolithic where prefill blocks decode).
 
-### lemmas
-
-> [!lemma] 1 (Prefill Compute-Bound)
+> [!lemma] Prefill Compute-Bound
 >
 > For input sequence $T_{\text{in}} > T^*$, prefill is compute-bound, where:
 >
 > $$
 > T^* = \sqrt{\frac{P_{\text{active}} \cdot \text{MI}}{2 n_h (d_c + d_R + v_h) L}}
 > $$
+>
+> _Proof:_
+>
+> Prefill FLOPs:
+>
+> $$
+> \Phi_p = 2P_{\text{active}}T + 2T^2 n_h d L
+> $$
+>
+> where $d = d_c + d_R + v_h$.
+>
+> Memory access $\sim P_{\text{active}}$ bytes.
+>
+> Setting $\text{AI} = \text{MI}$: $2T + 2T^2 n_h d L / P_{\text{active}} = \text{MI}$.
+>
+> Solving the quadratic and taking the attention-dominated regime gives $T^* \approx \sqrt{P_{\text{active}} \cdot \text{MI} / (2 n_h d L)}$. $\square$
 
-_Proof:_
-
-Prefill FLOPs:
-
-$$
-\Phi_p = 2P_{\text{active}}T + 2T^2 n_h d L
-$$
-
-where $d = d_c + d_R + v_h$.
-
-Memory access $\sim P_{\text{active}}$ bytes.
-
-Setting $\text{AI} = \text{MI}$: $2T + 2T^2 n_h d L / P_{\text{active}} = \text{MI}$.
-
-Solving the quadratic and taking the attention-dominated regime gives $T^* \approx \sqrt{P_{\text{active}} \cdot \text{MI} / (2 n_h d L)}$. $\square$
-
-> [!lemma] 2 (Decode Memory-Bound)
+> [!lemma] Decode Memory-Bound
 >
 > For batch $B < B^*$, decode is memory-bound, where:
 >
@@ -214,36 +212,36 @@ Solving the quadratic and taking the attention-dominated regime gives $T^* \appr
 > $$
 >
 > valid when $T < 2P_{\text{active}}/(\text{MI} \cdot M_{\text{kv}})$.
+>
+> _Proof:_
+>
+> Decode loads $P_{\text{active}} + BT M_{\text{kv}}$ bytes, computes $2P_{\text{active}}B$ FLOPs.
+>
+> Arithmetic intensity $\text{AI} = 2P_{\text{active}}B/(P_{\text{active}} + BT M_{\text{kv}})$.
+>
+> Setting $\text{AI} = \text{MI}$ and solving gives the threshold.
+>
+> For short contexts where $T M_{\text{kv}} \ll P_{\text{active}}$, simplifies to $B^* \approx \text{MI}/2$. $\square$
 
-_Proof:_
-
-Decode loads $P_{\text{active}} + BT M_{\text{kv}}$ bytes, computes $2P_{\text{active}}B$ FLOPs.
-
-Arithmetic intensity $\text{AI} = 2P_{\text{active}}B/(P_{\text{active}} + BT M_{\text{kv}})$.
-
-Setting $\text{AI} = \text{MI}$ and solving gives the threshold.
-
-For short contexts where $T M_{\text{kv}} \ll P_{\text{active}}$, simplifies to $B^* \approx \text{MI}/2$. $\square$
-
-> [!lemma] 3 (MoE Expert Activation)
+> [!lemma] MoE Expert Activation
 >
 > Expected number of remote nodes requiring communication:
 >
 > $$
 > n_{\text{remote}} = (N-1)\left[1 - \left(1 - \frac{1}{N}\right)^k\right]
 > $$
+>
+> _Proof:_
+>
+> Balls-into-bins.
+>
+> Each of $k$ routed experts lands on node $i$ with probability $1/N$.
+>
+> Probability no expert lands on remote node $j$: $(1-1/N)^k$.
+>
+> Expected count over $N-1$ remote nodes by linearity. $\square$
 
-_Proof:_
-
-Balls-into-bins.
-
-Each of $k$ routed experts lands on node $i$ with probability $1/N$.
-
-Probability no expert lands on remote node $j$: $(1-1/N)^k$.
-
-Expected count over $N-1$ remote nodes by linearity. $\square$
-
-> [!lemma] 4 (TTFT Queueing Bound)
+> [!lemma] TTFT Queueing Bound
 >
 > Under M/G/1 arrivals:
 >
@@ -253,31 +251,29 @@ Expected count over $N-1$ remote nodes by linearity. $\square$
 >
 > where $\rho = \lambda \mathbb{E}[S_p]$ is utilization. [^q-formula]
 
-### MoE propositions
-
-> [!proposition] 1 (Communication Crossover)
+> [!proposition] MoE Communication Crossover
 >
 > IB becomes bottleneck when batch size exceeds:
 >
 > $$
 > B > B^*_{\text{gpu}} = \frac{3h' E_{\text{gpu,active}}}{s_{\text{disp}} + s_{\text{comb}}} \cdot \frac{\beta_{\text{IB}}}{\beta_{\text{HBM}}} \cdot \frac{1}{n_{\text{remote}}}
 > $$
+>
+> _Derivation:_ Set $T_{\text{IB}} = T_{\text{HBM}}$ and solve for $B$.
 
-_Derivation:_ Set $T_{\text{IB}} = T_{\text{HBM}}$ and solve for $B$.
-
-> [!proposition] 2 (Shared Expert Overlap)
+> [!proposition] MoE Shared Expert Overlap
 >
 > When $T_{\text{shared}} \leq T_{\text{combine}}$, shared expert compute is "free" (hidden behind combine latency).
+>
+> This is the DeepSeek-style optimization where shared experts run concurrently with the combine all-to-all.
 
-This is the DeepSeek-style optimization where shared experts run concurrently with the combine all-to-all.
-
-> [!proposition] 3 (Node Coalescing Bound)
+> [!proposition] MoE Node Coalescing Bound
 >
 > DeepSeek's $\min(\cdot, 4)$ cap bounds inter-node messages regardless of $k$ or cluster size.
+>
+> _collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
 
-_collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
-
-> [!proposition] 4 (DBO Overlap Efficiency) [Empirical]
+> [!proposition] DBO Overlap Efficiency [Empirical]
 >
 > $$
 > \eta_{\text{DBO}}(B) \approx 1 - \frac{1}{1 + L_{\text{MoE}} \cdot T_{\text{compute}} / T_{\text{comm}}}
@@ -286,8 +282,6 @@ _collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
 > Empirical fits: $\eta \approx 75\%$ at $B=16$, $\eta \approx 90\%$ at $B=64$, $\eta \approx 95\%$ at $B=256$.
 
 _note:_ these are empirical observations from vLLM benchmarks, not proven bounds.
-
-see also: [[lectures/420/notes#roofline model|roofline analysis]]
 
 ### goodput
 
@@ -632,41 +626,41 @@ $$
 
 #### optimal ratio
 
-> [!theorem] 1 (Optimal P/D Ratio)
+> [!theorem] Optimal P/D Ratio
 >
 > Under steady-state balanced utilization:
 >
 > $$R_{\text{opt}} = \frac{n_p}{n_d} = \frac{\lambda_d}{\lambda_p}$$
+>
+> _Proof:_ Set $U_p = U_d$. From Definition 4:
+>
+> $$
+> \frac{\lambda \mathbb{E}[S_p]}{m_p} = \frac{\lambda \mathbb{E}[S_d]}{m_d}
+> $$
+>
+> Rearranging: $\frac{m_p}{m_d} = \frac{\mathbb{E}[S_p]}{\mathbb{E}[S_d]} = \frac{1/\lambda_p}{1/\lambda_d} = \frac{\lambda_d}{\lambda_p}$. $\square$
 
-_Proof:_ Set $U_p = U_d$. From Definition 4:
-
-$$
-\frac{\lambda \mathbb{E}[S_p]}{m_p} = \frac{\lambda \mathbb{E}[S_d]}{m_d}
-$$
-
-Rearranging: $\frac{m_p}{m_d} = \frac{\mathbb{E}[S_p]}{\mathbb{E}[S_d]} = \frac{1/\lambda_p}{1/\lambda_d} = \frac{\lambda_d}{\lambda_p}$. $\square$
-
-> [!theorem] 2 (Capacity Constraint)
+> [!theorem] Capacity Constraint
 >
 > $$
 > cc_d \leq \left\lfloor \frac{\text{VRAM} - W - A}{(T_{\text{in}} + T_{\text{out}}) \cdot M_{\text{kv}}} \right\rfloor
 > $$
 >
 > where $W$ is weight memory, $A$ is activation memory. Context grows to $T_{\text{in}} + T_{\text{out}}$ during generation.
-
-from [[#pool throughputs|pool throughputs]]:
-
-using derived values from [[#prefill|prefill]] and [[#decode|decode]]:
-
-- $\lambda_d^{\text{node}} = \frac{cc_d \times 8}{\text{OSL} \times t_d} = \frac{448}{200 \times 0.00514} = 436 \text{ req/s}$
-- $\lambda_p^{\text{node}} = \frac{1}{t_p}$
-
-| cache hit | $t_p$  | $\lambda_p$ | $R_{\text{opt}}$ | P:D ratio | interpretation  |
-| --------- | ------ | ----------- | ---------------- | --------- | --------------- |
-| 0%        | 732 ms | 1.37        | 318              | 318P:1D   | prefill-bound   |
-| 90%       | 5.1 ms | 196         | 2.22             | 2P:1D     | prefill-bound   |
-| 95%       | 3.5 ms | 286         | 1.52             | ==3P:2D== | prefill-limited |
-| 96%       | 2.6 ms | 385         | 1.13             | 1P:1D     | nearly balanced |
+>
+> from [[#pool throughputs|pool throughputs]]:
+>
+> using derived values from [[#prefill|prefill]] and [[#decode|decode]]:
+>
+> - $\lambda_d^{\text{node}} = \frac{cc_d \times 8}{\text{OSL} \times t_d} = \frac{448}{200 \times 0.00514} = 436 \text{ req/s}$
+> - $\lambda_p^{\text{node}} = \frac{1}{t_p}$
+>
+> | cache hit | $t_p$  | $\lambda_p$ | $R_{\text{opt}}$ | P:D ratio | interpretation  |
+> | --------- | ------ | ----------- | ---------------- | --------- | --------------- |
+> | 0%        | 732 ms | 1.37        | 318              | 318P:1D   | prefill-bound   |
+> | 90%       | 5.1 ms | 196         | 2.22             | 2P:1D     | prefill-bound   |
+> | 95%       | 3.5 ms | 286         | 1.52             | ==3P:2D== | prefill-limited |
+> | 96%       | 2.6 ms | 385         | 1.13             | 1P:1D     | nearly balanced |
 
 ##### verification
 
@@ -688,7 +682,7 @@ $$
 
 #### comparison
 
-> [!conjecture] 1 (Disaggregation Gain)
+> [!conjecture] Disaggregation Gain
 >
 > Throughput ratio:
 >
@@ -698,7 +692,7 @@ $$
 >
 > _Motivation:_ From Pollaczek-Khinchine (Lemma 4), waiting time scales with $c_v^2$. Monolithic has high $c_v$ (prefill: 3.5ms–732ms). Disaggregation reduces per-pool $c_v$. The bound form is plausible but $\alpha$ remains uncharacterized from production traces—requires empirical calibration.
 
-> [!theorem] 4 (Cache Sensitivity)
+> [!theorem] Cache Sensitivity
 >
 > $$t_p(h) = \frac{2P_{\text{active}}(1-h)T + 2(1-h)^2 T^2 n_h d L}{C \cdot U}$$
 >

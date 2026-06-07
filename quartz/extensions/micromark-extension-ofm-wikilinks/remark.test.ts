@@ -238,6 +238,29 @@ describe('remarkWikilink integration', () => {
       assert(html.includes('data-block="#^block-id"'))
     })
 
+    test('converts absolute transclude with block reference', () => {
+      const html = processToHTML('![[/quotes#^tommy|from tommy]]')
+      assert(html.includes('<blockquote class="transclude"'))
+      assert(html.includes('data-url="/quotes"'))
+      assert(html.includes('data-block="#^tommy"'))
+      assert(html.includes('data-embed-alias="from tommy"'))
+    })
+
+    test('converts notebook cell transclude anchor', () => {
+      const html = processToHTML('![[thoughts/Jax#code-cell-1|example]]')
+      assert(html.includes('<blockquote class="transclude"'))
+      assert(html.includes('data-url="thoughts/Jax"'))
+      assert(html.includes('data-block="#code-cell-1"'))
+      assert(html.includes('data-embed-alias="example"'))
+    })
+
+    test('converts transclude metadata', () => {
+      const html = processToHTML('![[thoughts/Attention#{collapsed: true}]]')
+      assert(html.includes('<blockquote class="transclude"'))
+      assert(html.includes('data-url="thoughts/Attention"'))
+      assert(html.includes('data-metadata="{&#x22;collapsed&#x22;:true}"'))
+    })
+
     test('converts transclude with alias', () => {
       const html = processToHTML('![[notes#summary|See notes]]')
       assert(html.includes('<blockquote class="transclude"'))

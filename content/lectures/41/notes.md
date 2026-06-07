@@ -2,12 +2,12 @@
 date: '2025-09-10'
 description: 2/n some more notes on EAGLE and MTP
 id: notes
-modified: 2026-06-06 00:12:57 GMT-04:00
+modified: 2026-06-07 01:29:45 GMT-04:00
 socials:
   youtube: https://youtu.be/sSdoETRQQHY
 tags:
   - workshop
-title: supplement to 0.410
+title: supplement to 0[dot]410
 transclude:
   title: false
 ---

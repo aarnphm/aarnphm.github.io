@@ -129,13 +129,14 @@
 }
 
 .acc-card {
-  padding: 0.7rem 0.85rem;
+  padding: 0.75rem 0.9rem;
   border-radius: var(--radius-none);
   border: 0;
   background: var(--acc-card-bg);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  align-items: flex-start;
+  gap: 0.2rem;
   min-width: 0;
   transition: background 220ms ease;
 }
@@ -147,26 +148,24 @@
   background: var(--acc-card-bg-sage);
 }
 
-.acc-card-head {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  min-width: 0;
-}
-
 .acc-card-label {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--acc-note);
   font-weight: 600;
 }
 
 .acc-card-eq {
-  font-size: 0.75rem;
+  display: block;
+  margin-top: 0.05rem;
+  max-width: 100%;
+  font-size: 0.72rem;
   color: var(--acc-note);
+  opacity: 0.8;
+  text-align: left;
   overflow-x: auto;
   overflow-y: hidden;
   .katex {
-    font-size: 0.95em;
+    font-size: 0.92em;
     color: inherit;
   }
 }
@@ -179,11 +178,11 @@
 }
 
 .acc-card-num {
-  font-size: 1.25rem;
+  font-size: 1.45rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--dark);
-  line-height: 1.1;
+  line-height: 1.15;
 
   .katex {
     font-size: 1em;
