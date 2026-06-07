@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-07 01:20:41 GMT-04:00
+modified: 2026-06-07 09:02:28 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -9137,6 +9137,237 @@ title: are.na
 - [meta]:
   - view: list
   - json: true
+
+- https://github.com/kvcache-ai/ktransformers/blob/main/doc/en/Kimi-K2.5.md -- Running Kimi-K2.5 with SGLang and KT-Kernel
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, sglang]
+    - later: true
+- https://github.com/kvcache-ai/ktransformers -- KTransformers
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, optimization]
+    - later: true
+- https://github.com/lucasb-eyer/dotfiles/blob/master/_codex/prompts/lbreview.md -- lbreview prompt
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [code-review, prompts]
+    - later: true
+- https://github.com/VikramKarLex/mamba3-minimal -- Mamba-3 minimal
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [mamba, pytorch]
+    - later: true
+- https://github.com/tim-hua-01/ai-psychosis/blob/main/characters/colin_reality.txt -- Colin reality character file
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [ai-psychosis, evals]
+    - later: true
+- https://github.com/gpu-mode/resource-stream -- GPU Mode resource stream
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [gpu, resources]
+    - later: true
+- https://github.com/karpathy/autoresearch/blob/master/train.py -- autoresearch train.py
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [research, training]
+    - later: true
+- https://github.com/tanishqkumar/ssd/blob/main/ssd/engine/speculator_async.py -- SSD async speculator
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [speculative-decoding, inference]
+    - later: true
+- https://github.com/allenai/olmo-core -- OLMo-core
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [llm, training]
+    - later: true
+- https://github.com/novitalabs/pegaflow/blob/master/python/README.md -- Pegaflow Python README
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/novitalabs/pegaflow/blob/master/pegaflow-transfer/README.md -- Pegaflow transfer README
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [kv, rdma]
+    - later: true
+- https://github.com/paradigms-of-intelligence?curius=3971 -- Paradigms of Intelligence
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [organization, intelligence]
+    - later: true
+- https://github.com/aarnphm/aarnphm.github.io/commit/cb0a0326fb02bc6f873ed88095c9c196cbf6994b#diff-f624a8618d0410d4fb3081584fd87c7e21656303bd90eb8afc0de5f021cdad68 -- aarnphm.github.io commit cb0a032
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [garden, commit]
+    - later: true
+- https://github.com/openai/parameter-golf/blob/main/records/track_10min_16mb/2026-03-17_NaiveBaseline/train_gpt.py -- parameter-golf train_gpt.py
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [llm, challenge]
+    - later: true
+- https://github.com/mlc-ai/xgrammar/blob/main/python/xgrammar/kernels/apply_token_bitmask_inplace_torch_compile.py -- xgrammar token bitmask kernel
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [structured-outputs, kernel]
+    - later: true
+- https://github.com/NVIDIA/TensorRT-LLM/blob/main/docs%2Fsource%2Fblogs%2Ftech_blog%2Fblog12_Combining_Guided_Decoding_and_Speculative_Decoding.md -- Combining guided decoding and speculative decoding
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, decoding]
+    - later: true
+- https://github.com/jakubkrehel/make-interfaces-feel-better -- make interfaces feel better
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [design, skills]
+    - later: true
+- https://github.com/aarnphm/agents/blob/main/agents/cartographer.md -- cartographer agent
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [agents, cartography]
+    - later: true
+- https://github.com/jaxson/ai-policy-course -- Applied AI systems and governance course
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [ai-policy, course]
+    - later: true
+- https://github.com/firecracker-microvm/firecracker -- Firecracker
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [microvm, serverless]
+    - later: true
+- https://github.com/dreadnode/agent-lens -- Agent Lens
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [agents, observability]
+    - later: true
+- https://github.com/NVlabs/cutile-rs -- cuTile Rust
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [rust, gpu]
+    - later: true
+- https://github.com/FlashSampling/FlashSampling -- FlashSampling
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [sampling, inference]
+    - later: true
+- https://github.com/iree-org/iree/blob/main/runtime/src/iree/tokenizer/README.md -- IREE tokenizer README
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [tokenizer, runtime]
+    - later: true
+- https://github.com/jakubkrehel/make-interfaces-feel-better/blob/main/skills/make-interfaces-feel-better/SKILL.md -- make interfaces feel better skill
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [design, skills]
+    - later: true
+- https://github.com/imbue-ai/offload -- Offload
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [testing, compute]
+    - later: true
+- https://github.com/ai-dynamo/nixl -- NIXL
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, transfer]
+    - later: true
+- https://github.com/copilot/c/61c0659d-1840-42aa-a738-d9cdf45ed745 -- Copilot coding session 61c0659d
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [agents, coding]
+    - later: true
+- https://github.com/llm-d/llm-d-kv-cache/tree/main/kv_connectors/llmd_fs_backend -- llm-d filesystem KV connector
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [kv, inference]
+    - later: true
+- https://github.com/flashinfer-ai/flashinfer/pull/2917/changes#diff-6669e2f453f75b5b113ff05d8eeb153517a361322c48e56f7444316fdb43860b -- FlashInfer PR 2917 changes
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [kernel, inference]
+    - later: true
+- https://github.com/llm-d/llm-d-inference-scheduler?tab=readme-ov-file -- llm-d inference scheduler
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, scheduler]
+    - later: true
+- https://github.com/llm-d/llm-d-inference-scheduler/blob/main/docs/architecture.md -- llm-d inference scheduler architecture
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, architecture]
+    - later: true
+- https://github.com/llm-d/llm-d-inference-scheduler/tree/main -- llm-d inference scheduler tree
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, scheduler]
+    - later: true
+- https://github.com/ratatui/ratatui -- Ratatui
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [rust, tui]
+    - later: true
+- https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard -- Berkeley function-call leaderboard
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [tools, evaluation]
+    - later: true
+- https://github.com/viemccoy/excalibur/blob/main/README.md -- Excalibur README
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [agents, harness]
+    - later: true
+- https://github.com/Dao-AILab/quack/blob/main/quack/gemm_symmetric.py -- QuACK symmetric GEMM
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [kernel, gemm]
+    - later: true
+- https://github.com/Dao-AILab/gram-newton-schulz -- Gram Newton-Schulz
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [optimization, muon]
+    - later: true
+- https://github.com/modular/modular/blob/main/max/kernels/examples/pmpp/chapter_02/fig2_10.mojo -- Mojo PMPP fig2_10
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [mojo, gpu]
+    - later: true
+- https://github.com/jd-opensource/xllm/tree/main/xllm -- xLLM
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [inference, engine]
+    - later: true
+- https://github.com/WeianMao/triattention/blob/main/triattention/vllm/core/kernels/triton_scoring.py -- TriAttention vLLM triton scoring
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [vllm, kernel]
+    - later: true
+- https://github.com/guidance-ai/llguidance/tree/d787735640aebfe363b1a43ce8c79677432b65bc -- llguidance
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [structured-outputs, inference]
+    - later: true
+- https://github.com/cloudflare/cloudflared -- cloudflared
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [cloudflare, tunnel]
+    - later: true
+- https://github.com/prinsss/node-tikzjax/commit/b85f30276c0a402af2d5b6f20279f31d7c291840 -- node-tikzjax commit b85f302
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [latex, rendering]
+    - later: true
+- https://github.com/johndpope/ltx2-castlehill -- CastleHill
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [video, diffusion]
+    - later: true
+- https://github.com/ai-dynamo/flextensor -- FlexTensor
+  - [meta]:
+    - date: 06/07/2026
+    - tags: [offloading, pytorch]
+    - later: true
 
 - https://github.com/prosekit/prosekit -- ProseKit
   - [meta]:

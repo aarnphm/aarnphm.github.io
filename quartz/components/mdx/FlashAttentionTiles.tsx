@@ -282,7 +282,7 @@ const FlashAttentionTilesImpl: QuartzMdxComponent<Props> = ({ caption }) => {
               class="fat-ratio"
               data-fat-ratio
               dangerouslySetInnerHTML={{
-                __html: tex('\\text{HBM: streamed in tiles, never } L{\\times}L'),
+                __html: tex('\\text{HBM: streamed in tiles}'),
               }}
             />
           </div>

@@ -324,9 +324,20 @@ const M: FunctionalComponent<{ t: string; d?: boolean }> = ({ t, d }) => (
   />
 )
 
+const BOW = 0.16
+const BOW_MAX = 16
 const path = (e: E): string => {
-  const mx = (e.fx + e.tx) / 2
-  return `M ${e.fx} ${e.fy} C ${mx} ${e.fy}, ${mx} ${e.ty}, ${e.tx} ${e.ty}`
+  const dx = e.tx - e.fx
+  const dy = e.ty - e.fy
+  const len = Math.hypot(dx, dy) || 1
+  const m = Math.min(len * BOW, BOW_MAX) * (dy < 0 ? -1 : 1)
+  const nx = (-dy / len) * m
+  const ny = (dx / len) * m
+  const c1x = e.fx + dx / 3 + nx
+  const c1y = e.fy + dy / 3 + ny
+  const c2x = e.fx + (2 * dx) / 3 + nx
+  const c2y = e.fy + (2 * dy) / 3 + ny
+  return `M ${e.fx} ${e.fy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${e.tx} ${e.ty}`
 }
 
 const def = Object.fromEntries(SLIDERS.map(s => [s.k, s.def])) as Record<string, number>

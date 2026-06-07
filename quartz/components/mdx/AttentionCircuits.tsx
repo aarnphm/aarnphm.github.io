@@ -140,7 +140,14 @@ const CircuitPanel: FunctionalComponent = () => {
         const label = idx === 3 ? 'i' : String(idx)
         return (
           <g>
-            <rect class="acir-box acir-box--input" x={18} y={y - 14} width={44} height={28} rx={4} />
+            <rect
+              class="acir-box acir-box--input"
+              x={18}
+              y={y - 14}
+              width={44}
+              height={28}
+              rx={4}
+            />
             <Fo x={18} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
             <path class="acir-line" d={`M 62 ${y} L 106 ${y}`} marker-end={arr} />
           </g>
@@ -160,7 +167,14 @@ const CircuitPanel: FunctionalComponent = () => {
             style={{ opacity: 0.85 - idx * 0.18 }}
           />
         ))}
-        <Fo x={110} y={303} w={56} h={22} t={math`\text{QK}`} cls="acir-fo--label acir-fo--qk-label" />
+        <Fo
+          x={110}
+          y={303}
+          w={56}
+          h={22}
+          t={math`\text{QK}`}
+          cls="acir-fo--label acir-fo--qk-label"
+        />
       </g>
       <g data-acir-circuit="ov">
         <g data-acir-ov-split>
@@ -181,7 +195,14 @@ const CircuitPanel: FunctionalComponent = () => {
             cls="acir-fo--xs acir-fo--rank"
           />
         </g>
-        <Fo x={196} y={252} w={64} h={22} t={math`\text{OV}`} cls="acir-fo--label acir-fo--ov-label" />
+        <Fo
+          x={196}
+          y={252}
+          w={64}
+          h={22}
+          t={math`\text{OV}`}
+          cls="acir-fo--label acir-fo--ov-label"
+        />
       </g>
       <path class="acir-line" d="M 166 205 L 196 205" marker-end={arr} />
       <path class="acir-line" d="M 256 205 L 276 205" marker-end={arr} />

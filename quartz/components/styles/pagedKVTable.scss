@@ -63,7 +63,7 @@
 .pkt-seq {
   padding: 0.65rem 0.75rem;
   border-radius: var(--radius-none);
-  border: 0;
+  border: 1px solid var(--lightgray);
   background: var(--pkt-card-bg);
   display: flex;
   flex-direction: column;

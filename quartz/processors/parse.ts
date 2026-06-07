@@ -311,6 +311,7 @@ const processedContentCacheSourcePatterns = [
   'quartz/processors/parse.ts',
   'quartz/extensions/**/*.{ts,js}',
   'quartz/plugins/transformers/**/*.{ts,tsx,js}',
+  'quartz/components/mdx/**/*.{ts,tsx}',
 ]
 const processedContentCacheSourceIgnores = [
   '**/*.test.ts',
