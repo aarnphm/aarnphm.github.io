@@ -9,6 +9,7 @@ const tocHoverRadius = tocHoverSigma * 3
 const tocHoverLerp = 0.32
 const tocHoverEpsilon = 0.08
 const tocDenseThreshold = 50
+const headingSelector = 'h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]'
 
 interface TocButtonMetric {
   button: HTMLButtonElement
@@ -324,6 +325,24 @@ function cacheTocEntries() {
   })
 }
 
+function tocHeadingTargets(): HTMLElement[] {
+  const pageContent = activeToc?.closest<HTMLElement>('.page-content')
+  const article = pageContent?.querySelector<HTMLElement>('article')
+  if (!article) return []
+
+  const headingById = new Map<string, HTMLElement>()
+  article.querySelectorAll<HTMLElement>(headingSelector).forEach(heading => {
+    if (!headingById.has(heading.id)) headingById.set(heading.id, heading)
+  })
+
+  const targets: HTMLElement[] = []
+  for (const slug of tocEntryBySlug.keys()) {
+    const heading = headingById.get(slug)
+    if (heading) targets.push(heading)
+  }
+  return targets
+}
+
 function resetTocPageContentClasses() {
   document.querySelectorAll<HTMLElement>('.page-content.has-minimal-toc').forEach(pageContent => {
     pageContent.classList.remove('has-minimal-toc', 'toc-hovering', 'toc-scrolling', 'toc-dense')
@@ -464,9 +483,7 @@ document.addEventListener('nav', () => {
   setupToc()
   cacheTocEntries()
   observer.disconnect()
-  document
-    .querySelectorAll('h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]')
-    .forEach(header => observer.observe(header))
+  tocHeadingTargets().forEach(header => observer.observe(header))
 
   window.addCleanup(() => {
     cleanupToc()

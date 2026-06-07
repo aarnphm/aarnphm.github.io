@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-06 22:42:42 GMT-04:00
+modified: 2026-06-06 22:56:27 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -8548,6 +8548,7 @@ title: are.na
     - tags: [solarprotocol]
 
 ## arts
+
 - https://dollarchive.neocities.org -- Doll Archive
   - [meta]:
     - date: 06/06/2026
@@ -8709,6 +8710,10 @@ title: are.na
 
 ## resources
 
+- https://svgl.app/ -- SVG for application
+  - [meta]:
+    - date: 06/06/2026
+    - tags: [foundry]
 - https://forum.openai.com/public/videos/event-replay-terence-tao-and-mark-chen-on-ai-and-mathematical-discovery-2026-03-11 -- Terence Tao and Mark Chen on AI and Mathematical Discovery
   - [meta]:
     - date: 06/06/2026
