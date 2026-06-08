@@ -1,5 +1,5 @@
 ---
-date: "2026-05-27"
+date: '2026-05-27'
 description: tiled IO-aware attention kernel, recomputes softmax denominators on-the-fly, avoids materialising the full attention matrix.
 id: attention-flash
 modified: 2026-06-07 11:02:58 GMT-04:00
@@ -143,6 +143,7 @@ A trick to address this overflow is often referred to as the _safe-softmax_ impl
 > $$
 
 Looking at this equation, one might notice that it will takes us ::three passes:: over $x$:
+
 - for the maximum $m_V$
 - the denominator $\ell_v = \sum_j e^{x_j - m_V}$
 - normalize (the factor)

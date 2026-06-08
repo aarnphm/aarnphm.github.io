@@ -6,6 +6,8 @@ export interface OuraDaily {
   rhr: number | null
   sleepDurationS: number | null
   tempDeviationC: number | null
+  totalCalories: number | null
+  activeCalories: number | null
 }
 
 export interface OuraAuth {
@@ -35,5 +37,7 @@ export function emptyOuraDaily(date: string): OuraDaily {
     rhr: null,
     sleepDurationS: null,
     tempDeviationC: null,
+    totalCalories: null,
+    activeCalories: null,
   }
 }
