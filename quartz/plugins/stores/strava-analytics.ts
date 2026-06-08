@@ -641,10 +641,12 @@ const RACE_LEGS: Record<RaceDistance, Record<Sport, number>> = {
   ironman: { swim: 3.8, bike: 180, run: 42.2 },
 }
 const RACE_REF: Record<RaceDistance, number> = { sprint: 35, olympic: 50, '70.3': 70, ironman: 90 }
-const RACE_FADE: Record<RaceDistance, number> = {
-  sprint: 1,
-  olympic: 1,
-  '70.3': 1.06,
+const T_REF_S = 3600
+const RIEGEL_K: Record<Sport, number> = { swim: 1.03, bike: 1.05, run: 1.06 }
+const RUN_BRICK_FADE: Record<RaceDistance, number> = {
+  sprint: 1.02,
+  olympic: 1.04,
+  '70.3': 1.07,
   ironman: 1.12,
 }
 const confRank: Record<Conf, number> = { firm: 0, stale: 1, low: 2, prior: 3 }
@@ -655,8 +657,10 @@ function recencyGate(staleDays: number): number {
   return 0.3
 }
 
-function legSplitSeconds(distKm: number, vThr: number): number {
-  return (distKm * 1000) / vThr
+function legSplitSeconds(distKm: number, vThr: number, k: number): number {
+  const dRefKm = (vThr * T_REF_S) / 1000
+  if (dRefKm <= 0) return 0
+  return T_REF_S * Math.pow(distKm / dRefKm, k)
 }
 
 function buildReadiness(
@@ -671,7 +675,8 @@ function buildReadiness(
     const longestKm = bests.get(sport)?.longestKm ?? 0
     const coverage = clamp(longestKm / legKm[sport], 0, 1)
     const gate = recencyGate(th.staleDays)
-    const splitS = legSplitSeconds(legKm[sport], th.vThr)
+    const raw = legSplitSeconds(legKm[sport], th.vThr, RIEGEL_K[sport])
+    const splitS = sport === 'run' ? raw * RUN_BRICK_FADE[distance] : raw
     return {
       sport,
       legKm: legKm[sport],
@@ -682,8 +687,7 @@ function buildReadiness(
     }
   })
 
-  const fade = RACE_FADE[distance]
-  const total = (legs.reduce((s, l) => s + l.splitS, 0) + 120 + 90) * fade
+  const total = legs.reduce((s, l) => s + l.splitS, 0) + 120 + 90
   const fitnessReady = clamp(ctlNow / RACE_REF[distance], 0, 1)
   const gatedCoverage = legs.map(l => l.coverage * l.recencyGate)
   const score = round(100 * (0.45 * fitnessReady + 0.55 * mean(gatedCoverage)), 0)

@@ -1541,3 +1541,63 @@
     gap: 1.1rem;
   }
 }
+
+[data-gloss] {
+  cursor: help;
+}
+
+[data-gloss]:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--secondary) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.tri-ana-chip[data-gloss],
+.tri-ana-k[data-gloss],
+.tri-ana-block-title[data-gloss],
+.tri-ana-conf[data-gloss],
+.tri-trend-unit[data-gloss],
+.tri-trend-dir[data-gloss],
+.tri-rdy-bind[data-gloss],
+.tri-rdy-time[data-gloss],
+.tri-ana-stat[data-gloss] .tri-ana-stat-k {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: color-mix(in srgb, var(--gray) 55%, transparent);
+  text-underline-offset: 2px;
+}
+
+.tri-gloss {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-width: 17rem;
+  padding: 0.5rem 0.7rem;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--gray) 40%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.tri-gloss--on {
+  opacity: 1;
+}
+
+.tri-gloss-h {
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--dark);
+}
+
+.tri-gloss-def {
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: var(--darkgray);
+}

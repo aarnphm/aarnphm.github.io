@@ -782,7 +782,76 @@ const hms = (sec: number): string => {
     ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
     : `${m}:${s.toString().padStart(2, '0')}`
 }
-const anaTitle = (text: string): HTMLElement => el('div', 'tri-ana-block-title', text)
+const GLOSS: Record<string, { term: string; def: string }> = {
+  ctl: {
+    term: 'fitness · CTL',
+    def: 'Chronic Training Load: a 42-day weighted average of daily training stress. Climbs slowly with consistent work and is the best single proxy for fitness.',
+  },
+  atl: {
+    term: 'fatigue · ATL',
+    def: 'Acute Training Load: a 7-day weighted average of training stress. Spikes after hard days; the proxy for how tired you are right now.',
+  },
+  tsb: {
+    term: 'form · TSB',
+    def: 'Training Stress Balance = fitness − fatigue (CTL − ATL). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
+  },
+  acwr: {
+    term: 'ACWR',
+    def: 'Acute:Chronic Workload Ratio — this week’s load over the trailing 4-week average. 0.8–1.3 is the safe zone; above 1.5 flags an injury-risk spike.',
+  },
+  ramp: {
+    term: 'ramp',
+    def: 'Week-over-week change in fitness (CTL). Positive is building; large jumps are the classic too-much-too-soon risk.',
+  },
+  monotony: {
+    term: 'monotony',
+    def: 'How same-y your daily load is across a week (mean ÷ standard deviation). Above ~2 paired with high load is Foster’s strain red flag.',
+  },
+  strain: {
+    term: 'strain',
+    def: 'Weekly load × monotony. High, unvarying training scores high — the combination that precedes overtraining.',
+  },
+  load: {
+    term: 'load',
+    def: 'Per-session training stress ≈ intensity² × duration, scaled so one hour at threshold = 100. Pace-derived here, since no HR or power is available.',
+  },
+  score: {
+    term: 'readiness',
+    def: 'A 0–100 blend of your fitness against the race demand (45%) and how much of each leg’s distance you have actually covered in training (55%).',
+  },
+  binding: {
+    term: 'binding leg',
+    def: 'The discipline limiting your readiness most — the weakest distance-coverage × recency. Train this one first.',
+  },
+  predtime: {
+    term: 'predicted time',
+    def: 'Each leg is paced from your threshold pace through an endurance-decay model, so longer legs slow down, plus transitions and a run-off-the-bike penalty.',
+  },
+  conf: {
+    term: 'confidence',
+    def: 'How much data backs the estimate. firm = enough recent efforts; low = only a couple; stale = newest effort over 45 days old; prior = no data, a generic assumption.',
+  },
+  threshold: {
+    term: 'threshold pace',
+    def: 'Your grade-adjusted pace at roughly 1-hour effort, taken from the 90th percentile of your sessions. The anchor for every prediction.',
+  },
+  trend: {
+    term: 'pace trend',
+    def: 'Which way your threshold pace is moving, fit by EWMA or least-squares over recent sessions. The shaded band is the forecast’s uncertainty.',
+  },
+}
+
+const markGloss = (e: HTMLElement, key: string): HTMLElement => {
+  e.dataset.gloss = key
+  e.tabIndex = 0
+  return e
+}
+
+const anaTitle = (text: string, key?: string): HTMLElement => {
+  const e = el('div', 'tri-ana-block-title', text)
+  if (key) markGloss(e, key)
+  return e
+}
 const bySport = <T extends { sport: Sport }>(arr: T[], sport: Sport): T | undefined =>
   arr.find(x => x.sport === sport)
 const thLabel = (th: { paceLabel: string; unit: string }): string =>
@@ -802,23 +871,24 @@ const buildHeadline = (data: StravaAnalytics): HTMLElement => {
   wrap.appendChild(el('div', 'tri-ana-head-line', data.headline || 'training analytics'))
   const r = data.risk
   const stats = el('div', 'tri-ana-head-stats')
-  const stat = (k: string, v: string, sub: string, cls: string): HTMLElement => {
+  const stat = (k: string, v: string, sub: string, cls: string, key: string): HTMLElement => {
     const c = el('div', 'tri-ana-stat')
     c.append(
       el('span', `tri-ana-stat-v ${cls}`, v),
       el('span', 'tri-ana-stat-k', k),
       el('span', 'tri-ana-stat-sub', sub),
     )
-    return c
+    return markGloss(c, key)
   }
   stats.append(
-    stat('fitness', `${Math.round(r.ctl)}`, 'CTL', ''),
-    stat('form', signed(Math.round(r.tsb)), r.tsbZone, `tri-zone-${r.tsbZone}`),
+    stat('fitness', `${Math.round(r.ctl)}`, 'CTL', '', 'ctl'),
+    stat('form', signed(Math.round(r.tsb)), r.tsbZone, `tri-zone-${r.tsbZone}`, 'tsb'),
     stat(
       'load',
       r.acwrState === 'building' ? 'base' : (r.acwr?.toFixed(2) ?? '—'),
       r.acwrState,
       `tri-acwr-${r.acwrState}`,
+      'acwr',
     ),
   )
   wrap.appendChild(stats)
@@ -878,20 +948,32 @@ const buildGauge = (data: StravaAnalytics): HTMLElement => {
   block.appendChild(track)
   const chips = el('div', 'tri-gauge-chips')
   chips.append(
-    el(
-      'span',
-      `tri-ana-chip tri-acwr-${r.acwrState}`,
-      r.acwrState === 'building'
-        ? 'ACWR building base'
-        : `ACWR ${r.acwr?.toFixed(2)} ${r.acwrState}`,
+    markGloss(
+      el(
+        'span',
+        `tri-ana-chip tri-acwr-${r.acwrState}`,
+        r.acwrState === 'building'
+          ? 'ACWR building base'
+          : `ACWR ${r.acwr?.toFixed(2)} ${r.acwrState}`,
+      ),
+      'acwr',
     ),
-    el('span', 'tri-ana-chip', `ramp ${signed(Math.round((r.rampWeek || 0) * 100))}%`),
-    el(
-      'span',
-      'tri-ana-chip',
-      r.monotony != null ? `monotony ${r.monotony.toFixed(2)}` : 'monotony —',
+    markGloss(
+      el('span', 'tri-ana-chip', `ramp ${signed(Math.round((r.rampWeek || 0) * 100))}%`),
+      'ramp',
     ),
-    el('span', 'tri-ana-chip', r.strain != null ? `strain ${Math.round(r.strain)}` : 'strain —'),
+    markGloss(
+      el(
+        'span',
+        'tri-ana-chip',
+        r.monotony != null ? `monotony ${r.monotony.toFixed(2)}` : 'monotony —',
+      ),
+      'monotony',
+    ),
+    markGloss(
+      el('span', 'tri-ana-chip', r.strain != null ? `strain ${Math.round(r.strain)}` : 'strain —'),
+      'strain',
+    ),
   )
   block.appendChild(chips)
   const cap = el('div', 'tri-elev-cap')
@@ -965,9 +1047,12 @@ const buildPmc = (data: StravaAnalytics): HTMLElement => {
   const r = data.risk
   const cap = el('div', 'tri-elev-cap')
   cap.append(
-    el('span', 'tri-ana-k', `CTL ${Math.round(r.ctl)}`),
-    el('span', 'tri-ana-k', `ATL ${Math.round(r.atl)}`),
-    el('span', `tri-ana-k tri-zone-${r.tsbZone}`, `TSB ${signed(Math.round(r.tsb))}`),
+    markGloss(el('span', 'tri-ana-k', `CTL ${Math.round(r.ctl)}`), 'ctl'),
+    markGloss(el('span', 'tri-ana-k', `ATL ${Math.round(r.atl)}`), 'atl'),
+    markGloss(
+      el('span', `tri-ana-k tri-zone-${r.tsbZone}`, `TSB ${signed(Math.round(r.tsb))}`),
+      'tsb',
+    ),
   )
   block.appendChild(cap)
   return block
@@ -975,7 +1060,7 @@ const buildPmc = (data: StravaAnalytics): HTMLElement => {
 
 const buildCtlSport = (data: StravaAnalytics): HTMLElement => {
   const block = el('div', 'tri-ana-ctlsport')
-  block.appendChild(anaTitle('fitness by discipline'))
+  block.appendChild(anaTitle('fitness by discipline', 'ctl'))
   const daily = data.daily
   const n = daily.length
   if (n < 2) {
@@ -1020,7 +1105,7 @@ const buildCtlSport = (data: StravaAnalytics): HTMLElement => {
 
 const buildWeekly = (data: StravaAnalytics): HTMLElement => {
   const block = el('div', 'tri-ana-weekly')
-  block.appendChild(anaTitle('weekly load'))
+  block.appendChild(anaTitle('weekly load', 'load'))
   const wk = data.weekly
   if (!wk.length) {
     block.appendChild(el('div', 'tri-ana-empty', 'no weeks'))
@@ -1068,7 +1153,7 @@ const buildWeekly = (data: StravaAnalytics): HTMLElement => {
 
 const buildReadiness = (data: StravaAnalytics): HTMLElement => {
   const block = el('div', 'tri-ana-readiness')
-  block.appendChild(anaTitle('race readiness'))
+  block.appendChild(anaTitle('race readiness', 'score'))
   if (!data.races.length) {
     block.appendChild(el('div', 'tri-ana-empty', '—'))
     return block
@@ -1088,8 +1173,8 @@ const buildReadiness = (data: StravaAnalytics): HTMLElement => {
     row.appendChild(track)
     const meta = el('span', 'tri-rdy-meta')
     meta.append(
-      el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, r.bindingLeg),
-      el('span', 'tri-rdy-time', hms(r.predictedTotalS)),
+      markGloss(el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, r.bindingLeg), 'binding'),
+      markGloss(el('span', 'tri-rdy-time', hms(r.predictedTotalS)), 'predtime'),
     )
     row.appendChild(meta)
     block.appendChild(row)
@@ -1102,8 +1187,12 @@ const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
   const th = bySport(data.thresholds, sport)
   const wrap = el('div', `tri-trend-panel${tr?.stale ? ' tri-trend-stale' : ''}`)
   const head = el('div', 'tri-trend-head')
-  head.append(buildIconLeg(sport), el('span', 'tri-trend-unit', th ? thLabel(th) : sport))
-  if (th) head.appendChild(el('span', `tri-ana-conf tri-conf-${th.conf}`, th.conf))
+  head.append(
+    buildIconLeg(sport),
+    markGloss(el('span', 'tri-trend-unit', th ? thLabel(th) : sport), 'threshold'),
+  )
+  if (th)
+    head.appendChild(markGloss(el('span', `tri-ana-conf tri-conf-${th.conf}`, th.conf), 'conf'))
   wrap.appendChild(head)
   if (!tr || tr.method === 'none') {
     const msg =
@@ -1158,10 +1247,13 @@ const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
   const dir = trendDir(tr.invert, tr.slopePerWeek)
   const note = el('div', 'tri-trend-note')
   note.append(
-    el(
-      'span',
-      `tri-trend-dir tri-dir-${dir > 0 ? 'up' : dir < 0 ? 'down' : 'flat'}`,
-      dir > 0 ? 'faster' : dir < 0 ? 'slower' : 'flat',
+    markGloss(
+      el(
+        'span',
+        `tri-trend-dir tri-dir-${dir > 0 ? 'up' : dir < 0 ? 'down' : 'flat'}`,
+        dir > 0 ? 'faster' : dir < 0 ? 'slower' : 'flat',
+      ),
+      'trend',
     ),
     el('span', 'tri-ana-k', `${tr.method} · n=${tr.sampleSize}`),
   )
@@ -1349,6 +1441,71 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const setupGloss = (root: HTMLElement): (() => void) | null => {
+  const zones = ['.tri-analytics', '.tri-ana-headline']
+    .map(s => root.querySelector<HTMLElement>(s))
+    .filter((z): z is HTMLElement => z != null)
+  if (zones.length === 0) return null
+  const pop = el('div', 'tri-gloss')
+  pop.setAttribute('role', 'tooltip')
+  root.appendChild(pop)
+  let current: HTMLElement | null = null
+  const place = (term: HTMLElement) => {
+    const r = term.getBoundingClientRect()
+    const pr = pop.getBoundingClientRect()
+    let left = r.left
+    if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - 8 - pr.width
+    let top = r.bottom + 6
+    if (top + pr.height > window.innerHeight - 8) top = r.top - 6 - pr.height
+    pop.style.left = `${Math.max(8, left)}px`
+    pop.style.top = `${Math.max(8, top)}px`
+  }
+  const show = (term: HTMLElement) => {
+    const g = GLOSS[term.dataset.gloss ?? '']
+    if (!g) return
+    current = term
+    pop.replaceChildren(el('span', 'tri-gloss-h', g.term), el('span', 'tri-gloss-def', g.def))
+    pop.classList.add('tri-gloss--on')
+    place(term)
+  }
+  const hide = (term?: HTMLElement) => {
+    if (term && term !== current) return
+    current = null
+    pop.classList.remove('tri-gloss--on')
+  }
+  const onOver = (event: Event) => {
+    const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
+    if (t) show(t)
+  }
+  const onOut = (event: Event) => {
+    const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
+    if (!t) return
+    const to = (event as MouseEvent).relatedTarget as Node | null
+    if (to && t.contains(to)) return
+    hide(t)
+  }
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') hide()
+  }
+  for (const z of zones) {
+    z.addEventListener('mouseover', onOver)
+    z.addEventListener('mouseout', onOut)
+    z.addEventListener('focusin', onOver)
+    z.addEventListener('focusout', onOut)
+  }
+  document.addEventListener('keydown', onKey)
+  return () => {
+    for (const z of zones) {
+      z.removeEventListener('mouseover', onOver)
+      z.removeEventListener('mouseout', onOut)
+      z.removeEventListener('focusin', onOver)
+      z.removeEventListener('focusout', onOut)
+    }
+    document.removeEventListener('keydown', onKey)
+    pop.remove()
+  }
+}
+
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
@@ -1376,4 +1533,6 @@ document.addEventListener('nav', () => {
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)
   if (anaCleanup) window.addCleanup?.(anaCleanup)
+  const glossCleanup = setupGloss(root)
+  if (glossCleanup) window.addCleanup?.(glossCleanup)
 })
