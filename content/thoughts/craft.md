@@ -6,7 +6,7 @@ comments: false
 date: '2021-12-22'
 description: and a celebration for the act of making.
 id: craft
-modified: 2026-06-07 01:18:37 GMT-04:00
+modified: 2026-06-07 22:35:56 GMT-04:00
 permalinks:
   - /thoughts/work
   - /craft
@@ -111,6 +111,19 @@ There is also a [[ideas|backlog]] of unfinished ideas that I might work on, one 
 
 ## lives
 
+<!-- prettier-ignore -->
+- [[triathlon|an amateur triathlete]]
+  <div class="nolist">
+
+  <iframe height='454' width='300' frameborder='0' allowtransparency='true' scrolling='no' src='https://www.strava.com/athletes/123158310/latest-rides/6ecaafad0b2414c8166dcd13d4d97950a87764f4'></iframe>
+
+  </div>
+  - SuperTri Toronto 2026
+  - TODO:
+    - [Challenge Roth](https://www.challenge-roth.com/en/registration.html)
+    - IRONMAN {{sidenotes[70.3]: in Palm Springs, California}} [La Quinta](https://www.ironman.com/races/im703-la-quinta)
+    - IRONMAN [70.3 Phu Quoc](https://www.ironman.com/races/im703-phu-quoc)
+    - {{sidenotes[Norseman]: This is far fetch, but I want that black jacket}} [XTREME Triathlon](https://www.nxtri.com/)
 - Modular, 01/2026—Now
   - Inference Optimization Engineer, MAX Serve
   - Source: [website](https://www.modular.com/)
@@ -137,7 +150,7 @@ vLLM Blog: Structured Decoding in vLLM: a gentle introduction
 
 ## web poetics
 
-- #bday, a collection of online artifacts I built in addition with some [[/posts|writing]] to celebrate my friends' birthday.
+- #bday, a collection of online artifacts I built in addition with some [[posts|writing]] to celebrate my friends' birthday.
   - a fun [self-replicating spacecraft](https://en.wikipedia.org/wiki/Self-replicating_spacecraft) game
     - A hybrid of A\* and a BFS search for pathfinding algorithm.
     - polyalphabetic cipher with deterministic reversible transformations includes a Fiestel network structure with MurmurHash3 mixing of 32-bit avalanche mixer

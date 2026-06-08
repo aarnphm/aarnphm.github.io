@@ -38,8 +38,8 @@ _https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
 
 > [!table] sm execution roles (hopper/blackwell)
 >
-> | unit                      | capacity per sm                           | responsibility                        | deeper dive                                            |
-> | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------------ |
+> | unit                      | capacity per sm                           | responsibility                        | deeper dive                                      |
+> | ------------------------- | ----------------------------------------- | ------------------------------------- | ------------------------------------------------ |
 > | warp schedulers           | 4 quads, 16 warp issue slots/cycle        | pick ready warps, arbitrate pipelines | [[lectures/420#1. Warp Scheduler]]               |
 > | cuda cores                | 128 fp32/int32 alus                       | scalar and vector integer/fp work     | [[lectures/420#2. CUDA Core]]                    |
 > | tensor cores              | 4 mma pipelines (fp16/bf16/tf32/fp8/fp4)  | matrix multiply-accumulate via wgmma  | [[lectures/420#tensor core operation]]           |
@@ -69,14 +69,14 @@ i.e: H100 (2022)
 
 > [!example] sheets
 >
-> | metric       | value                                                                                |
-> | ------------ | ------------------------------------------------------------------------------------ |
-> | sm count     | 132 (144 on sxm)                                                                     |
-> | cuda cores   | 16,896                                                                               |
-> | tensor cores | 528 (4th gen)                                                                        |
-> | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                               |
-> | fp16 peak    | 1,979 tflop/s                                                                        |
-> | fp8 peak     | 3,958 tflop/s                                                                        |
+> | metric       | value                                                                          |
+> | ------------ | ------------------------------------------------------------------------------ |
+> | sm count     | 132 (144 on sxm)                                                               |
+> | cuda cores   | 16,896                                                                         |
+> | tensor cores | 528 (4th gen)                                                                  |
+> | hbm          | 80 gb hbm3 @ 3.35 tb/s                                                         |
+> | fp16 peak    | 1,979 tflop/s                                                                  |
+> | fp8 peak     | 3,958 tflop/s                                                                  |
 > | reference    | [[lectures/420#memory hierarchy: the performance bottleneck]] · modal glossary |
 
 > [!tip] hopper features
@@ -92,14 +92,14 @@ i.e: b200 (2024)
 
 > [!example] sheets
 >
-> | metric       | value                                                                                            |
-> | ------------ | ------------------------------------------------------------------------------------------------ |
-> | sm count     | 192                                                                                              |
-> | cuda cores   | 24,576                                                                                           |
-> | tensor cores | 768 (5th gen)                                                                                    |
-> | hbm          | 192 gb hbm3e @ 8 tb/s                                                                            |
-> | fp16 peak    | 2,250 tflop/s                                                                                    |
-> | fp4 peak     | 20,000 tflop/s                                                                                   |
+> | metric       | value                                                                                      |
+> | ------------ | ------------------------------------------------------------------------------------------ |
+> | sm count     | 192                                                                                        |
+> | cuda cores   | 24,576                                                                                     |
+> | tensor cores | 768 (5th gen)                                                                              |
+> | hbm          | 192 gb hbm3e @ 8 tb/s                                                                      |
+> | fp16 peak    | 2,250 tflop/s                                                                              |
+> | fp4 peak     | 20,000 tflop/s                                                                             |
 > | reference    | [[lectures/420#level 1: the GPU chip \| architecture table]] · jax scaling book section 12 |
 
 > [!tip] blackwell enhancements
@@ -115,11 +115,11 @@ See [[lectures/420#cute dsl mental model|CUTLASS and CuTe DSL section]] for comp
 
 > [!table] templated gemm stack
 >
-> | component                         | focus                                                             | follow-up                                                                                                                          |
-> | --------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420#hierarchical tiling with local_tile]]                                                                         |
-> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420#layout algebra operations]]                                                                                   |
-> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420#swizzling and bank conflict avoidance]]                                                                       |
+> | component                         | focus                                                             | follow-up                                                                                                              |
+> | --------------------------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+> | cutlass                           | template-based gemm primitives, epilogue fusion, cute integration | [[lectures/420#hierarchical tiling with local_tile]]                                                                   |
+> | cute dsl                          | layout algebra for compile-time tiling/swizzling                  | [[lectures/420#layout algebra operations]]                                                                             |
+> | cute swizzle ops                  | xor, block-raked layouts to kill bank conflicts                   | [[lectures/420#swizzling and bank conflict avoidance]]                                                                 |
 > | cute local_tile / local_partition | hierarchical decompositions down to register tiles                | [[lectures/420#hierarchical tiling with local_tile]] · [[lectures/420#thread-level partitioning with local_partition]] |
 
 ### triton linear layout

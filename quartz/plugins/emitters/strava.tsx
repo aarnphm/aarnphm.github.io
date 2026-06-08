@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import { Node } from 'unist'
+import type { GarminCache } from '../stores/garmin'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { TriathlonPage } from '../../components'
@@ -10,14 +11,15 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import { buildAnalytics } from '../stores/analytics'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
-import { buildAnalytics } from '../stores/strava-analytics'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const ouraCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
+const garminCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
@@ -30,6 +32,14 @@ async function readCache(): Promise<StravaRawCache | null> {
 async function readOura(): Promise<OuraCache | null> {
   try {
     return JSON.parse(await fs.readFile(ouraCacheFile, 'utf8')) as OuraCache
+  } catch {
+    return null
+  }
+}
+
+async function readGarmin(): Promise<GarminCache | null> {
+  try {
+    return JSON.parse(await fs.readFile(garminCacheFile, 'utf8')) as GarminCache
   } catch {
     return null
   }
@@ -59,27 +69,41 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
   ): Promise<FilePath[]> {
     const cache = await readCache()
     const oura = await readOura()
+    const garmin = await readGarmin()
     const files: FilePath[] = []
 
     const allFiles = contentDataFor(content)
     for (const [tree, file] of content) {
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
-      const payload = buildPayload(cache, oura, typeof since === 'string' ? since : undefined)
+      const payload = buildPayload(
+        cache,
+        oura,
+        garmin,
+        typeof since === 'string' ? since : undefined,
+      )
       files.push(
         await write({
           ctx,
           slug: 'static/strava-detail' as FullSlug,
           ext: '.json',
-          content: JSON.stringify({ details: payload.details, health: payload.health }),
+          content: JSON.stringify({
+            details: payload.details,
+            health: payload.health,
+            zones: payload.zones,
+            powerCurveRef: payload.powerCurveRef,
+          }),
         }),
       )
+      const tracking = file.data.tracking
       files.push(
         await write({
           ctx,
-          slug: 'static/strava-analytics' as FullSlug,
+          slug: 'static/analytics' as FullSlug,
           ext: '.json',
-          content: JSON.stringify(buildAnalytics(cache)),
+          content: JSON.stringify(
+            buildAnalytics(cache, { oura, weights: tracking?.days, events: tracking?.races }),
+          ),
         }),
       )
       const slug = file.data.slug!

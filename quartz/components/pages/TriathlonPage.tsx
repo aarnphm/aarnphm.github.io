@@ -105,6 +105,7 @@ export default (() => {
     const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
     const location = String(fileData.frontmatter?.['location'] ?? 'Toronto')
     const target = String(fileData.frontmatter?.['triathlon'] ?? '')
+    const raceDates = new Set((fileData.tracking?.races ?? []).map(r => r.date))
 
     const yearStarts: { year: string; index: number }[] = []
     let lastYear = ''
@@ -120,10 +121,7 @@ export default (() => {
       <article
         class={classNames(displayClass, 'triathlon', 'main-col', 'popover-hint')}
         data-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-detail.json')}
-        data-analytics-path={joinSegments(
-          pathToRoot(fileData.slug!),
-          'static/strava-analytics.json',
-        )}
+        data-analytics-path={joinSegments(pathToRoot(fileData.slug!), 'static/analytics.json')}
         data-location={location}
       >
         <div class="tri-head">
@@ -153,7 +151,7 @@ export default (() => {
                   const scale = rawTotal + gaps > MAX_BAR ? (MAX_BAR - gaps) / rawTotal : 1
                   return (
                     <span
-                      class={rest ? 'tri-bar' : 'tri-bar tri-bar--day'}
+                      class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
                       data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
                       data-date={prettyDate(d.date)}
                       data-date-iso={d.date}
@@ -427,21 +425,32 @@ export default (() => {
         >
           <div class="tri-ana-bar">
             <span class="tri-ana-title">analytics</span>
+            <input
+              class="tri-ana-search"
+              type="search"
+              placeholder="search metrics & activities"
+              aria-label="search analytics"
+              autocomplete="off"
+            />
             <button class="tri-ana-close" type="button" aria-label="Close">
               ×
             </button>
           </div>
+          <aside class="tri-ana-pop" aria-hidden="true" />
           <div class="tri-ana-body">
+            <div class="tri-ana-results" aria-hidden="true" />
+            <div class="tri-ana-detail" aria-hidden="true" />
             <div class="tri-ana-headline" />
+            <div class="tri-ana-block" data-chart="body" />
             <div class="tri-ana-block" data-chart="gauge" />
             <div class="tri-ana-block" data-chart="pmc" />
             <div class="tri-ana-block" data-chart="ctl-sport" />
             <div class="tri-ana-block" data-chart="weekly" />
+            <div class="tri-ana-block" data-chart="effort" />
             <div class="tri-ana-block" data-chart="readiness" />
             <div class="tri-ana-block" data-chart="trend" />
             <div class="tri-ana-block" data-chart="actions" />
           </div>
-          <aside class="tri-ana-pop" aria-hidden="true" />
         </aside>
       </article>
     )

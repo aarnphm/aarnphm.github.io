@@ -5,7 +5,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 
 const API = 'https://api.ouraring.com/v2/usercollection'
 const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
-const CACHE_VERSION = 1
+const CACHE_VERSION = 2
 const LOOKBACK_DAYS = 365
 const REFRESH_DAYS = 30
 const DAY_MS = 86_400_000
@@ -158,6 +158,7 @@ async function main(): Promise<void> {
   const readiness = await fetchRange(access, 'daily_readiness', start, end)
   const dailySleep = await fetchRange(access, 'daily_sleep', start, end)
   const sleep = await fetchRange(access, 'sleep', start, end)
+  const activity = await fetchRange(access, 'daily_activity', start, end)
 
   for (const r of readiness) {
     const day = str(r.day)
@@ -185,6 +186,13 @@ async function main(): Promise<void> {
     d.hrv = num(r.average_hrv)
     d.rhr = num(r.lowest_heart_rate)
     d.sleepDurationS = num(r.total_sleep_duration)
+  }
+  for (const r of activity) {
+    const day = str(r.day)
+    if (!day) continue
+    const d = ensure(day)
+    d.totalCalories = num(r.total_calories)
+    d.activeCalories = num(r.active_calories)
   }
 
   await writeCache()

@@ -5,6 +5,7 @@ import {
   RawStravaActivity,
   StravaRawCache,
   StravaStreams,
+  StravaZones,
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
@@ -167,6 +168,36 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
   }
 }
 
+async function fetchZones(token: string): Promise<StravaZones | null> {
+  const res = await fetchWithRetry(
+    apiUrl('/athlete/zones'),
+    { headers: authHeaders(token) },
+    limiter,
+  )
+  if (!res || !res.ok) return null
+  const data = (await res.json()) as {
+    heart_rate?: { zones?: { min: number; max: number }[] }
+    power?: { zones?: { min: number; max: number }[] }
+  }
+  const bounds = (zones: { max: number }[] | undefined): number[] =>
+    (zones ?? []).map(z => z.max).filter(m => m > 0)
+  const hr = bounds(data.heart_rate?.zones)
+  const power = bounds(data.power?.zones)
+  if (hr.length === 0 && power.length === 0) return null
+  return { hr, power, ftp: null }
+}
+
+async function fetchActivityCalories(token: string, id: number): Promise<number | null> {
+  const res = await fetchWithRetry(
+    apiUrl(`/activities/${id}`),
+    { headers: authHeaders(token) },
+    limiter,
+  )
+  if (!res) return null
+  const data = (await res.json()) as Record<string, unknown>
+  return data.calories === undefined || data.calories === null ? null : Number(data.calories)
+}
+
 async function fetchCity(lat: number, lon: number): Promise<string | null> {
   const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`
   const res = await fetchWithRetry(
@@ -210,6 +241,7 @@ async function main(): Promise<void> {
 
   const streams: Record<string, StravaStreams> = { ...prev?.streams }
   const geo: Record<string, string> = { ...prev?.geo }
+  let zones: StravaZones | undefined = prev?.zones
   const writeCache = async (): Promise<void> => {
     const cache: StravaRawCache = {
       version: CACHE_VERSION,
@@ -222,10 +254,15 @@ async function main(): Promise<void> {
       ),
       streams,
       geo,
+      zones,
     }
     await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
     await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   }
+
+  const fetchedZones = await fetchZones(access)
+  if (fetchedZones) zones = fetchedZones
+  else if (!zones) console.log('[strava] no athlete zones (needs profile:read_all) — deriving')
 
   const needStreams = Object.values(merged)
     .filter(a => {
@@ -260,9 +297,21 @@ async function main(): Promise<void> {
     if (gi % 8 === 0) await writeCache()
   }
 
+  const needCalories = Object.values(merged)
+    .filter(a => normalizeSport(a.sportType) !== null && a.calories === undefined)
+    .sort((x, y) => y.startDate.localeCompare(x.startDate))
+  let ci = 0
+  for (const a of needCalories) {
+    const cal = await fetchActivityCalories(access, a.id)
+    if (cal != null) merged[String(a.id)].calories = cal
+    progress('calories', ++ci, needCalories.length)
+    if (ci % 8 === 0) await writeCache()
+  }
+
   await writeCache()
+  const withCalories = Object.values(merged).filter(a => a.calories != null).length
   console.log(
-    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(geo).length} located → ${cacheFile}`,
+    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(geo).length} located, ${withCalories} with calories → ${cacheFile}`,
   )
 }
 

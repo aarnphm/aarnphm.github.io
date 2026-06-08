@@ -1,11 +1,14 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
+import katex from 'katex'
 import { annotate } from 'rough-notation'
-import type { DailyPoint, StravaAnalytics } from '../../plugins/stores/strava-analytics'
+import type { Analytics, BodyBlock, DailyPoint } from '../../plugins/stores/analytics'
 import {
   type ActivityHealth,
+  type PowerCurvePoint,
   type Sport,
   SPORT_ICON,
   type StravaActivityDetail,
+  type StravaZones,
 } from '../../plugins/stores/strava'
 
 export {}
@@ -13,7 +16,12 @@ export {}
 type DetailPayload = {
   details: Record<string, StravaActivityDetail>
   health: Record<string, ActivityHealth>
+  zones?: StravaZones
+  powerCurveRef?: PowerCurvePoint[]
 }
+
+let DETAIL_ZONES: StravaZones | null = null
+let DETAIL_CURVE_REF: PowerCurvePoint[] = []
 
 const SVGNS = 'http://www.w3.org/2000/svg'
 const KM_TO_MI = 0.621371
@@ -46,6 +54,11 @@ const clock = (s: number): string =>
   `${Math.floor(s / 60)}:${Math.round(s % 60)
     .toString()
     .padStart(2, '0')}`
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const shortDate = (iso: string): string => {
+  const [, m, d] = iso.split('-').map(Number)
+  return `${MONTHS[(m || 1) - 1]} ${d || 1}`
+}
 const rate = (sport: Sport, km: number, s: number): string => {
   const mi = km * KM_TO_MI
   if (sport === 'bike') return `${(mi / (s / 3600)).toFixed(1)} mph`
@@ -185,6 +198,10 @@ const recoveryRows = (h: ActivityHealth): [string, string][] => {
   if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
   if (h.tempDeviationC != null)
     rows.push(['temp', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
+  if (h.totalCalories != null)
+    rows.push(['day burn', `${Math.round(h.totalCalories).toLocaleString('en-US')} kcal`])
+  if (h.activeCalories != null)
+    rows.push(['day active', `${Math.round(h.activeCalories).toLocaleString('en-US')} kcal`])
   return rows
 }
 
@@ -193,6 +210,51 @@ const buildRecovery = (h: ActivityHealth): HTMLElement | null => {
   if (rows.length === 0) return null
   const wrap = el('div', 'tri-act-health')
   wrap.appendChild(el('span', 'tri-act-health-h', 'recovery'))
+  const table = el('table', 'tri-act-stats')
+  const tbody = document.createElement('tbody')
+  for (const [k, v] of rows) tbody.appendChild(statRow(k, v))
+  table.appendChild(tbody)
+  wrap.appendChild(table)
+  return wrap
+}
+
+type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
+
+const formatMl = (value: number): string => {
+  if (value < 1000) return `${Math.round(value)} ml`
+  const liters = value / 1000
+  return `${liters >= 10 ? liters.toFixed(0) : liters.toFixed(1)} L`
+}
+
+const formatGarminSource = (value: string | null): string => {
+  const clean = value?.trim()
+  if (!clean) return 'Garmin'
+  return clean.toLowerCase().includes('garmin') ? clean : `Garmin ${clean}`
+}
+
+const fuelingRows = (f: ActivityFueling): [string, string][] => {
+  const rows: [string, string][] = []
+  const consumed: string[] = []
+  if (f.caloriesConsumed != null) consumed.push(`${Math.round(f.caloriesConsumed)} kcal`)
+  if (f.carbsConsumedG != null) consumed.push(`${Math.round(f.carbsConsumedG)} g carb`)
+  if (consumed.length > 0) rows.push(['consumed', consumed.join(' / ')])
+  if (f.fluidMl != null) rows.push(['fluid', formatMl(f.fluidMl)])
+
+  const target: string[] = []
+  if (f.carbsRecommendedG != null) target.push(`${Math.round(f.carbsRecommendedG)} g carb`)
+  if (f.fluidRecommendedMl != null) target.push(formatMl(f.fluidRecommendedMl))
+  if (target.length > 0) rows.push(['target', target.join(' / ')])
+
+  if (f.sweatLossMl != null) rows.push(['sweat', formatMl(f.sweatLossMl)])
+  if (rows.length > 0) rows.push(['source', formatGarminSource(f.sourceDevice)])
+  return rows
+}
+
+const buildFueling = (f: ActivityFueling): HTMLElement | null => {
+  const rows = fuelingRows(f)
+  if (rows.length === 0) return null
+  const wrap = el('div', 'tri-act-health tri-act-fueling')
+  wrap.appendChild(el('span', 'tri-act-health-h', 'fueling'))
   const table = el('table', 'tri-act-stats')
   const tbody = document.createElement('tbody')
   for (const [k, v] of rows) tbody.appendChild(statRow(k, v))
@@ -284,6 +346,161 @@ const linkScrub = (
   }
 }
 
+const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
+const POWER_ZONE_NAMES = [
+  'recovery',
+  'endurance',
+  'tempo',
+  'threshold',
+  'VO2max',
+  'anaerobic',
+  'neuromuscular',
+]
+
+const zoneClock = (sec: number): string => {
+  const s = Math.round(sec)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const x = s % 60
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${x.toString().padStart(2, '0')}`
+  if (m > 0) return `${m}:${x.toString().padStart(2, '0')}`
+  return `${x}s`
+}
+
+const zoneRange = (bounds: number[], i: number): string => {
+  if (i === 0) return `< ${bounds[0]}`
+  if (i >= bounds.length) return `> ${bounds[bounds.length - 1]}`
+  return `${bounds[i - 1] + 1}–${bounds[i]}`
+}
+
+const buildZoneTable = (
+  title: string,
+  times: number[],
+  bounds: number[],
+  names: string[],
+  unit: string,
+  caption: string,
+): HTMLElement => {
+  const wrap = el('div', 'tri-zone')
+  wrap.appendChild(el('div', 'tri-zone-title', title))
+  const total = times.reduce((s, x) => s + x, 0) || 1
+  let mx = 1
+  for (const t of times) if (t > mx) mx = t
+  const grid = el('div', 'tri-zone-grid')
+  for (let i = times.length - 1; i >= 0; i--) {
+    const row = el('div', 'tri-zone-row')
+    row.append(
+      el('span', 'tri-zone-z', `Z${i + 1}`),
+      el('span', 'tri-zone-name', names[i] ?? `Z${i + 1}`),
+      el('span', 'tri-zone-range', `${zoneRange(bounds, i)}${unit}`),
+      el('span', 'tri-zone-time', zoneClock(times[i])),
+      el('span', 'tri-zone-pct', `${((times[i] / total) * 100).toFixed(1)}%`),
+    )
+    const track = el('span', 'tri-zone-bar')
+    const fill = el('span', `tri-zone-fill tri-zone-fill--${i + 1}`)
+    fill.style.width = `${(times[i] / mx) * 100}%`
+    track.appendChild(fill)
+    row.appendChild(track)
+    grid.appendChild(row)
+  }
+  wrap.appendChild(grid)
+  if (caption) wrap.appendChild(el('div', 'tri-zone-cap', caption))
+  return wrap
+}
+
+const buildHrZones = (d: StravaActivityDetail): HTMLElement | null => {
+  if (!d.hrZones || !DETAIL_ZONES?.hr.length) return null
+  return buildZoneTable('heart rate zones', d.hrZones, DETAIL_ZONES.hr, HR_ZONE_NAMES, '', '')
+}
+
+const buildPowerZones = (d: StravaActivityDetail): HTMLElement | null => {
+  if (!d.powerZones || !DETAIL_ZONES?.power.length) return null
+  const ftp = DETAIL_ZONES.ftp
+  return buildZoneTable(
+    'power zones',
+    d.powerZones,
+    DETAIL_ZONES.power,
+    POWER_ZONE_NAMES,
+    'w',
+    ftp != null ? `based on FTP ${ftp} W` : '',
+  )
+}
+
+const buildPowerHist = (d: StravaActivityDetail): HTMLElement | null => {
+  const hist = d.powerHist
+  if (!hist || hist.length < 2) return null
+  const wrap = el('div', 'tri-zone')
+  wrap.appendChild(el('div', 'tri-zone-title', '25W power distribution'))
+  const H = 34
+  const n = hist.length
+  let mx = 1
+  for (const t of hist) if (t > mx) mx = t
+  const s = svg('svg', {
+    class: 'tri-hist-svg',
+    viewBox: `0 0 ${n} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  hist.forEach((t, i) => {
+    if (t <= 0) return
+    const h = (t / mx) * (H - 1)
+    s.appendChild(
+      svg('rect', { x: i + 0.1, y: H - h, width: 0.8, height: h, class: 'tri-hist-bar' }),
+    )
+  })
+  const np = d.npWatts ?? d.avgWatts
+  if (np != null)
+    s.appendChild(
+      svg('line', { x1: np / 25 + 0.5, y1: 0, x2: np / 25 + 0.5, y2: H, class: 'tri-hist-avg' }),
+    )
+  wrap.appendChild(s)
+  const cap = el('div', 'tri-elev-cap')
+  cap.appendChild(el('span', 'tri-ana-k', `0–${(n - 1) * 25 + 24} W`))
+  if (np != null) cap.appendChild(el('span', 'tri-ana-k', `wtd avg ${np} W`))
+  wrap.appendChild(cap)
+  return wrap
+}
+
+const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
+  const curve = d.powerCurve
+  if (!curve || curve.length < 2) return null
+  const ref = DETAIL_CURVE_REF
+  const wrap = el('div', 'tri-zone')
+  wrap.appendChild(el('div', 'tri-zone-title', 'power curve'))
+  const W = 100
+  const H = 34
+  const secs = curve.map(c => c.s)
+  const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w))
+  const minLog = Math.log(secs[0])
+  const maxLog = Math.log(secs[secs.length - 1])
+  const span = Math.max(1e-6, maxLog - minLog)
+  const X = (sec: number): number => ((Math.log(sec) - minLog) / span) * W
+  const Y = (w: number): number => H - (w / maxW) * (H - 1)
+  const toPath = (pts: PowerCurvePoint[]): string =>
+    pts.map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`).join(' ')
+  const s = svg('svg', {
+    class: 'tri-curve-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  if (ref.length >= 2)
+    s.appendChild(
+      svg('path', {
+        d: toPath(ref.filter(c => c.s <= secs[secs.length - 1])),
+        class: 'tri-curve-ref',
+      }),
+    )
+  s.appendChild(svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
+  wrap.appendChild(s)
+  const cap = el('div', 'tri-elev-cap')
+  for (const sec of [5, 60, 300, 1200]) {
+    const p = curve.find(c => c.s === sec)
+    if (p)
+      cap.appendChild(el('span', 'tri-ana-k', `${sec < 60 ? `${sec}s` : `${sec / 60}m`} ${p.w}W`))
+  }
+  wrap.appendChild(cap)
+  return wrap
+}
+
 const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   const wrap = el('section', 'tri-act')
   const head = el('div', 'tri-act-head')
@@ -300,6 +517,10 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   if (d.avgHr) body.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
   stats.appendChild(body)
   wrap.appendChild(stats)
+  if (d.fueling) {
+    const fueling = buildFueling(d.fueling)
+    if (fueling) wrap.appendChild(fueling)
+  }
 
   let routeMarker: SVGElement | null = null
   const surfaces: ScrubSurface[] = []
@@ -333,6 +554,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
     moreRows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
   if (d.deviceWatts && d.maxWatts != null) moreRows.push(['max power', `${d.maxWatts} W`])
   if (d.kilojoules != null) moreRows.push(['energy', `${d.kilojoules} kJ`])
+  if (d.calories != null) moreRows.push(['calories', `${d.calories.toLocaleString('en-US')} kcal`])
   if (d.avgCadence != null)
     moreRows.push(['cadence', `${d.avgCadence} ${d.sport === 'run' ? 'spm' : 'rpm'}`])
   if (d.maxHr != null) moreRows.push(['max hr', `${d.maxHr} bpm`])
@@ -342,8 +564,9 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   const hasPowerStream = d.deviceWatts && d.route.some(p => p.w > 0)
   const hasHrStream = d.route.some(p => p.hr > 0)
   const hasCadStream = d.route.some(p => p.cad > 0)
+  const hasZones = !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
 
-  if (moreRows.length > 0 || hasPowerStream || hasHrStream || hasCadStream) {
+  if (moreRows.length > 0 || hasPowerStream || hasHrStream || hasCadStream || hasZones) {
     const toggle = el('button', 'tri-act-toggle')
     toggle.setAttribute('type', 'button')
     const more = el('div', 'tri-act-more')
@@ -387,6 +610,14 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
         fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad} ${d.sport === 'run' ? 'spm' : 'rpm'}`,
       })
     }
+    const hrz = buildHrZones(d)
+    if (hrz) more.appendChild(hrz)
+    const pcurve = buildPowerCurve(d)
+    if (pcurve) more.appendChild(pcurve)
+    const pz = buildPowerZones(d)
+    if (pz) more.appendChild(pz)
+    const phist = buildPowerHist(d)
+    if (phist) more.appendChild(phist)
     wrap.append(toggle, more)
   }
   if (surfaces.length > 0 && d.route.length >= 2) linkScrub(wrap, routeMarker, surfaces, d.route)
@@ -412,6 +643,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   const scroller = el('div', 'tri-pop-scroll')
   pop.appendChild(scroller)
   const updateOverflow = () => {
+    pop.classList.toggle('tri-pop--top', scroller.scrollTop > 4)
     pop.classList.toggle(
       'tri-pop--more',
       scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 4,
@@ -470,10 +702,12 @@ const setup = (root: HTMLElement): (() => void) | null => {
       rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
       card.appendChild(rest)
     } else if (details) {
-      for (const id of idsAttr.split(',')) {
-        const d = details[id]
-        if (d) card.appendChild(renderDetail(d))
-      }
+      const day = idsAttr
+        .split(',')
+        .map(id => details![id])
+        .filter(Boolean)
+        .sort((a, b) => b.distanceKm - a.distanceKm)
+      for (const d of day) card.appendChild(renderDetail(d))
     } else {
       card.appendChild(el('div', 'tri-pop-rest', '·'))
     }
@@ -604,6 +838,8 @@ const setup = (root: HTMLElement): (() => void) | null => {
       .then((data: DetailPayload) => {
         details = data.details
         healthByDate = data.health ?? {}
+        DETAIL_ZONES = data.zones ?? null
+        DETAIL_CURVE_REF = data.powerCurveRef ?? []
         if (active) {
           scroller.replaceChildren(buildCard(active))
           if (locked) setExpanded(true)
@@ -611,6 +847,18 @@ const setup = (root: HTMLElement): (() => void) | null => {
         }
       })
       .catch(() => {})
+
+  const onFocusDay = (event: Event) => {
+    const date = (event as CustomEvent<{ date?: string }>).detail?.date
+    if (!date) return
+    const idx = bars.findIndex(b => b.dataset.dateIso === date)
+    if (idx < 0) return
+    bars[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    const r = bars[idx].getBoundingClientRect()
+    showFor(idx, r.left + r.width / 2, r.top + r.height / 2)
+    setLocked(true)
+    setExpanded(true)
+  }
 
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
@@ -621,6 +869,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   scroller.addEventListener('scroll', updateOverflow, { passive: true })
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
+  window.addEventListener('tri:focus-day', onFocusDay)
 
   return () => {
     window.clearTimeout(hideTimer)
@@ -635,6 +884,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('pointerdown', armAudio)
     window.removeEventListener('keydown', armAudio)
+    window.removeEventListener('tri:focus-day', onFocusDay)
     void audio?.close()
   }
 }
@@ -784,20 +1034,20 @@ const hms = (sec: number): string => {
 }
 const GLOSS: Record<string, { term: string; def: string }> = {
   ctl: {
-    term: 'fitness · CTL',
-    def: 'Chronic Training Load: a 42-day weighted average of daily training stress. Climbs slowly with consistent work and is the best single proxy for fitness.',
+    term: 'fitness/CTL',
+    def: 'Chronic Training Load is a 42-day weighted average of daily training stress. Climbs slowly with consistent work and is the best single proxy for fitness.',
   },
   atl: {
-    term: 'fatigue · ATL',
-    def: 'Acute Training Load: a 7-day weighted average of training stress. Spikes after hard days; the proxy for how tired you are right now.',
+    term: 'fatigue/ATL',
+    def: 'Acute Training Load is a 7-day weighted average of training stress. Spikes after hard days; the proxy for how tired you are right now.',
   },
   tsb: {
-    term: 'form · TSB',
-    def: 'Training Stress Balance = fitness − fatigue (CTL − ATL). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
+    term: 'form/TSB',
+    def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$ (fitness − fatigue). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
   },
   acwr: {
     term: 'ACWR',
-    def: 'Acute:Chronic Workload Ratio — this week’s load over the trailing 4-week average. 0.8–1.3 is the safe zone; above 1.5 flags an injury-risk spike.',
+    def: 'Acute:Chronic Workload Ratio $\\mathrm{ACWR}=\\text{7d}/\\text{28d}$ load. 0.8–1.3 is the safe zone; above 1.5 flags an injury-risk spike.',
   },
   ramp: {
     term: 'ramp',
@@ -805,15 +1055,15 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   monotony: {
     term: 'monotony',
-    def: 'How same-y your daily load is across a week (mean ÷ standard deviation). Above ~2 paired with high load is Foster’s strain red flag.',
+    def: 'Daily-load sameness across a week, $\\text{monotony}=\\mu/\\sigma$ (mean over standard deviation). Above ~2 with high load is Foster’s strain red flag.',
   },
   strain: {
     term: 'strain',
-    def: 'Weekly load × monotony. High, unvarying training scores high — the combination that precedes overtraining.',
+    def: '$\\text{strain}=\\text{weekly load}\\times\\text{monotony}$. High, unvarying training scores high, often dictates overtraining.',
   },
   load: {
     term: 'load',
-    def: 'Per-session training stress ≈ intensity² × duration, scaled so one hour at threshold = 100. Pace-derived here, since no HR or power is available.',
+    def: 'Per-session training stress $\\mathrm{load}\\approx\\mathrm{IF}^2\\cdot t$, scaled so an hour at threshold ≈ 100. HR, power and cadence are captured per activity; this load stays pace-derived for now.',
   },
   score: {
     term: 'readiness',
@@ -838,6 +1088,18 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   trend: {
     term: 'pace trend',
     def: 'Which way your threshold pace is moving, fit by EWMA or least-squares over recent sessions. The shaded band is the forecast’s uncertainty.',
+  },
+  weight: {
+    term: 'body weight',
+    def: 'Daily weigh-ins from your tracking log (entered in lbs, shown in kg). Feeds recovery context and the bodyweight-dependent energy estimates.',
+  },
+  wtrend: {
+    term: 'weight trend',
+    def: 'Least-squares slope of your logged weight in kg per week. Negative means trending down.',
+  },
+  effort: {
+    term: 'relative effort',
+    def: 'Strava’s suffer score — duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
   },
 }
 
@@ -866,7 +1128,7 @@ const trendDir = (invert: boolean, slope: number | null): number => {
   return (invert ? slope < 0 : slope > 0) ? 1 : -1
 }
 
-const buildHeadline = (data: StravaAnalytics): HTMLElement => {
+const buildHeadline = (data: Analytics): HTMLElement => {
   const wrap = el('div', 'tri-ana-head')
   wrap.appendChild(el('div', 'tri-ana-head-line', data.headline || 'training analytics'))
   const r = data.risk
@@ -895,7 +1157,7 @@ const buildHeadline = (data: StravaAnalytics): HTMLElement => {
   return wrap
 }
 
-const buildGauge = (data: StravaAnalytics): HTMLElement => {
+const buildGauge = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-gauge')
   block.appendChild(anaTitle('form · ramp'))
   const r = data.risk
@@ -988,7 +1250,7 @@ const buildGauge = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildPmc = (data: StravaAnalytics): HTMLElement => {
+const buildPmc = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-pmc')
   block.appendChild(anaTitle('fitness · fatigue · form'))
   const daily = data.daily
@@ -1058,7 +1320,7 @@ const buildPmc = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildCtlSport = (data: StravaAnalytics): HTMLElement => {
+const buildCtlSport = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-ctlsport')
   block.appendChild(anaTitle('fitness by discipline', 'ctl'))
   const daily = data.daily
@@ -1103,7 +1365,7 @@ const buildCtlSport = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildWeekly = (data: StravaAnalytics): HTMLElement => {
+const buildWeekly = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-weekly')
   block.appendChild(anaTitle('weekly load', 'load'))
   const wk = data.weekly
@@ -1151,7 +1413,7 @@ const buildWeekly = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildReadiness = (data: StravaAnalytics): HTMLElement => {
+const buildReadiness = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-readiness')
   block.appendChild(anaTitle('race readiness', 'score'))
   if (!data.races.length) {
@@ -1182,7 +1444,31 @@ const buildReadiness = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
+const METHOD_WIKI: Record<string, string> = {
+  ols: 'Ordinary least squares',
+  ewma: 'Exponential smoothing',
+}
+
+const buildMethod = (method: string, n: number): HTMLElement => {
+  const span = el('span', 'tri-ana-k')
+  const title = METHOD_WIKI[method]
+  if (!title) {
+    span.textContent = `${method} · n=${n}`
+    return span
+  }
+  const a = document.createElement('a')
+  a.className = 'internal tri-ana-wiki'
+  a.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(title.replace(/ /g, '_'))}`
+  a.target = '_blank'
+  a.rel = 'noopener noreferrer'
+  a.dataset.wikipediaLang = 'en'
+  a.dataset.wikipediaTitle = title
+  a.textContent = method
+  span.append(a, ` · n=${n}`)
+  return span
+}
+
+const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
   const tr = bySport(data.trends, sport)
   const th = bySport(data.thresholds, sport)
   const wrap = el('div', `tri-trend-panel${tr?.stale ? ' tri-trend-stale' : ''}`)
@@ -1203,44 +1489,58 @@ const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
   }
   const fc = tr.forecast
   if (fc.length >= 1 && tr.level != null) {
-    const ys = [tr.level, ...fc.flatMap(f => [f.value, f.lo, f.hi])]
-    const ymin = Math.min(...ys)
-    const ymax = Math.max(...ys)
-    const yspan = Math.max(1e-6, ymax - ymin)
+    const level = tr.level
+    const m = fc.length
+    const weeks = m / 7
+    const slope = tr.slopePerWeek ?? 0
+    const endVal = level + slope * weeks
+    const change = Math.abs(endVal - level)
+    const pad = Math.max(change * 0.8, Math.abs(level) * 0.05, 1e-6)
+    const lo = Math.min(level, endVal) - pad
+    const hi = Math.max(level, endVal) + pad
+    const span = Math.max(1e-6, hi - lo)
     const top = 4
     const bot = 24
-    const m = fc.length
-    const xOf = (i: number): number => (i < 0 ? 0 : 8 + (i / Math.max(1, m - 1)) * (ANA_W - 8))
-    const Y = (v: number): number =>
-      tr.invert
-        ? top + ((v - ymin) / yspan) * (bot - top)
-        : bot - ((v - ymin) / yspan) * (bot - top)
+    const xOf = (p: number): number => 8 + p * (ANA_W - 8)
+    const Y = (v: number): number => {
+      const t = (v - lo) / span
+      return tr.invert ? top + t * (bot - top) : bot - t * (bot - top)
+    }
+    const Yc = (v: number): number => clampN(Y(v), 0.5, ANA_H - 0.5)
+    const valAt = (p: number): number => level + (endVal - level) * p
+    const ciHalf = (fc[m - 1].hi - fc[m - 1].lo) / 2
+    const coneEnd = clampN(ciHalf, change * 0.4 + 1e-6, span * 0.42)
     const s = svg('svg', {
       class: 'tri-ana-svg tri-trend-svg',
       viewBox: `0 0 ${ANA_W} ${ANA_H}`,
       preserveAspectRatio: 'none',
     })
-    if (m >= 2) {
-      const hiPts = fc.map((f, i) => `${xOf(i).toFixed(2)} ${Y(f.hi).toFixed(2)}`)
-      const loPts = fc.map(
-        (_, i) => `${xOf(m - 1 - i).toFixed(2)} ${Y(fc[m - 1 - i].lo).toFixed(2)}`,
-      )
-      s.appendChild(
-        svg('path', {
-          d: `M ${hiPts.join(' L ')} L ${loPts.join(' L ')} Z`,
-          class: `tri-trend-band tri-fill-${sport}`,
-        }),
-      )
+    const N = 12
+    const hiPts: string[] = []
+    const loPts: string[] = []
+    for (let k = 0; k <= N; k++) {
+      const p = k / N
+      const hw = coneEnd * Math.sqrt(p)
+      const c = valAt(p)
+      hiPts.push(`${xOf(p).toFixed(2)} ${Yc(c + hw).toFixed(2)}`)
+      loPts.push(`${xOf(p).toFixed(2)} ${Yc(c - hw).toFixed(2)}`)
     }
-    const linePts: [number, number][] = [
-      [xOf(-1), Y(tr.level)],
-      ...fc.map((f, i) => [xOf(i), Y(f.value)] as [number, number]),
-    ]
-    s.appendChild(svg('path', { d: polyD(linePts), class: `tri-trend-proj tri-line-${sport}` }))
+    s.appendChild(
+      svg('path', {
+        d: `M ${hiPts.join(' L ')} L ${loPts.reverse().join(' L ')} Z`,
+        class: `tri-trend-band tri-fill-${sport}`,
+      }),
+    )
+    s.appendChild(
+      svg('path', {
+        d: `M ${xOf(0).toFixed(2)} ${Y(level).toFixed(2)} L ${xOf(1).toFixed(2)} ${Y(endVal).toFixed(2)}`,
+        class: `tri-trend-proj tri-line-${sport}`,
+      }),
+    )
     const track = el('div', 'tri-trend-track')
     const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
-    dot.style.left = `${clampN((xOf(-1) / ANA_W) * 100, 2, 98)}%`
-    dot.style.top = `${(Y(tr.level) / ANA_H) * 100}%`
+    dot.style.left = `${clampN((xOf(0) / ANA_W) * 100, 2, 98)}%`
+    dot.style.top = `${clampN((Y(level) / ANA_H) * 100, 4, 96)}%`
     track.append(s, dot)
     wrap.appendChild(track)
   }
@@ -1255,13 +1555,13 @@ const buildTrendPanel = (data: StravaAnalytics, sport: Sport): HTMLElement => {
       ),
       'trend',
     ),
-    el('span', 'tri-ana-k', `${tr.method} · n=${tr.sampleSize}`),
+    buildMethod(tr.method, tr.sampleSize),
   )
   wrap.appendChild(note)
   return wrap
 }
 
-const buildTrend = (data: StravaAnalytics): HTMLElement => {
+const buildTrend = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-trend')
   block.appendChild(anaTitle('pace trend + forecast'))
   for (const sport of ['swim', 'bike', 'run'] as Sport[])
@@ -1269,7 +1569,7 @@ const buildTrend = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const buildActions = (data: StravaAnalytics): HTMLElement => {
+const buildActions = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-actions')
   block.appendChild(anaTitle('things to improve'))
   const banner = el('div', 'tri-actions-head')
@@ -1305,14 +1605,156 @@ const buildActions = (data: StravaAnalytics): HTMLElement => {
   return block
 }
 
-const ANALYTICS_BUILDERS: Record<string, (data: StravaAnalytics) => HTMLElement> = {
+const buildBody = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-bodywt')
+  block.appendChild(anaTitle('body weight', 'weight'))
+  const b: BodyBlock = data.body
+  if (b.latestKg == null) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no weight logged'))
+    return block
+  }
+  const head = el('div', 'tri-bodywt-head')
+  head.append(el('span', 'tri-bodywt-kg', `${b.latestKg.toFixed(1)} kg`))
+  if (b.latestLbs != null)
+    head.appendChild(el('span', 'tri-bodywt-lbs', `${b.latestLbs.toFixed(0)} lb`))
+  block.appendChild(head)
+  const pts = b.series
+  if (pts.length >= 2) {
+    let min = Infinity
+    let max = -Infinity
+    for (const p of pts) {
+      if (p.kg < min) min = p.kg
+      if (p.kg > max) max = p.kg
+    }
+    const range = Math.max(0.5, max - min)
+    const lo = min - range * 0.18
+    const hi = max + range * 0.18
+    const n = pts.length
+    const xPct = (i: number): number => (n === 1 ? 50 : (i / (n - 1)) * 100)
+    const yPct = (kg: number): number => (1 - (kg - lo) / (hi - lo)) * 100
+    const chart = el('div', 'tri-bodywt-chart')
+    const yax = el('div', 'tri-bodywt-yax')
+    yax.append(el('span', '', `${hi.toFixed(1)}`), el('span', '', `${lo.toFixed(1)}`))
+    const plot = el('div', 'tri-bodywt-plot')
+    const s = svg('svg', {
+      class: 'tri-bodywt-svg',
+      viewBox: '0 0 100 100',
+      preserveAspectRatio: 'none',
+    })
+    for (const gy of [0, 50, 100])
+      s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-bodywt-grid' }))
+    for (let i = 0; i < n; i++)
+      s.appendChild(
+        svg('line', {
+          x1: xPct(i),
+          y1: 0,
+          x2: xPct(i),
+          y2: 100,
+          class: 'tri-bodywt-grid tri-bodywt-grid--v',
+        }),
+      )
+    s.appendChild(
+      svg('path', { d: polyD(pts.map((p, i) => [xPct(i), yPct(p.kg)])), class: 'tri-bodywt-line' }),
+    )
+    plot.appendChild(s)
+    pts.forEach((p, i) => {
+      const m = el('span', `tri-bodywt-pt${i === n - 1 ? ' tri-bodywt-pt--last' : ''}`)
+      m.style.left = `${xPct(i).toFixed(2)}%`
+      m.style.top = `${yPct(p.kg).toFixed(2)}%`
+      m.title = `${p.date} · ${p.kg.toFixed(1)} kg`
+      plot.appendChild(m)
+    })
+    chart.append(yax, plot)
+    const xax = el('div', 'tri-bodywt-xax')
+    xax.append(el('span', '', shortDate(pts[0].date)), el('span', '', shortDate(pts[n - 1].date)))
+    block.append(chart, xax)
+  }
+  const cap = el('div', 'tri-elev-cap')
+  if (b.trendKgPerWeek != null)
+    cap.appendChild(
+      markGloss(
+        el(
+          'span',
+          'tri-ana-k',
+          `${b.trendKgPerWeek > 0 ? '+' : ''}${b.trendKgPerWeek.toFixed(2)} kg/wk`,
+        ),
+        'wtrend',
+      ),
+    )
+  const next = (data.events ?? [])
+    .filter(e => e.date >= data.meta.today)
+    .sort((a, b2) => a.date.localeCompare(b2.date))[0]
+  if (next) cap.appendChild(el('span', 'tri-ana-k', `${next.event ?? 'race'} · ${next.date}`))
+  block.appendChild(cap)
+  return block
+}
+
+const buildEffort = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-effort')
+  block.appendChild(anaTitle('relative effort', 'effort'))
+  const all = data.weekly
+  const active = all.filter(w => w.effort > 0)
+  if (!active.length) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no effort logged'))
+    return block
+  }
+  let mx = 1
+  for (const w of all) if (w.effort > mx) mx = w.effort
+  const n = all.length
+  const H = 32
+  const bot = H - 0.5
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-ana-weekly-svg',
+    viewBox: `0 0 ${n} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  all.forEach((w, i) => {
+    if (w.effort <= 0) {
+      s.appendChild(
+        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
+      )
+      return
+    }
+    const h = (w.effort / mx) * (H - 2)
+    s.appendChild(
+      svg('rect', { x: i + 0.12, y: bot - h, width: 0.76, height: h, class: 'tri-seg--effort' }),
+    )
+  })
+  block.appendChild(s)
+  const last = all[all.length - 1]
+  const prev = all.length >= 2 ? all[all.length - 2] : null
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el('span', 'tri-ana-k', `this wk ${Math.round(last?.effort ?? 0)}`),
+    el('span', 'tri-ana-k', `peak ${Math.round(mx)}`),
+  )
+  if (prev && prev.effort > 0) {
+    const d = Math.round((last?.effort ?? 0) - prev.effort)
+    cap.appendChild(el('span', 'tri-ana-k', `${d >= 0 ? '+' : ''}${d} vs last`))
+  }
+  block.appendChild(cap)
+  return block
+}
+
+const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
+  body: buildBody,
   gauge: buildGauge,
   pmc: buildPmc,
   'ctl-sport': buildCtlSport,
   weekly: buildWeekly,
+  effort: buildEffort,
   readiness: buildReadiness,
   trend: buildTrend,
   actions: buildActions,
+}
+
+const setPopReadout = (pop: HTMLElement, d: DailyPoint): void => {
+  pop.replaceChildren(
+    el('span', 'tri-pop-date', d.date),
+    el('span', 'tri-ana-k', `CTL ${Math.round(d.ctl)}`),
+    el('span', 'tri-ana-k', `ATL ${Math.round(d.atl)}`),
+    el('span', 'tri-ana-k', `TSB ${signed(Math.round(d.tsb))}`),
+  )
 }
 
 const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (() => void) => {
@@ -1325,17 +1767,13 @@ const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (
     const d = daily[Math.round(frac * (daily.length - 1))]
     cursor.setAttribute('x1', `${(frac * ANA_W).toFixed(2)}`)
     cursor.setAttribute('x2', `${(frac * ANA_W).toFixed(2)}`)
-    pop.replaceChildren(
-      el('span', 'tri-pop-date', d.date),
-      el('span', 'tri-ana-k', `CTL ${Math.round(d.ctl)}`),
-      el('span', 'tri-ana-k', `ATL ${Math.round(d.atl)}`),
-      el('span', 'tri-ana-k', `TSB ${signed(Math.round(d.tsb))}`),
-    )
-    pop.style.left = `${Math.min(event.clientX + 14, window.innerWidth - 150)}px`
-    pop.style.top = `${r.top - 4}px`
+    setPopReadout(pop, d)
     panel.classList.add('tri-ana-scrubbing')
   }
-  const onLeave = () => panel.classList.remove('tri-ana-scrubbing')
+  const onLeave = () => {
+    panel.classList.remove('tri-ana-scrubbing')
+    setPopReadout(pop, daily[daily.length - 1])
+  }
   svgEl.addEventListener('mousemove', onMove)
   svgEl.addEventListener('mouseleave', onLeave)
   return () => {
@@ -1344,24 +1782,92 @@ const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (
   }
 }
 
+const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
+  { label: 'body weight', chart: 'body', hay: 'body weight kg lbs mass cut' },
+  { label: 'form · ramp', chart: 'gauge', hay: 'form ramp gauge taper peak projection' },
+  { label: 'fitness · fatigue · form', chart: 'pmc', hay: 'pmc fitness fatigue form ctl atl tsb' },
+  {
+    label: 'fitness by discipline',
+    chart: 'ctl-sport',
+    hay: 'fitness discipline swim bike run ctl',
+  },
+  { label: 'weekly load', chart: 'weekly', hay: 'weekly load volume tss' },
+  { label: 'relative effort', chart: 'effort', hay: 'relative effort suffer score weekly' },
+  {
+    label: 'race readiness',
+    chart: 'readiness',
+    hay: 'race readiness predicted time sprint olympic 70.3 ironman binding leg',
+  },
+  {
+    label: 'pace trend + forecast',
+    chart: 'trend',
+    hay: 'pace trend forecast threshold faster slower ewma ols',
+  },
+  { label: 'things to improve', chart: 'actions', hay: 'actions things improve weakest' },
+]
+
+const GLOSS_CHART: Record<string, string> = {
+  ctl: 'pmc',
+  atl: 'pmc',
+  tsb: 'gauge',
+  acwr: 'gauge',
+  ramp: 'gauge',
+  monotony: 'gauge',
+  strain: 'gauge',
+  load: 'weekly',
+  effort: 'effort',
+  score: 'readiness',
+  binding: 'readiness',
+  predtime: 'readiness',
+  conf: 'trend',
+  threshold: 'trend',
+  trend: 'trend',
+  weight: 'body',
+  wtrend: 'body',
+}
+
 const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-analytics-btn')
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
+  const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
   const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
   const pop = root.querySelector<HTMLElement>('.tri-ana-pop')
+  const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
+  const results = root.querySelector<HTMLElement>('.tri-ana-results')
   if (!btn || !panel) return null
 
+  const body = root.querySelector<HTMLElement>('.tri-ana-body')
+  const detail = root.querySelector<HTMLElement>('.tri-ana-detail')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let loaded = false
+  let data: Analytics | null = null
+  let detailData: DetailPayload | null = null
+  let detailLoaded = false
   let scrubCleanup: (() => void) | null = null
+  let selIndex = -1
 
-  const render = (data: StravaAnalytics) => {
-    if (headline) headline.replaceChildren(buildHeadline(data))
+  const updateBodyFade = () => {
+    if (!body) return
+    body.classList.toggle('tri-ana-body--top', body.scrollTop > 2)
+    body.classList.toggle(
+      'tri-ana-body--bot',
+      body.scrollHeight - body.clientHeight - body.scrollTop > 2,
+    )
+  }
+  const render = (d: Analytics) => {
+    data = d
+    if (headline) headline.replaceChildren(buildHeadline(d))
     for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))) {
       const build = ANALYTICS_BUILDERS[block.dataset.chart ?? '']
-      if (build) block.replaceChildren(build(data))
+      if (build) block.replaceChildren(build(d))
     }
-    if (pop) scrubCleanup = wireScrub(panel, pop, data.daily)
+    if (pop) scrubCleanup = wireScrub(panel, pop, d.daily)
+    if (pop && d.daily.length) setPopReadout(pop, d.daily[d.daily.length - 1])
+    document.dispatchEvent(
+      new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
+    )
+    requestAnimationFrame(updateBodyFade)
   }
   const load = () => {
     if (loaded) return
@@ -1370,29 +1876,235 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (!path) return
     fetch(path)
       .then(res => res.json())
-      .then((data: StravaAnalytics) => render(data))
+      .then((d: Analytics) => render(d))
       .catch(() => {})
   }
-  const open = () => {
-    root.classList.add('tri-analytics-open')
-    panel.setAttribute('aria-hidden', 'false')
-    load()
+  const closeDetail = () => {
+    panel.classList.remove('tri-analytics--detail')
+    if (detail) detail.replaceChildren()
   }
   const close = () => {
     root.classList.remove('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'true')
+    if (search) search.value = ''
+    panel.classList.remove('tri-analytics--searching')
+    closeDetail()
+    if (results) results.replaceChildren()
+    selIndex = -1
+  }
+  const loadDetails = (): Promise<void> => {
+    if (detailLoaded) return Promise.resolve()
+    detailLoaded = true
+    const p = root.dataset.detailPath
+    if (!p) return Promise.resolve()
+    return fetch(p)
+      .then(res => res.json())
+      .then((d: DetailPayload) => {
+        detailData = d
+        DETAIL_ZONES = d.zones ?? null
+        DETAIL_CURVE_REF = d.powerCurveRef ?? []
+      })
+      .catch(() => {})
+  }
+  const showActivity = (id: string) => {
+    if (!detail) return
+    void loadDetails().then(() => {
+      const d = detailData?.details?.[id]
+      if (!d) return
+      const card = el('div', 'tri-pop-card')
+      const head = el('div', 'tri-pop-head')
+      const back = el('button', 'tri-ana-back')
+      back.setAttribute('type', 'button')
+      back.textContent = '← back'
+      head.append(el('span', 'tri-pop-date', shortDate(d.date)), back)
+      card.appendChild(head)
+      const act = renderDetail(d)
+      act.classList.add('tri-act--expanded')
+      card.appendChild(act)
+      const h = detailData?.health?.[d.date]
+      if (h) {
+        const rec = buildRecovery(h)
+        if (rec) card.appendChild(rec)
+      }
+      detail.replaceChildren(card)
+      panel.classList.add('tri-analytics--detail')
+      back.addEventListener('click', closeDetail, { once: true })
+      body?.scrollTo({ top: 0 })
+      requestAnimationFrame(updateBodyFade)
+    })
+  }
+
+  const scrollToChart = (chart: string) => {
+    const block = panel.querySelector<HTMLElement>(`.tri-ana-block[data-chart="${chart}"]`)
+    if (search) search.value = ''
+    panel.classList.remove('tri-analytics--searching')
+    block?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    block?.classList.add('tri-ana-block--flash')
+    window.setTimeout(() => block?.classList.remove('tri-ana-block--flash'), 900)
+  }
+  const ritem = (title: HTMLElement | string, sub: string): HTMLElement => {
+    const it = el('button', 'tri-ana-ritem')
+    it.setAttribute('type', 'button')
+    const t = el('span', 'tri-ana-ritem-t')
+    if (typeof title === 'string') t.textContent = title
+    else t.appendChild(title)
+    it.append(t, el('span', 'tri-ana-ritem-s', sub))
+    return it
+  }
+  const matchHay = (hay: string, tokens: string[]): boolean => tokens.every(t => hay.includes(t))
+  const resultItems = (): HTMLElement[] =>
+    results ? Array.from(results.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+  const setSel = (i: number) => {
+    const its = resultItems()
+    if (its.length === 0) {
+      selIndex = -1
+      return
+    }
+    selIndex = ((i % its.length) + its.length) % its.length
+    its.forEach((it, k) => it.classList.toggle('tri-ana-ritem--sel', k === selIndex))
+    its[selIndex].scrollIntoView({ block: 'nearest' })
+  }
+  const activate = (it: HTMLElement | undefined) => {
+    if (!it) return
+    if (it.dataset.chart) scrollToChart(it.dataset.chart)
+    else if (it.dataset.id) showActivity(it.dataset.id)
+  }
+  const runSearch = () => {
+    if (!search || !results) return
+    const q = search.value.trim().toLowerCase()
+    results.replaceChildren()
+    if (!q) {
+      panel.classList.remove('tri-analytics--searching')
+      results.setAttribute('aria-hidden', 'true')
+      return
+    }
+    panel.classList.add('tri-analytics--searching')
+    results.setAttribute('aria-hidden', 'false')
+    const tokens = q.split(/\s+/)
+    const metrics: HTMLElement[] = []
+    for (const s of SEARCH_SECTIONS)
+      if (matchHay(`${s.label} ${s.hay}`.toLowerCase(), tokens)) {
+        const it = ritem(s.label, 'section')
+        it.dataset.chart = s.chart
+        metrics.push(it)
+      }
+    for (const key of Object.keys(GLOSS)) {
+      const g = GLOSS[key]
+      if (matchHay(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
+        const it = ritem(g.term, g.def)
+        it.dataset.chart = GLOSS_CHART[key] ?? 'pmc'
+        metrics.push(it)
+      }
+    }
+    const acts = (data?.activities ?? []).filter(a =>
+      matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens),
+    )
+    if (metrics.length) {
+      const grp = el('div', 'tri-ana-rgroup')
+      grp.appendChild(el('div', 'tri-ana-rlabel', 'metrics & terms'))
+      for (const it of metrics.slice(0, 8)) grp.appendChild(it)
+      results.appendChild(grp)
+    }
+    if (acts.length) {
+      const grp = el('div', 'tri-ana-rgroup')
+      grp.appendChild(el('div', 'tri-ana-rlabel', 'activities'))
+      for (const a of acts.slice(0, 10)) {
+        const head = el('span', 'tri-ana-ritem-h')
+        head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
+        const it = ritem(head, `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}`)
+        it.dataset.id = String(a.id)
+        grp.appendChild(it)
+      }
+      results.appendChild(grp)
+    }
+    if (!metrics.length && !acts.length)
+      results.appendChild(el('div', 'tri-ana-empty', 'no matches'))
+    setSel(0)
+  }
+  const onResultsClick = (event: MouseEvent) => {
+    activate(
+      (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem') ?? undefined,
+    )
+  }
+  const onSearchKey = (event: KeyboardEvent) => {
+    if (!panel.classList.contains('tri-analytics--searching')) return
+    if (event.key === 'ArrowDown' || (event.ctrlKey && (event.key === 'n' || event.key === 'N'))) {
+      event.preventDefault()
+      setSel(selIndex + 1)
+    } else if (
+      event.key === 'ArrowUp' ||
+      (event.ctrlKey && (event.key === 'p' || event.key === 'P'))
+    ) {
+      event.preventDefault()
+      setSel(selIndex - 1)
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+      const its = resultItems()
+      activate(its[selIndex] ?? its[0])
+    }
+  }
+
+  const open = () => {
+    root.classList.add('tri-analytics-open')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+    requestAnimationFrame(updateBodyFade)
+    if (reduce) return
+    const br = btn.getBoundingClientRect()
+    const pr = panel.getBoundingClientRect()
+    if (pr.width < 1 || pr.height < 1) return
+    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
+    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
+    const sx = Math.max(0.05, br.width / pr.width)
+    const sy = Math.max(0.05, br.height / pr.height)
+    panel.animate(
+      [
+        {
+          opacity: 0,
+          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+        },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+      ],
+      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    )
+  }
+  const onDetailToggle = (event: MouseEvent) => {
+    const t = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
+    t?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
   }
   const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') close()
+    if (event.key !== 'Escape') return
+    if (panel.classList.contains('tri-analytics--detail')) {
+      closeDetail()
+      return
+    }
+    if (search && search.value) {
+      search.value = ''
+      runSearch()
+      return
+    }
+    close()
   }
 
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
+  scrim?.addEventListener('click', close)
+  search?.addEventListener('input', runSearch)
+  search?.addEventListener('keydown', onSearchKey)
+  results?.addEventListener('click', onResultsClick)
+  detail?.addEventListener('click', onDetailToggle)
+  body?.addEventListener('scroll', updateBodyFade, { passive: true })
   document.addEventListener('keydown', onKey)
 
   return () => {
     btn.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
+    scrim?.removeEventListener('click', close)
+    search?.removeEventListener('input', runSearch)
+    search?.removeEventListener('keydown', onSearchKey)
+    results?.removeEventListener('click', onResultsClick)
+    detail?.removeEventListener('click', onDetailToggle)
+    body?.removeEventListener('scroll', updateBodyFade)
     document.removeEventListener('keydown', onKey)
     scrubCleanup?.()
   }
@@ -1441,6 +2153,25 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const renderGlossDef = (def: string): HTMLElement => {
+  const span = el('span', 'tri-gloss-def')
+  def.split(/\$([^$]+)\$/).forEach((part, i) => {
+    if (i % 2 === 1) {
+      const m = el('span', 'tri-gloss-math')
+      m.innerHTML = katex.renderToString(part, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      })
+      span.appendChild(m)
+    } else if (part) {
+      span.appendChild(document.createTextNode(part))
+    }
+  })
+  return span
+}
+
 const setupGloss = (root: HTMLElement): (() => void) | null => {
   const zones = ['.tri-analytics', '.tri-ana-headline']
     .map(s => root.querySelector<HTMLElement>(s))
@@ -1464,7 +2195,7 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
     const g = GLOSS[term.dataset.gloss ?? '']
     if (!g) return
     current = term
-    pop.replaceChildren(el('span', 'tri-gloss-h', g.term), el('span', 'tri-gloss-def', g.def))
+    pop.replaceChildren(el('span', 'tri-gloss-h', g.term), renderGlossDef(g.def))
     pop.classList.add('tri-gloss--on')
     place(term)
   }
@@ -1506,6 +2237,68 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const setupShortcuts = (root: HTMLElement): (() => void) => {
+  let waitingForG = false
+  let gTimeout: number | null = null
+
+  const onKey = (e: KeyboardEvent) => {
+    const el = e.target as HTMLElement | null
+    if (el) {
+      const tag = el.tagName.toLowerCase()
+      if (
+        tag === 'input' ||
+        tag === 'textarea' ||
+        el.isContentEditable ||
+        el.closest('.search-container') !== null
+      ) {
+        return
+      }
+    }
+
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+
+    if (waitingForG) {
+      const key = e.key.toLowerCase()
+      let handled = false
+      if (key === 'a') {
+        root.querySelector<HTMLElement>('.tri-analytics-btn')?.click()
+        handled = true
+      } else if (key === 'g') {
+        root.querySelector<HTMLElement>('.tri-gear-btn')?.click()
+        handled = true
+      } else if (key === 'p') {
+        root.querySelector<HTMLElement>('.tri-pace-btn')?.click()
+        handled = true
+      } else if (key === 'c') {
+        root.querySelector<HTMLElement>('.tri-calc-btn')?.click()
+        handled = true
+      } else if (key === 's') {
+        root.querySelector<HTMLElement>('.tri-total')?.click()
+        handled = true
+      }
+
+      if (handled) {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+      }
+
+      waitingForG = false
+      if (gTimeout) {
+        clearTimeout(gTimeout)
+        gTimeout = null
+      }
+    } else if (e.key.toLowerCase() === 'g') {
+      waitingForG = true
+      gTimeout = window.setTimeout(() => {
+        waitingForG = false
+      }, 1000)
+    }
+  }
+
+  document.addEventListener('keydown', onKey, true)
+  return () => document.removeEventListener('keydown', onKey, true)
+}
+
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
@@ -1535,4 +2328,6 @@ document.addEventListener('nav', () => {
   if (anaCleanup) window.addCleanup?.(anaCleanup)
   const glossCleanup = setupGloss(root)
   if (glossCleanup) window.addCleanup?.(glossCleanup)
+  const shortcutsCleanup = setupShortcuts(root)
+  if (shortcutsCleanup) window.addCleanup?.(shortcutsCleanup)
 })

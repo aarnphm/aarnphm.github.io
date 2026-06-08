@@ -129,6 +129,7 @@ const config: QuartzConfig = {
       Plugin.Citations({ bibliography: './content/References.bib' }),
       Plugin.ObsidianBases(),
       Plugin.JsonCanvas(),
+      Plugin.Tracking(),
       Plugin.ObsidianFlavoredMarkdown(),
       Plugin.Audio(),
       Plugin.GitHubFlavoredMarkdown(),

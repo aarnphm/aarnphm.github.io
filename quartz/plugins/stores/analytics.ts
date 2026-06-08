@@ -1,3 +1,4 @@
+import { OuraCache } from './oura'
 import {
   type Sport,
   SPORT_ORDER,
@@ -7,6 +8,30 @@ import {
   type StravaStreams,
   type StravaRawCache,
 } from './strava'
+import { RaceEvent, TrackEntry } from './tracking'
+
+export interface BodyBlock {
+  latestKg: number | null
+  latestLbs: number | null
+  trendKgPerWeek: number | null
+  series: { date: string; kg: number }[]
+}
+
+export interface ActivitySummary {
+  id: number
+  date: string
+  sport: Sport
+  name: string
+  distanceKm: number
+  movingTimeS: number
+  load: number
+}
+
+export interface AnalyticsInputs {
+  oura?: OuraCache | null
+  weights?: TrackEntry[]
+  events?: RaceEvent[]
+}
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
 export type TsbZone = 'fresh' | 'neutral' | 'fatigued' | 'deep'
@@ -46,6 +71,12 @@ export interface DailyPoint {
   swimCtl: number
   bikeCtl: number
   runCtl: number
+  readiness: number | null
+  hrv: number | null
+  rhr: number | null
+  sleepScore: number | null
+  weightKg: number | null
+  totalCalories: number | null
   warmup: boolean
 }
 
@@ -54,6 +85,7 @@ export interface WeeklyPoint {
   load: number
   km: number
   hours: number
+  effort: number
   ramp: number | null
   monotony: number | null
   strain: number | null
@@ -141,7 +173,7 @@ export interface TrainingAction {
   value: string
 }
 
-export interface StravaAnalytics {
+export interface Analytics {
   meta: AnalyticsMeta
   thresholds: ThresholdEstimate[]
   daily: DailyPoint[]
@@ -150,6 +182,10 @@ export interface StravaAnalytics {
   bests: SportBest[]
   risk: RiskBlock
   races: RaceReadiness[]
+  loadShare: Record<Sport, number>
+  body: BodyBlock
+  events: RaceEvent[]
+  activities: ActivitySummary[]
   weakestSport: Sport
   headline: string
   actions: TrainingAction[]
@@ -340,6 +376,12 @@ function buildDaily(
       swimCtl: round(swimCtl, 1),
       bikeCtl: round(bikeCtl, 1),
       runCtl: round(runCtl, 1),
+      readiness: null,
+      hrv: null,
+      rhr: null,
+      sleepScore: null,
+      weightKg: null,
+      totalCalories: null,
       warmup: dayMs(row.date) < warmupCut,
     })
     ctl += (row.total - ctl) * K42
@@ -352,16 +394,17 @@ function buildDaily(
 }
 
 function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] {
-  const byWeek = new Map<string, { load: number; km: number; seconds: number }>()
+  const byWeek = new Map<string, { load: number; km: number; seconds: number; effort: number }>()
   for (const act of acts) {
     const ms = dayMs(act.day)
     const dow = new Date(ms).getUTCDay()
     const offset = (dow + 6) % 7
     const weekStart = new Date(ms - offset * DAY_MS).toISOString().slice(0, 10)
-    const bucket = byWeek.get(weekStart) ?? { load: 0, km: 0, seconds: 0 }
+    const bucket = byWeek.get(weekStart) ?? { load: 0, km: 0, seconds: 0, effort: 0 }
     bucket.load += loadById.get(act.a.id) ?? 0
     bucket.km += act.distanceKm
     bucket.seconds += act.a.movingTime
+    bucket.effort += act.a.sufferScore ?? 0
     byWeek.set(weekStart, bucket)
   }
   const weeks = [...byWeek.keys()].sort()
@@ -386,6 +429,7 @@ function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] 
       load: round(cur.load, 1),
       km: round(cur.km, 1),
       hours: round(cur.seconds / 3600, 1),
+      effort: round(cur.effort, 0),
       ramp,
       monotony,
       strain,
@@ -829,7 +873,7 @@ function emptyMeta(athleteId: number, today: string): AnalyticsMeta {
       ifCap: IF_CAP,
       thresholdWindowDays: 0,
       seededFrom: 'mean daily load over first 14 active days',
-      note: 'pace-derived surrogate; no HR/power available',
+      note: 'pace-derived load; HR, power, and cadence captured per activity',
     },
   }
 }
@@ -848,7 +892,31 @@ function neutralRisk(): RiskBlock {
   }
 }
 
-function emptyAnalytics(athleteId: number, today: string): StravaAnalytics {
+const emptyBody = (): BodyBlock => ({
+  latestKg: null,
+  latestLbs: null,
+  trendKgPerWeek: null,
+  series: [],
+})
+
+function weightTrendPerWeek(entries: TrackEntry[]): number | null {
+  const pts = entries
+    .filter(e => e.weightKg != null)
+    .map(e => ({ t: dayMs(e.date) / DAY_MS, w: e.weightKg as number }))
+  if (pts.length < 2) return null
+  const mt = mean(pts.map(p => p.t))
+  const mw = mean(pts.map(p => p.w))
+  let num = 0
+  let den = 0
+  for (const p of pts) {
+    num += (p.t - mt) * (p.w - mw)
+    den += (p.t - mt) ** 2
+  }
+  if (den === 0) return null
+  return round((num / den) * 7, 2)
+}
+
+function emptyAnalytics(athleteId: number, today: string): Analytics {
   return {
     meta: emptyMeta(athleteId, today),
     thresholds: [],
@@ -858,13 +926,20 @@ function emptyAnalytics(athleteId: number, today: string): StravaAnalytics {
     bests: [],
     risk: neutralRisk(),
     races: [],
+    loadShare: { swim: 0, bike: 0, run: 0 },
+    body: emptyBody(),
+    events: [],
+    activities: [],
     weakestSport: 'run',
     headline: '',
     actions: [],
   }
 }
 
-export function buildAnalytics(cache: StravaRawCache | null): StravaAnalytics {
+export function buildAnalytics(
+  cache: StravaRawCache | null,
+  inputs: AnalyticsInputs = {},
+): Analytics {
   const todayFromSync = cache?.lastSync ? new Date(cache.lastSync).toISOString().slice(0, 10) : null
 
   if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
@@ -905,6 +980,33 @@ export function buildAnalytics(cache: StravaRawCache | null): StravaAnalytics {
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
 
   const daily = buildDaily(acts, loadById, windowFrom, windowTo)
+  const ouraDays = inputs.oura?.days ?? {}
+  const weightByDate = new Map<string, number>()
+  for (const w of inputs.weights ?? []) if (w.weightKg != null) weightByDate.set(w.date, w.weightKg)
+  let carryKg: number | null = null
+  for (const d of daily) {
+    const o = ouraDays[d.date]
+    if (o) {
+      d.readiness = o.readiness
+      d.hrv = o.hrv
+      d.rhr = o.rhr
+      d.sleepScore = o.sleepScore
+      d.totalCalories = o.totalCalories
+    }
+    const w = weightByDate.get(d.date)
+    if (w != null) carryKg = w
+    d.weightKg = carryKg
+  }
+  const weighedDaily = daily.filter(d => d.weightKg != null)
+  const latestKg = weighedDaily.length ? weighedDaily[weighedDaily.length - 1].weightKg : null
+  const body: BodyBlock = {
+    latestKg,
+    latestLbs: latestKg != null ? round(latestKg / 0.45359237, 1) : null,
+    trendKgPerWeek: weightTrendPerWeek(inputs.weights ?? []),
+    series: (inputs.weights ?? [])
+      .filter(w => w.weightKg != null)
+      .map(w => ({ date: w.date, kg: w.weightKg as number })),
+  }
   const weekly = buildWeekly(acts, loadById)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
   const bestList = SPORT_ORDER.map(sport => buildBest(acts, sport))
@@ -924,6 +1026,18 @@ export function buildAnalytics(cache: StravaRawCache | null): StravaAnalytics {
     for (const act of recentActs) loadShare[act.sport] += (loadById.get(act.a.id) ?? 0) / recentLoad
   }
 
+  const activities: ActivitySummary[] = acts
+    .map(act => ({
+      id: act.a.id,
+      date: act.day,
+      sport: act.sport,
+      name: act.a.name ?? '',
+      distanceKm: act.distanceKm,
+      movingTimeS: act.a.movingTime,
+      load: round(loadById.get(act.a.id) ?? 0, 1),
+    }))
+    .sort((p, q) => q.date.localeCompare(p.date))
+
   const { weakest, headline, actions } = buildActions(thresholds, bests, daily, loadShare)
 
   return {
@@ -941,7 +1055,7 @@ export function buildAnalytics(cache: StravaRawCache | null): StravaAnalytics {
         ifCap: IF_CAP,
         thresholdWindowDays: 0,
         seededFrom: 'mean daily load over first 14 active days',
-        note: 'pace-derived surrogate; no HR/power available',
+        note: 'pace-derived load; HR, power, and cadence captured per activity',
       },
     },
     thresholds: thresholdList,
@@ -951,6 +1065,10 @@ export function buildAnalytics(cache: StravaRawCache | null): StravaAnalytics {
     bests: bestList,
     risk,
     races,
+    loadShare,
+    body,
+    events: inputs.events ?? [],
+    activities,
     weakestSport: weakest,
     headline,
     actions,

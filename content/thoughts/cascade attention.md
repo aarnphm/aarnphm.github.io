@@ -1,5 +1,5 @@
 ---
-date: "2026-05-27"
+date: '2026-05-27'
 description: two-stage attention filter, cheap scorer prunes key blocks, expensive exact attention only on survivors.
 id: attention-cascade
 modified: 2026-06-07 10:38:49 GMT-04:00

@@ -1,4 +1,6 @@
+import type { GarminCache, GarminFueling } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
+import { matchGarminFueling } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
@@ -53,6 +55,7 @@ export interface RawStravaActivity {
   averageCadence?: number
   sufferScore?: number
   averageTemp?: number
+  calories?: number
 }
 
 export interface StravaStreams {
@@ -64,6 +67,12 @@ export interface StravaStreams {
   cadence?: number[]
 }
 
+export interface StravaZones {
+  hr: number[]
+  power: number[]
+  ftp: number | null
+}
+
 export interface StravaRawCache {
   version?: number
   athleteId: number
@@ -73,6 +82,12 @@ export interface StravaRawCache {
   activities: Record<string, RawStravaActivity>
   streams?: Record<string, StravaStreams>
   geo?: Record<string, string>
+  zones?: StravaZones
+}
+
+export interface PowerCurvePoint {
+  s: number
+  w: number
 }
 
 export interface StravaSportTotals {
@@ -126,12 +141,18 @@ export interface StravaActivityDetail {
   deviceWatts: boolean
   avgCadence: number | null
   sufferScore: number | null
+  calories: number | null
   avgTemp: number | null
   location: string | null
+  fueling: GarminFueling | null
   route: StravaRoutePoint[]
   minAlt: number
   maxAlt: number
   descentM: number
+  hrZones: number[] | null
+  powerZones: number[] | null
+  powerHist: number[] | null
+  powerCurve: PowerCurvePoint[] | null
 }
 
 export interface StravaPayload {
@@ -144,6 +165,8 @@ export interface StravaPayload {
   days: StravaDay[]
   details: Record<string, StravaActivityDetail>
   health: Record<string, ActivityHealth>
+  zones: StravaZones
+  powerCurveRef: PowerCurvePoint[]
 }
 
 export function normalizeSport(sportType: string): Sport | null {
@@ -211,6 +234,8 @@ function toHealth(o: OuraDaily): ActivityHealth {
     rhr: o.rhr,
     sleepDurationS: o.sleepDurationS,
     tempDeviationC: o.tempDeviationC,
+    totalCalories: o.totalCalories,
+    activeCalories: o.activeCalories,
   }
 }
 
@@ -232,11 +257,75 @@ function maxPos(arr: number[]): number | null {
   return m > 0 ? Math.round(m) : null
 }
 
+const CURVE_SECS = [1, 5, 10, 15, 30, 60, 120, 180, 300, 600, 1200, 1800, 3600, 5400, 7200, 10800]
+
+function meanMaxCurve(w: number[]): PowerCurvePoint[] {
+  const n = w.length
+  if (n < 1) return []
+  const pre = new Float64Array(n + 1)
+  for (let i = 0; i < n; i++) pre[i + 1] = pre[i] + (w[i] > 0 ? w[i] : 0)
+  const out: PowerCurvePoint[] = []
+  for (const d of CURVE_SECS) {
+    if (d > n) break
+    let best = 0
+    for (let i = 0; i + d <= n; i++) {
+      const avg = (pre[i + d] - pre[i]) / d
+      if (avg > best) best = avg
+    }
+    out.push({ s: d, w: Math.round(best) })
+  }
+  return out
+}
+
+function zoneTimes(stream: number[], uppers: number[], countZero: boolean): number[] {
+  const counts = Array.from({ length: uppers.length + 1 }, () => 0)
+  for (const raw of stream) {
+    if (raw <= 0 && !countZero) continue
+    const v = raw > 0 ? raw : 0
+    let z = uppers.length
+    for (let i = 0; i < uppers.length; i++)
+      if (v <= uppers[i]) {
+        z = i
+        break
+      }
+    counts[z]++
+  }
+  return counts
+}
+
+function powerHistogram(w: number[], bin = 25): number[] {
+  let maxB = 0
+  for (const raw of w) {
+    const b = Math.floor((raw > 0 ? raw : 0) / bin)
+    if (b > maxB) maxB = b
+  }
+  const out = Array.from({ length: maxB + 1 }, () => 0)
+  for (const raw of w) out[Math.floor((raw > 0 ? raw : 0) / bin)]++
+  return out
+}
+
+function deriveHrBounds(hrmax: number): number[] {
+  return [0.6, 0.7, 0.8, 0.9].map(p => Math.round(hrmax * p))
+}
+
+function derivePowerBounds(ftp: number): number[] {
+  return [0.55, 0.75, 0.9, 1.05, 1.2, 1.5].map(p => Math.round(ftp * p))
+}
+
+function mergeMaxCurves(curves: PowerCurvePoint[][]): PowerCurvePoint[] {
+  const best = new Map<number, number>()
+  for (const c of curves) for (const p of c) best.set(p.s, Math.max(best.get(p.s) ?? 0, p.w))
+  return CURVE_SECS.filter(s => best.has(s)).map(s => ({ s, w: best.get(s)! }))
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: Sport,
   streams: StravaStreams | undefined,
   geo: string | undefined,
+  fueling: GarminFueling | null,
+  hrBounds: number[],
+  powerBounds: number[],
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let minAlt = 0
@@ -297,6 +386,9 @@ function projectDetail(
       })
     })
   }
+  const wFull = streams?.watts ?? []
+  const hasHr = hrStream.some(v => v > 0)
+  const hasW = wFull.some(v => v > 0)
   return {
     id: a.id,
     sport,
@@ -314,12 +406,18 @@ function projectDetail(
     deviceWatts: a.deviceWatts === true,
     avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
+    calories: a.calories != null ? Math.round(a.calories) : null,
     avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
     location: geo ?? null,
+    fueling,
     route,
     minAlt,
     maxAlt,
     descentM,
+    hrZones: hasHr && hrBounds.length > 0 ? zoneTimes(hrStream, hrBounds, false) : null,
+    powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, true) : null,
+    powerHist: hasW ? powerHistogram(wFull) : null,
+    powerCurve: hasW ? meanMaxCurve(wFull) : null,
   }
 }
 
@@ -334,12 +432,15 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     days: [],
     details: {},
     health: {},
+    zones: { hr: [], power: [], ftp: null },
+    powerCurveRef: [],
   }
 }
 
 export function buildPayload(
   cache: StravaRawCache | null,
   oura: OuraCache | null,
+  garmin: GarminCache | null,
   since?: string,
 ): StravaPayload {
   if (!cache) return emptyPayload()
@@ -402,6 +503,28 @@ export function buildPayload(
     elevationM: Math.round(t.elevationM),
   }))
 
+  let hrmax = 0
+  for (const { a } of activities) if ((a.maxHeartrate ?? 0) > hrmax) hrmax = a.maxHeartrate ?? 0
+  if (hrmax < 100) hrmax = 190
+  const recentCut = end - 42 * DAY_MS
+  let best20 = 0
+  const recentCurves: PowerCurvePoint[][] = []
+  for (const { a } of activities) {
+    const w = cache.streams?.[String(a.id)]?.watts
+    if (!w || !w.some(v => v > 0)) continue
+    const c = meanMaxCurve(w)
+    const p20 = c.find(p => p.s === 1200)
+    if (p20 && p20.w > best20) best20 = p20.w
+    if (dayMs(a.startDateLocal.slice(0, 10)) >= recentCut) recentCurves.push(c)
+  }
+  const ftp = cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
+  const hrBounds = cache.zones?.hr?.length ? cache.zones.hr : deriveHrBounds(hrmax)
+  const powerBounds = cache.zones?.power?.length
+    ? cache.zones.power
+    : ftp != null
+      ? derivePowerBounds(ftp)
+      : []
+
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
     details[String(a.id)] = projectDetail(
@@ -409,6 +532,9 @@ export function buildPayload(
       sport,
       cache.streams?.[String(a.id)],
       cache.geo?.[String(a.id)],
+      matchGarminFueling(a, sport, garmin),
+      hrBounds,
+      powerBounds,
     )
   }
 
@@ -428,5 +554,7 @@ export function buildPayload(
     days,
     details,
     health,
+    zones: { hr: hrBounds, power: powerBounds, ftp },
+    powerCurveRef: mergeMaxCurves(recentCurves),
   }
 }
