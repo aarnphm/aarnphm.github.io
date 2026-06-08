@@ -1144,7 +1144,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   weight: {
     term: 'body weight',
-    def: 'Daily weigh-ins from your tracking log (entered in lbs, shown in kg). Feeds recovery context and the bodyweight-dependent energy estimates.',
+    def: 'Daily weigh-ins. Feeds recovery context and the bodyweight-dependent energy estimates.',
   },
   wtrend: {
     term: 'weight trend',
@@ -1152,7 +1152,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   effort: {
     term: 'relative effort',
-    def: 'Strava’s suffer score — duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
+    def: 'Strava’s suffer score—duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
   },
 }
 
@@ -1370,6 +1370,7 @@ const buildPmc = (data: Analytics): HTMLElement => {
     ),
   )
   block.appendChild(cap)
+  block.appendChild(el('div', 'tri-chart-readout'))
   return block
 }
 
@@ -1801,32 +1802,22 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   actions: buildActions,
 }
 
-const setPopReadout = (pop: HTMLElement, d: DailyPoint): void => {
-  pop.replaceChildren(
-    el('span', 'tri-pop-date', d.date),
-    el('span', 'tri-ana-k', `CTL ${Math.round(d.ctl)}`),
-    el('span', 'tri-ana-k', `ATL ${Math.round(d.atl)}`),
-    el('span', 'tri-ana-k', `TSB ${signed(Math.round(d.tsb))}`),
-  )
-}
-
-const wireScrub = (panel: HTMLElement, pop: HTMLElement, daily: DailyPoint[]): (() => void) => {
-  const svgEl = panel.querySelector<SVGElement>('.tri-pmc-svg')
+const wireScrub = (panel: HTMLElement, daily: DailyPoint[]): (() => void) => {
+  const block = panel.querySelector<HTMLElement>('.tri-ana-pmc')
+  const svgEl = block?.querySelector<SVGElement>('.tri-pmc-svg')
   const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
-  if (!svgEl || !cursor || daily.length < 2) return () => {}
+  const readout = block?.querySelector<HTMLElement>('.tri-chart-readout')
+  if (!block || !svgEl || !cursor || !readout || daily.length < 2) return () => {}
   const onMove = (event: MouseEvent) => {
     const r = svgEl.getBoundingClientRect()
     const frac = clampN((event.clientX - r.left) / r.width, 0, 1)
     const d = daily[Math.round(frac * (daily.length - 1))]
     cursor.setAttribute('x1', `${(frac * ANA_W).toFixed(2)}`)
     cursor.setAttribute('x2', `${(frac * ANA_W).toFixed(2)}`)
-    setPopReadout(pop, d)
-    panel.classList.add('tri-ana-scrubbing')
+    readout.textContent = `${d.date} · CTL ${Math.round(d.ctl)} ATL ${Math.round(d.atl)} TSB ${signed(Math.round(d.tsb))}`
+    block.classList.add('tri-chart--hover')
   }
-  const onLeave = () => {
-    panel.classList.remove('tri-ana-scrubbing')
-    setPopReadout(pop, daily[daily.length - 1])
-  }
+  const onLeave = () => block.classList.remove('tri-chart--hover')
   svgEl.addEventListener('mousemove', onMove)
   svgEl.addEventListener('mouseleave', onLeave)
   return () => {
@@ -1886,7 +1877,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
   const title = root.querySelector<HTMLElement>('.tri-ana-title')
   const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
-  const pop = root.querySelector<HTMLElement>('.tri-ana-pop')
   const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
   if (!btn || !panel) return null
@@ -1908,8 +1898,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const build = ANALYTICS_BUILDERS[block.dataset.chart ?? '']
       if (build) block.replaceChildren(build(d))
     }
-    if (pop) scrubCleanup = wireScrub(panel, pop, d.daily)
-    if (pop && d.daily.length) setPopReadout(pop, d.daily[d.daily.length - 1])
+    scrubCleanup = wireScrub(panel, d.daily)
     document.dispatchEvent(
       new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
     )

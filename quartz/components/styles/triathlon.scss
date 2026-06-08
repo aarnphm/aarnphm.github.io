@@ -707,7 +707,14 @@
 }
 
 .tri-gear-v {
+  display: flex;
+  flex-direction: column;
   color: var(--dark);
+}
+
+.tri-gear-li {
+  padding-left: 2ch;
+  text-indent: -2ch;
 }
 
 .tri-pace-wrap {
@@ -1345,12 +1352,17 @@
 
 .tri-ana-cursor {
   stroke: var(--dark);
-  stroke-width: 0.5;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
   opacity: 0;
 }
 
-.tri-ana-scrubbing .tri-ana-cursor {
+.tri-chart--hover .tri-ana-cursor {
   opacity: 0.7;
+}
+
+.tri-ana-pmc {
+  position: relative;
 }
 
 .tri-line-swim {
@@ -1685,37 +1697,6 @@
   color: var(--gray);
 }
 
-.tri-ana-pop {
-  display: flex;
-  flex: none;
-  gap: 0.9rem;
-  padding: 0.45rem 1.1rem;
-  font-family: var(--codeFont);
-  font-size: 0.62rem;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-  color: var(--gray);
-  border-bottom: 1px solid color-mix(in srgb, var(--gray) 16%, transparent);
-}
-
-.tri-ana-pop::-webkit-scrollbar {
-  display: none;
-}
-
-.tri-ana-pop:empty {
-  display: none;
-}
-
-.tri-ana-pop .tri-pop-date {
-  color: var(--darkgray);
-}
-
-.tri-ana-scrubbing .tri-ana-pop .tri-pop-date {
-  color: var(--tri-accent);
-}
-
 @media all and (max-width: 48rem) {
   .tri-analytics {
     width: 100vw;
@@ -2046,6 +2027,7 @@
   position: absolute;
   top: 0;
   right: 0;
+  white-space: nowrap;
   padding: 0.12rem 0.4rem;
   font-family: var(--codeFont);
   font-size: 0.6rem;
