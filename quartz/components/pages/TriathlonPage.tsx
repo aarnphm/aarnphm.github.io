@@ -261,7 +261,9 @@ export default (() => {
                   <div class="tri-gear-row">
                     <span class="tri-gear-k">{label}</span>
                     <span class="tri-gear-v">
-                      {items.flatMap((it, i) => (i === 0 ? [`· ${it}`] : [<br />, `· ${it}`]))}
+                      {items.map(it => (
+                        <span class="tri-gear-li">· {it}</span>
+                      ))}
                     </span>
                   </div>
                 ))}
@@ -454,7 +456,6 @@ export default (() => {
               ×
             </button>
           </div>
-          <aside class="tri-ana-pop" aria-hidden="true" />
           <div class="tri-ana-body">
             <div class="tri-ana-results" aria-hidden="true" />
             <div class="tri-ana-detail" aria-hidden="true" />
