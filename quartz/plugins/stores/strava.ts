@@ -1,6 +1,6 @@
-import type { GarminCache, GarminFueling } from './garmin'
+import type { GarminActivityMatch, GarminCache, GarminFueling } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
-import { matchGarminFueling } from './garmin'
+import { matchGarminActivity, matchGarminFueling } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
@@ -124,6 +124,33 @@ export interface StravaRoutePoint {
 
 export type ActivityHealth = Omit<OuraDaily, 'date'>
 
+export interface GarminVerification {
+  activityId: string
+  name: string | null
+  sourceDevice: string | null
+  startDate: string
+  startDiffS: number
+  distanceM: number | null
+  distanceDeltaM: number | null
+  distanceDeltaPct: number | null
+  movingTimeS: number | null
+  movingTimeDeltaS: number | null
+  elapsedTimeS: number | null
+  elapsedTimeDeltaS: number | null
+  totalCalories: number | null
+  caloriesDelta: number | null
+  avgHeartRate: number | null
+  avgHeartRateDelta: number | null
+  avgPower: number | null
+  avgPowerDelta: number | null
+  normalizedPower: number | null
+  maxPower: number | null
+  totalWorkKJ: number | null
+  totalWorkDeltaKJ: number | null
+  trainingStressScore: number | null
+  intensityFactor: number | null
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: Sport
@@ -145,6 +172,7 @@ export interface StravaActivityDetail {
   avgTemp: number | null
   location: string | null
   fueling: GarminFueling | null
+  garmin: GarminVerification | null
   route: StravaRoutePoint[]
   minAlt: number
   maxAlt: number
@@ -318,12 +346,67 @@ function mergeMaxCurves(curves: PowerCurvePoint[][]): PowerCurvePoint[] {
   return CURVE_SECS.filter(s => best.has(s)).map(s => ({ s, w: best.get(s)! }))
 }
 
+function delta(
+  garmin: number | null | undefined,
+  strava: number | null | undefined,
+): number | null {
+  return garmin != null && strava != null ? Math.round(garmin - strava) : null
+}
+
+function deltaFloat(
+  garmin: number | null | undefined,
+  strava: number | null | undefined,
+  dp: number,
+): number | null {
+  return garmin != null && strava != null ? round(garmin - strava, dp) : null
+}
+
+function garminVerification(
+  a: RawStravaActivity,
+  match: GarminActivityMatch | null,
+): GarminVerification | null {
+  if (!match) return null
+  const activity = match.activity
+  const metrics = activity.metrics
+  const distanceDeltaM = delta(activity.distanceM, a.distance)
+  return {
+    activityId: activity.id,
+    name: activity.name,
+    sourceDevice: activity.sourceDevice,
+    startDate: activity.startDate,
+    startDiffS: Math.round(match.startDiffMs / 1000),
+    distanceM: activity.distanceM,
+    distanceDeltaM,
+    distanceDeltaPct:
+      distanceDeltaM != null && a.distance > 0
+        ? round((distanceDeltaM / a.distance) * 100, 1)
+        : null,
+    movingTimeS: activity.movingTimeS,
+    movingTimeDeltaS: delta(activity.movingTimeS, a.movingTime),
+    elapsedTimeS: activity.elapsedTimeS,
+    elapsedTimeDeltaS: delta(activity.elapsedTimeS, a.elapsedTime),
+    totalCalories: metrics.totalCalories,
+    caloriesDelta: delta(metrics.totalCalories, a.calories),
+    avgHeartRate: metrics.avgHeartRate,
+    avgHeartRateDelta: delta(metrics.avgHeartRate, a.averageHeartrate),
+    avgPower: metrics.avgPower,
+    avgPowerDelta: delta(metrics.avgPower, a.averageWatts),
+    normalizedPower: metrics.normalizedPower,
+    maxPower: metrics.maxPower,
+    totalWorkKJ: metrics.totalWorkKJ,
+    totalWorkDeltaKJ: deltaFloat(metrics.totalWorkKJ, a.kilojoules, 1),
+    trainingStressScore: metrics.trainingStressScore,
+    intensityFactor: metrics.intensityFactor,
+  }
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: Sport,
   streams: StravaStreams | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
+  garmin: GarminVerification | null,
   hrBounds: number[],
   powerBounds: number[],
 ): StravaActivityDetail {
@@ -410,6 +493,7 @@ function projectDetail(
     avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
     location: geo ?? null,
     fueling,
+    garmin,
     route,
     minAlt,
     maxAlt,
@@ -527,12 +611,14 @@ export function buildPayload(
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
+    const garminMatch = matchGarminActivity(a, sport, garmin)
     details[String(a.id)] = projectDetail(
       a,
       sport,
       cache.streams?.[String(a.id)],
       cache.geo?.[String(a.id)],
       matchGarminFueling(a, sport, garmin),
+      garminVerification(a, garminMatch),
       hrBounds,
       powerBounds,
     )

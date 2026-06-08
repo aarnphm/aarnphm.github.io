@@ -12,6 +12,7 @@ import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import { buildAnalytics } from '../stores/analytics'
+import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
@@ -20,6 +21,7 @@ import { write } from './helpers'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const ouraCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 const garminCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
+const appleCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
@@ -40,6 +42,14 @@ async function readOura(): Promise<OuraCache | null> {
 async function readGarmin(): Promise<GarminCache | null> {
   try {
     return JSON.parse(await fs.readFile(garminCacheFile, 'utf8')) as GarminCache
+  } catch {
+    return null
+  }
+}
+
+async function readApple(): Promise<AppleCache | null> {
+  try {
+    return JSON.parse(await fs.readFile(appleCacheFile, 'utf8')) as AppleCache
   } catch {
     return null
   }
@@ -70,6 +80,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const cache = await readCache()
     const oura = await readOura()
     const garmin = await readGarmin()
+    const apple = await readApple()
     const files: FilePath[] = []
 
     const allFiles = contentDataFor(content)
@@ -102,7 +113,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/analytics' as FullSlug,
           ext: '.json',
           content: JSON.stringify(
-            buildAnalytics(cache, { oura, weights: tracking?.days, events: tracking?.races }),
+            buildAnalytics(cache, {
+              oura,
+              apple,
+              weights: tracking?.days,
+              events: tracking?.races,
+            }),
           ),
         }),
       )

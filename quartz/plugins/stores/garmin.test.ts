@@ -2,7 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { GarminCache } from './garmin'
 import type { RawStravaActivity } from './strava'
-import { emptyGarminFueling, matchGarminFueling } from './garmin'
+import {
+  emptyGarminFueling,
+  emptyGarminMetrics,
+  matchGarminActivity,
+  matchGarminFueling,
+} from './garmin'
 
 function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
@@ -38,6 +43,8 @@ test('matches Garmin fueling to a Strava activity by sport, start, distance, and
         movingTimeS: 7180,
         elapsedTimeS: 7520,
         sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
         fueling,
       },
     },
@@ -70,6 +77,8 @@ test('rejects Garmin fueling outside sport and activity tolerances', () => {
         movingTimeS: 7200,
         elapsedTimeS: 7500,
         sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
         fueling,
       },
       far: {
@@ -82,10 +91,43 @@ test('rejects Garmin fueling outside sport and activity tolerances', () => {
         movingTimeS: 10_400,
         elapsedTimeS: 10_700,
         sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
         fueling,
       },
     },
   }
 
+  assert.equal(matchGarminFueling(strava(), 'bike', cache), null)
+})
+
+test('matches Garmin FIT baseline metrics without fueling', () => {
+  const metrics = emptyGarminMetrics()
+  metrics.totalCalories = 1403
+  metrics.avgHeartRate = 135
+  metrics.avgPower = 108
+  const cache: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      fit: {
+        id: 'fit:ride',
+        name: 'ROAD',
+        sport: 'bike',
+        startDate: '2026-06-01T12:02:00Z',
+        startDateLocal: '2026-06-01T12:02:00Z',
+        distanceM: 48_320,
+        movingTimeS: 7190,
+        elapsedTimeS: 7512,
+        sourceDevice: 'Edge 1050',
+        sourceFile: 'ride.fit',
+        metrics,
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+  }
+
+  const match = matchGarminActivity(strava(), 'bike', cache)
+  assert.equal(match?.activity.metrics.totalCalories, 1403)
+  assert.equal(match?.distanceDiffM, 120)
   assert.equal(matchGarminFueling(strava(), 'bike', cache), null)
 })
