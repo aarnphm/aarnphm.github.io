@@ -1,3 +1,4 @@
+import { AppleCache } from './apple'
 import { OuraCache } from './oura'
 import {
   type Sport,
@@ -29,6 +30,7 @@ export interface ActivitySummary {
 
 export interface AnalyticsInputs {
   oura?: OuraCache | null
+  apple?: AppleCache | null
   weights?: TrackEntry[]
   events?: RaceEvent[]
 }
@@ -77,6 +79,7 @@ export interface DailyPoint {
   sleepScore: number | null
   weightKg: number | null
   totalCalories: number | null
+  intakeKcal: number | null
   warmup: boolean
 }
 
@@ -382,6 +385,7 @@ function buildDaily(
       sleepScore: null,
       weightKg: null,
       totalCalories: null,
+      intakeKcal: null,
       warmup: dayMs(row.date) < warmupCut,
     })
     ctl += (row.total - ctl) * K42
@@ -981,6 +985,7 @@ export function buildAnalytics(
 
   const daily = buildDaily(acts, loadById, windowFrom, windowTo)
   const ouraDays = inputs.oura?.days ?? {}
+  const appleDays = inputs.apple?.days ?? {}
   const weightByDate = new Map<string, number>()
   for (const w of inputs.weights ?? []) if (w.weightKg != null) weightByDate.set(w.date, w.weightKg)
   let carryKg: number | null = null
@@ -996,6 +1001,12 @@ export function buildAnalytics(
     const w = weightByDate.get(d.date)
     if (w != null) carryKg = w
     d.weightKg = carryKg
+    const ap = appleDays[d.date]
+    if (ap) {
+      if (d.totalCalories == null && ap.burnKcal != null) d.totalCalories = ap.burnKcal
+      d.intakeKcal = ap.intakeKcal
+      if (ap.weightKg != null && d.weightKg == null) d.weightKg = ap.weightKg
+    }
   }
   const weighedDaily = daily.filter(d => d.weightKg != null)
   const latestKg = weighedDaily.length ? weighedDaily[weighedDaily.length - 1].weightKg : null

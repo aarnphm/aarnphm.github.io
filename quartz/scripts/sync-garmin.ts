@@ -1,8 +1,18 @@
+import {
+  Decoder,
+  Stream,
+  type FileIdMesg,
+  type FitMessages,
+  type SessionMesg,
+} from '@garmin/fitsdk'
 import fs from 'node:fs/promises'
+import { basename, extname } from 'node:path'
 import {
   emptyGarminFueling,
+  emptyGarminMetrics,
   type GarminActivity,
   type GarminCache,
+  hasGarminMetrics,
   hasGarminFueling,
   normalizeGarminSport,
 } from '../plugins/stores/garmin'
@@ -10,8 +20,10 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
 
 const CACHE_VERSION = 1
+const FIT_EPOCH_MS = Date.UTC(1989, 11, 31)
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
 const defaultInputDir = joinSegments(QUARTZ, '.quartz-cache', 'garmin-fueling')
+const defaultFitDir = joinSegments(QUARTZ, '.quartz-cache', 'garmin-fit')
 
 const RECORD_KEYS = [
   'activity',
@@ -166,8 +178,14 @@ function firstSport(records: readonly UnknownRecord[]): string | null {
   return null
 }
 
-function normalizeDate(value: string | null): string | null {
+function normalizeDate(value: string | number | Date | null): string | null {
   if (!value) return null
+  if (value instanceof Date) return Number.isFinite(value.valueOf()) ? value.toISOString() : null
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return null
+    const ms = value > 1_000_000_000_000 ? value : FIT_EPOCH_MS + value * 1000
+    return new Date(ms).toISOString()
+  }
   const trimmed = value.trim().replace(' ', 'T')
   if (!trimmed) return null
   const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/.test(trimmed) ? trimmed : `${trimmed}Z`
@@ -183,6 +201,13 @@ function normalizeLocalDate(value: string | null, fallback: string): string {
 function rounded(value: number | null): number | null {
   const n = positive(value)
   return n == null ? null : Math.round(n)
+}
+
+function roundedFloat(value: number | null, dp: number): number | null {
+  const n = positive(value)
+  if (n == null) return null
+  const factor = 10 ** dp
+  return Math.round(n * factor) / factor
 }
 
 function ml(
@@ -207,6 +232,16 @@ function activityRecords(raw: unknown): UnknownRecord[] {
   if (Array.isArray(raw.data)) return raw.data.filter(isRecord)
   if (isRecord(raw.data)) return Object.values(raw.data).filter(isRecord)
   return [raw]
+}
+
+function hasGarminActivityData(activity: GarminActivity): boolean {
+  return (
+    hasGarminFueling(activity.fueling) ||
+    hasGarminMetrics(activity.metrics) ||
+    activity.distanceM != null ||
+    activity.movingTimeS != null ||
+    activity.elapsedTimeS != null
+  )
 }
 
 function toActivity(record: UnknownRecord, index: number): GarminActivity | null {
@@ -237,8 +272,7 @@ function toActivity(record: UnknownRecord, index: number): GarminActivity | null
     FLUID_RECOMMENDED_OZ_KEYS,
   )
   fueling.sweatLossMl = ml(records, SWEAT_ML_KEYS, SWEAT_L_KEYS, SWEAT_OZ_KEYS)
-  if (!hasGarminFueling(fueling)) return null
-  return {
+  const activity: GarminActivity = {
     id: firstString(records, ID_KEYS) ?? `${startDate}:${index}`,
     name: firstString(records, NAME_KEYS),
     sport: normalizeGarminSport(firstSport(records)),
@@ -248,37 +282,145 @@ function toActivity(record: UnknownRecord, index: number): GarminActivity | null
     movingTimeS,
     elapsedTimeS,
     sourceDevice,
+    sourceFile: null,
+    metrics: emptyGarminMetrics(),
     fueling,
   }
+  return hasGarminActivityData(activity) ? activity : null
 }
 
-async function inputFiles(): Promise<string[]> {
-  const file = process.env.GARMIN_FUELING_FILE
-  if (file?.trim()) return [file.trim()]
-  const dir = process.env.GARMIN_FUELING_DIR?.trim() || defaultInputDir
+function productName(value: string | number | undefined): string | null {
+  if (value == null) return null
+  const clean = String(value).trim()
+  if (!clean) return null
+  const edge = clean.match(/^edge(\d+)$/i)
+  if (edge) return `Edge ${edge[1]}`
+  return clean
+}
+
+function sourceDevice(fileId: FileIdMesg | undefined, messages: FitMessages): string | null {
+  return (
+    productName(fileId?.productName) ??
+    productName(fileId?.garminProduct) ??
+    productName(messages.deviceInfoMesgs?.find(device => device.garminProduct)?.garminProduct) ??
+    productName(fileId?.product)
+  )
+}
+
+function isFitActivity(messages: FitMessages): boolean {
+  const type = messages.fileIdMesgs?.[0]?.type
+  return type === 'activity' || type === 4
+}
+
+function fitStart(session: SessionMesg, fileId: FileIdMesg | undefined): string | null {
+  return normalizeDate(session.startTime ?? session.timestamp ?? fileId?.timeCreated ?? null)
+}
+
+function toFitActivity(file: string, messages: FitMessages): GarminActivity | null {
+  if (!isFitActivity(messages)) return null
+  const session = messages.sessionMesgs?.[0]
+  if (!session) return null
+  const fileId = messages.fileIdMesgs?.[0]
+  const startDate = fitStart(session, fileId)
+  if (!startDate) return null
+  const device = sourceDevice(fileId, messages)
+  const sourceFile = basename(file)
+  const metrics = emptyGarminMetrics()
+  metrics.totalCalories = rounded(session.totalCalories ?? null)
+  metrics.metabolicCalories = rounded(session.metabolicCalories ?? null)
+  metrics.avgHeartRate = rounded(session.avgHeartRate ?? null)
+  metrics.maxHeartRate = rounded(session.maxHeartRate ?? null)
+  metrics.avgPower = rounded(session.avgPower ?? null)
+  metrics.normalizedPower = rounded(session.normalizedPower ?? null)
+  metrics.maxPower = rounded(session.maxPower ?? null)
+  metrics.avgCadence = rounded(session.avgCadence ?? null)
+  metrics.totalAscentM = rounded(session.totalAscent ?? null)
+  metrics.totalDescentM = rounded(session.totalDescent ?? null)
+  metrics.totalWorkKJ = roundedFloat(session.totalWork != null ? session.totalWork / 1000 : null, 1)
+  metrics.trainingStressScore = roundedFloat(session.trainingStressScore ?? null, 1)
+  metrics.intensityFactor = roundedFloat(session.intensityFactor ?? null, 3)
+  const activity: GarminActivity = {
+    id: `fit:${sourceFile.replace(/\.fit$/i, '')}`,
+    name: session.sportProfileName ?? sourceFile,
+    sport: normalizeGarminSport(typeof session.sport === 'string' ? session.sport : null),
+    startDate,
+    startDateLocal: startDate,
+    distanceM: rounded(session.totalDistance ?? null),
+    movingTimeS: rounded(session.totalTimerTime ?? null),
+    elapsedTimeS: rounded(session.totalElapsedTime ?? null),
+    sourceDevice: device,
+    sourceFile,
+    metrics,
+    fueling: emptyGarminFueling(device),
+  }
+  return hasGarminActivityData(activity) ? activity : null
+}
+
+async function fitActivity(file: string): Promise<GarminActivity | null> {
+  const bytes = await fs.readFile(file)
+  const decoder = new Decoder(Stream.fromByteArray(bytes))
+  const result = decoder.read()
+  if (result.errors.length > 0) {
+    const summary = result.errors.map(error => error.message).join('; ')
+    console.warn(`[garmin] decoded ${file} with ${result.errors.length} FIT error(s): ${summary}`)
+  }
+  return toFitActivity(file, result.messages)
+}
+
+async function filesInDir(dir: string, extension: string): Promise<string[]> {
+  const out: string[] = []
+  async function walk(current: string): Promise<void> {
+    const entries = await fs.readdir(current, { withFileTypes: true })
+    for (const entry of entries) {
+      const file = joinSegments(current, entry.name)
+      if (entry.isDirectory()) await walk(file)
+      else if (entry.isFile() && extname(entry.name).toLowerCase() === extension) out.push(file)
+    }
+  }
   try {
-    const entries = await fs.readdir(dir, { withFileTypes: true })
-    return entries
-      .filter(entry => entry.isFile() && entry.name.endsWith('.json'))
-      .map(entry => joinSegments(dir, entry.name))
-      .sort()
+    await walk(dir)
   } catch {
     return []
   }
+  return out.sort()
+}
+
+async function jsonInputFiles(): Promise<string[]> {
+  const file = process.env.GARMIN_FUELING_FILE
+  if (file?.trim()) return [file.trim()]
+  const dir = process.env.GARMIN_FUELING_DIR?.trim() || defaultInputDir
+  return filesInDir(dir, '.json')
+}
+
+async function fitInputFiles(): Promise<string[]> {
+  const file = process.env.GARMIN_FIT_FILE
+  if (file?.trim()) return [file.trim()]
+  const dir = process.env.GARMIN_FIT_DIR?.trim() || defaultFitDir
+  return filesInDir(dir, '.fit')
 }
 
 async function main(): Promise<void> {
-  const files = await inputFiles()
-  if (files.length === 0) {
+  const jsonFiles = await jsonInputFiles()
+  const fitFiles = await fitInputFiles()
+  if (jsonFiles.length === 0 && fitFiles.length === 0) {
     console.log(
-      `[garmin] no JSON input found (set GARMIN_FUELING_FILE or GARMIN_FUELING_DIR, default ${defaultInputDir})`,
+      `[garmin] no input found (set GARMIN_FIT_FILE/GARMIN_FIT_DIR or GARMIN_FUELING_FILE/GARMIN_FUELING_DIR; defaults ${defaultFitDir} and ${defaultInputDir})`,
     )
     return
   }
 
   const activities: Record<string, GarminActivity> = {}
+  let fitCount = 0
+  for (const file of fitFiles) {
+    const activity = await fitActivity(file)
+    if (activity) {
+      activities[activity.id] = activity
+      fitCount++
+    }
+  }
+
   let index = 0
-  for (const file of files) {
+  for (const file of jsonFiles) {
     const raw: unknown = JSON.parse(await fs.readFile(file, 'utf8'))
     for (const record of activityRecords(raw)) {
       const activity = toActivity(record, index++)
@@ -295,7 +437,12 @@ async function main(): Promise<void> {
   const cache: GarminCache = { version: CACHE_VERSION, lastSync: Date.now(), activities: sorted }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
-  console.log(`[garmin] wrote ${Object.keys(sorted).length} fueling activities → ${cacheFile}`)
+  const fuelingCount = Object.values(sorted).filter(activity =>
+    hasGarminFueling(activity.fueling),
+  ).length
+  console.log(
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${fitCount} FIT, ${fuelingCount} fueling) → ${cacheFile}`,
+  )
 }
 
 main().catch(err => {

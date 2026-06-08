@@ -389,9 +389,11 @@ const buildZoneTable = (
   const grid = el('div', 'tri-zone-grid')
   for (let i = times.length - 1; i >= 0; i--) {
     const row = el('div', 'tri-zone-row')
+    const z = el('span', 'tri-zone-z', `Z${i + 1}`)
+    z.dataset.name = names[i] ?? `Z${i + 1}`
+    z.tabIndex = 0
     row.append(
-      el('span', 'tri-zone-z', `Z${i + 1}`),
-      el('span', 'tri-zone-name', names[i] ?? `Z${i + 1}`),
+      z,
       el('span', 'tri-zone-range', `${zoneRange(bounds, i)}${unit}`),
       el('span', 'tri-zone-time', zoneClock(times[i])),
       el('span', 'tri-zone-pct', `${((times[i] / total) * 100).toFixed(1)}%`),
@@ -435,28 +437,53 @@ const buildPowerHist = (d: StravaActivityDetail): HTMLElement | null => {
   const n = hist.length
   let mx = 1
   for (const t of hist) if (t > mx) mx = t
+  const total = hist.reduce((a, b) => a + b, 0) || 1
   const s = svg('svg', {
     class: 'tri-hist-svg',
     viewBox: `0 0 ${n} ${H}`,
     preserveAspectRatio: 'none',
   })
+  const barByBin = new Map<number, SVGElement>()
   hist.forEach((t, i) => {
     if (t <= 0) return
     const h = (t / mx) * (H - 1)
-    s.appendChild(
-      svg('rect', { x: i + 0.1, y: H - h, width: 0.8, height: h, class: 'tri-hist-bar' }),
-    )
+    const r = svg('rect', { x: i + 0.1, y: H - h, width: 0.8, height: h, class: 'tri-hist-bar' })
+    s.appendChild(r)
+    barByBin.set(i, r)
   })
   const np = d.npWatts ?? d.avgWatts
   if (np != null)
     s.appendChild(
       svg('line', { x1: np / 25 + 0.5, y1: 0, x2: np / 25 + 0.5, y2: H, class: 'tri-hist-avg' }),
     )
+  s.appendChild(svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
   wrap.appendChild(s)
+  const readout = el('div', 'tri-chart-readout')
+  wrap.appendChild(readout)
   const cap = el('div', 'tri-elev-cap')
   cap.appendChild(el('span', 'tri-ana-k', `0–${(n - 1) * 25 + 24} W`))
   if (np != null) cap.appendChild(el('span', 'tri-ana-k', `wtd avg ${np} W`))
   wrap.appendChild(cap)
+  const cursor = s.querySelector<SVGElement>('.tri-chart-cursor')!
+  let lastBar: SVGElement | null = null
+  const onMove = (event: MouseEvent) => {
+    const r = s.getBoundingClientRect()
+    const bin = Math.max(0, Math.min(n - 1, Math.floor(((event.clientX - r.left) / r.width) * n)))
+    cursor.setAttribute('x1', `${bin + 0.5}`)
+    cursor.setAttribute('x2', `${bin + 0.5}`)
+    lastBar?.classList.remove('tri-hist-bar--on')
+    lastBar = barByBin.get(bin) ?? null
+    lastBar?.classList.add('tri-hist-bar--on')
+    readout.textContent = `${bin * 25}–${bin * 25 + 24} W · ${zoneClock(hist[bin])} (${((hist[bin] / total) * 100).toFixed(1)}%)`
+    wrap.classList.add('tri-chart--hover')
+  }
+  const onLeave = () => {
+    wrap.classList.remove('tri-chart--hover')
+    lastBar?.classList.remove('tri-hist-bar--on')
+    lastBar = null
+  }
+  s.addEventListener('mousemove', onMove)
+  s.addEventListener('mouseleave', onLeave)
   return wrap
 }
 
@@ -490,14 +517,40 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
       }),
     )
   s.appendChild(svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
+  const cursor = svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H })
+  s.appendChild(cursor)
   wrap.appendChild(s)
+  const readout = el('div', 'tri-chart-readout')
+  wrap.appendChild(readout)
   const cap = el('div', 'tri-elev-cap')
+  const dlabel = (sec: number): string =>
+    sec < 60 ? `${sec}s` : sec < 3600 ? `${sec / 60}m` : `${sec / 3600}h`
   for (const sec of [5, 60, 300, 1200]) {
     const p = curve.find(c => c.s === sec)
-    if (p)
-      cap.appendChild(el('span', 'tri-ana-k', `${sec < 60 ? `${sec}s` : `${sec / 60}m`} ${p.w}W`))
+    if (p) cap.appendChild(el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
   }
   wrap.appendChild(cap)
+  const onMove = (event: MouseEvent) => {
+    const r = s.getBoundingClientRect()
+    const fx = Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) * W
+    let bi = 0
+    let best = Infinity
+    for (let i = 0; i < curve.length; i++) {
+      const dd = Math.abs(X(curve[i].s) - fx)
+      if (dd < best) {
+        best = dd
+        bi = i
+      }
+    }
+    const c = curve[bi]
+    cursor.setAttribute('x1', X(c.s).toFixed(2))
+    cursor.setAttribute('x2', X(c.s).toFixed(2))
+    readout.textContent = `${dlabel(c.s)} · ${c.w} W`
+    wrap.classList.add('tri-chart--hover')
+  }
+  const onLeave = () => wrap.classList.remove('tri-chart--hover')
+  s.addEventListener('mousemove', onMove)
+  s.addEventListener('mouseleave', onLeave)
   return wrap
 }
 
@@ -1831,6 +1884,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
   const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
   const closeBtn = root.querySelector<HTMLElement>('.tri-ana-close')
+  const title = root.querySelector<HTMLElement>('.tri-ana-title')
   const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
   const pop = root.querySelector<HTMLElement>('.tri-ana-pop')
   const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
@@ -1847,14 +1901,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   let scrubCleanup: (() => void) | null = null
   let selIndex = -1
 
-  const updateBodyFade = () => {
-    if (!body) return
-    body.classList.toggle('tri-ana-body--top', body.scrollTop > 2)
-    body.classList.toggle(
-      'tri-ana-body--bot',
-      body.scrollHeight - body.clientHeight - body.scrollTop > 2,
-    )
-  }
   const render = (d: Analytics) => {
     data = d
     if (headline) headline.replaceChildren(buildHeadline(d))
@@ -1867,7 +1913,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     document.dispatchEvent(
       new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
     )
-    requestAnimationFrame(updateBodyFade)
   }
   const load = () => {
     if (loaded) return
@@ -1882,6 +1927,13 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const closeDetail = () => {
     panel.classList.remove('tri-analytics--detail')
     if (detail) detail.replaceChildren()
+  }
+  const toMain = () => {
+    closeDetail()
+    if (search) search.value = ''
+    panel.classList.remove('tri-analytics--searching')
+    if (results) results.replaceChildren()
+    selIndex = -1
   }
   const close = () => {
     root.classList.remove('tri-analytics-open')
@@ -1930,7 +1982,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       panel.classList.add('tri-analytics--detail')
       back.addEventListener('click', closeDetail, { once: true })
       body?.scrollTo({ top: 0 })
-      requestAnimationFrame(updateBodyFade)
     })
   }
 
@@ -2048,7 +2099,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     root.classList.add('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
-    requestAnimationFrame(updateBodyFade)
     if (reduce) return
     const br = btn.getBoundingClientRect()
     const pr = panel.getBoundingClientRect()
@@ -2088,23 +2138,23 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
+  title?.addEventListener('click', toMain)
   scrim?.addEventListener('click', close)
   search?.addEventListener('input', runSearch)
   search?.addEventListener('keydown', onSearchKey)
   results?.addEventListener('click', onResultsClick)
   detail?.addEventListener('click', onDetailToggle)
-  body?.addEventListener('scroll', updateBodyFade, { passive: true })
   document.addEventListener('keydown', onKey)
 
   return () => {
     btn.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
+    title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
     search?.removeEventListener('input', runSearch)
     search?.removeEventListener('keydown', onSearchKey)
     results?.removeEventListener('click', onResultsClick)
     detail?.removeEventListener('click', onDetailToggle)
-    body?.removeEventListener('scroll', updateBodyFade)
     document.removeEventListener('keydown', onKey)
     scrubCleanup?.()
   }

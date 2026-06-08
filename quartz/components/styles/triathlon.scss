@@ -475,6 +475,10 @@
   color: var(--tri-accent);
 }
 
+.tri-act-garmin .tri-act-health-h {
+  color: var(--secondary);
+}
+
 .tri-act-figs {
   position: relative;
   display: flex;
@@ -665,7 +669,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  width: 290px;
+  width: 320px;
   max-width: 86vw;
   padding: 0.9rem 1rem;
   background: color-mix(in srgb, var(--light) 92%, transparent);
@@ -1177,6 +1181,11 @@
 .tri-ana-title {
   font-size: 0.8rem;
   color: var(--dark);
+  cursor: pointer;
+}
+
+.tri-ana-title:hover {
+  color: var(--tri-accent);
 }
 
 .tri-ana-close {
@@ -1194,7 +1203,6 @@
 }
 
 .tri-ana-body {
-  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -1206,43 +1214,6 @@
 }
 
 .tri-ana-body::-webkit-scrollbar {
-  display: none;
-}
-
-.tri-ana-body::before,
-.tri-ana-body::after {
-  content: '';
-  position: sticky;
-  left: 0;
-  right: 0;
-  display: block;
-  flex: none;
-  height: 2.2rem;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.tri-ana-body::before {
-  top: 0;
-  margin-bottom: -2.2rem;
-  background: linear-gradient(to bottom, var(--light), transparent);
-}
-
-.tri-ana-body::after {
-  bottom: 0;
-  margin-top: -2.2rem;
-  background: linear-gradient(to top, var(--light), transparent);
-}
-
-.tri-ana-body--top::before,
-.tri-ana-body--bot::after {
-  opacity: 1;
-}
-
-.tri-analytics--detail .tri-ana-body::before,
-.tri-analytics--detail .tri-ana-body::after {
   display: none;
 }
 
@@ -1925,6 +1896,7 @@
 }
 
 .tri-zone {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -1946,7 +1918,7 @@
 
 .tri-zone-row {
   display: grid;
-  grid-template-columns: 1.5rem minmax(3.5rem, 1fr) auto 2.6rem 2.4rem 2.6fr;
+  grid-template-columns: 1.7rem 3.6rem 3.4rem 2.6rem 1fr;
   align-items: center;
   gap: 0.5rem;
   font-family: var(--codeFont);
@@ -1955,11 +1927,33 @@
 }
 
 .tri-zone-z {
+  position: relative;
   color: var(--gray);
+  cursor: help;
 }
 
-.tri-zone-name {
+.tri-zone-z::after {
+  content: attr(data-name);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 3px);
+  z-index: 6;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.56rem;
+  white-space: nowrap;
   color: var(--dark);
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  backdrop-filter: blur(4px);
+  border: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+  border-radius: var(--radius-none);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+}
+
+.tri-zone-z:hover::after,
+.tri-zone-z:focus-visible::after {
+  opacity: 1;
 }
 
 .tri-zone-range {
@@ -2026,11 +2020,47 @@
   fill: color-mix(in srgb, var(--tri-accent) 55%, transparent);
 }
 
+.tri-hist-bar--on {
+  fill: var(--tri-accent);
+}
+
 .tri-hist-avg {
   stroke: var(--tri-accent);
   stroke-width: 0.5;
   stroke-dasharray: 1.5 1.5;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-chart-cursor {
+  stroke: var(--tri-accent);
+  stroke-width: 0.5;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+}
+
+.tri-chart--hover .tri-chart-cursor {
+  opacity: 1;
+}
+
+.tri-chart-readout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.12rem 0.4rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  backdrop-filter: blur(3px);
+  border-radius: var(--radius-none);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.tri-chart--hover .tri-chart-readout {
+  opacity: 1;
 }
 
 .tri-curve-svg {
