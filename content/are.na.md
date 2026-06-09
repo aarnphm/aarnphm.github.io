@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-08 20:55:13 GMT-04:00
+modified: 2026-06-09 14:22:08 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2491,6 +2491,109 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/S5dnLsmRbj2JkLWvf/turning-20-in-the-probable-pre-apocalypse -- Turning 20 in the probable pre-apocalypse
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [forecasting, life]
+    - later: true
+- https://www.lesswrong.com/posts/jwrhoHxxQHGrbBk3f/mourning-a-life-without-ai -- Mourning a life without AI
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [ai, grief]
+    - later: true
+- https://forum.effectivealtruism.org/posts/kACcdhLDdWb9ZPG9L/why-you-can-justify-almost-anything-using-historical-social -- Why you can justify almost anything using historical social movements
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [history, activism]
+    - later: true
+- https://www.lesswrong.com/posts/DoLQN5ryZ9XkZjq5h/tsuyoku-naritai-i-want-to-become-stronger -- Tsuyoku Naritai! (I Want To Become Stronger)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [agency, rationality]
+    - later: true
+- https://www.lesswrong.com/posts/WLJwTJ7uGPA5Qphbp/trying-to-try -- Trying to Try
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [agency, rationality]
+    - later: true
+- https://www.lesswrong.com/posts/hHEvfp7kwvaHwgcdH/college-was-not-that-terrible-now-that-i-m-not-that-crazy -- College Was Not That Terrible Now That I'm Not That Crazy
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [education, mental health]
+    - later: true
+- https://www.lesswrong.com/posts/AocXh6gJ9tJC2WyCL/book-review-going-infinite -- Book Review: Going Infinite
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [finance, fraud]
+    - later: true
+- https://www.lesswrong.com/posts/WBdvyyHLdxZSAMmoz/taboo-your-words -- Taboo Your Words
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [rationality, language]
+    - later: true
+- https://www.lesswrong.com/posts/tz5AmWbEcMBQpiEjY/why-you-don-t-believe-in-xhosa-prophecies -- Why You Don't Believe in Xhosa Prophecies
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [epistemology, history]
+    - later: true
+- https://www.lesswrong.com/posts/ophhRzHyt44qcjnkS/trying-to-understand-my-own-cognitive-edge -- Trying to understand my own cognitive edge
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [metacognition, agency]
+    - later: true
+- https://www.lesswrong.com/posts/E9xfgJHvs6M55kABD/less-dead -- Less Dead
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [health, survival]
+    - later: true
+- https://www.lesswrong.com/posts/NEFNs4vbNxJPJJgYY/nullius-in-verba -- Nullius in Verba: 3rd party evidence for Nectome's Brain Preservation
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [cryonics, brain preservation]
+    - later: true
+- https://www.lesswrong.com/posts/PPLHfFhNWMuWCnaTt/the-practical-guide-to-superbabies-3 -- The Practical Guide to Superbabies
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [biology, futurism]
+    - later: true
+- https://www.lesswrong.com/posts/hTnhwX9kr6GHgFrp4/an-interactive-version-of-the-extropians-mailing-list -- An interactive version of the extropians mailing list
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [extropianism, archive]
+    - later: true
+- https://www.lesswrong.com/posts/eFD3rozNCZKMe4rTs/mats-9-retrospective-and-advice -- MATS 9 Retrospective & Advice
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [research, career]
+    - later: true
+- https://www.lesswrong.com/posts/kLdADoEtdYf6FDM8j/i-made-geneguessr?curius=3971 -- I made Geneguessr
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [biology, game]
+    - later: true
+- https://www.lesswrong.com/posts/BJ7AqXeigNKXLqZyx/mnemonic-portraits-for-19-023-human-genes?curius=3971 -- Mnemonic portraits for 19,023 human genes
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [biology, memory]
+    - later: true
+- https://www.lesswrong.com/posts/frizRHnA6AZpJSDqw/lab-leaks-black-holes-and-eggs-epistemic-case-study?curius=5413 -- Lab Leaks, Black Holes, and Eggs: Epistemic Case Study Competition
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [epistemology, ai]
+    - later: true
+- https://borretti.me/article/the-applicability-of-spaced-repetition -- The applicability of spaced repetition
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [pedagogy]
+    - importance: 7
+- https://www.dwarkesh.com/p/the-mistake-of-conflating-intelligence -- The Mistake of conflating intelligence with power
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [being, ontology]
+- https://taper.badquar.to/16/ -- Taper 16
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [zine, intraweb]
 - https://www.gleech.org/enhance -- Transnormalism
   - [meta]:
     - date: 06/08/2026
@@ -2503,7 +2606,7 @@ title: are.na
 - https://www.lesswrong.com/posts/kqxEJkq5Big9nNKxy/beyond-kolmogorov-and-shannon -- Beyond Kolmogorov and Shannon
   - [meta]:
     - date: 06/08/2026
-    - tags: [information-theory, epistemology]
+    - tags: [information theory, epistemology]
     - later: true
 - https://www.lesswrong.com/posts/WRaq4SzxhunLoFKCs/2023-survey-results#IV__Politics_and_Religion -- 2023 Survey Results
   - [meta]:
@@ -4614,6 +4717,72 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/Ty5Bmg7P6Tciy2uj2/measuring-no-cot-math-time-horizon-single-forward-pass -- Measuring no CoT math time horizon (single forward pass)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [evals, reasoning]
+    - later: true
+- https://www.lesswrong.com/posts/rdhyHtjf3LcZxuQPm/dreaming-vectors-gradient-descented-steering-vectors-from -- Dreaming Vectors: Gradient-descented steering vectors from Activation Oracles and using them to Red-Team AOs
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [steering, interpretability]
+    - later: true
+- https://www.lesswrong.com/posts/k4FjAzJwvYjFbCTKn/why-we-are-excited-about-confession -- Why we are excited about confession!
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [interpretability, research]
+    - later: true
+- https://www.lesswrong.com/posts/gpyqWzWYADWmLYLeX/how-ai-is-learning-to-think-in-secret -- How AI Is Learning to Think in Secret
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [neuralese, reasoning]
+    - later: true
+- https://www.alignmentforum.org/posts/5ciYedyQDDqAcrDLr/a-positive-case-for-how-we-might-succeed-at-prosaic-ai -- A positive case for how we might succeed at prosaic AI alignment
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [alignment, prosaic]
+    - later: true
+- https://www.lesswrong.com/posts/ceEgAEXcL7cC2Ddiy/anthropic-s-hot-mess-paper-overstates-its-case-and-the-blog -- Anthropic's "Hot Mess" paper overstates its case (and the blog post is worse)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [interpretability, critique]
+    - later: true
+- https://www.lesswrong.com/posts/XdQd9gELHakd5pzJA/arc-progress-update-competing-with-sampling -- ARC progress update: Competing with sampling
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [alignment, elicitation]
+    - later: true
+- https://www.alignmentforum.org/posts/GJTzhQgaRWLFJkPbt/how-will-we-do-sft-on-models-with-opaque-reasoning -- How will we do SFT on models with opaque reasoning?
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [sft, reasoning]
+    - later: true
+- https://www.lesswrong.com/posts/Dw8mskAvBX37MxvXo/deep-learning-as-program-synthesis-1 -- Deep learning as program synthesis
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [program synthesis, theory]
+    - later: true
+- https://www.alignmentforum.org/posts/WZXqNYbJhtidjRXSi/what-will-gpt-2030-look-like?curius=3971 -- What will GPT-2030 look like?
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [forecasting, ai]
+    - later: true
+- https://www.lesswrong.com/posts/EPefYWjuHNcNH4C7E/attribution-based-parameter-decomposition -- Attribution-based parameter decomposition
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [interpretability]
+    - later: true
+- https://www.alignmentforum.org/posts/roE7SHjFWEoMcGZKd/circuits-in-superposition-compressing-many-small-neural -- Circuits in Superposition: Compressing many small neural networks into one
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [interpretability, superposition]
+    - later: true
+- https://finbarr.ca/request-for-research-puct/ -- Request for Research
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [topics, rl]
+    - later: true
+    - importance: 7
 - https://web.archive.org/web/20260519133855/https://rosmine.ai/2026/05/18/fixing-llm-writing-with-distribution-fine-tuning/ -- Fixing LLM writing with Distribution Fine Tuning
   - [meta]:
     - date: 06/08/2026
@@ -4693,10 +4862,11 @@ title: are.na
   - [meta]:
     - date: 05/18/2026
     - tags: [algorithm]
-- https://cp4space.hatsya.com/2026/05/03/schanuels-conjecture-and-the-semantics-of-fpsan/ -- Schanuel’s conjecture and the semantics of FPSan
+- https://cp4space.hatsya.com/2026/05/03/schanuels-conjecture-and-the-semantics-of-fpsan/ -- Schanuel’s conjecture and the semantics of FPSan [**]
   - [meta]:
     - date: 05/17/2026
     - tags: [compiler, triton, system]
+    - pinned: true
 - https://x.com/togethercompute/status/2053891740822917606 -- Serving DeepSeek-V4: why million-token context is an inference systems problem
   - [meta]:
     - date: 05/12/2026
@@ -5857,6 +6027,20 @@ title: are.na
 
 ## opinions
 
+- https://www.lesswrong.com/posts/KWdtL8iyCCiYud9mw/persona-parasitology -- Persona Parasitology
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [models, behaviour]
+    - later: true
+- https://www.lesswrong.com/posts/MNpBCtmZmqD7yk4q8/my-understanding-of-anthropic-strategy -- My understanding of Anthropic strategy
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [strategy, alignment]
+    - later: true
+- https://signal.org/blog/pdfs/2026-06-08-uk-surveillance-is-not-safety.pdf -- Surveillance Is Not Safety
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [privacy, selfhood]
 - https://www.theglobeandmail.com/business/commentary/article-canada-national-ai-strategy-incredible-step-forward/ -- Canada AI Strategy
   - [meta]:
     - date: 06/05/2026
@@ -6755,6 +6939,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/faAX5Buxc7cdjkXQG/machines-of-faithful-obedience -- Machines of Faithful Obedience
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [ai, humanism]
+    - later: true
+- https://www.lesswrong.com/posts/hopeRDfyAgQc4Ez2g/how-i-stopped-being-sure-llms-are-just-making-up-their -- How I stopped being sure LLMs are just making up their internal experience (but the topic is still confusing)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [consciousness, models]
+    - later: true
+- https://www.lesswrong.com/w/universal-prior -- Universal prior
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [bayesian, solomonoff]
+    - later: true
+- https://www.lesswrong.com/posts/WGEPBmErv8ufrq8Fc/teleosemantics -- Teleosemantics!
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [semantics, philosophy]
+    - later: true
+- https://www.lesswrong.com/posts/D7PumeYTDPfBTp3i7/the-waluigi-effect-mega-post -- The Waluigi Effect (mega-post)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [simulacra, models]
+    - later: true
+- https://www.lesswrong.com/posts/vzHtHHBJoKATi5SeK/empowerment-corrigibility-etc-are-simple-abstractions-of-a -- Empowerment, corrigibility, etc. are simple abstractions (of a messed-up ontology)
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [corrigibility, ontology]
+    - later: true
 - https://www.lesswrong.com/w/instrumental-convergence -- Instrumental convergence
   - [meta]:
     - date: 06/08/2026
@@ -7083,7 +7297,7 @@ title: are.na
   - two camps when talking about [[thoughts/Empathy]]:
   - simulation theory: "putting yourself into another shoe"
   - theory theory: "mindreading"
-  - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locust of their own subjectivity.
+  - She argues that empathy as "the experience of foreign consciousness in general", i.e: doesn't have to have shared experience, but rather a locus of their own subjectivity.
 - https://www.youtube.com/watch?v=WyofKBRpRqU -- Merleau-Ponty on the World of Perception & the World of Science (1948)
   - [meta]:
     - date: 11/05/2025
@@ -7266,6 +7480,11 @@ title: are.na
 
 ## stream
 
+- https://www.cypherpunkbooks.com/ -- Cypherpunk books
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [collections, reading]
+    - seealso: [[thoughts/reading]]
 - https://www.032carchive.com/ -- 032c archive
   - [meta]:
     - date: 06/06/2026
@@ -7711,6 +7930,11 @@ title: are.na
 
 ## finances
 
+- https://www.berkshirehathaway.com/letters/1983.html -- Berkshire Hathaway's 1983 letter to investor [**]
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [principles]
+    - importance: 4
 - https://simonwillison.net/2026/May/27/product-market-fit/ -- PMF for Anthropic/OpenAI
   - [meta]:
     - date: 06/08/2026
@@ -7806,6 +8030,10 @@ title: are.na
 
 ## design
 
+- https://index.how/to/articulate -- Designers' vocabulary
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [vernacular, vocabulary, speaking]
 - https://www.are.na/block/58882 -- Paperweight
   - [meta]:
     - date: 06/04/2026
@@ -7830,7 +8058,7 @@ title: are.na
   - [meta]:
     - date: 06/03/2026
     - tags: [designer]
-- https://specialforc.es/ -- Special Forces
+- https://specialforc.es/ -- Special Forces [**]
   - [meta]:
     - date: 05/31/2026
     - tags: [agency]
@@ -8782,6 +9010,14 @@ title: are.na
 
 ## resources
 
+- https://www.noahpinion.blog/p/all-non-drone-militaries-are-obsolete -- All non-drone militaries are obsolete
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [history, predictive]
+- https://artofpilgrim.github.io/Dials -- dials, in React
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [generative, web, svg, artefacts]
 - https://svgl.app/ -- SVG for application
   - [meta]:
     - date: 06/06/2026
@@ -8836,7 +9072,7 @@ title: are.na
   - [meta]:
     - date: 05/25/2026
     - tags: [pedagogy]
-- https://www.startertosf.guide/ -- The starter guide to SF for Founder
+- https://www.startertosf.guide/ -- The starter guide to SF for Founder [**]
   - [meta]:
     - date: 05/19/2026
     - tags: [docs]
@@ -9210,6 +9446,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/google/re2 -- RE2 implementation
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [regex]
 - https://github.com/ryoppippi/ccusage -- Token Usage
   - [meta]:
     - date: 06/08/2026
@@ -10243,6 +10483,19 @@ title: are.na
 
 ## engineering
 
+- https://cpojer.net/posts/modern-engineering-values -- Modern Engineering Value
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [people, skills]
+    - later: true
+- https://docs.google.com/document/d/1tITE46A9JS4BTrVBDkg88efUIEWwV9ttoCJTMsdJv7A/edit?tab=t.mktegv8ygb8s#heading=h.7donmu2298op -- the removal of `torch.compile` in vLLM
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [inference, design docs, rfc]
+- https://wanglun1996.github.io/blog/your-evals-will-break.html -- Your Evals Will Break and You Won't See It Coming
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [models, infrastructure]
 - https://www.buchodi.com/meta-glasses-facial-recognition/ -- Meta's smart glasses companion app ships a complete, dormant face-recognition pipeline on a stock account
   - [meta]:
     - date: 06/08/2026
@@ -11051,6 +11304,25 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/w/arithmetical-hierarchy?lens=arithmetical-hierarchy-if-you-don-t-read-logic -- Arithmetical hierarchy
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [logic]
+    - later: true
+- https://www.lesswrong.com/posts/qRWfvgJG75ESLRNu9/the-crackpot-offer -- The Crackpot Offer
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [math, epistemology]
+    - later: true
+- https://www.lesswrong.com/posts/Tr7tAyt5zZpdTwTQK/the-solomonoff-prior-is-malign -- The Solomonoff Prior is Malign
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [solomonoff, agency]
+    - later: true
+- https://cse442-17f.github.io/LinUCB/ -- Multi-Armed Bandit Theory
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [economics, game theory]
 - https://ncatlab.org/nlab/show/homotopy+theory -- Homotopy Theory
   - [meta]:
     - date: 06/08/2026

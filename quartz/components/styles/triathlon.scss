@@ -620,22 +620,34 @@
   margin-top: 0.45rem;
 }
 
+.tri-fuel-btn,
 .tri-calc-btn,
 .tri-gear-btn,
-.tri-pace-btn {
+.tri-pace-btn,
+.tri-analytics-btn {
   padding: 0;
   background: none;
   border: 0;
+  text-decoration: none;
   font-family: var(--codeFont);
   font-size: 0.64rem;
-  line-height: 1.4;
+  line-height: 1.4 !important;
   color: var(--darkgray);
   cursor: pointer;
   border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  display: inline-flex;
 
   &:hover {
     color: var(--dark);
     border-bottom-color: var(--dark);
+  }
+}
+
+.tri-fuel-btn {
+  &:hover {
+    background: transparent;
+    color: var(--dark);
+    border-bottom-color: color-mix(in srgb, var(--gray) 50%, transparent);
   }
 }
 
@@ -997,21 +1009,7 @@
   --tri-run: #fdb2a2;
 }
 
-.tri-analytics-btn {
-  padding: 0;
-  background: none;
-  border: 0;
-  font-family: var(--codeFont);
-  font-size: 0.64rem;
-  color: var(--darkgray);
-  cursor: pointer;
-  border-bottom: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
 
-  &:hover {
-    color: var(--dark);
-    border-bottom-color: var(--dark);
-  }
-}
 
 .tri-analytics-scrim {
   position: fixed;
