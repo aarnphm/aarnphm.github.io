@@ -156,6 +156,7 @@ const mhaSetReadout = (root: HTMLElement, h: number, dm: number, seq: number) =>
   mhaSetText(root, '[data-mha-params]', mhaFmtCompact(params))
   mhaSetText(root, '[data-mha-cache]', mhaFmtBytes(cachePerToken))
   mhaSetText(root, '[data-mha-flops]', mhaFmtCompact(flops))
+  mhaSetText(root, '[data-mha-dm-value]', String(dm))
 
   const ticks = root.querySelectorAll<HTMLElement>('[data-mha-tick]')
   for (const tick of ticks) {
@@ -209,6 +210,7 @@ const mhaSetup = () => {
 
     const slider = root.querySelector<HTMLInputElement>('[data-mha-heads-input]')
     const dmInput = root.querySelector<HTMLInputElement>('[data-mha-dm-input]')
+    const dmValue = root.querySelector<HTMLElement>('[data-mha-dm-value]')
     const toggle = root.querySelector<HTMLButtonElement>('[data-mha-pattern-toggle]')
 
     const render = () => {
@@ -232,16 +234,54 @@ const mhaSetup = () => {
       handlers.push(() => slider.removeEventListener('input', onSlide))
     }
 
-    if (dmInput) {
-      const onDm = () => {
-        const raw = Number(dmInput.value)
-        if (!Number.isFinite(raw) || raw <= 0) return
-        dm = Math.round(raw)
-        root.dataset.mhaDm = String(dm)
-        render()
+    if (dmInput && dmValue) {
+      const startEdit = () => {
+        dmInput.value = String(dm)
+        dmValue.hidden = true
+        dmInput.hidden = false
+        dmInput.focus()
+        dmInput.select()
       }
-      dmInput.addEventListener('input', onDm)
-      handlers.push(() => dmInput.removeEventListener('input', onDm))
+      const commitEdit = () => {
+        if (dmInput.hidden) return
+        const raw = Number(dmInput.value)
+        if (Number.isFinite(raw) && raw > 0) {
+          dm = Math.min(16384, Math.max(64, Math.round(raw)))
+          root.dataset.mhaDm = String(dm)
+          render()
+        }
+        dmInput.hidden = true
+        dmValue.hidden = false
+      }
+      const cancelEdit = () => {
+        dmInput.hidden = true
+        dmValue.hidden = false
+      }
+      const onValueKey = (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          startEdit()
+        }
+      }
+      const onEditKey = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          commitEdit()
+        } else if (e.key === 'Escape') {
+          e.preventDefault()
+          cancelEdit()
+        }
+      }
+      dmValue.addEventListener('click', startEdit)
+      dmValue.addEventListener('keydown', onValueKey)
+      dmInput.addEventListener('keydown', onEditKey)
+      dmInput.addEventListener('blur', commitEdit)
+      handlers.push(() => {
+        dmValue.removeEventListener('click', startEdit)
+        dmValue.removeEventListener('keydown', onValueKey)
+        dmInput.removeEventListener('keydown', onEditKey)
+        dmInput.removeEventListener('blur', commitEdit)
+      })
     }
 
     if (toggle) {

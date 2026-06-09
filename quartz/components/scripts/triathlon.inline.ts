@@ -2008,6 +2008,13 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (!it) return
     if (it.dataset.chart) scrollToChart(it.dataset.chart)
     else if (it.dataset.id) showActivity(it.dataset.id)
+    else if (it.dataset.insert) {
+      const tokens = search!.value.trim().split(/\s+/)
+      tokens[tokens.length - 1] = it.dataset.insert
+      search!.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
+      search!.focus()
+      runSearch()
+    }
   }
   const runSearch = () => {
     if (!search || !results) return
@@ -2020,25 +2027,97 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     }
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
-    const tokens = q.split(/\s+/)
-    const metrics: HTMLElement[] = []
-    for (const s of SEARCH_SECTIONS)
-      if (matchHay(`${s.label} ${s.hay}`.toLowerCase(), tokens)) {
-        const it = ritem(s.label, 'section')
-        it.dataset.chart = s.chart
-        metrics.push(it)
-      }
-    for (const key of Object.keys(GLOSS)) {
-      const g = GLOSS[key]
-      if (matchHay(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
-        const it = ritem(g.term, g.def)
-        it.dataset.chart = GLOSS_CHART[key] ?? 'pmc'
-        metrics.push(it)
+    const rawTokens = q.split(/\s+/)
+    let filterSport: string | null = null
+    let sortKey: string | null = null
+    const tokens: string[] = []
+
+    for (const t of rawTokens) {
+      if (t.startsWith('filter:')) {
+        filterSport = t.slice(7)
+      } else if (t.startsWith('sort:')) {
+        sortKey = t.slice(5)
+      } else {
+        if (t) tokens.push(t)
       }
     }
-    const acts = (data?.activities ?? []).filter(a =>
-      matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens),
-    )
+
+    const metrics: HTMLElement[] = []
+    const lastToken = rawTokens[rawTokens.length - 1]
+    const hints: HTMLElement[] = []
+
+    if (lastToken.startsWith('filter:') && !['bike', 'run', 'swim'].includes(lastToken.slice(7))) {
+      const prefix = lastToken.slice(7)
+      for (const f of ['bike', 'run', 'swim']) {
+        if (f.startsWith(prefix)) {
+          const it = ritem(`filter:${f}`, 'filter activities')
+          it.dataset.insert = `filter:${f}`
+          hints.push(it)
+        }
+      }
+    } else if (
+      lastToken.startsWith('sort:') &&
+      !['distance', 'cadence', 'pace'].includes(lastToken.slice(5))
+    ) {
+      const prefix = lastToken.slice(5)
+      for (const s of ['distance', 'cadence', 'pace']) {
+        if (s.startsWith(prefix)) {
+          const it = ritem(`sort:${s}`, 'sort activities')
+          it.dataset.insert = `sort:${s}`
+          hints.push(it)
+        }
+      }
+    } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
+      const it = ritem('filter:', 'filter by sport (bike, run, swim)')
+      it.dataset.insert = 'filter:'
+      hints.push(it)
+    } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
+      const it = ritem('sort:', 'sort by distance, cadence, pace')
+      it.dataset.insert = 'sort:'
+      hints.push(it)
+    }
+
+    if (!filterSport && !sortKey) {
+      for (const s of SEARCH_SECTIONS)
+        if (matchHay(`${s.label} ${s.hay}`.toLowerCase(), tokens)) {
+          const it = ritem(s.label, 'section')
+          it.dataset.chart = s.chart
+          metrics.push(it)
+        }
+      for (const key of Object.keys(GLOSS)) {
+        const g = GLOSS[key]
+        if (matchHay(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
+          const it = ritem(g.term, g.def)
+          it.dataset.chart = GLOSS_CHART[key] ?? 'pmc'
+          metrics.push(it)
+        }
+      }
+    }
+
+    let acts = (data?.activities ?? []).filter(a => {
+      if (filterSport && a.sport !== filterSport) return false
+      return tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+    })
+
+    if (sortKey) {
+      acts.sort((a, b) => {
+        if (sortKey === 'distance') return b.distanceKm - a.distanceKm
+        if (sortKey === 'cadence') return (b.cadence ?? 0) - (a.cadence ?? 0)
+        if (sortKey === 'pace') {
+          const speedA = a.movingTimeS > 0 ? a.distanceKm / a.movingTimeS : 0
+          const speedB = b.movingTimeS > 0 ? b.distanceKm / b.movingTimeS : 0
+          return speedB - speedA
+        }
+        return 0
+      })
+    }
+
+    if (hints.length) {
+      const grp = el('div', 'tri-ana-rgroup')
+      grp.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))
+      for (const it of hints) grp.appendChild(it)
+      results.appendChild(grp)
+    }
     if (metrics.length) {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', 'metrics & terms'))
@@ -2048,16 +2127,19 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (acts.length) {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', 'activities'))
-      for (const a of acts.slice(0, 10)) {
+      for (const a of acts.slice(0, 50)) {
         const head = el('span', 'tri-ana-ritem-h')
         head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
-        const it = ritem(head, `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}`)
+        const sub =
+          `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
+          (a.cadence ? ` · ${a.cadence} rpm/spm` : '')
+        const it = ritem(head, sub)
         it.dataset.id = String(a.id)
         grp.appendChild(it)
       }
       results.appendChild(grp)
     }
-    if (!metrics.length && !acts.length)
+    if (!metrics.length && !acts.length && !hints.length)
       results.appendChild(el('div', 'tri-ana-empty', 'no matches'))
     setSel(0)
   }
@@ -2338,6 +2420,22 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   return () => document.removeEventListener('keydown', onKey, true)
 }
 
+const setupPaceUnit = (root: HTMLElement): (() => void) | null => {
+  const buttons = root.querySelectorAll<HTMLButtonElement>('.tri-pace-unit')
+  const cells = root.querySelectorAll<HTMLElement>('.tri-pace [data-kph]')
+  if (buttons.length === 0 || cells.length === 0) return null
+  let mph = false
+  const onClick = () => {
+    mph = !mph
+    for (const b of buttons) b.textContent = mph ? 'mph' : 'km/h'
+    for (const c of cells) c.textContent = (mph ? c.dataset.mph : c.dataset.kph) ?? ''
+  }
+  for (const b of buttons) b.addEventListener('click', onClick)
+  return () => {
+    for (const b of buttons) b.removeEventListener('click', onClick)
+  }
+}
+
 document.addEventListener('nav', () => {
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
@@ -2361,6 +2459,8 @@ document.addEventListener('nav', () => {
     'tri-pace-open',
   )
   if (paceCleanup) window.addCleanup?.(paceCleanup)
+  const paceUnitCleanup = setupPaceUnit(root)
+  if (paceUnitCleanup) window.addCleanup?.(paceUnitCleanup)
   const cheatCleanup = setupCheat(root)
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)

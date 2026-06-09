@@ -3,7 +3,7 @@ abstract: The reason for Attention comparing to LSTM is that its ability to enco
 date: '2024-02-07'
 description: and posteriori information retrieval.
 id: Attention
-modified: 2026-06-07 00:42:19 GMT-04:00
+modified: 2026-06-08 14:59:16 GMT-04:00
 seealso:
   - '[[lectures/2/convexity|emperical finding]]'
   - '[[lectures/2/afp|attention from first principles]]'
@@ -52,9 +52,9 @@ Allows the model to jointly attend to information from different representation 
 
 $$
 \begin{aligned}
-\text{MHA}(Q,K,V) &= \operatorname{concat}(\text{head}_1, \ldots, \text{head}_h)\, W_O,\\
-\text{head}_i &= \operatorname{softmax}\!\left(\frac{Q W_{Q,i}\,(K W_{K,i})^{\top}}{\sqrt{d_h}}\right)\, V W_{V,i},\\
-& W_O \in \mathbb{R}^{(h d_h) \times d_{\text{model}}},\; W_{Q,i},W_{K,i} \in \mathbb{R}^{d_{\text{model}} \times d_h},\; W_{V,i} \in \mathbb{R}^{d_{\text{model}} \times d_h}.
+\text{MHA}(Q,K,V) &= \operatorname{concat}(\text{head}_1, \ldots, \text{head}_h)\, W_O\\
+\text{head}_i &= \operatorname{softmax}\!\left(\frac{Q W_{Q,i}\,(K W_{K,i})^{\top}}{\sqrt{d_h}}\right)\, V W_{V,i}\\
+& W_O \in \mathbb{R}^{(h d_h) \times d_{\text{model}}},\; W_{Q,i},W_{K,i} \in \mathbb{R}^{d_{\text{model}} \times d_h},\; W_{V,i} \in \mathbb{R}^{d_{\text{model}} \times d_h}
 \end{aligned}
 $$
 
@@ -94,7 +94,9 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 > Y_{\text{MHA}} = \big(P^{(+1)} V\big) W_O^{(1)} + \big(P^{(-1)} V\big) W_O^{(2)}.
 > $$
 >
-> A single head with scores $S = S^{(+1)} + S^{(-1)}$ yields $P=\operatorname{softmax}(S)$ and output $Y_{\text{SH}} = (PV)\,\tilde W_O$. Because $\operatorname{softmax}(A+B) \neq \operatorname{softmax}(A)+\operatorname{softmax}(B)$ in general, $Y_{\text{SH}}$ cannot match $Y_{\text{MHA}}$ for all inputs even if $\tilde W_O$ is chosen adversarially; one normaliser is coupled where two normalisers are separable. This structural independence of normalisers increases expressivity [@cordonnier2019relationshipselfattentionconvolution; @yun2019universaltransformers].
+> A single head with scores $S = S^{(+1)} + S^{(-1)}$ yields $P=\operatorname{softmax}(S)$ and output $Y_{\text{SH}} = (PV)\,\tilde W_O$
+>
+> Because softmax is non-additive, $Y_{\text{SH}}$ cannot match $Y_{\text{MHA}}$ for all inputs even if $\tilde W_O$ is chosen {{sidenotes[adversarially]: one normaliser is coupled where two normalisers are separable. This structural independence of normalisers increases expressivity [@cordonnier2019relationshipselfattentionconvolution; @yun2019universaltransformers]}}
 >
 > ```python shell
 > import torch, math
@@ -129,7 +131,7 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 ```jsx imports={Zoomable,OffsetHeadsToy}
 <Zoomable label="two-head softmax demo">
   <OffsetHeadsToy
-    caption="The same demo, live: two heads ($P^{(+1)}$, $P^{(-1)}$) and the single-head surrogate ($P = \operatorname{softmax}(S^{(+1)} + S^{(-1)})$). Reseed $V$ and the projection matrices to watch $\|Y_{\text{MHA}} - Y_{\text{SH}}\|_F$ stay stubbornly $O(1)$; no choice of single-head projection closes the gap."
+    caption="Two heads ($P^{(+1)}$, $P^{(-1)}$) against the single-head surrogate ($P = \operatorname{softmax}(S^{(+1)} + S^{(-1)})$). Raise $\beta$ to sharpen each diagonal; reseed $V$ and the projections and $\|Y_{\text{MHA}} - Y_{\text{SH}}\|_F$ stays stubbornly $O(1)$ — no single-head projection closes the gap."
     length={6}
   />
 </Zoomable>
@@ -155,7 +157,7 @@ One may focus on positional offsets (e.g., "next token" dependencies) while anot
 
 ```jsx imports={Zoomable,AttentionCostCalculator}
 <Zoomable label="attention cost calculator">
-  <AttentionCostCalculator caption="Dial $d_{\text{model}}$, layers, $h$, sequence length, batch and dtype to see params, FLOPs, and KV cache update live. The $h$ knob is free in params; the cache is $L \times B \times N \times 2d_{\text{model}} \times \operatorname{bytes}$." />
+  <AttentionCostCalculator caption="Dial $d_{\text{model}}$, layers, $h$, sequence length and batch (click any value to type it), plus the KV-cache dtype; weights stay bf16. The cache is $L \times B \times N \times 2d_{\text{model}} \times \operatorname{bytes}$, so quantising it (int8, int4) shrinks the salmon bar against the fixed weight bars while $h$ alone stays free." />
 </Zoomable>
 ```
 

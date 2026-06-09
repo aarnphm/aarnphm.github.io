@@ -34,14 +34,16 @@
 
 a[data-list] {
   &.perma {
+    &:hover {
+      color: var(--foam) !important;
+      text-decoration: underline;
+    }
+
     & > .description {
       font-size: 11.1px;
     }
 
     &[data-tag] {
-      &:hover {
-        color: var(--foam) !important;
-      }
       & > .title {
         @include tinyCodeFonts;
       }

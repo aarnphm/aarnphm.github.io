@@ -191,10 +191,14 @@
 
 .acir-panel-title {
   margin: 0;
-  font-family: var(--bodyFont);
   font-size: 0.92rem;
   font-weight: 600;
-  color: var(--dark);
+  color: var(--acir-note-fg);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .acir-panel-sub {
@@ -319,15 +323,16 @@
     stroke: none;
   }
 
-  .acir-weight {
-    transition: filter 160ms ease;
+  .acir-box--weight {
+    transition:
+      fill 160ms ease,
+      stroke 160ms ease;
   }
 
   &.is-highlight-qk {
     .acir-weight[data-acir-circuit='qk'] .acir-box--weight {
       fill: var(--acir-qk-fill);
       stroke: var(--acir-qk);
-      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--acir-qk) 60%, transparent));
     }
     .acir-line--qk {
       stroke: color-mix(in srgb, var(--acir-qk) 80%, var(--acir-stroke));
@@ -343,7 +348,6 @@
     .acir-weight[data-acir-circuit='ov'] .acir-box--weight {
       fill: var(--acir-ov-fill);
       stroke: var(--acir-ov);
-      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--acir-ov) 60%, transparent));
     }
     .acir-line--ov {
       stroke: color-mix(in srgb, var(--acir-ov) 80%, var(--acir-stroke));

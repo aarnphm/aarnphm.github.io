@@ -114,7 +114,10 @@ type AccMetrics = {
   ratio: number
   ffnParams: number
   paramBytes: number
+  ffnBytes: number
 }
+
+const ACC_WEIGHT_BYTES = 2
 
 const accCompute = (s: AccState): AccMetrics => {
   const dh = s.dm / s.nh
@@ -125,9 +128,10 @@ const accCompute = (s: AccState): AccMetrics => {
   const flops = 4 * s.sl * s.dm
   const kvtok = 2 * s.dm * bytes
   const kvtotal = s.bs * s.sl * s.nl * 2 * s.dm * bytes
-  const paramBytes = params * bytes
+  const paramBytes = params * ACC_WEIGHT_BYTES
+  const ffnBytes = ffnParams * ACC_WEIGHT_BYTES
   const ratio = paramBytes > 0 ? kvtotal / paramBytes : 0
-  return { dh, dhInteger, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes }
+  return { dh, dhInteger, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes, ffnBytes }
 }
 
 const accSetText = (root: HTMLElement, sel: string, text: string) => {
@@ -224,31 +228,24 @@ const accFlashCard = (root: HTMLElement, k: AccKey) => {
 }
 
 const accUpdateBar = (root: HTMLElement, m: AccMetrics) => {
-  const totalParams = Math.max(1, m.params + m.ffnParams)
-  const attnPct = (m.params / totalParams) * 100
-  const ffnPct = (m.ffnParams / totalParams) * 100
-  const totalBytes = Math.max(1, m.paramBytes + m.kvtotal)
-  const kvPct = (m.kvtotal / totalBytes) * 100
-  const paramBytesPct = (m.paramBytes / totalBytes) * 100
-
+  const total = Math.max(1, m.paramBytes + m.ffnBytes + m.kvtotal)
   const setBar = (k: string, pct: number) => {
     const el = root.querySelector<HTMLElement>(`[data-acc-bar="${k}"]`)
     if (el) el.style.width = `${pct.toFixed(1)}%`
   }
-  setBar('attn', attnPct)
-  setBar('ffn', ffnPct)
-  setBar('kv', kvPct)
-  setBar('paramBytes', paramBytesPct)
+  setBar('attn', (m.paramBytes / total) * 100)
+  setBar('ffn', (m.ffnBytes / total) * 100)
+  setBar('kv', (m.kvtotal / total) * 100)
 
-  accSetTex(root, '[data-acc-barval="attn"]', accFmtCount(m.params))
-  accSetTex(root, '[data-acc-barval="ffn"]', accFmtCount(m.ffnParams))
+  accSetTex(root, '[data-acc-barval="attn"]', accFmtBytes(m.paramBytes))
+  accSetTex(root, '[data-acc-barval="ffn"]', accFmtBytes(m.ffnBytes))
   accSetTex(root, '[data-acc-barval="kv"]', accFmtBytes(m.kvtotal))
 }
 
 const accUpdateSummary = (root: HTMLElement, m: AccMetrics) => {
-  accSetText(root, '[data-acc-sumkv]', accFmtBytes(m.kvtotal))
-  accSetText(root, '[data-acc-sumparams]', accFmtBytes(m.paramBytes))
-  accSetText(root, '[data-acc-sumratio]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
+  accSetTex(root, '[data-acc-sumkv]', accFmtBytes(m.kvtotal))
+  accSetTex(root, '[data-acc-sumparams]', accFmtBytes(m.paramBytes))
+  accSetTex(root, '[data-acc-sumratio]', `${m.ratio.toFixed(m.ratio >= 10 ? 0 : 2)}x`)
 }
 
 const accRender = (root: HTMLElement, s: AccState, prev: AccMetrics | null): AccMetrics => {
@@ -293,6 +290,63 @@ const accSetup = () => {
       }
       input.addEventListener('input', handler)
       offHandlers.push(() => input.removeEventListener('input', handler))
+
+      const valueEl = root.querySelector<HTMLElement>(`[data-acc-value="${k}"]`)
+      const editEl = root.querySelector<HTMLInputElement>(`[data-acc-edit="${k}"]`)
+      if (valueEl && editEl) {
+        const startEdit = () => {
+          editEl.value = String(state[k])
+          valueEl.hidden = true
+          editEl.hidden = false
+          editEl.focus()
+          editEl.select()
+        }
+        const commitEdit = () => {
+          if (editEl.hidden) return
+          const raw = Number(editEl.value)
+          if (Number.isFinite(raw) && raw > 0) {
+            let next = accSnap(raw, opts)
+            if (k === 'nh') {
+              const divisors = opts.filter(h => Number.isInteger(state.dm / h))
+              if (divisors.length > 0) next = accSnap(next, divisors)
+            }
+            state[k] = next
+            prev = accRender(root, state, prev)
+            accFlashCard(root, k)
+          }
+          editEl.hidden = true
+          valueEl.hidden = false
+        }
+        const cancelEdit = () => {
+          editEl.hidden = true
+          valueEl.hidden = false
+        }
+        const onValueKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            startEdit()
+          }
+        }
+        const onEditKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            commitEdit()
+          } else if (e.key === 'Escape') {
+            e.preventDefault()
+            cancelEdit()
+          }
+        }
+        valueEl.addEventListener('click', startEdit)
+        valueEl.addEventListener('keydown', onValueKey)
+        editEl.addEventListener('keydown', onEditKey)
+        editEl.addEventListener('blur', commitEdit)
+        offHandlers.push(() => {
+          valueEl.removeEventListener('click', startEdit)
+          valueEl.removeEventListener('keydown', onValueKey)
+          editEl.removeEventListener('keydown', onEditKey)
+          editEl.removeEventListener('blur', commitEdit)
+        })
+      }
     }
 
     const dtSelect = root.querySelector<HTMLSelectElement>('[data-acc-input="dt"]')

@@ -61,7 +61,7 @@ export function extractArxivId(url: string): string | null {
 }
 
 export class AdaptiveRateLimiter {
-  private lastRequest = 0
+  private nextSlot = 0
   private interval: number
 
   constructor(
@@ -72,11 +72,11 @@ export class AdaptiveRateLimiter {
   }
 
   async wait(): Promise<void> {
-    const elapsed = Date.now() - this.lastRequest
-    if (elapsed < this.interval) {
-      await new Promise(r => setTimeout(r, this.interval - elapsed))
-    }
-    this.lastRequest = Date.now()
+    const now = Date.now()
+    const slot = Math.max(now, this.nextSlot)
+    this.nextSlot = slot + this.interval
+    const delay = slot - now
+    if (delay > 0) await new Promise(r => setTimeout(r, delay))
   }
 
   onSuccess() {
@@ -85,6 +85,7 @@ export class AdaptiveRateLimiter {
 
   onRateLimit() {
     this.interval = Math.min(this.maxInterval, this.interval * 2)
+    this.nextSlot = Math.max(this.nextSlot, Date.now() + this.interval)
   }
 }
 

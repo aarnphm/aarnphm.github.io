@@ -150,7 +150,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       <section class="pkt-col" aria-label="Logical KV blocks per sequence">
         <header
           class="pkt-col-head"
-          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{logical KV blocks}') }}
+          dangerouslySetInnerHTML={{ __html: renderMath('\\text{logical KV blocks}') }}
         />
         <div class="pkt-seqs">
           {SEQS.map(seq => (
@@ -181,7 +181,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       <section class="pkt-col" aria-label="Page table">
         <header
           class="pkt-col-head"
-          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{page table}') }}
+          dangerouslySetInnerHTML={{ __html: renderMath('\\text{page table}') }}
         />
         <table class="pkt-pt">
           <thead>
@@ -226,19 +226,29 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       <section class="pkt-col" aria-label="Physical GPU memory">
         <header
           class="pkt-col-head"
-          dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{physical memory}') }}
+          dangerouslySetInnerHTML={{ __html: renderMath('\\text{physical memory}') }}
         />
         <ol class="pkt-pblocks">
           {Array.from({ length: PHYSICAL_SLOTS }, (_, idx) => (
             <PhysicalSlot idx={idx} />
           ))}
         </ol>
+        <div class="pkt-card pkt-card--reset" style={{ marginTop: 'auto' }}>
+          <button
+            type="button"
+            class="pkt-reset"
+            data-pkt-reset
+            aria-label="Reset to initial state"
+          >
+            reset
+          </button>
+        </div>
       </section>
     </div>
 
     <aside class="pkt-side" aria-label="Per-block attention and fragmentation readout">
       <div class="pkt-card">
-        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{per-block attention}') }} />
+        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\text{per-block attention}') }} />
         <MathLabel
           display
           tex="A_{ij} = \dfrac{\exp\!\left(q_i^{\top} K_j / \sqrt{d}\right)}{\sum_{t}\exp\!\left(q_i^{\top} K_t / \sqrt{d}\right)}"
@@ -249,7 +259,7 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         </p>
       </div>
       <div class="pkt-card">
-        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\textbf{live readout}') }} />
+        <h4 dangerouslySetInnerHTML={{ __html: renderMath('\\text{live readout}') }} />
         <dl class="pkt-readout">
           <div class="pkt-readout-row">
             <dt>
@@ -314,11 +324,6 @@ const PagedKVTableImpl: QuartzMdxComponent<Props> = ({ caption }) => (
             </dd>
           </div>
         </dl>
-      </div>
-      <div class="pkt-card pkt-card--reset">
-        <button type="button" class="pkt-reset" data-pkt-reset aria-label="Reset to initial state">
-          reset
-        </button>
       </div>
     </aside>
 

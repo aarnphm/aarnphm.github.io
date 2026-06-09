@@ -41,6 +41,7 @@
 
 .rpt-card-title {
   margin: 0;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--rpt-note-fg);
 }
@@ -204,7 +205,6 @@
     .rpt-node-shape {
       stroke: var(--rpt-match);
       stroke-width: 1.5;
-      filter: drop-shadow(0 0 4px color-mix(in srgb, var(--rpt-match) 50%, transparent));
     }
   }
 

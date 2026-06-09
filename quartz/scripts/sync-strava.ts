@@ -18,7 +18,24 @@ const PER_PAGE = 200
 const CACHE_VERSION = 1
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
-const limiter = new AdaptiveRateLimiter(1500, 60_000)
+const limiter = new AdaptiveRateLimiter(400, 60_000)
+const geoLimiter = new AdaptiveRateLimiter(1100, 30_000)
+const CONCURRENCY = 5
+
+async function mapPool<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T, index: number) => Promise<void>,
+): Promise<void> {
+  let cursor = 0
+  const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const index = cursor++
+      await worker(items[index], index)
+    }
+  })
+  await Promise.all(runners)
+}
 
 interface TokenResponse {
   access_token: string
@@ -203,7 +220,7 @@ async function fetchCity(lat: number, lon: number): Promise<string | null> {
   const res = await fetchWithRetry(
     url,
     { headers: { 'User-Agent': 'aarnphm-garden-strava-sync/1.0' } },
-    limiter,
+    geoLimiter,
   )
   if (!res) return null
   const data = (await res.json()) as { address?: Record<string, string> }
@@ -215,7 +232,7 @@ function progress(label: string, done: number, total: number): void {
   const width = 22
   const filled = Math.round((done / total) * width)
   const bar = '█'.repeat(filled) + '░'.repeat(width - filled)
-  process.stdout.write(`\r[strava] ${label.padEnd(7)} [${bar}] ${done}/${total}`)
+  process.stdout.write(`\r[strava] ${label.padEnd(8)} [${bar}] ${done}/${total}`)
   if (done >= total) process.stdout.write('\n')
 }
 
@@ -259,6 +276,13 @@ async function main(): Promise<void> {
     await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
     await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   }
+  let writing: Promise<void> | null = null
+  const checkpoint = (): void => {
+    if (writing) return
+    writing = writeCache().finally(() => {
+      writing = null
+    })
+  }
 
   const fetchedZones = await fetchZones(access)
   if (fetchedZones) zones = fetchedZones
@@ -272,12 +296,12 @@ async function main(): Promise<void> {
     })
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
   let si = 0
-  for (const a of needStreams) {
+  await mapPool(needStreams, CONCURRENCY, async a => {
     const s = await fetchStreams(access, a.id)
     if (s) streams[String(a.id)] = s
     progress('streams', ++si, needStreams.length)
-    if (si % 8 === 0) await writeCache()
-  }
+    if (si % 16 === 0) checkpoint()
+  })
 
   const needGeo = Object.values(merged).filter(a => {
     const s = streams[String(a.id)]
@@ -294,20 +318,21 @@ async function main(): Promise<void> {
     const city = await fetchCity(s.latlng[0][0], s.latlng[0][1])
     if (city) geo[String(a.id)] = city
     progress('geocode', ++gi, needGeo.length)
-    if (gi % 8 === 0) await writeCache()
+    if (gi % 8 === 0) checkpoint()
   }
 
   const needCalories = Object.values(merged)
     .filter(a => normalizeSport(a.sportType) !== null && a.calories === undefined)
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
   let ci = 0
-  for (const a of needCalories) {
+  await mapPool(needCalories, CONCURRENCY, async a => {
     const cal = await fetchActivityCalories(access, a.id)
     if (cal != null) merged[String(a.id)].calories = cal
     progress('calories', ++ci, needCalories.length)
-    if (ci % 8 === 0) await writeCache()
-  }
+    if (ci % 16 === 0) checkpoint()
+  })
 
+  if (writing) await writing
   await writeCache()
   const withCalories = Object.values(merged).filter(a => a.calories != null).length
   console.log(

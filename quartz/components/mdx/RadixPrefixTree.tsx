@@ -219,7 +219,7 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
       <aside class="rpt-prompts" aria-label="Request panel">
         <span
           class="rpt-card-title"
-          dangerouslySetInnerHTML={{ __html: tex('\\textbf{incoming requests}') }}
+          dangerouslySetInnerHTML={{ __html: tex('\\text{incoming requests}') }}
         />
         <ol class="rpt-prompt-list" role="list">
           {PROMPTS.map(p => (
@@ -340,7 +340,10 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
 
       <aside class="rpt-side">
         <div class="rpt-card">
-          <span dangerouslySetInnerHTML={{ __html: tex('\\textbf{live readout}') }} />
+          <span
+            class="rpt-card-title"
+            dangerouslySetInnerHTML={{ __html: tex('\\text{live readout}') }}
+          />
           <dl class="rpt-stats">
             {STATS.map(s => (
               <div key={s.key}>
@@ -352,7 +355,10 @@ const RadixPrefixTreeImpl: QuartzMdxComponent<Props> = ({ caption }) => (
         </div>
 
         <div class="rpt-card">
-          <span dangerouslySetInnerHTML={{ __html: tex('\\textbf{DFS lower bound}') }} />
+          <span
+            class="rpt-card-title"
+            dangerouslySetInnerHTML={{ __html: tex('\\text{DFS lower bound}') }}
+          />
           <M t="C \ge \sum_{e \in \text{edges}(T)} |e|" d cls="rpt-math rpt-math--display" />
           <p>
             Longest-shared-prefix-first scheduling = DFS over <M t="T" />, which touches each edge

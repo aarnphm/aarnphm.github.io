@@ -512,21 +512,22 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
               <em>rearranges</em> the <MathLabel tex="d_m" /> budget.
             </span>
           </div>
-
-          <div class="mha-equation">
-            <MathLabel
-              tex="\text{MHA}(x) = \operatorname{concat}(\text{head}_1,\dots,\text{head}_{h})\,W_O"
-              display
-            />
-            <MathLabel
-              tex="\text{head}_i = \operatorname{softmax}\!\left(\tfrac{Q_i K_i^{\top}}{\sqrt{d_h}}\right) V_i"
-              display
-            />
-          </div>
         </aside>
       </div>
 
       <div class="mha-controls" role="group" aria-label="MHA configuration">
+        <div class="mha-control mha-control--toggle">
+          <button
+            type="button"
+            class="mha-toggle is-active"
+            data-mha-pattern-toggle
+            aria-pressed="true"
+          >
+            <span class="mha-toggle-dot" aria-hidden="true" />
+            <span class="mha-toggle-label">show per-head attention pattern</span>
+          </button>
+        </div>
+        <div class="mha-control-divider" aria-hidden="true" />
         <div class="mha-control mha-control--slider">
           <label class="mha-label" for="mha-heads-slider">
             heads <MathLabel tex="h" />
@@ -551,14 +552,14 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
             dangerouslySetInnerHTML={{ __html: renderMath(`h = ${initialH}`) }}
           />
           <div class="mha-tick-strip" data-mha-tick-strip>
-            {HEAD_OPTIONS.map(h => (
+            {HEAD_OPTIONS.map((h, i) => (
               <span
                 class="mha-tick"
                 data-mha-tick={String(h)}
                 data-mha-active={h === initialH ? 'true' : 'false'}
-              >
-                {h}
-              </span>
+                style={`--mha-frac:${i / (HEAD_OPTIONS.length - 1)}`}
+                dangerouslySetInnerHTML={{ __html: renderMath(String(h)) }}
+              />
             ))}
           </div>
         </div>
@@ -567,29 +568,28 @@ const MultiHeadAttentionImpl: QuartzMdxComponent<Props> = ({ caption, heads = DE
           <label class="mha-label" for="mha-dm-input">
             model dim <MathLabel tex="d_m" />
           </label>
-          <input
-            id="mha-dm-input"
-            class="mha-num"
-            type="number"
-            min="64"
-            max="16384"
-            step="64"
-            value={DEFAULT_DM}
-            data-mha-dm-input
-            inputmode="numeric"
-          />
-        </div>
-
-        <div class="mha-control mha-control--toggle">
-          <button
-            type="button"
-            class="mha-toggle is-active"
-            data-mha-pattern-toggle
-            aria-pressed="true"
-          >
-            <span class="mha-toggle-dot" aria-hidden="true" />
-            <span class="mha-toggle-label">show per-head attention pattern</span>
-          </button>
+          <div class="mha-num-wrap">
+            <span
+              class="mha-num-value"
+              data-mha-dm-value
+              role="button"
+              tabindex={0}
+              title="click to type a value"
+              dangerouslySetInnerHTML={{ __html: renderMath(String(DEFAULT_DM)) }}
+            />
+            <input
+              id="mha-dm-input"
+              class="mha-num"
+              type="number"
+              min="64"
+              max="16384"
+              step="64"
+              value={DEFAULT_DM}
+              data-mha-dm-input
+              inputmode="numeric"
+              hidden
+            />
+          </div>
         </div>
       </div>
 

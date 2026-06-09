@@ -201,11 +201,11 @@ title: lists
 - quixotic
 - asinine
 - {{sidenotes[semiotic]: the study of signs}}
-- {{sidenotes[chauvinist]: a person who displays an aggressive, unreasonable, and fanatical beelif in the superiority of their own group}}
+- {{sidenotes[chauvinist]: a person who displays an aggressive, unreasonable, and fanatical belief in the superiority of their own group}}
 - peleton
 - domestique
 - fevor
-- {{sidenotes[truculent]: someone who is aggresively self-assertive, defiant, and easily angered}}
+- {{sidenotes[truculent]: someone who is aggressively self-assertive, defiant, and easily angered}}
 - preclude
 - Euler's polyhedron formula
   - $V-E+F$
