@@ -87,6 +87,7 @@ const configuration: GlobalConfiguration = {
     'cmd+/': 'recherche',
     'cmd+\\': "page d'accueil",
     'cmd+j': 'curius',
+    'cmd+g': 'triathlon',
     'cmd+.': 'arena',
     'cmd+i': 'stream',
     'cmd+b': 'lecteur',

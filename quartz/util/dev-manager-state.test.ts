@@ -17,7 +17,7 @@ test('initial build lifecycle starts wrangler once', () => {
 
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'build:start', epoch: 'a', reason: 'initial' }, delayMs),
-    [],
+    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
   )
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'public:remove:start', epoch: 'a' }, delayMs),
@@ -40,7 +40,7 @@ test('source hard rebuild stops then schedules wrangler restart', () => {
 
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'source' }, delayMs),
-    [],
+    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
   )
   assert.deepEqual(
     applyQuartzDevEvent(state, { type: 'public:remove:start', epoch: 'b' }, delayMs),
@@ -50,6 +50,24 @@ test('source hard rebuild stops then schedules wrangler restart', () => {
     applyQuartzDevEvent(
       state,
       { type: 'build:ready', epoch: 'b', files: 10, elapsedMs: 45 },
+      delayMs,
+    ),
+    [{ type: 'schedule-wrangler-start', delayMs }],
+  )
+})
+
+test('content rebuild stops wrangler then schedules restart on ready', () => {
+  const state = readyState('a')
+
+  assert.deepEqual(
+    applyQuartzDevEvent(state, { type: 'build:start', epoch: 'b', reason: 'content' }, delayMs),
+    [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }],
+  )
+  assert.equal(state.quartz, 'building')
+  assert.deepEqual(
+    applyQuartzDevEvent(
+      state,
+      { type: 'build:ready', epoch: 'b', files: 3, elapsedMs: 20 },
       delayMs,
     ),
     [{ type: 'schedule-wrangler-start', delayMs }],

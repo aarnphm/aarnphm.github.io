@@ -597,10 +597,6 @@ img {
   content-visibility: auto;
 }
 
-figure[data-img-w-caption] {
-  margin-bottom: 1.2rem;
-}
-
 p > img + em {
   display: block;
   transform: translateY(-1rem);
@@ -1095,43 +1091,5 @@ iframe.pdf {
 @keyframes showOpacity {
   to {
     opacity: 1;
-  }
-}
-
-#grain {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  pointer-events: none;
-  opacity: 0;
-  animation: showOpacity 1s forwards;
-  animation-delay: 0.5s;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-
-  &:before {
-    content: '';
-    top: -50vh;
-    left: -50vw;
-    width: 200vw;
-    height: 200vh;
-    position: fixed;
-    background-image: url(https://upload.wikimedia.org/wikipedia/commons/5/5c/Image_gaussian_noise_example.png);
-    opacity: 0.1;
-    pointer-events: none;
-    will-change: transform;
-    animation: staticNoise 1s steps(2) infinite;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    transform-style: preserve-3d;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #grain {
-    display: none;
   }
 }

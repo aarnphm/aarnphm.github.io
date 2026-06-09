@@ -79,9 +79,6 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.7.6
         version: 1.7.6
-      '@garmin/fitsdk':
-        specifier: ^21.205.0
-        version: 21.205.0
       '@huggingface/transformers':
         specifier: ^4.2.0
         version: 4.2.0
@@ -1454,9 +1451,6 @@ packages:
 
   '@floating-ui/utils@0.2.11':
     resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
-
-  '@garmin/fitsdk@21.205.0':
-    resolution: {integrity: sha512-oSfiJVQ3BQlNxfc1f7XUBDn8yuHOdiP5jW21p6zjuBq0KPQfXWe6SU66yZdCNYliyBmKcfC3Gjd9osiKfR52Dg==}
 
   '@hono/node-server@1.19.14':
     resolution: {integrity: sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw==}
@@ -7215,8 +7209,6 @@ snapshots:
       '@floating-ui/utils': 0.2.11
 
   '@floating-ui/utils@0.2.11': {}
-
-  '@garmin/fitsdk@21.205.0': {}
 
   '@hono/node-server@1.19.14(hono@4.12.24)':
     dependencies:

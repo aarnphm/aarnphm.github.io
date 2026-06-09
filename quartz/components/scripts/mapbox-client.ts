@@ -20,7 +20,10 @@ async function fetchMapboxToken() {
 }
 
 export function getMapboxToken() {
-  return (mapboxTokenPromise ??= fetchMapboxToken())
+  return (mapboxTokenPromise ??= fetchMapboxToken().then(token => {
+    if (!token) mapboxTokenPromise = null
+    return token
+  }))
 }
 
 export async function loadMapbox() {
@@ -42,7 +45,7 @@ export async function loadMapbox() {
   }
 
   if (!mapboxReady) {
-    mapboxReady = new Promise(resolve => {
+    mapboxReady = new Promise<any | null>(resolve => {
       let script = document.querySelector<HTMLScriptElement>(`script[src="${MAPBOX_SCRIPT_SRC}"]`)
       if (!script) {
         script = document.createElement('script')
@@ -55,6 +58,12 @@ export async function loadMapbox() {
 
       script.addEventListener('load', () => resolve(window.mapboxgl), { once: true })
       script.addEventListener('error', () => resolve(null), { once: true })
+    }).then(mapbox => {
+      if (!mapbox) {
+        mapboxReady = null
+        document.querySelector(`script[src="${MAPBOX_SCRIPT_SRC}"]`)?.remove()
+      }
+      return mapbox
     })
   }
 

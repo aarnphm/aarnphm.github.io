@@ -1036,7 +1036,7 @@
   z-index: 61;
   display: flex;
   flex-direction: column;
-  width: min(44rem, 92vw);
+  width: min(50rem, 92vw);
   height: min(86vh, 820px);
   padding: 0;
   font-family: var(--codeFont);
@@ -1081,6 +1081,10 @@
 
   &::placeholder {
     color: var(--gray);
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
   }
 
   &:focus {
@@ -2089,23 +2093,98 @@
   vector-effect: non-scaling-stroke;
 }
 
-.tri-map--searching .tri-ana-results {
-  display: flex;
+.tri-map-body {
+  position: relative;
+  flex-direction: row;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-.tri-map--detail .tri-ana-detail {
-  display: flex;
+.tri-map-pane {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
-.tri-map--detail .tri-ana-results,
-.tri-map--searching .tri-map-hint,
-.tri-map--detail .tri-map-hint {
+.tri-map-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.tri-map-canvas--down {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  color: var(--gray);
+}
+
+.tri-map-results {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 1.1rem 1.2rem;
+  background: var(--light);
+}
+
+.tri-map-results::-webkit-scrollbar {
   display: none;
 }
 
-.tri-map-hint {
-  font-size: 0.66rem;
-  color: color-mix(in srgb, var(--gray) 85%, transparent);
+.tri-map--searching .tri-map-results {
+  display: flex;
+}
+
+.tri-map--detail .tri-map-results {
+  display: none;
+}
+
+.tri-map-sidebar {
+  flex: 0 0 min(34%, 460px);
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 1rem 1.1rem;
+}
+
+.tri-map-sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.tri-map--detail .tri-map-sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.tri-map--detail .tri-map-pane {
+  border-right: 1px solid var(--lightgray);
+}
+
+.tri-map.tri-map--detail {
+  width: min(72rem, 96vw);
+}
+
+@media all and (max-width: 48rem) {
+  .tri-map.tri-map--detail {
+    width: 96vw;
+  }
+
+  .tri-map--detail .tri-map-body {
+    flex-direction: column;
+  }
+
+  .tri-map--detail .tri-map-pane {
+    flex: 0 0 45%;
+    border-right: 0;
+  }
+
+  .tri-map--detail .tri-map-sidebar {
+    flex: 1 1 auto;
+  }
 }
 
 .tri-map-tablist {

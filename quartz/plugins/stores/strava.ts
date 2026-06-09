@@ -120,6 +120,8 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  lat: number
+  lng: number
 }
 
 export type ActivityHealth = Omit<OuraDaily, 'date'>
@@ -220,6 +222,31 @@ export function normalizeSport(sportType: string): Sport | null {
 export function round(value: number, dp: number): number {
   const f = 10 ** dp
   return Math.round(value * f) / f
+}
+
+export function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const dLat = (lat2 - lat1) * 111320
+  const dLng = (lng2 - lng1) * 111320 * Math.cos((lat1 * Math.PI) / 180)
+  return Math.hypot(dLat, dLng)
+}
+
+function median(xs: number[]): number {
+  if (xs.length === 0) return 0
+  const s = [...xs].sort((p, q) => p - q)
+  const m = Math.floor(s.length / 2)
+  return s.length % 2 === 1 ? s[m] : (s[m - 1] + s[m]) / 2
+}
+
+function homeStart(starts: [number, number][]): [number, number] | null {
+  if (starts.length < 6) return null
+  const seedLat = median(starts.map(p => p[0]))
+  const seedLng = median(starts.map(p => p[1]))
+  const near = starts.filter(p => haversineMeters(p[0], p[1], seedLat, seedLng) <= 200)
+  if (near.length < 6) return null
+  return [
+    near.reduce((s, p) => s + p[0], 0) / near.length,
+    near.reduce((s, p) => s + p[1], 0) / near.length,
+  ]
 }
 
 function cleanAltitude(alt: number[]): number[] {
@@ -409,6 +436,7 @@ function projectDetail(
   garmin: GarminVerification | null,
   hrBounds: number[],
   powerBounds: number[],
+  home: [number, number] | null,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let minAlt = 0
@@ -432,10 +460,24 @@ function projectDetail(
     ascentM = Math.round(ascent)
     descentM = Math.round(descent)
     const n = latlng.length
-    const stride = Math.max(1, Math.ceil(n / 140))
+    let lo0 = 0
+    let hi0 = n - 1
+    if (home) {
+      while (lo0 < n && haversineMeters(latlng[lo0][0], latlng[lo0][1], home[0], home[1]) <= 200)
+        lo0++
+      while (hi0 > lo0 && haversineMeters(latlng[hi0][0], latlng[hi0][1], home[0], home[1]) <= 200)
+        hi0--
+    }
+    if (hi0 - lo0 < 1) {
+      lo0 = 0
+      hi0 = n - 1
+    }
+    const window = hi0 - lo0 + 1
+    const stride = Math.max(1, Math.ceil(window / 140))
     const idx: number[] = []
-    for (let i = 0; i < n; i += stride) idx.push(i)
-    if (idx[idx.length - 1] !== n - 1) idx.push(n - 1)
+    for (let i = lo0; i <= hi0; i += stride) idx.push(i)
+    if (idx[idx.length - 1] !== hi0) idx.push(hi0)
+    const d0 = distance[lo0] ?? 0
     let sumLat = 0
     let sumLng = 0
     for (const i of idx) {
@@ -461,11 +503,13 @@ function projectDetail(
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
-        d: round((distance[i] ?? 0) / 1000, 3),
+        d: round(((distance[i] ?? 0) - d0) / 1000, 3),
         alt: round(alts[k], 1),
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(hrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
+        lat: round(latlng[i][0], 5),
+        lng: round(latlng[i][1], 5),
       })
     })
   }
@@ -609,6 +653,13 @@ export function buildPayload(
       ? derivePowerBounds(ftp)
       : []
 
+  const starts: [number, number][] = []
+  for (const { a } of activities) {
+    const ll = cache.streams?.[String(a.id)]?.latlng
+    if (ll && ll.length >= 2) starts.push([ll[0][0], ll[0][1]])
+  }
+  const home = homeStart(starts)
+
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
     const garminMatch = matchGarminActivity(a, sport, garmin)
@@ -621,6 +672,7 @@ export function buildPayload(
       garminVerification(a, garminMatch),
       hrBounds,
       powerBounds,
+      home,
     )
   }
 
