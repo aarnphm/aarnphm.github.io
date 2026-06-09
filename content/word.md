@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-06 02:30:39 GMT-04:00
+modified: 2026-06-08 23:48:56 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -213,3 +213,4 @@ title: lists
 - {{sidenotes[portmanteau]: In literature, also known in linguistics and lexicography as a blend word, lexical blend, or simply a blend, is a word formed by combining the meanings and parts of the sounds of two or more words.}}
 - {{sidenotes[solipsistic]: the philosophical belief that only one's own mind is sure to exist. In every day language, it can be interpreted as self-centered, self-absorbed}}
 - {{sidenotes[errata]: a list of corrections or errors discovered in a published work}}
+- lingua franca

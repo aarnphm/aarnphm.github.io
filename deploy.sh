@@ -10,7 +10,7 @@ git lfs checkout
 
 export GITHUB_SHA="$(git rev-parse HEAD)"
 
-pnpm clean --lockfile && pnpm i && pnpm health
+pnpm health || exit 1
 
 EMAIL_EMITTER_ENABLED=1 NODE_ENV=production pnpm exec quartz/bootstrap-cli.mjs build --concurrency 16 --bundleInfo --verbose
 

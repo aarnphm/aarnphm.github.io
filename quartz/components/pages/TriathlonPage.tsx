@@ -139,7 +139,10 @@ export default (() => {
   const TriathlonPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
     const payload = fileData.stravaPayload ?? emptyPayload()
     const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
-    const location = String(fileData.frontmatter?.['location'] ?? 'Toronto')
+    const recentLoc = Object.values(payload.details)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .find(d => d.location)?.location
+    const location = String(recentLoc ?? fileData.frontmatter?.['location'] ?? 'Toronto')
     const target = String(fileData.frontmatter?.['triathlon'] ?? '')
     const raceDates = new Set((fileData.tracking?.races ?? []).map(r => r.date))
 
@@ -357,6 +360,14 @@ export default (() => {
             <button class="tri-calc-btn" type="button">
               calculator
             </button>
+            <a
+              class="tri-fuel-btn internal"
+              href="/thoughts/pdfs/triathlon.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              fuel plan
+            </a>
             <a
               class="tri-credit"
               href="https://rauno.me/run"

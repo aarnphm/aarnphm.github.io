@@ -2,7 +2,7 @@
 date: '2025-12-13'
 description: and knowledge diffusion
 id: reading
-modified: 2026-06-05 15:08:26 GMT-04:00
+modified: 2026-06-08 23:52:57 GMT-04:00
 tags:
   - pattern
   - evergreen
@@ -27,6 +27,8 @@ I'm not yet _sure_ how I read. But this is more/less a collection of how people 
 He mentioned the model to be {{sidenotes[_transmissionism_]: according to this [article](https://pmc.ncbi.nlm.nih.gov/articles/PMC6189484), it is a teacher-centred teaching and learning model in which the teacher's role is to design lessons aimed at predetermined goals and to present knowledge and skills in a predetermined order, and the students' tasks are to **passively** a acquire teacher-specified knowledge and skills}}. verbatim:
 
 https://x.com/andy_matuschak/status/1081382567100600321
+
+I found that to [read more](https://borretti.me/article/how-to-read-more) requires somewhat of a concurrent model, where you will incrementally work on 5-10 books at a time. However, this approach is very much succumb to [cognitive overload](https://en.wikipedia.org/wiki/Cognitive_load)
 
 ## how rtq read
 

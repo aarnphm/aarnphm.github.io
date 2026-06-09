@@ -1,6 +1,6 @@
 ---
 date: '2024-01-14'
-description: locust of controls towards certain actions.
+description: locus of controls towards certain actions.
 id: Will
 modified: 2026-06-05 15:08:29 GMT-04:00
 tags:
