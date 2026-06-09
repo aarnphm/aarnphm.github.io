@@ -445,12 +445,9 @@ async function manageWranglerLoop(): Promise<void> {
         wranglerBackoffUntil = Date.now() + WRANGLER_EXIT_BACKOFF_MS
       })
     }
-    const shouldStop =
-      wrangler !== null && (!managerState.publicAvailable || managerState.quartz === 'building')
+    const shouldStop = wrangler !== null && !managerState.publicAvailable
     if (shouldStop) {
-      const reason = !managerState.publicAvailable
-        ? 'stopping wrangler while public directory is missing'
-        : 'stopping wrangler while public is regenerated'
+      const reason = 'stopping wrangler while public directory is missing'
       await stopWrangler(reason)
     }
     await delay(pollIntervalMs)
