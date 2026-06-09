@@ -12,9 +12,9 @@ type Props = { caption?: string; length?: number }
 const MIN_LENGTH = 4
 const MAX_LENGTH = 10
 const DEFAULT_LENGTH = 6
-const DEFAULT_BETA = 6
+const DEFAULT_BETA = 4
 const MIN_BETA = 1
-const MAX_BETA = 20
+const MAX_BETA = 12
 const BETA_STEP = 0.5
 const HEAD_DIM = 4
 
@@ -104,7 +104,10 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
           <div class={`oht-panel ${panel.panel}`} key={panel.key} data-oht-panel={panel.key}>
             <header class="oht-panel-head">
               <span class={`oht-swatch ${panel.swatch}`} aria-hidden="true" />
-              <span class="oht-panel-title">{panel.title}</span>
+              <span
+                class="oht-panel-title"
+                dangerouslySetInnerHTML={{ __html: renderMath(`\\text{${panel.title}}`) }}
+              />
             </header>
             <svg
               class="oht-grid"
@@ -164,12 +167,6 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
       </div>
 
       <div class="oht-readout" data-oht-readout>
-        <div class="oht-formula">
-          <MathLabel
-            display
-            tex="\operatorname{softmax}(A+B) \;\neq\; \operatorname{softmax}(A) + \operatorname{softmax}(B)"
-          />
-        </div>
         <dl class="oht-stats">
           <div class="oht-stat-row">
             <dt>
@@ -209,9 +206,12 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
           </div>
         </dl>
         <p class="oht-note">
-          Two independent normalisers supply two distributions you can recombine with{' '}
-          <MathLabel tex="W_O^{(1)}, W_O^{(2)}" />. One normaliser splits the same mass across both
-          diagonals; no single <MathLabel tex="\tilde W_O" /> closes the gap.
+          Each head runs its own softmax, so <MathLabel tex="P^{(+1)}" /> and{' '}
+          <MathLabel tex="P^{(-1)}" /> are two independent distributions that{' '}
+          <MathLabel tex="W_O^{(1)}, W_O^{(2)}" /> map and sum.
+          <br />
+          The surrogate adds the scores first, leaving one softmax over both offsets, so no{' '}
+          <MathLabel tex="\tilde W_O" /> would be able to recover the pair.
         </p>
       </div>
 
@@ -234,9 +234,11 @@ const OffsetHeadsToyImpl: QuartzMdxComponent<Props> = ({ caption, length = DEFAU
             aria-valuenow={DEFAULT_BETA}
             aria-valuetext={`beta ${DEFAULT_BETA}`}
           />
-          <span class="oht-slider-value" data-oht-beta-value>
-            {DEFAULT_BETA.toFixed(1)}
-          </span>
+          <span
+            class="oht-slider-value"
+            data-oht-beta-value
+            dangerouslySetInnerHTML={{ __html: renderMath(DEFAULT_BETA.toFixed(1)) }}
+          />
         </div>
 
         <div class="oht-control oht-control--toggle">

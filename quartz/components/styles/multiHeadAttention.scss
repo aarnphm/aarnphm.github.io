@@ -361,9 +361,10 @@
 .mha-controls {
   margin-top: 1.1rem;
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.4fr);
-  gap: 0.85rem 1.2rem;
-  align-items: end;
+  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 1fr);
+  column-gap: 1.5rem;
+  row-gap: 0.9rem;
+  align-items: start;
 }
 
 .mha-control {
@@ -373,7 +374,26 @@
   min-width: 0;
 }
 
+.mha-control--toggle {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.mha-control-divider {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  height: 1px;
+  background: color-mix(in srgb, var(--gray) 30%, transparent);
+}
+
+.mha-control--dm {
+  grid-column: 2 / 3;
+  grid-row: 3;
+}
+
 .mha-control--slider {
+  grid-column: 1 / 2;
+  grid-row: 3;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-rows: auto auto;
@@ -427,18 +447,56 @@
 }
 
 .mha-tick-strip {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
+  position: relative;
+  height: 0.95rem;
   font-size: 0.7rem;
   color: var(--mha-note);
-  text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+.mha-tick {
+  position: absolute;
+  top: 0;
+  left: calc(0.5rem + var(--mha-frac, 0) * (100% - 1rem));
+  transform: translateX(-50%);
+  white-space: nowrap;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .mha-tick[data-mha-active='true'] {
   color: var(--dark);
   font-weight: 600;
+}
+
+.mha-num-wrap {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.mha-num-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  cursor: pointer;
+
+  &[hidden] {
+    display: none;
+  }
+  &:hover,
+  &:focus-visible {
+    color: var(--mha-accent-edge);
+    outline: none;
+  }
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .mha-num {
@@ -452,6 +510,10 @@
   font-variant-numeric: tabular-nums;
   min-width: 0;
   width: 100%;
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .mha-num:focus-visible {
@@ -473,21 +535,16 @@
   cursor: pointer;
   transition:
     background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
-}
+    color 160ms ease;
 
-.mha-toggle:hover {
-  color: var(--dark);
-}
+  &:hover {
+    color: var(--dark);
+  }
 
-.mha-toggle:active {
-  transform: scale(0.96);
-}
-
-.mha-toggle.is-active {
-  background: color-mix(in srgb, var(--mha-salmon) 18%, var(--light));
-  color: var(--dark);
+  &.is-active {
+    background: color-mix(in srgb, var(--mha-salmon) 18%, var(--light));
+    color: var(--dark);
+  }
 }
 
 .mha-toggle-dot {
@@ -530,6 +587,13 @@
   }
   .mha-controls {
     grid-template-columns: 1fr;
+  }
+  .mha-control--toggle,
+  .mha-control-divider,
+  .mha-control--slider,
+  .mha-control--dm {
+    grid-column: 1 / -1;
+    grid-row: auto;
   }
 }
 

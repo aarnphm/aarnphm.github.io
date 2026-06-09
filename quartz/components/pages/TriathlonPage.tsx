@@ -44,6 +44,24 @@ const swimMi = (p: string): string => {
   const secMi = Math.round((Number(m) * 60 + Number(s)) * 16.0934)
   return `${Math.floor(secMi / 60)}:${(secMi % 60).toString().padStart(2, '0')}`
 }
+const runKmh = (mi: string): string => {
+  const [m = '0', s = '0'] = mi.split(':')
+  const minPerMi = Number(m) + Number(s) / 60
+  return minPerMi > 0 ? (60 / minPerMi / KM_TO_MI).toFixed(1) : '0'
+}
+const swimKmh = (p: string): string => {
+  const [m = '0', s = '0'] = p.split(':')
+  const sec = Number(m) * 60 + Number(s)
+  return sec > 0 ? ((100 / sec) * 3.6).toFixed(1) : '0'
+}
+const BIKE_KMH = [25, 28, 30, 32, 35, 38, 40, 45]
+const kmhToMph = (kmh: number): string => (kmh * KM_TO_MI).toFixed(1)
+const clockFromSec = (sec: number): string => {
+  const s = Math.round(sec)
+  return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
+}
+const bikePaceKm = (kmh: number): string => clockFromSec(3600 / kmh)
+const bikePaceMi = (kmh: number): string => clockFromSec(3600 / (kmh * KM_TO_MI))
 
 const CONVERSIONS: [string, string][] = [
   ['pace', '/100m × 16.09 → /mi'],
@@ -278,22 +296,57 @@ export default (() => {
                 <div class="tri-pace-row tri-pace-head">
                   <span>/mi</span>
                   <span>/km</span>
+                  <button class="tri-pace-unit" type="button">
+                    km/h
+                  </button>
                 </div>
-                {PACE_MI.map(mi => (
-                  <div class="tri-pace-row">
-                    <span class="tri-pace-mi">{mi}</span>
-                    <span class="tri-pace-km">{paceKm(mi)}</span>
-                  </div>
-                ))}
+                {PACE_MI.map(mi => {
+                  const k = runKmh(mi)
+                  return (
+                    <div class="tri-pace-row">
+                      <span class="tri-pace-mi">{mi}</span>
+                      <span class="tri-pace-km">{paceKm(mi)}</span>
+                      <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
+                        {k}
+                      </span>
+                    </div>
+                  )
+                })}
                 <span class="tri-pace-sec">swim</span>
                 <div class="tri-pace-row tri-pace-head">
                   <span>/100m</span>
                   <span>/mi</span>
+                  <button class="tri-pace-unit" type="button">
+                    km/h
+                  </button>
                 </div>
-                {SWIM_100.map(p => (
+                {SWIM_100.map(p => {
+                  const k = swimKmh(p)
+                  return (
+                    <div class="tri-pace-row">
+                      <span class="tri-pace-mi">{p}</span>
+                      <span class="tri-pace-km">{swimMi(p)}</span>
+                      <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
+                        {k}
+                      </span>
+                    </div>
+                  )
+                })}
+                <span class="tri-pace-sec">bike</span>
+                <div class="tri-pace-row tri-pace-head">
+                  <span>/mi</span>
+                  <span>/km</span>
+                  <button class="tri-pace-unit" type="button">
+                    km/h
+                  </button>
+                </div>
+                {BIKE_KMH.map(kmh => (
                   <div class="tri-pace-row">
-                    <span class="tri-pace-mi">{p}</span>
-                    <span class="tri-pace-km">{swimMi(p)}</span>
+                    <span class="tri-pace-mi">{bikePaceMi(kmh)}</span>
+                    <span class="tri-pace-km">{bikePaceKm(kmh)}</span>
+                    <span class="tri-pace-spd" data-kph={kmh} data-mph={kmhToMph(kmh)}>
+                      {kmh}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -448,7 +501,7 @@ export default (() => {
             <input
               class="tri-ana-search"
               type="search"
-              placeholder="search metrics & activities"
+              placeholder="search (filter:bike|run|swim, sort:distance|cadence|pace)"
               aria-label="search analytics"
               autocomplete="off"
             />

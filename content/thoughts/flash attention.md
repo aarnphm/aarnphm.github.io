@@ -128,11 +128,11 @@ We will first go into motivation of stable softmax, and the ingenious tricks of 
 > \operatorname{softmax}(z)_i = \frac{e^{z_i}}{\sum_j e^{z_j}}
 > $$
 
-Now, with IEEE7554 and quirky computer representation of integer we know that with 32-bit floating point, the maximum representable value is $(2 - 2^{-23})\times 2^{127}$.
+Now, with IEEE 754 and quirky computer representation of integer we know that with 32-bit floating point, the maximum representable value is $(2 - 2^{-23})\times 2^{127}$.
 
 Since $e^{x} = 2^{x \log_2 e}$, we will very much reach {{sidenotes[overflows]: $e^{x_i}$ exceeds the FP16 ceiling ($\approx 65504$) once $x_i > 11$, and FP32 near $x_i \approx 88$.}} at certain $x_i$ for any logit vector $x \in \mathbb{R}^{V}$!!
 
-A trick to address this overflow is often referred to as the _safe-softmax_ implementation, where we subtract the maximum value vector from every element before expontent
+A trick to address this overflow is often referred to as the _safe-softmax_ implementation, where we subtract the maximum value vector from every element before exponentiating
 
 > [!propos] safe-softmax
 >
@@ -142,10 +142,10 @@ A trick to address this overflow is often referred to as the _safe-softmax_ impl
 > y_i = \frac{e^{x_i - m_V}}{\sum_{j=1}^{V} e^{x_j - m_V}},\;\;m_V = \max_{k} x_k
 > $$
 
-Looking at this equation, one might notice that it will takes us ::three passes:: over $x$:
+Looking at this equation, one might notice that it takes us ::three passes:: over $x$:
 
 - for the maximum $m_V$
-- the denominator $\ell_v = \sum_j e^{x_j - m_V}$
+- the denominator $\ell_V = \sum_j e^{x_j - m_V}$
 - normalize (the factor)
 
 > The denominator pass is blocked on the maximum pass, because $\ell_V$ subtracts the _global_ $m_V$, which is unknown until the first pass finishes.

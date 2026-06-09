@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-07 09:02:28 GMT-04:00
+modified: 2026-06-08 20:55:13 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1271,6 +1271,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/users/jsteinhardt -- Jacob Steinhardt
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [researcher, ai safety]
+    - later: true
 - https://en.wikipedia.org/wiki/Ernst_Zermelo -- Ernst Zermelo
   - [meta]:
     - date: 06/04/2026
@@ -2486,6 +2491,30 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.gleech.org/enhance -- Transnormalism
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [humanism, longtermism]
+- https://www.lesswrong.com/posts/M2bs6xCbmc79nwr8j/dmitry-vaintrob-s-shortform -- Dmitry Vaintrob's Shortform
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [shortform, rationality]
+    - later: true
+- https://www.lesswrong.com/posts/kqxEJkq5Big9nNKxy/beyond-kolmogorov-and-shannon -- Beyond Kolmogorov and Shannon
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [information-theory, epistemology]
+    - later: true
+- https://www.lesswrong.com/posts/WRaq4SzxhunLoFKCs/2023-survey-results#IV__Politics_and_Religion -- 2023 Survey Results
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [survey, community]
+    - later: true
+- https://www.lesswrong.com/posts/fwQburGDyGoSSweT9/you-will-be-ok -- You will be OK
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [ai, resilience]
+    - later: true
 - https://idlewords.com/2005/04/dabblers_and_blowhards.htm -- Dabblers And Blowhards
   - [meta]:
     - date: 06/06/2026
@@ -4585,6 +4614,35 @@ title: are.na
   - view: list
   - json: true
 
+- https://web.archive.org/web/20260519133855/https://rosmine.ai/2026/05/18/fixing-llm-writing-with-distribution-fine-tuning/ -- Fixing LLM writing with Distribution Fine Tuning
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [writing, sft]
+    - seealso: https://dft.rosmine.ai/
+- https://www.goodfire.ai/research/can-saes-capture-neural-geometry -- Can SAEs Capture Neural Geometry? [**]
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [interpretability, ml]
+    - pinned: true
+- https://docs.pytorch.org/devlogs/eager/2026-06-01-cuda-caching-allocator/ -- When does fragmentation occur in the CUDA caching allocator?
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [engine, pytorch]
+- https://www.lesswrong.com/posts/9GyniEBaN3YYTqZXn/the-self-unalignment-problem -- The self-unalignment problem
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [alignment, agency]
+    - later: true
+- https://www.lesswrong.com/posts/qkhwh4AdG7kXgELCD/scalable-end-to-end-interpretability -- Scalable End-to-End Interpretability
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [interpretability, ai safety]
+    - later: true
+- https://www.lesswrong.com/posts/Hy6PX43HGgmfiTaKu/an-ambitious-vision-for-interpretability -- An Ambitious Vision for Interpretability
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [interpretability, ai safety]
+    - later: true
 - https://political-manipulation.ai/ -- Reducing Political Manipulation with Consistency Training
   - [meta]:
     - date: 06/06/2026
@@ -6122,6 +6180,11 @@ title: are.na
 
 ## life is literature
 
+- https://www.derekthompson.org/p/three-reasons-to-be-a-parent -- On being a Dad
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [family, kids]
+    - importance: 8
 - https://borretti.me/article/effective-spaced-repetition -- Effective spaced repetition
   - [meta]:
     - date: 06/06/2026
@@ -6692,6 +6755,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/w/instrumental-convergence -- Instrumental convergence
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [ai safety, rationality]
+    - later: true
 - https://en.wikipedia.org/wiki/Tall_poppy_syndrome -- Tall poppy syndrome
   - [meta]:
     - date: 06/05/2026
@@ -7643,6 +7711,10 @@ title: are.na
 
 ## finances
 
+- https://simonwillison.net/2026/May/27/product-market-fit/ -- PMF for Anthropic/OpenAI
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [tokens]
 - https://www.sec.gov/Archives/edgar/data/1181412/000162828026036936/spaceexplorationtechnologi.htm -- SpaceX IPO filing
   - [meta]:
     - date: 05/25/2026
@@ -9138,6 +9210,195 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/ryoppippi/ccusage -- Token Usage
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [agents]
+- https://github.com/vllm-project/vllm/pull/37160/changes -- vLLM CPU KV cache offloading PR
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [kv, offloading]
+    - later: true
+- https://github.com/ovg-project/kvcached -- ovg-project/kvcached
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [kv, virtualization]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/39446/changes -- vLLM parse_delta streaming parser refactor
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [vllm, parser]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/39728 -- vLLM parse_delta simplification
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [vllm, parser]
+    - later: true
+- https://github.com/stas00/the-art-of-debugging/blob/master/pytorch/README.md#auto-dumping-desired-tensor-attributes -- PyTorch tensor attribute auto-dumping
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [debugging, pytorch]
+    - later: true
+- https://github.com/xl0/lovely-tensors/ -- lovely-tensors
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [pytorch, visualization]
+    - later: true
+- https://github.com/LaurieWired/tailslayer/blob/main/README.md -- TailSlayer README
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [latency, memory]
+    - later: true
+- https://github.com/copilot/c/4a332a3a-f088-4de2-bea5-2ec5fac400ce -- Copilot coding session 4a332a3a
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [agents, coding]
+    - later: true
+- https://github.com/karpathy/autoresearch/blob/master/program.md -- autoresearch program
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [agents, research]
+    - later: true
+- https://github.com/flashinfer-ai/flashinfer-bench -- flashinfer-bench
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [benchmark, inference]
+    - later: true
+- https://github.com/deepseek-ai/DeepGEMM/pull/304 -- DeepGEMM Mega MoE and FP4 indexer PR
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [gemm, moe]
+    - later: true
+- https://github.com/GeeeekExplorer/nano-vllm -- nano-vllm
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [inference, llm]
+    - later: true
+- https://github.com/cloudflare/pingora -- Pingora
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [networking, rust]
+    - later: true
+- https://github.com/modularml/modular -- Modular
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [mojo, max]
+    - later: true
+- https://github.com/safety-research/petri/blob/main/src/petri/scorers/judge.py -- PETRI judge scorer
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [evals, alignment]
+    - later: true
+- https://github.com/mlc-ai/xgrammar/blob/main/cpp/earley_parser.cc -- xgrammar Earley parser
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [structured-outputs, parser]
+    - later: true
+- https://github.com/triton-lang/triton/blob/main/lib/Dialect/TritonInstrument/Transforms/FpSanitizer.cpp -- Triton FPSanitizer transform
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [triton, sanitizer]
+    - later: true
+- https://github.com/triton-lang/triton/pull/10177 -- Triton FPSAN docs PR
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [triton, sanitizer]
+    - later: true
+- https://github.com/UKPLab/tmlr2026-manifold-analysis -- TMLR 2026 manifold analysis
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [manifolds, interpretability]
+    - later: true
+- https://github.com/ruipeterpan/marconi -- Marconi prefix caching
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [prefix-caching, inference]
+    - later: true
+- https://gist.github.com/aparente/e48c353755958621b3c0004593105a90 -- tufte-viz Claude Code skill
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [visualization, skills]
+    - later: true
+- https://github.com/folke/todo-comments.nvim -- todo-comments.nvim
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [neovim, plugin]
+    - later: true
+- https://github.com/vllm-project/vllm/tree/main/vllm/renderers -- vLLM renderers
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [vllm, templates]
+    - later: true
+- https://github.com/nuvic/flexoki-nvim/blob/main/lua/flexoki.lua -- flexoki-nvim color scheme
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [neovim, colors]
+    - later: true
+- https://github.com/lukas-reineke/cbfmt -- cbfmt
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [markdown, formatter]
+    - later: true
+- https://github.com/jackyzha0/quartz/blob/v5/quartz.lock.json -- Quartz v5 lockfile
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [quartz, dependencies]
+    - later: true
+- https://github.com/google/afl -- American Fuzzy Lop
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [fuzzing, security]
+    - later: true
+- https://github.com/pierrecomputer/pierre/blob/main/packages/trees/src/render/FileTree.ts -- pierre FileTree renderer
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [file-tree, ui]
+    - later: true
+- https://github.com/Yifei-Zuo/Parallax/ -- Parallax
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [attention, architecture]
+    - later: true
+- https://github.com/russellromney/honker -- honker
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [sqlite, pubsub]
+    - later: true
+- https://github.com/SWE-agent/mini-swe-agent?curius=5775 -- mini-swe-agent
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [agents, cli]
+    - later: true
+- https://github.com/ai-dynamo/frontend-crates/tree/main/parsers -- Dynamo frontend parsers
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [parser, inference]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/rust/src/tool-parser/src/qwen_coder.rs -- vLLM Qwen Coder tool parser
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [vllm, parser]
+    - later: true
+- https://github.com/modularml/mammoth/pull/3321 -- Mammoth tokenizer subsystem rewrite PR
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [tokenizer, max]
+    - later: true
+- https://github.com/modularml/modular/pull/86427/changes#diff-0a17e0d187ae85d6197018d02acd3ff76f7692668c3cd33b0b154ad49bd6a70c -- Modular Kimi K2.5 Mojo BPE PR
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [tokenizer, mojo]
+    - later: true
+- https://github.com/rust-lang/regex/blob/master/regex-automata/src/lib.rs -- regex-automata lib.rs
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [regex, rust]
+    - later: true
+- https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-mechanism-of-optimization -- FSRS mechanism of optimization
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [spaced-repetition, optimization]
+    - later: true
 - https://github.com/kvcache-ai/ktransformers/blob/main/doc/en/Kimi-K2.5.md -- Running Kimi-K2.5 with SGLang and KT-Kernel
   - [meta]:
     - date: 06/07/2026
@@ -9982,6 +10243,24 @@ title: are.na
 
 ## engineering
 
+- https://www.buchodi.com/meta-glasses-facial-recognition/ -- Meta's smart glasses companion app ships a complete, dormant face-recognition pipeline on a stock account
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [products, models, vlm]
+- https://replit.com/canvas -- Replit Canvas
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [engineering]
+- https://ramp.com/leading-indicators/the-art-of-hiring-insights -- The art of Hiring at Ramp
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [people, skills]
+- https://www.shihaocao.com/builds/telemetry -- Race Car Telemetry [**]
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [automation, hardware]
+    - pinned: true
+    - seealso: https://jzhao.xyz/posts/24h-lemons-telem
 - https://9p.io/plan9/index.html -- Plan 9 from Bell Labs
   - [meta]:
     - date: 06/04/2026
@@ -10772,6 +11051,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://ncatlab.org/nlab/show/homotopy+theory -- Homotopy Theory
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [math, topology]
+    - later: true
 - https://en.wikipedia.org/wiki/De_Finetti%27s_theorem -- De Finetti's theorem
   - [meta]:
     - date: 06/05/2026

@@ -48,10 +48,14 @@
 }
 
 .pkt-col-head {
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  text-transform: uppercase;
   color: var(--pkt-note-fg);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .pkt-seqs {
@@ -290,7 +294,7 @@
 .pkt-side {
   margin: 1.25rem auto 0;
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 0.85rem;
   align-items: stretch;
   max-width: 76rem;
@@ -307,9 +311,14 @@
 
   h4 {
     margin: 0;
-    font-size: 0.72rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--pkt-note-fg);
+
+    .katex {
+      font-size: 1em;
+      color: inherit;
+    }
   }
 
   &--reset {
@@ -458,9 +467,6 @@
   }
   .pkt-side {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-  .pkt-card--reset {
-    grid-column: 1 / -1;
   }
 }
 

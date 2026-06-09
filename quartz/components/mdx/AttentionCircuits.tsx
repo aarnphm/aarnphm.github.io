@@ -135,53 +135,50 @@ const CircuitPanel: FunctionalComponent = () => {
       aria-label="Circuit decomposition: x_j weighted by a_ij (QK circuit) then transformed by W_V W_O (OV circuit)."
     >
       <ArrowDefs id={CIR_ARROW} />
-      {Array.from({ length: 4 }, (_, idx) => {
-        const y = 90 + idx * 60
-        const label = idx === 3 ? 'i' : String(idx)
-        return (
-          <g>
-            <rect
-              class="acir-box acir-box--input"
-              x={18}
-              y={y - 14}
-              width={44}
-              height={28}
-              rx={4}
-            />
-            <Fo x={18} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
-            <path class="acir-line" d={`M 62 ${y} L 106 ${y}`} marker-end={arr} />
-          </g>
-        )
-      })}
+      {[
+        { label: '0', y: 105 },
+        { label: '1', y: 155 },
+        { label: '2', y: 205 },
+        { label: 'i', y: 305 },
+      ].map(({ label, y }) => (
+        <g>
+          <rect class="acir-box acir-box--input" x={18} y={y - 14} width={44} height={28} rx={4} />
+          <Fo x={18} y={y - 14} w={44} h={28} t={`x_{${label}}`} cls="acir-fo--sm" />
+          <path class="acir-line" d={`M 62 ${y} L 106 ${y}`} marker-end={arr} />
+        </g>
+      ))}
+      <Fo x={18} y={247} w={44} h={16} t={math`\vdots`} cls="acir-fo--label" />
       <g class="acir-aij" data-acir-circuit="qk">
+        <Fo x={102} y={56} w={72} h={20} t="a^{l,h}_{ij}" cls="acir-fo--sm" />
         <rect class="acir-box acir-box--qk-pattern" x={110} y={80} width={56} height={250} rx={4} />
-        <Fo x={110} y={82} w={56} h={26} t="a^{l,h}_{ij}" cls="acir-fo--sm" />
-        {Array.from({ length: 4 }, (_, idx) => (
+        {[91, 141, 191, 291].map((y, idx) => (
           <rect
             class="acir-aij-bar"
             x={122}
-            y={120 + idx * 50}
+            y={y}
             width={32}
             height={28}
             rx={2}
-            style={{ opacity: 0.85 - idx * 0.18 }}
+            style={{ opacity: 0.85 - idx * 0.11 }}
           />
         ))}
+        <Fo x={122} y={247} w={32} h={18} t={math`\vdots`} cls="acir-fo--qk-label" />
         <Fo
           x={110}
-          y={303}
+          y={338}
           w={56}
-          h={22}
+          h={20}
           t={math`\text{QK}`}
           cls="acir-fo--label acir-fo--qk-label"
         />
       </g>
       <g data-acir-circuit="ov">
         <g data-acir-ov-split>
-          <rect class="acir-box acir-box--weight" x={200} y={165} width={56} height={40} rx={4} />
-          <Fo x={200} y={165} w={56} h={40} t="W_V" />
-          <rect class="acir-box acir-box--weight" x={200} y={205} width={56} height={40} rx={4} />
-          <Fo x={200} y={205} w={56} h={40} t="W_O" />
+          <rect class="acir-box acir-box--weight" x={200} y={160} width={56} height={36} rx={4} />
+          <Fo x={200} y={160} w={56} h={36} t="W_V" />
+          <Fo x={200} y={198} w={56} h={14} t={math`\cdot`} cls="acir-fo--sm" />
+          <rect class="acir-box acir-box--weight" x={200} y={214} width={56} height={36} rx={4} />
+          <Fo x={200} y={214} w={56} h={36} t="W_O" />
         </g>
         <g data-acir-ov-rank hidden>
           <rect class="acir-box acir-box--ov-rank" x={200} y={170} width={56} height={70} rx={4} />
@@ -268,11 +265,17 @@ const AttentionCircuitsImpl: QuartzMdxComponent<Props> = ({ caption }) => (
     <Controls />
     <div class="acir-panels">
       <section class="acir-panel" data-acir-panel="standard">
-        <h4 class="acir-panel-title">standard view</h4>
+        <span
+          class="acir-panel-title"
+          dangerouslySetInnerHTML={{ __html: tex('\\text{standard view}') }}
+        />
         <StandardPanel />
       </section>
       <section class="acir-panel" data-acir-panel="circuit">
-        <h4 class="acir-panel-title">circuit decomposition</h4>
+        <span
+          class="acir-panel-title"
+          dangerouslySetInnerHTML={{ __html: tex('\\text{circuit decomposition}') }}
+        />
         <CircuitPanel />
       </section>
     </div>

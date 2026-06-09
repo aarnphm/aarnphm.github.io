@@ -131,7 +131,6 @@ const config: QuartzConfig = {
       Plugin.JsonCanvas(),
       Plugin.Tracking(),
       Plugin.ObsidianFlavoredMarkdown(),
-      Plugin.Audio(),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.CrawlLinks({
         markdownLinkResolution: 'absolute',
@@ -239,7 +238,7 @@ const config: QuartzConfig = {
             'thoughts/Transformers',
             'thoughts/Camus',
             'thoughts/Attention',
-            'thoughts/Philosophy and Nietzsche',
+            'thoughts/Sets',
             'thoughts/ethics',
             'thoughts/PD disaggregated serving',
             'thoughts/topology',

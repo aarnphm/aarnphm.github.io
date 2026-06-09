@@ -63,13 +63,7 @@ const ohtMatmul = (a: OhtMatrix, b: OhtMatrix): OhtMatrix => {
 }
 
 const ohtAddMatrix = (a: OhtMatrix, b: OhtMatrix): OhtMatrix =>
-  a.map((row, i) =>
-    row.map((aij, j) => {
-      const aa = aij < -1e8 ? -1e9 : aij
-      const bb = b[i][j] < -1e8 ? -1e9 : b[i][j]
-      return aa + bb
-    }),
-  )
+  a.map((row, i) => row.map((aij, j) => aij + b[i][j]))
 
 const ohtFrobeniusDiff = (a: OhtMatrix, b: OhtMatrix): number => {
   let total = 0
@@ -92,7 +86,7 @@ const ohtFrobenius = (a: OhtMatrix): number => {
 
 const ohtBuildOffsetScores = (L: number, offset: number, beta: number): OhtMatrix =>
   Array.from({ length: L }, (_, i) =>
-    Array.from({ length: L }, (_, j) => (j === i + offset ? beta : -1e9)),
+    Array.from({ length: L }, (_, j) => (j === i + offset ? beta : 0)),
   )
 
 const ohtTranspose = (a: OhtMatrix): OhtMatrix => {
@@ -268,7 +262,7 @@ const ohtRender = (root: HTMLElement, state: OhtState) => {
   if (seedEl) seedEl.innerHTML = ohtTex(String(state.seed))
 
   const betaValue = root.querySelector('[data-oht-beta-value]')
-  if (betaValue) betaValue.textContent = state.beta.toFixed(1)
+  if (betaValue) betaValue.innerHTML = ohtTex(state.beta.toFixed(1))
   const betaInput = root.querySelector<HTMLInputElement>('[data-oht-beta-input]')
   if (betaInput) {
     betaInput.setAttribute('aria-valuenow', String(state.beta))
@@ -292,7 +286,7 @@ const ohtSetupRoot = (root: HTMLElement) => {
   root.dataset.ohtBound = 'true'
 
   const L = Number(root.dataset.ohtLength ?? '6')
-  let beta = Number(root.dataset.ohtBeta ?? '6')
+  let beta = Number(root.dataset.ohtBeta ?? '4')
   let seed = Number(root.dataset.ohtSeed ?? '1')
   let mode: 'independent' | 'forced' = root.dataset.ohtMode === 'forced' ? 'forced' : 'independent'
 

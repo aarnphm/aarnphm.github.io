@@ -93,10 +93,41 @@
   min-width: 5ch;
   text-align: right;
   color: var(--dark);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--acc-salmon-edge);
+    outline: none;
+  }
 
   .katex {
     font-size: 1em;
     color: inherit;
+  }
+}
+
+.acc-value-edit {
+  grid-column: 2 / 3;
+  justify-self: end;
+  width: 5.5ch;
+  font-family: var(--codeFont, ui-monospace, monospace);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding: 0.05rem 0.25rem;
+  border: 1px solid var(--acc-salmon-edge);
+  border-radius: var(--radius-none);
+  background: var(--light);
+  color: var(--dark);
+
+  &[hidden] {
+    display: none;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--acc-salmon);
+    outline-offset: 1px;
   }
 }
 
@@ -260,9 +291,6 @@
 .acc-bar-fill--kv {
   background: color-mix(in srgb, var(--acc-salmon) 78%, var(--dark));
 }
-.acc-bar-fill--params {
-  background: color-mix(in srgb, var(--acc-sage) 55%, var(--lightgray));
-}
 
 .acc-bar-val {
   text-align: right;
@@ -284,15 +312,39 @@
   font-size: 0.85rem;
   line-height: 1.5;
   font-variant-numeric: tabular-nums;
-  strong {
-    color: var(--acc-salmon-edge);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
+}
+
+.acc-summary-table {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 1.5rem;
+  row-gap: 0.2rem;
+  width: fit-content;
+  margin: 0 0 0.5rem;
+}
+
+.acc-summary-row {
+  display: contents;
+
+  dt {
+    margin: 0;
+    color: var(--acc-note);
+  }
+  dd {
+    margin: 0;
     font-weight: 600;
+    color: var(--acc-salmon-edge);
   }
 }
 
 .acc-summary-hint {
   display: block;
-  margin-top: 0.3rem;
+  margin: 0;
   color: var(--acc-note);
   font-size: 0.78rem;
   font-variant-numeric: normal;

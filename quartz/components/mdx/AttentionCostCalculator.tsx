@@ -58,8 +58,8 @@ const READOUTS: ReadoutCard[] = [
   },
   {
     k: 'ratio',
-    label: 'cache / param weight ratio',
-    formula: '\\frac{B\\,L\\cdot 2\\,\\text{bytes}}{4\\,d_{\\text{model}}}',
+    label: 'cache / weight memory ratio',
+    formula: '\\frac{B\\,L\\,\\text{bytes}}{4\\,d_{\\text{model}}}',
     accent: 'sage',
   },
 ]
@@ -111,6 +111,8 @@ const fmtCount = (n: number): string => {
 
 const initial = { dm: 4096, nl: 32, nh: 32, sl: 4096, bs: 1, dt: 'bf16' as DType }
 
+const WEIGHT_BYTES = 2
+
 const computeInitial = () => {
   const dh = initial.dm / initial.nh
   const bytes = DTYPE_BYTES[initial.dt]
@@ -119,9 +121,10 @@ const computeInitial = () => {
   const kvtok = 2 * initial.dm * bytes
   const ffnParams = initial.nl * 8 * initial.dm * initial.dm
   const kvtotal = initial.bs * initial.sl * initial.nl * 2 * initial.dm * bytes
-  const paramBytes = params * bytes
+  const paramBytes = params * WEIGHT_BYTES
+  const ffnBytes = ffnParams * WEIGHT_BYTES
   const ratio = paramBytes > 0 ? kvtotal / paramBytes : 0
-  return { dh, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes }
+  return { dh, params, flops, kvtok, kvtotal, ratio, ffnParams, paramBytes, ffnBytes }
 }
 
 const init = computeInitial()
@@ -146,12 +149,10 @@ const readoutValue = (k: string): string => {
 }
 
 const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => {
-  const totalParams = Math.max(1, init.params + init.ffnParams)
-  const totalBytes = Math.max(1, init.paramBytes + init.kvtotal)
-  const attnFrac = init.params / totalParams
-  const ffnFrac = init.ffnParams / totalParams
-  const kvFracVsParams = init.kvtotal / totalBytes
-  const paramFracVsKv = init.paramBytes / totalBytes
+  const totalMem = Math.max(1, init.paramBytes + init.ffnBytes + init.kvtotal)
+  const attnFrac = init.paramBytes / totalMem
+  const ffnFrac = init.ffnBytes / totalMem
+  const kvFrac = init.kvtotal / totalMem
 
   return (
     <figure
@@ -185,14 +186,28 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
                 aria-valuenow={s.def}
                 aria-valuetext={`${s.lbl} ${s.def}`}
               />
-              <span class="acc-value" data-acc-value={s.k}>
+              <span
+                class="acc-value"
+                data-acc-value={s.k}
+                role="button"
+                tabindex={0}
+                title="click to type a value"
+              >
                 {s.def}
               </span>
+              <input
+                class="acc-value-edit"
+                type="text"
+                inputmode="numeric"
+                data-acc-edit={s.k}
+                aria-label={`${s.lbl} value`}
+                hidden
+              />
             </div>
           ))}
           <div class="acc-control acc-control--dropdown">
             <label class="acc-label" for="acc-dt">
-              <span class="acc-label-lbl">dtype</span>
+              <span class="acc-label-lbl">kv dtype</span>
             </label>
             <select
               id="acc-dt"
@@ -236,10 +251,10 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
 
       <div
         class="acc-bar"
-        aria-label="relative cost: attention params vs FFN params vs KV cache bytes"
+        aria-label="memory footprint: attention weights vs FFN weights vs KV cache"
       >
         <div class="acc-bar-row">
-          <span class="acc-bar-tag">attn params</span>
+          <span class="acc-bar-tag">attn weights</span>
           <div class="acc-bar-track">
             <span
               class="acc-bar-fill acc-bar-fill--attn"
@@ -248,11 +263,11 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
             />
           </div>
           <span class="acc-bar-val" data-acc-barval="attn">
-            {fmtCount(init.params)}
+            {fmtBytes(init.paramBytes)}
           </span>
         </div>
         <div class="acc-bar-row">
-          <span class="acc-bar-tag">FFN params</span>
+          <span class="acc-bar-tag">FFN weights</span>
           <div class="acc-bar-track">
             <span
               class="acc-bar-fill acc-bar-fill--ffn"
@@ -261,7 +276,7 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
             />
           </div>
           <span class="acc-bar-val" data-acc-barval="ffn">
-            {fmtCount(init.ffnParams)}
+            {fmtBytes(init.ffnBytes)}
           </span>
         </div>
         <div class="acc-bar-row">
@@ -270,12 +285,7 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
             <span
               class="acc-bar-fill acc-bar-fill--kv"
               data-acc-bar="kv"
-              style={`width:${(kvFracVsParams * 100).toFixed(1)}%`}
-            />
-            <span
-              class="acc-bar-fill acc-bar-fill--params"
-              data-acc-bar="paramBytes"
-              style={`width:${(paramFracVsKv * 100).toFixed(1)}%;left:auto;right:0;opacity:.25`}
+              style={`width:${(kvFrac * 100).toFixed(1)}%`}
             />
           </div>
           <span class="acc-bar-val" data-acc-barval="kv">
@@ -284,15 +294,26 @@ const AttentionCostCalculatorImpl: QuartzMdxComponent<Props> = ({ caption }) => 
         </div>
       </div>
 
-      <p class="acc-summary" data-acc-summary>
-        At current config: <strong data-acc-sumkv>{fmtBytes(init.kvtotal)}</strong> KV vs{' '}
-        <strong data-acc-sumparams>{fmtBytes(init.paramBytes)}</strong> attention weights, ratio{' '}
-        <strong data-acc-sumratio>{init.ratio.toFixed(init.ratio >= 10 ? 0 : 2)}x</strong>.{' '}
-        <span class="acc-summary-hint">
+      <div class="acc-summary" data-acc-summary>
+        <dl class="acc-summary-table">
+          <div class="acc-summary-row">
+            <dt>KV</dt>
+            <dd data-acc-sumkv>{fmtBytes(init.kvtotal)}</dd>
+          </div>
+          <div class="acc-summary-row">
+            <dt>attn weight</dt>
+            <dd data-acc-sumparams>{fmtBytes(init.paramBytes)}</dd>
+          </div>
+          <div class="acc-summary-row">
+            <dt>ratio</dt>
+            <dd data-acc-sumratio>{init.ratio.toFixed(init.ratio >= 10 ? 0 : 2)}x</dd>
+          </div>
+        </dl>
+        <p class="acc-summary-hint">
           Long-context inference is cache-bound (linear in <M t="L \cdot B \cdot N" />
           ); short-context is param-bound. Sliding <M t="h" /> alone is free in both.
-        </span>
-      </p>
+        </p>
+      </div>
 
       {caption ? (
         <figcaption class="acc-caption">

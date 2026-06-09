@@ -26,6 +26,7 @@ export interface ActivitySummary {
   distanceKm: number
   movingTimeS: number
   load: number
+  cadence: number | null
 }
 
 export interface AnalyticsInputs {
@@ -1046,6 +1047,7 @@ export function buildAnalytics(
       distanceKm: act.distanceKm,
       movingTimeS: act.a.movingTime,
       load: round(loadById.get(act.a.id) ?? 0, 1),
+      cadence: act.a.averageCadence ?? null,
     }))
     .sort((p, q) => q.date.localeCompare(p.date))
 

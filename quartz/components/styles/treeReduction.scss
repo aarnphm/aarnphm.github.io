@@ -109,10 +109,6 @@
   }
 
   .tr-node {
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: transform 0.25s ease;
-
     &.tr-active .tr-node-shape,
     &.tr-settled .tr-node-shape {
       fill: var(--tr-fill-active-soft);
@@ -125,7 +121,6 @@
     &.tr-pulse .tr-node-shape {
       fill: var(--tr-fill-pulse);
       stroke: color-mix(in srgb, #fdb2a2 70%, var(--darkgray) 30%);
-      animation: tr-pulse 0.7s ease-out;
     }
   }
 
@@ -155,16 +150,6 @@
     justify-content: flex-end;
     color: var(--tr-note-fg);
     font-size: 11px;
-  }
-}
-
-@keyframes tr-pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.08);
   }
 }
 

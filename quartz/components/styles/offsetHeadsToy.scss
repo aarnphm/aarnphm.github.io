@@ -16,6 +16,9 @@
   --oht-surrogate: color-mix(in srgb, var(--gray) 70%, var(--darkgray) 30%);
   --oht-grid-bg: color-mix(in srgb, var(--lightgray) 18%, var(--light));
   --oht-grid-stroke: color-mix(in srgb, var(--gray) 32%, transparent);
+  --oht-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  --oht-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --oht-tab-active: color-mix(in srgb, var(--lightgray) 70%, var(--light));
 }
 
 :root[saved-theme='dark'] .offset-heads-toy {
@@ -24,6 +27,9 @@
   --oht-surrogate: color-mix(in srgb, var(--gray) 50%, var(--lightgray));
   --oht-grid-bg: color-mix(in srgb, var(--lightgray) 22%, var(--dark));
   --oht-grid-stroke: color-mix(in srgb, var(--gray) 22%, transparent);
+  --oht-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
+  --oht-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
+  --oht-tab-active: color-mix(in srgb, var(--lightgray) 26%, var(--dark));
 }
 
 .oht-panels {
@@ -53,8 +59,14 @@
 }
 
 .oht-panel-title {
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--dark);
+  color: var(--oht-note);
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .oht-swatch {
@@ -254,44 +266,56 @@
   font-weight: 600;
   min-width: 2rem;
   text-align: right;
+
+  .katex {
+    font-size: 1em;
+    color: inherit;
+  }
 }
 
 .oht-toggle {
   display: inline-flex;
-  gap: 0.25rem;
-  padding: 0.15rem;
+  align-items: stretch;
+  height: 1.55rem;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--oht-tab-border);
   border-radius: var(--radius-none);
-  background: color-mix(in srgb, var(--lightgray) 50%, transparent);
+  background: var(--oht-tab-surface);
 }
 
 .oht-toggle-btn {
   appearance: none;
-  border: none;
-  background: transparent;
-  color: var(--oht-note);
-  font: inherit;
-  font-size: 0.78rem;
-  min-height: 2.5rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: var(--radius-none);
-  cursor: pointer;
-  transition:
-    background 120ms ease-out,
-    color 120ms ease-out,
-    transform 120ms ease-out;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.3rem;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0 0.78rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--oht-tab-surface);
+  color: var(--gray);
+  cursor: pointer;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
 
-  &:hover {
+  &:not(:disabled):hover {
     color: var(--dark);
+  }
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--oht-note) 50%, transparent);
+    outline-offset: -2px;
   }
   &.is-active {
-    background: var(--light);
+    background: var(--oht-tab-active);
     color: var(--dark);
-  }
-  &:active {
-    transform: scale(0.96);
   }
   .katex {
     font-size: 0.95em;
