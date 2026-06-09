@@ -31,7 +31,7 @@ export function applyQuartzDevEvent(
     case 'build:start':
       state.currentEpoch = event.epoch
       state.quartz = 'building'
-      return []
+      return [{ type: 'stop-wrangler', reason: 'stopping wrangler while quartz rebuilds' }]
     case 'public:remove:start':
       if (event.epoch !== state.currentEpoch) return []
       state.publicAvailable = false

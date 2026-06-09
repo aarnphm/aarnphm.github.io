@@ -1,432 +1,320 @@
-import {
-  Decoder,
-  Stream,
-  type FileIdMesg,
-  type FitMessages,
-  type SessionMesg,
-} from '@garmin/fitsdk'
 import fs from 'node:fs/promises'
-import { basename, extname } from 'node:path'
+import type { GarminActivity, GarminCache } from '../plugins/stores/garmin'
+import { browserCookieHeader } from '../util/browser-cookie'
 import {
-  emptyGarminFueling,
-  emptyGarminMetrics,
-  type GarminActivity,
-  type GarminCache,
-  hasGarminMetrics,
-  hasGarminFueling,
-  normalizeGarminSport,
-} from '../plugins/stores/garmin'
+  garminConnectActivities,
+  garminConnectActivity,
+  type GarminConnectActivityListItem,
+} from '../util/garmin-connect'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
-import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
+import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 1
-const FIT_EPOCH_MS = Date.UTC(1989, 11, 31)
+const CACHE_VERSION = 2
+const CONNECT_ORIGIN = 'https://connect.garmin.com'
+const DEFAULT_CONNECT_BASE = `${CONNECT_ORIGIN}/gc-api`
+const DEFAULT_USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.7827.53 Safari/537.36'
+const DEFAULT_PAGE_SIZE = 100
+const DEFAULT_DELAY_MS = 1200
+const DAY_MS = 86_400_000
+const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
-const defaultInputDir = joinSegments(QUARTZ, '.quartz-cache', 'garmin-fueling')
-const defaultFitDir = joinSegments(QUARTZ, '.quartz-cache', 'garmin-fit')
 
-const RECORD_KEYS = [
-  'activity',
-  'activityDTO',
-  'activityDetail',
-  'activityDetailDTO',
-  'activitySummary',
-  'fueling',
-  'hydration',
-  'metadataDTO',
-  'nutrition',
-  'summary',
-  'summaryDTO',
-]
-
-const ID_KEYS = ['garminActivityId', 'activityId', 'activityIdStr', 'id', 'uuid']
-const NAME_KEYS = ['activityName', 'name', 'title']
-const SPORT_KEYS = ['activityType', 'eventType', 'sport', 'sportType', 'type']
-const SPORT_NESTED_KEYS = ['name', 'type', 'typeKey']
-const START_UTC_KEYS = [
-  'beginTimestamp',
-  'startDate',
-  'startTime',
-  'startTimeGMT',
-  'startTimeGmt',
-  'startedAt',
-]
-const START_LOCAL_KEYS = ['startDateLocal', 'startLocal', 'startTimeLocal', 'startedAtLocal']
-const DISTANCE_M_KEYS = ['distance', 'distanceInMeters', 'distanceM', 'distanceMeters']
-const DISTANCE_KM_KEYS = ['distanceKm', 'distanceKilometers']
-const MOVING_S_KEYS = ['movingDuration', 'movingDurationS', 'movingTimeS']
-const MOVING_MS_KEYS = ['movingDurationMs', 'movingTimeMs']
-const ELAPSED_S_KEYS = [
-  'duration',
-  'durationS',
-  'elapsedDuration',
-  'elapsedDurationS',
-  'elapsedTimeS',
-]
-const ELAPSED_MS_KEYS = ['durationMs', 'elapsedDurationMs', 'elapsedTimeMs']
-const DEVICE_KEYS = ['activityDeviceName', 'deviceModel', 'deviceName', 'sourceDevice']
-
-const CALORIES_KEYS = [
-  'caloriesConsumed',
-  'caloriesConsumedInKcal',
-  'caloriesConsumedKcal',
-  'caloriesIntake',
-  'caloriesIntakeKcal',
-  'consumedCalories',
-  'nutritionCalories',
-]
-const CARBS_KEYS = [
-  'carbIntakeG',
-  'carbohydrateIntakeG',
-  'carbohydratesConsumed',
-  'carbohydratesConsumedG',
-  'carbsConsumed',
-  'carbsConsumedG',
-  'consumedCarbs',
-]
-const CARBS_RECOMMENDED_KEYS = [
-  'carbohydratesRecommendedG',
-  'carbsRecommendedG',
-  'recommendedCarbohydratesG',
-  'recommendedCarbsG',
-]
-const FLUID_ML_KEYS = [
-  'fluidConsumedInMl',
-  'fluidConsumedMl',
-  'fluidIntakeInMl',
-  'fluidIntakeMl',
-  'fluidMl',
-  'hydrationMl',
-  'waterConsumedMl',
-  'waterIntakeMl',
-]
-const FLUID_L_KEYS = ['fluidConsumedL', 'fluidIntakeL', 'fluidL', 'fluidLiters', 'waterL']
-const FLUID_OZ_KEYS = ['fluidConsumedOz', 'fluidIntakeOz', 'fluidOunces', 'fluidOz', 'waterOz']
-const FLUID_RECOMMENDED_ML_KEYS = [
-  'fluidRecommendedMl',
-  'recommendedFluidMl',
-  'recommendedHydrationMl',
-  'recommendedWaterMl',
-]
-const FLUID_RECOMMENDED_L_KEYS = ['fluidRecommendedL', 'recommendedFluidL', 'recommendedWaterL']
-const FLUID_RECOMMENDED_OZ_KEYS = ['fluidRecommendedOz', 'recommendedFluidOz', 'recommendedWaterOz']
-const SWEAT_ML_KEYS = ['estimatedSweatLossMl', 'sweatLoss', 'sweatLossInMl', 'sweatLossMl']
-const SWEAT_L_KEYS = ['estimatedSweatLossL', 'sweatLossL']
-const SWEAT_OZ_KEYS = ['estimatedSweatLossOz', 'sweatLossOz']
-
-function numeric(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) return value
-  if (typeof value !== 'string') return null
-  const parsed = Number(value.replace(/,/g, '').trim())
-  return Number.isFinite(parsed) ? parsed : null
+interface GarminConnectSession {
+  cookie: string
+  csrf: string
 }
 
-function positive(value: number | null): number | null {
-  return value != null && value > 0 ? value : null
+function cleanBaseUrl(value: string): string {
+  return value.replace(/\/+$/, '')
 }
 
-function collectRecords(root: UnknownRecord): UnknownRecord[] {
-  const out: UnknownRecord[] = []
-  const queue: UnknownRecord[] = [root]
-  const seen = new Set<UnknownRecord>()
-  for (let i = 0; i < queue.length; i++) {
-    const record = queue[i]
-    if (seen.has(record)) continue
-    seen.add(record)
-    out.push(record)
-    for (const key of RECORD_KEYS) {
-      const child = record[key]
-      if (isRecord(child)) queue.push(child)
-    }
-  }
-  return out
+function envNumber(name: string, fallback: number): number {
+  const value = process.env[name]
+  if (!value?.trim()) return fallback
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed < 0) throw new Error(`${name} must be nonnegative`)
+  return parsed
 }
 
-function firstNumber(records: readonly UnknownRecord[], keys: readonly string[]): number | null {
-  for (const record of records) {
-    for (const key of keys) {
-      const value = readNumber(record, key) ?? numeric(record[key])
-      if (value != null) return value
-    }
-  }
-  return null
+function isoDay(ms: number): string {
+  return new Date(ms).toISOString().slice(0, 10)
 }
 
-function firstString(records: readonly UnknownRecord[], keys: readonly string[]): string | null {
-  for (const record of records) {
-    for (const key of keys) {
-      const value = readString(record, key)
-      if (value?.trim()) return value.trim()
-      const n = readNumber(record, key)
-      if (n != null) return String(n)
-    }
-  }
-  return null
+function cleanDay(value: string | undefined): string | null {
+  if (!value?.trim()) return null
+  const day = value.trim()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error(`${value} is not YYYY-MM-DD`)
+  return day
 }
 
-function firstSport(records: readonly UnknownRecord[]): string | null {
-  const direct = firstString(records, SPORT_KEYS)
-  if (direct) return direct
-  for (const record of records) {
-    for (const key of SPORT_KEYS) {
-      const child = record[key]
-      if (!isRecord(child)) continue
-      const nested = firstString([child], SPORT_NESTED_KEYS)
-      if (nested) return nested
-    }
-  }
-  return null
-}
-
-function normalizeDate(value: string | number | Date | null): string | null {
-  if (!value) return null
-  if (value instanceof Date) return Number.isFinite(value.valueOf()) ? value.toISOString() : null
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) return null
-    const ms = value > 1_000_000_000_000 ? value : FIT_EPOCH_MS + value * 1000
-    return new Date(ms).toISOString()
-  }
-  const trimmed = value.trim().replace(' ', 'T')
-  if (!trimmed) return null
-  const zoned = /(?:Z|[+-]\d{2}:?\d{2})$/.test(trimmed) ? trimmed : `${trimmed}Z`
-  const ms = Date.parse(zoned)
-  return Number.isFinite(ms) ? new Date(ms).toISOString() : null
-}
-
-function normalizeLocalDate(value: string | null, fallback: string): string {
-  if (!value) return fallback
-  return value.trim().replace(' ', 'T')
-}
-
-function rounded(value: number | null): number | null {
-  const n = positive(value)
-  return n == null ? null : Math.round(n)
-}
-
-function roundedFloat(value: number | null, dp: number): number | null {
-  const n = positive(value)
-  if (n == null) return null
-  const factor = 10 ** dp
-  return Math.round(n * factor) / factor
-}
-
-function ml(
-  records: readonly UnknownRecord[],
-  mlKeys: readonly string[],
-  literKeys: readonly string[],
-  ounceKeys: readonly string[],
-): number | null {
-  const direct = rounded(firstNumber(records, mlKeys))
-  if (direct != null) return direct
-  const liters = positive(firstNumber(records, literKeys))
-  if (liters != null) return Math.round(liters * 1000)
-  const ounces = positive(firstNumber(records, ounceKeys))
-  return ounces == null ? null : Math.round(ounces * 29.5735)
-}
-
-function activityRecords(raw: unknown): UnknownRecord[] {
-  if (Array.isArray(raw)) return raw.filter(isRecord)
-  if (!isRecord(raw)) return []
-  if (Array.isArray(raw.activities)) return raw.activities.filter(isRecord)
-  if (isRecord(raw.activities)) return Object.values(raw.activities).filter(isRecord)
-  if (Array.isArray(raw.data)) return raw.data.filter(isRecord)
-  if (isRecord(raw.data)) return Object.values(raw.data).filter(isRecord)
-  return [raw]
-}
-
-function hasGarminActivityData(activity: GarminActivity): boolean {
-  return (
-    hasGarminFueling(activity.fueling) ||
-    hasGarminMetrics(activity.metrics) ||
-    activity.distanceM != null ||
-    activity.movingTimeS != null ||
-    activity.elapsedTimeS != null
-  )
-}
-
-function toActivity(record: UnknownRecord, index: number): GarminActivity | null {
-  const records = collectRecords(record)
-  const utcRaw = firstString(records, START_UTC_KEYS)
-  const localRaw = firstString(records, START_LOCAL_KEYS)
-  const startDate = normalizeDate(utcRaw ?? localRaw)
-  if (!startDate) return null
-  const sourceDevice = firstString(records, DEVICE_KEYS)
-  const distanceM =
-    rounded(firstNumber(records, DISTANCE_M_KEYS)) ??
-    rounded((firstNumber(records, DISTANCE_KM_KEYS) ?? 0) * 1000)
-  const movingTimeS =
-    rounded(firstNumber(records, MOVING_S_KEYS)) ??
-    rounded((firstNumber(records, MOVING_MS_KEYS) ?? 0) / 1000)
-  const elapsedTimeS =
-    rounded(firstNumber(records, ELAPSED_S_KEYS)) ??
-    rounded((firstNumber(records, ELAPSED_MS_KEYS) ?? 0) / 1000)
-  const fueling = emptyGarminFueling(sourceDevice)
-  fueling.caloriesConsumed = rounded(firstNumber(records, CALORIES_KEYS))
-  fueling.carbsConsumedG = rounded(firstNumber(records, CARBS_KEYS))
-  fueling.fluidMl = ml(records, FLUID_ML_KEYS, FLUID_L_KEYS, FLUID_OZ_KEYS)
-  fueling.carbsRecommendedG = rounded(firstNumber(records, CARBS_RECOMMENDED_KEYS))
-  fueling.fluidRecommendedMl = ml(
-    records,
-    FLUID_RECOMMENDED_ML_KEYS,
-    FLUID_RECOMMENDED_L_KEYS,
-    FLUID_RECOMMENDED_OZ_KEYS,
-  )
-  fueling.sweatLossMl = ml(records, SWEAT_ML_KEYS, SWEAT_L_KEYS, SWEAT_OZ_KEYS)
-  const activity: GarminActivity = {
-    id: firstString(records, ID_KEYS) ?? `${startDate}:${index}`,
-    name: firstString(records, NAME_KEYS),
-    sport: normalizeGarminSport(firstSport(records)),
-    startDate,
-    startDateLocal: normalizeLocalDate(localRaw, startDate),
-    distanceM,
-    movingTimeS,
-    elapsedTimeS,
-    sourceDevice,
-    sourceFile: null,
-    metrics: emptyGarminMetrics(),
-    fueling,
-  }
-  return hasGarminActivityData(activity) ? activity : null
-}
-
-function productName(value: string | number | undefined): string | null {
-  if (value == null) return null
-  const clean = String(value).trim()
-  if (!clean) return null
-  const edge = clean.match(/^edge(\d+)$/i)
-  if (edge) return `Edge ${edge[1]}`
-  return clean
-}
-
-function sourceDevice(fileId: FileIdMesg | undefined, messages: FitMessages): string | null {
-  return (
-    productName(fileId?.productName) ??
-    productName(fileId?.garminProduct) ??
-    productName(messages.deviceInfoMesgs?.find(device => device.garminProduct)?.garminProduct) ??
-    productName(fileId?.product)
-  )
-}
-
-function isFitActivity(messages: FitMessages): boolean {
-  const type = messages.fileIdMesgs?.[0]?.type
-  return type === 'activity' || type === 4
-}
-
-function fitStart(session: SessionMesg, fileId: FileIdMesg | undefined): string | null {
-  return normalizeDate(session.startTime ?? session.timestamp ?? fileId?.timeCreated ?? null)
-}
-
-function toFitActivity(file: string, messages: FitMessages): GarminActivity | null {
-  if (!isFitActivity(messages)) return null
-  const session = messages.sessionMesgs?.[0]
-  if (!session) return null
-  const fileId = messages.fileIdMesgs?.[0]
-  const startDate = fitStart(session, fileId)
-  if (!startDate) return null
-  const device = sourceDevice(fileId, messages)
-  const sourceFile = basename(file)
-  const metrics = emptyGarminMetrics()
-  metrics.totalCalories = rounded(session.totalCalories ?? null)
-  metrics.metabolicCalories = rounded(session.metabolicCalories ?? null)
-  metrics.avgHeartRate = rounded(session.avgHeartRate ?? null)
-  metrics.maxHeartRate = rounded(session.maxHeartRate ?? null)
-  metrics.avgPower = rounded(session.avgPower ?? null)
-  metrics.normalizedPower = rounded(session.normalizedPower ?? null)
-  metrics.maxPower = rounded(session.maxPower ?? null)
-  metrics.avgCadence = rounded(session.avgCadence ?? null)
-  metrics.totalAscentM = rounded(session.totalAscent ?? null)
-  metrics.totalDescentM = rounded(session.totalDescent ?? null)
-  metrics.totalWorkKJ = roundedFloat(session.totalWork != null ? session.totalWork / 1000 : null, 1)
-  metrics.trainingStressScore = roundedFloat(session.trainingStressScore ?? null, 1)
-  metrics.intensityFactor = roundedFloat(session.intensityFactor ?? null, 3)
-  const activity: GarminActivity = {
-    id: `fit:${sourceFile.replace(/\.fit$/i, '')}`,
-    name: session.sportProfileName ?? sourceFile,
-    sport: normalizeGarminSport(typeof session.sport === 'string' ? session.sport : null),
-    startDate,
-    startDateLocal: startDate,
-    distanceM: rounded(session.totalDistance ?? null),
-    movingTimeS: rounded(session.totalTimerTime ?? null),
-    elapsedTimeS: rounded(session.totalElapsedTime ?? null),
-    sourceDevice: device,
-    sourceFile,
-    metrics,
-    fueling: emptyGarminFueling(device),
-  }
-  return hasGarminActivityData(activity) ? activity : null
-}
-
-async function fitActivity(file: string): Promise<GarminActivity | null> {
-  const bytes = await fs.readFile(file)
-  const decoder = new Decoder(Stream.fromByteArray(bytes))
-  const result = decoder.read()
-  if (result.errors.length > 0) {
-    const summary = result.errors.map(error => error.message).join('; ')
-    console.warn(`[garmin] decoded ${file} with ${result.errors.length} FIT error(s): ${summary}`)
-  }
-  return toFitActivity(file, result.messages)
-}
-
-async function filesInDir(dir: string, extension: string): Promise<string[]> {
-  const out: string[] = []
-  async function walk(current: string): Promise<void> {
-    const entries = await fs.readdir(current, { withFileTypes: true })
-    for (const entry of entries) {
-      const file = joinSegments(current, entry.name)
-      if (entry.isDirectory()) await walk(file)
-      else if (entry.isFile() && extname(entry.name).toLowerCase() === extension) out.push(file)
-    }
-  }
+async function readTriathlonStart(): Promise<string | null> {
   try {
-    await walk(dir)
+    const content = await fs.readFile(TRIATHLON_PAGE, 'utf8')
+    const match = /^strava:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?\s*$/m.exec(content)
+    return match?.[1] ?? null
   } catch {
-    return []
+    return null
   }
-  return out.sort()
 }
 
-async function jsonInputFiles(): Promise<string[]> {
-  const file = process.env.GARMIN_FUELING_FILE
-  if (file?.trim()) return [file.trim()]
-  const dir = process.env.GARMIN_FUELING_DIR?.trim() || defaultInputDir
-  return filesInDir(dir, '.json')
+async function startDate(): Promise<string> {
+  return (
+    cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
+    cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
+    (await readTriathlonStart()) ??
+    isoDay(Date.now() - 90 * DAY_MS)
+  )
 }
 
-async function fitInputFiles(): Promise<string[]> {
-  const file = process.env.GARMIN_FIT_FILE
-  if (file?.trim()) return [file.trim()]
-  const dir = process.env.GARMIN_FIT_DIR?.trim() || defaultFitDir
-  return filesInDir(dir, '.fit')
+function endDate(): string {
+  return cleanDay(process.env.GARMIN_CONNECT_END_DATE) ?? isoDay(Date.now() + DAY_MS)
+}
+
+async function readCookie(): Promise<string> {
+  const inline = process.env.GARMIN_CONNECT_COOKIE?.trim()
+  if (inline) return inline
+  const file = process.env.GARMIN_CONNECT_COOKIE_FILE?.trim()
+  if (file) {
+    const cookie = (await fs.readFile(file, 'utf8')).trim()
+    if (cookie) return cookie
+  }
+  const cookie = await browserCookieHeader()
+  if (cookie) {
+    console.log('[garmin] using Garmin Connect cookies from browser profile')
+    return cookie
+  }
+  throw new Error(
+    'set GARMIN_CONNECT_COOKIE/GARMIN_CONNECT_COOKIE_FILE, or log in to Garmin Connect in a supported browser profile',
+  )
+}
+
+async function readSession(): Promise<GarminConnectSession> {
+  const cookie = await readCookie()
+  const session: GarminConnectSession = { cookie, csrf: '' }
+  session.csrf = process.env.GARMIN_CONNECT_CSRF_TOKEN?.trim() || (await fetchCsrf(session))
+  return session
+}
+
+function requestHeaders(session: GarminConnectSession, contentType?: string): HeadersInit {
+  return {
+    Accept: 'application/json, text/plain, */*',
+    Cookie: session.cookie,
+    Origin: CONNECT_ORIGIN,
+    Referer: `${CONNECT_ORIGIN}/app/home`,
+    'User-Agent': process.env.GARMIN_CONNECT_USER_AGENT?.trim() || DEFAULT_USER_AGENT,
+    'Accept-Language': process.env.GARMIN_CONNECT_ACCEPT_LANGUAGE?.trim() || 'en-GB,en;q=0.9',
+    'Connect-Csrf-Token': session.csrf,
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Dest': 'empty',
+    ...(contentType ? { 'Content-Type': contentType } : {}),
+  }
+}
+
+function documentHeaders(session: GarminConnectSession): HeadersInit {
+  return {
+    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    Cookie: session.cookie,
+    'User-Agent': process.env.GARMIN_CONNECT_USER_AGENT?.trim() || DEFAULT_USER_AGENT,
+    'Accept-Language': process.env.GARMIN_CONNECT_ACCEPT_LANGUAGE?.trim() || 'en-GB,en;q=0.9',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Upgrade-Insecure-Requests': '1',
+  }
+}
+
+function cookiePairs(header: string): Map<string, string> {
+  const pairs = new Map<string, string>()
+  for (const part of header.split('; ')) {
+    const index = part.indexOf('=')
+    if (index <= 0) continue
+    pairs.set(part.slice(0, index), part.slice(index + 1))
+  }
+  return pairs
+}
+
+function splitSetCookie(header: string): string[] {
+  return header.split(/,(?=\s*[^;,=\s]+=)/g).map(cookie => cookie.trim())
+}
+
+function setCookieHeaders(headers: Headers): string[] {
+  const withSetCookie = headers as Headers & { getSetCookie?: () => string[] }
+  const values = withSetCookie.getSetCookie?.()
+  if (values?.length) return values
+  const header = headers.get('set-cookie')
+  return header ? splitSetCookie(header) : []
+}
+
+function applySetCookies(session: GarminConnectSession, headers: Headers): void {
+  const updates = setCookieHeaders(headers)
+  if (updates.length === 0) return
+  const pairs = cookiePairs(session.cookie)
+  for (const header of updates) {
+    const first = header.split(';', 1)[0]
+    const index = first.indexOf('=')
+    if (index <= 0) continue
+    const name = first.slice(0, index)
+    const value = first.slice(index + 1)
+    if (!value || /;\s*Max-Age=0(?:;|$)/i.test(header)) pairs.delete(name)
+    else pairs.set(name, value)
+  }
+  session.cookie = [...pairs].map(([name, value]) => `${name}=${value}`).join('; ')
+}
+
+async function fetchCsrf(session: GarminConnectSession): Promise<string> {
+  const res = await fetch(`${CONNECT_ORIGIN}/app/home`, {
+    headers: documentHeaders(session),
+    redirect: 'manual',
+  })
+  const text = await res.text()
+  applySetCookies(session, res.headers)
+  if (res.status === 301 || res.status === 302 || res.status === 303 || res.status === 307)
+    throw new Error('Garmin Connect app shell redirected to sign-in; refresh the browser session')
+  if (!res.ok) throw new Error(`Garmin Connect app shell failed: ${res.status}`)
+  const csrf = /<meta\s+name=["']csrf-token["']\s+content=["']([^"']+)["']/i.exec(text)?.[1]
+  if (!csrf) throw new Error('Garmin Connect app shell did not expose a CSRF token')
+  return csrf
+}
+
+function urlFor(base: string, path: string, params?: URLSearchParams): string {
+  const url = new URL(`${base}${path}`)
+  if (params) for (const [key, value] of params) url.searchParams.set(key, value)
+  return url.toString()
+}
+
+function responseSummary(res: Response, text: string): string {
+  const type = res.headers.get('content-type') ?? 'unknown content-type'
+  if (type.includes('text/html') || text.trimStart().startsWith('<'))
+    return `${type} (${text.length} bytes HTML)`
+  return `${type} ${text.trim().slice(0, 300)}`
+}
+
+async function getJson(
+  session: GarminConnectSession,
+  base: string,
+  path: string,
+  params?: URLSearchParams,
+  init?: RequestInit,
+): Promise<unknown> {
+  const res = await fetch(urlFor(base, path, params), {
+    ...init,
+    headers: requestHeaders(session, init?.body ? 'application/json' : undefined),
+  })
+  const text = await res.text()
+  applySetCookies(session, res.headers)
+  if (res.status === 401 || res.status === 403)
+    throw new Error(`Garmin Connect session rejected (${res.status}); refresh the cookie`)
+  if (!res.ok)
+    throw new Error(`Garmin Connect request failed: ${res.status} ${responseSummary(res, text)}`)
+  const type = res.headers.get('content-type') ?? ''
+  if (!type.includes('application/json'))
+    throw new Error(`Garmin Connect returned non-JSON: ${responseSummary(res, text)}`)
+  return JSON.parse(text) as unknown
+}
+
+function activityStartMs(item: GarminConnectActivityListItem): number | null {
+  const start = garminConnectActivity(null, item.record, 0)?.startDate
+  if (!start) return null
+  const ms = Date.parse(start)
+  return Number.isFinite(ms) ? ms : null
+}
+
+function dayStartMs(day: string): number {
+  return Date.parse(`${day}T00:00:00.000Z`)
+}
+
+function dayEndMs(day: string): number {
+  return Date.parse(`${day}T23:59:59.999Z`)
+}
+
+async function fetchActivities(
+  session: GarminConnectSession,
+  base: string,
+  start: string,
+  end: string,
+  pageSize: number,
+  maxActivities: number,
+): Promise<GarminConnectActivityListItem[]> {
+  const out: GarminConnectActivityListItem[] = []
+  const seen = new Set<string>()
+  const startMs = dayStartMs(start)
+  const endMs = dayEndMs(end)
+  for (let offset = 0; ; offset += pageSize) {
+    const raw = await getJson(session, base, '/graphql-gateway/graphql', undefined, {
+      method: 'POST',
+      body: JSON.stringify({
+        query: `query{searchActivitiesScalar(start:${offset}, limit:${pageSize}, excludedActivitySubTypes:["assistance"])}`,
+      }),
+    })
+    const page = garminConnectActivities(raw)
+    let oldestMs: number | null = null
+    for (const item of page) {
+      if (seen.has(item.id)) continue
+      seen.add(item.id)
+      const ms = activityStartMs(item)
+      if (ms != null) {
+        oldestMs = oldestMs == null ? ms : Math.min(oldestMs, ms)
+        if (ms < startMs || ms > endMs) continue
+      }
+      out.push(item)
+      if (maxActivities > 0 && out.length >= maxActivities) return out
+    }
+    if (page.length < pageSize) return out
+    if (oldestMs != null && oldestMs < startMs) return out
+  }
+}
+
+async function fetchActivityDetail(
+  session: GarminConnectSession,
+  base: string,
+  id: string,
+): Promise<UnknownRecord | null> {
+  const raw = await getJson(session, base, `/activity-service/activity/${encodeURIComponent(id)}`)
+  return isRecord(raw) ? raw : null
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function main(): Promise<void> {
-  const jsonFiles = await jsonInputFiles()
-  const fitFiles = await fitInputFiles()
-  if (jsonFiles.length === 0 && fitFiles.length === 0) {
-    console.log(
-      `[garmin] no input found (set GARMIN_FIT_FILE/GARMIN_FIT_DIR or GARMIN_FUELING_FILE/GARMIN_FUELING_DIR; defaults ${defaultFitDir} and ${defaultInputDir})`,
-    )
-    return
-  }
+  const session = await readSession()
+  const base = cleanBaseUrl(process.env.GARMIN_CONNECT_BASE_URL?.trim() || DEFAULT_CONNECT_BASE)
+  const pageSize = Math.max(1, envNumber('GARMIN_CONNECT_PAGE_SIZE', DEFAULT_PAGE_SIZE))
+  const delayMs = envNumber('GARMIN_CONNECT_DELAY_MS', DEFAULT_DELAY_MS)
+  const maxActivities = envNumber('GARMIN_CONNECT_MAX_ACTIVITIES', 0)
+  const start = await startDate()
+  const end = endDate()
+
+  console.log(`[garmin] fetching Garmin Connect activities ${start} -> ${end}`)
+  const list = await fetchActivities(session, base, start, end, pageSize, maxActivities)
+  list.sort((a, b) => {
+    const left = garminConnectActivity(null, a.record, 0)?.startDate ?? ''
+    const right = garminConnectActivity(null, b.record, 0)?.startDate ?? ''
+    return left.localeCompare(right)
+  })
+  console.log(`[garmin] found ${list.length} activities`)
 
   const activities: Record<string, GarminActivity> = {}
-  let fitCount = 0
-  for (const file of fitFiles) {
-    const activity = await fitActivity(file)
-    if (activity) {
-      activities[activity.id] = activity
-      fitCount++
+  let details = 0
+  let skipped = 0
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i]
+    let detail: UnknownRecord | null = null
+    try {
+      detail = await fetchActivityDetail(session, base, item.id)
+      if (detail) details++
+    } catch (err) {
+      console.warn(`[garmin] detail ${item.id} failed: ${err instanceof Error ? err.message : err}`)
     }
-  }
-
-  let index = 0
-  for (const file of jsonFiles) {
-    const raw: unknown = JSON.parse(await fs.readFile(file, 'utf8'))
-    for (const record of activityRecords(raw)) {
-      const activity = toActivity(record, index++)
-      if (activity) activities[activity.id] = activity
-    }
+    const activity = garminConnectActivity(detail, item.record, i)
+    if (activity) activities[activity.id] = activity
+    else skipped++
+    if (delayMs > 0) await sleep(delayMs)
   }
 
   const sorted: Record<string, GarminActivity> = {}
@@ -435,15 +323,14 @@ async function main(): Promise<void> {
   )) {
     sorted[activity.id] = activity
   }
-  const cache: GarminCache = { version: CACHE_VERSION, lastSync: Date.now(), activities: sorted }
+
+  const now = Date.now()
+  const cache: GarminCache = { version: CACHE_VERSION, lastSync: now, activities: sorted }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
-  const fuelingCount = Object.values(sorted).filter(activity =>
-    hasGarminFueling(activity.fueling),
-  ).length
   console.log(
-    `[garmin] wrote ${Object.keys(sorted).length} activities (${fitCount} FIT, ${fuelingCount} fueling) → ${cacheFile}`,
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${skipped} skipped) -> ${cacheFile}`,
   )
 }
 

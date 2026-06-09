@@ -10,6 +10,7 @@ import {
   type StravaActivityDetail,
   type StravaZones,
 } from '../../plugins/stores/strava'
+import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 export {}
 
@@ -725,7 +726,13 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   return specs
 }
 
-const renderMapDetail = (d: StravaActivityDetail): HTMLElement => {
+interface MapDetailOpts {
+  mapMode?: boolean
+  onMetric?: (i: number) => void
+  onHover?: (p: StravaActivityDetail['route'][number], i: number) => void
+}
+
+const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLElement => {
   const wrap = el('section', 'tri-act tri-act--expanded')
   const head = el('div', 'tri-act-head')
   head.appendChild(buildIcon(d.sport))
@@ -771,17 +778,36 @@ const renderMapDetail = (d: StravaActivityDetail): HTMLElement => {
       if (v < lo) lo = v
       if (v > hi) hi = v
     }
-    const heat = buildHeatRoute(d.route, spec.pick)
-    figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt))
-    const marker = heat.querySelector<SVGElement>('.tri-route-cursor')
+    let marker: SVGElement | null = null
+    if (opts?.mapMode) {
+      figs.replaceChildren(buildHeatLegend(lo, hi, spec.fmt))
+    } else {
+      const heat = buildHeatRoute(d.route, spec.pick)
+      figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt))
+      marker = heat.querySelector<SVGElement>('.tri-route-cursor')
+    }
     const prof = spec.profile()
     profileBox.replaceChildren(prof)
     zoneBox.replaceChildren()
     if (spec.extra) for (const z of spec.extra()) if (z) zoneBox.appendChild(z)
-    linkScrub(wrap, marker, [{ wrap: prof, fmt: spec.readout }], d.route)
+    linkScrub(
+      wrap,
+      marker,
+      [
+        {
+          wrap: prof,
+          fmt: (p, i) => {
+            opts?.onHover?.(p, i)
+            return spec.readout(p, i)
+          },
+        },
+      ],
+      d.route,
+    )
     Array.from(tablist.children).forEach((t, i) =>
       t.setAttribute('aria-selected', i === active ? 'true' : 'false'),
     )
+    opts?.onMetric?.(active)
   }
   specs.forEach((spec, i) => {
     const tab = el('button', 'tri-map-tab', spec.label)
@@ -2474,6 +2500,95 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const HEAT_RAMP = ['#997c6d', '#a9745b', '#b96c4a', '#ca6538', '#da5d27', '#ea5515', '#fc4c02']
+
+type GeoFC = { type: 'FeatureCollection'; features: unknown[] }
+const emptyFC = (): GeoFC => ({ type: 'FeatureCollection', features: [] })
+
+const lineFeature = (
+  route: StravaActivityDetail['route'],
+  props: Record<string, unknown> = {},
+) => ({
+  type: 'Feature',
+  properties: props,
+  geometry: { type: 'LineString', coordinates: route.map(p => [p.lng, p.lat]) },
+})
+
+const heatFC = (dp: DetailPayload | null): GeoFC => {
+  const features: unknown[] = []
+  const det = dp?.details ?? {}
+  for (const k in det) {
+    const d = det[k]
+    if ((d.sport === 'run' || d.sport === 'bike') && d.route.length >= 2)
+      features.push(lineFeature(d.route, { id: d.id }))
+  }
+  return { type: 'FeatureCollection', features }
+}
+
+const routeFC = (d: StravaActivityDetail): GeoFC => ({
+  type: 'FeatureCollection',
+  features: [lineFeature(d.route)],
+})
+
+const pointFC = (lng: number, lat: number): GeoFC => ({
+  type: 'FeatureCollection',
+  features: [
+    { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: [lng, lat] } },
+  ],
+})
+
+const gradientExpr = (
+  d: StravaActivityDetail,
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number,
+): unknown[] => {
+  const vals = d.route.map((p, i) => pick(p, i))
+  let lo = Infinity
+  let hi = -Infinity
+  for (const v of vals) {
+    if (v < lo) lo = v
+    if (v > hi) hi = v
+  }
+  const range = hi > lo ? hi - lo : 1
+  const dN = d.route[d.route.length - 1].d || 1
+  const pairs: [number, string][] = []
+  let lastT = -1
+  d.route.forEach((p, i) => {
+    const t = Math.min(1, Math.max(0, p.d / dN))
+    if (t <= lastT) return
+    lastT = t
+    const bucket = Math.min(7, Math.max(1, Math.ceil(((vals[i] - lo) / range) * 7) || 1))
+    pairs.push([t, HEAT_RAMP[bucket - 1]])
+  })
+  if (pairs.length === 0) pairs.push([0, HEAT_RAMP[3]])
+  if (pairs[0][0] > 0) pairs.unshift([0, pairs[0][1]])
+  if (pairs[pairs.length - 1][0] < 1) pairs.push([1, pairs[pairs.length - 1][1]])
+  const stops: unknown[] = ['interpolate', ['linear'], ['line-progress']]
+  for (const [t, c] of pairs) stops.push(t, c)
+  return stops
+}
+
+const fcBounds = (fc: GeoFC): [[number, number], [number, number]] | null => {
+  let minLng = Infinity
+  let minLat = Infinity
+  let maxLng = -Infinity
+  let maxLat = -Infinity
+  for (const f of fc.features) {
+    const coords = (f as { geometry: { coordinates: [number, number][] } }).geometry.coordinates
+    for (const [lng, lat] of coords) {
+      if (lng < minLng) minLng = lng
+      if (lng > maxLng) maxLng = lng
+      if (lat < minLat) minLat = lat
+      if (lat > maxLat) maxLat = lat
+    }
+  }
+  return Number.isFinite(minLng)
+    ? [
+        [minLng, minLat],
+        [maxLng, maxLat],
+      ]
+    : null
+}
+
 const setupMap = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-map-btn')
   const panel = root.querySelector<HTMLElement>('.tri-map')
@@ -2492,6 +2607,137 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   let detailData: DetailPayload | null = null
   let detailLoaded = false
   let selIndex = -1
+  const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
+
+  const mapCtl = (() => {
+    let map: any = null
+    let started = false
+    let okFlag = false
+    const recolor = (d: StravaActivityDetail, i: number) => {
+      if (!map) return
+      const spec = metricSpecs(d)[i]
+      if (spec) map.setPaintProperty('tri-sel', 'line-gradient', gradientExpr(d, spec.pick))
+    }
+    const init = async (): Promise<void> => {
+      if (started) return
+      started = true
+      if (!canvas) return
+      const mapboxgl = await loadMapbox()
+      if (!mapboxgl) {
+        started = false
+        canvas.classList.add('tri-map-canvas--down')
+        canvas.textContent = 'map unavailable'
+        return
+      }
+      canvas.classList.remove('tri-map-canvas--down')
+      canvas.textContent = ''
+      map = new mapboxgl.Map({
+        container: canvas,
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [-79.4, 43.7],
+        zoom: 9,
+        attributionControl: false,
+      })
+      ;(canvas as unknown as { _mapInstance: unknown })._mapInstance = map
+      await new Promise<void>(resolve => map.once('load', () => resolve()))
+      applyMonochromeMapPalette(map)
+      map.addSource('tri-heat', { type: 'geojson', data: emptyFC() })
+      map.addLayer({
+        id: 'tri-heat',
+        type: 'line',
+        source: 'tri-heat',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-color': '#fc4c02',
+          'line-opacity': 0.2,
+          'line-blur': 0.6,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.2, 14, 2, 16, 3],
+        },
+      })
+      map.addSource('tri-sel', { type: 'geojson', lineMetrics: true, data: emptyFC() })
+      map.addLayer({
+        id: 'tri-sel-casing',
+        type: 'line',
+        source: 'tri-sel',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fff9f3', 'line-width': 5 },
+      })
+      map.addLayer({
+        id: 'tri-sel',
+        type: 'line',
+        source: 'tri-sel',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-width': 3.4,
+          'line-gradient': [
+            'interpolate',
+            ['linear'],
+            ['line-progress'],
+            0,
+            '#fc4c02',
+            1,
+            '#fc4c02',
+          ],
+        },
+      })
+      map.addSource('tri-dot', { type: 'geojson', data: emptyFC() })
+      map.addLayer({
+        id: 'tri-dot',
+        type: 'circle',
+        source: 'tri-dot',
+        paint: {
+          'circle-radius': 4,
+          'circle-color': '#fc4c02',
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#fff9f3',
+        },
+      })
+      okFlag = true
+    }
+    const drawHeatmap = () => {
+      if (!map) return
+      const fc = heatFC(detailData)
+      map.getSource('tri-heat')?.setData(fc)
+      const b = fcBounds(fc)
+      if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
+    }
+    const select = (d: StravaActivityDetail, i: number) => {
+      if (!map) return
+      map.getSource('tri-sel')?.setData(routeFC(d))
+      recolor(d, i)
+      map.setPaintProperty('tri-heat', 'line-opacity', 0.08)
+      const b = fcBounds(routeFC(d))
+      if (b) map.fitBounds(b, { padding: 40, maxZoom: 15, duration: reduce ? 0 : 600 })
+    }
+    const moveDot = (lng: number, lat: number) =>
+      map?.getSource('tri-dot')?.setData(pointFC(lng, lat))
+    const clearSelection = () => {
+      if (!map) return
+      map.getSource('tri-sel')?.setData(emptyFC())
+      map.getSource('tri-dot')?.setData(emptyFC())
+      map.setPaintProperty('tri-heat', 'line-opacity', 0.2)
+      drawHeatmap()
+    }
+    const resize = () => map?.resize()
+    const dispose = () => {
+      if (map?.remove) map.remove()
+      map = null
+      started = false
+      okFlag = false
+      if (canvas) (canvas as unknown as { _mapInstance: unknown })._mapInstance = null
+    }
+    return {
+      init,
+      ok: () => okFlag,
+      drawHeatmap,
+      select,
+      recolor,
+      moveDot,
+      clearSelection,
+      resize,
+      dispose,
+    }
+  })()
 
   const load = () => {
     if (loaded) return
@@ -2524,6 +2770,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const closeDetail = () => {
     panel.classList.remove('tri-map--detail')
     if (detail) detail.replaceChildren()
+    mapCtl.clearSelection()
+    requestAnimationFrame(() => mapCtl.resize())
   }
   const toMain = () => {
     closeDetail()
@@ -2549,11 +2797,27 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       back.textContent = '← back'
       head.append(el('span', 'tri-pop-date', `${shortDate(d.date)} · ${d.name || d.sport}`), back)
       card.appendChild(head)
-      card.appendChild(renderMapDetail(d))
+      const mapMode = mapCtl.ok()
+      card.appendChild(
+        mapMode
+          ? renderMapDetail(d, {
+              mapMode: true,
+              onMetric: i => mapCtl.recolor(d, i),
+              onHover: p => mapCtl.moveDot(p.lng, p.lat),
+            })
+          : renderMapDetail(d),
+      )
       detail.replaceChildren(card)
       panel.classList.add('tri-map--detail')
       back.addEventListener('click', closeDetail, { once: true })
-      body?.scrollTo({ top: 0 })
+      if (mapMode) {
+        requestAnimationFrame(() => {
+          mapCtl.resize()
+          mapCtl.select(d, 0)
+        })
+      } else {
+        body?.scrollTo({ top: 0 })
+      }
     })
   }
   const ritem = (titleEl: HTMLElement | string, sub: string): HTMLElement => {
@@ -2679,20 +2943,31 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       activate(its[selIndex] ?? its[0])
     }
   }
+  const startMap = () =>
+    void mapCtl.init().then(() => {
+      mapCtl.resize()
+      mapCtl.drawHeatmap()
+    })
   const open = () => {
     root.classList.add('tri-map-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
     void loadDetails()
-    if (reduce) return
+    if (reduce) {
+      startMap()
+      return
+    }
     const br = btn.getBoundingClientRect()
     const pr = panel.getBoundingClientRect()
-    if (pr.width < 1 || pr.height < 1) return
+    if (pr.width < 1 || pr.height < 1) {
+      startMap()
+      return
+    }
     const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
     const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
     const sx = Math.max(0.05, br.width / pr.width)
     const sy = Math.max(0.05, br.height / pr.height)
-    panel.animate(
+    const anim = panel.animate(
       [
         {
           opacity: 0,
@@ -2702,6 +2977,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
+    anim.finished.then(startMap).catch(startMap)
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
@@ -2735,6 +3011,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     search?.removeEventListener('keydown', onSearchKey)
     results?.removeEventListener('click', onResultsClick)
     document.removeEventListener('keydown', onKey)
+    mapCtl.dispose()
   }
 }
 

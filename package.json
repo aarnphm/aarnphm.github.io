@@ -75,7 +75,6 @@
     "@electric-sql/pglite": "^0.5.1",
     "@electric-sql/pglite-pgvector": "^0.0.2",
     "@floating-ui/dom": "^1.7.6",
-    "@garmin/fitsdk": "^21.205.0",
     "@huggingface/transformers": "^4.2.0",
     "@jax-js/jax": "^0.1.11",
     "@modelcontextprotocol/sdk": "^1.29.0",

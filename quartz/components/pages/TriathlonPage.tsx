@@ -555,9 +555,11 @@ export default (() => {
             </button>
           </div>
           <div class="tri-ana-body tri-map-body">
-            <div class="tri-ana-results tri-map-results" aria-hidden="true" />
-            <div class="tri-ana-detail tri-map-detail" aria-hidden="true" />
-            <div class="tri-map-hint">search a ride or run to view its route heatmap</div>
+            <div class="tri-map-pane">
+              <div class="tri-map-canvas" />
+              <div class="tri-ana-results tri-map-results" aria-hidden="true" />
+            </div>
+            <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
           </div>
         </aside>
       </article>
