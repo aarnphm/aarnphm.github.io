@@ -34,6 +34,7 @@ export interface AnalyticsInputs {
   apple?: AppleCache | null
   weights?: TrackEntry[]
   events?: RaceEvent[]
+  since?: string
 }
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
@@ -949,9 +950,12 @@ export function buildAnalytics(
 
   if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
 
+  const sinceDay =
+    inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const raw = Object.values(cache.activities)
     .map(a => ({ a, sport: normalizeSport(a.sportType) }))
     .filter((x): x is { a: RawStravaActivity; sport: Sport } => x.sport !== null)
+    .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
   if (raw.length === 0) {
@@ -980,7 +984,7 @@ export function buildAnalytics(
     loadById.set(act.a.id, activityLoad(act, vThr))
   }
 
-  const firstDay = acts[0].day
+  const firstDay = sinceDay ?? acts[0].day
   const windowFrom = dayMs(firstDay)
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
 

@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import { emptyOuraDaily, OuraCache, OuraDaily, OuraUser } from '../plugins/stores/oura'
 import { joinSegments, QUARTZ } from '../util/path'
+import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
 const API = 'https://api.ouraring.com/v2/usercollection'
 const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
@@ -196,6 +197,7 @@ async function main(): Promise<void> {
   }
 
   await writeCache()
+  await refreshTriathlonRouteSource()
   const withReadiness = Object.values(days).filter(d => d.readiness != null).length
   console.log(
     `[oura] wrote ${Object.keys(days).length} days (${start} → ${end}), ${withReadiness} with readiness → ${cacheFile}`,

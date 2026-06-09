@@ -9,6 +9,7 @@ import {
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
+import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readString } from '../util/type-guards'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
@@ -334,6 +335,7 @@ async function main(): Promise<void> {
 
   if (writing) await writing
   await writeCache()
+  await refreshTriathlonRouteSource()
   const withCalories = Object.values(merged).filter(a => a.calories != null).length
   console.log(
     `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(geo).length} located, ${withCalories} with calories → ${cacheFile}`,

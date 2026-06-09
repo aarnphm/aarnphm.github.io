@@ -357,6 +357,9 @@ export default (() => {
             <button class="tri-analytics-btn" type="button">
               analytics
             </button>
+            <button class="tri-map-btn" type="button">
+              map
+            </button>
             <button class="tri-calc-btn" type="button">
               calculator
             </button>
@@ -533,6 +536,28 @@ export default (() => {
             <div class="tri-ana-block" data-chart="readiness" />
             <div class="tri-ana-block" data-chart="trend" />
             <div class="tri-ana-block" data-chart="actions" />
+          </div>
+        </aside>
+
+        <div class="tri-map-scrim" aria-hidden="true" />
+        <aside class="tri-map" aria-hidden="true" role="dialog" aria-label="triathlon route maps">
+          <div class="tri-ana-bar tri-map-bar">
+            <span class="tri-ana-title tri-map-title">map</span>
+            <input
+              class="tri-ana-search tri-map-search"
+              type="search"
+              placeholder="search routes (filter:bike|run)"
+              aria-label="search routes"
+              autocomplete="off"
+            />
+            <button class="tri-ana-close tri-map-close" type="button" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <div class="tri-ana-body tri-map-body">
+            <div class="tri-ana-results tri-map-results" aria-hidden="true" />
+            <div class="tri-ana-detail tri-map-detail" aria-hidden="true" />
+            <div class="tri-map-hint">search a ride or run to view its route heatmap</div>
           </div>
         </aside>
       </article>
