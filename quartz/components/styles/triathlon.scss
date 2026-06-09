@@ -624,6 +624,7 @@
 .tri-calc-btn,
 .tri-gear-btn,
 .tri-pace-btn,
+.tri-map-btn,
 .tri-analytics-btn {
   padding: 0;
   background: none;
@@ -1009,9 +1010,8 @@
   --tri-run: #fdb2a2;
 }
 
-
-
-.tri-analytics-scrim {
+.tri-analytics-scrim,
+.tri-map-scrim {
   position: fixed;
   inset: 0;
   z-index: 60;
@@ -1022,12 +1022,14 @@
     visibility 0.2s;
 }
 
-.tri-analytics-open .tri-analytics-scrim {
+.tri-analytics-open .tri-analytics-scrim,
+.tri-map-open .tri-map-scrim {
   opacity: 1;
   visibility: visible;
 }
 
-.tri-analytics {
+.tri-analytics,
+.tri-map {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -1050,7 +1052,8 @@
     visibility 0.28s;
 }
 
-.tri-analytics-open .tri-analytics {
+.tri-analytics-open .tri-analytics,
+.tri-map-open .tri-map {
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, -50%);
@@ -2084,4 +2087,116 @@
   stroke-width: 0.8;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-map--searching .tri-ana-results {
+  display: flex;
+}
+
+.tri-map--detail .tri-ana-detail {
+  display: flex;
+}
+
+.tri-map--detail .tri-ana-results,
+.tri-map--searching .tri-map-hint,
+.tri-map--detail .tri-map-hint {
+  display: none;
+}
+
+.tri-map-hint {
+  font-size: 0.66rem;
+  color: color-mix(in srgb, var(--gray) 85%, transparent);
+}
+
+.tri-map-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tri-map-tab {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gray);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+  border-radius: var(--radius-none);
+  padding: 0.18rem 0.5rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &[aria-selected='true'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
+}
+
+.tri-map-figs {
+  align-items: center;
+}
+
+.tri-map-figs .tri-route {
+  max-height: 240px;
+}
+
+.tri-map-profile {
+  display: flex;
+  flex-direction: column;
+}
+
+.tri-heat-seg {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-heat--1 {
+  stroke: color-mix(in srgb, var(--tri-accent) 15%, var(--gray));
+}
+.tri-heat--2 {
+  stroke: color-mix(in srgb, var(--tri-accent) 29%, var(--gray));
+}
+.tri-heat--3 {
+  stroke: color-mix(in srgb, var(--tri-accent) 43%, var(--gray));
+}
+.tri-heat--4 {
+  stroke: color-mix(in srgb, var(--tri-accent) 57%, var(--gray));
+}
+.tri-heat--5 {
+  stroke: color-mix(in srgb, var(--tri-accent) 71%, var(--gray));
+}
+.tri-heat--6 {
+  stroke: color-mix(in srgb, var(--tri-accent) 85%, var(--gray));
+}
+.tri-heat--7 {
+  stroke: var(--tri-accent);
+}
+
+.tri-map-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-map-legend-bar {
+  flex: 1 1 auto;
+  height: 0.5rem;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-accent) 15%, var(--gray)),
+    var(--tri-accent)
+  );
 }

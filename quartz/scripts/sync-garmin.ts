@@ -17,6 +17,7 @@ import {
   normalizeGarminSport,
 } from '../plugins/stores/garmin'
 import { joinSegments, QUARTZ } from '../util/path'
+import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
 
 const CACHE_VERSION = 1
@@ -437,6 +438,7 @@ async function main(): Promise<void> {
   const cache: GarminCache = { version: CACHE_VERSION, lastSync: Date.now(), activities: sorted }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  await refreshTriathlonRouteSource()
   const fuelingCount = Object.values(sorted).filter(activity =>
     hasGarminFueling(activity.fueling),
   ).length

@@ -6,11 +6,13 @@ import {
   AppleCache,
   AppleDaily,
   AppleRecord,
+  latestAppleDate,
   matchAppleRecord,
   mergeAppleDay,
   parseAppleJson,
 } from '../plugins/stores/apple'
 import { joinSegments, QUARTZ } from '../util/path'
+import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
 const CACHE_VERSION = 1
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
@@ -72,11 +74,16 @@ async function main(): Promise<void> {
       '[apple] no import found. set APPLE_HEALTH_FILE=<export.xml|day.json>, or drop one at quartz/.quartz-cache/apple-health-import.{json,xml}',
     )
     if (!prev) return
+    const latest = latestAppleDate(prev.days)
+    const lastSync = new Date(prev.lastSync).toISOString()
+    console.log(`[apple] keeping previous cache (${lastSync}, latest day ${latest ?? 'none'})`)
+    return
   }
 
   const cache: AppleCache = { version: CACHE_VERSION, lastSync: Date.now(), days }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
+  await refreshTriathlonRouteSource()
   console.log(
     `[apple] merged ${touched} day-entries → ${Object.keys(days).length} days → ${cacheFile}`,
   )

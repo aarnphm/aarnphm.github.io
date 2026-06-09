@@ -118,6 +118,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
               apple,
               weights: tracking?.days,
               events: tracking?.races,
+              since: typeof since === 'string' ? since : undefined,
             }),
           ),
         }),

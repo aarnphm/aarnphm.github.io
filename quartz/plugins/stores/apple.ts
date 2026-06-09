@@ -154,3 +154,12 @@ export function mergeAppleDay(prev: AppleDaily | undefined, next: AppleDaily): A
     weightKg: next.weightKg ?? prev.weightKg,
   }
 }
+
+export function latestAppleDate(days: Record<string, AppleDaily>): string | null {
+  let latest: string | null = null
+  for (const day of Object.values(days)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day.date)) continue
+    if (!latest || day.date > latest) latest = day.date
+  }
+  return latest
+}

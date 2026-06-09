@@ -149,7 +149,7 @@ const buildPool = (d: StravaActivityDetail): HTMLElement => {
 
 const buildTrace = (
   d: StravaActivityDetail,
-  pick: (p: StravaActivityDetail['route'][number]) => number,
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number,
   title: string,
   cap: (max: number) => string,
 ): HTMLElement => {
@@ -158,16 +158,16 @@ const buildTrace = (
   const pad = 2
   const maxD = d.route[d.route.length - 1].d || 1
   let max = 1
-  for (const p of d.route) {
-    const v = pick(p)
+  d.route.forEach((p, i) => {
+    const v = pick(p, i)
     if (v > max) max = v
-  }
+  })
   const px = (km: number): number => (km / maxD) * w
   const py = (v: number): number => h - pad - (v / max) * (h - 2 * pad)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
-    const v = pick(p)
+    const v = pick(p, i)
     area += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
     line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
   })
@@ -551,6 +551,249 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
   const onLeave = () => wrap.classList.remove('tri-chart--hover')
   s.addEventListener('mousemove', onMove)
   s.addEventListener('mouseleave', onLeave)
+  return wrap
+}
+
+const derivePace = (route: StravaActivityDetail['route'], movingTimeS: number): number[] => {
+  const n = route.length
+  const out = Array.from({ length: n }, () => 0)
+  if (n < 2) return out
+  const dtPer = movingTimeS / Math.max(1, n - 1)
+  for (let i = 0; i < n; i++) {
+    const j0 = Math.max(0, i - 2)
+    const j1 = Math.min(n - 1, i + 2)
+    const dKm = route[j1].d - route[j0].d
+    const dt = (j1 - j0) * dtPer
+    out[i] = dt > 0 ? dKm / (dt / 3600) : 0
+  }
+  return out
+}
+
+const buildHeatRoute = (
+  route: StravaActivityDetail['route'],
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number,
+  ramp = 7,
+): SVGElement => {
+  const pad = 6
+  const span = 100 - pad * 2
+  const vals = route.map((p, i) => pick(p, i))
+  let lo = Infinity
+  let hi = -Infinity
+  for (const v of vals) {
+    if (v < lo) lo = v
+    if (v > hi) hi = v
+  }
+  const range = hi > lo ? hi - lo : 1
+  const sx = (p: StravaActivityDetail['route'][number]): number => pad + p.x * span
+  const sy = (p: StravaActivityDetail['route'][number]): number => pad + (1 - p.y) * span
+  const s = svg('svg', {
+    class: 'tri-route',
+    viewBox: '0 0 100 100',
+    preserveAspectRatio: 'xMidYMid meet',
+  })
+  const g = svg('g', { class: 'tri-heat' })
+  for (let i = 0; i < route.length - 1; i++) {
+    const mid = (vals[i] + vals[i + 1]) / 2
+    const t = Math.min(1, Math.max(0, (mid - lo) / range))
+    const bucket = Math.min(ramp, Math.max(1, Math.ceil(t * ramp) || 1))
+    g.appendChild(
+      svg('path', {
+        d: `M ${sx(route[i]).toFixed(2)} ${sy(route[i]).toFixed(2)} L ${sx(route[i + 1]).toFixed(2)} ${sy(route[i + 1]).toFixed(2)}`,
+        class: `tri-heat-seg tri-heat--${bucket}`,
+      }),
+    )
+  }
+  s.appendChild(g)
+  s.appendChild(svg('circle', { class: 'tri-route-cursor', cx: -10, cy: -10, r: 2.6 }))
+  return s
+}
+
+const buildHeatLegend = (lo: number, hi: number, fmt: (v: number) => string): HTMLElement => {
+  const wrap = el('div', 'tri-map-legend')
+  wrap.append(
+    el('span', 'tri-map-legend-lo', fmt(lo)),
+    el('span', 'tri-map-legend-bar'),
+    el('span', 'tri-map-legend-hi', fmt(hi)),
+  )
+  return wrap
+}
+
+interface MapMetric {
+  label: string
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number
+  fmt: (v: number) => string
+  profile: () => HTMLElement
+  readout: (p: StravaActivityDetail['route'][number], i: number) => string
+  extra?: () => (HTMLElement | null)[]
+}
+
+const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
+  const route = d.route
+  const pace = derivePace(route, d.movingTimeS)
+  const hasPower = d.deviceWatts && route.some(p => p.w > 0)
+  const hasHr = route.some(p => p.hr > 0)
+  const hasCad = route.some(p => p.cad > 0)
+  const hasElev = d.maxAlt > d.minAlt
+  const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
+  const paceFmt = (kmh: number): string => {
+    if (kmh <= 0) return '—'
+    if (d.sport === 'bike') return `${(kmh * KM_TO_MI).toFixed(1)} mph`
+    if (d.sport === 'swim') return `${clock(3600 / (kmh * 10))} /100m`
+    return `${clock(3600 / (kmh * KM_TO_MI))} /mi`
+  }
+  const paceSpec: MapMetric = {
+    label: d.sport === 'bike' ? 'speed' : 'pace',
+    pick: (_p, i) => pace[i],
+    fmt: paceFmt,
+    profile: () =>
+      buildTrace(
+        d,
+        (_p, i) => pace[i],
+        d.sport === 'bike' ? 'speed' : 'pace',
+        () => '',
+      ),
+    readout: (p, i) => `${scrubDist(p.d, d.sport)} · ${paceFmt(pace[i])}`,
+  }
+  const powerSpec: MapMetric = {
+    label: 'power',
+    pick: p => p.w,
+    fmt: v => `${Math.round(v)} W`,
+    profile: () =>
+      buildTrace(
+        d,
+        p => p.w,
+        'power',
+        m => `${m} W peak`,
+      ),
+    readout: p => `${scrubDist(p.d, d.sport)} · ${p.w} W`,
+    extra: () => [buildPowerCurve(d), buildPowerZones(d), buildPowerHist(d)],
+  }
+  const hrSpec: MapMetric = {
+    label: 'heart rate',
+    pick: p => p.hr,
+    fmt: v => `${Math.round(v)} bpm`,
+    profile: () =>
+      buildTrace(
+        d,
+        p => p.hr,
+        'hr',
+        m => `${m} bpm peak`,
+      ),
+    readout: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm`,
+    extra: () => [buildHrZones(d)],
+  }
+  const cadSpec: MapMetric = {
+    label: 'cadence',
+    pick: p => p.cad,
+    fmt: v => `${Math.round(v)} ${cadUnit}`,
+    profile: () =>
+      buildTrace(
+        d,
+        p => p.cad,
+        'cadence',
+        m => `${m} ${cadUnit} peak`,
+      ),
+    readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad} ${cadUnit}`,
+  }
+  const elevSpec: MapMetric = {
+    label: 'elevation',
+    pick: p => p.alt,
+    fmt: v => `${Math.round(v)} m`,
+    profile: () => buildElevation(d),
+    readout: (p, i) => {
+      const g = Math.round(gradeAt(route, i) * 10) / 10
+      return `${scrubDist(p.d, d.sport)} · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
+    },
+  }
+  const specs: MapMetric[] = []
+  if (d.sport === 'bike') {
+    if (hasPower) specs.push(powerSpec)
+    if (hasHr) specs.push(hrSpec)
+    if (hasCad) specs.push(cadSpec)
+    specs.push(paceSpec)
+    if (hasElev) specs.push(elevSpec)
+  } else if (d.sport === 'run') {
+    specs.push(paceSpec)
+    if (hasHr) specs.push(hrSpec)
+    if (hasCad) specs.push(cadSpec)
+    if (hasElev) specs.push(elevSpec)
+    if (hasPower) specs.push(powerSpec)
+  } else {
+    specs.push(paceSpec)
+    if (hasHr) specs.push(hrSpec)
+  }
+  return specs
+}
+
+const renderMapDetail = (d: StravaActivityDetail): HTMLElement => {
+  const wrap = el('section', 'tri-act tri-act--expanded')
+  const head = el('div', 'tri-act-head')
+  head.appendChild(buildIcon(d.sport))
+  wrap.appendChild(head)
+
+  const stats = el('table', 'tri-act-stats')
+  const sbody = document.createElement('tbody')
+  sbody.append(
+    statRow('distance', dist(d.distanceKm, d.sport)),
+    statRow('time', dur(d.movingTimeS)),
+    statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
+  )
+  if (d.avgHr) sbody.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
+  stats.appendChild(sbody)
+  wrap.appendChild(stats)
+
+  const specs = d.route.length >= 2 ? metricSpecs(d) : []
+  if (specs.length === 0) {
+    const figs = el('div', 'tri-act-figs')
+    if (d.sport === 'swim') figs.appendChild(buildPool(d))
+    if (figs.childElementCount > 0) wrap.appendChild(figs)
+    const more = el('div', 'tri-act-more')
+    for (const z of [buildPowerCurve(d), buildPowerZones(d), buildPowerHist(d), buildHrZones(d)])
+      if (z) more.appendChild(z)
+    if (more.childElementCount > 0) wrap.appendChild(more)
+    return wrap
+  }
+
+  const tablist = el('div', 'tri-map-tablist')
+  tablist.setAttribute('role', 'tablist')
+  const figs = el('div', 'tri-act-figs tri-map-figs')
+  const profileBox = el('div', 'tri-map-profile')
+  const zoneBox = el('div', 'tri-act-more')
+  wrap.append(tablist, figs, profileBox, zoneBox)
+
+  let active = 0
+  const draw = () => {
+    const spec = specs[active]
+    const vals = d.route.map((p, i) => spec.pick(p, i))
+    let lo = Infinity
+    let hi = -Infinity
+    for (const v of vals) {
+      if (v < lo) lo = v
+      if (v > hi) hi = v
+    }
+    const heat = buildHeatRoute(d.route, spec.pick)
+    figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt))
+    const marker = heat.querySelector<SVGElement>('.tri-route-cursor')
+    const prof = spec.profile()
+    profileBox.replaceChildren(prof)
+    zoneBox.replaceChildren()
+    if (spec.extra) for (const z of spec.extra()) if (z) zoneBox.appendChild(z)
+    linkScrub(wrap, marker, [{ wrap: prof, fmt: spec.readout }], d.route)
+    Array.from(tablist.children).forEach((t, i) =>
+      t.setAttribute('aria-selected', i === active ? 'true' : 'false'),
+    )
+  }
+  specs.forEach((spec, i) => {
+    const tab = el('button', 'tri-map-tab', spec.label)
+    tab.setAttribute('type', 'button')
+    tab.setAttribute('role', 'tab')
+    tab.addEventListener('click', () => {
+      active = i
+      draw()
+    })
+    tablist.appendChild(tab)
+  })
+  draw()
   return wrap
 }
 
@@ -2231,6 +2474,270 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const setupMap = (root: HTMLElement): (() => void) | null => {
+  const btn = root.querySelector<HTMLElement>('.tri-map-btn')
+  const panel = root.querySelector<HTMLElement>('.tri-map')
+  const scrim = root.querySelector<HTMLElement>('.tri-map-scrim')
+  const closeBtn = root.querySelector<HTMLElement>('.tri-map-close')
+  const title = root.querySelector<HTMLElement>('.tri-map-title')
+  const search = root.querySelector<HTMLInputElement>('.tri-map-search')
+  const results = root.querySelector<HTMLElement>('.tri-map-results')
+  const detail = root.querySelector<HTMLElement>('.tri-map-detail')
+  if (!btn || !panel) return null
+
+  const body = root.querySelector<HTMLElement>('.tri-map-body')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let loaded = false
+  let data: Analytics | null = null
+  let detailData: DetailPayload | null = null
+  let detailLoaded = false
+  let selIndex = -1
+
+  const load = () => {
+    if (loaded) return
+    loaded = true
+    const path = root.dataset.analyticsPath
+    if (!path) return
+    fetch(path)
+      .then(res => res.json())
+      .then((d: Analytics) => {
+        data = d
+        if (search?.value) runSearch()
+      })
+      .catch(() => {})
+  }
+  const loadDetails = (): Promise<void> => {
+    if (detailLoaded) return Promise.resolve()
+    detailLoaded = true
+    const p = root.dataset.detailPath
+    if (!p) return Promise.resolve()
+    return fetch(p)
+      .then(res => res.json())
+      .then((d: DetailPayload) => {
+        detailData = d
+        DETAIL_ZONES = d.zones ?? null
+        DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        if (search?.value) runSearch()
+      })
+      .catch(() => {})
+  }
+  const closeDetail = () => {
+    panel.classList.remove('tri-map--detail')
+    if (detail) detail.replaceChildren()
+  }
+  const toMain = () => {
+    closeDetail()
+    if (search) search.value = ''
+    panel.classList.remove('tri-map--searching')
+    if (results) results.replaceChildren()
+    selIndex = -1
+  }
+  const close = () => {
+    root.classList.remove('tri-map-open')
+    panel.setAttribute('aria-hidden', 'true')
+    toMain()
+  }
+  const showRoute = (id: string) => {
+    if (!detail) return
+    void loadDetails().then(() => {
+      const d = detailData?.details?.[id]
+      if (!d) return
+      const card = el('div', 'tri-pop-card')
+      const head = el('div', 'tri-pop-head')
+      const back = el('button', 'tri-ana-back')
+      back.setAttribute('type', 'button')
+      back.textContent = '← back'
+      head.append(el('span', 'tri-pop-date', `${shortDate(d.date)} · ${d.name || d.sport}`), back)
+      card.appendChild(head)
+      card.appendChild(renderMapDetail(d))
+      detail.replaceChildren(card)
+      panel.classList.add('tri-map--detail')
+      back.addEventListener('click', closeDetail, { once: true })
+      body?.scrollTo({ top: 0 })
+    })
+  }
+  const ritem = (titleEl: HTMLElement | string, sub: string): HTMLElement => {
+    const it = el('button', 'tri-ana-ritem')
+    it.setAttribute('type', 'button')
+    const t = el('span', 'tri-ana-ritem-t')
+    if (typeof titleEl === 'string') t.textContent = titleEl
+    else t.appendChild(titleEl)
+    it.append(t, el('span', 'tri-ana-ritem-s', sub))
+    return it
+  }
+  const matchHay = (hay: string, tokens: string[]): boolean => tokens.every(t => hay.includes(t))
+  const resultItems = (): HTMLElement[] =>
+    results ? Array.from(results.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+  const setSel = (i: number) => {
+    const its = resultItems()
+    if (its.length === 0) {
+      selIndex = -1
+      return
+    }
+    selIndex = ((i % its.length) + its.length) % its.length
+    its.forEach((it, k) => it.classList.toggle('tri-ana-ritem--sel', k === selIndex))
+    its[selIndex].scrollIntoView({ block: 'nearest' })
+  }
+  const activate = (it: HTMLElement | undefined) => {
+    if (!it) return
+    if (it.dataset.id) showRoute(it.dataset.id)
+    else if (it.dataset.insert) {
+      const tokens = search!.value.trim().split(/\s+/)
+      tokens[tokens.length - 1] = it.dataset.insert
+      search!.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
+      search!.focus()
+      runSearch()
+    }
+  }
+  const drawableIds = (): Set<string> => {
+    const ids = new Set<string>()
+    const det = detailData?.details ?? {}
+    for (const k in det) if ((det[k].route?.length ?? 0) >= 2) ids.add(k)
+    return ids
+  }
+  const runSearch = () => {
+    if (!search || !results) return
+    const q = search.value.trim().toLowerCase()
+    results.replaceChildren()
+    if (!q) {
+      panel.classList.remove('tri-map--searching')
+      results.setAttribute('aria-hidden', 'true')
+      return
+    }
+    panel.classList.add('tri-map--searching')
+    results.setAttribute('aria-hidden', 'false')
+    const rawTokens = q.split(/\s+/)
+    let filterSport: string | null = null
+    const tokens: string[] = []
+    for (const t of rawTokens) {
+      if (t.startsWith('filter:')) filterSport = t.slice(7)
+      else if (t) tokens.push(t)
+    }
+    const hints: HTMLElement[] = []
+    const lastToken = rawTokens[rawTokens.length - 1]
+    if (lastToken.startsWith('filter:') && !['bike', 'run'].includes(lastToken.slice(7))) {
+      const prefix = lastToken.slice(7)
+      for (const f of ['bike', 'run'])
+        if (f.startsWith(prefix)) {
+          const it = ritem(`filter:${f}`, 'filter routes')
+          it.dataset.insert = `filter:${f}`
+          hints.push(it)
+        }
+    } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
+      const it = ritem('filter:', 'filter by sport (bike, run)')
+      it.dataset.insert = 'filter:'
+      hints.push(it)
+    }
+    const ids = drawableIds()
+    const acts = (data?.activities ?? []).filter(a => {
+      if (!ids.has(String(a.id))) return false
+      if (filterSport && a.sport !== filterSport) return false
+      return tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+    })
+    if (hints.length) {
+      const grp = el('div', 'tri-ana-rgroup')
+      grp.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))
+      for (const it of hints) grp.appendChild(it)
+      results.appendChild(grp)
+    }
+    if (acts.length) {
+      const grp = el('div', 'tri-ana-rgroup')
+      grp.appendChild(el('div', 'tri-ana-rlabel', 'routes'))
+      for (const a of acts.slice(0, 50)) {
+        const head = el('span', 'tri-ana-ritem-h')
+        head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
+        const sub = `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}`
+        const it = ritem(head, sub)
+        it.dataset.id = String(a.id)
+        grp.appendChild(it)
+      }
+      results.appendChild(grp)
+    }
+    if (!acts.length && !hints.length)
+      results.appendChild(el('div', 'tri-ana-empty', detailLoaded ? 'no routes' : 'loading…'))
+    setSel(0)
+  }
+  const onResultsClick = (event: MouseEvent) => {
+    activate(
+      (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem') ?? undefined,
+    )
+  }
+  const onSearchKey = (event: KeyboardEvent) => {
+    if (!panel.classList.contains('tri-map--searching')) return
+    if (event.key === 'ArrowDown' || (event.ctrlKey && (event.key === 'n' || event.key === 'N'))) {
+      event.preventDefault()
+      setSel(selIndex + 1)
+    } else if (
+      event.key === 'ArrowUp' ||
+      (event.ctrlKey && (event.key === 'p' || event.key === 'P'))
+    ) {
+      event.preventDefault()
+      setSel(selIndex - 1)
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+      const its = resultItems()
+      activate(its[selIndex] ?? its[0])
+    }
+  }
+  const open = () => {
+    root.classList.add('tri-map-open')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+    void loadDetails()
+    if (reduce) return
+    const br = btn.getBoundingClientRect()
+    const pr = panel.getBoundingClientRect()
+    if (pr.width < 1 || pr.height < 1) return
+    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
+    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
+    const sx = Math.max(0.05, br.width / pr.width)
+    const sy = Math.max(0.05, br.height / pr.height)
+    panel.animate(
+      [
+        {
+          opacity: 0,
+          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+        },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+      ],
+      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    )
+  }
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape') return
+    if (panel.classList.contains('tri-map--detail')) {
+      closeDetail()
+      return
+    }
+    if (search && search.value) {
+      search.value = ''
+      runSearch()
+      return
+    }
+    close()
+  }
+
+  btn.addEventListener('click', open)
+  closeBtn?.addEventListener('click', close)
+  title?.addEventListener('click', toMain)
+  scrim?.addEventListener('click', close)
+  search?.addEventListener('input', runSearch)
+  search?.addEventListener('keydown', onSearchKey)
+  results?.addEventListener('click', onResultsClick)
+  document.addEventListener('keydown', onKey)
+
+  return () => {
+    btn.removeEventListener('click', open)
+    closeBtn?.removeEventListener('click', close)
+    title?.removeEventListener('click', toMain)
+    scrim?.removeEventListener('click', close)
+    search?.removeEventListener('input', runSearch)
+    search?.removeEventListener('keydown', onSearchKey)
+    results?.removeEventListener('click', onResultsClick)
+    document.removeEventListener('keydown', onKey)
+  }
+}
+
 const setupCheat = (root: HTMLElement): (() => void) | null => {
   const unit = root.querySelector<HTMLButtonElement>('.tri-cheat-unit')
   const cells = root.querySelectorAll<HTMLElement>('.tri-cheat td[data-km]')
@@ -2465,6 +2972,8 @@ document.addEventListener('nav', () => {
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)
   if (anaCleanup) window.addCleanup?.(anaCleanup)
+  const mapCleanup = setupMap(root)
+  if (mapCleanup) window.addCleanup?.(mapCleanup)
   const glossCleanup = setupGloss(root)
   if (glossCleanup) window.addCleanup?.(glossCleanup)
   const shortcutsCleanup = setupShortcuts(root)
