@@ -1,6 +1,6 @@
 ---
 date: '2025-01-22'
-description: and on emboddied experience.
+description: and on embodied experience.
 draft: true
 id: physical touch
 modified: 2026-06-05 15:08:09 GMT-04:00

@@ -119,7 +119,7 @@ Proposition 11:
 
 Ontological Proof: Explain God as a being that cannot not exist. God's essence includes existence
 
-Cosmological Proof: God is the first cause, the aultimate cause of everything else. WIthout God the chain of cause and effect would recede forever, and the world would be without a rational foundation.
+Cosmological Proof: God is the first cause, the ultimate cause of everything else. Without God the chain of cause and effect would recede forever, and the world would be without a rational foundation.
 Aristotle's proof of the Unmoved Mover in Metaphysics was this type of proof
 
 Teleological Proof ("Design argument"): Nature shows evidence of intelligent design. <- Sphinoza rejects the _Teleological proof_. His three arguments in Proposition 11
@@ -141,7 +141,7 @@ First proof: (ontological argument)
 2. Axiom 7: If a thing can be conceived as not existing, its essence does not involve existence
 3. Prop. 7: Existence belongs to the nature of substance. - Why?
    a. Substance cannot be produced by another
-   b. So, from def.1, substance is self-caused, aso its essence involves edistence
+   b. So, from def.1, substance is self-caused, also its essence involves existence
 4. The hypothetical non-existence of God reduces to contradiction
 5. Therefore, God exists.
 
@@ -151,7 +151,7 @@ Second proof: (cosmological argument)
 2. The cause, whether of existence or non-existence, is either in the thing or in another
 3. A thing necessarily exists if no cause prevents its existence.
 4. So, if God does not exist, there must be a cause of non-existence, and this cause must be in another
-5. What causes God not to exist must absolute exclude God from being, and can there have nothing in commong with God
+5. What causes God not to exist must absolutely exclude God from being, and can therefore have nothing in common with God
 6. If two things have nothing in common, one cannot prevent the other's existence
 7. Therefore, no cause prevents God's existence
 8. So, God exists.

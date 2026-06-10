@@ -75,7 +75,7 @@ Kant: morality comes from reason, not consequences or feelings. [@kant1785ground
 - Act from respect for law, not inclination (you keep promise because it's right, not because you feel like it)
 - Maxim passes universal law test (can everyone act this way?)
 - Treat persons as ends (respect their rational agency)
-- Willing, not just conforming (external compliance ≠ moral worth)
+- Willing, not just conforming (external compliance $\neq$ moral worth)
 
 **Strengths**:
 
@@ -159,7 +159,7 @@ Philia (friendship, [[thoughts/love|love]]): central to good life. Not instrumen
 
 **Criteria**: what does virtuous person do?
 
-- Acts from stable disposition (one generous act ≠ generous)
+- Acts from stable disposition (one generous act $\neq$ generous)
 - Chooses virtue for its own sake (not for external reward)
 - Acts with pleasure (virtuous person enjoys virtuous acts)
 - Exhibits phronesis (knows what situation calls for)
