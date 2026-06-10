@@ -950,8 +950,7 @@ export function buildAnalytics(
 
   if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
 
-  const sinceDay =
-    inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
+  const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const raw = Object.values(cache.activities)
     .map(a => ({ a, sport: normalizeSport(a.sportType) }))
     .filter((x): x is { a: RawStravaActivity; sport: Sport } => x.sport !== null)

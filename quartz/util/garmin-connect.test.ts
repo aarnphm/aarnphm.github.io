@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { garminConnectActivities, garminConnectActivity } from './garmin-connect'
+import {
+  garminConnectActivities,
+  garminConnectActivity,
+  garminConnectStreams,
+} from './garmin-connect'
 
 test('normalizes Garmin Connect activity details into the Garmin cache shape', () => {
   const raw = {
@@ -127,4 +131,34 @@ test('normalizes Garmin Connect GraphQL activity scalars', () => {
     items.map(item => item.id),
     ['3', '4'],
   )
+})
+
+test('normalizes Garmin Connect detail metrics into streams', () => {
+  const streams = garminConnectStreams({
+    metricDescriptors: [
+      { key: 'sumDistance' },
+      { key: 'directLatitude' },
+      { key: 'directLongitude' },
+      { key: 'directElevation' },
+      { key: 'directPower' },
+      { key: 'directHeartRate' },
+      { key: 'directBikeCadence' },
+    ],
+    activityDetailMetrics: [
+      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82] },
+      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88] },
+      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91] },
+    ],
+  })
+
+  assert.deepEqual(streams?.latlng, [
+    [43.1, -79.1],
+    [43.2, -79.2],
+    [43.3, -79.3],
+  ])
+  assert.deepEqual(streams?.distance, [0, 500, 1000])
+  assert.deepEqual(streams?.altitude, [101, 104, 109])
+  assert.deepEqual(streams?.watts, [120, 180, 210])
+  assert.deepEqual(streams?.heartrate, [135, 142, 149])
+  assert.deepEqual(streams?.cadence, [82, 88, 91])
 })

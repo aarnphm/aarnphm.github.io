@@ -1,12 +1,14 @@
-import type { GarminActivityMatch, GarminCache, GarminFueling } from './garmin'
+import type { GarminActivityMatch, GarminCache, GarminFueling, GarminStreams } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import { matchGarminActivity, matchGarminFueling } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
+export type ActivityKind = Sport | 'strength'
+
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 
-export const SPORT_ICON: Record<Sport, string[]> = {
+export const SPORT_ICON: Record<ActivityKind, string[]> = {
   run: [
     'M15 7C16.1046 7 17 6.10457 17 5C17 3.89543 16.1046 3 15 3C13.8954 3 13 3.89543 13 5C13 6.10457 13.8954 7 15 7Z',
     'M12.6129 8.26709L9.30469 12.4023L13.4399 16.5376L11.3723 21.0863',
@@ -24,10 +26,13 @@ export const SPORT_ICON: Record<Sport, string[]> = {
     'M3 13l6-2 4 2.5',
     'M2 18c1.5 1.4 3 1.4 4.5 0s3-1.4 4.5 0 3 1.4 4.5 0',
   ],
+  strength: ['M2 12H22', 'M5 9.5V14.5', 'M8 6.5V17.5', 'M16 6.5V17.5', 'M19 9.5V14.5'],
 }
 
 const DAY_MS = 86_400_000
 const WINDOW_DAYS = 364
+const ROUTE_POINTS = 140
+const MAP_ROUTE_POINTS = 1600
 
 export interface StravaAuth {
   refreshToken: string
@@ -100,7 +105,7 @@ export interface StravaSportTotals {
 
 export interface StravaDayItem {
   id: number
-  sport: Sport
+  sport: ActivityKind
   distanceKm: number
   durationS: number
 }
@@ -109,7 +114,7 @@ export interface StravaDay {
   date: string
   durationS: number
   items: StravaDayItem[]
-  dominant: Sport | null
+  dominant: ActivityKind | null
 }
 
 export interface StravaRoutePoint {
@@ -120,6 +125,11 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  lat: number
+  lng: number
+}
+
+export interface StravaMapPoint {
   lat: number
   lng: number
 }
@@ -155,7 +165,7 @@ export interface GarminVerification {
 
 export interface StravaActivityDetail {
   id: number
-  sport: Sport
+  sport: ActivityKind
   name: string
   date: string
   distanceKm: number
@@ -176,6 +186,7 @@ export interface StravaActivityDetail {
   fueling: GarminFueling | null
   garmin: GarminVerification | null
   route: StravaRoutePoint[]
+  mapRoute?: StravaMapPoint[]
   minAlt: number
   maxAlt: number
   descentM: number
@@ -219,6 +230,16 @@ export function normalizeSport(sportType: string): Sport | null {
   }
 }
 
+export function normalizeKind(sportType: string): ActivityKind | null {
+  switch (sportType) {
+    case 'WeightTraining':
+    case 'Crossfit':
+      return 'strength'
+    default:
+      return normalizeSport(sportType)
+  }
+}
+
 export function round(value: number, dp: number): number {
   const f = 10 ** dp
   return Math.round(value * f) / f
@@ -258,6 +279,7 @@ function cleanAltitude(alt: number[]): number[] {
     else filled[i] = last
   }
   const w = 4
+  if (n <= w * 2 + 1) return filled
   const out = filled.slice()
   for (let i = 0; i < n; i++) {
     let sum = 0
@@ -269,6 +291,16 @@ function cleanAltitude(alt: number[]): number[] {
     out[i] = sum / count
   }
   return out
+}
+
+function sampleIndices(lo: number, hi: number, maxPoints: number): number[] {
+  if (hi < lo) return []
+  const span = hi - lo + 1
+  const stride = Math.max(1, Math.ceil(span / maxPoints))
+  const idx: number[] = []
+  for (let i = lo; i <= hi; i += stride) idx.push(i)
+  if (idx[idx.length - 1] !== hi) idx.push(hi)
+  return idx
 }
 
 function emptyTotals(): StravaSportTotals[] {
@@ -310,6 +342,43 @@ function maxPos(arr: number[]): number | null {
   let m = 0
   for (const x of arr) if (x > m) m = x
   return m > 0 ? Math.round(m) : null
+}
+
+function hasPositive(values: number[] | undefined): boolean {
+  return values?.some(value => value > 0) ?? false
+}
+
+function positiveCount(values: number[] | undefined): number {
+  return values?.filter(value => value > 0).length ?? 0
+}
+
+function streamQuality(streams: StravaStreams | GarminStreams | undefined): number {
+  if (!streams) return 0
+  const channels =
+    (streams.latlng.length >= 2 ? 1 : 0) +
+    (streams.altitude.length > 0 ? 1 : 0) +
+    (streams.distance.length > 0 ? 1 : 0) +
+    (hasPositive(streams.heartrate) ? 1 : 0) +
+    (hasPositive(streams.cadence) ? 1 : 0) +
+    (hasPositive(streams.watts) ? 1 : 0)
+  return (
+    channels * 10_000 +
+    streams.latlng.length +
+    streams.altitude.length +
+    streams.distance.length +
+    positiveCount(streams.heartrate) +
+    positiveCount(streams.cadence) +
+    positiveCount(streams.watts)
+  )
+}
+
+function selectStreams(
+  strava: StravaStreams | undefined,
+  match: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): StravaStreams | GarminStreams | undefined {
+  const fromGarmin = match ? garmin?.streams?.[match.activity.id] : undefined
+  return streamQuality(fromGarmin) > streamQuality(strava) ? fromGarmin : strava
 }
 
 const CURVE_SECS = [1, 5, 10, 15, 30, 60, 120, 180, 300, 600, 1200, 1800, 3600, 5400, 7200, 10800]
@@ -429,8 +498,8 @@ function garminVerification(
 
 function projectDetail(
   a: RawStravaActivity,
-  sport: Sport,
-  streams: StravaStreams | undefined,
+  sport: ActivityKind,
+  streams: StravaStreams | GarminStreams | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
   garmin: GarminVerification | null,
@@ -439,6 +508,7 @@ function projectDetail(
   home: [number, number] | null,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
+  const mapRoute: StravaMapPoint[] = []
   let minAlt = 0
   let maxAlt = 0
   let ascentM = 0
@@ -472,11 +542,9 @@ function projectDetail(
       lo0 = 0
       hi0 = n - 1
     }
-    const window = hi0 - lo0 + 1
-    const stride = Math.max(1, Math.ceil(window / 140))
-    const idx: number[] = []
-    for (let i = lo0; i <= hi0; i += stride) idx.push(i)
-    if (idx[idx.length - 1] !== hi0) idx.push(hi0)
+    const idx = sampleIndices(lo0, hi0, ROUTE_POINTS)
+    for (const i of sampleIndices(lo0, hi0, MAP_ROUTE_POINTS))
+      mapRoute.push({ lat: round(latlng[i][0], 5), lng: round(latlng[i][1], 5) })
     const d0 = distance[lo0] ?? 0
     let sumLat = 0
     let sumLng = 0
@@ -539,6 +607,7 @@ function projectDetail(
     fueling,
     garmin,
     route,
+    mapRoute,
     minAlt,
     maxAlt,
     descentM,
@@ -575,21 +644,32 @@ export function buildPayload(
 
   const sinceDay = since && /^\d{4}-\d{2}-\d{2}$/.test(since) ? since : null
   const activities = Object.values(cache.activities)
-    .map(a => ({ a, sport: normalizeSport(a.sportType) }))
-    .filter((x): x is { a: RawStravaActivity; sport: Sport } => x.sport !== null)
+    .map(a => ({ a, sport: normalizeKind(a.sportType) }))
+    .filter((x): x is { a: RawStravaActivity; sport: ActivityKind } => x.sport !== null)
     .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
   if (activities.length === 0) return emptyPayload(cache.athleteId)
 
+  const garminMatches = new Map<string, GarminActivityMatch | null>()
+  const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
+  for (const { a, sport } of activities) {
+    const id = String(a.id)
+    const match = sport === 'strength' ? null : matchGarminActivity(a, sport, garmin)
+    garminMatches.set(id, match)
+    selectedStreams.set(id, selectStreams(cache.streams?.[id], match, garmin))
+  }
+
   const totals = emptyTotals()
   const byDate = new Map<string, StravaDayItem[]>()
   for (const { a, sport } of activities) {
-    const t = totals.find(x => x.sport === sport)!
-    t.count += 1
-    t.distanceKm += a.distance / 1000
-    t.movingTimeS += a.movingTime
-    t.elevationM += a.totalElevationGain
+    const t = totals.find(x => x.sport === sport)
+    if (t) {
+      t.count += 1
+      t.distanceKm += a.distance / 1000
+      t.movingTimeS += a.movingTime
+      t.elevationM += a.totalElevationGain
+    }
 
     const date = a.startDateLocal.slice(0, 10)
     const items = byDate.get(date) ?? []
@@ -632,13 +712,16 @@ export function buildPayload(
   }))
 
   let hrmax = 0
-  for (const { a } of activities) if ((a.maxHeartrate ?? 0) > hrmax) hrmax = a.maxHeartrate ?? 0
+  for (const { a } of activities) {
+    const maxHr = a.maxHeartrate ?? maxPos(selectedStreams.get(String(a.id))?.heartrate ?? [])
+    if ((maxHr ?? 0) > hrmax) hrmax = maxHr ?? 0
+  }
   if (hrmax < 100) hrmax = 190
   const recentCut = end - 42 * DAY_MS
   let best20 = 0
   const recentCurves: PowerCurvePoint[][] = []
   for (const { a } of activities) {
-    const w = cache.streams?.[String(a.id)]?.watts
+    const w = selectedStreams.get(String(a.id))?.watts
     if (!w || !w.some(v => v > 0)) continue
     const c = meanMaxCurve(w)
     const p20 = c.find(p => p.s === 1200)
@@ -655,20 +738,21 @@ export function buildPayload(
 
   const starts: [number, number][] = []
   for (const { a } of activities) {
-    const ll = cache.streams?.[String(a.id)]?.latlng
+    const ll = selectedStreams.get(String(a.id))?.latlng
     if (ll && ll.length >= 2) starts.push([ll[0][0], ll[0][1]])
   }
   const home = homeStart(starts)
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {
-    const garminMatch = matchGarminActivity(a, sport, garmin)
+    const id = String(a.id)
+    const garminMatch = garminMatches.get(id) ?? null
     details[String(a.id)] = projectDetail(
       a,
       sport,
-      cache.streams?.[String(a.id)],
+      selectedStreams.get(id),
       cache.geo?.[String(a.id)],
-      matchGarminFueling(a, sport, garmin),
+      sport === 'strength' ? null : matchGarminFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
       hrBounds,
       powerBounds,
@@ -686,8 +770,8 @@ export function buildPayload(
       finalized.reduce((s, t) => s + t.distanceKm, 0),
       1,
     ),
-    totalTimeS: finalized.reduce((s, t) => s + t.movingTimeS, 0),
-    totalCount: finalized.reduce((s, t) => s + t.count, 0),
+    totalTimeS: activities.reduce((s, { a }) => s + a.movingTime, 0),
+    totalCount: activities.length,
     totals: finalized,
     days,
     details,

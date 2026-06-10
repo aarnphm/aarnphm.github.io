@@ -543,13 +543,16 @@ export default (() => {
         <aside class="tri-map" aria-hidden="true" role="dialog" aria-label="triathlon route maps">
           <div class="tri-ana-bar tri-map-bar">
             <span class="tri-ana-title tri-map-title">map</span>
-            <input
-              class="tri-ana-search tri-map-search"
-              type="search"
-              placeholder="search routes (filter:bike|run)"
-              aria-label="search routes"
-              autocomplete="off"
-            />
+            <div class="tri-map-search-wrap">
+              <input
+                class="tri-ana-search tri-map-search"
+                type="search"
+                placeholder="search routes (filter:bike|run)"
+                aria-label="search routes"
+                autocomplete="off"
+              />
+              <div class="tri-ana-results tri-map-results" aria-hidden="true" />
+            </div>
             <button class="tri-ana-close tri-map-close" type="button" aria-label="Close">
               ×
             </button>
@@ -557,7 +560,31 @@ export default (() => {
           <div class="tri-ana-body tri-map-body">
             <div class="tri-map-pane">
               <div class="tri-map-canvas" />
-              <div class="tri-ana-results tri-map-results" aria-hidden="true" />
+              <div class="tri-map-overlay">
+                <div class="tri-map-modes" role="group" aria-label="map overlay metric">
+                  <button class="tri-map-mode" type="button" data-mode="heat" aria-pressed="true">
+                    heat
+                  </button>
+                  <button class="tri-map-mode" type="button" data-mode="w" aria-pressed="false">
+                    power
+                  </button>
+                  <button class="tri-map-mode" type="button" data-mode="hr" aria-pressed="false">
+                    hr
+                  </button>
+                  <button class="tri-map-mode" type="button" data-mode="cad" aria-pressed="false">
+                    cadence
+                  </button>
+                  <button class="tri-map-mode" type="button" data-mode="spd" aria-pressed="false">
+                    speed
+                  </button>
+                </div>
+                <div class="tri-map-legend tri-map-overlay-legend">
+                  <span class="tri-map-legend-lo" />
+                  <span class="tri-map-legend-bar" />
+                  <span class="tri-map-legend-hi" />
+                </div>
+              </div>
+              <div class="tri-map-tip" aria-hidden="true" />
             </div>
             <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
           </div>

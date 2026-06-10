@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-09 14:22:08 GMT-04:00
+modified: 2026-06-09 23:00:38 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -683,6 +683,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.newmuseum.org/ -- New Museum
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [arts]
 - https://spruce.world/ -- Spruce world
   - [meta]:
     - date: 06/05/2026
@@ -1271,6 +1275,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://wttdotm.com/ -- morry kolman
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [developer, artist]
 - https://www.lesswrong.com/users/jsteinhardt -- Jacob Steinhardt
   - [meta]:
     - date: 06/08/2026
@@ -8386,6 +8394,15 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=IroPQ150F6c -- A Practical Guide to Applying Data Oriented Design (DoD), Andrew Kelley [**]
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [plt, zig, systems]
+    - pinned: true
+- https://www.youtube.com/watch?v=f30PceqQWko -- Don't Forget to Flush, Andrew Kelley
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [plt]
 - https://www.youtube.com/watch?v=4xWGSUZmkIc -- John Doerr: Ideas are easy, execution is everything.
   - [meta]:
     - date: 06/03/2026
@@ -10483,6 +10500,10 @@ title: are.na
 
 ## engineering
 
+- https://otoro.net/slimevolley/ -- Slime Volley RL simulation
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [environment, rl]
 - https://cpojer.net/posts/modern-engineering-values -- Modern Engineering Value
   - [meta]:
     - date: 06/08/2026

@@ -1,16 +1,17 @@
 import fs from 'node:fs/promises'
-import type { GarminActivity, GarminCache } from '../plugins/stores/garmin'
+import type { GarminActivity, GarminCache, GarminStreams } from '../plugins/stores/garmin'
 import { browserCookieHeader } from '../util/browser-cookie'
 import {
   garminConnectActivities,
   garminConnectActivity,
+  garminConnectStreams,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3
 const CONNECT_ORIGIN = 'https://connect.garmin.com'
 const DEFAULT_CONNECT_BASE = `${CONNECT_ORIGIN}/gc-api`
 const DEFAULT_USER_AGENT =
@@ -36,6 +37,14 @@ function envNumber(name: string, fallback: number): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed) || parsed < 0) throw new Error(`${name} must be nonnegative`)
   return parsed
+}
+
+function envFlag(name: string, fallback: boolean): boolean {
+  const value = process.env[name]?.trim()
+  if (!value) return fallback
+  if (value === '0' || value.toLowerCase() === 'false') return false
+  if (value === '1' || value.toLowerCase() === 'true') return true
+  throw new Error(`${name} must be true/false or 1/0`)
 }
 
 function isoDay(ms: number): string {
@@ -277,6 +286,19 @@ async function fetchActivityDetail(
   return isRecord(raw) ? raw : null
 }
 
+async function fetchActivityStreamDetail(
+  session: GarminConnectSession,
+  base: string,
+  id: string,
+): Promise<UnknownRecord | null> {
+  const raw = await getJson(
+    session,
+    base,
+    `/activity-service/activity/${encodeURIComponent(id)}/details`,
+  )
+  return isRecord(raw) ? raw : null
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -287,6 +309,7 @@ async function main(): Promise<void> {
   const pageSize = Math.max(1, envNumber('GARMIN_CONNECT_PAGE_SIZE', DEFAULT_PAGE_SIZE))
   const delayMs = envNumber('GARMIN_CONNECT_DELAY_MS', DEFAULT_DELAY_MS)
   const maxActivities = envNumber('GARMIN_CONNECT_MAX_ACTIVITIES', 0)
+  const fetchStreams = envFlag('GARMIN_CONNECT_FETCH_STREAMS', true)
   const start = await startDate()
   const end = endDate()
 
@@ -300,7 +323,9 @@ async function main(): Promise<void> {
   console.log(`[garmin] found ${list.length} activities`)
 
   const activities: Record<string, GarminActivity> = {}
+  const streams: Record<string, GarminStreams> = {}
   let details = 0
+  let streamDetails = 0
   let skipped = 0
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
@@ -312,8 +337,21 @@ async function main(): Promise<void> {
       console.warn(`[garmin] detail ${item.id} failed: ${err instanceof Error ? err.message : err}`)
     }
     const activity = garminConnectActivity(detail, item.record, i)
-    if (activity) activities[activity.id] = activity
-    else skipped++
+    if (activity) {
+      activities[activity.id] = activity
+      if (fetchStreams) {
+        try {
+          const streamDetail = await fetchActivityStreamDetail(session, base, item.id)
+          const stream = garminConnectStreams(streamDetail)
+          if (stream) streams[activity.id] = stream
+          if (streamDetail) streamDetails++
+        } catch (err) {
+          console.warn(
+            `[garmin] stream ${item.id} failed: ${err instanceof Error ? err.message : err}`,
+          )
+        }
+      }
+    } else skipped++
     if (delayMs > 0) await sleep(delayMs)
   }
 
@@ -325,12 +363,19 @@ async function main(): Promise<void> {
   }
 
   const now = Date.now()
-  const cache: GarminCache = { version: CACHE_VERSION, lastSync: now, activities: sorted }
+  const sortedStreams: Record<string, GarminStreams> = {}
+  for (const id of Object.keys(sorted)) if (streams[id]) sortedStreams[id] = streams[id]
+  const cache: GarminCache = {
+    version: CACHE_VERSION,
+    lastSync: now,
+    activities: sorted,
+    streams: sortedStreams,
+  }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${skipped} skipped) -> ${cacheFile}`,
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${skipped} skipped) -> ${cacheFile}`,
   )
 }
 

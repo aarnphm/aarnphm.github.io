@@ -3,13 +3,13 @@ comments: false
 date: '2024-01-07'
 description: A (mostly) up-to-date scents that I use/like/prefer.
 id: Scents
-modified: 2026-06-05 15:08:27 GMT-04:00
+modified: 2026-06-09 22:59:26 GMT-04:00
+seealso:
+  - '[[books|antilibrary]]'
 tags:
   - evergreen
 title: Scents
 ---
-
-See [[books|antilibrary]] for reading list.
 
 ## current
 
@@ -24,6 +24,7 @@ See [[books|antilibrary]] for reading list.
 - Maison Francis Kurkdjian's _OUD satin mood_
 - Tom Ford's _Noir de Noir_
 - Maison Louis Marie's _No. 4_
+- oddityfragrance's [_Resonant_](https://oddityfragrance.com/products/resonant)
 
 ## review.
 
