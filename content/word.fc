@@ -202,7 +202,6 @@ Q: col-major memory locations
 A:
 $$y + N_y \cdot (x-1)$$
 - Access `A(y, x)`
-C: https://en.wikipedia.org/wiki/Row-_and_column-major_order
 
 ---
 
@@ -298,3 +297,153 @@ A: a list of corrections or errors discovered in a published work
 
 Q: lingua franca
 A: a language systematically adopted as a common medium of communication between speakers whose native languages differ; a bridge language
+
+---
+
+Q: CPU operation cost ladder
+A: A modern x86/x64 ballpark where operations span from `<1` cycle for register-register work to `10,000-1,000,000` cycles for a full thread context switch.
+
+---
+
+Q: CPU operation cost caveat
+A: Treat the numbers as order-of-magnitude estimates; exact timings depend on CPU, compiler, cache state, contention, and surrounding instructions.
+
+---
+
+Q: CPU cost: simple register-register op
+A: `<1` cycle for `ADD`, `OR`, `MOV`-like work when operands are already in registers.
+
+---
+
+Q: CPU cost: memory write
+A: `~1` cycle apparent cost when the CPU can buffer the write.
+
+---
+
+Q: CPU cost: bypass delay
+A: `0-3` cycles to switch between integer and floating-point units.
+
+---
+
+Q: CPU cost: correctly predicted branch
+A: `1-2` cycles.
+
+---
+
+Q: CPU cost: floating-point/vector addition
+A: `1-3` cycles.
+
+---
+
+Q: CPU cost: multiplication
+A: `1-7` cycles for integer, floating-point, or vector multiplication.
+
+---
+
+Q: CPU cost: return error code and check
+A: `1-7` cycles in the normal case.
+
+---
+
+Q: CPU cost: L1 read
+A: `3-4` cycles.
+
+---
+
+Q: CPU cost: TLB miss
+A: `7-21` cycles.
+
+---
+
+Q: CPU cost: L2 read
+A: `10-12` cycles.
+
+---
+
+Q: CPU cost: branch misprediction
+A: `10-20` cycles, roughly `5-20x` the correctly predicted branch path.
+
+---
+
+Q: CPU cost: floating-point division
+A: `10-40` cycles.
+
+---
+
+Q: CPU cost: 128-bit vector division
+A: `10-70` cycles.
+
+---
+
+Q: CPU cost: atomics/CAS
+A: `15-30` cycles.
+
+---
+
+Q: CPU cost: C function direct call
+A: `15-30` cycles.
+
+---
+
+Q: CPU cost: integer division
+A: `15-40` cycles.
+
+---
+
+Q: CPU cost: C function indirect call
+A: `20-50` cycles.
+
+---
+
+Q: CPU cost: C++ virtual function call
+A: `30-60` cycles.
+
+---
+
+Q: CPU cost: L3 read
+A: `30-70` cycles.
+
+---
+
+Q: CPU cost: main RAM read
+A: `100-150` cycles, roughly `30-50x` an L1 read.
+
+---
+
+Q: CPU cost: NUMA different-socket atomics/CAS
+A: `100-300` cycles.
+
+---
+
+Q: CPU cost: NUMA different-socket L3 read
+A: `100-300` cycles.
+
+---
+
+Q: CPU cost: allocation+deallocation pair
+A: `200-500` cycles for small objects.
+
+---
+
+Q: CPU cost: NUMA different-socket main RAM read
+A: `300-500` cycles.
+
+---
+
+Q: CPU cost: kernel call
+A: `1,000-1,500` cycles.
+
+---
+
+Q: CPU cost: thread context switch direct costs
+A: `2,000` cycles.
+
+---
+
+Q: CPU cost: C++ exception thrown+caught
+A: `5,000-10,000` cycles.
+
+---
+
+Q: CPU cost: thread context switch total costs
+A: `10,000-1,000,000` cycles, including cache invalidation.

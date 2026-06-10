@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-08 23:48:56 GMT-04:00
+modified: 2026-06-09 22:22:27 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -40,6 +40,49 @@ title: lists
   - L2: matrix-vector ops
   - L3: matrix-matrix ops
   - ![[thoughts/images/BLAS.webp]]
+- CPU operation costs ([ithare/6IT](https://6it.dev/blog/infographics-operation-costs-in-cpu-clock-cycles-741))
+  - ballpark cycle counts for modern x86/x64 CPUs; the order of magnitude matters more than the exact number
+  - at 3GHz, 1 cycle is ~0.33ns; 1,000,000 cycles is ~0.33ms, a 1,000,000:1 latency spread
+  - arithmetic and predictable control
+    | Operation | Cycles |
+    | --- | --- |
+    | simple register-register op (`ADD`, `OR`, etc.) | `<1` |
+    | memory write | `~1` |
+    | bypass delay between integer and floating-point units | `0-3` |
+    | correctly predicted branch | `1-2` |
+    | floating-point/vector addition | `1-3` |
+    | multiplication, integer/float/vector | `1-7` |
+    | return error code and check | `1-7` |
+  - cache, TLB, memory
+    | Operation | Cycles |
+    | --- | --- |
+    | L1 read | `3-4` |
+    | TLB miss | `7-21` |
+    | L2 read | `10-12` |
+    | L3 read | `30-70` |
+    | main RAM read | `100-150` |
+    | NUMA different-socket L3 read | `100-300` |
+    | NUMA different-socket main RAM read | `300-500` |
+  - expensive scalar operations and calls
+    | Operation | Cycles |
+    | --- | --- |
+    | branch misprediction | `10-20` |
+    | floating-point division | `10-40` |
+    | 128-bit vector division | `10-70` |
+    | atomics/CAS | `15-30` |
+    | C function direct call | `15-30` |
+    | integer division | `15-40` |
+    | C function indirect call | `20-50` |
+    | C++ virtual function call | `30-60` |
+  - allocation, NUMA, OS
+    | Operation | Cycles |
+    | --- | --- |
+    | NUMA different-socket atomics/CAS | `100-300` |
+    | allocation+deallocation pair, small objects | `200-500` |
+    | kernel call | `1,000-1,500` |
+    | thread context switch, direct costs | `2,000` |
+    | C++ exception thrown+caught | `5,000-10,000` |
+    | thread context switch, total costs including cache invalidation | `10,000-1,000,000` |
 - $$\begin{aligned} &\text{Big O(micron)}: O \text{ or } \mathcal{O} \\ &\text{Big Omega}: \Omega \\ &\text{Big Theta}: \Theta \\ &\text{Small O(micron)}: o \\ &\text{Small Omega}: \omega \\ &\text{On the order of}: \sim \end{aligned}$$
 - time complexity of algorithm
   | Algorithm | Best | Average | Worst | Stable | In-place |
@@ -58,35 +101,35 @@ title: lists
 - ostreperous
 - carthusian
 - vaudeville
-- {{sidenotes<inline: true>[saudade]: a feeling of longing, melancholy, or nostalgia that is supposedly characteristic of Portuguese temperament}}
-- {{sidenotes<inline: true>[fin de siècle]: relating to or characteristic of the end of a century, especially the 19th century.}}
+- {{sidenotes[saudade]: a feeling of longing, melancholy, or nostalgia that is supposedly characteristic of Portuguese temperament}}
+- {{sidenotes[fin de siècle]: relating to or characteristic of the end of a century, especially the 19th century.}}
 - firmament
 - nipper
 - aspersion
 - eudaimonia
 - vim
 - sibilant
-- {{sidenotes<inline: true>[quine]: is a computer program that takes no input and produces a copy of its own _source code_ as its only output.}}
-- {{sidenotes<inline: true>[endogenous]: having an internal cause or origin}}
+- {{sidenotes[quine]: is a computer program that takes no input and produces a copy of its own _source code_ as its only output.}}
+- {{sidenotes[endogenous]: having an internal cause or origin}}
 - nomenclature
 - inundation
-- {{sidenotes<inline: true>[joie de vivre]: exuberant enjoyment of life}}
+- {{sidenotes[joie de vivre]: exuberant enjoyment of life}}
 - paratactic
 - blogosphere
-- {{sidenotes<inline: true>[ditering]: quantized color on the web}}
-- {{sidenotes<inline: true>[gastronomy]: art of choosing, cooking, and eating good food.}}
-- {{sidenotes<inline: true>[la cuisine nouvelle]: characterized by lighter, more delicate dishes and an increased emphasis on presentation}}
+- {{sidenotes[ditering]: quantized color on the web}}
+- {{sidenotes[gastronomy]: art of choosing, cooking, and eating good food.}}
+- {{sidenotes[la cuisine nouvelle]: characterized by lighter, more delicate dishes and an increased emphasis on presentation}}
 - smitheeren
 - bloviating
-- {{sidenotes<inline: true>[haute cuisine]: meticulous preparation, elaborate presentation, and the use of high quality ingredients}}
+- {{sidenotes[haute cuisine]: meticulous preparation, elaborate presentation, and the use of high quality ingredients}}
 - [POSIWID](https://en.wikipedia.org/wiki/The_purpose_of_a_system_is_what_it_does)
 - sacrament
-- {{sidenotes<inline: true>[liminal space]:the in-between/transition state of being, see also [[thoughts/aesthetic value|aesthetics]]}}
+- {{sidenotes[liminal space]:the in-between/transition state of being, see also [[thoughts/aesthetic value|aesthetics]]}}
 - muggy
-- {{sidenotes<inline: true>[polyphony]: a feature of narrative, which includes a diversity of simultaneous points of view and voices}}
+- {{sidenotes[polyphony]: a feature of narrative, which includes a diversity of simultaneous points of view and voices}}
 - dasein
 - [amatonormativity](https://elizabethbrake.com/amatonormativity)
-- row-major versus column-{{sidenotes<inline: true>[major]: indicates how we order data in memory for flattened array}}
+- row-major versus column-{{sidenotes[major]: indicates how we order data in memory for flattened array}}
   - row-major memory locations:
     - $$x + N_x \cdot y$$
     - Access `A[y][x]`
@@ -214,3 +257,6 @@ title: lists
 - {{sidenotes[solipsistic]: the philosophical belief that only one's own mind is sure to exist. In every day language, it can be interpreted as self-centered, self-absorbed}}
 - {{sidenotes[errata]: a list of corrections or errors discovered in a published work}}
 - lingua franca
+- Torschlusspanik
+- Kairos
+- pêche à pied

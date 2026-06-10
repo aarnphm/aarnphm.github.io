@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { GarminCache } from './garmin'
-import type { RawStravaActivity } from './strava'
 import {
   emptyGarminFueling,
   emptyGarminMetrics,
   matchGarminActivity,
   matchGarminFueling,
 } from './garmin'
+import { buildPayload, type RawStravaActivity, type StravaRawCache } from './strava'
 
 function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
@@ -130,4 +130,58 @@ test('matches Garmin FIT baseline metrics without fueling', () => {
   assert.equal(match?.activity.metrics.totalCalories, 1403)
   assert.equal(match?.distanceDiffM, 120)
   assert.equal(matchGarminFueling(strava(), 'bike', cache), null)
+})
+
+test('backfills Strava detail streams from a matched Garmin activity', () => {
+  const ride = strava({ averageHeartrate: undefined, maxHeartrate: undefined })
+  const stravaCache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(ride.startDate) / 1000),
+    activities: { [ride.id]: ride },
+    streams: { [ride.id]: { latlng: [], altitude: [], distance: [] } },
+  }
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Morning ride',
+        sport: 'bike',
+        startDate: '2026-06-01T12:04:00Z',
+        startDateLocal: '2026-06-01T08:04:00',
+        distanceM: 48_450,
+        movingTimeS: 7180,
+        elapsedTimeS: 7520,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      edge: {
+        latlng: [
+          [43.1, -79.1],
+          [43.2, -79.2],
+          [43.3, -79.3],
+        ],
+        altitude: [101, 104, 109],
+        distance: [0, 500, 1000],
+        watts: [100, 200, 300],
+        heartrate: [130, 140, 150],
+        cadence: [80, 88, 96],
+      },
+    },
+  }
+
+  const detail = buildPayload(stravaCache, null, garmin, '2026-05-12').details[String(ride.id)]
+  assert.equal(detail.route.length, 3)
+  assert.equal(detail.elevationM, 8)
+  assert.equal(detail.avgHr, 140)
+  assert.equal(detail.maxHr, 150)
+  assert.equal(detail.avgCadence, 88)
+  assert.equal(detail.powerCurve?.[0]?.w, 300)
 })

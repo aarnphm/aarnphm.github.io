@@ -11,7 +11,7 @@ tags:
   - 'differential equations'
   - 'mathematical analysis'
 aliases:
-  - 'mit18_156_s25.jpg'
+  - 'mit18_156_s25.webp'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
@@ -19,10 +19,10 @@ license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
 
 up: [[courses/18-156-projection-theory-spring-2025/|mit 18.156]]
 
-![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25.jpg]]
+![[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25.webp]]
 
 ## metadata
 
 - type: image
-- file: [[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25.jpg|mit18_156_s25.jpg]]
-- source: [mit opencourseware](https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025/mit18_156_s25.jpg)
+- file: [[courses/18-156-projection-theory-spring-2025/static_resources/mit18_156_s25.webp|mit18_156_s25.webp]]
+- source: [mit opencourseware](https://ocw.mit.edu/courses/18-156-projection-theory-spring-2025/mit18_156_s25.webp)

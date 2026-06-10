@@ -47,6 +47,15 @@ export interface GarminActivity {
   fueling: GarminFueling
 }
 
+export interface GarminStreams {
+  latlng: [number, number][]
+  altitude: number[]
+  distance: number[]
+  watts?: number[]
+  heartrate?: number[]
+  cadence?: number[]
+}
+
 export interface GarminActivityMatch {
   activity: GarminActivity
   score: number
@@ -59,6 +68,7 @@ export interface GarminCache {
   version?: number
   lastSync: number
   activities: Record<string, GarminActivity>
+  streams?: Record<string, GarminStreams>
 }
 
 export function emptyGarminMetrics(): GarminMetrics {

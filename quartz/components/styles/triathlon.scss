@@ -2108,8 +2108,8 @@
 }
 
 .tri-map-canvas {
-  position: absolute;
-  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .tri-map-canvas--down {
@@ -2121,14 +2121,100 @@
   color: var(--gray);
 }
 
+.tri-map-overlay {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.5rem 0.6rem;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid var(--lightgray);
+}
+
+.tri-map-canvas--down ~ .tri-map-overlay,
+.tri-map--detail .tri-map-overlay {
+  display: none;
+}
+
+.tri-map-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tri-map-mode {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gray);
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
+  border-radius: var(--radius-none);
+  padding: 0.18rem 0.5rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--light);
+    background: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
+}
+
+.tri-map-overlay-legend {
+  font-size: 0.56rem;
+}
+
+.tri-map-overlay-legend .tri-map-legend-bar {
+  min-width: 4.5rem;
+  background: linear-gradient(to right, #997c6d, #b96c4a, #da5d27, #fc4c02);
+}
+
+.tri-map-tip {
+  position: absolute;
+  z-index: 5;
+  display: none;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  padding: 0.22rem 0.45rem;
+}
+
+.tri-map-tip--on {
+  display: block;
+}
+
+.tri-map-search-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .tri-map-results {
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 6;
+  max-height: min(48vh, 24rem);
   overflow-y: auto;
   scrollbar-width: none;
-  padding: 1.1rem 1.2rem;
+  gap: 0.7rem;
+  padding: 0.7rem 0.8rem;
   background: var(--light);
+  border: 1px solid var(--lightgray);
 }
 
 .tri-map-results::-webkit-scrollbar {
@@ -2137,10 +2223,6 @@
 
 .tri-map--searching .tri-map-results {
   display: flex;
-}
-
-.tri-map--detail .tri-map-results {
-  display: none;
 }
 
 .tri-map-sidebar {

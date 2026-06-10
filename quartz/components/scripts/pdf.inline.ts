@@ -67,7 +67,6 @@ interface PdfPage {
 interface PdfDocument {
   numPages: number
   getPage(pageNumber: number): Promise<PdfPage>
-  destroy(): Promise<void>
 }
 
 interface PdfLoadingTask {
@@ -113,7 +112,6 @@ interface PdfDocumentCacheEntry {
   promise: Promise<PdfDocument>
   refs: number
   destroyTimer: number
-  document?: PdfDocument
 }
 
 interface PdfDocumentHandle {
@@ -467,7 +465,6 @@ function releasePdfDocument(key: string) {
 
     pdfDocumentCache.delete(key)
     void entry.loadingTask.destroy().catch(() => undefined)
-    void entry.document?.destroy().catch(() => undefined)
   }, PDF_DOCUMENT_CACHE_TTL_MS)
 }
 
@@ -477,18 +474,11 @@ function loadPdfDocument(pdfjs: PdfJsRuntime, src: string): Promise<PdfDocumentH
 
   if (!entry) {
     const loadingTask = pdfjs.getDocument(pdfDocumentOptions(src))
-    let cacheEntry: PdfDocumentCacheEntry
-    const promise = loadingTask.promise
-      .then(document => {
-        cacheEntry.document = document
-        return document
-      })
-      .catch(error => {
-        pdfDocumentCache.delete(key)
-        throw error
-      })
-    cacheEntry = { key, loadingTask, promise, refs: 0, destroyTimer: 0 }
-    entry = cacheEntry
+    const promise = loadingTask.promise.catch(error => {
+      pdfDocumentCache.delete(key)
+      throw error
+    })
+    entry = { key, loadingTask, promise, refs: 0, destroyTimer: 0 }
     pdfDocumentCache.set(key, entry)
   }
 

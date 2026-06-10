@@ -2,6 +2,7 @@ import {
   emptyGarminFueling,
   emptyGarminMetrics,
   type GarminActivity,
+  type GarminStreams,
   hasGarminFueling,
   hasGarminMetrics,
   normalizeGarminSport,
@@ -131,6 +132,15 @@ const FLUID_RECOMMENDED_OZ_KEYS = ['fluidRecommendedOz', 'recommendedFluidOz', '
 const SWEAT_ML_KEYS = ['estimatedSweatLossMl', 'sweatLoss', 'sweatLossInMl', 'sweatLossMl']
 const SWEAT_L_KEYS = ['estimatedSweatLossL', 'sweatLossL']
 const SWEAT_OZ_KEYS = ['estimatedSweatLossOz', 'sweatLossOz']
+const METRIC_KEYS = {
+  altitude: 'directElevation',
+  cadence: 'directBikeCadence',
+  distance: 'sumDistance',
+  heartRate: 'directHeartRate',
+  latitude: 'directLatitude',
+  longitude: 'directLongitude',
+  power: 'directPower',
+}
 
 export interface GarminConnectActivityListItem {
   id: string
@@ -142,6 +152,10 @@ function numeric(value: unknown): number | null {
   if (typeof value !== 'string') return null
   const parsed = Number(value.replace(/,/g, '').trim())
   return Number.isFinite(parsed) ? parsed : null
+}
+
+function finite(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : numeric(value)
 }
 
 function positive(value: number | null): number | null {
@@ -293,6 +307,111 @@ export function garminConnectActivities(raw: unknown): GarminConnectActivityList
     out.push({ id, record })
   }
   return out
+}
+
+function metricIndex(detail: UnknownRecord, key: string): number | null {
+  const descriptors = detail.metricDescriptors
+  if (!Array.isArray(descriptors)) return null
+  for (let i = 0; i < descriptors.length; i++) {
+    const descriptor = descriptors[i]
+    if (isRecord(descriptor) && readString(descriptor, 'key') === key) return i
+  }
+  return null
+}
+
+function metricValue(row: UnknownRecord, index: number | null): number | null {
+  if (index == null) return null
+  const metrics = row.metrics
+  if (!Array.isArray(metrics)) return null
+  return finite(metrics[index])
+}
+
+function validLatLng(lat: number, lng: number): boolean {
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180
+}
+
+function hasStreamData(streams: GarminStreams): boolean {
+  return (
+    streams.latlng.length >= 2 ||
+    streams.altitude.length > 0 ||
+    streams.distance.length > 0 ||
+    (streams.watts?.some(value => value > 0) ?? false) ||
+    (streams.heartrate?.some(value => value > 0) ?? false) ||
+    (streams.cadence?.some(value => value > 0) ?? false)
+  )
+}
+
+function polylineStreams(detail: UnknownRecord): GarminStreams | null {
+  const geo = detail.geoPolylineDTO
+  if (!isRecord(geo) || !Array.isArray(geo.polyline)) return null
+
+  const streams: GarminStreams = { latlng: [], altitude: [], distance: [] }
+  let distance = 0
+  for (const item of geo.polyline) {
+    if (!isRecord(item)) continue
+    const lat = finite(item.lat)
+    const lng = finite(item.lon)
+    if (lat == null || lng == null || !validLatLng(lat, lng)) continue
+    distance =
+      finite(item.distanceInMeters) ?? distance + (finite(item.distanceFromPreviousPoint) ?? 0)
+    streams.latlng.push([lat, lng])
+    streams.altitude.push(finite(item.altitude) ?? 0)
+    streams.distance.push(distance)
+  }
+  return hasStreamData(streams) ? streams : null
+}
+
+export function garminConnectStreams(detail: UnknownRecord | null): GarminStreams | null {
+  if (!detail || !Array.isArray(detail.activityDetailMetrics))
+    return detail ? polylineStreams(detail) : null
+
+  const indices = {
+    altitude: metricIndex(detail, METRIC_KEYS.altitude),
+    cadence: metricIndex(detail, METRIC_KEYS.cadence),
+    distance: metricIndex(detail, METRIC_KEYS.distance),
+    heartRate: metricIndex(detail, METRIC_KEYS.heartRate),
+    latitude: metricIndex(detail, METRIC_KEYS.latitude),
+    longitude: metricIndex(detail, METRIC_KEYS.longitude),
+    power: metricIndex(detail, METRIC_KEYS.power),
+  }
+  const streams: GarminStreams = {
+    latlng: [],
+    altitude: [],
+    distance: [],
+    watts: [],
+    heartrate: [],
+    cadence: [],
+  }
+
+  const hasLocationMetrics = indices.latitude != null && indices.longitude != null
+  let lastDistance = 0
+  for (const item of detail.activityDetailMetrics) {
+    if (!isRecord(item)) continue
+    const lat = metricValue(item, indices.latitude)
+    const lng = metricValue(item, indices.longitude)
+    const hasLocation = lat != null && lng != null && validLatLng(lat, lng)
+    if (hasLocationMetrics && !hasLocation) continue
+
+    const distance = metricValue(item, indices.distance)
+    if (distance != null) lastDistance = distance
+    if (lat != null && lng != null && validLatLng(lat, lng)) streams.latlng.push([lat, lng])
+    streams.altitude.push(metricValue(item, indices.altitude) ?? 0)
+    streams.distance.push(lastDistance)
+    streams.watts?.push(metricValue(item, indices.power) ?? 0)
+    streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
+    streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
+  }
+
+  if (streams.latlng.length < 2) {
+    const polyline = polylineStreams(detail)
+    if (polyline) {
+      streams.latlng = polyline.latlng
+      streams.altitude = polyline.altitude
+      streams.distance = polyline.distance
+    }
+  }
+
+  return hasStreamData(streams) ? streams : null
 }
 
 export function garminConnectActivity(

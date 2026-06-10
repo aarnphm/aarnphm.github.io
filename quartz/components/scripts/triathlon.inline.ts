@@ -4,6 +4,8 @@ import { annotate } from 'rough-notation'
 import type { Analytics, BodyBlock, DailyPoint } from '../../plugins/stores/analytics'
 import {
   type ActivityHealth,
+  type ActivityKind,
+  type StravaMapPoint,
   type PowerCurvePoint,
   type Sport,
   SPORT_ICON,
@@ -41,7 +43,7 @@ const svg = (tag: string, attrs: Record<string, string | number>): SVGElement =>
   return e
 }
 
-const dist = (km: number, sport: Sport): string => {
+const dist = (km: number, sport: ActivityKind): string => {
   if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
   const mi = km * KM_TO_MI
   return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
@@ -60,14 +62,14 @@ const shortDate = (iso: string): string => {
   const [, m, d] = iso.split('-').map(Number)
   return `${MONTHS[(m || 1) - 1]} ${d || 1}`
 }
-const rate = (sport: Sport, km: number, s: number): string => {
+const rate = (sport: ActivityKind, km: number, s: number): string => {
   const mi = km * KM_TO_MI
   if (sport === 'bike') return `${(mi / (s / 3600)).toFixed(1)} mph`
   if (sport === 'swim') return `${clock(s / (km * 10))} /100m`
   return `${clock(s / mi)} /mi`
 }
 
-const buildIcon = (sport: Sport): SVGElement => {
+const buildIcon = (sport: ActivityKind): SVGElement => {
   const s = svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of SPORT_ICON[sport]) s.appendChild(svg('path', { d }))
   return s
@@ -271,7 +273,7 @@ const gradeAt = (route: StravaActivityDetail['route'], i: number): number => {
   return dKm > 0 ? ((route[j1].alt - route[j0].alt) / (dKm * 1000)) * 100 : 0
 }
 
-const scrubDist = (km: number, sport: Sport): string =>
+const scrubDist = (km: number, sport: ActivityKind): string =>
   sport === 'swim'
     ? `${Math.round(km * 1000).toLocaleString('en-US')} m`
     : `${(km * KM_TO_MI).toFixed(2)} mi`
@@ -573,14 +575,17 @@ const derivePace = (route: StravaActivityDetail['route'], movingTimeS: number): 
 const buildHeatRoute = (
   route: StravaActivityDetail['route'],
   pick: (p: StravaActivityDetail['route'][number], i: number) => number,
-  ramp = 7,
+  colors?: string[],
+  zeroGap = false,
 ): SVGElement => {
+  const ramp = colors?.length ?? 7
   const pad = 6
   const span = 100 - pad * 2
   const vals = route.map((p, i) => pick(p, i))
+  const pool = zeroGap ? vals.filter(v => v > 0) : vals
   let lo = Infinity
   let hi = -Infinity
-  for (const v of vals) {
+  for (const v of pool.length ? pool : vals) {
     if (v < lo) lo = v
     if (v > hi) hi = v
   }
@@ -597,30 +602,69 @@ const buildHeatRoute = (
     const mid = (vals[i] + vals[i + 1]) / 2
     const t = Math.min(1, Math.max(0, (mid - lo) / range))
     const bucket = Math.min(ramp, Math.max(1, Math.ceil(t * ramp) || 1))
-    g.appendChild(
-      svg('path', {
-        d: `M ${sx(route[i]).toFixed(2)} ${sy(route[i]).toFixed(2)} L ${sx(route[i + 1]).toFixed(2)} ${sy(route[i + 1]).toFixed(2)}`,
-        class: `tri-heat-seg tri-heat--${bucket}`,
-      }),
-    )
+    const attrs: Record<string, string | number> = {
+      d: `M ${sx(route[i]).toFixed(2)} ${sy(route[i]).toFixed(2)} L ${sx(route[i + 1]).toFixed(2)} ${sy(route[i + 1]).toFixed(2)}`,
+      class: colors ? 'tri-heat-seg' : `tri-heat-seg tri-heat--${bucket}`,
+    }
+    if (colors) attrs.style = `stroke: ${colors[bucket - 1]}`
+    g.appendChild(svg('path', attrs))
   }
   s.appendChild(g)
   s.appendChild(svg('circle', { class: 'tri-route-cursor', cx: -10, cy: -10, r: 2.6 }))
   return s
 }
 
-const buildHeatLegend = (lo: number, hi: number, fmt: (v: number) => string): HTMLElement => {
+const rampGradient = (colors: string[]): string =>
+  `linear-gradient(to right, ${colors[0]}, ${colors[3]}, ${colors[6]})`
+
+const buildHeatLegend = (
+  lo: number,
+  hi: number,
+  fmt: (v: number) => string,
+  colors?: string[],
+): HTMLElement => {
   const wrap = el('div', 'tri-map-legend')
+  const bar = el('span', 'tri-map-legend-bar')
+  if (colors) bar.style.background = rampGradient(colors)
   wrap.append(
     el('span', 'tri-map-legend-lo', fmt(lo)),
-    el('span', 'tri-map-legend-bar'),
+    bar,
     el('span', 'tri-map-legend-hi', fmt(hi)),
   )
   return wrap
 }
 
+const HEAT_RAMP = ['#997c6d', '#a9745b', '#b96c4a', '#ca6538', '#da5d27', '#ea5515', '#fc4c02']
+
+const ramp7 = (from: string, to: string): string[] => {
+  const rgb = (h: string): number[] => [
+    parseInt(h.slice(1, 3), 16),
+    parseInt(h.slice(3, 5), 16),
+    parseInt(h.slice(5, 7), 16),
+  ]
+  const a = rgb(from)
+  const b = rgb(to)
+  return Array.from({ length: 7 }, (_, i) => {
+    const t = i / 6
+    return `#${a
+      .map((v, j) =>
+        Math.round(v + (b[j] - v) * t)
+          .toString(16)
+          .padStart(2, '0'),
+      )
+      .join('')}`
+  })
+}
+
+const HR_RAMP = ramp7('#9c7f7a', '#af3029')
+const CAD_RAMP = ramp7('#8a8197', '#5e409d')
+const SPD_RAMP = ramp7('#7d8a96', '#205ea6')
+const ELEV_RAMP = ramp7('#868a72', '#66800b')
+
 interface MapMetric {
   label: string
+  ramp: string[]
+  zeroGap?: boolean
   pick: (p: StravaActivityDetail['route'][number], i: number) => number
   fmt: (v: number) => string
   profile: () => HTMLElement
@@ -644,6 +688,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const paceSpec: MapMetric = {
     label: d.sport === 'bike' ? 'speed' : 'pace',
+    ramp: SPD_RAMP,
     pick: (_p, i) => pace[i],
     fmt: paceFmt,
     profile: () =>
@@ -657,6 +702,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const powerSpec: MapMetric = {
     label: 'power',
+    ramp: HEAT_RAMP,
     pick: p => p.w,
     fmt: v => `${Math.round(v)} W`,
     profile: () =>
@@ -671,6 +717,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const hrSpec: MapMetric = {
     label: 'heart rate',
+    ramp: HR_RAMP,
     pick: p => p.hr,
     fmt: v => `${Math.round(v)} bpm`,
     profile: () =>
@@ -683,21 +730,25 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm`,
     extra: () => [buildHrZones(d)],
   }
+  const cadScale = d.sport === 'run' ? 2 : 1
   const cadSpec: MapMetric = {
     label: 'cadence',
-    pick: p => p.cad,
+    ramp: CAD_RAMP,
+    zeroGap: true,
+    pick: p => p.cad * cadScale,
     fmt: v => `${Math.round(v)} ${cadUnit}`,
     profile: () =>
       buildTrace(
         d,
-        p => p.cad,
+        p => p.cad * cadScale,
         'cadence',
         m => `${m} ${cadUnit} peak`,
       ),
-    readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad} ${cadUnit}`,
+    readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
   }
   const elevSpec: MapMetric = {
     label: 'elevation',
+    ramp: ELEV_RAMP,
     pick: p => p.alt,
     fmt: v => `${Math.round(v)} m`,
     profile: () => buildElevation(d),
@@ -740,11 +791,15 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
 
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
-  sbody.append(
-    statRow('distance', dist(d.distanceKm, d.sport)),
-    statRow('time', dur(d.movingTimeS)),
-    statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
-  )
+  if (d.sport === 'strength') {
+    sbody.appendChild(statRow('time', dur(d.movingTimeS)))
+  } else {
+    sbody.append(
+      statRow('distance', dist(d.distanceKm, d.sport)),
+      statRow('time', dur(d.movingTimeS)),
+      statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
+    )
+  }
   if (d.avgHr) sbody.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
   stats.appendChild(sbody)
   wrap.appendChild(stats)
@@ -772,18 +827,19 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   const draw = () => {
     const spec = specs[active]
     const vals = d.route.map((p, i) => spec.pick(p, i))
+    const pool = spec.zeroGap ? vals.filter(v => v > 0) : vals
     let lo = Infinity
     let hi = -Infinity
-    for (const v of vals) {
+    for (const v of pool.length ? pool : vals) {
       if (v < lo) lo = v
       if (v > hi) hi = v
     }
     let marker: SVGElement | null = null
     if (opts?.mapMode) {
-      figs.replaceChildren(buildHeatLegend(lo, hi, spec.fmt))
+      figs.replaceChildren(buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
     } else {
-      const heat = buildHeatRoute(d.route, spec.pick)
-      figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt))
+      const heat = buildHeatRoute(d.route, spec.pick, spec.ramp, spec.zeroGap)
+      figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
       marker = heat.querySelector<SVGElement>('.tri-route-cursor')
     }
     const prof = spec.profile()
@@ -804,9 +860,13 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       ],
       d.route,
     )
-    Array.from(tablist.children).forEach((t, i) =>
-      t.setAttribute('aria-selected', i === active ? 'true' : 'false'),
-    )
+    Array.from(tablist.children).forEach((t, i) => {
+      const on = i === active
+      t.setAttribute('aria-selected', on ? 'true' : 'false')
+      const tab = t as HTMLElement
+      tab.style.background = on ? spec.ramp[6] : ''
+      tab.style.borderColor = on ? spec.ramp[6] : ''
+    })
     opts?.onMetric?.(active)
   }
   specs.forEach((spec, i) => {
@@ -831,11 +891,15 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
 
   const stats = el('table', 'tri-act-stats')
   const body = document.createElement('tbody')
-  body.append(
-    statRow('distance', dist(d.distanceKm, d.sport)),
-    statRow('time', dur(d.movingTimeS)),
-    statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
-  )
+  if (d.sport === 'strength') {
+    body.appendChild(statRow('time', dur(d.movingTimeS)))
+  } else {
+    body.append(
+      statRow('distance', dist(d.distanceKm, d.sport)),
+      statRow('time', dur(d.movingTimeS)),
+      statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
+    )
+  }
   if (d.avgHr) body.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
   stats.appendChild(body)
   wrap.appendChild(stats)
@@ -878,7 +942,10 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   if (d.kilojoules != null) moreRows.push(['energy', `${d.kilojoules} kJ`])
   if (d.calories != null) moreRows.push(['calories', `${d.calories.toLocaleString('en-US')} kcal`])
   if (d.avgCadence != null)
-    moreRows.push(['cadence', `${d.avgCadence} ${d.sport === 'run' ? 'spm' : 'rpm'}`])
+    moreRows.push([
+      'cadence',
+      d.sport === 'run' ? `${d.avgCadence * 2} spm` : `${d.avgCadence} rpm`,
+    ])
   if (d.maxHr != null) moreRows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) moreRows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null) moreRows.push(['temp', `${d.avgTemp}°C`])
@@ -920,16 +987,18 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
       surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
     }
     if (hasCadStream) {
+      const cadScale = d.sport === 'run' ? 2 : 1
+      const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
       const t = buildTrace(
         d,
-        p => p.cad,
+        p => p.cad * cadScale,
         'cadence',
-        m => `${m} ${d.sport === 'run' ? 'spm' : 'rpm'} peak`,
+        m => `${m} ${cadUnit} peak`,
       )
       more.appendChild(t)
       surfaces.push({
         wrap: t,
-        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad} ${d.sport === 'run' ? 'spm' : 'rpm'}`,
+        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
       })
     }
     const hrz = buildHrZones(d)
@@ -1440,7 +1509,7 @@ const bySport = <T extends { sport: Sport }>(arr: T[], sport: Sport): T | undefi
   arr.find(x => x.sport === sport)
 const thLabel = (th: { paceLabel: string; unit: string }): string =>
   th.unit === 'km/h' ? `${th.paceLabel} km/h` : `${th.paceLabel}${th.unit.slice(1)}`
-const buildIconLeg = (sport: Sport): HTMLElement => {
+const buildIconLeg = (sport: ActivityKind): HTMLElement => {
   const wrap = el('span', `tri-ana-ico tri-leg-${sport}`)
   wrap.appendChild(buildIcon(sport))
   return wrap
@@ -2401,7 +2470,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
         const sub =
           `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
-          (a.cadence ? ` · ${a.cadence} rpm/spm` : '')
+          (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
         const it = ritem(head, sub)
         it.dataset.id = String(a.id)
         grp.appendChild(it)
@@ -2500,34 +2569,187 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-const HEAT_RAMP = ['#997c6d', '#a9745b', '#b96c4a', '#ca6538', '#da5d27', '#ea5515', '#fc4c02']
-
 type GeoFC = { type: 'FeatureCollection'; features: unknown[] }
 const emptyFC = (): GeoFC => ({ type: 'FeatureCollection', features: [] })
 
-const lineFeature = (
-  route: StravaActivityDetail['route'],
-  props: Record<string, unknown> = {},
-) => ({
+const gpsRoute = (d: StravaActivityDetail): readonly StravaMapPoint[] =>
+  d.mapRoute && d.mapRoute.length >= 2 ? d.mapRoute : d.route
+
+const lineFeature = (route: readonly StravaMapPoint[], props: Record<string, unknown> = {}) => ({
   type: 'Feature',
   properties: props,
   geometry: { type: 'LineString', coordinates: route.map(p => [p.lng, p.lat]) },
 })
 
-const heatFC = (dp: DetailPayload | null): GeoFC => {
-  const features: unknown[] = []
+type OverviewMode = 'heat' | 'w' | 'hr' | 'cad' | 'spd'
+
+interface OverviewLegend {
+  lo: string
+  hi: string
+}
+
+interface Overview {
+  heat: GeoFC
+  traces: GeoFC
+  legend: Record<OverviewMode, OverviewLegend | null>
+}
+
+const OVERVIEW_METRICS = ['w', 'hr', 'cad', 'spd'] as const
+const OVERVIEW_CELL = 0.0008
+
+const overviewCellKey = (lng: number, lat: number): string =>
+  `${Math.round(lng / OVERVIEW_CELL)},${Math.round(lat / OVERVIEW_CELL)}`
+
+const stampSegment = (a: StravaMapPoint, b: StravaMapPoint, into: Set<string>) => {
+  const steps = Math.max(
+    1,
+    Math.ceil(Math.max(Math.abs(b.lng - a.lng), Math.abs(b.lat - a.lat)) / (OVERVIEW_CELL / 2)),
+  )
+  for (let s = 0; s <= steps; s++) {
+    const t = s / steps
+    into.add(overviewCellKey(a.lng + (b.lng - a.lng) * t, a.lat + (b.lat - a.lat) * t))
+  }
+}
+
+const pctRange = (vals: number[]): [number, number] => {
+  const sorted = [...vals].sort((x, y) => x - y)
+  const lo = sorted[Math.floor(0.1 * (sorted.length - 1))]
+  const hi = sorted[Math.ceil(0.9 * (sorted.length - 1))]
+  return hi > lo ? [lo, hi] : [lo, lo + 1]
+}
+
+const overviewMetric = (d: StravaActivityDetail, k: (typeof OVERVIEW_METRICS)[number]) => {
+  if (k === 'w') return d.deviceWatts && d.avgWatts ? d.avgWatts : null
+  if (k === 'hr') return d.avgHr
+  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'run' ? 2 : 1)
+  return d.movingTimeS > 0 ? d.distanceKm / (d.movingTimeS / 3600) : null
+}
+
+const overviewFmt = (k: (typeof OVERVIEW_METRICS)[number], sport: Sport, v: number): string => {
+  if (k === 'w') return `${Math.round(v)} W`
+  if (k === 'hr') return `${Math.round(v)} bpm`
+  if (k === 'cad') return `${Math.round(v)} ${sport === 'run' ? 'spm' : 'rpm'}`
+  if (sport === 'bike') return `${(v * KM_TO_MI).toFixed(1)} mph`
+  return `${clock(3600 / (v * KM_TO_MI))} /mi`
+}
+
+const buildOverview = (dp: DetailPayload | null): Overview => {
+  const acts: StravaActivityDetail[] = []
   const det = dp?.details ?? {}
   for (const k in det) {
     const d = det[k]
-    if ((d.sport === 'run' || d.sport === 'bike') && d.route.length >= 2)
-      features.push(lineFeature(d.route, { id: d.id }))
+    if ((d.sport === 'run' || d.sport === 'bike') && gpsRoute(d).length >= 2) acts.push(d)
   }
-  return { type: 'FeatureCollection', features }
+  const counts = new Map<string, number>()
+  for (const d of acts) {
+    const cells = new Set<string>()
+    const r = gpsRoute(d)
+    for (let i = 0; i < r.length - 1; i++) stampSegment(r[i], r[i + 1], cells)
+    for (const c of cells) counts.set(c, (counts.get(c) ?? 0) + 1)
+  }
+  let maxCount = 1
+  for (const c of counts.values()) if (c > maxCount) maxCount = c
+  const bucketOf = (c: number): number =>
+    maxCount > 1
+      ? Math.min(7, Math.max(1, 1 + Math.round((6 * Math.log(c)) / Math.log(maxCount))))
+      : 1
+  const heatFeatures: unknown[] = []
+  for (const d of acts) {
+    const r = gpsRoute(d)
+    let runB = -1
+    let coords: [number, number][] = []
+    const flush = () => {
+      if (coords.length >= 2)
+        heatFeatures.push({
+          type: 'Feature',
+          properties: { id: d.id, heat: runB },
+          geometry: { type: 'LineString', coordinates: coords },
+        })
+    }
+    for (let i = 0; i < r.length - 1; i++) {
+      const mid = overviewCellKey((r[i].lng + r[i + 1].lng) / 2, (r[i].lat + r[i + 1].lat) / 2)
+      const b = bucketOf(counts.get(mid) ?? 1)
+      if (b !== runB) {
+        flush()
+        runB = b
+        coords = [[r[i].lng, r[i].lat]]
+      }
+      coords.push([r[i + 1].lng, r[i + 1].lat])
+    }
+    flush()
+  }
+  const ranges = new Map<string, [number, number]>()
+  for (const k of OVERVIEW_METRICS)
+    for (const sport of ['run', 'bike'] as const) {
+      const vals: number[] = []
+      for (const d of acts)
+        if (d.sport === sport) {
+          const v = overviewMetric(d, k)
+          if (v != null && v > 0) vals.push(v)
+        }
+      if (vals.length) ranges.set(`${k}:${sport}`, pctRange(vals))
+    }
+  const traceFeatures: unknown[] = []
+  for (const d of acts) {
+    const props: Record<string, unknown> = { id: d.id }
+    for (const k of OVERVIEW_METRICS) {
+      const v = overviewMetric(d, k)
+      const range = ranges.get(`${k}:${d.sport}`)
+      props[k] =
+        v != null && v > 0 && range
+          ? Math.min(1, Math.max(0, (v - range[0]) / (range[1] - range[0])))
+          : -1
+    }
+    traceFeatures.push(lineFeature(gpsRoute(d), props))
+  }
+  const legend: Record<OverviewMode, OverviewLegend | null> = {
+    heat: { lo: '1×', hi: `${maxCount}×` },
+    w: null,
+    hr: null,
+    cad: null,
+    spd: null,
+  }
+  for (const k of OVERVIEW_METRICS) {
+    const present = (['run', 'bike'] as const).filter(s => ranges.has(`${k}:${s}`))
+    if (present.length === 1) {
+      const [lo, hi] = ranges.get(`${k}:${present[0]}`)!
+      legend[k] = { lo: overviewFmt(k, present[0], lo), hi: overviewFmt(k, present[0], hi) }
+    }
+  }
+  return {
+    heat: { type: 'FeatureCollection', features: heatFeatures },
+    traces: { type: 'FeatureCollection', features: traceFeatures },
+    legend,
+  }
 }
+
+const heatColorExpr: unknown[] = (() => {
+  const e: unknown[] = ['interpolate', ['linear'], ['get', 'heat']]
+  HEAT_RAMP.forEach((c, i) => e.push(i + 1, c))
+  return e
+})()
+
+const heatOpacityExpr: unknown[] = ['interpolate', ['linear'], ['get', 'heat'], 1, 0.25, 7, 0.9]
+
+const heatWidthExpr: unknown[] = (() => {
+  const w = (base: number, k: number) => ['+', base, ['*', k, ['-', ['get', 'heat'], 1]]]
+  return ['interpolate', ['linear'], ['zoom'], 10, w(0.8, 0.12), 14, w(1.3, 0.22), 16, w(1.9, 0.3)]
+})()
+
+const overviewRamp = (m: OverviewMode): string[] =>
+  m === 'hr' ? HR_RAMP : m === 'cad' ? CAD_RAMP : m === 'spd' ? SPD_RAMP : HEAT_RAMP
+
+const traceColorExpr = (k: OverviewMode): unknown[] => {
+  const ramp: unknown[] = ['interpolate', ['linear'], ['get', k]]
+  overviewRamp(k).forEach((c, i) => ramp.push(i / 6, c))
+  return ['case', ['<', ['get', k], 0], '#b7b3ac', ramp]
+}
+
+const traceOpacityExpr = (k: OverviewMode): unknown[] => ['case', ['<', ['get', k], 0], 0.12, 0.6]
 
 const routeFC = (d: StravaActivityDetail): GeoFC => ({
   type: 'FeatureCollection',
-  features: [lineFeature(d.route)],
+  features: [lineFeature(gpsRoute(d))],
 })
 
 const pointFC = (lng: number, lat: number): GeoFC => ({
@@ -2540,11 +2762,14 @@ const pointFC = (lng: number, lat: number): GeoFC => ({
 const gradientExpr = (
   d: StravaActivityDetail,
   pick: (p: StravaActivityDetail['route'][number], i: number) => number,
+  colors: string[] = HEAT_RAMP,
+  zeroGap = false,
 ): unknown[] => {
   const vals = d.route.map((p, i) => pick(p, i))
+  const pool = zeroGap ? vals.filter(v => v > 0) : vals
   let lo = Infinity
   let hi = -Infinity
-  for (const v of vals) {
+  for (const v of pool.length ? pool : vals) {
     if (v < lo) lo = v
     if (v > hi) hi = v
   }
@@ -2553,13 +2778,16 @@ const gradientExpr = (
   const pairs: [number, string][] = []
   let lastT = -1
   d.route.forEach((p, i) => {
+    const v = vals[i]
+    if (zeroGap && v <= 0 && (vals[i - 1] ?? 0) > 0 && (vals[i + 1] ?? 0) > 0) return
     const t = Math.min(1, Math.max(0, p.d / dN))
     if (t <= lastT) return
     lastT = t
-    const bucket = Math.min(7, Math.max(1, Math.ceil(((vals[i] - lo) / range) * 7) || 1))
-    pairs.push([t, HEAT_RAMP[bucket - 1]])
+    const bucket =
+      zeroGap && v <= 0 ? 1 : Math.min(7, Math.max(1, Math.ceil(((v - lo) / range) * 7) || 1))
+    pairs.push([t, colors[bucket - 1]])
   })
-  if (pairs.length === 0) pairs.push([0, HEAT_RAMP[3]])
+  if (pairs.length === 0) pairs.push([0, colors[3]])
   if (pairs[0][0] > 0) pairs.unshift([0, pairs[0][1]])
   if (pairs[pairs.length - 1][0] < 1) pairs.push([1, pairs[pairs.length - 1][1]])
   const stops: unknown[] = ['interpolate', ['linear'], ['line-progress']]
@@ -2608,15 +2836,50 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   let detailLoaded = false
   let selIndex = -1
   const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
+  const overlay = root.querySelector<HTMLElement>('.tri-map-overlay')
+  const tip = root.querySelector<HTMLElement>('.tri-map-tip')
+  const legendLo = overlay?.querySelector<HTMLElement>('.tri-map-legend-lo') ?? null
+  const legendHi = overlay?.querySelector<HTMLElement>('.tri-map-legend-hi') ?? null
+  const legendBar = overlay?.querySelector<HTMLElement>('.tri-map-legend-bar') ?? null
+  const modeBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-map-mode'))
+  let mode: OverviewMode = 'heat'
+  let overview: Overview | null = null
+  const getOverview = () => (overview ??= buildOverview(detailData))
 
   const mapCtl = (() => {
     let map: any = null
     let started = false
     let okFlag = false
+    let hoverId: string | null = null
+    const clearHover = () => {
+      hoverId = null
+      map?.getSource('tri-hov')?.setData(emptyFC())
+      if (map) map.getCanvas().style.cursor = ''
+      tip?.classList.remove('tri-map-tip--on')
+    }
+    const applyMode = () => {
+      if (!map) return
+      map.setLayoutProperty('tri-heat', 'visibility', mode === 'heat' ? 'visible' : 'none')
+      map.setLayoutProperty('tri-traces', 'visibility', mode === 'heat' ? 'none' : 'visible')
+      map.setPaintProperty('tri-heat', 'line-opacity', heatOpacityExpr)
+      if (mode !== 'heat') {
+        map.setPaintProperty('tri-traces', 'line-color', traceColorExpr(mode))
+        map.setPaintProperty('tri-traces', 'line-opacity', traceOpacityExpr(mode))
+      }
+      const lg = getOverview().legend[mode]
+      if (legendLo) legendLo.textContent = lg?.lo ?? 'low'
+      if (legendHi) legendHi.textContent = lg?.hi ?? 'high'
+      if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
+    }
     const recolor = (d: StravaActivityDetail, i: number) => {
       if (!map) return
       const spec = metricSpecs(d)[i]
-      if (spec) map.setPaintProperty('tri-sel', 'line-gradient', gradientExpr(d, spec.pick))
+      if (spec)
+        map.setPaintProperty(
+          'tri-sel',
+          'line-gradient',
+          gradientExpr(d, spec.pick, spec.ramp, spec.zeroGap),
+        )
     }
     const init = async (): Promise<void> => {
       if (started) return
@@ -2648,11 +2911,44 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         source: 'tri-heat',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: {
+          'line-color': heatColorExpr,
+          'line-opacity': heatOpacityExpr,
+          'line-width': heatWidthExpr,
+        },
+      })
+      map.addSource('tri-traces', { type: 'geojson', data: emptyFC() })
+      map.addLayer({
+        id: 'tri-traces',
+        type: 'line',
+        source: 'tri-traces',
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+        paint: {
           'line-color': '#fc4c02',
-          'line-opacity': 0.2,
-          'line-blur': 0.6,
+          'line-opacity': 0.5,
           'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.2, 14, 2, 16, 3],
         },
+      })
+      map.addLayer({
+        id: 'tri-hit',
+        type: 'line',
+        source: 'tri-traces',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 12 },
+      })
+      map.addSource('tri-hov', { type: 'geojson', data: emptyFC() })
+      map.addLayer({
+        id: 'tri-hov-casing',
+        type: 'line',
+        source: 'tri-hov',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fff9f3', 'line-width': 4.6 },
+      })
+      map.addLayer({
+        id: 'tri-hov',
+        type: 'line',
+        source: 'tri-hov',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fc4c02', 'line-width': 2.8 },
       })
       map.addSource('tri-sel', { type: 'geojson', lineMetrics: true, data: emptyFC() })
       map.addLayer({
@@ -2692,20 +2988,52 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
           'circle-stroke-color': '#fff9f3',
         },
       })
+      map.on('mousemove', 'tri-hit', (e: any) => {
+        if (panel.classList.contains('tri-map--detail')) return
+        const id = e.features?.[0]?.properties?.id
+        if (id == null) return
+        map.getCanvas().style.cursor = 'pointer'
+        const key = String(id)
+        if (hoverId !== key) {
+          hoverId = key
+          const d = detailData?.details?.[key]
+          if (!d) return
+          map.getSource('tri-hov')?.setData(routeFC(d))
+          if (tip)
+            tip.textContent = `${d.name || d.sport} · ${shortDate(d.date)} · ${dist(d.distanceKm, d.sport)}`
+        }
+        if (tip) {
+          tip.classList.add('tri-map-tip--on')
+          const bound = canvas.clientWidth - tip.offsetWidth - 8
+          tip.style.left = `${Math.min(e.point.x + 14, Math.max(8, bound))}px`
+          tip.style.top = `${e.point.y + 14}px`
+        }
+      })
+      map.on('mouseleave', 'tri-hit', clearHover)
+      map.on('click', 'tri-hit', (e: any) => {
+        if (panel.classList.contains('tri-map--detail')) return
+        const id = e.features?.[0]?.properties?.id
+        if (id != null) showRoute(String(id))
+      })
+      applyMode()
       okFlag = true
     }
-    const drawHeatmap = () => {
+    const drawOverview = () => {
       if (!map) return
-      const fc = heatFC(detailData)
-      map.getSource('tri-heat')?.setData(fc)
-      const b = fcBounds(fc)
+      const ov = getOverview()
+      map.getSource('tri-heat')?.setData(ov.heat)
+      map.getSource('tri-traces')?.setData(ov.traces)
+      applyMode()
+      const b = fcBounds(ov.traces)
       if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
     }
     const select = (d: StravaActivityDetail, i: number) => {
       if (!map) return
+      clearHover()
       map.getSource('tri-sel')?.setData(routeFC(d))
       recolor(d, i)
-      map.setPaintProperty('tri-heat', 'line-opacity', 0.08)
+      map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
+      map.setPaintProperty('tri-traces', 'line-opacity', 0.06)
       const b = fcBounds(routeFC(d))
       if (b) map.fitBounds(b, { padding: 40, maxZoom: 15, duration: reduce ? 0 : 600 })
     }
@@ -2713,13 +3041,14 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       map?.getSource('tri-dot')?.setData(pointFC(lng, lat))
     const clearSelection = () => {
       if (!map) return
+      clearHover()
       map.getSource('tri-sel')?.setData(emptyFC())
       map.getSource('tri-dot')?.setData(emptyFC())
-      map.setPaintProperty('tri-heat', 'line-opacity', 0.2)
-      drawHeatmap()
+      drawOverview()
     }
     const resize = () => map?.resize()
     const dispose = () => {
+      clearHover()
       if (map?.remove) map.remove()
       map = null
       started = false
@@ -2729,7 +3058,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     return {
       init,
       ok: () => okFlag,
-      drawHeatmap,
+      drawOverview,
+      applyMode,
       select,
       recolor,
       moveDot,
@@ -2763,6 +3093,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        overview = null
+        mapCtl.drawOverview()
         if (search?.value) runSearch()
       })
       .catch(() => {})
@@ -2809,6 +3141,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       )
       detail.replaceChildren(card)
       panel.classList.add('tri-map--detail')
+      panel.classList.remove('tri-map--searching')
+      results?.setAttribute('aria-hidden', 'true')
       back.addEventListener('click', closeDetail, { once: true })
       if (mapMode) {
         requestAnimationFrame(() => {
@@ -2946,7 +3280,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const startMap = () =>
     void mapCtl.init().then(() => {
       mapCtl.resize()
-      mapCtl.drawHeatmap()
+      mapCtl.drawOverview()
     })
   const open = () => {
     root.classList.add('tri-map-open')
@@ -2981,6 +3315,11 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
+    if (panel.classList.contains('tri-map--searching') && search?.value) {
+      search.value = ''
+      runSearch()
+      return
+    }
     if (panel.classList.contains('tri-map--detail')) {
       closeDetail()
       return
@@ -2992,14 +3331,37 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     }
     close()
   }
+  const onPanelClick = (event: MouseEvent) => {
+    if (!panel.classList.contains('tri-map--searching')) return
+    if ((event.target as HTMLElement | null)?.closest('.tri-map-search-wrap')) return
+    panel.classList.remove('tri-map--searching')
+    results?.setAttribute('aria-hidden', 'true')
+  }
+  const onModeClick = (event: MouseEvent) => {
+    const b = (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-map-mode')
+    const m = b?.dataset.mode as OverviewMode | undefined
+    if (!m || m === mode) return
+    mode = m
+    const accent = overviewRamp(m)[6]
+    for (const it of modeBtns) {
+      const on = it.dataset.mode === m
+      it.setAttribute('aria-pressed', String(on))
+      it.style.background = on ? accent : ''
+      it.style.borderColor = on ? accent : ''
+    }
+    mapCtl.applyMode()
+  }
 
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
   title?.addEventListener('click', toMain)
   scrim?.addEventListener('click', close)
   search?.addEventListener('input', runSearch)
+  search?.addEventListener('focus', runSearch)
   search?.addEventListener('keydown', onSearchKey)
   results?.addEventListener('click', onResultsClick)
+  panel.addEventListener('click', onPanelClick)
+  overlay?.addEventListener('click', onModeClick)
   document.addEventListener('keydown', onKey)
 
   return () => {
@@ -3008,8 +3370,11 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
     search?.removeEventListener('input', runSearch)
+    search?.removeEventListener('focus', runSearch)
     search?.removeEventListener('keydown', onSearchKey)
     results?.removeEventListener('click', onResultsClick)
+    panel.removeEventListener('click', onPanelClick)
+    overlay?.removeEventListener('click', onModeClick)
     document.removeEventListener('keydown', onKey)
     mapCtl.dispose()
   }
@@ -3179,6 +3544,19 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
         handled = true
       } else if (key === 's') {
         root.querySelector<HTMLElement>('.tri-total')?.click()
+        handled = true
+      } else if (key === 'm') {
+        root.querySelector<HTMLElement>('.tri-map-btn')?.click()
+        handled = true
+      } else if (key === 'h') {
+        if (window.spaNavigate) {
+          window.spaNavigate(new URL('/', window.location.toString()))
+        } else {
+          window.location.href = '/'
+        }
+        handled = true
+      } else if (key === 'f') {
+        root.querySelector<HTMLElement>('.tri-fuel-btn')?.click()
         handled = true
       }
 

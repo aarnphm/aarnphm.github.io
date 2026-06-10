@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import {
-  normalizeSport,
+  normalizeKind,
   RawStravaActivity,
   StravaRawCache,
   StravaStreams,
@@ -291,7 +291,7 @@ async function main(): Promise<void> {
 
   const needStreams = Object.values(merged)
     .filter(a => {
-      if (normalizeSport(a.sportType) === null) return false
+      if (normalizeKind(a.sportType) === null) return false
       const s = streams[String(a.id)]
       return !s || s.heartrate === undefined
     })
@@ -307,7 +307,7 @@ async function main(): Promise<void> {
   const needGeo = Object.values(merged).filter(a => {
     const s = streams[String(a.id)]
     return (
-      normalizeSport(a.sportType) !== null &&
+      normalizeKind(a.sportType) !== null &&
       s !== undefined &&
       s.latlng.length >= 2 &&
       !geo[String(a.id)]
@@ -323,7 +323,7 @@ async function main(): Promise<void> {
   }
 
   const needCalories = Object.values(merged)
-    .filter(a => normalizeSport(a.sportType) !== null && a.calories === undefined)
+    .filter(a => normalizeKind(a.sportType) !== null && a.calories === undefined)
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
   let ci = 0
   await mapPool(needCalories, CONCURRENCY, async a => {
