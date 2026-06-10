@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-09 23:00:38 GMT-04:00
+modified: 2026-06-10 09:02:53 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1275,6 +1275,51 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Emil_Cioran -- Emil Cioran
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [philosopher, essayist]
+    - later: true
+- https://en.wikipedia.org/wiki/Irwin_Weil -- Irwin Weil
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [scholar, literature]
+    - later: true
+- https://en.wikipedia.org/wiki/Elvin_Jones -- Elvin Jones
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [jazz, drummer]
+    - later: true
+- https://en.wikipedia.org/wiki/Joni_Mitchell -- Joni Mitchell
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [music, songwriter]
+    - later: true
+- https://en.wikipedia.org/wiki/Arthur_Miller -- Arthur Miller
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [playwright, essayist]
+    - later: true
+- https://en.wikipedia.org/wiki/Willard_Van_Orman_Quine -- Willard Van Orman Quine
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [philosopher, logician]
+    - later: true
+- https://en.wikipedia.org/wiki/John_Maynard_Keynes -- John Maynard Keynes
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [economics, philosophy]
+    - later: true
+- https://en.wikipedia.org/wiki/Brewster_Kahle -- Brewster Kahle
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [archive, internet]
+    - later: true
+- https://bellard.org/ -- Fabrice Bellard
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [engineer, cs]
+  - QEMU, FFmpeg
 - https://wttdotm.com/ -- morry kolman
   - [meta]:
     - date: 06/09/2026
@@ -2213,6 +2258,11 @@ title: are.na
 
 ## places
 
+- https://en.wikipedia.org/wiki/Sammamish,_Washington -- Sammamish, Washington
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [city, washington]
+    - later: true
 - https://maps.app.goo.gl/3T93xsip4wVikdKJ9 -- Misha Coffee
   - [meta]:
     - date: 12/18/2025
@@ -2499,6 +2549,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/KWeAYcDJwfrG7RwBN/theory-uplift-differentially-benefits-safety-and-is?curius=4648 -- theory uplift differentially benefits safety & is underleveraged
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [ai safety, theory]
+    - later: true
 - https://www.lesswrong.com/posts/S5dnLsmRbj2JkLWvf/turning-20-in-the-probable-pre-apocalypse -- Turning 20 in the probable pre-apocalypse
   - [meta]:
     - date: 06/09/2026
@@ -6372,6 +6427,21 @@ title: are.na
 
 ## life is literature
 
+- https://en.wikipedia.org/wiki/Elective_Affinities -- Elective Affinities
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [goethe, novel]
+    - later: true
+- https://en.wikipedia.org/wiki/Dilbert -- Dilbert
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [comics, office]
+    - later: true
+- https://en.wikipedia.org/wiki/The_Story_of_T%E1%BA%A5m_and_C%C3%A1m -- The Story of Tấm and Cám
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [folklore, vietnam]
+    - later: true
 - https://www.derekthompson.org/p/three-reasons-to-be-a-parent -- On being a Dad
   - [meta]:
     - date: 06/08/2026
@@ -6741,6 +6811,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Rubin_(microarchitecture) -- Rubin
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [gpu, nvidia]
+    - later: true
+- https://en.wikipedia.org/wiki/High_Bandwidth_Memory -- High Bandwidth Memory
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [memory, gpu]
+    - later: true
+- https://en.wikipedia.org/wiki/Hardening_(computing) -- Hardening
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [security, systems]
+    - later: true
+- https://en.wikipedia.org/wiki/Operator-precedence_parser -- Operator-precedence parser
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [parser, compiler]
+    - later: true
+- https://en.wikipedia.org/wiki/Futex -- Futex
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [linux, concurrency]
+    - later: true
+- https://en.wikipedia.org/wiki/Systolic_array -- Systolic array
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [architecture, acceleration]
+    - later: true
+- https://en.wikipedia.org/wiki/4%2B1_architectural_view_model -- 4+1 architectural view model
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [architecture, systems]
+    - later: true
 - https://blog.calif.io/p/first-public-kernel-memory-corruption -- First public macOS kernel memory corruption exploit on Apple M5
   - [meta]:
     - date: 05/25/2026
@@ -6947,6 +7052,51 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Neural_correlates_of_consciousness -- Neural correlates of consciousness
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [consciousness, neuroscience]
+    - later: true
+- https://en.wikipedia.org/wiki/Philosophy_of_mind -- Philosophy of mind
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [mind, metaphysics]
+    - later: true
+- https://en.wikipedia.org/wiki/Diff%C3%A9rance -- Différance
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [derrida, semiotics]
+    - later: true
+- https://en.wikipedia.org/wiki/Mimetic_theory -- Mimetic theory
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [desire, girard]
+    - later: true
+- https://en.wikipedia.org/wiki/Temporal_finitism -- Temporal finitism
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [time, metaphysics]
+    - later: true
+- https://en.wikipedia.org/wiki/Iron_cage -- Iron cage
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [weber, rationalization]
+    - later: true
+- https://en.wikipedia.org/wiki/Dual_strategies_theory -- Dual strategies theory
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [evolution, psychology]
+    - later: true
+- https://en.wikipedia.org/wiki/Newcomb%27s_problem -- Newcomb's problem
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [decision theory, rationality]
+    - later: true
+- https://en.wikipedia.org/wiki/Intellectual_responsibility -- Intellectual responsibility
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [ethics, epistemology]
+    - later: true
 - https://www.lesswrong.com/posts/faAX5Buxc7cdjkXQG/machines-of-faithful-obedience -- Machines of Faithful Obedience
   - [meta]:
     - date: 06/09/2026
@@ -9027,6 +9177,36 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/Special_relativity -- Special relativity
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [physics, spacetime]
+    - later: true
+- https://en.wikipedia.org/wiki/Cellular_senescence -- Cellular senescence
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [biology, aging]
+    - later: true
+- https://en.wikipedia.org/wiki/DNA_methylation#In_aging -- DNA methylation
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [epigenetics, aging]
+    - later: true
+- https://en.wikipedia.org/wiki/Macdaniel_affair -- Macdaniel affair
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [history, diplomacy]
+    - later: true
+- https://en.wikipedia.org/wiki/Portmanteau -- Portmanteau
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [language, words]
+    - later: true
+- https://en.wikipedia.org/wiki/Spatial_architecture -- Spatial architecture
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [architecture, space]
+    - later: true
 - https://www.noahpinion.blog/p/all-non-drone-militaries-are-obsolete -- All non-drone militaries are obsolete
   - [meta]:
     - date: 06/08/2026
@@ -11151,6 +11331,11 @@ title: are.na
 
 ## organizations
 
+- https://en.wikipedia.org/wiki/Cybernetic_Culture_Research_Unit -- Cybernetic Culture Research Unit
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [theory, cybernetics]
+    - later: true
 - https://www.sternberg-press.com/ -- Sternberg Press [**]
   - [meta]:
     - date: 06/04/2026
@@ -11325,6 +11510,66 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Lagrange_polynomial -- Lagrange polynomial
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [interpolation, polynomial]
+    - later: true
+- https://en.wikipedia.org/wiki/Sinkhorn%27s_theorem -- Sinkhorn's theorem
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [matrix, scaling]
+    - later: true
+- https://en.wikipedia.org/wiki/Haar_measure#The_modular_function -- Haar measure
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [measure theory, groups]
+    - later: true
+- https://en.wikipedia.org/wiki/Hyperhomology -- Hyperhomology
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [homological algebra]
+    - later: true
+- https://en.wikipedia.org/wiki/Marginal_distribution -- Marginal distribution
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [probability, statistics]
+    - later: true
+- https://en.wikipedia.org/wiki/Serre_group -- Serre group
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [algebraic geometry, groups]
+    - later: true
+- https://en.wikipedia.org/wiki/Rouch%C3%A9%27s_theorem -- Rouché's theorem
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [complex analysis]
+    - later: true
+- https://en.wikipedia.org/wiki/Gale%E2%80%93Shapley_algorithm -- Gale-Shapley algorithm
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [matching, algorithm]
+    - later: true
+- https://en.wikipedia.org/wiki/Neumorphism -- Neumorphism
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [category theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Fundamental_group -- Fundamental group
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [topology, algebra]
+    - later: true
+- https://en.wikipedia.org/wiki/Birth%E2%80%93death_process -- Birth-death process
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [stochastic process]
+    - later: true
+- https://en.wikipedia.org/wiki/Estimation_lemma -- Estimation lemma
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [complex analysis]
+    - later: true
 - https://www.lesswrong.com/w/arithmetical-hierarchy?lens=arithmetical-hierarchy-if-you-don-t-read-logic -- Arithmetical hierarchy
   - [meta]:
     - date: 06/09/2026
