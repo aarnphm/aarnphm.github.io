@@ -520,6 +520,11 @@ export default (() => {
             <div class="tri-ana-headline" />
             <div class="tri-ana-block" data-chart="body" />
             <div class="tri-ana-block" data-chart="gauge" />
+            <div class="tri-ana-block" data-chart="recovery" />
+            <div class="tri-ana-block" data-chart="sleep" />
+            <div class="tri-ana-block" data-chart="vo2max" />
+            <div class="tri-ana-block" data-chart="abilities" />
+            <div class="tri-ana-block" data-chart="cardio" />
             <div class="tri-ana-block" data-chart="pmc" />
             <div class="tri-ana-block" data-chart="ctl-sport" />
             <div class="tri-ana-block" data-chart="weekly" />

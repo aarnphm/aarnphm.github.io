@@ -572,7 +572,9 @@ describe('notebook parser', () => {
     assert(
       findElement(
         resetButton,
-        child => child.tagName === 'path' && child.properties?.d === 'M9 14 4 9l5-5',
+        child =>
+          child.tagName === 'path' &&
+          child.properties?.d === 'M5.7 12a6.3 6.3 0 1 0 6.3-6.3 6.83 6.83 0 0 0-4.72 1.92L5.7 9.2',
       ),
     )
     assert.strictEqual(buttons[3]?.properties?.ariaPressed, 'false')

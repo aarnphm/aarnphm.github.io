@@ -1310,6 +1310,54 @@ const GLOSS: Record<string, { term: string; def: string }> = {
     term: 'relative effort',
     def: 'Strava’s suffer score—duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
   },
+  hrv: {
+    term: 'HRV',
+    def: 'Heart-rate variability (RMSSD, ms). Tracked as the 7-day mean of $\\ln(\\mathrm{RMSSD})$ against a 28-day personal baseline, $z=(\\overline{\\ln\\mathrm{RMSSD}}_{7}-\\mu_{28})/\\sigma_{28}$. Below $-1\\sigma$ flags parasympathetic suppression.',
+  },
+  rhr: {
+    term: 'resting HR',
+    def: 'Overnight low heart rate in bpm. A rise of $\\ge 5$ bpm or $+1\\sigma$ over the 28-day baseline is an early fatigue or illness signal.',
+  },
+  tempdev: {
+    term: 'temp deviation',
+    def: 'Skin temperature against your personal baseline (°C). $\\ge +0.5$°C reads as a possible immune response, often 24–48 h before symptoms.',
+  },
+  sleepdebt: {
+    term: 'sleep debt',
+    def: 'Rolling 14-night shortfall against an 8 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. The 7 h floor is the adult minimum; athletes need 8–10 h.',
+  },
+  overreaching: {
+    term: 'overreaching',
+    def: 'Suppressed HRV ($z\\le-1$) while load spikes (ACWR caution/high or ramp $>10\\%$) — the combination that precedes non-functional overreaching.',
+  },
+  oreadiness: {
+    term: 'readiness',
+    def: 'Oura’s 0–100 daily readiness: $\\ge 85$ optimal, 70–84 good, $<70$ pay attention. Streaks under 70 flag accumulated strain.',
+  },
+  vo2max: {
+    term: 'VO₂max',
+    def: 'Maximal oxygen uptake in ml/kg/min. Bike path: $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ with $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ and FTP as 95% of best 20-min power.',
+  },
+  fitage: {
+    term: 'fitness age',
+    def: 'The age whose population-median VO₂max (FRIEND registry, male) equals yours, clamped 20–80. Lower than calendar age means the engine outruns the birthday.',
+  },
+  vam: {
+    term: 'VAM',
+    def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$. Recreational ≈ 600–1000; pro climbers exceed 1600.',
+  },
+  radar: {
+    term: 'abilities',
+    def: 'Six axes normalised 0–100: Coggan W/kg anchors for sprint and threshold, CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm, mean readiness for recovery.',
+  },
+  ef: {
+    term: 'efficiency factor',
+    def: 'Aerobic output per heartbeat: $\\mathrm{NP}/\\overline{\\mathrm{HR}}$ on the bike, graded speed per beat on the run. Rising EF at equal effort means the engine is getting cheaper.',
+  },
+  decouple: {
+    term: 'decoupling',
+    def: 'Pw:Hr drift $(E_1-E_2)/E_1$ across session halves. Under 5% means coupled — a durable aerobic base; over 10% the engine fades late.',
+  },
 }
 
 const markGloss = (e: HTMLElement, key: string): HTMLElement => {
@@ -1946,9 +1994,460 @@ const buildEffort = (data: Analytics): HTMLElement => {
   return block
 }
 
+const segRuns = <T>(
+  rows: T[],
+  sel: (r: T) => number | null,
+  x: (i: number) => number,
+  y: (v: number) => number,
+): [number, number][][] => {
+  const out: [number, number][][] = []
+  let cur: [number, number][] = []
+  rows.forEach((r, i) => {
+    const v = sel(r)
+    if (v == null) {
+      if (cur.length > 1) out.push(cur)
+      cur = []
+      return
+    }
+    cur.push([x(i), y(v)])
+  })
+  if (cur.length > 1) out.push(cur)
+  return out
+}
+
+const buildRecoveryChart = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-recovery')
+  block.appendChild(anaTitle('recovery · hrv · rhr', 'hrv'))
+  const rec = data.recovery
+  if (!rec.series.length) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no recovery data'))
+    return block
+  }
+  if (rec.flags.length) {
+    const flags = el('div', 'tri-rec-flags')
+    for (const f of rec.flags) {
+      const row = el('div', `tri-rec-flag tri-flag--${f.severity}`)
+      row.appendChild(el('span', 'tri-rec-dot'))
+      row.appendChild(markGloss(el('span', 'tri-rec-flag-label', f.label), f.metric))
+      row.appendChild(el('span', 'tri-rec-flag-detail', f.detail))
+      flags.appendChild(row)
+    }
+    block.appendChild(flags)
+  }
+  const n = rec.series.length
+  if (rec.status !== 'building' && n > 1) {
+    const x = (i: number): number => (i / (n - 1)) * ANA_W
+    const yZ = (z: number): number => 15 - (clampN(z, -3, 3) / 3) * 12
+    const s = svg('svg', {
+      class: 'tri-ana-svg tri-rec-svg',
+      viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+      preserveAspectRatio: 'none',
+    })
+    s.appendChild(
+      svg('rect', { x: 0, y: yZ(1), width: ANA_W, height: yZ(-1) - yZ(1), class: 'tri-rec-band' }),
+    )
+    s.appendChild(svg('line', { x1: 0, y1: yZ(0), x2: ANA_W, y2: yZ(0), class: 'tri-ana-zero' }))
+    s.appendChild(svg('line', { x1: 0, y1: yZ(-1), x2: ANA_W, y2: yZ(-1), class: 'tri-rec-zline' }))
+    s.appendChild(
+      svg('line', {
+        x1: 0,
+        y1: yZ(-2),
+        x2: ANA_W,
+        y2: yZ(-2),
+        class: 'tri-rec-zline tri-rec-zline--alert',
+      }),
+    )
+    for (const seg of segRuns(rec.series, d => d.hrvZ, x, yZ))
+      s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-hrv' }))
+    for (const seg of segRuns(rec.series, d => (d.rhrZ == null ? null : -d.rhrZ), x, yZ))
+      s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-rhr' }))
+    s.appendChild(svg('line', { x1: ANA_W, y1: 0, x2: ANA_W, y2: ANA_H, class: 'tri-pmc-now' }))
+    block.appendChild(s)
+  }
+  const t = rec.thresholds
+  const sevCls = (cond: boolean | null, alert: boolean | null): string =>
+    alert ? 'tri-flag--alert' : cond ? 'tri-flag--watch' : ''
+  const hrvCls = sevCls(
+    rec.hrvZ != null && rec.hrvZ <= t.hrvWatchZ,
+    rec.hrvZ != null && rec.hrvZ <= t.hrvAlertZ,
+  )
+  const rhrCls = sevCls(
+    rec.rhrZ != null && rec.rhrZ >= t.rhrWatchZ,
+    rec.rhrZ != null && rec.rhrZ >= t.rhrAlertZ,
+  )
+  const tmpCls = sevCls(
+    rec.tempDevLatest != null && rec.tempDevLatest >= t.tempWatchC,
+    rec.tempDevLatest != null && rec.tempDevLatest >= t.tempAlertC,
+  )
+  const rdyCls =
+    rec.readinessLatest != null && rec.readinessLatest < t.readinessFloor ? 'tri-flag--watch' : ''
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    markGloss(
+      el(
+        'span',
+        `tri-ana-k ${hrvCls}`.trim(),
+        rec.hrvLatest != null ? `HRV ${Math.round(rec.hrvLatest)} ms` : 'HRV —',
+      ),
+      'hrv',
+    ),
+    markGloss(
+      el(
+        'span',
+        `tri-ana-k ${rhrCls}`.trim(),
+        rec.rhrLatest != null ? `RHR ${Math.round(rec.rhrLatest)}` : 'RHR —',
+      ),
+      'rhr',
+    ),
+    markGloss(
+      el(
+        'span',
+        `tri-ana-k ${rdyCls}`.trim(),
+        rec.readinessLatest != null
+          ? `readiness ${Math.round(rec.readinessLatest)}`
+          : 'readiness —',
+      ),
+      'oreadiness',
+    ),
+    markGloss(
+      el(
+        'span',
+        `tri-ana-k ${tmpCls}`.trim(),
+        rec.tempDevLatest != null
+          ? `temp ${rec.tempDevLatest >= 0 ? '+' : ''}${rec.tempDevLatest.toFixed(1)}°C`
+          : 'temp —',
+      ),
+      'tempdev',
+    ),
+  )
+  if (rec.status !== 'firm')
+    cap.appendChild(el('span', 'tri-ana-k', `baseline ${rec.baselineDays}/14`))
+  block.appendChild(cap)
+  return block
+}
+
+const buildSleep = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-sleep')
+  block.appendChild(anaTitle('sleep · debt', 'sleepdebt'))
+  const rec = data.recovery
+  const view = rec.series.slice(-28)
+  if (!view.some(d => d.sleepS != null)) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no sleep logged'))
+    return block
+  }
+  const n = view.length
+  const H = 32
+  const bot = H - 0.5
+  let maxS = rec.sleepTargetS
+  for (const d of view) if (d.sleepS != null && d.sleepS > maxS) maxS = d.sleepS
+  const yBar = (sec: number): number => bot - (sec / maxS) * (H - 2)
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-ana-weekly-svg',
+    viewBox: `0 0 ${n} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  s.appendChild(
+    svg('line', {
+      x1: 0,
+      y1: yBar(rec.sleepTargetS),
+      x2: n,
+      y2: yBar(rec.sleepTargetS),
+      class: 'tri-rec-target',
+    }),
+  )
+  s.appendChild(
+    svg('line', {
+      x1: 0,
+      y1: yBar(rec.thresholds.sleepFloorS),
+      x2: n,
+      y2: yBar(rec.thresholds.sleepFloorS),
+      class: 'tri-rec-floor',
+    }),
+  )
+  view.forEach((d, i) => {
+    if (d.sleepS == null) {
+      s.appendChild(
+        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
+      )
+      return
+    }
+    const h = (d.sleepS / maxS) * (H - 2)
+    s.appendChild(
+      svg('rect', {
+        x: i + 0.12,
+        y: bot - h,
+        width: 0.76,
+        height: h,
+        class: d.sleepS < rec.thresholds.sleepFloorS ? 'tri-seg--short' : 'tri-seg--sleep',
+      }),
+    )
+  })
+  const ys = (sc: number): number => bot - (sc / 100) * (H - 2)
+  for (const seg of segRuns(
+    view,
+    d => d.sleepScore,
+    i => i + 0.5,
+    ys,
+  ))
+    s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-score' }))
+  block.appendChild(s)
+  const debtCls =
+    rec.sleepDebtS >= rec.thresholds.sleepDebtAlertS
+      ? 'tri-flag--alert'
+      : rec.sleepDebtS >= rec.thresholds.sleepDebtWatchS
+        ? 'tri-flag--watch'
+        : ''
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el(
+      'span',
+      'tri-ana-k',
+      rec.sleepLatestS != null ? `sleep ${hms(rec.sleepLatestS)}` : 'sleep —',
+    ),
+    el(
+      'span',
+      'tri-ana-k',
+      rec.sleepBaselineS != null ? `base ${hms(rec.sleepBaselineS)}` : 'base —',
+    ),
+    markGloss(
+      el('span', `tri-ana-k ${debtCls}`.trim(), `debt ${(rec.sleepDebtS / 3600).toFixed(1)} h`),
+      'sleepdebt',
+    ),
+    el('span', 'tri-ana-k', `target ${hms(rec.sleepTargetS)}`),
+  )
+  if (rec.shortSleepStreak >= 2)
+    cap.appendChild(
+      el(
+        'span',
+        `tri-ana-k tri-flag--${rec.shortSleepStreak >= 3 ? 'alert' : 'watch'}`,
+        `${rec.shortSleepStreak} short`,
+      ),
+    )
+  block.appendChild(cap)
+  return block
+}
+
+const buildVo2max = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-engine-vo2')
+  block.appendChild(anaTitle('vo2max · fitness age', 'vo2max'))
+  const v = data.engine.vo2max
+  if (v.value == null) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no power or hr data yet'))
+    return block
+  }
+  const head = el('div', 'tri-engine-vo2-head')
+  const num = el('div', 'tri-engine-vo2-num', v.value.toFixed(1))
+  num.appendChild(el('span', 'tri-engine-vo2-unit', ' ml/kg/min'))
+  head.appendChild(num)
+  if (v.fitnessAge != null)
+    head.appendChild(
+      markGloss(
+        el(
+          'span',
+          `tri-engine-age tri-dir-${(v.ageDeltaYears ?? 0) <= 0 ? 'up' : 'down'}`,
+          `fitness age ${v.fitnessAge} (${signed(v.ageDeltaYears ?? 0)}y)`,
+        ),
+        'fitage',
+      ),
+    )
+  block.appendChild(head)
+  const pos = (a: number): number => clampN(((a - 20) / 60) * 100, 1.5, 98.5)
+  const bar = el('div', 'tri-engine-agebar')
+  if (v.fitnessAge != null) {
+    const needle = el('span', 'tri-engine-agebar-needle')
+    needle.style.left = `${pos(v.fitnessAge)}%`
+    needle.title = `fitness age ${v.fitnessAge}`
+    bar.appendChild(needle)
+  }
+  const chrono = el('span', 'tri-engine-agebar-chrono')
+  chrono.style.left = `${pos(v.chronoAge)}%`
+  chrono.title = `age ${v.chronoAge}`
+  bar.appendChild(chrono)
+  block.appendChild(bar)
+  if (v.trend.length > 1) {
+    const n = v.trend.length
+    let lo = Infinity
+    let hi = -Infinity
+    for (const p of v.trend) {
+      if (p.vo2max < lo) lo = p.vo2max
+      if (p.vo2max > hi) hi = p.vo2max
+    }
+    if (hi - lo < 2) {
+      hi += 1
+      lo -= 1
+    }
+    const x = (i: number): number => (i / (n - 1)) * ANA_W
+    const y = (val: number): number => 27 - ((val - lo) / (hi - lo)) * 24
+    const s = svg('svg', {
+      class: 'tri-ana-svg tri-engine-vo2-spark',
+      viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+      preserveAspectRatio: 'none',
+    })
+    s.appendChild(
+      svg('path', {
+        d: polyD(v.trend.map((p, i) => [x(i), y(p.vo2max)] as [number, number])),
+        class: 'tri-elev-line tri-line-bike',
+      }),
+    )
+    block.appendChild(s)
+  }
+  const cap = el('div', 'tri-elev-cap')
+  cap.append(
+    el('span', 'tri-ana-k', v.method),
+    markGloss(el('span', `tri-ana-k tri-conf-${v.conf}`, v.conf), 'conf'),
+  )
+  if (v.percentileForAge != null)
+    cap.appendChild(el('span', 'tri-ana-k', `p${v.percentileForAge} for age ${v.chronoAge}`))
+  cap.appendChild(el('span', 'tri-ana-k', v.note))
+  cap.appendChild(el('span', 'tri-ana-k', `hrmax ${v.hrMax} (${v.hrMaxSource})`))
+  block.appendChild(cap)
+  return block
+}
+
+const buildAbilities = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-engine-radar')
+  block.appendChild(anaTitle('abilities', 'radar'))
+  const ab = data.engine.abilities
+  if (!ab.axes.length || ab.axes.every(a => a.score == null)) {
+    block.appendChild(el('div', 'tri-ana-empty', 'not enough data'))
+    return block
+  }
+  const cx = 50
+  const cy = 50
+  const R = 36
+  const angle = (i: number): number => ((-90 + (360 / ab.axes.length) * i) * Math.PI) / 180
+  const pt = (i: number, score: number): [number, number] => {
+    const th = angle(i)
+    const r = (R * score) / 100
+    return [cx + r * Math.cos(th), cy + r * Math.sin(th)]
+  }
+  const s = svg('svg', { class: 'tri-radar-svg', viewBox: '0 0 100 100' })
+  for (const g of [25, 50, 75, 100])
+    s.appendChild(
+      svg('path', { d: `${polyD(ab.axes.map((_, i) => pt(i, g)))} Z`, class: 'tri-radar-grid' }),
+    )
+  ab.axes.forEach((_, i) => {
+    const [px, py] = pt(i, 100)
+    s.appendChild(svg('line', { x1: cx, y1: cy, x2: px, y2: py, class: 'tri-radar-spoke' }))
+  })
+  s.appendChild(
+    svg('path', {
+      d: `${polyD(ab.axes.map((a, i) => pt(i, a.score ?? 0)))} Z`,
+      class: 'tri-radar-fill',
+    }),
+  )
+  ab.axes.forEach((a, i) => {
+    const [px, py] = pt(i, a.score ?? 0)
+    const dot = svg('circle', {
+      cx: px,
+      cy: py,
+      r: 1.4,
+      class: a.score == null ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot',
+    })
+    const tip = svg('title', {})
+    tip.textContent = `${a.label} · ${a.rawValue != null ? `${a.rawValue} ${a.rawUnit}` : 'no data'}`
+    dot.appendChild(tip)
+    s.appendChild(dot)
+    const th = angle(i)
+    const label = svg('text', {
+      x: cx + (R + 8) * Math.cos(th),
+      y: cy + (R + 8) * Math.sin(th) + 1.6,
+      'text-anchor': Math.abs(Math.cos(th)) < 0.3 ? 'middle' : Math.cos(th) > 0 ? 'start' : 'end',
+      class: a.score == null ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax',
+    })
+    label.textContent = a.label
+    s.appendChild(label)
+  })
+  block.appendChild(s)
+  const cap = el('div', 'tri-elev-cap')
+  for (const a of ab.axes)
+    cap.appendChild(el('span', 'tri-ana-k', `${a.label} ${a.score != null ? a.score : '—'}`))
+  if (ab.area != null) cap.appendChild(el('span', 'tri-ana-k', `overall ${ab.area}`))
+  block.appendChild(cap)
+  return block
+}
+
+const buildCardio = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-engine-cardio')
+  block.appendChild(anaTitle('cardiovascular health', 'ef'))
+  const c = data.engine.cardio
+  if (!c.metrics.length || c.metrics.every(m => m.value == null)) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no heart data yet'))
+    return block
+  }
+  const seriesOf = (key: string): number[] => {
+    if (key === 'rhr') return c.rhrSeries.map(p => p.rhr)
+    if (key === 'hrv') return c.hrvSeries.map(p => p.hrv)
+    if (key === 'ef') return c.efSeries.map(p => p.ef)
+    return []
+  }
+  const glossOf: Record<string, string> = {
+    rhr: 'rhr',
+    hrv: 'hrv',
+    ef: 'ef',
+    decoupling: 'decouple',
+  }
+  for (const m of c.metrics) {
+    const row = el('div', 'tri-engine-row')
+    row.appendChild(markGloss(el('span', 'tri-engine-row-k', m.label), glossOf[m.key] ?? 'ef'))
+    const ys = seriesOf(m.key)
+    if (ys.length > 1) {
+      const n = ys.length
+      let lo = Infinity
+      let hi = -Infinity
+      for (const yv of ys) {
+        if (yv < lo) lo = yv
+        if (yv > hi) hi = yv
+      }
+      if (hi - lo === 0) {
+        hi += 1
+        lo -= 1
+      }
+      const s = svg('svg', {
+        class: 'tri-engine-spark',
+        viewBox: '0 0 100 24',
+        preserveAspectRatio: 'none',
+      })
+      s.appendChild(
+        svg('path', {
+          d: polyD(
+            ys.map(
+              (yv, i) =>
+                [(i / (n - 1)) * 100, 21 - ((yv - lo) / (hi - lo)) * 18] as [number, number],
+            ),
+          ),
+          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : 'tri-line-run'}`,
+        }),
+      )
+      row.appendChild(s)
+    } else row.appendChild(el('span', 'tri-engine-spark'))
+    const val = el(
+      'span',
+      'tri-engine-row-v',
+      m.value != null ? `${m.value}${m.unit === '%' ? '%' : ` ${m.unit}`}` : '—',
+    )
+    val.title = m.note
+    row.appendChild(val)
+    row.appendChild(
+      el(
+        'span',
+        `tri-engine-row-dir ${m.dir === 'improving' ? 'tri-dir-up' : m.dir === 'declining' ? 'tri-dir-down' : 'tri-dir-flat'}`,
+        m.dir === 'improving' ? '▲' : m.dir === 'declining' ? '▼' : m.dir === 'stable' ? '■' : '',
+      ),
+    )
+    block.appendChild(row)
+  }
+  return block
+}
+
 const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   body: buildBody,
   gauge: buildGauge,
+  recovery: buildRecoveryChart,
+  sleep: buildSleep,
+  vo2max: buildVo2max,
+  abilities: buildAbilities,
+  cardio: buildCardio,
   pmc: buildPmc,
   'ctl-sport': buildCtlSport,
   weekly: buildWeekly,
@@ -1985,6 +2484,31 @@ const wireScrub = (panel: HTMLElement, daily: DailyPoint[]): (() => void) => {
 const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   { label: 'body weight', chart: 'body', hay: 'body weight kg lbs mass cut' },
   { label: 'form · ramp', chart: 'gauge', hay: 'form ramp gauge taper peak projection' },
+  {
+    label: 'recovery · hrv · rhr',
+    chart: 'recovery',
+    hay: 'recovery hrv heart rate variability rhr resting autonomic illness temperature overreaching suppressed fatigue oura',
+  },
+  {
+    label: 'sleep · debt',
+    chart: 'sleep',
+    hay: 'sleep debt duration score short streak need target rest hours oura',
+  },
+  {
+    label: 'vo2max · fitness age',
+    chart: 'vo2max',
+    hay: 'vo2max vo2 max aerobic fitness age friend percentile engine ftp map',
+  },
+  {
+    label: 'abilities',
+    chart: 'abilities',
+    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg',
+  },
+  {
+    label: 'cardiovascular health',
+    chart: 'cardio',
+    hay: 'cardio cardiovascular heart rhr hrv efficiency factor decoupling aerobic drift',
+  },
   { label: 'fitness · fatigue · form', chart: 'pmc', hay: 'pmc fitness fatigue form ctl atl tsb' },
   {
     label: 'fitness by discipline',
@@ -2024,6 +2548,18 @@ const GLOSS_CHART: Record<string, string> = {
   trend: 'trend',
   weight: 'body',
   wtrend: 'body',
+  hrv: 'recovery',
+  rhr: 'recovery',
+  tempdev: 'recovery',
+  overreaching: 'recovery',
+  oreadiness: 'recovery',
+  sleepdebt: 'sleep',
+  vo2max: 'vo2max',
+  fitage: 'vo2max',
+  vam: 'abilities',
+  radar: 'abilities',
+  ef: 'cardio',
+  decouple: 'cardio',
 }
 
 const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
