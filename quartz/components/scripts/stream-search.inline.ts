@@ -338,7 +338,13 @@ document.addEventListener('nav', async () => {
     const target = event.target as Element | null
     if (target) {
       const tag = target.tagName?.toLowerCase()
-      if (tag === 'input' || tag === 'textarea' || (target as HTMLElement).isContentEditable) return
+      const isStreamSearchTarget = searchInput.contains(target)
+      if (
+        (tag === 'input' || tag === 'textarea' || (target as HTMLElement).isContentEditable) &&
+        !isStreamSearchTarget
+      ) {
+        return
+      }
     }
 
     event.preventDefault()

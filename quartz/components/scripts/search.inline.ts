@@ -221,7 +221,6 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
 async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug) {
   searchElement.dataset.currentSlug = currentSlug
   if (configuredSearchElements.has(searchElement)) {
-    searchResetters.get(searchElement)?.()
     return
   }
   configuredSearchElements.add(searchElement)
@@ -546,14 +545,22 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     if (paletteOpen && paletteOpen.classList.contains('active')) return
 
     const isBasePage = document.body?.dataset?.isBase === 'true'
+    const key = e.key.toLowerCase()
 
-    if ((e.key === '/' || e.key === 'k') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-      if (isBasePage && e.key.toLowerCase() === 'k') {
-        return
-      }
-      const hasInlineSearch = document.querySelector('.page-list-search-container')
-      if (hasInlineSearch && e.key.toLowerCase() === 'k') {
-        return
+    if ((e.key === '/' || key === 'k') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      if (key === 'k') {
+        if (isBasePage) return
+
+        const hasInlineSearch = document.querySelector('.page-list-search-container')
+        if (hasInlineSearch) return
+
+        const streamSearchInput = document.querySelector<HTMLInputElement>('.stream-search-input')
+        if (streamSearchInput) {
+          e.preventDefault()
+          streamSearchInput.focus()
+          streamSearchInput.select()
+          return
+        }
       }
       e.preventDefault()
       const searchBarOpen = container!.classList.contains('active')
@@ -1178,10 +1185,13 @@ async function fillDocument(data: ContentIndex) {
 
 document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
   const currentSlug = e.detail.url
-  const searchElement = document.getElementsByClassName(
-    'search',
-  ) as HTMLCollectionOf<HTMLDivElement>
-  for (const element of searchElement) {
+  const searchElements = Array.from(
+    document.getElementsByClassName('search') as HTMLCollectionOf<HTMLDivElement>,
+  )
+  for (const element of searchElements) {
+    searchResetters.get(element)?.()
+  }
+  for (const element of searchElements) {
     await setupSearch(element, currentSlug)
   }
 })
