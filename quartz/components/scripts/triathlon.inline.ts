@@ -2633,11 +2633,12 @@ const overviewFmt = (k: (typeof OVERVIEW_METRICS)[number], sport: Sport, v: numb
   return `${clock(3600 / (v * KM_TO_MI))} /mi`
 }
 
-const buildOverview = (dp: DetailPayload | null): Overview => {
+const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | null): Overview => {
   const acts: StravaActivityDetail[] = []
   const det = dp?.details ?? {}
   for (const k in det) {
     const d = det[k]
+    if (sportFilter && d.sport !== sportFilter) continue
     if ((d.sport === 'run' || d.sport === 'bike') && gpsRoute(d).length >= 2) acts.push(d)
   }
   const counts = new Map<string, number>()
@@ -2843,8 +2844,17 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const legendBar = overlay?.querySelector<HTMLElement>('.tri-map-legend-bar') ?? null
   const modeBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-map-mode'))
   let mode: OverviewMode = 'heat'
-  let overview: Overview | null = null
-  const getOverview = () => (overview ??= buildOverview(detailData))
+  let sportFilter: 'run' | 'bike' | null = null
+  const overviewCache = new Map<string, Overview>()
+  const getOverview = () => {
+    const key = sportFilter ?? 'all'
+    let ov = overviewCache.get(key)
+    if (!ov) {
+      ov = buildOverview(detailData, sportFilter)
+      overviewCache.set(key, ov)
+    }
+    return ov
+  }
 
   const mapCtl = (() => {
     let map: any = null
@@ -3093,11 +3103,16 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
-        overview = null
+        overviewCache.clear()
         mapCtl.drawOverview()
         if (search?.value) runSearch()
       })
       .catch(() => {})
+  }
+  const setSportFilter = (f: 'run' | 'bike' | null) => {
+    if (f === sportFilter) return
+    sportFilter = f
+    mapCtl.drawOverview()
   }
   const closeDetail = () => {
     panel.classList.remove('tri-map--detail')
@@ -3111,6 +3126,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     panel.classList.remove('tri-map--searching')
     if (results) results.replaceChildren()
     selIndex = -1
+    setSportFilter(null)
   }
   const close = () => {
     root.classList.remove('tri-map-open')
@@ -3200,6 +3216,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     if (!q) {
       panel.classList.remove('tri-map--searching')
       results.setAttribute('aria-hidden', 'true')
+      setSportFilter(null)
       return
     }
     panel.classList.add('tri-map--searching')
@@ -3211,6 +3228,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (t.startsWith('filter:')) filterSport = t.slice(7)
       else if (t) tokens.push(t)
     }
+    setSportFilter(filterSport === 'run' || filterSport === 'bike' ? filterSport : null)
     const hints: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1]
     if (lastToken.startsWith('filter:') && !['bike', 'run'].includes(lastToken.slice(7))) {

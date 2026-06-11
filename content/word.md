@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-09 22:22:27 GMT-04:00
+modified: 2026-06-10 21:09:32 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -260,3 +260,6 @@ title: lists
 - Torschlusspanik
 - Kairos
 - pêche à pied
+- revenant
+- moratorium
+- pervasive

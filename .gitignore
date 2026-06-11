@@ -244,3 +244,4 @@ PROMPTS.md
 !quartz/runtime/native/packs/**/go.sum
 quartz/runtime/native/packs/**/_build/
 !migrations/**/*.sql
+.pnpm-store

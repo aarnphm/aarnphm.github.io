@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 import type { GarminActivity, GarminCache, GarminStreams } from '../plugins/stores/garmin'
-import { browserCookieHeader } from '../util/browser-cookie'
+import { browserCookieHeaders } from '../util/browser-cookie'
 import {
   garminConnectActivities,
   garminConnectActivity,
@@ -19,12 +19,19 @@ const DEFAULT_USER_AGENT =
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const DAY_MS = 86_400_000
+const MAX_DOCUMENT_REDIRECTS = 8
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
 
 interface GarminConnectSession {
   cookie: string
   csrf: string
+}
+
+interface CookieCandidate {
+  cookie: string
+  source: string
+  type: 'env' | 'file' | 'browser'
 }
 
 function cleanBaseUrl(value: string): string {
@@ -81,29 +88,46 @@ function endDate(): string {
   return cleanDay(process.env.GARMIN_CONNECT_END_DATE) ?? isoDay(Date.now() + DAY_MS)
 }
 
-async function readCookie(): Promise<string> {
+async function readCookieCandidates(): Promise<CookieCandidate[]> {
   const inline = process.env.GARMIN_CONNECT_COOKIE?.trim()
-  if (inline) return inline
+  if (inline) return [{ cookie: inline, source: 'env', type: 'env' }]
   const file = process.env.GARMIN_CONNECT_COOKIE_FILE?.trim()
   if (file) {
     const cookie = (await fs.readFile(file, 'utf8')).trim()
-    if (cookie) return cookie
+    if (cookie) return [{ cookie, source: file, type: 'file' }]
   }
-  const cookie = await browserCookieHeader()
-  if (cookie) {
-    console.log('[garmin] using Garmin Connect cookies from browser profile')
-    return cookie
-  }
+  const candidates = await browserCookieHeaders()
+  if (candidates.length > 0)
+    return candidates.map(candidate => ({
+      cookie: candidate.cookie,
+      source: `${candidate.browser}:${candidate.db}`,
+      type: 'browser',
+    }))
   throw new Error(
     'set GARMIN_CONNECT_COOKIE/GARMIN_CONNECT_COOKIE_FILE, or log in to Garmin Connect in a supported browser profile',
   )
 }
 
 async function readSession(): Promise<GarminConnectSession> {
-  const cookie = await readCookie()
-  const session: GarminConnectSession = { cookie, csrf: '' }
-  session.csrf = process.env.GARMIN_CONNECT_CSRF_TOKEN?.trim() || (await fetchCsrf(session))
-  return session
+  const candidates = await readCookieCandidates()
+  const csrf = process.env.GARMIN_CONNECT_CSRF_TOKEN?.trim()
+  let last: unknown = null
+  for (const candidate of candidates) {
+    const session: GarminConnectSession = { cookie: candidate.cookie, csrf: '' }
+    try {
+      session.csrf = csrf || (await fetchCsrf(session))
+      if (candidate.type === 'browser')
+        console.log('[garmin] using Garmin Connect cookies from browser profile')
+      return session
+    } catch (err) {
+      last = err
+      if (candidates.length === 1) break
+      console.warn(
+        `[garmin] skipped Garmin Connect cookie jar ${candidate.source}: ${errorMessage(err)}`,
+      )
+    }
+  }
+  throw last instanceof Error ? last : new Error(errorMessage(last))
 }
 
 function requestHeaders(session: GarminConnectSession, contentType?: string): HeadersInit {
@@ -134,6 +158,10 @@ function documentHeaders(session: GarminConnectSession): HeadersInit {
     'Sec-Fetch-Dest': 'document',
     'Upgrade-Insecure-Requests': '1',
   }
+}
+
+function errorMessage(value: unknown): string {
+  return value instanceof Error ? value.message : String(value)
 }
 
 function cookiePairs(header: string): Map<string, string> {
@@ -175,18 +203,56 @@ function applySetCookies(session: GarminConnectSession, headers: Headers): void 
 }
 
 async function fetchCsrf(session: GarminConnectSession): Promise<string> {
-  const res = await fetch(`${CONNECT_ORIGIN}/app/home`, {
-    headers: documentHeaders(session),
-    redirect: 'manual',
-  })
-  const text = await res.text()
-  applySetCookies(session, res.headers)
-  if (res.status === 301 || res.status === 302 || res.status === 303 || res.status === 307)
-    throw new Error('Garmin Connect app shell redirected to sign-in; refresh the browser session')
-  if (!res.ok) throw new Error(`Garmin Connect app shell failed: ${res.status}`)
-  const csrf = /<meta\s+name=["']csrf-token["']\s+content=["']([^"']+)["']/i.exec(text)?.[1]
-  if (!csrf) throw new Error('Garmin Connect app shell did not expose a CSRF token')
-  return csrf
+  let last: string | null = null
+  for (const path of ['/app/home', '/app/activities']) {
+    const shell = await fetchDocument(session, `${CONNECT_ORIGIN}${path}`)
+    const csrf = /<meta\s+name=["']csrf-token["']\s+content=["']([^"']+)["']/i.exec(shell.text)?.[1]
+    if (csrf) return csrf
+    if (!shell.res.ok) last = `Garmin Connect app shell failed: ${shell.res.status}`
+    else if (isSignInUrl(shell.url))
+      last = 'Garmin Connect app shell landed on sign-in; refresh the browser session'
+    else last = 'Garmin Connect app shell did not expose a CSRF token'
+  }
+  throw new Error(last ?? 'Garmin Connect app shell did not expose a CSRF token')
+}
+
+function isRedirect(status: number): boolean {
+  return status === 301 || status === 302 || status === 303 || status === 307 || status === 308
+}
+
+function redirectTarget(current: string, location: string | null): string | null {
+  if (!location) return null
+  let target: URL
+  try {
+    target = new URL(location, current)
+  } catch {
+    return null
+  }
+  if (target.protocol !== 'https:') return null
+  if (target.hostname !== 'connect.garmin.com' && !target.hostname.endsWith('.garmin.com'))
+    return null
+  return target.toString()
+}
+
+function isSignInUrl(value: string): boolean {
+  const url = new URL(value)
+  return url.hostname === 'sso.garmin.com' || /(?:sign-?in|login)/i.test(url.pathname)
+}
+
+async function fetchDocument(
+  session: GarminConnectSession,
+  start: string,
+): Promise<{ res: Response; text: string; url: string }> {
+  let url = start
+  for (let redirects = 0; redirects <= MAX_DOCUMENT_REDIRECTS; redirects++) {
+    const res = await fetch(url, { headers: documentHeaders(session), redirect: 'manual' })
+    applySetCookies(session, res.headers)
+    if (!isRedirect(res.status)) return { res, text: await res.text(), url }
+    const next = redirectTarget(url, res.headers.get('location'))
+    if (!next) return { res, text: await res.text(), url }
+    url = next
+  }
+  throw new Error('Garmin Connect app shell exceeded redirect limit')
 }
 
 function urlFor(base: string, path: string, params?: URLSearchParams): string {

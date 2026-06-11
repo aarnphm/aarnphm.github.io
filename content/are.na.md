@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-10 09:02:53 GMT-04:00
+modified: 2026-06-10 23:12:43 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -10680,6 +10680,10 @@ title: are.na
 
 ## engineering
 
+- https://antaresindustries.com/updates/antares-achieves-criticality -- Antares Achieves Criticality of Mark-0 Reactor
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [energy, technologica]
 - https://otoro.net/slimevolley/ -- Slime Volley RL simulation
   - [meta]:
     - date: 06/09/2026

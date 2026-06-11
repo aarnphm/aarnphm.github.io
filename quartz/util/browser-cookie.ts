@@ -27,6 +27,12 @@ interface CookieRecord {
   expiresUtc: bigint
 }
 
+export interface BrowserCookieHeader {
+  browser: string
+  db: string
+  cookie: string
+}
+
 const browserRoots: readonly BrowserRoot[] = [
   {
     name: 'Helium',
@@ -94,9 +100,13 @@ async function profileCookieDbs(root: string): Promise<string[]> {
 
 async function cookieDbCandidates(): Promise<{ browser: BrowserRoot; db: string }[]> {
   const explicit = process.env.GARMIN_CONNECT_COOKIE_DB?.trim()
-  if (explicit) return [{ browser: browserRoots[0], db: explicit }]
-
   const selected = process.env.GARMIN_CONNECT_BROWSER?.trim().toLowerCase()
+  if (explicit) {
+    const browser =
+      browserRoots.find(root => root.name.toLowerCase() === selected) ?? browserRoots[0]
+    return [{ browser, db: explicit }]
+  }
+
   const roots = selected
     ? browserRoots.filter(browser => browser.name.toLowerCase() === selected)
     : browserRoots
@@ -180,14 +190,15 @@ function decryptChromeValue(
   return stripHostHash(host, out).toString('utf8')
 }
 
-async function cookieValue(cookie: CookieRecord, browser: BrowserRoot): Promise<string | null> {
+function cookieValue(cookie: CookieRecord, password: string | null): string | null {
   if (cookie.value) return cookie.value
-  return decryptChromeValue(cookie.host, cookie.encryptedValue, await keychainPassword(browser))
+  return decryptChromeValue(cookie.host, cookie.encryptedValue, password)
 }
 
-export async function browserCookieHeader(): Promise<string | null> {
-  const pairs = new Map<string, string>()
+export async function browserCookieHeaders(): Promise<BrowserCookieHeader[]> {
+  const out: BrowserCookieHeader[] = []
   for (const candidate of await cookieDbCandidates()) {
+    const pairs = new Map<string, string>()
     let cookies: CookieRecord[]
     try {
       cookies = queryCookies(candidate.db)
@@ -197,16 +208,26 @@ export async function browserCookieHeader(): Promise<string | null> {
     } catch {
       continue
     }
+    const password = await keychainPassword(candidate.browser)
     for (const cookie of cookies) {
       let value: string | null
       try {
-        value = await cookieValue(cookie, candidate.browser)
+        value = cookieValue(cookie, password)
       } catch {
         continue
       }
       if (value) pairs.set(cookie.name, value)
     }
-    if (pairs.size > 0) return [...pairs].map(([name, value]) => `${name}=${value}`).join('; ')
+    if (pairs.size > 0)
+      out.push({
+        browser: candidate.browser.name,
+        db: candidate.db,
+        cookie: [...pairs].map(([name, value]) => `${name}=${value}`).join('; '),
+      })
   }
-  return null
+  return out
+}
+
+export async function browserCookieHeader(): Promise<string | null> {
+  return (await browserCookieHeaders())[0]?.cookie ?? null
 }
