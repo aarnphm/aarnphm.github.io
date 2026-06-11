@@ -11,7 +11,6 @@ import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 
 const SPORT_LABEL: Record<Sport, string> = { swim: 'swim', bike: 'bike', run: 'run' }
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const KM_TO_MI = 0.621371
 const FT_PER_KM = 3280.84
 const PX_PER_MIN = 2.4
@@ -117,16 +116,6 @@ const dist = (km: number, sport: Sport): string => {
   return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
 }
 
-const ordinal = (d: number): string => {
-  if (d % 100 >= 11 && d % 100 <= 13) return 'th'
-  return { 1: 'st', 2: 'nd', 3: 'rd' }[d % 10] ?? 'th'
-}
-
-const prettyDate = (iso: string): string => {
-  const [, m, d] = iso.split('-').map(Number)
-  return `${MONTHS[(m ?? 1) - 1]} ${d}${ordinal(d ?? 1)}`
-}
-
 const Icon = ({ sport, cls }: { sport: Sport; cls: string }) => (
   <svg class={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
     {SPORT_ICON[sport].map(d => (
@@ -145,6 +134,7 @@ export default (() => {
     const location = String(recentLoc ?? fileData.frontmatter?.['location'] ?? 'Toronto')
     const target = String(fileData.frontmatter?.['triathlon'] ?? '')
     const raceDates = new Set((fileData.tracking?.races ?? []).map(r => r.date))
+    const trackByDate = new Map((fileData.tracking?.days ?? []).map(d => [d.date, d]))
 
     const yearStarts: { year: string; index: number }[] = []
     let lastYear = ''
@@ -182,6 +172,7 @@ export default (() => {
               >
                 {payload.days.map(d => {
                   const rest = d.items.length === 0
+                  const track = trackByDate.get(d.date)
                   const segRaw = d.items.map(it =>
                     Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
                   )
@@ -192,8 +183,9 @@ export default (() => {
                     <span
                       class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
                       data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
-                      data-date={prettyDate(d.date)}
                       data-date-iso={d.date}
+                      data-event={track?.event ?? (track?.race ? 'race' : undefined)}
+                      data-weight={track?.weightLbs ?? undefined}
                     >
                       {rest ? (
                         <span class="tri-seg" style={`height:${REST_SEG}px`} />

@@ -10,6 +10,8 @@ import {
 } from '../../util/lesswrong'
 import { getContentType } from '../../util/mime'
 import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
+import { type PreviewTocEntry } from '../../util/preview'
+import { readSepPreview, sepPreviewApiUrl, type SepPreview, type SepTarget } from '../../util/sep'
 import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
@@ -876,7 +878,7 @@ function formatLessWrongDate(value: string): string {
   }).format(date)
 }
 
-function lessWrongTocHref(pageUrl: string, href: string): string {
+function popoverTocHref(pageUrl: string, href: string): string {
   try {
     return new URL(href, pageUrl).toString()
   } catch {
@@ -884,29 +886,34 @@ function lessWrongTocHref(pageUrl: string, href: string): string {
   }
 }
 
-function appendLessWrongToc(parent: HTMLElement, preview: LessWrongPreview) {
-  if (!preview.toc || preview.toc.length === 0) return
+function appendPopoverToc(
+  parent: HTMLElement,
+  pageUrl: string,
+  toc: PreviewTocEntry[] | undefined,
+  ariaLabel: string,
+) {
+  if (!toc || toc.length === 0) return
 
   const section = document.createElement('section')
-  section.classList.add('lesswrong-popover-toc')
-  section.ariaLabel = 'LessWrong contents'
+  section.classList.add('popover-toc')
+  section.ariaLabel = ariaLabel
 
   const label = document.createElement('div')
-  label.classList.add('lesswrong-popover-toc-title')
+  label.classList.add('popover-toc-title')
   label.textContent = 'Contents'
   section.appendChild(label)
 
   const list = document.createElement('ol')
-  list.classList.add('lesswrong-popover-toc-list')
+  list.classList.add('popover-toc-list')
 
-  for (const entry of preview.toc) {
+  for (const entry of toc) {
     const item = document.createElement('li')
-    item.classList.add('lesswrong-popover-toc-item')
-    item.style.setProperty('--lesswrong-popover-toc-indent', `${(entry.depth - 1) * 0.72}rem`)
+    item.classList.add('popover-toc-item')
+    item.style.setProperty('--popover-toc-indent', `${(entry.depth - 1) * 0.72}rem`)
 
     const link = document.createElement('a')
-    link.classList.add('lesswrong-popover-toc-link')
-    link.href = lessWrongTocHref(preview.pageUrl, entry.href)
+    link.classList.add('popover-toc-link')
+    link.href = popoverTocHref(pageUrl, entry.href)
     link.target = '_blank'
     link.rel = 'noopener noreferrer'
     link.textContent = entry.text
@@ -962,7 +969,7 @@ function renderLessWrongPreview(preview: LessWrongPreview, popoverInner: HTMLDiv
   }
 
   card.appendChild(previewHeader)
-  appendLessWrongToc(card, preview)
+  appendPopoverToc(card, preview.pageUrl, preview.toc, 'LessWrong contents')
 
   const extract = document.createElement('p')
   extract.classList.add('lesswrong-popover-extract')
@@ -1031,6 +1038,149 @@ async function handleLessWrong(
   link.dataset.popoverId = popoverId
   document.body.appendChild(popoverElement)
   activePopoverReq = null
+
+  if (activeAnchor !== link) return
+  await showPopover(link, popoverElement, pointer, { popoverInner })
+}
+
+function sepTargetFromLink(link: HTMLAnchorElement): SepTarget | undefined {
+  const { sepEntry, sepArchive } = link.dataset
+  if (!sepEntry) return undefined
+  return { entry: sepEntry, ...(sepArchive ? { archive: sepArchive } : {}) }
+}
+
+function renderSepPreview(preview: SepPreview, popoverInner: HTMLDivElement) {
+  popoverInner.dataset.contentType = 'text/x-sep'
+
+  const card = document.createElement('article')
+  card.classList.add('sep-popover-card')
+
+  const previewHeader = document.createElement('div')
+  previewHeader.classList.add('sep-popover-header')
+
+  const title = document.createElement('h2')
+  title.classList.add('sep-popover-title')
+
+  const titleLink = document.createElement('a')
+  titleLink.href = preview.pageUrl
+  titleLink.target = '_blank'
+  titleLink.rel = 'noopener noreferrer'
+  titleLink.textContent = preview.title
+  title.appendChild(titleLink)
+  previewHeader.appendChild(title)
+
+  const meta = document.createElement('ul')
+  meta.classList.add('sep-popover-meta')
+  meta.ariaLabel = 'SEP metadata'
+  for (const author of preview.authors ?? []) appendTextItem(meta, author, 'author')
+  if (preview.pubInfo) appendTextItem(meta, preview.pubInfo)
+  if (meta.childElementCount > 0) previewHeader.appendChild(meta)
+
+  card.appendChild(previewHeader)
+  appendPopoverToc(card, preview.pageUrl, preview.toc, 'SEP contents')
+
+  const extract = document.createElement('p')
+  extract.classList.add('sep-popover-extract')
+  extract.textContent = preview.extract
+  card.appendChild(extract)
+
+  const source = document.createElement('a')
+  source.classList.add('sep-popover-source')
+  source.href = preview.pageUrl
+  source.target = '_blank'
+  source.rel = 'noopener noreferrer'
+  source.textContent = 'Stanford Encyclopedia of Philosophy'
+  card.appendChild(source)
+
+  popoverInner.appendChild(card)
+}
+
+async function handleSep(link: HTMLAnchorElement, pointer: { clientX: number; clientY: number }) {
+  const target = sepTargetFromLink(link)
+  if (!target) return
+
+  const popoverId =
+    link.dataset.popoverId ?? `popover-sep-${target.archive ?? 'current'}-${target.entry}`
+  const existingPopover = document.getElementById(popoverId)
+  if (existingPopover) {
+    await showPopover(link, existingPopover, pointer)
+    return
+  }
+
+  if (activePopoverReq && activePopoverReq.link !== link) {
+    activePopoverReq.abort()
+    activePopoverReq = null
+  }
+
+  const controller = new AbortController()
+  activePopoverReq = { abort: () => controller.abort(), link }
+
+  const response = await fetch(sepPreviewApiUrl(target, window.location.toString()), {
+    signal: controller.signal,
+  }).catch(error => {
+    if (!isAbortError(error)) console.error(error)
+    return null
+  })
+  if (!response || !response.ok) {
+    activePopoverReq = null
+    return
+  }
+
+  const preview = readSepPreview(await response.json())
+  if (!preview || activeAnchor !== link) {
+    activePopoverReq = null
+    return
+  }
+
+  const { popoverElement, popoverInner } = createPopoverElement('sep-popover')
+  popoverElement.id = popoverId
+  renderSepPreview(preview, popoverInner)
+
+  if (document.getElementById(popoverId)) {
+    activePopoverReq = null
+    return
+  }
+
+  link.dataset.popoverId = popoverId
+  document.body.appendChild(popoverElement)
+  activePopoverReq = null
+
+  if (activeAnchor !== link) return
+  await showPopover(link, popoverElement, pointer, { popoverInner })
+}
+
+async function handleTriathlon(
+  link: HTMLAnchorElement,
+  pointer: { clientX: number; clientY: number },
+) {
+  const date = link.dataset.triathlonDate
+  if (!date) return
+
+  const popoverId = link.dataset.popoverId ?? `popover-triathlon-${date}`
+  const existingPopover = document.getElementById(popoverId)
+  if (existingPopover) {
+    await showPopover(link, existingPopover, pointer)
+    return
+  }
+
+  const card = await window.quartzTriathlon
+    ?.dayCard(date, new URL('/static/strava-detail.json', link.href).toString(), {
+      location: link.dataset.triathlonLoc,
+      event: link.dataset.triathlonEvent,
+      weightLbs: link.dataset.triathlonWeight ? Number(link.dataset.triathlonWeight) : undefined,
+    })
+    .catch(() => null)
+  if (!card || activeAnchor !== link) return
+
+  const { popoverElement, popoverInner } = createPopoverElement('triathlon-popover')
+  popoverElement.id = popoverId
+  popoverInner.dataset.contentType = 'text/x-triathlon'
+  popoverInner.appendChild(card)
+
+  if (document.getElementById(popoverId)) return
+
+  link.dataset.popoverId = popoverId
+  document.body.appendChild(popoverElement)
 
   if (activeAnchor !== link) return
   await showPopover(link, popoverElement, pointer, { popoverInner })
@@ -1174,6 +1324,8 @@ function mouseLeaveHandler(this: HTMLAnchorElement, event: MouseEvent) {
 function allowsStackedPopover(link: HTMLAnchorElement): boolean {
   if (link.dataset.wikipediaLang && link.dataset.wikipediaTitle) return false
   if (link.dataset.lesswrongPostId) return false
+  if (link.dataset.sepEntry) return false
+  if (link.dataset.triathlonDate) return false
   if (link.dataset.noPopover === '' || link.dataset.noPopover === 'true') {
     return link.dataset.backlink !== undefined
   }
@@ -1278,6 +1430,16 @@ async function mouseEnterHandler(
 
   if (link.dataset.lesswrongPostId) {
     await handleLessWrong(link, { clientX, clientY })
+    return
+  }
+
+  if (link.dataset.sepEntry) {
+    await handleSep(link, { clientX, clientY })
+    return
+  }
+
+  if (link.dataset.triathlonDate) {
+    await handleTriathlon(link, { clientX, clientY })
     return
   }
 
@@ -1435,6 +1597,10 @@ async function mouseClickHandler(evt: MouseEvent) {
   }
 
   if (link.dataset.lesswrongPostId) {
+    return
+  }
+
+  if (link.dataset.sepEntry) {
     return
   }
 

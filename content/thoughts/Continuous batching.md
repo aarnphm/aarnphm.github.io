@@ -92,7 +92,7 @@ slot 3:  │ C   C   C   C   C   C │ ← (queue empty)
 
 this eliminates COMPUTE fragmentation—no wasted FLOPs on padding. GPU arithmetic utilization approaches 100% when queue depth > 0.
 
-> [!important] continuous batching ≠ solving memory fragmentation
+> [!important] continuous batching $\neq$ solving memory fragmentation
 >
 > iteration-level scheduling solves compute waste, but KV cache memory fragmentation persists unless you also page the cache. [[thoughts/vllm|vLLM]] combines continuous batching with [[thoughts/Attention#Paged Attention|PagedAttention]] to eliminate both.
 

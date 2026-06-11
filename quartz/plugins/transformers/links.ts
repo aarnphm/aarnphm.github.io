@@ -37,6 +37,7 @@ import {
   transformLink,
 } from '../../util/path'
 import { transformResourceUrl } from '../../util/resource-url'
+import { parseSepTarget } from '../../util/sep'
 import { hostnameMatches, parseExternalUrl } from '../../util/url'
 import { parseWikipediaTarget } from '../../util/wikipedia'
 import { extractArxivId } from '../stores/citations'
@@ -212,6 +213,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
               const lessWrongTarget = linkTypes.isLessWrong
                 ? parseLessWrongTarget(ctx.dest)
                 : undefined
+              const sepTarget = linkTypes.isSep ? parseSepTarget(ctx.dest) : undefined
 
               if (linkTypes.isBentoml) {
                 if (!classes.includes('bentoml-link')) {
@@ -252,6 +254,15 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 node.children[0].value === dest
               ) {
                 node.children[0].value = `lesswrong/${lessWrongTarget.slug ?? lessWrongTarget.postId}`
+              }
+
+              if (
+                sepTarget &&
+                node.children.length === 1 &&
+                node.children[0].type === 'text' &&
+                node.children[0].value === dest
+              ) {
+                node.children[0].value = `sep/${sepTarget.entry}`
               }
 
               if (
@@ -333,6 +344,16 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 return true
               }
 
+              const handleSep = (ctx: LinkContext) => {
+                if (!sepTarget || metadataDisablesPopover(ctx.metadata)) return false
+                ctx.classes.push('internal')
+                ctx.node.properties.dataSepEntry = sepTarget.entry
+                if (sepTarget.archive) {
+                  ctx.node.properties.dataSepArchive = sepTarget.archive
+                }
+                return true
+              }
+
               const handleCdnLinks = (ctx: LinkContext) => {
                 if (ctx.isExternal && opts.enableRawEmbed) {
                   if (
@@ -363,6 +384,7 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = userOpts =>
                 !handleArxiv(ctx) &&
                 !handleWikipedia(ctx) &&
                 !handleLessWrong(ctx) &&
+                !handleSep(ctx) &&
                 !linkTypes.isEmbedTwitter
               ) {
                 ctx.classes.push(ctx.isExternal ? 'external' : 'internal')

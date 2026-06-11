@@ -1,15 +1,10 @@
+import { readPreviewTocEntries, type PreviewTocEntry } from './preview'
 import { isRecord, readNumber, readString } from './type-guards'
 import { hostnameMatches } from './url'
 
 export interface LessWrongTarget {
   postId: string
   slug?: string
-}
-
-export interface LessWrongPreviewTocEntry {
-  text: string
-  href: string
-  depth: number
 }
 
 export interface LessWrongPreview {
@@ -23,7 +18,7 @@ export interface LessWrongPreview {
   commentCount?: number
   readTimeMinutes?: number
   tags?: string[]
-  toc?: LessWrongPreviewTocEntry[]
+  toc?: PreviewTocEntry[]
 }
 
 const lessWrongPostId = /^[A-Za-z0-9]+$/
@@ -123,7 +118,7 @@ export function readLessWrongPreview(value: unknown): LessWrongPreview | undefin
     .filter((item): item is string => typeof item === 'string')
     .map(item => item.trim())
     .filter(item => item.length > 0)
-  const toc = readLessWrongTocEntries(value.toc)
+  const toc = readPreviewTocEntries(value.toc)
 
   return {
     postId,
@@ -138,22 +133,4 @@ export function readLessWrongPreview(value: unknown): LessWrongPreview | undefin
     ...(tags.length > 0 ? { tags } : {}),
     ...(toc.length > 0 ? { toc } : {}),
   }
-}
-
-function readLessWrongTocEntries(value: unknown): LessWrongPreviewTocEntry[] {
-  if (!Array.isArray(value)) return []
-
-  return value.flatMap(item => {
-    if (!isRecord(item)) return []
-    const text = readString(item, 'text')?.trim()
-    const href = readString(item, 'href')?.trim()
-    const depth = readNumber(item, 'depth')
-    if (!text || !href || !href.startsWith('#') || depth === undefined) return []
-    return [{ text, href, depth: normalizeTocDepth(depth) }]
-  })
-}
-
-function normalizeTocDepth(value: number): number {
-  if (!Number.isInteger(value)) return 1
-  return Math.min(Math.max(value, 1), 6)
 }

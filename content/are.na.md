@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-10 23:12:43 GMT-04:00
+modified: 2026-06-11 12:11:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -143,6 +143,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/BecomingCritter/status/2064775603404820617 -- Men's mental health
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [being]
 - https://x.com/grantstenger/status/2060812385342963713 -- local minima in strict training regime
   - [meta]:
     - date: 06/06/2026
@@ -1275,6 +1279,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Alex_O%27Connor -- Alex O'Connor
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [philosophy, youtube]
+    - later: true
+- https://en.wikipedia.org/wiki/H._E._T._Haultain -- H. E. T. Haultain
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [engineer, inventor]
+    - later: true
+- https://en.wikipedia.org/wiki/Rudyard_Kipling -- Rudyard Kipling
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [writer, poet]
+    - later: true
+- https://en.wikipedia.org/wiki/Roger_Caillois -- Roger Caillois
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [sociologist, critic]
+    - later: true
 - https://en.wikipedia.org/wiki/Emil_Cioran -- Emil Cioran
   - [meta]:
     - date: 06/10/2026
@@ -2549,7 +2573,7 @@ title: are.na
 - [meta]:
   - json: true
 
-- https://www.lesswrong.com/posts/KWeAYcDJwfrG7RwBN/theory-uplift-differentially-benefits-safety-and-is?curius=4648 -- theory uplift differentially benefits safety & is underleveraged
+- https://www.lesswrong.com/posts/KWeAYcDJwfrG7RwBN/theory-uplift-differentially-benefits-safety-and-is -- theory uplift differentially benefits safety & is underleveraged
   - [meta]:
     - date: 06/10/2026
     - tags: [ai safety, theory]
@@ -2629,17 +2653,17 @@ title: are.na
     - date: 06/09/2026
     - tags: [research, career]
     - later: true
-- https://www.lesswrong.com/posts/kLdADoEtdYf6FDM8j/i-made-geneguessr?curius=3971 -- I made Geneguessr
+- https://www.lesswrong.com/posts/kLdADoEtdYf6FDM8j/i-made-geneguessr -- I made Geneguessr
   - [meta]:
     - date: 06/09/2026
     - tags: [biology, game]
     - later: true
-- https://www.lesswrong.com/posts/BJ7AqXeigNKXLqZyx/mnemonic-portraits-for-19-023-human-genes?curius=3971 -- Mnemonic portraits for 19,023 human genes
+- https://www.lesswrong.com/posts/BJ7AqXeigNKXLqZyx/mnemonic-portraits-for-19-023-human-genes -- Mnemonic portraits for 19,023 human genes
   - [meta]:
     - date: 06/09/2026
     - tags: [biology, memory]
     - later: true
-- https://www.lesswrong.com/posts/frizRHnA6AZpJSDqw/lab-leaks-black-holes-and-eggs-epistemic-case-study?curius=5413 -- Lab Leaks, Black Holes, and Eggs: Epistemic Case Study Competition
+- https://www.lesswrong.com/posts/frizRHnA6AZpJSDqw/lab-leaks-black-holes-and-eggs-epistemic-case-study -- Lab Leaks, Black Holes, and Eggs: Epistemic Case Study Competition
   - [meta]:
     - date: 06/09/2026
     - tags: [epistemology, ai]
@@ -4780,6 +4804,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Temporal_difference_learning -- Temporal difference learning
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [reinforcement learning]
+    - later: true
+- https://en.wikipedia.org/wiki/Curriculum_learning -- Curriculum learning
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [training, pedagogy]
+    - later: true
 - https://www.lesswrong.com/posts/Ty5Bmg7P6Tciy2uj2/measuring-no-cot-math-time-horizon-single-forward-pass -- Measuring no CoT math time horizon (single forward pass)
   - [meta]:
     - date: 06/09/2026
@@ -4825,7 +4859,7 @@ title: are.na
     - date: 06/09/2026
     - tags: [program synthesis, theory]
     - later: true
-- https://www.alignmentforum.org/posts/WZXqNYbJhtidjRXSi/what-will-gpt-2030-look-like?curius=3971 -- What will GPT-2030 look like?
+- https://www.alignmentforum.org/posts/WZXqNYbJhtidjRXSi/what-will-gpt-2030-look-like -- What will GPT-2030 look like?
   - [meta]:
     - date: 06/09/2026
     - tags: [forecasting, ai]
@@ -6427,6 +6461,21 @@ title: are.na
 
 ## life is literature
 
+- https://en.wikipedia.org/wiki/East_of_Eden_(novel) -- East of Eden
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [steinbeck, novel]
+    - later: true
+- https://en.wikipedia.org/wiki/A_Farewell_to_Arms -- A Farewell to Arms
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [hemingway, novel]
+    - later: true
+- https://en.wikipedia.org/wiki/Niels_Lyhne -- Niels Lyhne
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [novel, realism]
+    - later: true
 - https://en.wikipedia.org/wiki/Elective_Affinities -- Elective Affinities
   - [meta]:
     - date: 06/10/2026
@@ -6811,6 +6860,46 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Programming_language_theory -- Programming language theory
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [programming languages, theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Type_theory -- Type theory
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [logic, programming languages]
+    - later: true
+- https://en.wikipedia.org/wiki/Program_analysis -- Program analysis
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [static analysis, compiler]
+    - later: true
+- https://en.wikipedia.org/wiki/Program_transformation -- Program transformation
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [compiler, optimization]
+    - later: true
+- https://en.wikipedia.org/wiki/Programming_paradigm -- Programming paradigm
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [programming languages]
+    - later: true
+- https://en.wikipedia.org/wiki/Universal_Turing_machine -- Universal Turing machine
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [computability, turing machine]
+    - later: true
+- https://en.wikipedia.org/wiki/Cellular_automaton#Classification -- Cellular automaton
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [automata, classification]
+    - later: true
+- https://en.wikipedia.org/wiki/Tag_system#Cyclic_tag_systems -- Tag system
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [computability, automata]
+    - later: true
 - https://en.wikipedia.org/wiki/Rubin_(microarchitecture) -- Rubin
   - [meta]:
     - date: 06/10/2026
@@ -7052,6 +7141,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Post_hoc_ergo_propter_hoc -- Post hoc ergo propter hoc
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [fallacy, causality]
+    - later: true
+- https://en.wikipedia.org/wiki/ELIZA_effect -- ELIZA effect
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [anthropomorphism, ai]
+    - later: true
+- https://en.wikipedia.org/wiki/Solomonoff%27s_theory_of_inductive_inference -- Solomonoff's theory of inductive inference
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [induction, solomonoff]
+    - later: true
+- https://en.wikipedia.org/wiki/Defence_mechanism -- Defence mechanism
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [psychology, psychoanalysis]
+    - later: true
+- https://en.wikipedia.org/wiki/Simulacra_and_Simulation -- Simulacra and Simulation
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [baudrillard, semiotics]
+    - later: true
 - https://en.wikipedia.org/wiki/Neural_correlates_of_consciousness -- Neural correlates of consciousness
   - [meta]:
     - date: 06/10/2026
@@ -8415,7 +8529,7 @@ title: are.na
     - date: 11/21/2025
     - tags: [fashion, design]
     - pinned: true
-- https://colorpalette.pro/?color=oklch%2856%25+0.04+192%29&curius=3527&paletteType=ana&paletteStyle=square&colorFormat=oklch&effects=0%2C0%2C0%2C0 -- Color Palette Pro
+- https://colorpalette.pro/?color=oklch%2856%25+0.04+192%29&paletteType=ana&paletteStyle=square&colorFormat=oklch&effects=0%2C0%2C0%2C0 -- Color Palette Pro
   - [meta]:
     - date: 11/20/2025
     - tags: [color]
@@ -9177,6 +9291,36 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/Asbestos -- Asbestos
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [mineral, carcinogen]
+    - later: true
+- https://en.wikipedia.org/wiki/Republic_of_Letters -- Republic of Letters
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [intellectual history]
+    - later: true
+- https://en.wikipedia.org/wiki/History_of_meat_consumption_in_Japan -- History of meat consumption in Japan
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [food, japan]
+    - later: true
+- https://en.wikipedia.org/wiki/NATO_phonetic_alphabet -- NATO phonetic alphabet
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [language, radio]
+    - later: true
+- https://en.wikipedia.org/wiki/Vowel_diagram -- Vowel diagram
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [phonetics, language]
+    - later: true
+- https://en.wikipedia.org/wiki/Operational_level_of_war -- Operational level of war
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [strategy, military]
+    - later: true
 - https://en.wikipedia.org/wiki/Special_relativity -- Special relativity
   - [meta]:
     - date: 06/10/2026
@@ -9801,7 +9945,7 @@ title: are.na
     - date: 06/08/2026
     - tags: [sqlite, pubsub]
     - later: true
-- https://github.com/SWE-agent/mini-swe-agent?curius=5775 -- mini-swe-agent
+- https://github.com/SWE-agent/mini-swe-agent -- mini-swe-agent
   - [meta]:
     - date: 06/08/2026
     - tags: [agents, cli]
@@ -9891,7 +10035,7 @@ title: are.na
     - date: 06/07/2026
     - tags: [kv, rdma]
     - later: true
-- https://github.com/paradigms-of-intelligence?curius=3971 -- Paradigms of Intelligence
+- https://github.com/paradigms-of-intelligence -- Paradigms of Intelligence
   - [meta]:
     - date: 06/07/2026
     - tags: [organization, intelligence]
@@ -11514,6 +11658,91 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Conformal_map -- Conformal map
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [complex analysis]
+    - later: true
+- https://en.wikipedia.org/wiki/Extreme_value_theorem -- Extreme value theorem
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [real analysis]
+    - later: true
+- https://en.wikipedia.org/wiki/Meijer_G-function -- Meijer G-function
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [special functions]
+    - later: true
+- https://en.wikipedia.org/wiki/Latent_and_observable_variables -- Latent and observable variables
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [statistics, modeling]
+    - later: true
+- https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem -- Lindemann-Weierstrass theorem
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [number theory, transcendence]
+    - later: true
+- https://en.wikipedia.org/wiki/Sesquilinear_form -- Sesquilinear form
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [linear algebra]
+    - later: true
+- https://en.wikipedia.org/wiki/Euler_spiral -- Euler spiral
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [geometry, curves]
+    - later: true
+- https://en.wikipedia.org/wiki/Special_linear_Lie_algebra -- Special linear Lie algebra
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [lie algebra]
+    - later: true
+- https://en.wikipedia.org/wiki/Correlation -- Correlation
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [statistics]
+    - later: true
+- https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test -- Miller-Rabin primality test
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [number theory, algorithm]
+    - later: true
+- https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm -- Pollard's rho algorithm
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [number theory, algorithm]
+    - later: true
+- https://en.wikipedia.org/wiki/Stern%E2%80%93Brocot_tree -- Stern-Brocot tree
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [number theory, fractions]
+    - later: true
+- https://en.wikipedia.org/wiki/Naive_set_theory -- Naive set theory
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [set theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Differential_geometry -- Differential geometry
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [geometry, manifolds]
+    - later: true
+- https://en.wikipedia.org/wiki/Open_set -- Open set
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [topology]
+    - later: true
+- https://en.wikipedia.org/wiki/Set_(mathematics) -- Set
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [set theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model -- Bradley-Terry model
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [statistics, ranking]
+    - later: true
 - https://en.wikipedia.org/wiki/Lagrange_polynomial -- Lagrange polynomial
   - [meta]:
     - date: 06/10/2026

@@ -33,7 +33,7 @@ flops_per_tok = params_per_tok * 6
 ![[thoughts/TPU]]
 
 - 2D/3D torus
-- distance between nodes is $\max{\frac{N}{2}}$
+- distance between nodes is $\max(\frac{N}{2})$
 - scale pretty well (up-to 8960 chips)
 - between pods
 - 100GB/s of bandwidth per axis

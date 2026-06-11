@@ -88,7 +88,7 @@ dimension 4+: wild west
 
 - exotic structures on $\mathbb{R}^4$
 - poincaré fails (counterexamples exist for dim 4+)
-- h-cobordism theorem works (dim ≥5)
+- h-cobordism theorem works (dim $\geq 5$)
 
 ## connection to poincaré conjecture
 
