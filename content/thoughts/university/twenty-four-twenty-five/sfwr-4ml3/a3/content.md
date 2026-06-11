@@ -22,7 +22,7 @@ See also [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/a3/svm.ipynb|ju
 | Architecture       | Through a single linear layers based on given input_size and `num_classes`                                                       | optimized over pairs of class scores with multi-vector encoding                                        |
 | Parameter Learning | Uses [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/Stochastic gradient descent\|SGD]] with minibatches to optimize MML | Whereas we show a theoretical formulation of optimizing over multi-vector encoded space [^theoretical] |
 
-[^multiloss]: [[thoughts/PyTorch#MultiMarginLoss|Loss]] is defined as: $\text{loss}(x,y) = \frac{\sum_{i} \max{0, \text{margin} - x[y] + x[i]}^p}{x.\text{size}(0)}$
+[^multiloss]: [[thoughts/PyTorch#MultiMarginLoss|Loss]] is defined as: $\text{loss}(x,y) = \frac{\sum_{i} \max(0, \text{margin} - x[y] + x[i])^p}{x.\text{size}(0)}$
 
 [^theoretical]: Given input $(x_1, y_1), \ldots, (x_m, y_m)$
 

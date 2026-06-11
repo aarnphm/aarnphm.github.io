@@ -1,6 +1,10 @@
-.triathlon {
+.triathlon,
+.tri-day-embed,
+.triathlon-popover {
   --tri-accent: #fc4c02;
+}
 
+.triathlon {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -2360,4 +2364,22 @@
     color-mix(in srgb, var(--tri-accent) 15%, var(--gray)),
     var(--tri-accent)
   );
+}
+
+.tri-day-embed {
+  max-width: min(320px, 100%);
+  border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+}
+
+.tri-pop-track {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-pop-race {
+  color: var(--tri-accent);
 }

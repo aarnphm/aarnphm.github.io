@@ -1,6 +1,8 @@
 import { OAuthProvider } from '@cloudflare/workers-oauth-provider'
 import { greaterWrongPostUrl, lessWrongTargetFromSearchParams } from '../quartz/util/lesswrong'
 import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
+import { sepEntryUrl, sepTargetFromSearchParams } from '../quartz/util/sep'
+import { readSepPreviewHtml } from '../quartz/util/sep-preview'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
   handleArenaEmbedCapability,
@@ -33,8 +35,7 @@ const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
-const LESSWRONG_PREVIEW_USER_AGENT =
-  'Mozilla/5.0 (compatible; AarnphmGarden/1.0; +https://aarnphm.xyz)'
+const PREVIEW_USER_AGENT = 'Mozilla/5.0 (compatible; AarnphmGarden/1.0; +https://aarnphm.xyz)'
 
 const COOP_COEP_HEADERS: Record<string, string> = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -353,7 +354,7 @@ async function handleLessWrong(request: Request): Promise<Response> {
   }
 
   const response = await fetch(greaterWrongPostUrl(target), {
-    headers: { Accept: 'text/html', 'User-Agent': LESSWRONG_PREVIEW_USER_AGENT },
+    headers: { Accept: 'text/html', 'User-Agent': PREVIEW_USER_AGENT },
     cf: { cacheTtl: 300, cacheEverything: true },
   })
 
@@ -367,6 +368,46 @@ async function handleLessWrong(request: Request): Promise<Response> {
   const preview = readGreaterWrongPreviewHtml(await response.text(), target)
   if (!preview) {
     return new Response(JSON.stringify({ error: 'LessWrong preview unavailable' }), {
+      status: 404,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  return new Response(JSON.stringify(preview), { headers: { 'Content-Type': 'application/json' } })
+}
+
+async function handleSep(request: Request): Promise<Response> {
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json', Allow: 'GET' },
+    })
+  }
+
+  const url = new URL(request.url)
+  const target = sepTargetFromSearchParams(url.searchParams)
+  if (!target) {
+    return new Response(JSON.stringify({ error: 'SEP entry is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const response = await fetch(sepEntryUrl(target), {
+    headers: { Accept: 'text/html', 'User-Agent': PREVIEW_USER_AGENT },
+    cf: { cacheTtl: 86400, cacheEverything: true },
+  })
+
+  if (!response.ok) {
+    return new Response(JSON.stringify({ error: 'SEP preview unavailable' }), {
+      status: response.status === 404 ? 404 : 502,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  const preview = readSepPreviewHtml(await response.text(), target)
+  if (!preview) {
+    return new Response(JSON.stringify({ error: 'SEP preview unavailable' }), {
       status: 404,
       headers: { 'Content-Type': 'application/json' },
     })
@@ -720,6 +761,10 @@ export default {
       }
       case '/api/lesswrong': {
         const resp = await handleLessWrong(request)
+        return withHeaders(resp, apiHeaders)
+      }
+      case '/api/sep': {
+        const resp = await handleSep(request)
         return withHeaders(resp, apiHeaders)
       }
       case '/api/curius': {

@@ -31,5 +31,12 @@ export declare global {
       cleanup(root?: ParentNode): void
       preload(src?: string): Promise<void>
     }
+    quartzTriathlon?: {
+      dayCard(
+        date: string,
+        detailPath: string,
+        extras?: { location?: string; event?: string; weightLbs?: number },
+      ): Promise<HTMLElement | null>
+    }
   }
 }

@@ -38,6 +38,7 @@ import {
   isFullSlug,
   joinSegments,
   normalizeHastElement,
+  pathToRoot,
   resolveRelative,
   slugifyFilePath,
 } from '../util/path'
@@ -678,7 +679,10 @@ type RenderTreeFeatures = {
   hasReferences: boolean
   hasFootnotes: boolean
   hasNestedAnchor: boolean
+  hasDateAnchor: boolean
 }
+
+const DATE_ANCHOR_RE = /#(\d{4}-\d{2}-\d{2})$/
 
 function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
   const features: RenderTreeFeatures = {
@@ -686,6 +690,7 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     hasReferences: false,
     hasFootnotes: false,
     hasNestedAnchor: false,
+    hasDateAnchor: false,
   }
   visit(root, 'element', node => {
     if (node.tagName === 'blockquote') {
@@ -703,18 +708,35 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
       if (typeof node.properties?.dataAnchorPath === 'string') {
         features.hasNestedAnchor = true
       }
+      if (typeof node.properties?.href === 'string' && DATE_ANCHOR_RE.test(node.properties.href)) {
+        features.hasDateAnchor = true
+      }
     }
 
     if (
       features.hasTranscludeBlockquote &&
       features.hasReferences &&
       features.hasFootnotes &&
-      features.hasNestedAnchor
+      features.hasNestedAnchor &&
+      features.hasDateAnchor
     ) {
       return EXIT
     }
   })
   return features
+}
+
+function triathlonDayProps(page: QuartzPluginData, date: string): Record<string, string> {
+  const props: Record<string, string> = { 'data-triathlon-date': date }
+  const location = page.frontmatter?.['location']
+  if (typeof location === 'string' && location !== '') {
+    props['data-triathlon-loc'] = location
+  }
+  const day = page.tracking?.days.find(d => d.date === date)
+  const event = day?.event ?? (day?.race ? 'race' : null)
+  if (event) props['data-triathlon-event'] = event
+  if (day?.weightLbs != null) props['data-triathlon-weight'] = String(day.weightLbs)
+  return props
 }
 
 type FootnoteInfo = {
@@ -1330,6 +1352,22 @@ export function transcludeFinal(
     })
   }
 
+  if (features.hasDateAnchor) {
+    const renderData = renderDataFor(componentData.ctx, allFiles)
+    visit(root, { tagName: 'a' }, node => {
+      const props = node.properties
+      const href = props?.href
+      if (typeof href !== 'string') return
+      const date = DATE_ANCHOR_RE.exec(href)?.[1]
+      if (!date) return
+      const targetSlug = props['dataSlug'] ?? props['data-slug']
+      if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
+      const page = renderData.bySlug.get(targetSlug)
+      if (page?.frontmatter?.layout !== 'triathlon') return
+      Object.assign(props, triathlonDayProps(page, date))
+    })
+  }
+
   if (features.hasTranscludeBlockquote) {
     const renderData = renderDataFor(componentData.ctx, allFiles)
     visit(root, { tagName: 'blockquote' }, node => {
@@ -1401,6 +1439,32 @@ export function transcludeFinal(
           transcludeMetadata,
         )
       ) {
+        return
+      }
+
+      const triathlonDate =
+        blockRef && page.frontmatter?.layout === 'triathlon'
+          ? DATE_ANCHOR_RE.exec(blockRef)?.[1]
+          : undefined
+      if (triathlonDate) {
+        const children: ElementContent[] = [
+          h('.tri-day-embed', {
+            ...triathlonDayProps(page, triathlonDate),
+            'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
+          }),
+        ]
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
+          children.push(
+            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+              {
+                type: 'text',
+                value:
+                  page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
+            ]),
+          )
+        }
+        node.children = children
         return
       }
 

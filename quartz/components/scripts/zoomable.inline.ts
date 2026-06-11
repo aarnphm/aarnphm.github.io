@@ -26,9 +26,10 @@ function runWithTransition(target: HTMLElement, mutate: () => void) {
   if (typeof doc.startViewTransition === 'function') {
     target.style.setProperty('view-transition-name', VT_NAME)
     const transition = doc.startViewTransition(mutate)
-    transition.finished.finally(() => {
+    const clearTransitionName = () => {
       target.style.removeProperty('view-transition-name')
-    })
+    }
+    void transition.finished.then(clearTransitionName, clearTransitionName)
   } else {
     mutate()
   }

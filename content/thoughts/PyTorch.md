@@ -31,7 +31,7 @@ Creates a criterion that optimizes a multi-class classification hinge loss (marg
 For each mini-batch sample, loss in terms of 1D input $x$ and output $y$ is:
 
 $$
-\text{loss}(x,y) = \frac{\sum_{i} \max{0, \text{margin} - x[y] + x[i]}^p}{x.\text{size}(0)}
+\text{loss}(x,y) = \frac{\sum_{i} \max(0, \text{margin} - x[y] + x[i])^p}{x.\text{size}(0)}
 \\
 \because i \in \{0, \ldots x.\text{size}(0)-1\} \text{ and } i \neq y
 $$

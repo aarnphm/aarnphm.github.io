@@ -350,7 +350,8 @@
   }
 }
 
-.lesswrong-popover {
+.lesswrong-popover,
+.sep-popover {
   color: var(--dark);
 
   & > .popover-inner {
@@ -359,18 +360,31 @@
   }
 }
 
-.lesswrong-popover-card {
+.triathlon-popover {
+  color: var(--dark);
+
+  & > .popover-inner {
+    width: min(300px, 84vw);
+    max-height: min(60vh, 24rem);
+    padding: 0;
+  }
+}
+
+.lesswrong-popover-card,
+.sep-popover-card {
   padding: 0.95rem;
 }
 
-.lesswrong-popover-header {
+.lesswrong-popover-header,
+.sep-popover-header {
   display: grid;
   gap: 0.45rem;
   justify-items: start;
   min-width: 0;
 }
 
-.lesswrong-popover-title {
+.lesswrong-popover-title,
+.sep-popover-title {
   margin: 0;
   padding: 0;
   font-size: 1.08rem;
@@ -389,6 +403,7 @@
 }
 
 .lesswrong-popover-meta,
+.sep-popover-meta,
 ul.tags.lesswrong-popover-tags {
   display: flex;
   align-items: center;
@@ -402,7 +417,8 @@ ul.tags.lesswrong-popover-tags {
   line-height: 1.25;
 }
 
-.lesswrong-popover-meta {
+.lesswrong-popover-meta,
+.sep-popover-meta {
   justify-content: flex-start;
 
   .author {
@@ -442,7 +458,7 @@ span.internal.tag-link.lesswrong-popover-tag {
   }
 }
 
-.lesswrong-popover-toc {
+.popover-toc {
   display: grid;
   float: right;
   gap: 0.35rem;
@@ -454,7 +470,7 @@ span.internal.tag-link.lesswrong-popover-tag {
   border-radius: var(--radius-none);
 }
 
-.lesswrong-popover-toc-title {
+.popover-toc-title {
   color: var(--gray);
   font-family: var(--bodyFont);
   font-size: 0.68rem;
@@ -463,7 +479,7 @@ span.internal.tag-link.lesswrong-popover-tag {
   text-transform: uppercase;
 }
 
-.lesswrong-popover-toc-list {
+.popover-toc-list {
   display: grid;
   gap: 0.2rem;
   margin: 0;
@@ -471,13 +487,13 @@ span.internal.tag-link.lesswrong-popover-tag {
   list-style: none;
 }
 
-.lesswrong-popover-toc-item {
+.popover-toc-item {
   min-width: 0;
   margin: 0;
-  padding-left: var(--lesswrong-popover-toc-indent, 0);
+  padding-left: var(--popover-toc-indent, 0);
 }
 
-.lesswrong-popover-toc-link {
+.popover-toc-link {
   display: block;
   overflow: hidden;
   color: var(--darkgray);
@@ -493,13 +509,15 @@ span.internal.tag-link.lesswrong-popover-tag {
   }
 }
 
-.lesswrong-popover-extract {
+.lesswrong-popover-extract,
+.sep-popover-extract {
   margin: 0.85rem 0;
   font-size: 0.92rem;
   line-height: 1.45;
 }
 
-.lesswrong-popover-source {
+.lesswrong-popover-source,
+.sep-popover-source {
   display: inline-block;
   clear: both;
   color: var(--gray);

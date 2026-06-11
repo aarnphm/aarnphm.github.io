@@ -158,7 +158,7 @@ Two equivalent ways to write the binary logistic negative log‑likelihood per e
 
   Derivative w.r.t. $t$: $\partial_t\ell_{01}=\sigma(t)-y\in[-1,1]$; second derivative $\partial_t^2\ell_{01}=\sigma(t)(1-\sigma(t))\le\tfrac14$.
 
-- ±1 labels ($y\in\{-1,+1\}$):
+- $\pm 1$ labels ($y\in\{-1,+1\}$):
   $$
   \ell_{\pm}(t;y) = \log\big(1+e^{-y t}\big).
   $$

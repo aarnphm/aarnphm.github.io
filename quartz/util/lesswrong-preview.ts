@@ -1,94 +1,19 @@
 import type { Element, Nodes } from 'hast'
 import { fromHtml } from 'hast-util-from-html'
 import {
-  lessWrongPostUrl,
-  type LessWrongPreview,
-  type LessWrongPreviewTocEntry,
-  type LessWrongTarget,
-} from './lesswrong'
-
-type ElementPredicate = (element: Element) => boolean
-
-function isElement(node: Nodes): node is Element {
-  return node.type === 'element'
-}
-
-function childNodes(node: Nodes): readonly Nodes[] {
-  return 'children' in node ? node.children : []
-}
-
-function propertyValue(element: Element, key: string): unknown {
-  return element.properties?.[key]
-}
-
-function attributeValue(element: Element, key: string): string | undefined {
-  const value = propertyValue(element, key) ?? propertyValue(element, kebabToCamel(key))
-  return typeof value === 'string' || typeof value === 'number' ? `${value}` : undefined
-}
-
-function kebabToCamel(value: string): string {
-  return value.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase())
-}
-
-function classList(element: Element): string[] {
-  const value = propertyValue(element, 'className')
-  if (typeof value === 'string') return value.split(/\s+/).filter(Boolean)
-  if (!Array.isArray(value)) return []
-  return value.filter((item): item is string => typeof item === 'string')
-}
-
-function hasClass(element: Element, className: string): boolean {
-  return classList(element).includes(className)
-}
-
-function hasId(element: Element, id: string): boolean {
-  return attributeValue(element, 'id') === id
-}
-
-function findElement(node: Nodes, predicate: ElementPredicate): Element | undefined {
-  if (isElement(node) && predicate(node)) return node
-  for (const child of childNodes(node)) {
-    const match = findElement(child, predicate)
-    if (match) return match
-  }
-  return undefined
-}
-
-function findElements(
-  node: Nodes,
-  predicate: ElementPredicate,
-  matches: Element[] = [],
-): Element[] {
-  if (isElement(node) && predicate(node)) matches.push(node)
-  for (const child of childNodes(node)) {
-    findElements(child, predicate, matches)
-  }
-  return matches
-}
-
-function textContent(node: Nodes): string {
-  if (node.type === 'text') return node.value
-  return childNodes(node).map(textContent).join('')
-}
-
-function normalizeText(value: string): string {
-  return value.replace(/\s+/g, ' ').trim()
-}
-
-function firstClassText(root: Nodes, className: string): string | undefined {
-  const element = findElement(root, item => hasClass(item, className))
-  const text = element ? normalizeText(textContent(element)) : ''
-  return text.length > 0 ? text : undefined
-}
-
-function metaContent(root: Nodes, property: string): string | undefined {
-  const element = findElement(
-    root,
-    item => item.tagName === 'meta' && attributeValue(item, 'property') === property,
-  )
-  const content = element ? attributeValue(element, 'content')?.trim() : undefined
-  return content && content.length > 0 ? content : undefined
-}
+  classList,
+  findElement,
+  findElements,
+  firstClassText,
+  hasClass,
+  hasId,
+  metaContent,
+  normalizeText,
+  textContent,
+  attributeValue,
+} from './hast-query'
+import { lessWrongPostUrl, type LessWrongPreview, type LessWrongTarget } from './lesswrong'
+import { normalizeTocDepth, truncateText, type PreviewTocEntry } from './preview'
 
 function parseInteger(value: string | undefined): number | undefined {
   if (!value) return undefined
@@ -125,13 +50,6 @@ function previewExtract(root: Nodes): string | undefined {
   return description ? truncateText(normalizeText(description), 640) : undefined
 }
 
-function truncateText(value: string, limit: number): string {
-  if (value.length <= limit) return value
-  const slice = value.slice(0, limit + 1)
-  const boundary = slice.lastIndexOf(' ')
-  return `${slice.slice(0, boundary > limit * 0.7 ? boundary : limit).trimEnd()}...`
-}
-
 function tocDepth(element: Element): number {
   for (const className of classList(element)) {
     const match = /^toc-item-(\d+)$/.exec(className)
@@ -140,12 +58,7 @@ function tocDepth(element: Element): number {
   return 1
 }
 
-function normalizeTocDepth(value: number): number {
-  if (!Number.isInteger(value)) return 1
-  return Math.min(Math.max(value, 1), 6)
-}
-
-function tocEntriesFromContents(contents: Element): LessWrongPreviewTocEntry[] {
+function tocEntriesFromContents(contents: Element): PreviewTocEntry[] {
   return findElements(contents, item => item.tagName === 'li')
     .flatMap(item => {
       const anchor = findElement(item, child => child.tagName === 'a')
@@ -157,7 +70,7 @@ function tocEntriesFromContents(contents: Element): LessWrongPreviewTocEntry[] {
     .slice(0, 24)
 }
 
-function tocEntriesFromHeadings(postBody: Element): LessWrongPreviewTocEntry[] {
+function tocEntriesFromHeadings(postBody: Element): PreviewTocEntry[] {
   return findElements(postBody, item => /^h[1-6]$/.test(item.tagName))
     .flatMap(item => {
       const id = attributeValue(item, 'id')?.trim()
@@ -169,7 +82,7 @@ function tocEntriesFromHeadings(postBody: Element): LessWrongPreviewTocEntry[] {
     .slice(0, 24)
 }
 
-function tocEntries(root: Nodes): LessWrongPreviewTocEntry[] {
+function tocEntries(root: Nodes): PreviewTocEntry[] {
   const postBody = findElement(root, item => hasClass(item, 'post-body'))
   if (!postBody) return []
 
@@ -248,6 +161,6 @@ function withOptionalTags(tags: string[]): Pick<LessWrongPreview, 'tags'> {
   return tags.length > 0 ? { tags } : {}
 }
 
-function withOptionalToc(toc: LessWrongPreviewTocEntry[]): Pick<LessWrongPreview, 'toc'> {
+function withOptionalToc(toc: PreviewTocEntry[]): Pick<LessWrongPreview, 'toc'> {
   return toc.length > 0 ? { toc } : {}
 }

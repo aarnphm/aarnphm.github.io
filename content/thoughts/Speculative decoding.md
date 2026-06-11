@@ -451,7 +451,7 @@ Based on:
     >
     > this relies on _q_ is sampled from this given distributions, and $l$ increases $\alpha$
 
-    In the case of greedy decoding (`temperature=0`), the draft essentially outputs $x^{'}_q = \argmax{q(x)}$, so scaling $l q(x)$ becomes a no-op, given that the argmax will be unchanged in this case.
+    In the case of greedy decoding (`temperature=0`), the draft essentially outputs $x^{'}_q = \argmax(q(x))$, so scaling $l q(x)$ becomes a no-op, given that the argmax will be unchanged in this case.
 
 ### goal and algorithm
 

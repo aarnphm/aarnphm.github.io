@@ -2,7 +2,7 @@
 date: '2025-11-10'
 description: phenomenal properties and what resists functional explanation
 id: qualia
-modified: 2026-06-05 15:08:21 GMT-04:00
+modified: 2026-06-10 23:44:47 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/identity]]'
@@ -83,7 +83,7 @@ conceivability arguments keep this whole topic live for me:
 
 all three use the same pattern: show that phenomenal properties can vary independently of functional properties. if they can vary independently even in imagination, my brain wants to treat them as different kinds of thing—even if i’m not sure that’s good metaphysics.
 
-```quote
+```quotes
 The aspects of things that are most important for us are hidden because of their simplicity and familiarity.
 
 Wittgenstein, _[[library/Philosophical Investigations|PI, 153]]_

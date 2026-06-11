@@ -63,6 +63,7 @@ let semanticReady = false
 let semanticInitFailed = false
 let searchDataPromise: Promise<ContentIndex> | null = null
 const configuredSearchElements = new WeakSet<HTMLDivElement>()
+const searchResetters = new WeakMap<HTMLDivElement, () => void>()
 type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
 let manifestIds: string[] = []
@@ -219,7 +220,10 @@ function highlightHTML(searchTerm: string, el: HTMLElement) {
 
 async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug) {
   searchElement.dataset.currentSlug = currentSlug
-  if (configuredSearchElements.has(searchElement)) return
+  if (configuredSearchElements.has(searchElement)) {
+    searchResetters.get(searchElement)?.()
+    return
+  }
   configuredSearchElements.add(searchElement)
 
   const container = searchElement.querySelector<HTMLDivElement>('.search-container')
@@ -495,17 +499,36 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
   }
 
-  function hideSearch() {
+  let currentHover: HTMLInputElement | null = null
+
+  function hideSearch(focusButton = true) {
+    searchSeq += 1
+    if (runSearchTimer !== null) {
+      window.clearTimeout(runSearchTimer)
+      runSearchTimer = null
+    }
     container!.classList.remove('active')
     searchBar!.value = ''
     rawSearchTerm = ''
+    currentSearchTerm = ''
+    currentHover = null
     removeAllChildren(results)
     if (preview) {
       removeAllChildren(preview)
     }
     searchLayout!.classList.remove('display-results')
-    searchButton!.focus()
+    if (focusButton) searchButton!.focus()
     resetProgressBar()
+  }
+
+  const resetSearch = () => hideSearch(false)
+  searchResetters.set(searchElement, resetSearch)
+
+  function navigateSearchResult(anchor: HTMLAnchorElement) {
+    const href = anchor.getAttribute('href')
+    if (!href) return
+    window.spaNavigate(new URL(href, window.location.toString()))
+    hideSearch()
   }
 
   function showSearch(type: SearchType) {
@@ -517,8 +540,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
     searchBar!.focus()
   }
-
-  let currentHover: HTMLInputElement | null = null
 
   async function shortcutHandler(e: HTMLElementEventMap['keydown']) {
     const paletteOpen = document.querySelector('search#palette-container') as HTMLDivElement
@@ -565,16 +586,13 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
         if (anchor.classList.contains('no-match')) return
         await displayPreview(anchor)
         e.preventDefault()
-        anchor.click()
       } else {
         anchor = document.getElementsByClassName('result-card')[0] as HTMLAnchorElement
         if (!anchor || anchor.classList.contains('no-match')) return
         await displayPreview(anchor)
         e.preventDefault()
-        anchor.click()
       }
-      if (anchor !== undefined)
-        window.spaNavigate(new URL(new URL(anchor.href).pathname, window.location.toString()))
+      if (anchor !== undefined) navigateSearchResult(anchor)
     } else if (
       e.key === 'ArrowUp' ||
       (e.shiftKey && e.key === 'Tab') ||
@@ -714,11 +732,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
       const anchor = evt.currentTarget as HTMLAnchorElement | null
       if (!anchor) return
       evt.preventDefault()
-      const href = anchor.getAttribute('href')
-      if (!href) return
-      const url = new URL(href, window.location.toString())
-      window.spaNavigate(url)
-      hideSearch()
+      navigateSearchResult(anchor)
     }
 
     async function onMouseEnter(ev: MouseEvent) {
@@ -1126,15 +1140,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   searchBar.addEventListener('input', onType)
   window.addCleanup(() => searchBar.removeEventListener('input', onType))
   window.addCleanup(() => {
-    if (runSearchTimer !== null) {
-      window.clearTimeout(runSearchTimer)
-      runSearchTimer = null
-    }
-    resetProgressBar()
+    hideSearch(false)
   })
 
   registerEscapeHandler(container, hideSearch)
-  window.addCleanup(() => configuredSearchElements.delete(searchElement))
+  window.addCleanup(() => {
+    searchResetters.delete(searchElement)
+    configuredSearchElements.delete(searchElement)
+  })
 }
 
 let indexPopulated = false

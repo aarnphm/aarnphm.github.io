@@ -25,6 +25,19 @@ type DetailPayload = {
 
 let DETAIL_ZONES: StravaZones | null = null
 let DETAIL_CURVE_REF: PowerCurvePoint[] = []
+let DETAIL_PAYLOAD: Promise<DetailPayload | null> | null = null
+
+const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
+  DETAIL_PAYLOAD ??= fetch(path)
+    .then(res => res.json())
+    .then((data: DetailPayload) => {
+      DETAIL_ZONES = data.zones ?? null
+      DETAIL_CURVE_REF = data.powerCurveRef ?? []
+      return data
+    })
+    .catch(() => null)
+  return DETAIL_PAYLOAD
+}
 
 const SVGNS = 'http://www.w3.org/2000/svg'
 const KM_TO_MI = 0.621371
@@ -61,6 +74,13 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const shortDate = (iso: string): string => {
   const [, m, d] = iso.split('-').map(Number)
   return `${MONTHS[(m || 1) - 1]} ${d || 1}`
+}
+const prettyDate = (iso: string): string => {
+  const [, m, dRaw] = iso.split('-').map(Number)
+  const d = dRaw || 1
+  const suffix =
+    d % 100 >= 11 && d % 100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[d % 10] ?? 'th')
+  return `${MONTHS[(m || 1) - 1]} ${d}${suffix}`
 }
 const rate = (sport: ActivityKind, km: number, s: number): string => {
   const mi = km * KM_TO_MI
@@ -1015,6 +1035,97 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   return wrap
 }
 
+type DayCardExtras = { location?: string; event?: string; weightLbs?: number }
+
+const recentLocation = (payload: DetailPayload | null): string | undefined => {
+  if (!payload) return undefined
+  return (
+    Object.values(payload.details)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .find(d => d.location)?.location ?? undefined
+  )
+}
+
+const onCardToggle = (event: Event) => {
+  const btn = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
+  btn?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
+}
+
+const buildDayCard = (
+  dateIso: string,
+  payload: DetailPayload | null,
+  extras: DayCardExtras = {},
+): HTMLElement => {
+  const card = el('div', 'tri-pop-card')
+  const head = el('div', 'tri-pop-head')
+  head.appendChild(el('span', 'tri-pop-date', prettyDate(dateIso)))
+  const day = payload
+    ? Object.values(payload.details)
+        .filter(d => d.date === dateIso)
+        .sort((a, b) => b.distanceKm - a.distanceKm)
+    : []
+  if (day.length > 0) {
+    head.appendChild(
+      el(
+        'span',
+        'tri-pop-loc',
+        day[0].location ?? recentLocation(payload) ?? extras.location ?? 'Toronto',
+      ),
+    )
+  }
+  card.appendChild(head)
+  if (extras.event || extras.weightLbs != null) {
+    const track = el('div', 'tri-pop-track')
+    if (extras.event) track.appendChild(el('span', 'tri-pop-race', extras.event))
+    if (extras.weightLbs != null) {
+      track.appendChild(el('span', 'tri-pop-weight', `${extras.weightLbs} lbs`))
+    }
+    card.appendChild(track)
+  }
+  if (!payload) {
+    card.appendChild(el('div', 'tri-pop-rest', '·'))
+  } else if (day.length === 0) {
+    const rest = el('div', 'tri-pop-rest')
+    rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
+    card.appendChild(rest)
+  } else {
+    for (const d of day) card.appendChild(renderDetail(d))
+  }
+  const dh = payload?.health[dateIso]
+  if (dh) {
+    const rec = buildRecovery(dh)
+    if (rec) card.appendChild(rec)
+  }
+  card.addEventListener('click', onCardToggle)
+  return card
+}
+
+const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => ({
+  location: data.triathlonLoc,
+  event: data.triathlonEvent,
+  weightLbs: data.triathlonWeight ? Number(data.triathlonWeight) : undefined,
+})
+
+const setupDayEmbeds = (): (() => void) | null => {
+  const embeds = Array.from(
+    document.querySelectorAll<HTMLElement>('.tri-day-embed[data-triathlon-date]'),
+  )
+  if (embeds.length === 0) return null
+  let live = true
+  for (const embed of embeds) {
+    const date = embed.dataset.triathlonDate!
+    const extras = dayExtrasFromDataset(embed.dataset)
+    embed.replaceChildren(buildDayCard(date, null, extras))
+    void loadDetailPayload(embed.dataset.detailPath ?? '/static/strava-detail.json').then(data => {
+      if (!live || !embed.isConnected) return
+      embed.replaceChildren(buildDayCard(date, data, extras))
+    })
+  }
+  return () => {
+    live = false
+  }
+}
+
 const setup = (root: HTMLElement): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
   const pop = root.querySelector<HTMLElement>('.tri-pop')
@@ -1025,8 +1136,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   const location = root.dataset.location ?? 'Toronto'
   let active: HTMLElement | null = null
   let activeIdx = -1
-  let details: Record<string, StravaActivityDetail> | null = null
-  let healthByDate: Record<string, ActivityHealth> = {}
+  let payload: DetailPayload | null = null
   let pinned = false
   let locked = false
   let hideTimer = 0
@@ -1078,37 +1188,12 @@ const setup = (root: HTMLElement): (() => void) | null => {
   window.addEventListener('pointerdown', armAudio)
   window.addEventListener('keydown', armAudio)
 
-  const buildCard = (bar: HTMLElement): HTMLElement => {
-    const card = el('div', 'tri-pop-card')
-    const idsAttr = bar.dataset.ids
-    const head = el('div', 'tri-pop-head')
-    head.appendChild(el('span', 'tri-pop-date', bar.dataset.date ?? ''))
-    if (idsAttr) {
-      const first = details?.[idsAttr.split(',')[0]]
-      head.appendChild(el('span', 'tri-pop-loc', first?.location ?? location))
-    }
-    card.appendChild(head)
-    if (!idsAttr) {
-      const rest = el('div', 'tri-pop-rest')
-      rest.append(buildBattery(), el('span', 'tri-pop-rest-label', 'rest'))
-      card.appendChild(rest)
-    } else if (details) {
-      const day = idsAttr
-        .split(',')
-        .map(id => details![id])
-        .filter(Boolean)
-        .sort((a, b) => b.distanceKm - a.distanceKm)
-      for (const d of day) card.appendChild(renderDetail(d))
-    } else {
-      card.appendChild(el('div', 'tri-pop-rest', '·'))
-    }
-    const dh = healthByDate[bar.dataset.dateIso ?? '']
-    if (dh) {
-      const rec = buildRecovery(dh)
-      if (rec) card.appendChild(rec)
-    }
-    return card
-  }
+  const buildCard = (bar: HTMLElement): HTMLElement =>
+    buildDayCard(bar.dataset.dateIso ?? '', payload, {
+      location,
+      event: bar.dataset.event,
+      weightLbs: bar.dataset.weight ? Number(bar.dataset.weight) : undefined,
+    })
 
   const place = (cx: number, cy: number) => {
     const r = pop.getBoundingClientRect()
@@ -1204,10 +1289,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
       setExpanded(true)
     }
   }
-  const onToggle = (event: MouseEvent) => {
-    const btn = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
-    btn?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
-  }
   const dismiss = () => {
     if (!locked) return
     setLocked(false)
@@ -1224,20 +1305,14 @@ const setup = (root: HTMLElement): (() => void) | null => {
 
   const path = root.dataset.detailPath
   if (path)
-    fetch(path)
-      .then(res => res.json())
-      .then((data: DetailPayload) => {
-        details = data.details
-        healthByDate = data.health ?? {}
-        DETAIL_ZONES = data.zones ?? null
-        DETAIL_CURVE_REF = data.powerCurveRef ?? []
-        if (active) {
-          scroller.replaceChildren(buildCard(active))
-          if (locked) setExpanded(true)
-          updateOverflow()
-        }
-      })
-      .catch(() => {})
+    void loadDetailPayload(path).then(data => {
+      payload = data
+      if (active) {
+        scroller.replaceChildren(buildCard(active))
+        if (locked) setExpanded(true)
+        updateOverflow()
+      }
+    })
 
   const onFocusDay = (event: Event) => {
     const date = (event as CustomEvent<{ date?: string }>).detail?.date
@@ -1256,7 +1331,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
   barsEl.addEventListener('click', onBarsClick)
   pop.addEventListener('mouseenter', onPopEnter)
   pop.addEventListener('mouseleave', onPopLeave)
-  pop.addEventListener('click', onToggle)
   scroller.addEventListener('scroll', updateOverflow, { passive: true })
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
@@ -1269,7 +1343,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
     barsEl.removeEventListener('click', onBarsClick)
     pop.removeEventListener('mouseenter', onPopEnter)
     pop.removeEventListener('mouseleave', onPopLeave)
-    pop.removeEventListener('click', onToggle)
     scroller.removeEventListener('scroll', updateOverflow)
     document.removeEventListener('click', onDocClick)
     document.removeEventListener('keydown', onKey)
@@ -3616,7 +3689,17 @@ const setupPaceUnit = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+window.quartzTriathlon = {
+  dayCard: async (date, detailPath, extras) => {
+    const data = await loadDetailPayload(detailPath)
+    if (!data) return null
+    return buildDayCard(date, data, extras ?? {})
+  },
+}
+
 document.addEventListener('nav', () => {
+  const embedCleanup = setupDayEmbeds()
+  if (embedCleanup) window.addCleanup?.(embedCleanup)
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
   const cleanup = setup(root)
@@ -3651,4 +3734,7 @@ document.addEventListener('nav', () => {
   if (glossCleanup) window.addCleanup?.(glossCleanup)
   const shortcutsCleanup = setupShortcuts(root)
   if (shortcutsCleanup) window.addCleanup?.(shortcutsCleanup)
+  const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
+  if (hashDate)
+    window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))
 })
