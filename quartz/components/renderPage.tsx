@@ -57,12 +57,18 @@ import {
   JSResourceToScriptElement,
   StaticResources,
 } from '../util/resources'
+import { loadStravaPayloadSync } from '../util/strava-payload'
 import {
   findHeadingSectionBounds,
   getHastClassNames,
   hasHastClass,
   readTranscludeTarget,
 } from '../util/transclude-props'
+import {
+  buildDayCard as buildTriathlonDayCard,
+  type DayCardExtras,
+  type TriNodeFactory,
+} from '../util/triathlon-card'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -726,16 +732,31 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
   return features
 }
 
-function triathlonDayProps(page: QuartzPluginData, date: string): Record<string, string> {
-  const props: Record<string, string> = { 'data-triathlon-date': date }
+const triCardFactory: TriNodeFactory<Element> = {
+  el: (tag, cls, text, attrs) =>
+    h(tag, { ...(cls ? { class: cls } : {}), ...attrs }, text !== undefined ? [text] : []),
+  svg: (tag, attrs) => s(tag, attrs),
+  add: (parent, ...children) => {
+    parent.children.push(...children)
+  },
+}
+
+function triathlonDayExtras(page: QuartzPluginData, date: string): DayCardExtras {
+  const extras: DayCardExtras = {}
   const location = page.frontmatter?.['location']
-  if (typeof location === 'string' && location !== '') {
-    props['data-triathlon-loc'] = location
-  }
+  if (typeof location === 'string' && location !== '') extras.location = location
   const day = page.tracking?.days.find(d => d.date === date)
   const event = day?.event ?? (day?.race ? 'race' : null)
-  if (event) props['data-triathlon-event'] = event
-  if (day?.weightLbs != null) props['data-triathlon-weight'] = String(day.weightLbs)
+  if (event) extras.event = event
+  if (day?.weightLbs != null) extras.weightLbs = day.weightLbs
+  return extras
+}
+
+function triathlonDayProps(extras: DayCardExtras, date: string): Record<string, string> {
+  const props: Record<string, string> = { 'data-triathlon-date': date }
+  if (extras.location) props['data-triathlon-loc'] = extras.location
+  if (extras.event) props['data-triathlon-event'] = extras.event
+  if (extras.weightLbs != null) props['data-triathlon-weight'] = String(extras.weightLbs)
   return props
 }
 
@@ -1364,7 +1385,7 @@ export function transcludeFinal(
       if (typeof targetSlug !== 'string' || !isFullSlug(targetSlug)) return
       const page = renderData.bySlug.get(targetSlug)
       if (page?.frontmatter?.layout !== 'triathlon') return
-      Object.assign(props, triathlonDayProps(page, date))
+      Object.assign(props, triathlonDayProps(triathlonDayExtras(page, date), date))
     })
   }
 
@@ -1447,11 +1468,25 @@ export function transcludeFinal(
           ? DATE_ANCHOR_RE.exec(blockRef)?.[1]
           : undefined
       if (triathlonDate) {
+        const extras = triathlonDayExtras(page, triathlonDate)
+        const since = page.frontmatter?.['strava']
+        const payload = loadStravaPayloadSync(typeof since === 'string' ? since : undefined)
         const children: ElementContent[] = [
-          h('.tri-day-embed', {
-            ...triathlonDayProps(page, triathlonDate),
-            'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
-          }),
+          h(
+            '.tri-day-embed',
+            {
+              ...triathlonDayProps(extras, triathlonDate),
+              'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
+            },
+            [
+              buildTriathlonDayCard(
+                triCardFactory,
+                triathlonDate,
+                payload.totalCount > 0 ? payload : null,
+                extras,
+              ),
+            ],
+          ),
         ]
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(

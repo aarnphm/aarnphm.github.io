@@ -2367,8 +2367,34 @@
 }
 
 .tri-day-embed {
-  max-width: min(320px, 100%);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+
+  .tri-pop-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+    align-items: start;
+    gap: 1.2rem 2.2rem;
+
+    > .tri-act-health {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+
+  .tri-pop-head,
+  .tri-pop-track {
+    grid-column: 1 / -1;
+  }
+
+  .tri-act {
+    min-width: 0;
+
+    & + .tri-act {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
 }
 
 .tri-pop-track {

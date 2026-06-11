@@ -9,8 +9,14 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
+import { FilePath, FullSlug, pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import {
+  appleCachePath,
+  garminCachePath,
+  ouraCachePath,
+  stravaCachePath,
+} from '../../util/strava-payload'
 import { buildAnalytics } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
@@ -18,14 +24,9 @@ import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
-const ouraCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
-const garminCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
-const appleCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
-
 async function readCache(): Promise<StravaRawCache | null> {
   try {
-    return JSON.parse(await fs.readFile(cacheFile, 'utf8')) as StravaRawCache
+    return JSON.parse(await fs.readFile(stravaCachePath, 'utf8')) as StravaRawCache
   } catch {
     return null
   }
@@ -33,7 +34,7 @@ async function readCache(): Promise<StravaRawCache | null> {
 
 async function readOura(): Promise<OuraCache | null> {
   try {
-    return JSON.parse(await fs.readFile(ouraCacheFile, 'utf8')) as OuraCache
+    return JSON.parse(await fs.readFile(ouraCachePath, 'utf8')) as OuraCache
   } catch {
     return null
   }
@@ -41,7 +42,7 @@ async function readOura(): Promise<OuraCache | null> {
 
 async function readGarmin(): Promise<GarminCache | null> {
   try {
-    return JSON.parse(await fs.readFile(garminCacheFile, 'utf8')) as GarminCache
+    return JSON.parse(await fs.readFile(garminCachePath, 'utf8')) as GarminCache
   } catch {
     return null
   }
@@ -49,7 +50,7 @@ async function readGarmin(): Promise<GarminCache | null> {
 
 async function readApple(): Promise<AppleCache | null> {
   try {
-    return JSON.parse(await fs.readFile(appleCacheFile, 'utf8')) as AppleCache
+    return JSON.parse(await fs.readFile(appleCachePath, 'utf8')) as AppleCache
   } catch {
     return null
   }

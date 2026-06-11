@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-09 14:49:23 GMT-04:00
+modified: 2026-06-11 13:10:51 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -48,4 +48,9 @@ weight: 200
 ```tracking
 date: 2026-06-09
 weight: 195
+```
+
+```tracking
+date: 2026-06-10
+weight: 197
 ```
