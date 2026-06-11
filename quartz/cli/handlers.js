@@ -146,22 +146,56 @@ const createBuildConfig = () => ({
   ],
 })
 
-const printBundleInfo = async metafile => {
-  const outputFileName = cacheFile.replace(/^\.\//, '')
+const bundleInfoOutputFile = () => cacheFile.replace(/^\.\//, '')
+
+export const bundleInfoSummary = metafile => {
+  const outputFileName = bundleInfoOutputFile()
   const meta = metafile.outputs[outputFileName]
-  if (meta) {
-    console.log(
-      `Successfully transpiled ${Object.keys(meta.inputs).length} files (${prettyBytes(
-        meta.bytes,
-      )})`,
-    )
+  return {
+    outputFile: outputFileName,
+    inputCount: meta ? Object.keys(meta.inputs).length : 0,
+    bytes: meta?.bytes ?? 0,
+    bytesText: prettyBytes(meta?.bytes ?? 0),
   }
-  console.log(await esbuild.analyzeMetafile(metafile, { color: true }))
 }
 
-const printCurrentBundleInfo = async () => {
+const useBundleInfoColor = () =>
+  process.stdout.isTTY && process.env.TERM !== 'dumb' && process.env.NO_COLOR === undefined
+
+export const resolveBundleInfoFormat = argv =>
+  argv?.json || argv?.format === 'json' ? 'json' : 'table'
+
+export const formatBundleInfoJson = metafile =>
+  JSON.stringify({ version, summary: bundleInfoSummary(metafile), metafile }, null, 2)
+
+export const formatBundleInfoTable = async (metafile, color = useBundleInfoColor()) => {
+  const summary = bundleInfoSummary(metafile)
+  const lines = []
+  if (summary.inputCount > 0) {
+    lines.push(
+      `Successfully transpiled ${summary.inputCount} files (${prettyBytes(summary.bytes)})`,
+    )
+  }
+  lines.push(await esbuild.analyzeMetafile(metafile, { color }))
+  return lines.join('\n')
+}
+
+const printBundleInfo = async (metafile, format = 'table') => {
+  if (format === 'json') {
+    console.log(formatBundleInfoJson(metafile))
+    return
+  }
+
+  console.log(await formatBundleInfoTable(metafile))
+}
+
+const printCurrentBundleInfo = async (format = 'table') => {
   const result = await esbuild.build({ ...createBuildConfig(), write: false })
-  await printBundleInfo(result.metafile)
+  await printBundleInfo(result.metafile, format)
+}
+
+const printBundleInfoHeader = () => {
+  console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
 }
 
 /**
@@ -457,7 +491,10 @@ export async function handleStats(argv) {
   await printCurrentBundleInfo()
 }
 
-export async function handleBundleInfo() {
-  console.log('\n' + styleText(['bgGreen', 'black'], `Quartz v${version}`) + '\n')
-  await printCurrentBundleInfo()
+export async function handleBundleInfo(argv) {
+  const format = resolveBundleInfoFormat(argv)
+  if (format === 'table') {
+    printBundleInfoHeader()
+  }
+  await printCurrentBundleInfo(format)
 }

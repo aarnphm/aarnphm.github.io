@@ -7,7 +7,15 @@ import type { StreamEntry } from '../../plugins/transformers/stream'
 import type { FilePath } from '../../util/path'
 import type { EncryptedPayload } from '../../util/protected'
 import { htmlToJsx } from '../../util/jsx'
-import { buildStreamDayPathFromIso } from '../../util/stream'
+import {
+  buildStreamDayPathFromIso,
+  formatStreamDate,
+  isDraftEntry,
+  isPrivateEntry,
+  isProtectedEntry,
+  isRestrictedEntry,
+  truthyStreamFlag,
+} from '../../util/stream'
 import { StreamUnlockIcon } from './UnlockIcon'
 
 export interface StreamEntryRenderOptions {
@@ -52,28 +60,7 @@ const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): Componen
   return htmlToJsx(filePath, root)
 }
 
-export const truthyStreamFlag = (value: unknown): boolean => {
-  if (typeof value === 'boolean') return value
-  if (typeof value === 'number') return value !== 0
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase()
-    return (
-      normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on'
-    )
-  }
-  return false
-}
-
-export const isProtectedEntry = (entry: StreamEntry): boolean =>
-  truthyStreamFlag(entry.metadata?.protected)
-
-export const isPrivateEntry = (entry: StreamEntry): boolean =>
-  truthyStreamFlag(entry.metadata?.private)
-
-export const isDraftEntry = (entry: StreamEntry): boolean => truthyStreamFlag(entry.metadata?.draft)
-
-export const isRestrictedEntry = (entry: StreamEntry): boolean =>
-  isProtectedEntry(entry) || isPrivateEntry(entry)
+export { isDraftEntry, isPrivateEntry, isProtectedEntry, isRestrictedEntry, truthyStreamFlag }
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>
   countWords(streamEntryText(entry))
@@ -81,25 +68,7 @@ export const getStreamEntryWordCount = (entry: StreamEntry): number =>
 export const formatWordCount = (count: number): string =>
   count === 1 ? '1 word' : `${count} words`
 
-export const formatStreamDate = (isoDate: string | undefined): string | null => {
-  if (!isoDate) return null
-
-  const date = new Date(isoDate)
-  if (Number.isNaN(date.getTime())) return null
-
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'America/Los_Angeles',
-    timeZoneName: 'shortOffset',
-  })
-
-  return formatter.format(date)
-}
+export { formatStreamDate }
 
 export const buildOnPath = (isoDate: string | undefined): string | null => {
   return buildStreamDayPathFromIso(isoDate)

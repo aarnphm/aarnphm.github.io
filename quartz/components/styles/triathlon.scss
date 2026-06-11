@@ -203,6 +203,7 @@
 }
 
 .tri-pop-head {
+  position: relative;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -622,6 +623,10 @@
   align-items: baseline;
   gap: 1.2rem;
   margin-top: 0.45rem;
+
+  button {
+    outline: none;
+  }
 }
 
 .tri-fuel-btn,
@@ -1184,6 +1189,27 @@
   color: var(--dark);
 }
 
+.tri-search-command {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.22rem;
+}
+
+.tri-search-command-token {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.13rem 0.36rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  color: var(--gray);
+  background: color-mix(in srgb, var(--lightgray) 30%, transparent);
+  line-height: 1;
+}
+
+.tri-search-command-value {
+  color: var(--dark);
+}
+
 .tri-ana-ritem-h {
   display: flex;
   align-items: center;
@@ -1685,6 +1711,7 @@
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-top: 0.6rem;
+  margin-bottom: 0.45rem;
 }
 
 .tri-ana-chip {
@@ -2381,8 +2408,7 @@
     }
   }
 
-  .tri-pop-head,
-  .tri-pop-track {
+  .tri-pop-head {
     grid-column: 1 / -1;
   }
 
@@ -2398,6 +2424,9 @@
 }
 
 .tri-pop-track {
+  position: absolute;
+  top: calc(100% + 0.2rem);
+  right: 0;
   display: flex;
   align-items: baseline;
   gap: 0.6rem;

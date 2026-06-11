@@ -11,7 +11,7 @@ export interface TriNodeFactory<N> {
   add: (parent: N, ...children: N[]) => void
 }
 
-export type DayCardExtras = { location?: string; event?: string; weightLbs?: number }
+export type DayCardExtras = { location?: string; event?: string }
 
 export type DayCardPayload = {
   details: Record<string, StravaActivityDetail>
@@ -95,6 +95,7 @@ export const recoveryRows = (h: ActivityHealth): [string, string][] => {
   if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
   if (h.tempDeviationC != null)
     rows.push(['temp', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
+  if (h.windKph != null) rows.push(['wind', `${h.windKph} km/h${h.windDir ? ` ${h.windDir}` : ''}`])
   if (h.totalCalories != null)
     rows.push(['day burn', `${Math.round(h.totalCalories).toLocaleString('en-US')} kcal`])
   if (h.activeCalories != null)
@@ -340,15 +341,12 @@ export const buildDayCard = <N>(
       ),
     )
   }
-  f.add(card, head)
-  if (extras.event || extras.weightLbs != null) {
+  if (extras.event) {
     const track = f.el('div', 'tri-pop-track')
-    if (extras.event) f.add(track, f.el('span', 'tri-pop-race', extras.event))
-    if (extras.weightLbs != null) {
-      f.add(track, f.el('span', 'tri-pop-weight', `${extras.weightLbs} lbs`))
-    }
-    f.add(card, track)
+    f.add(track, f.el('span', 'tri-pop-race', extras.event))
+    f.add(head, track)
   }
+  f.add(card, head)
   if (!payload) {
     f.add(card, f.el('div', 'tri-pop-rest', '·'))
   } else if (day.length === 0) {

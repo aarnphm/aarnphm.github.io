@@ -827,7 +827,6 @@ const buildDayCard = (
 const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => ({
   location: data.triathlonLoc,
   event: data.triathlonEvent,
-  weightLbs: data.triathlonWeight ? Number(data.triathlonWeight) : undefined,
 })
 
 const setupDayEmbeds = (): (() => void) | null => {
@@ -939,11 +938,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   window.addEventListener('keydown', armAudio)
 
   const buildCard = (bar: HTMLElement): HTMLElement =>
-    buildDayCard(bar.dataset.dateIso ?? '', payload, {
-      location,
-      event: bar.dataset.event,
-      weightLbs: bar.dataset.weight ? Number(bar.dataset.weight) : undefined,
-    })
+    buildDayCard(bar.dataset.dateIso ?? '', payload, { location, event: bar.dataset.event })
 
   const place = (cx: number, cy: number) => {
     const r = pop.getBoundingClientRect()
@@ -2031,6 +2026,51 @@ const GLOSS_CHART: Record<string, string> = {
   wtrend: 'body',
 }
 
+const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
+  const wrap = el('span', 'tri-search-command')
+  wrap.appendChild(el('span', 'tri-search-command-token', prefix))
+  if (value) wrap.appendChild(el('span', 'tri-search-command-value', value))
+  return wrap
+}
+
+const flipClose = (
+  btn: HTMLElement,
+  panel: HTMLElement,
+  reduce: boolean,
+  finish: () => void,
+): Animation | null => {
+  if (reduce) {
+    finish()
+    return null
+  }
+  const br = btn.getBoundingClientRect()
+  const pr = panel.getBoundingClientRect()
+  if (pr.width < 1 || pr.height < 1 || br.width < 1) {
+    finish()
+    return null
+  }
+  const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
+  const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
+  const sx = Math.max(0.05, br.width / pr.width)
+  const sy = Math.max(0.05, br.height / pr.height)
+  const anim = panel.animate(
+    [
+      { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+      {
+        opacity: 0,
+        transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+      },
+    ],
+    { duration: 240, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
+  )
+  const done = () => {
+    finish()
+    anim.cancel()
+  }
+  anim.finished.then(done).catch(done)
+  return anim
+}
+
 const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-analytics-btn')
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
@@ -2085,14 +2125,21 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (results) results.replaceChildren()
     selIndex = -1
   }
+  let closeAnim: Animation | null = null
+  let closeSeq = 0
   const close = () => {
-    root.classList.remove('tri-analytics-open')
-    panel.setAttribute('aria-hidden', 'true')
-    if (search) search.value = ''
-    panel.classList.remove('tri-analytics--searching')
-    closeDetail()
-    if (results) results.replaceChildren()
-    selIndex = -1
+    const seq = ++closeSeq
+    closeAnim?.cancel()
+    closeAnim = flipClose(btn, panel, reduce, () => {
+      if (seq !== closeSeq) return
+      root.classList.remove('tri-analytics-open')
+      panel.setAttribute('aria-hidden', 'true')
+      if (search) search.value = ''
+      panel.classList.remove('tri-analytics--searching')
+      closeDetail()
+      if (results) results.replaceChildren()
+      selIndex = -1
+    })
   }
   const loadDetails = (): Promise<void> => {
     if (detailLoaded) return Promise.resolve()
@@ -2211,7 +2258,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const prefix = lastToken.slice(7)
       for (const f of ['bike', 'run', 'swim']) {
         if (f.startsWith(prefix)) {
-          const it = ritem(`filter:${f}`, 'filter activities')
+          const it = ritem(searchCommandTitle('filter:', f), 'filter activities')
           it.dataset.insert = `filter:${f}`
           hints.push(it)
         }
@@ -2223,17 +2270,17 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const prefix = lastToken.slice(5)
       for (const s of ['distance', 'cadence', 'pace']) {
         if (s.startsWith(prefix)) {
-          const it = ritem(`sort:${s}`, 'sort activities')
+          const it = ritem(searchCommandTitle('sort:', s), 'sort activities')
           it.dataset.insert = `sort:${s}`
           hints.push(it)
         }
       }
     } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-      const it = ritem('filter:', 'filter by sport (bike, run, swim)')
+      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim)')
       it.dataset.insert = 'filter:'
       hints.push(it)
     } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
-      const it = ritem('sort:', 'sort by distance, cadence, pace')
+      const it = ritem(searchCommandTitle('sort:'), 'sort by distance, cadence, pace')
       it.dataset.insert = 'sort:'
       hints.push(it)
     }
@@ -2328,6 +2375,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 
   const open = () => {
+    closeSeq++
+    closeAnim?.cancel()
+    closeAnim = null
     root.classList.add('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
@@ -2951,10 +3001,17 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     selIndex = -1
     setSportFilter(null)
   }
+  let closeAnim: Animation | null = null
+  let closeSeq = 0
   const close = () => {
-    root.classList.remove('tri-map-open')
-    panel.setAttribute('aria-hidden', 'true')
-    toMain()
+    const seq = ++closeSeq
+    closeAnim?.cancel()
+    closeAnim = flipClose(btn, panel, reduce, () => {
+      if (seq !== closeSeq) return
+      root.classList.remove('tri-map-open')
+      panel.setAttribute('aria-hidden', 'true')
+      toMain()
+    })
   }
   const showRoute = (id: string) => {
     if (!detail) return
@@ -3058,12 +3115,12 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       const prefix = lastToken.slice(7)
       for (const f of ['bike', 'run'])
         if (f.startsWith(prefix)) {
-          const it = ritem(`filter:${f}`, 'filter routes')
+          const it = ritem(searchCommandTitle('filter:', f), 'filter routes')
           it.dataset.insert = `filter:${f}`
           hints.push(it)
         }
     } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-      const it = ritem('filter:', 'filter by sport (bike, run)')
+      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run)')
       it.dataset.insert = 'filter:'
       hints.push(it)
     }
@@ -3124,6 +3181,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       mapCtl.drawOverview()
     })
   const open = () => {
+    closeSeq++
+    closeAnim?.cancel()
+    closeAnim = null
     root.classList.add('tri-map-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
@@ -3352,7 +3412,54 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
 
+  const modalChords: Record<string, { btn: string; openClass: string; close: string }> = {
+    a: { btn: '.tri-analytics-btn', openClass: 'tri-analytics-open', close: '.tri-ana-close' },
+    c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
+    m: { btn: '.tri-map-btn', openClass: 'tri-map-open', close: '.tri-map-close' },
+  }
+  const closeOpenModals = (except?: string) => {
+    for (const k in modalChords) {
+      if (k === except) continue
+      const mc = modalChords[k]
+      if (root.classList.contains(mc.openClass)) root.querySelector<HTMLElement>(mc.close)?.click()
+    }
+  }
+  const toggleModal = (key: string) => {
+    const mc = modalChords[key]
+    if (root.classList.contains(mc.openClass)) {
+      root.querySelector<HTMLElement>(mc.close)?.click()
+      return
+    }
+    closeOpenModals(key)
+    root.querySelector<HTMLElement>(mc.btn)?.click()
+  }
+  const toggleSearchFocus = (): boolean => {
+    const search =
+      (root.classList.contains('tri-map-open')
+        ? root.querySelector<HTMLInputElement>('.tri-map-search')
+        : null) ??
+      (root.classList.contains('tri-analytics-open')
+        ? root.querySelector<HTMLInputElement>('.tri-analytics .tri-ana-search')
+        : null)
+    if (!search) return false
+    if (document.activeElement === search) {
+      search.blur()
+    } else {
+      search.focus()
+      search.select()
+    }
+    return true
+  }
+
   const onKey = (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+      if (toggleSearchFocus()) {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+      }
+      return
+    }
+
     const el = e.target as HTMLElement | null
     if (el) {
       const tag = el.tagName.toLowerCase()
@@ -3371,23 +3478,19 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     if (waitingForG) {
       const key = e.key.toLowerCase()
       let handled = false
-      if (key === 'a') {
-        root.querySelector<HTMLElement>('.tri-analytics-btn')?.click()
+      if (key === 'a' || key === 'c' || key === 'm') {
+        toggleModal(key)
         handled = true
       } else if (key === 'g') {
+        closeOpenModals()
         root.querySelector<HTMLElement>('.tri-gear-btn')?.click()
         handled = true
       } else if (key === 'p') {
+        closeOpenModals()
         root.querySelector<HTMLElement>('.tri-pace-btn')?.click()
-        handled = true
-      } else if (key === 'c') {
-        root.querySelector<HTMLElement>('.tri-calc-btn')?.click()
         handled = true
       } else if (key === 's') {
         root.querySelector<HTMLElement>('.tri-total')?.click()
-        handled = true
-      } else if (key === 'm') {
-        root.querySelector<HTMLElement>('.tri-map-btn')?.click()
         handled = true
       } else if (key === 'h') {
         if (window.spaNavigate) {

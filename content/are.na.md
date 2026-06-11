@@ -338,7 +338,7 @@ title: are.na
     - tags: [eldrich, horror]
     - socials:
       - imdb: https://m.imdb.com/title/tt1945126/
-  - seealso: [[thoughts/Eldrich horror]]
+  - seealso: [[thoughts/Eldritch horror]]
 - https://x.com/0xluffy/status/2007140595043889254?s=20 -- boyfriend 101
   - [meta]:
     - date: 01/18/2026
@@ -6792,7 +6792,7 @@ title: are.na
   - [meta]:
     - date: 04/09/2025
     - tags: [life, being]
-- https://en.wikipedia.org/wiki/Lovecraftian_horror -- [[thoughts/Eldrich horror]]
+- https://en.wikipedia.org/wiki/Lovecraftian_horror -- [[thoughts/Eldritch horror]]
   - [meta]:
     - date: 04/09/2025
     - tags: [gothic]

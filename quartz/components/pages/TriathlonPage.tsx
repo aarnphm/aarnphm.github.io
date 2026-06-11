@@ -185,7 +185,6 @@ export default (() => {
                       data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
                       data-date-iso={d.date}
                       data-event={track?.event ?? (track?.race ? 'race' : undefined)}
-                      data-weight={track?.weightLbs ?? undefined}
                     >
                       {rest ? (
                         <span class="tri-seg" style={`height:${REST_SEG}px`} />

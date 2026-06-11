@@ -45,4 +45,12 @@ export const BuildArgv = {
 
 export const StatsArgv = { ...CommonArgv }
 
-export const BundleInfoArgv = {}
+export const BundleInfoArgv = {
+  format: {
+    string: true,
+    choices: ['table', 'json'],
+    default: 'table',
+    describe: 'bundle information output format',
+  },
+  json: { boolean: true, default: false, describe: 'print bundle information as JSON' },
+}

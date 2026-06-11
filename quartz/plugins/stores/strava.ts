@@ -26,7 +26,13 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
     'M3 13l6-2 4 2.5',
     'M2 18c1.5 1.4 3 1.4 4.5 0s3-1.4 4.5 0 3 1.4 4.5 0',
   ],
-  strength: ['M2 12H22', 'M5 9.5V14.5', 'M8 6.5V17.5', 'M16 6.5V17.5', 'M19 9.5V14.5'],
+  strength: [
+    'M7.4 7H4.6C4.26863 7 4 7.26863 4 7.6V16.4C4 16.7314 4.26863 17 4.6 17H7.4C7.73137 17 8 16.7314 8 16.4V7.6C8 7.26863 7.73137 7 7.4 7Z',
+    'M19.4 7H16.6C16.2686 7 16 7.26863 16 7.6V16.4C16 16.7314 16.2686 17 16.6 17H19.4C19.7314 17 20 16.7314 20 16.4V7.6C20 7.26863 19.7314 7 19.4 7Z',
+    'M1 14.4V9.6C1 9.26863 1.26863 9 1.6 9H3.4C3.73137 9 4 9.26863 4 9.6V14.4C4 14.7314 3.73137 15 3.4 15H1.6C1.26863 15 1 14.7314 1 14.4Z',
+    'M23 14.4V9.6C23 9.26863 22.7314 9 22.4 9H20.6C20.2686 9 20 9.26863 20 9.6V14.4C20 14.7314 20.2686 15 20.6 15H22.4C22.7314 15 23 14.7314 23 14.4Z',
+    'M8 12H16',
+  ],
 }
 
 const DAY_MS = 86_400_000
@@ -134,7 +140,23 @@ export interface StravaMapPoint {
   lng: number
 }
 
-export type ActivityHealth = Omit<OuraDaily, 'date'>
+export type ActivityHealth = Omit<OuraDaily, 'date'> & {
+  windKph?: number | null
+  windDir?: string | null
+}
+
+export function emptyHealth(): ActivityHealth {
+  return {
+    readiness: null,
+    sleepScore: null,
+    hrv: null,
+    rhr: null,
+    sleepDurationS: null,
+    tempDeviationC: null,
+    totalCalories: null,
+    activeCalories: null,
+  }
+}
 
 export interface GarminVerification {
   activityId: string

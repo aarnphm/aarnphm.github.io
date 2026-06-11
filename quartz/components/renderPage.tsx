@@ -748,7 +748,6 @@ function triathlonDayExtras(page: QuartzPluginData, date: string): DayCardExtras
   const day = page.tracking?.days.find(d => d.date === date)
   const event = day?.event ?? (day?.race ? 'race' : null)
   if (event) extras.event = event
-  if (day?.weightLbs != null) extras.weightLbs = day.weightLbs
   return extras
 }
 
@@ -756,7 +755,6 @@ function triathlonDayProps(extras: DayCardExtras, date: string): Record<string, 
   const props: Record<string, string> = { 'data-triathlon-date': date }
   if (extras.location) props['data-triathlon-loc'] = extras.location
   if (extras.event) props['data-triathlon-event'] = extras.event
-  if (extras.weightLbs != null) props['data-triathlon-weight'] = String(extras.weightLbs)
   return props
 }
 
