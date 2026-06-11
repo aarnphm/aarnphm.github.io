@@ -4,6 +4,7 @@ export interface AppleDaily {
   activeKcal: number | null
   intakeKcal: number | null
   weightKg: number | null
+  vo2max: number | null
 }
 
 export interface AppleCache {
@@ -14,7 +15,7 @@ export interface AppleCache {
 
 export interface AppleRecord {
   date: string
-  kind: 'active' | 'basal' | 'intake' | 'weight'
+  kind: 'active' | 'basal' | 'intake' | 'weight' | 'vo2max'
   value: number
   unit: string
   source: string
@@ -27,6 +28,7 @@ const KIND_BY_TYPE: Record<string, AppleRecord['kind']> = {
   HKQuantityTypeIdentifierBasalEnergyBurned: 'basal',
   HKQuantityTypeIdentifierDietaryEnergyConsumed: 'intake',
   HKQuantityTypeIdentifierBodyMass: 'weight',
+  HKQuantityTypeIdentifierVO2Max: 'vo2max',
 }
 
 export function matchAppleRecord(line: string): AppleRecord | null {
@@ -95,6 +97,7 @@ export function aggregateAppleRecords(records: AppleRecord[]): AppleDaily[] {
     const basal = at('basal')
     const intake = at('intake')
     const weight = at('weight')
+    const vo2max = at('vo2max')
     const activeKcal = active ? Math.round(active.sum) : null
     const basalKcal = basal ? Math.round(basal.sum) : null
     const burnKcal =
@@ -105,6 +108,7 @@ export function aggregateAppleRecords(records: AppleRecord[]): AppleDaily[] {
       burnKcal,
       intakeKcal: intake ? Math.round(intake.sum) : null,
       weightKg: weight ? Math.round(toKg(weight.last, weight.unit) * 10) / 10 : null,
+      vo2max: vo2max ? Math.round(vo2max.last * 10) / 10 : null,
     })
   }
   return out.sort((a, b) => a.date.localeCompare(b.date))
@@ -128,17 +132,21 @@ export function parseAppleJson(raw: unknown): AppleDaily[] {
     const burn =
       num(r.burnKcal) ?? (active != null || basal != null ? (active ?? 0) + (basal ?? 0) : null)
     const lbs = num(r.weightLbs)
+    const intake = num(r.intakeKcal)
+    const weightKg = num(r.weightKg)
+    const vo2max = num(r.vo2max)
     out.push({
       date,
       activeKcal: active != null ? Math.round(active) : null,
       burnKcal: burn != null ? Math.round(burn) : null,
-      intakeKcal: num(r.intakeKcal) != null ? Math.round(num(r.intakeKcal)!) : null,
+      intakeKcal: intake != null ? Math.round(intake) : null,
       weightKg:
-        num(r.weightKg) != null
-          ? Math.round(num(r.weightKg)! * 10) / 10
+        weightKg != null
+          ? Math.round(weightKg * 10) / 10
           : lbs != null
             ? Math.round(lbs * LB_TO_KG * 10) / 10
             : null,
+      vo2max: vo2max != null ? Math.round(vo2max * 10) / 10 : null,
     })
   }
   return out.sort((a, b) => a.date.localeCompare(b.date))
@@ -152,6 +160,7 @@ export function mergeAppleDay(prev: AppleDaily | undefined, next: AppleDaily): A
     activeKcal: next.activeKcal ?? prev.activeKcal,
     intakeKcal: next.intakeKcal ?? prev.intakeKcal,
     weightKg: next.weightKg ?? prev.weightKg,
+    vo2max: next.vo2max ?? prev.vo2max,
   }
 }
 

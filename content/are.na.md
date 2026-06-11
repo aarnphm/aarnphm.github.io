@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-11 12:11:41 GMT-04:00
+modified: 2026-06-11 16:18:59 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -4804,6 +4804,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://curlewis.co.nz/posts/lines-of-code-got-a-better-publicist/ -- Lines of Code Got a Better Publicist [**]
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [efficiency, work]
+    - importance: 8
+  - How do we measure the effectiveness of work?
 - https://en.wikipedia.org/wiki/Temporal_difference_learning -- Temporal difference learning
   - [meta]:
     - date: 06/11/2026

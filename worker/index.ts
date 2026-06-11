@@ -182,6 +182,7 @@ function shouldRewriteMarkdown(request: Request, url: URL): boolean {
   if (url.pathname.endsWith('.md')) return false
   if (getExtension(url.pathname)) return false
   if (url.pathname.startsWith('/api/')) return false
+  if (url.pathname === '/triathlon/data') return false
   if (url.pathname.startsWith('/comments/')) return false
   if (url.pathname.startsWith('/mcp')) return false
   if (url.pathname.startsWith('/sse')) return false
@@ -745,6 +746,16 @@ export default {
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'DENY',
           'Cache-Control': 'no-store, no-cache, must-revalidate',
+        })
+      }
+      case '/triathlon/data': {
+        const assetUrl = new URL(request.url)
+        assetUrl.pathname = '/triathlon/data.jsonl'
+        const assetResp = await env.ASSETS.fetch(new Request(assetUrl.toString(), request))
+        return withHeaders(assetResp, {
+          'Content-Type': 'application/x-ndjson; charset=utf-8',
+          'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
+          'Access-Control-Allow-Origin': '*',
         })
       }
       case '/manual':

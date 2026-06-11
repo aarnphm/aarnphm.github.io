@@ -17,7 +17,7 @@ import {
   ouraCachePath,
   stravaCachePath,
 } from '../../util/strava-payload'
-import { buildAnalytics } from '../stores/analytics'
+import { buildAnalytics, buildDataFeed } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
@@ -117,20 +117,31 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           }),
         }),
       )
+      const analytics = buildAnalytics(cache, {
+        oura,
+        apple,
+        weights: tracking?.days,
+        events: tracking?.races,
+        since: typeof since === 'string' ? since : undefined,
+      })
       files.push(
         await write({
           ctx,
           slug: 'static/analytics' as FullSlug,
           ext: '.json',
-          content: JSON.stringify(
-            buildAnalytics(cache, {
-              oura,
-              apple,
-              weights: tracking?.days,
-              events: tracking?.races,
-              since: typeof since === 'string' ? since : undefined,
-            }),
-          ),
+          content: JSON.stringify(analytics),
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
+          slug: 'triathlon/data' as FullSlug,
+          ext: '.jsonl',
+          content: buildDataFeed(cache, analytics, {
+            oura,
+            weights: tracking?.days,
+            zones: payload.zones,
+          }),
         }),
       )
       const slug = file.data.slug!
