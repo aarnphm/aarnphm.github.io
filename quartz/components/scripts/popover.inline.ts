@@ -1167,7 +1167,6 @@ async function handleTriathlon(
     ?.dayCard(date, new URL('/static/strava-detail.json', link.href).toString(), {
       location: link.dataset.triathlonLoc,
       event: link.dataset.triathlonEvent,
-      weightLbs: link.dataset.triathlonWeight ? Number(link.dataset.triathlonWeight) : undefined,
     })
     .catch(() => null)
   if (!card || activeAnchor !== link) return

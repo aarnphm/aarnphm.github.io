@@ -20,7 +20,7 @@ import {
 import { buildAnalytics } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
-import { buildPayload, StravaPayload, StravaRawCache } from '../stores/strava'
+import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
@@ -88,12 +88,22 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     for (const [tree, file] of content) {
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
+      const tracking = file.data.tracking
       const payload = buildPayload(
         cache,
         oura,
         garmin,
         typeof since === 'string' ? since : undefined,
       )
+      for (const t of tracking?.days ?? [])
+        if (t.windKph != null) {
+          const h = payload.health[t.date] ?? emptyHealth()
+          payload.health[t.date] = {
+            ...h,
+            windKph: h.windKph ?? t.windKph,
+            windDir: h.windDir ?? t.windDir,
+          }
+        }
       files.push(
         await write({
           ctx,
@@ -107,7 +117,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           }),
         }),
       )
-      const tracking = file.data.tracking
       files.push(
         await write({
           ctx,

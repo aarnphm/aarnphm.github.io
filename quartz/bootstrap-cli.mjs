@@ -15,8 +15,8 @@ void yargs(hideBin(process.argv))
   .command('stats', 'Show bundle and vault stats', StatsArgv, async argv => {
     await handleStats(argv)
   })
-  .command('bundleInfo', 'Show bundle information', BundleInfoArgv, async () => {
-    await handleBundleInfo()
+  .command('bundleInfo', 'Show bundle information', BundleInfoArgv, async argv => {
+    await handleBundleInfo(argv)
   })
   .showHelpOnFail(true)
   .help()

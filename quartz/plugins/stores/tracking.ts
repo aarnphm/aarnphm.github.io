@@ -2,6 +2,8 @@ export interface TrackEntry {
   date: string
   weightLbs: number | null
   weightKg: number | null
+  windKph: number | null
+  windDir: string | null
   race: boolean
   event: string | null
 }
@@ -53,6 +55,14 @@ export function parseTrackingBlock(
   const wl = body.weight != null ? Number(body.weight) : NaN
   const weightLbs = Number.isFinite(wl) ? wl : null
   const weightKg = weightLbs != null ? Math.round(weightLbs * LB_TO_KG * 10) / 10 : null
+  const wind =
+    /^(\d+(?:\.\d+)?)\s*(kph|km\/h|mph)?(?:\s+(?:\d+(?:\.\d+)?)?\s*([nsew]{1,3})?)?$/i.exec(
+      body.wind ?? '',
+    )
+  const windKph = wind
+    ? Math.round(Number(wind[1]) * (wind[2]?.toLowerCase() === 'mph' ? 1.609 : 1))
+    : null
+  const windDir = wind?.[3] ? wind[3].toUpperCase() : null
   const { race, event } = parseTrackingMeta(meta)
-  return { date: date.slice(0, 10), weightLbs, weightKg, race, event }
+  return { date: date.slice(0, 10), weightLbs, weightKg, windKph, windDir, race, event }
 }

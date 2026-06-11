@@ -40,6 +40,49 @@ export interface StreamYearGroup {
   months: StreamMonthGroup[]
 }
 
+export const truthyStreamFlag = (value: unknown): boolean => {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value !== 0
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    return (
+      normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on'
+    )
+  }
+  return false
+}
+
+export const isProtectedEntry = (entry: StreamEntry): boolean =>
+  truthyStreamFlag(entry.metadata?.protected)
+
+export const isPrivateEntry = (entry: StreamEntry): boolean =>
+  truthyStreamFlag(entry.metadata?.private)
+
+export const isDraftEntry = (entry: StreamEntry): boolean => truthyStreamFlag(entry.metadata?.draft)
+
+export const isRestrictedEntry = (entry: StreamEntry): boolean =>
+  isProtectedEntry(entry) || isPrivateEntry(entry)
+
+export const formatStreamDate = (isoDate: string | undefined): string | null => {
+  if (!isoDate) return null
+
+  const date = new Date(isoDate)
+  if (Number.isNaN(date.getTime())) return null
+
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'America/Los_Angeles',
+    timeZoneName: 'shortOffset',
+  })
+
+  return formatter.format(date)
+}
+
 const pad2 = (value: number): string => String(value).padStart(2, '0')
 
 export const buildStreamOnPath = (): string => '/stream/on'

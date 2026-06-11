@@ -14,7 +14,6 @@
   "homepage": "https://aarnphm.xyz",
   "license": "MIT",
   "author": "Aaron Pham <contact@aarnphm.xyz>",
-  "packageManager": "pnpm@11.1.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/aarnphm/aarnphm.github.io.git"
@@ -47,10 +46,11 @@
     "db:migrate": "pnpm dlx wrangler d1 migrations apply COMMENTS_ROOM --remote && pnpm dlx wrangler d1 migrations apply FLASHCARDS --remote",
     "cf:deploy": "pnpm check && pnpm db:migrate && pnpm dlx wrangler deploy",
     "lint": "oxlint",
-    "check:codeblocks": "cbfmt --best-effort --check content .github",
-    "format:codeblocks": "cbfmt --best-effort --write content .github",
-    "check": "oxfmt --check \"quartz/**/*.html\" && oxfmt --check && oxlint && tsgo --noEmit && tsx --test",
-    "format": "pnpx bibtex-tidy content/References.bib --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify && oxfmt \"quartz/**/*.html\" && oxfmt && oxlint --fix && uvx ruff format",
+    "check:codeblocks": "git -c core.quotepath=false ls-files '*.md' | tr '\\n' '\\0' | xargs -0 -n 1 cbfmt --best-effort --check || true",
+    "format:codeblocks": "git -c core.quotepath=false ls-files '*.md' | tr '\\n' '\\0' | xargs -0 -n 1 cbfmt --best-effort --write || true",
+    "check": "oxfmt --check && oxlint && tsgo --noEmit && tsx --test",
+    "format": "pnpx bibtex-tidy content/References.bib --months --merge=combine --no-align --sort=type,year,eprint --duplicates=key,doi,citation --no-escape --sort-fields=title,shorttitle,author,year,month,day,journal,booktitle,eprint,archivePrefix,primaryClass,location,on,publisher,address,series,volume,number,pages,doi,isbn,issn,url,urldate,copyright,category,note,metadata --strip-comments --no-remove-dupe-fields --blank-lines --modify && oxfmt && oxlint --fix && uvx ruff format",
+    "all": "pnpm format && pnpm convert && pnpm health && pnpm check",
     "profile": "0x -D prof quartz/bootstrap-cli.mjs build --concurrency=1"
   },
   "dependencies": {
@@ -230,5 +230,6 @@
   "engines": {
     "node": ">=24",
     "npm": ">=9.3.1"
-  }
+  },
+  "packageManager": "pnpm@11.1.3"
 }
