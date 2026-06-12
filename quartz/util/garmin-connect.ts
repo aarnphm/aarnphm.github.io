@@ -3,6 +3,7 @@ import {
   emptyGarminMetrics,
   type GarminActivity,
   type GarminStreams,
+  type GarminVo2Day,
   hasGarminFueling,
   hasGarminMetrics,
   normalizeGarminSport,
@@ -307,6 +308,31 @@ export function garminConnectActivities(raw: unknown): GarminConnectActivityList
     out.push({ id, record })
   }
   return out
+}
+
+function vo2Of(value: unknown): number | null {
+  if (!isRecord(value)) return null
+  return finite(value.vo2MaxPreciseValue) ?? finite(value.vo2MaxValue)
+}
+
+export function garminConnectVo2(raw: unknown): GarminVo2Day[] {
+  if (!Array.isArray(raw)) return []
+  const out: GarminVo2Day[] = []
+  for (const item of raw) {
+    if (!isRecord(item)) continue
+    const generic = isRecord(item.generic) ? item.generic : null
+    const cycling = isRecord(item.cycling) ? item.cycling : null
+    const date =
+      readString(item, 'calendarDate') ??
+      (generic ? readString(generic, 'calendarDate') : null) ??
+      (cycling ? readString(cycling, 'calendarDate') : null)
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
+    const g = vo2Of(generic)
+    const c = vo2Of(cycling)
+    if (g == null && c == null) continue
+    out.push({ date, generic: g, cycling: c })
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date))
 }
 
 function metricIndex(detail: UnknownRecord, key: string): number | null {

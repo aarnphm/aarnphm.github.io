@@ -16,11 +16,13 @@ import {
   garminCachePath,
   ouraCachePath,
   stravaCachePath,
+  weatherCachePath,
 } from '../../util/strava-payload'
 import { buildAnalytics, buildDataFeed } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
+import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
@@ -56,6 +58,14 @@ async function readApple(): Promise<AppleCache | null> {
   }
 }
 
+async function readWeather(): Promise<WeatherCache | null> {
+  try {
+    return parseWeatherCache(JSON.parse(await fs.readFile(weatherCachePath, 'utf8')))
+  } catch {
+    return null
+  }
+}
+
 const isTriathlon = (data: QuartzPluginData): boolean => data.frontmatter?.layout === 'triathlon'
 
 export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => {
@@ -82,6 +92,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const oura = await readOura()
     const garmin = await readGarmin()
     const apple = await readApple()
+    const weather = await readWeather()
     const files: FilePath[] = []
 
     const allFiles = contentDataFor(content)
@@ -94,15 +105,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         oura,
         garmin,
         typeof since === 'string' ? since : undefined,
+        weather,
       )
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()
-          payload.health[t.date] = {
-            ...h,
-            windKph: h.windKph ?? t.windKph,
-            windDir: h.windDir ?? t.windDir,
-          }
+          payload.health[t.date] = { ...h, windKph: t.windKph, windDir: t.windDir ?? h.windDir }
         }
       files.push(
         await write({
@@ -120,6 +128,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const analytics = buildAnalytics(cache, {
         oura,
         apple,
+        garmin,
+        weather,
         weights: tracking?.days,
         events: tracking?.races,
         since: typeof since === 'string' ? since : undefined,
@@ -139,6 +149,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ext: '.jsonl',
           content: buildDataFeed(cache, analytics, {
             oura,
+            weather,
             weights: tracking?.days,
             zones: payload.zones,
           }),

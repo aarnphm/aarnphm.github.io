@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-11 16:18:59 GMT-04:00
+modified: 2026-06-12 09:00:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://www.lesswrong.com/posts/oiNaBc4MEAGhzhdXg/the-machines-lack-honour -- The Machines Lack Honour
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [ai, ethics]
+    - later: true
 - https://www.lesswrong.com/posts/uk9eeZZEoQxARNmL5/astronomical-waste-and-conscientious-objection -- Astronomical Waste & Conscientious Objection
   - [meta]:
     - date: 10/30/2025
@@ -1279,6 +1284,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://palbin.web.illinois.edu/ -- Piere Albin
+  - [meta]:
+    - date: 06/11/2026
+    - tags: [mathematician]
+  - Algebraic topology, cohomology, geometric analysis
 - https://en.wikipedia.org/wiki/Alex_O%27Connor -- Alex O'Connor
   - [meta]:
     - date: 06/11/2026
@@ -9793,6 +9803,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/google/re2/wiki/syntax -- RE2 syntax
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [regex]
+    - later: true
+- https://github.com/kyx0r/pikevm -- pikevm regex engine
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [regex, nfa]
+    - later: true
+- https://github.com/ekmett/lens -- lens
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [haskell, optics]
+    - later: true
+- https://github.com/alexnask/ctregex.zig/tree/master -- ctregex.zig
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [regex, zig]
+    - later: true
+- https://github.com/jameysharp/pikevm -- Pike VM regex implementation
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [regex, nfa]
+    - later: true
+- https://github.com/rust-lang/regex/blob/master/regex-syntax/src/ast/parse.rs -- regex-syntax AST parser
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [regex, rust]
+    - later: true
+- https://github.com/abhinav/git-spice -- git-spice
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [git, tooling]
+    - later: true
 - https://github.com/google/re2 -- RE2 implementation
   - [meta]:
     - date: 06/08/2026
@@ -12191,6 +12236,181 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2409.19606
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://arxiv.org/abs/2408.08147
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [inference, disaggregation]
+    - later: true
+- https://arxiv.org/abs/2401.11181
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [inference, disaggregation]
+    - later: true
+- https://arxiv.org/abs/2510.01070
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [alignment, interpretability]
+    - later: true
+- https://arxiv.org/abs/2508.19559
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [inference, autoscaling]
+    - later: true
+- https://arxiv.org/abs/2401.09670
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [inference, disaggregation]
+    - later: true
+- https://arxiv.org/abs/2303.01037
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [speech, models]
+    - later: true
+- https://arxiv.org/abs/2301.13310
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [architecture, efficiency]
+    - later: true
+- https://arxiv.org/abs/2411.07501
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://arxiv.org/abs/2506.06644
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [sparsity, architecture]
+    - later: true
+- https://arxiv.org/abs/2512.10942
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [vlm, representation]
+    - later: true
+- https://arxiv.org/abs/1804.08838
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [optimization, geometry]
+    - later: true
+- https://arxiv.org/abs/2601.01206
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [software, psychology]
+    - later: true
+- https://arxiv.org/abs/2412.19437
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [models, architecture]
+    - later: true
+- https://arxiv.org/abs/2406.06484
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [linear-attention, parallelism]
+    - later: true
+- https://arxiv.org/abs/2312.06635
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [linear-attention, training]
+    - later: true
+- https://arxiv.org/abs/2601.03220
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [information-theory, intelligence]
+    - later: true
+- https://arxiv.org/abs/2601.04603
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [safety, jailbreaks]
+    - later: true
+- https://arxiv.org/abs/2601.00417
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [architecture, attention]
+    - later: true
+- https://arxiv.org/abs/2502.06643
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [moe, inference]
+    - later: true
+- https://arxiv.org/abs/2512.24601
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [architecture, recursion]
+    - later: true
+- https://arxiv.org/abs/2406.09264
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [alignment, human-ai]
+    - later: true
+- https://arxiv.org/abs/1905.01517
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [crdt, collaboration]
+    - later: true
+- https://arxiv.org/abs/math/0501118
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [math, number-theory]
+    - later: true
+- https://arxiv.org/abs/2503.08679
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [cot, reasoning]
+    - later: true
+- https://arxiv.org/abs/2507.07101
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [training, optimization]
+    - later: true
+- https://arxiv.org/abs/2510.09665
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [kv, inference]
+    - later: true
+- https://arxiv.org/abs/2601.05401
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [generative-ai, interface]
+    - later: true
+- https://arxiv.org/abs/2511.09030
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [agents, reliability]
+    - later: true
+- https://arxiv.org/abs/2511.11907
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [kv, offloading]
+    - later: true
+- https://arxiv.org/abs/1904.09751
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [decoding, language-models]
+    - later: true
+- https://arxiv.org/abs/2512.12167
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [long-context, positional-embeddings]
+    - later: true
+- https://arxiv.org/abs/2506.06266
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [long-context, representation]
+    - later: true
+- https://arxiv.org/abs/2510.12402
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [optimizer, training]
+    - later: true
+- https://arxiv.org/abs/2601.07372
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [memory, sparsity]
+    - later: true
 - https://arxiv.org/abs/2505.01618
   - [meta]:
     - date: 06/04/2026

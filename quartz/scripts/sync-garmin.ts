@@ -1,10 +1,16 @@
 import fs from 'node:fs/promises'
-import type { GarminActivity, GarminCache, GarminStreams } from '../plugins/stores/garmin'
+import type {
+  GarminActivity,
+  GarminCache,
+  GarminStreams,
+  GarminVo2Day,
+} from '../plugins/stores/garmin'
 import { browserCookieHeaders } from '../util/browser-cookie'
 import {
   garminConnectActivities,
   garminConnectActivity,
   garminConnectStreams,
+  garminConnectVo2,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
 import { joinSegments, QUARTZ } from '../util/path'
@@ -421,6 +427,19 @@ async function main(): Promise<void> {
     if (delayMs > 0) await sleep(delayMs)
   }
 
+  const vo2max: Record<string, GarminVo2Day> = {}
+  try {
+    const raw = await getJson(
+      session,
+      base,
+      `/metrics-service/metrics/maxmet/daily/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
+    )
+    for (const day of garminConnectVo2(raw)) vo2max[day.date] = day
+    console.log(`[garmin] vo2max days: ${Object.keys(vo2max).length}`)
+  } catch (err) {
+    console.warn(`[garmin] vo2max fetch failed: ${err instanceof Error ? err.message : err}`)
+  }
+
   const sorted: Record<string, GarminActivity> = {}
   for (const activity of Object.values(activities).sort((a, b) =>
     a.startDate.localeCompare(b.startDate),
@@ -436,6 +455,7 @@ async function main(): Promise<void> {
     lastSync: now,
     activities: sorted,
     streams: sortedStreams,
+    vo2max,
   }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))

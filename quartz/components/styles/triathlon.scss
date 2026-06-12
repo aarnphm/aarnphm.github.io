@@ -2183,16 +2183,16 @@
 }
 
 .tri-zone-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.18rem;
+  display: grid;
+  grid-template-columns: max-content max-content max-content max-content 1fr;
+  gap: 0.18rem 0.5rem;
 }
 
 .tri-zone-row {
   display: grid;
-  grid-template-columns: 1.7rem 3.6rem 3.4rem 2.6rem 1fr;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 0.5rem;
   font-family: var(--codeFont);
   font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
@@ -2230,6 +2230,7 @@
 
 .tri-zone-range {
   color: color-mix(in srgb, var(--gray) 80%, transparent);
+  text-align: right;
 }
 
 .tri-zone-time {
@@ -2655,6 +2656,14 @@
       padding-top: 0;
       border-top: 0;
     }
+  }
+
+  .tri-zone-grid {
+    grid-template-columns: max-content max-content max-content 1fr;
+  }
+
+  .tri-zone-range {
+    display: none;
   }
 }
 

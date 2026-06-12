@@ -1,3 +1,5 @@
+import type { GarminCache } from './garmin'
+import type { WeatherCache } from './weather'
 import { AppleCache } from './apple'
 import { OuraCache } from './oura'
 import {
@@ -28,11 +30,16 @@ export interface ActivitySummary {
   movingTimeS: number
   load: number
   cadence: number | null
+  windKph: number | null
+  windDir: string | null
+  windGustKph: number | null
 }
 
 export interface AnalyticsInputs {
   oura?: OuraCache | null
   apple?: AppleCache | null
+  garmin?: GarminCache | null
+  weather?: WeatherCache | null
   weights?: TrackEntry[]
   events?: RaceEvent[]
   since?: string
@@ -249,7 +256,7 @@ export interface RecoveryBlock {
   thresholds: RecoveryThresholds
 }
 
-export type Vo2Method = 'apple' | 'bike' | 'run' | 'hrratio' | 'none'
+export type Vo2Method = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'none'
 export type RadarAxisKey = 'sprint' | 'threshold' | 'endurance' | 'climb' | 'cadence' | 'recovery'
 export type CardioDir = 'improving' | 'stable' | 'declining' | null
 export type CardioKey = 'rhr' | 'hrv' | 'ef' | 'decoupling'
@@ -271,7 +278,7 @@ export interface Vo2maxBlock {
   method: Vo2Method
   conf: Conf
   hrMax: number
-  hrMaxSource: 'observed' | 'tanaka'
+  hrMaxSource: 'observed' | 'declared' | 'tanaka'
   hrRest: number | null
   chronoAge: number
   fitnessAge: number | null
@@ -323,6 +330,7 @@ export interface EngineBlock {
 
 export interface DataFeedInputs {
   oura?: OuraCache | null
+  weather?: WeatherCache | null
   weights?: TrackEntry[]
   zones?: StravaZones | null
 }
@@ -1417,7 +1425,14 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
   }
 }
 
-const ATHLETE = { sex: 'M' as const, born: '2000-06', bornAnchor: '2000-06-15' }
+const ATHLETE = {
+  sex: 'M' as const,
+  born: '2001-03',
+  bornAnchor: '2001-03-01',
+  hrMax: 195 as number | null,
+  vo2max: 42 as number | null,
+}
+
 const VO2_FLOOR = 20
 const VO2_CEIL = 80
 const FRIEND_MED_M: [number, number][] = [
@@ -1640,17 +1655,17 @@ const hrMaxOf = (
   acts: Act[],
   cache: StravaRawCache,
   age: number,
-): { hrMax: number; source: 'observed' | 'tanaka' } => {
+): { hrMax: number; source: 'observed' | 'declared' | 'tanaka' } => {
   let obs = 0
   for (const { a } of acts) {
     if (a.maxHeartrate && a.maxHeartrate > obs) obs = a.maxHeartrate
     const hr = cache.streams?.[String(a.id)]?.heartrate
     if (hr) for (const v of hr) if (v > obs) obs = v
   }
-  const tanaka = TANAKA_A - TANAKA_B * age
-  return obs >= tanaka
+  const base = ATHLETE.hrMax ?? TANAKA_A - TANAKA_B * age
+  return obs >= base
     ? { hrMax: obs, source: 'observed' }
-    : { hrMax: Math.round(tanaka), source: 'tanaka' }
+    : { hrMax: Math.round(base), source: ATHLETE.hrMax != null ? 'declared' : 'tanaka' }
 }
 
 const danielsVo2 = (vms: number): number => {
@@ -1742,6 +1757,7 @@ function buildEngine(
   body: BodyBlock,
   ctlNow: number,
   today: string,
+  garminVo2: { date: string; v: number }[],
   appleVo2: { date: string; v: number }[],
 ): EngineBlock {
   const age = ageOn(today)
@@ -1774,23 +1790,34 @@ function buildEngine(
   ).length
 
   const estimates: Vo2Estimate[] = []
+  if (garminVo2.length)
+    estimates.push({
+      method: 'garmin',
+      vo2max: round(clamp(garminVo2[garminVo2.length - 1].v, VO2_FLOOR, VO2_CEIL), 1),
+      conf: 'firm',
+    })
   if (appleVo2.length)
     estimates.push({
       method: 'apple',
       vo2max: round(clamp(appleVo2[appleVo2.length - 1].v, VO2_FLOOR, VO2_CEIL), 1),
       conf: 'firm',
     })
-  let ftp: number | null = null
+  const declaredFtp = cache.zones?.ftp ?? null
+  let ftp = declaredFtp
+  let ftpSrc: 'strava' | 'derived' | null = declaredFtp != null ? 'strava' : null
   let bikeKg: number | null = null
-  if (p20 != null) {
+  if (ftp == null && p20 != null) {
     ftp = round(p20 * FTP_FROM_P20, 0)
-    bikeKg = (p20Day ? kgAt.get(p20Day) : null) ?? body.latestKg
+    ftpSrc = 'derived'
+  }
+  if (ftp != null) {
+    bikeKg = (ftpSrc === 'derived' && p20Day ? kgAt.get(p20Day) : null) ?? body.latestKg
     if (bikeKg != null && bikeKg > 0) {
-      const map = (p20 * FTP_FROM_P20) / MAP_FTP_RATIO
+      const map = ftp / MAP_FTP_RATIO
       estimates.push({
         method: 'bike',
         vo2max: round(clamp((ACSM_WATT_K * map) / bikeKg + ACSM_BASE, VO2_FLOOR, VO2_CEIL), 1),
-        conf: deviceN >= 3 && p20Win === 1200 ? 'firm' : 'low',
+        conf: ftpSrc === 'strava' ? 'firm' : deviceN >= 3 && p20Win === 1200 ? 'firm' : 'low',
       })
     }
   }
@@ -1805,9 +1832,10 @@ function buildEngine(
 
   const primary = estimates.length ? estimates[0] : null
   const noteOf = (m: Vo2Method): string => {
+    if (m === 'garmin') return 'garmin connect (device/manual)'
     if (m === 'apple') return 'apple watch measurement'
     if (m === 'bike')
-      return `ftp ${ftp}w · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
+      return `ftp ${ftp}w${ftpSrc === 'strava' ? ' (strava)' : ''} · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
     if (m === 'run') return 'run hr–speed extrapolation'
     if (m === 'hrratio') return 'upper-bound proxy from sleeping rhr'
     return 'no power or hr data'
@@ -2256,7 +2284,13 @@ export function buildAnalytics(
   for (const d of Object.values(appleDays))
     if (d.vo2max != null) appleVo2.push({ date: d.date, v: d.vo2max })
   appleVo2.sort((p, q) => p.date.localeCompare(q.date))
-  const engine = buildEngine(cache, acts, daily, body, ctlNow, today, appleVo2)
+  const garminVo2: { date: string; v: number }[] = []
+  for (const d of Object.values(inputs.garmin?.vo2max ?? {})) {
+    const v = d.generic ?? d.cycling
+    if (v != null) garminVo2.push({ date: d.date, v })
+  }
+  garminVo2.sort((p, q) => p.date.localeCompare(q.date))
+  const engine = buildEngine(cache, acts, daily, body, ctlNow, today, garminVo2, appleVo2)
 
   const activities: ActivitySummary[] = acts
     .map(act => ({
@@ -2268,6 +2302,9 @@ export function buildAnalytics(
       movingTimeS: act.a.movingTime,
       load: round(loadById.get(act.a.id) ?? 0, 1),
       cadence: act.a.averageCadence ?? null,
+      windKph: inputs.weather?.activities[String(act.a.id)]?.windKph ?? null,
+      windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
+      windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,
     }))
     .sort((p, q) => q.date.localeCompare(p.date))
 
@@ -2339,6 +2376,7 @@ export const DAY_FIELDS = [
   'weightKg',
   'windKph',
   'windDir',
+  'windGustKph',
   'readinessNext',
   'hrvNext',
 ] as const
@@ -2362,6 +2400,9 @@ export const ACTIVITY_FIELDS = [
   'calories',
   'sufferScore',
   'avgTemp',
+  'windKph',
+  'windDir',
+  'windGustKph',
   'vGap',
   'intensity',
   'load',
@@ -2418,6 +2459,7 @@ export interface FeedDayRow {
   weightKg: number | null
   windKph: number | null
   windDir: string | null
+  windGustKph: number | null
   readinessNext: number | null
   hrvNext: number | null
 }
@@ -2441,6 +2483,9 @@ export interface FeedActivityRow {
   calories: number | null
   sufferScore: number | null
   avgTemp: number | null
+  windKph: number | null
+  windDir: string | null
+  windGustKph: number | null
   vGap: number
   intensity: number | null
   load: number
@@ -2499,12 +2544,14 @@ export function buildDataFeed(
   const windByDate = new Map<string, TrackEntry>()
   for (const w of inputs.weights ?? [])
     if (w.windKph != null || w.windDir != null) windByDate.set(w.date, w)
+  const weatherDays = inputs.weather?.days ?? {}
 
   const dayLines = analytics.daily.map(d => {
     const o = ouraDays[d.date]
     const next = ouraDays[nextIso(d.date)]
     const agg = byDay.get(d.date)
     const wind = windByDate.get(d.date)
+    const weather = weatherDays[d.date]
     return pickLine(
       {
         kind: 'day',
@@ -2533,8 +2580,9 @@ export function buildDataFeed(
         activeCalories: o?.activeCalories ?? null,
         intakeKcal: d.intakeKcal,
         weightKg: d.weightKg,
-        windKph: wind?.windKph ?? null,
-        windDir: wind?.windDir ?? null,
+        windKph: wind?.windKph ?? weather?.windKph ?? null,
+        windDir: wind?.windDir ?? weather?.windDir ?? null,
+        windGustKph: weather?.windGustKph ?? null,
         readinessNext: next?.readiness ?? null,
         hrvNext: next?.hrv ?? null,
       },
@@ -2579,6 +2627,9 @@ export function buildDataFeed(
           calories: raw.calories ?? null,
           sufferScore: raw.sufferScore ?? null,
           avgTemp: raw.averageTemp ?? null,
+          windKph: s.windKph,
+          windDir: s.windDir,
+          windGustKph: s.windGustKph,
           vGap: round(vGap, 3),
           intensity: vThr > 0 ? round(vGap / vThr, 3) : null,
           load: s.load,
@@ -2611,7 +2662,8 @@ export function buildDataFeed(
       sex: ATHLETE.sex,
       born: ATHLETE.born,
       ageYears,
-      hrMaxEst: ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null,
+      hrMaxEst:
+        ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
     },
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }
@@ -2636,10 +2688,10 @@ export function buildDataFeed(
       ps: 'peak mean m/s over 30/60/300/1200s from distance stream, bike+run only',
       ef: 'bike np/avgHr w/bpm; run+swim 60*vGap/avgHr m/min/bpm',
       decoupling: '(ef first half - ef second half)/ef first half * 100, streams, >=1200s only',
-      hrMaxEst: '208 - 0.7*age (tanaka 2001)',
+      hrMaxEst: 'declared max hr; 208 - 0.7*age (tanaka 2001) when unset',
       weightKg: 'tracking weight forward-filled, apple fallback',
       avgWatts: 'strava estimate unless deviceWatts true',
-      windDir: 'verbatim tracking string',
+      windDir: 'tracking override, WeatherKit compass fallback',
     },
   }
 

@@ -1,5 +1,6 @@
 import type { GarminActivityMatch, GarminCache, GarminFueling, GarminStreams } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
+import type { WeatherCache } from './weather'
 import { matchGarminActivity, matchGarminFueling } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
@@ -143,6 +144,8 @@ export interface StravaMapPoint {
 export type ActivityHealth = Omit<OuraDaily, 'date'> & {
   windKph?: number | null
   windDir?: string | null
+  windDirDeg?: number | null
+  windGustKph?: number | null
 }
 
 export function emptyHealth(): ActivityHealth {
@@ -204,6 +207,10 @@ export interface StravaActivityDetail {
   sufferScore: number | null
   calories: number | null
   avgTemp: number | null
+  windKph: number | null
+  windDir: string | null
+  windDirDeg: number | null
+  windGustKph: number | null
   location: string | null
   fueling: GarminFueling | null
   garmin: GarminVerification | null
@@ -522,6 +529,7 @@ function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
   streams: StravaStreams | GarminStreams | undefined,
+  weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
   garmin: GarminVerification | null,
@@ -623,8 +631,12 @@ function projectDetail(
     deviceWatts: a.deviceWatts === true,
     avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
-    calories: a.calories != null ? Math.round(a.calories) : null,
+    calories: a.calories ? Math.round(a.calories) : (garmin?.totalCalories ?? null),
     avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
+    windKph: weather?.windKph ?? null,
+    windDir: weather?.windDir ?? null,
+    windDirDeg: weather?.windDirDeg ?? null,
+    windGustKph: weather?.windGustKph ?? null,
     location: geo ?? null,
     fueling,
     garmin,
@@ -661,6 +673,7 @@ export function buildPayload(
   oura: OuraCache | null,
   garmin: GarminCache | null,
   since?: string,
+  weather?: WeatherCache | null,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -677,7 +690,7 @@ export function buildPayload(
   const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
   for (const { a, sport } of activities) {
     const id = String(a.id)
-    const match = sport === 'strength' ? null : matchGarminActivity(a, sport, garmin)
+    const match = matchGarminActivity(a, sport, garmin)
     garminMatches.set(id, match)
     selectedStreams.set(id, selectStreams(cache.streams?.[id], match, garmin))
   }
@@ -742,7 +755,8 @@ export function buildPayload(
   const recentCut = end - 42 * DAY_MS
   let best20 = 0
   const recentCurves: PowerCurvePoint[][] = []
-  for (const { a } of activities) {
+  for (const { a, sport } of activities) {
+    if (sport !== 'bike') continue
     const w = selectedStreams.get(String(a.id))?.watts
     if (!w || !w.some(v => v > 0)) continue
     const c = meanMaxCurve(w)
@@ -773,8 +787,9 @@ export function buildPayload(
       a,
       sport,
       selectedStreams.get(id),
+      weather?.activities[id],
       cache.geo?.[String(a.id)],
-      sport === 'strength' ? null : matchGarminFueling(a, sport, garmin),
+      matchGarminFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
       hrBounds,
       powerBounds,
@@ -784,6 +799,17 @@ export function buildPayload(
 
   const health: Record<string, ActivityHealth> = {}
   if (oura) for (const [date, o] of Object.entries(oura.days)) health[date] = toHealth(o)
+  if (weather)
+    for (const [date, w] of Object.entries(weather.days)) {
+      const h = health[date] ?? emptyHealth()
+      health[date] = {
+        ...h,
+        windKph: h.windKph ?? w.windKph,
+        windDir: h.windDir ?? w.windDir,
+        windDirDeg: h.windDirDeg ?? w.windDirDeg,
+        windGustKph: h.windGustKph ?? w.windGustKph,
+      }
+    }
 
   return {
     generatedAt: cache.lastSync,

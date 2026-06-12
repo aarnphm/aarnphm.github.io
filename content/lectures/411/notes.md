@@ -191,7 +191,7 @@ $$A^\top A\,x=A^\top b.$$
 >
 > - **Fundamental theorem of linear algebra**: relations among row space, column space, and nullspace.
 > - **Pivot columns = basis for column space**; **nonzero rows in RREF = basis for row space**.
-> - **Dimension arguments**: any spanning set for a subspace of dimension $d$ has ≥ $d$ vectors; any independent set has ≤ $d$ vectors.
+> - **Dimension arguments**: any spanning set for a subspace of dimension $d$ has $\geq d$ vectors; any independent set has $\leq d$ vectors.
 > - **Kernel + image decomposition**: for any linear map $T: V \to W$, $V / \ker(T) \cong \mathrm{im}(T)$.
 
 ## basis
