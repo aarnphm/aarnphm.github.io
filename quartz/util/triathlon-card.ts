@@ -95,7 +95,11 @@ export const recoveryRows = (h: ActivityHealth): [string, string][] => {
   if (h.rhr != null) rows.push(['resting hr', `${h.rhr} bpm`])
   if (h.tempDeviationC != null)
     rows.push(['temp', `${h.tempDeviationC > 0 ? '+' : ''}${h.tempDeviationC.toFixed(1)}°C`])
-  if (h.windKph != null) rows.push(['wind', `${h.windKph} km/h${h.windDir ? ` ${h.windDir}` : ''}`])
+  if (h.windKph != null)
+    rows.push([
+      'wind',
+      `${h.windKph} km/h${h.windDir ? ` ${h.windDir}` : ''}${h.windGustKph != null ? ` / gust ${h.windGustKph}` : ''}`,
+    ])
   if (h.totalCalories != null)
     rows.push(['day burn', `${Math.round(h.totalCalories).toLocaleString('en-US')} kcal`])
   if (h.activeCalories != null)
@@ -132,7 +136,12 @@ export const moreStatRows = (d: StravaActivityDetail): [string, string][] => {
     rows.push(['cadence', d.sport === 'run' ? `${d.avgCadence * 2} spm` : `${d.avgCadence} rpm`])
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
-  if (d.avgTemp != null) rows.push(['temp', `${d.avgTemp}°C`])
+  if (d.avgTemp != null) rows.push(['temp', `${Math.round((d.avgTemp * 9) / 5 + 32)}°F`])
+  if (d.windKph != null)
+    rows.push([
+      'wind',
+      `${d.windKph} km/h${d.windDir ? ` ${d.windDir}` : ''}${d.windGustKph != null ? ` / gust ${d.windGustKph}` : ''}`,
+    ])
   return rows
 }
 

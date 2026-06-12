@@ -186,13 +186,21 @@ async function fetchStreams(token: string, id: number): Promise<StravaStreams | 
   }
 }
 
+async function fetchAthleteFtp(token: string): Promise<number | null> {
+  const res = await fetchWithRetry(apiUrl('/athlete'), { headers: authHeaders(token) }, limiter)
+  if (!res || !res.ok) return null
+  const data = (await res.json()) as { ftp?: number | null }
+  return typeof data.ftp === 'number' && data.ftp > 0 ? Math.round(data.ftp) : null
+}
+
 async function fetchZones(token: string): Promise<StravaZones | null> {
   const res = await fetchWithRetry(
     apiUrl('/athlete/zones'),
     { headers: authHeaders(token) },
     limiter,
   )
-  if (!res || !res.ok) return null
+  const ftp = await fetchAthleteFtp(token)
+  if (!res || !res.ok) return ftp != null ? { hr: [], power: [], ftp } : null
   const data = (await res.json()) as {
     heart_rate?: { zones?: { min: number; max: number }[] }
     power?: { zones?: { min: number; max: number }[] }
@@ -201,8 +209,8 @@ async function fetchZones(token: string): Promise<StravaZones | null> {
     (zones ?? []).map(z => z.max).filter(m => m > 0)
   const hr = bounds(data.heart_rate?.zones)
   const power = bounds(data.power?.zones)
-  if (hr.length === 0 && power.length === 0) return null
-  return { hr, power, ftp: null }
+  if (hr.length === 0 && power.length === 0 && ftp == null) return null
+  return { hr, power, ftp }
 }
 
 async function fetchActivityCalories(token: string, id: number): Promise<number | null> {

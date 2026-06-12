@@ -1,4 +1,4 @@
-import type { RawStravaActivity, Sport } from './strava'
+import type { ActivityKind, RawStravaActivity, Sport } from './strava'
 
 const START_TOLERANCE_MS = 20 * 60 * 1000
 const DISTANCE_TOLERANCE_RATIO = 0.08
@@ -64,11 +64,18 @@ export interface GarminActivityMatch {
   durationDiffS: number | null
 }
 
+export interface GarminVo2Day {
+  date: string
+  generic: number | null
+  cycling: number | null
+}
+
 export interface GarminCache {
   version?: number
   lastSync: number
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
+  vo2max?: Record<string, GarminVo2Day>
 }
 
 export function emptyGarminMetrics(): GarminMetrics {
@@ -170,7 +177,7 @@ function withDevice(fueling: GarminFueling, sourceDevice: string | null): Garmin
 
 export function matchGarminActivity(
   strava: RawStravaActivity,
-  sport: Sport,
+  sport: ActivityKind,
   cache: GarminCache | null,
 ): GarminActivityMatch | null {
   if (!cache) return null
@@ -180,6 +187,7 @@ export function matchGarminActivity(
   let best: { score: number; activity: GarminActivity } | null = null
   for (const activity of Object.values(cache.activities)) {
     if (activity.sport != null && activity.sport !== sport) continue
+    if (sport === 'strength' && positive(activity.distanceM) != null) continue
     const garminStart = Date.parse(activity.startDate)
     if (!Number.isFinite(garminStart)) continue
     const startDiff = Math.abs(garminStart - stravaStart)
@@ -206,7 +214,7 @@ export function matchGarminActivity(
 
 export function matchGarminFueling(
   strava: RawStravaActivity,
-  sport: Sport,
+  sport: ActivityKind,
   cache: GarminCache | null,
 ): GarminFueling | null {
   const match = matchGarminActivity(strava, sport, cache)

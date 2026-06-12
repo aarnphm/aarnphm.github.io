@@ -185,3 +185,105 @@ test('backfills Strava detail streams from a matched Garmin activity', () => {
   assert.equal(detail.avgCadence, 88)
   assert.equal(detail.powerCurve?.[0]?.w, 300)
 })
+
+test('matches strength to a sport-null Garmin entry and backfills calories', () => {
+  const lift = strava({
+    id: 202,
+    name: 'Legs & Core Strength',
+    sportType: 'WeightTraining',
+    distance: 0,
+    movingTime: 2700,
+    elapsedTime: 2895,
+    totalElevationGain: 0,
+    startDate: '2026-06-11T21:29:46Z',
+    startDateLocal: '2026-06-11T17:29:46',
+    calories: 0,
+  })
+  const metrics = emptyGarminMetrics()
+  metrics.totalCalories = 356
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      lift: {
+        id: 'connect:lift',
+        name: 'Leg & Core Strength',
+        sport: null,
+        startDate: '2026-06-11T21:29:50Z',
+        startDateLocal: '2026-06-11T17:29:50',
+        distanceM: null,
+        movingTimeS: null,
+        elapsedTimeS: null,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics,
+        fueling: emptyGarminFueling(),
+      },
+    },
+  }
+
+  assert.equal(matchGarminActivity(lift, 'strength', garmin)?.activity.id, 'connect:lift')
+
+  const stravaCache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-11T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(lift.startDate) / 1000),
+    activities: { [lift.id]: lift },
+    streams: {},
+  }
+  const detail = buildPayload(stravaCache, null, garmin).details[String(lift.id)]
+  assert.equal(detail.calories, 356)
+  assert.equal(detail.garmin?.activityId, 'connect:lift')
+})
+
+test('strength skips Garmin entries that carry distance', () => {
+  const lift = strava({
+    sportType: 'WeightTraining',
+    distance: 0,
+    movingTime: 2700,
+    elapsedTime: 2895,
+    startDate: '2026-06-11T21:29:46Z',
+    startDateLocal: '2026-06-11T17:29:46',
+  })
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      ride: {
+        id: 'connect:ride',
+        name: 'Toronto Road Cycling',
+        sport: null,
+        startDate: '2026-06-11T21:35:00Z',
+        startDateLocal: '2026-06-11T17:35:00',
+        distanceM: 21_386,
+        movingTimeS: 2724,
+        elapsedTimeS: 2810,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling(),
+      },
+    },
+  }
+
+  assert.equal(matchGarminActivity(lift, 'strength', garmin), null)
+})
+
+test('garminConnectVo2 parses maxmet daily payloads defensively', async () => {
+  const { garminConnectVo2 } = await import('../../util/garmin-connect')
+  const rows = garminConnectVo2([
+    {
+      calendarDate: '2026-06-10',
+      generic: { vo2MaxPreciseValue: 54.3, vo2MaxValue: 54 },
+      cycling: { vo2MaxValue: 50 },
+    },
+    { generic: { calendarDate: '2026-06-09', vo2MaxValue: 53 }, cycling: null },
+    { calendarDate: 'not-a-date', generic: { vo2MaxValue: 50 } },
+    { calendarDate: '2026-06-08', generic: {}, cycling: {} },
+    'garbage',
+  ])
+  assert.deepEqual(rows, [
+    { date: '2026-06-09', generic: 53, cycling: null },
+    { date: '2026-06-10', generic: 54.3, cycling: 50 },
+  ])
+})
