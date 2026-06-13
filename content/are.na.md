@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-12 19:30:36 GMT-04:00
+modified: 2026-06-13 09:03:21 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -12241,6 +12241,221 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2502.04878
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [interpretability, sae]
+    - later: true
+- https://arxiv.org/abs/2508.09494
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [memory, knowledge]
+    - later: true
+- https://arxiv.org/abs/2509.06863
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [rl, value-learning]
+    - later: true
+- https://arxiv.org/abs/2310.07240
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [kv, compression]
+    - later: true
+- https://arxiv.org/abs/2405.16444
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [rag, kv]
+    - later: true
+- https://arxiv.org/abs/2510.04871
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [reasoning, recursion]
+    - later: true
+- https://arxiv.org/abs/1611.09940
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [rl, optimization]
+    - later: true
+- https://arxiv.org/abs/2601.16175
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [test-time, discovery]
+    - later: true
+- https://arxiv.org/abs/2601.15727
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [kernels, codegen]
+    - later: true
+- https://arxiv.org/abs/2504.11816
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [kv, offloading]
+    - later: true
+- https://arxiv.org/abs/2512.19428
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [architecture, attention]
+    - later: true
+- https://arxiv.org/abs/2601.16979
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [training, curvature]
+    - later: true
+- https://arxiv.org/abs/2302.00805
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [safety, prediction]
+    - later: true
+- https://arxiv.org/abs/2601.22401
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [math, agents]
+    - later: true
+- https://arxiv.org/abs/2601.07933
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [math, cohomology]
+    - later: true
+- https://arxiv.org/abs/2601.18778
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [reasoning, learnability]
+    - later: true
+- https://arxiv.org/abs/2505.22756
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [rl, reasoning]
+    - later: true
+- https://arxiv.org/abs/2412.08905
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [models, data]
+    - later: true
+- https://arxiv.org/abs/2602.12429
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [pretraining, low-rank]
+    - later: true
+- https://arxiv.org/abs/2602.07193
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [human-ai, safety]
+    - later: true
+- https://arxiv.org/abs/2602.11287
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [quantization, inference]
+    - later: true
+- https://arxiv.org/abs/2410.13787
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [introspection, llms]
+    - later: true
+- https://arxiv.org/abs/2603.07685
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [moe, training]
+    - later: true
+- https://arxiv.org/abs/2603.02298
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [cute, tensor]
+    - later: true
+- https://arxiv.org/abs/2602.01469
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [speculative-decoding, eagle]
+    - later: true
+- https://arxiv.org/abs/2212.11279
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [history, ai]
+    - later: true
+- https://arxiv.org/abs/2003.07892
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [calibration, transformers]
+    - later: true
+- https://arxiv.org/abs/2510.27484
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [cot, interpretability]
+    - later: true
+- https://arxiv.org/abs/2410.04691
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [icl, fine-tuning]
+    - later: true
+- https://arxiv.org/abs/2001.08361
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [scaling, language-models]
+    - later: true
+- https://arxiv.org/abs/2408.02442
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [structured-generation, evaluation]
+    - later: true
+- https://arxiv.org/abs/2601.00397
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [simulation, serving]
+    - later: true
+- https://arxiv.org/abs/2502.06785
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://arxiv.org/abs/2507.10524
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [adaptive-compute, recursion]
+    - later: true
+- https://arxiv.org/abs/2603.15339
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [neuroscience, transformers]
+    - later: true
+- https://arxiv.org/abs/2502.12131
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [interpretability, dynamics]
+    - later: true
+- https://arxiv.org/abs/2407.21092
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [thermodynamics, language-models]
+    - later: true
+- https://arxiv.org/abs/2409.02387
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [cognitive-science, llms]
+    - later: true
+- https://arxiv.org/abs/2506.04374
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [statistical-physics, reasoning]
+    - later: true
+- https://arxiv.org/abs/2503.01840
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [speculative-decoding, eagle]
+    - later: true
+- https://arxiv.org/abs/2505.07203
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [prefill, inference]
+    - later: true
+- https://arxiv.org/abs/2603.13358
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [disaggregation, serving]
+    - later: true
+- https://arxiv.org/abs/2405.05254
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [kv, architecture]
+    - later: true
 - https://arxiv.org/abs/2409.19606
   - [meta]:
     - date: 06/12/2026

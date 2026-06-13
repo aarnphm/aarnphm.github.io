@@ -12,13 +12,13 @@ import {
 } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
+import { dist, distCombined, dur } from '../../util/triathlon-card'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 
 const SPORT_LABEL: Record<Sport, string> = { swim: 'swim', bike: 'bike', run: 'run' }
 const KM_TO_MI = 0.621371
-const FT_PER_KM = 3280.84
 const PX_PER_MIN = 2.4
 const MAX_BAR = 300
 const MIN_SEG = 3
@@ -106,27 +106,25 @@ const GEAR: [string, string[]][] = [
       'Powermeter: Magene P715 S Pedal',
       'Bike Computer: Garmin Edge 1050',
       'HR monitor: Garmin HRM 600',
+      'Radar: Garmin Varia RTL515',
+      'Scale: Garmin Index S2',
       'Shoes: SPECIALIZED TORCH 2.0',
+      'Socks: DANISH ENDURANCE Aero Socks',
     ],
   ],
-  ['running', ['HOKA Clifton 10', 'Ciele Athletic Gocap']],
+  [
+    'running',
+    [
+      'HOKA Clifton 10',
+      'Ciele Athletic Gocap',
+      'Saucony Inferno Cushion Mid 3-Pack Sock',
+      'Saucony Endorphin Elite 3',
+    ],
+  ],
   ['swim', ['2XU trisuit', 'Decathlon swimskin', 'Speedo goggles']],
   ['wearables', ['Oura Ring 4', 'Apple Watch Ultra 3']],
   ['fuel', ['mandarins', 'apple', 'banana', 'Precision Fueld & Hydration', 'Maurten']],
 ]
-
-const miles = (km: number): string => Math.round(km * KM_TO_MI).toLocaleString('en-US')
-const dist = (km: number, sport: Sport): string => {
-  if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
-  const mi = km * KM_TO_MI
-  return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
-}
-
-const dur = (s: number): string => {
-  const h = Math.floor(s / 3600)
-  const m = Math.round((s % 3600) / 60)
-  return h > 0 ? `${h}h${m.toString().padStart(2, '0')}'` : `${m}'`
-}
 
 const Icon = ({ sport, cls }: { sport: ActivityKind; cls: string }) => (
   <svg class={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -167,7 +165,15 @@ export default (() => {
       >
         <div class="tri-head">
           <a class="tri-total" href={profile} target="_blank" rel="noopener noreferrer">
-            {miles(payload.totalKm)}mi
+            <span
+              class="tri-dist"
+              data-km={payload.totalKm}
+              data-kind="combined"
+              data-gloss="herodist"
+              tabindex={0}
+            >
+              {distCombined(payload.totalKm)}
+            </span>
           </a>
           <a class="tri-total" data-no-popover href="/">
             home
@@ -227,14 +233,38 @@ export default (() => {
             return (
               <span class="tri-leg">
                 <Icon sport={sport} cls="tri-ico tri-leg-ico" />
-                {SPORT_LABEL[sport]} · {dist(t?.distanceKm ?? 0, sport)} · {t?.count ?? 0}
+                <span class="tri-leg-body">
+                  {SPORT_LABEL[sport]} ·{' '}
+                  <span
+                    class="tri-dist"
+                    data-km={t?.distanceKm ?? 0}
+                    data-kind={sport}
+                    data-gloss="legdist"
+                    tabindex={0}
+                  >
+                    {dist(t?.distanceKm ?? 0, sport)}
+                  </span>{' '}
+                  ·{' '}
+                  <span data-gloss="legcount" tabindex={0}>
+                    {t?.count ?? 0}
+                  </span>
+                </span>
               </span>
             )
           })}
           {payload.strengthTotal.count > 0 && (
             <span class="tri-leg">
               <Icon sport="strength" cls="tri-ico tri-leg-ico" />
-              strength · {dur(payload.strengthTotal.movingTimeS)} · {payload.strengthTotal.count}
+              <span class="tri-leg-body">
+                strength ·{' '}
+                <span data-gloss="legtime" tabindex={0}>
+                  {dur(payload.strengthTotal.movingTimeS)}
+                </span>{' '}
+                ·{' '}
+                <span data-gloss="legcount" tabindex={0}>
+                  {payload.strengthTotal.count}
+                </span>
+              </span>
             </span>
           )}
         </div>

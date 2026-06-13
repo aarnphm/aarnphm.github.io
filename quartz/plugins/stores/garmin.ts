@@ -70,7 +70,8 @@ export interface GarminVo2Day {
   cycling: number | null
 }
 
-export interface GarminWeightDay {
+export interface GarminWeightSample {
+  ts: number
   date: string
   weightKg: number | null
   bmi: number | null
@@ -86,7 +87,7 @@ export interface GarminCache {
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
   vo2max?: Record<string, GarminVo2Day>
-  weight?: Record<string, GarminWeightDay>
+  weight?: GarminWeightSample[]
   weightGoalKg?: number | null
 }
 

@@ -20,12 +20,14 @@ import {
   buildRecovery as buildRecoveryNode,
   clock,
   dist,
+  distCombined,
   dur,
   gradeAt,
   KM_TO_MI,
   rate,
   routeStreamFlags,
   scrubDist,
+  setDistanceUnit,
   shortDate,
   statRow as statRowNode,
   type DayCardExtras,
@@ -1071,6 +1073,13 @@ const setup = (root: HTMLElement): (() => void) | null => {
     setExpanded(true)
   }
 
+  const onUnit = () => {
+    if (!active) return
+    scroller.replaceChildren(buildCard(active))
+    if (locked) setExpanded(true)
+    updateOverflow()
+  }
+
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
   barsEl.addEventListener('click', onBarsClick)
@@ -1080,6 +1089,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
   window.addEventListener('tri:focus-day', onFocusDay)
+  window.addEventListener('tri:unit', onUnit)
 
   return () => {
     window.clearTimeout(hideTimer)
@@ -1094,6 +1104,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
     window.removeEventListener('pointerdown', armAudio)
     window.removeEventListener('keydown', armAudio)
     window.removeEventListener('tri:focus-day', onFocusDay)
+    window.removeEventListener('tri:unit', onUnit)
     void audio?.close()
   }
 }
@@ -1623,7 +1634,9 @@ const buildCtlSport = (data: Analytics): HTMLElement => {
       }),
     )
   }
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
   block.appendChild(s)
+  block.appendChild(el('div', 'tri-chart-readout'))
   const cap = el('div', 'tri-elev-cap')
   for (const sp of ['swim', 'bike', 'run'] as Sport[]) {
     const days = bySport(data.thresholds, sp)?.staleDays ?? 0
@@ -1672,7 +1685,9 @@ const buildWeekly = (data: Analytics): HTMLElement => {
       }),
     )
   })
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
   block.appendChild(s)
+  block.appendChild(el('div', 'tri-chart-readout'))
   const active = wk.filter(w => w.load > 0).length
   const cap = el('div', 'tri-elev-cap')
   cap.append(
@@ -1904,8 +1919,14 @@ const buildBody = (data: Analytics): HTMLElement => {
     const lo = min - range * 0.18
     const hi = max + range * 0.18
     const n = pts.length
-    const xPct = (i: number): number => (n === 1 ? 50 : (i / (n - 1)) * 100)
+    const t0 = pts[0].ts
+    const t1 = pts[n - 1].ts
+    const xPct = (ts: number): number => (t1 > t0 ? ((ts - t0) / (t1 - t0)) * 100 : 50)
     const yPct = (kg: number): number => (1 - (kg - lo) / (hi - lo)) * 100
+    const clk = (ts: number): string => {
+      const dt = new Date(ts)
+      return `${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}`
+    }
     const chart = el('div', 'tri-bodywt-chart')
     const yax = el('div', 'tri-bodywt-yax')
     yax.append(el('span', '', `${hi.toFixed(1)}`), el('span', '', `${lo.toFixed(1)}`))
@@ -1917,16 +1938,6 @@ const buildBody = (data: Analytics): HTMLElement => {
     })
     for (const gy of [0, 50, 100])
       s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-bodywt-grid' }))
-    for (let i = 0; i < n; i++)
-      s.appendChild(
-        svg('line', {
-          x1: xPct(i),
-          y1: 0,
-          x2: xPct(i),
-          y2: 100,
-          class: 'tri-bodywt-grid tri-bodywt-grid--v',
-        }),
-      )
     if (b.goalKg != null)
       s.appendChild(
         svg('line', {
@@ -1938,14 +1949,14 @@ const buildBody = (data: Analytics): HTMLElement => {
         }),
       )
     s.appendChild(
-      svg('path', { d: polyD(pts.map((p, i) => [xPct(i), yPct(p.kg)])), class: 'tri-bodywt-line' }),
+      svg('path', { d: polyD(pts.map(p => [xPct(p.ts), yPct(p.kg)])), class: 'tri-bodywt-line' }),
     )
     plot.appendChild(s)
     pts.forEach((p, i) => {
       const m = el('span', `tri-bodywt-pt${i === n - 1 ? ' tri-bodywt-pt--last' : ''}`)
-      m.style.left = `${xPct(i).toFixed(2)}%`
+      m.style.left = `${xPct(p.ts).toFixed(2)}%`
       m.style.top = `${yPct(p.kg).toFixed(2)}%`
-      m.title = `${p.date} · ${p.kg.toFixed(1)} kg`
+      m.title = `${shortDate(p.date)} ${clk(p.ts)} · ${p.kg.toFixed(1)} kg`
       plot.appendChild(m)
     })
     chart.append(yax, plot)
@@ -2033,7 +2044,9 @@ const buildEffort = (data: Analytics): HTMLElement => {
       svg('rect', { x: i + 0.12, y: bot - h, width: 0.76, height: h, class: 'tri-seg--effort' }),
     )
   })
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
   block.appendChild(s)
+  block.appendChild(el('div', 'tri-chart-readout'))
   const last = all[all.length - 1]
   const prev = all.length >= 2 ? all[all.length - 2] : null
   const cap = el('div', 'tri-elev-cap')
@@ -2117,7 +2130,9 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
     for (const seg of segRuns(rec.series, d => (d.rhrZ == null ? null : -d.rhrZ), x, yZ))
       s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-rhr' }))
     s.appendChild(svg('line', { x1: ANA_W, y1: 0, x2: ANA_W, y2: ANA_H, class: 'tri-pmc-now' }))
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
     block.appendChild(s)
+    block.appendChild(el('div', 'tri-chart-readout'))
   }
   const t = rec.thresholds
   const sevCls = (cond: boolean | null, alert: boolean | null): string =>
@@ -2245,7 +2260,9 @@ const buildSleep = (data: Analytics): HTMLElement => {
     ys,
   ))
     s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-score' }))
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
   block.appendChild(s)
+  block.appendChild(el('div', 'tri-chart-readout'))
   const debtCls =
     rec.sleepDebtS >= rec.thresholds.sleepDebtAlertS
       ? 'tri-flag--alert'
@@ -2344,7 +2361,9 @@ const buildVo2max = (data: Analytics): HTMLElement => {
         class: 'tri-elev-line tri-line-bike',
       }),
     )
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
     block.appendChild(s)
+    block.appendChild(el('div', 'tri-chart-readout'))
   }
   const cap = el('div', 'tri-elev-cap')
   cap.append(
@@ -2393,16 +2412,14 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   )
   ab.axes.forEach((a, i) => {
     const [px, py] = pt(i, a.score ?? 0)
-    const dot = svg('circle', {
-      cx: px,
-      cy: py,
-      r: 1.4,
-      class: a.score == null ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot',
-    })
-    const tip = svg('title', {})
-    tip.textContent = `${a.label} · ${a.rawValue != null ? `${a.rawValue} ${a.rawUnit}` : 'no data'}`
-    dot.appendChild(tip)
-    s.appendChild(dot)
+    s.appendChild(
+      svg('circle', {
+        cx: px,
+        cy: py,
+        r: 1.4,
+        class: a.score == null ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot',
+      }),
+    )
     const th = angle(i)
     const label = svg('text', {
       x: cx + (R + 8) * Math.cos(th),
@@ -2414,11 +2431,6 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     s.appendChild(label)
   })
   block.appendChild(s)
-  const cap = el('div', 'tri-elev-cap')
-  for (const a of ab.axes)
-    cap.appendChild(el('span', 'tri-ana-k', `${a.label} ${a.score != null ? a.score : '—'}`))
-  if (ab.area != null) cap.appendChild(el('span', 'tri-ana-k', `overall ${ab.area}`))
-  block.appendChild(cap)
   return block
 }
 
@@ -2444,6 +2456,9 @@ const buildCardio = (data: Analytics): HTMLElement => {
   }
   for (const m of c.metrics) {
     const row = el('div', 'tri-engine-row')
+    row.dataset.metric = m.key
+    row.dataset.label = m.label
+    row.dataset.unit = m.unit
     row.appendChild(markGloss(el('span', 'tri-engine-row-k', m.label), glossOf[m.key] ?? 'ef'))
     const ys = seriesOf(m.key)
     if (ys.length > 1) {
@@ -2474,7 +2489,9 @@ const buildCardio = (data: Analytics): HTMLElement => {
           class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : 'tri-line-run'}`,
         }),
       )
+      s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 24, class: 'tri-ana-cursor' }))
       row.appendChild(s)
+      row.appendChild(el('div', 'tri-chart-readout'))
     } else row.appendChild(el('span', 'tri-engine-spark'))
     const val = el(
       'span',
@@ -2512,27 +2529,176 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   actions: buildActions,
 }
 
-const wireScrub = (panel: HTMLElement, daily: DailyPoint[]): (() => void) => {
-  const block = panel.querySelector<HTMLElement>('.tri-ana-pmc')
-  const svgEl = block?.querySelector<SVGElement>('.tri-pmc-svg')
-  const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
-  const readout = block?.querySelector<HTMLElement>('.tri-chart-readout')
-  if (!block || !svgEl || !cursor || !readout || daily.length < 2) return () => {}
+const scrubBind = (
+  hover: HTMLElement,
+  svgEl: SVGElement,
+  cursor: SVGElement,
+  readout: HTMLElement,
+  count: number,
+  vbW: number,
+  textOf: (i: number) => string,
+): (() => void) => {
+  if (count < 2) return () => {}
   const onMove = (event: MouseEvent) => {
     const r = svgEl.getBoundingClientRect()
     const frac = clampN((event.clientX - r.left) / r.width, 0, 1)
-    const d = daily[Math.round(frac * (daily.length - 1))]
-    cursor.setAttribute('x1', `${(frac * ANA_W).toFixed(2)}`)
-    cursor.setAttribute('x2', `${(frac * ANA_W).toFixed(2)}`)
-    readout.textContent = `${d.date} · CTL ${Math.round(d.ctl)} ATL ${Math.round(d.atl)} TSB ${signed(Math.round(d.tsb))}`
-    block.classList.add('tri-chart--hover')
+    const cx = (frac * vbW).toFixed(2)
+    cursor.setAttribute('x1', cx)
+    cursor.setAttribute('x2', cx)
+    readout.textContent = textOf(Math.round(frac * (count - 1)))
+    hover.classList.add('tri-chart--hover')
   }
-  const onLeave = () => block.classList.remove('tri-chart--hover')
+  const onLeave = () => hover.classList.remove('tri-chart--hover')
   svgEl.addEventListener('mousemove', onMove)
   svgEl.addEventListener('mouseleave', onLeave)
   return () => {
     svgEl.removeEventListener('mousemove', onMove)
     svgEl.removeEventListener('mouseleave', onLeave)
+  }
+}
+
+const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
+  const cleanups: (() => void)[] = []
+  const bind = (
+    blockSel: string,
+    svgSel: string,
+    count: number,
+    vbW: number,
+    textOf: (i: number) => string,
+  ) => {
+    const block = panel.querySelector<HTMLElement>(blockSel)
+    const svgEl = block?.querySelector<SVGElement>(svgSel)
+    const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+    const readout = block?.querySelector<HTMLElement>('.tri-chart-readout')
+    if (block && svgEl && cursor && readout)
+      cleanups.push(scrubBind(block, svgEl, cursor, readout, count, vbW, textOf))
+  }
+
+  const daily = data.daily
+  bind('.tri-ana-pmc', '.tri-pmc-svg', daily.length, ANA_W, i => {
+    const d = daily[i]
+    return `${d.date} · CTL ${Math.round(d.ctl)} ATL ${Math.round(d.atl)} TSB ${signed(Math.round(d.tsb))}`
+  })
+
+  const rec = data.recovery.series
+  bind('.tri-ana-recovery', '.tri-rec-svg', rec.length, ANA_W, i => {
+    const d = rec[i]
+    const z = d.hrvZ != null ? ` ${signed(d.hrvZ)}σ` : ''
+    return `${d.date} · HRV ${d.hrv ?? '—'}${z} · RHR ${d.rhr ?? '—'} · rdy ${d.readiness ?? '—'}`
+  })
+
+  const sleepView = data.recovery.series.slice(-28)
+  bind('.tri-ana-sleep', '.tri-ana-weekly-svg', sleepView.length, sleepView.length, i => {
+    const d = sleepView[i]
+    const debt = d.sleepDebtS != null ? `${(d.sleepDebtS / 3600).toFixed(1)}h` : '—'
+    return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'} · score ${d.sleepScore ?? '—'} · debt ${debt}`
+  })
+
+  const trend = data.engine.vo2max.trend
+  bind('.tri-engine-vo2', '.tri-engine-vo2-spark', trend.length, ANA_W, i => {
+    const p = trend[i]
+    return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min`
+  })
+
+  bind('.tri-ana-ctlsport', '.tri-ana-svg', daily.length, ANA_W, i => {
+    const d = daily[i]
+    return `${d.date} · swim ${Math.round(d.swimCtl)} · bike ${Math.round(d.bikeCtl)} · run ${Math.round(d.runCtl)}`
+  })
+
+  const wk = data.weekly
+  bind('.tri-ana-weekly', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
+    const w = wk[i]
+    return `${w.weekStart} · load ${Math.round(w.load)}`
+  })
+  bind('.tri-ana-effort', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
+    const w = wk[i]
+    return `${w.weekStart} · effort ${Math.round(w.effort)}`
+  })
+
+  const cardioBlock = panel.querySelector<HTMLElement>('.tri-engine-cardio')
+  if (cardioBlock) {
+    const ser: Record<string, { date: string; v: number }[]> = {
+      rhr: data.engine.cardio.rhrSeries.map(p => ({ date: p.date, v: p.rhr })),
+      hrv: data.engine.cardio.hrvSeries.map(p => ({ date: p.date, v: p.hrv })),
+      ef: data.engine.cardio.efSeries.map(p => ({ date: p.date, v: p.ef })),
+    }
+    for (const row of Array.from(cardioBlock.querySelectorAll<HTMLElement>('.tri-engine-row'))) {
+      const points = ser[row.dataset.metric ?? '']
+      const svgEl = row.querySelector<SVGElement>('.tri-engine-spark')
+      const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+      const readout = row.querySelector<HTMLElement>('.tri-chart-readout')
+      if (svgEl && cursor && readout && points && points.length > 1) {
+        const label = row.dataset.label ?? ''
+        const unit = row.dataset.unit ?? ''
+        cleanups.push(
+          scrubBind(row, svgEl, cursor, readout, points.length, 100, i => {
+            const p = points[i]
+            return `${p.date} · ${label} ${p.v}${unit ? ` ${unit}` : ''}`
+          }),
+        )
+      }
+    }
+  }
+
+  const radarSvg = panel.querySelector<SVGElement>('.tri-engine-radar .tri-radar-svg')
+  if (radarSvg) {
+    document.body.querySelector('.tri-radar-tip')?.remove()
+    const radarTip = el('div', 'tri-gloss tri-radar-tip')
+    radarTip.setAttribute('role', 'tooltip')
+    document.body.appendChild(radarTip)
+    const axes = data.engine.abilities.axes
+    const vbPt = (i: number, score: number): [number, number] => {
+      const th = ((-90 + (360 / axes.length) * i) * Math.PI) / 180
+      const r = (36 * score) / 100
+      return [50 + r * Math.cos(th), 50 + r * Math.sin(th)]
+    }
+    const onMove = (event: MouseEvent) => {
+      const rect = radarSvg.getBoundingClientRect()
+      let best = -1
+      let bestD = Infinity
+      axes.forEach((a, i) => {
+        const [vx, vy] = vbPt(i, a.score ?? 0)
+        const d = Math.hypot(
+          rect.left + (vx / 100) * rect.width - event.clientX,
+          rect.top + (vy / 100) * rect.height - event.clientY,
+        )
+        if (d < bestD) {
+          bestD = d
+          best = i
+        }
+      })
+      const a = best >= 0 ? axes[best] : null
+      if (!a) return
+      const raw = a.rawValue != null ? `${a.rawValue} ${a.rawUnit}` : 'no data'
+      radarTip.replaceChildren(
+        el('span', 'tri-gloss-h', a.label),
+        el('span', 'tri-gloss-def', `${raw} · ${a.score != null ? `${a.score}/100` : '—'}`),
+      )
+      radarTip.classList.add('tri-gloss--on')
+      const pr = radarTip.getBoundingClientRect()
+      const left =
+        event.clientX + 14 + pr.width > window.innerWidth - 8
+          ? event.clientX - 14 - pr.width
+          : event.clientX + 14
+      const top =
+        event.clientY + 14 + pr.height > window.innerHeight - 8
+          ? event.clientY - 14 - pr.height
+          : event.clientY + 14
+      radarTip.style.left = `${Math.max(8, left).toFixed(0)}px`
+      radarTip.style.top = `${Math.max(8, top).toFixed(0)}px`
+    }
+    const onLeave = () => radarTip.classList.remove('tri-gloss--on')
+    radarSvg.addEventListener('mousemove', onMove)
+    radarSvg.addEventListener('mouseleave', onLeave)
+    cleanups.push(() => {
+      radarSvg.removeEventListener('mousemove', onMove)
+      radarSvg.removeEventListener('mouseleave', onLeave)
+      radarTip.remove()
+    })
+  }
+
+  return () => {
+    for (const c of cleanups) c()
   }
 }
 
@@ -2697,7 +2863,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const build = ANALYTICS_BUILDERS[block.dataset.chart ?? '']
       if (build) block.replaceChildren(build(d))
     }
-    scrubCleanup = wireScrub(panel, d.daily)
+    scrubCleanup = wireScrub(panel, d)
     document.dispatchEvent(
       new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
     )
@@ -3901,10 +4067,12 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
     showTimer = window.setTimeout(() => a.show(), 200)
   }
 
+  const dists = root.querySelectorAll<HTMLElement>('.tri-dist[data-km]')
   let mi = false
   const onClick = () => {
     mi = !mi
     unit.textContent = mi ? 'mi' : 'km'
+    setDistanceUnit(mi)
     for (const c of cells) {
       if (!mi) {
         c.textContent = c.dataset.km ?? ''
@@ -3913,12 +4081,19 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
         c.textContent = v < 10 ? v.toFixed(2) : v.toFixed(1)
       }
     }
+    for (const d of dists) {
+      const km = Number(d.dataset.km)
+      const kind = d.dataset.kind ?? 'combined'
+      d.textContent = kind === 'combined' ? distCombined(km) : dist(km, kind as ActivityKind)
+    }
+    window.dispatchEvent(new CustomEvent('tri:unit'))
   }
   unit.addEventListener('click', onClick)
   return () => {
     window.clearTimeout(showTimer)
     unit.removeEventListener('click', onClick)
     ann?.remove()
+    setDistanceUnit(false)
   }
 }
 
@@ -3941,8 +4116,24 @@ const renderGlossDef = (def: string): HTMLElement => {
   return span
 }
 
+const LEG_GLOSS: Record<string, { term: string; def: string }> = {
+  legdist: {
+    term: 'total distance',
+    def: 'Distance covered in this discipline over the season window. Swims read in metres; ride and run follow the km/mi toggle.',
+  },
+  legcount: {
+    term: 'sessions',
+    def: 'Number of workouts logged in this discipline over the window.',
+  },
+  legtime: { term: 'total time', def: 'Total moving time across these sessions.' },
+  herodist: {
+    term: 'season total',
+    def: 'Combined swim, bike, and run distance over the window. Follows the km/mi toggle.',
+  },
+}
+
 const setupGloss = (root: HTMLElement): (() => void) | null => {
-  const zones = ['.tri-analytics', '.tri-ana-headline']
+  const zones = ['.tri-analytics', '.tri-ana-headline', '.tri-foot', '.tri-head']
     .map(s => root.querySelector<HTMLElement>(s))
     .filter((z): z is HTMLElement => z != null)
   if (zones.length === 0) return null
@@ -3961,7 +4152,8 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
     pop.style.top = `${Math.max(8, top)}px`
   }
   const show = (term: HTMLElement) => {
-    const g = GLOSS[term.dataset.gloss ?? '']
+    const key = term.dataset.gloss ?? ''
+    const g = GLOSS[key] ?? LEG_GLOSS[key]
     if (!g) return
     current = term
     pop.replaceChildren(el('span', 'tri-gloss-h', g.term), renderGlossDef(g.def))
