@@ -220,6 +220,64 @@ test('garmin vo2max outranks every other estimate', () => {
   assert.ok(a.engine.vo2max.fitnessAge != null && a.engine.vo2max.fitnessAge < 25)
 })
 
+test('garmin scale drives body composition, weight merge, and goal convergence', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    weight: {
+      [iso(25)]: {
+        date: iso(25),
+        weightKg: 87.2,
+        bmi: 26.9,
+        bodyFatPct: 21.5,
+        bodyWaterPct: 55.3,
+        muscleMassKg: 35.4,
+        boneMassKg: 3.7,
+      },
+      [iso(28)]: {
+        date: iso(28),
+        weightKg: 86.8,
+        bmi: 26.7,
+        bodyFatPct: 21.1,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+    },
+    weightGoalKg: 80,
+  }
+  const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
+  const b = a.body
+  assert.equal(b.latestKg, 86.8)
+  assert.equal(b.goalKg, 80)
+  assert.equal(b.goalLbs != null && Math.round(b.goalLbs), 176)
+  assert.equal(b.goalDeltaKg, 6.8)
+  assert.ok(b.trendKgPerWeek != null && b.trendKgPerWeek < 0)
+  assert.ok(b.goalEtaWeeks != null && b.goalEtaWeeks > 0 && b.goalEtaWeeks <= 104)
+  assert.equal(b.bodyFatPct, 21.1)
+  assert.equal(b.bodyWaterPct, 55.3)
+  assert.equal(b.muscleMassKg, 35.4)
+  assert.equal(b.boneMassKg, 3.7)
+  assert.equal(b.bmi, 26.7)
+  assert.equal(b.series.length, 3)
+  assert.equal(b.composition.length, 2)
+  const day = a.daily.find(d => d.date === iso(26))
+  assert.equal(day?.weightKg, 87.2)
+  const feed = buildDataFeed(cache, a, { oura, garmin, weights, zones: cache.zones })
+  const rows = feed
+    .trimEnd()
+    .split('\n')
+    .map(l => JSON.parse(l))
+  assert.equal(rows[0].athlete.weightGoalKg, 80)
+  const scaleDay = rows.find(r => r.kind === 'day' && r.date === iso(25))
+  assert.equal(scaleDay.bmi, 26.9)
+  assert.equal(scaleDay.bodyFatPct, 21.5)
+  const plainDay = rows.find(r => r.kind === 'day' && r.date === iso(20))
+  assert.equal(plainDay.bmi, null)
+  assert.equal(plainDay.muscleMassKg, null)
+})
+
 test('apple vo2max wins the estimate priority when present', () => {
   const { cache, oura, weights } = fixtures()
   const apple: AppleCache = {

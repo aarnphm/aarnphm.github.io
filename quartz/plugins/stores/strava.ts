@@ -232,6 +232,7 @@ export interface StravaPayload {
   totalTimeS: number
   totalCount: number
   totals: StravaSportTotals[]
+  strengthTotal: { count: number; movingTimeS: number }
   days: StravaDay[]
   details: Record<string, StravaActivityDetail>
   health: Record<string, ActivityHealth>
@@ -660,6 +661,7 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     totalTimeS: 0,
     totalCount: 0,
     totals: emptyTotals(),
+    strengthTotal: { count: 0, movingTimeS: 0 },
     days: [],
     details: {},
     health: {},
@@ -696,6 +698,7 @@ export function buildPayload(
   }
 
   const totals = emptyTotals()
+  const strengthTotal = { count: 0, movingTimeS: 0 }
   const byDate = new Map<string, StravaDayItem[]>()
   for (const { a, sport } of activities) {
     const t = totals.find(x => x.sport === sport)
@@ -704,6 +707,10 @@ export function buildPayload(
       t.distanceKm += a.distance / 1000
       t.movingTimeS += a.movingTime
       t.elevationM += a.totalElevationGain
+    }
+    if (sport === 'strength') {
+      strengthTotal.count += 1
+      strengthTotal.movingTimeS += a.movingTime
     }
 
     const date = a.startDateLocal.slice(0, 10)
@@ -821,6 +828,7 @@ export function buildPayload(
     totalTimeS: activities.reduce((s, { a }) => s + a.movingTime, 0),
     totalCount: activities.length,
     totals: finalized,
+    strengthTotal,
     days,
     details,
     health,

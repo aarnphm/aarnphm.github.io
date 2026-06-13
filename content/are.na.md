@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-12 09:00:41 GMT-04:00
+modified: 2026-06-12 19:30:36 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -8674,6 +8674,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=DpGU8NARX-s -- The Trick Pseudoscience Always Uses
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [science, communications]
+    - pinned: true
 - https://www.youtube.com/watch?v=IroPQ150F6c -- A Practical Guide to Applying Data Oriented Design (DoD), Andrew Kelley [**]
   - [meta]:
     - date: 06/09/2026

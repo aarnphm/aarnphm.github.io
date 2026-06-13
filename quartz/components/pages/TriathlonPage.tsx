@@ -3,7 +3,13 @@ import type {
   QuartzComponentConstructor,
   QuartzComponentProps,
 } from '../../types/component'
-import { emptyPayload, SPORT_ICON, SPORT_ORDER, type Sport } from '../../plugins/stores/strava'
+import {
+  emptyPayload,
+  SPORT_ICON,
+  SPORT_ORDER,
+  type ActivityKind,
+  type Sport,
+} from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
 // @ts-ignore
@@ -116,7 +122,13 @@ const dist = (km: number, sport: Sport): string => {
   return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
 }
 
-const Icon = ({ sport, cls }: { sport: Sport; cls: string }) => (
+const dur = (s: number): string => {
+  const h = Math.floor(s / 3600)
+  const m = Math.round((s % 3600) / 60)
+  return h > 0 ? `${h}h${m.toString().padStart(2, '0')}'` : `${m}'`
+}
+
+const Icon = ({ sport, cls }: { sport: ActivityKind; cls: string }) => (
   <svg class={cls} viewBox="0 0 24 24" fill="none" aria-hidden="true">
     {SPORT_ICON[sport].map(d => (
       <path d={d} />
@@ -219,6 +231,12 @@ export default (() => {
               </span>
             )
           })}
+          {payload.strengthTotal.count > 0 && (
+            <span class="tri-leg">
+              <Icon sport="strength" cls="tri-ico tri-leg-ico" />
+              strength · {dur(payload.strengthTotal.movingTimeS)} · {payload.strengthTotal.count}
+            </span>
+          )}
         </div>
 
         <div class="tri-note">
