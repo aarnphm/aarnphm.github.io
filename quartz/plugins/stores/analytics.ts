@@ -1,4 +1,4 @@
-import type { GarminCache } from './garmin'
+import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
 import { AppleCache } from './apple'
 import { OuraCache } from './oura'
@@ -37,7 +37,7 @@ export interface BodyBlock {
   bodyWaterPct: number | null
   muscleMassKg: number | null
   boneMassKg: number | null
-  series: { date: string; kg: number }[]
+  series: { date: string; ts: number; kg: number }[]
   composition: BodyCompositionDay[]
 }
 
@@ -2255,11 +2255,11 @@ export function buildAnalytics(
   const daily = buildDaily(acts, loadById, windowFrom, windowTo)
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
-  const garminWeight = inputs.garmin?.weight ?? {}
+  const garminWeightRaw = inputs.garmin?.weight
+  const garminSamples = Array.isArray(garminWeightRaw) ? garminWeightRaw : []
   const weightByDate = new Map<string, number>()
   for (const w of inputs.weights ?? []) if (w.weightKg != null) weightByDate.set(w.date, w.weightKg)
-  for (const g of Object.values(garminWeight))
-    if (g.weightKg != null) weightByDate.set(g.date, g.weightKg)
+  for (const s of garminSamples) if (s.weightKg != null) weightByDate.set(s.date, s.weightKg)
   let carryKg: number | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
@@ -2284,21 +2284,27 @@ export function buildAnalytics(
   }
   const weighedDaily = daily.filter(d => d.weightKg != null)
   const latestKg = weighedDaily.length ? weighedDaily[weighedDaily.length - 1].weightKg : null
-  const weightSeries = [...weightByDate.entries()]
+  const dailySeries = [...weightByDate.entries()]
     .map(([date, kg]) => ({ date, kg }))
     .sort((p, q) => p.date.localeCompare(q.date))
-  const trendKgPerWeek = weightTrendPerWeek(weightSeries)
-  const composition = Object.values(garminWeight)
-    .map(g => ({
-      date: g.date,
-      kg: g.weightKg,
-      bmi: g.bmi,
-      bodyFatPct: g.bodyFatPct,
-      bodyWaterPct: g.bodyWaterPct,
-      muscleMassKg: g.muscleMassKg,
-      boneMassKg: g.boneMassKg,
-    }))
-    .sort((p, q) => p.date.localeCompare(q.date))
+  const trendKgPerWeek = weightTrendPerWeek(dailySeries)
+  const garminDates = new Set(garminSamples.map(s => s.date))
+  const trackingPts = (inputs.weights ?? [])
+    .filter(w => w.weightKg != null && !garminDates.has(w.date))
+    .map(w => ({ date: w.date, ts: dayMs(w.date) + 12 * 3_600_000, kg: w.weightKg as number }))
+  const garminPts = garminSamples
+    .filter(s => s.weightKg != null)
+    .map(s => ({ date: s.date, ts: s.ts, kg: s.weightKg as number }))
+  const weightSeries = [...trackingPts, ...garminPts].sort((p, q) => p.ts - q.ts)
+  const composition = garminSamples.map(s => ({
+    date: s.date,
+    kg: s.weightKg,
+    bmi: s.bmi,
+    bodyFatPct: s.bodyFatPct,
+    bodyWaterPct: s.bodyWaterPct,
+    muscleMassKg: s.muscleMassKg,
+    boneMassKg: s.boneMassKg,
+  }))
   const lastComp = (
     key: 'bmi' | 'bodyFatPct' | 'bodyWaterPct' | 'muscleMassKg' | 'boneMassKg',
   ): number | null => {
@@ -2629,12 +2635,15 @@ export function buildDataFeed(
   for (const w of inputs.weights ?? [])
     if (w.windKph != null || w.windDir != null) windByDate.set(w.date, w)
   const weatherDays = inputs.weather?.days ?? {}
-  const garminWeightDays = inputs.garmin?.weight ?? {}
+  const garminWeightByDay = new Map<string, GarminWeightSample>()
+  const feedWeightRaw = inputs.garmin?.weight
+  for (const s of Array.isArray(feedWeightRaw) ? feedWeightRaw : [])
+    garminWeightByDay.set(s.date, s)
 
   const dayLines = analytics.daily.map(d => {
     const o = ouraDays[d.date]
     const next = ouraDays[nextIso(d.date)]
-    const gw = garminWeightDays[d.date]
+    const gw = garminWeightByDay.get(d.date)
     const agg = byDay.get(d.date)
     const wind = windByDate.get(d.date)
     const weather = weatherDays[d.date]

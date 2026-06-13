@@ -4,7 +4,7 @@ import {
   type GarminActivity,
   type GarminStreams,
   type GarminVo2Day,
-  type GarminWeightDay,
+  type GarminWeightSample,
   hasGarminFueling,
   hasGarminMetrics,
   normalizeGarminSport,
@@ -357,25 +357,26 @@ const isoDayOf = (record: UnknownRecord, keys: string[]): string | null => {
   return null
 }
 
-export function garminConnectWeightDays(raw: unknown): GarminWeightDay[] {
-  if (!isRecord(raw) && !Array.isArray(raw)) return []
-  const source = Array.isArray(raw)
-    ? raw
-    : Array.isArray((raw as UnknownRecord).dailyWeightSummaries)
-      ? ((raw as UnknownRecord).dailyWeightSummaries as unknown[])
-      : Array.isArray((raw as UnknownRecord).dateWeightList)
-        ? ((raw as UnknownRecord).dateWeightList as unknown[])
-        : []
-  const byDate = new Map<string, GarminWeightDay>()
-  for (const item of source) {
-    if (!isRecord(item)) continue
-    const m = isRecord(item.latestWeight) ? item.latestWeight : item
+const tsOf = (record: UnknownRecord): number | null => {
+  for (const key of ['timestampGMT', 'weighInTimestampGMT', 'date', 'samplePk']) {
+    if (key === 'samplePk') break
+    const v = finite(record[key])
+    if (v != null && v > 1_000_000_000_000) return v
+  }
+  return null
+}
+
+export function garminConnectWeightSamples(raw: unknown): GarminWeightSample[] {
+  const out: GarminWeightSample[] = []
+  const push = (m: UnknownRecord, dayHint: string | null): void => {
+    const ts = tsOf(m)
     const date =
-      isoDayOf(item, ['summaryDate', 'calendarDate']) ??
+      dayHint ??
       isoDayOf(m, ['calendarDate', 'summaryDate', 'date', 'weightDate']) ??
-      isoDayOf(item, ['date'])
-    if (!date) continue
-    const day: GarminWeightDay = {
+      (ts != null ? new Date(ts).toISOString().slice(0, 10) : null)
+    if (!date) return
+    const sample: GarminWeightSample = {
+      ts: ts ?? Date.parse(`${date}T12:00:00.000Z`),
       date,
       weightKg: kgOf(m.weight),
       bmi: pctOf(m.bmi),
@@ -385,17 +386,34 @@ export function garminConnectWeightDays(raw: unknown): GarminWeightDay[] {
       boneMassKg: kgOf(m.boneMass),
     }
     if (
-      day.weightKg == null &&
-      day.bmi == null &&
-      day.bodyFatPct == null &&
-      day.bodyWaterPct == null &&
-      day.muscleMassKg == null &&
-      day.boneMassKg == null
+      sample.weightKg == null &&
+      sample.bmi == null &&
+      sample.bodyFatPct == null &&
+      sample.bodyWaterPct == null &&
+      sample.muscleMassKg == null &&
+      sample.boneMassKg == null
     )
-      continue
-    byDate.set(date, day)
+      return
+    out.push(sample)
   }
-  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date))
+  const summaries =
+    isRecord(raw) && Array.isArray(raw.dailyWeightSummaries) ? raw.dailyWeightSummaries : []
+  for (const sum of summaries) {
+    if (!isRecord(sum)) continue
+    const date = isoDayOf(sum, ['summaryDate', 'calendarDate'])
+    const metrics = Array.isArray(sum.allWeightMetrics) ? sum.allWeightMetrics : null
+    if (metrics && metrics.length) {
+      for (const m of metrics)
+        if (isRecord(m)) push(m, date ?? isoDayOf(m, ['calendarDate', 'date']))
+    } else if (isRecord(sum.latestWeight)) {
+      push(sum.latestWeight, date)
+    }
+  }
+  if (!out.length) {
+    const list = isRecord(raw) && Array.isArray(raw.dateWeightList) ? raw.dateWeightList : raw
+    if (Array.isArray(list)) for (const m of list) if (isRecord(m)) push(m, null)
+  }
+  return out.sort((a, b) => a.ts - b.ts)
 }
 
 export function garminConnectWeightGoal(raw: unknown): number | null {

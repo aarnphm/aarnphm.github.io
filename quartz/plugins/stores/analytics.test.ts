@@ -220,13 +220,16 @@ test('garmin vo2max outranks every other estimate', () => {
   assert.ok(a.engine.vo2max.fitnessAge != null && a.engine.vo2max.fitnessAge < 25)
 })
 
-test('garmin scale drives body composition, weight merge, and goal convergence', () => {
+test('garmin scale drives body composition, multi-weigh-in series, weight merge, and goal', () => {
   const { cache, oura, weights } = fixtures()
+  const at = (offset: number, h: number): number =>
+    Date.parse(`${iso(offset)}T${String(h).padStart(2, '0')}:00:00.000Z`)
   const garmin: GarminCache = {
     lastSync: cache.lastSync,
     activities: {},
-    weight: {
-      [iso(25)]: {
+    weight: [
+      {
+        ts: at(25, 7),
         date: iso(25),
         weightKg: 87.2,
         bmi: 26.9,
@@ -235,7 +238,18 @@ test('garmin scale drives body composition, weight merge, and goal convergence',
         muscleMassKg: 35.4,
         boneMassKg: 3.7,
       },
-      [iso(28)]: {
+      {
+        ts: at(28, 7),
+        date: iso(28),
+        weightKg: 87,
+        bmi: 26.8,
+        bodyFatPct: 21.3,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+      {
+        ts: at(28, 21),
         date: iso(28),
         weightKg: 86.8,
         bmi: 26.7,
@@ -244,7 +258,7 @@ test('garmin scale drives body composition, weight merge, and goal convergence',
         muscleMassKg: null,
         boneMassKg: null,
       },
-    },
+    ],
     weightGoalKg: 80,
   }
   const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
@@ -260,8 +274,15 @@ test('garmin scale drives body composition, weight merge, and goal convergence',
   assert.equal(b.muscleMassKg, 35.4)
   assert.equal(b.boneMassKg, 3.7)
   assert.equal(b.bmi, 26.7)
-  assert.equal(b.series.length, 3)
-  assert.equal(b.composition.length, 2)
+  assert.equal(b.series.length, 4)
+  const day28 = b.series.filter(p => p.date === iso(28))
+  assert.equal(day28.length, 2)
+  assert.ok(day28[0].ts < day28[1].ts)
+  assert.deepEqual(
+    b.series.map(p => p.kg),
+    [88.5, 87.2, 87, 86.8],
+  )
+  assert.equal(b.composition.length, 3)
   const day = a.daily.find(d => d.date === iso(26))
   assert.equal(day?.weightKg, 87.2)
   const feed = buildDataFeed(cache, a, { oura, garmin, weights, zones: cache.zones })

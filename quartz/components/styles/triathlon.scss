@@ -1401,7 +1401,7 @@
 
 .tri-pmc-now {
   stroke: var(--tri-accent);
-  stroke-width: 0.5;
+  stroke-width: 0.2px;
   opacity: 0.5;
 }
 
@@ -1416,8 +1416,23 @@
   opacity: 0.7;
 }
 
-.tri-ana-pmc {
+.tri-ana-pmc,
+.tri-ana-ctlsport,
+.tri-ana-weekly,
+.tri-ana-effort,
+.tri-ana-recovery,
+.tri-ana-sleep,
+.tri-engine-vo2,
+.tri-engine-row {
   position: relative;
+}
+
+.tri-radar-svg {
+  cursor: crosshair;
+}
+
+.tri-radar-tip .tri-gloss-def {
+  font-variant-numeric: tabular-nums;
 }
 
 .tri-line-swim {
@@ -2014,6 +2029,7 @@
 .tri-rec-flag-label[data-gloss],
 .tri-engine-age[data-gloss],
 .tri-engine-row-k[data-gloss],
+.tri-foot [data-gloss],
 .tri-ana-stat[data-gloss] .tri-ana-stat-k {
   text-decoration-line: underline;
   text-decoration-style: dotted;
@@ -2208,7 +2224,7 @@
 .tri-zone-z {
   position: relative;
   color: var(--gray);
-  cursor: help;
+  cursor: pointer;
 }
 
 .tri-zone-z::after {

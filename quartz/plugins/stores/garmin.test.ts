@@ -288,43 +288,40 @@ test('garminConnectVo2 parses maxmet daily payloads defensively', async () => {
   ])
 })
 
-test('garminConnectWeightDays parses both weight-service shapes with gram conversion', async () => {
-  const { garminConnectWeightDays } = await import('../../util/garmin-connect')
-  const modern = garminConnectWeightDays({
+test('garminConnectWeightSamples flattens multiple weigh-ins per day with timestamps', async () => {
+  const { garminConnectWeightSamples } = await import('../../util/garmin-connect')
+  const morning = Date.parse('2026-06-12T07:30:00Z')
+  const evening = Date.parse('2026-06-12T21:10:00Z')
+  const samples = garminConnectWeightSamples({
     dailyWeightSummaries: [
       {
         summaryDate: '2026-06-12',
-        latestWeight: {
-          weight: 88450,
-          bmi: 27.4,
-          bodyFat: 21.5,
-          bodyWater: 55.3,
-          muscleMass: 35400,
-          boneMass: 3700,
-        },
+        numOfWeightEntries: 2,
+        allWeightMetrics: [
+          { timestampGMT: morning, weight: 91920, bmi: 26, bodyFat: 22 },
+          { timestampGMT: evening, weight: 90800, bmi: 25.7, bodyFat: 21.4 },
+        ],
       },
-      { summaryDate: 'garbage', latestWeight: { weight: 88000 } },
-      { summaryDate: '2026-06-13', latestWeight: {} },
+      { summaryDate: '2026-06-13', latestWeight: { weight: 90500, bodyFat: 21 } },
     ],
   })
-  assert.deepEqual(modern, [
-    {
-      date: '2026-06-12',
-      weightKg: 88.45,
-      bmi: 27.4,
-      bodyFatPct: 21.5,
-      bodyWaterPct: 55.3,
-      muscleMassKg: 35.4,
-      boneMassKg: 3.7,
-    },
-  ])
-  const legacy = garminConnectWeightDays({
+  assert.equal(samples.length, 3)
+  assert.deepEqual(
+    samples.map(s => [s.date, s.ts, s.weightKg]),
+    [
+      ['2026-06-12', morning, 91.92],
+      ['2026-06-12', evening, 90.8],
+      ['2026-06-13', Date.parse('2026-06-13T12:00:00.000Z'), 90.5],
+    ],
+  )
+  assert.equal(samples[0].bodyFatPct, 22)
+  const legacy = garminConnectWeightSamples({
     dateWeightList: [{ calendarDate: '2026-06-10', weight: 89.1, bodyFat: 22 }],
   })
   assert.equal(legacy[0].weightKg, 89.1)
   assert.equal(legacy[0].bodyFatPct, 22)
   assert.equal(legacy[0].boneMassKg, null)
-  assert.deepEqual(garminConnectWeightDays('junk'), [])
+  assert.deepEqual(garminConnectWeightSamples('junk'), [])
 })
 
 test('garminConnectWeightGoal finds the weight-typed goal and ignores other goal kinds', async () => {

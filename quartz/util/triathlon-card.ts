@@ -25,11 +25,25 @@ export const FT_PER_KM = 3280.84
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+let imperial = false
+export const setDistanceUnit = (v: boolean): void => {
+  imperial = v
+}
+export const isImperialUnit = (): boolean => imperial
+
 export const dist = (km: number, sport: ActivityKind): string => {
   if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
-  const mi = km * KM_TO_MI
-  return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
+  if (imperial) {
+    const mi = km * KM_TO_MI
+    return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
+  }
+  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`
 }
+
+export const distCombined = (km: number): string =>
+  imperial
+    ? `${Math.round(km * KM_TO_MI).toLocaleString('en-US')} mi`
+    : `${Math.round(km).toLocaleString('en-US')} km`
 
 export const dur = (s: number): string => {
   const h = Math.floor(s / 3600)
@@ -56,16 +70,20 @@ export const prettyDate = (iso: string): string => {
 }
 
 export const rate = (sport: ActivityKind, km: number, s: number): string => {
-  const mi = km * KM_TO_MI
-  if (sport === 'bike') return `${(mi / (s / 3600)).toFixed(1)} mph`
   if (sport === 'swim') return `${clock(s / (km * 10))} /100m`
-  return `${clock(s / mi)} /mi`
+  if (imperial) {
+    const mi = km * KM_TO_MI
+    return sport === 'bike' ? `${(mi / (s / 3600)).toFixed(1)} mph` : `${clock(s / mi)} /mi`
+  }
+  return sport === 'bike' ? `${(km / (s / 3600)).toFixed(1)} km/h` : `${clock(s / km)} /km`
 }
 
 export const scrubDist = (km: number, sport: ActivityKind): string =>
   sport === 'swim'
     ? `${Math.round(km * 1000).toLocaleString('en-US')} m`
-    : `${(km * KM_TO_MI).toFixed(2)} mi`
+    : imperial
+      ? `${(km * KM_TO_MI).toFixed(2)} mi`
+      : `${km.toFixed(2)} km`
 
 export const gradeAt = (route: StravaActivityDetail['route'], i: number): number => {
   const j0 = Math.max(0, i - 2)

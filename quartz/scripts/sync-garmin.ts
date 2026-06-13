@@ -4,7 +4,7 @@ import type {
   GarminCache,
   GarminStreams,
   GarminVo2Day,
-  GarminWeightDay,
+  GarminWeightSample,
 } from '../plugins/stores/garmin'
 import { browserCookieHeaders } from '../util/browser-cookie'
 import {
@@ -12,7 +12,7 @@ import {
   garminConnectActivity,
   garminConnectStreams,
   garminConnectVo2,
-  garminConnectWeightDays,
+  garminConnectWeightSamples,
   garminConnectWeightGoal,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
@@ -443,7 +443,7 @@ async function main(): Promise<void> {
     console.warn(`[garmin] vo2max fetch failed: ${err instanceof Error ? err.message : err}`)
   }
 
-  const weight: Record<string, GarminWeightDay> = {}
+  let weight: GarminWeightSample[] = []
   let weightGoalKg: number | null = null
   try {
     const raw = await getJson(
@@ -452,8 +452,9 @@ async function main(): Promise<void> {
       '/weight-service/weight/dateRange',
       new URLSearchParams({ startDate: start, endDate: end }),
     )
-    for (const day of garminConnectWeightDays(raw)) weight[day.date] = day
-    console.log(`[garmin] weight days: ${Object.keys(weight).length}`)
+    weight = garminConnectWeightSamples(raw)
+    const days = new Set(weight.map(s => s.date)).size
+    console.log(`[garmin] weight samples: ${weight.length} over ${days} days`)
   } catch (err) {
     console.warn(`[garmin] weight fetch failed: ${err instanceof Error ? err.message : err}`)
   }
