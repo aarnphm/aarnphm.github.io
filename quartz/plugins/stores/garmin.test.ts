@@ -287,3 +287,60 @@ test('garminConnectVo2 parses maxmet daily payloads defensively', async () => {
     { date: '2026-06-10', generic: 54.3, cycling: 50 },
   ])
 })
+
+test('garminConnectWeightDays parses both weight-service shapes with gram conversion', async () => {
+  const { garminConnectWeightDays } = await import('../../util/garmin-connect')
+  const modern = garminConnectWeightDays({
+    dailyWeightSummaries: [
+      {
+        summaryDate: '2026-06-12',
+        latestWeight: {
+          weight: 88450,
+          bmi: 27.4,
+          bodyFat: 21.5,
+          bodyWater: 55.3,
+          muscleMass: 35400,
+          boneMass: 3700,
+        },
+      },
+      { summaryDate: 'garbage', latestWeight: { weight: 88000 } },
+      { summaryDate: '2026-06-13', latestWeight: {} },
+    ],
+  })
+  assert.deepEqual(modern, [
+    {
+      date: '2026-06-12',
+      weightKg: 88.45,
+      bmi: 27.4,
+      bodyFatPct: 21.5,
+      bodyWaterPct: 55.3,
+      muscleMassKg: 35.4,
+      boneMassKg: 3.7,
+    },
+  ])
+  const legacy = garminConnectWeightDays({
+    dateWeightList: [{ calendarDate: '2026-06-10', weight: 89.1, bodyFat: 22 }],
+  })
+  assert.equal(legacy[0].weightKg, 89.1)
+  assert.equal(legacy[0].bodyFatPct, 22)
+  assert.equal(legacy[0].boneMassKg, null)
+  assert.deepEqual(garminConnectWeightDays('junk'), [])
+})
+
+test('garminConnectWeightGoal finds the weight-typed goal and ignores other goal kinds', async () => {
+  const { garminConnectWeightGoal } = await import('../../util/garmin-connect')
+  assert.equal(
+    garminConnectWeightGoal([
+      { goalType: 0, targetValue: 10000 },
+      { userGoalTypePK: 4, goalValue: 80000 },
+    ]),
+    80,
+  )
+  assert.equal(garminConnectWeightGoal([{ goalType: 'WEIGHT', targetValue: 79.5 }]), 79.5)
+  assert.equal(garminConnectWeightGoal([{ goalType: 0, targetValue: 10000 }]), null)
+  assert.equal(garminConnectWeightGoal({ goals: [{ goalType: 4, targetValue: 81200 }] }), 81.2)
+  assert.equal(garminConnectWeightGoal({ goalWeight: 80000 }), 80)
+  assert.equal(garminConnectWeightGoal({ weightGoal: { goalWeight: 79.5 } }), 79.5)
+  assert.equal(garminConnectWeightGoal({ nothing: true }), null)
+  assert.equal(garminConnectWeightGoal(null), null)
+})

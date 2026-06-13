@@ -70,12 +70,24 @@ export interface GarminVo2Day {
   cycling: number | null
 }
 
+export interface GarminWeightDay {
+  date: string
+  weightKg: number | null
+  bmi: number | null
+  bodyFatPct: number | null
+  bodyWaterPct: number | null
+  muscleMassKg: number | null
+  boneMassKg: number | null
+}
+
 export interface GarminCache {
   version?: number
   lastSync: number
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
   vo2max?: Record<string, GarminVo2Day>
+  weight?: Record<string, GarminWeightDay>
+  weightGoalKg?: number | null
 }
 
 export function emptyGarminMetrics(): GarminMetrics {

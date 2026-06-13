@@ -1306,6 +1306,18 @@ const GLOSS: Record<string, { term: string; def: string }> = {
     term: 'weight trend',
     def: 'Least-squares slope of your logged weight in kg per week. Negative means trending down.',
   },
+  wgoal: {
+    term: 'weight goal',
+    def: 'Target weight from Garmin Connect. The delta is current minus goal; the ETA divides the gap by your current weekly trend, shown only while the trend actually converges.',
+  },
+  bodyfat: {
+    term: 'body fat',
+    def: 'Bio-impedance body-fat percentage from the Index scale. Trend matters more than any single reading — hydration swings a measurement by ±1%.',
+  },
+  bmi: {
+    term: 'BMI',
+    def: 'Body mass index, $\\mathrm{kg}/\\mathrm{m}^2$. Blunt for muscular athletes — read it alongside body fat, not instead of it.',
+  },
   effort: {
     term: 'relative effort',
     def: 'Strava’s suffer score—duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
@@ -1884,6 +1896,10 @@ const buildBody = (data: Analytics): HTMLElement => {
       if (p.kg < min) min = p.kg
       if (p.kg > max) max = p.kg
     }
+    if (b.goalKg != null) {
+      if (b.goalKg < min) min = b.goalKg
+      if (b.goalKg > max) max = b.goalKg
+    }
     const range = Math.max(0.5, max - min)
     const lo = min - range * 0.18
     const hi = max + range * 0.18
@@ -1909,6 +1925,16 @@ const buildBody = (data: Analytics): HTMLElement => {
           x2: xPct(i),
           y2: 100,
           class: 'tri-bodywt-grid tri-bodywt-grid--v',
+        }),
+      )
+    if (b.goalKg != null)
+      s.appendChild(
+        svg('line', {
+          x1: 0,
+          y1: yPct(b.goalKg),
+          x2: 100,
+          y2: yPct(b.goalKg),
+          class: 'tri-bodywt-goal',
         }),
       )
     s.appendChild(
@@ -1939,6 +1965,35 @@ const buildBody = (data: Analytics): HTMLElement => {
         'wtrend',
       ),
     )
+  if (b.goalKg != null) {
+    const delta =
+      b.goalDeltaKg != null
+        ? ` (${b.goalDeltaKg > 0 ? '+' : ''}${b.goalDeltaKg.toFixed(1)} kg)`
+        : ''
+    const eta = b.goalEtaWeeks != null ? ` · ~${b.goalEtaWeeks} wk` : ''
+    cap.appendChild(
+      markGloss(
+        el(
+          'span',
+          'tri-ana-k',
+          `goal ${b.goalLbs != null ? `${b.goalLbs.toFixed(0)} lb` : `${b.goalKg.toFixed(1)} kg`}${delta}${eta}`,
+        ),
+        'wgoal',
+      ),
+    )
+  }
+  if (b.bodyFatPct != null)
+    cap.appendChild(
+      markGloss(el('span', 'tri-ana-k', `fat ${b.bodyFatPct.toFixed(1)}%`), 'bodyfat'),
+    )
+  if (b.bmi != null)
+    cap.appendChild(markGloss(el('span', 'tri-ana-k', `bmi ${b.bmi.toFixed(1)}`), 'bmi'))
+  if (b.muscleMassKg != null)
+    cap.appendChild(el('span', 'tri-ana-k', `muscle ${b.muscleMassKg.toFixed(1)} kg`))
+  if (b.boneMassKg != null)
+    cap.appendChild(el('span', 'tri-ana-k', `bone ${b.boneMassKg.toFixed(1)} kg`))
+  if (b.bodyWaterPct != null)
+    cap.appendChild(el('span', 'tri-ana-k', `water ${b.bodyWaterPct.toFixed(1)}%`))
   const next = (data.events ?? [])
     .filter(e => e.date >= data.meta.today)
     .sort((a, b2) => a.date.localeCompare(b2.date))[0]
@@ -2482,7 +2537,11 @@ const wireScrub = (panel: HTMLElement, daily: DailyPoint[]): (() => void) => {
 }
 
 const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
-  { label: 'body weight', chart: 'body', hay: 'body weight kg lbs mass cut' },
+  {
+    label: 'body weight',
+    chart: 'body',
+    hay: 'body weight kg lbs mass cut goal fat bmi muscle bone water composition scale index',
+  },
   { label: 'form · ramp', chart: 'gauge', hay: 'form ramp gauge taper peak projection' },
   {
     label: 'recovery · hrv · rhr',
@@ -2548,6 +2607,9 @@ const GLOSS_CHART: Record<string, string> = {
   trend: 'trend',
   weight: 'body',
   wtrend: 'body',
+  wgoal: 'body',
+  bodyfat: 'body',
+  bmi: 'body',
   hrv: 'recovery',
   rhr: 'recovery',
   tempdev: 'recovery',

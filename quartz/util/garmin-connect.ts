@@ -4,6 +4,7 @@ import {
   type GarminActivity,
   type GarminStreams,
   type GarminVo2Day,
+  type GarminWeightDay,
   hasGarminFueling,
   hasGarminMetrics,
   normalizeGarminSport,
@@ -333,6 +334,90 @@ export function garminConnectVo2(raw: unknown): GarminVo2Day[] {
     out.push({ date, generic: g, cycling: c })
   }
   return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+const kgOf = (value: unknown): number | null => {
+  const n = finite(value)
+  if (n == null || n <= 0) return null
+  return Math.round((n > 400 ? n / 1000 : n) * 100) / 100
+}
+
+const pctOf = (value: unknown): number | null => {
+  const n = finite(value)
+  return n != null && n > 0 && n <= 100 ? Math.round(n * 10) / 10 : null
+}
+
+const isoDayOf = (record: UnknownRecord, keys: string[]): string | null => {
+  for (const key of keys) {
+    const v = record[key]
+    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) return v.slice(0, 10)
+    if (typeof v === 'number' && v > 1_000_000_000_000)
+      return new Date(v).toISOString().slice(0, 10)
+  }
+  return null
+}
+
+export function garminConnectWeightDays(raw: unknown): GarminWeightDay[] {
+  if (!isRecord(raw) && !Array.isArray(raw)) return []
+  const source = Array.isArray(raw)
+    ? raw
+    : Array.isArray((raw as UnknownRecord).dailyWeightSummaries)
+      ? ((raw as UnknownRecord).dailyWeightSummaries as unknown[])
+      : Array.isArray((raw as UnknownRecord).dateWeightList)
+        ? ((raw as UnknownRecord).dateWeightList as unknown[])
+        : []
+  const byDate = new Map<string, GarminWeightDay>()
+  for (const item of source) {
+    if (!isRecord(item)) continue
+    const m = isRecord(item.latestWeight) ? item.latestWeight : item
+    const date =
+      isoDayOf(item, ['summaryDate', 'calendarDate']) ??
+      isoDayOf(m, ['calendarDate', 'summaryDate', 'date', 'weightDate']) ??
+      isoDayOf(item, ['date'])
+    if (!date) continue
+    const day: GarminWeightDay = {
+      date,
+      weightKg: kgOf(m.weight),
+      bmi: pctOf(m.bmi),
+      bodyFatPct: pctOf(m.bodyFat),
+      bodyWaterPct: pctOf(m.bodyWater),
+      muscleMassKg: kgOf(m.muscleMass),
+      boneMassKg: kgOf(m.boneMass),
+    }
+    if (
+      day.weightKg == null &&
+      day.bmi == null &&
+      day.bodyFatPct == null &&
+      day.bodyWaterPct == null &&
+      day.muscleMassKg == null &&
+      day.boneMassKg == null
+    )
+      continue
+    byDate.set(date, day)
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export function garminConnectWeightGoal(raw: unknown): number | null {
+  const list = Array.isArray(raw) ? raw : isRecord(raw) && Array.isArray(raw.goals) ? raw.goals : []
+  for (const item of list) {
+    if (!isRecord(item)) continue
+    const type = item.goalType ?? item.userGoalTypePK ?? item.goalTypePK
+    const weightTyped =
+      type === 4 || (typeof type === 'string' && type.toLowerCase().includes('weight'))
+    if (!weightTyped) continue
+    for (const key of ['targetValue', 'goalValue', 'value']) {
+      const kg = kgOf(item[key])
+      if (kg != null) return kg
+    }
+  }
+  if (!isRecord(raw)) return null
+  const nested = isRecord(raw.weightGoal) ? raw.weightGoal : raw
+  for (const key of ['goalWeight', 'weightGoalValue', 'targetWeight']) {
+    const kg = kgOf(nested[key])
+    if (kg != null) return kg
+  }
+  return null
 }
 
 function metricIndex(detail: UnknownRecord, key: string): number | null {

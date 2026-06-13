@@ -14,11 +14,31 @@ import {
 } from './strava'
 import { RaceEvent, TrackEntry } from './tracking'
 
+export interface BodyCompositionDay {
+  date: string
+  kg: number | null
+  bmi: number | null
+  bodyFatPct: number | null
+  bodyWaterPct: number | null
+  muscleMassKg: number | null
+  boneMassKg: number | null
+}
+
 export interface BodyBlock {
   latestKg: number | null
   latestLbs: number | null
   trendKgPerWeek: number | null
+  goalKg: number | null
+  goalLbs: number | null
+  goalDeltaKg: number | null
+  goalEtaWeeks: number | null
+  bmi: number | null
+  bodyFatPct: number | null
+  bodyWaterPct: number | null
+  muscleMassKg: number | null
+  boneMassKg: number | null
   series: { date: string; kg: number }[]
+  composition: BodyCompositionDay[]
 }
 
 export interface ActivitySummary {
@@ -331,6 +351,7 @@ export interface EngineBlock {
 export interface DataFeedInputs {
   oura?: OuraCache | null
   weather?: WeatherCache | null
+  garmin?: GarminCache | null
   weights?: TrackEntry[]
   zones?: StravaZones | null
 }
@@ -1063,13 +1084,21 @@ const emptyBody = (): BodyBlock => ({
   latestKg: null,
   latestLbs: null,
   trendKgPerWeek: null,
+  goalKg: null,
+  goalLbs: null,
+  goalDeltaKg: null,
+  goalEtaWeeks: null,
+  bmi: null,
+  bodyFatPct: null,
+  bodyWaterPct: null,
+  muscleMassKg: null,
+  boneMassKg: null,
   series: [],
+  composition: [],
 })
 
-function weightTrendPerWeek(entries: TrackEntry[]): number | null {
-  const pts = entries
-    .filter(e => e.weightKg != null)
-    .map(e => ({ t: dayMs(e.date) / DAY_MS, w: e.weightKg as number }))
+function weightTrendPerWeek(series: { date: string; kg: number }[]): number | null {
+  const pts = series.map(e => ({ t: dayMs(e.date) / DAY_MS, w: e.kg }))
   if (pts.length < 2) return null
   const mt = mean(pts.map(p => p.t))
   const mw = mean(pts.map(p => p.w))
@@ -2226,8 +2255,11 @@ export function buildAnalytics(
   const daily = buildDaily(acts, loadById, windowFrom, windowTo)
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
+  const garminWeight = inputs.garmin?.weight ?? {}
   const weightByDate = new Map<string, number>()
   for (const w of inputs.weights ?? []) if (w.weightKg != null) weightByDate.set(w.date, w.weightKg)
+  for (const g of Object.values(garminWeight))
+    if (g.weightKg != null) weightByDate.set(g.date, g.weightKg)
   let carryKg: number | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
@@ -2252,13 +2284,55 @@ export function buildAnalytics(
   }
   const weighedDaily = daily.filter(d => d.weightKg != null)
   const latestKg = weighedDaily.length ? weighedDaily[weighedDaily.length - 1].weightKg : null
+  const weightSeries = [...weightByDate.entries()]
+    .map(([date, kg]) => ({ date, kg }))
+    .sort((p, q) => p.date.localeCompare(q.date))
+  const trendKgPerWeek = weightTrendPerWeek(weightSeries)
+  const composition = Object.values(garminWeight)
+    .map(g => ({
+      date: g.date,
+      kg: g.weightKg,
+      bmi: g.bmi,
+      bodyFatPct: g.bodyFatPct,
+      bodyWaterPct: g.bodyWaterPct,
+      muscleMassKg: g.muscleMassKg,
+      boneMassKg: g.boneMassKg,
+    }))
+    .sort((p, q) => p.date.localeCompare(q.date))
+  const lastComp = (
+    key: 'bmi' | 'bodyFatPct' | 'bodyWaterPct' | 'muscleMassKg' | 'boneMassKg',
+  ): number | null => {
+    for (let i = composition.length - 1; i >= 0; i--) {
+      const v = composition[i][key]
+      if (v != null) return v
+    }
+    return null
+  }
+  const goalKg = inputs.garmin?.weightGoalKg ?? null
+  const goalDeltaKg = latestKg != null && goalKg != null ? round(latestKg - goalKg, 1) : null
+  const converging =
+    goalDeltaKg != null &&
+    trendKgPerWeek != null &&
+    Math.abs(trendKgPerWeek) >= 0.05 &&
+    goalDeltaKg * trendKgPerWeek < 0
+  const goalEtaWeeks = converging
+    ? Math.min(104, Math.ceil(Math.abs(goalDeltaKg / trendKgPerWeek)))
+    : null
   const body: BodyBlock = {
     latestKg,
     latestLbs: latestKg != null ? round(latestKg / 0.45359237, 1) : null,
-    trendKgPerWeek: weightTrendPerWeek(inputs.weights ?? []),
-    series: (inputs.weights ?? [])
-      .filter(w => w.weightKg != null)
-      .map(w => ({ date: w.date, kg: w.weightKg as number })),
+    trendKgPerWeek,
+    goalKg,
+    goalLbs: goalKg != null ? round(goalKg / 0.45359237, 1) : null,
+    goalDeltaKg,
+    goalEtaWeeks,
+    bmi: lastComp('bmi'),
+    bodyFatPct: lastComp('bodyFatPct'),
+    bodyWaterPct: lastComp('bodyWaterPct'),
+    muscleMassKg: lastComp('muscleMassKg'),
+    boneMassKg: lastComp('boneMassKg'),
+    series: weightSeries,
+    composition,
   }
   const weekly = buildWeekly(acts, loadById)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
@@ -2374,6 +2448,11 @@ export const DAY_FIELDS = [
   'activeCalories',
   'intakeKcal',
   'weightKg',
+  'bmi',
+  'bodyFatPct',
+  'bodyWaterPct',
+  'muscleMassKg',
+  'boneMassKg',
   'windKph',
   'windDir',
   'windGustKph',
@@ -2457,6 +2536,11 @@ export interface FeedDayRow {
   activeCalories: number | null
   intakeKcal: number | null
   weightKg: number | null
+  bmi: number | null
+  bodyFatPct: number | null
+  bodyWaterPct: number | null
+  muscleMassKg: number | null
+  boneMassKg: number | null
   windKph: number | null
   windDir: string | null
   windGustKph: number | null
@@ -2545,10 +2629,12 @@ export function buildDataFeed(
   for (const w of inputs.weights ?? [])
     if (w.windKph != null || w.windDir != null) windByDate.set(w.date, w)
   const weatherDays = inputs.weather?.days ?? {}
+  const garminWeightDays = inputs.garmin?.weight ?? {}
 
   const dayLines = analytics.daily.map(d => {
     const o = ouraDays[d.date]
     const next = ouraDays[nextIso(d.date)]
+    const gw = garminWeightDays[d.date]
     const agg = byDay.get(d.date)
     const wind = windByDate.get(d.date)
     const weather = weatherDays[d.date]
@@ -2580,6 +2666,11 @@ export function buildDataFeed(
         activeCalories: o?.activeCalories ?? null,
         intakeKcal: d.intakeKcal,
         weightKg: d.weightKg,
+        bmi: gw?.bmi ?? null,
+        bodyFatPct: gw?.bodyFatPct ?? null,
+        bodyWaterPct: gw?.bodyWaterPct ?? null,
+        muscleMassKg: gw?.muscleMassKg ?? null,
+        boneMassKg: gw?.boneMassKg ?? null,
         windKph: wind?.windKph ?? weather?.windKph ?? null,
         windDir: wind?.windDir ?? weather?.windDir ?? null,
         windGustKph: weather?.windGustKph ?? null,
@@ -2664,6 +2755,7 @@ export function buildDataFeed(
       ageYears,
       hrMaxEst:
         ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
+      weightGoalKg: inputs.garmin?.weightGoalKg ?? null,
     },
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }
@@ -2689,7 +2781,9 @@ export function buildDataFeed(
       ef: 'bike np/avgHr w/bpm; run+swim 60*vGap/avgHr m/min/bpm',
       decoupling: '(ef first half - ef second half)/ef first half * 100, streams, >=1200s only',
       hrMaxEst: 'declared max hr; 208 - 0.7*age (tanaka 2001) when unset',
-      weightKg: 'tracking weight forward-filled, apple fallback',
+      weightKg: 'garmin scale primary, tracking forward-filled, apple fallback',
+      bodyComposition:
+        'bmi/bodyFatPct/bodyWaterPct/muscleMassKg/boneMassKg from garmin index scale, measurement days only',
       avgWatts: 'strava estimate unless deviceWatts true',
       windDir: 'tracking override, WeatherKit compass fallback',
     },

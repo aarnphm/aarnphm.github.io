@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-06-06 15:34:35 GMT-04:00
+modified: 2026-06-12 17:51:31 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> My grandma used to say everything we do is yarn knit into our sweater
+>
+> some youtube comment, from [Hank Green's _No Effort is Wasted_](https://www.youtube.com/watch?v=AgBaU9mmceQ)
 
 > I did disappoint my dad [...] If he had lived a little longer, perhaps he would have realized I hadn't wasted my time. But he had an entire suitcase full of clippings and messages talking about his success. [...] He did not think you wasted your time. A person who feels that way does not even think of saving a clipping in the first place.
 >

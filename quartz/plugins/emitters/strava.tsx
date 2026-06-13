@@ -150,6 +150,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           content: buildDataFeed(cache, analytics, {
             oura,
             weather,
+            garmin,
             weights: tracking?.days,
             zones: payload.zones,
           }),
