@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-13 09:03:21 GMT-04:00
+modified: 2026-06-14 09:04:05 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -7157,6 +7157,56 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://plato.stanford.edu/entries/domination/ -- Domination
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [political-philosophy, power]
+    - later: true
+- https://plato.stanford.edu/entries/consciousness/ -- Consciousness
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [consciousness, philosophy-of-mind]
+    - later: true
+- https://plato.stanford.edu/entries/zombies/ -- Zombies
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [consciousness, philosophy-of-mind]
+    - later: true
+- https://plato.stanford.edu/entries/omnipotence/ -- Omnipotence
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [theology, metaphysics]
+    - later: true
+- https://plato.stanford.edu/entries/hermeneutics -- Hermeneutics
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [hermeneutics, interpretation]
+    - later: true
+- https://plato.stanford.edu/entries/hegel-dialectics -- Hegel's Dialectics
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [hegel, dialectics]
+    - later: true
+- https://plato.stanford.edu/entries/deleuze/ -- Gilles Deleuze
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [deleuze, continental]
+    - later: true
+- https://plato.stanford.edu/entries/mereology/ -- Mereology
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [mereology, metaphysics]
+    - later: true
+- https://plato.stanford.edu/entries/panpsychism -- Panpsychism
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [consciousness, metaphysics]
+    - later: true
+- https://plato.stanford.edu/entries/rorty/ -- Richard Rorty
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [pragmatism, philosophy]
+    - later: true
 - https://en.wikipedia.org/wiki/Post_hoc_ergo_propter_hoc -- Post hoc ergo propter hoc
   - [meta]:
     - date: 06/11/2026
@@ -8318,6 +8368,10 @@ title: are.na
 
 ## design
 
+- https://chubbyapplesdesign.com -- Annie Gao
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [designer]
 - https://index.how/to/articulate -- Designers' vocabulary
   - [meta]:
     - date: 06/08/2026
@@ -12241,6 +12295,156 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2512.18194
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [kv, disaggregation]
+    - later: true
+- https://arxiv.org/abs/2602.11729
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [interpretability, crosscoders]
+    - later: true
+- https://arxiv.org/abs/2410.13780
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [quantization, matrix-multiplication]
+    - later: true
+- https://arxiv.org/abs/2604.06425
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [architecture, neural-computers]
+    - later: true
+- https://arxiv.org/abs/2603.21852
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [symbolic-regression, functions]
+    - later: true
+- https://arxiv.org/abs/2602.06036
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [speculative-decoding, diffusion]
+    - later: true
+- https://arxiv.org/abs/2602.02204
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [multimodal, serving]
+    - later: true
+- https://arxiv.org/abs/2603.12201
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [sparse-attention, inference]
+    - later: true
+- https://arxiv.org/abs/2604.01472
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [optimizer, muon]
+    - later: true
+- https://arxiv.org/abs/2603.20105
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [long-context, recursion]
+    - later: true
+- https://arxiv.org/abs/2102.03467
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [rl, game-playing]
+    - later: true
+- https://arxiv.org/abs/1611.01144
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [gumbel-softmax, reparameterization]
+    - later: true
+- https://arxiv.org/abs/2411.19379
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [prefix-caching, hybrid-models]
+    - later: true
+- https://arxiv.org/abs/2603.15031
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://arxiv.org/abs/2509.25424
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [rl, objectives]
+    - later: true
+- https://arxiv.org/abs/2103.03230
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [self-supervised-learning, representation]
+    - later: true
+- https://arxiv.org/abs/2405.04434
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [moe, models]
+    - later: true
+- https://arxiv.org/abs/2201.02177
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [grokking, generalization]
+    - later: true
+- https://arxiv.org/abs/2605.28814
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [self-improvement, search]
+    - later: true
+- https://arxiv.org/abs/2605.29157
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [linear-attention, architecture]
+    - later: true
+- https://arxiv.org/abs/2603.03251
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [speculative-decoding, inference]
+    - later: true
+- https://arxiv.org/abs/2410.05364
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [diffusion, control]
+    - later: true
+- https://arxiv.org/abs/2603.19312
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [world-models, representation]
+    - later: true
+- https://arxiv.org/abs/2503.02113
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [generalization, deep-learning]
+    - later: true
+- https://arxiv.org/abs/2509.14786
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [pretraining, scaling]
+    - later: true
+- https://arxiv.org/abs/2605.21739
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [emotional-intelligence, benchmark]
+    - later: true
+- https://arxiv.org/abs/2605.31574
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [moral-disagreement, human-ai]
+    - later: true
+- https://arxiv.org/abs/1805.02867
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [softmax, optimization]
+    - later: true
+- https://arxiv.org/abs/2606.03237
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [cooperation, ai-safety]
+    - later: true
+- https://arxiv.org/abs/2604.05192
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [tokenization, bpe]
+    - later: true
 - https://arxiv.org/abs/2502.04878
   - [meta]:
     - date: 06/13/2026

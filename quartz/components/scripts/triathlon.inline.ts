@@ -44,6 +44,16 @@ type DetailPayload = {
   powerCurveRef?: PowerCurvePoint[]
 }
 
+type TrainingPlan = {
+  id: string
+  meta: string
+  distance: string
+  date: string
+  target: string
+  html: string
+}
+type TrainingPayload = { plans: TrainingPlan[] }
+
 let DETAIL_ZONES: StravaZones | null = null
 let DETAIL_CURVE_REF: PowerCurvePoint[] = []
 let DETAIL_PAYLOAD: Promise<DetailPayload | null> | null = null
@@ -79,6 +89,35 @@ const svg = (tag: string, attrs: Record<string, string | number>): SVGElement =>
   const e = document.createElementNS(SVGNS, tag)
   for (const k in attrs) e.setAttribute(k, String(attrs[k]))
   return e
+}
+
+const mathFrag = (text: string): Node[] => {
+  const out: Node[] = []
+  text.split(/\$([^$]+)\$/).forEach((part, i) => {
+    if (i % 2 === 1) {
+      const m = el('span', 'tri-math')
+      m.innerHTML = katex.renderToString(part, {
+        displayMode: false,
+        output: 'html',
+        throwOnError: false,
+        strict: false,
+      })
+      out.push(m)
+    } else if (part) {
+      out.push(document.createTextNode(part))
+    }
+  })
+  return out
+}
+
+const setMath = (host: HTMLElement, text: string): void => {
+  host.replaceChildren(...mathFrag(text))
+}
+
+const mathK = (cls: string, text: string): HTMLElement => {
+  const span = el('span', cls)
+  setMath(span, text)
+  return span
 }
 
 const domF: TriNodeFactory<HTMLElement | SVGElement> = {
@@ -1204,6 +1243,17 @@ const setupDropdown = (
   const panel = root.querySelector<HTMLElement>(panelSel)
   if (!btn || !wrap || !panel) return null
 
+  const scroller = panel.querySelector<HTMLElement>(`${panelSel}-scroll`)
+  const base = panelSel.slice(1)
+  const updateFade = () => {
+    if (!scroller) return
+    panel.classList.toggle(`${base}--top`, scroller.scrollTop > 4)
+    panel.classList.toggle(
+      `${base}--more`,
+      scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 4,
+    )
+  }
+
   const close = () => {
     wrap.classList.remove(openClass)
     panel.setAttribute('aria-hidden', 'true')
@@ -1211,6 +1261,7 @@ const setupDropdown = (
   const onBtn = () => {
     const open = wrap.classList.toggle(openClass)
     panel.setAttribute('aria-hidden', open ? 'false' : 'true')
+    if (open) updateFade()
   }
   const onDocClick = (event: MouseEvent) => {
     if (!wrap.contains(event.target as Node)) close()
@@ -1220,11 +1271,13 @@ const setupDropdown = (
   }
 
   btn.addEventListener('click', onBtn)
+  scroller?.addEventListener('scroll', updateFade, { passive: true })
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
 
   return () => {
     btn.removeEventListener('click', onBtn)
+    scroller?.removeEventListener('scroll', updateFade)
     document.removeEventListener('click', onDocClick)
     document.removeEventListener('keydown', onKey)
   }
@@ -1263,11 +1316,11 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   tsb: {
     term: 'form/TSB',
-    def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$ (fitness − fatigue). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
+    def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$ ($\\text{fitness} - \\text{fatigue}$). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
   },
   acwr: {
     term: 'ACWR',
-    def: 'Acute:Chronic Workload Ratio $\\mathrm{ACWR}=\\text{7d}/\\text{28d}$ load. 0.8–1.3 is the safe zone; above 1.5 flags an injury-risk spike.',
+    def: 'Acute:Chronic Workload Ratio $\\mathrm{ACWR}=\\text{7d}/\\text{28d}$ load. $0.8\\text{–}1.3$ is the safe zone; above $1.5$ flags an injury-risk spike.',
   },
   ramp: {
     term: 'ramp',
@@ -1275,7 +1328,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   monotony: {
     term: 'monotony',
-    def: 'Daily-load sameness across a week, $\\text{monotony}=\\mu/\\sigma$ (mean over standard deviation). Above ~2 with high load is Foster’s strain red flag.',
+    def: 'Daily-load sameness across a week, $\\text{monotony}=\\mu/\\sigma$ (mean over standard deviation). Above $\\approx 2$ with high load is Foster’s strain red flag.',
   },
   strain: {
     term: 'strain',
@@ -1283,15 +1336,15 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   load: {
     term: 'load',
-    def: 'Per-session training stress $\\mathrm{load}\\approx\\mathrm{IF}^2\\cdot t$, scaled so an hour at threshold ≈ 100. HR, power and cadence are captured per activity; this load stays pace-derived for now.',
+    def: 'Per-session training stress $\\mathrm{load}\\approx\\mathrm{IF}^2\\cdot t$, scaled so an hour at threshold $\\approx 100$. HR, power and cadence are captured per activity; this load stays pace-derived for now.',
   },
   score: {
     term: 'readiness',
-    def: 'A 0–100 blend of your fitness against the race demand (45%) and how much of each leg’s distance you have actually covered in training (55%).',
+    def: 'A 0–100 blend of your fitness against the race demand ($45\\%$) and how much of each leg’s distance you have actually covered in training ($55\\%$).',
   },
   binding: {
     term: 'binding leg',
-    def: 'The discipline limiting your readiness most — the weakest distance-coverage × recency. Train this one first.',
+    def: 'The discipline limiting your readiness most — the weakest distance-coverage $\\times$ recency. Train this one first.',
   },
   predtime: {
     term: 'predicted time',
@@ -1323,7 +1376,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   bodyfat: {
     term: 'body fat',
-    def: 'Bio-impedance body-fat percentage from the Index scale. Trend matters more than any single reading — hydration swings a measurement by ±1%.',
+    def: 'Bio-impedance body-fat percentage from the Index scale. Trend matters more than any single reading — hydration swings a measurement by $\\pm 1\\%$.',
   },
   bmi: {
     term: 'BMI',
@@ -1343,11 +1396,11 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   tempdev: {
     term: 'temp deviation',
-    def: 'Skin temperature against your personal baseline (°C). $\\ge +0.5$°C reads as a possible immune response, often 24–48 h before symptoms.',
+    def: 'Skin temperature against your personal baseline ($^\\circ\\mathrm{C}$). $\\ge +0.5\\,^\\circ\\mathrm{C}$ reads as a possible immune response, often $24\\text{–}48$ h before symptoms.',
   },
   sleepdebt: {
     term: 'sleep debt',
-    def: 'Rolling 14-night shortfall against an 8 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. The 7 h floor is the adult minimum; athletes need 8–10 h.',
+    def: 'Rolling 14-night shortfall against an 8 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. The 7 h floor is the adult minimum; athletes need $8\\text{–}10$ h.',
   },
   overreaching: {
     term: 'overreaching',
@@ -1355,23 +1408,23 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   oreadiness: {
     term: 'readiness',
-    def: 'Oura’s 0–100 daily readiness: $\\ge 85$ optimal, 70–84 good, $<70$ pay attention. Streaks under 70 flag accumulated strain.',
+    def: 'Oura’s $0\\text{–}100$ daily readiness: $\\ge 85$ optimal, $70\\text{–}84$ good, $<70$ pay attention. Streaks under 70 flag accumulated strain.',
   },
   vo2max: {
     term: 'VO₂max',
-    def: 'Maximal oxygen uptake in ml/kg/min. Bike path: $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ with $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ and FTP as 95% of best 20-min power.',
+    def: 'Maximal oxygen uptake in $\\mathrm{ml/kg/min}$. Bike path: $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ with $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ and FTP as $95\\%$ of best 20-min power.',
   },
   fitage: {
     term: 'fitness age',
-    def: 'The age whose population-median VO₂max (FRIEND registry, male) equals yours, clamped 20–80. Lower than calendar age means the engine outruns the birthday.',
+    def: 'The age whose population-median VO₂max (FRIEND registry, male) equals yours, clamped $20\\text{–}80$. Lower than calendar age means the engine outruns the birthday.',
   },
   vam: {
     term: 'VAM',
-    def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$. Recreational ≈ 600–1000; pro climbers exceed 1600.',
+    def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$. Recreational $\\approx 600\\text{–}1000$; pro climbers exceed $1600$.',
   },
   radar: {
     term: 'abilities',
-    def: 'Six axes normalised 0–100: Coggan W/kg anchors for sprint and threshold, CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm, mean readiness for recovery.',
+    def: 'Six axes normalised $0\\text{–}100$: Coggan $\\mathrm{W/kg}$ anchors for sprint and threshold, CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm, mean readiness for recovery.',
   },
   ef: {
     term: 'efficiency factor',
@@ -1379,7 +1432,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   decouple: {
     term: 'decoupling',
-    def: 'Pw:Hr drift $(E_1-E_2)/E_1$ across session halves. Under 5% means coupled — a durable aerobic base; over 10% the engine fades late.',
+    def: 'Pw:Hr drift $(E_1-E_2)/E_1$ across session halves. $<5\\%$ means coupled — a durable aerobic base; $>10\\%$ the engine fades late.',
   },
 }
 
@@ -1890,6 +1943,46 @@ const buildActions = (data: Analytics): HTMLElement => {
   return block
 }
 
+interface BodyDay {
+  date: string
+  ts: number
+  samples: { date: string; ts: number; kg: number }[]
+  min: number
+  max: number
+  first: number
+  last: number
+}
+
+const groupBodyByDay = (series: { date: string; ts: number; kg: number }[]): BodyDay[] => {
+  const byDay = new Map<string, { date: string; ts: number; kg: number }[]>()
+  for (const p of series) {
+    const arr = byDay.get(p.date)
+    if (arr) arr.push(p)
+    else byDay.set(p.date, [p])
+  }
+  return [...byDay.values()]
+    .map(arr => {
+      const sorted = arr.slice().sort((a, b) => a.ts - b.ts)
+      let mn = Infinity
+      let mx = -Infinity
+      for (const q of sorted) {
+        if (q.kg < mn) mn = q.kg
+        if (q.kg > mx) mx = q.kg
+      }
+      const last = sorted[sorted.length - 1]
+      return {
+        date: sorted[0].date,
+        ts: last.ts,
+        samples: sorted,
+        min: mn,
+        max: mx,
+        first: sorted[0].kg,
+        last: last.kg,
+      }
+    })
+    .sort((a, b) => a.ts - b.ts)
+}
+
 const buildBody = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-bodywt')
   block.appendChild(anaTitle('body weight', 'weight'))
@@ -1918,15 +2011,12 @@ const buildBody = (data: Analytics): HTMLElement => {
     const range = Math.max(0.5, max - min)
     const lo = min - range * 0.18
     const hi = max + range * 0.18
-    const n = pts.length
+    const days = groupBodyByDay(pts)
+    const nd = days.length
     const t0 = pts[0].ts
-    const t1 = pts[n - 1].ts
+    const t1 = pts[pts.length - 1].ts
     const xPct = (ts: number): number => (t1 > t0 ? ((ts - t0) / (t1 - t0)) * 100 : 50)
     const yPct = (kg: number): number => (1 - (kg - lo) / (hi - lo)) * 100
-    const clk = (ts: number): string => {
-      const dt = new Date(ts)
-      return `${dt.getHours().toString().padStart(2, '0')}:${dt.getMinutes().toString().padStart(2, '0')}`
-    }
     const chart = el('div', 'tri-bodywt-chart')
     const yax = el('div', 'tri-bodywt-yax')
     yax.append(el('span', '', `${hi.toFixed(1)}`), el('span', '', `${lo.toFixed(1)}`))
@@ -1948,21 +2038,52 @@ const buildBody = (data: Analytics): HTMLElement => {
           class: 'tri-bodywt-goal',
         }),
       )
+    for (const d of days) {
+      if (d.samples.length < 2) continue
+      const dx = xPct(d.ts).toFixed(2)
+      s.appendChild(
+        svg('line', {
+          x1: dx,
+          y1: yPct(d.max),
+          x2: dx,
+          y2: yPct(d.min),
+          class: 'tri-bodywt-range',
+          'data-day': d.date,
+        }),
+      )
+    }
     s.appendChild(
-      svg('path', { d: polyD(pts.map(p => [xPct(p.ts), yPct(p.kg)])), class: 'tri-bodywt-line' }),
+      svg('path', {
+        d: polyD(days.map(d => [xPct(d.ts), yPct(d.last)])),
+        class: 'tri-bodywt-line',
+      }),
     )
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 100, class: 'tri-ana-cursor' }))
     plot.appendChild(s)
-    pts.forEach((p, i) => {
-      const m = el('span', `tri-bodywt-pt${i === n - 1 ? ' tri-bodywt-pt--last' : ''}`)
-      m.style.left = `${xPct(p.ts).toFixed(2)}%`
-      m.style.top = `${yPct(p.kg).toFixed(2)}%`
-      m.title = `${shortDate(p.date)} ${clk(p.ts)} · ${p.kg.toFixed(1)} kg`
-      plot.appendChild(m)
+    days.forEach((d, di) => {
+      const left = `${xPct(d.ts).toFixed(2)}%`
+      d.samples.forEach((sample, si) => {
+        const dayLast = si === d.samples.length - 1
+        const cls =
+          di === nd - 1 && dayLast
+            ? 'tri-bodywt-pt tri-bodywt-pt--last'
+            : dayLast
+              ? 'tri-bodywt-pt'
+              : 'tri-bodywt-pt tri-bodywt-pt--sub'
+        const m = el('span', cls)
+        m.style.left = left
+        m.style.top = `${yPct(sample.kg).toFixed(2)}%`
+        plot.appendChild(m)
+      })
     })
     chart.append(yax, plot)
     const xax = el('div', 'tri-bodywt-xax')
-    xax.append(el('span', '', shortDate(pts[0].date)), el('span', '', shortDate(pts[n - 1].date)))
+    xax.append(
+      el('span', '', shortDate(days[0].date)),
+      el('span', '', shortDate(days[nd - 1].date)),
+    )
     block.append(chart, xax)
+    block.appendChild(el('div', 'tri-chart-readout'))
   }
   const cap = el('div', 'tri-elev-cap')
   if (b.trendKgPerWeek != null)
@@ -1981,11 +2102,10 @@ const buildBody = (data: Analytics): HTMLElement => {
       b.goalDeltaKg != null
         ? ` (${b.goalDeltaKg > 0 ? '+' : ''}${b.goalDeltaKg.toFixed(1)} kg)`
         : ''
-    const eta = b.goalEtaWeeks != null ? ` · ~${b.goalEtaWeeks} wk` : ''
+    const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ wk` : ''
     cap.appendChild(
       markGloss(
-        el(
-          'span',
+        mathK(
           'tri-ana-k',
           `goal ${b.goalLbs != null ? `${b.goalLbs.toFixed(0)} lb` : `${b.goalKg.toFixed(1)} kg`}${delta}${eta}`,
         ),
@@ -2180,11 +2300,10 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
       'oreadiness',
     ),
     markGloss(
-      el(
-        'span',
+      mathK(
         `tri-ana-k ${tmpCls}`.trim(),
         rec.tempDevLatest != null
-          ? `temp ${rec.tempDevLatest >= 0 ? '+' : ''}${rec.tempDevLatest.toFixed(1)}°C`
+          ? `temp ${rec.tempDevLatest >= 0 ? '+' : ''}${rec.tempDevLatest.toFixed(1)}$^\\circ\\mathrm{C}$`
           : 'temp —',
       ),
       'tempdev',
@@ -2446,6 +2565,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
     if (key === 'rhr') return c.rhrSeries.map(p => p.rhr)
     if (key === 'hrv') return c.hrvSeries.map(p => p.hrv)
     if (key === 'ef') return c.efSeries.map(p => p.ef)
+    if (key === 'decoupling') return c.decouplingSeries.map(p => p.pct)
     return []
   }
   const glossOf: Record<string, string> = {
@@ -2486,7 +2606,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
                 [(i / (n - 1)) * 100, 21 - ((yv - lo) / (hi - lo)) * 18] as [number, number],
             ),
           ),
-          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : 'tri-line-run'}`,
+          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : m.key === 'rhr' ? 'tri-line-run' : ''}`,
         }),
       )
       s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 24, class: 'tri-ana-cursor' }))
@@ -2545,7 +2665,7 @@ const scrubBind = (
     const cx = (frac * vbW).toFixed(2)
     cursor.setAttribute('x1', cx)
     cursor.setAttribute('x2', cx)
-    readout.textContent = textOf(Math.round(frac * (count - 1)))
+    setMath(readout, textOf(Math.round(frac * (count - 1))))
     hover.classList.add('tri-chart--hover')
   }
   const onLeave = () => hover.classList.remove('tri-chart--hover')
@@ -2583,7 +2703,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   const rec = data.recovery.series
   bind('.tri-ana-recovery', '.tri-rec-svg', rec.length, ANA_W, i => {
     const d = rec[i]
-    const z = d.hrvZ != null ? ` ${signed(d.hrvZ)}σ` : ''
+    const z = d.hrvZ != null ? ` $${signed(d.hrvZ)}\\sigma$` : ''
     return `${d.date} · HRV ${d.hrv ?? '—'}${z} · RHR ${d.rhr ?? '—'} · rdy ${d.readiness ?? '—'}`
   })
 
@@ -2615,12 +2735,64 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     return `${w.weekStart} · effort ${Math.round(w.effort)}`
   })
 
+  const bodySeries = data.body.series
+  const bodyBlock = panel.querySelector<HTMLElement>('.tri-ana-bodywt')
+  const bodyPlot = bodyBlock?.querySelector<HTMLElement>('.tri-bodywt-plot')
+  const bodyCursor = bodyPlot?.querySelector<SVGElement>('.tri-ana-cursor')
+  const bodyReadout = bodyBlock?.querySelector<HTMLElement>('.tri-chart-readout')
+  if (bodyBlock && bodyPlot && bodyCursor && bodyReadout && bodySeries.length >= 2) {
+    const bdays = groupBodyByDay(bodySeries)
+    const bt0 = bdays[0].ts
+    const bt1 = bdays[bdays.length - 1].ts
+    const bx = (ts: number): number => (bt1 > bt0 ? ((ts - bt0) / (bt1 - bt0)) * 100 : 50)
+    const ranges = Array.from(bodyPlot.querySelectorAll<SVGLineElement>('.tri-bodywt-range'))
+    const onMove = (event: MouseEvent) => {
+      const r = bodyPlot.getBoundingClientRect()
+      const fx = clampN((event.clientX - r.left) / r.width, 0, 1) * 100
+      let best = bdays[0]
+      let bestD = Infinity
+      for (const d of bdays) {
+        const dd = Math.abs(bx(d.ts) - fx)
+        if (dd < bestD) {
+          bestD = dd
+          best = d
+        }
+      }
+      const cx = bx(best.ts).toFixed(2)
+      bodyCursor.setAttribute('x1', cx)
+      bodyCursor.setAttribute('x2', cx)
+      if (best.samples.length > 1) {
+        const delta = best.last - best.first
+        setMath(
+          bodyReadout,
+          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${best.min.toFixed(1)}–${best.max.toFixed(1)} kg · $\\Delta${delta >= 0 ? '+' : ''}${delta.toFixed(1)}$`,
+        )
+      } else {
+        setMath(bodyReadout, `${shortDate(best.date)} · ${best.last.toFixed(1)} kg`)
+      }
+      for (const ln of ranges)
+        ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)
+      bodyBlock.classList.add('tri-chart--hover')
+    }
+    const onLeave = () => {
+      bodyBlock.classList.remove('tri-chart--hover')
+      for (const ln of ranges) ln.classList.remove('tri-bodywt-range--active')
+    }
+    bodyPlot.addEventListener('mousemove', onMove)
+    bodyPlot.addEventListener('mouseleave', onLeave)
+    cleanups.push(() => {
+      bodyPlot.removeEventListener('mousemove', onMove)
+      bodyPlot.removeEventListener('mouseleave', onLeave)
+    })
+  }
+
   const cardioBlock = panel.querySelector<HTMLElement>('.tri-engine-cardio')
   if (cardioBlock) {
     const ser: Record<string, { date: string; v: number }[]> = {
       rhr: data.engine.cardio.rhrSeries.map(p => ({ date: p.date, v: p.rhr })),
       hrv: data.engine.cardio.hrvSeries.map(p => ({ date: p.date, v: p.hrv })),
       ef: data.engine.cardio.efSeries.map(p => ({ date: p.date, v: p.ef })),
+      decoupling: data.engine.cardio.decouplingSeries.map(p => ({ date: p.date, v: p.pct })),
     }
     for (const row of Array.from(cardioBlock.querySelectorAll<HTMLElement>('.tri-engine-row'))) {
       const points = ser[row.dataset.metric ?? '']
@@ -3341,7 +3513,7 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
     traceFeatures.push(lineFeature(gpsRoute(d), props))
   }
   const legend: Record<OverviewMode, OverviewLegend | null> = {
-    heat: { lo: '1×', hi: `${maxCount}×` },
+    heat: { lo: '$1\\times$', hi: `$${maxCount}\\times$` },
     w: null,
     hr: null,
     cad: null,
@@ -3514,8 +3686,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         map.setPaintProperty('tri-traces', 'line-opacity', traceOpacityExpr(mode))
       }
       const lg = getOverview().legend[mode]
-      if (legendLo) legendLo.textContent = lg?.lo ?? 'low'
-      if (legendHi) legendHi.textContent = lg?.hi ?? 'high'
+      if (legendLo) setMath(legendLo, lg?.lo ?? 'low')
+      if (legendHi) setMath(legendHi, lg?.hi ?? 'high')
       if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
     }
     const recolor = (d: StravaActivityDetail, i: number) => {
@@ -4097,22 +4269,249 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const setupTraining = (root: HTMLElement): (() => void) | null => {
+  const btn = root.querySelector<HTMLElement>('.tri-training-btn')
+  const panel = root.querySelector<HTMLElement>('.tri-training')
+  const scrim = root.querySelector<HTMLElement>('.tri-training-scrim')
+  const closeBtn = root.querySelector<HTMLElement>('.tri-training-close')
+  const title = root.querySelector<HTMLElement>('.tri-training-title')
+  const search = root.querySelector<HTMLInputElement>('.tri-training-search')
+  const results = root.querySelector<HTMLElement>('.tri-training-results')
+  const list = root.querySelector<HTMLElement>('.tri-training-plans')
+  const tree = root.querySelector<HTMLElement>('.tri-training-tree')
+  const preview = root.querySelector<HTMLElement>('.tri-training-doc')
+  if (!btn || !panel) return null
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let loaded = false
+  let data: TrainingPayload | null = null
+  let selIndex = -1
+
+  const tag = (cls: string, text: string): HTMLElement | null =>
+    text ? el('span', `tri-training-tag ${cls}`, text) : null
+
+  const showPlan = (plan: TrainingPlan) => {
+    if (!preview) return
+    const head = el('div', 'tri-pop-head tri-training-head')
+    head.appendChild(el('span', 'tri-pop-date tri-training-meta-name', plan.meta))
+    const dt = tag('tri-training-tag--distance', plan.distance)
+    if (dt) head.appendChild(dt)
+    if (plan.date) head.appendChild(el('span', 'tri-training-tag', plan.date))
+    const tt = tag('tri-training-tag--target', plan.target)
+    if (tt) head.appendChild(tt)
+    const body = el('div', 'tri-training-render')
+    body.innerHTML = plan.html
+    preview.replaceChildren(head, body)
+    preview.scrollTo({ top: 0 })
+    buildTree(plan, body)
+    document.dispatchEvent(
+      new CustomEvent('contentdecrypted', { detail: { article: preview, content: preview } }),
+    )
+  }
+
+  const buildTree = (plan: TrainingPlan, body: HTMLElement) => {
+    if (!tree) return
+    const heads = Array.from(body.querySelectorAll<HTMLElement>('h2, h3, h4')).filter(
+      h => !h.closest('.footnotes'),
+    )
+    tree.replaceChildren()
+    if (!heads.length) return
+    type TNode = { id: string; label: string; level: number; children: TNode[] }
+    const roots: TNode[] = []
+    const stack: TNode[] = []
+    heads.forEach((h, i) => {
+      const id = `tri-h-${plan.id}-${i}`
+      h.id = id
+      const node: TNode = {
+        id,
+        label: (h.textContent ?? '').trim(),
+        level: Number(h.tagName[1]),
+        children: [],
+      }
+      while (stack.length && stack[stack.length - 1].level >= node.level) stack.pop()
+      ;(stack.length ? stack[stack.length - 1].children : roots).push(node)
+      stack.push(node)
+    })
+    const nb = ' '
+    const seg = (bar: boolean) => (bar ? `│${nb.repeat(3)}` : nb.repeat(4))
+    const lines: HTMLElement[] = []
+    const walk = (node: TNode, last: boolean, anc: boolean[]) => {
+      const prefix = anc.map(seg).join('') + (last ? '└── ' : '├── ')
+      const line = el('div', 'tri-training-tree-line')
+      line.appendChild(el('span', 'tri-training-tree-prefix', prefix))
+      const link = el('button', 'tri-training-tree-link', node.label)
+      link.setAttribute('type', 'button')
+      link.dataset.target = node.id
+      line.appendChild(link)
+      lines.push(line)
+      node.children.forEach((c, i) => walk(c, i === node.children.length - 1, [...anc, !last]))
+    }
+    roots.forEach((n, i) => walk(n, i === roots.length - 1, []))
+    tree.replaceChildren(...lines)
+  }
+
+  const select = (idx: number) => {
+    if (!data || !data.plans.length) return
+    const items = list ? Array.from(list.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+    selIndex = clampN(idx, 0, data.plans.length - 1)
+    items.forEach((it, i) => it.classList.toggle('tri-ana-ritem--sel', i === selIndex))
+    showPlan(data.plans[selIndex])
+  }
+
+  const ritem = (plan: TrainingPlan, i: number): HTMLElement => {
+    const it = el('button', 'tri-ana-ritem')
+    it.setAttribute('type', 'button')
+    it.dataset.plan = String(i)
+    it.append(
+      el('span', 'tri-ana-ritem-t', plan.meta),
+      el('span', 'tri-ana-ritem-s', [plan.distance, plan.target].filter(Boolean).join(' · ')),
+    )
+    return it
+  }
+
+  const renderList = () => {
+    if (!list || !data) return
+    list.replaceChildren(...data.plans.map(ritem))
+    if (data.plans.length) select(0)
+    else preview?.replaceChildren(el('div', 'tri-ana-empty', 'no plan'))
+  }
+
+  const load = () => {
+    if (loaded) return
+    loaded = true
+    const path = root.dataset.trainingPath
+    if (!path) return
+    fetch(path)
+      .then(res => res.json())
+      .then((d: TrainingPayload) => {
+        data = d
+        renderList()
+      })
+      .catch(() => {})
+  }
+
+  let closeAnim: Animation | null = null
+  let closeSeq = 0
+  const toMain = () => {
+    if (search) search.value = ''
+    panel.classList.remove('tri-training--searching')
+    results?.replaceChildren()
+  }
+  const open = () => {
+    closeSeq++
+    closeAnim?.cancel()
+    closeAnim = null
+    root.classList.add('tri-training-open')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+    if (reduce) return
+    const br = btn.getBoundingClientRect()
+    const pr = panel.getBoundingClientRect()
+    if (pr.width < 1 || pr.height < 1) return
+    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
+    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
+    const sx = Math.max(0.05, br.width / pr.width)
+    const sy = Math.max(0.05, br.height / pr.height)
+    panel.animate(
+      [
+        {
+          opacity: 0,
+          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+        },
+        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+      ],
+      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+    )
+  }
+  const close = () => {
+    const seq = ++closeSeq
+    closeAnim?.cancel()
+    closeAnim = flipClose(btn, panel, reduce, () => {
+      if (seq !== closeSeq) return
+      root.classList.remove('tri-training-open')
+      panel.setAttribute('aria-hidden', 'true')
+      toMain()
+    })
+  }
+
+  const runSearch = () => {
+    if (!search || !results || !data) return
+    const q = search.value.trim().toLowerCase()
+    if (!q) {
+      panel.classList.remove('tri-training--searching')
+      results.replaceChildren()
+      return
+    }
+    panel.classList.add('tri-training--searching')
+    const hits = data.plans
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => `${p.meta} ${p.distance} ${p.target} ${p.date}`.toLowerCase().includes(q))
+    results.replaceChildren(
+      ...(hits.length
+        ? hits.map(({ p, i }) => ritem(p, i))
+        : [el('div', 'tri-ana-empty', 'no matches')]),
+    )
+  }
+
+  const activate = (it?: HTMLElement | null) => {
+    if (!it || it.dataset.plan == null) return
+    select(Number(it.dataset.plan))
+    toMain()
+  }
+  const onListClick = (event: MouseEvent) =>
+    activate((event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem'))
+  const onResultsClick = (event: MouseEvent) =>
+    activate((event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem'))
+  const onTreeClick = (event: MouseEvent) => {
+    const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-target]')
+    if (!t?.dataset.target || !preview) return
+    const target = preview.querySelector<HTMLElement>(`[id="${CSS.escape(t.dataset.target)}"]`)
+    if (!target) return
+    preview.scrollTo({
+      top:
+        preview.scrollTop +
+        target.getBoundingClientRect().top -
+        preview.getBoundingClientRect().top -
+        8,
+      behavior: 'smooth',
+    })
+  }
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || !root.classList.contains('tri-training-open')) return
+    if (search && search.value) {
+      search.value = ''
+      runSearch()
+      return
+    }
+    close()
+  }
+
+  btn.addEventListener('click', open)
+  closeBtn?.addEventListener('click', close)
+  title?.addEventListener('click', toMain)
+  scrim?.addEventListener('click', close)
+  search?.addEventListener('input', runSearch)
+  results?.addEventListener('click', onResultsClick)
+  list?.addEventListener('click', onListClick)
+  tree?.addEventListener('click', onTreeClick)
+  document.addEventListener('keydown', onKey)
+
+  return () => {
+    btn.removeEventListener('click', open)
+    closeBtn?.removeEventListener('click', close)
+    title?.removeEventListener('click', toMain)
+    scrim?.removeEventListener('click', close)
+    search?.removeEventListener('input', runSearch)
+    results?.removeEventListener('click', onResultsClick)
+    list?.removeEventListener('click', onListClick)
+    tree?.removeEventListener('click', onTreeClick)
+    document.removeEventListener('keydown', onKey)
+  }
+}
+
 const renderGlossDef = (def: string): HTMLElement => {
   const span = el('span', 'tri-gloss-def')
-  def.split(/\$([^$]+)\$/).forEach((part, i) => {
-    if (i % 2 === 1) {
-      const m = el('span', 'tri-gloss-math')
-      m.innerHTML = katex.renderToString(part, {
-        displayMode: false,
-        output: 'html',
-        throwOnError: false,
-        strict: false,
-      })
-      span.appendChild(m)
-    } else if (part) {
-      span.appendChild(document.createTextNode(part))
-    }
-  })
+  span.replaceChildren(...mathFrag(def))
   return span
 }
 
@@ -4206,6 +4605,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     a: { btn: '.tri-analytics-btn', openClass: 'tri-analytics-open', close: '.tri-ana-close' },
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
     m: { btn: '.tri-map-btn', openClass: 'tri-map-open', close: '.tri-map-close' },
+    t: { btn: '.tri-training-btn', openClass: 'tri-training-open', close: '.tri-training-close' },
   }
   const closeOpenModals = (except?: string) => {
     for (const k in modalChords) {
@@ -4268,7 +4668,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     if (waitingForG) {
       const key = e.key.toLowerCase()
       let handled = false
-      if (key === 'a' || key === 'c' || key === 'm') {
+      if (key === 'a' || key === 'c' || key === 'm' || key === 't') {
         toggleModal(key)
         handled = true
       } else if (key === 'g') {
@@ -4371,6 +4771,8 @@ document.addEventListener('nav', () => {
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)
   if (anaCleanup) window.addCleanup?.(anaCleanup)
+  const trainingCleanup = setupTraining(root)
+  if (trainingCleanup) window.addCleanup?.(trainingCleanup)
   const mapCleanup = setupMap(root)
   if (mapCleanup) window.addCleanup?.(mapCleanup)
   const glossCleanup = setupGloss(root)

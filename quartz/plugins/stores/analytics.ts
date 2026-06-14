@@ -340,6 +340,7 @@ export interface CardioBlock {
   rhrSeries: { date: string; rhr: number }[]
   hrvSeries: { date: string; hrv: number }[]
   efSeries: { date: string; ef: number; sport: Sport }[]
+  decouplingSeries: { date: string; pct: number }[]
 }
 
 export interface EngineBlock {
@@ -1460,7 +1461,10 @@ const ATHLETE = {
   bornAnchor: '2001-03-01',
   hrMax: 195 as number | null,
   vo2max: 42 as number | null,
+  goalWeightLb: 180 as number | null,
 }
+
+const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * 0.45359237 : null
 
 const VO2_FLOOR = 20
 const VO2_CEIL = 80
@@ -1775,7 +1779,7 @@ function emptyEngine(): EngineBlock {
       note: 'no power or hr data',
     },
     abilities: { axes: [], area: null },
-    cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [] },
+    cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
   }
 }
 
@@ -2181,6 +2185,7 @@ function buildEngine(
         .filter(d => d.hrv != null)
         .map(d => ({ date: d.date, hrv: d.hrv as number })),
       efSeries: efActs.map(e => ({ date: e.x.day, ef: e.ef, sport: e.x.sport })),
+      decouplingSeries: decActs.map(e => ({ date: e.x.day, pct: e.d })),
     },
   }
 }
@@ -2314,7 +2319,7 @@ export function buildAnalytics(
     }
     return null
   }
-  const goalKg = inputs.garmin?.weightGoalKg ?? null
+  const goalKg = inputs.garmin?.weightGoalKg ?? goalWeightKg
   const goalDeltaKg = latestKg != null && goalKg != null ? round(latestKg - goalKg, 1) : null
   const converging =
     goalDeltaKg != null &&
@@ -2764,7 +2769,7 @@ export function buildDataFeed(
       ageYears,
       hrMaxEst:
         ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
-      weightGoalKg: inputs.garmin?.weightGoalKg ?? null,
+      weightGoalKg: inputs.garmin?.weightGoalKg ?? goalWeightKg,
     },
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }

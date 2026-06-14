@@ -1,3 +1,4 @@
+import type { Root as HtmlRoot } from 'hast'
 import fs from 'node:fs/promises'
 import { Node } from 'unist'
 import type { GarminCache } from '../stores/garmin'
@@ -22,6 +23,7 @@ import { buildAnalytics, buildDataFeed } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
+import { parseTrainingPlans } from '../stores/training'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
@@ -140,6 +142,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/analytics' as FullSlug,
           ext: '.json',
           content: JSON.stringify(analytics),
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
+          slug: 'static/training' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify({ plans: parseTrainingPlans(tree as unknown as HtmlRoot) }),
         }),
       )
       files.push(

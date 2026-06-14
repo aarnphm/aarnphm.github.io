@@ -119,6 +119,7 @@ const GEAR: [string, string[]][] = [
       'Ciele Athletic Gocap',
       'Saucony Inferno Cushion Mid 3-Pack Sock',
       'Saucony Endorphin Elite 3',
+      'Salomon SHAKEOUT CORE 5',
     ],
   ],
   ['swim', ['2XU trisuit', 'Decathlon swimskin', 'Speedo goggles']],
@@ -161,6 +162,7 @@ export default (() => {
         class={classNames(displayClass, 'triathlon', 'main-col', 'popover-hint')}
         data-detail-path={joinSegments(pathToRoot(fileData.slug!), 'static/strava-detail.json')}
         data-analytics-path={joinSegments(pathToRoot(fileData.slug!), 'static/analytics.json')}
+        data-training-path={joinSegments(pathToRoot(fileData.slug!), 'static/training.json')}
         data-location={location}
       >
         <div class="tri-head">
@@ -317,16 +319,18 @@ export default (() => {
                 gear
               </button>
               <div class="tri-gear" aria-hidden="true">
-                {GEAR.map(([label, items]) => (
-                  <div class="tri-gear-row">
-                    <span class="tri-gear-k">{label}</span>
-                    <span class="tri-gear-v">
-                      {items.map(it => (
-                        <span class="tri-gear-li">· {it}</span>
-                      ))}
-                    </span>
-                  </div>
-                ))}
+                <div class="tri-gear-scroll">
+                  {GEAR.map(([label, items]) => (
+                    <div class="tri-gear-row">
+                      <span class="tri-gear-k">{label}</span>
+                      <span class="tri-gear-v">
+                        {items.map(it => (
+                          <span class="tri-gear-li">· {it}</span>
+                        ))}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div class="tri-pace-wrap">
@@ -398,6 +402,9 @@ export default (() => {
             </button>
             <button class="tri-map-btn" type="button">
               map
+            </button>
+            <button class="tri-training-btn" type="button">
+              training
             </button>
             <button class="tri-calc-btn" type="button">
               calculator
@@ -631,6 +638,38 @@ export default (() => {
               <div class="tri-map-tip" aria-hidden="true" />
             </div>
             <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
+          </div>
+        </aside>
+
+        <div class="tri-training-scrim" aria-hidden="true" />
+        <aside
+          class="tri-training"
+          aria-hidden="true"
+          role="dialog"
+          aria-label="triathlon training plan"
+        >
+          <div class="tri-ana-bar tri-training-bar">
+            <span class="tri-ana-title tri-training-title">training</span>
+            <div class="tri-training-search-wrap">
+              <input
+                class="tri-ana-search tri-training-search"
+                type="search"
+                placeholder="search plans (meta, distance, target)"
+                aria-label="search training plans"
+                autocomplete="off"
+              />
+              <div class="tri-ana-results tri-training-results" aria-hidden="true" />
+            </div>
+            <button class="tri-ana-close tri-training-close" type="button" aria-label="Close">
+              ×
+            </button>
+          </div>
+          <div class="tri-ana-body tri-training-body">
+            <div class="tri-training-list">
+              <div class="tri-training-plans" aria-label="training plans" />
+              <div class="tri-training-tree" aria-label="plan sections" />
+            </div>
+            <div class="tri-ana-detail tri-training-doc" aria-hidden="true" />
           </div>
         </aside>
       </article>
