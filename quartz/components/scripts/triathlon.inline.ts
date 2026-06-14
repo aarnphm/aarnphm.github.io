@@ -1382,6 +1382,10 @@ const GLOSS: Record<string, { term: string; def: string }> = {
     term: 'BMI',
     def: 'Body mass index, $\\mathrm{kg}/\\mathrm{m}^2$. Blunt for muscular athletes — read it alongside body fat, not instead of it.',
   },
+  bmr: {
+    term: 'BMR (Katch-McArdle)',
+    def: 'Resting daily burn from lean mass, $\\mathrm{BMR}=370+21.6\\,\\mathrm{LBM}$ with $\\mathrm{LBM}=\\text{weight}\\,(1-\\text{bodyfat})$ in kg. Driven by the Index scale’s body-fat reading, so it tracks composition rather than scale weight.',
+  },
   effort: {
     term: 'relative effort',
     def: 'Strava’s suffer score—duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
@@ -2076,7 +2080,41 @@ const buildBody = (data: Analytics): HTMLElement => {
         plot.appendChild(m)
       })
     })
+    let yaxR: HTMLElement | null = null
+    const bmr = Array.isArray(b.bmrSeries) ? b.bmrSeries : []
+    if (bmr.length >= 2) {
+      const byDayB = new Map<string, { ts: number; bmr: number }>()
+      for (const p of bmr) {
+        const e = byDayB.get(p.date)
+        if (!e || p.ts > e.ts) byDayB.set(p.date, { ts: p.ts, bmr: p.bmr })
+      }
+      const bd = [...byDayB.values()].sort((p, q) => p.ts - q.ts)
+      let blo = Infinity
+      let bhi = -Infinity
+      for (const p of bd) {
+        if (p.bmr < blo) blo = p.bmr
+        if (p.bmr > bhi) bhi = p.bmr
+      }
+      const brange = Math.max(40, bhi - blo)
+      const bLoP = blo - brange * 0.18
+      const bHiP = bhi + brange * 0.18
+      const bY = (v: number): number => (1 - (v - bLoP) / (bHiP - bLoP)) * 100
+      s.appendChild(
+        svg('path', { d: polyD(bd.map(p => [xPct(p.ts), bY(p.bmr)])), class: 'tri-bodywt-bmr' }),
+      )
+      const lastB = bd[bd.length - 1]
+      const bm = el('span', 'tri-bodywt-bpt')
+      bm.style.left = `${xPct(lastB.ts).toFixed(2)}%`
+      bm.style.top = `${bY(lastB.bmr).toFixed(2)}%`
+      plot.appendChild(bm)
+      yaxR = el('div', 'tri-bodywt-yax tri-bodywt-yax-r')
+      yaxR.append(el('span', '', `${Math.round(bHiP)}`), el('span', '', `${Math.round(bLoP)}`))
+    }
     chart.append(yax, plot)
+    if (yaxR) {
+      chart.appendChild(yaxR)
+      block.classList.add('tri-bodywt--bmr')
+    }
     const xax = el('div', 'tri-bodywt-xax')
     xax.append(
       el('span', '', shortDate(days[0].date)),
@@ -2119,6 +2157,8 @@ const buildBody = (data: Analytics): HTMLElement => {
     )
   if (b.bmi != null)
     cap.appendChild(markGloss(el('span', 'tri-ana-k', `bmi ${b.bmi.toFixed(1)}`), 'bmi'))
+  if (b.latestBmr != null)
+    cap.appendChild(markGloss(el('span', 'tri-ana-k tri-bmr-k', `BMR ${b.latestBmr} kcal`), 'bmr'))
   if (b.muscleMassKg != null)
     cap.appendChild(el('span', 'tri-ana-k', `muscle ${b.muscleMassKg.toFixed(1)} kg`))
   if (b.boneMassKg != null)
@@ -2742,6 +2782,9 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   const bodyReadout = bodyBlock?.querySelector<HTMLElement>('.tri-chart-readout')
   if (bodyBlock && bodyPlot && bodyCursor && bodyReadout && bodySeries.length >= 2) {
     const bdays = groupBodyByDay(bodySeries)
+    const bmrByDay = new Map<string, number>()
+    for (const p of Array.isArray(data.body.bmrSeries) ? data.body.bmrSeries : [])
+      bmrByDay.set(p.date, p.bmr)
     const bt0 = bdays[0].ts
     const bt1 = bdays[bdays.length - 1].ts
     const bx = (ts: number): number => (bt1 > bt0 ? ((ts - bt0) / (bt1 - bt0)) * 100 : 50)
@@ -2761,14 +2804,16 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       const cx = bx(best.ts).toFixed(2)
       bodyCursor.setAttribute('x1', cx)
       bodyCursor.setAttribute('x2', cx)
+      const bmrV = bmrByDay.get(best.date)
+      const bmrTxt = bmrV != null ? ` · BMR ${bmrV} kcal` : ''
       if (best.samples.length > 1) {
         const delta = best.last - best.first
         setMath(
           bodyReadout,
-          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${best.min.toFixed(1)}–${best.max.toFixed(1)} kg · $\\Delta${delta >= 0 ? '+' : ''}${delta.toFixed(1)}$`,
+          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${best.min.toFixed(1)}–${best.max.toFixed(1)} kg · $\\Delta${delta >= 0 ? '+' : ''}${delta.toFixed(1)}$${bmrTxt}`,
         )
       } else {
-        setMath(bodyReadout, `${shortDate(best.date)} · ${best.last.toFixed(1)} kg`)
+        setMath(bodyReadout, `${shortDate(best.date)} · ${best.last.toFixed(1)} kg${bmrTxt}`)
       }
       for (const ln of ranges)
         ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)

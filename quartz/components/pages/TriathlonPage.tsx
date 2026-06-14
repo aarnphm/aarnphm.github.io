@@ -115,16 +115,38 @@ const GEAR: [string, string[]][] = [
   [
     'running',
     [
-      'HOKA Clifton 10',
-      'Ciele Athletic Gocap',
-      'Saucony Inferno Cushion Mid 3-Pack Sock',
-      'Saucony Endorphin Elite 3',
-      'Salomon SHAKEOUT CORE 5',
+      'Shoes: HOKA Clifton 10',
+      'Shoes: Saucony Endorphin Elite 3',
+      'Hat: Ciele Athletic Gocap',
+      'Socks: Saucony Inferno Cushion Mid 3-Pack Sock',
+      'Pants: Salomon SHAKEOUT CORE 5',
+      'Headphones: SHOKZ OpenRun Pro 2-Bone Conduction Headphones',
+      'Utilities: Zone3 Ultimate Race Number Belt',
     ],
   ],
-  ['swim', ['2XU trisuit', 'Decathlon swimskin', 'Speedo goggles']],
+  [
+    'swim',
+    [
+      'Suit: 2XU Trisuit',
+      'Goggles: Decathlon Anti-fog Swimming Goggles',
+      'Goggles: Speedo Unisex Adult Swim Goggles Hydrospex Classic',
+      'Cap: Speedo Unisex Adult Swim Cap Silicone',
+      "Pants: Speedo Speedo Men's Swimsuit Endurance+",
+      'Utilities: Speedo Ergo Ear Plug',
+    ],
+  ],
   ['wearables', ['Oura Ring 4', 'Apple Watch Ultra 3']],
-  ['fuel', ['mandarins', 'apple', 'banana', 'Precision Fueld & Hydration', 'Maurten']],
+  [
+    'fuel',
+    [
+      'mandarins',
+      'apple',
+      'banana',
+      'Precision Fuel & Hydration Chews',
+      'Maurten Gels & Carb Drinks',
+      'Skratch Labs Super High-Carb Hydration Powder',
+    ],
+  ],
 ]
 
 const Icon = ({ sport, cls }: { sport: ActivityKind; cls: string }) => (

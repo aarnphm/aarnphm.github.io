@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-13 18:34:36 GMT-04:00
+modified: 2026-06-14 14:43:12 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -215,7 +215,15 @@ B5, race-power durability:
 
 - 15 min warmup.
 - 3x15 min at 180-195 W, 5 min easy between.
-- Finish with 10 min easy. If legs are sore at minute 45, choose 185 W before 210 W. Math is allowed to be rude.
+- Finish with 10 min easy. If legs are sore at minute 45, choose 185 W before 210 W
+
+### race track
+
+![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
+
+![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
+
+![[https://strava-embeds.com/route/3459617422094043424?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=6d5683ba-67f2-4753-b660-9b1e4c7ef5f0&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 
 [^seiler]: Seiler, "What is best practice for training intensity and duration distribution in endurance athletes?", 2010. https://pubmed.ncbi.nlm.nih.gov/20861519/
 

@@ -38,6 +38,8 @@ export interface BodyBlock {
   muscleMassKg: number | null
   boneMassKg: number | null
   series: { date: string; ts: number; kg: number }[]
+  bmrSeries: { date: string; ts: number; bmr: number }[]
+  latestBmr: number | null
   composition: BodyCompositionDay[]
 }
 
@@ -1095,8 +1097,13 @@ const emptyBody = (): BodyBlock => ({
   muscleMassKg: null,
   boneMassKg: null,
   series: [],
+  bmrSeries: [],
+  latestBmr: null,
   composition: [],
 })
+
+const katchMcArdleBmr = (weightKg: number, bodyFatPct: number): number =>
+  Math.round(370 + 21.6 * weightKg * (1 - bodyFatPct / 100))
 
 function weightTrendPerWeek(series: { date: string; kg: number }[]): number | null {
   const pts = series.map(e => ({ t: dayMs(e.date) / DAY_MS, w: e.kg }))
@@ -2301,6 +2308,15 @@ export function buildAnalytics(
     .filter(s => s.weightKg != null)
     .map(s => ({ date: s.date, ts: s.ts, kg: s.weightKg as number }))
   const weightSeries = [...trackingPts, ...garminPts].sort((p, q) => p.ts - q.ts)
+  const bmrSeries = garminSamples
+    .filter(s => s.weightKg != null && s.bodyFatPct != null)
+    .map(s => ({
+      date: s.date,
+      ts: s.ts,
+      bmr: katchMcArdleBmr(s.weightKg as number, s.bodyFatPct as number),
+    }))
+    .sort((p, q) => p.ts - q.ts)
+  const latestBmr = bmrSeries.length ? bmrSeries[bmrSeries.length - 1].bmr : null
   const composition = garminSamples.map(s => ({
     date: s.date,
     kg: s.weightKg,
@@ -2343,6 +2359,8 @@ export function buildAnalytics(
     muscleMassKg: lastComp('muscleMassKg'),
     boneMassKg: lastComp('boneMassKg'),
     series: weightSeries,
+    bmrSeries,
+    latestBmr,
     composition,
   }
   const weekly = buildWeekly(acts, loadById)
@@ -2464,6 +2482,7 @@ export const DAY_FIELDS = [
   'bodyWaterPct',
   'muscleMassKg',
   'boneMassKg',
+  'bmr',
   'windKph',
   'windDir',
   'windGustKph',
@@ -2685,6 +2704,10 @@ export function buildDataFeed(
         bodyWaterPct: gw?.bodyWaterPct ?? null,
         muscleMassKg: gw?.muscleMassKg ?? null,
         boneMassKg: gw?.boneMassKg ?? null,
+        bmr:
+          gw?.weightKg != null && gw?.bodyFatPct != null
+            ? katchMcArdleBmr(gw.weightKg, gw.bodyFatPct)
+            : null,
         windKph: wind?.windKph ?? weather?.windKph ?? null,
         windDir: wind?.windDir ?? weather?.windDir ?? null,
         windGustKph: weather?.windGustKph ?? null,
