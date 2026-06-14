@@ -1478,10 +1478,6 @@
   cursor: crosshair;
 }
 
-.tri-radar-tip .tri-gloss-def {
-  font-variant-numeric: tabular-nums;
-}
-
 .tri-line-swim {
   stroke: var(--tri-swim);
 }
@@ -2154,6 +2150,11 @@
   color: var(--gray);
 }
 
+.tri-bodywt-yax-r {
+  text-align: left;
+  color: color-mix(in srgb, var(--tri-swim) 80%, var(--gray));
+}
+
 .tri-bodywt-plot {
   position: relative;
   flex: 1 1 auto;
@@ -2223,6 +2224,27 @@
   stroke: color-mix(in srgb, var(--tri-accent) 85%, transparent);
 }
 
+.tri-bodywt-bmr {
+  fill: none;
+  stroke: var(--tri-swim);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.9;
+}
+
+.tri-bodywt-bpt {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  transform: translate(-50%, -50%);
+  background: var(--tri-swim);
+}
+
+.tri-bmr-k {
+  color: color-mix(in srgb, var(--tri-swim) 78%, var(--dark));
+}
+
 .tri-bodywt-xax {
   display: flex;
   justify-content: space-between;
@@ -2231,6 +2253,10 @@
   font-size: 0.56rem;
   font-variant-numeric: tabular-nums;
   color: var(--gray);
+}
+
+.tri-bodywt--bmr .tri-bodywt-xax {
+  padding-right: 2.7rem;
 }
 
 .tri-ana-wiki {
@@ -2247,8 +2273,11 @@
 }
 
 .tri-math .katex {
-  font-size: 1em;
+  font:
+    normal 1em KaTeX_Main,
+    serif !important;
   line-height: 1;
+  color: inherit;
 }
 
 .tri-zone {
