@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-12 22:57:42 GMT-04:00
+modified: 2026-06-13 18:34:36 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -62,13 +62,19 @@ weight: 195
 wind: 17kph 230SW
 ```
 
-## training plan to 2026-07-26
+<!-- training plan start
+meta: supertri toronto 2026
+distance: olympic
+date: 2026-07-26
+target: sub-3
+-->
 
 The plan uses three constraints from the literature:
 
 - Most minutes stay easy, with two hard swim or bike sessions per week. Endurance athletes usually improve through high-volume low-intensity work plus careful high-intensity dosing.[^seiler]
 - Swim paces are set around critical swim speed, because CSS tracks the highest sustainable aerobic swim speed and gives a repeatable way to set 100 m work.[^css]
 - The taper keeps intensity while cutting volume. The best-supported taper shape is about two weeks with volume down 40-60% while intensity stays sharp.[^taper]
+- Combine with Runna training plan for maximum utilization
 
 ### intensity anchors
 
@@ -218,3 +224,5 @@ B5, race-power durability:
 [^taper]: Bosquet et al., "Effects of tapering on performance: a meta-analysis", 2007. https://pubmed.ncbi.nlm.nih.gov/17762369/ See also Mujika and Padilla, "Scientific bases for precompetition tapering strategies", 2003. https://pubmed.ncbi.nlm.nih.gov/12840640/
 
 [^carb]: Burke et al., "Carbohydrates for training and competition", 2011. https://pubmed.ncbi.nlm.nih.gov/21660838/
+
+<!-- training plan end -->

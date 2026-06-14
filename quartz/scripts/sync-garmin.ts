@@ -446,13 +446,37 @@ async function main(): Promise<void> {
   let weight: GarminWeightSample[] = []
   let weightGoalKg: number | null = null
   try {
-    const raw = await getJson(
+    const rangeRaw = await getJson(
       session,
       base,
       '/weight-service/weight/dateRange',
       new URLSearchParams({ startDate: start, endDate: end }),
     )
-    weight = garminConnectWeightSamples(raw)
+    const byDay = new Map<string, GarminWeightSample>()
+    for (const s of garminConnectWeightSamples(rangeRaw)) byDay.set(s.date, s)
+    const collected: GarminWeightSample[] = []
+    for (const day of [...byDay.keys()].sort()) {
+      let samples: GarminWeightSample[] = []
+      try {
+        const dv = await getJson(
+          session,
+          base,
+          `/weight-service/weight/dayview/${encodeURIComponent(day)}`,
+          new URLSearchParams({ includeAll: 'true' }),
+        )
+        samples = garminConnectWeightSamples(dv)
+      } catch (err) {
+        console.warn(
+          `[garmin] weight dayview ${day} failed: ${err instanceof Error ? err.message : err}`,
+        )
+      }
+      if (samples.length) collected.push(...samples)
+      else collected.push(byDay.get(day)!)
+      if (delayMs > 0) await sleep(delayMs)
+    }
+    const deduped = new Map<number, GarminWeightSample>()
+    for (const s of collected) deduped.set(s.ts, s)
+    weight = [...deduped.values()].sort((a, b) => a.ts - b.ts)
     const days = new Set(weight.map(s => s.date)).size
     console.log(`[garmin] weight samples: ${weight.length} over ${days} days`)
   } catch (err) {
