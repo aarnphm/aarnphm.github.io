@@ -9,9 +9,9 @@ tags:
 title: preimages
 ---
 
-also known as a _inverse image_, of a subset $B$ uonder a function $f: X \to Y$ is the set of all elements in the domain $X$ that maps to elements in $B$
+also known as an _inverse image_, of a subset $B$ under a function $f: X \to Y$ is the set of all elements in the domain $X$ that map to elements in $B$
 
-if $f$ maps set $X$ (domain) to set $Y$ (codomain), then $B \subseteq Y$ is ::always:: a subset of $X$
+if $f$ maps set $X$ (domain) to set $Y$ (codomain), then for $B \subseteq Y$ the preimage $f^{-1}(B)$ is ::always:: a subset of $X$
 
 | properties   | notation                                      |
 | ------------ | --------------------------------------------- |
