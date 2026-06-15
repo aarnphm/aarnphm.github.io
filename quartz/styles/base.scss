@@ -986,6 +986,17 @@ iframe.pdf {
   aspect-ratio: 16 / 9;
 }
 
+iframe.external-embed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+iframe.external-embed.strava {
+  aspect-ratio: 1 / 1;
+  border: none;
+}
+
 .navigation-progress {
   position: fixed;
   top: 0;

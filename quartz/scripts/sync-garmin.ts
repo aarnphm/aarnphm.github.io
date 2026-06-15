@@ -13,7 +13,6 @@ import {
   garminConnectStreams,
   garminConnectVo2,
   garminConnectWeightSamples,
-  garminConnectWeightGoal,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
 import { joinSegments, QUARTZ } from '../util/path'
@@ -444,7 +443,6 @@ async function main(): Promise<void> {
   }
 
   let weight: GarminWeightSample[] = []
-  let weightGoalKg: number | null = null
   try {
     const rangeRaw = await getJson(
       session,
@@ -482,20 +480,6 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(`[garmin] weight fetch failed: ${err instanceof Error ? err.message : err}`)
   }
-  try {
-    weightGoalKg = garminConnectWeightGoal(
-      await getJson(
-        session,
-        base,
-        '/goal-service/goal/goals',
-        new URLSearchParams({ status: 'active', start: '0', limit: '30', sortOrder: 'asc' }),
-      ),
-    )
-    if (weightGoalKg != null) console.log(`[garmin] weight goal: ${weightGoalKg} kg`)
-    else console.log('[garmin] no active weight goal')
-  } catch (err) {
-    console.warn(`[garmin] weight goal fetch failed: ${err instanceof Error ? err.message : err}`)
-  }
 
   const sorted: Record<string, GarminActivity> = {}
   for (const activity of Object.values(activities).sort((a, b) =>
@@ -514,7 +498,6 @@ async function main(): Promise<void> {
     streams: sortedStreams,
     vo2max,
     weight,
-    weightGoalKg,
   }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))

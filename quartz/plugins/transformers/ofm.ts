@@ -29,6 +29,8 @@ import calloutScript from '../../components/scripts/callout.inline.ts'
 //@ts-ignore
 import checkboxScript from '../../components/scripts/checkbox.inline'
 // @ts-ignore
+import embedScript from '../../components/scripts/embed.inline'
+// @ts-ignore
 import mermaidScript from '../../components/scripts/mermaid.inline'
 import mermaidStyle from '../../components/styles/mermaid.inline.scss'
 import { svgOptions } from '../../components/svg'
@@ -48,6 +50,7 @@ import {
   isStandaloneProofLine,
   italicizeProofLine,
 } from '../../util/callouts'
+import { buildExternalEmbed } from '../../util/embed'
 import { capitalize } from '../../util/lang'
 // @ts-ignore
 import { FullSlug, pathToRoot, slugTag } from '../../util/path'
@@ -397,6 +400,8 @@ export const wikiTextTransform = (src: string) => {
   })
   return src
 }
+
+let stravaEmbedSeq = 0
 
 export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>> = userOpts => {
   const opts = { ...defaultOptions, ...userOpts }
@@ -1044,21 +1049,46 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
               if (!checkEmbed(node)) return
 
               const src = (node.properties.src ?? '') as string
-              const embed = typeof src === 'string' ? buildYouTubeEmbed(src) : undefined
-              if (!embed) return
 
-              const baseProperties = {
-                class: 'external-embed youtube',
-                allow:
-                  'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
-                frameborder: 0,
-                width: '600px',
-                referrerpolicy: 'strict-origin-when-cross-origin',
-                allowfullscreen: true,
+              const youtube = buildYouTubeEmbed(src)
+              if (youtube) {
+                node.tagName = 'iframe'
+                node.properties = {
+                  class: 'external-embed youtube',
+                  allow:
+                    'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+                  frameborder: 0,
+                  width: '600px',
+                  referrerpolicy: 'strict-origin-when-cross-origin',
+                  allowfullscreen: true,
+                  src: youtube.src,
+                }
+                return
               }
 
+              const embed = buildExternalEmbed(src)
+              const marked =
+                Array.isArray(node.properties.className) &&
+                node.properties.className.includes('external-embed')
+              if (!embed || !(embed.provider || marked)) return
+
+              const { width, height } = node.properties
+              const usable = (v: unknown) =>
+                (typeof v === 'string' || typeof v === 'number') && v !== 'auto'
+
               node.tagName = 'iframe'
-              node.properties = { ...baseProperties, src: embed.src }
+              node.properties = {
+                class: embed.provider ? `external-embed ${embed.provider}` : 'external-embed',
+                frameborder: 0,
+                loading: 'lazy',
+                referrerpolicy: 'no-referrer',
+                src:
+                  embed.provider === 'strava'
+                    ? `${embed.src}#ns=garden-${(stravaEmbedSeq++).toString(36)}`
+                    : embed.src,
+                ...(usable(width) ? { width } : {}),
+                ...(usable(height) ? { height } : {}),
+              }
             })
           }
         })
@@ -1166,6 +1196,10 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
 
       if (opts.enableCheckbox) {
         js.push({ script: checkboxScript, loadTime: 'afterDOMReady', contentType: 'inline' })
+      }
+
+      if (opts.enableYouTubeEmbed) {
+        js.push({ script: embedScript, loadTime: 'afterDOMReady', contentType: 'inline' })
       }
 
       if (opts.callouts) {

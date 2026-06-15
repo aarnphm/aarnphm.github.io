@@ -7,6 +7,7 @@ export interface TrainingPlan {
   distance: string
   date: string
   target: string
+  author: string
   html: string
 }
 
@@ -22,9 +23,9 @@ const isFootnotes = (n: RootContent): n is Element =>
   n.type === 'element' && n.tagName === 'section' && n.properties?.dataFootnotes === ''
 
 function parseMeta(value: string): Omit<TrainingPlan, 'id' | 'html'> {
-  const fields = { meta: '', distance: '', date: '', target: '' }
+  const fields = { meta: '', distance: '', date: '', target: '', author: '' }
   for (const line of value.split('\n')) {
-    const m = /^\s*(meta|distance|date|target)\s*:\s*(.+?)\s*$/.exec(line)
+    const m = /^\s*(meta|distance|date|target|author)\s*:\s*(.+?)\s*$/.exec(line)
     if (m) (fields as Record<string, string>)[m[1]] = m[2]
   }
   return fields

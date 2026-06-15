@@ -323,21 +323,3 @@ test('garminConnectWeightSamples flattens multiple weigh-ins per day with timest
   assert.equal(legacy[0].boneMassKg, null)
   assert.deepEqual(garminConnectWeightSamples('junk'), [])
 })
-
-test('garminConnectWeightGoal finds the weight-typed goal and ignores other goal kinds', async () => {
-  const { garminConnectWeightGoal } = await import('../../util/garmin-connect')
-  assert.equal(
-    garminConnectWeightGoal([
-      { goalType: 0, targetValue: 10000 },
-      { userGoalTypePK: 4, goalValue: 80000 },
-    ]),
-    80,
-  )
-  assert.equal(garminConnectWeightGoal([{ goalType: 'WEIGHT', targetValue: 79.5 }]), 79.5)
-  assert.equal(garminConnectWeightGoal([{ goalType: 0, targetValue: 10000 }]), null)
-  assert.equal(garminConnectWeightGoal({ goals: [{ goalType: 4, targetValue: 81200 }] }), 81.2)
-  assert.equal(garminConnectWeightGoal({ goalWeight: 80000 }), 80)
-  assert.equal(garminConnectWeightGoal({ weightGoal: { goalWeight: 79.5 } }), 79.5)
-  assert.equal(garminConnectWeightGoal({ nothing: true }), null)
-  assert.equal(garminConnectWeightGoal(null), null)
-})

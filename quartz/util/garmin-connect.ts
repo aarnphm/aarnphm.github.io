@@ -416,28 +416,6 @@ export function garminConnectWeightSamples(raw: unknown): GarminWeightSample[] {
   return out.sort((a, b) => a.ts - b.ts)
 }
 
-export function garminConnectWeightGoal(raw: unknown): number | null {
-  const list = Array.isArray(raw) ? raw : isRecord(raw) && Array.isArray(raw.goals) ? raw.goals : []
-  for (const item of list) {
-    if (!isRecord(item)) continue
-    const type = item.goalType ?? item.userGoalTypePK ?? item.goalTypePK
-    const weightTyped =
-      type === 4 || (typeof type === 'string' && type.toLowerCase().includes('weight'))
-    if (!weightTyped) continue
-    for (const key of ['targetValue', 'goalValue', 'value']) {
-      const kg = kgOf(item[key])
-      if (kg != null) return kg
-    }
-  }
-  if (!isRecord(raw)) return null
-  const nested = isRecord(raw.weightGoal) ? raw.weightGoal : raw
-  for (const key of ['goalWeight', 'weightGoalValue', 'targetWeight']) {
-    const kg = kgOf(nested[key])
-    if (kg != null) return kg
-  }
-  return null
-}
-
 function metricIndex(detail: UnknownRecord, key: string): number | null {
   const descriptors = detail.metricDescriptors
   if (!Array.isArray(descriptors)) return null
