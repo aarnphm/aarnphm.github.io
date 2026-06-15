@@ -7,7 +7,7 @@ import {
 } from '../types/component'
 import { descriptionToPlainText } from '../util/description'
 import { unescapeHTML } from '../util/escape'
-import { FullSlug, getFileExtension, joinSegments, pathToRoot } from '../util/path'
+import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } from '../util/path'
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
 export default (() => {
@@ -36,7 +36,11 @@ export default (() => {
 
     // Url of current page
     const socialUrl =
-      fileData.slug === '404' ? url.toString() : joinSegments(url.toString(), fileData.slug!)
+      fileData.slug === '404'
+        ? url.toString()
+        : joinSegments(url.toString(), simplifySlug(fileData.slug!))
+    const noindex =
+      fileData.frontmatter?.noindex === true || fileData.frontmatter?.protected === true
 
     const usesCustomOgImage = ctx.cfg.plugins.emitters.some(
       e => e.name === CustomOgImagesEmitterName,
@@ -84,6 +88,7 @@ export default (() => {
 
         {cfg.baseUrl && (
           <>
+            {fileData.slug !== '404' && <link rel="canonical" href={socialUrl} />}
             <meta property="twitter:domain" content={cfg.baseUrl}></meta>
             <meta property="og:url" content={socialUrl}></meta>
             <meta property="twitter:url" content={socialUrl}></meta>
@@ -93,6 +98,7 @@ export default (() => {
         <link rel="icon" href={iconPath} />
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
+        {noindex && <meta name="robots" content="noindex, nofollow" />}
 
         {css.map(resource => CSSResourceToStyleElement(resource, true))}
         {js
