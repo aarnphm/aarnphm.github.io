@@ -49,6 +49,7 @@ interface CustomEventMap {
   collapsibletoggle: CustomEvent<{ toggleId: string; isOpen: 'true' | 'false' }>
   commentauthorupdated: CustomEvent<{ oldAuthor: string; newAuthor: string }>
   contentdecrypted: CustomEvent<{ article: HTMLElement; content: HTMLElement; slug?: string }>
+  'tri-weightunit': CustomEvent<{}>
 }
 
 type ContentIndex = Record<FullSlug, ContentDetails>

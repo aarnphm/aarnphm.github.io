@@ -111,6 +111,10 @@ class SidenoteManager {
     this.setActiveState(state, expanded)
   }
 
+  private isAnchorCollapsed(label: HTMLElement): boolean {
+    return !!label.closest('.callout.is-collapsed, .collapse-shell:not(.is-open)')
+  }
+
   private measureContentHeight(content: HTMLElement): number {
     const probe = content.cloneNode(true) as HTMLElement
     probe.removeAttribute('id')
@@ -274,6 +278,8 @@ class SidenoteManager {
     this.reset()
 
     this.sidenotes.forEach(state => {
+      if (this.isAnchorCollapsed(state.label)) return
+
       const forceInline = state.span.getAttribute('data-force-inline') === 'true'
 
       if (this.layoutMode === 'inline' || forceInline) {
@@ -296,6 +302,10 @@ function setupSidenotes() {
 
   window.addEventListener('resize', debouncedLayout, { passive: true })
 
+  // collapse toggles change document flow and anchor visibility
+  document.addEventListener('callouttoggle', debouncedLayout)
+  document.addEventListener('collapsibletoggle', debouncedLayout)
+
   // watch for sidepanel state changes
   const sidepanel = document.querySelector('.sidepanel-container')
   let observer: MutationObserver | null = null
@@ -307,6 +317,8 @@ function setupSidenotes() {
 
   window.addCleanup(() => {
     window.removeEventListener('resize', debouncedLayout)
+    document.removeEventListener('callouttoggle', debouncedLayout)
+    document.removeEventListener('collapsibletoggle', debouncedLayout)
     if (observer) {
       observer.disconnect()
     }

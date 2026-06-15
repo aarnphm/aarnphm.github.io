@@ -40,6 +40,7 @@
   justify-content: center;
   min-height: 0;
   max-height: 40%;
+  overflow: hidden;
   padding-block: 5rem 0rem;
   margin-block: 1rem 0;
 }
@@ -618,8 +619,9 @@
 
 .tri-note-foot {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 1.2rem;
+  gap: 0.5rem 1.2rem;
   margin-top: 0.45rem;
 
   button {
@@ -653,6 +655,8 @@
 }
 
 .tri-fuel-btn {
+  white-space: nowrap;
+
   &:hover {
     background: transparent;
     color: var(--dark);
@@ -662,6 +666,7 @@
 
 .triathlon a.tri-credit {
   display: inline;
+  white-space: nowrap;
   font-family: var(--codeFont);
   font-size: 0.64rem;
   line-height: 1.4;
@@ -912,7 +917,7 @@
   border-radius: var(--radius-none);
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, -68%) scale(0.97);
+  transform: translate(-50%, calc(var(--tri-modal-y) + 2%)) scale(0.97);
   transition:
     opacity 0.2s ease,
     transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
@@ -922,7 +927,7 @@
 .tri-calc-open .tri-calc {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, -70%) scale(1);
+  transform: translate(-50%, var(--tri-modal-y)) scale(1);
 }
 
 .tri-calc-bar {
@@ -1060,6 +1065,28 @@
   --tri-run: #fdb2a2;
   --tri-modal-w: min(70rem, 94vw);
   --tri-modal-h: min(86vh, 870px);
+  --tri-modal-y: -50%;
+}
+
+@media all and (max-width: 48rem) {
+  .triathlon {
+    --tri-modal-w: 100vw;
+    --tri-modal-h: 100dvh;
+  }
+
+  .tri-analytics,
+  .tri-map,
+  .tri-training {
+    border: none;
+  }
+
+  .tri-calc {
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    border: none;
+  }
 }
 
 .tri-analytics-scrim,
@@ -1112,7 +1139,7 @@
 .tri-training-open .tri-training {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, -70%);
+  transform: translate(-50%, var(--tri-modal-y));
 }
 
 .tri-ana-bar {
@@ -2125,11 +2152,44 @@
   color: var(--dark);
 }
 
-.tri-bodywt-lbs {
+.tri-bodywt-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-bodywt-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-unit-switch {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: baseline;
   font-family: var(--codeFont);
   font-size: 0.7rem;
+}
+
+.tri-unit-opt {
+  font: inherit;
   font-variant-numeric: tabular-nums;
   color: var(--gray);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.tri-unit-opt:hover {
+  color: var(--dark);
+}
+
+.tri-unit-opt--on {
+  color: var(--dark);
+  border-bottom-color: currentColor;
 }
 
 .tri-bodywt-chart {
@@ -2468,6 +2528,28 @@
   stroke-width: 0.8;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-curve-ftp {
+  stroke: color-mix(in srgb, var(--gray) 60%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-curve-goal {
+  stroke: color-mix(in srgb, var(--tri-accent) 70%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-curve-ftp-k {
+  color: var(--gray);
+}
+
+.tri-curve-goal-k {
+  color: color-mix(in srgb, var(--tri-accent) 75%, var(--dark));
 }
 
 .tri-map-body {
@@ -2918,10 +3000,6 @@
 }
 
 @media all and (max-width: 48rem) {
-  .tri-training {
-    --tri-modal-w: 96vw;
-  }
-
   .tri-training-body {
     flex-direction: column;
   }
@@ -2940,7 +3018,7 @@
 
 @media all and (max-width: 48rem) {
   .tri-map.tri-map--detail {
-    width: 96vw;
+    width: 100vw;
   }
 
   .tri-map--detail .tri-map-body {

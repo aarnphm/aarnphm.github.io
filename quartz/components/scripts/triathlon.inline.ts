@@ -42,6 +42,8 @@ type DetailPayload = {
   health: Record<string, ActivityHealth>
   zones?: StravaZones
   powerCurveRef?: PowerCurvePoint[]
+  ftp?: number | null
+  goalFtp?: number | null
 }
 
 type TrainingPlan = {
@@ -57,6 +59,8 @@ type TrainingPayload = { plans: TrainingPlan[] }
 
 let DETAIL_ZONES: StravaZones | null = null
 let DETAIL_CURVE_REF: PowerCurvePoint[] = []
+let DETAIL_FTP: number | null = null
+let DETAIL_GOAL_FTP: number | null = null
 let DETAIL_PAYLOAD: Promise<DetailPayload | null> | null = null
 
 const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
@@ -65,6 +69,8 @@ const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
     .then((data: DetailPayload) => {
       DETAIL_ZONES = data.zones ?? null
       DETAIL_CURVE_REF = data.powerCurveRef ?? []
+      DETAIL_FTP = data.ftp ?? null
+      DETAIL_GOAL_FTP = data.goalFtp ?? null
       return data
     })
     .catch(() => null)
@@ -392,12 +398,14 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
   const ref = DETAIL_CURVE_REF
+  const ftpRef = DETAIL_FTP
+  const goalRef = DETAIL_GOAL_FTP
   const wrap = el('div', 'tri-zone')
   wrap.appendChild(el('div', 'tri-zone-title', 'power curve'))
   const W = 100
   const H = 34
   const secs = curve.map(c => c.s)
-  const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w))
+  const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w), ftpRef ?? 0, goalRef ?? 0)
   const minLog = Math.log(secs[0])
   const maxLog = Math.log(secs[secs.length - 1])
   const span = Math.max(1e-6, maxLog - minLog)
@@ -417,6 +425,10 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
         class: 'tri-curve-ref',
       }),
     )
+  const hline = (w: number, cls: string): SVGElement =>
+    svg('line', { x1: 0, y1: Y(w).toFixed(2), x2: W, y2: Y(w).toFixed(2), class: cls })
+  if (ftpRef != null) s.appendChild(hline(ftpRef, 'tri-curve-ftp'))
+  if (goalRef != null) s.appendChild(hline(goalRef, 'tri-curve-goal'))
   s.appendChild(svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
   const cursor = svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H })
   s.appendChild(cursor)
@@ -430,6 +442,8 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
     const p = curve.find(c => c.s === sec)
     if (p) cap.appendChild(el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
   }
+  if (ftpRef != null) cap.appendChild(el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftpRef}W`))
+  if (goalRef != null) cap.appendChild(el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalRef}W`))
   wrap.appendChild(cap)
   const onMove = (event: MouseEvent) => {
     const r = s.getBoundingClientRect()
@@ -1286,6 +1300,47 @@ const setupDropdown = (
 
 const ANA_W = 100
 const ANA_H = 30
+
+type WeightUnit = 'kg' | 'lb'
+const WEIGHT_UNIT_KEY = 'tri-weight-unit'
+const KG_PER_LB = 0.45359237
+const readWeightUnit = (): WeightUnit => {
+  try {
+    return localStorage.getItem(WEIGHT_UNIT_KEY) === 'kg' ? 'kg' : 'lb'
+  } catch {
+    return 'lb'
+  }
+}
+let weightUnit: WeightUnit = readWeightUnit()
+const wConv = (kg: number): number => (weightUnit === 'kg' ? kg : kg / KG_PER_LB)
+const wNum = (kg: number, kgDp = 1, lbDp = 0): string =>
+  wConv(kg).toFixed(weightUnit === 'kg' ? kgDp : lbDp)
+const wFmt = (kg: number, kgDp = 1, lbDp = 0): string => `${wNum(kg, kgDp, lbDp)} ${weightUnit}`
+const wSigned = (kg: number, dp: number): string => {
+  const v = wConv(kg)
+  return `${v > 0 ? '+' : ''}${v.toFixed(dp)}`
+}
+const setWeightUnit = (u: WeightUnit): void => {
+  if (u === weightUnit) return
+  weightUnit = u
+  try {
+    localStorage.setItem(WEIGHT_UNIT_KEY, u)
+  } catch {}
+  document.dispatchEvent(new CustomEvent('tri-weightunit', { detail: {} }))
+}
+const weightSwitch = (): HTMLElement => {
+  const g = el('div', 'tri-unit-switch', undefined, { role: 'group', 'aria-label': 'weight unit' })
+  for (const u of ['kg', 'lb'] as WeightUnit[]) {
+    const on = u === weightUnit
+    const opt = el('button', on ? 'tri-unit-opt tri-unit-opt--on' : 'tri-unit-opt', u, {
+      type: 'button',
+      'aria-pressed': String(on),
+    })
+    opt.addEventListener('click', () => setWeightUnit(u))
+    g.appendChild(opt)
+  }
+  return g
+}
 const RACE_LABEL: Record<string, string> = {
   sprint: 'sprint',
   olympic: 'olympic',
@@ -1317,7 +1372,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   tsb: {
     term: 'form/TSB',
-    def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$ ($\\text{fitness} - \\text{fatigue}$). Positive means fresh and tapered; negative means loaded and carrying fatigue.',
+    def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$. Positive means fresh and tapered; negative means loaded and carrying fatigue.',
   },
   acwr: {
     term: 'ACWR',
@@ -1697,9 +1752,10 @@ const buildCtlSport = (data: Analytics): HTMLElement => {
   block.appendChild(el('div', 'tri-chart-readout'))
   const cap = el('div', 'tri-elev-cap')
   for (const sp of ['swim', 'bike', 'run'] as Sport[]) {
-    const days = bySport(data.thresholds, sp)?.staleDays ?? 0
+    const th = bySport(data.thresholds, sp)
+    const label = th == null ? '—' : th.staleDays === 0 ? 'today' : `${th.staleDays}d ago`
     const leg = el('span', `tri-ana-leg tri-leg-${sp}`)
-    leg.append(buildIcon(sp), el('span', 'tri-ana-k', days > 45 ? `${days}d stale` : `${days}d`))
+    leg.append(buildIcon(sp), el('span', 'tri-ana-k', label))
     cap.appendChild(leg)
   }
   block.appendChild(cap)
@@ -1990,16 +2046,18 @@ const groupBodyByDay = (series: { date: string; ts: number; kg: number }[]): Bod
 
 const buildBody = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-bodywt')
-  block.appendChild(anaTitle('body weight', 'weight'))
+  const title = anaTitle('body weight', 'weight')
   const b: BodyBlock = data.body
   if (b.latestKg == null) {
+    block.appendChild(title)
     block.appendChild(el('div', 'tri-ana-empty', 'no weight logged'))
     return block
   }
+  const titleRow = el('div', 'tri-bodywt-titlerow')
+  titleRow.append(title, weightSwitch())
+  block.appendChild(titleRow)
   const head = el('div', 'tri-bodywt-head')
-  head.append(el('span', 'tri-bodywt-kg', `${b.latestKg.toFixed(1)} kg`))
-  if (b.latestLbs != null)
-    head.appendChild(el('span', 'tri-bodywt-lbs', `${b.latestLbs.toFixed(0)} lb`))
+  head.append(el('span', 'tri-bodywt-kg', wFmt(b.latestKg)))
   block.appendChild(head)
   const pts = b.series
   if (pts.length >= 2) {
@@ -2024,7 +2082,7 @@ const buildBody = (data: Analytics): HTMLElement => {
     const yPct = (kg: number): number => (1 - (kg - lo) / (hi - lo)) * 100
     const chart = el('div', 'tri-bodywt-chart')
     const yax = el('div', 'tri-bodywt-yax')
-    yax.append(el('span', '', `${hi.toFixed(1)}`), el('span', '', `${lo.toFixed(1)}`))
+    yax.append(el('span', '', wNum(hi)), el('span', '', wNum(lo)))
     const plot = el('div', 'tri-bodywt-plot')
     const s = svg('svg', {
       class: 'tri-bodywt-svg',
@@ -2128,29 +2186,14 @@ const buildBody = (data: Analytics): HTMLElement => {
   if (b.trendKgPerWeek != null)
     cap.appendChild(
       markGloss(
-        el(
-          'span',
-          'tri-ana-k',
-          `${b.trendKgPerWeek > 0 ? '+' : ''}${b.trendKgPerWeek.toFixed(2)} kg/wk`,
-        ),
+        el('span', 'tri-ana-k', `${wSigned(b.trendKgPerWeek, 2)} ${weightUnit}/wk`),
         'wtrend',
       ),
     )
   if (b.goalKg != null) {
-    const delta =
-      b.goalDeltaKg != null
-        ? ` (${b.goalDeltaKg > 0 ? '+' : ''}${b.goalDeltaKg.toFixed(1)} kg)`
-        : ''
+    const delta = b.goalDeltaKg != null ? ` (${wSigned(b.goalDeltaKg, 1)} ${weightUnit})` : ''
     const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ wk` : ''
-    cap.appendChild(
-      markGloss(
-        mathK(
-          'tri-ana-k',
-          `goal ${b.goalLbs != null ? `${b.goalLbs.toFixed(0)} lb` : `${b.goalKg.toFixed(1)} kg`}${delta}${eta}`,
-        ),
-        'wgoal',
-      ),
-    )
+    cap.appendChild(markGloss(mathK('tri-ana-k', `goal ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'))
   }
   if (b.bodyFatPct != null)
     cap.appendChild(
@@ -2161,9 +2204,9 @@ const buildBody = (data: Analytics): HTMLElement => {
   if (b.latestBmr != null)
     cap.appendChild(markGloss(el('span', 'tri-ana-k tri-bmr-k', `BMR ${b.latestBmr} kcal`), 'bmr'))
   if (b.muscleMassKg != null)
-    cap.appendChild(el('span', 'tri-ana-k', `muscle ${b.muscleMassKg.toFixed(1)} kg`))
+    cap.appendChild(el('span', 'tri-ana-k', `muscle ${wFmt(b.muscleMassKg, 1, 1)}`))
   if (b.boneMassKg != null)
-    cap.appendChild(el('span', 'tri-ana-k', `bone ${b.boneMassKg.toFixed(1)} kg`))
+    cap.appendChild(el('span', 'tri-ana-k', `bone ${wFmt(b.boneMassKg, 1, 1)}`))
   if (b.bodyWaterPct != null)
     cap.appendChild(el('span', 'tri-ana-k', `water ${b.bodyWaterPct.toFixed(1)}%`))
   const next = (data.events ?? [])
@@ -2811,10 +2854,10 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         const delta = best.last - best.first
         setMath(
           bodyReadout,
-          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${best.min.toFixed(1)}–${best.max.toFixed(1)} kg · $\\Delta${delta >= 0 ? '+' : ''}${delta.toFixed(1)}$${bmrTxt}`,
+          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(best.min)}–${wNum(best.max)} ${weightUnit} · $\\Delta${wSigned(delta, 1)}$${bmrTxt}`,
         )
       } else {
-        setMath(bodyReadout, `${shortDate(best.date)} · ${best.last.toFixed(1)} kg${bmrTxt}`)
+        setMath(bodyReadout, `${shortDate(best.date)} · ${wFmt(best.last)}${bmrTxt}`)
       }
       for (const ln of ranges)
         ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)
@@ -3015,6 +3058,8 @@ const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
   return wrap
 }
 
+const modalBaseY = (): number => -50
+
 const flipClose = (
   btn: HTMLElement,
   panel: HTMLElement,
@@ -3037,10 +3082,10 @@ const flipClose = (
   const sy = Math.max(0.05, br.height / pr.height)
   const anim = panel.animate(
     [
-      { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
+      { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
       {
         opacity: 0,
-        transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+        transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
       },
     ],
     { duration: 240, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
@@ -3134,6 +3179,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        DETAIL_FTP = d.ftp ?? null
+        DETAIL_GOAL_FTP = d.goalFtp ?? null
       })
       .catch(() => {})
   }
@@ -3375,9 +3422,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
+        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
@@ -3409,6 +3456,10 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   results?.addEventListener('click', onResultsClick)
   detail?.addEventListener('click', onDetailToggle)
   document.addEventListener('keydown', onKey)
+  const onUnitChange = () => {
+    if (data) render(data)
+  }
+  document.addEventListener('tri-weightunit', onUnitChange)
 
   return () => {
     btn.removeEventListener('click', open)
@@ -3420,6 +3471,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     results?.removeEventListener('click', onResultsClick)
     detail?.removeEventListener('click', onDetailToggle)
     document.removeEventListener('keydown', onKey)
+    document.removeEventListener('tri-weightunit', onUnitChange)
     scrubCleanup?.()
   }
 }
@@ -3958,6 +4010,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        DETAIL_FTP = d.ftp ?? null
+        DETAIL_GOAL_FTP = d.goalFtp ?? null
         overviewCache.clear()
         mapCtl.drawOverview()
         if (search?.value) runSearch()
@@ -4188,9 +4242,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
+        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
@@ -4474,9 +4528,9 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
+        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
