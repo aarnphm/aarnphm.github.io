@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-14 20:16:44 GMT-04:00
+modified: 2026-06-14 21:30:45 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2583,6 +2583,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://web.archive.org/web/20260611112129/https://europe2031.ai/ -- Europe 2031
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [futurism, transhumanism]
+    - importance: 5
+- https://nostalgebraist.tumblr.com/post/785766737747574784/the-void -- the void
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [ai, sentient]
+    - later: true
+- https://livingbulwark.net/wp-content/bulwark/april2020p7.htm -- On Living in an Atomic Age, C. S. Lewis
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [longtermism]
+  - > If we are all going to be destroyed by an atomic bomb, let that bomb when it comes find us doing sensible and human things—praying, working, teaching, reading, listening to music, bathing the children, playing tennis, chatting to our friends over a pint and a game of darts—not huddled together like frightened sheep and thinking about bombs. They may break our bodies (a microbe can do that) but they need not dominate our minds...
+- https://aarushgupta.io/posts/specialization/ -- The pitfalls of hyperspecialization
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [efficiency]
+    - later: true
+- https://randsinrepose.com/archives/stables-and-volatiles/ -- Stables and Volatiles
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [work, being, culture]
+    - later: true
+- https://www.palladiummag.com/2023/06/06/school-is-not-enough -- School Is Not Enough [**]
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [pedagogy, skills]
+    - importance: 8
 - https://www.lesswrong.com/posts/KWeAYcDJwfrG7RwBN/theory-uplift-differentially-benefits-safety-and-is -- theory uplift differentially benefits safety & is underleveraged
   - [meta]:
     - date: 06/10/2026
@@ -4761,6 +4791,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://eatonphil.com/2026-ostep.html -- Operating Systems: Three Easy Pieces Book Club
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [swe]
 - https://mathcs.org/analysis/reals/index.html -- Interactive Real Analysis [**]
   - [meta]:
     - date: 06/05/2026
@@ -6347,7 +6381,7 @@ title: are.na
   - [meta]:
     - date: 11/20/2025
     - tags: [internet]
-- https://substack.com/@ellieanderphd/note/c-176537495?r=1z8i4s&utm_medium=ios -- How to read philosophy
+- https://substack.com/@ellieanderphd/note/c-176537495?r=1z8i4s -- How to read philosophy
   - [meta]:
     - date: 11/13/2025
     - tags: [philosophy]
@@ -7818,6 +7852,10 @@ title: are.na
 
 ## stream
 
+- https://randsinrepose.com/ -- Michael Lopp's Blog
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [management, people]
 - https://www.cypherpunkbooks.com/ -- Cypherpunk books
   - [meta]:
     - date: 06/08/2026
