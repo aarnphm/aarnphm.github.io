@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-14 22:45:45 GMT-04:00
+modified: 2026-06-15 09:03:47 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2588,6 +2588,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://onethingnewsletter.substack.com/p/taste-notes-112025-turbo-moka-edition -- Taste Notes 11.20.25, turbo moka edition
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [criticism, culture]
+    - later: true
+- https://mingyuan.substack.com/p/digital-intentionality-whats-the -- Digital intentionality: What's the point?
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [intentionality, attention]
+    - later: true
+- https://lydialoo.substack.com/p/the-problem-with-micro-nostalgia -- The problem with micro nostalgia
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [nostalgia, culture]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/first-we-shape-our-social-graph-then -- First we shape our social graph; then it shapes us
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [social-graph, culture]
+    - later: true
+- https://milky.substack.com/p/mollys-2025-notes -- Molly's 2025 notes
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [notes, life]
+    - later: true
+- https://befriendjamin.substack.com/p/the-green-light-of-another-language -- The Green Light of Another Language
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [literature, translation]
+    - later: true
 - https://web.archive.org/web/20260611112129/https://europe2031.ai/ -- Europe 2031
   - [meta]:
     - date: 06/14/2026
@@ -6179,6 +6209,16 @@ title: are.na
 
 ## opinions
 
+- https://samkriss.substack.com/p/against-truth -- Against truth
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [rationality, epistemology]
+    - later: true
+- https://samkriss.substack.com/p/the-law-that-can-be-named-is-not -- The law that can be named is not the true law
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [law, politics]
+    - later: true
 - https://www.lesswrong.com/posts/KWdtL8iyCCiYud9mw/persona-parasitology -- Persona Parasitology
   - [meta]:
     - date: 06/09/2026
@@ -6516,6 +6556,21 @@ title: are.na
 
 ## life is literature
 
+- https://wellnesswisdom.substack.com/p/40ish-pieces-of-advice-from-2025 -- 40(ish) pieces of advice from 2025
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [advice, life]
+    - later: true
+- https://adaptivegood.substack.com/p/memetic-desire -- Mimetic Desire
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [desire, mimesis]
+    - later: true
+- https://ceselder.substack.com/p/the-gradient-descented-normie -- The gradient-descented normie
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [mimetic-desire, selfhood]
+    - later: true
 - https://en.wikipedia.org/wiki/East_of_Eden_(novel) -- East of Eden
   - [meta]:
     - date: 06/11/2026
@@ -7196,6 +7251,121 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://plato.stanford.edu/entries/functionalism/ -- Functionalism
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-mind, functionalism]
+    - later: true
+- https://plato.stanford.edu/entries/arendt/ -- Hannah Arendt
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [political-philosophy, arendt]
+    - later: true
+- https://plato.stanford.edu/entries/lewis-ci/ -- Clarence Irving Lewis
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [pragmatism, epistemology]
+    - later: true
+- https://plato.stanford.edu/entries/quine/ -- Willard Van Orman Quine
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [quine, analytic-philosophy]
+    - later: true
+- https://plato.stanford.edu/entries/dualism/ -- Dualism
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-mind, metaphysics]
+    - later: true
+- https://plato.stanford.edu/entries/hartshorne/ -- Charles Hartshorne
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [theology, metaphysics]
+    - later: true
+- https://plato.stanford.edu/entries/mental-causation/ -- Mental Causation
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-mind, causation]
+    - later: true
+- https://plato.stanford.edu/search/searcher.py?query=dualism -- SEP search: dualism
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [dualism, philosophy-of-mind]
+    - later: true
+- https://plato.stanford.edu/entries/physicalism/ -- Physicalism
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-mind, physicalism]
+    - later: true
+- https://plato.stanford.edu/entries/leibniz-mind/ -- Leibniz's Philosophy of Mind
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [leibniz, philosophy-of-mind]
+    - later: true
+- https://plato.stanford.edu/entries/emily-elizabeth-constance-jones/ -- Emily Elizabeth Constance Jones
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [logic, history-of-philosophy]
+    - later: true
+- https://plato.stanford.edu/archives/fall2007/entries/repugnant-conclusion -- The Repugnant Conclusion
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [population-ethics, value]
+    - later: true
+- https://plato.stanford.edu/entries/rights-children -- Children's Rights
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [rights, ethics]
+    - later: true
+- https://plato.stanford.edu/entries/popper/ -- Karl Popper
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-science, popper]
+    - later: true
+- https://plato.stanford.edu/entries/thomas-kuhn/ -- Thomas Kuhn
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-science, kuhn]
+    - later: true
+- https://plato.stanford.edu/entries/content-externalism/ -- Externalism About the Mind
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [philosophy-of-mind, externalism]
+    - later: true
+- https://plato.stanford.edu/entries/fine-tuning/ -- Fine-Tuning
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [cosmology, philosophy-of-religion]
+    - later: true
+- https://plato.stanford.edu/entries/aristotle-logic/ -- Aristotle's Logic
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [aristotle, logic]
+    - later: true
+- https://plato.stanford.edu/entries/aristotle-ethics/ -- Aristotle's Ethics
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [aristotle, ethics]
+    - later: true
+- https://plato.stanford.edu/entries/epistemology-bayesian/ -- Bayesian Epistemology
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [bayesianism, epistemology]
+    - later: true
+- https://plato.stanford.edu/entries/analytic-synthetic/?curius=3971 -- The Analytic/Synthetic Distinction
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [analytic-philosophy, language]
+    - later: true
+- https://plato.stanford.edu/entries/cellular-automata/ -- Cellular Automata
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [computation, complexity]
+    - later: true
+- https://plato.stanford.edu/entries/axiom-choice/ -- The Axiom of Choice
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [set-theory, logic]
+    - later: true
 - https://plato.stanford.edu/entries/domination/ -- Domination
   - [meta]:
     - date: 06/14/2026
@@ -8311,6 +8481,11 @@ title: are.na
 
 ## finances
 
+- https://philiptrammell.substack.com/p/capital-in-the-22nd-century -- Capital in the 22nd Century
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [capital, inequality]
+    - later: true
 - https://www.berkshirehathaway.com/letters/1983.html -- Berkshire Hathaway's 1983 letter to investor [**]
   - [meta]:
     - date: 06/08/2026
@@ -9909,6 +10084,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/attentiontech/gtm-superintelligence -- gtm-superintelligence
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [agents, sales]
+    - later: true
 - https://github.com/google/re2/wiki/syntax -- RE2 syntax
   - [meta]:
     - date: 06/12/2026
@@ -10981,6 +11161,11 @@ title: are.na
 
 ## engineering
 
+- https://thezvi.substack.com/p/claude-opus-45-model-card-alignment -- Claude Opus 4.5: Model Card, Alignment and Safety
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [alignment, model-card]
+    - later: true
 - https://antaresindustries.com/updates/antares-achieves-criticality -- Antares Achieves Criticality of Mark-0 Reactor
   - [meta]:
     - date: 06/10/2026
@@ -12342,6 +12527,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2606.07878v1 -- Still: Amortized KV Cache Compaction in a Single Forward Pass
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [kv-cache, inference]
+    - later: true
+- https://arxiv.org/abs/2211.00593 -- Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [interpretability, circuits]
+    - later: true
+- https://arxiv.org/abs/2502.05795 -- The Curse of Depth in Large Language Models
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [llm, training]
+    - later: true
 - https://arxiv.org/abs/2512.18194
   - [meta]:
     - date: 06/14/2026
