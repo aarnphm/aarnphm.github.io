@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-14 21:30:45 GMT-04:00
+modified: 2026-06-14 22:45:45 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1284,6 +1284,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://theodore.net/ -- Teddy
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [sf, engineer]
+    - later: true
 - https://palbin.web.illinois.edu/ -- Piere Albin
   - [meta]:
     - date: 06/11/2026
