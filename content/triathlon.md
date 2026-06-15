@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-14 14:43:12 GMT-04:00
+modified: 2026-06-14 14:49:50 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -67,6 +67,7 @@ meta: supertri toronto 2026
 distance: olympic
 date: 2026-07-26
 target: sub-3
+author: gpt-5.5-pro-xhigh,claude-fable-5[1m]
 -->
 
 The plan uses three constraints from the literature:

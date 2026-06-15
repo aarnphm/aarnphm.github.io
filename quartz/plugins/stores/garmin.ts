@@ -88,7 +88,6 @@ export interface GarminCache {
   streams?: Record<string, GarminStreams>
   vo2max?: Record<string, GarminVo2Day>
   weight?: GarminWeightSample[]
-  weightGoalKg?: number | null
 }
 
 export function emptyGarminMetrics(): GarminMetrics {

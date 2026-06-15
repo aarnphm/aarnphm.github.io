@@ -6,6 +6,7 @@
 import type { Element as HastElement, Text as HastText } from 'hast'
 import type { Extension, CompileContext, Token } from 'mdast-util-from-markdown'
 import { Literal } from 'unist'
+import { buildExternalEmbed } from '../../util/embed'
 import { flashcardsSlug, isFlashcardPath, sourceSlugForDeck } from '../../util/flashcards-path'
 import {
   FilePath,
@@ -473,6 +474,39 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
   }
 }
 
+/**
+ * annotate external URL embed with hast properties.
+ * converts `![[https://...]]` to an <img> marked `external-embed`;
+ * the ofm.ts html plugin rewrites it to a sized <iframe>.
+ */
+function annotateExternalEmbed(node: Wikilink, wikilink: WikilinkData, url: string): void {
+  const { alias, metadataParsed, metadata } = wikilink
+
+  let width: string | undefined
+  let height: string | undefined
+  const parts = (alias ?? '').split('|').map(s => s.trim())
+  const dimMatch = /^(\d+%?)(?:x(\d+%?))?$/.exec(parts[parts.length - 1] ?? '')
+  if (dimMatch) {
+    width = dimMatch[1]
+    height = dimMatch[2]
+  }
+
+  if (!node.data) node.data = { wikilink }
+
+  node.data.hName = 'img'
+  node.data.hProperties = {
+    src: url,
+    className: ['external-embed'],
+    ...(width ? { width } : {}),
+    ...(height ? { height } : {}),
+    ...(metadataParsed
+      ? { 'data-metadata': JSON.stringify(metadataParsed) }
+      : metadata
+        ? { 'data-metadata': metadata }
+        : {}),
+  }
+}
+
 function pdfMetadataValue(metadata: Record<string, unknown> | undefined, key: string): unknown {
   return metadata ? metadata[key] : undefined
 }
@@ -716,6 +750,11 @@ function exitWikilink(
             annotateAudioEmbed(node, wikilink, url)
           } else if (ext === '.pdf') {
             annotatePdfEmbed(node, wikilink, url)
+          } else if (
+            /^https?:\/\//i.test(targetPath) &&
+            buildExternalEmbed(targetPath + (displayAnchor || ''))
+          ) {
+            annotateExternalEmbed(node, wikilink, targetPath + (displayAnchor || ''))
           } else {
             annotateTransclude(node, wikilink, url, displayAnchor)
           }

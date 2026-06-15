@@ -259,14 +259,13 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
         boneMassKg: null,
       },
     ],
-    weightGoalKg: 80,
   }
   const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
   const b = a.body
   assert.equal(b.latestKg, 86.8)
-  assert.equal(b.goalKg, 80)
-  assert.equal(b.goalLbs != null && Math.round(b.goalLbs), 176)
-  assert.equal(b.goalDeltaKg, 6.8)
+  assert.equal(b.goalKg != null && Math.round(b.goalKg), 82)
+  assert.equal(b.goalLbs, 180)
+  assert.equal(b.goalDeltaKg, 5.2)
   assert.ok(b.trendKgPerWeek != null && b.trendKgPerWeek < 0)
   assert.ok(b.goalEtaWeeks != null && b.goalEtaWeeks > 0 && b.goalEtaWeeks <= 104)
   assert.equal(b.bodyFatPct, 21.1)
@@ -290,7 +289,7 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
     .trimEnd()
     .split('\n')
     .map(l => JSON.parse(l))
-  assert.equal(rows[0].athlete.weightGoalKg, 80)
+  assert.equal(rows[0].athlete.weightGoalKg != null && Math.round(rows[0].athlete.weightGoalKg), 82)
   const scaleDay = rows.find(r => r.kind === 'day' && r.date === iso(25))
   assert.equal(scaleDay.bmi, 26.9)
   assert.equal(scaleDay.bodyFatPct, 21.5)

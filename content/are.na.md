@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-14 09:04:05 GMT-04:00
+modified: 2026-06-14 20:16:44 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -8728,6 +8728,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=AvlZBH_aPlM -- Dumping My Girlfriend
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [meme]
 - https://www.youtube.com/watch?v=DpGU8NARX-s -- The Trick Pseudoscience Always Uses
   - [meta]:
     - date: 06/12/2026

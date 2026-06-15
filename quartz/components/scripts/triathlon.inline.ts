@@ -50,6 +50,7 @@ type TrainingPlan = {
   distance: string
   date: string
   target: string
+  author: string
   html: string
 }
 type TrainingPayload = { plans: TrainingPlan[] }
@@ -3036,10 +3037,10 @@ const flipClose = (
   const sy = Math.max(0.05, br.height / pr.height)
   const anim = panel.animate(
     [
-      { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+      { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
       {
         opacity: 0,
-        transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+        transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
       },
     ],
     { duration: 240, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
@@ -3374,9 +3375,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
@@ -4187,9 +4188,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )
@@ -4332,18 +4333,30 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
   let data: TrainingPayload | null = null
   let selIndex = -1
 
-  const tag = (cls: string, text: string): HTMLElement | null =>
-    text ? el('span', `tri-training-tag ${cls}`, text) : null
-
   const showPlan = (plan: TrainingPlan) => {
     if (!preview) return
     const head = el('div', 'tri-pop-head tri-training-head')
     head.appendChild(el('span', 'tri-pop-date tri-training-meta-name', plan.meta))
-    const dt = tag('tri-training-tag--distance', plan.distance)
-    if (dt) head.appendChild(dt)
-    if (plan.date) head.appendChild(el('span', 'tri-training-tag', plan.date))
-    const tt = tag('tri-training-tag--target', plan.target)
-    if (tt) head.appendChild(tt)
+    const meta = el('ul', 'tri-training-meta')
+    const metaRow = (label: string, value: string) => {
+      if (!value) return
+      const li = el('li')
+      li.append(el('span', 'tri-training-meta-k', label), el('span', 'tri-training-meta-v', value))
+      meta.appendChild(li)
+    }
+    metaRow('distance', plan.distance)
+    metaRow('date', plan.date)
+    metaRow('objectif', plan.target)
+    metaRow(
+      'avec',
+      plan.author
+        ? plan.author
+            .split(',')
+            .map(s => s.trim())
+            .join(', ')
+        : '',
+    )
+    if (meta.childElementCount) head.appendChild(meta)
     const body = el('div', 'tri-training-render')
     body.innerHTML = plan.html
     preview.replaceChildren(head, body)
@@ -4461,9 +4474,9 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
       [
         {
           opacity: 0,
-          transform: `translate(-50%, -50%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
+          transform: `translate(-50%, -70%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
         },
-        { opacity: 1, transform: 'translate(-50%, -50%) scale(1, 1)' },
+        { opacity: 1, transform: 'translate(-50%, -70%) scale(1, 1)' },
       ],
       { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
     )

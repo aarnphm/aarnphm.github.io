@@ -1466,8 +1466,8 @@ const ATHLETE = {
   sex: 'M' as const,
   born: '2001-03',
   bornAnchor: '2001-03-01',
-  hrMax: 195 as number | null,
-  vo2max: 42 as number | null,
+  hrMax: 190 as number | null,
+  vo2max: 44 as number | null,
   goalWeightLb: 180 as number | null,
 }
 
@@ -2335,7 +2335,7 @@ export function buildAnalytics(
     }
     return null
   }
-  const goalKg = inputs.garmin?.weightGoalKg ?? goalWeightKg
+  const goalKg = goalWeightKg
   const goalDeltaKg = latestKg != null && goalKg != null ? round(latestKg - goalKg, 1) : null
   const converging =
     goalDeltaKg != null &&
@@ -2792,7 +2792,7 @@ export function buildDataFeed(
       ageYears,
       hrMaxEst:
         ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
-      weightGoalKg: inputs.garmin?.weightGoalKg ?? goalWeightKg,
+      weightGoalKg: goalWeightKg,
     },
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }
