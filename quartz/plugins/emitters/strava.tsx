@@ -19,7 +19,7 @@ import {
   stravaCachePath,
   weatherCachePath,
 } from '../../util/strava-payload'
-import { buildAnalytics, buildDataFeed } from '../stores/analytics'
+import { ATHLETE, buildAnalytics, buildDataFeed } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
@@ -124,6 +124,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             health: payload.health,
             zones: payload.zones,
             powerCurveRef: payload.powerCurveRef,
+            ftp: ATHLETE.ftp,
+            goalFtp: ATHLETE.goalFTP,
           }),
         }),
       )

@@ -1462,13 +1462,15 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
   }
 }
 
-const ATHLETE = {
+export const ATHLETE = {
   sex: 'M' as const,
   born: '2001-03',
   bornAnchor: '2001-03-01',
   hrMax: 190 as number | null,
   vo2max: 44 as number | null,
+  ftp: 208 as number | null,
   goalWeightLb: 180 as number | null,
+  goalFTP: 290 as number | null,
 }
 
 const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * 0.45359237 : null
@@ -2793,6 +2795,8 @@ export function buildDataFeed(
       hrMaxEst:
         ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
       weightGoalKg: goalWeightKg,
+      ftp: ATHLETE.ftp,
+      goalFtp: ATHLETE.goalFTP,
     },
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }
