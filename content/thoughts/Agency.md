@@ -2,7 +2,7 @@
 date: '2024-02-07'
 description: considered to be a study of action theory
 id: agency
-modified: 2026-06-05 15:08:23 GMT-04:00
+modified: 2026-06-14 21:31:49 GMT-04:00
 tags:
   - pattern
   - philosophy
@@ -114,7 +114,7 @@ Wasil presents:
 
 ## agency and taste
 
-[The Agency Gap](https://benjamincongdon.me/blog/2025/07/31/The-Agency-Gap/) and _[Impact, agency, and taste](https://www.benkuhn.net/impact/)_
+_[The Agency Gap](https://benjamincongdon.me/blog/2025/07/31/The-Agency-Gap/) and [Impact, agency, and taste](https://www.benkuhn.net/impact/)_
 
 To [dwell](https://tsvibt.github.io/theory/pages/bl_24_08_01_14_01_47_609192.html) is to surrender your will to become even more agentic.
 
