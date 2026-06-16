@@ -74,4 +74,4 @@ Plato --> Idea for all Socrates asks
 
 Charges for Athenian trials?
 
-Animosity with regards to to his way of being?
+Animosity with regards to his way of being?

@@ -63,7 +63,7 @@ for any real number $a \in \mathbb{R}$
 
 ### vector bundle
 
-a topological construction that makes precise the idea of of a family of vector space parameterised by another space $X$
+a topological construction that makes precise the idea of a family of vector space parameterised by another space $X$
 
 ex: $X$ could be a topological space, a [[thoughts/manifold]]
 
