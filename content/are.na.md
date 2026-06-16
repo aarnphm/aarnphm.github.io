@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-15 09:03:47 GMT-04:00
+modified: 2026-06-16 12:24:15 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://mindslice.substack.com/p/entering-my-rock-era -- entering my ROCK ERA
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [ai, culture]
+    - later: true
+- https://nikolajurkovic.substack.com/p/mourning-a-life-without-ai -- Mourning a life without AI
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [ai, family]
+    - later: true
 - https://www.lesswrong.com/posts/oiNaBc4MEAGhzhdXg/the-machines-lack-honour -- The Machines Lack Honour
   - [meta]:
     - date: 06/12/2026
@@ -692,6 +702,29 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://tastelabs.com/ -- Taste Labs
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [design, infrastructure]
+- https://jaredhenderson.substack.com/ -- Commonplace Philosophy
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [philosophy, newsletter]
+    - later: true
+- https://substack.com/@hormeze -- Hormeze
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [newsletter]
+    - later: true
+- https://aleximas.substack.com/ -- Ghosts of Electricity
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [economics, ai]
+    - later: true
+- https://isaiprofitable.com/ -- Is AI profitable?
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [world model]
 - https://www.newmuseum.org/ -- New Museum
   - [meta]:
     - date: 06/09/2026
@@ -2588,6 +2621,41 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://malmesbury.substack.com/p/links-for-winter-2026 -- Links for Winter 2026
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [links, culture]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/search-query -- A blog post is a very long and complex search query
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [writing, internet]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/being-creative-requires-taking-risks -- Being creative requires taking risks
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [creativity, risk]
+    - later: true
+- https://www.avabear.xyz/p/nothing-will-change-your-life-more -- nothing will change your life more than saying what you actually want to say
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [writing, selfhood]
+    - later: true
+- https://www.sherryning.com/p/ohexuberance -- Oh-Exuberance!
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [exuberance, life]
+    - later: true
+- https://map.simonsarris.com/p/ink-in-the-stomach -- Ink in the Stomach
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [craft, home]
+    - later: true
+- https://www.personalcanon.com/p/writing-is-an-inherently-dignified -- writing is an inherently dignified human activity
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [writing, newsletter]
+    - later: true
 - https://onethingnewsletter.substack.com/p/taste-notes-112025-turbo-moka-edition -- Taste Notes 11.20.25, turbo moka edition
   - [meta]:
     - date: 06/15/2026
@@ -2871,7 +2939,7 @@ title: are.na
     - tags: [belief, longtermism]
     - importance: 8
     - pinned: true
-- https://www.e-flux.com/journal/116/379446/refusing-completion-a-conversation -- Refusing Completion: A Conversation
+- https://www.e-flux.com/journal/116/379446/refusing-completion-a-conversation -- Refusing Completion: A Conversation [**]
   - [meta]:
     - date: 05/25/2026
     - tags: [life, conversation]
@@ -4883,6 +4951,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://noahchrein.substack.com/p/the-cognitive-space-adiabatic -- The Cognitive Space Adiabatic
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [cognition, systems]
+    - later: true
+- https://www.interconnects.ai/p/papers-im-reading-base-model-rl-grpo -- Recent reasoning research: GRPO tweaks, base model RL, and data curation
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [reasoning, reinforcement-learning]
+    - later: true
+- https://www.interconnects.ai/p/use-multiple-models -- Use multiple models
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [models, workflows]
+    - later: true
+- https://patricktoulme.substack.com/p/when-xla-isnt-enough-from-pallas -- When XLA Isn't Enough: From Pallas to VLIW with Splash Attention on TPU
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [tpu, compiler]
+    - later: true
 - https://curlewis.co.nz/posts/lines-of-code-got-a-better-publicist/ -- Lines of Code Got a Better Publicist [**]
   - [meta]:
     - date: 06/11/2026
@@ -6209,6 +6297,26 @@ title: are.na
 
 ## opinions
 
+- https://substack.com/@arjunramani/p-154910809 -- builders vs. prigs
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [growth, ea]
+    - later: true
+- https://writing.nikunjk.com/p/the-case-against-doomerism -- The Case Against Doomerism
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [ai, optimism]
+    - later: true
+- https://kasurian.com/p/democracy-will-not-survive-consumption -- Democracy Will Not Survive the Age of Consumption
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [politics, productivity]
+    - later: true
+- https://andrewwu.substack.com/p/against-vibes -- Against vibes
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [rigor, aesthetics]
+    - later: true
 - https://samkriss.substack.com/p/against-truth -- Against truth
   - [meta]:
     - date: 06/15/2026
@@ -6556,6 +6664,61 @@ title: are.na
 
 ## life is literature
 
+- https://lydianottingham.substack.com/p/day-15-things-i-learned-on-connectedness -- Day 15: Things I learned on Connectedness Day
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [connectedness, language]
+    - later: true
+- https://tishweinstock.substack.com/p/rayne-fisher-quann-i-have-very-bad -- Rayne Fisher-Quann: I have very bad dreams nearly every night
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [interview, anxiety]
+    - later: true
+- https://anson.substack.com/p/recognizing-sparkly-people-without -- sparkly people and how to find them
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [friendship, life]
+    - later: true
+- https://sphericalcowselectricsheep.substack.com/p/value-function-learning -- value function learning
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [values, retrospective]
+    - later: true
+- https://mylenesmind.substack.com/p/i-want-to-make-a-digital-time-capsule -- I want to make a digital time capsule of my 20s
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [memory, twenties]
+    - later: true
+- https://jasminexli.substack.com/p/a-journey-through-the-american-west -- a journey through the american west
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [travel, america]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/doestoevsky-as-lover -- Dostoevsky as lover
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [love, dostoevsky]
+    - later: true
+- https://usefulfictions.substack.com/p/burnout-is-breaking-a-sacred-pact -- Burnout is breaking a sacred pact
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [burnout, agency]
+    - later: true
+- https://maalvika.substack.com/p/the-great-dating-overthink -- The Great Dating Overthink
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [dating, body]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/looking-for-alice -- Looking for Alice
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [dating, love]
+    - later: true
+- https://usefulfictions.substack.com/p/how-to-be-more-agentic -- How to be more agentic
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [agency, life]
+    - later: true
 - https://wellnesswisdom.substack.com/p/40ish-pieces-of-advice-from-2025 -- 40(ish) pieces of advice from 2025
   - [meta]:
     - date: 06/15/2026
@@ -7251,6 +7414,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://bigthinkmedia.substack.com/p/3-philosophical-debates-from-the -- 3 philosophical debates from the 20th century that neuroscience is reshaping
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [neuroscience, philosophy-of-mind]
+    - later: true
+- https://jaredhenderson.substack.com/p/why-i-am-not-a-modern-stoic -- Why I am not a Modern Stoic
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [stoicism, ethics]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/just-and-loving-seeing -- Just and loving seeing
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [iris-murdoch, attention]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/sacrifice -- Don't sacrifice the wrong thing
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [family, creativity]
+    - later: true
 - https://plato.stanford.edu/entries/functionalism/ -- Functionalism
   - [meta]:
     - date: 06/15/2026
@@ -7351,7 +7534,7 @@ title: are.na
     - date: 06/15/2026
     - tags: [bayesianism, epistemology]
     - later: true
-- https://plato.stanford.edu/entries/analytic-synthetic/?curius=3971 -- The Analytic/Synthetic Distinction
+- https://plato.stanford.edu/entries/analytic-synthetic -- The Analytic/Synthetic Distinction
   - [meta]:
     - date: 06/15/2026
     - tags: [analytic-philosophy, language]
@@ -8917,6 +9100,11 @@ title: are.na
 
 ## cooking
 
+- https://chillcrispbyxueci.substack.com/p/lets-talk-about-doubanjiang -- Let's talk about Doubanjiang
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [chinese, pantry]
+    - later: true
 - https://docs.google.com/document/d/1N1hNks4PCebMHqy7gkhyhtmwOIIThoDEahGh4bsifgU/edit?tab=t.0 -- Fusion
   - [meta]:
     - date: 12/04/2025
@@ -8946,6 +9134,11 @@ title: are.na
 
 ## video
 
+- https://edatweets.substack.com/p/2-hours-in-line-for-a-free-hat -- 2 Hours in Line for a Free Hat
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [claude, marketing]
+    - later: true
 - https://www.youtube.com/watch?v=AvlZBH_aPlM -- Dumping My Girlfriend
   - [meta]:
     - date: 06/14/2026
@@ -9427,6 +9620,21 @@ title: are.na
 
 ## arts
 
+- https://agoodhardstare.substack.com/p/runaround-sue -- Runaround Sue
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [susan-sontag, biography]
+    - later: true
+- https://www.seeingthroughfilm.com/p/david-lynch-changed-tv-film-and-how -- David Lynch changed TV, Film, and How I Think About Art Forever
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [david-lynch, film]
+    - later: true
+- https://substack.com/@gwern/note/c-197000013 -- Gwern on LLM poetry and greatness
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [poetry, llm]
+    - later: true
 - https://dollarchive.neocities.org -- Doll Archive
   - [meta]:
     - date: 06/06/2026
@@ -9588,6 +9796,16 @@ title: are.na
 
 ## resources
 
+- https://psychotechnology.substack.com/p/mephedrone-is-a-cursed-drug-1730 -- Mephedrone is a Cursed Drug
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [drugs, psychotechnology]
+    - later: true
+- https://newsletter.squishy.computer/p/evolution-adjacent-possible -- The path of evolution is always through the adjacent possible
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [systems, evolution]
+    - later: true
 - https://en.wikipedia.org/wiki/Asbestos -- Asbestos
   - [meta]:
     - date: 06/11/2026
@@ -11161,6 +11379,21 @@ title: are.na
 
 ## engineering
 
+- https://www.elenaverna.com/p/growth-lessons-behind-lovables-66b -- Growth lessons behind Lovable's $6.6B valuation
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [growth, product]
+    - later: true
+- https://www.oneusefulthing.org/p/claude-code-and-what-comes-next -- Claude Code and What Comes Next
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [agents, coding]
+    - later: true
+- https://joinreboot.org/p/training-large-language-models-on -- Training LLMs On My Loved Ones' Data
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [data, labor]
+    - later: true
 - https://thezvi.substack.com/p/claude-opus-45-model-card-alignment -- Claude Opus 4.5: Model Card, Alignment and Safety
   - [meta]:
     - date: 06/15/2026
