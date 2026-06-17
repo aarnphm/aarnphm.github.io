@@ -1,7 +1,8 @@
+#!/usr/bin/env -S tsx
 import type { ChildProcessByStdio } from 'node:child_process'
 import type { Readable } from 'node:stream'
 import { spawn } from 'node:child_process'
-import { open, writeFile } from 'node:fs/promises'
+import { open, readFile, rm, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import path from 'node:path'
 import process from 'node:process'
@@ -12,9 +13,13 @@ import {
   createQuartzManagerState,
   resetQuartzManagerState,
 } from '../util/dev-manager-state'
-import { stopProcessTree } from '../util/process-tree'
+import { stopProcessTree, stopProcessTreeByPid } from '../util/process-tree'
 
 const gitRoot = resolveGitRoot()
+const daemonPidFile = path.join(gitRoot, '.dev.pid')
+const daemonErrFile = path.join(gitRoot, '.dev.err')
+const daemonLogFile = '/tmp/quartz-dev.log'
+const daemonChildEnv = 'QUARTZ_DEV_DAEMON_CHILD'
 const pollIntervalMs = 500
 const useColor = process.stdout.isTTY && process.stderr.isTTY
 const RESET = '\x1b[0m'
@@ -71,7 +76,8 @@ interface RuntimeConfig {
   wranglerArgs: string[]
   publicBaseUrl: string
   pnpmDevRetryLimit: number
-  bg: boolean
+  daemon: boolean
+  kill: boolean
 }
 
 interface CliOptions {
@@ -80,7 +86,8 @@ interface CliOptions {
   retry: number | null
   force: boolean
   serve: boolean
-  bg: boolean
+  daemon: boolean
+  kill: boolean
   allBuildLogs: boolean
 }
 
@@ -94,7 +101,7 @@ function assertBasePort(candidate: number): void {
 }
 
 function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
-  const { port, help, retry, force, serve, bg, allBuildLogs } = parseCliOptions(argv)
+  const { port, help, retry, force, serve, daemon, kill, allBuildLogs } = parseCliOptions(argv)
   if (help) {
     printHelp()
     process.exit(0)
@@ -146,7 +153,8 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
     wranglerArgs,
     publicBaseUrl,
     pnpmDevRetryLimit,
-    bg,
+    daemon,
+    kill,
   }
 }
 
@@ -156,7 +164,8 @@ function parseCliOptions(argv: string[]): CliOptions {
   let force = false
   let retry: number | null = null
   let serve = false
-  let bg = false
+  let daemon = false
+  let kill = false
   let allBuildLogs = false
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]
@@ -198,14 +207,17 @@ function parseCliOptions(argv: string[]): CliOptions {
     if (token === '--serve') {
       serve = true
     }
-    if (token === '--bg') {
-      bg = true
+    if (token === '--daemon' || token === '--bg') {
+      daemon = true
+    }
+    if (token === '--kill') {
+      kill = true
     }
     if (token === '--allBuildLogs') {
       allBuildLogs = true
     }
   }
-  return { port, help, retry, force, serve, bg, allBuildLogs }
+  return { port, help, retry, force, serve, daemon, kill, allBuildLogs }
 }
 
 function parsePortValue(raw: string): number {
@@ -235,7 +247,9 @@ function printHelp(): void {
     '  --retry <count>     restart pnpm dev up to <count> times when it exits non-zero',
     '  --force             enforce running all plugins (longer to compile)',
     '  --allBuildLogs      print all Quartz verbose build logs instead of only slow spans',
-    '  --bg                run process in the background',
+    '  --daemon            run manager in the background',
+    '  --bg                alias for --daemon',
+    '  --kill              stop the daemon from .dev.pid',
     '  --help, -h          show this message',
     '',
     'environment:',
@@ -274,32 +288,132 @@ function failStartup(message: string): never {
 }
 
 async function main(): Promise<void> {
+  if (runtimeConfig.kill) {
+    await killDaemon()
+    return
+  }
   log(
     'main',
     `using dev port ${runtimeConfig.port}, ws ${runtimeConfig.wsPort}, wrangler ${runtimeConfig.wranglerPort}`,
   )
-  if (runtimeConfig.bg) {
-    const pidFile = path.join(gitRoot, '.dev.pid')
-    const logFile = path.join(gitRoot, '.dev.log')
-    const errFile = path.join(gitRoot, '.dev.err.log')
-    const stdout = await open(logFile, 'a')
-    const stderr = await open(errFile, 'a')
-    const child = spawn(
-      process.execPath,
-      [fileURLToPath(import.meta.url), ...process.argv.slice(2).filter(arg => arg !== '--bg')],
-      { cwd: gitRoot, detached: true, stdio: ['ignore', stdout.fd, stderr.fd] },
-    )
-    child.unref()
-    await writeFile(pidFile, String(child.pid ?? process.pid))
-    log('main', `started background process (PID: ${child.pid ?? process.pid})`)
-    log('main', `logs: ${logFile}, errors: ${errFile}`)
-    process.exit(0)
+  if (runtimeConfig.daemon) {
+    await startDaemon()
+    return
   }
   log('main', `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
   launchPnpmDev()
   registerLifecycle()
   registerCtrlCHandler()
   await manageWranglerLoop()
+}
+
+async function startDaemon(): Promise<void> {
+  if (process.env[daemonChildEnv] === '1') {
+    failStartup('daemon child tried to daemonize itself')
+  }
+  const existingPid = await readDaemonPid()
+  if (existingPid !== null) {
+    if (processAlive(existingPid)) {
+      log('main', `dev daemon already running (pid ${existingPid})`)
+      log('main', `logs: ${daemonLogFile}, errors: ${daemonErrFile}`)
+      return
+    }
+    await rm(daemonPidFile, { force: true })
+  }
+
+  const stdout = await open(daemonLogFile, 'a')
+  const stderr = await open(daemonErrFile, 'a')
+  try {
+    const child = spawn(
+      process.execPath,
+      [
+        ...process.execArgv,
+        fileURLToPath(import.meta.url),
+        ...removeDaemonArgs(process.argv.slice(2)),
+      ],
+      {
+        cwd: gitRoot,
+        detached: true,
+        env: { ...process.env, [daemonChildEnv]: '1' },
+        stdio: ['ignore', stdout.fd, stderr.fd],
+      },
+    )
+    const pid = child.pid
+    if (pid === undefined) {
+      failStartup('failed to start daemon: child pid is unavailable')
+    }
+    child.unref()
+    await writeFile(daemonPidFile, `${pid}\n`)
+    log('main', `started dev daemon (pid ${pid})`)
+    log('main', `pid: ${daemonPidFile}`)
+    log('main', `logs: ${daemonLogFile}`)
+    log('main', `errors: ${daemonErrFile}`)
+  } finally {
+    await stdout.close()
+    await stderr.close()
+  }
+}
+
+async function killDaemon(): Promise<void> {
+  const pid = await readDaemonPid()
+  if (pid === null) {
+    log('main', `no dev daemon pid file at ${daemonPidFile}`)
+    return
+  }
+  if (!processAlive(pid)) {
+    await rm(daemonPidFile, { force: true })
+    log('main', `removed stale dev daemon pid file for pid ${pid}`)
+    return
+  }
+  const result = await stopProcessTreeByPid(pid, {
+    interruptDelayMs: 15000,
+    terminateDelayMs: 3000,
+  })
+  await rm(daemonPidFile, { force: true })
+  if (result === 'not-found') {
+    log('main', `dev daemon pid ${pid} was already gone`)
+    return
+  }
+  log('main', `stopped dev daemon pid ${pid}`)
+}
+
+async function readDaemonPid(): Promise<number | null> {
+  let raw: string
+  try {
+    raw = await readFile(daemonPidFile, 'utf8')
+  } catch (err) {
+    if (isNotFoundError(err)) return null
+    throw err
+  }
+  const trimmed = raw.trim()
+  const pid = Number(trimmed)
+  if (!Number.isSafeInteger(pid) || pid < 1) {
+    failStartup(`invalid dev daemon pid file at ${daemonPidFile}: ${trimmed}`)
+  }
+  return pid
+}
+
+function removeDaemonArgs(argv: string[]): string[] {
+  return argv.filter(arg => arg !== '--daemon' && arg !== '--bg')
+}
+
+function processAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch (err) {
+    if (isErrorCode(err, 'ESRCH')) return false
+    if (isErrorCode(err, 'EPERM')) return true
+    throw err
+  }
+}
+
+function isNotFoundError(value: unknown): boolean {
+  return isErrorCode(value, 'ENOENT')
+}
+
+function isErrorCode(value: unknown, code: string): boolean {
+  return typeof value === 'object' && value !== null && 'code' in value && value.code === code
 }
 
 function launchPnpmDev(): void {

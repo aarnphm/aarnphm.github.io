@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-14 14:49:50 GMT-04:00
+modified: 2026-06-17 13:55:37 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -102,64 +102,64 @@ Recovery gates:
 
 ### weekly build
 
-| week    |                    dates |        load ceiling | swim       | bike      | key proof                                         |
-| ------- | -----------------------: | ------------------: | ---------- | --------- | ------------------------------------------------- |
-| absorb  | 2026-06-14 to 2026-06-21 |             450-500 | 4.5-5.0 km | 4.0-5.0 h | 1.5 km continuous swim, one controlled tempo bike |
-| build 1 | 2026-06-22 to 2026-06-28 |             600-650 | 5.5-6.0 km | 5.5-6.5 h | 1.6-1.8 km continuous swim, 2x20 min tempo        |
-| build 2 | 2026-06-29 to 2026-07-05 |             680-730 | 6.0-7.0 km | 6.5-7.5 h | 40 km bike rehearsal at 175-190 W                 |
-| peak    | 2026-07-06 to 2026-07-12 |             720-780 | 7.0-8.0 km | 7.0-8.0 h | 1.8-2.0 km swim, 75-90 min race-power durability  |
-| taper 1 | 2026-07-13 to 2026-07-19 |             500-560 | 5.0-5.5 km | 4.5-5.5 h | race-kit swim plus 30-40 km bike, full fueling    |
-| race    | 2026-07-20 to 2026-07-26 | 280-360 before race | 2.5-3.5 km | 2.5-3.5 h | arrive sharp and fresh                            |
+| week    |          dates |        load ceiling | swim       | bike      | key proof                                         |
+| ------- | -------------: | ------------------: | ---------- | --------- | ------------------------------------------------- |
+| absorb  | 06-14 to 06-21 |             450-500 | 4.5-5.0 km | 4.0-5.0 h | 1.5 km continuous swim, one controlled tempo bike |
+| build 1 | 06-22 to 06-28 |             600-650 | 5.5-6.0 km | 5.5-6.5 h | 1.6-1.8 km continuous swim, 2x20 min tempo        |
+| build 2 | 06-29 to 07-05 |             680-730 | 6.0-7.0 km | 6.5-7.5 h | 40 km bike rehearsal at 175-190 W                 |
+| peak    | 07-06 to 07-12 |             720-780 | 7.0-8.0 km | 7.0-8.0 h | 1.8-2.0 km swim, 75-90 min race-power durability  |
+| taper 1 | 07-13 to 07-19 |             500-560 | 5.0-5.5 km | 4.5-5.5 h | race-kit swim plus 30-40 km bike, full fueling    |
+| race    | 07-20 to 07-26 | 280-360 before race | 2.5-3.5 km | 2.5-3.5 h | arrive sharp and fresh                            |
 
 The load ceiling is total weekly load, including any running. Running has to fit inside the ceiling because the run is the current binding leg.
 
 ### calendar
 
-| date       | swim                                                             | bike                                                    |
-| ---------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
-| 2026-06-14 | off or 1000 m easy technique                                     | off or 45 min easy spin                                 |
-| 2026-06-15 | S1, 1600-1800 m                                                  | off                                                     |
-| 2026-06-16 | off                                                              | B1, 60 min with 5x3 min at 220-240 W                    |
-| 2026-06-17 | S2, 1800-2000 m with 3x400 m easy-CSS                            | off or 45 min easy                                      |
-| 2026-06-18 | off                                                              | B2, 75 min with 3x10 min at 165-175 W                   |
-| 2026-06-19 | S3, 1500-1700 m speed and drills                                 | off                                                     |
-| 2026-06-20 | off                                                              | B3, 2:00 Z2, last 20 min at 160-170 W                   |
-| 2026-06-21 | 1500 m continuous, easy                                          | 45 min recovery spin                                    |
-| 2026-06-22 | S1, 1800-2000 m                                                  | off                                                     |
-| 2026-06-23 | off                                                              | B1, 70 min with 5x4 min at 220-240 W                    |
-| 2026-06-24 | S2, 2200 m with 4x400 m                                          | 45 min easy                                             |
-| 2026-06-25 | off                                                              | B2, 90 min with 2x20 min at 175-185 W                   |
-| 2026-06-26 | S3, 1800 m                                                       | off                                                     |
-| 2026-06-27 | off                                                              | B3, 2:30 Z2, 70-80 km if roads cooperate                |
-| 2026-06-28 | 1600-1800 m continuous or open water                             | 45-60 min recovery spin                                 |
-| 2026-06-29 | S1, 2000 m                                                       | off                                                     |
-| 2026-06-30 | off                                                              | B1, 75 min with 6x3 min at 230-250 W                    |
-| 2026-07-01 | S2, 2400 m with 5x400 m                                          | 45 min easy                                             |
-| 2026-07-02 | off                                                              | B2, 95 min with 3x15 min at 180-190 W                   |
-| 2026-07-03 | S3, 1800-2000 m                                                  | off                                                     |
-| 2026-07-04 | off                                                              | B4, 40 km rehearsal at 175-190 W, cap spikes over 250 W |
-| 2026-07-05 | 1800 m easy continuous                                           | 60 min recovery spin                                    |
-| 2026-07-06 | S1, 2200 m                                                       | off                                                     |
-| 2026-07-07 | off                                                              | B1, 80 min with 5x5 min at 220-240 W                    |
-| 2026-07-08 | S2, 2600 m with 3x600 m                                          | 45 min easy                                             |
-| 2026-07-09 | off                                                              | B2, 100 min with 3x12 min at 190-205 W                  |
-| 2026-07-10 | S3, 2000 m                                                       | off                                                     |
-| 2026-07-11 | off or 1000 m easy                                               | B5, 75-90 min at race power blocks, full fueling        |
-| 2026-07-12 | 1800-2000 m continuous, sighting every 6-8 strokes if open water | 60 min easy                                             |
-| 2026-07-13 | S1, 1800 m                                                       | off                                                     |
-| 2026-07-14 | off                                                              | B1, 60 min with 4x3 min at 225-240 W                    |
-| 2026-07-15 | S2, 2200 m with 3x400 m                                          | 45 min easy                                             |
-| 2026-07-16 | off                                                              | B2, 75 min with 2x15 min at 185-195 W                   |
-| 2026-07-17 | S3, 1600 m, stop while stroke still looks good                   | off                                                     |
-| 2026-07-18 | 1500 m race-kit swim, controlled                                 | B4, 30-40 km at 180-190 W, full fueling                 |
-| 2026-07-19 | off or 1000 m easy                                               | 45 min recovery spin                                    |
-| 2026-07-20 | S1, 1400-1600 m                                                  | off                                                     |
-| 2026-07-21 | off                                                              | B1, 50 min with 3x3 min at 220-235 W                    |
-| 2026-07-22 | S3, 1200-1500 m with 8x50 m fast                                 | 40 min easy                                             |
-| 2026-07-23 | off                                                              | B2, 45 min with 3x5 min at 180-190 W                    |
-| 2026-07-24 | 1000-1200 m easy, 4x50 m fast                                    | off                                                     |
-| 2026-07-25 | 10-15 min water feel if available                                | 20 min spin, 3x30 s openers                             |
-| 2026-07-26 | race: 1.5 km, settle in the first 300 m                          | race: 40 km, cap first 10 min at 180 W, then 185-195 W  |
+| date  | swim                                                             | bike                                                    |
+| ----- | ---------------------------------------------------------------- | ------------------------------------------------------- |
+| 06-14 | off or 1000 m easy technique                                     | off or 45 min easy spin                                 |
+| 06-15 | S1, 1600-1800 m                                                  | off                                                     |
+| 06-16 | off                                                              | B1, 60 min with 5x3 min at 220-240 W                    |
+| 06-17 | S2, 1800-2000 m with 3x400 m easy-CSS                            | off or 45 min easy                                      |
+| 06-18 | off                                                              | B2, 75 min with 3x10 min at 165-175 W                   |
+| 06-19 | S3, 1500-1700 m speed and drills                                 | off                                                     |
+| 06-20 | off                                                              | B3, 2:00 Z2, last 20 min at 160-170 W                   |
+| 06-21 | 1500 m continuous, easy                                          | 45 min recovery spin                                    |
+| 06-22 | S1, 1800-2000 m                                                  | off                                                     |
+| 06-23 | off                                                              | B1, 70 min with 5x4 min at 220-240 W                    |
+| 06-24 | S2, 2200 m with 4x400 m                                          | 45 min easy                                             |
+| 06-25 | off                                                              | B2, 90 min with 2x20 min at 175-185 W                   |
+| 06-26 | S3, 1800 m                                                       | off                                                     |
+| 06-27 | off                                                              | B3, 2:30 Z2, 70-80 km if roads cooperate                |
+| 06-28 | 1600-1800 m continuous or open water                             | 45-60 min recovery spin                                 |
+| 06-29 | S1, 2000 m                                                       | off                                                     |
+| 06-30 | off                                                              | B1, 75 min with 6x3 min at 230-250 W                    |
+| 07-01 | S2, 2400 m with 5x400 m                                          | 45 min easy                                             |
+| 07-02 | off                                                              | B2, 95 min with 3x15 min at 180-190 W                   |
+| 07-03 | S3, 1800-2000 m                                                  | off                                                     |
+| 07-04 | off                                                              | B4, 40 km rehearsal at 175-190 W, cap spikes over 250 W |
+| 07-05 | 1800 m easy continuous                                           | 60 min recovery spin                                    |
+| 07-06 | S1, 2200 m                                                       | off                                                     |
+| 07-07 | off                                                              | B1, 80 min with 5x5 min at 220-240 W                    |
+| 07-08 | S2, 2600 m with 3x600 m                                          | 45 min easy                                             |
+| 07-09 | off                                                              | B2, 100 min with 3x12 min at 190-205 W                  |
+| 07-10 | S3, 2000 m                                                       | off                                                     |
+| 07-11 | off or 1000 m easy                                               | B5, 75-90 min at race power blocks, full fueling        |
+| 07-12 | 1800-2000 m continuous, sighting every 6-8 strokes if open water | 60 min easy                                             |
+| 07-13 | S1, 1800 m                                                       | off                                                     |
+| 07-14 | off                                                              | B1, 60 min with 4x3 min at 225-240 W                    |
+| 07-15 | S2, 2200 m with 3x400 m                                          | 45 min easy                                             |
+| 07-16 | off                                                              | B2, 75 min with 2x15 min at 185-195 W                   |
+| 07-17 | S3, 1600 m, stop while stroke still looks good                   | off                                                     |
+| 07-18 | 1500 m race-kit swim, controlled                                 | B4, 30-40 km at 180-190 W, full fueling                 |
+| 07-19 | off or 1000 m easy                                               | 45 min recovery spin                                    |
+| 07-20 | S1, 1400-1600 m                                                  | off                                                     |
+| 07-21 | off                                                              | B1, 50 min with 3x3 min at 220-235 W                    |
+| 07-22 | S3, 1200-1500 m with 8x50 m fast                                 | 40 min easy                                             |
+| 07-23 | off                                                              | B2, 45 min with 3x5 min at 180-190 W                    |
+| 07-24 | 1000-1200 m easy, 4x50 m fast                                    | off                                                     |
+| 07-25 | 10-15 min water feel if available                                | 20 min spin, 3x30 s openers                             |
+| 07-26 | race: 1.5 km, settle in the first 300 m                          | race: 40 km, cap first 10 min at 180 W, then 185-195 W  |
 
 ### session library
 

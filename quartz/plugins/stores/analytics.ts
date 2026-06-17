@@ -4,8 +4,10 @@ import { AppleCache } from './apple'
 import { OuraCache } from './oura'
 import {
   type Sport,
+  type ActivityKind,
   SPORT_ORDER,
   normalizeSport,
+  normalizeKind,
   round,
   type RawStravaActivity,
   type StravaStreams,
@@ -46,7 +48,7 @@ export interface BodyBlock {
 export interface ActivitySummary {
   id: number
   date: string
-  sport: Sport
+  sport: ActivityKind
   name: string
   distanceKm: number
   movingTimeS: number
@@ -2397,11 +2399,27 @@ export function buildAnalytics(
   garminVo2.sort((p, q) => p.date.localeCompare(q.date))
   const engine = buildEngine(cache, acts, daily, body, ctlNow, today, garminVo2, appleVo2)
 
+  const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
+    .filter(a => normalizeKind(a.sportType) === 'walk')
+    .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
+    .map(a => ({
+      id: a.id,
+      date: a.startDateLocal.slice(0, 10),
+      sport: 'walk' as const,
+      name: a.name ?? '',
+      distanceKm: round(a.distance / 1000, 1),
+      movingTimeS: a.movingTime,
+      load: 0,
+      cadence: a.averageCadence ?? null,
+      windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
+      windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
+      windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
+    }))
   const activities: ActivitySummary[] = acts
     .map(act => ({
       id: act.a.id,
       date: act.day,
-      sport: act.sport,
+      sport: act.sport as ActivityKind,
       name: act.a.name ?? '',
       distanceKm: act.distanceKm,
       movingTimeS: act.a.movingTime,
@@ -2411,6 +2429,7 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,
     }))
+    .concat(walkSummaries)
     .sort((p, q) => q.date.localeCompare(p.date))
 
   const { weakest, headline, actions } = buildActions(thresholds, bests, daily, loadShare)
@@ -2724,6 +2743,7 @@ export function buildDataFeed(
   for (const s of sorted) {
     const raw = cache?.activities[String(s.id)]
     if (!raw) continue
+    if (s.sport !== 'swim' && s.sport !== 'bike' && s.sport !== 'run') continue
     const stream = cache?.streams?.[String(s.id)]
     const vThr = vThrBySport.get(s.sport) ?? 0
     const vGap = gradeAdjSpeed(raw, s.sport, stream)

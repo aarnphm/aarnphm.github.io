@@ -3271,7 +3271,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
     for (const t of rawTokens) {
       if (t.startsWith('filter:')) {
-        filterSport = t.slice(7)
+        const fv = t.slice(7)
+        filterSport = fv === 'hike' ? 'walk' : fv
       } else if (t.startsWith('sort:')) {
         sortKey = t.slice(5)
       } else {
@@ -3283,9 +3284,12 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     const lastToken = rawTokens[rawTokens.length - 1]
     const hints: HTMLElement[] = []
 
-    if (lastToken.startsWith('filter:') && !['bike', 'run', 'swim'].includes(lastToken.slice(7))) {
+    if (
+      lastToken.startsWith('filter:') &&
+      !['bike', 'run', 'swim', 'walk', 'hike'].includes(lastToken.slice(7))
+    ) {
       const prefix = lastToken.slice(7)
-      for (const f of ['bike', 'run', 'swim']) {
+      for (const f of ['bike', 'run', 'swim', 'walk']) {
         if (f.startsWith(prefix)) {
           const it = ritem(searchCommandTitle('filter:', f), 'filter activities')
           it.dataset.insert = `filter:${f}`
@@ -3305,7 +3309,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         }
       }
     } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim)')
+      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim, walk)')
       it.dataset.insert = 'filter:'
       hints.push(it)
     } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
