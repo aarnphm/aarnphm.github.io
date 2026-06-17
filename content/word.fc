@@ -647,3 +647,13 @@ A: a temporary prohibition or suspension of an activity; a legal authorization t
 
 Q: pervasive
 A: spreading widely throughout an area or group; present everywhere.
+
+---
+
+Q: continuity transition
+A: An animation that carries a shared element across states so the interface reads as one continuous object rather than a cut between screens. See [gabriell_lab](https://x.com/gabriell_lab/status/2058217175047901310).
+
+---
+
+Q: `/^\s*-\s*tags:\s*\[/s/\(\[[^]]*\)\zs\([a-z0-9]\+\)-\([a-z0-9]\+\)\ze[^]]*\]/\2 \3/g`
+A: On lines matching a `tags: [...]` array, replace the hyphen in each hyphenated lowercase-alphanumeric tag (e.g. `foo-bar` becomes `foo bar`) with a space, leaving the surrounding brackets untouched.

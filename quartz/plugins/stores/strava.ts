@@ -5,7 +5,7 @@ import { matchGarminActivity, matchGarminFueling } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
-export type ActivityKind = Sport | 'strength'
+export type ActivityKind = Sport | 'strength' | 'walk'
 
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 
@@ -33,6 +33,12 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
     'M1 14.4V9.6C1 9.26863 1.26863 9 1.6 9H3.4C3.73137 9 4 9.26863 4 9.6V14.4C4 14.7314 3.73137 15 3.4 15H1.6C1.26863 15 1 14.7314 1 14.4Z',
     'M23 14.4V9.6C23 9.26863 22.7314 9 22.4 9H20.6C20.2686 9 20 9.26863 20 9.6V14.4C20 14.7314 20.2686 15 20.6 15H22.4C22.7314 15 23 14.7314 23 14.4Z',
     'M8 12H16',
+  ],
+  walk: [
+    'M14 4a1 1 0 1 0-2 0a1 1 0 1 0 2 0',
+    'M7 21l3-4',
+    'M16 21l-2-4l-3-3l1-6',
+    'M6 12l2-3l4-1l3 3l3 1',
   ],
 }
 
@@ -265,6 +271,9 @@ export function normalizeKind(sportType: string): ActivityKind | null {
     case 'WeightTraining':
     case 'Crossfit':
       return 'strength'
+    case 'Walk':
+    case 'Hike':
+      return 'walk'
     default:
       return normalizeSport(sportType)
   }

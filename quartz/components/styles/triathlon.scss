@@ -2944,6 +2944,15 @@
     vertical-align: top;
   }
 
+  [data-date-type] {
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    white-space: nowrap;
+  }
+
   th[align='right'],
   td[align='right'] {
     text-align: right;

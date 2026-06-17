@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-16 12:24:15 GMT-04:00
+modified: 2026-06-17 16:41:04 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://substack.com/@vincentli/note/c-202331338 -- learning music as a language
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [music, taste]
+    - later: true
+- https://substack.com/@henrikkarlsson/note/c-214506889 -- Independence vs autonomy
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [autonomy, relationship]
+    - later: true
 - https://mindslice.substack.com/p/entering-my-rock-era -- entering my ROCK ERA
   - [meta]:
     - date: 06/16/2026
@@ -158,6 +168,10 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/paulg/status/2066145325056680089 -- non-technical founder myopic
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [discourses]
 - https://x.com/BecomingCritter/status/2064775603404820617 -- Men's mental health
   - [meta]:
     - date: 06/10/2026
@@ -702,6 +716,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.unsiloed.ai/ -- Unsiloed AI
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [minimalist, efficiency]
 - https://tastelabs.com/ -- Taste Labs
   - [meta]:
     - date: 06/16/2026
@@ -1317,6 +1335,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://palbin.web.illinois.edu/ -- Pierre Albin
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [professor, topology]
+    - later: true
 - https://theodore.net/ -- Teddy
   - [meta]:
     - date: 06/14/2026
@@ -2621,6 +2644,216 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.inkandswitch.com/essay/malleable-software/ -- Malleable software [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [tools]
+    - pinned: true
+    - importance: 8
+- https://jack-clark.net/2026/05/26/import-ai-458-reckoning-with-the-future-and-a-singularity-story/ -- Import AI 458: Reckoning with the future; and a singularity story [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [singularity]
+    - importance: 5
+- https://leodemoura.github.io/blog/2026-2-28-when-ai-writes-the-worlds-software-who-verifies-it/ -- When AI Writes the World's Software, Who Verifies It?
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [verfiable, plt]
+- https://snscratchpad.com/posts/frontier-ecosystem/ -- A frontier without an ecosystem is not stable
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [scaling]
+- https://borretti.me/article/i-wish-people-were-more-public#your-books -- I Wish People Were More Public
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [public, life]
+- https://borretti.me/article/human-bottlenecks -- Human Bottlenecks
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [longtermism]
+- https://jasmi.news/p/2026-advice -- the old world is dying
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [futurism, work]
+    - importance: 10
+- https://intempus.org/writings/machines-for-conviviality/ -- Machines for Conviviality
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [agi, autonomous]
+- https://wttdotm.com/blog/tcpb_part_1.html -- The Making of Traffic Cam Photobooth
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [play]
+- https://x.com/pk_iv/status/2066272106682466799?s=46&t=E_gPjnJKDBGnwpVrE7Z-WQ -- A Letter to My Younger Self [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [visions, life]
+    - importance: 5
+- https://ribbonfarm.com/2011/10/14/the-gervais-principle-v-heads-i-win-tails-you-lose/ -- The Gervais Principle V: Heads I Win, Tails You Lose
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [teleology]
+    - later: true
+- https://www.thriveholdings.com/long-humans -- Long Human [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [transhumanism, future]
+    - importance: 8
+- https://clarkesworldmagazine.com/gu_02_23/ -- Introduction to 2181 Overture, Second Edition
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [fiction, writing]
+    - later: true
+- https://scottlocklin.wordpress.com/2025/01/22/some-interesting-open-problems-in-technology/ -- Some interesting open problems in technology [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [science, ideas]
+    - pinned: true
+- [[thoughts/pdfs/Simondon_Gilbert_On_the_Mode_of_Existence_of_Technical_Objects_Part_I_alt.pdf]] -- On The Mode of Existence of Technical Objects, Gilbert Simondon
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [math, theology, naturalism]
+    - later: true
+- [[thoughts/pdfs/IntroductionInverseProblems.pdf]] -- Introduction to Inverse Problems
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [math]
+    - later: true
+- https://www.awwwards.com/summer-afternoon.html -- Summer Afternoon
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [gx, visuals]
+    - later: true
+- https://upcycledwords.substack.com/p/process-note-5 -- Process Note 5
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [retrospective, life]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/on-the-preparations-before-writing -- On the preparations before writing an essay
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [writing, process]
+    - later: true
+- https://www.booritney.com/p/march-madness -- march madness
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [life, risk]
+    - later: true
+- https://nabeelqu.substack.com/p/on-reading-prousts-in-search-of-lost -- On Reading Proust's In Search of Lost Time
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [reading, literature]
+    - later: true
+- https://aella.substack.com/p/how-your-survey-responder-lies -- How Your Survey Responder Lies
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [survey, honesty]
+    - later: true
+- https://www.startingfromnix.com/p/choice-loneliness -- choice loneliness
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [choice, loneliness]
+    - later: true
+- https://slatestarcodex.com/2017/12/28/adderall-risks-much-more-than-you-wanted-to-know/ -- Adderall Risks: Much More Than You Wanted To Know
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [stimulants, medicine]
+    - later: true
+- https://haleynahman.substack.com/p/217-following-your-non-specific-dreams -- Following your non-specific dreams
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [dreams, agency]
+    - later: true
+- https://ceselder.substack.com/p/walking-on-rope -- walking on rope
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [identity, memory]
+    - later: true
+- https://aiprospects.substack.com/p/when-ideas-round-to-false -- When Ideas Round to False
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [epistemology, memetics]
+    - later: true
+- https://acotra.substack.com/p/the-stable-marriage-problem -- The stable marriage problem
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [agency, relationship]
+    - later: true
+- https://www.avabear.xyz/p/friendship-maintenance -- Friendship maintenance
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [friendship, relationship]
+    - later: true
+- https://usefulfictions.substack.com/p/the-lies-i-used-to-tell-myself -- The lies I used to tell myself
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [selfhood, growth]
+    - later: true
+- https://rojospinks.substack.com/p/the-friendship-problem -- The friendship problem
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [friendship, adulthood]
+    - later: true
+- https://www.avabear.xyz/p/always-on-your-side -- always on your side
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [friendship, love]
+    - later: true
+- https://theebookclubx.substack.com/p/inside-the-dead-poets-society -- Inside the dead poets society
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [literature, reading]
+    - later: true
+- https://theebookclubx.substack.com/p/the-secret-syllabus-hobbies-thatll-c3b -- The Secret Syllabus: Hobbies That'll Make Adulthood Less Boring
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [hobbies, adulthood]
+    - later: true
+- https://ceselder.substack.com/p/do-you-want-to-make-it-or-do-you -- do I want to make it or do I just want to be held
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [ambition, love]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/fracking-for-power -- On political power
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [power, biography]
+    - later: true
+- https://mindslice.substack.com/p/mode-collapse -- mode collapse
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [selfhood, aging]
+    - later: true
+- https://internetprincess.substack.com/p/the-pain-gap -- the pain gap
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [dating, maturity]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/things-that-connect-us -- Things that connect us to ourselves, and things that don't
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [connection, selfhood]
+    - later: true
+- https://stephstiner.substack.com/p/a-gen-z-guide-to-fixing-your-doom -- a gen z guide to fixing your doom-pilled brain
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [doom, mental health]
+    - later: true
+- https://malmesbury.substack.com/p/my-journey-to-the-microwave-alternate -- My journey to the microwave alternate timeline
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [technology, counterfactual]
+    - later: true
+- https://davidbessis.substack.com/p/attention-is-all-we-have -- Attention is all we have
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [attention, cognition]
+    - later: true
+- https://thingofthings.substack.com/p/some-thoughts-on-social-status -- Some thoughts on social status
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [status, sociology]
+    - later: true
 - https://malmesbury.substack.com/p/links-for-winter-2026 -- Links for Winter 2026
   - [meta]:
     - date: 06/16/2026
@@ -2674,7 +2907,7 @@ title: are.na
 - https://www.henrikkarlsson.xyz/p/first-we-shape-our-social-graph-then -- First we shape our social graph; then it shapes us
   - [meta]:
     - date: 06/15/2026
-    - tags: [social-graph, culture]
+    - tags: [social graph, culture]
     - later: true
 - https://milky.substack.com/p/mollys-2025-notes -- Molly's 2025 notes
   - [meta]:
@@ -3012,7 +3245,7 @@ title: are.na
   - [meta]:
     - date: 04/27/2026
     - tags: [aesthetics]
-- https://jason.ml/heuristics -- Do Thing, Do One Thing
+- https://jason.ml/heuristics -- Do Thing, Do One Thing [**]
   - [meta]:
     - date: 04/27/2026
     - tags: [heuristics]
@@ -4951,6 +5184,45 @@ title: are.na
   - view: list
   - json: true
 
+- https://syfi.cs.washington.edu/blog/2026-06-05-piper/ -- Introducing Piper: A Programmable Distributed Training System [**]
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [distributed, ml]
+- https://app.notion.com/p/RL-Interview-Questions-2026-378802359a2a80079bbff139272e0aee -- RL Interview Questions 2026
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [engineering, interviews]
+    - later: true
+- https://rlhfbook.com/c/06-policy-gradients -- Reinforcement Learning, Nathan Lambert
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [rl]
+    - pinned: true
+- https://jacobrintamaki.substack.com/p/the-one-nine-thesis -- The One Nine Thesis
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [robotics, forecasting]
+    - later: true
+- https://ceselder.substack.com/p/the-guy-who-birthed-modern-deep-learning -- The guy who birthed modern deep learning and dipped
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [deep learning, biography]
+    - later: true
+- https://cameronrwolfe.substack.com/p/rl-continual-learning -- Continual Learning with RL for LLMs
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [rl, continual learning]
+    - later: true
+- https://thezvi.substack.com/p/claudes-constitutional-structure -- Claude's Constitutional Structure
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [alignment, constitution]
+    - later: true
+- https://www.astralcodexten.com/p/janus-simulators -- Janus' Simulators
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [simulators, ai]
+    - later: true
 - https://noahchrein.substack.com/p/the-cognitive-space-adiabatic -- The Cognitive Space Adiabatic
   - [meta]:
     - date: 06/16/2026
@@ -4959,7 +5231,7 @@ title: are.na
 - https://www.interconnects.ai/p/papers-im-reading-base-model-rl-grpo -- Recent reasoning research: GRPO tweaks, base model RL, and data curation
   - [meta]:
     - date: 06/16/2026
-    - tags: [reasoning, reinforcement-learning]
+    - tags: [reasoning, reinforcement learning]
     - later: true
 - https://www.interconnects.ai/p/use-multiple-models -- Use multiple models
   - [meta]:
@@ -5265,7 +5537,7 @@ title: are.na
   - [meta]:
     - date: 01/11/2026
     - tags: [optimizer, training]
-    - later: true
+    - pinned: true
     - importance: 7
 - https://yifanzhang-pro.github.io/deep-delta-learning/ -- Deep Delta Learning
   - [meta]:
@@ -5359,7 +5631,7 @@ title: are.na
 - https://blog.google/technology/developers/t5gemma-2/ -- T5Gemma releases (2025)
   - [meta]:
     - date: 12/18/2025
-    - tags: [models, encoder-decoder, release]
+    - tags: [models, encoder decoder, release]
 - https://jacobgw.com/blog/ml/2024/12/12/interp-latent.html -- Creating Interpretable Latent Spaces with Gradient Routing
   - [meta]:
     - date: 12/17/2025
@@ -5433,7 +5705,7 @@ title: are.na
 - https://x.com/eliebakouch/status/2000609468812284110 -- LatentMoE
   - [meta]:
     - date: 12/16/2025
-    - tags: [scaling, byte-level, moe]
+    - tags: [scaling, byte level, moe]
 - https://www.youtube.com/watch?v=q-yo6TPRPVk -- In-Context Learning & "Model Systems" Interpretability, Ekdeep Singh Lubana
   - [meta]:
     - date: 12/16/2025
@@ -5769,7 +6041,7 @@ title: are.na
 - https://jameschen.io/jekyll/update/2024/02/12/mamba.html -- Mamba models
   - [meta]:
     - date: 10/24/2025
-    - tags: [state-space models, s4]
+    - tags: [state space models, s4]
   - see also: [[thoughts/state-space models#Mamba]]
 - https://www.tilderesearch.com/vignettes/gram-space -- Gram-Space Manifold Muon
   - [meta]:
@@ -6297,6 +6569,50 @@ title: are.na
 
 ## opinions
 
+- https://jacobin.com/2019/09/meritocracy-trap-inequality-human-capital-markovits -- The Hell of Meritocracy
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [work, being]
+    - later: true
+- https://www.kobro.co/joining-anthropic/ -- Joining Anthropic
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [company, transition, work]
+- https://chiasm.substack.com/p/attention-economy -- ATTENTION ECONOMY
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [attention, stimulants]
+    - later: true
+- https://www.vox.com/future-perfect/371996/volunteering-charity-giving-philanthropy-generosity -- Are Americans generous?
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [generosity, philanthropy]
+    - later: true
+- https://thecounterfactual.substack.com/p/maim-is-probably-not-a-good-deal -- MAIM is Probably Not a Good Deal for America
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [policy, incentives]
+    - later: true
+- https://gracebyron.substack.com/p/main-character-syndrome-as-politics -- Main Character Syndrome as Politics
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [politics, liberalism]
+    - later: true
+- https://post.substack.com/p/direct-relationships-are-the-way -- Direct relationships are the way out of this TikTok mess
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [attention, social media]
+    - later: true
+- https://digitalspirits.substack.com/p/never-let-a-good-sputnik-moment-go -- Never let a Good Sputnik Moment go to Waste
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [cybersecurity, ai]
+    - later: true
+- https://malavika.substack.com/p/its-time-to-start-bullying-young -- it's time to start bullying young Palantir employees
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [defense, tech]
+    - later: true
 - https://substack.com/@arjunramani/p-154910809 -- builders vs. prigs
   - [meta]:
     - date: 06/16/2026
@@ -6443,7 +6759,7 @@ title: are.na
 - https://x.com/demishassabis/status/2003097405026193809 -- Demis' on building an augmented brains
   - [meta]:
     - date: 12/23/2025
-    - tags: [mind-body dualism, silicon, ai]
+    - tags: [mind body dualism, silicon, ai]
 - https://www.lesswrong.com/posts/yw9B5jQazBKGLjize/ai-safety-undervalues-founders -- AI safety undervalues founders, Ryan Kidd
   - [meta]:
     - date: 12/18/2025
@@ -6655,7 +6971,7 @@ title: are.na
 - https://mishaglouberman.substack.com/p/stop-pretending-toronto-is-more-than -- Stop Pretending Toronto is More Than It Is.
   - [meta]:
     - date: 10/02/2025
-    - tags: [dunning-kruger, living]
+    - tags: [dunning kruger, living]
 - https://baincapitalventures.com/insight/we-must-know-we-will-know/ -- We must know, we will know
   - [meta]:
     - date: 10/03/2025
@@ -6664,6 +6980,21 @@ title: are.na
 
 ## life is literature
 
+- https://mindslice.substack.com/p/no-skill-issues-only-love-issues -- no SKILL ISSUES, only LOVE ISSUES
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [love, creativity]
+    - later: true
+- https://aella.substack.com/p/the-difficulty-in-dating-good-men -- The Difficulty In Dating Good Men
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [dating, gender]
+    - later: true
+- https://caitlynrichardson.substack.com/p/congrats-on-the-autism -- congrats on the autism
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [autism, selfhood]
+    - later: true
 - https://lydianottingham.substack.com/p/day-15-things-i-learned-on-connectedness -- Day 15: Things I learned on Connectedness Day
   - [meta]:
     - date: 06/16/2026
@@ -6732,7 +7063,7 @@ title: are.na
 - https://ceselder.substack.com/p/the-gradient-descented-normie -- The gradient-descented normie
   - [meta]:
     - date: 06/15/2026
-    - tags: [mimetic-desire, selfhood]
+    - tags: [mimetic desire, selfhood]
     - later: true
 - https://en.wikipedia.org/wiki/East_of_Eden_(novel) -- East of Eden
   - [meta]:
@@ -7219,7 +7550,7 @@ title: are.na
 - https://en.wikipedia.org/wiki/Matrix_chain_multiplication -- Matrix chain multiplication
   - [meta]:
     - date: 05/25/2026
-    - tags: [linalg, cs]
+    - tags: [linear algebra, cs]
 - https://sean.heelan.io/2026/01/18/on-the-coming-industrialisation-of-exploit-generation-with-llms/ -- On the Coming Industrialisation of Exploit Generation with LLMs
   - [meta]:
     - date: 01/22/2026
@@ -7414,10 +7745,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://joecarlsmith.substack.com/p/building-ais-that-do-human-like-philosophy -- Building AIs that do human-like philosophy
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [ai, philosophy]
+    - later: true
 - https://bigthinkmedia.substack.com/p/3-philosophical-debates-from-the -- 3 philosophical debates from the 20th century that neuroscience is reshaping
   - [meta]:
     - date: 06/16/2026
-    - tags: [neuroscience, philosophy-of-mind]
+    - tags: [neuroscience, philosophy-of mind]
     - later: true
 - https://jaredhenderson.substack.com/p/why-i-am-not-a-modern-stoic -- Why I am not a Modern Stoic
   - [meta]:
@@ -7427,7 +7763,7 @@ title: are.na
 - https://www.henrikkarlsson.xyz/p/just-and-loving-seeing -- Just and loving seeing
   - [meta]:
     - date: 06/16/2026
-    - tags: [iris-murdoch, attention]
+    - tags: [iris murdoch, attention]
     - later: true
 - https://www.henrikkarlsson.xyz/p/sacrifice -- Don't sacrifice the wrong thing
   - [meta]:
@@ -7437,12 +7773,12 @@ title: are.na
 - https://plato.stanford.edu/entries/functionalism/ -- Functionalism
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-mind, functionalism]
+    - tags: [philosophy-of mind, functionalism]
     - later: true
 - https://plato.stanford.edu/entries/arendt/ -- Hannah Arendt
   - [meta]:
     - date: 06/15/2026
-    - tags: [political-philosophy, arendt]
+    - tags: [political philosophy, arendt]
     - later: true
 - https://plato.stanford.edu/entries/lewis-ci/ -- Clarence Irving Lewis
   - [meta]:
@@ -7452,12 +7788,12 @@ title: are.na
 - https://plato.stanford.edu/entries/quine/ -- Willard Van Orman Quine
   - [meta]:
     - date: 06/15/2026
-    - tags: [quine, analytic-philosophy]
+    - tags: [quine, analytic philosophy]
     - later: true
 - https://plato.stanford.edu/entries/dualism/ -- Dualism
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-mind, metaphysics]
+    - tags: [philosophy-of mind, metaphysics]
     - later: true
 - https://plato.stanford.edu/entries/hartshorne/ -- Charles Hartshorne
   - [meta]:
@@ -7467,32 +7803,32 @@ title: are.na
 - https://plato.stanford.edu/entries/mental-causation/ -- Mental Causation
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-mind, causation]
+    - tags: [philosophy-of mind, causation]
     - later: true
 - https://plato.stanford.edu/search/searcher.py?query=dualism -- SEP search: dualism
   - [meta]:
     - date: 06/15/2026
-    - tags: [dualism, philosophy-of-mind]
+    - tags: [dualism, philosophy-of mind]
     - later: true
 - https://plato.stanford.edu/entries/physicalism/ -- Physicalism
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-mind, physicalism]
+    - tags: [philosophy-of mind, physicalism]
     - later: true
 - https://plato.stanford.edu/entries/leibniz-mind/ -- Leibniz's Philosophy of Mind
   - [meta]:
     - date: 06/15/2026
-    - tags: [leibniz, philosophy-of-mind]
+    - tags: [leibniz, philosophy-of mind]
     - later: true
 - https://plato.stanford.edu/entries/emily-elizabeth-constance-jones/ -- Emily Elizabeth Constance Jones
   - [meta]:
     - date: 06/15/2026
-    - tags: [logic, history-of-philosophy]
+    - tags: [logic, history-of philosophy]
     - later: true
 - https://plato.stanford.edu/archives/fall2007/entries/repugnant-conclusion -- The Repugnant Conclusion
   - [meta]:
     - date: 06/15/2026
-    - tags: [population-ethics, value]
+    - tags: [population ethics, value]
     - later: true
 - https://plato.stanford.edu/entries/rights-children -- Children's Rights
   - [meta]:
@@ -7502,22 +7838,22 @@ title: are.na
 - https://plato.stanford.edu/entries/popper/ -- Karl Popper
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-science, popper]
+    - tags: [philosophy-of science, popper]
     - later: true
 - https://plato.stanford.edu/entries/thomas-kuhn/ -- Thomas Kuhn
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-science, kuhn]
+    - tags: [philosophy-of science, kuhn]
     - later: true
 - https://plato.stanford.edu/entries/content-externalism/ -- Externalism About the Mind
   - [meta]:
     - date: 06/15/2026
-    - tags: [philosophy-of-mind, externalism]
+    - tags: [philosophy-of mind, externalism]
     - later: true
 - https://plato.stanford.edu/entries/fine-tuning/ -- Fine-Tuning
   - [meta]:
     - date: 06/15/2026
-    - tags: [cosmology, philosophy-of-religion]
+    - tags: [cosmology, philosophy-of religion]
     - later: true
 - https://plato.stanford.edu/entries/aristotle-logic/ -- Aristotle's Logic
   - [meta]:
@@ -7537,7 +7873,7 @@ title: are.na
 - https://plato.stanford.edu/entries/analytic-synthetic -- The Analytic/Synthetic Distinction
   - [meta]:
     - date: 06/15/2026
-    - tags: [analytic-philosophy, language]
+    - tags: [analytic philosophy, language]
     - later: true
 - https://plato.stanford.edu/entries/cellular-automata/ -- Cellular Automata
   - [meta]:
@@ -7547,22 +7883,22 @@ title: are.na
 - https://plato.stanford.edu/entries/axiom-choice/ -- The Axiom of Choice
   - [meta]:
     - date: 06/15/2026
-    - tags: [set-theory, logic]
+    - tags: [set theory, logic]
     - later: true
 - https://plato.stanford.edu/entries/domination/ -- Domination
   - [meta]:
     - date: 06/14/2026
-    - tags: [political-philosophy, power]
+    - tags: [political philosophy, power]
     - later: true
 - https://plato.stanford.edu/entries/consciousness/ -- Consciousness
   - [meta]:
     - date: 06/14/2026
-    - tags: [consciousness, philosophy-of-mind]
+    - tags: [consciousness, philosophy-of mind]
     - later: true
 - https://plato.stanford.edu/entries/zombies/ -- Zombies
   - [meta]:
     - date: 06/14/2026
-    - tags: [consciousness, philosophy-of-mind]
+    - tags: [consciousness, philosophy-of mind]
     - later: true
 - https://plato.stanford.edu/entries/omnipotence/ -- Omnipotence
   - [meta]:
@@ -8180,7 +8516,7 @@ title: are.na
 - https://www.youtube.com/watch?v=KIu4y1stILY&ab_channel=essentialsalts -- Politices as Neuro-Physiology, a conversation with Uberboyo
   - [meta]:
     - date: 07/04/2025
-    - tags: [meta-politics]
+    - tags: [meta politics]
   - In what way the connection between philosophy, ideas and cultural does [[thoughts/Philosophy and Nietzsche|Nietzsche]] nihilism?
 - https://simulation-argument.com/simulation/ -- Are we living in a simulation?
   - [meta]:
@@ -8210,6 +8546,10 @@ title: are.na
 
 ## stream
 
+- https://theventurecodex.com/dashboard/rounds -- The Venture Codex
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [investment, rounds, companies]
 - https://randsinrepose.com/ -- Michael Lopp's Blog
   - [meta]:
     - date: 06/14/2026
@@ -8769,6 +9109,10 @@ title: are.na
 
 ## design
 
+- https://ploy.ai/
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [maximalist]
 - https://chubbyapplesdesign.com -- Annie Gao
   - [meta]:
     - date: 06/13/2026
@@ -9574,6 +9918,10 @@ title: are.na
 
 ## tools
 
+- https://inscyd.com/article/vo2max-charts-by-age-gender-sport/ -- VO2 Max charts
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [health]
 - https://vega.github.io/ -- Vega
   - [meta]:
     - date: 12/18/2025
@@ -9623,12 +9971,12 @@ title: are.na
 - https://agoodhardstare.substack.com/p/runaround-sue -- Runaround Sue
   - [meta]:
     - date: 06/16/2026
-    - tags: [susan-sontag, biography]
+    - tags: [susan sontag, biography]
     - later: true
 - https://www.seeingthroughfilm.com/p/david-lynch-changed-tv-film-and-how -- David Lynch changed TV, Film, and How I Think About Art Forever
   - [meta]:
     - date: 06/16/2026
-    - tags: [david-lynch, film]
+    - tags: [david lynch, film]
     - later: true
 - https://substack.com/@gwern/note/c-197000013 -- Gwern on LLM poetry and greatness
   - [meta]:
@@ -10428,7 +10776,7 @@ title: are.na
 - https://github.com/mlc-ai/xgrammar/blob/main/cpp/earley_parser.cc -- xgrammar Earley parser
   - [meta]:
     - date: 06/08/2026
-    - tags: [structured-outputs, parser]
+    - tags: [structured outputs, parser]
     - later: true
 - https://github.com/triton-lang/triton/blob/main/lib/Dialect/TritonInstrument/Transforms/FpSanitizer.cpp -- Triton FPSanitizer transform
   - [meta]:
@@ -10448,7 +10796,7 @@ title: are.na
 - https://github.com/ruipeterpan/marconi -- Marconi prefix caching
   - [meta]:
     - date: 06/08/2026
-    - tags: [prefix-caching, inference]
+    - tags: [prefix caching, inference]
     - later: true
 - https://gist.github.com/aparente/e48c353755958621b3c0004593105a90 -- tufte-viz Claude Code skill
   - [meta]:
@@ -10488,7 +10836,7 @@ title: are.na
 - https://github.com/pierrecomputer/pierre/blob/main/packages/trees/src/render/FileTree.ts -- pierre FileTree renderer
   - [meta]:
     - date: 06/08/2026
-    - tags: [file-tree, ui]
+    - tags: [file tree, ui]
     - later: true
 - https://github.com/Yifei-Zuo/Parallax/ -- Parallax
   - [meta]:
@@ -10533,7 +10881,7 @@ title: are.na
 - https://github.com/open-spaced-repetition/awesome-fsrs/wiki/The-mechanism-of-optimization -- FSRS mechanism of optimization
   - [meta]:
     - date: 06/08/2026
-    - tags: [spaced-repetition, optimization]
+    - tags: [spaced repetition, optimization]
     - later: true
 - https://github.com/kvcache-ai/ktransformers/blob/main/doc/en/Kimi-K2.5.md -- Running Kimi-K2.5 with SGLang and KT-Kernel
   - [meta]:
@@ -10548,7 +10896,7 @@ title: are.na
 - https://github.com/lucasb-eyer/dotfiles/blob/master/_codex/prompts/lbreview.md -- lbreview prompt
   - [meta]:
     - date: 06/07/2026
-    - tags: [code-review, prompts]
+    - tags: [code review, prompts]
     - later: true
 - https://github.com/VikramKarLex/mamba3-minimal -- Mamba-3 minimal
   - [meta]:
@@ -10558,7 +10906,7 @@ title: are.na
 - https://github.com/tim-hua-01/ai-psychosis/blob/main/characters/colin_reality.txt -- Colin reality character file
   - [meta]:
     - date: 06/07/2026
-    - tags: [ai-psychosis, evals]
+    - tags: [ai psychosis, evals]
     - later: true
 - https://github.com/gpu-mode/resource-stream -- GPU Mode resource stream
   - [meta]:
@@ -10573,7 +10921,7 @@ title: are.na
 - https://github.com/tanishqkumar/ssd/blob/main/ssd/engine/speculator_async.py -- SSD async speculator
   - [meta]:
     - date: 06/07/2026
-    - tags: [speculative-decoding, inference]
+    - tags: [speculative decoding, inference]
     - later: true
 - https://github.com/allenai/olmo-core -- OLMo-core
   - [meta]:
@@ -10608,7 +10956,7 @@ title: are.na
 - https://github.com/mlc-ai/xgrammar/blob/main/python/xgrammar/kernels/apply_token_bitmask_inplace_torch_compile.py -- xgrammar token bitmask kernel
   - [meta]:
     - date: 06/07/2026
-    - tags: [structured-outputs, kernel]
+    - tags: [structured outputs, kernel]
     - later: true
 - https://github.com/NVIDIA/TensorRT-LLM/blob/main/docs%2Fsource%2Fblogs%2Ftech_blog%2Fblog12_Combining_Guided_Decoding_and_Speculative_Decoding.md -- Combining guided decoding and speculative decoding
   - [meta]:
@@ -10628,7 +10976,7 @@ title: are.na
 - https://github.com/jaxson/ai-policy-course -- Applied AI systems and governance course
   - [meta]:
     - date: 06/07/2026
-    - tags: [ai-policy, course]
+    - tags: [ai policy, course]
     - later: true
 - https://github.com/firecracker-microvm/firecracker -- Firecracker
   - [meta]:
@@ -10743,7 +11091,7 @@ title: are.na
 - https://github.com/guidance-ai/llguidance/tree/d787735640aebfe363b1a43ce8c79677432b65bc -- llguidance
   - [meta]:
     - date: 06/07/2026
-    - tags: [structured-outputs, inference]
+    - tags: [structured outputs, inference]
     - later: true
 - https://github.com/cloudflare/cloudflared -- cloudflared
   - [meta]:
@@ -10819,7 +11167,7 @@ title: are.na
 - https://github.com/HazyResearch/cartridges/blob/main/cartridges/cache.py -- Cartridges cache implementation
   - [meta]:
     - date: 06/06/2026
-    - tags: [kv, long-context]
+    - tags: [kv, long context]
     - later: true
 - https://github.com/udecode/plate -- Plate editor
   - [meta]:
@@ -10839,7 +11187,7 @@ title: are.na
 - https://github.com/cannoneyed/isometric-nyc/blob/main/inference/server.py -- isometric.nyc inference server
   - [meta]:
     - date: 06/06/2026
-    - tags: [generative-art, inference]
+    - tags: [generative art, inference]
     - later: true
 - https://gist.github.com/grahamhelton/f5c8ce265161990b0847ac05a74e466a -- Detection script for nodes/proxy
   - [meta]:
@@ -10904,7 +11252,7 @@ title: are.na
 - https://github.com/ai-dynamo/dynamo/blob/main/docs/fault_tolerance/graceful_shutdown.md -- Dynamo graceful shutdown
   - [meta]:
     - date: 06/06/2026
-    - tags: [inference, fault-tolerance]
+    - tags: [inference, fault tolerance]
     - later: true
 - https://github.com/ai-dynamo/dynamo/blob/main/docs/kvbm/kvbm_architecture.md -- Dynamo KVBM architecture
   - [meta]:
@@ -10994,7 +11342,7 @@ title: are.na
 - https://github.com/eudoxia0/flashcards -- eudoxia0 flashcards
   - [meta]:
     - date: 06/06/2026
-    - tags: [flashcards, spaced-repetition]
+    - tags: [flashcards, spaced repetition]
     - later: true
 - https://github.com/badlogic/pi-mono/ -- pi-mono
   - [meta]:
@@ -11379,6 +11727,20 @@ title: are.na
 
 ## engineering
 
+- https://world.hey.com/dhh/let-the-agents-democratize-open-source-9fd630a9 -- Let the agents democratize open source
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [agents, oss]
+- https://www.inkandswitch.com/potluck/ -- Potluck, Dynamic documents as personal software
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [tools, agents]
+- https://www.muppetlabs.com/~breadbox/software/tiny/teensy.html -- A Whirlwind Tutorial on Creating Really Teensy ELF Executables for Linux
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [plt]
+    - importance: 8
+    - later: true
 - https://www.elenaverna.com/p/growth-lessons-behind-lovables-66b -- Growth lessons behind Lovable's $6.6B valuation
   - [meta]:
     - date: 06/16/2026
@@ -11397,7 +11759,7 @@ title: are.na
 - https://thezvi.substack.com/p/claude-opus-45-model-card-alignment -- Claude Opus 4.5: Model Card, Alignment and Safety
   - [meta]:
     - date: 06/15/2026
-    - tags: [alignment, model-card]
+    - tags: [alignment, model card]
     - later: true
 - https://antaresindustries.com/updates/antares-achieves-criticality -- Antares Achieves Criticality of Mark-0 Reactor
   - [meta]:
@@ -11915,7 +12277,7 @@ title: are.na
 - https://en.wikipedia.org/wiki/L-system -- Lindenmayer system [**]
   - [meta]:
     - date: 10/05/2025
-    - tags: [l-system, generative world]
+    - tags: [l system, generative world]
 - http://lastweek.io/notes/MLIR/ -- MLIR at a 10000 feet
   - [meta]:
     - date: 10/05/2025
@@ -12233,6 +12595,14 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.grantstenger.com/local-minima -- Why Local Minima Are Rare in High-Dimensional Landscapes
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [matrix, linear algebra]
+- [[thoughts/pdfs/mat67_course_notes.pdf]] -- Linear Algebra As an Introduction to Abstract Mathematics
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [linear algebra]
 - https://en.wikipedia.org/wiki/Conformal_map -- Conformal map
   - [meta]:
     - date: 06/11/2026
@@ -12763,7 +13133,7 @@ title: are.na
 - https://arxiv.org/abs/2606.07878v1 -- Still: Amortized KV Cache Compaction in a Single Forward Pass
   - [meta]:
     - date: 06/15/2026
-    - tags: [kv-cache, inference]
+    - tags: [kv cache, inference]
     - later: true
 - https://arxiv.org/abs/2211.00593 -- Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small
   - [meta]:
@@ -12788,22 +13158,22 @@ title: are.na
 - https://arxiv.org/abs/2410.13780
   - [meta]:
     - date: 06/14/2026
-    - tags: [quantization, matrix-multiplication]
+    - tags: [quantization, matrix multiplication]
     - later: true
 - https://arxiv.org/abs/2604.06425
   - [meta]:
     - date: 06/14/2026
-    - tags: [architecture, neural-computers]
+    - tags: [architecture, neural computers]
     - later: true
 - https://arxiv.org/abs/2603.21852
   - [meta]:
     - date: 06/14/2026
-    - tags: [symbolic-regression, functions]
+    - tags: [symbolic regression, functions]
     - later: true
 - https://arxiv.org/abs/2602.06036
   - [meta]:
     - date: 06/14/2026
-    - tags: [speculative-decoding, diffusion]
+    - tags: [speculative decoding, diffusion]
     - later: true
 - https://arxiv.org/abs/2602.02204
   - [meta]:
@@ -12813,7 +13183,7 @@ title: are.na
 - https://arxiv.org/abs/2603.12201
   - [meta]:
     - date: 06/14/2026
-    - tags: [sparse-attention, inference]
+    - tags: [sparse attention, inference]
     - later: true
 - https://arxiv.org/abs/2604.01472
   - [meta]:
@@ -12823,22 +13193,22 @@ title: are.na
 - https://arxiv.org/abs/2603.20105
   - [meta]:
     - date: 06/14/2026
-    - tags: [long-context, recursion]
+    - tags: [long context, recursion]
     - later: true
 - https://arxiv.org/abs/2102.03467
   - [meta]:
     - date: 06/14/2026
-    - tags: [rl, game-playing]
+    - tags: [rl, game playing]
     - later: true
 - https://arxiv.org/abs/1611.01144
   - [meta]:
     - date: 06/14/2026
-    - tags: [gumbel-softmax, reparameterization]
+    - tags: [gumbel softmax, reparameterization]
     - later: true
 - https://arxiv.org/abs/2411.19379
   - [meta]:
     - date: 06/14/2026
-    - tags: [prefix-caching, hybrid-models]
+    - tags: [prefix-caching, hybrid models]
     - later: true
 - https://arxiv.org/abs/2603.15031
   - [meta]:
@@ -12853,7 +13223,7 @@ title: are.na
 - https://arxiv.org/abs/2103.03230
   - [meta]:
     - date: 06/14/2026
-    - tags: [self-supervised-learning, representation]
+    - tags: [self-supervised learning, representation]
     - later: true
 - https://arxiv.org/abs/2405.04434
   - [meta]:
@@ -12868,17 +13238,17 @@ title: are.na
 - https://arxiv.org/abs/2605.28814
   - [meta]:
     - date: 06/14/2026
-    - tags: [self-improvement, search]
+    - tags: [self improvement, search]
     - later: true
 - https://arxiv.org/abs/2605.29157
   - [meta]:
     - date: 06/14/2026
-    - tags: [linear-attention, architecture]
+    - tags: [linear attention, architecture]
     - later: true
 - https://arxiv.org/abs/2603.03251
   - [meta]:
     - date: 06/14/2026
-    - tags: [speculative-decoding, inference]
+    - tags: [speculative decoding, inference]
     - later: true
 - https://arxiv.org/abs/2410.05364
   - [meta]:
@@ -12888,12 +13258,12 @@ title: are.na
 - https://arxiv.org/abs/2603.19312
   - [meta]:
     - date: 06/14/2026
-    - tags: [world-models, representation]
+    - tags: [world models, representation]
     - later: true
 - https://arxiv.org/abs/2503.02113
   - [meta]:
     - date: 06/14/2026
-    - tags: [generalization, deep-learning]
+    - tags: [generalization, deep learning]
     - later: true
 - https://arxiv.org/abs/2509.14786
   - [meta]:
@@ -12903,12 +13273,12 @@ title: are.na
 - https://arxiv.org/abs/2605.21739
   - [meta]:
     - date: 06/14/2026
-    - tags: [emotional-intelligence, benchmark]
+    - tags: [emotional intelligence, benchmark]
     - later: true
 - https://arxiv.org/abs/2605.31574
   - [meta]:
     - date: 06/14/2026
-    - tags: [moral-disagreement, human-ai]
+    - tags: [moral-disagreement, human ai]
     - later: true
 - https://arxiv.org/abs/1805.02867
   - [meta]:
@@ -12918,7 +13288,7 @@ title: are.na
 - https://arxiv.org/abs/2606.03237
   - [meta]:
     - date: 06/14/2026
-    - tags: [cooperation, ai-safety]
+    - tags: [cooperation, ai safety]
     - later: true
 - https://arxiv.org/abs/2604.05192
   - [meta]:
@@ -12938,7 +13308,7 @@ title: are.na
 - https://arxiv.org/abs/2509.06863
   - [meta]:
     - date: 06/13/2026
-    - tags: [rl, value-learning]
+    - tags: [rl, value learning]
     - later: true
 - https://arxiv.org/abs/2310.07240
   - [meta]:
@@ -12963,7 +13333,7 @@ title: are.na
 - https://arxiv.org/abs/2601.16175
   - [meta]:
     - date: 06/13/2026
-    - tags: [test-time, discovery]
+    - tags: [test time, discovery]
     - later: true
 - https://arxiv.org/abs/2601.15727
   - [meta]:
@@ -13018,12 +13388,12 @@ title: are.na
 - https://arxiv.org/abs/2602.12429
   - [meta]:
     - date: 06/13/2026
-    - tags: [pretraining, low-rank]
+    - tags: [pretraining, low rank]
     - later: true
 - https://arxiv.org/abs/2602.07193
   - [meta]:
     - date: 06/13/2026
-    - tags: [human-ai, safety]
+    - tags: [human ai, safety]
     - later: true
 - https://arxiv.org/abs/2602.11287
   - [meta]:
@@ -13048,7 +13418,7 @@ title: are.na
 - https://arxiv.org/abs/2602.01469
   - [meta]:
     - date: 06/13/2026
-    - tags: [speculative-decoding, eagle]
+    - tags: [speculative decoding, eagle]
     - later: true
 - https://arxiv.org/abs/2212.11279
   - [meta]:
@@ -13068,17 +13438,17 @@ title: are.na
 - https://arxiv.org/abs/2410.04691
   - [meta]:
     - date: 06/13/2026
-    - tags: [icl, fine-tuning]
+    - tags: [icl, fine tuning]
     - later: true
 - https://arxiv.org/abs/2001.08361
   - [meta]:
     - date: 06/13/2026
-    - tags: [scaling, language-models]
+    - tags: [scaling, language models]
     - later: true
 - https://arxiv.org/abs/2408.02442
   - [meta]:
     - date: 06/13/2026
-    - tags: [structured-generation, evaluation]
+    - tags: [structured generation, evaluation]
     - later: true
 - https://arxiv.org/abs/2601.00397
   - [meta]:
@@ -13093,7 +13463,7 @@ title: are.na
 - https://arxiv.org/abs/2507.10524
   - [meta]:
     - date: 06/13/2026
-    - tags: [adaptive-compute, recursion]
+    - tags: [adaptive compute, recursion]
     - later: true
 - https://arxiv.org/abs/2603.15339
   - [meta]:
@@ -13108,22 +13478,22 @@ title: are.na
 - https://arxiv.org/abs/2407.21092
   - [meta]:
     - date: 06/13/2026
-    - tags: [thermodynamics, language-models]
+    - tags: [thermodynamics, language models]
     - later: true
 - https://arxiv.org/abs/2409.02387
   - [meta]:
     - date: 06/13/2026
-    - tags: [cognitive-science, llms]
+    - tags: [cognitive science, llms]
     - later: true
 - https://arxiv.org/abs/2506.04374
   - [meta]:
     - date: 06/13/2026
-    - tags: [statistical-physics, reasoning]
+    - tags: [statistical physics, reasoning]
     - later: true
 - https://arxiv.org/abs/2503.01840
   - [meta]:
     - date: 06/13/2026
-    - tags: [speculative-decoding, eagle]
+    - tags: [speculative decoding, eagle]
     - later: true
 - https://arxiv.org/abs/2505.07203
   - [meta]:
@@ -13213,17 +13583,17 @@ title: are.na
 - https://arxiv.org/abs/2406.06484
   - [meta]:
     - date: 06/12/2026
-    - tags: [linear-attention, parallelism]
+    - tags: [linear attention, parallelism]
     - later: true
 - https://arxiv.org/abs/2312.06635
   - [meta]:
     - date: 06/12/2026
-    - tags: [linear-attention, training]
+    - tags: [linear attention, training]
     - later: true
 - https://arxiv.org/abs/2601.03220
   - [meta]:
     - date: 06/12/2026
-    - tags: [information-theory, intelligence]
+    - tags: [information theory, intelligence]
     - later: true
 - https://arxiv.org/abs/2601.04603
   - [meta]:
@@ -13248,7 +13618,7 @@ title: are.na
 - https://arxiv.org/abs/2406.09264
   - [meta]:
     - date: 06/12/2026
-    - tags: [alignment, human-ai]
+    - tags: [alignment, human ai]
     - later: true
 - https://arxiv.org/abs/1905.01517
   - [meta]:
@@ -13258,7 +13628,7 @@ title: are.na
 - https://arxiv.org/abs/math/0501118
   - [meta]:
     - date: 06/12/2026
-    - tags: [math, number-theory]
+    - tags: [math, number theory]
     - later: true
 - https://arxiv.org/abs/2503.08679
   - [meta]:
@@ -13278,7 +13648,7 @@ title: are.na
 - https://arxiv.org/abs/2601.05401
   - [meta]:
     - date: 06/12/2026
-    - tags: [generative-ai, interface]
+    - tags: [generative ai, interface]
     - later: true
 - https://arxiv.org/abs/2511.09030
   - [meta]:
@@ -13293,17 +13663,17 @@ title: are.na
 - https://arxiv.org/abs/1904.09751
   - [meta]:
     - date: 06/12/2026
-    - tags: [decoding, language-models]
+    - tags: [decoding, language models]
     - later: true
 - https://arxiv.org/abs/2512.12167
   - [meta]:
     - date: 06/12/2026
-    - tags: [long-context, positional-embeddings]
+    - tags: [long-context, positional embeddings]
     - later: true
 - https://arxiv.org/abs/2506.06266
   - [meta]:
     - date: 06/12/2026
-    - tags: [long-context, representation]
+    - tags: [long context, representation]
     - later: true
 - https://arxiv.org/abs/2510.12402
   - [meta]:
@@ -13407,7 +13777,7 @@ title: are.na
 - https://arxiv.org/abs/2512.23675
   - [meta]:
     - date: 01/14/2026
-    - tags: [scaling, test-time compute]
+    - tags: [scaling, test time compute]
 - https://arxiv.org/abs/2206.13353
   - [meta]:
     - date: 01/08/2026
@@ -13475,7 +13845,7 @@ title: are.na
 - https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3-White-Paper.pdf -- Nemotron 3
   - [meta]:
     - date: 12/16/2025
-    - tags: [architecture, byte-level]
+    - tags: [architecture, byte level]
 - https://donsheehy.net/research/sheehy05complexity.pdf -- The Complexity of Domino Tiling Problems
   - [meta]:
     - date: 12/16/2025
@@ -13493,7 +13863,7 @@ title: are.na
 - https://arxiv.org/abs/2505.15813
   - [meta]:
     - date: 12/14/2025
-    - tags: [in-context learning, meta-learning]
+    - tags: [in-context learning, meta learning]
     - later: true
 - https://arxiv.org/abs/2206.00759
   - [meta]:
@@ -13508,7 +13878,7 @@ title: are.na
 - https://arxiv.org/abs/2505.12075
   - [meta]:
     - date: 12/14/2025
-    - tags: [in-context learning, behaviour]
+    - tags: [in context learning, behaviour]
     - later: true
 - https://arxiv.org/abs/2411.01783
   - [meta]:
@@ -13593,7 +13963,7 @@ title: are.na
 - https://arxiv.org/abs/2507.12638
   - [meta]:
     - date: 12/14/2025
-    - tags: [distilation, fine-tuning]
+    - tags: [distilation, fine tuning]
 - https://arxiv.org/abs/2508.21258
   - [meta]:
     - date: 12/14/2025
@@ -13643,7 +14013,7 @@ title: are.na
 - https://arxiv.org/abs/2410.22264
   - [meta]:
     - date: 12/01/2025
-    - tags: [lora, meta-learning]
+    - tags: [lora, meta learning]
 - https://arxiv.org/abs/2511.20102
   - [meta]:
     - date: 12/01/2025

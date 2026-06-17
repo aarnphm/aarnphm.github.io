@@ -2,7 +2,12 @@ import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import process from 'node:process'
 import test from 'node:test'
-import { stopProcessTree, type ProcessTree } from './process-tree'
+import {
+  stopProcessGroup,
+  stopProcessTree,
+  stopProcessTreeByPid,
+  type ProcessTree,
+} from './process-tree'
 
 function pidAlive(pid: number): boolean {
   try {
@@ -41,5 +46,52 @@ test('stopProcessTree terminates descendants in the child process group', async 
   assert.equal(pidAlive(descendantPid), true)
 
   await stopProcessTree(child, { interruptDelayMs: 50, terminateDelayMs: 50 })
+  await waitForDead(descendantPid)
+})
+
+test('stopProcessGroup terminates a detached process group by pid', async () => {
+  const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], {
+    detached: true,
+    stdio: 'ignore',
+  })
+  const pid = child.pid
+  if (pid === undefined) {
+    throw new Error('detached child pid is unavailable')
+  }
+
+  assert.equal(pidAlive(pid), true)
+  const result = await stopProcessGroup(pid, { interruptDelayMs: 50, terminateDelayMs: 50 })
+
+  assert.equal(result, 'stopped')
+  await waitForDead(pid)
+})
+
+test('stopProcessTreeByPid terminates detached child groups', async () => {
+  const script = `
+    const { spawn } = require('node:child_process')
+    const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], {
+      detached: true,
+      stdio: 'ignore',
+    })
+    process.stdout.write(String(child.pid) + '\\n')
+    setInterval(() => {}, 1000)
+  `
+  const child = spawn(process.execPath, ['-e', script], {
+    detached: true,
+    stdio: ['ignore', 'pipe', 'ignore'],
+  })
+  const pid = child.pid
+  if (pid === undefined) {
+    throw new Error('root child pid is unavailable')
+  }
+  const descendantPid = await new Promise<number>(resolve => {
+    child.stdout?.once('data', chunk => resolve(Number(chunk.toString().trim())))
+  })
+
+  assert.equal(pidAlive(descendantPid), true)
+  const result = await stopProcessTreeByPid(pid, { interruptDelayMs: 50, terminateDelayMs: 50 })
+
+  assert.equal(result, 'stopped')
+  await waitForDead(pid)
   await waitForDead(descendantPid)
 })

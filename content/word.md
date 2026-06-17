@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-10 21:09:32 GMT-04:00
+modified: 2026-06-17 13:17:15 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -31,6 +31,7 @@ title: lists
 - Vim magic
   - `[&|?]curius=\v\d+(,\s*\d+)*//g`
   - `\v\((O[^|]*)\)(\s*\|)/$\1$\2/g`
+  - `/^\s*-\s*tags:\s*\[/s/\(\[[^]]*\)\zs\([a-z0-9]\+\)-\([a-z0-9]\+\)\ze[^]]*\]/\2 \3/g`
 - bash magic
   - {{sidenotes[`sudo pmset -b sleep 0; sudo pmset -b disablesleep 1`]: disable display sleeping MacOS}}
   - {{sidenotes[`sudo pmset -b sleep 5; sudo pmset -b disablesleep 0`]: revert sleeping setup on MacOS}}
@@ -263,3 +264,4 @@ title: lists
 - revenant
 - moratorium
 - pervasive
+- myopic

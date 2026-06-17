@@ -583,7 +583,7 @@ export default (() => {
             <input
               class="tri-ana-search"
               type="search"
-              placeholder="search (filter:bike|run|swim, sort:distance|cadence|pace)"
+              placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
               aria-label="search analytics"
               autocomplete="off"
             />

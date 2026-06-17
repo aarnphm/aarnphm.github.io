@@ -22,6 +22,31 @@ const isComment = (n: RootContent): n is Comment => n.type === 'comment'
 const isFootnotes = (n: RootContent): n is Element =>
   n.type === 'element' && n.tagName === 'section' && n.properties?.dataFootnotes === ''
 
+const DATE_CELL = /^(?:\d{4}-)?\d{2}-\d{2}(?:\s+to\s+(?:\d{4}-)?\d{2}-\d{2})?$/
+
+function cellText(node: Element): string {
+  let out = ''
+  for (const child of node.children) {
+    if (child.type === 'text') out += child.value
+    else if (child.type === 'element') out += cellText(child)
+  }
+  return out
+}
+
+function tagDateCells(nodes: RootContent[]): void {
+  for (const node of nodes) {
+    if (node.type !== 'element') continue
+    if (node.tagName === 'td' || node.tagName === 'th') {
+      const text = cellText(node).trim()
+      if (DATE_CELL.test(text)) {
+        node.properties ??= {}
+        node.properties.dataDateType = text.includes(' to ') ? 'range' : 'day'
+      }
+    }
+    tagDateCells(node.children)
+  }
+}
+
 function parseMeta(value: string): Omit<TrainingPlan, 'id' | 'html'> {
   const fields = { meta: '', distance: '', date: '', target: '', author: '' }
   for (const line of value.split('\n')) {
@@ -52,6 +77,7 @@ export function parseTrainingPlans(tree: HtmlRoot): TrainingPlan[] {
       j++
     }
     if (footnotes && !body.includes(footnotes)) body.push(footnotes)
+    tagDateCells(body)
     const html = toHtml({ type: 'root', children: body } as HtmlRoot, { allowDangerousHtml: true })
     plans.push({ id: `plan-${plans.length}`, ...fields, html })
     i = j + 1
