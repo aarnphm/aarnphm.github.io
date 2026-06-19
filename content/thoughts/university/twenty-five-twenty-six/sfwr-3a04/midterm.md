@@ -55,7 +55,7 @@ reentrant objects/components (executed concurrently)
 
 Static structural Diagram
 
-- control flow (time-independant) between elements and system
+- control flow (time-independent) between elements and system
 - class diagram, component diagram
 - independent from time
 

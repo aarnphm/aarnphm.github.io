@@ -29,7 +29,7 @@ Write grammars as below with NLTK and draw the parse trees with NLTK
 > Write a grammar such that $+$ binds tighter than $-$ and both $+$ and $-$ associate to the left. That is, $a+b+c$ is parsed as $\left( a+b \right)+c$ and $a-b+c-d$ as $\left( a - \left( b+c \right) \right) - d$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
 
 > [!question] 2.
-> Write a grammar such that $-$ binds tighter than $+$ and both $-$ and $+$ associate to the left. That is $a+b+c$ is parsed as as $\left( a+b \right) + c$ and $a-b+c-d$ as $\left( a-b \right) + \left( c-d \right)$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
+> Write a grammar such that $-$ binds tighter than $+$ and both $-$ and $+$ associate to the left. That is $a+b+c$ is parsed as $\left( a+b \right) + c$ and $a-b+c-d$ as $\left( a-b \right) + \left( c-d \right)$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!
 
 > [!question] 3.
 > Write a grammar such that $+$ and $-$ bind equally strongly and associate to the left. That is, $a+b+c$ is parsed as $\left( a+b \right)+c$ is parsed as $\left( a+b \right) + c$ and $a-b+c-d$ as $\left( \left( a-b \right) +c \right) - d$. Draw the parse tree for $a+b+c$ and $a-b+c-d$!

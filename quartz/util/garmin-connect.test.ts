@@ -4,6 +4,7 @@ import {
   garminConnectActivities,
   garminConnectActivity,
   garminConnectStreams,
+  garminConnectWeightSamples,
 } from './garmin-connect'
 
 test('normalizes Garmin Connect activity details into the Garmin cache shape', () => {
@@ -131,6 +132,64 @@ test('normalizes Garmin Connect GraphQL activity scalars', () => {
     items.map(item => item.id),
     ['3', '4'],
   )
+})
+
+test('normalizes Garmin Connect weight samples across dayview aliases', () => {
+  const samples = garminConnectWeightSamples({
+    dailyWeightSummaries: [
+      {
+        summaryDate: '2026-06-18',
+        weightMetrics: [
+          {
+            samplePk: 1_781_826_649,
+            weightInGrams: 91_130,
+            bodyMassIndex: 25.8,
+            bodyFatPercentage: 22.2,
+            bodyWaterPercentage: 56.8,
+            muscleMassInGrams: 37_750,
+            boneMassInGrams: 6_240,
+          },
+        ],
+      },
+    ],
+  })
+
+  assert.deepEqual(samples, [
+    {
+      ts: 1_781_826_649_000,
+      date: '2026-06-18',
+      weightKg: 91.13,
+      bmi: 25.8,
+      bodyFatPct: 22.2,
+      bodyWaterPct: 56.8,
+      muscleMassKg: 37.75,
+      boneMassKg: 6.24,
+    },
+  ])
+})
+
+test('normalizes Garmin Connect weight records with timestamp strings and pound units', () => {
+  const samples = garminConnectWeightSamples({
+    weightMetrics: [
+      {
+        weighInTimestampGMT: '2026-06-19 11:03:00',
+        weight: 200.6,
+        weightUnit: 'pounds',
+        bodyFatPercent: 22.1,
+        bodyWaterPct: 56.7,
+        muscleMassKg: 37.8,
+        boneMassKg: 6.2,
+      },
+    ],
+  })
+
+  assert.equal(samples.length, 1)
+  assert.equal(samples[0].date, '2026-06-19')
+  assert.equal(samples[0].weightKg, 90.99)
+  assert.equal(samples[0].bodyFatPct, 22.1)
+  assert.equal(samples[0].bodyWaterPct, 56.7)
+  assert.equal(samples[0].muscleMassKg, 37.8)
+  assert.equal(samples[0].boneMassKg, 6.2)
 })
 
 test('normalizes Garmin Connect detail metrics into streams', () => {
