@@ -49,7 +49,7 @@ metadata:
     list_entry     = "-" , ws , link , [ ws "--" ws title ] , [ ws "[**]" ] ;
     meta_section   = ws , "-" , ws , "[meta]:" , newline , meta_pair , { meta_pair } ;
     meta_pair      = ws , ws , "-" , ws , key , ":" , ws , value ;
-    key            = "date" | "tags" | "pinned" | "later" | "socials" | "view" | identifier ;
+    key            = "date" | "tags" | "pinned" | "later" | "unlocked" | "socials" | "view" | identifier ;
     value          = date | tag_list | boolean | text ;
     tag_list       = "[" , tag , { "," , ws , tag } , "]" ;
     tag            = identifier ;
@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-17 16:41:04 GMT-04:00
+modified: 2026-06-18 16:55:54 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://www.astralcodexten.com/p/open-thread-424 -- Open Thread 424
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [open thread, community]
+    - later: true
+- https://mindslice.substack.com/p/2026-q1-update -- 2026 Q1 update
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [life, ai]
+    - later: true
 - https://substack.com/@vincentli/note/c-202331338 -- learning music as a language
   - [meta]:
     - date: 06/17/2026
@@ -716,6 +726,35 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.tacitlabs.co/ -- Tacit Labs
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [ai, design]
+- https://www.henrikkarlsson.xyz/ -- Escaping Flatland
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [newsletter, relationships]
+    - later: true
+- https://lydianottingham.substack.com/philosophyhaven -- pronotre
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [newsletter, ai]
+    - later: true
+- https://nablatheta.substack.com/p/im-starting-a-new-blog -- I'm starting a new blog
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [blog, ml]
+    - later: true
+- https://ethanding.substack.com/ -- mandates
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [newsletter, ai]
+    - later: true
+- https://ninamontagne.substack.com/ -- nina montagne
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [newsletter, philosophy]
+    - later: true
 - https://www.unsiloed.ai/ -- Unsiloed AI
   - [meta]:
     - date: 06/17/2026
@@ -2644,6 +2683,35 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.newyorker.com/magazine/2026/06/22/mutiny-noam-scheiber-book-review-yuppies-dylan-gottlieb -- When Did White-Collar Work Start to Look So Bleak?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [work, futurism]
+- https://www.theseedsofscience.pub/p/a-brief-history-of-biohacking -- A Brief History of Biohacking
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [biohacking, biology]
+    - later: true
+- https://rebeccamakkai.substack.com/p/youre-writing-a-book-so-stop-writing -- You're Writing a Book. So Stop Writing a Movie.
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [writing, fiction]
+    - later: true
+- https://www.personalcanon.com/p/everything-i-read-in-february-march-2026 -- everything i read in february & march 2026
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [reading, books]
+    - later: true
+- https://croissanthology.substack.com/p/boringpunk -- Boringpunk
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [humanism, culture]
+    - later: true
+- https://internetprincess.substack.com/p/how-i-read -- How i read
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [reading, writing]
+    - later: true
 - https://www.inkandswitch.com/essay/malleable-software/ -- Malleable software [**]
   - [meta]:
     - date: 06/17/2026
@@ -6569,6 +6637,41 @@ title: are.na
 
 ## opinions
 
+- https://afeteworsethandeath.substack.com/p/you-dont-have-to-use-ai -- You don't have to use AI
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [ai, humanities]
+    - later: true
+- https://beyondladder.substack.com/p/whats-left-for-us -- What's Left for Us?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [ai, human advantage]
+    - later: true
+- https://nanransohoff.substack.com/p/the-third-wave-of-american-philanthropy -- The third wave of American philanthropy
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [philanthropy, ai]
+    - later: true
+- https://qchu.substack.com/p/the-singularity-does-not-wear-prada -- The singularity does not wear Prada
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [singularity, fashion]
+    - later: true
+- https://www.nytimes.com/2026/04/01/opinion/high-agency-silicon-valley.html -- All the Worst People Seem to Want to Be 'High Agency'
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [agency, silicon valley]
+    - later: true
+- https://usefulfictions.substack.com/p/agency-is-for-sociopaths -- Agency is for sociopaths
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [agency, ethics]
+    - later: true
+- https://rorytruex.substack.com/p/will-ai-break-the-university -- Will AI Break the University?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [ai, education]
+    - later: true
 - https://jacobin.com/2019/09/meritocracy-trap-inequality-human-capital-markovits -- The Hell of Meritocracy
   - [meta]:
     - date: 06/17/2026
@@ -6980,6 +7083,71 @@ title: are.na
 
 ## life is literature
 
+- https://jennyclark.substack.com/p/the-story-of-how-we-met -- the story of how we met
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [love, relationship]
+    - later: true
+- https://samkriss.substack.com/p/how-to-live-without-your-phone -- How to live without your phone
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [attention, phone]
+    - later: true
+- https://benxwang.substack.com/p/a-reflection-on-tennis -- a reflection on tennis
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [tennis, practice]
+    - later: true
+- https://thebagatelles.substack.com/p/the-wind-chime-chronicles -- The Wind Chime Chronicles
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [fiction, environment]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/going-your-own-way -- Some relationships deepen when you tell the truth and some end
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [relationship, truth]
+    - later: true
+- https://www.sherryning.com/p/youre-overspending-because-you-lack-values -- You're overspending because you lack values
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [values, desire]
+    - later: true
+- https://altered.substack.com/p/resentment -- Resentment is needing others to change so you can stay the same
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [resentment, change]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/two-kinds-of-introspection -- Two kinds of introspection
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [introspection, identity]
+    - later: true
+- https://thingofthings.substack.com/p/the-life-goals-of-dead-people -- The Life Goals of Dead People
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [guilt, values]
+    - later: true
+- https://mingyuan.substack.com/p/physical-competence -- Physical competence
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [body, competence]
+    - later: true
+- https://v4913.substack.com/p/sophomore-year-recap-life-update -- Sophomore year recap / life update
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [college, life]
+    - later: true
+- https://altered.substack.com/p/insecurity -- To have an insecurity is to pretend not to have it
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [insecurity, selfhood]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/love-and-change -- Love is about being invested in someone's continual expansion
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [love, change]
+    - later: true
 - https://mindslice.substack.com/p/no-skill-issues-only-love-issues -- no SKILL ISSUES, only LOVE ISSUES
   - [meta]:
     - date: 06/17/2026
@@ -7745,6 +7913,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://lydianottingham.substack.com/p/on-bootstrapping-morality -- Bootstrapping morality
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [morality, selfhood]
+    - later: true
+- https://www.astralcodexten.com/p/being-john-rawls -- Being John Rawls
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [rawls, political philosophy]
+    - later: true
+- https://philipgoff.substack.com/p/what-if-the-quran-is-written-into -- What if the Quran is Written into the Big Bang?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [theology, cosmology]
+    - later: true
+- https://slatestarcodex.com/2014/11/21/the-categories-were-made-for-man-not-man-for-the-categories/ -- The Categories Were Made For Man, Not Man For The Categories
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [categories, identity]
+    - later: true
 - https://joecarlsmith.substack.com/p/building-ais-that-do-human-like-philosophy -- Building AIs that do human-like philosophy
   - [meta]:
     - date: 06/17/2026
@@ -9968,6 +10156,11 @@ title: are.na
 
 ## arts
 
+- https://nabeelqu.substack.com/p/what-makes-art-great -- What Makes Art Great?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [art, aesthetics]
+    - later: true
 - https://agoodhardstare.substack.com/p/runaround-sue -- Runaround Sue
   - [meta]:
     - date: 06/16/2026
@@ -11727,6 +11920,46 @@ title: are.na
 
 ## engineering
 
+- https://substack.com/@ruben/p-189763580 -- Cowork.
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [claude, agents]
+    - later: true
+- https://fulcruminc.substack.com/p/the-bitter-lesson-for-software -- The bitter lesson for software
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [agents, software]
+    - later: true
+- https://joinreboot.org/p/automations-appetite-for-human-traces -- Automation's appetite for human traces
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [agents, data]
+    - later: true
+- https://articles.nectome.com/p/preservation-pre-sales -- Preservation Sales
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [preservation, longevity]
+    - later: true
+- https://blog.redwoodresearch.org/p/how-do-we-more-safely-defer-to-ais -- How do we (more) safely defer to AIs?
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [alignment, deference]
+    - later: true
+- https://semaphore.substack.com/p/things-i-learned-at-openai -- Things I learned at OpenAI
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [openai, research]
+    - later: true
+- https://croissanthology.substack.com/p/try-aligning-the-mossad-instead-of -- Aligning the mossad instead of trying to defend against it
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [security, offense]
+    - later: true
+- https://ethanding.substack.com/p/claude-code-is-not-making-your-product -- claude code is not making your product better
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [coding agents, product]
+    - later: true
 - https://world.hey.com/dhh/let-the-agents-democratize-open-source-9fd630a9 -- Let the agents democratize open source
   - [meta]:
     - date: 06/17/2026
@@ -13130,6 +13363,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://jacopogabrielli.substack.com/p/the-moores-law-of-synthetic-gene -- The Moore's Law of Synthetic Gene Circuits
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [synthetic biology, gene circuits]
+    - later: true
 - https://arxiv.org/abs/2606.07878v1 -- Still: Amortized KV Cache Compaction in a Single Forward Pass
   - [meta]:
     - date: 06/15/2026

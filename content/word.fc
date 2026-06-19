@@ -657,3 +657,8 @@ A: An animation that carries a shared element across states so the interface rea
 
 Q: `/^\s*-\s*tags:\s*\[/s/\(\[[^]]*\)\zs\([a-z0-9]\+\)-\([a-z0-9]\+\)\ze[^]]*\]/\2 \3/g`
 A: On lines matching a `tags: [...]` array, replace the hyphen in each hyphenated lowercase-alphanumeric tag (e.g. `foo-bar` becomes `foo bar`) with a space, leaving the surrounding brackets untouched.
+
+---
+
+Q: myopic
+A: nearsighted (short-sighted vision); figuratively, lacking foresight or breadth of view, focused only on immediate concerns.

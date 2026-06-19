@@ -87,7 +87,7 @@ $$
 
 and then emits $\hat{x}_{1:M}$ where $M=\max\{\,m:\,A(\hat{x}_{1:m})\,\}$ among a candidate set.
 
-This conditioning on _passing thresholds_ without the importance-weight correction skews both marginals and joints away from $\pi[P]$ (no acceptance rule of the form $\min{1, P/Q}$ is applied).
+This conditioning on _passing thresholds_ without the importance-weight correction skews both marginals and joints away from $\pi[P]$ (no acceptance rule of the form $\min(1, P/Q)$ is applied).
 
 > Thus even beyond the first token the distribution is altered unless the policy is greedy.
 >
