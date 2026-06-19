@@ -1,4 +1,4 @@
-import type { Root, Element, ElementContent } from 'hast'
+import type { Root } from 'hast'
 import { Fragment, h } from 'preact'
 import { render } from 'preact-render-to-string'
 import type { FullPageLayout } from '../../cfg'
@@ -15,7 +15,7 @@ import { renderStreamEntry, renderProtectedEntryBody } from '../../components/st
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { joinSegments, pathToRoot, FullSlug, normalizeHastElement } from '../../util/path'
+import { joinSegments, pathToRoot, type FullSlug } from '../../util/path'
 import { EncryptedPayload, encryptContent, resolveProtectedPassword } from '../../util/protected'
 import {
   buildStreamDayPathFromIso,
@@ -30,6 +30,11 @@ import {
   isRestrictedEntry,
 } from '../../util/stream'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
+import {
+  buildStreamRouteTree,
+  cloneStreamEntries,
+  rebaseStreamEntries,
+} from '../../util/stream-route-tree'
 import { write } from './helpers'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
@@ -42,19 +47,18 @@ const formatIsoAsYMD = (iso?: string | null): string | null => {
   return `${year}/${month}/${day}`
 }
 
-const isElement = (node: ElementContent): node is Element => node.type === 'element'
-
 const streamSlugFromPath = (path: string): FullSlug => path.replace(/^\//, '') as FullSlug
 
 const renderStreamRoute = async (
   ctx: BuildCtx,
-  tree: Root,
+  sourceTree: Root,
   fileData: QuartzPluginData,
   allFiles: QuartzPluginData[],
   resources: StaticResources,
   layout: FullPageLayout,
 ) => {
   const slug = fileData.slug!
+  const streamData = fileData.streamData
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
   const componentData: QuartzComponentProps = {
     ctx,
@@ -62,7 +66,7 @@ const renderStreamRoute = async (
     externalResources,
     cfg: ctx.cfg.configuration,
     children: [],
-    tree,
+    tree: streamData ? buildStreamRouteTree(streamData.entries, sourceTree) : sourceTree,
     allFiles,
   }
   const html = renderPage(ctx, slug, componentData, layout, externalResources, false)
@@ -189,7 +193,7 @@ async function* processStreamIndex(
       {
         ...fileData,
         slug: route.slug,
-        streamData: { entries: route.entries },
+        streamData: { entries: cloneStreamEntries(route.entries) },
         frontmatter: { ...legendFrontmatter, title: route.title },
       },
       allFiles,
@@ -212,15 +216,6 @@ async function* processStreamIndex(
   }
 
   const sourceSlug = fileData.slug! as FullSlug
-  const rebaseEntries = (entries: StreamEntry[], targetSlug: FullSlug): StreamEntry[] =>
-    entries.map(entry => ({
-      ...entry,
-      content: entry.content.map(node =>
-        isElement(node)
-          ? (normalizeHastElement(node, targetSlug, sourceSlug) as ElementContent)
-          : node,
-      ),
-    }))
 
   const protectedPayloadsForEntries = (
     entries: StreamEntry[],
@@ -251,7 +246,7 @@ async function* processStreamIndex(
     const titleDate = formatIsoAsYMD(isoSource) ?? formatIsoAsYMD(group.isoDate)
     const title = titleDate ?? fileData!.frontmatter?.title ?? 'stream'
 
-    const rebasedEntries = rebaseEntries(group.entries, slug)
+    const rebasedEntries = rebaseStreamEntries(group.entries, slug, sourceSlug)
 
     const fileDataForGroup: QuartzPluginData = {
       ...fileData,
@@ -272,12 +267,14 @@ async function* processStreamIndex(
       externalResources,
       cfg: ctx.cfg.configuration,
       children: [],
-      tree,
+      tree: buildStreamRouteTree(rebasedEntries, tree),
       allFiles,
     }
 
-    const renderGroupPage = () =>
-      renderPage(ctx, slug, componentData, layout, externalResources, false)
+    const renderGroupPage = () => {
+      componentData.tree = buildStreamRouteTree(fileDataForGroup.streamData?.entries ?? [], tree)
+      return renderPage(ctx, slug, componentData, layout, externalResources, false)
+    }
 
     let html = renderGroupPage()
     if (streamPassword && rebasedEntries.some(isProtectedEntry)) {

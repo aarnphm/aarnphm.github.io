@@ -56,6 +56,7 @@ export const GEAR: [string, string[]][] = [
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
       'Front Wheel: Reserve 42TA, DT Swiss 350, 12x100mm, 24H, centerlock, tubeless compatible',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
+      'Tube: Pirelli P Zero TPU',
       'Tires: Vittoria Corsa N.EXT TLR G2.0 700x29c',
       'Shifter/Break: Shimano Ultegra, R8170',
       'Crankset: Shimano Ultegra, R8100, 52/36T',

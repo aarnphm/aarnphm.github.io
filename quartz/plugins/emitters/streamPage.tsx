@@ -1,4 +1,4 @@
-import { Root } from 'hast'
+import type { Root } from 'hast'
 import type { StreamEntry } from '../transformers/stream'
 import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -12,6 +12,7 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { pathToRoot } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import { buildStreamRouteTree, cloneStreamEntries } from '../../util/stream-route-tree'
 import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
@@ -38,16 +39,21 @@ async function processStreamPage(
 ) {
   const slug = fileData.slug!
   const publishedFileData = filterUnpublishedStreamEntries(fileData)
+  const streamData = publishedFileData.streamData
+  const routeEntries = streamData ? cloneStreamEntries(streamData.entries) : []
+  const routeFileData = streamData
+    ? { ...publishedFileData, streamData: { ...streamData, entries: routeEntries } }
+    : publishedFileData
   const cfg = ctx.cfg.configuration
   const externalResources = pageResources(pathToRoot(slug), resources, ctx)
 
   const componentData: QuartzComponentProps = {
     ctx,
-    fileData: publishedFileData,
+    fileData: routeFileData,
     externalResources,
     cfg,
     children: [],
-    tree,
+    tree: streamData ? buildStreamRouteTree(routeEntries, tree) : tree,
     allFiles,
   }
 
