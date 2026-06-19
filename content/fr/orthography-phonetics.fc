@@ -1,0 +1,515 @@
+---
+title: French orthography and phonetics
+tags:
+  - fr
+  - language
+  - learning
+---
+
+Q: Which pronunciation variety does this deck assume?
+A: Standard contemporary French, with notes where common regional mergers change the spelling-to-sound mapping.
+
+---
+
+Q: How many base letters are in the French alphabet?
+A: 26, the same base Latin letters as English: `a b c d e f g h i j k l m n o p q r s t u v w x y z`.
+
+---
+
+Q: Are accented letters separate letters in the French alphabet?
+A: No. `é`, `è`, `ê`, `ë`, `à`, `â`, `î`, `ï`, `ô`, `ù`, `û`, `ü`, `ÿ`, and `ç` are modified spellings of base letters.
+
+---
+
+Q: Which French alphabet letters are vowel letters?
+A: `a`, `e`, `i`, `o`, `u`, and sometimes `y`.
+
+---
+
+Q: How should you use the `Approx` field on alphabet cards?
+A: As a rough English memory handle. The IPA `Sound` field is the target, especially for letters like `u` /y/ and `r` /ɛʁ/.
+
+---
+
+Q: How do you say French letter `a`?
+A: Name: `a`. Sound: /a/. Approx: `ah`.
+
+---
+
+Q: How do you say French letter `b`?
+A: Name: `bé`. Sound: /be/. Approx: `beh`.
+
+---
+
+Q: How do you say French letter `c`?
+A: Name: `cé`. Sound: /se/. Approx: `seh`.
+
+---
+
+Q: How do you say French letter `d`?
+A: Name: `dé`. Sound: /de/. Approx: `deh`.
+
+---
+
+Q: How do you say French letter `e`?
+A: Name: `e`. Sound: /ø/ or /ə/ depending on speaker and context. Approx: `uh`.
+
+---
+
+Q: How do you say French letter `f`?
+A: Name: `effe`. Sound: /ɛf/. Approx: `eff`.
+
+---
+
+Q: How do you say French letter `g`?
+A: Name: `gé`. Sound: /ʒe/. Approx: `zheh`.
+
+---
+
+Q: How do you say French letter `h`?
+A: Name: `ache`. Sound: /aʃ/. Approx: `ahsh`.
+
+---
+
+Q: How do you say French letter `i`?
+A: Name: `i`. Sound: /i/. Approx: `ee`.
+
+---
+
+Q: How do you say French letter `j`?
+A: Name: `ji`. Sound: /ʒi/. Approx: `zhee`.
+
+---
+
+Q: How do you say French letter `k`?
+A: Name: `ka`. Sound: /ka/. Approx: `kah`.
+
+---
+
+Q: How do you say French letter `l`?
+A: Name: `elle`. Sound: /ɛl/. Approx: `ell`.
+
+---
+
+Q: How do you say French letter `m`?
+A: Name: `emme`. Sound: /ɛm/. Approx: `em`.
+
+---
+
+Q: How do you say French letter `n`?
+A: Name: `enne`. Sound: /ɛn/. Approx: `en`.
+
+---
+
+Q: How do you say French letter `o`?
+A: Name: `o`. Sound: /o/. Approx: `oh`.
+
+---
+
+Q: How do you say French letter `p`?
+A: Name: `pé`. Sound: /pe/. Approx: `peh`.
+
+---
+
+Q: How do you say French letter `q`?
+A: Name: `ku`. Sound: /ky/. Approx: `koo`.
+
+---
+
+Q: How do you say French letter `r`?
+A: Name: `erre`. Sound: /ɛʁ/. Approx: `air`.
+
+---
+
+Q: How do you say French letter `s`?
+A: Name: `esse`. Sound: /ɛs/. Approx: `ess`.
+
+---
+
+Q: How do you say French letter `t`?
+A: Name: `té`. Sound: /te/. Approx: `teh`.
+
+---
+
+Q: How do you say French letter `u`?
+A: Name: `u`. Sound: /y/. Approx: `ooh`.
+
+---
+
+Q: How do you say French letter `v`?
+A: Name: `vé`. Sound: /ve/. Approx: `veh`.
+
+---
+
+Q: How do you say French letter `w`?
+A: Name: `double vé`. Sound: /dublə ve/. Approx: `doo-blah-veh`.
+
+---
+
+Q: How do you say French letter `x`?
+A: Name: `ixe`. Sound: /iks/. Approx: `eeks`.
+
+---
+
+Q: How do you say French letter `y`?
+A: Name: `i grec`. Sound: /i gʁɛk/. Approx: `ee-grek`.
+
+---
+
+Q: How do you say French letter `z`?
+A: Name: `zède`. Sound: /zɛd/. Approx: `zed`.
+
+---
+
+Q: Where does French stress normally fall?
+A: On the final pronounced syllable of a rhythmic group, not as a lexical stress on each written word.
+
+---
+
+Q: Do French written accents mark stress?
+A: No. Written accents usually distinguish vowel quality, spelling history, or homographs.
+
+---
+
+Q: What does acute `é` usually mark?
+A: Closed /e/, as in `été` /ete/.
+
+---
+
+Q: What do grave `è` and circumflex `ê` usually mark on `e`?
+A: Open /ɛ/, as in `père` /pɛʁ/ and `tête` /tɛt/.
+
+---
+
+Q: What sound does final `-er` usually have in an infinitive?
+A: /e/, as in `parler` /paʁle/.
+
+---
+
+Q: What sound does final `-ez` usually have?
+A: /e/, as in `parlez` /paʁle/.
+
+---
+
+Q: What happens to final written `e` in most French words?
+A: It is usually silent, but it can make the preceding consonant pronounced: `petit` /pəti/ vs `petite` /pətit/.
+
+---
+
+Q: What is schwa in French?
+A: The variable vowel /ə/ written mostly as `e`, often dropped in casual speech when the consonant cluster still works.
+
+---
+
+Q: What is the pronunciation trap in third-person plural verb ending `-ent`?
+A: In verbs it is silent: `ils parlent` is /il paʁl/, not */il paʁlɑ̃/.
+
+---
+
+Q: What usually happens to written plural `-s` and `-x`?
+A: They are silent unless liaison makes them surface before a following vowel sound.
+
+---
+
+Q: What is the broad rule for final consonants in French?
+A: Many final consonants are silent: `grand` /gʁɑ̃/, `petit` /pəti/, `deux` /dø/.
+
+---
+
+Q: What is the `c r f l` final-consonant heuristic?
+A: Final `c`, `r`, `f`, and `l` are often pronounced, but this is a heuristic with many lexical exceptions.
+
+---
+
+Q: What does final `-d` often become in liaison?
+A: /t/, as in `grand homme` /gʁɑ̃t‿ɔm/.
+
+---
+
+Q: What do final `-s`, `-x`, and `-z` often become in liaison?
+A: /z/, as in `les amis` /lez‿ami/ and `deux ans` /døz‿ɑ̃/.
+
+---
+
+Q: What is liaison?
+A: A normally silent final consonant is pronounced before a following vowel sound inside certain word groups.
+
+---
+
+Q: What is enchaînement?
+A: A pronounced final consonant resyllabifies onto the next vowel: `avec elle` sounds like /a.vɛ.kɛl/.
+
+---
+
+Q: What is elision in French spelling?
+A: A short vowel is dropped before a vowel sound, as in `le ami` becoming `l'ami`.
+
+---
+
+Q: What is the difference between `h muet` and `h aspiré`?
+A: Both are silent, but `h muet` allows elision and liaison, while `h aspiré` blocks them.
+
+---
+
+Q: Give an `h muet` example.
+A: `l'homme`, with elision, and `les hommes` /lez‿ɔm/, with liaison.
+
+---
+
+Q: Give an `h aspiré` example.
+A: `le héros` and `les héros`, with no elision and no liaison.
+
+---
+
+Q: When does a vowel plus `n` or `m` usually become nasal?
+A: Before another consonant or at the end of a word: `bon` /bɔ̃/, `temps` /tɑ̃/.
+
+---
+
+Q: When does written `n` or `m` usually stop nasalizing the previous vowel?
+A: Before a following vowel or when doubled: `bonne` /bɔn/, `année` /ane/.
+
+---
+
+Q: Why does French spelling use `m` instead of `n` in some nasal spellings?
+A: Before `b`, `p`, or `m`, spelling usually writes `m`: `temps`, `simple`, `tomber`.
+
+---
+
+Q: What nasal vowel do `an`, `en`, `am`, and `em` usually spell?
+A: /ɑ̃/, as in `sans` /sɑ̃/ and `temps` /tɑ̃/.
+
+---
+
+Q: What nasal vowel do `on` and `om` usually spell?
+A: /ɔ̃/, as in `bon` /bɔ̃/ and `nom` /nɔ̃/.
+
+---
+
+Q: What nasal vowel do `in`, `ain`, `ein`, `im`, and `ym` usually spell?
+A: /ɛ̃/, as in `vin` /vɛ̃/, `pain` /pɛ̃/, and `simple` /sɛ̃pl/.
+
+---
+
+Q: What does `un` or `um` usually spell?
+A: Traditionally /œ̃/, though many speakers in France merge it with /ɛ̃/.
+
+---
+
+Q: What does final `-ien` usually sound like?
+A: /jɛ̃/, as in `bien` /bjɛ̃/.
+
+---
+
+Q: What does `oin` usually sound like?
+A: /wɛ̃/, as in `loin` /lwɛ̃/.
+
+---
+
+Q: What sound does single `u` usually spell?
+A: /y/, a high front rounded vowel, as in `tu` /ty/.
+
+---
+
+Q: What sound does `ou` usually spell?
+A: /u/, as in `vous` /vu/.
+
+---
+
+Q: Why are `u` and `ou` high-value minimal-pair spellings?
+A: `tu` /ty/ and `tout` /tu/ differ mainly by front rounded /y/ vs back rounded /u/.
+
+---
+
+Q: What does `au` or `eau` usually spell?
+A: /o/, as in `chaud` /ʃo/ and `eau` /o/.
+
+---
+
+Q: What does `oi` usually spell?
+A: /wa/, as in `moi` /mwa/ and `trois` /tʁwa/.
+
+---
+
+Q: What does `ui` usually spell?
+A: /ɥi/, as in `huit` /ɥit/ and `lui` /lɥi/.
+
+---
+
+Q: What do `ai` and `ei` usually spell?
+A: /ɛ/ in many common words, as in `lait` /lɛ/ and `reine` /ʁɛn/.
+
+---
+
+Q: What is the usual contrast between `é` and `è`?
+A: `é` is /e/ and `è` is /ɛ/: `été` /ete/ vs `père` /pɛʁ/.
+
+---
+
+Q: What does `eu` or `œu` often spell in an open syllable?
+A: Closed /ø/, as in `peu` /pø/ and `deux` /dø/.
+
+---
+
+Q: What does `eu` or `œu` often spell before a pronounced consonant?
+A: Open /œ/, as in `peur` /pœʁ/ and `sœur` /sœʁ/.
+
+---
+
+Q: What is the rough open/closed contrast for written `o`?
+A: `o` is often /o/ in open syllables and /ɔ/ before pronounced consonants: `mot` /mo/ vs `porte` /pɔʁt/.
+
+---
+
+Q: What does `â` usually do in contemporary standard French?
+A: Often no stable separate sound from `a`; some speakers keep /ɑ/ in a few words.
+
+---
+
+Q: What does diaeresis in `ë`, `ï`, or `ü` signal?
+A: The marked vowel is pronounced separately: `Noël` /nɔɛl/, `naïf` /naif/.
+
+---
+
+Q: What sound does `c` have before `e`, `i`, or `y`?
+A: /s/, as in `ce` /sə/ and `cinq` /sɛ̃k/.
+
+---
+
+Q: What sound does `c` have before `a`, `o`, `u`, or a consonant?
+A: /k/, as in `car` /kaʁ/ and `cou` /ku/.
+
+---
+
+Q: What does `ç` do?
+A: It keeps `c` pronounced /s/ before `a`, `o`, or `u`: `ça` /sa/, `garçon` /gaʁsɔ̃/.
+
+---
+
+Q: What sound does `g` have before `e`, `i`, or `y`?
+A: /ʒ/, as in `geste` /ʒɛst/.
+
+---
+
+Q: What sound does `g` have before `a`, `o`, `u`, or a consonant?
+A: /g/, as in `gare` /gaʁ/ and `goût` /gu/.
+
+---
+
+Q: What does `gu` before `e` or `i` usually do?
+A: It keeps hard /g/: `guerre` /gɛʁ/, `guide` /gid/.
+
+---
+
+Q: What does `ge` before `a` or `o` usually do?
+A: It keeps soft /ʒ/: `mangeons` /mɑ̃ʒɔ̃/.
+
+---
+
+Q: What does `ch` usually spell?
+A: /ʃ/, as in `chat` /ʃa/.
+
+---
+
+Q: What do `ph` and `th` usually spell?
+A: `ph` spells /f/ and `th` spells /t/: `photo` /foto/, `thé` /te/.
+
+---
+
+Q: What does `qu` usually spell?
+A: /k/, as in `qui` /ki/ and `quatre` /katʁ/.
+
+---
+
+Q: What sound does `j` spell?
+A: /ʒ/, as in `jour` /ʒuʁ/.
+
+---
+
+Q: When does single `s` usually sound like /z/?
+A: Between two vowel letters: `maison` /mɛzɔ̃/.
+
+---
+
+Q: What does `ss` do between vowels?
+A: It keeps /s/: `poisson` /pwasɔ̃/.
+
+---
+
+Q: What are common pronunciations of `x`?
+A: /ks/ in `taxi`, /gz/ in `examen`, often silent word-finally, and /z/ in liaison.
+
+---
+
+Q: What does `gn` usually spell?
+A: /ɲ/, as in `montagne` /mɔ̃taɲ/ and `campagne` /kɑ̃paɲ/.
+
+---
+
+Q: What does final `-il` or `-ill` often spell after a vowel?
+A: /j/, as in `travail` /tʁavaj/ and `soleil` /sɔlɛj/.
+
+---
+
+Q: What does `ill` often spell after a consonant?
+A: /ij/, as in `fille` /fij/ and `famille` /famij/.
+
+---
+
+Q: Name three common exceptions where `ill` is /il/, not /ij/.
+A: `ville` /vil/, `mille` /mil/, and `tranquille` /tʁɑ̃kil/.
+
+---
+
+Q: What does `-tion` usually sound like?
+A: /sjɔ̃/, as in `nation` /nasjɔ̃/.
+
+---
+
+Q: What does `-sion` often sound like after a vowel?
+A: /zjɔ̃/, as in `vision` /vizjɔ̃/.
+
+---
+
+Q: What sound does French `r` usually have?
+A: A uvular /ʁ/, as in `rouge` /ʁuʒ/.
+
+---
+
+Q: What are French semivowels?
+A: /j/, /w/, and /ɥ/, as in `fille` /fij/, `oui` /wi/, and `lui` /lɥi/.
+
+---
+
+Q: What is the spelling-to-sound lesson of `grand` vs `grande`?
+A: Silent final consonants can reappear when a following written `e` makes them pronounceable: /gʁɑ̃/ vs /gʁɑ̃d/.
+
+---
+
+Q: What is the spelling-to-sound lesson of `bon` vs `bonne`?
+A: `bon` has a nasal vowel /bɔ̃/, while `bonne` has oral /ɔ/ plus /n/: /bɔn/.
+
+---
+
+Q: What is the spelling-to-sound lesson of `les` before a vowel?
+A: The silent `s` can surface as liaison /z/: `les amis` /lez‿ami/.
+
+---
+
+Q: What is the spelling-to-sound lesson of `des` before a consonant?
+A: The final `s` stays silent: `des livres` /de livʁ/.
+
+---
+
+Q: What is the spelling-to-sound lesson of `est`?
+A: As the verb `être`, `est` is usually /ɛ/, with final `st` silent.
+
+---
+
+Q: What is the spelling-to-sound lesson of `et`?
+A: `et` is usually /e/ and normally does not liaison.
+
+---
+
+Q: Why is French spelling less chaotic than it looks?
+A: Many written letters mark morphology, liaison, or vowel quality even when they are not pronounced in isolation.

@@ -100,6 +100,7 @@ declare module 'vfile' {
 const TRAILING_MARKERS_PATTERN = /(?:\s*\[(?:\*\*|--|—)\])+\s*$/
 const HIGHLIGHT_MARKER = /\[\*\*\]/
 const EMBED_DISABLED_MARKER = /\[(?:--|—)\]/
+const REMOVE_PAYWALL_PREFIX = 'https://removepaywalls.com/'
 
 const parseLinkTitle = (text: string): { url: string; title?: string } | undefined => {
   const match = text.match(/^(https?:\/\/[^\s]+)\s*(?:(?:--|—)\s*(.+))?$/)
@@ -462,6 +463,7 @@ export const Arena: QuartzTransformerPlugin = () => {
                   highlighted,
                   embedMode: defaultEmbedMode,
                 }
+                let unlocked = false
 
                 const nestedList = extractNestedList(li)
                 if (nestedList) {
@@ -533,6 +535,27 @@ export const Arena: QuartzTransformerPlugin = () => {
                     if (embedMode) {
                       block.embedMode = embedMode
                       delete block.metadata?.embed
+                    }
+
+                    const unlockedValue = block.metadata?.unlocked
+                    if (unlockedValue !== undefined) {
+                      const normalizedUnlocked =
+                        typeof unlockedValue === 'string'
+                          ? unlockedValue.toLowerCase().trim()
+                          : unlockedValue === true
+                            ? 'true'
+                            : unlockedValue === false
+                              ? 'false'
+                              : undefined
+                      if (
+                        (normalizedUnlocked === 'true' || normalizedUnlocked === 'yes') &&
+                        block.url &&
+                        !block.url.startsWith(REMOVE_PAYWALL_PREFIX)
+                      ) {
+                        unlocked = true
+                        block.url = `${REMOVE_PAYWALL_PREFIX}${block.url}`
+                      }
+                      delete block.metadata?.unlocked
                     }
 
                     if (block.metadata && Object.keys(block.metadata).length === 0) {
@@ -658,6 +681,9 @@ export const Arena: QuartzTransformerPlugin = () => {
 
                         if (!classes.includes('internal')) classes.push('internal')
                       } else if (isExternal) {
+                        if (unlocked && url && dest === url) {
+                          e.properties.href = `${REMOVE_PAYWALL_PREFIX}${dest}`
+                        }
                         if (!classes.includes('external')) classes.push('external')
                       }
 

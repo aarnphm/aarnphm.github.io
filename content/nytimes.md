@@ -1,6 +1,6 @@
 ---
 date: '2025-10-27'
-description: from nytimes
+description: a la [[puzzle/index|puzzle]] et al.
 id: nytimes
 modified: 2026-06-10 17:54:41 GMT-04:00
 tags:
@@ -8,7 +8,9 @@ tags:
 title: games
 ---
 
-_a la [[puzzle/index|puzzle]] et al._
+## hankgreen.com/fourbythree
+
+![[thoughts/images/2026-06-18.webp]]
 
 ## connections
 
