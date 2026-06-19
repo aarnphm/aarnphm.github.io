@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-18 16:55:54 GMT-04:00
+modified: 2026-06-18 23:00:03 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -726,6 +726,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.azazie.ca/all/bridesmaid-dresses -- Dresses
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [fashion]
 - https://www.tacitlabs.co/ -- Tacit Labs
   - [meta]:
     - date: 06/18/2026
@@ -2683,6 +2687,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.totei.com/story/la-marzocco-coffee -- How La Marzocco Perfected the Espresso Machine [**]
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [craft, machinery, engineering]
 - https://www.newyorker.com/magazine/2026/06/22/mutiny-noam-scheiber-book-review-yuppies-dylan-gottlieb -- When Did White-Collar Work Start to Look So Bleak?
   - [meta]:
     - date: 06/18/2026
@@ -5252,6 +5260,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.midjourney.com/medical/blogpost -- A New Era of Midjourney
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [medical, health, technologica]
 - https://syfi.cs.washington.edu/blog/2026-06-05-piper/ -- Introducing Piper: A Programmable Distributed Training System [**]
   - [meta]:
     - date: 06/17/2026
@@ -7913,6 +7925,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- [[thoughts/pdfs/The Bootstrapping Problem.pdf]] -- The Bootstrapping Problem
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [morals]
 - https://lydianottingham.substack.com/p/on-bootstrapping-morality -- Bootstrapping morality
   - [meta]:
     - date: 06/18/2026
@@ -11920,6 +11936,14 @@ title: are.na
 
 ## engineering
 
+- https://nvlabs.github.io/cuda-oxide/index.html -- CUDA-oxide handbook
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [gpu, systems]
+- https://openbird.vercel.app/ -- Openbird
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [ml, engineering]
 - https://substack.com/@ruben/p-189763580 -- Cowork.
   - [meta]:
     - date: 06/18/2026
@@ -12828,6 +12852,10 @@ title: are.na
   - view: list
   - json: true
 
+- [[thoughts/pdfs/weisberg_vob.pdf]] -- Varieties of Bayesianism
+  - [meta]:
+    - date: 06/18/2026
+    - tags: [probability, life]
 - https://www.grantstenger.com/local-minima -- Why Local Minima Are Rare in High-Dimensional Landscapes
   - [meta]:
     - date: 06/17/2026

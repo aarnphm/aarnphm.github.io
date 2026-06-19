@@ -7,11 +7,49 @@ export interface AppleDaily {
   vo2max: number | null
 }
 
+export interface AppleSwim {
+  date: string
+  totalM: number
+  laps: number
+  strokes: Record<string, number>
+}
+
 export interface AppleCache {
   version?: number
   lastSync: number
   days: Record<string, AppleDaily>
+  swims?: Record<string, AppleSwim>
 }
+
+export const SWIM_STROKES = [
+  'freestyle',
+  'breaststroke',
+  'backstroke',
+  'butterfly',
+  'mixed',
+  'kickboard',
+] as const
+export type SwimStroke = (typeof SWIM_STROKES)[number]
+
+export const STROKE_LABEL: Record<SwimStroke, string> = {
+  freestyle: 'freestyle',
+  breaststroke: 'breast',
+  backstroke: 'back',
+  butterfly: 'fly',
+  mixed: 'mixed',
+  kickboard: 'kick',
+}
+
+const STROKE_BY_VALUE: Record<string, SwimStroke> = {
+  '1': 'mixed',
+  '2': 'freestyle',
+  '3': 'backstroke',
+  '4': 'breaststroke',
+  '5': 'butterfly',
+  '6': 'kickboard',
+}
+
+const SWIM_DIST_UNIT: Record<string, number> = { m: 1, km: 1000, mi: 1609.344, yd: 0.9144 }
 
 export interface AppleRecord {
   date: string
@@ -112,6 +150,70 @@ export function aggregateAppleRecords(records: AppleRecord[]): AppleDaily[] {
     })
   }
   return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export function matchSwimDistance(line: string): { start: string; meters: number } | null {
+  if (!line.includes('HKQuantityTypeIdentifierDistanceSwimming')) return null
+  const start = /startDate="([^"]+)"/.exec(line)?.[1]
+  const value = /\svalue="([\d.]+)"/.exec(line)?.[1]
+  if (!start || value === undefined) return null
+  const unit = /\sunit="([^"]+)"/.exec(line)?.[1] ?? 'm'
+  return { start, meters: Number(value) * (SWIM_DIST_UNIT[unit.toLowerCase()] ?? 1) }
+}
+
+export function matchSwimStrokeOpen(line: string): string | null {
+  if (!line.includes('HKQuantityTypeIdentifierSwimmingStrokeCount')) return null
+  if (line.trimEnd().endsWith('/>')) return null
+  return /startDate="([^"]+)"/.exec(line)?.[1] ?? null
+}
+
+export function matchStrokeStyle(line: string): SwimStroke | null {
+  const v = /key="HKSwimmingStrokeStyle" value="(\d+)"/.exec(line)?.[1]
+  return v ? (STROKE_BY_VALUE[v] ?? null) : null
+}
+
+function poolLengthByDate(distByStart: Map<string, number>): Map<string, number> {
+  const groups = new Map<string, number[]>()
+  for (const [start, m] of distByStart) {
+    const date = start.slice(0, 10)
+    const arr = groups.get(date)
+    if (arr) arr.push(m)
+    else groups.set(date, [m])
+  }
+  const out = new Map<string, number>()
+  for (const [date, arr] of groups) {
+    arr.sort((a, b) => a - b)
+    out.set(date, arr[arr.length >> 1])
+  }
+  return out
+}
+
+export function aggregateSwimLaps(
+  strokeLaps: { start: string; stroke: SwimStroke }[],
+  distByStart: Map<string, number>,
+): AppleSwim[] {
+  const poolByDate = poolLengthByDate(distByStart)
+  const byDate = new Map<string, AppleSwim>()
+  for (const lap of strokeLaps) {
+    const date = lap.start.slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
+    const meters = distByStart.get(lap.start) ?? poolByDate.get(date) ?? 25
+    let sw = byDate.get(date)
+    if (!sw) {
+      sw = { date, totalM: 0, laps: 0, strokes: {} }
+      byDate.set(date, sw)
+    }
+    sw.strokes[lap.stroke] = (sw.strokes[lap.stroke] ?? 0) + meters
+    sw.totalM += meters
+    sw.laps += 1
+  }
+  return [...byDate.values()]
+    .map(sw => {
+      const strokes: Record<string, number> = {}
+      for (const k of Object.keys(sw.strokes)) strokes[k] = Math.round(sw.strokes[k])
+      return { date: sw.date, laps: sw.laps, totalM: Math.round(sw.totalM), strokes }
+    })
+    .sort((a, b) => a.date.localeCompare(b.date))
 }
 
 function num(v: unknown): number | null {

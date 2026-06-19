@@ -1207,6 +1207,41 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     setResult('total', swimSec + t1 + bikeSec + t2 + runSec)
   }
 
+  let analytics: Analytics | null = null
+  let userEdited = false
+  const source = calc.querySelector<HTMLElement>('.tri-calc-source')
+  const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null => {
+    if (!analytics) return null
+    const th = bySport(analytics.thresholds, sport)
+    if (!th || !(th.vThr > 0)) return null
+    const avg = sport === 'swim' ? 100 / th.vThr : sport === 'bike' ? th.vThr * 3.6 : 1000 / th.vThr
+    if (which === 'avg') return avg
+    const tr = bySport(analytics.trends, sport)
+    if (!tr || !tr.level) return avg
+    const end = tr.forecast[tr.forecast.length - 1]?.value ?? tr.level
+    const ratio = end / tr.level
+    return Number.isFinite(ratio) && ratio > 0 ? avg * ratio : avg
+  }
+  const toCalcInput = (sport: Sport, v: number): string =>
+    sport === 'bike' ? (v * KM_TO_MI).toFixed(1) : clock(sport === 'run' ? v / KM_TO_MI : v)
+  const applySource = (which: 'avg' | 'pred'): void => {
+    let any = false
+    for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
+      const v = paceHuman(which, sport)
+      if (v == null || !Number.isFinite(v) || v <= 0) continue
+      const input = calc.querySelector<HTMLInputElement>(`.tri-calc-in[data-k="${sport}"]`)
+      if (input) input.value = toCalcInput(sport, v)
+      any = true
+    }
+    if (!any) return
+    for (const b of calc.querySelectorAll<HTMLElement>('.tri-calc-src')) {
+      const on = b.dataset.src === which
+      b.classList.toggle('tri-calc-src--on', on)
+      b.setAttribute('aria-selected', String(on))
+    }
+    compute()
+  }
+
   const open = () => {
     root.classList.add('tri-calc-open')
     calc.setAttribute('aria-hidden', 'false')
@@ -1217,6 +1252,11 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     calc.setAttribute('aria-hidden', 'true')
   }
   const onCalcClick = (event: MouseEvent) => {
+    const src = (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-calc-src')
+    if (src?.dataset.src === 'avg' || src?.dataset.src === 'pred') {
+      applySource(src.dataset.src)
+      return
+    }
     const p = (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-calc-preset')
     if (!p) return
     calc.dataset.swim = p.dataset.swim ?? ''
@@ -1226,6 +1266,10 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       x.classList.toggle('tri-calc-preset--on', x === p)
     compute()
   }
+  const onInput = () => {
+    userEdited = true
+    compute()
+  }
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape') close()
   }
@@ -1233,15 +1277,29 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   btn.addEventListener('click', open)
   closeBtn?.addEventListener('click', close)
   calc.addEventListener('click', onCalcClick)
-  calc.addEventListener('input', compute)
+  calc.addEventListener('input', onInput)
   document.addEventListener('keydown', onKey)
   calc.querySelectorAll('.tri-calc-preset')[1]?.classList.add('tri-calc-preset--on')
+
+  const apath = root.dataset.analyticsPath
+  if (apath)
+    fetch(apath)
+      .then(res => res.json())
+      .then((d: Analytics) => {
+        analytics = d
+        const usable = (['swim', 'bike', 'run'] as Sport[]).some(
+          s => paceHuman('avg', s) != null || paceHuman('pred', s) != null,
+        )
+        if (source && usable) source.hidden = false
+        if (usable && !userEdited) applySource('avg')
+      })
+      .catch(() => {})
 
   return () => {
     btn.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     calc.removeEventListener('click', onCalcClick)
-    calc.removeEventListener('input', compute)
+    calc.removeEventListener('input', onInput)
     document.removeEventListener('keydown', onKey)
   }
 }
@@ -1867,10 +1925,16 @@ const buildMethod = (method: string, n: number): HTMLElement => {
   return span
 }
 
+const fmtTrendVal = (sport: Sport, v: number): string =>
+  sport === 'bike' ? `${Math.round(v)} km/h` : `${clock(v)}${sport === 'swim' ? ' /100m' : ' /km'}`
+const fmtTrendShort = (sport: Sport, v: number): string =>
+  sport === 'bike' ? String(Math.round(v)) : clock(v)
+
 const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
   const tr = bySport(data.trends, sport)
   const th = bySport(data.thresholds, sport)
   const wrap = el('div', `tri-trend-panel${tr?.stale ? ' tri-trend-stale' : ''}`)
+  wrap.dataset.sport = sport
   const head = el('div', 'tri-trend-head')
   head.append(
     buildIconLeg(sport),
@@ -1900,7 +1964,7 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     const span = Math.max(1e-6, hi - lo)
     const top = 4
     const bot = 24
-    const xOf = (p: number): number => 8 + p * (ANA_W - 8)
+    const xOf = (p: number): number => p * ANA_W
     const Y = (v: number): number => {
       const t = (v - lo) / span
       return tr.invert ? top + t * (bot - top) : bot - t * (bot - top)
@@ -1914,6 +1978,8 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
       viewBox: `0 0 ${ANA_W} ${ANA_H}`,
       preserveAspectRatio: 'none',
     })
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
+    s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
     const N = 12
     const hiPts: string[] = []
     const loPts: string[] = []
@@ -1936,12 +2002,22 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
         class: `tri-trend-proj tri-line-${sport}`,
       }),
     )
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
     const track = el('div', 'tri-trend-track')
     const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
-    dot.style.left = `${clampN((xOf(0) / ANA_W) * 100, 2, 98)}%`
+    dot.style.left = `${clampN((xOf(0) / ANA_W) * 100, 0, 98)}%`
     dot.style.top = `${clampN((Y(level) / ANA_H) * 100, 4, 96)}%`
     track.append(s, dot)
-    wrap.appendChild(track)
+    const yax = el('div', 'tri-trend-yax')
+    yax.append(
+      el('span', '', fmtTrendShort(sport, tr.invert ? lo : hi)),
+      el('span', '', fmtTrendShort(sport, tr.invert ? hi : lo)),
+    )
+    const chart = el('div', 'tri-trend-chart')
+    chart.append(yax, track)
+    const xax = el('div', 'tri-trend-xax')
+    xax.append(el('span', '', 'now'), el('span', '', `+${Math.round(weeks)} wk`))
+    wrap.append(chart, xax, el('div', 'tri-chart-readout'))
   }
   const dir = trendDir(tr.invert, tr.slopePerWeek)
   const note = el('div', 'tri-trend-note')
@@ -2761,6 +2837,43 @@ const scrubBind = (
   }
 }
 
+type ScrubItem = {
+  svgEl: SVGElement
+  cursor: SVGElement
+  readout: HTMLElement
+  hover: HTMLElement
+  textOf: (f: number) => string
+}
+
+const scrubGroup = (items: ScrubItem[], cursorXOf: (f: number) => number): (() => void) => {
+  if (items.length === 0) return () => {}
+  const move = (event: MouseEvent, ref: SVGElement) => {
+    const r = ref.getBoundingClientRect()
+    const f = clampN((event.clientX - r.left) / r.width, 0, 1)
+    const cx = cursorXOf(f).toFixed(2)
+    for (const it of items) {
+      it.cursor.setAttribute('x1', cx)
+      it.cursor.setAttribute('x2', cx)
+      it.hover.classList.add('tri-chart--hover')
+      setMath(it.readout, it.textOf(f))
+    }
+  }
+  const leave = () => {
+    for (const it of items) it.hover.classList.remove('tri-chart--hover')
+  }
+  const offs: (() => void)[] = []
+  for (const it of items) {
+    const onMove = (e: MouseEvent) => move(e, it.svgEl)
+    it.svgEl.addEventListener('mousemove', onMove)
+    it.svgEl.addEventListener('mouseleave', leave)
+    offs.push(() => {
+      it.svgEl.removeEventListener('mousemove', onMove)
+      it.svgEl.removeEventListener('mouseleave', leave)
+    })
+  }
+  return () => offs.forEach(f => f())
+}
+
 const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   const cleanups: (() => void)[] = []
   const bind = (
@@ -2899,6 +3012,40 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         )
       }
     }
+  }
+
+  const trendBlock = panel.querySelector<HTMLElement>('.tri-ana-trend')
+  if (trendBlock) {
+    const items: ScrubItem[] = []
+    for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
+      const wrap = trendBlock.querySelector<HTMLElement>(`.tri-trend-panel[data-sport="${sport}"]`)
+      const svgEl = wrap?.querySelector<SVGElement>('.tri-trend-svg')
+      const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+      const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
+      const tr = bySport(data.trends, sport)
+      if (
+        !wrap ||
+        !svgEl ||
+        !cursor ||
+        !readout ||
+        !tr ||
+        tr.level == null ||
+        tr.forecast.length < 1
+      )
+        continue
+      const level = tr.level
+      const weeks = tr.forecast.length / 7
+      const endVal = level + (tr.slopePerWeek ?? 0) * weeks
+      items.push({
+        svgEl,
+        cursor,
+        readout,
+        hover: wrap,
+        textOf: f =>
+          `+${(f * weeks).toFixed(1)} wk · ${fmtTrendVal(sport, level + (endVal - level) * f)}`,
+      })
+    }
+    cleanups.push(scrubGroup(items, f => f * ANA_W))
   }
 
   const radarSvg = panel.querySelector<SVGElement>('.tri-engine-radar .tri-radar-svg')

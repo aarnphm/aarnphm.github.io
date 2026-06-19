@@ -464,111 +464,137 @@ export default (() => {
               ×
             </button>
           </div>
-          <div class="tri-calc-presets">
-            {TRI_DISTANCES.map(([label, s, b, r]) => (
-              <button
-                class="tri-calc-preset"
-                type="button"
-                data-swim={s}
-                data-bike={b}
-                data-run={r}
-              >
-                {label}
-              </button>
-            ))}
+          <div class="tri-calc-cell">
+            <div class="tri-calc-presets">
+              {TRI_DISTANCES.map(([label, s, b, r]) => (
+                <button
+                  class="tri-calc-preset"
+                  type="button"
+                  data-swim={s}
+                  data-bike={b}
+                  data-run={r}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div class="tri-calc-source" hidden>
+              <div class="tri-calc-srcs" role="tablist" aria-label="pace source">
+                <button
+                  class="tri-calc-src tri-calc-src--on"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                  data-src="avg"
+                >
+                  average
+                </button>
+                <button
+                  class="tri-calc-src"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                  data-src="pred"
+                >
+                  projected
+                </button>
+              </div>
+            </div>
+            <div class="tri-calc-box">
+              <table class="tri-calc-io">
+                <tbody>
+                  <tr>
+                    <th>swim</th>
+                    <td>
+                      <input
+                        class="tri-calc-in"
+                        data-k="swim"
+                        type="text"
+                        value="2:00"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td class="tri-calc-u">/100m</td>
+                    <td class="tri-calc-r" data-leg="swim">
+                      —
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>T1</th>
+                    <td>
+                      <input
+                        class="tri-calc-in"
+                        data-k="t1"
+                        type="text"
+                        value="2:00"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td class="tri-calc-u">min</td>
+                    <td class="tri-calc-r" data-leg="t1">
+                      —
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>bike</th>
+                    <td>
+                      <input
+                        class="tri-calc-in"
+                        data-k="bike"
+                        type="text"
+                        value="18"
+                        inputMode="decimal"
+                      />
+                    </td>
+                    <td class="tri-calc-u">mph</td>
+                    <td class="tri-calc-r" data-leg="bike">
+                      —
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>T2</th>
+                    <td>
+                      <input
+                        class="tri-calc-in"
+                        data-k="t2"
+                        type="text"
+                        value="1:30"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td class="tri-calc-u">min</td>
+                    <td class="tri-calc-r" data-leg="t2">
+                      —
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>run</th>
+                    <td>
+                      <input
+                        class="tri-calc-in"
+                        data-k="run"
+                        type="text"
+                        value="9:00"
+                        inputMode="numeric"
+                      />
+                    </td>
+                    <td class="tri-calc-u">/mi</td>
+                    <td class="tri-calc-r" data-leg="run">
+                      —
+                    </td>
+                  </tr>
+                  <tr class="tri-calc-total">
+                    <th>finish</th>
+                    <td />
+                    <td />
+                    <td class="tri-calc-r" data-leg="total">
+                      —
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <table class="tri-calc-io">
-            <tbody>
-              <tr>
-                <th>swim</th>
-                <td>
-                  <input
-                    class="tri-calc-in"
-                    data-k="swim"
-                    type="text"
-                    value="2:00"
-                    inputMode="numeric"
-                  />
-                </td>
-                <td class="tri-calc-u">/100m</td>
-                <td class="tri-calc-r" data-leg="swim">
-                  —
-                </td>
-              </tr>
-              <tr>
-                <th>T1</th>
-                <td>
-                  <input
-                    class="tri-calc-in"
-                    data-k="t1"
-                    type="text"
-                    value="2:00"
-                    inputMode="numeric"
-                  />
-                </td>
-                <td class="tri-calc-u">min</td>
-                <td class="tri-calc-r" data-leg="t1">
-                  —
-                </td>
-              </tr>
-              <tr>
-                <th>bike</th>
-                <td>
-                  <input
-                    class="tri-calc-in"
-                    data-k="bike"
-                    type="text"
-                    value="18"
-                    inputMode="decimal"
-                  />
-                </td>
-                <td class="tri-calc-u">mph</td>
-                <td class="tri-calc-r" data-leg="bike">
-                  —
-                </td>
-              </tr>
-              <tr>
-                <th>T2</th>
-                <td>
-                  <input
-                    class="tri-calc-in"
-                    data-k="t2"
-                    type="text"
-                    value="1:30"
-                    inputMode="numeric"
-                  />
-                </td>
-                <td class="tri-calc-u">min</td>
-                <td class="tri-calc-r" data-leg="t2">
-                  —
-                </td>
-              </tr>
-              <tr>
-                <th>run</th>
-                <td>
-                  <input
-                    class="tri-calc-in"
-                    data-k="run"
-                    type="text"
-                    value="9:00"
-                    inputMode="numeric"
-                  />
-                </td>
-                <td class="tri-calc-u">/mi</td>
-                <td class="tri-calc-r" data-leg="run">
-                  —
-                </td>
-              </tr>
-              <tr class="tri-calc-total">
-                <th>finish</th>
-                <td />
-                <td />
-                <td class="tri-calc-r" data-leg="total">
-                  —
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </aside>
 
         <div class="tri-analytics-scrim" aria-hidden="true" />
