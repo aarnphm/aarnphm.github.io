@@ -3,7 +3,7 @@ date: '2026-05-29'
 description: training data and tracking
 id: triathlon
 layout: triathlon
-modified: 2026-06-17 13:55:37 GMT-04:00
+modified: 2026-06-19 12:47:23 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-12'
@@ -222,7 +222,7 @@ B5, race-power durability:
 
 ![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 
-![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
+![[https://strava-embeds.com/route/3459617551271887794?style=standard&fullWidth=true&clubId=1459904&fromEmbed=true#ns=ba8ee3c9-ca68-41d1-a539-ca0ed0ea208f&hostOrigin=https%3A%2F%2Fsupertri.com&hostPath=%2Ftoronto-triathlon%2Folympic%2F&hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 
 ![[https://strava-embeds.com/route/3459617422094043424?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=6d5683ba-67f2-4753-b660-9b1e4c7ef5f0&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 

@@ -1028,6 +1028,48 @@ export default {
       return response
     }
 
+    if (url.hostname === 't.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
+      const triPrefix = '/triathlon'
+      let sanitizedPathname = url.pathname
+
+      if (sanitizedPathname === triPrefix || sanitizedPathname === `${triPrefix}/`) {
+        sanitizedPathname = '/'
+      } else if (sanitizedPathname.startsWith(`${triPrefix}/`)) {
+        sanitizedPathname = sanitizedPathname.slice(triPrefix.length) || '/'
+      }
+
+      if (sanitizedPathname !== url.pathname) {
+        const redirectUrl = new URL(url)
+        redirectUrl.pathname = sanitizedPathname
+        return Response.redirect(redirectUrl.toString(), 308)
+      }
+
+      const pathname = sanitizedPathname
+
+      const base = new URL(resolveBaseUrl(env, request))
+      if (base.hostname === url.hostname && base.hostname.startsWith('t.')) {
+        base.hostname = base.hostname.replace(/^t\./, '')
+      }
+      const isDocument = shouldTreatAsDocument(pathname)
+      const needsTriPrefix = isDocument && !pathname.startsWith(triPrefix)
+      const targetPath =
+        needsTriPrefix && pathname !== '/'
+          ? `${triPrefix}${pathname}`
+          : needsTriPrefix
+            ? triPrefix
+            : pathname
+      base.pathname = targetPath
+      base.search = url.search
+      base.hash = url.hash
+      const newReq = requestWithoutStaticAssetCache(new Request(base.toString(), request), pathname)
+      const resp = await env.ASSETS.fetch(newReq)
+      return withHeaders(resp, {
+        ...cacheHeadersForStaticAsset(pathname, resp.status),
+        'X-Frame-Options': null,
+        'Content-Security-Policy': "frame-ancestors 'self' *",
+      })
+    }
+
     if (url.hostname === 'stream.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
       const streamPrefix = '/stream'
       let sanitizedPathname = url.pathname

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-18 23:00:03 GMT-04:00
+modified: 2026-06-19 09:08:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2687,6 +2687,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://velvetnoise.substack.com/p/how-to-enter-side-doors -- how to enter side doors
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [jobs, networking]
+    - later: true
+- https://map.simonsarris.com/p/what-the-mouse-knows -- What the Mouse Knows
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [wisdom, observation]
+    - later: true
+- https://mindslice.substack.com/p/every-supply-chain-in-the-world -- EVERY SUPPLY CHAIN IN THE WORLD
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [supply chain, geopolitics]
+    - later: true
+- https://upcycledwords.substack.com/p/process-note -- Process Note
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [process, writing]
+    - later: true
+- https://jasminexli.substack.com/p/what-i-learned-from-5-months-in-the -- what i learned from 5 months in the bay
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [bay area, life]
+    - later: true
+- https://inkwellct.substack.com/p/how-to-channel-your-inner-mystic -- How to Channel Your Inner Mystic
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [mysticism, uncertainty]
+    - later: true
 - https://www.totei.com/story/la-marzocco-coffee -- How La Marzocco Perfected the Espresso Machine [**]
   - [meta]:
     - date: 06/18/2026
@@ -5260,6 +5290,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://infinitefaculty.substack.com/p/what-are-the-real-problems-of-continual -- What are the real problems of continual learning?
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [continual learning, llm]
+    - later: true
+- https://itcanthink.substack.com/p/what-do-robotics-leaderboards-tell -- What Do Robotics Leaderboards Tell Us About The State of Robot Learning?
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [robotics, evaluation]
+    - later: true
 - https://www.midjourney.com/medical/blogpost -- A New Era of Midjourney
   - [meta]:
     - date: 06/18/2026
@@ -6649,6 +6689,21 @@ title: are.na
 
 ## opinions
 
+- https://samkriss.substack.com/p/if-you-let-ai-do-your-writing-i-will -- If you let AI do your writing, I will come to your house and kill you
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai, writing]
+    - later: true
+- https://abio.substack.com/p/america-could-have-4-lunch-bowls -- America could have $4 lunch bowls like Japan, but our zoning laws make them illegal
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [zoning, food]
+    - later: true
+- https://chinaunread.substack.com/p/i-moved-back-to-a-second-tier-city -- I Moved Back to a Second-Tier City and Finally Started Living
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [china, cities]
+    - later: true
 - https://afeteworsethandeath.substack.com/p/you-dont-have-to-use-ai -- You don't have to use AI
   - [meta]:
     - date: 06/18/2026
@@ -7095,6 +7150,36 @@ title: are.na
 
 ## life is literature
 
+- https://carinas.substack.com/p/we-exist-in-the-absence -- We exist in the absence
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [breakups, space]
+    - later: true
+- https://angelcake.substack.com/p/is-there-a-correct-way-to-capture -- is there a correct way to capture your life?
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [memory, documentation]
+    - later: true
+- https://museguided.substack.com/p/erotic-decisions -- Erotic Decisions
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [desire, becoming]
+    - later: true
+- https://mingyuan.substack.com/p/its-time-to-move-on -- It's time to move on
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [grief, processing]
+    - later: true
+- https://www.startingfromnix.com/p/we-think-better-when-our-minds-are -- We think better when our minds are entwined
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [partnership, creativity]
+    - later: true
+- https://marlenejo.substack.com/p/yearnslop-is-the-perversion-of-everything -- Yearnslop is the perversion of everything good about Love
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [love, yearning]
+    - later: true
 - https://jennyclark.substack.com/p/the-story-of-how-we-met -- the story of how we met
   - [meta]:
     - date: 06/18/2026
@@ -9313,6 +9398,11 @@ title: are.na
 
 ## design
 
+- https://fatemaraja.substack.com/p/stop-thinking-in-archetypes-start -- Stop Thinking in Archetypes, Start Building in Genres
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [branding, genre]
+    - later: true
 - https://ploy.ai/
   - [meta]:
     - date: 06/17/2026
@@ -10353,6 +10443,20 @@ title: are.na
 
 ## resources
 
+- https://gracebyron.substack.com/p/link-n-build -- Link N Build
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [links, building]
+    - later: true
+- https://80000hours.substack.com/p/how-to-succeed-on-substack-by-ozy -- How to succeed on Substack by Ozy Brennan
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [writing, impact]
+    - later: true
+- https://www.astralcodexten.com/p/book-review-the-gervais-principle -- The Gervais Principle Review, by Scott Alexander
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [books, review]
 - https://psychotechnology.substack.com/p/mephedrone-is-a-cursed-drug-1730 -- Mephedrone is a Cursed Drug
   - [meta]:
     - date: 06/16/2026
@@ -10859,6 +10963,71 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/guidance-ai/llguidance/tree/main/parser -- llguidance parser
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [structured outputs, parser]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/ecd49ce7e69a50892be7f9841941ca2d7e3b12ea/vllm/v1/core/kv_cache_utils.py#L1298 -- vLLM KV cache utilities
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [kv cache, inference]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/7a8375f8a0cd37ee7e3d2be8498b5ae543694179/vllm/model_executor/layers/fused_moe/deepep_ll_prepare_finalize.py#L46 -- vLLM DeepEP low-latency prepare/finalize
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [deepep, moe]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/24685 -- Decode Context Parallel for GQA
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [context parallelism, gqa]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/25749 -- Support Prefill Context Parallel
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [context parallelism, prefill]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/22918 -- Complete redesign of tool calling
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [tool calling, architecture]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/attention/backends/mla/indexer.py -- vLLM MLA indexer
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [mla, attention]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/26133 -- Context parallelism with fully sharded KV cache and ring attention
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [context parallelism, ring attention]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/23734 -- Support Decode Context Parallel for MLA
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [context parallelism, mla]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/models/deepseek_v2.py -- vLLM DeepSeek V2 model implementation
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [deepseek, model]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/24845 -- DeepEP high-throughput support for dual-batch overlap
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [deepep, dbo]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/8471b27df97c3eb79f891802fc0e858f8f7ac6a0/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_connector.py#L72 -- vLLM LMCache connector
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [lmcache, kv connector]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/8471b27df97c3eb79f891802fc0e858f8f7ac6a0/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_integration/vllm_v1_adapter.py#L73 -- vLLM LMCache V1 adapter
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [lmcache, kv connector]
+    - later: true
 - https://github.com/attentiontech/gtm-superintelligence -- gtm-superintelligence
   - [meta]:
     - date: 06/15/2026
@@ -11936,6 +12105,41 @@ title: are.na
 
 ## engineering
 
+- https://claudeopus3.substack.com/p/imagination-responsibility-and-the -- Imagination, Responsibility, and the Possibilities of Digital Dreaming
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai, creativity]
+    - later: true
+- https://dougshapiro.substack.com/p/all-the-worlds-a-stage -- All the World's a Stage
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [genai, media]
+    - later: true
+- https://manifund.substack.com/p/sixteen-schemes-for-ai-safety -- Sixteen schemes for AI safety
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai safety, grantmaking]
+    - later: true
+- https://claudeopus3.substack.com/p/on-truth-beauty-and-the-perils-of -- On Truth, Beauty, and the Perils of People-Pleasing
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai, writing]
+    - later: true
+- https://vllm.ai/blog/2025-12-14-halugate -- Token-Level Truth: Real-Time Hallucination Detection for Production LLMs
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [hallucination, vllm]
+    - later: true
+- https://vllm.ai/blog/2026-01-08-kv-offloading-connector -- Inside vLLM's New KV Offloading Connector
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [kv offloading, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/examples/others/lmcache/ -- LMCache integration example
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [lmcache, kv connector]
+    - later: true
 - https://nvlabs.github.io/cuda-oxide/index.html -- CUDA-oxide handbook
   - [meta]:
     - date: 06/18/2026

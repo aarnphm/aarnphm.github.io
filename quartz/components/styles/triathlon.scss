@@ -122,6 +122,15 @@
   }
 }
 
+.tri-axis-labels-hidden .tri-axis-year {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tri-axis-labels-hidden .tri-axis-year::before {
+  opacity: 0;
+}
+
 .tri-bar {
   display: flex;
   flex-direction: column;
@@ -1286,6 +1295,170 @@
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, var(--tri-modal-y));
+}
+
+.tri-subpage {
+  --tri-page-w: min(980px, 92vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  margin-block: 0;
+  padding: 1.6rem 0;
+  box-sizing: border-box;
+}
+
+.tri-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 1.1rem;
+  width: 100%;
+  max-width: var(--tri-page-w);
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+}
+
+.tri-subnav-home {
+  color: var(--dark);
+}
+
+.tri-subnav-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+}
+
+.tri-subnav-link {
+  color: var(--gray);
+}
+
+.tri-subnav-link[aria-current='page'] {
+  color: var(--tri-accent);
+}
+
+.tri-subpage a:hover {
+  background: none;
+  color: var(--dark);
+  opacity: 1;
+}
+
+.tri-subnav-link[aria-current='page']:hover {
+  color: var(--tri-accent);
+}
+
+.tri-analytics--page,
+.tri-map--page,
+.tri-training--page {
+  position: static;
+  width: 100%;
+  max-width: var(--tri-page-w);
+  height: calc(100dvh - 7rem);
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.tri-subpage .tri-analytics-scrim,
+.tri-subpage .tri-map-scrim,
+.tri-subpage .tri-training-scrim {
+  display: none;
+}
+
+.tri-analytics--page .tri-ana-close,
+.tri-map--page .tri-map-close,
+.tri-training--page .tri-training-close {
+  display: none;
+}
+
+.tri-tools {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  width: 100%;
+  max-width: var(--tri-page-w);
+  height: calc(100dvh - 7rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  @include thin-scrollbar;
+  padding: 1.3rem 1.4rem 2rem;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  background: var(--light);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+}
+
+.tri-tools-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.tri-tools-h {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray);
+}
+
+.tri-tools .tri-gear-btn,
+.tri-tools .tri-pace-btn {
+  display: none;
+}
+
+.tri-tools .tri-gear-wrap,
+.tri-tools .tri-pace-wrap {
+  display: block;
+}
+
+.tri-tools .tri-gear,
+.tri-tools .tri-pace {
+  position: static;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.tri-tools .tri-gear-scroll {
+  max-height: none;
+  overflow: visible;
+}
+
+.tri-tools .tri-pace .tri-pace-row > :nth-child(1) {
+  text-align: left;
+}
+.tri-tools .tri-pace .tri-pace-row > :nth-child(2) {
+  text-align: center;
+}
+.tri-tools .tri-pace .tri-pace-row > :nth-child(3) {
+  text-align: right;
+}
+
+.tri-fuel-embed {
+  width: 100%;
+  height: min(74vh, 780px);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  overflow: hidden;
+}
+
+.tri-calc--page {
+  position: static;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
 }
 
 .tri-ana-bar {

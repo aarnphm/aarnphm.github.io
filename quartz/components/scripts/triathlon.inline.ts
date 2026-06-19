@@ -1167,7 +1167,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-calc-btn')
   const calc = root.querySelector<HTMLElement>('.tri-calc')
   const closeBtn = root.querySelector<HTMLElement>('.tri-calc-close')
-  if (!btn || !calc) return null
+  const pageMode = root.dataset.triView === 'tools'
+  if (!calc || (!btn && !pageMode)) return null
 
   const parseClock = (s: string): number => {
     const parts = s.split(':').map(Number)
@@ -1274,8 +1275,14 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     if (event.key === 'Escape') close()
   }
 
-  btn.addEventListener('click', open)
-  closeBtn?.addEventListener('click', close)
+  if (pageMode) {
+    calc.classList.add('tri-calc--page')
+    calc.setAttribute('aria-hidden', 'false')
+    compute()
+  } else {
+    btn?.addEventListener('click', open)
+    closeBtn?.addEventListener('click', close)
+  }
   calc.addEventListener('click', onCalcClick)
   calc.addEventListener('input', onInput)
   document.addEventListener('keydown', onKey)
@@ -1296,7 +1303,7 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       .catch(() => {})
 
   return () => {
-    btn.removeEventListener('click', open)
+    btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     calc.removeEventListener('click', onCalcClick)
     calc.removeEventListener('input', onInput)
@@ -3254,7 +3261,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const headline = root.querySelector<HTMLElement>('.tri-ana-headline')
   const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
-  if (!btn || !panel) return null
+  const pageMode = root.dataset.triView === 'analytics'
+  if (!panel || (!btn && !pageMode)) return null
 
   const body = root.querySelector<HTMLElement>('.tri-ana-body')
   const detail = root.querySelector<HTMLElement>('.tri-ana-detail')
@@ -3302,6 +3310,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   let closeAnim: Animation | null = null
   let closeSeq = 0
   const close = () => {
+    if (!btn) return
     const seq = ++closeSeq
     closeAnim?.cancel()
     closeAnim = flipClose(btn, panel, reduce, () => {
@@ -3555,6 +3564,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 
   const open = () => {
+    if (!btn) return
     closeSeq++
     closeAnim?.cancel()
     closeAnim = null
@@ -3598,10 +3608,16 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     close()
   }
 
-  btn.addEventListener('click', open)
-  closeBtn?.addEventListener('click', close)
-  title?.addEventListener('click', toMain)
-  scrim?.addEventListener('click', close)
+  if (pageMode) {
+    panel.classList.add('tri-analytics--page')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+  } else {
+    btn?.addEventListener('click', open)
+    closeBtn?.addEventListener('click', close)
+    title?.addEventListener('click', toMain)
+    scrim?.addEventListener('click', close)
+  }
   search?.addEventListener('input', runSearch)
   search?.addEventListener('keydown', onSearchKey)
   results?.addEventListener('click', onResultsClick)
@@ -3613,7 +3629,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('tri-weightunit', onUnitChange)
 
   return () => {
-    btn.removeEventListener('click', open)
+    btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
@@ -3885,7 +3901,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const search = root.querySelector<HTMLInputElement>('.tri-map-search')
   const results = root.querySelector<HTMLElement>('.tri-map-results')
   const detail = root.querySelector<HTMLElement>('.tri-map-detail')
-  if (!btn || !panel) return null
+  const pageMode = root.dataset.triView === 'maps'
+  if (!panel || (!btn && !pageMode)) return null
 
   const body = root.querySelector<HTMLElement>('.tri-map-body')
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -4191,6 +4208,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   let closeAnim: Animation | null = null
   let closeSeq = 0
   const close = () => {
+    if (!btn) return
     const seq = ++closeSeq
     closeAnim?.cancel()
     closeAnim = flipClose(btn, panel, reduce, () => {
@@ -4368,6 +4386,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       mapCtl.drawOverview()
     })
   const open = () => {
+    if (!btn) return
     closeSeq++
     closeAnim?.cancel()
     closeAnim = null
@@ -4440,10 +4459,18 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     mapCtl.applyMode()
   }
 
-  btn.addEventListener('click', open)
-  closeBtn?.addEventListener('click', close)
-  title?.addEventListener('click', toMain)
-  scrim?.addEventListener('click', close)
+  if (pageMode) {
+    panel.classList.add('tri-map--page')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+    void loadDetails()
+    startMap()
+  } else {
+    btn?.addEventListener('click', open)
+    closeBtn?.addEventListener('click', close)
+    title?.addEventListener('click', toMain)
+    scrim?.addEventListener('click', close)
+  }
   search?.addEventListener('input', runSearch)
   search?.addEventListener('focus', runSearch)
   search?.addEventListener('keydown', onSearchKey)
@@ -4453,7 +4480,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('keydown', onKey)
 
   return () => {
-    btn.removeEventListener('click', open)
+    btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
@@ -4531,7 +4558,8 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
   const list = root.querySelector<HTMLElement>('.tri-training-plans')
   const tree = root.querySelector<HTMLElement>('.tri-training-tree')
   const preview = root.querySelector<HTMLElement>('.tri-training-doc')
-  if (!btn || !panel) return null
+  const pageMode = root.dataset.triView === 'training'
+  if (!panel || (!btn && !pageMode)) return null
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let loaded = false
@@ -4661,6 +4689,7 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
     results?.replaceChildren()
   }
   const open = () => {
+    if (!btn) return
     closeSeq++
     closeAnim?.cancel()
     closeAnim = null
@@ -4687,6 +4716,7 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
     )
   }
   const close = () => {
+    if (!btn) return
     const seq = ++closeSeq
     closeAnim?.cancel()
     closeAnim = flipClose(btn, panel, reduce, () => {
@@ -4749,10 +4779,16 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
     close()
   }
 
-  btn.addEventListener('click', open)
-  closeBtn?.addEventListener('click', close)
-  title?.addEventListener('click', toMain)
-  scrim?.addEventListener('click', close)
+  if (pageMode) {
+    panel.classList.add('tri-training--page')
+    panel.setAttribute('aria-hidden', 'false')
+    load()
+  } else {
+    btn?.addEventListener('click', open)
+    closeBtn?.addEventListener('click', close)
+    title?.addEventListener('click', toMain)
+    scrim?.addEventListener('click', close)
+  }
   search?.addEventListener('input', runSearch)
   results?.addEventListener('click', onResultsClick)
   list?.addEventListener('click', onListClick)
@@ -4760,7 +4796,7 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('keydown', onKey)
 
   return () => {
-    btn.removeEventListener('click', open)
+    btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
@@ -4860,6 +4896,54 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const setupAxisLabels = (root: HTMLElement): (() => void) | null => {
+  const axis = root.querySelector<HTMLElement>('.tri-axis')
+  if (!axis) return null
+  const labels = [...axis.querySelectorAll<HTMLElement>('.tri-axis-year')]
+  if (labels.length === 0) return null
+  const visible = new Map<Element, boolean>()
+  let frame: number | null = null
+  const apply = () => {
+    frame = null
+    const viewportBottom = window.innerHeight - 1
+    const clippedByRect = labels.some(label => {
+      const r = label.getBoundingClientRect()
+      return r.top < 0 || r.bottom > viewportBottom
+    })
+    root.classList.toggle(
+      'tri-axis-labels-hidden',
+      clippedByRect || [...visible.values()].some(ok => !ok),
+    )
+  }
+  const schedule = () => {
+    if (frame == null) frame = window.requestAnimationFrame(apply)
+  }
+  const observer = new IntersectionObserver(
+    entries => {
+      for (const entry of entries)
+        visible.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= 0.98)
+      schedule()
+    },
+    { threshold: [0, 0.98, 1] },
+  )
+  for (const label of labels) {
+    visible.set(label, true)
+    observer.observe(label)
+  }
+  const resize = new ResizeObserver(schedule)
+  resize.observe(root)
+  resize.observe(axis)
+  window.addEventListener('resize', schedule, { passive: true })
+  schedule()
+  return () => {
+    observer.disconnect()
+    resize.disconnect()
+    window.removeEventListener('resize', schedule)
+    if (frame != null) window.cancelAnimationFrame(frame)
+    root.classList.remove('tri-axis-labels-hidden')
+  }
+}
+
 const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
@@ -4910,6 +4994,15 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
         e.preventDefault()
         e.stopImmediatePropagation()
       }
+      return
+    }
+
+    if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      const url = new URL('/triathlon/tools', window.location.toString())
+      if (window.spaNavigate) window.spaNavigate(url)
+      else window.location.href = url.toString()
       return
     }
 
@@ -5040,6 +5133,8 @@ document.addEventListener('nav', () => {
   if (mapCleanup) window.addCleanup?.(mapCleanup)
   const glossCleanup = setupGloss(root)
   if (glossCleanup) window.addCleanup?.(glossCleanup)
+  const axisCleanup = setupAxisLabels(root)
+  if (axisCleanup) window.addCleanup?.(axisCleanup)
   const shortcutsCleanup = setupShortcuts(root)
   if (shortcutsCleanup) window.addCleanup?.(shortcutsCleanup)
   const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]

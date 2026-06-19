@@ -1,11 +1,13 @@
 import type { Root as HtmlRoot } from 'hast'
 import fs from 'node:fs/promises'
 import { Node } from 'unist'
+import type { TriView } from '../../components/pages/triathlon-panels'
 import type { GarminCache } from '../stores/garmin'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
 import { TriathlonPage } from '../../components'
 import HeaderConstructor from '../../components/Header'
+import { TriathlonSubPage } from '../../components/pages/TriathlonSubPage'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
@@ -31,8 +33,10 @@ import {
 } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
-import { ProcessedContent, QuartzPluginData } from '../vfile'
+import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
+
+const TRI_SUBVIEWS: TriView[] = ['tools', 'analytics', 'maps', 'training']
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
@@ -199,6 +203,33 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       }
       const html = renderPage(ctx, slug, componentData, opts, externalResources, false)
       files.push(await write({ ctx, content: html, slug, ext: '.html' }))
+
+      for (const view of TRI_SUBVIEWS) {
+        const subSlug = `triathlon/${view}` as FullSlug
+        const [subTree, subFile] = defaultProcessedContent({
+          slug: subSlug,
+          frontmatter: { title: `triathlon · ${view}`, pageLayout: 'default', tags: [] },
+        })
+        const subResources = pageResources(pathToRoot(subSlug), resources, ctx)
+        const subData: QuartzComponentProps = {
+          ctx,
+          fileData: { ...subFile.data, stravaPayload: payload },
+          externalResources: subResources,
+          cfg: ctx.cfg.configuration,
+          children: [],
+          tree: subTree as Node,
+          allFiles,
+        }
+        const subHtml = renderPage(
+          ctx,
+          subSlug,
+          subData,
+          { ...opts, pageBody: TriathlonSubPage(view) },
+          subResources,
+          true,
+        )
+        files.push(await write({ ctx, content: subHtml, slug: subSlug, ext: '.html' }))
+      }
     }
     return files
   }
