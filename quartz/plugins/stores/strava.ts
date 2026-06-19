@@ -229,6 +229,7 @@ export interface StravaActivityDetail {
   powerZones: number[] | null
   powerHist: number[] | null
   powerCurve: PowerCurvePoint[] | null
+  strokes?: Record<string, number> | null
 }
 
 export interface StravaPayload {

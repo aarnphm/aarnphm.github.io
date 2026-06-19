@@ -4,6 +4,23 @@
   --tri-accent: #fc4c02;
 }
 
+@mixin thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--gray) 45%, transparent);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
 .triathlon {
   display: flex;
   flex-direction: column;
@@ -576,6 +593,82 @@
   color: var(--gray);
 }
 
+.tri-pool-strokes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  max-width: 240px;
+}
+
+.tri-stroke-bar {
+  display: flex;
+  width: 100%;
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: var(--radius-none);
+}
+
+.tri-stroke-seg {
+  height: 100%;
+  min-width: 1px;
+}
+
+.tri-stroke-legend {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tri-stroke-leg {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-stroke-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-none);
+}
+
+.tri-stroke-val {
+  margin-left: auto;
+  color: var(--dark);
+}
+
+.tri-stroke-freestyle {
+  background: #cdd597;
+}
+
+.tri-stroke-breaststroke {
+  background: #fdb2a2;
+}
+
+.tri-stroke-backstroke {
+  background: var(--tri-swim);
+}
+
+.tri-stroke-butterfly {
+  background: #8b7ec8;
+}
+
+.tri-stroke-mixed {
+  background: color-mix(in srgb, var(--gray) 55%, transparent);
+}
+
+.tri-stroke-kickboard {
+  background: #d0a215;
+}
+
 .tri-elev-wrap {
   position: relative;
   display: flex;
@@ -718,20 +811,7 @@
   padding: 0.9rem 1rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
-}
-
-.tri-gear-scroll::-webkit-scrollbar {
-  width: 5px;
-}
-
-.tri-gear-scroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--gray) 45%, transparent);
-}
-
-.tri-gear-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  @include thin-scrollbar;
 }
 
 .tri-gear--more::after,
@@ -906,9 +986,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: min(360px, 92vw);
+  width: min(420px, 94vw);
   max-height: 88vh;
   overflow-y: auto;
+  @include thin-scrollbar;
   padding: 1.2rem 1.3rem 1.4rem;
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
@@ -955,10 +1036,32 @@
   }
 }
 
+.tri-calc-cell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  column-gap: 0.9rem;
+  row-gap: 0;
+}
+
 .tri-calc-presets {
+  grid-column: 1;
+  grid-row: 2;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.3rem;
+  padding-top: 0.55rem;
+}
+
+.tri-calc-box {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: color-mix(in srgb, var(--light) 86%, var(--lightgray));
 }
 
 .tri-calc-preset {
@@ -980,6 +1083,49 @@
   background: var(--dark);
   border-color: var(--dark);
   color: var(--light);
+}
+
+.tri-calc-source {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  margin-bottom: -1px;
+}
+
+.tri-calc-srcs {
+  --tri-src-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid var(--lightgray);
+  border-bottom: 0;
+  border-radius: var(--radius-none);
+  background: var(--tri-src-surface);
+  isolation: isolate;
+}
+
+.tri-calc-src {
+  padding: 0.22rem 0.7rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+  line-height: 1.3;
+  color: var(--gray);
+  cursor: pointer;
+  transition:
+    background-color 140ms ease,
+    color 140ms ease;
+
+  &:not(:disabled):hover {
+    color: var(--dark);
+  }
+}
+
+.tri-calc-src--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-src-surface));
+  color: var(--dark);
 }
 
 .tri-calc-io {
@@ -1343,12 +1489,8 @@
   flex: 1 1 auto;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: none;
+  @include thin-scrollbar;
   padding: 1.1rem 1.2rem 2rem;
-}
-
-.tri-ana-body::-webkit-scrollbar {
-  display: none;
 }
 
 .tri-ana-block:empty {
@@ -1887,6 +2029,7 @@
 }
 
 .tri-trend-panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -1938,8 +2081,20 @@
 }
 
 .tri-trend-band {
-  opacity: 0.18;
-  stroke: none;
+  fill-opacity: 0.2;
+  stroke-width: 0.5;
+  stroke-opacity: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trend-band.tri-fill-swim {
+  stroke: var(--tri-swim);
+}
+.tri-trend-band.tri-fill-bike {
+  stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-trend-band.tri-fill-run {
+  stroke: var(--tri-run);
 }
 
 .tri-trend-proj {
@@ -1949,8 +2104,42 @@
   vector-effect: non-scaling-stroke;
 }
 
+.tri-trend-axis {
+  stroke: color-mix(in srgb, var(--gray) 50%, transparent);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
 .tri-trend-track {
   position: relative;
+  flex: 1 1 auto;
+}
+
+.tri-trend-chart {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tri-trend-yax {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2.4rem;
+  padding: 0.15rem 0;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-trend-xax {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2.9rem;
+  margin-top: 0.1rem;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
 }
 
 .tri-trend-dot {
@@ -2667,15 +2856,11 @@
   z-index: 6;
   max-height: min(48vh, 24rem);
   overflow-y: auto;
-  scrollbar-width: none;
+  @include thin-scrollbar;
   gap: 0.7rem;
   padding: 0.7rem 0.8rem;
   background: var(--light);
   border: 1px solid var(--lightgray);
-}
-
-.tri-map-results::-webkit-scrollbar {
-  display: none;
 }
 
 .tri-map--searching .tri-map-results {
@@ -2686,12 +2871,8 @@
   flex: 0 0 min(34%, 460px);
   min-width: 0;
   overflow-y: auto;
-  scrollbar-width: none;
+  @include thin-scrollbar;
   padding: 1rem 1.1rem;
-}
-
-.tri-map-sidebar::-webkit-scrollbar {
-  display: none;
 }
 
 .tri-map--detail .tri-map-sidebar {
@@ -2719,15 +2900,11 @@
   flex-direction: column;
   max-height: min(48vh, 24rem);
   overflow-y: auto;
-  scrollbar-width: none;
+  @include thin-scrollbar;
   gap: 0.4rem;
   padding: 0.7rem 0.8rem;
   background: var(--light);
   border: 1px solid var(--lightgray);
-}
-
-.tri-training-results::-webkit-scrollbar {
-  display: none;
 }
 
 .tri-training--searching .tri-training-results {
@@ -2750,12 +2927,8 @@
   min-width: 0;
   padding: 0.9rem 0.9rem 1.4rem;
   overflow-y: auto;
-  scrollbar-width: none;
+  @include thin-scrollbar;
   border-right: 1px solid var(--lightgray);
-}
-
-.tri-training-list::-webkit-scrollbar {
-  display: none;
 }
 
 .tri-training-plans {
@@ -2814,11 +2987,7 @@
   padding: 1.1rem 1.3rem 2rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: none;
-}
-
-.tri-training-doc::-webkit-scrollbar {
-  display: none;
+  @include thin-scrollbar;
 }
 
 .tri-training-head {

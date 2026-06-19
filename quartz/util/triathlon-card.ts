@@ -1,3 +1,4 @@
+import { STROKE_LABEL, SWIM_STROKES } from '../plugins/stores/apple'
 import {
   SPORT_ICON,
   type ActivityHealth,
@@ -266,6 +267,34 @@ export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N =
   )
   f.add(fig, f.svg('line', { x1: 22, y1: 28, x2: 78, y2: 28, class: 'tri-pool-mid' }))
   f.add(wrap, fig, f.el('span', 'tri-pool-cap', `${lengths} × 25m`))
+  const strokes = d.strokes
+  if (strokes) {
+    const entries = SWIM_STROKES.map(s => [s, strokes[s] ?? 0] as const).filter(([, m]) => m > 0)
+    const total = entries.reduce((sum, [, m]) => sum + m, 0)
+    if (entries.length > 0 && total > 0) {
+      const box = f.el('div', 'tri-pool-strokes')
+      const bar = f.el('div', 'tri-stroke-bar')
+      const legend = f.el('ul', 'tri-stroke-legend')
+      for (const [s, m] of entries) {
+        f.add(
+          bar,
+          f.el('span', `tri-stroke-seg tri-stroke-${s}`, undefined, {
+            style: `width:${((m / total) * 100).toFixed(2)}%`,
+          }),
+        )
+        const li = f.el('li', 'tri-stroke-leg')
+        f.add(
+          li,
+          f.el('span', `tri-stroke-dot tri-stroke-${s}`),
+          f.el('span', 'tri-stroke-name', STROKE_LABEL[s]),
+          f.el('span', 'tri-stroke-val', `${Math.round(m)}m`),
+        )
+        f.add(legend, li)
+      }
+      f.add(box, bar, legend)
+      f.add(wrap, box)
+    }
+  }
   return wrap
 }
 

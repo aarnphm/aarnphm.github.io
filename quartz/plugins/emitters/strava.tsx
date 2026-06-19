@@ -22,7 +22,13 @@ import {
 import { ATHLETE, buildAnalytics, buildDataFeed } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
-import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
+import {
+  buildPayload,
+  emptyHealth,
+  StravaActivityDetail,
+  StravaPayload,
+  StravaRawCache,
+} from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
@@ -114,6 +120,18 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           const h = payload.health[t.date] ?? emptyHealth()
           payload.health[t.date] = { ...h, windKph: t.windKph, windDir: t.windDir ?? h.windDir }
         }
+      if (apple?.swims) {
+        const mainSwim = new Map<string, StravaActivityDetail>()
+        for (const d of Object.values(payload.details)) {
+          if (d.sport !== 'swim') continue
+          const cur = mainSwim.get(d.date)
+          if (!cur || d.distanceKm > cur.distanceKm) mainSwim.set(d.date, d)
+        }
+        for (const [date, d] of mainSwim) {
+          const sw = apple.swims[date]
+          if (sw && Object.keys(sw.strokes).length > 0) d.strokes = sw.strokes
+        }
+      }
       files.push(
         await write({
           ctx,
