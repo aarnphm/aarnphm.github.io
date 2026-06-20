@@ -122,15 +122,6 @@
   }
 }
 
-.tri-axis-labels-hidden .tri-axis-year {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.tri-axis-labels-hidden .tri-axis-year::before {
-  opacity: 0;
-}
-
 .tri-bar {
   display: flex;
   flex-direction: column;

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-19 21:02:55 GMT-04:00
+modified: 2026-06-20 15:01:08 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -3201,7 +3201,7 @@ title: are.na
   - [meta]:
     - date: 06/06/2026
     - tags: [life, family]
-- https://home.ubalt.edu/ntygfit/ai_05_mapping_directions/ai_05_see/ad_total_eclipse.htm -- Total Eclipse, Annie Dillard
+- https://home.ubalt.edu/ntygfit/ai_05_mapping_directions/ai_05_see/ad_total_eclipse.htm -- Total Eclipse, Annie Dillard [**]
   - [meta]:
     - date: 06/06/2026
     - tags: [life]
@@ -5290,6 +5290,226 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/vllm-project/vllm/issues/19854 -- vLLM KV cache offloading RFC
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/31249 -- vLLM environment variable handling RFC
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [configuration, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/32358 -- vLLM IR RFC
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [compiler, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/24322 -- vLLM spec decode with draft models
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [speculative decoding, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/23120 -- GPT-OSS structured output enforcement bug
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [structured outputs, vllm]
+    - later: true
+- https://github.com/LMCache/LMCache/blob/28e5bf7a62f7f73d629294f2998440d1c2f0b0d1/lmcache/v1/gpu_connector.py -- LMCache GPU connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, kv cache, lmcache]
+    - later: true
+- https://github.com/LMCache/LMCache/blob/28e5bf7a62f7f73d629294f2998440d1c2f0b0d1/lmcache/v1/cache_engine.py#L489 -- LMCache cache engine lookup path
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, kv cache, lmcache]
+    - later: true
+- https://docs.vllm.ai/projects/recipes/en/latest/DeepSeek/DeepSeek-V3_2-Exp.html -- DeepSeek-V3.2-Exp vLLM usage guide
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/fused_moe_modular_kernel/ -- vLLM fused MoE modular kernel
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [moe, kernel, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/prefix_caching/ -- vLLM automatic prefix caching
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [prefix caching, kv cache, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/moe_kernel_features -- vLLM fused MoE kernel features
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [moe, kernel, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/9fd918e510c8981ccbab0380bf8d42fa81df1e9e/vllm/distributed/kv_transfer/kv_connector/v1/moriio/moriio_engine.py#L61 -- vLLM MoriIO KV connector engine
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, disaggregation, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/cli/run-batch/?h=kv_offloading#cacheconfig -- vLLM batch cache configuration
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [batch inference, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pulls?page=7&q=is%3Apr+kv_connector+is%3Aclosed -- Closed vLLM KV connector pull requests
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/dbo/?h=deepep#introduction -- vLLM dual batch overlap
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [batch inference, deepep, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/tools/ep_kernels/README.md -- vLLM EP kernels
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [moe, kernel, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/3f3f89529dc3fbaa5bf22c86d9f0833b49dc76ea/vllm/distributed/kv_transfer/kv_connector/v1/offloading_connector.py -- vLLM offloading KV connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/3f3f89529dc3fbaa5bf22c86d9f0833b49dc76ea/vllm/v1/worker/kv_connector_model_runner_mixin.py#L68 -- vLLM KV connector model runner mixin
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, model runner, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/commits/main/vllm/distributed/kv_transfer/kv_connector/v1/base.py?after=243e78c20fd74a68f86b6523c1f607eb3cc14ab2+34 -- vLLM KV connector base history
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, history, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/25712 -- vLLM hybrid allocator and KV cache connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, allocator, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/23620 -- vLLM async matched-token support for KV connectors
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, async, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/22595 -- vLLM offloading KV connector PR
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/19728/changes#diff-9eeca590fd99f15621897e559dba39b3ec4e7c2c65ec3c3229711689e008b5f4 -- vLLM request block hash ownership
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, scheduler, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/19848 -- vLLM KV offloading component
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/19737 -- vLLM KV events from connectors
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, events, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/20075 -- vLLM LRU CPU offloading manager
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/21448 -- vLLM worker-side CPU KV offloading
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/llm-compressor/tree/main/examples/quantization_kv_cache -- llm-compressor KV cache quantization examples
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [quantization, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/33526 -- Progressive KV cache CPU onloading RFC
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, onloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/33961 -- vLLM elastic AFD
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, vllm]
+    - later: true
+- https://docs.vllm.ai/projects/recipes/en/latest/moonshotai/Kimi-K2.5.html#installing-vllm -- Kimi-K2.5 vLLM usage guide
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [inference, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/61cf0876805c1ac04b9b811c27e3645eedfc13c8/vllm/v1/worker/gpu/kv_connector.py#L118 -- vLLM GPU worker KV connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, gpu, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/2b84ac669cfd8a4b6433b4ae4505028d9082c3a7/vllm/distributed/kv_transfer/kv_connector/v1/lmcache_connector.py -- vLLM LMCache connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, lmcache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/34015#pullrequestreview-3765570439 -- vLLM renamed translations import aliases
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [frontend, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/distributed/kv_transfer/disagg_prefill_workflow.jpg -- vLLM disaggregated prefill workflow diagram
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [disaggregation, kv transfer, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues?q=state%3Aopen%20label%3Akv-connector -- Open vLLM KV connector issues
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/27743 -- vLLM cross-layer KV blocks
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, kv cache, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/27742 -- vLLM cross-layer KV cache block layout RFC
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, layout, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/29870 -- vLLM offloading preemption bug fix
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, preemption, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/31341 -- vLLM wait for compute before CPU KV offload
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/8b7346d5f11d0b2da58e60f866dcb2a089b1101b/vllm/distributed/kv_transfer/kv_connector/utils.py#L28 -- vLLM KV connector utilities
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/19972/changes#diff-c9be1c9341e80978fbbbfebbe88d0125291a03d9ba7ee4d2f9d5a70e626e872f -- Safe vLLM KV connector
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/worker/gpu/model_runner.py -- vLLM GPU model runner
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [model runner, gpu, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/hybrid_kv_cache_manager/?h=kv+cache#high-level-idea -- vLLM hybrid KV cache manager
+  - [meta]:
+    - date: 06/20/2026
+    - tags: [kv cache, scheduler, vllm]
+    - later: true
 - https://infinitefaculty.substack.com/p/what-are-the-real-problems-of-continual -- What are the real problems of continual learning?
   - [meta]:
     - date: 06/19/2026
