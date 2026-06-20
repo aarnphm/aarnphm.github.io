@@ -1192,14 +1192,10 @@
 
   &:hover {
     background-color: color-mix(in srgb, var(--light) 72%, var(--tri-accent));
-    border-bottom-color: color-mix(in srgb, var(--tri-accent) 50%, transparent);
-    outline-color: color-mix(in srgb, var(--tri-accent) 26%, transparent);
   }
 
   &:focus {
     background-color: color-mix(in srgb, var(--light) 64%, var(--tri-accent));
-    border-bottom-color: var(--tri-accent);
-    outline-color: color-mix(in srgb, var(--tri-accent) 72%, transparent);
   }
 }
 
@@ -2020,12 +2016,6 @@
   color: var(--gray);
 }
 
-.tri-pmc-load-row {
-  font-size: 0.56rem;
-  color: color-mix(in srgb, var(--gray) 88%, transparent);
-  font-variant-numeric: tabular-nums;
-}
-
 .tri-pmc-entries {
   display: flex;
   flex-direction: column;
@@ -2064,8 +2054,7 @@
   white-space: nowrap;
 }
 
-.tri-pmc-entry-d,
-.tri-pmc-entry-l {
+.tri-pmc-entry-d {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
