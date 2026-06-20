@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-19 09:08:00 GMT-04:00
+modified: 2026-06-19 21:02:55 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -10443,6 +10443,10 @@ title: are.na
 
 ## resources
 
+- https://intheweights.com/ -- Are you in the weights?
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [horror, models]
 - https://gracebyron.substack.com/p/link-n-build -- Link N Build
   - [meta]:
     - date: 06/19/2026

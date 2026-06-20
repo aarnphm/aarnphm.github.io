@@ -1,0 +1,629 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000101 /* ExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000001 /* ExportModels.swift */; };
+		100000000000000000000102 /* HealthAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000002 /* HealthAggregator.swift */; };
+		100000000000000000000103 /* HealthExporterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000003 /* HealthExporterError.swift */; };
+		100000000000000000000104 /* HealthExportWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000004 /* HealthExportWriter.swift */; };
+		100000000000000000000105 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000005 /* HealthKitService.swift */; };
+		100000000000000000000106 /* HealthExporterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000006 /* HealthExporterApp.swift */; };
+		100000000000000000000107 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000007 /* ContentView.swift */; };
+		100000000000000000000108 /* HealthExporterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000008 /* HealthExporterViewModel.swift */; };
+		100000000000000000000109 /* HealthBackgroundScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000009 /* HealthBackgroundScheduler.swift */; };
+		10000000000000000000010A /* HealthExportRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000000A /* HealthExportRuntime.swift */; };
+		10000000000000000000010B /* PhoneWatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000000B /* PhoneWatchSession.swift */; };
+		10000000000000000000010C /* HealthExporterWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000000E /* HealthExporterWatchApp.swift */; };
+		10000000000000000000010D /* WatchContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000000F /* WatchContentView.swift */; };
+		10000000000000000000010E /* WatchBackgroundScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000010 /* WatchBackgroundScheduler.swift */; };
+		10000000000000000000010F /* WatchExportSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000011 /* WatchExportSession.swift */; };
+		100000000000000000000110 /* ExportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000001 /* ExportModels.swift */; };
+		100000000000000000000111 /* HealthAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000002 /* HealthAggregator.swift */; };
+		100000000000000000000112 /* HealthAggregatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000013 /* HealthAggregatorTests.swift */; };
+		100000000000000000000113 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000017 /* Assets.xcassets */; };
+		100000000000000000000114 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000018 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		100000000000000000000201 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 100000000000000000000300 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 100000000000000000000401;
+			remoteInfo = HealthExporter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		100000000000000000000001 /* ExportModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportModels.swift; sourceTree = "<group>"; };
+		100000000000000000000002 /* HealthAggregator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAggregator.swift; sourceTree = "<group>"; };
+		100000000000000000000003 /* HealthExporterError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExporterError.swift; sourceTree = "<group>"; };
+		100000000000000000000004 /* HealthExportWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExportWriter.swift; sourceTree = "<group>"; };
+		100000000000000000000005 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		100000000000000000000006 /* HealthExporterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExporterApp.swift; sourceTree = "<group>"; };
+		100000000000000000000007 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		100000000000000000000008 /* HealthExporterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExporterViewModel.swift; sourceTree = "<group>"; };
+		100000000000000000000009 /* HealthBackgroundScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthBackgroundScheduler.swift; sourceTree = "<group>"; };
+		10000000000000000000000A /* HealthExportRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExportRuntime.swift; sourceTree = "<group>"; };
+		10000000000000000000000B /* PhoneWatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneWatchSession.swift; sourceTree = "<group>"; };
+		10000000000000000000000C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		10000000000000000000000D /* HealthExporter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthExporter.entitlements; sourceTree = "<group>"; };
+		10000000000000000000000E /* HealthExporterWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExporterWatchApp.swift; sourceTree = "<group>"; };
+		10000000000000000000000F /* WatchContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchContentView.swift; sourceTree = "<group>"; };
+		100000000000000000000010 /* WatchBackgroundScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchBackgroundScheduler.swift; sourceTree = "<group>"; };
+		100000000000000000000011 /* WatchExportSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchExportSession.swift; sourceTree = "<group>"; };
+		100000000000000000000012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100000000000000000000013 /* HealthAggregatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthAggregatorTests.swift; sourceTree = "<group>"; };
+		100000000000000000000014 /* HealthExporter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HealthExporter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000015 /* HealthExporter Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HealthExporter Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000016 /* HealthExporterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HealthExporterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		100000000000000000000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		100000000000000000000019 /* triathlon-app-icon.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Artwork/triathlon-app-icon.svg; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		100000000000000000000501 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000502 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000503 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		100000000000000000000601 = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000602 /* Shared */,
+				100000000000000000000603 /* HealthExporter */,
+				100000000000000000000604 /* HealthExporterWatch */,
+				100000000000000000000605 /* HealthExporterTests */,
+				100000000000000000000606 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		100000000000000000000602 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000001 /* ExportModels.swift */,
+				100000000000000000000002 /* HealthAggregator.swift */,
+				100000000000000000000003 /* HealthExporterError.swift */,
+				100000000000000000000004 /* HealthExportWriter.swift */,
+				100000000000000000000005 /* HealthKitService.swift */,
+				100000000000000000000019 /* triathlon-app-icon.svg */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		100000000000000000000603 /* HealthExporter */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000006 /* HealthExporterApp.swift */,
+				100000000000000000000007 /* ContentView.swift */,
+				100000000000000000000008 /* HealthExporterViewModel.swift */,
+				100000000000000000000009 /* HealthBackgroundScheduler.swift */,
+				10000000000000000000000A /* HealthExportRuntime.swift */,
+				10000000000000000000000B /* PhoneWatchSession.swift */,
+				100000000000000000000017 /* Assets.xcassets */,
+				10000000000000000000000C /* Info.plist */,
+				10000000000000000000000D /* HealthExporter.entitlements */,
+			);
+			path = HealthExporter;
+			sourceTree = "<group>";
+		};
+		100000000000000000000604 /* HealthExporterWatch */ = {
+			isa = PBXGroup;
+			children = (
+				10000000000000000000000E /* HealthExporterWatchApp.swift */,
+				10000000000000000000000F /* WatchContentView.swift */,
+				100000000000000000000010 /* WatchBackgroundScheduler.swift */,
+				100000000000000000000011 /* WatchExportSession.swift */,
+				100000000000000000000018 /* Assets.xcassets */,
+				100000000000000000000012 /* Info.plist */,
+			);
+			path = HealthExporterWatch;
+			sourceTree = "<group>";
+		};
+		100000000000000000000605 /* HealthExporterTests */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000013 /* HealthAggregatorTests.swift */,
+			);
+			path = HealthExporterTests;
+			sourceTree = "<group>";
+		};
+		100000000000000000000606 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000014 /* HealthExporter.app */,
+				100000000000000000000015 /* HealthExporter Watch App.app */,
+				100000000000000000000016 /* HealthExporterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		100000000000000000000401 /* HealthExporter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000801 /* Build configuration list for PBXNativeTarget "HealthExporter" */;
+			buildPhases = (
+				100000000000000000000701 /* Sources */,
+				100000000000000000000501 /* Frameworks */,
+				100000000000000000000901 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HealthExporter;
+			productName = HealthExporter;
+			productReference = 100000000000000000000014 /* HealthExporter.app */;
+			productType = "com.apple.product-type.application";
+		};
+		100000000000000000000402 /* HealthExporter Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000802 /* Build configuration list for PBXNativeTarget "HealthExporter Watch App" */;
+			buildPhases = (
+				100000000000000000000702 /* Sources */,
+				100000000000000000000502 /* Frameworks */,
+				100000000000000000000902 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "HealthExporter Watch App";
+			productName = "HealthExporter Watch App";
+			productReference = 100000000000000000000015 /* HealthExporter Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		100000000000000000000403 /* HealthExporterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000803 /* Build configuration list for PBXNativeTarget "HealthExporterTests" */;
+			buildPhases = (
+				100000000000000000000703 /* Sources */,
+				100000000000000000000503 /* Frameworks */,
+				100000000000000000000903 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				100000000000000000000202 /* PBXTargetDependency */,
+			);
+			name = HealthExporterTests;
+			productName = HealthExporterTests;
+			productReference = 100000000000000000000016 /* HealthExporterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		100000000000000000000300 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2650;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					100000000000000000000401 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+					100000000000000000000402 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+					100000000000000000000403 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = 100000000000000000000401;
+					};
+				};
+			};
+			buildConfigurationList = 100000000000000000000800 /* Build configuration list for PBXProject "HealthExporter" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 100000000000000000000601;
+			productRefGroup = 100000000000000000000606 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				100000000000000000000401 /* HealthExporter */,
+				100000000000000000000402 /* HealthExporter Watch App */,
+				100000000000000000000403 /* HealthExporterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		100000000000000000000901 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000113 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000902 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000114 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000903 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		100000000000000000000701 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000101 /* ExportModels.swift in Sources */,
+				100000000000000000000102 /* HealthAggregator.swift in Sources */,
+				100000000000000000000103 /* HealthExporterError.swift in Sources */,
+				100000000000000000000104 /* HealthExportWriter.swift in Sources */,
+				100000000000000000000105 /* HealthKitService.swift in Sources */,
+				100000000000000000000106 /* HealthExporterApp.swift in Sources */,
+				100000000000000000000107 /* ContentView.swift in Sources */,
+				100000000000000000000108 /* HealthExporterViewModel.swift in Sources */,
+				100000000000000000000109 /* HealthBackgroundScheduler.swift in Sources */,
+				10000000000000000000010A /* HealthExportRuntime.swift in Sources */,
+				10000000000000000000010B /* PhoneWatchSession.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000702 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10000000000000000000010C /* HealthExporterWatchApp.swift in Sources */,
+				10000000000000000000010D /* WatchContentView.swift in Sources */,
+				10000000000000000000010E /* WatchBackgroundScheduler.swift in Sources */,
+				10000000000000000000010F /* WatchExportSession.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		100000000000000000000703 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000110 /* ExportModels.swift in Sources */,
+				100000000000000000000111 /* HealthAggregator.swift in Sources */,
+				100000000000000000000112 /* HealthAggregatorTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		100000000000000000000202 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 100000000000000000000401 /* HealthExporter */;
+			targetProxy = 100000000000000000000201 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		100000000000000000000A00 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		100000000000000000000A01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		100000000000000000000A10 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HealthExporter/HealthExporter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = BD9TM94G4B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HealthExporter/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000A11 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = HealthExporter/HealthExporter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = BD9TM94G4B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HealthExporter/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		100000000000000000000A20 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BD9TM94G4B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HealthExporterWatch/Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		100000000000000000000A21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = BD9TM94G4B;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = HealthExporterWatch/Info.plist;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		100000000000000000000A30 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000A31 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.aarnphm.healthexporter.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		100000000000000000000800 /* Build configuration list for PBXProject "HealthExporter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000A00 /* Debug */,
+				100000000000000000000A01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000801 /* Build configuration list for PBXNativeTarget "HealthExporter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000A10 /* Debug */,
+				100000000000000000000A11 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000802 /* Build configuration list for PBXNativeTarget "HealthExporter Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000A20 /* Debug */,
+				100000000000000000000A21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000803 /* Build configuration list for PBXNativeTarget "HealthExporterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000A30 /* Debug */,
+				100000000000000000000A31 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 100000000000000000000300 /* Project object */;
+}

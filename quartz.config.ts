@@ -31,6 +31,7 @@ const configuration: GlobalConfiguration = {
     '**/.conform*',
     '**/target',
     '**/data',
+    'hinterland/healthexporter/**',
     'quartz/static/emails.txt',
   ],
   defaultDateType: 'created',
