@@ -462,7 +462,15 @@ export const CalcPanel = () => (
               </td>
               <td class="tri-calc-u">/100m</td>
               <td class="tri-calc-r" data-leg="swim">
-                —
+                <input
+                  class="tri-calc-in tri-calc-legtime"
+                  data-legtime="swim"
+                  type="text"
+                  value=""
+                  placeholder="—"
+                  aria-label="swim time"
+                  inputMode="numeric"
+                />
               </td>
             </tr>
             <tr>
@@ -496,7 +504,15 @@ export const CalcPanel = () => (
               </td>
               <td class="tri-calc-u">mph</td>
               <td class="tri-calc-r" data-leg="bike">
-                —
+                <input
+                  class="tri-calc-in tri-calc-legtime"
+                  data-legtime="bike"
+                  type="text"
+                  value=""
+                  placeholder="—"
+                  aria-label="bike time"
+                  inputMode="numeric"
+                />
               </td>
             </tr>
             <tr>
@@ -530,7 +546,15 @@ export const CalcPanel = () => (
               </td>
               <td class="tri-calc-u">/mi</td>
               <td class="tri-calc-r" data-leg="run">
-                —
+                <input
+                  class="tri-calc-in tri-calc-legtime"
+                  data-legtime="run"
+                  type="text"
+                  value=""
+                  placeholder="—"
+                  aria-label="run time"
+                  inputMode="numeric"
+                />
               </td>
             </tr>
             <tr class="tri-calc-total">

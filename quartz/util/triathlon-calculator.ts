@@ -100,3 +100,23 @@ export function solveTriathlonCalcTarget(
 
   return { swimPaceSec, bikeMph, runPaceSec }
 }
+
+export type TriathlonCalcLeg = 'swim' | 'bike' | 'run'
+
+export function solveTriathlonCalcLeg(
+  input: TriathlonCalcInput,
+  leg: TriathlonCalcLeg,
+  legSec: number,
+): Partial<TriathlonCalcPaces> | null {
+  if (!(legSec > 0)) return null
+  if (leg === 'swim') {
+    if (!(input.swimKm > 0)) return null
+    return { swimPaceSec: legSec / (input.swimKm * 10) }
+  }
+  if (leg === 'bike') {
+    if (!(input.bikeKm > 0)) return null
+    return { bikeMph: (input.bikeKm * KM_TO_MI * 3600) / legSec }
+  }
+  if (!(input.runKm > 0)) return null
+  return { runPaceSec: legSec / (input.runKm * KM_TO_MI) }
+}
