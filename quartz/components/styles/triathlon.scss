@@ -1205,12 +1205,19 @@
   color: var(--dark);
 }
 
-.tri-calc-target {
-  width: 5.2rem;
-
+.tri-calc-target,
+.tri-calc-legtime {
   &::placeholder {
     color: color-mix(in srgb, var(--gray) 55%, transparent);
   }
+}
+
+.tri-calc-target {
+  width: 5.2rem;
+}
+
+.tri-calc-legtime {
+  width: 4.6rem;
 }
 
 .tri-calc-target-cell {

@@ -20,8 +20,10 @@ import {
   computeTriathlonCalcTimes,
   formatDurationClock,
   parseClockSeconds,
+  solveTriathlonCalcLeg,
   solveTriathlonCalcTarget,
   type TriathlonCalcInput,
+  type TriathlonCalcLeg,
 } from '../../util/triathlon-calculator'
 import {
   buildActivity as buildActivityNode,
@@ -1198,6 +1200,13 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       }
       return
     }
+    const legInput = calc.querySelector<HTMLInputElement>(
+      `.tri-calc-legtime[data-legtime="${leg}"]`,
+    )
+    if (legInput) {
+      if (document.activeElement !== legInput) legInput.value = formatDurationClock(sec)
+      return
+    }
     const e = calc.querySelector<HTMLElement>(`.tri-calc-r[data-leg="${leg}"]`)
     if (e) e.textContent = formatDurationClock(sec)
   }
@@ -1234,6 +1243,20 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     setInputVal('swim', clock(paces.swimPaceSec))
     setInputVal('bike', paces.bikeMph.toFixed(1))
     setInputVal('run', clock(paces.runPaceSec))
+    compute(true)
+  }
+
+  const commitLeg = (leg: TriathlonCalcLeg): void => {
+    const input = calc.querySelector<HTMLInputElement>(`.tri-calc-legtime[data-legtime="${leg}"]`)
+    if (!input) return
+    const solved = solveTriathlonCalcLeg(readCalcInput(), leg, parseClockSeconds(input.value))
+    if (!solved) {
+      compute(true)
+      return
+    }
+    if (solved.swimPaceSec != null) setInputVal('swim', clock(solved.swimPaceSec))
+    if (solved.bikeMph != null) setInputVal('bike', solved.bikeMph.toFixed(1))
+    if (solved.runPaceSec != null) setInputVal('run', clock(solved.runPaceSec))
     compute(true)
   }
 
@@ -1300,26 +1323,37 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   const onInput = (event: Event) => {
     userEdited = true
     const target = event.target
-    if (target instanceof HTMLInputElement && target.classList.contains('tri-calc-target')) return
+    if (
+      target instanceof HTMLInputElement &&
+      (target.classList.contains('tri-calc-target') ||
+        target.classList.contains('tri-calc-legtime'))
+    )
+      return
     compute()
   }
   const onChange = (event: Event) => {
     const target = event.target
-    if (target instanceof HTMLInputElement && target.classList.contains('tri-calc-target')) {
+    if (!(target instanceof HTMLInputElement)) return
+    if (target.classList.contains('tri-calc-target')) {
       userEdited = true
       commitTarget()
+    } else if (target.classList.contains('tri-calc-legtime')) {
+      userEdited = true
+      commitLeg(target.dataset.legtime as TriathlonCalcLeg)
     }
   }
   const onCalcKey = (event: KeyboardEvent) => {
     const target = event.target
-    if (
-      target instanceof HTMLInputElement &&
-      target.classList.contains('tri-calc-target') &&
-      event.key === 'Enter'
-    ) {
+    if (!(target instanceof HTMLInputElement) || event.key !== 'Enter') return
+    if (target.classList.contains('tri-calc-target')) {
       event.preventDefault()
       userEdited = true
       commitTarget()
+      target.blur()
+    } else if (target.classList.contains('tri-calc-legtime')) {
+      event.preventDefault()
+      userEdited = true
+      commitLeg(target.dataset.legtime as TriathlonCalcLeg)
       target.blur()
     }
   }
