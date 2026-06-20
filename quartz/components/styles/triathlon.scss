@@ -1167,18 +1167,39 @@
 }
 
 .tri-calc-in {
-  width: 2.8rem;
-  padding: 0;
+  width: 3.1rem;
+  min-height: 1.45rem;
+  margin: -0.08rem -0.18rem;
+  padding: 0.08rem 0.18rem;
   background: none;
   border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: var(--radius-none);
+  outline: 1px solid transparent;
+  outline-offset: 1px;
   font-family: var(--codeFont);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1.3;
   text-align: right;
   color: var(--dark);
+  cursor: text;
+  transition:
+    background-color 140ms ease,
+    border-bottom-color 140ms ease,
+    color 140ms ease,
+    outline-color 140ms ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--light) 72%, var(--tri-accent));
+    border-bottom-color: color-mix(in srgb, var(--tri-accent) 50%, transparent);
+    outline-color: color-mix(in srgb, var(--tri-accent) 26%, transparent);
+  }
 
   &:focus {
-    outline: none;
+    background-color: color-mix(in srgb, var(--light) 64%, var(--tri-accent));
+    border-bottom-color: var(--tri-accent);
+    outline-color: color-mix(in srgb, var(--tri-accent) 72%, transparent);
   }
 }
 
@@ -1186,6 +1207,18 @@
   width: 100%;
   text-align: right;
   color: var(--dark);
+}
+
+.tri-calc-target {
+  width: 5.2rem;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--gray) 55%, transparent);
+  }
+}
+
+.tri-calc-target-cell {
+  white-space: nowrap;
 }
 
 .tri-calc-total {
@@ -1505,7 +1538,6 @@
   display: flex;
 }
 
-.tri-analytics--searching .tri-ana-headline,
 .tri-analytics--searching .tri-ana-block {
   display: none;
 }
@@ -1524,7 +1556,6 @@
 }
 
 .tri-analytics--detail .tri-ana-results,
-.tri-analytics--detail .tri-ana-headline,
 .tri-analytics--detail .tri-ana-block {
   display: none;
 }
@@ -1694,45 +1725,6 @@
   overflow: visible;
 }
 
-.tri-ana-head {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.tri-ana-head-line {
-  font-size: 0.78rem;
-  line-height: 1.4;
-  color: var(--dark);
-}
-
-.tri-ana-head-stats {
-  display: flex;
-  gap: 1.6rem;
-}
-
-.tri-ana-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.tri-ana-stat-v {
-  font-size: 1.15rem;
-  line-height: 1;
-  color: var(--dark);
-}
-
-.tri-ana-stat-k {
-  font-size: 0.58rem;
-  color: var(--gray);
-}
-
-.tri-ana-stat-sub {
-  font-size: 0.6rem;
-  color: color-mix(in srgb, var(--gray) 80%, transparent);
-}
-
 .tri-zone-fresh,
 .tri-acwr-ok {
   color: var(--tri-swim);
@@ -1753,30 +1745,386 @@
   fill: color-mix(in srgb, var(--gray) 22%, transparent);
 }
 
-.tri-pmc-ctl {
-  stroke: var(--dark);
-  stroke-width: 1;
+.tri-ana-pmc {
+  --tri-pmc-fit: var(--tri-accent);
+  --tri-pmc-fat: color-mix(in srgb, var(--gray) 72%, var(--dark));
+  --tri-pmc-form: #2f7480;
 }
 
-.tri-pmc-warm {
-  stroke: var(--dark);
-  stroke-width: 1;
-  stroke-dasharray: 2 2;
-  opacity: 0.6;
+.tri-pmc-now-row {
+  display: flex;
+  gap: 1.7rem;
+  margin-bottom: 0.7rem;
 }
 
-.tri-pmc-atl {
+.tri-pmc-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.tri-pmc-stat-head {
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.tri-pmc-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--gray);
+}
+
+.tri-pmc-fit .tri-pmc-dot {
+  background: var(--tri-pmc-fit);
+}
+.tri-pmc-fat .tri-pmc-dot {
+  background: var(--tri-pmc-fat);
+}
+.tri-pmc-form .tri-pmc-dot {
+  background: var(--tri-pmc-form);
+}
+
+.tri-pmc-stat-k {
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.tri-pmc-stat-v {
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-pmc-stat-d {
+  font-size: 0.55rem;
+  color: color-mix(in srgb, var(--gray) 85%, transparent);
+}
+
+.tri-pmc-frame {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.tri-pmc-yax {
+  position: relative;
+  flex: 0 0 1.6rem;
+  height: 184px;
+}
+
+.tri-pmc-yt {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-pmc-plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tri-pmc-svg {
+  height: 184px;
+  cursor: crosshair;
+  shape-rendering: geometricPrecision;
+}
+
+.tri-pmc-xax {
+  position: relative;
+  height: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.tri-pmc-xt {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-pmc-xt--first {
+  transform: none;
+}
+
+.tri-pmc-xt--now {
+  transform: translateX(-100%);
+  color: var(--tri-accent);
+}
+
+.tri-pmc-grid {
+  stroke: color-mix(in srgb, var(--gray) 18%, transparent);
+  stroke-width: 0.4;
+  shape-rendering: crispEdges;
+}
+
+.tri-pmc-baseline {
+  stroke: color-mix(in srgb, var(--gray) 28%, transparent);
+  stroke-width: 0.4;
+  shape-rendering: crispEdges;
+}
+
+.tri-pmc-bar {
+  fill: color-mix(in srgb, var(--gray) 30%, transparent);
+  shape-rendering: crispEdges;
+}
+
+.tri-pmc-bar--now {
+  fill: var(--tri-accent);
+}
+
+.tri-pmc-area {
+  fill: color-mix(in srgb, var(--tri-pmc-fit) 15%, transparent);
+}
+
+.tri-pmc-l-fit {
   fill: none;
-  stroke: var(--tri-accent);
-  stroke-width: 0.7;
+  stroke: var(--tri-pmc-fit);
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
 
-.tri-ana-tsb {
+.tri-pmc-l-fat {
   fill: none;
-  stroke: color-mix(in srgb, var(--gray) 75%, transparent);
-  stroke-width: 0.6;
+  stroke: var(--tri-pmc-fat);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-pmc-l-form {
+  fill: none;
+  stroke: var(--tri-pmc-form);
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-pmc-proj {
+  stroke-dasharray: 2.6 2;
+  opacity: 0.72;
+}
+
+.tri-pmc-hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
+.tri-pmc-xt--end {
+  transform: translateX(-100%);
+}
+
+.tri-pmc-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.tri-pmc-ctrl-k {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-pmc-load {
+  flex: 0 1 9rem;
+  height: 2px;
+  accent-color: var(--tri-accent);
+  cursor: pointer;
+}
+
+.tri-pmc-ctrl-lab {
+  font-size: 0.55rem;
+  color: color-mix(in srgb, var(--gray) 90%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-ana-pmc .tri-chart-readout {
+  position: absolute;
+  top: 0.45rem;
+  left: 89%;
+  right: auto;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.34rem;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(16rem, calc(100% - 1rem));
+  padding: 0.55rem 0.65rem;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(-0.2rem);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.tri-ana-pmc.tri-chart--hover .tri-chart-readout {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tri-pmc-leg-date {
+  font-size: 0.58rem;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-pmc-leg-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.tri-pmc-leg {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+  min-width: 0;
+}
+
+.tri-pmc-leg-v {
+  font-size: 0.62rem;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-pmc-leg-k {
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--gray);
+}
+
+.tri-pmc-load-row {
+  font-size: 0.56rem;
+  color: color-mix(in srgb, var(--gray) 88%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-pmc-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+}
+
+.tri-pmc-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(3.2rem, auto) minmax(3.9rem, auto);
+  gap: 0.36rem;
+  align-items: baseline;
+  font-size: 0.55rem;
+  color: var(--gray);
+}
+
+.tri-pmc-entry-s {
+  color: var(--gray);
+}
+
+.tri-pmc-entry-s.tri-leg-swim {
+  color: var(--tri-swim);
+}
+
+.tri-pmc-entry-s.tri-leg-bike {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+
+.tri-pmc-entry-s.tri-leg-run {
+  color: var(--tri-run);
+}
+
+.tri-pmc-entry-n {
+  overflow: hidden;
+  color: var(--dark);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-pmc-entry-d,
+.tri-pmc-entry-l {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tri-pmc-entry-d {
+  justify-self: end;
+  text-align: right;
+}
+
+.tri-pmc-entry--empty {
+  display: block;
+  color: color-mix(in srgb, var(--gray) 72%, transparent);
+}
+
+.tri-cax-frame {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.tri-cax-yax {
+  position: relative;
+  flex: 0 0 1.6rem;
+}
+
+.tri-cax-yt {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-cax-plot {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tri-cax-xax {
+  position: relative;
+  height: 0.85rem;
+  margin-top: 0.2rem;
+}
+
+.tri-cax-xt {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-cax-xt--first {
+  transform: none;
 }
 
 .tri-ana-zero {
@@ -1935,7 +2283,7 @@
 }
 
 .tri-rec-svg {
-  height: 64px;
+  height: 150px;
 }
 
 .tri-rec-band {
@@ -1956,14 +2304,14 @@
 .tri-rec-hrv {
   fill: none;
   stroke: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
-  stroke-width: 1;
+  stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
 
 .tri-rec-rhr {
   fill: none;
   stroke: var(--tri-run);
-  stroke-width: 1;
+  stroke-width: 1.5;
   vector-effect: non-scaling-stroke;
 }
 
@@ -2346,40 +2694,64 @@
   display: block;
 }
 
-.tri-gauge-z-low {
-  fill: color-mix(in srgb, var(--tri-run) 30%, transparent);
-}
-.tri-gauge-z-mid {
+.tri-acwr-z-under {
   fill: color-mix(in srgb, var(--gray) 16%, transparent);
 }
-.tri-gauge-z-high {
+.tri-acwr-z-sweet {
   fill: color-mix(in srgb, var(--tri-swim) 30%, transparent);
+}
+.tri-acwr-z-caution {
+  fill: color-mix(in srgb, var(--tri-run) 32%, transparent);
+}
+.tri-acwr-z-high {
+  fill: color-mix(in srgb, #d14d41 38%, transparent);
+}
+
+.tri-gauge-scale {
+  position: relative;
+  height: 0.7rem;
+  margin-top: 0.15rem;
+}
+.tri-gauge-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+}
+.tri-gauge-val {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+.tri-gauge-num {
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+.tri-gauge-state {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .tri-gauge-track {
   position: relative;
 }
 
-.tri-gauge-needle,
-.tri-gauge-proj {
+.tri-gauge-needle {
   position: absolute;
   top: 50%;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-}
-
-.tri-gauge-needle {
   width: 8px;
   height: 8px;
   background: var(--tri-accent);
-}
-
-.tri-gauge-proj {
-  width: 6px;
-  height: 6px;
-  border: 1px solid var(--dark);
-  opacity: 0.6;
 }
 
 .tri-gauge-chips {
@@ -2432,9 +2804,6 @@
   .tri-analytics {
     width: 100vw;
   }
-  .tri-ana-head-stats {
-    gap: 1.1rem;
-  }
 }
 
 [data-gloss] {
@@ -2457,8 +2826,7 @@
 .tri-rec-flag-label[data-gloss],
 .tri-engine-age[data-gloss],
 .tri-engine-row-k[data-gloss],
-.tri-foot [data-gloss],
-.tri-ana-stat[data-gloss] .tri-ana-stat-k {
+.tri-foot [data-gloss] {
   text-decoration-line: underline;
   text-decoration-style: dotted;
   text-decoration-color: color-mix(in srgb, var(--gray) 55%, transparent);

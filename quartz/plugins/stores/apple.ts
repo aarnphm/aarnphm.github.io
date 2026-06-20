@@ -1,3 +1,5 @@
+import { isRecord, readNumber, readString } from '../../util/type-guards'
+
 export interface AppleDaily {
   date: string
   burnKcal: number | null
@@ -19,6 +21,11 @@ export interface AppleCache {
   lastSync: number
   days: Record<string, AppleDaily>
   swims?: Record<string, AppleSwim>
+}
+
+export interface AppleJsonEntries {
+  days: AppleDaily[]
+  swims: AppleSwim[]
 }
 
 export const SWIM_STROKES = [
@@ -220,23 +227,23 @@ function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null
 }
 
-export function parseAppleJson(raw: unknown): AppleDaily[] {
-  const days = (raw as { days?: unknown })?.days
+function parseAppleJsonDays(raw: unknown): AppleDaily[] {
+  const days = isRecord(raw) ? raw.days : undefined
   if (!Array.isArray(days)) return []
   const out: AppleDaily[] = []
   for (const d of days) {
-    if (typeof d !== 'object' || d === null) continue
-    const r = d as Record<string, unknown>
-    const date = typeof r.date === 'string' ? r.date.slice(0, 10) : null
+    if (!isRecord(d)) continue
+    const date = readString(d, 'date')?.slice(0, 10) ?? null
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
-    const active = num(r.activeKcal)
-    const basal = num(r.basalKcal)
+    const active = readNumber(d, 'activeKcal') ?? null
+    const basal = readNumber(d, 'basalKcal') ?? null
     const burn =
-      num(r.burnKcal) ?? (active != null || basal != null ? (active ?? 0) + (basal ?? 0) : null)
-    const lbs = num(r.weightLbs)
-    const intake = num(r.intakeKcal)
-    const weightKg = num(r.weightKg)
-    const vo2max = num(r.vo2max)
+      readNumber(d, 'burnKcal') ??
+      (active != null || basal != null ? (active ?? 0) + (basal ?? 0) : null)
+    const lbs = readNumber(d, 'weightLbs') ?? null
+    const intake = readNumber(d, 'intakeKcal') ?? null
+    const weightKg = readNumber(d, 'weightKg') ?? null
+    const vo2max = readNumber(d, 'vo2max') ?? null
     out.push({
       date,
       activeKcal: active != null ? Math.round(active) : null,
@@ -252,6 +259,33 @@ export function parseAppleJson(raw: unknown): AppleDaily[] {
     })
   }
   return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
+  const swims = isRecord(raw) ? raw.swims : undefined
+  if (!Array.isArray(swims)) return []
+  const out: AppleSwim[] = []
+  for (const swim of swims) {
+    if (!isRecord(swim)) continue
+    const date = readString(swim, 'date')?.slice(0, 10) ?? null
+    const totalM = readNumber(swim, 'totalM')
+    const laps = readNumber(swim, 'laps')
+    const rawStrokes = isRecord(swim.strokes) ? swim.strokes : null
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date) || totalM == null || laps == null || !rawStrokes)
+      continue
+    const strokes: Record<string, number> = {}
+    for (const [stroke, meters] of Object.entries(rawStrokes)) {
+      const rounded = num(meters)
+      if (rounded != null && rounded > 0) strokes[stroke] = Math.round(rounded)
+    }
+    if (Object.keys(strokes).length === 0) continue
+    out.push({ date, totalM: Math.round(totalM), laps: Math.round(laps), strokes })
+  }
+  return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+export function parseAppleJson(raw: unknown): AppleJsonEntries {
+  return { days: parseAppleJsonDays(raw), swims: parseAppleJsonSwims(raw) }
 }
 
 export function mergeAppleDay(prev: AppleDaily | undefined, next: AppleDaily): AppleDaily {

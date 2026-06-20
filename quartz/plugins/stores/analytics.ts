@@ -377,7 +377,6 @@ export interface Analytics {
   events: RaceEvent[]
   activities: ActivitySummary[]
   weakestSport: Sport
-  headline: string
   actions: TrainingAction[]
 }
 
@@ -967,7 +966,7 @@ function buildActions(
   bests: Map<Sport, SportBest>,
   daily: DailyPoint[],
   loadShare: Record<Sport, number>,
-): { weakest: Sport; headline: string; actions: TrainingAction[] } {
+): { weakest: Sport; actions: TrainingAction[] } {
   const last = daily.length ? daily[daily.length - 1] : null
   const ctlBySport: Record<Sport, number> = {
     swim: last?.swimCtl ?? 0,
@@ -1040,15 +1039,7 @@ function buildActions(
     }
   }
 
-  const staleLabels = SPORT_ORDER.filter(s => thresholds.get(s)!.staleDays > 45).map(
-    s => `${s} ${thresholds.get(s)!.staleDays}d stale`,
-  )
-  const buildLabels = SPORT_ORDER.filter(s => thresholds.get(s)!.staleDays <= 45)
-  const headline = staleLabels.length
-    ? `${buildLabels.length ? `${buildLabels.join('/')} build, ` : ''}${staleLabels.join(', ')}`
-    : 'balanced build'
-
-  return { weakest, headline, actions }
+  return { weakest, actions }
 }
 
 function emptyMeta(athleteId: number, today: string): AnalyticsMeta {
@@ -1469,7 +1460,7 @@ export const ATHLETE = {
   born: '2001-03',
   bornAnchor: '2001-03-01',
   hrMax: 190 as number | null,
-  vo2max: 44 as number | null,
+  vo2max: 45 as number | null,
   ftp: 208 as number | null,
   goalWeightLb: 180 as number | null,
   goalFTP: 290 as number | null,
@@ -2218,7 +2209,6 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     events: [],
     activities: [],
     weakestSport: 'run',
-    headline: '',
     actions: [],
   }
 }
@@ -2432,7 +2422,7 @@ export function buildAnalytics(
     .concat(walkSummaries)
     .sort((p, q) => q.date.localeCompare(p.date))
 
-  const { weakest, headline, actions } = buildActions(thresholds, bests, daily, loadShare)
+  const { weakest, actions } = buildActions(thresholds, bests, daily, loadShare)
 
   return {
     meta: {
@@ -2466,7 +2456,6 @@ export function buildAnalytics(
     events: inputs.events ?? [],
     activities,
     weakestSport: weakest,
-    headline,
     actions,
   }
 }

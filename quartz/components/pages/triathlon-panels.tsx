@@ -177,7 +177,6 @@ export const AnalyticsPanel = () => (
       <div class="tri-ana-body">
         <div class="tri-ana-results" aria-hidden="true" />
         <div class="tri-ana-detail" aria-hidden="true" />
-        <div class="tri-ana-headline" />
         <div class="tri-ana-block" data-chart="body" />
         <div class="tri-ana-block" data-chart="gauge" />
         <div class="tri-ana-block" data-chart="recovery" />
@@ -457,6 +456,7 @@ export const CalcPanel = () => (
                   data-k="swim"
                   type="text"
                   value="2:00"
+                  aria-label="swim pace"
                   inputMode="numeric"
                 />
               </td>
@@ -473,6 +473,7 @@ export const CalcPanel = () => (
                   data-k="t1"
                   type="text"
                   value="2:00"
+                  aria-label="T1 time"
                   inputMode="numeric"
                 />
               </td>
@@ -489,6 +490,7 @@ export const CalcPanel = () => (
                   data-k="bike"
                   type="text"
                   value="18"
+                  aria-label="bike speed"
                   inputMode="decimal"
                 />
               </td>
@@ -505,6 +507,7 @@ export const CalcPanel = () => (
                   data-k="t2"
                   type="text"
                   value="1:30"
+                  aria-label="T2 time"
                   inputMode="numeric"
                 />
               </td>
@@ -521,6 +524,7 @@ export const CalcPanel = () => (
                   data-k="run"
                   type="text"
                   value="9:00"
+                  aria-label="run pace"
                   inputMode="numeric"
                 />
               </td>
@@ -533,8 +537,16 @@ export const CalcPanel = () => (
               <th>finish</th>
               <td />
               <td />
-              <td class="tri-calc-r" data-leg="total">
-                —
+              <td class="tri-calc-r tri-calc-target-cell" data-leg="total">
+                <input
+                  class="tri-calc-in tri-calc-target"
+                  data-k="target"
+                  type="text"
+                  value=""
+                  placeholder="—"
+                  aria-label="target finish time"
+                  inputMode="numeric"
+                />
               </td>
             </tr>
           </tbody>

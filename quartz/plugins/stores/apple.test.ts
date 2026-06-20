@@ -75,9 +75,32 @@ test('Apple VO2 max survives XML aggregation and JSON import', () => {
   assert.deepEqual(aggregateAppleRecords(record ? [record] : []), [
     day('2026-06-08', { vo2max: 49.3 }),
   ])
-  assert.deepEqual(parseAppleJson({ days: [{ date: '2026-06-08', vo2max: 49.26 }] }), [
+  assert.deepEqual(parseAppleJson({ days: [{ date: '2026-06-08', vo2max: 49.26 }] }).days, [
     day('2026-06-08', { vo2max: 49.3 }),
   ])
+})
+
+test('JSON import preserves swim aggregates from HealthExporter', () => {
+  assert.deepEqual(
+    parseAppleJson({
+      swims: [
+        {
+          date: '2026-06-19T07:30:00-04:00',
+          totalM: 1500.2,
+          laps: 60,
+          strokes: { freestyle: 1450.4, breaststroke: 49.6, mixed: null },
+        },
+      ],
+    }).swims,
+    [
+      {
+        date: '2026-06-19',
+        totalM: 1500,
+        laps: 60,
+        strokes: { freestyle: 1450, breaststroke: 50 },
+      },
+    ],
+  )
 })
 
 test('matchSwimDistance reads the lap start + meters, converting non-metric units', () => {
