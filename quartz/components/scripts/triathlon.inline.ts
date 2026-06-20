@@ -2043,20 +2043,12 @@ const buildPmc = (data: Analytics): HTMLElement => {
     )
     return row
   }
-  const sportLoad = (d: DailyPoint): string => {
-    const parts: string[] = []
-    if (d.swimLoad > 0) parts.push(`swim ${Math.round(d.swimLoad)}`)
-    if (d.bikeLoad > 0) parts.push(`bike ${Math.round(d.bikeLoad)}`)
-    if (d.runLoad > 0) parts.push(`run ${Math.round(d.runLoad)}`)
-    return parts.length > 0 ? parts.join(' · ') : 'rest'
-  }
   const entryRow = (a: ActivitySummary): HTMLElement => {
     const row = el('div', 'tri-pmc-entry')
     row.append(
       el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, a.sport),
       el('span', 'tri-pmc-entry-n', a.name || a.sport),
       el('span', 'tri-pmc-entry-d', dist(a.distanceKm, a.sport)),
-      el('span', 'tri-pmc-entry-l', `· load ${Math.round(a.load)}`),
     )
     return row
   }
@@ -2067,9 +2059,6 @@ const buildPmc = (data: Analytics): HTMLElement => {
     const entries = proj
       ? []
       : [...(activitiesByDate.get(date) ?? [])].sort((a, b) => b.load - a.load)
-    const loadRow = proj
-      ? el('div', 'tri-pmc-load-row', `projected load ${futLoad}/day`)
-      : el('div', 'tri-pmc-load-row', `load ${Math.round(daily[i].load)} · ${sportLoad(daily[i])}`)
     const entryList = el('div', 'tri-pmc-entries')
     if (!proj) {
       if (entries.length === 0)
@@ -2085,7 +2074,6 @@ const buildPmc = (data: Analytics): HTMLElement => {
     readoutEl.replaceChildren(
       el('span', 'tri-pmc-leg-date', `${shortDate(date)}${proj ? ' · proj' : ''}`),
       metricGrid,
-      loadRow,
     )
     if (!proj) readoutEl.append(entryList)
   }
