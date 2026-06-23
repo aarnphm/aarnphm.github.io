@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-23 09:06:07 GMT-04:00
+modified: 2026-06-23 17:50:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2767,6 +2767,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lincolnquirk.com/2026/04/16/aiwriting.html -- On AI Writing
+  - [meta]:
+    - date: 06/23/2026
+    - tags: [jagged, taste]
 - https://velvetnoise.substack.com/p/how-to-enter-side-doors -- how to enter side doors
   - [meta]:
     - date: 06/19/2026
