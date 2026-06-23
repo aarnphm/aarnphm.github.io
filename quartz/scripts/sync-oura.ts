@@ -1,6 +1,12 @@
 import fs from 'node:fs/promises'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
-import { emptyOuraDaily, OuraCache, OuraDaily, OuraUser } from '../plugins/stores/oura'
+import {
+  emptyOuraDaily,
+  OuraCache,
+  OuraDaily,
+  ouraSleepCalendarDay,
+  OuraUser,
+} from '../plugins/stores/oura'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
@@ -175,7 +181,7 @@ async function main(): Promise<void> {
   }
   const mainSleep: Record<string, Row> = {}
   for (const r of sleep) {
-    const day = str(r.day)
+    const day = ouraSleepCalendarDay(r)
     if (!day) continue
     if (r.type !== undefined && r.type !== 'long_sleep') continue
     const cur = mainSleep[day]

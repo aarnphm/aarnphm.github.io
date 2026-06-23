@@ -28,6 +28,19 @@ export interface OuraCache {
   days: Record<string, OuraDaily>
 }
 
+export interface OuraSleepDateFields {
+  day?: unknown
+  bedtime_end?: unknown
+}
+
+const localDatePattern = /^\d{4}-\d{2}-\d{2}T/
+
+export function ouraSleepCalendarDay(row: OuraSleepDateFields): string | null {
+  if (typeof row.bedtime_end === 'string' && localDatePattern.test(row.bedtime_end))
+    return row.bedtime_end.slice(0, 10)
+  return typeof row.day === 'string' ? row.day : null
+}
+
 export function emptyOuraDaily(date: string): OuraDaily {
   return {
     date,
