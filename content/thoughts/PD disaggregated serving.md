@@ -271,7 +271,7 @@ where $d_c$ is latent dimension, $d_R$ is [[thoughts/RoPE]] dimension.
 >
 > DeepSeek's $\min(\cdot, 4)$ cap bounds inter-node messages regardless of $k$ or cluster size.
 >
-> _collary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
+> _corollary:_ Communication complexity is $O(1)$ in cluster size $N$ for $N > 4$.
 
 > [!proposition] DBO Overlap Efficiency [Empirical]
 >

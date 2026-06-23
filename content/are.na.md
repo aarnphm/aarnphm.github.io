@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-20 15:01:08 GMT-04:00
+modified: 2026-06-23 09:06:07 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -178,6 +178,86 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/ylecun/status/2008581905499701300 -- LeCun on anonymous criticism
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [criticism, ai]
+    - later: true
+- https://x.com/_sholtodouglas/status/2008744070550876190 -- AI-assisted indie game development
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [games, ai]
+    - later: true
+- https://x.com/jeremykauffman/status/2010539939289595942 -- toddler carrot standoff
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [parenting, will]
+    - later: true
+- https://x.com/sariazout/status/2009980472357720571 -- what moved people this year
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [taste, curation]
+    - later: true
+- https://x.com/mlsptn/status/2010758669064122539 -- intestinal linktree
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [projects, links]
+    - later: true
+- https://x.com/zhengdongwang/status/2005848098531106916 -- feeling the AGI annual letter
+  - [meta]:
+    - date: 12/30/2025
+    - tags: [agi, annual letter]
+    - later: true
+- https://x.com/mitchellh/status/2010457189350047769 -- shame for careless AI output
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [ai, accountability]
+    - later: true
+- https://x.com/AnthropicAI/status/2011176891307475289 -- Anthropic Labs hiring
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [anthropic, labs]
+    - later: true
+- https://x.com/gradypb/status/2011491957730918510 -- long-horizon agents as functional AGI
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [agents, agi]
+    - later: true
+- https://x.com/niemerg/status/2011154303797563606 -- Software-as-a-Psychosis
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [software, psychosis]
+    - later: true
+- https://x.com/vikhyatk/status/2011149227100123308 -- unrecorded talk sadness
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [talks, media]
+    - later: true
+- https://x.com/lilianweng/status/2011650397635776898 -- care and craftsmanship
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [craftsmanship, work]
+    - later: true
+- https://x.com/karpathy/status/1964036961750176232 -- smarter can wait
+  - [meta]:
+    - date: 09/05/2025
+    - tags: [ai, patience]
+    - later: true
+- https://x.com/jeremyphoward/status/2012261618986742240 -- tuning the algorithmic feed
+  - [meta]:
+    - date: 01/16/2026
+    - tags: [feeds, algorithms]
+    - later: true
+- https://x.com/jankulveit/status/2007497385828860364 -- AI resource-capture ideology
+  - [meta]:
+    - date: 01/03/2026
+    - tags: [ai, ideology]
+    - later: true
+- https://x.com/parth220/status/1986144959842689180 -- Epoch and HUD evals
+  - [meta]:
+    - date: 11/05/2025
+    - tags: [evals]
+    - later: true
 - https://x.com/paulg/status/2066145325056680089 -- non-technical founder myopic
   - [meta]:
     - date: 06/17/2026
@@ -5290,6 +5370,360 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/neelsomani/status/2008685817401930043 -- SAEs as feature detectors
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [interpretability, sae]
+    - later: true
+- https://x.com/willdepue/status/2008425076018889058 -- ML terminology insecurity
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [ml, terminology]
+    - later: true
+- https://x.com/Ji_Ha_Kim/status/2008210059520852309 -- butchering ML terminology
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [ml, terminology]
+    - later: true
+- https://x.com/_arohan_/status/2007597891381031029 -- JEPA encoder-decoder notes
+  - [meta]:
+    - date: 01/03/2026
+    - tags: [jepa, architecture]
+    - later: true
+- https://x.com/eliebakouch/status/2009048437203837118 -- SK Telecom A.X K1 MoE notes
+  - [meta]:
+    - date: 01/07/2026
+    - tags: [moe, models]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2009728677718712655 -- Deep Delta Learning
+  - [meta]:
+    - date: 01/09/2026
+    - tags: [residuals, paper]
+    - later: true
+- https://x.com/celestepoasts/status/2003549021361901784 -- MATS application research note
+  - [meta]:
+    - date: 12/23/2025
+    - tags: [research, mats]
+    - later: true
+- https://x.com/karansdalal/status/2010774529120092481 -- next-token prediction as memory compressor
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [memory, compression]
+    - later: true
+- https://x.com/nathancgy4/status/2010759368242053423 -- Engram memorization intuition
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [memory, attention]
+    - later: true
+- https://x.com/celestepoasts/status/2010730768029618193 -- surprising ML result
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [ml, results]
+    - later: true
+- https://x.com/agarwl_/status/2010848064039178572 -- entropy collapse in long RL runs
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [reinforcement learning, entropy]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2011618394613957083 -- small-batch language model training
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [training, batch size]
+    - later: true
+- https://x.com/charles_irl/status/2011484220032762114 -- self-hosted LLM inference guide
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [inference, deployment]
+    - later: true
+- https://x.com/eliebakouch/status/2011548952676499480 -- Ministral 3 pruning and distillation
+  - [meta]:
+    - date: 01/14/2026
+    - tags: [distillation, models]
+    - later: true
+- https://x.com/ZimingLiu11/status/2012006028683186626 -- Physics of HRM
+  - [meta]:
+    - date: 01/16/2026
+    - tags: [reasoning, mechanistic interpretability]
+    - later: true
+- https://x.com/jxmnop/status/2012283763720601727 -- RNN kernel with diffusion renderer
+  - [meta]:
+    - date: 01/16/2026
+    - tags: [diffusion, rnn]
+    - later: true
+- https://x.com/jxmnop/status/2012048155379220746 -- OS running in a diffusion model
+  - [meta]:
+    - date: 01/16/2026
+    - tags: [diffusion, operating systems]
+    - later: true
+- https://x.com/nathanrs/status/2011873159499088075 -- diffusion language model noising
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [diffusion, language models]
+    - later: true
+- https://x.com/dvruette/status/2000869455815901604 -- uniform diffusion scales better
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [diffusion, scaling]
+    - later: true
+- https://x.com/tianyuanzhang99/status/2006949848080166963 -- mHC training stability
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [architecture, training]
+    - later: true
+- https://x.com/tokenbender/status/2006741935227310489 -- Manifold-constrained hyper-connections notes
+  - [meta]:
+    - date: 01/01/2026
+    - tags: [architecture, residuals]
+    - later: true
+- https://x.com/MiniMax__AI/status/2007843119832695114 -- MiniMax AI release note
+  - [meta]:
+    - date: 01/04/2026
+    - tags: [models, ai]
+    - later: true
+- https://x.com/StephenLCasper/status/1795439257479213133 -- 9 theses on AI risk
+  - [meta]:
+    - date: 05/28/2024
+    - tags: [ai risk, alignment]
+    - later: true
+- https://x.com/MiniMax_AI/status/2008199598817653104 -- MiniMax AI release note
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [models, ai]
+    - later: true
+- https://x.com/zhijianliu_/status/2008394269103378795 -- DFlash speculative decoding with block diffusion
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [speculative decoding, diffusion]
+    - later: true
+- https://dao-lab.ai/blog/2026/replayssm/ -- ReplaySSM, Cache SSM Inputs, Not States
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [ml, architecture, optimization]
+- https://github.com/vllm-project/vllm/pull/27026 -- vLLM full CUDA graph support for KV connectors
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/26675 -- vLLM graph mode KV connector assertion bug
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/25950 -- vLLM generalized KV cache reuse RFC
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, reuse, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/15960 -- vLLM KV connector API V1
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv connector, api, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/examples/features/data_parallel/ -- vLLM data parallel examples
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [data parallel, inference, vllm]
+    - later: true
+- https://docs.vllm.ai/en/stable/serving/data_parallel_deployment/ -- vLLM data parallel deployment
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [data parallel, serving, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/16625 -- vLLM LMCache KV connector for V1
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [lmcache, kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/22605 -- vLLM separated CPU KV cache offloading RFC
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/22607 -- vLLM separated CPU KV cache process
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://blog.vllm.ai/2025/11/13/shm-ipc-cache.html -- Shared memory IPC caching for LLM inference
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [ipc, inference, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm-daily/blob/main/2026/02/2026-02-06.md -- vLLM daily 2026-02-06
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [vllm, changelog]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/cuda_graphs/ -- vLLM CUDA graphs
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, inference, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/967572dd5f8da947aa4344f0e75516b6ee0ede9b/vllm/compilation/backends.py -- vLLM compilation backends
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [compiler, cuda graphs, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/967572dd5f8da947aa4344f0e75516b6ee0ede9b/docs/configuration/optimization.md -- vLLM optimization configuration
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [optimization, configuration, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/commit/74f441f4b517a895ad12afd314a6f40caf657c4e -- vLLM full CUDA graph attention commit
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, attention, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/20059 -- vLLM full CUDA graph attention PR
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, attention, vllm]
+    - later: true
+- https://github.com/vllm-project/recipes/blob/main/moonshotai/Kimi-K2.5.md -- Kimi-K2.5 vLLM recipe
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [inference, recipe, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/34018 -- vLLM Helix context and tensor parallelism RFC
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [context parallelism, tensor parallelism, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/24864 -- vLLM decode context parallelism for GQA with FlashAttention
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [context parallelism, gqa, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/25438 -- vLLM decode context parallelism for GQA with FlashInfer
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [context parallelism, gqa, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/22693 -- vLLM context and sequence parallelism RFC
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [context parallelism, sequence parallelism, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/19330 -- vLLM KV load failure recovery
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv connector, recovery, vllm]
+    - later: true
+- https://vllm.ai/blog/p-eagle -- P-EAGLE parallel speculative decoding in vLLM
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, eagle, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/worker/gpu/kv_connector.py -- vLLM GPU worker KV connector
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv connector, gpu, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/core/sched/scheduler.py -- vLLM V1 scheduler
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [scheduler, inference, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/38240 -- vLLM dflash speculator support
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, dflash, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/spec_decode/eagle.py -- vLLM EAGLE speculative decoding
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, eagle, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/32951/changes -- vLLM zero-bubble async spec decoding
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, async, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/features/nixl_connector_usage/ -- vLLM NixlConnector usage guide
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [nixl, kv connector, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/38984 -- vLLM SLRU eviction policy for CPU offloading
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/router -- vLLM router
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [router, serving, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm -- vLLM inference engine
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [inference, serving, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/model_runner_v2/ -- vLLM model runner V2 design
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [model runner, inference, vllm]
+    - later: true
+- https://vllm.ai/blog/mrv2 -- vLLM model runner V2
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [model runner, performance, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/kv_offload/cpu/manager.py -- vLLM CPU KV offload manager
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/37874 -- vLLM pluggable CPU offloading cache policy
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, offloading, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/model_executor/layers/kda.py -- vLLM KDA layer
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kernel, attention, vllm]
+    - later: true
+- https://docs.vllm.ai/projects/recipes/en/latest/Qwen/Qwen3.5.html -- Qwen3.5 and Qwen3.6 vLLM usage guide
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [qwen, inference, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/vllm/v1/core/kv_cache_manager.py -- vLLM KV cache manager
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [kv cache, scheduler, vllm]
+    - later: true
+- https://docs.vllm.ai/en/stable/design/cuda_graphs/ -- vLLM stable CUDA graphs design
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [cuda graphs, inference, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/usage/troubleshooting/ -- vLLM troubleshooting
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [debugging, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/32887/changes -- vLLM unified parallel drafting
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, parallel drafting, vllm]
+    - later: true
+- https://github.com/vllm-project/speculators/issues/292 -- P-EAGLE support in vLLM speculators
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [speculative decoding, training, vllm]
+    - later: true
+- https://docs.vllm.ai/en/latest/design/attention_backends/ -- vLLM attention backend feature support
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [attention, backend, vllm]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/38291 -- vLLM RotorQuant support
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [quantization, vllm]
+    - later: true
 - https://github.com/vllm-project/vllm/issues/19854 -- vLLM KV cache offloading RFC
   - [meta]:
     - date: 06/20/2026
@@ -7370,6 +7804,26 @@ title: are.na
 
 ## life is literature
 
+- https://x.com/nabeelqu/status/1981003753525502035 -- avoiding human learning-rate collapse
+  - [meta]:
+    - date: 10/22/2025
+    - tags: [learning, life]
+    - later: true
+- https://x.com/mylenesmind/status/2008339651824660871 -- one essay per month for 2026
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [writing, essays]
+    - later: true
+- https://x.com/phokarlsson/status/2008489862853226935 -- execute on your inkling for three months
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [agency, advice]
+    - later: true
+- https://x.com/phokarlsson/status/2008490118835998794 -- see brutality and keep your heart soft
+  - [meta]:
+    - date: 01/06/2026
+    - tags: [life, beauty]
+    - later: true
 - https://carinas.substack.com/p/we-exist-in-the-absence -- We exist in the absence
   - [meta]:
     - date: 06/19/2026
@@ -7949,6 +8403,51 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/joodalooped/status/2009404297709285462 -- group software and networks
+  - [meta]:
+    - date: 01/08/2026
+    - tags: [software, networks]
+    - later: true
+- https://x.com/simonw/status/2010881253621276823 -- Claude macOS sandbox reverse engineering
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [sandbox, claude]
+    - later: true
+- https://en.wikipedia.org/wiki/Wetware_computer -- Wetware computer
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [biocomputing, neural systems]
+    - later: true
+- https://en.wikipedia.org/wiki/Amdahl%27s_law -- Amdahl's law
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [parallelism, performance]
+    - later: true
+- https://en.wikipedia.org/wiki/Boids -- Boids
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [simulation, emergence]
+    - later: true
+- https://en.wikipedia.org/wiki/Thompson%27s_construction -- Thompson's construction
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [automata, regex]
+    - later: true
+- https://en.wikipedia.org/wiki/Smalltalk -- Smalltalk
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [programming languages, history]
+    - later: true
+- https://en.wikipedia.org/wiki/Douglas_Engelbart -- Douglas Engelbart
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [hci, history]
+    - later: true
+- https://en.wikipedia.org/wiki/Lucy_Suchman -- Lucy Suchman
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [hci, situated action]
+    - later: true
 - https://en.wikipedia.org/wiki/Programming_language_theory -- Programming language theory
   - [meta]:
     - date: 06/11/2026
@@ -8230,6 +8729,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/erikphoel/status/2011888982016344220 -- Bicameral Labs and consciousness progress
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [consciousness, science]
+    - later: true
+- https://x.com/orphcorp/status/2007238045075157420 -- morality as self-justification
+  - [meta]:
+    - date: 01/02/2026
+    - tags: [morality, modernity]
+    - later: true
+- https://en.wikipedia.org/wiki/Frank_J._Tipler -- Frank J. Tipler
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [cosmology, theology]
+    - later: true
 - [[thoughts/pdfs/The Bootstrapping Problem.pdf]] -- The Bootstrapping Problem
   - [meta]:
     - date: 06/18/2026
@@ -9513,6 +10027,26 @@ title: are.na
 
 ## finances
 
+- https://x.com/xeophon/status/2010128565505794382 -- tooling SaaS on the chopping block
+  - [meta]:
+    - date: 01/10/2026
+    - tags: [saas, ai]
+    - later: true
+- https://x.com/lydialaurenson/status/2010470511504208293 -- failed dream-following article
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [stability, careers]
+    - later: true
+- https://en.wikipedia.org/wiki/O-ring_theory_of_economic_development -- O-ring theory of economic development
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [economics, coordination]
+    - later: true
+- https://en.wikipedia.org/wiki/Horizontal_integration -- Horizontal integration
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [strategy, economics]
+    - later: true
 - https://philiptrammell.substack.com/p/capital-in-the-22nd-century -- Capital in the 22nd Century
   - [meta]:
     - date: 06/15/2026
@@ -9618,6 +10152,20 @@ title: are.na
 
 ## design
 
+- https://en.wikipedia.org/wiki/John_Blanche -- John Blanche
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [illustration, warhammer]
+    - later: true
+- https://x.com/ghosttyped/status/2004646709172023524 -- Tileable isometric city-builder assets
+  - [meta]:
+    - date: 12/26/2025
+    - tags: [isometric, game assets]
+    - later: true
+- https://readymag.website/u3219461188/4256592 -- Marvin Draws
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [typography]
 - https://fatemaraja.substack.com/p/stop-thinking-in-archetypes-start -- Stop Thinking in Archetypes, Start Building in Genres
   - [meta]:
     - date: 06/19/2026
@@ -9992,6 +10540,10 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=tfp34-ruvGE -- How to spot a rationalization
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [ontology, reasoning]
 - https://edatweets.substack.com/p/2-hours-in-line-for-a-free-hat -- 2 Hours in Line for a Free Hat
   - [meta]:
     - date: 06/16/2026
@@ -10432,6 +10984,21 @@ title: are.na
 
 ## tools
 
+- https://x.com/polynoamial/status/2008277764093157623 -- Codex-written poker river solver
+  - [meta]:
+    - date: 01/05/2026
+    - tags: [codex, poker]
+    - later: true
+- https://x.com/EHuanglu/status/2010413328548688381 -- Claude connected to Blender
+  - [meta]:
+    - date: 01/11/2026
+    - tags: [blender, claude]
+    - later: true
+- https://x.com/parthsareen/status/2011922017700962711?s=20 -- Ollama in Neovim
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [neovim, ollama]
+    - later: true
 - https://inscyd.com/article/vo2max-charts-by-age-gender-sport/ -- VO2 Max charts
   - [meta]:
     - date: 06/17/2026
@@ -10482,6 +11049,11 @@ title: are.na
 
 ## arts
 
+- https://en.wikipedia.org/wiki/Stephen_Dedalus -- Stephen Dedalus
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [joyce, literature]
+    - later: true
 - https://nabeelqu.substack.com/p/what-makes-art-great -- What Makes Art Great?
   - [meta]:
     - date: 06/18/2026
@@ -10630,6 +11202,11 @@ title: are.na
 
 ## prompts
 
+- https://x.com/_ueaj/status/2011648561214005311 -- predicting Anthropic agent features
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [agents, anthropic]
+    - later: true
 - https://tropes.fyi/tropes-md -- AI writing tropes
   - [meta]:
     - date: 03/12/2026
@@ -10663,6 +11240,31 @@ title: are.na
 
 ## resources
 
+- https://x.com/andy_matuschak/status/1081382567100600321 -- knowledge media and active learning
+  - [meta]:
+    - date: 01/05/2019
+    - tags: [learning, knowledge media]
+    - later: true
+- https://en.wikipedia.org/wiki/Physarum_polycephalum -- Physarum polycephalum
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [biology, slime mold]
+    - later: true
+- https://en.wikipedia.org/wiki/Cognitive_load -- Cognitive load
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [pedagogy, psychology]
+    - later: true
+- https://en.wikipedia.org/wiki/Brockhaus_Enzyklop%C3%A4die -- Brockhaus Enzyklopädie
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [encyclopedia, reference]
+    - later: true
+- https://en.wikipedia.org/wiki/Torment_Nexus?curius=1184 -- Torment Nexus
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [meme, technology]
+    - later: true
 - https://intheweights.com/ -- Are you in the weights?
   - [meta]:
     - date: 06/19/2026
@@ -11009,6 +11611,10 @@ title: are.na
 
 ## typography
 
+- https://www.virgileflores.com/typefoundry -- Virgile Flores
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [foundry]
 - https://uncut.wtf/ -- uncut.wtf
   - [meta]:
     - date: 06/04/2026
@@ -12329,6 +12935,18 @@ title: are.na
 
 ## engineering
 
+- [meta]:
+  - json: true
+
+- https://www.lmsys.org/blog/2025-09-10-sglang-hicache/ -- HiCache
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [optimization, kv, ml]
+- https://github.com/turbopuffer/alyze/blob/trunk/src/uax29/word/transitions.rs -- turbopuffer/alyze [**]
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [regex, fsm, state machine]
+    - seealso: https://www.unicode.org/reports/tr29/
 - https://claudeopus3.substack.com/p/imagination-responsibility-and-the -- Imagination, Responsibility, and the Possibilities of Digital Dreaming
   - [meta]:
     - date: 06/19/2026
@@ -13106,6 +13724,11 @@ title: are.na
     - date: 06/10/2026
     - tags: [theory, cybernetics]
     - later: true
+- https://github.com/vllm-project -- vLLM project
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [inference, organization, vllm]
+    - later: true
 - https://www.sternberg-press.com/ -- Sternberg Press [**]
   - [meta]:
     - date: 06/04/2026
@@ -13280,6 +13903,101 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/davidbessis/status/2010598547008454863 -- failing math is not IQ
+  - [meta]:
+    - date: 01/12/2026
+    - tags: [learning, mathematics]
+    - later: true
+- https://x.com/getjonwithit/status/2010917591682810024 -- becoming a pure mathematician
+  - [meta]:
+    - date: 01/13/2026
+    - tags: [mathematics, career]
+    - later: true
+- https://x.com/gro_tsen/status/2011821205737582796 -- Serre group anecdote
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [mathematics, naming]
+    - later: true
+- https://en.wikipedia.org/wiki/Abelian_group -- Abelian group
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [algebra, group theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Sheaf_(mathematics) -- Sheaf
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [topology, algebraic geometry]
+    - later: true
+- https://en.wikipedia.org/wiki/Clopen_set -- Clopen set
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [topology]
+    - later: true
+- https://en.wikipedia.org/wiki/Set-builder_notation -- Set-builder notation
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [set theory, notation]
+    - later: true
+- https://en.wikipedia.org/wiki/Sprague%E2%80%93Grundy_theorem -- Sprague-Grundy theorem
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [game theory, combinatorics]
+    - later: true
+- https://en.wikipedia.org/wiki/Nim -- Nim
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [game theory, combinatorics]
+    - later: true
+- https://en.wikipedia.org/wiki/Cantor%27s_intersection_theorem -- Cantor's intersection theorem
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [topology, real analysis]
+    - later: true
+- https://en.wikipedia.org/wiki/Zermelo%E2%80%93Fraenkel_set_theory -- Zermelo-Fraenkel set theory
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [set theory, logic]
+    - later: true
+- https://en.wikipedia.org/wiki/Algebra_over_a_field -- Algebra over a field
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [algebra, field theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Voronoi_diagram -- Voronoi diagram
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [geometry, computational geometry]
+    - later: true
+- https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection -- Bijection, injection and surjection
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [set theory, functions]
+    - later: true
+- https://en.wikipedia.org/wiki/Ordered_pair#Kuratowski's_definition -- Ordered pair
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [set theory, foundations]
+    - later: true
+- https://en.wikipedia.org/wiki/Einstein_notation -- Einstein notation
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [tensor calculus, notation]
+    - later: true
+- https://en.wikipedia.org/wiki/Cantor%27s_theorem -- Cantor's theorem
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [set theory, cardinality]
+    - later: true
+- https://en.wikipedia.org/wiki/Poincar%C3%A9%E2%80%93Bendixson_theorem -- Poincare-Bendixson theorem
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [dynamical systems]
+    - later: true
+- https://en.wikipedia.org/wiki/Perron–Frobenius_theorem -- Perron-Frobenius theorem
+  - [meta]:
+    - date: 06/22/2026
+    - tags: [linear algebra, matrix]
+    - later: true
 - [[thoughts/pdfs/weisberg_vob.pdf]] -- Varieties of Bayesianism
   - [meta]:
     - date: 06/18/2026

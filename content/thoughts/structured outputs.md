@@ -318,7 +318,7 @@ idx_with_tokens = {
 
 _note:_ each state of FSM represents a forward pass to the LM. In vanilla generation, this is essentially necessary. Thus there is no added overhead of FSM for controlling the generated outputs.
 
-From state 2-6, we observer that there are eight different paths to get the same generations of `name`. We probably don't need to do this, given that it will all give us result `name`
+From state 2-6, we observe that there are eight different paths to get the same generations of `name`. We probably don't need to do this, given that it will all give us result `name`
 
 But suffice to say, we can hijack this behaviour to accelerate generations by append either of the following tokens **word** to currently generated sequence:
 
@@ -381,11 +381,11 @@ A pseudocode for sampling procedure is as follow:
     \State $s \gets ()$
     \For{$i \gets 1, L$}
         \State $\alpha \gets \text{LM}(s, \theta)$
-        \State Sample $s \sim \text{Categorical}(\alpha)$
-        \If{$s = \text{EOS}$}
+        \State Sample $w \sim \text{Categorical}(\alpha)$
+        \If{$w = \text{EOS}$}
             \State \textbf{break}
         \EndIf
-        \State $s \gets \text{append}(s, s)$
+        \State $s \gets \text{append}(s, w)$
     \EndFor
     \State \Return $s$
 \EndFunction
