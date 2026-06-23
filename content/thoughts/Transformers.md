@@ -20,7 +20,7 @@ tags:
 title: Transformers
 ---
 
-> A multi-layer perceptron (MLP) architecture built on top of a [[thoughts/Attention#Muti-head Attention|multi-head attention]] mechanism [@vaswani2023attentionneed] to signal high entropy tokens to be amplified and less important tokens to be diminished.
+> A multi-layer perceptron (MLP) architecture built on top of a [[thoughts/Attention#Multi-head Attention|multi-head attention]] mechanism [@vaswani2023attentionneed] to signal high entropy tokens to be amplified and less important tokens to be diminished.
 
 ELI5: Mom often creates a food list consists of $n$ of items to buy. Your job is to guess what the last item on this list would be.
 

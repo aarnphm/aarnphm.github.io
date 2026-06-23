@@ -82,7 +82,7 @@ Equivalent form of soft-margin SVM:
 $$
 \begin{aligned}
 \min_{w} &(\lambda \|w\|^2 + L_S^{\text{hinge}}(w)) \\[8pt]
-L_{S}^{\text{hinge}}(w) &= \frac{1}{m} \sum_{i=1}^{m} \max{(\{0, 1 - y \langle w, x_i \rangle\})}
+L_{S}^{\text{hinge}}(w) &= \frac{1}{m} \sum_{i=1}^{m} \max(0, 1 - y \langle w, x_i \rangle)
 \end{aligned}
 $$
 

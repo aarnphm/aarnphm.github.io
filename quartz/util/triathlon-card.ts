@@ -253,6 +253,35 @@ export const buildElevation = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
   return wrap
 }
 
+export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
+  const strokes = d.strokes
+  if (!strokes) return null
+  const entries = SWIM_STROKES.map(s => [s, strokes[s] ?? 0] as const).filter(([, m]) => m > 0)
+  const total = entries.reduce((sum, [, m]) => sum + m, 0)
+  if (entries.length === 0 || total <= 0) return null
+  const box = f.el('div', 'tri-pool-strokes')
+  const bar = f.el('div', 'tri-stroke-bar')
+  const legend = f.el('ul', 'tri-stroke-legend')
+  for (const [s, m] of entries) {
+    f.add(
+      bar,
+      f.el('span', `tri-stroke-seg tri-stroke-${s}`, undefined, {
+        style: `width:${((m / total) * 100).toFixed(2)}%`,
+      }),
+    )
+    const li = f.el('li', 'tri-stroke-leg')
+    f.add(
+      li,
+      f.el('span', `tri-stroke-dot tri-stroke-${s}`),
+      f.el('span', 'tri-stroke-name', STROKE_LABEL[s]),
+      f.el('span', 'tri-stroke-val', `${Math.round(m)}m`),
+    )
+    f.add(legend, li)
+  }
+  f.add(box, bar, legend)
+  return box
+}
+
 export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
   const lengths = Math.max(1, Math.round((d.distanceKm * 1000) / 25))
   const wrap = f.el('div', 'tri-pool-wrap')
@@ -267,34 +296,8 @@ export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N =
   )
   f.add(fig, f.svg('line', { x1: 22, y1: 28, x2: 78, y2: 28, class: 'tri-pool-mid' }))
   f.add(wrap, fig, f.el('span', 'tri-pool-cap', `${lengths} × 25m`))
-  const strokes = d.strokes
-  if (strokes) {
-    const entries = SWIM_STROKES.map(s => [s, strokes[s] ?? 0] as const).filter(([, m]) => m > 0)
-    const total = entries.reduce((sum, [, m]) => sum + m, 0)
-    if (entries.length > 0 && total > 0) {
-      const box = f.el('div', 'tri-pool-strokes')
-      const bar = f.el('div', 'tri-stroke-bar')
-      const legend = f.el('ul', 'tri-stroke-legend')
-      for (const [s, m] of entries) {
-        f.add(
-          bar,
-          f.el('span', `tri-stroke-seg tri-stroke-${s}`, undefined, {
-            style: `width:${((m / total) * 100).toFixed(2)}%`,
-          }),
-        )
-        const li = f.el('li', 'tri-stroke-leg')
-        f.add(
-          li,
-          f.el('span', `tri-stroke-dot tri-stroke-${s}`),
-          f.el('span', 'tri-stroke-name', STROKE_LABEL[s]),
-          f.el('span', 'tri-stroke-val', `${Math.round(m)}m`),
-        )
-        f.add(legend, li)
-      }
-      f.add(box, bar, legend)
-      f.add(wrap, box)
-    }
-  }
+  const strokes = buildSwimStrokes(f, d)
+  if (strokes) f.add(wrap, strokes)
   return wrap
 }
 
@@ -347,13 +350,19 @@ export const buildActivity = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail):
     const fueling = buildFueling(f, d.fueling)
     if (fueling) f.add(wrap, fueling)
   }
-  if (d.sport === 'swim') {
+  if (d.route.length >= 2) {
+    const figs = f.el('div', 'tri-act-figs')
+    f.add(figs, buildRoute(f, d.route))
+    if (d.sport === 'swim') {
+      const strokes = buildSwimStrokes(f, d)
+      if (strokes) f.add(figs, strokes)
+    } else {
+      f.add(figs, buildElevation(f, d))
+    }
+    f.add(wrap, figs)
+  } else if (d.sport === 'swim') {
     const figs = f.el('div', 'tri-act-figs')
     f.add(figs, buildPool(f, d))
-    f.add(wrap, figs)
-  } else if (d.route.length >= 2) {
-    const figs = f.el('div', 'tri-act-figs')
-    f.add(figs, buildRoute(f, d.route), buildElevation(f, d))
     f.add(wrap, figs)
   }
   if (hasMoreSection(d)) {

@@ -645,7 +645,7 @@ $$
 
 #### example
 
-The following contains three graph solution:
+The following shows three graph solutions:
 
 - unique solution:
   ```prolog

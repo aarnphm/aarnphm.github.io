@@ -2,17 +2,13 @@
 date: '2026-06-17'
 description: spelling-to-sound rules, alphabet, and pronunciation hints for french
 id: orthography-phonetics
-modified: 2026-06-17 20:24:43 GMT-04:00
+modified: 2026-06-22 22:30:02 GMT-04:00
 tags:
   - fr
   - language
   - learning
 title: orthography and phonetics
 ---
-
-reading aloud, with the spelling treated as a set of cues rather than a phonetic transcript. variety assumed throughout is standard contemporary french; regional mergers are flagged where they change the mapping. the paired deck lives in [[fr/orthography-phonetics.fc|orthography-phonetics.fc]].
-
-the IPA column is the target. the rough-english column is a memory handle only, and it lies in the places french has no english analogue, mainly `u` /y/ and `r` /ʁ/.
 
 ## alphabet
 
