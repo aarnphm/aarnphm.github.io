@@ -183,6 +183,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ext: '.jsonl',
           content: buildDataFeed(cache, analytics, {
             oura,
+            apple,
             weather,
             garmin,
             weights: tracking?.days,

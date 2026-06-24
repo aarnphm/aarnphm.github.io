@@ -1,6 +1,7 @@
 import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
 import { AppleCache } from './apple'
+import { matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
 import {
   type Sport,
@@ -9,6 +10,8 @@ import {
   normalizeSport,
   normalizeKind,
   round,
+  resolveActivityHeartRate,
+  type ActivityHeartRate,
   type RawStravaActivity,
   type StravaStreams,
   type StravaRawCache,
@@ -355,6 +358,7 @@ export interface EngineBlock {
 
 export interface DataFeedInputs {
   oura?: OuraCache | null
+  apple?: AppleCache | null
   weather?: WeatherCache | null
   garmin?: GarminCache | null
   weights?: TrackEntry[]
@@ -1649,8 +1653,13 @@ const np30 = (watts: number[]): number | null => {
   return count > 0 ? Math.pow(acc / count, 0.25) : null
 }
 
-const efOf = (sport: Sport, a: RawStravaActivity, vGap: number): number | null => {
-  const hr = a.averageHeartrate
+const efOf = (
+  sport: Sport,
+  a: RawStravaActivity,
+  vGap: number,
+  avgHr: number | null | undefined = a.averageHeartrate,
+): number | null => {
+  const hr = avgHr
   if (hr == null || hr <= 0) return null
   if (sport === 'bike')
     return a.weightedAverageWatts != null ? round(a.weightedAverageWatts / hr, 2) : null
@@ -1690,11 +1699,13 @@ const hrMaxOf = (
   acts: Act[],
   cache: StravaRawCache,
   age: number,
+  heartRateById: Map<number, ActivityHeartRate>,
 ): { hrMax: number; source: 'observed' | 'declared' | 'tanaka' } => {
   let obs = 0
   for (const { a } of acts) {
-    if (a.maxHeartrate && a.maxHeartrate > obs) obs = a.maxHeartrate
-    const hr = cache.streams?.[String(a.id)]?.heartrate
+    const resolved = heartRateById.get(a.id)
+    if (resolved?.maxHr != null && resolved.maxHr > obs) obs = resolved.maxHr
+    const hr = resolved?.stream ?? cache.streams?.[String(a.id)]?.heartrate
     if (hr) for (const v of hr) if (v > obs) obs = v
   }
   const base = ATHLETE.hrMax ?? TANAKA_A - TANAKA_B * age
@@ -1713,6 +1724,7 @@ function runVo2Of(
   cache: StravaRawCache,
   hrMax: number,
   hrRest: number | null,
+  heartRateById: Map<number, ActivityHeartRate>,
 ): number | null {
   const vs: number[] = []
   const hs: number[] = []
@@ -1754,7 +1766,7 @@ function runVo2Of(
   if (hrRest == null || hrRest >= hrMax) return null
   const ests: number[] = []
   for (const x of qual) {
-    const ah = x.a.averageHeartrate
+    const ah = heartRateById.get(x.a.id)?.avgHr ?? x.a.averageHeartrate
     if (ah == null || ah <= hrRest) continue
     const frac = (ah - hrRest) / (hrMax - hrRest)
     if (frac <= 0.4) continue
@@ -1794,9 +1806,10 @@ function buildEngine(
   today: string,
   garminVo2: { date: string; v: number }[],
   appleVo2: { date: string; v: number }[],
+  heartRateById: Map<number, ActivityHeartRate>,
 ): EngineBlock {
   const age = ageOn(today)
-  const { hrMax, source: hrMaxSource } = hrMaxOf(acts, cache, age)
+  const { hrMax, source: hrMaxSource } = hrMaxOf(acts, cache, age, heartRateById)
   const rhrArr = daily.map(d => d.rhr)
   const hrRestRaw = winMedian(rhrArr, daily.length - 1, HRV_BASE_SPAN, 1)
   const hrRest = hrRestRaw != null ? round(hrRestRaw, 0) : null
@@ -1856,7 +1869,7 @@ function buildEngine(
       })
     }
   }
-  const runVo2 = runVo2Of(acts, cache, hrMax, hrRest)
+  const runVo2 = runVo2Of(acts, cache, hrMax, hrRest, heartRateById)
   if (runVo2 != null) estimates.push({ method: 'run', vo2max: runVo2, conf: 'low' })
   if (hrRest != null && hrRest > 0)
     estimates.push({
@@ -2054,7 +2067,7 @@ function buildEngine(
     hrv7m && hrv28m && hrv28m.mean > 0 ? (hrv7m.mean - hrv28m.mean) / hrv28m.mean : null
 
   const efActs = acts
-    .map(x => ({ x, ef: efOf(x.sport, x.a, x.vGap) }))
+    .map(x => ({ x, ef: efOf(x.sport, x.a, x.vGap, heartRateById.get(x.a.id)?.avgHr) }))
     .filter((e): e is { x: Act; ef: number } => e.ef != null)
   const efBike = efActs.filter(e => e.x.sport === 'bike')
   const efRun = efActs.filter(e => e.x.sport === 'run')
@@ -2236,6 +2249,20 @@ export function buildAnalytics(
   const lastActDay = raw[raw.length - 1].a.startDateLocal.slice(0, 10)
   const today = todayFromSync ?? lastActDay
   const todayMs = dayMs(today)
+  const heartRateById = new Map<number, ActivityHeartRate>()
+  for (const { a, sport } of raw) {
+    const stream = cache.streams?.[String(a.id)]
+    heartRateById.set(
+      a.id,
+      resolveActivityHeartRate(
+        a,
+        sport,
+        stream,
+        matchGarminHeartRateActivity(a, sport, inputs.garmin ?? null),
+        inputs.garmin ?? null,
+      ),
+    )
+  }
 
   const acts: Act[] = raw.map(({ a, sport }) => ({
     a,
@@ -2387,7 +2414,17 @@ export function buildAnalytics(
     if (v != null) garminVo2.push({ date: d.date, v })
   }
   garminVo2.sort((p, q) => p.date.localeCompare(q.date))
-  const engine = buildEngine(cache, acts, daily, body, ctlNow, today, garminVo2, appleVo2)
+  const engine = buildEngine(
+    cache,
+    acts,
+    daily,
+    body,
+    ctlNow,
+    today,
+    garminVo2,
+    appleVo2,
+    heartRateById,
+  )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
     .filter(a => normalizeKind(a.sportType) === 'walk')
@@ -2650,6 +2687,7 @@ export function buildDataFeed(
   inputs: DataFeedInputs = {},
 ): string {
   const ouraDays = inputs.oura?.days ?? {}
+  const appleDays = inputs.apple?.days ?? {}
   const vThrBySport = new Map(analytics.thresholds.map(t => [t.sport, t.vThr]))
   const sorted = [...analytics.activities].sort(
     (p, q) => p.date.localeCompare(q.date) || p.id - q.id,
@@ -2677,6 +2715,7 @@ export function buildDataFeed(
   const dayLines = analytics.daily.map(d => {
     const o = ouraDays[d.date]
     const next = ouraDays[nextIso(d.date)]
+    const ap = appleDays[d.date]
     const gw = garminWeightByDay.get(d.date)
     const agg = byDay.get(d.date)
     const wind = windByDate.get(d.date)
@@ -2705,10 +2744,10 @@ export function buildDataFeed(
         rhr: o?.rhr ?? null,
         sleepDurationS: o?.sleepDurationS ?? null,
         tempDeviationC: o?.tempDeviationC ?? null,
-        totalCalories: o?.totalCalories ?? null,
-        activeCalories: o?.activeCalories ?? null,
-        intakeKcal: d.intakeKcal,
-        weightKg: d.weightKg,
+        totalCalories: d.totalCalories ?? o?.totalCalories ?? ap?.burnKcal ?? null,
+        activeCalories: o?.activeCalories ?? ap?.activeKcal ?? null,
+        intakeKcal: d.intakeKcal ?? ap?.intakeKcal ?? null,
+        weightKg: d.weightKg ?? ap?.weightKg ?? null,
         bmi: gw?.bmi ?? null,
         bodyFatPct: gw?.bodyFatPct ?? null,
         bodyWaterPct: gw?.bodyWaterPct ?? null,
@@ -2734,6 +2773,13 @@ export function buildDataFeed(
     if (!raw) continue
     if (s.sport !== 'swim' && s.sport !== 'bike' && s.sport !== 'run') continue
     const stream = cache?.streams?.[String(s.id)]
+    const heartRate = resolveActivityHeartRate(
+      raw,
+      s.sport,
+      stream,
+      matchGarminHeartRateActivity(raw, s.sport, inputs.garmin ?? null),
+      inputs.garmin ?? null,
+    )
     const vThr = vThrBySport.get(s.sport) ?? 0
     const vGap = gradeAdjSpeed(raw, s.sport, stream)
     const watts = stream?.watts ?? []
@@ -2757,8 +2803,8 @@ export function buildDataFeed(
           movingTimeS: raw.movingTime,
           elapsedTimeS: raw.elapsedTime,
           elevationM: round(raw.totalElevationGain, 0),
-          avgHr: raw.averageHeartrate ?? null,
-          maxHr: raw.maxHeartrate ?? null,
+          avgHr: heartRate.avgHr,
+          maxHr: heartRate.maxHr,
           avgWatts: raw.averageWatts ?? null,
           weightedWatts: raw.weightedAverageWatts ?? null,
           deviceWatts: raw.deviceWatts ?? null,
@@ -2773,7 +2819,7 @@ export function buildDataFeed(
           intensity: vThr > 0 ? round(vGap / vThr, 3) : null,
           load: s.load,
           ...peaks,
-          ef: efOf(s.sport, raw, vGap),
+          ef: efOf(s.sport, raw, vGap, heartRate.avgHr),
           decoupling: decouplingOf(s.sport, stream, raw.movingTime),
         },
         ACTIVITY_FIELDS,

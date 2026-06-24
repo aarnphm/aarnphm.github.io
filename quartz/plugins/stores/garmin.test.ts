@@ -6,6 +6,7 @@ import {
   emptyGarminMetrics,
   matchGarminActivity,
   matchGarminFueling,
+  matchGarminHeartRateActivity,
 } from './garmin'
 import { buildPayload, type RawStravaActivity, type StravaRawCache } from './strava'
 
@@ -184,6 +185,75 @@ test('backfills Strava detail streams from a matched Garmin activity', () => {
   assert.equal(detail.maxHr, 150)
   assert.equal(detail.avgCadence, 88)
   assert.equal(detail.powerCurve?.[0]?.w, 300)
+})
+
+test('prefers Garmin heart rate for matched runs without using loose match for calories', () => {
+  const run = strava({
+    sportType: 'Run',
+    distance: 4_000,
+    movingTime: 1_200,
+    elapsedTime: 1_260,
+    startDate: '2026-06-01T12:00:00Z',
+    startDateLocal: '2026-06-01T08:00:00',
+    averageHeartrate: 162,
+    maxHeartrate: 181,
+    calories: 300,
+  })
+  const stravaCache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-01T13:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(run.startDate) / 1000),
+    activities: { [run.id]: run },
+    streams: {
+      [run.id]: {
+        latlng: [
+          [43.1, -79.1],
+          [43.2, -79.2],
+          [43.3, -79.3],
+        ],
+        altitude: [101, 104, 109],
+        distance: [0, 2_000, 4_000],
+        heartrate: [160, 162, 181],
+      },
+    },
+  }
+  const metrics = emptyGarminMetrics()
+  metrics.avgHeartRate = 145
+  metrics.maxHeartRate = 173
+  metrics.totalCalories = 900
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      hrm: {
+        id: 'hrm',
+        name: 'Morning run',
+        sport: 'run',
+        startDate: '2026-06-01T12:00:10Z',
+        startDateLocal: '2026-06-01T08:00:10',
+        distanceM: 8_000,
+        movingTimeS: 2_400,
+        elapsedTimeS: 2_500,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics,
+        fueling: emptyGarminFueling(),
+      },
+    },
+    streams: { hrm: { latlng: [], altitude: [], distance: [], heartrate: [130, 150, 170] } },
+  }
+
+  assert.equal(matchGarminActivity(run, 'run', garmin), null)
+  assert.equal(matchGarminHeartRateActivity(run, 'run', garmin)?.activity.id, 'hrm')
+  const detail = buildPayload(stravaCache, null, garmin, '2026-06-01').details[String(run.id)]
+  assert.equal(detail.avgHr, 145)
+  assert.equal(detail.maxHr, 173)
+  assert.equal(detail.calories, 300)
+  assert.equal(
+    detail.hrZones?.reduce((sum, value) => sum + value, 0),
+    1200,
+  )
 })
 
 test('matches strength to a sport-null Garmin entry and backfills calories', () => {

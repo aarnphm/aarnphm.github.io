@@ -1,7 +1,7 @@
 import type { GarminActivityMatch, GarminCache, GarminFueling, GarminStreams } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { WeatherCache } from './weather'
-import { matchGarminActivity, matchGarminFueling } from './garmin'
+import { matchGarminActivity, matchGarminFueling, matchGarminHeartRateActivity } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
@@ -194,6 +194,12 @@ export interface GarminVerification {
   intensityFactor: number | null
 }
 
+export interface ActivityHeartRate {
+  avgHr: number | null
+  maxHr: number | null
+  stream: number[]
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -384,6 +390,10 @@ function maxPos(arr: number[]): number | null {
   return m > 0 ? Math.round(m) : null
 }
 
+function roundPos(value: number | null | undefined): number | null {
+  return value != null && Number.isFinite(value) && value > 0 ? Math.round(value) : null
+}
+
 function hasPositive(values: number[] | undefined): boolean {
   return values?.some(value => value > 0) ?? false
 }
@@ -421,6 +431,33 @@ function selectStreams(
   return streamQuality(fromGarmin) > streamQuality(strava) ? fromGarmin : strava
 }
 
+export function resolveActivityHeartRate(
+  a: RawStravaActivity,
+  sport: ActivityKind,
+  selectedStreams: StravaStreams | GarminStreams | undefined,
+  garminMatch: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): ActivityHeartRate {
+  const selectedHr = selectedStreams?.heartrate ?? []
+  const stravaAvg = roundPos(a.averageHeartrate) ?? avgPos(selectedHr)
+  const stravaMax = roundPos(a.maxHeartrate) ?? maxPos(selectedHr)
+  const garminStream = garminMatch
+    ? (garmin?.streams?.[garminMatch.activity.id]?.heartrate ?? [])
+    : []
+  const metrics = garminMatch?.activity.metrics
+  const garminAvg = roundPos(metrics?.avgHeartRate) ?? avgPos(garminStream)
+  const garminMax = roundPos(metrics?.maxHeartRate) ?? maxPos(garminStream)
+
+  if (sport === 'run' && (garminAvg != null || garminMax != null))
+    return {
+      avgHr: garminAvg ?? stravaAvg,
+      maxHr: garminMax ?? stravaMax,
+      stream: hasPositive(garminStream) ? garminStream : selectedHr,
+    }
+
+  return { avgHr: stravaAvg, maxHr: stravaMax, stream: selectedHr }
+}
+
 const CURVE_SECS = [1, 5, 10, 15, 30, 60, 120, 180, 300, 600, 1200, 1800, 3600, 5400, 7200, 10800]
 
 function meanMaxCurve(w: number[]): PowerCurvePoint[] {
@@ -455,6 +492,14 @@ function zoneTimes(stream: number[], uppers: number[], countZero: boolean): numb
     counts[z]++
   }
   return counts
+}
+
+function durationZoneTimes(stream: number[], uppers: number[], movingTimeS: number): number[] {
+  const counts = zoneTimes(stream, uppers, false)
+  const total = counts.reduce((sum, count) => sum + count, 0)
+  if (total <= 0 || movingTimeS <= 0) return counts
+  const scale = movingTimeS / total
+  return counts.map(count => Math.round(count * scale))
 }
 
 function powerHistogram(w: number[], bin = 25): number[] {
@@ -540,6 +585,7 @@ function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
   streams: StravaStreams | GarminStreams | undefined,
+  heartRate: ActivityHeartRate,
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
@@ -555,7 +601,9 @@ function projectDetail(
   let ascentM = 0
   let descentM = 0
   const latlng = streams?.latlng ?? []
-  const hrStream = streams?.heartrate ?? []
+  const alignedHrStream = streams?.heartrate ?? []
+  const routeHrStream =
+    heartRate.stream.length === latlng.length ? heartRate.stream : alignedHrStream
   const cadStream = streams?.cadence ?? []
   if (latlng.length >= 2) {
     const altitude = cleanAltitude(streams!.altitude)
@@ -615,7 +663,7 @@ function projectDetail(
         d: round(((distance[i] ?? 0) - d0) / 1000, 3),
         alt: round(alts[k], 1),
         w: Math.round(watts[i] ?? 0),
-        hr: Math.round(hrStream[i] ?? 0),
+        hr: Math.round(routeHrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
@@ -623,7 +671,7 @@ function projectDetail(
     })
   }
   const wFull = streams?.watts ?? []
-  const hasHr = hrStream.some(v => v > 0)
+  const hasHr = heartRate.stream.some(v => v > 0)
   const hasW = wFull.some(v => v > 0)
   return {
     id: a.id,
@@ -633,8 +681,8 @@ function projectDetail(
     distanceKm: round(a.distance / 1000, 1),
     movingTimeS: a.movingTime,
     elevationM: ascentM,
-    avgHr: a.averageHeartrate ? Math.round(a.averageHeartrate) : avgPos(hrStream),
-    maxHr: a.maxHeartrate ? Math.round(a.maxHeartrate) : maxPos(hrStream),
+    avgHr: heartRate.avgHr,
+    maxHr: heartRate.maxHr,
     avgWatts: a.averageWatts != null ? Math.round(a.averageWatts) : null,
     npWatts: a.weightedAverageWatts != null ? Math.round(a.weightedAverageWatts) : null,
     maxWatts: a.maxWatts != null ? Math.round(a.maxWatts) : null,
@@ -656,7 +704,10 @@ function projectDetail(
     minAlt,
     maxAlt,
     descentM,
-    hrZones: hasHr && hrBounds.length > 0 ? zoneTimes(hrStream, hrBounds, false) : null,
+    hrZones:
+      hasHr && hrBounds.length > 0
+        ? durationZoneTimes(heartRate.stream, hrBounds, a.movingTime)
+        : null,
     powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, true) : null,
     powerHist: hasW ? powerHistogram(wFull) : null,
     powerCurve: hasW ? meanMaxCurve(wFull) : null,
@@ -699,12 +750,18 @@ export function buildPayload(
   if (activities.length === 0) return emptyPayload(cache.athleteId)
 
   const garminMatches = new Map<string, GarminActivityMatch | null>()
+  const garminHeartRateMatches = new Map<string, GarminActivityMatch | null>()
   const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
+  const heartRates = new Map<string, ActivityHeartRate>()
   for (const { a, sport } of activities) {
     const id = String(a.id)
     const match = matchGarminActivity(a, sport, garmin)
+    const hrMatch = matchGarminHeartRateActivity(a, sport, garmin)
+    const streams = selectStreams(cache.streams?.[id], match, garmin)
     garminMatches.set(id, match)
-    selectedStreams.set(id, selectStreams(cache.streams?.[id], match, garmin))
+    garminHeartRateMatches.set(id, hrMatch)
+    selectedStreams.set(id, streams)
+    heartRates.set(id, resolveActivityHeartRate(a, sport, streams, hrMatch, garmin))
   }
 
   const totals = emptyTotals()
@@ -765,7 +822,7 @@ export function buildPayload(
 
   let hrmax = 0
   for (const { a } of activities) {
-    const maxHr = a.maxHeartrate ?? maxPos(selectedStreams.get(String(a.id))?.heartrate ?? [])
+    const maxHr = heartRates.get(String(a.id))?.maxHr
     if ((maxHr ?? 0) > hrmax) hrmax = maxHr ?? 0
   }
   if (hrmax < 100) hrmax = 190
@@ -804,6 +861,14 @@ export function buildPayload(
       a,
       sport,
       selectedStreams.get(id),
+      heartRates.get(id) ??
+        resolveActivityHeartRate(
+          a,
+          sport,
+          selectedStreams.get(id),
+          garminHeartRateMatches.get(id) ?? null,
+          garmin,
+        ),
       weather?.activities[id],
       cache.geo?.[String(a.id)],
       matchGarminFueling(a, sport, garmin),
