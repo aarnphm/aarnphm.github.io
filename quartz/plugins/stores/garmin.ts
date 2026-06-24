@@ -135,6 +135,11 @@ export function hasGarminMetrics(metrics: GarminMetrics): boolean {
   return Object.values(metrics).some(value => value != null)
 }
 
+export function hasGarminHeartRate(activity: GarminActivity, cache: GarminCache | null): boolean {
+  if (activity.metrics.avgHeartRate != null || activity.metrics.maxHeartRate != null) return true
+  return cache?.streams?.[activity.id]?.heartrate?.some(value => value > 0) ?? false
+}
+
 export function normalizeGarminSport(value: string | null | undefined): Sport | null {
   if (!value) return null
   const sport = value.toLowerCase()
@@ -211,6 +216,37 @@ export function matchGarminActivity(
     if (tScore == null) continue
 
     const score = startDiff / 60_000 + dScore + tScore
+    if (!best || score < best.score) best = { score, activity }
+  }
+
+  if (!best) return null
+  return {
+    activity: best.activity,
+    score: best.score,
+    startDiffMs: Math.abs(Date.parse(best.activity.startDate) - stravaStart),
+    distanceDiffM: distanceDiffM(strava.distance, best.activity.distanceM),
+    durationDiffS: durationDiffS(strava, best.activity),
+  }
+}
+
+export function matchGarminHeartRateActivity(
+  strava: RawStravaActivity,
+  sport: ActivityKind,
+  cache: GarminCache | null,
+): GarminActivityMatch | null {
+  if (sport !== 'run' || !cache) return null
+  const stravaStart = Date.parse(strava.startDate)
+  if (!Number.isFinite(stravaStart)) return null
+
+  let best: { score: number; activity: GarminActivity } | null = null
+  for (const activity of Object.values(cache.activities)) {
+    if (activity.sport !== 'run') continue
+    if (!hasGarminHeartRate(activity, cache)) continue
+    const garminStart = Date.parse(activity.startDate)
+    if (!Number.isFinite(garminStart)) continue
+    const startDiff = Math.abs(garminStart - stravaStart)
+    if (startDiff > START_TOLERANCE_MS) continue
+    const score = startDiff / 60_000 + durationDiffS(strava, activity) / 60
     if (!best || score < best.score) best = { score, activity }
   }
 

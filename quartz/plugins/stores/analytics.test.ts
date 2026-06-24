@@ -13,6 +13,7 @@ import {
   buildAnalytics,
   buildDataFeed,
 } from './analytics'
+import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
 
 const DAY = 86_400_000
 
@@ -183,7 +184,7 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   assert.ok(v.value != null && v.value > 25 && v.value < 50)
   assert.ok(v.fitnessAge != null && v.fitnessAge >= 20 && v.fitnessAge <= 80)
   assert.equal(v.chronoAge, 25)
-  assert.equal(v.hrMax, 195)
+  assert.equal(v.hrMax, 190)
   assert.equal(v.hrMaxSource, 'declared')
   assert.ok(v.trend.length >= 1)
   assert.equal(a.engine.abilities.axes.length, 6)
@@ -335,7 +336,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
-  assert.equal(rows[0].athlete.hrMaxEst, 195)
+  assert.equal(rows[0].athlete.hrMaxEst, 190)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
   assert.deepEqual([...new Set(kinds)], order)
@@ -368,6 +369,79 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(ride?.windKph, 18)
   assert.equal(ride?.windDir, 'W')
   assert.equal(ride?.windGustKph, 29)
+})
+
+test('data feed prefers Garmin run heart rate over Strava heart rate', () => {
+  const { cache, oura, weights } = fixtures()
+  const run = cache.activities['2']
+  assert.ok(run)
+  const metrics = emptyGarminMetrics()
+  metrics.avgHeartRate = 141
+  metrics.maxHeartRate = 169
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {
+      run: {
+        id: 'run',
+        name: 'Run 2',
+        sport: 'run',
+        startDate: run.startDate,
+        startDateLocal: run.startDateLocal,
+        distanceM: run.distance * 2,
+        movingTimeS: run.movingTime * 2,
+        elapsedTimeS: run.elapsedTime * 2,
+        sourceDevice: null,
+        sourceFile: null,
+        metrics,
+        fueling: emptyGarminFueling(),
+      },
+    },
+  }
+
+  const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
+  const feed = buildDataFeed(cache, a, { oura, garmin, weights, zones: cache.zones })
+  const rows = feed
+    .trimEnd()
+    .split('\n')
+    .map(l => JSON.parse(l))
+  const runRow = rows.find(row => row.kind === 'activity' && row.id === 2)
+  const bikeRow = rows.find(row => row.kind === 'activity' && row.id === 1)
+  assert.equal(runRow?.avgHr, 141)
+  assert.equal(runRow?.maxHr, 169)
+  assert.equal(bikeRow?.avgHr, 152)
+})
+
+test('data feed preserves Apple daily fallback values', () => {
+  const { cache, oura } = fixtures()
+  const day = iso(22)
+  const o = oura.days[day]
+  assert.ok(o)
+  oura.days[day] = { ...o, totalCalories: null, activeCalories: null }
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {
+      [day]: {
+        date: day,
+        burnKcal: 2310,
+        activeKcal: 410,
+        intakeKcal: 2800,
+        weightKg: 87.2,
+        vo2max: null,
+      },
+    },
+  }
+  const a = buildAnalytics(cache, { oura, apple, since: '2026-05-12' })
+  const feed = buildDataFeed(cache, a, { oura, apple, zones: cache.zones })
+  const row = feed
+    .trimEnd()
+    .split('\n')
+    .map(l => JSON.parse(l))
+    .find(r => r.kind === 'day' && r.date === day)
+
+  assert.equal(row?.totalCalories, 2310)
+  assert.equal(row?.activeCalories, 410)
+  assert.equal(row?.intakeKcal, 2800)
+  assert.equal(row?.weightKg, 87.2)
 })
 
 test('data feed derives stream features on 1hz activities and nulls them on swims', () => {
