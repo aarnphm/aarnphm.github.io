@@ -58,6 +58,7 @@ type DetailPayload = {
   powerCurveRef?: PowerCurvePoint[]
   ftp?: number | null
   goalFtp?: number | null
+  vt1Hr?: number | null
 }
 
 type TrainingPlan = {
@@ -75,6 +76,7 @@ let DETAIL_ZONES: StravaZones | null = null
 let DETAIL_CURVE_REF: PowerCurvePoint[] = []
 let DETAIL_FTP: number | null = null
 let DETAIL_GOAL_FTP: number | null = null
+let DETAIL_VT1: number | null = null
 let DETAIL_PAYLOAD: Promise<DetailPayload | null> | null = null
 
 const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
@@ -85,6 +87,7 @@ const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
       DETAIL_CURVE_REF = data.powerCurveRef ?? []
       DETAIL_FTP = data.ftp ?? null
       DETAIL_GOAL_FTP = data.goalFtp ?? null
+      DETAIL_VT1 = data.vt1Hr ?? null
       return data
     })
     .catch(() => null)
@@ -333,7 +336,14 @@ const buildZoneTable = (
 
 const buildHrZones = (d: StravaActivityDetail): HTMLElement | null => {
   if (!d.hrZones || !DETAIL_ZONES?.hr.length) return null
-  return buildZoneTable('heart rate zones', d.hrZones, DETAIL_ZONES.hr, HR_ZONE_NAMES, '', '')
+  return buildZoneTable(
+    'heart rate zones',
+    d.hrZones,
+    DETAIL_ZONES.hr,
+    HR_ZONE_NAMES,
+    '',
+    DETAIL_VT1 != null ? `based on vt1 ${DETAIL_VT1} bpm` : '',
+  )
 }
 
 const buildPowerZones = (d: StravaActivityDetail): HTMLElement | null => {
@@ -3910,6 +3920,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
         DETAIL_FTP = d.ftp ?? null
         DETAIL_GOAL_FTP = d.goalFtp ?? null
+        DETAIL_VT1 = d.vt1Hr ?? null
       })
       .catch(() => {})
   }
@@ -4753,6 +4764,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
         DETAIL_FTP = d.ftp ?? null
         DETAIL_GOAL_FTP = d.goalFtp ?? null
+        DETAIL_VT1 = d.vt1Hr ?? null
         overviewCache.clear()
         mapCtl.drawOverview()
         if (search?.value) runSearch()

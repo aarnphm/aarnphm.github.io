@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-25 00:00:00 GMT-04:00
+modified: 2026-06-25 14:10:31 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -14221,6 +14221,10 @@ title: are.na
 
 ## organizations
 
+- https://www.generalintuition.com/ -- General Intuition
+  - [meta]:
+    - date: 06/25/2026
+    - tags: [agi, labs]
 - https://x.com/humansand/status/2013641246515056798 -- humans& frontier AI lab
   - [meta]:
     - date: 01/20/2026
