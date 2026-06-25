@@ -1,9 +1,34 @@
 ---
 date: '2026-05-29'
 description: training data and tracking
+dexa:
+  - ag: 1.29
+    arms:
+      bmc: 1
+      fat: 4.7
+      lean: 17.2
+    bmcLbs: 7.8
+    bmd: 1.383
+    bmdT: 1.8
+    bodyFat: 27.4
+    date: '2026-06-25'
+    fatLbs: 54.2
+    leanLbs: 135.7
+    legs:
+      bmc: 3
+      fat: 17.7
+      lean: 54.4
+    rmr: 1695
+    rsmi: 9.2
+    totalLbs: 197.6
+    trunk:
+      bmc: 2.3
+      fat: 29.3
+      lean: 55
+    vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-23 18:39:32 GMT-04:00
+modified: 2026-06-25 14:09:44 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-13'
@@ -13,6 +38,25 @@ tags:
   - evergreen
 title: triathlon
 triathlon: olympic
+vo2max:
+  - date: '2026-06-25'
+    hrMax: 182
+    maxKmh: 15
+    percentile: 70
+    value: 47.8
+    ve: 117
+    vt1Hr: 145
+    vt1Kmh: 10.5
+    zonesHr:
+      - 112
+      - 121
+      - 142
+      - 171
+    zonesKmh:
+      - 7
+      - 8
+      - 10.5
+      - 14
 ---
 
 ```tracking

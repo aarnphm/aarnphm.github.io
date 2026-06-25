@@ -178,6 +178,7 @@ export const AnalyticsPanel = () => (
         <div class="tri-ana-results" aria-hidden="true" />
         <div class="tri-ana-detail" aria-hidden="true" />
         <div class="tri-ana-block" data-chart="body" />
+        <div class="tri-ana-block" data-chart="dexa" />
         <div class="tri-ana-block" data-chart="gauge" />
         <div class="tri-ana-block" data-chart="recovery" />
         <div class="tri-ana-block" data-chart="sleep" />

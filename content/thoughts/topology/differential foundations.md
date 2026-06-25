@@ -14,7 +14,7 @@ title: differential foundations
 
 {{sidenotes[year 2]: this note will be populated during year 2 (fall semester) when studying lee's "introduction to smooth manifolds".}}
 
-transition from topological to smooth manifolds. understand tangent spaces, vector fields, differential forms. develop tools for [[thoughts/topology/ricci-flow|ricci flow]] which requires smooth structures.
+transition from topological to smooth manifolds. understand tangent spaces, vector fields, differential forms. develop tools for [[thoughts/topology/ricci flow|ricci flow]] which requires smooth structures.
 
 ## topics to cover
 
@@ -55,14 +55,14 @@ see [[thoughts/topology/poincare#level 2a differential topology (year 2, semeste
 prerequisites:
 
 - [[thoughts/topology|point-set topology]] (completed year 1)
-- [[thoughts/topology/algebraic-bridge|algebraic topology]] foundations
+- [[thoughts/topology/algebraic bridge|algebraic topology]] foundations
 - multivariable calculus, linear algebra
 
 leads to:
 
-- [[thoughts/topology/3-manifolds|3-manifold topology]] (smooth structures on 3-manifolds)
+- [[thoughts/topology/3 manifolds|3-manifold topology]] (smooth structures on 3-manifolds)
 - [[thoughts/manifold|riemannian geometry]] (metrics on smooth manifolds)
-- [[thoughts/topology/ricci-flow|ricci flow]] (evolution of riemannian metrics)
+- [[thoughts/topology/ricci flow|ricci flow]] (evolution of riemannian metrics)
 
 ## key examples to work through
 

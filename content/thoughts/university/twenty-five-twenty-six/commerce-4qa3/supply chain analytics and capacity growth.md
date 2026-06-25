@@ -24,7 +24,7 @@ $$
 
 ## dynamic capacity expansion policy
 
-see also [[thoughts/economies of scales]]
+see also [[thoughts/economies of scale]]
 
 | variable | description                                                              |
 | -------- | ------------------------------------------------------------------------ |
