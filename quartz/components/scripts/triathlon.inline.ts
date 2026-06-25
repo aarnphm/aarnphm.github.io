@@ -3039,6 +3039,115 @@ const buildSleep = (data: Analytics): HTMLElement => {
   return block
 }
 
+const aceBand = (pct: number): string =>
+  pct < 6
+    ? 'essential'
+    : pct < 14
+      ? 'athlete'
+      : pct < 18
+        ? 'fitness'
+        : pct < 25
+          ? 'average'
+          : 'obese'
+
+const buildDexa = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-dexa')
+  const titleRow = el('div', 'tri-dexa-titlerow')
+  titleRow.appendChild(anaTitle('body composition', 'dexa'))
+  const d = data.tests.dexa[data.tests.dexa.length - 1]
+  if (!d) {
+    block.appendChild(titleRow)
+    block.appendChild(el('div', 'tri-ana-empty', 'no dexa scan logged'))
+    return block
+  }
+  titleRow.appendChild(el('span', 'tri-dexa-date', d.date))
+  block.appendChild(titleRow)
+
+  const head = el('div', 'tri-dexa-head')
+  const bf = el('div', 'tri-dexa-bf', d.bodyFat.toFixed(1))
+  bf.appendChild(el('span', 'tri-dexa-unit', '% fat'))
+  head.append(bf, el('span', 'tri-dexa-cat', `ACE ${aceBand(d.bodyFat)}`))
+  block.appendChild(head)
+
+  const total = d.fatLbs + d.leanLbs + d.bmcLbs
+  const seg = (cls: string, lbs: number, label: string): HTMLElement => {
+    const s = el('span', `tri-dexa-seg ${cls}`)
+    s.style.width = `${(lbs / total) * 100}%`
+    s.title = `${label} ${lbs.toFixed(1)} lb · ${((lbs / total) * 100).toFixed(0)}%`
+    return s
+  }
+  const bar = el('div', 'tri-dexa-bar')
+  bar.append(
+    seg('is-lean', d.leanLbs, 'lean'),
+    seg('is-fat', d.fatLbs, 'fat'),
+    seg('is-bone', d.bmcLbs, 'bone'),
+  )
+  block.appendChild(bar)
+
+  const legend = el('div', 'tri-dexa-legend')
+  const leg = (cls: string, name: string, lbs: number): HTMLElement => {
+    const w = el('span', 'tri-dexa-legitem')
+    w.append(
+      el('span', `tri-dexa-dot ${cls}`),
+      el('span', 'tri-dexa-legname', name),
+      el('span', 'tri-dexa-legval', `${lbs.toFixed(1)} lb`),
+    )
+    return w
+  }
+  legend.append(
+    leg('is-lean', 'lean', d.leanLbs),
+    leg('is-fat', 'fat', d.fatLbs),
+    leg('is-bone', 'bone', d.bmcLbs),
+  )
+  block.appendChild(legend)
+
+  const regions = [
+    ['arms', d.arms],
+    ['legs', d.legs],
+    ['trunk', d.trunk],
+  ] as const
+  const reg = el('div', 'tri-dexa-regions')
+  for (const [name, r] of regions) {
+    if (!r) continue
+    const rtot = r.fat + r.lean + r.bmc
+    const row = el('div', 'tri-dexa-region')
+    const rbar = el('div', 'tri-dexa-rbar')
+    const rseg = (cls: string, lbs: number): HTMLElement => {
+      const s = el('span', `tri-dexa-seg ${cls}`)
+      s.style.width = `${(lbs / rtot) * 100}%`
+      return s
+    }
+    rbar.append(rseg('is-lean', r.lean), rseg('is-fat', r.fat), rseg('is-bone', r.bmc))
+    row.append(
+      el('span', 'tri-dexa-rlabel', name),
+      rbar,
+      el(
+        'span',
+        'tri-dexa-rval',
+        `${rtot.toFixed(0)} lb · ${((r.fat / rtot) * 100).toFixed(0)}% fat`,
+      ),
+    )
+    reg.appendChild(row)
+  }
+  block.appendChild(reg)
+
+  const stats = el('div', 'tri-dexa-stats')
+  const stat = (label: string, val: string): void => {
+    const c = el('div', 'tri-dexa-stat')
+    c.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', label))
+    stats.appendChild(c)
+  }
+  stat('lean', `${d.leanLbs.toFixed(1)} lb`)
+  if (d.rmr != null) stat('rmr', `${d.rmr} kcal`)
+  if (d.bmd != null)
+    stat('bmd', `${d.bmd.toFixed(2)}${d.bmdT != null ? ` · T${signed(d.bmdT)}` : ''}`)
+  if (d.vatLbs != null) stat('vat', `${d.vatLbs.toFixed(2)} lb`)
+  if (d.rsmi != null) stat('rsmi', d.rsmi.toFixed(1))
+  if (d.ag != null) stat('a/g', d.ag.toFixed(2))
+  block.appendChild(stats)
+  return block
+}
+
 const buildVo2max = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-vo2')
   block.appendChild(anaTitle('vo2max · fitness age', 'vo2max'))
@@ -3115,6 +3224,22 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   cap.appendChild(el('span', 'tri-ana-k', v.note))
   cap.appendChild(el('span', 'tri-ana-k', `hrmax ${v.hrMax} (${v.hrMaxSource})`))
   block.appendChild(cap)
+  const lab = data.tests.vo2max[data.tests.vo2max.length - 1]
+  if (lab) {
+    const labCap = el('div', 'tri-elev-cap tri-vo2-lab')
+    if (lab.vt1Hr != null)
+      labCap.appendChild(
+        el(
+          'span',
+          'tri-ana-k',
+          `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${lab.vt1Kmh}km/h` : ''}`,
+        ),
+      )
+    if (lab.maxKmh != null) labCap.appendChild(el('span', 'tri-ana-k', `vmax ${lab.maxKmh}km/h`))
+    if (lab.ve != null) labCap.appendChild(el('span', 'tri-ana-k', `ve ${lab.ve}l/min`))
+    labCap.appendChild(el('span', 'tri-ana-k', `lab ${lab.date}`))
+    block.appendChild(labCap)
+  }
   return block
 }
 
@@ -3255,6 +3380,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
 
 const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   body: buildBody,
+  dexa: buildDexa,
   gauge: buildGauge,
   recovery: buildRecoveryChart,
   sleep: buildSleep,

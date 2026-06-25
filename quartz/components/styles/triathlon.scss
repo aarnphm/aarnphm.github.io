@@ -2880,6 +2880,183 @@
   margin-bottom: 0;
 }
 
+.tri-dexa-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-dexa-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-dexa-date {
+  margin-left: auto;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-dexa-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.tri-dexa-bf {
+  font-family: var(--codeFont);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-dexa-unit {
+  margin-left: 0.15rem;
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-dexa-cat {
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-dexa-bar {
+  display: flex;
+  width: 100%;
+  height: 0.85rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+}
+
+.tri-dexa-seg {
+  display: block;
+  height: 100%;
+}
+
+.tri-dexa-seg.is-lean {
+  background: #cdd597;
+}
+
+.tri-dexa-seg.is-fat {
+  background: #fdb2a2;
+}
+
+.tri-dexa-seg.is-bone {
+  background: color-mix(in srgb, var(--gray) 50%, transparent);
+}
+
+.tri-dexa-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.tri-dexa-legitem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-dexa-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: none;
+}
+
+.tri-dexa-dot.is-lean {
+  background: #cdd597;
+}
+
+.tri-dexa-dot.is-fat {
+  background: #fdb2a2;
+}
+
+.tri-dexa-dot.is-bone {
+  background: color-mix(in srgb, var(--gray) 50%, transparent);
+}
+
+.tri-dexa-legname {
+  color: var(--gray);
+}
+
+.tri-dexa-legval {
+  color: var(--dark);
+}
+
+.tri-dexa-regions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.tri-dexa-region {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-dexa-rlabel {
+  color: var(--gray);
+}
+
+.tri-dexa-rbar {
+  display: flex;
+  height: 0.6rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--gray) 22%, transparent);
+}
+
+.tri-dexa-rval {
+  color: var(--dark);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tri-dexa-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem 0.6rem;
+  margin-top: 0.1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+}
+
+.tri-dexa-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.tri-dexa-statv {
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+}
+
+.tri-dexa-statk {
+  font-size: 0.56rem;
+  color: var(--gray);
+}
+
+.tri-vo2-lab {
+  margin-top: 0.2rem;
+}
+
 .tri-unit-switch {
   margin-left: auto;
   display: inline-flex;

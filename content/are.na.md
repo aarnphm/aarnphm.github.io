@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-24 09:04:00 GMT-04:00
+modified: 2026-06-25 00:00:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://x.com/phokarlsson/status/2016462003272093944 -- Christopher Alexander on fewest degrees of freedom
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [design, problem solving]
+    - later: true
 - https://x.com/phokarlsson/status/2012991899536151026 -- Henrik Karlsson longform note
   - [meta]:
     - date: 01/18/2026
@@ -188,6 +193,76 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/i/communities/2014750694339723512 -- AI Engineering Founders community
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [ai, community]
+    - later: true
+- https://x.com/noampomsky/status/2015946014671393018 -- middle class striverism and center-left instincts
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [politics, class]
+    - later: true
+- https://x.com/ella_schlags/status/2016254087654957291 -- learning curve to coding and marketing experiments
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [coding, marketing]
+    - later: true
+- https://x.com/grx_xce/status/2016216007552204990 -- Arcada founding launch designer
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [design, jobs]
+    - later: true
+- https://x.com/jxmnop/status/2016374486875173334 -- write the short blog post
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [writing, research]
+    - later: true
+- https://x.com/vikhyatk/status/2018159239286657339 -- understanding every critical part
+  - [meta]:
+    - date: 02/02/2026
+    - tags: [programming, judgement]
+    - later: true
+- https://x.com/AcerFur/status/2018156547524673888 -- Aletheia on the Erdos Problems
+  - [meta]:
+    - date: 02/02/2026
+    - tags: [math, theorem proving]
+    - later: true
+- https://x.com/MillionInt/status/2018016024285814975 -- mountain of wisdom intelligence parable
+  - [meta]:
+    - date: 02/01/2026
+    - tags: [intelligence, parable]
+    - later: true
+- https://x.com/davemorin/status/2021333714350051486 -- Dave Morin link
+  - [meta]:
+    - date: 02/10/2026
+    - tags: [links]
+    - later: true
+- https://x.com/demishassabis/status/2019827916385972517 -- Genie 3 simulation use case
+  - [meta]:
+    - date: 02/06/2026
+    - tags: [simulation, world models]
+    - later: true
+- https://x.com/WillManidis/status/2021655191901155534 -- Will Manidis link
+  - [meta]:
+    - date: 02/11/2026
+    - tags: [links]
+    - later: true
+- https://x.com/IterIntellectus/status/2020523559953572236 -- Vittorio link
+  - [meta]:
+    - date: 02/08/2026
+    - tags: [links]
+    - later: true
+- https://x.com/startingfromnix/status/2021257814388470069 -- Nix link
+  - [meta]:
+    - date: 02/10/2026
+    - tags: [links]
+    - later: true
+- https://x.com/ericzakariasson/status/2024535665333956960 -- Eric Zakariasson link
+  - [meta]:
+    - date: 02/19/2026
+    - tags: [links]
+    - later: true
 - https://x.com/AmandaAskell/status/2012355090225733858 -- Amanda Askell on protecting Claude's character
   - [meta]:
     - date: 01/17/2026
@@ -861,6 +936,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/RealEmirHan/status/1889411568833790020 -- David Lynch deadline clip
+  - [meta]:
+    - date: 02/11/2025
+    - tags: [film, david lynch]
+    - later: true
 - https://www.azazie.ca/all/bridesmaid-dresses -- Dresses
   - [meta]:
     - date: 06/18/2026
@@ -5442,6 +5522,151 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/remilouf/status/2016047512478507444 -- voice notes to Obsidian agent pipeline
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [agents, obsidian]
+    - later: true
+- https://x.com/phokarlsson/status/2016226516154061209 -- Claude Code for software-shaped problems
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [claude code, automation]
+    - later: true
+- https://x.com/ericho_goodfire/status/2015927383745036669 -- consequential years for humanity
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [ai, longtermism]
+    - later: true
+- https://x.com/allen_ai/status/2016182658989006865 -- Ai2 Open Coding Agents
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [coding agents, models]
+    - later: true
+- https://x.com/polynoamial/status/2015874457307644058 -- uniquely human judgement
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [ai, judgement]
+    - later: true
+- https://x.com/PrimeIntellect/status/2016280793879085157 -- Trinity Architecture
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [architecture, inference]
+    - later: true
+- https://x.com/georgeyw_/status/2016226870300443025 -- patterning as the dual of mechinterp
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [interpretability, data]
+    - later: true
+- https://x.com/cloneofsimo/status/2016060241268682936 -- Simo Ryu unavailable tweet
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [ai]
+    - later: true
+- https://x.com/WilliamBarrHeld/status/2016369891625095257 -- Trinity-Large TrueBase checkpoint
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [pretraining, models]
+    - later: true
+- https://x.com/eliebakouch/status/2016025747144483060/photo/1 -- Kimi K2.5 parallel RL agent swarm
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [kimi, rl, agents]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2016361781048787334 -- PlaNet paper notes
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [rl, world models]
+    - later: true
+- https://x.com/livgorton/status/2016199512763818405 -- non-linear features objection
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [interpretability, features]
+    - later: true
+- https://x.com/voooooogel/status/2015976774128341421 -- future model harnesses
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [agents, harnesses]
+    - later: true
+- https://x.com/cloneofsimo/status/2016557078886699062 -- JEPA and discrete riddles
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [jepa, reasoning]
+    - later: true
+- https://x.com/eliebakouch/status/2016577949676319092 -- embedding parameters in LongCat Flash
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [embeddings, models]
+    - later: true
+- https://x.com/jxmnop/status/1940057965521670284 -- initialization patterns in neural weights
+  - [meta]:
+    - date: 07/01/2025
+    - tags: [initialization, neural networks]
+    - later: true
+- https://x.com/GoodfireAI/status/2016563911508840623 -- Alzheimer's biomarkers via interpretability
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [interpretability, biology]
+    - later: true
+- https://x.com/Meituan_LongCat/status/2016548500457357324 -- LongCat-Flash-Lite n-gram embeddings
+  - [meta]:
+    - date: 01/28/2026
+    - tags: [embeddings, moe]
+    - later: true
+- https://x.com/lailexiao/status/2017969605759889588 -- Manifold Constrained Steepest Descent
+  - [meta]:
+    - date: 02/01/2026
+    - tags: [optimization, manifolds]
+    - later: true
+- https://x.com/livgorton/status/1995648155518730285 -- mech interp as pre-paradigmatic
+  - [meta]:
+    - date: 12/02/2025
+    - tags: [interpretability, kuhn]
+    - later: true
+- https://x.com/gabriberton/status/2017675207331483999 -- Scaling Embedding Layers in Language Models
+  - [meta]:
+    - date: 01/31/2026
+    - tags: [embeddings, language models]
+    - later: true
+- https://x.com/CaimingXiong/status/2016248124503974164 -- MoE expert parallelism imbalance
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [moe, expert parallelism]
+    - later: true
+- https://x.com/willdepue/status/2019490652824957043 -- Will Depue unavailable tweet
+  - [meta]:
+    - date: 02/05/2026
+    - tags: [ai]
+    - later: true
+- https://x.com/TheGracia_here/status/2021399430436618248 -- Strace link
+  - [meta]:
+    - date: 02/11/2026
+    - tags: [ai]
+    - later: true
+- https://x.com/karpathy/status/2021694437152157847 -- GPT in 243 lines of pure Python
+  - [meta]:
+    - date: 02/11/2026
+    - tags: [gpt, python]
+    - later: true
+- https://x.com/karpathy/status/2021633574089416993 -- DeepWiki and malleable software
+  - [meta]:
+    - date: 02/11/2026
+    - tags: [software, ai]
+    - later: true
+- https://x.com/Majumdar_Ani/status/2021242532517040560?s=20 -- Anirudha Majumdar link
+  - [meta]:
+    - date: 02/10/2026
+    - tags: [robotics, ai]
+    - later: true
+- https://x.com/gm8xx8/status/2023186685727580209 -- scale-invariant function-space stability
+  - [meta]:
+    - date: 02/16/2026
+    - tags: [training, stability]
+    - later: true
+- https://x.com/latentspacepod/status/2022105955039608871 -- Jeff Dean and the modern AI stack
+  - [meta]:
+    - date: 02/13/2026
+    - tags: [ai history, infrastructure]
+    - later: true
 - https://x.com/ID_AA_Carmack/status/2011950339558097279 -- Local Feature Swapping for Generalization in Reinforcement Learning
   - [meta]:
     - date: 01/15/2026
@@ -10384,6 +10609,16 @@ title: are.na
 
 ## design
 
+- https://x.com/Afinetheorem/status/2017033972270678057 -- Christopher Alexander urban design
+  - [meta]:
+    - date: 01/30/2026
+    - tags: [urban design, architecture]
+    - later: true
+- https://x.com/TweetsByTBI/status/2023834930778943918 -- Otherkind interface and brand studio
+  - [meta]:
+    - date: 02/17/2026
+    - tags: [branding, interface]
+    - later: true
 - https://en.wikipedia.org/wiki/John_Blanche -- John Blanche
   - [meta]:
     - date: 06/22/2026
@@ -10772,6 +11007,11 @@ title: are.na
 
 ## video
 
+- https://x.com/artenpedia/status/2023412059644539005 -- Hiroshi Yoshida United States woodblock prints
+  - [meta]:
+    - date: 02/16/2026
+    - tags: [woodblock, prints]
+    - later: true
 - https://www.youtube.com/watch?v=tfp34-ruvGE -- How to spot a rationalization
   - [meta]:
     - date: 06/22/2026
@@ -11216,6 +11456,11 @@ title: are.na
 
 ## tools
 
+- https://x.com/kmdrfx/status/2023911684834808137 -- Three.js rendered in opentui
+  - [meta]:
+    - date: 02/18/2026
+    - tags: [terminal, webgpu]
+    - later: true
 - https://x.com/polynoamial/status/2008277764093157623 -- Codex-written poker river solver
   - [meta]:
     - date: 01/05/2026
@@ -14165,6 +14410,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/Math_files/status/2017819748801909247 -- Matiyasevich formula for pi and Fibonacci numbers
+  - [meta]:
+    - date: 02/01/2026
+    - tags: [fibonacci, pi]
+    - later: true
 - https://x.com/davidbessis/status/2010598547008454863 -- failing math is not IQ
   - [meta]:
     - date: 01/12/2026

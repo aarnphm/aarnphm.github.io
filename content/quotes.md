@@ -399,7 +399,7 @@ transclude:
 
 > In another life, I would have really liked just doing laundry and taxes with you
 >
-> Ke Huy Quan ([[movies/everything-everywhere-all-at-once|Everything Everywhere All at Once]])
+> Ke Huy Quan ([[movies/Everything Everywhere All At Once|Everything Everywhere All at Once]])
 
 > You don't know about real loss, because it only occurs when you [[posts/her|love]] something more than you love yourself. I doubt you've ever dared to love anybody that much
 >

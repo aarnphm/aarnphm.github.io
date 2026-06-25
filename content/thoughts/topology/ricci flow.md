@@ -137,7 +137,7 @@ _perelman's theorem_: geometrization is true.
 
 _proof strategy_: ricci flow + surgery decomposes manifold along jsj tori, flows each piece toward geometric limit.
 
-_poincaré as corollary_: [[thoughts/topology/simply-connected|simply connected]] manifolds can't decompose non-trivially. must be single spherical piece $S^3/\Gamma$. simple connectivity forces $\Gamma = \{e\}$, hence $M \cong S^3$.
+_poincaré as corollary_: [[thoughts/topology/simply connected|simply connected]] manifolds can't decompose non-trivially. must be single spherical piece $S^3/\Gamma$. simple connectivity forces $\Gamma = \{e\}$, hence $M \cong S^3$.
 
 ## topics to master
 

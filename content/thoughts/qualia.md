@@ -6,7 +6,7 @@ modified: 2026-06-10 23:44:47 GMT-04:00
 seealso:
   - '[[thoughts/functionalism]]'
   - '[[thoughts/identity]]'
-  - '[[thoughts/representation]]'
+  - '[[thoughts/representations]]'
   - '[[thoughts/philosophical zombies]]'
   - '[[thoughts/knowledge argument]]'
   - '[[thoughts/inverted spectrum]]'

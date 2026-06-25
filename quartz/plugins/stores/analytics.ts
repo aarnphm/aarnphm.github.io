@@ -1,5 +1,6 @@
 import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
+import { isRecord, numberValue } from '../../util/type-guards'
 import { AppleCache } from './apple'
 import { matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
@@ -27,6 +28,48 @@ export interface BodyCompositionDay {
   bodyWaterPct: number | null
   muscleMassKg: number | null
   boneMassKg: number | null
+}
+
+export interface DexaRegion {
+  fat: number
+  lean: number
+  bmc: number
+}
+
+export interface DexaRecord {
+  date: string
+  totalLbs: number
+  fatLbs: number
+  leanLbs: number
+  bmcLbs: number
+  bodyFat: number
+  vatLbs: number | null
+  bmd: number | null
+  bmdT: number | null
+  rmr: number | null
+  rsmi: number | null
+  ag: number | null
+  arms: DexaRegion | null
+  legs: DexaRegion | null
+  trunk: DexaRegion | null
+}
+
+export interface Vo2LabRecord {
+  date: string
+  value: number
+  hrMax: number | null
+  vt1Hr: number | null
+  vt1Kmh: number | null
+  maxKmh: number | null
+  ve: number | null
+  percentile: number | null
+  zonesHr: number[]
+  zonesKmh: number[]
+}
+
+export interface LabTests {
+  dexa: DexaRecord[]
+  vo2max: Vo2LabRecord[]
 }
 
 export interface BodyBlock {
@@ -69,6 +112,8 @@ export interface AnalyticsInputs {
   weather?: WeatherCache | null
   weights?: TrackEntry[]
   events?: RaceEvent[]
+  dexa?: unknown
+  vo2labs?: unknown
   since?: string
 }
 
@@ -283,7 +328,7 @@ export interface RecoveryBlock {
   thresholds: RecoveryThresholds
 }
 
-export type Vo2Method = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'none'
+export type Vo2Method = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'lab' | 'none'
 export type RadarAxisKey = 'sprint' | 'threshold' | 'endurance' | 'climb' | 'cadence' | 'recovery'
 export type CardioDir = 'improving' | 'stable' | 'declining' | null
 export type CardioKey = 'rhr' | 'hrv' | 'ef' | 'decoupling'
@@ -382,6 +427,7 @@ export interface Analytics {
   activities: ActivitySummary[]
   weakestSport: Sport
   actions: TrainingAction[]
+  tests: LabTests
 }
 
 interface Act {
@@ -1463,14 +1509,111 @@ export const ATHLETE = {
   sex: 'M' as const,
   born: '2001-03',
   bornAnchor: '2001-03-01',
-  hrMax: 190 as number | null,
-  vo2max: 45 as number | null,
+  hrMax: 182 as number | null,
+  vo2max: 47.8 as number | null,
   ftp: 208 as number | null,
   goalWeightLb: 180 as number | null,
   goalFTP: 290 as number | null,
 }
 
 const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * 0.45359237 : null
+
+const isoOf = (v: unknown): string | undefined => {
+  if (typeof v === 'string') return v
+  if (v instanceof Date) return v.toISOString().slice(0, 10)
+  return undefined
+}
+
+const numAt = (r: Record<string, unknown>, k: string): number | null => {
+  const v = numberValue(r[k])
+  return v === undefined ? null : v
+}
+
+const numArr = (raw: unknown): number[] => {
+  if (!Array.isArray(raw)) return []
+  const out: number[] = []
+  for (const v of raw) {
+    const n = numberValue(v)
+    if (n !== undefined) out.push(n)
+  }
+  return out
+}
+
+const dexaRegionOf = (raw: unknown): DexaRegion | null => {
+  if (!isRecord(raw)) return null
+  const fat = numberValue(raw.fat)
+  const lean = numberValue(raw.lean)
+  const bmc = numberValue(raw.bmc)
+  if (fat === undefined || lean === undefined || bmc === undefined) return null
+  return { fat, lean, bmc }
+}
+
+const parseDexa = (raw: unknown): DexaRecord[] => {
+  if (!Array.isArray(raw)) return []
+  const out: DexaRecord[] = []
+  for (const item of raw) {
+    if (!isRecord(item)) continue
+    const date = isoOf(item.date)
+    const totalLbs = numberValue(item.totalLbs)
+    const fatLbs = numberValue(item.fatLbs)
+    const leanLbs = numberValue(item.leanLbs)
+    const bmcLbs = numberValue(item.bmcLbs)
+    const bodyFat = numberValue(item.bodyFat)
+    if (
+      date === undefined ||
+      totalLbs === undefined ||
+      fatLbs === undefined ||
+      leanLbs === undefined ||
+      bmcLbs === undefined ||
+      bodyFat === undefined
+    )
+      continue
+    out.push({
+      date,
+      totalLbs,
+      fatLbs,
+      leanLbs,
+      bmcLbs,
+      bodyFat,
+      vatLbs: numAt(item, 'vatLbs'),
+      bmd: numAt(item, 'bmd'),
+      bmdT: numAt(item, 'bmdT'),
+      rmr: numAt(item, 'rmr'),
+      rsmi: numAt(item, 'rsmi'),
+      ag: numAt(item, 'ag'),
+      arms: dexaRegionOf(item.arms),
+      legs: dexaRegionOf(item.legs),
+      trunk: dexaRegionOf(item.trunk),
+    })
+  }
+  out.sort((a, b) => a.date.localeCompare(b.date))
+  return out
+}
+
+const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
+  if (!Array.isArray(raw)) return []
+  const out: Vo2LabRecord[] = []
+  for (const item of raw) {
+    if (!isRecord(item)) continue
+    const date = isoOf(item.date)
+    const value = numberValue(item.value)
+    if (date === undefined || value === undefined) continue
+    out.push({
+      date,
+      value,
+      hrMax: numAt(item, 'hrMax'),
+      vt1Hr: numAt(item, 'vt1Hr'),
+      vt1Kmh: numAt(item, 'vt1Kmh'),
+      maxKmh: numAt(item, 'maxKmh'),
+      ve: numAt(item, 've'),
+      percentile: numAt(item, 'percentile'),
+      zonesHr: numArr(item.zonesHr),
+      zonesKmh: numArr(item.zonesKmh),
+    })
+  }
+  out.sort((a, b) => a.date.localeCompare(b.date))
+  return out
+}
 
 const VO2_FLOOR = 20
 const VO2_CEIL = 80
@@ -1807,6 +1950,7 @@ function buildEngine(
   garminVo2: { date: string; v: number }[],
   appleVo2: { date: string; v: number }[],
   heartRateById: Map<number, ActivityHeartRate>,
+  vo2Lab: Vo2LabRecord | null,
 ): EngineBlock {
   const age = ageOn(today)
   const { hrMax, source: hrMaxSource } = hrMaxOf(acts, cache, age, heartRateById)
@@ -1838,6 +1982,12 @@ function buildEngine(
   ).length
 
   const estimates: Vo2Estimate[] = []
+  if (vo2Lab)
+    estimates.push({
+      method: 'lab',
+      vo2max: round(clamp(vo2Lab.value, VO2_FLOOR, VO2_CEIL), 1),
+      conf: 'firm',
+    })
   if (garminVo2.length)
     estimates.push({
       method: 'garmin',
@@ -1886,6 +2036,7 @@ function buildEngine(
       return `ftp ${ftp}w${ftpSrc === 'strava' ? ' (strava)' : ''} · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
     if (m === 'run') return 'run hr–speed extrapolation'
     if (m === 'hrratio') return 'upper-bound proxy from sleeping rhr'
+    if (m === 'lab') return 'graded exercise test'
     return 'no power or hr data'
   }
 
@@ -1925,6 +2076,16 @@ function buildEngine(
         1,
       )
     if (lastVo2 != null) trend.push({ weekStart: ws, vo2max: lastVo2, method: 'bike' })
+  }
+  if (vo2Lab) {
+    const lw = weekOf(vo2Lab.date)
+    const lv = round(clamp(vo2Lab.value, VO2_FLOOR, VO2_CEIL), 1)
+    const at = trend.findIndex(p => p.weekStart === lw)
+    if (at >= 0) trend[at] = { weekStart: lw, vo2max: lv, method: 'lab' }
+    else {
+      trend.push({ weekStart: lw, vo2max: lv, method: 'lab' })
+      trend.sort((a, b) => a.weekStart.localeCompare(b.weekStart))
+    }
   }
 
   const vo2 = primary?.vo2max ?? null
@@ -2223,6 +2384,7 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     activities: [],
     weakestSport: 'run',
     actions: [],
+    tests: { dexa: [], vo2max: [] },
   }
 }
 
@@ -2231,6 +2393,10 @@ export function buildAnalytics(
   inputs: AnalyticsInputs = {},
 ): Analytics {
   const todayFromSync = cache?.lastSync ? new Date(cache.lastSync).toISOString().slice(0, 10) : null
+  const dexaTests = parseDexa(inputs.dexa)
+  const vo2Tests = parseVo2Lab(inputs.vo2labs)
+  const latestDexa = dexaTests.length ? dexaTests[dexaTests.length - 1] : null
+  const latestVo2Lab = vo2Tests.length ? vo2Tests[vo2Tests.length - 1] : null
 
   if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
 
@@ -2384,6 +2550,10 @@ export function buildAnalytics(
     latestBmr,
     composition,
   }
+  if (latestDexa) {
+    body.bodyFatPct = latestDexa.bodyFat
+    body.boneMassKg = round(latestDexa.bmcLbs * 0.45359237, 2)
+  }
   const weekly = buildWeekly(acts, loadById)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
   const bestList = SPORT_ORDER.map(sport => buildBest(acts, sport))
@@ -2424,6 +2594,7 @@ export function buildAnalytics(
     garminVo2,
     appleVo2,
     heartRateById,
+    latestVo2Lab,
   )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
@@ -2494,6 +2665,7 @@ export function buildAnalytics(
     activities,
     weakestSport: weakest,
     actions,
+    tests: { dexa: dexaTests, vo2max: vo2Tests },
   }
 }
 
