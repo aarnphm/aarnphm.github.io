@@ -295,7 +295,7 @@ _note: the author noted to use [M/G/1](https://en.wikipedia.org/wiki/M/D/1_queue
     W = \frac{\lambda E[S^{2}]}{2(1-\rho)}
     $$
 
-    Collary from M/D/1:
+    Corollary from M/D/1:
 
     - The random arrival $M$ is under the assumption that it arrives according to Poisson process with rate $R$
     - Assumption: a uniform input lengths, denoted as $D$. However, this doesn't really hold true in a heterogenous setup with variable input lengths. Therefore we treat this calculation as upper bound.

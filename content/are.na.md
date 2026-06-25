@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-23 17:50:41 GMT-04:00
+modified: 2026-06-24 09:04:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,16 @@ title: are.na
 
 ## discourse
 
+- https://x.com/phokarlsson/status/2012991899536151026 -- Henrik Karlsson longform note
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [writing, life]
+    - later: true
+- https://x.com/phokarlsson/status/2013199757305614754 -- Johanna dissolving frames
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [thinking, relationship]
+    - later: true
 - https://www.astralcodexten.com/p/open-thread-424 -- Open Thread 424
   - [meta]:
     - date: 06/18/2026
@@ -178,6 +188,51 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/AmandaAskell/status/2012355090225733858 -- Amanda Askell on protecting Claude's character
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [claude, character]
+    - later: true
+- https://x.com/nickcammarata/status/2012331265001717860 -- internet poisoning and model trigger words
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [ai, poisoning]
+    - later: true
+- https://x.com/ella_schlags/status/2013376241122902162 -- Ella Schlaghecke longform note
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [writing, influence]
+    - later: true
+- https://x.com/ella_schlags/status/2012670273443504396 -- making an audience think critically
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [influence, rhetoric]
+    - later: true
+- https://x.com/0xShual/status/2014198512443888102 -- Anthropic exam leaderboard
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [benchmark, recruiting]
+    - later: true
+- https://x.com/JaidCodes/status/2014859895862952258 -- Claude Code meme
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [claude, meme]
+    - later: true
+- https://x.com/jasminewsun/status/2015498600260968900 -- iMessage Wrapped with Claude Code
+  - [meta]:
+    - date: 01/25/2026
+    - tags: [claude, imessage]
+    - later: true
+- https://x.com/howdymerry/status/2014673974186115568 -- frontier lab Big Idea job
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [research, sf]
+    - later: true
+- https://x.com/JaidCodes/status/2014865156547735896 -- Jaid Claude Code follow-up
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [claude, meme]
+    - later: true
 - https://x.com/ylecun/status/2008581905499701300 -- LeCun on anonymous criticism
   - [meta]:
     - date: 01/06/2026
@@ -1458,6 +1513,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://justinjay.wang/ -- Justin Wang
+  - [meta]:
+    - date: 06/23/2026
+    - tags: [designer, sf, interactive]
 - https://palbin.web.illinois.edu/ -- Pierre Albin
   - [meta]:
     - date: 06/17/2026
@@ -2767,6 +2826,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://aresluna.org/show-your-hands-honor -- Show your hands honor for the strange power they bring you, On designing finger-friendly interactions
+  - [meta]:
+    - date: 06/23/2026
+    - tags: [hci, history]
 - https://www.lincolnquirk.com/2026/04/16/aiwriting.html -- On AI Writing
   - [meta]:
     - date: 06/23/2026
@@ -5317,6 +5380,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/vivekgalatage/status/2012600003533951075 -- algorithm course to revisit
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [algorithms, course]
+    - later: true
 - https://eatonphil.com/2026-ostep.html -- Operating Systems: Three Easy Pieces Book Club
   - [meta]:
     - date: 06/14/2026
@@ -5374,6 +5442,141 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/ID_AA_Carmack/status/2011950339558097279 -- Local Feature Swapping for Generalization in Reinforcement Learning
+  - [meta]:
+    - date: 01/15/2026
+    - tags: [rl, paper]
+    - later: true
+- https://x.com/nathanrs/status/2001006213174329754 -- uniform diffusion language models
+  - [meta]:
+    - date: 12/16/2025
+    - tags: [diffusion, language models]
+    - later: true
+- https://x.com/abiralxshakya/status/2012592317824393350 -- scaling models and hardware
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [scaling, hardware]
+    - later: true
+- https://x.com/orphcorp/status/2012883506314023108 -- Gwern on AI training dynamics
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [gwern, ai]
+    - later: true
+- https://x.com/eliebakouch/status/2013272478018048209 -- GLM-4.7-Flash MLA notes
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [glm, mla]
+    - later: true
+- https://x.com/stochasticchasm/status/2013268543064715629 -- GLM Flash MLA head dimensions
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [glm, attention]
+    - later: true
+- https://x.com/eliebakouch/status/2013032285155590427 -- favorite 2025 technical reports
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [technical reports, models]
+    - later: true
+- https://x.com/ns123abc/status/2013030876683145417 -- NIK longform AI note
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [ai, longform]
+    - later: true
+- https://x.com/0xluffy/status/2012583552253129021 -- luffy longform AI note
+  - [meta]:
+    - date: 01/17/2026
+    - tags: [ai, longform]
+    - later: true
+- https://x.com/giffmana/status/2012978224125411634 -- Lucas Beyer longform ML note
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [ml, longform]
+    - later: true
+- https://x.com/ai_sentience/status/2003012558458913165 -- Alan Mathison longform AI note
+  - [meta]:
+    - date: 12/22/2025
+    - tags: [ai, longform]
+    - later: true
+- https://x.com/wobbywells/status/2013011670474293583 -- GPT-5.2 suffering prompt
+  - [meta]:
+    - date: 01/18/2026
+    - tags: [prompting, model behavior]
+    - later: true
+- https://x.com/Zai_org/status/2013261304060866758 -- GLM-4.7-Flash release
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [glm, agents]
+    - later: true
+- https://x.com/AnthropicAI/status/2013356793477361991 -- the Assistant Axis
+  - [meta]:
+    - date: 01/19/2026
+    - tags: [persona, alignment]
+    - later: true
+- https://x.com/janleike/status/2013669924950970781 -- automated auditing alignment trend
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [alignment, auditing]
+    - later: true
+- https://x.com/secemp9/status/1815442854615118254?s=20 -- unified pretraining and instruct tuning
+  - [meta]:
+    - date: 07/22/2024
+    - tags: [pretraining, instruct tuning]
+    - later: true
+- https://x.com/logic_int/status/2014048025111371966 -- Logical Intelligence longform AI note
+  - [meta]:
+    - date: 01/21/2026
+    - tags: [ai, longform]
+    - later: true
+- https://x.com/ch402/status/2014066134194995256 -- Chris Olah favorite paragraph
+  - [meta]:
+    - date: 01/21/2026
+    - tags: [interpretability, writing]
+    - later: true
+- https://x.com/dan_biderman/status/1932119831781978222 -- compressed KV caches trained offline
+  - [meta]:
+    - date: 06/09/2025
+    - tags: [kv cache, compression]
+    - later: true
+- https://x.com/EyubogluSabri/status/1932106746446905552 -- self-study for smaller KV caches
+  - [meta]:
+    - date: 06/09/2025
+    - tags: [kv cache, test-time training]
+    - later: true
+- https://x.com/gallabytes/status/2015109665764560943 -- emergent misalignment and antisocial context
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [misalignment, coding]
+    - later: true
+- https://x.com/donglixp/status/2014553000682156270 -- LLM-in-Sandbox deployment paradigm
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [agents, sandbox]
+    - later: true
+- https://x.com/AnthropicAI/status/2015870963792142563 -- elicitation attacks for chemical weapons capability
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [biosecurity, elicitation]
+    - later: true
+- https://x.com/karpathy/status/2015883857489522876 -- Karpathy on Claude coding workflow
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [coding agents, workflow]
+    - later: true
+- https://x.com/JacobHHilton/status/2015856367429698013 -- 432-parameter RNN interpretability challenge
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [interpretability, rnn]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2015993652841964007 -- Discovering state-of-the-art reinforcement learning algorithms
+  - [meta]:
+    - date: 01/27/2026
+    - tags: [rl, paper]
+    - later: true
+- https://x.com/rronak_/status/2015649459552850113 -- TTT plus RL from Stanford and NVIDIA
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [rl, test-time training]
+    - later: true
 - https://x.com/neelsomani/status/2008685817401930043 -- SAEs as feature detectors
   - [meta]:
     - date: 01/06/2026
@@ -8407,6 +8610,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/_arohan_/status/2014243683139477855 -- branchy batch tree traversal performance exercise
+  - [meta]:
+    - date: 01/22/2026
+    - tags: [performance, simd]
+    - later: true
+- https://x.com/trishume/status/1730386529997238605?s=20 -- Anthropic performance optimization team
+  - [meta]:
+    - date: 12/01/2023
+    - tags: [performance, kernels]
+    - later: true
+- https://x.com/cosminnegruseri/status/2014909891107029486 -- PyTorch puzzle
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [pytorch, puzzle]
+    - later: true
+- https://x.com/CUDAHandbook/status/2015032158537056767 -- TensorCores and CUDA performance portability
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [cuda, tensorcores]
+    - later: true
+- https://x.com/GrahamHelton3/status/2015789985459212714 -- Kubernetes read-only RBAC RCE
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [kubernetes, security]
+    - later: true
 - https://x.com/joodalooped/status/2009404297709285462 -- group software and networks
   - [meta]:
     - date: 01/08/2026
@@ -11053,6 +11281,11 @@ title: are.na
 
 ## arts
 
+- https://x.com/rtwlz/status/2015797876765737320 -- San Francisco graffiti citations as art
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [graffiti, scraping]
+    - later: true
 - https://en.wikipedia.org/wiki/Stephen_Dedalus -- Stephen Dedalus
   - [meta]:
     - date: 06/22/2026
@@ -12942,6 +13175,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/andersonbcdefg/status/2015123064556789829 -- Claude Code as a stranger's fridge
+  - [meta]:
+    - date: 01/24/2026
+    - tags: [claude, coding agents]
+    - later: true
+- https://x.com/__tinygrad__/status/2015594693829197837 -- tinygrad PR review standard
+  - [meta]:
+    - date: 01/26/2026
+    - tags: [code review, ai slop]
+    - later: true
+- https://x.com/benhylak/status/2014831438294876287 -- Bill Atkinson and negative lines of code
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [software, apple]
+    - later: true
+- https://x.com/giffmana/status/2014796070493016411 -- profiling after a 2 percent optimization
+  - [meta]:
+    - date: 01/23/2026
+    - tags: [profiling, performance]
+    - later: true
 - https://www.lmsys.org/blog/2025-09-10-sglang-hicache/ -- HiCache
   - [meta]:
     - date: 06/21/2026
@@ -13723,6 +13976,11 @@ title: are.na
 
 ## organizations
 
+- https://x.com/humansand/status/2013641246515056798 -- humans& frontier AI lab
+  - [meta]:
+    - date: 01/20/2026
+    - tags: [ai lab, human-centric]
+    - later: true
 - https://en.wikipedia.org/wiki/Cybernetic_Culture_Research_Unit -- Cybernetic Culture Research Unit
   - [meta]:
     - date: 06/10/2026

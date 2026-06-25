@@ -737,6 +737,7 @@ export function buildPayload(
   garmin: GarminCache | null,
   since?: string,
   weather?: WeatherCache | null,
+  inputFtp?: number | null,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -838,13 +839,16 @@ export function buildPayload(
     if (p20 && p20.w > best20) best20 = p20.w
     if (dayMs(a.startDateLocal.slice(0, 10)) >= recentCut) recentCurves.push(c)
   }
-  const ftp = cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
+  const ftp = inputFtp ?? cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
   const hrBounds = cache.zones?.hr?.length ? cache.zones.hr : deriveHrBounds(hrmax)
-  const powerBounds = cache.zones?.power?.length
-    ? cache.zones.power
-    : ftp != null
-      ? derivePowerBounds(ftp)
-      : []
+  const powerBounds =
+    inputFtp != null
+      ? derivePowerBounds(inputFtp)
+      : cache.zones?.power?.length
+        ? cache.zones.power
+        : ftp != null
+          ? derivePowerBounds(ftp)
+          : []
 
   const starts: [number, number][] = []
   for (const { a } of activities) {

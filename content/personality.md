@@ -253,7 +253,7 @@ from [this test](https://programs.clearerthinking.org/philosophical_beliefs.html
 
 > [!note]- transitory nature of beliefs
 >
-> beliefs change change overtime, but I think core principles has been the same.
+> beliefs change overtime, but I think core principles has been the same.
 
 ```jsx imports={Zoomable,MetaEthicsTree}
 <Zoomable label="meta-ethical positions decision tree">
