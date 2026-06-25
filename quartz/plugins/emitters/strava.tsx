@@ -21,7 +21,13 @@ import {
   stravaCachePath,
   weatherCachePath,
 } from '../../util/strava-payload'
-import { ATHLETE, buildAnalytics, buildDataFeed } from '../stores/analytics'
+import {
+  ATHLETE,
+  buildAnalytics,
+  buildDataFeed,
+  hrZoneUppers,
+  parseVo2Lab,
+} from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
 import {
@@ -112,6 +118,9 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
       const tracking = file.data.tracking
+      const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
+      const latestVo2 = vo2labs.length ? vo2labs[vo2labs.length - 1] : null
+      const hrBoundsOverride = latestVo2 ? hrZoneUppers(latestVo2) : null
       const payload = buildPayload(
         cache,
         oura,
@@ -119,6 +128,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         typeof since === 'string' ? since : undefined,
         weather,
         ATHLETE.ftp,
+        hrBoundsOverride ?? undefined,
       )
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
@@ -149,6 +159,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             powerCurveRef: payload.powerCurveRef,
             ftp: ATHLETE.ftp,
             goalFtp: ATHLETE.goalFTP,
+            vt1Hr: latestVo2?.vt1Hr ?? null,
           }),
         }),
       )

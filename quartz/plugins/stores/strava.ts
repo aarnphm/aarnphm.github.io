@@ -738,6 +738,7 @@ export function buildPayload(
   since?: string,
   weather?: WeatherCache | null,
   inputFtp?: number | null,
+  inputHrBounds?: number[] | null,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -840,7 +841,11 @@ export function buildPayload(
     if (dayMs(a.startDateLocal.slice(0, 10)) >= recentCut) recentCurves.push(c)
   }
   const ftp = inputFtp ?? cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
-  const hrBounds = cache.zones?.hr?.length ? cache.zones.hr : deriveHrBounds(hrmax)
+  const hrBounds = inputHrBounds?.length
+    ? inputHrBounds
+    : cache.zones?.hr?.length
+      ? cache.zones.hr
+      : deriveHrBounds(hrmax)
   const powerBounds =
     inputFtp != null
       ? derivePowerBounds(inputFtp)

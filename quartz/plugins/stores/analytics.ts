@@ -1590,7 +1590,14 @@ const parseDexa = (raw: unknown): DexaRecord[] => {
   return out
 }
 
-const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
+export const hrZoneUppers = (rec: Vo2LabRecord): number[] | null => {
+  const e = rec.zonesHr
+  if (e.length < 2) return null
+  const max = rec.hrMax ?? e[e.length - 1]
+  return e.map((_, i) => (i + 1 < e.length ? e[i + 1] : max) - 1)
+}
+
+export const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
   if (!Array.isArray(raw)) return []
   const out: Vo2LabRecord[] = []
   for (const item of raw) {
