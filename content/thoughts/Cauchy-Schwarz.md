@@ -10,10 +10,10 @@ title: Cauchy-Schwarz
 
 > [!abstract] format
 >
-> for all vectors $v$ and $v$ of an inner product space, we have
+> for all vectors $u$ and $v$ of an inner product space, we have
 >
 > $$
-> \mid \langle u, v \rangle \mid ^2 \le \langle u, u \rangle \dot \langle v, v \rangle
+> \mid \langle u, v \rangle \mid ^2 \le \langle u, u \rangle \cdot \langle v, v \rangle
 > $$
 
 In context of Euclidean norm:

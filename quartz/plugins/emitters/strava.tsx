@@ -118,6 +118,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         garmin,
         typeof since === 'string' ? since : undefined,
         weather,
+        ATHLETE.ftp,
       )
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {

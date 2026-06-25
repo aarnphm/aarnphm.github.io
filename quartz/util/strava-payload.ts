@@ -2,6 +2,7 @@ import { readFileSync, statSync } from 'node:fs'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { WeatherCache } from '../plugins/stores/weather'
+import { ATHLETE } from '../plugins/stores/analytics'
 import { buildPayload, type StravaPayload, type StravaRawCache } from '../plugins/stores/strava'
 import { joinSegments, QUARTZ } from './path'
 
@@ -40,6 +41,7 @@ export function loadStravaPayloadSync(since?: string): StravaPayload {
         readJson<GarminCache>(garminCachePath),
         since,
         readJson<WeatherCache>(weatherCachePath),
+        ATHLETE.ftp,
       ),
     }
   }
