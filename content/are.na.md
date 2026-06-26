@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-25 14:10:31 GMT-04:00
+modified: 2026-06-26 00:00:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -193,6 +193,256 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/QuiverAI/status/2026792057893708072 -- Arrow 1.0 SVG AI model
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [svg, ai, design]
+    - later: true
+- https://x.com/dileeplearning/status/2026717137306578984 -- Dileep George cortical column article
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [neuroscience, intelligence]
+    - later: true
+- https://x.com/1914ad/status/2026757796390449382 -- Jane Street Bitcoin price action article
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [bitcoin, markets]
+    - later: true
+- https://x.com/punished_daniel/status/2026874205195907431 -- punished_daniel blocked tweet
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [tweets]
+    - later: true
+- https://x.com/paramitanoia/status/2026394989505183870 -- government pressure as alignment challenge
+  - [meta]:
+    - date: 02/24/2026
+    - tags: [alignment, government]
+    - later: true
+- https://x.com/_lewtun/status/2022966614283718852 -- tiny 4B model reasoning for millions of tokens
+  - [meta]:
+    - date: 02/15/2026
+    - tags: [reasoning, rl]
+    - later: true
+- https://x.com/yaboilyrical/status/2026773766538510342 -- nightwing article link
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [links]
+    - later: true
+- https://x.com/Mishok2000/status/2028032679770288620 -- guiding speculative execution
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [speculative execution, systems]
+    - later: true
+- https://x.com/steveruizok/status/2028170125338411428 -- Steve Ruiz mobile cycling prototype
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [design, prototyping]
+    - later: true
+- https://x.com/theconsensusdev/status/2028119024446443617 -- pgvector at home
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [databases, vectors]
+    - later: true
+- https://x.com/steveruizok/status/2027499153463341513 -- 2018 product design notebooks
+  - [meta]:
+    - date: 02/27/2026
+    - tags: [design, notebooks]
+    - later: true
+- https://x.com/phokarlsson/status/2028060176247648327 -- rereading good essays via email snooze
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [reading, writing]
+    - later: true
+- https://x.com/rough__sea/status/2027896125047640455 -- The happiest I have ever been
+  - [meta]:
+    - date: 02/28/2026
+    - tags: [life, writing]
+    - later: true
+- https://x.com/SteveStuWill/status/2018800616638980413 -- sex differences and male combat adaptation
+  - [meta]:
+    - date: 02/03/2026
+    - tags: [evolution, psychology]
+    - later: true
+- https://x.com/abdimoalim_/status/2027922164033192109 -- beating the L1 cache with value speculation
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [systems, performance]
+    - later: true
+- https://x.com/mntruell/status/2026736314272591924 -- Michael Truell article link
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [links]
+    - later: true
+- https://x.com/i/trending/2027104812534292863 -- X trending item
+  - [meta]:
+    - date: 02/26/2026
+    - tags: [trending]
+    - later: true
+- https://x.com/mathematics_inc/status/2028542388717986135 -- Gauss formalizes Viazovska sphere packing theorem
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [formal proof, math]
+    - later: true
+- https://x.com/SoundDobad/status/2028177031649710375 -- make no mistakes prompt
+  - [meta]:
+    - date: 03/01/2026
+    - tags: [prompting, meme]
+    - later: true
+- https://x.com/repligate/status/2028516010471690648 -- AI phenomenological reports
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [phenomenology, ai]
+    - later: true
+- https://x.com/noampomsky/status/1157362267077242880 -- deep sympathy modified by revulsion
+  - [meta]:
+    - date: 08/02/2019
+    - tags: [attitude, life]
+    - later: true
+- https://x.com/benjamintherien/status/2026862326184304734 -- MuLoCo cross-datacenter pretraining optimizer
+  - [meta]:
+    - date: 02/25/2026
+    - tags: [optimizer, training]
+    - later: true
+- https://x.com/deanwball/status/2028464782622195992 -- Dean Ball article link
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [links]
+    - later: true
+- https://x.com/mathematics_inc/status/2028542394736513372 -- Gauss formalizes Leech lattice sphere packing
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [formal proof, math]
+    - later: true
+- https://x.com/NeelNanda5/status/2028600215343943983 -- designing environments to study scheming
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [scheming, evals]
+    - later: true
+- https://x.com/noampomsky/status/2028612689598255434 -- friendship theory of everything
+  - [meta]:
+    - date: 03/02/2026
+    - tags: [friendship, life]
+    - later: true
+- https://x.com/AlexanderLong/status/2030022884979028435 -- Alibaba tech report buried statements
+  - [meta]:
+    - date: 03/06/2026
+    - tags: [models, report]
+    - later: true
+- https://x.com/tanishqkumar07/status/2029251146196631872 -- Speculative Speculative Decoding
+  - [meta]:
+    - date: 03/04/2026
+    - tags: [speculative decoding, inference]
+    - later: true
+- https://x.com/RileyRalmuto/status/2030540996606390462 -- paper for MoMA
+  - [meta]:
+    - date: 03/08/2026
+    - tags: [papers, art]
+    - later: true
+- https://x.com/i/trending/2031451048951378005 -- X trending item
+  - [meta]:
+    - date: 03/10/2026
+    - tags: [trending]
+    - later: true
+- https://x.com/i/trending/2031484100046106855 -- X trending item
+  - [meta]:
+    - date: 03/10/2026
+    - tags: [trending]
+    - later: true
+- https://x.com/i/trending/2030448892035441050 -- Karpathy's Autoresearch lets AI agents run ML experiments alone
+  - [meta]:
+    - date: 03/09/2026
+    - tags: [agents, ml]
+    - later: true
+- https://x.com/AstasiaMyers/status/2031425984898207768 -- agent harnesses mental model
+  - [meta]:
+    - date: 03/10/2026
+    - tags: [agents, harness]
+    - later: true
+- https://x.com/LydNot/status/2031458705804574826 -- synbio scaling megapost
+  - [meta]:
+    - date: 03/10/2026
+    - tags: [synthetic biology, scaling]
+    - later: true
+- https://x.com/anneouyang/status/2031757990806823313 -- Standard Kernel seed round
+  - [meta]:
+    - date: 03/11/2026
+    - tags: [kernels, startups]
+    - later: true
+- https://x.com/zodchiii/status/2031427077937709527 -- broke because smart
+  - [meta]:
+    - date: 03/10/2026
+    - tags: [meme]
+    - later: true
+- https://x.com/YouJiacheng/status/2031733357303013802 -- 142.5T cuBLAS on H100
+  - [meta]:
+    - date: 03/11/2026
+    - tags: [cuda, performance]
+    - later: true
+- https://x.com/bookwormengr/status/2036617652702171390?s=46 -- distributed RL rollouts across datacenters
+  - [meta]:
+    - date: 03/25/2026
+    - tags: [rl, infrastructure]
+    - later: true
+- https://x.com/FireworksAI_HQ/status/2036579985998356970 -- Composer 2 disaggregated sampling
+  - [meta]:
+    - date: 03/24/2026
+    - tags: [rl, disaggregation]
+    - later: true
+- https://x.com/WillManidis/status/2025923396148621522 -- Will Manidis article link
+  - [meta]:
+    - date: 02/23/2026
+    - tags: [links]
+    - later: true
+- https://x.com/benhylak/status/2039030188982538687 -- personalized software flaw
+  - [meta]:
+    - date: 03/31/2026
+    - tags: [software, interface]
+    - later: true
+- https://x.com/mal_shaik/status/2038918662489510273 -- mal article link
+  - [meta]:
+    - date: 03/31/2026
+    - tags: [links]
+    - later: true
+- https://x.com/benhylak/status/2033656459230318945 -- ben hylak article link
+  - [meta]:
+    - date: 03/16/2026
+    - tags: [links]
+    - later: true
+- https://x.com/jackminong/status/2038441806116036980/photo/2 -- jackminong photo
+  - [meta]:
+    - date: 03/29/2026
+    - tags: [image]
+    - later: true
+- https://x.com/i/trending/2039525184709787881 -- X trending item
+  - [meta]:
+    - date: 04/01/2026
+    - tags: [trending]
+    - later: true
+- https://x.com/_shruti_joshi_/status/2039456658724696419 -- SAEs fail at OOD tasks
+  - [meta]:
+    - date: 04/01/2026
+    - tags: [interpretability, superposition]
+    - later: true
+- https://x.com/i/trending/2034679464769061355 -- X trending item
+  - [meta]:
+    - date: 03/19/2026
+    - tags: [trending]
+    - later: true
+- https://x.com/WorkshopLabs/status/2032504548926042341 -- Trellis for Kimi K2 Thinking
+  - [meta]:
+    - date: 03/13/2026
+    - tags: [post-training, models]
+    - later: true
+- https://x.com/OpenAI/status/2034315401438580953 -- Parameter Golf challenge
+  - [meta]:
+    - date: 03/18/2026
+    - tags: [openai, challenge]
+    - later: true
+- https://x.com/voooooogel/status/2033713553841242212 -- internet retreat to group chats
+  - [meta]:
+    - date: 03/17/2026
+    - tags: [internet, communities]
+    - later: true
 - https://x.com/i/communities/2014750694339723512 -- AI Engineering Founders community
   - [meta]:
     - date: 01/23/2026

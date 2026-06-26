@@ -3057,6 +3057,153 @@
   margin-top: 0.2rem;
 }
 
+.tri-vo2t-titlerow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tri-vo2t-titlerow .tri-ana-block-title {
+  margin-bottom: 0;
+}
+
+.tri-vo2t-date {
+  margin-left: auto;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
+.tri-vo2t-chart {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tri-vo2t-yax {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 2rem;
+  padding: 0.1rem 0;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-vo2t-plot {
+  position: relative;
+  flex: 1 1 auto;
+  height: 104px;
+}
+
+.tri-vo2t-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tri-vo2t-zone {
+  cursor: default;
+}
+
+.tri-vo2t-zone:hover {
+  fill-opacity: 0.85;
+}
+
+.tri-vo2t-zone--1 {
+  fill: color-mix(in srgb, var(--gray) 9%, transparent);
+}
+
+.tri-vo2t-zone--2 {
+  fill: color-mix(in srgb, #cdd597 18%, transparent);
+}
+
+.tri-vo2t-zone--3 {
+  fill: color-mix(in srgb, #cdd597 32%, transparent);
+}
+
+.tri-vo2t-zone--4 {
+  fill: color-mix(in srgb, #fdb2a2 30%, transparent);
+}
+
+.tri-vo2t-zone--5 {
+  fill: color-mix(in srgb, var(--tri-accent) 24%, transparent);
+}
+
+.tri-vo2t-grid {
+  stroke: color-mix(in srgb, var(--gray) 18%, transparent);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-vt {
+  stroke: color-mix(in srgb, var(--gray) 45%, transparent);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-line {
+  fill: none;
+  stroke: color-mix(in srgb, #fdb2a2 72%, var(--dark));
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-vo2t-pt {
+  position: absolute;
+  width: 0.32rem;
+  height: 0.32rem;
+  background: color-mix(in srgb, #fdb2a2 72%, var(--dark));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-vo2t-pt--vt {
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--tri-accent);
+  pointer-events: auto;
+}
+
+.tri-vo2t-pt--max {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tri-accent);
+  pointer-events: auto;
+}
+
+.tri-vo2t-lbl {
+  position: absolute;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  white-space: nowrap;
+  transform: translate(-50%, -165%);
+  pointer-events: none;
+}
+
+.tri-vo2t-lbl--vt {
+  color: var(--gray);
+}
+
+.tri-vo2t-xax {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.2rem 0 0 2.5rem;
+  font-size: 0.56rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+}
+
 .tri-unit-switch {
   margin-left: auto;
   display: inline-flex;

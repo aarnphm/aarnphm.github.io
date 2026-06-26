@@ -3253,6 +3253,146 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   return block
 }
 
+const buildVo2test = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-vo2t')
+  const titleRow = el('div', 'tri-vo2t-titlerow')
+  titleRow.appendChild(anaTitle('vo2 test profile', 'vo2test'))
+  const r = data.tests.vo2max[data.tests.vo2max.length - 1]
+  const anchors = r
+    ? r.zonesKmh.map((s, i) => ({ s, hr: r.zonesHr[i] })).filter(p => p.hr != null)
+    : []
+  if (!r || anchors.length < 2 || r.maxKmh == null) {
+    block.appendChild(titleRow)
+    block.appendChild(el('div', 'tri-ana-empty', 'no vo2 test logged'))
+    return block
+  }
+  titleRow.appendChild(el('span', 'tri-vo2t-date', r.date))
+  block.appendChild(titleRow)
+
+  const maxHr = r.hrAtVo2max ?? r.hrMax ?? anchors[anchors.length - 1].hr
+  const bandTop = r.hrMax ?? maxHr
+  const curve = [...anchors, { s: r.maxKmh, hr: maxHr }].sort((a, b) => a.s - b.s)
+  const speeds = curve.map(p => p.s)
+  const hrs = [...curve.map(p => p.hr), bandTop]
+  if (r.vt1Hr != null) hrs.push(r.vt1Hr)
+  const x0 = Math.min(...speeds) - 0.6
+  const x1 = Math.max(...speeds) + 0.6
+  const y0 = Math.min(...hrs) - 6
+  const y1 = Math.max(...hrs) + 6
+  const xP = (s: number): number => ((s - x0) / (x1 - x0)) * 100
+  const yP = (hr: number): number => (1 - (hr - y0) / (y1 - y0)) * 100
+
+  const chart = el('div', 'tri-vo2t-chart')
+  const yax = el('div', 'tri-vo2t-yax')
+  yax.append(el('span', '', String(Math.round(y1))), el('span', '', String(Math.round(y0))))
+  const plot = el('div', 'tri-vo2t-plot')
+  const s = svg('svg', {
+    class: 'tri-vo2t-svg',
+    viewBox: '0 0 100 100',
+    preserveAspectRatio: 'none',
+  })
+
+  const zoneNames = ['warm up', 'fat burning', 'endurance', 'vigorous', 'maximal']
+  const lows = [...r.zonesHr, bandTop]
+  lows.forEach((lo, i) => {
+    const hi = i + 1 < lows.length ? lows[i + 1] : Math.ceil(y1)
+    const visLo = i === 0 ? y0 : lo
+    const last = i + 1 >= lows.length
+    const spd = r.zonesKmh[i] != null ? ` · ${r.zonesKmh[i]} km/h` : ''
+    const kcal = r.zonesKcal[i] != null ? ` · ${r.zonesKcal[i]} kcal/h` : ''
+    s.appendChild(
+      svg('rect', {
+        x: 0,
+        y: yP(hi),
+        width: 100,
+        height: yP(visLo) - yP(hi),
+        class: `tri-vo2t-zone tri-vo2t-zone--${i + 1}`,
+        'data-tip-h': zoneNames[i] ?? `zone ${i + 1}`,
+        'data-tip-d': `${last ? `${lo}+ bpm` : `${lo}–${hi - 1} bpm`}${spd}${kcal}`,
+      }),
+    )
+  })
+
+  for (const gy of [0, 50, 100])
+    s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-vo2t-grid' }))
+  if (r.vt1Kmh != null)
+    s.appendChild(
+      svg('line', { x1: xP(r.vt1Kmh), y1: 0, x2: xP(r.vt1Kmh), y2: 100, class: 'tri-vo2t-vt' }),
+    )
+  s.appendChild(
+    svg('line', { x1: xP(r.maxKmh), y1: 0, x2: xP(r.maxKmh), y2: 100, class: 'tri-vo2t-vt' }),
+  )
+  s.appendChild(
+    svg('path', { d: polyD(curve.map(p => [xP(p.s), yP(p.hr)])), class: 'tri-vo2t-line' }),
+  )
+  plot.appendChild(s)
+  for (const p of curve) {
+    const m = el('span', 'tri-vo2t-pt')
+    m.style.left = `${xP(p.s).toFixed(1)}%`
+    m.style.top = `${yP(p.hr).toFixed(1)}%`
+    plot.appendChild(m)
+  }
+  const marker = (
+    spd: number,
+    hr: number,
+    mod: string,
+    label: string,
+    tipH: string,
+    tipD: string,
+  ): void => {
+    const pt = el('span', `tri-vo2t-pt tri-vo2t-pt--${mod}`)
+    pt.style.left = `${xP(spd).toFixed(1)}%`
+    pt.style.top = `${yP(hr).toFixed(1)}%`
+    pt.dataset.tipH = tipH
+    pt.dataset.tipD = tipD
+    plot.appendChild(pt)
+    if (label) {
+      const lbl = el('span', `tri-vo2t-lbl tri-vo2t-lbl--${mod}`, label)
+      lbl.style.left = `${xP(spd).toFixed(1)}%`
+      lbl.style.top = `${yP(hr).toFixed(1)}%`
+      plot.appendChild(lbl)
+    }
+  }
+  if (r.vt1Kmh != null && r.vt1Hr != null)
+    marker(
+      r.vt1Kmh,
+      r.vt1Hr,
+      'vt',
+      'vt1',
+      'vt1 · aerobic threshold',
+      `${r.vt1Hr} bpm · ${r.vt1Kmh} km/h${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1} kcal/h` : ''}`,
+    )
+  marker(
+    r.maxKmh,
+    maxHr,
+    'max',
+    '',
+    'vo2max',
+    `${r.value.toFixed(1)} ml/kg/min · ${maxHr} bpm · ${r.maxKmh} km/h`,
+  )
+  chart.append(yax, plot)
+  block.appendChild(chart)
+  const xax = el('div', 'tri-vo2t-xax')
+  xax.append(el('span', '', `${speeds[0]} km/h`), el('span', '', `${r.maxKmh} km/h`))
+  block.appendChild(xax)
+
+  const cap = el('div', 'tri-elev-cap')
+  cap.appendChild(el('span', 'tri-ana-k', `vo2max ${r.value.toFixed(1)} ml/kg/min`))
+  if (r.percentile != null) cap.appendChild(el('span', 'tri-ana-k', `p${r.percentile}`))
+  if (r.vt1Hr != null)
+    cap.appendChild(
+      el(
+        'span',
+        'tri-ana-k',
+        `vt1 ${r.vt1Hr}bpm${r.vt1Kmh != null ? ` · ${r.vt1Kmh}km/h` : ''}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1}kcal/h` : ''}`,
+      ),
+    )
+  if (r.ve != null) cap.appendChild(el('span', 'tri-ana-k', `ve ${r.ve}l/min`))
+  if (r.hrMax != null) cap.appendChild(el('span', 'tri-ana-k', `hrmax ${r.hrMax}`))
+  block.appendChild(cap)
+  return block
+}
+
 const buildAbilities = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-radar')
   block.appendChild(anaTitle('abilities', 'radar'))
@@ -3395,6 +3535,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   recovery: buildRecoveryChart,
   sleep: buildSleep,
   vo2max: buildVo2max,
+  vo2test: buildVo2test,
   abilities: buildAbilities,
   cardio: buildCardio,
   pmc: buildPmc,
@@ -3694,6 +3835,49 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       radarSvg.removeEventListener('mousemove', onMove)
       radarSvg.removeEventListener('mouseleave', onLeave)
       radarTip.remove()
+    })
+  }
+
+  const vo2t = panel.querySelector<HTMLElement>('.tri-vo2t')
+  if (vo2t) {
+    document.body.querySelector('.tri-vo2t-tip')?.remove()
+    const tip = el('div', 'tri-gloss tri-vo2t-tip')
+    tip.setAttribute('role', 'tooltip')
+    document.body.appendChild(tip)
+    const place = (event: MouseEvent): void => {
+      const pr = tip.getBoundingClientRect()
+      const left =
+        event.clientX + 14 + pr.width > window.innerWidth - 8
+          ? event.clientX - 14 - pr.width
+          : event.clientX + 14
+      const top =
+        event.clientY + 14 + pr.height > window.innerHeight - 8
+          ? event.clientY - 14 - pr.height
+          : event.clientY + 14
+      tip.style.left = `${Math.max(8, left).toFixed(0)}px`
+      tip.style.top = `${Math.max(8, top).toFixed(0)}px`
+    }
+    const bound: Array<[HTMLElement, (e: MouseEvent) => void, () => void]> = []
+    for (const t of Array.from(vo2t.querySelectorAll<HTMLElement>('[data-tip-h]'))) {
+      const move = (e: MouseEvent): void => {
+        tip.replaceChildren(
+          el('span', 'tri-gloss-h', t.dataset.tipH ?? ''),
+          el('span', 'tri-gloss-def', t.dataset.tipD ?? ''),
+        )
+        tip.classList.add('tri-gloss--on')
+        place(e)
+      }
+      const leave = (): void => tip.classList.remove('tri-gloss--on')
+      t.addEventListener('mousemove', move)
+      t.addEventListener('mouseleave', leave)
+      bound.push([t, move, leave])
+    }
+    cleanups.push(() => {
+      for (const [t, move, leave] of bound) {
+        t.removeEventListener('mousemove', move)
+        t.removeEventListener('mouseleave', leave)
+      }
+      tip.remove()
     })
   }
 
