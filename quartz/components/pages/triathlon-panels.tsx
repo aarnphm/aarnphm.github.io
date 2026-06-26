@@ -183,6 +183,7 @@ export const AnalyticsPanel = () => (
         <div class="tri-ana-block" data-chart="recovery" />
         <div class="tri-ana-block" data-chart="sleep" />
         <div class="tri-ana-block" data-chart="vo2max" />
+        <div class="tri-ana-block" data-chart="vo2test" />
         <div class="tri-ana-block" data-chart="abilities" />
         <div class="tri-ana-block" data-chart="cardio" />
         <div class="tri-ana-block" data-chart="pmc" />

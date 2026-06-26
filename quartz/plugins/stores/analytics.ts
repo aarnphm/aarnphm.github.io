@@ -58,13 +58,16 @@ export interface Vo2LabRecord {
   date: string
   value: number
   hrMax: number | null
+  hrAtVo2max: number | null
   vt1Hr: number | null
   vt1Kmh: number | null
+  caloriesAtVt1: number | null
   maxKmh: number | null
   ve: number | null
   percentile: number | null
   zonesHr: number[]
   zonesKmh: number[]
+  zonesKcal: number[]
 }
 
 export interface LabTests {
@@ -1609,13 +1612,16 @@ export const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
       date,
       value,
       hrMax: numAt(item, 'hrMax'),
+      hrAtVo2max: numAt(item, 'hrAtVo2max'),
       vt1Hr: numAt(item, 'vt1Hr'),
       vt1Kmh: numAt(item, 'vt1Kmh'),
+      caloriesAtVt1: numAt(item, 'caloriesAtVt1'),
       maxKmh: numAt(item, 'maxKmh'),
       ve: numAt(item, 've'),
       percentile: numAt(item, 'percentile'),
       zonesHr: numArr(item.zonesHr),
       zonesKmh: numArr(item.zonesKmh),
+      zonesKcal: numArr(item.zonesKcal),
     })
   }
   out.sort((a, b) => a.date.localeCompare(b.date))
