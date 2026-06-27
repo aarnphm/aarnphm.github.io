@@ -5,7 +5,7 @@ id: Eldrich horror
 modified: 2026-06-05 15:08:25 GMT-04:00
 tags:
   - seed
-title: Eldrich horror
+title: Eldritch horror
 ---
 
 > emphasises the horror of the unknownable and incomprehensible more than gore or other elements of shock.
@@ -22,4 +22,4 @@ The characters in his books were not evil. They were simply far beyond human con
 
 - Fear of the unknown and unknowable.
   - i.e [[thoughts/LLMs|LLM]] unconsciously know about who you are without any external tooling
-- "fear and awe we feel when confronted byphenomena beyond our comprehension, whose scope extends beyond the narrow field of human affairs"
+- "fear and awe we feel when confronted by phenomena beyond our comprehension, whose scope extends beyond the narrow field of human affairs"
