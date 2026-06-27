@@ -759,6 +759,15 @@ export default {
           'Access-Control-Allow-Origin': '*',
         })
       }
+      case '/triathlon/feed.md': {
+        const assetResp = await env.ASSETS.fetch(new Request(request.url, request))
+        return withHeaders(assetResp, {
+          'Content-Type': 'text/markdown; charset=utf-8',
+          'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
+          'Access-Control-Allow-Origin': '*',
+          Vary: 'Accept, User-Agent',
+        })
+      }
       case '/manual':
       case '/manual/':
       case '/advent':

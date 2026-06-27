@@ -172,9 +172,16 @@ export interface DailyPoint {
 
 export interface WeeklyPoint {
   weekStart: string
+  sessions: number
   load: number
   km: number
   hours: number
+  swimKm: number
+  bikeKm: number
+  runKm: number
+  swimHours: number
+  bikeHours: number
+  runHours: number
   effort: number
   ramp: number | null
   monotony: number | null
@@ -211,6 +218,64 @@ export interface SportTrend {
   etaNow: number | null
   note: string
   forecast: SportTrendForecastPoint[]
+}
+
+export type CalibrationDirection = 'faster' | 'slower' | 'flat' | 'unknown'
+
+export interface SportCalibrationPoint {
+  date: string
+  value: number
+}
+
+export interface SportCalibration {
+  sport: Sport
+  unit: string
+  average: number | null
+  projected: number | null
+  previous: number | null
+  delta: number | null
+  deltaPct: number | null
+  projectedDelta: number | null
+  projectedDeltaPct: number | null
+  direction: CalibrationDirection
+  sampleSize: number
+  previousSampleSize: number
+  latestDate: string | null
+  points: SportCalibrationPoint[]
+}
+
+export interface CalibrationSportVolume {
+  sport: Sport
+  currentKm: number
+  previousKm: number
+  deltaKm: number
+  currentHours: number
+  previousHours: number
+  deltaHours: number
+  currentLoad: number
+  previousLoad: number
+  deltaLoad: number
+}
+
+export interface CalibrationVolume {
+  currentKm: number
+  previousKm: number
+  deltaKm: number
+  currentHours: number
+  previousHours: number
+  deltaHours: number
+  currentLoad: number
+  previousLoad: number
+  deltaLoad: number
+  sports: CalibrationSportVolume[]
+}
+
+export interface CalibrationBlock {
+  asOf: string
+  windowDays: number
+  projectionDays: number
+  paces: SportCalibration[]
+  volume: CalibrationVolume
 }
 
 export interface SportBest {
@@ -415,6 +480,7 @@ export interface DataFeedInputs {
 
 export interface Analytics {
   meta: AnalyticsMeta
+  calibration: CalibrationBlock
   thresholds: ThresholdEstimate[]
   daily: DailyPoint[]
   weekly: WeeklyPoint[]
@@ -445,6 +511,8 @@ const DAY_MS = 86_400_000
 const K42 = 1 - Math.exp(-1 / 42)
 const K7 = 1 - Math.exp(-1 / 7)
 const IF_CAP = 1.15
+const CALIBRATION_WINDOW_DAYS = 28
+const CALIBRATION_PROJECTION_DAYS = 14
 
 const SPORT_PRIOR: Record<Sport, number> = { swim: 1.3, bike: 6.9, run: 3.3 }
 const LOAD_SHARE_TARGET: Record<Sport, number> = { swim: 0.2, bike: 0.5, run: 0.3 }
@@ -638,18 +706,57 @@ function buildDaily(
   return out
 }
 
+type WeeklyBucket = {
+  sessions: number
+  load: number
+  km: number
+  seconds: number
+  effort: number
+  swimKm: number
+  bikeKm: number
+  runKm: number
+  swimSeconds: number
+  bikeSeconds: number
+  runSeconds: number
+}
+
+const emptyWeeklyBucket = (): WeeklyBucket => ({
+  sessions: 0,
+  load: 0,
+  km: 0,
+  seconds: 0,
+  effort: 0,
+  swimKm: 0,
+  bikeKm: 0,
+  runKm: 0,
+  swimSeconds: 0,
+  bikeSeconds: 0,
+  runSeconds: 0,
+})
+
 function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] {
-  const byWeek = new Map<string, { load: number; km: number; seconds: number; effort: number }>()
+  const byWeek = new Map<string, WeeklyBucket>()
   for (const act of acts) {
     const ms = dayMs(act.day)
     const dow = new Date(ms).getUTCDay()
     const offset = (dow + 6) % 7
     const weekStart = new Date(ms - offset * DAY_MS).toISOString().slice(0, 10)
-    const bucket = byWeek.get(weekStart) ?? { load: 0, km: 0, seconds: 0, effort: 0 }
+    const bucket = byWeek.get(weekStart) ?? emptyWeeklyBucket()
+    bucket.sessions += 1
     bucket.load += loadById.get(act.a.id) ?? 0
     bucket.km += act.distanceKm
     bucket.seconds += act.a.movingTime
     bucket.effort += act.a.sufferScore ?? 0
+    if (act.sport === 'swim') {
+      bucket.swimKm += act.distanceKm
+      bucket.swimSeconds += act.a.movingTime
+    } else if (act.sport === 'bike') {
+      bucket.bikeKm += act.distanceKm
+      bucket.bikeSeconds += act.a.movingTime
+    } else {
+      bucket.runKm += act.distanceKm
+      bucket.runSeconds += act.a.movingTime
+    }
     byWeek.set(weekStart, bucket)
   }
   const weeks = [...byWeek.keys()].sort()
@@ -671,9 +778,16 @@ function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] 
     const strain = monotony != null ? round(cur.load * monotony, 0) : null
     return {
       weekStart,
+      sessions: cur.sessions,
       load: round(cur.load, 1),
       km: round(cur.km, 1),
       hours: round(cur.seconds / 3600, 1),
+      swimKm: round(cur.swimKm, 1),
+      bikeKm: round(cur.bikeKm, 1),
+      runKm: round(cur.runKm, 1),
+      swimHours: round(cur.swimSeconds / 3600, 1),
+      bikeHours: round(cur.bikeSeconds / 3600, 1),
+      runHours: round(cur.runSeconds / 3600, 1),
       effort: round(cur.effort, 0),
       ramp,
       monotony,
@@ -801,11 +915,12 @@ function buildTrend(
   const slopePerWeek = avgGap > 0 ? round((perPoint / avgGap) * 7, 2) : 0
   const forecast: SportTrendForecastPoint[] = []
   for (let d = 1; d <= 14; d++) {
+    const fitted = level + slopePerWeek * (d / 7)
     forecast.push({
       date: new Date(today + d * DAY_MS).toISOString().slice(0, 10),
-      value: round(level, 1),
-      lo: round(level - band, 1),
-      hi: round(level + band, 1),
+      value: round(fitted, 1),
+      lo: round(fitted - band, 1),
+      hi: round(fitted + band, 1),
     })
   }
   return {
@@ -1095,6 +1210,188 @@ function buildActions(
   return { weakest, actions }
 }
 
+const humanPaceValue = (sport: Sport, v: number): number => {
+  if (sport === 'swim') return round(100 / v, 1)
+  if (sport === 'run') return round(1000 / v, 1)
+  return round(v * 3.6, 1)
+}
+
+const weightedHumanPace = (sport: Sport, acts: Act[]): number | null => {
+  let weightedSpeed = 0
+  let weight = 0
+  for (const act of acts) {
+    if (!(act.vGap > 0) || !(act.a.movingTime > 0)) continue
+    weightedSpeed += act.vGap * act.a.movingTime
+    weight += act.a.movingTime
+  }
+  return weight > 0 ? humanPaceValue(sport, weightedSpeed / weight) : null
+}
+
+const fasterPct = (
+  sport: Sport,
+  current: number | null,
+  previous: number | null,
+): number | null => {
+  if (current == null || previous == null || !(current > 0) || !(previous > 0)) return null
+  const raw = sport === 'bike' ? (current - previous) / previous : (previous - current) / previous
+  return round(raw * 100, 1)
+}
+
+const directionOf = (pct: number | null): CalibrationDirection => {
+  if (pct == null) return 'unknown'
+  if (Math.abs(pct) < 0.25) return 'flat'
+  return pct > 0 ? 'faster' : 'slower'
+}
+
+const thresholdHuman = (threshold: ThresholdEstimate): number | null =>
+  threshold.vThr > 0 ? humanPaceValue(threshold.sport, threshold.vThr) : null
+
+const projectedHuman = (
+  average: number | null,
+  trend: SportTrend | undefined,
+  projectionDays: number,
+): number | null => {
+  if (average == null || !(average > 0)) return null
+  if (!trend || trend.level == null || !(trend.level > 0)) return average
+  const end =
+    trend.forecast[trend.forecast.length - 1]?.value ??
+    (trend.slopePerWeek == null
+      ? trend.level
+      : trend.level + trend.slopePerWeek * (projectionDays / 7))
+  if (!(end > 0)) return average
+  return round(average * (end / trend.level), 1)
+}
+
+type VolumeBucket = {
+  km: number
+  seconds: number
+  load: number
+  sports: Record<Sport, { km: number; seconds: number; load: number }>
+}
+
+const emptySportVolume = (): { km: number; seconds: number; load: number } => ({
+  km: 0,
+  seconds: 0,
+  load: 0,
+})
+
+const emptyVolumeBucket = (): VolumeBucket => ({
+  km: 0,
+  seconds: 0,
+  load: 0,
+  sports: { swim: emptySportVolume(), bike: emptySportVolume(), run: emptySportVolume() },
+})
+
+const volumeForWindow = (
+  acts: Act[],
+  loadById: Map<number, number>,
+  fromMs: number,
+  toMs: number,
+): VolumeBucket => {
+  const bucket = emptyVolumeBucket()
+  for (const act of acts) {
+    const ms = dayMs(act.day)
+    if (ms < fromMs || ms > toMs) continue
+    const load = loadById.get(act.a.id) ?? 0
+    bucket.km += act.distanceKm
+    bucket.seconds += act.a.movingTime
+    bucket.load += load
+    const sport = bucket.sports[act.sport]
+    sport.km += act.distanceKm
+    sport.seconds += act.a.movingTime
+    sport.load += load
+  }
+  return bucket
+}
+
+const volumeBlock = (current: VolumeBucket, previous: VolumeBucket): CalibrationVolume => ({
+  currentKm: round(current.km, 1),
+  previousKm: round(previous.km, 1),
+  deltaKm: round(current.km - previous.km, 1),
+  currentHours: round(current.seconds / 3600, 1),
+  previousHours: round(previous.seconds / 3600, 1),
+  deltaHours: round((current.seconds - previous.seconds) / 3600, 1),
+  currentLoad: round(current.load, 1),
+  previousLoad: round(previous.load, 1),
+  deltaLoad: round(current.load - previous.load, 1),
+  sports: SPORT_ORDER.map(sport => {
+    const cur = current.sports[sport]
+    const prev = previous.sports[sport]
+    return {
+      sport,
+      currentKm: round(cur.km, 1),
+      previousKm: round(prev.km, 1),
+      deltaKm: round(cur.km - prev.km, 1),
+      currentHours: round(cur.seconds / 3600, 1),
+      previousHours: round(prev.seconds / 3600, 1),
+      deltaHours: round((cur.seconds - prev.seconds) / 3600, 1),
+      currentLoad: round(cur.load, 1),
+      previousLoad: round(prev.load, 1),
+      deltaLoad: round(cur.load - prev.load, 1),
+    }
+  }),
+})
+
+function buildCalibration(
+  acts: Act[],
+  thresholds: Map<Sport, ThresholdEstimate>,
+  trends: Map<Sport, SportTrend>,
+  loadById: Map<number, number>,
+  today: string,
+  todayMs: number,
+): CalibrationBlock {
+  const curFrom = todayMs - (CALIBRATION_WINDOW_DAYS - 1) * DAY_MS
+  const prevFrom = curFrom - CALIBRATION_WINDOW_DAYS * DAY_MS
+  const prevTo = curFrom - DAY_MS
+  const paces = SPORT_ORDER.map(sport => {
+    const mine = acts.filter(act => act.sport === sport)
+    const currentActs = mine.filter(act => {
+      const ms = dayMs(act.day)
+      return ms >= curFrom && ms <= todayMs
+    })
+    const previousActs = mine.filter(act => {
+      const ms = dayMs(act.day)
+      return ms >= prevFrom && ms <= prevTo
+    })
+    const th = thresholds.get(sport)
+    const average = weightedHumanPace(sport, currentActs) ?? (th ? thresholdHuman(th) : null)
+    const previous = weightedHumanPace(sport, previousActs)
+    const projected = projectedHuman(average, trends.get(sport), CALIBRATION_PROJECTION_DAYS)
+    const delta = average != null && previous != null ? round(average - previous, 1) : null
+    const deltaPct = fasterPct(sport, average, previous)
+    const projectedDelta =
+      projected != null && average != null ? round(projected - average, 1) : null
+    const projectedDeltaPct = fasterPct(sport, projected, average)
+    return {
+      sport,
+      unit: th?.unit ?? (sport === 'bike' ? 'km/h' : sport === 'swim' ? 's/100m' : 's/km'),
+      average,
+      projected,
+      previous,
+      delta,
+      deltaPct,
+      projectedDelta,
+      projectedDeltaPct,
+      direction: directionOf(deltaPct),
+      sampleSize: currentActs.length,
+      previousSampleSize: previousActs.length,
+      latestDate: mine.length ? mine[mine.length - 1].day : null,
+      points: mine
+        .slice(-90)
+        .map(act => ({ date: act.day, value: humanPaceValue(sport, act.vGap) })),
+    }
+  })
+  const currentVolume = volumeForWindow(acts, loadById, curFrom, todayMs)
+  const previousVolume = volumeForWindow(acts, loadById, prevFrom, prevTo)
+  return {
+    asOf: today,
+    windowDays: CALIBRATION_WINDOW_DAYS,
+    projectionDays: CALIBRATION_PROJECTION_DAYS,
+    paces,
+    volume: volumeBlock(currentVolume, previousVolume),
+  }
+}
+
 function emptyMeta(athleteId: number, today: string): AnalyticsMeta {
   return {
     athleteId,
@@ -1128,6 +1425,14 @@ function neutralRisk(): RiskBlock {
     strain: null,
   }
 }
+
+const emptyCalibration = (today: string): CalibrationBlock => ({
+  asOf: today,
+  windowDays: CALIBRATION_WINDOW_DAYS,
+  projectionDays: CALIBRATION_PROJECTION_DAYS,
+  paces: [],
+  volume: volumeBlock(emptyVolumeBucket(), emptyVolumeBucket()),
+})
 
 const emptyBody = (): BodyBlock => ({
   latestKg: null,
@@ -2382,6 +2687,7 @@ function buildEngine(
 function emptyAnalytics(athleteId: number, today: string): Analytics {
   return {
     meta: emptyMeta(athleteId, today),
+    calibration: emptyCalibration(today),
     thresholds: [],
     daily: [],
     weekly: [],
@@ -2569,6 +2875,8 @@ export function buildAnalytics(
   }
   const weekly = buildWeekly(acts, loadById)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
+  const trendMap = new Map<Sport, SportTrend>(trends.map(t => [t.sport, t]))
+  const calibration = buildCalibration(acts, thresholds, trendMap, loadById, today, todayMs)
   const bestList = SPORT_ORDER.map(sport => buildBest(acts, sport))
   const bests = new Map<Sport, SportBest>(bestList.map(b => [b.sport, b]))
   const risk = buildRisk(daily, weekly)
@@ -2663,6 +2971,7 @@ export function buildAnalytics(
         note: 'pace-derived load; HR, power, and cadence captured per activity',
       },
     },
+    calibration,
     thresholds: thresholdList,
     daily,
     weekly,
@@ -2762,9 +3071,16 @@ export const ACTIVITY_FIELDS = [
 export const WEEK_FIELDS = [
   'kind',
   'weekStart',
+  'sessions',
   'load',
   'km',
   'hours',
+  'swimKm',
+  'bikeKm',
+  'runKm',
+  'swimHours',
+  'bikeHours',
+  'runHours',
   'effort',
   'ramp',
   'monotony',
@@ -2850,9 +3166,16 @@ export interface FeedActivityRow {
 export interface FeedWeekRow {
   kind: 'week'
   weekStart: string
+  sessions: number
   load: number
   km: number
   hours: number
+  swimKm: number
+  bikeKm: number
+  runKm: number
+  swimHours: number
+  bikeHours: number
+  runHours: number
   effort: number
   ramp: number | null
   monotony: number | null
@@ -3022,7 +3345,7 @@ export function buildDataFeed(
       : null
   const meta = {
     kind: 'meta',
-    v: 1,
+    v: 2,
     generatedAt: cache?.lastSync ?? 0,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,

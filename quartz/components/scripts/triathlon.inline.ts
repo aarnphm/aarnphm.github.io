@@ -37,6 +37,7 @@ import {
   distCombined,
   dur,
   gradeAt,
+  isImperialUnit,
   KM_TO_MI,
   rate,
   routeStreamFlags,
@@ -1227,9 +1228,9 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     runKm: Number(calc.dataset.run) || 0,
     swimPaceSec: parseClockSeconds(inputVal('swim')),
     t1Sec: parseClockSeconds(inputVal('t1')),
-    bikeMph: Number(inputVal('bike')) || 0,
+    bikeMph: (Number(inputVal('bike')) || 0) * (isImperialUnit() ? 1 : KM_TO_MI),
     t2Sec: parseClockSeconds(inputVal('t2')),
-    runPaceSec: parseClockSeconds(inputVal('run')),
+    runPaceSec: parseClockSeconds(inputVal('run')) / (isImperialUnit() ? 1 : KM_TO_MI),
   })
 
   const compute = (forceTarget = false): void => {
@@ -1251,8 +1252,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       return
     }
     setInputVal('swim', clock(paces.swimPaceSec))
-    setInputVal('bike', paces.bikeMph.toFixed(1))
-    setInputVal('run', clock(paces.runPaceSec))
+    setInputVal('bike', bikeToDisp(paces.bikeMph))
+    setInputVal('run', runToDisp(paces.runPaceSec))
     compute(true)
   }
 
@@ -1265,8 +1266,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       return
     }
     if (solved.swimPaceSec != null) setInputVal('swim', clock(solved.swimPaceSec))
-    if (solved.bikeMph != null) setInputVal('bike', solved.bikeMph.toFixed(1))
-    if (solved.runPaceSec != null) setInputVal('run', clock(solved.runPaceSec))
+    if (solved.bikeMph != null) setInputVal('bike', bikeToDisp(solved.bikeMph))
+    if (solved.runPaceSec != null) setInputVal('run', runToDisp(solved.runPaceSec))
     compute(true)
   }
 
@@ -1275,6 +1276,9 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   const source = calc.querySelector<HTMLElement>('.tri-calc-source')
   const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null => {
     if (!analytics) return null
+    const cal = bySport(analytics.calibration.paces, sport)
+    const calibrated = which === 'avg' ? cal?.average : cal?.projected
+    if (calibrated != null && Number.isFinite(calibrated) && calibrated > 0) return calibrated
     const th = bySport(analytics.thresholds, sport)
     if (!th || !(th.vThr > 0)) return null
     const avg = sport === 'swim' ? 100 / th.vThr : sport === 'bike' ? th.vThr * 3.6 : 1000 / th.vThr
@@ -1286,7 +1290,11 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     return Number.isFinite(ratio) && ratio > 0 ? avg * ratio : avg
   }
   const toCalcInput = (sport: Sport, v: number): string =>
-    sport === 'bike' ? (v * KM_TO_MI).toFixed(1) : clock(sport === 'run' ? v / KM_TO_MI : v)
+    sport === 'bike'
+      ? (isImperialUnit() ? v * KM_TO_MI : v).toFixed(1)
+      : clock(sport === 'run' && isImperialUnit() ? v / KM_TO_MI : v)
+  const bikeToDisp = (mph: number): string => (isImperialUnit() ? mph : mph / KM_TO_MI).toFixed(1)
+  const runToDisp = (miSec: number): string => clock(isImperialUnit() ? miSec : miSec * KM_TO_MI)
   const applySource = (which: 'avg' | 'pred'): void => {
     let any = false
     for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
@@ -1384,6 +1392,25 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   calc.addEventListener('change', onChange)
   calc.addEventListener('keydown', onCalcKey)
   document.addEventListener('keydown', onKey)
+  const bikeUnitCell = calc.querySelector<HTMLElement>('.tri-calc-u[data-u="bike"]')
+  const runUnitCell = calc.querySelector<HTMLElement>('.tri-calc-u[data-u="run"]')
+  const syncUnitLabels = () => {
+    if (bikeUnitCell) bikeUnitCell.textContent = isImperialUnit() ? 'mph' : 'km/h'
+    if (runUnitCell) runUnitCell.textContent = isImperialUnit() ? '/mi' : '/km'
+  }
+  const onUnit = () => {
+    const bikeRaw = Number(inputVal('bike')) || 0
+    if (bikeRaw > 0)
+      setInputVal('bike', (isImperialUnit() ? bikeRaw * KM_TO_MI : bikeRaw / KM_TO_MI).toFixed(1))
+    const runRaw = parseClockSeconds(inputVal('run'))
+    if (runRaw > 0)
+      setInputVal('run', clock(isImperialUnit() ? runRaw / KM_TO_MI : runRaw * KM_TO_MI))
+    syncUnitLabels()
+    compute()
+  }
+  window.addEventListener('tri:unit', onUnit)
+  syncUnitLabels()
+  if (!isImperialUnit()) onUnit()
   calc.querySelectorAll('.tri-calc-preset')[1]?.classList.add('tri-calc-preset--on')
 
   const apath = root.dataset.analyticsPath
@@ -1408,6 +1435,7 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     calc.removeEventListener('change', onChange)
     calc.removeEventListener('keydown', onCalcKey)
     document.removeEventListener('keydown', onKey)
+    window.removeEventListener('tri:unit', onUnit)
   }
 }
 
@@ -1517,6 +1545,7 @@ const clampN = (x: number, lo: number, hi: number): number => Math.min(hi, Math.
 const polyD = (pts: [number, number][]): string =>
   pts.map(([x, y], i) => `${i ? 'L' : 'M'} ${x.toFixed(2)} ${y.toFixed(2)}`).join(' ')
 const signed = (n: number): string => (n > 0 ? `+${n}` : `${n}`)
+const signedFixed = (n: number, dp: number): string => `${n > 0 ? '+' : ''}${n.toFixed(dp)}`
 const hms = (sec: number): string => {
   const t = Math.max(0, Math.round(sec))
   const h = Math.floor(t / 3600)
@@ -2286,11 +2315,46 @@ const buildWeekly = (data: Analytics): HTMLElement => {
   )
   block.appendChild(el('div', 'tri-chart-readout'))
   const active = wk.filter(w => w.load > 0).length
-  const cap = el('div', 'tri-elev-cap')
-  cap.append(
+  const last = wk[wk.length - 1]
+  const prev = wk.length >= 2 ? wk[wk.length - 2] : null
+  const vol = data.calibration.volume
+  const deltaClass =
+    vol.deltaLoad > 0 ? 'tri-dir-up' : vol.deltaLoad < 0 ? 'tri-dir-down' : 'tri-dir-flat'
+  const cap = el('div', 'tri-elev-cap tri-wk-cap')
+  const statRow = el('div', 'tri-wk-cap-row')
+  statRow.append(
     el('span', 'tri-ana-k', `${active} active wk`),
     el('span', 'tri-ana-k', `peak ${Math.round(mx)}/wk`),
+    mathK('tri-ana-k', `this wk ${fmtKm(last.km)} $\\cdot$ ${last.hours.toFixed(1)}h`),
+    mathK('tri-ana-k', `28d ${fmtKm(vol.currentKm)} $\\cdot$ ${vol.currentHours.toFixed(1)}h`),
   )
+  cap.appendChild(statRow)
+  const deltaRow = el('div', 'tri-wk-cap-row')
+  deltaRow.appendChild(
+    mathK(
+      `tri-ana-k ${deltaClass}`,
+      `$\\Delta$ ${fmtSignedKm(vol.deltaKm)} $\\cdot$ ${signedFixed(vol.deltaHours, 1)}h $\\cdot$ ${signedFixed(vol.deltaLoad, 0)} load`,
+    ),
+  )
+  if (prev)
+    deltaRow.appendChild(
+      mathK(
+        'tri-ana-k',
+        `wk $\\Delta$ ${fmtSignedKm(last.km - prev.km)} $\\cdot$ ${signedFixed(last.hours - prev.hours, 1)}h`,
+      ),
+    )
+  cap.appendChild(deltaRow)
+  const legRow = el('div', 'tri-wk-cap-row tri-wk-cap-legs')
+  for (const sport of vol.sports) {
+    if (sport.currentKm <= 0 && sport.previousKm <= 0) continue
+    const leg = el('span', `tri-ana-leg tri-leg-${sport.sport}`)
+    leg.append(
+      buildIcon(sport.sport),
+      el('span', 'tri-ana-k', `${fmtKm(sport.currentKm)} (${fmtSignedKm(sport.deltaKm)})`),
+    )
+    legRow.appendChild(leg)
+  }
+  if (legRow.childElementCount) cap.appendChild(legRow)
   block.appendChild(cap)
   return block
 }
@@ -2354,6 +2418,10 @@ const fmtTrendVal = (sport: Sport, v: number): string =>
   sport === 'bike' ? `${Math.round(v)} km/h` : `${clock(v)}${sport === 'swim' ? ' /100m' : ' /km'}`
 const fmtTrendShort = (sport: Sport, v: number): string =>
   sport === 'bike' ? String(Math.round(v)) : clock(v)
+const fmtKm = (km: number): string =>
+  isImperialUnit() ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
+const fmtSignedKm = (km: number): string =>
+  isImperialUnit() ? `${signedFixed(km * KM_TO_MI, 1)} mi` : `${signedFixed(km, 1)} km`
 
 const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
   const tr = bySport(data.trends, sport)
@@ -2443,6 +2511,41 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     const xax = el('div', 'tri-trend-xax')
     xax.append(el('span', '', 'now'), el('span', '', `+${Math.round(weeks)} wk`))
     wrap.append(chart, xax, el('div', 'tri-chart-readout'))
+  }
+  const cal = bySport(data.calibration.paces, sport)
+  if (cal) {
+    const cap = el('div', 'tri-elev-cap tri-trend-cap')
+    if (cal.average != null)
+      cap.appendChild(el('span', 'tri-ana-k', `avg ${fmtTrendVal(sport, cal.average)}`))
+    if (cal.projected != null)
+      cap.appendChild(el('span', 'tri-ana-k', `proj ${fmtTrendVal(sport, cal.projected)}`))
+    if (cal.deltaPct != null) {
+      const cls =
+        cal.direction === 'faster'
+          ? 'tri-dir-up'
+          : cal.direction === 'slower'
+            ? 'tri-dir-down'
+            : 'tri-dir-flat'
+      cap.appendChild(
+        el(
+          'span',
+          `tri-ana-k ${cls}`,
+          `${signedFixed(cal.deltaPct, 1)}% vs prev ${data.calibration.windowDays}d`,
+        ),
+      )
+    }
+    if (cal.projectedDeltaPct != null)
+      cap.appendChild(
+        el(
+          'span',
+          'tri-ana-k',
+          `${signedFixed(cal.projectedDeltaPct, 1)}% next ${data.calibration.projectionDays}d`,
+        ),
+      )
+    cap.appendChild(el('span', 'tri-ana-k', `n ${cal.sampleSize}/${cal.previousSampleSize}`))
+    if (cal.latestDate)
+      cap.appendChild(el('span', 'tri-ana-k', `latest ${shortDate(cal.latestDate)}`))
+    wrap.appendChild(cap)
   }
   const dir = trendDir(tr.invert, tr.slopePerWeek)
   const note = el('div', 'tri-trend-note')
@@ -3658,7 +3761,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   const wk = data.weekly
   bind('.tri-ana-weekly', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
     const w = wk[i]
-    return `${w.weekStart} · load ${Math.round(w.load)}`
+    return `${w.weekStart} · load ${Math.round(w.load)} · ${fmtKm(w.km)} · ${w.hours.toFixed(1)}h · swim ${fmtKm(w.swimKm)} · bike ${fmtKm(w.bikeKm)} · run ${fmtKm(w.runKm)}`
   })
   bind('.tri-ana-effort', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
     const w = wk[i]
@@ -4392,9 +4495,13 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   detail?.addEventListener('click', onDetailToggle)
   document.addEventListener('keydown', onKey)
   const onUnitChange = () => {
-    if (data) render(data)
+    if (data) {
+      scrubCleanup?.()
+      render(data)
+    }
   }
   document.addEventListener('tri-weightunit', onUnitChange)
+  window.addEventListener('tri:unit', onUnitChange)
 
   return () => {
     btn?.removeEventListener('click', open)
@@ -4407,6 +4514,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     detail?.removeEventListener('click', onDetailToggle)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('tri-weightunit', onUnitChange)
+    window.removeEventListener('tri:unit', onUnitChange)
     scrubCleanup?.()
   }
 }
@@ -5287,11 +5395,9 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
   }
 
   const dists = root.querySelectorAll<HTMLElement>('.tri-dist[data-km]')
-  let mi = false
-  const onClick = () => {
-    mi = !mi
+  const sync = () => {
+    const mi = isImperialUnit()
     unit.textContent = mi ? 'mi' : 'km'
-    setDistanceUnit(mi)
     for (const c of cells) {
       if (!mi) {
         c.textContent = c.dataset.km ?? ''
@@ -5305,14 +5411,16 @@ const setupCheat = (root: HTMLElement): (() => void) | null => {
       const kind = d.dataset.kind ?? 'combined'
       d.textContent = kind === 'combined' ? distCombined(km) : dist(km, kind as ActivityKind)
     }
-    window.dispatchEvent(new CustomEvent('tri:unit'))
   }
+  const onClick = () => toggleTriUnit()
   unit.addEventListener('click', onClick)
+  window.addEventListener('tri:unit', sync)
+  sync()
   return () => {
     window.clearTimeout(showTimer)
     unit.removeEventListener('click', onClick)
+    window.removeEventListener('tri:unit', sync)
     ann?.remove()
-    setDistanceUnit(false)
   }
 }
 
@@ -5713,6 +5821,178 @@ const setupAxisLabels = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const TRI_UNIT_KEY = 'tri-dist-unit'
+
+const toggleTriUnit = (): void => {
+  const next = !isImperialUnit()
+  setDistanceUnit(next)
+  try {
+    localStorage.setItem(TRI_UNIT_KEY, next ? 'mi' : 'km')
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent('tri:unit'))
+}
+
+const TRI_PAGES: { path: string; label: string; hint: string }[] = [
+  { path: '/triathlon', label: 'triathlon', hint: 'overview · bars' },
+  { path: '/triathlon/tools', label: 'tools', hint: 'gear · pace · fuel · calculator' },
+  { path: '/triathlon/analytics', label: 'analytics', hint: 'charts · search' },
+  { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
+  { path: '/triathlon/training', label: 'training', hint: 'plans' },
+  { path: '/triathlon/feed', label: 'feed', hint: 'all activities · list' },
+]
+
+const setupCommandPalette = (root: HTMLElement): (() => void) => {
+  const overlay = el('div', 'tri-cmdk', undefined, { 'aria-hidden': 'true' })
+  const box = el('div', 'tri-cmdk-box', undefined, {
+    role: 'dialog',
+    'aria-label': 'command palette',
+  })
+  const input = el('input', 'tri-cmdk-input', undefined, {
+    type: 'text',
+    placeholder: 'go to page · toggle units…',
+    'aria-label': 'command',
+    autocomplete: 'off',
+    spellcheck: 'false',
+  }) as HTMLInputElement
+  const list = el('div', 'tri-cmdk-list', undefined, { role: 'listbox' })
+  box.append(input, list)
+  overlay.appendChild(box)
+  root.appendChild(overlay)
+
+  interface Cmd {
+    label: () => string
+    hint: string
+    keys: string
+    run: () => void
+  }
+  const navTo = (path: string) => (): void => {
+    close()
+    const url = new URL(path, window.location.toString())
+    if (window.spaNavigate) window.spaNavigate(url)
+    else window.location.href = url.toString()
+  }
+  const cmds: Cmd[] = [
+    ...TRI_PAGES.map(p => ({
+      label: () => `go to ${p.label}`,
+      hint: p.hint,
+      keys: `go ${p.label} ${p.path}`,
+      run: navTo(p.path),
+    })),
+    {
+      label: () => `toggle units · ${isImperialUnit() ? 'mi → km' : 'km → mi'}`,
+      hint: 'distance · pace · analytics · calculator',
+      keys: 'toggle units km mi miles imperial metric pace distance speed',
+      run: () => {
+        toggleTriUnit()
+        render()
+      },
+    },
+  ]
+
+  let items: Cmd[] = cmds
+  let sel = 0
+  let isOpen = false
+
+  const paint = (): void => {
+    const rows = list.querySelectorAll<HTMLElement>('.tri-cmdk-row')
+    rows.forEach((r, i) => {
+      r.classList.toggle('tri-cmdk-row--on', i === sel)
+      r.setAttribute('aria-selected', String(i === sel))
+    })
+    rows[sel]?.scrollIntoView({ block: 'nearest' })
+  }
+  const render = (): void => {
+    const q = input.value.trim().toLowerCase()
+    items = q
+      ? cmds.filter(c => `${c.label()} ${c.hint} ${c.keys}`.toLowerCase().includes(q))
+      : cmds
+    if (sel >= items.length) sel = Math.max(0, items.length - 1)
+    list.replaceChildren(
+      ...items.map((c, i) => {
+        const row = el(
+          'div',
+          i === sel ? 'tri-cmdk-row tri-cmdk-row--on' : 'tri-cmdk-row',
+          undefined,
+          { role: 'option', 'aria-selected': String(i === sel) },
+        )
+        row.append(
+          el('span', 'tri-cmdk-row-label', c.label()),
+          el('span', 'tri-cmdk-row-hint', c.hint),
+        )
+        row.addEventListener('mousemove', () => {
+          if (sel !== i) {
+            sel = i
+            paint()
+          }
+        })
+        row.addEventListener('click', () => c.run())
+        return row
+      }),
+    )
+    if (!items.length) list.appendChild(el('div', 'tri-cmdk-empty', 'no commands'))
+  }
+  const openPalette = (): void => {
+    if (isOpen) return
+    isOpen = true
+    input.value = ''
+    sel = 0
+    render()
+    overlay.classList.add('tri-cmdk--on')
+    overlay.setAttribute('aria-hidden', 'false')
+    input.focus()
+  }
+  function close(): void {
+    if (!isOpen) return
+    isOpen = false
+    overlay.classList.remove('tri-cmdk--on')
+    overlay.setAttribute('aria-hidden', 'true')
+    input.blur()
+  }
+
+  const onInput = (): void => {
+    sel = 0
+    render()
+  }
+  const onInputKey = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      close()
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      items[sel]?.run()
+    } else if (e.key === 'ArrowDown' || (e.ctrlKey && e.key.toLowerCase() === 'n')) {
+      e.preventDefault()
+      if (items.length) sel = (sel + 1) % items.length
+      paint()
+    } else if (e.key === 'ArrowUp' || (e.ctrlKey && e.key.toLowerCase() === 'p')) {
+      e.preventDefault()
+      if (items.length) sel = (sel - 1 + items.length) % items.length
+      paint()
+    }
+  }
+  const onDocKey = (e: KeyboardEvent): void => {
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      if (isOpen) close()
+      else openPalette()
+    }
+  }
+  const onScrim = (e: MouseEvent): void => {
+    if (e.target === overlay) close()
+  }
+  input.addEventListener('input', onInput)
+  input.addEventListener('keydown', onInputKey)
+  overlay.addEventListener('mousedown', onScrim)
+  document.addEventListener('keydown', onDocKey, true)
+  return () => {
+    document.removeEventListener('keydown', onDocKey, true)
+    overlay.remove()
+  }
+}
+
 const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
@@ -5739,33 +6019,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     closeOpenModals(key)
     root.querySelector<HTMLElement>(mc.btn)?.click()
   }
-  const toggleSearchFocus = (): boolean => {
-    const search =
-      (root.classList.contains('tri-map-open')
-        ? root.querySelector<HTMLInputElement>('.tri-map-search')
-        : null) ??
-      (root.classList.contains('tri-analytics-open')
-        ? root.querySelector<HTMLInputElement>('.tri-analytics .tri-ana-search')
-        : null)
-    if (!search) return false
-    if (document.activeElement === search) {
-      search.blur()
-    } else {
-      search.focus()
-      search.select()
-    }
-    return true
-  }
-
   const onKey = (e: KeyboardEvent) => {
-    if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
-      if (toggleSearchFocus()) {
-        e.preventDefault()
-        e.stopImmediatePropagation()
-      }
-      return
-    }
-
     if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
       e.preventDefault()
       e.stopImmediatePropagation()
@@ -5845,15 +6099,226 @@ const setupPaceUnit = (root: HTMLElement): (() => void) | null => {
   const buttons = root.querySelectorAll<HTMLButtonElement>('.tri-pace-unit')
   const cells = root.querySelectorAll<HTMLElement>('.tri-pace [data-kph]')
   if (buttons.length === 0 || cells.length === 0) return null
-  let mph = false
-  const onClick = () => {
-    mph = !mph
+  const sync = () => {
+    const mph = isImperialUnit()
     for (const b of buttons) b.textContent = mph ? 'mph' : 'km/h'
     for (const c of cells) c.textContent = (mph ? c.dataset.mph : c.dataset.kph) ?? ''
   }
+  const onClick = () => toggleTriUnit()
   for (const b of buttons) b.addEventListener('click', onClick)
+  window.addEventListener('tri:unit', sync)
+  sync()
   return () => {
     for (const b of buttons) b.removeEventListener('click', onClick)
+    window.removeEventListener('tri:unit', sync)
+  }
+}
+
+const FEED_SORTS: Record<string, (a: ActivitySummary, b: ActivitySummary) => number> = {
+  date: (a, b) => b.date.localeCompare(a.date),
+  distance: (a, b) => b.distanceKm - a.distanceKm,
+  pace: (a, b) =>
+    (b.movingTimeS > 0 ? b.distanceKm / b.movingTimeS : 0) -
+    (a.movingTimeS > 0 ? a.distanceKm / a.movingTimeS : 0),
+}
+
+const setupFeed = (root: HTMLElement): (() => void) | null => {
+  if (root.dataset.triView !== 'feed') return null
+  const list = root.querySelector<HTMLElement>('.tri-feed-list')
+  const search = root.querySelector<HTMLInputElement>('.tri-feed-search')
+  const countEl = root.querySelector<HTMLElement>('.tri-feed-count')
+  const analyticsPath = root.dataset.analyticsPath
+  const detailPath = root.dataset.detailPath
+  if (!list || !analyticsPath) return null
+
+  let acts: ActivitySummary[] = []
+  let openId: string | null = null
+  const detailCache = new Map<string, HTMLElement>()
+
+  const buildSub = (a: ActivitySummary): HTMLElement => {
+    const sub = el('span', 'tri-feed-sub')
+    sub.append(
+      el('span', 'tri-feed-c tri-feed-c--date', a.date),
+      el('span', 'tri-feed-c tri-feed-c--dist', dist(a.distanceKm, a.sport)),
+      el('span', 'tri-feed-c tri-feed-c--time', dur(a.movingTimeS)),
+      el('span', 'tri-feed-c tri-feed-c--pace', rate(a.sport, a.distanceKm, a.movingTimeS)),
+    )
+    return sub
+  }
+
+  const buildDetail = (id: string): HTMLElement => {
+    const cached = detailCache.get(id)
+    if (cached) return cached
+    const wrap = el('div', 'tri-feed-detail')
+    wrap.appendChild(el('div', 'tri-ana-empty', 'loading…'))
+    detailCache.set(id, wrap)
+    if (detailPath)
+      void loadDetailPayload(detailPath).then(payload => {
+        const d = payload?.details?.[id]
+        if (!d) {
+          wrap.replaceChildren(el('div', 'tri-ana-empty', 'no detail'))
+          return
+        }
+        const act = renderDetail(d)
+        act.classList.add('tri-act--expanded')
+        wrap.replaceChildren(act)
+        const h = payload?.health?.[d.date]
+        if (h) {
+          const rec = buildRecovery(h)
+          if (rec) wrap.appendChild(rec)
+        }
+      })
+    return wrap
+  }
+
+  const collapse = () => {
+    if (openId == null) return
+    const row = list.querySelector<HTMLElement>(`.tri-feed-row[data-id="${openId}"]`)
+    row?.querySelector('.tri-feed-detail')?.remove()
+    row?.querySelector('.tri-feed-head')?.setAttribute('aria-expanded', 'false')
+    row?.classList.remove('tri-feed-row--open')
+    openId = null
+  }
+
+  const expand = (id: string) => {
+    if (openId === id) {
+      collapse()
+      return
+    }
+    collapse()
+    const row = list.querySelector<HTMLElement>(`.tri-feed-row[data-id="${id}"]`)
+    if (!row) return
+    openId = id
+    row.classList.add('tri-feed-row--open')
+    row.querySelector('.tri-feed-head')?.setAttribute('aria-expanded', 'true')
+    row.appendChild(buildDetail(id))
+  }
+
+  const renderList = () => {
+    const q = (search?.value ?? '').trim().toLowerCase()
+    const sortKey = /sort:(distance|pace|date)/.exec(q)?.[1] ?? 'date'
+    const term = q
+      .replace(/sort:\w+/g, '')
+      .replace(/filter:/g, '')
+      .trim()
+    const filtered = (
+      term
+        ? acts.filter(a => `${a.sport} ${a.name} ${a.date}`.toLowerCase().includes(term))
+        : acts.slice()
+    ).sort(FEED_SORTS[sortKey] ?? FEED_SORTS.date)
+    list.replaceChildren(
+      ...filtered.map(a => {
+        const row = el('div', 'tri-feed-row', undefined, { role: 'listitem' })
+        row.dataset.id = String(a.id)
+        const head = el('button', 'tri-feed-head', undefined, {
+          type: 'button',
+          'aria-expanded': 'false',
+        })
+        head.append(buildIcon(a.sport), el('span', 'tri-feed-name', a.name || a.sport), buildSub(a))
+        row.appendChild(head)
+        return row
+      }),
+    )
+    if (!filtered.length) list.appendChild(el('div', 'tri-ana-empty', 'no activities'))
+    if (countEl) countEl.textContent = String(filtered.length)
+    list.setAttribute('aria-busy', 'false')
+  }
+
+  const onListClick = (e: MouseEvent) => {
+    const head = (e.target as HTMLElement).closest<HTMLElement>('.tri-feed-head')
+    const id = head?.closest<HTMLElement>('.tri-feed-row')?.dataset.id
+    if (id) expand(id)
+  }
+  const onSearch = () => {
+    collapse()
+    renderList()
+  }
+  const onUnit = () => {
+    detailCache.clear()
+    const reopen = openId
+    openId = null
+    renderList()
+    if (reopen) expand(reopen)
+  }
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && openId != null) collapse()
+  }
+
+  let marqueeName: HTMLElement | null = null
+  let marqueeRaf = 0
+  let marqueeStart = 0
+  const stopMarquee = () => {
+    if (marqueeRaf) {
+      cancelAnimationFrame(marqueeRaf)
+      marqueeRaf = 0
+    }
+    if (marqueeName) {
+      marqueeName.scrollLeft = 0
+      marqueeName.style.textOverflow = ''
+      marqueeName = null
+    }
+    marqueeStart = 0
+  }
+  const onOver = (e: MouseEvent) => {
+    const name = (e.target as HTMLElement)
+      .closest<HTMLElement>('.tri-feed-head')
+      ?.querySelector<HTMLElement>('.tri-feed-name')
+    if (!name || name === marqueeName) return
+    stopMarquee()
+    const max = name.scrollWidth - name.clientWidth
+    if (max <= 2) return
+    marqueeName = name
+    name.style.textOverflow = 'clip'
+    const leg = (max / 36) * 1000
+    const cycle = leg * 2 + 1400
+    const step = (ts: number) => {
+      if (!marqueeStart) marqueeStart = ts
+      const t = (ts - marqueeStart) % cycle
+      name.scrollLeft =
+        t < leg
+          ? (t / leg) * max
+          : t < leg + 700
+            ? max
+            : t < leg * 2 + 700
+              ? max - ((t - leg - 700) / leg) * max
+              : 0
+      marqueeRaf = requestAnimationFrame(step)
+    }
+    marqueeRaf = requestAnimationFrame(step)
+  }
+  const onOut = (e: MouseEvent) => {
+    const head = (e.target as HTMLElement).closest<HTMLElement>('.tri-feed-head')
+    const to = e.relatedTarget as Node | null
+    if (head && to && head.contains(to)) return
+    stopMarquee()
+  }
+
+  list.addEventListener('click', onListClick)
+  list.addEventListener('mouseover', onOver)
+  list.addEventListener('mouseout', onOut)
+  search?.addEventListener('input', onSearch)
+  window.addEventListener('tri:unit', onUnit)
+  document.addEventListener('keydown', onKey)
+
+  fetch(analyticsPath)
+    .then(res => res.json())
+    .then((d: Analytics) => {
+      acts = d.activities ?? []
+      renderList()
+    })
+    .catch(() => {
+      list.setAttribute('aria-busy', 'false')
+      list.replaceChildren(el('div', 'tri-ana-empty', 'no data'))
+    })
+
+  return () => {
+    stopMarquee()
+    list.removeEventListener('click', onListClick)
+    list.removeEventListener('mouseover', onOver)
+    list.removeEventListener('mouseout', onOut)
+    search?.removeEventListener('input', onSearch)
+    window.removeEventListener('tri:unit', onUnit)
+    document.removeEventListener('keydown', onKey)
   }
 }
 
@@ -5870,6 +6335,13 @@ document.addEventListener('nav', () => {
   if (embedCleanup) window.addCleanup?.(embedCleanup)
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (!root) return
+  try {
+    setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
+  } catch {
+    /* ignore */
+  }
+  const paletteCleanup = setupCommandPalette(root)
+  window.addCleanup?.(paletteCleanup)
   const cleanup = setup(root)
   if (cleanup) window.addCleanup?.(cleanup)
   const calcCleanup = setupCalc(root)
@@ -5896,6 +6368,8 @@ document.addEventListener('nav', () => {
   if (cheatCleanup) window.addCleanup?.(cheatCleanup)
   const anaCleanup = setupAnalytics(root)
   if (anaCleanup) window.addCleanup?.(anaCleanup)
+  const feedCleanup = setupFeed(root)
+  if (feedCleanup) window.addCleanup?.(feedCleanup)
   const trainingCleanup = setupTraining(root)
   if (trainingCleanup) window.addCleanup?.(trainingCleanup)
   const mapCleanup = setupMap(root)

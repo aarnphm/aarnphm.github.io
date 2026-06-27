@@ -48,6 +48,7 @@
     "quartz/runtime/native/packs/**/*.mjs",
     "content/stream.md",
     "content/are.na.md",
+    "content/hinterland/healthexporter/**/*.json",
     "migrations/",
     "quartz/static/pdfjs/"
   ]

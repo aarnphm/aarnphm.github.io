@@ -2210,6 +2210,26 @@
   flex-wrap: wrap;
 }
 
+.tri-wk-cap {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.tri-wk-cap-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.tri-trend-cap {
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
 .tri-ana-weekly-svg {
   height: 56px;
 }
@@ -3202,6 +3222,192 @@
   font-size: 0.56rem;
   font-variant-numeric: tabular-nums;
   color: var(--gray);
+}
+
+.tri-cmdk {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 14vh;
+  border: 1px solid var(--gray);
+}
+
+.tri-cmdk--on {
+  display: flex;
+}
+
+.tri-cmdk-box {
+  display: flex;
+  flex-direction: column;
+  width: min(540px, 92vw);
+  max-height: 60vh;
+  overflow: hidden;
+  background: var(--light);
+  border: 1px solid color-mix(in srgb, var(--gray) 42%, transparent);
+}
+
+.tri-cmdk-input {
+  padding: 0.7rem 0.85rem;
+  font-family: var(--codeFont);
+  font-size: 0.85rem;
+  color: var(--dark);
+  background: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+  outline: none;
+}
+
+.tri-cmdk-input::placeholder {
+  color: var(--gray);
+}
+
+.tri-cmdk-list {
+  overflow-y: auto;
+  padding: 0.3rem 0;
+}
+
+.tri-cmdk-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--codeFont);
+  cursor: pointer;
+}
+
+.tri-cmdk-row--on {
+  background: color-mix(in srgb, var(--tri-accent) 14%, transparent);
+}
+
+.tri-cmdk-row-label {
+  font-size: 0.78rem;
+  color: var(--dark);
+}
+
+.tri-cmdk-row-hint {
+  margin-left: auto;
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-cmdk-empty {
+  padding: 0.5rem 0.85rem;
+  font-family: var(--codeFont);
+  font-size: 0.7rem;
+  color: var(--gray);
+}
+
+.tri-feed {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--tri-page-w);
+  height: calc(100dvh - 7rem);
+  overflow: hidden;
+  background: var(--light);
+  border: 1px solid var(--gray);
+  border-radius: var(--radius-none);
+}
+
+.tri-feed-bar {
+  flex: none;
+}
+
+.tri-feed-count {
+  margin-left: auto;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+}
+
+.tri-feed-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 1rem 1rem;
+  @include thin-scrollbar;
+}
+
+.tri-feed-row {
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 20%, transparent);
+}
+
+.tri-feed-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.1rem;
+  font-family: var(--codeFont);
+  color: var(--dark);
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.tri-feed-head:hover,
+.tri-feed-row--open .tri-feed-head {
+  color: var(--tri-accent);
+}
+
+.tri-feed-head svg {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  align-self: center;
+}
+
+.tri-feed-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-feed-sub {
+  display: inline-flex;
+  flex: none;
+  gap: 0.7rem;
+  margin-left: auto;
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-feed-c {
+  text-align: right;
+}
+
+.tri-feed-c--date {
+  width: 10.5ch;
+}
+
+.tri-feed-c--dist {
+  width: 8ch;
+}
+
+.tri-feed-c--time {
+  width: 6ch;
+}
+
+.tri-feed-c--pace {
+  width: 11ch;
+}
+
+.tri-feed-detail .tri-act-head {
+  display: none;
+}
+
+.tri-feed-detail {
+  padding: 0.2rem 0 0.8rem;
 }
 
 .tri-unit-switch {

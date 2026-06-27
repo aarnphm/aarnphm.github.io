@@ -184,7 +184,7 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   assert.ok(v.value != null && v.value > 25 && v.value < 50)
   assert.ok(v.fitnessAge != null && v.fitnessAge >= 20 && v.fitnessAge <= 80)
   assert.equal(v.chronoAge, 25)
-  assert.equal(v.hrMax, 190)
+  assert.equal(v.hrMax, 182)
   assert.equal(v.hrMaxSource, 'declared')
   assert.ok(v.trend.length >= 1)
   assert.equal(a.engine.abilities.axes.length, 6)
@@ -219,6 +219,43 @@ test('garmin vo2max outranks every other estimate', () => {
   assert.equal(a.engine.vo2max.conf, 'firm')
   assert.ok(a.engine.vo2max.estimates.some(e => e.method === 'bike'))
   assert.ok(a.engine.vo2max.fitnessAge != null && a.engine.vo2max.fitnessAge < 25)
+})
+
+test('calibration tracks newest pace and volume deltas against the prior window', () => {
+  const { cache } = fixtures()
+  cache.lastSync = Date.parse('2026-06-11T10:00:00Z')
+  cache.activities = {
+    '10': activity(10, 'Run', iso(-16), 1800, 5000, { totalElevationGain: 0 }),
+    '11': activity(11, 'Run', iso(-6), 1800, 5000, { totalElevationGain: 0 }),
+    '12': activity(12, 'Run', iso(20), 1500, 5000, { totalElevationGain: 0 }),
+    '13': activity(13, 'Run', iso(26), 1500, 5000, { totalElevationGain: 0 }),
+  }
+  cache.streams = {}
+
+  const a = buildAnalytics(cache, { since: '2026-04-01' })
+  const run = a.calibration.paces.find(p => p.sport === 'run')
+  assert.ok(run)
+  assert.equal(a.calibration.asOf, '2026-06-11')
+  assert.equal(a.calibration.windowDays, 28)
+  assert.equal(a.calibration.projectionDays, 14)
+  assert.equal(run.sampleSize, 2)
+  assert.equal(run.previousSampleSize, 2)
+  assert.equal(run.average, 300)
+  assert.equal(run.previous, 360)
+  assert.equal(run.direction, 'faster')
+  assert.equal(run.deltaPct, 16.7)
+  assert.ok(run.projected != null && run.projected < run.average)
+  assert.ok(run.projectedDeltaPct != null && run.projectedDeltaPct > 0)
+  assert.equal(a.calibration.volume.currentKm, 10)
+  assert.equal(a.calibration.volume.previousKm, 10)
+  assert.ok(a.calibration.volume.deltaHours < 0)
+  const runVolume = a.calibration.volume.sports.find(s => s.sport === 'run')
+  assert.equal(runVolume?.currentKm, 10)
+  assert.equal(runVolume?.previousKm, 10)
+  const lastWeek = a.weekly[a.weekly.length - 1]
+  assert.equal(lastWeek.sessions, 2)
+  assert.equal(lastWeek.runKm, 10)
+  assert.equal(lastWeek.runHours, 0.8)
 })
 
 test('garmin scale drives body composition, multi-weigh-in series, weight merge, and goal', () => {
@@ -328,7 +365,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
   assert.equal(rows[0].kind, 'meta')
-  assert.equal(rows[0].v, 1)
+  assert.equal(rows[0].v, 2)
   assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
   assert.deepEqual(rows[0].fields.activity, [...ACTIVITY_FIELDS])
   assert.deepEqual(rows[0].fields.week, [...WEEK_FIELDS])
@@ -336,7 +373,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
-  assert.equal(rows[0].athlete.hrMaxEst, 190)
+  assert.equal(rows[0].athlete.hrMaxEst, 182)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
   assert.deepEqual([...new Set(kinds)], order)
@@ -365,6 +402,11 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(trained?.sessions, 1)
   assert.ok(trained?.hrv != null)
   assert.ok(trained?.readinessNext != null)
+  const week = rows.find(r => r.kind === 'week')
+  assert.ok('sessions' in week)
+  assert.ok('swimKm' in week)
+  assert.ok('bikeHours' in week)
+  assert.ok('runHours' in week)
   const ride = rows.find(r => r.kind === 'activity' && r.id === 1)
   assert.equal(ride?.windKph, 18)
   assert.equal(ride?.windDir, 'W')
