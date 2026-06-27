@@ -22,7 +22,6 @@ export type DayCardPayload = {
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
 
 export const KM_TO_MI = 0.621371
-export const FT_PER_KM = 3280.84
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -34,11 +33,7 @@ export const isImperialUnit = (): boolean => imperial
 
 export const dist = (km: number, sport: ActivityKind): string => {
   if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
-  if (imperial) {
-    const mi = km * KM_TO_MI
-    return mi < 1 ? `${Math.round(km * FT_PER_KM)} ft` : `${mi.toFixed(1)} mi`
-  }
-  return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`
+  return imperial ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
 }
 
 export const distCombined = (km: number): string =>

@@ -7,7 +7,8 @@ import { isRecord, readString } from '../util/type-guards'
 
 const PORT = 8721
 const REDIRECT = `http://localhost:${PORT}`
-const SCOPE = 'activity:read_all,profile:read_all'
+const READ_SCOPE = 'activity:read_all,profile:read_all'
+const WRITE_SCOPE = `${READ_SCOPE},activity:write`
 const AUTHORIZE_URL = 'https://www.strava.com/oauth/authorize'
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const REVOKE_URL = 'https://www.strava.com/oauth/revoke'
@@ -28,13 +29,18 @@ interface RevokeToken {
   hint: TokenTypeHint
 }
 
-function authorizeUrl(clientId: string): string {
+interface AuthorizationGrant {
+  code: string
+  scope: string
+}
+
+function authorizeUrl(clientId: string, scope: string): string {
   const params = new URLSearchParams({
     client_id: clientId,
     response_type: 'code',
     redirect_uri: REDIRECT,
     approval_prompt: 'force',
-    scope: SCOPE,
+    scope,
   })
   return `${AUTHORIZE_URL}?${params.toString()}`
 }
@@ -45,11 +51,12 @@ function openBrowser(url: string): void {
   child.unref()
 }
 
-function waitForCode(): Promise<string> {
+function waitForCode(): Promise<AuthorizationGrant> {
   return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const url = new URL(req.url ?? '', REDIRECT)
       const code = url.searchParams.get('code')
+      const scope = url.searchParams.get('scope') ?? ''
       const error = url.searchParams.get('error')
       res.end(
         error
@@ -58,11 +65,18 @@ function waitForCode(): Promise<string> {
       )
       server.close()
       if (error) reject(new Error(error))
-      else if (code) resolve(code)
+      else if (code) resolve({ code, scope })
       else reject(new Error('no authorization code in redirect'))
     })
     server.listen(PORT, () => console.log(`[strava] waiting for redirect on ${REDIRECT} ...`))
   })
+}
+
+function assertGrantedScope(requested: string, granted: string): void {
+  if (!granted) return
+  const grantedScopes = new Set(granted.split(',').filter(Boolean))
+  const missing = requested.split(',').filter(scope => !grantedScopes.has(scope))
+  if (missing.length > 0) throw new Error(`authorization missing scope(s): ${missing.join(',')}`)
 }
 
 async function exchange(
@@ -139,13 +153,15 @@ async function main(): Promise<void> {
     return
   }
 
-  const url = authorizeUrl(clientId)
-  console.log(`\n[strava] opening browser to authorize (scope: ${SCOPE}).`)
+  const scope = process.argv.includes('--write') ? WRITE_SCOPE : READ_SCOPE
+  const url = authorizeUrl(clientId, scope)
+  console.log(`\n[strava] opening browser to authorize (scope: ${scope}).`)
   console.log(`if it does not open, visit:\n${url}\n`)
   openBrowser(url)
 
-  const code = await waitForCode()
-  const token = await exchange(clientId, clientSecret, code)
+  const grant = await waitForCode()
+  assertGrantedScope(scope, grant.scope)
+  const token = await exchange(clientId, clientSecret, grant.code)
   await writeRefreshToken(token.refresh_token)
   console.log('\n[strava] authorized. STRAVA_REFRESH_TOKEN written to .env.')
   console.log('now run:  pnpm strava:sync\n')
