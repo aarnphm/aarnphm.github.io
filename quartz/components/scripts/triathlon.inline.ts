@@ -5851,7 +5851,7 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
   })
   const input = el('input', 'tri-cmdk-input', undefined, {
     type: 'text',
-    placeholder: 'go to page · toggle units…',
+    placeholder: 'go to page · toggle units...',
     'aria-label': 'command',
     autocomplete: 'off',
     spellcheck: 'false',
@@ -5875,7 +5875,7 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
   }
   const cmds: Cmd[] = [
     ...TRI_PAGES.map(p => ({
-      label: () => `go to ${p.label}`,
+      label: () => `${p.label}`,
       hint: p.hint,
       keys: `go ${p.label} ${p.path}`,
       run: navTo(p.path),
@@ -5997,6 +5997,21 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
 
+  const go = (path: string) => {
+    const url = new URL(path, window.location.toString())
+    if (window.spaNavigate) window.spaNavigate(url)
+    else window.location.href = url.toString()
+  }
+  const subView = root.dataset.triView
+  const subpageNav: Record<string, string> = {
+    t: '/triathlon/tools',
+    a: '/triathlon/analytics',
+    m: '/triathlon/maps',
+    r: '/triathlon/training',
+    f: '/triathlon/feed',
+    h: '/triathlon',
+  }
+
   const modalChords: Record<string, { btn: string; openClass: string; close: string }> = {
     a: { btn: '.tri-analytics-btn', openClass: 'tri-analytics-open', close: '.tri-ana-close' },
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
@@ -6019,13 +6034,46 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     closeOpenModals(key)
     root.querySelector<HTMLElement>(mc.btn)?.click()
   }
+  const runChord = (key: string): boolean => {
+    if (subView) {
+      const path = subpageNav[key]
+      if (!path) return false
+      go(path)
+      return true
+    }
+    if (key === 'a' || key === 'c' || key === 'm' || key === 't') {
+      toggleModal(key)
+      return true
+    }
+    if (key === 'g') {
+      closeOpenModals()
+      root.querySelector<HTMLElement>('.tri-gear-btn')?.click()
+      return true
+    }
+    if (key === 'p') {
+      closeOpenModals()
+      root.querySelector<HTMLElement>('.tri-pace-btn')?.click()
+      return true
+    }
+    if (key === 's') {
+      root.querySelector<HTMLElement>('.tri-total')?.click()
+      return true
+    }
+    if (key === 'h') {
+      go('/')
+      return true
+    }
+    if (key === 'f') {
+      root.querySelector<HTMLElement>('.tri-fuel-btn')?.click()
+      return true
+    }
+    return false
+  }
   const onKey = (e: KeyboardEvent) => {
     if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
       e.preventDefault()
       e.stopImmediatePropagation()
-      const url = new URL('/triathlon/tools', window.location.toString())
-      if (window.spaNavigate) window.spaNavigate(url)
-      else window.location.href = url.toString()
+      go('/triathlon/tools')
       return
     }
 
@@ -6045,39 +6093,10 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return
 
     if (waitingForG) {
-      const key = e.key.toLowerCase()
-      let handled = false
-      if (key === 'a' || key === 'c' || key === 'm' || key === 't') {
-        toggleModal(key)
-        handled = true
-      } else if (key === 'g') {
-        closeOpenModals()
-        root.querySelector<HTMLElement>('.tri-gear-btn')?.click()
-        handled = true
-      } else if (key === 'p') {
-        closeOpenModals()
-        root.querySelector<HTMLElement>('.tri-pace-btn')?.click()
-        handled = true
-      } else if (key === 's') {
-        root.querySelector<HTMLElement>('.tri-total')?.click()
-        handled = true
-      } else if (key === 'h') {
-        if (window.spaNavigate) {
-          window.spaNavigate(new URL('/', window.location.toString()))
-        } else {
-          window.location.href = '/'
-        }
-        handled = true
-      } else if (key === 'f') {
-        root.querySelector<HTMLElement>('.tri-fuel-btn')?.click()
-        handled = true
-      }
-
-      if (handled) {
+      if (runChord(e.key.toLowerCase())) {
         e.preventDefault()
         e.stopImmediatePropagation()
       }
-
       waitingForG = false
       if (gTimeout) {
         clearTimeout(gTimeout)
