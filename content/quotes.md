@@ -16,7 +16,7 @@ metadata:
     text_line    = { character - newline } ;
     ws           = { " " } ;
     character    = ? any printable ascii except newline ? ;
-modified: 2026-06-15 20:17:46 GMT-04:00
+modified: 2026-06-26 12:10:43 GMT-04:00
 seealso:
   - '[[word|dictionary]]'
   - '[[research|wip]]'
@@ -30,6 +30,10 @@ transclude:
   dynalist: false
   title: false
 ---
+
+> Literally from a hospital bed, he was telling me bugs.
+>
+> Matt Mullenweg on Om
 
 > Each time my heart is broken it makes me feel more adventurous.
 >
