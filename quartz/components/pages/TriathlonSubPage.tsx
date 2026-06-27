@@ -7,6 +7,7 @@ import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import {
   AnalyticsPanel,
+  FeedPanel,
   MapPanel,
   ToolsPanel,
   TrainingPanel,
@@ -19,6 +20,7 @@ const PANEL: Record<TriView, () => JSX.Element> = {
   analytics: AnalyticsPanel,
   maps: MapPanel,
   training: TrainingPanel,
+  feed: FeedPanel,
 }
 
 export const TriathlonSubPage = (view: TriView): QuartzComponent => {

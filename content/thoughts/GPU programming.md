@@ -31,8 +31,8 @@ _https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
 > | GPU vs CPU                    | throughput-optimized accelerator (270k+ resident threads on Hopper) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) |
 > | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                            |
 > | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                              |
-> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm ($\approx 400$) → nvlink fabric                                  |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover $\approx 400$-cycle hbm accesses                                                              |
+> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm ($\approx 400$) → nvlink fabric                         |
+> | latency hiding                | 64 resident warps per sm swap on stall to cover $\approx 400$-cycle hbm accesses                                                     |
 
 ## execution units
 

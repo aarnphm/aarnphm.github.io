@@ -5,6 +5,7 @@ const NAV = [
   ['analytics', 'analytics'],
   ['maps', 'maps'],
   ['training', 'training'],
+  ['feed', 'feed'],
 ] as const
 
 export type TriView = (typeof NAV)[number][0]
@@ -155,6 +156,23 @@ export const TriathlonSubnav = ({ active, root }: { active: TriView; root: strin
       ))}
     </span>
   </nav>
+)
+
+export const FeedPanel = () => (
+  <section class="tri-feed" aria-label="activity feed">
+    <div class="tri-ana-bar tri-feed-bar">
+      <span class="tri-ana-title">feed</span>
+      <input
+        class="tri-ana-search tri-feed-search"
+        type="search"
+        placeholder="filter (bike|run|swim|walk, sort:distance|pace|date)"
+        aria-label="filter activities"
+        autocomplete="off"
+      />
+      <span class="tri-feed-count" aria-live="polite" />
+    </div>
+    <div class="tri-feed-list" role="list" aria-busy="true" />
+  </section>
 )
 
 export const AnalyticsPanel = () => (
@@ -504,7 +522,9 @@ export const CalcPanel = () => (
                   inputMode="decimal"
                 />
               </td>
-              <td class="tri-calc-u">mph</td>
+              <td class="tri-calc-u" data-u="bike">
+                mph
+              </td>
               <td class="tri-calc-r" data-leg="bike">
                 <input
                   class="tri-calc-in tri-calc-legtime"
@@ -546,7 +566,9 @@ export const CalcPanel = () => (
                   inputMode="numeric"
                 />
               </td>
-              <td class="tri-calc-u">/mi</td>
+              <td class="tri-calc-u" data-u="run">
+                /mi
+              </td>
               <td class="tri-calc-r" data-leg="run">
                 <input
                   class="tri-calc-in tri-calc-legtime"

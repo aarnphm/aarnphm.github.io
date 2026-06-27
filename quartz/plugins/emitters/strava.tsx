@@ -21,6 +21,7 @@ import {
   stravaCachePath,
   weatherCachePath,
 } from '../../util/strava-payload'
+import { buildFeedMarkdown } from '../../util/triathlon-feed'
 import {
   ATHLETE,
   buildAnalytics,
@@ -42,7 +43,7 @@ import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-const TRI_SUBVIEWS: TriView[] = ['tools', 'analytics', 'maps', 'training']
+const TRI_SUBVIEWS: TriView[] = ['tools', 'analytics', 'maps', 'training', 'feed']
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
@@ -190,18 +191,25 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           content: JSON.stringify({ plans: parseTrainingPlans(tree as unknown as HtmlRoot) }),
         }),
       )
+      const dataFeed = buildDataFeed(cache, analytics, {
+        oura,
+        apple,
+        weather,
+        garmin,
+        weights: tracking?.days,
+        zones: payload.zones,
+      })
+      files.push(
+        await write({ ctx, slug: 'triathlon/data' as FullSlug, ext: '.jsonl', content: dataFeed }),
+      )
       files.push(
         await write({
           ctx,
-          slug: 'triathlon/data' as FullSlug,
-          ext: '.jsonl',
-          content: buildDataFeed(cache, analytics, {
-            oura,
-            apple,
-            weather,
-            garmin,
-            weights: tracking?.days,
-            zones: payload.zones,
+          slug: 'triathlon/feed' as FullSlug,
+          ext: '.md',
+          content: buildFeedMarkdown(dataFeed, analytics, {
+            details: payload.details,
+            baseUrl: ctx.cfg.configuration.baseUrl,
           }),
         }),
       )

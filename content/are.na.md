@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-26 00:00:00 GMT-04:00
+modified: 2026-06-27 12:07:22 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1843,6 +1843,12 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nehanarula.org/ -- Neha Narula
+  - [meta]:
+    - date: 06/27/2026
+    - tags: [hci, directory]
+    - later: true
+  - Director of the Digital Currency Initiative at the MIT Media Lab
 - https://justinjay.wang/ -- Justin Wang
   - [meta]:
     - date: 06/23/2026
@@ -10276,6 +10282,13 @@ title: are.na
 
 ## stream
 
+- [meta]:
+  - json: true
+
+- https://www.searchartwith.art/ -- Search Art with Art [**]
+  - [meta]:
+    - date: 06/27/2026
+    - tags: [typography, design, masonry]
 - https://theventurecodex.com/dashboard/rounds -- The Venture Codex
   - [meta]:
     - date: 06/17/2026
