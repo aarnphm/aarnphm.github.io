@@ -320,7 +320,7 @@ const buildZoneTable = (
   caption: string,
 ): HTMLElement => {
   const wrap = el('div', 'tri-zone')
-  wrap.appendChild(el('div', 'tri-zone-title', title))
+  wrap.appendChild(el('div', 'tri-zone-title', tl(title)))
   const total = times.reduce((s, x) => s + x, 0) || 1
   let mx = 1
   for (const t of times) if (t > mx) mx = t
@@ -328,7 +328,7 @@ const buildZoneTable = (
   for (let i = times.length - 1; i >= 0; i--) {
     const row = el('div', 'tri-zone-row')
     const z = el('span', 'tri-zone-z', `Z${i + 1}`)
-    z.dataset.name = names[i] ?? `Z${i + 1}`
+    z.dataset.name = tl(names[i] ?? `Z${i + 1}`)
     z.tabIndex = 0
     row.append(
       z,
@@ -1713,12 +1713,16 @@ const buildGauge = (data: Analytics): HTMLElement => {
       el(
         'span',
         'tri-ana-chip',
-        r.monotony != null ? `monotony ${r.monotony.toFixed(2)}` : 'monotony —',
+        r.monotony != null ? `${tl('monotony')} ${r.monotony.toFixed(2)}` : `${tl('monotony')} —`,
       ),
       'monotony',
     ),
     markGloss(
-      el('span', 'tri-ana-chip', r.strain != null ? `strain ${Math.round(r.strain)}` : 'strain —'),
+      el(
+        'span',
+        'tri-ana-chip',
+        r.strain != null ? `${tl('strain')} ${Math.round(r.strain)}` : `${tl('strain')} —`,
+      ),
       'strain',
     ),
   )
@@ -1878,7 +1882,7 @@ const buildPmc = (data: Analytics): HTMLElement => {
   ): HTMLElement => {
     const wrap = el('div', `tri-pmc-stat ${cls}`)
     const head = el('div', 'tri-pmc-stat-head')
-    head.append(el('span', 'tri-pmc-dot'), el('span', 'tri-pmc-stat-k', label))
+    head.append(el('span', 'tri-pmc-dot'), el('span', 'tri-pmc-stat-k', tl(label)))
     wrap.append(
       head,
       el('div', `tri-pmc-stat-v${zone ? ` tri-zone-${zone}` : ''}`, value),
@@ -2096,14 +2100,14 @@ const buildPmc = (data: Analytics): HTMLElement => {
     row.append(
       el('span', 'tri-pmc-dot'),
       el('span', 'tri-pmc-leg-v', val),
-      el('span', 'tri-pmc-leg-k', name),
+      el('span', 'tri-pmc-leg-k', tl(name)),
     )
     return row
   }
   const entryRow = (a: ActivitySummary): HTMLElement => {
     const row = el('div', 'tri-pmc-entry')
     row.append(
-      el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, a.sport),
+      el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, tl(a.sport)),
       el('span', 'tri-pmc-entry-n', a.name || a.sport),
       el('span', 'tri-pmc-entry-d', dist(a.distanceKm, a.sport)),
     )
@@ -2405,7 +2409,7 @@ const buildReadiness = (data: Analytics): HTMLElement => {
     row.appendChild(track)
     const meta = el('span', 'tri-rdy-meta')
     meta.append(
-      markGloss(el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, r.bindingLeg), 'binding'),
+      markGloss(el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, tl(r.bindingLeg)), 'binding'),
       markGloss(el('span', 'tri-rdy-time', hms(r.predictedTotalS)), 'predtime'),
     )
     row.appendChild(meta)
@@ -2433,7 +2437,7 @@ const buildMethod = (method: string, n: number): HTMLElement => {
   a.rel = 'noopener noreferrer'
   a.dataset.wikipediaLang = 'en'
   a.dataset.wikipediaTitle = title
-  a.textContent = method
+  a.textContent = tl(method)
   span.append(a, ` · n=${n}`)
   return span
 }
@@ -2822,7 +2826,9 @@ const buildBody = (data: Analytics): HTMLElement => {
     const delta =
       b.goalDeltaKg != null ? ` (${wSigned(b.goalDeltaKg, 1)} ${weightUnitLabel()})` : ''
     const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ wk` : ''
-    cap.appendChild(markGloss(mathK('tri-ana-k', `goal ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'))
+    cap.appendChild(
+      markGloss(mathK('tri-ana-k', `${tl('goal')} ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'),
+    )
   }
   if (b.bodyFatPct != null)
     cap.appendChild(
@@ -2954,7 +2960,7 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
   if (rec.status !== 'building' && n > 1) {
     const recLeg = (cls: string, name: string): HTMLElement => {
       const w = el('span', 'tri-rec-legitem')
-      w.append(el('span', `tri-rec-legdot ${cls}`), el('span', 'tri-rec-legname', name))
+      w.append(el('span', `tri-rec-legdot ${cls}`), el('span', 'tri-rec-legname', tl(name)))
       return w
     }
     const legend = el('div', 'tri-rec-legend')
@@ -3160,12 +3166,12 @@ const buildSleep = (data: Analytics): HTMLElement => {
     el(
       'span',
       'tri-ana-k',
-      rec.sleepLatestS != null ? `sleep ${hms(rec.sleepLatestS)}` : 'sleep —',
+      rec.sleepLatestS != null ? `${tl('sleep')} ${hms(rec.sleepLatestS)}` : `${tl('sleep')} —`,
     ),
     el(
       'span',
       'tri-ana-k',
-      rec.sleepBaselineS != null ? `base ${hms(rec.sleepBaselineS)}` : 'base —',
+      rec.sleepBaselineS != null ? `${tl('base')} ${hms(rec.sleepBaselineS)}` : `${tl('base')} —`,
     ),
     markGloss(
       el(
@@ -3223,7 +3229,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
   const seg = (cls: string, lbs: number, label: string): HTMLElement => {
     const s = el('span', `tri-dexa-seg ${cls}`)
     s.style.width = `${(lbs / total) * 100}%`
-    s.title = `${label} ${wFmt(lbs * KG_PER_LB, 1, 1)} · ${((lbs / total) * 100).toFixed(0)}%`
+    s.title = `${tl(label)} ${wFmt(lbs * KG_PER_LB, 1, 1)} · ${((lbs / total) * 100).toFixed(0)}%`
     return s
   }
   const bar = el('div', 'tri-dexa-bar')
@@ -3239,7 +3245,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
     const w = el('span', 'tri-dexa-legitem')
     w.append(
       el('span', `tri-dexa-dot ${cls}`),
-      el('span', 'tri-dexa-legname', name),
+      el('span', 'tri-dexa-legname', tl(name)),
       el('span', 'tri-dexa-legval', wFmt(lbs * KG_PER_LB, 1, 1)),
     )
     return w
@@ -3269,7 +3275,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
     }
     rbar.append(rseg('is-lean', r.lean), rseg('is-fat', r.fat), rseg('is-bone', r.bmc))
     row.append(
-      el('span', 'tri-dexa-rlabel', name),
+      el('span', 'tri-dexa-rlabel', tl(name)),
       rbar,
       el(
         'span',
@@ -3284,7 +3290,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
   const stats = el('div', 'tri-dexa-stats')
   const stat = (label: string, val: string): void => {
     const c = el('div', 'tri-dexa-stat')
-    c.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', label))
+    c.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', tl(label)))
     stats.appendChild(c)
   }
   stat('lean', wFmt(d.leanLbs * KG_PER_LB, 1, 1))
@@ -3316,7 +3322,7 @@ const buildVo2max = (data: Analytics): HTMLElement => {
         el(
           'span',
           `tri-engine-age tri-dir-${(v.ageDeltaYears ?? 0) <= 0 ? 'up' : 'down'}`,
-          `fitness age ${v.fitnessAge} (${signed(v.ageDeltaYears ?? 0)}y)`,
+          `${tl('fitness age')} ${v.fitnessAge} (${signed(v.ageDeltaYears ?? 0)}y)`,
         ),
         'fitage',
       ),
@@ -3327,7 +3333,7 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   if (v.fitnessAge != null) {
     const needle = el('span', 'tri-engine-agebar-needle')
     needle.style.left = `${pos(v.fitnessAge)}%`
-    needle.title = `fitness age ${v.fitnessAge}`
+    needle.title = `${tl('fitness age')} ${v.fitnessAge}`
     bar.appendChild(needle)
   }
   const chrono = el('span', 'tri-engine-agebar-chrono')
@@ -3447,7 +3453,7 @@ const buildVo2test = (data: Analytics): HTMLElement => {
         width: 100,
         height: yP(visLo) - yP(hi),
         class: `tri-vo2t-zone tri-vo2t-zone--${i + 1}`,
-        'data-tip-h': zoneNames[i] ?? `zone ${i + 1}`,
+        'data-tip-h': tl(zoneNames[i] ?? `zone ${i + 1}`),
         'data-tip-d': `${last ? `${lo}+ bpm` : `${lo}–${hi - 1} bpm`}${spd}${kcal}`,
       }),
     )
@@ -3560,7 +3566,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   const methods = el('div', 'tri-ftp-methods')
   const methodRow = (label: string, key: string, value: number, cls: string): HTMLElement => {
     const row = el('div', 'tri-ftp-method')
-    row.appendChild(el('span', 'tri-ftp-method-k', label))
+    row.appendChild(el('span', 'tri-ftp-method-k', tl(label)))
     const track = el('span', 'tri-ftp-method-track')
     const fill = el('span', `tri-ftp-method-fill ${cls}`, undefined, { 'data-ftp-bar': key })
     fill.style.width = `${clampN((value / 350) * 100, 4, 100)}%`
@@ -3581,7 +3587,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   const chainRow = (label: string, key: string, value: string): HTMLElement => {
     const row = el('div', 'tri-ftp-chain-row')
     row.append(
-      el('span', 'tri-ftp-chain-k', label),
+      el('span', 'tri-ftp-chain-k', tl(label)),
       el('span', 'tri-ftp-chain-v', value, { 'data-ftp-out': key }),
     )
     return row
@@ -3609,7 +3615,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     const wrap = el('label', 'tri-ftp-ctrl')
     const row = el('span', 'tri-ftp-ctrl-row')
     row.append(
-      el('span', 'tri-ftp-ctrl-label', label),
+      el('span', 'tri-ftp-ctrl-label', tl(label)),
       el('span', 'tri-ftp-ctrl-val', `${value}${unit}`, { 'data-ftp-val': key }),
     )
     const input = document.createElement('input')
@@ -3710,7 +3716,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
       'text-anchor': Math.abs(Math.cos(th)) < 0.3 ? 'middle' : Math.cos(th) > 0 ? 'start' : 'end',
       class: a.score == null ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax',
     })
-    label.textContent = a.label
+    label.textContent = tl(a.label)
     s.appendChild(label)
   })
   block.appendChild(s)
@@ -3743,7 +3749,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
     row.dataset.metric = m.key
     row.dataset.label = m.label
     row.dataset.unit = m.unit
-    row.appendChild(markGloss(el('span', 'tri-engine-row-k', m.label), glossOf[m.key] ?? 'ef'))
+    row.appendChild(markGloss(el('span', 'tri-engine-row-k', tl(m.label)), glossOf[m.key] ?? 'ef'))
     const ys = seriesOf(m.key)
     if (ys.length > 1) {
       const n = ys.length
@@ -4473,7 +4479,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const head = el('div', 'tri-pop-head')
       const back = el('button', 'tri-ana-back')
       back.setAttribute('type', 'button')
-      back.textContent = '← back'
+      back.textContent = tl('← back')
       head.append(el('span', 'tri-pop-date', shortDate(d.date)), back)
       card.appendChild(head)
       const act = renderDetail(d)
@@ -4600,8 +4606,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
     if (!filterSport && !sortKey) {
       for (const s of SEARCH_SECTIONS)
-        if (matchHay(`${s.label} ${s.hay}`.toLowerCase(), tokens)) {
-          const it = ritem(s.label, 'section')
+        if (matchHay(`${s.label} ${tl(s.label)} ${s.hay}`.toLowerCase(), tokens)) {
+          const it = ritem(tl(s.label), 'section')
           it.dataset.chart = s.chart
           metrics.push(it)
         }
@@ -5102,7 +5108,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (!mapboxgl) {
         started = false
         canvas.classList.add('tri-map-canvas--down')
-        canvas.textContent = 'map unavailable'
+        canvas.textContent = tl('map unavailable')
         return
       }
       canvas.classList.remove('tri-map-canvas--down')
@@ -5356,7 +5362,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       const head = el('div', 'tri-pop-head')
       const back = el('button', 'tri-ana-back')
       back.setAttribute('type', 'button')
-      back.textContent = '← back'
+      back.textContent = tl('← back')
       head.append(el('span', 'tri-pop-date', `${shortDate(d.date)} · ${d.name || d.sport}`), back)
       card.appendChild(head)
       const mapMode = mapCtl.ok()
