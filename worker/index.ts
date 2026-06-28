@@ -3,6 +3,11 @@ import { greaterWrongPostUrl, lessWrongTargetFromSearchParams } from '../quartz/
 import { readGreaterWrongPreviewHtml } from '../quartz/util/lesswrong-preview'
 import { sepEntryUrl, sepTargetFromSearchParams } from '../quartz/util/sep'
 import { readSepPreviewHtml } from '../quartz/util/sep-preview'
+import {
+  streamAssetPathname,
+  streamHostPathname,
+  STREAM_HOSTNAME,
+} from '../quartz/util/stream-host'
 import { triathlonShortcutRedirectUrl } from '../quartz/util/triathlon-shortcut'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
@@ -1049,15 +1054,8 @@ export default {
       )
     }
 
-    if (url.hostname === 'stream.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
-      const streamPrefix = '/stream'
-      let sanitizedPathname = url.pathname
-
-      if (sanitizedPathname === streamPrefix || sanitizedPathname === `${streamPrefix}/`) {
-        sanitizedPathname = '/'
-      } else if (sanitizedPathname.startsWith(`${streamPrefix}/`)) {
-        sanitizedPathname = sanitizedPathname.slice(streamPrefix.length) || '/'
-      }
+    if (url.hostname === STREAM_HOSTNAME && !url.pathname.startsWith('/fonts/')) {
+      const sanitizedPathname = streamHostPathname(url.pathname)
 
       if (sanitizedPathname !== url.pathname) {
         const redirectUrl = new URL(url)
@@ -1071,15 +1069,7 @@ export default {
       if (base.hostname === url.hostname && base.hostname.startsWith('stream.')) {
         base.hostname = base.hostname.replace(/^stream\./, '')
       }
-      const isDocument = shouldTreatAsDocument(pathname)
-      const needsStreamPrefix = isDocument && !pathname.startsWith('/stream')
-      const targetPath =
-        needsStreamPrefix && pathname !== '/'
-          ? `/stream${pathname}`
-          : needsStreamPrefix
-            ? '/stream'
-            : pathname
-      base.pathname = targetPath
+      base.pathname = streamAssetPathname(pathname, shouldTreatAsDocument(pathname))
       base.search = url.search
       base.hash = url.hash
       const newReq = requestWithoutStaticAssetCache(new Request(base.toString(), request), pathname)

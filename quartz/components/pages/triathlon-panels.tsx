@@ -144,6 +144,7 @@ export const TriathlonSubnav = ({ active, root }: { active: TriView; root: strin
           class="tri-subnav-link"
           href={`${root}/triathlon/${slug}`}
           aria-current={slug === active ? 'page' : undefined}
+          data-i18n={label}
         >
           {label}
         </a>
@@ -155,7 +156,9 @@ export const TriathlonSubnav = ({ active, root }: { active: TriView; root: strin
 export const FeedPanel = () => (
   <section class="tri-feed" aria-label="activity feed">
     <div class="tri-ana-bar tri-feed-bar">
-      <span class="tri-ana-title">feed</span>
+      <span class="tri-ana-title" data-i18n="feed">
+        feed
+      </span>
       <input
         class="tri-ana-search tri-feed-search"
         type="search"
@@ -174,7 +177,9 @@ export const AnalyticsPanel = () => (
     <div class="tri-analytics-scrim" aria-hidden="true" />
     <aside class="tri-analytics" aria-hidden="true" role="dialog" aria-label="triathlon analytics">
       <div class="tri-ana-bar">
-        <span class="tri-ana-title">analytics</span>
+        <span class="tri-ana-title" data-i18n="analytics">
+          analytics
+        </span>
         <input
           class="tri-ana-search"
           type="search"
@@ -216,7 +221,9 @@ export const MapPanel = () => (
     <div class="tri-map-scrim" aria-hidden="true" />
     <aside class="tri-map" aria-hidden="true" role="dialog" aria-label="triathlon route maps">
       <div class="tri-ana-bar tri-map-bar">
-        <span class="tri-ana-title tri-map-title">map</span>
+        <span class="tri-ana-title tri-map-title" data-i18n="map">
+          map
+        </span>
         <div class="tri-map-search-wrap">
           <input
             class="tri-ana-search tri-map-search"
@@ -236,19 +243,49 @@ export const MapPanel = () => (
           <div class="tri-map-canvas" />
           <div class="tri-map-overlay">
             <div class="tri-map-modes" role="group" aria-label="map overlay metric">
-              <button class="tri-map-mode" type="button" data-mode="heat" aria-pressed="true">
+              <button
+                class="tri-map-mode"
+                type="button"
+                data-mode="heat"
+                aria-pressed="true"
+                data-i18n="heat"
+              >
                 heat
               </button>
-              <button class="tri-map-mode" type="button" data-mode="w" aria-pressed="false">
+              <button
+                class="tri-map-mode"
+                type="button"
+                data-mode="w"
+                aria-pressed="false"
+                data-i18n="power"
+              >
                 power
               </button>
-              <button class="tri-map-mode" type="button" data-mode="hr" aria-pressed="false">
+              <button
+                class="tri-map-mode"
+                type="button"
+                data-mode="hr"
+                aria-pressed="false"
+                data-i18n="hr"
+              >
                 hr
               </button>
-              <button class="tri-map-mode" type="button" data-mode="cad" aria-pressed="false">
+              <button
+                class="tri-map-mode"
+                type="button"
+                data-mode="cad"
+                aria-pressed="false"
+                data-i18n="cadence"
+              >
                 cadence
               </button>
-              <button class="tri-map-mode" type="button" data-mode="spd" aria-pressed="false">
+              <button
+                class="tri-map-mode"
+                type="button"
+                data-mode="spd"
+                aria-pressed="false"
+                data-i18n="speed"
+              >
                 speed
               </button>
             </div>
@@ -629,19 +666,27 @@ export const CalcPanel = () => (
 export const ToolsPanel = () => (
   <div class="tri-tools">
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h">gear</h2>
+      <h2 class="tri-tools-h" data-i18n="gear">
+        gear
+      </h2>
       <GearPanel />
     </section>
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h">pace</h2>
+      <h2 class="tri-tools-h" data-i18n="pace">
+        pace
+      </h2>
       <PacePanel />
     </section>
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h">fuel</h2>
+      <h2 class="tri-tools-h" data-i18n="fuel">
+        fuel
+      </h2>
       <FuelEmbed />
     </section>
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h">calculator</h2>
+      <h2 class="tri-tools-h" data-i18n="calculator">
+        calculator
+      </h2>
       <CalcPanel />
     </section>
   </div>
