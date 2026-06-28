@@ -12,6 +12,7 @@ import {
   WEEK_FIELDS,
   buildAnalytics,
   buildDataFeed,
+  computeFtpHypothesisFromVo2,
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
 
@@ -201,6 +202,32 @@ test('engine derives ftp from 20-min power only when strava declares none', () =
   assert.equal(v.method, 'bike')
   assert.equal(v.conf, 'low')
   assert.ok(v.note.includes('ftp 190w ·'))
+})
+
+test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => {
+  const h = computeFtpHypothesisFromVo2('2026-06-25', 47.8, 88.9)
+  assert.ok(h)
+  assert.equal(h.absoluteRunningVo2, 4.25)
+  assert.equal(h.cyclingVo2max, 3.91)
+  assert.equal(h.thresholdVo2, 3.32)
+  assert.equal(h.efficiencyFtp, 243)
+  assert.equal(h.acsmFtp, 224)
+  assert.equal(h.ftp, 230)
+  assert.equal(h.low, 210)
+  assert.equal(h.high, 260)
+  assert.equal(h.wattsPerKg, 2.59)
+  assert.equal(h.conf, 'low')
+})
+
+test('athlete ftp override drives analytics when supplied by the emitter', () => {
+  const { cache, oura, weights } = fixtures()
+  const a = buildAnalytics(cache, { oura, weights, ftp: 230, since: '2026-05-12' })
+  const v = a.engine.vo2max
+  assert.equal(v.method, 'bike')
+  assert.equal(v.conf, 'low')
+  assert.ok(v.note.includes('ftp 230w (athlete)'))
+  const threshold = a.engine.abilities.axes.find(axis => axis.key === 'threshold')
+  assert.equal(threshold?.rawValue, 2.6)
 })
 
 test('garmin vo2max outranks every other estimate', () => {

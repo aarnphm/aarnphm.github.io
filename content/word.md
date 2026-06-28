@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-17 13:17:15 GMT-04:00
+modified: 2026-06-27 21:15:27 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -265,3 +265,5 @@ title: lists
 - moratorium
 - pervasive
 - myopic
+- subaqueous
+- rollicking

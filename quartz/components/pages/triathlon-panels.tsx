@@ -1,3 +1,4 @@
+import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI } from '../../util/triathlon-card'
 
 const NAV = [
@@ -26,13 +27,6 @@ const PACE_MI = [
 ]
 const SWIM_100 = ['1:20', '1:30', '1:40', '1:50', '2:00', '2:10', '2:20', '2:30']
 const BIKE_KMH = [25, 28, 30, 32, 35, 38, 40, 45]
-
-export const TRI_DISTANCES: [string, string, string, string][] = [
-  ['sprint', '0.75', '20', '5'],
-  ['olympic', '1.5', '40', '10'],
-  ['70.3', '1.9', '90', '21.1'],
-  ['ironman', '3.8', '180', '42.2'],
-]
 
 export const CONVERSIONS: [string, string][] = [
   ['pace', '/100m × 16.09 → /mi'],
@@ -211,6 +205,7 @@ export const AnalyticsPanel = () => (
         <div class="tri-ana-block" data-chart="readiness" />
         <div class="tri-ana-block" data-chart="trend" />
         <div class="tri-ana-block" data-chart="actions" />
+        <div class="tri-ana-block" data-chart="ftp" />
       </div>
     </aside>
   </>
@@ -431,13 +426,40 @@ export const CalcPanel = () => (
   >
     <div class="tri-calc-bar">
       <span class="tri-calc-title">triathlon calculator</span>
+      <button
+        class="tri-calc-copy"
+        type="button"
+        aria-label="Copy embed link"
+        title="Copy embed link"
+      >
+        <svg
+          class="copy-icon"
+          width="16"
+          height="16"
+          viewBox="-4 -4 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <use href="#github-copy" />
+        </svg>
+        <svg
+          class="check-icon"
+          width="16"
+          height="16"
+          viewBox="-4 -4 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <use href="#github-check" />
+        </svg>
+      </button>
       <button class="tri-calc-close" type="button" aria-label="Close">
         ×
       </button>
     </div>
     <div class="tri-calc-cell">
       <div class="tri-calc-presets">
-        {TRI_DISTANCES.map(([label, s, b, r]) => (
+        {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
           <button class="tri-calc-preset" type="button" data-swim={s} data-bike={b} data-run={r}>
             {label}
           </button>

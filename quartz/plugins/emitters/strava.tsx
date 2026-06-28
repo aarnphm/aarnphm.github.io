@@ -173,6 +173,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         events: tracking?.races,
         dexa: file.data.frontmatter?.['dexa'],
         vo2labs: file.data.frontmatter?.['vo2max'],
+        ftp: ATHLETE.ftp,
         since: typeof since === 'string' ? since : undefined,
       })
       files.push(

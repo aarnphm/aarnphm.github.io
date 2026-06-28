@@ -12,6 +12,7 @@ import {
 } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
+import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { dist, distCombined, dur } from '../../util/triathlon-card'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
@@ -24,7 +25,6 @@ import {
   GearPanel,
   MapPanel,
   PacePanel,
-  TRI_DISTANCES,
   TrainingPanel,
 } from './triathlon-panels'
 
@@ -46,7 +46,7 @@ const Icon = ({ sport, cls }: { sport: ActivityKind; cls: string }) => (
 export default (() => {
   const TriathlonPage: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
     const payload = fileData.stravaPayload ?? emptyPayload()
-    const profile = `https://www.strava.com/athletes/${payload.athleteId || ''}`
+    const profile = `https://www.strava.com/athletes/${payload.athleteId || 'aarnphm'}`
     const recentLoc = Object.values(payload.details)
       .sort((a, b) => b.date.localeCompare(a.date))
       .find(d => d.location)?.location
@@ -200,7 +200,7 @@ export default (() => {
               </tr>
             </thead>
             <tbody>
-              {TRI_DISTANCES.map(([label, s, b, r]) => (
+              {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
                 <tr>
                   <th>
                     {label === target ? (
