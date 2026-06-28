@@ -1,16 +1,14 @@
+import { AUDIO_ICON_PATHS, audioBarHeight, audioIconSvg } from '../../util/audio'
+
 const PITCH = 4
-const SVG_PLAY = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>`
-const SVG_PAUSE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.4v14H7zm6.6 0H17v14h-3.4z"/></svg>`
+const SVG_PLAY = audioIconSvg(AUDIO_ICON_PATHS.play)
+const SVG_PAUSE = audioIconSvg(AUDIO_ICON_PATHS.pause)
 
 function fmt(t: number): string {
   if (!isFinite(t) || t < 0) return '0:00'
   const m = Math.floor(t / 60)
   const s = Math.floor(t % 60)
   return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-function barHeight(i: number): number {
-  return 30 + Math.round(60 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * 0.55)))
 }
 
 const MAX_DECODE_BYTES = 20_000_000
@@ -57,41 +55,26 @@ async function computePeaks(
   }
 }
 
-function buildPlayer(audio: HTMLAudioElement): void {
-  if (audio.dataset.customized === 'true') return
-  audio.dataset.customized = 'true'
+function hydrate(wrap: HTMLElement): void {
+  if (wrap.dataset.customized === 'true') return
+  const audio = wrap.querySelector<HTMLAudioElement>('audio')
+  const btn = wrap.querySelector<HTMLButtonElement>('.ap-play')
+  const repeat = wrap.querySelector<HTMLButtonElement>('.ap-repeat')
+  const bars = wrap.querySelector<HTMLElement>('.ap-bars')
+  const time = wrap.querySelector<HTMLElement>('.ap-time')
+  if (!audio || !btn || !bars || !time) return
+  wrap.dataset.customized = 'true'
+
   audio.removeAttribute('controls')
   audio.removeAttribute('loading')
   audio.preload = 'metadata'
 
-  const wrap = document.createElement('div')
-  wrap.className = 'audio-player'
-
-  const row = document.createElement('div')
-  row.className = 'ap-row'
-
-  const btn = document.createElement('button')
-  btn.className = 'ap-play'
-  btn.type = 'button'
-  btn.setAttribute('aria-label', 'Play')
-  btn.innerHTML = SVG_PLAY
-
-  const bars = document.createElement('div')
-  bars.className = 'ap-bars'
-
-  const time = document.createElement('div')
-  time.className = 'ap-time'
-  time.textContent = '0:00 / 0:00'
-
-  row.append(btn, bars)
-  wrap.append(row, time)
-  audio.parentNode?.insertBefore(wrap, audio)
-
   const count = Math.max(24, Math.floor((bars.clientWidth || 600) / PITCH))
+  bars.replaceChildren()
   const barEls: HTMLElement[] = []
   for (let i = 0; i < count; i++) {
     const b = document.createElement('span')
-    b.style.height = `${barHeight(i)}%`
+    b.style.height = `${audioBarHeight(i)}%`
     bars.appendChild(b)
     barEls.push(b)
   }
@@ -151,9 +134,16 @@ function buildPlayer(audio: HTMLAudioElement): void {
     const rect = bars.getBoundingClientRect()
     const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width))
     if (audio.duration) audio.currentTime = ratio * audio.duration
+    if (audio.paused) void audio.play().catch(() => {})
+  }
+  const toggleRepeat = () => {
+    audio.loop = !audio.loop
+    repeat?.classList.toggle('active', audio.loop)
+    repeat?.setAttribute('aria-pressed', String(audio.loop))
   }
 
   btn.addEventListener('click', toggle)
+  repeat?.addEventListener('click', toggleRepeat)
   bars.addEventListener('click', seek)
   audio.addEventListener('timeupdate', render)
   audio.addEventListener('loadedmetadata', render)
@@ -166,6 +156,7 @@ function buildPlayer(audio: HTMLAudioElement): void {
 
   window.addCleanup(() => {
     btn.removeEventListener('click', toggle)
+    repeat?.removeEventListener('click', toggleRepeat)
     bars.removeEventListener('click', seek)
     audio.removeEventListener('timeupdate', render)
     audio.removeEventListener('loadedmetadata', render)
@@ -180,5 +171,5 @@ function buildPlayer(audio: HTMLAudioElement): void {
 }
 
 document.addEventListener('nav', () => {
-  document.querySelectorAll<HTMLAudioElement>('audio').forEach(buildPlayer)
+  document.querySelectorAll<HTMLElement>('figure.audio-player[data-audio-embed]').forEach(hydrate)
 })

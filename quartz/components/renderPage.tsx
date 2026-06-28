@@ -9,6 +9,7 @@ import { EXIT, visit } from 'unist-util-visit'
 import type { ActivityKind } from '../plugins/stores/strava'
 import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
+import { ATHLETE } from '../plugins/stores/analytics'
 import { checkBib, checkBibSection } from '../plugins/transformers/citations'
 import { checkFootnoteRef, checkFootnoteSection } from '../plugins/transformers/gfm'
 import { collectHtmlTocData } from '../plugins/transformers/toc'
@@ -69,6 +70,7 @@ import { buildTriathlonCalcCard, decodeCalcShare } from '../util/triathlon-calcu
 import {
   buildDayCard as buildTriathlonDayCard,
   type DayCardExtras,
+  type DetailCtx,
   type TriNodeFactory,
 } from '../util/triathlon-card'
 import BaseViewSelector from './BaseViewSelector'
@@ -1515,6 +1517,14 @@ export function transcludeFinal(
                 triathlonDate,
                 payload.totalCount > 0 ? payload : null,
                 extras,
+                undefined,
+                {
+                  zones: payload.zones,
+                  curveRef: payload.powerCurveRef,
+                  ftp: ATHLETE.ftp,
+                  goalFtp: ATHLETE.goalFTP,
+                  vt1: null,
+                } satisfies DetailCtx,
               ),
             ],
           ),

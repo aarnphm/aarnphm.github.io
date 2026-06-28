@@ -33,6 +33,7 @@ type ContentHandler = (
   response: Response,
   targetUrl: URL,
   popoverInner: HTMLDivElement,
+  hash: string,
 ) => Promise<void>
 
 interface PositioningOptions {
@@ -87,6 +88,100 @@ function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   )
   refsAndNotes.forEach(section => section.remove())
   return element
+}
+
+function prefixPopoverIds(container: ParentNode) {
+  container.querySelectorAll<HTMLElement>('[id]').forEach(el => {
+    el.id = `popover-${el.id}`
+  })
+}
+
+function isStreamDocumentPath(pathname: string): boolean {
+  const normalized = pathname.replace(/\/+$/, '')
+  return normalized === '/stream' || normalized.startsWith('/stream/on/')
+}
+
+function streamPopoverKey(targetUrl: URL): string {
+  const entry = targetUrl.searchParams.get('entry')?.trim()
+  const hash = decodeURIComponent(targetUrl.hash).replace(/^#/, '').trim()
+  if (isStreamDocumentPath(targetUrl.pathname) && (entry || hash)) {
+    return `popover-${targetUrl.pathname}-${entry || hash}`
+  }
+  return `popover-${targetUrl.pathname}`
+}
+
+function streamPopoverFetchUrl(targetUrl: URL): URL {
+  const fetchUrl = new URL(targetUrl.toString())
+  fetchUrl.hash = ''
+  if (!isStreamDocumentPath(fetchUrl.pathname)) {
+    fetchUrl.search = ''
+  }
+  return fetchUrl
+}
+
+function streamEntryFromTarget(
+  container: ParentNode,
+  targetUrl: URL,
+  hash: string,
+): HTMLElement | null {
+  const entryId = targetUrl.searchParams.get('entry')?.trim()
+  if (entryId) {
+    const entry = findHashTarget(container, entryId, 'popover-')?.closest<HTMLElement>(
+      '.stream-entry',
+    )
+    if (entry) return entry
+  }
+
+  if (!hash) return null
+  return findHashTarget(container, hash, 'popover-')?.closest<HTMLElement>('.stream-entry') ?? null
+}
+
+function isolateStreamEntryPreview(container: ParentNode, entry: HTMLElement): HTMLElement | null {
+  const article = entry.closest<HTMLElement>('article.stream.popover-hint')
+  if (!article || !article.contains(entry)) return null
+
+  const list = entry.closest<HTMLElement>('ol.stream-feed')
+  if (list && article.contains(list)) {
+    const listClone = list.cloneNode(false)
+    if (!(listClone instanceof HTMLElement)) return null
+    listClone.appendChild(entry)
+    article.replaceChildren(listClone)
+  } else {
+    article.replaceChildren(entry)
+  }
+
+  return container instanceof HTMLElement ? container : article
+}
+
+function narrowStreamPopover(popoverInner: HTMLElement, targetUrl: URL, hash: string) {
+  if (!isStreamDocumentPath(targetUrl.pathname)) return
+  const entry = streamEntryFromTarget(popoverInner, targetUrl, hash)
+  if (!entry) return
+  isolateStreamEntryPreview(popoverInner, entry)
+}
+
+function cloneCurrentStreamEntryPreview(hash: string): HTMLElement | null {
+  const article = document.querySelector<HTMLElement>('article.stream.popover-hint')
+  if (!article) return null
+  const target = findHashTarget(article, hash)
+  const entry = target?.closest<HTMLElement>('.stream-entry')
+  if (!entry) return null
+
+  const articleClone = article.cloneNode(false)
+  if (!(articleClone instanceof HTMLElement)) return null
+
+  const list = entry.closest<HTMLElement>('ol.stream-feed')
+  if (list && article.contains(list)) {
+    const listClone = list.cloneNode(false)
+    if (!(listClone instanceof HTMLElement)) return null
+    listClone.appendChild(entry.cloneNode(true))
+    articleClone.appendChild(listClone)
+  } else {
+    articleClone.appendChild(entry.cloneNode(true))
+  }
+
+  prefixPopoverIds(articleClone)
+  return cleanAbsoluteElement(articleClone)
 }
 
 function createPopoverElement(...classes: string[]): {
@@ -445,20 +540,19 @@ async function handleDefaultContent(
   response: Response,
   targetUrl: URL,
   popoverInner: HTMLDivElement,
+  hash = '',
 ) {
   popoverInner.classList.add('grid')
   const contents = await response.text()
   const html = p.parseFromString(contents, 'text/html')
   normalizeRelativeURLs(html, targetUrl)
-  html.querySelectorAll('[id]').forEach(el => {
-    const targetID = `popover-${el.id}`
-    el.id = targetID
-  })
+  prefixPopoverIds(html)
   const elts = [
     ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLDivElement>),
   ].map(cleanAbsoluteElement)
   if (elts.length === 0) return
   popoverInner.append(...elts)
+  narrowStreamPopover(popoverInner, targetUrl, hash)
 }
 
 const contentHandlers: Record<string, ContentHandler> = {
@@ -473,6 +567,7 @@ async function populatePopoverContent(
   response: Response,
   targetUrl: URL,
   popoverInner: HTMLDivElement,
+  hash = '',
 ) {
   delete popoverInner.dataset.state
   popoverInner.replaceChildren()
@@ -488,7 +583,7 @@ async function populatePopoverContent(
     contentHandlers[contentType] ??
     contentHandlers['default']
 
-  await handler(response, targetUrl, popoverInner)
+  await handler(response, targetUrl, popoverInner, hash)
 }
 
 function stackedNoteSlugFromUrl(targetUrl: URL): string {
@@ -536,10 +631,7 @@ function populateStackedPayloadContent(
   popoverInner.classList.add('grid')
   const html = p.parseFromString(payload.content, 'text/html')
   normalizeRelativeURLs(html, targetUrl)
-  html.querySelectorAll('[id]').forEach(el => {
-    const targetID = `popover-${el.id}`
-    el.id = targetID
-  })
+  prefixPopoverIds(html)
   const elements = Array.from(html.body.children).flatMap(el =>
     el instanceof HTMLElement ? [cleanAbsoluteElement(el)] : [],
   )
@@ -1454,6 +1546,35 @@ async function mouseEnterHandler(
   if (compareUrls(thisUrl, targetUrl)) {
     clearActivePopover()
     if (hash !== '') {
+      const currentStreamPreview = cloneCurrentStreamEntryPreview(hash)
+      if (currentStreamPreview) {
+        const popoverId = streamPopoverKey(targetUrl)
+        link.dataset.popoverId = popoverId
+        const existingPopover = document.getElementById(popoverId) as HTMLElement | null
+        const popoverInner = existingPopover?.querySelector<HTMLDivElement>('.popover-inner')
+        if (existingPopover && popoverInner) {
+          await showPopover(link, existingPopover, { clientX, clientY }, { hash, popoverInner })
+          return
+        }
+
+        const created = createPopoverElement()
+        const { popoverElement } = created
+        popoverElement.id = popoverId
+        const { popoverInner: createdInner } = created
+        createdInner.classList.add('grid')
+        createdInner.dataset.contentType = 'text/html'
+        createdInner.appendChild(currentStreamPreview)
+        document.body.appendChild(popoverElement)
+        notifyProtectedContentLoaded(createdInner)
+        await showPopover(
+          link,
+          popoverElement,
+          { clientX, clientY },
+          { hash, popoverInner: createdInner },
+        )
+        return
+      }
+
       const article = document.querySelector('article')
       const heading = article ? findHashTarget(article, hash) : null
       if (heading) {
@@ -1469,10 +1590,10 @@ async function mouseEnterHandler(
     return
   }
 
-  targetUrl.hash = ''
-  targetUrl.search = ''
+  const fetchUrl = streamPopoverFetchUrl(targetUrl)
 
-  const popoverId = `popover-${targetUrl.pathname}`
+  const popoverId = streamPopoverKey(targetUrl)
+  link.dataset.popoverId = popoverId
   const existingPopover = document.getElementById(popoverId) as HTMLElement | null
 
   if (existingPopover) {
@@ -1528,14 +1649,14 @@ async function mouseEnterHandler(
     notifyProtectedContentLoaded(popoverInner)
     await setPosition(link, popoverElement, { clientX, clientY })
     return
-  } else if (isPdfUrl(targetUrl)) {
+  } else if (isPdfUrl(fetchUrl)) {
     const { popoverElement, popoverInner } = createPopoverElement()
     popoverElement.id = popoverId
     popoverInner.dataset.contentType = 'application/pdf'
     popoverInner.appendChild(
       createPdfEmbed(
-        targetUrl.toString(),
-        pdfTitleFromUrl(targetUrl.toString()),
+        fetchUrl.toString(),
+        pdfTitleFromUrl(fetchUrl.toString()),
         PDF_PREVIEW_OPTIONS,
       ),
     )
@@ -1553,7 +1674,7 @@ async function mouseEnterHandler(
     await showPopover(link, popoverElement, { clientX, clientY }, { hash, popoverInner })
     return
   } else {
-    response = await fetchCanonical(new URL(targetUrl.toString())).catch(error => {
+    response = await fetchCanonical(fetchUrl).catch(error => {
       console.error(error)
     })
   }
@@ -1564,7 +1685,7 @@ async function mouseEnterHandler(
   const { popoverElement, popoverInner } = createPopoverElement()
   popoverElement.id = popoverId
 
-  await populatePopoverContent(response, targetUrl, popoverInner)
+  await populatePopoverContent(response, targetUrl, popoverInner, hash)
 
   if (document.getElementById(popoverId)) return
 

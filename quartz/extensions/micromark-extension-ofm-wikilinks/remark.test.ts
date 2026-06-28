@@ -186,6 +186,11 @@ describe('remarkWikilink integration', () => {
         assert(html.includes(`<audio src="audio.${ext}"`), `should handle .${ext}`)
       }
     })
+
+    test('carries alias as caption', () => {
+      const html = processToHTML('![[song.mp3|Hey, Who Really Cares—Linda Perhacs]]')
+      assert(html.includes('data-caption="Hey, Who Really Cares—Linda Perhacs"'))
+    })
   })
 
   describe('PDF embeds', () => {

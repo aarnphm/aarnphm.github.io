@@ -458,7 +458,8 @@ function annotateVideoEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
 }
 
 function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string): void {
-  const { metadataParsed, metadata } = wikilink
+  const { alias, metadataParsed, metadata } = wikilink
+  const caption = alias?.trim()
 
   if (!node.data) node.data = { wikilink }
 
@@ -466,6 +467,7 @@ function annotateAudioEmbed(node: Wikilink, wikilink: WikilinkData, url: string)
   node.data.hProperties = {
     src: url,
     controls: true,
+    ...(caption ? { 'data-caption': caption } : {}),
     ...(metadataParsed
       ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata

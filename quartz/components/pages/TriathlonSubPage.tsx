@@ -15,7 +15,7 @@ import {
   type TriView,
 } from './triathlon-panels'
 
-const PANEL: Record<TriView, () => JSX.Element> = {
+const PANEL: Record<TriView, (props: { page?: boolean }) => JSX.Element> = {
   tools: ToolsPanel,
   analytics: AnalyticsPanel,
   maps: MapPanel,
@@ -36,7 +36,7 @@ export const TriathlonSubPage = (view: TriView): QuartzComponent => {
         data-training-path={joinSegments(root, 'static/training.json')}
       >
         <TriathlonSubnav active={view} root={root} />
-        <Panel />
+        <Panel page />
       </div>
     )
   }

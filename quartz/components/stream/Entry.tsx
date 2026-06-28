@@ -60,6 +60,13 @@ const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): Componen
   return htmlToJsx(filePath, root)
 }
 
+const renderEntryTitle = (entry: StreamEntry): ComponentChild =>
+  entry.title ? (
+    <h2 id={entry.titleId} class="stream-entry-title">
+      {entry.title}
+    </h2>
+  ) : null
+
 export { isDraftEntry, isPrivateEntry, isProtectedEntry, isRestrictedEntry, truthyStreamFlag }
 
 export const getStreamEntryWordCount = (entry: StreamEntry): number =>
@@ -134,7 +141,7 @@ export const renderStreamEntry = (
   if (!protectedEntry && !privateEntry) {
     body = (
       <>
-        {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
+        {renderEntryTitle(entry)}
         {renderEntryBody(entry, filePath, showWordCount)}
       </>
     )
@@ -143,7 +150,7 @@ export const renderStreamEntry = (
 
     body = (
       <>
-        {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
+        {renderEntryTitle(entry)}
         {protectedPrompt === 'icon' ? (
           <div
             class="protected-content-wrapper inline compact"
@@ -194,7 +201,7 @@ export const renderStreamEntry = (
   } else {
     body = (
       <>
-        {entry.title && <h2 class="stream-entry-title">{entry.title}</h2>}
+        {renderEntryTitle(entry)}
         <div class="stream-entry-private">
           <p>{restrictedLabel}</p>
         </div>

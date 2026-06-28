@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-28 01:53:51 GMT-04:00
+modified: 2026-06-28 09:03:19 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -193,6 +193,251 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/DavidSHolz/status/1783966435406164040 -- favorite short science fiction stories
+  - [meta]:
+    - date: 04/26/2024
+    - tags: [science fiction, reading]
+    - later: true
+- https://x.com/RyanPGreenblatt/status/2034414603632050609 -- Ryan Greenblatt on current AI scheming predictions
+  - [meta]:
+    - date: 03/18/2026
+    - tags: [alignment, scheming]
+    - later: true
+- https://x.com/VincentAbruzzo/status/2034381502344265797 -- AgentLens alignment interpretability tool
+  - [meta]:
+    - date: 03/18/2026
+    - tags: [agents, interpretability]
+    - later: true
+- https://x.com/YGandelsman/status/2034443577129095513 -- LLM steering for diffusion models
+  - [meta]:
+    - date: 03/19/2026
+    - tags: [diffusion, llms]
+    - later: true
+- https://x.com/anirudhbv_ce/status/2031922790169809072 -- decode-specific attention kernel
+  - [meta]:
+    - date: 03/12/2026
+    - tags: [attention, kernels]
+    - later: true
+- https://x.com/ChristosTzamos/status/2031845134577406426 -- computer inside a transformer
+  - [meta]:
+    - date: 03/11/2026
+    - tags: [transformers, computation]
+    - later: true
+- https://x.com/IgorCarron/status/2035159036224487657 -- Igor Carron X article
+  - [meta]:
+    - date: 03/21/2026
+    - tags: [article]
+    - later: true
+- https://x.com/WillManidis/status/2028917236694749639 -- Will Manidis X article
+  - [meta]:
+    - date: 03/03/2026
+    - tags: [article]
+    - later: true
+- https://x.com/SchrodingrsBrat/status/2037197756683387211 -- Crime and Punishment conscience note
+  - [meta]:
+    - date: 03/26/2026
+    - tags: [literature, conscience]
+    - later: true
+- https://x.com/reinerpope/status/1974659472888061962 -- hashmap layout serialization
+  - [meta]:
+    - date: 10/05/2025
+    - tags: [serialization, performance]
+    - later: true
+- https://x.com/jacobaustin132/status/1957447356518891583 -- LLM parallelism phase transitions
+  - [meta]:
+    - date: 08/18/2025
+    - tags: [llms, parallelism]
+    - later: true
+- https://x.com/sanjitneelam/status/1950390989455315429 -- blockwise sparse attention for draft tokens
+  - [meta]:
+    - date: 07/30/2025
+    - tags: [attention, speculative decoding]
+    - later: true
+- https://x.com/WillManidis/status/2040055253102391463 -- long-term compounding in friendships and places
+  - [meta]:
+    - date: 04/03/2026
+    - tags: [friendship, life]
+    - later: true
+- https://x.com/Kimi_Moonshot/status/2040079034290409692 -- Kimi X article
+  - [meta]:
+    - date: 04/03/2026
+    - tags: [ai, article]
+    - later: true
+- https://x.com/satvikgari/status/2039735450424742316 -- building a Blackwell-style GPU in Verilog
+  - [meta]:
+    - date: 04/02/2026
+    - tags: [gpu, verilog]
+    - later: true
+- https://x.com/viemccoy/status/2039801685841993765 -- EXCALIBUR agent harness
+  - [meta]:
+    - date: 04/02/2026
+    - tags: [agents, security]
+    - later: true
+- https://x.com/LydNot/status/2039734991069081853 -- epistemic status indicator
+  - [meta]:
+    - date: 04/02/2026
+    - tags: [epistemics]
+    - later: true
+- https://x.com/badlogicgames/status/2038658436464873752 -- long context implementation note
+  - [meta]:
+    - date: 03/30/2026
+    - tags: [context, llms]
+    - later: true
+- https://x.com/tri_dao/status/2038666307738964466 -- Muon speedup via Gram Newton-Schulz
+  - [meta]:
+    - date: 03/30/2026
+    - tags: [optimization, linear algebra]
+    - later: true
+- https://x.com/jcz42/status/2038660309968208028 -- Gram Newton-Schulz for faster Muon
+  - [meta]:
+    - date: 03/30/2026
+    - tags: [optimization, muon]
+    - later: true
+- https://x.com/ImTheBigP/status/2038395912175935980 -- Pravesh X article
+  - [meta]:
+    - date: 03/29/2026
+    - tags: [article]
+    - later: true
+- https://x.com/mohitwt_/status/2038982791715815822 -- mohit X article
+  - [meta]:
+    - date: 03/31/2026
+    - tags: [article]
+    - later: true
+- https://x.com/reinerpope/status/1949612893382857016 -- prefill and decode as different workloads
+  - [meta]:
+    - date: 07/27/2025
+    - tags: [inference, decoding]
+    - later: true
+- https://x.com/WillManidis/status/2041262402889457721 -- Will Manidis X article
+  - [meta]:
+    - date: 04/06/2026
+    - tags: [article]
+    - later: true
+- https://x.com/robbensinger/status/2040214713397911891 -- Rob Bensinger cryonics message
+  - [meta]:
+    - date: 04/03/2026
+    - tags: [cryonics, longevity]
+    - later: true
+- https://x.com/deanwball/status/2041610761433174180 -- Dean Ball on Mythos and AI vulnerability discovery
+  - [meta]:
+    - date: 04/07/2026
+    - tags: [ai policy, security]
+    - later: true
+- https://x.com/OpenAI/status/2042295688323875316 -- OpenAI Codex subscription update
+  - [meta]:
+    - date: 04/09/2026
+    - tags: [codex, pricing]
+    - later: true
+- https://x.com/mitchellh/status/2043788123008868600 -- GitHub stacked changes design
+  - [meta]:
+    - date: 04/13/2026
+    - tags: [github, design]
+    - later: true
+- https://x.com/LydNot/status/2043836464493187569 -- special cases as primitives
+  - [meta]:
+    - date: 04/13/2026
+    - tags: [abstraction, primitives]
+    - later: true
+- https://x.com/altryne/status/2043748676099866771 -- Alex Volkov X article
+  - [meta]:
+    - date: 04/13/2026
+    - tags: [article]
+    - later: true
+- https://x.com/trajektoriePL/status/2043264123123769740 -- Terence Tao Copernican view of intelligence
+  - [meta]:
+    - date: 04/12/2026
+    - tags: [intelligence, philosophy]
+    - later: true
+- https://x.com/sahilgo6801/status/2044060697697628323 -- Elastic Looped Transformers
+  - [meta]:
+    - date: 04/14/2026
+    - tags: [transformers, generative models]
+    - later: true
+- https://x.com/modal/status/2044146413509206379 -- Modal X article
+  - [meta]:
+    - date: 04/14/2026
+    - tags: [infrastructure, article]
+    - later: true
+- https://x.com/xenovacom/status/2044451835780518024 -- 1-bit LLMs with WebGPU
+  - [meta]:
+    - date: 04/15/2026
+    - tags: [webgpu, quantization]
+    - later: true
+- https://x.com/tri_dao/status/2044842948118921703 -- looped transformer stability
+  - [meta]:
+    - date: 04/16/2026
+    - tags: [transformers, dynamical systems]
+    - later: true
+- https://x.com/badlogicgames/status/2055794010900377933 -- pi-ai image generation API release
+  - [meta]:
+    - date: 05/16/2026
+    - tags: [image generation, sdk]
+    - later: true
+- https://x.com/alicealeph0/status/2055548302805066182 -- songwriter as poet note
+  - [meta]:
+    - date: 05/16/2026
+    - tags: [poetry, music]
+    - later: true
+- https://x.com/itseieio/status/2056110098888437840 -- nolen image post
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [image]
+    - later: true
+- https://x.com/joliegans/status/2056153083458306428 -- books for anxious questions
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [books, ai]
+    - later: true
+- https://x.com/lilianweng/status/2056177479782658363 -- Charles Perrow system accidents
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [systems, accidents]
+    - later: true
+- https://x.com/huozhi/status/2056111378977759429 -- minimal programming language experiment
+  - [meta]:
+    - date: 05/17/2026
+    - tags: [programming languages, parsing]
+    - later: true
+- https://x.com/AnthropicAI/status/2056419620643541012 -- Anthropic acquiring Stainless
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [anthropic, acquisition]
+    - later: true
+- https://x.com/Sapient_Int/status/2056199911348318221 -- Sapient Intelligence countdown
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [agi, labs]
+    - later: true
+- https://x.com/deepfates/status/2056408847892500598 -- San Francisco built on bay fill
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [san francisco, history]
+    - later: true
+- https://x.com/i/trending/2059005534179901495 -- X trending topic
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [trend]
+    - later: true
+- https://x.com/i/trending/2058958071515533447 -- X trending topic
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [trend]
+    - later: true
+- https://x.com/i/trending/2059039524651466955 -- X trending topic
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [trend]
+    - later: true
+- https://x.com/_aidan_clark_/status/2056452489743048869 -- in-demand skills without work-machine advice
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [career, ai]
+    - later: true
+- https://x.com/ggerganov/status/2056391115469689330 -- llama.cpp MTP for Qwen3.6
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [llama.cpp, inference]
+    - later: true
 - https://x.com/QuiverAI/status/2026792057893708072 -- Arrow 1.0 SVG AI model
   - [meta]:
     - date: 02/25/2026

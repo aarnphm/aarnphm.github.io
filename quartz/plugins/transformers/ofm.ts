@@ -34,6 +34,7 @@ import embedScript from '../../components/scripts/embed.inline'
 import mermaidScript from '../../components/scripts/mermaid.inline'
 import mermaidStyle from '../../components/styles/mermaid.inline.scss'
 import { svgOptions } from '../../components/svg'
+import { AUDIO_ICON_PATHS, AUDIO_BAR_COUNT, audioBarHeight } from '../../util/audio'
 import { remarkSidenote } from '../../extensions/micromark-extension-ofm-sidenotes'
 import {
   remarkWikilink,
@@ -1183,6 +1184,64 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                   h('figcaption', [h('span', { class: 'figure-caption' }, ...captionChildren)]),
                 ]),
               )
+            },
+          )
+        }
+      })
+
+      plugins.push(() => {
+        return tree => {
+          const isAudioEmbed = (node: Element) =>
+            node.tagName === 'audio' && typeof node.properties?.src === 'string'
+          const onlyAudio = (node: Element) =>
+            node.children.some(child => isAudioEmbed(child as Element)) &&
+            node.children.every(child => isAudioEmbed(child as Element) || whitespace(child))
+          const icon = (path: string) =>
+            s('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' }, [s('path', { d: path })])
+          const bars = Array.from({ length: AUDIO_BAR_COUNT }, (_, i) =>
+            h('span', { style: `height:${audioBarHeight(i)}%` }),
+          )
+
+          visit(tree, { tagName: 'p' }, (node, idx, parent) => {
+            if (!onlyAudio(node as Element)) return
+            remove(node, 'text')
+            parent?.children.splice(idx!, 1, ...node.children)
+            return idx
+          })
+
+          visit(
+            tree,
+            node => isAudioEmbed(node as Element),
+            (node, idx, parent) => {
+              const el = node as Element
+              if ((parent as Element)?.tagName === 'figure') return
+              const props = { ...el.properties }
+              const caption =
+                (props['data-caption'] as string | undefined) ??
+                (props.dataCaption as string | undefined)
+              delete props['data-caption']
+              delete props.dataCaption
+              parent?.children.splice(
+                idx!,
+                1,
+                h('figure.audio-player', { 'data-audio-embed': true }, [
+                  h('div.ap-row', [
+                    h('button.ap-play', { type: 'button', 'aria-label': 'Play' }, [
+                      icon(AUDIO_ICON_PATHS.play),
+                    ]),
+                    h(
+                      'button.ap-repeat',
+                      { type: 'button', 'aria-label': 'Repeat', 'aria-pressed': 'false' },
+                      [icon(AUDIO_ICON_PATHS.repeat)],
+                    ),
+                    h('div.ap-bars', bars),
+                  ]),
+                  h('div.ap-time', '0:00 / 0:00'),
+                  ...(caption ? [h('figcaption.ap-caption', caption)] : []),
+                  h('audio', props),
+                ]),
+              )
+              return SKIP
             },
           )
         }

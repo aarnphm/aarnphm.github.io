@@ -12,6 +12,7 @@ export type StreamMetadata = Record<string, unknown>
 export interface StreamEntry {
   id: string
   title?: string
+  titleId?: string
   description?: string
   descriptionHtml?: string
   metadata: StreamMetadata
@@ -314,6 +315,12 @@ interface ParsedEntry {
 
 const anonToken = '<INSERT_HERE>'
 
+const titleId = (node: ElementContent | undefined): string | undefined => {
+  if (!node || !isElement(node)) return undefined
+  const id = node.properties?.id
+  return typeof id === 'string' && id.length > 0 ? id : undefined
+}
+
 export const Stream: QuartzTransformerPlugin = () => {
   return {
     name: 'Stream',
@@ -440,6 +447,7 @@ export const Stream: QuartzTransformerPlugin = () => {
               return {
                 id: entryId,
                 title: entry.title ? toString(entry.title) : undefined,
+                titleId: titleId(entry.title),
                 description,
                 descriptionHtml: entry.descriptionHtml ?? fallbackDescriptionHtml,
                 metadata: cleanMetadata,
