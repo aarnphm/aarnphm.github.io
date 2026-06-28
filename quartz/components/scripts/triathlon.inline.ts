@@ -2145,7 +2145,7 @@ const buildPmc = (data: Analytics): HTMLElement => {
   }
   const setCtrlLab = (): void => {
     const lp = projSeries[H - 1]
-    ctrlLab.textContent = `${futLoad}/day → ${H}d: fitness ${Math.round(lp.ctl)} · form ${signed(Math.round(lp.tsb))}`
+    ctrlLab.textContent = `${futLoad}/day → ${H}d: ${tl('fitness')} ${Math.round(lp.ctl)} · ${tl('form')} ${signed(Math.round(lp.tsb))}`
   }
   let activeIndex = n - 1
   let locked = false
