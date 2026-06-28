@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-27 12:07:22 GMT-04:00
+modified: 2026-06-28 00:25:03 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -1186,6 +1186,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.infinitealmanac.com -- THE INFINITE ALMANAC
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [interactive, visuals]
+    - importance: 3
 - https://x.com/RealEmirHan/status/1889411568833790020 -- David Lynch deadline clip
   - [meta]:
     - date: 02/11/2025
@@ -1843,6 +1848,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.ivanzhao.me/ -- Ivan Zhao
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [designer]
 - https://nehanarula.org/ -- Neha Narula
   - [meta]:
     - date: 06/27/2026
@@ -3162,6 +3171,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://distill.pub/2017/research-debt/ -- Research Debt
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [efficiency, topics]
+- https://bradylab.ucsd.edu/tcc/ -- Target confusability competition model (TCC) primer
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [memory, learning, research]
+    - importance: 8
+    - later: true
 - https://aresluna.org/show-your-hands-honor -- Show your hands honor for the strange power they bring you, On designing finger-friendly interactions
   - [meta]:
     - date: 06/23/2026
@@ -10285,6 +10304,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.mek.gallery/ -- MEK.txt
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [masonry, arts]
 - https://www.searchartwith.art/ -- Search Art with Art [**]
   - [meta]:
     - date: 06/27/2026
@@ -12538,6 +12561,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/callummcdougall/ARENA_3.0 -- ARENA 3.0
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [alignment, safety]
+    - later: true
 - https://github.com/guidance-ai/llguidance/tree/main/parser -- llguidance parser
   - [meta]:
     - date: 06/19/2026
@@ -15316,6 +15344,15 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2602.11399
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [rl, scaling]
+    - later: true
+- https://research.facebook.com/publications/scuba-diving-into-data-at-facebook/ -- Scuba: Diving into Data at Facebook
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [data, systems]
 - https://jacopogabrielli.substack.com/p/the-moores-law-of-synthetic-gene -- The Moore's Law of Synthetic Gene Circuits
   - [meta]:
     - date: 06/18/2026
