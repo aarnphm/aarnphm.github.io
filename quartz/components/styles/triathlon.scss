@@ -3222,6 +3222,10 @@
   gap: 0.2rem;
 }
 
+.tri-ftp-ctrl-unit {
+  margin-left: 0.2rem;
+}
+
 .tri-ftp-ctrl-row {
   display: flex;
   align-items: baseline;
@@ -4920,52 +4924,20 @@
     }
   }
 
-  .tri-act:only-of-type {
-    grid-column: 1 / -1;
-  }
-
-  &[data-triathlon-sport] .tri-act-toggle {
-    display: none;
-  }
-
-  .tri-act--expanded .tri-act-more {
-    display: contents;
-  }
-
-  .tri-act-stats {
-    display: block;
-    width: 100%;
-
-    tbody {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.1rem 1.5rem;
-    }
-
-    tr {
-      display: flex;
-      flex: 1 1 6.5rem;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    th,
-    td {
-      min-width: 0;
-    }
-  }
-
-  .tri-pool-wrap {
-    align-items: center;
-  }
-
   .tri-zone-grid {
     grid-template-columns: max-content max-content max-content 1fr;
   }
 
   .tri-zone-range {
     display: none;
+  }
+}
+
+.tri-day-embed:has(.tri-act:only-of-type) {
+  width: min(20rem, 100%);
+
+  .tri-pop-card {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
