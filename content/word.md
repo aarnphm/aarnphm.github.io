@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-27 21:15:27 GMT-04:00
+modified: 2026-06-28 00:55:13 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -84,6 +84,42 @@ title: lists
     | thread context switch, direct costs | `2,000` |
     | C++ exception thrown+caught | `5,000-10,000` |
     | thread context switch, total costs including cache invalidation | `10,000-1,000,000` |
+- latency numbers everyone should know ([Finbarr Timbers](https://finbarr.ca/numbers-you-should-know/))
+  - latency table
+    | Operation | Time (ns) | Time (ms) |
+    | --- | ---: | ---: |
+    | L1 cache reference | `1` | `0.000001` |
+    | Branch misprediction | `3` | `0.000003` |
+    | L2 cache reference | `4` | `0.000004` |
+    | Mutex lock/unlock | `17` | `0.000017` |
+    | Main memory reference | `100` | `0.0001` |
+    | Compress 1 kB with Zippy | `2,000` | `0.002` |
+    | Read 1 MB sequentially from memory | `10,000` | `0.010` |
+    | Send 2 kB over 10 Gbps network | `1,600` | `0.0016` |
+    | SSD 4 kB random read | `20,000` | `0.020` |
+    | Read 1 MB sequentially from SSD | `1,000,000` | `1` |
+    | Round trip within same datacenter | `500,000` | `0.5` |
+    | Read 1 MB sequentially from disk | `5,000,000` | `5` |
+    | Read 1 MB sequentially from 1 Gbps network | `10,000,000` | `10` |
+    | Disk seek | `10,000,000` | `10` |
+    | TCP packet round trip between continents | `150,000,000` | `150` |
+  - derived throughput estimates
+    | Path | Throughput |
+    | --- | ---: |
+    | Sequential read from HDD | `~200 MB/s` |
+    | Sequential read from SSD | `~1 GB/s` |
+    | Sequential read from main memory | `~100 GB/s` burst |
+    | Sequential read from 10 Gbps Ethernet | `~1000 MB/s` |
+  - additional observations
+    | Path | Rate |
+    | --- | ---: |
+    | Europe to US round trips | `~6-7/s` |
+    | Same-datacenter round trips | `~2000/s` |
+  - sample calculation: retrieving 30 × 256 kB images from one server
+    - reads required: `30 images / 2 disks per machine = 15 reads`
+    - one HDD image read: `(256 kB / 1 MB) * 5ms + 10ms seek = 1.28ms + 10ms = 11.28ms`
+    - total time: `15 reads * 11.28ms = 169.2ms`
+    - throughput: `1000ms / 169.2ms ≈ 5 result pages/s`
 - $$\begin{aligned} &\text{Big O(micron)}: O \text{ or } \mathcal{O} \\ &\text{Big Omega}: \Omega \\ &\text{Big Theta}: \Theta \\ &\text{Small O(micron)}: o \\ &\text{Small Omega}: \omega \\ &\text{On the order of}: \sim \end{aligned}$$
 - time complexity of algorithm
   | Algorithm | Best | Average | Worst | Stable | In-place |

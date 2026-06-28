@@ -13,13 +13,13 @@ dexa:
     bodyFat: 27.4
     date: '2026-06-25'
     fatLbs: 54.2
+    fatLossTo14PctLbs: 30.8
+    ffmLbs: 143.5
     leanLbs: 135.7
     legs:
       bmc: 3
       fat: 17.7
       lean: 54.4
-    ffmLbs: 143.5
-    fatLossTo14PctLbs: 30.8
     rmr: 1695
     rsmi: 9.2
     targetBodyFat: 14
@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-27 17:41:09 GMT-04:00
+modified: 2026-06-28 01:23:56 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-13'
@@ -47,8 +47,8 @@ tags:
 title: triathlon
 triathlon: olympic
 vo2max:
-  - date: '2026-06-25'
-    caloriesAtVt1: 850
+  - caloriesAtVt1: 850
+    date: '2026-06-25'
     hrAtVo2max: 180
     hrMax: 182
     massKg: 88.9
@@ -58,8 +58,8 @@ vo2max:
     ve: 117
     vt1Hr: 145
     vt1Kmh: 10.5
-    vt2Hr:
-    vt2Kmh:
+    vt2Hr: null
+    vt2Kmh: null
     zonesHr:
       - 112
       - 121
@@ -140,6 +140,8 @@ The plan now uses five measured constraints:
 - DEXA on 2026-06-25 measured 197.6 lb total mass, 54.2 lb fat, 135.7 lb lean, 7.8 lb bone mineral content, 27.4% total-mass fat, 28.5% tissue fat, 1.24 lb VAT, and 1695 kcal/day RMR.
 - Holding fat-free mass at 143.5 lb, 14% body fat implies about 166.9 lb total mass and 23.4 lb fat. That is about 30.8 lb fat loss. Race day is 31 days away, so the race block targets 4-6 lb loss, not the full cut.
 - Current analytics have Olympic prediction at about 3:02 before transitions, binding leg run, CTL 69, ATL 93, and TSB -24 on 2026-06-25. The test day counts as hard. The next 48 hours buy freshness before adding more intensity.
+
+TriDot has some pretty good drill for [swimming](https://support.tridot.com/hc/en-us/sections/201539593-Swim) here, and some form with drill which is recommended to follow to improve your stroke and general techniques.
 
 ### intensity anchors
 

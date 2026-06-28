@@ -780,6 +780,7 @@ body[data-arena-subpage='true'] {
     align-items: flex-start;
     justify-content: center;
     overflow: hidden;
+    border-bottom: 1px solid var(--lightgray);
   }
 
   .arena-modal-capture-link {
