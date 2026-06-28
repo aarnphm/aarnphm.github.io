@@ -172,10 +172,15 @@ export const FeedPanel = () => (
   </section>
 )
 
-export const AnalyticsPanel = () => (
+export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
   <>
     <div class="tri-analytics-scrim" aria-hidden="true" />
-    <aside class="tri-analytics" aria-hidden="true" role="dialog" aria-label="triathlon analytics">
+    <aside
+      class={`tri-analytics${page ? ' tri-analytics--page' : ''}`}
+      aria-hidden={page ? 'false' : 'true'}
+      role="dialog"
+      aria-label="triathlon analytics"
+    >
       <div class="tri-ana-bar">
         <span class="tri-ana-title" data-i18n="analytics">
           analytics
@@ -216,10 +221,15 @@ export const AnalyticsPanel = () => (
   </>
 )
 
-export const MapPanel = () => (
+export const MapPanel = ({ page }: { page?: boolean }) => (
   <>
     <div class="tri-map-scrim" aria-hidden="true" />
-    <aside class="tri-map" aria-hidden="true" role="dialog" aria-label="triathlon route maps">
+    <aside
+      class={`tri-map${page ? ' tri-map--page' : ''}`}
+      aria-hidden={page ? 'false' : 'true'}
+      role="dialog"
+      aria-label="triathlon route maps"
+    >
       <div class="tri-ana-bar tri-map-bar">
         <span class="tri-ana-title tri-map-title" data-i18n="map">
           map
@@ -303,12 +313,12 @@ export const MapPanel = () => (
   </>
 )
 
-export const TrainingPanel = () => (
+export const TrainingPanel = ({ page }: { page?: boolean }) => (
   <>
     <div class="tri-training-scrim" aria-hidden="true" />
     <aside
-      class="tri-training"
-      aria-hidden="true"
+      class={`tri-training${page ? ' tri-training--page' : ''}`}
+      aria-hidden={page ? 'false' : 'true'}
       role="dialog"
       aria-label="triathlon training plan"
     >
@@ -451,10 +461,10 @@ export const FuelEmbed = () => (
   </div>
 )
 
-export const CalcPanel = () => (
+export const CalcPanel = ({ page }: { page?: boolean }) => (
   <aside
-    class="tri-calc"
-    aria-hidden="true"
+    class={`tri-calc${page ? ' tri-calc--page' : ''}`}
+    aria-hidden={page ? 'false' : 'true'}
     role="dialog"
     aria-label="triathlon calculator"
     data-swim="1.5"
@@ -663,7 +673,7 @@ export const CalcPanel = () => (
   </aside>
 )
 
-export const ToolsPanel = () => (
+export const ToolsPanel = ({ page }: { page?: boolean }) => (
   <div class="tri-tools">
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
@@ -687,7 +697,7 @@ export const ToolsPanel = () => (
       <h2 class="tri-tools-h" data-i18n="calculator">
         calculator
       </h2>
-      <CalcPanel />
+      <CalcPanel page={page} />
     </section>
   </div>
 )

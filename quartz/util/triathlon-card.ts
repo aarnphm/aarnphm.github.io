@@ -3,7 +3,9 @@ import {
   SPORT_ICON,
   type ActivityHealth,
   type ActivityKind,
+  type PowerCurvePoint,
   type StravaActivityDetail,
+  type StravaZones,
 } from '../plugins/stores/strava'
 
 export interface TriNodeFactory<N> {
@@ -326,10 +328,327 @@ export const buildRecovery = <N>(f: TriNodeFactory<N>, h: ActivityHealth): N | n
   return wrap
 }
 
+export interface DetailCtx {
+  zones: StravaZones | null
+  curveRef: PowerCurvePoint[]
+  ftp: number | null
+  goalFtp: number | null
+  vt1: number | null
+}
+
+export type AxisXTick = { label: string; pct: number; cls?: string }
+
+const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
+const POWER_ZONE_NAMES = [
+  'recovery',
+  'endurance',
+  'tempo',
+  'threshold',
+  'VO2max',
+  'anaerobic',
+  'neuromuscular',
+]
+
+export const zoneClock = (sec: number): string => {
+  const s = Math.round(sec)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const x = s % 60
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${x.toString().padStart(2, '0')}`
+  if (m > 0) return `${m}:${x.toString().padStart(2, '0')}`
+  return `${x}s`
+}
+
+const zoneRange = (bounds: number[], i: number): string => {
+  if (i === 0) return `< ${bounds[0]}`
+  if (i >= bounds.length) return `> ${bounds[bounds.length - 1]}`
+  return `${bounds[i - 1] + 1}–${bounds[i]}`
+}
+
+export const dlabel = (sec: number): string =>
+  sec < 60 ? `${sec}s` : sec < 3600 ? `${sec / 60}m` : `${sec / 3600}h`
+
+export const axisFrame = <N>(
+  f: TriNodeFactory<N>,
+  svgEl: N,
+  yTicks: { label: string; vbY: number }[],
+  vbH: number,
+  xTicks: AxisXTick[],
+  cssH: number,
+): N => {
+  const frame = f.el('div', 'tri-cax-frame')
+  const yax = f.el('div', 'tri-cax-yax', undefined, { style: `height:${cssH}px` })
+  for (const t of yTicks)
+    f.add(
+      yax,
+      f.el('span', 'tri-cax-yt', t.label, { style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%` }),
+    )
+  const plot = f.el('div', 'tri-cax-plot')
+  f.add(plot, svgEl)
+  const xax = f.el('div', 'tri-cax-xax')
+  for (const t of xTicks)
+    f.add(
+      xax,
+      f.el('span', `tri-cax-xt${t.cls ? ` ${t.cls}` : ''}`, t.label, {
+        style: `left:${t.pct.toFixed(2)}%`,
+      }),
+    )
+  f.add(plot, xax)
+  f.add(frame, yax, plot)
+  return frame
+}
+
+const zoneTable = <N>(
+  f: TriNodeFactory<N>,
+  title: string,
+  times: number[],
+  bounds: number[],
+  names: string[],
+  unit: string,
+  caption: string,
+): N => {
+  const wrap = f.el('div', 'tri-zone')
+  f.add(wrap, f.el('div', 'tri-zone-title', title, { 'data-i18n': title }))
+  const total = times.reduce((s, x) => s + x, 0) || 1
+  let mx = 1
+  for (const t of times) if (t > mx) mx = t
+  const grid = f.el('div', 'tri-zone-grid')
+  for (let i = times.length - 1; i >= 0; i--) {
+    const row = f.el('div', 'tri-zone-row')
+    const track = f.el('span', 'tri-zone-bar')
+    f.add(
+      track,
+      f.el('span', `tri-zone-fill tri-zone-fill--${i + 1}`, undefined, {
+        style: `width:${(times[i] / mx) * 100}%`,
+      }),
+    )
+    f.add(
+      row,
+      f.el('span', 'tri-zone-z', `Z${i + 1}`, {
+        'data-name': names[i] ?? `Z${i + 1}`,
+        tabindex: '0',
+      }),
+      f.el('span', 'tri-zone-range', `${zoneRange(bounds, i)}${unit}`),
+      f.el('span', 'tri-zone-time', zoneClock(times[i])),
+      f.el('span', 'tri-zone-pct', `${((times[i] / total) * 100).toFixed(1)}%`),
+      track,
+    )
+    f.add(grid, row)
+  }
+  f.add(wrap, grid)
+  if (caption) f.add(wrap, f.el('div', 'tri-zone-cap', caption))
+  return wrap
+}
+
+export const buildHrZones = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  ctx: DetailCtx,
+): N | null => {
+  if (!d.hrZones || !ctx.zones?.hr.length) return null
+  return zoneTable(
+    f,
+    'heart rate zones',
+    d.hrZones,
+    ctx.zones.hr,
+    HR_ZONE_NAMES,
+    '',
+    ctx.vt1 != null ? `based on vt1 ${ctx.vt1} bpm` : '',
+  )
+}
+
+export const buildPowerZones = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  ctx: DetailCtx,
+): N | null => {
+  if (!d.powerZones || !ctx.zones?.power.length) return null
+  const ftp = ctx.zones.ftp
+  return zoneTable(
+    f,
+    'power zones',
+    d.powerZones,
+    ctx.zones.power,
+    POWER_ZONE_NAMES,
+    'w',
+    ftp != null ? `based on FTP ${ftp} W` : '',
+  )
+}
+
+export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
+  const hist = d.powerHist
+  if (!hist || hist.length < 2) return null
+  const wrap = f.el('div', 'tri-zone')
+  f.add(
+    wrap,
+    f.el('div', 'tri-zone-title', '25W power distribution', {
+      'data-i18n': '25W power distribution',
+    }),
+  )
+  const H = 34
+  const n = hist.length
+  let mx = 1
+  for (const t of hist) if (t > mx) mx = t
+  const s = f.svg('svg', {
+    class: 'tri-hist-svg',
+    viewBox: `0 0 ${n} ${H}`,
+    preserveAspectRatio: 'none',
+    'data-hist': JSON.stringify(hist),
+  })
+  hist.forEach((t, i) => {
+    if (t <= 0) return
+    const h = (t / mx) * (H - 1)
+    f.add(
+      s,
+      f.svg('rect', {
+        x: i + 0.1,
+        y: H - h,
+        width: 0.8,
+        height: h,
+        class: 'tri-hist-bar',
+        'data-bin': i,
+      }),
+    )
+  })
+  const np = d.npWatts ?? d.avgWatts
+  if (np != null)
+    f.add(
+      s,
+      f.svg('line', { x1: np / 25 + 0.5, y1: 0, x2: np / 25 + 0.5, y2: H, class: 'tri-hist-avg' }),
+    )
+  f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
+  const histMaxWatt = n * 25
+  const histStepW = histMaxWatt <= 300 ? 100 : histMaxWatt <= 700 ? 200 : 300
+  const histXTicks: AxisXTick[] = []
+  for (let w = 0; w < histMaxWatt; w += histStepW)
+    histXTicks.push({
+      label: `${w}w`,
+      pct: (w / 25 / n) * 100,
+      cls: w === 0 ? 'tri-cax-xt--first' : undefined,
+    })
+  f.add(
+    wrap,
+    axisFrame(
+      f,
+      s,
+      [
+        { label: zoneClock(mx), vbY: H - (H - 1) },
+        { label: zoneClock(Math.round(mx / 2)), vbY: H - (H - 1) / 2 },
+        { label: '0', vbY: H },
+      ],
+      H,
+      histXTicks,
+      60,
+    ),
+  )
+  f.add(wrap, f.el('div', 'tri-chart-readout'))
+  const cap = f.el('div', 'tri-elev-cap')
+  f.add(cap, f.el('span', 'tri-ana-k', `0–${(n - 1) * 25 + 24} W`))
+  if (np != null) f.add(cap, f.el('span', 'tri-ana-k', `wtd avg ${np} W`))
+  f.add(wrap, cap)
+  return wrap
+}
+
+export const buildPowerCurve = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  ctx: DetailCtx,
+): N | null => {
+  const curve = d.powerCurve
+  if (!curve || curve.length < 2) return null
+  const ref = ctx.curveRef
+  const ftpRef = ctx.ftp
+  const goalRef = ctx.goalFtp
+  const wrap = f.el('div', 'tri-zone')
+  f.add(wrap, f.el('div', 'tri-zone-title', 'power curve', { 'data-i18n': 'power curve' }))
+  const W = 100
+  const H = 34
+  const secs = curve.map(c => c.s)
+  const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w), ftpRef ?? 0, goalRef ?? 0)
+  const minLog = Math.log(secs[0])
+  const maxLog = Math.log(secs[secs.length - 1])
+  const span = Math.max(1e-6, maxLog - minLog)
+  const X = (sec: number): number => ((Math.log(sec) - minLog) / span) * W
+  const Y = (w: number): number => H - (w / maxW) * (H - 1)
+  const toPath = (pts: PowerCurvePoint[]): string =>
+    pts.map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`).join(' ')
+  const s = f.svg('svg', {
+    class: 'tri-curve-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+    'data-curve': JSON.stringify(curve),
+  })
+  if (ref.length >= 2)
+    f.add(
+      s,
+      f.svg('path', {
+        d: toPath(ref.filter(c => c.s <= secs[secs.length - 1])),
+        class: 'tri-curve-ref',
+      }),
+    )
+  if (ftpRef != null)
+    f.add(
+      s,
+      f.svg('line', {
+        x1: 0,
+        y1: Y(ftpRef).toFixed(2),
+        x2: W,
+        y2: Y(ftpRef).toFixed(2),
+        class: 'tri-curve-ftp',
+      }),
+    )
+  if (goalRef != null)
+    f.add(
+      s,
+      f.svg('line', {
+        x1: 0,
+        y1: Y(goalRef).toFixed(2),
+        x2: W,
+        y2: Y(goalRef).toFixed(2),
+        class: 'tri-curve-goal',
+      }),
+    )
+  f.add(s, f.svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
+  f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
+  const curveDurTicks = [1, 5, 30, 60, 300, 1200, 3600].filter(
+    sec => sec >= secs[0] && sec <= secs[secs.length - 1],
+  )
+  f.add(
+    wrap,
+    axisFrame(
+      f,
+      s,
+      [
+        { label: `${Math.round(maxW)}w`, vbY: Y(maxW) },
+        { label: `${Math.round(maxW / 2)}w`, vbY: Y(maxW / 2) },
+        { label: '0', vbY: Y(0) },
+      ],
+      H,
+      curveDurTicks.map((sec, idx) => ({
+        label: dlabel(sec),
+        pct: X(sec),
+        cls: idx === 0 ? 'tri-cax-xt--first' : undefined,
+      })),
+      64,
+    ),
+  )
+  f.add(wrap, f.el('div', 'tri-chart-readout'))
+  const cap = f.el('div', 'tri-elev-cap')
+  for (const sec of [5, 60, 300, 1200]) {
+    const p = curve.find(c => c.s === sec)
+    if (p) f.add(cap, f.el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
+  }
+  if (ftpRef != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftpRef}W`))
+  if (goalRef != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalRef}W`))
+  f.add(wrap, cap)
+  return wrap
+}
+
 export const buildActivity = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   expanded = false,
+  ctx?: DetailCtx,
 ): N => {
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act')
   const head = f.el('div', 'tri-act-head')
@@ -368,6 +687,16 @@ export const buildActivity = <N>(
     const more = f.el('div', 'tri-act-more')
     const rows = moreStatRows(d)
     if (rows.length > 0) f.add(more, statsTable(f, rows))
+    if (ctx) {
+      const hrz = buildHrZones(f, d, ctx)
+      if (hrz) f.add(more, hrz)
+      const pcurve = buildPowerCurve(f, d, ctx)
+      if (pcurve) f.add(more, pcurve)
+      const pz = buildPowerZones(f, d, ctx)
+      if (pz) f.add(more, pz)
+      const phist = buildPowerHist(f, d)
+      if (phist) f.add(more, phist)
+    }
     f.add(wrap, f.el('button', 'tri-act-toggle', undefined, { type: 'button' }), more)
   }
   return wrap
@@ -389,8 +718,9 @@ export const buildDayCard = <N>(
   payload: DayCardPayload | null,
   extras: DayCardExtras = {},
   activity?: (d: StravaActivityDetail) => N,
+  ctx?: DetailCtx,
 ): N => {
-  const render = activity ?? ((d: StravaActivityDetail) => buildActivity(f, d, !!extras.sport))
+  const render = activity ?? ((d: StravaActivityDetail) => buildActivity(f, d, !!extras.sport, ctx))
   const card = f.el('div', 'tri-pop-card')
   const head = f.el('div', 'tri-pop-head')
   f.add(head, f.el('span', 'tri-pop-date', prettyDate(dateIso)))

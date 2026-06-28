@@ -662,3 +662,128 @@ A: On lines matching a `tags: [...]` array, replace the hyphen in each hyphenate
 
 Q: myopic
 A: nearsighted (short-sighted vision); figuratively, lacking foresight or breadth of view, focused only on immediate concerns.
+
+---
+
+Q: latency numbers everyone should know
+A: Finbarr Timbers' rule-of-thumb table spanning `1 ns` for an L1 cache reference to `150 ms` for a TCP round trip between continents, a ~150,000,000:1 spread; orders of magnitude matter more than the exact figures.
+
+---
+
+Q: latency: L1 cache reference
+A: `1 ns` (`0.000001 ms`).
+
+---
+
+Q: latency: branch misprediction
+A: `3 ns`, roughly `3x` an L1 cache reference.
+
+---
+
+Q: latency: L2 cache reference
+A: `4 ns`, roughly `4x` an L1 cache reference.
+
+---
+
+Q: latency: mutex lock/unlock
+A: `17 ns`.
+
+---
+
+Q: latency: main memory reference
+A: `100 ns`, roughly `100x` an L1 cache reference.
+
+---
+
+Q: latency: compress 1 kB with Zippy
+A: `2,000 ns` (`0.002 ms`).
+
+---
+
+Q: latency: send 2 kB over 10 Gbps network
+A: `1,600 ns` (`0.0016 ms`).
+
+---
+
+Q: latency: read 1 MB sequentially from memory
+A: `10,000 ns` (`0.01 ms`).
+
+---
+
+Q: latency: SSD 4 kB random read
+A: `20,000 ns` (`0.02 ms`).
+
+---
+
+Q: latency: read 1 MB sequentially from SSD
+A: `1,000,000 ns` (`1 ms`), roughly `100x` reading 1 MB from memory.
+
+---
+
+Q: latency: round trip within same datacenter
+A: `500,000 ns` (`0.5 ms`).
+
+---
+
+Q: latency: read 1 MB sequentially from disk
+A: `5,000,000 ns` (`5 ms`), roughly `5x` reading 1 MB from SSD.
+
+---
+
+Q: latency: read 1 MB sequentially from 1 Gbps network
+A: `10,000,000 ns` (`10 ms`).
+
+---
+
+Q: latency: disk seek
+A: `10,000,000 ns` (`10 ms`).
+
+---
+
+Q: latency: TCP packet round trip between continents
+A: `150,000,000 ns` (`150 ms`), the most expensive entry, roughly `300x` a same-datacenter round trip.
+
+---
+
+Q: throughput: sequential read from HDD
+A: `~200 MB/s`.
+
+---
+
+Q: throughput: sequential read from SSD
+A: `~1 GB/s`, roughly `5x` HDD sequential read.
+
+---
+
+Q: throughput: sequential read from main memory
+A: `~100 GB/s` burst.
+
+---
+
+Q: throughput: sequential read from 10 Gbps Ethernet
+A: `~1000 MB/s`.
+
+---
+
+Q: round trips: Europe to US
+A: `~6-7/s`, limited by the cross-continent round-trip latency.
+
+---
+
+Q: round trips: same-datacenter
+A: `~2000/s`, roughly `300x` the Europe-to-US rate.
+
+---
+
+Q: latency sample calculation: 30 × 256 kB images from one server
+A: With 2 disks/machine, `30 / 2 = 15` reads; one HDD image read is `(256 kB / 1 MB) * 5ms + 10ms seek = 1.28ms + 10ms = 11.28ms`; total `15 * 11.28ms = 169.2ms`, giving `1000 / 169.2 ≈ 5` result pages/s.
+
+---
+
+Q: subaqueous
+A: existing, formed, or taking place under water.
+
+---
+
+Q: rollicking
+A: exuberantly lively and amusing; boisterously carefree.
