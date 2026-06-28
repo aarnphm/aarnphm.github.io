@@ -606,8 +606,9 @@ function annotateTransclude(
   url: string,
   displayAnchor: string,
 ): void {
-  const { alias, metadataParsed, metadata } = wikilink
+  const { alias, metadataParsed, metadata, anchorSegments, anchorIsBlockRef } = wikilink
   const block = displayAnchor
+  const nested = !anchorIsBlockRef && anchorSegments !== undefined && anchorSegments.length >= 2
 
   if (!node.data) node.data = { wikilink }
 
@@ -618,6 +619,9 @@ function annotateTransclude(
     'data-url': url,
     'data-block': block,
     'data-embed-alias': alias ?? '',
+    ...(nested
+      ? { 'data-anchor-path': JSON.stringify(anchorSegments.map(s => slugAnchor(s.trim()))) }
+      : {}),
     ...(metadataParsed
       ? { 'data-metadata': JSON.stringify(metadataParsed) }
       : metadata

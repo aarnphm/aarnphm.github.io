@@ -6,6 +6,7 @@ import type {
   Analytics,
   BodyBlock,
   DailyPoint,
+  RaceLeg,
 } from '../../plugins/stores/analytics'
 import {
   type ActivityHealth,
@@ -17,7 +18,11 @@ import {
   type StravaZones,
 } from '../../plugins/stores/strava'
 import {
+  CALC_ANCHOR_PREFIX,
+  type CalcShare,
   computeTriathlonCalcTimes,
+  decodeCalcShare,
+  encodeCalcShare,
   formatDurationClock,
   parseClockSeconds,
   solveTriathlonCalcLeg,
@@ -908,6 +913,7 @@ const buildDayCard = (
 const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => ({
   location: data.triathlonLoc,
   event: data.triathlonEvent,
+  sport: data.triathlonSport as DayCardExtras['sport'],
 })
 
 const setupDayEmbeds = (): (() => void) | null => {
@@ -1427,6 +1433,65 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       })
       .catch(() => {})
 
+  const copyBtn = calc.querySelector<HTMLElement>('.tri-calc-copy')
+  const currentShare = (): CalcShare => {
+    const presets = Array.from(calc.querySelectorAll('.tri-calc-preset'))
+    const idx = presets.findIndex(p => p.classList.contains('tri-calc-preset--on'))
+    const mode: 'a' | 'p' =
+      calc.querySelector('.tri-calc-src--on')?.getAttribute('data-src') === 'pred' ? 'p' : 'a'
+    const ci = readCalcInput()
+    return {
+      presetIdx: idx >= 0 ? idx : 1,
+      mode,
+      unit: isImperialUnit() ? 'i' : 'm',
+      swimPaceSec: ci.swimPaceSec,
+      t1Sec: ci.t1Sec,
+      bikeMph: ci.bikeMph,
+      t2Sec: ci.t2Sec,
+      runPaceSec: ci.runPaceSec,
+    }
+  }
+  let copyTimer: number | null = null
+  const onCopy = () => {
+    const text = `![[triathlon#${CALC_ANCHOR_PREFIX}${encodeCalcShare(currentShare())}]]`
+    void navigator.clipboard?.writeText(text).then(() => {
+      if (!copyBtn) return
+      copyBtn.classList.add('check')
+      if (copyTimer) clearTimeout(copyTimer)
+      copyTimer = window.setTimeout(() => copyBtn.classList.remove('check'), 2000)
+    })
+  }
+  copyBtn?.addEventListener('click', onCopy)
+
+  const onCalcFill = (event: Event): void => {
+    const share = (event as CustomEvent).detail?.share as CalcShare | undefined
+    if (!share) return
+    if ((share.unit === 'i') !== isImperialUnit()) toggleTriUnit()
+    const presets = Array.from(calc.querySelectorAll<HTMLElement>('.tri-calc-preset'))
+    const preset = presets[share.presetIdx]
+    if (preset) {
+      calc.dataset.swim = preset.dataset.swim ?? ''
+      calc.dataset.bike = preset.dataset.bike ?? ''
+      calc.dataset.run = preset.dataset.run ?? ''
+      for (const p of presets) p.classList.toggle('tri-calc-preset--on', p === preset)
+    }
+    const srcKey = share.mode === 'p' ? 'pred' : 'avg'
+    for (const b of calc.querySelectorAll<HTMLElement>('.tri-calc-src')) {
+      const on = b.dataset.src === srcKey
+      b.classList.toggle('tri-calc-src--on', on)
+      b.setAttribute('aria-selected', String(on))
+    }
+    setInputVal('swim', clock(share.swimPaceSec))
+    setInputVal('t1', clock(share.t1Sec))
+    setInputVal('bike', bikeToDisp(share.bikeMph))
+    setInputVal('t2', clock(share.t2Sec))
+    setInputVal('run', runToDisp(share.runPaceSec))
+    userEdited = true
+    compute(true)
+    open()
+  }
+  window.addEventListener('tri:calc-fill', onCalcFill)
+
   return () => {
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
@@ -1436,6 +1501,9 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     calc.removeEventListener('keydown', onCalcKey)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('tri:unit', onUnit)
+    copyBtn?.removeEventListener('click', onCopy)
+    window.removeEventListener('tri:calc-fill', onCalcFill)
+    if (copyTimer) clearTimeout(copyTimer)
   }
 }
 
@@ -1494,42 +1562,28 @@ const setupDropdown = (
 const ANA_W = 100
 const ANA_H = 30
 
-type WeightUnit = 'kg' | 'lb'
-const WEIGHT_UNIT_KEY = 'tri-weight-unit'
 const KG_PER_LB = 0.45359237
-const readWeightUnit = (): WeightUnit => {
-  try {
-    return localStorage.getItem(WEIGHT_UNIT_KEY) === 'kg' ? 'kg' : 'lb'
-  } catch {
-    return 'lb'
-  }
-}
-let weightUnit: WeightUnit = readWeightUnit()
-const wConv = (kg: number): number => (weightUnit === 'kg' ? kg : kg / KG_PER_LB)
+const weightUnitLabel = (): string => (isImperialUnit() ? 'lb' : 'kg')
+const wConv = (kg: number): number => (isImperialUnit() ? kg / KG_PER_LB : kg)
 const wNum = (kg: number, kgDp = 1, lbDp = 0): string =>
-  wConv(kg).toFixed(weightUnit === 'kg' ? kgDp : lbDp)
-const wFmt = (kg: number, kgDp = 1, lbDp = 0): string => `${wNum(kg, kgDp, lbDp)} ${weightUnit}`
+  wConv(kg).toFixed(isImperialUnit() ? lbDp : kgDp)
+const wFmt = (kg: number, kgDp = 1, lbDp = 0): string =>
+  `${wNum(kg, kgDp, lbDp)} ${weightUnitLabel()}`
 const wSigned = (kg: number, dp: number): string => {
   const v = wConv(kg)
   return `${v > 0 ? '+' : ''}${v.toFixed(dp)}`
 }
-const setWeightUnit = (u: WeightUnit): void => {
-  if (u === weightUnit) return
-  weightUnit = u
-  try {
-    localStorage.setItem(WEIGHT_UNIT_KEY, u)
-  } catch {}
-  document.dispatchEvent(new CustomEvent('tri-weightunit', { detail: {} }))
-}
 const weightSwitch = (): HTMLElement => {
   const g = el('div', 'tri-unit-switch', undefined, { role: 'group', 'aria-label': 'weight unit' })
-  for (const u of ['kg', 'lb'] as WeightUnit[]) {
-    const on = u === weightUnit
+  for (const u of ['kg', 'lb'] as const) {
+    const on = (u === 'lb') === isImperialUnit()
     const opt = el('button', on ? 'tri-unit-opt tri-unit-opt--on' : 'tri-unit-opt', u, {
       type: 'button',
       'aria-pressed': String(on),
     })
-    opt.addEventListener('click', () => setWeightUnit(u))
+    opt.addEventListener('click', () => {
+      if ((u === 'lb') !== isImperialUnit()) toggleTriUnit()
+    })
     g.appendChild(opt)
   }
   return g
@@ -1555,6 +1609,22 @@ const hms = (sec: number): string => {
     ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
     : `${m}:${s.toString().padStart(2, '0')}`
 }
+const raceLegDistance = (leg: RaceLeg): string =>
+  leg.sport === 'swim'
+    ? `${Math.round(leg.legKm * 1000).toLocaleString('en-US')} m`
+    : fmtKm(leg.legKm)
+const raceLegPace = (leg: RaceLeg): string => {
+  if (leg.legKm <= 0 || leg.splitS <= 0) return '—'
+  if (leg.sport === 'swim') return `${clock(leg.splitS / (leg.legKm * 10))} /100m`
+  if (leg.sport === 'bike') {
+    const kmh = leg.legKm / (leg.splitS / 3600)
+    return isImperialUnit() ? `${(kmh * KM_TO_MI).toFixed(1)} mph` : `${kmh.toFixed(1)} km/h`
+  }
+  const secKm = leg.splitS / leg.legKm
+  return isImperialUnit() ? `${clock(secKm / KM_TO_MI)} /mi` : `${clock(secKm)} /km`
+}
+const raceLegTip = (leg: RaceLeg): string =>
+  `${leg.sport} · ${hms(leg.splitS)} · ${raceLegDistance(leg)} · ${raceLegPace(leg)}`
 const GLOSS: Record<string, { term: string; def: string }> = {
   ctl: {
     term: 'fitness/CTL',
@@ -1654,7 +1724,7 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   },
   sleepdebt: {
     term: 'sleep debt',
-    def: 'Rolling 14-night shortfall against an 8 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. The 7 h floor is the adult minimum; athletes need $8\\text{–}10$ h.',
+    def: 'Rolling 14-night shortfall against a 7 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. $7$ h is the adult minimum; athletes often need $8\\text{–}10$ h.',
   },
   overreaching: {
     term: 'overreaching',
@@ -1667,6 +1737,10 @@ const GLOSS: Record<string, { term: string; def: string }> = {
   vo2max: {
     term: 'VO₂max',
     def: 'Maximal oxygen uptake in $\\mathrm{ml/kg/min}$. Bike path: $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ with $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ and FTP as $95\\%$ of best 20-min power.',
+  },
+  ftp: {
+    term: 'FTP hypothesis',
+    def: 'Functional threshold power estimated from a treadmill VO₂max test. The chain crosses sport modality and invents the missing VT2, so use HR zones for training until a bike power test replaces it.',
   },
   fitage: {
     term: 'fitness age',
@@ -2148,13 +2222,19 @@ const buildPmc = (data: Analytics): HTMLElement => {
       el('span', 'tri-pmc-leg-date', `${shortDate(date)}${proj ? ' · proj' : ''}`),
       metricGrid,
     )
-    if (!proj) readoutEl.append(entryList)
+    if (!proj) {
+      readoutEl.append(
+        el('span', 'tri-pmc-leg-load', `training impulse ${Math.round(daily[i].load)}`),
+      )
+      readoutEl.append(entryList)
+    }
   }
   const setCtrlLab = (): void => {
     const lp = projSeries[H - 1]
     ctrlLab.textContent = `${futLoad}/day → ${H}d: fitness ${Math.round(lp.ctl)} · form ${signed(Math.round(lp.tsb))}`
   }
   let activeIndex = n - 1
+  let locked = false
   const focusIndex = (i: number, hover: boolean): void => {
     activeIndex = Math.round(clampN(i, 0, N - 1))
     const cx = x(activeIndex).toFixed(2)
@@ -2163,6 +2243,10 @@ const buildPmc = (data: Analytics): HTMLElement => {
     readoutEl.style.left = `${clampN((x(activeIndex) / ANA_W) * 100, 14, 86).toFixed(2)}%`
     renderLegend(activeIndex)
     block.classList.toggle('tri-chart--hover', hover)
+  }
+  const indexAt = (event: MouseEvent): number => {
+    const rect = s.getBoundingClientRect()
+    return Math.round(clampN((event.clientX - rect.left) / rect.width, 0, 1) * (N - 1))
   }
   setCtrlLab()
   focusIndex(n - 1, false)
@@ -2186,15 +2270,28 @@ const buildPmc = (data: Analytics): HTMLElement => {
   })
 
   const onMove = (event: MouseEvent): void => {
-    const rect = s.getBoundingClientRect()
-    const i = Math.round(clampN((event.clientX - rect.left) / rect.width, 0, 1) * (N - 1))
-    focusIndex(i, true)
+    if (locked) return
+    focusIndex(indexAt(event), true)
   }
   const onLeave = (): void => {
+    if (locked) return
     focusIndex(n - 1, false)
+  }
+  const onClick = (event: MouseEvent): void => {
+    const i = indexAt(event)
+    if (locked && i === activeIndex) {
+      locked = false
+      block.classList.remove('tri-chart--locked')
+      focusIndex(n - 1, false)
+      return
+    }
+    locked = true
+    block.classList.add('tri-chart--locked')
+    focusIndex(i, true)
   }
   s.addEventListener('mousemove', onMove)
   s.addEventListener('mouseleave', onLeave)
+  s.addEventListener('click', onClick)
 
   return block
 }
@@ -2378,6 +2475,23 @@ const buildReadiness = (data: Analytics): HTMLElement => {
     band.style.left = `${clampN(score - bw / 2, 0, 100 - bw)}%`
     band.style.width = `${bw}%`
     track.append(fill, band)
+    const legTotalS = r.legs.reduce((sum, leg) => sum + Math.max(0, leg.splitS), 0)
+    let legOffsetS = 0
+    if (legTotalS > 0) {
+      for (const leg of r.legs) {
+        const splitS = Math.max(0, leg.splitS)
+        if (splitS <= 0) continue
+        const hit = el('button', `tri-rdy-leg tri-rdy-leg-${leg.sport}`, undefined, {
+          type: 'button',
+          'aria-label': raceLegTip(leg),
+          'data-tip': raceLegTip(leg),
+        })
+        hit.style.left = `${((legOffsetS / legTotalS) * 100).toFixed(2)}%`
+        hit.style.width = `${((splitS / legTotalS) * 100).toFixed(2)}%`
+        track.appendChild(hit)
+        legOffsetS += splitS
+      }
+    }
     row.appendChild(track)
     const meta = el('span', 'tri-rdy-meta')
     meta.append(
@@ -2790,12 +2904,13 @@ const buildBody = (data: Analytics): HTMLElement => {
   if (b.trendKgPerWeek != null)
     cap.appendChild(
       markGloss(
-        el('span', 'tri-ana-k', `${wSigned(b.trendKgPerWeek, 2)} ${weightUnit}/wk`),
+        el('span', 'tri-ana-k', `${wSigned(b.trendKgPerWeek, 2)} ${weightUnitLabel()}/wk`),
         'wtrend',
       ),
     )
   if (b.goalKg != null) {
-    const delta = b.goalDeltaKg != null ? ` (${wSigned(b.goalDeltaKg, 1)} ${weightUnit})` : ''
+    const delta =
+      b.goalDeltaKg != null ? ` (${wSigned(b.goalDeltaKg, 1)} ${weightUnitLabel()})` : ''
     const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ wk` : ''
     cap.appendChild(markGloss(mathK('tri-ana-k', `goal ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'))
   }
@@ -2927,6 +3042,14 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
   }
   const n = rec.series.length
   if (rec.status !== 'building' && n > 1) {
+    const recLeg = (cls: string, name: string): HTMLElement => {
+      const w = el('span', 'tri-rec-legitem')
+      w.append(el('span', `tri-rec-legdot ${cls}`), el('span', 'tri-rec-legname', name))
+      return w
+    }
+    const legend = el('div', 'tri-rec-legend')
+    legend.append(recLeg('tri-rec-leg-hrv', 'hrv'), recLeg('tri-rec-leg-rhr', 'rhr'))
+    block.appendChild(legend)
     const x = (i: number): number => (i / (n - 1)) * ANA_W
     const yZ = (z: number): number => 15 - (clampN(z, -3, 3) / 3) * 12
     const s = svg('svg', {
@@ -3186,7 +3309,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
   const seg = (cls: string, lbs: number, label: string): HTMLElement => {
     const s = el('span', `tri-dexa-seg ${cls}`)
     s.style.width = `${(lbs / total) * 100}%`
-    s.title = `${label} ${lbs.toFixed(1)} lb · ${((lbs / total) * 100).toFixed(0)}%`
+    s.title = `${label} ${wFmt(lbs * KG_PER_LB, 1, 1)} · ${((lbs / total) * 100).toFixed(0)}%`
     return s
   }
   const bar = el('div', 'tri-dexa-bar')
@@ -3203,7 +3326,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
     w.append(
       el('span', `tri-dexa-dot ${cls}`),
       el('span', 'tri-dexa-legname', name),
-      el('span', 'tri-dexa-legval', `${lbs.toFixed(1)} lb`),
+      el('span', 'tri-dexa-legval', wFmt(lbs * KG_PER_LB, 1, 1)),
     )
     return w
   }
@@ -3237,7 +3360,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
       el(
         'span',
         'tri-dexa-rval',
-        `${rtot.toFixed(0)} lb · ${((r.fat / rtot) * 100).toFixed(0)}% fat`,
+        `${wFmt(rtot * KG_PER_LB, 0, 0)} · ${((r.fat / rtot) * 100).toFixed(0)}% fat`,
       ),
     )
     reg.appendChild(row)
@@ -3250,11 +3373,11 @@ const buildDexa = (data: Analytics): HTMLElement => {
     c.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', label))
     stats.appendChild(c)
   }
-  stat('lean', `${d.leanLbs.toFixed(1)} lb`)
+  stat('lean', wFmt(d.leanLbs * KG_PER_LB, 1, 1))
   if (d.rmr != null) stat('rmr', `${d.rmr} kcal`)
   if (d.bmd != null)
     stat('bmd', `${d.bmd.toFixed(2)}${d.bmdT != null ? ` · T${signed(d.bmdT)}` : ''}`)
-  if (d.vatLbs != null) stat('vat', `${d.vatLbs.toFixed(2)} lb`)
+  if (d.vatLbs != null) stat('vat', wFmt(d.vatLbs * KG_PER_LB, 2, 2))
   if (d.rsmi != null) stat('rsmi', d.rsmi.toFixed(1))
   if (d.ag != null) stat('a/g', d.ag.toFixed(2))
   block.appendChild(stats)
@@ -3496,6 +3619,134 @@ const buildVo2test = (data: Analytics): HTMLElement => {
   return block
 }
 
+const buildFtpHypothesis = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ftp')
+  block.appendChild(anaTitle('ftp hypothesis', 'ftp'))
+  const h = data.engine.ftpHypothesis
+  if (!h) {
+    block.appendChild(el('div', 'tri-ana-empty', 'no vo2-derived ftp estimate'))
+    return block
+  }
+
+  const head = el('div', 'tri-ftp-head')
+  const headline = el('div', 'tri-ftp-main')
+  headline.append(
+    el('span', 'tri-ftp-num', String(h.ftp), { 'data-ftp-out': 'headline' }),
+    el('span', 'tri-ftp-unit', ' W'),
+  )
+  const meta = el('div', 'tri-ftp-meta')
+  meta.append(
+    el('span', 'tri-ftp-pill', `${h.low}-${h.high} W`, { 'data-ftp-out': 'band' }),
+    el('span', 'tri-ftp-pill', `${h.wattsPerKg.toFixed(2)} W/kg`, { 'data-ftp-out': 'wkg' }),
+    markGloss(el('span', `tri-ftp-pill tri-conf-${h.conf}`, h.conf), 'conf'),
+  )
+  head.append(headline, meta)
+  block.appendChild(head)
+
+  const methods = el('div', 'tri-ftp-methods')
+  const methodRow = (label: string, key: string, value: number, cls: string): HTMLElement => {
+    const row = el('div', 'tri-ftp-method')
+    row.appendChild(el('span', 'tri-ftp-method-k', label))
+    const track = el('span', 'tri-ftp-method-track')
+    const fill = el('span', `tri-ftp-method-fill ${cls}`, undefined, { 'data-ftp-bar': key })
+    fill.style.width = `${clampN((value / 350) * 100, 4, 100)}%`
+    track.appendChild(fill)
+    row.append(
+      track,
+      el('span', 'tri-ftp-method-v', `${Math.round(value)} W`, { 'data-ftp-out': key }),
+    )
+    return row
+  }
+  methods.append(
+    methodRow('efficiency chain', 'efficiencyFtp', h.efficiencyFtp, 'tri-ftp-method-fill--eff'),
+    methodRow('ACSM inverse', 'acsmFtp', h.acsmFtp, 'tri-ftp-method-fill--acsm'),
+  )
+  block.appendChild(methods)
+
+  const chain = el('div', 'tri-ftp-chain')
+  const chainRow = (label: string, key: string, value: string): HTMLElement => {
+    const row = el('div', 'tri-ftp-chain-row')
+    row.append(
+      el('span', 'tri-ftp-chain-k', label),
+      el('span', 'tri-ftp-chain-v', value, { 'data-ftp-out': key }),
+    )
+    return row
+  }
+  chain.append(
+    chainRow('absolute vo2max', 'absoluteRunningVo2', `${h.absoluteRunningVo2.toFixed(2)} L/min`),
+    chainRow('cycling vo2max', 'cyclingVo2max', `${h.cyclingVo2max.toFixed(2)} L/min`),
+    chainRow('vo2 at threshold', 'thresholdVo2', `${h.thresholdVo2.toFixed(2)} L/min`),
+    chainRow('metabolic power', 'metabolicWatts', `${Math.round(h.metabolicWatts)} W`),
+    chainRow('MAP', 'acsmMapWatts', `${Math.round(h.acsmMapWatts)} W`),
+  )
+  block.appendChild(chain)
+
+  const controls = el('div', 'tri-ftp-controls')
+  const control = (
+    key: string,
+    label: string,
+    min: number,
+    max: number,
+    step: number,
+    value: number,
+    unit: string,
+    note: string,
+  ): HTMLElement => {
+    const wrap = el('label', 'tri-ftp-ctrl')
+    const row = el('span', 'tri-ftp-ctrl-row')
+    row.append(
+      el('span', 'tri-ftp-ctrl-label', label),
+      el('span', 'tri-ftp-ctrl-val', `${value}${unit}`, { 'data-ftp-val': key }),
+    )
+    const input = document.createElement('input')
+    input.className = 'tri-ftp-range'
+    input.type = 'range'
+    input.dataset.ftpParam = key
+    input.dataset.ftpDefault = String(value)
+    input.min = String(min)
+    input.max = String(max)
+    input.step = String(step)
+    input.value = String(value)
+    input.setAttribute('aria-label', label)
+    wrap.append(row, input, el('span', 'tri-ftp-note', note))
+    return wrap
+  }
+  controls.append(
+    control('mass', 'bodyweight', 60, 110, 0.1, h.massKg, ' kg', 'vo2 report input'),
+    control('vo2', 'running vo2max', 30, 70, 0.1, h.runningVo2max, '', 'measured treadmill value'),
+    control(
+      'discount',
+      'cross-modal discount',
+      0,
+      15,
+      0.5,
+      h.crossModalDiscountPct,
+      '%',
+      'running to cycling haircut',
+    ),
+    control('threshold', 'LT2 fraction', 70, 92, 0.5, h.thresholdPct, '%', 'VT2 was not detected'),
+    control(
+      'efficiency',
+      'gross efficiency',
+      18,
+      25,
+      0.5,
+      h.grossEfficiencyPct,
+      '%',
+      'cycling mechanical yield',
+    ),
+  )
+  block.appendChild(controls)
+  const foot = el('div', 'tri-ftp-foot')
+  foot.append(
+    el('span', 'tri-ftp-source', `lab ${h.date}`),
+    el('span', 'tri-ftp-source', h.note),
+    el('button', 'tri-ftp-reset', 'reset', { type: 'button' }),
+  )
+  block.appendChild(foot)
+  return block
+}
+
 const buildAbilities = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-radar')
   block.appendChild(anaTitle('abilities', 'radar'))
@@ -3648,6 +3899,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   readiness: buildReadiness,
   trend: buildTrend,
   actions: buildActions,
+  ftp: buildFtpHypothesis,
 }
 
 const scrubBind = (
@@ -3803,7 +4055,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         const delta = best.last - best.first
         setMath(
           bodyReadout,
-          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(best.min)}–${wNum(best.max)} ${weightUnit} · $\\Delta${wSigned(delta, 1)}$${bmrTxt}`,
+          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(best.min)}–${wNum(best.max)} ${weightUnitLabel()} · $\\Delta${wSigned(delta, 1)}$${bmrTxt}`,
         )
       } else {
         setMath(bodyReadout, `${shortDate(best.date)} · ${wFmt(best.last)}${bmrTxt}`)
@@ -3984,6 +4236,84 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     })
   }
 
+  const ftpBlock = panel.querySelector<HTMLElement>('.tri-ftp')
+  if (ftpBlock) {
+    const inputs = Array.from(ftpBlock.querySelectorAll<HTMLInputElement>('[data-ftp-param]'))
+    const out = (key: string): HTMLElement | null =>
+      ftpBlock.querySelector<HTMLElement>(`[data-ftp-out="${key}"]`)
+    const valOut = (key: string): HTMLElement | null =>
+      ftpBlock.querySelector<HTMLElement>(`[data-ftp-val="${key}"]`)
+    const bar = (key: string): HTMLElement | null =>
+      ftpBlock.querySelector<HTMLElement>(`[data-ftp-bar="${key}"]`)
+    const inputFor = (key: string): HTMLInputElement | undefined =>
+      inputs.find(input => input.dataset.ftpParam === key)
+    const num = (key: string): number => Number(inputFor(key)?.value ?? 0)
+    const setText = (key: string, value: string): void => {
+      const node = out(key)
+      if (node) node.textContent = value
+    }
+    const setBar = (key: string, value: number): void => {
+      const node = bar(key)
+      if (node) node.style.width = `${clampN((value / 350) * 100, 4, 100)}%`
+    }
+    const renderFtp = (): void => {
+      const mass = num('mass')
+      const vo2 = num('vo2')
+      const discountPct = num('discount')
+      const thresholdPct = num('threshold')
+      const efficiencyPct = num('efficiency')
+      const discount = discountPct / 100
+      const threshold = thresholdPct / 100
+      const efficiency = efficiencyPct / 100
+      const absRun = (vo2 * mass) / 1000
+      const absCyc = absRun * (1 - discount)
+      const thr = absCyc * threshold
+      const met = (thr * 20.9 * 1000) / 60
+      const ftpEff = met * efficiency
+      const map = (Math.max(0, vo2 * (1 - discount) - 7) * mass) / 1.8 / 6.12
+      const ftpAcsm = map * 0.75
+      const ftp = (ftpEff + ftpAcsm) / 2
+      const ftpShown = Math.round(ftp / 10) * 10
+      const low = Math.round((ftp - 25) / 5) * 5
+      const high = Math.round((ftp + 25) / 5) * 5
+      const writeVal = (key: string, value: string): void => {
+        const node = valOut(key)
+        if (node) node.textContent = value
+      }
+      writeVal('mass', `${mass.toFixed(1)} kg`)
+      writeVal('vo2', vo2.toFixed(1))
+      writeVal('discount', `${discountPct}%`)
+      writeVal('threshold', `${thresholdPct}%`)
+      writeVal('efficiency', `${efficiencyPct}%`)
+      setText('headline', String(ftpShown))
+      setText('band', `${low}-${high} W`)
+      setText('wkg', `${(ftpShown / mass).toFixed(2)} W/kg`)
+      setText('efficiencyFtp', `${Math.round(ftpEff)} W`)
+      setText('acsmFtp', `${Math.round(ftpAcsm)} W`)
+      setText('absoluteRunningVo2', `${absRun.toFixed(2)} L/min`)
+      setText('cyclingVo2max', `${absCyc.toFixed(2)} L/min`)
+      setText('thresholdVo2', `${thr.toFixed(2)} L/min`)
+      setText('metabolicWatts', `${Math.round(met)} W`)
+      setText('acsmMapWatts', `${Math.round(map)} W`)
+      setBar('efficiencyFtp', ftpEff)
+      setBar('acsmFtp', ftpAcsm)
+    }
+    const onInput = () => renderFtp()
+    for (const input of inputs) input.addEventListener('input', onInput)
+    const reset = ftpBlock.querySelector<HTMLButtonElement>('.tri-ftp-reset')
+    const onReset = (): void => {
+      for (const input of inputs)
+        if (input.dataset.ftpDefault) input.value = input.dataset.ftpDefault
+      renderFtp()
+    }
+    reset?.addEventListener('click', onReset)
+    renderFtp()
+    cleanups.push(() => {
+      for (const input of inputs) input.removeEventListener('input', onInput)
+      reset?.removeEventListener('click', onReset)
+    })
+  }
+
   return () => {
     for (const c of cleanups) c()
   }
@@ -4010,6 +4340,11 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
     label: 'vo2max · fitness age',
     chart: 'vo2max',
     hay: 'vo2max vo2 max aerobic fitness age friend percentile engine ftp map',
+  },
+  {
+    label: 'ftp hypothesis',
+    chart: 'ftp',
+    hay: 'ftp watts power vo2 hypothesis slider acsm efficiency threshold lt2 vt2 cycling',
   },
   {
     label: 'abilities',
@@ -4070,6 +4405,8 @@ const GLOSS_CHART: Record<string, string> = {
   oreadiness: 'recovery',
   sleepdebt: 'sleep',
   vo2max: 'vo2max',
+  ftp: 'ftp',
+  watts: 'ftp',
   fitage: 'vo2max',
   vam: 'abilities',
   radar: 'abilities',
@@ -4147,6 +4484,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
   const render = (d: Analytics) => {
     data = d
+    scrubCleanup?.()
+    scrubCleanup = null
     for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))) {
       const build = ANALYTICS_BUILDERS[block.dataset.chart ?? '']
       if (build) block.replaceChildren(build(d))
@@ -4496,11 +4835,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('keydown', onKey)
   const onUnitChange = () => {
     if (data) {
-      scrubCleanup?.()
       render(data)
     }
   }
-  document.addEventListener('tri-weightunit', onUnitChange)
   window.addEventListener('tri:unit', onUnitChange)
 
   return () => {
@@ -4513,7 +4850,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     results?.removeEventListener('click', onResultsClick)
     detail?.removeEventListener('click', onDetailToggle)
     document.removeEventListener('keydown', onKey)
-    document.removeEventListener('tri-weightunit', onUnitChange)
     window.removeEventListener('tri:unit', onUnitChange)
     scrubCleanup?.()
   }
@@ -5881,9 +6217,9 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       run: navTo(p.path),
     })),
     {
-      label: () => `toggle units · ${isImperialUnit() ? 'mi → km' : 'km → mi'}`,
-      hint: 'distance · pace · analytics · calculator',
-      keys: 'toggle units km mi miles imperial metric pace distance speed',
+      label: () => `toggle units · ${isImperialUnit() ? 'imperial → metric' : 'metric → imperial'}`,
+      hint: 'distance · pace · weight · composition',
+      keys: 'toggle units km mi miles kg lb imperial metric pace distance speed weight',
       run: () => {
         toggleTriUnit()
         render()
@@ -6004,9 +6340,10 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   }
   const subView = root.dataset.triView
   const subpageNav: Record<string, string> = {
-    t: '/triathlon/tools',
+    g: '/triathlon/tools',
     a: '/triathlon/analytics',
     m: '/triathlon/maps',
+    t: '/triathlon/training',
     r: '/triathlon/training',
     f: '/triathlon/feed',
     h: '/triathlon',
@@ -6402,4 +6739,8 @@ document.addEventListener('nav', () => {
   const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
   if (hashDate)
     window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))
+  const calcHash = /^#(calculator-[a-z0-9-]+)$/.exec(window.location.hash)?.[1]
+  const calcShare = calcHash ? decodeCalcShare(calcHash) : null
+  if (calcShare)
+    window.dispatchEvent(new CustomEvent('tri:calc-fill', { detail: { share: calcShare } }))
 })

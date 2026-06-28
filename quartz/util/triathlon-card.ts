@@ -12,7 +12,7 @@ export interface TriNodeFactory<N> {
   add: (parent: N, ...children: N[]) => void
 }
 
-export type DayCardExtras = { location?: string; event?: string }
+export type DayCardExtras = { location?: string; event?: string; sport?: ActivityKind }
 
 export type DayCardPayload = {
   details: Record<string, StravaActivityDetail>
@@ -326,8 +326,12 @@ export const buildRecovery = <N>(f: TriNodeFactory<N>, h: ActivityHealth): N | n
   return wrap
 }
 
-export const buildActivity = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
-  const wrap = f.el('section', 'tri-act')
+export const buildActivity = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  expanded = false,
+): N => {
+  const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act')
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
@@ -386,11 +390,12 @@ export const buildDayCard = <N>(
   extras: DayCardExtras = {},
   activity?: (d: StravaActivityDetail) => N,
 ): N => {
-  const render = activity ?? ((d: StravaActivityDetail) => buildActivity(f, d))
+  const render = activity ?? ((d: StravaActivityDetail) => buildActivity(f, d, !!extras.sport))
   const card = f.el('div', 'tri-pop-card')
   const head = f.el('div', 'tri-pop-head')
   f.add(head, f.el('span', 'tri-pop-date', prettyDate(dateIso)))
-  const day = payload ? dayDetails(payload, dateIso) : []
+  const allDay = payload ? dayDetails(payload, dateIso) : []
+  const day = extras.sport ? allDay.filter(d => d.sport === extras.sport) : allDay
   if (day.length > 0) {
     f.add(
       head,
@@ -411,15 +416,21 @@ export const buildDayCard = <N>(
     f.add(card, f.el('div', 'tri-pop-rest', '·'))
   } else if (day.length === 0) {
     const rest = f.el('div', 'tri-pop-rest')
-    f.add(rest, buildBattery(f), f.el('span', 'tri-pop-rest-label', 'rest'))
+    if (extras.sport) {
+      f.add(rest, f.el('span', 'tri-pop-rest-label', `no ${extras.sport}`))
+    } else {
+      f.add(rest, buildBattery(f), f.el('span', 'tri-pop-rest-label', 'rest'))
+    }
     f.add(card, rest)
   } else {
     for (const d of day) f.add(card, render(d))
   }
-  const dh = payload?.health[dateIso]
-  if (dh) {
-    const rec = buildRecovery(f, dh)
-    if (rec) f.add(card, rec)
+  if (!extras.sport) {
+    const dh = payload?.health[dateIso]
+    if (dh) {
+      const rec = buildRecovery(f, dh)
+      if (rec) f.add(card, rec)
+    }
   }
   return card
 }

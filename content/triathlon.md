@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-25 14:20:15 GMT-04:00
+modified: 2026-06-27 17:41:09 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-13'
@@ -51,6 +51,7 @@ vo2max:
     caloriesAtVt1: 850
     hrAtVo2max: 180
     hrMax: 182
+    massKg: 88.9
     maxKmh: 15
     percentile: 70
     value: 47.8
@@ -133,8 +134,9 @@ author: gpt-5.5-pro-xhigh,claude-fable-5[1m]
 
 The plan now uses five measured constraints:
 
-- The VO2 test on 2026-06-25 put VO2max at 47.8 ml/kg/min, vVO2max at 15.0 km/h, HR at VO2max at 180 bpm, and peak observed HR at 182 bpm. VT1 was detected at 145 bpm and 10.5 km/h. VT2 was not detected, so do not invent precise threshold work above VT1.
+- The VO2 test on 2026-06-25 put VO2max at 47.8 ml/kg/min at 88.9 kg, vVO2max at 15.0 km/h, HR at VO2max at 180 bpm, and peak observed HR at 182 bpm. VT1 was detected at 145 bpm and 10.5 km/h. VT2 was not detected, so do not invent precise threshold work above VT1.
 - The useful fat-burning lane is boring: HR 121-142 bpm, roughly 8-10.5 km/h on the treadmill test. Most aerobic run minutes live there. Easy bike days use the same HR ceiling and power stays subordinate to HR drift.
+- FTP is now a 230 W hypothesis with a 210-260 W realistic band, derived from running VO2max. The math crosses treadmill to bike and invents the missing VT2, so it sets power vocabulary, not training law.
 - DEXA on 2026-06-25 measured 197.6 lb total mass, 54.2 lb fat, 135.7 lb lean, 7.8 lb bone mineral content, 27.4% total-mass fat, 28.5% tissue fat, 1.24 lb VAT, and 1695 kcal/day RMR.
 - Holding fat-free mass at 143.5 lb, 14% body fat implies about 166.9 lb total mass and 23.4 lb fat. That is about 30.8 lb fat loss. Race day is 31 days away, so the race block targets 4-6 lb loss, not the full cut.
 - Current analytics have Olympic prediction at about 3:02 before transitions, binding leg run, CTL 69, ATL 93, and TSB -24 on 2026-06-25. The test day counts as hard. The next 48 hours buy freshness before adding more intensity.
@@ -158,12 +160,12 @@ Swim:
 - Fast: 1:55-2:08/100 m on 25-50 m repeats only.
 - Race: 34:30-35:30 for 1.5 km. Faster is loot, but sub-3 mostly comes from bike-run execution now.
 
-Bike, using FTP 200 W until a new bike test proves otherwise:
+Bike, using FTP 230 W as a VO2-derived hypothesis until a bike test proves otherwise:
 
-- Easy: 120-150 W, HR under 142 if the day is for fat loss, under 145 if the day is endurance.
-- Tempo: 160-180 W, smooth cadence, no spikes.
-- Race power: 180-195 W, with 80-90 rpm and no heroic surges over 250 W.
-- VO2: 220-250 W for 3-5 minute repeats. One bike VO2 session per week is enough while Runna has hard running.
+- Easy: 125-160 W, HR under 142 if the day is for fat loss, under 145 if the day is endurance.
+- Tempo: 170-195 W, smooth cadence, no spikes.
+- Race power: 185-205 W, with 80-90 rpm and no heroic surges over 270 W.
+- VO2: 245-275 W for 3-5 minute repeats. One bike VO2 session per week is enough while Runna has hard running.
 - Race: 40 km in 82-85 minutes, then run. A faster bike that detonates the first 3 km of the run is fake profit.
 
 Run:
@@ -201,33 +203,33 @@ The load ceiling is total weekly load. The Runna mileage is the run lane, so ext
 | 06-27 | 400 m Repeats, 4 mi; Stretch & Stability 1, 25 min     | off                                                              | 45-60 min Z2 only if reps stay controlled                   |
 | 06-28 | 6.5 mi Long Run, HR mostly under 145                   | 1500-1800 m continuous or open water                             | 30-45 min recovery spin                                     |
 | 06-29 | 4 mi Easy Run                                          | S1, 2000 m                                                       | off                                                         |
-| 06-30 | Strength Supersets, 55-65 min                          | off                                                              | B1, 70-75 min with 5x3 min at 220-240 W                     |
+| 06-30 | Strength Supersets, 55-65 min                          | off                                                              | B1, 70-75 min with 5x3 min at 245-265 W                     |
 | 07-01 | Tempo 2 Miles, 4.5 mi                                  | S2, 2200-2400 m with 4-5x400 m                                   | 30-45 min easy                                              |
-| 07-02 | Lower Body Strength Session, 55-65 min                 | off                                                              | B2, 80-90 min with 2x20 min at 175-185 W                    |
+| 07-02 | Lower Body Strength Session, 55-65 min                 | off                                                              | B2, 80-90 min with 2x20 min at 180-195 W                    |
 | 07-03 | 4 mi Easy Run, HR 121-142                              | S3, 1800-2000 m                                                  | off                                                         |
-| 07-04 | Stretch & Stability 2, 25 min                          | off                                                              | B4, 40 km rehearsal at 180-190 W, full fueling              |
+| 07-04 | Stretch & Stability 2, 25 min                          | off                                                              | B4, 40 km rehearsal at 185-200 W, full fueling              |
 | 07-05 | 7.5 mi Long Run                                        | 1600-1800 m easy continuous                                      | 45 min recovery spin if HRV is normal                       |
 | 07-06 | 3.25 mi Easy Run                                       | S1, 2200 m                                                       | off                                                         |
-| 07-07 | Full Body Endurance Session, 55-65 min                 | off                                                              | B1, 75-80 min with 5x4 min at 220-240 W                     |
+| 07-07 | Full Body Endurance Session, 55-65 min                 | off                                                              | B1, 75-80 min with 5x4 min at 245-265 W                     |
 | 07-08 | 1 km Repeats, 4.5 mi                                   | S2, 2400-2600 m with 3x600 m                                     | 30-45 min easy                                              |
-| 07-09 | Legs & Core Endurance, 55-65 min                       | off                                                              | B2, 90-100 min with 3x15 min at 180-190 W                   |
+| 07-09 | Legs & Core Endurance, 55-65 min                       | off                                                              | B2, 90-100 min with 3x15 min at 185-200 W                   |
 | 07-10 | 5 mi Brick Run                                         | S3, 1800-2000 m                                                  | 45-60 min race-power primer before brick if legs are normal |
 | 07-11 | Stretch & Stability 3, 25 min                          | off or 1000 m easy                                               | B5, 75-90 min at race-power blocks, full fueling            |
 | 07-12 | 9 mi Progressive Long Run                              | 1800-2000 m continuous, sighting every 6-8 strokes if open water | 45-60 min easy                                              |
 | 07-13 | 3.25 mi Easy Run                                       | S1, 1800 m                                                       | off                                                         |
-| 07-14 | Ticking Over, 55-65 min                                | off                                                              | B1, 55-60 min with 4x3 min at 220-235 W                     |
+| 07-14 | Ticking Over, 55-65 min                                | off                                                              | B1, 55-60 min with 4x3 min at 245-260 W                     |
 | 07-15 | Drop Set, 3.4 mi                                       | S2, 2000-2200 m with 3x400 m                                     | 30-40 min easy                                              |
-| 07-16 | Light(er) Work, 55-65 min                              | off                                                              | B2, 65-75 min with 2x12 min at 180-190 W                    |
+| 07-16 | Light(er) Work, 55-65 min                              | off                                                              | B2, 65-75 min with 2x12 min at 185-200 W                    |
 | 07-17 | 5 mi Easy Run                                          | S3, 1500-1600 m, stop while stroke still looks good              | off                                                         |
-| 07-18 | Stretch & Stability 4, 25 min                          | 1200-1500 m race-kit swim, controlled                            | B4, 25-35 km at 180-190 W, full fueling                     |
+| 07-18 | Stretch & Stability 4, 25 min                          | 1200-1500 m race-kit swim, controlled                            | B4, 25-35 km at 185-200 W, full fueling                     |
 | 07-19 | 6 mi Long Run                                          | off or 1000 m easy                                               | 30-45 min recovery spin                                     |
 | 07-20 | off                                                    | S1, 1400-1600 m                                                  | off                                                         |
-| 07-21 | Hard Work Is Done, 55-65 min                           | off                                                              | B1, 45-50 min with 3x3 min at 220-230 W                     |
+| 07-21 | Hard Work Is Done, 55-65 min                           | off                                                              | B1, 45-50 min with 3x3 min at 240-255 W                     |
 | 07-22 | Race Pace Practice Half Miles, 3.5 mi                  | S3, 1200-1500 m with 8x50 m fast                                 | 30-40 min easy                                              |
-| 07-23 | off                                                    | off                                                              | B2, 40-45 min with 3x5 min at 180-190 W                     |
+| 07-23 | off                                                    | off                                                              | B2, 40-45 min with 3x5 min at 185-200 W                     |
 | 07-24 | 3.25 mi Easy Run                                       | 1000-1200 m easy, 4x50 m fast                                    | off                                                         |
 | 07-25 | Stretch & Stability 5, 25 min                          | 10-15 min water feel if available                                | 20 min spin, 3x30 s openers                                 |
-| 07-26 | race: 10 km, first 2 km at 5:05-5:10/km                | race: 1.5 km, settle in the first 300 m                          | race: 40 km, cap first 10 min at 180 W, then 185-195 W      |
+| 07-26 | race: 10 km, first 2 km at 5:05-5:10/km                | race: 1.5 km, settle in the first 300 m                          | race: 40 km, cap first 10 min at 180 W, then 185-205 W      |
 
 ### session library
 
@@ -256,27 +258,27 @@ S3, speed and stroke:
 B1, VO2:
 
 - 15 min warmup.
-- 5-6x3-5 min at 220-250 W, equal easy recovery. HR can touch 171+ late, but the first reps should feel controlled.
+- 5-6x3-5 min at 245-275 W, equal easy recovery. HR can touch 171+ late, but the first reps should feel controlled.
 - 10-15 min cooldown.
 - End the session if power falls below target for two consecutive reps.
 
 B2, tempo and race durability:
 
 - 15 min warmup.
-- Progress from 3x10 min at 165-175 W to 3x15 min at 180-190 W and then 3x12 min at 190-205 W.
+- Progress from 3x10 min at 170-185 W to 3x15 min at 185-200 W and then 3x12 min at 195-210 W.
 - Keep cadence 80-90 rpm.
 - Cool down until HR is boring again.
 
 B3, long aerobic:
 
-- 2:00-3:00 at 120-150 W.
-- Add 20-30 min at 160-175 W only when readiness is normal and HR stays under 145.
+- 2:00-3:00 at 125-160 W.
+- Add 20-30 min at 170-185 W only when readiness is normal and HR stays under 145.
 - Eat 60-90 g carbs/h and drink to thirst plus sodium in heat.
 
 B4, race rehearsal:
 
 - 10 min easy.
-- 40 km at 175-190 W, target 29-30 km/h, no power spikes over 250 W unless traffic forces it.
+- 40 km at 185-200 W, target 29-30 km/h, no power spikes over 270 W unless traffic forces it.
 - Hold aero position whenever safe.
 - Practice race bottle, carbs, and the first 10 minutes of restraint.
 - If this takes more than 86 minutes in normal wind, the sub-3 budget moves to transitions plus run discipline.
@@ -284,8 +286,8 @@ B4, race rehearsal:
 B5, race-power durability:
 
 - 15 min warmup.
-- 3x15 min at 180-195 W, 5 min easy between.
-- Finish with 10 min easy. If legs are sore at minute 45, choose 185 W before 210 W.
+- 3x15 min at 185-205 W, 5 min easy between.
+- Finish with 10 min easy. If legs are sore at minute 45, choose 185 W before 215 W.
 
 Runna R1, easy run:
 

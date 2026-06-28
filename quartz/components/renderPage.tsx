@@ -6,6 +6,7 @@ import { h, s } from 'hastscript'
 import { JSX } from 'preact'
 import { render } from 'preact-render-to-string'
 import { EXIT, visit } from 'unist-util-visit'
+import type { ActivityKind } from '../plugins/stores/strava'
 import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
 import { checkBib, checkBibSection } from '../plugins/transformers/citations'
@@ -64,6 +65,7 @@ import {
   hasHastClass,
   readTranscludeTarget,
 } from '../util/transclude-props'
+import { buildTriathlonCalcCard, decodeCalcShare } from '../util/triathlon-calculator'
 import {
   buildDayCard as buildTriathlonDayCard,
   type DayCardExtras,
@@ -689,6 +691,7 @@ type RenderTreeFeatures = {
 }
 
 const DATE_ANCHOR_RE = /#(\d{4}-\d{2}-\d{2})$/
+const CALC_ANCHOR_RE = /#(calculator-[a-z0-9-]+)$/
 
 function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
   const features: RenderTreeFeatures = {
@@ -755,7 +758,17 @@ function triathlonDayProps(extras: DayCardExtras, date: string): Record<string, 
   const props: Record<string, string> = { 'data-triathlon-date': date }
   if (extras.location) props['data-triathlon-loc'] = extras.location
   if (extras.event) props['data-triathlon-event'] = extras.event
+  if (extras.sport) props['data-triathlon-sport'] = extras.sport
   return props
+}
+
+const TRI_SPORT_ANCHOR: Record<string, ActivityKind> = {
+  swim: 'swim',
+  bike: 'bike',
+  cycling: 'bike',
+  cycle: 'bike',
+  run: 'run',
+  walk: 'walk',
 }
 
 type FootnoteInfo = {
@@ -1461,12 +1474,32 @@ export function transcludeFinal(
         return
       }
 
-      const triathlonDate =
-        blockRef && page.frontmatter?.layout === 'triathlon'
-          ? DATE_ANCHOR_RE.exec(blockRef)?.[1]
-          : undefined
+      let triathlonDate: string | undefined
+      let triathlonSport: ActivityKind | undefined
+      if (page.frontmatter?.layout === 'triathlon') {
+        triathlonDate = blockRef ? DATE_ANCHOR_RE.exec(blockRef)?.[1] : undefined
+        const anchorPath = node.properties?.dataAnchorPath
+        if (!triathlonDate && typeof anchorPath === 'string') {
+          try {
+            const segs = JSON.parse(anchorPath) as string[]
+            if (
+              segs.length === 2 &&
+              /^\d{4}-\d{2}-\d{2}$/.test(segs[0]) &&
+              TRI_SPORT_ANCHOR[segs[1]]
+            ) {
+              triathlonDate = segs[0]
+              triathlonSport = TRI_SPORT_ANCHOR[segs[1]]
+            }
+          } catch {
+            // ignore malformed anchor path
+          }
+        }
+      }
       if (triathlonDate) {
-        const extras = triathlonDayExtras(page, triathlonDate)
+        const extras: DayCardExtras = {
+          ...triathlonDayExtras(page, triathlonDate),
+          ...(triathlonSport ? { sport: triathlonSport } : {}),
+        }
         const since = page.frontmatter?.['strava']
         const payload = loadStravaPayloadSync(typeof since === 'string' ? since : undefined)
         const children: ElementContent[] = [
@@ -1485,6 +1518,32 @@ export function transcludeFinal(
               ),
             ],
           ),
+        ]
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
+          children.push(
+            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+              {
+                type: 'text',
+                value:
+                  page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
+            ]),
+          )
+        }
+        node.children = children
+        return
+      }
+
+      const calcAnchor =
+        blockRef && page.frontmatter?.layout === 'triathlon'
+          ? CALC_ANCHOR_RE.exec(blockRef)?.[1]
+          : undefined
+      const calcShare = calcAnchor ? decodeCalcShare(calcAnchor) : null
+      if (calcAnchor && calcShare) {
+        const children: ElementContent[] = [
+          h('.tri-calc-embed', { 'data-calc-hash': calcAnchor }, [
+            buildTriathlonCalcCard(triCardFactory, calcShare),
+          ]),
         ]
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(

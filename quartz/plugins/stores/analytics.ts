@@ -57,10 +57,13 @@ export interface DexaRecord {
 export interface Vo2LabRecord {
   date: string
   value: number
+  massKg: number | null
   hrMax: number | null
   hrAtVo2max: number | null
   vt1Hr: number | null
   vt1Kmh: number | null
+  vt2Hr: number | null
+  vt2Kmh: number | null
   caloriesAtVt1: number | null
   maxKmh: number | null
   ve: number | null
@@ -117,6 +120,7 @@ export interface AnalyticsInputs {
   events?: RaceEvent[]
   dexa?: unknown
   vo2labs?: unknown
+  ftp?: number | null
   since?: string
 }
 
@@ -463,10 +467,39 @@ export interface CardioBlock {
   decouplingSeries: { date: string; pct: number }[]
 }
 
+export interface FtpHypothesisParams {
+  crossModalDiscountPct: number
+  thresholdPct: number
+  grossEfficiencyPct: number
+}
+
+export interface FtpHypothesis {
+  date: string
+  conf: Conf
+  massKg: number
+  runningVo2max: number
+  crossModalDiscountPct: number
+  thresholdPct: number
+  grossEfficiencyPct: number
+  absoluteRunningVo2: number
+  cyclingVo2max: number
+  thresholdVo2: number
+  metabolicWatts: number
+  efficiencyFtp: number
+  acsmMapWatts: number
+  acsmFtp: number
+  ftp: number
+  low: number
+  high: number
+  wattsPerKg: number
+  note: string
+}
+
 export interface EngineBlock {
   vo2max: Vo2maxBlock
   abilities: AbilitiesBlock
   cardio: CardioBlock
+  ftpHypothesis: FtpHypothesis | null
 }
 
 export interface DataFeedInputs {
@@ -1486,8 +1519,8 @@ const RECOVERY_THRESHOLDS: RecoveryThresholds = {
   rhrAlertBpm: 7,
   tempWatchC: 0.5,
   tempAlertC: 1,
-  sleepTargetS: 28800,
-  sleepFloorS: 25200,
+  sleepTargetS: 25200,
+  sleepFloorS: 21600,
   sleepDebtWatchS: 18000,
   sleepDebtAlertS: 36000,
   readinessFloor: 70,
@@ -1726,7 +1759,7 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
       id: 'sleep-debt',
       severity: sleepDebtS >= t.sleepDebtAlertS ? 'alert' : 'watch',
       label: 'sleep debt',
-      detail: `${(sleepDebtS / 3600).toFixed(1)} h short of the 8 h target over 14 nights`,
+      detail: `${(sleepDebtS / 3600).toFixed(1)} h short of the 7 h target over 14 nights`,
       metric: 'sleepdebt',
       value: sleepDebtS,
       baseline: t.sleepTargetS,
@@ -1817,10 +1850,10 @@ export const ATHLETE = {
   sex: 'M' as const,
   born: '2001-03',
   bornAnchor: '2001-03-01',
-  hrMax: 182 as number | null,
+  hrMax: 184 as number | null,
   vo2max: 47.8 as number | null,
-  ftp: 208 as number | null,
-  goalWeightLb: 180 as number | null,
+  ftp: 230 as number | null,
+  goalWeightLb: 166 as number | null,
   goalFTP: 290 as number | null,
 }
 
@@ -1916,10 +1949,13 @@ export const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
     out.push({
       date,
       value,
+      massKg: numAt(item, 'massKg'),
       hrMax: numAt(item, 'hrMax'),
       hrAtVo2max: numAt(item, 'hrAtVo2max'),
       vt1Hr: numAt(item, 'vt1Hr'),
       vt1Kmh: numAt(item, 'vt1Kmh'),
+      vt2Hr: numAt(item, 'vt2Hr'),
+      vt2Kmh: numAt(item, 'vt2Kmh'),
       caloriesAtVt1: numAt(item, 'caloriesAtVt1'),
       maxKmh: numAt(item, 'maxKmh'),
       ve: numAt(item, 've'),
@@ -2009,6 +2045,15 @@ const ACSM_WATT_K = 10.8
 const ACSM_BASE = 7
 const FTP_FROM_P20 = 0.95
 const MAP_FTP_RATIO = 0.75
+const FTP_VO2_KJ_PER_L = 20.9
+const FTP_ACSM_KGM_PER_WATT = 6.12
+const FTP_ACSM_VO2_PER_KGM = 1.8
+export const FTP_HYPOTHESIS_DEFAULTS: FtpHypothesisParams = {
+  crossModalDiscountPct: 8,
+  thresholdPct: 85,
+  grossEfficiencyPct: 21,
+}
+const FTP_HYPOTHESIS_ERROR_W = 25
 const DANIELS_A = -4.6
 const DANIELS_B = 0.182258
 const DANIELS_C = 0.000104
@@ -2029,6 +2074,52 @@ const ageOn = (iso: string): number =>
   Math.floor((dayMs(iso) - dayMs(ATHLETE.bornAnchor)) / (365.25 * DAY_MS))
 
 const norm01 = (v: number, lo: number, hi: number): number => clamp((v - lo) / (hi - lo), 0, 1)
+const round5 = (v: number): number => Math.round(v / 5) * 5
+const round10 = (v: number): number => Math.round(v / 10) * 10
+
+export function computeFtpHypothesisFromVo2(
+  date: string,
+  runningVo2max: number,
+  massKg: number,
+  params: FtpHypothesisParams = FTP_HYPOTHESIS_DEFAULTS,
+): FtpHypothesis | null {
+  if (!(runningVo2max > 0) || !(massKg > 0)) return null
+  const discount = params.crossModalDiscountPct / 100
+  const threshold = params.thresholdPct / 100
+  const efficiency = params.grossEfficiencyPct / 100
+  const absoluteRunningVo2 = (runningVo2max * massKg) / 1000
+  const cyclingVo2max = absoluteRunningVo2 * (1 - discount)
+  const thresholdVo2 = cyclingVo2max * threshold
+  const metabolicWatts = (thresholdVo2 * FTP_VO2_KJ_PER_L * 1000) / 60
+  const efficiencyFtp = metabolicWatts * efficiency
+  const cyclingVo2Rel = runningVo2max * (1 - discount)
+  const acsmMapWatts =
+    (Math.max(0, cyclingVo2Rel - ACSM_BASE) * massKg) / FTP_ACSM_VO2_PER_KGM / FTP_ACSM_KGM_PER_WATT
+  const acsmFtp = acsmMapWatts * MAP_FTP_RATIO
+  const ftpMean = (efficiencyFtp + acsmFtp) / 2
+  const ftp = round10(ftpMean)
+  return {
+    date,
+    conf: 'low',
+    massKg: round(massKg, 1),
+    runningVo2max: round(runningVo2max, 1),
+    crossModalDiscountPct: params.crossModalDiscountPct,
+    thresholdPct: params.thresholdPct,
+    grossEfficiencyPct: params.grossEfficiencyPct,
+    absoluteRunningVo2: round(absoluteRunningVo2, 2),
+    cyclingVo2max: round(cyclingVo2max, 2),
+    thresholdVo2: round(thresholdVo2, 2),
+    metabolicWatts: round(metabolicWatts, 0),
+    efficiencyFtp: round(efficiencyFtp, 0),
+    acsmMapWatts: round(acsmMapWatts, 0),
+    acsmFtp: round(acsmFtp, 0),
+    ftp,
+    low: round5(ftpMean - FTP_HYPOTHESIS_ERROR_W),
+    high: round5(ftpMean + FTP_HYPOTHESIS_ERROR_W),
+    wattsPerKg: round(ftp / massKg, 2),
+    note: 'running vo2max to cycling ftp; vt2 missing, so hr zones remain the training governor',
+  }
+}
 
 const invLerp = (tbl: [number, number][], y: number): number => {
   const n = tbl.length
@@ -2255,6 +2346,7 @@ function emptyEngine(): EngineBlock {
     },
     abilities: { axes: [], area: null },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
+    ftpHypothesis: null,
   }
 }
 
@@ -2269,6 +2361,7 @@ function buildEngine(
   appleVo2: { date: string; v: number }[],
   heartRateById: Map<number, ActivityHeartRate>,
   vo2Lab: Vo2LabRecord | null,
+  ftpOverride: number | null,
 ): EngineBlock {
   const age = ageOn(today)
   const { hrMax, source: hrMaxSource } = hrMaxOf(acts, cache, age, heartRateById)
@@ -2318,9 +2411,10 @@ function buildEngine(
       vo2max: round(clamp(appleVo2[appleVo2.length - 1].v, VO2_FLOOR, VO2_CEIL), 1),
       conf: 'firm',
     })
-  const declaredFtp = cache.zones?.ftp ?? null
+  const declaredFtp = ftpOverride ?? cache.zones?.ftp ?? null
   let ftp = declaredFtp
-  let ftpSrc: 'strava' | 'derived' | null = declaredFtp != null ? 'strava' : null
+  let ftpSrc: 'athlete' | 'strava' | 'derived' | null =
+    ftpOverride != null ? 'athlete' : declaredFtp != null ? 'strava' : null
   let bikeKg: number | null = null
   if (ftp == null && p20 != null) {
     ftp = round(p20 * FTP_FROM_P20, 0)
@@ -2350,8 +2444,10 @@ function buildEngine(
   const noteOf = (m: Vo2Method): string => {
     if (m === 'garmin') return 'garmin connect (device/manual)'
     if (m === 'apple') return 'apple watch measurement'
-    if (m === 'bike')
-      return `ftp ${ftp}w${ftpSrc === 'strava' ? ' (strava)' : ''} · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
+    if (m === 'bike') {
+      const src = ftpSrc === 'athlete' ? ' (athlete)' : ftpSrc === 'strava' ? ' (strava)' : ''
+      return `ftp ${ftp}w${src} · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
+    }
     if (m === 'run') return 'run hr–speed extrapolation'
     if (m === 'hrratio') return 'upper-bound proxy from sleeping rhr'
     if (m === 'lab') return 'graded exercise test'
@@ -2410,6 +2506,9 @@ function buildEngine(
   const fitnessAge = vo2 != null ? Math.round(clamp(invLerp(FRIEND_MED_M, vo2), 20, 80)) : null
   const ageDeltaYears = fitnessAge != null ? fitnessAge - age : null
   const percentileForAge = vo2 != null ? pctForAge(vo2, age) : null
+  const ftpHypothesis = vo2Lab
+    ? computeFtpHypothesisFromVo2(vo2Lab.date, vo2Lab.value, vo2Lab.massKg ?? body.latestKg ?? 0)
+    : null
 
   const kgNow = body.latestKg
   let p5: number | null = null
@@ -2681,6 +2780,7 @@ function buildEngine(
       efSeries: efActs.map(e => ({ date: e.x.day, ef: e.ef, sport: e.x.sport })),
       decouplingSeries: decActs.map(e => ({ date: e.x.day, pct: e.d })),
     },
+    ftpHypothesis,
   }
 }
 
@@ -2916,6 +3016,7 @@ export function buildAnalytics(
     appleVo2,
     heartRateById,
     latestVo2Lab,
+    inputs.ftp ?? null,
   )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
