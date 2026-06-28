@@ -3611,13 +3611,28 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     value: number,
     unit: string,
     note: string,
+    editable = false,
+    display: string = String(value),
   ): HTMLElement => {
-    const wrap = el('label', 'tri-ftp-ctrl')
+    const wrap = el(editable ? 'div' : 'label', 'tri-ftp-ctrl')
     const row = el('span', 'tri-ftp-ctrl-row')
-    row.append(
-      el('span', 'tri-ftp-ctrl-label', tl(label)),
-      el('span', 'tri-ftp-ctrl-val', `${value}${unit}`, { 'data-ftp-val': key }),
-    )
+    let valEl: HTMLElement
+    if (editable) {
+      valEl = el('span', 'tri-ftp-ctrl-val tri-ftp-ctrl-val--edit', undefined, {
+        'data-ftp-val': key,
+      })
+      const numIn = document.createElement('input')
+      numIn.className = 'tri-ftp-ctrl-num'
+      numIn.type = 'text'
+      numIn.inputMode = 'decimal'
+      numIn.dataset.ftpNum = key
+      numIn.value = display
+      numIn.setAttribute('aria-label', label)
+      valEl.append(numIn, el('span', 'tri-ftp-ctrl-unit', unit, { 'data-ftp-unit': key }))
+    } else {
+      valEl = el('span', 'tri-ftp-ctrl-val', `${display}${unit}`, { 'data-ftp-val': key })
+    }
+    row.append(el('span', 'tri-ftp-ctrl-label', tl(label)), valEl)
     const input = document.createElement('input')
     input.className = 'tri-ftp-range'
     input.type = 'range'
@@ -3632,8 +3647,30 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     return wrap
   }
   controls.append(
-    control('mass', 'bodyweight', 60, 110, 0.1, h.massKg, ' kg', 'vo2 report input'),
-    control('vo2', 'running vo2max', 30, 70, 0.1, h.runningVo2max, '', 'measured treadmill value'),
+    control(
+      'mass',
+      'bodyweight',
+      60,
+      110,
+      0.1,
+      h.massKg,
+      ` ${weightUnitLabel()}`,
+      'vo2 report input',
+      true,
+      wNum(h.massKg, 1, 0),
+    ),
+    control(
+      'vo2',
+      'running vo2max',
+      30,
+      70,
+      0.1,
+      h.runningVo2max,
+      '',
+      'measured treadmill value',
+      true,
+      h.runningVo2max.toFixed(1),
+    ),
     control(
       'discount',
       'cross-modal discount',
@@ -4176,6 +4213,12 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       const node = bar(key)
       if (node) node.style.width = `${clampN((value / 350) * 100, 4, 100)}%`
     }
+    const setNum = (key: string, display: string, unit: string): void => {
+      const numIn = ftpBlock.querySelector<HTMLInputElement>(`[data-ftp-num="${key}"]`)
+      if (numIn && document.activeElement !== numIn) numIn.value = display
+      const unitNode = ftpBlock.querySelector<HTMLElement>(`[data-ftp-unit="${key}"]`)
+      if (unitNode) unitNode.textContent = unit
+    }
     const renderFtp = (): void => {
       const mass = num('mass')
       const vo2 = num('vo2')
@@ -4200,8 +4243,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         const node = valOut(key)
         if (node) node.textContent = value
       }
-      writeVal('mass', `${mass.toFixed(1)} kg`)
-      writeVal('vo2', vo2.toFixed(1))
+      setNum('mass', wNum(mass, 1, 0), ` ${weightUnitLabel()}`)
+      setNum('vo2', vo2.toFixed(1), '')
       writeVal('discount', `${discountPct}%`)
       writeVal('threshold', `${thresholdPct}%`)
       writeVal('efficiency', `${efficiencyPct}%`)
@@ -4220,6 +4263,30 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     }
     const onInput = () => renderFtp()
     for (const input of inputs) input.addEventListener('input', onInput)
+    const numInputs = Array.from(ftpBlock.querySelectorAll<HTMLInputElement>('[data-ftp-num]'))
+    const onNum = (e: Event): void => {
+      const numIn = e.target as HTMLInputElement
+      const key = numIn.dataset.ftpNum
+      const range = key ? inputFor(key) : undefined
+      if (!key || !range) return
+      let v = Number(numIn.value)
+      if (!Number.isFinite(v)) return renderFtp()
+      if (key === 'mass' && isImperialUnit()) v *= KG_PER_LB
+      range.value = String(clampN(v, Number(range.min), Number(range.max)))
+      renderFtp()
+    }
+    const onNumKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        ;(e.target as HTMLInputElement).blur()
+      }
+    }
+    const onNumFocus = (e: Event): void => (e.target as HTMLInputElement).select()
+    for (const numIn of numInputs) {
+      numIn.addEventListener('change', onNum)
+      numIn.addEventListener('keydown', onNumKey)
+      numIn.addEventListener('focus', onNumFocus)
+    }
     const reset = ftpBlock.querySelector<HTMLButtonElement>('.tri-ftp-reset')
     const onReset = (): void => {
       for (const input of inputs)
@@ -4230,6 +4297,11 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     renderFtp()
     cleanups.push(() => {
       for (const input of inputs) input.removeEventListener('input', onInput)
+      for (const numIn of numInputs) {
+        numIn.removeEventListener('change', onNum)
+        numIn.removeEventListener('keydown', onNumKey)
+        numIn.removeEventListener('focus', onNumFocus)
+      }
       reset?.removeEventListener('click', onReset)
     })
   }
@@ -6082,7 +6154,7 @@ const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
-  { path: '/triathlon/feed', label: 'feed', hint: 'all activities' },
+  { path: '/triathlon/feed', label: 'feed', hint: 'feed' },
 ]
 
 const setupCommandPalette = (root: HTMLElement): (() => void) => {
@@ -6124,7 +6196,7 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
     })),
     {
       label: () => `${isImperialUnit() ? 'imperial → metric' : 'metric → imperial'}`,
-      hint: 'distance · pace · weight · composition',
+      hint: 'units',
       keys: 'toggle units km mi miles kg lb imperial metric pace distance speed weight',
       run: () => {
         toggleTriUnit()

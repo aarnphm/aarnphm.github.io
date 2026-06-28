@@ -3245,6 +3245,34 @@
   color: var(--dark);
 }
 
+.tri-ftp-ctrl-val--edit {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.tri-ftp-ctrl-num {
+  width: 2.6rem;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--dark);
+  text-align: right;
+  cursor: text;
+  border-radius: var(--radius-none);
+
+  &:hover {
+    text-decoration: underline dotted color-mix(in srgb, var(--gray) 55%, transparent);
+  }
+
+  &:focus {
+    text-decoration: underline solid var(--tri-accent);
+  }
+}
+
 .tri-ftp-range {
   width: 100%;
 }
