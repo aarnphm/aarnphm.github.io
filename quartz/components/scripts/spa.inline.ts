@@ -13,6 +13,12 @@ import {
   stackedNoteMetadataHtml,
   withStackedNoteMetadata,
 } from '../../util/stacked-notes'
+import {
+  isStreamRoutePathname,
+  streamHostPathname,
+  STREAM_HOSTNAME,
+  streamHostUrl,
+} from '../../util/stream-host'
 import { Toast } from './toast'
 import {
   cacheStackedNotePayload,
@@ -993,25 +999,26 @@ class StackedNoteManager {
   }
 }
 
-const STREAM_HOSTNAME = 'stream.aarnphm.xyz'
 const NOTES_HOSTNAME = 'notes.aarnphm.xyz'
 const APEX_ORIGIN = 'https://aarnphm.xyz'
 
-function normalizeStreamPath(raw: string): string | null {
+function normalizeStreamPath(raw: string): { path: string; streamRoute: boolean } | null {
   if (!raw) return null
   const trimmed = raw.trim()
-  if (trimmed === '') return '/'
+  if (trimmed === '') return { path: '/', streamRoute: true }
   if (trimmed.startsWith('#')) return null
 
   try {
     const parsed = new URL(trimmed, `https://${STREAM_HOSTNAME}`)
     const hash = parsed.hash ?? ''
     const search = parsed.search ?? ''
-    let pathname = parsed.pathname.replace(/^\/+/, '')
-    if (pathname === '') return `/${search}${hash}`
+    const streamRoute = isStreamRoutePathname(parsed.pathname)
+    const canonicalPathname = streamRoute ? streamHostPathname(parsed.pathname) : parsed.pathname
+    let pathname = canonicalPathname.replace(/^\/+/, '')
+    if (pathname === '') return { path: `/${search}${hash}`, streamRoute }
     pathname = sluggify(pathname)
     const normalizedPath = `/${pathname}`
-    return `${normalizedPath}${search}${hash}`
+    return { path: `${normalizedPath}${search}${hash}`, streamRoute }
   } catch {
     return null
   }
@@ -1025,12 +1032,12 @@ function transformHostInternalLinks(root: Document | Element) {
   anchors.forEach(anchor => {
     if (host === STREAM_HOSTNAME) {
       const preferred = anchor.dataset.slug ?? anchor.getAttribute('href') ?? ''
-      const normalizedPath = normalizeStreamPath(preferred)
-      if (!normalizedPath) return
+      const target = normalizeStreamPath(preferred)
+      if (!target) return
 
-      const absoluteHref = `${APEX_ORIGIN}${
-        normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
-      }`
+      const absoluteHref = target.streamRoute
+        ? streamHostUrl(target.path)
+        : `${APEX_ORIGIN}${target.path.startsWith('/') ? target.path : `/${target.path}`}`
       if (anchor.getAttribute('href') !== absoluteHref) {
         anchor.setAttribute('href', absoluteHref)
       }
@@ -1045,11 +1052,11 @@ function transformHostInternalLinks(root: Document | Element) {
     const transcludeRefs = root.querySelectorAll<HTMLElement>('.transclude-ref[data-href]')
     transcludeRefs.forEach(ref => {
       const preferred = ref.dataset.slug ?? ref.dataset.href ?? ''
-      const normalizedPath = normalizeStreamPath(preferred)
-      if (!normalizedPath) return
-      const absoluteHref = `${APEX_ORIGIN}${
-        normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`
-      }`
+      const target = normalizeStreamPath(preferred)
+      if (!target) return
+      const absoluteHref = target.streamRoute
+        ? streamHostUrl(target.path)
+        : `${APEX_ORIGIN}${target.path.startsWith('/') ? target.path : `/${target.path}`}`
       ref.dataset.href = absoluteHref
       ref.dataset.routerIgnore = 'true'
     })

@@ -1199,7 +1199,7 @@
 }
 
 .tri-calc-card-tab {
-  padding: 0.15rem 0.55rem;
+  padding: 0.15rem 0 0.15rem 0.55rem;
   font-size: 0.72rem;
   color: var(--gray);
   border-radius: var(--radius-none);
@@ -4890,6 +4890,46 @@
       padding-top: 0;
       border-top: 0;
     }
+  }
+
+  .tri-act:only-of-type {
+    grid-column: 1 / -1;
+  }
+
+  &[data-triathlon-sport] .tri-act-toggle {
+    display: none;
+  }
+
+  .tri-act--expanded .tri-act-more {
+    display: contents;
+  }
+
+  .tri-act-stats {
+    display: block;
+    width: 100%;
+
+    tbody {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.1rem 1.5rem;
+    }
+
+    tr {
+      display: flex;
+      flex: 1 1 6.5rem;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    th,
+    td {
+      min-width: 0;
+    }
+  }
+
+  .tri-pool-wrap {
+    align-items: center;
   }
 
   .tri-zone-grid {

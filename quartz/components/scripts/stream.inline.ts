@@ -1,3 +1,5 @@
+import { streamHostPathname, STREAM_HOSTNAME } from '../../util/stream-host'
+
 function hydrateStreamInteractions() {
   const el = document.querySelector<HTMLElement>('.stream')
   if (!el) return
@@ -72,12 +74,14 @@ function hydrateStreamInteractions() {
 
   if (interactiveLinks.length === 0) return
 
+  const isStreamHost = window.location.hostname === STREAM_HOSTNAME
+  const canonicalizePath = (path: string) => (isStreamHost ? streamHostPathname(path) : path)
   const timestampHrefMap = new Map<string, string>()
   interactiveLinks.forEach(link => {
     const timestamp = link.dataset.streamTimestamp
     const href = link.dataset.streamHref
     if (timestamp && href) {
-      timestampHrefMap.set(timestamp, href)
+      timestampHrefMap.set(timestamp, canonicalizePath(href))
     }
   })
 
@@ -89,7 +93,7 @@ function hydrateStreamInteractions() {
     return
   }
 
-  const canonicalPath = el.dataset.streamCanonical || '/stream'
+  const canonicalPath = canonicalizePath(el.dataset.streamCanonical || '/stream')
   const originalUrl = new URL(window.location.href)
   const originalSearch = originalUrl.search
   const originalHash = originalUrl.hash

@@ -1,4 +1,5 @@
 import { KM_TO_MI, clock, type TriNodeFactory } from './triathlon-card'
+import { tl } from './triathlon-i18n'
 
 export const TRI_RACE_DISTANCES: [string, number, number, number][] = [
   ['sprint', 0.75, 20, 5],
@@ -86,7 +87,7 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
     f.el(
       'span',
       'tri-calc-card-tab tri-calc-card-tab--on',
-      share.mode === 'a' ? 'average' : 'projected',
+      share.mode === 'a' ? tl('average') : tl('projected'),
     ),
   )
   f.add(head, tabs)
@@ -95,11 +96,11 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
   const bikeDisp = (imperial ? share.bikeMph : share.bikeMph / KM_TO_MI).toFixed(1)
   const runDisp = clock(imperial ? share.runPaceSec : share.runPaceSec * KM_TO_MI)
   const rows: [string, string, number][] = [
-    ['swim', `${clock(share.swimPaceSec)} /100m`, times.swimSec],
+    [tl('swim'), `${clock(share.swimPaceSec)} /100m`, times.swimSec],
     ['T1', `${clock(share.t1Sec)} min`, times.t1Sec],
-    ['bike', `${bikeDisp} ${imperial ? 'mph' : 'km/h'}`, times.bikeSec],
+    [tl('bike'), `${bikeDisp} ${imperial ? 'mph' : 'km/h'}`, times.bikeSec],
     ['T2', `${clock(share.t2Sec)} min`, times.t2Sec],
-    ['run', `${runDisp} ${imperial ? '/mi' : '/km'}`, times.runSec],
+    [tl('run'), `${runDisp} ${imperial ? '/mi' : '/km'}`, times.runSec],
   ]
   const table = f.el('table', 'tri-calc-card-io')
   const tbody = f.el('tbody')
@@ -116,7 +117,7 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
   const total = f.el('tr', 'tri-calc-card-row tri-calc-card-total')
   f.add(
     total,
-    f.el('th', 'tri-calc-card-k', 'finish'),
+    f.el('th', 'tri-calc-card-k', tl('finish')),
     f.el('td', 'tri-calc-card-v', ''),
     f.el('td', 'tri-calc-card-split', formatDurationClock(times.totalSec)),
   )
