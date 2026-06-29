@@ -5,7 +5,7 @@ import { matchGarminActivity, matchGarminFueling, matchGarminHeartRateActivity }
 
 export type Sport = 'swim' | 'bike' | 'run'
 
-export type ActivityKind = Sport | 'strength' | 'walk'
+export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment'
 
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 
@@ -39,6 +39,12 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
     'M7 21l3-4',
     'M16 21l-2-4l-3-3l1-6',
     'M6 12l2-3l4-1l3 3l3 1',
+  ],
+  yoga: [
+    'M16.22 23H5.5a5.978 5.978 0 01-2.265-.443C1.928 22.021.878 21.03.354 19.766a4.593 4.593 0 01.161-3.881l5.991-12.98a.983.983 0 01.02-.042C7.159 1.646 8.289.737 9.634.296a6.02 6.02 0 014.132.147c1.307.536 2.357 1.527 2.881 2.791a4.592 4.592 0 01-.161 3.881L16.076 8h5.861a2 2 0 011.816 2.838l-4.809 10.42A3 3 0 0116.22 23zM13.006 2.293a4.02 4.02 0 00-2.75-.096c-.887.29-1.573.867-1.944 1.569L3.957 13.2a6.02 6.02 0 013.808.243c1.093.448 2.007 1.216 2.584 2.195l4.329-9.38.02-.043a2.594 2.594 0 00.1-2.215c-.3-.727-.93-1.353-1.792-1.707zM8.983 17.708A2.63 2.63 0 008.8 17c-.302-.727-.932-1.354-1.793-1.707a4.02 4.02 0 00-2.75-.096c-.89.291-1.579.872-1.949 1.577A2.594 2.594 0 002.201 19c.302.727.932 1.354 1.793 1.707.473.194.987.293 1.506.293h10.72a1 1 0 00.908-.58L21.938 10h-6.785l-3.516 7.619a4.099 4.099 0 01-7.388.115l-.143-.287 1.788-.894.144.287a2.099 2.099 0 002.945.868z',
+  ],
+  treatment: [
+    'M12.5 0a3.5 3.5 0 012.51 5.936c.654 2.723.711 5.556.162 8.303l-.019.091 4.48 1.493A2 2 0 0121 17.721V24h-2v-6.28l-6.153-2.05.364-1.823a17.335 17.335 0 00-.026-6.915 3.513 3.513 0 01-1.665-.073 39.226 39.226 0 01-1.949 14.588l-.394 1.186A2 2 0 017.279 24H1v-2h6.28l.395-1.186a37.226 37.226 0 001.903-12.46L5.71 11.032 8.6 13.2l-1.2 1.6-2.89-2.167a2 2 0 01.061-3.245l5.25-3.635A3.5 3.5 0 0112.5 0zm0 2a1.5 1.5 0 100 3 1.5 1.5 0 000-3z',
   ],
 }
 
@@ -276,14 +282,25 @@ export function normalizeSport(sportType: string): Sport | null {
 export function normalizeKind(sportType: string): ActivityKind | null {
   switch (sportType) {
     case 'WeightTraining':
+    case 'Workout':
     case 'Crossfit':
       return 'strength'
     case 'Walk':
     case 'Hike':
       return 'walk'
+    case 'Yoga':
+    case 'Pilates':
+      return 'yoga'
     default:
       return normalizeSport(sportType)
   }
+}
+
+const TREATMENT_TYPES = new Set(['PhysicalTherapy', 'Physiotherapy'])
+const TREATMENT_NAME_RE = /\b(physio|physiotherapy|physical[ -]?therapy|treatment|rehab|massage)\b/i
+
+export function isTreatment(sportType: string, name: string | null | undefined): boolean {
+  return TREATMENT_TYPES.has(sportType) || TREATMENT_NAME_RE.test(name ?? '')
 }
 
 export function round(value: number, dp: number): number {
@@ -744,7 +761,12 @@ export function buildPayload(
 
   const sinceDay = since && /^\d{4}-\d{2}-\d{2}$/.test(since) ? since : null
   const activities = Object.values(cache.activities)
-    .map(a => ({ a, sport: normalizeKind(a.sportType) }))
+    .map(a => ({
+      a,
+      sport: isTreatment(a.sportType, a.name)
+        ? ('treatment' as ActivityKind)
+        : normalizeKind(a.sportType),
+    }))
     .filter((x): x is { a: RawStravaActivity; sport: ActivityKind } => x.sport !== null)
     .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
