@@ -264,6 +264,11 @@
   }
 }
 
+.tri-ico--solid path {
+  fill: var(--dark);
+  stroke: none;
+}
+
 .tri-battery path {
   stroke: var(--darkgray);
 }
@@ -684,9 +689,11 @@
 
 .tri-elev-cap {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 0.9rem;
   font-size: 0.66rem;
+  font-family: var(--codeFont);
   color: var(--gray);
 }
 
@@ -2361,10 +2368,6 @@
 .tri-ana-ico .tri-ico {
   width: 0.9rem;
   height: 0.9rem;
-}
-
-.tri-elev-cap {
-  flex-wrap: wrap;
 }
 
 .tri-wk-cap {

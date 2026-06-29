@@ -10,6 +10,7 @@ import {
   SPORT_ORDER,
   normalizeSport,
   normalizeKind,
+  isTreatment,
   round,
   resolveActivityHeartRate,
   type ActivityHeartRate,
@@ -2822,7 +2823,10 @@ export function buildAnalytics(
   const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
   const raw = Object.values(cache.activities)
     .map(a => ({ a, sport: normalizeSport(a.sportType) }))
-    .filter((x): x is { a: RawStravaActivity; sport: Sport } => x.sport !== null)
+    .filter(
+      (x): x is { a: RawStravaActivity; sport: Sport } =>
+        x.sport !== null && !isTreatment(x.a.sportType, x.a.name),
+    )
     .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
@@ -3020,7 +3024,7 @@ export function buildAnalytics(
   )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
-    .filter(a => normalizeKind(a.sportType) === 'walk')
+    .filter(a => normalizeKind(a.sportType) === 'walk' && !isTreatment(a.sportType, a.name))
     .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
     .map(a => ({
       id: a.id,
@@ -3031,6 +3035,54 @@ export function buildAnalytics(
       movingTimeS: a.movingTime,
       load: 0,
       cadence: a.averageCadence ?? null,
+      windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
+      windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
+      windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
+    }))
+  const strengthSummaries: ActivitySummary[] = Object.values(cache.activities)
+    .filter(a => normalizeKind(a.sportType) === 'strength' && !isTreatment(a.sportType, a.name))
+    .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
+    .map(a => ({
+      id: a.id,
+      date: a.startDateLocal.slice(0, 10),
+      sport: 'strength' as const,
+      name: a.name ?? '',
+      distanceKm: 0,
+      movingTimeS: a.movingTime,
+      load: 0,
+      cadence: null,
+      windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
+      windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
+      windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
+    }))
+  const treatmentSummaries: ActivitySummary[] = Object.values(cache.activities)
+    .filter(a => isTreatment(a.sportType, a.name))
+    .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
+    .map(a => ({
+      id: a.id,
+      date: a.startDateLocal.slice(0, 10),
+      sport: 'treatment' as const,
+      name: a.name ?? '',
+      distanceKm: 0,
+      movingTimeS: a.movingTime,
+      load: 0,
+      cadence: null,
+      windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
+      windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
+      windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
+    }))
+  const yogaSummaries: ActivitySummary[] = Object.values(cache.activities)
+    .filter(a => normalizeKind(a.sportType) === 'yoga' && !isTreatment(a.sportType, a.name))
+    .filter(a => !sinceDay || a.startDateLocal.slice(0, 10) >= sinceDay)
+    .map(a => ({
+      id: a.id,
+      date: a.startDateLocal.slice(0, 10),
+      sport: 'yoga' as const,
+      name: a.name ?? '',
+      distanceKm: 0,
+      movingTimeS: a.movingTime,
+      load: 0,
+      cadence: null,
       windKph: inputs.weather?.activities[String(a.id)]?.windKph ?? null,
       windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
@@ -3049,7 +3101,7 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,
     }))
-    .concat(walkSummaries)
+    .concat(walkSummaries, strengthSummaries, treatmentSummaries, yogaSummaries)
     .sort((p, q) => q.date.localeCompare(p.date))
 
   const { weakest, actions } = buildActions(thresholds, bests, daily, loadShare)

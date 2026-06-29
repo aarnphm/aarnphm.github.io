@@ -101,12 +101,18 @@ export default (() => {
                 {payload.days.map(d => {
                   const rest = d.items.length === 0
                   const track = trackByDate.get(d.date)
+                  const restKind = (s: string): boolean => s === 'treatment' || s === 'yoga'
                   const segRaw = d.items.map(it =>
-                    Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
+                    restKind(it.sport)
+                      ? REST_SEG
+                      : Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
+                  )
+                  const scalable = d.items.reduce(
+                    (a, it, i) => (restKind(it.sport) ? a : a + segRaw[i]),
+                    0,
                   )
                   const gaps = Math.max(0, d.items.length - 1) * GAP_PX
-                  const rawTotal = segRaw.reduce((a, b) => a + b, 0)
-                  const scale = rawTotal + gaps > MAX_BAR ? (MAX_BAR - gaps) / rawTotal : 1
+                  const scale = scalable + gaps > MAX_BAR ? (MAX_BAR - gaps) / scalable : 1
                   return (
                     <span
                       class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
@@ -117,8 +123,11 @@ export default (() => {
                       {rest ? (
                         <span class="tri-seg" style={`height:${REST_SEG}px`} />
                       ) : (
-                        segRaw.map(s => (
-                          <span class="tri-seg" style={`height:${(s * scale).toFixed(1)}px`} />
+                        d.items.map((it, i) => (
+                          <span
+                            class={`tri-seg${restKind(it.sport) ? ' tri-seg--treatment' : ''}`}
+                            style={`height:${(restKind(it.sport) ? segRaw[i] : segRaw[i] * scale).toFixed(1)}px`}
+                          />
                         ))
                       )}
                     </span>

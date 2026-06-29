@@ -566,7 +566,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
 
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
-  if (d.sport === 'strength') {
+  if (d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga') {
     sbody.appendChild(statRow('time', dur(d.movingTimeS)))
   } else {
     sbody.append(
@@ -6288,11 +6288,15 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
 
   const buildSub = (a: ActivitySummary): HTMLElement => {
     const sub = el('span', 'tri-feed-sub')
-    sub.append(
-      el('span', 'tri-feed-c tri-feed-c--date', a.date),
-      el('span', 'tri-feed-c tri-feed-c--dist', dist(a.distanceKm, a.sport)),
-      el('span', 'tri-feed-c tri-feed-c--time', dur(a.movingTimeS)),
-      el('span', 'tri-feed-c tri-feed-c--pace', rate(a.sport, a.distanceKm, a.movingTimeS)),
+    const cell = (cls: string, val: string): void => {
+      sub.appendChild(el('span', `tri-feed-c ${cls}`, val || '-'))
+    }
+    cell('tri-feed-c--date', a.date)
+    cell('tri-feed-c--dist', a.distanceKm > 0 ? dist(a.distanceKm, a.sport) : '')
+    cell('tri-feed-c--time', a.movingTimeS > 0 ? dur(a.movingTimeS) : '')
+    cell(
+      'tri-feed-c--pace',
+      a.distanceKm > 0 && a.movingTimeS > 0 ? rate(a.sport, a.distanceKm, a.movingTimeS) : '',
     )
     return sub
   }

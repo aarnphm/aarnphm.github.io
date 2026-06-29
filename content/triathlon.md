@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-28 01:23:56 GMT-04:00
+modified: 2026-06-28 18:41:28 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-13'
@@ -143,7 +143,7 @@ The plan now uses five measured constraints:
 
 TriDot has some pretty good drill for [swimming](https://support.tridot.com/hc/en-us/sections/201539593-Swim) here, and some form with drill which is recommended to follow to improve your stroke and general techniques.
 
-### intensity anchors
+## intensity anchors
 
 Lab HR zones:
 
@@ -184,7 +184,7 @@ Recovery gates:
 - The VO2 test is a hard session. On 06-25 and 06-26, stack recovery and easy aerobic work before chasing another interval badge.
 - Fuel every ride over 75 minutes. Use 30-60 g carbs/h for 75-150 minutes and practice 60-90 g/h for race rehearsals.[^carb]
 
-### weekly build
+## weekly build
 
 | week    |          dates |        load ceiling | Runna   | swim       | bike      | key proof                                          |
 | ------- | -------------: | ------------------: | ------- | ---------- | --------- | -------------------------------------------------- |
@@ -196,7 +196,7 @@ Recovery gates:
 
 The load ceiling is total weekly load. The Runna mileage is the run lane, so extra jogs do not exist. If the app moves a run, keep the weekly mileage inside the same band and keep at least 24 hours between hard run work and bike race-power work. Most minutes stay easy, then taper volume drops while short intensity stays alive.[^seiler][^taper]
 
-### calendar
+## calendar
 
 | date  | Runna                                                  | swim                                                             | bike                                                        |
 | ----- | ------------------------------------------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------- |
@@ -233,7 +233,7 @@ The load ceiling is total weekly load. The Runna mileage is the run lane, so ext
 | 07-25 | Stretch & Stability 5, 25 min                          | 10-15 min water feel if available                                | 20 min spin, 3x30 s openers                                 |
 | 07-26 | race: 10 km, first 2 km at 5:05-5:10/km                | race: 1.5 km, settle in the first 300 m                          | race: 40 km, cap first 10 min at 180 W, then 185-205 W      |
 
-### session library
+## session library
 
 S1, technique plus CSS:
 
@@ -308,7 +308,7 @@ Runna R3, long run:
 - Fuel 30-60 g carbs/h once the run passes 75 minutes.
 - Last 10 minutes can progress only if the next day is not a bike-quality day.
 
-### body composition and food
+## body composition and food
 
 The DEXA math:
 
@@ -351,7 +351,7 @@ Race fueling:
 - Bike: 60-80 g carbs/h, 500-800 mg sodium/h if hot, fluid to thirst.
 - Run: 30-45 g carbs/h if tolerated. The run is short enough that stomach calm beats maximal gel cosplay.
 
-### race track
+## race track
 
 ![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 
