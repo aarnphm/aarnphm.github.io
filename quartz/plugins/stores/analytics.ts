@@ -1905,7 +1905,7 @@ export const ATHLETE = {
   hrMax: 184 as number | null,
   vo2max: 47.8 as number | null,
   ftp: 230 as number | null,
-  goalWeightLb: 166 as number | null,
+  goalWeightLb: 160 as number | null,
   goalFTP: 290 as number | null,
 }
 
