@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-28 18:41:28 GMT-04:00
+modified: 2026-06-30 19:13:08 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-13'
@@ -237,7 +237,7 @@ The plan now uses five measured constraints:
 - The useful fat-burning lane is boring: HR 121-142 bpm, roughly 8-10.5 km/h on the treadmill test. Most aerobic run minutes live there. Easy bike days use the same HR ceiling and power stays subordinate to HR drift.
 - FTP is now a 230 W hypothesis with a 210-260 W realistic band, derived from running VO2max. The math crosses treadmill to bike and invents the missing VT2, so it sets power vocabulary, not training law.
 - DEXA on 2026-06-25 measured 197.6 lb total mass, 54.2 lb fat, 135.7 lb lean, 7.8 lb bone mineral content, 27.4% total-mass fat, 28.5% tissue fat, 1.24 lb VAT, and 1695 kcal/day RMR.
-- Holding fat-free mass at 143.5 lb, 14% body fat implies about 166.9 lb total mass and 23.4 lb fat. That is about 30.8 lb fat loss. Race day is 31 days away, so the race block targets 4-6 lb loss, not the full cut.
+- Holding fat-free mass at 143.5 lb, 14% body fat implies about 166.9 lb total mass and 23.4 lb fat. The chart weight target is 160.0 lb, which implies about 16.5 lb fat and 10.3% total-mass fat if fat-free mass stays flat. Race day is 31 days away, so the race block targets 4-6 lb loss, not the full cut.
 - Current analytics have Olympic prediction at about 3:02 before transitions, binding leg run, CTL 69, ATL 93, and TSB -24 on 2026-06-25. The test day counts as hard. The next 48 hours buy freshness before adding more intensity.
 
 TriDot has some pretty good drill for [swimming](https://support.tridot.com/hc/en-us/sections/201539593-Swim) here, and some form with drill which is recommended to follow to improve your stroke and general techniques.
@@ -413,13 +413,14 @@ The DEXA math:
 
 - Current: 197.6 lb total, 54.2 lb fat, 135.7 lb lean, 7.8 lb bone, 143.5 lb fat-free mass.
 - Current total-mass body fat: 27.4%. Reported tissue-fat view: 28.5%.
-- Target: 14% total-mass body fat with fat-free mass preserved.
-- Target body mass: about 166.9 lb. Target fat mass: about 23.4 lb. Required fat loss: about 30.8 lb.
-- Race-block target: 191-193 lb by 07-26 if readiness, sleep, and workout quality stay green. Do not chase a lower number during taper.
+- Chart weight target: 160.0 lb.
+- 14% body-fat checkpoint with fat-free mass preserved: about 166.9 lb total mass and 23.4 lb fat.
+- 160 lb target math with fat-free mass preserved: about 16.5 lb fat, about 10.3% total-mass fat, and about 37.6 lb fat loss from DEXA.
+- Race-block checkpoint: 191-193 lb by 07-26 if readiness, sleep, and workout quality stay green. Do not chase a lower number during taper.
 
 The cut rate:
 
-- Use 0.5-0.7% body mass per week, about 1.0-1.4 lb/week right now. That puts the full 14% target about 22-31 weeks away.[^weightloss]
+- Use 0.5-0.7% body mass per week, about 1.0-1.4 lb/week right now. That puts the 14% checkpoint about 22-31 weeks away and the 160 lb chart target about 27-38 weeks away.[^weightloss]
 - Keep the deficit mostly on rest/easy days. Hard sessions, long runs, race rehearsals, and race week are maintenance or near-maintenance.
 - If sleep score drops under 75 for two nights, RHR stays 5 bpm over baseline, or intervals flatten, remove the deficit before removing training quality.
 
