@@ -332,6 +332,10 @@ const en: TriDict = {
       term: 'body fat',
       def: 'Bio-impedance body-fat percentage from the Index scale. Trend matters more than any single reading — hydration swings a measurement by $\\pm 1\\%$.',
     },
+    dexa: {
+      term: 'DEXA body composition',
+      def: 'Lab scan split into total mass, fat mass, lean mass, and bone mineral content. Use it as the composition anchor; the scale gives the noisier daily trend.',
+    },
     bmi: {
       term: 'BMI',
       def: 'Body mass index, $\\mathrm{kg}/\\mathrm{m}^2$. Blunt for muscular athletes — read it alongside body fat, not instead of it.',
@@ -697,6 +701,10 @@ const fr: TriDict = {
     bodyfat: {
       term: 'masse grasse',
       def: "pourcentage de masse grasse par bio-impédance, depuis la balance Index. la tendance compte plus qu'une mesure isolée — l'hydratation fait varier une mesure de $\\pm 1\\%$.",
+    },
+    dexa: {
+      term: 'composition corporelle DEXA',
+      def: "scan labo séparant masse totale, masse grasse, masse maigre et contenu minéral osseux. c'est l'ancre de composition ; la balance donne la tendance quotidienne plus bruitée.",
     },
     bmi: {
       term: 'IMC',
