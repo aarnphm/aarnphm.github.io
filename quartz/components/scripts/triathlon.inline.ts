@@ -7,6 +7,11 @@ import type {
   BodyBlock,
   DailyPoint,
   RaceLeg,
+  Vo2LabProfile,
+  Vo2LabProfileSample,
+  Vo2LabProfileStats,
+  Vo2LabRecord,
+  Vo2LabTargetStep,
 } from '../../plugins/stores/analytics'
 import {
   type ActivityHealth,
@@ -22,13 +27,19 @@ import {
   type CalcShare,
   computeTriathlonCalcTimes,
   decodeCalcShare,
+  deriveZoneBands,
   encodeCalcShare,
   formatDurationClock,
   parseClockSeconds,
+  type ProjectedLeg,
+  projectZoneTimes,
+  type SportThresholdVel,
   solveTriathlonCalcLeg,
   solveTriathlonCalcTarget,
   type TriathlonCalcInput,
   type TriathlonCalcLeg,
+  type Vo2LabZones,
+  type ZoneBand,
 } from '../../util/triathlon-calculator'
 import {
   axisFrame,
@@ -1080,6 +1091,7 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     setResult('t2', times.t2Sec)
     setResult('run', times.runSec)
     setResult('total', times.totalSec, forceTarget)
+    if (projActive) renderProjection()
   }
 
   const commitTarget = (): void => {
@@ -1113,6 +1125,13 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   let analytics: Analytics | null = null
   let userEdited = false
   const source = calc.querySelector<HTMLElement>('.tri-calc-source')
+  const projPanel = calc.querySelector<HTMLElement>('.tri-calc-proj')
+  const projZonesWrap = projPanel?.querySelector<HTMLElement>('.tri-calc-proj-zones') ?? null
+  const projOut = projPanel?.querySelector<HTMLElement>('.tri-calc-proj-out') ?? null
+  const projTab = calc.querySelector<HTMLElement>('.tri-calc-src--proj')
+  let projBands: ZoneBand[] = []
+  let projZoneIdx = 2
+  let projActive = false
   const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null => {
     if (!analytics) return null
     const cal = bySport(analytics.calibration.paces, sport)
@@ -1148,10 +1167,168 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       b.classList.toggle('tri-calc-src--on', on)
       b.setAttribute('aria-selected', String(on))
     }
+    setProjActive(false)
     compute()
   }
 
+  const readThresholds = (): SportThresholdVel | null => {
+    if (!analytics) return null
+    const get = (s: Sport): number => bySport(analytics!.thresholds, s)?.vThr ?? 0
+    return { swim: get('swim'), bike: get('bike'), run: get('run') }
+  }
+  const latestLab = (): Vo2LabZones | null => {
+    const labs = analytics?.tests?.vo2max
+    const r = labs && labs.length ? labs[labs.length - 1] : null
+    return r ? { zonesKmh: r.zonesKmh, zonesHr: r.zonesHr, maxKmh: r.maxKmh, hrMax: r.hrMax } : null
+  }
+  const zoneHrLabel = (band: ZoneBand): string =>
+    band.hrLo != null ? `${band.hrLo}${band.hrHi != null ? `–${band.hrHi}` : '+'}` : ''
+  const legBand = (sport: Sport, leg: ProjectedLeg): { pace: string; split: string } => {
+    const split = `${formatDurationClock(leg.fastSec)}–${formatDurationClock(leg.slowSec)}`
+    if (sport === 'swim')
+      return { pace: `${clock(360 / leg.vMaxKmh)}–${clock(360 / leg.vMinKmh)}`, split }
+    if (sport === 'bike') {
+      const lo = isImperialUnit() ? leg.vMinKmh * KM_TO_MI : leg.vMinKmh
+      const hi = isImperialUnit() ? leg.vMaxKmh * KM_TO_MI : leg.vMaxKmh
+      return { pace: `${lo.toFixed(1)}–${hi.toFixed(1)}`, split }
+    }
+    const fast = 3600 / leg.vMaxKmh
+    const slow = 3600 / leg.vMinKmh
+    const conv = (s: number): number => (isImperialUnit() ? s / KM_TO_MI : s)
+    return { pace: `${clock(conv(fast))}–${clock(conv(slow))}`, split }
+  }
+  const projUnit = (sport: Sport): string =>
+    sport === 'swim'
+      ? '/100m'
+      : sport === 'bike'
+        ? isImperialUnit()
+          ? 'mph'
+          : 'km/h'
+        : isImperialUnit()
+          ? '/mi'
+          : '/km'
+  const buildZoneSelector = (): void => {
+    if (!projZonesWrap) return
+    projZonesWrap.replaceChildren()
+    for (const band of projBands) {
+      const on = band.index === projZoneIdx
+      const btn = el('button', `tri-calc-zone${on ? ' tri-calc-zone--on' : ''}`, `Z${band.index}`, {
+        type: 'button',
+        role: 'tab',
+        'data-zone': String(band.index),
+        'aria-selected': String(on),
+      })
+      const hr = zoneHrLabel(band)
+      btn.title = hr ? `${tl(band.key)} · ${hr} bpm` : tl(band.key)
+      projZonesWrap.appendChild(btn)
+    }
+  }
+  const renderProjection = (): void => {
+    if (!projOut) return
+    const band = projBands.find(b => b.index === projZoneIdx) ?? projBands[0]
+    const thr = readThresholds()
+    const input = readCalcInput()
+    const proj = band && thr ? projectZoneTimes(input, band, thr) : null
+    if (!band || !proj) {
+      projOut.replaceChildren(el('div', 'tri-ana-empty', tl('no vo2 test logged')))
+      return
+    }
+    const ifPct = `${Math.round(proj.ifMin * 100)}–${Math.round(proj.ifMax * 100)}%`
+    const frag = document.createDocumentFragment()
+
+    const cap = el('div', 'tri-calc-proj-cap')
+    cap.appendChild(el('span', 'tri-calc-proj-cap-z', tl(band.key)))
+    const hr = zoneHrLabel(band)
+    if (hr) cap.appendChild(el('span', 'tri-calc-proj-cap-k', `HR ${hr}`))
+    cap.appendChild(el('span', 'tri-calc-proj-cap-k', `${ifPct} ${tl('threshold')}`))
+    frag.appendChild(cap)
+
+    const table = el('table', 'tri-calc-proj-io')
+    const tbody = el('tbody')
+    const legs: [Sport, string, ProjectedLeg][] = [
+      ['swim', tl('swim'), proj.swim],
+      ['bike', tl('bike'), proj.bike],
+      ['run', tl('run'), proj.run],
+    ]
+    for (const [sport, label, leg] of legs) {
+      const b = legBand(sport, leg)
+      const tr = el('tr', 'tri-calc-proj-row')
+      tr.append(
+        el('th', 'tri-calc-proj-k', label),
+        el('td', 'tri-calc-proj-pace', b.pace),
+        el('td', 'tri-calc-proj-u', projUnit(sport)),
+        el('td', 'tri-calc-proj-split', b.split),
+      )
+      tbody.appendChild(tr)
+    }
+    const finishTr = el('tr', 'tri-calc-proj-row tri-calc-proj-finish')
+    finishTr.append(
+      el('th', 'tri-calc-proj-k', tl('finish')),
+      el('td', 'tri-calc-proj-pace', ifPct),
+      el('td', 'tri-calc-proj-u', ''),
+      el(
+        'td',
+        'tri-calc-proj-split',
+        `${formatDurationClock(proj.fastSec)}–${formatDurationClock(proj.slowSec)}`,
+      ),
+    )
+    tbody.appendChild(finishTr)
+    table.appendChild(tbody)
+    frag.appendChild(table)
+
+    const currentSec = computeTriathlonCalcTimes(input).totalSec
+    const deltaSec = (proj.fastSec + proj.slowSec) / 2 - currentSec
+    const delta = el('div', 'tri-calc-proj-delta')
+    const deltaD = el(
+      'span',
+      `tri-calc-proj-delta-d${deltaSec < 0 ? ' tri-calc-proj-delta-d--fast' : ''}`,
+    )
+    setMath(
+      deltaD,
+      `$\\Delta$ $${deltaSec >= 0 ? '+' : '-'}$${formatDurationClock(Math.abs(deltaSec))}`,
+    )
+    delta.append(
+      el('span', 'tri-calc-proj-delta-k', tl('vs current')),
+      el('span', 'tri-calc-proj-delta-v', formatDurationClock(currentSec)),
+      deltaD,
+    )
+    frag.appendChild(delta)
+
+    projOut.replaceChildren(frag)
+  }
+  const pinModalTop = (): void => {
+    if (pageMode) return
+    const top = Math.round(calc.getBoundingClientRect().top)
+    calc.style.transition = 'none'
+    calc.style.top = `${top}px`
+    calc.style.transform = 'translateX(-50%) scale(1)'
+    void calc.offsetHeight
+    calc.style.transition = ''
+  }
+  const unpinModalTop = (): void => {
+    if (pageMode) return
+    calc.style.top = ''
+    calc.style.transform = ''
+    calc.style.transition = ''
+  }
+  const setProjActive = (on: boolean): void => {
+    projActive = on
+    if (!projPanel) return
+    if (on && projPanel.hidden) pinModalTop()
+    projPanel.hidden = !on
+  }
+  const selectProjection = (): void => {
+    for (const b of calc.querySelectorAll<HTMLElement>('.tri-calc-src')) {
+      const on = b.dataset.src === 'proj'
+      b.classList.toggle('tri-calc-src--on', on)
+      b.setAttribute('aria-selected', String(on))
+    }
+    setProjActive(true)
+    renderProjection()
+  }
+
   const open = () => {
+    unpinModalTop()
     root.classList.add('tri-calc-open')
     calc.setAttribute('aria-hidden', 'false')
     compute()
@@ -1166,6 +1343,21 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     const src = targetElement?.closest<HTMLElement>('.tri-calc-src')
     if (src?.dataset.src === 'avg' || src?.dataset.src === 'pred') {
       applySource(src.dataset.src)
+      return
+    }
+    if (src?.dataset.src === 'proj') {
+      selectProjection()
+      return
+    }
+    const zoneBtn = targetElement?.closest<HTMLElement>('.tri-calc-zone')
+    if (zoneBtn?.dataset.zone) {
+      projZoneIdx = Number(zoneBtn.dataset.zone)
+      for (const b of projZonesWrap?.querySelectorAll<HTMLElement>('.tri-calc-zone') ?? []) {
+        const on = b === zoneBtn
+        b.classList.toggle('tri-calc-zone--on', on)
+        b.setAttribute('aria-selected', String(on))
+      }
+      renderProjection()
       return
     }
     const p = targetElement?.closest<HTMLElement>('.tri-calc-preset')
@@ -1261,6 +1453,14 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
         )
         if (source && usable) source.hidden = false
         if (usable && !userEdited) applySource('avg')
+        const lab = latestLab()
+        projBands = lab ? deriveZoneBands(lab) : []
+        if (projBands.length) {
+          if (!projBands.some(b => b.index === projZoneIdx)) projZoneIdx = projBands[0].index
+          buildZoneSelector()
+          if (projTab) projTab.hidden = false
+          if (source) source.hidden = false
+        }
       })
       .catch(() => {})
 
@@ -1860,8 +2060,8 @@ const buildPmc = (data: Analytics): HTMLElement => {
   const entryRow = (a: ActivitySummary): HTMLElement => {
     const row = el('div', 'tri-pmc-entry')
     row.append(
-      el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, tl(a.sport)),
       el('span', 'tri-pmc-entry-n', a.name || a.sport),
+      el('span', `tri-pmc-entry-s tri-leg-${a.sport}`, tl(a.sport)),
       el('span', 'tri-pmc-entry-d', dist(a.distanceKm, a.sport)),
     )
     return row
@@ -3157,11 +3357,444 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   return block
 }
 
+const VO2P_W = 760
+const VO2P_H = 430
+const VO2P_L = 58
+const VO2P_R = 686
+const VO2P_T = 48
+const VO2P_B = 360
+const VO2P_PW = VO2P_R - VO2P_L
+const VO2P_PH = VO2P_B - VO2P_T
+
+type Vo2ProfileMetric = 'vo2' | 'hr' | 've' | 'rf' | 'tv'
+type Vo2ProfileChartKind = 'metabolic' | 'ventilation'
+
+const vo2ProfileText = (
+  cls: string,
+  text: string,
+  attrs: Record<string, string | number>,
+): SVGElement => {
+  const t = svg('text', { ...attrs, class: cls })
+  t.textContent = text
+  return t
+}
+
+const vo2ProfileTime = (seconds: number): string => {
+  const sec = Math.max(0, Math.round(seconds))
+  const min = Math.floor(sec / 60)
+  return `${min}:${String(sec - min * 60).padStart(2, '0')}`
+}
+
+const vo2ProfileWithTitle = <T extends SVGElement>(node: T, text: string): T => {
+  const title = svg('title', {})
+  title.textContent = text
+  node.appendChild(title)
+  return node
+}
+
+const vo2ProfileSampleValue = (
+  sample: Vo2LabProfileSample,
+  metric: Vo2ProfileMetric,
+): number | null => {
+  if (metric === 'vo2') return sample.vo2
+  if (metric === 'hr') return sample.hr
+  if (metric === 've') return sample.ve
+  if (metric === 'rf') return sample.rf
+  return sample.tv
+}
+
+const vo2ProfileX = (profile: Vo2LabProfile, t: number): number =>
+  VO2P_L + clampN(t / profile.durationSec, 0, 1) * VO2P_PW
+
+const vo2ProfileY = (value: number, lo: number, hi: number): number =>
+  VO2P_B - clampN((value - lo) / (hi - lo), 0, 1) * VO2P_PH
+
+const vo2ProfilePath = (
+  profile: Vo2LabProfile,
+  metric: Vo2ProfileMetric,
+  lo: number,
+  hi: number,
+): string => {
+  const pts: [number, number][] = []
+  for (const sample of profile.samples) {
+    const v = vo2ProfileSampleValue(sample, metric)
+    if (v != null) pts.push([vo2ProfileX(profile, sample.t), vo2ProfileY(v, lo, hi)])
+  }
+  return polyD(pts)
+}
+
+const vo2ProfileTargetPath = (
+  profile: Vo2LabProfile,
+  steps: Vo2LabTargetStep[],
+  area: boolean,
+): string => {
+  if (!steps.length) return ''
+  let d = `M ${vo2ProfileX(profile, 0).toFixed(2)} ${vo2ProfileY(steps[0].kmh, 0, 20).toFixed(2)}`
+  for (let i = 1; i < steps.length; i++) {
+    const prev = steps[i - 1]
+    const curr = steps[i]
+    const x = vo2ProfileX(profile, curr.t).toFixed(2)
+    d += ` L ${x} ${vo2ProfileY(prev.kmh, 0, 20).toFixed(2)}`
+    d += ` L ${x} ${vo2ProfileY(curr.kmh, 0, 20).toFixed(2)}`
+  }
+  const last = steps[steps.length - 1]
+  d += ` L ${vo2ProfileX(profile, profile.durationSec).toFixed(2)} ${vo2ProfileY(last.kmh, 0, 20).toFixed(2)}`
+  if (area)
+    d += ` L ${vo2ProfileX(profile, profile.durationSec).toFixed(2)} ${VO2P_B} L ${vo2ProfileX(profile, 0).toFixed(2)} ${VO2P_B} Z`
+  return d
+}
+
+const vo2ProfileStatNodes = (
+  label: string,
+  stats: Vo2LabProfileStats | null,
+  cls: string,
+  dp: number,
+): HTMLElement[] => {
+  if (!stats) return []
+  return [
+    el('span', `tri-vo2p-stat-name ${cls}`, label),
+    el('span', 'tri-vo2p-stat-k', 'Min:'),
+    el('span', `tri-vo2p-stat-v ${cls}`, stats.min.toFixed(dp)),
+    el('span', 'tri-vo2p-stat-k', 'Max:'),
+    el('span', `tri-vo2p-stat-v ${cls}`, stats.max.toFixed(dp)),
+    el('span', 'tri-vo2p-stat-k', 'Avg:'),
+    el('span', `tri-vo2p-stat-v ${cls}`, stats.avg.toFixed(dp)),
+  ]
+}
+
+const vo2ProfileLegendItem = (label: string, cls: string, area = false): HTMLElement => {
+  const item = el('span', 'tri-vo2p-leg')
+  item.append(el('span', `tri-vo2p-leg-mark ${cls}${area ? ' tri-vo2p-leg-mark--area' : ''}`))
+  item.appendChild(el('span', 'tri-vo2p-leg-text', label))
+  return item
+}
+
+const vo2ProfileTicks = (
+  s: SVGElement,
+  values: number[],
+  lo: number,
+  hi: number,
+  xText: number,
+  xTick0: number,
+  xTick1: number,
+  cls: string,
+  anchor: 'start' | 'end',
+  dp = 0,
+): void => {
+  for (const v of values) {
+    const y = vo2ProfileY(v, lo, hi)
+    s.appendChild(svg('line', { x1: xTick0, y1: y, x2: xTick1, y2: y, class: 'tri-vo2p-tick' }))
+    s.appendChild(
+      vo2ProfileText('tri-vo2p-ytext ' + cls, v.toFixed(dp), {
+        x: xText,
+        y: y + 4,
+        'text-anchor': anchor,
+      }),
+    )
+  }
+}
+
+const vo2ProfilePhase = (s: SVGElement, profile: Vo2LabProfile): void => {
+  if (profile.warmupEndSec != null)
+    s.appendChild(
+      svg('rect', {
+        x: vo2ProfileX(profile, 0),
+        y: VO2P_T,
+        width: vo2ProfileX(profile, profile.warmupEndSec) - VO2P_L,
+        height: VO2P_PH,
+        class: 'tri-vo2p-phase',
+      }),
+    )
+  if (profile.cooldownStartSec != null)
+    s.appendChild(
+      svg('rect', {
+        x: vo2ProfileX(profile, profile.cooldownStartSec),
+        y: VO2P_T,
+        width:
+          vo2ProfileX(profile, profile.durationSec) -
+          vo2ProfileX(profile, profile.cooldownStartSec),
+        height: VO2P_PH,
+        class: 'tri-vo2p-phase',
+      }),
+    )
+}
+
+const vo2ProfileZoneHit = (
+  s: SVGElement,
+  profile: Vo2LabProfile,
+  start: number,
+  end: number,
+  label: string,
+): void => {
+  if (end <= start) return
+  s.appendChild(
+    vo2ProfileWithTitle(
+      svg('rect', {
+        x: vo2ProfileX(profile, start),
+        y: VO2P_T,
+        width: vo2ProfileX(profile, end) - vo2ProfileX(profile, start),
+        height: VO2P_PH,
+        class: 'tri-vo2p-zone-hit',
+      }),
+      `${label} · ${vo2ProfileTime(start)}-${vo2ProfileTime(end)}`,
+    ),
+  )
+}
+
+const vo2ProfileZoneHits = (s: SVGElement, profile: Vo2LabProfile): void => {
+  const warmupEnd = profile.warmupEndSec ?? 0
+  const cooldownStart = profile.cooldownStartSec ?? profile.durationSec
+  if (profile.warmupEndSec != null) vo2ProfileZoneHit(s, profile, 0, warmupEnd, 'Warm-Up')
+  vo2ProfileZoneHit(s, profile, warmupEnd, cooldownStart, 'Test')
+  if (profile.cooldownStartSec != null)
+    vo2ProfileZoneHit(s, profile, cooldownStart, profile.durationSec, 'Cool-Down')
+}
+
+const vo2ProfileMarker = (
+  s: SVGElement,
+  profile: Vo2LabProfile,
+  t: number | null,
+  label: string,
+): void => {
+  if (t == null) return
+  const x = vo2ProfileX(profile, t)
+  s.appendChild(svg('line', { x1: x, y1: VO2P_T, x2: x, y2: VO2P_B, class: 'tri-vo2p-marker' }))
+  s.appendChild(
+    vo2ProfileWithTitle(
+      svg('rect', {
+        x: x - 5,
+        y: VO2P_T,
+        width: 10,
+        height: VO2P_PH,
+        class: 'tri-vo2p-marker-hit',
+      }),
+      `${label} · ${vo2ProfileTime(t)}`,
+    ),
+  )
+}
+
+const vo2ProfileBaseSvg = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): SVGElement => {
+  const s = svg('svg', {
+    class: 'tri-vo2p-svg',
+    viewBox: `0 0 ${VO2P_W} ${VO2P_H}`,
+    preserveAspectRatio: 'xMidYMid meet',
+  })
+  s.appendChild(svg('rect', { x: 0, y: 0, width: VO2P_W, height: VO2P_H, class: 'tri-vo2p-bg' }))
+  vo2ProfilePhase(s, profile)
+  const targetD = vo2ProfileTargetPath(profile, profile.targetKmh, false)
+  s.appendChild(
+    svg('path', {
+      d: vo2ProfileTargetPath(profile, profile.targetKmh, true),
+      class: 'tri-vo2p-target-area',
+    }),
+  )
+  for (let t = 0; t <= 720; t += 30) {
+    const x = vo2ProfileX(profile, t)
+    const major = t % 120 === 0
+    s.appendChild(
+      svg('line', {
+        x1: x,
+        y1: VO2P_B,
+        x2: x,
+        y2: VO2P_B + (major ? 14 : 8),
+        class: 'tri-vo2p-xtick',
+      }),
+    )
+    if (major)
+      s.appendChild(
+        vo2ProfileText('tri-vo2p-xtext', `${Math.floor(t / 60)}:00`, {
+          x,
+          y: VO2P_B + 34,
+          'text-anchor': 'middle',
+        }),
+      )
+  }
+  for (const gy of [0, 0.25, 0.5, 0.75, 1]) {
+    const y = VO2P_T + gy * VO2P_PH
+    s.appendChild(svg('line', { x1: VO2P_L, y1: y, x2: VO2P_R, y2: y, class: 'tri-vo2p-grid' }))
+  }
+  s.appendChild(svg('path', { d: targetD, class: 'tri-vo2p-target-line' }))
+  vo2ProfileZoneHits(s, profile)
+  vo2ProfileMarker(s, profile, profile.vt1Sec, 'VT 1')
+  vo2ProfileMarker(s, profile, profile.vo2maxSec, 'VO2 max')
+  s.appendChild(
+    svg('rect', { x: VO2P_L, y: VO2P_T, width: VO2P_PW, height: VO2P_PH, class: 'tri-vo2p-frame' }),
+  )
+  if (kind === 'metabolic') {
+    s.appendChild(
+      svg('path', {
+        d: vo2ProfilePath(profile, 'vo2', 0, 60),
+        class: 'tri-vo2p-line tri-vo2p-line--vo2',
+      }),
+    )
+    s.appendChild(
+      svg('path', {
+        d: vo2ProfilePath(profile, 'hr', 60, 200),
+        class: 'tri-vo2p-line tri-vo2p-line--hr',
+      }),
+    )
+    vo2ProfileTicks(
+      s,
+      [60, 80, 100, 120, 140, 160, 180, 200],
+      60,
+      200,
+      VO2P_L - 17,
+      VO2P_L - 10,
+      VO2P_L,
+      'tri-vo2p-red',
+      'end',
+    )
+    vo2ProfileTicks(
+      s,
+      [0, 10, 20, 30, 40, 50, 60],
+      0,
+      60,
+      VO2P_R + 18,
+      VO2P_R,
+      VO2P_R + 10,
+      'tri-vo2p-blue',
+      'start',
+    )
+  } else {
+    s.appendChild(
+      svg('path', {
+        d: vo2ProfilePath(profile, 've', 0, 160),
+        class: 'tri-vo2p-line tri-vo2p-line--ve',
+      }),
+    )
+    s.appendChild(
+      svg('path', {
+        d: vo2ProfilePath(profile, 'rf', 0, 80),
+        class: 'tri-vo2p-line tri-vo2p-line--rf',
+      }),
+    )
+    s.appendChild(
+      svg('path', {
+        d: vo2ProfilePath(profile, 'tv', 0, 4),
+        class: 'tri-vo2p-line tri-vo2p-line--tv',
+      }),
+    )
+    vo2ProfileTicks(
+      s,
+      [0, 20, 40, 60, 80],
+      0,
+      80,
+      VO2P_L - 28,
+      VO2P_L - 10,
+      VO2P_L,
+      'tri-vo2p-cyan',
+      'end',
+    )
+    vo2ProfileTicks(
+      s,
+      [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4],
+      0,
+      4,
+      VO2P_L + 27,
+      VO2P_L - 10,
+      VO2P_L,
+      'tri-vo2p-orange',
+      'start',
+      1,
+    )
+    vo2ProfileTicks(
+      s,
+      [0, 20, 40, 60, 80, 100, 120, 140, 160],
+      0,
+      160,
+      VO2P_R + 24,
+      VO2P_R,
+      VO2P_R + 10,
+      'tri-vo2p-green',
+      'start',
+    )
+  }
+  vo2ProfileTicks(
+    s,
+    [0, 5, 10, 15, 20],
+    0,
+    20,
+    VO2P_R - 21,
+    VO2P_R,
+    VO2P_R + 10,
+    'tri-vo2p-target',
+    'end',
+  )
+  s.appendChild(
+    vo2ProfileText('tri-vo2p-panel-title', kind === 'metabolic' ? 'Metabolic' : 'Ventilation', {
+      x: VO2P_L + 4,
+      y: VO2P_T + 10,
+      'text-anchor': 'start',
+    }),
+  )
+  return s
+}
+
+const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): HTMLElement => {
+  const panel = el('div', 'tri-vo2p-panel')
+  const stats = el('div', 'tri-vo2p-stats')
+  if (kind === 'metabolic') {
+    stats.append(...vo2ProfileStatNodes('VO2', profile.stats.vo2, 'tri-vo2p-blue', 1))
+    stats.append(...vo2ProfileStatNodes('HR', profile.stats.hr, 'tri-vo2p-red', 0))
+  } else {
+    stats.append(...vo2ProfileStatNodes('Tv', profile.stats.tv, 'tri-vo2p-orange', 1))
+    stats.append(...vo2ProfileStatNodes('Rf', profile.stats.rf, 'tri-vo2p-cyan', 1))
+    stats.append(...vo2ProfileStatNodes('Ve', profile.stats.ve, 'tri-vo2p-green', 1))
+  }
+  const legend = el('div', 'tri-vo2p-legend')
+  legend.appendChild(vo2ProfileLegendItem('Target[km/h]', 'tri-vo2p-target', true))
+  if (kind === 'metabolic') {
+    legend.appendChild(vo2ProfileLegendItem('VO2[mL/kg/min]', 'tri-vo2p-blue'))
+    legend.appendChild(vo2ProfileLegendItem('HR[bpm]', 'tri-vo2p-red'))
+  } else {
+    legend.appendChild(vo2ProfileLegendItem('Ve[L/min]', 'tri-vo2p-green'))
+    legend.appendChild(vo2ProfileLegendItem('Rf[bpm]', 'tri-vo2p-cyan'))
+    legend.appendChild(vo2ProfileLegendItem('Tv[L]', 'tri-vo2p-orange'))
+  }
+  const fig = el('div', 'tri-vo2p-fig')
+  fig.append(legend, vo2ProfileBaseSvg(profile, kind))
+  panel.append(stats, fig)
+  return panel
+}
+
+const buildVo2Profile = (profile: Vo2LabProfile): HTMLElement => {
+  const wrap = el('div', 'tri-vo2p')
+  wrap.append(
+    buildVo2ProfileChart(profile, 'metabolic'),
+    buildVo2ProfileChart(profile, 'ventilation'),
+  )
+  return wrap
+}
+
+const appendVo2TestCap = (block: HTMLElement, r: Vo2LabRecord): void => {
+  const cap = el('div', 'tri-elev-cap')
+  cap.appendChild(el('span', 'tri-ana-k', `vo2max ${r.value.toFixed(1)} ml/kg/min`))
+  if (r.percentile != null) cap.appendChild(el('span', 'tri-ana-k', `p${r.percentile}`))
+  if (r.vt1Hr != null)
+    cap.appendChild(
+      el(
+        'span',
+        'tri-ana-k',
+        `vt1 ${r.vt1Hr}bpm${r.vt1Kmh != null ? ` · ${r.vt1Kmh}km/h` : ''}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1}kcal/h` : ''}`,
+      ),
+    )
+  if (r.ve != null) cap.appendChild(el('span', 'tri-ana-k', `ve ${r.ve}l/min`))
+  if (r.hrMax != null) cap.appendChild(el('span', 'tri-ana-k', `hrmax ${r.hrMax}`))
+  block.appendChild(cap)
+}
+
 const buildVo2test = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-vo2t')
   const titleRow = el('div', 'tri-vo2t-titlerow')
   titleRow.appendChild(anaTitle('vo2 test profile', 'vo2test'))
   const r = data.tests.vo2max[data.tests.vo2max.length - 1]
+  if (r?.profile) {
+    titleRow.appendChild(el('span', 'tri-vo2t-date', r.date))
+    block.appendChild(titleRow)
+    block.appendChild(buildVo2Profile(r.profile))
+    appendVo2TestCap(block, r)
+    return block
+  }
   const anchors = r
     ? r.zonesKmh.map((s, i) => ({ s, hr: r.zonesHr[i] })).filter(p => p.hr != null)
     : []
@@ -3280,20 +3913,7 @@ const buildVo2test = (data: Analytics): HTMLElement => {
   xax.append(el('span', '', `${speeds[0]} km/h`), el('span', '', `${r.maxKmh} km/h`))
   block.appendChild(xax)
 
-  const cap = el('div', 'tri-elev-cap')
-  cap.appendChild(el('span', 'tri-ana-k', `vo2max ${r.value.toFixed(1)} ml/kg/min`))
-  if (r.percentile != null) cap.appendChild(el('span', 'tri-ana-k', `p${r.percentile}`))
-  if (r.vt1Hr != null)
-    cap.appendChild(
-      el(
-        'span',
-        'tri-ana-k',
-        `vt1 ${r.vt1Hr}bpm${r.vt1Kmh != null ? ` · ${r.vt1Kmh}km/h` : ''}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1}kcal/h` : ''}`,
-      ),
-    )
-  if (r.ve != null) cap.appendChild(el('span', 'tri-ana-k', `ve ${r.ve}l/min`))
-  if (r.hrMax != null) cap.appendChild(el('span', 'tri-ana-k', `hrmax ${r.hrMax}`))
-  block.appendChild(cap)
+  appendVo2TestCap(block, r)
   return block
 }
 
@@ -3515,6 +4135,125 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     s.appendChild(label)
   })
   block.appendChild(s)
+
+  const hist = ab.history ?? []
+  const DEV_KEYS = ['endurance', 'recovery', 'cadence', 'sprint', 'threshold', 'climb'] as const
+  const devKeys = DEV_KEYS.filter(k => hist.filter(h => h[k] != null).length >= 2)
+  if (hist.length >= 2 && devKeys.length) {
+    const onByDefault = new Set<string>(['endurance', 'recovery'])
+    const dev = el('div', 'tri-dev')
+    const W = 100
+    const H = 30
+    const xAt = (i: number): number => (i / (hist.length - 1)) * W
+    const yAt = (v: number): number => H - (v / 100) * H
+    const frame = el('div', 'tri-dev-frame')
+    const yax = el('div', 'tri-dev-yax')
+    for (const gv of [100, 75, 50, 25, 0]) {
+      const lab = el('span', 'tri-dev-yt', String(gv))
+      lab.style.top = `${100 - gv}%`
+      yax.appendChild(lab)
+    }
+    frame.appendChild(yax)
+    const plot = el('div', 'tri-dev-plot')
+    const sv = svg('svg', {
+      class: 'tri-dev-svg',
+      viewBox: `0 0 ${W} ${H}`,
+      preserveAspectRatio: 'none',
+    })
+    for (const gv of [100, 75, 50, 25, 0])
+      sv.appendChild(
+        svg('line', {
+          x1: 0,
+          y1: yAt(gv),
+          x2: W,
+          y2: yAt(gv),
+          class: gv === 50 ? 'tri-dev-grid tri-dev-grid--mid' : 'tri-dev-grid',
+        }),
+      )
+    const paths = new Map<string, SVGElement>()
+    for (const k of devKeys) {
+      const d = hist
+        .map((h, i) => ({ x: xAt(i), v: h[k] }))
+        .filter((p): p is { x: number; v: number } => p.v != null)
+        .map((p, i) => `${i ? 'L' : 'M'} ${p.x.toFixed(2)} ${yAt(p.v).toFixed(2)}`)
+        .join(' ')
+      const path = svg('path', {
+        d,
+        class: `tri-dev-line tri-dev-line--${k}${onByDefault.has(k) ? '' : ' tri-dev-line--off'}`,
+      })
+      sv.appendChild(path)
+      paths.set(k, path)
+    }
+    const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-chart-cursor' })
+    sv.appendChild(cursor)
+    plot.appendChild(sv)
+    const readoutEl = el('div', 'tri-chart-readout tri-dev-read')
+    plot.appendChild(readoutEl)
+    const renderRead = (i: number): void => {
+      const point = hist[i]
+      const rows: HTMLElement[] = [el('span', 'tri-dev-read-date', shortDate(point.date))]
+      for (const k of devKeys) {
+        if (paths.get(k)!.classList.contains('tri-dev-line--off') || point[k] == null) continue
+        const row = el('div', 'tri-dev-read-row')
+        row.append(
+          el('span', `tri-dev-dot tri-dev-dot--${k}`),
+          el('span', 'tri-dev-read-k', tl(k)),
+          el('span', 'tri-dev-read-v', String(point[k])),
+        )
+        rows.push(row)
+      }
+      readoutEl.replaceChildren(...rows)
+    }
+    const focusIndex = (i: number, hover: boolean): void => {
+      const idx = Math.round(clampN(i, 0, hist.length - 1))
+      const cx = xAt(idx).toFixed(2)
+      cursor.setAttribute('x1', cx)
+      cursor.setAttribute('x2', cx)
+      readoutEl.style.left = `${clampN((xAt(idx) / W) * 100, 6, 80).toFixed(2)}%`
+      readoutEl.style.right = 'auto'
+      renderRead(idx)
+      dev.classList.toggle('tri-chart--hover', hover)
+    }
+    const indexAt = (event: MouseEvent): number => {
+      const rect = sv.getBoundingClientRect()
+      return Math.round(clampN((event.clientX - rect.left) / rect.width, 0, 1) * (hist.length - 1))
+    }
+    sv.addEventListener('mousemove', (event: MouseEvent) => focusIndex(indexAt(event), true))
+    sv.addEventListener('mouseleave', () => dev.classList.remove('tri-chart--hover'))
+    const xax = el('div', 'tri-dev-xax')
+    for (const t of monthTicks(
+      hist.map(h => h.date),
+      i => xAt(i),
+    )) {
+      const lab = el('span', `tri-dev-xt${t.cls ? ' tri-dev-xt--first' : ''}`, t.label)
+      lab.style.left = `${t.pct.toFixed(2)}%`
+      xax.appendChild(lab)
+    }
+    frame.appendChild(plot)
+    dev.appendChild(frame)
+    dev.appendChild(xax)
+    const legend = el('div', 'tri-dev-legend')
+    for (const k of devKeys) {
+      const item = el(
+        'button',
+        `tri-dev-leg${onByDefault.has(k) ? '' : ' tri-dev-leg--off'}`,
+        undefined,
+        { type: 'button' },
+      )
+      item.append(
+        el('span', `tri-dev-dot tri-dev-dot--${k}`),
+        el('span', 'tri-dev-leg-name', tl(k)),
+      )
+      item.addEventListener('click', () => {
+        const hidden = paths.get(k)!.classList.toggle('tri-dev-line--off')
+        item.classList.toggle('tri-dev-leg--off', hidden)
+      })
+      legend.appendChild(item)
+    }
+    dev.appendChild(legend)
+    block.appendChild(dev)
+  }
+
   return block
 }
 
@@ -4171,6 +4910,83 @@ const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
   return wrap
 }
 
+const ACTIVITY_FILTER_SPORTS: readonly string[] = ['bike', 'run', 'swim', 'walk']
+const ACTIVITY_SORT_KEYS: readonly string[] = ['distance', 'cadence', 'pace']
+
+interface ActivityQuery {
+  filterSport: string | null
+  sortKey: string | null
+  tokens: string[]
+}
+
+const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
+  let filterSport: string | null = null
+  let sortKey: string | null = null
+  const tokens: string[] = []
+  for (const t of rawTokens) {
+    if (t.startsWith('filter:')) {
+      const fv = t.slice(7)
+      filterSport = fv === 'hike' ? 'walk' : fv
+    } else if (t.startsWith('sort:')) {
+      sortKey = t.slice(5)
+    } else if (t) tokens.push(t)
+  }
+  return { filterSport, sortKey, tokens }
+}
+
+const sortActivitiesBy = <
+  T extends Pick<ActivitySummary, 'distanceKm' | 'cadence' | 'movingTimeS'>,
+>(
+  acts: T[],
+  sortKey: string | null,
+): T[] => {
+  if (!sortKey) return acts
+  return acts.sort((a, b) => {
+    if (sortKey === 'distance') return b.distanceKm - a.distanceKm
+    if (sortKey === 'cadence') return (b.cadence ?? 0) - (a.cadence ?? 0)
+    if (sortKey === 'pace') {
+      const sa = a.movingTimeS > 0 ? a.distanceKm / a.movingTimeS : 0
+      const sb = b.movingTimeS > 0 ? b.distanceKm / b.movingTimeS : 0
+      return sb - sa
+    }
+    return 0
+  })
+}
+
+const activityCommandHints = (
+  lastToken: string,
+  ritem: (title: HTMLElement | string, sub: string) => HTMLElement,
+  noun: string,
+): HTMLElement[] => {
+  const hints: HTMLElement[] = []
+  const filterValue = lastToken.startsWith('filter:') ? lastToken.slice(7) : null
+  const sortValue = lastToken.startsWith('sort:') ? lastToken.slice(5) : null
+  if (filterValue !== null && ![...ACTIVITY_FILTER_SPORTS, 'hike'].includes(filterValue)) {
+    for (const f of ACTIVITY_FILTER_SPORTS)
+      if (f.startsWith(filterValue)) {
+        const it = ritem(searchCommandTitle('filter:', f), `filter ${noun}`)
+        it.dataset.insert = `filter:${f}`
+        hints.push(it)
+      }
+  } else if (sortValue !== null && !ACTIVITY_SORT_KEYS.includes(sortValue)) {
+    for (const s of ACTIVITY_SORT_KEYS)
+      if (s.startsWith(sortValue)) {
+        const it = ritem(searchCommandTitle('sort:', s), `sort ${noun}`)
+        it.dataset.insert = `sort:${s}`
+        hints.push(it)
+      }
+  } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
+    const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim, walk)')
+    it.dataset.insert = 'filter:'
+    hints.push(it)
+  } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
+    const it = ritem(searchCommandTitle('sort:'), 'sort by distance, cadence, pace')
+    it.dataset.insert = 'sort:'
+    hints.push(it)
+  }
+  return hints
+}
+
 const modalBaseY = (): number => -50
 
 const flipClose = (
@@ -4381,58 +5197,11 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
     const rawTokens = q.split(/\s+/)
-    let filterSport: string | null = null
-    let sortKey: string | null = null
-    const tokens: string[] = []
-
-    for (const t of rawTokens) {
-      if (t.startsWith('filter:')) {
-        const fv = t.slice(7)
-        filterSport = fv === 'hike' ? 'walk' : fv
-      } else if (t.startsWith('sort:')) {
-        sortKey = t.slice(5)
-      } else {
-        if (t) tokens.push(t)
-      }
-    }
+    const { filterSport, sortKey, tokens } = parseActivityQuery(rawTokens)
 
     const metrics: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1]
-    const hints: HTMLElement[] = []
-
-    if (
-      lastToken.startsWith('filter:') &&
-      !['bike', 'run', 'swim', 'walk', 'hike'].includes(lastToken.slice(7))
-    ) {
-      const prefix = lastToken.slice(7)
-      for (const f of ['bike', 'run', 'swim', 'walk']) {
-        if (f.startsWith(prefix)) {
-          const it = ritem(searchCommandTitle('filter:', f), 'filter activities')
-          it.dataset.insert = `filter:${f}`
-          hints.push(it)
-        }
-      }
-    } else if (
-      lastToken.startsWith('sort:') &&
-      !['distance', 'cadence', 'pace'].includes(lastToken.slice(5))
-    ) {
-      const prefix = lastToken.slice(5)
-      for (const s of ['distance', 'cadence', 'pace']) {
-        if (s.startsWith(prefix)) {
-          const it = ritem(searchCommandTitle('sort:', s), 'sort activities')
-          it.dataset.insert = `sort:${s}`
-          hints.push(it)
-        }
-      }
-    } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim, walk)')
-      it.dataset.insert = 'filter:'
-      hints.push(it)
-    } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
-      const it = ritem(searchCommandTitle('sort:'), 'sort by distance, cadence, pace')
-      it.dataset.insert = 'sort:'
-      hints.push(it)
-    }
+    const hints = activityCommandHints(lastToken, ritem, 'activities')
 
     if (!filterSport && !sortKey) {
       for (const s of SEARCH_SECTIONS)
@@ -4451,23 +5220,15 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       }
     }
 
-    let acts = (data?.activities ?? []).filter(a => {
-      if (filterSport && a.sport !== filterSport) return false
-      return tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
-    })
-
-    if (sortKey) {
-      acts.sort((a, b) => {
-        if (sortKey === 'distance') return b.distanceKm - a.distanceKm
-        if (sortKey === 'cadence') return (b.cadence ?? 0) - (a.cadence ?? 0)
-        if (sortKey === 'pace') {
-          const speedA = a.movingTimeS > 0 ? a.distanceKm / a.movingTimeS : 0
-          const speedB = b.movingTimeS > 0 ? b.distanceKm / b.movingTimeS : 0
-          return speedB - speedA
-        }
-        return 0
-      })
-    }
+    const acts = sortActivitiesBy(
+      (data?.activities ?? []).filter(a => {
+        if (filterSport && a.sport !== filterSport) return false
+        return (
+          tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+        )
+      }),
+      sortKey,
+    )
 
     if (hints.length) {
       const grp = el('div', 'tri-ana-rgroup')
@@ -5270,34 +6031,21 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     panel.classList.add('tri-map--searching')
     results.setAttribute('aria-hidden', 'false')
     const rawTokens = q.split(/\s+/)
-    let filterSport: string | null = null
-    const tokens: string[] = []
-    for (const t of rawTokens) {
-      if (t.startsWith('filter:')) filterSport = t.slice(7)
-      else if (t) tokens.push(t)
-    }
+    const { filterSport, sortKey, tokens } = parseActivityQuery(rawTokens)
     setSportFilter(filterSport === 'run' || filterSport === 'bike' ? filterSport : null)
-    const hints: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1]
-    if (lastToken.startsWith('filter:') && !['bike', 'run'].includes(lastToken.slice(7))) {
-      const prefix = lastToken.slice(7)
-      for (const f of ['bike', 'run'])
-        if (f.startsWith(prefix)) {
-          const it = ritem(searchCommandTitle('filter:', f), 'filter routes')
-          it.dataset.insert = `filter:${f}`
-          hints.push(it)
-        }
-    } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-      const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run)')
-      it.dataset.insert = 'filter:'
-      hints.push(it)
-    }
+    const hints = activityCommandHints(lastToken, ritem, 'routes')
     const ids = drawableIds()
-    const acts = (data?.activities ?? []).filter(a => {
-      if (!ids.has(String(a.id))) return false
-      if (filterSport && a.sport !== filterSport) return false
-      return tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
-    })
+    const acts = sortActivitiesBy(
+      (data?.activities ?? []).filter(a => {
+        if (!ids.has(String(a.id))) return false
+        if (filterSport && a.sport !== filterSport) return false
+        return (
+          tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+        )
+      }),
+      sortKey,
+    )
     if (hints.length) {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))

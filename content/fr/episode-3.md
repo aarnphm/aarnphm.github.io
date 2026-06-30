@@ -19,7 +19,7 @@ the source method writes clock times with a space, `9 h 30`, which i keep in pro
 ## l'heure
 
 > [!note] écrire l'heure
-> one writes the hours `1h` through `12h` and then `13h` through `24h`. the letter `h` is the abbreviation of the word `heure`, so `9h` reads `neuf heures`.
+> one writes the hours `1 h` through `12 h` and then `13 h` through `24 h`. the letter `h` is the abbreviation of the word `heure`, so `9 h` reads `neuf heures`.
 
 `Il est…` plus the hour. the half-hour splits into two registers: the everyday reading counts up to `et demie`, then switches to the next hour with `moins`; the digital reading just states the minutes.[^moins]
 

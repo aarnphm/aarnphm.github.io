@@ -72,6 +72,46 @@ export interface Vo2LabRecord {
   zonesHr: number[]
   zonesKmh: number[]
   zonesKcal: number[]
+  profile: Vo2LabProfile | null
+}
+
+export interface Vo2LabProfileStats {
+  min: number
+  max: number
+  avg: number
+}
+
+export interface Vo2LabProfileStatsMap {
+  vo2: Vo2LabProfileStats | null
+  hr: Vo2LabProfileStats | null
+  ve: Vo2LabProfileStats | null
+  rf: Vo2LabProfileStats | null
+  tv: Vo2LabProfileStats | null
+}
+
+export interface Vo2LabTargetStep {
+  t: number
+  kmh: number
+}
+
+export interface Vo2LabProfileSample {
+  t: number
+  vo2: number | null
+  hr: number | null
+  ve: number | null
+  rf: number | null
+  tv: number | null
+}
+
+export interface Vo2LabProfile {
+  durationSec: number
+  warmupEndSec: number | null
+  cooldownStartSec: number | null
+  vt1Sec: number | null
+  vo2maxSec: number | null
+  stats: Vo2LabProfileStatsMap
+  targetKmh: Vo2LabTargetStep[]
+  samples: Vo2LabProfileSample[]
 }
 
 export interface LabTests {
@@ -444,9 +484,20 @@ export interface RadarAxis {
   hi: number
 }
 
+export interface AbilityTrendPoint {
+  date: string
+  sprint: number | null
+  threshold: number | null
+  endurance: number | null
+  climb: number | null
+  cadence: number | null
+  recovery: number | null
+}
+
 export interface AbilitiesBlock {
   axes: RadarAxis[]
   area: number | null
+  history: AbilityTrendPoint[]
 }
 
 export interface CardioMetric {
@@ -1881,6 +1932,108 @@ const numArr = (raw: unknown): number[] => {
   return out
 }
 
+const nullableNum = (raw: unknown): number | null => {
+  const n = numberValue(raw)
+  return n === undefined ? null : n
+}
+
+const vo2StatsOf = (raw: unknown): Vo2LabProfileStats | null => {
+  let min: number | undefined
+  let max: number | undefined
+  let avg: number | undefined
+  if (Array.isArray(raw)) {
+    min = numberValue(raw[0])
+    max = numberValue(raw[1])
+    avg = numberValue(raw[2])
+  } else if (isRecord(raw)) {
+    min = numberValue(raw.min)
+    max = numberValue(raw.max)
+    avg = numberValue(raw.avg)
+  }
+  if (min === undefined || max === undefined || avg === undefined) return null
+  return { min, max, avg }
+}
+
+const vo2StatsMapOf = (raw: unknown): Vo2LabProfileStatsMap => ({
+  vo2: isRecord(raw) ? vo2StatsOf(raw.vo2) : null,
+  hr: isRecord(raw) ? vo2StatsOf(raw.hr) : null,
+  ve: isRecord(raw) ? vo2StatsOf(raw.ve) : null,
+  rf: isRecord(raw) ? vo2StatsOf(raw.rf) : null,
+  tv: isRecord(raw) ? vo2StatsOf(raw.tv) : null,
+})
+
+const vo2TargetStepsOf = (raw: unknown): Vo2LabTargetStep[] => {
+  if (!Array.isArray(raw)) return []
+  const out: Vo2LabTargetStep[] = []
+  for (const item of raw) {
+    let t: number | undefined
+    let kmh: number | undefined
+    if (Array.isArray(item)) {
+      t = numberValue(item[0])
+      kmh = numberValue(item[1])
+    } else if (isRecord(item)) {
+      t = numberValue(item.t)
+      kmh = numberValue(item.kmh)
+    }
+    if (t !== undefined && kmh !== undefined && t >= 0 && kmh >= 0) out.push({ t, kmh })
+  }
+  out.sort((a, b) => a.t - b.t)
+  return out
+}
+
+const vo2ProfileSamplesOf = (raw: unknown): Vo2LabProfileSample[] => {
+  if (!Array.isArray(raw)) return []
+  const out: Vo2LabProfileSample[] = []
+  for (const item of raw) {
+    let sample: Vo2LabProfileSample | null = null
+    if (Array.isArray(item)) {
+      const t = numberValue(item[0])
+      if (t !== undefined)
+        sample = {
+          t,
+          vo2: nullableNum(item[1]),
+          hr: nullableNum(item[2]),
+          ve: nullableNum(item[3]),
+          rf: nullableNum(item[4]),
+          tv: nullableNum(item[5]),
+        }
+    } else if (isRecord(item)) {
+      const t = numberValue(item.t)
+      if (t !== undefined)
+        sample = {
+          t,
+          vo2: nullableNum(item.vo2),
+          hr: nullableNum(item.hr),
+          ve: nullableNum(item.ve),
+          rf: nullableNum(item.rf),
+          tv: nullableNum(item.tv),
+        }
+    }
+    if (sample && sample.t >= 0) out.push(sample)
+  }
+  out.sort((a, b) => a.t - b.t)
+  return out
+}
+
+const vo2ProfileOf = (raw: unknown): Vo2LabProfile | null => {
+  if (!isRecord(raw)) return null
+  const samples = vo2ProfileSamplesOf(raw.samples)
+  const targetKmh = vo2TargetStepsOf(raw.targetKmh)
+  const duration = numberValue(raw.durationSec) ?? samples[samples.length - 1]?.t
+  if (duration === undefined || duration <= 0 || samples.length < 2 || targetKmh.length < 2)
+    return null
+  return {
+    durationSec: duration,
+    warmupEndSec: numAt(raw, 'warmupEndSec'),
+    cooldownStartSec: numAt(raw, 'cooldownStartSec'),
+    vt1Sec: numAt(raw, 'vt1Sec'),
+    vo2maxSec: numAt(raw, 'vo2maxSec'),
+    stats: vo2StatsMapOf(raw.stats),
+    targetKmh,
+    samples,
+  }
+}
+
 const dexaRegionOf = (raw: unknown): DexaRegion | null => {
   if (!isRecord(raw)) return null
   const fat = numberValue(raw.fat)
@@ -1964,6 +2117,7 @@ export const parseVo2Lab = (raw: unknown): Vo2LabRecord[] => {
       zonesHr: numArr(item.zonesHr),
       zonesKmh: numArr(item.zonesKmh),
       zonesKcal: numArr(item.zonesKcal),
+      profile: vo2ProfileOf(item.profile),
     })
   }
   out.sort((a, b) => a.date.localeCompare(b.date))
@@ -2345,7 +2499,7 @@ function emptyEngine(): EngineBlock {
       trend: [],
       note: 'no power or hr data',
     },
-    abilities: { axes: [], area: null },
+    abilities: { axes: [], area: null, history: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
     ftpHypothesis: null,
   }
@@ -2617,6 +2771,64 @@ function buildEngine(
   const scored = axes.filter(a => a.score != null).map(a => a.score as number)
   const area = scored.length ? Math.round(mean(scored)) : null
 
+  const abilityHistory: AbilityTrendPoint[] = []
+  {
+    const bikeStats = bikes
+      .map(b => ({
+        day: b.day,
+        peak5: peakMean(wattsOf(b.a.id), 5) ?? b.a.maxWatts ?? null,
+        vam:
+          b.a.movingTime > 0 && b.a.totalElevationGain > 0
+            ? (b.a.totalElevationGain * 3600) / b.a.movingTime
+            : null,
+        rpm: b.a.averageCadence ?? null,
+      }))
+      .sort((p, q) => p.day.localeCompare(q.day))
+    const runStats = acts
+      .filter(x => x.sport === 'run' && x.a.averageCadence != null)
+      .map(x => ({ day: x.day, spm: (x.a.averageCadence as number) * 2 }))
+      .sort((p, q) => p.day.localeCompare(q.day))
+    const ftpWkgConst = ftp != null && kgNow ? ftp / kgNow : null
+    const rdyArr = daily.map(d => d.readiness)
+    let bi = 0
+    let ri = 0
+    let cumP5: number | null = null
+    let cumVam: number | null = null
+    const rpmAcc: number[] = []
+    const spmAcc: number[] = []
+    for (let i = 0; i < daily.length; i++) {
+      const cutoff = daily[i].date
+      while (bi < bikeStats.length && bikeStats[bi].day <= cutoff) {
+        const sb = bikeStats[bi]
+        if (sb.peak5 != null && (cumP5 == null || sb.peak5 > cumP5)) cumP5 = sb.peak5
+        if (sb.vam != null && (cumVam == null || sb.vam > cumVam)) cumVam = sb.vam
+        if (sb.rpm != null) rpmAcc.push(sb.rpm)
+        bi++
+      }
+      while (ri < runStats.length && runStats[ri].day <= cutoff) {
+        spmAcc.push(runStats[ri].spm)
+        ri++
+      }
+      const sprintWkgH = cumP5 != null && kgNow ? cumP5 / kgNow : null
+      const devsH: number[] = []
+      if (rpmAcc.length) devsH.push(Math.abs(mean(rpmAcc) - BIKE_RPM_TARGET) / BIKE_RPM_TARGET)
+      if (spmAcc.length) devsH.push(Math.abs(mean(spmAcc) - RUN_SPM_TARGET) / RUN_SPM_TARGET)
+      const cadH = devsH.length ? Math.round(clamp(100 - Math.min(...devsH) * 200, 0, 100)) : null
+      const rdyH = winValues(rdyArr, i, 14)
+      abilityHistory.push({
+        date: cutoff,
+        sprint:
+          sprintWkgH != null ? Math.round(norm01(sprintWkgH, ...COGGAN_SPRINT_WKG) * 100) : null,
+        threshold:
+          ftpWkgConst != null ? Math.round(norm01(ftpWkgConst, ...COGGAN_FTP_WKG) * 100) : null,
+        endurance: Math.round(norm01(daily[i].ctl, ...CTL_ANCHOR) * 100),
+        climb: cumVam != null ? Math.round(norm01(cumVam, ...VAM_ANCHOR) * 100) : null,
+        cadence: cadH,
+        recovery: rdyH.length ? Math.round(mean(rdyH)) : null,
+      })
+    }
+  }
+
   const last28 = daily.slice(-28)
   const rhrXs: number[] = []
   const rhrYs: number[] = []
@@ -2769,7 +2981,7 @@ function buildEngine(
       trend,
       note: noteOf(primary?.method ?? 'none'),
     },
-    abilities: { axes, area },
+    abilities: { axes, area, history: abilityHistory },
     cardio: {
       metrics,
       rhrSeries: daily

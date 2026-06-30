@@ -2,9 +2,12 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   computeTriathlonCalcTimes,
+  deriveZoneBands,
   formatDurationClock,
   parseClockSeconds,
+  projectZoneTimes,
   solveTriathlonCalcTarget,
+  type SportThresholdVel,
   type TriathlonCalcInput,
 } from './triathlon-calculator'
 
@@ -59,4 +62,65 @@ test('solves target finish time by scaling sport paces around fixed transitions'
 
 test('rejects target times shorter than transitions', () => {
   assert.equal(solveTriathlonCalcTarget(olympicInput, 120), null)
+})
+
+const lab = { zonesKmh: [7, 8, 10.5, 14], zonesHr: [112, 121, 142, 171], maxKmh: 15, hrMax: 182 }
+
+test('derives zone speed bands from lab anchors', () => {
+  const bands = deriveZoneBands(lab)
+  assert.equal(bands.length, 4)
+  const z2 = bands[1]
+  assert.equal(z2.index, 2)
+  assert.equal(z2.key, 'fat burning')
+  assert.equal(z2.hrLo, 121)
+  assert.equal(z2.hrHi, 141)
+  assert.equal(z2.vMinKmh, 8)
+  assert.equal(z2.vMaxKmh, 10.5)
+  assert.equal(bands[3].hrHi, 182)
+  assert.equal(bands[3].vMaxKmh, 15)
+})
+
+test('ignores lab data without two valid speed anchors', () => {
+  assert.deepEqual(
+    deriveZoneBands({ zonesKmh: [10], zonesHr: [120], maxKmh: null, hrMax: null }),
+    [],
+  )
+})
+
+const thresholds: SportThresholdVel = { swim: 0.7, bike: 8, run: 3 }
+
+test('projects a zone into per-leg ranges that scale by each sport threshold', () => {
+  const z2 = deriveZoneBands(lab)[1]
+  const proj = projectZoneTimes(olympicInput, z2, thresholds)
+  assert.ok(proj)
+
+  const runThrKmh = thresholds.run * 3.6
+  assert.ok(Math.abs(proj.ifMin - z2.vMinKmh / runThrKmh) < 1e-9)
+  assert.ok(Math.abs(proj.ifMax - z2.vMaxKmh / runThrKmh) < 1e-9)
+
+  assert.ok(Math.abs(proj.run.vMinKmh - z2.vMinKmh) < 1e-9)
+  assert.ok(Math.abs(proj.run.vMaxKmh - z2.vMaxKmh) < 1e-9)
+
+  assert.ok(
+    Math.abs(proj.bike.vMaxKmh / proj.run.vMaxKmh - thresholds.bike / thresholds.run) < 1e-9,
+  )
+  assert.ok(
+    Math.abs(proj.swim.vMaxKmh / proj.run.vMaxKmh - thresholds.swim / thresholds.run) < 1e-9,
+  )
+
+  for (const leg of [proj.swim, proj.bike, proj.run]) assert.ok(leg.fastSec < leg.slowSec)
+  assert.ok(proj.fastSec < proj.slowSec)
+  assert.ok(
+    Math.abs(
+      proj.fastSec -
+        (proj.swim.fastSec + proj.t1Sec + proj.bike.fastSec + proj.t2Sec + proj.run.fastSec),
+    ) < 1e-9,
+  )
+  assert.equal(proj.t1Sec, olympicInput.t1Sec)
+  assert.equal(proj.t2Sec, olympicInput.t2Sec)
+})
+
+test('rejects projection when run threshold is missing', () => {
+  const z2 = deriveZoneBands(lab)[1]
+  assert.equal(projectZoneTimes(olympicInput, z2, { swim: 0.7, bike: 8, run: 0 }), null)
 })

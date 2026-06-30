@@ -228,6 +228,115 @@ export function solveTriathlonCalcTarget(
   return { swimPaceSec, bikeMph, runPaceSec }
 }
 
+export const ZONE_KEYS = ['warm up', 'fat burning', 'endurance', 'vigorous', 'maximal'] as const
+
+export interface ZoneBand {
+  index: number
+  key: string
+  hrLo: number | null
+  hrHi: number | null
+  vMinKmh: number
+  vMaxKmh: number
+}
+
+export interface Vo2LabZones {
+  zonesKmh: number[]
+  zonesHr: number[]
+  maxKmh: number | null
+  hrMax: number | null
+}
+
+export function deriveZoneBands(lab: Vo2LabZones): ZoneBand[] {
+  const speeds = lab.zonesKmh.filter(v => Number.isFinite(v) && v > 0)
+  if (speeds.length < 2) return []
+  const top = lab.maxKmh
+  const pts =
+    top != null && Number.isFinite(top) && top > speeds[speeds.length - 1]
+      ? [...speeds, top]
+      : speeds
+  const bands: ZoneBand[] = []
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const nextHr = lab.zonesHr[i + 1]
+    bands.push({
+      index: i + 1,
+      key: ZONE_KEYS[i] ?? `zone ${i + 1}`,
+      hrLo: lab.zonesHr[i] ?? null,
+      hrHi: nextHr != null ? nextHr - 1 : (lab.hrMax ?? null),
+      vMinKmh: pts[i],
+      vMaxKmh: pts[i + 1],
+    })
+  }
+  return bands
+}
+
+export interface SportThresholdVel {
+  swim: number
+  bike: number
+  run: number
+}
+
+export interface ProjectedLeg {
+  vMinKmh: number
+  vMaxKmh: number
+  fastSec: number
+  slowSec: number
+}
+
+export interface ProjectedZone {
+  ifMin: number
+  ifMax: number
+  swim: ProjectedLeg
+  bike: ProjectedLeg
+  run: ProjectedLeg
+  t1Sec: number
+  t2Sec: number
+  fastSec: number
+  slowSec: number
+}
+
+const MS_TO_KMH = 3.6
+
+export function projectZoneTimes(
+  input: TriathlonCalcInput,
+  zone: { vMinKmh: number; vMaxKmh: number },
+  thr: SportThresholdVel,
+): ProjectedZone | null {
+  const runThrKmh = finiteNonnegative(thr.run) * MS_TO_KMH
+  if (!(runThrKmh > 0) || !(zone.vMinKmh > 0) || !(zone.vMaxKmh > 0)) return null
+  const ifMin = zone.vMinKmh / runThrKmh
+  const ifMax = zone.vMaxKmh / runThrKmh
+  const projectLeg = (distKm: number, sportThrMs: number): ProjectedLeg | null => {
+    const thrKmh = finiteNonnegative(sportThrMs) * MS_TO_KMH
+    const dist = finiteNonnegative(distKm)
+    if (!(thrKmh > 0) || !(dist > 0)) return null
+    const vMin = ifMin * thrKmh
+    const vMax = ifMax * thrKmh
+    return {
+      vMinKmh: vMin,
+      vMaxKmh: vMax,
+      fastSec: (dist * 3600) / vMax,
+      slowSec: (dist * 3600) / vMin,
+    }
+  }
+  const swim = projectLeg(input.swimKm, thr.swim)
+  const bike = projectLeg(input.bikeKm, thr.bike)
+  const run = projectLeg(input.runKm, thr.run)
+  if (!swim || !bike || !run) return null
+  const t1Sec = finiteNonnegative(input.t1Sec)
+  const t2Sec = finiteNonnegative(input.t2Sec)
+  return {
+    ifMin,
+    ifMax,
+    swim,
+    bike,
+    run,
+    t1Sec,
+    t2Sec,
+    fastSec: swim.fastSec + t1Sec + bike.fastSec + t2Sec + run.fastSec,
+    slowSec: swim.slowSec + t1Sec + bike.slowSec + t2Sec + run.slowSec,
+  }
+}
+
 export type TriathlonCalcLeg = 'swim' | 'bike' | 'run'
 
 export function solveTriathlonCalcLeg(
