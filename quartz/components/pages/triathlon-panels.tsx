@@ -166,7 +166,7 @@ export const FeedPanel = () => (
       <input
         class="tri-ana-search tri-feed-search"
         type="search"
-        placeholder="filter (bike|run|swim|walk, sort:distance|pace|date)"
+        placeholder="search activities"
         aria-label="filter activities"
         autocomplete="off"
       />
@@ -242,7 +242,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
           <input
             class="tri-ana-search tri-map-search"
             type="search"
-            placeholder="search routes (filter:bike|run)"
+            placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
             aria-label="search routes"
             autocomplete="off"
           />
@@ -536,6 +536,17 @@ export const CalcPanel = ({ page }: { page?: boolean }) => (
           >
             projected
           </button>
+          <button
+            class="tri-calc-src tri-calc-src--proj"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-src="proj"
+            data-i18n="projection"
+            hidden
+          >
+            projection
+          </button>
         </div>
       </div>
       <div class="tri-calc-box">
@@ -673,6 +684,10 @@ export const CalcPanel = ({ page }: { page?: boolean }) => (
           </tbody>
         </table>
       </div>
+    </div>
+    <div class="tri-calc-proj" hidden>
+      <div class="tri-calc-proj-zones" role="tablist" aria-label="heart rate zone" />
+      <div class="tri-calc-proj-out" aria-live="polite" />
     </div>
   </aside>
 )

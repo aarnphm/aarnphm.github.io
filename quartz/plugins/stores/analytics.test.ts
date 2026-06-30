@@ -219,6 +219,45 @@ test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => 
   assert.equal(h.conf, 'low')
 })
 
+test('vo2 lab profile samples survive analytics parsing', () => {
+  const { cache } = fixtures()
+  const a = buildAnalytics(cache, {
+    since: '2026-05-12',
+    vo2labs: [
+      {
+        date: '2026-06-25',
+        value: 47.8,
+        massKg: 88.9,
+        profile: {
+          durationSec: 20,
+          warmupEndSec: 10,
+          cooldownStartSec: 18,
+          vt1Sec: 12,
+          vo2maxSec: 16,
+          stats: { vo2: [6.7, 50.5, 35.9], hr: [72, 182, 139] },
+          targetKmh: [
+            [0, 5],
+            [10, 7],
+            [18, 5],
+          ],
+          samples: [
+            [0, 9.6, 73, 31.6, 16.9, 1.86],
+            [10, 21.3, 112, 34.9, 19.1, 1.98],
+            [20, null, 158, null, null, null],
+          ],
+        },
+      },
+    ],
+  })
+
+  const lab = a.tests.vo2max[0]
+  assert.equal(lab.profile?.durationSec, 20)
+  assert.equal(lab.profile?.targetKmh[1].kmh, 7)
+  assert.equal(lab.profile?.samples[2].vo2, null)
+  assert.equal(lab.profile?.samples[2].hr, 158)
+  assert.equal(a.engine.ftpHypothesis?.ftp, 230)
+})
+
 test('athlete ftp override drives analytics when supplied by the emitter', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics(cache, { oura, weights, ftp: 230, since: '2026-05-12' })

@@ -105,7 +105,7 @@ the `et` shows up only at `-et-un` (21…61) and `soixante-et-onze` (71). the `q
 | 1 000 000 | `un million`              | a noun: `un million de dollars`    |
 | 2 026     | `deux-mille-vingt-six`    | the current year                   |
 
-`cent` takes `-s` as a round multiple (`trois-cents`) but drops it before another number (`trois-cent-un`). `mille` never inflects. `million` (and `milliard`) are nouns, so they take `de` before what they count: `un million de personnes`, `deux-millions de dollars`.
+`cent` takes `-s` as a round multiple (`trois-cents`) but drops it before another number (`trois-cent-un`). `mille` never inflects. `million` (and `milliard`) are nouns, so they take `de` before what they count: `un million de personnes`, `deux millions de dollars`. being nouns, they are not hyphenated to the multiplier even under the 1990 reform (which only joins the numerals): `trois milliards cinq-cents millions`.
 
 > [!note] orthographe rectifiée: hyphens everywhere
 > the 1990 reform hyphenates ALL parts of a written number: `vingt-et-un`, `deux-cent-trente-quatre`, `deux-mille-vingt-six`. the older convention used hyphens only below 100 and `et` for the joints, so you would have seen `deux cent trente-quatre`. québec teaches the rectified form, so prefer the fully-hyphenated spelling.

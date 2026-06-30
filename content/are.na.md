@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-29 09:03:00 GMT-04:00
+modified: 2026-06-30 09:06:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,56 @@ title: are.na
 
 ## discourse
 
+- https://x.com/tenobrus/status/2062532381001777627 -- Berkeley intro CS AI cheating failure rate
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [ai, education]
+    - later: true
+- https://x.com/zetalyrae/status/2061954222212673584 -- Fernando on AI making people worse
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [ai, culture]
+    - later: true
+- https://x.com/WillManidis/status/2064691827220111387 -- Will Manidis on moral panics and societal sins
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [moral panic, society]
+    - later: true
+- https://x.com/deanwball/status/2065620379134026087 -- Dean Ball on AI export controls and safety reporting
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [ai, policy]
+    - later: true
+- https://x.com/noampomsky/status/2066226468536078429 -- Ava on healthy matchmaking preferences
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [relationships, matchmaking]
+    - later: true
+- https://x.com/WillManidis/status/2066181115509969204 -- Will Manidis on chaebol and AI labs
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [ai labs, political economy]
+    - later: true
+- https://x.com/nayafia/status/2066924711716802847 -- Nadia Asparouhova on San Francisco moral vision
+  - [meta]:
+    - date: 06/16/2026
+    - tags: [san francisco, moral vision]
+    - later: true
+- https://x.com/alisawuffles/status/2068765723569324462 -- Alisa Liu on the OpenAI job search
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [career, openai]
+    - later: true
+- https://firstscattering.com/p/your-company-slack-is-not-a-substitute -- Your Company Slack Is Not A Substitute For The Discourse
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [slack, discourse]
+    - later: true
+- https://x.com/paulg/status/2071158214373044624 -- Paul Graham on beliefs and living up to them
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [beliefs, integrity]
+    - later: true
 - https://www.sherryning.com/p/solicited-advice-14-self-forgiveness -- SOLICITED ADVICE #14: Self-forgiveness
   - [meta]:
     - date: 06/29/2026
@@ -228,6 +278,51 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/WillManidis/status/2018318844247347308 -- Will Manidis X article
+  - [meta]:
+    - date: 02/02/2026
+    - tags: [article]
+    - later: true
+- https://x.com/noperator/status/2060102628537668096 -- Caleb Gross X article
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [article]
+    - later: true
+- https://x.com/rsnous/status/2064422180075487715 -- Omar Rizwan link note
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [link, screenshot]
+    - later: true
+- https://x.com/noampomsky/status/2064854282340639081 -- Ava on thinking about a linked note
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [link, relationships]
+    - later: true
+- https://x.com/ar0cket1/status/2065772402622263701 -- ar0cket1 X article
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [article]
+    - later: true
+- https://x.com/itsreallyvivek/status/2064686372737454155 -- Vivek X article
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [article]
+    - later: true
+- https://x.com/fasccionera/status/2065802132477931786 -- Ricardo on a pHiycrtyl tweet
+  - [meta]:
+    - date: 06/13/2026
+    - tags: [tweet, screenshot]
+    - later: true
+- https://x.com/majamediaco/status/2071112493548847227 -- meanwhile zizek
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [zizek, meme]
+    - later: true
+- https://x.com/livgorton/status/2071280343731294263 -- AI summer is here
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [ai, culture]
+    - later: true
 - https://x.com/DavidSHolz/status/1783966435406164040 -- favorite short science fiction stories
   - [meta]:
     - date: 04/26/2024
@@ -2138,6 +2233,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/yacineMTB -- yacine X profile
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [tpot, posters]
+    - later: true
 - https://www.anandupender.com/ -- Anand Upender
   - [meta]:
     - date: 06/28/2026
@@ -3478,6 +3578,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://davidgraeber.org/articles/on-the-phenomenon-of-bullshit-jobs-a-work-rant/ -- On the Phenomenon of Bullshit Jobs: A Work Rant
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [work, bureaucracy]
+    - later: true
 - https://karthiksuresh.me/#nominative-determinism -- Nominative Determinism
   - [meta]:
     - date: 06/28/2026
@@ -6265,6 +6370,101 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/tilderesearch/status/2061771450168889432 -- Tilde X article
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [article, research]
+    - later: true
+- https://x.com/voooooogel/status/2061345017432854716 -- thebes on LLM pushback behavior
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [llms, behavior]
+    - later: true
+- https://x.com/RhizoNymph/status/2060503718500733261 -- emotion-space manifold steering
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [steering, emotion vectors]
+    - later: true
+- https://x.com/Kevin_GuoweiXu/status/2060022930172506200 -- sampling hard reasoning problems
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [reasoning, sampling]
+    - later: true
+- https://x.com/sang_yun_lee/status/2060083653380816933 -- language model sleep phase
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [language models, memory]
+    - later: true
+- https://x.com/kuchaev/status/2062526830780067908 -- MOPD post-training pipeline
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [post-training, distillation]
+    - later: true
+- https://x.com/tilderesearch/status/2060483441289048327 -- Parallax attention
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [attention, kernels]
+    - later: true
+- https://x.com/polynoamial/status/2064210146558136827 -- Noam Brown X article
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [article, reasoning]
+    - later: true
+- https://x.com/xeophon/status/2064673063904440676 -- Florian Brand on closed models and bad actors
+  - [meta]:
+    - date: 06/10/2026
+    - tags: [model safety, security]
+    - later: true
+- https://x.com/brunorganised/status/2065506750921634135 -- Muon advantage and discretisation error
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [optimizers, muon]
+    - later: true
+- https://x.com/bilalchughtai_/status/2065484515573911946 -- open-ended model diffing agents
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [interpretability, agents]
+    - later: true
+- https://x.com/a_karvonen/status/2065556276466037129 -- Fable remembering paper appendix details
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [models, recall]
+    - later: true
+- https://x.com/jxmnop/status/2065495499566989675 -- improving pretraining data with Fable
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [pretraining, data quality]
+    - later: true
+- https://x.com/kohjingyu/status/2065538074856010143 -- LLM generated research ideas
+  - [meta]:
+    - date: 06/12/2026
+    - tags: [research, autoresearch]
+    - later: true
+- https://x.com/_xjdr/status/2066016534414426294 -- k2.7-Code terse output snapshot
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [coding models, evaluation]
+    - later: true
+- https://x.com/MatthieuWyart/status/2061317203857739846 -- LLMs versus world models data gap
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [world models, data]
+    - later: true
+- https://x.com/kimbochen/status/2067259199097028777 -- RL resource thread
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [rl, resources]
+    - later: true
+- https://gwern.net/lean-scaling -- Lean Software Scaling Laws
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [scaling laws, lean]
+    - later: true
+- https://lelouch.dev/blog/math-for-machine-learning/ -- Math For Machine Learning [Resources]
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [math, resources]
+    - later: true
 - https://github.com/modularml/modular/pull/89304/changes#diff-b6f863a0fe120364a108b6eab543aeb4f94acec581a1e431dc64d94cc0d55fcd -- Modular Minimax M3 tool parser changes
   - [meta]:
     - date: 06/29/2026
@@ -8604,6 +8804,11 @@ title: are.na
 
 ## opinions
 
+- https://x.com/zetalyrae/status/2071350566887059780 -- Fernando on community consultation
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [governance, consultation]
+    - later: true
 - https://thoughts.hmmz.org/2026-05-31.html -- The solution might be cancelling my AI subscription
   - [meta]:
     - date: 06/28/2026
@@ -9722,6 +9927,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/BenjDicken/status/2060366393288298911 -- math theory and practical implementation in computer science
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [networks, engineering]
+    - later: true
+- https://x.com/VictorTaelin/status/2061552922488398109 -- AI productivity and HVM spec work
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [hvm, ai coding]
+    - later: true
+- https://x.com/rsnous/status/2060233823355343034 -- CUPS cancel command
+  - [meta]:
+    - date: 05/29/2026
+    - tags: [unix, naming]
+    - later: true
+- https://x.com/rsnous/status/2064419621856215303 -- C compilation and link-time optimization
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [compilers, optimization]
+    - later: true
+- https://x.com/ID_AA_Carmack/status/2064095424420487226 -- Carmack on Fabrice Bellard
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [programming, bellard]
+    - later: true
+- https://x.com/sincerelysofi/status/2066107528543342782 -- Friedrich Kittler's Gentoo root setup
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [linux, kittler]
+    - later: true
 - https://en.wikipedia.org/wiki/Fabrice_Bellard -- Fabrice Bellard
   - [meta]:
     - date: 06/29/2026
@@ -10093,6 +10328,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/nickcammarata/status/2061619534080131294 -- Nick Cammarata on inaccessible feelings and stomach issues
+  - [meta]:
+    - date: 06/02/2026
+    - tags: [feelings, somatics]
+    - later: true
+- https://x.com/zetalyrae/status/2064162102936572146 -- Fernando on the hard problem
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [consciousness, hard problem]
+    - later: true
+- https://x.com/sighswoon/status/2064408353145815135 -- sigh swoon on embodiment and digestion
+  - [meta]:
+    - date: 06/09/2026
+    - tags: [embodiment, digestion]
+    - later: true
+- https://borretti.me/article/on-vulgar-materialism -- On Vulgar Materialism
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [materialism, cynicism]
+    - later: true
+- https://x.com/zetalyrae/status/2071432416787644486 -- Fernando on P implies Q
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [logic, implication]
+    - later: true
 - https://forum.effectivealtruism.org/posts/L8oqoskXpcvHPeukk/you-are-not-too-irrational-to-know-your-preferences -- You are not too "irrational" to know your preferences
   - [meta]:
     - date: 06/29/2026
@@ -11433,6 +11693,16 @@ title: are.na
 
 ## finances
 
+- https://x.com/WillManidis/status/2061479823545884940 -- Will Manidis on technocapital price discovery
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [technocapital, markets]
+    - later: true
+- https://www.marxists.org/reference/subject/economics/ricardo/tax/ch31.htm -- Chapter 31: On Machinery
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [machinery, economics]
+    - later: true
 - https://www.nsf.gov/tip/updates/nsf-announces-15b-nsf-x-labs-initiative-pursue-generational -- NSF announces $1.5B NSF X-Labs initiative to pursue generational breakthrough science efforts
   - [meta]:
     - date: 06/28/2026
@@ -11566,6 +11836,16 @@ title: are.na
 
 ## design
 
+- https://x.com/0xnichy/status/2060145136881799551 -- nichy on design borrowing from collective memory
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [design, cultural memory]
+    - later: true
+- https://x.com/kiiradesign/status/2060065275375223007 -- Keerthi X article
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [article, design]
+    - later: true
 - https://kern.kineticstudio.com/ -- Type Kerning
   - [meta]:
     - date: 06/28/2026
@@ -11973,6 +12253,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=6Qb6QtC6QMs -- Smooth-Maximum, the most useful function
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [math, graphics]
+    - later: true
 - https://x.com/artenpedia/status/2023412059644539005 -- Hiroshi Yoshida United States woodblock prints
   - [meta]:
     - date: 02/16/2026
@@ -12422,6 +12707,11 @@ title: are.na
 
 ## tools
 
+- https://www.aerolopa.com/ -- AeroLOPA
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [travel, seat maps]
+    - later: true
 - https://x.com/kmdrfx/status/2023911684834808137 -- Three.js rendered in opentui
   - [meta]:
     - date: 02/18/2026
@@ -12492,6 +12782,16 @@ title: are.na
 
 ## arts
 
+- https://x.com/WarnerTeddy/status/2064113996488425951 -- generated bird visitor collage
+  - [meta]:
+    - date: 06/08/2026
+    - tags: [generative art, birds]
+    - later: true
+- https://x.com/ethnopoetics/status/2066215037807566864 -- storyknife tales
+  - [meta]:
+    - date: 06/14/2026
+    - tags: [storytelling, visual culture]
+    - later: true
 - https://www.follymagazine.org/articles/nature-as-witness -- Nature as Witness
   - [meta]:
     - date: 06/28/2026
@@ -12767,7 +13067,7 @@ title: are.na
     - date: 06/22/2026
     - tags: [encyclopedia, reference]
     - later: true
-- https://en.wikipedia.org/wiki/Torment_Nexus?curius=1184 -- Torment Nexus
+- https://en.wikipedia.org/wiki/Torment_Nexus -- Torment Nexus
   - [meta]:
     - date: 06/22/2026
     - tags: [meme, technology]
@@ -13300,6 +13600,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/deepseek-ai/DeepSpec -- DeepSpec
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [speculative decoding, deepseek]
+    - later: true
 - https://github.com/bruits/satteri/tree/main -- satteri
   - [meta]:
     - date: 06/29/2026
@@ -14481,6 +14786,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://adiamond.me/2026/06/software-engineering-in-the-age-of-ai/ -- Software Engineering in the Age of AI
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [ai, software engineering]
+    - later: true
+- https://x.com/geoffreylitt/status/2071329112216793534 -- Geoffrey Litt on specification space
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [agents, specifications]
+    - later: true
+- https://x.com/snoopy_dot_jpg/status/2071244654251745616 -- software engineers in AI fun and despair
+  - [meta]:
+    - date: 06/28/2026
+    - tags: [ai, software]
+    - later: true
 - https://en.wikipedia.org/wiki/Chebyshev_lambda_linkage -- Chebyshev lambda linkage
   - [meta]:
     - date: 06/29/2026
@@ -15577,6 +15897,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/arnal_charles/status/2060009395107377282 -- ATLAS Lean 4 formalization corpus
+  - [meta]:
+    - date: 05/28/2026
+    - tags: [lean, formalization]
+    - later: true
+- https://scottaaronson.blog/?p=9875 -- 50 Years of Aumann's Agreement Theorem
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [game theory, common knowledge]
+    - later: true
 - https://web.archive.org/web/20131204014112/http://nautil.us/issue/5/fame/the-twin-prime-hero -- The Twin Prime Hero
   - [meta]:
     - date: 06/28/2026
@@ -16236,6 +16566,10 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2606.09589
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [biology]
 - https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf -- DSpark
   - [meta]:
     - date: 06/29/2026
