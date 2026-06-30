@@ -1640,6 +1640,10 @@ const hms = (sec: number): string => {
     ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
     : `${m}:${s.toString().padStart(2, '0')}`
 }
+const speedUnitLabel = (): 'mph' | 'km/h' => (isImperialUnit() ? 'mph' : 'km/h')
+const speedFromKmh = (kmh: number): number => (isImperialUnit() ? kmh * KM_TO_MI : kmh)
+const fmtSpeedKmh = (kmh: number, dp = 1, gap = ' '): string =>
+  `${speedFromKmh(kmh).toFixed(dp)}${gap}${speedUnitLabel()}`
 const raceLegDistance = (leg: RaceLeg): string =>
   leg.sport === 'swim'
     ? `${Math.round(leg.legKm * 1000).toLocaleString('en-US')} m`
@@ -1649,7 +1653,7 @@ const raceLegPace = (leg: RaceLeg): string => {
   if (leg.sport === 'swim') return `${clock(leg.splitS / (leg.legKm * 10))} /100m`
   if (leg.sport === 'bike') {
     const kmh = leg.legKm / (leg.splitS / 3600)
-    return isImperialUnit() ? `${(kmh * KM_TO_MI).toFixed(1)} mph` : `${kmh.toFixed(1)} km/h`
+    return fmtSpeedKmh(kmh)
   }
   const secKm = leg.splitS / leg.legKm
   return isImperialUnit() ? `${clock(secKm / KM_TO_MI)} /mi` : `${clock(secKm)} /km`
@@ -1669,8 +1673,12 @@ const anaTitle = (text: string, key?: string): HTMLElement => {
 }
 const bySport = <T extends { sport: Sport }>(arr: T[], sport: Sport): T | undefined =>
   arr.find(x => x.sport === sport)
-const thLabel = (th: { paceLabel: string; unit: string }): string =>
-  th.unit === 'km/h' ? `${th.paceLabel} km/h` : `${th.paceLabel}${th.unit.slice(1)}`
+const thLabel = (th: { paceLabel: string; unit: string; vThr?: number }): string => {
+  if (th.unit === 'km/h' && th.vThr != null) return fmtSpeedKmh(th.vThr * 3.6, 0)
+  if (th.unit === 's/km' && th.vThr != null && isImperialUnit())
+    return `${clock(1609.344 / th.vThr)} /mi`
+  return th.unit === 'km/h' ? `${th.paceLabel} km/h` : `${th.paceLabel}${th.unit.slice(1)}`
+}
 const buildIconLeg = (sport: ActivityKind): HTMLElement => {
   const wrap = el('span', `tri-ana-ico tri-leg-${sport}`)
   wrap.appendChild(buildIcon(sport))
@@ -2398,9 +2406,13 @@ const buildMethod = (method: string, n: number): HTMLElement => {
 }
 
 const fmtTrendVal = (sport: Sport, v: number): string =>
-  sport === 'bike' ? `${Math.round(v)} km/h` : `${clock(v)}${sport === 'swim' ? ' /100m' : ' /km'}`
+  sport === 'bike'
+    ? fmtSpeedKmh(v, 0)
+    : `${clock(sport === 'run' && isImperialUnit() ? v / KM_TO_MI : v)}${sport === 'swim' ? ' /100m' : isImperialUnit() ? ' /mi' : ' /km'}`
 const fmtTrendShort = (sport: Sport, v: number): string =>
-  sport === 'bike' ? String(Math.round(v)) : clock(v)
+  sport === 'bike'
+    ? String(Math.round(speedFromKmh(v)))
+    : clock(sport === 'run' && isImperialUnit() ? v / KM_TO_MI : v)
 const fmtKm = (km: number): string =>
   isImperialUnit() ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
 const fmtSignedKm = (km: number): string =>
@@ -3346,10 +3358,11 @@ const buildVo2max = (data: Analytics): HTMLElement => {
         el(
           'span',
           'tri-ana-k',
-          `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${lab.vt1Kmh}km/h` : ''}`,
+          `vt1 ${lab.vt1Hr}bpm${lab.vt1Kmh != null ? ` · ${fmtSpeedKmh(lab.vt1Kmh, 1, '')}` : ''}`,
         ),
       )
-    if (lab.maxKmh != null) labCap.appendChild(el('span', 'tri-ana-k', `vmax ${lab.maxKmh}km/h`))
+    if (lab.maxKmh != null)
+      labCap.appendChild(el('span', 'tri-ana-k', `vmax ${fmtSpeedKmh(lab.maxKmh, 1, '')}`))
     if (lab.ve != null) labCap.appendChild(el('span', 'tri-ana-k', `ve ${lab.ve}l/min`))
     labCap.appendChild(el('span', 'tri-ana-k', `${tl('lab')} ${lab.date}`))
     block.appendChild(labCap)
@@ -3357,10 +3370,10 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   return block
 }
 
-const VO2P_W = 760
+const VO2P_W = 800
 const VO2P_H = 430
-const VO2P_L = 58
-const VO2P_R = 686
+const VO2P_L = 82
+const VO2P_R = 690
 const VO2P_T = 48
 const VO2P_B = 360
 const VO2P_PW = VO2P_R - VO2P_L
@@ -3368,6 +3381,12 @@ const VO2P_PH = VO2P_B - VO2P_T
 
 type Vo2ProfileMetric = 'vo2' | 'hr' | 've' | 'rf' | 'tv'
 type Vo2ProfileChartKind = 'metabolic' | 'ventilation'
+
+const vo2ProfileChartLabel = (kind: Vo2ProfileChartKind): string =>
+  kind === 'metabolic' ? 'Metabolic' : 'Ventilation'
+const vo2ProfileTargetLegend = (): string => `Target[${speedUnitLabel()}]`
+const vo2ProfileTargetTick = (kmh: number): string =>
+  isImperialUnit() ? speedFromKmh(kmh).toFixed(kmh === 0 ? 0 : 1) : kmh.toFixed(0)
 
 const vo2ProfileText = (
   cls: string,
@@ -3385,10 +3404,10 @@ const vo2ProfileTime = (seconds: number): string => {
   return `${min}:${String(sec - min * 60).padStart(2, '0')}`
 }
 
-const vo2ProfileWithTitle = <T extends SVGElement>(node: T, text: string): T => {
-  const title = svg('title', {})
-  title.textContent = text
-  node.appendChild(title)
+const vo2ProfileWithTip = <T extends SVGElement>(node: T, heading: string, detail: string): T => {
+  node.setAttribute('data-tip-h', heading)
+  node.setAttribute('data-tip-d', detail)
+  node.setAttribute('aria-label', `${heading} ${detail}`)
   return node
 }
 
@@ -3494,6 +3513,22 @@ const vo2ProfileTicks = (
   }
 }
 
+const vo2ProfileTargetTicks = (s: SVGElement): void => {
+  for (const kmh of [0, 5, 10, 15, 20]) {
+    const y = vo2ProfileY(kmh, 0, 20)
+    s.appendChild(
+      svg('line', { x1: VO2P_R, y1: y, x2: VO2P_R + 10, y2: y, class: 'tri-vo2p-tick' }),
+    )
+    s.appendChild(
+      vo2ProfileText('tri-vo2p-ytext tri-vo2p-target', vo2ProfileTargetTick(kmh), {
+        x: VO2P_R + 52,
+        y: y + 4,
+        'text-anchor': 'start',
+      }),
+    )
+  }
+}
+
 const vo2ProfilePhase = (s: SVGElement, profile: Vo2LabProfile): void => {
   if (profile.warmupEndSec != null)
     s.appendChild(
@@ -3528,7 +3563,7 @@ const vo2ProfileZoneHit = (
 ): void => {
   if (end <= start) return
   s.appendChild(
-    vo2ProfileWithTitle(
+    vo2ProfileWithTip(
       svg('rect', {
         x: vo2ProfileX(profile, start),
         y: VO2P_T,
@@ -3536,7 +3571,8 @@ const vo2ProfileZoneHit = (
         height: VO2P_PH,
         class: 'tri-vo2p-zone-hit',
       }),
-      `${label} · ${vo2ProfileTime(start)}-${vo2ProfileTime(end)}`,
+      label,
+      `${vo2ProfileTime(start)}-${vo2ProfileTime(end)}`,
     ),
   )
 }
@@ -3560,7 +3596,7 @@ const vo2ProfileMarker = (
   const x = vo2ProfileX(profile, t)
   s.appendChild(svg('line', { x1: x, y1: VO2P_T, x2: x, y2: VO2P_B, class: 'tri-vo2p-marker' }))
   s.appendChild(
-    vo2ProfileWithTitle(
+    vo2ProfileWithTip(
       svg('rect', {
         x: x - 5,
         y: VO2P_T,
@@ -3568,7 +3604,8 @@ const vo2ProfileMarker = (
         height: VO2P_PH,
         class: 'tri-vo2p-marker-hit',
       }),
-      `${label} · ${vo2ProfileTime(t)}`,
+      label,
+      vo2ProfileTime(t),
     ),
   )
 }
@@ -3649,7 +3686,7 @@ const vo2ProfileBaseSvg = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): S
       [0, 10, 20, 30, 40, 50, 60],
       0,
       60,
-      VO2P_R + 18,
+      VO2P_R + 16,
       VO2P_R,
       VO2P_R + 10,
       'tri-vo2p-blue',
@@ -3679,7 +3716,7 @@ const vo2ProfileBaseSvg = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): S
       [0, 20, 40, 60, 80],
       0,
       80,
-      VO2P_L - 28,
+      VO2P_L - 16,
       VO2P_L - 10,
       VO2P_L,
       'tri-vo2p-cyan',
@@ -3690,11 +3727,11 @@ const vo2ProfileBaseSvg = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): S
       [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4],
       0,
       4,
-      VO2P_L + 27,
+      VO2P_L - 50,
       VO2P_L - 10,
       VO2P_L,
       'tri-vo2p-orange',
-      'start',
+      'end',
       1,
     )
     vo2ProfileTicks(
@@ -3702,36 +3739,21 @@ const vo2ProfileBaseSvg = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): S
       [0, 20, 40, 60, 80, 100, 120, 140, 160],
       0,
       160,
-      VO2P_R + 24,
+      VO2P_R + 16,
       VO2P_R,
       VO2P_R + 10,
       'tri-vo2p-green',
       'start',
     )
   }
-  vo2ProfileTicks(
-    s,
-    [0, 5, 10, 15, 20],
-    0,
-    20,
-    VO2P_R - 21,
-    VO2P_R,
-    VO2P_R + 10,
-    'tri-vo2p-target',
-    'end',
-  )
-  s.appendChild(
-    vo2ProfileText('tri-vo2p-panel-title', kind === 'metabolic' ? 'Metabolic' : 'Ventilation', {
-      x: VO2P_L + 4,
-      y: VO2P_T + 10,
-      'text-anchor': 'start',
-    }),
-  )
+  vo2ProfileTargetTicks(s)
   return s
 }
 
 const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind): HTMLElement => {
   const panel = el('div', 'tri-vo2p-panel')
+  const head = el('div', 'tri-vo2p-panel-head')
+  head.appendChild(el('span', 'tri-vo2p-panel-heading', vo2ProfileChartLabel(kind)))
   const stats = el('div', 'tri-vo2p-stats')
   if (kind === 'metabolic') {
     stats.append(...vo2ProfileStatNodes('VO2', profile.stats.vo2, 'tri-vo2p-blue', 1))
@@ -3742,7 +3764,7 @@ const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind)
     stats.append(...vo2ProfileStatNodes('Ve', profile.stats.ve, 'tri-vo2p-green', 1))
   }
   const legend = el('div', 'tri-vo2p-legend')
-  legend.appendChild(vo2ProfileLegendItem('Target[km/h]', 'tri-vo2p-target', true))
+  legend.appendChild(vo2ProfileLegendItem(vo2ProfileTargetLegend(), 'tri-vo2p-target', true))
   if (kind === 'metabolic') {
     legend.appendChild(vo2ProfileLegendItem('VO2[mL/kg/min]', 'tri-vo2p-blue'))
     legend.appendChild(vo2ProfileLegendItem('HR[bpm]', 'tri-vo2p-red'))
@@ -3753,7 +3775,7 @@ const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind)
   }
   const fig = el('div', 'tri-vo2p-fig')
   fig.append(legend, vo2ProfileBaseSvg(profile, kind))
-  panel.append(stats, fig)
+  panel.append(head, stats, fig)
   return panel
 }
 
@@ -3775,7 +3797,7 @@ const appendVo2TestCap = (block: HTMLElement, r: Vo2LabRecord): void => {
       el(
         'span',
         'tri-ana-k',
-        `vt1 ${r.vt1Hr}bpm${r.vt1Kmh != null ? ` · ${r.vt1Kmh}km/h` : ''}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1}kcal/h` : ''}`,
+        `vt1 ${r.vt1Hr}bpm${r.vt1Kmh != null ? ` · ${fmtSpeedKmh(r.vt1Kmh, 1, '')}` : ''}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1}kcal/h` : ''}`,
       ),
     )
   if (r.ve != null) cap.appendChild(el('span', 'tri-ana-k', `ve ${r.ve}l/min`))
@@ -3835,7 +3857,7 @@ const buildVo2test = (data: Analytics): HTMLElement => {
     const hi = i + 1 < lows.length ? lows[i + 1] : Math.ceil(y1)
     const visLo = i === 0 ? y0 : lo
     const last = i + 1 >= lows.length
-    const spd = r.zonesKmh[i] != null ? ` · ${r.zonesKmh[i]} km/h` : ''
+    const spd = r.zonesKmh[i] != null ? ` · ${fmtSpeedKmh(r.zonesKmh[i])}` : ''
     const kcal = r.zonesKcal[i] != null ? ` · ${r.zonesKcal[i]} kcal/h` : ''
     s.appendChild(
       svg('rect', {
@@ -3897,7 +3919,7 @@ const buildVo2test = (data: Analytics): HTMLElement => {
       'vt',
       'vt1',
       'vt1 · aerobic threshold',
-      `${r.vt1Hr} bpm · ${r.vt1Kmh} km/h${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1} kcal/h` : ''}`,
+      `${r.vt1Hr} bpm · ${fmtSpeedKmh(r.vt1Kmh)}${r.caloriesAtVt1 != null ? ` · ${r.caloriesAtVt1} kcal/h` : ''}`,
     )
   marker(
     r.maxKmh,
@@ -3905,12 +3927,12 @@ const buildVo2test = (data: Analytics): HTMLElement => {
     'max',
     '',
     'vo2max',
-    `${r.value.toFixed(1)} ml/kg/min · ${maxHr} bpm · ${r.maxKmh} km/h`,
+    `${r.value.toFixed(1)} ml/kg/min · ${maxHr} bpm · ${fmtSpeedKmh(r.maxKmh)}`,
   )
   chart.append(yax, plot)
   block.appendChild(chart)
   const xax = el('div', 'tri-vo2t-xax')
-  xax.append(el('span', '', `${speeds[0]} km/h`), el('span', '', `${r.maxKmh} km/h`))
+  xax.append(el('span', '', fmtSpeedKmh(speeds[0])), el('span', '', fmtSpeedKmh(r.maxKmh)))
   block.appendChild(xax)
 
   appendVo2TestCap(block, r)
@@ -4690,6 +4712,49 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     })
   }
 
+  const vo2p = panel.querySelector<HTMLElement>('.tri-vo2p')
+  if (vo2p) {
+    document.body.querySelector('.tri-vo2p-tip')?.remove()
+    const tip = el('div', 'tri-gloss tri-vo2p-tip')
+    tip.setAttribute('role', 'tooltip')
+    document.body.appendChild(tip)
+    const place = (event: MouseEvent): void => {
+      const pr = tip.getBoundingClientRect()
+      const left =
+        event.clientX + 14 + pr.width > window.innerWidth - 8
+          ? event.clientX - 14 - pr.width
+          : event.clientX + 14
+      const top =
+        event.clientY + 14 + pr.height > window.innerHeight - 8
+          ? event.clientY - 14 - pr.height
+          : event.clientY + 14
+      tip.style.left = `${Math.max(8, left).toFixed(0)}px`
+      tip.style.top = `${Math.max(8, top).toFixed(0)}px`
+    }
+    const bound: Array<[SVGElement, (e: MouseEvent) => void, () => void]> = []
+    for (const t of Array.from(vo2p.querySelectorAll<SVGElement>('[data-tip-h]'))) {
+      const move = (e: MouseEvent): void => {
+        tip.replaceChildren(
+          el('span', 'tri-gloss-h', t.getAttribute('data-tip-h') ?? ''),
+          el('span', 'tri-gloss-def', t.getAttribute('data-tip-d') ?? ''),
+        )
+        tip.classList.add('tri-gloss--on')
+        place(e)
+      }
+      const leave = (): void => tip.classList.remove('tri-gloss--on')
+      t.addEventListener('mousemove', move)
+      t.addEventListener('mouseleave', leave)
+      bound.push([t, move, leave])
+    }
+    cleanups.push(() => {
+      for (const [t, move, leave] of bound) {
+        t.removeEventListener('mousemove', move)
+        t.removeEventListener('mouseleave', leave)
+      }
+      tip.remove()
+    })
+  }
+
   const ftpBlock = panel.querySelector<HTMLElement>('.tri-ftp')
   if (ftpBlock) {
     const inputs = Array.from(ftpBlock.querySelectorAll<HTMLInputElement>('[data-ftp-param]'))
@@ -4886,6 +4951,7 @@ const GLOSS_CHART: Record<string, string> = {
   wtrend: 'body',
   wgoal: 'body',
   bodyfat: 'body',
+  dexa: 'dexa',
   bmi: 'body',
   hrv: 'recovery',
   rhr: 'recovery',
