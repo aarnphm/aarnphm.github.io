@@ -26,13 +26,13 @@ _https://modal.com/gpu-glossary/perf/arithmetic-bandwidth_
 
 > [!info] core terminology
 >
-> | concept                       | summary                                                                                                                              |
-> | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-> | GPU vs CPU                    | throughput-optimized accelerator (270k+ resident threads on Hopper) vs latency-optimized cpu (≈192 hardware threads on 96-core epyc) |
-> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                            |
-> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                              |
-> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm ($\approx 400$) → nvlink fabric                         |
-> | latency hiding                | 64 resident warps per sm swap on stall to cover $\approx 400$-cycle hbm accesses                                                     |
+> | concept                       | summary                                                                                                                                       |
+> | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+> | GPU vs CPU                    | throughput-optimized accelerator (270k+ resident threads on Hopper) vs latency-optimized cpu ($\approx 192$ hardware threads on 96-core epyc) |
+> | sm (streaming multiprocessor) | scheduling + execution quad containing cuda cores, tensor cores, shared memory partitions                                                     |
+> | SIMT                          | warp-level (32 thread) execution model issuing one instruction per warp                                                                       |
+> | memory hierarchy              | registers ($\approx 1$ cycle) → shared/l1 (20–30) → l2 ($\approx 200$) → hbm ($\approx 400$) → nvlink fabric                                  |
+> | latency hiding                | 64 resident warps per sm swap on stall to cover $\approx 400$-cycle hbm accesses                                                              |
 
 ## execution units
 
@@ -126,14 +126,14 @@ See [[lectures/420#cute dsl mental model|CUTLASS and CuTe DSL section]] for comp
 
 See also: [post](https://www.lei.chat/posts/triton-linear-layout-concept/) · modal glossary on tensor cores: https://modal.com/gpu-glossary/device-hardware/tensor-core
 
-Triton's layout system provides high-level abstractions similar to CUTe but with Python-based programming model.
+Triton's layout system provides high-level abstractions similar to CUTe but with a Python-based programming model.
 
 ![[lectures/420#roofline model|Roofline model section]].
 
 > [!abstract] roofline checklist
 >
 > - arithmetic intensity (flop/byte) classifies memory- vs compute-bound behavior
-> - ridge point on h100: i ≈ 592 flop/byte (1979 tflop/s ÷ 3.35 tb/s)
+> - ridge point on h100: $i \approx 592$ flop/byte (1979 tflop/s ÷ 3.35 tb/s)
 > - optimization target: increase reuse via tiling so intensity crosses the ridge point
 
 ### profiling tools

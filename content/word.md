@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-06-28 00:55:13 GMT-04:00
+modified: 2026-06-29 18:18:11 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -303,3 +303,4 @@ title: lists
 - myopic
 - subaqueous
 - rollicking
+- consign

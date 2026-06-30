@@ -1,6 +1,6 @@
 ---
 date: '2024-11-05'
-description: useful for derive upper bounds, e.g when analysing the error or convergence rate of an algorithm
+description: useful for deriving upper bounds, e.g when analysing the error or convergence rate of an algorithm
 id: Cauchy-Schwarz
 modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
@@ -28,7 +28,7 @@ _using Pythagorean theorem_
 
 special case of $v=0$. Then $\|u\|\|v\| =0$,
 
-=> if $u$ and $v$ are [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#linear dependence of vectors|linearly dependent]]., then q.e.d
+$\implies$ if $u$ and $v$ are [[thoughts/university/twenty-four-twenty-five/sfwr-4ml3/tut/tut1#linear dependence of vectors|linearly dependent]], then q.e.d
 
 Assume that $v \neq 0$. Let $z \coloneqq u - \frac{\langle u, v \rangle}{\langle v, v \rangle} v$
 

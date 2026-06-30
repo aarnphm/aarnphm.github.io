@@ -34,7 +34,6 @@ import embedScript from '../../components/scripts/embed.inline'
 import mermaidScript from '../../components/scripts/mermaid.inline'
 import mermaidStyle from '../../components/styles/mermaid.inline.scss'
 import { svgOptions } from '../../components/svg'
-import { AUDIO_ICON_PATHS, AUDIO_BAR_COUNT, audioBarHeight } from '../../util/audio'
 import { remarkSidenote } from '../../extensions/micromark-extension-ofm-sidenotes'
 import {
   remarkWikilink,
@@ -44,6 +43,7 @@ import {
   wikilinkFromMarkdown,
 } from '../../extensions/micromark-extension-ofm-wikilinks'
 import { QuartzTransformerPlugin } from '../../types/plugin'
+import { AUDIO_ICON_PATHS, AUDIO_BAR_COUNT, audioBarHeight } from '../../util/audio'
 import {
   canonicalizeCallout,
   formatMathCalloutTitle,
