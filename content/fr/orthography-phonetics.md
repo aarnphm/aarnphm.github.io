@@ -138,3 +138,7 @@ french has no lexical stress on individual words. prominence falls on the final 
 `est` (the verb `être`) is /ɛ/, final `st` silent. `et` is /e/ and normally refuses liaison, which keeps it audibly distinct from `est`.
 
 the payoff of all the silent letters: french spelling encodes morphology, liaison potential, and vowel quality rather than a one-to-one sound map. a letter that says nothing in isolation often says something the moment a suffix or a following vowel arrives.
+
+## les nombres
+
+the number words obey the same final-consonant sandhi. `six` /sis/, `dix` /dis/, and `huit` /ɥit/ drop their final consonant before a consonant (`dix minutes` /di minyt/, `huit jours` /ɥi ʒuʁ/) but liaise before a vowel — `six`/`dix` as /z/ (`dix ans` /diz‿ɑ̃/), `huit` keeping /t/ (`huit ans` /ɥit‿ɑ̃/). `neuf` is /nœf/ except in `neuf ans` /nœv‿ɑ̃/ and `neuf heures` /nœv‿œʁ/, where it voices to /v/; `vingt` /vɛ̃/ and `cent` /sɑ̃/ have silent `t` that surfaces in liaison (`vingt ans` /vɛ̃t‿ɑ̃/, `cent ans` /sɑ̃t‿ɑ̃/). see [[fr/les-nombres]] for the full table and the cardinals/ordinals.

@@ -399,7 +399,7 @@ $$
 \begin{aligned}
 \alpha &= \text{LM}(\tilde{S_t}, \theta) \\
 \tilde{\alpha} &= m(\tilde{S_t}) \odot \alpha \\
-\tilde{s_{t+1}} &\approx \text{Categorial}(\tilde{\alpha})
+\tilde{s_{t+1}} &\approx \text{Categorical}(\tilde{\alpha})
 \end{aligned}
 $$
 

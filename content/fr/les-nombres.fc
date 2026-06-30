@@ -1,0 +1,292 @@
+---
+title: les nombres
+tags:
+  - fr
+  - language
+  - learning
+---
+
+Q: Which French number system does Québec use, standard or Belgian/Swiss?
+A: Standard French: `soixante-dix` (70), `quatre-vingts` (80), `quatre-vingt-dix` (90). NOT the Belgian/Swiss `septante` / `huitante` / `nonante`.
+
+---
+
+Q: Spell out 17 in French (rectified).
+A: `dix-sept` /disɛt/
+
+---
+
+Q: Spell out 20 in French.
+A: `vingt` /vɛ̃/
+
+---
+
+Q: Spell out 21 in French (rectified).
+A: `vingt-et-un`
+
+---
+
+Q: Spell out 70 in French.
+A: `soixante-dix`
+
+---
+
+Q: Spell out 71 in French (rectified).
+A: `soixante-et-onze` (keeps `et` because it is built on `onze`)
+
+---
+
+Q: Spell out 72 in French.
+A: `soixante-douze` (no `et`)
+
+---
+
+Q: Spell out 79 in French.
+A: `soixante-dix-neuf`
+
+---
+
+Q: Spell out 80 in French.
+A: `quatre-vingts` (with `-s`, since it ends the number)
+
+---
+
+Q: Spell out 81 in French (rectified).
+A: `quatre-vingt-un` (no `-s`, no `et`)
+
+---
+
+Q: Spell out 90 in French.
+A: `quatre-vingt-dix`
+
+---
+
+Q: Spell out 91 in French (rectified).
+A: `quatre-vingt-onze` (no `et`)
+
+---
+
+Q: Spell out 96 in French.
+A: `quatre-vingt-seize`
+
+---
+
+Q: Spell out 99 in French.
+A: `quatre-vingt-dix-neuf`
+
+---
+
+Q: Spell out 100 in French.
+A: `cent` /sɑ̃/
+
+---
+
+Q: Spell out 200 in French (rectified).
+A: `deux-cents` (with `-s`, a round multiple)
+
+---
+
+Q: Spell out 201 in French (rectified).
+A: `deux-cent-un` (the `-s` drops before another number)
+
+---
+
+Q: Spell out 1000 in French.
+A: `mille` /mil/
+
+---
+
+Q: Spell out 2026 in French (rectified).
+A: `deux-mille-vingt-six`
+
+---
+
+C: In `quatre-vingts` (80) the final `-s` appears only when [it ends the number]; `quatre-vingt-un` (81) drops it.
+
+---
+
+C: The connector `et` appears only in [`-et-un`] (21, 31, 41, 51, 61) and in [`soixante-et-onze`] (71); the `quatre-vingt` family never takes it.
+
+---
+
+C: $70 = 60 + [10]$
+
+---
+
+C: $80 = [4] \times [20]$
+
+---
+
+C: $90 = 4 \times 20 + [10]$
+
+---
+
+C: $96 = 4 \times 20 + [16]$
+
+---
+
+Q: How does orthographe rectifiée (1990) hyphenate written numbers?
+A: Hyphens between ALL parts: `vingt-et-un`, `deux-cent-trente-quatre`, `deux-mille-vingt-six`. The old convention hyphenated only below 100.
+
+---
+
+Q: Is `mille` ever pluralized as `milles`?
+A: No. `mille` is invariable: `deux-mille`, `cent-mille`, never `milles`.
+
+---
+
+Q: `million` counts something: what word does it require?
+A: `de`: `un million de dollars`, `deux-millions de personnes`. (`million` is a noun, unlike `cent`/`mille`.)
+
+---
+
+C: `million` is a noun, so it takes [de] before what it counts: `un million [de] dollars`.
+
+---
+
+Q: How is `cinq` pronounced in isolation?
+A: /sɛ̃k/, final consonant pronounced.
+
+---
+
+Q: How is `six` pronounced in isolation / when counting?
+A: /sis/, with the final /s/.
+
+---
+
+Q: How is `dix` pronounced in isolation / when counting?
+A: /dis/, with the final /s/.
+
+---
+
+Q: How is `huit` pronounced in isolation?
+A: /ɥit/, with the final /t/.
+
+---
+
+Q: What happens to the final consonant of `six`, `dix`, `huit` before a CONSONANT?
+A: It drops: `six livres` /si livʁ/, `dix minutes` /di minyt/, `huit jours` /ɥi ʒuʁ/.
+
+---
+
+Q: How does `six` sound before a vowel, e.g. `six ans`?
+A: Liaison /z/: `six ans` /siz‿ɑ̃/.
+
+---
+
+Q: How does `dix` sound before a vowel, e.g. `dix ans`?
+A: Liaison /z/: `dix ans` /diz‿ɑ̃/.
+
+---
+
+Q: How does `huit` sound before a vowel, e.g. `huit ans`?
+A: Keeps its /t/: `huit ans` /ɥit‿ɑ̃/ (no /z/ liaison).
+
+---
+
+C: The most common number trap: before a consonant `six`/`dix`/`huit` [drop] their final consonant; before a vowel `six`/`dix` liaise as [/z/].
+
+---
+
+Q: `neuf` is normally /nœf/. In which two phrases does its final consonant become /v/?
+A: `neuf ans` /nœv‿ɑ̃/ and `neuf heures` /nœv‿œʁ/. Everywhere else it stays /f/.
+
+---
+
+C: `neuf` softens to [/v/] only in `neuf ans` and `neuf` [heures]; otherwise it is /f/.
+
+---
+
+Q: Is the `t` of `vingt` pronounced on its own?
+A: No, `vingt` is /vɛ̃/ with silent `t`.
+
+---
+
+Q: When does the `t` of `vingt` surface?
+A: In 21–29 (`vingt-deux` /vɛ̃tdø/) and in liaison (`vingt ans` /vɛ̃t‿ɑ̃/). `quatre-vingts` keeps it silent (/katʁəvɛ̃/).
+
+---
+
+Q: How is `vingt-deux` (22) pronounced?
+A: /vɛ̃tdø/: the `t` of `vingt` is audible inside the compound.
+
+---
+
+Q: How is `cent` pronounced alone and before a vowel?
+A: Alone /sɑ̃/ (silent `t`); before a vowel the `t` liaises: `cent ans` /sɑ̃t‿ɑ̃/.
+
+---
+
+C: `cent ans` is pronounced /sɑ̃[t]‿ɑ̃/, with the otherwise-silent `t` surfacing in liaison.
+
+---
+
+Q: For the general rule behind number liaison and silent finals, which note covers it?
+A: [[fr/orthography-phonetics|orthographe]]: final consonants are silent in isolation but surface in liaison before a vowel.
+
+---
+
+Q: How is the ordinal "1st" written and said (masc. / fem.)?
+A: `premier` /pʁəmje/ (`1er`) and `première` /pʁəmjɛʁ/ (`1re`). It is the only ordinal not built on `-ième`.
+
+---
+
+Q: What is the general rule for forming ordinals?
+A: Cardinal + `-ième`, dropping a final mute `e` first: `quatre` → `quatrième`, `trois` → `troisième`.
+
+---
+
+Q: Spell the ordinal for 5th, and note its spelling quirk.
+A: `cinquième` /sɛ̃kjɛm/: insert a `u` after `cinq` so the `c` stays /k/.
+
+---
+
+Q: Spell the ordinal for 9th, and note its spelling quirk.
+A: `neuvième` /nœvjɛm/: the `f` of `neuf` becomes `v`.
+
+---
+
+Q: What ordinal is interchangeable with `deuxième`?
+A: `second` / `seconde` (slight preference when there are only two items).
+
+---
+
+C: To form `cinquième` you insert a [u]; to form `neuvième` the `f` of `neuf` becomes [v].
+
+---
+
+Q: In dates, when do you use `premier` vs a cardinal?
+A: `le premier` (`le 1er`) only for the 1st of the month; every other day is a cardinal: `le deux`, `le quatorze`.
+
+---
+
+C: French dates use the ordinal `le [premier] mars` for the 1st, but cardinals like `le [deux]` mars for the other days.
+
+---
+
+Q: How do you state your age in French, and what word is obligatory?
+A: `avoir` + cardinal + `ans`: `J'ai 25 ans.` The `ans` cannot be dropped.
+
+---
+
+C: `J'ai [25] ans.` (age uses `avoir` plus the obligatory noun `ans`).
+
+---
+
+Q: How are midday and midnight said in French (no `heures`)?
+A: `midi` (12:00) and `minuit` (00:00).
+
+---
+
+Q: How does the 24-hour clock read 15 h 30 in French?
+A: `quinze heures trente`: the hour is a plain cardinal, `h` is the separator.
+
+---
+
+Q: How are phone numbers read aloud in French?
+A: Digit by digit, each one separate. Québec does not group them in pairs the way France does: `514 555 0199`.
+
+---
+
+Q: What is the decimal separator for prices in French, and the colloquial Québec word for dollars?
+A: A comma: `15,50 $` ("quinze dollars cinquante"). Québec colloquially says `piastres` / `piasses`.

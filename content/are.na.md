@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-28 09:03:19 GMT-04:00
+modified: 2026-06-29 09:03:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,41 @@ title: are.na
 
 ## discourse
 
+- https://www.sherryning.com/p/solicited-advice-14-self-forgiveness -- SOLICITED ADVICE #14: Self-forgiveness
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [self-forgiveness, advice]
+    - later: true
+- https://www.avabear.xyz/p/sometimes-you-get-stuck-in-a-sinkhole -- sometimes you get stuck in a sinkhole for a few years
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [life, recovery]
+    - later: true
+- https://mindslice.substack.com/p/turn-your-fears-into-a-bucket-list -- TURN YOUR FEARS INTO A BUCKET LIST
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [fear, life]
+    - later: true
+- https://www.astralcodexten.com/p/should-people-avoid-whole-body-screening -- Should People Avoid Whole-Body Screening Info?
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [medicine, screening]
+    - later: true
+- https://janetshinn.substack.com/p/artificially-inflate-your-ego -- Artificially Inflate Your Ego
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [perfectionism, selfhood]
+    - later: true
+- https://x.com/simonsarris/status/2058168893667934275 -- Simon Sarris on doing unusual things
+  - [meta]:
+    - date: 05/23/2026
+    - tags: [life, agency]
+    - later: true
+- https://x.com/noampomsky/status/2058993024466911464 -- discernment is an olympic sport
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [discernment, relationships]
+    - later: true
 - https://x.com/phokarlsson/status/2016462003272093944 -- Christopher Alexander on fewest degrees of freedom
   - [meta]:
     - date: 01/28/2026
@@ -6230,6 +6265,61 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/modularml/modular/pull/89304/changes#diff-b6f863a0fe120364a108b6eab543aeb4f94acec581a1e431dc64d94cc0d55fcd -- Modular Minimax M3 tool parser changes
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [tool calling, parser]
+    - later: true
+- https://github.com/modularml/modular/blob/47e83c6c17544fd68ab3f1f579eb7e19e4a6e52d/max_private/minimax_m3/tool_parser.py#L4 -- Modular Minimax M3 tool parser
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [tool calling, parser]
+    - later: true
+- https://github.com/vllm-project/vllm/blob/main/rust/src/tool-parser/src/minimax_m3.rs -- vLLM Minimax M3 tool parser
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [tool calling, rust]
+    - later: true
+- https://github.com/THUDM/slime -- slime RL scaling framework
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [rl, post-training]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/44297 -- constrain vLLM structured-output bitmask at reasoning boundary
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [structured outputs, speculative decoding]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/44006 -- vLLM strict tool calling speculative decoding bug
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [tool calling, speculative decoding]
+    - later: true
+- https://x.com/willccbb/status/2056466783994061026 -- non-distillation knowledge acquisition during RL
+  - [meta]:
+    - date: 05/18/2026
+    - tags: [rl, knowledge acquisition]
+    - later: true
+- https://x.com/METR_Evals/status/2056800034231091268 -- METR on agents violating constraints
+  - [meta]:
+    - date: 05/19/2026
+    - tags: [agents, evals]
+    - later: true
+- https://x.com/Sauers_/status/2057621247345701047 -- manifolds vs shattered features
+  - [meta]:
+    - date: 05/22/2026
+    - tags: [features, representation]
+    - later: true
+- https://x.com/eliebakouch/status/2057609683314044946 -- gated deltanet 2 state control
+  - [meta]:
+    - date: 05/21/2026
+    - tags: [linear attention, deltanet]
+    - later: true
+- https://x.com/nvidia/status/2062522316672667770 -- NVIDIA Nemotron 3 Ultra
+  - [meta]:
+    - date: 06/04/2026
+    - tags: [agents, models]
+    - later: true
 - https://alisawuffles.notion.site/alisa-s-book-of-llms -- Alisa's book of LLMs
   - [meta]:
     - date: 06/28/2026
@@ -9632,6 +9722,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Fabrice_Bellard -- Fabrice Bellard
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [programming, systems]
+    - later: true
+- https://x.com/genmon/status/2059383674282340575 -- personal computing from user, inode, and proc
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [unix, computing]
+    - later: true
+- https://x.com/zebriez/status/2059483736346145142 -- University of Utah computer graphics lineage
+  - [meta]:
+    - date: 05/27/2026
+    - tags: [computer graphics, history]
+    - later: true
+- https://x.com/JamesStineJr/status/2061401819834671395 -- Doom on CV-Wally
+  - [meta]:
+    - date: 06/01/2026
+    - tags: [risc-v, doom]
+    - later: true
 - https://x.com/_arohan_/status/2014243683139477855 -- branchy batch tree traversal performance exercise
   - [meta]:
     - date: 01/22/2026
@@ -9983,6 +10093,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://forum.effectivealtruism.org/posts/L8oqoskXpcvHPeukk/you-are-not-too-irrational-to-know-your-preferences -- You are not too "irrational" to know your preferences
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [preferences, rationality]
+    - later: true
+- https://www.lesswrong.com/posts/xiTBpBDwubnr4MLRe/trees-are-mostly-made-of-air-and-a-generalizable-lesson-for -- Trees are mostly made of air
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [ai safety, abstraction]
+    - later: true
+- https://map.simonsarris.com/p/veganism-and-moral-intuitions -- Veganism and Moral Intuitions
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [ethics, moral intuitions]
+    - later: true
+- https://x.com/dwarkesh_sp/status/2058986663297376642 -- Joe Carlsmith on AI consciousness and ethics
+  - [meta]:
+    - date: 05/25/2026
+    - tags: [consciousness, ai ethics]
+    - later: true
+- https://x.com/DavidSHolz/status/2062310981146218979 -- Aristotle on immortalizing ourselves
+  - [meta]:
+    - date: 06/03/2026
+    - tags: [aristotle, life]
+    - later: true
 - https://x.com/erikphoel/status/2011888982016344220 -- Bicameral Labs and consciousness progress
   - [meta]:
     - date: 01/15/2026
@@ -13165,6 +13300,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/bruits/satteri/tree/main -- satteri
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [markdown, mdx]
+    - later: true
+- https://github.com/shreyashankar/plain-writing-skill -- plain-writing-skill
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [writing, agents]
+    - later: true
+- https://github.com/crusoecloud/fastokens -- Fast Tokens
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [tokenization, performance]
+    - later: true
+- https://github.com/lwouis/alt-tab-macos -- AltTab macOS
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [macos, window management]
+    - later: true
+- https://github.com/Th0rgal/open_oura -- open_oura
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [oura, rust]
+    - later: true
+- https://github.com/uellenberg/Insert -- Insert programming language
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [programming languages, self-modifying code]
+    - later: true
 - https://github.com/callummcdougall/ARENA_3.0 -- ARENA 3.0
   - [meta]:
     - date: 06/28/2026
@@ -14316,6 +14481,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Chebyshev_lambda_linkage -- Chebyshev lambda linkage
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [mechanisms, kinematics]
+    - later: true
+- https://en.wikipedia.org/wiki/Schmidt_coupling -- Schmidt coupling
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [mechanisms, coupling]
+    - later: true
+- https://en.wikipedia.org/wiki/Constant-velocity_joint -- Constant-velocity joint
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [mechanisms, drivetrain]
+    - later: true
+- https://en.wikipedia.org/wiki/Insecure_direct_object_reference -- Insecure direct object reference
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [security, access control]
+    - later: true
 - https://steve-yegge.medium.com/the-last-technical-interview-bc13ddcf4564 -- The Last Technical Interview
   - [meta]:
     - date: 06/28/2026
@@ -16051,6 +16236,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf -- DSpark
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [speculative decoding]
+    - later: true
+- https://arxiv.org/abs/2503.24278 -- AutoEval: Autonomous Evaluation of Generalist Robot Manipulation Policies in the Real World
+  - [meta]:
+    - date: 06/29/2026
+    - tags: [robotics, evaluation]
+    - later: true
+- https://x.com/giffmana/status/2059356284525195308 -- BiternionNets head orientation thread
+  - [meta]:
+    - date: 05/26/2026
+    - tags: [computer vision, orientation]
+    - later: true
 - https://proceedings.mlr.press/v70/guo17a/guo17a.pdf -- On Calibration of Modern Neural Networks
   - [meta]:
     - date: 06/28/2026
