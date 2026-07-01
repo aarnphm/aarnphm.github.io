@@ -5536,15 +5536,24 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
 type GeoFC = { type: 'FeatureCollection'; features: unknown[] }
 const emptyFC = (): GeoFC => ({ type: 'FeatureCollection', features: [] })
+type GeoCoord = [number, number]
 
 const gpsRoute = (d: StravaActivityDetail): readonly StravaMapPoint[] =>
   d.mapRoute && d.mapRoute.length >= 2 ? d.mapRoute : d.route
 
-const lineFeature = (route: readonly StravaMapPoint[], props: Record<string, unknown> = {}) => ({
-  type: 'Feature',
-  properties: props,
-  geometry: { type: 'LineString', coordinates: route.map(p => [p.lng, p.lat]) },
-})
+const gpsSegments = (d: StravaActivityDetail): readonly (readonly StravaMapPoint[])[] =>
+  gpsRoute(d).length >= 2 ? [gpsRoute(d)] : []
+
+const lineFeatures = (route: readonly StravaMapPoint[], props: Record<string, unknown> = {}) =>
+  route.length >= 2
+    ? [
+        {
+          type: 'Feature',
+          properties: props,
+          geometry: { type: 'LineString', coordinates: route.map(p => [p.lng, p.lat] as GeoCoord) },
+        },
+      ]
+    : []
 
 type OverviewMode = 'heat' | 'w' | 'hr' | 'cad' | 'spd'
 
@@ -5609,8 +5618,8 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
   const counts = new Map<string, number>()
   for (const d of acts) {
     const cells = new Set<string>()
-    const r = gpsRoute(d)
-    for (let i = 0; i < r.length - 1; i++) stampSegment(r[i], r[i + 1], cells)
+    for (const r of gpsSegments(d))
+      for (let i = 0; i < r.length - 1; i++) stampSegment(r[i], r[i + 1], cells)
     for (const c of cells) counts.set(c, (counts.get(c) ?? 0) + 1)
   }
   let maxCount = 1
@@ -5621,28 +5630,29 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
       : 1
   const heatFeatures: unknown[] = []
   for (const d of acts) {
-    const r = gpsRoute(d)
-    let runB = -1
-    let coords: [number, number][] = []
-    const flush = () => {
-      if (coords.length >= 2)
-        heatFeatures.push({
-          type: 'Feature',
-          properties: { id: d.id, heat: runB },
-          geometry: { type: 'LineString', coordinates: coords },
-        })
-    }
-    for (let i = 0; i < r.length - 1; i++) {
-      const mid = overviewCellKey((r[i].lng + r[i + 1].lng) / 2, (r[i].lat + r[i + 1].lat) / 2)
-      const b = bucketOf(counts.get(mid) ?? 1)
-      if (b !== runB) {
-        flush()
-        runB = b
-        coords = [[r[i].lng, r[i].lat]]
+    for (const r of gpsSegments(d)) {
+      let runB = -1
+      let coords: GeoCoord[] = []
+      const flush = () => {
+        if (coords.length >= 2)
+          heatFeatures.push({
+            type: 'Feature',
+            properties: { id: d.id, heat: runB },
+            geometry: { type: 'LineString', coordinates: coords },
+          })
       }
-      coords.push([r[i + 1].lng, r[i + 1].lat])
+      for (let i = 0; i < r.length - 1; i++) {
+        const mid = overviewCellKey((r[i].lng + r[i + 1].lng) / 2, (r[i].lat + r[i + 1].lat) / 2)
+        const b = bucketOf(counts.get(mid) ?? 1)
+        if (b !== runB) {
+          flush()
+          runB = b
+          coords = [[r[i].lng, r[i].lat]]
+        }
+        coords.push([r[i + 1].lng, r[i + 1].lat])
+      }
+      flush()
     }
-    flush()
   }
   const ranges = new Map<string, [number, number]>()
   for (const k of OVERVIEW_METRICS)
@@ -5666,7 +5676,7 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
           ? Math.min(1, Math.max(0, (v - range[0]) / (range[1] - range[0])))
           : -1
     }
-    traceFeatures.push(lineFeature(gpsRoute(d), props))
+    traceFeatures.push(...lineFeatures(gpsRoute(d), props))
   }
   const legend: Record<OverviewMode, OverviewLegend | null> = {
     heat: { lo: '$1\\times$', hi: `$${maxCount}\\times$` },
@@ -5695,11 +5705,11 @@ const heatColorExpr: unknown[] = (() => {
   return e
 })()
 
-const heatOpacityExpr: unknown[] = ['interpolate', ['linear'], ['get', 'heat'], 1, 0.25, 7, 0.9]
+const heatOpacityExpr: unknown[] = ['interpolate', ['linear'], ['get', 'heat'], 1, 0.18, 7, 0.72]
 
 const heatWidthExpr: unknown[] = (() => {
   const w = (base: number, k: number) => ['+', base, ['*', k, ['-', ['get', 'heat'], 1]]]
-  return ['interpolate', ['linear'], ['zoom'], 10, w(0.8, 0.12), 14, w(1.3, 0.22), 16, w(1.9, 0.3)]
+  return ['interpolate', ['linear'], ['zoom'], 10, w(0.55, 0.08), 14, w(0.9, 0.14), 16, w(1.3, 0.2)]
 })()
 
 const overviewRamp = (m: OverviewMode): string[] =>
@@ -5715,7 +5725,7 @@ const traceOpacityExpr = (k: OverviewMode): unknown[] => ['case', ['<', ['get', 
 
 const routeFC = (d: StravaActivityDetail): GeoFC => ({
   type: 'FeatureCollection',
-  features: [lineFeature(gpsRoute(d))],
+  features: lineFeatures(gpsRoute(d)),
 })
 
 const pointFC = (lng: number, lat: number): GeoFC => ({
@@ -5767,7 +5777,7 @@ const fcBounds = (fc: GeoFC): [[number, number], [number, number]] | null => {
   let maxLng = -Infinity
   let maxLat = -Infinity
   for (const f of fc.features) {
-    const coords = (f as { geometry: { coordinates: [number, number][] } }).geometry.coordinates
+    const coords = (f as { geometry: { coordinates: GeoCoord[] } }).geometry.coordinates
     for (const [lng, lat] of coords) {
       if (lng < minLng) minLng = lng
       if (lng > maxLng) maxLng = lng
@@ -5827,14 +5837,18 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     let started = false
     let okFlag = false
     let hoverId: string | null = null
+    let styleSeq = 0
+    let eventsBound = false
+    let selection: { d: StravaActivityDetail; i: number } | null = null
+    const ready = () => Boolean(map && okFlag)
     const clearHover = () => {
       hoverId = null
-      map?.getSource('tri-hov')?.setData(emptyFC())
+      if (ready()) map.getSource('tri-hov')?.setData(emptyFC())
       if (map) map.getCanvas().style.cursor = ''
       tip?.classList.remove('tri-map-tip--on')
     }
     const applyMode = () => {
-      if (!map) return
+      if (!ready()) return
       map.setLayoutProperty('tri-heat', 'visibility', mode === 'heat' ? 'visible' : 'none')
       map.setLayoutProperty('tri-traces', 'visibility', mode === 'heat' ? 'none' : 'visible')
       map.setPaintProperty('tri-heat', 'line-opacity', heatOpacityExpr)
@@ -5848,7 +5862,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
     }
     const recolor = (d: StravaActivityDetail, i: number) => {
-      if (!map) return
+      if (!ready()) return
       const spec = metricSpecs(d)[i]
       if (spec)
         map.setPaintProperty(
@@ -5856,6 +5870,154 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
           'line-gradient',
           gradientExpr(d, spec.pick, spec.ramp, spec.zeroGap),
         )
+    }
+    const addSource = (id: string, source: Record<string, unknown>) => {
+      if (!map.getSource(id)) map.addSource(id, source)
+    }
+    const addLayer = (layer: Record<string, unknown>) => {
+      const id = layer.id
+      if (typeof id === 'string' && !map.getLayer(id)) map.addLayer(layer)
+    }
+    const onTraceMove = (e: any) => {
+      if (panel.classList.contains('tri-map--detail')) return
+      const id = e.features?.[0]?.properties?.id
+      if (id == null) return
+      map.getCanvas().style.cursor = 'pointer'
+      const key = String(id)
+      if (hoverId !== key) {
+        hoverId = key
+        const d = detailData?.details?.[key]
+        if (!d) return
+        map.getSource('tri-hov')?.setData(routeFC(d))
+        if (tip)
+          tip.textContent = `${d.name || d.sport} · ${shortDate(d.date)} · ${dist(d.distanceKm, d.sport)}`
+      }
+      if (tip) {
+        tip.classList.add('tri-map-tip--on')
+        if (!canvas) return
+        const bound = canvas.clientWidth - tip.offsetWidth - 8
+        tip.style.left = `${Math.min(e.point.x + 14, Math.max(8, bound))}px`
+        tip.style.top = `${e.point.y + 14}px`
+      }
+    }
+    const onTraceClick = (e: any) => {
+      if (panel.classList.contains('tri-map--detail')) return
+      const id = e.features?.[0]?.properties?.id
+      if (id != null) showRoute(String(id))
+    }
+    const bindEvents = () => {
+      if (eventsBound) return
+      map.on('mousemove', 'tri-hit', onTraceMove)
+      map.on('mouseleave', 'tri-hit', clearHover)
+      map.on('click', 'tri-hit', onTraceClick)
+      eventsBound = true
+    }
+    const installLayers = () => {
+      if (!map) return
+      if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(map)
+      addSource('tri-heat', { type: 'geojson', data: emptyFC() })
+      addLayer({
+        id: 'tri-heat',
+        type: 'line',
+        source: 'tri-heat',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-color': heatColorExpr,
+          'line-opacity': heatOpacityExpr,
+          'line-width': heatWidthExpr,
+        },
+      })
+      addSource('tri-traces', { type: 'geojson', data: emptyFC() })
+      addLayer({
+        id: 'tri-traces',
+        type: 'line',
+        source: 'tri-traces',
+        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
+        paint: {
+          'line-color': '#fc4c02',
+          'line-opacity': 0.44,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.75, 14, 1.2, 16, 1.8],
+        },
+      })
+      addLayer({
+        id: 'tri-hit',
+        type: 'line',
+        source: 'tri-traces',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 12 },
+      })
+      addSource('tri-hov', { type: 'geojson', data: emptyFC() })
+      addLayer({
+        id: 'tri-hov-casing',
+        type: 'line',
+        source: 'tri-hov',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fff9f3', 'line-width': 3.2 },
+      })
+      addLayer({
+        id: 'tri-hov',
+        type: 'line',
+        source: 'tri-hov',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fc4c02', 'line-width': 2 },
+      })
+      addSource('tri-sel', { type: 'geojson', lineMetrics: true, data: emptyFC() })
+      addLayer({
+        id: 'tri-sel-casing',
+        type: 'line',
+        source: 'tri-sel',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fff9f3', 'line-width': 3.4 },
+      })
+      addLayer({
+        id: 'tri-sel',
+        type: 'line',
+        source: 'tri-sel',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-width': 2.1,
+          'line-gradient': [
+            'interpolate',
+            ['linear'],
+            ['line-progress'],
+            0,
+            '#fc4c02',
+            1,
+            '#fc4c02',
+          ],
+        },
+      })
+      addSource('tri-dot', { type: 'geojson', data: emptyFC() })
+      addLayer({
+        id: 'tri-dot',
+        type: 'circle',
+        source: 'tri-dot',
+        paint: {
+          'circle-radius': 3.5,
+          'circle-color': '#fc4c02',
+          'circle-stroke-width': 1.5,
+          'circle-stroke-color': '#fff9f3',
+        },
+      })
+      bindEvents()
+      okFlag = true
+      applyMode()
+    }
+    const refreshMapData = () => {
+      if (selection) select(selection.d, selection.i)
+      else drawOverview()
+    }
+    const applyMapStyle = () => {
+      if (!map) return
+      const seq = ++styleSeq
+      okFlag = false
+      clearHover()
+      map.setStyle(mapboxStyleUrl(readTriMapStyle()))
+      map.once('style.load', () => {
+        if (!map || seq !== styleSeq) return
+        installLayers()
+        refreshMapData()
+      })
     }
     const init = async (): Promise<void> => {
       if (started) return
@@ -5872,130 +6034,17 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       canvas.textContent = ''
       map = new mapboxgl.Map({
         container: canvas,
-        style: 'mapbox://styles/mapbox/light-v11',
+        style: mapboxStyleUrl(readTriMapStyle()),
         center: [-79.4, 43.7],
         zoom: 9,
         attributionControl: false,
       })
       ;(canvas as unknown as { _mapInstance: unknown })._mapInstance = map
       await new Promise<void>(resolve => map.once('load', () => resolve()))
-      applyMonochromeMapPalette(map)
-      map.addSource('tri-heat', { type: 'geojson', data: emptyFC() })
-      map.addLayer({
-        id: 'tri-heat',
-        type: 'line',
-        source: 'tri-heat',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': heatColorExpr,
-          'line-opacity': heatOpacityExpr,
-          'line-width': heatWidthExpr,
-        },
-      })
-      map.addSource('tri-traces', { type: 'geojson', data: emptyFC() })
-      map.addLayer({
-        id: 'tri-traces',
-        type: 'line',
-        source: 'tri-traces',
-        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
-        paint: {
-          'line-color': '#fc4c02',
-          'line-opacity': 0.5,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.2, 14, 2, 16, 3],
-        },
-      })
-      map.addLayer({
-        id: 'tri-hit',
-        type: 'line',
-        source: 'tri-traces',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#000', 'line-opacity': 0, 'line-width': 12 },
-      })
-      map.addSource('tri-hov', { type: 'geojson', data: emptyFC() })
-      map.addLayer({
-        id: 'tri-hov-casing',
-        type: 'line',
-        source: 'tri-hov',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fff9f3', 'line-width': 4.6 },
-      })
-      map.addLayer({
-        id: 'tri-hov',
-        type: 'line',
-        source: 'tri-hov',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fc4c02', 'line-width': 2.8 },
-      })
-      map.addSource('tri-sel', { type: 'geojson', lineMetrics: true, data: emptyFC() })
-      map.addLayer({
-        id: 'tri-sel-casing',
-        type: 'line',
-        source: 'tri-sel',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fff9f3', 'line-width': 5 },
-      })
-      map.addLayer({
-        id: 'tri-sel',
-        type: 'line',
-        source: 'tri-sel',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-width': 3.4,
-          'line-gradient': [
-            'interpolate',
-            ['linear'],
-            ['line-progress'],
-            0,
-            '#fc4c02',
-            1,
-            '#fc4c02',
-          ],
-        },
-      })
-      map.addSource('tri-dot', { type: 'geojson', data: emptyFC() })
-      map.addLayer({
-        id: 'tri-dot',
-        type: 'circle',
-        source: 'tri-dot',
-        paint: {
-          'circle-radius': 4,
-          'circle-color': '#fc4c02',
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#fff9f3',
-        },
-      })
-      map.on('mousemove', 'tri-hit', (e: any) => {
-        if (panel.classList.contains('tri-map--detail')) return
-        const id = e.features?.[0]?.properties?.id
-        if (id == null) return
-        map.getCanvas().style.cursor = 'pointer'
-        const key = String(id)
-        if (hoverId !== key) {
-          hoverId = key
-          const d = detailData?.details?.[key]
-          if (!d) return
-          map.getSource('tri-hov')?.setData(routeFC(d))
-          if (tip)
-            tip.textContent = `${d.name || d.sport} · ${shortDate(d.date)} · ${dist(d.distanceKm, d.sport)}`
-        }
-        if (tip) {
-          tip.classList.add('tri-map-tip--on')
-          const bound = canvas.clientWidth - tip.offsetWidth - 8
-          tip.style.left = `${Math.min(e.point.x + 14, Math.max(8, bound))}px`
-          tip.style.top = `${e.point.y + 14}px`
-        }
-      })
-      map.on('mouseleave', 'tri-hit', clearHover)
-      map.on('click', 'tri-hit', (e: any) => {
-        if (panel.classList.contains('tri-map--detail')) return
-        const id = e.features?.[0]?.properties?.id
-        if (id != null) showRoute(String(id))
-      })
-      applyMode()
-      okFlag = true
+      installLayers()
     }
     const drawOverview = () => {
-      if (!map) return
+      if (!ready()) return
       const ov = getOverview()
       map.getSource('tri-heat')?.setData(ov.heat)
       map.getSource('tri-traces')?.setData(ov.traces)
@@ -6004,7 +6053,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
     }
     const select = (d: StravaActivityDetail, i: number) => {
-      if (!map) return
+      selection = { d, i }
+      if (!ready()) return
       clearHover()
       map.getSource('tri-sel')?.setData(routeFC(d))
       recolor(d, i)
@@ -6014,9 +6064,10 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (b) map.fitBounds(b, { padding: 40, maxZoom: 15, duration: reduce ? 0 : 600 })
     }
     const moveDot = (lng: number, lat: number) =>
-      map?.getSource('tri-dot')?.setData(pointFC(lng, lat))
+      ready() ? map.getSource('tri-dot')?.setData(pointFC(lng, lat)) : undefined
     const clearSelection = () => {
-      if (!map) return
+      selection = null
+      if (!ready()) return
       clearHover()
       map.getSource('tri-sel')?.setData(emptyFC())
       map.getSource('tri-dot')?.setData(emptyFC())
@@ -6029,6 +6080,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       map = null
       started = false
       okFlag = false
+      eventsBound = false
+      selection = null
       if (canvas) (canvas as unknown as { _mapInstance: unknown })._mapInstance = null
     }
     return {
@@ -6040,6 +6093,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       recolor,
       moveDot,
       clearSelection,
+      applyMapStyle,
       resize,
       dispose,
     }
@@ -6337,6 +6391,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     }
     mapCtl.applyMode()
   }
+  const onMapStyle = () => mapCtl.applyMapStyle()
 
   if (pageMode) {
     load()
@@ -6355,6 +6410,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   panel.addEventListener('click', onPanelClick)
   overlay?.addEventListener('click', onModeClick)
   document.addEventListener('keydown', onKey)
+  window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
 
   return () => {
     btn?.removeEventListener('click', open)
@@ -6368,6 +6424,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     panel.removeEventListener('click', onPanelClick)
     overlay?.removeEventListener('click', onModeClick)
     document.removeEventListener('keydown', onKey)
+    window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
     mapCtl.dispose()
   }
 }
@@ -6804,6 +6861,33 @@ const setupAxisLabels = (root: HTMLElement): (() => void) | null => {
 }
 
 const TRI_UNIT_KEY = 'tri-dist-unit'
+const TRI_MAP_STYLE_KEY = 'tri-map-style'
+const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
+const TRI_MAP_STYLES = ['mono', 'streets'] as const
+type TriMapStyle = (typeof TRI_MAP_STYLES)[number]
+
+const readTriMapStyle = (): TriMapStyle => {
+  try {
+    const stored = localStorage.getItem(TRI_MAP_STYLE_KEY)
+    if (stored === 'streets') return stored
+  } catch {
+    return 'mono'
+  }
+  return 'mono'
+}
+
+const mapboxStyleUrl = (style: TriMapStyle): string =>
+  style === 'streets' ? 'mapbox://styles/mapbox/streets-v12' : 'mapbox://styles/mapbox/light-v11'
+
+const toggleTriMapStyle = (): void => {
+  const next: TriMapStyle = readTriMapStyle() === 'mono' ? 'streets' : 'mono'
+  try {
+    localStorage.setItem(TRI_MAP_STYLE_KEY, next)
+  } catch {
+    void 0
+  }
+  window.dispatchEvent(new CustomEvent(TRI_MAP_STYLE_EVENT, { detail: { style: next } }))
+}
 
 const toggleTriUnit = (): void => {
   const next = !isImperialUnit()
@@ -6878,6 +6962,16 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       keys: 'language langue locale english french francais français en fr i18n',
       run: () => {
         applyTriLocale(triLocale() === 'fr' ? 'en' : 'fr')
+        render()
+      },
+    },
+    {
+      label: () =>
+        readTriMapStyle() === 'mono' ? 'map style · streets' : 'map style · monochrome',
+      hint: 'map',
+      keys: 'map style roads streets monochrome mono mapbox route road',
+      run: () => {
+        toggleTriMapStyle()
         render()
       },
     },
@@ -7627,6 +7721,8 @@ async function fillDistancePredictor(scope: ParentNode): Promise<void> {
   const pct = (s: number): number => (s / maxSec) * 100
   for (const r of results) {
     r.card.dataset.filled = '1'
+    const badge = r.card.querySelector('.tri-pred-badge')
+    if (badge && r.card.dataset.label) badge.textContent = r.card.dataset.label
     const bar = r.card.querySelector<HTMLElement>('.tri-pred-bar')
     if (bar) bar.style.width = `${Math.max(2, pct(r.nowSec))}%`
     const range = r.card.querySelector<HTMLElement>('.tri-pred-bar-range')
@@ -7638,13 +7734,18 @@ async function fillDistancePredictor(scope: ParentNode): Promise<void> {
     if (timeEl) timeEl.textContent = hms(r.nowSec)
     let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
     const deltaEl = r.card.querySelector('.tri-pred-delta')
-    if (deltaEl && r.delta != null && Math.abs(r.delta) >= 1) {
-      const faster = r.delta < 0
-      deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
-      deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
-      tip += ` · ${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))} vs 30d`
+    if (deltaEl) {
+      deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
+      if (r.delta != null && Math.abs(r.delta) >= 1) {
+        const faster = r.delta < 0
+        deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
+        deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
+        tip += ` · ${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))} vs 30d`
+      } else {
+        deltaEl.textContent = ''
+      }
     }
-    r.card.dataset.tipH = r.card.querySelector('.tri-pred-badge')?.textContent ?? ''
+    r.card.dataset.tipH = r.card.dataset.label ?? ''
     r.card.dataset.tipD = tip
   }
   const axis = results[0].card
@@ -7663,12 +7764,12 @@ const buildDistancePredictor = (): HTMLElement => {
     if (!cfg) return
     let cards = Array.from(grid.querySelectorAll<HTMLElement>('.tri-pred-card'))
     if (cards.length !== cfg.dists.length) {
-      cards = cfg.dists.map(() => {
+      cards = cfg.dists.map(d => {
         const card = el('div', 'tri-pred-card')
         const track = el('div', 'tri-pred-bar-track')
         track.append(el('div', 'tri-pred-bar-range'), el('div', 'tri-pred-bar'))
         card.append(
-          el('span', 'tri-pred-badge', ''),
+          el('span', 'tri-pred-badge', d.label),
           track,
           el('span', 'tri-pred-time', '—'),
           el('span', 'tri-pred-delta'),
@@ -7681,16 +7782,8 @@ const buildDistancePredictor = (): HTMLElement => {
       const card = cards[i]
       card.dataset.km = String(d.km)
       card.dataset.sport = sport
+      card.dataset.label = d.label
       delete card.dataset.filled
-      delete card.dataset.tipH
-      delete card.dataset.tipD
-      const badge = card.querySelector('.tri-pred-badge')
-      if (badge) badge.textContent = d.label
-      const delta = card.querySelector('.tri-pred-delta')
-      if (delta) {
-        delta.textContent = ''
-        delta.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
-      }
     })
     if (paceForecaster?.ready) queueMicrotask(() => void fillDistancePredictor(grid))
   }

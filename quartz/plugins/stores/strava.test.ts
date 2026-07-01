@@ -46,8 +46,71 @@ test('emits dense map geometry separately from compact telemetry route', () => {
   const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
   assert.ok(detail.route.length <= 141)
   assert.equal(detail.mapRoute?.length, 1_000)
+  assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
   assert.deepEqual(detail.mapRoute?.[0], { lat: 43, lng: -79 })
   assert.deepEqual(detail.mapRoute?.at(-1), { lat: 43.00999, lng: -79.01998 })
+})
+
+test('keeps dense map route continuous across GPS jumps', () => {
+  const latlng: [number, number][] = [
+    [43.64, -79.4],
+    [43.64001, -79.40001],
+    [43.64292, -79.39886],
+    [43.64293, -79.39887],
+  ]
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride({ distance: 680, movingTime: 4 }) },
+    streams: {
+      101: {
+        latlng,
+        altitude: [80, 80, 81, 81],
+        distance: [0, 2, 672, 680],
+        watts: [140, 141, 142, 143],
+        heartrate: [120, 121, 122, 123],
+        cadence: [70, 71, 72, 73],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(detail.mapRoute?.length, 4)
+  assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
+})
+
+test('keeps sparse but plausible map samples continuous', () => {
+  const latlng: [number, number][] = [
+    [43.64, -79.4],
+    [43.64002, -79.40002],
+    [43.6411, -79.40002],
+    [43.64112, -79.40004],
+  ]
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride({ distance: 126, movingTime: 600 }) },
+    streams: {
+      101: {
+        latlng,
+        altitude: [80, 80, 81, 81],
+        distance: [0, 3, 123, 126],
+        watts: [140, 141, 142, 143],
+        heartrate: [120, 121, 122, 123],
+        cadence: [70, 71, 72, 73],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(detail.mapRoute?.length, 4)
+  assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
 })
 
 test('merges WeatherKit wind into activity detail and day health', () => {

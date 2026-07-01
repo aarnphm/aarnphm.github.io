@@ -367,6 +367,14 @@ function sampleIndices(lo: number, hi: number, maxPoints: number): number[] {
   return idx
 }
 
+function sampledMapRoute(latlng: [number, number][], lo: number, hi: number): StravaMapPoint[] {
+  const route: StravaMapPoint[] = []
+  for (const raw of sampleIndices(lo, hi, MAP_ROUTE_POINTS)) {
+    route.push({ lat: round(latlng[raw][0], 5), lng: round(latlng[raw][1], 5) })
+  }
+  return route
+}
+
 function emptyTotals(): StravaSportTotals[] {
   return SPORT_ORDER.map(sport => ({
     sport,
@@ -650,8 +658,7 @@ function projectDetail(
       hi0 = n - 1
     }
     const idx = sampleIndices(lo0, hi0, ROUTE_POINTS)
-    for (const i of sampleIndices(lo0, hi0, MAP_ROUTE_POINTS))
-      mapRoute.push({ lat: round(latlng[i][0], 5), lng: round(latlng[i][1], 5) })
+    mapRoute.push(...sampledMapRoute(latlng, lo0, hi0))
     const d0 = distance[lo0] ?? 0
     let sumLat = 0
     let sumLng = 0
