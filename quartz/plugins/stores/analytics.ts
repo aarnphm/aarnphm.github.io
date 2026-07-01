@@ -2274,7 +2274,7 @@ export function computeFtpHypothesisFromVo2(
     low: round5(ftpMean - FTP_HYPOTHESIS_ERROR_W),
     high: round5(ftpMean + FTP_HYPOTHESIS_ERROR_W),
     wattsPerKg: round(ftp / massKg, 2),
-    note: 'running vo2max to cycling ftp; vt2 missing, so hr zones remain the training governor',
+    note: 'running vo2max to cycling ftp',
   }
 }
 
