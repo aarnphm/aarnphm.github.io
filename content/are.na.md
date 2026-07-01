@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-06-30 09:06:00 GMT-04:00
+modified: 2026-07-01 09:02:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,56 @@ title: are.na
 
 ## discourse
 
+- https://x.com/SchrodingrsBrat/status/2067256534128615722 -- Sherry on compound, taste, and unautomated renewal
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [taste, life]
+    - later: true
+- https://x.com/Gena_I_Gorlin/status/2066656227661087091 -- Gena Gorlin link note
+  - [meta]:
+    - date: 06/15/2026
+    - tags: [link]
+    - later: true
+- https://x.com/zetalyrae/status/2068090303798722807 -- Fernando on model hallucinations about you
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai, identity]
+    - later: true
+- https://x.com/SimonLermenAI/status/2067943357402190065 -- Simon Lermen on Dean Ball and AI takeover policy
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai policy, extinction]
+    - later: true
+- https://x.com/noampomsky/status/2068773458448920688 -- Ava on age cutoffs in matchmaking
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [relationships, matchmaking]
+    - later: true
+- https://x.com/noampomsky/status/2068777104263860230 -- Ava's four relationship questions
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [relationships, questions]
+    - later: true
+- https://x.com/zetalyrae/status/2067772186535010731 -- Fernando on AI, capital, and the state
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [ai, state]
+    - later: true
+- https://x.com/kelin_online/status/2069583145180320073 -- kelin on vibecoding and software as art
+  - [meta]:
+    - date: 06/24/2026
+    - tags: [software, art]
+    - later: true
+- https://x.com/deepfates/status/2070387965076058569 -- deepfates on rituals for digital algorithms
+  - [meta]:
+    - date: 06/26/2026
+    - tags: [algorithms, ritual]
+    - later: true
+- https://x.com/tszzl/status/2070409453774815547 -- roon on Bryan Johnson and immortality
+  - [meta]:
+    - date: 06/26/2026
+    - tags: [longevity, love]
+    - later: true
 - https://x.com/tenobrus/status/2062532381001777627 -- Berkeley intro CS AI cheating failure rate
   - [meta]:
     - date: 06/04/2026
@@ -278,6 +328,41 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/theJayAlto/status/2068024477481398306 -- Jay Alto screenshot note
+  - [meta]:
+    - date: 06/19/2026
+    - tags: [screenshot]
+    - later: true
+- https://x.com/strangestloop/status/1861840664423506302 -- Loopy purchase recommendations
+  - [meta]:
+    - date: 11/27/2024
+    - tags: [recommendations, purchases]
+    - later: true
+- https://x.com/natfriedman/status/1847140133377921366 -- Nat Friedman gadget recommendations
+  - [meta]:
+    - date: 10/18/2024
+    - tags: [gadgets, recommendations]
+    - later: true
+- https://x.com/charliermarsh/status/2070289423380418769 -- Charlie Marsh goose and eggs note
+  - [meta]:
+    - date: 06/25/2026
+    - tags: [metaphor, software]
+    - later: true
+- https://x.com/rbfasho/status/2070223005889028576 -- Royce Branning on screen time
+  - [meta]:
+    - date: 06/25/2026
+    - tags: [parenting, screens]
+    - later: true
+- https://x.com/unconvai -- unconvAI profile
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [profile, ai]
+    - later: true
+- https://x.com/arcticinstincts/status/2070465229285405037 -- David Sun math advice screenshot
+  - [meta]:
+    - date: 06/26/2026
+    - tags: [math, advice]
+    - later: true
 - https://x.com/WillManidis/status/2018318844247347308 -- Will Manidis X article
   - [meta]:
     - date: 02/02/2026
@@ -6370,6 +6455,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/tararezaeikh/status/2069869995589611531 -- Tara Rezaei announces Mirendil AI
+  - [meta]:
+    - date: 06/24/2026
+    - tags: [ai labs, science]
+    - later: true
+- https://x.com/aryaman2020/status/2069582061665677602 -- Aryaman Arora on Claude Code training-run bug
+  - [meta]:
+    - date: 06/24/2026
+    - tags: [claude code, training]
+    - later: true
+- https://x.com/_xjdr/status/2069932134148767997 -- xjdr AI tool link note
+  - [meta]:
+    - date: 06/24/2026
+    - tags: [ai tools]
+    - later: true
+- https://x.com/alephneuro/status/2070183632132845995 -- Aleph brain-interface imaging announcement
+  - [meta]:
+    - date: 06/25/2026
+    - tags: [brain interfaces, imaging]
+    - later: true
+- https://x.com/SumnerLN/status/2070579706701987909 -- Sumner Norman on Aleph ultrasound science
+  - [meta]:
+    - date: 06/26/2026
+    - tags: [ultrasound, neuroscience]
+    - later: true
 - https://x.com/tilderesearch/status/2061771450168889432 -- Tilde X article
   - [meta]:
     - date: 06/02/2026
@@ -9927,6 +10037,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/andy_matuschak/status/2067117671469162707 -- Andy Matuschak on Sparkle update flow UI
+  - [meta]:
+    - date: 06/17/2026
+    - tags: [ui, software updates]
+    - later: true
+- https://x.com/BenjDicken/status/2068836303299621187 -- Ben Dicken on the PDF spec
+  - [meta]:
+    - date: 06/21/2026
+    - tags: [pdf, specification]
+    - later: true
+- https://x.com/BenjDicken/status/2070249878215913844 -- Ben Dicken on Grace Hopper visual aids
+  - [meta]:
+    - date: 06/25/2026
+    - tags: [latency, computing history]
+    - later: true
 - https://x.com/BenjDicken/status/2060366393288298911 -- math theory and practical implementation in computer science
   - [meta]:
     - date: 05/29/2026
@@ -12253,6 +12378,111 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=7KWFhW0klf4 -- The Hard Problem of Consciousness
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [consciousness, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=pau4r_R6rpg -- A. J. Ayer's Language, Truth, and Logic
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [logical positivism, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=gBSUMC3CqGg -- Logical Positivism and its Legacy
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [logical positivism, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=5Cj4H4FBwho -- Reflections on love
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [love, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=MncEzRAw3tU -- Naming and Necessity by Saul Kripke
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [kripke, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=iENXfnOobzw -- The Octopus, the Sea, and the Deep Origins of Consciousness
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [consciousness, biology]
+    - later: true
+- https://www.youtube.com/watch?v=PHJQ3IjQfKI -- Being in the World: A Tribute to Hubert Dreyfus
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [dreyfus, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=ot4z1UrPvZY -- Consciousness as a Problem in Philosophy and Neurobiology
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [consciousness, neurobiology]
+    - later: true
+- https://www.youtube.com/watch?v=j-JAuGXU_UE -- Free Will
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [free will, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=yhn8BRisDoM -- Heidegger, Being and Ontotheology
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [heidegger, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=Di64T5lvN3s -- Is Killing Sometimes Justified?
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [ethics, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=iLMzsV0JOHk -- Stanford AA228/CS238 Decision Making Under Uncertainty
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [decision making, uncertainty]
+    - later: true
+- https://www.youtube.com/watch?v=EgLbYhnK30Y -- Are We Alone in the Universe?
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [aliens, science]
+    - later: true
+- https://www.youtube.com/watch?v=zxlHYS4X8r8 -- Taking Time Seriously: Richard Rorty on Philosophy
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [rorty, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=2uBbmuvW-Kc -- Bernard Williams' Attack on Moral Relativism
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [moral relativism, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=UhX1ouUjDHE -- Intro to the Philosophy of Mathematics
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [philosophy of math, math]
+    - later: true
+- https://www.youtube.com/watch?v=wlEMkAkGS1I -- Immanuel Kant's Philosophy
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [kant, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=TsonzzAW3Mk -- John J. Mearsheimer, The Case for Restraint
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [foreign policy, realism]
+    - later: true
+- https://www.youtube.com/watch?v=oGpBjoHbqHI -- Ranking Classic Philosophy Books
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [philosophy, books]
+    - later: true
+- https://www.youtube.com/watch?v=77Z_kngHs00 -- Modular Tech Talk: Mojo GPU Compilation
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [mojo, gpu]
+    - later: true
+- https://www.youtube.com/watch?v=DovtGocRyAQ -- Thomas Nagel on The Last Word
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [nagel, reason]
+    - later: true
 - https://www.youtube.com/watch?v=6Qb6QtC6QMs -- Smooth-Maximum, the most useful function
   - [meta]:
     - date: 06/30/2026

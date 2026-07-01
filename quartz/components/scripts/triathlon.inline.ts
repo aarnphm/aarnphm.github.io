@@ -5574,6 +5574,12 @@ const OVERVIEW_CELL = 0.0008
 const overviewCellKey = (lng: number, lat: number): string =>
   `${Math.round(lng / OVERVIEW_CELL)},${Math.round(lat / OVERVIEW_CELL)}`
 
+const HEAT_SNAP = 0.0003
+const HEAT_PRUNE_DENSITY = 4
+
+const heatKey = (lng: number, lat: number): string =>
+  `${Math.round(lng / HEAT_SNAP)},${Math.round(lat / HEAT_SNAP)}`
+
 const stampSegment = (a: StravaMapPoint, b: StravaMapPoint, into: Set<string>) => {
   const steps = Math.max(
     1,
@@ -5628,31 +5634,77 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
     maxCount > 1
       ? Math.min(7, Math.max(1, 1 + Math.round((6 * Math.log(c)) / Math.log(maxCount))))
       : 1
-  const heatFeatures: unknown[] = []
+  const nodeAcc = new Map<string, [number, number, number]>()
+  for (const d of acts)
+    for (const r of gpsSegments(d))
+      for (const p of r) {
+        const k = heatKey(p.lng, p.lat)
+        const a = nodeAcc.get(k)
+        if (a) {
+          a[0] += p.lng
+          a[1] += p.lat
+          a[2] += 1
+        } else nodeAcc.set(k, [p.lng, p.lat, 1])
+      }
+  const nodeCoord = (k: string): GeoCoord => {
+    const a = nodeAcc.get(k)!
+    return [a[0] / a[2], a[1] / a[2]]
+  }
+  const edgeKey = (ka: string, kb: string): string => (ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`)
+  const seqs: string[][] = []
+  const edgeCount = new Map<string, number>()
   for (const d of acts) {
+    const seen = new Set<string>()
     for (const r of gpsSegments(d)) {
-      let runB = -1
-      let coords: GeoCoord[] = []
-      const flush = () => {
-        if (coords.length >= 2)
-          heatFeatures.push({
-            type: 'Feature',
-            properties: { id: d.id, heat: runB },
-            geometry: { type: 'LineString', coordinates: coords },
-          })
+      const seq: string[] = []
+      for (const p of r) {
+        const k = heatKey(p.lng, p.lat)
+        if (seq.length && seq[seq.length - 1] === k) continue
+        seq.push(k)
       }
-      for (let i = 0; i < r.length - 1; i++) {
-        const mid = overviewCellKey((r[i].lng + r[i + 1].lng) / 2, (r[i].lat + r[i + 1].lat) / 2)
-        const b = bucketOf(counts.get(mid) ?? 1)
-        if (b !== runB) {
-          flush()
-          runB = b
-          coords = [[r[i].lng, r[i].lat]]
-        }
-        coords.push([r[i + 1].lng, r[i + 1].lat])
-      }
-      flush()
+      if (seq.length >= 2) seqs.push(seq)
+      for (let i = 0; i < seq.length - 1; i++) seen.add(edgeKey(seq[i], seq[i + 1]))
     }
+    for (const e of seen) edgeCount.set(e, (edgeCount.get(e) ?? 0) + 1)
+  }
+  const heatFeatures: unknown[] = []
+  const drawnEdges = new Set<string>()
+  for (const seq of seqs) {
+    let runB = -1
+    let coords: GeoCoord[] = []
+    const flush = () => {
+      if (coords.length >= 2)
+        heatFeatures.push({
+          type: 'Feature',
+          properties: { heat: runB },
+          geometry: { type: 'LineString', coordinates: coords },
+        })
+      coords = []
+      runB = -1
+    }
+    for (let i = 0; i < seq.length - 1; i++) {
+      const edge = edgeKey(seq[i], seq[i + 1])
+      if (drawnEdges.has(edge)) {
+        flush()
+        continue
+      }
+      const ca = nodeCoord(seq[i])
+      const cb = nodeCoord(seq[i + 1])
+      const cell = counts.get(overviewCellKey((ca[0] + cb[0]) / 2, (ca[1] + cb[1]) / 2)) ?? 1
+      if ((edgeCount.get(edge) ?? 0) < 2 && cell >= HEAT_PRUNE_DENSITY) {
+        flush()
+        continue
+      }
+      drawnEdges.add(edge)
+      const bucket = bucketOf(cell)
+      if (bucket !== runB) {
+        flush()
+        coords = [ca]
+        runB = bucket
+      }
+      coords.push(cb)
+    }
+    flush()
   }
   const ranges = new Map<string, [number, number]>()
   for (const k of OVERVIEW_METRICS)
@@ -5705,7 +5757,7 @@ const heatColorExpr: unknown[] = (() => {
   return e
 })()
 
-const heatOpacityExpr: unknown[] = ['interpolate', ['linear'], ['get', 'heat'], 1, 0.18, 7, 0.72]
+const heatOpacityExpr: unknown[] = ['interpolate', ['linear'], ['get', 'heat'], 1, 0.5, 7, 0.95]
 
 const heatWidthExpr: unknown[] = (() => {
   const w = (base: number, k: number) => ['+', base, ['*', k, ['-', ['get', 'heat'], 1]]]
