@@ -88,3 +88,23 @@ test('merges WeatherKit wind into activity detail and day health', () => {
   assert.equal(payload.health['2026-06-07'].windKph, 18)
   assert.equal(payload.health['2026-06-07'].windDir, 'SW')
 })
+
+test('buildPayload keeps late evening syncs on the local calendar day', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-07-01T02:45:00.000Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-07-01T01:11:01Z') / 1000),
+    activities: {
+      101: ride({ startDate: '2026-07-01T01:11:01Z', startDateLocal: '2026-06-30T21:11:01' }),
+    },
+  }
+
+  const payload = buildPayload(cache, null, null, '2026-06-30', null, null, null, 'America/Toronto')
+
+  assert.deepEqual(
+    payload.days.map(day => day.date),
+    ['2026-06-30'],
+  )
+})

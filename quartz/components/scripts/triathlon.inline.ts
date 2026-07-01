@@ -89,7 +89,7 @@ const applyI18n = (root: HTMLElement): void => {
   }
 }
 import { type PaceLegSpec, type PaceSport, isPaceSport } from '../../util/pace-features'
-import { PaceForecaster } from '../../util/pace-forecast'
+import { PaceForecaster, Z80 } from '../../util/pace-forecast'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 export {}
@@ -7569,33 +7569,88 @@ const PRED_SPORTS: { sport: PaceSport; dists: { km: number; label: string }[] }[
   },
 ]
 
+interface PredResult {
+  card: HTMLElement
+  nowSec: number
+  fastSec: number
+  slowSec: number
+  delta: number | null
+}
+
+const PRED_AXIS_FRACS = [0, 0.25, 0.5, 0.75, 1]
+const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
+  const ticks = track.querySelectorAll<HTMLElement>('.tri-pred-axis-tick')
+  if (ticks.length === PRED_AXIS_FRACS.length) {
+    PRED_AXIS_FRACS.forEach((fr, i) => (ticks[i].textContent = hms(maxSec * fr)))
+    return
+  }
+  track.replaceChildren(
+    ...PRED_AXIS_FRACS.map(fr => {
+      const tick = el('span', 'tri-pred-axis-tick', hms(maxSec * fr))
+      tick.style.left = `${fr * 100}%`
+      if (fr === 0) tick.dataset.edge = 'start'
+      else if (fr === 1) tick.dataset.edge = 'end'
+      return tick
+    }),
+  )
+}
+
 async function fillDistancePredictor(scope: ParentNode): Promise<void> {
   const f = paceForecaster
   if (!f?.ready || !f.day) return
+  const day = f.day
   const past = f.dayStateAgo(30)
-  for (const card of scope.querySelectorAll<HTMLElement>('.tri-pred-card')) {
-    if (card.dataset.filled) continue
+  const cards = Array.from(scope.querySelectorAll<HTMLElement>('.tri-pred-card')).filter(
+    c => !c.dataset.filled,
+  )
+  const jobs = cards.map(async (card): Promise<PredResult | null> => {
     const km = Number(card.dataset.km)
     const sport = card.dataset.sport
-    if (!km || !isPaceSport(sport)) continue
+    if (!km || !isPaceSport(sport)) return null
     const leg: PaceLegSpec = { sport, distanceKm: km, elevationM: 0, tempC: null, windKph: null }
-    const now = await f.forecastLegAt(f.day, leg)
-    if (!now || now.mu <= 0) continue
-    card.dataset.filled = '1'
-    const nowSec = (km * 1000) / now.mu
-    const timeEl = card.querySelector('.tri-pred-time')
-    if (timeEl) timeEl.textContent = hms(nowSec)
-    const then = past ? await f.forecastLegAt(past, leg) : null
-    const deltaEl = card.querySelector('.tri-pred-delta')
-    if (deltaEl && then && then.mu > 0) {
-      const delta = nowSec - (km * 1000) / then.mu
-      if (Math.abs(delta) >= 1) {
-        const faster = delta < 0
-        deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(delta))}`
-        deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
-      }
+    const [now, then] = await Promise.all([
+      f.forecastLegAt(day, leg),
+      past ? f.forecastLegAt(past, leg) : Promise.resolve(null),
+    ])
+    if (!now || now.mu <= 0) return null
+    const meters = km * 1000
+    const nowSec = meters / now.mu
+    const timeSd = (meters / (now.mu * now.mu)) * now.sigma
+    const fastSec = Math.max(0, nowSec - Z80 * timeSd)
+    const slowSec = nowSec + Z80 * timeSd
+    const delta = then && then.mu > 0 ? nowSec - meters / then.mu : null
+    return { card, nowSec, fastSec, slowSec, delta }
+  })
+  const results = (await Promise.all(jobs)).filter((r): r is PredResult => r !== null)
+  if (!results.length) return
+  const maxSec = Math.max(...results.map(r => r.slowSec), 1)
+  const pct = (s: number): number => (s / maxSec) * 100
+  for (const r of results) {
+    r.card.dataset.filled = '1'
+    const bar = r.card.querySelector<HTMLElement>('.tri-pred-bar')
+    if (bar) bar.style.width = `${Math.max(2, pct(r.nowSec))}%`
+    const range = r.card.querySelector<HTMLElement>('.tri-pred-bar-range')
+    if (range) {
+      range.style.left = `${pct(r.fastSec)}%`
+      range.style.width = `${Math.max(0, pct(r.slowSec) - pct(r.fastSec))}%`
     }
+    const timeEl = r.card.querySelector('.tri-pred-time')
+    if (timeEl) timeEl.textContent = hms(r.nowSec)
+    let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
+    const deltaEl = r.card.querySelector('.tri-pred-delta')
+    if (deltaEl && r.delta != null && Math.abs(r.delta) >= 1) {
+      const faster = r.delta < 0
+      deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
+      deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
+      tip += ` · ${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))} vs 30d`
+    }
+    r.card.dataset.tipH = r.card.querySelector('.tri-pred-badge')?.textContent ?? ''
+    r.card.dataset.tipD = tip
   }
+  const axis = results[0].card
+    .closest('.tri-pred')
+    ?.querySelector<HTMLElement>('.tri-pred-axis-track')
+  if (axis) renderPredAxis(axis, maxSec)
 }
 
 const buildDistancePredictor = (): HTMLElement => {
@@ -7604,18 +7659,39 @@ const buildDistancePredictor = (): HTMLElement => {
   const tabs = el('div', 'tri-pred-tabs')
   const grid = el('div', 'tri-pred-grid')
   const renderSport = (sport: PaceSport): void => {
-    grid.replaceChildren()
     const cfg = PRED_SPORTS.find(s => s.sport === sport)
     if (!cfg) return
-    for (const d of cfg.dists) {
-      const card = el('div', 'tri-pred-card', '', { 'data-km': String(d.km), 'data-sport': sport })
-      card.append(
-        el('span', 'tri-pred-badge', d.label),
-        el('span', 'tri-pred-time', '—'),
-        el('span', 'tri-pred-delta'),
-      )
-      grid.appendChild(card)
+    let cards = Array.from(grid.querySelectorAll<HTMLElement>('.tri-pred-card'))
+    if (cards.length !== cfg.dists.length) {
+      cards = cfg.dists.map(() => {
+        const card = el('div', 'tri-pred-card')
+        const track = el('div', 'tri-pred-bar-track')
+        track.append(el('div', 'tri-pred-bar-range'), el('div', 'tri-pred-bar'))
+        card.append(
+          el('span', 'tri-pred-badge', ''),
+          track,
+          el('span', 'tri-pred-time', '—'),
+          el('span', 'tri-pred-delta'),
+        )
+        return card
+      })
+      grid.replaceChildren(...cards)
     }
+    cfg.dists.forEach((d, i) => {
+      const card = cards[i]
+      card.dataset.km = String(d.km)
+      card.dataset.sport = sport
+      delete card.dataset.filled
+      delete card.dataset.tipH
+      delete card.dataset.tipD
+      const badge = card.querySelector('.tri-pred-badge')
+      if (badge) badge.textContent = d.label
+      const delta = card.querySelector('.tri-pred-delta')
+      if (delta) {
+        delta.textContent = ''
+        delta.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
+      }
+    })
     if (paceForecaster?.ready) queueMicrotask(() => void fillDistancePredictor(grid))
   }
   for (const s of PRED_SPORTS) {
@@ -7634,9 +7710,59 @@ const buildDistancePredictor = (): HTMLElement => {
     })
     tabs.appendChild(tab)
   }
-  block.append(tabs, grid)
+  const axis = el('div', 'tri-pred-axis')
+  axis.append(
+    el('span', 'tri-pred-axis-pad'),
+    el('div', 'tri-pred-axis-track'),
+    el('span', 'tri-pred-axis-end'),
+  )
+  block.append(tabs, grid, axis)
   renderSport('run')
   return block
+}
+
+const wirePredTip = (root: HTMLElement): (() => void) => {
+  document.body.querySelector('.tri-pred-tip')?.remove()
+  const tip = el('div', 'tri-gloss tri-pred-tip')
+  tip.setAttribute('role', 'tooltip')
+  document.body.appendChild(tip)
+  let cur: HTMLElement | null = null
+  const move = (e: MouseEvent): void => {
+    const card = (e.target as HTMLElement | null)?.closest<HTMLElement>('.tri-pred-card')
+    if (!card?.dataset.tipD) {
+      cur = null
+      tip.classList.remove('tri-gloss--on')
+      return
+    }
+    if (card !== cur) {
+      cur = card
+      tip.replaceChildren(
+        el('span', 'tri-gloss-h', card.dataset.tipH ?? ''),
+        el('span', 'tri-gloss-def', card.dataset.tipD ?? ''),
+      )
+      tip.classList.add('tri-gloss--on')
+    }
+    const pr = tip.getBoundingClientRect()
+    const left =
+      e.clientX + 14 + pr.width > window.innerWidth - 8 ? e.clientX - 14 - pr.width : e.clientX + 14
+    const top =
+      e.clientY + 14 + pr.height > window.innerHeight - 8
+        ? e.clientY - 14 - pr.height
+        : e.clientY + 14
+    tip.style.left = `${Math.max(8, left).toFixed(0)}px`
+    tip.style.top = `${Math.max(8, top).toFixed(0)}px`
+  }
+  const leave = (): void => {
+    cur = null
+    tip.classList.remove('tri-gloss--on')
+  }
+  root.addEventListener('mousemove', move)
+  root.addEventListener('mouseleave', leave)
+  return () => {
+    root.removeEventListener('mousemove', move)
+    root.removeEventListener('mouseleave', leave)
+    tip.remove()
+  }
 }
 
 const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
@@ -7658,7 +7784,9 @@ const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
       }
     })
     .catch(() => {})
+  const tipCleanup = wirePredTip(root)
   return () => {
+    tipCleanup()
     forecaster.dispose()
     if (paceForecaster === forecaster) paceForecaster = null
   }

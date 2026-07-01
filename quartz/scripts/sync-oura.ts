@@ -7,6 +7,7 @@ import {
   ouraSleepCalendarDay,
   OuraUser,
 } from '../plugins/stores/oura'
+import { localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
@@ -15,7 +16,6 @@ const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
 const CACHE_VERSION = 2
 const LOOKBACK_DAYS = 365
 const REFRESH_DAYS = 30
-const DAY_MS = 86_400_000
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 const limiter = new AdaptiveRateLimiter(1500, 60_000)
 
@@ -108,7 +108,6 @@ async function fetchRange(
   return rows
 }
 
-const iso = (ms: number): string => new Date(ms).toISOString().slice(0, 10)
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null)
 const str = (v: unknown): string | null => (typeof v === 'string' ? v : null)
 
@@ -129,8 +128,8 @@ async function main(): Promise<void> {
   const { access, refreshToken } = await resolveToken(prev)
   const stale = (prev?.version ?? 0) < CACHE_VERSION
   const now = Date.now()
-  const start = iso(now - (stale ? LOOKBACK_DAYS : REFRESH_DAYS) * DAY_MS)
-  const end = iso(now + DAY_MS)
+  const start = localIsoDayOffset(stale ? -LOOKBACK_DAYS : -REFRESH_DAYS, now)
+  const end = localIsoDayOffset(0, now)
 
   const days: Record<string, OuraDaily> = {}
   if (prev?.days) for (const [k, v] of Object.entries(prev.days)) days[k] = { ...v }

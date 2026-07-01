@@ -13,6 +13,7 @@ import {
   type WeatherCache,
   type WeatherHour,
 } from '../plugins/stores/weather'
+import { localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readNumber, readString } from '../util/type-guards'
@@ -23,7 +24,6 @@ import {
 } from '../util/weather-kit'
 
 const CACHE_VERSION = 1
-const DAY_MS = 86_400_000
 const HOUR_MS = 3_600_000
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const stravaCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -74,15 +74,12 @@ async function startDate(): Promise<string> {
     cleanDay(process.env.WEATHERKIT_START_DATE) ??
     cleanDay(process.env.WEATHERKIT_SINCE) ??
     (await readTriathlonStart()) ??
-    new Date(Date.now() - 90 * DAY_MS).toISOString().slice(0, 10)
+    localIsoDayOffset(-90)
   )
 }
 
 function endDate(): string {
-  return (
-    cleanDay(process.env.WEATHERKIT_END_DATE) ??
-    new Date(Date.now() + DAY_MS).toISOString().slice(0, 10)
-  )
+  return cleanDay(process.env.WEATHERKIT_END_DATE) ?? localIsoDayOffset(0)
 }
 
 async function readPrivateKey(): Promise<string | null> {

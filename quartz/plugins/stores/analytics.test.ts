@@ -324,6 +324,23 @@ test('calibration tracks newest pace and volume deltas against the prior window'
   assert.equal(lastWeek.runHours, 0.8)
 })
 
+test('analytics treats late evening syncs as the local calendar day', () => {
+  const { cache } = fixtures()
+  cache.lastSync = Date.parse('2026-07-01T02:45:00.000Z')
+  cache.activities = {
+    '10': activity(10, 'Ride', '2026-06-30', 1800, 12000, {
+      startDate: '2026-07-01T01:11:01Z',
+      startDateLocal: '2026-06-30T21:11:01',
+    }),
+  }
+  cache.streams = {}
+
+  const a = buildAnalytics(cache, { since: '2026-06-01', timeZone: 'America/Toronto' })
+
+  assert.equal(a.meta.today, '2026-06-30')
+  assert.equal(a.meta.windowTo, '2026-06-30')
+})
+
 test('garmin scale drives body composition, multi-weigh-in series, weight merge, and goal', () => {
   const { cache, oura, weights } = fixtures()
   const at = (offset: number, h: number): number =>
