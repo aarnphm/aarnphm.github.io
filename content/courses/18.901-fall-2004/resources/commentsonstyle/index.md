@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 890ee0429431ba0ea62273ae0043c4f2_commentsonstyle.pdf
 date: '2026-06-05'
 description: This handout contains suggestions for completing assignments in good mathematical style.
 id: mit-18-901-fall-2004-resource-resources-comments-on-style

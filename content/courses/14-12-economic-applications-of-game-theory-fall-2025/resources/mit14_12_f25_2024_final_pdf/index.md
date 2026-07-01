@@ -1,6 +1,4 @@
 ---
-aliases:
-  - mit14_12_f25_2024_final.pdf
 date: '2026-06-05'
 description: mit 14.12 2024 final exam
 id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-2024-final-pdf

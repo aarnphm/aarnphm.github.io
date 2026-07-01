@@ -11,8 +11,6 @@ tags:
   - 'differential equations'
   - 'mathematical analysis'
   - 'lecture notes'
-aliases:
-  - 'mit18_156_s25_lec14.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

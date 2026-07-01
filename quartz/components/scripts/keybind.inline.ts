@@ -226,6 +226,13 @@ document.addEventListener('nav', () => {
       ggTimeout = null
     }
   }
+  const maxScrollY = (): number => {
+    const scroller = document.scrollingElement ?? document.documentElement
+    return Math.max(0, scroller.scrollHeight - window.innerHeight)
+  }
+  const scrollToPageRatio = (ratio: number): void => {
+    window.scrollTo({ top: maxScrollY() * ratio, behavior: 'smooth' })
+  }
 
   const suppressPaletteBindings = (e: KeyboardEvent) => {
     if (!isPaletteActive()) return
@@ -526,7 +533,10 @@ document.addEventListener('nav', () => {
       return
     }
 
-    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+      clearGPrefix()
+      return
+    }
 
     if (waitingForSecondG && e.key !== 'g') {
       const navigated =
@@ -536,6 +546,7 @@ document.addEventListener('nav', () => {
         e.preventDefault()
         return
       }
+      return
     }
 
     switch (e.key) {
@@ -575,21 +586,22 @@ document.addEventListener('nav', () => {
         }
         break
 
+      case 'h':
       case 'H':
         e.preventDefault()
-        window.scrollTo({ top: window.scrollY, behavior: 'auto' })
+        scrollToPageRatio(0)
         break
 
+      case 'm':
       case 'M':
         e.preventDefault()
-        const middleY = window.scrollY + window.innerHeight / 2 - window.innerHeight / 2
-        window.scrollTo({ top: middleY, behavior: 'auto' })
+        scrollToPageRatio(0.5)
         break
 
+      case 'l':
       case 'L':
         e.preventDefault()
-        const bottomY = window.scrollY + window.innerHeight - window.innerHeight / 2
-        window.scrollTo({ top: bottomY, behavior: 'auto' })
+        scrollToPageRatio(1)
         break
     }
   }

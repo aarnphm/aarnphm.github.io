@@ -683,7 +683,6 @@ async function resourceMarkdown(context: CourseContext, resource: CourseResource
       description: resource.description || `${context.label} ${resource.title}`,
       id: metadataId(context, 'resource', resource.relDir),
       tags: uniqueValues([...context.tags, ...learningTypesForFrontmatter(resource.resourceTypes)]),
-      aliases: [path.posix.basename(resource.originalFile)],
     }),
     '',
     `up: ${resourceLink(context, '', context.label)}`,

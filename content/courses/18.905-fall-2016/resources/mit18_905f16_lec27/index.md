@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 8665d7c97d9a83a78bbc576390b4a95e_MIT18_905F16_lec27.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 27 ext and uct'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec27

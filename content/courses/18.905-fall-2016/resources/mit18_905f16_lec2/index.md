@@ -1,6 +1,4 @@
 ---
-aliases:
-  - fbfde8b8ae0b5b731ffa4641efbdee06_MIT18_905F16_lec2.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 2 homology'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec2

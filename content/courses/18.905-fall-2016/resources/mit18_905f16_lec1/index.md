@@ -1,6 +1,4 @@
 ---
-aliases:
-  - da2617fb684559927c6ccdfc61fd15e5_MIT18_905F16_lec1.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 1 introduction: singular simplices and chains'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec1

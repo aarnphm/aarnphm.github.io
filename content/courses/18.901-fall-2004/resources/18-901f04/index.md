@@ -1,6 +1,4 @@
 ---
-aliases:
-  - fd6e6b71b2a84ed4cc62a976da33a264_18-901f04.webp
 date: '2026-06-05'
 description: A standard example in topology called "the topologist's sine curve." (Image courtesy of Prof. James Munkres.)
 id: mit-18-901-fall-2004-resource-resources-18-901f04

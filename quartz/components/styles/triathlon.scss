@@ -690,7 +690,7 @@
 .tri-elev-cap {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.9rem;
   font-size: 0.66rem;
   margin-top: 0.32rem;
@@ -1328,6 +1328,24 @@
   color: color-mix(in srgb, var(--tri-bike) 60%, var(--dark));
 }
 
+.tri-calc-proj-likely {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  font-family: var(--codeFont);
+  font-size: 0.66rem;
+}
+.tri-calc-proj-likely-k {
+  font-size: 0.6rem;
+  color: var(--gray);
+}
+.tri-calc-proj-likely-v {
+  margin-left: auto;
+  color: var(--tri-accent);
+  font-variant-numeric: tabular-nums;
+}
+
 .tri-calc-embed {
   margin: 1.2rem 0;
 }
@@ -1768,8 +1786,8 @@
   position: static;
   box-sizing: border-box;
   width: 100%;
-  max-width: none;
-  margin: 0;
+  max-width: var(--tri-page-w);
+  margin: 0 auto;
   opacity: 1;
   visibility: visible;
   transform: none;
@@ -2435,6 +2453,10 @@
   transform: none;
 }
 
+.tri-cax-xt--last {
+  transform: translateX(-100%);
+}
+
 .tri-ana-zero {
   stroke: color-mix(in srgb, var(--gray) 35%, transparent);
   stroke-width: 0.4;
@@ -2750,6 +2772,9 @@
 
 .tri-engine-vo2-spark {
   height: 38px;
+}
+
+.tri-engine-vo2-axis {
   margin-top: 0.45rem;
 }
 
@@ -3035,7 +3060,7 @@
 
 .tri-rdy-row {
   display: grid;
-  grid-template-columns: 3.6rem 1fr auto;
+  grid-template-columns: 3.6rem minmax(0, 1fr) max-content;
   align-items: center;
   gap: 0.6rem;
 }
@@ -3162,13 +3187,16 @@
 }
 
 .tri-rdy-meta {
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 3em 8ch max-content;
   align-items: baseline;
-  gap: 0.5rem;
+  column-gap: 0.5rem;
   font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .tri-rdy-bind {
+  min-width: 3em;
   text-transform: lowercase;
 }
 .tri-rdy-bind.tri-leg-swim {
@@ -3182,7 +3210,113 @@
 }
 
 .tri-rdy-time {
+  min-width: 8ch;
   color: var(--dark);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tri-rdy-forecast {
+  display: grid;
+  grid-template-columns: 1ch repeat(3, 6.6ch);
+  align-items: baseline;
+  column-gap: 0.55rem;
+  color: var(--tri-accent);
+  font-variant-numeric: tabular-nums;
+
+  &:empty {
+    display: none;
+  }
+
+  &::before {
+    content: '≈';
+    opacity: 0.6;
+    text-align: center;
+  }
+}
+
+.tri-rdy-fc-leg {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.tri-rdy-fc-leg.tri-leg-swim {
+  color: var(--tri-swim);
+}
+.tri-rdy-fc-leg.tri-leg-bike {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-rdy-fc-leg.tri-leg-run {
+  color: var(--tri-run);
+}
+
+.tri-pred {
+  margin-top: 1rem;
+}
+.tri-pred-head {
+  font-size: 0.6rem;
+  color: var(--gray);
+  margin-bottom: 0.7rem;
+}
+.tri-pred-tabs {
+  --tri-pred-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  display: inline-flex;
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+  border: 1px solid var(--lightgray);
+  background: var(--tri-pred-surface);
+}
+.tri-pred-tab {
+  padding: 0.2rem 0.75rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  color: var(--gray);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+.tri-pred-tab--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-pred-surface));
+  color: var(--dark);
+}
+
+.tri-pred-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+.tri-pred-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.tri-pred-badge {
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  color: var(--tri-accent);
+}
+.tri-pred-time {
+  font-size: 1.15rem;
+  color: var(--dark);
+  font-variant-numeric: tabular-nums;
+}
+.tri-pred-delta {
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+
+  &:empty {
+    display: none;
+  }
+}
+.tri-pred-delta--up {
+  color: #66800b;
+}
+.tri-pred-delta--down {
+  color: #af3029;
 }
 
 .tri-ana-trend {
@@ -3763,6 +3897,10 @@
   font-size: 0.74rem;
   line-height: 1.45;
   color: var(--darkgray);
+}
+
+.tri-radar-tip {
+  max-width: min(21rem, calc(100vw - 1rem));
 }
 
 .tri-bodywt-head {

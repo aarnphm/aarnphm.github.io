@@ -1,6 +1,4 @@
 ---
-aliases:
-  - ad2717fa10ee054462fffa7752f37fb5_MIT18_905F16_lec26.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 26 coproducts, cohomology'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec26

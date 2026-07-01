@@ -1,6 +1,4 @@
 ---
-aliases:
-  - e24eb917e278a8dfe5914a72729c91d8_MIT18_905F16_lec32.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 32 proof of the orientation theorem'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec32

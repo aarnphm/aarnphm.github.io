@@ -88,6 +88,8 @@ const applyI18n = (root: HTMLElement): void => {
     if (key) node.textContent = tl(key)
   }
 }
+import { type PaceLegSpec, type PaceSport, isPaceSport } from '../../util/pace-features'
+import { PaceForecaster } from '../../util/pace-forecast'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 export {}
@@ -1042,7 +1044,7 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   const btn = root.querySelector<HTMLElement>('.tri-calc-btn')
   const calc = root.querySelector<HTMLElement>('.tri-calc')
   const closeBtn = root.querySelector<HTMLElement>('.tri-calc-close')
-  const pageMode = root.dataset.triView === 'tools'
+  const pageMode = root.dataset.triView === 'tools' || root.dataset.triView === 'calc'
   if (!calc || (!btn && !pageMode)) return null
 
   const inputVal = (k: string): string =>
@@ -1132,6 +1134,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   let projBands: ZoneBand[] = []
   let projZoneIdx = 2
   let projActive = false
+  let projModelKey = ''
+  let projModel: { mu: number; sigma: number } | null = null
   const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null => {
     if (!analytics) return null
     const cal = bySport(analytics.calibration.paces, sport)
@@ -1294,7 +1298,40 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     )
     frag.appendChild(delta)
 
+    if (projModel && projModelKey === raceKey(input)) {
+      const p =
+        normCdf((proj.slowSec - projModel.mu) / projModel.sigma) -
+        normCdf((proj.fastSec - projModel.mu) / projModel.sigma)
+      const likely = el('div', 'tri-calc-proj-likely', undefined, {
+        title: 'model probability the actual finish lands in this projected range',
+      })
+      likely.append(
+        el('span', 'tri-calc-proj-likely-k', 'model'),
+        el('span', 'tri-calc-proj-likely-v', `${Math.round(Math.max(0, Math.min(1, p)) * 100)}%`),
+      )
+      frag.appendChild(likely)
+    } else {
+      void ensureProjModel(input)
+    }
+
     projOut.replaceChildren(frag)
+  }
+  const raceKey = (i: TriathlonCalcInput): string => `${i.swimKm}-${i.bikeKm}-${i.runKm}`
+  const ensureProjModel = async (i: TriathlonCalcInput): Promise<void> => {
+    const key = raceKey(i)
+    if (key === projModelKey && projModel) return
+    const f = paceForecaster
+    if (!f?.ready) return
+    const legs: PaceLegSpec[] = [
+      { sport: 'swim', distanceKm: i.swimKm, elevationM: 0, tempC: null, windKph: null },
+      { sport: 'bike', distanceKm: i.bikeKm, elevationM: 0, tempC: null, windKph: null },
+      { sport: 'run', distanceKm: i.runKm, elevationM: 0, tempC: null, windKph: null },
+    ]
+    const fin = await f.forecastFinish(legs, i.t1Sec + i.t2Sec)
+    if (!fin || fin.slowSec <= fin.fastSec) return
+    projModel = { mu: fin.midSec, sigma: (fin.slowSec - fin.fastSec) / (2 * 1.2816) }
+    projModelKey = key
+    if (projActive) renderProjection()
   }
   const pinModalTop = (): void => {
     if (pageMode) return
@@ -2376,6 +2413,12 @@ const buildReadiness = (data: Analytics): HTMLElement => {
       markGloss(el('span', 'tri-rdy-time', hms(r.predictedTotalS)), 'predtime'),
     )
     row.appendChild(meta)
+    const fc = el('span', 'tri-rdy-forecast', '', {
+      'data-legs': JSON.stringify(r.legs.map(l => ({ sport: l.sport, distanceKm: l.legKm }))),
+      title: 'model forecast · 80% range',
+    })
+    meta.appendChild(fc)
+    if (paceForecaster?.ready) queueMicrotask(() => void fillForecastSlot(fc))
     block.appendChild(row)
   }
   return block
@@ -2564,6 +2607,7 @@ const buildTrend = (data: Analytics): HTMLElement => {
   block.appendChild(anaTitle('pace trend + forecast'))
   for (const sport of ['swim', 'bike', 'run'] as Sport[])
     block.appendChild(buildTrendPanel(data, sport))
+  block.appendChild(buildDistancePredictor())
   return block
 }
 
@@ -3337,7 +3381,23 @@ const buildVo2max = (data: Analytics): HTMLElement => {
       }),
     )
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
-    block.appendChild(s)
+    const frame = axisFrame(
+      domF,
+      s,
+      [hi, (hi + lo) / 2, lo].map(val => ({ label: val.toFixed(1), vbY: y(val) })),
+      ANA_H,
+      [
+        { label: shortDate(v.trend[0].weekStart), pct: 0, cls: 'tri-cax-xt--first' },
+        {
+          label: shortDate(v.trend[v.trend.length - 1].weekStart),
+          pct: 100,
+          cls: 'tri-cax-xt--last',
+        },
+      ],
+      38,
+    )
+    frame.classList.add('tri-engine-vo2-axis')
+    block.appendChild(frame)
     block.appendChild(el('div', 'tri-chart-readout'))
   }
   const cap = el('div', 'tri-elev-cap')
@@ -4104,6 +4164,46 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   return block
 }
 
+type AbilityAxis = Analytics['engine']['abilities']['axes'][number]
+
+const radarAxisDefinition = (axis: AbilityAxis): string => {
+  switch (axis.key) {
+    case 'sprint':
+      return 'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.'
+    case 'threshold':
+      return 'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.'
+    case 'endurance':
+      return 'Endurance is CTL, the 42-day weighted average of training load. Higher CTL means more recent work capacity is on the ledger.'
+    case 'climb':
+      return 'Climb is VAM, the rate of vertical gain while moving uphill. Higher VAM means more metres climbed per hour.'
+    case 'cadence':
+      return 'Cadence scores how close the current average is to 90 rpm on the bike or 180 spm on the run. Overspin and underspin both cost points.'
+    case 'recovery':
+      return 'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.'
+  }
+}
+
+const radarNotationDefinition = (axis: AbilityAxis): string => {
+  switch (axis.rawUnit) {
+    case 'w/kg':
+      return '$\\mathrm{W/kg}$ means watts per kilogram: power divided by body mass, so a 270 W rider at 90 kg reads 3.0 W/kg.'
+    case 'ctl':
+      return 'CTL means Chronic Training Load: a 42-day exponentially weighted training-stress average.'
+    case 'm/h':
+      return '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.'
+    case 'rpm':
+      return 'rpm means revolutions per minute, the pedal-turn rate on the bike.'
+    case 'spm':
+      return 'spm means steps per minute, the stride-turnover rate on the run.'
+    case 'readiness':
+      return "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain."
+    case 'ms':
+      return 'ms means milliseconds. HRV is the beat-to-beat variation in heart rhythm, with higher values usually reflecting better recovery relative to baseline.'
+    default:
+      return 'The raw value is the source measurement mapped onto the 0-100 radar score for this axis.'
+  }
+}
+
 const buildAbilities = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-radar')
   block.appendChild(anaTitle('abilities', 'radar'))
@@ -4643,8 +4743,10 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       if (!a) return
       const raw = a.rawValue != null ? `${a.rawValue} ${a.rawUnit}` : 'no data'
       radarTip.replaceChildren(
-        el('span', 'tri-gloss-h', a.label),
+        el('span', 'tri-gloss-h', tl(a.label)),
         el('span', 'tri-gloss-def', `${raw} · ${a.score != null ? `${a.score}/100` : '—'}`),
+        renderGlossDef(radarAxisDefinition(a)),
+        renderGlossDef(radarNotationDefinition(a)),
       )
       radarTip.classList.add('tri-gloss--on')
       const pr = radarTip.getBoundingClientRect()
@@ -6717,6 +6819,7 @@ const toggleTriUnit = (): void => {
 const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon', label: 'triathlon', hint: 'overview' },
   { path: '/triathlon/tools', label: 'tools', hint: 'gears' },
+  { path: '/triathlon/calc', label: 'calculator', hint: 'race calc' },
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
@@ -6886,6 +6989,13 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   let waitingForG = false
   let gTimeout: number | null = null
 
+  const clearG = (): void => {
+    waitingForG = false
+    if (gTimeout) {
+      clearTimeout(gTimeout)
+      gTimeout = null
+    }
+  }
   const go = (path: string) => {
     const url = new URL(path, window.location.toString())
     if (window.spaNavigate) window.spaNavigate(url)
@@ -6894,6 +7004,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   const subView = root.dataset.triView
   const subpageNav: Record<string, string> = {
     g: '/triathlon/tools',
+    c: '/triathlon/calc',
     a: '/triathlon/analytics',
     m: '/triathlon/maps',
     t: '/triathlon/training',
@@ -7007,6 +7118,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
   }
   const onKey = (e: KeyboardEvent) => {
     if (e.shiftKey && (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'g') {
+      clearG()
       e.preventDefault()
       e.stopImmediatePropagation()
       go('/triathlon/tools')
@@ -7014,6 +7126,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     }
 
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key === '\\') {
+      clearG()
       e.preventDefault()
       e.stopImmediatePropagation()
       runChord('h')
@@ -7029,29 +7142,33 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
       !e.altKey &&
       toggleSearchFocus(el)
     ) {
+      clearG()
       e.preventDefault()
       e.stopImmediatePropagation()
       return
     }
 
-    if (el && isEditable(el)) return
+    if (el && isEditable(el)) {
+      clearG()
+      return
+    }
 
-    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.ctrlKey || e.metaKey || e.altKey) {
+      clearG()
+      return
+    }
 
     if (waitingForG) {
       if (runChord(e.key.toLowerCase())) {
         e.preventDefault()
         e.stopImmediatePropagation()
       }
-      waitingForG = false
-      if (gTimeout) {
-        clearTimeout(gTimeout)
-        gTimeout = null
-      }
+      clearG()
     } else if (e.key.toLowerCase() === 'g') {
       waitingForG = true
       gTimeout = window.setTimeout(() => {
         waitingForG = false
+        gTimeout = null
       }, 1000)
     }
   }
@@ -7381,6 +7498,172 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
   }
 }
 
+function normCdf(z: number): number {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z))
+  const d = 0.3989423 * Math.exp((-z * z) / 2)
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
+  return z >= 0 ? 1 - p : p
+}
+
+let paceForecaster: PaceForecaster | null = null
+
+async function fillForecastSlot(slot: HTMLElement): Promise<void> {
+  if (!paceForecaster?.ready || slot.dataset.filled) return
+  let legs: PaceLegSpec[]
+  try {
+    const raw = JSON.parse(slot.dataset.legs ?? '[]') as { sport: string; distanceKm: number }[]
+    legs = raw
+      .filter(l => isPaceSport(l.sport) && l.distanceKm > 0)
+      .map(l => ({
+        sport: l.sport as PaceSport,
+        distanceKm: l.distanceKm,
+        elevationM: 0,
+        tempC: null,
+        windKph: null,
+      }))
+  } catch {
+    return
+  }
+  if (!legs.length) return
+  const fin = await paceForecaster.forecastFinish(legs, 0)
+  if (!fin) return
+  slot.dataset.filled = '1'
+  slot.replaceChildren()
+  slot.title = `model forecast · finish ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)}`
+  for (const leg of fin.legs)
+    slot.appendChild(el('span', `tri-rdy-fc-leg tri-leg-${leg.sport}`, hms(leg.midSec)))
+}
+
+function fillForecasts(scope: ParentNode): void {
+  for (const slot of scope.querySelectorAll<HTMLElement>('.tri-rdy-forecast'))
+    void fillForecastSlot(slot)
+}
+
+const PRED_SPORTS: { sport: PaceSport; dists: { km: number; label: string }[] }[] = [
+  {
+    sport: 'swim',
+    dists: [
+      { km: 0.75, label: '750m' },
+      { km: 1.5, label: '1.5K' },
+      { km: 1.9, label: '1.9K' },
+      { km: 3.8, label: '3.8K' },
+    ],
+  },
+  {
+    sport: 'bike',
+    dists: [
+      { km: 20, label: '20K' },
+      { km: 40, label: '40K' },
+      { km: 90, label: '90K' },
+      { km: 180, label: '180K' },
+    ],
+  },
+  {
+    sport: 'run',
+    dists: [
+      { km: 5, label: '5K' },
+      { km: 10, label: '10K' },
+      { km: 21.0975, label: 'half' },
+      { km: 42.195, label: 'marathon' },
+    ],
+  },
+]
+
+async function fillDistancePredictor(scope: ParentNode): Promise<void> {
+  const f = paceForecaster
+  if (!f?.ready || !f.day) return
+  const past = f.dayStateAgo(30)
+  for (const card of scope.querySelectorAll<HTMLElement>('.tri-pred-card')) {
+    if (card.dataset.filled) continue
+    const km = Number(card.dataset.km)
+    const sport = card.dataset.sport
+    if (!km || !isPaceSport(sport)) continue
+    const leg: PaceLegSpec = { sport, distanceKm: km, elevationM: 0, tempC: null, windKph: null }
+    const now = await f.forecastLegAt(f.day, leg)
+    if (!now || now.mu <= 0) continue
+    card.dataset.filled = '1'
+    const nowSec = (km * 1000) / now.mu
+    const timeEl = card.querySelector('.tri-pred-time')
+    if (timeEl) timeEl.textContent = hms(nowSec)
+    const then = past ? await f.forecastLegAt(past, leg) : null
+    const deltaEl = card.querySelector('.tri-pred-delta')
+    if (deltaEl && then && then.mu > 0) {
+      const delta = nowSec - (km * 1000) / then.mu
+      if (Math.abs(delta) >= 1) {
+        const faster = delta < 0
+        deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(delta))}`
+        deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
+      }
+    }
+  }
+}
+
+const buildDistancePredictor = (): HTMLElement => {
+  const block = el('div', 'tri-pred')
+  block.appendChild(el('div', 'tri-pred-head', 'model predictor · vs 30d ago'))
+  const tabs = el('div', 'tri-pred-tabs')
+  const grid = el('div', 'tri-pred-grid')
+  const renderSport = (sport: PaceSport): void => {
+    grid.replaceChildren()
+    const cfg = PRED_SPORTS.find(s => s.sport === sport)
+    if (!cfg) return
+    for (const d of cfg.dists) {
+      const card = el('div', 'tri-pred-card', '', { 'data-km': String(d.km), 'data-sport': sport })
+      card.append(
+        el('span', 'tri-pred-badge', d.label),
+        el('span', 'tri-pred-time', '—'),
+        el('span', 'tri-pred-delta'),
+      )
+      grid.appendChild(card)
+    }
+    if (paceForecaster?.ready) queueMicrotask(() => void fillDistancePredictor(grid))
+  }
+  for (const s of PRED_SPORTS) {
+    const on = s.sport === 'run'
+    const tab = el('button', `tri-pred-tab${on ? ' tri-pred-tab--on' : ''}`, s.sport, {
+      type: 'button',
+      'aria-selected': String(on),
+    })
+    tab.addEventListener('click', () => {
+      for (const t of tabs.querySelectorAll<HTMLElement>('.tri-pred-tab')) {
+        const active = t === tab
+        t.classList.toggle('tri-pred-tab--on', active)
+        t.setAttribute('aria-selected', String(active))
+      }
+      renderSport(s.sport)
+    })
+    tabs.appendChild(tab)
+  }
+  block.append(tabs, grid)
+  renderSport('run')
+  return block
+}
+
+const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
+  if (!root.dataset.analyticsPath && !root.querySelector('.tri-calc')) return null
+  let worker: Worker
+  try {
+    worker = new Worker(new URL('/pace.worker.js', import.meta.url), { type: 'module' })
+  } catch {
+    return null
+  }
+  const forecaster = new PaceForecaster(worker)
+  paceForecaster = forecaster
+  forecaster
+    .init(location.origin, 'pace', '/triathlon/data.jsonl')
+    .then(ok => {
+      if (ok) {
+        fillForecasts(root)
+        void fillDistancePredictor(root)
+      }
+    })
+    .catch(() => {})
+  return () => {
+    forecaster.dispose()
+    if (paceForecaster === forecaster) paceForecaster = null
+  }
+}
+
 document.addEventListener('nav', () => {
   const embedCleanup = setupDayEmbeds()
   if (embedCleanup) window.addCleanup?.(embedCleanup)
@@ -7402,6 +7685,8 @@ document.addEventListener('nav', () => {
   if (cleanup) window.addCleanup?.(cleanup)
   const calcCleanup = setupCalc(root)
   if (calcCleanup) window.addCleanup?.(calcCleanup)
+  const forecastCleanup = setupPaceForecast(root)
+  if (forecastCleanup) window.addCleanup?.(forecastCleanup)
   const gearCleanup = setupDropdown(
     root,
     '.tri-gear-wrap',

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 098e628738806c23f3000a19c3882f1d_MIT18_905F16_lec4.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 4 categorical language'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec4

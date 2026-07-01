@@ -316,6 +316,36 @@ async function getObjectFromBucket(
   return resp
 }
 
+async function getModelObject(
+  ctx: ExecutionContext,
+  bucket: R2Bucket,
+  key: string,
+  request: Request,
+  cacheControl: string,
+): Promise<Response> {
+  const head = request.method === 'HEAD'
+  const cache = (caches as CfCacheStorage).default
+  const cacheKey = new Request(request.url)
+  if (!head) {
+    const cached = await cache.match(cacheKey)
+    if (cached) return cached
+  }
+  const object = head ? await bucket.head(key) : await bucket.get(key)
+  if (!object)
+    return new Response('not found', {
+      status: 404,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+    })
+  const headers = new Headers()
+  object.writeHttpMetadata(headers)
+  if (object.httpEtag) headers.set('ETag', object.httpEtag)
+  headers.set('Cache-Control', cacheControl)
+  headers.set('Access-Control-Allow-Origin', '*')
+  const resp = new Response(head ? null : (object as R2ObjectBody).body, { headers })
+  if (!head) ctx.waitUntil(cache.put(cacheKey, resp.clone()))
+  return resp
+}
+
 async function getObjectFromLFS(
   info: { hash_algo: string; oid: string; size: number },
   request: Request,
@@ -652,6 +682,15 @@ export default {
       const id = env.MULTIPLAYER_COMMENTS.idFromName('global')
       const stub = env.MULTIPLAYER_COMMENTS.get(id)
       return stub.fetch(request)
+    }
+
+    if (url.pathname.startsWith('/models/')) {
+      if (request.method !== 'GET' && request.method !== 'HEAD')
+        return new Response('method not allowed', { status: 405 })
+      const cacheControl = url.pathname.endsWith('/latest.json')
+        ? 'public, max-age=60, must-revalidate'
+        : 'public, max-age=31536000, immutable'
+      return getModelObject(ctx, env.LFS_BUCKET, url.pathname.slice(1), request, cacheControl)
     }
 
     if (shouldRewriteMarkdown(request, url)) {

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - mit14_12_f25_problemset9.pdf
 date: '2026-06-05'
 description: mit 14.12 problem set 9
 id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-problem-set9-pdf

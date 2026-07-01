@@ -18,6 +18,8 @@ fd --glob "*.ddl" public -x rm
 fd --glob "*.war" public -x rm
 rm public/embeddings-text.jsonl
 
+pnpm model:retrain || echo "pace model refresh failed; deploying site without model update"
+
 pnpm wrangler deploy --minify
 
 unset GITHUB_SHA

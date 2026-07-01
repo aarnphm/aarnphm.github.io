@@ -1,6 +1,4 @@
 ---
-aliases:
-  - mit14_12f12_chapter11_f12.pdf
 date: '2026-06-05'
 description: 'mit 14.12 chapter 11 lecture notes: subgame perfect nash equilibrium'
 id: mit-14-12-fall-2025-resource-resources-mit14-12f12-chapter11-f12-pdf

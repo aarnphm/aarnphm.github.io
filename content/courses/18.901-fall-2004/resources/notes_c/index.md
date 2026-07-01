@@ -1,6 +1,4 @@
 ---
-aliases:
-  - e319b3a36ca774261b6b8c45e11804c2_notes_c.pdf
 date: '2026-06-05'
 description: 'Notes C: These Supplementary Notes are optional reading for the corresponding lecture sessions.'
 id: mit-18-901-fall-2004-resource-resources-notes-c

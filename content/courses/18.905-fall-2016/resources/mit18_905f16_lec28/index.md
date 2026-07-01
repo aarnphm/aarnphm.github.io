@@ -1,6 +1,4 @@
 ---
-aliases:
-  - b6e223ce8fd07c93e44c2345b8a76483_MIT18_905F16_lec28.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 27 products in cohomology'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec28

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - d6c5d6d30bf26300b6f1b2c278791796_problemset_5.pdf
 date: '2026-06-05'
 description: This is an optional problem set intended to make up for any assignment on which the student did poorly.
 id: mit-18-901-fall-2004-resource-resources-problem-set-5

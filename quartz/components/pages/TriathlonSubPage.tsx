@@ -7,6 +7,7 @@ import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
 import {
   AnalyticsPanel,
+  CalcPanel,
   FeedPanel,
   MapPanel,
   ToolsPanel,
@@ -17,6 +18,7 @@ import {
 
 const PANEL: Record<TriView, (props: { page?: boolean }) => JSX.Element> = {
   tools: ToolsPanel,
+  calc: CalcPanel,
   analytics: AnalyticsPanel,
   maps: MapPanel,
   training: TrainingPanel,

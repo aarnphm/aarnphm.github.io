@@ -1,6 +1,4 @@
 ---
-aliases:
-  - e6722722f4c4ac08e3ff6be15da390a6_MIT18_905F16_lec12.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 12 subdivision'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec12

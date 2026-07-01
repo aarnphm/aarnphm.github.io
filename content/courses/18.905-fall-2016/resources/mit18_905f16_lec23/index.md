@@ -1,6 +1,4 @@
 ---
-aliases:
-  - eb4705e2796dc724ebd2af0d087c1629_MIT18_905F16_lec23.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 23 hom and lim'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec23

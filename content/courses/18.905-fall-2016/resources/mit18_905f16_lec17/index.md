@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 8bb5e1d093463942643d57a4207a1494_MIT18_905F16_lec17.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 17 real projective space'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec17

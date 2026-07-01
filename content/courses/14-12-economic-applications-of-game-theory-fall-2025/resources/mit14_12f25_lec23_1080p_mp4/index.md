@@ -1,6 +1,4 @@
 ---
-aliases:
-  - mit14_12f25_lec23_1080p_360p_16_9.mp4
 date: '2026-06-05'
 description: 'mit 14.12 lecture 23: bargaining with incomplete information'
 id: mit-14-12-fall-2025-resource-resources-mit14-12f25-lec23-1080p-mp4

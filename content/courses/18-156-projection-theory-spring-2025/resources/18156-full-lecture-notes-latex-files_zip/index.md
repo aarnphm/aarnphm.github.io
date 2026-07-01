@@ -12,8 +12,6 @@ tags:
   - 'mathematical analysis'
   - 'lecture notes'
   - 'editable files'
-aliases:
-  - '18156-full-lecture-notes-latex-files.zip'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

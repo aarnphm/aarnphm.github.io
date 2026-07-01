@@ -3,6 +3,7 @@ import { KM_TO_MI } from '../../util/triathlon-card'
 
 const NAV = [
   ['tools', 'tools'],
+  ['calc', 'calculator'],
   ['analytics', 'analytics'],
   ['maps', 'maps'],
   ['training', 'training'],
@@ -692,7 +693,7 @@ export const CalcPanel = ({ page }: { page?: boolean }) => (
   </aside>
 )
 
-export const ToolsPanel = ({ page }: { page?: boolean }) => (
+export const ToolsPanel = () => (
   <div class="tri-tools">
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
@@ -711,12 +712,6 @@ export const ToolsPanel = ({ page }: { page?: boolean }) => (
         fuel
       </h2>
       <FuelEmbed />
-    </section>
-    <section class="tri-tools-sec">
-      <h2 class="tri-tools-h" data-i18n="calculator">
-        calculator
-      </h2>
-      <CalcPanel page={page} />
     </section>
   </div>
 )

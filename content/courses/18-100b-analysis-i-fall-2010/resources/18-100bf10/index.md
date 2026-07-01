@@ -11,8 +11,6 @@ tags:
   - 'mathematical analysis'
   - 'differential equations'
   - 'calculus'
-aliases:
-  - '5c88f9408009514f73f41d6b5d91fd13_18-100bf10.webp'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -12,8 +12,6 @@ tags:
   - 'mathematical analysis'
   - 'problem sets'
   - 'editable files'
-aliases:
-  - 'mit18_156_s25_pset1.tex'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 64c56d8bcc2967c1d289a61c959f3095_MIT18_905F16_lec11.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 11 the eilenberg steenrod axioms and the locality principle'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec11

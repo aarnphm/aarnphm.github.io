@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 2a313c70afa3c392a4d0cb36c6558b3e_MIT18_905F16_lec3.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 3 categories, functors, natural transformations'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec3

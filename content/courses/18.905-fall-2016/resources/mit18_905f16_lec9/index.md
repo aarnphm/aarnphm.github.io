@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 59a5307eef174c76ba863984d5dc452b_MIT18_905F16_lec9.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 9'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec9

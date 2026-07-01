@@ -1,6 +1,4 @@
 ---
-aliases:
-  - mit14_12_f25_chapter5_f12.pdf
 date: '2026-06-05'
 description: 'mit 14.12 chapter 5 lecture notes: rationalizability'
 id: mit-14-12-fall-2025-resource-resources-mit14-12-f25-chapter5-f12-pdf

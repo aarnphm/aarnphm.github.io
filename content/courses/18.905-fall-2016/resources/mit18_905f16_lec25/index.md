@@ -1,6 +1,4 @@
 ---
-aliases:
-  - ef3c91132a201f4b7667ab0916c4b373_MIT18_905F16_lec25.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 25 künneth and eilenberg zilber'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec25
