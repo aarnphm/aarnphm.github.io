@@ -1,5 +1,6 @@
 import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
+import { localIsoDay } from '../../util/local-date'
 import { isRecord, numberValue } from '../../util/type-guards'
 import { AppleCache } from './apple'
 import { matchGarminHeartRateActivity } from './garmin'
@@ -163,6 +164,7 @@ export interface AnalyticsInputs {
   vo2labs?: unknown
   ftp?: number | null
   since?: string
+  timeZone?: string
 }
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
@@ -3024,7 +3026,7 @@ export function buildAnalytics(
   cache: StravaRawCache | null,
   inputs: AnalyticsInputs = {},
 ): Analytics {
-  const todayFromSync = cache?.lastSync ? new Date(cache.lastSync).toISOString().slice(0, 10) : null
+  const todayFromSync = cache?.lastSync ? localIsoDay(cache.lastSync, inputs.timeZone) : null
   const dexaTests = parseDexa(inputs.dexa)
   const vo2Tests = parseVo2Lab(inputs.vo2labs)
   const latestDexa = dexaTests.length ? dexaTests[dexaTests.length - 1] : null

@@ -1991,6 +1991,7 @@
   gap: 1.5rem;
   flex: 1 1 auto;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   overscroll-behavior: contain;
   @include thin-scrollbar;
   padding: 1.1rem 1.2rem 2rem;
@@ -3284,39 +3285,160 @@
 }
 
 .tri-pred-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .tri-pred-card {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.6rem;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(0.45rem);
+  }
 }
 .tri-pred-badge {
-  font-size: 0.58rem;
+  flex: none;
+  min-width: 4.4rem;
+  font-size: 0.62rem;
   letter-spacing: 0.05em;
   color: var(--tri-accent);
 }
+.tri-pred-bar-track {
+  --tri-pred-line: color-mix(in srgb, var(--gray) 16%, transparent);
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.5rem;
+  background:
+    linear-gradient(
+      90deg,
+      transparent calc(25% - 0.5px),
+      var(--tri-pred-line) calc(25% - 0.5px) calc(25% + 0.5px),
+      transparent calc(25% + 0.5px)
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(50% - 0.5px),
+      var(--tri-pred-line) calc(50% - 0.5px) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      90deg,
+      transparent calc(75% - 0.5px),
+      var(--tri-pred-line) calc(75% - 0.5px) calc(75% + 0.5px),
+      transparent calc(75% + 0.5px)
+    ),
+    color-mix(in srgb, var(--gray) 12%, transparent);
+}
+.tri-pred-bar-range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  width: 0;
+  background: color-mix(in srgb, var(--tri-accent) 20%, transparent);
+  transition:
+    left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.15s ease;
+}
+.tri-pred-bar {
+  position: relative;
+  z-index: 1;
+  width: 0;
+  height: 100%;
+  background: var(--tri-accent);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.tri-pred-card:hover .tri-pred-bar-range {
+  background: color-mix(in srgb, var(--tri-accent) 32%, transparent);
+}
 .tri-pred-time {
-  font-size: 1.15rem;
+  flex: none;
+  min-width: 4.4rem;
+  text-align: right;
+  font-size: 0.72rem;
   color: var(--dark);
   font-variant-numeric: tabular-nums;
 }
 .tri-pred-delta {
+  flex: none;
+  min-width: 3.6rem;
+  text-align: right;
   font-size: 0.6rem;
   font-variant-numeric: tabular-nums;
-
-  &:empty {
-    display: none;
-  }
 }
 .tri-pred-delta--up {
   color: #66800b;
 }
 .tri-pred-delta--down {
   color: #af3029;
+}
+.tri-pred-axis {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+.tri-pred-axis-pad {
+  flex: none;
+  min-width: 4.4rem;
+}
+.tri-pred-axis-end {
+  flex: none;
+  min-width: 8.6rem;
+}
+.tri-pred-axis-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 0.85rem;
+}
+.tri-pred-axis-tick {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  padding-top: 0.3rem;
+  font-size: 0.54rem;
+  color: var(--gray);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 0.2rem;
+    background: color-mix(in srgb, var(--gray) 30%, transparent);
+  }
+
+  &[data-edge='start'] {
+    transform: translateX(0);
+
+    &::before {
+      left: 0;
+    }
+  }
+
+  &[data-edge='end'] {
+    transform: translateX(-100%);
+
+    &::before {
+      left: auto;
+      right: 0;
+    }
+  }
 }
 
 .tri-ana-trend {

@@ -15,6 +15,7 @@ import {
   garminConnectWeightSamples,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
+import { localDayEndUtcMs, localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
@@ -26,7 +27,6 @@ const DEFAULT_USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.7827.53 Safari/537.36'
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
-const DAY_MS = 86_400_000
 const MAX_DOCUMENT_REDIRECTS = 8
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
@@ -62,10 +62,6 @@ function envFlag(name: string, fallback: boolean): boolean {
   throw new Error(`${name} must be true/false or 1/0`)
 }
 
-function isoDay(ms: number): string {
-  return new Date(ms).toISOString().slice(0, 10)
-}
-
 function cleanDay(value: string | undefined): string | null {
   if (!value?.trim()) return null
   const day = value.trim()
@@ -88,12 +84,12 @@ async function startDate(): Promise<string> {
     cleanDay(process.env.GARMIN_CONNECT_START_DATE) ??
     cleanDay(process.env.GARMIN_CONNECT_SINCE) ??
     (await readTriathlonStart()) ??
-    isoDay(Date.now() - 90 * DAY_MS)
+    localIsoDayOffset(-90)
   )
 }
 
 function endDate(): string {
-  return cleanDay(process.env.GARMIN_CONNECT_END_DATE) ?? isoDay(Date.now() + DAY_MS)
+  return cleanDay(process.env.GARMIN_CONNECT_END_DATE) ?? localIsoDayOffset(0)
 }
 
 async function readCookieCandidates(): Promise<CookieCandidate[]> {
@@ -306,14 +302,6 @@ function activityStartMs(item: GarminConnectActivityListItem): number | null {
   return Number.isFinite(ms) ? ms : null
 }
 
-function dayStartMs(day: string): number {
-  return Date.parse(`${day}T00:00:00.000Z`)
-}
-
-function dayEndMs(day: string): number {
-  return Date.parse(`${day}T23:59:59.999Z`)
-}
-
 async function fetchActivities(
   session: GarminConnectSession,
   base: string,
@@ -324,8 +312,8 @@ async function fetchActivities(
 ): Promise<GarminConnectActivityListItem[]> {
   const out: GarminConnectActivityListItem[] = []
   const seen = new Set<string>()
-  const startMs = dayStartMs(start)
-  const endMs = dayEndMs(end)
+  const startMs = localDayStartUtcMs(start)
+  const endMs = localDayEndUtcMs(end)
   for (let offset = 0; ; offset += pageSize) {
     const raw = await getJson(session, base, '/graphql-gateway/graphql', undefined, {
       method: 'POST',

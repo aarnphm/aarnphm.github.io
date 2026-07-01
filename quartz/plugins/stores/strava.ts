@@ -1,6 +1,7 @@
 import type { GarminActivityMatch, GarminCache, GarminFueling, GarminStreams } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { WeatherCache } from './weather'
+import { localIsoDay } from '../../util/local-date'
 import { matchGarminActivity, matchGarminFueling, matchGarminHeartRateActivity } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
@@ -756,6 +757,7 @@ export function buildPayload(
   weather?: WeatherCache | null,
   inputFtp?: number | null,
   inputHrBounds?: number[] | null,
+  timeZone?: string,
 ): StravaPayload {
   if (!cache) return emptyPayload()
 
@@ -818,9 +820,7 @@ export function buildPayload(
   const dayMs = (iso: string): number => Date.parse(`${iso}T00:00:00Z`)
   const firstMs = dayMs(activities[0].a.startDateLocal.slice(0, 10))
   const lastActMs = dayMs(activities[activities.length - 1].a.startDateLocal.slice(0, 10))
-  const end = cache.lastSync
-    ? dayMs(new Date(cache.lastSync).toISOString().slice(0, 10))
-    : lastActMs
+  const end = cache.lastSync ? dayMs(localIsoDay(cache.lastSync, timeZone)) : lastActMs
   const start = sinceDay ? dayMs(sinceDay) : Math.max(firstMs, end - (WINDOW_DAYS - 1) * DAY_MS)
   const days: StravaDay[] = []
   for (let ms = start; ms <= end; ms += DAY_MS) {
