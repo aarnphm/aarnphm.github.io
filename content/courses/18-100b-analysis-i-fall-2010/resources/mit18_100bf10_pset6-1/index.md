@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'problem sets'
-aliases:
-  - 'b3278fcc00eeb2507e4da4f127dc50ca_MIT18_100BF10_pset6.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exam solutions'
-aliases:
-  - '00a16a14431ed934d646d4a8bada5a82_MIT18_100BF10_Practice1sol.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-aliases:
-  - '0fd469d484daa1477141879ef252dba4_MIT18_100BF10_RiemannInte.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 1df7278a926d432190b76eb78b5d417e_MIT18_905F16_lec18.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 18 euler characteristic and homology approximation'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec18

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 296193819500dc68f6aedff1e470bd12_erratafortop.pdf
 date: '2026-06-05'
 description: This handout contains the errata sheet for the reference book "Topology" for second and subsequent printings.
 id: mit-18-901-fall-2004-resource-resources-errata-for-topology

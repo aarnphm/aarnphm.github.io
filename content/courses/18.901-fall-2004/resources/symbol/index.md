@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 5e12e0e93d08bc92b9c623a91291e57a_symbol.webp
 date: '2026-06-05'
 description: This is an image of a mathematical symbol used for problem set 0, the "diagnostic" problem set.
 id: mit-18-901-fall-2004-resource-resources-symbol

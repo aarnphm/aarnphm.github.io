@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'exams'
-aliases:
-  - 'e7cdeead3c01afdda5b3feb4cdf39ac2_MIT18_100BF10_prac3.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

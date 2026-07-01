@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 3800ce641a9ff63ffe0d4440242705ca_MIT18_905F16_lec24.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 24 universal coefficient theorem'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec24

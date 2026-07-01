@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-aliases:
-  - 'b7780b2a0629359b11c5de998c72a147_MIT18_100BF10_compactness.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 03255991e65719b1a785d86275fffd24_MIT18_905F16_lec29.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 29 cup product (cont.)'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec29

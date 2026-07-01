@@ -1,6 +1,4 @@
 ---
-aliases:
-  - cab89a135e857d1dca92425bf22ade36_MIT18_905F16_lec8.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 8 relative homology'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec8

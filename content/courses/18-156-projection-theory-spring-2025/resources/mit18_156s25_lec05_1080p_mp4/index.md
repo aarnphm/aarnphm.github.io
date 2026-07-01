@@ -11,8 +11,6 @@ tags:
   - 'differential equations'
   - 'mathematical analysis'
   - 'lecture videos'
-aliases:
-  - 'mit18_156s25_lec05_1080p_360p_16_9.mp4'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

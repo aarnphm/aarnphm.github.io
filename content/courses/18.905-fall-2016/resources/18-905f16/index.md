@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 5e0c719d764c68917a8e422c4fd7c449_18-905f16.gif
 date: '2026-06-05'
 description: mit 18.905 18 905f16
 id: mit-18-905-fall-2016-resource-resources-18-905f16

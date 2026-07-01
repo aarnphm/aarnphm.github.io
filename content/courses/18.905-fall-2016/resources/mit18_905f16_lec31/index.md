@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 2cb69838cfa957134e95f913ab9a3210_MIT18_905F16_lec31.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 31 local coefficients and orientations'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec31

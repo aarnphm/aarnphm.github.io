@@ -1,6 +1,4 @@
 ---
-aliases:
-  - bdcbc277a4da063b13550baf12206a6f_notes_k.pdf
 date: '2026-06-05'
 description: 'Notes K: These Supplementary Notes are optional reading for the corresponding lecture sessions.'
 id: mit-18-901-fall-2004-resource-resources-notes-k

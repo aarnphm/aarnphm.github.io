@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 5ce6e8fd72d7196cf756c1062fa96d16_MIT18_905F16_lec19.pdf
 date: '2026-05-23'
 description: 'mit 18.905 algebraic topology i: lecture 19 coefficients'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec19

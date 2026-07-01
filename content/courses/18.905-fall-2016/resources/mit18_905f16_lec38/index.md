@@ -1,6 +1,4 @@
 ---
-aliases:
-  - df5a124cb9ce127b0783ffabd11b5641_MIT18_905F16_lec38.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 38 applications'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec38

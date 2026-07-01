@@ -12,8 +12,6 @@ tags:
   - 'differential equations'
   - 'calculus'
   - 'readings'
-aliases:
-  - 'a86090efb2b8c2b55e27179ae17c2007_MIT18_100BF10_Dvl_Strcs.pdf'
 layout: 'A|L'
 license: 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International'
 license_url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

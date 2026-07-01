@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 2dad3dd8354992d877fbeca4049817ee_MIT18_905F16_lecture_notes.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture notes'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lecture-notes

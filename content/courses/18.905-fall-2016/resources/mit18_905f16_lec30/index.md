@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 814487341940af3b7b590d4486d5fbcb_MIT18_905F16_lec30.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 30 surfaces and nondegenerate symmetric bilinear forms'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec30

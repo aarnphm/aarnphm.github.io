@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 1f3d6264ad65213f713f5b80f61ddaa1_MIT18_905F16_lec34.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 34 cap product and "cech" cohomology'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec34

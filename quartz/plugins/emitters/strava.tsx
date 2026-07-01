@@ -38,7 +38,7 @@ import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
-const TRI_SUBVIEWS: TriView[] = ['tools', 'analytics', 'maps', 'training', 'feed']
+const TRI_SUBVIEWS: TriView[] = ['tools', 'calc', 'analytics', 'maps', 'training', 'feed']
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {

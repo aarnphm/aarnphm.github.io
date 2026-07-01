@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 9d6d15233b7bf48fa9902e3d584c6f5e_MIT18_905F16_lec15.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 15 cw complexes ii'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec15

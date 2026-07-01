@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 3bc1cb3c5738726fb810455953c3c821_MIT18_905F16_pset1.pdf
 date: '2026-06-05'
 description: This resource contains information regarding algebraic topology I, problem set 1.
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-pset1

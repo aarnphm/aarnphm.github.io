@@ -1,6 +1,4 @@
 ---
-aliases:
-  - 6d0d50879f0d498ecd93ec54e7c94db3_MIT18_905F16_lec37.pdf
 date: '2026-06-05'
 description: 'mit 18.905 algebraic topology i: lecture 37 poincaré duality'
 id: mit-18-905-fall-2016-resource-resources-mit18-905f16-lec37
