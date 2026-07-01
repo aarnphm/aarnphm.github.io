@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import subprocess
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -25,8 +26,10 @@ from safetensors.numpy import save_file
 
 jax.config.update('jax_enable_x64', False)
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 SPORTS = ('swim', 'bike', 'run')
+T_REF_S = 3600.0
+RIEGEL_K = {'swim': 1.03, 'bike': 1.05, 'run': 1.06}
 FEATURE_NAMES = (
   'sport_swim',
   'sport_bike',
@@ -47,12 +50,13 @@ FEATURE_NAMES = (
   'weight_kg',
   'vthr',
   'hr_max',
+  'effort',
 )
 DF = len(FEATURE_NAMES)
 DIN = DF * 2
 LN_EPS = 1e-5
 VAR_EPS = 1e-6
-MASKABLE = (5, 6, 11, 12, 13, 14, 15, 16, 18)
+MASKABLE = (5, 6, 11, 12, 13, 14, 15, 16, 18, 19)
 
 
 def prev_iso(iso: str) -> str:
@@ -135,6 +139,8 @@ def feature_vector(day: dict, act: dict, vthr: float, hr_max: float | None):
   put(16, day.get('weightKg'))
   raw[17] = vthr
   put(18, hr_max)
+  avg_hr = num(act, 'avgHr')
+  put(19, avg_hr / hr_max if avg_hr is not None and hr_max else None)
   return raw, pres
 
 
@@ -145,6 +151,7 @@ def build_dataset(meta: dict, days: dict, acts: list[dict], target: str):
   hr_max = float(hr_max) if isinstance(hr_max, (int, float)) else None
   today = datetime.now().strftime('%Y-%m-%d')
   rows_raw, rows_pres, ys, dates, sports = [], [], [], [], []
+  vbbs, vreals = [], []
   for act in acts:
     sport = act.get('sport')
     if sport not in SPORTS:
@@ -154,32 +161,48 @@ def build_dataset(meta: dict, days: dict, acts: list[dict], target: str):
     vthr = vthr_by.get(sport, 0.0)
     if vthr <= 0:
       continue
+    v_bb = math.nan
     if target == 'pace':
       vgap = num(act, 'vGap')
-      if vgap is None:
+      dist = num(act, 'distanceKm')
+      if vgap is None or dist is None or dist <= 0:
         continue
-      y = vgap / vthr
+      if not 0.3 <= vgap / vthr <= 2.5:
+        continue
+      d_ref = vthr * T_REF_S / 1000.0
+      v_bb = vthr * (dist / d_ref) ** (1.0 - RIEGEL_K[sport])
+      y = math.log(vgap / v_bb)
     else:
       avg_hr = num(act, 'avgHr')
       if avg_hr is None or not hr_max:
         continue
       y = avg_hr / hr_max
-    if not 0.3 <= y <= 2.5:
-      continue
+      if not 0.3 <= y <= 2.5:
+        continue
     iso = act['date']
     day = days.get(prev_iso(iso)) or days.get(iso) or {}
     raw, pres = feature_vector(day, act, vthr, hr_max)
+    if target == 'hr':
+      raw[19] = 0.0
+      pres[19] = 0.0
+    else:
+      raw[3] = 0.0
+      pres[3] = 0.0
     rows_raw.append(raw)
     rows_pres.append(pres)
     ys.append(y)
     dates.append(iso)
     sports.append(sport)
+    vbbs.append(v_bb)
+    vreals.append(num(act, 'vGap') if target == 'pace' else math.nan)
   return (
     np.array(rows_raw),
     np.array(rows_pres),
     np.array(ys, dtype=np.float64),
     dates,
     sports,
+    np.array(vbbs, dtype=np.float64),
+    np.array(vreals, dtype=np.float64),
   )
 
 
@@ -240,7 +263,9 @@ def nll_loss(params, x, y, arch, l2):
 def train_member(xtr, ytr, xva, yva, arch, l2, seed, steps):
   key = jax.random.PRNGKey(seed)
   params = init_params(key, arch, xtr.shape[1])
-  opt = optax.chain(optax.clip_by_global_norm(1.0), optax.adamw(1e-2, weight_decay=0.0))
+  opt = optax.chain(
+    optax.clip_by_global_norm(1.0), optax.adamw(1e-2, weight_decay=0.0)
+  )
   state = opt.init(params)
   loss_grad = jax.jit(
     jax.value_and_grad(lambda p, x, y: nll_loss(p, x, y, arch, l2))
@@ -323,7 +348,9 @@ def main() -> None:
 
   feed_path = Path(args.feed)
   meta, days, acts = load_feed(feed_path)
-  raw, pres, y, dates, sports = build_dataset(meta, days, acts, args.target)
+  raw, pres, y, dates, sports, v_bb_all, v_real_all = build_dataset(
+    meta, days, acts, args.target
+  )
   n = len(y)
   if n < 24:
     print(f'pace_train: only {n} samples for {args.target}; skipping')
@@ -368,21 +395,41 @@ def main() -> None:
   arch['layerNormEps'] = LN_EPS
   arch['members'] = args.members
   mu_va, var_va = ensemble_predict(best_members, jnp.array(x_all[va]), arch)
-  mae = float(np.mean(np.abs(mu_va - y[va])))
-  rmse = float(np.sqrt(np.mean((mu_va - y[va]) ** 2)))
   sd = np.sqrt(var_va)
   cov80 = float(np.mean(np.abs(mu_va - y[va]) <= 1.2816 * sd))
   cov90 = float(np.mean(np.abs(mu_va - y[va]) <= 1.6449 * sd))
-  nll_va = float(np.mean(0.5 * (np.log(var_va) + (mu_va - y[va]) ** 2 / var_va)))
+  nll_va = float(
+    np.mean(0.5 * (np.log(var_va) + (mu_va - y[va]) ** 2 / var_va))
+  )
 
-  sport_mean = {
-    s: float(np.mean(y[tr][np.array(sports)[tr] == s]))
-    for s in set(np.array(sports)[tr])
-  }
-  base_pred = np.array([
-    sport_mean.get(s, float(np.mean(y[tr]))) for s in np.array(sports)[va]
-  ])
-  base_mae = float(np.mean(np.abs(base_pred - y[va])))
+  backbone = None
+  if args.target == 'pace':
+    vbb_va = v_bb_all[va]
+    vreal_va = v_real_all[va]
+    vhat_va = vbb_va * np.exp(mu_va)
+    mae = float(np.mean(np.abs(vhat_va - vreal_va)))
+    rmse = float(np.sqrt(np.mean((vhat_va - vreal_va) ** 2)))
+    base_mae = float(np.mean(np.abs(vbb_va - vreal_va)))
+    val_space = 'velocity'
+    backbone = {
+      'kind': 'riegel',
+      'tRefS': T_REF_S,
+      'riegelK': dict(RIEGEL_K),
+      'distanceIndex': FEATURE_NAMES.index('distance_km'),
+      'sportIndices': {'swim': 0, 'bike': 1, 'run': 2},
+    }
+  else:
+    mae = float(np.mean(np.abs(mu_va - y[va])))
+    rmse = float(np.sqrt(np.mean((mu_va - y[va]) ** 2)))
+    sport_mean = {
+      s: float(np.mean(y[tr][np.array(sports)[tr] == s]))
+      for s in set(np.array(sports)[tr])
+    }
+    base_pred = np.array([
+      sport_mean.get(s, float(np.mean(y[tr]))) for s in np.array(sports)[va]
+    ])
+    base_mae = float(np.mean(np.abs(base_pred - y[va])))
+    val_space = 'ratio'
   beats_baseline = mae < base_mae
 
   scale_feature = 'vthr' if args.target == 'pace' else 'hr_max'
@@ -433,6 +480,7 @@ def main() -> None:
       'varTransform': 'softplus',
       'varEps': VAR_EPS,
       'scaleFeature': scale_feature,
+      'backbone': backbone,
     },
     'arch': arch,
     'sha256': sha,
@@ -446,6 +494,7 @@ def main() -> None:
       'nTrain': int(tr.sum()),
       'baselineMae': base_mae,
       'beatsBaseline': beats_baseline,
+      'valSpace': val_space,
       'valFromDate': sorted([dates[i] for i in np.where(va)[0]])[0],
     },
     'golden': golden,
@@ -453,7 +502,7 @@ def main() -> None:
   (vdir / 'manifest.json').write_text(json.dumps(manifest, indent=2))
   print(
     f'pace_train[{args.target}] v{version}: n={n} arch={arch["layers"]}L '
-    f'mae={mae:.4f} baseline={base_mae:.4f} beats={beats_baseline} '
+    f'mae={mae:.4f}({val_space}) baseline={base_mae:.4f} beats={beats_baseline} '
     f'cov90={cov90:.2f} -> {vdir}'
   )
 

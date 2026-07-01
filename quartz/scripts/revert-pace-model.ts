@@ -2,7 +2,7 @@ import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { isRecord, readNumber, readString } from '../util/type-guards'
-import { POINTER_CC, PUBLIC_BASE, r2put } from './pace-r2'
+import { POINTER_CC, PUBLIC_BASE, livePointerVal, r2put } from './pace-r2'
 
 async function main(): Promise<void> {
   const [family, versionArg] = process.argv.slice(2)
@@ -29,11 +29,7 @@ async function main(): Promise<void> {
     weights: `models/${family}/v${version}/model.safetensors`,
     sha256: readString(manifest, 'sha256') ?? '',
     datasetHash: readString(manifest, 'datasetHash') ?? '',
-    val: {
-      mae: readNumber(val, 'mae') ?? 0,
-      nll: readNumber(val, 'nll') ?? 0,
-      coverage90: readNumber(val, 'coverage90') ?? 0,
-    },
+    val: livePointerVal(val, readNumber(val, 'mae') ?? 0),
     promotedAt: Date.now(),
     revertedTo: version,
   }

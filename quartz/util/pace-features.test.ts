@@ -40,19 +40,47 @@ const runSpec: PaceLegSpec = {
 }
 
 test('feature schema dims are coherent', () => {
-  assert.equal(PACE_FEATURE_DIM, 19)
+  assert.equal(PACE_FEATURE_DIM, 20)
   assert.equal(PACE_FEATURE_NAMES.length, PACE_FEATURE_DIM)
-  assert.equal(PACE_INPUT_DIM, 38)
+  assert.equal(PACE_INPUT_DIM, 40)
   assert.equal(new Set(PACE_FEATURE_NAMES).size, PACE_FEATURE_NAMES.length)
 })
 
 test('fully populated vector matches expected order', () => {
   const { raw, presence } = buildFeatureVector(day, runSpec, ctx)
-  assert.deepEqual(
-    Array.from(raw),
-    [0, 0, 1, 10, 120, 18, 12, 50, 40, 10, 25, 60, 48, 80, 28800, -0.25, 88, 3.5, 182],
-  )
+  assert.deepEqual(Array.from(raw), [
+    0,
+    0,
+    1,
+    10,
+    120,
+    18,
+    12,
+    50,
+    40,
+    10,
+    25,
+    60,
+    48,
+    80,
+    28800,
+    -0.25,
+    88,
+    3.5,
+    182,
+    Math.fround(0.92),
+  ])
   assert.deepEqual(Array.from(presence), Array<number>(PACE_FEATURE_DIM).fill(1))
+})
+
+test('effort pins to race fraction and overrides via ctx', () => {
+  const def = buildFeatureVector(day, runSpec, ctx)
+  assert.equal(def.raw[19], Math.fround(0.92))
+  assert.equal(def.presence[19], 1)
+  const swim = buildFeatureVector(day, { ...runSpec, sport: 'swim' }, ctx)
+  assert.equal(swim.raw[19], Math.fround(0.88))
+  const pinned = buildFeatureVector(day, runSpec, { ...ctx, effortFrac: 0.75 })
+  assert.equal(pinned.raw[19], Math.fround(0.75))
 })
 
 test('sport one-hot and sport_ctl select by sport', () => {

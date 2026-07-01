@@ -56,7 +56,7 @@ function primed(): PaceForecaster {
 
 test('predict returns null when not ready', async () => {
   const f = new PaceForecaster(new MockWorker())
-  assert.equal(await f.predict(new Float32Array(19), new Float32Array(19)), null)
+  assert.equal(await f.predict(new Float32Array(20), new Float32Array(20)), null)
 })
 
 test('forecastFinish composes per-leg ranges + transitions', async () => {

@@ -3,7 +3,15 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { PaceModel, ensureBackend, parseManifest, parseSafetensors } from '../util/pace-model'
 import { isRecord, readNumber, readString } from '../util/type-guards'
-import { IMMUTABLE_CC, POINTER_CC, fetchLiveLatest, r2put } from './pace-r2'
+import {
+  IMMUTABLE_CC,
+  LEGACY_VAL_SPACE,
+  POINTER_CC,
+  fetchLiveLatest,
+  livePointerVal,
+  r2put,
+  regressesLiveMae,
+} from './pace-r2'
 
 const FAMILIES = ['pace', 'hr'] as const
 const ARCHIVE = process.env.PACE_ARCHIVE ?? '.models-archive'
@@ -50,12 +58,13 @@ async function publishFamily(family: string): Promise<void> {
 
   const datasetHash = readString(manifestRaw as Record<string, unknown>, 'datasetHash') ?? ''
   const newMae = readNumber(val, 'mae') ?? Number.POSITIVE_INFINITY
+  const newValSpace = readString(val, 'valSpace') ?? LEGACY_VAL_SPACE
   const live = await fetchLiveLatest(family)
   if (live && live.datasetHash === datasetHash) {
     console.log(`${family}: dataset unchanged (live v${live.version}); skipping`)
     return
   }
-  if (live && newMae > live.valMae * (1 + REGRESS_TOL)) {
+  if (live && regressesLiveMae(live, newMae, newValSpace, REGRESS_TOL)) {
     console.log(
       `${family}: val MAE ${newMae.toFixed(4)} regresses vs ${live.valMae.toFixed(4)}; not promoting`,
     )
@@ -80,11 +89,7 @@ async function publishFamily(family: string): Promise<void> {
     weights: `models/${family}/v${version}/model.safetensors`,
     sha256: manifest.sha256,
     datasetHash,
-    val: {
-      mae: newMae,
-      nll: readNumber(val, 'nll') ?? 0,
-      coverage90: readNumber(val, 'coverage90') ?? 0,
-    },
+    val: livePointerVal(val, newMae),
     promotedAt: Date.now(),
   }
   const latestPath = join(vdir, 'latest.json')

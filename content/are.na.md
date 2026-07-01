@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-01 09:02:00 GMT-04:00
+modified: 2026-07-01 13:02:08 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2318,6 +2318,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://seanxthielen.com/ -- Sean Thielen-Esparza
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [engineer]
+  - Special Projects at Anthropic
 - https://x.com/yacineMTB -- yacine X profile
   - [meta]:
     - date: 06/30/2026
@@ -16241,12 +16246,10 @@ title: are.na
   - [meta]:
     - date: 06/22/2026
     - tags: [tensor calculus, notation]
-    - later: true
 - https://en.wikipedia.org/wiki/Cantor%27s_theorem -- Cantor's theorem
   - [meta]:
     - date: 06/22/2026
     - tags: [set theory, cardinality]
-    - later: true
 - https://en.wikipedia.org/wiki/Poincar%C3%A9%E2%80%93Bendixson_theorem -- Poincare-Bendixson theorem
   - [meta]:
     - date: 06/22/2026
