@@ -10,6 +10,8 @@ struct WatchContentView: View {
         LabeledContent("Last", value: session.lastExport)
         LabeledContent("Days", value: "\(session.dayCount)")
         LabeledContent("Swims", value: "\(session.swimCount)")
+        LabeledContent("Workouts", value: "\(session.workoutCount)")
+        LabeledContent("HR", value: "\(session.heartRateCount)")
       }
       Section {
         Button("Sync Now") {

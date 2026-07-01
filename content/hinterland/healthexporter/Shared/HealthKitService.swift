@@ -33,15 +33,20 @@ final class HealthKitService {
     let identifiers = (cumulativeTypes + latestTypes).map(\.1) + [
       .distanceSwimming,
       .swimmingStrokeCount,
+      .heartRate,
     ]
     return identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
+  }
+
+  private var allSampleTypes: [HKSampleType] {
+    allQuantityTypes + [HKObjectType.workoutType()]
   }
 
   func requestAuthorization() async throws {
     guard HKHealthStore.isHealthDataAvailable() else {
       throw HealthExporterError.healthDataUnavailable
     }
-    let types = Set(allQuantityTypes.map { $0 as HKObjectType })
+    let types = Set(allSampleTypes.map { $0 as HKObjectType })
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
       store.requestAuthorization(toShare: [], read: types) { success, error in
         if let error {
@@ -57,7 +62,7 @@ final class HealthKitService {
 
   func startObservers(onChange: @escaping () -> Void) {
     guard observerQueries.isEmpty else { return }
-    for type in allQuantityTypes {
+    for type in allSampleTypes {
       let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completion, _ in
         onChange()
         completion()
@@ -95,9 +100,11 @@ final class HealthKitService {
       )
     }
     let swimSamples = try await swimSamples(start: start, end: end, calendar: calendar)
+    let workouts = try await workoutHeartRates(start: start, end: end)
     return HealthAggregator.document(
       quantitySamples: quantitySamples,
       swimSamples: swimSamples,
+      workouts: workouts,
       generatedAt: now,
       calendar: calendar
     )
@@ -289,6 +296,106 @@ final class HealthKitService {
       return .kickboard
     default:
       return nil
+    }
+  }
+
+  private func workouts(start: Date, end: Date) async throws -> [HKWorkout] {
+    let type = HKObjectType.workoutType()
+    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [.strictStartDate])
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+    return try await withCheckedThrowingContinuation { continuation in
+      let query = HKSampleQuery(
+        sampleType: type,
+        predicate: predicate,
+        limit: HKObjectQueryNoLimit,
+        sortDescriptors: [sort]
+      ) { _, samples, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        continuation.resume(returning: (samples ?? []).compactMap { $0 as? HKWorkout })
+      }
+      store.execute(query)
+    }
+  }
+
+  private func heartRateSamples(for workout: HKWorkout) async throws -> [AppleHealthHeartRate] {
+    let type = try quantityType(.heartRate)
+    let unit = HKUnit.count().unitDivided(by: .minute())
+    let predicate = HKQuery.predicateForObjects(from: workout)
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+    return try await withCheckedThrowingContinuation { continuation in
+      let query = HKSampleQuery(
+        sampleType: type,
+        predicate: predicate,
+        limit: HKObjectQueryNoLimit,
+        sortDescriptors: [sort]
+      ) { _, samples, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        let values = (samples ?? []).compactMap { sample -> AppleHealthHeartRate? in
+          guard let sample = sample as? HKQuantitySample else { return nil }
+          let bpm = Int(sample.quantity.doubleValue(for: unit).rounded())
+          guard bpm > 0 else { return nil }
+          return AppleHealthHeartRate(
+            time: HealthExporterFormat.utcTimestampString(sample.startDate),
+            bpm: bpm
+          )
+        }
+        continuation.resume(returning: values)
+      }
+      store.execute(query)
+    }
+  }
+
+  private func workoutHeartRates(start: Date, end: Date) async throws -> [AppleHealthWorkout] {
+    var exports: [AppleHealthWorkout] = []
+    for workout in try await workouts(start: start, end: end) {
+      let heartRate = try await heartRateSamples(for: workout)
+      if heartRate.isEmpty { continue }
+      exports.append(
+        AppleHealthWorkout(
+          id: workout.uuid.uuidString,
+          activity: Self.workoutActivityName(workout.workoutActivityType),
+          start: HealthExporterFormat.utcTimestampString(workout.startDate),
+          end: HealthExporterFormat.utcTimestampString(workout.endDate),
+          durationS: Int(workout.duration.rounded()),
+          heartRate: heartRate
+        )
+      )
+    }
+    return exports
+  }
+
+  private static func workoutActivityName(_ type: HKWorkoutActivityType) -> String {
+    switch type {
+    case .cycling:
+      return "cycling"
+    case .running:
+      return "running"
+    case .walking:
+      return "walking"
+    case .swimming:
+      return "swimming"
+    case .traditionalStrengthTraining:
+      return "strength"
+    case .functionalStrengthTraining:
+      return "functionalStrength"
+    case .highIntensityIntervalTraining:
+      return "hiit"
+    case .yoga:
+      return "yoga"
+    case .coreTraining:
+      return "core"
+    case .flexibility:
+      return "flexibility"
+    case .other:
+      return "other"
+    default:
+      return "other"
     }
   }
 }

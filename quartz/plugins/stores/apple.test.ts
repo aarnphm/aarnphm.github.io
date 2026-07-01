@@ -103,6 +103,41 @@ test('JSON import preserves swim aggregates from HealthExporter', () => {
   )
 })
 
+test('JSON import preserves workout heart-rate streams from HealthExporter', () => {
+  assert.deepEqual(
+    parseAppleJson({
+      workouts: [
+        {
+          id: '7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63',
+          activity: 'cycling',
+          start: '2026-07-01T01:11:00.000Z',
+          end: '2026-07-01T02:07:45Z',
+          durationS: 3405.4,
+          heartRate: [
+            { time: '2026-07-01T01:11:09Z', bpm: 122.2 },
+            { time: '2026-07-01T01:11:04.000Z', bpm: 117.6 },
+            { time: 'wat', bpm: 200 },
+            { time: '2026-07-01T01:11:12Z', bpm: 0 },
+          ],
+        },
+      ],
+    }).workouts,
+    [
+      {
+        id: '7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63',
+        activity: 'cycling',
+        start: '2026-07-01T01:11:00Z',
+        end: '2026-07-01T02:07:45Z',
+        durationS: 3405,
+        heartRate: [
+          { time: '2026-07-01T01:11:04Z', bpm: 118 },
+          { time: '2026-07-01T01:11:09Z', bpm: 122 },
+        ],
+      },
+    ],
+  )
+})
+
 test('matchSwimDistance reads the lap start + meters, converting non-metric units', () => {
   assert.deepEqual(
     matchSwimDistance(

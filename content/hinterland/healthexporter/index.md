@@ -24,6 +24,7 @@ A 180-day window back from `now`, bucketed by the device's autoupdating calendar
 | body mass      | `bodyMass`                                 | latest reading per day                |
 | VO2 max        | `vo2Max`                                   | latest reading per day                |
 | swims          | `distanceSwimming` + `swimmingStrokeCount` | per-day total, laps, stroke breakdown |
+| workout HR     | `workoutType` + `heartRate`                | workout-scoped heart-rate samples     |
 
 ## output
 
@@ -31,7 +32,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -51,6 +52,19 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
       "laps": 60,
       "strokes": { "freestyle": 1300, "breaststroke": 200 }
     }
+  ],
+  "workouts": [
+    {
+      "id": "7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63",
+      "activity": "cycling",
+      "start": "2026-07-01T01:11:00Z",
+      "end": "2026-07-01T02:07:45Z",
+      "durationS": 3405,
+      "heartRate": [
+        { "time": "2026-07-01T01:11:04Z", "bpm": 118 },
+        { "time": "2026-07-01T01:11:09Z", "bpm": 122 }
+      ]
+    }
   ]
 }
 ```
@@ -58,7 +72,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 ## architecture
 
 - `HealthAggregator` — pure folding of samples into day buckets and swim days. No HealthKit import, so `HealthAggregatorTests` runs without a device.
-- `HealthKitService` — authorization, the statistics-collection queries for cumulative daily sums, the sample queries for latest weight/VO2, and swim reconstruction.
+- `HealthKitService` — authorization, the statistics-collection queries for cumulative daily sums, the sample queries for latest weight/VO2, swim reconstruction, and workout-scoped heart-rate streams.
 - `HealthExportWriter` — JSON encode plus atomic write to the iCloud container.
 - `HealthExportRuntime` — wires the three together and re-exports whenever an observer query fires.
 

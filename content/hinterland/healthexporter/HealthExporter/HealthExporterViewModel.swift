@@ -7,6 +7,8 @@ final class HealthExporterViewModel: ObservableObject {
   @Published var generatedAt = "Never"
   @Published var dayCount = 0
   @Published var swimCount = 0
+  @Published var workoutCount = 0
+  @Published var heartRateCount = 0
   @Published var isExporting = false
 
   func prepare() async {
@@ -29,6 +31,8 @@ final class HealthExporterViewModel: ObservableObject {
         generatedAt = result.document.generatedAt
         dayCount = result.document.days.count
         swimCount = result.document.swims.count
+        workoutCount = result.document.workouts.count
+        heartRateCount = result.document.workouts.reduce(0) { $0 + $1.heartRate.count }
         filePath = HealthExportWriter.visiblePath
         status = "Exported to iCloud Drive"
       } catch {
