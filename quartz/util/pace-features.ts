@@ -1,6 +1,6 @@
 import { type UnknownRecord, isRecord, readNumber, readString } from './type-guards'
 
-export const PACE_SCHEMA_VERSION = 1
+export const PACE_SCHEMA_VERSION = 2
 
 export const PACE_SPORTS = ['swim', 'bike', 'run'] as const
 export type PaceSport = (typeof PACE_SPORTS)[number]
@@ -25,11 +25,14 @@ export const PACE_FEATURE_NAMES = [
   'weight_kg',
   'vthr',
   'hr_max',
+  'effort',
 ] as const
 export type PaceFeatureName = (typeof PACE_FEATURE_NAMES)[number]
 
 export const PACE_FEATURE_DIM = PACE_FEATURE_NAMES.length
 export const PACE_INPUT_DIM = PACE_FEATURE_DIM * 2
+
+export const RACE_EFFORT_FRAC: Record<PaceSport, number> = { swim: 0.88, bike: 0.9, run: 0.92 }
 
 export interface PaceDayState {
   ctl: number
@@ -57,6 +60,7 @@ export interface PaceLegSpec {
 export interface PaceContext {
   vThrBySport: Record<PaceSport, number>
   hrMax: number | null
+  effortFrac?: number | null
 }
 
 export interface PaceFeatureVector {
@@ -107,6 +111,7 @@ export function buildFeatureVector(
   put(16, day.weightKg)
   raw[17] = ctx.vThrBySport[spec.sport]
   put(18, ctx.hrMax)
+  put(19, ctx.effortFrac ?? RACE_EFFORT_FRAC[spec.sport])
   return { raw, presence }
 }
 

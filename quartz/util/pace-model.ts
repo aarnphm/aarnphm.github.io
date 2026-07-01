@@ -9,12 +9,21 @@ export interface PaceTensor {
   data: Float32Array
 }
 
+export interface PaceBackbone {
+  kind: string
+  tRefS: number
+  riegelK: Record<string, number>
+  distanceIndex: number
+  sportIndices: Record<string, number>
+}
+
 export interface PaceManifestOutput {
   muIndex: number
   varIndex: number
   varTransform: string
   varEps: number
   scaleFeature: string
+  backbone: PaceBackbone | null
 }
 
 export interface PaceManifestArch {
@@ -65,6 +74,33 @@ function softplus(x: number): number {
   return x > 20 ? x : Math.log1p(Math.exp(x))
 }
 
+function numberRecord(value: unknown): Record<string, number> {
+  const out: Record<string, number> = {}
+  if (isRecord(value))
+    for (const [k, v] of Object.entries(value)) if (typeof v === 'number') out[k] = v
+  return out
+}
+
+function parseBackbone(value: unknown): PaceBackbone | null {
+  if (!isRecord(value)) return null
+  const tRefS = readNumber(value, 'tRefS')
+  const distanceIndex = readNumber(value, 'distanceIndex')
+  if (tRefS == null || distanceIndex == null) return null
+  return {
+    kind: readString(value, 'kind') ?? 'riegel',
+    tRefS,
+    riegelK: numberRecord(value.riegelK),
+    distanceIndex,
+    sportIndices: numberRecord(value.sportIndices),
+  }
+}
+
+function riegelKForRaw(raw: Float32Array, bb: PaceBackbone): number {
+  for (const [sport, idx] of Object.entries(bb.sportIndices))
+    if (raw[idx] > 0.5) return bb.riegelK[sport] ?? 1.06
+  return 1.06
+}
+
 function floatArray(value: unknown): Float32Array | null {
   if (!Array.isArray(value)) return null
   const out = new Float32Array(value.length)
@@ -100,8 +136,8 @@ export function parseSafetensors(buf: ArrayBuffer): Map<string, PaceTensor> {
 export function parseManifest(value: unknown): PaceManifest {
   if (!isRecord(value)) throw new Error('pace-model: manifest is not an object')
   const featureNames = Array.isArray(value.featureNames) ? value.featureNames.map(String) : []
-  if (featureNames.length !== PACE_FEATURE_NAMES.length)
-    throw new Error('pace-model: manifest featureNames length mismatch')
+  if (featureNames.length === 0 || featureNames.length > PACE_FEATURE_NAMES.length)
+    throw new Error('pace-model: manifest featureNames length out of range')
   for (let i = 0; i < featureNames.length; i++)
     if (featureNames[i] !== PACE_FEATURE_NAMES[i])
       throw new Error(`pace-model: featureNames[${i}] mismatch: ${featureNames[i]}`)
@@ -141,6 +177,7 @@ export function parseManifest(value: unknown): PaceManifest {
       varTransform: readString(out, 'varTransform') ?? 'softplus',
       varEps: readNumber(out, 'varEps') ?? 1e-6,
       scaleFeature: readString(out, 'scaleFeature') ?? 'vthr',
+      backbone: parseBackbone(out.backbone),
     },
     arch: {
       layers: readNumber(arch, 'layers') ?? 0,
@@ -177,6 +214,7 @@ export class PaceModel {
     readonly manifest: PaceManifest,
     private readonly members: Member[],
     private readonly scaleIndex: number,
+    private readonly backbone: PaceBackbone | null,
   ) {}
 
   static load(manifest: PaceManifest, tensors: Map<string, PaceTensor>): PaceModel {
@@ -200,7 +238,12 @@ export class PaceModel {
     const scaleIndex = PACE_FEATURE_NAMES.indexOf(
       manifest.output.scaleFeature as (typeof PACE_FEATURE_NAMES)[number],
     )
-    return new PaceModel(manifest, members, scaleIndex < 0 ? 17 : scaleIndex)
+    return new PaceModel(
+      manifest,
+      members,
+      scaleIndex < 0 ? 17 : scaleIndex,
+      manifest.output.backbone,
+    )
   }
 
   private standardize(raw: Float32Array, presence: Float32Array): Tensor {
@@ -211,6 +254,11 @@ export class PaceModel {
       const filled = presence[i] > 0 ? raw[i] : this.manifest.impute[i]
       xin[i] = (filled - mu[i]) / sigma[i]
       xin[df + i] = (presence[i] - mu[df + i]) / sigma[df + i]
+    }
+    const d = this.backbone?.distanceIndex
+    if (d != null) {
+      xin[d] = 0
+      xin[df + d] = 0
     }
     return np.array(xin)
   }
@@ -250,6 +298,16 @@ export class PaceModel {
 
   async predict(raw: Float32Array, presence: Float32Array): Promise<PacePrediction> {
     const intensity = await this.forwardIntensity(raw, presence)
+    const bb = this.backbone
+    if (bb) {
+      const vThr = raw[this.scaleIndex]
+      const dist = raw[bb.distanceIndex]
+      const dRef = (vThr * bb.tRefS) / 1000
+      const vBackbone =
+        dRef > 0 && dist > 0 ? vThr * Math.pow(dist / dRef, 1 - riegelKForRaw(raw, bb)) : vThr
+      const v = vBackbone * Math.exp(intensity.mu)
+      return { mu: v, sigma: v * intensity.sigma }
+    }
     const scale = raw[this.scaleIndex]
     return { mu: intensity.mu * scale, sigma: intensity.sigma * scale }
   }
