@@ -8,6 +8,8 @@ final class WatchExportSession: NSObject, ObservableObject, WCSessionDelegate {
   @Published var lastExport = "Never"
   @Published var dayCount = 0
   @Published var swimCount = 0
+  @Published var workoutCount = 0
+  @Published var heartRateCount = 0
 
   private override init() {
     super.init()
@@ -75,6 +77,12 @@ final class WatchExportSession: NSObject, ObservableObject, WCSessionDelegate {
       }
       if let swimCount = context["swimCount"] as? Int {
         self.swimCount = swimCount
+      }
+      if let workoutCount = context["workoutCount"] as? Int {
+        self.workoutCount = workoutCount
+      }
+      if let heartRateCount = context["heartRateCount"] as? Int {
+        self.heartRateCount = heartRateCount
       }
       self.status = "Synced from phone"
     }

@@ -108,11 +108,36 @@ final class HealthAggregatorTests: XCTestCase {
       calendar: calendar
     )
 
-    XCTAssertEqual(document.version, 1)
+    XCTAssertEqual(document.version, 2)
     XCTAssertEqual(document.generatedAt, "2026-06-19T07:30:00-04:00")
     XCTAssertEqual(document.timezone, "America/Toronto")
     XCTAssertEqual(document.days, [])
     XCTAssertEqual(document.swims, [])
+    XCTAssertEqual(document.workouts, [])
+  }
+
+  func testDocumentCarriesWorkoutHeartRateStreams() {
+    let generatedAt = date(2026, 6, 19, 7, 30)
+    let workout = AppleHealthWorkout(
+      id: "7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63",
+      activity: "cycling",
+      start: "2026-07-01T01:11:00Z",
+      end: "2026-07-01T02:07:45Z",
+      durationS: 3405,
+      heartRate: [
+        AppleHealthHeartRate(time: "2026-07-01T01:11:04Z", bpm: 118),
+        AppleHealthHeartRate(time: "2026-07-01T01:11:09Z", bpm: 122),
+      ]
+    )
+    let document = HealthAggregator.document(
+      quantitySamples: [],
+      swimSamples: [],
+      workouts: [workout],
+      generatedAt: generatedAt,
+      calendar: calendar
+    )
+
+    XCTAssertEqual(document.workouts, [workout])
   }
 
   private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {

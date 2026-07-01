@@ -17,17 +17,19 @@ struct HealthAggregator {
   static func document(
     quantitySamples: [QuantitySampleValue],
     swimSamples: [SwimSampleValue],
+    workouts: [AppleHealthWorkout] = [],
     generatedAt: Date,
     calendar: Calendar
   ) -> HealthExportDocument {
     let days = aggregateDays(quantitySamples: quantitySamples, calendar: calendar)
     let swims = aggregateSwims(swimSamples: swimSamples, calendar: calendar)
     return HealthExportDocument(
-      version: 1,
+      version: 2,
       generatedAt: HealthExporterFormat.timestampString(generatedAt, timeZone: calendar.timeZone),
       timezone: calendar.timeZone.identifier,
       days: days,
-      swims: swims
+      swims: swims,
+      workouts: workouts
     )
   }
 

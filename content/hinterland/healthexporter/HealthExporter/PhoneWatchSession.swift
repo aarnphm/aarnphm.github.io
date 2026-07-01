@@ -24,6 +24,8 @@ final class PhoneWatchSession: NSObject, WCSessionDelegate {
       "generatedAt": result.document.generatedAt,
       "dayCount": result.document.days.count,
       "swimCount": result.document.swims.count,
+      "workoutCount": result.document.workouts.count,
+      "heartRateCount": result.document.workouts.reduce(0) { $0 + $1.heartRate.count },
       "path": result.url.path,
     ]
     try? WCSession.default.updateApplicationContext(context)

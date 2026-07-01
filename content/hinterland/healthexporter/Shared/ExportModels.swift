@@ -50,12 +50,27 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable {
   var id: String { date }
 }
 
+struct AppleHealthHeartRate: Codable, Equatable {
+  let time: String
+  let bpm: Int
+}
+
+struct AppleHealthWorkout: Codable, Equatable, Identifiable {
+  let id: String
+  let activity: String
+  let start: String
+  let end: String
+  let durationS: Int
+  let heartRate: [AppleHealthHeartRate]
+}
+
 struct HealthExportDocument: Codable, Equatable {
   let version: Int
   let generatedAt: String
   let timezone: String
   let days: [AppleHealthDay]
   let swims: [AppleHealthSwim]
+  let workouts: [AppleHealthWorkout]
 }
 
 struct HealthExportResult: Equatable {
@@ -78,5 +93,10 @@ enum HealthExporterFormat {
     formatter.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone]
     formatter.timeZone = timeZone
     return formatter.string(from: date)
+  }
+
+  static func utcTimestampString(_ date: Date) -> String {
+    let timeZone = TimeZone(secondsFromGMT: 0) ?? TimeZone(identifier: "UTC") ?? .current
+    return timestampString(date, timeZone: timeZone)
   }
 }

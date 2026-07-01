@@ -16,16 +16,32 @@ export interface AppleSwim {
   strokes: Record<string, number>
 }
 
+export interface AppleHeartRateSample {
+  time: string
+  bpm: number
+}
+
+export interface AppleWorkout {
+  id: string
+  activity: string
+  start: string
+  end: string
+  durationS: number
+  heartRate: AppleHeartRateSample[]
+}
+
 export interface AppleCache {
   version?: number
   lastSync: number
   days: Record<string, AppleDaily>
   swims?: Record<string, AppleSwim>
+  workouts?: Record<string, AppleWorkout>
 }
 
 export interface AppleJsonEntries {
   days: AppleDaily[]
   swims: AppleSwim[]
+  workouts: AppleWorkout[]
 }
 
 export const SWIM_STROKES = [
@@ -284,8 +300,53 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
   return out.sort((a, b) => a.date.localeCompare(b.date))
 }
 
+function parseIsoSecond(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const time = Date.parse(value)
+  if (!Number.isFinite(time)) return null
+  return new Date(time).toISOString().replace('.000Z', 'Z')
+}
+
+function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
+  const workouts = isRecord(raw) ? raw.workouts : undefined
+  if (!Array.isArray(workouts)) return []
+  const out: AppleWorkout[] = []
+  for (const workout of workouts) {
+    if (!isRecord(workout)) continue
+    const id = readString(workout, 'id')
+    const activity = readString(workout, 'activity')
+    const start = parseIsoSecond(workout.start)
+    const end = parseIsoSecond(workout.end)
+    const durationS = readNumber(workout, 'durationS')
+    const rawHeartRate = Array.isArray(workout.heartRate) ? workout.heartRate : []
+    if (!id || !activity || !start || !end || durationS == null) continue
+    const heartRate: AppleHeartRateSample[] = []
+    for (const sample of rawHeartRate) {
+      if (!isRecord(sample)) continue
+      const time = parseIsoSecond(sample.time)
+      const bpm = readNumber(sample, 'bpm')
+      if (!time || bpm == null || bpm <= 0) continue
+      heartRate.push({ time, bpm: Math.round(bpm) })
+    }
+    if (heartRate.length === 0) continue
+    out.push({
+      id,
+      activity,
+      start,
+      end,
+      durationS: Math.round(durationS),
+      heartRate: heartRate.sort((a, b) => a.time.localeCompare(b.time)),
+    })
+  }
+  return out.sort((a, b) => a.start.localeCompare(b.start))
+}
+
 export function parseAppleJson(raw: unknown): AppleJsonEntries {
-  return { days: parseAppleJsonDays(raw), swims: parseAppleJsonSwims(raw) }
+  return {
+    days: parseAppleJsonDays(raw),
+    swims: parseAppleJsonSwims(raw),
+    workouts: parseAppleJsonWorkouts(raw),
+  }
 }
 
 export function mergeAppleDay(prev: AppleDaily | undefined, next: AppleDaily): AppleDaily {

@@ -9,6 +9,7 @@ import {
   aggregateSwimLaps,
   AppleCache,
   AppleDaily,
+  AppleWorkout,
   AppleRecord,
   AppleSwim,
   latestAppleDate,
@@ -23,7 +24,7 @@ import {
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 const healthExporterICloudContainer = 'iCloud~xyz~aarnphm~healthexporter'
 const healthExporterImportFile = 'apple-health-import.json'
@@ -96,6 +97,7 @@ async function readCache(): Promise<AppleCache | null> {
 interface AppleEntries {
   days: AppleDaily[]
   swims: AppleSwim[]
+  workouts: AppleWorkout[]
 }
 
 async function parseXmlFile(path: string): Promise<AppleEntries> {
@@ -120,7 +122,11 @@ async function parseXmlFile(path: string): Promise<AppleEntries> {
       if (open) pendingStart = open
     }
   }
-  return { days: aggregateAppleRecords(records), swims: aggregateSwimLaps(strokeLaps, distByStart) }
+  return {
+    days: aggregateAppleRecords(records),
+    swims: aggregateSwimLaps(strokeLaps, distByStart),
+    workouts: [],
+  }
 }
 
 async function loadEntries(path: string): Promise<AppleEntries> {
@@ -132,6 +138,7 @@ async function main(): Promise<void> {
   const prev = await readCache()
   const days: Record<string, AppleDaily> = { ...prev?.days }
   const swims: Record<string, AppleSwim> = { ...prev?.swims }
+  const workouts: Record<string, AppleWorkout> = { ...prev?.workouts }
 
   const candidates = appleImportCandidates(process.env.APPLE_HEALTH_FILE)
 
@@ -150,8 +157,9 @@ async function main(): Promise<void> {
       touched += 1
     }
     for (const s of entries.swims) swims[s.date] = s
+    for (const workout of entries.workouts) workouts[workout.id] = workout
     console.log(
-      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims from ${path}`,
+      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims, ${entries.workouts.length} workout HR streams from ${path}`,
     )
   }
 
@@ -166,12 +174,12 @@ async function main(): Promise<void> {
     return
   }
 
-  const cache: AppleCache = { version: CACHE_VERSION, lastSync: Date.now(), days, swims }
+  const cache: AppleCache = { version: CACHE_VERSION, lastSync: Date.now(), days, swims, workouts }
   await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[apple] merged ${touched} day-entries → ${Object.keys(days).length} days → ${cacheFile}`,
+    `[apple] merged ${touched} day-entries → ${Object.keys(days).length} days, ${Object.keys(workouts).length} workout HR streams → ${cacheFile}`,
   )
 }
 

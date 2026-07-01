@@ -11,6 +11,8 @@ struct ContentView: View {
           LabeledContent("Last export", value: model.generatedAt)
           LabeledContent("Days", value: "\(model.dayCount)")
           LabeledContent("Swims", value: "\(model.swimCount)")
+          LabeledContent("Workouts", value: "\(model.workoutCount)")
+          LabeledContent("HR samples", value: "\(model.heartRateCount)")
         }
         Section("Output") {
           Text(model.filePath)

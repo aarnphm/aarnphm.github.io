@@ -21,11 +21,11 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>HealthExporter reads daily training and recovery metrics so the triathlon page can stay current.</string>
+	<string>HealthExporter reads daily training, workout, and heart-rate metrics so the triathlon page can stay current.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>HealthExporter does not write Health data.</string>
 	<key>NSUbiquitousContainers</key>
