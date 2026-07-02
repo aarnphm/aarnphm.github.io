@@ -1,5 +1,8 @@
+import { SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI } from '../../util/triathlon-card'
+
+const MAP_SPORTS = ['bike', 'run', 'walk'] as const
 
 const NAV = [
   ['tools', 'tools'],
@@ -305,9 +308,55 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
               </button>
             </div>
             <div class="tri-map-legend tri-map-overlay-legend">
-              <span class="tri-map-legend-lo" />
               <span class="tri-map-legend-bar" />
-              <span class="tri-map-legend-hi" />
+              <span class="tri-map-legend-ends">
+                <span class="tri-map-legend-lo" />
+                <span class="tri-map-legend-hi" />
+              </span>
+            </div>
+          </div>
+          <div class="tri-map-side" role="group" aria-label="map controls">
+            <button
+              class="tri-map-side-fold"
+              type="button"
+              aria-expanded="true"
+              aria-label="Collapse map controls"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
+            <div class="tri-map-side-body">
+              {MAP_SPORTS.map(sport => (
+                <button
+                  class="tri-map-sport"
+                  type="button"
+                  data-sport={sport}
+                  aria-pressed="true"
+                  aria-label={sport}
+                  title={sport}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    {SPORT_ICON[sport].map(d => (
+                      <path d={d} />
+                    ))}
+                  </svg>
+                </button>
+              ))}
+              <span class="tri-map-side-rule" />
+              <button
+                class="tri-map-style"
+                type="button"
+                aria-pressed="false"
+                aria-label="satellite"
+                title="satellite"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+                  <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
+                  <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+                </svg>
+              </button>
             </div>
           </div>
           <div class="tri-map-tip" aria-hidden="true" />

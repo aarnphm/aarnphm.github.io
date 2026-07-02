@@ -10,6 +10,38 @@ export interface OuraDaily {
   activeCalories: number | null
 }
 
+export interface OuraSeries {
+  startTs: string
+  intervalS: number
+  items: (number | null)[]
+}
+
+export interface OuraDayDetail {
+  date: string
+  bedtimeStart: string | null
+  bedtimeEnd: string | null
+  phase5Min: string | null
+  efficiency: number | null
+  latencyS: number | null
+  timeInBedS: number | null
+  totalSleepS: number | null
+  deepS: number | null
+  lightS: number | null
+  remS: number | null
+  awakeS: number | null
+  avgBreath: number | null
+  avgHr: number | null
+  avgHrv: number | null
+  lowestHr: number | null
+  restlessPeriods: number | null
+  hrv: OuraSeries | null
+  hr: OuraSeries | null
+  readinessScore: number | null
+  readinessContrib: Record<string, number | null> | null
+  sleepScore: number | null
+  sleepContrib: Record<string, number | null> | null
+}
+
 export interface OuraAuth {
   refreshToken: string
   obtainedAt: number
@@ -26,6 +58,7 @@ export interface OuraCache {
   user?: OuraUser
   lastSync: number
   days: Record<string, OuraDaily>
+  details?: Record<string, OuraDayDetail>
 }
 
 export interface OuraSleepDateFields {

@@ -228,6 +228,29 @@
   gap: 1rem;
 }
 
+.tri-pop-head--detail {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.tri-pop-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tri-pop-title {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--codeFont);
+  font-size: 0.78rem;
+  color: var(--dark);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tri-pop-date {
   font-family: var(--codeFont);
   font-size: 0.72rem;
@@ -1586,8 +1609,8 @@
   opacity: 0;
   visibility: hidden;
   transition:
-    opacity 0.2s ease,
-    visibility 0.2s;
+    opacity 0.15s ease,
+    visibility 0s linear 0.15s;
 }
 
 .tri-analytics-open .tri-analytics-scrim,
@@ -1595,6 +1618,9 @@
 .tri-training-open .tri-training-scrim {
   opacity: 1;
   visibility: visible;
+  transition:
+    opacity 0.2s ease,
+    visibility 0s;
 }
 
 .tri-analytics,
@@ -1616,10 +1642,11 @@
   border-radius: var(--radius-none);
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, -46%);
+  transform: translate(-50%, var(--tri-modal-y)) scale(0.97);
   transition:
-    opacity 0.2s ease,
-    visibility 0.28s;
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0s linear 0.15s;
 }
 
 .tri-analytics-open .tri-analytics,
@@ -1627,7 +1654,31 @@
 .tri-training-open .tri-training {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, var(--tri-modal-y));
+  transform: translate(-50%, var(--tri-modal-y)) scale(1);
+  transition:
+    opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-analytics,
+  .tri-map,
+  .tri-training {
+    transform: translate(-50%, var(--tri-modal-y));
+    transition:
+      opacity 0.15s ease,
+      visibility 0s linear 0.15s;
+  }
+
+  .tri-analytics-open .tri-analytics,
+  .tri-map-open .tri-map,
+  .tri-training-open .tri-training {
+    transform: translate(-50%, var(--tri-modal-y));
+    transition:
+      opacity 0.15s ease,
+      visibility 0s;
+  }
 }
 
 .tri-subpage {
@@ -1871,6 +1922,28 @@
 
   &:hover {
     color: var(--dark);
+  }
+}
+
+.tri-ana-back--ico {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 }
 
@@ -2725,6 +2798,243 @@
   stroke: color-mix(in srgb, var(--dark) 70%, transparent);
   stroke-width: 0.7;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-ana-sleep .tri-ana-weekly-svg .tri-seg--sleep,
+.tri-ana-sleep .tri-ana-weekly-svg .tri-seg--short {
+  cursor: pointer;
+}
+
+.tri-ana-sleep .tri-seg--active {
+  fill: var(--tri-accent);
+}
+
+.tri-sleep-day {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tri-sleep-day > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tri-sleep-day--open {
+  grid-template-rows: 1fr;
+  transition-duration: 0.3s;
+}
+
+.tri-sleep-day-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    padding-top 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tri-sleep-day--open .tri-sleep-day-inner {
+  padding-top: 0.6rem;
+  opacity: 1;
+  transition:
+    opacity 0.24s ease 0.08s,
+    padding-top 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-sleep-day,
+  .tri-sleep-day--open {
+    transition: none;
+  }
+
+  .tri-sleep-day-inner,
+  .tri-sleep-day--open .tri-sleep-day-inner {
+    transition: opacity 0.15s ease;
+  }
+}
+
+.tri-sleep-day-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.tri-sleep-day-head .tri-elev-cap {
+  margin-top: 0;
+  gap: 0.6rem;
+}
+
+.tri-sleep-day-date {
+  color: var(--dark);
+}
+
+.tri-sleep-day-close {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--codeFont);
+  font-size: 0.72rem;
+  line-height: 1;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+.tri-sleep-day-close:hover {
+  color: var(--dark);
+}
+
+.tri-sleep-contrib {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 1rem;
+}
+
+.tri-sleep-contrib .tri-ana-block-title {
+  margin-bottom: 0.15rem;
+}
+
+.tri-sleep-contrib-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr) 2rem;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--codeFont);
+  font-size: 0.6rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--darkgray);
+}
+
+.tri-sleep-contrib-bar {
+  position: relative;
+  height: 4px;
+  background: color-mix(in srgb, var(--gray) 18%, transparent);
+  border-radius: var(--radius-none);
+}
+
+.tri-sleep-contrib-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--tri-bike) 70%, var(--dark));
+  border-radius: var(--radius-none);
+}
+
+.tri-sleep-contrib-fill--low {
+  background: #d14d41;
+}
+
+.tri-sleep-contrib-val {
+  text-align: right;
+  color: var(--gray);
+}
+
+.tri-sleep-chart {
+  position: relative;
+  margin-top: 1rem;
+}
+
+.tri-sleep-chart .tri-ana-block-title {
+  margin-bottom: 0.3rem;
+}
+
+.tri-hyp-svg {
+  height: 64px;
+}
+
+.tri-sleep-line-svg {
+  height: 56px;
+}
+
+.tri-sleep-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1rem 0 0.6rem;
+}
+
+.tri-sleep-rocky {
+  position: relative;
+  width: 96px;
+  height: 104px;
+}
+
+.tri-rocky-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  opacity: 0;
+  animation: tri-rocky-toss 2.4s step-end infinite;
+}
+
+.tri-rocky-frame:nth-child(2) {
+  animation-delay: -1.8s;
+}
+
+.tri-rocky-frame:nth-child(3) {
+  animation-delay: -1.2s;
+}
+
+.tri-rocky-frame:nth-child(4) {
+  animation-delay: -0.6s;
+}
+
+@keyframes tri-rocky-toss {
+  0%,
+  24.99% {
+    opacity: 1;
+  }
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-rocky-frame {
+    animation: none;
+  }
+
+  .tri-rocky-frame:first-child {
+    opacity: 1;
+  }
+}
+
+.tri-hyp--deep {
+  fill: color-mix(in srgb, var(--dark) 85%, transparent);
+}
+
+.tri-hyp--light {
+  fill: color-mix(in srgb, var(--tri-bike) 70%, var(--dark));
+}
+
+.tri-hyp--rem {
+  fill: var(--tri-swim);
+}
+
+.tri-hyp--awake {
+  fill: color-mix(in srgb, var(--gray) 35%, transparent);
+}
+
+.tri-ana-sleep .tri-sleep-day .tri-ana-cursor {
+  opacity: 0;
+}
+
+.tri-sleep-day .tri-sleep-chart.tri-chart--hover .tri-ana-cursor {
+  opacity: 0.7;
+}
+
+.tri-ana-sleep .tri-sleep-day .tri-chart-readout {
+  opacity: 0;
+}
+
+.tri-sleep-day .tri-sleep-chart.tri-chart--hover .tri-chart-readout {
+  opacity: 1;
 }
 
 .tri-engine-vo2-head {
@@ -5281,13 +5591,103 @@
   }
 }
 
-.tri-map-overlay-legend {
+.tri-map-side {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--light) 94%, transparent);
+  border: 1px solid var(--lightgray);
+}
+
+.tri-map-canvas--down ~ .tri-map-side,
+.tri-map--detail .tri-map-side {
+  display: none;
+}
+
+.tri-map-side-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.tri-map-side--folded .tri-map-side-body {
+  display: none;
+}
+
+.tri-map-side-fold,
+.tri-map-sport,
+.tri-map-style {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  color: var(--gray);
+  background: none;
+  border: none;
+  border-radius: var(--radius-none);
+  padding: 0;
+  cursor: pointer;
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-map-sport[aria-pressed='true'],
+.tri-map-style[aria-pressed='true'] {
+  color: var(--dark);
+}
+
+.tri-map-side-rule {
+  height: 1px;
+  margin: 0.15rem 0.3rem;
+  background: var(--lightgray);
+}
+
+.tri-map-side-fold svg {
+  transition: transform 0.18s ease;
+}
+
+.tri-map-side-fold[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.tri-map-legend.tri-map-overlay-legend {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
   font-size: 0.56rem;
 }
 
 .tri-map-overlay-legend .tri-map-legend-bar {
+  width: 100%;
   min-width: 4.5rem;
   background: linear-gradient(to right, #997c6d, #b96c4a, #da5d27, #fc4c02);
+}
+
+.tri-map-legend-ends {
+  display: flex;
+  width: 100%;
+  min-height: 1.4em;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .tri-map-tip {
