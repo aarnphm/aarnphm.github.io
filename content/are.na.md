@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://internetprincess.substack.com/p/the-perpetual-present-tense -- The perpetual present-tense
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [heteropessimism, culture]
+    - later: true
 - https://x.com/SchrodingrsBrat/status/2067256534128615722 -- Sherry on compound, taste, and unautomated renewal
   - [meta]:
     - date: 06/17/2026
@@ -1646,6 +1651,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://ftlsid.com/home -- ftlsid
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [personal site]
+    - later: true
+- https://lukeas.com/ -- lukeas
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [personal site, writing]
+    - later: true
 - https://www.vernatus.com/thoughts.html -- Thoughts
   - [meta]:
     - date: 06/28/2026
@@ -3668,6 +3683,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://gwern.net/blog/2026/make-me-care -- First, Make Me Care
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [writing, attention]
+    - later: true
 - https://davidgraeber.org/articles/on-the-phenomenon-of-bullshit-jobs-a-work-rant/ -- On the Phenomenon of Bullshit Jobs: A Work Rant
   - [meta]:
     - date: 06/30/2026
@@ -6460,6 +6480,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/ninklefitz/status/2072040419110551960 -- Nicole Fitzgerald on Anthropic preclinical drug programs
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [anthropic, biology]
+    - later: true
 - https://x.com/tararezaeikh/status/2069869995589611531 -- Tara Rezaei announces Mirendil AI
   - [meta]:
     - date: 06/24/2026
@@ -8919,6 +8944,16 @@ title: are.na
 
 ## opinions
 
+- https://x.com/WillManidis/status/2072360051730231684 -- Will Manidis on companies as theories
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [companies, palantir]
+    - later: true
+- https://rivalvoices.substack.com/p/god-help-me-am-i-about-to-change -- God help me am I about to change my view on AI-assisted writing?
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [ai, writing]
+    - later: true
 - https://x.com/zetalyrae/status/2071350566887059780 -- Fernando on community consultation
   - [meta]:
     - date: 06/28/2026
@@ -9418,6 +9453,26 @@ title: are.na
 
 ## life is literature
 
+- https://cybermonk.substack.com/p/notes-on-unconditional-love -- Notes on unconditional love
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [love, unconditional]
+    - later: true
+- https://www.booritney.com/p/the-care-and-keeping-of-luke -- the care and keeping of luke
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [love, devotion]
+    - later: true
+- https://divyavenn.substack.com/p/happiness-from-the-inside-out -- happiness from the inside out
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [happiness, selfhood]
+    - later: true
+- https://hinterlander.substack.com/p/the-constant-conversation -- The Constant Conversation
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [consciousness, intimacy]
+    - later: true
 - https://www.clubreticent.com/p/ais-got-nothing-on-a-womans-loneliness -- AI's got nothing on a woman's loneliness
   - [meta]:
     - date: 06/28/2026
@@ -12942,6 +12997,11 @@ title: are.na
 
 ## tools
 
+- https://shaders.paper.design/ -- Paper Shaders
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [shaders, react]
+    - later: true
 - https://www.aerolopa.com/ -- AeroLOPA
   - [meta]:
     - date: 06/30/2026
@@ -13232,6 +13292,31 @@ title: are.na
 
 ## resources
 
+- https://www.quantamagazine.org/for-the-first-time-a-cell-built-from-scratch-grows-and-divides-20260701/ -- For the First Time, a Cell Built From Scratch Grows and Divides
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [synthetic biology, cells]
+    - later: true
+- https://pradyuprasad.com/writings/how-to-ask-for-help/ -- How to ask for help from people who don't know you
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [help, communication]
+    - later: true
+- https://www.carbon-ti.com/products/chainrings/x-aeroring -- X-Aeroring
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [cycling, chainrings]
+    - later: true
+- https://ceramicspeed.com/en-eu/products/ospw-rs-5-spoke-for-shimano-9250-8150?variant=47841960952110 -- OSPW RS 5-Spoke for Shimano 9250/8150
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [cycling, drivetrain]
+    - later: true
+- https://www.go-astronomy.com/dark-sky-sites.php -- Dark Sky Parks & Places
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [astronomy, stargazing]
+    - later: true
 - https://en.wikipedia.org/wiki/Prussian_Reform_Movement -- Prussian Reform Movement
   - [meta]:
     - date: 06/28/2026
@@ -15021,6 +15106,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/geoffreylitt/status/2072110805089435973 -- Geoffrey Litt on a Claude-to-Notion talk-prep workflow
+  - [meta]:
+    - date: 07/01/2026
+    - tags: [claude, workflow]
+    - later: true
+- https://x.com/NotionHQ/status/2072011390345494739 -- Notion on AI adoption findings
+  - [meta]:
+    - date: 06/30/2026
+    - tags: [ai adoption, notion]
+    - later: true
 - https://adiamond.me/2026/06/software-engineering-in-the-age-of-ai/ -- Software Engineering in the Age of AI
   - [meta]:
     - date: 06/30/2026

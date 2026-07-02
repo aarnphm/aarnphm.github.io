@@ -171,6 +171,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       files.push(
         await write({
           ctx,
+          slug: 'static/oura-detail' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(oura?.details ?? {}),
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
           slug: 'static/training' as FullSlug,
           ext: '.json',
           content: JSON.stringify({ plans: parseTrainingPlans(tree as unknown as HtmlRoot) }),

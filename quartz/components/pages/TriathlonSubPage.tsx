@@ -35,6 +35,7 @@ export const TriathlonSubPage = (view: TriView): QuartzComponent => {
         data-tri-view={view}
         data-detail-path={joinSegments(root, 'static/strava-detail.json')}
         data-analytics-path={joinSegments(root, 'static/analytics.json')}
+        data-oura-detail-path={joinSegments(root, 'static/oura-detail.json')}
         data-training-path={joinSegments(root, 'static/training.json')}
       >
         <TriathlonSubnav active={view} root={root} />

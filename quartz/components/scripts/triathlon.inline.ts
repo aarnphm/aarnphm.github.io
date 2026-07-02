@@ -13,6 +13,7 @@ import type {
   Vo2LabRecord,
   Vo2LabTargetStep,
 } from '../../plugins/stores/analytics'
+import type { OuraDayDetail, OuraSeries } from '../../plugins/stores/oura'
 import {
   type ActivityHealth,
   type ActivityKind,
@@ -3085,6 +3086,300 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
   return block
 }
 
+let OURA_DETAIL_PATH: string | null = null
+let OURA_DETAIL: Promise<Record<string, OuraDayDetail> | null> | null = null
+let OURA_OPEN_DATE: string | null = null
+let OURA_SCRUB_OFF: (() => void)[] = []
+
+const loadOuraDetail = (): Promise<Record<string, OuraDayDetail> | null> => {
+  if (!OURA_DETAIL_PATH) return Promise.resolve(null)
+  OURA_DETAIL ??= fetch(OURA_DETAIL_PATH)
+    .then(res => res.json() as Promise<Record<string, OuraDayDetail>>)
+    .catch(() => null)
+  return OURA_DETAIL
+}
+
+const flushOuraScrub = (): void => {
+  for (const off of OURA_SCRUB_OFF) off()
+  OURA_SCRUB_OFF = []
+}
+
+const wallMin = (iso: string): number => Number(iso.slice(11, 13)) * 60 + Number(iso.slice(14, 16))
+const wallClock = (min: number): string => {
+  const m = ((Math.round(min) % 1440) + 1440) % 1440
+  return `${Math.floor(m / 60)
+    .toString()
+    .padStart(2, '0')}:${(m % 60).toString().padStart(2, '0')}`
+}
+
+const hourTicks = (
+  startIso: string,
+  intervalS: number,
+  count: number,
+  pctOf: (i: number) => number,
+): AxisXTick[] => {
+  const out: AxisXTick[] = []
+  const startS = wallMin(startIso) * 60
+  let bucket = Math.floor(startS / 7200)
+  for (let i = 1; i < count; i++) {
+    const b = Math.floor((startS + i * intervalS) / 7200)
+    if (b === bucket) continue
+    bucket = b
+    out.push({ label: wallClock((b * 7200) / 60), pct: pctOf(i) })
+  }
+  return out
+}
+
+const OURA_STAGE: Record<string, { key: string; lane: number }> = {
+  '4': { key: 'awake', lane: 0 },
+  '3': { key: 'rem', lane: 1 },
+  '2': { key: 'light', lane: 2 },
+  '1': { key: 'deep', lane: 3 },
+}
+
+const ouraScoreCls = (v: number): string =>
+  v < 70 ? 'tri-flag--alert' : v < 85 ? 'tri-flag--watch' : 'tri-flag--info'
+
+const ouraContribGroup = (
+  title: string,
+  contrib: Record<string, number | null> | null,
+): HTMLElement | null => {
+  if (!contrib) return null
+  const rows = Object.entries(contrib).filter((e): e is [string, number] => e[1] != null)
+  if (!rows.length) return null
+  const g = el('div', 'tri-sleep-contrib')
+  g.appendChild(el('div', 'tri-ana-block-title', tl(title)))
+  for (const [key, v] of rows) {
+    const row = el('div', 'tri-sleep-contrib-row')
+    const bar = el('div', 'tri-sleep-contrib-bar')
+    const fill = el(
+      'div',
+      v >= 70 ? 'tri-sleep-contrib-fill' : 'tri-sleep-contrib-fill tri-sleep-contrib-fill--low',
+    )
+    fill.style.width = `${clampN(v, 0, 100)}%`
+    bar.appendChild(fill)
+    row.append(
+      el('span', 'tri-sleep-contrib-label', tl(key.replace(/_/g, ' '))),
+      bar,
+      el('span', 'tri-sleep-contrib-val', String(Math.round(v))),
+    )
+    g.appendChild(row)
+  }
+  return g
+}
+
+const buildHypnogram = (d: OuraDayDetail): HTMLElement | null => {
+  const phase = d.phase5Min
+  if (!phase || !phase.length || !d.bedtimeStart) return null
+  const len = phase.length
+  const H = 16
+  const wrap = el('div', 'tri-sleep-chart tri-sleep-hyp')
+  wrap.appendChild(el('div', 'tri-ana-block-title', tl('sleep stages')))
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-hyp-svg',
+    viewBox: `0 0 ${len} ${H}`,
+    preserveAspectRatio: 'none',
+  })
+  let i = 0
+  while (i < len) {
+    const c = phase[i]
+    let j = i + 1
+    while (j < len && phase[j] === c) j++
+    const st = OURA_STAGE[c]
+    if (st)
+      s.appendChild(
+        svg('rect', {
+          x: i,
+          y: st.lane * 4 + 0.3,
+          width: j - i,
+          height: 3.4,
+          class: `tri-hyp--${st.key}`,
+        }),
+      )
+    i = j
+  }
+  const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' })
+  s.appendChild(cursor)
+  wrap.appendChild(
+    axisFrame(
+      domF,
+      s,
+      [
+        { label: tl('awake'), vbY: 2 },
+        { label: tl('rem'), vbY: 6 },
+        { label: tl('light'), vbY: 10 },
+        { label: tl('deep'), vbY: 14 },
+      ],
+      H,
+      hourTicks(d.bedtimeStart, 300, len, k => (k / len) * 100),
+      64,
+    ),
+  )
+  const readout = el('div', 'tri-chart-readout')
+  wrap.appendChild(readout)
+  const cap = el('div', 'tri-elev-cap')
+  const durs: [string, number | null][] = [
+    ['deep', d.deepS],
+    ['light', d.lightS],
+    ['rem', d.remS],
+    ['awake', d.awakeS],
+  ]
+  for (const [name, sec] of durs)
+    if (sec != null) cap.appendChild(el('span', 'tri-ana-k', `${tl(name)} ${hms(sec)}`))
+  wrap.appendChild(cap)
+  const startMin = wallMin(d.bedtimeStart)
+  OURA_SCRUB_OFF.push(
+    scrubBind(wrap, s, cursor, readout, len, len, k => {
+      const st = OURA_STAGE[phase[k]]
+      return `${wallClock(startMin + k * 5)} · ${st ? tl(st.key) : '—'}`
+    }),
+  )
+  return wrap
+}
+
+const buildOuraSeriesChart = (
+  title: string,
+  series: OuraSeries | null,
+  unit: string,
+  strokeCls: string,
+): HTMLElement | null => {
+  if (!series || series.items.length < 2) return null
+  const items = series.items
+  const n = items.length
+  const vals = items.filter((v): v is number => v != null)
+  if (vals.length < 2) return null
+  let lo = Infinity
+  let hi = -Infinity
+  for (const v of vals) {
+    if (v < lo) lo = v
+    if (v > hi) hi = v
+  }
+  const pad = Math.max((hi - lo) * 0.1, 1)
+  const mn = lo - pad
+  const mx = hi + pad
+  const x = (i: number): number => (i / (n - 1)) * ANA_W
+  const y = (v: number): number => ANA_H - 2 - ((v - mn) / (mx - mn)) * (ANA_H - 4)
+  const wrap = el('div', 'tri-sleep-chart')
+  wrap.appendChild(el('div', 'tri-ana-block-title', tl(title)))
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-sleep-line-svg',
+    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+    preserveAspectRatio: 'none',
+  })
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length
+  s.appendChild(svg('line', { x1: 0, y1: y(avg), x2: ANA_W, y2: y(avg), class: 'tri-rec-target' }))
+  for (const seg of segRuns(items, v => v, x, y))
+    s.appendChild(svg('path', { d: polyD(seg), class: strokeCls }))
+  const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' })
+  s.appendChild(cursor)
+  wrap.appendChild(
+    axisFrame(
+      domF,
+      s,
+      [
+        { label: String(Math.round(hi)), vbY: y(hi) },
+        { label: String(Math.round(lo)), vbY: y(lo) },
+      ],
+      ANA_H,
+      hourTicks(series.startTs, series.intervalS, n, k => (k / (n - 1)) * 100),
+      56,
+    ),
+  )
+  const readout = el('div', 'tri-chart-readout')
+  wrap.appendChild(readout)
+  const startMin = wallMin(series.startTs)
+  OURA_SCRUB_OFF.push(
+    scrubBind(wrap, s, cursor, readout, n, ANA_W, k => {
+      const v = items[k]
+      const t = wallClock(startMin + (k * series.intervalS) / 60)
+      return `${t} · ${v != null ? Math.round(v) : '—'} ${unit}`
+    }),
+  )
+  return wrap
+}
+
+const SLEEPLESS_ROCKY_FRAMES = [1, 2, 3, 0].map(
+  c => `/static/landing/rocky-monomyth/frames/rocky-monomyth-r5-c${c}.webp`,
+)
+
+const buildSleeplessRock = (caption: string): HTMLElement => {
+  const wrap = el('div', 'tri-sleep-empty')
+  const stage = el('div', 'tri-sleep-rocky', undefined, { 'aria-hidden': 'true' })
+  for (const src of SLEEPLESS_ROCKY_FRAMES)
+    stage.appendChild(
+      el('img', 'tri-rocky-frame', undefined, {
+        src,
+        alt: '',
+        width: '192',
+        height: '208',
+        decoding: 'async',
+        draggable: 'false',
+      }),
+    )
+  wrap.append(stage, el('div', 'tri-ana-empty', caption))
+  return wrap
+}
+
+const buildOuraDayDetail = (d: OuraDayDetail, close: () => void): HTMLElement => {
+  const wrap = el('div', 'tri-sleep-day-body')
+  const head = el('div', 'tri-sleep-day-head')
+  const cap = el('div', 'tri-elev-cap')
+  cap.appendChild(el('span', 'tri-ana-k tri-sleep-day-date', shortDate(d.date)))
+  if (d.bedtimeStart)
+    cap.appendChild(
+      el('span', 'tri-ana-k', `${tl('bedtime')} ${wallClock(wallMin(d.bedtimeStart))}`),
+    )
+  if (d.bedtimeEnd)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('wake-up')} ${wallClock(wallMin(d.bedtimeEnd))}`))
+  if (d.totalSleepS != null)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('sleep')} ${hms(d.totalSleepS)}`))
+  if (d.efficiency != null)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('efficiency')} ${Math.round(d.efficiency)}%`))
+  if (d.latencyS != null)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('latency')} ${hms(d.latencyS)}`))
+  if (d.lowestHr != null)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('lowest hr')} ${Math.round(d.lowestHr)}`))
+  if (d.avgBreath != null)
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('breath')} ${d.avgBreath.toFixed(1)}`))
+  if (d.sleepScore != null)
+    cap.appendChild(
+      el(
+        'span',
+        `tri-ana-k ${ouraScoreCls(d.sleepScore)}`,
+        `${tl('sleep score')} ${Math.round(d.sleepScore)}`,
+      ),
+    )
+  if (d.readinessScore != null)
+    cap.appendChild(
+      el(
+        'span',
+        `tri-ana-k ${ouraScoreCls(d.readinessScore)}`,
+        `${tl('readiness')} ${Math.round(d.readinessScore)}`,
+      ),
+    )
+  head.appendChild(cap)
+  const closeBtn = el('button', 'tri-sleep-day-close', '×', {
+    type: 'button',
+    'aria-label': tl('Close'),
+  })
+  closeBtn.addEventListener('click', close)
+  head.appendChild(closeBtn)
+  wrap.appendChild(head)
+  const hyp = buildHypnogram(d)
+  const hrv = buildOuraSeriesChart('hrv', d.hrv, 'ms', 'tri-rec-hrv')
+  const hr = buildOuraSeriesChart('resting heart rate', d.hr, 'bpm', 'tri-rec-rhr')
+  if (!hyp && !hrv && !hr)
+    wrap.appendChild(buildSleeplessRock(tl('rock bottom — no sleep recorded')))
+  const sleepContrib = ouraContribGroup('sleep score', d.sleepContrib)
+  if (sleepContrib) wrap.appendChild(sleepContrib)
+  const readyContrib = ouraContribGroup('readiness', d.readinessContrib)
+  if (readyContrib) wrap.appendChild(readyContrib)
+  if (hyp) wrap.appendChild(hyp)
+  if (hrv) wrap.appendChild(hrv)
+  if (hr) wrap.appendChild(hr)
+  return wrap
+}
+
 const buildSleep = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-sleep')
   block.appendChild(anaTitle('sleep · debt', 'sleepdebt'))
@@ -3124,6 +3419,7 @@ const buildSleep = (data: Analytics): HTMLElement => {
       class: 'tri-rec-floor',
     }),
   )
+  const barByDate = new Map<string, SVGElement>()
   view.forEach((d, i) => {
     if (d.sleepS == null) {
       s.appendChild(
@@ -3132,15 +3428,16 @@ const buildSleep = (data: Analytics): HTMLElement => {
       return
     }
     const h = (d.sleepS / maxS) * (H - 2)
-    s.appendChild(
-      svg('rect', {
-        x: i + 0.12,
-        y: bot - h,
-        width: 0.76,
-        height: h,
-        class: d.sleepS < rec.thresholds.sleepFloorS ? 'tri-seg--short' : 'tri-seg--sleep',
-      }),
-    )
+    const base = d.sleepS < rec.thresholds.sleepFloorS ? 'tri-seg--short' : 'tri-seg--sleep'
+    const bar = svg('rect', {
+      x: i + 0.12,
+      y: bot - h,
+      width: 0.76,
+      height: h,
+      class: d.date === OURA_OPEN_DATE ? `${base} tri-seg--active` : base,
+    })
+    barByDate.set(d.date, bar)
+    s.appendChild(bar)
   })
   const ys = (sc: number): number => bot - (sc / 100) * (H - 2)
   for (const seg of segRuns(
@@ -3206,6 +3503,53 @@ const buildSleep = (data: Analytics): HTMLElement => {
       ),
     )
   block.appendChild(cap)
+  const dayWrap = el('div', 'tri-sleep-day')
+  const dayInner = el('div', 'tri-sleep-day-inner')
+  dayWrap.appendChild(dayInner)
+  block.appendChild(dayWrap)
+  const setActive = (date: string | null): void => {
+    for (const [dt, bar] of barByDate) bar.classList.toggle('tri-seg--active', dt === date)
+  }
+  const closeDay = (): void => {
+    OURA_OPEN_DATE = null
+    setActive(null)
+    dayWrap.classList.remove('tri-sleep-day--open')
+  }
+  const showDay = (date: string, onReady?: () => void): void => {
+    flushOuraScrub()
+    void loadOuraDetail().then(details => {
+      if (OURA_OPEN_DATE !== date || !dayInner.isConnected) return
+      const d = details?.[date]
+      if (!d) {
+        dayInner.replaceChildren(buildSleeplessRock(tl('no detail for this night')))
+        onReady?.()
+        return
+      }
+      flushOuraScrub()
+      dayInner.replaceChildren(buildOuraDayDetail(d, closeDay))
+      onReady?.()
+    })
+  }
+  const openDay = (date: string): void => {
+    OURA_OPEN_DATE = date
+    setActive(date)
+    showDay(date, () => {
+      requestAnimationFrame(() => dayWrap.classList.add('tri-sleep-day--open'))
+    })
+  }
+  s.addEventListener('click', ev => {
+    const r = s.getBoundingClientRect()
+    if (r.width <= 0) return
+    const frac = clampN((ev.clientX - r.left) / r.width, 0, 1)
+    const date = view[Math.min(n - 1, Math.floor(frac * n))]?.date
+    if (!date) return
+    if (OURA_OPEN_DATE === date) closeDay()
+    else openDay(date)
+  })
+  if (OURA_OPEN_DATE && view.some(d => d.date === OURA_OPEN_DATE)) {
+    dayWrap.classList.add('tri-sleep-day--open')
+    showDay(OURA_OPEN_DATE)
+  }
   return block
 }
 
@@ -5155,47 +5499,73 @@ const activityCommandHints = (
   return hints
 }
 
-const modalBaseY = (): number => -50
+const marqueeCtl = (): { run: (name: HTMLElement) => void; stop: () => void } => {
+  let host: HTMLElement | null = null
+  let raf = 0
+  let start = 0
+  const stop = () => {
+    if (raf) {
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    if (host) {
+      host.scrollLeft = 0
+      host.style.textOverflow = ''
+      host = null
+    }
+    start = 0
+  }
+  const run = (name: HTMLElement) => {
+    if (name === host) return
+    stop()
+    const max = name.scrollWidth - name.clientWidth
+    if (max <= 2) return
+    host = name
+    name.style.textOverflow = 'clip'
+    const leg = (max / 36) * 1000
+    const cycle = leg * 2 + 1400
+    const step = (ts: number) => {
+      if (!name.isConnected) {
+        stop()
+        return
+      }
+      if (!start) start = ts
+      const t = (ts - start) % cycle
+      name.scrollLeft =
+        t < leg
+          ? (t / leg) * max
+          : t < leg + 700
+            ? max
+            : t < leg * 2 + 700
+              ? max - ((t - leg - 700) / leg) * max
+              : 0
+      raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+  }
+  return { run, stop }
+}
 
-const flipClose = (
-  btn: HTMLElement,
-  panel: HTMLElement,
-  reduce: boolean,
-  finish: () => void,
-): Animation | null => {
-  if (reduce) {
-    finish()
-    return null
-  }
-  const br = btn.getBoundingClientRect()
-  const pr = panel.getBoundingClientRect()
-  if (pr.width < 1 || pr.height < 1 || br.width < 1) {
-    finish()
-    return null
-  }
-  const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
-  const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
-  const sx = Math.max(0.05, br.width / pr.width)
-  const sy = Math.max(0.05, br.height / pr.height)
-  const anim = panel.animate(
-    [
-      { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
-      {
-        opacity: 0,
-        transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
-      },
-    ],
-    { duration: 240, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
-  )
-  const done = () => {
-    finish()
-    anim.cancel()
-  }
-  anim.finished.then(done).catch(done)
-  return anim
+const detailHead = (date: string, title: string): { head: HTMLElement; back: HTMLElement } => {
+  const head = el('div', 'tri-pop-head tri-pop-head--detail')
+  const row = el('div', 'tri-pop-head-row')
+  const back = el('button', 'tri-ana-back tri-ana-back--ico')
+  back.setAttribute('type', 'button')
+  back.setAttribute('aria-label', tl('go back'))
+  const ico = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' })
+  ico.appendChild(svg('path', { d: 'M19 12H5M11 6l-6 6 6 6' }))
+  back.appendChild(ico)
+  row.append(el('span', 'tri-pop-date', date), back)
+  const titleEl = el('span', 'tri-pop-title', title)
+  const marquee = marqueeCtl()
+  titleEl.addEventListener('mouseenter', () => marquee.run(titleEl))
+  titleEl.addEventListener('mouseleave', marquee.stop)
+  head.append(row, titleEl)
+  return { head, back }
 }
 
 const setupAnalytics = (root: HTMLElement): (() => void) | null => {
+  if (root.dataset.ouraDetailPath) OURA_DETAIL_PATH = root.dataset.ouraDetailPath
   const btn = root.querySelector<HTMLElement>('.tri-analytics-btn')
   const panel = root.querySelector<HTMLElement>('.tri-analytics')
   const scrim = root.querySelector<HTMLElement>('.tri-analytics-scrim')
@@ -5208,7 +5578,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
   const body = root.querySelector<HTMLElement>('.tri-ana-body')
   const detail = root.querySelector<HTMLElement>('.tri-ana-detail')
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let loaded = false
   let data: Analytics | null = null
   let detailData: DetailPayload | null = null
@@ -5250,22 +5619,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (results) results.replaceChildren()
     selIndex = -1
   }
-  let closeAnim: Animation | null = null
-  let closeSeq = 0
   const close = () => {
-    if (!btn) return
-    const seq = ++closeSeq
-    closeAnim?.cancel()
-    closeAnim = flipClose(btn, panel, reduce, () => {
-      if (seq !== closeSeq) return
-      root.classList.remove('tri-analytics-open')
-      panel.setAttribute('aria-hidden', 'true')
-      if (search) search.value = ''
-      panel.classList.remove('tri-analytics--searching')
-      closeDetail()
-      if (results) results.replaceChildren()
-      selIndex = -1
-    })
+    root.classList.remove('tri-analytics-open')
+    panel.setAttribute('aria-hidden', 'true')
   }
   const loadDetails = (): Promise<void> => {
     if (detailLoaded) return Promise.resolve()
@@ -5290,11 +5646,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const d = detailData?.details?.[id]
       if (!d) return
       const card = el('div', 'tri-pop-card')
-      const head = el('div', 'tri-pop-head')
-      const back = el('button', 'tri-ana-back')
-      back.setAttribute('type', 'button')
-      back.textContent = tl('← back')
-      head.append(el('span', 'tri-pop-date', shortDate(d.date)), back)
+      const { head, back } = detailHead(shortDate(d.date), d.name || d.sport)
       card.appendChild(head)
       const act = renderDetail(d)
       act.classList.add('tri-act--expanded')
@@ -5453,31 +5805,10 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
 
   const open = () => {
-    if (!btn) return
-    closeSeq++
-    closeAnim?.cancel()
-    closeAnim = null
+    toMain()
     root.classList.add('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
-    if (reduce) return
-    const br = btn.getBoundingClientRect()
-    const pr = panel.getBoundingClientRect()
-    if (pr.width < 1 || pr.height < 1) return
-    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
-    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
-    const sx = Math.max(0.05, br.width / pr.width)
-    const sy = Math.max(0.05, br.height / pr.height)
-    panel.animate(
-      [
-        {
-          opacity: 0,
-          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
-        },
-        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
-      ],
-      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-    )
   }
   const onDetailToggle = (event: MouseEvent) => {
     const t = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
@@ -5569,6 +5900,7 @@ interface Overview {
 }
 
 const OVERVIEW_METRICS = ['w', 'hr', 'cad', 'spd'] as const
+const ROUTE_SPORTS = ['bike', 'run', 'walk'] as const
 const OVERVIEW_CELL = 0.0008
 
 const overviewCellKey = (lng: number, lat: number): string =>
@@ -5601,25 +5933,28 @@ const pctRange = (vals: number[]): [number, number] => {
 const overviewMetric = (d: StravaActivityDetail, k: (typeof OVERVIEW_METRICS)[number]) => {
   if (k === 'w') return d.deviceWatts && d.avgWatts ? d.avgWatts : null
   if (k === 'hr') return d.avgHr
-  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'run' ? 2 : 1)
+  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'bike' ? 1 : 2)
   return d.movingTimeS > 0 ? d.distanceKm / (d.movingTimeS / 3600) : null
 }
 
-const overviewFmt = (k: (typeof OVERVIEW_METRICS)[number], sport: Sport, v: number): string => {
+const overviewFmt = (
+  k: (typeof OVERVIEW_METRICS)[number],
+  sport: ActivityKind,
+  v: number,
+): string => {
   if (k === 'w') return `${Math.round(v)} W`
   if (k === 'hr') return `${Math.round(v)} bpm`
-  if (k === 'cad') return `${Math.round(v)} ${sport === 'run' ? 'spm' : 'rpm'}`
+  if (k === 'cad') return `${Math.round(v)} ${sport === 'bike' ? 'rpm' : 'spm'}`
   if (sport === 'bike') return `${(v * KM_TO_MI).toFixed(1)} mph`
   return `${clock(3600 / (v * KM_TO_MI))} /mi`
 }
 
-const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | null): Overview => {
+const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKind>): Overview => {
   const acts: StravaActivityDetail[] = []
   const det = dp?.details ?? {}
   for (const k in det) {
     const d = det[k]
-    if (sportFilter && d.sport !== sportFilter) continue
-    if ((d.sport === 'run' || d.sport === 'bike') && gpsRoute(d).length >= 2) acts.push(d)
+    if (enabled.has(d.sport) && gpsRoute(d).length >= 2) acts.push(d)
   }
   const counts = new Map<string, number>()
   for (const d of acts) {
@@ -5708,7 +6043,7 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
   }
   const ranges = new Map<string, [number, number]>()
   for (const k of OVERVIEW_METRICS)
-    for (const sport of ['run', 'bike'] as const) {
+    for (const sport of ROUTE_SPORTS) {
       const vals: number[] = []
       for (const d of acts)
         if (d.sport === sport) {
@@ -5738,7 +6073,7 @@ const buildOverview = (dp: DetailPayload | null, sportFilter: 'run' | 'bike' | n
     spd: null,
   }
   for (const k of OVERVIEW_METRICS) {
-    const present = (['run', 'bike'] as const).filter(s => ranges.has(`${k}:${s}`))
+    const present = ROUTE_SPORTS.filter(s => ranges.has(`${k}:${s}`))
     if (present.length === 1) {
       const [lo, hi] = ranges.get(`${k}:${present[0]}`)!
       legend[k] = { lo: overviewFmt(k, present[0], lo), hi: overviewFmt(k, present[0], hi) }
@@ -5871,14 +6206,18 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const legendHi = overlay?.querySelector<HTMLElement>('.tri-map-legend-hi') ?? null
   const legendBar = overlay?.querySelector<HTMLElement>('.tri-map-legend-bar') ?? null
   const modeBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-map-mode'))
+  const sportBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-map-sport'))
+  const side = root.querySelector<HTMLElement>('.tri-map-side')
+  const sideFold = side?.querySelector<HTMLButtonElement>('.tri-map-side-fold') ?? null
+  const styleBtn = side?.querySelector<HTMLButtonElement>('.tri-map-style') ?? null
   let mode: OverviewMode = 'heat'
-  let sportFilter: 'run' | 'bike' | null = null
+  const enabledSports = new Set<ActivityKind>(ROUTE_SPORTS)
   const overviewCache = new Map<string, Overview>()
   const getOverview = () => {
-    const key = sportFilter ?? 'all'
+    const key = ROUTE_SPORTS.filter(s => enabledSports.has(s)).join(',') || 'none'
     let ov = overviewCache.get(key)
     if (!ov) {
-      ov = buildOverview(detailData, sportFilter)
+      ov = buildOverview(detailData, enabledSports)
       overviewCache.set(key, ov)
     }
     return ov
@@ -6095,13 +6434,17 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       await new Promise<void>(resolve => map.once('load', () => resolve()))
       installLayers()
     }
-    const drawOverview = () => {
+    const setOverviewData = () => {
       if (!ready()) return
       const ov = getOverview()
       map.getSource('tri-heat')?.setData(ov.heat)
       map.getSource('tri-traces')?.setData(ov.traces)
       applyMode()
-      const b = fcBounds(ov.traces)
+    }
+    const drawOverview = () => {
+      if (!ready()) return
+      setOverviewData()
+      const b = fcBounds(getOverview().traces)
       if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
     }
     const select = (d: StravaActivityDetail, i: number) => {
@@ -6123,7 +6466,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       clearHover()
       map.getSource('tri-sel')?.setData(emptyFC())
       map.getSource('tri-dot')?.setData(emptyFC())
-      drawOverview()
+      setOverviewData()
     }
     const resize = () => map?.resize()
     const dispose = () => {
@@ -6184,16 +6527,52 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       })
       .catch(() => {})
   }
-  const setSportFilter = (f: 'run' | 'bike' | null) => {
-    if (f === sportFilter) return
-    sportFilter = f
+  const syncSportBtns = () => {
+    for (const b of sportBtns)
+      b.setAttribute('aria-pressed', String(enabledSports.has(b.dataset.sport as ActivityKind)))
+  }
+  const setEnabledSports = (next: ReadonlySet<ActivityKind>) => {
+    if (next.size === enabledSports.size && [...next].every(s => enabledSports.has(s))) return
+    enabledSports.clear()
+    for (const s of next) enabledSports.add(s)
+    syncSportBtns()
     mapCtl.drawOverview()
   }
-  const closeDetail = () => {
+  const toggleSport = (sport: ActivityKind) => {
+    const next = new Set(enabledSports)
+    if (next.has(sport)) next.delete(sport)
+    else next.add(sport)
+    setEnabledSports(next)
+  }
+  let detailAnim: Animation | null = null
+  const finishCloseDetail = () => {
     panel.classList.remove('tri-map--detail')
     if (detail) detail.replaceChildren()
     mapCtl.clearSelection()
     requestAnimationFrame(() => mapCtl.resize())
+  }
+  const closeDetail = (animate = false) => {
+    detailAnim?.cancel()
+    detailAnim = null
+    const card = detail?.querySelector<HTMLElement>('.tri-pop-card')
+    if (!animate || reduce || !card) {
+      finishCloseDetail()
+      return
+    }
+    const anim = card.animate(
+      [
+        { opacity: 1, transform: 'translateX(0)' },
+        { opacity: 0, transform: 'translateX(1.25rem)' },
+      ],
+      { duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
+    )
+    detailAnim = anim
+    const done = () => {
+      if (detailAnim !== anim) return
+      detailAnim = null
+      finishCloseDetail()
+    }
+    anim.finished.then(done).catch(done)
   }
   const toMain = () => {
     closeDetail()
@@ -6201,32 +6580,21 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     panel.classList.remove('tri-map--searching')
     if (results) results.replaceChildren()
     selIndex = -1
-    setSportFilter(null)
+    setEnabledSports(new Set(ROUTE_SPORTS))
   }
-  let closeAnim: Animation | null = null
-  let closeSeq = 0
   const close = () => {
-    if (!btn) return
-    const seq = ++closeSeq
-    closeAnim?.cancel()
-    closeAnim = flipClose(btn, panel, reduce, () => {
-      if (seq !== closeSeq) return
-      root.classList.remove('tri-map-open')
-      panel.setAttribute('aria-hidden', 'true')
-      toMain()
-    })
+    root.classList.remove('tri-map-open')
+    panel.setAttribute('aria-hidden', 'true')
   }
   const showRoute = (id: string) => {
     if (!detail) return
     void loadDetails().then(() => {
       const d = detailData?.details?.[id]
       if (!d) return
+      detailAnim?.cancel()
+      detailAnim = null
       const card = el('div', 'tri-pop-card')
-      const head = el('div', 'tri-pop-head')
-      const back = el('button', 'tri-ana-back')
-      back.setAttribute('type', 'button')
-      back.textContent = tl('← back')
-      head.append(el('span', 'tri-pop-date', `${shortDate(d.date)} · ${d.name || d.sport}`), back)
+      const { head, back } = detailHead(shortDate(d.date), d.name || d.sport)
       card.appendChild(head)
       const mapMode = mapCtl.ok()
       card.appendChild(
@@ -6242,7 +6610,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       panel.classList.add('tri-map--detail')
       panel.classList.remove('tri-map--searching')
       results?.setAttribute('aria-hidden', 'true')
-      back.addEventListener('click', closeDetail, { once: true })
+      back.addEventListener('click', () => closeDetail(true), { once: true })
       if (mapMode) {
         requestAnimationFrame(() => {
           mapCtl.resize()
@@ -6299,14 +6667,15 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     if (!q) {
       panel.classList.remove('tri-map--searching')
       results.setAttribute('aria-hidden', 'true')
-      setSportFilter(null)
+      setEnabledSports(new Set(ROUTE_SPORTS))
       return
     }
     panel.classList.add('tri-map--searching')
     results.setAttribute('aria-hidden', 'false')
     const rawTokens = q.split(/\s+/)
     const { filterSport, sortKey, tokens } = parseActivityQuery(rawTokens)
-    setSportFilter(filterSport === 'run' || filterSport === 'bike' ? filterSport : null)
+    const routeSport = ROUTE_SPORTS.find(s => s === filterSport)
+    setEnabledSports(routeSport ? new Set([routeSport]) : new Set(ROUTE_SPORTS))
     const lastToken = rawTokens[rawTokens.length - 1]
     const hints = activityCommandHints(lastToken, ritem, 'routes')
     const ids = drawableIds()
@@ -6371,39 +6740,12 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       mapCtl.drawOverview()
     })
   const open = () => {
-    if (!btn) return
-    closeSeq++
-    closeAnim?.cancel()
-    closeAnim = null
+    toMain()
     root.classList.add('tri-map-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
     void loadDetails()
-    if (reduce) {
-      startMap()
-      return
-    }
-    const br = btn.getBoundingClientRect()
-    const pr = panel.getBoundingClientRect()
-    if (pr.width < 1 || pr.height < 1) {
-      startMap()
-      return
-    }
-    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
-    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
-    const sx = Math.max(0.05, br.width / pr.width)
-    const sy = Math.max(0.05, br.height / pr.height)
-    const anim = panel.animate(
-      [
-        {
-          opacity: 0,
-          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
-        },
-        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
-      ],
-      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-    )
-    anim.finished.then(startMap).catch(startMap)
+    startMap()
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
@@ -6413,7 +6755,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       return
     }
     if (panel.classList.contains('tri-map--detail')) {
-      closeDetail()
+      closeDetail(true)
       return
     }
     if (search && search.value) {
@@ -6443,7 +6785,26 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     }
     mapCtl.applyMode()
   }
-  const onMapStyle = () => mapCtl.applyMapStyle()
+  const onSportClick = (event: MouseEvent) => {
+    const b = (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-map-sport')
+    const s = b?.dataset.sport as ActivityKind | undefined
+    if (s) toggleSport(s)
+  }
+  const syncStyleBtn = () =>
+    styleBtn?.setAttribute('aria-pressed', String(readTriMapStyle() === 'satellite'))
+  const onStyleClick = () =>
+    setTriMapStyle(readTriMapStyle() === 'satellite' ? 'mono' : 'satellite')
+  const onFold = () => {
+    if (!side) return
+    const folded = side.classList.toggle('tri-map-side--folded')
+    sideFold?.setAttribute('aria-expanded', String(!folded))
+    sideFold?.setAttribute('aria-label', folded ? 'Expand map controls' : 'Collapse map controls')
+  }
+  const onMapStyle = () => {
+    syncStyleBtn()
+    mapCtl.applyMapStyle()
+  }
+  syncStyleBtn()
 
   if (pageMode) {
     load()
@@ -6461,6 +6822,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   results?.addEventListener('click', onResultsClick)
   panel.addEventListener('click', onPanelClick)
   overlay?.addEventListener('click', onModeClick)
+  side?.addEventListener('click', onSportClick)
+  sideFold?.addEventListener('click', onFold)
+  styleBtn?.addEventListener('click', onStyleClick)
   document.addEventListener('keydown', onKey)
   window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
 
@@ -6475,6 +6839,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     results?.removeEventListener('click', onResultsClick)
     panel.removeEventListener('click', onPanelClick)
     overlay?.removeEventListener('click', onModeClick)
+    side?.removeEventListener('click', onSportClick)
+    sideFold?.removeEventListener('click', onFold)
+    styleBtn?.removeEventListener('click', onStyleClick)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
     mapCtl.dispose()
@@ -6547,7 +6914,6 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
   const pageMode = root.dataset.triView === 'training'
   if (!panel || (!btn && !pageMode)) return null
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let loaded = false
   let data: TrainingPayload | null = null
   let selIndex = -1
@@ -6667,50 +7033,20 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
       .catch(() => {})
   }
 
-  let closeAnim: Animation | null = null
-  let closeSeq = 0
   const toMain = () => {
     if (search) search.value = ''
     panel.classList.remove('tri-training--searching')
     results?.replaceChildren()
   }
   const open = () => {
-    if (!btn) return
-    closeSeq++
-    closeAnim?.cancel()
-    closeAnim = null
+    toMain()
     root.classList.add('tri-training-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
-    if (reduce) return
-    const br = btn.getBoundingClientRect()
-    const pr = panel.getBoundingClientRect()
-    if (pr.width < 1 || pr.height < 1) return
-    const dx = br.left + br.width / 2 - (pr.left + pr.width / 2)
-    const dy = br.top + br.height / 2 - (pr.top + pr.height / 2)
-    const sx = Math.max(0.05, br.width / pr.width)
-    const sy = Math.max(0.05, br.height / pr.height)
-    panel.animate(
-      [
-        {
-          opacity: 0,
-          transform: `translate(-50%, ${modalBaseY()}%) translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`,
-        },
-        { opacity: 1, transform: `translate(-50%, ${modalBaseY()}%) scale(1, 1)` },
-      ],
-      { duration: 300, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-    )
   }
   const close = () => {
-    if (!btn) return
-    const seq = ++closeSeq
-    closeAnim?.cancel()
-    closeAnim = flipClose(btn, panel, reduce, () => {
-      if (seq !== closeSeq) return
-      root.classList.remove('tri-training-open')
-      panel.setAttribute('aria-hidden', 'true')
-      toMain()
-    })
+    root.classList.remove('tri-training-open')
+    panel.setAttribute('aria-hidden', 'true')
   }
 
   const runSearch = () => {
@@ -6915,13 +7251,13 @@ const setupAxisLabels = (root: HTMLElement): (() => void) | null => {
 const TRI_UNIT_KEY = 'tri-dist-unit'
 const TRI_MAP_STYLE_KEY = 'tri-map-style'
 const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
-const TRI_MAP_STYLES = ['mono', 'streets'] as const
+const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
 type TriMapStyle = (typeof TRI_MAP_STYLES)[number]
 
 const readTriMapStyle = (): TriMapStyle => {
   try {
     const stored = localStorage.getItem(TRI_MAP_STYLE_KEY)
-    if (stored === 'streets') return stored
+    if (stored === 'streets' || stored === 'satellite') return stored
   } catch {
     return 'mono'
   }
@@ -6929,10 +7265,13 @@ const readTriMapStyle = (): TriMapStyle => {
 }
 
 const mapboxStyleUrl = (style: TriMapStyle): string =>
-  style === 'streets' ? 'mapbox://styles/mapbox/streets-v12' : 'mapbox://styles/mapbox/light-v11'
+  style === 'streets'
+    ? 'mapbox://styles/mapbox/streets-v12'
+    : style === 'satellite'
+      ? 'mapbox://styles/mapbox/satellite-streets-v12'
+      : 'mapbox://styles/mapbox/light-v11'
 
-const toggleTriMapStyle = (): void => {
-  const next: TriMapStyle = readTriMapStyle() === 'mono' ? 'streets' : 'mono'
+const setTriMapStyle = (next: TriMapStyle): void => {
   try {
     localStorage.setItem(TRI_MAP_STYLE_KEY, next)
   } catch {
@@ -6940,6 +7279,11 @@ const toggleTriMapStyle = (): void => {
   }
   window.dispatchEvent(new CustomEvent(TRI_MAP_STYLE_EVENT, { detail: { style: next } }))
 }
+
+const nextTriMapStyle = (): TriMapStyle =>
+  TRI_MAP_STYLES[(TRI_MAP_STYLES.indexOf(readTriMapStyle()) + 1) % TRI_MAP_STYLES.length]
+
+const toggleTriMapStyle = (): void => setTriMapStyle(nextTriMapStyle())
 
 const toggleTriUnit = (): void => {
   const next = !isImperialUnit()
@@ -7018,10 +7362,12 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       },
     },
     {
-      label: () =>
-        readTriMapStyle() === 'mono' ? 'map style · streets' : 'map style · monochrome',
+      label: () => {
+        const next = nextTriMapStyle()
+        return `map style · ${next === 'mono' ? 'monochrome' : next}`
+      },
       hint: 'map',
-      keys: 'map style roads streets monochrome mono mapbox route road',
+      keys: 'map style roads streets monochrome mono satellite imagery mapbox route road',
       run: () => {
         toggleTriMapStyle()
         render()
@@ -7476,53 +7822,18 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     if (e.key === 'Escape' && openId != null) collapse()
   }
 
-  let marqueeName: HTMLElement | null = null
-  let marqueeRaf = 0
-  let marqueeStart = 0
-  const stopMarquee = () => {
-    if (marqueeRaf) {
-      cancelAnimationFrame(marqueeRaf)
-      marqueeRaf = 0
-    }
-    if (marqueeName) {
-      marqueeName.scrollLeft = 0
-      marqueeName.style.textOverflow = ''
-      marqueeName = null
-    }
-    marqueeStart = 0
-  }
+  const marquee = marqueeCtl()
   const onOver = (e: MouseEvent) => {
     const name = (e.target as HTMLElement)
       .closest<HTMLElement>('.tri-feed-head')
       ?.querySelector<HTMLElement>('.tri-feed-name')
-    if (!name || name === marqueeName) return
-    stopMarquee()
-    const max = name.scrollWidth - name.clientWidth
-    if (max <= 2) return
-    marqueeName = name
-    name.style.textOverflow = 'clip'
-    const leg = (max / 36) * 1000
-    const cycle = leg * 2 + 1400
-    const step = (ts: number) => {
-      if (!marqueeStart) marqueeStart = ts
-      const t = (ts - marqueeStart) % cycle
-      name.scrollLeft =
-        t < leg
-          ? (t / leg) * max
-          : t < leg + 700
-            ? max
-            : t < leg * 2 + 700
-              ? max - ((t - leg - 700) / leg) * max
-              : 0
-      marqueeRaf = requestAnimationFrame(step)
-    }
-    marqueeRaf = requestAnimationFrame(step)
+    if (name) marquee.run(name)
   }
   const onOut = (e: MouseEvent) => {
     const head = (e.target as HTMLElement).closest<HTMLElement>('.tri-feed-head')
     const to = e.relatedTarget as Node | null
     if (head && to && head.contains(to)) return
-    stopMarquee()
+    marquee.stop()
   }
 
   list.addEventListener('click', onListClick)
@@ -7544,7 +7855,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     })
 
   return () => {
-    stopMarquee()
+    marquee.stop()
     list.removeEventListener('click', onListClick)
     list.removeEventListener('mouseover', onOver)
     list.removeEventListener('mouseout', onOut)
