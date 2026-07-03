@@ -188,11 +188,44 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   assert.equal(v.hrMax, 182)
   assert.equal(v.hrMaxSource, 'declared')
   assert.ok(v.trend.length >= 1)
-  assert.equal(a.engine.abilities.axes.length, 6)
-  const keys = a.engine.abilities.axes.map(x => x.key)
-  assert.deepEqual(keys, ['sprint', 'threshold', 'endurance', 'climb', 'cadence', 'recovery'])
   assert.ok(a.engine.cardio.metrics.length === 4)
   assert.ok(a.engine.cardio.rhrSeries.length >= 16)
+})
+
+test('abilities block builds one radar per sport with per-discipline history', () => {
+  const { cache, oura, weights } = fixtures()
+  const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
+  assert.deepEqual(
+    a.engine.abilities.sports.map(s => s.sport),
+    ['swim', 'bike', 'run'],
+  )
+  for (const s of a.engine.abilities.sports) {
+    assert.deepEqual(
+      s.axes.map(x => x.key),
+      ['sprint', 'threshold', 'endurance', 'climb', 'cadence', 'recovery'],
+    )
+    assert.ok(s.history.length >= 2)
+    assert.ok(s.area != null && s.area > 0)
+    for (const x of s.axes) {
+      if (x.score == null) assert.equal(x.proj, null)
+      else assert.ok(x.proj != null && x.proj >= 0 && x.proj <= 100)
+    }
+  }
+  const [swim, bike, run] = a.engine.abilities.sports
+  assert.equal(swim.axes.find(x => x.key === 'climb')?.score, null)
+  assert.equal(swim.axes.find(x => x.key === 'cadence')?.score, null)
+  assert.equal(swim.axes.find(x => x.key === 'sprint')?.rawUnit, 'm/s')
+  assert.equal(bike.axes.find(x => x.key === 'sprint')?.rawUnit, 'w/kg')
+  assert.equal(bike.axes.find(x => x.key === 'threshold')?.rawUnit, 'w/kg')
+  assert.equal(run.axes.find(x => x.key === 'cadence')?.rawValue, 176)
+  assert.equal(run.axes.find(x => x.key === 'threshold')?.score, null)
+  const bikeEnd = bike.axes.find(x => x.key === 'endurance')
+  assert.equal(bikeEnd?.hi, 50)
+  const runLast = run.history[run.history.length - 1]
+  assert.ok(runLast.sprint != null)
+  assert.equal(runLast.climb != null, true)
+  const swimLast = swim.history[swim.history.length - 1]
+  assert.equal(swimLast.climb, null)
 })
 
 test('engine derives ftp from 20-min power only when strava declares none', () => {
@@ -265,7 +298,8 @@ test('athlete ftp override drives analytics when supplied by the emitter', () =>
   assert.equal(v.method, 'bike')
   assert.equal(v.conf, 'low')
   assert.ok(v.note.includes('ftp 230w (athlete)'))
-  const threshold = a.engine.abilities.axes.find(axis => axis.key === 'threshold')
+  const bike = a.engine.abilities.sports.find(s => s.sport === 'bike')
+  const threshold = bike?.axes.find(axis => axis.key === 'threshold')
   assert.equal(threshold?.rawValue, 2.6)
 })
 
@@ -285,6 +319,50 @@ test('garmin vo2max outranks every other estimate', () => {
   assert.equal(a.engine.vo2max.conf, 'firm')
   assert.ok(a.engine.vo2max.estimates.some(e => e.method === 'bike'))
   assert.ok(a.engine.vo2max.fitnessAge != null && a.engine.vo2max.fitnessAge < 25)
+})
+
+test('garmin readings drive the vo2 trend and the bike proxy only fills earlier weeks', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: { [iso(29)]: { date: iso(29), generic: 54, cycling: 49.8 } },
+  }
+  const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
+  const trend = a.engine.vo2max.trend
+  assert.equal(trend.length, 2)
+  assert.equal(trend[0].weekStart, iso(20))
+  assert.equal(trend[0].method, 'bike')
+  assert.ok(trend[0].vo2max > 25 && trend[0].vo2max < 50)
+  assert.equal(trend[1].weekStart, iso(27))
+  assert.equal(trend[1].method, 'garmin')
+  assert.equal(trend[1].vo2max, 54)
+})
+
+test('lab test outranks a garmin reading in the same trend week', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: {
+      [iso(26)]: { date: iso(26), generic: 53.5, cycling: null },
+      [iso(29)]: { date: iso(29), generic: 54, cycling: 49.8 },
+    },
+  }
+  const a = buildAnalytics(cache, {
+    oura,
+    garmin,
+    weights,
+    since: '2026-05-12',
+    vo2labs: [{ date: iso(30), value: 47.8, massKg: 88.9 }],
+  })
+  const trend = a.engine.vo2max.trend
+  assert.equal(trend.length, 2)
+  assert.equal(trend[0].method, 'garmin')
+  assert.equal(trend[0].vo2max, 53.5)
+  assert.equal(trend[1].weekStart, iso(27))
+  assert.equal(trend[1].method, 'lab')
+  assert.equal(trend[1].vo2max, 47.8)
 })
 
 test('calibration tracks newest pace and volume deltas against the prior window', () => {
@@ -322,6 +400,23 @@ test('calibration tracks newest pace and volume deltas against the prior window'
   assert.equal(lastWeek.sessions, 2)
   assert.equal(lastWeek.runKm, 10)
   assert.equal(lastWeek.runHours, 0.8)
+})
+
+test('suffer score flows into daily effort, activity summaries, and weekly totals', () => {
+  const { cache, oura, weights } = fixtures()
+  cache.activities['1'].sufferScore = 96
+  cache.activities['2'].sufferScore = 41
+  const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
+  assert.equal(a.daily.find(d => d.date === iso(20))?.effort, 96)
+  assert.equal(a.daily.find(d => d.date === iso(22))?.effort, 41)
+  assert.equal(a.daily.find(d => d.date === iso(24))?.effort, 0)
+  assert.equal(a.activities.find(x => x.id === 1)?.effort, 96)
+  assert.equal(a.activities.find(x => x.id === 2)?.effort, 41)
+  assert.equal(a.activities.find(x => x.id === 3)?.effort, null)
+  assert.equal(
+    a.weekly.reduce((s, w) => s + w.effort, 0),
+    137,
+  )
 })
 
 test('analytics treats late evening syncs as the local calendar day', () => {
@@ -438,6 +533,30 @@ test('apple vo2max wins the estimate priority when present', () => {
   assert.equal(a.engine.vo2max.method, 'apple')
   assert.equal(a.engine.vo2max.value, 45.2)
   assert.ok(a.engine.vo2max.estimates.length >= 2)
+})
+
+test('apple swim strokes flow into activity summaries and data feed', () => {
+  const { cache, oura, weights } = fixtures()
+  const swimDay = iso(24)
+  const strokes = { freestyle: 1200, breaststroke: 300 }
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {},
+    swims: { [swimDay]: { date: swimDay, totalM: 1500, laps: 60, strokes } },
+  }
+  const a = buildAnalytics(cache, { oura, apple, weights, since: '2026-05-12' })
+  const swim = a.activities.find(r => r.sport === 'swim')
+  const run = a.activities.find(r => r.sport === 'run')
+  assert.deepEqual(swim?.strokes, strokes)
+  assert.equal(run?.strokes, null)
+
+  const feed = buildDataFeed(cache, a, { oura, apple, weights, zones: cache.zones })
+  const feedSwim = feed
+    .trimEnd()
+    .split('\n')
+    .map(l => JSON.parse(l))
+    .find(r => r.kind === 'activity' && r.sport === 'swim')
+  assert.deepEqual(feedSwim?.strokes, strokes)
 })
 
 test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', () => {

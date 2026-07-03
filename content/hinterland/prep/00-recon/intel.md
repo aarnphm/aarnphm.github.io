@@ -50,7 +50,7 @@ if the screen is 2-question format (Datadog phone screens frequently are), expec
 ## 3. what interviewers actually grade
 
 - **roundtrip-test-first habit.** writing `assert decode(encode(xs)) == xs` before generalizing. Stripe and Datadog both grade production reflexes over algorithmic flash ([interviewing.io/stripe](https://interviewing.io/stripe-interview-questions), [ophyai datadog](https://ophyai.com/blog/company-guides/datadog-interview-guide): "clean, efficient code is expected" with error handling and edge cases).
-- **byte-level fluency without stalling.** `& 0x7f`, `| 0x80`, shift-then-mask order, unsigned right shift where the language needs it (Java `>>>`, Python ints are arbitrary so mask explicitly, JS needs `>>> 0` or BigInt past 2^31). hesitation here reads as "never touched a wire format".
+- **byte-level fluency without stalling.** `& 0x7f`, `| 0x80`, shift-then-mask order, unsigned right shift where the language needs it (Java `>>>`, Python ints are arbitrary so mask explicitly, JS needs `>>> 0` or BigInt past $2^{31}$). hesitation here reads as "never touched a wire format".
 - **edge-case enumeration unprompted.** 0, boundary values 127/128 and 255/256, empty input, max width, truncation, garbage bytes. interviewers keep a checklist; each one they must hand you costs signal.
 - **API/state design for streaming.** decoder as object with explicit partial state vs generator; who owns the buffer; what `feed` returns on incomplete input. Datadog's buffered-writer follow-ups (flush on size or time, partial writes, shutdown) grade exactly this ([prachub](https://prachub.com/interview-questions/implement-buffered-file-writer-with-concurrency-support)).
 - **communication of the encoding decision.** naming the schemes (fixed-width, length-prefix, continuation-bit varint, zigzag) and picking with a stated reason. knowing the protobuf formula `(field << 3) | wire_type` territory is a plus signal, silence is neutral, inventing a delimiter-based byte format that cannot contain the delimiter is negative.
@@ -73,7 +73,7 @@ if the screen is 2-question format (Datadog phone screens frequently are), expec
 
 - **stringification dodge.** `",".join(map(str, xs))` when byte output was specified. interviewer redirects once; a second dodge ends the calibration.
 - **7-bit/8-bit confusion.** off-by-one at 127/128 (varint payload is 7 bits) or 255/256 (byte is 8). the ladder is built to expose exactly this boundary.
-- **sign/shift bugs.** arithmetic shift where logical was needed, missing `& 0xff` when a language yields signed bytes (Java), shifting past width, JS numbers silently losing bits past 2^53.
+- **sign/shift bugs.** arithmetic shift where logical was needed, missing `& 0xff` when a language yields signed bytes (Java), shifting past width, JS numbers silently losing bits past $2^{53}$.
 - **unbounded decode loop.** no guard on continuation bytes → malformed input `0x80 0x80 0x80...` spins forever or overflows shift. the 10-byte u64 cap is the tell of someone who has read a real varint decoder.
 - **streaming state dropped at chunk boundary.** emitting a garbage value from a truncated varint instead of holding `(accum, shift)` for the next `feed`.
 - **testing encode only.** never running decode, or never running decode-of-encode. no roundtrip = no correctness argument.

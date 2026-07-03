@@ -95,7 +95,7 @@ import {
   type PaceSport,
   isPaceSport,
 } from '../../util/pace-features'
-import { PaceForecaster, Z80 } from '../../util/pace-forecast'
+import { type FinishForecast, PaceForecaster, Z80 } from '../../util/pace-forecast'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 export {}
@@ -1687,11 +1687,12 @@ const speedUnitLabel = (): 'mph' | 'km/h' => (isImperialUnit() ? 'mph' : 'km/h')
 const speedFromKmh = (kmh: number): number => (isImperialUnit() ? kmh * KM_TO_MI : kmh)
 const fmtSpeedKmh = (kmh: number, dp = 1, gap = ' '): string =>
   `${speedFromKmh(kmh).toFixed(dp)}${gap}${speedUnitLabel()}`
-const raceLegDistance = (leg: RaceLeg): string =>
+type RaceLegSplit = Pick<RaceLeg, 'sport' | 'legKm' | 'splitS'>
+const raceLegDistance = (leg: RaceLegSplit): string =>
   leg.sport === 'swim'
     ? `${Math.round(leg.legKm * 1000).toLocaleString('en-US')} m`
     : fmtKm(leg.legKm)
-const raceLegPace = (leg: RaceLeg): string => {
+const raceLegPace = (leg: RaceLegSplit): string => {
   if (leg.legKm <= 0 || leg.splitS <= 0) return '—'
   if (leg.sport === 'swim') return `${clock(leg.splitS / (leg.legKm * 10))} /100m`
   if (leg.sport === 'bike') {
@@ -1701,7 +1702,7 @@ const raceLegPace = (leg: RaceLeg): string => {
   const secKm = leg.splitS / leg.legKm
   return isImperialUnit() ? `${clock(secKm / KM_TO_MI)} /mi` : `${clock(secKm)} /km`
 }
-const raceLegTip = (leg: RaceLeg): string =>
+const raceLegTip = (leg: RaceLegSplit): string =>
   `${leg.sport} · ${hms(leg.splitS)} · ${raceLegDistance(leg)} · ${raceLegPace(leg)}`
 const markGloss = (e: HTMLElement, key: string): HTMLElement => {
   e.dataset.gloss = key
@@ -2275,54 +2276,162 @@ const buildCtlSport = (data: Analytics): HTMLElement => {
   return block
 }
 
-const buildWeekly = (data: Analytics): HTMLElement => {
-  const block = el('div', 'tri-ana-weekly')
-  block.appendChild(anaTitle('weekly load', 'load'))
+type WkKind = 'load' | 'effort'
+const WKT_H = 34
+const WKT_TOP = 4
+const WKT_BOT = WKT_H - 4
+const WKT_CHRONIC = 4
+const WKT_BAND_LO = 0.8
+const WKT_BAND_HI = 1.3
+const WKT_ACTS = 4
+
+const wkVal = (w: Analytics['weekly'][number], kind: WkKind): number =>
+  kind === 'load' ? w.load : w.effort
+
+const wkBandAt = (vals: number[], i: number): [number, number] | null => {
+  if (i < WKT_CHRONIC) return null
+  let sum = 0
+  for (let j = i - WKT_CHRONIC; j < i; j++) sum += vals[j]
+  const chronic = sum / WKT_CHRONIC
+  return chronic > 0 ? [chronic * WKT_BAND_LO, chronic * WKT_BAND_HI] : null
+}
+
+const wkDates = (weekStart: string): string[] =>
+  Array.from({ length: 7 }, (_, k) =>
+    new Date(Date.parse(`${weekStart}T00:00:00Z`) + k * 86400000).toISOString().slice(0, 10),
+  )
+
+const wkDayLetter = (iso: string): string =>
+  new Date(`${iso}T00:00:00Z`)
+    .toLocaleDateString(triLocale() === 'fr' ? 'fr-CA' : 'en-US', {
+      weekday: 'narrow',
+      timeZone: 'UTC',
+    })
+    .toUpperCase()
+
+const renderWkDetail = (block: HTMLElement, data: Analytics, kind: WkKind, i: number): void => {
+  const host = block.querySelector<HTMLElement>('.tri-wkdetail')
+  const w = data.weekly[i]
+  if (!host || !w || host.dataset.week === String(i)) return
+  host.dataset.week = String(i)
+  const vals = data.weekly.map(x => wkVal(x, kind))
+  const band = wkBandAt(vals, i)
+  const days = wkDates(w.weekStart)
+  const head = el('div', 'tri-wkdetail-head')
+  head.append(
+    el('span', 'tri-wkdetail-num', String(Math.round(vals[i]))),
+    el('span', 'tri-wkdetail-range', `${shortDate(days[0])} – ${shortDate(days[6])}`),
+  )
+  if (band) {
+    const state = vals[i] > band[1] ? 'above' : vals[i] < band[0] ? 'below' : 'in'
+    head.appendChild(
+      el('span', `tri-wkdetail-state tri-wkdetail-state--${state}`, tl(`${state} range`)),
+    )
+  }
+  const byDate = new Map<string, DailyPoint>()
+  for (const d of data.daily) byDate.set(d.date, d)
+  const dayVals = days.map(date => {
+    const d = byDate.get(date)
+    return d ? (kind === 'load' ? d.load : d.effort) : 0
+  })
+  let dayMax = 1
+  for (const dv of dayVals) if (dv > dayMax) dayMax = dv
+  const grid = el('div', 'tri-wkdetail-days')
+  days.forEach((date, k) => {
+    const col = el('span', 'tri-wkdetail-day')
+    const track = el('span', 'tri-wkdetail-track')
+    if (dayVals[k] > 0) {
+      const fill = el('span', 'tri-wkdetail-fill')
+      fill.style.height = `${Math.max(6, (dayVals[k] / dayMax) * 100).toFixed(1)}%`
+      track.appendChild(fill)
+    }
+    col.append(track, el('span', 'tri-wkdetail-dl', wkDayLetter(date)))
+    grid.appendChild(col)
+  })
+  const stats = mathK(
+    'tri-ana-k tri-wkdetail-stats',
+    `${w.sessions}$\\times$ $\\cdot$ ${fmtKm(w.km)} $\\cdot$ ${w.hours.toFixed(1)}h`,
+  )
+  const actsBox = el('div', 'tri-wkdetail-acts')
+  const acts = data.activities
+    .filter(a => a.date >= days[0] && a.date <= days[6])
+    .map(a => ({ a, v: kind === 'load' ? a.load : a.effort }))
+    .sort((p, q) => (q.v ?? -1) - (p.v ?? -1))
+  for (const { a, v } of acts.slice(0, WKT_ACTS)) {
+    const row = el('div', 'tri-wkdetail-act')
+    row.append(
+      buildIconLeg(a.sport),
+      el('span', 'tri-wkdetail-act-name', a.name || a.sport),
+      el('span', 'tri-wkdetail-act-t', hms(a.movingTimeS)),
+      el('span', 'tri-wkdetail-act-v', v != null && v > 0 ? String(Math.round(v)) : '—'),
+    )
+    actsBox.appendChild(row)
+  }
+  if (acts.length > WKT_ACTS)
+    actsBox.appendChild(
+      el('div', 'tri-wkdetail-act tri-wkdetail-act--more', `+${acts.length - WKT_ACTS}`),
+    )
+  host.replaceChildren(head, grid, stats, actsBox)
+}
+
+const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
+  const block = el('div', kind === 'load' ? 'tri-ana-weekly' : 'tri-ana-effort')
+  block.appendChild(
+    kind === 'load' ? anaTitle('weekly load', 'load') : anaTitle('relative effort', 'effort'),
+  )
   const wk = data.weekly
-  if (!wk.length) {
-    block.appendChild(el('div', 'tri-ana-empty', tl('no weeks')))
+  if (kind === 'load' ? !wk.length : !wk.some(w => w.effort > 0)) {
+    block.appendChild(
+      el('div', 'tri-ana-empty', tl(kind === 'load' ? 'no weeks' : 'no effort logged')),
+    )
     return block
   }
-  let mx = 1
-  for (const w of wk) if (w.load > mx) mx = w.load
   const n = wk.length
-  const H = 32
-  const bot = H - 0.5
-  const yMaxW = niceUp(mx)
+  const vals = wk.map(w => wkVal(w, kind))
+  const bands = vals.map((_, i) => wkBandAt(vals, i))
+  let mx = 1
+  for (const v of vals) if (v > mx) mx = v
+  for (const b of bands) if (b && b[1] > mx) mx = b[1]
+  const yMax = niceUp(mx)
+  const x = (i: number): number => ((i + 0.5) / n) * ANA_W
+  const y = (v: number): number => WKT_BOT - (v / yMax) * (WKT_BOT - WKT_TOP)
   const s = svg('svg', {
-    class: 'tri-ana-svg tri-ana-weekly-svg',
-    viewBox: `0 0 ${n} ${H}`,
+    class: 'tri-ana-svg tri-wkt-svg',
+    viewBox: `0 0 ${ANA_W} ${WKT_H}`,
     preserveAspectRatio: 'none',
   })
-  wk.forEach((w, i) => {
-    if (w.load <= 0) {
-      s.appendChild(
-        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
-      )
-      return
+  let run: number[] = []
+  const flushBand = (): void => {
+    if (run.length >= 2) {
+      const top = run.map(i => [x(i), y(bands[i]![1])] as [number, number])
+      const btm = [...run].reverse().map(i => [x(i), y(bands[i]![0])] as [number, number])
+      s.appendChild(svg('path', { d: `${polyD([...top, ...btm])} Z`, class: 'tri-wkt-band' }))
     }
-    const h = (w.load / yMaxW) * (H - 2)
-    const spike = w.ramp != null && w.ramp > 0.1
-    s.appendChild(
-      svg('rect', {
-        x: i + 0.12,
-        y: bot - h,
-        width: 0.76,
-        height: h,
-        class: spike ? 'tri-seg--load tri-seg--spike' : 'tri-seg--load',
-      }),
-    )
+    run = []
+  }
+  bands.forEach((b, i) => {
+    if (b) run.push(i)
+    else flushBand()
   })
-  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
+  flushBand()
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: WKT_H, class: 'tri-ana-cursor' }))
+  vals.forEach((v, i) => {
+    const d = `M ${x(i).toFixed(2)} ${y(v).toFixed(2)} l 0.01 0`
+    const g = svg('g', {
+      class: i === n - 1 ? 'tri-wkt-pt tri-wkt-pt--now' : 'tri-wkt-pt',
+      'data-week': i,
+    })
+    g.appendChild(svg('path', { d, class: 'tri-wkt-halo' }))
+    g.appendChild(svg('path', { d, class: 'tri-wkt-o' }))
+    if (i !== n - 1) g.appendChild(svg('path', { d, class: 'tri-wkt-i' }))
+    s.appendChild(g)
+  })
   block.appendChild(
     axisFrame(
       domF,
       s,
-      [yMaxW, yMaxW / 2, 0].map(v => ({
-        label: String(Math.round(v)),
-        vbY: bot - (v / yMaxW) * (H - 2),
-      })),
-      H,
+      [yMax, yMax / 2, 0].map(v => ({ label: String(Math.round(v)), vbY: y(v) })),
+      WKT_H,
       monthTicks(
         wk.map(w => w.weekStart),
         i => ((i + 0.5) / n) * 100,
@@ -2330,7 +2439,18 @@ const buildWeekly = (data: Analytics): HTMLElement => {
       56,
     ),
   )
-  block.appendChild(el('div', 'tri-chart-readout'))
+  const wrap = el('div', 'tri-wkdetail-wrap')
+  wrap.appendChild(el('div', 'tri-wkdetail'))
+  block.appendChild(wrap)
+  return block
+}
+
+const buildWeekly = (data: Analytics): HTMLElement => {
+  const block = buildWeekTrend(data, 'load')
+  const wk = data.weekly
+  if (!wk.length) return block
+  let mx = 1
+  for (const w of wk) if (w.load > mx) mx = w.load
   const active = wk.filter(w => w.load > 0).length
   const last = wk[wk.length - 1]
   const prev = wk.length >= 2 ? wk[wk.length - 2] : null
@@ -2342,7 +2462,6 @@ const buildWeekly = (data: Analytics): HTMLElement => {
   statRow.append(
     el('span', 'tri-ana-k', `${active} ${tl('active wk')}`),
     el('span', 'tri-ana-k', `${tl('peak')} ${Math.round(mx)}/wk`),
-    mathK('tri-ana-k', `this wk ${fmtKm(last.km)} $\\cdot$ ${last.hours.toFixed(1)}h`),
     mathK('tri-ana-k', `28d ${fmtKm(vol.currentKm)} $\\cdot$ ${vol.currentHours.toFixed(1)}h`),
   )
   cap.appendChild(statRow)
@@ -2376,6 +2495,26 @@ const buildWeekly = (data: Analytics): HTMLElement => {
   return block
 }
 
+const renderLegSegments = (track: HTMLElement, legs: RaceLegSplit[]): void => {
+  for (const old of track.querySelectorAll('.tri-rdy-leg')) old.remove()
+  const legTotalS = legs.reduce((sum, leg) => sum + Math.max(0, leg.splitS), 0)
+  if (legTotalS <= 0) return
+  let legOffsetS = 0
+  for (const leg of legs) {
+    const splitS = Math.max(0, leg.splitS)
+    if (splitS <= 0) continue
+    const hit = el('button', `tri-rdy-leg tri-rdy-leg-${leg.sport}`, undefined, {
+      type: 'button',
+      'aria-label': raceLegTip(leg),
+      'data-tip': raceLegTip(leg),
+    })
+    hit.style.left = `${((legOffsetS / legTotalS) * 100).toFixed(2)}%`
+    hit.style.width = `${((splitS / legTotalS) * 100).toFixed(2)}%`
+    track.appendChild(hit)
+    legOffsetS += splitS
+  }
+}
+
 const buildReadiness = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-readiness')
   block.appendChild(anaTitle('race readiness', 'score'))
@@ -2395,23 +2534,7 @@ const buildReadiness = (data: Analytics): HTMLElement => {
     band.style.left = `${clampN(score - bw / 2, 0, 100 - bw)}%`
     band.style.width = `${bw}%`
     track.append(fill, band)
-    const legTotalS = r.legs.reduce((sum, leg) => sum + Math.max(0, leg.splitS), 0)
-    let legOffsetS = 0
-    if (legTotalS > 0) {
-      for (const leg of r.legs) {
-        const splitS = Math.max(0, leg.splitS)
-        if (splitS <= 0) continue
-        const hit = el('button', `tri-rdy-leg tri-rdy-leg-${leg.sport}`, undefined, {
-          type: 'button',
-          'aria-label': raceLegTip(leg),
-          'data-tip': raceLegTip(leg),
-        })
-        hit.style.left = `${((legOffsetS / legTotalS) * 100).toFixed(2)}%`
-        hit.style.width = `${((splitS / legTotalS) * 100).toFixed(2)}%`
-        track.appendChild(hit)
-        legOffsetS += splitS
-      }
-    }
+    renderLegSegments(track, r.legs)
     row.appendChild(track)
     const meta = el('span', 'tri-rdy-meta')
     meta.append(
@@ -2870,66 +2993,13 @@ const buildBody = (data: Analytics): HTMLElement => {
 }
 
 const buildEffort = (data: Analytics): HTMLElement => {
-  const block = el('div', 'tri-ana-effort')
-  block.appendChild(anaTitle('relative effort', 'effort'))
+  const block = buildWeekTrend(data, 'effort')
   const all = data.weekly
-  const active = all.filter(w => w.effort > 0)
-  if (!active.length) {
-    block.appendChild(el('div', 'tri-ana-empty', tl('no effort logged')))
-    return block
-  }
+  if (!all.some(w => w.effort > 0)) return block
   let mx = 1
   for (const w of all) if (w.effort > mx) mx = w.effort
-  const n = all.length
-  const H = 32
-  const bot = H - 0.5
-  const yMaxE = niceUp(mx)
-  const s = svg('svg', {
-    class: 'tri-ana-svg tri-ana-weekly-svg',
-    viewBox: `0 0 ${n} ${H}`,
-    preserveAspectRatio: 'none',
-  })
-  all.forEach((w, i) => {
-    if (w.effort <= 0) {
-      s.appendChild(
-        svg('rect', { x: i + 0.35, y: bot - 0.5, width: 0.3, height: 0.5, class: 'tri-seg--rest' }),
-      )
-      return
-    }
-    const h = (w.effort / yMaxE) * (H - 2)
-    s.appendChild(
-      svg('rect', { x: i + 0.12, y: bot - h, width: 0.76, height: h, class: 'tri-seg--effort' }),
-    )
-  })
-  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
-  block.appendChild(
-    axisFrame(
-      domF,
-      s,
-      [yMaxE, yMaxE / 2, 0].map(v => ({
-        label: String(Math.round(v)),
-        vbY: bot - (v / yMaxE) * (H - 2),
-      })),
-      H,
-      monthTicks(
-        all.map(w => w.weekStart),
-        i => ((i + 0.5) / n) * 100,
-      ),
-      56,
-    ),
-  )
-  block.appendChild(el('div', 'tri-chart-readout'))
-  const last = all[all.length - 1]
-  const prev = all.length >= 2 ? all[all.length - 2] : null
   const cap = el('div', 'tri-elev-cap')
-  cap.append(
-    el('span', 'tri-ana-k', `${tl('this wk')} ${Math.round(last?.effort ?? 0)}`),
-    el('span', 'tri-ana-k', `${tl('peak')} ${Math.round(mx)}`),
-  )
-  if (prev && prev.effort > 0) {
-    const d = Math.round((last?.effort ?? 0) - prev.effort)
-    cap.appendChild(el('span', 'tri-ana-k', `${d >= 0 ? '+' : ''}${d} ${tl('vs last')}`))
-  }
+  cap.appendChild(el('span', 'tri-ana-k', `${tl('peak')} ${Math.round(mx)}`))
   block.appendChild(cap)
   return block
 }
@@ -3723,12 +3793,21 @@ const buildVo2max = (data: Analytics): HTMLElement => {
       viewBox: `0 0 ${ANA_W} ${ANA_H}`,
       preserveAspectRatio: 'none',
     })
-    s.appendChild(
-      svg('path', {
-        d: polyD(v.trend.map((p, i) => [x(i), y(p.vo2max)] as [number, number])),
-        class: 'tri-elev-line tri-line-bike',
-      }),
-    )
+    const pts = v.trend.map((p, i) => [x(i), y(p.vo2max)] as [number, number])
+    const proj = (i: number): boolean =>
+      v.trend[i - 1].method === 'bike' || v.trend[i].method === 'bike'
+    let from = 0
+    for (let i = 1; i < n; i++) {
+      if (i === n - 1 || proj(i + 1) !== proj(i)) {
+        s.appendChild(
+          svg('path', {
+            d: polyD(pts.slice(from, i + 1)),
+            class: `tri-elev-line tri-line-bike${proj(i) ? ' tri-vo2-proj' : ''}`,
+          }),
+        )
+        from = i
+      }
+    }
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
     const frame = axisFrame(
       domF,
@@ -3758,6 +3837,10 @@ const buildVo2max = (data: Analytics): HTMLElement => {
     cap.appendChild(el('span', 'tri-ana-k', `p${v.percentileForAge} for age ${v.chronoAge}`))
   cap.appendChild(el('span', 'tri-ana-k', v.note))
   cap.appendChild(el('span', 'tri-ana-k', `hrmax ${v.hrMax} (${v.hrMaxSource})`))
+  if (v.trend.some(p => p.method === 'bike'))
+    cap.appendChild(
+      el('span', 'tri-ana-k tri-vo2-proj-note', tl('dashes = projected from bike power')),
+    )
   block.appendChild(cap)
   const lab = data.tests.vo2max[data.tests.vo2max.length - 1]
   if (lab) {
@@ -4513,20 +4596,37 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   return block
 }
 
-type AbilityAxis = Analytics['engine']['abilities']['axes'][number]
+type SportAbility = Analytics['engine']['abilities']['sports'][number]
+type AbilityAxis = SportAbility['axes'][number]
 
-const radarAxisDefinition = (axis: AbilityAxis): string => {
+const radarAxisDefinition = (sport: Sport, axis: AbilityAxis): string => {
   switch (axis.key) {
     case 'sprint':
-      return 'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.'
+      if (sport === 'bike')
+        return 'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.'
+      if (sport === 'run')
+        return 'Sprint is the best 30 s running speed on record. It measures top-end leg speed rather than aerobic fitness.'
+      return 'Sprint is the fastest average speed of any recorded swim. Lap-quantised pool streams make whole-swim speed the honest peak.'
     case 'threshold':
-      return 'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.'
+      if (sport === 'bike')
+        return 'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.'
+      if (sport === 'run')
+        return 'Threshold is the grade-adjusted running speed you can hold near steady state, estimated from your fastest sustained efforts.'
+      return 'Threshold is critical swim speed, the pace you could hold for a long steady swim, estimated from sustained efforts.'
     case 'endurance':
-      return 'Endurance is CTL, the 42-day weighted average of training load. Higher CTL means more recent work capacity is on the ledger.'
+      return `Endurance is ${sport} CTL, the 42-day weighted training load from this discipline alone, scored against its target share of total load.`
     case 'climb':
+      if (sport === 'swim')
+        return 'Climbing does not apply in the pool, so this axis stays empty for swimming.'
+      if (sport === 'run')
+        return 'Climb is VAM on foot: vertical metres gained per hour of moving time on the run.'
       return 'Climb is VAM, the rate of vertical gain while moving uphill. Higher VAM means more metres climbed per hour.'
     case 'cadence':
-      return 'Cadence scores how close the current average is to 90 rpm on the bike or 180 spm on the run. Overspin and underspin both cost points.'
+      if (sport === 'bike')
+        return 'Cadence scores how close the average pedal turnover sits to 90 rpm. Overspin and underspin both cost points.'
+      if (sport === 'run')
+        return 'Cadence scores how close the average stride turnover sits to 180 spm. Overstriding shows up here first.'
+      return 'Cadence scores stroke rate against a 30 strokes-per-minute freestyle target.'
     case 'recovery':
       return 'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.'
   }
@@ -4540,10 +4640,14 @@ const radarNotationDefinition = (axis: AbilityAxis): string => {
       return 'CTL means Chronic Training Load: a 42-day exponentially weighted training-stress average.'
     case 'm/h':
       return '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.'
+    case 'm/s':
+      return '$\\mathrm{m/s}$ means metres per second of forward speed. Multiply by 3.6 for km/h; $1000/v$ gives seconds per kilometre.'
     case 'rpm':
       return 'rpm means revolutions per minute, the pedal-turn rate on the bike.'
     case 'spm':
       return 'spm means steps per minute, the stride-turnover rate on the run.'
+    case 'str/min':
+      return 'str/min means strokes per minute, the freestyle stroke-turnover rate the watch records.'
     case 'readiness':
       return "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain."
     case 'ms':
@@ -4553,65 +4657,226 @@ const radarNotationDefinition = (axis: AbilityAxis): string => {
   }
 }
 
+const radarPaceHint = (sport: Sport, axis: AbilityAxis): string | null => {
+  if (axis.rawUnit !== 'm/s' || axis.rawValue == null || axis.rawValue <= 0) return null
+  if (sport === 'swim') return `${clock(100 / axis.rawValue)} /100m`
+  return isImperialUnit()
+    ? `${clock(1609.344 / axis.rawValue)} /mi`
+    : `${clock(1000 / axis.rawValue)} /km`
+}
+
 const buildAbilities = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-radar')
   block.appendChild(anaTitle('abilities', 'radar'))
-  const ab = data.engine.abilities
-  if (!ab.axes.length || ab.axes.every(a => a.score == null)) {
+  const sports = data.engine.abilities.sports.filter(sp => sp.axes.length > 0)
+  if (!sports.length || sports.every(sp => sp.axes.every(a => a.score == null))) {
     block.appendChild(el('div', 'tri-ana-empty', tl('not enough data')))
     return block
   }
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const pressed = new Set<Sport>([
+    sports.some(sp => sp.sport === 'bike') ? 'bike' : sports[0].sport,
+  ])
+  const singleOf = (): SportAbility | null =>
+    pressed.size === 1 ? (sports.find(sp => pressed.has(sp.sport)) ?? null) : null
+
+  const tabs = el('div', 'tri-radar-sports', undefined, {
+    role: 'group',
+    'aria-label': 'radar sports',
+  })
+  const tabOf = new Map<Sport, HTMLElement>()
+  for (const sp of sports) {
+    const tab = el('button', `tri-radar-sport tri-radar-sport--${sp.sport}`, undefined, {
+      type: 'button',
+      'aria-pressed': pressed.has(sp.sport) ? 'true' : 'false',
+      'aria-label': sp.sport,
+      title: sp.sport,
+    })
+    tab.appendChild(buildIcon(sp.sport))
+    tab.addEventListener('click', () => toggleSport(sp.sport))
+    tabOf.set(sp.sport, tab)
+    tabs.appendChild(tab)
+  }
+  block.appendChild(tabs)
+
+  const axesRef = sports[0].axes
+  const axesN = axesRef.length
   const cx = 50
   const cy = 50
   const R = 36
-  const angle = (i: number): number => ((-90 + (360 / ab.axes.length) * i) * Math.PI) / 180
+  const angle = (i: number): number => ((-90 + (360 / axesN) * i) * Math.PI) / 180
   const pt = (i: number, score: number): [number, number] => {
     const th = angle(i)
     const r = (R * score) / 100
     return [cx + r * Math.cos(th), cy + r * Math.sin(th)]
   }
+  const zeros = (): number[] => axesRef.map(() => 0)
+  const ringD = (vals: number[]): string => `${polyD(vals.map((v, i) => pt(i, v)))} Z`
   const s = svg('svg', { class: 'tri-radar-svg', viewBox: '0 0 100 100' })
   for (const g of [25, 50, 75, 100])
-    s.appendChild(
-      svg('path', { d: `${polyD(ab.axes.map((_, i) => pt(i, g)))} Z`, class: 'tri-radar-grid' }),
-    )
-  ab.axes.forEach((_, i) => {
+    s.appendChild(svg('path', { d: ringD(axesRef.map(() => g)), class: 'tri-radar-grid' }))
+  axesRef.forEach((_, i) => {
     const [px, py] = pt(i, 100)
     s.appendChild(svg('line', { x1: cx, y1: cy, x2: px, y2: py, class: 'tri-radar-spoke' }))
   })
-  s.appendChild(
-    svg('path', {
-      d: `${polyD(ab.axes.map((a, i) => pt(i, a.score ?? 0)))} Z`,
-      class: 'tri-radar-fill',
-    }),
-  )
-  ab.axes.forEach((a, i) => {
-    const [px, py] = pt(i, a.score ?? 0)
-    s.appendChild(
-      svg('circle', {
-        cx: px,
-        cy: py,
-        r: 1.4,
-        class: a.score == null ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot',
-      }),
-    )
+  const solidOf = new Map<Sport, SVGElement>()
+  const projPathOf = new Map<Sport, SVGElement>()
+  for (const sp of sports) {
+    const path = svg('path', {
+      d: ringD(zeros()),
+      class: `tri-radar-fill tri-radar-fill--${sp.sport}`,
+    })
+    s.appendChild(path)
+    solidOf.set(sp.sport, path)
+  }
+  for (const sp of sports) {
+    const path = svg('path', {
+      d: ringD(zeros()),
+      class: `tri-radar-proj tri-radar-proj--${sp.sport}`,
+    })
+    s.appendChild(path)
+    projPathOf.set(sp.sport, path)
+  }
+  const dots = axesRef.map((_, i) => {
+    const [px, py] = pt(i, 0)
+    const dot = svg('circle', { cx: px, cy: py, r: 1.4, class: 'tri-radar-dot' })
+    s.appendChild(dot)
+    return dot
+  })
+  const labels = axesRef.map((a, i) => {
     const th = angle(i)
     const label = svg('text', {
       x: cx + (R + 8) * Math.cos(th),
       y: cy + (R + 8) * Math.sin(th) + 1.6,
       'text-anchor': Math.abs(Math.cos(th)) < 0.3 ? 'middle' : Math.cos(th) > 0 ? 'start' : 'end',
-      class: a.score == null ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax',
+      class: 'tri-radar-ax',
     })
     label.textContent = tl(a.label)
     s.appendChild(label)
+    return label
   })
   block.appendChild(s)
 
-  const hist = ab.history ?? []
+  const keyCap = el('div', 'tri-radar-key')
+  const nowKey = el('span', 'tri-radar-key-item')
+  nowKey.append(
+    el('span', 'tri-radar-swatch tri-radar-swatch--now'),
+    el('span', undefined, tl('now')),
+  )
+  const projKey = el('span', 'tri-radar-key-item')
+  projKey.append(
+    el('span', 'tri-radar-swatch tri-radar-swatch--proj'),
+    el('span', undefined, `${tl('projected')} +28d`),
+  )
+  keyCap.append(nowKey, projKey)
+  block.appendChild(keyCap)
+
+  const shown = new Map<Sport, { solid: number[]; proj: number[] }>()
+  for (const sp of sports) shown.set(sp.sport, { solid: zeros(), proj: zeros() })
+  let raf = 0
+  const apply = (): void => {
+    for (const sp of sports) {
+      const st = shown.get(sp.sport)!
+      solidOf.get(sp.sport)!.setAttribute('d', ringD(st.solid))
+      projPathOf.get(sp.sport)!.setAttribute('d', ringD(st.proj))
+    }
+    const single = singleOf()
+    if (single) {
+      shown.get(single.sport)!.solid.forEach((v, i) => {
+        const [px, py] = pt(i, v)
+        dots[i].setAttribute('cx', px.toFixed(2))
+        dots[i].setAttribute('cy', py.toFixed(2))
+      })
+    }
+  }
+  const targetOf = (sp: SportAbility): { solid: number[]; proj: number[] } =>
+    pressed.has(sp.sport)
+      ? { solid: sp.axes.map(a => a.score ?? 0), proj: sp.axes.map(a => a.proj ?? a.score ?? 0) }
+      : { solid: zeros(), proj: zeros() }
+  const morphAll = (animate: boolean): void => {
+    window.cancelAnimationFrame(raf)
+    const targets = new Map(sports.map(sp => [sp.sport, targetOf(sp)] as const))
+    if (!animate || reduced) {
+      for (const sp of sports) shown.set(sp.sport, targets.get(sp.sport)!)
+      apply()
+      return
+    }
+    const from = new Map(
+      [...shown].map(([k, v]) => [k, { solid: [...v.solid], proj: [...v.proj] }] as const),
+    )
+    const t0 = performance.now()
+    const tick = (now: number): void => {
+      const t = Math.min(1, (now - t0) / 450)
+      const e = 1 - (1 - t) ** 3
+      for (const sp of sports) {
+        const f = from.get(sp.sport)!
+        const g = targets.get(sp.sport)!
+        shown.set(sp.sport, {
+          solid: f.solid.map((v, i) => v + (g.solid[i] - v) * e),
+          proj: f.proj.map((v, i) => v + (g.proj[i] - v) * e),
+        })
+      }
+      apply()
+      if (t < 1) raf = window.requestAnimationFrame(tick)
+    }
+    raf = window.requestAnimationFrame(tick)
+  }
+  const applyAxisClasses = (): void => {
+    const single = singleOf()
+    axesRef.forEach((_, i) => {
+      const isNull = single != null && single.axes[i].score == null
+      dots[i].setAttribute('class', isNull ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot')
+      labels[i].setAttribute('class', isNull ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax')
+    })
+  }
+
+  const devBox = el('div', 'tri-dev-slot')
+  const legendOn = new Set<string>(['endurance', 'recovery'])
+  let revealDev: (() => void) | null = null
   const DEV_KEYS = ['endurance', 'recovery', 'cadence', 'sprint', 'threshold', 'climb'] as const
-  const devKeys = DEV_KEYS.filter(k => hist.filter(h => h[k] != null).length >= 2)
-  if (hist.length >= 2 && devKeys.length) {
-    const onByDefault = new Set<string>(['endurance', 'recovery'])
+  type DevSeries = {
+    key: string
+    cls: string
+    dotCls: string
+    label: string
+    vals: (number | null)[]
+    toggle: boolean
+  }
+
+  const renderDev = (draw: 'defer' | 'animate' | 'none'): void => {
+    revealDev = null
+    const single = singleOf()
+    const hist = (single ?? sports[0]).history ?? []
+    let series: DevSeries[]
+    if (single) {
+      series = DEV_KEYS.filter(k => hist.filter(h => h[k] != null).length >= 2).map(k => ({
+        key: k,
+        cls: `tri-dev-line--${k}`,
+        dotCls: `tri-dev-dot--${k}`,
+        label: tl(k),
+        vals: hist.map(h => h[k]),
+        toggle: true,
+      }))
+    } else {
+      series = sports
+        .filter(sp => pressed.has(sp.sport))
+        .map(sp => ({
+          key: sp.sport as string,
+          cls: `tri-line-${sp.sport}`,
+          dotCls: `tri-dev-dot--sp-${sp.sport}`,
+          label: tl(sp.sport),
+          vals: sp.history.map(h => {
+            const xs = DEV_KEYS.map(k => h[k]).filter((v): v is number => v != null)
+            return xs.length ? Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length) : null
+          }),
+          toggle: false,
+        }))
+        .filter(sr => sr.vals.filter(v => v != null).length >= 2)
+    }
+    if (hist.length < 2 || !series.length) {
+      devBox.replaceChildren()
+      return
+    }
     const dev = el('div', 'tri-dev')
     const W = 100
     const H = 30
@@ -4641,19 +4906,22 @@ const buildAbilities = (data: Analytics): HTMLElement => {
           class: gv === 50 ? 'tri-dev-grid tri-dev-grid--mid' : 'tri-dev-grid',
         }),
       )
+    const linesG = svg('g', { class: 'tri-dev-lines' }) as SVGGElement
+    sv.appendChild(linesG)
     const paths = new Map<string, SVGElement>()
-    for (const k of devKeys) {
-      const d = hist
-        .map((h, i) => ({ x: xAt(i), v: h[k] }))
+    for (const sr of series) {
+      const d = sr.vals
+        .map((v, i) => ({ x: xAt(i), v }))
         .filter((p): p is { x: number; v: number } => p.v != null)
         .map((p, i) => `${i ? 'L' : 'M'} ${p.x.toFixed(2)} ${yAt(p.v).toFixed(2)}`)
         .join(' ')
+      const off = sr.toggle && !legendOn.has(sr.key)
       const path = svg('path', {
         d,
-        class: `tri-dev-line tri-dev-line--${k}${onByDefault.has(k) ? '' : ' tri-dev-line--off'}`,
+        class: `tri-dev-line ${sr.cls}${off ? ' tri-dev-line--off' : ''}`,
       })
-      sv.appendChild(path)
-      paths.set(k, path)
+      linesG.appendChild(path)
+      paths.set(sr.key, path)
     }
     const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-chart-cursor' })
     sv.appendChild(cursor)
@@ -4661,15 +4929,15 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     const readoutEl = el('div', 'tri-chart-readout tri-dev-read')
     plot.appendChild(readoutEl)
     const renderRead = (i: number): void => {
-      const point = hist[i]
-      const rows: HTMLElement[] = [el('span', 'tri-dev-read-date', shortDate(point.date))]
-      for (const k of devKeys) {
-        if (paths.get(k)!.classList.contains('tri-dev-line--off') || point[k] == null) continue
+      const rows: HTMLElement[] = [el('span', 'tri-dev-read-date', shortDate(hist[i].date))]
+      for (const sr of series) {
+        const v = sr.vals[i]
+        if (paths.get(sr.key)!.classList.contains('tri-dev-line--off') || v == null) continue
         const row = el('div', 'tri-dev-read-row')
         row.append(
-          el('span', `tri-dev-dot tri-dev-dot--${k}`),
-          el('span', 'tri-dev-read-k', tl(k)),
-          el('span', 'tri-dev-read-v', String(point[k])),
+          el('span', `tri-dev-dot ${sr.dotCls}`),
+          el('span', 'tri-dev-read-k', sr.label),
+          el('span', 'tri-dev-read-v', String(v)),
         )
         rows.push(row)
       }
@@ -4677,9 +4945,9 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     }
     const focusIndex = (i: number, hover: boolean): void => {
       const idx = Math.round(clampN(i, 0, hist.length - 1))
-      const cx = xAt(idx).toFixed(2)
-      cursor.setAttribute('x1', cx)
-      cursor.setAttribute('x2', cx)
+      const cxAttr = xAt(idx).toFixed(2)
+      cursor.setAttribute('x1', cxAttr)
+      cursor.setAttribute('x2', cxAttr)
       readoutEl.style.left = `${clampN((xAt(idx) / W) * 100, 6, 80).toFixed(2)}%`
       readoutEl.style.right = 'auto'
       renderRead(idx)
@@ -4704,25 +4972,86 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     dev.appendChild(frame)
     dev.appendChild(xax)
     const legend = el('div', 'tri-dev-legend')
-    for (const k of devKeys) {
+    for (const sr of series) {
+      if (!sr.toggle) {
+        const item = el('span', 'tri-dev-leg tri-dev-leg--static')
+        item.append(
+          el('span', `tri-dev-dot ${sr.dotCls}`),
+          el('span', 'tri-dev-leg-name', sr.label),
+        )
+        legend.appendChild(item)
+        continue
+      }
       const item = el(
         'button',
-        `tri-dev-leg${onByDefault.has(k) ? '' : ' tri-dev-leg--off'}`,
+        `tri-dev-leg${legendOn.has(sr.key) ? '' : ' tri-dev-leg--off'}`,
         undefined,
         { type: 'button' },
       )
-      item.append(
-        el('span', `tri-dev-dot tri-dev-dot--${k}`),
-        el('span', 'tri-dev-leg-name', tl(k)),
-      )
+      item.append(el('span', `tri-dev-dot ${sr.dotCls}`), el('span', 'tri-dev-leg-name', sr.label))
       item.addEventListener('click', () => {
-        const hidden = paths.get(k)!.classList.toggle('tri-dev-line--off')
+        const hidden = paths.get(sr.key)!.classList.toggle('tri-dev-line--off')
         item.classList.toggle('tri-dev-leg--off', hidden)
+        if (hidden) legendOn.delete(sr.key)
+        else legendOn.add(sr.key)
       })
       legend.appendChild(item)
     }
     dev.appendChild(legend)
-    block.appendChild(dev)
+    if (draw !== 'none') {
+      linesG.style.clipPath = 'inset(0 100% 0 0)'
+      const reveal = (): void => {
+        linesG.style.clipPath = 'inset(0 0 0 0)'
+      }
+      if (draw === 'animate')
+        window.requestAnimationFrame(() => window.requestAnimationFrame(reveal))
+      else revealDev = reveal
+    }
+    devBox.replaceChildren(dev)
+  }
+  block.appendChild(devBox)
+
+  let revealed = reduced
+  const syncChrome = (): void => {
+    block.dataset.sport = singleOf()?.sport ?? (pressed.size ? 'all' : 'none')
+    block.dataset.pressed = [...pressed].join(',')
+    block.classList.toggle('tri-engine-radar--multi', pressed.size !== 1)
+    for (const sp of sports)
+      block.classList.toggle(
+        `tri-engine-radar--${sp.sport}`,
+        pressed.size === 1 && pressed.has(sp.sport),
+      )
+    for (const [k, tab] of tabOf)
+      tab.setAttribute('aria-pressed', pressed.has(k) ? 'true' : 'false')
+    applyAxisClasses()
+  }
+  const toggleSport = (sport: Sport): void => {
+    revealed = true
+    if (pressed.has(sport)) pressed.delete(sport)
+    else pressed.add(sport)
+    syncChrome()
+    morphAll(!reduced)
+    renderDev(reduced ? 'none' : 'animate')
+  }
+
+  syncChrome()
+  renderDev(reduced ? 'none' : 'defer')
+  if (reduced) morphAll(false)
+  else {
+    apply()
+    const io = new IntersectionObserver(
+      entries => {
+        if (!entries.some(en => en.isIntersecting)) return
+        io.disconnect()
+        if (revealed) return
+        revealed = true
+        morphAll(true)
+        revealDev?.()
+        revealDev = null
+      },
+      { threshold: 0.15 },
+    )
+    io.observe(block)
   }
 
   return block
@@ -4927,7 +5256,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   const trend = data.engine.vo2max.trend
   bind('.tri-engine-vo2', '.tri-engine-vo2-spark', trend.length, ANA_W, i => {
     const p = trend[i]
-    return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min`
+    const src = p.method === 'bike' ? `bike (${tl('projected')})` : p.method
+    return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min · ${src}`
   })
 
   bind('.tri-ana-ctlsport', '.tri-ana-svg', daily.length, ANA_W, i => {
@@ -4936,14 +5266,52 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   })
 
   const wk = data.weekly
-  bind('.tri-ana-weekly', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
-    const w = wk[i]
-    return `${w.weekStart} · load ${Math.round(w.load)} · ${fmtKm(w.km)} · ${w.hours.toFixed(1)}h · swim ${fmtKm(w.swimKm)} · bike ${fmtKm(w.bikeKm)} · run ${fmtKm(w.runKm)}`
-  })
-  bind('.tri-ana-effort', '.tri-ana-weekly-svg', wk.length, wk.length, i => {
-    const w = wk[i]
-    return `${w.weekStart} · effort ${Math.round(w.effort)}`
-  })
+  const bindWkTrend = (blockSel: string, kind: WkKind): void => {
+    const block = panel.querySelector<HTMLElement>(blockSel)
+    const svgEl = block?.querySelector<SVGElement>('.tri-wkt-svg')
+    const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+    const wrap = block?.querySelector<HTMLElement>('.tri-wkdetail-wrap')
+    if (!block || !svgEl || !cursor || !wrap || !wk.length) return
+    const pts = Array.from(svgEl.querySelectorAll<SVGElement>('.tri-wkt-pt'))
+    const mark = (cls: string, idx: number | null): void => {
+      for (const p of pts) p.classList.toggle(cls, p.dataset.week === String(idx))
+    }
+    const idxAt = (event: MouseEvent): number => {
+      const r = svgEl.getBoundingClientRect()
+      const f = clampN((event.clientX - r.left) / r.width, 0, 1)
+      return Math.min(wk.length - 1, Math.floor(f * wk.length))
+    }
+    let sel: number | null = null
+    const onMove = (event: MouseEvent): void => {
+      const i = idxAt(event)
+      const cx = (((i + 0.5) / wk.length) * ANA_W).toFixed(2)
+      cursor.setAttribute('x1', cx)
+      cursor.setAttribute('x2', cx)
+      mark('tri-wkt-pt--hot', i)
+      block.classList.add('tri-chart--hover')
+    }
+    const onLeave = (): void => {
+      block.classList.remove('tri-chart--hover')
+      mark('tri-wkt-pt--hot', null)
+    }
+    const onClick = (event: MouseEvent): void => {
+      const i = idxAt(event)
+      sel = sel === i ? null : i
+      if (sel != null) renderWkDetail(block, data, kind, sel)
+      mark('tri-wkt-pt--sel', sel)
+      wrap.classList.toggle('tri-wkdetail-wrap--open', sel != null)
+    }
+    svgEl.addEventListener('mousemove', onMove)
+    svgEl.addEventListener('mouseleave', onLeave)
+    svgEl.addEventListener('click', onClick)
+    cleanups.push(() => {
+      svgEl.removeEventListener('mousemove', onMove)
+      svgEl.removeEventListener('mouseleave', onLeave)
+      svgEl.removeEventListener('click', onClick)
+    })
+  }
+  bindWkTrend('.tri-ana-weekly', 'load')
+  bindWkTrend('.tri-ana-effort', 'effort')
 
   const bodySeries = data.body.series
   const bodyBlock = panel.querySelector<HTMLElement>('.tri-ana-bodywt')
@@ -5061,42 +5429,64 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     cleanups.push(scrubGroup(items, f => f * ANA_W))
   }
 
-  const radarSvg = panel.querySelector<SVGElement>('.tri-engine-radar .tri-radar-svg')
-  if (radarSvg) {
+  const radarBlock = panel.querySelector<HTMLElement>('.tri-engine-radar')
+  const radarSvg = radarBlock?.querySelector<SVGElement>('.tri-radar-svg')
+  if (radarBlock && radarSvg) {
     document.body.querySelector('.tri-radar-tip')?.remove()
     const radarTip = el('div', 'tri-gloss tri-radar-tip')
     radarTip.setAttribute('role', 'tooltip')
     document.body.appendChild(radarTip)
-    const axes = data.engine.abilities.axes
-    const vbPt = (i: number, score: number): [number, number] => {
-      const th = ((-90 + (360 / axes.length) * i) * Math.PI) / 180
-      const r = (36 * score) / 100
-      return [50 + r * Math.cos(th), 50 + r * Math.sin(th)]
+    const abilities = data.engine.abilities.sports
+    const rawOf = (sp: SportAbility, a: AbilityAxis): string => {
+      const pace = radarPaceHint(sp.sport, a)
+      return a.rawValue != null
+        ? `${a.rawValue} ${a.rawUnit}${pace ? ` (${pace})` : ''}`
+        : 'no data'
     }
+    const projTxtOf = (a: AbilityAxis): string =>
+      a.proj != null && a.proj !== a.score ? ` → ${a.proj}/100` : ''
     const onMove = (event: MouseEvent) => {
+      const n = abilities[0]?.axes.length ?? 0
+      if (!n) return
       const rect = radarSvg.getBoundingClientRect()
-      let best = -1
-      let bestD = Infinity
-      axes.forEach((a, i) => {
-        const [vx, vy] = vbPt(i, a.score ?? 0)
-        const d = Math.hypot(
-          rect.left + (vx / 100) * rect.width - event.clientX,
-          rect.top + (vy / 100) * rect.height - event.clientY,
+      const dx = event.clientX - (rect.left + rect.width / 2)
+      const dy = event.clientY - (rect.top + rect.height / 2)
+      const deg = (Math.atan2(dy, dx) * 180) / Math.PI
+      const idx = ((Math.round(((deg + 90) / 360) * n) % n) + n) % n
+      const pressedSports = (radarBlock.dataset.pressed ?? '').split(',').filter(Boolean)
+      if (!pressedSports.length) {
+        radarTip.classList.remove('tri-gloss--on')
+        return
+      }
+      const single =
+        pressedSports.length === 1 ? abilities.find(sp => sp.sport === pressedSports[0]) : undefined
+      if (single) {
+        const a = single.axes[idx]
+        radarTip.replaceChildren(
+          el('span', 'tri-gloss-h', `${tl(single.sport)} · ${tl(a.label)}`),
+          el(
+            'span',
+            'tri-gloss-def',
+            `${rawOf(single, a)} · ${a.score != null ? `${a.score}/100` : '—'}${projTxtOf(a)}`,
+          ),
+          renderGlossDef(radarAxisDefinition(single.sport, a)),
+          renderGlossDef(radarNotationDefinition(a)),
         )
-        if (d < bestD) {
-          bestD = d
-          best = i
+      } else {
+        const rows: HTMLElement[] = [el('span', 'tri-gloss-h', tl(abilities[0].axes[idx].label))]
+        for (const sp of abilities) {
+          if (!pressedSports.includes(sp.sport)) continue
+          const a = sp.axes[idx]
+          rows.push(
+            el(
+              'span',
+              'tri-gloss-def',
+              `${tl(sp.sport)}: ${a.score != null ? `${a.score}/100` : '—'}${projTxtOf(a)} · ${rawOf(sp, a)}`,
+            ),
+          )
         }
-      })
-      const a = best >= 0 ? axes[best] : null
-      if (!a) return
-      const raw = a.rawValue != null ? `${a.rawValue} ${a.rawUnit}` : 'no data'
-      radarTip.replaceChildren(
-        el('span', 'tri-gloss-h', tl(a.label)),
-        el('span', 'tri-gloss-def', `${raw} · ${a.score != null ? `${a.score}/100` : '—'}`),
-        renderGlossDef(radarAxisDefinition(a)),
-        renderGlossDef(radarNotationDefinition(a)),
-      )
+        radarTip.replaceChildren(...rows)
+      }
       radarTip.classList.add('tri-gloss--on')
       const pr = radarTip.getBoundingClientRect()
       const left =
@@ -5354,7 +5744,7 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
     label: 'abilities',
     chart: 'abilities',
-    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg',
+    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg swim bike run pace css stroke',
   },
   {
     label: 'cardiovascular health',
@@ -7970,8 +8360,25 @@ function normCdf(z: number): number {
 let paceForecaster: PaceForecaster | null = null
 let paceForecastUnavailable = false
 
-const paceForecastStatus = (): string =>
-  paceForecastUnavailable ? 'model unavailable' : 'model loading'
+const RACE_T1_S = 300
+const RACE_T2_S = 300
+
+function applyForecastToRow(slot: HTMLElement, fin: FinishForecast): void {
+  const row = slot.closest<HTMLElement>('.tri-rdy-row')
+  if (!row) return
+  const time = row.querySelector<HTMLElement>('.tri-rdy-time')
+  if (time) time.textContent = hms(fin.midSec)
+  const track = row.querySelector<HTMLElement>('.tri-rdy-bar')
+  if (track)
+    renderLegSegments(
+      track,
+      fin.legs.map(leg => ({
+        sport: leg.sport,
+        legKm: leg.distanceKm,
+        splitS: Math.round(leg.midSec),
+      })),
+    )
+}
 
 async function fillForecastSlot(slot: HTMLElement): Promise<void> {
   if (!paceForecaster?.ready || slot.dataset.filled) return
@@ -7991,13 +8398,14 @@ async function fillForecastSlot(slot: HTMLElement): Promise<void> {
     return
   }
   if (!legs.length) return
-  const fin = await paceForecaster.forecastFinish(legs, 0)
+  const fin = await paceForecaster.forecastFinish(legs, RACE_T1_S + RACE_T2_S)
   if (!fin) return
   slot.dataset.filled = '1'
   slot.replaceChildren()
-  slot.title = `model forecast · finish ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)}`
+  slot.title = `model forecast · finish ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)} · incl. ${clock(RACE_T1_S + RACE_T2_S)} T1+T2`
   for (const leg of fin.legs)
     slot.appendChild(el('span', `tri-rdy-fc-leg tri-leg-${leg.sport}`, hms(leg.midSec)))
+  applyForecastToRow(slot, fin)
 }
 
 function fillForecasts(scope: ParentNode): void {
@@ -8061,7 +8469,347 @@ interface PredResult {
 
 const PRED_AXIS_FRACS = [0, 0.25, 0.5, 0.75, 1]
 const PRED_DEFAULT_COMPARE: PredCompareKey = '30'
+const PRED_CALENDAR_WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+const PRED_CALENDAR_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
 let predRunSeq = 0
+
+interface PredDateParts {
+  year: number
+  month: number
+  day: number
+}
+
+interface PredMonthParts {
+  year: number
+  month: number
+}
+
+interface PredDatePicker {
+  wrap: HTMLElement
+  trigger: HTMLButtonElement
+  panel: HTMLElement
+  render: () => void
+  close: () => void
+}
+
+const predDatePad = (value: number): string => String(value).padStart(2, '0')
+
+const predDateValue = (year: number, month: number, day: number): string =>
+  `${year}-${predDatePad(month)}-${predDatePad(day)}`
+
+const predDateFromLocal = (date: Date): string =>
+  predDateValue(date.getFullYear(), date.getMonth() + 1, date.getDate())
+
+const parsePredDate = (value: string | undefined): PredDateParts | null => {
+  if (!value) return null
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) return null
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const date = new Date(year, month - 1, day)
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day)
+    return null
+  return { year, month, day }
+}
+
+const predMonthValue = (parts: PredMonthParts): string =>
+  `${parts.year}-${predDatePad(parts.month)}`
+
+const parsePredMonth = (value: string | undefined): PredMonthParts | null => {
+  if (!value) return null
+  const match = /^(\d{4})-(\d{2})$/.exec(value)
+  if (!match) return null
+  const year = Number(match[1])
+  const month = Number(match[2])
+  if (month < 1 || month > 12) return null
+  return { year, month }
+}
+
+const predMonthFromDate = (parts: PredDateParts): PredMonthParts => ({
+  year: parts.year,
+  month: parts.month,
+})
+
+const addPredMonths = (parts: PredMonthParts, delta: number): PredMonthParts => {
+  const date = new Date(parts.year, parts.month - 1 + delta, 1)
+  return { year: date.getFullYear(), month: date.getMonth() + 1 }
+}
+
+const predTodayParts = (): PredDateParts => {
+  const date = new Date()
+  return { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() }
+}
+
+const clampPredDate = (value: string, min: string | undefined, max: string | undefined): string => {
+  if (min && value < min) return min
+  if (max && value > max) return max
+  return value
+}
+
+const predButton = (
+  cls: string,
+  text?: string,
+  attrs?: Record<string, string>,
+): HTMLButtonElement => {
+  const button = document.createElement('button')
+  button.className = cls
+  button.type = 'button'
+  if (text !== undefined) button.textContent = text
+  if (attrs) for (const k in attrs) button.setAttribute(k, attrs[k])
+  return button
+}
+
+const buildPredCalendarIcon = (): SVGElement => {
+  const icon = svg('svg', {
+    class: 'tri-pred-date-ico',
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+  icon.append(
+    svg('path', {
+      d: 'M4.5 2v2M11.5 2v2M3.5 5.5h9M4 3.5h8a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z',
+      stroke: 'currentColor',
+      'stroke-width': '1.35',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  )
+  return icon
+}
+
+const buildPredCalendarArrow = (direction: -1 | 1): SVGElement => {
+  const icon = svg('svg', {
+    class: 'tri-pred-cal-arrow',
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+  icon.append(
+    svg('path', {
+      d: direction < 0 ? 'M10 3.5 5.5 8l4.5 4.5' : 'M6 3.5 10.5 8 6 12.5',
+      stroke: 'currentColor',
+      'stroke-width': '1.6',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  )
+  return icon
+}
+
+const positionPredCalendar = (trigger: HTMLElement, panel: HTMLElement): void => {
+  const rect = trigger.getBoundingClientRect()
+  const width = Math.min(Math.max(238, rect.width), window.innerWidth - 16)
+  const height = 304
+  const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))
+  const below = rect.bottom + 6
+  const top = below + height > window.innerHeight ? Math.max(8, rect.top - height - 6) : below
+  panel.style.inlineSize = `${width}px`
+  panel.style.insetInlineStart = `${left}px`
+  panel.style.insetBlockStart = `${top}px`
+}
+
+const focusPredCalendarSelection = (panel: HTMLElement): void => {
+  const selected =
+    panel.querySelector<HTMLButtonElement>('.tri-pred-cal-day--selected:not(:disabled)') ??
+    panel.querySelector<HTMLButtonElement>('.tri-pred-cal-day:not(:disabled)')
+  selected?.focus()
+}
+
+const movePredCalendarFocus = (panel: HTMLElement, offset: number): void => {
+  const active = document.activeElement
+  if (!(active instanceof HTMLButtonElement) || !active.classList.contains('tri-pred-cal-day'))
+    return
+  const current = parsePredDate(active.dataset.date)
+  if (!current) return
+  const date = new Date(current.year, current.month - 1, current.day + offset)
+  const next = clampPredDate(predDateFromLocal(date), panel.dataset.minDate, panel.dataset.maxDate)
+  const nextParts = parsePredDate(next)
+  if (!nextParts) return
+  panel.dataset.viewMonth = predMonthValue(predMonthFromDate(nextParts))
+  panel.dispatchEvent(new CustomEvent('tri:pred-date-render'))
+  panel.querySelector<HTMLButtonElement>(`.tri-pred-cal-day[data-date="${next}"]`)?.focus()
+}
+
+const buildPredDatePicker = (
+  block: HTMLElement,
+  onOpen: () => void,
+  onSelect: (date: string) => void,
+  onClear: () => void,
+): PredDatePicker => {
+  const wrap = el('div', 'tri-pred-date-wrap')
+  const trigger = predButton('tri-pred-date', undefined, {
+    'aria-label': 'comparison date',
+    'aria-haspopup': 'dialog',
+    'aria-expanded': 'false',
+  })
+  const text = el('span', 'tri-pred-date-text')
+  trigger.append(text, buildPredCalendarIcon())
+  const panel = el('div', 'tri-pred-calendar', undefined, {
+    role: 'dialog',
+    'aria-label': 'comparison date picker',
+    popover: 'auto',
+  })
+  panel.id = `tri-pred-calendar-${Math.random().toString(36).slice(2)}`
+  panel.tabIndex = -1
+  trigger.setAttribute('aria-controls', panel.id)
+  wrap.append(trigger, panel)
+
+  const close = (): void => {
+    if (panel.matches(':popover-open') && typeof panel.hidePopover === 'function')
+      panel.hidePopover()
+    panel.removeAttribute('data-open')
+    trigger.setAttribute('aria-expanded', 'false')
+  }
+
+  const render = (): void => {
+    const min = block.dataset.compareMin
+    const max = block.dataset.compareMax
+    const today = predDateFromLocal(new Date())
+    const selected =
+      block.dataset.compareDate ??
+      max ??
+      min ??
+      predDateValue(predTodayParts().year, predTodayParts().month, predTodayParts().day)
+    const selectedParts =
+      parsePredDate(selected) ?? parsePredDate(max) ?? parsePredDate(min) ?? predTodayParts()
+    const view = parsePredMonth(panel.dataset.viewMonth) ?? predMonthFromDate(selectedParts)
+    panel.dataset.viewMonth = predMonthValue(view)
+    if (min) panel.dataset.minDate = min
+    else delete panel.dataset.minDate
+    if (max) panel.dataset.maxDate = max
+    else delete panel.dataset.maxDate
+
+    const minMonth = parsePredDate(min)
+    const maxMonth = parsePredDate(max)
+    const prevMonth = addPredMonths(view, -1)
+    const nextMonth = addPredMonths(view, 1)
+    const monthTitle = `${PRED_CALENDAR_MONTHS[view.month - 1]} ${view.year}`
+    const head = el('div', 'tri-pred-cal-head')
+    const title = el('span', 'tri-pred-cal-title', monthTitle)
+    const prev = predButton('tri-pred-cal-nav', undefined, { 'aria-label': 'previous month' })
+    const next = predButton('tri-pred-cal-nav', undefined, { 'aria-label': 'next month' })
+    prev.appendChild(buildPredCalendarArrow(-1))
+    next.appendChild(buildPredCalendarArrow(1))
+    if (minMonth && predMonthValue(prevMonth) < predMonthValue(predMonthFromDate(minMonth)))
+      prev.disabled = true
+    if (maxMonth && predMonthValue(nextMonth) > predMonthValue(predMonthFromDate(maxMonth)))
+      next.disabled = true
+    prev.addEventListener('click', () => {
+      panel.dataset.viewMonth = predMonthValue(prevMonth)
+      render()
+      focusPredCalendarSelection(panel)
+    })
+    next.addEventListener('click', () => {
+      panel.dataset.viewMonth = predMonthValue(nextMonth)
+      render()
+      focusPredCalendarSelection(panel)
+    })
+    head.append(title, prev, next)
+
+    const week = el('div', 'tri-pred-cal-week')
+    for (const day of PRED_CALENDAR_WEEKDAYS)
+      week.appendChild(el('span', 'tri-pred-cal-weekday', day))
+
+    const grid = el('div', 'tri-pred-cal-grid')
+    const monthStart = new Date(view.year, view.month - 1, 1)
+    const gridStart = new Date(view.year, view.month - 1, 1 - monthStart.getDay())
+    for (let i = 0; i < 42; i += 1) {
+      const date = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i)
+      const value = predDateFromLocal(date)
+      const day = predButton('tri-pred-cal-day', String(date.getDate()), {
+        'data-date': value,
+        'aria-label': value,
+      })
+      if (date.getMonth() !== view.month - 1) day.classList.add('tri-pred-cal-day--muted')
+      if (value === selected) {
+        day.classList.add('tri-pred-cal-day--selected')
+        day.setAttribute('aria-current', 'date')
+      }
+      if (value === today) day.classList.add('tri-pred-cal-day--today')
+      if ((min && value < min) || (max && value > max)) day.disabled = true
+      else
+        day.addEventListener('click', () => {
+          onSelect(value)
+          close()
+        })
+      grid.appendChild(day)
+    }
+
+    const foot = el('div', 'tri-pred-cal-foot')
+    const clear = predButton('tri-pred-cal-action', 'clear')
+    const now = predButton('tri-pred-cal-action', 'today')
+    clear.addEventListener('click', () => {
+      onClear()
+      close()
+    })
+    now.addEventListener('click', () => {
+      onSelect(clampPredDate(today, min, max))
+      close()
+    })
+    foot.append(clear, now)
+    panel.replaceChildren(head, week, grid, foot)
+  }
+
+  trigger.addEventListener('click', () => {
+    if (panel.matches(':popover-open') || panel.dataset.open === 'true') {
+      close()
+      return
+    }
+    onOpen()
+    const selected = parsePredDate(block.dataset.compareDate)
+    if (selected) panel.dataset.viewMonth = predMonthValue(predMonthFromDate(selected))
+    render()
+    positionPredCalendar(trigger, panel)
+    if (typeof panel.showPopover === 'function') panel.showPopover()
+    else panel.dataset.open = 'true'
+    trigger.setAttribute('aria-expanded', 'true')
+    focusPredCalendarSelection(panel)
+  })
+  panel.addEventListener('toggle', () => {
+    trigger.setAttribute('aria-expanded', String(panel.matches(':popover-open')))
+  })
+  panel.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      close()
+      trigger.focus()
+      return
+    }
+    const offsets: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowRight: 1,
+      ArrowUp: -7,
+      ArrowDown: 7,
+      Home: -42,
+      End: 42,
+      PageUp: -31,
+      PageDown: 31,
+    }
+    const offset = offsets[event.key]
+    if (offset === undefined) return
+    event.preventDefault()
+    movePredCalendarFocus(panel, offset)
+  })
+  panel.addEventListener('tri:pred-date-render', () => render())
+
+  return { wrap, trigger, panel, render, close }
+}
 
 const isPredCompareKey = (value: string | undefined): value is PredCompareKey =>
   PRED_COMPARE_OPTIONS.some(option => option.key === value)
@@ -8074,17 +8822,21 @@ const predCompareKey = (block: HTMLElement): PredCompareKey => {
 const predCompareOption = (key: PredCompareKey): (typeof PRED_COMPARE_OPTIONS)[number] =>
   PRED_COMPARE_OPTIONS.find(option => option.key === key) ?? PRED_COMPARE_OPTIONS[2]
 
-const syncPredDateInput = (block: HTMLElement, f: PaceForecaster): void => {
-  const input = block.querySelector<HTMLInputElement>('.tri-pred-date')
+const syncPredDateControl = (block: HTMLElement, f: PaceForecaster): void => {
+  const trigger = block.querySelector<HTMLButtonElement>('.tri-pred-date')
+  const text = block.querySelector<HTMLElement>('.tri-pred-date-text')
   const bounds = f.dayBounds()
-  if (!input || !bounds) return
-  input.min = bounds.min
-  input.max = bounds.max
+  if (!trigger || !text || !bounds) return
   const selected = block.dataset.compareDate
   const fallback = f.dayStateAgo(30)?.date ?? bounds.min
   const date = selected && selected >= bounds.min && selected <= bounds.max ? selected : fallback
+  block.dataset.compareMin = bounds.min
+  block.dataset.compareMax = bounds.max
   block.dataset.compareDate = date
-  input.value = date
+  trigger.dataset.value = date
+  text.textContent = date
+  const panel = block.querySelector<HTMLElement>('.tri-pred-calendar')
+  if (panel?.matches(':popover-open')) panel.dispatchEvent(new CustomEvent('tri:pred-date-render'))
 }
 
 const predComparison = (f: PaceForecaster, block: HTMLElement): PredComparison => {
@@ -8095,12 +8847,10 @@ const predComparison = (f: PaceForecaster, block: HTMLElement): PredComparison =
   }
   const days = predCompareOption(key).days ?? 30
   const day = f.dayStateAgo(days)
-  return { day, label: day?.date ? `vs ${days}d (${shortDate(day.date)})` : `vs ${days}d` }
-}
-
-const setPredStatus = (block: HTMLElement, label: string): void => {
-  const status = block.querySelector<HTMLElement>('.tri-pred-status')
-  if (status) status.textContent = label
+  return {
+    day,
+    label: day?.date ? `vs ${days}d (${shortDate(day.date)})` : `vs ${days}d (no data)`,
+  }
 }
 
 const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
@@ -8120,12 +8870,18 @@ const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
   )
 }
 
-const resetPredCard = (card: HTMLElement): void => {
+const resetPredCard = (card: HTMLElement, preserveVisual: boolean): void => {
+  const stale = card.dataset.stale === '1'
   delete card.dataset.filled
   delete card.dataset.error
+  card.dataset.pending = '1'
+  if (preserveVisual || stale) {
+    card.dataset.tipH = card.dataset.label ?? ''
+    card.dataset.tipD = 'updating'
+    return
+  }
   delete card.dataset.tipD
   delete card.dataset.tipH
-  card.dataset.pending = '1'
   const bar = card.querySelector<HTMLElement>('.tri-pred-bar')
   if (bar) bar.style.width = '0%'
   const range = card.querySelector<HTMLElement>('.tri-pred-bar-range')
@@ -8138,12 +8894,13 @@ const resetPredCard = (card: HTMLElement): void => {
   const deltaEl = card.querySelector('.tri-pred-delta')
   if (deltaEl) {
     deltaEl.textContent = ''
-    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
+    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down', 'tri-pred-delta--na')
   }
 }
 
 const failPredCard = (card: HTMLElement): void => {
   delete card.dataset.pending
+  delete card.dataset.stale
   card.dataset.error = '1'
   const timeEl = card.querySelector('.tri-pred-time')
   if (timeEl) timeEl.textContent = '—'
@@ -8156,6 +8913,7 @@ const failPredCard = (card: HTMLElement): void => {
 const applyPredResult = (r: PredResult, maxSec: number): void => {
   const pct = (s: number): number => (s / maxSec) * 100
   delete r.card.dataset.pending
+  delete r.card.dataset.stale
   delete r.card.dataset.error
   r.card.dataset.filled = '1'
   const badge = r.card.querySelector('.tri-pred-badge')
@@ -8172,8 +8930,12 @@ const applyPredResult = (r: PredResult, maxSec: number): void => {
   let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
   const deltaEl = r.card.querySelector('.tri-pred-delta')
   if (deltaEl) {
-    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
-    if (r.delta != null && Math.abs(r.delta) >= 1) {
+    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down', 'tri-pred-delta--na')
+    if (r.delta == null) {
+      deltaEl.textContent = '—'
+      deltaEl.classList.add('tri-pred-delta--na')
+      tip += ` · ${r.compareLabel}`
+    } else if (Math.abs(r.delta) >= 1) {
       const faster = r.delta < 0
       deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
       deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
@@ -8218,11 +8980,8 @@ async function fillDistancePredictor(scope: ParentNode): Promise<void> {
       ? (scope.closest<HTMLElement>('.tri-pred') ?? scope.querySelector<HTMLElement>('.tri-pred'))
       : null
   if (!block) return
-  if (!f?.ready || !f.day) {
-    setPredStatus(block, paceForecastStatus())
-    return
-  }
-  syncPredDateInput(block, f)
+  if (!f?.ready || !f.day) return
+  syncPredDateControl(block, f)
   const day = f.day
   const comparison = predComparison(f, block)
   const cards = Array.from(scope.querySelectorAll<HTMLElement>('.tri-pred-card')).filter(
@@ -8231,14 +8990,12 @@ async function fillDistancePredictor(scope: ParentNode): Promise<void> {
   if (!cards.length) return
   const runId = String(++predRunSeq)
   block.dataset.predRun = runId
-  block.querySelector<HTMLElement>('.tri-pred-axis-track')?.replaceChildren()
-  for (const card of cards) resetPredCard(card)
-  let done = 0
+  const hasStale = cards.some(card => card.dataset.stale === '1')
+  if (!hasStale) block.querySelector<HTMLElement>('.tri-pred-axis-track')?.replaceChildren()
+  for (const card of cards) resetPredCard(card, hasStale)
   const results: PredResult[] = []
   const render = (): void => {
     if (block.dataset.predRun !== runId) return
-    const total = cards.length
-    setPredStatus(block, `inferring ${done}/${total}`)
     const maxSec = Math.max(...results.map(r => r.slowSec), 1)
     for (const result of results) applyPredResult(result, maxSec)
     const axis = block.querySelector<HTMLElement>('.tri-pred-axis-track')
@@ -8249,18 +9006,10 @@ async function fillDistancePredictor(scope: ParentNode): Promise<void> {
     cards.map(async card => {
       const result = await inferPredCard(f, day, comparison, card)
       if (block.dataset.predRun !== runId) return
-      done += 1
       if (result) results.push(result)
       else failPredCard(card)
       render()
     }),
-  )
-  if (block.dataset.predRun !== runId) return
-  setPredStatus(
-    block,
-    results.length
-      ? `ready · ${comparison.day ? comparison.label : 'no comparison'}`
-      : 'model unavailable',
   )
 }
 
@@ -8269,22 +9018,12 @@ const buildDistancePredictor = (): HTMLElement => {
   block.dataset.compareMode = PRED_DEFAULT_COMPARE
   const head = el('div', 'tri-pred-head')
   const headMain = el('div', 'tri-pred-head-main')
-  headMain.append(
-    el('span', 'tri-pred-title', 'pace predictor'),
-    el('span', 'tri-pred-status', paceForecastStatus(), { 'aria-live': 'polite' }),
-  )
+  headMain.append(el('span', 'tri-pred-title', 'pace predictor'))
   const controls = el('div', 'tri-pred-controls')
   const compare = el('div', 'tri-pred-compare', undefined, {
     role: 'tablist',
     'aria-label': 'comparison range',
   })
-  const dateInput = document.createElement('input')
-  dateInput.className = 'tri-pred-date'
-  dateInput.type = 'date'
-  dateInput.disabled = true
-  dateInput.setAttribute('aria-label', 'comparison date')
-  const dateWrap = el('label', 'tri-pred-date-wrap')
-  dateWrap.append(dateInput, el('span', 'tri-pred-date-mark', '▾', { 'aria-hidden': 'true' }))
   let activeSport: PaceSport = 'run'
   const updateCompareControls = (): void => {
     const mode = predCompareKey(block)
@@ -8293,15 +9032,14 @@ const buildDistancePredictor = (): HTMLElement => {
       button.classList.toggle('tri-pred-compare-btn--on', active)
       button.setAttribute('aria-selected', String(active))
     }
-    dateInput.disabled = mode !== 'custom'
-    dateInput.setAttribute('aria-disabled', String(mode !== 'custom'))
-    dateWrap.classList.toggle('tri-pred-date-wrap--disabled', mode !== 'custom')
-    if (paceForecaster?.ready) syncPredDateInput(block, paceForecaster)
+    if (paceForecaster?.ready) syncPredDateControl(block, paceForecaster)
   }
-  controls.append(compare, dateWrap)
   head.append(headMain, controls)
   block.appendChild(head)
-  const tabs = el('div', 'tri-pred-tabs')
+  const tabs = el('div', 'tri-pred-tabs', undefined, {
+    role: 'group',
+    'aria-label': 'predictor sport',
+  })
   const grid = el('div', 'tri-pred-grid')
   const renderSport = (sport: PaceSport): void => {
     activeSport = sport
@@ -8328,16 +9066,18 @@ const buildDistancePredictor = (): HTMLElement => {
       card.dataset.km = String(d.km)
       card.dataset.sport = sport
       card.dataset.label = d.label
+      if (card.dataset.filled) card.dataset.stale = '1'
       delete card.dataset.filled
       delete card.dataset.pending
       delete card.dataset.error
-      delete card.dataset.tipD
-      delete card.dataset.tipH
+      if (!card.dataset.stale) {
+        delete card.dataset.tipD
+        delete card.dataset.tipH
+      }
     })
     if (paceForecaster?.ready) queueMicrotask(() => void fillDistancePredictor(grid))
     else {
       if (paceForecastUnavailable) for (const card of cards) failPredCard(card)
-      setPredStatus(block, paceForecastStatus())
     }
   }
   for (const option of PRED_COMPARE_OPTIONS) {
@@ -8359,35 +9099,63 @@ const buildDistancePredictor = (): HTMLElement => {
     })
     compare.appendChild(button)
   }
-  dateInput.addEventListener('change', () => {
+  const activateCustomCompare = (): void => {
+    if (block.dataset.compareMode === 'custom') return
     block.dataset.compareMode = 'custom'
-    if (dateInput.value) block.dataset.compareDate = dateInput.value
     updateCompareControls()
     renderSport(activeSport)
-  })
+  }
+  const selectPredDate = (date: string): void => {
+    block.dataset.compareMode = 'custom'
+    block.dataset.compareDate = date
+    updateCompareControls()
+    renderSport(activeSport)
+  }
+  const clearPredDate = (): void => {
+    block.dataset.compareMode = PRED_DEFAULT_COMPARE
+    updateCompareControls()
+    renderSport(activeSport)
+  }
+  const datePicker = buildPredDatePicker(
+    block,
+    activateCustomCompare,
+    selectPredDate,
+    clearPredDate,
+  )
   for (const s of PRED_SPORTS) {
     const on = s.sport === 'run'
-    const tab = el('button', `tri-pred-tab${on ? ' tri-pred-tab--on' : ''}`, s.sport, {
-      type: 'button',
-      'aria-selected': String(on),
-    })
+    const tab = el(
+      'button',
+      `tri-pred-tab tri-pred-tab--${s.sport}${on ? ' tri-pred-tab--on' : ''}`,
+      undefined,
+      {
+        type: 'button',
+        'aria-label': s.sport,
+        'aria-pressed': String(on),
+        'aria-selected': String(on),
+        title: s.sport,
+      },
+    )
+    tab.appendChild(buildIcon(s.sport))
     tab.addEventListener('click', () => {
       for (const t of tabs.querySelectorAll<HTMLElement>('.tri-pred-tab')) {
         const active = t === tab
         t.classList.toggle('tri-pred-tab--on', active)
+        t.setAttribute('aria-pressed', String(active))
         t.setAttribute('aria-selected', String(active))
       }
       renderSport(s.sport)
     })
     tabs.appendChild(tab)
   }
+  controls.append(tabs, compare, datePicker.wrap)
   const axis = el('div', 'tri-pred-axis')
   axis.append(
     el('span', 'tri-pred-axis-pad'),
     el('div', 'tri-pred-axis-track'),
     el('span', 'tri-pred-axis-end'),
   )
-  block.append(tabs, grid, axis)
+  block.append(grid, axis)
   updateCompareControls()
   renderSport('run')
   return block
@@ -8458,7 +9226,6 @@ const initPaceForecaster = async (forecaster: PaceForecaster): Promise<boolean> 
 
 const markDistancePredictorUnavailable = (root: HTMLElement): void => {
   for (const block of root.querySelectorAll<HTMLElement>('.tri-pred')) {
-    setPredStatus(block, paceForecastStatus())
     for (const card of block.querySelectorAll<HTMLElement>('.tri-pred-card'))
       if (!card.dataset.filled) failPredCard(card)
   }

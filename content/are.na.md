@@ -82,6 +82,26 @@ title: are.na
 
 ## discourse
 
+- https://www.youtube.com/watch?v=1LpbGW3qLVg -- C. Thi Nguyen: The Gamification of Public Discourse
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [gamification, public discourse]
+    - later: true
+- https://www.youtube.com/watch?v=BVlfNtIml2U -- Why we are getting more stupid
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [intelligence, zizek]
+    - later: true
+- https://www.youtube.com/watch?v=7y_hbz6loEo -- Geo-Strategy #8: The Iran Trap
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [geostrategy, iran]
+    - later: true
+- https://www.youtube.com/watch?v=pN_OGOPI92g -- the paradox of being ambitious but lazy
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [ambition, motivation]
+    - later: true
 - https://www.youtube.com/watch?v=88KJwEu5TRs -- Why we're lonely
   - [meta]:
     - date: 07/02/2026
@@ -6457,6 +6477,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=jQPiH-KB4B0 -- Welcome to The RLHF Book & Post-Training Course
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [rlhf, post-training]
+    - later: true
 - https://www.nand2tetris.org/ -- nand2tetris
   - [meta]:
     - date: 06/28/2026
@@ -6530,6 +6555,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=ck63uv6APBA -- Goodfire AI on interpretability as model design
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [interpretability, model design]
+    - later: true
+- https://www.youtube.com/watch?v=qvrdCpLPbuQ -- Reiner Pope of MatX on transformer-optimized chips
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [ai chips, transformers]
+    - later: true
+- https://www.youtube.com/watch?v=kwSVtQ7dziU -- Andrej Karpathy on code agents and AutoResearch
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [code agents, autoresearch]
+    - later: true
+- https://www.youtube.com/watch?v=s2L_wnbJbNQ -- Towards unlimited contexts with sparse logarithmic attention
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [attention, long context]
+    - later: true
+- https://www.youtube.com/watch?v=rIwgZWzUKm8 -- Saining Xie on world models and AMI Labs
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [world models, computer vision]
+    - later: true
+- https://www.youtube.com/watch?v=X_ZVSPcZhtw -- What rebuilding AlphaGo teaches us about self-play and RL
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [self-play, reinforcement learning]
+    - later: true
+- https://www.youtube.com/watch?v=xlSaoP0b90A -- Tri Dao on inference costs and the next 10X in speed
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [inference, performance]
+    - later: true
 - https://www.youtube.com/watch?v=3K1J83Yle5Q -- Design of new protein functions using deep learning
   - [meta]:
     - date: 07/02/2026
@@ -10157,6 +10217,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=awOxxHnsiv0 -- George Hotz on Gas Town and computer use
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [programming, computer use]
+    - later: true
+- https://www.youtube.com/watch?v=tND-wBBZ8RY -- The Cost of Concurrency Coordination
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [concurrency, coordination]
+    - later: true
 - https://www.youtube.com/watch?v=mMaid2jYeEo -- Automated Theorem Proving and Axiomatic Mathematics
   - [meta]:
     - date: 07/02/2026
@@ -10598,6 +10668,46 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=_STD1D0REkc -- A Philosophy Student's Analysis of The Stranger by Camus
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [camus, literature]
+    - later: true
+- https://www.youtube.com/watch?v=jdqjE1lrxQ4 -- Blaise Pascal: Philosopher, Mathematician, Genius
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [pascal, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=ckjl5mK8JEA -- Debating why people feel a need for meaning in life
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [meaning, life]
+    - later: true
+- https://www.youtube.com/watch?v=egWy_Z9nCMo -- My Problem With C.S. Lewis
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [c.s. lewis, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=V6pgZKVcKpw -- You Actually Do Need to Understand Mythos
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [mythos, culture]
+    - later: true
+- https://www.youtube.com/watch?v=tBHa2bnKRoA -- If Life Has No Meaning... Then What?
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [meaning, nietzsche]
+    - later: true
+- https://www.youtube.com/watch?v=mbs8JGA_Y-M -- Why God Allows Suffering
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [theodicy, religion]
+    - later: true
+- https://www.youtube.com/watch?v=-d7oR0J9usQ -- Slavoj Žižek and Alex O'Connor Live in London
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [zizek, philosophy]
+    - later: true
 - https://www.youtube.com/watch?v=4YcbhLgftJA -- Hubert Dreyfus on Dostoyevsky and the sacred
   - [meta]:
     - date: 07/02/2026
@@ -12023,6 +12133,16 @@ title: are.na
 
 ## finances
 
+- https://www.youtube.com/watch?v=u_eEW7N1xjE -- Option Pricing Explained
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [options, quant finance]
+    - later: true
+- https://www.youtube.com/watch?v=-FmVCDx_kFw -- Dave Ricks on GLP-1s and the business of pharma
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [pharma, glp-1]
+    - later: true
 - https://x.com/WillManidis/status/2061479823545884940 -- Will Manidis on technocapital price discovery
   - [meta]:
     - date: 06/01/2026
@@ -12166,6 +12286,11 @@ title: are.na
 
 ## design
 
+- https://www.youtube.com/watch?v=eh8bcBIAAFo -- The design process is dead. Here's what's replacing it
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [design process, claude]
+    - later: true
 - https://x.com/0xnichy/status/2060145136881799551 -- nichy on design borrowing from collective memory
   - [meta]:
     - date: 05/28/2026
@@ -12583,6 +12708,46 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=HiFT9bKmZJA -- The Ultimate Guide To Racing In 2026
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [formula 1, racing]
+    - later: true
+- https://www.youtube.com/watch?v=choxcHXhZhE -- 1177 BC: The vanishing of the first globalized world
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [history, bronze age]
+    - later: true
+- https://www.youtube.com/watch?v=PCvsY9QgJRo -- They picked Riven and forgot to ban Renekton
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [league of legends, gaming]
+    - later: true
+- https://www.youtube.com/watch?v=tTC10Kqb0XU -- Ford GT Mk IV Nürburgring Lap
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [ford gt, racing]
+    - later: true
+- https://www.youtube.com/watch?v=VABOvcZ_c9Y -- Private YouTube video
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [private video]
+    - later: true
+- https://www.youtube.com/watch?v=U1eFd9FeFUA -- How to Swim Without Getting Out of Breath
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [swimming, breathing]
+    - later: true
+- https://www.youtube.com/watch?v=6hS83KIkKu8 -- Franco Bifo Berardi & Claire Bishop on Attention
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [attention, art criticism]
+    - later: true
+- https://www.youtube.com/watch?v=LEzOkpfu3zM -- Zendaya & Robert Pattinson on finding their partners
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [actors, relationships]
+    - later: true
 - https://www.youtube.com/watch?v=BucSbzYXqKM -- Hollywood's Obsession with Ambition
   - [meta]:
     - date: 07/02/2026
@@ -13262,6 +13427,16 @@ title: are.na
 
 ## arts
 
+- https://www.youtube.com/watch?v=I90ZluYvHic -- Martin Scorsese on the Importance of Visual Literacy
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [visual literacy, film]
+    - later: true
+- https://www.youtube.com/watch?v=3jbHbDena_U -- Schumann: Klavierkonzert
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [classical music, piano]
+    - later: true
 - https://www.youtube.com/watch?v=OgDAFxVm5tw -- Popular Words Invented by Authors
   - [meta]:
     - date: 07/02/2026
@@ -14048,6 +14223,16 @@ title: are.na
 
 ## lecture
 
+- https://www.youtube.com/watch?v=Tt_hDVN5TZE -- Linus Lee Lecture for MIT Media Lab's Thinking With Sand
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [interfaces, computing]
+    - later: true
+- https://www.youtube.com/watch?v=v0JjG0Qfwi8 -- Bryan Cantrill: Andreessen's Folly
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [software, hardware]
+    - later: true
 - https://www.youtube.com/watch?v=HtSuA80QTyo&list=PLUl4u3cNGP61Oq3tWYp6V_F-5jb5L2iHb -- Introduction to Algorithm
   - [meta]:
     - date: 05/12/2026
@@ -16172,6 +16357,21 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=CL52Mr9HPZs -- How Vookum Makes $1,000,000 Selling Watches
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [watches, business]
+    - later: true
+- https://www.youtube.com/@BrittPearceWatches -- Britt Pearce
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [watches, channel]
+    - later: true
+- https://www.youtube.com/watch?v=ZLc4xyKdVNs -- Leonardo DiCaprio's Secret Watch Collection
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [watches, collection]
+    - later: true
 - https://www.youtube.com/watch?v=LKi6ZjnrHyY -- Independent Watch Brands
   - [meta]:
     - date: 03/09/2026
@@ -16417,6 +16617,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=XxFGokyYo6g -- History of Algebraic Topology; Homotopy Equivalence
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [algebraic topology, homotopy]
+    - later: true
+- https://www.youtube.com/watch?v=PXIcas22MtQ -- Topology - Bruno Zimmerman - Lecture 01
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [topology, lecture]
+    - later: true
+- https://www.youtube.com/watch?v=BPSEpDq6QYc -- Lecture 1 | Mean curvature flow
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [mean curvature flow, geometry]
+    - later: true
+- https://www.youtube.com/watch?v=JHEO7cplfk8 -- Formalizing a proof in Lean using Claude Code
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [lean, proof]
+    - later: true
+- https://www.youtube.com/watch?v=Q8Fkpi18QXU -- Terence Tao on how the world’s top mathematician uses AI
+  - [meta]:
+    - date: 07/03/2026
+    - tags: [terence tao, ai]
+    - later: true
 - https://www.youtube.com/watch?v=GcbLL4C3VwY -- Computational Complexity and Explanations in Physics
   - [meta]:
     - date: 07/02/2026
