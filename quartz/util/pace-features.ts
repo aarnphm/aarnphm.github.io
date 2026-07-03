@@ -35,6 +35,7 @@ export const PACE_INPUT_DIM = PACE_FEATURE_DIM * 2
 export const RACE_EFFORT_FRAC: Record<PaceSport, number> = { swim: 0.88, bike: 0.9, run: 0.92 }
 
 export interface PaceDayState {
+  date: string
   ctl: number
   atl: number
   tsb: number
@@ -120,6 +121,7 @@ export function dayStateFromFeedRow(row: unknown): PaceDayState | null {
   const num = (k: string): number => readNumber(row, k) ?? 0
   const nul = (k: string): number | null => readNumber(row, k) ?? null
   return {
+    date: readString(row, 'date') ?? '',
     ctl: num('ctl'),
     atl: num('atl'),
     tsb: num('tsb'),

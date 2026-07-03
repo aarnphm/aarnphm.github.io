@@ -1,0 +1,210 @@
+---
+title: 02 · unsigned semantics & alignment
+---
+
+Q: What is $n$-bit unsigned arithmetic, stated algebraically?
+A: Arithmetic in $\mathbb{Z}/2^n\mathbb{Z}$: add, sub, mul are exact integer operations followed by reduction mod $2^n$. Overflow is not an event, it is the reduction — u32 `0xFFFFFFFF + 1 == 0`, `0 - 1 == 0xFFFFFFFF`.
+
+---
+
+Q: The signed value of an $n$-bit pattern $x$ under two's complement?
+A: $x$ if $x < 2^{n-1}$, else $x - 2^n$ — a relabeling of the same residues. Add, sub, mul produce identical bit patterns for both readings; comparison, division, right shift, and widening diverge.
+
+---
+
+Q: What does the C standard guarantee about overflow and conversions?
+A: Unsigned overflow: defined, reduced mod $2^n$, never UB. Signed overflow: UB. Conversion to unsigned: defined mod $2^n$. Conversion to signed of an out-of-range value: implementation-defined (wraps in practice; C++20 defines the wrap).
+
+---
+
+Q: Why is signed overflow UB rather than wrapping?
+A: It licenses optimization: `a + 1 > a` folds to true, induction-variable widening, trip-count proofs. `-fwrapv` buys wrapping semantics and trades those away; `-fsanitize=signed-integer-overflow` traps.
+
+---
+
+Q: `-7 // 2` and `-7 % 2` in Python vs `-7 / 2` and `-7 % 2` in C?
+A: Python: $-4$ and $1$ (floor; `%` takes the divisor's sign). C: $-3$ and $-1$ (truncate toward 0).
+
+---
+
+Q: Ring-buffer decrement `(head - 1) % cap` — which language needs a fix?
+A: Correct in Python (floor mod is nonnegative); C needs `(head + cap - 1) % cap` because its `%` can go negative.
+
+---
+
+Q: `to_unsigned(x, n)`?
+A: `x & ((1 << n) - 1)` — $x \bmod 2^n$, and exactly C's signed-to-unsigned conversion rule (defined for all inputs).
+
+---
+
+Q: `to_signed(u, n)` — the branchless trick and why it works.
+A: With $s = 2^{n-1}$: `((u & ((1 << n) - 1)) ^ s) - s`. XOR with the sign bit adds $s$ mod $2^n$ (swaps the halves of $[0, 2^n)$); subtracting $s$ recenters into $[-s, s)$.
+
+---
+
+Q: `to_signed(0xFE, 8)`, worked?
+A: `0xFE ^ 0x80 = 0x7E` (126), then $126 - 128 = -2$.
+
+---
+
+Q: align_down, align_up, is_aligned for power-of-two $a$.
+A: `align_down = x & ~(a - 1)` (equals `x & -a`); `align_up = (x + a - 1) & ~(a - 1)` (bias, then clear); `is_aligned = (x & (a - 1)) == 0`.
+
+---
+
+Q: The classic align_up bug?
+A: Writing `+ a` instead of `+ a - 1`: it bumps already-aligned inputs (16 → 24 at $a = 8$). The correct form is idempotent: `align_up(16, 8) == 16`, `align_up(13, 8) == 16`, `align_up(0, a) == 0`.
+
+---
+
+Q: The align_up properties to state unprompted.
+A: Result $\ge x$; $0 \le \mathrm{align\_up}(x, a) - x < a$; result $\bmod a = 0$; idempotent; monotone in $x$. Tests property-check exactly these.
+
+---
+
+Q: Why do the mask alignment formulas require power-of-two $a$, and the general-$a$ form?
+A: `a - 1` must be a contiguous low-bit mask; $a = 12$ gives `0b1011`, whose complement clears garbage bits. General: `(x + a - 1) // a * a` (one division instead of an AND).
+
+---
+
+Q: The C caveat for `(x + a - 1) & ~(a - 1)` near the top of the address space?
+A: `x + a - 1` can wrap in `uintptr_t`. Kernel style: check first, or `r = x & (a - 1); if (r) x += a - r;`.
+
+---
+
+Q: Probability an 8-byte load at a random address crosses a 64 B cache line, and the cost?
+A: $7/64 \approx 11\%$; roughly $2\times$ (two line reads merged). Crossing a 4 KiB page is far worse — two TLB lookups, historically 100+ cycles.
+
+---
+
+Q: What is a split lock?
+A: A `lock` RMW atomic spanning two cache lines: it locks the whole bus. Lock-free guarantees hold only for naturally aligned words; recent CPUs can raise #AC, Linux `split_lock_detect` warns or kills.
+
+---
+
+Q: SSE/AVX alignment rules for the aligned moves?
+A: `movdqa` #GP-faults unless 16-byte aligned (`movdqu` is the unaligned form); AVX-512 aligned moves want 64 B. Even legal unaligned 32 B vector loads split a line $31/64 \approx 48\%$ of the time.
+
+---
+
+Q: Is dereferencing a misaligned pointer OK on x86 in C?
+A: No — UB regardless of hardware tolerance; autovectorizers emit `movdqa` on that assumption and crash real code. Use `memcpy(&v, p, sizeof v)` (compiles to one mov). Rust: constructing a misaligned `&T` is instant UB; use `ptr::read_unaligned`. `-fsanitize=alignment` catches it.
+
+---
+
+Q: What alignment does `malloc` guarantee, and how do you get more?
+A: `alignof(max_align_t)`, 16 B on mainstream 64-bit ABIs. Stricter: `aligned_alloc(64, n)` or `posix_memalign`.
+
+---
+
+Q: The C struct layout algorithm.
+A: `cursor = 0`; each member in declaration order lands at `offset = align_up(cursor, alignof(member))`, cursor advances by sizeof. `alignof(struct) = max(member alignofs)`; `sizeof = align_up(cursor, alignof(struct))` — tail padding. C never reorders members.
+
+---
+
+Q: sizeof and layout of `struct { char a; int b; short c; }` on LP64?
+A: 12 — `a` at 0 (3 pad), `b` at 4, `c` at 8 (2 tail pad); alignof 4. Byte map `a...bbbbcc..`.
+
+---
+
+Q: Why does tail padding exist?
+A: Arrays: `&arr[1] == &arr[0] + sizeof(T)` and every element's members must stay aligned, so sizeof must be a multiple of the struct alignment.
+
+---
+
+Q: The struct-shrinking rule, and why it is optimal.
+A: Sort members by descending alignment. Every real C type's size is a multiple of its alignment, so each prefix sum stays aligned for every remaining member — zero internal padding, $\mathrm{sizeof} = \mathrm{align\_up}(\sum \mathrm{sizes}, \max \mathrm{align})$, which no ordering beats. `-Wpadded` reports every pad byte.
+
+---
+
+Q: `{char; double; char}` vs reordered `{double; char; char}` — sizes?
+A: 24 (offsets 0, 8, 16) vs 16 ($8 + 1 + 1 = 10$, padded to 16). A third of the struct recovered by moving two declarations.
+
+---
+
+Q: One line each: `#pragma pack(1)`, `alignas(64)`, bit-fields, flexible array member.
+A: pack(1) caps member alignment — then passing a pointer to a packed member into alignment-expecting code is the UB everyone ships. `alignas(64)` over-aligns (the standard false-sharing fix). Bit-field packing is implementation-defined — say "ABI-specific", never claim exact layout. A flexible array member `T x[];` adds no size but its alignment counts.
+
+---
+
+Q: Python struct prefixes: `@` vs `=` vs `<` `>` `!`?
+A: `@` (the default): native order, native sizes, native padding between members. `=`: native order, standard sizes, no padding. `<` `>` `!`: little/big/network order, standard sizes, no padding. Wire formats: always `<` or `>`; native `'l'`/`'L'` even change width across platforms.
+
+---
+
+Q: `struct.calcsize('@ic')` vs `sizeof(struct { int; char; })`, and how to reconcile them?
+A: 5 vs 8 — the module pads between members but never at the end. Emulate tail padding with a trailing zero-repeat code: `calcsize('@ic0i') == 8`.
+
+---
+
+Q: The C integer promotion rule in one sentence.
+A: Any operand of rank below `int` (`uint8_t`, `uint16_t`, bit-fields) first converts to `int` if int represents all its values (else `unsigned int`); then the usual arithmetic conversions reconcile the operands. `uint32_t` has rank equal to `int` and stays put.
+
+---
+
+C: In C's usual arithmetic conversions, at equal rank the signed operand converts to [unsigned].
+
+---
+
+Q: Why does `(uint8_t)x << 24 >> 24` sign-extend in C?
+A: The u8 promotes to signed `int`; `<< 24` parks its top bit in the sign bit (formally UB for values $\ge 128$); `>> 24` on the now-negative int is arithmetic. `0xFF` comes back as $-1$, not 255. Fix: `(uint32_t)x << 24`.
+
+---
+
+Q: `-1 < 1u` in C? And `-1L < 1u` on LP64?
+A: False — equal rank, so $-1$ converts to $2^{32} - 1$. But `-1L < 1u` is true: `long` outranks and absorbs `unsigned int`. The trap is rank-sensitive, which is why it survives review; `-Wsign-compare` flags it.
+
+---
+
+Q: Why does `for (size_t i = n - 1; i >= 0; --i)` never terminate, and the idiomatic fix?
+A: `i >= 0` is a tautology for unsigned, and $0 - 1$ wraps to $2^{64} - 1$. Fix: `for (size_t i = n; i-- > 0;)` (the "goes-to operator"), or a signed index.
+
+---
+
+Q: With `uint8_t s = 1`, why is `~s == 0xFE` false in C?
+A: `~` promotes: `~s` is int `0xFFFFFFFE`. Fix: `(uint8_t)~s` or `~s & 0xFF`. Same story for unary minus and `u8a - u8b` compared against unsigned.
+
+---
+
+Q: Why is `uint16_t * uint16_t` UB in C?
+A: Both promote to signed `int`; $65535 \times 65535 = 4294836225 > 2^{31} - 1$ is signed overflow. Fix: `(uint32_t)a * b`.
+
+---
+
+Q: `uint64_t p = a * b;` with `uint32_t` operands — what's wrong?
+A: Defined, but the multiply happens in 32 bits and truncates before widening. Write `(uint64_t)a * b`.
+
+---
+
+Q: What does `a - b > 0` test for unsigned operands, and the wrap-aware ordering?
+A: Just `a != b` (unsigned subtraction wraps). Serial-number arithmetic (RFC 1982, TCP sequence space): `(int32_t)(a - b) > 0` is wrap-aware "a is after b" and survives rollover where `a > b` breaks.
+
+---
+
+Q: The `char` signedness platform split, and the `getchar` corollary.
+A: Signed on x86 Linux/macOS, unsigned on ARM/PowerPC/s390x Linux — decode paths use `uint8_t` exclusively. `while ((c = getchar()) != EOF)` needs `int c`: with `char` it either never exits (unsigned) or exits early on byte `0xFF` (signed).
+
+---
+
+Q: The overflow-safe midpoint?
+A: `lo + (hi - lo) / 2`. `(lo + hi) / 2` is UB for int and wraps for u32 — the bug sat in Java's `Arrays.binarySearch` for nine years.
+
+---
+
+Q: Why does `while x: x >>= 1` hang in Python for negative `x`?
+A: `>>` on a negative is arithmetic over infinite sign bits: `-1 >> k == -1` for all $k$. Mask first. Relatedly, one forgotten mask silently promotes your "u64" into a bignum that diverges from the C reference and never comes back.
+
+---
+
+Q: sizeof / alignof of `struct { char c; double d; }`?
+A: 16 and 8.
+
+---
+
+Q: `to_unsigned(-1, 64)`?
+A: $2^{64} - 1$.
+
+---
+
+Q: Read a u16 LE at byte offset 3 of `buf` in Python, and a u64 at unaligned `p` in C?
+A: `struct.unpack_from('<H', buf, 3)[0]`; `uint64_t v; memcpy(&v, p, 8);`.

@@ -58,11 +58,11 @@ Consider the memory problem. Every token you generate needs to attend to every p
 
 ![[thoughts/images/page_layout_flashinfer.webp|Paged KV layout in FlashInfer]]
 
-[^solutions]: [[thoughts/vllm|vLLM]] solved this with [[thoughts/Attention#Paged Attention|PagedAttention]] — treating KV cache like virtual memory, with pages that can be shared, swapped, and freed. It's pretty neat.
+[^solutions]: [[thoughts/vllm|vLLM]] solved this with [[thoughts/paged attention|PagedAttention]] — treating KV cache like virtual memory, with pages that can be shared, swapped, and freed. It's pretty neat.
 
 There's also scheduling: how do you decide which request to process next when they all have different deadlines and costs? [^scheduling-solution]
 
-[^scheduling-solution]: vLLM popularized [[thoughts/Continuous batching|continuous batching]] — instead of waiting for all requests in a batch to finish, you continuously add and remove requests. Orca took this further with iteration-level scheduling. SGLang went another direction entirely with [[thoughts/Attention#RadixAttention]], building a tree of shared prefixes so common prompts don't get recomputed, but similar idea.
+[^scheduling-solution]: vLLM popularized [[thoughts/Continuous batching|continuous batching]] — instead of waiting for all requests in a batch to finish, you continuously add and remove requests. Orca took this further with iteration-level scheduling. SGLang went another direction entirely with [[thoughts/radix attention]], building a tree of shared prefixes so common prompts don't get recomputed, but similar idea.
 
 Then there's also the kernel problem [^kernel]. Deep learning comprises a lot of matmuls (matrix multiplication, or also known as [[lectures/411/notes#Hadamard and Kronecker products|Kronecker products]]) and other [transcendental](https://en.wikipedia.org/wiki/Transcendental_function) ops, happening in CUDA kernels that need to be meticulously optimized. [^kernel-solution]
 

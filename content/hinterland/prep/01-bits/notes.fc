@@ -1,0 +1,245 @@
+---
+title: 01 · bits, bytes, shifts
+---
+
+Q: In two's complement, what weight does the top bit of an $N$-bit word carry?
+A: $-2^{N-1}$: when bit $N-1$ is set, signed = unsigned $-\,2^N$. The other bits keep their unsigned weights, so one adder circuit serves both readings.
+
+---
+
+Q: State negation in two's complement as a bit operation.
+A: $-x = \lnot x + 1$ — flip all bits, then increment.
+
+---
+
+Q: What is Python's `~x` arithmetically, and why does fixed-width work need a mask after it?
+A: `~x == -x - 1`. Python ints are two's complement at infinite width, so `~x` is negative with unbounded sign bits; `~x & 0xFFFFFFFF` is the u32 NOT.
+
+---
+
+Q: Emulating u32 in Python: which ops require re-masking, and which never escape?
+A: Mask after `+`, `-`, `*`, `<<`, `~`, and unary `-`. `>>` and `& mask` cannot escape $[0, 2^{32})$.
+
+---
+
+Q: Logical (zero-fill) right shift in Python when the value might be negative?
+A: Mask before shifting: `(x & 0xFFFFFFFF) >> n`. Python only shifts arithmetically when an actual negative leaks in.
+
+---
+
+Q: `-7 >> 1` vs `-7 / 2` in C — values, and why they differ?
+A: $-4$ vs $-3$: arithmetic shift floors toward $-\infty$, C division truncates toward 0 (mandated since C99). This gap is why compilers lowering signed division to shifts must add a bias correction.
+
+---
+
+Q: `-1 >> 100` in Python?
+A: `-1` — arithmetic shift over infinite sign bits never reaches 0.
+
+---
+
+Q: `0x80000000 >> 4` in Python?
+A: `0x08000000` — a masked value is an ordinary nonnegative int, so `>>` zero-fills. The same bit pattern in a C signed `int` shifts arithmetically to `0xF8000000`.
+
+---
+
+Q: Why is `1 << 31` UB in C, and the fix?
+A: Bare `1` is a signed `int`; shifting into the sign bit is signed overflow. Write `1u << 31` (or `1ull << 63`).
+
+---
+
+Q: Why does C leave shift counts $\ge$ width undefined?
+A: Hardware disagrees: x86 masks the count to 5 bits for 32-bit operands (so `x << 32` executes as `x << 0`), ARM32 uses the low byte of the count register and gives 0. C refuses to pick.
+
+---
+
+Q: Test, set, clear, and toggle bit $k$ of `x`.
+A: Test `(x >> k) & 1`; set `x | (1 << k)`; clear `x & ~(1 << k)`; toggle `x ^ (1 << k)`.
+
+---
+
+Q: Update bit $k$ of `x` to $v \in \{0, 1\}$ in one expression.
+A: `(x & ~(1 << k)) | (v << k)` — clear, then OR.
+
+---
+
+Q: The field extract and insert primitives (`offset`, `width`, `mask = (1 << width) - 1`).
+A: Extract `(word >> offset) & mask`; insert `(word & ~(mask << offset)) | ((value & mask) << offset)`.
+
+---
+
+Q: Extract bits 23..16 of a u32.
+A: `(x >> 16) & 0xFF`.
+
+---
+
+Q: Why is `(1 << width) - 1` a dangerous mask builder in C, and a safe u64 form?
+A: UB at `width == 32` (count = width), and already at 31 without a `u` suffix (bare `1` is signed). Safe for $1 \le \text{width} \le 64$: `(((1ull << (width - 1)) - 1) << 1) | 1`. Python needs none of this — say the UB caveat out loud anyway.
+
+---
+
+Q: Sign-extend a $k$-bit value $v$ branchlessly, and why it works.
+A: `(v ^ (1 << (k - 1))) - (1 << (k - 1))`. XOR toggles the field's sign bit, adding or subtracting $2^{k-1}$; the subtraction recenters both cases.
+
+---
+
+Q: Sign-extend 12-bit `0x8A3`.
+A: `(0x8A3 ^ 0x800) - 0x800 = -1885`.
+
+---
+
+C: Lowest-set-bit family: [x & -x] isolates the lowest set bit, and [x & (x - 1)] clears it.
+
+---
+
+Q: Why does `x & -x` isolate the lowest set bit?
+A: $-x = \lnot x + 1$: the +1 carries through the trailing 1s of $\lnot x$ (the trailing 0s of $x$) and stops at $x$'s lowest set bit — zeros below, a 1 there, the complement above.
+
+---
+
+Q: The power-of-two test, and why the zero guard matters.
+A: `x != 0 and (x & (x - 1)) == 0`. Without the guard 0 passes, since `0 & -1 == 0`.
+
+---
+
+Q: Round up to the next power of two by bit smear.
+A: Decrement, then OR in `x >> 1, 2, 4, 8, 16` (and 32 for u64), then add 1. The decrement makes exact powers map to themselves; each OR doubles the solid run of 1s to reach $2^k - 1$.
+
+---
+
+Q: Edge cases of the next-pow2 smear?
+A: `next_pow2(0)` returns 0 (Python) or wraps (u64) — special-case to 1. Above $2^{63}$ the u64 version wraps to 0.
+
+---
+
+Q: Python one-liner for next power of two ($x \ge 1$)?
+A: `1 << (x - 1).bit_length()`. C++20: `std::bit_ceil`.
+
+---
+
+Q: Kernighan popcount — loop and complexity.
+A: `while x: x &= x - 1; n += 1` — strips one set bit per iteration, $O(\text{set bits})$. The expected first answer; SWAR is the follow-up.
+
+---
+
+Q: In SWAR popcount, what granularities do the constants `0x55…`, `0x33…`, `0x0F…` work at?
+A: 1-bit fields (`0101…`), 2-bit fields (`0011…`), 4-bit fields — masks alternating at doubling granularity. Line 1 is the two-bit trick: a chunk holding $2a + b$ becomes $a + b$ by subtracting its high bit once.
+
+---
+
+Q: What do the final `* 0x0101010101010101` and `>> 56` do in SWAR popcount64, and where do naive Python ports break?
+A: The multiply is a byte-sum — every byte lands once in the top byte's column (total $\le 64$ fits a byte); `>> 56` extracts it. C wraps for free; Python must `& M64` before the shift, and that line is where ports break.
+
+---
+
+Q: Production popcount in Python, C, Rust, Go?
+A: `x.bit_count()` (3.10+; before that `bin(x).count('1')`), `__builtin_popcountll` / C++20 `std::popcount`, `count_ones`, `math/bits.OnesCount64`. Hardware: x86 `POPCNT`, NEON `CNT`+`ADDV`.
+
+---
+
+Q: ctz and clz32 in Python, plus the zero edge.
+A: `ctz = (x & -x).bit_length() - 1` (gives $-1$ at 0 — guard it); `clz32 = 32 - x.bit_length()` (correct at 0: gives 32). `bit_length() - 1` is floor log2.
+
+---
+
+Q: `__builtin_ctz(0)` vs Rust `trailing_zeros(0)`?
+A: UB in C (BSF/BSR leave the register undefined at 0; TZCNT/LZCNT later fixed the hardware) vs defined 32 in Rust, C++20 `std::countr_zero`, and Go. "What does yours do at zero" is a stock probe.
+
+---
+
+Q: Branch-free ctz without a hardware instruction — name it.
+A: De Bruijn multiply: `table[((x & -x) * 0x077CB531) >> 27]` for u32. Name it; nobody derives it live.
+
+---
+
+Q: The shape of `reverse_bits32`, and the classic Python port bug.
+A: Divide and conquer with the popcount mask family: swap adjacent bits (`0x55…`), pairs (`0x33…`), nibbles (`0x0F…`), bytes (`0x00FF00FF`), then halves. The last rung shifts all of `x` left, so it needs the final `& 0xFFFFFFFF` — forgetting it is the classic bug. AArch64 has `RBIT`; x86 has no bit reverse.
+
+---
+
+Q: `reverse_bits32(1)`?
+A: `0x80000000`.
+
+---
+
+Q: `bswap32(0x12345678)`?
+A: `0x78563412` — `(x >> 24) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | (x << 24)`, masked to 32 bits.
+
+---
+
+Q: Are shifts endianness-dependent?
+A: No — shifts act on the integer value; endianness exists only at the memory/wire boundary. `(word >> 24) & 0xFF` is the most significant byte, which coincides with wire byte 0 only in big-endian formats.
+
+---
+
+Q: rotl32 in Python, and the `n == 0` handling.
+A: `n &= 31`, then `((x << n) | (x >> (32 - n))) & 0xFFFFFFFF`. In Python `x >> 32` is just 0, harmless.
+
+---
+
+Q: The UB-free rotate in C?
+A: `(x << n) | (x >> (-n & 31))` — avoids `x >> 32` at `n == 0`; compilers pattern-match it to `ROL`. Rotates are the workhorse of ARX primitives (ChaCha, SipHash, SHA), which is where hashing follow-ups go.
+
+---
+
+Q: XOR as algebra?
+A: Carry-less addition in $(\mathbb{Z}/2)^n$: `x ^ x = 0`, `x ^ 0 = x`, associative, commutative — pairs annihilate, which powers find-the-singleton (`5 ^ 7 ^ 5 == 7`) and parity tricks.
+
+---
+
+Q: Hamming distance between two words?
+A: `popcount(a ^ b)` — XOR marks exactly the differing bits.
+
+---
+
+Q: Parity of a word by folding?
+A: XOR the halves repeatedly (`x ^= x >> 16` down to `x ^= x >> 1`), then `x & 1`; each fold XORs the halves so the low bit accumulates every bit's parity. Parity = popcount mod 2.
+
+---
+
+Q: Why refuse the XOR swap?
+A: It zeroes both operands when they alias the same memory (`swap(&v[i], &v[i])`), and its three dependent ops lose to the compiler's register-renamed temporary anyway. Know it, refuse it, say why.
+
+---
+
+Q: The branchless abs for i32 in C, and its caveat.
+A: With `m = x >> 31` (all-ones if negative, zero otherwise): `(x ^ m) - m`. UB at `INT_MIN` — $-2^{31}$ has no positive counterpart; `abs(INT_MIN)` is a stock find-the-bug.
+
+---
+
+Q: When does branchless actually win over a branch?
+A: Only on unpredictable data — a mispredict flushes the pipeline (15–20 cycles) vs 2–3 ALU ops, and compilers already emit `cmov` for simple ternaries. Mandatory in crypto (a data-dependent branch is a timing leak) and SIMD (lanes cannot branch). In Python, never for speed. Interview move: write the readable branch, name the branchless form.
+
+---
+
+Q: Enumerate all submasks of `m` in decreasing order.
+A: Do-while from `s = m`: visit, exit after `s == 0`, step `s = (s - 1) & m`. The decrement flips the lowest set bit and sets everything below; `& m` keeps only `m`'s positions — a decrement in `m`'s compressed coordinate system.
+
+---
+
+Q: The two classic submask-enumeration bugs.
+A: `while s:` as the loop condition silently drops the empty submask; continuing past 0 loops forever because `(0 - 1) & m == m`. Hence the do-while shape with an explicit exit at 0.
+
+---
+
+Q: Number of submasks of `m`, and the sum over all `m` of an $n$-bit universe?
+A: $2^{\mathrm{popcount}(m)}$ each; $\sum_m 2^{\mathrm{popcount}(m)} = 3^n$ (each bit is outside `m`, in `m` only, or in both) — the complexity signature of SOS and subset-sum DP.
+
+---
+
+Q: Why decode bytes through `uint8_t*` rather than `char*` in C?
+A: `char` may be signed: byte `0xFF` promotes to int $-1$, so `c >> 4` gives sign-extended garbage instead of `0x0F`. Decode through `uint8_t` or mask `& 0xFF` at every read.
+
+---
+
+Q: Detect add overflow in C — unsigned and signed?
+A: Unsigned wrap is defined: `sum = a + b; if (sum < a)`. Signed overflow is UB: use `__builtin_add_overflow` or C23 `<stdckdint.h>`. Python never wraps — "loop until it wraps" never terminates on Python ints.
+
+---
+
+Q: The popcount escalation ladder interviewers walk?
+A: Per-bit loop → Kernighan → SWAR → byte table (256 entries, wins in hot loops where it stays in L1) → hardware intrinsic. Volunteer the next rung before being pushed.
+
+---
+
+Q: `popcount(0xF0F0F0F0)`?
+A: 16.

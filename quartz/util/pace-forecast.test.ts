@@ -24,6 +24,7 @@ class MockWorker implements WorkerLike {
 }
 
 const day: PaceDayState = {
+  date: '2026-06-03',
   ctl: 50,
   atl: 40,
   tsb: 10,
@@ -91,4 +92,37 @@ test('concurrent predictions route to the right ids', async () => {
   assert.ok(Math.abs((swim?.mu ?? 0) - 1.3) < 1e-9)
   assert.ok(Math.abs((bike?.mu ?? 0) - 8) < 1e-9)
   assert.ok(Math.abs((run?.mu ?? 0) - 3.3) < 1e-9)
+})
+
+test('init keeps dated day states for comparison lookup', async () => {
+  const f = new PaceForecaster(new MockWorker())
+  const originalFetch = globalThis.fetch
+  globalThis.fetch = async () =>
+    new Response(
+      [
+        JSON.stringify({
+          kind: 'meta',
+          thresholds: [
+            { sport: 'swim', vThr: 1.2 },
+            { sport: 'bike', vThr: 8 },
+            { sport: 'run', vThr: 3.3 },
+          ],
+          athlete: { hrMaxEst: 182 },
+        }),
+        JSON.stringify({ kind: 'day', date: '2026-06-01', ctl: 1 }),
+        JSON.stringify({ kind: 'day', date: '2026-06-02', ctl: 2 }),
+        JSON.stringify({ kind: 'day', date: '2026-06-03', ctl: 3 }),
+      ].join('\n'),
+    )
+  try {
+    assert.equal(await f.init('https://aarnphm.xyz', 'pace', '/triathlon/data.jsonl'), true)
+    assert.equal(f.day?.date, '2026-06-03')
+    assert.equal(f.dayStateAgo(1)?.date, '2026-06-02')
+    assert.equal(f.dayStateOnOrBefore('2026-06-02')?.ctl, 2)
+    assert.equal(f.dayStateOnOrBefore('2026-05-31'), null)
+    assert.equal(f.dayStateOnOrBefore('2026-06'), null)
+    assert.deepEqual(f.dayBounds(), { min: '2026-06-01', max: '2026-06-03' })
+  } finally {
+    globalThis.fetch = originalFetch
+  }
 })

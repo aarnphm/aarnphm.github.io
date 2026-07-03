@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-01 13:02:08 GMT-04:00
+modified: 2026-07-02 09:03:41 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,56 @@ title: are.na
 
 ## discourse
 
+- https://www.youtube.com/watch?v=88KJwEu5TRs -- Why we're lonely
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [loneliness, community]
+    - later: true
+- https://www.youtube.com/watch?v=M8lfd6ghyhs -- Hope Is Not a Feeling
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [hope, life]
+    - later: true
+- https://www.youtube.com/watch?v=Hh-Ah2hdC1g -- I Wasn't Always Like This!!
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [selfhood, change]
+    - later: true
+- https://www.youtube.com/watch?v=iDNZGw6uWZg -- What Is Sex Like For Straight Women?
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [sex, relationships]
+    - later: true
+- https://www.youtube.com/watch?v=wzmDIKrztUQ -- Being offline is the new online trend
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [offline, internet]
+    - later: true
+- https://www.youtube.com/watch?v=Esu8BXLBmZ4 -- Is not believing in God causing more harm than good?
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [religion, debate]
+    - later: true
+- https://www.youtube.com/watch?v=JFN7LK35roE -- Am I ... Good?
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [goodness, selfhood]
+    - later: true
+- https://www.youtube.com/watch?v=8PehaSuoNlM -- The desire to disappear completely
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [selfhood, disappearance]
+    - later: true
+- https://www.youtube.com/watch?v=KVl49IBqlEI -- A New Beginning | So Be It
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [life, renewal]
+    - later: true
+- https://www.youtube.com/watch?v=OL8DyVusLeE -- Viktor Frankl: Self-Actualization is not the goal
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [meaning, self-actualization]
+    - later: true
 - https://internetprincess.substack.com/p/the-perpetual-present-tense -- The perpetual present-tense
   - [meta]:
     - date: 07/01/2026
@@ -6480,6 +6530,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=3K1J83Yle5Q -- Design of new protein functions using deep learning
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [protein design, deep learning]
+    - later: true
+- https://www.youtube.com/watch?v=MlFu6v3qolg -- Cartridges: lightweight and general-purpose language model memory via self-study
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [language models, memory]
+    - later: true
 - https://x.com/ninklefitz/status/2072040419110551960 -- Nicole Fitzgerald on Anthropic preclinical drug programs
   - [meta]:
     - date: 06/30/2026
@@ -10097,6 +10157,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=mMaid2jYeEo -- Automated Theorem Proving and Axiomatic Mathematics
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [theorem proving, axiomatic mathematics]
+    - later: true
+- https://www.youtube.com/watch?v=ZZBkvfesKG0 -- Manim Slides is plain awesome
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [manim, slides]
+    - later: true
+- https://www.youtube.com/watch?v=uZy1M_s-8zs -- "please stop" - maintainers
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [open source, maintainers]
+    - later: true
+- https://www.youtube.com/watch?v=G6q719ck7ww -- Lecture 15: CUTLASS
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [cutlass, gpu]
+    - later: true
+- https://www.youtube.com/watch?v=NTrAISNdf70 -- Ken Thompson on developing Go at Google
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [go, programming languages]
+    - later: true
 - https://x.com/andy_matuschak/status/2067117671469162707 -- Andy Matuschak on Sparkle update flow UI
   - [meta]:
     - date: 06/17/2026
@@ -10513,6 +10598,66 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=4YcbhLgftJA -- Hubert Dreyfus on Dostoyevsky and the sacred
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [dreyfus, dostoyevsky]
+    - later: true
+- https://www.youtube.com/watch?v=nD248K11zNE -- Ethics of Principle vs Sensitivity
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [rorty, ethics]
+    - later: true
+- https://www.youtube.com/watch?v=5rizWDrvOxE -- An argument against objective morality that defeats itself
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [morality, argument]
+    - later: true
+- https://www.youtube.com/watch?v=dJ9JlB7nvAI -- The Nature and Aims of Science
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [philosophy-of-science, nagel]
+    - later: true
+- https://www.youtube.com/watch?v=8RSquhILju0 -- Hubert Dreyfus on Decision-Making
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [dreyfus, decision making]
+    - later: true
+- https://www.youtube.com/watch?v=fn2F2BWLZ0Q -- Richard Rorty: Is Religion Compatible with Science?
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [rorty, religion]
+    - later: true
+- https://www.youtube.com/watch?v=z2UHLMVr4vg -- David Lynch on Consciousness, Creativity and the Brain
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [consciousness, creativity]
+    - later: true
+- https://www.youtube.com/watch?v=hUTGAR0fBow -- A Brief History of Atheism
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [atheism, religion]
+    - later: true
+- https://www.youtube.com/watch?v=YX34ikiBRxw -- Nelson Goodman on Simplicity and Truth in Science
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [goodman, philosophy-of-science]
+    - later: true
+- https://www.youtube.com/watch?v=VddLlnOZIfY -- John Searle: Perception and Intentionality
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [searle, intentionality]
+    - later: true
+- https://www.youtube.com/watch?v=d__In2PQS60 -- Kant, Critique of Pure Reason, Robert Paul Wolff Lecture 1
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [kant, critique of pure reason]
+    - later: true
+- https://www.youtube.com/watch?v=JttzWtYqy-M -- Marcuse, One Dimensional Man
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [marcuse, critical theory]
+    - later: true
 - https://x.com/nickcammarata/status/2061619534080131294 -- Nick Cammarata on inaccessible feelings and stomach issues
   - [meta]:
     - date: 06/02/2026
@@ -12438,6 +12583,46 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=BucSbzYXqKM -- Hollywood's Obsession with Ambition
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [film, ambition]
+    - later: true
+- https://www.youtube.com/watch?v=eQUOTm50tUk -- The moment you realize it's 2006 and your camera guy's a magician
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [cinema, filmmaking]
+    - later: true
+- https://www.youtube.com/watch?v=kOCwxP0iDN0 -- My Top 25 Films of 2025
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [film, list]
+    - later: true
+- https://www.youtube.com/watch?v=_32QyCVw6Ig -- Guess the Comedian ft Druski
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [comedy, entertainment]
+    - later: true
+- https://www.youtube.com/watch?v=6F9Efm9JGqY -- The Controversial Business of Adin Ross
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [streaming, business]
+    - later: true
+- https://www.youtube.com/watch?v=Y2T4caGlK80 -- Cat politely asking to get petted
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [cats, cute]
+    - later: true
+- https://www.youtube.com/watch?v=jDZX7T-zq_k -- The kitten that can't be helped by stroking is cute
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [cats, cute]
+    - later: true
+- https://www.youtube.com/watch?v=_W0o4jr49xk -- When a whole generation misunderstands the movie
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [film, criticism]
+    - later: true
 - https://www.youtube.com/watch?v=7KWFhW0klf4 -- The Hard Problem of Consciousness
   - [meta]:
     - date: 07/01/2026
@@ -13077,6 +13262,11 @@ title: are.na
 
 ## arts
 
+- https://www.youtube.com/watch?v=OgDAFxVm5tw -- Popular Words Invented by Authors
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [language, authors]
+    - later: true
 - https://x.com/WarnerTeddy/status/2064113996488425951 -- generated bird visitor collage
   - [meta]:
     - date: 06/08/2026
@@ -16227,6 +16417,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=GcbLL4C3VwY -- Computational Complexity and Explanations in Physics
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [complexity, physics]
+    - later: true
+- https://www.youtube.com/watch?v=60z_hpEAtD8 -- A Swift Introduction to Geometric Algebra
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [geometric algebra, math]
+    - later: true
+- https://www.youtube.com/watch?v=tprlQMClSYQ -- Maryam Mirzakhani, Dynamics Moduli Spaces of Curves I
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [mirzakhani, moduli spaces]
+    - later: true
+- https://www.youtube.com/watch?v=ScX2aBFyrVU -- Information Theory, Lecture 1
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [information theory, entropy]
+    - later: true
+- https://www.youtube.com/watch?v=IfClFdFq2gE -- Hyperbolic Manifolds, Their Submanifolds and Fundamental Groups
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [hyperbolic manifolds, geometry]
+    - later: true
+- https://www.youtube.com/watch?v=I3GWzXRectE -- Introductory Calculus: Oxford Mathematics 1st Year Student Lecture
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [calculus, lecture]
+    - later: true
 - https://x.com/arnal_charles/status/2060009395107377282 -- ATLAS Lean 4 formalization corpus
   - [meta]:
     - date: 05/28/2026

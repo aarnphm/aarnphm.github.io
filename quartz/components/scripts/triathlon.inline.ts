@@ -89,7 +89,12 @@ const applyI18n = (root: HTMLElement): void => {
     if (key) node.textContent = tl(key)
   }
 }
-import { type PaceLegSpec, type PaceSport, isPaceSport } from '../../util/pace-features'
+import {
+  type PaceDayState,
+  type PaceLegSpec,
+  type PaceSport,
+  isPaceSport,
+} from '../../util/pace-features'
 import { PaceForecaster, Z80 } from '../../util/pace-forecast'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
@@ -7963,6 +7968,10 @@ function normCdf(z: number): number {
 }
 
 let paceForecaster: PaceForecaster | null = null
+let paceForecastUnavailable = false
+
+const paceForecastStatus = (): string =>
+  paceForecastUnavailable ? 'model unavailable' : 'model loading'
 
 async function fillForecastSlot(slot: HTMLElement): Promise<void> {
   if (!paceForecaster?.ready || slot.dataset.filled) return
@@ -8026,15 +8035,74 @@ const PRED_SPORTS: { sport: PaceSport; dists: { km: number; label: string }[] }[
   },
 ]
 
+const PRED_COMPARE_OPTIONS = [
+  { key: '7', label: '7d', days: 7 },
+  { key: '14', label: '14d', days: 14 },
+  { key: '30', label: '30d', days: 30 },
+  { key: '60', label: '60d', days: 60 },
+  { key: 'custom', label: 'custom', days: null },
+] as const
+
+type PredCompareKey = (typeof PRED_COMPARE_OPTIONS)[number]['key']
+
+interface PredComparison {
+  day: PaceDayState | null
+  label: string
+}
+
 interface PredResult {
   card: HTMLElement
   nowSec: number
   fastSec: number
   slowSec: number
   delta: number | null
+  compareLabel: string
 }
 
 const PRED_AXIS_FRACS = [0, 0.25, 0.5, 0.75, 1]
+const PRED_DEFAULT_COMPARE: PredCompareKey = '30'
+let predRunSeq = 0
+
+const isPredCompareKey = (value: string | undefined): value is PredCompareKey =>
+  PRED_COMPARE_OPTIONS.some(option => option.key === value)
+
+const predCompareKey = (block: HTMLElement): PredCompareKey => {
+  const key = block.dataset.compareMode
+  return isPredCompareKey(key) ? key : PRED_DEFAULT_COMPARE
+}
+
+const predCompareOption = (key: PredCompareKey): (typeof PRED_COMPARE_OPTIONS)[number] =>
+  PRED_COMPARE_OPTIONS.find(option => option.key === key) ?? PRED_COMPARE_OPTIONS[2]
+
+const syncPredDateInput = (block: HTMLElement, f: PaceForecaster): void => {
+  const input = block.querySelector<HTMLInputElement>('.tri-pred-date')
+  const bounds = f.dayBounds()
+  if (!input || !bounds) return
+  input.min = bounds.min
+  input.max = bounds.max
+  const selected = block.dataset.compareDate
+  const fallback = f.dayStateAgo(30)?.date ?? bounds.min
+  const date = selected && selected >= bounds.min && selected <= bounds.max ? selected : fallback
+  block.dataset.compareDate = date
+  input.value = date
+}
+
+const predComparison = (f: PaceForecaster, block: HTMLElement): PredComparison => {
+  const key = predCompareKey(block)
+  if (key === 'custom') {
+    const day = f.dayStateOnOrBefore(block.dataset.compareDate ?? '')
+    return { day, label: day?.date ? `vs ${shortDate(day.date)}` : 'custom date missing' }
+  }
+  const days = predCompareOption(key).days ?? 30
+  const day = f.dayStateAgo(days)
+  return { day, label: day?.date ? `vs ${days}d (${shortDate(day.date)})` : `vs ${days}d` }
+}
+
+const setPredStatus = (block: HTMLElement, label: string): void => {
+  const status = block.querySelector<HTMLElement>('.tri-pred-status')
+  if (status) status.textContent = label
+}
+
 const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
   const ticks = track.querySelectorAll<HTMLElement>('.tri-pred-axis-tick')
   if (ticks.length === PRED_AXIS_FRACS.length) {
@@ -8052,77 +8120,191 @@ const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
   )
 }
 
+const resetPredCard = (card: HTMLElement): void => {
+  delete card.dataset.filled
+  delete card.dataset.error
+  delete card.dataset.tipD
+  delete card.dataset.tipH
+  card.dataset.pending = '1'
+  const bar = card.querySelector<HTMLElement>('.tri-pred-bar')
+  if (bar) bar.style.width = '0%'
+  const range = card.querySelector<HTMLElement>('.tri-pred-bar-range')
+  if (range) {
+    range.style.left = '0%'
+    range.style.width = '0%'
+  }
+  const timeEl = card.querySelector('.tri-pred-time')
+  if (timeEl) timeEl.textContent = '…'
+  const deltaEl = card.querySelector('.tri-pred-delta')
+  if (deltaEl) {
+    deltaEl.textContent = ''
+    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
+  }
+}
+
+const failPredCard = (card: HTMLElement): void => {
+  delete card.dataset.pending
+  card.dataset.error = '1'
+  const timeEl = card.querySelector('.tri-pred-time')
+  if (timeEl) timeEl.textContent = '—'
+  const deltaEl = card.querySelector('.tri-pred-delta')
+  if (deltaEl) deltaEl.textContent = ''
+  card.dataset.tipH = card.dataset.label ?? ''
+  card.dataset.tipD = 'model unavailable'
+}
+
+const applyPredResult = (r: PredResult, maxSec: number): void => {
+  const pct = (s: number): number => (s / maxSec) * 100
+  delete r.card.dataset.pending
+  delete r.card.dataset.error
+  r.card.dataset.filled = '1'
+  const badge = r.card.querySelector('.tri-pred-badge')
+  if (badge && r.card.dataset.label) badge.textContent = r.card.dataset.label
+  const bar = r.card.querySelector<HTMLElement>('.tri-pred-bar')
+  if (bar) bar.style.width = `${Math.max(2, pct(r.nowSec))}%`
+  const range = r.card.querySelector<HTMLElement>('.tri-pred-bar-range')
+  if (range) {
+    range.style.left = `${pct(r.fastSec)}%`
+    range.style.width = `${Math.max(0, pct(r.slowSec) - pct(r.fastSec))}%`
+  }
+  const timeEl = r.card.querySelector('.tri-pred-time')
+  if (timeEl) timeEl.textContent = hms(r.nowSec)
+  let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
+  const deltaEl = r.card.querySelector('.tri-pred-delta')
+  if (deltaEl) {
+    deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
+    if (r.delta != null && Math.abs(r.delta) >= 1) {
+      const faster = r.delta < 0
+      deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
+      deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
+      tip += ` · ${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))} ${r.compareLabel}`
+    } else {
+      deltaEl.textContent = ''
+      tip += ` · ${r.compareLabel}`
+    }
+  }
+  r.card.dataset.tipH = r.card.dataset.label ?? ''
+  r.card.dataset.tipD = tip
+}
+
+const inferPredCard = async (
+  f: PaceForecaster,
+  day: PaceDayState,
+  comparison: PredComparison,
+  card: HTMLElement,
+): Promise<PredResult | null> => {
+  const km = Number(card.dataset.km)
+  const sport = card.dataset.sport
+  if (!km || !isPaceSport(sport)) return null
+  const leg: PaceLegSpec = { sport, distanceKm: km, elevationM: 0, tempC: null, windKph: null }
+  const [now, then] = await Promise.all([
+    f.forecastLegAt(day, leg),
+    comparison.day ? f.forecastLegAt(comparison.day, leg) : Promise.resolve(null),
+  ])
+  if (!now || now.mu <= 0) return null
+  const meters = km * 1000
+  const nowSec = meters / now.mu
+  const timeSd = (meters / (now.mu * now.mu)) * now.sigma
+  const fastSec = Math.max(0, nowSec - Z80 * timeSd)
+  const slowSec = nowSec + Z80 * timeSd
+  const delta = then && then.mu > 0 ? nowSec - meters / then.mu : null
+  return { card, nowSec, fastSec, slowSec, delta, compareLabel: comparison.label }
+}
+
 async function fillDistancePredictor(scope: ParentNode): Promise<void> {
   const f = paceForecaster
-  if (!f?.ready || !f.day) return
+  const block =
+    scope instanceof HTMLElement
+      ? (scope.closest<HTMLElement>('.tri-pred') ?? scope.querySelector<HTMLElement>('.tri-pred'))
+      : null
+  if (!block) return
+  if (!f?.ready || !f.day) {
+    setPredStatus(block, paceForecastStatus())
+    return
+  }
+  syncPredDateInput(block, f)
   const day = f.day
-  const past = f.dayStateAgo(30)
+  const comparison = predComparison(f, block)
   const cards = Array.from(scope.querySelectorAll<HTMLElement>('.tri-pred-card')).filter(
     c => !c.dataset.filled,
   )
-  const jobs = cards.map(async (card): Promise<PredResult | null> => {
-    const km = Number(card.dataset.km)
-    const sport = card.dataset.sport
-    if (!km || !isPaceSport(sport)) return null
-    const leg: PaceLegSpec = { sport, distanceKm: km, elevationM: 0, tempC: null, windKph: null }
-    const [now, then] = await Promise.all([
-      f.forecastLegAt(day, leg),
-      past ? f.forecastLegAt(past, leg) : Promise.resolve(null),
-    ])
-    if (!now || now.mu <= 0) return null
-    const meters = km * 1000
-    const nowSec = meters / now.mu
-    const timeSd = (meters / (now.mu * now.mu)) * now.sigma
-    const fastSec = Math.max(0, nowSec - Z80 * timeSd)
-    const slowSec = nowSec + Z80 * timeSd
-    const delta = then && then.mu > 0 ? nowSec - meters / then.mu : null
-    return { card, nowSec, fastSec, slowSec, delta }
-  })
-  const results = (await Promise.all(jobs)).filter((r): r is PredResult => r !== null)
-  if (!results.length) return
-  const maxSec = Math.max(...results.map(r => r.slowSec), 1)
-  const pct = (s: number): number => (s / maxSec) * 100
-  for (const r of results) {
-    r.card.dataset.filled = '1'
-    const badge = r.card.querySelector('.tri-pred-badge')
-    if (badge && r.card.dataset.label) badge.textContent = r.card.dataset.label
-    const bar = r.card.querySelector<HTMLElement>('.tri-pred-bar')
-    if (bar) bar.style.width = `${Math.max(2, pct(r.nowSec))}%`
-    const range = r.card.querySelector<HTMLElement>('.tri-pred-bar-range')
-    if (range) {
-      range.style.left = `${pct(r.fastSec)}%`
-      range.style.width = `${Math.max(0, pct(r.slowSec) - pct(r.fastSec))}%`
-    }
-    const timeEl = r.card.querySelector('.tri-pred-time')
-    if (timeEl) timeEl.textContent = hms(r.nowSec)
-    let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
-    const deltaEl = r.card.querySelector('.tri-pred-delta')
-    if (deltaEl) {
-      deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down')
-      if (r.delta != null && Math.abs(r.delta) >= 1) {
-        const faster = r.delta < 0
-        deltaEl.textContent = `${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))}`
-        deltaEl.classList.add(faster ? 'tri-pred-delta--up' : 'tri-pred-delta--down')
-        tip += ` · ${faster ? '▾' : '▴'}${hms(Math.abs(r.delta))} vs 30d`
-      } else {
-        deltaEl.textContent = ''
-      }
-    }
-    r.card.dataset.tipH = r.card.dataset.label ?? ''
-    r.card.dataset.tipD = tip
+  if (!cards.length) return
+  const runId = String(++predRunSeq)
+  block.dataset.predRun = runId
+  block.querySelector<HTMLElement>('.tri-pred-axis-track')?.replaceChildren()
+  for (const card of cards) resetPredCard(card)
+  let done = 0
+  const results: PredResult[] = []
+  const render = (): void => {
+    if (block.dataset.predRun !== runId) return
+    const total = cards.length
+    setPredStatus(block, `inferring ${done}/${total}`)
+    const maxSec = Math.max(...results.map(r => r.slowSec), 1)
+    for (const result of results) applyPredResult(result, maxSec)
+    const axis = block.querySelector<HTMLElement>('.tri-pred-axis-track')
+    if (axis && results.length) renderPredAxis(axis, maxSec)
   }
-  const axis = results[0].card
-    .closest('.tri-pred')
-    ?.querySelector<HTMLElement>('.tri-pred-axis-track')
-  if (axis) renderPredAxis(axis, maxSec)
+  render()
+  await Promise.all(
+    cards.map(async card => {
+      const result = await inferPredCard(f, day, comparison, card)
+      if (block.dataset.predRun !== runId) return
+      done += 1
+      if (result) results.push(result)
+      else failPredCard(card)
+      render()
+    }),
+  )
+  if (block.dataset.predRun !== runId) return
+  setPredStatus(
+    block,
+    results.length
+      ? `ready · ${comparison.day ? comparison.label : 'no comparison'}`
+      : 'model unavailable',
+  )
 }
 
 const buildDistancePredictor = (): HTMLElement => {
   const block = el('div', 'tri-pred')
-  block.appendChild(el('div', 'tri-pred-head', 'model predictor · vs 30d ago'))
+  block.dataset.compareMode = PRED_DEFAULT_COMPARE
+  const head = el('div', 'tri-pred-head')
+  const headMain = el('div', 'tri-pred-head-main')
+  headMain.append(
+    el('span', 'tri-pred-title', 'pace predictor'),
+    el('span', 'tri-pred-status', paceForecastStatus(), { 'aria-live': 'polite' }),
+  )
+  const controls = el('div', 'tri-pred-controls')
+  const compare = el('div', 'tri-pred-compare', undefined, {
+    role: 'tablist',
+    'aria-label': 'comparison range',
+  })
+  const dateInput = document.createElement('input')
+  dateInput.className = 'tri-pred-date'
+  dateInput.type = 'date'
+  dateInput.disabled = true
+  dateInput.setAttribute('aria-label', 'comparison date')
+  const dateWrap = el('label', 'tri-pred-date-wrap')
+  dateWrap.append(dateInput, el('span', 'tri-pred-date-mark', '▾', { 'aria-hidden': 'true' }))
+  let activeSport: PaceSport = 'run'
+  const updateCompareControls = (): void => {
+    const mode = predCompareKey(block)
+    for (const button of compare.querySelectorAll<HTMLButtonElement>('.tri-pred-compare-btn')) {
+      const active = button.dataset.compareMode === mode
+      button.classList.toggle('tri-pred-compare-btn--on', active)
+      button.setAttribute('aria-selected', String(active))
+    }
+    dateInput.disabled = mode !== 'custom'
+    dateInput.setAttribute('aria-disabled', String(mode !== 'custom'))
+    dateWrap.classList.toggle('tri-pred-date-wrap--disabled', mode !== 'custom')
+    if (paceForecaster?.ready) syncPredDateInput(block, paceForecaster)
+  }
+  controls.append(compare, dateWrap)
+  head.append(headMain, controls)
+  block.appendChild(head)
   const tabs = el('div', 'tri-pred-tabs')
   const grid = el('div', 'tri-pred-grid')
   const renderSport = (sport: PaceSport): void => {
+    activeSport = sport
     const cfg = PRED_SPORTS.find(s => s.sport === sport)
     if (!cfg) return
     let cards = Array.from(grid.querySelectorAll<HTMLElement>('.tri-pred-card'))
@@ -8147,9 +8329,42 @@ const buildDistancePredictor = (): HTMLElement => {
       card.dataset.sport = sport
       card.dataset.label = d.label
       delete card.dataset.filled
+      delete card.dataset.pending
+      delete card.dataset.error
+      delete card.dataset.tipD
+      delete card.dataset.tipH
     })
     if (paceForecaster?.ready) queueMicrotask(() => void fillDistancePredictor(grid))
+    else {
+      if (paceForecastUnavailable) for (const card of cards) failPredCard(card)
+      setPredStatus(block, paceForecastStatus())
+    }
   }
+  for (const option of PRED_COMPARE_OPTIONS) {
+    const button = el(
+      'button',
+      `tri-pred-compare-btn${option.key === PRED_DEFAULT_COMPARE ? ' tri-pred-compare-btn--on' : ''}`,
+      option.label,
+      {
+        type: 'button',
+        role: 'tab',
+        'aria-selected': String(option.key === PRED_DEFAULT_COMPARE),
+        'data-compare-mode': option.key,
+      },
+    )
+    button.addEventListener('click', () => {
+      block.dataset.compareMode = option.key
+      updateCompareControls()
+      renderSport(activeSport)
+    })
+    compare.appendChild(button)
+  }
+  dateInput.addEventListener('change', () => {
+    block.dataset.compareMode = 'custom'
+    if (dateInput.value) block.dataset.compareDate = dateInput.value
+    updateCompareControls()
+    renderSport(activeSport)
+  })
   for (const s of PRED_SPORTS) {
     const on = s.sport === 'run'
     const tab = el('button', `tri-pred-tab${on ? ' tri-pred-tab--on' : ''}`, s.sport, {
@@ -8173,6 +8388,7 @@ const buildDistancePredictor = (): HTMLElement => {
     el('span', 'tri-pred-axis-end'),
   )
   block.append(tabs, grid, axis)
+  updateCompareControls()
   renderSport('run')
   return block
 }
@@ -8221,6 +8437,33 @@ const wirePredTip = (root: HTMLElement): (() => void) => {
   }
 }
 
+const paceModelBaseCandidates = (): string[] => {
+  const bases = [location.origin]
+  const port = Number(location.port)
+  if (
+    (location.hostname === 'localhost' || location.hostname === '127.0.0.1') &&
+    Number.isInteger(port) &&
+    port > 0 &&
+    port + 707 <= 65535
+  )
+    bases.push(`${location.protocol}//${location.hostname}:${port + 707}`)
+  return Array.from(new Set(bases))
+}
+
+const initPaceForecaster = async (forecaster: PaceForecaster): Promise<boolean> => {
+  for (const base of paceModelBaseCandidates())
+    if (await forecaster.init(base, 'pace', '/triathlon/data.jsonl')) return true
+  return false
+}
+
+const markDistancePredictorUnavailable = (root: HTMLElement): void => {
+  for (const block of root.querySelectorAll<HTMLElement>('.tri-pred')) {
+    setPredStatus(block, paceForecastStatus())
+    for (const card of block.querySelectorAll<HTMLElement>('.tri-pred-card'))
+      if (!card.dataset.filled) failPredCard(card)
+  }
+}
+
 const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
   if (!root.dataset.analyticsPath && !root.querySelector('.tri-calc')) return null
   let worker: Worker
@@ -8231,15 +8474,23 @@ const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
   }
   const forecaster = new PaceForecaster(worker)
   paceForecaster = forecaster
-  forecaster
-    .init(location.origin, 'pace', '/triathlon/data.jsonl')
+  paceForecastUnavailable = false
+  initPaceForecaster(forecaster)
     .then(ok => {
-      if (ok) {
-        fillForecasts(root)
-        void fillDistancePredictor(root)
+      if (paceForecaster !== forecaster) return
+      paceForecastUnavailable = !ok
+      if (!ok) {
+        markDistancePredictorUnavailable(root)
+        return
       }
+      fillForecasts(root)
+      void fillDistancePredictor(root)
     })
-    .catch(() => {})
+    .catch(() => {
+      if (paceForecaster !== forecaster) return
+      paceForecastUnavailable = true
+      markDistancePredictorUnavailable(root)
+    })
   const tipCleanup = wirePredTip(root)
   return () => {
     tipCleanup()

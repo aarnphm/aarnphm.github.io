@@ -6,7 +6,7 @@ modified: 2026-06-05 15:08:24 GMT-04:00
 permalinks:
   - /vllm
 seealso:
-  - '[[thoughts/Attention#Paged Attention|PagedAttention]]'
+  - '[[thoughts/paged attention|PagedAttention]]'
   - '[[thoughts/PD disaggregated serving|pd disaggregation]]'
   - '[[thoughts/Speculative decoding]]'
   - '[[thoughts/Continuous batching]]'

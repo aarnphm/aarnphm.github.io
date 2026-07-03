@@ -15,6 +15,7 @@ import {
 } from './pace-features'
 
 const day: PaceDayState = {
+  date: '2026-06-01',
   ctl: 50,
   atl: 40,
   tsb: 10,
@@ -124,6 +125,7 @@ test('dayStateFromFeedRow reads day fields and nulls', () => {
   }
   const state = dayStateFromFeedRow(row)
   assert.ok(state)
+  assert.equal(state.date, '2026-06-01')
   assert.equal(state.ctl, 50)
   assert.equal(state.runCtl, 25)
   assert.equal(state.hrv, null)

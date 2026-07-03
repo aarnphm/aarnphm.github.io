@@ -131,7 +131,7 @@ source: [github](https://github.com/IsaacRe/vllm-kvcompress)
 
 Motivation:
 
-- _group-query-compression_: compress KV-cache of [[thoughts/Attention#Group-Query Attention|GQA]] without repeating it into the dimension of $\sum$ query heads.
+- _group-query-compression_: compress KV-cache of [[thoughts/GQA|GQA]] without repeating it into the dimension of $\sum$ query heads.
 - Modified `PagedAttention` that compute _against_ KV-cache (contains variable numbers of KVs per head)
 
 ![[thoughts/images/vllm/kv-compress-vllm.webp]]

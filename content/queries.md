@@ -3,7 +3,7 @@ date: '2026-05-25'
 description: "\U0001F9E9 \U0001F6E4️\U0001F6E5️\U0001F698 \U0001F6D5 \U0001F6F7"
 id: queries
 layout: letter
-modified: 2026-06-05 23:39:12 GMT-04:00
+modified: 2026-07-02 12:33:02 GMT-04:00
 seealso:
   - '[[puzzle|puzzle]]'
   - '[[thoughts/craft|craft]]'
@@ -25,7 +25,7 @@ Some rules:
 - I recommend no assistant first (i.e LLM, Wolfram, OEIS, MathExchange), but feel free to read up on any concepts that you didn't know about before.
 - Pen, paper, a REPL, and some hardcore grit.
 
-## THE _STERN_ WALK
+## _STERN_ WALK
 
 _number theory, integer factorization_, approx: 35 min
 
@@ -77,7 +77,7 @@ check(solve())
 
 ---
 
-## THE _110_ ON A RING
+## _110_ ON A RING
 
 _cellular automata, modular arithmetic_, approx: 20 min
 
@@ -169,7 +169,7 @@ main = putStrLn (check solve)
 
 ---
 
-## THE _INVISIBLE_ HAND SHAKES
+## _INVISIBLE_ HAND SHAKES
 
 _game theory, stable matching_, approx: 30 min
 
@@ -268,7 +268,7 @@ func main() {
 
 ---
 
-## THE _PERCEPTRON_ ORACLE
+## _PERCEPTRON_ ORACLE
 
 _machine learning, linear separability_, approx: 15 min
 
@@ -365,7 +365,7 @@ println!("{}", check(solve()));
 
 ---
 
-## THE _LYNDON_ LOCK
+## _LYNDON_ LOCK
 
 _combinatorics, de Bruijn sequences, bit manipulation_, approx: 30 min
 
@@ -465,7 +465,7 @@ int main(void) {
 
 ---
 
-## THE _MEX_ FLOOR
+## _MEX_ FLOOR
 
 _combinatorial game theory, memoization_, approx: 35 min
 
@@ -557,7 +557,7 @@ int main() {
 
 ---
 
-## THE _CALKIN_ LOCK
+## _CALKIN_ LOCK
 
 _wasm, bit-twiddling, number theory_, approx: 45 min
 
@@ -672,7 +672,7 @@ No need to imports, heap, strings, or host help. (think of opcodes)
 
 ---
 
-## THE _PARENTHESIST'S_ BURDEN
+## _PARENTHESIST'S_ BURDEN
 
 _dynamic programming_, approx: 25 min
 
@@ -745,7 +745,7 @@ let () = print_string (check (solve ()))
 
 ---
 
-## THE _GENUS_ WALK
+## _GENUS_ WALK
 
 _topology, union-find_, approx: 30 min
 
