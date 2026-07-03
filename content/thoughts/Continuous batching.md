@@ -5,7 +5,7 @@ id: Continuous batching
 modified: 2026-06-05 15:08:12 GMT-04:00
 seealso:
   - '[[thoughts/vllm|vLLM]]'
-  - '[[thoughts/Attention#Paged Attention|PagedAttention]]'
+  - '[[thoughts/paged attention|PagedAttention]]'
 tags:
   - ml
   - inference
@@ -73,7 +73,7 @@ after seq A and C complete, seq D arrives (needs 1800 tokens):
             must wait for B to finish or compact
 ```
 
-[[thoughts/Attention#Paged Attention|PagedAttention]] solves this by paging KV cache into fixed-size blocks—like OS virtual memory. allocate only what you need, reclaim blocks granularly.
+[[thoughts/paged attention|PagedAttention]] solves this by paging KV cache into fixed-size blocks—like OS virtual memory. allocate only what you need, reclaim blocks granularly.
 
 ## iteration-level scheduling
 
@@ -94,7 +94,7 @@ this eliminates COMPUTE fragmentation—no wasted FLOPs on padding. GPU arithmet
 
 > [!important] continuous batching $\neq$ solving memory fragmentation
 >
-> iteration-level scheduling solves compute waste, but KV cache memory fragmentation persists unless you also page the cache. [[thoughts/vllm|vLLM]] combines continuous batching with [[thoughts/Attention#Paged Attention|PagedAttention]] to eliminate both.
+> iteration-level scheduling solves compute waste, but KV cache memory fragmentation persists unless you also page the cache. [[thoughts/vllm|vLLM]] combines continuous batching with [[thoughts/paged attention|PagedAttention]] to eliminate both.
 
 ## single iteration
 

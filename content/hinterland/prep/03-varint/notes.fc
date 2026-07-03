@@ -1,0 +1,189 @@
+---
+title: 03 · varints
+---
+
+Q: The three design questions every varint answers?
+A: Where the length/tag bits live (one continuation bit per byte, or all tag bits packed into byte 1); group significance order (LSB-first like LEB128, or MSB-first like VLQ/SQLite); how the top of the range is capped (constrained final byte, or a raw-tail trick).
+
+---
+
+Q: The LEB128 / protobuf uvarint encoding rule.
+A: Split $n$ into 7-bit groups from the least-significant end; emit one byte per group, least-significant group first; set bit 7 (0x80) on every byte except the last. The decoder reads until a byte $< 0x80$.
+
+---
+
+Q: Encoded length of $n$ as a uvarint?
+A: $\max(1, \lceil \operatorname{bitlen}(n)/7 \rceil)$ — $k$ bytes iff $n < 2^{7k}$: 1 byte iff $n < 128$, 2 bytes iff $n < 16384$.
+
+---
+
+Q: Encode 300 as a uvarint, worked.
+A: $300 = \texttt{0b1\_0010\_1100}$; low 7 bits `0x2C` with continuation → `0xAC`; next group `0x02`, done. Wire: `AC 02`. Check: $44 + (2 \ll 7) = 300$.
+
+---
+
+Q: Encode 16384 as a uvarint.
+A: `80 80 01` — two zero-payload groups with the continuation bit set (legal and necessary mid-stream), then bit 14 lands at shift 14.
+
+---
+
+Q: Max uvarint lengths for u32 and u64, and the final-byte constraints.
+A: u32: $\lceil 32/7 \rceil = 5$ bytes, valid 5th byte $\le$ `0x0F`. u64: $\lceil 64/7 \rceil = 10$ bytes, valid 10th byte `0x00` or `0x01` — and `0x00` would be overlong.
+
+---
+
+C: A canonical 10-byte u64 LEB128 varint always ends with byte [0x01].
+
+---
+
+Q: uvarint of $2^{64} - 1$?
+A: `FF FF FF FF FF FF FF FF FF 01` — nine `0x7F` groups (63 ones), then bit 63.
+
+---
+
+Q: Why must the uvarint encode loop be do-while shaped?
+A: $n = 0$ must emit exactly one byte `00`; a `while n:` pre-test loop emits nothing.
+
+---
+
+Q: What happens when a negative number reaches the Python encode loop?
+A: `n >>= 7` on a negative approaches $-1$, never 0 (`-1 >> 7 == -1`), so `while n:` loops forever appending `FF`. C signed has the same fixed point under arithmetic shift. State the domain up front; raise or mask to u64 (`n & MASK64` is exactly protobuf int64 semantics).
+
+---
+
+Q: The single most common C varint decode bug?
+A: The missing widening cast: `value |= (uint64_t)(b & 0x7F) << shift;`. Without it `(b & 0x7F)` promotes to 32-bit `int` and `<< 35` is UB.
+
+---
+
+Q: The three malformed-input classes a strict uvarint decoder distinguishes.
+A: Truncated — buffer ends with the continuation bit still set; recoverable, a streaming decoder reports "need more bytes". Too long — ten continuation bytes seen, or the 10th group exceeds 1 (value $\ge 2^{64}$); fatal even at end-of-buffer. Overlong — terminates and fits, but more than one byte was consumed and the final group is zero; a shorter encoding exists.
+
+---
+
+Q: Classify these inputs: `80` alone; `80` ×10 then `01`; `80 00`.
+A: Truncated (a legal completion like `80 01` exists); too long (an 11th group can never be valid for u64); overlong encoding of 0 (canonical is `00`).
+
+---
+
+Q: Why does varint canonicality matter — three consequences?
+A: Signatures/content addressing: two encodings of one value break dedup and enable malleability (Bitcoin has rejected non-minimal CompactSize since 2012). Cache/map keys: `00` and `80 00` become different keys for the same logical key. Consensus: one lenient node plus one strict node hash the "same" structure differently → fork.
+
+---
+
+Q: Does protobuf enforce canonical varints? Who deliberately allows padding, and who mandates shortest form?
+A: Protobuf parsers accept overlong varints — proto bytes are not canonical; never hash or sign a serialized proto expecting cross-library stability. WASM deliberately allows zero-padded LEB128 up to max length so linkers can patch fixed 5-byte slots in place. CBOR's deterministic encoding (RFC 8949 §4.2) mandates shortest-form integers.
+
+---
+
+Q: How does protobuf `int64` encode negatives, and the cost?
+A: Reinterpret the signed value as u64 and uvarint it: $-1 = 2^{64} - 1$ costs 10 bytes. Negative `int32` sign-extends to 64 bits first (wire compatibility with int64 fields).
+
+---
+
+Q: The zigzag map, arithmetically and bitwise.
+A: $\operatorname{zz}(n) = 2n$ for $n \ge 0$, $2|n| - 1$ for $n < 0$ — negatives to odds, non-negatives to evens. Bitwise: $(n \ll 1) \oplus (n \gg 63)$ in 64-bit two's-complement semantics; the arithmetic shift broadcasts the sign into an all-ones/all-zeros mask and XOR conditionally complements.
+
+---
+
+Q: Zigzag decode?
+A: $(u \gg 1) \oplus -(u \wedge 1)$ — `-(u & 1)` is 0 or all-ones, again a conditional complement. No mask needed in Python: for $u \in [0, 2^{64})$ it lands exactly in $[-2^{63}, 2^{63})$.
+
+---
+
+Q: Why does Python zigzag encode need `& MASK64`?
+A: `n >> 63` on a negative is arithmetic over infinitely many sign bits (`-1 >> 63 == -1`), so the XOR flips infinitely many bits; the mask truncates back to the 64-bit result.
+
+---
+
+Q: In C zigzag, which shift runs signed and which unsigned, and why?
+A: `((uint64_t)n << 1) ^ (uint64_t)(n >> 63)` — left shift on the unsigned copy (signed left-shift overflow is UB), right shift on the signed value (you want the arithmetic shift; implementation-defined in C but arithmetic everywhere real, mandated since C++20).
+
+---
+
+Q: zigzag($-3$)? zigzag($2^{63}-1$)? unzigzag(7)?
+A: 5; $2^{64} - 2$; $-4$.
+
+---
+
+Q: Wire size of $-1$ as protobuf `int64` vs `sint64`, and when to pick which type?
+A: 10 bytes vs 1 byte. `sint*` when the field is frequently negative; `int*` when negatives are rare; `fixed64` when values are uniformly large.
+
+---
+
+Q: MIDI VLQ vs LEB128 — the difference, and 128 in both.
+A: Same 7-bit groups and 0x80-continues convention, opposite group order: VLQ is most-significant group first. 128: LEB `80 01`, VLQ `81 00`. VLQ decode needs no shift counter — `value = (value << 7) | (b & 0x7F)` per byte — but encode must know the group count up front.
+
+---
+
+C: The redundant zero group of an overlong encoding is [trailing] in LEB128 and [leading] in MSB-first VLQ.
+
+---
+
+Q: Which varint designs the overlong class out of existence?
+A: Git's ofs-delta varint: MSB-first with a +1 bias per continuation step, so every byte string decodes to a distinct value (bijective numeration) and range-per-length shifts up.
+
+---
+
+Q: UTF-8 viewed as a varint: where do the length bits live, and what does the per-byte `10` tag buy?
+A: All length bits in byte 1 — the count of leading ones announces total length, so dispatch is one `clz`. The `10` continuation tag buys self-synchronization: from any offset you find the next boundary within 3 bytes. Price: 6 payload bits per continuation byte, 21 bits max in 4 bytes where a tag-free scheme carries 28.
+
+---
+
+Q: PrefixVarint: layout, and what it wins over LEB128.
+A: Byte 1 = $(L-1)$ ones, one zero, then the top $8-L$ payload bits, followed by $L-1$ raw payload bytes; $L = 9$ is `0xFF` plus 8 raw big-endian bytes. Same $7L$-bit density through 56 bits, u64 caps at 9 bytes vs LEB's 10, and decode is one `clz` plus one unaligned load — one data-dependent branch per value versus LEB's branch per byte. Costs: not self-synchronizing, and the fast path wants 8 bytes of overread headroom.
+
+---
+
+Q: SQLite's varint design.
+A: Big-endian groups, hard-capped at 9 bytes: bytes 1–8 contribute their low 7 bits, and a 9th byte contributes all 8 bits — $8 \times 7 + 8 = 64$ exactly. No wasted 10th byte, no 1-useful-bit tail; the loop bound is the fixed number 9.
+
+---
+
+Q: Google group varint: layout and the numbers.
+A: Four u32s behind one shared tag byte — four 2-bit fields give each value's byte length (1–4) — then 4–16 data bytes. Decode is a 256-entry table of shuffle masks plus unaligned loads (`pshufb` in SIMD), zero per-value branches. Worst case 17 bytes per 4 values vs 20 for LEB; loses on all-tiny data (min 5 vs 4). Jeff Dean's search-postings trick; ancestor of StreamVByte.
+
+---
+
+Q: When does fixed-width beat every varint?
+A: When values are uniformly large ($\ge 2^{56}$): fixed 8-byte little-endian wins on both size and speed. Varints are a bet on smallness.
+
+---
+
+Q: The protobuf field header, and how field 1 = 150 serializes.
+A: The header is itself a varint: `(field_number << 3) | wire_type`, wire type 0 = varint. Field 1 → `0x08`, then 150 → `96 01`; wire `08 96 01`.
+
+---
+
+Q: Defense against a hostile uvarint length prefix?
+A: `FF FF FF FF 0F` claims 4 GiB. Validate against the remaining buffer and a frame cap before allocating.
+
+---
+
+Q: Decode `E5 8E 26`.
+A: `0x65 | 0x0E << 7 | 0x26 << 14` = 624485.
+
+---
+
+Q: Largest 1-byte and 2-byte uvarint values, and the count of values that fit in $\le 2$ bytes?
+A: 127 and 16383; $2^{14} = 16384$ values.
+
+---
+
+Q: uvarint length of 1,000,000?
+A: 3 bytes ($2^{14} \le 10^6 < 2^{21}$).
+
+---
+
+Q: Encode $2^{63}$.
+A: `80 80 80 80 80 80 80 80 80 01`.
+
+---
+
+Q: The decode return-convention discipline?
+A: Pick `(value, bytes_consumed)` or `(value, new_offset)` and never mix them — `consumed` composes as `offset += consumed`. The off-by-offset in whole-stream decoding is the most common live-coding bug.
+
+---
+
+Q: The meta-move that scores before coding a varint?
+A: State the domain (u64), the return convention, and the three error classes. Interviewers grade the error taxonomy more than the happy path.

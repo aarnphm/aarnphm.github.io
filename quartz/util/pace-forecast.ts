@@ -95,6 +95,22 @@ export class PaceForecaster {
     return i >= 0 ? this.dayList[i] : null
   }
 
+  dayStateOnOrBefore(date: string): PaceDayState | null {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
+    for (let i = this.dayList.length - 1; i >= 0; i--) {
+      const day = this.dayList[i]
+      if (day.date && day.date <= date) return day
+    }
+    return null
+  }
+
+  dayBounds(): { min: string; max: string } | null {
+    const dated = this.dayList.filter(d => d.date)
+    const first = dated[0]?.date
+    const last = dated[dated.length - 1]?.date
+    return first && last ? { min: first, max: last } : null
+  }
+
   async forecastFinish(
     legs: PaceLegSpec[],
     transitionSec = 0,

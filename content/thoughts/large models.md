@@ -22,7 +22,7 @@ Distributed serving of large models requires cost-efficient methods[^1]
 
 ### large world models
 
-[LWM](https://github.com/LargeWorldModel/LWM): implementation of [[thoughts/Attention#RingAttention|RingAttention]]
+[LWM](https://github.com/LargeWorldModel/LWM): implementation of [[thoughts/ring attention|RingAttention]]
 
 ## visions
 

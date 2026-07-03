@@ -1574,8 +1574,8 @@
   --tri-swim: #3aa99f;
   --tri-bike: #cdd597;
   --tri-run: #fdb2a2;
-  --tri-modal-w: min(70rem, 94vw);
-  --tri-modal-h: min(86vh, 870px);
+  --tri-modal-w: min(79rem, 94vw);
+  --tri-modal-h: min(86vh, 1080px);
   --tri-modal-y: -50%;
 }
 
@@ -3565,9 +3565,131 @@
   margin-top: 1rem;
 }
 .tri-pred-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
   font-size: 0.6rem;
   color: var(--gray);
-  margin-bottom: 0.7rem;
+}
+.tri-pred-head-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  min-width: 0;
+}
+.tri-pred-title {
+  min-width: 0;
+}
+.tri-pred-status {
+  flex: none;
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--gray) 78%, transparent);
+  text-align: right;
+  white-space: nowrap;
+}
+.tri-pred-controls {
+  --tri-pred-control-width: min(100%, 23rem);
+  --tri-pred-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+.tri-pred-compare {
+  display: inline-flex;
+  box-sizing: border-box;
+  inline-size: var(--tri-pred-control-width);
+  max-inline-size: 100%;
+  overflow: hidden;
+  border: 1px solid var(--lightgray);
+  background: var(--tri-pred-surface);
+}
+.tri-pred-compare-btn {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  padding: 0.18rem 0.55rem;
+  border: 0;
+  background: transparent;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:hover {
+    color: var(--dark);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+.tri-pred-compare-btn--on {
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-pred-surface));
+  color: var(--dark);
+}
+.tri-pred-date-wrap {
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  box-sizing: border-box;
+  inline-size: var(--tri-pred-control-width);
+  max-inline-size: 100%;
+  min-height: 1.55rem;
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  background: var(--tri-pred-surface);
+  cursor: pointer;
+
+  &:focus-within {
+    border-color: color-mix(in srgb, var(--tri-accent) 42%, var(--lightgray));
+    background: color-mix(in srgb, var(--tri-accent) 8%, var(--tri-pred-surface));
+  }
+}
+.tri-pred-date-wrap--disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.tri-pred-date {
+  min-inline-size: 0;
+  inline-size: 100%;
+  min-height: calc(1.55rem - 2px);
+  padding: 0.13rem 0.45rem;
+  border: 0;
+  appearance: none;
+  background: transparent;
+  color: var(--gray);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+
+  &::-webkit-date-and-time-value {
+    text-align: left;
+  }
+}
+.tri-pred-date-mark {
+  padding-inline: 0.45rem;
+  color: color-mix(in srgb, var(--gray) 70%, transparent);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  pointer-events: none;
 }
 .tri-pred-tabs {
   --tri-pred-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));

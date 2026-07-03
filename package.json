@@ -38,6 +38,7 @@
     "oura:auth": "tsx --env-file=.env quartz/scripts/auth-oura.ts",
     "oura:sync": "tsx --env-file=.env quartz/scripts/sync-oura.ts",
     "garmin:sync": "tsx --env-file=.env quartz/scripts/sync-garmin.ts",
+    "garmin:backfill-runs": "tsx --env-file=.env quartz/scripts/backfill-garmin-runs.ts",
     "apple:sync": "tsx --env-file=.env quartz/scripts/sync-apple.ts",
     "weather:sync": "tsx --env-file=.env quartz/scripts/sync-weather.ts",
     "health": "pnpm strava:sync && pnpm oura:sync && pnpm weather:sync && pnpm apple:sync",

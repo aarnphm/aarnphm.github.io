@@ -170,7 +170,7 @@ community can reproduce, extend, analyze reasoning capabilities without massive 
 
 ### architecture
 
-[[thoughts/Attention#Multi-head Latent Attention (MLA)|Multi-Head Latent Attention]] replaces standard MHA:
+[[thoughts/MLA|Multi-Head Latent Attention]] replaces standard MHA:
 
 - low-rank projection of KV cache: $d_{model} \rightarrow d_c$ (compression dimension)
 - decoupling for RoPE: separate low-rank projections for rotary embeddings

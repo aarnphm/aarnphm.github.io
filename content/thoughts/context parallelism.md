@@ -22,7 +22,7 @@ Given different SLO characteristics for [[thoughts/PD disaggregated serving#pref
 
 > [!note] engine kv layout
 >
-> We will assume that given system implement [[thoughts/Attention#Paged Attention|paged KV cache]]
+> We will assume that given system implement [[thoughts/paged attention|paged KV cache]]
 
 > [!important] storage
 >

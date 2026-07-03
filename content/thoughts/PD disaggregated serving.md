@@ -458,7 +458,7 @@ note that this will makes a noticeable difference in dense models, but most MLA 
 | $d_R$               | 64                  | `qk_rope_head_dim`          |
 | $v_h$               | 128                 | `v_head_dim`                |
 
-##### [[thoughts/Attention#Multi-head Latent Attention|MLA]] KV cache
+##### [[thoughts/MLA|MLA]] KV cache
 
 MLA stores compressed latent $c_t^{KV}$ plus RoPE keys $k_t^R$—values reconstructed via $W^{UV}$:
 
@@ -807,7 +807,7 @@ let
 
 - $L_p$: prompt tokens, $L_o$: output tokens
 - $d_h$: head dim, $H_{kv}$: kv heads (after gqa), $L$: layers
-- $b$: bytes per element (fp16=2, bf16=2, fp8≈1), $r$: latent dim if using [[thoughts/Attention#multi-head latent attention|mla]]
+- $b$: bytes per element (fp16=2, bf16=2, fp8≈1), $r$: latent dim if using [[thoughts/MLA|mla]]
 
 per‑request kv size (dense kv):
 

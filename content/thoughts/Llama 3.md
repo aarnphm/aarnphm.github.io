@@ -22,7 +22,7 @@ The data mix: 50% of tokens corresponding to general knowledge, 25% mathematical
 
 They also run their own scaling law calculations, instead of using Chinchilla constant
 
-Architecture-wise, nothing special, but pure [[thoughts/Transformers]] with [[thoughts/Attention#Group-Query Attention]] and [[thoughts/FFN]]
+Architecture-wise, nothing special, but pure [[thoughts/Transformers]] with [[thoughts/GQA]] and [[thoughts/FFN]]
 
 |                       | 8b                     | 70b                    | 405b                   |
 | --------------------- | ---------------------- | ---------------------- | ---------------------- |

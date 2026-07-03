@@ -22,4 +22,4 @@ _I wouldn't say I fully understand what Nietzsche have to convey, but some of th
 
 ![[library/On The Genealogy of Morals]]
 
-![[library/Thus Spake Zarathustra]]
+![[library/Thus Spoke Zarathustra]]

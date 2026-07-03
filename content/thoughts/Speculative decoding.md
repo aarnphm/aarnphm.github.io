@@ -104,7 +104,7 @@ EAGLE address this by **inputs the token sequence from one time step ahead inclu
 - autoregressive_head:
   - FC layer -> `reduce # [bs, seq_len, hidden_dim]{:prolog}`
   - decoder layer -> `features`
-- using [[thoughts/Attention#TreeAttention|tree attention]] to generate a draft tree of depth $m$ and more than $m$ tokens for $m$ forward pass. [^tree-attention]
+- using [[thoughts/tree attention|tree attention]] to generate a draft tree of depth $m$ and more than $m$ tokens for $m$ forward pass. [^tree-attention]
 
 [^tree-attention]: Aligns with DistillSpec and Medusa
 
