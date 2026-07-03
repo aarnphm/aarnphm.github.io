@@ -129,6 +129,9 @@ const en: TriDict = {
     'assumed future daily load': 'assumed future daily load',
     'no activity': 'no activity',
     'no weeks': 'no weeks',
+    'above range': 'above range',
+    'in range': 'in range',
+    'below range': 'below range',
     now: 'now',
     faster: 'faster',
     slower: 'slower',
@@ -219,6 +222,7 @@ const en: TriDict = {
     average: 'average',
     projected: 'projected',
     projection: 'projection',
+    'dashes = projected from bike power': 'dashes = projected from bike power',
     'vs current': 'vs current',
     finish: 'finish',
     'avg power': 'avg power',
@@ -331,7 +335,7 @@ const en: TriDict = {
     },
     predtime: {
       term: 'predicted time',
-      def: 'Each leg is paced from your threshold pace through an endurance-decay model, so longer legs slow down, plus transitions and a run-off-the-bike penalty.',
+      def: 'Each leg is the pace model’s predicted best split for the race distance, with threshold Riegel decay as the fallback until the model loads, plus a flat $5$ min each for T1 and T2.',
     },
     conf: {
       term: 'confidence',
@@ -419,7 +423,7 @@ const en: TriDict = {
     },
     radar: {
       term: 'abilities',
-      def: 'Six axes normalised $0\\text{–}100$: Coggan $\\mathrm{W/kg}$ anchors for sprint and threshold, CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm, mean readiness for recovery.',
+      def: 'One radar per discipline, six axes normalised $0\\text{–}100$: sprint and threshold from Coggan $\\mathrm{W/kg}$ on the bike or peak and threshold speed in the water and on foot, per-sport CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm / 30 str/min, mean readiness for recovery. The dashed outline projects each axis 28 days ahead from its 28-day trend.',
     },
     ef: {
       term: 'efficiency factor',
@@ -528,6 +532,9 @@ const fr: TriDict = {
     'assumed future daily load': 'charge quotidienne future supposée',
     'no activity': 'aucune activité',
     'no weeks': 'aucune semaine',
+    'above range': 'au-dessus de la plage',
+    'in range': 'dans la plage',
+    'below range': 'sous la plage',
     now: 'maint.',
     faster: 'plus rapide',
     slower: 'plus lent',
@@ -618,6 +625,7 @@ const fr: TriDict = {
     average: 'moyenne',
     projected: 'projetée',
     projection: 'projection',
+    'dashes = projected from bike power': 'tirets = projection via la puissance vélo',
     'vs current': 'vs actuel',
     finish: 'arrivée',
     'avg power': 'puiss moy',
@@ -730,7 +738,7 @@ const fr: TriDict = {
     },
     predtime: {
       term: 'temps estimé',
-      def: "chaque segment est allure-calé sur ton allure seuil via un modèle de décroissance d'endurance, donc les segments longs ralentissent, plus les transitions et une pénalité de course après le vélo.",
+      def: 'chaque segment vient de la meilleure allure prédite par le modèle pour la distance de course, avec la décroissance Riegel au seuil en repli tant que le modèle charge, plus $5$ min fixes pour T1 et T2.',
     },
     conf: {
       term: 'fiabilité',
@@ -818,7 +826,7 @@ const fr: TriDict = {
     },
     radar: {
       term: 'aptitudes',
-      def: "six axes normalisés $0\\text{–}100$ : les repères Coggan $\\mathrm{W/kg}$ pour le sprint et le seuil, la CTL pour l'endurance, la VAM pour la grimpe, la cadence face à 90 rpm / 180 spm, la readiness moyenne pour la récupération.",
+      def: "un radar par discipline, six axes normalisés $0\\text{–}100$ : sprint et seuil selon les repères Coggan $\\mathrm{W/kg}$ à vélo ou les vitesses de pointe et de seuil à l'eau et à pied, la CTL par sport pour l'endurance, la VAM pour la grimpe, la cadence face à 90 rpm / 180 spm / 30 mvts/min, la readiness moyenne pour la récupération. le contour en tirets projette chaque axe à 28 jours selon sa tendance récente.",
     },
     ef: {
       term: "facteur d'efficacité",
