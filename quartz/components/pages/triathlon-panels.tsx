@@ -1,6 +1,6 @@
 import { SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
-import { KM_TO_MI } from '../../util/triathlon-card'
+import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
 
 const MAP_SPORTS = ['bike', 'run', 'walk'] as const
 
@@ -217,7 +217,6 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
         <div class="tri-ana-block" data-chart="abilities" />
         <div class="tri-ana-block" data-chart="cardio" />
         <div class="tri-ana-block" data-chart="pmc" />
-        <div class="tri-ana-block" data-chart="ctl-sport" />
         <div class="tri-ana-block" data-chart="weekly" />
         <div class="tri-ana-block" data-chart="effort" />
         <div class="tri-ana-block" data-chart="readiness" />
@@ -352,9 +351,9 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
                 title="satellite"
               >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
-                  <path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65" />
-                  <path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65" />
+                  {LAYERS_ICON.map(d => (
+                    <path d={d} />
+                  ))}
                 </svg>
               </button>
             </div>

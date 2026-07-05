@@ -24,6 +24,7 @@ export type DayCardPayload = {
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
 
 export const KM_TO_MI = 0.621371
+export const M_TO_FT = 3.28084
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -199,6 +200,18 @@ export const buildIcon = <N>(f: TriNodeFactory<N>, sport: ActivityKind): N => {
 export const buildBattery = <N>(f: TriNodeFactory<N>): N => {
   const icon = f.svg('svg', { class: 'tri-ico tri-battery', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of BATTERY) f.add(icon, f.svg('path', { d }))
+  return icon
+}
+
+export const LAYERS_ICON = [
+  'M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z',
+  'm22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65',
+  'm22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65',
+]
+
+export const buildLayers = <N>(f: TriNodeFactory<N>): N => {
+  const icon = f.svg('svg', { class: 'tri-ico', viewBox: '0 0 24 24', fill: 'none' })
+  for (const d of LAYERS_ICON) f.add(icon, f.svg('path', { d }))
   return icon
 }
 
@@ -378,17 +391,29 @@ export const axisFrame = <N>(
   yTicks: { label: string; vbY: number }[],
   vbH: number,
   xTicks: AxisXTick[],
-  cssH: number,
+  axes = true,
 ): N => {
   const frame = f.el('div', 'tri-cax-frame')
-  const yax = f.el('div', 'tri-cax-yax', undefined, { style: `height:${cssH}px` })
+  const yax = f.el('div', 'tri-cax-yax')
   for (const t of yTicks)
     f.add(
       yax,
       f.el('span', 'tri-cax-yt', t.label, { style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%` }),
     )
-  const plot = f.el('div', 'tri-cax-plot')
-  f.add(plot, svgEl)
+  const stage = f.el('div', 'tri-cax-stage')
+  if (axes && yTicks.length >= 2) {
+    const pcts = yTicks.map(t => (t.vbY / vbH) * 100)
+    const top = Math.min(...pcts)
+    const base = Math.max(...pcts)
+    f.add(
+      stage,
+      f.el('span', 'tri-cax-ax tri-cax-ax--y', undefined, {
+        style: `top:${top.toFixed(2)}%;height:${(base - top).toFixed(2)}%`,
+      }),
+      f.el('span', 'tri-cax-ax tri-cax-ax--x', undefined, { style: `top:${base.toFixed(2)}%` }),
+    )
+  }
+  f.add(stage, svgEl)
   const xax = f.el('div', 'tri-cax-xax')
   for (const t of xTicks)
     f.add(
@@ -397,8 +422,7 @@ export const axisFrame = <N>(
         style: `left:${t.pct.toFixed(2)}%`,
       }),
     )
-  f.add(plot, xax)
-  f.add(frame, yax, plot)
+  f.add(frame, yax, stage, xax)
   return frame
 }
 
@@ -542,7 +566,6 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
       ],
       H,
       histXTicks,
-      60,
     ),
   )
   f.add(wrap, f.el('div', 'tri-chart-readout'))
@@ -633,7 +656,6 @@ export const buildPowerCurve = <N>(
         pct: X(sec),
         cls: idx === 0 ? 'tri-cax-xt--first' : undefined,
       })),
-      64,
     ),
   )
   f.add(wrap, f.el('div', 'tri-chart-readout'))

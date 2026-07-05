@@ -92,7 +92,6 @@ const en: TriDict = {
     'training impulse': 'training impulse',
     'vs last': 'vs last',
     'training load · injury risk': 'training load · injury risk',
-    'fitness by discipline': 'fitness by discipline',
     'weekly load': 'weekly load',
     'race readiness': 'race readiness',
     'pace trend + forecast': 'pace trend + forecast',
@@ -291,6 +290,62 @@ const en: TriDict = {
     'recovery index': 'recovery index',
     'sleep balance': 'sleep balance',
     'sleep regularity': 'sleep regularity',
+    age: 'age',
+    feet: 'feet',
+    metres: 'metres',
+    'model forecast · 80% range': 'model forecast · 80% range',
+    'model forecast': 'model forecast',
+    'incl.': 'incl.',
+    'custom date missing': 'custom date missing',
+    'radar sprint bike definition':
+      'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.',
+    'radar sprint run definition':
+      'Sprint is the best 30 s running speed on record. It measures top-end leg speed rather than aerobic fitness.',
+    'radar sprint swim definition':
+      'Sprint is the fastest average speed of any recorded swim. Lap-quantised pool streams make whole-swim speed the honest peak.',
+    'radar threshold bike definition':
+      'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.',
+    'radar threshold run definition':
+      'Threshold is the grade-adjusted running speed you can hold near steady state, estimated from your fastest sustained efforts.',
+    'radar threshold swim definition':
+      'Threshold is critical swim speed, the pace you could hold for a long steady swim, estimated from sustained efforts.',
+    'radar endurance definition':
+      "Endurance is this discipline's CTL, the 42-day weighted training load, scored against its target share of total load.",
+    'radar climb swim definition':
+      'Climbing does not apply in the pool, so this axis stays empty for swimming.',
+    'radar climb run definition':
+      'Climb is VAM on foot: vertical {unit} gained per hour of moving time on the run.',
+    'radar climb bike definition':
+      'Climb is VAM, the rate of vertical gain while moving uphill. Higher VAM means more {unit} climbed per hour.',
+    'radar cadence bike definition':
+      'Cadence scores how close the average pedal turnover sits to 90 rpm. Overspin and underspin both cost points.',
+    'radar cadence run definition':
+      'Cadence scores how close the average stride turnover sits to 180 spm. Overstriding shows up here first.',
+    'radar cadence swim definition':
+      'Cadence scores stroke rate against a 30 strokes-per-minute freestyle target.',
+    'radar recovery definition':
+      'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.',
+    'radar unit wkg definition':
+      '$\\mathrm{W/kg}$ means watts per kilogram: power divided by body mass, so a 270 W rider at 90 kg reads 3.0 W/kg.',
+    'radar unit ctl definition':
+      'CTL means Chronic Training Load: a 42-day exponentially weighted training-stress average.',
+    'radar unit fth definition':
+      '$\\mathrm{ft/h}$ means vertical feet per hour, converted from metres at $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.',
+    'radar unit mh definition':
+      '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.',
+    'radar unit mspeed definition':
+      '$\\mathrm{m/s}$ means metres per second of forward speed. Multiply by 3.6 for km/h; $1000/v$ gives seconds per kilometre.',
+    'radar unit rpm definition':
+      'rpm means revolutions per minute, the pedal-turn rate on the bike.',
+    'radar unit spm definition': 'spm means steps per minute, the stride-turnover rate on the run.',
+    'radar unit strmin definition':
+      'str/min means strokes per minute, the freestyle stroke-turnover rate the watch records.',
+    'radar unit readiness definition':
+      "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain.",
+    'radar unit ms definition':
+      'ms means milliseconds. HRV is the beat-to-beat variation in heart rhythm, with higher values usually reflecting better recovery relative to baseline.',
+    'radar unit default definition':
+      'The raw value is the source measurement mapped onto the 0-100 radar score for this axis.',
   },
   gloss: {
     ctl: {
@@ -419,7 +474,7 @@ const en: TriDict = {
     },
     vam: {
       term: 'VAM',
-      def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$. Recreational $\\approx 600\\text{–}1000$; pro climbers exceed $1600$.',
+      def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$; $\\times 3.281$ for $\\mathrm{ft/h}$. Recreational $\\approx 600\\text{–}1000\\,\\mathrm{m/h}$; pro climbers exceed $1600$.',
     },
     radar: {
       term: 'abilities',
@@ -495,7 +550,6 @@ const fr: TriDict = {
     'training impulse': 'charge séance',
     'vs last': 'vs préc',
     'training load · injury risk': 'charge · risque de blessure',
-    'fitness by discipline': 'condition par discipline',
     'weekly load': 'charge hebdo',
     'race readiness': 'préparation course',
     'pace trend + forecast': 'tendance allure + prévision',
@@ -694,6 +748,61 @@ const fr: TriDict = {
     'recovery index': 'indice de récupération',
     'sleep balance': 'équilibre de sommeil',
     'sleep regularity': 'régularité du sommeil',
+    age: 'âge',
+    feet: 'pieds',
+    metres: 'mètres',
+    'model forecast · 80% range': 'prévision modèle · plage 80 %',
+    'model forecast': 'prévision modèle',
+    'incl.': 'incl.',
+    'custom date missing': 'date perso manquante',
+    'radar sprint bike definition':
+      "le sprint est la meilleure puissance vélo sur 5 s divisée par la masse corporelle. il mesure le punch anaérobie court avant que l'aérobie prenne le relais.",
+    'radar sprint run definition':
+      'le sprint est la meilleure vitesse de course sur 30 s enregistrée. il mesure la vitesse max des jambes plutôt que la condition aérobie.',
+    'radar sprint swim definition':
+      "le sprint est la vitesse moyenne la plus rapide de n'importe quelle natation enregistrée. les séries de piscine quantifiées au tour rendent la vitesse totale plus honnête comme pic.",
+    'radar threshold bike definition':
+      "le seuil est la FTP divisée par la masse corporelle. la FTP estime la puissance tenable près de l'état stable pendant environ une heure.",
+    'radar threshold run definition':
+      "le seuil est la vitesse de course ajustée à la pente que tu peux tenir près de l'état stable, estimée depuis tes efforts soutenus les plus rapides.",
+    'radar threshold swim definition':
+      "le seuil est la vitesse critique de natation, l'allure tenable sur une longue nage régulière, estimée depuis les efforts soutenus.",
+    'radar endurance definition':
+      'l’endurance est la CTL de cette discipline, une charge pondérée sur 42 jours, notée face à sa part cible de la charge totale.',
+    'radar climb swim definition':
+      "la grimpe ne s'applique pas en piscine, donc cet axe reste vide pour la natation.",
+    'radar climb run definition':
+      'la grimpe est la VAM à pied, les {unit} de dénivelé gagnés par heure de temps en mouvement en course.',
+    'radar climb bike definition':
+      'la grimpe est la VAM, le rythme de gain vertical en montée. une VAM plus haute veut dire plus de {unit} grimpés par heure.',
+    'radar cadence bike definition':
+      'la cadence note la proximité du pédalage moyen avec 90 rpm. surmouliner et sous-mouliner coûtent des points.',
+    'radar cadence run definition':
+      'la cadence note la proximité de la foulée moyenne avec 180 spm. la sur-foulée apparaît ici en premier.',
+    'radar cadence swim definition':
+      'la cadence note la fréquence de nage face à une cible crawl de 30 coups par minute.',
+    'radar recovery definition':
+      'la récupération utilise la moyenne du score de préparation Oura sur 14 jours quand elle existe, puis la VFC comme signal de repli.',
+    'radar unit wkg definition':
+      '$\\mathrm{W/kg}$ signifie watts par kilogramme : puissance divisée par la masse corporelle, donc un cycliste à 270 W et 90 kg vaut 3,0 W/kg.',
+    'radar unit ctl definition':
+      "CTL signifie charge chronique d'entraînement : moyenne exponentielle pondérée du stress d'entraînement sur 42 jours.",
+    'radar unit fth definition':
+      '$\\mathrm{ft/h}$ signifie pieds verticaux par heure, convertis depuis les mètres à $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$. la VAM vaut $\\mathrm{gain}\\cdot3600/t$ avec le temps de montée en mouvement en secondes.',
+    'radar unit mh definition':
+      '$\\mathrm{m/h}$ signifie mètres verticaux par heure. la VAM vaut $\\mathrm{gain}\\cdot3600/t$ avec le temps de montée en mouvement en secondes.',
+    'radar unit mspeed definition':
+      '$\\mathrm{m/s}$ signifie mètres par seconde de vitesse horizontale. multiplie par 3.6 pour km/h ; $1000/v$ donne les secondes par kilomètre.',
+    'radar unit rpm definition': 'rpm signifie tours par minute, la fréquence de pédalage à vélo.',
+    'radar unit spm definition': 'spm signifie pas par minute, la cadence de course.',
+    'radar unit strmin definition':
+      'str/min signifie coups par minute, la cadence de nage crawl enregistrée par la montre.',
+    'radar unit readiness definition':
+      'la préparation est le score quotidien Oura 0-100 calculé depuis sommeil, VFC, fréquence cardiaque au repos et contrainte récente.',
+    'radar unit ms definition':
+      'ms signifie millisecondes. la VFC est la variation battement à battement du rythme cardiaque ; des valeurs plus hautes reflètent souvent une meilleure récupération relative à la référence.',
+    'radar unit default definition':
+      'la valeur brute est la mesure source projetée sur le score radar 0-100 de cet axe.',
   },
   gloss: {
     ctl: {
@@ -822,7 +931,7 @@ const fr: TriDict = {
     },
     vam: {
       term: 'VAM',
-      def: 'velocità ascensionale media — mètres de dénivelé grimpés par heure, $\\mathrm{gain}\\cdot 3600/t$. amateur $\\approx 600\\text{–}1000$ ; les grimpeurs pros dépassent $1600$.',
+      def: 'velocità ascensionale media — mètres de dénivelé grimpés par heure, $\\mathrm{gain}\\cdot 3600/t$ ; $\\times 3{,}281$ pour $\\mathrm{ft/h}$. amateur $\\approx 600\\text{–}1000\\,\\mathrm{m/h}$ ; les grimpeurs pros dépassent $1600$.',
     },
     radar: {
       term: 'aptitudes',
