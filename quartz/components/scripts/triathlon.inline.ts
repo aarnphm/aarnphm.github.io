@@ -54,6 +54,7 @@ import {
   buildDayCard as buildDayCardNode,
   buildElevation as buildElevationNode,
   buildIcon as buildIconNode,
+  buildLayers as buildLayersNode,
   buildPool as buildPoolNode,
   buildRecovery as buildRecoveryNode,
   clock,
@@ -63,6 +64,7 @@ import {
   gradeAt,
   isImperialUnit,
   KM_TO_MI,
+  M_TO_FT,
   rate,
   routeStreamFlags,
   scrubDist,
@@ -1703,7 +1705,7 @@ const raceLegPace = (leg: RaceLegSplit): string => {
   return isImperialUnit() ? `${clock(secKm / KM_TO_MI)} /mi` : `${clock(secKm)} /km`
 }
 const raceLegTip = (leg: RaceLegSplit): string =>
-  `${leg.sport} · ${hms(leg.splitS)} · ${raceLegDistance(leg)} · ${raceLegPace(leg)}`
+  `${tl(leg.sport)} · ${hms(leg.splitS)} · ${raceLegDistance(leg)} · ${raceLegPace(leg)}`
 const markGloss = (e: HTMLElement, key: string): HTMLElement => {
   e.dataset.gloss = key
   e.tabIndex = 0
@@ -1979,16 +1981,6 @@ const buildPmc = (data: Analytics): HTMLElement => {
     return polyD(pts)
   }
 
-  const frame = el('div', 'tri-pmc-frame')
-  const yax = el('div', 'tri-pmc-yax')
-  for (const gv of [maxFit, maxFit / 2, 0]) {
-    const lab = el('span', 'tri-pmc-yt', String(Math.round(gv)))
-    lab.style.top = `${((yFit(gv) / PMC_H) * 100).toFixed(2)}%`
-    yax.appendChild(lab)
-  }
-  frame.appendChild(yax)
-
-  const plot = el('div', 'tri-pmc-plot')
   const s = svg('svg', {
     class: 'tri-ana-svg tri-pmc-svg',
     viewBox: `0 0 ${ANA_W} ${PMC_H}`,
@@ -2060,32 +2052,24 @@ const buildPmc = (data: Analytics): HTMLElement => {
   const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: PMC_H, class: 'tri-ana-cursor' })
   s.appendChild(cursor)
   s.appendChild(hits)
-  plot.appendChild(s)
 
-  const xax = el('div', 'tri-pmc-xax')
-  const seenMonth = new Set<string>()
-  for (let i = 0; i < n; i++) {
-    const mo = daily[i].date.slice(0, 7)
-    if (seenMonth.has(mo)) continue
-    seenMonth.add(mo)
-    const lab = el(
-      'span',
-      `tri-pmc-xt${i === 0 ? ' tri-pmc-xt--first' : ''}`,
-      PMC_MONTHS[Number(daily[i].date.slice(5, 7)) - 1],
-    )
-    lab.style.left = `${x(i).toFixed(2)}%`
-    xax.appendChild(lab)
-  }
-  const today = el('span', 'tri-pmc-xt tri-pmc-xt--now', tl('today'))
-  today.style.left = `${nowX.toFixed(2)}%`
-  xax.appendChild(today)
-  const endLab = el('span', 'tri-pmc-xt tri-pmc-xt--end', `+${H}d`)
-  endLab.style.left = '100%'
-  xax.appendChild(endLab)
-  plot.appendChild(xax)
+  const frame = axisFrame(
+    domF,
+    s,
+    [maxFit, maxFit / 2, 0].map(gv => ({ label: String(Math.round(gv)), vbY: yFit(gv) })),
+    PMC_H,
+    [
+      ...monthTicks(
+        daily.map(d => d.date),
+        i => x(i),
+      ),
+      { label: tl('today'), pct: nowX, cls: 'tri-pmc-xt--now' },
+      { label: `+${H}d`, pct: 100, cls: 'tri-pmc-xt--end' },
+    ],
+    false,
+  ) as HTMLElement
   const readoutEl = el('div', 'tri-chart-readout')
-  plot.appendChild(readoutEl)
-  frame.appendChild(plot)
+  frame.querySelector('.tri-cax-stage')?.appendChild(readoutEl)
   block.appendChild(frame)
 
   const ctrl = el('div', 'tri-pmc-ctrl')
@@ -2099,6 +2083,25 @@ const buildPmc = (data: Analytics): HTMLElement => {
   const ctrlLab = el('span', 'tri-pmc-ctrl-lab')
   ctrl.append(el('span', 'tri-pmc-ctrl-k', tl('projected load')), slider, ctrlLab)
   block.appendChild(ctrl)
+
+  const sportSeries: { sp: Sport; get: (d: DailyPoint) => number }[] = [
+    { sp: 'swim', get: d => d.swimCtl },
+    { sp: 'bike', get: d => d.bikeCtl },
+    { sp: 'run', get: d => d.runCtl },
+  ]
+  const sportCap = el('div', 'tri-elev-cap')
+  sportCap.appendChild(el('span', 'tri-ana-k', tl('fitness')))
+  for (const { sp, get } of sportSeries) {
+    const th = bySport(data.thresholds, sp)
+    const stale = th == null ? '—' : th.staleDays === 0 ? 'today' : `${th.staleDays}d ago`
+    const leg = el('span', `tri-ana-leg tri-leg-${sp}`)
+    leg.append(
+      buildIcon(sp),
+      el('span', 'tri-ana-k', `${Math.round(get(daily[n - 1]))} · ${stale}`),
+    )
+    sportCap.appendChild(leg)
+  }
+  block.appendChild(sportCap)
 
   const legendRow = (cls: string, name: string, val: string): HTMLElement => {
     const row = el('div', `tri-pmc-leg ${cls}`)
@@ -2142,8 +2145,14 @@ const buildPmc = (data: Analytics): HTMLElement => {
       metricGrid,
     )
     if (!proj) {
+      const d = daily[i]
       readoutEl.append(
-        el('span', 'tri-pmc-leg-load', `${tl('training impulse')} ${Math.round(daily[i].load)}`),
+        el(
+          'span',
+          'tri-pmc-leg-load',
+          `${tl('swim')} ${Math.round(d.swimCtl)} · ${tl('bike')} ${Math.round(d.bikeCtl)} · ${tl('run')} ${Math.round(d.runCtl)}`,
+        ),
+        el('span', 'tri-pmc-leg-load', `${tl('training impulse')} ${Math.round(d.load)}`),
       )
       readoutEl.append(entryList)
     }
@@ -2215,85 +2224,34 @@ const buildPmc = (data: Analytics): HTMLElement => {
   return block
 }
 
-const buildCtlSport = (data: Analytics): HTMLElement => {
-  const block = el('div', 'tri-ana-ctlsport')
-  block.appendChild(anaTitle('fitness by discipline', 'ctl'))
-  const daily = data.daily
-  const n = daily.length
-  if (n < 2) {
-    block.appendChild(el('div', 'tri-ana-empty', tl('not enough data')))
-    return block
-  }
-  let mx = 1
-  for (const d of daily) mx = Math.max(mx, d.swimCtl, d.bikeCtl, d.runCtl)
-  const top = 3
-  const bot = 28
-  const yMaxC = niceUp(mx)
-  const x = (i: number): number => (i / (n - 1)) * ANA_W
-  const y = (v: number): number => bot - (v / yMaxC) * (bot - top)
-  const s = svg('svg', {
-    class: 'tri-ana-svg',
-    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
-    preserveAspectRatio: 'none',
-  })
-  const series: { sp: Sport; get: (d: DailyPoint) => number }[] = [
-    { sp: 'swim', get: d => d.swimCtl },
-    { sp: 'bike', get: d => d.bikeCtl },
-    { sp: 'run', get: d => d.runCtl },
-  ]
-  for (const { sp, get } of series) {
-    s.appendChild(
-      svg('path', {
-        d: polyD(daily.map((d, i) => [x(i), y(get(d))])),
-        class: `tri-elev-line tri-line-${sp}`,
-      }),
-    )
-  }
-  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
-  block.appendChild(
-    axisFrame(
-      domF,
-      s,
-      [yMaxC, yMaxC / 2, 0].map(v => ({ label: String(Math.round(v)), vbY: y(v) })),
-      ANA_H,
-      monthTicks(
-        daily.map(d => d.date),
-        i => (i / (n - 1)) * ANA_W,
-      ),
-      70,
-    ),
-  )
-  block.appendChild(el('div', 'tri-chart-readout'))
-  const cap = el('div', 'tri-elev-cap')
-  for (const sp of ['swim', 'bike', 'run'] as Sport[]) {
-    const th = bySport(data.thresholds, sp)
-    const label = th == null ? '—' : th.staleDays === 0 ? 'today' : `${th.staleDays}d ago`
-    const leg = el('span', `tri-ana-leg tri-leg-${sp}`)
-    leg.append(buildIcon(sp), el('span', 'tri-ana-k', label))
-    cap.appendChild(leg)
-  }
-  block.appendChild(cap)
-  return block
-}
-
 type WkKind = 'load' | 'effort'
 const WKT_H = 34
 const WKT_TOP = 4
 const WKT_BOT = WKT_H - 4
 const WKT_CHRONIC = 4
-const WKT_BAND_LO = 0.8
-const WKT_BAND_HI = 1.3
+const WKT_ALPHA = 1 - Math.exp(-1 / WKT_CHRONIC)
+const WKT_Z = 1.28
 const WKT_ACTS = 4
 
 const wkVal = (w: Analytics['weekly'][number], kind: WkKind): number =>
   kind === 'load' ? w.load : w.effort
 
-const wkBandAt = (vals: number[], i: number): [number, number] | null => {
-  if (i < WKT_CHRONIC) return null
-  let sum = 0
-  for (let j = i - WKT_CHRONIC; j < i; j++) sum += vals[j]
-  const chronic = sum / WKT_CHRONIC
-  return chronic > 0 ? [chronic * WKT_BAND_LO, chronic * WKT_BAND_HI] : null
+const wkBands = (vals: number[]): ([number, number] | null)[] => {
+  const out: ([number, number] | null)[] = []
+  let m = 0
+  let v = 0
+  for (let i = 0; i < vals.length; i++) {
+    const s = Math.sqrt(v)
+    out.push(i >= WKT_CHRONIC && m > 0 ? [Math.max(0, m - WKT_Z * s), m + WKT_Z * s] : null)
+    if (i === 0) {
+      m = vals[0]
+    } else {
+      const d = vals[i] - m
+      m += WKT_ALPHA * d
+      v = (1 - WKT_ALPHA) * (v + WKT_ALPHA * d * d)
+    }
+  }
+  return out
 }
 
 const wkDates = (weekStart: string): string[] =>
@@ -2315,7 +2273,7 @@ const renderWkDetail = (block: HTMLElement, data: Analytics, kind: WkKind, i: nu
   if (!host || !w || host.dataset.week === String(i)) return
   host.dataset.week = String(i)
   const vals = data.weekly.map(x => wkVal(x, kind))
-  const band = wkBandAt(vals, i)
+  const band = wkBands(vals)[i]
   const days = wkDates(w.weekStart)
   const head = el('div', 'tri-wkdetail-head')
   head.append(
@@ -2388,7 +2346,7 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
   }
   const n = wk.length
   const vals = wk.map(w => wkVal(w, kind))
-  const bands = vals.map((_, i) => wkBandAt(vals, i))
+  const bands = wkBands(vals)
   let mx = 1
   for (const v of vals) if (v > mx) mx = v
   for (const b of bands) if (b && b[1] > mx) mx = b[1]
@@ -2414,6 +2372,17 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
     else flushBand()
   })
   flushBand()
+  const pred = bands[n - 1]
+  if (pred)
+    s.appendChild(
+      svg('line', {
+        x1: x(n - 1).toFixed(2),
+        y1: y(pred[1]).toFixed(2),
+        x2: x(n - 1).toFixed(2),
+        y2: y(pred[0]).toFixed(2),
+        class: 'tri-wkt-whisk',
+      }),
+    )
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: WKT_H, class: 'tri-ana-cursor' }))
   vals.forEach((v, i) => {
     const d = `M ${x(i).toFixed(2)} ${y(v).toFixed(2)} l 0.01 0`
@@ -2426,19 +2395,26 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
     if (i !== n - 1) g.appendChild(svg('path', { d, class: 'tri-wkt-i' }))
     s.appendChild(g)
   })
-  block.appendChild(
-    axisFrame(
-      domF,
-      s,
-      [yMax, yMax / 2, 0].map(v => ({ label: String(Math.round(v)), vbY: y(v) })),
-      WKT_H,
-      monthTicks(
-        wk.map(w => w.weekStart),
-        i => ((i + 0.5) / n) * 100,
-      ),
-      56,
+  const frame = axisFrame(
+    domF,
+    s,
+    [yMax, yMax / 2, 0].map(v => ({ label: String(Math.round(v)), vbY: y(v) })),
+    WKT_H,
+    monthTicks(
+      wk.map(w => w.weekStart),
+      i => ((i + 0.5) / n) * 100,
     ),
-  )
+  ) as HTMLElement
+  if (pred) {
+    const stage = frame.querySelector<HTMLElement>('.tri-cax-stage')
+    for (const bound of [pred[1], pred[0]])
+      stage?.appendChild(
+        el('span', 'tri-wkt-pred', String(Math.round(bound)), {
+          style: `top:${((y(bound) / WKT_H) * 100).toFixed(1)}%`,
+        }),
+      )
+  }
+  block.appendChild(frame)
   const wrap = el('div', 'tri-wkdetail-wrap')
   wrap.appendChild(el('div', 'tri-wkdetail'))
   block.appendChild(wrap)
@@ -2544,7 +2520,7 @@ const buildReadiness = (data: Analytics): HTMLElement => {
     row.appendChild(meta)
     const fc = el('span', 'tri-rdy-forecast', '', {
       'data-legs': JSON.stringify(r.legs.map(l => ({ sport: l.sport, distanceKm: l.legKm }))),
-      title: 'model forecast · 80% range',
+      title: tl('model forecast · 80% range'),
     })
     meta.appendChild(fc)
     if (paceForecaster?.ready) queueMicrotask(() => void fillForecastSlot(fc))
@@ -3095,7 +3071,7 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
           rec.series.map(d => d.date),
           i => (i / (n - 1)) * ANA_W,
         ),
-        150,
+        false,
       ),
     )
     block.appendChild(el('div', 'tri-chart-readout'))
@@ -3287,7 +3263,7 @@ const buildHypnogram = (d: OuraDayDetail): HTMLElement | null => {
       ],
       H,
       hourTicks(d.bedtimeStart, 300, len, k => (k / len) * 100),
-      64,
+      false,
     ),
   )
   const readout = el('div', 'tri-chart-readout')
@@ -3357,7 +3333,6 @@ const buildOuraSeriesChart = (
       ],
       ANA_H,
       hourTicks(series.startTs, series.intervalS, n, k => (k / (n - 1)) * 100),
-      56,
     ),
   )
   const readout = el('div', 'tri-chart-readout')
@@ -3459,7 +3434,7 @@ const buildSleep = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-sleep')
   block.appendChild(anaTitle('sleep · debt', 'sleepdebt'))
   const rec = data.recovery
-  const view = rec.series.slice(-28)
+  const view = rec.series
   if (!view.some(d => d.sleepS != null)) {
     block.appendChild(el('div', 'tri-ana-empty', tl('no sleep logged')))
     return block
@@ -3472,7 +3447,7 @@ const buildSleep = (data: Analytics): HTMLElement => {
   maxS = Math.ceil(maxS / 3600) * 3600
   const yBar = (sec: number): number => bot - (sec / maxS) * (H - 2)
   const s = svg('svg', {
-    class: 'tri-ana-svg tri-ana-weekly-svg',
+    class: 'tri-ana-svg tri-sleep-svg',
     viewBox: `0 0 ${n} ${H}`,
     preserveAspectRatio: 'none',
   })
@@ -3505,9 +3480,9 @@ const buildSleep = (data: Analytics): HTMLElement => {
     const h = (d.sleepS / maxS) * (H - 2)
     const base = d.sleepS < rec.thresholds.sleepFloorS ? 'tri-seg--short' : 'tri-seg--sleep'
     const bar = svg('rect', {
-      x: i + 0.12,
+      x: i + 0.2,
       y: bot - h,
-      width: 0.76,
+      width: 0.6,
       height: h,
       class: d.date === OURA_OPEN_DATE ? `${base} tri-seg--active` : base,
     })
@@ -3537,7 +3512,6 @@ const buildSleep = (data: Analytics): HTMLElement => {
         view.map(d => d.date),
         i => ((i + 0.5) / n) * 100,
       ),
-      56,
     ),
   )
   block.appendChild(el('div', 'tri-chart-readout'))
@@ -3771,7 +3745,7 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   }
   const chrono = el('span', 'tri-engine-agebar-chrono')
   chrono.style.left = `${pos(v.chronoAge)}%`
-  chrono.title = `age ${v.chronoAge}`
+  chrono.title = `${tl('age')} ${v.chronoAge}`
   bar.appendChild(chrono)
   block.appendChild(bar)
   if (v.trend.length > 1) {
@@ -3822,7 +3796,6 @@ const buildVo2max = (data: Analytics): HTMLElement => {
           cls: 'tri-cax-xt--last',
         },
       ],
-      38,
     )
     frame.classList.add('tri-engine-vo2-axis')
     block.appendChild(frame)
@@ -4599,61 +4572,58 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
 type SportAbility = Analytics['engine']['abilities']['sports'][number]
 type AbilityAxis = SportAbility['axes'][number]
 
+const radarUnitText = (): string => tl(isImperialUnit() ? 'feet' : 'metres')
+const radarDefinition = (key: string): string => tl(key).replace('{unit}', radarUnitText())
+
 const radarAxisDefinition = (sport: Sport, axis: AbilityAxis): string => {
   switch (axis.key) {
     case 'sprint':
-      if (sport === 'bike')
-        return 'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.'
-      if (sport === 'run')
-        return 'Sprint is the best 30 s running speed on record. It measures top-end leg speed rather than aerobic fitness.'
-      return 'Sprint is the fastest average speed of any recorded swim. Lap-quantised pool streams make whole-swim speed the honest peak.'
+      if (sport === 'bike') return radarDefinition('radar sprint bike definition')
+      if (sport === 'run') return radarDefinition('radar sprint run definition')
+      return radarDefinition('radar sprint swim definition')
     case 'threshold':
-      if (sport === 'bike')
-        return 'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.'
-      if (sport === 'run')
-        return 'Threshold is the grade-adjusted running speed you can hold near steady state, estimated from your fastest sustained efforts.'
-      return 'Threshold is critical swim speed, the pace you could hold for a long steady swim, estimated from sustained efforts.'
+      if (sport === 'bike') return radarDefinition('radar threshold bike definition')
+      if (sport === 'run') return radarDefinition('radar threshold run definition')
+      return radarDefinition('radar threshold swim definition')
     case 'endurance':
-      return `Endurance is ${sport} CTL, the 42-day weighted training load from this discipline alone, scored against its target share of total load.`
+      return radarDefinition('radar endurance definition')
     case 'climb':
-      if (sport === 'swim')
-        return 'Climbing does not apply in the pool, so this axis stays empty for swimming.'
-      if (sport === 'run')
-        return 'Climb is VAM on foot: vertical metres gained per hour of moving time on the run.'
-      return 'Climb is VAM, the rate of vertical gain while moving uphill. Higher VAM means more metres climbed per hour.'
+      if (sport === 'swim') return radarDefinition('radar climb swim definition')
+      if (sport === 'run') return radarDefinition('radar climb run definition')
+      return radarDefinition('radar climb bike definition')
     case 'cadence':
-      if (sport === 'bike')
-        return 'Cadence scores how close the average pedal turnover sits to 90 rpm. Overspin and underspin both cost points.'
-      if (sport === 'run')
-        return 'Cadence scores how close the average stride turnover sits to 180 spm. Overstriding shows up here first.'
-      return 'Cadence scores stroke rate against a 30 strokes-per-minute freestyle target.'
+      if (sport === 'bike') return radarDefinition('radar cadence bike definition')
+      if (sport === 'run') return radarDefinition('radar cadence run definition')
+      return radarDefinition('radar cadence swim definition')
     case 'recovery':
-      return 'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.'
+      return radarDefinition('radar recovery definition')
   }
 }
 
 const radarNotationDefinition = (axis: AbilityAxis): string => {
   switch (axis.rawUnit) {
     case 'w/kg':
-      return '$\\mathrm{W/kg}$ means watts per kilogram: power divided by body mass, so a 270 W rider at 90 kg reads 3.0 W/kg.'
+      return radarDefinition('radar unit wkg definition')
     case 'ctl':
-      return 'CTL means Chronic Training Load: a 42-day exponentially weighted training-stress average.'
+      return radarDefinition('radar unit ctl definition')
     case 'm/h':
-      return '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.'
+      return isImperialUnit()
+        ? radarDefinition('radar unit fth definition')
+        : radarDefinition('radar unit mh definition')
     case 'm/s':
-      return '$\\mathrm{m/s}$ means metres per second of forward speed. Multiply by 3.6 for km/h; $1000/v$ gives seconds per kilometre.'
+      return radarDefinition('radar unit mspeed definition')
     case 'rpm':
-      return 'rpm means revolutions per minute, the pedal-turn rate on the bike.'
+      return radarDefinition('radar unit rpm definition')
     case 'spm':
-      return 'spm means steps per minute, the stride-turnover rate on the run.'
+      return radarDefinition('radar unit spm definition')
     case 'str/min':
-      return 'str/min means strokes per minute, the freestyle stroke-turnover rate the watch records.'
+      return radarDefinition('radar unit strmin definition')
     case 'readiness':
-      return "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain."
+      return radarDefinition('radar unit readiness definition')
     case 'ms':
-      return 'ms means milliseconds. HRV is the beat-to-beat variation in heart rhythm, with higher values usually reflecting better recovery relative to baseline.'
+      return radarDefinition('radar unit ms definition')
     default:
-      return 'The raw value is the source measurement mapped onto the 0-100 radar score for this axis.'
+      return radarDefinition('radar unit default definition')
   }
 }
 
@@ -4677,13 +4647,23 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   const pressed = new Set<Sport>([
     sports.some(sp => sp.sport === 'bike') ? 'bike' : sports[0].sport,
   ])
+  let avg = false
   const singleOf = (): SportAbility | null =>
-    pressed.size === 1 ? (sports.find(sp => pressed.has(sp.sport)) ?? null) : null
+    !avg && pressed.size === 1 ? (sports.find(sp => pressed.has(sp.sport)) ?? null) : null
 
   const tabs = el('div', 'tri-radar-sports', undefined, {
     role: 'group',
     'aria-label': 'radar sports',
   })
+  const avgTab = el('button', 'tri-radar-sport tri-radar-sport--avg', undefined, {
+    type: 'button',
+    'aria-pressed': 'false',
+    'aria-label': tl('average'),
+    title: tl('average'),
+  })
+  avgTab.appendChild(buildLayersNode(domF) as SVGElement)
+  avgTab.addEventListener('click', () => toggleAvg())
+  tabs.appendChild(avgTab)
   const tabOf = new Map<Sport, HTMLElement>()
   for (const sp of sports) {
     const tab = el('button', `tri-radar-sport tri-radar-sport--${sp.sport}`, undefined, {
@@ -4719,23 +4699,19 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     const [px, py] = pt(i, 100)
     s.appendChild(svg('line', { x1: cx, y1: cy, x2: px, y2: py, class: 'tri-radar-spoke' }))
   })
-  const solidOf = new Map<Sport, SVGElement>()
-  const projPathOf = new Map<Sport, SVGElement>()
-  for (const sp of sports) {
-    const path = svg('path', {
-      d: ringD(zeros()),
-      class: `tri-radar-fill tri-radar-fill--${sp.sport}`,
-    })
+  type RadarKey = Sport | 'avg'
+  const solidOf = new Map<RadarKey, SVGElement>()
+  const projPathOf = new Map<RadarKey, SVGElement>()
+  const radarKeys: RadarKey[] = [...sports.map(sp => sp.sport), 'avg']
+  for (const k of radarKeys) {
+    const path = svg('path', { d: ringD(zeros()), class: `tri-radar-fill tri-radar-fill--${k}` })
     s.appendChild(path)
-    solidOf.set(sp.sport, path)
+    solidOf.set(k, path)
   }
-  for (const sp of sports) {
-    const path = svg('path', {
-      d: ringD(zeros()),
-      class: `tri-radar-proj tri-radar-proj--${sp.sport}`,
-    })
+  for (const k of radarKeys) {
+    const path = svg('path', { d: ringD(zeros()), class: `tri-radar-proj tri-radar-proj--${k}` })
     s.appendChild(path)
-    projPathOf.set(sp.sport, path)
+    projPathOf.set(k, path)
   }
   const dots = axesRef.map((_, i) => {
     const [px, py] = pt(i, 0)
@@ -4771,33 +4747,45 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   keyCap.append(nowKey, projKey)
   block.appendChild(keyCap)
 
-  const shown = new Map<Sport, { solid: number[]; proj: number[] }>()
-  for (const sp of sports) shown.set(sp.sport, { solid: zeros(), proj: zeros() })
+  const shown = new Map<RadarKey, { solid: number[]; proj: number[] }>()
+  for (const k of radarKeys) shown.set(k, { solid: zeros(), proj: zeros() })
   let raf = 0
   const apply = (): void => {
-    for (const sp of sports) {
-      const st = shown.get(sp.sport)!
-      solidOf.get(sp.sport)!.setAttribute('d', ringD(st.solid))
-      projPathOf.get(sp.sport)!.setAttribute('d', ringD(st.proj))
+    for (const [k, st] of shown) {
+      solidOf.get(k)!.setAttribute('d', ringD(st.solid))
+      projPathOf.get(k)!.setAttribute('d', ringD(st.proj))
     }
     const single = singleOf()
-    if (single) {
-      shown.get(single.sport)!.solid.forEach((v, i) => {
+    const focus = avg ? shown.get('avg') : single ? shown.get(single.sport) : null
+    if (focus) {
+      focus.solid.forEach((v, i) => {
         const [px, py] = pt(i, v)
         dots[i].setAttribute('cx', px.toFixed(2))
         dots[i].setAttribute('cy', py.toFixed(2))
       })
     }
   }
+  const avgAxis = (pick: (a: AbilityAxis) => number | null | undefined): number[] =>
+    axesRef.map((_, i) => {
+      const xs = sports.map(sp => pick(sp.axes[i])).filter((v): v is number => v != null)
+      return xs.length ? xs.reduce((acc, v) => acc + v, 0) / xs.length : 0
+    })
   const targetOf = (sp: SportAbility): { solid: number[]; proj: number[] } =>
-    pressed.has(sp.sport)
+    !avg && pressed.has(sp.sport)
       ? { solid: sp.axes.map(a => a.score ?? 0), proj: sp.axes.map(a => a.proj ?? a.score ?? 0) }
+      : { solid: zeros(), proj: zeros() }
+  const avgTarget = (): { solid: number[]; proj: number[] } =>
+    avg
+      ? { solid: avgAxis(a => a.score), proj: avgAxis(a => a.proj ?? a.score) }
       : { solid: zeros(), proj: zeros() }
   const morphAll = (animate: boolean): void => {
     window.cancelAnimationFrame(raf)
-    const targets = new Map(sports.map(sp => [sp.sport, targetOf(sp)] as const))
+    const targets = new Map<RadarKey, { solid: number[]; proj: number[] }>(
+      sports.map(sp => [sp.sport, targetOf(sp)] as const),
+    )
+    targets.set('avg', avgTarget())
     if (!animate || reduced) {
-      for (const sp of sports) shown.set(sp.sport, targets.get(sp.sport)!)
+      for (const [k, g] of targets) shown.set(k, g)
       apply()
       return
     }
@@ -4808,10 +4796,9 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     const tick = (now: number): void => {
       const t = Math.min(1, (now - t0) / 450)
       const e = 1 - (1 - t) ** 3
-      for (const sp of sports) {
-        const f = from.get(sp.sport)!
-        const g = targets.get(sp.sport)!
-        shown.set(sp.sport, {
+      for (const [k, g] of targets) {
+        const f = from.get(k)!
+        shown.set(k, {
           solid: f.solid.map((v, i) => v + (g.solid[i] - v) * e),
           proj: f.proj.map((v, i) => v + (g.proj[i] - v) * e),
         })
@@ -4824,7 +4811,9 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   const applyAxisClasses = (): void => {
     const single = singleOf()
     axesRef.forEach((_, i) => {
-      const isNull = single != null && single.axes[i].score == null
+      const isNull = avg
+        ? sports.every(sp => sp.axes[i].score == null)
+        : single != null && single.axes[i].score == null
       dots[i].setAttribute('class', isNull ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot')
       labels[i].setAttribute('class', isNull ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax')
     })
@@ -4847,6 +4836,12 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     revealDev = null
     const single = singleOf()
     const hist = (single ?? sports[0]).history ?? []
+    const meanAt = (sp: SportAbility, i: number): number | null => {
+      const h = sp.history[i]
+      if (!h) return null
+      const xs = DEV_KEYS.map(k => h[k]).filter((v): v is number => v != null)
+      return xs.length ? xs.reduce((acc, v) => acc + v, 0) / xs.length : null
+    }
     let series: DevSeries[]
     if (single) {
       series = DEV_KEYS.filter(k => hist.filter(h => h[k] != null).length >= 2).map(k => ({
@@ -4857,6 +4852,20 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         vals: hist.map(h => h[k]),
         toggle: true,
       }))
+    } else if (avg) {
+      series = [
+        {
+          key: 'avg',
+          cls: 'tri-line-avg',
+          dotCls: 'tri-dev-dot--sp-avg',
+          label: tl('average'),
+          vals: hist.map((_, i) => {
+            const xs = sports.map(sp => meanAt(sp, i)).filter((v): v is number => v != null)
+            return xs.length ? Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length) : null
+          }),
+          toggle: false,
+        },
+      ].filter(sr => sr.vals.filter(v => v != null).length >= 2)
     } else {
       series = sports
         .filter(sp => pressed.has(sp.sport))
@@ -4865,9 +4874,9 @@ const buildAbilities = (data: Analytics): HTMLElement => {
           cls: `tri-line-${sp.sport}`,
           dotCls: `tri-dev-dot--sp-${sp.sport}`,
           label: tl(sp.sport),
-          vals: sp.history.map(h => {
-            const xs = DEV_KEYS.map(k => h[k]).filter((v): v is number => v != null)
-            return xs.length ? Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length) : null
+          vals: sp.history.map((_, i) => {
+            const v = meanAt(sp, i)
+            return v == null ? null : Math.round(v)
           }),
           toggle: false,
         }))
@@ -5013,25 +5022,38 @@ const buildAbilities = (data: Analytics): HTMLElement => {
 
   let revealed = reduced
   const syncChrome = (): void => {
-    block.dataset.sport = singleOf()?.sport ?? (pressed.size ? 'all' : 'none')
-    block.dataset.pressed = [...pressed].join(',')
-    block.classList.toggle('tri-engine-radar--multi', pressed.size !== 1)
+    block.dataset.sport = avg ? 'avg' : (singleOf()?.sport ?? (pressed.size ? 'all' : 'none'))
+    block.dataset.pressed = avg ? sports.map(sp => sp.sport).join(',') : [...pressed].join(',')
+    block.classList.toggle('tri-engine-radar--multi', !avg && pressed.size !== 1)
+    block.classList.toggle('tri-engine-radar--avg', avg)
     for (const sp of sports)
       block.classList.toggle(
         `tri-engine-radar--${sp.sport}`,
-        pressed.size === 1 && pressed.has(sp.sport),
+        !avg && pressed.size === 1 && pressed.has(sp.sport),
       )
+    avgTab.setAttribute('aria-pressed', avg ? 'true' : 'false')
     for (const [k, tab] of tabOf)
-      tab.setAttribute('aria-pressed', pressed.has(k) ? 'true' : 'false')
+      tab.setAttribute('aria-pressed', !avg && pressed.has(k) ? 'true' : 'false')
     applyAxisClasses()
   }
-  const toggleSport = (sport: Sport): void => {
+  const rerender = (): void => {
     revealed = true
-    if (pressed.has(sport)) pressed.delete(sport)
-    else pressed.add(sport)
     syncChrome()
     morphAll(!reduced)
     renderDev(reduced ? 'none' : 'animate')
+  }
+  const toggleSport = (sport: Sport): void => {
+    if (avg) {
+      avg = false
+      pressed.clear()
+      pressed.add(sport)
+    } else if (pressed.has(sport)) pressed.delete(sport)
+    else pressed.add(sport)
+    rerender()
+  }
+  const toggleAvg = (): void => {
+    avg = !avg
+    rerender()
   }
 
   syncChrome()
@@ -5147,7 +5169,6 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   abilities: buildAbilities,
   cardio: buildCardio,
   pmc: buildPmc,
-  'ctl-sport': buildCtlSport,
   weekly: buildWeekly,
   effort: buildEffort,
   readiness: buildReadiness,
@@ -5238,7 +5259,6 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       cleanups.push(scrubBind(block, svgEl, cursor, readout, count, vbW, textOf))
   }
 
-  const daily = data.daily
   const rec = data.recovery.series
   bind('.tri-ana-recovery', '.tri-rec-svg', rec.length, ANA_W, i => {
     const d = rec[i]
@@ -5246,8 +5266,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     return `${d.date} · HRV ${d.hrv ?? '—'}${z} · RHR ${d.rhr ?? '—'} · rdy ${d.readiness ?? '—'}`
   })
 
-  const sleepView = data.recovery.series.slice(-28)
-  bind('.tri-ana-sleep', '.tri-ana-weekly-svg', sleepView.length, sleepView.length, i => {
+  const sleepView = data.recovery.series
+  bind('.tri-ana-sleep', '.tri-sleep-svg', sleepView.length, sleepView.length, i => {
     const d = sleepView[i]
     const debt = d.sleepDebtS != null ? `${(d.sleepDebtS / 3600).toFixed(1)}h` : '—'
     return `${d.date} · ${d.sleepS != null ? hms(d.sleepS) : '—'} · score ${d.sleepScore ?? '—'} · debt ${debt}`
@@ -5258,11 +5278,6 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const p = trend[i]
     const src = p.method === 'bike' ? `bike (${tl('projected')})` : p.method
     return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min · ${src}`
-  })
-
-  bind('.tri-ana-ctlsport', '.tri-ana-svg', daily.length, ANA_W, i => {
-    const d = daily[i]
-    return `${d.date} · swim ${Math.round(d.swimCtl)} · bike ${Math.round(d.bikeCtl)} · run ${Math.round(d.runCtl)}`
   })
 
   const wk = data.weekly
@@ -5439,9 +5454,10 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const abilities = data.engine.abilities.sports
     const rawOf = (sp: SportAbility, a: AbilityAxis): string => {
       const pace = radarPaceHint(sp.sport, a)
-      return a.rawValue != null
-        ? `${a.rawValue} ${a.rawUnit}${pace ? ` (${pace})` : ''}`
-        : 'no data'
+      if (a.rawValue == null) return tl('no data')
+      const vamFt = a.rawUnit === 'm/h' && isImperialUnit()
+      const value = vamFt ? Math.round(a.rawValue * M_TO_FT) : a.rawValue
+      return `${value} ${vamFt ? 'ft/h' : a.rawUnit}${pace ? ` (${pace})` : ''}`
     }
     const projTxtOf = (a: AbilityAxis): string =>
       a.proj != null && a.proj !== a.score ? ` → ${a.proj}/100` : ''
@@ -5474,6 +5490,20 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         )
       } else {
         const rows: HTMLElement[] = [el('span', 'tri-gloss-h', tl(abilities[0].axes[idx].label))]
+        if (radarBlock.dataset.sport === 'avg') {
+          const xs = abilities
+            .filter(sp => pressedSports.includes(sp.sport))
+            .map(sp => sp.axes[idx].score)
+            .filter((v): v is number => v != null)
+          if (xs.length)
+            rows.push(
+              el(
+                'span',
+                'tri-gloss-def',
+                `${tl('average')}: ${Math.round(xs.reduce((acc, v) => acc + v, 0) / xs.length)}/100`,
+              ),
+            )
+        }
         for (const sp of abilities) {
           if (!pressedSports.includes(sp.sport)) continue
           const a = sp.axes[idx]
@@ -5744,18 +5774,17 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
     label: 'abilities',
     chart: 'abilities',
-    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg swim bike run pace css stroke',
+    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg swim bike run pace css stroke average',
   },
   {
     label: 'cardiovascular health',
     chart: 'cardio',
     hay: 'cardio cardiovascular heart rhr hrv efficiency factor decoupling aerobic drift',
   },
-  { label: 'fitness · fatigue · form', chart: 'pmc', hay: 'pmc fitness fatigue form ctl atl tsb' },
   {
-    label: 'fitness by discipline',
-    chart: 'ctl-sport',
-    hay: 'fitness discipline swim bike run ctl',
+    label: 'fitness · fatigue · form',
+    chart: 'pmc',
+    hay: 'pmc fitness fatigue form ctl atl tsb discipline swim bike run',
   },
   { label: 'weekly load', chart: 'weekly', hay: 'weekly load volume tss' },
   { label: 'relative effort', chart: 'effort', hay: 'relative effort suffer score weekly' },
@@ -8402,7 +8431,7 @@ async function fillForecastSlot(slot: HTMLElement): Promise<void> {
   if (!fin) return
   slot.dataset.filled = '1'
   slot.replaceChildren()
-  slot.title = `model forecast · finish ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)} · incl. ${clock(RACE_T1_S + RACE_T2_S)} T1+T2`
+  slot.title = `${tl('model forecast')} · ${tl('finish')} ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)} · ${tl('incl.')} ${clock(RACE_T1_S + RACE_T2_S)} T1+T2`
   for (const leg of fin.legs)
     slot.appendChild(el('span', `tri-rdy-fc-leg tri-leg-${leg.sport}`, hms(leg.midSec)))
   applyForecastToRow(slot, fin)
@@ -8843,13 +8872,13 @@ const predComparison = (f: PaceForecaster, block: HTMLElement): PredComparison =
   const key = predCompareKey(block)
   if (key === 'custom') {
     const day = f.dayStateOnOrBefore(block.dataset.compareDate ?? '')
-    return { day, label: day?.date ? `vs ${shortDate(day.date)}` : 'custom date missing' }
+    return { day, label: day?.date ? `vs ${shortDate(day.date)}` : tl('custom date missing') }
   }
   const days = predCompareOption(key).days ?? 30
   const day = f.dayStateAgo(days)
   return {
     day,
-    label: day?.date ? `vs ${days}d (${shortDate(day.date)})` : `vs ${days}d (no data)`,
+    label: day?.date ? `vs ${days}d (${shortDate(day.date)})` : `vs ${days}d (${tl('no data')})`,
   }
 }
 

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-02 09:03:41 GMT-04:00
+modified: 2026-07-04 09:03:18 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,46 @@ title: are.na
 
 ## discourse
 
+- https://www.youtube.com/watch?v=Ga1yuy-mlDo -- the importance of a reading, writing and thinking practice to feel intellectually alive
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [thinking, writing]
+    - later: true
+- https://www.youtube.com/watch?v=VqlNnK2ALa0 -- David Brooks - The 5 Levels of Character
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [character, david brooks]
+    - later: true
+- https://www.youtube.com/watch?v=NZD5IFpyDcE -- I Tried the World's Simplest Productivity Trick (it worked)
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [productivity, practice]
+    - later: true
+- https://www.youtube.com/watch?v=eWrhhlPYgAk -- this is how I want to remember my life
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [memory, life]
+    - later: true
+- https://www.youtube.com/watch?v=RrOGQD4Z9A4 -- The psychology of playing safe
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [risk, psychology]
+    - later: true
+- https://www.youtube.com/watch?v=a1zDuOPkMSw -- Hamming, "You and Your Research" (June 6, 1995)
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [research, hamming]
+    - later: true
+- https://www.youtube.com/watch?v=BrK7X_XlGB8 -- A visual guide to Bayesian thinking
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [bayesian thinking, rationality]
+    - later: true
+- https://www.youtube.com/watch?v=bg9ml1HnIMg -- Is There An Actual Purpose to Marriage?
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [marriage, relationships]
+    - later: true
 - https://www.youtube.com/watch?v=1LpbGW3qLVg -- C. Thi Nguyen: The Gamification of Public Discourse
   - [meta]:
     - date: 07/03/2026
@@ -6477,6 +6517,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=WRibE2nt8wM -- Lecture 1: Introduction to Individual Decision-Making
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [decision-making, economics]
+    - later: true
+- https://www.youtube.com/watch?v=2oH6PWPrYFo -- Stanford CS336 Language Modeling from Scratch, Lecture 15: Mid/Post-Training
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [language models, post-training]
+    - later: true
 - https://www.youtube.com/watch?v=jQPiH-KB4B0 -- Welcome to The RLHF Book & Post-Training Course
   - [meta]:
     - date: 07/03/2026
@@ -6555,6 +6605,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=YPnDMPYFxBE -- Sid Kamalakara: Foundation Models, Cultural Accidents, and Building in Toronto
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [foundation models, toronto]
+    - later: true
 - https://www.youtube.com/watch?v=ck63uv6APBA -- Goodfire AI on interpretability as model design
   - [meta]:
     - date: 07/03/2026
@@ -10217,6 +10272,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=L2AOrseB2_Y -- Steel, Rust, and truth
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [rust, software]
+    - later: true
+- https://www.youtube.com/watch?v=IdpD5QIVOKQ -- Jonathan Blow - Jai Demo and Design Explanation
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [jai, programming languages]
+    - later: true
+- https://www.youtube.com/watch?v=TxgaS_N78Xw -- These 3 projects will make you into a software engineer
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [software engineering, projects]
+    - later: true
+- https://www.youtube.com/watch?v=wzfC7Q-xNik -- Will Wilson on Swarm Testing
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [testing, swarm testing]
+    - later: true
+- https://www.youtube.com/watch?v=_KC_ZjD6ouM -- enclose.horse is NP Complete
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [complexity, puzzles]
+    - later: true
 - https://www.youtube.com/watch?v=awOxxHnsiv0 -- George Hotz on Gas Town and computer use
   - [meta]:
     - date: 07/03/2026
@@ -10668,6 +10748,36 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.youtube.com/watch?v=CDbXzVwdyo8 -- On Betraying Your Own Potential
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [sartre, potential]
+    - later: true
+- https://www.youtube.com/watch?v=UwUrX_VOBcQ -- The Later Wittgenstein
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [wittgenstein, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=PmckTveYNI8 -- Wittgenstein's Games by A. C. Grayling
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [wittgenstein, language games]
+    - later: true
+- https://www.youtube.com/watch?v=a_hifamdISs -- Gilles Deleuze on Cinema: What is the Creative Act
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [deleuze, creativity]
+    - later: true
+- https://www.youtube.com/watch?v=tCUQhHDUUdI -- Gilles Deleuze From A to Z
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [deleuze, philosophy]
+    - later: true
+- https://www.youtube.com/watch?v=vqBl50TREHU -- The Repugnant Conclusion
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [population ethics, philosophy]
+    - later: true
 - https://www.youtube.com/watch?v=_STD1D0REkc -- A Philosophy Student's Analysis of The Stranger by Camus
   - [meta]:
     - date: 07/03/2026
@@ -12708,6 +12818,56 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=l-4635Wb_60 -- How gaslighting the audience for two hours made this a masterpiece
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [film, cinema]
+    - later: true
+- https://www.youtube.com/watch?v=D_7D7KS-4YE -- Men take notes! Trudon Medie
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [fragrance, style]
+    - later: true
+- https://www.youtube.com/watch?v=TjiHAA1z_ZA -- FULL Men's Spring Classics 2026 Highlights
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [cycling, racing]
+    - later: true
+- https://www.youtube.com/watch?v=_OTs-NDpLTQ -- Mathieu van der Poel: THIS IS HOME
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [cycling, shimano]
+    - later: true
+- https://www.youtube.com/watch?v=1J9rORtZ5XI -- The Steepest, Hardest & Longest Climbs We've Ridden
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [cycling, climbs]
+    - later: true
+- https://www.youtube.com/watch?v=ofI5RV7fpT4 -- Only 1% make it: Arctic Elite Military Force
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [military, endurance]
+    - later: true
+- https://www.youtube.com/watch?v=zbBndWexLWQ -- Your 1-Sentence Guide to EVERY TEAM in the 2026 World Cup
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [world cup, football]
+    - later: true
+- https://www.youtube.com/watch?v=SWkMYO9V_-k -- mmaaAAAaah
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [animation, short]
+    - later: true
+- https://www.youtube.com/watch?v=F3rfkfMlGH0 -- Full Training Day as a Pro Triathlete
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [triathlon, training]
+    - later: true
+- https://www.youtube.com/watch?v=_UbCXNdFdmk -- Beginners guide to pro bike setup
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [triathlon, bike setup]
+    - later: true
 - https://www.youtube.com/watch?v=HiFT9bKmZJA -- The Ultimate Guide To Racing In 2026
   - [meta]:
     - date: 07/03/2026
@@ -16617,6 +16777,56 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.youtube.com/watch?v=tY7jac-iPA4 -- how to understand all of lie algebras with one picture
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [lie algebras, math]
+    - later: true
+- https://www.youtube.com/watch?v=triNEat764M -- How Compactness Was Invented
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [compactness, topology]
+    - later: true
+- https://www.youtube.com/watch?v=bD8kjpynF6A -- Algebra - It's not what you think it is!
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [algebra, math]
+    - later: true
+- https://www.youtube.com/watch?v=roP_HC7tiXw -- What is a Monad? Math vs Computer Science
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [monads, category theory]
+    - later: true
+- https://www.youtube.com/watch?v=td7Nz9ATyWY -- The Concept So Much of Modern Math is Built On: Compactness
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [compactness, math]
+    - later: true
+- https://www.youtube.com/watch?v=oCNQhTpyMgE -- Kan Academy: Intro to Colimits
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [colimits, category theory]
+    - later: true
+- https://www.youtube.com/watch?v=p2bFLG_Q7Lo -- WTF is Sheafification??
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [sheafification, category theory]
+    - later: true
+- https://www.youtube.com/watch?v=oVaSA_b938U -- Factorials, prime numbers, and the Riemann Hypothesis
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [riemann hypothesis, number theory]
+    - later: true
+- https://www.youtube.com/watch?v=ZErN6SBJGUk -- the famous goat problem
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [problem solving, math]
+    - later: true
+- https://www.youtube.com/watch?v=kCTpfqRJ2kk -- Algebraic Topology 0: Cell Complexes
+  - [meta]:
+    - date: 07/04/2026
+    - tags: [algebraic topology, cell complexes]
+    - later: true
 - https://www.youtube.com/watch?v=XxFGokyYo6g -- History of Algebraic Topology; Homotopy Equivalence
   - [meta]:
     - date: 07/03/2026

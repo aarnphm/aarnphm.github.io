@@ -2179,60 +2179,12 @@
   color: color-mix(in srgb, var(--gray) 85%, transparent);
 }
 
-.tri-pmc-frame {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
-}
-
-.tri-pmc-yax {
-  position: relative;
-  flex: 0 0 1.6rem;
-  height: 184px;
-}
-
-.tri-pmc-yt {
-  position: absolute;
-  right: 0;
-  transform: translateY(-50%);
-  font-size: 0.5rem;
-  line-height: 1;
-  color: var(--gray);
-  font-variant-numeric: tabular-nums;
-}
-
-.tri-pmc-plot {
-  position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 .tri-pmc-svg {
   height: auto;
   aspect-ratio: 10 / 3;
   min-height: 184px;
   cursor: crosshair;
   shape-rendering: geometricPrecision;
-}
-
-.tri-pmc-xax {
-  position: relative;
-  height: 0.85rem;
-  margin-top: 0.2rem;
-}
-
-.tri-pmc-xt {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  font-size: 0.5rem;
-  line-height: 1;
-  color: var(--gray);
-  white-space: nowrap;
-}
-
-.tri-pmc-xt--first {
-  transform: none;
 }
 
 .tri-pmc-xt--now {
@@ -2482,14 +2434,13 @@
 }
 
 .tri-cax-frame {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 1fr);
+  column-gap: 0.4rem;
 }
 
 .tri-cax-yax {
   position: relative;
-  flex: 0 0 1.6rem;
 }
 
 .tri-cax-yt {
@@ -2502,13 +2453,31 @@
   font-variant-numeric: tabular-nums;
 }
 
-.tri-cax-plot {
+.tri-cax-stage {
   position: relative;
-  flex: 1 1 auto;
   min-width: 0;
 }
 
+.tri-cax-ax {
+  position: absolute;
+  background: color-mix(in srgb, var(--gray) 45%, transparent);
+  pointer-events: none;
+}
+
+.tri-cax-ax--y {
+  left: 0;
+  width: 1px;
+}
+
+.tri-cax-ax--x {
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
 .tri-cax-xax {
+  grid-column: 2;
   position: relative;
   height: 0.85rem;
   margin-top: 0.2rem;
@@ -2561,7 +2530,6 @@
 }
 
 .tri-ana-pmc,
-.tri-ana-ctlsport,
 .tri-ana-weekly,
 .tri-ana-effort,
 .tri-ana-recovery,
@@ -2585,9 +2553,13 @@
 .tri-line-run {
   stroke: var(--tri-run);
 }
+.tri-line-avg {
+  stroke: color-mix(in srgb, var(--dark) 65%, transparent);
+}
 .tri-line-swim,
 .tri-line-bike,
-.tri-line-run {
+.tri-line-run,
+.tri-line-avg {
   fill: none;
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
@@ -2649,8 +2621,8 @@
   margin-top: 0.5rem;
 }
 
-.tri-ana-weekly-svg {
-  height: 56px;
+.tri-sleep-svg {
+  height: 88px;
 }
 
 .tri-seg--rest {
@@ -2658,7 +2630,7 @@
 }
 
 .tri-wkt-svg {
-  height: 56px;
+  height: 88px;
   cursor: pointer;
 }
 
@@ -2704,6 +2676,24 @@
 
 .tri-wkt-pt--hot .tri-wkt-halo {
   opacity: 1;
+}
+
+.tri-wkt-whisk {
+  stroke: var(--dark);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.7;
+}
+
+.tri-wkt-pred {
+  position: absolute;
+  right: 2px;
+  transform: translateY(-50%);
+  padding: 0.1rem 0.14rem;
+  font-size: 0.5rem;
+  line-height: 1;
+  color: var(--gray);
+  background: var(--light);
 }
 
 .tri-wkt-pt--sel .tri-wkt-o {
@@ -2994,8 +2984,8 @@
   vector-effect: non-scaling-stroke;
 }
 
-.tri-ana-sleep .tri-ana-weekly-svg .tri-seg--sleep,
-.tri-ana-sleep .tri-ana-weekly-svg .tri-seg--short {
+.tri-ana-sleep .tri-sleep-svg .tri-seg--sleep,
+.tri-ana-sleep .tri-sleep-svg .tri-seg--short {
   cursor: pointer;
 }
 
@@ -3326,6 +3316,11 @@
   stroke: var(--tri-run);
 }
 
+.tri-radar-fill--avg {
+  fill: color-mix(in srgb, var(--dark) 12%, transparent);
+  stroke: color-mix(in srgb, var(--dark) 65%, transparent);
+}
+
 .tri-radar-proj {
   fill: none;
   stroke-width: 1;
@@ -3344,6 +3339,10 @@
 
 .tri-radar-proj--run {
   stroke: var(--tri-run);
+}
+
+.tri-radar-proj--avg {
+  stroke: color-mix(in srgb, var(--dark) 65%, transparent);
 }
 
 .tri-radar-dot {
@@ -3388,6 +3387,10 @@
   --tri-radar-accent: var(--tri-run);
 }
 
+.tri-engine-radar--avg {
+  --tri-radar-accent: var(--dark);
+}
+
 .tri-radar-sports {
   position: absolute;
   top: 0;
@@ -3429,6 +3432,10 @@
   &[aria-pressed='true'] {
     opacity: 1;
   }
+}
+
+.tri-radar-sport--avg[aria-pressed='true'] {
+  color: var(--dark);
 }
 
 .tri-radar-sport--swim[aria-pressed='true'] {
@@ -3686,6 +3693,10 @@
   background: var(--tri-run);
 }
 
+.tri-dev-dot--sp-avg {
+  background: color-mix(in srgb, var(--dark) 65%, transparent);
+}
+
 .tri-dev-leg--static {
   cursor: default;
 }
@@ -3863,7 +3874,7 @@
 
 .tri-rdy-meta {
   display: grid;
-  grid-template-columns: 3em 8ch max-content;
+  grid-template-columns: minmax(3em, max-content) 8ch max-content;
   align-items: baseline;
   column-gap: 0.5rem;
   font-size: 0.62rem;
