@@ -1,148 +1,188 @@
-# Streaming algorithms: sketches, samples, windows — and the pipelines that feed them
+---
+date: '2026-07-05'
+description: sketches, samples, windows
+id: notes
+modified: 2026-07-06 13:05:30 GMT-04:00
+tags:
+  - cs
+title: streaming algorithms
+---
 
-Kit 05 is the bytes half (incremental decoding, framing, buffer discipline). This is the other streaming interview: the data is too big to store, so you answer questions from kilobytes of state — and then you ship that state machine on a distributed log. Part A (through "Windowed aggregation") is the theory as ammunition: every structure comes with its guarantee, its constant, and one number you can say out loud. Part B is the systems vocabulary for the "now design the pipeline" follow-up.
+## route
 
-## Core mental model
+This module is for adjacent systems screens and follow-ups.
 
-One pass over $n$ items, space polylogarithmic in $n$, answers wrong by $\varepsilon$ with probability at most $\delta$. The impossibility that forces this shape: exact distinct-count over a universe of size $u$ needs $\Omega(u)$ bits even with randomization, and deterministic approximation needs $\Omega(u)$ too — you must buy randomization **and** approximation together, and then $O(\varepsilon^{-2} + \log u)$ bits suffice (Kane–Nelson–Woodruff 2010, optimal). So every structure below is quoted as an $(\varepsilon, \delta)$ guarantee. Read the fine print on what $\varepsilon$ multiplies: additive in the stream length (CMS), relative (HLL), in a norm ($\varepsilon \lVert f \rVert_2$ for Count Sketch), or rank error (quantile sketches). Quoting the wrong error model is the classic way to sound like you memorized the name.
+1. Read `choice map`.
+2. Solve `MovingAverage`, `StreamingMedian`, `sliding_window_max`, and `reservoir_sample`.
+3. Read `sketches`.
+4. Solve `misra_gries`, `CountMinSketch`, and `SwagWindow`.
+5. Skim `systems stream vocabulary`.
+6. Review [[hinterland/prep/07-stream-algorithms/notes.fc]].
 
-The boosting recipe, because every sketch's dimensions factor the same way: build a cheap estimator that is right in expectation; Markov or Chebyshev gets one copy to constant failure probability with $O(1/\varepsilon^2)$ averaging; then take the **median of $O(\log(1/\delta))$ independent copies** — the median is bad only if half the copies are bad simultaneously, and Chernoff drives that to $\delta$. Hence sketch shape = accuracy dimension $\times$ confidence dimension: CMS width $\lceil e/\varepsilon \rceil$ handles $\varepsilon$ (Markov on one row), depth $\lceil \ln(1/\delta) \rceil$ handles $\delta$ (min across rows).
+## choice map
 
-Two more axes to state before any specific structure:
+```mermaid
+flowchart TD
+  Q["stream question"] --> Exact{"exact answer required?"}
+  Exact -->|yes| Window{"sliding window?"}
+  Exact -->|no| Sketch["choose sketch by error type"]
+  Window -->|mean| Moving["running sum + ring buffer"]
+  Window -->|max/min| Deque["monotonic deque"]
+  Window -->|associative op| SWAG["two-stack aggregate queue"]
+  Exact -->|median so far| Heaps["two heaps"]
+  Sketch --> HH["heavy hitters: Misra-Gries / Count-Min"]
+  Sketch --> Distinct["distinct: HLL"]
+  Sketch --> Membership["membership: Bloom"]
+  Sketch --> Sample["sample: reservoir"]
+```
 
-- **Order.** All guarantees below hold for adversarially _ordered_ streams fixed in advance. Random arrival order is strictly easier (quantile algorithms exploit it). An _adaptive_ adversary who sees your answers before choosing the next items can break linear sketches; "my guarantees assume a non-adaptive stream" is the one-sentence disclaimer.
-- **Mergeability.** Distributed aggregation is a tree of merges, so a sketch that cannot merge cannot shard. HLL merges by register-wise max (lossless — the merge _is_ the sketch of the union), CMS and Count Sketch by entrywise addition, Misra–Gries by adding counters then shaving, t-digest and GK merge with bounded damage, plain reservoirs need count-weighted resampling.
+The interview move: name the state, the update cost, the query cost, and the guarantee.
 
-## Sampling: keep $k$, pretend you kept everything
+## core exact structures
 
-**Reservoir, Algorithm R.** Keep the first $k$ items. For item at index $i \ge k$ (0-based): draw $j$ uniform on $[0, i]$; if $j < k$, overwrite slot $j$. The induction that every item survives with probability exactly $k/n$: item $n$ (1-indexed) enters with probability $k/n$ by construction; any earlier item is in the reservoir with probability $k/(n-1)$ by hypothesis, and survives step $n$ unless item $n$ enters ($k/n$) _and_ lands on its slot ($1/k$), i.e. with probability $1 - 1/n$; multiply: $\frac{k}{n-1} \cdot \frac{n-1}{n} = \frac{k}{n}$. One RNG call per item, unknown stream length never needed.
+### moving average
 
-**Algorithm L** replaces per-item dice with skip counting: track $W$, the largest key in the reservoir's implicit key-space, update $W \gets W \cdot u^{1/k}$, and jump ahead $\lfloor \ln u' / \ln(1 - W) \rfloor$ items between replacements. Expected replacements are $k \ln(n/k)$, so sampling $k = 1000$ from $10^9$ items does about $1000 \times \ln(10^6) \approx 14{,}000$ reservoir touches instead of $10^9$ RNG calls — the win is three to five orders of magnitude of skipped work, and it is exact, not approximate.
+State:
 
-**Weighted reservoir (Efraimidis–Spirakis).** Give item $i$ the key $u_i^{1/w_i}$ with $u_i$ uniform; keep the $k$ largest keys. Equivalent view: $-\ln(u_i)/w_i$ is Exponential($w_i$), so this is a race of exponential clocks and heavier items win proportionally. Because "top-$k$ keys" is a mergeable statistic, this also gives distributed weighted sampling for free.
+- fixed-size circular buffer
+- running sum
+- count seen
+- next index
 
-## Heavy hitters: who exceeds $n/k$
+Update:
 
-**Misra–Gries** — deterministic, $k-1$ counters. Increment if the item has a counter; start a counter if a slot is free; otherwise decrement _every_ counter and delete zeros (the arriving item is absorbed by the decrement). Each decrement event destroys $k$ units of mass — the $k-1$ counters plus the incoming item — and total mass is $n$, so there are at most $n/k$ decrement events, so every counter undercounts by at most $n/k$: $f_x - n/k \le c_x \le f_x$, and anything with $f_x > n/k$ is guaranteed present. Concrete: finding everything above 1% of a stream takes $k = 100$, i.e. 99 counters, forever, regardless of stream length. A second pass counting only the surviving candidates makes the answer exact — the standard two-pass exact heavy-hitters. $k = 2$ (one counter) is Boyer–Moore majority vote; say that and the interviewer relaxes.
+1. subtract overwritten value if full.
+2. write new value.
+3. add new value.
+4. divide by current count.
 
-**Count-Min sketch** — $w = \lceil e/\varepsilon \rceil$ columns, $d = \lceil \ln(1/\delta) \rceil$ rows, one hash per row, add to one counter per row, point query = min over rows. Collisions only inflate, so estimates _never_ undercount: $f_x \le \hat f_x \le f_x + \varepsilon N$ with probability $1 - \delta$, where $N$ is the total count ($\varepsilon \lVert f \rVert_1$ — additive error, the fine print). Per row, expected excess is at most $N/w \le \varepsilon N / e$, Markov gives failure $\le 1/e$, and $d$ independent rows fail together with probability $e^{-d} \le \delta$. Concrete: $\varepsilon = 0.1\%$, $\delta = 10^{-6}$ → $2719 \times 14$ counters, about 149 KiB of uint32 for any stream size. **Conservative update**: on add, only raise each row's counter up to (current estimate + count) — strictly reduces overestimation on skewed data (typically 2–10×) at the cost of losing support for decrements. CMS answers _point queries only_; for top-$k$ you keep a $k$-entry heap next to it, updated on every add.
+Cost: O(1) time, O(k) memory.
 
-**Count Sketch contrast** — same grid, but each row also has a sign hash $g_r(x) \in \{\pm 1\}$; update adds $g_r(x) \cdot c$, estimate is the _median_ over rows of $g_r(x) \cdot C[r][h_r(x)]$. Signs make collisions cancel in expectation, so it is unbiased (CMS is biased up), and the error is $\varepsilon \lVert f \rVert_2$ instead of $\varepsilon \lVert f \rVert_1$ — much stronger on heavy-tailed data since $\lVert f \rVert_2 \ll \lVert f \rVert_1$ there — but width must be $O(1/\varepsilon^2)$ instead of $O(1/\varepsilon)$. Median, not min, because signed estimates undershoot as often as they overshoot.
+### running median
 
-## Distinct count: Flajolet–Martin to HyperLogLog
+State:
 
-Hash every item to a uniform bit string and look at the **rank** — the position of the first 1 bit. Among $n$ distinct values you expect max rank $\approx \log_2 n$: seeing rank 20 suggests about a million distincts. One estimator has geometric-tail variance (useless alone), so bucketize: **HyperLogLog** uses the first $b$ bits of the hash to pick one of $m = 2^b$ registers and each register keeps the **max rank** of the remaining bits ever routed to it. Estimate with the harmonic mean, $\hat n = \alpha_m m^2 \bigl(\sum_j 2^{-M_j}\bigr)^{-1}$ — harmonic because it damps the upward outlier registers that wreck an arithmetic mean of $2^{M_j}$. Standard error is $1.04/\sqrt{m}$. Concrete: $m = 2^{14}$ registers of 6 bits is **12 KiB** and counts billions of distincts within about 1% ($1.04/128 = 0.81\%$) — exactly Redis's `PFCOUNT` configuration. Union is register-wise max and is lossless (it _is_ the sketch of the union); intersection via inclusion–exclusion inherits the absolute errors of the big sets and is garbage for small overlaps — decline it. Small cardinalities are handled by switching to linear counting; HLL++ adds a sparse representation below a few thousand.
+- max-heap for low half.
+- min-heap for high half.
+- sizes differ by at most 1.
 
-## Membership: Bloom and descendants
+Median:
 
-**Bloom filter** — $m$ bits, $k$ hash functions, set $k$ bits per insert, query = all $k$ bits set. After $n$ inserts the false-positive rate is $\bigl(1 - e^{-kn/m}\bigr)^k$; minimizing over $k$ gives $k = (m/n)\ln 2$ and FP $= 2^{-k} \approx 0.6185^{\,m/n}$. Concrete: 1% FP costs $m/n = 9.6$ bits per element with $k = 7$ — about 10 bits _regardless of element size_, which is the whole point (a 100-byte URL becomes 1.2 bytes). One-sided error: false positives only, never false negatives — know which side your application tolerates before proposing it. No deletes (bits are shared) and no resizing (FP degrades as $n$ grows; you rebuild, or chain filters).
+- odd count: top of larger heap.
+- even count: mean of both tops.
 
-**Counting Bloom**: 4-bit counters instead of bits — deletes work, 4× the space, counters can saturate. **Cuckoo filter**: short fingerprints in two-choice cuckoo buckets — deletes, better space than Bloom below roughly 3% FP, lookups touch exactly 2 buckets, inserts can fail near full.
+Cost: `add` O(log n), `median` O(1).
 
-## Quantiles
+### sliding max
 
-**Two-heap streaming median** (the interview classic, LC 295): max-heap of the low half, min-heap of the high half, low $\le$ high elementwise, sizes within 1. `add` is $O(\log n)$, `median` is $O(1)$: top of the bigger heap, or the mean of both tops. Window version (LC 480) = same heaps plus lazy deletion.
+Use a monotonic deque of indices, decreasing by value.
 
-**GK (Greenwald–Khanna)** — deterministic $\varepsilon$-approximate rank: a query for quantile $q$ returns an element whose true rank is within $\varepsilon n$ of $qn$, storing tuples $(v, g, \Delta)$ in $O(\frac{1}{\varepsilon}\log(\varepsilon n))$ space. Concrete: $\varepsilon = 0.01$ over $10^9$ items guarantees rank within $10^7$ from a few kilobytes of tuples. It is the worst-case-guaranteed baseline the fancier sketches get compared against.
+Recipe per index `i`:
 
-**t-digest** — clusters (centroid, count) whose allowed size scales like $q(1-q)$, so clusters near the tails stay tiny and p99.9 stays sharp while the middle is coarse; mergeable, compact, everywhere in observability (Elasticsearch percentiles), but no formal worst-case guarantee — pathological merge orders degrade it. Datadog's answer is **DDSketch**: log-spaced buckets giving _guaranteed relative error_ $\gamma$, trivially mergeable; they built it precisely because t-digest lacks the guarantee. Knowing both names and the reason is the whole flex.
+1. pop back while `values[back] <= values[i]`.
+2. push `i`.
+3. pop front if it left the window.
+4. front is the max once the first full window exists.
 
-## Windowed aggregation
+Each index enters and leaves once, so total O(n).
 
-**The two-stack trick (SWAG).** Sum over a sliding window is easy because subtraction exists — running total, subtract what leaves. Max, min, gcd, matrix product have no inverse, and SWAG fixes all of them at once: two stacks, each entry carrying (value, running fold); push onto the back stack with fold-so-far; pop from the front stack, and when it is empty, drain the back stack into it, reversing order and recomputing folds so the front's top always holds the fold of the remaining window in order; query = op(front top fold, back top fold). Any **associative** op, no inverse, no commutativity needed. Each element crosses each stack once → $O(1)$ amortized per operation, $O(n)$ worst case on the one pop that drains (DABA removes even that spike if the interviewer pushes). This is "implement a queue with two stacks" wearing a monoid.
+### swag
 
-**Monotonic deque** for window max (LC 239): deque of indices, values decreasing front to back; evict the back while $\le$ incoming, drop the front when it exits the window, answer at the front. Each index enters and leaves once: $O(n)$ total for all windows, vs $O(nk)$ naive — for $k = 10^4$ that ratio is four orders of magnitude.
+For any associative operation, use two stacks with running folds.
 
-**DGIM** — count the 1s among the last $N$ bits using $O(\log^2 N)$ bits: buckets of sizes that are powers of two, at most two buckets per size, each storing a timestamp modulo $N$; answer = full buckets plus _half_ the straddling oldest bucket, error at most 50% of that bucket, i.e. relative error $\le 50\%$; allowing $r$ buckets per size tightens it to $\frac{1}{2(r-1)}$. Concrete: $N = 10^9$ costs on the order of $\log^2 N \approx 900$ bits of state versus 1 Gbit raw — a $10^6$:1 compression for a bounded-error count. **Exponential histograms** are the generalization of the same bucketing to any weakly additive aggregate (sum of small ints, etc.); DGIM is the bit-counting special case.
+```mermaid
+flowchart LR
+  Push["push to back stack"] --> Query["combine front fold + back fold"]
+  Query --> Pop{"pop needed and front empty?"}
+  Pop -->|yes| Drain["move back to front, recompute folds"]
+  Pop -->|no| Done["pop front"]
+  Drain --> Done
+```
 
-## Event time, watermarks, windows (the Dataflow/Beam model)
+No inverse required. Sum can subtract, but max, gcd, and matrix product need this shape.
 
-**Event time** is when the thing happened; **processing time** is when your pipeline saw it. Skew between them is unbounded (a phone offline for six hours uploads six-hour-old events), so "results by processing time" silently reassigns data to wrong windows under lag, redeploys, and backfills. The Dataflow/Beam answer is four orthogonal questions: _what_ (the transform), _where_ (event-time windowing), _when_ (triggers), _how_ (accumulate vs discard on re-fire).
+## reservoir sampling
 
-A **watermark** $W(t)$ is the system's claim "no events with timestamp before $W$ will arrive anymore" — in practice a heuristic (source progress minus an estimated max delay). An event-time window closes when the watermark passes its end. Events arriving after that are **late data**: within **allowed lateness** they re-fire the window pane (accumulating mode updates the emitted result; discarding mode emits a delta); beyond it they are dropped or side-outputted. The tuning tension: an aggressive watermark gives low latency and more dropped/late corrections, a conservative one gives completeness and lag — you are choosing where on that curve to sit, per pipeline.
+Algorithm R samples `k` items uniformly from a stream of unknown length.
 
-**Window types**: tumbling (fixed length, disjoint — hourly billing), sliding (length + slide, overlapping — 5-minute rate every 30 s), session (per-key gap timeout, data-driven, unaligned — user visits). **Triggers** decide when a pane emits: default at watermark, plus early firings (processing-time ticks for partial results) and late firings (per late arrival within allowed lateness).
+1. Keep first `k` items.
+2. For item at zero-based index `i >= k`, draw `j = rng.randrange(i + 1)`.
+3. If `j < k`, replace reservoir slot `j`.
 
-## Delivery semantics: the ladder
+Why it works: every item survives to length `n` with probability `k/n`.
 
-- **At-most-once**: fire and forget; loss on any failure. Fine for metrics where a hole is cheaper than a retry storm.
-- **At-least-once**: retry until acknowledged; duplicates on ack loss (the effect happened, the ack died). This is the honest default of every real transport.
-- **Exactly-once** = at-least-once **plus** one of: idempotent effects (deterministic key, `INSERT ... ON CONFLICT DO NOTHING`), dedup on a stable message id, or a transactional sink that commits results and input offsets atomically.
+Inject the RNG. Global randomness makes tests unstable and cross-process behavior weird for no upside.
 
-"Exactly-once _delivery_" is the wrong phrase — over a lossy network you cannot make the receiver see each message exactly once (retries exist because acks get lost; Two Generals); what is achievable is **exactly-once processing**: each message's _effect_ applied once, duplicates delivered but deduplicated at the effect boundary. **Kafka EOS** is the worked example: the idempotent producer attaches a producer id and per-partition sequence numbers so broker-side retries dedup, and transactions (`transactional.id`) atomically commit writes across partitions _together with_ consumer offsets (offsets are themselves a topic write), with consumers in `read_committed` skipping aborted data. Consume–transform–produce becomes one atomic unit; effects outside Kafka (an email, an HTTP call) are still on you.
+## sketches
 
-## The log abstraction
+| need            | structure                | memory                                     | guarantee                                          |
+| --------------- | ------------------------ | ------------------------------------------ | -------------------------------------------------- |
+| heavy hitters   | Misra-Gries              | `k - 1` counters                           | undercount `<= n/k`; all `> n/k` survive           |
+| point frequency | Count-Min                | `ceil(e/eps) * ceil(ln(1/delta))` counters | overestimate by `eps*N` with probability `1-delta` |
+| distinct count  | HyperLogLog              | `m` registers                              | relative error `1.04 / sqrt(m)`                    |
+| membership      | Bloom                    | bits                                       | false positives only                               |
+| quantiles       | GK / t-digest / DDSketch | sketch-specific                            | rank or relative-error guarantee                   |
 
-A partitioned, append-only log (Kafka, Kinesis): records get monotonically increasing **offsets** per partition; consumers are cursors, not destructive readers — position is just an offset you commit, and rewinding it _is_ replay. **Consumer groups** split partitions among members (one member per partition at a time), so partitions are the parallelism unit and the max useful consumer count. **Compaction** retains the latest record per key (plus tombstones for deletes), turning a topic into a changelog you can bootstrap a table from — this is the "stream–table duality" sentence worth saying.
+Concrete denominators to memorize:
 
-Ordering guarantees are **per-partition only**. There is no cross-partition order, and global order costs you a single partition, i.e. a single writer's throughput. Records route to partitions by key hash, so **key choice = ordering choice**: key by `user_id` and each user's events are totally ordered; key by anything else and they are not. The same choice is also your skew: one hot key = one hot partition that no added consumer can help with. Also know: a producer with retries and `max.in.flight` above 1 can reorder within a partition unless idempotence is on — ordering claims have producer-config fine print.
+- Misra-Gries for 1% heavy hitters: `k = 100`, so 99 counters.
+- HLL with `2^14` registers: about 12 KiB and about 0.8% relative error.
+- Bloom at 1% false positives: about 9.6 bits per element, about 7 hash probes.
 
-## Micro-batch vs record-at-a-time; checkpoints
+Bias directions:
 
-**Spark Structured Streaming** runs micro-batches: the stream is a sequence of small deterministic batch jobs, latency floor around 100 ms to seconds, recovery = recompute the failed batch from source offsets (determinism is the fault-tolerance mechanism). **Flink** runs long-lived operators processing record-at-a-time, millisecond latency, mutable operator state — which now needs its own fault-tolerance story:
+- Misra-Gries undercounts.
+- Count-Min overcounts.
+- Bloom has false positives, never false negatives.
+- HLL union is register-wise max; small intersections via inclusion-exclusion are bad.
 
-**Chandy–Lamport barrier snapshots** (Flink's aligned checkpoints). The job manager injects numbered **barriers** into the sources; a barrier flows with the data; an operator with multiple inputs _aligns_ — after seeing barrier $n$ on one input it buffers that input until barrier $n$ arrives on the others — then snapshots its state and forwards the barrier. The union of all operator snapshots for barrier $n$ plus the source offsets recorded at injection is a **consistent global snapshot**, taken without stopping the world. On failure: restore every operator to snapshot $n$, rewind sources to the recorded offsets, replay. What gets replayed is exactly the data after the snapshot's offsets — which is why the source must be a replayable log, and why end-to-end exactly-once additionally needs a transactional or idempotent sink (state resets, but the old output already escaped). Under backpressure alignment stalls; unaligned checkpoints trade snapshot size (in-flight buffers get included) for not waiting.
+## systems stream vocabulary
 
-## Backpressure
+Event time: when the event happened. Processing time: when the system saw it.
 
-Demand must flow upstream. Reactive-streams style: the consumer signals `request(n)` and the producer may send at most $n$ items — pull-calibrated push. Flink's implementation is **credit-based flow control**: each receiving channel advertises its free buffer count as credit; senders send at most their credit, so a slow operator's starvation propagates channel-by-channel to the sources, which throttle intake (before Flink 1.5 this rode raw TCP windows, which head-of-line blocked every channel multiplexed on the connection). Kafka's version is implicit: consumers pull, so lag accumulates durably in the broker — the log _is_ the buffer, bounded by retention, and lag is your first-class overload metric.
+Watermark: the system's heuristic claim that no events older than time `W` will arrive. Late data is data older than the watermark.
 
-Why an unbounded in-memory buffer is not a softer alternative: with arrival rate $\lambda$ above service rate $\mu$ the queue grows without bound, so you get an OOM **eventually** and unbounded latency **immediately** (Little's law: latency = queue length / throughput; and even below saturation, M/M/1 queue length $\rho/(1-\rho)$ diverges as utilization $\rho \to 1$). An unbounded buffer converts a throughput deficit into an outage plus an SLA breach; a bounded buffer plus backpressure converts it into visible throttling at the edge, where load shedding is a product decision instead of a crash.
+Windows:
 
-## Lambda vs kappa; streaming joins
+- tumbling: fixed, disjoint.
+- sliding: fixed length plus slide, overlapping.
+- session: per-key gap timeout.
 
-**Lambda**: run a batch layer (slow, correct, reprocessable) and a speed layer (fast, approximate) and merge at query time — the price is every feature implemented twice in two frameworks with two bug surfaces. **Kappa**: keep everything as one log and one stream processor; reprocessing = start a second job from offset 0 into a new output table, cut over, delete the old — feasible exactly when retention (or tiered storage) covers your history and throughput allows replay. Kappa is the default answer today; say "lambda survives where replay is economically infeasible" and move on.
+Delivery:
 
-**Windowed stream joins** buffer both sides keyed and windowed: state size $\approx$ rate $\times$ window per side, which is why join windows have TTLs and why "join two unbounded streams" without a window is a memory leak with a schema. A **temporal-table join** enriches a stream against a _versioned_ table (itself built from a changelog): each event joins the dimension row _as of its event time_ — orders join the FX rate at order time, not the current one. That per-event-time versioning is the difference between an enrichment and a slowly wrong report.
+- at-most-once: may lose.
+- at-least-once: may duplicate.
+- exactly-once processing: replayable source, snapshotted state, idempotent or transactional sink.
 
-## Gotchas and interviewer follow-ups
+Kafka:
 
-1. **"Sketch top-k" is two structures.** CMS answers point queries; enumeration needs a heap maintained on the add path (or Misra–Gries, which stores candidates by construction).
-2. **Bias directions are opposite**: Misra–Gries undercounts (by $\le n/k$), CMS overcounts (by $\le \varepsilon N$). Bracketing a true count between the two is a legitimate trick; mixing up the directions is a legible fail.
-3. **HLL has no intersection.** Union is exact-in-sketch (register max); inclusion–exclusion on big sets destroys small intersections. Offer MinHash if they actually want overlap.
-4. **Bloom deletes / counting confusion**: plain Bloom cannot delete (shared bits) and cannot count (use CMS); counting Bloom deletes at 4× space; cuckoo filter deletes with fingerprints.
-5. **Monotonic deque stores indices**, not values — eviction at the window edge needs the index. Storing values is the classic five-minutes-of-debugging bug in LC 239.
-6. **Two-heap median rebalance order**: push to one heap, then rebalance to size-diff $\le 1$; deciding by comparing against the wrong top gives an off-by-one median on descending input.
-7. **Reservoir subtlety**: the first $k$ items must not consume randomness (tests that replay RNG traces catch this), and returning your internal list lets the caller mutate your reservoir.
-8. **`random.Random` injection**: any streaming code with randomness takes an rng (or clock) parameter. Global `random` + `PYTHONHASHSEED`-dependent `hash()` are the two nondeterminism leaks; keyed `blake2b` fixes the second (also across processes and machines — `hash()` is not stable across either).
-9. **Watermark tuning is a latency/completeness dial**, not a correctness proof: too fast drops late data, too slow stalls every downstream window. Say "heuristic watermark" and name allowed lateness as the escape hatch.
-10. **"Your consumer processed a message twice — why?"** Rebalance (or crash) after processing but before offset commit: at-least-once redelivers from the last committed offset. The fix is idempotent effects or transactional offset+result commit, never "commit before processing" (that is silent data loss under crash).
-11. **Kafka "ordered" claims**: per partition only, and only with idempotence on (or `max.in.flight = 1`) — retries reorder otherwise. Key choice is also the skew choice; a celebrity key saturates one partition regardless of cluster size.
-12. **Barrier snapshots checkpoint state, not output**: after restore, everything since the checkpoint replays; a non-idempotent, non-transactional sink double-writes. End-to-end exactly-once = replayable source + snapshotted state + committing sink, all three.
-13. **The unbounded-queue reflex**: "just buffer it" converts overload into OOM plus unbounded latency (queue $\rho/(1-\rho)$ near saturation). The interviewer wants "bounded buffer, backpressure to source, shed or throttle at the edge, watch consumer lag".
-14. **Meta-move that scores**: for each structure you name, state the guarantee with its constant and one concrete number — "MG: $k-1$ counters, undercount $\le n/k$"; "HLL: 12 KiB, ~1%"; "Bloom: ~10 bits/element for 1%". That sentence pattern is the difference between having read about sketches and having operated them.
+- partition order only.
+- consumer groups split partitions.
+- key choice is ordering choice and skew choice.
+- compaction keeps latest value per key.
 
-## Rapid-fire drills
+Backpressure:
 
-| question                                                           | answer                                                                                                                  |
-| ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| Space for exact distinct count, universe $u$?                      | $\Omega(u)$ bits — approximation + randomization is forced                                                              |
-| Boost confidence of an $(\varepsilon, 1/4)$ estimator to $\delta$? | median of $O(\log(1/\delta))$ independent copies (median-of-means)                                                      |
-| Algorithm R replacement rule?                                      | item $i \ge k$: $j = \text{randrange}(i+1)$, replace slot $j$ if $j < k$; survival prob $k/n$                           |
-| Algorithm L's win?                                                 | skip-counts between replacements: $O(k \log(n/k))$ RNG work instead of $O(n)$                                           |
-| Weighted reservoir key?                                            | $u^{1/w}$, keep top-$k$ keys (Efraimidis–Spirakis)                                                                      |
-| Misra–Gries guarantee with $k-1$ counters?                         | $f_x - n/k \le c_x \le f_x$; everything with $f_x > n/k$ survives                                                       |
-| Make Misra–Gries exact?                                            | second pass counting only the surviving candidates                                                                      |
-| CMS dimensions for $(\varepsilon, \delta)$?                        | $w = \lceil e/\varepsilon \rceil$, $d = \lceil \ln(1/\delta) \rceil$; error additive $\varepsilon N$                    |
-| CMS bias direction?                                                | overestimate only — collisions add; min over rows                                                                       |
-| Count Sketch vs CMS in one line?                                   | signed hashes, unbiased, median estimator, error $\varepsilon \lVert f \rVert_2$, width $1/\varepsilon^2$               |
-| HLL standard error with $m$ registers?                             | $1.04/\sqrt{m}$; $2^{14}$ registers $\approx$ 12 KiB, $\approx$ 0.8%                                                    |
-| HLL union? intersection?                                           | register-wise max, lossless; intersection — refuse, use MinHash                                                         |
-| Bloom bits/element and $k$ for 1% FP?                              | $\approx$ 9.6 bits, $k = 7$; FP $=(1 - e^{-kn/m})^k$, optimal $k = (m/n)\ln 2$                                          |
-| Bloom error side?                                                  | false positives only, never false negatives                                                                             |
-| Streaming median structure?                                        | two heaps, sizes within 1; even count = mean of tops                                                                    |
-| t-digest vs DDSketch?                                              | t-digest: $q(1-q)$-sized clusters, tail-accurate, no worst-case bound; DDSketch: log buckets, guaranteed relative error |
-| Sliding-window max in $O(n)$?                                      | monotonic deque of indices, decreasing values                                                                           |
-| Sliding-window gcd in $O(1)$ amortized?                            | SWAG two-stack fold — any associative op, no inverse needed                                                             |
-| DGIM: ones in last $N$ bits?                                       | power-of-two buckets, $\le 2$ per size, $O(\log^2 N)$ bits, $\le 50\%$ error                                            |
-| Event time vs processing time?                                     | when it happened vs when you saw it; skew unbounded                                                                     |
-| Watermark in one sentence?                                         | heuristic claim "nothing older than $W$ is still coming"; closes event-time windows                                     |
-| Tumbling / sliding / session?                                      | disjoint fixed; overlapping (length + slide); per-key gap timeout                                                       |
-| Why is exactly-once _delivery_ wrong?                              | acks get lost, retries exist; achievable is exactly-once _processing_ (dedup/idempotence/txn at the effect)             |
-| Kafka EOS ingredients?                                             | idempotent producer (PID + seq per partition) + transactions incl. offset commit + `read_committed`                     |
-| Kafka ordering guarantee?                                          | per partition only; key choice = ordering choice = skew choice                                                          |
-| Flink checkpoint mechanism?                                        | Chandy–Lamport-style aligned barriers; snapshot state + source offsets; restore and replay                              |
-| Spark vs Flink execution?                                          | micro-batch (recompute batches) vs record-at-a-time (snapshot operator state)                                           |
-| Why does an unbounded buffer not "handle" overload?                | queue $\rho/(1-\rho)$ diverges: OOM eventually, unbounded latency immediately; backpressure throttles at the source     |
-| Lambda vs kappa?                                                   | batch+speed dual code paths vs one log + replay; kappa default when retention covers history                            |
-| Temporal-table join?                                               | enrich each event against the dimension _as of its event time_ (versioned changelog table)                              |
+- bounded buffers expose overload.
+- unbounded buffers hide overload until latency and memory explode.
+- consumer lag is a queue, and Little's law applies.
+
+## guards
+
+- sliding-window max stores indices, not values.
+- two-heap median must rebalance after every add.
+- reservoir's first `k` items should not consume randomness.
+- Count-Min cannot enumerate top-k by itself; keep candidates separately.
+- Python `hash()` is process-randomized; use a stable hash for sketches.
+- t-digest is practical but lacks the worst-case bound DDSketch has.
+
+## drills
+
+1. State the deque invariant for sliding max.
+2. Explain Algorithm R replacement probability.
+3. Give Misra-Gries memory for 1% heavy hitters.
+4. Give Count-Min width and depth.
+5. Explain why HLL union is easy and intersection is not.
+6. Bloom false positive or false negative?
+7. Define event time and processing time.
+8. Explain why exactly-once delivery is the wrong phrase.

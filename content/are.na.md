@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-04 09:03:18 GMT-04:00
+modified: 2026-07-06 15:57:30 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,21 @@ title: are.na
 
 ## discourse
 
+- https://www.astralcodexten.com/p/the-pledge -- Pledge Drive
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [pledge drive, acx]
+    - later: true
+- https://x.com/jxnlco/status/2073819508729684462 -- If You Want Taste, You're Gonna Have to Eat
+  - [meta]:
+    - date: 07/05/2026
+    - tags: [taste, culture]
+    - later: true
+- https://x.com/paulg/status/2072665214965674012 -- Paul Graham on quarterly exercise questions
+  - [meta]:
+    - date: 07/02/2026
+    - tags: [questions, company]
+    - later: true
 - https://www.youtube.com/watch?v=Ga1yuy-mlDo -- the importance of a reading, writing and thinking practice to feel intellectually alive
   - [meta]:
     - date: 07/04/2026
@@ -1761,6 +1776,15 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://internetlabs.co/
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [agency]
+- https://ihatedns.cargo.site/ -- ami yoshimura
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [personal site]
+    - later: true
 - https://ftlsid.com/home -- ftlsid
   - [meta]:
     - date: 07/01/2026
@@ -3793,6 +3817,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://paulgraham.com/startuplessons.html -- The Hardest Lessons for Startups to Learn
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [startups, lessons]
+    - later: true
+- https://www.paulgraham.com/yahoo.html -- What Happened to Yahoo
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [yahoo, companies]
+    - later: true
+- https://jeffgiesea.substack.com/p/dionysian-futurism -- Dionysian Futurism
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [futurism, culture]
+    - later: true
+- https://meschatology.substack.com/p/why-you-shouldnt-write-that-substack -- why you shouldn't write that substack essay
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [writing, essays]
+    - later: true
+- https://x.com/WillManidis/status/2033641286302110204 -- The Merchant in the Statehouse
+  - [meta]:
+    - date: 03/16/2026
+    - tags: [merchants, statecraft]
+    - later: true
 - https://gwern.net/blog/2026/make-me-care -- First, Make Me Care
   - [meta]:
     - date: 07/01/2026
@@ -9119,6 +9168,11 @@ title: are.na
 
 ## opinions
 
+- https://samkriss.substack.com/p/the-century-of-the-maxxer -- The century of the maxxer
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [culture, maxxing]
+    - later: true
 - https://x.com/WillManidis/status/2072360051730231684 -- Will Manidis on companies as theories
   - [meta]:
     - date: 07/01/2026
@@ -9628,6 +9682,11 @@ title: are.na
 
 ## life is literature
 
+- https://nailujmay.substack.com/p/goodbye-bay -- Goodbye Bay
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [bay area, life]
+    - later: true
 - https://cybermonk.substack.com/p/notes-on-unconditional-love -- Notes on unconditional love
   - [meta]:
     - date: 07/01/2026
@@ -10272,6 +10331,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.cs.unc.edu/~anderson/teach/comp790/papers/mars_pathfinder_long_version.html -- What really happened on Mars? -- Authoritative Account
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [real-time systems, priority inversion]
+    - later: true
+- https://shuhaowu.com/blog/2022/02-linux-rt-appdev-part2.html -- Real-time programming with Linux, part 2: configuring Linux for real-time
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [linux, real-time]
+    - later: true
+- https://www.youtube.com/watch?v=I8YnwUV2C9w -- The Memory Problem, Baseten | Compile 26
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [memory, ai infrastructure]
+    - later: true
 - https://www.youtube.com/watch?v=L2AOrseB2_Y -- Steel, Rust, and truth
   - [meta]:
     - date: 07/04/2026
@@ -12243,6 +12317,11 @@ title: are.na
 
 ## finances
 
+- https://www.citriniresearch.com/p/free-strait-of-hormuz-a-citrini-field -- FREE: Strait of Hormuz: A Citrini Field Trip
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [markets, geopolitics]
+    - later: true
 - https://www.youtube.com/watch?v=u_eEW7N1xjE -- Option Pricing Explained
   - [meta]:
     - date: 07/03/2026
@@ -12335,6 +12414,11 @@ title: are.na
 
 ## poetry
 
+- https://poets.org/poem/failing-and-flying -- Failing and Flying
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [jack gilbert, icarus]
+    - later: true
 - https://web.mit.edu/daveg/Text/poetry/Manifest:MFLF -- Manifesto: The Mad Farmer Liberation Front
   - [meta]:
     - date: 04/27/2026
@@ -12396,6 +12480,16 @@ title: are.na
 
 ## design
 
+- https://www.murmur.living/ -- mur mur
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [ambient, hardware]
+    - later: true
+- https://www.feelingthemagazine.com/p/how-to-style-a-table-like-a-designer -- How to Style a Table like a Designer
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [table setting, interiors]
+    - later: true
 - https://www.youtube.com/watch?v=eh8bcBIAAFo -- The design process is dead. Here's what's replacing it
   - [meta]:
     - date: 07/03/2026
@@ -12818,6 +12912,21 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=J9AOaINKy0E -- Who Will Win The 2026 Tour De France?
+  - [meta]:
+    - date: 07/05/2026
+    - tags: [tour de france, cycling]
+    - later: true
+- https://www.youtube.com/watch?v=6Hptrc1lYwI -- A Very French Reunion
+  - [meta]:
+    - date: 07/05/2026
+    - tags: [vlogbrothers, france]
+    - later: true
+- https://www.youtube.com/watch?v=OMw8u_nLSAM -- No Video Today!!
+  - [meta]:
+    - date: 07/05/2026
+    - tags: [vlogbrothers, anniversary]
+    - later: true
 - https://www.youtube.com/watch?v=l-4635Wb_60 -- How gaslighting the audience for two hours made this a masterpiece
   - [meta]:
     - date: 07/04/2026
@@ -13507,6 +13616,11 @@ title: are.na
 
 ## tools
 
+- https://www.midlife.engineering/ -- Midlife Engineering
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [sound, focus]
+    - later: true
 - https://shaders.paper.design/ -- Paper Shaders
   - [meta]:
     - date: 07/01/2026
@@ -13817,6 +13931,11 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/Twice_exceptional -- Twice exceptional
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [neurodiversity, education]
+    - later: true
 - https://www.quantamagazine.org/for-the-first-time-a-cell-built-from-scratch-grows-and-divides-20260701/ -- For the First Time, a Cell Built From Scratch Grows and Divides
   - [meta]:
     - date: 07/01/2026
@@ -15641,6 +15760,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://engineering.fb.com/2026/07/01/data-infrastructure/metas-ai-storage-blueprint-at-scale/ -- Meta's AI Storage Blueprint at Scale
+  - [meta]:
+    - date: 07/06/2026
+    - tags: [ai infrastructure, storage]
+    - later: true
 - https://x.com/geoffreylitt/status/2072110805089435973 -- Geoffrey Litt on a Claude-to-Notion talk-prep workflow
   - [meta]:
     - date: 07/01/2026
