@@ -1,175 +1,96 @@
 ---
-title: 04 · byte streams
+title: 04 byte streams
 ---
 
-Q: Every byte-stream decoder is one polynomial — state it.
-A: $v = \sum_i b_i \cdot 256^{k(i)}$, where endianness decides $k$: little-endian $k(i) = i$ (byte at lowest offset is the $256^0$ digit), big-endian $k(i) = n - 1 - i$. Everything else is API and edge cases.
-
----
-
-Q: Memory bytes of u32 `0x11223344` at address $a$, both endians.
-A: LE: `44 33 22 11` (LSB at lowest offset). BE: `11 22 33 44` (reads like the literal).
+Q: What polynomial does every fixed-width byte decoder compute?
+A: `v = sum(b_i * 256^k(i))`, with `k(i)` chosen by endian order.
 
 ---
 
-C: Network byte order is [big]-endian; x86 and mainstream ARM run [little]-endian.
+Q: In little-endian, which byte is the `256^0` digit?
+A: The first byte, at the lowest offset.
 
 ---
 
-Q: Why is network order big-endian, and why did x86 go little-endian?
-A: BE headers read left-to-right in dumps — designed human-auditable (RFC 791/1700). LE makes width changes free: a u32 holding 7 reread through a `u16*` or `u8*` still reads 7 at the same address; early serial ALUs (8080 lineage) also wanted the low byte first for carry propagation.
+Q: Bytes of `0x11223344` in little-endian and big-endian.
+A: LE `44 33 22 11`; BE `11 22 33 44`.
 
 ---
 
-Q: BE or LE: PNG chunk lengths, ZIP, ELF, GGUF, the safetensors header length?
-A: PNG (and JPEG/AIFF): BE. ZIP, BMP, ELF (mostly), WAV/RIFF, GGUF, and the safetensors u64 header length: LE. Misread a PNG length as LE and you `read(0x0D000000)` instead of 13.
+Q: Bytes of `0xdeadbeef` in little-endian and big-endian.
+A: LE `ef be ad de`; BE `de ad be ef`.
 
 ---
 
-Q: Why is `*(uint32_t *)p` on a wire buffer wrong in C?
-A: UB twice (strict aliasing + alignment), and on x86 it reads BE fields byte-swapped anyway. The blessed idiom: `memcpy(&v, p, 4)` or explicit shifts — compilers pattern-match both into a single `mov`/`bswap`.
+Q: Network byte order is what endian?
+A: Big-endian.
 
 ---
 
-Q: The two shift-only read loops (LE and BE).
-A: LE, digit into position: `v |= b[o + i] << (8 * i)`. BE, accumulator: `v = (v << 8) | b[o + i]`.
+Q: Shift-loop for reading u32 little-endian.
+A: `v |= buf[offset + i] << (8 * i)`.
 
 ---
 
-Q: `read_u32_le(b'\x44\x33\x22\x11', 0)`, worked?
-A: `0x44 | 0x33 << 8 | 0x22 << 16 | 0x11 << 24 = 0x11223344`.
+Q: Shift-loop for reading u32 big-endian.
+A: `v = (v << 8) | buf[offset + i]`.
 
 ---
 
-Q: Why is hashing or memcmp-ing a raw struct wrong?
-A: The digest depends on host endianness and on padding bytes with indeterminate content. Serialize explicitly, then hash.
+Q: Encode signed integer `n` to width `w` bytes.
+A: Mask to unsigned: `u = n & ((1 << (8*w)) - 1)`, then write unsigned.
 
 ---
 
-Q: The C `char` promotion trap in `b[3] << 24`.
-A: `char` may be signed; a byte $\ge$ `0x80` promotes to a negative `int` and the shift is UB. Cast `(uint32_t)(unsigned char)b[3]` first. This is the single most common C follow-up in this space; Python's mirror trap is forgetting that intermediates never truncate.
+Q: Decode unsigned `u` as signed width `bits`.
+A: `u - (1 << bits)` if `u >= 1 << (bits - 1)`, else `u`.
 
 ---
 
-Q: Encode and decode a signed integer through the unsigned bridge (width 64).
-A: Encode: `u = n & (2**64 - 1)` — masking is the two's-complement conversion — then write unsigned. Decode: read unsigned, then `u - 2**64 if u >= 2**63 else u`; branchless `(u ^ 2**63) - 2**63`.
+Q: Write `-2` as i16 little-endian.
+A: `fe ff`.
 
 ---
 
-Q: `-2` as i16 little-endian bytes?
-A: `-2 & 0xFFFF = 0xFFFE` → `fe ff`. Decode: `0xFFFE >= 0x8000`, so `0xFFFE - 0x10000 = -2`.
+Q: Cursor invariant for binary readers.
+A: Bounds-check first, advance only after a successful read.
 
 ---
 
-Q: The `int.to_bytes` traps.
-A: Since 3.11 the arguments are optional and `byteorder` defaults to `'big'` — `(258).to_bytes(2)` is `b'\x01\x02'`; always pass it explicitly. Negatives raise `OverflowError` without `signed=True`.
+Q: Which `struct` prefix means little-endian standard sizes no padding?
+A: `<`.
 
 ---
 
-Q: struct format chars for i8/u8, i16/u16, i32/u32, i64/u64, f32, f64?
-A: `b`/`B`, `h`/`H`, `i`/`I`, `q`/`Q`, `f`, `d`.
+Q: Which `struct` prefix is dangerous for wire parsing?
+A: `@`, because it uses native order, native sizes, and native padding.
 
 ---
 
-Q: `calcsize('<BI')` vs `calcsize('@BI')`, and the rule it teaches.
-A: 5 vs 8 — `@` (the default!) uses native sizes with C alignment padding (3 pad bytes after the `B`). Never parse wire data without an explicit `<` or `>`.
+Q: What is `bswap32(0x12345678)`?
+A: `0x78563412`.
 
 ---
 
-Q: `unpack` vs `unpack_from` vs `pack_into`, and the exception type?
-A: `unpack` demands an exact-length buffer; `unpack_from(fmt, buf, offset)` doesn't; `pack_into` writes into a `bytearray` in place — the pair for walking record arrays. Errors are `struct.error`, not `ValueError`.
+Q: Why is `*(uint32_t *)p` wrong on a wire buffer in C?
+A: It can violate alignment, strict aliasing, and endian assumptions.
 
 ---
 
-Q: Why reach for `memoryview` in a parse loop?
-A: `bytes` slices copy — a 100 MB parse loop of slices is accidentally $O(n^2)$. `memoryview(buf)[off:off+n]` slices without copying; `mv.cast('I')` reinterprets in native order; `bytes(mv)` is the explicit copy at the end.
+Q: Float32 bit layout.
+A: 1 sign bit, 8 exponent bits with bias 127, 23 mantissa bits.
 
 ---
 
-Q: IEEE 754 field layout for float32 and float64.
-A: f32: sign 1, exponent 8 (bias 127), mantissa 23. f64: sign 1, exponent 11 (bias 1023), mantissa 52. Normals: $(-1)^s \cdot 1.m \cdot 2^{e - \text{bias}}$.
+Q: Float32 bits of `1.0`.
+A: `0x3f800000`.
 
 ---
 
-Q: The IEEE 754 categories by raw exponent field.
-A: Exponent 0 with mantissa 0: ±zero. Exponent 0, mantissa nonzero: subnormal $(-1)^s \cdot 0.m \cdot 2^{-126}$ — no hidden 1, gradual underflow. 1..254: normal (hidden leading 1). All ones: ±inf (mantissa 0) or NaN (mantissa nonzero; its MSB is the quiet bit, the rest payload).
+Q: How do you detect NaN from float bits?
+A: Exponent all ones and mantissa nonzero.
 
 ---
 
-Q: float32 bits of 1.0 and $-2.5$?
-A: `0x3F800000` (s 0, e 127, m 0) and `0xC0200000` ($-1.25 \cdot 2^1$: s 1, e 128, m `0x200000`).
-
----
-
-Q: Smallest positive float32, and largest finite float32?
-A: Subnormal $2^{-149}$ ($2^{-23} \cdot 2^{-126}$), bits `0x00000001`; `0x7F7FFFFF` $= (2 - 2^{-23}) \cdot 2^{127} \approx 3.4 \times 10^{38}$.
-
----
-
-Q: The float↔bits bit-cast idiom in Python.
-A: `bits = struct.unpack('<Q', struct.pack('<d', f))[0]` and back with the pair swapped; f32 uses `'<I'`/`'<f'` (and `pack('<f', x)` also rounds to nearest binary32). The endianness prefix must match on both sides — it cancels out, but mixing byte-swaps your float.
-
----
-
-Q: Detect $-0.0$?
-A: `math.copysign(1.0, x) < 0`, or compare bits (`0x80000000` f32). `-0.0 == 0.0` is True, yet `1 / -0.0 == -inf` and struct round-trips the sign bit.
-
----
-
-Q: NaN facts a decoder must know.
-A: `nan != nan` (breaks `==` tests, sort stability, dict-key sanity); test with `math.isnan`. Canonical quiet NaN f64 is `0x7FF8000000000000`. Never memcmp floats — $-0.0$ vs $0.0$ and NaN payloads; compare bits when you mean bits.
-
----
-
-Q: Why is 0.1 inexact in binary?
-A: Base-2 expansions terminate only for denominators $2^k$; $1/10$ has prime factor 5, so it repeats (`0.0001100110011…`). The stored double is `0x3FB999999999999A`, hence `0.1 + 0.2 != 0.3`. Exactness needs `decimal`/`fractions` — or fixed point.
-
----
-
-Q: bfloat16 vs fp16?
-A: bfloat16 is literally the top 16 bits of float32 — same 8-bit exponent, mantissa truncated to 7. fp16 is 1/5/10 with bias 15 — tiny range, hence loss-scaling.
-
----
-
-Q: Fixed-point Qm.n: representation, multiply, and why lockstep systems use it.
-A: Store `round(x * 2**n)`; value is $i / 2^n$. Add/sub are exact integer ops; multiply is `(a * b) >> n` with a double-width intermediate. Nothing depends on FPU rounding modes, so results are bit-identical across machines — lockstep game networking, DSP, audio codecs. Q16.16 in i32: range $\pm 32768$, resolution $2^{-16}$.
-
----
-
-Q: Fixed-width records vs length-prefixed framing — the trade.
-A: Fixed-width: record $i$ at `i * calcsize(fmt)` — O(1) random access, mmap-friendly, seekable; every field pays max width and schema changes shift every offset. Length-prefixed: compact for small values, but decode is sequential and one corrupted length desynchronizes everything after it; validate against a cap before allocating.
-
----
-
-Q: The hexdump -C canonical row, and the ASCII panel rule.
-A: Offset column, 16 bytes of hex split 8+8, ASCII panel where `0x20..0x7E` print literally and everything else is `.`. PNG opens `89 50 4E 47 0D 0A 1A 0A`, then the BE chunk length — `00 00 00 0D` is 13. When your codec is wrong, diff hexdumps before re-reading code.
-
----
-
-Q: `buf[i]` vs `buf[i:i+1]` on `bytes`?
-A: `int` in 0..255 vs `bytes`; iterating `bytes` yields ints. In C, `(char)0xFF` is likely $-1$.
-
----
-
-Q: Cursor discipline on EOF in a reader?
-A: Advance only after a successful read; on EOF raise without moving, so callers can recover. Interviewers probe this in streaming follow-ups.
-
----
-
-Q: Largest integer float64 holds exactly?
-A: $2^{53}$.
-
----
-
-Q: `htonl` on a little-endian host?
-A: A full byte swap (bswap32); identity on BE.
-
----
-
-Q: Bytes of `0xDEADBEEF` on a little-endian wire?
-A: `ef be ad de`.
-
----
-
-Q: Swap the u16 halves of a u32?
-A: `(x >> 16) | ((x & 0xFFFF) << 16)`.
+Q: What does the ASCII panel in a hexdump show?
+A: Printable bytes `0x20..0x7e`, with other bytes shown as `.`.

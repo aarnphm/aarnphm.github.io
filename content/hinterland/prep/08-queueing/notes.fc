@@ -1,0 +1,101 @@
+---
+title: 08 queueing theory
+---
+
+Q: Little's law.
+A: `L = lambda * W`.
+
+---
+
+Q: 500 req/s at 100 ms mean latency means how many in flight?
+A: 50.
+
+---
+
+Q: One-server utilization.
+A: `rho = lambda / mu`.
+
+---
+
+Q: Stability condition for one server.
+A: `rho < 1`.
+
+---
+
+Q: M/M/1 mean sojourn time.
+A: `W = 1 / (mu - lambda) = E[S] / (1 - rho)`.
+
+---
+
+Q: M/M/1 latency multiplier at `rho = 0.95`.
+A: `20 * E[S]`.
+
+---
+
+Q: M/M/1 latency multiplier at `rho = 0.99`.
+A: `100 * E[S]`.
+
+---
+
+Q: Pollaczek-Khinchine formula.
+A: `Wq = lambda * E[S^2] / (2 * (1 - rho))`.
+
+---
+
+Q: What queueing term makes service whales hurt everyone?
+A: `E[S^2]`, the service-time second moment.
+
+---
+
+Q: Kingman's approximation in words.
+A: wait ~= utilization blow-up * variability * service time.
+
+---
+
+Q: Lindley recursion for FIFO wait.
+A: `W_i = max(0, W_{i-1} + S_{i-1} - interarrival_i)`.
+
+---
+
+Q: Token bucket state.
+A: tokens, last timestamp, refill rate, and capacity.
+
+---
+
+Q: Token bucket guarantee over interval `T`.
+A: admitted work `<= capacity + rate * T`.
+
+---
+
+Q: What if request cost exceeds token-bucket capacity?
+A: It can never be admitted.
+
+---
+
+Q: Sliding-window counter estimate.
+A: `previous * (1 - elapsed/window) + current`.
+
+---
+
+Q: Sliding log vs sliding counter memory.
+A: Log stores one timestamp per admitted request; counter stores two counters per key.
+
+---
+
+Q: Fan-out tail formula.
+A: All `n` leaves are fast with probability `p^n`.
+
+---
+
+Q: Chance no leaf is slow for 100 leaves at per-leaf p99.
+A: `0.99^100 ~= 0.37`.
+
+---
+
+Q: Open-loop vs closed-loop load generation.
+A: Open-loop keeps arrivals fixed; closed-loop waits for each response before sending the next request.
+
+---
+
+Q: Coordinated omission.
+A: A stalled generator omits the requests that would have measured the queueing delay.

@@ -1,0 +1,91 @@
+---
+title: 07 streaming algorithms
+---
+
+Q: Moving-average state for a fixed window.
+A: Circular buffer, running sum, count seen, next index.
+
+---
+
+Q: Streaming median structure.
+A: Max-heap for low half, min-heap for high half, sizes differ by at most 1.
+
+---
+
+Q: Sliding-window max data structure.
+A: Monotonic deque of indices with decreasing values.
+
+---
+
+Q: Why store indices in the sliding-window max deque?
+A: Eviction at the window edge needs to know whether the front index expired.
+
+---
+
+Q: Algorithm R reservoir replacement rule.
+A: For item index `i >= k`, draw `j = randrange(i + 1)` and replace slot `j` if `j < k`.
+
+---
+
+Q: Reservoir sampling survival probability after `n` items.
+A: Every item is kept with probability `k/n`.
+
+---
+
+Q: Misra-Gries memory and guarantee.
+A: `k - 1` counters; undercount at most `n/k`; every item with frequency `> n/k` survives.
+
+---
+
+Q: Count-Min sketch dimensions.
+A: Width `ceil(e/eps)`, depth `ceil(ln(1/delta))`.
+
+---
+
+Q: Count-Min bias direction.
+A: It overestimates only.
+
+---
+
+Q: HyperLogLog standard error.
+A: About `1.04 / sqrt(m)` for `m` registers.
+
+---
+
+Q: HLL with `2^14` registers costs and error.
+A: About 12 KiB and about 0.8% relative error.
+
+---
+
+Q: Bloom filter error side.
+A: False positives only, never false negatives.
+
+---
+
+Q: Bloom filter cost at 1% false positives.
+A: About 9.6 bits per element and about 7 hash probes.
+
+---
+
+Q: What does SWAG support?
+A: Sliding-window aggregates for any associative operation without needing an inverse.
+
+---
+
+Q: Event time vs processing time.
+A: Event time is when the event happened; processing time is when the system observed it.
+
+---
+
+Q: What is a watermark?
+A: A heuristic claim that no events older than time `W` are still expected.
+
+---
+
+Q: Kafka ordering guarantee.
+A: Ordering is per partition only.
+
+---
+
+Q: Exactly-once processing requires what three pieces?
+A: Replayable source, snapshotted state, and idempotent or transactional sink.

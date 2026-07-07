@@ -1,0 +1,91 @@
+---
+title: 05 streaming decoders
+---
+
+Q: What is a streaming decoder?
+A: A state machine plus retained partial state across `feed(chunk)` calls.
+
+---
+
+Q: State the split-invariance property.
+A: Feeding the whole stream must emit the same total output as feeding any chunk split.
+
+---
+
+Q: What are the two streaming failure modes?
+A: Need more data, which is a valid prefix; malformed, which no future byte can fix.
+
+---
+
+Q: What does `finish()` do?
+A: Turns dangling partial state into a truncation error.
+
+---
+
+Q: Streaming varint state.
+A: `(accumulator, shift, byte_count)`.
+
+---
+
+Q: What does feeding `ac` then `02` emit?
+A: First feed emits nothing; second emits 300.
+
+---
+
+Q: Where does the length-prefix `max_frame` guard belong?
+A: Immediately after decoding the length, before buffering or allocating payload.
+
+---
+
+Q: Why does TLV give forward compatibility?
+A: Unknown tag plus known length lets old readers skip the value and continue.
+
+---
+
+Q: Protobuf wire format in one phrase.
+A: Varint-key TLV: key is `(field_number << 3) | wire_type`.
+
+---
+
+Q: UTF-8 streaming state.
+A: Remaining continuation count plus allowed range for the next byte.
+
+---
+
+Q: After UTF-8 lead byte `e0`, what range must the next byte be in?
+A: `a0..bf`, to avoid overlong 3-byte encodings.
+
+---
+
+Q: After UTF-8 lead byte `ed`, what range must the next byte be in?
+A: `80..9f`, to reject surrogates.
+
+---
+
+Q: What does COBS code byte `ff` mean?
+A: 254 data bytes follow and no zero is implied at that boundary.
+
+---
+
+Q: COBS encode `11 22 00 33`.
+A: `03 11 22 02 33`.
+
+---
+
+Q: COBS overhead.
+A: One byte per 254 payload bytes, plus the `00` delimiter.
+
+---
+
+Q: HTTP chunked states.
+A: size line, data, data CRLF, then either next size or trailers and done.
+
+---
+
+Q: Why is repeated `buf = buf[n:]` bad?
+A: It copies the tail on every consume, making total work quadratic.
+
+---
+
+Q: What should an empty chunk do?
+A: Nothing; return no completed items and preserve state.
