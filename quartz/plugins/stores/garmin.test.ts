@@ -358,6 +358,32 @@ test('garminConnectVo2 parses maxmet daily payloads defensively', async () => {
   ])
 })
 
+test('garminConnectActivity converts Garmin totalWork kcal to kilojoules', async () => {
+  const { garminConnectActivity } = await import('../../util/garmin-connect')
+  const activity = garminConnectActivity(
+    {
+      activityId: 23513621234,
+      activityName: 'Sprint 3x1mins maximal effort',
+      startTimeGMT: '2026-07-07T17:19:11.000Z',
+      startTimeLocal: '2026-07-07T13:19:11.0',
+      activityType: { typeKey: 'cycling' },
+      summaryDTO: {
+        averagePower: 214,
+        normalizedPower: 235,
+        maxPower: 1008,
+        totalWork: 32.21941661376318,
+        distance: 6116,
+        duration: 705,
+      },
+    },
+    {},
+    0,
+  )
+
+  assert.equal(activity?.metrics.totalWorkKJ, 134.8)
+  assert.equal(activity?.metrics.avgPower, 214)
+})
+
 test('garminConnectWeightSamples flattens multiple weigh-ins per day with timestamps', async () => {
   const { garminConnectWeightSamples } = await import('../../util/garmin-connect')
   const morning = Date.parse('2026-06-12T07:30:00Z')

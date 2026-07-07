@@ -64,7 +64,7 @@ I propose a box model where one can decompose our feelings into interpretable co
 
 inspired by _[Keating's LW post](https://www.lesswrong.com/posts/gmysPZ3t5Rz9nzcCr/my-dating-heuristic)_ and [[dating|my-doc]]
 
-> When i a dating context, I ask myself: what would an emotionally healthy person do? Then I do that.
+> When in a dating context, I ask myself: what would an emotionally healthy person do? Then I do that.
 
 - Leveling up emotional intelligence
 - Don't cosplay as a mature adult

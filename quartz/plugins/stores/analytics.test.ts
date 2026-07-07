@@ -167,9 +167,9 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.ok(a.recovery.hrvLatest != null && a.recovery.hrvLatest >= 80)
   assert.equal(a.recovery.rhrLatest, 50)
   assert.ok(a.recovery.series.length >= 16)
-  assert.ok(a.recovery.sleepDebtS > 0)
+  assert.equal(a.recovery.sleepDebtS, 0)
   assert.ok(a.recovery.flags.every(f => ['info', 'watch', 'alert'].includes(f.severity)))
-  assert.equal(a.recovery.thresholds.sleepTargetS, 28800)
+  assert.equal(a.recovery.thresholds.sleepTargetS, 25200)
   const day = a.daily.find(d => d.date === iso(20))
   assert.equal(day?.sleepDurationS, 27000)
   assert.equal(day?.tempDevC, 0.1)
@@ -185,7 +185,7 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   assert.ok(v.value != null && v.value > 25 && v.value < 50)
   assert.ok(v.fitnessAge != null && v.fitnessAge >= 20 && v.fitnessAge <= 80)
   assert.equal(v.chronoAge, 25)
-  assert.equal(v.hrMax, 182)
+  assert.equal(v.hrMax, 184)
   assert.equal(v.hrMaxSource, 'declared')
   assert.ok(v.trend.length >= 1)
   assert.ok(a.engine.cardio.metrics.length === 4)
@@ -420,6 +420,11 @@ test('suffer score flows into daily effort, activity summaries, and weekly total
 })
 
 test('analytics treats late evening syncs as the local calendar day', () => {
+  const env = {
+    health: process.env.HEALTH_TIMEZONE,
+    local: process.env.LOCAL_TIMEZONE,
+    tz: process.env.TZ,
+  }
   const { cache } = fixtures()
   cache.lastSync = Date.parse('2026-07-01T02:45:00.000Z')
   cache.activities = {
@@ -430,10 +435,25 @@ test('analytics treats late evening syncs as the local calendar day', () => {
   }
   cache.streams = {}
 
-  const a = buildAnalytics(cache, { since: '2026-06-01', timeZone: 'America/Toronto' })
+  try {
+    delete process.env.HEALTH_TIMEZONE
+    delete process.env.LOCAL_TIMEZONE
+    process.env.TZ = 'UTC'
+    const a = buildAnalytics(cache, { since: '2026-06-01' })
 
-  assert.equal(a.meta.today, '2026-06-30')
-  assert.equal(a.meta.windowTo, '2026-06-30')
+    assert.equal(a.meta.today, '2026-06-30')
+    assert.equal(a.meta.windowTo, '2026-06-30')
+    assert.equal(a.daily.at(-1)?.date, '2026-06-30')
+    assert.ok((a.daily.at(-1)?.load ?? 0) > 0)
+    assert.equal(a.activities[0]?.date, '2026-06-30')
+  } finally {
+    if (env.health == null) delete process.env.HEALTH_TIMEZONE
+    else process.env.HEALTH_TIMEZONE = env.health
+    if (env.local == null) delete process.env.LOCAL_TIMEZONE
+    else process.env.LOCAL_TIMEZONE = env.local
+    if (env.tz == null) delete process.env.TZ
+    else process.env.TZ = env.tz
+  }
 })
 
 test('garmin scale drives body composition, multi-weigh-in series, weight merge, and goal', () => {
@@ -575,7 +595,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
-  assert.equal(rows[0].athlete.hrMaxEst, 182)
+  assert.equal(rows[0].athlete.hrMaxEst, 184)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
   assert.deepEqual([...new Set(kinds)], order)

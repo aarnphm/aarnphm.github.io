@@ -83,9 +83,10 @@ const AVG_CADENCE_KEYS = [
 const ASCENT_M_KEYS = ['elevationGain', 'totalAscent', 'totalAscentM', 'totalElevationGain']
 const DESCENT_M_KEYS = ['elevationLoss', 'totalDescent', 'totalDescentM', 'totalElevationLoss']
 const WORK_KJ_KEYS = ['kilojoules', 'totalWorkKJ']
-const WORK_J_KEYS = ['totalWork']
+const WORK_KCAL_KEYS = ['totalWork']
 const TSS_KEYS = ['trainingStressScore', 'tss']
 const IF_KEYS = ['intensityFactor']
+const KJ_PER_KCAL = 4.184
 
 const CALORIES_CONSUMED_KEYS = [
   'caloriesConsumed',
@@ -695,7 +696,7 @@ export function garminConnectActivity(
   metrics.totalDescentM = rounded(firstNumber(records, DESCENT_M_KEYS))
   metrics.totalWorkKJ =
     roundedFloat(firstNumber(records, WORK_KJ_KEYS), 1) ??
-    roundedFloat((firstNumber(records, WORK_J_KEYS) ?? 0) / 1000, 1)
+    roundedFloat((firstNumber(records, WORK_KCAL_KEYS) ?? 0) * KJ_PER_KCAL, 1)
   metrics.trainingStressScore = roundedFloat(firstNumber(records, TSS_KEYS), 1)
   metrics.intensityFactor = roundedFloat(firstNumber(records, IF_KEYS), 3)
 
