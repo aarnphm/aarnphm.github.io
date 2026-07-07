@@ -9,6 +9,7 @@ import {
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
+import { DEFAULT_STRAVA_REFRESH_WINDOW_DAYS, stravaFetchAfter } from '../util/strava-sync-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readString } from '../util/type-guards'
 
@@ -22,6 +23,14 @@ const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
 const geoLimiter = new AdaptiveRateLimiter(1100, 30_000)
 const CONCURRENCY = 5
+
+function envNonnegativeNumber(name: string, fallback: number): number {
+  const value = process.env[name]
+  if (!value?.trim()) return fallback
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed < 0) throw new Error(`${name} must be nonnegative`)
+  return parsed
+}
 
 async function mapPool<T>(
   items: T[],
@@ -251,10 +260,14 @@ async function main(): Promise<void> {
   const stale = (prev?.version ?? 0) < CACHE_VERSION
   if (stale && prev)
     console.log('[strava] cache schema bumped → re-pulling all summaries to backfill')
-  const { activities, athleteId } = await fetchActivities(
-    access,
-    stale ? 0 : (prev?.lastActivityStart ?? 0),
+  const refreshWindowDays = envNonnegativeNumber(
+    'STRAVA_SYNC_REFRESH_DAYS',
+    DEFAULT_STRAVA_REFRESH_WINDOW_DAYS,
   )
+  const after = stravaFetchAfter(prev?.lastActivityStart, stale, refreshWindowDays)
+  if (!stale && after < (prev?.lastActivityStart ?? 0))
+    console.log(`[strava] refreshing ${refreshWindowDays}d recent activity overlap`)
+  const { activities, athleteId } = await fetchActivities(access, after)
 
   const merged: Record<string, RawStravaActivity> = { ...prev?.activities }
   for (const a of activities) merged[String(a.id)] = a

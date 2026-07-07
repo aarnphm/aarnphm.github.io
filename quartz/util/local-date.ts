@@ -1,4 +1,4 @@
-const DEFAULT_LOCAL_TIME_ZONE = 'America/Toronto'
+export const DEFAULT_LOCAL_TIME_ZONE = 'America/Toronto'
 
 interface LocalParts {
   year: number
@@ -10,12 +10,8 @@ interface LocalParts {
 }
 
 export function resolveLocalTimeZone(): string {
-  const configured =
-    process.env.HEALTH_TIMEZONE?.trim() ||
-    process.env.LOCAL_TIMEZONE?.trim() ||
-    process.env.TZ?.trim()
-  if (configured) return configured
-  return Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_LOCAL_TIME_ZONE
+  const configured = process.env.HEALTH_TIMEZONE?.trim() || process.env.LOCAL_TIMEZONE?.trim()
+  return configured || DEFAULT_LOCAL_TIME_ZONE
 }
 
 function localParts(ms: number, timeZone: string): LocalParts {

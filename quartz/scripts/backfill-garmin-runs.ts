@@ -10,6 +10,7 @@ import { upsertEnvLine } from '../util/env-file'
 import {
   applyGarminSetCookies,
   cleanGarminConnectBaseUrl,
+  DEFAULT_GARMIN_CONNECT_BASE,
   DEFAULT_GARMIN_IMPORT_BASE,
   garminConnectRequestHeaders,
   garminResponseSummary,
@@ -17,6 +18,7 @@ import {
   readGarminConnectSession,
   type GarminConnectSession,
 } from '../util/garmin-session'
+import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
 
@@ -511,9 +513,15 @@ async function main(): Promise<void> {
   const uploadBase = cleanGarminConnectBaseUrl(
     process.env.GARMIN_CONNECT_IMPORT_BASE_URL?.trim() || DEFAULT_GARMIN_IMPORT_BASE,
   )
+  const titleBase = cleanGarminConnectBaseUrl(
+    process.env.GARMIN_CONNECT_TITLE_BASE_URL?.trim() ||
+      process.env.GARMIN_CONNECT_BASE_URL?.trim() ||
+      DEFAULT_GARMIN_CONNECT_BASE,
+  )
 
   let uploaded = 0
   let duplicates = 0
+  let renamed = 0
   for (const candidate of candidates) {
     const activity = candidate.activity
     const filename = safeFilename(activity)
@@ -522,19 +530,28 @@ async function main(): Promise<void> {
     const path = joinSegments(args.outputDir, filename)
     await fs.writeFile(path, tcx)
     const result = await uploadTcx(session, uploadBase, filename, tcx)
+    const ids = resultIds(result.json)
     if (result.status === 409) {
       duplicates++
-      console.log(`[garmin-backfill] duplicate ${activity.id} ${filename}`)
+      console.log(
+        `[garmin-backfill] duplicate ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
+      )
     } else {
       uploaded++
-      const ids = resultIds(result.json)
       console.log(
         `[garmin-backfill] uploaded ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
       )
     }
+    for (const id of ids) {
+      await updateGarminActivityTitle(session, titleBase, id, activity.name)
+      renamed++
+      console.log(`[garmin-backfill] renamed ${id} -> ${activity.name}`)
+    }
     if (args.uploadDelayMs > 0) await sleep(args.uploadDelayMs)
   }
-  console.log(`[garmin-backfill] done uploaded=${uploaded} duplicate=${duplicates}`)
+  console.log(
+    `[garmin-backfill] done uploaded=${uploaded} duplicate=${duplicates} renamed=${renamed}`,
+  )
 }
 
 main().catch(err => {
