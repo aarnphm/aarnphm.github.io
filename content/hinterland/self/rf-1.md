@@ -30,7 +30,7 @@ that [[posts/romantic epistemology|romantic love]] is the telos, that friendship
 
 For three years I've built this _interpretive infrastructure_ with N—her silences, her pauses, her curiosity. This is how you come to know them, but creating these hermeneutics practices and accumulating capacity through sustained [[thoughts/Attention|attention]] such that the facts built itself into the picture, the same way you learnt a language through immersion and error and adjustment and non-sequiturs.
 
-somewhere in that process I fell into something that the vocabulary couldn't hold. In a the same way that it lives outside of my vernacular.
+somewhere in that process I fell into something that the vocabulary couldn't hold. In the same way that it lives outside of my vernacular.
 Wittgenstein posthumously said that "the limits of my language mean the limits of my world". There were feelings that I find not fitting inside the landscape of English grammatical structures. As such, I was in the process of figuring a whole new representation for the language of the heart and minds, to represent this being with N.
 "friend" and "partner" are the available categories, yet the emergent properties fit neither. The Aristotelian syllogism goes roughly like:
 

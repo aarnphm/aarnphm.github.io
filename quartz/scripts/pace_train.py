@@ -149,14 +149,19 @@ def build_dataset(meta: dict, days: dict, acts: list[dict], target: str):
   athlete = meta.get('athlete') or {}
   hr_max = athlete.get('hrMaxEst')
   hr_max = float(hr_max) if isinstance(hr_max, (int, float)) else None
-  today = datetime.now().strftime('%Y-%m-%d')
+  meta_today = meta.get('today')
+  today = (
+    meta_today
+    if isinstance(meta_today, str)
+    else datetime.now().strftime('%Y-%m-%d')
+  )
   rows_raw, rows_pres, ys, dates, sports = [], [], [], [], []
   vbbs, vreals = [], []
   for act in acts:
     sport = act.get('sport')
     if sport not in SPORTS:
       continue
-    if str(act.get('date', '')) >= today:
+    if str(act.get('date', '')) > today:
       continue
     vthr = vthr_by.get(sport, 0.0)
     if vthr <= 0:

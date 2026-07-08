@@ -293,9 +293,8 @@ const en: TriDict = {
     age: 'age',
     feet: 'feet',
     metres: 'metres',
-    'model forecast · 80% range': 'model forecast · 80% range',
-    'model forecast': 'model forecast',
-    'incl.': 'incl.',
+    'trend-projected finish · 80% range · incl. T1+T2':
+      'trend-projected finish · 80% range · incl. T1+T2',
     'custom date missing': 'custom date missing',
     'radar sprint bike definition':
       'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.',
@@ -751,9 +750,8 @@ const fr: TriDict = {
     age: 'âge',
     feet: 'pieds',
     metres: 'mètres',
-    'model forecast · 80% range': 'prévision modèle · plage 80 %',
-    'model forecast': 'prévision modèle',
-    'incl.': 'incl.',
+    'trend-projected finish · 80% range · incl. T1+T2':
+      'arrivée projetée par tendance · plage 80 % · incl. T1+T2',
     'custom date missing': 'date perso manquante',
     'radar sprint bike definition':
       "le sprint est la meilleure puissance vélo sur 5 s divisée par la masse corporelle. il mesure le punch anaérobie court avant que l'aérobie prenne le relais.",
