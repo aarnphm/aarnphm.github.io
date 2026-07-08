@@ -7,6 +7,7 @@ import type {
   BodyBlock,
   DailyPoint,
   RaceLeg,
+  SportTrend,
   Vo2LabProfile,
   Vo2LabProfileSample,
   Vo2LabProfileStats,
@@ -2566,6 +2567,29 @@ const fmtKm = (km: number): string =>
 const fmtSignedKm = (km: number): string =>
   isImperialUnit() ? `${signedFixed(km * KM_TO_MI, 1)} mi` : `${signedFixed(km, 1)} km`
 
+type TrendSamples = { centers: number[]; los: number[]; his: number[]; days: number }
+const trendSamples = (tr: SportTrend): TrendSamples | null => {
+  if (tr.level == null || tr.forecast.length < 1) return null
+  const lvl = tr.level
+  return {
+    centers: [lvl, ...tr.forecast.map(p => p.value)],
+    los: [lvl, ...tr.forecast.map(p => p.lo)],
+    his: [lvl, ...tr.forecast.map(p => p.hi)],
+    days: tr.forecast.length,
+  }
+}
+const sampleTrend = (
+  s: TrendSamples,
+  f: number,
+): { value: number; lo: number; hi: number; days: number } => {
+  const q = clampN(f, 0, 1) * s.days
+  const i0 = Math.floor(q)
+  const i1 = Math.min(s.days, i0 + 1)
+  const t = q - i0
+  const at = (a: number[]): number => a[i0] + (a[i1] - a[i0]) * t
+  return { value: at(s.centers), lo: at(s.los), hi: at(s.his), days: q }
+}
+
 const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
   const tr = bySport(data.trends, sport)
   const th = bySport(data.thresholds, sport)
@@ -2586,29 +2610,39 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     wrap.appendChild(el('div', 'tri-trend-note', msg))
     return wrap
   }
-  const fc = tr.forecast
-  if (fc.length >= 1 && tr.level != null) {
-    const level = tr.level
-    const m = fc.length
-    const weeks = m / 7
-    const slope = tr.slopePerWeek ?? 0
-    const endVal = level + slope * weeks
-    const change = Math.abs(endVal - level)
-    const pad = Math.max(change * 0.8, Math.abs(level) * 0.05, 1e-6)
-    const lo = Math.min(level, endVal) - pad
-    const hi = Math.max(level, endVal) + pad
+  const samples = trendSamples(tr)
+  if (samples) {
+    const { centers, los, his, days: M } = samples
+    const level = centers[0]
+    const weeks = M / 7
+    let cLo = Infinity
+    let cHi = -Infinity
+    for (let i = 0; i <= M; i++) {
+      if (centers[i] > cHi) cHi = centers[i]
+      if (centers[i] < cLo) cLo = centers[i]
+    }
+    const scale = Math.max(cHi - cLo, Math.abs(level) * 0.05, 1e-6)
+    const coneMax = scale * 0.5
+    const halfAt = (i: number): number => Math.min((his[i] - los[i]) / 2, coneMax)
+    let lo = cLo
+    let hi = cHi
+    for (let i = 0; i <= M; i++) {
+      const h = halfAt(i)
+      if (centers[i] + h > hi) hi = centers[i] + h
+      if (centers[i] - h < lo) lo = centers[i] - h
+    }
+    const pad = scale * 0.3
+    lo -= pad
+    hi += pad
     const span = Math.max(1e-6, hi - lo)
     const top = 4
     const bot = 24
-    const xOf = (p: number): number => p * ANA_W
+    const xOf = (i: number): number => (i / M) * ANA_W
     const Y = (v: number): number => {
       const t = (v - lo) / span
       return tr.invert ? top + t * (bot - top) : bot - t * (bot - top)
     }
     const Yc = (v: number): number => clampN(Y(v), 0.5, ANA_H - 0.5)
-    const valAt = (p: number): number => level + (endVal - level) * p
-    const ciHalf = (fc[m - 1].hi - fc[m - 1].lo) / 2
-    const coneEnd = clampN(ciHalf, change * 0.4 + 1e-6, span * 0.42)
     const s = svg('svg', {
       class: 'tri-ana-svg tri-trend-svg',
       viewBox: `0 0 ${ANA_W} ${ANA_H}`,
@@ -2616,32 +2650,26 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     })
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
     s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
-    const N = 12
-    const hiPts: string[] = []
-    const loPts: string[] = []
-    for (let k = 0; k <= N; k++) {
-      const p = k / N
-      const hw = coneEnd * Math.sqrt(p)
-      const c = valAt(p)
-      hiPts.push(`${xOf(p).toFixed(2)} ${Yc(c + hw).toFixed(2)}`)
-      loPts.push(`${xOf(p).toFixed(2)} ${Yc(c - hw).toFixed(2)}`)
+    const hiPts: [number, number][] = []
+    const loPts: [number, number][] = []
+    const midPts: [number, number][] = []
+    for (let i = 0; i <= M; i++) {
+      const h = halfAt(i)
+      hiPts.push([xOf(i), Yc(centers[i] + h)])
+      loPts.push([xOf(i), Yc(centers[i] - h)])
+      midPts.push([xOf(i), Yc(centers[i])])
     }
     s.appendChild(
       svg('path', {
-        d: `M ${hiPts.join(' L ')} L ${loPts.reverse().join(' L ')} Z`,
+        d: `${polyD([...hiPts, ...loPts.reverse()])} Z`,
         class: `tri-trend-band tri-fill-${sport}`,
       }),
     )
-    s.appendChild(
-      svg('path', {
-        d: `M ${xOf(0).toFixed(2)} ${Y(level).toFixed(2)} L ${xOf(1).toFixed(2)} ${Y(endVal).toFixed(2)}`,
-        class: `tri-trend-proj tri-line-${sport}`,
-      }),
-    )
+    s.appendChild(svg('path', { d: polyD(midPts), class: `tri-trend-proj tri-line-${sport}` }))
     s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
     const track = el('div', 'tri-trend-track')
     const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
-    dot.style.left = `${clampN((xOf(0) / ANA_W) * 100, 0, 98)}%`
+    dot.style.left = '0%'
     dot.style.top = `${clampN((Y(level) / ANA_H) * 100, 4, 96)}%`
     track.append(s, dot)
     const yax = el('div', 'tri-trend-yax')
@@ -2902,10 +2930,45 @@ const buildBody = (data: Analytics): HTMLElement => {
         if (p.bmr < blo) blo = p.bmr
         if (p.bmr > bhi) bhi = p.bmr
       }
+      const goalBmr = b.goalBmr ?? b.goalLeanBmr
+      if (goalBmr != null) {
+        if (goalBmr < blo) blo = goalBmr
+        if (goalBmr > bhi) bhi = goalBmr
+      }
       const brange = Math.max(40, bhi - blo)
-      const bLoP = blo - brange * 0.18
-      const bHiP = bhi + brange * 0.18
+      let bLoP = blo - brange * 0.18
+      let bHiP = bhi + brange * 0.18
+      if (goalBmr != null && b.goalKg != null) {
+        const weightGoalY = yPct(b.goalKg)
+        const goalY = (1 - (goalBmr - bLoP) / (bHiP - bLoP)) * 100
+        if (Math.abs(goalY - weightGoalY) < 10) {
+          const targetY = clampN(weightGoalY - 10, 12, 88)
+          bLoP = Math.min(bLoP, bHiP - ((bHiP - goalBmr) * 100) / targetY)
+        }
+      }
       const bY = (v: number): number => (1 - (v - bLoP) / (bHiP - bLoP)) * 100
+      if (goalBmr != null)
+        s.appendChild(
+          svg('line', {
+            x1: 0,
+            y1: bY(goalBmr),
+            x2: 100,
+            y2: bY(goalBmr),
+            class: 'tri-bodywt-bmr-goal',
+          }),
+        )
+      const firstB = bd[0]
+      const firstBx = xPct(firstB.ts)
+      if (firstBx > 0)
+        s.appendChild(
+          svg('line', {
+            x1: 0,
+            y1: bY(firstB.bmr),
+            x2: firstBx.toFixed(2),
+            y2: bY(firstB.bmr),
+            class: 'tri-bodywt-bmr-missing',
+          }),
+        )
       s.appendChild(
         svg('path', { d: polyD(bd.map(p => [xPct(p.ts), bY(p.bmr)])), class: 'tri-bodywt-bmr' }),
       )
@@ -2945,6 +3008,12 @@ const buildBody = (data: Analytics): HTMLElement => {
     cap.appendChild(
       markGloss(mathK('tri-ana-k', `${tl('goal')} ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'),
     )
+  }
+  if (b.goalBmr != null || b.goalLeanBmr != null) {
+    const lean = b.goalLeanBmr != null ? ` · FFM ${b.goalLeanBmr} kcal` : ''
+    const text =
+      b.goalBmr != null ? `goal BMR ${b.goalBmr} kcal${lean}` : `goal BMR ${b.goalLeanBmr} kcal`
+    cap.appendChild(markGloss(el('span', 'tri-ana-k tri-bmr-k', text), 'bmr'))
   }
   if (b.bodyFatPct != null)
     cap.appendChild(
@@ -5419,26 +5488,18 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
       const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
       const tr = bySport(data.trends, sport)
-      if (
-        !wrap ||
-        !svgEl ||
-        !cursor ||
-        !readout ||
-        !tr ||
-        tr.level == null ||
-        tr.forecast.length < 1
-      )
-        continue
-      const level = tr.level
-      const weeks = tr.forecast.length / 7
-      const endVal = level + (tr.slopePerWeek ?? 0) * weeks
+      const samples = tr ? trendSamples(tr) : null
+      if (!wrap || !svgEl || !cursor || !readout || !tr || !samples) continue
       items.push({
         svgEl,
         cursor,
         readout,
         hover: wrap,
-        textOf: f =>
-          `+${(f * weeks).toFixed(1)} wk · ${fmtTrendVal(sport, level + (endVal - level) * f)}`,
+        textOf: f => {
+          const at = sampleTrend(samples, f)
+          const band = `${fmtTrendShort(sport, Math.min(at.lo, at.hi))}–${fmtTrendShort(sport, Math.max(at.lo, at.hi))}`
+          return `+${(at.days / 7).toFixed(1)} wk · ${fmtTrendVal(sport, at.value)} · ${band}`
+        },
       })
     }
     cleanups.push(scrubGroup(items, f => f * ANA_W))
@@ -8497,7 +8558,7 @@ interface PredResult {
 }
 
 const PRED_AXIS_FRACS = [0, 0.25, 0.5, 0.75, 1]
-const PRED_DEFAULT_COMPARE: PredCompareKey = '30'
+const PRED_DEFAULT_COMPARE: PredCompareKey = '7'
 const PRED_CALENDAR_WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 const PRED_CALENDAR_MONTHS = [
   'January',
@@ -8849,7 +8910,7 @@ const predCompareKey = (block: HTMLElement): PredCompareKey => {
 }
 
 const predCompareOption = (key: PredCompareKey): (typeof PRED_COMPARE_OPTIONS)[number] =>
-  PRED_COMPARE_OPTIONS.find(option => option.key === key) ?? PRED_COMPARE_OPTIONS[2]
+  PRED_COMPARE_OPTIONS.find(option => option.key === key) ?? PRED_COMPARE_OPTIONS[0]
 
 const syncPredDateControl = (block: HTMLElement, f: PaceForecaster): void => {
   const trigger = block.querySelector<HTMLButtonElement>('.tri-pred-date')

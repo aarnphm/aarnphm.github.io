@@ -2621,17 +2621,24 @@
   margin-top: 0.5rem;
 }
 
-.tri-sleep-svg {
-  height: 88px;
-}
-
 .tri-seg--rest {
   fill: color-mix(in srgb, var(--gray) 40%, transparent);
 }
 
+.tri-bodywt-plot,
+.tri-trend-svg,
+.tri-sleep-svg,
+.tri-engine-vo2-spark,
 .tri-wkt-svg {
-  height: 88px;
+  height: auto;
+  aspect-ratio: 10 / 3;
+  min-height: 184px;
   cursor: pointer;
+}
+
+.tri-bodywt-plot {
+  position: relative;
+  flex: 1 1 auto;
 }
 
 .tri-wkt-band {
@@ -3263,10 +3270,6 @@
   width: 3px;
   height: 10px;
   background: var(--tri-accent);
-}
-
-.tri-engine-vo2-spark {
-  height: 38px;
 }
 
 .tri-vo2-proj {
@@ -4502,10 +4505,6 @@
 }
 .tri-dir-flat {
   color: var(--gray);
-}
-
-.tri-trend-svg {
-  height: 46px;
 }
 
 .tri-trend-band {
@@ -5878,12 +5877,6 @@
   color: color-mix(in srgb, var(--tri-swim) 80%, var(--gray));
 }
 
-.tri-bodywt-plot {
-  position: relative;
-  flex: 1 1 auto;
-  height: 96px;
-}
-
 .tri-bodywt-svg {
   display: block;
   width: 100%;
@@ -5954,6 +5947,22 @@
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
   opacity: 0.9;
+}
+
+.tri-bodywt-bmr-goal {
+  stroke: color-mix(in srgb, var(--tri-swim) 72%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 1.5 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-bmr-missing {
+  stroke: color-mix(in srgb, var(--tri-swim) 58%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .tri-bodywt-bpt {

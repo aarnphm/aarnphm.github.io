@@ -36,10 +36,10 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-06-30 20:39:15 GMT-04:00
+modified: 2026-07-07 20:14:26 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
-strava: '2026-05-13'
+strava: '2026-05-15'
 tags:
   - life
   - self
@@ -830,6 +830,7 @@ The DEXA math:
 - Chart weight target: 160.0 lb.
 - 14% body-fat checkpoint with fat-free mass preserved: about 166.9 lb total mass and 23.4 lb fat.
 - 160 lb target math with fat-free mass preserved: about 16.5 lb fat, about 10.3% total-mass fat, and about 37.6 lb fat loss from DEXA.
+- 160 lb goal-weight BMR: about 1780 kcal/day by Mifflin-St Jeor at 188 cm and age 25; lean-mass-preserved Katch-McArdle gives about 1775 kcal/day because fat-free mass stays 143.5 lb. Treat the DEXA RMR of 1695 kcal/day as the measured anchor until the next lab check.[^bmr]
 - Race-block checkpoint: 191-193 lb by 07-26 if readiness, sleep, and workout quality stay green. Do not chase a lower number during taper.
 
 The cut rate:
@@ -886,5 +887,49 @@ Race fueling:
 [^protein]: Jager et al., "International Society of Sports Nutrition Position Stand: protein and exercise", 2017. https://pubmed.ncbi.nlm.nih.gov/28642676/ See also Helms et al., "A systematic review of dietary protein during caloric restriction in resistance trained lean athletes", 2014. https://pubmed.ncbi.nlm.nih.gov/24092765/
 
 [^cho-period]: Gejl and Nybo, "Performance effects of periodized carbohydrate restriction in endurance trained athletes: a systematic review and meta-analysis", 2021. https://link.springer.com/article/10.1186/s12970-021-00435-3
+
+[^bmr]: Mifflin et al., "A new predictive equation for resting energy expenditure in healthy individuals", 1990. https://pubmed.ncbi.nlm.nih.gov/2305711/ The Katch-McArdle style lean-mass estimate uses $BMR = 370 + 21.6 \times FFM_{kg}$.
+
+<!-- training plan end -->
+
+<!-- training plan start
+meta: 45 minute climb
+distance: cycling
+date: 2026-07-27 to 2026-08-24
+target: climbing threshold durability
+author: strava,cts
+-->
+
+The CTS Forty-five Minute Climb block is anchored here as a post-Supertri cycling plan. It starts Monday 2026-07-27, runs 28 days through the 2026-08-24 boundary, and uses the standard 5:2 workout/rest rhythm: rides Tuesday through Thursday plus longer Saturday/Sunday rides, with Monday and Friday off. Total visible riding is about 25 hours across four weeks, or 6.25 h/week.
+
+Date gate: this anchor starts the day after Supertri race day, so no cycling workout lands inside the taper/race block. Keep Monday 2026-07-27 as rest, then start the first EM ride on Tuesday 2026-07-28 only if readiness, sleep, and legs are normal.
+
+## schedule
+
+| week | dates          | total | Mon  | Tue   | Wed   | Thu   | Fri  | Sat            | Sun               |
+| ---- | -------------- | ----: | ---- | ----- | ----- | ----- | ---- | -------------- | ----------------- |
+| 1    | 07-27 to 08-02 | 6h15m | rest | EM 1h | SS 1h | T 1h  | rest | EM + T 1h30    | EM 1h45           |
+| 2    | 08-03 to 08-09 | 6h15m | rest | EM 1h | CR 1h | OU 1h | rest | EM + uphill TT | EM 1h45           |
+| 3    | 08-10 to 08-16 | 6h30m | rest | EM 1h | SS 1h | T 1h  | rest | EM + SS 1h30   | EM 2h             |
+| 4    | 08-17 to 08-23 | 6h00m | rest | EM 1h | SS 1h | EM 1h | rest | EM 1h          | segment challenge |
+
+## visible workouts
+
+- Week 1 SS: 4x8 min Steady State, 5 min recovery.
+- Week 1 T: 3x12 min Tempo, 5 min recovery.
+- Week 1 weekend T: 4x12 min Tempo inside a 1h30 ride, 5 min recovery.
+- Week 2 CR: 5x6 min Climbing Repeats, 4 min recovery.
+- Week 2 OU: 4x8 min Over Under as 3 min under / 1 min over / 3 min under / 1 min over, 5 min recovery.
+- Week 2 uphill TT: 45 min uphill time trial, or 2x25 min uphill time trials.
+
+## intensity translation
+
+| code | Strava intent       | CTS intensity | power if 230 W FTP | use here                                     |
+| ---- | ------------------- | ------------: | -----------------: | -------------------------------------------- |
+| EM   | aerobic development |          5/10 |          104-168 W | easy endurance; HR still caps the day        |
+| T    | aerobic endurance   |          6/10 |          186-196 W | race-power durability when legs are normal   |
+| SS   | lactate threshold   |          7/10 |          198-207 W | threshold-adjacent, limit during Runna weeks |
+| CR   | climbing threshold  |          8/10 |          219-230 W | after-race climb strength; skip during taper |
+| OU   | threshold surges    |          9/10 |  198-207/219-230 W | after-race surge work; skip during taper     |
 
 <!-- training plan end -->

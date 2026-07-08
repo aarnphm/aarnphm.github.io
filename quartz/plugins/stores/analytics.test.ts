@@ -534,6 +534,28 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
   assert.equal(plainDay.muscleMassKg, null)
 })
 
+test('body block reports goal-weight bmr estimates from athlete goal and dexa lean mass', () => {
+  const { cache, oura, weights } = fixtures()
+  const a = buildAnalytics(cache, {
+    oura,
+    weights,
+    since: '2026-05-12',
+    dexa: [
+      {
+        date: '2026-06-25',
+        totalLbs: 197.6,
+        fatLbs: 54.2,
+        leanLbs: 135.7,
+        bmcLbs: 7.8,
+        ffmLbs: 143.5,
+        bodyFat: 27.4,
+      },
+    ],
+  })
+  assert.equal(a.body.goalBmr, 1781)
+  assert.equal(a.body.goalLeanBmr, 1776)
+})
+
 test('apple vo2max wins the estimate priority when present', () => {
   const { cache, oura, weights } = fixtures()
   const apple: AppleCache = {

@@ -44,6 +44,7 @@ export interface DexaRecord {
   fatLbs: number
   leanLbs: number
   bmcLbs: number
+  ffmLbs: number | null
   bodyFat: number
   vatLbs: number | null
   bmd: number | null
@@ -128,6 +129,8 @@ export interface BodyBlock {
   goalLbs: number | null
   goalDeltaKg: number | null
   goalEtaWeeks: number | null
+  goalBmr: number | null
+  goalLeanBmr: number | null
   bmi: number | null
   bodyFatPct: number | null
   bodyWaterPct: number | null
@@ -914,6 +917,35 @@ function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] 
   })
 }
 
+const TREND_FORECAST_DAYS = 14
+const TREND_HALFLIFE_DAYS = 28
+const TREND_DAMP = 0.94
+const TREND_Z = 1.28
+
+const dampedTrendForecast = (
+  today: number,
+  etaNow: number,
+  slopePerDay: number,
+  halfAt: (d: number) => number,
+): SportTrendForecastPoint[] => {
+  const out: SportTrendForecastPoint[] = []
+  let phi = 1
+  let cum = 0
+  for (let d = 1; d <= TREND_FORECAST_DAYS; d++) {
+    phi *= TREND_DAMP
+    cum += phi
+    const value = etaNow + slopePerDay * cum
+    const half = halfAt(d)
+    out.push({
+      date: new Date(today + d * DAY_MS).toISOString().slice(0, 10),
+      value: round(value, 1),
+      lo: round(value - half, 1),
+      hi: round(value + half, 1),
+    })
+  }
+  return out
+}
+
 function buildTrend(
   acts: Act[],
   threshold: ThresholdEstimate,
@@ -975,32 +1007,24 @@ function buildTrend(
   }
 
   if (n >= 6 && spanDays >= 21 && maxGap <= 14) {
-    const mx = mean(xs)
-    const my = mean(ys)
+    const w = xs.map(x => 0.5 ** ((todayX - x) / TREND_HALFLIFE_DAYS))
+    const wSum = w.reduce((s, v) => s + v, 0)
+    const mx = xs.reduce((s, x, i) => s + w[i] * x, 0) / wSum
+    const my = ys.reduce((s, y, i) => s + w[i] * y, 0) / wSum
     let sxx = 0
     let sxy = 0
-    for (let i = 0; i < xs.length; i++) {
-      sxx += (xs[i] - mx) ** 2
-      sxy += (xs[i] - mx) * (ys[i] - my)
+    for (let i = 0; i < n; i++) {
+      sxx += w[i] * (xs[i] - mx) ** 2
+      sxy += w[i] * (xs[i] - mx) * (ys[i] - my)
     }
     const b = sxx > 0 ? sxy / sxx : 0
     const a = my - b * mx
-    const resid = ys.map((y, i) => y - (a + b * xs[i]))
-    const dof = Math.max(1, n - 2)
-    const se = Math.sqrt(resid.reduce((s, r) => s + r * r, 0) / dof)
+    const wr2 = ys.reduce((s, y, i) => s + w[i] * (y - (a + b * xs[i])) ** 2, 0)
+    const nEff = wSum ** 2 / w.reduce((s, v) => s + v * v, 0)
+    const se = Math.sqrt(wr2 / wSum) * Math.sqrt(nEff / Math.max(1, nEff - 2))
     const etaNow = a + b * todayX
-    const forecast: SportTrendForecastPoint[] = []
-    for (let d = 1; d <= 14; d++) {
-      const fx = todayX + d
-      const fitted = a + b * fx
-      const band = 1.96 * se * Math.sqrt(1 + 1 / n + (fx - mx) ** 2 / (sxx || 1))
-      forecast.push({
-        date: new Date(today + d * DAY_MS).toISOString().slice(0, 10),
-        value: round(fitted, 1),
-        lo: round(fitted - band, 1),
-        hi: round(fitted + band, 1),
-      })
-    }
+    const halfAt = (d: number): number =>
+      TREND_Z * se * Math.sqrt(1 / nEff + (todayX + d - mx) ** 2 / (sxx || 1))
     return {
       sport,
       unit,
@@ -1013,7 +1037,7 @@ function buildTrend(
       slopePerWeek: round(b * 7, 2),
       etaNow: round(etaNow, 1),
       note: `${n} efforts over ${spanDays}d`,
-      forecast,
+      forecast: dampedTrendForecast(today, etaNow, b, halfAt),
     }
   }
 
@@ -1025,22 +1049,14 @@ function buildTrend(
     for (let j = 1; j <= i; j++) l += alpha * (ys[j] - l)
     return y - l
   })
-  const band = 1.5 * sd(resid)
+  const sigma = sd(resid)
   const firstHalf = mean(ys.slice(0, Math.max(1, Math.floor(ys.length / 2))))
   const secondHalf = mean(ys.slice(Math.floor(ys.length / 2)))
   const perPoint = ys.length > 1 ? (secondHalf - firstHalf) / Math.max(1, ys.length / 2) : 0
   const avgGap = spanDays > 0 && n > 1 ? spanDays / (n - 1) : 7
   const slopePerWeek = avgGap > 0 ? round((perPoint / avgGap) * 7, 2) : 0
-  const forecast: SportTrendForecastPoint[] = []
-  for (let d = 1; d <= 14; d++) {
-    const fitted = level + slopePerWeek * (d / 7)
-    forecast.push({
-      date: new Date(today + d * DAY_MS).toISOString().slice(0, 10),
-      value: round(fitted, 1),
-      lo: round(fitted - band, 1),
-      hi: round(fitted + band, 1),
-    })
-  }
+  const sigmaLevel = sigma * Math.sqrt(alpha / (2 - alpha))
+  const halfAt = (d: number): number => TREND_Z * sigmaLevel * Math.sqrt(d / TREND_FORECAST_DAYS)
   return {
     sport,
     unit,
@@ -1053,7 +1069,7 @@ function buildTrend(
     slopePerWeek,
     etaNow: round(level, 1),
     note: `${n} efforts, ewma`,
-    forecast,
+    forecast: dampedTrendForecast(today, level, slopePerWeek / 7, halfAt),
   }
 }
 
@@ -1562,6 +1578,8 @@ const emptyBody = (): BodyBlock => ({
   goalLbs: null,
   goalDeltaKg: null,
   goalEtaWeeks: null,
+  goalBmr: null,
+  goalLeanBmr: null,
   bmi: null,
   bodyFatPct: null,
   bodyWaterPct: null,
@@ -1573,8 +1591,17 @@ const emptyBody = (): BodyBlock => ({
   composition: [],
 })
 
+const katchMcArdleBmrFromLeanKg = (leanKg: number): number => Math.round(370 + 21.6 * leanKg)
+
 const katchMcArdleBmr = (weightKg: number, bodyFatPct: number): number =>
-  Math.round(370 + 21.6 * weightKg * (1 - bodyFatPct / 100))
+  katchMcArdleBmrFromLeanKg(weightKg * (1 - bodyFatPct / 100))
+
+const mifflinStJeorBmr = (
+  weightKg: number,
+  heightCm: number,
+  ageYears: number,
+  sex: typeof ATHLETE.sex,
+): number => Math.round(10 * weightKg + 6.25 * heightCm - 5 * ageYears + (sex === 'M' ? 5 : -161))
 
 function weightTrendPerWeek(series: { date: string; kg: number }[]): number | null {
   const pts = series.map(e => ({ t: dayMs(e.date) / DAY_MS, w: e.kg }))
@@ -1934,7 +1961,7 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
 }
 
 export const ATHLETE = {
-  sex: 'M' as const,
+  sex: 'M' as 'M' | 'F',
   born: '2001-03',
   bornAnchor: '2001-03-01',
   hrMax: 184 as number | null,
@@ -1942,6 +1969,7 @@ export const ATHLETE = {
   ftp: 230 as number | null,
   goalWeightLb: 160 as number | null,
   goalFTP: 290 as number | null,
+  heightCm: 188,
 }
 
 const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * 0.45359237 : null
@@ -2104,6 +2132,7 @@ const parseDexa = (raw: unknown): DexaRecord[] => {
       fatLbs,
       leanLbs,
       bmcLbs,
+      ffmLbs: numAt(item, 'ffmLbs'),
       bodyFat,
       vatLbs: numAt(item, 'vatLbs'),
       bmd: numAt(item, 'bmd'),
@@ -3350,6 +3379,12 @@ export function buildAnalytics(
   const goalEtaWeeks = converging
     ? Math.min(104, Math.ceil(Math.abs(goalDeltaKg / trendKgPerWeek)))
     : null
+  const latestFfmLbs =
+    latestDexa?.ffmLbs ?? (latestDexa ? latestDexa.leanLbs + latestDexa.bmcLbs : null)
+  const goalBmr =
+    goalKg != null ? mifflinStJeorBmr(goalKg, ATHLETE.heightCm, ageOn(today), ATHLETE.sex) : null
+  const goalLeanBmr =
+    latestFfmLbs != null ? katchMcArdleBmrFromLeanKg(latestFfmLbs * 0.45359237) : null
   const body: BodyBlock = {
     latestKg,
     latestLbs: latestKg != null ? round(latestKg / 0.45359237, 1) : null,
@@ -3358,6 +3393,8 @@ export function buildAnalytics(
     goalLbs: goalKg != null ? round(goalKg / 0.45359237, 1) : null,
     goalDeltaKg,
     goalEtaWeeks,
+    goalBmr,
+    goalLeanBmr,
     bmi: lastComp('bmi'),
     bodyFatPct: lastComp('bodyFatPct'),
     bodyWaterPct: lastComp('bodyWaterPct'),
