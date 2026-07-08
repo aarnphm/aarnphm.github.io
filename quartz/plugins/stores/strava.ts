@@ -716,7 +716,12 @@ function projectDetail(
     avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
     calories: a.calories ? Math.round(a.calories) : (garmin?.totalCalories ?? null),
-    avgTemp: a.averageTemp != null ? Math.round(a.averageTemp) : null,
+    avgTemp:
+      a.averageTemp != null
+        ? Math.round(a.averageTemp)
+        : weather?.temperatureC != null
+          ? Math.round(weather.temperatureC)
+          : null,
     windKph: weather?.windKph ?? null,
     windDir: weather?.windDir ?? null,
     windDirDeg: weather?.windDirDeg ?? null,
