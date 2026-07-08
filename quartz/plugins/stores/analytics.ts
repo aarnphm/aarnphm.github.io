@@ -368,6 +368,10 @@ export interface RaceReadiness {
   distance: RaceDistance
   legs: RaceLeg[]
   predictedTotalS: number
+  currentTotalS: number
+  predictedFastS: number
+  predictedSlowS: number
+  projected: boolean
   score: number
   fitnessReady: number
   bindingLeg: Sport
@@ -1203,31 +1207,70 @@ function legSplitSeconds(distKm: number, vThr: number, k: number): number {
   return T_REF_S * Math.pow(distKm / dRefKm, k)
 }
 
+const TREND_PROJ_CLAMP = 0.08
+const TREND_BAND_CLAMP = 0.12
+
+function trendVelocityRatios(tr: SportTrend | undefined): {
+  mid: number
+  fast: number
+  slow: number
+  usable: boolean
+} {
+  const none = { mid: 1, fast: 1, slow: 1, usable: false }
+  if (!tr || tr.stale || tr.level == null || tr.level <= 0) return none
+  const last = tr.forecast[tr.forecast.length - 1]
+  if (!last || last.value <= 0 || last.lo <= 0 || last.hi <= 0) return none
+  const mid = clamp(
+    tr.invert ? tr.level / last.value : last.value / tr.level,
+    1 - TREND_PROJ_CLAMP,
+    1 + TREND_PROJ_CLAMP,
+  )
+  const halfFrac = clamp((last.hi - last.lo) / (2 * last.value), 0, TREND_BAND_CLAMP)
+  return { mid, fast: mid * (1 + halfFrac), slow: mid * (1 - halfFrac), usable: true }
+}
+
 function buildReadiness(
   distance: RaceDistance,
   thresholds: Map<Sport, ThresholdEstimate>,
   bests: Map<Sport, SportBest>,
   ctlNow: number,
+  trends: Map<Sport, SportTrend>,
 ): RaceReadiness {
   const legKm = RACE_LEGS[distance]
+  const ratios = new Map(SPORT_ORDER.map(s => [s, trendVelocityRatios(trends.get(s))]))
+  const splitAt = (sport: Sport, vThr: number): number => {
+    const raw = legSplitSeconds(legKm[sport], vThr, RIEGEL_K[sport])
+    return sport === 'run' ? raw * RUN_BRICK_FADE[distance] : raw
+  }
   const legs: RaceLeg[] = SPORT_ORDER.map(sport => {
     const th = thresholds.get(sport)!
     const longestKm = bests.get(sport)?.longestKm ?? 0
     const coverage = clamp(longestKm / legKm[sport], 0, 1)
     const gate = recencyGate(th.staleDays)
-    const raw = legSplitSeconds(legKm[sport], th.vThr, RIEGEL_K[sport])
-    const splitS = sport === 'run' ? raw * RUN_BRICK_FADE[distance] : raw
     return {
       sport,
       legKm: legKm[sport],
       longestKm,
       coverage,
       recencyGate: gate,
-      splitS: round(splitS, 0),
+      splitS: round(splitAt(sport, th.vThr * ratios.get(sport)!.mid), 0),
     }
   })
 
-  const total = legs.reduce((s, l) => s + l.splitS, 0) + T1_S + T2_S
+  const trans = T1_S + T2_S
+  const total = legs.reduce((s, l) => s + l.splitS, 0) + trans
+  let currentTotal = trans
+  let fastTotal = trans
+  let slowTotal = trans
+  for (const sport of SPORT_ORDER) {
+    const th = thresholds.get(sport)!
+    const r = ratios.get(sport)!
+    currentTotal += splitAt(sport, th.vThr)
+    fastTotal += splitAt(sport, th.vThr * r.fast)
+    slowTotal += splitAt(sport, th.vThr * r.slow)
+  }
+  const projected = SPORT_ORDER.some(s => ratios.get(s)!.usable && ratios.get(s)!.mid !== 1)
+
   const fitnessReady = clamp(ctlNow / RACE_REF[distance], 0, 1)
   const gatedCoverage = legs.map(l => l.coverage * l.recencyGate)
   const score = round(100 * (0.45 * fitnessReady + 0.55 * mean(gatedCoverage)), 0)
@@ -1257,6 +1300,10 @@ function buildReadiness(
     distance,
     legs,
     predictedTotalS: round(total, 0),
+    currentTotalS: round(currentTotal, 0),
+    predictedFastS: round(fastTotal, 0),
+    predictedSlowS: round(slowTotal, 0),
+    projected,
     score,
     fitnessReady: round(fitnessReady, 2),
     bindingLeg,
@@ -3420,7 +3467,7 @@ export function buildAnalytics(
 
   const ctlNow = daily.length ? daily[daily.length - 1].ctl : 0
   const races = (['sprint', 'olympic', '70.3', 'ironman'] as RaceDistance[]).map(distance =>
-    buildReadiness(distance, thresholds, bests, ctlNow),
+    buildReadiness(distance, thresholds, bests, ctlNow, trendMap),
   )
 
   const recentCut = todayMs - 42 * DAY_MS

@@ -98,7 +98,7 @@ import {
   type PaceSport,
   isPaceSport,
 } from '../../util/pace-features'
-import { type FinishForecast, PaceForecaster, Z80 } from '../../util/pace-forecast'
+import { PaceForecaster, Z80 } from '../../util/pace-forecast'
 import { applyMonochromeMapPalette, loadMapbox } from './mapbox-client'
 
 export {}
@@ -2518,13 +2518,26 @@ const buildReadiness = (data: Analytics): HTMLElement => {
       markGloss(el('span', `tri-rdy-bind tri-leg-${r.bindingLeg}`, tl(r.bindingLeg)), 'binding'),
       markGloss(el('span', 'tri-rdy-time', hms(r.predictedTotalS)), 'predtime'),
     )
+    const gain = r.currentTotalS - r.predictedTotalS
+    const showGain = r.projected && Math.abs(gain) >= 1
+    meta.appendChild(
+      el(
+        'span',
+        `tri-rdy-delta${showGain ? ` tri-dir-${gain > 0 ? 'up' : 'down'}` : ''}`,
+        showGain ? `${gain > 0 ? '−' : '+'}${hms(Math.abs(gain))}` : '',
+      ),
+    )
+    const rangeTxt =
+      r.predictedFastS < r.predictedSlowS ? `${hms(r.predictedFastS)}–${hms(r.predictedSlowS)}` : ''
+    meta.appendChild(
+      markGloss(
+        el('span', 'tri-rdy-forecast', rangeTxt, {
+          title: tl('trend-projected finish · 80% range · incl. T1+T2'),
+        }),
+        'predtime',
+      ),
+    )
     row.appendChild(meta)
-    const fc = el('span', 'tri-rdy-forecast', '', {
-      'data-legs': JSON.stringify(r.legs.map(l => ({ sport: l.sport, distanceKm: l.legKm }))),
-      title: tl('model forecast · 80% range'),
-    })
-    meta.appendChild(fc)
-    if (paceForecaster?.ready) queueMicrotask(() => void fillForecastSlot(fc))
     block.appendChild(row)
   }
   return block
@@ -8450,59 +8463,6 @@ function normCdf(z: number): number {
 let paceForecaster: PaceForecaster | null = null
 let paceForecastUnavailable = false
 
-const RACE_T1_S = 300
-const RACE_T2_S = 300
-
-function applyForecastToRow(slot: HTMLElement, fin: FinishForecast): void {
-  const row = slot.closest<HTMLElement>('.tri-rdy-row')
-  if (!row) return
-  const time = row.querySelector<HTMLElement>('.tri-rdy-time')
-  if (time) time.textContent = hms(fin.midSec)
-  const track = row.querySelector<HTMLElement>('.tri-rdy-bar')
-  if (track)
-    renderLegSegments(
-      track,
-      fin.legs.map(leg => ({
-        sport: leg.sport,
-        legKm: leg.distanceKm,
-        splitS: Math.round(leg.midSec),
-      })),
-    )
-}
-
-async function fillForecastSlot(slot: HTMLElement): Promise<void> {
-  if (!paceForecaster?.ready || slot.dataset.filled) return
-  let legs: PaceLegSpec[]
-  try {
-    const raw = JSON.parse(slot.dataset.legs ?? '[]') as { sport: string; distanceKm: number }[]
-    legs = raw
-      .filter(l => isPaceSport(l.sport) && l.distanceKm > 0)
-      .map(l => ({
-        sport: l.sport as PaceSport,
-        distanceKm: l.distanceKm,
-        elevationM: 0,
-        tempC: null,
-        windKph: null,
-      }))
-  } catch {
-    return
-  }
-  if (!legs.length) return
-  const fin = await paceForecaster.forecastFinish(legs, RACE_T1_S + RACE_T2_S)
-  if (!fin) return
-  slot.dataset.filled = '1'
-  slot.replaceChildren()
-  slot.title = `${tl('model forecast')} · ${tl('finish')} ≈ ${hms(fin.fastSec)}–${hms(fin.slowSec)} · ${tl('incl.')} ${clock(RACE_T1_S + RACE_T2_S)} T1+T2`
-  for (const leg of fin.legs)
-    slot.appendChild(el('span', `tri-rdy-fc-leg tri-leg-${leg.sport}`, hms(leg.midSec)))
-  applyForecastToRow(slot, fin)
-}
-
-function fillForecasts(scope: ParentNode): void {
-  for (const slot of scope.querySelectorAll<HTMLElement>('.tri-rdy-forecast'))
-    void fillForecastSlot(slot)
-}
-
 const PRED_SPORTS: { sport: PaceSport; dists: { km: number; label: string }[] }[] = [
   {
     sport: 'swim',
@@ -9340,7 +9300,6 @@ const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
         markDistancePredictorUnavailable(root)
         return
       }
-      fillForecasts(root)
       void fillDistancePredictor(root)
     })
     .catch(() => {
