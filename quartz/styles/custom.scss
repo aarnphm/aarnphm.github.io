@@ -602,9 +602,6 @@ footer[class~='menu'] {
 .callout[data-callout] {
   --callout-color: inherit;
   border-radius: var(--radius-none);
-}
-
-.callout[data-callout] {
   background: transparent;
   border: 1px solid var(--dark);
 }

@@ -13,7 +13,18 @@ test('parseViews preserves raw filters', () => {
 })
 
 test('parseViews rejects missing type/name', () => {
-  assert.throws(() => parseViews([{}]))
+  assert.throws(
+    () => parseViews([{}]),
+    /View at index 0 must have non-empty 'type' and 'name' fields/,
+  )
+})
+
+test('parseViews rejects invalid entries and view types', () => {
+  assert.throws(() => parseViews(['table']), /View at index 0 must be an object/)
+  assert.throws(
+    () => parseViews([{ type: 'spreadsheet', name: 'all' }]),
+    /View at index 0 has unsupported type 'spreadsheet'/,
+  )
 })
 
 test('parseViewSummaries resolves builtin and formula refs', () => {

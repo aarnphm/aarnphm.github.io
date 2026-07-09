@@ -1,5 +1,4 @@
 import type { Mermaid } from 'mermaid'
-import { removeAllChildren } from './util'
 
 interface Position {
   x: number
@@ -312,7 +311,7 @@ async function setupMermaid(root: Document | HTMLElement = document) {
       const container = popupContainer!.querySelector('#mermaid-space') as HTMLElement
       const content = popupContainer!.querySelector('.mermaid-content') as HTMLElement
       if (!content) return
-      removeAllChildren(content)
+      content.replaceChildren()
 
       const mermaidContent = codeBlock.querySelector('svg')!.cloneNode(true) as SVGElement
       content.appendChild(mermaidContent)

@@ -2,6 +2,8 @@ import Foundation
 
 @MainActor
 final class HealthExporterViewModel: ObservableObject {
+  private static let catchUpInterval: TimeInterval = 60 * 60
+
   @Published var status = "Waiting for HealthKit permission"
   @Published var filePath = HealthExportWriter.visiblePath
   @Published var generatedAt = "Never"
@@ -12,10 +14,15 @@ final class HealthExporterViewModel: ObservableObject {
   @Published var isExporting = false
 
   func prepare() async {
+    if let result = await HealthExportRuntime.shared.currentExport() {
+      apply(result)
+    }
     do {
       try await HealthExportRuntime.shared.requestAuthorization()
       HealthBackgroundScheduler.shared.schedule()
-      status = "Ready"
+      let result = try await HealthExportRuntime.shared.catchUpIfNeeded(maxAge: Self.catchUpInterval)
+      apply(result)
+      status = "Ready. Background sync runs when Health changes."
     } catch {
       status = message(error)
     }
@@ -28,18 +35,22 @@ final class HealthExporterViewModel: ObservableObject {
     Task {
       do {
         let result = try await HealthExportRuntime.shared.export(force: true)
-        generatedAt = result.document.generatedAt
-        dayCount = result.document.days.count
-        swimCount = result.document.swims.count
-        workoutCount = result.document.workouts.count
-        heartRateCount = result.document.workouts.reduce(0) { $0 + $1.heartRate.count }
-        filePath = HealthExportWriter.visiblePath
+        apply(result)
         status = "Exported to iCloud Drive"
       } catch {
         status = message(error)
       }
       isExporting = false
     }
+  }
+
+  private func apply(_ result: HealthExportResult) {
+    generatedAt = result.document.generatedAt
+    dayCount = result.document.days.count
+    swimCount = result.document.swims.count
+    workoutCount = result.document.workouts.count
+    heartRateCount = result.document.workouts.reduce(0) { $0 + $1.heartRate.count }
+    filePath = HealthExportWriter.visiblePath
   }
 
   private func message(_ error: Error) -> String {

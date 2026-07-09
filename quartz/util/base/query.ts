@@ -10,6 +10,45 @@ type SummaryValueResolver = (
 
 type SummaryContextFactory = (file: QuartzPluginData) => EvalContext
 
+const isFiniteNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+
+const isValidDate = (value: unknown): value is Date =>
+  value instanceof Date && Number.isFinite(value.getTime())
+
+const formatDate = (timestamp: number): string | undefined => {
+  const date = new Date(timestamp)
+  return Number.isFinite(date.getTime()) ? date.toISOString().split('T')[0] : undefined
+}
+
+const dateTimestamp = (value: unknown): number | undefined => {
+  if (isValidDate(value)) return value.getTime()
+  if (typeof value === 'number') {
+    return Number.isFinite(new Date(value).getTime()) ? value : undefined
+  }
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}/.test(value)) return undefined
+  const timestamp = new Date(value).getTime()
+  return Number.isFinite(timestamp) ? timestamp : undefined
+}
+
+const computeExtremum = (values: unknown[], type: 'min' | 'max'): string | number | undefined => {
+  const dates = values.filter(isValidDate)
+  const numbers = values.filter(isFiniteNumber)
+  const numericValues = [...numbers, ...dates.map(date => date.getTime())]
+
+  if (numericValues.length > 0) {
+    const extremum = type === 'min' ? Math.min(...numericValues) : Math.max(...numericValues)
+    return dates.length > 0 ? formatDate(extremum) : extremum
+  }
+
+  const strings = values.filter((value): value is string => typeof value === 'string')
+  if (strings.length === 0) return undefined
+  return strings.reduce((extremum, value) => {
+    if (type === 'min') return value < extremum ? value : extremum
+    return value > extremum ? value : extremum
+  })
+}
+
 export function computeColumnSummary(
   column: string,
   files: QuartzPluginData[],
@@ -48,7 +87,7 @@ export function computeColumnSummary(
 }
 
 function computeBuiltinSummary(
-  values: any[],
+  values: unknown[],
   type: BuiltinSummaryType,
 ): string | number | undefined {
   switch (type) {
@@ -56,74 +95,46 @@ function computeBuiltinSummary(
       return values.length
 
     case 'sum': {
-      const nums = values.filter(v => typeof v === 'number')
+      const nums = values.filter(isFiniteNumber)
       if (nums.length === 0) return undefined
       return nums.reduce((acc, v) => acc + v, 0)
     }
 
     case 'average':
     case 'avg': {
-      const nums = values.filter(v => typeof v === 'number')
+      const nums = values.filter(isFiniteNumber)
       if (nums.length === 0) return undefined
       const sum = nums.reduce((acc, v) => acc + v, 0)
       return Math.round((sum / nums.length) * 100) / 100
     }
 
-    case 'min': {
-      const comparable = values.filter(
-        v => typeof v === 'number' || v instanceof Date || typeof v === 'string',
-      )
-      if (comparable.length === 0) return undefined
-      const normalized = comparable.map(v => (v instanceof Date ? v.getTime() : v))
-      const min = Math.min(...normalized.filter(v => typeof v === 'number'))
-      if (isNaN(min)) {
-        const strings = comparable.filter(v => typeof v === 'string') as string[]
-        if (strings.length === 0) return undefined
-        return strings.sort()[0]
-      }
-      if (comparable.some(v => v instanceof Date)) {
-        return new Date(min).toISOString().split('T')[0]
-      }
-      return min
-    }
+    case 'min':
+      return computeExtremum(values, 'min')
 
-    case 'max': {
-      const comparable = values.filter(
-        v => typeof v === 'number' || v instanceof Date || typeof v === 'string',
-      )
-      if (comparable.length === 0) return undefined
-      const normalized = comparable.map(v => (v instanceof Date ? v.getTime() : v))
-      const max = Math.max(...normalized.filter(v => typeof v === 'number'))
-      if (isNaN(max)) {
-        const strings = comparable.filter(v => typeof v === 'string') as string[]
-        if (strings.length === 0) return undefined
-        return strings.sort().reverse()[0]
-      }
-      if (comparable.some(v => v instanceof Date)) {
-        return new Date(max).toISOString().split('T')[0]
-      }
-      return max
-    }
+    case 'max':
+      return computeExtremum(values, 'max')
 
     case 'range': {
-      const comparable = values.filter(
-        v => typeof v === 'number' || v instanceof Date || typeof v === 'string',
-      )
-      if (comparable.length === 0) return undefined
-      const normalized = comparable.map(v => (v instanceof Date ? v.getTime() : v))
-      const nums = normalized.filter(v => typeof v === 'number')
+      const dates = values.filter(isValidDate)
+      const nums = [...values.filter(isFiniteNumber), ...dates.map(date => date.getTime())]
       if (nums.length === 0) return undefined
       const min = Math.min(...nums)
       const max = Math.max(...nums)
-      if (comparable.some(v => v instanceof Date)) {
-        return `${new Date(min).toISOString().split('T')[0]} - ${new Date(max).toISOString().split('T')[0]}`
+      if (dates.length > 0) {
+        const start = formatDate(min)
+        const end = formatDate(max)
+        return start && end ? `${start} - ${end}` : undefined
       }
       return `${min} - ${max}`
     }
 
     case 'unique': {
       const nonNull = values.filter(v => v !== undefined && v !== null && v !== '')
-      const unique = new Set(nonNull.map(v => (v instanceof Date ? v.toISOString() : String(v))))
+      const normalized = nonNull.flatMap(value => {
+        if (!(value instanceof Date)) return [String(value)]
+        return isValidDate(value) ? [value.toISOString()] : []
+      })
+      const unique = new Set(normalized)
       return unique.size
     }
 
@@ -138,7 +149,7 @@ function computeBuiltinSummary(
     }
 
     case 'median': {
-      const nums = values.filter(v => typeof v === 'number') as number[]
+      const nums = values.filter(isFiniteNumber)
       if (nums.length === 0) return undefined
       const sorted = [...nums].sort((a, b) => a - b)
       const mid = Math.floor(sorted.length / 2)
@@ -149,7 +160,7 @@ function computeBuiltinSummary(
     }
 
     case 'stddev': {
-      const nums = values.filter(v => typeof v === 'number') as number[]
+      const nums = values.filter(isFiniteNumber)
       if (nums.length === 0) return undefined
       const mean = nums.reduce((acc, v) => acc + v, 0) / nums.length
       const variance = nums.reduce((acc, v) => acc + (v - mean) * (v - mean), 0) / nums.length
@@ -175,37 +186,23 @@ function computeBuiltinSummary(
     }
 
     case 'earliest': {
-      const dates = values.filter(
-        v =>
-          v instanceof Date ||
-          (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) ||
-          typeof v === 'number',
-      )
-      if (dates.length === 0) return undefined
-      const timestamps = dates.map(v => {
-        if (v instanceof Date) return v.getTime()
-        if (typeof v === 'string') return new Date(v).getTime()
-        return v
+      const timestamps = values.flatMap(value => {
+        const timestamp = dateTimestamp(value)
+        return timestamp === undefined ? [] : [timestamp]
       })
+      if (timestamps.length === 0) return undefined
       const earliest = Math.min(...timestamps)
-      return new Date(earliest).toISOString().split('T')[0]
+      return formatDate(earliest)
     }
 
     case 'latest': {
-      const dates = values.filter(
-        v =>
-          v instanceof Date ||
-          (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) ||
-          typeof v === 'number',
-      )
-      if (dates.length === 0) return undefined
-      const timestamps = dates.map(v => {
-        if (v instanceof Date) return v.getTime()
-        if (typeof v === 'string') return new Date(v).getTime()
-        return v
+      const timestamps = values.flatMap(value => {
+        const timestamp = dateTimestamp(value)
+        return timestamp === undefined ? [] : [timestamp]
       })
+      if (timestamps.length === 0) return undefined
       const latest = Math.max(...timestamps)
-      return new Date(latest).toISOString().split('T')[0]
+      return formatDate(latest)
     }
 
     default:

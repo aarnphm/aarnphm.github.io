@@ -1,7 +1,7 @@
 import { selectedCompletion, completionStatus } from '@codemirror/autocomplete'
 import { EditorView, ViewUpdate } from '@codemirror/view'
+import { fetchCanonical } from '../../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../../util/path'
-import { fetchCanonical } from '../../scripts/util'
 
 const parser = new DOMParser()
 

@@ -13,6 +13,22 @@ export { BUILTIN_SUMMARY_TYPES }
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.trim().length > 0
 
+const BASE_VIEW_TYPES = [
+  'table',
+  'list',
+  'gallery',
+  'board',
+  'calendar',
+  'card',
+  'cards',
+  'map',
+] as const
+
+type BaseViewType = (typeof BASE_VIEW_TYPES)[number]
+
+const isBaseViewType = (value: unknown): value is BaseViewType =>
+  BASE_VIEW_TYPES.some(type => type === value)
+
 export type BaseFileFilter =
   | string
   | { and: BaseFileFilter[] }
@@ -28,7 +44,7 @@ export interface BaseFile {
 }
 
 export interface BaseView {
-  type: 'table' | 'list' | 'gallery' | 'board' | 'calendar' | 'card' | 'cards' | 'map'
+  type: BaseViewType
   name: string
   order?: string[]
   sort?: BaseSortConfig[]
@@ -67,13 +83,16 @@ export interface BaseGroupBy {
 }
 
 export function parseViews(raw: unknown[]): BaseView[] {
-  return raw.map(entry => {
-    if (!isRecord(entry)) throw new Error('Each view must be an object')
+  return raw.map((entry, index) => {
+    if (!isRecord(entry)) throw new Error(`View at index ${index} must be an object`)
     const { type, name } = entry
     if (!isNonEmptyString(type) || !isNonEmptyString(name)) {
-      throw new Error("Each view must have 'type' and 'name' fields")
+      throw new Error(`View at index ${index} must have non-empty 'type' and 'name' fields`)
     }
-    return { ...entry, type, name } as BaseView
+    if (!isBaseViewType(type)) {
+      throw new Error(`View at index ${index} has unsupported type '${type}'`)
+    }
+    return { ...entry, type, name }
   })
 }
 

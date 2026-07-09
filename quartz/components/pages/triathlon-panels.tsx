@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact'
 import { SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
@@ -180,226 +181,255 @@ export const FeedPanel = () => (
   </section>
 )
 
+type TriPanelKind = 'analytics' | 'map' | 'training'
+
+interface TriPanelShellProps {
+  kind: TriPanelKind
+  page?: boolean
+  label: string
+  title: string
+  barClass?: string
+  titleClass?: string
+  bodyClass?: string
+  search: ComponentChildren
+  children: ComponentChildren
+}
+
+const TriPanelShell = ({
+  kind,
+  page,
+  label,
+  title,
+  barClass,
+  titleClass,
+  bodyClass,
+  search,
+  children,
+}: TriPanelShellProps) => {
+  const rootClass = `tri-${kind}`
+  return (
+    <>
+      <div class={`${rootClass}-scrim`} aria-hidden="true" />
+      <aside
+        class={`${rootClass}${page ? ` ${rootClass}--page` : ''}`}
+        aria-hidden={page ? 'false' : 'true'}
+        role="dialog"
+        aria-label={label}
+      >
+        <div class={`tri-ana-bar${barClass ? ` ${barClass}` : ''}`}>
+          <span class={`tri-ana-title${titleClass ? ` ${titleClass}` : ''}`} data-i18n={title}>
+            {title}
+          </span>
+          {search}
+          <button
+            class={`tri-ana-close${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
+            type="button"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div class={`tri-ana-body${bodyClass ? ` ${bodyClass}` : ''}`}>{children}</div>
+      </aside>
+    </>
+  )
+}
+
 export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
-  <>
-    <div class="tri-analytics-scrim" aria-hidden="true" />
-    <aside
-      class={`tri-analytics${page ? ' tri-analytics--page' : ''}`}
-      aria-hidden={page ? 'false' : 'true'}
-      role="dialog"
-      aria-label="triathlon analytics"
-    >
-      <div class="tri-ana-bar">
-        <span class="tri-ana-title" data-i18n="analytics">
-          analytics
-        </span>
-        <input
-          class="tri-ana-search"
-          type="search"
-          placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
-          aria-label="search analytics"
-          autocomplete="off"
-        />
-        <button class="tri-ana-close" type="button" aria-label="Close">
-          ×
-        </button>
-      </div>
-      <div class="tri-ana-body">
-        <div class="tri-ana-results" aria-hidden="true" />
-        <div class="tri-ana-detail" aria-hidden="true" />
-        <div class="tri-ana-block" data-chart="body" />
-        <div class="tri-ana-block" data-chart="dexa" />
-        <div class="tri-ana-block" data-chart="gauge" />
-        <div class="tri-ana-block" data-chart="recovery" />
-        <div class="tri-ana-block" data-chart="sleep" />
-        <div class="tri-ana-block" data-chart="vo2max" />
-        <div class="tri-ana-block" data-chart="vo2test" />
-        <div class="tri-ana-block" data-chart="abilities" />
-        <div class="tri-ana-block" data-chart="cardio" />
-        <div class="tri-ana-block" data-chart="pmc" />
-        <div class="tri-ana-block" data-chart="weekly" />
-        <div class="tri-ana-block" data-chart="effort" />
-        <div class="tri-ana-block" data-chart="readiness" />
-        <div class="tri-ana-block" data-chart="trend" />
-        <div class="tri-ana-block" data-chart="actions" />
-        <div class="tri-ana-block" data-chart="ftp" />
-      </div>
-    </aside>
-  </>
+  <TriPanelShell
+    kind="analytics"
+    page={page}
+    label="triathlon analytics"
+    title="analytics"
+    search={
+      <input
+        class="tri-ana-search"
+        type="search"
+        placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
+        aria-label="search analytics"
+        autocomplete="off"
+      />
+    }
+  >
+    <div class="tri-ana-results" aria-hidden="true" />
+    <div class="tri-ana-detail" aria-hidden="true" />
+    <div class="tri-ana-block" data-chart="body" />
+    <div class="tri-ana-block" data-chart="dexa" />
+    <div class="tri-ana-block" data-chart="gauge" />
+    <div class="tri-ana-block" data-chart="recovery" />
+    <div class="tri-ana-block" data-chart="sleep" />
+    <div class="tri-ana-block" data-chart="vo2max" />
+    <div class="tri-ana-block" data-chart="vo2test" />
+    <div class="tri-ana-block" data-chart="abilities" />
+    <div class="tri-ana-block" data-chart="cardio" />
+    <div class="tri-ana-block" data-chart="pmc" />
+    <div class="tri-ana-block" data-chart="weekly" />
+    <div class="tri-ana-block" data-chart="effort" />
+    <div class="tri-ana-block" data-chart="readiness" />
+    <div class="tri-ana-block" data-chart="trend" />
+    <div class="tri-ana-block" data-chart="actions" />
+    <div class="tri-ana-block" data-chart="ftp" />
+  </TriPanelShell>
 )
 
 export const MapPanel = ({ page }: { page?: boolean }) => (
-  <>
-    <div class="tri-map-scrim" aria-hidden="true" />
-    <aside
-      class={`tri-map${page ? ' tri-map--page' : ''}`}
-      aria-hidden={page ? 'false' : 'true'}
-      role="dialog"
-      aria-label="triathlon route maps"
-    >
-      <div class="tri-ana-bar tri-map-bar">
-        <span class="tri-ana-title tri-map-title" data-i18n="map">
-          map
-        </span>
-        <div class="tri-map-search-wrap">
-          <input
-            class="tri-ana-search tri-map-search"
-            type="search"
-            placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
-            aria-label="search routes"
-            autocomplete="off"
-          />
-          <div class="tri-ana-results tri-map-results" aria-hidden="true" />
-        </div>
-        <button class="tri-ana-close tri-map-close" type="button" aria-label="Close">
-          ×
-        </button>
+  <TriPanelShell
+    kind="map"
+    page={page}
+    label="triathlon route maps"
+    title="map"
+    barClass="tri-map-bar"
+    titleClass="tri-map-title"
+    bodyClass="tri-map-body"
+    search={
+      <div class="tri-map-search-wrap">
+        <input
+          class="tri-ana-search tri-map-search"
+          type="search"
+          placeholder="search (filter:bike|run|swim|walk, sort:distance|pace|cadence)"
+          aria-label="search routes"
+          autocomplete="off"
+        />
+        <div class="tri-ana-results tri-map-results" aria-hidden="true" />
       </div>
-      <div class="tri-ana-body tri-map-body">
-        <div class="tri-map-pane">
-          <div class="tri-map-canvas" />
-          <div class="tri-map-overlay">
-            <div class="tri-map-modes" role="group" aria-label="map overlay metric">
-              <button
-                class="tri-map-mode"
-                type="button"
-                data-mode="heat"
-                aria-pressed="true"
-                data-i18n="heat"
-              >
-                heat
-              </button>
-              <button
-                class="tri-map-mode"
-                type="button"
-                data-mode="w"
-                aria-pressed="false"
-                data-i18n="power"
-              >
-                power
-              </button>
-              <button
-                class="tri-map-mode"
-                type="button"
-                data-mode="hr"
-                aria-pressed="false"
-                data-i18n="hr"
-              >
-                hr
-              </button>
-              <button
-                class="tri-map-mode"
-                type="button"
-                data-mode="cad"
-                aria-pressed="false"
-                data-i18n="cadence"
-              >
-                cadence
-              </button>
-              <button
-                class="tri-map-mode"
-                type="button"
-                data-mode="spd"
-                aria-pressed="false"
-                data-i18n="speed"
-              >
-                speed
-              </button>
-            </div>
-            <div class="tri-map-legend tri-map-overlay-legend">
-              <span class="tri-map-legend-bar" />
-              <span class="tri-map-legend-ends">
-                <span class="tri-map-legend-lo" />
-                <span class="tri-map-legend-hi" />
-              </span>
-            </div>
-          </div>
-          <div class="tri-map-side" role="group" aria-label="map controls">
+    }
+  >
+    <div class="tri-map-pane">
+      <div class="tri-map-canvas" />
+      <div class="tri-map-overlay">
+        <div class="tri-map-modes" role="group" aria-label="map overlay metric">
+          <button
+            class="tri-map-mode"
+            type="button"
+            data-mode="heat"
+            aria-pressed="true"
+            data-i18n="heat"
+          >
+            heat
+          </button>
+          <button
+            class="tri-map-mode"
+            type="button"
+            data-mode="w"
+            aria-pressed="false"
+            data-i18n="power"
+          >
+            power
+          </button>
+          <button
+            class="tri-map-mode"
+            type="button"
+            data-mode="hr"
+            aria-pressed="false"
+            data-i18n="hr"
+          >
+            hr
+          </button>
+          <button
+            class="tri-map-mode"
+            type="button"
+            data-mode="cad"
+            aria-pressed="false"
+            data-i18n="cadence"
+          >
+            cadence
+          </button>
+          <button
+            class="tri-map-mode"
+            type="button"
+            data-mode="spd"
+            aria-pressed="false"
+            data-i18n="speed"
+          >
+            speed
+          </button>
+        </div>
+        <div class="tri-map-legend tri-map-overlay-legend">
+          <span class="tri-map-legend-bar" />
+          <span class="tri-map-legend-ends">
+            <span class="tri-map-legend-lo" />
+            <span class="tri-map-legend-hi" />
+          </span>
+        </div>
+      </div>
+      <div class="tri-map-side" role="group" aria-label="map controls">
+        <button
+          class="tri-map-side-fold"
+          type="button"
+          aria-expanded="true"
+          aria-label="Collapse map controls"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+        <div class="tri-map-side-body">
+          {MAP_SPORTS.map(sport => (
             <button
-              class="tri-map-side-fold"
+              class="tri-map-sport"
               type="button"
-              aria-expanded="true"
-              aria-label="Collapse map controls"
+              data-sport={sport}
+              aria-pressed="true"
+              aria-label={sport}
+              title={sport}
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6 9l6 6 6-6" />
+                {SPORT_ICON[sport].map(d => (
+                  <path d={d} />
+                ))}
               </svg>
             </button>
-            <div class="tri-map-side-body">
-              {MAP_SPORTS.map(sport => (
-                <button
-                  class="tri-map-sport"
-                  type="button"
-                  data-sport={sport}
-                  aria-pressed="true"
-                  aria-label={sport}
-                  title={sport}
-                >
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    {SPORT_ICON[sport].map(d => (
-                      <path d={d} />
-                    ))}
-                  </svg>
-                </button>
+          ))}
+          <span class="tri-map-side-rule" />
+          <button
+            class="tri-map-style"
+            type="button"
+            aria-pressed="false"
+            aria-label="satellite"
+            title="satellite"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              {LAYERS_ICON.map(d => (
+                <path d={d} />
               ))}
-              <span class="tri-map-side-rule" />
-              <button
-                class="tri-map-style"
-                type="button"
-                aria-pressed="false"
-                aria-label="satellite"
-                title="satellite"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  {LAYERS_ICON.map(d => (
-                    <path d={d} />
-                  ))}
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="tri-map-tip" aria-hidden="true" />
+            </svg>
+          </button>
         </div>
-        <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
       </div>
-    </aside>
-  </>
+      <div class="tri-map-tip" aria-hidden="true" />
+    </div>
+    <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
+  </TriPanelShell>
 )
 
 export const TrainingPanel = ({ page }: { page?: boolean }) => (
-  <>
-    <div class="tri-training-scrim" aria-hidden="true" />
-    <aside
-      class={`tri-training${page ? ' tri-training--page' : ''}`}
-      aria-hidden={page ? 'false' : 'true'}
-      role="dialog"
-      aria-label="triathlon training plan"
-    >
-      <div class="tri-ana-bar tri-training-bar">
-        <span class="tri-ana-title tri-training-title">training</span>
-        <div class="tri-training-search-wrap">
-          <input
-            class="tri-ana-search tri-training-search"
-            type="search"
-            placeholder="search plans (meta, distance, target)"
-            aria-label="search training plans"
-            autocomplete="off"
-          />
-          <div class="tri-ana-results tri-training-results" aria-hidden="true" />
-        </div>
-        <button class="tri-ana-close tri-training-close" type="button" aria-label="Close">
-          ×
-        </button>
+  <TriPanelShell
+    kind="training"
+    page={page}
+    label="triathlon training plan"
+    title="training"
+    barClass="tri-training-bar"
+    titleClass="tri-training-title"
+    bodyClass="tri-training-body"
+    search={
+      <div class="tri-training-search-wrap">
+        <input
+          class="tri-ana-search tri-training-search"
+          type="search"
+          placeholder="search plans (meta, distance, target)"
+          aria-label="search training plans"
+          autocomplete="off"
+        />
+        <div class="tri-ana-results tri-training-results" aria-hidden="true" />
       </div>
-      <div class="tri-ana-body tri-training-body">
-        <div class="tri-training-list">
-          <div class="tri-training-plans" aria-label="training plans" />
-          <div class="tri-training-tree" aria-label="plan sections" />
-        </div>
-        <div class="tri-ana-detail tri-training-doc" aria-hidden="true" />
-      </div>
-    </aside>
-  </>
+    }
+  >
+    <div class="tri-training-list">
+      <div class="tri-training-plans" aria-label="training plans" />
+      <div class="tri-training-tree" aria-label="plan sections" />
+    </div>
+    <div class="tri-ana-detail tri-training-doc" aria-hidden="true" />
+  </TriPanelShell>
 )
 
 export const GearPanel = () => (

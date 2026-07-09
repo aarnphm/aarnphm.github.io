@@ -1,13 +1,16 @@
-import { exec } from 'node:child_process'
-import fs from 'node:fs/promises'
+import { spawn } from 'node:child_process'
 import http from 'node:http'
+import path from 'node:path'
 import readline from 'node:readline/promises'
+import { pathToFileURL } from 'node:url'
+import { upsertEnvLine } from '../util/env-file'
 
 const REDIRECT = process.env.OURA_REDIRECT_URI ?? 'https://aarnphm.xyz'
 const SCOPE =
   process.env.OURA_SCOPE ??
   'email personal daily heartrate tag workout session spo2 ring_configuration stress heart_health'
 const LOCAL_PORT = 8722
+const ENV_FILE = '.env'
 
 interface TokenResponse {
   access_token: string
@@ -23,6 +26,16 @@ function authorizeUrl(clientId: string): string {
     scope: SCOPE,
   })
   return `https://cloud.ouraring.com/oauth/authorize?${params.toString()}`
+}
+
+export function openBrowserArgs(url: string): string[] {
+  return [url]
+}
+
+function openBrowser(url: string): void {
+  const child = spawn('open', openBrowserArgs(url), { detached: true, stdio: 'ignore' })
+  child.on('error', () => {})
+  child.unref()
 }
 
 const isLocal = (uri: string): boolean => uri.startsWith('http://localhost')
@@ -85,18 +98,8 @@ async function exchange(
   return (await res.json()) as TokenResponse
 }
 
-async function writeRefreshToken(refreshToken: string): Promise<void> {
-  let content = ''
-  try {
-    content = await fs.readFile('.env', 'utf8')
-  } catch {
-    content = ''
-  }
-  const line = `OURA_REFRESH_TOKEN=${refreshToken}`
-  content = /^OURA_REFRESH_TOKEN=.*$/m.test(content)
-    ? content.replace(/^OURA_REFRESH_TOKEN=.*$/m, line)
-    : `${content.trimEnd()}\n${line}\n`
-  await fs.writeFile('.env', content)
+export async function writeRefreshToken(refreshToken: string, envFile = ENV_FILE): Promise<void> {
+  await upsertEnvLine(envFile, 'OURA_REFRESH_TOKEN', refreshToken)
 }
 
 async function main(): Promise<void> {
@@ -114,7 +117,7 @@ async function main(): Promise<void> {
   )
   console.log(`[oura] opening browser to authorize (scope: ${SCOPE}).`)
   console.log(`if it does not open, visit:\n${url}\n`)
-  exec(`open "${url}"`, () => {})
+  openBrowser(url)
 
   const code = isLocal(REDIRECT) ? await catchCodeOnLocalhost() : await promptForCode()
   const token = await exchange(clientId, clientSecret, code)
@@ -125,7 +128,9 @@ async function main(): Promise<void> {
   console.log('now run:  pnpm oura:sync\n')
 }
 
-main().catch(err => {
-  console.error(`[oura] auth failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[oura] auth failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}

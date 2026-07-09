@@ -1,18 +1,21 @@
 import Foundation
 import WatchConnectivity
 
-final class PhoneWatchSession: NSObject, WCSessionDelegate {
+final class PhoneWatchSession: NSObject, WCSessionDelegate, @unchecked Sendable {
   static let shared = PhoneWatchSession()
 
-  private var exportHandler: (() -> Void)?
+  private let exportHandlerLock = NSLock()
+  private var exportHandler: (@Sendable () -> Void)?
 
   private override init() {
     super.init()
   }
 
-  func start(exportHandler: @escaping () -> Void) {
+  func start(exportHandler: @escaping @Sendable () -> Void) {
     guard WCSession.isSupported() else { return }
+    exportHandlerLock.lock()
     self.exportHandler = exportHandler
+    exportHandlerLock.unlock()
     let session = WCSession.default
     session.delegate = self
     session.activate()
@@ -36,7 +39,10 @@ final class PhoneWatchSession: NSObject, WCSessionDelegate {
       replyHandler?(["accepted": false])
       return
     }
-    exportHandler?()
+    exportHandlerLock.lock()
+    let handler = exportHandler
+    exportHandlerLock.unlock()
+    handler?()
     replyHandler?(["accepted": true])
   }
 

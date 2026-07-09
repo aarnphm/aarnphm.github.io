@@ -27,6 +27,8 @@
 		100000000000000000000112 /* HealthAggregatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000013 /* HealthAggregatorTests.swift */; };
 		100000000000000000000113 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000017 /* Assets.xcassets */; };
 		100000000000000000000114 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000018 /* Assets.xcassets */; };
+		100000000000000000000115 /* HealthExporterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000003 /* HealthExporterError.swift */; };
+		100000000000000000000116 /* HealthExportWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000004 /* HealthExportWriter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -322,6 +324,8 @@
 			files = (
 				100000000000000000000110 /* ExportModels.swift in Sources */,
 				100000000000000000000111 /* HealthAggregator.swift in Sources */,
+				100000000000000000000115 /* HealthExporterError.swift in Sources */,
+				100000000000000000000116 /* HealthExportWriter.swift in Sources */,
 				100000000000000000000112 /* HealthAggregatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

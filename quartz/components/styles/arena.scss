@@ -1367,7 +1367,7 @@ span.tag-link:hover {
 
 .arena-search-result-tag-badge {
   display: inline-block;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease;
   border: 1px solid var(--gray);
   color: inherit;
   border-radius: var(--radius-none);
@@ -1379,7 +1379,7 @@ span.tag-link:hover {
   text-decoration: none;
 
   &:hover {
-    background: rgba(var(--secondary), 0.12);
+    background-color: rgba(var(--secondary), 0.12);
   }
 }
 

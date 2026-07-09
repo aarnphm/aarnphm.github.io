@@ -9,10 +9,11 @@ import {
   isArenaPdfUrl,
   type ArenaExternalEmbedMode,
 } from '../../util/arena-embed'
+import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
+import { tokenizeTerm } from '../../util/search-text'
 import { isRecord, readString } from '../../util/type-guards'
 import { loadMapbox, applyMonochromeMapPalette } from '../scripts/mapbox-client'
-import { fetchCanonical, tokenizeTerm } from '../scripts/util'
 
 let currentBlockIndex = 0
 let totalBlocks = 0

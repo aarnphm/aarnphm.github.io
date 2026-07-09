@@ -1,3 +1,5 @@
+import { currentNavSignal } from './nav-lifecycle'
+
 interface CardState {
   cardId: string
   due: number
@@ -10,11 +12,25 @@ interface LogEntry {
   requeued: boolean
 }
 
+let activeSignal: AbortSignal | undefined
+
 document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  if (activeSignal === signal) return
+
   const root = document.querySelector<HTMLElement>('.flashcards-root')
   if (!root) return
   const cards = Array.from(root.querySelectorAll<HTMLElement>('.flashcard[data-card-id]'))
   if (cards.length === 0) return
+
+  activeSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (activeSignal === signal) activeSignal = undefined
+    },
+    { once: true },
+  )
 
   const deckSlug = root.dataset.deck ?? ''
   const cardBox = root.querySelector<HTMLElement>('.flashcards-card')
@@ -40,6 +56,7 @@ document.addEventListener('nav', () => {
   let revealed = false
   let finished = false
   let persistError = false
+  let submitting = false
   let startedAt = 0
   const log: LogEntry[] = []
 
@@ -120,14 +137,14 @@ document.addEventListener('nav', () => {
   }
 
   const submit = async (grade: number) => {
-    if (!revealed || !active || finished) return
-    const el = queue.shift()
-    if (!el) return
+    if (!revealed || !active || finished || submitting) return
+    const el = active
     const cardId = el.dataset.cardId
-    if (!cardId) {
-      queue.unshift(el)
-      return
-    }
+    if (!cardId) return
+
+    submitting = true
+    setReveal(false)
+    queue.shift()
     const requeued = grade <= 2
     if (requeued) queue.push(el)
     log.push({ el, cardId, grade, requeued })
@@ -137,12 +154,15 @@ document.addEventListener('nav', () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ cardId, deckSlug, grade, login }),
+          signal,
         })
         if (!res.ok) persistError = true
       } catch {
-        persistError = true
+        if (!signal.aborted) persistError = true
       }
     }
+    if (signal.aborted) return
+    submitting = false
     if (queue.length === 0) {
       finish()
       return
@@ -151,6 +171,7 @@ document.addEventListener('nav', () => {
   }
 
   const undo = () => {
+    if (submitting) return
     const last = log.pop()
     if (!last) return
     if (last.requeued) {
@@ -178,17 +199,20 @@ document.addEventListener('nav', () => {
 
   const onCardClick = (event: MouseEvent) => {
     if (event.target instanceof Element && event.target.closest('a')) return
-    if (!finished && !revealed) setReveal(true)
+    if (!finished && !revealed && !submitting) setReveal(true)
   }
   const onReveal = () => {
-    if (!finished && !revealed) setReveal(true)
+    if (!finished && !revealed && !submitting) setReveal(true)
   }
   const onGrade = (event: MouseEvent) => {
-    const btn = (event.target as HTMLElement).closest<HTMLButtonElement>('.fc-grade')
+    if (!(event.target instanceof Element)) return
+    const btn = event.target.closest<HTMLButtonElement>('.fc-grade')
     if (!btn) return
     void submit(Number(btn.dataset.grade))
   }
-  const onEnd = () => finish()
+  const onEnd = () => {
+    if (!submitting) finish()
+  }
   const onKey = (event: KeyboardEvent) => {
     const target = event.target
     if (
@@ -199,6 +223,7 @@ document.addEventListener('nav', () => {
     ) {
       return
     }
+    if (submitting) return
     if (event.shiftKey || event.ctrlKey || event.altKey || event.metaKey) return
     if (event.key === ' ') {
       if (finished) return
@@ -229,15 +254,15 @@ document.addEventListener('nav', () => {
   }
   const onBlur = () => setHints(false)
 
-  cardBox?.addEventListener('click', onCardClick)
-  revealBtn?.addEventListener('click', onReveal)
-  grades?.addEventListener('click', onGrade)
-  undoBtn?.addEventListener('click', undo)
-  endBtn?.addEventListener('click', onEnd)
-  window.addEventListener('keydown', onKey)
-  window.addEventListener('keydown', onModDown)
-  window.addEventListener('keyup', onModUp)
-  window.addEventListener('blur', onBlur)
+  cardBox?.addEventListener('click', onCardClick, { signal })
+  revealBtn?.addEventListener('click', onReveal, { signal })
+  grades?.addEventListener('click', onGrade, { signal })
+  undoBtn?.addEventListener('click', undo, { signal })
+  endBtn?.addEventListener('click', onEnd, { signal })
+  window.addEventListener('keydown', onKey, { signal })
+  window.addEventListener('keydown', onModDown, { signal })
+  window.addEventListener('keyup', onModUp, { signal })
+  window.addEventListener('blur', onBlur, { signal })
 
   const start = async () => {
     let order = cards.slice()
@@ -245,6 +270,7 @@ document.addEventListener('nav', () => {
       try {
         const res = await fetch(
           `/api/flashcards/state?deck=${encodeURIComponent(deckSlug)}&login=${encodeURIComponent(login)}`,
+          { signal },
         )
         if (res.ok) {
           const data = (await res.json()) as { states?: CardState[] }
@@ -257,6 +283,7 @@ document.addEventListener('nav', () => {
         }
       } catch {}
     }
+    if (signal.aborted) return
     shuffle(order)
     const limit = Number(new URLSearchParams(window.location.search).get('n'))
     if (Number.isInteger(limit) && limit > 0) order = order.slice(0, limit)
@@ -270,16 +297,4 @@ document.addEventListener('nav', () => {
     show()
   }
   void start()
-
-  window.addCleanup(() => {
-    cardBox?.removeEventListener('click', onCardClick)
-    revealBtn?.removeEventListener('click', onReveal)
-    grades?.removeEventListener('click', onGrade)
-    undoBtn?.removeEventListener('click', undo)
-    endBtn?.removeEventListener('click', onEnd)
-    window.removeEventListener('keydown', onKey)
-    window.removeEventListener('keydown', onModDown)
-    window.removeEventListener('keyup', onModUp)
-    window.removeEventListener('blur', onBlur)
-  })
 })

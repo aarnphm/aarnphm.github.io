@@ -1,17 +1,28 @@
 import { fetchFollowing, timeSince, PINNED_FOLLOWING_IDS } from './curius'
-import { registerMouseHover, removeAllChildren } from './util'
+import { rootNavSignal } from './root-lifecycle'
 
 const pinnedFollowingIds = new Set<number>(PINNED_FOLLOWING_IDS)
+const configuredFriends = new WeakMap<HTMLUListElement, AbortSignal>()
 
 document.addEventListener('nav', async () => {
   const friends = document.getElementById('friends-list') as HTMLUListElement | null
   const seeMoreFriends = document.getElementById('see-more-friends') as HTMLDivElement | null
   if (!friends) return
+  const signal = rootNavSignal(friends)
+  if (configuredFriends.get(friends) === signal) return
+  configuredFriends.set(friends, signal)
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (configuredFriends.get(friends) === signal) configuredFriends.delete(friends)
+    },
+    { once: true },
+  )
 
   const response = await fetchFollowing()
-  if (!response) return
+  if (!response || signal.aborted) return
 
-  removeAllChildren(friends)
+  friends.replaceChildren()
   response.map((user, index) => {
     const { user: User, link: Link } = user
     const li = document.createElement('li')
@@ -24,10 +35,9 @@ document.addEventListener('nav', async () => {
       if (e.target instanceof HTMLAnchorElement) return
       window.open(Link.link, '_blank')
     }
-    li.addEventListener('click', onClick)
-    window.addCleanup(() => li.removeEventListener('click', onClick))
-
-    registerMouseHover(li, 'focus')
+    li.addEventListener('click', onClick, { signal })
+    li.addEventListener('mouseenter', () => li.classList.add('focus'), { signal })
+    li.addEventListener('mouseleave', () => li.classList.remove('focus'), { signal })
 
     // only show first four friends
     if (index < 4) {
@@ -91,6 +101,5 @@ document.addEventListener('nav', async () => {
     }
   }
 
-  seeMoreFriends?.addEventListener('click', onSeeMore)
-  window.addCleanup(() => seeMoreFriends?.removeEventListener('click', onSeeMore))
+  seeMoreFriends?.addEventListener('click', onSeeMore, { signal })
 })

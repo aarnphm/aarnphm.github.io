@@ -12,6 +12,7 @@ import {
 import {
   decodeStackedNoteHash,
   hashStackedNoteSlug,
+  readStackedNotePayload,
   stackedNoteMetadataHtml,
   withStackedNoteMetadata,
 } from './stacked-notes'
@@ -95,4 +96,36 @@ test('stacked note hashes round-trip real slugs', () => {
   }
 
   assert.equal(decodeStackedNoteHash('bm90ZXM'), 'notes')
+})
+
+test('stacked note payload parsing accepts only complete known states', () => {
+  assert.deepEqual(
+    readStackedNotePayload({
+      slug: 'thoughts/kant',
+      title: 'Kant',
+      content: '<article>Kant</article>',
+      metadata: '<footer>metadata</footer>',
+      state: 'ready',
+    }),
+    {
+      slug: 'thoughts/kant',
+      title: 'Kant',
+      content: '<article>Kant</article>',
+      metadata: '<footer>metadata</footer>',
+      state: 'ready',
+    },
+  )
+  assert.equal(
+    readStackedNotePayload({ slug: 'thoughts/kant', title: 'Kant', content: '', state: 'ready' }),
+    null,
+  )
+  assert.equal(
+    readStackedNotePayload({
+      slug: 'thoughts/kant',
+      title: 'Kant',
+      content: '<article>Kant</article>',
+      state: 'unknown',
+    }),
+    null,
+  )
 })

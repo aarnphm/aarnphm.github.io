@@ -1,8 +1,24 @@
-import { execSync } from 'child_process'
-import { promises as fs } from 'fs'
 import { globby } from 'globby'
+import { execFileSync } from 'node:child_process'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { styleText } from 'node:util'
-import path from 'path'
+
+export function ffmpegArgs(mediaFile: string, outputFile: string): string[] {
+  return [
+    '-y',
+    '-i',
+    mediaFile,
+    '-c:v',
+    'libwebp',
+    '-quality',
+    '90',
+    '-compression_level',
+    '6',
+    outputFile,
+  ]
+}
 
 async function convertMedia(contentDir: string) {
   try {
@@ -31,21 +47,19 @@ async function convertMedia(contentDir: string) {
     for (const mediaFile of mediaFiles) {
       const ext = path.extname(mediaFile).toLowerCase()
       let outputFile: string
-      let ffmpegCmd: string
 
       switch (ext) {
         case '.png':
         case '.jpeg':
         case '.jpg':
           outputFile = mediaFile.replace(/\.(png|jpe?g)$/i, '.webp')
-          ffmpegCmd = `ffmpeg -y -i "${mediaFile}" -c:v libwebp -quality 90 -compression_level 6 "${outputFile}"`
           break
         default:
           continue
       }
 
       try {
-        execSync(ffmpegCmd, { stdio: 'inherit' })
+        execFileSync('ffmpeg', ffmpegArgs(mediaFile, outputFile), { stdio: 'inherit' })
         await fs.unlink(mediaFile)
         console.log(
           styleText(
@@ -102,5 +116,7 @@ async function convertMedia(contentDir: string) {
   }
 }
 
-const contentDir = process.argv[2] || path.join(process.cwd(), 'content')
-convertMedia(contentDir).catch(console.error)
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  const contentDir = process.argv[2] || path.join(process.cwd(), 'content')
+  convertMedia(contentDir).catch(console.error)
+}

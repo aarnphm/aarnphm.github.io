@@ -4,7 +4,8 @@ import {
   notebookCellFrames,
   selectNotebookCellFrame,
 } from '../../util/notebook-active-cell'
-import { registerEscapeHandler } from './util'
+import { registerEscapeHandler } from './escape-handler'
+import { currentNavSignal } from './nav-lifecycle'
 
 type Browser = 'Safari' | 'Chrome' | 'Firefox' | 'Edge' | 'Opera' | 'Other'
 
@@ -29,9 +30,22 @@ const isMacOS = (): boolean => {
   return window.navigator.userAgent.toLowerCase().includes('mac')
 }
 
-document.addEventListener('nav', async () => {
+let shortcutDialogSignal: AbortSignal | undefined
+let navigationKeybindSignal: AbortSignal | undefined
+
+document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  if (shortcutDialogSignal === signal) return
   const keybind = document.getElementsByClassName('keybind')[0] as HTMLDivElement | null
   if (!keybind) return
+  shortcutDialogSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (shortcutDialogSignal === signal) shortcutDialogSignal = undefined
+    },
+    { once: true },
+  )
 
   const container = keybind.querySelector<HTMLDivElement>('#shortcut-container')
   const shortcutKey = keybind.querySelector('#shortcut-key') as HTMLElement
@@ -152,8 +166,18 @@ async function showVimiumWarning() {
 }
 
 document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  if (navigationKeybindSignal === signal) return
   const container = document.getElementById('shortcut-container') as HTMLDivElement | null
   if (!container) return
+  navigationKeybindSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (navigationKeybindSignal === signal) navigationKeybindSignal = undefined
+    },
+    { once: true },
+  )
 
   // Show Vimium warning on initial load
   showVimiumWarning()

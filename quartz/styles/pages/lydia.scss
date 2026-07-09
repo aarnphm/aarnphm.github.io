@@ -280,7 +280,6 @@ body[data-slug='lyd'] {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
 
     @media all and ($mobile) {
       position: absolute;
@@ -293,7 +292,6 @@ body[data-slug='lyd'] {
       width: 16px;
       height: 16px;
       color: var(--secondary);
-      transition: all 0.3s ease;
 
       @media all and ($mobile) {
         width: 16px;
@@ -326,7 +324,9 @@ body[data-slug='lyd'] {
     padding: 1.75rem;
     border-radius: var(--radius-none);
     border: 1px solid rgba(255, 206, 194, 0.4);
-    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     cursor: pointer;
 
@@ -364,6 +364,14 @@ body[data-slug='lyd'] {
     &:hover {
       border-color: rgba(255, 189, 156, 0.8);
       transform: translateY(-4px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        transform: none;
+      }
     }
   }
 

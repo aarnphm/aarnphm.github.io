@@ -1,5 +1,23 @@
+import { debounce } from '../../util/debounce'
+import { registerEscapeHandler } from './escape-handler'
 import { pageListItemMatchesQuery } from './pagelist-search'
-import { registerEscapeHandler } from './util'
+import { rootNavSignal } from './root-lifecycle'
+
+const configuredSearches = new WeakMap<HTMLElement, AbortSignal>()
+
+function claimSearch(container: HTMLElement): AbortSignal | null {
+  const signal = rootNavSignal(container)
+  if (configuredSearches.get(container) === signal) return null
+  configuredSearches.set(container, signal)
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (configuredSearches.get(container) === signal) configuredSearches.delete(container)
+    },
+    { once: true },
+  )
+  return signal
+}
 
 interface PageListState {
   container: HTMLElement
@@ -17,14 +35,6 @@ interface TagSectionState {
   clearBtn: HTMLButtonElement
   sections: HTMLElement[]
   focusedIdx: number
-}
-
-function debounce<Args extends unknown[]>(fn: (...args: Args) => void, delay: number) {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
-  return (...args: Args) => {
-    if (timeoutId) clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => fn(...args), delay)
-  }
 }
 
 function parseItemTags(rawTags: string | undefined): string[] {
@@ -202,64 +212,79 @@ function setupAllTagsSearch(container: HTMLElement) {
 
   const sections = Array.from(sectionsContainer.querySelectorAll<HTMLElement>(':scope > div'))
   if (sections.length === 0) return
+  const signal = claimSearch(container)
+  if (!signal) return
 
   const state: TagSectionState = { container, input, status, clearBtn, sections, focusedIdx: -1 }
 
   const debouncedFilter = debounce((query: string) => filterSections(state, query), 50)
 
-  input.addEventListener('input', () => debouncedFilter(input.value))
+  input.addEventListener('input', () => debouncedFilter(input.value), { signal })
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
+  input.addEventListener(
+    'keydown',
+    e => {
+      if (e.key === 'Escape') {
+        input.value = ''
+        input.blur()
+        filterSections(state, '')
+        return
+      }
+      if (e.ctrlKey && e.key === 'n') {
+        e.preventDefault()
+        navigateSectionNext(state)
+        return
+      }
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault()
+        navigateSectionPrev(state)
+        return
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        navigateSectionNext(state)
+        return
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        navigateSectionPrev(state)
+        return
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        openFocusedSection(state)
+        return
+      }
+    },
+    { signal },
+  )
+
+  clearBtn.addEventListener(
+    'click',
+    () => {
       input.value = ''
-      input.blur()
-      filterSections(state, '')
-      return
-    }
-    if (e.ctrlKey && e.key === 'n') {
-      e.preventDefault()
-      navigateSectionNext(state)
-      return
-    }
-    if (e.ctrlKey && e.key === 'p') {
-      e.preventDefault()
-      navigateSectionPrev(state)
-      return
-    }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      navigateSectionNext(state)
-      return
-    }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      navigateSectionPrev(state)
-      return
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      openFocusedSection(state)
-      return
-    }
-  })
-
-  clearBtn.addEventListener('click', () => {
-    input.value = ''
-    input.focus()
-    filterSections(state, '')
-  })
-
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
-      const active = document.activeElement
-      const isOtherInput =
-        (active?.tagName === 'INPUT' || active?.tagName === 'TEXTAREA') && active !== input
-      if (isOtherInput) return
-      e.preventDefault()
       input.focus()
-      input.select()
-    }
-  })
+      filterSections(state, '')
+    },
+    { signal },
+  )
+
+  document.addEventListener(
+    'keydown',
+    e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
+        const active = document.activeElement
+        const isOtherInput =
+          (active?.tagName === 'INPUT' || active?.tagName === 'TEXTAREA') && active !== input
+        if (isOtherInput) return
+        e.preventDefault()
+        input.focus()
+        input.select()
+      }
+    },
+    { signal },
+  )
+  signal.addEventListener('abort', debouncedFilter.cancel, { once: true })
 
   registerEscapeHandler(container, () => {
     input.value = ''
@@ -279,64 +304,79 @@ function setupPageListSearch(container: HTMLElement) {
 
   const items = Array.from(listContainer.querySelectorAll<HTMLLIElement>('.section-li'))
   if (items.length === 0) return
+  const signal = claimSearch(container)
+  if (!signal) return
 
   const state: PageListState = { container, input, status, clearBtn, items, focusedIdx: -1 }
 
   const debouncedFilter = debounce((query: string) => filterItems(state, query), 50)
 
-  input.addEventListener('input', () => debouncedFilter(input.value))
+  input.addEventListener('input', () => debouncedFilter(input.value), { signal })
 
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
+  input.addEventListener(
+    'keydown',
+    e => {
+      if (e.key === 'Escape') {
+        input.value = ''
+        input.blur()
+        filterItems(state, '')
+        return
+      }
+      if (e.ctrlKey && e.key === 'n') {
+        e.preventDefault()
+        navigateItemNext(state)
+        return
+      }
+      if (e.ctrlKey && e.key === 'p') {
+        e.preventDefault()
+        navigateItemPrev(state)
+        return
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        navigateItemNext(state)
+        return
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        navigateItemPrev(state)
+        return
+      }
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        openFocusedItem(state)
+        return
+      }
+    },
+    { signal },
+  )
+
+  clearBtn.addEventListener(
+    'click',
+    () => {
       input.value = ''
-      input.blur()
-      filterItems(state, '')
-      return
-    }
-    if (e.ctrlKey && e.key === 'n') {
-      e.preventDefault()
-      navigateItemNext(state)
-      return
-    }
-    if (e.ctrlKey && e.key === 'p') {
-      e.preventDefault()
-      navigateItemPrev(state)
-      return
-    }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      navigateItemNext(state)
-      return
-    }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      navigateItemPrev(state)
-      return
-    }
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      openFocusedItem(state)
-      return
-    }
-  })
-
-  clearBtn.addEventListener('click', () => {
-    input.value = ''
-    input.focus()
-    filterItems(state, '')
-  })
-
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
-      const active = document.activeElement
-      const isOtherInput =
-        (active?.tagName === 'INPUT' || active?.tagName === 'TEXTAREA') && active !== input
-      if (isOtherInput) return
-      e.preventDefault()
       input.focus()
-      input.select()
-    }
-  })
+      filterItems(state, '')
+    },
+    { signal },
+  )
+
+  document.addEventListener(
+    'keydown',
+    e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k' && !e.shiftKey) {
+        const active = document.activeElement
+        const isOtherInput =
+          (active?.tagName === 'INPUT' || active?.tagName === 'TEXTAREA') && active !== input
+        if (isOtherInput) return
+        e.preventDefault()
+        input.focus()
+        input.select()
+      }
+    },
+    { signal },
+  )
+  signal.addEventListener('abort', debouncedFilter.cancel, { once: true })
 
   registerEscapeHandler(container, () => {
     input.value = ''

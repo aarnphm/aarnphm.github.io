@@ -2,7 +2,28 @@
 import Foundation
 import HealthKit
 
-final class HealthKitService {
+final class HealthObserverCompletion: @unchecked Sendable {
+  private let handler: () -> Void
+  private let lock = NSLock()
+  private var isCompleted = false
+
+  init(_ handler: @escaping () -> Void) {
+    self.handler = handler
+  }
+
+  func complete() {
+    lock.lock()
+    guard !isCompleted else {
+      lock.unlock()
+      return
+    }
+    isCompleted = true
+    lock.unlock()
+    handler()
+  }
+}
+
+final class HealthKitService: @unchecked Sendable {
   static let shared = HealthKitService()
 
   private struct DistanceSample {
@@ -21,7 +42,8 @@ final class HealthKitService {
   }
 
   private let store = HKHealthStore()
-  private var observerQueries: [HKObserverQuery] = []
+  private let observerLock = NSLock()
+  private var observerQuery: HKObserverQuery?
 
   private let cumulativeTypes: [(HealthMetricKind, HKQuantityTypeIdentifier, HKUnit)] = [
     (.activeEnergy, .activeEnergyBurned, .kilocalorie()),
@@ -47,6 +69,17 @@ final class HealthKitService {
     allQuantityTypes + [HKObjectType.workoutType()]
   }
 
+  private var backgroundTriggerTypes: Set<HKSampleType> {
+    let identifiers: [HKQuantityTypeIdentifier] = [
+      .activeEnergyBurned,
+      .dietaryEnergyConsumed,
+      .bodyMass,
+      .vo2Max,
+    ]
+    let quantities = identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
+    return Set(quantities + [HKObjectType.workoutType()])
+  }
+
   func requestAuthorization() async throws {
     guard HKHealthStore.isHealthDataAvailable() else {
       throw HealthExporterError.healthDataUnavailable
@@ -65,16 +98,38 @@ final class HealthKitService {
     }
   }
 
-  func startObservers(onChange: @escaping () -> Void) {
-    guard observerQueries.isEmpty else { return }
-    for type in allSampleTypes {
-      let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completion, _ in
-        onChange()
-        completion()
+  func startObservers(
+    restart: Bool = false,
+    onChange: @escaping @Sendable (HealthObserverCompletion) -> Void
+  ) {
+    observerLock.lock()
+    defer { observerLock.unlock() }
+    if restart {
+      if let query = observerQuery {
+        store.stop(query)
       }
-      observerQueries.append(query)
+      observerQuery = nil
+    }
+    if observerQuery == nil {
+      let descriptors = allSampleTypes.map { HKQueryDescriptor(sampleType: $0, predicate: nil) }
+      let query = HKObserverQuery(queryDescriptors: descriptors) { _, _, completion, error in
+        let observerCompletion = HealthObserverCompletion(completion)
+        guard error == nil else {
+          observerCompletion.complete()
+          return
+        }
+        onChange(observerCompletion)
+      }
+      observerQuery = query
       store.execute(query)
-      store.enableBackgroundDelivery(for: type, frequency: .hourly) { _, _ in }
+    }
+    let backgroundTriggerTypes = backgroundTriggerTypes
+    for type in allSampleTypes {
+      if backgroundTriggerTypes.contains(type) {
+        store.enableBackgroundDelivery(for: type, frequency: .hourly) { _, _ in }
+      } else {
+        store.disableBackgroundDelivery(for: type) { _, _ in }
+      }
     }
   }
 

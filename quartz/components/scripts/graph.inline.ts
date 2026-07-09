@@ -17,7 +17,6 @@ import { Text, Graphics, Application, Container, Circle } from 'pixi.js'
 import type { ContentDetails } from '../../plugins/emitters/contentIndex'
 import { FullSlug, SimpleSlug, getFullSlug, resolveRelative, simplifySlug } from '../../util/path'
 import { D3Config } from '../Graph'
-import { removeAllChildren } from './util'
 
 type GraphicsInfo = { color: string; gfx: Graphics; alpha: number; active: boolean }
 
@@ -66,7 +65,7 @@ async function determineGraphicsAPI(): Promise<'webgpu' | 'webgl'> {
 async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const slug = simplifySlug(fullSlug)
   const visited = getVisited()
-  removeAllChildren(graph)
+  graph.replaceChildren()
 
   let {
     drag: enableDrag,

@@ -1,15 +1,23 @@
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom'
-import { registerEvents } from './util'
+import { rootNavSignal } from './root-lifecycle'
 
 const TRIGGER_CLASS = 'breadcrumb-overflow-trigger'
 const TEMPLATE_SELECTOR = '[data-overflow-menu]'
 const FLOATING_CLASS = 'breadcrumb-overflow-floating'
 const BOUND_ATTRIBUTE = 'data-overflow-bound'
 
-function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () => void) {
-  const floating = template.cloneNode(true) as HTMLElement
+function mountFloating(
+  trigger: HTMLElement,
+  template: HTMLElement,
+  onClose: () => void,
+  signal: AbortSignal,
+) {
+  const clone = template.cloneNode(true)
+  if (!(clone instanceof HTMLElement)) throw new Error('Breadcrumb menu clone is not an element')
+  const floating = clone
   floating.removeAttribute('hidden')
   floating.removeAttribute('data-overflow-menu')
+  floating.removeAttribute('aria-hidden')
   floating.classList.add(FLOATING_CLASS)
   floating.setAttribute('role', 'menu')
   floating.setAttribute('tabindex', '-1')
@@ -32,11 +40,12 @@ function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () 
       middleware: [offset(8), flip(), shift({ padding: 8 })],
     })
 
+    if (!mounted) return
     Object.assign(floating.style, { left: `${x}px`, top: `${y}px`, visibility: 'visible' })
   }
 
   const cleanupAutoUpdate = autoUpdate(trigger, floating, update)
-  update()
+  void update()
 
   function removeFloating() {
     if (!mounted) return
@@ -47,12 +56,13 @@ function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () 
     document.removeEventListener('pointerdown', onPointerDown, true)
     floating.removeEventListener('click', onItemClick)
     floating.removeEventListener('keydown', onFloatingKeydown)
+    signal.removeEventListener('abort', removeFloating)
     onClose()
   }
 
   const onPointerDown = (event: PointerEvent) => {
-    const target = event.target as Node | null
-    if (!target) return
+    const target = event.target
+    if (!(target instanceof Node)) return
     if (floating.contains(target) || trigger.contains(target)) return
     removeFloating()
   }
@@ -62,16 +72,15 @@ function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () 
     if (event.key === 'Escape') {
       event.preventDefault()
       removeFloating()
+      trigger.focus()
     }
   }
 
-  document.addEventListener('pointerdown', onPointerDown, true)
-  floating.addEventListener('click', onItemClick)
-  floating.addEventListener('keydown', onFloatingKeydown)
+  document.addEventListener('pointerdown', onPointerDown, { capture: true, signal })
+  floating.addEventListener('click', onItemClick, { signal })
+  floating.addEventListener('keydown', onFloatingKeydown, { signal })
+  signal.addEventListener('abort', removeFloating, { once: true })
 
-  window.addCleanup(() => removeFloating())
-
-  // Focus management: move focus to first menu item when opened.
   const firstLink = floating.querySelector<HTMLAnchorElement>('a')
   if (firstLink) {
     requestAnimationFrame(() => firstLink.focus())
@@ -80,7 +89,7 @@ function mountFloating(trigger: HTMLElement, template: HTMLElement, onClose: () 
   return removeFloating
 }
 
-function setupOverflow(container: HTMLElement) {
+function setupOverflow(container: HTMLElement, signal: AbortSignal) {
   if (container.getAttribute(BOUND_ATTRIBUTE) === 'true') return
 
   const trigger = container.querySelector<HTMLButtonElement>(`.${TRIGGER_CLASS}`)
@@ -98,21 +107,27 @@ function setupOverflow(container: HTMLElement) {
       return
     }
 
-    closeFloating = mountFloating(trigger, template, () => {
-      closeFloating = null
-    })
+    closeFloating = mountFloating(
+      trigger,
+      template,
+      () => {
+        closeFloating = null
+      },
+      signal,
+    )
   }
 
-  registerEvents(trigger, [
+  trigger.addEventListener(
     'click',
     event => {
       event.preventDefault()
       event.stopPropagation()
       toggle()
     },
-  ])
+    { signal },
+  )
 
-  registerEvents(trigger, [
+  trigger.addEventListener(
     'keydown',
     event => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -123,9 +138,10 @@ function setupOverflow(container: HTMLElement) {
         closeFloating()
       }
     },
-  ])
+    { signal },
+  )
 
-  window.addCleanup(() => {
+  signal.addEventListener('abort', () => {
     closeFloating?.()
     closeFloating = null
     container.removeAttribute(BOUND_ATTRIBUTE)
@@ -155,7 +171,7 @@ function hydrateBreadcrumbs() {
   ensureBreadcrumbContainer()
   document
     .querySelectorAll<HTMLElement>('.breadcrumb-overflow')
-    .forEach(container => setupOverflow(container))
+    .forEach(container => setupOverflow(container, rootNavSignal(container)))
 }
 
 document.addEventListener('nav', hydrateBreadcrumbs)

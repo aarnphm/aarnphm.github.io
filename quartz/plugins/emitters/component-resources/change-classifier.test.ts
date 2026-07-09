@@ -13,7 +13,7 @@ test('classifies component resource partial emit changes by asset family', () =>
     change('quartz/runtime/notebook/client.ts'),
     change('quartz/components/scripts/notebook-runtime.inline.ts'),
     change('quartz/components/scripts/popover.inline.ts'),
-    change('quartz/components/scripts/util.ts'),
+    change('quartz/components/scripts/nav-lifecycle.ts'),
     change('quartz/components/ArticleTitle.tsx'),
     change('quartz/components/multiplayer/ws.ts'),
     change('quartz/workers/semantic.worker.ts'),
@@ -43,10 +43,18 @@ test('classifies component resource partial emit changes by asset family', () =>
 })
 
 test('classifies shared browser utilities as page script changes', () => {
-  const changes = classifyResourceChanges([change('quartz/util/stacked-notes.ts')])
+  const changes = classifyResourceChanges([
+    change('quartz/util/stacked-notes.ts'),
+    change('quartz/util/fetch-canonical.ts'),
+    change('quartz/util/search-text.ts'),
+  ])
 
   assert.equal(changes.notebookRuntimePageScript, false)
   assert.equal(changes.pageScripts, true)
+  assert.equal(
+    classifyResourceChanges([change('quartz/util/fetch-canonical.test.ts')]).pageScripts,
+    false,
+  )
 })
 
 test('classifies global component styles as index stylesheet changes', () => {

@@ -78,7 +78,9 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ## background
 
-`HealthBackgroundScheduler` registers a `BGAppRefreshTask` (`xyz.aarnphm.healthexporter.export`) aimed at ~02:30 local, re-armed every time the app enters background. HealthKit background delivery is enabled hourly per type, so a fresh sample also kicks off an export between scheduled runs.
+`HealthBackgroundScheduler` registers a `BGAppRefreshTask` (`xyz.aarnphm.healthexporter.export`) aimed at ~02:30 local and schedules it again every time the app enters background. This is the daily reconciliation pass. One observer covers every exported HealthKit type. Hourly background delivery uses active energy as its regular trigger, plus infrequent changes to dietary energy, body mass, VO2 max, and workouts. Heart rate and swim samples are picked up by those exports without causing their own wakeups. Automatic exports query data from today and the previous two calendar days. They merge it into the document containing 180 days and skip the iCloud write when the health data did not change. The app reloads the existing export on launch and updates it when it is more than one hour old.
+
+iOS decides the exact background execution time. Swiping the app away in the app switcher suppresses HealthKit background launches until the app is opened again. Leaving the app suspended or allowing iOS to terminate it preserves background delivery.
 
 The watch target carries no HealthKit access of its own. It sends an `export` command over `WCSession`, and the phone publishes the resulting day and swim counts back through application context for the watch to display.
 

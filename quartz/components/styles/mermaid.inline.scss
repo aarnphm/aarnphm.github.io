@@ -75,10 +75,12 @@
         cursor: pointer;
         font-size: 16px;
         font-family: var(--bodyFont);
-        transition: all var(--transition-normal);
+        transition:
+          background-color var(--transition-normal),
+          transform var(--transition-normal);
 
         &:hover {
-          background: var(--lightgray);
+          background-color: var(--lightgray);
         }
 
         &:active {
@@ -91,6 +93,22 @@
           padding: 0 12px;
           font-size: 14px;
         }
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #mermaid-container > #mermaid-space {
+    > .mermaid-content {
+      transition: none;
+    }
+
+    > .mermaid-controls .mermaid-control-button {
+      transition: background-color var(--transition-normal);
+
+      &:active {
+        transform: none;
       }
     }
   }

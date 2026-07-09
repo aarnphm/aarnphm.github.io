@@ -140,6 +140,102 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertEqual(document.workouts, [workout])
   }
 
+  func testWriterRestoresTheLastExport() throws {
+    let container = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: container) }
+    let writer = HealthExportWriter(containerURL: container)
+    let document = HealthAggregator.document(
+      quantitySamples: [],
+      swimSamples: [],
+      generatedAt: date(2026, 6, 19, 7, 30),
+      calendar: calendar
+    )
+
+    let writtenURL = try writer.write(document)
+    let restored = try writer.read()
+
+    XCTAssertEqual(restored?.document, document)
+    XCTAssertEqual(restored?.url, writtenURL)
+  }
+
+  func testRecentExportReplacesOnlyTheRecentWindow() {
+    let oldDay = AppleHealthDay(
+      date: "2026-06-17",
+      burnKcal: 1800,
+      activeKcal: 200,
+      intakeKcal: nil,
+      weightKg: nil,
+      vo2max: nil
+    )
+    let staleDay = AppleHealthDay(
+      date: "2026-06-18",
+      burnKcal: 1900,
+      activeKcal: 300,
+      intakeKcal: nil,
+      weightKg: nil,
+      vo2max: nil
+    )
+    let updatedDay = AppleHealthDay(
+      date: "2026-06-18",
+      burnKcal: 2100,
+      activeKcal: 500,
+      intakeKcal: 2300,
+      weightKg: nil,
+      vo2max: nil
+    )
+    let oldWorkout = AppleHealthWorkout(
+      id: "old",
+      activity: "running",
+      start: "2026-06-17T12:00:00Z",
+      end: "2026-06-17T13:00:00Z",
+      durationS: 3600,
+      heartRate: []
+    )
+    let staleWorkout = AppleHealthWorkout(
+      id: "stale",
+      activity: "cycling",
+      start: "2026-06-18T12:00:00Z",
+      end: "2026-06-18T13:00:00Z",
+      durationS: 3600,
+      heartRate: []
+    )
+    let updatedWorkout = AppleHealthWorkout(
+      id: "updated",
+      activity: "cycling",
+      start: "2026-06-18T12:00:00Z",
+      end: "2026-06-18T13:00:00Z",
+      durationS: 3600,
+      heartRate: []
+    )
+    let previous = HealthExportDocument(
+      version: 2,
+      generatedAt: "2026-06-18T12:00:00-04:00",
+      timezone: "America/Toronto",
+      days: [oldDay, staleDay],
+      swims: [],
+      workouts: [oldWorkout, staleWorkout]
+    )
+    let recent = HealthExportDocument(
+      version: 2,
+      generatedAt: "2026-06-19T12:00:00-04:00",
+      timezone: "America/Toronto",
+      days: [updatedDay],
+      swims: [],
+      workouts: [updatedWorkout]
+    )
+
+    let merged = previous.replacingRecent(
+      with: recent,
+      dayCutoff: "2026-06-18",
+      timestampCutoff: "2026-06-18T04:00:00Z"
+    )
+
+    XCTAssertEqual(merged.generatedAt, recent.generatedAt)
+    XCTAssertEqual(merged.days, [oldDay, updatedDay])
+    XCTAssertEqual(merged.workouts, [oldWorkout, updatedWorkout])
+  }
+
   private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {
     calendar.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
   }

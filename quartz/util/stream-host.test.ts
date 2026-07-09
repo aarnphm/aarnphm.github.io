@@ -1,11 +1,17 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  isStreamHostname,
   isStreamRoutePathname,
   streamAssetPathname,
   streamHostPathname,
   streamHostUrl,
 } from './stream-host'
+
+test('detects the canonical stream hostname', () => {
+  assert.equal(isStreamHostname('stream.aarnphm.xyz'), true)
+  assert.equal(isStreamHostname('aarnphm.xyz'), false)
+})
 
 test('canonicalizes stream host public paths', () => {
   assert.equal(streamHostPathname('/stream'), '/')

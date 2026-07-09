@@ -652,7 +652,9 @@ $avatar-sm: 24px;
           @include button-base;
           background: $primary-blue;
           color: white;
-          transition: all $transition-fast ease;
+          transition:
+            background-color $transition-fast ease,
+            opacity $transition-fast ease;
           outline: none;
 
           &[aria-disabled='true'] {

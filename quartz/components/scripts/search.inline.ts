@@ -1,16 +1,11 @@
 import FlexSearch, { DefaultDocumentSearchResults, DocumentData, Id } from 'flexsearch'
 import type { ContentDetails } from '../../plugins'
 import { escapeHTML } from '../../util/escape'
-import { FullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import { fetchCanonical } from '../../util/fetch-canonical'
+import { FullSlug, getFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import { encode, highlight, tokenizeTerm } from '../../util/search-text'
+import { registerEscapeHandler } from './escape-handler'
 import { SemanticClient, type SemanticResult } from './semantic.inline'
-import {
-  registerEscapeHandler,
-  removeAllChildren,
-  highlight,
-  tokenizeTerm,
-  encode,
-  fetchCanonical,
-} from './util'
 
 interface Item extends DocumentData {
   id: number
@@ -63,7 +58,6 @@ let semanticReady = false
 let semanticInitFailed = false
 let searchDataPromise: Promise<ContentIndex> | null = null
 const configuredSearchElements = new WeakSet<HTMLDivElement>()
-const searchResetters = new WeakMap<HTMLDivElement, () => void>()
 type SimilarityResult = { item: Item; similarity: number }
 let chunkMetadata: Record<string, { parentSlug: string; chunkId: number }> = {}
 let manifestIds: string[] = []
@@ -511,17 +505,14 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     rawSearchTerm = ''
     currentSearchTerm = ''
     currentHover = null
-    removeAllChildren(results)
+    results.replaceChildren()
     if (preview) {
-      removeAllChildren(preview)
+      preview.replaceChildren()
     }
     searchLayout!.classList.remove('display-results')
     if (focusButton) searchButton!.focus()
     resetProgressBar()
   }
-
-  const resetSearch = () => hideSearch(false)
-  searchResetters.set(searchElement, resetSearch)
 
   function navigateSearchResult(anchor: HTMLAnchorElement) {
     const href = anchor.getAttribute('href')
@@ -757,7 +748,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
   }
 
   async function displayResults(finalResults: SimilarityResult[]) {
-    removeAllChildren(results)
+    results.replaceChildren()
     if (finalResults.length === 0) {
       results.innerHTML = `<a class="result-card no-match">
           <h3>No results.</h3>
@@ -775,7 +766,7 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     }
 
     if (finalResults.length === 0 && preview) {
-      removeAllChildren(preview)
+      preview.replaceChildren()
     } else {
       const firstChild = results.firstElementChild as HTMLElement
       firstChild.classList.add('focus')
@@ -883,9 +874,9 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
     await ensureSearchData()
     const trimmed = rawTerm.trim()
     if (trimmed === '') {
-      removeAllChildren(results)
+      results.replaceChildren()
       if (preview) {
-        removeAllChildren(preview)
+        preview.replaceChildren()
       }
       currentHover = null
       searchLayout!.classList.remove('display-results')
@@ -1152,7 +1143,6 @@ async function setupSearch(searchElement: HTMLDivElement, currentSlug: FullSlug)
 
   registerEscapeHandler(container, hideSearch)
   window.addCleanup(() => {
-    searchResetters.delete(searchElement)
     configuredSearchElements.delete(searchElement)
   })
 }
@@ -1183,14 +1173,11 @@ async function fillDocument(data: ContentIndex) {
   indexPopulated = true
 }
 
-document.addEventListener('nav', async (e: CustomEventMap['nav']) => {
-  const currentSlug = e.detail.url
+document.addEventListener('nav', async () => {
+  const currentSlug = getFullSlug(window)
   const searchElements = Array.from(
     document.getElementsByClassName('search') as HTMLCollectionOf<HTMLDivElement>,
   )
-  for (const element of searchElements) {
-    searchResetters.get(element)?.()
-  }
   for (const element of searchElements) {
     await setupSearch(element, currentSlug)
   }

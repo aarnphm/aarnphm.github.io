@@ -1,6 +1,7 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
-import { registerEscapeHandler } from './util'
+import { registerEscapeHandler } from './escape-handler'
+import { currentNavSignal } from './nav-lifecycle'
 
 let ag: RoughAnnotation | null = null
 
@@ -23,6 +24,7 @@ let secondaryExtmarks: HTMLElement[] = []
 let secondaryKeys: string[] = []
 let searchInput: HTMLInputElement | null = null
 let searchQuery = ''
+let activeHeadingsSignal: AbortSignal | undefined
 
 const SECONDARY_CHOICE_KEYS = [
   'a',
@@ -512,6 +514,25 @@ function handleGlobalKeyDown(e: KeyboardEvent) {
 }
 
 document.addEventListener('nav', () => {
+  const signal = currentNavSignal()
+  if (activeHeadingsSignal === signal) return
+  activeHeadingsSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (activeHeadingsSignal === signal) activeHeadingsSignal = undefined
+    },
+    { once: true },
+  )
+
+  isOpen = false
+  isSecondaryMode = false
+  allHeadings = []
+  filteredHeadings = []
+  searchQuery = ''
+  currentIndex = 0
+  clearSecondaryMode()
+
   modal = document.querySelector('.headings-modal-container')
 
   if (modal) {
@@ -571,13 +592,15 @@ document.addEventListener('nav', () => {
       searchInput = header.querySelector('.headings-modal-search input') as HTMLInputElement | null
     }
 
-    registerEscapeHandler(modal, closeModal)
+    registerEscapeHandler(modal, closeModal, () => isOpen)
 
     const backdrop = modal.querySelector('.headings-modal-backdrop')
     if (backdrop) {
       backdrop.addEventListener('click', closeModal)
       window.addCleanup(() => backdrop.removeEventListener('click', closeModal))
     }
+
+    modal.style.display = 'none'
   }
 
   document.addEventListener('keydown', handleKeyDown)
@@ -588,18 +611,4 @@ document.addEventListener('nav', () => {
     document.removeEventListener('keydown', handleGlobalKeyDown)
     clearSecondaryMode()
   })
-})
-
-document.addEventListener('nav', () => {
-  isOpen = false
-  isSecondaryMode = false
-  allHeadings = []
-  filteredHeadings = []
-  searchQuery = ''
-  currentIndex = 0
-  clearSecondaryMode()
-
-  if (modal) {
-    modal.style.display = 'none'
-  }
 })

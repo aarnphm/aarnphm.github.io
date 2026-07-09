@@ -1,6 +1,6 @@
 import { Link, CuriusResponse } from '../../types/curius'
 import { createLinkEl } from './curius'
-import { removeAllChildren } from './util'
+import { cleanupEscapeHandlers } from './escape-handler'
 
 declare global {
   interface Window {
@@ -54,7 +54,8 @@ async function renderPage(page: number): Promise<boolean> {
 
   if (linksData.length === 0) {
     if (page === 0) {
-      removeAllChildren(fragment)
+      cleanupEscapeHandlers(fragment)
+      fragment.replaceChildren()
       fragment.innerHTML = `<p>Échec de la récupération des liens.</p>`
       window.curiusState = { currentPage: 0, hasMore: false }
       updateNavigation()
@@ -74,7 +75,8 @@ async function renderPage(page: number): Promise<boolean> {
     return false
   }
 
-  removeAllChildren(fragment)
+  cleanupEscapeHandlers(fragment)
+  fragment.replaceChildren()
   fragment.append(...linksData.map(createLinkEl))
 
   window.curiusState = {

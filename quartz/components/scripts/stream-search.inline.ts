@@ -1,5 +1,7 @@
 import FlexSearch from 'flexsearch'
-import { tokenizeTerm, encode, isStreamHost } from './util'
+import { encode, tokenizeTerm } from '../../util/search-text'
+import { isStreamHostname } from '../../util/stream-host'
+import { currentNavSignal } from './nav-lifecycle'
 
 interface StreamEntry {
   id: string
@@ -60,7 +62,9 @@ function stripHtml(html: string): string {
 async function buildSearchIndex() {
   if (isIndexBuilt) return
 
-  const endpoint = isStreamHost() ? `${window.location.origin}/streams.jsonl` : '/streams.jsonl'
+  const endpoint = isStreamHostname(window.location.hostname)
+    ? `${window.location.origin}/streams.jsonl`
+    : '/streams.jsonl'
   const response = await fetch(endpoint)
 
   const text = await response.text()
@@ -316,13 +320,32 @@ function updateSearchStatus(message: string) {
   }
 }
 
+let activeStreamSearchSignal: AbortSignal | undefined
+
 document.addEventListener('nav', async () => {
   const currentPath = window.location.pathname
   const isStreamPage =
-    currentPath === '/stream' || currentPath.startsWith('/stream/') || isStreamHost()
+    currentPath === '/stream' ||
+    currentPath.startsWith('/stream/') ||
+    isStreamHostname(window.location.hostname)
   if (!isStreamPage) return
+  const signal = currentNavSignal()
+  if (activeStreamSearchSignal === signal) return
+  activeStreamSearchSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (searchTimeout !== null) {
+        window.clearTimeout(searchTimeout)
+        searchTimeout = null
+      }
+      if (activeStreamSearchSignal === signal) activeStreamSearchSignal = undefined
+    },
+    { once: true },
+  )
 
   await buildSearchIndex()
+  if (signal.aborted) return
 
   const form = document.querySelector<HTMLFormElement>('.stream-search-form')
   const searchInput = document.querySelector<HTMLInputElement>('.stream-search-input')
@@ -355,7 +378,7 @@ document.addEventListener('nav', async () => {
     searchInput.select()
   }
 
-  const focusListenerOptions: AddEventListenerOptions = { capture: true }
+  const focusListenerOptions: AddEventListenerOptions = { capture: true, signal }
   document.addEventListener('keydown', focusShortcutHandler, focusListenerOptions)
 
   const handleInput = () => {
@@ -367,16 +390,6 @@ document.addEventListener('nav', async () => {
 
   const handleSubmit = (e: Event) => e.preventDefault()
 
-  searchInput.addEventListener('input', handleInput)
-  form.addEventListener('submit', handleSubmit)
-
-  window.addCleanup(() => {
-    searchInput.removeEventListener('input', handleInput)
-    form.removeEventListener('submit', handleSubmit)
-    document.removeEventListener('keydown', focusShortcutHandler, focusListenerOptions)
-    if (searchTimeout !== null) {
-      window.clearTimeout(searchTimeout)
-      searchTimeout = null
-    }
-  })
+  searchInput.addEventListener('input', handleInput, { signal })
+  form.addEventListener('submit', handleSubmit, { signal })
 })

@@ -188,12 +188,16 @@ body[data-slug='curius'] {
 svg.favorite-icon {
   clip-path: circle(20% at 50% 50%);
   color: rgb(236, 180, 19);
-  transition: all 200ms ease 0s;
+  transition: clip-path 200ms ease 0s;
   width: fit-content;
   height: fit-content;
 
   &.focus {
     clip-path: circle(100% at 50% 40%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 

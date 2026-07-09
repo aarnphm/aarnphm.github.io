@@ -1,4 +1,4 @@
-import { debounce } from './util'
+import { debounce } from '../../util/debounce'
 
 const SIDENOTE_WIDTH = 17
 const SPACING = 1

@@ -71,6 +71,29 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
   let days: [AppleHealthDay]
   let swims: [AppleHealthSwim]
   let workouts: [AppleHealthWorkout]
+
+  func replacingRecent(
+    with recent: HealthExportDocument,
+    dayCutoff: String,
+    timestampCutoff: String
+  ) -> HealthExportDocument {
+    HealthExportDocument(
+      version: recent.version,
+      generatedAt: recent.generatedAt,
+      timezone: recent.timezone,
+      days: (days.filter { $0.date < dayCutoff } + recent.days).sorted { $0.date < $1.date },
+      swims: (swims.filter { $0.date < dayCutoff } + recent.swims).sorted { $0.date < $1.date },
+      workouts: workouts.filter { $0.start < timestampCutoff } + recent.workouts
+    )
+  }
+
+  func hasSameHealthData(as other: HealthExportDocument) -> Bool {
+    version == other.version
+      && timezone == other.timezone
+      && days == other.days
+      && swims == other.swims
+      && workouts == other.workouts
+  }
 }
 
 struct HealthExportResult: Equatable, Sendable {

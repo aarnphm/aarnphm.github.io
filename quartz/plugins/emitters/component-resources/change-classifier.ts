@@ -64,12 +64,9 @@ export function isPageScriptChange(changePath: string): boolean {
     return true
   }
   return (
-    changePath === 'quartz/util/mime.ts' ||
-    changePath === 'quartz/util/path.ts' ||
-    changePath === 'quartz/util/lesswrong.ts' ||
-    changePath === 'quartz/util/stacked-notes.ts' ||
-    changePath === 'quartz/util/type-guards.ts' ||
-    changePath === 'quartz/util/wikipedia.ts'
+    changePath.startsWith('quartz/util/') &&
+    /\.[jt]sx?$/.test(changePath) &&
+    !/\.(?:test|spec)\.[jt]sx?$/.test(changePath)
   )
 }
 

@@ -1,7 +1,28 @@
 import BackgroundTasks
 import Foundation
 
-final class HealthBackgroundScheduler {
+private final class BackgroundRefreshCompletion: @unchecked Sendable {
+  private let task: BGAppRefreshTask
+  private let lock = NSLock()
+  private var isCompleted = false
+
+  init(_ task: BGAppRefreshTask) {
+    self.task = task
+  }
+
+  func complete(success: Bool) {
+    lock.lock()
+    guard !isCompleted else {
+      lock.unlock()
+      return
+    }
+    isCompleted = true
+    lock.unlock()
+    task.setTaskCompleted(success: success)
+  }
+}
+
+final class HealthBackgroundScheduler: @unchecked Sendable {
   static let shared = HealthBackgroundScheduler()
   static let taskIdentifier = "xyz.aarnphm.healthexporter.export"
 
@@ -18,6 +39,7 @@ final class HealthBackgroundScheduler {
   }
 
   func schedule() {
+    BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.taskIdentifier)
     let request = BGAppRefreshTaskRequest(identifier: Self.taskIdentifier)
     request.earliestBeginDate = nextRefreshDate()
     try? BGTaskScheduler.shared.submit(request)
@@ -25,16 +47,18 @@ final class HealthBackgroundScheduler {
 
   private func handle(_ task: BGAppRefreshTask) {
     schedule()
+    let completion = BackgroundRefreshCompletion(task)
     let exportTask = Task {
       do {
         _ = try await HealthExportRuntime.shared.export(force: true)
-        task.setTaskCompleted(success: true)
+        completion.complete(success: true)
       } catch {
-        task.setTaskCompleted(success: false)
+        completion.complete(success: false)
       }
     }
     task.expirationHandler = {
       exportTask.cancel()
+      completion.complete(success: false)
     }
   }
 
