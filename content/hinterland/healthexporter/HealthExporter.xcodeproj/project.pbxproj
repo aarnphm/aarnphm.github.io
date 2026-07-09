@@ -29,6 +29,8 @@
 		100000000000000000000114 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000018 /* Assets.xcassets */; };
 		100000000000000000000115 /* HealthExporterError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000003 /* HealthExporterError.swift */; };
 		100000000000000000000116 /* HealthExportWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000004 /* HealthExportWriter.swift */; };
+		100000000000000000000117 /* HealthExportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000001A /* HealthExportState.swift */; };
+		100000000000000000000118 /* HealthExportState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000001A /* HealthExportState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +69,7 @@
 		100000000000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		100000000000000000000018 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		100000000000000000000019 /* triathlon-app-icon.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Artwork/triathlon-app-icon.svg; sourceTree = "<group>"; };
+		10000000000000000000001A /* HealthExportState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthExportState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +116,7 @@
 				100000000000000000000003 /* HealthExporterError.swift */,
 				100000000000000000000004 /* HealthExportWriter.swift */,
 				100000000000000000000005 /* HealthKitService.swift */,
+				10000000000000000000001A /* HealthExportState.swift */,
 				100000000000000000000019 /* triathlon-app-icon.svg */,
 			);
 			path = Shared;
@@ -304,6 +308,7 @@
 				100000000000000000000109 /* HealthBackgroundScheduler.swift in Sources */,
 				10000000000000000000010A /* HealthExportRuntime.swift in Sources */,
 				10000000000000000000010B /* PhoneWatchSession.swift in Sources */,
+				100000000000000000000117 /* HealthExportState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,6 +331,7 @@
 				100000000000000000000111 /* HealthAggregator.swift in Sources */,
 				100000000000000000000115 /* HealthExporterError.swift in Sources */,
 				100000000000000000000116 /* HealthExportWriter.swift in Sources */,
+				100000000000000000000118 /* HealthExportState.swift in Sources */,
 				100000000000000000000112 /* HealthAggregatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

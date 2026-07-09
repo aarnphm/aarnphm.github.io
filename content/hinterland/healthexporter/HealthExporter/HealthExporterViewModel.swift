@@ -1,62 +1,95 @@
 import Foundation
 
-@MainActor
-final class HealthExporterViewModel: ObservableObject {
-  private static let catchUpInterval: TimeInterval = 60 * 60
+struct HealthExportDetails {
+  let generatedAt: String
+  let dayCount: Int
+  let swimCount: Int
+  let workoutCount: Int
+  let heartRateCount: Int
 
-  @Published var status = "Waiting for HealthKit permission"
-  @Published var filePath = HealthExportWriter.visiblePath
-  @Published var generatedAt = "Never"
-  @Published var dayCount = 0
-  @Published var swimCount = 0
-  @Published var workoutCount = 0
-  @Published var heartRateCount = 0
-  @Published var isExporting = false
-
-  func prepare() async {
-    if let result = await HealthExportRuntime.shared.currentExport() {
-      apply(result)
-    }
-    do {
-      try await HealthExportRuntime.shared.requestAuthorization()
-      HealthBackgroundScheduler.shared.schedule()
-      let result = try await HealthExportRuntime.shared.catchUpIfNeeded(maxAge: Self.catchUpInterval)
-      apply(result)
-      status = "Ready. Background sync runs when Health changes."
-    } catch {
-      status = message(error)
-    }
-  }
-
-  func exportNow() {
-    guard !isExporting else { return }
-    isExporting = true
-    status = "Exporting"
-    Task {
-      do {
-        let result = try await HealthExportRuntime.shared.export(force: true)
-        apply(result)
-        status = "Exported to iCloud Drive"
-      } catch {
-        status = message(error)
-      }
-      isExporting = false
-    }
-  }
-
-  private func apply(_ result: HealthExportResult) {
+  init(result: HealthExportResult) {
     generatedAt = result.document.generatedAt
     dayCount = result.document.days.count
     swimCount = result.document.swims.count
     workoutCount = result.document.workouts.count
     heartRateCount = result.document.workouts.reduce(0) { $0 + $1.heartRate.count }
-    filePath = HealthExportWriter.visiblePath
+  }
+}
+
+enum HealthExportDetailsState {
+  case idle
+  case loading
+  case available(HealthExportDetails)
+  case unavailable
+}
+
+@MainActor
+final class HealthExporterViewModel: ObservableObject {
+  private static let catchUpInterval: TimeInterval = 60 * 60
+  private let stateStore: HealthExportStateStore
+
+  @Published private(set) var state: HealthExportState
+  @Published private(set) var detailsState = HealthExportDetailsState.idle
+
+  private var detailsRequested = false
+
+  var isExporting: Bool {
+    state == .exporting
   }
 
-  private func message(_ error: Error) -> String {
-    if let error = error as? LocalizedError, let description = error.errorDescription {
-      return description
+  init(stateStore: HealthExportStateStore = HealthExportStateStore()) {
+    self.stateStore = stateStore
+    state = stateStore.state(maxAge: Self.catchUpInterval)
+  }
+
+  func refreshState() {
+    guard !isExporting else { return }
+    state = stateStore.state(maxAge: Self.catchUpInterval)
+  }
+
+  func prepare() async {
+    do {
+      try await HealthExportRuntime.shared.requestAuthorization()
+      HealthBackgroundScheduler.shared.schedule()
+      guard stateStore.state(maxAge: Self.catchUpInterval) == .stale else {
+        state = .exported
+        return
+      }
+      state = .exporting
+      try await HealthExportRuntime.shared.catchUpIfNeeded(maxAge: Self.catchUpInterval)
+      state = .exported
+      if detailsRequested {
+        await loadDetails()
+      }
+    } catch {
+      state = .failed
     }
-    return error.localizedDescription
+  }
+
+  func loadDetails() async {
+    detailsRequested = true
+    if case .loading = detailsState { return }
+    detailsState = .loading
+    guard let result = await HealthExportRuntime.shared.currentExport() else {
+      detailsState = .unavailable
+      return
+    }
+    detailsState = .available(HealthExportDetails(result: result))
+  }
+
+  func exportNow() {
+    guard !isExporting else { return }
+    state = .exporting
+    Task {
+      do {
+        let result = try await HealthExportRuntime.shared.export(force: true)
+        state = .exported
+        if detailsRequested {
+          detailsState = .available(HealthExportDetails(result: result))
+        }
+      } catch {
+        state = .failed
+      }
+    }
   }
 }

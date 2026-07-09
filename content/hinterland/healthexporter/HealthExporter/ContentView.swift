@@ -1,35 +1,73 @@
 import SwiftUI
 
 struct ContentView: View {
+  @Environment(\.scenePhase) private var scenePhase
   @StateObject private var model = HealthExporterViewModel()
+  @State private var isStatusExpanded = false
 
   var body: some View {
-    NavigationStack {
-      Form {
-        Section("Status") {
-          LabeledContent("State", value: model.status)
-          LabeledContent("Last export", value: model.generatedAt)
-          LabeledContent("Days", value: "\(model.dayCount)")
-          LabeledContent("Swims", value: "\(model.swimCount)")
-          LabeledContent("Workouts", value: "\(model.workoutCount)")
-          LabeledContent("HR samples", value: "\(model.heartRateCount)")
+    Form {
+      Section("Status") {
+        DisclosureGroup(isExpanded: $isStatusExpanded) {
+          exportDetails
+        } label: {
+          LabeledContent("State", value: model.state.rawValue)
         }
-        Section("Output") {
-          Text(model.filePath)
-            .font(.footnote)
-            .textSelection(.enabled)
+        .onChange(of: isStatusExpanded) { _, expanded in
+          if expanded {
+            Task {
+              await model.loadDetails()
+            }
+          }
         }
       }
-      .navigationTitle("HealthExporter")
-      .safeAreaInset(edge: .bottom) {
-        syncButton
-          .buttonStyle(.borderedProminent)
-          .padding()
-          .background(.regularMaterial)
+      Section("Output") {
+        Text(HealthExportWriter.visiblePath)
+          .font(.footnote)
+          .textSelection(.enabled)
       }
+    }
+    .safeAreaInset(edge: .bottom) {
+      syncButton
+        .buttonStyle(.borderedProminent)
+        .padding()
+        .background(.regularMaterial)
     }
     .task {
       await model.prepare()
+    }
+    .onChange(of: scenePhase) { _, phase in
+      if phase == .active {
+        Task {
+          model.refreshState()
+          if isStatusExpanded {
+            await model.loadDetails()
+          }
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var exportDetails: some View {
+    switch model.detailsState {
+    case .idle, .loading:
+      HStack {
+        Text("Loading details")
+        Spacer()
+        ProgressView()
+          .controlSize(.small)
+      }
+      .foregroundStyle(.secondary)
+    case .available(let details):
+      LabeledContent("Last export", value: details.generatedAt)
+      LabeledContent("Days", value: details.dayCount.formatted())
+      LabeledContent("Swims", value: details.swimCount.formatted())
+      LabeledContent("Workouts", value: details.workoutCount.formatted())
+      LabeledContent("HR samples", value: details.heartRateCount.formatted())
+    case .unavailable:
+      Text("No export is available yet.")
+        .foregroundStyle(.secondary)
     }
   }
 

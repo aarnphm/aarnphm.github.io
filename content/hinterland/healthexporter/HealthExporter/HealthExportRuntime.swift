@@ -16,6 +16,7 @@ actor HealthExportRuntime {
 
   private let health = HealthKitService.shared
   private let writer = HealthExportWriter()
+  private let stateStore = HealthExportStateStore()
   private var changeGeneration = 0
   private var cachedGeneration = -1
   private var cachedResult: HealthExportResult?
@@ -79,19 +80,9 @@ actor HealthExportRuntime {
     return result
   }
 
-  func catchUpIfNeeded(maxAge: TimeInterval, now: Date = Date()) async throws -> HealthExportResult {
-    if let result = currentExport(), isCurrentExportFresh(maxAge: maxAge, now: now) {
-      return result
-    }
-    return try await export(scope: .recent, force: true)
-  }
-
-  private func isCurrentExportFresh(maxAge: TimeInterval, now: Date = Date()) -> Bool {
-    guard let result = currentExport(),
-      let generatedAt = ISO8601DateFormatter().date(from: result.document.generatedAt)
-    else { return false }
-    let age = now.timeIntervalSince(generatedAt)
-    return age >= 0 && age < maxAge
+  func catchUpIfNeeded(maxAge: TimeInterval, now: Date = Date()) async throws {
+    guard stateStore.state(maxAge: maxAge, now: now) == .stale else { return }
+    _ = try await export(scope: .recent, force: true)
   }
 
   func export(force: Bool = false) async throws -> HealthExportResult {
@@ -135,6 +126,7 @@ actor HealthExportRuntime {
     guard inFlightExport?.id == id else { return }
     cachedResult = result
     cachedGeneration = generation
+    stateStore.markSuccessful()
     inFlightExport = nil
     if changeGeneration != generation {
       scheduleObserverExport()

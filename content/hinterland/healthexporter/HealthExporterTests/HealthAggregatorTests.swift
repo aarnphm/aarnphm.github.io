@@ -236,6 +236,22 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertEqual(merged.workouts, [oldWorkout, updatedWorkout])
   }
 
+  func testExportStateUsesTheLastSuccessfulSyncWithoutReadingTheExport() {
+    let suiteName = "HealthExportStateTests.\(UUID().uuidString)"
+    let defaults = UserDefaults(suiteName: suiteName)!
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+    let store = HealthExportStateStore(defaults: defaults)
+    let now = date(2026, 7, 9, 12, 0)
+
+    XCTAssertEqual(store.state(maxAge: 3600, now: now), .stale)
+
+    store.markSuccessful(at: now.addingTimeInterval(-3599))
+    XCTAssertEqual(store.state(maxAge: 3600, now: now), .exported)
+
+    store.markSuccessful(at: now.addingTimeInterval(-3600))
+    XCTAssertEqual(store.state(maxAge: 3600, now: now), .stale)
+  }
+
   private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {
     calendar.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
   }
