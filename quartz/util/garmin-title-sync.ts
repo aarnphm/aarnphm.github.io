@@ -31,6 +31,21 @@ export interface GarminTitleUpdate {
   durationDiffS: number | null
 }
 
+export interface GarminActivityTypeUpdate {
+  stravaId: number
+  garminId: string
+  garminActivityId: string
+  title: string
+  from: ActivityKind | null
+  to: 'pool-swim'
+  startDate: string
+  startDateLocal: string
+  score: number
+  startDiffS: number
+  distanceDiffM: number | null
+  durationDiffS: number | null
+}
+
 function cleanTitle(value: string | null | undefined): string {
   return (value ?? '').trim().replace(/\s+/g, ' ')
 }
@@ -72,6 +87,31 @@ function updateFor(
   }
 }
 
+function typeUpdateFor(
+  activity: RawStravaActivity,
+  match: GarminActivityMatch,
+): GarminActivityTypeUpdate | null {
+  if (match.activity.sport === 'swim') return null
+  const garminActivityId = garminConnectNumericActivityId(match.activity.id)
+  if (!garminActivityId) return null
+  const title = cleanTitle(activity.name)
+  if (!title) return null
+  return {
+    stravaId: activity.id,
+    garminId: match.activity.id,
+    garminActivityId,
+    title,
+    from: match.activity.sport,
+    to: 'pool-swim',
+    startDate: activity.startDate,
+    startDateLocal: activity.startDateLocal,
+    score: match.score,
+    startDiffS: Math.round(match.startDiffMs / 1000),
+    distanceDiffM: match.distanceDiffM,
+    durationDiffS: match.durationDiffS,
+  }
+}
+
 export function selectGarminTitleUpdates(
   strava: StravaRawCache,
   garmin: GarminCache,
@@ -89,6 +129,30 @@ export function selectGarminTitleUpdates(
     const match = matchGarminActivity(activity, kind, garmin)
     if (!match) continue
     const update = updateFor(activity, match)
+    if (update) updates.push(update)
+  }
+
+  return options.limit && options.limit > 0 ? updates.slice(0, options.limit) : updates
+}
+
+export function selectGarminActivityTypeUpdates(
+  strava: StravaRawCache,
+  garmin: GarminCache,
+  options: GarminTitleSyncOptions = {},
+): GarminActivityTypeUpdate[] {
+  const kind = options.kind ?? 'swim'
+  if (kind !== 'swim') return []
+  const updates: GarminActivityTypeUpdate[] = []
+  const activities = Object.values(strava.activities)
+    .filter(activity => normalizeKind(activity.sportType) === kind)
+    .filter(activity => !options.ids?.size || options.ids.has(String(activity.id)))
+    .filter(activity => !options.since || startDay(activity) >= options.since)
+    .sort((left, right) => startValue(left).localeCompare(startValue(right)))
+
+  for (const activity of activities) {
+    const match = matchGarminActivity(activity, kind, garmin)
+    if (!match) continue
+    const update = typeUpdateFor(activity, match)
     if (update) updates.push(update)
   }
 

@@ -9168,6 +9168,12 @@ title: are.na
 
 ## opinions
 
+- https://removepaywalls.com/https://www.bloomberg.com/news/newsletters/2026-07-06/donald-trump-changed-presidential-power-will-democrats-keep-it -- Trump has expanded presidential power. Will the next Democrat keep it?
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [trump, presidential power]
+    - unlocked: true
+    - later: true
 - https://samkriss.substack.com/p/the-century-of-the-maxxer -- The century of the maxxer
   - [meta]:
     - date: 07/06/2026
@@ -10331,6 +10337,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://gist.github.com/mfuerstenau/ba870a29e16536fdbaba -- ZigZag encoding/decoding explained
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [zigzag encoding, integers]
+    - later: true
+- https://lemire.me/blog/2022/11/25/making-all-your-integers-positive-with-zigzag-encoding/ -- Making all your integers positive with zigzag encoding
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [zigzag encoding, integers]
+    - later: true
+- https://en.wikipedia.org/wiki/Two%27s_complement -- Two's complement
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [binary arithmetic, integers]
+    - later: true
 - https://www.cs.unc.edu/~anderson/teach/comp790/papers/mars_pathfinder_long_version.html -- What really happened on Mars? -- Authoritative Account
   - [meta]:
     - date: 07/06/2026
@@ -13931,6 +13952,11 @@ title: are.na
 
 ## resources
 
+- https://archive.is/uSDrR -- archive.is snapshot
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [archive]
+    - later: true
 - https://en.wikipedia.org/wiki/Twice_exceptional -- Twice exceptional
   - [meta]:
     - date: 07/06/2026

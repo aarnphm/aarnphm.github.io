@@ -27,7 +27,7 @@ final class HealthExporterViewModel: ObservableObject {
     status = "Exporting"
     Task {
       do {
-        let result = try await HealthExportRuntime.shared.export()
+        let result = try await HealthExportRuntime.shared.export(force: true)
         generatedAt = result.document.generatedAt
         dayCount = result.document.days.count
         swimCount = result.document.swims.count

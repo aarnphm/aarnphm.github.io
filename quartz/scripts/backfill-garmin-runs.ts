@@ -4,6 +4,7 @@ import { matchGarminActivity, type GarminCache } from '../plugins/stores/garmin'
 import {
   normalizeKind,
   type RawStravaActivity,
+  type Sport,
   type StravaRawCache,
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
@@ -37,12 +38,15 @@ const DEFAULT_UPLOAD_DELAY_MS = 1500
 
 interface Args {
   write: boolean
+  sport: BackfillSport
   since: string | null
   limit: number
   ids: Set<string>
-  outputDir: string
+  outputDir: string | null
   uploadDelayMs: number
 }
+
+type BackfillSport = Extract<Sport, 'run' | 'swim'>
 
 interface TokenResponse {
   access_token: string
@@ -78,7 +82,7 @@ interface UploadResult {
 
 function usage(): string {
   return [
-    'usage: pnpm garmin:backfill-runs -- [--write] [--since YYYY-MM-DD] [--limit N] [--id ID]',
+    'usage: pnpm garmin:backfill-runs -- [--write] [--sport run|swim] [--since YYYY-MM-DD] [--limit N] [--id ID]',
     '',
     'defaults to dry-run. --write uploads generated TCX files to Garmin Connect.',
   ].join('\n')
@@ -87,10 +91,11 @@ function usage(): string {
 function parseArgs(argv: string[]): Args {
   const args: Args = {
     write: false,
+    sport: 'run',
     since: null,
     limit: 0,
     ids: new Set(),
-    outputDir: DEFAULT_OUTPUT_DIR,
+    outputDir: null,
     uploadDelayMs: envNumber('GARMIN_BACKFILL_UPLOAD_DELAY_MS', DEFAULT_UPLOAD_DELAY_MS),
   }
   for (let i = 0; i < argv.length; i++) {
@@ -98,6 +103,7 @@ function parseArgs(argv: string[]): Args {
     if (arg === '--') continue
     if (arg === '--write') args.write = true
     else if (arg === '--dry-run') args.write = false
+    else if (arg === '--sport') args.sport = parseSport(readArgValue(argv, ++i, arg))
     else if (arg === '--since') args.since = readArgValue(argv, ++i, arg)
     else if (arg === '--limit') args.limit = positiveInteger(readArgValue(argv, ++i, arg), arg)
     else if (arg === '--id') args.ids.add(readArgValue(argv, ++i, arg))
@@ -115,6 +121,11 @@ function parseArgs(argv: string[]): Args {
   if (args.since && !/^\d{4}-\d{2}-\d{2}$/.test(args.since))
     throw new Error(`--since must be YYYY-MM-DD, got ${args.since}`)
   return args
+}
+
+function parseSport(value: string): BackfillSport {
+  if (value === 'run' || value === 'swim') return value
+  throw new Error(`--sport must be run or swim, got ${value}`)
 }
 
 function readArgValue(argv: string[], index: number, flag: string): string {
@@ -200,8 +211,8 @@ async function resolveStravaToken(cache: StravaRawCache): Promise<StravaToken> {
   throw new Error('need Strava OAuth env or cached refresh token')
 }
 
-function isRunActivity(activity: RawStravaActivity): boolean {
-  return normalizeKind(activity.sportType) === 'run'
+function isBackfillSport(activity: RawStravaActivity, sport: BackfillSport): boolean {
+  return normalizeKind(activity.sportType) === sport
 }
 
 function startDay(activity: RawStravaActivity): string {
@@ -215,16 +226,16 @@ function selectCandidates(
 ): BackfillCandidate[] {
   const candidates: BackfillCandidate[] = []
   const activities = Object.values(strava.activities)
-    .filter(isRunActivity)
+    .filter(activity => isBackfillSport(activity, args.sport))
     .filter(activity => args.ids.size === 0 || args.ids.has(String(activity.id)))
     .filter(activity => !args.since || startDay(activity) >= args.since)
     .sort((left, right) => left.startDate.localeCompare(right.startDate))
   for (const activity of activities) {
-    const match = matchGarminActivity(activity, 'run', garmin)
+    const match = matchGarminActivity(activity, args.sport, garmin)
     if (match) continue
     candidates.push({
       activity,
-      reason: 'no Garmin run matched by start time, distance, and duration',
+      reason: `no Garmin ${args.sport} matched by start time, distance, and duration`,
     })
   }
   return args.limit > 0 ? candidates.slice(0, args.limit) : candidates
@@ -311,6 +322,11 @@ function pointNumber(values: number[], index: number): number | null {
   return positive(values[index])
 }
 
+function pointDistance(values: number[], index: number): number | null {
+  const value = values[index]
+  return value != null && Number.isFinite(value) && value >= 0 ? value : null
+}
+
 function pointTime(startMs: number, elapsedS: number): string {
   return new Date(startMs + Math.round(elapsedS * 1000)).toISOString()
 }
@@ -353,7 +369,7 @@ function trackpoint(
   const time = streams.time[index]
   const latlng = streams.latlng[index]
   const altitude = pointNumber(streams.altitude, index)
-  const distance = pointNumber(streams.distance, index)
+  const distance = pointDistance(streams.distance, index)
   const heartrate = pointNumber(streams.heartrate, index)
   const cadence = byte(pointNumber(streams.cadence, index))
   const watts = integer(pointNumber(streams.watts, index))
@@ -377,7 +393,16 @@ function trackpoint(
   return `<Trackpoint>${parts.join('')}</Trackpoint>`
 }
 
-function buildTcx(activity: RawStravaActivity, streams: TimedStravaStreams): string {
+function tcxSport(sport: BackfillSport): string {
+  if (sport === 'run') return 'Running'
+  return 'Other'
+}
+
+function buildTcx(
+  activity: RawStravaActivity,
+  streams: TimedStravaStreams,
+  sport: BackfillSport,
+): string {
   if (streams.time.length < 2) throw new Error(`Strava activity ${activity.id} has no timed stream`)
   const startMs = Date.parse(activity.startDate)
   if (!Number.isFinite(startMs))
@@ -394,7 +419,7 @@ function buildTcx(activity: RawStravaActivity, streams: TimedStravaStreams): str
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2" xmlns:ns3="http://www.garmin.com/xmlschemas/ActivityExtension/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd">',
     '<Activities>',
-    '<Activity Sport="Running">',
+    `<Activity Sport="${tcxSport(sport)}">`,
     `<Id>${new Date(startMs).toISOString()}</Id>`,
     `<Lap StartTime="${new Date(startMs).toISOString()}">`,
     element('TotalTimeSeconds', totalTimeS.toFixed(1)),
@@ -407,7 +432,7 @@ function buildTcx(activity: RawStravaActivity, streams: TimedStravaStreams): str
     `<Track>${points}</Track>`,
     '</Lap>',
     `<Notes>${xml(`Strava ${activity.id}: ${activity.name}`)}</Notes>`,
-    '<Creator xsi:type="Device_t"><Name>Strava Backfill</Name><UnitId>0</UnitId><ProductID>0</ProductID></Creator>',
+    `<Creator xsi:type="Device_t"><Name>${xml(`Strava ${sport === 'swim' ? 'Swim' : 'Run'} Backfill`)}</Name><UnitId>0</UnitId><ProductID>0</ProductID></Creator>`,
     '</Activity>',
     '</Activities>',
     '</TrainingCenterDatabase>',
@@ -416,6 +441,12 @@ function buildTcx(activity: RawStravaActivity, streams: TimedStravaStreams): str
 
 function safeFilename(activity: RawStravaActivity): string {
   return `${activity.startDate.slice(0, 10)}-${activity.id}.tcx`
+}
+
+function outputDir(args: Args): string {
+  if (args.outputDir) return args.outputDir
+  if (args.sport === 'run') return DEFAULT_OUTPUT_DIR
+  return joinSegments(CACHE_DIR, 'garmin-swim-backfill')
 }
 
 function uploadHeaders(session: GarminConnectSession): HeadersInit {
@@ -501,13 +532,14 @@ async function main(): Promise<void> {
   const garmin = await readJsonFile<GarminCache>(GARMIN_CACHE)
   const candidates = selectCandidates(strava, garmin, args)
   console.log(
-    `[garmin-backfill] ${args.write ? 'write' : 'dry-run'} ${candidates.length} candidate runs${args.since ? ` since ${args.since}` : ''}`,
+    `[garmin-backfill] ${args.write ? 'write' : 'dry-run'} ${candidates.length} candidate ${args.sport}s${args.since ? ` since ${args.since}` : ''}`,
   )
   for (const candidate of candidates)
     console.log(`[garmin-backfill] candidate ${describe(candidate.activity)}`)
   if (!args.write || candidates.length === 0) return
 
-  await fs.mkdir(args.outputDir, { recursive: true })
+  const targetDir = outputDir(args)
+  await fs.mkdir(targetDir, { recursive: true })
   const token = await resolveStravaToken(strava)
   const session = await readGarminConnectSession()
   const uploadBase = cleanGarminConnectBaseUrl(
@@ -526,8 +558,8 @@ async function main(): Promise<void> {
     const activity = candidate.activity
     const filename = safeFilename(activity)
     const streams = await fetchTimedStreams(token.access, activity.id)
-    const tcx = buildTcx(activity, streams)
-    const path = joinSegments(args.outputDir, filename)
+    const tcx = buildTcx(activity, streams, args.sport)
+    const path = joinSegments(targetDir, filename)
     await fs.writeFile(path, tcx)
     const result = await uploadTcx(session, uploadBase, filename, tcx)
     const ids = resultIds(result.json)

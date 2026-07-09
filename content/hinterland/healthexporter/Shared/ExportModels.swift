@@ -1,6 +1,6 @@
 import Foundation
 
-enum HealthMetricKind: String, Equatable {
+enum HealthMetricKind: String, Equatable, Sendable {
   case activeEnergy
   case basalEnergy
   case dietaryEnergy
@@ -8,14 +8,14 @@ enum HealthMetricKind: String, Equatable {
   case vo2Max
 }
 
-struct QuantitySampleValue: Equatable {
+struct QuantitySampleValue: Equatable, Sendable {
   let kind: HealthMetricKind
   let startDate: Date
   let endDate: Date
   let value: Double
 }
 
-enum SwimStrokeName: String, Codable, CaseIterable {
+enum SwimStrokeName: String, Codable, CaseIterable, Sendable {
   case freestyle
   case breaststroke
   case backstroke
@@ -24,13 +24,13 @@ enum SwimStrokeName: String, Codable, CaseIterable {
   case kickboard
 }
 
-struct SwimSampleValue: Equatable {
+struct SwimSampleValue: Equatable, Sendable {
   let startDate: Date
   let meters: Double
   let stroke: SwimStrokeName?
 }
 
-struct AppleHealthDay: Codable, Equatable, Identifiable {
+struct AppleHealthDay: Codable, Equatable, Identifiable, Sendable {
   let date: String
   let burnKcal: Int?
   let activeKcal: Int?
@@ -41,7 +41,7 @@ struct AppleHealthDay: Codable, Equatable, Identifiable {
   var id: String { date }
 }
 
-struct AppleHealthSwim: Codable, Equatable, Identifiable {
+struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
   let date: String
   let totalM: Int
   let laps: Int
@@ -50,12 +50,12 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable {
   var id: String { date }
 }
 
-struct AppleHealthHeartRate: Codable, Equatable {
+struct AppleHealthHeartRate: Codable, Equatable, Sendable {
   let time: String
   let bpm: Int
 }
 
-struct AppleHealthWorkout: Codable, Equatable, Identifiable {
+struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   let id: String
   let activity: String
   let start: String
@@ -64,7 +64,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable {
   let heartRate: [AppleHealthHeartRate]
 }
 
-struct HealthExportDocument: Codable, Equatable {
+struct HealthExportDocument: Codable, Equatable, Sendable {
   let version: Int
   let generatedAt: String
   let timezone: String
@@ -73,7 +73,7 @@ struct HealthExportDocument: Codable, Equatable {
   let workouts: [AppleHealthWorkout]
 }
 
-struct HealthExportResult: Equatable {
+struct HealthExportResult: Equatable, Sendable {
   let document: HealthExportDocument
   let url: URL
 }

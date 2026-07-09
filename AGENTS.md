@@ -11,12 +11,12 @@ This means: no fallbacks, no hacks, no shortcuts. Production-grade, Google-quali
 - Use `pnpm`, `oxlint`, `oxfmt`, and `tsgo`.
 - Inspect with `fd` and `rg`.
 - Keep new files in `quartz/util` kebab-case.
-- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites. But don't overused and having to put everything under `quartz/util`
+- Reuse shared guards and helpers from the owning util module; do not copy `isRecord`, JSON readers, or tiny support functions into call sites. If there are scripts available to be self-contained no need to make a util modules. ONLY uses `quartz/util` when it is universally used in a lot of places.
 - Do not run bundle or build. Inspect the running `dev.ts` process when runtime evidence is needed. Oftentimes we will pipe the outputs to `/tmp/quartz-dev.log` for easier inspection.
 - Keep secrets in `.env` locally and Cloudflare Secrets in production.
 - Keep filesystem access out of `@quartz/plugins/transformers`.
 - Write markdown math with LaTeX blocks.
 - Skip shims and backward compatibility unless aarnphm asks for them.
 - When you write test NEVER USE `readFile` and create unit tests that regex the actual changes for regression, that is fucking stupid.
-- Make sure that `window.addCleanup` must always written within `document.addEventListener('nav', () => {})` here
+- Make sure that `window.addCleanup` must always written within `document.addEventListener('nav', () => {})`
 - no `box-shadow`, `border-left` and any sloppy styling that you might do for frontend components

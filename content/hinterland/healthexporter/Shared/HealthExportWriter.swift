@@ -14,7 +14,7 @@ struct HealthExportWriter {
   func write(_ document: HealthExportDocument) throws -> URL {
     let url = try exportURL()
     let encoder = JSONEncoder()
-    encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+    encoder.outputFormatting = [.withoutEscapingSlashes]
     let data = try encoder.encode(document)
     try data.write(to: url, options: [.atomic])
     return url
