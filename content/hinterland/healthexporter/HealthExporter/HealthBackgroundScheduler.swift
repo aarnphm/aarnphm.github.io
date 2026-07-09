@@ -27,7 +27,7 @@ final class HealthBackgroundScheduler {
     schedule()
     let exportTask = Task {
       do {
-        _ = try await HealthExportRuntime.shared.export()
+        _ = try await HealthExportRuntime.shared.export(force: true)
         task.setTaskCompleted(success: true)
       } catch {
         task.setTaskCompleted(success: false)

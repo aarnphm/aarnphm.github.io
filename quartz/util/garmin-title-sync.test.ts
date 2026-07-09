@@ -2,7 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { RawStravaActivity, StravaRawCache } from '../plugins/stores/strava'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from '../plugins/stores/garmin'
-import { garminConnectNumericActivityId, selectGarminTitleUpdates } from './garmin-title-sync'
+import {
+  garminConnectNumericActivityId,
+  selectGarminActivityTypeUpdates,
+  selectGarminTitleUpdates,
+} from './garmin-title-sync'
 
 function strava(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
@@ -92,4 +96,59 @@ test('normalizes Garmin Connect numeric activity ids', () => {
   assert.equal(garminConnectNumericActivityId('connect:123'), '123')
   assert.equal(garminConnectNumericActivityId('123'), '123')
   assert.equal(garminConnectNumericActivityId('connect:fit:123'), null)
+})
+
+test('selects pool swim type updates for matched imported swims', () => {
+  const updates = selectGarminActivityTypeUpdates(
+    stravaCache([
+      strava({
+        id: 202,
+        name: 'Pool Swim',
+        sportType: 'Swim',
+        distance: 700,
+        movingTime: 1094,
+        elapsedTime: 1476,
+        startDate: '2026-07-09T00:32:32Z',
+        startDateLocal: '2026-07-08T20:32:32',
+      }),
+    ]),
+    garminCache({
+      id: 'connect:23530271040',
+      name: 'Pool Swim',
+      sport: null,
+      startDate: '2026-07-09T00:32:00Z',
+      startDateLocal: '2026-07-08T20:32:00',
+      distanceM: 700,
+      movingTimeS: 122,
+      elapsedTimeS: 1477,
+    }),
+    { kind: 'swim' },
+  )
+
+  assert.deepEqual(updates, [
+    {
+      stravaId: 202,
+      garminId: 'connect:23530271040',
+      garminActivityId: '23530271040',
+      title: 'Pool Swim',
+      from: null,
+      to: 'pool-swim',
+      startDate: '2026-07-09T00:32:32Z',
+      startDateLocal: '2026-07-08T20:32:32',
+      score: updates[0].score,
+      startDiffS: 32,
+      distanceDiffM: 0,
+      durationDiffS: 1,
+    },
+  ])
+})
+
+test('skips pool swim type updates when Garmin already reports swim', () => {
+  const updates = selectGarminActivityTypeUpdates(
+    stravaCache([strava({ sportType: 'Swim', distance: 700 })]),
+    garminCache({ sport: 'swim', distanceM: 700 }),
+    { kind: 'swim' },
+  )
+
+  assert.equal(updates.length, 0)
 })

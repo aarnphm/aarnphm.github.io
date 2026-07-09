@@ -21,7 +21,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     HealthBackgroundScheduler.shared.schedule()
     PhoneWatchSession.shared.start {
       Task {
-        _ = try? await HealthExportRuntime.shared.export()
+        _ = try? await HealthExportRuntime.shared.export(force: true)
       }
     }
     return true

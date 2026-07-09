@@ -15,6 +15,11 @@ final class HealthKitService {
     let stroke: SwimStrokeName
   }
 
+  private struct HeartRateSample {
+    let startDate: Date
+    let value: AppleHealthHeartRate
+  }
+
   private let store = HKHealthStore()
   private var observerQueries: [HKObserverQuery] = []
 
@@ -74,37 +79,61 @@ final class HealthKitService {
   }
 
   func export(daysBack: Int = 180, now: Date = Date()) async throws -> HealthExportDocument {
-    var calendar = Calendar.autoupdatingCurrent
-    calendar.timeZone = .autoupdatingCurrent
+    var currentCalendar = Calendar.autoupdatingCurrent
+    currentCalendar.timeZone = .autoupdatingCurrent
+    let calendar = currentCalendar
     let end = now
     let start = calendar.date(byAdding: .day, value: -daysBack, to: calendar.startOfDay(for: now))
       ?? calendar.startOfDay(for: now)
-    var quantitySamples: [QuantitySampleValue] = []
-    for item in cumulativeTypes {
-      quantitySamples += try await cumulativeSamples(
-        kind: item.0,
-        identifier: item.1,
-        unit: item.2,
-        start: start,
-        end: end,
-        calendar: calendar
-      )
-    }
-    for item in latestTypes {
-      quantitySamples += try await latestSamples(
-        kind: item.0,
-        identifier: item.1,
-        unit: item.2,
-        start: start,
-        end: end
-      )
-    }
-    let swimSamples = try await swimSamples(start: start, end: end, calendar: calendar)
-    let workouts = try await workoutHeartRates(start: start, end: end)
+    async let activeEnergy = cumulativeSamples(
+      kind: .activeEnergy,
+      identifier: .activeEnergyBurned,
+      unit: .kilocalorie(),
+      start: start,
+      end: end,
+      calendar: calendar
+    )
+    async let basalEnergy = cumulativeSamples(
+      kind: .basalEnergy,
+      identifier: .basalEnergyBurned,
+      unit: .kilocalorie(),
+      start: start,
+      end: end,
+      calendar: calendar
+    )
+    async let dietaryEnergy = cumulativeSamples(
+      kind: .dietaryEnergy,
+      identifier: .dietaryEnergyConsumed,
+      unit: .kilocalorie(),
+      start: start,
+      end: end,
+      calendar: calendar
+    )
+    async let bodyMass = latestSamples(
+      kind: .bodyMass,
+      identifier: .bodyMass,
+      unit: .gramUnit(with: .kilo),
+      start: start,
+      end: end
+    )
+    async let vo2Max = latestSamples(
+      kind: .vo2Max,
+      identifier: .vo2Max,
+      unit: HKUnit(from: "mL/kg*min"),
+      start: start,
+      end: end
+    )
+    async let swimSamples = swimSamples(start: start, end: end, calendar: calendar)
+    async let workouts = workoutHeartRates(start: start, end: end)
+    var quantitySamples = try await activeEnergy
+    quantitySamples += try await basalEnergy
+    quantitySamples += try await dietaryEnergy
+    quantitySamples += try await bodyMass
+    quantitySamples += try await vo2Max
     return HealthAggregator.document(
       quantitySamples: quantitySamples,
-      swimSamples: swimSamples,
-      workouts: workouts,
+      swimSamples: try await swimSamples,
+      workouts: try await workouts,
       generatedAt: now,
       calendar: calendar
     )
@@ -197,13 +226,15 @@ final class HealthKitService {
   }
 
   private func swimSamples(start: Date, end: Date, calendar: Calendar) async throws -> [SwimSampleValue] {
-    let distances = try await distanceSamples(start: start, end: end)
-    let strokes = try await strokeSamples(start: start, end: end)
-    let distanceBySecond = Dictionary(uniqueKeysWithValues: distances.map {
+    async let distances = distanceSamples(start: start, end: end)
+    async let strokes = strokeSamples(start: start, end: end)
+    let distanceValues = try await distances
+    let strokeValues = try await strokes
+    let distanceBySecond = Dictionary(uniqueKeysWithValues: distanceValues.map {
       (Int($0.startDate.timeIntervalSince1970.rounded()), $0.meters)
     })
     var distancesByDay: [String: [Double]] = [:]
-    for sample in distances {
+    for sample in distanceValues {
       let key = HealthExporterFormat.dayString(sample.startDate, calendar: calendar)
       distancesByDay[key, default: []].append(sample.meters)
     }
@@ -211,7 +242,7 @@ final class HealthKitService {
       let sorted = values.sorted()
       return sorted[sorted.count / 2]
     }
-    return strokes.map { stroke in
+    return strokeValues.map { stroke in
       let second = Int(stroke.startDate.timeIntervalSince1970.rounded())
       let day = HealthExporterFormat.dayString(stroke.startDate, calendar: calendar)
       let meters = distanceBySecond[second] ?? medianByDay[day] ?? 25
@@ -320,10 +351,10 @@ final class HealthKitService {
     }
   }
 
-  private func heartRateSamples(for workout: HKWorkout) async throws -> [AppleHealthHeartRate] {
+  private func heartRateSamples(start: Date, end: Date) async throws -> [HeartRateSample] {
     let type = try quantityType(.heartRate)
     let unit = HKUnit.count().unitDivided(by: .minute())
-    let predicate = HKQuery.predicateForObjects(from: workout)
+    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [.strictStartDate])
     let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
     return try await withCheckedThrowingContinuation { continuation in
       let query = HKSampleQuery(
@@ -336,13 +367,16 @@ final class HealthKitService {
           continuation.resume(throwing: error)
           return
         }
-        let values = (samples ?? []).compactMap { sample -> AppleHealthHeartRate? in
+        let values = (samples ?? []).compactMap { sample -> HeartRateSample? in
           guard let sample = sample as? HKQuantitySample else { return nil }
           let bpm = Int(sample.quantity.doubleValue(for: unit).rounded())
           guard bpm > 0 else { return nil }
-          return AppleHealthHeartRate(
-            time: HealthExporterFormat.utcTimestampString(sample.startDate),
-            bpm: bpm
+          return HeartRateSample(
+            startDate: sample.startDate,
+            value: AppleHealthHeartRate(
+              time: HealthExporterFormat.utcTimestampString(sample.startDate),
+              bpm: bpm
+            )
           )
         }
         continuation.resume(returning: values)
@@ -351,10 +385,35 @@ final class HealthKitService {
     }
   }
 
+  private static func lowerBoundHeartRate(_ samples: [HeartRateSample], start: Date) -> Int {
+    var low = 0
+    var high = samples.count
+    while low < high {
+      let mid = (low + high) / 2
+      if samples[mid].startDate < start {
+        low = mid + 1
+      } else {
+        high = mid
+      }
+    }
+    return low
+  }
+
   private func workoutHeartRates(start: Date, end: Date) async throws -> [AppleHealthWorkout] {
+    async let workoutValues = workouts(start: start, end: end)
+    async let heartRateValues = heartRateSamples(start: start, end: end)
+    let workouts = try await workoutValues
+    let heartRates = try await heartRateValues
     var exports: [AppleHealthWorkout] = []
-    for workout in try await workouts(start: start, end: end) {
-      let heartRate = try await heartRateSamples(for: workout)
+    for workout in workouts {
+      var heartRate: [AppleHealthHeartRate] = []
+      var index = Self.lowerBoundHeartRate(heartRates, start: workout.startDate)
+      while index < heartRates.count {
+        let sample = heartRates[index]
+        if sample.startDate > workout.endDate { break }
+        heartRate.append(sample.value)
+        index += 1
+      }
       if heartRate.isEmpty { continue }
       exports.append(
         AppleHealthWorkout(
