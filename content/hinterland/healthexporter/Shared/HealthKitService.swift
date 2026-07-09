@@ -38,7 +38,7 @@ final class HealthKitService: @unchecked Sendable {
 
   private struct HeartRateSample {
     let startDate: Date
-    let value: AppleHealthHeartRate
+    let bpm: Int
   }
 
   private let store = HKHealthStore()
@@ -406,10 +406,19 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
-  private func heartRateSamples(start: Date, end: Date) async throws -> [HeartRateSample] {
+  private func heartRateSamples(workouts: [HKWorkout]) async throws -> [HeartRateSample] {
+    guard !workouts.isEmpty else { return [] }
     let type = try quantityType(.heartRate)
     let unit = HKUnit.count().unitDivided(by: .minute())
-    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [.strictStartDate])
+    let predicate = NSCompoundPredicate(
+      orPredicateWithSubpredicates: workouts.map {
+        HKQuery.predicateForSamples(
+          withStart: $0.startDate,
+          end: $0.endDate,
+          options: [.strictStartDate]
+        )
+      }
+    )
     let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
     return try await withCheckedThrowingContinuation { continuation in
       let query = HKSampleQuery(
@@ -428,10 +437,7 @@ final class HealthKitService: @unchecked Sendable {
           guard bpm > 0 else { return nil }
           return HeartRateSample(
             startDate: sample.startDate,
-            value: AppleHealthHeartRate(
-              time: HealthExporterFormat.utcTimestampString(sample.startDate),
-              bpm: bpm
-            )
+            bpm: bpm
           )
         }
         continuation.resume(returning: values)
@@ -455,10 +461,8 @@ final class HealthKitService: @unchecked Sendable {
   }
 
   private func workoutHeartRates(start: Date, end: Date) async throws -> [AppleHealthWorkout] {
-    async let workoutValues = workouts(start: start, end: end)
-    async let heartRateValues = heartRateSamples(start: start, end: end)
-    let workouts = try await workoutValues
-    let heartRates = try await heartRateValues
+    let workouts = try await workouts(start: start, end: end)
+    let heartRates = try await heartRateSamples(workouts: workouts)
     var exports: [AppleHealthWorkout] = []
     for workout in workouts {
       var heartRate: [AppleHealthHeartRate] = []
@@ -466,7 +470,12 @@ final class HealthKitService: @unchecked Sendable {
       while index < heartRates.count {
         let sample = heartRates[index]
         if sample.startDate > workout.endDate { break }
-        heartRate.append(sample.value)
+        heartRate.append(
+          AppleHealthHeartRate(
+            time: HealthExporterFormat.utcTimestampString(sample.startDate),
+            bpm: sample.bpm
+          )
+        )
         index += 1
       }
       if heartRate.isEmpty { continue }

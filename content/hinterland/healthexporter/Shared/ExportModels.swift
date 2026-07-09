@@ -101,21 +101,59 @@ struct HealthExportResult: Equatable, Sendable {
   let url: URL
 }
 
+private final class HealthExporterFormatterCache: @unchecked Sendable {
+  private let lock = NSLock()
+  private var dayFormatters: [String: DateFormatter] = [:]
+  private var timestampFormatters: [String: ISO8601DateFormatter] = [:]
+
+  func dayString(_ date: Date, calendar: Calendar) -> String {
+    let key = "\(calendar.identifier):\(calendar.timeZone.identifier)"
+    lock.lock()
+    let formatter: DateFormatter
+    if let cached = dayFormatters[key] {
+      formatter = cached
+    } else {
+      let created = DateFormatter()
+      created.calendar = calendar
+      created.timeZone = calendar.timeZone
+      created.locale = Locale(identifier: "en_US_POSIX")
+      created.dateFormat = "yyyy-MM-dd"
+      dayFormatters[key] = created
+      formatter = created
+    }
+    let result = formatter.string(from: date)
+    lock.unlock()
+    return result
+  }
+
+  func timestampString(_ date: Date, timeZone: TimeZone) -> String {
+    let key = timeZone.identifier
+    lock.lock()
+    let formatter: ISO8601DateFormatter
+    if let cached = timestampFormatters[key] {
+      formatter = cached
+    } else {
+      let created = ISO8601DateFormatter()
+      created.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone]
+      created.timeZone = timeZone
+      timestampFormatters[key] = created
+      formatter = created
+    }
+    let result = formatter.string(from: date)
+    lock.unlock()
+    return result
+  }
+}
+
 enum HealthExporterFormat {
+  private static let cache = HealthExporterFormatterCache()
+
   static func dayString(_ date: Date, calendar: Calendar) -> String {
-    let formatter = DateFormatter()
-    formatter.calendar = calendar
-    formatter.timeZone = calendar.timeZone
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.dateFormat = "yyyy-MM-dd"
-    return formatter.string(from: date)
+    cache.dayString(date, calendar: calendar)
   }
 
   static func timestampString(_ date: Date, timeZone: TimeZone) -> String {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withColonSeparatorInTimeZone]
-    formatter.timeZone = timeZone
-    return formatter.string(from: date)
+    cache.timestampString(date, timeZone: timeZone)
   }
 
   static func utcTimestampString(_ date: Date) -> String {

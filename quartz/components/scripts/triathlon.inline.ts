@@ -9315,68 +9315,58 @@ const setupPaceForecast = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-document.addEventListener('nav', () => {
-  const embedCleanup = setupDayEmbeds()
-  if (embedCleanup) window.addCleanup?.(embedCleanup)
-  const scrubCleanup = setupChartScrub(document.body)
-  window.addCleanup?.(scrubCleanup)
-  const root = document.querySelector<HTMLElement>('.triathlon')
-  if (!root) return
-  try {
-    setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
-  } catch {
-    /* ignore */
+const mountTriathlon = (): (() => void) => {
+  const cleanups: (() => void)[] = []
+  const addCleanup = (cleanup: (() => void) | null | undefined): void => {
+    if (cleanup) cleanups.push(cleanup)
   }
-  initTriLocale()
-  const i18nCleanup = setupI18n(root)
-  window.addCleanup?.(i18nCleanup)
-  const paletteCleanup = setupCommandPalette(root)
-  window.addCleanup?.(paletteCleanup)
-  const cleanup = setup(root)
-  if (cleanup) window.addCleanup?.(cleanup)
-  const calcCleanup = setupCalc(root)
-  if (calcCleanup) window.addCleanup?.(calcCleanup)
-  const forecastCleanup = setupPaceForecast(root)
-  if (forecastCleanup) window.addCleanup?.(forecastCleanup)
-  const gearCleanup = setupDropdown(
-    root,
-    '.tri-gear-wrap',
-    '.tri-gear-btn',
-    '.tri-gear',
-    'tri-gear-open',
-  )
-  if (gearCleanup) window.addCleanup?.(gearCleanup)
-  const paceCleanup = setupDropdown(
-    root,
-    '.tri-pace-wrap',
-    '.tri-pace-btn',
-    '.tri-pace',
-    'tri-pace-open',
-  )
-  if (paceCleanup) window.addCleanup?.(paceCleanup)
-  const paceUnitCleanup = setupPaceUnit(root)
-  if (paceUnitCleanup) window.addCleanup?.(paceUnitCleanup)
-  const cheatCleanup = setupCheat(root)
-  if (cheatCleanup) window.addCleanup?.(cheatCleanup)
-  const anaCleanup = setupAnalytics(root)
-  if (anaCleanup) window.addCleanup?.(anaCleanup)
-  const feedCleanup = setupFeed(root)
-  if (feedCleanup) window.addCleanup?.(feedCleanup)
-  const trainingCleanup = setupTraining(root)
-  if (trainingCleanup) window.addCleanup?.(trainingCleanup)
-  const mapCleanup = setupMap(root)
-  if (mapCleanup) window.addCleanup?.(mapCleanup)
-  const glossCleanup = setupGloss(root)
-  if (glossCleanup) window.addCleanup?.(glossCleanup)
-  const axisCleanup = setupAxisLabels(root)
-  if (axisCleanup) window.addCleanup?.(axisCleanup)
-  const shortcutsCleanup = setupShortcuts(root)
-  if (shortcutsCleanup) window.addCleanup?.(shortcutsCleanup)
-  const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
-  if (hashDate)
-    window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))
-  const calcHash = /^#(calculator-[a-z0-9-]+)$/.exec(window.location.hash)?.[1]
-  const calcShare = calcHash ? decodeCalcShare(calcHash) : null
-  if (calcShare)
-    window.dispatchEvent(new CustomEvent('tri:calc-fill', { detail: { share: calcShare } }))
+  const embedCleanup = setupDayEmbeds()
+  addCleanup(embedCleanup)
+  addCleanup(setupChartScrub(document.body))
+  const root = document.querySelector<HTMLElement>('.triathlon')
+  if (root) {
+    try {
+      setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
+    } catch {}
+    initTriLocale()
+    addCleanup(setupI18n(root))
+    addCleanup(setupCommandPalette(root))
+    addCleanup(setup(root))
+    addCleanup(setupCalc(root))
+    addCleanup(setupPaceForecast(root))
+    addCleanup(setupDropdown(root, '.tri-gear-wrap', '.tri-gear-btn', '.tri-gear', 'tri-gear-open'))
+    addCleanup(setupDropdown(root, '.tri-pace-wrap', '.tri-pace-btn', '.tri-pace', 'tri-pace-open'))
+    addCleanup(setupPaceUnit(root))
+    addCleanup(setupCheat(root))
+    addCleanup(setupAnalytics(root))
+    addCleanup(setupFeed(root))
+    addCleanup(setupTraining(root))
+    addCleanup(setupMap(root))
+    addCleanup(setupGloss(root))
+    addCleanup(setupAxisLabels(root))
+    addCleanup(setupShortcuts(root))
+    const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
+    if (hashDate)
+      window.dispatchEvent(new CustomEvent('tri:focus-day', { detail: { date: hashDate } }))
+    const calcHash = /^#(calculator-[a-z0-9-]+)$/.exec(window.location.hash)?.[1]
+    const calcShare = calcHash ? decodeCalcShare(calcHash) : null
+    if (calcShare)
+      window.dispatchEvent(new CustomEvent('tri:calc-fill', { detail: { share: calcShare } }))
+  }
+  return () => {
+    for (let i = cleanups.length - 1; i >= 0; i--) cleanups[i]()
+  }
+}
+
+let triathlonCleanup: (() => void) | null = null
+
+const unmountTriathlon = (): void => {
+  triathlonCleanup?.()
+  triathlonCleanup = null
+}
+
+document.addEventListener('prenav', unmountTriathlon)
+document.addEventListener('nav', () => {
+  unmountTriathlon()
+  triathlonCleanup = mountTriathlon()
 })

@@ -1220,6 +1220,7 @@ function createRouter() {
 }
 
 createRouter()
+// We will have to trigger first call in spa.inline.ts here
 notifyNav(getFullSlug(window))
 
 if (!customElements.get('route-announcer')) {
