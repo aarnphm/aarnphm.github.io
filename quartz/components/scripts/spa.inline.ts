@@ -1,16 +1,28 @@
 import micromorph from 'micromorph'
+import { fetchCanonical } from '../../util/fetch-canonical'
 import {
   FullSlug,
   RelativeURL,
   getFullSlug,
+  isFullSlug,
   normalizeRelativeURLs,
   sluggify,
 } from '../../util/path'
 import {
   STACKED_NOTE_METADATA_CLASSES,
+  cacheStackedNotePayload,
   decodeStackedNoteHash,
+  Dag,
+  type DagNode,
+  getCachedStackedNotePayload,
   hashStackedNoteSlug,
+  type NoteDocument,
+  readStackedNotePayload,
+  stackedNotePayloadUrl,
   stackedNoteMetadataHtml,
+  type StackedNotePayload,
+  type StackedNoteState,
+  type VirtualRange,
   withStackedNoteMetadata,
 } from '../../util/stacked-notes'
 import {
@@ -19,21 +31,21 @@ import {
   STREAM_HOSTNAME,
   streamHostUrl,
 } from '../../util/stream-host'
+import { cleanupHydratedRoot } from './root-lifecycle'
 import { Toast } from './toast'
-import {
-  cacheStackedNotePayload,
-  Dag,
-  DagNode,
-  getCachedStackedNotePayload,
-  NoteDocument,
-  readStackedNotePayload,
-  removeAllChildren,
-  stackedNotePayloadUrl,
-  StackedNotePayload,
-  StackedNoteState,
-  VirtualRange,
-} from './util'
-import { fetchCanonical, startViewTransition } from './util'
+
+function startViewTransition(callback: () => void): void {
+  if (
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+    typeof document.startViewTransition !== 'function'
+  ) {
+    callback()
+    return
+  }
+
+  const transition = document.startViewTransition(callback)
+  void transition.finished.catch(() => undefined)
+}
 
 // adapted from `micromorph`
 // https://github.com/natemoo-re/micromorph
@@ -100,7 +112,7 @@ function notifyNav(url: FullSlug) {
   document.dispatchEvent(event)
 }
 
-const cleanupFns: Set<(...args: any[]) => void> = new Set()
+const cleanupFns = new Set<() => void>()
 window.addCleanup = fn => cleanupFns.add(fn)
 
 if (!window.quartzToast) {
@@ -391,7 +403,7 @@ class StackedNoteManager {
         if (!noteContent) noteElement.prepend(bodyHost)
         if (!noteTitle) noteElement.append(titleRail)
         if (noteDocument.state === 'pending') {
-          removeAllChildren(bodyHost)
+          bodyHost.replaceChildren()
           bodyHost.dataset.virtualized = 'unmounted'
         } else {
           bodyHost.dataset.virtualized = 'mounted'
@@ -649,12 +661,14 @@ class StackedNoteManager {
     this.updateDagClasses(bodyHost)
     node.mounted.mounted = true
     this.notifyContentMounted(node.mounted.shell, bodyHost, node.slug)
+    if (isFullSlug(node.slug)) notifyNav(node.slug)
     this.scrollToHash(node)
   }
 
   private unmountBody(node: DagNode) {
     if (!node.mounted.mounted) return
-    removeAllChildren(node.mounted.bodyHost)
+    cleanupHydratedRoot(node.mounted.bodyHost)
+    node.mounted.bodyHost.replaceChildren()
     node.mounted.bodyHost.dataset.virtualized = 'unmounted'
     node.mounted.mounted = false
   }
@@ -915,7 +929,6 @@ class StackedNoteManager {
     this.addPendingNode(slug, href, anchor ?? null)
     this.isActive = true
     this.render({ scrollToTail: true })
-    notifyNav(this.getSlug(href))
     return this.loadAndApply(href, slug)
   }
 
@@ -952,7 +965,6 @@ class StackedNoteManager {
     await this.initFromParams()
     this.updateURL()
     this.render({ scrollToTail: true })
-    notifyNav(getFullSlug(window))
 
     return true
   }
@@ -962,7 +974,7 @@ class StackedNoteManager {
 
     this.dag.clear()
     this.inflight.clear()
-    removeAllChildren(this.column)
+    this.column.replaceChildren()
 
     const url = new URL(window.location.toString())
     url.searchParams.delete('stackedNotes')

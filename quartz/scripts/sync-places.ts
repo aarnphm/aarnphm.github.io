@@ -1,7 +1,8 @@
 import matter from 'gray-matter'
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 interface Coordinates {
   lat: string
@@ -28,6 +29,10 @@ const NOMINATIM_USER_AGENT =
 const NOMINATIM_DELAY_MS = Number(process.env.NOMINATIM_DELAY_MS ?? '1100')
 
 const addressCache = new Map<string, string>()
+
+export function oxfmtArgs(files: readonly string[]): string[] {
+  return ['exec', 'oxfmt', '--write', ...files]
+}
 
 function sanitizeFileName(title: string): string {
   return title
@@ -532,19 +537,18 @@ async function main() {
     console.warn(`Unable to resolve addresses for ${missingAddress} place(s).`)
   }
   if (changedFiles.length > 0) {
-    console.log(`Formatting ${changedFiles.length} changed file(s) with prettier...`)
+    console.log(`Formatting ${changedFiles.length} changed file(s) with oxfmt...`)
     try {
-      execSync(`pnpm prettier --write ${changedFiles.map(f => `"${f}"`).join(' ')}`, {
-        cwd: process.cwd(),
-        stdio: 'inherit',
-      })
+      execFileSync('pnpm', oxfmtArgs(changedFiles), { cwd: process.cwd(), stdio: 'inherit' })
     } catch (error) {
-      console.warn('Failed to run prettier:', error)
+      console.warn('Failed to run oxfmt:', error)
     }
   }
 }
 
-main().catch(error => {
-  console.error(error)
-  process.exitCode = 1
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch(error => {
+    console.error(error)
+    process.exitCode = 1
+  })
+}

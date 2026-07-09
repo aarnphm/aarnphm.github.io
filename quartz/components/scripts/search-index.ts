@@ -1,6 +1,6 @@
 import FlexSearch, { DocumentData } from 'flexsearch'
 import { FullSlug, FilePath } from '../../util/path'
-import { encode } from './util'
+import { encode } from '../../util/search-text'
 
 export interface SearchItem extends DocumentData {
   id: number

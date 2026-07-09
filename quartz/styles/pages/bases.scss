@@ -334,7 +334,7 @@
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
   height: 100%;
 
   &:hover {
@@ -362,6 +362,22 @@
 
     &:hover img.base-card-image {
       transform: scale(1.05);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+
+    .base-card-image-link img.base-card-image {
+      transition: none;
+    }
+
+    .base-card-image-link:hover img.base-card-image {
+      transform: none;
     }
   }
 

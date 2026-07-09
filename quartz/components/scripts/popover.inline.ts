@@ -2,6 +2,7 @@ import type { Placement, ReferenceElement, Strategy, VirtualElement } from '@flo
 import { arrow as floatingArrow, computePosition, flip, offset, shift } from '@floating-ui/dom'
 import xmlFormat from 'xml-formatter'
 import { arenaPdfViewerSource } from '../../util/arena-embed'
+import { fetchCanonical } from '../../util/fetch-canonical'
 import {
   lessWrongPreviewApiUrl,
   readLessWrongPreview,
@@ -9,25 +10,24 @@ import {
   type LessWrongTarget,
 } from '../../util/lesswrong'
 import { getContentType } from '../../util/mime'
-import { FullSlug, getFullSlug, normalizeRelativeURLs } from '../../util/path'
+import { getFullSlug, isFullSlug, normalizeRelativeURLs } from '../../util/path'
 import { type PreviewTocEntry } from '../../util/preview'
 import { readSepPreview, sepPreviewApiUrl, type SepPreview, type SepTarget } from '../../util/sep'
+import {
+  cacheStackedNotePayload,
+  getCachedStackedNotePayload,
+  readStackedNotePayload,
+  stackedNotePayloadUrl,
+  type StackedNotePayload,
+} from '../../util/stacked-notes'
 import {
   readWikipediaPreviewResponse,
   wikipediaActionApiUrl,
   type WikipediaPreview,
   type WikipediaTarget,
 } from '../../util/wikipedia'
-import {
-  cacheStackedNotePayload,
-  createSidePanel,
-  fetchCanonical,
-  getCachedStackedNotePayload,
-  getOrCreateSidePanel,
-  readStackedNotePayload,
-  stackedNotePayloadUrl,
-  StackedNotePayload,
-} from './util'
+import { currentNavSignal } from './nav-lifecycle'
+import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 type ContentHandler = (
   response: Response,
@@ -78,9 +78,11 @@ const PDF_SIDE_PANEL_OPTIONS = PDF_PREVIEW_OPTIONS
 
 const p = new DOMParser()
 let activeAnchor: HTMLAnchorElement | null = null
+let activeDagHeading: HTMLElement | null = null
 let activePopoverReq: { abort: () => void; link: HTMLAnchorElement } | null = null
 let stackedPopoverEvents: AbortController | null = null
 let pdfRuntimePreloadScheduled = false
+let delegatedPopoverSignal: AbortSignal | undefined
 
 function cleanAbsoluteElement(element: HTMLElement): HTMLElement {
   const refsAndNotes = element.querySelectorAll<HTMLElement>(
@@ -719,6 +721,8 @@ function blurPopoverFocus(popoverElement: HTMLElement) {
 
 function clearActivePopover(except?: HTMLElement) {
   activeAnchor = null
+  activeDagHeading?.classList.remove('dag')
+  activeDagHeading = null
   const allPopoverElements = document.querySelectorAll<HTMLElement>('.popover')
   allPopoverElements.forEach(popoverElement => {
     if (popoverElement === except) return
@@ -1578,13 +1582,9 @@ async function mouseEnterHandler(
       const article = document.querySelector('article')
       const heading = article ? findHashTarget(article, hash) : null
       if (heading) {
+        activeDagHeading?.classList.remove('dag')
         heading.classList.add('dag')
-        const cleanup = () => {
-          heading.classList.remove('dag')
-          link.removeEventListener('mouseleave', cleanup)
-        }
-        link.addEventListener('mouseleave', cleanup)
-        window.addCleanup(() => link.removeEventListener('mouseleave', cleanup))
+        activeDagHeading = heading
       }
     }
     return
@@ -1700,8 +1700,7 @@ async function mouseEnterHandler(
   await showPopover(link, popoverElement, { clientX, clientY }, { hash, popoverInner })
 }
 
-async function mouseClickHandler(evt: MouseEvent) {
-  const link = evt.currentTarget as HTMLAnchorElement
+async function mouseClickHandler(evt: MouseEvent, link: HTMLAnchorElement) {
   clearActivePopover()
 
   const thisUrl = new URL(document.location.href)
@@ -1729,11 +1728,14 @@ async function mouseClickHandler(evt: MouseEvent) {
     evt.stopPropagation()
 
     // derive slug from href if data-slug not set (e.g. generated pages like /tags/*)
-    const slug = link.dataset.slug || targetUrl.pathname
+    const slug = (link.dataset.slug || targetUrl.pathname).replace(/^\/+|\/+$/g, '') || 'index'
+    if (!isFullSlug(slug)) return
 
+    let request: ReturnType<typeof beginSidePanelRequest> | undefined
     try {
       const asidePanel = getOrCreateSidePanel()
-      asidePanel.dataset.slug = slug
+      const activeRequest = beginSidePanelRequest(asidePanel)
+      request = activeRequest
 
       if (link.dataset.arxivId) {
         const arxivUrl = arxivPdfUrl(link.dataset.arxivId)
@@ -1742,9 +1744,10 @@ async function mouseClickHandler(evt: MouseEvent) {
           `${cleanArxivIdentifier(link.dataset.arxivId)}.pdf`,
           PDF_SIDE_PANEL_OPTIONS,
         )
-        const sideInner = createSidePanel(asidePanel, pdf)
+        const sideInner = activeRequest.mount(slug, pdf)
+        if (!sideInner) return
         mountPdfPreviews(sideInner)
-        window.notifyNav(slug as FullSlug)
+        window.notifyNav(slug)
         return
       }
 
@@ -1759,15 +1762,21 @@ async function mouseClickHandler(evt: MouseEvent) {
           pdfTitleFromUrl(fetchUrl.toString()),
           PDF_SIDE_PANEL_OPTIONS,
         )
-        const sideInner = createSidePanel(asidePanel, pdf)
+        const sideInner = activeRequest.mount(slug, pdf)
+        if (!sideInner) return
         mountPdfPreviews(sideInner)
-        window.notifyNav(slug as FullSlug)
+        window.notifyNav(slug)
         return
       }
 
-      response = await fetchCanonical(fetchUrl).catch(console.error)
+      response = await fetchCanonical(fetchUrl, { signal: activeRequest.signal }).catch(error => {
+        if (!activeRequest.signal.aborted) console.error(error)
+      })
 
-      if (!response) return
+      if (!response) {
+        activeRequest.cancel()
+        return
+      }
 
       const headerContentType = response.headers.get('Content-Type')
       const contentType = headerContentType
@@ -1781,7 +1790,8 @@ async function mouseClickHandler(evt: MouseEvent) {
           pdfTitleFromUrl(fetchUrl.toString()),
           PDF_SIDE_PANEL_OPTIONS,
         )
-        const sideInner = createSidePanel(asidePanel, pdf)
+        const sideInner = activeRequest.mount(slug, pdf)
+        if (!sideInner) return
         mountPdfPreviews(sideInner)
       } else {
         const contents = await response.text()
@@ -1794,14 +1804,19 @@ async function mouseClickHandler(evt: MouseEvent) {
         const elts = [
           ...(html.getElementsByClassName('popover-hint') as HTMLCollectionOf<HTMLElement>),
         ]
-        if (elts.length === 0) return
+        if (elts.length === 0) {
+          activeRequest.cancel()
+          return
+        }
 
-        createSidePanel(asidePanel, ...elts)
+        if (!activeRequest.mount(slug, ...elts)) return
       }
 
-      window.notifyNav(slug as FullSlug)
+      window.notifyNav(slug)
     } catch (error) {
-      console.error('Failed to create side panel:', error)
+      const wasAborted = request?.signal.aborted ?? false
+      request?.cancel()
+      if (!wasAborted) console.error('Failed to create side panel:', error)
     }
     return
   }
@@ -1816,7 +1831,54 @@ async function mouseClickHandler(evt: MouseEvent) {
   }
 }
 
-function setupPopoverLinks(container: Document | HTMLElement = document) {
+function closestPopoverLink(target: EventTarget | null): HTMLAnchorElement | null {
+  const element =
+    target instanceof Element ? target : target instanceof Node ? target.parentElement : null
+  const link = element?.closest<HTMLAnchorElement>('a.internal') ?? null
+  return link?.closest('#stacked-notes-container') ? null : link
+}
+
+function setupPopoverDelegation(): void {
+  const signal = currentNavSignal()
+  if (delegatedPopoverSignal === signal) return
+  delegatedPopoverSignal = signal
+
+  document.addEventListener(
+    'mouseover',
+    event => {
+      const link = closestPopoverLink(event.target)
+      if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      void mouseEnterHandler.call(link, event)
+    },
+    { signal },
+  )
+  document.addEventListener(
+    'mouseout',
+    event => {
+      const link = closestPopoverLink(event.target)
+      if (!link || containsRelatedTarget(link, event.relatedTarget)) return
+      mouseLeaveHandler.call(link, event)
+    },
+    { signal },
+  )
+  document.addEventListener(
+    'click',
+    event => {
+      const link = closestPopoverLink(event.target)
+      if (link) void mouseClickHandler(event, link)
+    },
+    { signal },
+  )
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (delegatedPopoverSignal === signal) delegatedPopoverSignal = undefined
+    },
+    { once: true },
+  )
+}
+
+function preloadPopoverLinks(container: Document | HTMLElement = document): void {
   const links = ([...container.getElementsByClassName('internal')] as HTMLAnchorElement[]).filter(
     link => !link.closest('#stacked-notes-container'),
   )
@@ -1826,31 +1888,25 @@ function setupPopoverLinks(container: Document | HTMLElement = document) {
     return source ? [source] : []
   })
   if (pdfSources.length > 0) schedulePdfRuntimePreload(pdfSources)
+}
 
-  for (const link of links) {
-    link.addEventListener('mouseenter', mouseEnterHandler)
-    link.addEventListener('mouseleave', mouseLeaveHandler)
-    link.addEventListener('click', mouseClickHandler)
-
-    window.addCleanup(() => {
-      link.removeEventListener('mouseenter', mouseEnterHandler)
-      link.removeEventListener('mouseleave', mouseLeaveHandler)
-      link.removeEventListener('click', mouseClickHandler)
-
-      if (activePopoverReq) {
-        activePopoverReq.abort()
-        activePopoverReq = null
-      }
-    })
-  }
+function cleanupPopoverRuntime(): void {
+  activePopoverReq?.abort()
+  activePopoverReq = null
+  stackedPopoverEvents?.abort()
+  stackedPopoverEvents = null
+  clearActivePopover()
 }
 
 document.addEventListener('nav', () => {
-  setupPopoverLinks()
+  window.addCleanup(disposeSidePanel)
+  window.addCleanup(cleanupPopoverRuntime)
+  setupPopoverDelegation()
+  preloadPopoverLinks()
   setupStackedPopoverLinks()
 })
 
 document.addEventListener('contentdecrypted', e => {
   const { content } = e.detail
-  if (content) setupPopoverLinks(content)
+  if (content) preloadPopoverLinks(content)
 })

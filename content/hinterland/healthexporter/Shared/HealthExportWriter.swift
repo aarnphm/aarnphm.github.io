@@ -6,9 +6,11 @@ struct HealthExportWriter {
   static let visiblePath = "iCloud Drive/HealthExporter/\(fileName)"
 
   private let fileManager: FileManager
+  private let containerURL: URL?
 
-  init(fileManager: FileManager = .default) {
+  init(fileManager: FileManager = .default, containerURL: URL? = nil) {
     self.fileManager = fileManager
+    self.containerURL = containerURL
   }
 
   func write(_ document: HealthExportDocument) throws -> URL {
@@ -20,8 +22,17 @@ struct HealthExportWriter {
     return url
   }
 
+  func read() throws -> HealthExportResult? {
+    let url = try exportURL()
+    guard fileManager.fileExists(atPath: url.path) else { return nil }
+    let data = try Data(contentsOf: url, options: [.mappedIfSafe])
+    let document = try JSONDecoder().decode(HealthExportDocument.self, from: data)
+    return HealthExportResult(document: document, url: url)
+  }
+
   func exportURL() throws -> URL {
-    guard let container = fileManager.url(forUbiquityContainerIdentifier: Self.containerIdentifier)
+    guard let container = containerURL
+      ?? fileManager.url(forUbiquityContainerIdentifier: Self.containerIdentifier)
     else {
       throw HealthExporterError.iCloudUnavailable(Self.containerIdentifier)
     }

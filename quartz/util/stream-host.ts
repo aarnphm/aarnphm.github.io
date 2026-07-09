@@ -1,6 +1,10 @@
 export const STREAM_HOSTNAME = 'stream.aarnphm.xyz'
 export const STREAM_PREFIX = '/stream'
 
+export function isStreamHostname(hostname: string): boolean {
+  return hostname === STREAM_HOSTNAME
+}
+
 function leadingSlash(pathname: string): string {
   return pathname.startsWith('/') ? pathname : `/${pathname}`
 }

@@ -2,8 +2,9 @@ import FlexSearch, { Id } from 'flexsearch'
 import { ValidLocale, i18n } from '../../i18n'
 import { Link, CuriusResponse, Trail, TrailInfo, Following } from '../../types/curius'
 import { LCG } from '../../util/helpers'
-import { registerEscapeHandler, registerEvents, removeAllChildren } from './util'
-import { encode } from './util'
+import { encode, highlight } from '../../util/search-text'
+import { registerEscapeHandler } from './escape-handler'
+import { currentNavSignal } from './nav-lifecycle'
 
 const CURIUS_HOST = 'https://curius.app'
 export const CURIUS = `${CURIUS_HOST}/aaron-pham`
@@ -75,10 +76,10 @@ function updateNotePanel(Link: Link, note: HTMLDivElement, parent: HTMLLIElement
   window.addCleanup(() => close?.removeEventListener('click', cleanUp))
   registerEscapeHandler(note, cleanUp)
 
-  removeAllChildren(snippetNode)
+  snippetNode.replaceChildren()
   snippetNode.textContent = Link.metadata ? Link.metadata.full_text : Link.snippet
 
-  removeAllChildren(highlightsNode)
+  highlightsNode.replaceChildren()
   if (Link.highlights.length === 0) return
   for (const hl of Link.highlights) {
     const highlightItem = document.createElement('li')
@@ -168,12 +169,10 @@ export function createLinkEl(Link: Link): HTMLLIElement {
         modal.style.top = `${pageY + 10}px`
       }
 
-      registerEvents(
-        highlights,
-        ['mouseenter', onMouseEnter],
-        ['mouseleave', onMouseLeave],
-        ['mousemove', onMouseMove],
-      )
+      const signal = currentNavSignal()
+      highlights.addEventListener('mouseenter', onMouseEnter, { signal })
+      highlights.addEventListener('mouseleave', onMouseLeave, { signal })
+      highlights.addEventListener('mousemove', onMouseMove, { signal })
     }
 
     item.append(tags, misc)
@@ -219,13 +218,10 @@ export function createLinkEl(Link: Link): HTMLLIElement {
     curiusItem.classList.remove('focus')
   }
 
-  registerEvents(
-    curiusItem,
-    //@ts-ignore
-    ['click', onClick],
-    ['mouseenter', onMouseEnter],
-    ['mouseleave', onMouseLeave],
-  )
+  const signal = currentNavSignal()
+  curiusItem.addEventListener('click', onClick, { signal })
+  curiusItem.addEventListener('mouseenter', onMouseEnter, { signal })
+  curiusItem.addEventListener('mouseleave', onMouseLeave, { signal })
 
   return curiusItem
 }
@@ -537,7 +533,7 @@ export const createTrailList = (trails: Map<string, TrailInfo>) => {
   const numTrails = parseInt(total.dataset.numTrails!) ?? 4
   const locale = total.dataset.locale! as ValidLocale
 
-  removeAllChildren(trail)
+  trail.replaceChildren()
   for (const [trail_name, { trail: Trail, links: linksMap }] of Array.from(trails.entries()).slice(
     0,
     numTrails,
@@ -584,18 +580,15 @@ function createTrailEl(
         el.classList.remove('focus')
       }
 
-      const openLink = (evt: HTMLElementEventMap['click']) => {
+      const openLink = (evt: Event) => {
         if (evt.target instanceof HTMLAnchorElement) return
         window.open(trailLink, '_blank')
       }
 
-      registerEvents(
-        el,
-        ['mouseenter', onMouseEnter],
-        ['mouseleave', onMouseLeave],
-        //@ts-ignore
-        ['click', openLink],
-      )
+      const signal = currentNavSignal()
+      el.addEventListener('mouseenter', onMouseEnter, { signal })
+      el.addEventListener('mouseleave', onMouseLeave, { signal })
+      el.addEventListener('click', openLink, { signal })
 
       return el
     }),
@@ -624,63 +617,6 @@ let index = new FlexSearch.Document({
 })
 
 const numSearchResults = 20
-const contextWindowWords = 30
-
-const tokenizeTerm = (term: string) => {
-  const tokens = term.split(/\s+/).filter(t => t.trim() !== '')
-  const tokenLen = tokens.length
-  if (tokenLen > 1) {
-    for (let i = 1; i < tokenLen; i++) {
-      tokens.push(tokens.slice(0, i + 1).join(' '))
-    }
-  }
-
-  return tokens.sort((a, b) => b.length - a.length)
-}
-
-function highlight(searchTerm: string, text: string, trim?: boolean) {
-  const tokenizedTerms = tokenizeTerm(searchTerm)
-  let tokenizedText = text.split(/\s+/).filter(t => t !== '')
-
-  let startIndex = 0
-  let endIndex = tokenizedText.length - 1
-  if (trim) {
-    const includesCheck = (tok: string) =>
-      tokenizedTerms.some(term => tok.toLowerCase().startsWith(term.toLowerCase()))
-    const occurrencesIndices = tokenizedText.map(includesCheck)
-
-    let bestSum = 0
-    let bestIndex = 0
-    for (let i = 0; i < Math.max(tokenizedText.length - contextWindowWords, 0); i++) {
-      const window = occurrencesIndices.slice(i, i + contextWindowWords)
-      const windowSum = window.reduce((total, cur) => total + (cur ? 1 : 0), 0)
-      if (windowSum >= bestSum) {
-        bestSum = windowSum
-        bestIndex = i
-      }
-    }
-
-    startIndex = Math.max(bestIndex - contextWindowWords, 0)
-    endIndex = Math.min(startIndex + 2 * contextWindowWords, tokenizedText.length - 1)
-    tokenizedText = tokenizedText.slice(startIndex, endIndex)
-  }
-
-  const slice = tokenizedText
-    .map(tok => {
-      for (const searchTok of tokenizedTerms) {
-        if (tok.toLowerCase().includes(searchTok.toLowerCase())) {
-          const regex = new RegExp(searchTok.toLowerCase(), 'gi')
-          return tok.replace(regex, `<span class="highlight">$&</span>`)
-        }
-      }
-      return tok
-    })
-    .join(' ')
-
-  return `${startIndex === 0 ? '' : '...'}${slice}${
-    endIndex === tokenizedText.length - 1 ? '' : '...'
-  }`
-}
 
 // Use current date as seed to get same equation for whole day
 const now = new Date()
@@ -727,7 +663,7 @@ export async function curiusSearch(searchData: Link[]) {
 
   function displayLinks(links: Link[]) {
     if (!container) return
-    removeAllChildren(container)
+    container.replaceChildren()
 
     if (links.length === 0) {
       container.innerHTML = `<a class="curius-search-link"><span class="curius-search-title">No results found.</span><p class="curius-search-snippet">Try another search term?</p></a>`

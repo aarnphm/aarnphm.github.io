@@ -1,3 +1,5 @@
+import { isRecord, readString } from './type-guards'
+
 const DOT_ESCAPE = '___DOT___'
 export const STACKED_NOTE_METADATA_CLASSES = ['modified-time', 'published-time', 'reading-time']
 
@@ -114,4 +116,121 @@ export function withStackedNoteMetadata(content: string, metadata: string | unde
   if (pageFooterIndex === -1) return `${content}\n${footer}`
 
   return `${content.slice(0, pageFooterIndex)}${footer}\n${content.slice(pageFooterIndex)}`
+}
+
+export type StackedNoteState = 'pending' | 'ready' | 'protected' | 'failed'
+
+export interface StackedNotePayload {
+  slug: string
+  title: string
+  content: string
+  metadata?: string
+  state: StackedNoteState
+}
+
+export interface NoteDocument {
+  slug: string
+  title: string
+  hash?: string
+  bodyHtml: string
+  metadataHtml?: string
+  state: StackedNoteState
+}
+
+export interface MountedNote {
+  shell: HTMLElement
+  bodyHost: HTMLElement
+  titleRail: HTMLElement
+  mounted: boolean
+}
+
+export interface VirtualRange {
+  first: number
+  last: number
+}
+
+export interface DagNode {
+  slug: string
+  title: string
+  document: NoteDocument
+  mounted: MountedNote
+  anchor?: HTMLElement | null
+}
+
+export class Dag {
+  private readonly nodes = new Map<string, DagNode>()
+  private readonly order: string[] = []
+
+  addNode(node: DagNode): DagNode {
+    const existing = this.nodes.get(node.slug)
+    if (existing) return existing
+    this.nodes.set(node.slug, node)
+    this.order.push(node.slug)
+    return node
+  }
+
+  getOrderedNodes(): DagNode[] {
+    return this.order.flatMap(slug => {
+      const node = this.nodes.get(slug)
+      return node ? [node] : []
+    })
+  }
+
+  truncateAfter(slug: string): void {
+    const index = this.order.indexOf(slug)
+    if (index === -1) return
+    for (const removed of this.order.splice(index + 1)) this.nodes.delete(removed)
+  }
+
+  clear(): void {
+    this.nodes.clear()
+    this.order.length = 0
+  }
+
+  has(slug: string): boolean {
+    return this.nodes.has(slug)
+  }
+
+  get(slug: string): DagNode | undefined {
+    return this.nodes.get(slug)
+  }
+
+  getTail(): DagNode | undefined {
+    const lastSlug = this.order.at(-1)
+    return lastSlug ? this.nodes.get(lastSlug) : undefined
+  }
+}
+
+function isStackedNoteState(value: unknown): value is StackedNoteState {
+  return value === 'pending' || value === 'ready' || value === 'protected' || value === 'failed'
+}
+
+function sharedStackedNotePayloadCache(): Map<string, StackedNotePayload> {
+  window.stackedNotePayloadCache ??= new Map()
+  return window.stackedNotePayloadCache
+}
+
+export function stackedNotePayloadUrl(slug: string): URL {
+  const url = new URL('/api/stacked-note', window.location.toString())
+  url.searchParams.set('slug', slug)
+  return url
+}
+
+export function getCachedStackedNotePayload(slug: string): StackedNotePayload | null {
+  return window.stackedNotePayloadCache?.get(slug) ?? null
+}
+
+export function cacheStackedNotePayload(payload: StackedNotePayload): void {
+  if (payload.state === 'ready') sharedStackedNotePayloadCache().set(payload.slug, payload)
+}
+
+export function readStackedNotePayload(value: unknown): StackedNotePayload | null {
+  if (!isRecord(value)) return null
+  const slug = readString(value, 'slug')
+  const title = readString(value, 'title')
+  const content = readString(value, 'content')
+  const metadata = readString(value, 'metadata')
+  const state = readString(value, 'state')
+  if (!slug || !title || !content || !isStackedNoteState(state)) return null
+  return { slug, title, content, metadata, state }
 }

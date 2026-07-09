@@ -14,12 +14,15 @@ export declare global {
   interface Window {
     spaNavigate(url: URL, isBack: boolean = false)
     notifyNav(url: FullSlug)
-    addCleanup(fn: (...args: any[]) => void)
+    addCleanup(fn: () => void)
+    quartzNavLifecycle?: { listening: boolean; controller?: AbortController }
+    quartzEscapeHandlers?: import('./quartz/components/scripts/escape-handler').EscapeHandlerRegistry
+    quartzRootLifecycles?: import('./quartz/components/scripts/root-lifecycle').RootLifecycleRegistry
+    quartzSidePanelSessions?: WeakMap<HTMLElement, () => void>
+    quartzSidePanelRequests?: WeakMap<HTMLElement, AbortController>
+    quartzCanvas?: { cleanup(root?: ParentNode): void }
     stacked: import('./quartz/types/plugin').Notes
-    stackedNotePayloadCache?: Map<
-      string,
-      import('./quartz/components/scripts/util').StackedNotePayload
-    >
+    stackedNotePayloadCache?: Map<string, import('./quartz/util/stacked-notes').StackedNotePayload>
     quartzToast: import('./quartz/components/scripts/toast').Toast
     plausible: { (eventName: string, options: { props: { path: string } }): void }
     twttr: { ready(f: (twttr: any) => void): void }

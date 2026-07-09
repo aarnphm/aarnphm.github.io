@@ -1,3 +1,5 @@
+import { currentNavSignal } from './nav-lifecycle'
+
 type Theme = 'light' | 'dark'
 type ThemePreference = Theme | 'system'
 
@@ -65,6 +67,7 @@ const readStoredPreference = (): ThemePreference => {
 let activePreference: ThemePreference = readStoredPreference()
 
 let toggleElement: HTMLElement | null = null
+let activeSignal: AbortSignal | undefined
 
 const showThemeToast = (preference: ThemePreference, _resolved: Theme) => {
   const event: CustomEventMap['toast'] = new CustomEvent('toast', {
@@ -118,11 +121,25 @@ const applyPreference = (
 applyPreference(activePreference, { emit: false })
 
 document.addEventListener('nav', () => {
-  const themeButton = document.querySelector('#light-toggle') as HTMLElement | null
+  const signal = currentNavSignal()
+  if (activeSignal === signal) return
+  activeSignal = signal
+
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (activeSignal !== signal) return
+      activeSignal = undefined
+      toggleElement = null
+    },
+    { once: true },
+  )
+
+  const themeButton = document.querySelector<HTMLElement>('#light-toggle')
   if (themeButton) {
     toggleElement = themeButton
     updateTogglePresentation(
-      activePreference === 'system' ? getSystemTheme() : (activePreference as Theme),
+      activePreference === 'system' ? getSystemTheme() : activePreference,
       activePreference,
     )
 
@@ -145,28 +162,21 @@ document.addEventListener('nav', () => {
       }
     }
 
-    themeButton.addEventListener('click', activateButton)
-    themeButton.addEventListener('keydown', keyActivate)
-
-    window.addCleanup(() => {
-      themeButton.removeEventListener('click', activateButton)
-      themeButton.removeEventListener('keydown', keyActivate)
-      toggleElement = null
-    })
+    themeButton.addEventListener('click', activateButton, { signal })
+    themeButton.addEventListener('keydown', keyActivate, { signal })
   }
 
   const shouldIgnoreTarget = (el: EventTarget | null) => {
     if (!el || !(el instanceof Element)) return false
     const tag = el.tagName.toLowerCase()
 
-    // Check if headings modal is open
-    const headingsModal = document.querySelector('.headings-modal-container') as HTMLElement
-    const isHeadingsModalOpen = headingsModal && headingsModal.style.display === 'flex'
+    const headingsModal = document.querySelector<HTMLElement>('.headings-modal-container')
+    const isHeadingsModalOpen = headingsModal?.style.display === 'flex'
 
     return (
       tag === 'input' ||
       tag === 'textarea' ||
-      (el as HTMLElement).isContentEditable ||
+      (el instanceof HTMLElement && el.isContentEditable) ||
       el.closest('.search .search-container') !== null ||
       isHeadingsModalOpen
     )
@@ -187,8 +197,7 @@ document.addEventListener('nav', () => {
     }
   }
 
-  document.addEventListener('keydown', keyToggle)
-  window.addCleanup(() => document.removeEventListener('keydown', keyToggle))
+  document.addEventListener('keydown', keyToggle, { signal })
 
   const themeChange = (e: MediaQueryListEvent) => {
     if (activePreference !== 'system') {
@@ -202,6 +211,5 @@ document.addEventListener('nav', () => {
     emitThemeChangeEvent(newTheme)
   }
 
-  prefersDarkMediaQuery.addEventListener('change', themeChange)
-  window.addCleanup(() => prefersDarkMediaQuery.removeEventListener('change', themeChange))
+  prefersDarkMediaQuery.addEventListener('change', themeChange, { signal })
 })

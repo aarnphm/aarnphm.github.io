@@ -13,15 +13,13 @@ import {
   zoomIdentity,
 } from 'd3'
 import { marked } from 'marked'
+import { fetchCanonical } from '../../util/fetch-canonical'
 import { normalizeRelativeURLs } from '../../util/path'
-import { registerEscapeHandler, removeAllChildren, fetchCanonical } from './util'
 
 marked.setOptions({ breaks: true, gfm: true })
 
 const EDGE_LABEL_LINE_HEIGHT = 1.2
-const SYNTHETIC_MOUSELEAVE_FLAG = Symbol('canvasSyntheticMouseleave')
-
-type SyntheticMouseEvent = MouseEvent & { [SYNTHETIC_MOUSELEAVE_FLAG]?: boolean }
+const syntheticMouseleaveEvents = new WeakSet<Event>()
 
 function renderTextNodeContent(node: NodeData): string {
   const html = marked.parse(node.resolvedText ?? node.text ?? '', { async: false }) as string
@@ -138,9 +136,56 @@ type NodeData = CanvasNode & { fx?: number; fy?: number }
 
 type LinkData = CanvasEdge & { source: NodeData; target: NodeData }
 
+interface CanvasLifecycle {
+  controller: AbortController
+  cleanups: Set<() => void>
+}
+
 const jsonFetchCache = new Map<string, Promise<unknown>>()
 const filePreviewCache = new Map<string, Promise<string | null>>()
 const htmlParser = new DOMParser()
+const canvasLifecycles = new WeakMap<HTMLElement, CanvasLifecycle>()
+const activeCanvasContainers = new Set<HTMLElement>()
+
+function createCanvasLifecycle(): CanvasLifecycle {
+  return { controller: new AbortController(), cleanups: new Set() }
+}
+
+function addCanvasCleanup(lifecycle: CanvasLifecycle, cleanup: () => void): void {
+  if (lifecycle.controller.signal.aborted) {
+    cleanup()
+    return
+  }
+  lifecycle.cleanups.add(cleanup)
+}
+
+function disposeCanvas(container: HTMLElement, lifecycle: CanvasLifecycle): void {
+  if (canvasLifecycles.get(container) !== lifecycle) return
+
+  lifecycle.controller.abort()
+  lifecycle.cleanups.forEach(cleanup => cleanup())
+  lifecycle.cleanups.clear()
+  canvasLifecycles.delete(container)
+  activeCanvasContainers.delete(container)
+}
+
+function isCanvasActive(container: HTMLElement, lifecycle: CanvasLifecycle): boolean {
+  return (
+    container.isConnected &&
+    !lifecycle.controller.signal.aborted &&
+    canvasLifecycles.get(container) === lifecycle
+  )
+}
+
+function cleanupCanvases(root?: ParentNode): void {
+  for (const container of activeCanvasContainers) {
+    if (root instanceof Node && !root.contains(container)) continue
+    const lifecycle = canvasLifecycles.get(container)
+    if (lifecycle) disposeCanvas(container, lifecycle)
+  }
+}
+
+window.quartzCanvas = { cleanup: cleanupCanvases }
 
 function resolveToAbsoluteUrl(source: string): string {
   return new URL(source.trim(), window.location.href).toString()
@@ -148,25 +193,30 @@ function resolveToAbsoluteUrl(source: string): string {
 
 async function fetchJson<T>(source: string): Promise<T> {
   const absoluteUrl = resolveToAbsoluteUrl(source)
-
-  if (!jsonFetchCache.has(absoluteUrl)) {
-    jsonFetchCache.set(
-      absoluteUrl,
-      fetch(absoluteUrl, { credentials: 'same-origin' }).then(response => {
-        if (!response.ok) {
-          throw new Error(`Failed to load canvas data (${response.status})`)
-        }
-        return response.json()
-      }),
-    )
+  let request = jsonFetchCache.get(absoluteUrl)
+  if (!request) {
+    request = fetch(absoluteUrl, { credentials: 'same-origin' }).then(response => {
+      if (!response.ok) {
+        throw new Error(`Failed to load canvas data (${response.status})`)
+      }
+      return response.json()
+    })
+    jsonFetchCache.set(absoluteUrl, request)
   }
 
-  return jsonFetchCache.get(absoluteUrl)! as Promise<T>
+  try {
+    return (await request) as T
+  } catch (error) {
+    if (jsonFetchCache.get(absoluteUrl) === request) jsonFetchCache.delete(absoluteUrl)
+    throw error
+  }
 }
 
-async function renderCanvas(container: HTMLElement) {
+async function renderCanvas(container: HTMLElement, lifecycle: CanvasLifecycle) {
   const canvasUrl = container.getAttribute('data-canvas')?.trim()
   if (!canvasUrl) return
+
+  const { signal } = lifecycle.controller
 
   const cfgAttr = container.getAttribute('data-cfg')
   const metaUrl = container.getAttribute('data-meta')?.trim()
@@ -179,6 +229,8 @@ async function renderCanvas(container: HTMLElement) {
         ? fetchJson<Record<string, CanvasMeta>>(metaUrl)
         : Promise.resolve<Record<string, CanvasMeta>>({}),
     ])
+    if (!isCanvasActive(container, lifecycle)) return
+
     const cfg: CanvasConfig = cfgAttr ? JSON.parse(cfgAttr) : {}
     if (isEmbed) {
       cfg.drag = false
@@ -190,7 +242,7 @@ async function renderCanvas(container: HTMLElement) {
       return
     }
 
-    removeAllChildren(container)
+    container.replaceChildren()
 
     const width = container.clientWidth || 800
     const height = container.clientHeight || 600
@@ -325,9 +377,29 @@ async function renderCanvas(container: HTMLElement) {
     const edgeLabelGroup = g.append('g').attr('class', 'edge-labels')
     const nodeGroup = g.append('g').attr('class', 'nodes')
 
+    addCanvasCleanup(lifecycle, () => {
+      svg.interrupt()
+      svg.on('.zoom', null)
+      svg.on('click', null)
+    })
+
     let focusedNode: SVGGElement | null = null
     let isHelpOpen = false
     let bounds: CanvasBounds | null = null
+    let tooltipElement: HTMLElement | null = null
+    const activePopovers = new Set<HTMLElement>()
+
+    const hidePreviews = () => {
+      if (tooltipElement) tooltipElement.style.visibility = 'hidden'
+      activePopovers.forEach(popover => popover.remove())
+      activePopovers.clear()
+    }
+
+    addCanvasCleanup(lifecycle, () => {
+      hidePreviews()
+      tooltipElement?.remove()
+      tooltipElement = null
+    })
 
     let zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> | null = null
     let currentScale = 1
@@ -394,8 +466,8 @@ async function renderCanvas(container: HTMLElement) {
         event => {
           if (isHelpOpen) return
 
-          const target = event.target as HTMLElement
-          if (focusedNode && target.closest('.node-content')) {
+          const target = event.target
+          if (focusedNode && target instanceof Element && target.closest('.node-content')) {
             return
           }
 
@@ -436,7 +508,7 @@ async function renderCanvas(container: HTMLElement) {
             }
           }
         },
-        { passive: false },
+        { passive: false, signal },
       )
     }
 
@@ -455,15 +527,15 @@ async function renderCanvas(container: HTMLElement) {
     }
 
     if (helpModal) {
-      const helpBackdrop = helpModal.querySelector('.canvas-help-backdrop')
-      const helpClose = helpModal.querySelector('.canvas-help-close')
+      const helpBackdrop = helpModal.querySelector<HTMLElement>('.canvas-help-backdrop')
+      const helpClose = helpModal.querySelector<HTMLButtonElement>('.canvas-help-close')
 
       if (helpBackdrop) {
-        helpBackdrop.addEventListener('click', hideHelp)
+        helpBackdrop.addEventListener('click', hideHelp, { signal })
       }
 
       if (helpClose) {
-        helpClose.addEventListener('click', hideHelp)
+        helpClose.addEventListener('click', hideHelp, { signal })
       }
     }
 
@@ -476,50 +548,59 @@ async function renderCanvas(container: HTMLElement) {
           'position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000; cursor: pointer;'
         overlay.setAttribute('aria-label', `view full canvas: ${navigateTo}`)
         overlay.setAttribute('role', 'link')
-        overlay.addEventListener('click', () => {
-          const path = navigateTo.startsWith('/') ? navigateTo : `/${navigateTo}`
-          window.spaNavigate(new URL(path, window.location.origin))
-        })
+        overlay.addEventListener(
+          'click',
+          () => {
+            const path = navigateTo.startsWith('/') ? navigateTo : `/${navigateTo}`
+            window.spaNavigate(new URL(path, window.location.origin))
+          },
+          { signal },
+        )
         container.appendChild(overlay)
       }
     }
 
     if (toolbar) {
-      toolbar.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', e => {
-          e.stopPropagation()
-          const action = (btn as HTMLElement).getAttribute('data-action')
+      toolbar.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => {
+        button.addEventListener(
+          'click',
+          event => {
+            event.stopPropagation()
+            const action = button.dataset.action
 
-          if (action === 'help') {
-            showHelp()
-            return
-          }
+            if (action === 'help') {
+              showHelp()
+              return
+            }
 
-          if (!zoomBehavior) return
+            if (!zoomBehavior) return
 
-          switch (action) {
-            case 'zoom-in':
-              svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
-              break
-            case 'zoom-out':
-              svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7)
-              break
-            case 'zoom-reset':
-              svg.transition().duration(300).call(zoomBehavior.transform, initialTransform)
-              break
-            case 'zoom-fit':
-              if (bounds) {
-                applyBoundsTransform(bounds, true)
-              }
-              break
-          }
-        })
+            switch (action) {
+              case 'zoom-in':
+                svg.transition().duration(300).call(zoomBehavior.scaleBy, 1.3)
+                break
+              case 'zoom-out':
+                svg.transition().duration(300).call(zoomBehavior.scaleBy, 0.7)
+                break
+              case 'zoom-reset':
+                svg.transition().duration(300).call(zoomBehavior.transform, initialTransform)
+                break
+              case 'zoom-fit':
+                if (bounds) {
+                  applyBoundsTransform(bounds, true)
+                }
+                break
+            }
+          },
+          { signal },
+        )
       })
     }
 
     const handleKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         hideHelp()
+        hidePreviews()
         if (focusedNode) {
           focusedNode.classList.remove('is-focused')
           focusedNode = null
@@ -533,14 +614,7 @@ async function renderCanvas(container: HTMLElement) {
       }
     }
 
-    document.addEventListener('keydown', handleKeydown)
-    registerEscapeHandler(container, () => {
-      hideHelp()
-      if (focusedNode) {
-        focusedNode.classList.remove('is-focused')
-        focusedNode = null
-      }
-    })
+    document.addEventListener('keydown', handleKeydown, { signal })
 
     const nodes: NodeData[] = canvasData.nodes.map(n => {
       const meta: CanvasMeta = metaMap[n.id] ?? {}
@@ -585,6 +659,10 @@ async function renderCanvas(container: HTMLElement) {
         .force('charge', forceManyBody().strength(-cfg.forceStrength * 1000 || -300))
         .force('center', forceCenter(width / 2, height / 2))
         .force('collision', forceCollide().radius(cfg.collisionRadius || 50))
+
+      addCanvasCleanup(lifecycle, () => {
+        simulation?.on('tick', null).stop()
+      })
     }
 
     const groupNode = groupNodeGroup
@@ -1004,6 +1082,14 @@ async function renderCanvas(container: HTMLElement) {
       node.call(drag)
     }
 
+    addCanvasCleanup(lifecycle, () => {
+      node.on('click', null)
+      node.on('.drag', null)
+      node.on('mouseenter', null)
+      node.on('mousemove', null)
+      node.on('mouseleave', null)
+    })
+
     function updatePositions() {
       if (cfg.useManualPositions) {
         node.attr('transform', d => `translate(${d.x},${d.y})`)
@@ -1095,7 +1181,7 @@ async function renderCanvas(container: HTMLElement) {
       updatePositions()
     }
 
-    setTimeout(() => {
+    const edgeLabelTimer = window.setTimeout(() => {
       edgeLabels.each(function () {
         const group = this as SVGGElement
         const text = group.querySelector('text') as SVGTextElement
@@ -1110,6 +1196,7 @@ async function renderCanvas(container: HTMLElement) {
         }
       })
     }, 100)
+    addCanvasCleanup(lifecycle, () => window.clearTimeout(edgeLabelTimer))
 
     const boundsAttr = container.getAttribute('data-canvas-bounds')
     if (boundsAttr) {
@@ -1155,13 +1242,20 @@ async function renderCanvas(container: HTMLElement) {
         .style('z-index', '1000')
         .style('font-size', '0.9em')
 
+      const tooltipNode = tooltip.node()
+      if (tooltipNode instanceof HTMLElement) tooltipElement = tooltipNode
+
       node
         .filter(d => d.type === 'file')
         .on('mouseenter', async (event, d) => {
           if (d.description) {
             tooltip.html(wrapTextHtml(d.description)).style('visibility', 'visible')
           } else {
-            const pointer = event as MouseEvent
+            if (!(event instanceof MouseEvent)) return
+
+            const current = event.currentTarget
+            if (!(current instanceof SVGGElement)) return
+
             const href = d.resolvedHref
               ? `/${d.resolvedHref}`
               : d.resolvedSlug
@@ -1174,10 +1268,17 @@ async function renderCanvas(container: HTMLElement) {
             inner.classList.add('popover-inner')
             pop.appendChild(inner)
             document.body.appendChild(pop)
+            activePopovers.add(pop)
 
             pop.style.position = 'fixed'
-            pop.style.left = `${pointer.clientX + 12}px`
-            pop.style.top = `${pointer.clientY + 12}px`
+            pop.style.left = `${event.clientX + 12}px`
+            pop.style.top = `${event.clientY + 12}px`
+
+            const removePopover = () => {
+              pop.remove()
+              activePopovers.delete(pop)
+            }
+            current.addEventListener('mouseleave', removePopover, { once: true, signal })
 
             try {
               const url = new URL(href, window.location.toString())
@@ -1186,84 +1287,78 @@ async function renderCanvas(container: HTMLElement) {
               targetUrl.hash = ''
               targetUrl.search = ''
               const response = await fetchCanonical(targetUrl)
-              const html = new DOMParser().parseFromString(await response.text(), 'text/html')
+              const markup = await response.text()
+              if (signal.aborted || !pop.isConnected) return
+
+              const html = htmlParser.parseFromString(markup, 'text/html')
               html.querySelectorAll('[href], [src]').forEach(el => {
-                const e = el as HTMLElement
-                const attr = e.hasAttribute('href') ? 'href' : e.hasAttribute('src') ? 'src' : null
+                const attr = el.hasAttribute('href')
+                  ? 'href'
+                  : el.hasAttribute('src')
+                    ? 'src'
+                    : null
                 if (!attr) return
-                const val = e.getAttribute(attr)!
+                const val = el.getAttribute(attr)
                 if (!val) return
                 const rebased = new URL(val, targetUrl)
-                e.setAttribute(attr, rebased.pathname + rebased.hash)
+                el.setAttribute(attr, rebased.pathname + rebased.hash)
               })
               html.querySelectorAll('[id]').forEach(el => {
                 const targetID = `popover-${el.id}`
                 el.id = targetID
               })
-              const elts = [
-                ...(html.getElementsByClassName(
-                  'popover-hint',
-                ) as HTMLCollectionOf<HTMLDivElement>),
-              ]
+              const elts = Array.from(html.getElementsByClassName('popover-hint')).filter(
+                (element): element is HTMLDivElement => element instanceof HTMLDivElement,
+              )
               if (elts.length > 0) {
                 inner.append(...elts)
                 if (hash) {
                   const targetAnchor = hash.startsWith('#popover')
                     ? hash
                     : `#popover-${hash.slice(1)}`
-                  const heading = inner.querySelector(targetAnchor) as HTMLElement | null
+                  const heading = inner.querySelector<HTMLElement>(targetAnchor)
                   if (heading) {
                     inner.scroll({ top: heading.offsetTop - 12 })
                   }
                 }
                 inner.classList.add('grid')
               }
-            } catch (e) {
-              console.error('canvas popover failed: ', e)
+            } catch (error) {
+              if (!signal.aborted) console.error('canvas popover failed: ', error)
             }
-
-            const current = event.currentTarget as SVGGElement
-            const onLeave = () => {
-              pop.remove()
-              current.removeEventListener('mouseleave', onLeave)
-            }
-            current.addEventListener('mouseleave', onLeave)
           }
         })
         .on('mousemove', (event, d) => {
-          if (d.type === 'file' && d.description) {
+          if (event instanceof MouseEvent && d.type === 'file' && d.description) {
             tooltip.style('top', `${event.pageY + 10}px`).style('left', `${event.pageX + 10}px`)
           }
         })
         .on('mouseleave', (event, d) => {
           tooltip.style('visibility', 'hidden')
           if (d.type === 'file') {
-            const link = (event.currentTarget as SVGGElement).querySelector(
-              '.node-content a.canvas-popover-link',
-            ) as HTMLAnchorElement | null
-            if (link) {
-              const mouseleaveEvent = event as SyntheticMouseEvent
-              if (mouseleaveEvent[SYNTHETIC_MOUSELEAVE_FLAG]) {
-                return
-              }
+            const current = event.currentTarget
+            if (!(current instanceof SVGGElement)) return
 
-              const synthetic = new MouseEvent('mouseleave', {
-                bubbles: true,
-              }) as SyntheticMouseEvent
-              synthetic[SYNTHETIC_MOUSELEAVE_FLAG] = true
+            const link = current.querySelector<HTMLAnchorElement>(
+              '.node-content a.canvas-popover-link',
+            )
+            if (link) {
+              if (syntheticMouseleaveEvents.has(event)) return
+
+              const synthetic = new MouseEvent('mouseleave', { bubbles: true })
+              syntheticMouseleaveEvents.add(synthetic)
               link.dispatchEvent(synthetic)
             }
           }
         })
-
-      registerEscapeHandler(container, () => {
-        tooltip.remove()
-      })
     }
   } catch (error) {
-    console.error('Failed to render canvas:', error)
-    container.innerHTML =
-      '<div class="canvas-error">Failed to load canvas data. Check the console for details.</div>'
+    if (isCanvasActive(container, lifecycle)) {
+      disposeCanvas(container, lifecycle)
+      console.error('Failed to render canvas:', error)
+      container.innerHTML =
+        '<div class="canvas-error">Failed to load canvas data. Check the console for details.</div>'
+    }
   }
 }
 
@@ -1304,7 +1399,8 @@ async function getFileNodePreview(node: NodeData): Promise<string | null> {
         try {
           const response = await fetchCanonical(targetUrl)
           if (!response.ok) {
-            return null
+            if (response.status === 404) return null
+            throw new Error(`Failed to load canvas preview (${response.status})`)
           }
 
           const contentType = response.headers.get('Content-Type') ?? ''
@@ -1344,6 +1440,7 @@ async function getFileNodePreview(node: NodeData): Promise<string | null> {
           cleanCanvasPreviewElement(clone)
           return clone.innerHTML
         } catch (error) {
+          filePreviewCache.delete(cacheKey)
           console.error('Canvas preview failed:', error)
           return null
         }
@@ -1473,9 +1570,21 @@ function getControlPoint(extPoint: { x: number; y: number }, side: string, dista
 }
 
 document.addEventListener('nav', () => {
+  window.addCleanup(cleanupCanvases)
+  activeCanvasContainers.forEach(container => {
+    if (container.isConnected) return
+    const lifecycle = canvasLifecycles.get(container)
+    if (lifecycle) disposeCanvas(container, lifecycle)
+  })
+
   document
     .querySelectorAll<HTMLElement>(['.canvas-container', '.canvas-embed-container'].join(','))
     .forEach(container => {
-      renderCanvas(container)
+      if (canvasLifecycles.has(container)) return
+
+      const lifecycle = createCanvasLifecycle()
+      canvasLifecycles.set(container, lifecycle)
+      activeCanvasContainers.add(container)
+      void renderCanvas(container, lifecycle)
     })
 })

@@ -4,6 +4,7 @@ import {
   readCommentRoomEnabled,
   writeCommentRoomEnabled,
 } from '../../util/comment-room'
+import { fetchCanonical } from '../../util/fetch-canonical'
 import {
   notebookKernelCommandEvent,
   notebookKernelRequestEvent,
@@ -14,7 +15,13 @@ import {
 } from '../../util/notebook-kernel-events'
 import { notebookLocalSourcesClearedEvent } from '../../util/notebook-source-events'
 import { notebookLanguageIconSvg } from '../../util/notebook/render/icons'
-import { FullSlug, isFullSlug, normalizeRelativeURLs, resolveRelative } from '../../util/path'
+import {
+  FullSlug,
+  getFullSlug,
+  isFullSlug,
+  normalizeRelativeURLs,
+  resolveRelative,
+} from '../../util/path'
 import {
   queryRecentNotes,
   readRecentNotes,
@@ -24,15 +31,11 @@ import {
   writeRecentNotes,
   type RecentNote,
 } from '../../util/recent-notes'
+import { tokenizeTerm } from '../../util/search-text'
+import { registerEscapeHandler } from './escape-handler'
+import { currentNavSignal } from './nav-lifecycle'
 import { populateSearchIndex, querySearchIndex } from './search-index'
-import {
-  tokenizeTerm,
-  registerEscapeHandler,
-  removeAllChildren,
-  fetchCanonical,
-  createSidePanel,
-  getOrCreateSidePanel,
-} from './util'
+import { beginSidePanelRequest, disposeSidePanel, getOrCreateSidePanel } from './side-panel'
 
 interface Item {
   id: number
@@ -390,8 +393,22 @@ interface Action {
 let actionType: ActionType = 'quick_open'
 let fallbackActionType: FallbackActionType = 'quick_open'
 let currentSearchTerm: string = ''
-document.addEventListener('nav', e => {
-  const currentSlug = e.detail.url
+let activePaletteSignal: AbortSignal | undefined
+
+document.addEventListener('nav', () => {
+  window.addCleanup(disposeSidePanel)
+  const signal = currentNavSignal()
+  if (activePaletteSignal === signal) return
+  activePaletteSignal = signal
+  signal.addEventListener(
+    'abort',
+    () => {
+      if (activePaletteSignal === signal) activePaletteSignal = undefined
+    },
+    { once: true },
+  )
+
+  const currentSlug = getFullSlug(window)
   const container = document.getElementById('palette-container')
   if (!container) return
 
@@ -482,7 +499,7 @@ document.addEventListener('nav', e => {
       bar.value = '' // clear the input when we dismiss the search
     }
     if (output) {
-      removeAllChildren(output)
+      output.replaceChildren()
     }
 
     actionType = 'quick_open' // reset search type after closing
@@ -773,7 +790,7 @@ document.addEventListener('nav', e => {
 
   function getCommandItems(acts: Action[], transition = false) {
     if (output) {
-      removeAllChildren(output)
+      output.replaceChildren()
     }
     currentHover = null
     if (acts.length === 0) {
@@ -932,7 +949,7 @@ document.addEventListener('nav', e => {
     if (data) hydrateRecentNotes(data)
 
     if (output) {
-      removeAllChildren(output)
+      output.replaceChildren()
     }
     currentHover = null
 
@@ -1021,18 +1038,21 @@ document.addEventListener('nav', e => {
     if (e.metaKey && e.altKey && e.key === 'Enter') {
       if (!currentHover) return
       const slug = currentHover.dataset.slug
-      if (!slug) return
+      if (!slug || !isFullSlug(slug)) return
 
+      let request: ReturnType<typeof beginSidePanelRequest> | undefined
       try {
         const asidePanel = getOrCreateSidePanel()
-        await fetchContent(currentSlug, slug as FullSlug).then(innerDiv => {
-          asidePanel.dataset.slug = slug
-          createSidePanel(asidePanel, ...innerDiv)
-          window.notifyNav(slug as FullSlug)
-          hidePalette()
-        })
+        const activeRequest = beginSidePanelRequest(asidePanel)
+        request = activeRequest
+        const innerDiv = await fetchContent(currentSlug, slug)
+        if (!activeRequest.mount(slug, ...innerDiv)) return
+        window.notifyNav(slug)
+        hidePalette()
       } catch (error) {
-        console.error('Failed to create side panel:', error)
+        const wasAborted = request?.signal.aborted ?? false
+        request?.cancel()
+        if (!wasAborted) console.error('Failed to create side panel:', error)
       }
       return
     } else if (e.key === 'Enter') {
@@ -1188,7 +1208,7 @@ document.addEventListener('nav', e => {
     if (actionType !== 'quick_open') return
     if (!finalResults) return
 
-    removeAllChildren(output)
+    output.replaceChildren()
     currentHover = null
 
     const noMatchEl = document.createElement('div')

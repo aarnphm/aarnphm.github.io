@@ -46,6 +46,12 @@ type CompileBaseResult = {
 export function compileBaseConfig(source: string, path?: string): CompileBaseResult {
   const parsed = yaml.load(source)
   const parsedConfig: Record<string, unknown> = isRecord(parsed) ? parsed : {}
+  const viewsValue = parsedConfig.views
+  if (!Array.isArray(viewsValue)) {
+    const location = path ? ` in ${path}` : ''
+    throw new Error(`Invalid base configuration${location}: 'views' must be an array`)
+  }
+  const rawViews: unknown[] = viewsValue
 
   const properties = normalizeProperties(parsedConfig.properties)
   const diagnostics: BaseExpressionDiagnostic[] = []
@@ -271,21 +277,19 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
     }
   }
 
-  if (Array.isArray(parsedConfig.views)) {
-    parsedConfig.views.forEach((view, index) => {
-      if (!isRecord(view)) return
-      collectViewProperties(view, index)
-      if (view.filters) {
-        const expr = buildFilterExpr(view.filters, `views[${index}].filters`)
-        if (expr) {
-          expressions.viewFilters[String(index)] = compileExpression(expr)
-        }
+  rawViews.forEach((view, index) => {
+    if (!isRecord(view)) return
+    collectViewProperties(view, index)
+    if (view.filters) {
+      const expr = buildFilterExpr(view.filters, `views[${index}].filters`)
+      if (expr) {
+        expressions.viewFilters[String(index)] = compileExpression(expr)
       }
-      if (view.summaries) {
-        walkSummaries(view.summaries, `views[${index}].summaries`)
-      }
-    })
-  }
+    }
+    if (view.summaries) {
+      walkSummaries(view.summaries, `views[${index}].summaries`)
+    }
+  })
 
   if (isRecord(parsedConfig.formulas)) {
     for (const [name, expression] of Object.entries(parsedConfig.formulas)) {
@@ -311,36 +315,34 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
     }
   }
 
-  if (Array.isArray(parsedConfig.views)) {
-    parsedConfig.views.forEach((view, index) => {
-      if (!isRecord(view) || !view.summaries) return
-      const viewSummaries = view.summaries
-      if (!isRecord(viewSummaries)) return
-      const columns =
-        'columns' in viewSummaries && isRecord(viewSummaries.columns)
-          ? viewSummaries.columns
-          : viewSummaries
-      const viewKey = String(index)
-      const viewMap: Record<string, ProgramIR> = {}
-      for (const [column, summaryValue] of Object.entries(columns)) {
-        if (typeof summaryValue !== 'string') continue
-        const normalized = summaryValue.toLowerCase().trim()
-        if (builtinSummaries.has(normalized)) continue
-        const topLevel = expressions.summaries[summaryValue]
-        if (topLevel) {
-          viewMap[column] = topLevel
-          continue
-        }
-        const expr = parseExpression(summaryValue)
-        if (expr) {
-          viewMap[column] = compileExpression(expr)
-        }
+  rawViews.forEach((view, index) => {
+    if (!isRecord(view) || !view.summaries) return
+    const viewSummaries = view.summaries
+    if (!isRecord(viewSummaries)) return
+    const columns =
+      'columns' in viewSummaries && isRecord(viewSummaries.columns)
+        ? viewSummaries.columns
+        : viewSummaries
+    const viewKey = String(index)
+    const viewMap: Record<string, ProgramIR> = {}
+    for (const [column, summaryValue] of Object.entries(columns)) {
+      if (typeof summaryValue !== 'string') continue
+      const normalized = summaryValue.toLowerCase().trim()
+      if (builtinSummaries.has(normalized)) continue
+      const topLevel = expressions.summaries[summaryValue]
+      if (topLevel) {
+        viewMap[column] = topLevel
+        continue
       }
-      if (Object.keys(viewMap).length > 0) {
-        expressions.viewSummaries[viewKey] = viewMap
+      const expr = parseExpression(summaryValue)
+      if (expr) {
+        viewMap[column] = compileExpression(expr)
       }
-    })
-  }
+    }
+    if (Object.keys(viewMap).length > 0) {
+      expressions.viewSummaries[viewKey] = viewMap
+    }
+  })
 
   const rawFilters = parsedConfig.filters
   const filters: BaseFile['filters'] =
@@ -350,7 +352,7 @@ export function compileBaseConfig(source: string, path?: string): CompileBaseRes
 
   const config: BaseFile = {
     filters,
-    views: parseViews(parsedConfig.views as any[]),
+    views: parseViews(rawViews),
     properties,
     summaries,
     formulas: isRecord(parsedConfig.formulas)

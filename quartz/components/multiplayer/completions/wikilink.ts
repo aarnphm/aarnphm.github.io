@@ -2,7 +2,7 @@ import { CompletionContext, CompletionResult, Completion } from '@codemirror/aut
 import { EditorView } from '@codemirror/view'
 import type { ContentDetails } from '../../../plugins/emitters/contentIndex'
 import type { FuzzyMatch } from './types'
-import { isStreamHost } from '../../scripts/util'
+import { isStreamHostname } from '../../../util/stream-host'
 import { getContentIndex } from './data'
 import { frecencyStore } from './frecency'
 import { fuzzyMatch, fuzzyMatchMultiple } from './fuzzy'
@@ -121,7 +121,7 @@ export async function wikilinkCompletionSource(
 
   if (limited.length === 0) return null
 
-  const baseUrl = isStreamHost() ? 'https://aarnphm.xyz' : ''
+  const baseUrl = isStreamHostname(window.location.hostname) ? 'https://aarnphm.xyz' : ''
   const closingSuffix = wikiCtx.hasClosingBracket ? '' : ']]'
 
   const completions: Completion[] = limited.map(

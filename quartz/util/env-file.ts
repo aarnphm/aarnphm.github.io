@@ -15,7 +15,7 @@ export async function upsertEnvLine(file: string, key: string, value: string): P
   const line = `${key}=${value}`
   const pattern = new RegExp(`^${escapeRegex(key)}=.*$`, 'm')
   const next = pattern.test(content)
-    ? content.replace(pattern, line)
+    ? content.replace(pattern, () => line)
     : `${content.trimEnd()}${content.trimEnd() ? '\n' : ''}${line}\n`
   await fs.writeFile(file, next)
 }

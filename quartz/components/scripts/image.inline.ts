@@ -1,26 +1,30 @@
 import { getFullSlug } from '../../util/path'
-import { registerEscapeHandler } from './util'
+import { registerEscapeHandler } from './escape-handler'
+import { rootNavSignal } from './root-lifecycle'
+
+const configuredDialogs = new WeakMap<HTMLDialogElement, AbortSignal>()
 
 document.addEventListener('nav', () => {
   if (getFullSlug(window) === 'lyd') return
 
-  const dialog = document.getElementById('image-popup-modal') as HTMLDialogElement | null
+  const dialog = document.getElementById('image-popup-modal')
   const modalImg = dialog?.querySelector<HTMLImageElement>('.image-popup-img')
   const closeBtn = dialog?.querySelector<HTMLButtonElement>('.image-popup-close')
 
-  if (!dialog || !modalImg || !closeBtn) return
+  if (!(dialog instanceof HTMLDialogElement) || !modalImg || !closeBtn) return
+  const imageDialog = dialog
+  const imageElement = modalImg
+  const closeButton = closeBtn
 
   function closeModal() {
-    if (dialog!.open) dialog!.close()
+    if (imageDialog.open) imageDialog.close()
   }
 
   function openModal(imgSrc: string, imgAlt: string) {
-    modalImg!.src = imgSrc
-    modalImg!.alt = imgAlt
-    if (!dialog!.open) dialog!.showModal()
+    imageElement.src = imgSrc
+    imageElement.alt = imgAlt
+    if (!imageDialog.open) imageDialog.showModal()
   }
-
-  const imageHandlers = new WeakMap<HTMLImageElement, () => void>()
 
   function shouldSkipImage(img: HTMLImageElement) {
     return (
@@ -29,66 +33,43 @@ document.addEventListener('nav', () => {
       img.dataset.ignorePopup === '' ||
       img.dataset.ignorePopup === 'true' ||
       img.closest('[data-pet-widget]') !== null ||
-      img.closest('[data-remark-tikz]') !== null
+      img.closest('[data-remark-tikz]') !== null ||
+      img.closest('#image-popup-modal') !== null
     )
   }
 
-  function setupImageHandler(img: HTMLImageElement) {
-    if (imageHandlers.has(img)) return
-
-    img.style.cursor = 'pointer'
-    const popup = () => openModal(img.src, img.alt)
-    img.addEventListener('click', popup)
-    imageHandlers.set(img, popup)
-  }
-
-  // Add click handlers to all existing images
-  const contentImages = document.querySelectorAll('img')
-  for (const img of contentImages) {
+  for (const img of document.querySelectorAll('img')) {
     if (shouldSkipImage(img)) continue
-    if (img instanceof HTMLImageElement) {
-      setupImageHandler(img)
-    }
+    img.style.cursor = 'pointer'
   }
 
-  // Watch for masonry images being added incrementally
-  const masonryContainer = document.querySelector('.masonry-grid')
-  let observer: MutationObserver | undefined
-
-  if (masonryContainer) {
-    observer = new MutationObserver(mutations => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof HTMLImageElement) {
-            if (shouldSkipImage(node)) continue
-            setupImageHandler(node)
-          }
-        }
+  const dialogSignal = rootNavSignal(imageDialog)
+  if (configuredDialogs.get(imageDialog) === dialogSignal) return
+  configuredDialogs.set(imageDialog, dialogSignal)
+  document.addEventListener(
+    'click',
+    event => {
+      const element =
+        event.target instanceof Element
+          ? event.target
+          : event.target instanceof Node
+            ? event.target.parentElement
+            : null
+      const img = element?.closest('img')
+      if (!(img instanceof HTMLImageElement) || shouldSkipImage(img)) return
+      openModal(img.src, img.alt)
+    },
+    { signal: dialogSignal },
+  )
+  closeButton.addEventListener('click', closeModal, { signal: dialogSignal })
+  registerEscapeHandler(imageDialog, closeModal, () => imageDialog.open)
+  dialogSignal.addEventListener(
+    'abort',
+    () => {
+      if (configuredDialogs.get(imageDialog) === dialogSignal) {
+        configuredDialogs.delete(imageDialog)
       }
-    })
-
-    observer.observe(masonryContainer, { childList: true, subtree: true })
-  }
-
-  const backdropClickHandler = (e: MouseEvent) => {
-    if (e.target === dialog) closeModal()
-  }
-
-  closeBtn!.addEventListener('click', closeModal)
-  dialog!.addEventListener('click', backdropClickHandler)
-  registerEscapeHandler(closeBtn!, closeModal)
-
-  window.addCleanup(() => {
-    closeBtn!.removeEventListener('click', closeModal)
-    dialog!.removeEventListener('click', backdropClickHandler)
-
-    if (observer) observer.disconnect()
-
-    for (const img of contentImages) {
-      if (img instanceof HTMLImageElement) {
-        const handler = imageHandlers.get(img)
-        if (handler) img.removeEventListener('click', handler)
-      }
-    }
-  })
+    },
+    { once: true },
+  )
 })
