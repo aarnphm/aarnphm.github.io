@@ -584,6 +584,27 @@ test('renders cycling efforts in the expanded shared activity section', () => {
   assert.equal(byClass(rendered, 'tri-efforts').length, 1)
 })
 
+test('renders route stream graphs in the server activity markup', () => {
+  const rendered = buildDayCard(
+    factory,
+    '2026-07-09',
+    { details: { 101: detail() }, health: {} },
+    { expanded: true },
+  )
+  const traces = byClass(rendered, 'tri-elev-wrap').filter(
+    graph => graph.properties.dataTriTrace != null,
+  )
+  assert.deepEqual(
+    traces.map(graph => graph.properties.dataTriTrace),
+    ['hr', 'power', 'cadence'],
+  )
+  for (const graph of traces) {
+    assert.equal(byClass(graph, 'tri-elev').length, 1)
+    assert.equal(byClass(graph, 'tri-elev-area').length, 1)
+    assert.equal(byClass(graph, 'tri-elev-line').length, 1)
+  }
+})
+
 test('labels the activity disclosure and exposes its expanded state and controlled panel', () => {
   const collapsed = buildActivity(factory, detail({ id: 42 }))
   const collapsedToggle = byClass(collapsed, 'tri-act-toggle')[0]

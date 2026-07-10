@@ -56,7 +56,7 @@ export default (() => {
           {...triathlonDayProps(extras, date)}
           data-detail-path={detailPath}
         >
-          {htmlToJsx(fileData.filePath!, card)}
+          {htmlToJsx(fileData.filePath!, card, { wrapTables: false })}
         </div>
       </article>
     )

@@ -72,7 +72,6 @@ import {
   powerCurveFraction,
   powerCurveHoverAt,
   rate,
-  routeStreamFlags,
   scrubDist,
   setDistanceUnit,
   shortDate,
@@ -102,6 +101,7 @@ import {
   tl,
   triLocale,
 } from '../../util/triathlon-i18n'
+import { isRecord } from '../../util/type-guards'
 
 const applyI18n = (root: HTMLElement): void => {
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
@@ -704,7 +704,13 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
 }
 
 const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): HTMLElement => {
-  const wrap = buildActivityNode(domF, d, false, undefined, payload?.swimTrend ?? []) as HTMLElement
+  const wrap = buildActivityNode(
+    domF,
+    d,
+    false,
+    clientCtx(),
+    payload?.swimTrend ?? [],
+  ) as HTMLElement
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>('.tri-act-figs .tri-elev-wrap')
   if (elev) {
@@ -719,53 +725,18 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
       },
     })
   }
-  const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
-  if (more) {
-    const flags = routeStreamFlags(d)
-    if (flags.hr) {
-      const t = buildTrace(
-        d,
-        p => p.hr,
-        'hr',
-        m => `${m} bpm peak`,
-        v => `${Math.round(v)}bpm`,
-      )
-      more.appendChild(t)
-      surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
-    }
-    if (flags.power) {
-      const t = buildTrace(
-        d,
-        p => p.w,
-        'power',
-        m => `${m} W peak`,
-        v => `${Math.round(v)}w`,
-      )
-      more.appendChild(t)
-      surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
-    }
-    if (flags.cad) {
-      const cadScale = d.sport === 'run' ? 2 : 1
-      const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
-      const t = buildTrace(
-        d,
-        p => p.cad * cadScale,
-        'cadence',
-        m => `${m} ${cadUnit} peak`,
-        v => `${Math.round(v)}${cadUnit}`,
-      )
-      more.appendChild(t)
+  const cadenceScale = d.sport === 'run' ? 2 : 1
+  const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
+  for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
+    if (trace.dataset.triTrace === 'hr')
+      surfaces.push({ wrap: trace, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
+    else if (trace.dataset.triTrace === 'power')
+      surfaces.push({ wrap: trace, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
+    else if (trace.dataset.triTrace === 'cadence')
       surfaces.push({
-        wrap: t,
-        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
+        wrap: trace,
+        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadenceScale} ${cadenceUnit}`,
       })
-    }
-    const zones = zoneDuo(buildHrZones(d), buildPowerZones(d))
-    if (zones) more.appendChild(zones)
-    const charts = zoneDuo(buildPowerCurve(d), buildPowerHist(d))
-    if (charts) more.appendChild(charts)
-    const bestEfforts = more.querySelector<HTMLElement>(':scope > .tri-efforts')
-    if (bestEfforts) more.appendChild(bestEfforts)
   }
   if (surfaces.length > 0 && d.route.length >= 2) {
     const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
@@ -4841,6 +4812,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
 
 type SportAbility = Analytics['engine']['abilities']['sports'][number]
 type AbilityAxis = SportAbility['axes'][number]
+const TRI_ABILITIES_SELECTION_KEY = 'tri-abilities-selection'
 
 const radarUnitText = (): string => tl(isImperialUnit() ? 'feet' : 'metres')
 const radarDefinition = (key: string): string => tl(key).replace('{unit}', radarUnitText())
@@ -4925,9 +4897,24 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   }
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const pressed = new Set<Sport>([
-    sports.some(sp => sp.sport === 'bike') ? 'bike' : sports[0].sport,
+    sports.some(sport => sport.sport === 'bike') ? 'bike' : sports[0].sport,
   ])
   let avg = false
+  try {
+    const stored: unknown = JSON.parse(localStorage.getItem(TRI_ABILITIES_SELECTION_KEY) ?? 'null')
+    if (isRecord(stored) && typeof stored.average === 'boolean' && Array.isArray(stored.sports)) {
+      const storedSports = stored.sports.filter(
+        (sport): sport is Sport =>
+          (sport === 'swim' || sport === 'bike' || sport === 'run') &&
+          sports.some(available => available.sport === sport),
+      )
+      if (stored.sports.length === 0 || storedSports.length > 0) {
+        pressed.clear()
+        for (const sport of storedSports) pressed.add(sport)
+      }
+      avg = stored.average
+    }
+  } catch {}
   const singleOf = (): SportAbility | null =>
     !avg && pressed.size === 1 ? (sports.find(sp => pressed.has(sp.sport)) ?? null) : null
 
@@ -4999,17 +4986,20 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     s.appendChild(dot)
     return dot
   })
-  const labels = axesRef.map((a, i) => {
+  type RadarAxisLabel = { active: 0 | 1; nodes: [SVGElement, SVGElement] }
+  const labels = axesRef.map((a, i): RadarAxisLabel => {
     const th = angle(i)
-    const label = svg('text', {
+    const attrs = {
       x: cx + (R + 8) * Math.cos(th),
       y: cy + (R + 8) * Math.sin(th) + 1.6,
       'text-anchor': Math.abs(Math.cos(th)) < 0.3 ? 'middle' : Math.cos(th) > 0 ? 'start' : 'end',
-      class: 'tri-radar-ax',
-    })
-    label.textContent = tl(a.label)
-    s.appendChild(label)
-    return label
+    }
+    const current = svg('text', { ...attrs, class: 'tri-radar-ax tri-radar-ax--active' })
+    const next = svg('text', { ...attrs, class: 'tri-radar-ax' })
+    current.textContent = tl(a.label)
+    next.textContent = current.textContent
+    s.append(current, next)
+    return { active: 0, nodes: [current, next] }
   })
   block.appendChild(s)
 
@@ -5095,7 +5085,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         ? sports.every(sp => sp.axes[i].score == null)
         : single != null && single.axes[i].score == null
       dots[i].setAttribute('class', isNull ? 'tri-radar-dot tri-radar-dot--null' : 'tri-radar-dot')
-      labels[i].setAttribute('class', isNull ? 'tri-radar-ax tri-radar-ax--null' : 'tri-radar-ax')
+      for (const label of labels[i].nodes) label.classList.toggle('tri-radar-ax--null', isNull)
     })
   }
 
@@ -5110,6 +5100,29 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     label: string
     vals: (number | null)[]
     toggle: boolean
+  }
+
+  const swapDev = (next: HTMLElement | null, animate: boolean): void => {
+    if (!animate) {
+      devBox.replaceChildren(...(next ? [next] : []))
+      return
+    }
+    const current = devBox.querySelector<HTMLElement>(':scope > .tri-dev:not(.tri-dev--leaving)')
+    if (current) {
+      const removeCurrent = (event: TransitionEvent): void => {
+        if (event.target !== current || event.propertyName !== 'opacity') return
+        current.removeEventListener('transitionend', removeCurrent)
+        current.remove()
+      }
+      current.classList.add('tri-dev--leaving')
+      current.addEventListener('transitionend', removeCurrent)
+    }
+    if (!next) return
+    next.classList.add('tri-dev--entering')
+    devBox.appendChild(next)
+    window.requestAnimationFrame(() =>
+      window.requestAnimationFrame(() => next.classList.remove('tri-dev--entering')),
+    )
   }
 
   const renderDev = (draw: 'defer' | 'animate' | 'none'): void => {
@@ -5163,7 +5176,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         .filter(sr => sr.vals.filter(v => v != null).length >= 2)
     }
     if (hist.length < 2 || !series.length) {
-      devBox.replaceChildren()
+      swapDev(null, draw === 'animate')
       return
     }
     const dev = el('div', 'tri-dev')
@@ -5296,7 +5309,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         window.requestAnimationFrame(() => window.requestAnimationFrame(reveal))
       else revealDev = reveal
     }
-    devBox.replaceChildren(dev)
+    swapDev(dev, draw === 'animate')
   }
   block.appendChild(devBox)
 
@@ -5317,7 +5330,15 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     const activeSports =
       avg || pressed.size === 0 ? sports : sports.filter(sport => pressed.has(sport.sport))
     labels.forEach((label, index) => {
-      label.textContent = radarAxisLabel(activeSports, index)
+      const text = radarAxisLabel(activeSports, index)
+      const current = label.nodes[label.active]
+      if (current.textContent === text) return
+      const nextIndex = label.active === 0 ? 1 : 0
+      const next = label.nodes[nextIndex]
+      next.textContent = text
+      current.classList.remove('tri-radar-ax--active')
+      next.classList.add('tri-radar-ax--active')
+      label.active = nextIndex
     })
     applyAxisClasses()
   }
@@ -5327,6 +5348,14 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     morphAll(!reduced)
     renderDev(reduced ? 'none' : 'animate')
   }
+  const persistSelection = (): void => {
+    try {
+      localStorage.setItem(
+        TRI_ABILITIES_SELECTION_KEY,
+        JSON.stringify({ average: avg, sports: [...pressed] }),
+      )
+    } catch {}
+  }
   const toggleSport = (sport: Sport): void => {
     if (avg) {
       avg = false
@@ -5334,10 +5363,12 @@ const buildAbilities = (data: Analytics): HTMLElement => {
       pressed.add(sport)
     } else if (pressed.has(sport)) pressed.delete(sport)
     else pressed.add(sport)
+    persistSelection()
     rerender()
   }
   const toggleAvg = (): void => {
     avg = !avg
+    persistSelection()
     rerender()
   }
 

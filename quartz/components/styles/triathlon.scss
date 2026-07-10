@@ -3744,9 +3744,19 @@
 .tri-radar-ax {
   font-size: 5px;
   fill: var(--gray);
+  opacity: 0;
+  filter: blur(1px);
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 180ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.tri-radar-ax--null {
+.tri-radar-ax--active {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.tri-radar-ax--active.tri-radar-ax--null {
   opacity: 0.4;
 }
 
@@ -3857,6 +3867,29 @@
   display: grid;
   gap: 0.3rem;
   margin-top: 0.6rem;
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    filter 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.tri-dev-slot {
+  display: grid;
+}
+
+.tri-dev-slot > .tri-dev {
+  grid-area: 1 / 1;
+}
+
+.tri-dev--entering,
+.tri-dev--leaving {
+  opacity: 0;
+  filter: blur(1px);
+}
+
+.tri-dev--leaving {
+  pointer-events: none;
 }
 
 .tri-dev-frame {
@@ -3970,6 +4003,8 @@
 @media (prefers-reduced-motion: reduce) {
   .tri-dev-line,
   .tri-dev-lines,
+  .tri-dev,
+  .tri-radar-ax,
   .tri-radar-fill,
   .tri-radar-dot,
   .tri-radar-sport {
@@ -7709,7 +7744,20 @@
   }
 
   > .tri-pop-card > .tri-act-health {
-    max-width: 24rem;
+    max-width: none;
+
+    .tri-act-stats tbody {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2.4rem;
+    }
+
+    .tri-act-stats tr {
+      display: flex;
+      gap: 0.6rem;
+      align-items: baseline;
+      justify-content: space-between;
+    }
   }
 }
 
@@ -7717,6 +7765,10 @@
   .tri-day-page > .tri-day-embed .tri-act {
     display: flex;
     flex-direction: column;
+  }
+
+  .tri-day-page > .tri-day-embed > .tri-pop-card > .tri-act-health .tri-act-stats tbody {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
