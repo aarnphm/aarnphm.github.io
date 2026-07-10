@@ -1,8 +1,9 @@
 ---
 date: '2026-07-02'
 description: bit operations and manipulation
+draft: true
 id: bits
-modified: 2026-07-02 14:35:36 GMT-04:00
+modified: 2026-07-09 23:01:49 GMT-04:00
 seealso:
   - '[[hinterland/prep|preparation]]'
 tags:
