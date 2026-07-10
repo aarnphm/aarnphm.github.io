@@ -42,12 +42,37 @@ struct SwimStrokeIntervalValue: Equatable, Sendable {
   let stroke: SwimStrokeName?
 }
 
+struct SwimStrokeMetricsValue: Equatable, Sendable {
+  let count: Double
+  let timeS: TimeInterval
+}
+
 struct SwimSampleValue: Equatable, Sendable {
   let workoutID: String
   let startDate: Date
   let endDate: Date
   let meters: Double
+  let strokeCount: Double?
+  let strokeTimeS: TimeInterval?
   let stroke: SwimStrokeName?
+
+  init(
+    workoutID: String,
+    startDate: Date,
+    endDate: Date,
+    meters: Double,
+    strokeCount: Double? = nil,
+    strokeTimeS: TimeInterval? = nil,
+    stroke: SwimStrokeName?
+  ) {
+    self.workoutID = workoutID
+    self.startDate = startDate
+    self.endDate = endDate
+    self.meters = meters
+    self.strokeCount = strokeCount
+    self.strokeTimeS = strokeTimeS
+    self.stroke = stroke
+  }
 }
 
 struct AppleHealthDay: Codable, Equatable, Identifiable, Sendable {
@@ -61,6 +86,40 @@ struct AppleHealthDay: Codable, Equatable, Identifiable, Sendable {
   var id: String { date }
 }
 
+struct AppleHealthSwimInterval: Codable, Equatable, Sendable {
+  let start: String
+  let end: String
+  let startElapsedS: TimeInterval?
+  let endElapsedS: TimeInterval?
+  let distanceM: Double
+  let durationS: TimeInterval?
+  let strokeCount: Double?
+  let strokeTimeS: TimeInterval?
+  let stroke: SwimStrokeName?
+
+  init(
+    start: String,
+    end: String,
+    startElapsedS: TimeInterval? = nil,
+    endElapsedS: TimeInterval? = nil,
+    distanceM: Double,
+    durationS: TimeInterval? = nil,
+    strokeCount: Double? = nil,
+    strokeTimeS: TimeInterval? = nil,
+    stroke: SwimStrokeName? = nil
+  ) {
+    self.start = start
+    self.end = end
+    self.startElapsedS = startElapsedS
+    self.endElapsedS = endElapsedS
+    self.distanceM = distanceM
+    self.durationS = durationS
+    self.strokeCount = strokeCount
+    self.strokeTimeS = strokeTimeS
+    self.stroke = stroke
+  }
+}
+
 struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
   let id: String
   let date: String
@@ -72,6 +131,7 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
   let strokeCount: Int?
   let strokeTimeS: Int?
   let strokes: [String: Int]
+  let intervals: [AppleHealthSwimInterval]
 
   init(
     id: String,
@@ -83,7 +143,8 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     activeTimeS: Int?,
     strokeCount: Int?,
     strokeTimeS: Int?,
-    strokes: [String: Int]
+    strokes: [String: Int],
+    intervals: [AppleHealthSwimInterval] = []
   ) {
     self.id = id
     self.date = date
@@ -95,6 +156,7 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     self.strokeCount = strokeCount
     self.strokeTimeS = strokeTimeS
     self.strokes = strokes
+    self.intervals = intervals
   }
 
   private enum CodingKeys: String, CodingKey {
@@ -108,6 +170,7 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     case strokeCount
     case strokeTimeS
     case strokes
+    case intervals
   }
 
   init(from decoder: Decoder) throws {
@@ -122,6 +185,7 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     strokeCount = try values.decodeIfPresent(Int.self, forKey: .strokeCount)
     strokeTimeS = try values.decodeIfPresent(Int.self, forKey: .strokeTimeS)
     strokes = try values.decode([String: Int].self, forKey: .strokes)
+    intervals = try values.decodeIfPresent([AppleHealthSwimInterval].self, forKey: .intervals) ?? []
   }
 }
 
@@ -140,7 +204,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
 }
 
 struct HealthExportDocument: Codable, Equatable, Sendable {
-  static let currentVersion = 3
+  static let currentVersion = 6
 
   let version: Int
   let generatedAt: String

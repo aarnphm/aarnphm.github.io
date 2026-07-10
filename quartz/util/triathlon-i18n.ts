@@ -18,6 +18,88 @@ export const setTriLocale = (v: Locale): void => {
   locale = v
 }
 
+export type SwimActivityTextPoint = {
+  elapsed: string
+  cumulativeDistanceM: number
+  windowStartDistanceM?: number
+}
+
+const swimTextNumber = (value: number, maximumFractionDigits = 0): string =>
+  value.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', { maximumFractionDigits })
+
+export const swimActivityDistanceText = (distanceM: number): string =>
+  `${swimTextNumber(distanceM)} m`
+
+export const swimActivityHeaderValue = (
+  kind: 'pace' | 'stroke',
+  value: number,
+  pace: string,
+): string => (kind === 'pace' ? pace : swimTextNumber(value, 1))
+
+export const swimActivityPointText = (point: SwimActivityTextPoint): string => {
+  const end = swimTextNumber(point.cumulativeDistanceM)
+  const distance =
+    point.windowStartDistanceM == null
+      ? `${end} m`
+      : `${swimTextNumber(point.windowStartDistanceM)}–${end} m`
+  return `${distance} · ${point.elapsed} ${locale === 'fr' ? 'écoulé' : 'elapsed'}`
+}
+
+export const swimActivityDisplayValue = (
+  kind: 'pace' | 'stroke',
+  value: number,
+  pace: string,
+): string =>
+  kind === 'pace'
+    ? `${pace} /100m`
+    : `${swimTextNumber(value, 1)} ${locale === 'fr' ? 'coups/min' : 'str/min'}`
+
+export const swimActivityValueText = (
+  kind: 'pace' | 'stroke',
+  point: SwimActivityTextPoint,
+  value: number,
+  pace: string,
+): string => {
+  const end = swimTextNumber(point.cumulativeDistanceM)
+  const position =
+    point.windowStartDistanceM == null
+      ? locale === 'fr'
+        ? `${end} mètres, temps écoulé ${point.elapsed}`
+        : `${end} metres, ${point.elapsed} elapsed`
+      : locale === 'fr'
+        ? `bloc de ${swimTextNumber(point.cumulativeDistanceM - point.windowStartDistanceM)} mètres, de ${swimTextNumber(point.windowStartDistanceM)} à ${end} mètres, temps écoulé ${point.elapsed}`
+        : `${swimTextNumber(point.cumulativeDistanceM - point.windowStartDistanceM)} metre block from ${swimTextNumber(point.windowStartDistanceM)} to ${end} metres, ${point.elapsed} elapsed`
+  if (kind === 'pace')
+    return locale === 'fr'
+      ? `${position}, allure de nage ${pace} par 100 mètres`
+      : `${position}, swim pace ${pace} per 100 metres`
+  const rate = swimTextNumber(value, 1)
+  return locale === 'fr'
+    ? `${position}, fréquence de nage ${rate} coups par minute`
+    : `${position}, stroke rate ${rate} strokes per minute`
+}
+
+export const swimActivityComparisonText = (
+  kind: 'pace' | 'stroke',
+  delta: number | null,
+  priorCount: number | null,
+): string => {
+  if (delta == null || priorCount == null) return locale === 'fr' ? 'moy. activité' : 'activity avg'
+  if (Math.abs(delta) < 0.05)
+    return locale === 'fr'
+      ? `identique aux ${priorCount} précédentes`
+      : `same as prior ${priorCount}`
+  const magnitude = swimTextNumber(Math.abs(delta), 1)
+  if (kind === 'pace')
+    return locale === 'fr'
+      ? `${magnitude} s ${delta < 0 ? 'plus rapide' : 'plus lente'} que les ${priorCount} précédentes`
+      : `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
+  const signed = `${delta > 0 ? '+' : '−'}${magnitude}`
+  return locale === 'fr'
+    ? `${signed} coups/min vs ${priorCount} précédentes`
+    : `${signed} str/min vs prior ${priorCount}`
+}
+
 export const detectLocale = (): Locale => {
   try {
     return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en'
@@ -118,6 +200,12 @@ const en: TriDict = {
     'comparison range': 'comparison range',
     '6 weeks': '6 weeks',
     'all of': 'all of',
+    lengths: 'lengths',
+    '100 m': '100 m',
+    'swim chart aggregation': 'swim chart aggregation',
+    'swim activity analysis': 'swim activity analysis',
+    'pace /100m': 'pace /100m',
+    'stroke rate str/min': 'stroke rate str/min',
     speed: 'speed',
     pace: 'pace',
     power: 'power',
@@ -584,6 +672,12 @@ const fr: TriDict = {
     'comparison range': 'période de comparaison',
     '6 weeks': '6 semaines',
     'all of': "toute l'année",
+    lengths: 'longueurs',
+    '100 m': '100 m',
+    'swim chart aggregation': 'agrégation des graphiques de natation',
+    'swim activity analysis': "analyse de l'activité de natation",
+    'pace /100m': 'allure /100 m',
+    'stroke rate str/min': 'fréquence de nage coups/min',
     speed: 'vitesse',
     pace: 'allure',
     power: 'puissance',

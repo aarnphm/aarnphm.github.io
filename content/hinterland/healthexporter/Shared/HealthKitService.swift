@@ -389,7 +389,7 @@ final class HealthKitService: @unchecked Sendable {
     async let strokes = strokeSamples(start: start, end: end, workouts: workouts)
     let distanceValues = try await distances
     let strokeValues = try await strokes
-    var strokesBySession: [String: [StrokeSample]] = [:]
+    var strokesBySession: [String: [SwimStrokeIntervalValue]] = [:]
     for stroke in strokeValues {
       guard
         let scope = Self.swimmingScope(
@@ -397,9 +397,20 @@ final class HealthKitService: @unchecked Sendable {
           endDate: stroke.endDate,
           sourceBundleIdentifier: stroke.sourceBundleIdentifier,
           scopes: scopes
-        )
+      )
       else { continue }
-      strokesBySession[scope.session.id, default: []].append(stroke)
+      strokesBySession[scope.session.id, default: []].append(
+        SwimStrokeIntervalValue(
+          startDate: stroke.startDate,
+          endDate: stroke.endDate,
+          count: stroke.count,
+          stroke: Self.strokeName(
+            startDate: stroke.startDate,
+            endDate: stroke.endDate,
+            events: scope.events
+          )
+        )
+      )
     }
     let samples = distanceValues.compactMap { distance -> SwimSampleValue? in
       guard distance.meters > 0 else { return nil }
@@ -409,18 +420,28 @@ final class HealthKitService: @unchecked Sendable {
           endDate: distance.endDate,
           sourceBundleIdentifier: distance.sourceBundleIdentifier,
           scopes: scopes
-        )
+      )
       else { return nil }
+      let stroke = Self.strokeName(
+        startDate: distance.startDate,
+        endDate: distance.endDate,
+        events: scope.events
+      )
+      let strokeMetrics: SwimStrokeMetricsValue? = stroke == .kickboard
+        ? nil
+        : HealthAggregator.intervalStrokeMetrics(
+          startDate: distance.startDate,
+          endDate: distance.endDate,
+          strokeSamples: strokesBySession[scope.session.id] ?? []
+        )
       return SwimSampleValue(
         workoutID: scope.session.id,
         startDate: distance.startDate,
         endDate: distance.endDate,
         meters: distance.meters,
-        stroke: Self.strokeName(
-          startDate: distance.startDate,
-          endDate: distance.endDate,
-          events: scope.events
-        )
+        strokeCount: strokeMetrics?.count,
+        strokeTimeS: strokeMetrics?.timeS,
+        stroke: stroke
       )
     }
     let sessions = scopes.map { scope in
@@ -433,18 +454,7 @@ final class HealthKitService: @unchecked Sendable {
         activeTimeS: session.activeTimeS,
         strokeCount: session.strokeCount,
         strokeTimeS: HealthAggregator.strokeTime(
-          strokeSamples: (strokesBySession[session.id] ?? []).map { stroke in
-            SwimStrokeIntervalValue(
-              startDate: stroke.startDate,
-              endDate: stroke.endDate,
-              count: stroke.count,
-              stroke: Self.strokeName(
-                startDate: stroke.startDate,
-                endDate: stroke.endDate,
-                events: scope.events
-              )
-            )
-          }
+          strokeSamples: strokesBySession[session.id] ?? []
         ),
         lapCount: session.lapCount
       )

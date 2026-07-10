@@ -2,7 +2,11 @@ import type { Element, ElementContent } from 'hast'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { StravaActivityDetail, SwimTrendPoint } from '../plugins/stores/strava'
+import type {
+  StravaActivityDetail,
+  SwimActivityInterval,
+  SwimTrendPoint,
+} from '../plugins/stores/strava'
 import {
   buildActivity,
   buildCyclingBestEfforts,
@@ -18,12 +22,23 @@ import {
   powerCurveFraction,
   powerCurveHoverAt,
   setDistanceUnit,
+  swimActivityBlocks,
+  swimActivityPointLabel,
   swimTrendHoverAt,
   zoneDuo,
   type SwimTrendChartPoint,
   type DetailCtx,
   type TriNodeFactory,
 } from './triathlon-card'
+import {
+  setTriLocale,
+  swimActivityComparisonText,
+  swimActivityDistanceText,
+  swimActivityDisplayValue,
+  swimActivityHeaderValue,
+  swimActivityPointText,
+  swimActivityValueText,
+} from './triathlon-i18n'
 
 const factory: TriNodeFactory<Element> = {
   el: (tag, cls, text, attrs) =>
@@ -34,6 +49,35 @@ const factory: TriNodeFactory<Element> = {
 
 test('carries rounded pace seconds into the next minute', () => {
   assert.equal(clock(539.6), '9:00')
+})
+
+test('localizes swim block readouts and accessible values', () => {
+  const point = { elapsed: '2:11', cumulativeDistanceM: 100, windowStartDistanceM: 0 }
+  setTriLocale('fr')
+  try {
+    assert.equal(swimActivityPointText(point), '0–100 m · 2:11 écoulé')
+    assert.equal(swimActivityDisplayValue('stroke', 27.9, '0:28'), '27,9 coups/min')
+    assert.equal(swimActivityHeaderValue('stroke', 27.9, '0:28'), '27,9')
+    assert.equal(swimActivityDistanceText(1_000), '1 000 m')
+    assert.equal(
+      swimActivityComparisonText('pace', -0.9, 4),
+      '0,9 s plus rapide que les 4 précédentes',
+    )
+    assert.equal(
+      swimActivityValueText('pace', point, 107, '1:47'),
+      'bloc de 100 mètres, de 0 à 100 mètres, temps écoulé 2:11, allure de nage 1:47 par 100 mètres',
+    )
+  } finally {
+    setTriLocale('en')
+  }
+  assert.equal(swimActivityPointText(point), '0–100 m · 2:11 elapsed')
+  assert.equal(swimActivityHeaderValue('pace', 107, '1:47'), '1:47')
+  assert.equal(swimActivityDistanceText(1_000), '1,000 m')
+  assert.equal(swimActivityComparisonText('stroke', 0.4, 4), '+0.4 str/min vs prior 4')
+  assert.equal(
+    swimActivityValueText('stroke', point, 27.9, '0:28'),
+    '100 metre block from 0 to 100 metres, 2:11 elapsed, stroke rate 27.9 strokes per minute',
+  )
 })
 
 test('resolves an exact power duration and its six-week reference value', () => {
@@ -101,37 +145,15 @@ test('round trips dense and sparse power curve attributes', () => {
 
 test('selects the nearest serialized swim trend point and clamps the scrub range', () => {
   const points: SwimTrendChartPoint[] = [
-    {
-      activityId: 1,
-      date: '2026-07-01',
-      start: '2026-07-01T12:00:00Z',
-      value: 112,
-      xPct: 0,
-      yPct: 80,
-    },
-    {
-      activityId: 2,
-      date: '2026-07-03',
-      start: '2026-07-03T12:00:00Z',
-      value: 108,
-      xPct: 40,
-      yPct: 40,
-    },
-    {
-      activityId: 3,
-      date: '2026-07-09',
-      start: '2026-07-09T12:00:00Z',
-      value: 100,
-      xPct: 100,
-      yPct: 0,
-    },
+    { elapsedS: 30, cumulativeDistanceM: 25, value: 112, xPct: 10, yPct: 80 },
+    { elapsedS: 120, cumulativeDistanceM: 100, value: 108, xPct: 40, yPct: 40 },
+    { elapsedS: 300, cumulativeDistanceM: 250, value: 100, xPct: 100, yPct: 0 },
   ]
 
   assert.deepEqual(swimTrendHoverAt(points, 0.51), {
     index: 1,
-    activityId: 2,
-    date: '2026-07-03',
-    start: '2026-07-03T12:00:00Z',
+    elapsedS: 120,
+    cumulativeDistanceM: 100,
     value: 108,
     xPct: 40,
     yPct: 40,
@@ -140,6 +162,190 @@ test('selects the nearest serialized swim trend point and clamps the scrub range
   assert.equal(swimTrendHoverAt(points, 2)?.index, 2)
   assert.equal(swimTrendHoverAt(points, Number.NaN)?.index, 0)
   assert.equal(swimTrendHoverAt([], 0.5), null)
+})
+
+test('aggregates measured lengths into a weighted 100 metre block without rest time', () => {
+  const intervals: SwimActivityInterval[] = [
+    {
+      startElapsedS: 0,
+      endElapsedS: 25,
+      distanceM: 25,
+      durationS: 25,
+      cumulativeDistanceM: 25,
+      paceSPer100m: 100,
+      strokeCount: 10,
+      strokeTimeS: 25,
+      strokeRateSpm: 24,
+      stroke: 'freestyle',
+    },
+    {
+      startElapsedS: 40,
+      endElapsedS: 66,
+      distanceM: 25,
+      durationS: 26,
+      cumulativeDistanceM: 50,
+      paceSPer100m: 104,
+      strokeCount: 11,
+      strokeTimeS: 25.4,
+      strokeRateSpm: 26,
+      stroke: 'freestyle',
+    },
+    {
+      startElapsedS: 80,
+      endElapsedS: 105,
+      distanceM: 25,
+      durationS: 25,
+      cumulativeDistanceM: 75,
+      paceSPer100m: 100,
+      strokeCount: null,
+      strokeTimeS: null,
+      strokeRateSpm: null,
+      stroke: 'kickboard',
+    },
+    {
+      startElapsedS: 120,
+      endElapsedS: 144,
+      distanceM: 25,
+      durationS: 24,
+      cumulativeDistanceM: 100,
+      paceSPer100m: 96,
+      strokeCount: 12,
+      strokeTimeS: 24,
+      strokeRateSpm: 30,
+      stroke: 'freestyle',
+    },
+  ]
+
+  assert.deepEqual(swimActivityBlocks(intervals), [
+    {
+      startElapsedS: 0,
+      endElapsedS: 144,
+      distanceM: 100,
+      durationS: 100,
+      cumulativeDistanceM: 100,
+      paceSPer100m: 100,
+      strokeCount: 33,
+      strokeTimeS: 74.4,
+      strokeRateSpm: 26.6,
+      stroke: null,
+    },
+  ])
+})
+
+test('normalizes raw swim samples after aggregation instead of trusting filtered length rates', () => {
+  const starts = [0, 100, 120, 140]
+  const durations = [100, 20, 20, 20]
+  const intervals = durations.map(
+    (durationS, index): SwimActivityInterval => ({
+      startElapsedS: starts[index],
+      endElapsedS: starts[index] + durationS,
+      distanceM: 25,
+      durationS,
+      cumulativeDistanceM: (index + 1) * 25,
+      paceSPer100m: index === 0 ? null : 80,
+      strokeCount: index === 0 ? 50 : 5,
+      strokeTimeS: 20,
+      strokeRateSpm: index === 0 ? null : 15,
+      stroke: 'freestyle',
+    }),
+  )
+
+  assert.deepEqual(swimActivityBlocks(intervals), [
+    {
+      startElapsedS: 0,
+      endElapsedS: 160,
+      distanceM: 100,
+      durationS: 160,
+      cumulativeDistanceM: 100,
+      paceSPer100m: 160,
+      strokeCount: 65,
+      strokeTimeS: 80,
+      strokeRateSpm: 48.8,
+      stroke: null,
+    },
+  ])
+})
+
+test('splits a length at the 100 metre boundary and keeps the final partial block', () => {
+  const intervals: SwimActivityInterval[] = [
+    {
+      startElapsedS: 0,
+      endElapsedS: 60,
+      distanceM: 60,
+      durationS: 60,
+      cumulativeDistanceM: 60,
+      paceSPer100m: 100,
+      strokeCount: 24,
+      strokeTimeS: 60,
+      strokeRateSpm: 24,
+      stroke: 'freestyle',
+    },
+    {
+      startElapsedS: 100,
+      endElapsedS: 190,
+      distanceM: 60,
+      durationS: 90,
+      cumulativeDistanceM: 120,
+      paceSPer100m: 150,
+      strokeCount: 30,
+      strokeTimeS: 60,
+      strokeRateSpm: 30,
+      stroke: 'breaststroke',
+    },
+  ]
+
+  assert.deepEqual(swimActivityBlocks(intervals), [
+    {
+      startElapsedS: 0,
+      endElapsedS: 160,
+      distanceM: 100,
+      durationS: 120,
+      cumulativeDistanceM: 100,
+      paceSPer100m: 120,
+      strokeCount: 44,
+      strokeTimeS: 100,
+      strokeRateSpm: 26.4,
+      stroke: null,
+    },
+    {
+      startElapsedS: 160,
+      endElapsedS: 190,
+      distanceM: 20,
+      durationS: 30,
+      cumulativeDistanceM: 120,
+      paceSPer100m: 150,
+      strokeCount: 10,
+      strokeTimeS: 20,
+      strokeRateSpm: 30,
+      stroke: null,
+    },
+  ])
+  assert.equal(
+    swimActivityPointLabel({ elapsedS: 190, cumulativeDistanceM: 120, windowStartDistanceM: 100 }),
+    '100–120 m · 3:10 elapsed',
+  )
+})
+
+test('keeps a normalized stroke block empty when a non-kickboard length lacks stroke samples', () => {
+  const block = swimActivityBlocks([
+    {
+      startElapsedS: 0,
+      endElapsedS: 100,
+      distanceM: 100,
+      durationS: 100,
+      cumulativeDistanceM: 100,
+      paceSPer100m: 100,
+      strokeCount: null,
+      strokeTimeS: null,
+      strokeRateSpm: null,
+      stroke: 'freestyle',
+    },
+  ])[0]
+
+  assert.ok(block)
+  assert.equal(block.strokeCount, null)
+  assert.equal(block.strokeTimeS, null)
+  assert.equal(block.strokeRateSpm, null)
 })
 
 const classNames = (element: Element): string[] => {
@@ -280,6 +486,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   strokeCount: null,
   strokeRateSpm: null,
   swimPaceSPer100m: null,
+  swimDurationS: null,
+  swimIntervals: [],
   ...overrides,
 })
 
@@ -448,15 +656,95 @@ const swimTrendDetail = (overrides: Partial<StravaActivityDetail> = {}): StravaA
     name: 'Pool swim',
     date: '2026-07-05',
     start: '2026-07-05T12:00:00Z',
-    distanceKm: 1.5,
-    movingTimeS: 1_500,
+    distanceKm: 0.1,
+    movingTimeS: 100,
     route: [],
     bestEfforts: null,
     swimPaceSPer100m: 100,
     strokeRateSpm: 28,
     strokeCount: 700,
+    swimDurationS: 180,
+    swimIntervals: [
+      {
+        startElapsedS: 0,
+        endElapsedS: 25,
+        distanceM: 25,
+        durationS: 25,
+        cumulativeDistanceM: 25,
+        paceSPer100m: 100,
+        strokeCount: 10,
+        strokeTimeS: 25,
+        strokeRateSpm: 24,
+        stroke: 'freestyle',
+      },
+      {
+        startElapsedS: 40,
+        endElapsedS: 66,
+        distanceM: 25,
+        durationS: 26,
+        cumulativeDistanceM: 50,
+        paceSPer100m: 104,
+        strokeCount: 11,
+        strokeTimeS: 25.4,
+        strokeRateSpm: 26,
+        stroke: 'freestyle',
+      },
+      {
+        startElapsedS: 80,
+        endElapsedS: 105,
+        distanceM: 25,
+        durationS: 25,
+        cumulativeDistanceM: 75,
+        paceSPer100m: 100,
+        strokeCount: null,
+        strokeTimeS: null,
+        strokeRateSpm: null,
+        stroke: 'kickboard',
+      },
+      {
+        startElapsedS: 120,
+        endElapsedS: 144,
+        distanceM: 25,
+        durationS: 24,
+        cumulativeDistanceM: 100,
+        paceSPer100m: 96,
+        strokeCount: 12,
+        strokeTimeS: 24,
+        strokeRateSpm: 30,
+        stroke: 'freestyle',
+      },
+    ],
     ...overrides,
   })
+
+const swimToggleDetail = (): StravaActivityDetail => {
+  const durations = [25, 26, 25, 24, 30, 29, 31, 30]
+  const swimIntervals: SwimActivityInterval[] = durations.map((durationS, index) => {
+    const firstBlock = index < 4
+    const strokeCount = firstBlock ? 8 : 12
+    const strokeTimeS = firstBlock ? 20 : 24
+    return {
+      startElapsedS: index * 40,
+      endElapsedS: index * 40 + durationS,
+      distanceM: 25,
+      durationS,
+      cumulativeDistanceM: (index + 1) * 25,
+      paceSPer100m: durationS * 4,
+      strokeCount,
+      strokeTimeS,
+      strokeRateSpm: (strokeCount / strokeTimeS) * 60,
+      stroke: 'freestyle',
+    }
+  })
+  return swimTrendDetail({
+    distanceKm: 0.2,
+    movingTimeS: 220,
+    swimPaceSPer100m: 110,
+    strokeRateSpm: 27.3,
+    swimDurationS: 310,
+    swimIntervals,
+  })
+}
 
 const swimTrendPoints: SwimTrendPoint[] = [
   {
@@ -502,7 +790,7 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   const rendered = buildSwimTrends(factory, swimTrendDetail(), swimTrendPoints)
   assert.ok(rendered)
   assert.equal(rendered.tagName, 'section')
-  assert.equal(rendered.properties.ariaLabel, 'Swim trends')
+  assert.equal(rendered.properties.ariaLabel, 'Swim activity analysis')
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-title').map(text), [
     'pace /100m',
     'stroke rate str/min',
@@ -518,11 +806,10 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   assert.ok(pace)
   assert.ok(stroke)
   assert.equal(byClass(rendered, 'tri-zone-duo').length, 1)
+  assert.equal(byClass(rendered, 'tri-swim-mode-toggle').length, 0)
   assert.ok(classNames(pace).includes('tri-zone'))
   assert.ok(classNames(stroke).includes('tri-zone'))
-  assert.deepEqual(byClass(pace, 'tri-cax-yt').map(text), ['1:40', '1:45', '1:50', '1:55'])
-  assert.deepEqual(byClass(stroke, 'tri-cax-yt').map(text), ['20', '22', '24', '26', '28'])
-  assert.deepEqual(byClass(pace, 'tri-cax-xt').map(text), ['Jul 1', 'Jul 3', 'Jul 5'])
+  assert.deepEqual(byClass(pace, 'tri-cax-xt').map(text), ['0 m', '50 m', '100 m'])
   assert.deepEqual(
     byClass(stroke, 'tri-cax-xt').map(tick => [text(tick), tick.properties.style]),
     byClass(pace, 'tri-cax-xt').map(tick => [text(tick), tick.properties.style]),
@@ -533,53 +820,113 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   assert.equal(paceSvg.properties.tabIndex, 0)
   assert.equal(paceSvg.properties.ariaOrientation, 'horizontal')
   assert.equal(paceSvg.properties.ariaValueMin, 0)
-  assert.equal(paceSvg.properties.ariaValueMax, 4)
-  assert.equal(paceSvg.properties.ariaValueNow, 4)
+  assert.equal(paceSvg.properties.ariaValueMax, 100)
+  assert.equal(paceSvg.properties.ariaValueNow, 100)
   assert.match(
     String(paceSvg.properties.ariaValueText),
-    /Jul 5, 2026, at 8:00 AM, swim pace 1:40 per 100 metres\. 9 seconds faster than prior 4\./,
+    /100 metres, 2:24 elapsed, swim pace 1:36 per 100 metres\. Activity average 1:40 \/100m\. 9 seconds faster than prior 4\./,
   )
   assert.equal(paceSvg.properties.dataSwimKind, 'pace')
-  assert.equal(paceSvg.properties.dataSwimIndex, 4)
-  const paceSeries = JSON.parse(String(paceSvg.properties.dataSwimSeries)) as SwimTrendChartPoint[]
+  assert.equal(paceSvg.properties.dataSwimIndex, 3)
+  const paceSeries = JSON.parse(
+    String(paceSvg.properties.dataSwimSeriesLengths),
+  ) as SwimTrendChartPoint[]
   assert.deepEqual(paceSeries[0], {
-    activityId: 1,
-    date: '2026-07-01',
-    start: '2026-07-01T12:00:00Z',
-    value: 112,
-    xPct: 0,
-    yPct: 80,
+    elapsedS: 25,
+    cumulativeDistanceM: 25,
+    value: 100,
+    xPct: 25,
+    yPct: 50,
   })
   assert.deepEqual(paceSeries.at(-1), {
-    activityId: 5,
-    date: '2026-07-05',
-    start: '2026-07-05T12:00:00Z',
-    value: 100,
+    elapsedS: 144,
+    cumulativeDistanceM: 100,
+    value: 96,
     xPct: 100,
     yPct: 0,
   })
   const pacePath = byClass(paceSvg, 'tri-swim-trend-line')[0]
+  const paceArea = byClass(paceSvg, 'tri-swim-trend-area')[0]
   assert.ok(pacePath)
-  assert.match(String(pacePath.properties.d), /^M 0\.00 24\.00 .* L 100\.00 0\.00$/)
-  assert.deepEqual(
-    byClass(rendered, 'tri-swim-trend-current').map(marker => [
-      marker.properties.dataActivityId,
-      marker.properties.style,
-    ]),
-    [
-      ['5', 'left:100.00%;top:0.00%'],
-      ['5', 'left:100.00%;top:0.00%'],
-    ],
-  )
+  assert.ok(paceArea)
+  assert.match(String(pacePath.properties.d), /^M 25\.00 15\.00 .* L 100\.00 0\.00$/)
+  assert.match(String(paceArea.properties.d), /^M 25\.00 30 .* L 100\.00 0\.00 L 100\.00 30 Z$/)
+  assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
+  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 2)
   assert.deepEqual(
     byClass(rendered, 'tri-swim-trend-hover').map(point => point.properties.hidden),
     [true, true],
   )
   assert.equal(byClass(rendered, 'tri-chart-cursor').length, 2)
-  assert.deepEqual(byClass(pace, 'tri-swim-trend-readout').map(text), ['Jul 5 · 8:00 AM1:40 /100m'])
+  assert.deepEqual(byClass(pace, 'tri-swim-trend-readout').map(text), [
+    '100 m · 2:24 elapsed1:36 /100m',
+  ])
 })
 
-test('keeps same-date swim activities distinct and equally spaced', () => {
+test('renders one shared lengths and 100 metre toggle for both swim charts', () => {
+  const rendered = buildSwimTrends(factory, swimToggleDetail(), swimTrendPoints)
+  assert.ok(rendered)
+  const toggle = byClass(rendered, 'tri-swim-mode-toggle')[0]
+  assert.ok(toggle)
+  assert.equal(rendered.properties.dataI18nAriaLabel, 'swim activity analysis')
+  assert.equal(toggle.properties.role, 'group')
+  assert.equal(toggle.properties.ariaLabel, 'swim chart aggregation')
+  assert.equal(toggle.properties.dataSwimMode, 'lengths')
+  assert.deepEqual(
+    byClass(toggle, 'tri-swim-mode').map(button => [
+      text(button),
+      button.properties.dataSwimMode,
+      button.properties.ariaPressed,
+    ]),
+    [
+      ['lengths', 'lengths', 'true'],
+      ['100 m', '100m', 'false'],
+    ],
+  )
+
+  const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
+  const strokeSvg = byClass(rendered, 'tri-swim-trend-svg--stroke')[0]
+  assert.ok(paceSvg)
+  assert.ok(strokeSvg)
+  const paceLengths = JSON.parse(
+    String(paceSvg.properties.dataSwimSeriesLengths),
+  ) as SwimTrendChartPoint[]
+  const paceHundreds = JSON.parse(
+    String(paceSvg.properties.dataSwimSeriesHundred),
+  ) as SwimTrendChartPoint[]
+  const strokeHundreds = JSON.parse(
+    String(strokeSvg.properties.dataSwimSeriesHundred),
+  ) as SwimTrendChartPoint[]
+  assert.equal(paceLengths.length, 8)
+  assert.deepEqual(
+    paceHundreds.map(point => [
+      point.windowStartDistanceM,
+      point.cumulativeDistanceM,
+      point.elapsedS,
+      point.value,
+      point.xPct,
+    ]),
+    [
+      [0, 100, 144, 100, 50],
+      [100, 200, 310, 120, 100],
+    ],
+  )
+  assert.deepEqual(
+    strokeHundreds.map(point => [point.cumulativeDistanceM, point.value]),
+    [
+      [100, 24],
+      [200, 30],
+    ],
+  )
+  assert.equal(paceSvg.properties.dataSwimMode, 'lengths')
+  assert.equal(strokeSvg.properties.dataSwimMode, 'lengths')
+  assert.equal(byClass(rendered, 'tri-swim-series').length, 4)
+  assert.equal(byClass(rendered, 'tri-swim-series--active').length, 2)
+  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 4)
+  assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
+})
+
+test('plots only the selected swim intervals even when history contains same-date activities', () => {
   const rendered = buildSwimTrends(
     factory,
     swimTrendDetail({
@@ -593,31 +940,29 @@ test('keeps same-date swim activities distinct and equally spaced', () => {
   assert.ok(rendered)
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
   assert.ok(paceSvg)
-  const series = JSON.parse(String(paceSvg.properties.dataSwimSeries)) as SwimTrendChartPoint[]
+  const series = JSON.parse(
+    String(paceSvg.properties.dataSwimSeriesLengths),
+  ) as SwimTrendChartPoint[]
 
   assert.deepEqual(
-    series.map(point => [point.activityId, point.date, point.start, point.xPct]),
+    series.map(point => [point.cumulativeDistanceM, point.elapsedS, point.xPct]),
     [
-      [1, '2026-07-01', '2026-07-01T12:00:00Z', 0],
-      [2, '2026-07-02', '2026-07-02T12:00:00Z', 20],
-      [3, '2026-07-03', '2026-07-03T12:00:00Z', 40],
-      [4, '2026-07-04', '2026-07-04T12:00:00Z', 60],
-      [5, '2026-07-05', '2026-07-05T12:00:00Z', 80],
-      [7, '2026-07-05', '2026-07-05T18:00:00Z', 100],
+      [25, 25, 25],
+      [50, 66, 50],
+      [75, 105, 75],
+      [100, 144, 100],
     ],
   )
-  assert.match(String(paceSvg.properties.ariaValueText), /Jul 5, 2026, at 2:00 PM/)
-  assert.deepEqual(byClass(rendered, 'tri-swim-trend-readout-date').map(text), [
-    'Jul 5 · 2:00 PM',
-    'Jul 5 · 2:00 PM',
+  assert.doesNotMatch(String(paceSvg.properties.ariaValueText), /Jul|2026/)
+  assert.deepEqual(byClass(rendered, 'tri-swim-trend-readout-position').map(text), [
+    '100 m · 2:24 elapsed',
+    '100 m · 2:24 elapsed',
   ])
 })
 
-test('keeps sparse stroke observations aligned and falls back to pace alone below four', () => {
-  const sparse = swimTrendPoints
-    .slice(0, 5)
-    .map((point, index) => ({ ...point, strokeRateSpm: index === 1 ? null : point.strokeRateSpm }))
-  const rendered = buildSwimTrends(factory, swimTrendDetail(), sparse)
+test('keeps missing stroke intervals as graph gaps and renders pace alone when needed', () => {
+  const current = swimTrendDetail()
+  const rendered = buildSwimTrends(factory, current, swimTrendPoints)
   assert.ok(rendered)
   assert.equal(byClass(rendered, 'tri-swim-trend').length, 2)
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
@@ -629,77 +974,64 @@ test('keeps sparse stroke observations aligned and falls back to pace alone belo
   assert.ok(paceSvg)
   assert.ok(strokeSvg)
   assert.ok(strokePath)
-  assert.equal(String(strokePath.properties.d).match(/[ML]/g)?.length, 4)
-  assert.match(String(strokePath.properties.d), /^M 0\.00 .* M 50\.00 .* L 75\.00 .* L 100\.00/)
-  const paceSeries = JSON.parse(String(paceSvg.properties.dataSwimSeries)) as SwimTrendChartPoint[]
+  assert.equal(String(strokePath.properties.d).match(/[ML]/g)?.length, 3)
+  assert.match(String(strokePath.properties.d), /^M 25\.00 .* L 50\.00 .* M 100\.00/)
+  const paceSeries = JSON.parse(
+    String(paceSvg.properties.dataSwimSeriesLengths),
+  ) as SwimTrendChartPoint[]
   const strokeSeries = JSON.parse(
-    String(strokeSvg.properties.dataSwimSeries),
+    String(strokeSvg.properties.dataSwimSeriesLengths),
   ) as SwimTrendChartPoint[]
   assert.deepEqual(
     paceSeries.map(point => point.xPct),
-    [0, 25, 50, 75, 100],
+    [25, 50, 75, 100],
   )
   assert.deepEqual(
-    strokeSeries.map(point => [point.activityId, point.xPct]),
+    strokeSeries.map(point => [point.cumulativeDistanceM, point.xPct]),
     [
-      [1, 0],
-      [3, 50],
-      [4, 75],
-      [5, 100],
+      [25, 25],
+      [50, 50],
+      [100, 100],
     ],
   )
 
   const paceOnly = buildSwimTrends(
     factory,
-    swimTrendDetail(),
-    sparse.map((point, index) => ({
-      ...point,
-      strokeRateSpm: index < 2 ? null : point.strokeRateSpm,
-    })),
+    swimTrendDetail({
+      strokeRateSpm: null,
+      swimIntervals: current.swimIntervals.map(interval => ({ ...interval, strokeRateSpm: null })),
+    }),
+    swimTrendPoints,
   )
   assert.ok(paceOnly)
   assert.equal(byClass(paceOnly, 'tri-swim-trend--pace').length, 1)
   assert.equal(byClass(paceOnly, 'tri-swim-trend--stroke').length, 0)
   assert.equal(byClass(paceOnly, 'tri-zone-duo').length, 0)
 
-  assert.equal(buildSwimTrends(factory, swimTrendDetail(), swimTrendPoints.slice(0, 2)), null)
+  assert.equal(
+    buildSwimTrends(
+      factory,
+      swimTrendDetail({ swimIntervals: current.swimIntervals.slice(0, 1) }),
+      swimTrendPoints,
+    ),
+    null,
+  )
 })
 
 test('renders a stroke-rate trend independently when pace is unavailable', () => {
-  const points = swimTrendPoints.slice(0, 5).map(point => ({ ...point, paceSPer100m: null }))
-  const rendered = buildSwimTrends(factory, swimTrendDetail({ swimPaceSPer100m: null }), points)
+  const current = swimTrendDetail()
+  const rendered = buildSwimTrends(
+    factory,
+    swimTrendDetail({
+      swimPaceSPer100m: null,
+      swimIntervals: current.swimIntervals.map(interval => ({ ...interval, paceSPer100m: null })),
+    }),
+    swimTrendPoints,
+  )
 
   assert.ok(rendered)
   assert.equal(byClass(rendered, 'tri-swim-trend--pace').length, 0)
   assert.equal(byClass(rendered, 'tri-swim-trend--stroke').length, 1)
-})
-
-test('selects one latest-sixteen activity window for both swim metrics', () => {
-  const points = Array.from({ length: 20 }, (_, index): SwimTrendPoint => {
-    const day = (index + 1).toString().padStart(2, '0')
-    return {
-      id: index + 1,
-      date: `2026-07-${day}`,
-      start: `2026-07-${day}T12:00:00Z`,
-      paceSPer100m: 120 - index,
-      strokeRateSpm: index < 3 ? 20 + index : null,
-    }
-  })
-  const rendered = buildSwimTrends(
-    factory,
-    swimTrendDetail({
-      id: 20,
-      date: '2026-07-20',
-      start: '2026-07-20T12:00:00Z',
-      swimPaceSPer100m: 101,
-      strokeRateSpm: 28,
-    }),
-    points,
-  )
-
-  assert.ok(rendered)
-  assert.equal(byClass(rendered, 'tri-swim-trend--pace').length, 1)
-  assert.equal(byClass(rendered, 'tri-swim-trend--stroke').length, 0)
 })
 
 test('includes swim trends in the default server-rendered day card', () => {
@@ -744,46 +1076,6 @@ test('expanded day-card extras render every activity pre-expanded', () => {
     assert.equal(text(toggle), '− see less')
     assert.equal(toggle.properties.ariaExpanded, 'true')
   }
-})
-
-test('limits swim trends to the latest sixteen sessions', () => {
-  const points = Array.from({ length: 20 }, (_, index): SwimTrendPoint => {
-    const day = (index + 1).toString().padStart(2, '0')
-    return {
-      id: index + 1,
-      date: `2026-07-${day}`,
-      start: index === 4 ? '' : `2026-07-${day}T12:00:00Z`,
-      paceSPer100m: 120 - index,
-      strokeRateSpm: null,
-    }
-  })
-  const rendered = buildSwimTrends(
-    factory,
-    swimTrendDetail({
-      id: 20,
-      date: '2026-07-20',
-      start: '2026-07-20T12:00:00Z',
-      swimPaceSPer100m: 101,
-      strokeRateSpm: null,
-    }),
-    points,
-  )
-  assert.ok(rendered)
-  const path = byClass(rendered, 'tri-swim-trend-line')[0]
-  assert.ok(path)
-  assert.equal(String(path.properties.d).match(/[ML]/g)?.length, 16)
-  assert.deepEqual(byClass(rendered, 'tri-cax-xt').map(text), ['Jul 5', 'Jul 12', 'Jul 20'])
-  const svg = byClass(rendered, 'tri-swim-trend-svg')[0]
-  assert.ok(svg)
-  const series = JSON.parse(String(svg.properties.dataSwimSeries)) as SwimTrendChartPoint[]
-  assert.deepEqual(
-    series.map(point => point.activityId),
-    Array.from({ length: 16 }, (_, i) => i + 5),
-  )
-  assert.deepEqual(
-    series.map(point => Number(point.xPct.toFixed(2))),
-    [0, 6.67, 13.33, 20, 26.67, 33.33, 40, 46.67, 53.33, 60, 66.67, 73.33, 80, 86.67, 93.33, 100],
-  )
 })
 
 test('renders imperial effort values and elevation axes with feet grid increments', () => {

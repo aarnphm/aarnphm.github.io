@@ -6,7 +6,7 @@ import {
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
-import { enrichSwimMetrics } from './strava-payload'
+import { enrichSwimMetrics, swimActivityIntervals } from './strava-payload'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -48,6 +48,8 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   strokeCount: null,
   strokeRateSpm: null,
   swimPaceSPer100m: null,
+  swimDurationS: null,
+  swimIntervals: [],
   ...values,
 })
 
@@ -62,6 +64,7 @@ const appleSwim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   strokes: { freestyle: 600, breaststroke: 400 },
   strokeCount: 700,
   strokeTimeS: 1_500,
+  intervals: [],
   ...values,
 })
 
@@ -73,7 +76,26 @@ const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
 
 test('enriches swim detail and trend with Apple count, rate, and active-time pace', () => {
   const payload = payloadWith(detail())
-  const swim = appleSwim()
+  const swim = appleSwim({
+    intervals: [
+      {
+        start: '2026-07-09T20:13:30Z',
+        end: '2026-07-09T20:13:55Z',
+        distanceM: 25,
+        strokeCount: 10,
+        strokeTimeS: 25,
+        stroke: 'freestyle',
+      },
+      {
+        start: '2026-07-09T20:14:10Z',
+        end: '2026-07-09T20:14:36Z',
+        distanceM: 25,
+        strokeCount: 11,
+        strokeTimeS: 13,
+        stroke: 'freestyle',
+      },
+    ],
+  })
   const apple: AppleCache = {
     version: 4,
     lastSync: 1,
@@ -88,6 +110,33 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
   assert.equal(payload.details['1'].strokeCount, 700)
   assert.equal(payload.details['1'].strokeRateSpm, 28)
   assert.equal(payload.details['1'].swimPaceSPer100m, 160)
+  assert.equal(payload.details['1'].swimDurationS, 1_600)
+  assert.deepEqual(payload.details['1'].swimIntervals, [
+    {
+      startElapsedS: 0,
+      endElapsedS: 25,
+      distanceM: 25,
+      durationS: 25,
+      cumulativeDistanceM: 25,
+      paceSPer100m: 100,
+      strokeCount: 10,
+      strokeTimeS: 25,
+      strokeRateSpm: 24,
+      stroke: 'freestyle',
+    },
+    {
+      startElapsedS: 40,
+      endElapsedS: 66,
+      distanceM: 25,
+      durationS: 26,
+      cumulativeDistanceM: 50,
+      paceSPer100m: 104,
+      strokeCount: 11,
+      strokeTimeS: 13,
+      strokeRateSpm: 50.8,
+      stroke: 'freestyle',
+    },
+  ])
   assert.deepEqual(payload.swimTrend, [
     {
       id: 1,
@@ -97,6 +146,105 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
       strokeRateSpm: 28,
     },
   ])
+})
+
+test('keeps kickboard lengths in the distance series without inventing stroke rate', () => {
+  assert.deepEqual(
+    swimActivityIntervals(
+      appleSwim({
+        start: '2026-07-09T20:00:00Z',
+        end: '2026-07-09T20:02:00Z',
+        intervals: [
+          {
+            start: '2026-07-09T20:00:10Z',
+            end: '2026-07-09T20:00:40Z',
+            distanceM: 25,
+            strokeCount: null,
+            strokeTimeS: null,
+            stroke: 'kickboard',
+          },
+          {
+            start: '2026-07-09T20:01:00Z',
+            end: '2026-07-09T20:01:25Z',
+            distanceM: 25,
+            strokeCount: 10,
+            strokeTimeS: 20,
+            stroke: 'freestyle',
+          },
+        ],
+      }),
+    ),
+    {
+      durationS: 120,
+      intervals: [
+        {
+          startElapsedS: 10,
+          endElapsedS: 40,
+          distanceM: 25,
+          durationS: 30,
+          cumulativeDistanceM: 25,
+          paceSPer100m: 120,
+          strokeCount: null,
+          strokeTimeS: null,
+          strokeRateSpm: null,
+          stroke: 'kickboard',
+        },
+        {
+          startElapsedS: 60,
+          endElapsedS: 85,
+          distanceM: 25,
+          durationS: 25,
+          cumulativeDistanceM: 50,
+          paceSPer100m: 100,
+          strokeCount: 10,
+          strokeTimeS: 20,
+          strokeRateSpm: 30,
+          stroke: 'freestyle',
+        },
+      ],
+    },
+  )
+})
+
+test('uses exported subsecond offsets and duration for pace and elapsed endpoint', () => {
+  assert.deepEqual(
+    swimActivityIntervals(
+      appleSwim({
+        start: '2026-07-09T20:00:00Z',
+        end: '2026-07-09T20:01:00Z',
+        intervals: [
+          {
+            start: '2026-07-09T20:00:10Z',
+            end: '2026-07-09T20:00:37Z',
+            distanceM: 22.86,
+            startElapsedS: 10.4,
+            endElapsedS: 37.1,
+            durationS: 26.66,
+            strokeCount: 16,
+            strokeTimeS: 20,
+            stroke: 'freestyle',
+          },
+        ],
+      }),
+    ),
+    {
+      durationS: 60,
+      intervals: [
+        {
+          startElapsedS: 10.4,
+          endElapsedS: 37.1,
+          distanceM: 22.9,
+          durationS: 26.7,
+          cumulativeDistanceM: 22.9,
+          paceSPer100m: 116.6,
+          strokeCount: 16,
+          strokeTimeS: 20,
+          strokeRateSpm: 48,
+          stroke: 'freestyle',
+        },
+      ],
+    },
+  )
 })
 
 test('keeps two same-date swim activities as separate trend observations', () => {
@@ -120,6 +268,16 @@ test('keeps two same-date swim activities as separate trend observations', () =>
     activeTimeS: 600,
     strokeCount: 300,
     strokeTimeS: 600,
+    intervals: [
+      {
+        start: '2026-07-09T10:00:00Z',
+        end: '2026-07-09T10:00:25Z',
+        distanceM: 25,
+        strokeCount: 10,
+        strokeTimeS: 25,
+        stroke: 'freestyle',
+      },
+    ],
   })
   const evening = appleSwim({
     id: 'evening',
@@ -129,6 +287,16 @@ test('keeps two same-date swim activities as separate trend observations', () =>
     activeTimeS: 1_500,
     strokeCount: 560,
     strokeTimeS: 1_200,
+    intervals: [
+      {
+        start: '2026-07-09T18:00:00Z',
+        end: '2026-07-09T18:00:30Z',
+        distanceM: 50,
+        strokeCount: 16,
+        strokeTimeS: 30,
+        stroke: 'breaststroke',
+      },
+    ],
   })
   const payload = payloadWith(eveningActivity, morningActivity)
   const apple: AppleCache = {
@@ -155,6 +323,34 @@ test('keeps two same-date swim activities as separate trend observations', () =>
       start: '2026-07-09T18:02:00Z',
       paceSPer100m: 150,
       strokeRateSpm: 28,
+    },
+  ])
+  assert.deepEqual(payload.details['1'].swimIntervals, [
+    {
+      startElapsedS: 0,
+      endElapsedS: 25,
+      distanceM: 25,
+      durationS: 25,
+      cumulativeDistanceM: 25,
+      paceSPer100m: 100,
+      strokeCount: 10,
+      strokeTimeS: 25,
+      strokeRateSpm: 24,
+      stroke: 'freestyle',
+    },
+  ])
+  assert.deepEqual(payload.details['2'].swimIntervals, [
+    {
+      startElapsedS: 0,
+      endElapsedS: 30,
+      distanceM: 50,
+      durationS: 30,
+      cumulativeDistanceM: 50,
+      paceSPer100m: 60,
+      strokeCount: 16,
+      strokeTimeS: 30,
+      strokeRateSpm: 32,
+      stroke: 'breaststroke',
     },
   ])
 })

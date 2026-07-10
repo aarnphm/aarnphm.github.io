@@ -32,7 +32,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 3,
+  "version": 6,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -56,7 +56,20 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
       "activeTimeS": 1800,
       "strokeCount": 960,
       "strokeTimeS": 1700,
-      "strokes": { "freestyle": 1300, "breaststroke": 200 }
+      "strokes": { "freestyle": 1300, "breaststroke": 200 },
+      "intervals": [
+        {
+          "start": "2026-06-19T11:00:08Z",
+          "end": "2026-06-19T11:00:35Z",
+          "startElapsedS": 8,
+          "endElapsedS": 35,
+          "distanceM": 25,
+          "durationS": 27,
+          "strokeCount": 14,
+          "strokeTimeS": 27,
+          "stroke": "freestyle"
+        }
+      ]
     }
   ],
   "workouts": [
@@ -96,6 +109,7 @@ The watch target carries no HealthKit access of its own. It sends an `export` co
 
 - `totalM`, `activeTimeS`, and `strokeCount` come from workout or workout activity statistics. These totals remain complete when HealthKit condenses old samples.
 - `laps` comes from workout lap events when they are available. Associated distance samples provide the metres by style. The exporter does not invent a pool length or lap distance when HealthKit omits them.
+- `intervals` contains the exact start time, end time, elapsed start offset, elapsed end offset, and duration from each associated distance sample. Both elapsed offsets use the swim session start as zero. The exporter keeps distance, offsets, and duration to one decimal place and merges duplicate distance spans. It adds the stroke count and covered stroke seconds from matching or overlapping stroke samples. Overlapping samples only count each covered time span once. Kickboard spans leave both stroke values empty.
 - Stroke style comes from `HKMetadataKeySwimmingStrokeStyle` on workout lap events. The app maps it to freestyle, breaststroke, backstroke, butterfly, mixed, or kickboard.
 - `strokeTimeS` is the union of every positive associated stroke count interval. The app excludes intervals whose matching lap event is kickboard. It leaves `strokeTimeS` empty when HealthKit no longer has detailed intervals.
 - Pace per 100 m is `activeTimeS / totalM * 100`. Stroke rate per minute is `strokeCount / strokeTimeS * 60`.

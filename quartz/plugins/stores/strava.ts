@@ -1,3 +1,4 @@
+import type { SwimStroke } from './apple'
 import type {
   GarminActivityMatch,
   GarminCache,
@@ -293,6 +294,21 @@ export interface StravaActivityDetail {
   strokeCount: number | null
   strokeRateSpm: number | null
   swimPaceSPer100m: number | null
+  swimDurationS: number | null
+  swimIntervals: SwimActivityInterval[]
+}
+
+export interface SwimActivityInterval {
+  startElapsedS: number
+  endElapsedS: number
+  distanceM: number
+  durationS: number
+  cumulativeDistanceM: number
+  paceSPer100m: number | null
+  strokeCount: number | null
+  strokeTimeS: number | null
+  strokeRateSpm: number | null
+  stroke: SwimStroke | null
 }
 
 export interface SwimTrendPoint {
@@ -1106,6 +1122,8 @@ function projectDetail(
     strokeCount: null,
     strokeRateSpm: null,
     swimPaceSPer100m: null,
+    swimDurationS: null,
+    swimIntervals: [],
   }
 }
 
