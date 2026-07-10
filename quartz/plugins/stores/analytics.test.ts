@@ -371,6 +371,31 @@ test('lab test outranks a garmin reading in the same trend week', () => {
   assert.equal(trend[1].weekStart, iso(27))
   assert.equal(trend[1].method, 'lab')
   assert.equal(trend[1].vo2max, 47.8)
+  assert.equal(a.engine.vo2max.method, 'lab')
+  assert.equal(a.engine.vo2max.value, 47.8)
+})
+
+test('vo2 headline follows the latest garmin mark after an older lab test', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: { [iso(29)]: { date: iso(29), generic: 48.1, cycling: 47.5 } },
+  }
+  const a = buildAnalytics(cache, {
+    oura,
+    garmin,
+    weights,
+    since: '2026-05-12',
+    vo2labs: [{ date: iso(23), value: 47.8, massKg: 88.9 }],
+  })
+  const latest = a.engine.vo2max.trend[a.engine.vo2max.trend.length - 1]
+  assert.equal(latest.method, 'garmin')
+  assert.equal(latest.vo2max, 48.1)
+  assert.equal(a.engine.vo2max.method, 'garmin')
+  assert.equal(a.engine.vo2max.value, 48.1)
+  assert.equal(a.engine.vo2max.conf, 'firm')
+  assert.equal(a.engine.vo2max.note, 'garmin connect (device/manual)')
 })
 
 test('calibration tracks newest pace and volume deltas against the prior window', () => {

@@ -15,23 +15,27 @@ const baseComponents: Record<string, any> = {
 }
 
 let cachedComponents: Components | undefined
+let cachedMdxComponents: Components | undefined
 
-function resolveComponents(): Components {
-  if (!cachedComponents) {
-    const mdxEntries = Object.fromEntries(getMdxComponentEntries())
-    cachedComponents = { ...baseComponents, ...mdxEntries } as Components
-  }
+function resolveMdxComponents(): Components {
+  cachedMdxComponents ??= Object.fromEntries(getMdxComponentEntries()) as Components
+  return cachedMdxComponents
+}
+
+function resolveComponents(wrapTables: boolean): Components {
+  if (!wrapTables) return resolveMdxComponents()
+  cachedComponents ??= { ...baseComponents, ...resolveMdxComponents() } as Components
   return cachedComponents
 }
 
-export function htmlToJsx(fp: FilePath, tree: Node) {
+export function htmlToJsx(fp: FilePath, tree: Node, options: { wrapTables?: boolean } = {}) {
   try {
     return toJsxRuntime(tree as Root, {
       Fragment,
       jsx: jsx as Jsx,
       jsxs: jsxs as Jsx,
       elementAttributeNameCase: 'html',
-      components: resolveComponents(),
+      components: resolveComponents(options.wrapTables ?? true),
     })
   } catch (e) {
     trace(`Failed to parse Markdown in \`${fp}\` into JSX`, e as Error)

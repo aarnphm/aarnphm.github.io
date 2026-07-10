@@ -383,7 +383,7 @@ export const buildTrace = <N>(
   f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
   f.add(s, f.svg('path', { d: line, class: 'tri-elev-line' }))
   f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
-  const wrap = f.el('div', 'tri-elev-wrap')
+  const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
   const capEl = f.el('div', 'tri-elev-cap')
   f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(max)))
   f.add(wrap, capEl, axisFrame(f, s, yTicks, h, distanceXTicks(maxD), true, { top: 0, bottom: h }))
@@ -1798,6 +1798,46 @@ export const buildActivity = <N>(
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const rows = moreStatRows(d)
     if (rows.length > 0) f.add(more, statsTable(f, rows))
+    const flags = routeStreamFlags(d)
+    if (flags.hr)
+      f.add(
+        more,
+        buildTrace(
+          f,
+          d,
+          point => point.hr,
+          'hr',
+          max => `${max} bpm peak`,
+          value => `${Math.round(value)}bpm`,
+        ),
+      )
+    if (flags.power)
+      f.add(
+        more,
+        buildTrace(
+          f,
+          d,
+          point => point.w,
+          'power',
+          max => `${max} W peak`,
+          value => `${Math.round(value)}w`,
+        ),
+      )
+    if (flags.cad) {
+      const cadenceScale = d.sport === 'run' ? 2 : 1
+      const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
+      f.add(
+        more,
+        buildTrace(
+          f,
+          d,
+          point => point.cad * cadenceScale,
+          'cadence',
+          max => `${max} ${cadenceUnit} peak`,
+          value => `${Math.round(value)}${cadenceUnit}`,
+        ),
+      )
+    }
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)

@@ -2760,7 +2760,6 @@ function buildEngine(
       conf: 'prior',
     })
 
-  const primary = estimates.length ? estimates[0] : null
   const noteOf = (m: Vo2Method): string => {
     if (m === 'garmin') return 'garmin connect (device/manual)'
     if (m === 'apple') return 'apple watch measurement'
@@ -2843,7 +2842,15 @@ function buildEngine(
     }
   }
 
-  const vo2 = primary?.vo2max ?? null
+  const latest = trend[trend.length - 1]
+  const current = latest
+    ? {
+        method: latest.method,
+        vo2max: latest.vo2max,
+        conf: estimates.find(estimate => estimate.method === latest.method)?.conf ?? 'prior',
+      }
+    : (estimates[0] ?? null)
+  const vo2 = current?.vo2max ?? null
   const fitnessAge = vo2 != null ? Math.round(clamp(invLerp(FRIEND_MED_M, vo2), 20, 80)) : null
   const ageDeltaYears = fitnessAge != null ? fitnessAge - age : null
   const percentileForAge = vo2 != null ? pctForAge(vo2, age) : null
@@ -3268,8 +3275,8 @@ function buildEngine(
   return {
     vo2max: {
       value: vo2,
-      method: primary?.method ?? 'none',
-      conf: primary?.conf ?? 'prior',
+      method: current?.method ?? 'none',
+      conf: current?.conf ?? 'prior',
       hrMax,
       hrMaxSource,
       hrRest,
@@ -3279,7 +3286,7 @@ function buildEngine(
       percentileForAge,
       estimates,
       trend,
-      note: noteOf(primary?.method ?? 'none'),
+      note: noteOf(current?.method ?? 'none'),
     },
     abilities: { sports: SPORT_ORDER.map(buildSportAbilities) },
     cardio: {
