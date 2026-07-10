@@ -8,6 +8,8 @@ import { htmlToJsx } from '../../util/jsx'
 import { concatenateResources } from '../../util/resources'
 //@ts-ignore
 import lydiaScript from '../scripts/lydia.inline'
+//@ts-ignore
+import unbadgeScript from '../scripts/unbadge.inline'
 import SeeAlsoComponent from '../SeeAlso'
 
 export default (() => {
@@ -26,7 +28,7 @@ export default (() => {
     )
   }
 
-  Content.afterDOMLoaded = lydiaScript
+  Content.afterDOMLoaded = concatenateResources(lydiaScript, unbadgeScript)
   Content.css = concatenateResources(SeeAlso.css)
   Content.sourceNames = inheritComponentSourceNames('Content', [SeeAlso])
 
