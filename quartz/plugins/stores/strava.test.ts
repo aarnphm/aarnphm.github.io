@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildPayload, type RawStravaActivity, type StravaRawCache } from './strava'
+import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
+import {
+  buildPayload,
+  type RawStravaActivity,
+  type StravaRawCache,
+  type StravaStreams,
+} from './strava'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
 
 function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
@@ -170,4 +176,210 @@ test('buildPayload keeps late evening syncs on the local calendar day', () => {
     payload.days.map(day => day.date),
     ['2026-06-30'],
   )
+})
+
+test('uses an inclusive 42-day window for the six-week power reference', () => {
+  const stream = (watts: number): StravaStreams => ({
+    time: [0, 1, 2, 3, 4],
+    latlng: [],
+    altitude: [0, 0, 0, 0, 0],
+    distance: [0, 1, 2, 3, 4],
+    watts: [watts, watts, watts, watts, watts],
+  })
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-07-13T12:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-02T12:00:00Z') / 1000),
+    activities: {
+      101: ride({
+        id: 101,
+        movingTime: 5,
+        elapsedTime: 5,
+        startDate: '2026-06-01T12:00:00Z',
+        startDateLocal: '2026-06-01T12:00:00',
+      }),
+      102: ride({
+        id: 102,
+        movingTime: 5,
+        elapsedTime: 5,
+        startDate: '2026-06-02T12:00:00Z',
+        startDateLocal: '2026-06-02T12:00:00',
+      }),
+    },
+    streams: { 101: stream(900), 102: stream(500) },
+  }
+
+  const payload = buildPayload(cache, null, null, '2026-06-01', null, null, null, 'UTC')
+  assert.equal(payload.powerCurveRef.find(point => point.s === 1)?.w, 500)
+})
+
+test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments', () => {
+  const activity = ride({
+    distance: 10_000,
+    movingTime: 10,
+    elapsedTime: 15,
+    deviceWatts: true,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const points = 10
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 1, 2, 3, 4, 10, 11, 12, 13, 14],
+        latlng: Array.from({ length: points }, (_, i) => [43 + i * 0.00001, -79 - i * 0.00001]),
+        altitude: Array.from({ length: points }, (_, i) => 100 + i),
+        distance: [0, 1_000, 2_000, 3_000, 4_000, 4_000, 5_500, 7_000, 8_500, 10_000],
+        watts: [100, 200, 300, 400, 500, 0, 100, 100, 100, 100],
+        heartrate: [140, 141, 142, 143, 144, 145, 146, 147, 148, 149],
+        cadence: Array.from({ length: points }, () => 80),
+      },
+    },
+  }
+  const garmin: GarminCache = {
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Cadence training',
+        sport: 'bike',
+        startDate: activity.startDate,
+        startDateLocal: activity.startDateLocal,
+        distanceM: 10_000,
+        movingTimeS: 10,
+        elapsedTimeS: 15,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      edge: {
+        latlng: Array.from({ length: points }, (_, i) => [43 + i * 0.00001, -79 - i * 0.00001]),
+        altitude: Array.from({ length: points }, (_, i) => 100 + i),
+        distance: Array.from({ length: points }, (_, i) => i * 1_000),
+        watts: Array.from({ length: points }, () => 900),
+        heartrate: Array.from({ length: points }, () => 180),
+        cadence: Array.from({ length: points }, () => 100),
+      },
+    },
+    climbs: {
+      edge: [
+        {
+          startDate: '2026-06-07T12:00:02.000Z',
+          endDate: '2026-06-07T12:00:12.000Z',
+          distanceM: 500,
+          durationS: 10,
+          movingTimeS: 10,
+          elapsedTimeS: 15,
+          elevationGainM: 25,
+          elevationLossM: 0,
+          startElevationM: 100,
+          avgGradePct: 5,
+          maxGradePct: 8,
+          avgSpeedMps: 5,
+          avgHeartRate: 150,
+          maxHeartRate: 160,
+          avgPower: 225,
+          normalizedPower: 235,
+          maxPower: 400,
+          avgCadence: 80,
+          difficulty: 'MODERATE',
+        },
+      ],
+    },
+    weight: [
+      {
+        ts: Date.parse('2026-06-06T12:00:00Z'),
+        date: '2026-06-06',
+        weightKg: 76,
+        bmi: null,
+        bodyFatPct: null,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+      {
+        ts: Date.parse('2026-06-07T11:00:00Z'),
+        date: '2026-06-07',
+        weightKg: 75,
+        bmi: null,
+        bodyFatPct: null,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+      {
+        ts: Date.parse('2026-06-07T13:00:00Z'),
+        date: '2026-06-07',
+        weightKg: 74,
+        bmi: null,
+        bodyFatPct: null,
+        bodyWaterPct: null,
+        muscleMassKg: null,
+        boneMassKg: null,
+      },
+    ],
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  const efforts = detail.bestEfforts
+  assert.ok(efforts)
+  assert.equal(efforts.weightKg, 75)
+  assert.equal(efforts.weightDate, '2026-06-07')
+  assert.equal(efforts.distance.find(effort => effort.label === '10K')?.elapsedTimeS, 14)
+  assert.deepEqual(efforts.power[0], {
+    durationS: 5,
+    averageWatts: 300,
+    wattsPerKg: 4,
+    averageHeartRate: 142,
+    elevationDeltaM: 4,
+  })
+  assert.equal(efforts.power.find(effort => effort.durationS === 15)?.averageWatts, 126)
+  assert.deepEqual(efforts.climbs, [
+    {
+      name: 'Climb 1',
+      durationS: 10,
+      distanceM: 500,
+      elevationGainM: 25,
+      averageGradePct: 5,
+      averageSpeedKph: 18,
+      averageHeartRate: 150,
+      averageWatts: 225,
+      wattsPerKg: 3,
+      vamMPerHour: 9000,
+    },
+  ])
+  assert.deepEqual(
+    detail.powerCurve?.map(point => point.s),
+    Array.from({ length: 15 }, (_, index) => index + 1),
+  )
+  assert.equal(detail.powerCurve?.find(point => point.s === 15)?.w, 126)
+
+  const climbOnly = buildPayload({ ...cache, streams: {} }, null, garmin, '2026-06-01').details[
+    '101'
+  ].bestEfforts
+  assert.ok(climbOnly)
+  assert.deepEqual(climbOnly.distance, [])
+  assert.deepEqual(climbOnly.power, [])
+  assert.equal(climbOnly.climbs.length, 1)
+
+  const withoutSameDayWeight = buildPayload(
+    cache,
+    null,
+    { ...garmin, weight: garmin.weight?.filter(sample => sample.date !== '2026-06-07') },
+    '2026-06-01',
+  ).details['101'].bestEfforts
+  assert.ok(withoutSameDayWeight)
+  assert.equal(withoutSameDayWeight.weightKg, null)
+  assert.equal(withoutSameDayWeight.power[0].wattsPerKg, null)
 })

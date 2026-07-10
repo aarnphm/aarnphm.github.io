@@ -184,7 +184,8 @@ test('backfills Strava detail streams from a matched Garmin activity', () => {
   assert.equal(detail.avgHr, 140)
   assert.equal(detail.maxHr, 150)
   assert.equal(detail.avgCadence, 88)
-  assert.equal(detail.powerCurve?.[0]?.w, 300)
+  assert.equal(detail.powerCurve, null)
+  assert.equal(detail.bestEfforts, null)
 })
 
 test('prefers Garmin heart rate for matched runs without using loose match for calories', () => {

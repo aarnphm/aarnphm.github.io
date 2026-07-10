@@ -3,6 +3,7 @@ import test from 'node:test'
 import {
   garminConnectActivities,
   garminConnectActivity,
+  garminConnectClimbSegments,
   garminConnectStreams,
   garminConnectWeightSamples,
 } from './garmin-connect'
@@ -13,7 +14,7 @@ test('normalizes Garmin Connect activity details into the Garmin cache shape', (
       {
         activityId: 123,
         activityName: 'Morning ride',
-        activityType: { typeKey: 'cycling' },
+        activityType: { typeKey: 'road_biking' },
         startTimeGMT: '2026-06-01 12:00:00',
       },
     ],
@@ -23,7 +24,7 @@ test('normalizes Garmin Connect activity details into the Garmin cache shape', (
     {
       activityId: 123,
       activityName: 'Morning ride',
-      activityType: { typeKey: 'cycling' },
+      activityType: { typeKey: 'road_biking' },
       startTimeGMT: '2026-06-01 12:00:00',
       startTimeLocal: '2026-06-01 08:00:00',
       distance: 48_200,
@@ -190,6 +191,126 @@ test('normalizes Garmin Connect weight records with timestamp strings and pound 
   assert.equal(samples[0].bodyWaterPct, 56.7)
   assert.equal(samples[0].muscleMassKg, 37.8)
   assert.equal(samples[0].boneMassKg, 6.2)
+})
+
+test('normalizes Garmin ClimbPro parent splits and excludes their sections', () => {
+  const climbs = garminConnectClimbSegments({
+    splits: [
+      {
+        type: 'CLIMB_PRO_CYCLING_CLIMB',
+        startTimeGMT: '2026-07-09T22:12:18.0',
+        endTimeGMT: '2026-07-09T22:15:24.0',
+        distance: 1045.82,
+        duration: 187.552,
+        movingDuration: 186,
+        elapsedDuration: 187.552,
+        elevationGain: 29,
+        elevationLoss: 3,
+        startElevation: 81.8,
+        averageGrade: 2.730000019,
+        maxGrade: 8.739999771,
+        averageSpeed: 5.576000213,
+        averageHR: 155,
+        maxHR: 165,
+        averagePower: 225,
+        normalizedPower: 262,
+        maxPower: 451,
+        averageBikeCadence: 80,
+        climbProDifficulty: 'NONE',
+      },
+      {
+        type: 'CLIMB_PRO_CYCLING_CLIMB_SECTION',
+        startTimeGMT: '2026-07-09T22:06:26.0',
+        endTimeGMT: '2026-07-09T22:07:28.0',
+        distance: 268.51,
+        duration: 62,
+        elevationGain: 18.2,
+        averageGrade: 7.59,
+        averagePower: 338.24,
+        climbProDifficulty: 'STEEP',
+      },
+      {
+        type: 'CLIMB_PRO_CYCLING_CLIMB',
+        startTimeGMT: '2026-07-09T22:06:14.0',
+        endTimeGMT: '2026-07-09T22:09:34.0',
+        distance: 1067.37,
+        duration: 200.14,
+        movingDuration: 200,
+        elapsedDuration: 200.14,
+        elevationGain: 27,
+        elevationLoss: 4,
+        startElevation: 83.8,
+        averageGrade: 2.569999933,
+        maxGrade: 9.029999733,
+        averageSpeed: 5.333000183,
+        averageHR: 150,
+        maxHR: 162,
+        averagePower: 203,
+        normalizedPower: 257,
+        maxPower: 473,
+        averageBikeCadence: 79,
+        climbProDifficulty: 'NONE',
+      },
+      {
+        type: 'SURFACE_TYPE_PAVED',
+        startTimeGMT: '2026-07-09T21:38:32.0',
+        endTimeGMT: '2026-07-09T22:57:35.0',
+        distance: 29298.34,
+        duration: 4134.357,
+      },
+      {
+        type: 'CLIMB_PRO_CYCLING_CLIMB',
+        startTimeGMT: '2026-07-09T23:00:00.0',
+        endTimeGMT: '2026-07-09T23:01:00.0',
+        distance: 300,
+      },
+    ],
+  })
+
+  assert.deepEqual(climbs, [
+    {
+      startDate: '2026-07-09T22:06:14.000Z',
+      endDate: '2026-07-09T22:09:34.000Z',
+      distanceM: 1067.37,
+      durationS: 200.14,
+      movingTimeS: 200,
+      elapsedTimeS: 200.14,
+      elevationGainM: 27,
+      elevationLossM: 4,
+      startElevationM: 83.8,
+      avgGradePct: 2.57,
+      maxGradePct: 9.03,
+      avgSpeedMps: 5.333,
+      avgHeartRate: 150,
+      maxHeartRate: 162,
+      avgPower: 203,
+      normalizedPower: 257,
+      maxPower: 473,
+      avgCadence: 79,
+      difficulty: 'NONE',
+    },
+    {
+      startDate: '2026-07-09T22:12:18.000Z',
+      endDate: '2026-07-09T22:15:24.000Z',
+      distanceM: 1045.82,
+      durationS: 187.552,
+      movingTimeS: 186,
+      elapsedTimeS: 187.552,
+      elevationGainM: 29,
+      elevationLossM: 3,
+      startElevationM: 81.8,
+      avgGradePct: 2.73,
+      maxGradePct: 8.74,
+      avgSpeedMps: 5.576,
+      avgHeartRate: 155,
+      maxHeartRate: 165,
+      avgPower: 225,
+      normalizedPower: 262,
+      maxPower: 451,
+      avgCadence: 80,
+      difficulty: 'NONE',
+    },
+  ])
 })
 
 test('normalizes Garmin Connect detail metrics into streams', () => {

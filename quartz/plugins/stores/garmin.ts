@@ -47,6 +47,28 @@ export interface GarminActivity {
   fueling: GarminFueling
 }
 
+export interface GarminClimbSegment {
+  startDate: string
+  endDate: string
+  distanceM: number
+  durationS: number
+  movingTimeS: number | null
+  elapsedTimeS: number | null
+  elevationGainM: number | null
+  elevationLossM: number | null
+  startElevationM: number | null
+  avgGradePct: number | null
+  maxGradePct: number | null
+  avgSpeedMps: number | null
+  avgHeartRate: number | null
+  maxHeartRate: number | null
+  avgPower: number | null
+  normalizedPower: number | null
+  maxPower: number | null
+  avgCadence: number | null
+  difficulty: string | null
+}
+
 export interface GarminStreams {
   latlng: [number, number][]
   altitude: number[]
@@ -86,6 +108,7 @@ export interface GarminCache {
   lastSync: number
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
+  climbs?: Record<string, GarminClimbSegment[]>
   vo2max?: Record<string, GarminVo2Day>
   weight?: GarminWeightSample[]
 }
@@ -144,7 +167,13 @@ export function normalizeGarminSport(value: string | null | undefined): Sport | 
   if (!value) return null
   const sport = value.toLowerCase()
   if (sport.includes('swim')) return 'swim'
-  if (sport.includes('bike') || sport.includes('cycling') || sport.includes('ride')) return 'bike'
+  if (
+    sport.includes('bike') ||
+    sport.includes('biking') ||
+    sport.includes('cycling') ||
+    sport.includes('ride')
+  )
+    return 'bike'
   if (sport.includes('run')) return 'run'
   return null
 }
