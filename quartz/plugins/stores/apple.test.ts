@@ -106,6 +106,7 @@ test('JSON import preserves swim aggregates from HealthExporter', () => {
         strokeCount: null,
         strokeTimeS: null,
         strokes: { freestyle: 1450, breaststroke: 50 },
+        intervals: [],
       },
     ],
   )
@@ -127,6 +128,20 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
           strokeCount: 960.2,
           strokeTimeS: 1700.4,
           strokes: { freestyle: 1500 },
+          intervals: [
+            {
+              start: '2026-06-19T11:00:05.000Z',
+              end: '2026-06-19T11:00:30Z',
+              distanceM: 22.86,
+              startElapsedS: 5.4,
+              endElapsedS: 31.1,
+              durationS: 25.7,
+              strokeCount: 16.25,
+              strokeTimeS: 20.25,
+              stroke: 'freestyle',
+            },
+            { start: 'bad', end: '2026-06-19T11:01:00Z', distanceM: 25, stroke: 'backstroke' },
+          ],
         },
         {
           id: 'evening',
@@ -154,6 +169,19 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
         strokeCount: 960,
         strokeTimeS: 1700,
         strokes: { freestyle: 1500 },
+        intervals: [
+          {
+            start: '2026-06-19T11:00:05Z',
+            end: '2026-06-19T11:00:30Z',
+            distanceM: 22.9,
+            startElapsedS: 5.4,
+            endElapsedS: 31.1,
+            durationS: 25.7,
+            strokeCount: 16.3,
+            strokeTimeS: 20.3,
+            stroke: 'freestyle',
+          },
+        ],
       },
       {
         id: 'evening',
@@ -166,6 +194,7 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
         strokeCount: 600,
         strokeTimeS: 1200,
         strokes: { breaststroke: 1000 },
+        intervals: [],
       },
     ],
   )
@@ -358,6 +387,19 @@ test('aggregateSwimLaps keeps sessions separate and unions overlapping rate inte
       strokeCount: 24,
       strokeTimeS: 35,
       strokes: { freestyle: 25 },
+      intervals: [
+        {
+          start: '2026-05-17T17:19:25Z',
+          end: '2026-05-17T17:19:52Z',
+          distanceM: 25,
+          startElapsedS: 1165,
+          endElapsedS: 1192,
+          durationS: 27,
+          strokeCount: 20,
+          strokeTimeS: 27,
+          stroke: 'freestyle',
+        },
+      ],
     },
     {
       id: 'evening',
@@ -370,6 +412,62 @@ test('aggregateSwimLaps keeps sessions separate and unions overlapping rate inte
       strokeCount: 16,
       strokeTimeS: 30,
       strokes: { breaststroke: 50 },
+      intervals: [
+        {
+          start: '2026-05-17T22:10:00Z',
+          end: '2026-05-17T22:10:30Z',
+          distanceM: 50,
+          startElapsedS: 600,
+          endElapsedS: 630,
+          durationS: 30,
+          strokeCount: 16,
+          strokeTimeS: 30,
+          stroke: 'breaststroke',
+        },
+      ],
+    },
+  ])
+})
+
+test('aggregateSwimLaps prorates partial stroke coverage into interval count and time', () => {
+  const swims = aggregateSwimLaps(
+    [
+      {
+        start: '2026-05-17 13:00:00 -0400',
+        end: '2026-05-17 13:00:20 -0400',
+        count: 12,
+        stroke: 'freestyle',
+      },
+      {
+        start: '2026-05-17 13:00:30 -0400',
+        end: '2026-05-17 13:00:50 -0400',
+        count: 10,
+        stroke: 'freestyle',
+      },
+    ],
+    [{ start: '2026-05-17 13:00:10 -0400', end: '2026-05-17 13:00:40 -0400', meters: 25 }],
+    [
+      {
+        id: 'partial',
+        start: '2026-05-17 13:00:00 -0400',
+        end: '2026-05-17 13:01:00 -0400',
+        totalM: 25,
+        activeTimeS: 30,
+      },
+    ],
+  )
+
+  assert.deepEqual(swims[0]?.intervals, [
+    {
+      start: '2026-05-17T17:00:10Z',
+      end: '2026-05-17T17:00:40Z',
+      distanceM: 25,
+      startElapsedS: 10,
+      endElapsedS: 40,
+      durationS: 30,
+      strokeCount: 11,
+      strokeTimeS: 20,
+      stroke: 'freestyle',
     },
   ])
 })
@@ -421,6 +519,7 @@ test('aggregateSwimLaps preserves distance-only sessions without inventing dista
       strokeCount: null,
       strokeTimeS: null,
       strokes: {},
+      intervals: [],
     },
     {
       id: 'evening',
@@ -433,6 +532,30 @@ test('aggregateSwimLaps preserves distance-only sessions without inventing dista
       strokeCount: null,
       strokeTimeS: null,
       strokes: {},
+      intervals: [
+        {
+          start: '2026-05-17T22:10:00Z',
+          end: '2026-05-17T22:10:20Z',
+          distanceM: 25,
+          startElapsedS: 600,
+          endElapsedS: 620,
+          durationS: 20,
+          strokeCount: null,
+          strokeTimeS: null,
+          stroke: null,
+        },
+        {
+          start: '2026-05-17T22:10:20Z',
+          end: '2026-05-17T22:10:40Z',
+          distanceM: 25,
+          startElapsedS: 620,
+          endElapsedS: 640,
+          durationS: 20,
+          strokeCount: null,
+          strokeTimeS: null,
+          stroke: null,
+        },
+      ],
     },
   ])
   assert.deepEqual(aggregateSwimLaps([strokeOnly], [], []), [])

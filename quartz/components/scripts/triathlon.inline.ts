@@ -77,7 +77,6 @@ import {
   setDistanceUnit,
   shortDate,
   statRow as statRowNode,
-  swimTrendActivityLabel,
   swimTrendHoverAt,
   buildTrace as buildTraceNode,
   zoneDuo as zoneDuoNode,
@@ -85,6 +84,7 @@ import {
   type DayCardExtras,
   type DetailCtx,
   type SwimTrendChartPoint,
+  type SwimTrendMode,
   type TriNodeFactory,
 } from '../../util/triathlon-card'
 import {
@@ -93,6 +93,12 @@ import {
   glossKeys,
   initTriLocale,
   powerCurveReferenceLabel,
+  swimActivityComparisonText,
+  swimActivityDistanceText,
+  swimActivityDisplayValue,
+  swimActivityHeaderValue,
+  swimActivityPointText,
+  swimActivityValueText,
   tl,
   triLocale,
 } from '../../util/triathlon-i18n'
@@ -820,7 +826,74 @@ const setupDayEmbeds = (): (() => void) | null => {
     const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
     let upgraded = false
     let payload: DetailPayload | null = null
+    let pendingSwimMode: { index: number; mode: SwimTrendMode } | null = null
+    const setPendingSwimMode = (target: EventTarget | null): void => {
+      if (!(target instanceof Element)) return
+      const button = target.closest<HTMLButtonElement>('.tri-swim-mode')
+      const toggle = button?.closest<HTMLElement>('.tri-swim-mode-toggle')
+      const section = toggle?.closest<HTMLElement>('.tri-swim-trends')
+      if (!button || !section) return
+      const index = Array.from(embed.querySelectorAll<HTMLElement>('.tri-swim-trends')).indexOf(
+        section,
+      )
+      if (index < 0) return
+      pendingSwimMode = { index, mode: button.dataset.swimMode === '100m' ? '100m' : 'lengths' }
+    }
+    const onSwimPointerDown = (event: PointerEvent): void => setPendingSwimMode(event.target)
+    const onSwimKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Enter' || event.key === ' ') setPendingSwimMode(event.target)
+    }
+    const clearPendingSwimMode = (): void => {
+      pendingSwimMode = null
+    }
+    embed.addEventListener('pointerdown', onSwimPointerDown, { passive: true })
+    embed.addEventListener('keydown', onSwimKeyDown)
+    embed.addEventListener('click', clearPendingSwimMode)
+    embed.addEventListener('pointercancel', clearPendingSwimMode)
+    teardowns.push(() => {
+      embed.removeEventListener('pointerdown', onSwimPointerDown)
+      embed.removeEventListener('keydown', onSwimKeyDown)
+      embed.removeEventListener('click', clearPendingSwimMode)
+      embed.removeEventListener('pointercancel', clearPendingSwimMode)
+    })
     const render = (data: DetailPayload) => {
+      const swimStates: {
+        mode: SwimTrendMode
+        focusedMode: SwimTrendMode | null
+        charts: { kind: 'pace' | 'stroke'; distanceM: number; active: boolean; focused: boolean }[]
+      }[] = Array.from(embed.querySelectorAll<HTMLElement>('.tri-swim-trends'), section => {
+        const toggle = section.querySelector<HTMLElement>('.tri-swim-mode-toggle')
+        const active = document.activeElement
+        const charts: {
+          kind: 'pace' | 'stroke'
+          distanceM: number
+          active: boolean
+          focused: boolean
+        }[] = []
+        for (const chart of section.querySelectorAll<SVGSVGElement>('.tri-swim-trend-svg')) {
+          const distanceM = Number(chart.getAttribute('aria-valuenow'))
+          if (!Number.isFinite(distanceM)) continue
+          charts.push({
+            kind: chart.dataset.swimKind === 'stroke' ? 'stroke' : 'pace',
+            distanceM,
+            active: chart.closest('.tri-zone')?.classList.contains('tri-chart--hover') ?? false,
+            focused: active === chart,
+          })
+        }
+        return {
+          mode: toggle?.dataset.swimMode === '100m' ? '100m' : 'lengths',
+          focusedMode:
+            active instanceof HTMLButtonElement && toggle?.contains(active)
+              ? active.dataset.swimMode === '100m'
+                ? '100m'
+                : 'lengths'
+              : null,
+          charts,
+        }
+      })
+      if (pendingSwimMode && swimStates[pendingSwimMode.index])
+        swimStates[pendingSwimMode.index].mode = pendingSwimMode.mode
+      pendingSwimMode = null
       const fresh = buildDayCard(date, data, extras)
       const expanded = Array.from(embed.querySelectorAll('.tri-act'), activity =>
         activity.classList.contains('tri-act--expanded'),
@@ -829,6 +902,33 @@ const setupDayEmbeds = (): (() => void) | null => {
         if (index < expanded.length) setActivityExpanded(activity as HTMLElement, expanded[index])
       })
       embed.replaceChildren(fresh)
+      applyI18n(fresh)
+      fresh.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
+        const state = swimStates[index]
+        if (!state) return
+        const selected = section.querySelector<HTMLButtonElement>(
+          `.tri-swim-mode[data-swim-mode="${state.mode}"]`,
+        )
+        if (state.mode === '100m') selected?.click()
+        if (state.focusedMode)
+          section
+            .querySelector<HTMLButtonElement>(
+              `.tri-swim-mode[data-swim-mode="${state.focusedMode}"]`,
+            )
+            ?.focus({ preventScroll: true })
+        for (const chartState of state.charts) {
+          const chart = section.querySelector<SVGSVGElement>(
+            `.tri-swim-trend-svg[data-swim-kind="${chartState.kind}"]`,
+          )
+          if (chart) {
+            chart.dataset.swimRestoreDistance = chartState.distanceM.toString()
+            chart.dataset.swimRestoreActive = String(chartState.active)
+            chart.dispatchEvent(new Event('tri:swim-restore', { bubbles: true }))
+            if (chartState.focused) chart.focus({ preventScroll: true })
+          }
+        }
+      })
+      window.dispatchEvent(new CustomEvent('tri:locale'))
     }
     const upgrade = () => {
       if (upgraded) return
@@ -8516,7 +8616,11 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     SVGSVGElement,
     { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] }
   >()
-  const swimCache = new WeakMap<SVGSVGElement, SwimTrendChartPoint[]>()
+  const swimCache = new WeakMap<
+    SVGSVGElement,
+    { lengths: SwimTrendChartPoint[]; '100m': SwimTrendChartPoint[] }
+  >()
+  const swimAnimations = new Map<SVGGElement, Animation>()
   const curveData = (
     svg: SVGSVGElement,
   ): { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] } => {
@@ -8533,13 +8637,12 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
   const isSwimTrendPoint = (value: unknown): value is SwimTrendChartPoint =>
     typeof value === 'object' &&
     value !== null &&
-    'activityId' in value &&
-    typeof value.activityId === 'number' &&
-    Number.isFinite(value.activityId) &&
-    'date' in value &&
-    typeof value.date === 'string' &&
-    'start' in value &&
-    typeof value.start === 'string' &&
+    'elapsedS' in value &&
+    typeof value.elapsedS === 'number' &&
+    Number.isFinite(value.elapsedS) &&
+    'cumulativeDistanceM' in value &&
+    typeof value.cumulativeDistanceM === 'number' &&
+    Number.isFinite(value.cumulativeDistanceM) &&
     'value' in value &&
     typeof value.value === 'number' &&
     Number.isFinite(value.value) &&
@@ -8548,14 +8651,28 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     Number.isFinite(value.xPct) &&
     'yPct' in value &&
     typeof value.yPct === 'number' &&
-    Number.isFinite(value.yPct)
-  const swimData = (svg: SVGSVGElement): SwimTrendChartPoint[] => {
+    Number.isFinite(value.yPct) &&
+    (!('windowStartDistanceM' in value) ||
+      (typeof value.windowStartDistanceM === 'number' &&
+        Number.isFinite(value.windowStartDistanceM)))
+  const swimMode = (svg: SVGSVGElement): SwimTrendMode =>
+    svg.dataset.swimMode === '100m' ? '100m' : 'lengths'
+  const decodeSwimData = (value: string | undefined): SwimTrendChartPoint[] => {
+    const parsed: unknown = JSON.parse(value ?? '[]')
+    return Array.isArray(parsed) ? parsed.filter(isSwimTrendPoint) : []
+  }
+  const swimData = (
+    svg: SVGSVGElement,
+    mode: SwimTrendMode = swimMode(svg),
+  ): SwimTrendChartPoint[] => {
     const cached = swimCache.get(svg)
-    if (cached) return cached
-    const value: unknown = JSON.parse(svg.dataset.swimSeries ?? '[]')
-    const points = Array.isArray(value) ? value.filter(isSwimTrendPoint) : []
-    swimCache.set(svg, points)
-    return points
+    if (cached) return cached[mode]
+    const value = {
+      lengths: decodeSwimData(svg.dataset.swimSeriesLengths),
+      '100m': decodeSwimData(svg.dataset.swimSeriesHundred),
+    }
+    swimCache.set(svg, value)
+    return value[mode]
   }
   const curveRange = (svg: SVGSVGElement): CurveRange =>
     svg.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
@@ -8584,16 +8701,19 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     `${zoneClock(point.s)}, ${tl('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}`
   const swimKind = (svg: SVGSVGElement): 'pace' | 'stroke' =>
     svg.dataset.swimKind === 'stroke' ? 'stroke' : 'pace'
+  const swimAriaLabel = (svg: SVGSVGElement): string =>
+    `${tl('swim')} ${tl(swimKind(svg) === 'pace' ? 'pace' : 'stroke rate')} · ${tl(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
   const swimDisplayValue = (kind: 'pace' | 'stroke', value: number): string =>
-    kind === 'pace'
-      ? `${clock(value)} /100m`
-      : `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} str/min`
-  const swimValueText = (kind: 'pace' | 'stroke', point: SwimTrendChartPoint): string => {
-    const activity = swimTrendActivityLabel(point)
-    return kind === 'pace'
-      ? `${activity}, swim pace ${clock(point.value)} per 100 metres`
-      : `${activity}, stroke rate ${point.value.toLocaleString('en-US', { maximumFractionDigits: 1 })} strokes per minute`
-  }
+    swimActivityDisplayValue(kind, value, clock(value))
+  const swimTextPoint = (point: SwimTrendChartPoint) => ({
+    elapsed: clock(point.elapsedS),
+    cumulativeDistanceM: point.cumulativeDistanceM,
+    ...(point.windowStartDistanceM == null
+      ? {}
+      : { windowStartDistanceM: point.windowStartDistanceM }),
+  })
+  const swimValueText = (kind: 'pace' | 'stroke', point: SwimTrendChartPoint): string =>
+    swimActivityValueText(kind, swimTextPoint(point), point.value, clock(point.value))
   const deactivate = (wrap: HTMLElement): void => {
     wrap.classList.remove('tri-chart--hover')
     const point = wrap.querySelector<HTMLElement>('.tri-swim-trend-hover')
@@ -8698,9 +8818,9 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     const wrap = svg.closest<HTMLElement>('.tri-zone')
     const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
     const point = wrap?.querySelector<HTMLElement>('.tri-swim-trend-hover')
-    const readoutDate = wrap?.querySelector<HTMLElement>('.tri-swim-trend-readout-date')
+    const readoutPosition = wrap?.querySelector<HTMLElement>('.tri-swim-trend-readout-position')
     const readoutValue = wrap?.querySelector<HTMLElement>('.tri-swim-trend-readout-value')
-    if (!wrap || !point || !readoutDate || !readoutValue) return
+    if (!wrap || !point || !readoutPosition || !readoutValue) return
     const kind = swimKind(svg)
     const hover = swimTrendHoverAt(swimData(svg), fraction)
     if (!hover) return
@@ -8708,11 +8828,12 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     cursor?.setAttribute('x2', hover.xPct.toFixed(2))
     point.style.left = `${hover.xPct.toFixed(2)}%`
     point.style.top = `${hover.yPct.toFixed(2)}%`
-    point.hidden = false
-    readoutDate.textContent = swimTrendActivityLabel(hover)
+    point.hidden = !activateChart
+    readoutPosition.textContent = swimActivityPointText(swimTextPoint(hover))
     readoutValue.textContent = swimDisplayValue(kind, hover.value)
     svg.dataset.swimIndex = String(hover.index)
-    svg.setAttribute('aria-valuenow', String(hover.index))
+    svg.setAttribute('aria-label', swimAriaLabel(svg))
+    svg.setAttribute('aria-valuenow', String(Math.round(hover.cumulativeDistanceM)))
     svg.setAttribute('aria-valuetext', swimValueText(kind, hover))
     if (activateChart) {
       activeBar?.classList.remove('tri-hist-bar--on')
@@ -8729,6 +8850,22 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     if (points.length === 0) return
     const index = Math.min(points.length - 1, Math.max(0, requestedIndex))
     showSwim(svg, points[index].xPct / 100, activateChart)
+  }
+  const onSwimRestore = (event: Event): void => {
+    if (
+      !(event.target instanceof SVGSVGElement) ||
+      !event.target.classList.contains('tri-swim-trend-svg')
+    )
+      return
+    const svg = event.target
+    const distanceM = Number(svg.dataset.swimRestoreDistance)
+    const totalDistanceM = Number(svg.getAttribute('aria-valuemax'))
+    const activateChart = svg.dataset.swimRestoreActive === 'true'
+    delete svg.dataset.swimRestoreDistance
+    delete svg.dataset.swimRestoreActive
+    if (!Number.isFinite(distanceM) || !Number.isFinite(totalDistanceM) || totalDistanceM <= 0)
+      return
+    showSwim(svg, distanceM / totalDistanceM, activateChart)
   }
   const showFocused = (): void => {
     if (!focusedSvg) {
@@ -8818,8 +8955,62 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     if (isCurve) showCurveIndex(svg, next)
     else showSwimIndex(svg, next)
   }
-  const onRangeClick = (event: MouseEvent): void => {
+  const setSwimLayer = (svg: SVGSVGElement, mode: SwimTrendMode, animate: boolean): void => {
+    const previousMode = swimMode(svg)
+    if (previousMode === mode) return
+    const previous = svg.querySelector<SVGGElement>(
+      `.tri-swim-series[data-swim-mode="${previousMode}"]`,
+    )
+    const next = svg.querySelector<SVGGElement>(`.tri-swim-series[data-swim-mode="${mode}"]`)
+    if (!previous || !next) return
+    const previousOpacity = getComputedStyle(previous).opacity
+    const nextOpacity = getComputedStyle(next).opacity
+    swimAnimations.get(previous)?.cancel()
+    swimAnimations.get(next)?.cancel()
+    swimAnimations.delete(previous)
+    swimAnimations.delete(next)
+    previous.classList.remove('tri-swim-series--active')
+    previous.setAttribute('aria-hidden', 'true')
+    next.classList.add('tri-swim-series--active')
+    next.setAttribute('aria-hidden', 'false')
+    svg.dataset.swimMode = mode
+    if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const timing: KeyframeAnimationOptions = {
+      duration: 180,
+      easing: 'cubic-bezier(0.77, 0, 0.175, 1)',
+    }
+    swimAnimations.set(
+      previous,
+      previous.animate([{ opacity: previousOpacity }, { opacity: 0 }], timing),
+    )
+    swimAnimations.set(next, next.animate([{ opacity: nextOpacity }, { opacity: 1 }], timing))
+  }
+  const setSwimMode = (section: HTMLElement, mode: SwimTrendMode, animate: boolean): void => {
+    const toggle = section.querySelector<HTMLElement>('.tri-swim-mode-toggle')
+    if (!toggle || toggle.dataset.swimMode === mode) return
+    toggle.dataset.swimMode = mode
+    for (const option of toggle.querySelectorAll<HTMLButtonElement>('.tri-swim-mode'))
+      option.setAttribute('aria-pressed', String(option.dataset.swimMode === mode))
+    for (const svg of section.querySelectorAll<SVGSVGElement>('.tri-swim-trend-svg')) {
+      const previous = swimData(svg)
+      const selected = Math.min(previous.length - 1, Math.max(0, selectedSwimIndex(svg)))
+      const fraction = previous[selected]?.xPct != null ? previous[selected].xPct / 100 : 1
+      const wrap = svg.closest<HTMLElement>('.tri-zone')
+      const wasActive = wrap?.classList.contains('tri-chart--hover') ?? false
+      setSwimLayer(svg, mode, animate)
+      delete svg.dataset.swimIndex
+      showSwim(svg, fraction, wasActive)
+    }
+  }
+  const onChartClick = (event: MouseEvent): void => {
     if (!(event.target instanceof Element)) return
+    const swimButton = event.target.closest<HTMLButtonElement>('.tri-swim-mode')
+    const swimSection = swimButton?.closest<HTMLElement>('.tri-swim-trends')
+    if (swimButton && swimSection) {
+      const mode: SwimTrendMode = swimButton.dataset.swimMode === '100m' ? '100m' : 'lengths'
+      setSwimMode(swimSection, mode, event.detail > 0)
+      return
+    }
     const button = event.target.closest<HTMLButtonElement>('.tri-curve-range')
     const wrap = button?.closest<HTMLElement>('.tri-zone')
     const svg = wrap?.querySelector<SVGSVGElement>('.tri-curve-svg')
@@ -8839,6 +9030,24 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     showCurveIndex(svg, index, wasActive)
   }
   const onLocale = (): void => {
+    for (const delta of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-delta')) {
+      const kind = delta.dataset.swimComparisonKind === 'stroke' ? 'stroke' : 'pace'
+      const rawDelta = delta.dataset.swimComparisonDelta
+      const rawPrior = delta.dataset.swimComparisonPrior
+      const comparisonDelta = rawDelta == null ? null : Number(rawDelta)
+      const comparisonPrior = rawPrior == null ? null : Number(rawPrior)
+      delta.textContent = swimActivityComparisonText(
+        kind,
+        comparisonDelta != null && Number.isFinite(comparisonDelta) ? comparisonDelta : null,
+        comparisonPrior != null && Number.isInteger(comparisonPrior) ? comparisonPrior : null,
+      )
+    }
+    for (const average of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-value')) {
+      const kind = average.dataset.swimAverageKind === 'stroke' ? 'stroke' : 'pace'
+      const value = Number(average.dataset.swimAverageValue)
+      if (Number.isFinite(value))
+        average.textContent = swimActivityHeaderValue(kind, value, clock(value))
+    }
     for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-curve-svg')) {
       const data = curveData(svg)
       const curve = data.curve
@@ -8856,6 +9065,23 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
       svg.setAttribute('aria-valuenow', String(point.s))
       svg.setAttribute('aria-valuetext', curveValueText(svg, point, referenceWatts))
     }
+    for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-swim-trend-svg')) {
+      svg.setAttribute('aria-label', swimAriaLabel(svg))
+      const wrap = svg.closest<HTMLElement>('.tri-zone')
+      const totalDistanceM = Number(svg.getAttribute('aria-valuemax'))
+      if (wrap && Number.isFinite(totalDistanceM)) {
+        const distances = [0, totalDistanceM / 2, totalDistanceM]
+        wrap.querySelectorAll<HTMLElement>('.tri-cax-xt').forEach((tick, index) => {
+          const distanceM = distances[index]
+          if (distanceM != null) tick.textContent = swimActivityDistanceText(distanceM)
+        })
+      }
+      showSwimIndex(
+        svg,
+        selectedSwimIndex(svg),
+        wrap?.classList.contains('tri-chart--hover') ?? false,
+      )
+    }
   }
   const onPointerLeave = (): void => showFocused()
   scope.addEventListener('pointermove', onPointer)
@@ -8865,11 +9091,14 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
   scope.addEventListener('focusin', onFocus)
   scope.addEventListener('focusout', onBlur)
   scope.addEventListener('keydown', onKey)
-  scope.addEventListener('click', onRangeClick)
+  scope.addEventListener('click', onChartClick)
+  scope.addEventListener('tri:swim-restore', onSwimRestore)
   window.addEventListener('tri:locale', onLocale)
   onLocale()
   return () => {
     clear()
+    for (const animation of swimAnimations.values()) animation.cancel()
+    swimAnimations.clear()
     scope.removeEventListener('pointermove', onPointer)
     scope.removeEventListener('pointerdown', onPointer)
     scope.removeEventListener('pointerleave', onPointerLeave)
@@ -8877,7 +9106,8 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     scope.removeEventListener('focusin', onFocus)
     scope.removeEventListener('focusout', onBlur)
     scope.removeEventListener('keydown', onKey)
-    scope.removeEventListener('click', onRangeClick)
+    scope.removeEventListener('click', onChartClick)
+    scope.removeEventListener('tri:swim-restore', onSwimRestore)
     window.removeEventListener('tri:locale', onLocale)
   }
 }
@@ -9752,12 +9982,12 @@ const mountTriathlon = (): (() => void) => {
   try {
     setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
   } catch {}
+  const root = document.querySelector<HTMLElement>('.triathlon')
+  if (root) initTriLocale()
   const embedCleanup = setupDayEmbeds()
   addCleanup(embedCleanup)
   addCleanup(setupChartScrub(document.body))
-  const root = document.querySelector<HTMLElement>('.triathlon')
   if (root) {
-    initTriLocale()
     addCleanup(setupI18n(root))
     addCleanup(setupCommandPalette(root))
     addCleanup(setup(root))

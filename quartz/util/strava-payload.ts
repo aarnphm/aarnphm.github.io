@@ -1,11 +1,12 @@
 import { readFileSync, statSync } from 'node:fs'
-import type { AppleCache } from '../plugins/stores/apple'
+import type { AppleCache, AppleSwim } from '../plugins/stores/apple'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { WeatherCache } from '../plugins/stores/weather'
 import { ATHLETE } from '../plugins/stores/analytics'
 import {
   buildPayload,
+  type SwimActivityInterval,
   type StravaActivityDetail,
   type StravaPayload,
   type StravaRawCache,
@@ -36,6 +37,98 @@ const stamp = (path: string): number => {
   }
 }
 
+export function swimActivityIntervals(swim: AppleSwim): {
+  durationS: number | null
+  intervals: SwimActivityInterval[]
+} {
+  const raw = (swim.intervals ?? [])
+    .slice()
+    .sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end))
+  const firstStart = raw[0]?.start
+  const startMs = Date.parse(swim.start ?? firstStart ?? '')
+  if (!Number.isFinite(startMs)) return { durationS: null, intervals: [] }
+  const intervalEndMs = raw.reduce((latest, interval) => {
+    const end = Date.parse(interval.end)
+    return Number.isFinite(end) ? Math.max(latest, end) : latest
+  }, startMs)
+  const workoutEndMs = Date.parse(swim.end ?? '')
+  const endMs = Number.isFinite(workoutEndMs)
+    ? Math.max(workoutEndMs, intervalEndMs)
+    : intervalEndMs
+  const durationS = endMs > startMs ? Math.round((endMs - startMs) / 1000) : null
+  let distanceM = 0
+  const intervals: SwimActivityInterval[] = []
+  for (const interval of raw) {
+    const intervalStartMs = Date.parse(interval.start)
+    const intervalEndMs = Date.parse(interval.end)
+    if (
+      !Number.isFinite(intervalStartMs) ||
+      !Number.isFinite(intervalEndMs) ||
+      intervalEndMs <= intervalStartMs ||
+      intervalEndMs <= startMs ||
+      !Number.isFinite(interval.distanceM) ||
+      interval.distanceM <= 0
+    )
+      continue
+    const timestampDurationS = (intervalEndMs - intervalStartMs) / 1000
+    const exportedDurationS =
+      interval.durationS != null && Number.isFinite(interval.durationS) && interval.durationS > 0
+        ? interval.durationS
+        : null
+    const activeTimeS = exportedDurationS ?? timestampDurationS
+    const startElapsedS =
+      Math.round(
+        Math.max(
+          0,
+          interval.startElapsedS != null &&
+            Number.isFinite(interval.startElapsedS) &&
+            interval.startElapsedS >= 0
+            ? interval.startElapsedS
+            : (intervalStartMs - startMs) / 1000,
+        ) * 10,
+      ) / 10
+    const exportedEndElapsedS =
+      interval.endElapsedS != null &&
+      Number.isFinite(interval.endElapsedS) &&
+      interval.endElapsedS > startElapsedS
+        ? interval.endElapsedS
+        : null
+    const endElapsedS =
+      Math.round(
+        Math.max(
+          0,
+          exportedEndElapsedS ??
+            (exportedDurationS != null
+              ? startElapsedS + exportedDurationS
+              : (intervalEndMs - startMs) / 1000),
+        ) * 10,
+      ) / 10
+    distanceM += interval.distanceM
+    intervals.push({
+      startElapsedS,
+      endElapsedS,
+      distanceM: Math.round(interval.distanceM * 10) / 10,
+      durationS: Math.round(activeTimeS * 10) / 10,
+      cumulativeDistanceM: Math.round(distanceM * 10) / 10,
+      paceSPer100m: swimPaceSeconds(interval.distanceM, activeTimeS),
+      strokeCount:
+        interval.stroke !== 'kickboard' && interval.strokeCount != null
+          ? Math.round(interval.strokeCount * 10) / 10
+          : null,
+      strokeTimeS:
+        interval.stroke !== 'kickboard' && interval.strokeTimeS != null
+          ? Math.round(interval.strokeTimeS * 10) / 10
+          : null,
+      strokeRateSpm:
+        interval.stroke === 'kickboard'
+          ? null
+          : swimStrokeRate(interval.strokeCount ?? 0, interval.strokeTimeS ?? 0),
+      stroke: interval.stroke,
+    })
+  }
+  return { durationS, intervals }
+}
+
 export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | null): void {
   const details = Object.values(payload.details).filter(
     (detail): detail is StravaActivityDetail => detail.sport === 'swim',
@@ -61,6 +154,9 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
     detail.strokeRateSpm = swim
       ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0)
       : null
+    const activity = swim ? swimActivityIntervals(swim) : null
+    detail.swimDurationS = activity?.durationS ?? null
+    detail.swimIntervals = activity?.intervals ?? []
     if (detail.swimPaceSPer100m == null && detail.strokeRateSpm == null) continue
     payload.swimTrend.push({
       id: detail.id,

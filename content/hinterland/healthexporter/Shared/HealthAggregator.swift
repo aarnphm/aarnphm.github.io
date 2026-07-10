@@ -117,7 +117,9 @@ struct HealthAggregator {
       )
     })
     for sample in swimSamples {
-      guard sample.meters > 0, var bucket = buckets[sample.workoutID] else { continue }
+      guard sample.meters.isFinite, sample.meters > 0, var bucket = buckets[sample.workoutID] else {
+        continue
+      }
       bucket.samples.append(sample)
       buckets[sample.workoutID] = bucket
     }
@@ -129,18 +131,33 @@ struct HealthAggregator {
           endDate: sample.endDate
         )
         if let existing = samplesByKey[key] {
+          let stroke: SwimStrokeName? = existing.stroke == .kickboard || sample.stroke == .kickboard
+            ? .kickboard
+            : existing.stroke ?? sample.stroke
+          let detail: SwimSampleValue? = stroke == .kickboard
+            ? nil
+            : [existing, sample].filter {
+              $0.strokeCount != nil && $0.strokeTimeS != nil
+            }.max {
+              ($0.strokeCount ?? 0) < ($1.strokeCount ?? 0)
+            }
           samplesByKey[key] = SwimSampleValue(
             workoutID: existing.workoutID,
             startDate: existing.startDate,
             endDate: existing.endDate,
             meters: max(existing.meters, sample.meters),
-            stroke: existing.stroke ?? sample.stroke
+            strokeCount: detail?.strokeCount,
+            strokeTimeS: detail?.strokeTimeS,
+            stroke: stroke
           )
           continue
         }
         samplesByKey[key] = sample
       }
-      let samples = Array(samplesByKey.values)
+      let samples = samplesByKey.values.sorted {
+        if $0.startDate != $1.startDate { return $0.startDate < $1.startDate }
+        return $0.endDate < $1.endDate
+      }
       let totalM = bucket.session.distanceMeters ?? 0
       guard totalM > 0 else { return nil }
       var strokes: [String: Int] = [:]
@@ -148,6 +165,22 @@ struct HealthAggregator {
         let meters = samples.filter { $0.stroke == stroke }.reduce(0) { $0 + $1.meters }
         let rounded = Int(meters.rounded())
         if rounded > 0 { strokes[stroke.rawValue] = rounded }
+      }
+      let intervals = samples.compactMap { sample -> AppleHealthSwimInterval? in
+        guard sample.endDate > sample.startDate else { return nil }
+        let strokeCount = roundedPositiveTenth(sample.strokeCount)
+        let strokeTimeS = roundedPositiveTenth(sample.strokeTimeS)
+        return AppleHealthSwimInterval(
+          start: HealthExporterFormat.utcTimestampString(sample.startDate),
+          end: HealthExporterFormat.utcTimestampString(sample.endDate),
+          startElapsedS: roundedTenth(sample.startDate.timeIntervalSince(bucket.session.startDate)),
+          endElapsedS: roundedTenth(sample.endDate.timeIntervalSince(bucket.session.startDate)),
+          distanceM: (sample.meters * 10).rounded() / 10,
+          durationS: roundedPositiveTenth(sample.endDate.timeIntervalSince(sample.startDate)),
+          strokeCount: strokeTimeS == nil ? nil : strokeCount,
+          strokeTimeS: strokeCount == nil ? nil : strokeTimeS,
+          stroke: sample.stroke
+        )
       }
       return AppleHealthSwim(
         id: bucket.session.id,
@@ -159,7 +192,8 @@ struct HealthAggregator {
         activeTimeS: Int(bucket.session.activeTimeS.rounded()),
         strokeCount: bucket.session.strokeCount.map { Int($0.rounded()) },
         strokeTimeS: bucket.session.strokeTimeS.map { Int($0.rounded()) },
-        strokes: strokes
+        strokes: strokes,
+        intervals: intervals
       )
     }.sorted {
       ($0.start ?? $0.date, $0.id) < ($1.start ?? $1.date, $1.id)
@@ -185,6 +219,73 @@ struct HealthAggregator {
     return time
   }
 
+  static func intervalStrokeMetrics(
+    startDate: Date,
+    endDate: Date,
+    strokeSamples: [SwimStrokeIntervalValue]
+  ) -> SwimStrokeMetricsValue? {
+    guard endDate > startDate else { return nil }
+    var samplesByKey: [SwimSampleKey: SwimStrokeIntervalValue] = [:]
+    for sample in strokeSamples where
+      sample.count.isFinite && sample.count > 0 && sample.endDate > sample.startDate
+    {
+      let key = SwimSampleKey(startDate: sample.startDate, endDate: sample.endDate)
+      if let existing = samplesByKey[key] {
+        let stroke: SwimStrokeName? = existing.stroke == .kickboard || sample.stroke == .kickboard
+          ? .kickboard
+          : existing.stroke ?? sample.stroke
+        samplesByKey[key] = SwimStrokeIntervalValue(
+          startDate: existing.startDate,
+          endDate: existing.endDate,
+          count: max(existing.count, sample.count),
+          stroke: stroke
+        )
+      } else {
+        samplesByKey[key] = sample
+      }
+    }
+    let samples = samplesByKey.values.filter {
+      $0.stroke != .kickboard && $0.startDate < endDate && $0.endDate > startDate
+    }
+    if let exact = samples.first(where: {
+      $0.startDate == startDate && $0.endDate == endDate
+    }) {
+      return SwimStrokeMetricsValue(
+        count: exact.count,
+        timeS: endDate.timeIntervalSince(startDate)
+      )
+    }
+    var boundaries = Set([startDate, endDate])
+    for sample in samples {
+      boundaries.insert(max(startDate, sample.startDate))
+      boundaries.insert(min(endDate, sample.endDate))
+    }
+    let sortedBoundaries = boundaries.sorted()
+    var count = 0.0
+    var time: TimeInterval = 0
+    for index in 0..<(sortedBoundaries.count - 1) {
+      let segmentStart = sortedBoundaries[index]
+      let segmentEnd = sortedBoundaries[index + 1]
+      let segmentDuration = segmentEnd.timeIntervalSince(segmentStart)
+      guard segmentDuration > 0 else { continue }
+      let covering = samples.filter {
+        $0.startDate <= segmentStart && $0.endDate >= segmentEnd
+      }
+      guard let sample = covering.min(by: { left, right in
+        let leftDuration = left.endDate.timeIntervalSince(left.startDate)
+        let rightDuration = right.endDate.timeIntervalSince(right.startDate)
+        if leftDuration != rightDuration { return leftDuration < rightDuration }
+        if left.startDate != right.startDate { return left.startDate < right.startDate }
+        return left.count > right.count
+      }) else { continue }
+      let sampleDuration = sample.endDate.timeIntervalSince(sample.startDate)
+      count += sample.count / sampleDuration * segmentDuration
+      time += segmentDuration
+    }
+    guard count > 0, time > 0 else { return nil }
+    return SwimStrokeMetricsValue(count: count, timeS: time)
+  }
+
   private static func roundedInt(_ value: Double?) -> Int? {
     guard let value, value.isFinite else { return nil }
     return Int(value.rounded())
@@ -193,5 +294,10 @@ struct HealthAggregator {
   private static func roundedTenth(_ value: Double?) -> Double? {
     guard let value, value.isFinite else { return nil }
     return (value * 10).rounded() / 10
+  }
+
+  private static func roundedPositiveTenth(_ value: Double?) -> Double? {
+    guard let rounded = roundedTenth(value), rounded > 0 else { return nil }
+    return rounded
   }
 }

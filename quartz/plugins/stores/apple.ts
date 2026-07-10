@@ -20,6 +20,7 @@ export interface AppleSwim {
   strokeCount: number | null
   strokeTimeS: number | null
   strokes: Record<string, number>
+  intervals?: AppleSwimInterval[]
 }
 
 export interface AppleHeartRateSample {
@@ -59,6 +60,18 @@ export const SWIM_STROKES = [
   'kickboard',
 ] as const
 export type SwimStroke = (typeof SWIM_STROKES)[number]
+
+export interface AppleSwimInterval {
+  start: string
+  end: string
+  distanceM: number
+  startElapsedS?: number | null
+  endElapsedS?: number | null
+  durationS?: number | null
+  strokeCount: number | null
+  strokeTimeS: number | null
+  stroke: SwimStroke | null
+}
 
 export const STROKE_LABEL: Record<SwimStroke, string> = {
   freestyle: 'freestyle',
@@ -335,6 +348,67 @@ function unionStrokeTotals(laps: AppleSwimLap[]): { count: number; timeS: number
   return { count, timeS: timeMs / 1000 }
 }
 
+function intervalStrokeTotals(
+  distance: AppleSwimDistanceRecord,
+  laps: AppleSwimLap[],
+): { count: number | null; timeS: number | null; stroke: SwimStroke | null } {
+  const start = Date.parse(distance.start)
+  const end = Date.parse(distance.end)
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start)
+    return { count: null, timeS: null, stroke: null }
+  const overlaps = laps
+    .map(lap => {
+      const lapStart = Date.parse(lap.start)
+      const lapEnd = Date.parse(lap.end)
+      const overlapMs = Math.max(0, Math.min(end, lapEnd) - Math.max(start, lapStart))
+      return { lap, start: lapStart, end: lapEnd, overlapMs }
+    })
+    .filter(
+      overlap =>
+        Number.isFinite(overlap.start) &&
+        Number.isFinite(overlap.end) &&
+        overlap.end > overlap.start &&
+        overlap.overlapMs > 0,
+    )
+    .sort(
+      (a, b) =>
+        b.overlapMs - a.overlapMs ||
+        a.end - a.start - (b.end - b.start) ||
+        b.lap.count - a.lap.count,
+    )
+  const stroke = overlaps[0]?.lap.stroke ?? null
+  if (stroke === 'kickboard') return { count: null, timeS: null, stroke }
+  const rateIntervals = overlaps.filter(
+    overlap => overlap.lap.count > 0 && overlap.lap.stroke !== 'kickboard',
+  )
+  const exact = rateIntervals.find(interval => interval.start === start && interval.end === end)
+  if (exact) return { count: exact.lap.count, timeS: (end - start) / 1000, stroke }
+  const boundaries = new Set([start, end])
+  for (const interval of rateIntervals) {
+    boundaries.add(Math.max(start, interval.start))
+    boundaries.add(Math.min(end, interval.end))
+  }
+  const sortedBoundaries = [...boundaries].sort((a, b) => a - b)
+  let count = 0
+  let timeMs = 0
+  for (let index = 0; index < sortedBoundaries.length - 1; index++) {
+    const segmentStart = sortedBoundaries[index]
+    const segmentEnd = sortedBoundaries[index + 1]
+    const segmentMs = segmentEnd - segmentStart
+    if (segmentMs <= 0) continue
+    const interval = rateIntervals
+      .filter(candidate => candidate.start <= segmentStart && candidate.end >= segmentEnd)
+      .sort(
+        (a, b) =>
+          a.end - a.start - (b.end - b.start) || a.start - b.start || b.lap.count - a.lap.count,
+      )[0]
+    if (!interval) continue
+    count += (interval.lap.count / (interval.end - interval.start)) * segmentMs
+    timeMs += segmentMs
+  }
+  return { count: count > 0 ? count : null, timeS: timeMs > 0 ? timeMs / 1000 : null, stroke }
+}
+
 interface SwimAggregate {
   id: string
   date: string
@@ -439,6 +513,33 @@ export function aggregateSwimLaps(
       for (const stroke of Object.keys(strokes)) {
         strokes[stroke] = Math.round(strokes[stroke])
       }
+      const intervals = aggregate.distances
+        .slice()
+        .sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end))
+        .map(distance => {
+          const start = parseIsoSecond(distance.start)
+          const end = parseIsoSecond(distance.end)
+          const stroke = intervalStrokeTotals(distance, aggregate.strokeLaps)
+          if (!start || !end || Date.parse(end) <= Date.parse(start)) return null
+          return {
+            start,
+            end,
+            distanceM: Math.round(distance.meters * 10) / 10,
+            startElapsedS:
+              Math.round(
+                Math.max(0, (Date.parse(distance.start) - Date.parse(aggregate.start)) / 1000) * 10,
+              ) / 10,
+            endElapsedS:
+              Math.round(
+                Math.max(0, (Date.parse(distance.end) - Date.parse(aggregate.start)) / 1000) * 10,
+              ) / 10,
+            durationS: Math.round(((Date.parse(end) - Date.parse(start)) / 1000) * 10) / 10,
+            strokeCount: stroke.count != null ? Math.round(stroke.count * 10) / 10 : null,
+            strokeTimeS: stroke.timeS != null ? Math.round(stroke.timeS * 10) / 10 : null,
+            stroke: stroke.stroke,
+          }
+        })
+        .filter(interval => interval !== null)
       return {
         id: aggregate.id,
         date: aggregate.date,
@@ -450,6 +551,7 @@ export function aggregateSwimLaps(
         strokeCount: strokeTotals.count > 0 ? Math.round(strokeTotals.count) : null,
         strokeTimeS: strokeTotals.timeS > 0 ? Math.round(strokeTotals.timeS) : null,
         strokes,
+        intervals,
       }
     })
     .filter(swim => swim !== null)
@@ -522,6 +624,52 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
       const rounded = num(meters)
       if (rounded != null && rounded > 0) strokes[stroke] = Math.round(rounded)
     }
+    const intervals: AppleSwimInterval[] = []
+    const rawIntervals = Array.isArray(swim.intervals) ? swim.intervals : []
+    for (const interval of rawIntervals) {
+      if (!isRecord(interval)) continue
+      const intervalStart = parseIsoSecond(interval.start)
+      const intervalEnd = parseIsoSecond(interval.end)
+      const distanceM = num(interval.distanceM)
+      const startElapsedS = num(interval.startElapsedS)
+      const endElapsedS = num(interval.endElapsedS)
+      const durationS = num(interval.durationS)
+      const intervalStrokeCount = num(interval.strokeCount)
+      const intervalStrokeTimeS = num(interval.strokeTimeS)
+      const strokeName = readString(interval, 'stroke')
+      const stroke = SWIM_STROKES.find(candidate => candidate === strokeName) ?? null
+      if (
+        !intervalStart ||
+        !intervalEnd ||
+        Date.parse(intervalEnd) <= Date.parse(intervalStart) ||
+        distanceM == null ||
+        distanceM <= 0
+      )
+        continue
+      intervals.push({
+        start: intervalStart,
+        end: intervalEnd,
+        distanceM: Math.round(distanceM * 10) / 10,
+        startElapsedS:
+          startElapsedS != null && startElapsedS >= 0 ? Math.round(startElapsedS * 10) / 10 : null,
+        endElapsedS:
+          endElapsedS != null && endElapsedS > 0 ? Math.round(endElapsedS * 10) / 10 : null,
+        durationS:
+          durationS != null && durationS > 0
+            ? Math.round(durationS * 10) / 10
+            : Math.round(((Date.parse(intervalEnd) - Date.parse(intervalStart)) / 1000) * 10) / 10,
+        strokeCount:
+          intervalStrokeCount != null && intervalStrokeCount >= 0
+            ? Math.round(intervalStrokeCount * 10) / 10
+            : null,
+        strokeTimeS:
+          intervalStrokeTimeS != null && intervalStrokeTimeS > 0
+            ? Math.round(intervalStrokeTimeS * 10) / 10
+            : null,
+        stroke,
+      })
+    }
+    intervals.sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end))
     out.push({
       id,
       date,
@@ -533,6 +681,7 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
       strokeCount: strokeCount != null && strokeCount >= 0 ? Math.round(strokeCount) : null,
       strokeTimeS: strokeTimeS != null && strokeTimeS >= 0 ? Math.round(strokeTimeS) : null,
       strokes,
+      intervals,
     })
   }
   return out.sort(
