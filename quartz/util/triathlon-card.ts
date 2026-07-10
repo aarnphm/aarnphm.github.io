@@ -50,10 +50,10 @@ export const dur = (s: number): string => {
   return h > 0 ? `${h}h${m.toString().padStart(2, '0')}'` : `${m}'`
 }
 
-export const clock = (s: number): string =>
-  `${Math.floor(s / 60)}:${Math.round(s % 60)
-    .toString()
-    .padStart(2, '0')}`
+export const clock = (s: number): string => {
+  const seconds = Math.round(s)
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
+}
 
 export const shortDate = (iso: string): string => {
   const [, m, d] = iso.split('-').map(Number)
@@ -83,6 +83,18 @@ export const scrubDist = (km: number, sport: ActivityKind): string =>
     : imperial
       ? `${(km * KM_TO_MI).toFixed(2)} mi`
       : `${km.toFixed(2)} km`
+
+const elevationValue = (meters: number): number => (imperial ? meters * M_TO_FT : meters)
+
+export const formatAltitude = (meters: number): string => {
+  const rounded = Math.round(elevationValue(meters))
+  return `${(rounded === 0 ? 0 : rounded).toLocaleString('en-US')} ${imperial ? 'ft' : 'm'}`
+}
+
+export const formatElevationGain = (meters: number): string => formatAltitude(meters)
+
+export const formatVam = (metersPerHour: number): string =>
+  `${Math.round(elevationValue(metersPerHour)).toLocaleString('en-US')} ${imperial ? 'ft/h' : 'm/h'}`
 
 export const gradeAt = (route: StravaActivityDetail['route'], i: number): number => {
   const j0 = Math.max(0, i - 2)
@@ -172,11 +184,13 @@ export const routeStreamFlags = (
 
 export const hasMoreSection = (d: StravaActivityDetail): boolean => {
   const flags = routeStreamFlags(d)
+  const efforts = d.bestEfforts
   return (
     moreStatRows(d).length > 0 ||
     flags.power ||
     flags.hr ||
     flags.cad ||
+    !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
   )
 }
@@ -232,14 +246,64 @@ export const buildRoute = <N>(f: TriNodeFactory<N>, route: StravaActivityDetail[
   return fig
 }
 
+const niceStep = (span: number, intervals: number): number => {
+  if (!Number.isFinite(span) || span <= 0) return 1
+  const raw = span / Math.max(1, intervals)
+  const magnitude = 10 ** Math.floor(Math.log10(raw))
+  const fraction = raw / magnitude
+  const nice = fraction < 1.5 ? 1 : fraction < 3 ? 2 : fraction < 7 ? 5 : 10
+  return nice * magnitude
+}
+
+const niceTicks = (min: number, max: number, intervals: number): number[] => {
+  const step = niceStep(max - min, intervals)
+  const first = Math.ceil(min / step) * step
+  const ticks: number[] = []
+  for (let value = first; value <= max + step * 1e-6; value += step)
+    ticks.push(Math.round(value * 1e6) / 1e6)
+  if (ticks.length >= 2) return ticks
+  return [min, max]
+}
+
+const axisNumber = (value: number, step: number): string => {
+  const decimals = step >= 1 ? 0 : Math.min(2, Math.ceil(-Math.log10(step)))
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })
+}
+
+const distanceXTicks = (maxDKm: number): AxisXTick[] => {
+  const displayMaxD = maxDKm * (imperial ? KM_TO_MI : 1)
+  const step = niceStep(displayMaxD, 4)
+  const ticks: AxisXTick[] = []
+  for (let value = step; value < displayMaxD - step * 1e-6; value += step)
+    ticks.push({
+      label: `${axisNumber(value, step)} ${imperial ? 'mi' : 'km'}`,
+      pct: (value / displayMaxD) * 100,
+    })
+  return ticks
+}
+
 export const buildElevation = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
   const w = 100
   const h = 30
-  const pad = 2
   const maxD = d.route[d.route.length - 1].d || 1
-  const altSpan = Math.max(1, d.maxAlt - d.minAlt)
+  const displayMinAlt = elevationValue(d.minAlt)
+  const displayMaxAlt = elevationValue(d.maxAlt)
+  const altPad = displayMinAlt === displayMaxAlt ? 1 : 0
+  const minAlt = displayMinAlt - altPad
+  const maxAlt = displayMaxAlt + altPad
+  const altSpan = Math.max(1e-6, maxAlt - minAlt)
   const px = (km: number): number => (km / maxD) * w
-  const py = (alt: number): number => h - pad - ((alt - d.minAlt) / altSpan) * (h - 2 * pad)
+  const py = (alt: number): number => h - ((elevationValue(alt) - minAlt) / altSpan) * h
+  const yValues = niceTicks(minAlt, maxAlt, 4)
+  const yStep = niceStep(maxAlt - minAlt, 4)
+  const yTicks = yValues.map(value => ({
+    label: `${axisNumber(value, yStep)} ${imperial ? 'ft' : 'm'}`,
+    vbY: h - ((value - minAlt) / altSpan) * h,
+  }))
+  const xTicks = distanceXTicks(maxD)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
@@ -252,6 +316,8 @@ export const buildElevation = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
     viewBox: `0 0 ${w} ${h}`,
     preserveAspectRatio: 'none',
   })
+  for (const tick of yTicks)
+    f.add(fig, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: w, y2: tick.vbY }))
   f.add(fig, f.svg('path', { d: area, class: 'tri-elev-area' }))
   f.add(fig, f.svg('path', { d: line, class: 'tri-elev-line' }))
   f.add(fig, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
@@ -259,11 +325,58 @@ export const buildElevation = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
   const cap = f.el('div', 'tri-elev-cap')
   f.add(
     cap,
-    f.el('span', 'tri-elev-d', `+${d.elevationM} m`),
-    f.el('span', 'tri-elev-d', `−${d.descentM} m`),
-    f.el('span', 'tri-elev-range', `${Math.round(d.minAlt)}–${Math.round(d.maxAlt)} m`),
+    f.el('span', 'tri-elev-d', `+${formatElevationGain(d.elevationM)}`),
+    f.el('span', 'tri-elev-d', `−${formatElevationGain(d.descentM)}`),
+    f.el('span', 'tri-elev-range', `${formatAltitude(d.minAlt)}–${formatAltitude(d.maxAlt)}`),
   )
-  f.add(wrap, fig, cap)
+  f.add(wrap, axisFrame(f, fig, yTicks, h, xTicks, true, { top: 0, bottom: h }), cap)
+  return wrap
+}
+
+export const buildTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number,
+  title: string,
+  cap: (max: number) => string,
+  tick: (value: number) => string,
+): N => {
+  const w = 100
+  const h = 30
+  const maxD = d.route[d.route.length - 1].d || 1
+  let max = 1
+  d.route.forEach((p, i) => {
+    const v = pick(p, i)
+    if (v > max) max = v
+  })
+  const px = (km: number): number => (km / maxD) * w
+  const py = (v: number): number => h - (v / max) * (h - 1)
+  let area = `M 0 ${h} `
+  let line = ''
+  d.route.forEach((p, i) => {
+    const v = pick(p, i)
+    area += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
+    line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
+  })
+  area += `L ${w} ${h} Z`
+  const yTicks = niceTicks(0, max, 3).map(value => ({
+    label: value === 0 ? '0' : tick(value),
+    vbY: py(value),
+  }))
+  const s = f.svg('svg', {
+    class: 'tri-elev',
+    viewBox: `0 0 ${w} ${h}`,
+    preserveAspectRatio: 'none',
+  })
+  for (const t of yTicks)
+    f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
+  f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
+  f.add(s, f.svg('path', { d: line, class: 'tri-elev-line' }))
+  f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
+  const wrap = f.el('div', 'tri-elev-wrap')
+  const capEl = f.el('div', 'tri-elev-cap')
+  f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(max)))
+  f.add(wrap, capEl, axisFrame(f, s, yTicks, h, distanceXTicks(maxD), true, { top: 0, bottom: h }))
   return wrap
 }
 
@@ -385,6 +498,213 @@ const zoneRange = (bounds: number[], i: number): string => {
 export const dlabel = (sec: number): string =>
   sec < 60 ? `${sec}s` : sec < 3600 ? `${sec / 60}m` : `${sec / 3600}h`
 
+export type PowerCurveHover = {
+  index: number
+  durationS: number
+  watts: number
+  referenceWatts: number | null
+  xPct: number
+}
+
+export const powerCurveFraction = (
+  seconds: number,
+  minSeconds: number,
+  maxSeconds: number,
+): number => {
+  if (minSeconds <= 0 || maxSeconds <= minSeconds) return 0
+  const value = Math.min(maxSeconds, Math.max(minSeconds, seconds))
+  return (Math.log(value) - Math.log(minSeconds)) / (Math.log(maxSeconds) - Math.log(minSeconds))
+}
+
+export const powerCurveHoverAt = (
+  curve: PowerCurvePoint[],
+  reference: PowerCurvePoint[],
+  pointerFraction: number,
+): PowerCurveHover | null => {
+  if (curve.length < 2) return null
+  const fraction = Math.min(1, Math.max(0, pointerFraction))
+  const minSeconds = curve[0].s
+  const maxSeconds = curve[curve.length - 1].s
+  let index = 0
+  let distance = Infinity
+  curve.forEach((point, candidate) => {
+    const candidateDistance = Math.abs(
+      powerCurveFraction(point.s, minSeconds, maxSeconds) - fraction,
+    )
+    if (candidateDistance >= distance) return
+    index = candidate
+    distance = candidateDistance
+  })
+  const point = curve[index]
+  return {
+    index,
+    durationS: point.s,
+    watts: point.w,
+    referenceWatts: reference.find(candidate => candidate.s === point.s)?.w ?? null,
+    xPct: powerCurveFraction(point.s, minSeconds, maxSeconds) * 100,
+  }
+}
+
+const effortDuration = (seconds: number): string => {
+  if (seconds < 60) return `${Math.round(seconds)} sec`
+  if (seconds < 3600 && seconds % 60 === 0) {
+    const minutes = seconds / 60
+    return `${minutes} min`
+  }
+  if (seconds % 3600 === 0) {
+    const hours = seconds / 3600
+    return `${hours} hr`
+  }
+  return zoneClock(seconds)
+}
+
+const cyclingSpeed = (kph: number): string =>
+  imperial ? `${(kph * KM_TO_MI).toFixed(1)} mph` : `${kph.toFixed(1)} km/h`
+
+const heartRate = (bpm: number | null): string => (bpm == null ? '—' : `${Math.round(bpm)} bpm`)
+
+const watts = (value: number | null): string =>
+  value == null ? '—' : `${Math.round(value).toLocaleString('en-US')} W`
+
+const wattsPerKg = (value: number | null): string =>
+  value == null ? '—' : `${value.toLocaleString('en-US', { maximumFractionDigits: 2 })} W/kg`
+
+const effortTable = <N>(
+  f: TriNodeFactory<N>,
+  title: string,
+  kind: string,
+  headers: string[],
+  rows: string[][],
+): N => {
+  const block = f.el('div', `tri-effort-block tri-effort-block--${kind}`)
+  const table = f.el('table', `tri-effort-table tri-effort-table--${kind}`, undefined, {
+    'aria-label': `${title} efforts`,
+  })
+  const thead = f.el('thead')
+  const heading = f.el('tr')
+  for (const label of headers) f.add(heading, f.el('th', undefined, label, { scope: 'col' }))
+  f.add(thead, heading)
+  const tbody = f.el('tbody')
+  for (const cells of rows) {
+    const row = f.el('tr')
+    cells.forEach((value, index) =>
+      f.add(
+        row,
+        f.el(index === 0 ? 'th' : 'td', undefined, value, index === 0 ? { scope: 'row' } : {}),
+      ),
+    )
+    f.add(tbody, row)
+  }
+  f.add(table, thead, tbody)
+  const scroll = f.el('div', 'tri-effort-scroll', undefined, {
+    role: 'region',
+    'aria-label': `${title} efforts`,
+    tabindex: '0',
+  })
+  f.add(scroll, table)
+  const viewport = f.el('div', 'tri-effort-viewport')
+  f.add(viewport, scroll)
+  f.add(block, f.el('div', 'tri-zone-title tri-effort-title', title), viewport)
+  return block
+}
+
+export const buildCyclingBestEfforts = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+): N | null => {
+  const efforts = d.bestEfforts
+  if (
+    d.sport !== 'bike' ||
+    !efforts ||
+    (efforts.distance.length === 0 && efforts.power.length === 0 && efforts.climbs.length === 0)
+  )
+    return null
+
+  const wrap = f.el('section', 'tri-efforts', undefined, { 'aria-label': 'Cycling best efforts' })
+  if (efforts.distance.length > 0)
+    f.add(
+      wrap,
+      effortTable(
+        f,
+        'Distance',
+        'distance',
+        ['Distance', 'Time', 'Speed', 'Heart rate', 'Elev'],
+        efforts.distance.map(row => [
+          row.label || scrubDist(row.targetDistanceM / 1000, 'bike'),
+          zoneClock(row.elapsedTimeS),
+          cyclingSpeed(row.averageSpeedKph),
+          heartRate(row.averageHeartRate),
+          formatAltitude(row.elevationDeltaM),
+        ]),
+      ),
+    )
+  if (efforts.power.length > 0) {
+    f.add(
+      wrap,
+      effortTable(
+        f,
+        'Power',
+        'power',
+        ['Time', 'Power', 'W/kg', 'Heart rate', 'Elev'],
+        efforts.power.map(row => [
+          effortDuration(row.durationS),
+          watts(row.averageWatts),
+          wattsPerKg(row.wattsPerKg),
+          heartRate(row.averageHeartRate),
+          formatAltitude(row.elevationDeltaM),
+        ]),
+      ),
+    )
+  }
+  if (efforts.climbs.length > 0)
+    f.add(
+      wrap,
+      effortTable(
+        f,
+        'Climbing',
+        'climbing',
+        [
+          'Climb',
+          'Time',
+          'Distance',
+          'Gain',
+          'Grade',
+          'Speed',
+          'Heart rate',
+          'Power',
+          'W/kg',
+          'VAM',
+        ],
+        efforts.climbs.map((row, index) => [
+          row.name || `Climb ${index + 1}`,
+          zoneClock(row.durationS),
+          scrubDist(row.distanceM / 1000, 'bike'),
+          formatElevationGain(row.elevationGainM),
+          `${row.averageGradePct.toFixed(1)}%`,
+          cyclingSpeed(row.averageSpeedKph),
+          heartRate(row.averageHeartRate),
+          watts(row.averageWatts),
+          wattsPerKg(row.wattsPerKg),
+          formatVam(row.vamMPerHour),
+        ]),
+      ),
+    )
+  if (
+    efforts.weightKg != null &&
+    efforts.weightDate &&
+    (efforts.power.length || efforts.climbs.length)
+  )
+    f.add(
+      wrap,
+      f.el(
+        'p',
+        'tri-effort-note',
+        `W/kg from ${efforts.weightKg.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} kg Garmin weight · ${shortDate(efforts.weightDate)}`,
+      ),
+    )
+  return wrap
+}
+
 export const axisFrame = <N>(
   f: TriNodeFactory<N>,
   svgEl: N,
@@ -392,6 +712,7 @@ export const axisFrame = <N>(
   vbH: number,
   xTicks: AxisXTick[],
   axes = true,
+  axisRange?: { top: number; bottom: number },
 ): N => {
   const frame = f.el('div', 'tri-cax-frame')
   const yax = f.el('div', 'tri-cax-yax')
@@ -401,10 +722,10 @@ export const axisFrame = <N>(
       f.el('span', 'tri-cax-yt', t.label, { style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%` }),
     )
   const stage = f.el('div', 'tri-cax-stage')
-  if (axes && yTicks.length >= 2) {
+  if (axes && (yTicks.length >= 2 || axisRange)) {
     const pcts = yTicks.map(t => (t.vbY / vbH) * 100)
-    const top = Math.min(...pcts)
-    const base = Math.max(...pcts)
+    const top = axisRange ? (axisRange.top / vbH) * 100 : Math.min(...pcts)
+    const base = axisRange ? (axisRange.bottom / vbH) * 100 : Math.max(...pcts)
     f.add(
       stage,
       f.el('span', 'tri-cax-ax tri-cax-ax--y', undefined, {
@@ -424,6 +745,13 @@ export const axisFrame = <N>(
     )
   f.add(frame, yax, stage, xax)
   return frame
+}
+
+export const zoneDuo = <N>(f: TriNodeFactory<N>, a: N | null, b: N | null): N | null => {
+  if (!a || !b) return a ?? b
+  const duo = f.el('div', 'tri-zone-duo')
+  f.add(duo, a, b)
+  return duo
 }
 
 const zoneTable = <N>(
@@ -592,27 +920,31 @@ export const buildPowerCurve = <N>(
   const H = 34
   const secs = curve.map(c => c.s)
   const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w), ftpRef ?? 0, goalRef ?? 0)
-  const minLog = Math.log(secs[0])
-  const maxLog = Math.log(secs[secs.length - 1])
-  const span = Math.max(1e-6, maxLog - minLog)
-  const X = (sec: number): number => ((Math.log(sec) - minLog) / span) * W
+  const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
   const Y = (w: number): number => H - (w / maxW) * (H - 1)
   const toPath = (pts: PowerCurvePoint[]): string =>
     pts.map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`).join(' ')
+  const visibleRef = ref.filter(c => c.s >= secs[0] && c.s <= secs[secs.length - 1])
+  const initialValueText = `${dlabel(curve[0].s)} · ${curve[0].w.toLocaleString('en-US')} W`
   const s = f.svg('svg', {
     class: 'tri-curve-svg',
     viewBox: `0 0 ${W} ${H}`,
     preserveAspectRatio: 'none',
     'data-curve': JSON.stringify(curve),
+    'data-curve-ref': JSON.stringify(visibleRef),
+    'data-i18n-aria-label': 'power curve',
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': 'power curve',
+    'aria-orientation': 'horizontal',
+    'aria-readonly': 'true',
+    'aria-valuemin': curve[0].s,
+    'aria-valuemax': curve[curve.length - 1].s,
+    'aria-valuenow': curve[0].s,
+    'aria-valuetext': initialValueText,
   })
-  if (ref.length >= 2)
-    f.add(
-      s,
-      f.svg('path', {
-        d: toPath(ref.filter(c => c.s <= secs[secs.length - 1])),
-        class: 'tri-curve-ref',
-      }),
-    )
+  if (visibleRef.length >= 2)
+    f.add(s, f.svg('path', { d: toPath(visibleRef), class: 'tri-curve-ref' }))
   if (ftpRef != null)
     f.add(
       s,
@@ -640,16 +972,16 @@ export const buildPowerCurve = <N>(
   const curveDurTicks = [1, 5, 30, 60, 300, 1200, 3600].filter(
     sec => sec >= secs[0] && sec <= secs[secs.length - 1],
   )
+  const curveStep = niceStep(maxW, 4)
   f.add(
     wrap,
     axisFrame(
       f,
       s,
-      [
-        { label: `${Math.round(maxW)}w`, vbY: Y(maxW) },
-        { label: `${Math.round(maxW / 2)}w`, vbY: Y(maxW / 2) },
-        { label: '0', vbY: Y(0) },
-      ],
+      niceTicks(0, maxW, 4).map(value => ({
+        label: value === 0 ? '0' : `${axisNumber(value, curveStep)}w`,
+        vbY: Y(value),
+      })),
       H,
       curveDurTicks.map((sec, idx) => ({
         label: dlabel(sec),
@@ -658,7 +990,33 @@ export const buildPowerCurve = <N>(
       })),
     ),
   )
-  f.add(wrap, f.el('div', 'tri-chart-readout'))
+  const readout = f.el('div', 'tri-chart-readout tri-curve-readout', undefined, {
+    'aria-hidden': 'true',
+  })
+  f.add(readout, f.el('span', 'tri-curve-readout-duration'))
+  const rideRow = f.el('span', 'tri-curve-readout-row')
+  f.add(
+    rideRow,
+    f.el('span', 'tri-curve-readout-swatch tri-curve-readout-swatch--ride', undefined, {
+      'aria-hidden': 'true',
+    }),
+    f.el('strong', 'tri-curve-readout-value tri-curve-readout-value--ride'),
+    f.el('span', 'tri-curve-readout-label', 'this ride', { 'data-i18n': 'this ride' }),
+  )
+  f.add(readout, rideRow)
+  if (visibleRef.length >= 2) {
+    const referenceRow = f.el('span', 'tri-curve-readout-row tri-curve-readout-row--ref')
+    f.add(
+      referenceRow,
+      f.el('span', 'tri-curve-readout-swatch tri-curve-readout-swatch--ref', undefined, {
+        'aria-hidden': 'true',
+      }),
+      f.el('strong', 'tri-curve-readout-value tri-curve-readout-value--ref'),
+      f.el('span', 'tri-curve-readout-label', '6-week best', { 'data-i18n': '6-week best' }),
+    )
+    f.add(readout, referenceRow)
+  }
+  f.add(wrap, readout)
   const cap = f.el('div', 'tri-elev-cap')
   for (const sec of [5, 60, 300, 1200]) {
     const p = curve.find(c => c.s === sec)
@@ -695,14 +1053,13 @@ export const buildActivity = <N>(
     if (fueling) f.add(wrap, fueling)
   }
   if (d.route.length >= 2) {
-    const figs = f.el('div', 'tri-act-figs')
+    const secondary = d.sport === 'swim' ? buildSwimStrokes(f, d) : buildElevation(f, d)
+    const figs = f.el(
+      'div',
+      `tri-act-figs tri-act-figs--route${secondary ? ' tri-act-figs--split' : ''}`,
+    )
     f.add(figs, buildRoute(f, d.route))
-    if (d.sport === 'swim') {
-      const strokes = buildSwimStrokes(f, d)
-      if (strokes) f.add(figs, strokes)
-    } else {
-      f.add(figs, buildElevation(f, d))
-    }
+    if (secondary) f.add(figs, secondary)
     f.add(wrap, figs)
   } else if (d.sport === 'swim') {
     const figs = f.el('div', 'tri-act-figs')
@@ -714,15 +1071,13 @@ export const buildActivity = <N>(
     const rows = moreStatRows(d)
     if (rows.length > 0) f.add(more, statsTable(f, rows))
     if (ctx) {
-      const hrz = buildHrZones(f, d, ctx)
-      if (hrz) f.add(more, hrz)
-      const pcurve = buildPowerCurve(f, d, ctx)
-      if (pcurve) f.add(more, pcurve)
-      const pz = buildPowerZones(f, d, ctx)
-      if (pz) f.add(more, pz)
-      const phist = buildPowerHist(f, d)
-      if (phist) f.add(more, phist)
+      const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
+      if (zones) f.add(more, zones)
+      const charts = zoneDuo(f, buildPowerCurve(f, d, ctx), buildPowerHist(f, d))
+      if (charts) f.add(more, charts)
     }
+    const bestEfforts = buildCyclingBestEfforts(f, d)
+    if (bestEfforts) f.add(more, bestEfforts)
     f.add(wrap, f.el('button', 'tri-act-toggle', undefined, { type: 'button' }), more)
   }
   return wrap

@@ -17,7 +17,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 1
+const CACHE_VERSION = 2
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -179,13 +179,14 @@ async function fetchActivities(
 async function fetchStreams(token: string, id: number): Promise<StravaStreams | null> {
   const headers = authHeaders(token)
   const url = apiUrl(`/activities/${id}/streams`, {
-    keys: 'latlng,altitude,distance,watts,heartrate,cadence',
+    keys: 'time,latlng,altitude,distance,watts,heartrate,cadence',
     key_by_type: 'true',
   })
   const res = await fetchWithRetry(url, { headers }, limiter)
   if (!res) return null
   const data = (await res.json()) as Record<string, { data?: unknown[] }>
   return {
+    time: (data.time?.data as number[]) ?? [],
     latlng: (data.latlng?.data as [number, number][]) ?? [],
     altitude: (data.altitude?.data as number[]) ?? [],
     distance: (data.distance?.data as number[]) ?? [],
@@ -270,7 +271,10 @@ async function main(): Promise<void> {
   const { activities, athleteId } = await fetchActivities(access, after)
 
   const merged: Record<string, RawStravaActivity> = { ...prev?.activities }
-  for (const a of activities) merged[String(a.id)] = a
+  for (const a of activities) {
+    const previous = merged[String(a.id)]
+    merged[String(a.id)] = { ...a, calories: a.calories ?? previous?.calories }
+  }
 
   let lastActivityStart = prev?.lastActivityStart ?? 0
   for (const a of Object.values(merged)) {
@@ -314,7 +318,7 @@ async function main(): Promise<void> {
     .filter(a => {
       if (normalizeKind(a.sportType) === null) return false
       const s = streams[String(a.id)]
-      return !s || s.heartrate === undefined
+      return !s || s.heartrate === undefined || !s.time?.length
     })
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
   let si = 0

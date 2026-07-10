@@ -1,4 +1,10 @@
-import type { GarminActivityMatch, GarminCache, GarminFueling, GarminStreams } from './garmin'
+import type {
+  GarminActivityMatch,
+  GarminCache,
+  GarminClimbSegment,
+  GarminFueling,
+  GarminStreams,
+} from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { WeatherCache } from './weather'
 import { localIsoDay } from '../../util/local-date'
@@ -84,6 +90,7 @@ export interface RawStravaActivity {
 }
 
 export interface StravaStreams {
+  time?: number[]
   latlng: [number, number][]
   altitude: number[]
   distance: number[]
@@ -113,6 +120,44 @@ export interface StravaRawCache {
 export interface PowerCurvePoint {
   s: number
   w: number
+}
+
+export interface CyclingDistanceEffort {
+  label: string
+  targetDistanceM: number
+  elapsedTimeS: number
+  averageSpeedKph: number
+  averageHeartRate: number | null
+  elevationDeltaM: number
+}
+
+export interface CyclingPowerEffort {
+  durationS: number
+  averageWatts: number
+  wattsPerKg: number | null
+  averageHeartRate: number | null
+  elevationDeltaM: number
+}
+
+export interface CyclingClimbEffort {
+  name: string
+  durationS: number
+  distanceM: number
+  elevationGainM: number
+  averageGradePct: number
+  averageSpeedKph: number
+  averageHeartRate: number | null
+  averageWatts: number | null
+  wattsPerKg: number | null
+  vamMPerHour: number
+}
+
+export interface CyclingBestEfforts {
+  weightKg: number | null
+  weightDate: string | null
+  distance: CyclingDistanceEffort[]
+  power: CyclingPowerEffort[]
+  climbs: CyclingClimbEffort[]
 }
 
 export interface StravaSportTotals {
@@ -242,6 +287,7 @@ export interface StravaActivityDetail {
   powerZones: number[] | null
   powerHist: number[] | null
   powerCurve: PowerCurvePoint[] | null
+  bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
 }
 
@@ -457,6 +503,13 @@ function selectStreams(
   return streamQuality(fromGarmin) > streamQuality(strava) ? fromGarmin : strava
 }
 
+function selectEffortStreams(
+  strava: StravaStreams | undefined,
+  selected: StravaStreams | GarminStreams | undefined,
+): StravaStreams | GarminStreams | undefined {
+  return strava?.time?.length ? strava : selected
+}
+
 export function resolveActivityHeartRate(
   a: RawStravaActivity,
   sport: ActivityKind,
@@ -484,24 +537,274 @@ export function resolveActivityHeartRate(
   return { avgHr: stravaAvg, maxHr: stravaMax, stream: selectedHr }
 }
 
-const CURVE_SECS = [1, 5, 10, 15, 30, 60, 120, 180, 300, 600, 1200, 1800, 3600, 5400, 7200, 10800]
+const MILE_M = 1609.344
+const MAX_EFFORT_TIMELINE_S = (7 * DAY_MS) / 1000
+const CURVE_SECS = [
+  ...Array.from({ length: 60 }, (_, index) => index + 1),
+  120,
+  180,
+  300,
+  480,
+  600,
+  900,
+  1200,
+  1800,
+  2700,
+  3600,
+  5400,
+  7200,
+  10800,
+]
+const POWER_EFFORT_SECS = [
+  5, 15, 30, 60, 120, 180, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200,
+]
+const DISTANCE_EFFORTS = [
+  ['5 mile', 5 * MILE_M],
+  ['10K', 10_000],
+  ['10 mile', 10 * MILE_M],
+  ['20K', 20_000],
+  ['30K', 30_000],
+  ['40K', 40_000],
+  ['50K', 50_000],
+  ['80K', 80_000],
+  ['50 mile', 50 * MILE_M],
+  ['90K', 90_000],
+  ['100K', 100_000],
+  ['100 mile', 100 * MILE_M],
+  ['180K', 180_000],
+] as const
 
-function meanMaxCurve(w: number[]): PowerCurvePoint[] {
-  const n = w.length
-  if (n < 1) return []
-  const pre = new Float64Array(n + 1)
-  for (let i = 0; i < n; i++) pre[i + 1] = pre[i] + (w[i] > 0 ? w[i] : 0)
-  const out: PowerCurvePoint[] = []
-  for (const d of CURVE_SECS) {
-    if (d > n) break
-    let best = 0
-    for (let i = 0; i + d <= n; i++) {
-      const avg = (pre[i + d] - pre[i]) / d
-      if (avg > best) best = avg
-    }
-    out.push({ s: d, w: Math.round(best) })
+interface EffortTimeline {
+  distanceM: Float64Array
+  altitudeM: Float64Array
+  watts: Float64Array
+  heartRate: Float64Array
+}
+
+interface BestPowerWindow {
+  durationS: number
+  start: number
+  end: number
+  averageWatts: number
+}
+
+function effortTimeline(
+  streams: StravaStreams | GarminStreams | undefined,
+  movingTimeS: number,
+): EffortTimeline | null {
+  if (!streams) return null
+  const sampleCount = Math.max(
+    streams.distance.length,
+    streams.altitude.length,
+    streams.watts?.length ?? 0,
+    streams.heartrate?.length ?? 0,
+  )
+  if (sampleCount < 2) return null
+  const rawTime = 'time' in streams ? streams.time : undefined
+  if ('time' in streams && rawTime?.length !== sampleCount) return null
+  if (!rawTime && Math.abs(sampleCount - movingTimeS) / Math.max(1, movingTimeS) > 0.15) return null
+  const sampleSeconds = new Int32Array(sampleCount)
+  let previousSecond = 0
+  for (let i = 0; i < sampleCount; i++) {
+    const raw = rawTime ? rawTime[i] : i
+    const second = Number.isFinite(raw) ? Math.max(previousSecond, Math.round(raw)) : previousSecond
+    sampleSeconds[i] = second
+    previousSecond = second
   }
-  return out
+  if (previousSecond < 1 || previousSecond > MAX_EFFORT_TIMELINE_S) return null
+
+  const length = previousSecond + 1
+  const distanceM = new Float64Array(length)
+  const altitudeM = new Float64Array(length)
+  const watts = new Float64Array(length)
+  const heartRate = new Float64Array(length)
+  const distanceSet = new Uint8Array(length)
+  const altitudeSet = new Uint8Array(length)
+  const wattCount = new Uint16Array(length)
+  const heartRateCount = new Uint16Array(length)
+  const initialAltitude = streams.altitude.find(Number.isFinite) ?? 0
+
+  for (let i = 0; i < sampleCount; i++) {
+    const second = sampleSeconds[i]
+    const distance = streams.distance[i]
+    if (Number.isFinite(distance)) {
+      distanceM[second] = Math.max(0, distance)
+      distanceSet[second] = 1
+    }
+    const altitude = streams.altitude[i]
+    if (Number.isFinite(altitude)) {
+      altitudeM[second] = altitude
+      altitudeSet[second] = 1
+    }
+    const power = streams.watts?.[i]
+    if (Number.isFinite(power)) {
+      watts[second] += Math.max(0, power ?? 0)
+      wattCount[second]++
+    }
+    const hr = streams.heartrate?.[i]
+    if (Number.isFinite(hr) && (hr ?? 0) > 0) {
+      heartRate[second] += hr ?? 0
+      heartRateCount[second]++
+    }
+  }
+
+  let distance = 0
+  let altitude = initialAltitude
+  for (let second = 0; second < length; second++) {
+    if (distanceSet[second]) distance = Math.max(distance, distanceM[second])
+    distanceM[second] = distance
+    if (altitudeSet[second]) altitude = altitudeM[second]
+    altitudeM[second] = altitude
+    if (wattCount[second]) watts[second] /= wattCount[second]
+    if (heartRateCount[second]) heartRate[second] /= heartRateCount[second]
+  }
+  return { distanceM, altitudeM, watts, heartRate }
+}
+
+function sumPrefix(values: Float64Array): Float64Array {
+  const prefix = new Float64Array(values.length + 1)
+  for (let i = 0; i < values.length; i++) prefix[i + 1] = prefix[i] + values[i]
+  return prefix
+}
+
+function positivePrefixes(values: Float64Array): [Float64Array, Uint32Array] {
+  const sum = new Float64Array(values.length + 1)
+  const count = new Uint32Array(values.length + 1)
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i]
+    sum[i + 1] = sum[i] + (value > 0 ? value : 0)
+    count[i + 1] = count[i] + (value > 0 ? 1 : 0)
+  }
+  return [sum, count]
+}
+
+function averagePositive(
+  sum: Float64Array,
+  count: Uint32Array,
+  start: number,
+  end: number,
+): number | null {
+  const n = count[end] - count[start]
+  return n > 0 ? Math.round((sum[end] - sum[start]) / n) : null
+}
+
+function bestPowerWindows(
+  timeline: EffortTimeline,
+  durations: readonly number[],
+): BestPowerWindow[] {
+  const prefix = sumPrefix(timeline.watts)
+  const windows: BestPowerWindow[] = []
+  for (const durationS of durations) {
+    if (durationS > timeline.watts.length) break
+    let bestAverage = -1
+    let bestStart = 0
+    for (let start = 0; start + durationS <= timeline.watts.length; start++) {
+      const average = (prefix[start + durationS] - prefix[start]) / durationS
+      if (average > bestAverage) {
+        bestAverage = average
+        bestStart = start
+      }
+    }
+    windows.push({
+      durationS,
+      start: bestStart,
+      end: bestStart + durationS,
+      averageWatts: Math.floor(Math.max(0, bestAverage)),
+    })
+  }
+  return windows
+}
+
+function meanMaxCurve(timeline: EffortTimeline | null): PowerCurvePoint[] {
+  if (!timeline) return []
+  return bestPowerWindows(timeline, CURVE_SECS).map(window => ({
+    s: window.durationS,
+    w: window.averageWatts,
+  }))
+}
+
+function distanceBestEfforts(timeline: EffortTimeline): CyclingDistanceEffort[] {
+  const [hrSum, hrCount] = positivePrefixes(timeline.heartRate)
+  const efforts: CyclingDistanceEffort[] = []
+  for (const [label, targetDistanceM] of DISTANCE_EFFORTS) {
+    if (timeline.distanceM[timeline.distanceM.length - 1] - timeline.distanceM[0] < targetDistanceM)
+      break
+    let best: CyclingDistanceEffort | null = null
+    let bestElapsed = Infinity
+    let end = 1
+    for (let start = 0; start < timeline.distanceM.length - 1; start++) {
+      if (end <= start) end = start + 1
+      const target = timeline.distanceM[start] + targetDistanceM
+      while (end < timeline.distanceM.length && timeline.distanceM[end] < target) end++
+      if (end >= timeline.distanceM.length) break
+      const previous = Math.max(start, end - 1)
+      const spanM = timeline.distanceM[end] - timeline.distanceM[previous]
+      const fraction = spanM > 0 ? (target - timeline.distanceM[previous]) / spanM : 1
+      const elapsed = previous - start + Math.min(1, Math.max(0, fraction))
+      if (elapsed <= 0 || elapsed >= bestElapsed) continue
+      const endAltitude =
+        timeline.altitudeM[previous] +
+        (timeline.altitudeM[end] - timeline.altitudeM[previous]) * fraction
+      bestElapsed = elapsed
+      best = {
+        label,
+        targetDistanceM,
+        elapsedTimeS: Math.ceil(elapsed),
+        averageSpeedKph: round((targetDistanceM / 1000 / elapsed) * 3600, 3),
+        averageHeartRate: averagePositive(hrSum, hrCount, start, end + 1),
+        elevationDeltaM: round(endAltitude - timeline.altitudeM[start], 1),
+      }
+    }
+    if (best) efforts.push(best)
+  }
+  return efforts
+}
+
+function powerBestEfforts(timeline: EffortTimeline, weightKg: number | null): CyclingPowerEffort[] {
+  const [hrSum, hrCount] = positivePrefixes(timeline.heartRate)
+  return bestPowerWindows(timeline, POWER_EFFORT_SECS).map(window => ({
+    durationS: window.durationS,
+    averageWatts: window.averageWatts,
+    wattsPerKg: weightKg != null && weightKg > 0 ? round(window.averageWatts / weightKg, 2) : null,
+    averageHeartRate: averagePositive(hrSum, hrCount, window.start, window.end),
+    elevationDeltaM: round(
+      timeline.altitudeM[Math.max(window.start, window.end - 1)] - timeline.altitudeM[window.start],
+      1,
+    ),
+  }))
+}
+
+function cyclingClimbEfforts(
+  segments: GarminClimbSegment[],
+  weightKg: number | null,
+): CyclingClimbEffort[] {
+  return segments.flatMap((segment, index) => {
+    const durationS = segment.durationS
+    const elevationGainM = segment.elevationGainM ?? 0
+    if (durationS <= 0 || segment.distanceM <= 0 || elevationGainM <= 0) return []
+    const averageWatts = segment.avgPower
+    return [
+      {
+        name: `Climb ${index + 1}`,
+        durationS: round(durationS, 1),
+        distanceM: round(segment.distanceM, 1),
+        elevationGainM: round(elevationGainM, 1),
+        averageGradePct:
+          segment.avgGradePct ?? round((elevationGainM / segment.distanceM) * 100, 1),
+        averageSpeedKph:
+          segment.avgSpeedMps != null
+            ? round(segment.avgSpeedMps * 3.6, 1)
+            : round((segment.distanceM / durationS) * 3.6, 1),
+        averageHeartRate: segment.avgHeartRate,
+        averageWatts,
+        wattsPerKg:
+          averageWatts != null && weightKg != null && weightKg > 0
+            ? round(averageWatts / weightKg, 2)
+            : null,
+        vamMPerHour: Math.round((elevationGainM / durationS) * 3600),
+      },
+    ]
+  })
 }
 
 function zoneTimes(stream: number[], uppers: number[], countZero: boolean): number[] {
@@ -568,6 +871,39 @@ function deltaFloat(
   return garmin != null && strava != null ? round(garmin - strava, dp) : null
 }
 
+interface ActivityWeight {
+  kg: number
+  date: string
+}
+
+function activityWeight(
+  garmin: GarminCache | null,
+  activity: RawStravaActivity,
+): ActivityWeight | null {
+  const samples = garmin?.weight
+  if (!samples?.length) return null
+  const activityDate = activity.startDateLocal.slice(0, 10)
+  const startMs = Date.parse(activity.startDate)
+  let sameDayBefore: ActivityWeight | null = null
+  let sameDayAfter: ActivityWeight | null = null
+  let sameDayBeforeTs = -Infinity
+  let sameDayAfterTs = Infinity
+  for (const sample of samples) {
+    if (sample.weightKg == null || !Number.isFinite(sample.weightKg) || sample.weightKg <= 0)
+      continue
+    const weight = { kg: sample.weightKg, date: sample.date }
+    if (sample.date !== activityDate) continue
+    if (sample.ts <= startMs && sample.ts > sameDayBeforeTs) {
+      sameDayBefore = weight
+      sameDayBeforeTs = sample.ts
+    } else if (sample.ts > startMs && sample.ts < sameDayAfterTs) {
+      sameDayAfter = weight
+      sameDayAfterTs = sample.ts
+    }
+  }
+  return sameDayBefore ?? sameDayAfter
+}
+
 function garminVerification(
   a: RawStravaActivity,
   match: GarminActivityMatch | null,
@@ -611,11 +947,14 @@ function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
   streams: StravaStreams | GarminStreams | undefined,
+  effortStreams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
   garmin: GarminVerification | null,
+  weight: ActivityWeight | null,
+  climbs: GarminClimbSegment[],
   hrBounds: number[],
   powerBounds: number[],
   home: [number, number] | null,
@@ -698,6 +1037,13 @@ function projectDetail(
   const wFull = streams?.watts ?? []
   const hasHr = heartRate.stream.some(v => v > 0)
   const hasW = wFull.some(v => v > 0)
+  const hasEffortPower = effortStreams?.watts?.some(v => v > 0) ?? false
+  const timeline =
+    sport === 'bike' || hasEffortPower ? effortTimeline(effortStreams, a.movingTime) : null
+  const elapsedTimeline =
+    timeline && effortStreams && 'time' in effortStreams && effortStreams.time?.length
+      ? timeline
+      : null
   return {
     id: a.id,
     sport,
@@ -740,7 +1086,20 @@ function projectDetail(
         : null,
     powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, true) : null,
     powerHist: hasW ? powerHistogram(wFull) : null,
-    powerCurve: hasW ? meanMaxCurve(wFull) : null,
+    powerCurve: hasEffortPower && timeline ? meanMaxCurve(timeline) : null,
+    bestEfforts:
+      sport === 'bike' && (elapsedTimeline || climbs.length > 0)
+        ? {
+            weightKg: weight?.kg ?? null,
+            weightDate: weight?.date ?? null,
+            distance: elapsedTimeline ? distanceBestEfforts(elapsedTimeline) : [],
+            power:
+              elapsedTimeline && hasEffortPower
+                ? powerBestEfforts(elapsedTimeline, weight?.kg ?? null)
+                : [],
+            climbs: cyclingClimbEfforts(climbs, weight?.kg ?? null),
+          }
+        : null,
   }
 }
 
@@ -862,14 +1221,15 @@ export function buildPayload(
     if ((maxHr ?? 0) > hrmax) hrmax = maxHr ?? 0
   }
   if (hrmax < 100) hrmax = 190
-  const recentCut = end - 42 * DAY_MS
+  const recentCut = end - 41 * DAY_MS
   let best20 = 0
   const recentCurves: PowerCurvePoint[][] = []
   for (const { a, sport } of activities) {
     if (sport !== 'bike') continue
-    const w = selectedStreams.get(String(a.id))?.watts
-    if (!w || !w.some(v => v > 0)) continue
-    const c = meanMaxCurve(w)
+    const id = String(a.id)
+    const streams = selectEffortStreams(cache.streams?.[id], selectedStreams.get(id))
+    if (!streams?.watts?.some(v => v > 0)) continue
+    const c = meanMaxCurve(effortTimeline(streams, a.movingTime))
     const p20 = c.find(p => p.s === 1200)
     if (p20 && p20.w > best20) best20 = p20.w
     if (dayMs(a.startDateLocal.slice(0, 10)) >= recentCut) recentCurves.push(c)
@@ -904,6 +1264,7 @@ export function buildPayload(
       a,
       sport,
       selectedStreams.get(id),
+      selectEffortStreams(cache.streams?.[id], selectedStreams.get(id)),
       heartRates.get(id) ??
         resolveActivityHeartRate(
           a,
@@ -916,6 +1277,8 @@ export function buildPayload(
       cache.geo?.[String(a.id)],
       matchGarminFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
+      activityWeight(garmin, a),
+      garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],
       hrBounds,
       powerBounds,
       home,

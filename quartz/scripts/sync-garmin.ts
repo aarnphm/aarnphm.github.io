@@ -1,7 +1,10 @@
 import fs from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import type {
   GarminActivity,
   GarminCache,
+  GarminClimbSegment,
   GarminStreams,
   GarminVo2Day,
   GarminWeightSample,
@@ -9,6 +12,7 @@ import type {
 import {
   garminConnectActivities,
   garminConnectActivity,
+  garminConnectClimbSegments,
   garminConnectStreams,
   garminConnectVo2,
   garminConnectWeightSamples,
@@ -26,11 +30,49 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 3
+const CACHE_VERSION = 4
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
+
+export interface GarminFetchOutcome<T> {
+  ok: boolean
+  value?: T
+}
+
+export function resolveGarminFetch<T>(
+  outcome: GarminFetchOutcome<T>,
+  previous: T | undefined,
+): T | undefined {
+  return outcome.ok ? outcome.value : previous
+}
+
+export function resolveGarminWeightDay(
+  day: string,
+  outcome: GarminFetchOutcome<GarminWeightSample[]>,
+  summary: GarminWeightSample,
+  previous: GarminWeightSample[],
+): GarminWeightSample[] {
+  if (outcome.ok) return outcome.value?.length ? outcome.value : [summary]
+  const prior = previous.filter(sample => sample.date === day)
+  return prior.length ? prior : [summary]
+}
+
+export function initialGarminSyncRecords<T>(
+  previous: Record<string, T> | undefined,
+  partial: boolean,
+): Record<string, T> {
+  return partial ? { ...previous } : {}
+}
+
+async function readCache(): Promise<GarminCache | null> {
+  try {
+    return JSON.parse(await fs.readFile(cacheFile, 'utf8')) as GarminCache
+  } catch {
+    return null
+  }
+}
 
 function envNumber(name: string, fallback: number): number {
   const value = process.env[name]
@@ -148,11 +190,25 @@ async function fetchActivityStreamDetail(
   return isRecord(raw) ? raw : null
 }
 
+async function fetchActivityClimbDetail(
+  session: GarminConnectSession,
+  base: string,
+  id: string,
+): Promise<UnknownRecord | null> {
+  const raw = await fetchGarminJson(
+    session,
+    base,
+    `/activity-service/activity/${encodeURIComponent(id)}/typedsplits`,
+  )
+  return isRecord(raw) ? raw : null
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function main(): Promise<void> {
+  const previous = await readCache()
   const session = await readGarminConnectSession()
   const base = cleanGarminConnectBaseUrl(
     process.env.GARMIN_CONNECT_BASE_URL?.trim() || DEFAULT_GARMIN_CONNECT_BASE,
@@ -173,53 +229,96 @@ async function main(): Promise<void> {
   })
   console.log(`[garmin] found ${list.length} activities`)
 
-  const activities: Record<string, GarminActivity> = {}
-  const streams: Record<string, GarminStreams> = {}
+  const partial = maxActivities > 0
+  const activities = initialGarminSyncRecords(previous?.activities, partial)
+  const streams = initialGarminSyncRecords(previous?.streams, partial)
+  const climbs = initialGarminSyncRecords(previous?.climbs, partial)
   let details = 0
   let streamDetails = 0
+  let climbDetails = 0
   let skipped = 0
   for (let i = 0; i < list.length; i++) {
     const item = list[i]
-    let detail: UnknownRecord | null = null
+    const listedActivity = garminConnectActivity(null, item.record, i)
+    const cacheId = listedActivity?.id ?? `connect:${item.id}`
+    let activityOutcome: GarminFetchOutcome<GarminActivity> = { ok: false }
     try {
-      detail = await fetchActivityDetail(session, base, item.id)
-      if (detail) details++
+      const detail = await fetchActivityDetail(session, base, item.id)
+      if (detail) {
+        details++
+        const activity = garminConnectActivity(detail, item.record, i) ?? listedActivity
+        activityOutcome = activity ? { ok: true, value: activity } : { ok: true }
+      }
     } catch (err) {
       console.warn(`[garmin] detail ${item.id} failed: ${err instanceof Error ? err.message : err}`)
     }
-    const activity = garminConnectActivity(detail, item.record, i)
+    const activity =
+      resolveGarminFetch(activityOutcome, previous?.activities[cacheId]) ?? listedActivity
     if (activity) {
       activities[activity.id] = activity
+      let streamOutcome: GarminFetchOutcome<GarminStreams> = { ok: false }
       if (fetchStreams) {
         try {
           const streamDetail = await fetchActivityStreamDetail(session, base, item.id)
-          const stream = garminConnectStreams(streamDetail)
-          if (stream) streams[activity.id] = stream
-          if (streamDetail) streamDetails++
+          if (streamDetail) {
+            streamDetails++
+            const stream = garminConnectStreams(streamDetail)
+            streamOutcome = stream ? { ok: true, value: stream } : { ok: true }
+          }
         } catch (err) {
           console.warn(
             `[garmin] stream ${item.id} failed: ${err instanceof Error ? err.message : err}`,
           )
         }
       }
+      const stream = resolveGarminFetch(
+        streamOutcome,
+        previous?.streams?.[activity.id] ?? previous?.streams?.[cacheId],
+      )
+      if (stream) streams[activity.id] = stream
+      else delete streams[activity.id]
+      if (activity.sport === 'bike') {
+        let climbOutcome: GarminFetchOutcome<GarminClimbSegment[]> = { ok: false }
+        try {
+          const climbDetail = await fetchActivityClimbDetail(session, base, item.id)
+          if (climbDetail) {
+            climbDetails++
+            const segments = garminConnectClimbSegments(climbDetail)
+            climbOutcome = segments.length > 0 ? { ok: true, value: segments } : { ok: true }
+          }
+        } catch (err) {
+          console.warn(
+            `[garmin] climbs ${item.id} failed: ${err instanceof Error ? err.message : err}`,
+          )
+        }
+        const segments = resolveGarminFetch(
+          climbOutcome,
+          previous?.climbs?.[activity.id] ?? previous?.climbs?.[cacheId],
+        )
+        if (segments) climbs[activity.id] = segments
+        else delete climbs[activity.id]
+      }
     } else skipped++
     if (delayMs > 0) await sleep(delayMs)
   }
 
-  const vo2max: Record<string, GarminVo2Day> = {}
+  let vo2Outcome: GarminFetchOutcome<Record<string, GarminVo2Day>> = { ok: false }
   try {
     const raw = await fetchGarminJson(
       session,
       base,
       `/metrics-service/metrics/maxmet/daily/${encodeURIComponent(start)}/${encodeURIComponent(end)}`,
     )
-    for (const day of garminConnectVo2(raw)) vo2max[day.date] = day
-    console.log(`[garmin] vo2max days: ${Object.keys(vo2max).length}`)
+    const fetched: Record<string, GarminVo2Day> = {}
+    for (const day of garminConnectVo2(raw)) fetched[day.date] = day
+    vo2Outcome = { ok: true, value: fetched }
+    console.log(`[garmin] vo2max days: ${Object.keys(fetched).length}`)
   } catch (err) {
     console.warn(`[garmin] vo2max fetch failed: ${err instanceof Error ? err.message : err}`)
   }
+  const vo2max = resolveGarminFetch(vo2Outcome, previous?.vo2max) ?? {}
 
-  let weight: GarminWeightSample[] = []
+  let weightOutcome: GarminFetchOutcome<GarminWeightSample[]> = { ok: false }
   try {
     const rangeRaw = await fetchGarminJson(
       session,
@@ -231,7 +330,7 @@ async function main(): Promise<void> {
     for (const s of garminConnectWeightSamples(rangeRaw)) byDay.set(s.date, s)
     const collected: GarminWeightSample[] = []
     for (const day of [...byDay.keys()].sort()) {
-      let samples: GarminWeightSample[] = []
+      let dayOutcome: GarminFetchOutcome<GarminWeightSample[]> = { ok: false }
       try {
         const dv = await fetchGarminJson(
           session,
@@ -239,24 +338,27 @@ async function main(): Promise<void> {
           `/weight-service/weight/dayview/${encodeURIComponent(day)}`,
           new URLSearchParams({ includeAll: 'true' }),
         )
-        samples = garminConnectWeightSamples(dv)
+        dayOutcome = { ok: true, value: garminConnectWeightSamples(dv) }
       } catch (err) {
         console.warn(
           `[garmin] weight dayview ${day} failed: ${err instanceof Error ? err.message : err}`,
         )
       }
-      if (samples.length) collected.push(...samples)
-      else collected.push(byDay.get(day)!)
+      collected.push(
+        ...resolveGarminWeightDay(day, dayOutcome, byDay.get(day)!, previous?.weight ?? []),
+      )
       if (delayMs > 0) await sleep(delayMs)
     }
     const deduped = new Map<number, GarminWeightSample>()
     for (const s of collected) deduped.set(s.ts, s)
-    weight = [...deduped.values()].sort((a, b) => a.ts - b.ts)
+    const weight = [...deduped.values()].sort((a, b) => a.ts - b.ts)
+    weightOutcome = { ok: true, value: weight }
     const days = new Set(weight.map(s => s.date)).size
     console.log(`[garmin] weight samples: ${weight.length} over ${days} days`)
   } catch (err) {
     console.warn(`[garmin] weight fetch failed: ${err instanceof Error ? err.message : err}`)
   }
+  const weight = resolveGarminFetch(weightOutcome, previous?.weight) ?? []
 
   const sorted: Record<string, GarminActivity> = {}
   for (const activity of Object.values(activities).sort((a, b) =>
@@ -268,11 +370,14 @@ async function main(): Promise<void> {
   const now = Date.now()
   const sortedStreams: Record<string, GarminStreams> = {}
   for (const id of Object.keys(sorted)) if (streams[id]) sortedStreams[id] = streams[id]
+  const sortedClimbs: Record<string, GarminClimbSegment[]> = {}
+  for (const id of Object.keys(sorted)) if (climbs[id]) sortedClimbs[id] = climbs[id]
   const cache: GarminCache = {
     version: CACHE_VERSION,
     lastSync: now,
     activities: sorted,
     streams: sortedStreams,
+    climbs: sortedClimbs,
     vo2max,
     weight,
   }
@@ -280,11 +385,13 @@ async function main(): Promise<void> {
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${skipped} skipped) -> ${cacheFile}`,
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${skipped} skipped) -> ${cacheFile}`,
   )
 }
 
-main().catch(err => {
-  console.error(`[garmin] sync failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[garmin] sync failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}

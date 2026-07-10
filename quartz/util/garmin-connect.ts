@@ -2,6 +2,7 @@ import {
   emptyGarminFueling,
   emptyGarminMetrics,
   type GarminActivity,
+  type GarminClimbSegment,
   type GarminStreams,
   type GarminVo2Day,
   type GarminWeightSample,
@@ -87,6 +88,7 @@ const WORK_KCAL_KEYS = ['totalWork']
 const TSS_KEYS = ['trainingStressScore', 'tss']
 const IF_KEYS = ['intensityFactor']
 const KJ_PER_KCAL = 4.184
+const CLIMB_SPLIT_TYPE = 'CLIMB_PRO_CYCLING_CLIMB'
 
 const CALORIES_CONSUMED_KEYS = [
   'caloriesConsumed',
@@ -552,6 +554,45 @@ export function garminConnectWeightSamples(raw: unknown): GarminWeightSample[] {
     }
   }
   return out.sort((a, b) => a.ts - b.ts)
+}
+
+export function garminConnectClimbSegments(raw: unknown): GarminClimbSegment[] {
+  if (!isRecord(raw) || !Array.isArray(raw.splits)) return []
+  const out: GarminClimbSegment[] = []
+  for (const split of raw.splits) {
+    if (!isRecord(split) || readString(split, 'type') !== CLIMB_SPLIT_TYPE) continue
+    const startDate = normalizeDate(
+      readString(split, 'startTimeGMT') ?? readString(split, 'startTimeLocal') ?? null,
+    )
+    const endDate = normalizeDate(
+      readString(split, 'endTimeGMT') ?? readString(split, 'endTimeLocal') ?? null,
+    )
+    const distanceM = roundedFloat(firstNumber([split], ['distance']), 2)
+    const durationS = roundedFloat(firstNumber([split], ['duration']), 3)
+    if (!startDate || !endDate || distanceM == null || durationS == null) continue
+    out.push({
+      startDate,
+      endDate,
+      distanceM,
+      durationS,
+      movingTimeS: roundedFloat(firstNumber([split], ['movingDuration']), 3),
+      elapsedTimeS: roundedFloat(firstNumber([split], ['elapsedDuration']), 3),
+      elevationGainM: roundedFloat(firstNumber([split], ['elevationGain']), 1),
+      elevationLossM: roundedFloat(firstNumber([split], ['elevationLoss']), 1),
+      startElevationM: roundedFloat(firstNumber([split], ['startElevation']), 1),
+      avgGradePct: roundedFloat(firstNumber([split], ['averageGrade']), 2),
+      maxGradePct: roundedFloat(firstNumber([split], ['maxGrade']), 2),
+      avgSpeedMps: roundedFloat(firstNumber([split], ['averageSpeed']), 3),
+      avgHeartRate: rounded(firstNumber([split], ['averageHR'])),
+      maxHeartRate: rounded(firstNumber([split], ['maxHR'])),
+      avgPower: rounded(firstNumber([split], ['averagePower'])),
+      normalizedPower: rounded(firstNumber([split], ['normalizedPower'])),
+      maxPower: rounded(firstNumber([split], ['maxPower'])),
+      avgCadence: rounded(firstNumber([split], ['averageBikeCadence'])),
+      difficulty: readString(split, 'climbProDifficulty') ?? null,
+    })
+  }
+  return out.sort((a, b) => a.startDate.localeCompare(b.startDate))
 }
 
 function metricIndex(detail: UnknownRecord, key: string): number | null {

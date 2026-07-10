@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-06 15:57:30 GMT-04:00
+modified: 2026-07-09 20:03:43 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -12933,11 +12933,12 @@ title: are.na
 
 ## video
 
-- https://www.youtube.com/watch?v=J9AOaINKy0E -- Who Will Win The 2026 Tour De France?
+- https://www.youtube.com/watch?v=sK-4930SVrQ -- 75 Hacks Chefs Actually Use [**]
   - [meta]:
-    - date: 07/05/2026
-    - tags: [tour de france, cycling]
-    - later: true
+    - date: 07/09/2026
+    - tags: [cook, hacks]
+    - importance: 8
+    - pinned: true
 - https://www.youtube.com/watch?v=6Hptrc1lYwI -- A Very French Reunion
   - [meta]:
     - date: 07/05/2026
@@ -12958,11 +12959,6 @@ title: are.na
     - date: 07/04/2026
     - tags: [fragrance, style]
     - later: true
-- https://www.youtube.com/watch?v=TjiHAA1z_ZA -- FULL Men's Spring Classics 2026 Highlights
-  - [meta]:
-    - date: 07/04/2026
-    - tags: [cycling, racing]
-    - later: true
 - https://www.youtube.com/watch?v=_OTs-NDpLTQ -- Mathieu van der Poel: THIS IS HOME
   - [meta]:
     - date: 07/04/2026
@@ -12977,11 +12973,6 @@ title: are.na
   - [meta]:
     - date: 07/04/2026
     - tags: [military, endurance]
-    - later: true
-- https://www.youtube.com/watch?v=zbBndWexLWQ -- Your 1-Sentence Guide to EVERY TEAM in the 2026 World Cup
-  - [meta]:
-    - date: 07/04/2026
-    - tags: [world cup, football]
     - later: true
 - https://www.youtube.com/watch?v=SWkMYO9V_-k -- mmaaAAAaah
   - [meta]:
@@ -13052,16 +13043,6 @@ title: are.na
   - [meta]:
     - date: 07/02/2026
     - tags: [film, list]
-    - later: true
-- https://www.youtube.com/watch?v=_32QyCVw6Ig -- Guess the Comedian ft Druski
-  - [meta]:
-    - date: 07/02/2026
-    - tags: [comedy, entertainment]
-    - later: true
-- https://www.youtube.com/watch?v=6F9Efm9JGqY -- The Controversial Business of Adin Ross
-  - [meta]:
-    - date: 07/02/2026
-    - tags: [streaming, business]
     - later: true
 - https://www.youtube.com/watch?v=Y2T4caGlK80 -- Cat politely asking to get petted
   - [meta]:

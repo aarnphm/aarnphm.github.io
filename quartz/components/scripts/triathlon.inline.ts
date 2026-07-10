@@ -46,6 +46,7 @@ import {
 import {
   axisFrame,
   buildActivity as buildActivityNode,
+  buildCyclingBestEfforts as buildCyclingBestEffortsNode,
   buildHrZones as hrZonesNode,
   buildPowerCurve as powerCurveNode,
   buildPowerHist as powerHistNode,
@@ -62,16 +63,21 @@ import {
   dist,
   distCombined,
   dur,
+  formatAltitude,
   gradeAt,
   isImperialUnit,
   KM_TO_MI,
   M_TO_FT,
+  powerCurveFraction,
+  powerCurveHoverAt,
   rate,
   routeStreamFlags,
   scrubDist,
   setDistanceUnit,
   shortDate,
   statRow as statRowNode,
+  buildTrace as buildTraceNode,
+  zoneDuo as zoneDuoNode,
   type AxisXTick,
   type DayCardExtras,
   type DetailCtx,
@@ -90,6 +96,10 @@ const applyI18n = (root: HTMLElement): void => {
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
     const key = node.dataset.i18n
     if (key) node.textContent = tl(key)
+  }
+  for (const node of root.querySelectorAll<HTMLElement>('[data-i18n-aria-label]')) {
+    const key = node.dataset.i18nAriaLabel
+    if (key) node.setAttribute('aria-label', tl(key))
   }
 }
 import {
@@ -214,36 +224,11 @@ const buildTrace = (
   pick: (p: StravaActivityDetail['route'][number], i: number) => number,
   title: string,
   cap: (max: number) => string,
-): HTMLElement => {
-  const w = 100
-  const h = 30
-  const pad = 2
-  const maxD = d.route[d.route.length - 1].d || 1
-  let max = 1
-  d.route.forEach((p, i) => {
-    const v = pick(p, i)
-    if (v > max) max = v
-  })
-  const px = (km: number): number => (km / maxD) * w
-  const py = (v: number): number => h - pad - (v / max) * (h - 2 * pad)
-  let area = `M 0 ${h} `
-  let line = ''
-  d.route.forEach((p, i) => {
-    const v = pick(p, i)
-    area += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
-    line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
-  })
-  area += `L ${w} ${h} Z`
-  const s = svg('svg', { class: 'tri-elev', viewBox: `0 0 ${w} ${h}`, preserveAspectRatio: 'none' })
-  s.appendChild(svg('path', { d: area, class: 'tri-elev-area' }))
-  s.appendChild(svg('path', { d: line, class: 'tri-elev-line' }))
-  s.appendChild(svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
-  const wrap = el('div', 'tri-elev-wrap')
-  const cap2 = el('div', 'tri-elev-cap')
-  cap2.append(el('span', 'tri-elev-d', title), el('span', 'tri-elev-range', cap(max)))
-  wrap.append(s, cap2)
-  return wrap
-}
+  tick: (value: number) => string,
+): HTMLElement => buildTraceNode(domF, d, pick, title, cap, tick) as HTMLElement
+
+const zoneDuo = (a: HTMLElement | null, b: HTMLElement | null): HTMLElement | null =>
+  zoneDuoNode(domF, a, b) as HTMLElement | null
 
 const statRow = (label: string, value: string): HTMLElement =>
   statRowNode(domF, label, value) as HTMLElement
@@ -283,18 +268,18 @@ const linkScrub = (
   if (resolved.length === 0) return
   const indexAt = (clientX: number, svgEl: SVGElement): number => {
     const r = svgEl.getBoundingClientRect()
-    const frac = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
-    const targetD = frac * maxD
-    let i = 0
+    const fraction = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
+    const targetD = fraction * maxD
+    let index = 0
     let best = Infinity
     for (let k = 0; k < route.length; k++) {
       const dd = Math.abs(route[k].d - targetD)
       if (dd < best) {
         best = dd
-        i = k
+        index = k
       }
     }
-    return i
+    return index
   }
   for (const surf of resolved) {
     const onMove = (event: MouseEvent) => {
@@ -483,6 +468,12 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     if (d.sport === 'swim') return `${clock(3600 / (kmh * 10))} /100m`
     return `${clock(3600 / (kmh * KM_TO_MI))} /mi`
   }
+  const paceTick = (kmh: number): string => {
+    if (kmh <= 0) return '0'
+    if (d.sport === 'bike') return `${(kmh * KM_TO_MI).toFixed(0)}mph`
+    if (d.sport === 'swim') return clock(3600 / (kmh * 10))
+    return clock(3600 / (kmh * KM_TO_MI))
+  }
   const paceSpec: MapMetric = {
     label: d.sport === 'bike' ? 'speed' : 'pace',
     ramp: SPD_RAMP,
@@ -494,6 +485,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
         (_p, i) => pace[i],
         d.sport === 'bike' ? 'speed' : 'pace',
         () => '',
+        paceTick,
       ),
     readout: (p, i) => `${scrubDist(p.d, d.sport)} · ${paceFmt(pace[i])}`,
   }
@@ -508,9 +500,10 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
         p => p.w,
         'power',
         m => `${m} W peak`,
+        v => `${Math.round(v)}w`,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.w} W`,
-    extra: () => [buildPowerCurve(d), buildPowerZones(d), buildPowerHist(d)],
+    extra: () => [zoneDuo(buildPowerCurve(d), buildPowerHist(d)), buildPowerZones(d)],
   }
   const hrSpec: MapMetric = {
     label: 'heart rate',
@@ -523,6 +516,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
         p => p.hr,
         'hr',
         m => `${m} bpm peak`,
+        v => `${Math.round(v)}bpm`,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm`,
     extra: () => [buildHrZones(d)],
@@ -540,6 +534,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
         p => p.cad * cadScale,
         'cadence',
         m => `${m} ${cadUnit} peak`,
+        v => `${Math.round(v)}${cadUnit}`,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
   }
@@ -547,11 +542,11 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     label: 'elevation',
     ramp: ELEV_RAMP,
     pick: p => p.alt,
-    fmt: v => `${Math.round(v)} m`,
+    fmt: formatAltitude,
     profile: () => buildElevation(d),
     readout: (p, i) => {
       const g = Math.round(gradeAt(route, i) * 10) / 10
-      return `${scrubDist(p.d, d.sport)} · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
+      return `${scrubDist(p.d, d.sport)} · ${formatAltitude(p.alt)} · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
     },
   }
   const specs: MapMetric[] = []
@@ -576,6 +571,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
 
 interface MapDetailOpts {
   mapMode?: boolean
+  initialMetric?: number
   onMetric?: (i: number) => void
   onHover?: (p: StravaActivityDetail['route'][number], i: number) => void
 }
@@ -607,8 +603,13 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
     if (d.sport === 'swim') figs.appendChild(buildPool(d))
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
-    for (const z of [buildPowerCurve(d), buildPowerZones(d), buildPowerHist(d), buildHrZones(d)])
+    const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
+    for (const z of [
+      zoneDuo(buildHrZones(d), buildPowerZones(d)),
+      zoneDuo(buildPowerCurve(d), buildPowerHist(d)),
+    ])
       if (z) more.appendChild(z)
+    if (bestEfforts) more.appendChild(bestEfforts)
     if (more.childElementCount > 0) wrap.appendChild(more)
     return wrap
   }
@@ -618,9 +619,10 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
   const zoneBox = el('div', 'tri-act-more')
+  const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
   wrap.append(tablist, figs, profileBox, zoneBox)
 
-  let active = 0
+  let active = Math.min(specs.length - 1, Math.max(0, opts?.initialMetric ?? 0))
   const draw = () => {
     const spec = specs[active]
     const vals = d.route.map((p, i) => spec.pick(p, i))
@@ -643,6 +645,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
     profileBox.replaceChildren(prof)
     zoneBox.replaceChildren()
     if (spec.extra) for (const z of spec.extra()) if (z) zoneBox.appendChild(z)
+    if (bestEfforts) zoneBox.appendChild(bestEfforts)
     linkScrub(
       wrap,
       marker,
@@ -690,7 +693,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
       fmt: (p, i) => {
         const g = Math.round(gradeAt(d.route, i) * 10) / 10
         return (
-          `${scrubDist(p.d, d.sport)} · ${Math.round(p.alt)} m · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
+          `${scrubDist(p.d, d.sport)} · ${formatAltitude(p.alt)} · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
           (p.hr > 0 ? ` · ${p.hr} bpm` : '')
         )
       },
@@ -705,6 +708,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
         p => p.hr,
         'hr',
         m => `${m} bpm peak`,
+        v => `${Math.round(v)}bpm`,
       )
       more.appendChild(t)
       surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
@@ -715,6 +719,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
         p => p.w,
         'power',
         m => `${m} W peak`,
+        v => `${Math.round(v)}w`,
       )
       more.appendChild(t)
       surfaces.push({ wrap: t, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
@@ -727,6 +732,7 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
         p => p.cad * cadScale,
         'cadence',
         m => `${m} ${cadUnit} peak`,
+        v => `${Math.round(v)}${cadUnit}`,
       )
       more.appendChild(t)
       surfaces.push({
@@ -734,14 +740,12 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
         fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
       })
     }
-    const hrz = buildHrZones(d)
-    if (hrz) more.appendChild(hrz)
-    const pcurve = buildPowerCurve(d)
-    if (pcurve) more.appendChild(pcurve)
-    const pz = buildPowerZones(d)
-    if (pz) more.appendChild(pz)
-    const phist = buildPowerHist(d)
-    if (phist) more.appendChild(phist)
+    const zones = zoneDuo(buildHrZones(d), buildPowerZones(d))
+    if (zones) more.appendChild(zones)
+    const charts = zoneDuo(buildPowerCurve(d), buildPowerHist(d))
+    if (charts) more.appendChild(charts)
+    const bestEfforts = more.querySelector<HTMLElement>(':scope > .tri-efforts')
+    if (bestEfforts) more.appendChild(bestEfforts)
   }
   if (surfaces.length > 0 && d.route.length >= 2) {
     const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
@@ -783,21 +787,29 @@ const setupDayEmbeds = (): (() => void) | null => {
     const extras = dayExtrasFromDataset(embed.dataset)
     const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
     let upgraded = false
+    let payload: DetailPayload | null = null
+    const render = (data: DetailPayload) => {
+      const fresh = buildDayCard(date, data, extras)
+      const expanded = Array.from(embed.querySelectorAll('.tri-act'), activity =>
+        activity.classList.contains('tri-act--expanded'),
+      )
+      fresh.querySelectorAll('.tri-act').forEach((activity, index) => {
+        if (expanded[index]) activity.classList.add('tri-act--expanded')
+      })
+      embed.replaceChildren(fresh)
+    }
     const upgrade = () => {
       if (upgraded) return
       upgraded = true
       void loadDetailPayload(detailPath).then(data => {
         if (!live || !embed.isConnected || !data) return
-        const fresh = buildDayCard(date, data, extras)
-        const expanded = Array.from(embed.querySelectorAll('.tri-act'), a =>
-          a.classList.contains('tri-act--expanded'),
-        )
-        fresh.querySelectorAll('.tri-act').forEach((a, i) => {
-          if (expanded[i]) a.classList.add('tri-act--expanded')
-        })
-        embed.replaceChildren(fresh)
+        payload = data
+        render(data)
       })
     }
+    const onUnit = () => (payload ? render(payload) : upgrade())
+    window.addEventListener('tri:unit', onUnit)
+    teardowns.push(() => window.removeEventListener('tri:unit', onUnit))
     const ssr = embed.querySelector<HTMLElement>(':scope > .tri-pop-card')
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
@@ -6697,6 +6709,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   let detailData: DetailPayload | null = null
   let detailLoaded = false
   let selIndex = -1
+  let activeRouteId: string | null = null
+  let activeRouteMetric = 0
   const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
   const overlay = root.querySelector<HTMLElement>('.tri-map-overlay')
   const tip = root.querySelector<HTMLElement>('.tri-map-tip')
@@ -7046,6 +7060,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const finishCloseDetail = () => {
     panel.classList.remove('tri-map--detail')
     if (detail) detail.replaceChildren()
+    activeRouteId = null
+    activeRouteMetric = 0
     mapCtl.clearSelection()
     requestAnimationFrame(() => mapCtl.resize())
   }
@@ -7084,11 +7100,13 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     root.classList.remove('tri-map-open')
     panel.setAttribute('aria-hidden', 'true')
   }
-  const showRoute = (id: string) => {
+  const showRoute = (id: string, initialMetric = 0, selectMap = true) => {
     if (!detail) return
     void loadDetails().then(() => {
       const d = detailData?.details?.[id]
       if (!d) return
+      activeRouteId = id
+      activeRouteMetric = initialMetric
       detailAnim?.cancel()
       detailAnim = null
       const card = el('div', 'tri-pop-card')
@@ -7096,24 +7114,28 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       card.appendChild(head)
       const mapMode = mapCtl.ok()
       card.appendChild(
-        mapMode
-          ? renderMapDetail(d, {
-              mapMode: true,
-              onMetric: i => mapCtl.recolor(d, i),
-              onHover: p => mapCtl.moveDot(p.lng, p.lat),
-            })
-          : renderMapDetail(d),
+        renderMapDetail(d, {
+          mapMode,
+          initialMetric,
+          onMetric: i => {
+            activeRouteMetric = i
+            if (mapMode) mapCtl.recolor(d, i)
+          },
+          onHover: mapMode ? p => mapCtl.moveDot(p.lng, p.lat) : undefined,
+        }),
       )
       detail.replaceChildren(card)
       panel.classList.add('tri-map--detail')
       panel.classList.remove('tri-map--searching')
       results?.setAttribute('aria-hidden', 'true')
       back.addEventListener('click', () => closeDetail(true), { once: true })
-      if (mapMode) {
+      if (mapMode && selectMap) {
         requestAnimationFrame(() => {
           mapCtl.resize()
-          mapCtl.select(d, 0)
+          mapCtl.select(d, initialMetric)
         })
+      } else if (mapMode) {
+        requestAnimationFrame(() => mapCtl.resize())
       } else {
         body?.scrollTo({ top: 0 })
       }
@@ -7302,6 +7324,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     syncStyleBtn()
     mapCtl.applyMapStyle()
   }
+  const onUnit = () => {
+    if (activeRouteId) showRoute(activeRouteId, activeRouteMetric, false)
+  }
   syncStyleBtn()
 
   if (pageMode) {
@@ -7325,6 +7350,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   styleBtn?.addEventListener('click', onStyleClick)
   document.addEventListener('keydown', onKey)
   window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
+  window.addEventListener('tri:unit', onUnit)
 
   return () => {
     btn?.removeEventListener('click', open)
@@ -7342,6 +7368,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     styleBtn?.removeEventListener('click', onStyleClick)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
+    window.removeEventListener('tri:unit', onUnit)
     mapCtl.dispose()
   }
 }
@@ -7804,6 +7831,49 @@ const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/feed', label: 'feed', hint: 'feed' },
 ]
 
+type SearchShortcut = { view: string; openClass: string; search: string }
+
+const TRI_SEARCH_SHORTCUTS: SearchShortcut[] = [
+  { view: 'analytics', openClass: 'tri-analytics-open', search: '.tri-analytics .tri-ana-search' },
+  { view: 'maps', openClass: 'tri-map-open', search: '.tri-map .tri-map-search' },
+  {
+    view: 'training',
+    openClass: 'tri-training-open',
+    search: '.tri-training .tri-training-search',
+  },
+]
+
+const isEditable = (el: HTMLElement): boolean => {
+  const tag = el.tagName.toLowerCase()
+  return (
+    tag === 'input' ||
+    tag === 'textarea' ||
+    tag === 'select' ||
+    el.isContentEditable ||
+    el.closest('.search-container') !== null
+  )
+}
+
+const currentSearchShortcut = (root: HTMLElement): SearchShortcut | undefined => {
+  const subView = root.dataset.triView
+  if (subView) return TRI_SEARCH_SHORTCUTS.find(shortcut => shortcut.view === subView)
+  return TRI_SEARCH_SHORTCUTS.find(shortcut => root.classList.contains(shortcut.openClass))
+}
+
+const toggleSearchFocus = (root: HTMLElement, target: HTMLElement | null): boolean => {
+  const shortcut = currentSearchShortcut(root)
+  if (!shortcut) return false
+  const search = root.querySelector<HTMLInputElement>(shortcut.search)
+  if (!search) return false
+  if (target && isEditable(target) && target !== search) return false
+  if (document.activeElement === search) search.blur()
+  else {
+    search.focus()
+    search.select()
+  }
+  return true
+}
+
 const setupCommandPalette = (root: HTMLElement): (() => void) => {
   const overlay = el('div', 'tri-cmdk', undefined, { 'aria-hidden': 'true' })
   const box = el('div', 'tri-cmdk-box', undefined, {
@@ -7958,6 +8028,9 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
     if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'k') {
       e.preventDefault()
       e.stopImmediatePropagation()
+      if (toggleSearchFocus(root, null) || currentSearchShortcut(root)) return
+      if (root.matches('.tri-analytics-open, .tri-map-open, .tri-training-open, .tri-calc-open'))
+        return
       if (isOpen) close()
       else openPalette()
     }
@@ -8008,52 +8081,6 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
     m: { btn: '.tri-map-btn', openClass: 'tri-map-open', close: '.tri-map-close' },
     t: { btn: '.tri-training-btn', openClass: 'tri-training-open', close: '.tri-training-close' },
-  }
-  type SearchShortcut = { view: string; openClass: string; search: string }
-  const searchShortcuts: SearchShortcut[] = [
-    {
-      view: 'analytics',
-      openClass: 'tri-analytics-open',
-      search: '.tri-analytics .tri-ana-search',
-    },
-    { view: 'maps', openClass: 'tri-map-open', search: '.tri-map .tri-map-search' },
-    {
-      view: 'training',
-      openClass: 'tri-training-open',
-      search: '.tri-training .tri-training-search',
-    },
-  ]
-  const isEditable = (el: HTMLElement): boolean => {
-    const tag = el.tagName.toLowerCase()
-    return (
-      tag === 'input' ||
-      tag === 'textarea' ||
-      tag === 'select' ||
-      el.isContentEditable ||
-      el.closest('.search-container') !== null
-    )
-  }
-  const currentSearchShortcut = (): SearchShortcut | undefined => {
-    const active = document.activeElement
-    if (active instanceof HTMLElement) {
-      const focused = searchShortcuts.find(s => active.matches(s.search))
-      if (focused) return focused
-    }
-    if (subView) return searchShortcuts.find(s => s.view === subView)
-    return searchShortcuts.find(s => root.classList.contains(s.openClass))
-  }
-  const toggleSearchFocus = (target: HTMLElement | null): boolean => {
-    const shortcut = currentSearchShortcut()
-    if (!shortcut) return false
-    const search = root.querySelector<HTMLInputElement>(shortcut.search)
-    if (!search) return false
-    if (target && isEditable(target) && target !== search) return false
-    if (document.activeElement === search) search.blur()
-    else {
-      search.focus()
-      search.select()
-    }
-    return true
   }
   const closeOpenModals = (except?: string) => {
     for (const k in modalChords) {
@@ -8130,7 +8157,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
       !e.ctrlKey &&
       !e.metaKey &&
       !e.altKey &&
-      toggleSearchFocus(el)
+      toggleSearchFocus(root, el)
     ) {
       clearG()
       e.preventDefault()
@@ -8372,12 +8399,7 @@ window.quartzTriathlon = {
 }
 
 const setupI18n = (root: HTMLElement): (() => void) => {
-  const apply = (): void => {
-    for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
-      const key = node.dataset.i18n
-      if (key) node.textContent = tl(key)
-    }
-  }
+  const apply = (): void => applyI18n(root)
   apply()
   window.addEventListener('tri:locale', apply)
   return () => window.removeEventListener('tri:locale', apply)
@@ -8386,18 +8408,98 @@ const setupI18n = (root: HTMLElement): (() => void) => {
 const setupChartScrub = (scope: HTMLElement): (() => void) => {
   let activeWrap: HTMLElement | null = null
   let activeBar: Element | null = null
+  let focusedSvg: SVGSVGElement | null = null
+  const curveCache = new WeakMap<
+    SVGSVGElement,
+    { curve: PowerCurvePoint[]; reference: PowerCurvePoint[] }
+  >()
+  const isCurvePoint = (value: unknown): value is PowerCurvePoint =>
+    typeof value === 'object' &&
+    value !== null &&
+    's' in value &&
+    typeof value.s === 'number' &&
+    'w' in value &&
+    typeof value.w === 'number'
+  const readCurve = (raw: string | undefined): PowerCurvePoint[] => {
+    if (!raw) return []
+    const value: unknown = JSON.parse(raw)
+    return Array.isArray(value) ? value.filter(isCurvePoint) : []
+  }
+  const curveData = (
+    svg: SVGSVGElement,
+  ): { curve: PowerCurvePoint[]; reference: PowerCurvePoint[] } => {
+    const cached = curveCache.get(svg)
+    if (cached) return cached
+    const value = {
+      curve: readCurve(svg.dataset.curve),
+      reference: readCurve(svg.dataset.curveRef),
+    }
+    curveCache.set(svg, value)
+    return value
+  }
+  const selectedCurveIndex = (svg: SVGSVGElement): number => {
+    const value = Number(svg.dataset.curveIndex ?? 0)
+    return Number.isInteger(value) ? value : 0
+  }
+  const curveValueText = (point: PowerCurvePoint, referenceWatts: number | null): string =>
+    `${dlabel(point.s)}, ${tl('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${tl('6-week best')} ${referenceWatts.toLocaleString()} watts`}`
+  const activate = (wrap: HTMLElement): void => {
+    if (activeWrap && activeWrap !== wrap) activeWrap.classList.remove('tri-chart--hover')
+    activeWrap = wrap
+    wrap.classList.add('tri-chart--hover')
+  }
   const clear = (): void => {
     activeWrap?.classList.remove('tri-chart--hover')
     activeBar?.classList.remove('tri-hist-bar--on')
     activeWrap = null
     activeBar = null
   }
-  const onMove = (event: MouseEvent): void => {
-    const svg = (event.target as HTMLElement).closest<SVGSVGElement>(
-      '.tri-curve-svg, .tri-hist-svg',
-    )
+  const showCurve = (svg: SVGSVGElement, fraction: number): void => {
+    const wrap = svg.closest<HTMLElement>('.tri-zone')
+    const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
+    const readout = wrap?.querySelector<HTMLElement>('.tri-curve-readout')
+    if (!wrap || !readout) return
+    const { curve, reference } = curveData(svg)
+    const hover = powerCurveHoverAt(curve, reference, fraction)
+    if (!hover) return
+    if (svg.dataset.curveIndex !== String(hover.index)) {
+      cursor?.setAttribute('x1', hover.xPct.toFixed(2))
+      cursor?.setAttribute('x2', hover.xPct.toFixed(2))
+      const duration = readout.querySelector<HTMLElement>('.tri-curve-readout-duration')
+      const ride = readout.querySelector<HTMLElement>('.tri-curve-readout-value--ride')
+      const referenceRow = readout.querySelector<HTMLElement>('.tri-curve-readout-row--ref')
+      const referenceValue = readout.querySelector<HTMLElement>('.tri-curve-readout-value--ref')
+      if (duration) duration.textContent = dlabel(hover.durationS)
+      if (ride) ride.textContent = `${hover.watts.toLocaleString()} W`
+      if (referenceRow) referenceRow.hidden = hover.referenceWatts == null
+      if (referenceValue && hover.referenceWatts != null)
+        referenceValue.textContent = `${hover.referenceWatts.toLocaleString()} W`
+      svg.dataset.curveIndex = String(hover.index)
+      svg.setAttribute('aria-valuenow', String(hover.durationS))
+      svg.setAttribute(
+        'aria-valuetext',
+        curveValueText({ s: hover.durationS, w: hover.watts }, hover.referenceWatts),
+      )
+    }
+    activeBar?.classList.remove('tri-hist-bar--on')
+    activeBar = null
+    activate(wrap)
+  }
+  const showCurveIndex = (svg: SVGSVGElement, requestedIndex: number): void => {
+    const { curve } = curveData(svg)
+    if (curve.length < 2) return
+    const index = Math.min(curve.length - 1, Math.max(0, requestedIndex))
+    showCurve(svg, powerCurveFraction(curve[index].s, curve[0].s, curve[curve.length - 1].s))
+  }
+  const restoreFocusedCurve = (): void => {
+    if (focusedSvg) showCurveIndex(focusedSvg, selectedCurveIndex(focusedSvg))
+    else clear()
+  }
+  const onPointer = (event: PointerEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-hist-svg')
     if (!svg) {
-      if (activeWrap) clear()
+      if (activeWrap) restoreFocusedCurve()
       return
     }
     const wrap = svg.closest<HTMLElement>('.tri-zone')
@@ -8406,26 +8508,8 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     const r = svg.getBoundingClientRect()
     const frac = r.width > 0 ? Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) : 0
     if (svg.classList.contains('tri-curve-svg')) {
-      const curve = JSON.parse(svg.dataset.curve ?? '[]') as { s: number; w: number }[]
-      if (curve.length < 2) return
-      const secs = curve.map(c => c.s)
-      const minLog = Math.log(secs[0])
-      const span = Math.max(1e-6, Math.log(secs[secs.length - 1]) - minLog)
-      const X = (sec: number): number => ((Math.log(sec) - minLog) / span) * 100
-      const fx = frac * 100
-      let bi = 0
-      let best = Infinity
-      for (let i = 0; i < curve.length; i++) {
-        const dd = Math.abs(X(curve[i].s) - fx)
-        if (dd < best) {
-          best = dd
-          bi = i
-        }
-      }
-      const c = curve[bi]
-      cursor?.setAttribute('x1', X(c.s).toFixed(2))
-      cursor?.setAttribute('x2', X(c.s).toFixed(2))
-      if (readout) readout.textContent = `${dlabel(c.s)} · ${c.w} W`
+      showCurve(svg, frac)
+      return
     } else {
       const hist = JSON.parse(svg.dataset.hist ?? '[]') as number[]
       const n = hist.length
@@ -8440,16 +8524,77 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
       if (readout)
         readout.textContent = `${bin * 25}–${bin * 25 + 24} W · ${zoneClock(hist[bin])} (${((hist[bin] / total) * 100).toFixed(1)}%)`
     }
-    if (activeWrap && activeWrap !== wrap) activeWrap.classList.remove('tri-chart--hover')
-    activeWrap = wrap
-    wrap?.classList.add('tri-chart--hover')
+    if (wrap) activate(wrap)
   }
-  scope.addEventListener('mousemove', onMove)
-  scope.addEventListener('mouseleave', clear, true)
+  const onFocus = (event: FocusEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    if (!svg) return
+    focusedSvg = svg
+    showCurveIndex(svg, selectedCurveIndex(svg))
+  }
+  const onBlur = (event: FocusEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    if (!svg) return
+    if (focusedSvg === svg) focusedSvg = null
+    clear()
+  }
+  const onKey = (event: KeyboardEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    if (!svg) return
+    const { curve } = curveData(svg)
+    if (curve.length < 2) return
+    const current = selectedCurveIndex(svg)
+    let next: number | null = null
+    if (event.key === 'ArrowLeft') next = current - 1
+    else if (event.key === 'ArrowRight') next = current + 1
+    else if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = curve.length - 1
+    else if (event.key === 'Escape') {
+      focusedSvg = null
+      clear()
+      return
+    }
+    if (next == null) return
+    event.preventDefault()
+    focusedSvg = svg
+    showCurveIndex(svg, next)
+  }
+  const onLocale = (): void => {
+    for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-curve-svg')) {
+      const { curve, reference } = curveData(svg)
+      if (curve.length < 2) continue
+      const index = Math.min(curve.length - 1, Math.max(0, selectedCurveIndex(svg)))
+      const point = curve[index]
+      const referenceWatts = reference.find(candidate => candidate.s === point.s)?.w ?? null
+      svg.setAttribute('aria-label', tl('power curve'))
+      svg.setAttribute('aria-valuenow', String(point.s))
+      svg.setAttribute('aria-valuetext', curveValueText(point, referenceWatts))
+    }
+  }
+  const onPointerLeave = (): void => {
+    if (!focusedSvg) clear()
+  }
+  scope.addEventListener('pointermove', onPointer)
+  scope.addEventListener('pointerdown', onPointer)
+  scope.addEventListener('pointerleave', onPointerLeave)
+  scope.addEventListener('pointercancel', onPointerLeave)
+  scope.addEventListener('focusin', onFocus)
+  scope.addEventListener('focusout', onBlur)
+  scope.addEventListener('keydown', onKey)
+  window.addEventListener('tri:locale', onLocale)
   return () => {
     clear()
-    scope.removeEventListener('mousemove', onMove)
-    scope.removeEventListener('mouseleave', clear, true)
+    scope.removeEventListener('pointermove', onPointer)
+    scope.removeEventListener('pointerdown', onPointer)
+    scope.removeEventListener('pointerleave', onPointerLeave)
+    scope.removeEventListener('pointercancel', onPointerLeave)
+    scope.removeEventListener('focusin', onFocus)
+    scope.removeEventListener('focusout', onBlur)
+    scope.removeEventListener('keydown', onKey)
+    window.removeEventListener('tri:locale', onLocale)
   }
 }
 
@@ -9320,14 +9465,14 @@ const mountTriathlon = (): (() => void) => {
   const addCleanup = (cleanup: (() => void) | null | undefined): void => {
     if (cleanup) cleanups.push(cleanup)
   }
+  try {
+    setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
+  } catch {}
   const embedCleanup = setupDayEmbeds()
   addCleanup(embedCleanup)
   addCleanup(setupChartScrub(document.body))
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (root) {
-    try {
-      setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
-    } catch {}
     initTriLocale()
     addCleanup(setupI18n(root))
     addCleanup(setupCommandPalette(root))
