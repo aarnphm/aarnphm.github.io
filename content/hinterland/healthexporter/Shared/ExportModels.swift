@@ -24,8 +24,28 @@ enum SwimStrokeName: String, Codable, CaseIterable, Sendable {
   case kickboard
 }
 
-struct SwimSampleValue: Equatable, Sendable {
+struct SwimSessionValue: Equatable, Sendable {
+  let id: String
   let startDate: Date
+  let endDate: Date
+  let distanceMeters: Double?
+  let activeTimeS: TimeInterval
+  let strokeCount: Double?
+  let strokeTimeS: TimeInterval?
+  let lapCount: Int?
+}
+
+struct SwimStrokeIntervalValue: Equatable, Sendable {
+  let startDate: Date
+  let endDate: Date
+  let count: Double
+  let stroke: SwimStrokeName?
+}
+
+struct SwimSampleValue: Equatable, Sendable {
+  let workoutID: String
+  let startDate: Date
+  let endDate: Date
   let meters: Double
   let stroke: SwimStrokeName?
 }
@@ -42,12 +62,67 @@ struct AppleHealthDay: Codable, Equatable, Identifiable, Sendable {
 }
 
 struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
+  let id: String
   let date: String
+  let start: String?
+  let end: String?
   let totalM: Int
   let laps: Int
+  let activeTimeS: Int?
+  let strokeCount: Int?
+  let strokeTimeS: Int?
   let strokes: [String: Int]
 
-  var id: String { date }
+  init(
+    id: String,
+    date: String,
+    start: String?,
+    end: String?,
+    totalM: Int,
+    laps: Int,
+    activeTimeS: Int?,
+    strokeCount: Int?,
+    strokeTimeS: Int?,
+    strokes: [String: Int]
+  ) {
+    self.id = id
+    self.date = date
+    self.start = start
+    self.end = end
+    self.totalM = totalM
+    self.laps = laps
+    self.activeTimeS = activeTimeS
+    self.strokeCount = strokeCount
+    self.strokeTimeS = strokeTimeS
+    self.strokes = strokes
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case id
+    case date
+    case start
+    case end
+    case totalM
+    case laps
+    case activeTimeS
+    case strokeCount
+    case strokeTimeS
+    case strokes
+  }
+
+  init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    date = try values.decode(String.self, forKey: .date)
+    id = try values.decodeIfPresent(String.self, forKey: .id) ?? date
+    start = try values.decodeIfPresent(String.self, forKey: .start)
+    end = try values.decodeIfPresent(String.self, forKey: .end)
+    totalM = try values.decode(Int.self, forKey: .totalM)
+    laps = try values.decode(Int.self, forKey: .laps)
+    activeTimeS = try values.decodeIfPresent(Int.self, forKey: .activeTimeS)
+    strokeCount = try values.decodeIfPresent(Int.self, forKey: .strokeCount)
+    strokeTimeS = try values.decodeIfPresent(Int.self, forKey: .strokeTimeS)
+    strokes = try values.decode([String: Int].self, forKey: .strokes)
+  }
 }
 
 struct AppleHealthHeartRate: Codable, Equatable, Sendable {
@@ -65,6 +140,8 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
 }
 
 struct HealthExportDocument: Codable, Equatable, Sendable {
+  static let currentVersion = 3
+
   let version: Int
   let generatedAt: String
   let timezone: String
@@ -82,7 +159,9 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
       generatedAt: recent.generatedAt,
       timezone: recent.timezone,
       days: (days.filter { $0.date < dayCutoff } + recent.days).sorted { $0.date < $1.date },
-      swims: (swims.filter { $0.date < dayCutoff } + recent.swims).sorted { $0.date < $1.date },
+      swims: (swims.filter { $0.date < dayCutoff } + recent.swims).sorted {
+        ($0.start ?? $0.date, $0.id) < ($1.start ?? $1.date, $1.id)
+      },
       workouts: workouts.filter { $0.start < timestampCutoff } + recent.workouts
     )
   }

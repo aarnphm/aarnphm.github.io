@@ -28,12 +28,27 @@ final class HealthKitService: @unchecked Sendable {
 
   private struct DistanceSample {
     let startDate: Date
+    let endDate: Date
     let meters: Double
+    let sourceBundleIdentifier: String
   }
 
   private struct StrokeSample {
     let startDate: Date
-    let stroke: SwimStrokeName
+    let endDate: Date
+    let count: Double
+    let sourceBundleIdentifier: String
+  }
+
+  private struct SwimmingScope {
+    let session: SwimSessionValue
+    let workout: HKWorkout
+    let events: [HKWorkoutEvent]
+  }
+
+  private struct SwimExportValues {
+    let samples: [SwimSampleValue]
+    let sessions: [SwimSessionValue]
   }
 
   private struct HeartRateSample {
@@ -178,16 +193,21 @@ final class HealthKitService: @unchecked Sendable {
       start: start,
       end: end
     )
-    async let swimSamples = swimSamples(start: start, end: end, calendar: calendar)
-    async let workouts = workoutHeartRates(start: start, end: end)
+    async let workoutSamples = workouts(start: start, end: end)
+    let queriedWorkouts = try await workoutSamples
+    let swimmingScopes = try swimmingScopes(workouts: queriedWorkouts)
+    async let swimValues = swimSamples(start: start, end: end, scopes: swimmingScopes)
+    async let workouts = workoutHeartRates(workouts: queriedWorkouts)
     var quantitySamples = try await activeEnergy
     quantitySamples += try await basalEnergy
     quantitySamples += try await dietaryEnergy
     quantitySamples += try await bodyMass
     quantitySamples += try await vo2Max
+    let swims = try await swimValues
     return HealthAggregator.document(
       quantitySamples: quantitySamples,
-      swimSamples: try await swimSamples,
+      swimSamples: swims.samples,
+      swimSessions: swims.sessions,
       workouts: try await workouts,
       generatedAt: now,
       calendar: calendar
@@ -280,34 +300,232 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
-  private func swimSamples(start: Date, end: Date, calendar: Calendar) async throws -> [SwimSampleValue] {
-    async let distances = distanceSamples(start: start, end: end)
-    async let strokes = strokeSamples(start: start, end: end)
+  private func swimmingScopes(workouts: [HKWorkout]) throws -> [SwimmingScope] {
+    let distanceType = try quantityType(.distanceSwimming)
+    let strokeType = try quantityType(.swimmingStrokeCount)
+    var scopes: [SwimmingScope] = []
+    for workout in workouts {
+      switch workout.workoutActivityType {
+      case .swimming:
+        scopes.append(
+          SwimmingScope(
+            session: SwimSessionValue(
+              id: workout.uuid.uuidString,
+              startDate: workout.startDate,
+              endDate: workout.endDate,
+              distanceMeters: Self.statisticsValue(
+                workout.statistics(for: distanceType),
+                unit: .meter()
+              ),
+              activeTimeS: workout.duration,
+              strokeCount: Self.statisticsValue(
+                workout.statistics(for: strokeType),
+                unit: .count()
+              ),
+              strokeTimeS: nil,
+              lapCount: Self.lapCount(workout.workoutEvents ?? [])
+            ),
+            workout: workout,
+            events: workout.workoutEvents ?? []
+          )
+        )
+      case .swimBikeRun:
+        for activity in workout.workoutActivities where
+          activity.workoutConfiguration.activityType == .swimming
+        {
+          guard let endDate = activity.endDate else { continue }
+          scopes.append(
+            SwimmingScope(
+              session: SwimSessionValue(
+                id: activity.uuid.uuidString,
+                startDate: activity.startDate,
+                endDate: endDate,
+                distanceMeters: Self.statisticsValue(
+                  activity.statistics(for: distanceType),
+                  unit: .meter()
+                ),
+                activeTimeS: activity.duration,
+                strokeCount: Self.statisticsValue(
+                  activity.statistics(for: strokeType),
+                  unit: .count()
+                ),
+                strokeTimeS: nil,
+                lapCount: Self.lapCount(activity.workoutEvents)
+              ),
+              workout: workout,
+              events: activity.workoutEvents
+            )
+          )
+        }
+      default:
+        continue
+      }
+    }
+    return scopes
+  }
+
+  private static func statisticsValue(_ statistics: HKStatistics?, unit: HKUnit) -> Double? {
+    guard let value = statistics?.sumQuantity()?.doubleValue(for: unit), value.isFinite, value >= 0 else {
+      return nil
+    }
+    return value
+  }
+
+  private static func lapCount(_ events: [HKWorkoutEvent]) -> Int? {
+    let count = events.filter { $0.type == .lap }.count
+    return count > 0 ? count : nil
+  }
+
+  private func swimSamples(
+    start: Date,
+    end: Date,
+    scopes: [SwimmingScope]
+  ) async throws -> SwimExportValues {
+    guard !scopes.isEmpty else { return SwimExportValues(samples: [], sessions: []) }
+    let workouts = Array(Dictionary(uniqueKeysWithValues: scopes.map {
+      ($0.workout.uuid, $0.workout)
+    }).values)
+    async let distances = distanceSamples(start: start, end: end, workouts: workouts)
+    async let strokes = strokeSamples(start: start, end: end, workouts: workouts)
     let distanceValues = try await distances
     let strokeValues = try await strokes
-    let distanceBySecond = Dictionary(uniqueKeysWithValues: distanceValues.map {
-      (Int($0.startDate.timeIntervalSince1970.rounded()), $0.meters)
-    })
-    var distancesByDay: [String: [Double]] = [:]
-    for sample in distanceValues {
-      let key = HealthExporterFormat.dayString(sample.startDate, calendar: calendar)
-      distancesByDay[key, default: []].append(sample.meters)
+    var strokesBySession: [String: [StrokeSample]] = [:]
+    for stroke in strokeValues {
+      guard
+        let scope = Self.swimmingScope(
+          startDate: stroke.startDate,
+          endDate: stroke.endDate,
+          sourceBundleIdentifier: stroke.sourceBundleIdentifier,
+          scopes: scopes
+        )
+      else { continue }
+      strokesBySession[scope.session.id, default: []].append(stroke)
     }
-    let medianByDay = distancesByDay.mapValues { values -> Double in
-      let sorted = values.sorted()
-      return sorted[sorted.count / 2]
+    let samples = distanceValues.compactMap { distance -> SwimSampleValue? in
+      guard distance.meters > 0 else { return nil }
+      guard
+        let scope = Self.swimmingScope(
+          startDate: distance.startDate,
+          endDate: distance.endDate,
+          sourceBundleIdentifier: distance.sourceBundleIdentifier,
+          scopes: scopes
+        )
+      else { return nil }
+      return SwimSampleValue(
+        workoutID: scope.session.id,
+        startDate: distance.startDate,
+        endDate: distance.endDate,
+        meters: distance.meters,
+        stroke: Self.strokeName(
+          startDate: distance.startDate,
+          endDate: distance.endDate,
+          events: scope.events
+        )
+      )
     }
-    return strokeValues.map { stroke in
-      let second = Int(stroke.startDate.timeIntervalSince1970.rounded())
-      let day = HealthExporterFormat.dayString(stroke.startDate, calendar: calendar)
-      let meters = distanceBySecond[second] ?? medianByDay[day] ?? 25
-      return SwimSampleValue(startDate: stroke.startDate, meters: meters, stroke: stroke.stroke)
+    let sessions = scopes.map { scope in
+      let session = scope.session
+      return SwimSessionValue(
+        id: session.id,
+        startDate: session.startDate,
+        endDate: session.endDate,
+        distanceMeters: session.distanceMeters,
+        activeTimeS: session.activeTimeS,
+        strokeCount: session.strokeCount,
+        strokeTimeS: HealthAggregator.strokeTime(
+          strokeSamples: (strokesBySession[session.id] ?? []).map { stroke in
+            SwimStrokeIntervalValue(
+              startDate: stroke.startDate,
+              endDate: stroke.endDate,
+              count: stroke.count,
+              stroke: Self.strokeName(
+                startDate: stroke.startDate,
+                endDate: stroke.endDate,
+                events: scope.events
+              )
+            )
+          }
+        ),
+        lapCount: session.lapCount
+      )
+    }
+    return SwimExportValues(samples: samples, sessions: sessions)
+  }
+
+  private static func swimmingScope(
+    startDate: Date,
+    endDate: Date,
+    sourceBundleIdentifier: String,
+    scopes: [SwimmingScope]
+  ) -> SwimmingScope? {
+    var candidates = scopes.filter {
+      $0.session.startDate <= startDate && $0.session.endDate >= endDate
+    }
+    if candidates.isEmpty {
+      candidates = scopes.filter {
+        $0.session.startDate < endDate && $0.session.endDate > startDate
+      }
+    }
+    let sourceMatches = candidates.filter {
+      $0.workout.sourceRevision.source.bundleIdentifier == sourceBundleIdentifier
+    }
+    let matches = sourceMatches.isEmpty ? candidates : sourceMatches
+    return matches.min {
+      let leftDuration = $0.session.endDate.timeIntervalSince($0.session.startDate)
+      let rightDuration = $1.session.endDate.timeIntervalSince($1.session.startDate)
+      if leftDuration != rightDuration { return leftDuration < rightDuration }
+      return $0.session.id < $1.session.id
     }
   }
 
-  private func distanceSamples(start: Date, end: Date) async throws -> [DistanceSample] {
+  private static func strokeName(
+    startDate: Date,
+    endDate: Date,
+    events: [HKWorkoutEvent]
+  ) -> SwimStrokeName? {
+    let laps = events.filter { $0.type == .lap && strokeName($0.metadata) != nil }
+    let containing = laps.filter {
+      $0.dateInterval.start <= startDate && $0.dateInterval.end >= endDate
+    }
+    let overlapping = laps.filter {
+      $0.dateInterval.start < endDate && $0.dateInterval.end > startDate
+    }
+    let candidates = containing.isEmpty ? overlapping : containing
+    let matches = candidates.isEmpty ? laps.filter {
+      abs($0.dateInterval.start.timeIntervalSince(startDate)) < 1
+    } : candidates
+    let event = matches.min {
+      let leftDuration = $0.dateInterval.duration
+      let rightDuration = $1.dateInterval.duration
+      if leftDuration != rightDuration { return leftDuration < rightDuration }
+      return $0.dateInterval.start < $1.dateInterval.start
+    }
+    return strokeName(event?.metadata)
+  }
+
+  private static func samplePredicate(
+    start: Date,
+    end: Date,
+    workouts: [HKWorkout]
+  ) -> NSPredicate {
+    let range = HKQuery.predicateForSamples(
+      withStart: start,
+      end: end,
+      options: [.strictStartDate]
+    )
+    let associations = NSCompoundPredicate(
+      orPredicateWithSubpredicates: workouts.map { HKQuery.predicateForObjects(from: $0) }
+    )
+    return NSCompoundPredicate(andPredicateWithSubpredicates: [range, associations])
+  }
+
+  private func distanceSamples(
+    start: Date,
+    end: Date,
+    workouts: [HKWorkout]
+  ) async throws -> [DistanceSample] {
     let type = try quantityType(.distanceSwimming)
-    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [.strictStartDate])
+    let predicate = Self.samplePredicate(start: start, end: end, workouts: workouts)
     let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
     return try await withCheckedThrowingContinuation { continuation in
       let query = HKSampleQuery(
@@ -324,7 +542,9 @@ final class HealthKitService: @unchecked Sendable {
           guard let sample = sample as? HKQuantitySample else { return nil }
           return DistanceSample(
             startDate: sample.startDate,
-            meters: sample.quantity.doubleValue(for: .meter())
+            endDate: sample.endDate,
+            meters: sample.quantity.doubleValue(for: .meter()),
+            sourceBundleIdentifier: sample.sourceRevision.source.bundleIdentifier
           )
         }
         continuation.resume(returning: values)
@@ -333,9 +553,13 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
-  private func strokeSamples(start: Date, end: Date) async throws -> [StrokeSample] {
+  private func strokeSamples(
+    start: Date,
+    end: Date,
+    workouts: [HKWorkout]
+  ) async throws -> [StrokeSample] {
     let type = try quantityType(.swimmingStrokeCount)
-    let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: [.strictStartDate])
+    let predicate = Self.samplePredicate(start: start, end: end, workouts: workouts)
     let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
     return try await withCheckedThrowingContinuation { continuation in
       let query = HKSampleQuery(
@@ -349,10 +573,13 @@ final class HealthKitService: @unchecked Sendable {
           return
         }
         let values = (samples ?? []).compactMap { sample -> StrokeSample? in
-          guard let sample = sample as? HKQuantitySample, let stroke = Self.strokeName(sample.metadata) else {
-            return nil
-          }
-          return StrokeSample(startDate: sample.startDate, stroke: stroke)
+          guard let sample = sample as? HKQuantitySample else { return nil }
+          return StrokeSample(
+            startDate: sample.startDate,
+            endDate: sample.endDate,
+            count: sample.quantity.doubleValue(for: .count()),
+            sourceBundleIdentifier: sample.sourceRevision.source.bundleIdentifier
+          )
         }
         continuation.resume(returning: values)
       }
@@ -460,8 +687,7 @@ final class HealthKitService: @unchecked Sendable {
     return low
   }
 
-  private func workoutHeartRates(start: Date, end: Date) async throws -> [AppleHealthWorkout] {
-    let workouts = try await workouts(start: start, end: end)
+  private func workoutHeartRates(workouts: [HKWorkout]) async throws -> [AppleHealthWorkout] {
     let heartRates = try await heartRateSamples(workouts: workouts)
     var exports: [AppleHealthWorkout] = []
     for workout in workouts {
@@ -478,7 +704,6 @@ final class HealthKitService: @unchecked Sendable {
         )
         index += 1
       }
-      if heartRate.isEmpty { continue }
       exports.append(
         AppleHealthWorkout(
           id: workout.uuid.uuidString,
@@ -503,6 +728,8 @@ final class HealthKitService: @unchecked Sendable {
       return "walking"
     case .swimming:
       return "swimming"
+    case .swimBikeRun:
+      return "swimBikeRun"
     case .traditionalStrengthTraining:
       return "strength"
     case .functionalStrengthTraining:

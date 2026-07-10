@@ -36,6 +36,7 @@ import {
   requestWithoutCache,
   requestWithoutStaticAssetCache,
 } from './static-assets'
+import { triathlonDataHtml } from './triathlon-data'
 
 const VERSION = 'version https://git-lfs.github.com/spec/v1\n'
 const MIME = 'application/vnd.git-lfs+json'
@@ -162,9 +163,7 @@ function shouldTreatAsDocument(pathname: string): boolean {
   return ext === 'html' || ext === 'htm'
 }
 
-function wantsMarkdown(request: Request): boolean {
-  const accept = request.headers.get('Accept')?.toLowerCase() ?? ''
-  if (accept.includes('text/markdown')) return true
+function isAgentUserAgent(request: Request): boolean {
   const ua = request.headers.get('User-Agent')?.toLowerCase() ?? ''
   if (!ua) return false
   return (
@@ -174,6 +173,12 @@ function wantsMarkdown(request: Request): boolean {
     ua.includes('openai') ||
     ua.includes('gptbot')
   )
+}
+
+function wantsMarkdown(request: Request): boolean {
+  const accept = request.headers.get('Accept')?.toLowerCase() ?? ''
+  if (accept.includes('text/markdown')) return true
+  return isAgentUserAgent(request)
 }
 
 function markdownPathname(pathname: string): string {
@@ -797,10 +802,21 @@ export default {
         const assetUrl = new URL(request.url)
         assetUrl.pathname = '/triathlon/data.jsonl'
         const assetResp = await env.ASSETS.fetch(new Request(assetUrl.toString(), request))
+        const accept = request.headers.get('Accept') ?? ''
+        if (assetResp.ok && accept.includes('text/html') && !isAgentUserAgent(request)) {
+          return new Response(triathlonDataHtml(await assetResp.text()), {
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8',
+              'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
+              Vary: 'Accept, User-Agent',
+            },
+          })
+        }
         return withHeaders(assetResp, {
           'Content-Type': 'application/x-ndjson; charset=utf-8',
           'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
           'Access-Control-Allow-Origin': '*',
+          Vary: 'Accept, User-Agent',
         })
       }
       case '/triathlon/feed.md': {

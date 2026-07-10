@@ -75,13 +75,13 @@ where $\Omega$ represents control volume.
 
     > [!definition]
     >
-    > For any [[thoughts/Tensor field|tensor field]] $y$ that is _macroscopic_, or depends on ly on position and time coordinates $y=y(\mathbf{x}, t)$
+    > For any [[thoughts/Tensor field|tensor field]] $y$ that is _macroscopic_, or depends only on position and time coordinates $y=y(\mathbf{x}, t)$
     >
     > $$
     > \frac{Dy}{Dt} = \frac{\partial y}{\partial t} + \mathbf{u} \cdot \nabla y
     > $$
     >
-    > where $\nabla y$ is the covariant dervative of the tensor, and $\mathbf{u}(\mathbf{x}, t)$ is the flow velocity
+    > where $\nabla y$ is the covariant derivative of the tensor, and $\mathbf{u}(\mathbf{x}, t)$ is the flow velocity
 
 ## conservation form
 

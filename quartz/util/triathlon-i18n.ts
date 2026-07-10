@@ -65,6 +65,7 @@ const en: TriDict = {
     endurance: 'endurance',
     climb: 'climb',
     cadence: 'cadence',
+    'stroke rate': 'stroke rate',
     tempo: 'tempo',
     anaerobic: 'anaerobic',
     VO2max: 'VO2max',
@@ -114,6 +115,9 @@ const en: TriDict = {
     'power curve': 'power curve',
     'this ride': 'this ride',
     '6-week best': '6-week best',
+    'comparison range': 'comparison range',
+    '6 weeks': '6 weeks',
+    'all of': 'all of',
     speed: 'speed',
     pace: 'pace',
     power: 'power',
@@ -201,6 +205,7 @@ const en: TriDict = {
     maps: 'maps',
     training: 'training',
     feed: 'feed',
+    on: 'on',
     'all activities · list': 'all activities · list',
     'weight unit': 'weight unit',
     home: 'home',
@@ -312,8 +317,8 @@ const en: TriDict = {
       'Threshold is critical swim speed, the pace you could hold for a long steady swim, estimated from sustained efforts.',
     'radar endurance definition':
       "Endurance is this discipline's CTL, the 42-day weighted training load, scored against its target share of total load.",
-    'radar climb swim definition':
-      'Climbing does not apply in the pool, so this axis stays empty for swimming.',
+    'radar pace swim definition':
+      'Pace is the fastest valid pace based on active time from one recorded swim activity. Fewer seconds per 100 metres produce a higher score.',
     'radar climb run definition':
       'Climb is VAM on foot: vertical {unit} gained per hour of moving time on the run.',
     'radar climb bike definition':
@@ -322,8 +327,8 @@ const en: TriDict = {
       'Cadence scores how close the average pedal turnover sits to 90 rpm. Overspin and underspin both cost points.',
     'radar cadence run definition':
       'Cadence scores how close the average stride turnover sits to 180 spm. Overstriding shows up here first.',
-    'radar cadence swim definition':
-      'Cadence scores stroke rate against a 30 strokes-per-minute freestyle target.',
+    'radar stroke rate swim definition':
+      'Stroke rate is the mean of the rates from matched swim activities. Each rate uses the recorded stroke count and the time during which strokes were recorded. The score targets 30 strokes per minute.',
     'radar recovery definition':
       'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.',
     'radar unit wkg definition':
@@ -336,11 +341,13 @@ const en: TriDict = {
       '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.',
     'radar unit mspeed definition':
       '$\\mathrm{m/s}$ means metres per second of forward speed. Multiply by 3.6 for km/h; $1000/v$ gives seconds per kilometre.',
+    'radar unit s100m definition':
+      's/100m means seconds per 100 metres. A smaller value is a faster pace.',
     'radar unit rpm definition':
       'rpm means revolutions per minute, the pedal-turn rate on the bike.',
     'radar unit spm definition': 'spm means steps per minute, the stride-turnover rate on the run.',
     'radar unit strmin definition':
-      'str/min means strokes per minute, the freestyle stroke-turnover rate the watch records.',
+      'str/min means strokes per minute. Each activity rate divides its stroke count by the time during which strokes were recorded.',
     'radar unit readiness definition':
       "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain.",
     'radar unit ms definition':
@@ -479,7 +486,7 @@ const en: TriDict = {
     },
     radar: {
       term: 'abilities',
-      def: 'One radar per discipline, six axes normalised $0\\text{–}100$: sprint and threshold from Coggan $\\mathrm{W/kg}$ on the bike or peak and threshold speed in the water and on foot, per-sport CTL for endurance, VAM for climb, cadence against 90 rpm / 180 spm / 30 str/min, mean readiness for recovery. The dashed outline projects each axis 28 days ahead from its 28-day trend.',
+      def: 'Each discipline uses six scores from 0 to 100. Sprint and threshold use bike power or speed in the water and on foot. Endurance uses the training load for that sport over 42 days. Bike and run use climbing rate and cadence for the fourth and fifth axes. Swim uses the fastest valid activity pace and mean activity stroke rate in those positions. Recovery uses mean readiness. The dashed outline projects each axis 28 days from its trend over the last 28 days.',
     },
     ef: {
       term: 'efficiency factor',
@@ -524,6 +531,7 @@ const fr: TriDict = {
     endurance: 'endurance',
     climb: 'grimpe',
     cadence: 'cadence',
+    'stroke rate': 'fréquence de nage',
     tempo: 'tempo',
     anaerobic: 'anaérobie',
     VO2max: 'VO2max',
@@ -573,6 +581,9 @@ const fr: TriDict = {
     'power curve': 'courbe de puissance',
     'this ride': 'cette sortie',
     '6-week best': 'meilleur sur 6 semaines',
+    'comparison range': 'période de comparaison',
+    '6 weeks': '6 semaines',
+    'all of': "toute l'année",
     speed: 'vitesse',
     pace: 'allure',
     power: 'puissance',
@@ -660,6 +671,7 @@ const fr: TriDict = {
     maps: 'cartes',
     training: 'entraînement',
     feed: 'flux',
+    on: 'journal',
     'all activities · list': 'toutes les activités · liste',
     'weight unit': 'unité de poids',
     home: 'accueil',
@@ -771,8 +783,8 @@ const fr: TriDict = {
       "le seuil est la vitesse critique de natation, l'allure tenable sur une longue nage régulière, estimée depuis les efforts soutenus.",
     'radar endurance definition':
       'l’endurance est la CTL de cette discipline, une charge pondérée sur 42 jours, notée face à sa part cible de la charge totale.',
-    'radar climb swim definition':
-      "la grimpe ne s'applique pas en piscine, donc cet axe reste vide pour la natation.",
+    'radar pace swim definition':
+      "l'allure est la meilleure allure valide en temps actif d'une activité de natation enregistrée. moins de secondes par 100 mètres donne une note plus élevée.",
     'radar climb run definition':
       'la grimpe est la VAM à pied, les {unit} de dénivelé gagnés par heure de temps en mouvement en course.',
     'radar climb bike definition':
@@ -781,8 +793,8 @@ const fr: TriDict = {
       'la cadence note la proximité du pédalage moyen avec 90 rpm. surmouliner et sous-mouliner coûtent des points.',
     'radar cadence run definition':
       'la cadence note la proximité de la foulée moyenne avec 180 spm. la sur-foulée apparaît ici en premier.',
-    'radar cadence swim definition':
-      'la cadence note la fréquence de nage face à une cible crawl de 30 coups par minute.',
+    'radar stroke rate swim definition':
+      'la fréquence de nage est la moyenne des fréquences des activités de natation appariées. chaque fréquence utilise le nombre de coups et le temps pendant lequel les coups sont enregistrés. la note vise 30 coups par minute.',
     'radar recovery definition':
       'la récupération utilise la moyenne du score de préparation Oura sur 14 jours quand elle existe, puis la VFC comme signal de repli.',
     'radar unit wkg definition':
@@ -795,10 +807,12 @@ const fr: TriDict = {
       '$\\mathrm{m/h}$ signifie mètres verticaux par heure. la VAM vaut $\\mathrm{gain}\\cdot3600/t$ avec le temps de montée en mouvement en secondes.',
     'radar unit mspeed definition':
       '$\\mathrm{m/s}$ signifie mètres par seconde de vitesse horizontale. multiplie par 3.6 pour km/h ; $1000/v$ donne les secondes par kilomètre.',
+    'radar unit s100m definition':
+      's/100 m signifie secondes par 100 mètres. une valeur plus basse correspond à une allure plus rapide.',
     'radar unit rpm definition': 'rpm signifie tours par minute, la fréquence de pédalage à vélo.',
     'radar unit spm definition': 'spm signifie pas par minute, la cadence de course.',
     'radar unit strmin definition':
-      'str/min signifie coups par minute, la cadence de nage crawl enregistrée par la montre.',
+      'str/min signifie coups par minute. chaque fréquence d’activité divise le nombre de coups par le temps pendant lequel les coups sont enregistrés.',
     'radar unit readiness definition':
       'la préparation est le score quotidien Oura 0-100 calculé depuis sommeil, VFC, fréquence cardiaque au repos et contrainte récente.',
     'radar unit ms definition':
@@ -937,7 +951,7 @@ const fr: TriDict = {
     },
     radar: {
       term: 'aptitudes',
-      def: "un radar par discipline, six axes normalisés $0\\text{–}100$ : sprint et seuil selon les repères Coggan $\\mathrm{W/kg}$ à vélo ou les vitesses de pointe et de seuil à l'eau et à pied, la CTL par sport pour l'endurance, la VAM pour la grimpe, la cadence face à 90 rpm / 180 spm / 30 mvts/min, la readiness moyenne pour la récupération. le contour en tirets projette chaque axe à 28 jours selon sa tendance récente.",
+      def: "chaque discipline utilise six notes de 0 à 100. le sprint et le seuil utilisent la puissance à vélo ou la vitesse dans l'eau et à pied. l'endurance utilise la charge d'entraînement de ce sport sur 42 jours. le vélo et la course utilisent la vitesse de grimpe et la cadence pour les quatrième et cinquième axes. la natation utilise la meilleure allure valide d'une activité et la fréquence de nage moyenne des activités à ces positions. la récupération utilise la préparation moyenne. le contour en pointillés projette chaque axe à 28 jours selon sa tendance des 28 derniers jours.",
     },
     ef: {
       term: "facteur d'efficacité",
@@ -966,6 +980,9 @@ const fr: TriDict = {
 const TRI_I18N: Record<Locale, TriDict> = { en, fr }
 
 export const tl = (s: string): string => TRI_I18N[locale].ui[s] ?? s
+
+export const powerCurveReferenceLabel = (year: number | null): string =>
+  year == null ? tl('6-week best') : locale === 'fr' ? `meilleur de ${year}` : `${year} best`
 
 export const glossFor = (key: string): Gloss | undefined =>
   TRI_I18N[locale].gloss[key] ?? en.gloss[key]

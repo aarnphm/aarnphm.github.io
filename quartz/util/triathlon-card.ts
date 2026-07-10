@@ -6,7 +6,9 @@ import {
   type PowerCurvePoint,
   type StravaActivityDetail,
   type StravaZones,
+  type SwimTrendPoint,
 } from '../plugins/stores/strava'
+import { DEFAULT_LOCAL_TIME_ZONE } from './local-date'
 
 export interface TriNodeFactory<N> {
   el: (tag: string, cls?: string, text?: string, attrs?: Record<string, string>) => N
@@ -14,10 +16,17 @@ export interface TriNodeFactory<N> {
   add: (parent: N, ...children: N[]) => void
 }
 
-export type DayCardExtras = { location?: string; event?: string; sport?: ActivityKind }
+export type DayCardExtras = {
+  location?: string
+  event?: string
+  sport?: ActivityKind
+  expanded?: boolean
+  dateHref?: string
+}
 
 export type DayCardPayload = {
   details: Record<string, StravaActivityDetail>
+  swimTrend?: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
 }
 
@@ -428,6 +437,326 @@ export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N =
   return wrap
 }
 
+type SwimTrendObservation = { point: SwimTrendPoint; time: number; index: number }
+
+type SwimTrendMetric = { observation: SwimTrendObservation; value: number }
+
+export type SwimTrendChartPoint = {
+  activityId: number
+  date: string
+  start: string
+  value: number
+  xPct: number
+  yPct: number
+}
+
+export type SwimTrendHover = SwimTrendChartPoint & { index: number }
+
+export const swimTrendHoverAt = (
+  points: SwimTrendChartPoint[],
+  fraction: number,
+): SwimTrendHover | null => {
+  if (points.length === 0) return null
+  const xPct = Math.max(0, Math.min(100, (Number.isFinite(fraction) ? fraction : 0) * 100))
+  let index = 0
+  let distance = Math.abs(points[0].xPct - xPct)
+  for (let candidate = 1; candidate < points.length; candidate++) {
+    const candidateDistance = Math.abs(points[candidate].xPct - xPct)
+    if (candidateDistance < distance) {
+      index = candidate
+      distance = candidateDistance
+    }
+  }
+  return { ...points[index], index }
+}
+
+const positiveMetric = (value: number | null | undefined): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0
+
+const swimTrendDayTime = (date: string): number | null => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
+  const time = Date.parse(`${date}T00:00:00Z`)
+  return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === date ? time : null
+}
+
+const swimTrendTime = (start: string | null | undefined, date: string): number | null => {
+  const dayTime = swimTrendDayTime(date)
+  if (dayTime == null) return null
+  if (!start || !/^\d{4}-\d{2}-\d{2}T/.test(start)) return dayTime
+  const time = Date.parse(start)
+  return Number.isFinite(time) ? time : dayTime
+}
+
+const swimTrendNumber = (value: number): string =>
+  value.toLocaleString('en-US', { maximumFractionDigits: 1 })
+
+const swimPaceDelta = (delta: number, priorCount: number): string => {
+  const magnitude = swimTrendNumber(Math.abs(delta))
+  if (Math.abs(delta) < 0.05) return `same as prior ${priorCount}`
+  return `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
+}
+
+const swimStrokeDelta = (delta: number, priorCount: number): string => {
+  if (Math.abs(delta) < 0.05) return `same as prior ${priorCount}`
+  const sign = delta > 0 ? '+' : '−'
+  return `${sign}${swimTrendNumber(Math.abs(delta))} str/min vs prior ${priorCount}`
+}
+
+const swimTrendDisplayValue = (kind: 'pace' | 'stroke', value: number): string =>
+  kind === 'pace' ? `${clock(value)} /100m` : `${swimTrendNumber(value)} str/min`
+
+const swimTrendStartTime = (start: string): string | null => {
+  const time = Date.parse(start)
+  if (!Number.isFinite(time)) return null
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: DEFAULT_LOCAL_TIME_ZONE,
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(time)
+}
+
+export const swimTrendActivityLabel = (
+  point: Pick<SwimTrendChartPoint, 'activityId' | 'date' | 'start'>,
+): string =>
+  `${shortDate(point.date)} · ${swimTrendStartTime(point.start) ?? `swim ${point.activityId}`}`
+
+const swimTrendAriaValue = (
+  kind: 'pace' | 'stroke',
+  point: Pick<SwimTrendChartPoint, 'activityId' | 'date' | 'start' | 'value'>,
+): string => {
+  const [year] = point.date.split('-')
+  const startTime = swimTrendStartTime(point.start)
+  const activity = `${shortDate(point.date)}, ${year}, ${startTime ? `at ${startTime}` : `swim ${point.activityId}`}`
+  return kind === 'pace'
+    ? `${activity}, swim pace ${clock(point.value)} per 100 metres`
+    : `${activity}, stroke rate ${swimTrendNumber(point.value)} strokes per minute`
+}
+
+const swimTrendDomain = (values: number[], minimumStep = 0): { min: number; max: number } => {
+  const observedMin = Math.min(...values)
+  const observedMax = Math.max(...values)
+  const observedSpan = observedMax - observedMin
+  const step = Math.max(minimumStep, niceStep(observedSpan || Math.max(1, observedMax * 0.05), 3))
+  let min = Math.floor(observedMin / step) * step
+  let max = Math.ceil(observedMax / step) * step
+  if (min === max) {
+    min = Math.max(0, min - step)
+    max += step
+  }
+  return { min, max }
+}
+
+const swimTrendXTicks = (observations: SwimTrendObservation[]): AxisXTick[] => {
+  const first = observations[0]
+  const last = observations[observations.length - 1]
+  const x = (observation: SwimTrendObservation): number =>
+    (observation.index / Math.max(1, observations.length - 1)) * 100
+  const middle = observations[Math.floor((observations.length - 1) / 2)]
+  return [
+    { label: shortDate(first.point.date), pct: 0, cls: 'tri-cax-xt--first' },
+    { label: shortDate(middle.point.date), pct: x(middle) },
+    { label: shortDate(last.point.date), pct: 100, cls: 'tri-cax-xt--last' },
+  ]
+}
+
+const buildSwimTrendChart = <N>(
+  f: TriNodeFactory<N>,
+  observations: SwimTrendObservation[],
+  currentId: number,
+  kind: 'pace' | 'stroke',
+  pick: (point: SwimTrendPoint) => number | null,
+): N | null => {
+  const metrics: SwimTrendMetric[] = []
+  for (const observation of observations) {
+    const value = pick(observation.point)
+    if (positiveMetric(value)) metrics.push({ observation, value })
+  }
+  const series = metrics
+  if (series.length < 4) return null
+  const currentIndex = series.findIndex(metric => metric.observation.point.id === currentId)
+  if (currentIndex < 0) return null
+  const current = series[currentIndex]
+  const prior = series.slice(Math.max(0, currentIndex - 4), currentIndex)
+  if (prior.length === 0) return null
+  const baseline = prior.reduce((sum, metric) => sum + metric.value, 0) / prior.length
+  const delta = current.value - baseline
+  const title = kind === 'pace' ? 'pace /100m' : 'stroke rate str/min'
+  const value = kind === 'pace' ? clock(current.value) : swimTrendNumber(current.value)
+  const deltaText =
+    kind === 'pace' ? swimPaceDelta(delta, prior.length) : swimStrokeDelta(delta, prior.length)
+  const ariaDelta =
+    Math.abs(delta) < 0.05
+      ? `same as prior ${prior.length}`
+      : kind === 'pace'
+        ? `${swimTrendNumber(Math.abs(delta))} seconds ${delta < 0 ? 'faster' : 'slower'} than prior ${prior.length}`
+        : `${swimTrendNumber(Math.abs(delta))} strokes per minute ${delta > 0 ? 'above' : 'below'} prior ${prior.length}`
+  const wrap = f.el('article', `tri-zone tri-swim-trend tri-swim-trend--${kind}`)
+  const head = f.el('div', 'tri-swim-trend-head')
+  f.add(
+    head,
+    f.el('span', 'tri-swim-trend-title', title),
+    f.el('strong', 'tri-swim-trend-value', value),
+    f.el('span', 'tri-swim-trend-delta', deltaText),
+  )
+  const W = 100
+  const H = 30
+  const X = (observation: SwimTrendObservation): number =>
+    (observation.index / Math.max(1, observations.length - 1)) * W
+  const domain = swimTrendDomain(
+    series.map(metric => metric.value),
+    kind === 'pace' ? 1 : 0,
+  )
+  const domainSpan = domain.max - domain.min
+  const Y =
+    kind === 'pace'
+      ? (metric: number): number => ((metric - domain.min) / domainSpan) * H
+      : (metric: number): number => H - ((metric - domain.min) / domainSpan) * H
+  const ticks = niceTicks(domain.min, domain.max, 3)
+  const tickStep = niceStep(domainSpan, 3)
+  const yTicks = ticks.map(tick => ({
+    label: kind === 'pace' ? clock(tick) : axisNumber(tick, tickStep),
+    vbY: Y(tick),
+  }))
+  const chartPoints: SwimTrendChartPoint[] = series.map(metric => ({
+    activityId: metric.observation.point.id,
+    date: metric.observation.point.date,
+    start: metric.observation.point.start,
+    value: metric.value,
+    xPct: X(metric.observation),
+    yPct: (Y(metric.value) / H) * 100,
+  }))
+  const currentChartPoint = chartPoints[currentIndex]
+  const svg = f.svg('svg', {
+    class: `tri-swim-trend-svg tri-swim-trend-svg--${kind}`,
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': `Swim ${kind === 'pace' ? 'pace' : 'stroke rate'} trend`,
+    'aria-orientation': 'horizontal',
+    'aria-valuemin': 0,
+    'aria-valuemax': chartPoints.length - 1,
+    'aria-valuenow': currentIndex,
+    'aria-valuetext': `${swimTrendAriaValue(kind, currentChartPoint)}. ${ariaDelta}.`,
+    'data-swim-series': JSON.stringify(chartPoints),
+    'data-swim-kind': kind,
+    'data-swim-index': currentIndex,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svg,
+      f.svg('line', { class: 'tri-swim-trend-grid', x1: 0, y1: tick.vbY, x2: W, y2: tick.vbY }),
+    )
+  f.add(
+    svg,
+    f.svg('path', {
+      class: 'tri-swim-trend-line',
+      d: series
+        .map((metric, index) => {
+          const prior = series[index - 1]
+          const command =
+            prior && metric.observation.index === prior.observation.index + 1 ? 'L' : 'M'
+          return `${command} ${X(metric.observation).toFixed(2)} ${Y(metric.value).toFixed(2)}`
+        })
+        .join(' '),
+    }),
+    f.svg('line', {
+      class: 'tri-chart-cursor',
+      x1: currentChartPoint.xPct.toFixed(2),
+      y1: 0,
+      x2: currentChartPoint.xPct.toFixed(2),
+      y2: H,
+    }),
+  )
+  const marker = f.el('span', 'tri-swim-trend-current', undefined, {
+    'aria-hidden': 'true',
+    'data-activity-id': `${currentId}`,
+    style: `left:${X(current.observation).toFixed(2)}%;top:${((Y(current.value) / H) * 100).toFixed(2)}%`,
+  })
+  const hoverMarker = f.el('span', 'tri-swim-trend-hover', undefined, {
+    'aria-hidden': 'true',
+    hidden: '',
+    style: `left:${currentChartPoint.xPct.toFixed(2)}%;top:${currentChartPoint.yPct.toFixed(2)}%`,
+  })
+  const readout = f.el('div', 'tri-chart-readout tri-swim-trend-readout', undefined, {
+    'aria-hidden': 'true',
+  })
+  f.add(
+    readout,
+    f.el('span', 'tri-swim-trend-readout-date', swimTrendActivityLabel(currentChartPoint)),
+    f.el(
+      'strong',
+      'tri-swim-trend-readout-value',
+      swimTrendDisplayValue(kind, currentChartPoint.value),
+    ),
+  )
+  f.add(
+    wrap,
+    head,
+    axisFrame(f, svg, yTicks, H, swimTrendXTicks(observations), true, { top: 0, bottom: H }, [
+      marker,
+      hoverMarker,
+      readout,
+    ]),
+  )
+  return wrap
+}
+
+export const buildSwimTrends = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  points: SwimTrendPoint[],
+): N | null => {
+  if (d.sport !== 'swim') return null
+  const currentPoint = points.find(point => point.id === d.id)
+  const currentPace = positiveMetric(d.swimPaceSPer100m)
+    ? d.swimPaceSPer100m
+    : currentPoint?.paceSPer100m
+  const currentStrokeRate = positiveMetric(d.strokeRateSpm)
+    ? d.strokeRateSpm
+    : (currentPoint?.strokeRateSpm ?? null)
+  const source = points.filter(point => point.id !== d.id)
+  if (positiveMetric(currentPace) || positiveMetric(currentStrokeRate))
+    source.push({
+      id: d.id,
+      date: d.date,
+      start: d.start,
+      paceSPer100m: positiveMetric(currentPace) ? currentPace : null,
+      strokeRateSpm: positiveMetric(currentStrokeRate) ? currentStrokeRate : null,
+    })
+  const selectedTime = swimTrendTime(d.start, d.date)
+  if (selectedTime == null) return null
+  const recent: SwimTrendObservation[] = []
+  for (const point of source) {
+    const time = swimTrendTime(point.start, point.date)
+    if (
+      time == null ||
+      time > selectedTime ||
+      (!positiveMetric(point.paceSPer100m) && !positiveMetric(point.strokeRateSpm))
+    )
+      continue
+    recent.push({ point, time, index: 0 })
+  }
+  recent.sort((a, b) => a.time - b.time || a.point.id - b.point.id)
+  const activityWindow = recent.slice(-16)
+  activityWindow.forEach((observation, index) => {
+    observation.index = index
+  })
+  const pace = buildSwimTrendChart(f, activityWindow, d.id, 'pace', point => point.paceSPer100m)
+  const stroke = buildSwimTrendChart(
+    f,
+    activityWindow,
+    d.id,
+    'stroke',
+    point => point.strokeRateSpm,
+  )
+  const trends = zoneDuo(f, pace, stroke)
+  if (!trends) return null
+  const wrap = f.el('section', 'tri-swim-trends', undefined, { 'aria-label': 'Swim trends' })
+  f.add(wrap, trends)
+  return wrap
+}
+
 export const statRow = <N>(f: TriNodeFactory<N>, label: string, value: string): N => {
   const tr = f.el('tr')
   f.add(tr, f.el('th', 'tri-act-stat-k', label), f.el('td', 'tri-act-stat-v', value))
@@ -461,6 +790,8 @@ export const buildRecovery = <N>(f: TriNodeFactory<N>, h: ActivityHealth): N | n
 export interface DetailCtx {
   zones: StravaZones | null
   curveRef: PowerCurvePoint[]
+  curveYearRef: PowerCurvePoint[]
+  curveYear: number | null
   ftp: number | null
   goalFtp: number | null
   vt1: number | null
@@ -506,6 +837,46 @@ export type PowerCurveHover = {
   xPct: number
 }
 
+const POWER_CURVE_PATH_POINTS = 1_024
+
+export const encodePowerCurve = (curve: PowerCurvePoint[]): string => {
+  if (curve.length === 0) return ''
+  const consecutive = curve.every((point, index) => point.s === curve[0].s + index)
+  return consecutive
+    ? `d|${curve[0].s}|${curve.map(point => point.w).join(',')}`
+    : `s|${curve.map(point => `${point.s}:${point.w}`).join(',')}`
+}
+
+export const decodePowerCurve = (encoded: string | undefined): PowerCurvePoint[] => {
+  if (!encoded) return []
+  const fields = encoded.split('|')
+  const points: PowerCurvePoint[] = []
+  if (fields[0] === 'd' && fields.length === 3) {
+    const start = Number(fields[1])
+    if (!Number.isInteger(start) || start <= 0 || fields[2].length === 0) return []
+    for (const [index, raw] of fields[2].split(',').entries()) {
+      if (raw.length === 0) return []
+      const watts = Number(raw)
+      if (!Number.isFinite(watts)) return []
+      points.push({ s: start + index, w: watts })
+    }
+    return points
+  }
+  if (fields[0] !== 's' || fields.length !== 2 || fields[1].length === 0) return []
+  let previousSeconds = 0
+  for (const raw of fields[1].split(',')) {
+    const separator = raw.indexOf(':')
+    if (separator <= 0 || separator === raw.length - 1) return []
+    const seconds = Number(raw.slice(0, separator))
+    const watts = Number(raw.slice(separator + 1))
+    if (!Number.isInteger(seconds) || seconds <= previousSeconds || !Number.isFinite(watts))
+      return []
+    points.push({ s: seconds, w: watts })
+    previousSeconds = seconds
+  }
+  return points
+}
+
 export const powerCurveFraction = (
   seconds: number,
   minSeconds: number,
@@ -514,6 +885,43 @@ export const powerCurveFraction = (
   if (minSeconds <= 0 || maxSeconds <= minSeconds) return 0
   const value = Math.min(maxSeconds, Math.max(minSeconds, seconds))
   return (Math.log(value) - Math.log(minSeconds)) / (Math.log(maxSeconds) - Math.log(minSeconds))
+}
+
+const nearestPowerCurveIndex = (curve: PowerCurvePoint[], seconds: number): number => {
+  let low = 0
+  let high = curve.length - 1
+  while (low < high) {
+    const mid = Math.floor((low + high) / 2)
+    if (curve[mid].s < seconds) low = mid + 1
+    else high = mid
+  }
+  if (
+    low > 0 &&
+    Math.abs(Math.log(curve[low - 1].s) - Math.log(seconds)) <
+      Math.abs(Math.log(curve[low].s) - Math.log(seconds))
+  )
+    return low - 1
+  return low
+}
+
+const powerCurvePathPoints = (curve: PowerCurvePoint[]): PowerCurvePoint[] => {
+  if (curve.length <= POWER_CURVE_PATH_POINTS) return curve
+  const minSeconds = curve[0].s
+  const maxSeconds = curve[curve.length - 1].s
+  const points: PowerCurvePoint[] = []
+  let previousIndex = -1
+  for (let sample = 0; sample < POWER_CURVE_PATH_POINTS; sample++) {
+    const fraction = sample / (POWER_CURVE_PATH_POINTS - 1)
+    const seconds = Math.exp(
+      Math.log(minSeconds) + fraction * (Math.log(maxSeconds) - Math.log(minSeconds)),
+    )
+    const index = nearestPowerCurveIndex(curve, seconds)
+    if (index === previousIndex) continue
+    points.push(curve[index])
+    previousIndex = index
+  }
+  if (previousIndex !== curve.length - 1) points.push(curve[curve.length - 1])
+  return points
 }
 
 export const powerCurveHoverAt = (
@@ -525,22 +933,28 @@ export const powerCurveHoverAt = (
   const fraction = Math.min(1, Math.max(0, pointerFraction))
   const minSeconds = curve[0].s
   const maxSeconds = curve[curve.length - 1].s
-  let index = 0
-  let distance = Infinity
-  curve.forEach((point, candidate) => {
-    const candidateDistance = Math.abs(
-      powerCurveFraction(point.s, minSeconds, maxSeconds) - fraction,
-    )
-    if (candidateDistance >= distance) return
-    index = candidate
-    distance = candidateDistance
-  })
+  const targetSeconds = Math.exp(
+    Math.log(minSeconds) + fraction * (Math.log(maxSeconds) - Math.log(minSeconds)),
+  )
+  const index = nearestPowerCurveIndex(curve, targetSeconds)
   const point = curve[index]
+  let referenceWatts: number | null = null
+  let low = 0
+  let high = reference.length - 1
+  while (low <= high) {
+    const mid = Math.floor((low + high) / 2)
+    if (reference[mid].s < point.s) low = mid + 1
+    else if (reference[mid].s > point.s) high = mid - 1
+    else {
+      referenceWatts = reference[mid].w
+      break
+    }
+  }
   return {
     index,
     durationS: point.s,
     watts: point.w,
-    referenceWatts: reference.find(candidate => candidate.s === point.s)?.w ?? null,
+    referenceWatts,
     xPct: powerCurveFraction(point.s, minSeconds, maxSeconds) * 100,
   }
 }
@@ -713,6 +1127,7 @@ export const axisFrame = <N>(
   xTicks: AxisXTick[],
   axes = true,
   axisRange?: { top: number; bottom: number },
+  stageOverlays: N[] = [],
 ): N => {
   const frame = f.el('div', 'tri-cax-frame')
   const yax = f.el('div', 'tri-cax-yax')
@@ -734,7 +1149,7 @@ export const axisFrame = <N>(
       f.el('span', 'tri-cax-ax tri-cax-ax--x', undefined, { style: `top:${base.toFixed(2)}%` }),
     )
   }
-  f.add(stage, svgEl)
+  f.add(stage, svgEl, ...stageOverlays)
   const xax = f.el('div', 'tri-cax-xax')
   for (const t of xTicks)
     f.add(
@@ -911,40 +1326,108 @@ export const buildPowerCurve = <N>(
 ): N | null => {
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
-  const ref = ctx.curveRef
+  const sixWeekRef = ctx.curveRef
+  const yearRef = ctx.curveYearRef
   const ftpRef = ctx.ftp
   const goalRef = ctx.goalFtp
   const wrap = f.el('div', 'tri-zone')
-  f.add(wrap, f.el('div', 'tri-zone-title', 'power curve', { 'data-i18n': 'power curve' }))
   const W = 100
   const H = 34
   const secs = curve.map(c => c.s)
-  const maxW = Math.max(1, ...curve.map(c => c.w), ...ref.map(c => c.w), ftpRef ?? 0, goalRef ?? 0)
+  const visibleSixWeekRef = sixWeekRef.filter(c => c.s >= secs[0] && c.s <= secs[secs.length - 1])
+  const visibleYearRef = yearRef.filter(c => c.s >= secs[0] && c.s <= secs[secs.length - 1])
+  const defaultRange = visibleSixWeekRef.length > 0 ? 'six-weeks' : 'year'
+  const visibleRef = defaultRange === 'six-weeks' ? visibleSixWeekRef : visibleYearRef
+  const head = f.el('div', 'tri-curve-head')
+  f.add(head, f.el('div', 'tri-zone-title', 'power curve', { 'data-i18n': 'power curve' }))
+  if (ctx.curveYear != null && visibleYearRef.length > 0) {
+    const ranges = f.el('div', 'tri-curve-ranges', undefined, {
+      role: 'group',
+      'aria-label': 'comparison range',
+      'data-i18n-aria-label': 'comparison range',
+    })
+    const sixWeekAttrs: Record<string, string> = {
+      type: 'button',
+      'data-curve-range': 'six-weeks',
+      'aria-pressed': String(defaultRange === 'six-weeks'),
+      'data-i18n': '6 weeks',
+    }
+    if (visibleSixWeekRef.length === 0) sixWeekAttrs.disabled = ''
+    const yearButton = f.el('button', 'tri-curve-range', undefined, {
+      type: 'button',
+      'data-curve-range': 'year',
+      'aria-pressed': String(defaultRange === 'year'),
+    })
+    f.add(
+      yearButton,
+      f.el('span', undefined, 'all of', { 'data-i18n': 'all of' }),
+      f.el('span', undefined, ` ${ctx.curveYear}`),
+    )
+    f.add(ranges, f.el('button', 'tri-curve-range', '6 weeks', sixWeekAttrs), yearButton)
+    f.add(head, ranges)
+  }
+  f.add(wrap, head)
+  const observedMaxW = Math.max(
+    1,
+    ...curve.map(c => c.w),
+    ...visibleSixWeekRef.map(c => c.w),
+    ...visibleYearRef.map(c => c.w),
+    ftpRef ?? 0,
+    goalRef ?? 0,
+  )
+  const curveStep = niceStep(observedMaxW, 4)
+  const curveMax = Math.ceil(observedMaxW / curveStep) * curveStep
+  const curveTicks = Array.from(
+    { length: Math.round(curveMax / curveStep) + 1 },
+    (_, index) => index * curveStep,
+  )
   const X = (sec: number): number => powerCurveFraction(sec, secs[0], secs[secs.length - 1]) * W
-  const Y = (w: number): number => H - (w / maxW) * (H - 1)
+  const Y = (w: number): number => H - (w / curveMax) * (H - 1)
   const toPath = (pts: PowerCurvePoint[]): string =>
-    pts.map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`).join(' ')
-  const visibleRef = ref.filter(c => c.s >= secs[0] && c.s <= secs[secs.length - 1])
-  const initialValueText = `${dlabel(curve[0].s)} · ${curve[0].w.toLocaleString('en-US')} W`
+    powerCurvePathPoints(pts)
+      .map((c, i) => `${i ? 'L' : 'M'} ${X(c.s).toFixed(2)} ${Y(c.w).toFixed(2)}`)
+      .join(' ')
+  const initialValueText = `${zoneClock(curve[0].s)} · ${curve[0].w.toLocaleString('en-US')} W`
   const s = f.svg('svg', {
     class: 'tri-curve-svg',
     viewBox: `0 0 ${W} ${H}`,
     preserveAspectRatio: 'none',
-    'data-curve': JSON.stringify(curve),
-    'data-curve-ref': JSON.stringify(visibleRef),
+    'data-curve': encodePowerCurve(curve),
+    'data-curve-ref-six-weeks': encodePowerCurve(visibleSixWeekRef),
+    'data-curve-ref-year': encodePowerCurve(visibleYearRef),
+    'data-curve-range': defaultRange,
+    'data-curve-year': ctx.curveYear ?? '',
+    'data-curve-domain-max': curveMax,
     'data-i18n-aria-label': 'power curve',
     role: 'slider',
     tabindex: 0,
     'aria-label': 'power curve',
     'aria-orientation': 'horizontal',
-    'aria-readonly': 'true',
     'aria-valuemin': curve[0].s,
     'aria-valuemax': curve[curve.length - 1].s,
     'aria-valuenow': curve[0].s,
     'aria-valuetext': initialValueText,
   })
-  if (visibleRef.length >= 2)
-    f.add(s, f.svg('path', { d: toPath(visibleRef), class: 'tri-curve-ref' }))
+  if (visibleSixWeekRef.length >= 2)
+    f.add(
+      s,
+      f.svg('path', {
+        d: toPath(visibleSixWeekRef),
+        class: 'tri-curve-ref',
+        'data-curve-range': 'six-weeks',
+        ...(defaultRange === 'six-weeks' ? {} : { hidden: '' }),
+      }),
+    )
+  if (visibleYearRef.length >= 2)
+    f.add(
+      s,
+      f.svg('path', {
+        d: toPath(visibleYearRef),
+        class: 'tri-curve-ref',
+        'data-curve-range': 'year',
+        ...(defaultRange === 'year' ? {} : { hidden: '' }),
+      }),
+    )
   if (ftpRef != null)
     f.add(
       s,
@@ -969,26 +1452,24 @@ export const buildPowerCurve = <N>(
     )
   f.add(s, f.svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const curveDurTicks = [1, 5, 30, 60, 300, 1200, 3600].filter(
+  const curveDurTicks = [1, 5, 30, 60, 300, 1200, 3600, 10_800].filter(
     sec => sec >= secs[0] && sec <= secs[secs.length - 1],
   )
-  const curveStep = niceStep(maxW, 4)
-  f.add(
-    wrap,
-    axisFrame(
-      f,
-      s,
-      niceTicks(0, maxW, 4).map(value => ({
-        label: value === 0 ? '0' : `${axisNumber(value, curveStep)}w`,
-        vbY: Y(value),
-      })),
-      H,
-      curveDurTicks.map((sec, idx) => ({
-        label: dlabel(sec),
-        pct: X(sec),
-        cls: idx === 0 ? 'tri-cax-xt--first' : undefined,
-      })),
-    ),
+  const pointMarkers: N[] = []
+  if (visibleRef.length > 0) {
+    const initialRef = visibleRef.find(point => point.s === curve[0].s)
+    const attrs: Record<string, string> = {
+      'aria-hidden': 'true',
+      style: `left:${X(curve[0].s).toFixed(2)}%;top:${((Y(initialRef?.w ?? 0) / H) * 100).toFixed(2)}%`,
+    }
+    if (!initialRef) attrs.hidden = ''
+    pointMarkers.push(f.el('span', 'tri-curve-point tri-curve-point--ref', undefined, attrs))
+  }
+  pointMarkers.push(
+    f.el('span', 'tri-curve-point tri-curve-point--ride', undefined, {
+      'aria-hidden': 'true',
+      style: `left:${X(curve[0].s).toFixed(2)}%;top:${((Y(curve[0].w) / H) * 100).toFixed(2)}%`,
+    }),
   )
   const readout = f.el('div', 'tri-chart-readout tri-curve-readout', undefined, {
     'aria-hidden': 'true',
@@ -1004,7 +1485,7 @@ export const buildPowerCurve = <N>(
     f.el('span', 'tri-curve-readout-label', 'this ride', { 'data-i18n': 'this ride' }),
   )
   f.add(readout, rideRow)
-  if (visibleRef.length >= 2) {
+  if (visibleRef.length > 0) {
     const referenceRow = f.el('span', 'tri-curve-readout-row tri-curve-readout-row--ref')
     f.add(
       referenceRow,
@@ -1012,11 +1493,40 @@ export const buildPowerCurve = <N>(
         'aria-hidden': 'true',
       }),
       f.el('strong', 'tri-curve-readout-value tri-curve-readout-value--ref'),
-      f.el('span', 'tri-curve-readout-label', '6-week best', { 'data-i18n': '6-week best' }),
+      f.el(
+        'span',
+        'tri-curve-readout-label tri-curve-readout-label--ref',
+        defaultRange === 'year' && ctx.curveYear != null ? `${ctx.curveYear} best` : '6-week best',
+        defaultRange === 'six-weeks' ? { 'data-i18n': '6-week best' } : undefined,
+      ),
     )
     f.add(readout, referenceRow)
   }
-  f.add(wrap, readout)
+  f.add(
+    wrap,
+    axisFrame(
+      f,
+      s,
+      curveTicks.map(value => ({
+        label: value === 0 ? '0' : `${axisNumber(value, curveStep)}w`,
+        vbY: Y(value),
+      })),
+      H,
+      curveDurTicks.map((sec, idx) => ({
+        label: dlabel(sec),
+        pct: X(sec),
+        cls:
+          idx === 0
+            ? 'tri-cax-xt--first'
+            : sec === secs[secs.length - 1]
+              ? 'tri-cax-xt--last'
+              : undefined,
+      })),
+      true,
+      undefined,
+      [...pointMarkers, readout],
+    ),
+  )
   const cap = f.el('div', 'tri-elev-cap')
   for (const sec of [5, 60, 300, 1200]) {
     const p = curve.find(c => c.s === sec)
@@ -1033,19 +1543,28 @@ export const buildActivity = <N>(
   d: StravaActivityDetail,
   expanded = false,
   ctx?: DetailCtx,
+  swimTrend: SwimTrendPoint[] = [],
 ): N => {
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act')
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
+  const activityRate =
+    d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
+      ? `${clock(d.swimPaceSPer100m)} /100m`
+      : rate(d.sport, d.distanceKm, d.movingTimeS)
   const rows: [string, string][] =
     d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga'
       ? [['time', dur(d.movingTimeS)]]
       : [
           ['distance', dist(d.distanceKm, d.sport)],
           ['time', dur(d.movingTimeS)],
-          [d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)],
+          [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
         ]
+  if (d.sport === 'swim' && positiveMetric(d.strokeRateSpm))
+    rows.push(['stroke rate', `${swimTrendNumber(d.strokeRateSpm)} str/min`])
+  if (d.sport === 'swim' && positiveMetric(d.strokeCount))
+    rows.push(['strokes', Math.round(d.strokeCount).toLocaleString('en-US')])
   if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
   f.add(wrap, statsTable(f, rows))
   if (d.fueling) {
@@ -1066,8 +1585,10 @@ export const buildActivity = <N>(
     f.add(figs, buildPool(f, d))
     f.add(wrap, figs)
   }
-  if (hasMoreSection(d)) {
-    const more = f.el('div', 'tri-act-more')
+  const swimTrends = buildSwimTrends(f, d, swimTrend)
+  if (hasMoreSection(d) || swimTrends) {
+    const moreId = `tri-act-more-${d.id}`
+    const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const rows = moreStatRows(d)
     if (rows.length > 0) f.add(more, statsTable(f, rows))
     if (ctx) {
@@ -1078,7 +1599,16 @@ export const buildActivity = <N>(
     }
     const bestEfforts = buildCyclingBestEfforts(f, d)
     if (bestEfforts) f.add(more, bestEfforts)
-    f.add(wrap, f.el('button', 'tri-act-toggle', undefined, { type: 'button' }), more)
+    if (swimTrends) f.add(more, swimTrends)
+    f.add(
+      wrap,
+      f.el('button', 'tri-act-toggle', expanded ? '− see less' : '+ see more', {
+        type: 'button',
+        'aria-expanded': String(expanded),
+        'aria-controls': moreId,
+      }),
+      more,
+    )
   }
   return wrap
 }
@@ -1101,10 +1631,18 @@ export const buildDayCard = <N>(
   activity?: (d: StravaActivityDetail) => N,
   ctx?: DetailCtx,
 ): N => {
-  const render = activity ?? ((d: StravaActivityDetail) => buildActivity(f, d, !!extras.sport, ctx))
+  const render =
+    activity ??
+    ((d: StravaActivityDetail) =>
+      buildActivity(f, d, !!extras.sport || !!extras.expanded, ctx, payload?.swimTrend ?? []))
   const card = f.el('div', 'tri-pop-card')
   const head = f.el('div', 'tri-pop-head')
-  f.add(head, f.el('span', 'tri-pop-date', prettyDate(dateIso)))
+  f.add(
+    head,
+    extras.dateHref
+      ? f.el('a', 'tri-pop-date', prettyDate(dateIso), { href: extras.dateHref })
+      : f.el('span', 'tri-pop-date', prettyDate(dateIso)),
+  )
   const allDay = payload ? dayDetails(payload, dateIso) : []
   const day = extras.sport ? allDay.filter(d => d.sport === extras.sport) : allDay
   if (day.length > 0) {

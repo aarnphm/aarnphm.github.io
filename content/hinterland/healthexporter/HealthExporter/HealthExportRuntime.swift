@@ -80,7 +80,16 @@ actor HealthExportRuntime {
     return result
   }
 
+  func needsMigration() -> Bool {
+    guard let result = currentExport() else { return false }
+    return result.document.version != HealthExportDocument.currentVersion
+  }
+
   func catchUpIfNeeded(maxAge: TimeInterval, now: Date = Date()) async throws {
+    if needsMigration() {
+      _ = try await export(scope: .full, force: true)
+      return
+    }
     guard stateStore.state(maxAge: maxAge, now: now) == .stale else { return }
     _ = try await export(scope: .recent, force: true)
   }
@@ -144,10 +153,11 @@ actor HealthExportRuntime {
   private func performExport(scope: ExportScope) async throws -> HealthExportResult {
     let now = Date()
     let previous = scope == .recent ? currentExport() : nil
-    let daysBack = previous == nil ? 180 : Self.recentDaysBack
+    let needsMigration = previous?.document.version != HealthExportDocument.currentVersion
+    let daysBack = previous == nil || needsMigration ? 180 : Self.recentDaysBack
     let update = try await health.export(daysBack: daysBack, now: now)
     let document: HealthExportDocument
-    if let previous {
+    if let previous, !needsMigration {
       var calendar = Calendar.autoupdatingCurrent
       calendar.timeZone = .autoupdatingCurrent
       let cutoff = calendar.date(

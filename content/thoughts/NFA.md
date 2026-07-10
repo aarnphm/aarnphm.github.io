@@ -22,7 +22,7 @@ $$
 Q &: \text{finite set of states} \\\
 \Sigma &: \text{finite alphabet} \\\
 \Delta &: Q \times \Sigma \rightarrow P(Q) \\\
-S &: \text{Start states},\quad S \subseteq P(Q) \\\
+S &: \text{Start states},\quad S \subseteq Q \\\
 F &: \text{Final states},\quad F \subseteq Q \\\
 \end{align*}
 $$

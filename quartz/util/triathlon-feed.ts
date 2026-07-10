@@ -105,7 +105,7 @@ export function buildFeedMarkdown(
   const header = [
     '---',
     'title: triathlon activity feed',
-    `source: ${opts.baseUrl ? `https://${opts.baseUrl}` : ''}/triathlon/feed`,
+    `source: ${opts.baseUrl ? `https://${opts.baseUrl}` : ''}/triathlon/on`,
     `generated: ${opts.generatedAt ?? m.today}`,
     'units: distance km (swim m), pace min/km, swim min/100m, speed km/h, time h:mm, weight kg, hr bpm, power w',
     'description: Full triathlon training feed — season summary plus every activity with its numbers as JSON, for machine reading.',

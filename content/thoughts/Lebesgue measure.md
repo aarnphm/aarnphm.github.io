@@ -63,7 +63,7 @@ These heuristics match textbook discussions that stress coverings, regularity, a
 ## examples
 
 - Any closed interval $[a,b]$ is measurable with $\lambda([a,b])=b-a$. The open interval $(a,b)$ has the same measure (endpoints have measure zero).
-- Any Cartesian product $[a,b]\times[c,d]$ is measurable with measure $(b-a)(c-d)$ (area of the rectangle).
+- Any Cartesian product $[a,b]\times[c,d]$ is measurable with measure $(b-a)(d-c)$ (area of the rectangle).
 - Every Borel set is Lebesgue-measurable; there exist Lebesgue-measurable sets that are not Borel.
 - Every countable subset of $\mathbb{R}$ has Lebesgue measure 0 (e.g., algebraic numbers are dense yet null).
 - The Cantor set and the set of Liouville numbers are uncountable null sets.

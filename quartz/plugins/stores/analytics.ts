@@ -1,6 +1,13 @@
 import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
+import { matchAppleSwims } from '../../util/apple-swim-match'
 import { localIsoDay } from '../../util/local-date'
+import {
+  SWIM_PACE_MAX_S_PER_100M,
+  SWIM_PACE_MIN_S_PER_100M,
+  swimPaceSeconds,
+  swimStrokeRate,
+} from '../../util/swim-metrics'
 import { isRecord, numberValue } from '../../util/type-guards'
 import { AppleCache } from './apple'
 import { matchGarminHeartRateActivity } from './garmin'
@@ -610,20 +617,36 @@ interface Act {
   vGap: number
 }
 
-const swimStrokesByActivityId = (
+interface SwimActivityMetrics {
+  paceSPer100m: number | null
+  strokeRateSpm: number | null
+  strokes: Record<string, number> | null
+}
+
+const swimMetricsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
-): Map<number, Record<string, number>> => {
-  const byDay = new Map<string, Act>()
-  for (const act of acts) {
-    if (act.sport !== 'swim') continue
-    const cur = byDay.get(act.day)
-    if (!cur || act.distanceKm > cur.distanceKm) byDay.set(act.day, act)
-  }
-  const out = new Map<number, Record<string, number>>()
-  for (const [day, act] of byDay) {
-    const strokes = apple?.swims?.[day]?.strokes
-    if (strokes && Object.keys(strokes).length > 0) out.set(act.a.id, strokes)
+): Map<number, SwimActivityMetrics> => {
+  const swimActs = acts.filter(act => act.sport === 'swim')
+  const matches = matchAppleSwims(
+    Object.values(apple?.swims ?? {}),
+    swimActs.map(act => ({
+      id: act.a.id,
+      date: act.day,
+      start: act.a.startDate,
+      distanceM: act.a.distance,
+    })),
+  )
+
+  const out = new Map<number, SwimActivityMetrics>()
+  for (const act of swimActs) {
+    const swim = matches.get(act.a.id)
+    const applePace = swim ? swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0) : null
+    out.set(act.a.id, {
+      paceSPer100m: applePace ?? swimPaceSeconds(act.a.distance, act.a.movingTime),
+      strokeRateSpm: swim ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0) : null,
+      strokes: swim && Object.keys(swim.strokes).length > 0 ? swim.strokes : null,
+    })
   }
   return out
 }
@@ -2656,6 +2679,7 @@ function buildEngine(
   garminVo2: { date: string; v: number }[],
   appleVo2: { date: string; v: number }[],
   heartRateById: Map<number, ActivityHeartRate>,
+  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
   vo2Lab: Vo2LabRecord | null,
   ftpOverride: number | null,
 ): EngineBlock {
@@ -2871,6 +2895,8 @@ function buildEngine(
     a.averageCadence == null ? null : sport === 'run' ? a.averageCadence * 2 : a.averageCadence
   const cadScoreOf = (sport: Sport, v: number): number =>
     Math.round(clamp(100 - (Math.abs(v - CAD_TARGET[sport]) / CAD_TARGET[sport]) * 200, 0, 100))
+  const swimPaceScoreOf = (paceSPer100m: number): number =>
+    Math.round((1 - norm01(paceSPer100m, SWIM_PACE_MIN_S_PER_100M, SWIM_PACE_MAX_S_PER_100M)) * 100)
   const sportCtlOf = (d: DailyPoint, sport: Sport): number =>
     sport === 'swim' ? d.swimCtl : sport === 'bike' ? d.bikeCtl : d.runCtl
 
@@ -2880,6 +2906,11 @@ function buildEngine(
     const ctlSport = daily.length ? sportCtlOf(daily[daily.length - 1], sport) : 0
     const th = thresholds.get(sport)
     const vThrSport = th && th.conf !== 'prior' ? th.vThr : null
+    const swimPaces =
+      sport === 'swim'
+        ? mine.map(x => swimMetrics.get(x.a.id)?.paceSPer100m).filter((v): v is number => v != null)
+        : []
+    const bestSwimPace = swimPaces.length ? Math.min(...swimPaces) : null
 
     let sprint: RadarAxis
     let threshold: RadarAxis
@@ -2944,13 +2975,13 @@ function buildEngine(
     if (sport === 'swim') {
       climb = {
         key: 'climb',
-        label: 'climb',
+        label: 'pace',
         proj: null,
-        score: null,
-        rawValue: null,
-        rawUnit: 'm/h',
-        lo: 0,
-        hi: 0,
+        score: bestSwimPace != null ? swimPaceScoreOf(bestSwimPace) : null,
+        rawValue: bestSwimPace != null ? round(bestSwimPace, 1) : null,
+        rawUnit: 's/100m',
+        lo: SWIM_PACE_MIN_S_PER_100M,
+        hi: SWIM_PACE_MAX_S_PER_100M,
       }
     } else {
       let vam: number | null = null
@@ -2971,7 +3002,9 @@ function buildEngine(
       }
     }
 
-    const cads = mine.map(x => cadValOf(sport, x.a)).filter((v): v is number => v != null)
+    const cads = mine
+      .map(x => (sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a)))
+      .filter((v): v is number => v != null)
     const axes: RadarAxis[] = [
       sprint,
       threshold,
@@ -2988,10 +3021,10 @@ function buildEngine(
       climb,
       {
         key: 'cadence',
-        label: 'cadence',
+        label: sport === 'swim' ? 'stroke rate' : 'cadence',
         proj: null,
         score: cads.length ? cadScoreOf(sport, mean(cads)) : null,
-        rawValue: cads.length ? round(mean(cads), 0) : null,
+        rawValue: cads.length ? round(mean(cads), sport === 'swim' ? 1 : 0) : null,
         rawUnit: CAD_UNIT[sport],
         lo: 0,
         hi: 100,
@@ -3017,16 +3050,18 @@ function buildEngine(
     const stats = mine
       .map(x => ({
         day: x.day,
+        start: x.a.startDate,
+        id: x.a.id,
         sprint:
           sport === 'bike'
             ? (peakMean(wattsOf(x.a.id), BIKE_SPRINT_WIN_S) ?? x.a.maxWatts ?? null)
             : sport === 'run'
               ? (peakRunSpeedOf(x) ?? plausibleVgap(sport, x))
               : plausibleVgap(sport, x),
-        vam: sport === 'swim' ? null : vamOf(x),
-        cad: cadValOf(sport, x.a),
+        fourth: sport === 'swim' ? swimMetrics.get(x.a.id)?.paceSPer100m : vamOf(x),
+        fifth: sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a),
       }))
-      .sort((p, q) => p.day.localeCompare(q.day))
+      .sort((p, q) => p.start.localeCompare(q.start) || p.id - q.id)
     const sprintScoreOf = (v: number): number | null =>
       sport === 'bike'
         ? kgNow
@@ -3037,15 +3072,19 @@ function buildEngine(
     const history: AbilityTrendPoint[] = []
     let si = 0
     let cumSprint: number | null = null
-    let cumVam: number | null = null
-    const cadAcc: number[] = []
+    let cumFourth: number | null = null
+    const fifthAcc: number[] = []
     for (let i = 0; i < daily.length; i++) {
       const cutoff = daily[i].date
       while (si < stats.length && stats[si].day <= cutoff) {
         const st = stats[si]
         if (st.sprint != null && (cumSprint == null || st.sprint > cumSprint)) cumSprint = st.sprint
-        if (st.vam != null && (cumVam == null || st.vam > cumVam)) cumVam = st.vam
-        if (st.cad != null) cadAcc.push(st.cad)
+        if (
+          st.fourth != null &&
+          (cumFourth == null || (sport === 'swim' ? st.fourth < cumFourth : st.fourth > cumFourth))
+        )
+          cumFourth = st.fourth
+        if (st.fifth != null) fifthAcc.push(st.fifth)
         si++
       }
       const rdyH = winValues(rdyArr, i, 14)
@@ -3055,10 +3094,12 @@ function buildEngine(
         threshold: threshold.score,
         endurance: Math.round(norm01(sportCtlOf(daily[i], sport), CTL_ANCHOR[0], ctlHi) * 100),
         climb:
-          cumVam != null && sport !== 'swim'
-            ? Math.round(norm01(cumVam, ...VAM_ANCHOR_OF[sport]) * 100)
-            : null,
-        cadence: cadAcc.length ? cadScoreOf(sport, mean(cadAcc)) : null,
+          cumFourth == null
+            ? null
+            : sport === 'swim'
+              ? swimPaceScoreOf(cumFourth)
+              : Math.round(norm01(cumFourth, ...VAM_ANCHOR_OF[sport]) * 100),
+        cadence: fifthAcc.length ? cadScoreOf(sport, mean(fifthAcc)) : null,
         recovery: rdyH.length ? Math.round(mean(rdyH)) : null,
       })
     }
@@ -3331,6 +3372,7 @@ export function buildAnalytics(
     distanceKm: round(a.distance / 1000, 1),
     vGap: gradeAdjSpeed(a, sport, cache.streams?.[String(a.id)]),
   }))
+  const swimMetrics = swimMetricsByActivityId(acts, inputs.apple)
 
   const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs))
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
@@ -3498,6 +3540,7 @@ export function buildAnalytics(
     garminVo2,
     appleVo2,
     heartRateById,
+    swimMetrics,
     latestVo2Lab,
     inputs.ftp ?? null,
   )
@@ -3574,7 +3617,6 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
-  const swimStrokes = swimStrokesByActivityId(acts, inputs.apple)
   const activities: ActivitySummary[] = acts
     .map(act => ({
       id: act.a.id,
@@ -3586,7 +3628,7 @@ export function buildAnalytics(
       load: round(loadById.get(act.a.id) ?? 0, 1),
       effort: act.a.sufferScore ?? null,
       cadence: act.a.averageCadence ?? null,
-      strokes: swimStrokes.get(act.a.id) ?? null,
+      strokes: swimMetrics.get(act.a.id)?.strokes ?? null,
       windKph: inputs.weather?.activities[String(act.a.id)]?.windKph ?? null,
       windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,

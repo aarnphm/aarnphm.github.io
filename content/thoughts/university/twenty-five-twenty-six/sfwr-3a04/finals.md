@@ -35,9 +35,9 @@ See also: [[thoughts/university/twenty-five-twenty-six/sfwr-3a04/midterm|midterm
 
 ## Heterogeneous Architecture
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3a04/heterogeneous-decision.webp]]
+![[thoughts/university/twenty-five-twenty-six/sfwr-3a04/heterogeneous-decision.webp]]
 
-![[thoughts/university/twenty-four-twenty-five/sfwr-3a04/decision-matrix-architecture-saam.webp]]
+![[thoughts/university/twenty-five-twenty-six/sfwr-3a04/decision-matrix-architecture-saam.webp]]
 
 Idea of SAAM:
 

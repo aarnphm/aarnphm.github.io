@@ -67,12 +67,7 @@ import {
   readTranscludeTarget,
 } from '../util/transclude-props'
 import { buildTriathlonCalcCard, decodeCalcShare } from '../util/triathlon-calculator'
-import {
-  buildDayCard as buildTriathlonDayCard,
-  type DayCardExtras,
-  type DetailCtx,
-  type TriNodeFactory,
-} from '../util/triathlon-card'
+import { type DayCardExtras, type DetailCtx } from '../util/triathlon-card'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -96,6 +91,12 @@ import curiusScript from './scripts/curius.inline'
 import Search from './Search'
 import collapseHeaderStyle from './styles/collapseHeader.inline.scss'
 import { svgOptions, QuartzIcon } from './svg'
+import {
+  triathlonCardFactory,
+  triathlonDayCard,
+  triathlonDayExtras,
+  triathlonDayProps,
+} from './triathlon-day-card'
 
 interface RenderComponents {
   head: QuartzComponent
@@ -735,33 +736,6 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     }
   })
   return features
-}
-
-const triCardFactory: TriNodeFactory<Element> = {
-  el: (tag, cls, text, attrs) =>
-    h(tag, { ...(cls ? { class: cls } : {}), ...attrs }, text !== undefined ? [text] : []),
-  svg: (tag, attrs) => s(tag, attrs),
-  add: (parent, ...children) => {
-    parent.children.push(...children)
-  },
-}
-
-function triathlonDayExtras(page: QuartzPluginData, date: string): DayCardExtras {
-  const extras: DayCardExtras = {}
-  const location = page.frontmatter?.['location']
-  if (typeof location === 'string' && location !== '') extras.location = location
-  const day = page.tracking?.days.find(d => d.date === date)
-  const event = day?.event ?? (day?.race ? 'race' : null)
-  if (event) extras.event = event
-  return extras
-}
-
-function triathlonDayProps(extras: DayCardExtras, date: string): Record<string, string> {
-  const props: Record<string, string> = { 'data-triathlon-date': date }
-  if (extras.location) props['data-triathlon-loc'] = extras.location
-  if (extras.event) props['data-triathlon-event'] = extras.event
-  if (extras.sport) props['data-triathlon-sport'] = extras.sport
-  return props
 }
 
 const TRI_SPORT_ANCHOR: Record<string, ActivityKind> = {
@@ -1512,20 +1486,15 @@ export function transcludeFinal(
               'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
             },
             [
-              buildTriathlonDayCard(
-                triCardFactory,
-                triathlonDate,
-                payload.totalCount > 0 ? payload : null,
-                extras,
-                undefined,
-                {
-                  zones: payload.zones,
-                  curveRef: payload.powerCurveRef,
-                  ftp: ATHLETE.ftp,
-                  goalFtp: ATHLETE.goalFTP,
-                  vt1: null,
-                } satisfies DetailCtx,
-              ),
+              triathlonDayCard(triathlonDate, payload.totalCount > 0 ? payload : null, extras, {
+                zones: payload.zones,
+                curveRef: payload.powerCurveRef,
+                curveYearRef: payload.powerCurveYearRef,
+                curveYear: payload.powerCurveYear,
+                ftp: ATHLETE.ftp,
+                goalFtp: ATHLETE.goalFTP,
+                vt1: null,
+              } satisfies DetailCtx),
             ],
           ),
         ]
@@ -1552,7 +1521,7 @@ export function transcludeFinal(
       if (calcAnchor && calcShare) {
         const children: ElementContent[] = [
           h('.tri-calc-embed', { 'data-calc-hash': calcAnchor }, [
-            buildTriathlonCalcCard(triCardFactory, calcShare),
+            buildTriathlonCalcCard(triathlonCardFactory, calcShare),
           ]),
         ]
         if (fileData.frontmatter?.pageLayout !== 'reflection') {

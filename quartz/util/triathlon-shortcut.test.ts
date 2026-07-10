@@ -10,6 +10,10 @@ test('redirects triathlon shortcut documents to canonical triathlon paths', () =
     ['https://t.aarnphm.xyz/tools', 'https://aarnphm.xyz/triathlon/tools'],
     ['https://t.aarnphm.xyz/maps', 'https://aarnphm.xyz/triathlon/maps'],
     ['https://t.aarnphm.xyz/training', 'https://aarnphm.xyz/triathlon/training'],
+    ['https://t.aarnphm.xyz/on', 'https://aarnphm.xyz/triathlon/on'],
+    ['https://t.aarnphm.xyz/2026', 'https://aarnphm.xyz/triathlon/on/2026'],
+    ['https://t.aarnphm.xyz/2026/07', 'https://aarnphm.xyz/triathlon/on/2026/07'],
+    ['https://t.aarnphm.xyz/2026/07/09', 'https://aarnphm.xyz/triathlon/on/2026/07/09'],
     ['https://t.aarnphm.xyz/triathlon', 'https://aarnphm.xyz/triathlon'],
     ['https://t.aarnphm.xyz/triathlon/tools', 'https://aarnphm.xyz/triathlon/tools'],
   ]
@@ -27,6 +31,14 @@ test('preserves triathlon shortcut search and hash state', () => {
       true,
     ),
     'https://aarnphm.xyz/triathlon/analytics?window=42d#fitness',
+  )
+  assert.equal(
+    triathlonShortcutRedirectUrl(
+      'https://t.aarnphm.xyz',
+      'https://t.aarnphm.xyz/2026/07?sort=distance#bike',
+      true,
+    ),
+    'https://aarnphm.xyz/triathlon/on/2026/07?sort=distance#bike',
   )
 })
 

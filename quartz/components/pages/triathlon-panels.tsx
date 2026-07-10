@@ -1,4 +1,5 @@
 import type { ComponentChildren } from 'preact'
+import type { TriathlonTreeYear } from '../../util/triathlon-date-route'
 import { SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
@@ -12,6 +13,7 @@ const NAV = [
   ['maps', 'maps'],
   ['training', 'training'],
   ['feed', 'feed'],
+  ['on', 'on'],
 ] as const
 
 export type TriView = (typeof NAV)[number][0]
@@ -142,7 +144,7 @@ const clockFromSec = (sec: number): string => {
 const bikePaceKm = (kmh: number): string => clockFromSec(3600 / kmh)
 const bikePaceMi = (kmh: number): string => clockFromSec(3600 / (kmh * KM_TO_MI))
 
-export const TriathlonSubnav = ({ active, root }: { active: TriView; root: string }) => (
+export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: string }) => (
   <nav class="tri-subnav" aria-label="triathlon sections">
     <a class="tri-subnav-home" href={`${root}/triathlon`}>
       ← triathlon
@@ -162,11 +164,11 @@ export const TriathlonSubnav = ({ active, root }: { active: TriView; root: strin
   </nav>
 )
 
-export const FeedPanel = () => (
+export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
   <section class="tri-feed" aria-label="activity feed">
     <div class="tri-ana-bar tri-feed-bar">
-      <span class="tri-ana-title" data-i18n="feed">
-        feed
+      <span class="tri-ana-title" data-i18n={title === 'feed' ? 'feed' : undefined}>
+        {title}
       </span>
       <input
         class="tri-ana-search tri-feed-search"
@@ -178,6 +180,69 @@ export const FeedPanel = () => (
       <span class="tri-feed-count" aria-live="polite" />
     </div>
     <div class="tri-feed-list" role="list" aria-busy="true" />
+  </section>
+)
+
+const treeKm = (km: number): string => `${km >= 100 ? Math.round(km) : Number(km.toFixed(1))} km`
+
+const treeDur = (timeS: number): string => {
+  const minutes = Math.round(timeS / 60)
+  const h = Math.floor(minutes / 60)
+  return h > 0 ? `${h}h ${(minutes % 60).toString().padStart(2, '0')}m` : `${minutes}m`
+}
+
+const TreeSum = ({ count, km, timeS }: { count: number; km: number; timeS: number }) => (
+  <span class="tri-tree-sum">
+    <span class="tri-tree-c tri-tree-c--n">{count}</span>
+    <span class="tri-tree-c tri-tree-c--km">{treeKm(km)}</span>
+    <span class="tri-tree-c tri-tree-c--t">{treeDur(timeS)}</span>
+  </span>
+)
+
+export const OnTreePanel = ({
+  tree,
+  title = 'on',
+  root,
+}: {
+  tree: TriathlonTreeYear[]
+  title?: string
+  root: string
+}) => (
+  <section class="tri-feed tri-tree" aria-label="training log by date">
+    <div class="tri-ana-bar tri-feed-bar">
+      <span class="tri-ana-title" data-i18n={title === 'on' ? 'on' : undefined}>
+        {title}
+      </span>
+      <span class="tri-feed-count">{tree.reduce((total, year) => total + year.count, 0)}</span>
+    </div>
+    <div class="tri-tree-list">
+      {tree.map(year => (
+        <section class="tri-tree-year">
+          <div class="tri-tree-row tri-tree-row--year">
+            <a href={`${root}/${year.slug}`}>{year.year}</a>
+            <TreeSum count={year.count} km={year.km} timeS={year.timeS} />
+          </div>
+          {year.months.map(month => (
+            <section class="tri-tree-month">
+              <div class="tri-tree-row tri-tree-row--month">
+                <a href={`${root}/${month.slug}`}>{`${year.year} / ${month.month}`}</a>
+                <TreeSum count={month.count} km={month.km} timeS={month.timeS} />
+              </div>
+              <div class="tri-tree-days" role="list">
+                {month.days.map(day => (
+                  <a class="tri-tree-day" role="listitem" href={`${root}/${day.slug}`}>
+                    <span class="tri-tree-day-d">{day.day}</span>
+                    <span class="tri-tree-day-sports">{day.sports.join(' · ')}</span>
+                    <TreeSum count={day.count} km={day.km} timeS={day.timeS} />
+                  </a>
+                ))}
+              </div>
+            </section>
+          ))}
+        </section>
+      ))}
+      {tree.length === 0 && <div class="tri-ana-empty">no activities</div>}
+    </div>
   </section>
 )
 

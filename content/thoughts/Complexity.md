@@ -23,7 +23,7 @@ Think of it as a structured programs defined with references to control-flow gra
 >
 > $$
 > \begin{aligned}
-> \mathbb{M} &= \mathbb{M} - \mathbb{N} + 2 \mathbb{P} \\[8pt]
+> \mathbb{M} &= \mathbb{E} - \mathbb{N} + 2 \mathbb{P} \\[8pt]
 > &\because \mathbb{E} = \text{number of edges in the graph} \\
 > &\quad \space \mathbb{N} = \text{number of nodes in the graph} \\
 > &\quad \space \mathbb{P} = \text{number of connected components}

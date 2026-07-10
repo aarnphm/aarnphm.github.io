@@ -7,6 +7,10 @@ import { pathToFileURL } from 'node:url'
 import {
   aggregateAppleRecords,
   aggregateSwimLaps,
+  AppleSwimDistanceRecord,
+  AppleSwimLap,
+  AppleSwimStrokeRecord,
+  AppleSwimWorkoutWindow,
   AppleCache,
   AppleDaily,
   AppleWorkout,
@@ -17,14 +21,14 @@ import {
   matchStrokeStyle,
   matchSwimDistance,
   matchSwimStrokeOpen,
+  matchSwimWorkout,
   mergeAppleDay,
   parseAppleJson,
-  type SwimStroke,
 } from '../plugins/stores/apple'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
-const CACHE_VERSION = 3
+const CACHE_VERSION = 4
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 const healthExporterICloudContainer = 'iCloud~xyz~aarnphm~healthexporter'
 const healthExporterImportFile = 'apple-health-import.json'
@@ -102,29 +106,38 @@ interface AppleEntries {
 
 async function parseXmlFile(path: string): Promise<AppleEntries> {
   const records: AppleRecord[] = []
-  const distByStart = new Map<string, number>()
-  const strokeLaps: { start: string; stroke: SwimStroke }[] = []
-  let pendingStart: string | null = null
+  const distanceLaps: AppleSwimDistanceRecord[] = []
+  const strokeLaps: AppleSwimLap[] = []
+  const swimWorkouts: AppleSwimWorkoutWindow[] = []
+  let pendingStroke: AppleSwimStrokeRecord | null = null
   const rl = readline.createInterface({ input: createReadStream(path), crlfDelay: Infinity })
   for await (const line of rl) {
     const r = matchAppleRecord(line)
     if (r) records.push(r)
     const dist = matchSwimDistance(line)
-    if (dist) distByStart.set(dist.start, dist.meters)
-    if (pendingStart) {
+    if (dist) distanceLaps.push(dist)
+    const workout = matchSwimWorkout(line)
+    if (workout) swimWorkouts.push(workout)
+    if (pendingStroke) {
       const stroke = matchStrokeStyle(line)
       if (stroke) {
-        strokeLaps.push({ start: pendingStart, stroke })
-        pendingStart = null
-      } else if (line.includes('</Record>')) pendingStart = null
+        strokeLaps.push({ ...pendingStroke, stroke })
+        pendingStroke = null
+      } else if (line.includes('</Record>')) {
+        strokeLaps.push({ ...pendingStroke, stroke: null })
+        pendingStroke = null
+      }
     } else {
       const open = matchSwimStrokeOpen(line)
-      if (open) pendingStart = open
+      if (open) {
+        if (line.trimEnd().endsWith('/>')) strokeLaps.push({ ...open, stroke: null })
+        else pendingStroke = open
+      }
     }
   }
   return {
     days: aggregateAppleRecords(records),
-    swims: aggregateSwimLaps(strokeLaps, distByStart),
+    swims: aggregateSwimLaps(strokeLaps, distanceLaps, swimWorkouts),
     workouts: [],
   }
 }
@@ -134,10 +147,33 @@ async function loadEntries(path: string): Promise<AppleEntries> {
   return parseXmlFile(path)
 }
 
+export function mergeAppleSwims(
+  current: Record<string, AppleSwim>,
+  incoming: AppleSwim[],
+): Record<string, AppleSwim> {
+  const merged = { ...current }
+  const stableDates = new Set(incoming.filter(swim => swim.id).map(swim => swim.date))
+  if (stableDates.size > 0) {
+    for (const [key, swim] of Object.entries(merged)) {
+      if (!swim.id && stableDates.has(swim.date)) delete merged[key]
+    }
+  }
+  for (const swim of incoming) {
+    if (
+      !swim.id &&
+      Object.values(merged).some(existing => existing.id && existing.date === swim.date)
+    ) {
+      continue
+    }
+    merged[swim.id ?? swim.date] = swim
+  }
+  return merged
+}
+
 async function main(): Promise<void> {
   const prev = await readCache()
   const days: Record<string, AppleDaily> = { ...prev?.days }
-  const swims: Record<string, AppleSwim> = { ...prev?.swims }
+  let swims: Record<string, AppleSwim> = { ...prev?.swims }
   const workouts: Record<string, AppleWorkout> = { ...prev?.workouts }
 
   const candidates = appleImportCandidates(process.env.APPLE_HEALTH_FILE)
@@ -156,10 +192,10 @@ async function main(): Promise<void> {
       days[e.date] = mergeAppleDay(days[e.date], e)
       touched += 1
     }
-    for (const s of entries.swims) swims[s.date] = s
+    swims = mergeAppleSwims(swims, entries.swims)
     for (const workout of entries.workouts) workouts[workout.id] = workout
     console.log(
-      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims, ${entries.workouts.length} workout HR streams from ${path}`,
+      `[apple] read ${entries.days.length} days, ${entries.swims.length} swims, ${entries.workouts.length} workouts from ${path}`,
     )
   }
 
@@ -179,7 +215,7 @@ async function main(): Promise<void> {
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[apple] merged ${touched} day-entries → ${Object.keys(days).length} days, ${Object.keys(workouts).length} workout HR streams → ${cacheFile}`,
+    `[apple] merged ${touched} day-entries → ${Object.keys(days).length} days, ${Object.keys(workouts).length} workouts → ${cacheFile}`,
   )
 }
 

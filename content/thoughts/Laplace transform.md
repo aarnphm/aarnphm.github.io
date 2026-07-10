@@ -15,7 +15,7 @@ graph LR
 ```
 
 $$
-\mathcal{L} \{f(t)\} = \int_0^{\infty}f(t)^{-st}dt = F(s)
+\mathcal{L} \{f(t)\} = \int_0^{\infty}f(t)e^{-st}dt = F(s)
 $$
 
 $$

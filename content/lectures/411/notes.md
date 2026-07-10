@@ -1089,7 +1089,7 @@ for each $i, j \in \{1, \dots, n\}$. So each entry $C_{ij}$ requires you to do $
 
 - For each pair $(i,j)$, you do a loop over $k = 1 \dots n$ to compute the sum. That’s $n$ multiplications and additions per entry. So for each of the $n^2$ entries, $n$ inner operations.
 
-- Total work ≈ $n^2 \times n = n^3$ scalar multiplications (plus additions). So the time complexity is proportional to $n^3$ in the worst case.
+- Total work $\approx n^2 \times n = n^3$ scalar multiplications (plus additions). So the time complexity is proportional to $n^3$ in the worst case.
 
 #### formal big-O
 
