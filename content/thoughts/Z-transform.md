@@ -88,7 +88,7 @@ Let $z = e^{sT}$, we have the following definition:
 Transfer function of Zero-Order hold
 
 $$
-\mathcal{L}(u(t) - u(t-T)) = \frac{1}{s} - \frac{e^{sT}}{s}
+\mathcal{L}(u(t) - u(t-T)) = \frac{1}{s} - \frac{e^{-sT}}{s}
 $$
 
 ## finding the discrete transfer function

@@ -212,12 +212,20 @@ test('abilities block builds one radar per sport with per-discipline history', (
     }
   }
   const [swim, bike, run] = a.engine.abilities.sports
-  assert.equal(swim.axes.find(x => x.key === 'climb')?.score, null)
+  const swimPace = swim.axes.find(x => x.key === 'climb')
+  assert.equal(swimPace?.label, 'pace')
+  assert.equal(swimPace?.rawUnit, 's/100m')
+  assert.equal(swimPace?.rawValue, 120)
+  assert.equal(swimPace?.score, 76)
   assert.equal(swim.axes.find(x => x.key === 'cadence')?.score, null)
   assert.equal(swim.axes.find(x => x.key === 'sprint')?.rawUnit, 'm/s')
   assert.equal(bike.axes.find(x => x.key === 'sprint')?.rawUnit, 'w/kg')
   assert.equal(bike.axes.find(x => x.key === 'threshold')?.rawUnit, 'w/kg')
+  assert.equal(bike.axes.find(x => x.key === 'climb')?.label, 'climb')
+  assert.equal(bike.axes.find(x => x.key === 'cadence')?.label, 'cadence')
   assert.equal(run.axes.find(x => x.key === 'cadence')?.rawValue, 176)
+  assert.equal(run.axes.find(x => x.key === 'climb')?.label, 'climb')
+  assert.equal(run.axes.find(x => x.key === 'cadence')?.label, 'cadence')
   assert.equal(run.axes.find(x => x.key === 'threshold')?.score, null)
   const bikeEnd = bike.axes.find(x => x.key === 'endurance')
   assert.equal(bikeEnd?.hi, 50)
@@ -225,7 +233,7 @@ test('abilities block builds one radar per sport with per-discipline history', (
   assert.ok(runLast.sprint != null)
   assert.equal(runLast.climb != null, true)
   const swimLast = swim.history[swim.history.length - 1]
-  assert.equal(swimLast.climb, null)
+  assert.equal(swimLast.climb, 76)
 })
 
 test('engine derives ftp from 20-min power only when strava declares none', () => {
@@ -584,7 +592,20 @@ test('apple swim strokes flow into activity summaries and data feed', () => {
   const apple: AppleCache = {
     lastSync: cache.lastSync,
     days: {},
-    swims: { [swimDay]: { date: swimDay, totalM: 1500, laps: 60, strokes } },
+    swims: {
+      [swimDay]: {
+        id: null,
+        date: swimDay,
+        start: null,
+        end: null,
+        totalM: 1500,
+        laps: 60,
+        activeTimeS: null,
+        strokeCount: null,
+        strokeTimeS: null,
+        strokes,
+      },
+    },
   }
   const a = buildAnalytics(cache, { oura, apple, weights, since: '2026-05-12' })
   const swim = a.activities.find(r => r.sport === 'swim')
@@ -599,6 +620,99 @@ test('apple swim strokes flow into activity summaries and data feed', () => {
     .map(l => JSON.parse(l))
     .find(r => r.kind === 'activity' && r.sport === 'swim')
   assert.deepEqual(feedSwim?.strokes, strokes)
+})
+
+test('swim radar uses separate same-day activity pace and stroke rate samples', () => {
+  const { cache, oura, weights } = fixtures()
+  const swimDay = iso(24)
+  cache.activities['4'] = activity(4, 'Swim', swimDay, 1500, 1000, {
+    startDate: `${swimDay}T16:00:00Z`,
+    startDateLocal: `${swimDay}T12:00:00Z`,
+    averageCadence: undefined,
+  })
+  const firstStrokes = { freestyle: 600 }
+  const secondStrokes = { freestyle: 300 }
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {},
+    swims: {
+      first: {
+        id: 'first',
+        date: swimDay,
+        start: `${swimDay}T12:00:00Z`,
+        end: `${swimDay}T12:30:00Z`,
+        totalM: 1500,
+        laps: 60,
+        activeTimeS: 1800,
+        strokeCount: 600,
+        strokeTimeS: 1200,
+        strokes: firstStrokes,
+      },
+      second: {
+        id: 'second',
+        date: swimDay,
+        start: `${swimDay}T16:00:00Z`,
+        end: `${swimDay}T16:25:00Z`,
+        totalM: 1000,
+        laps: 40,
+        activeTimeS: 1500,
+        strokeCount: 300,
+        strokeTimeS: 900,
+        strokes: secondStrokes,
+      },
+    },
+  }
+
+  const a = buildAnalytics(cache, { oura, apple, weights, since: '2026-05-12' })
+  const swim = a.engine.abilities.sports.find(sport => sport.sport === 'swim')
+  const pace = swim?.axes.find(axis => axis.key === 'climb')
+  const strokeRate = swim?.axes.find(axis => axis.key === 'cadence')
+
+  assert.equal(pace?.label, 'pace')
+  assert.equal(pace?.rawUnit, 's/100m')
+  assert.equal(pace?.rawValue, 120)
+  assert.equal(pace?.score, 76)
+  assert.equal(strokeRate?.label, 'stroke rate')
+  assert.equal(strokeRate?.rawUnit, 'str/min')
+  assert.equal(strokeRate?.rawValue, 25)
+  assert.equal(strokeRate?.score, 67)
+  assert.equal(swim?.history.at(-1)?.climb, 76)
+  assert.equal(swim?.history.at(-1)?.cadence, 67)
+  assert.deepEqual(a.activities.find(row => row.id === 3)?.strokes, firstStrokes)
+  assert.deepEqual(a.activities.find(row => row.id === 4)?.strokes, secondStrokes)
+})
+
+test('swim radar rejects invalid Apple metrics and falls back to Strava activity pace', () => {
+  const { cache, oura, weights } = fixtures()
+  const swimDay = iso(24)
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {},
+    swims: {
+      invalid: {
+        id: 'invalid',
+        date: swimDay,
+        start: `${swimDay}T12:00:00Z`,
+        end: `${swimDay}T12:30:00Z`,
+        totalM: 1500,
+        laps: 60,
+        activeTimeS: 100,
+        strokeCount: 600,
+        strokeTimeS: 0,
+        strokes: {},
+      },
+    },
+  }
+
+  const a = buildAnalytics(cache, { oura, apple, weights, since: '2026-05-12' })
+  const swim = a.engine.abilities.sports.find(sport => sport.sport === 'swim')
+  const pace = swim?.axes.find(axis => axis.key === 'climb')
+  const strokeRate = swim?.axes.find(axis => axis.key === 'cadence')
+
+  assert.equal(pace?.rawValue, 120)
+  assert.equal(pace?.score, 76)
+  assert.equal(strokeRate?.rawValue, null)
+  assert.equal(strokeRate?.score, null)
 })
 
 test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', () => {

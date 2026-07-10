@@ -15,7 +15,7 @@ title: norm
 > | property              | statement                          | quick intuition                                  |
 > | --------------------- | ---------------------------------- | ------------------------------------------------ |
 > | triangle inequality   | $p(u+v) \le p(u) + p(v)$           | distance never exceeds the path via $u$ then $v$ |
-> | absolute homogeneity  | $p(\lambda u) = \|\lambda\|\,p(u)$ | scaling vectors scales their length              |
+> | absolute homogeneity  | $p(\lambda u) = |\lambda|\,p(u)$ | scaling vectors scales their length              |
 > | positive definiteness | $p(u) = 0 \Rightarrow u = 0$       | only the zero vector has zero length             |
 
 for a norm $p : x \to \mathbb{r}$ and $z \in x$, write $\lVert z \rVert = p(z)$. every vector space admits norms; $x_{\cdots} = (x_i)_{i \in i}$ is a Hamel [[thoughts/basis]].
@@ -74,7 +74,7 @@ when $p=2$ this recovers the euclidean norm; $p=1$ gives the taxicab norm, and $
 
 ## topological consequences
 
-a norm induces a metric $d(u,v) = \lVert u - v \rVert$, turning $(x,d)$ into a metric space. completeness with respect to this metric defines a banach space. convergence of sequences, continuity of linear functionals, and compactness notions (e.g. riesz’s lemma, heine–borsuk for finite dimension) can all be phrased purely in terms of the norm. bounded linear operators between normed spaces are precisely those continuous under the induced metrics.
+a norm induces a metric $d(u,v) = \lVert u - v \rVert$, turning $(x,d)$ into a metric space. completeness with respect to this metric defines a banach space. convergence of sequences, continuity of linear functionals, and compactness notions (e.g. riesz’s lemma, heine–borel for finite dimension) can all be phrased purely in terms of the norm. bounded linear operators between normed spaces are precisely those continuous under the induced metrics.
 
 ## [[lectures/411/notes#dual]] norm
 

@@ -172,7 +172,7 @@ for compression, we care about languages with structure:
 
 huffman, arithmetic, and ans are entropy coders. viewing them through automata:
 
-**huffman coding** assigns fixed-length binary codes based on symbol frequencies. algebraically, it constructs a binary tree (free monoid on $\{0,1\}$) where symbols are leaves.
+**huffman coding** assigns variable-length binary codes based on symbol frequencies. algebraically, it constructs a binary tree (free monoid on $\{0,1\}$) where symbols are leaves.
 
 **arithmetic coding** represents the entire message as a subinterval of $[0,1)$, using rational arithmetic. the precision required grows with message length.
 

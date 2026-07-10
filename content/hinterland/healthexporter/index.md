@@ -2,7 +2,7 @@
 date: '2026-06-19'
 description: iOS + watchOS app that snapshots Apple Health into one JSON file on iCloud Drive.
 id: index
-modified: 2026-06-22 09:24:18 GMT-04:00
+modified: 2026-07-09 22:41:23 GMT-04:00
 seealso:
   - '[[triathlon]]'
 tags:
@@ -10,21 +10,21 @@ tags:
 title: HealthDataExporter
 ---
 
-A small iOS + watchOS app that reads Apple Health and writes a single JSON file to iCloud Drive, so the numbers I care about for [[triathlon]] training (calories, weight, VO2 max, swim splits) live in one machine-readable place instead of inside the Health app.
+A small iOS + watchOS app that reads Apple Health and writes a single JSON file to iCloud Drive. It exports the calories, weight, VO2 max, swim splits, swim pace inputs, and stroke rate inputs I use for [[triathlon]] training.
 
 ## metrics
 
 A 180-day window back from `now`, bucketed by the device's autoupdating calendar and timezone.
 
-| metric         | HealthKit type                             | reduction                             |
-| -------------- | ------------------------------------------ | ------------------------------------- |
-| active energy  | `activeEnergyBurned`                       | cumulative sum per day                |
-| basal energy   | `basalEnergyBurned`                        | cumulative sum per day                |
-| dietary energy | `dietaryEnergyConsumed`                    | cumulative sum per day                |
-| body mass      | `bodyMass`                                 | latest reading per day                |
-| VO2 max        | `vo2Max`                                   | latest reading per day                |
-| swims          | `distanceSwimming` + `swimmingStrokeCount` | per-day total, laps, stroke breakdown |
-| workout HR     | `workoutType` + `heartRate`                | workout-scoped heart-rate samples     |
+| metric         | HealthKit type                             | reduction                                       |
+| -------------- | ------------------------------------------ | ----------------------------------------------- |
+| active energy  | `activeEnergyBurned`                       | cumulative sum per day                          |
+| basal energy   | `basalEnergyBurned`                        | cumulative sum per day                          |
+| dietary energy | `dietaryEnergyConsumed`                    | cumulative sum per day                          |
+| body mass      | `bodyMass`                                 | latest reading per day                          |
+| VO2 max        | `vo2Max`                                   | latest reading per day                          |
+| swims          | `distanceSwimming` + `swimmingStrokeCount` | one row per swim or multisport swim activity    |
+| workout HR     | `workoutType` + `heartRate`                | one row per workout with its heart rate samples |
 
 ## output
 
@@ -32,7 +32,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -47,9 +47,15 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
   ],
   "swims": [
     {
+      "id": "A45B1F35-9F51-4917-B656-C17BF2D07434",
       "date": "2026-06-19",
+      "start": "2026-06-19T11:00:00Z",
+      "end": "2026-06-19T12:00:00Z",
       "totalM": 1500,
       "laps": 60,
+      "activeTimeS": 1800,
+      "strokeCount": 960,
+      "strokeTimeS": 1700,
       "strokes": { "freestyle": 1300, "breaststroke": 200 }
     }
   ],
@@ -69,12 +75,14 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 }
 ```
 
+The exporter writes every workout row, including workouts with no heart rate samples. A swim row uses its workout UUID. A swim inside a `swimBikeRun` workout uses its workout activity UUID. Two swims on the same day remain separate.
+
 ## architecture
 
-- `HealthAggregator` — pure folding of samples into day buckets and swim days. No HealthKit import, so `HealthAggregatorTests` runs without a device.
-- `HealthKitService` — authorization, the statistics-collection queries for cumulative daily sums, the sample queries for latest weight/VO2, swim reconstruction, and workout-scoped heart-rate streams.
-- `HealthExportWriter` — JSON encode plus atomic write to the iCloud container.
-- `HealthExportRuntime` — wires the three together and re-exports whenever an observer query fires.
+- `HealthAggregator` folds samples into day buckets and swim sessions. It does not import HealthKit, so `HealthAggregatorTests` runs without a device.
+- `HealthKitService` handles authorization and HealthKit queries. It reads all workouts once. Two associated sample queries then fetch swim distance and stroke count data for every matching workout.
+- `HealthExportWriter` encodes JSON and writes it to the iCloud container.
+- `HealthExportRuntime` connects the other parts and exports again when an observer query fires.
 
 ## background
 
@@ -86,5 +94,8 @@ The watch target carries no HealthKit access of its own. It sends an `export` co
 
 ## quirks
 
-- Distance and stroke style arrive as separate swimming samples. The service joins them by rounded start-second; on a miss it falls back to that day's median distance, then to a 25 m default. Samples with zero meters are dropped.
-- Stroke style comes out of sample metadata (`HKMetadataKeySwimmingStrokeStyle`) as an enum int, mapped to freestyle / breaststroke / backstroke / butterfly / mixed / kickboard.
+- `totalM`, `activeTimeS`, and `strokeCount` come from workout or workout activity statistics. These totals remain complete when HealthKit condenses old samples.
+- `laps` comes from workout lap events when they are available. Associated distance samples provide the metres by style. The exporter does not invent a pool length or lap distance when HealthKit omits them.
+- Stroke style comes from `HKMetadataKeySwimmingStrokeStyle` on workout lap events. The app maps it to freestyle, breaststroke, backstroke, butterfly, mixed, or kickboard.
+- `strokeTimeS` is the union of every positive associated stroke count interval. The app excludes intervals whose matching lap event is kickboard. It leaves `strokeTimeS` empty when HealthKit no longer has detailed intervals.
+- Pace per 100 m is `activeTimeS / totalM * 100`. Stroke rate per minute is `strokeCount / strokeTimeS * 60`.

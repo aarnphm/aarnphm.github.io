@@ -13,7 +13,7 @@ fancy name for the measure of size, or the cardinality of the largest sets of po
 
 > [!definition]
 >
-> Let $H$ be a set set family and $C$ a set. Thus, their intersection is defined as the following set:
+> Let $H$ be a set family and $C$ a set. Thus, their intersection is defined as the following set:
 >
 > $$
 > H \cap C \coloneqq  \{h \cap C \mid h \in H\}
@@ -27,4 +27,4 @@ fancy name for the measure of size, or the cardinality of the largest sets of po
 >
 > Thus, the VC dimension $D$ of $H$ is the cardinality of the largest set that is shattered by $H$.
 
-Note that if arbitrary larget sets can be shattered, then the VC dimension is $\infty$
+Note that if arbitrarily large sets can be shattered, then the VC dimension is $\infty$

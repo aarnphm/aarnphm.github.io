@@ -33,7 +33,7 @@ This paper posits that GenAI currently occupies the "peak of inflated expectatio
 
 ## Gartner's hype cycle.
 
-For context, applications such as ChatGPT are built on top of [[thoughts/Transformers]] architecture and pre-trained on a large corpus of [[thoughts/Language#representation.|text]] [@brown2020languagemodelsfewshotlearners]. Given
+For context, applications such as ChatGPT are built on top of [[thoughts/Transformers]] architecture and pre-trained on a large corpus of [[thoughts/Language#representations|text]] [@brown2020languagemodelsfewshotlearners]. Given
 an input sequence of tokens length $n$, these systems will predict the next tokens at index $n+1$. Most implementations of transformers are autoregressive [@croft2023llm], meaning that the model will predict the future values (index $n+1 \to \infty$) based on past values (index $0 \to n$).
 However, [@keles2022computationalcomplexityselfattention{pp. 4}] proved that the computation complexity of self-attention is quadratic; therefore, running these systems in production remains a scaling problem [@kaplan2020scalinglawsneurallanguage].
 

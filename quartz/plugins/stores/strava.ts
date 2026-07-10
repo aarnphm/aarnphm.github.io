@@ -257,6 +257,7 @@ export interface StravaActivityDetail {
   sport: ActivityKind
   name: string
   date: string
+  start: string
   distanceKm: number
   movingTimeS: number
   elevationM: number
@@ -289,6 +290,17 @@ export interface StravaActivityDetail {
   powerCurve: PowerCurvePoint[] | null
   bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
+  strokeCount: number | null
+  strokeRateSpm: number | null
+  swimPaceSPer100m: number | null
+}
+
+export interface SwimTrendPoint {
+  id: number
+  date: string
+  start: string
+  paceSPer100m: number | null
+  strokeRateSpm: number | null
 }
 
 export interface StravaPayload {
@@ -301,9 +313,12 @@ export interface StravaPayload {
   strengthTotal: { count: number; movingTimeS: number }
   days: StravaDay[]
   details: Record<string, StravaActivityDetail>
+  swimTrend: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
   zones: StravaZones
   powerCurveRef: PowerCurvePoint[]
+  powerCurveYearRef: PowerCurvePoint[]
+  powerCurveYear: number | null
 }
 
 export function normalizeSport(sportType: string): Sport | null {
@@ -539,22 +554,8 @@ export function resolveActivityHeartRate(
 
 const MILE_M = 1609.344
 const MAX_EFFORT_TIMELINE_S = (7 * DAY_MS) / 1000
-const CURVE_SECS = [
-  ...Array.from({ length: 60 }, (_, index) => index + 1),
-  120,
-  180,
-  300,
-  480,
-  600,
-  900,
-  1200,
-  1800,
-  2700,
-  3600,
-  5400,
-  7200,
-  10800,
-]
+const POWER_CURVE_MAX_S = 3 * 60 * 60
+const CURVE_SECS = Array.from({ length: POWER_CURVE_MAX_S }, (_, index) => index + 1)
 const POWER_EFFORT_SECS = [
   5, 15, 30, 60, 120, 180, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200,
 ]
@@ -696,12 +697,12 @@ function bestPowerWindows(
   const windows: BestPowerWindow[] = []
   for (const durationS of durations) {
     if (durationS > timeline.watts.length) break
-    let bestAverage = -1
+    let bestSum = -1
     let bestStart = 0
     for (let start = 0; start + durationS <= timeline.watts.length; start++) {
-      const average = (prefix[start + durationS] - prefix[start]) / durationS
-      if (average > bestAverage) {
-        bestAverage = average
+      const sum = prefix[start + durationS] - prefix[start]
+      if (sum > bestSum) {
+        bestSum = sum
         bestStart = start
       }
     }
@@ -709,7 +710,7 @@ function bestPowerWindows(
       durationS,
       start: bestStart,
       end: bestStart + durationS,
-      averageWatts: Math.floor(Math.max(0, bestAverage)),
+      averageWatts: Math.floor(Math.max(0, bestSum / durationS)),
     })
   }
   return windows
@@ -958,6 +959,7 @@ function projectDetail(
   hrBounds: number[],
   powerBounds: number[],
   home: [number, number] | null,
+  powerCurve: PowerCurvePoint[] | undefined,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   const mapRoute: StravaMapPoint[] = []
@@ -1049,7 +1051,8 @@ function projectDetail(
     sport,
     name: a.name,
     date: a.startDateLocal.slice(0, 10),
-    distanceKm: round(a.distance / 1000, 1),
+    start: a.startDate,
+    distanceKm: round(a.distance / 1000, sport === 'swim' ? 3 : 1),
     movingTimeS: a.movingTime,
     elevationM: ascentM,
     avgHr: heartRate.avgHr,
@@ -1086,7 +1089,7 @@ function projectDetail(
         : null,
     powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, true) : null,
     powerHist: hasW ? powerHistogram(wFull) : null,
-    powerCurve: hasEffortPower && timeline ? meanMaxCurve(timeline) : null,
+    powerCurve: hasEffortPower && timeline ? (powerCurve ?? meanMaxCurve(timeline)) : null,
     bestEfforts:
       sport === 'bike' && (elapsedTimeline || climbs.length > 0)
         ? {
@@ -1100,6 +1103,9 @@ function projectDetail(
             climbs: cyclingClimbEfforts(climbs, weight?.kg ?? null),
           }
         : null,
+    strokeCount: null,
+    strokeRateSpm: null,
+    swimPaceSPer100m: null,
   }
 }
 
@@ -1114,9 +1120,12 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     strengthTotal: { count: 0, movingTimeS: 0 },
     days: [],
     details: {},
+    swimTrend: [],
     health: {},
     zones: { hr: [], power: [], ftp: null },
     powerCurveRef: [],
+    powerCurveYearRef: [],
+    powerCurveYear: null,
   }
 }
 
@@ -1133,7 +1142,7 @@ export function buildPayload(
   if (!cache) return emptyPayload()
 
   const sinceDay = since && /^\d{4}-\d{2}-\d{2}$/.test(since) ? since : null
-  const activities = Object.values(cache.activities)
+  const allActivities = Object.values(cache.activities)
     .map(a => ({
       a,
       sport: isTreatment(a.sportType, a.name)
@@ -1141,6 +1150,7 @@ export function buildPayload(
         : normalizeKind(a.sportType),
     }))
     .filter((x): x is { a: RawStravaActivity; sport: ActivityKind } => x.sport !== null)
+  const activities = allActivities
     .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
     .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
@@ -1222,17 +1232,33 @@ export function buildPayload(
   }
   if (hrmax < 100) hrmax = 190
   const recentCut = end - 41 * DAY_MS
+  const powerCurveYear = new Date(end).getUTCFullYear()
+  const yearCut = dayMs(`${powerCurveYear}-01-01`)
+  const detailIds = new Set(activities.map(({ a }) => String(a.id)))
   let best20 = 0
+  const powerCurves = new Map<string, PowerCurvePoint[]>()
   const recentCurves: PowerCurvePoint[][] = []
-  for (const { a, sport } of activities) {
+  const yearCurves: PowerCurvePoint[][] = []
+  for (const { a, sport } of allActivities) {
     if (sport !== 'bike') continue
     const id = String(a.id)
-    const streams = selectEffortStreams(cache.streams?.[id], selectedStreams.get(id))
+    const activityDay = dayMs(a.startDateLocal.slice(0, 10))
+    const inRecentWindow = activityDay >= recentCut && activityDay <= end
+    const inYear = activityDay >= yearCut && activityDay <= end
+    if (!detailIds.has(id) && !inRecentWindow && !inYear) continue
+    const selected =
+      selectedStreams.get(id) ??
+      selectStreams(cache.streams?.[id], matchGarminActivity(a, sport, garmin), garmin)
+    const streams = selectEffortStreams(cache.streams?.[id], selected)
     if (!streams?.watts?.some(v => v > 0)) continue
     const c = meanMaxCurve(effortTimeline(streams, a.movingTime))
-    const p20 = c.find(p => p.s === 1200)
-    if (p20 && p20.w > best20) best20 = p20.w
-    if (dayMs(a.startDateLocal.slice(0, 10)) >= recentCut) recentCurves.push(c)
+    powerCurves.set(id, c)
+    if (detailIds.has(id)) {
+      const p20 = c.find(p => p.s === 1200)
+      if (p20 && p20.w > best20) best20 = p20.w
+    }
+    if (inRecentWindow) recentCurves.push(c)
+    if (inYear) yearCurves.push(c)
   }
   const ftp = inputFtp ?? cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
   const hrBounds = inputHrBounds?.length
@@ -1282,6 +1308,7 @@ export function buildPayload(
       hrBounds,
       powerBounds,
       home,
+      powerCurves.get(id),
     )
   }
 
@@ -1312,8 +1339,11 @@ export function buildPayload(
     strengthTotal,
     days,
     details,
+    swimTrend: [],
     health,
     zones: { hr: hrBounds, power: powerBounds, ftp },
     powerCurveRef: mergeMaxCurves(recentCurves),
+    powerCurveYearRef: mergeMaxCurves(yearCurves),
+    powerCurveYear,
   }
 }

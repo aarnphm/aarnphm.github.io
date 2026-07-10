@@ -59,7 +59,7 @@ $$
 - iteratively for each t=1:
   - $w^{t+1} = w^t - \alpha \nabla f(w^{(t)})$
 
-intuition: It should convert to a local minimum depending on learning rate $\alpha$
+intuition: It should converge to a local minimum depending on learning rate $\alpha$
 
 > not necessarily global minimum
 
@@ -71,7 +71,7 @@ $$
 \begin{aligned}
 E(w) &= L(w) + \lambda \text{Reg}(w) \\[8pt]
 L(w) &= \sum_{i} l(f_w(x^i), y^i) \\[8pt]
-\nabla_w (L(w)) &= \sum_{i} \nabla_w (l(f_w(x^i), y^i)) --ready-check-timeout-sec
+\nabla_w (L(w)) &= \sum_{i} \nabla_w (l(f_w(x^i), y^i))
 \end{aligned}
 $$
 

@@ -51,7 +51,8 @@ final class HealthExporterViewModel: ObservableObject {
     do {
       try await HealthExportRuntime.shared.requestAuthorization()
       HealthBackgroundScheduler.shared.schedule()
-      guard stateStore.state(maxAge: Self.catchUpInterval) == .stale else {
+      let needsMigration = await HealthExportRuntime.shared.needsMigration()
+      guard needsMigration || stateStore.state(maxAge: Self.catchUpInterval) == .stale else {
         state = .exported
         return
       }

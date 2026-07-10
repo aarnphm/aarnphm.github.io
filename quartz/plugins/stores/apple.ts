@@ -10,9 +10,15 @@ export interface AppleDaily {
 }
 
 export interface AppleSwim {
+  id: string | null
   date: string
+  start: string | null
+  end: string | null
   totalM: number
   laps: number
+  activeTimeS: number | null
+  strokeCount: number | null
+  strokeTimeS: number | null
   strokes: Record<string, number>
 }
 
@@ -73,6 +79,7 @@ const STROKE_BY_VALUE: Record<string, SwimStroke> = {
 }
 
 const SWIM_DIST_UNIT: Record<string, number> = { m: 1, km: 1000, mi: 1609.344, yd: 0.9144 }
+const SWIM_DURATION_UNIT: Record<string, number> = { s: 1, sec: 1, min: 60, h: 3600, hr: 3600 }
 
 export interface AppleRecord {
   date: string
@@ -175,19 +182,78 @@ export function aggregateAppleRecords(records: AppleRecord[]): AppleDaily[] {
   return out.sort((a, b) => a.date.localeCompare(b.date))
 }
 
-export function matchSwimDistance(line: string): { start: string; meters: number } | null {
-  if (!line.includes('HKQuantityTypeIdentifierDistanceSwimming')) return null
-  const start = /startDate="([^"]+)"/.exec(line)?.[1]
-  const value = /\svalue="([\d.]+)"/.exec(line)?.[1]
-  if (!start || value === undefined) return null
-  const unit = /\sunit="([^"]+)"/.exec(line)?.[1] ?? 'm'
-  return { start, meters: Number(value) * (SWIM_DIST_UNIT[unit.toLowerCase()] ?? 1) }
+export interface AppleSwimDistanceRecord {
+  start: string
+  end: string
+  meters: number
 }
 
-export function matchSwimStrokeOpen(line: string): string | null {
+export function matchSwimDistance(line: string): AppleSwimDistanceRecord | null {
+  if (!line.includes('HKQuantityTypeIdentifierDistanceSwimming')) return null
+  const start = /startDate="([^"]+)"/.exec(line)?.[1]
+  const end = /endDate="([^"]+)"/.exec(line)?.[1] ?? start
+  const value = /\svalue="([\d.]+)"/.exec(line)?.[1]
+  const unit = /\sunit="([^"]+)"/.exec(line)?.[1]?.toLowerCase()
+  const factor = unit ? SWIM_DIST_UNIT[unit] : undefined
+  if (!start || !end || value === undefined || factor === undefined) return null
+  const meters = Number(value) * factor
+  return Number.isFinite(meters) && meters > 0 ? { start, end, meters } : null
+}
+
+export interface AppleSwimStrokeRecord {
+  start: string
+  end: string
+  count: number
+}
+
+export interface AppleSwimLap extends AppleSwimStrokeRecord {
+  stroke: SwimStroke | null
+}
+
+export interface AppleSwimWorkoutWindow {
+  id: string
+  start: string
+  end: string
+  totalM: number | null
+  activeTimeS: number | null
+}
+
+export function matchSwimStrokeOpen(line: string): AppleSwimStrokeRecord | null {
   if (!line.includes('HKQuantityTypeIdentifierSwimmingStrokeCount')) return null
-  if (line.trimEnd().endsWith('/>')) return null
-  return /startDate="([^"]+)"/.exec(line)?.[1] ?? null
+  const start = /startDate="([^"]+)"/.exec(line)?.[1]
+  const end = /endDate="([^"]+)"/.exec(line)?.[1]
+  const count = /\svalue="([\d.]+)"/.exec(line)?.[1]
+  if (!start || !end || count === undefined) return null
+  return { start, end, count: Number(count) }
+}
+
+export function matchSwimWorkout(line: string): AppleSwimWorkoutWindow | null {
+  if (!line.includes('<Workout ') || !line.includes('HKWorkoutActivityTypeSwimming')) return null
+  const start = /startDate="([^"]+)"/.exec(line)?.[1]
+  const end = /endDate="([^"]+)"/.exec(line)?.[1]
+  if (!start || !end) return null
+  const distance = /\stotalDistance="([\d.]+)"/.exec(line)?.[1]
+  const distanceUnit = /\stotalDistanceUnit="([^"]+)"/.exec(line)?.[1]?.toLowerCase()
+  const distanceFactor = distanceUnit ? SWIM_DIST_UNIT[distanceUnit] : undefined
+  const totalM =
+    distance !== undefined && distanceFactor !== undefined
+      ? Number(distance) * distanceFactor
+      : null
+  const duration = /\sduration="([\d.]+)"/.exec(line)?.[1]
+  const durationUnit = /\sdurationUnit="([^"]+)"/.exec(line)?.[1]?.toLowerCase()
+  const durationFactor = durationUnit ? SWIM_DURATION_UNIT[durationUnit] : undefined
+  const activeTimeS =
+    duration !== undefined && durationFactor !== undefined
+      ? Number(duration) * durationFactor
+      : null
+  return {
+    id: `xml:${start}|${end}`,
+    start,
+    end,
+    totalM: totalM != null && Number.isFinite(totalM) && totalM > 0 ? totalM : null,
+    activeTimeS:
+      activeTimeS != null && Number.isFinite(activeTimeS) && activeTimeS > 0 ? activeTimeS : null,
+  }
 }
 
 export function matchStrokeStyle(line: string): SwimStroke | null {
@@ -195,48 +261,203 @@ export function matchStrokeStyle(line: string): SwimStroke | null {
   return v ? (STROKE_BY_VALUE[v] ?? null) : null
 }
 
-function poolLengthByDate(distByStart: Map<string, number>): Map<string, number> {
-  const groups = new Map<string, number[]>()
-  for (const [start, m] of distByStart) {
-    const date = start.slice(0, 10)
-    const arr = groups.get(date)
-    if (arr) arr.push(m)
-    else groups.set(date, [m])
+interface TimedSwimWorkout extends AppleSwimWorkoutWindow {
+  startMs: number
+  endMs: number
+}
+
+function timedSwimWorkouts(workouts: AppleSwimWorkoutWindow[]): TimedSwimWorkout[] {
+  return workouts
+    .map(workout => ({
+      ...workout,
+      startMs: Date.parse(workout.start),
+      endMs: Date.parse(workout.end),
+    }))
+    .filter(workout => Number.isFinite(workout.startMs) && Number.isFinite(workout.endMs))
+}
+
+function findSwimWorkout(
+  start: string,
+  end: string,
+  workouts: TimedSwimWorkout[],
+): TimedSwimWorkout | null {
+  const startMs = Date.parse(start)
+  const endMs = Date.parse(end)
+  if (!Number.isFinite(startMs) || !Number.isFinite(endMs)) return null
+  const containing = workouts.filter(
+    workout => workout.startMs <= startMs && workout.endMs >= endMs,
+  )
+  const candidates =
+    containing.length > 0
+      ? containing
+      : workouts.filter(workout => workout.startMs < endMs && workout.endMs > startMs)
+  return (
+    candidates.sort(
+      (a, b) => a.endMs - a.startMs - (b.endMs - b.startMs) || a.id.localeCompare(b.id),
+    )[0] ?? null
+  )
+}
+
+function unionDurationS(intervals: { start: string; end: string }[]): number {
+  const parsed = intervals
+    .map(interval => ({ start: Date.parse(interval.start), end: Date.parse(interval.end) }))
+    .filter(interval => Number.isFinite(interval.start) && interval.end > interval.start)
+    .sort((a, b) => a.start - b.start || b.end - a.end)
+  let total = 0
+  let coveredUntil = -Infinity
+  for (const interval of parsed) {
+    total += Math.max(0, interval.end - Math.max(interval.start, coveredUntil))
+    coveredUntil = Math.max(coveredUntil, interval.end)
   }
-  const out = new Map<string, number>()
-  for (const [date, arr] of groups) {
-    arr.sort((a, b) => a - b)
-    out.set(date, arr[arr.length >> 1])
+  return total / 1000
+}
+
+function unionStrokeTotals(laps: AppleSwimLap[]): { count: number; timeS: number } {
+  const intervals = laps
+    .filter(lap => lap.count > 0 && lap.stroke !== 'kickboard')
+    .map(lap => ({
+      count: Math.max(0, lap.count),
+      start: Date.parse(lap.start),
+      end: Date.parse(lap.end),
+    }))
+    .filter(interval => Number.isFinite(interval.start) && interval.end > interval.start)
+    .sort((a, b) => a.start - b.start || b.end - a.end || b.count - a.count)
+  let count = 0
+  let timeMs = 0
+  let coveredUntil = -Infinity
+  for (const interval of intervals) {
+    const durationMs = interval.end - interval.start
+    const uncoveredMs = Math.max(0, interval.end - Math.max(interval.start, coveredUntil))
+    count += interval.count * (uncoveredMs / durationMs)
+    timeMs += uncoveredMs
+    coveredUntil = Math.max(coveredUntil, interval.end)
   }
-  return out
+  return { count, timeS: timeMs / 1000 }
+}
+
+interface SwimAggregate {
+  id: string
+  date: string
+  start: string
+  end: string
+  workoutTotalM: number | null
+  workoutActiveTimeS: number | null
+  distances: AppleSwimDistanceRecord[]
+  strokeLaps: AppleSwimLap[]
 }
 
 export function aggregateSwimLaps(
-  strokeLaps: { start: string; stroke: SwimStroke }[],
-  distByStart: Map<string, number>,
+  strokeLaps: AppleSwimLap[],
+  distanceLaps: AppleSwimDistanceRecord[],
+  workoutWindows: AppleSwimWorkoutWindow[] = [],
 ): AppleSwim[] {
-  const poolByDate = poolLengthByDate(distByStart)
-  const byDate = new Map<string, AppleSwim>()
+  const workouts = timedSwimWorkouts(workoutWindows)
+  const uniqueLaps = new Map<string, AppleSwimLap>()
   for (const lap of strokeLaps) {
+    const key = `${lap.start}\u0000${lap.end}`
+    const existing = uniqueLaps.get(key)
+    if (
+      !existing ||
+      lap.count > existing.count ||
+      (lap.count === existing.count && !existing.stroke && lap.stroke !== null)
+    ) {
+      uniqueLaps.set(key, lap)
+    }
+  }
+  const aggregates = new Map<string, SwimAggregate>()
+  for (const workout of workouts) {
+    const date = workout.start.slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
+    aggregates.set(workout.id, {
+      id: workout.id,
+      date,
+      start: workout.start,
+      end: workout.end,
+      workoutTotalM: workout.totalM,
+      workoutActiveTimeS: workout.activeTimeS,
+      distances: [],
+      strokeLaps: [],
+    })
+  }
+  const uniqueDistances = new Map<string, AppleSwimDistanceRecord>()
+  for (const distance of distanceLaps) {
+    if (!Number.isFinite(distance.meters) || distance.meters <= 0) continue
+    const key = `${distance.start}\u0000${distance.end}`
+    const existing = uniqueDistances.get(key)
+    if (!existing || distance.meters > existing.meters) uniqueDistances.set(key, distance)
+  }
+  for (const distance of uniqueDistances.values()) {
+    const date = distance.start.slice(0, 10)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
+    const workout = findSwimWorkout(distance.start, distance.end, workouts)
+    const key = workout?.id ?? `xml:unassigned:${date}`
+    let aggregate = aggregates.get(key)
+    if (!aggregate) {
+      aggregate = {
+        id: key,
+        date,
+        start: workout?.start ?? distance.start,
+        end: workout?.end ?? distance.end,
+        workoutTotalM: workout?.totalM ?? null,
+        workoutActiveTimeS: workout?.activeTimeS ?? null,
+        distances: [],
+        strokeLaps: [],
+      }
+      aggregates.set(key, aggregate)
+    }
+    if (!workout) {
+      if (Date.parse(distance.start) < Date.parse(aggregate.start)) aggregate.start = distance.start
+      if (Date.parse(distance.end) > Date.parse(aggregate.end)) aggregate.end = distance.end
+    }
+    aggregate.distances.push(distance)
+  }
+  for (const lap of uniqueLaps.values()) {
     const date = lap.start.slice(0, 10)
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue
-    const meters = distByStart.get(lap.start) ?? poolByDate.get(date) ?? 25
-    let sw = byDate.get(date)
-    if (!sw) {
-      sw = { date, totalM: 0, laps: 0, strokes: {} }
-      byDate.set(date, sw)
-    }
-    sw.strokes[lap.stroke] = (sw.strokes[lap.stroke] ?? 0) + meters
-    sw.totalM += meters
-    sw.laps += 1
+    const workout = findSwimWorkout(lap.start, lap.end, workouts)
+    const aggregate = aggregates.get(workout?.id ?? `xml:unassigned:${date}`)
+    if (aggregate) aggregate.strokeLaps.push(lap)
   }
-  return [...byDate.values()]
-    .map(sw => {
+  return [...aggregates.values()]
+    .map(aggregate => {
+      const totalM =
+        aggregate.workoutTotalM ??
+        aggregate.distances.reduce((total, distance) => total + distance.meters, 0)
+      if (totalM <= 0) return null
+      const strokeTotals = unionStrokeTotals(aggregate.strokeLaps)
+      const activeTimeFromDistances = unionDurationS(aggregate.distances)
+      const activeTimeS = aggregate.workoutActiveTimeS ?? activeTimeFromDistances
+      const strokeByStart = new Map<string, SwimStroke>()
+      for (const lap of aggregate.strokeLaps) {
+        if (lap.stroke && !strokeByStart.has(lap.start)) strokeByStart.set(lap.start, lap.stroke)
+      }
       const strokes: Record<string, number> = {}
-      for (const k of Object.keys(sw.strokes)) strokes[k] = Math.round(sw.strokes[k])
-      return { date: sw.date, laps: sw.laps, totalM: Math.round(sw.totalM), strokes }
+      for (const distance of aggregate.distances) {
+        const stroke = strokeByStart.get(distance.start)
+        if (stroke) strokes[stroke] = (strokes[stroke] ?? 0) + distance.meters
+      }
+      for (const stroke of Object.keys(strokes)) {
+        strokes[stroke] = Math.round(strokes[stroke])
+      }
+      return {
+        id: aggregate.id,
+        date: aggregate.date,
+        start: parseIsoSecond(aggregate.start),
+        end: parseIsoSecond(aggregate.end),
+        laps: aggregate.distances.length,
+        totalM: Math.round(totalM),
+        activeTimeS: activeTimeS > 0 ? Math.round(activeTimeS) : null,
+        strokeCount: strokeTotals.count > 0 ? Math.round(strokeTotals.count) : null,
+        strokeTimeS: strokeTotals.timeS > 0 ? Math.round(strokeTotals.timeS) : null,
+        strokes,
+      }
     })
-    .sort((a, b) => a.date.localeCompare(b.date))
+    .filter(swim => swim !== null)
+    .sort(
+      (a, b) =>
+        (a.start ?? a.date).localeCompare(b.start ?? b.date) ||
+        (a.id ?? '').localeCompare(b.id ?? ''),
+    )
 }
 
 function num(v: unknown): number | null {
@@ -283,9 +504,16 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
   const out: AppleSwim[] = []
   for (const swim of swims) {
     if (!isRecord(swim)) continue
+    const idValue = readString(swim, 'id')?.trim()
+    const id = idValue ? idValue : null
     const date = readString(swim, 'date')?.slice(0, 10) ?? null
+    const start = parseIsoSecond(swim.start)
+    const end = parseIsoSecond(swim.end)
     const totalM = readNumber(swim, 'totalM')
     const laps = readNumber(swim, 'laps')
+    const activeTimeS = num(swim.activeTimeS)
+    const strokeCount = num(swim.strokeCount)
+    const strokeTimeS = num(swim.strokeTimeS)
     const rawStrokes = isRecord(swim.strokes) ? swim.strokes : null
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date) || totalM == null || laps == null || !rawStrokes)
       continue
@@ -294,10 +522,24 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
       const rounded = num(meters)
       if (rounded != null && rounded > 0) strokes[stroke] = Math.round(rounded)
     }
-    if (Object.keys(strokes).length === 0) continue
-    out.push({ date, totalM: Math.round(totalM), laps: Math.round(laps), strokes })
+    out.push({
+      id,
+      date,
+      start,
+      end,
+      totalM: Math.round(totalM),
+      laps: Math.round(laps),
+      activeTimeS: activeTimeS != null && activeTimeS >= 0 ? Math.round(activeTimeS) : null,
+      strokeCount: strokeCount != null && strokeCount >= 0 ? Math.round(strokeCount) : null,
+      strokeTimeS: strokeTimeS != null && strokeTimeS >= 0 ? Math.round(strokeTimeS) : null,
+      strokes,
+    })
   }
-  return out.sort((a, b) => a.date.localeCompare(b.date))
+  return out.sort(
+    (a, b) =>
+      (a.start ?? a.date).localeCompare(b.start ?? b.date) ||
+      (a.id ?? '').localeCompare(b.id ?? ''),
+  )
 }
 
 function parseIsoSecond(value: unknown): string | null {
@@ -328,7 +570,6 @@ function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
       if (!time || bpm == null || bpm <= 0) continue
       heartRate.push({ time, bpm: Math.round(bpm) })
     }
-    if (heartRate.length === 0) continue
     out.push({
       id,
       activity,

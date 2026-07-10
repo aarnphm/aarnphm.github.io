@@ -217,7 +217,7 @@ Additional examples (similar proofs):
 
 - $\gamma^t\left(R_t+\gamma R_{t+1}+\gamma^2 V^{\pi_\theta}(S_{t+2})-V^{\pi_\theta}(S_t)\right)$ (2-step TD).
 - $\gamma^t\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (n-step TD).
-- $\gamma^t\sum_{n=1}^\infty \frac{\lambda^{n-1}}{1-\lambda}\cdot\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (TD($\lambda$), **GAE**) [@schulman2015highdimensionalcontinuouscontrolusing].
+- $\gamma^t\sum_{n=1}^\infty (1-\lambda)\lambda^{n-1}\cdot\left(\sum_{k=0}^{n-1}\gamma^k R_{t+k}+\gamma^n V^{\pi_\theta}(S_{t+n})-V^{\pi_\theta}(S_t)\right)$ (TD($\lambda$), **GAE**) [@schulman2015highdimensionalcontinuouscontrolusing].
 
 ---
 

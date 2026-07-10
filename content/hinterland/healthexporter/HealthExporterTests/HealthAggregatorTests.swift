@@ -78,25 +78,175 @@ final class HealthAggregatorTests: XCTestCase {
     )
   }
 
-  func testSwimExportRequiresStrokeData() {
+  func testSwimStatisticsStayAuthoritativeAndKickboardTimeIsExcludedFromStrokeRate() {
     let start = date(2026, 6, 19, 7, 0)
+    let session = SwimSessionValue(
+      id: "morning",
+      startDate: start,
+      endDate: start.addingTimeInterval(3600),
+      distanceMeters: 100,
+      activeTimeS: 75,
+      strokeCount: 23,
+      strokeTimeS: 40,
+      lapCount: 4
+    )
     let samples = [
-      SwimSampleValue(startDate: start, meters: 25, stroke: .freestyle),
-      SwimSampleValue(startDate: start.addingTimeInterval(30), meters: 25, stroke: .breaststroke),
-      SwimSampleValue(startDate: start.addingTimeInterval(60), meters: 25, stroke: nil),
+      SwimSampleValue(
+        workoutID: session.id,
+        startDate: start,
+        endDate: start.addingTimeInterval(30),
+        meters: 25,
+        stroke: .freestyle
+      ),
+      SwimSampleValue(
+        workoutID: session.id,
+        startDate: start.addingTimeInterval(20),
+        endDate: start.addingTimeInterval(40),
+        meters: 25,
+        stroke: nil
+      ),
+      SwimSampleValue(
+        workoutID: session.id,
+        startDate: start.addingTimeInterval(40),
+        endDate: start.addingTimeInterval(75),
+        meters: 25,
+        stroke: .kickboard
+      ),
     ]
 
     XCTAssertEqual(
-      HealthAggregator.aggregateSwims(swimSamples: samples, calendar: calendar),
+      HealthAggregator.aggregateSwims(
+        swimSamples: samples,
+        swimSessions: [session],
+        calendar: calendar
+      ),
       [
         AppleHealthSwim(
+          id: "morning",
           date: "2026-06-19",
-          totalM: 50,
-          laps: 2,
-          strokes: ["breaststroke": 25, "freestyle": 25]
+          start: "2026-06-19T11:00:00Z",
+          end: "2026-06-19T12:00:00Z",
+          totalM: 100,
+          laps: 4,
+          activeTimeS: 75,
+          strokeCount: 23,
+          strokeTimeS: 40,
+          strokes: ["freestyle": 25, "kickboard": 25]
         ),
       ]
     )
+  }
+
+  func testDistanceOnlySessionKeepsDistanceAndLeavesStrokeRateInputsMissing() {
+    let start = date(2026, 6, 20, 7, 0)
+    let session = SwimSessionValue(
+      id: "distance-only",
+      startDate: start,
+      endDate: start.addingTimeInterval(120),
+      distanceMeters: 200,
+      activeTimeS: 120,
+      strokeCount: nil,
+      strokeTimeS: nil,
+      lapCount: 2
+    )
+    let sample = SwimSampleValue(
+      workoutID: session.id,
+      startDate: start,
+      endDate: start.addingTimeInterval(60),
+      meters: 100,
+      stroke: nil
+    )
+
+    XCTAssertEqual(
+      HealthAggregator.aggregateSwims(
+        swimSamples: [sample],
+        swimSessions: [session],
+        calendar: calendar
+      ),
+      [
+        AppleHealthSwim(
+          id: "distance-only",
+          date: "2026-06-20",
+          start: "2026-06-20T11:00:00Z",
+          end: "2026-06-20T11:02:00Z",
+          totalM: 200,
+          laps: 2,
+          activeTimeS: 120,
+          strokeCount: nil,
+          strokeTimeS: nil,
+          strokes: [:]
+        ),
+      ]
+    )
+  }
+
+  func testSessionStatisticsProduceSwimWithoutExpandedSamples() {
+    let start = date(2026, 6, 21, 7, 0)
+    let session = SwimSessionValue(
+      id: "triathlon-swim-leg",
+      startDate: start,
+      endDate: start.addingTimeInterval(1800),
+      distanceMeters: 1500,
+      activeTimeS: 1750,
+      strokeCount: 800,
+      strokeTimeS: nil,
+      lapCount: 60
+    )
+
+    XCTAssertEqual(
+      HealthAggregator.aggregateSwims(
+        swimSamples: [],
+        swimSessions: [session],
+        calendar: calendar
+      ),
+      [
+        AppleHealthSwim(
+          id: "triathlon-swim-leg",
+          date: "2026-06-21",
+          start: "2026-06-21T11:00:00Z",
+          end: "2026-06-21T11:30:00Z",
+          totalM: 1500,
+          laps: 60,
+          activeTimeS: 1750,
+          strokeCount: 800,
+          strokeTimeS: nil,
+          strokes: [:]
+        ),
+      ]
+    )
+  }
+
+  func testStrokeTimeUnionsPositiveIntervalsAndExcludesKickboard() {
+    let start = date(2026, 6, 22, 7, 0)
+    let intervals = [
+      SwimStrokeIntervalValue(
+        startDate: start,
+        endDate: start.addingTimeInterval(30),
+        count: 18,
+        stroke: .freestyle
+      ),
+      SwimStrokeIntervalValue(
+        startDate: start.addingTimeInterval(20),
+        endDate: start.addingTimeInterval(40),
+        count: 10,
+        stroke: nil
+      ),
+      SwimStrokeIntervalValue(
+        startDate: start.addingTimeInterval(40),
+        endDate: start.addingTimeInterval(70),
+        count: 1,
+        stroke: .kickboard
+      ),
+      SwimStrokeIntervalValue(
+        startDate: start.addingTimeInterval(70),
+        endDate: start.addingTimeInterval(100),
+        count: 0,
+        stroke: nil
+      ),
+    ]
+
+    XCTAssertEqual(HealthAggregator.strokeTime(strokeSamples: intervals), 40)
+    XCTAssertNil(HealthAggregator.strokeTime(strokeSamples: Array(intervals.suffix(2))))
   }
 
   func testDocumentKeepsTimezoneAndMetadata() {
@@ -108,7 +258,7 @@ final class HealthAggregatorTests: XCTestCase {
       calendar: calendar
     )
 
-    XCTAssertEqual(document.version, 2)
+    XCTAssertEqual(document.version, 3)
     XCTAssertEqual(document.generatedAt, "2026-06-19T07:30:00-04:00")
     XCTAssertEqual(document.timezone, "America/Toronto")
     XCTAssertEqual(document.days, [])
@@ -157,6 +307,46 @@ final class HealthAggregatorTests: XCTestCase {
 
     XCTAssertEqual(restored?.document, document)
     XCTAssertEqual(restored?.url, writtenURL)
+  }
+
+  func testVersionTwoSwimsDecodeWithMigrationDefaults() throws {
+    let json = """
+      {
+        "version": 2,
+        "generatedAt": "2026-06-19T07:30:00-04:00",
+        "timezone": "America/Toronto",
+        "days": [],
+        "swims": [
+          {
+            "date": "2026-06-19",
+            "totalM": 1500,
+            "laps": 60,
+            "strokes": { "freestyle": 1500 }
+          }
+        ],
+        "workouts": []
+      }
+      """
+
+    let document = try JSONDecoder().decode(HealthExportDocument.self, from: Data(json.utf8))
+
+    XCTAssertEqual(
+      document.swims,
+      [
+        AppleHealthSwim(
+          id: "2026-06-19",
+          date: "2026-06-19",
+          start: nil,
+          end: nil,
+          totalM: 1500,
+          laps: 60,
+          activeTimeS: nil,
+          strokeCount: nil,
+          strokeTimeS: nil,
+          strokes: ["freestyle": 1500]
+        ),
+      ]
+    )
   }
 
   func testRecentExportReplacesOnlyTheRecentWindow() {

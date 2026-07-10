@@ -13,7 +13,7 @@ transclude:
   title: false
 ---
 
-alias: _BPE, diagram coding_
+alias: _BPE, digram coding_
 
 1994, by Philip Gage for encoding strings of text into smaller strings by creating and using a translation table. A modified version is used in [[thoughts/LLMs|LLMs]] [[thoughts/Tokenization|tokenizers]].
 

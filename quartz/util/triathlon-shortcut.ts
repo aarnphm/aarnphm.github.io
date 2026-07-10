@@ -1,3 +1,5 @@
+import { triathlonOnSlugFromShortcutPath } from './triathlon-date-route'
+
 const TRIATHLON_PREFIX = '/triathlon'
 const SHORTCUT_HOST_PREFIX = 't.'
 
@@ -14,6 +16,8 @@ function triathlonShortcutPathname(pathname: string): string {
     return TRIATHLON_PREFIX
   }
   if (pathname.startsWith(`${TRIATHLON_PREFIX}/`)) return pathname
+  const temporalSlug = triathlonOnSlugFromShortcutPath(pathname)
+  if (temporalSlug) return `/${temporalSlug}`
   return `${TRIATHLON_PREFIX}${pathname.startsWith('/') ? pathname : `/${pathname}`}`
 }
 

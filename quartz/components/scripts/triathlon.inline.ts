@@ -23,6 +23,7 @@ import {
   type Sport,
   type StravaActivityDetail,
   type StravaZones,
+  type SwimTrendPoint,
 } from '../../plugins/stores/strava'
 import {
   CALC_ANCHOR_PREFIX,
@@ -51,7 +52,6 @@ import {
   buildPowerCurve as powerCurveNode,
   buildPowerHist as powerHistNode,
   buildPowerZones as powerZonesNode,
-  dlabel,
   zoneClock,
   buildDayCard as buildDayCardNode,
   buildElevation as buildElevationNode,
@@ -62,6 +62,7 @@ import {
   clock,
   dist,
   distCombined,
+  decodePowerCurve,
   dur,
   formatAltitude,
   gradeAt,
@@ -76,11 +77,14 @@ import {
   setDistanceUnit,
   shortDate,
   statRow as statRowNode,
+  swimTrendActivityLabel,
+  swimTrendHoverAt,
   buildTrace as buildTraceNode,
   zoneDuo as zoneDuoNode,
   type AxisXTick,
   type DayCardExtras,
   type DetailCtx,
+  type SwimTrendChartPoint,
   type TriNodeFactory,
 } from '../../util/triathlon-card'
 import {
@@ -88,6 +92,7 @@ import {
   glossFor,
   glossKeys,
   initTriLocale,
+  powerCurveReferenceLabel,
   tl,
   triLocale,
 } from '../../util/triathlon-i18n'
@@ -115,9 +120,12 @@ export {}
 
 type DetailPayload = {
   details: Record<string, StravaActivityDetail>
+  swimTrend?: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
   zones?: StravaZones
   powerCurveRef?: PowerCurvePoint[]
+  powerCurveYearRef?: PowerCurvePoint[]
+  powerCurveYear?: number | null
   ftp?: number | null
   goalFtp?: number | null
   vt1Hr?: number | null
@@ -136,6 +144,8 @@ type TrainingPayload = { plans: TrainingPlan[] }
 
 let DETAIL_ZONES: StravaZones | null = null
 let DETAIL_CURVE_REF: PowerCurvePoint[] = []
+let DETAIL_CURVE_YEAR_REF: PowerCurvePoint[] = []
+let DETAIL_CURVE_YEAR: number | null = null
 let DETAIL_FTP: number | null = null
 let DETAIL_GOAL_FTP: number | null = null
 let DETAIL_VT1: number | null = null
@@ -147,6 +157,8 @@ const loadDetailPayload = (path: string): Promise<DetailPayload | null> => {
     .then((data: DetailPayload) => {
       DETAIL_ZONES = data.zones ?? null
       DETAIL_CURVE_REF = data.powerCurveRef ?? []
+      DETAIL_CURVE_YEAR_REF = data.powerCurveYearRef ?? []
+      DETAIL_CURVE_YEAR = data.powerCurveYear ?? null
       DETAIL_FTP = data.ftp ?? null
       DETAIL_GOAL_FTP = data.goalFtp ?? null
       DETAIL_VT1 = data.vt1Hr ?? null
@@ -310,6 +322,8 @@ const linkScrub = (
 const clientCtx = (): DetailCtx => ({
   zones: DETAIL_ZONES,
   curveRef: DETAIL_CURVE_REF,
+  curveYearRef: DETAIL_CURVE_YEAR_REF,
+  curveYear: DETAIL_CURVE_YEAR,
   ftp: DETAIL_FTP,
   goalFtp: DETAIL_GOAL_FTP,
   vt1: DETAIL_VT1,
@@ -683,8 +697,8 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   return wrap
 }
 
-const renderDetail = (d: StravaActivityDetail): HTMLElement => {
-  const wrap = buildActivityNode(domF, d) as HTMLElement
+const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): HTMLElement => {
+  const wrap = buildActivityNode(domF, d, false, undefined, payload?.swimTrend ?? []) as HTMLElement
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>('.tri-act-figs .tri-elev-wrap')
   if (elev) {
@@ -754,9 +768,18 @@ const renderDetail = (d: StravaActivityDetail): HTMLElement => {
   return wrap
 }
 
-const onCardToggle = (event: Event) => {
-  const btn = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
-  btn?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
+const setActivityExpanded = (activity: HTMLElement, expanded: boolean): void => {
+  activity.classList.toggle('tri-act--expanded', expanded)
+  const toggle = activity.querySelector<HTMLButtonElement>(':scope > .tri-act-toggle')
+  if (!toggle) return
+  toggle.setAttribute('aria-expanded', String(expanded))
+  toggle.textContent = expanded ? '− see less' : '+ see more'
+}
+
+const onCardToggle = (event: Event): void => {
+  const toggle = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>('.tri-act-toggle')
+  const activity = toggle?.closest<HTMLElement>('.tri-act')
+  if (activity) setActivityExpanded(activity, !activity.classList.contains('tri-act--expanded'))
 }
 
 const buildDayCard = (
@@ -764,7 +787,14 @@ const buildDayCard = (
   payload: DetailPayload | null,
   extras: DayCardExtras = {},
 ): HTMLElement => {
-  const card = buildDayCardNode(domF, dateIso, payload, extras, renderDetail) as HTMLElement
+  const card = buildDayCardNode(domF, dateIso, payload, extras, detail =>
+    renderDetail(detail, payload),
+  ) as HTMLElement
+  if (extras.expanded) {
+    card
+      .querySelectorAll<HTMLElement>('.tri-act')
+      .forEach(activity => setActivityExpanded(activity, true))
+  }
   card.addEventListener('click', onCardToggle)
   return card
 }
@@ -773,6 +803,8 @@ const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => ({
   location: data.triathlonLoc,
   event: data.triathlonEvent,
   sport: data.triathlonSport as DayCardExtras['sport'],
+  expanded: data.triathlonExpanded === '1',
+  dateHref: data.triathlonDateHref,
 })
 
 const setupDayEmbeds = (): (() => void) | null => {
@@ -794,7 +826,7 @@ const setupDayEmbeds = (): (() => void) | null => {
         activity.classList.contains('tri-act--expanded'),
       )
       fresh.querySelectorAll('.tri-act').forEach((activity, index) => {
-        if (expanded[index]) activity.classList.add('tri-act--expanded')
+        if (index < expanded.length) setActivityExpanded(activity as HTMLElement, expanded[index])
       })
       embed.replaceChildren(fresh)
     }
@@ -947,7 +979,8 @@ const setup = (root: HTMLElement): (() => void) | null => {
   }
 
   const setExpanded = (on: boolean) => {
-    for (const a of pop.querySelectorAll('.tri-act')) a.classList.toggle('tri-act--expanded', on)
+    for (const activity of pop.querySelectorAll<HTMLElement>('.tri-act'))
+      setActivityExpanded(activity, on)
     updateOverflow()
   }
   const hide = () => {
@@ -3095,6 +3128,39 @@ const segRuns = <T>(
   return out
 }
 
+const missingRuns = <T>(
+  rows: T[],
+  sel: (r: T) => number | null,
+  x: (i: number) => number,
+  y: (v: number) => number,
+): [number, number][][] => {
+  const out: [number, number][][] = []
+  let previous: { i: number; value: number } | null = null
+  for (const [i, row] of rows.entries()) {
+    const value = sel(row)
+    if (value == null) continue
+    if (previous == null) {
+      if (i > 0)
+        out.push([
+          [x(0), y(value)],
+          [x(i), y(value)],
+        ])
+    } else if (i > previous.i + 1) {
+      out.push([
+        [x(previous.i), y(previous.value)],
+        [x(i), y(value)],
+      ])
+    }
+    previous = { i, value }
+  }
+  if (previous != null && previous.i < rows.length - 1)
+    out.push([
+      [x(previous.i), y(previous.value)],
+      [x(rows.length - 1), y(previous.value)],
+    ])
+  return out
+}
+
 const buildRecoveryChart = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-recovery')
   block.appendChild(anaTitle('recovery · hrv · rhr', 'hrv'))
@@ -3145,6 +3211,10 @@ const buildRecoveryChart = (data: Analytics): HTMLElement => {
         class: 'tri-rec-zline tri-rec-zline--alert',
       }),
     )
+    for (const seg of missingRuns(rec.series, d => d.hrvZ, x, yZ))
+      s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-hrv tri-rec-missing' }))
+    for (const seg of missingRuns(rec.series, d => (d.rhrZ == null ? null : -d.rhrZ), x, yZ))
+      s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-rhr tri-rec-missing' }))
     for (const seg of segRuns(rec.series, d => d.hrvZ, x, yZ))
       s.appendChild(svg('path', { d: polyD(seg), class: 'tri-rec-hrv' }))
     for (const seg of segRuns(rec.series, d => (d.rhrZ == null ? null : -d.rhrZ), x, yZ))
@@ -4022,14 +4092,15 @@ const vo2ProfileTargetPath = (
   return d
 }
 
-const vo2ProfileStatNodes = (
+const vo2ProfileStat = (
   label: string,
   stats: Vo2LabProfileStats | null,
   cls: string,
   dp: number,
-): HTMLElement[] => {
-  if (!stats) return []
-  return [
+): HTMLElement | null => {
+  if (!stats) return null
+  const item = el('span', 'tri-vo2p-stat')
+  item.append(
     el('span', `tri-vo2p-stat-name ${cls}`, label),
     el('span', 'tri-vo2p-stat-k', 'Min:'),
     el('span', `tri-vo2p-stat-v ${cls}`, stats.min.toFixed(dp)),
@@ -4037,7 +4108,8 @@ const vo2ProfileStatNodes = (
     el('span', `tri-vo2p-stat-v ${cls}`, stats.max.toFixed(dp)),
     el('span', 'tri-vo2p-stat-k', 'Avg:'),
     el('span', `tri-vo2p-stat-v ${cls}`, stats.avg.toFixed(dp)),
-  ]
+  )
+  return item
 }
 
 const vo2ProfileLegendItem = (label: string, cls: string, area = false): HTMLElement => {
@@ -4314,14 +4386,18 @@ const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind)
   const head = el('div', 'tri-vo2p-panel-head')
   head.appendChild(el('span', 'tri-vo2p-panel-heading', vo2ProfileChartLabel(kind)))
   const stats = el('div', 'tri-vo2p-stats')
-  if (kind === 'metabolic') {
-    stats.append(...vo2ProfileStatNodes('VO2', profile.stats.vo2, 'tri-vo2p-blue', 1))
-    stats.append(...vo2ProfileStatNodes('HR', profile.stats.hr, 'tri-vo2p-red', 0))
-  } else {
-    stats.append(...vo2ProfileStatNodes('Tv', profile.stats.tv, 'tri-vo2p-orange', 1))
-    stats.append(...vo2ProfileStatNodes('Rf', profile.stats.rf, 'tri-vo2p-cyan', 1))
-    stats.append(...vo2ProfileStatNodes('Ve', profile.stats.ve, 'tri-vo2p-green', 1))
-  }
+  const profileStats =
+    kind === 'metabolic'
+      ? [
+          vo2ProfileStat('VO2', profile.stats.vo2, 'tri-vo2p-blue', 1),
+          vo2ProfileStat('HR', profile.stats.hr, 'tri-vo2p-red', 0),
+        ]
+      : [
+          vo2ProfileStat('Tv', profile.stats.tv, 'tri-vo2p-orange', 1),
+          vo2ProfileStat('Rf', profile.stats.rf, 'tri-vo2p-cyan', 1),
+          vo2ProfileStat('Ve', profile.stats.ve, 'tri-vo2p-green', 1),
+        ]
+  for (const stat of profileStats) if (stat) stats.appendChild(stat)
   const legend = el('div', 'tri-vo2p-legend')
   legend.appendChild(vo2ProfileLegendItem(vo2ProfileTargetLegend(), 'tri-vo2p-target', true))
   if (kind === 'metabolic') {
@@ -4669,6 +4745,14 @@ type AbilityAxis = SportAbility['axes'][number]
 const radarUnitText = (): string => tl(isImperialUnit() ? 'feet' : 'metres')
 const radarDefinition = (key: string): string => tl(key).replace('{unit}', radarUnitText())
 
+const radarAxisLabel = (sports: readonly SportAbility[], index: number): string => {
+  const labels = sports
+    .map(sport => sport.axes[index]?.label)
+    .filter((label): label is string => label != null)
+    .map(label => tl(label))
+  return [...new Set(labels)].join(' / ')
+}
+
 const radarAxisDefinition = (sport: Sport, axis: AbilityAxis): string => {
   switch (axis.key) {
     case 'sprint':
@@ -4682,13 +4766,13 @@ const radarAxisDefinition = (sport: Sport, axis: AbilityAxis): string => {
     case 'endurance':
       return radarDefinition('radar endurance definition')
     case 'climb':
-      if (sport === 'swim') return radarDefinition('radar climb swim definition')
+      if (sport === 'swim') return radarDefinition('radar pace swim definition')
       if (sport === 'run') return radarDefinition('radar climb run definition')
       return radarDefinition('radar climb bike definition')
     case 'cadence':
       if (sport === 'bike') return radarDefinition('radar cadence bike definition')
       if (sport === 'run') return radarDefinition('radar cadence run definition')
-      return radarDefinition('radar cadence swim definition')
+      return radarDefinition('radar stroke rate swim definition')
     case 'recovery':
       return radarDefinition('radar recovery definition')
   }
@@ -4706,6 +4790,8 @@ const radarNotationDefinition = (axis: AbilityAxis): string => {
         : radarDefinition('radar unit mh definition')
     case 'm/s':
       return radarDefinition('radar unit mspeed definition')
+    case 's/100m':
+      return radarDefinition('radar unit s100m definition')
     case 'rpm':
       return radarDefinition('radar unit rpm definition')
     case 'spm':
@@ -4942,7 +5028,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         key: k,
         cls: `tri-dev-line--${k}`,
         dotCls: `tri-dev-dot--${k}`,
-        label: tl(k),
+        label: tl(single.axes.find(axis => axis.key === k)?.label ?? k),
         vals: hist.map(h => h[k]),
         toggle: true,
       }))
@@ -5128,6 +5214,11 @@ const buildAbilities = (data: Analytics): HTMLElement => {
     avgTab.setAttribute('aria-pressed', avg ? 'true' : 'false')
     for (const [k, tab] of tabOf)
       tab.setAttribute('aria-pressed', !avg && pressed.has(k) ? 'true' : 'false')
+    const activeSports =
+      avg || pressed.size === 0 ? sports : sports.filter(sport => pressed.has(sport.sport))
+    labels.forEach((label, index) => {
+      label.textContent = radarAxisLabel(activeSports, index)
+    })
     applyAxisClasses()
   }
   const rerender = (): void => {
@@ -5541,6 +5632,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const rawOf = (sp: SportAbility, a: AbilityAxis): string => {
       const pace = radarPaceHint(sp.sport, a)
       if (a.rawValue == null) return tl('no data')
+      if (a.rawUnit === 's/100m') return `${clock(a.rawValue)} /100m`
       const vamFt = a.rawUnit === 'm/h' && isImperialUnit()
       const value = vamFt ? Math.round(a.rawValue * M_TO_FT) : a.rawValue
       return `${value} ${vamFt ? 'ft/h' : a.rawUnit}${pace ? ` (${pace})` : ''}`
@@ -5575,7 +5667,14 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
           renderGlossDef(radarNotationDefinition(a)),
         )
       } else {
-        const rows: HTMLElement[] = [el('span', 'tri-gloss-h', tl(abilities[0].axes[idx].label))]
+        const activeAbilities = abilities.filter(sp => pressedSports.includes(sp.sport))
+        const rows: HTMLElement[] = [
+          el(
+            'span',
+            'tri-gloss-h',
+            radarAxisLabel(activeAbilities, idx) || tl(abilities[0].axes[idx].label),
+          ),
+        ]
         if (radarBlock.dataset.sport === 'avg') {
           const xs = abilities
             .filter(sp => pressedSports.includes(sp.sport))
@@ -6144,6 +6243,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        DETAIL_CURVE_YEAR_REF = d.powerCurveYearRef ?? []
+        DETAIL_CURVE_YEAR = d.powerCurveYear ?? null
         DETAIL_FTP = d.ftp ?? null
         DETAIL_GOAL_FTP = d.goalFtp ?? null
         DETAIL_VT1 = d.vt1Hr ?? null
@@ -6158,8 +6259,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const card = el('div', 'tri-pop-card')
       const { head, back } = detailHead(shortDate(d.date), d.name || d.sport)
       card.appendChild(head)
-      const act = renderDetail(d)
-      act.classList.add('tri-act--expanded')
+      const act = renderDetail(d, detailData)
+      setActivityExpanded(act, true)
       card.appendChild(act)
       const h = detailData?.health?.[d.date]
       if (h) {
@@ -6320,10 +6421,6 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     panel.setAttribute('aria-hidden', 'false')
     load()
   }
-  const onDetailToggle = (event: MouseEvent) => {
-    const t = (event.target as HTMLElement | null)?.closest('.tri-act-toggle')
-    t?.closest('.tri-act')?.classList.toggle('tri-act--expanded')
-  }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
     if (panel.classList.contains('tri-analytics--detail')) {
@@ -6349,7 +6446,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   search?.addEventListener('input', runSearch)
   search?.addEventListener('keydown', onSearchKey)
   results?.addEventListener('click', onResultsClick)
-  detail?.addEventListener('click', onDetailToggle)
+  detail?.addEventListener('click', onCardToggle)
   document.addEventListener('keydown', onKey)
   const onUnitChange = () => {
     if (data) {
@@ -6367,7 +6464,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     search?.removeEventListener('input', runSearch)
     search?.removeEventListener('keydown', onSearchKey)
     results?.removeEventListener('click', onResultsClick)
-    detail?.removeEventListener('click', onDetailToggle)
+    detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
@@ -7030,6 +7127,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
+        DETAIL_CURVE_YEAR_REF = d.powerCurveYearRef ?? []
+        DETAIL_CURVE_YEAR = d.powerCurveYear ?? null
         DETAIL_FTP = d.ftp ?? null
         DETAIL_GOAL_FTP = d.goalFtp ?? null
         DETAIL_VT1 = d.vt1Hr ?? null
@@ -7828,7 +7927,8 @@ const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
-  { path: '/triathlon/feed', label: 'feed', hint: 'feed' },
+  { path: '/triathlon/feed', label: 'feed', hint: 'all activities' },
+  { path: '/triathlon/on', label: 'on', hint: 'by date' },
 ]
 
 type SearchShortcut = { view: string; openClass: string; search: string }
@@ -8073,6 +8173,7 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     t: '/triathlon/training',
     r: '/triathlon/training',
     f: '/triathlon/feed',
+    o: '/triathlon/on',
     h: '/triathlon',
   }
 
@@ -8228,6 +8329,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
   const countEl = root.querySelector<HTMLElement>('.tri-feed-count')
   const analyticsPath = root.dataset.analyticsPath
   const detailPath = root.dataset.detailPath
+  const datePrefix = root.dataset.feedPrefix ?? ''
   if (!list || !analyticsPath) return null
 
   let acts: ActivitySummary[] = []
@@ -8262,8 +8364,8 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
           wrap.replaceChildren(el('div', 'tri-ana-empty', tl('no detail')))
           return
         }
-        const act = renderDetail(d)
-        act.classList.add('tri-act--expanded')
+        const act = renderDetail(d, payload)
+        setActivityExpanded(act, true)
         wrap.replaceChildren(act)
         const h = payload?.health?.[d.date]
         if (h) {
@@ -8371,7 +8473,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
   fetch(analyticsPath)
     .then(res => res.json())
     .then((d: Analytics) => {
-      acts = d.activities ?? []
+      acts = (d.activities ?? []).filter(activity => activity.date.startsWith(datePrefix))
       renderList()
     })
     .catch(() => {
@@ -8406,60 +8508,130 @@ const setupI18n = (root: HTMLElement): (() => void) => {
 }
 
 const setupChartScrub = (scope: HTMLElement): (() => void) => {
+  type CurveRange = 'six-weeks' | 'year'
   let activeWrap: HTMLElement | null = null
   let activeBar: Element | null = null
   let focusedSvg: SVGSVGElement | null = null
   const curveCache = new WeakMap<
     SVGSVGElement,
-    { curve: PowerCurvePoint[]; reference: PowerCurvePoint[] }
+    { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] }
   >()
-  const isCurvePoint = (value: unknown): value is PowerCurvePoint =>
-    typeof value === 'object' &&
-    value !== null &&
-    's' in value &&
-    typeof value.s === 'number' &&
-    'w' in value &&
-    typeof value.w === 'number'
-  const readCurve = (raw: string | undefined): PowerCurvePoint[] => {
-    if (!raw) return []
-    const value: unknown = JSON.parse(raw)
-    return Array.isArray(value) ? value.filter(isCurvePoint) : []
-  }
+  const swimCache = new WeakMap<SVGSVGElement, SwimTrendChartPoint[]>()
   const curveData = (
     svg: SVGSVGElement,
-  ): { curve: PowerCurvePoint[]; reference: PowerCurvePoint[] } => {
+  ): { curve: PowerCurvePoint[]; sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] } => {
     const cached = curveCache.get(svg)
     if (cached) return cached
     const value = {
-      curve: readCurve(svg.dataset.curve),
-      reference: readCurve(svg.dataset.curveRef),
+      curve: decodePowerCurve(svg.dataset.curve),
+      sixWeeks: decodePowerCurve(svg.dataset.curveRefSixWeeks),
+      year: decodePowerCurve(svg.dataset.curveRefYear),
     }
     curveCache.set(svg, value)
     return value
+  }
+  const isSwimTrendPoint = (value: unknown): value is SwimTrendChartPoint =>
+    typeof value === 'object' &&
+    value !== null &&
+    'activityId' in value &&
+    typeof value.activityId === 'number' &&
+    Number.isFinite(value.activityId) &&
+    'date' in value &&
+    typeof value.date === 'string' &&
+    'start' in value &&
+    typeof value.start === 'string' &&
+    'value' in value &&
+    typeof value.value === 'number' &&
+    Number.isFinite(value.value) &&
+    'xPct' in value &&
+    typeof value.xPct === 'number' &&
+    Number.isFinite(value.xPct) &&
+    'yPct' in value &&
+    typeof value.yPct === 'number' &&
+    Number.isFinite(value.yPct)
+  const swimData = (svg: SVGSVGElement): SwimTrendChartPoint[] => {
+    const cached = swimCache.get(svg)
+    if (cached) return cached
+    const value: unknown = JSON.parse(svg.dataset.swimSeries ?? '[]')
+    const points = Array.isArray(value) ? value.filter(isSwimTrendPoint) : []
+    swimCache.set(svg, points)
+    return points
+  }
+  const curveRange = (svg: SVGSVGElement): CurveRange =>
+    svg.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
+  const curveReference = (
+    svg: SVGSVGElement,
+    data: { sixWeeks: PowerCurvePoint[]; year: PowerCurvePoint[] },
+  ): PowerCurvePoint[] => (curveRange(svg) === 'year' ? data.year : data.sixWeeks)
+  const curveReferenceYear = (svg: SVGSVGElement): number | null => {
+    if (curveRange(svg) !== 'year') return null
+    const year = Number(svg.dataset.curveYear)
+    return Number.isInteger(year) ? year : null
   }
   const selectedCurveIndex = (svg: SVGSVGElement): number => {
     const value = Number(svg.dataset.curveIndex ?? 0)
     return Number.isInteger(value) ? value : 0
   }
-  const curveValueText = (point: PowerCurvePoint, referenceWatts: number | null): string =>
-    `${dlabel(point.s)}, ${tl('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${tl('6-week best')} ${referenceWatts.toLocaleString()} watts`}`
+  const selectedSwimIndex = (svg: SVGSVGElement): number => {
+    const value = Number(svg.dataset.swimIndex ?? 0)
+    return Number.isInteger(value) ? value : 0
+  }
+  const curveValueText = (
+    svg: SVGSVGElement,
+    point: PowerCurvePoint,
+    referenceWatts: number | null,
+  ): string =>
+    `${zoneClock(point.s)}, ${tl('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}`
+  const swimKind = (svg: SVGSVGElement): 'pace' | 'stroke' =>
+    svg.dataset.swimKind === 'stroke' ? 'stroke' : 'pace'
+  const swimDisplayValue = (kind: 'pace' | 'stroke', value: number): string =>
+    kind === 'pace'
+      ? `${clock(value)} /100m`
+      : `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })} str/min`
+  const swimValueText = (kind: 'pace' | 'stroke', point: SwimTrendChartPoint): string => {
+    const activity = swimTrendActivityLabel(point)
+    return kind === 'pace'
+      ? `${activity}, swim pace ${clock(point.value)} per 100 metres`
+      : `${activity}, stroke rate ${point.value.toLocaleString('en-US', { maximumFractionDigits: 1 })} strokes per minute`
+  }
+  const deactivate = (wrap: HTMLElement): void => {
+    wrap.classList.remove('tri-chart--hover')
+    const point = wrap.querySelector<HTMLElement>('.tri-swim-trend-hover')
+    if (point) point.hidden = true
+  }
   const activate = (wrap: HTMLElement): void => {
-    if (activeWrap && activeWrap !== wrap) activeWrap.classList.remove('tri-chart--hover')
+    if (activeWrap && activeWrap !== wrap) deactivate(activeWrap)
     activeWrap = wrap
     wrap.classList.add('tri-chart--hover')
   }
   const clear = (): void => {
-    activeWrap?.classList.remove('tri-chart--hover')
+    if (activeWrap) deactivate(activeWrap)
     activeBar?.classList.remove('tri-hist-bar--on')
     activeWrap = null
     activeBar = null
   }
-  const showCurve = (svg: SVGSVGElement, fraction: number): void => {
+  const placeCurvePoint = (
+    point: HTMLElement | null,
+    x: number,
+    watts: number | null,
+    maxWatts: number,
+    height: number,
+  ): void => {
+    if (!point) return
+    point.hidden = watts == null
+    if (watts == null) return
+    const y = height - (Math.min(maxWatts, Math.max(0, watts)) / maxWatts) * (height - 1)
+    point.style.left = `${x.toFixed(2)}%`
+    point.style.top = `${((y / height) * 100).toFixed(2)}%`
+  }
+  const showCurve = (svg: SVGSVGElement, fraction: number, activateChart = true): void => {
     const wrap = svg.closest<HTMLElement>('.tri-zone')
     const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
     const readout = wrap?.querySelector<HTMLElement>('.tri-curve-readout')
     if (!wrap || !readout) return
-    const { curve, reference } = curveData(svg)
+    const data = curveData(svg)
+    const curve = data.curve
+    const reference = curveReference(svg, data)
     const hover = powerCurveHoverAt(curve, reference, fraction)
     if (!hover) return
     if (svg.dataset.curveIndex !== String(hover.index)) {
@@ -8469,37 +8641,111 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
       const ride = readout.querySelector<HTMLElement>('.tri-curve-readout-value--ride')
       const referenceRow = readout.querySelector<HTMLElement>('.tri-curve-readout-row--ref')
       const referenceValue = readout.querySelector<HTMLElement>('.tri-curve-readout-value--ref')
-      if (duration) duration.textContent = dlabel(hover.durationS)
+      const referenceLabel = readout.querySelector<HTMLElement>('.tri-curve-readout-label--ref')
+      const maxWatts = Number(svg.dataset.curveDomainMax)
+      const height = svg.viewBox.baseVal.height
+      if (Number.isFinite(maxWatts) && maxWatts > 0 && height > 0) {
+        placeCurvePoint(
+          wrap.querySelector<HTMLElement>('.tri-curve-point--ride'),
+          hover.xPct,
+          hover.watts,
+          maxWatts,
+          height,
+        )
+        placeCurvePoint(
+          wrap.querySelector<HTMLElement>('.tri-curve-point--ref'),
+          hover.xPct,
+          hover.referenceWatts,
+          maxWatts,
+          height,
+        )
+      }
+      if (duration) duration.textContent = zoneClock(hover.durationS)
       if (ride) ride.textContent = `${hover.watts.toLocaleString()} W`
       if (referenceRow) referenceRow.hidden = hover.referenceWatts == null
       if (referenceValue && hover.referenceWatts != null)
         referenceValue.textContent = `${hover.referenceWatts.toLocaleString()} W`
+      if (referenceLabel)
+        referenceLabel.textContent = powerCurveReferenceLabel(curveReferenceYear(svg))
       svg.dataset.curveIndex = String(hover.index)
       svg.setAttribute('aria-valuenow', String(hover.durationS))
       svg.setAttribute(
         'aria-valuetext',
-        curveValueText({ s: hover.durationS, w: hover.watts }, hover.referenceWatts),
+        curveValueText(svg, { s: hover.durationS, w: hover.watts }, hover.referenceWatts),
       )
     }
-    activeBar?.classList.remove('tri-hist-bar--on')
-    activeBar = null
-    activate(wrap)
+    if (activateChart) {
+      activeBar?.classList.remove('tri-hist-bar--on')
+      activeBar = null
+      activate(wrap)
+    }
   }
-  const showCurveIndex = (svg: SVGSVGElement, requestedIndex: number): void => {
+  const showCurveIndex = (
+    svg: SVGSVGElement,
+    requestedIndex: number,
+    activateChart = true,
+  ): void => {
     const { curve } = curveData(svg)
     if (curve.length < 2) return
     const index = Math.min(curve.length - 1, Math.max(0, requestedIndex))
-    showCurve(svg, powerCurveFraction(curve[index].s, curve[0].s, curve[curve.length - 1].s))
+    showCurve(
+      svg,
+      powerCurveFraction(curve[index].s, curve[0].s, curve[curve.length - 1].s),
+      activateChart,
+    )
   }
-  const restoreFocusedCurve = (): void => {
-    if (focusedSvg) showCurveIndex(focusedSvg, selectedCurveIndex(focusedSvg))
-    else clear()
+  const showSwim = (svg: SVGSVGElement, fraction: number, activateChart = true): void => {
+    const wrap = svg.closest<HTMLElement>('.tri-zone')
+    const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
+    const point = wrap?.querySelector<HTMLElement>('.tri-swim-trend-hover')
+    const readoutDate = wrap?.querySelector<HTMLElement>('.tri-swim-trend-readout-date')
+    const readoutValue = wrap?.querySelector<HTMLElement>('.tri-swim-trend-readout-value')
+    if (!wrap || !point || !readoutDate || !readoutValue) return
+    const kind = swimKind(svg)
+    const hover = swimTrendHoverAt(swimData(svg), fraction)
+    if (!hover) return
+    cursor?.setAttribute('x1', hover.xPct.toFixed(2))
+    cursor?.setAttribute('x2', hover.xPct.toFixed(2))
+    point.style.left = `${hover.xPct.toFixed(2)}%`
+    point.style.top = `${hover.yPct.toFixed(2)}%`
+    point.hidden = false
+    readoutDate.textContent = swimTrendActivityLabel(hover)
+    readoutValue.textContent = swimDisplayValue(kind, hover.value)
+    svg.dataset.swimIndex = String(hover.index)
+    svg.setAttribute('aria-valuenow', String(hover.index))
+    svg.setAttribute('aria-valuetext', swimValueText(kind, hover))
+    if (activateChart) {
+      activeBar?.classList.remove('tri-hist-bar--on')
+      activeBar = null
+      activate(wrap)
+    }
+  }
+  const showSwimIndex = (
+    svg: SVGSVGElement,
+    requestedIndex: number,
+    activateChart = true,
+  ): void => {
+    const points = swimData(svg)
+    if (points.length === 0) return
+    const index = Math.min(points.length - 1, Math.max(0, requestedIndex))
+    showSwim(svg, points[index].xPct / 100, activateChart)
+  }
+  const showFocused = (): void => {
+    if (!focusedSvg) {
+      clear()
+      return
+    }
+    if (focusedSvg.classList.contains('tri-curve-svg'))
+      showCurveIndex(focusedSvg, selectedCurveIndex(focusedSvg))
+    else showSwimIndex(focusedSvg, selectedSwimIndex(focusedSvg))
   }
   const onPointer = (event: PointerEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-hist-svg')
+    const svg = event.target.closest<SVGSVGElement>(
+      '.tri-curve-svg, .tri-hist-svg, .tri-swim-trend-svg',
+    )
     if (!svg) {
-      if (activeWrap) restoreFocusedCurve()
+      if (activeWrap) showFocused()
       return
     }
     const wrap = svg.closest<HTMLElement>('.tri-zone')
@@ -8509,6 +8755,10 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     const frac = r.width > 0 ? Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) : 0
     if (svg.classList.contains('tri-curve-svg')) {
       showCurve(svg, frac)
+      return
+    }
+    if (svg.classList.contains('tri-swim-trend-svg')) {
+      showSwim(svg, frac)
       return
     } else {
       const hist = JSON.parse(svg.dataset.hist ?? '[]') as number[]
@@ -8528,55 +8778,86 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
   }
   const onFocus = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
     if (!svg) return
     focusedSvg = svg
-    showCurveIndex(svg, selectedCurveIndex(svg))
+    if (svg.classList.contains('tri-curve-svg')) showCurveIndex(svg, selectedCurveIndex(svg))
+    else showSwimIndex(svg, selectedSwimIndex(svg))
   }
   const onBlur = (event: FocusEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
     if (!svg) return
     if (focusedSvg === svg) focusedSvg = null
     clear()
   }
   const onKey = (event: KeyboardEvent): void => {
     if (!(event.target instanceof Element)) return
-    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg')
+    const svg = event.target.closest<SVGSVGElement>('.tri-curve-svg, .tri-swim-trend-svg')
     if (!svg) return
-    const { curve } = curveData(svg)
-    if (curve.length < 2) return
-    const current = selectedCurveIndex(svg)
+    const isCurve = svg.classList.contains('tri-curve-svg')
+    const length = isCurve ? curveData(svg).curve.length : swimData(svg).length
+    if (length < 2) return
+    const current = isCurve ? selectedCurveIndex(svg) : selectedSwimIndex(svg)
     let next: number | null = null
-    if (event.key === 'ArrowLeft') next = current - 1
-    else if (event.key === 'ArrowRight') next = current + 1
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') next = current - 1
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') next = current + 1
     else if (event.key === 'Home') next = 0
-    else if (event.key === 'End') next = curve.length - 1
+    else if (event.key === 'End') next = length - 1
     else if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
       focusedSvg = null
+      svg.blur()
       clear()
       return
     }
     if (next == null) return
     event.preventDefault()
     focusedSvg = svg
-    showCurveIndex(svg, next)
+    if (isCurve) showCurveIndex(svg, next)
+    else showSwimIndex(svg, next)
+  }
+  const onRangeClick = (event: MouseEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const button = event.target.closest<HTMLButtonElement>('.tri-curve-range')
+    const wrap = button?.closest<HTMLElement>('.tri-zone')
+    const svg = wrap?.querySelector<SVGSVGElement>('.tri-curve-svg')
+    if (!button || button.disabled || !wrap || !svg) return
+    const range: CurveRange = button.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
+    const data = curveData(svg)
+    const reference = range === 'year' ? data.year : data.sixWeeks
+    if (reference.length === 0) return
+    const index = selectedCurveIndex(svg)
+    const wasActive = wrap.classList.contains('tri-chart--hover')
+    svg.dataset.curveRange = range
+    for (const option of wrap.querySelectorAll<HTMLButtonElement>('.tri-curve-range'))
+      option.setAttribute('aria-pressed', String(option.dataset.curveRange === range))
+    for (const path of svg.querySelectorAll<SVGElement>('.tri-curve-ref[data-curve-range]'))
+      path.toggleAttribute('hidden', path.dataset.curveRange !== range)
+    delete svg.dataset.curveIndex
+    showCurveIndex(svg, index, wasActive)
   }
   const onLocale = (): void => {
     for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-curve-svg')) {
-      const { curve, reference } = curveData(svg)
+      const data = curveData(svg)
+      const curve = data.curve
+      const reference = curveReference(svg, data)
       if (curve.length < 2) continue
       const index = Math.min(curve.length - 1, Math.max(0, selectedCurveIndex(svg)))
       const point = curve[index]
       const referenceWatts = reference.find(candidate => candidate.s === point.s)?.w ?? null
+      const referenceLabel = svg
+        .closest<HTMLElement>('.tri-zone')
+        ?.querySelector<HTMLElement>('.tri-curve-readout-label--ref')
+      if (referenceLabel)
+        referenceLabel.textContent = powerCurveReferenceLabel(curveReferenceYear(svg))
       svg.setAttribute('aria-label', tl('power curve'))
       svg.setAttribute('aria-valuenow', String(point.s))
-      svg.setAttribute('aria-valuetext', curveValueText(point, referenceWatts))
+      svg.setAttribute('aria-valuetext', curveValueText(svg, point, referenceWatts))
     }
   }
-  const onPointerLeave = (): void => {
-    if (!focusedSvg) clear()
-  }
+  const onPointerLeave = (): void => showFocused()
   scope.addEventListener('pointermove', onPointer)
   scope.addEventListener('pointerdown', onPointer)
   scope.addEventListener('pointerleave', onPointerLeave)
@@ -8584,7 +8865,9 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
   scope.addEventListener('focusin', onFocus)
   scope.addEventListener('focusout', onBlur)
   scope.addEventListener('keydown', onKey)
+  scope.addEventListener('click', onRangeClick)
   window.addEventListener('tri:locale', onLocale)
+  onLocale()
   return () => {
     clear()
     scope.removeEventListener('pointermove', onPointer)
@@ -8594,6 +8877,7 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     scope.removeEventListener('focusin', onFocus)
     scope.removeEventListener('focusout', onBlur)
     scope.removeEventListener('keydown', onKey)
+    scope.removeEventListener('click', onRangeClick)
     window.removeEventListener('tri:locale', onLocale)
   }
 }
