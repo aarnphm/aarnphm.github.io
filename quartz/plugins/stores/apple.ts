@@ -34,6 +34,16 @@ export interface AppleWorkout {
   start: string
   end: string
   durationS: number
+  elapsedTimeS?: number
+  distanceM?: number
+  activeEnergyKcal?: number
+  averageHeartRateBpm?: number
+  averageRunningPowerW?: number
+  averageCadenceSpm?: number
+  lapCount?: number
+  source?: string
+  device?: string
+  gpxFile?: string
   heartRate: AppleHeartRateSample[]
 }
 
@@ -709,6 +719,18 @@ function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
     const start = parseIsoSecond(workout.start)
     const end = parseIsoSecond(workout.end)
     const durationS = readNumber(workout, 'durationS')
+    const elapsedTimeS = readNumber(workout, 'elapsedTimeS')
+    const distanceM = readNumber(workout, 'distanceM')
+    const activeEnergyKcal = readNumber(workout, 'activeEnergyKcal')
+    const averageHeartRateBpm = readNumber(workout, 'averageHeartRateBpm')
+    const averageRunningPowerW = readNumber(workout, 'averageRunningPowerW')
+    const averageCadenceSpm = readNumber(workout, 'averageCadenceSpm')
+    const lapCount = readNumber(workout, 'lapCount')
+    const source = readString(workout, 'source')?.trim()
+    const device = readString(workout, 'device')?.trim()
+    const gpxFileValue = readString(workout, 'gpxFile')?.trim()
+    const gpxFile =
+      gpxFileValue && /^GPX\/[0-9A-F-]+\.gpx$/i.test(gpxFileValue) ? gpxFileValue : null
     const rawHeartRate = Array.isArray(workout.heartRate) ? workout.heartRate : []
     if (!id || !activity || !start || !end || durationS == null) continue
     const heartRate: AppleHeartRateSample[] = []
@@ -719,14 +741,29 @@ function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
       if (!time || bpm == null || bpm <= 0) continue
       heartRate.push({ time, bpm: Math.round(bpm) })
     }
-    out.push({
+    const parsed: AppleWorkout = {
       id,
       activity,
       start,
       end,
       durationS: Math.round(durationS),
       heartRate: heartRate.sort((a, b) => a.time.localeCompare(b.time)),
-    })
+    }
+    if (elapsedTimeS != null && elapsedTimeS >= 0) parsed.elapsedTimeS = Math.round(elapsedTimeS)
+    if (distanceM != null && distanceM >= 0) parsed.distanceM = Math.round(distanceM * 10) / 10
+    if (activeEnergyKcal != null && activeEnergyKcal >= 0)
+      parsed.activeEnergyKcal = Math.round(activeEnergyKcal * 10) / 10
+    if (averageHeartRateBpm != null && averageHeartRateBpm > 0)
+      parsed.averageHeartRateBpm = Math.round(averageHeartRateBpm)
+    if (averageRunningPowerW != null && averageRunningPowerW > 0)
+      parsed.averageRunningPowerW = Math.round(averageRunningPowerW)
+    if (averageCadenceSpm != null && averageCadenceSpm > 0)
+      parsed.averageCadenceSpm = Math.round(averageCadenceSpm)
+    if (lapCount != null && lapCount > 0) parsed.lapCount = Math.round(lapCount)
+    if (source) parsed.source = source
+    if (device) parsed.device = device
+    if (gpxFile) parsed.gpxFile = gpxFile
+    out.push(parsed)
   }
   return out.sort((a, b) => a.start.localeCompare(b.start))
 }

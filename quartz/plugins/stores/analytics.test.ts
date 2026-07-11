@@ -429,27 +429,69 @@ test('calibration tracks newest pace and volume deltas against the prior window'
   const runVolume = a.calibration.volume.sports.find(s => s.sport === 'run')
   assert.equal(runVolume?.currentKm, 10)
   assert.equal(runVolume?.previousKm, 10)
-  const lastWeek = a.weekly[a.weekly.length - 1]
-  assert.equal(lastWeek.sessions, 2)
-  assert.equal(lastWeek.runKm, 10)
-  assert.equal(lastWeek.runHours, 0.8)
+  const activeWeek = a.weekly.find(w => w.sessions === 2 && w.runKm === 10)
+  assert.ok(activeWeek)
+  assert.equal(activeWeek.runHours, 0.8)
 })
 
 test('suffer score flows into daily effort, activity summaries, and weekly totals', () => {
   const { cache, oura, weights } = fixtures()
   cache.activities['1'].sufferScore = 96
   cache.activities['2'].sufferScore = 41
+  cache.activities['4'] = activity(4, 'Walk', iso(21), 1200, 1500, { sufferScore: 8 })
+  cache.activities['5'] = activity(5, 'Yoga', iso(23), 1800, 0, { sufferScore: 16 })
   const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
   assert.equal(a.daily.find(d => d.date === iso(20))?.effort, 96)
+  assert.equal(a.daily.find(d => d.date === iso(21))?.effort, 8)
   assert.equal(a.daily.find(d => d.date === iso(22))?.effort, 41)
+  assert.equal(a.daily.find(d => d.date === iso(23))?.effort, 16)
   assert.equal(a.daily.find(d => d.date === iso(24))?.effort, 0)
   assert.equal(a.activities.find(x => x.id === 1)?.effort, 96)
   assert.equal(a.activities.find(x => x.id === 2)?.effort, 41)
   assert.equal(a.activities.find(x => x.id === 3)?.effort, null)
+  assert.equal(a.activities.find(x => x.id === 4)?.effort, 8)
+  assert.equal(a.activities.find(x => x.id === 5)?.effort, 16)
   assert.equal(
     a.weekly.reduce((s, w) => s + w.effort, 0),
-    137,
+    161,
   )
+  const scoredWeek = a.weekly.find(w => w.effort === 161)
+  assert.ok(scoredWeek)
+  assert.equal(scoredWeek.effortSessions, 4)
+  const weekEnd = new Date(Date.parse(`${scoredWeek.weekStart}T00:00:00Z`) + 6 * DAY)
+    .toISOString()
+    .slice(0, 10)
+  assert.equal(
+    a.daily
+      .filter(d => d.date >= scoredWeek.weekStart && d.date <= weekEnd)
+      .reduce((sum, day) => sum + day.effort, 0),
+    scoredWeek.effort,
+  )
+})
+
+test('analytics emits scored non-tri weeks and calendar gaps', () => {
+  const { cache } = fixtures()
+  cache.lastSync = Date.parse('2026-06-11T10:00:00Z')
+  cache.activities = {
+    '10': activity(10, 'Yoga', '2026-05-15', 1800, 0, { sufferScore: 30 }),
+    '11': activity(11, 'Yoga', '2026-06-01', 1800, 0, { sufferScore: 60 }),
+  }
+  cache.streams = {}
+
+  const a = buildAnalytics(cache, { since: '2026-05-15' })
+
+  assert.deepEqual(
+    a.weekly.map(w => [w.weekStart, w.complete, w.sessions, w.load, w.effort]),
+    [
+      ['2026-05-11', false, 0, 0, 30],
+      ['2026-05-18', true, 0, 0, 0],
+      ['2026-05-25', true, 0, 0, 0],
+      ['2026-06-01', true, 0, 0, 60],
+      ['2026-06-08', false, 0, 0, 0],
+    ],
+  )
+  assert.equal(a.daily.find(d => d.date === '2026-05-15')?.effort, 30)
+  assert.equal(a.daily.find(d => d.date === '2026-06-01')?.effort, 60)
 })
 
 test('analytics treats late evening syncs as the local calendar day', () => {
@@ -748,7 +790,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
   assert.equal(rows[0].kind, 'meta')
-  assert.equal(rows[0].v, 2)
+  assert.equal(rows[0].v, 3)
   assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
   assert.deepEqual(rows[0].fields.activity, [...ACTIVITY_FIELDS])
   assert.deepEqual(rows[0].fields.week, [...WEEK_FIELDS])

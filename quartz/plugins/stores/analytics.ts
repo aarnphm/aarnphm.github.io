@@ -9,6 +9,7 @@ import {
   swimStrokeRate,
 } from '../../util/swim-metrics'
 import { isRecord, numberValue } from '../../util/type-guards'
+import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
 import { matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
@@ -232,6 +233,7 @@ export interface DailyPoint {
 
 export interface WeeklyPoint {
   weekStart: string
+  complete: boolean
   sessions: number
   load: number
   km: number
@@ -243,6 +245,9 @@ export interface WeeklyPoint {
   bikeHours: number
   runHours: number
   effort: number
+  effortSessions: number
+  loadRange: WeeklyTargetRange | null
+  effortRange: WeeklyTargetRange | null
   ramp: number | null
   monotony: number | null
   strain: number | null
@@ -617,6 +622,11 @@ interface Act {
   vGap: number
 }
 
+interface EffortBucket {
+  effort: number
+  sessions: number
+}
+
 interface SwimActivityMetrics {
   paceSPer100m: number | null
   strokeRateSpm: number | null
@@ -785,17 +795,17 @@ function activityLoad(act: Act, vThr: number): number {
 function buildDaily(
   acts: Act[],
   loadById: Map<number, number>,
+  effortByDay: ReadonlyMap<string, EffortBucket>,
   windowFrom: number,
   windowTo: number,
 ): DailyPoint[] {
-  type DayBucket = { total: number; effort: number; swim: number; bike: number; run: number }
-  const emptyDay = (): DayBucket => ({ total: 0, effort: 0, swim: 0, bike: 0, run: 0 })
+  type DayBucket = { total: number; swim: number; bike: number; run: number }
+  const emptyDay = (): DayBucket => ({ total: 0, swim: 0, bike: 0, run: 0 })
   const byDay = new Map<string, DayBucket>()
   for (const act of acts) {
     const load = loadById.get(act.a.id) ?? 0
     const bucket = byDay.get(act.day) ?? emptyDay()
     bucket.total += load
-    bucket.effort += act.a.sufferScore ?? 0
     bucket[act.sport] += load
     byDay.set(act.day, bucket)
   }
@@ -824,7 +834,7 @@ function buildDaily(
     out.push({
       date: row.date,
       load: round(row.total, 1),
-      effort: round(row.effort, 0),
+      effort: round(effortByDay.get(row.date)?.effort ?? 0, 0),
       swimLoad: round(row.swim, 1),
       bikeLoad: round(row.bike, 1),
       runLoad: round(row.run, 1),
@@ -860,6 +870,7 @@ type WeeklyBucket = {
   km: number
   seconds: number
   effort: number
+  effortSessions: number
   swimKm: number
   bikeKm: number
   runKm: number
@@ -874,6 +885,7 @@ const emptyWeeklyBucket = (): WeeklyBucket => ({
   km: 0,
   seconds: 0,
   effort: 0,
+  effortSessions: 0,
   swimKm: 0,
   bikeKm: 0,
   runKm: 0,
@@ -882,19 +894,27 @@ const emptyWeeklyBucket = (): WeeklyBucket => ({
   runSeconds: 0,
 })
 
-function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] {
+function weekStartOf(day: string): string {
+  const ms = dayMs(day)
+  const offset = (new Date(ms).getUTCDay() + 6) % 7
+  return new Date(ms - offset * DAY_MS).toISOString().slice(0, 10)
+}
+
+function buildWeekly(
+  acts: Act[],
+  loadById: Map<number, number>,
+  effortByDay: ReadonlyMap<string, EffortBucket>,
+  windowFrom: number,
+  windowTo: number,
+): WeeklyPoint[] {
   const byWeek = new Map<string, WeeklyBucket>()
   for (const act of acts) {
-    const ms = dayMs(act.day)
-    const dow = new Date(ms).getUTCDay()
-    const offset = (dow + 6) % 7
-    const weekStart = new Date(ms - offset * DAY_MS).toISOString().slice(0, 10)
+    const weekStart = weekStartOf(act.day)
     const bucket = byWeek.get(weekStart) ?? emptyWeeklyBucket()
     bucket.sessions += 1
     bucket.load += loadById.get(act.a.id) ?? 0
     bucket.km += act.distanceKm
     bucket.seconds += act.a.movingTime
-    bucket.effort += act.a.sufferScore ?? 0
     if (act.sport === 'swim') {
       bucket.swimKm += act.distanceKm
       bucket.swimSeconds += act.a.movingTime
@@ -907,25 +927,38 @@ function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] 
     }
     byWeek.set(weekStart, bucket)
   }
-  const weeks = [...byWeek.keys()].sort()
-  return weeks.map((weekStart, i) => {
+  for (const [day, effort] of effortByDay) {
+    const weekStart = weekStartOf(day)
+    const bucket = byWeek.get(weekStart) ?? emptyWeeklyBucket()
+    bucket.effort += effort.effort
+    bucket.effortSessions += effort.sessions
+    byWeek.set(weekStart, bucket)
+  }
+  const firstWeek = weekStartOf(new Date(windowFrom).toISOString().slice(0, 10))
+  const lastWeek = weekStartOf(new Date(windowTo).toISOString().slice(0, 10))
+  const weeks: string[] = []
+  for (let ms = dayMs(firstWeek); ms <= dayMs(lastWeek); ms += 7 * DAY_MS)
+    weeks.push(new Date(ms).toISOString().slice(0, 10))
+  const firstDay = new Date(windowFrom).toISOString().slice(0, 10)
+  const lastDay = new Date(windowTo).toISOString().slice(0, 10)
+  const points: WeeklyPoint[] = weeks.map((weekStart, i) => {
+    if (!byWeek.has(weekStart)) byWeek.set(weekStart, emptyWeeklyBucket())
     const cur = byWeek.get(weekStart)!
     const prev = i > 0 ? byWeek.get(weeks[i - 1])! : null
     const ramp = prev && prev.load > 0 ? round((cur.load - prev.load) / prev.load, 2) : null
     const sessionLoads: number[] = []
     for (const act of acts) {
-      const ms = dayMs(act.day)
-      const dow = new Date(ms).getUTCDay()
-      const offset = (dow + 6) % 7
-      const ws = new Date(ms - offset * DAY_MS).toISOString().slice(0, 10)
+      const ws = weekStartOf(act.day)
       if (ws === weekStart) sessionLoads.push(loadById.get(act.a.id) ?? 0)
     }
     const m = mean(sessionLoads)
     const s = sd(sessionLoads)
     const monotony = s > 0 ? round(m / s, 2) : null
     const strain = monotony != null ? round(cur.load * monotony, 0) : null
+    const weekEnd = new Date(dayMs(weekStart) + 6 * DAY_MS).toISOString().slice(0, 10)
     return {
       weekStart,
+      complete: weekStart >= firstDay && weekEnd <= lastDay,
       sessions: cur.sessions,
       load: round(cur.load, 1),
       km: round(cur.km, 1),
@@ -937,11 +970,31 @@ function buildWeekly(acts: Act[], loadById: Map<number, number>): WeeklyPoint[] 
       bikeHours: round(cur.bikeSeconds / 3600, 1),
       runHours: round(cur.runSeconds / 3600, 1),
       effort: round(cur.effort, 0),
+      effortSessions: cur.effortSessions,
+      loadRange: null,
+      effortRange: null,
       ramp,
       monotony,
       strain,
     }
   })
+  const loadRanges = weeklyTargetRanges(
+    points.map(point => ({ value: point.load, complete: point.complete, observed: true })),
+  )
+  const effortRanges = weeklyTargetRanges(
+    points.map(point => ({
+      value: point.effort,
+      complete: point.complete,
+      observed: point.effortSessions > 0,
+    })),
+  )
+  const roundedRange = (range: WeeklyTargetRange | null): WeeklyTargetRange | null =>
+    range ? [round(range[0], 1), round(range[1], 1)] : null
+  return points.map((point, index) => ({
+    ...point,
+    loadRange: roundedRange(loadRanges[index]),
+    effortRange: roundedRange(effortRanges[index]),
+  }))
 }
 
 const TREND_FORECAST_DAYS = 14
@@ -3340,23 +3393,35 @@ export function buildAnalytics(
   if (!cache) return emptyAnalytics(0, todayFromSync ?? '1970-01-01')
 
   const sinceDay = inputs.since && /^\d{4}-\d{2}-\d{2}$/.test(inputs.since) ? inputs.since : null
-  const raw = Object.values(cache.activities)
+  const sourceActivities = Object.values(cache.activities)
+    .filter(activity => !sinceDay || activity.startDateLocal.slice(0, 10) >= sinceDay)
+    .sort((left, right) => left.startDateLocal.localeCompare(right.startDateLocal))
+
+  if (sourceActivities.length === 0) {
+    const fallback = todayFromSync ?? '1970-01-01'
+    return emptyAnalytics(cache.athleteId, fallback)
+  }
+
+  const raw = sourceActivities
     .map(a => ({ a, sport: normalizeSport(a.sportType) }))
     .filter(
       (x): x is { a: RawStravaActivity; sport: Sport } =>
         x.sport !== null && !isTreatment(x.a.sportType, x.a.name),
     )
-    .filter(x => !sinceDay || x.a.startDateLocal.slice(0, 10) >= sinceDay)
-    .sort((p, q) => p.a.startDateLocal.localeCompare(q.a.startDateLocal))
 
-  if (raw.length === 0) {
-    const fallback = todayFromSync ?? '1970-01-01'
-    return emptyAnalytics(cache.athleteId, fallback)
-  }
-
-  const lastActDay = raw[raw.length - 1].a.startDateLocal.slice(0, 10)
+  const lastActDay = sourceActivities[sourceActivities.length - 1].startDateLocal.slice(0, 10)
   const today = todayFromSync ?? lastActDay
   const todayMs = dayMs(today)
+  const effortByDay = new Map<string, EffortBucket>()
+  for (const activity of sourceActivities) {
+    const effort = activity.sufferScore
+    if (effort == null || !Number.isFinite(effort)) continue
+    const day = activity.startDateLocal.slice(0, 10)
+    const bucket = effortByDay.get(day) ?? { effort: 0, sessions: 0 }
+    bucket.effort += effort
+    bucket.sessions += 1
+    effortByDay.set(day, bucket)
+  }
   const heartRateById = new Map<number, ActivityHeartRate>()
   for (const { a, sport } of raw) {
     const stream = cache.streams?.[String(a.id)]
@@ -3390,11 +3455,11 @@ export function buildAnalytics(
     loadById.set(act.a.id, activityLoad(act, vThr))
   }
 
-  const firstDay = sinceDay ?? acts[0].day
+  const firstDay = sinceDay ?? sourceActivities[0].startDateLocal.slice(0, 10)
   const windowFrom = dayMs(firstDay)
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
 
-  const daily = buildDaily(acts, loadById, windowFrom, windowTo)
+  const daily = buildDaily(acts, loadById, effortByDay, windowFrom, windowTo)
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
   const garminWeightRaw = inputs.garmin?.weight
@@ -3505,7 +3570,7 @@ export function buildAnalytics(
     body.bodyFatPct = latestDexa.bodyFat
     body.boneMassKg = round(latestDexa.bmcLbs * 0.45359237, 2)
   }
-  const weekly = buildWeekly(acts, loadById)
+  const weekly = buildWeekly(acts, loadById, effortByDay, windowFrom, windowTo)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
   const trendMap = new Map<Sport, SportTrend>(trends.map(t => [t.sport, t]))
   const calibration = buildCalibration(acts, thresholds, trendMap, loadById, today, todayMs)
@@ -3764,6 +3829,7 @@ export const ACTIVITY_FIELDS = [
 export const WEEK_FIELDS = [
   'kind',
   'weekStart',
+  'complete',
   'sessions',
   'load',
   'km',
@@ -3775,6 +3841,9 @@ export const WEEK_FIELDS = [
   'bikeHours',
   'runHours',
   'effort',
+  'effortSessions',
+  'loadRange',
+  'effortRange',
   'ramp',
   'monotony',
   'strain',
@@ -3860,6 +3929,7 @@ export interface FeedActivityRow {
 export interface FeedWeekRow {
   kind: 'week'
   weekStart: string
+  complete: boolean
   sessions: number
   load: number
   km: number
@@ -3871,6 +3941,9 @@ export interface FeedWeekRow {
   bikeHours: number
   runHours: number
   effort: number
+  effortSessions: number
+  loadRange: WeeklyTargetRange | null
+  effortRange: WeeklyTargetRange | null
   ramp: number | null
   monotony: number | null
   strain: number | null
@@ -4040,7 +4113,7 @@ export function buildDataFeed(
       : null
   const meta = {
     kind: 'meta',
-    v: 2,
+    v: 3,
     generatedAt: cache?.lastSync ?? 0,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,

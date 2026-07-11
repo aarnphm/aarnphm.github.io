@@ -29,6 +29,7 @@ final class PhoneWatchSession: NSObject, WCSessionDelegate, @unchecked Sendable 
       "swimCount": result.document.swims.count,
       "workoutCount": result.document.workouts.count,
       "heartRateCount": result.document.workouts.reduce(0) { $0 + $1.heartRate.count },
+      "routeCount": result.document.workouts.filter { $0.gpxFile != nil }.count,
       "path": result.url.path,
     ]
     try? WCSession.default.updateApplicationContext(context)

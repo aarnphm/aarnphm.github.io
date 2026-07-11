@@ -9,7 +9,11 @@ import {
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
 import { joinSegments, QUARTZ } from '../util/path'
-import { DEFAULT_STRAVA_REFRESH_WINDOW_DAYS, stravaFetchAfter } from '../util/strava-sync-window'
+import {
+  DEFAULT_STRAVA_REFRESH_WINDOW_DAYS,
+  reconcileStravaActivities,
+  stravaFetchAfter,
+} from '../util/strava-sync-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, readString } from '../util/type-guards'
 
@@ -270,13 +274,10 @@ async function main(): Promise<void> {
     console.log(`[strava] refreshing ${refreshWindowDays}d recent activity overlap`)
   const { activities, athleteId } = await fetchActivities(access, after)
 
-  const merged: Record<string, RawStravaActivity> = { ...prev?.activities }
-  for (const a of activities) {
-    const previous = merged[String(a.id)]
-    merged[String(a.id)] = { ...a, calories: a.calories ?? previous?.calories }
-  }
+  const reconciled = reconcileStravaActivities(prev?.activities, activities, after)
+  const merged = reconciled.activities
 
-  let lastActivityStart = prev?.lastActivityStart ?? 0
+  let lastActivityStart = 0
   for (const a of Object.values(merged)) {
     const epoch = Math.floor(Date.parse(a.startDate) / 1000)
     if (Number.isFinite(epoch) && epoch > lastActivityStart) lastActivityStart = epoch
@@ -284,6 +285,10 @@ async function main(): Promise<void> {
 
   const streams: Record<string, StravaStreams> = { ...prev?.streams }
   const geo: Record<string, string> = { ...prev?.geo }
+  for (const id of reconciled.removedIds) {
+    delete streams[id]
+    delete geo[id]
+  }
   let zones: StravaZones | undefined = prev?.zones
   const writeCache = async (): Promise<void> => {
     const cache: StravaRawCache = {

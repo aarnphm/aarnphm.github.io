@@ -1,8 +1,8 @@
 ---
 date: '2026-06-19'
-description: iOS + watchOS app that snapshots Apple Health into one JSON file on iCloud Drive.
+description: iOS + watchOS app that snapshots Apple Health into JSON and GPX files on iCloud Drive.
 id: index
-modified: 2026-07-09 22:41:23 GMT-04:00
+modified: 2026-07-10 20:17:10 GMT-04:00
 seealso:
   - '[[triathlon]]'
 tags:
@@ -10,7 +10,7 @@ tags:
 title: HealthDataExporter
 ---
 
-A small iOS + watchOS app that reads Apple Health and writes a single JSON file to iCloud Drive. It exports the calories, weight, VO2 max, swim splits, swim pace inputs, and stroke rate inputs I use for [[triathlon]] training.
+A small iOS + watchOS app that reads Apple Health and writes JSON and GPX files to iCloud Drive. It exports the daily metrics, swim data, workout data, and run routes I use for [[triathlon]] training.
 
 ## metrics
 
@@ -25,6 +25,8 @@ A 180-day window back from `now`, bucketed by the device's autoupdating calendar
 | VO2 max        | `vo2Max`                                   | latest reading per day                          |
 | swims          | `distanceSwimming` + `swimmingStrokeCount` | one row per swim or multisport swim activity    |
 | workout HR     | `workoutType` + `heartRate`                | one row per workout with its heart rate samples |
+| run summary    | `workoutType` + running quantity types     | distance, time, energy, power, cadence, and laps |
+| run route      | `workoutRoute`                             | one GPX file per run with a stored route        |
 
 ## output
 
@@ -32,7 +34,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 6,
+  "version": 7,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -75,10 +77,20 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
   "workouts": [
     {
       "id": "7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63",
-      "activity": "cycling",
+      "activity": "running",
       "start": "2026-07-01T01:11:00Z",
       "end": "2026-07-01T02:07:45Z",
       "durationS": 3405,
+      "elapsedTimeS": 3769,
+      "distanceM": 9214.5,
+      "activeEnergyKcal": 741,
+      "averageHeartRateBpm": 156,
+      "averageRunningPowerW": 278,
+      "averageCadenceSpm": 159,
+      "lapCount": 6,
+      "source": "Strava",
+      "device": "Apple Watch Ultra 3 49mm",
+      "gpxFile": "GPX/7E0BEF46-8C0E-4E08-8E2B-0F2E0A1C9E63.gpx",
       "heartRate": [
         { "time": "2026-07-01T01:11:04Z", "bpm": 118 },
         { "time": "2026-07-01T01:11:09Z", "bpm": 122 }
@@ -88,18 +100,20 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 }
 ```
 
-The exporter writes every workout row, including workouts with no heart rate samples. A swim row uses its workout UUID. A swim inside a `swimBikeRun` workout uses its workout activity UUID. Two swims on the same day remain separate.
+The exporter writes every workout row, including workouts with no heart rate samples. Run fields stay empty when HealthKit does not provide that value. A swim row uses its workout UUID. A swim inside a `swimBikeRun` workout uses its workout activity UUID. Two swims on the same day remain separate.
+
+Each run with route data also gets a GPX file under `iCloud Drive/HealthExporter/GPX/`. The file contains GPS time, elevation, heart rate, running cadence, and running power when HealthKit has those samples. The JSON row stores the relative GPX path.
 
 ## architecture
 
 - `HealthAggregator` folds samples into day buckets and swim sessions. It does not import HealthKit, so `HealthAggregatorTests` runs without a device.
 - `HealthKitService` handles authorization and HealthKit queries. It reads all workouts once. Two associated sample queries then fetch swim distance and stroke count data for every matching workout.
-- `HealthExportWriter` encodes JSON and writes it to the iCloud container.
+- `HealthExportWriter` encodes JSON and writes each GPX route to the iCloud container.
 - `HealthExportRuntime` connects the other parts and exports again when an observer query fires.
 
 ## background
 
-`HealthBackgroundScheduler` registers a `BGAppRefreshTask` (`xyz.aarnphm.healthexporter.export`) aimed at ~02:30 local and schedules it again every time the app enters background. This is the daily reconciliation pass. One observer covers every exported HealthKit type. Hourly background delivery uses active energy as its regular trigger, plus infrequent changes to dietary energy, body mass, VO2 max, and workouts. Heart rate and swim samples are picked up by those exports without causing their own wakeups. Automatic exports query data from today and the previous two calendar days. They merge it into the document containing 180 days and skip the iCloud write when the health data did not change. The app reloads the existing export on launch and updates it when it is more than one hour old.
+`HealthBackgroundScheduler` registers a `BGAppRefreshTask` (`xyz.aarnphm.healthexporter.export`) aimed at ~02:30 local and schedules it again every time the app enters background. This is the daily reconciliation pass. One observer covers every exported HealthKit type. Hourly background delivery uses active energy as its regular trigger, plus infrequent changes to dietary energy, body mass, VO2 max, workouts, and workout routes. Heart rate and swim samples are picked up by those exports without causing their own wakeups. Automatic exports query data from today and the previous two calendar days. They merge it into the document containing 180 days and skip the iCloud write when the health data did not change. Recent GPX files can still be refreshed when HealthKit posts a newer route. The app reloads the existing export on launch and updates it when it is more than one hour old.
 
 iOS decides the exact background execution time. Swiping the app away in the app switcher suppresses HealthKit background launches until the app is opened again. Leaving the app suspended or allowing iOS to terminate it preserves background delivery.
 
@@ -113,3 +127,6 @@ The watch target carries no HealthKit access of its own. It sends an `export` co
 - Stroke style comes from `HKMetadataKeySwimmingStrokeStyle` on workout lap events. The app maps it to freestyle, breaststroke, backstroke, butterfly, mixed, or kickboard.
 - `strokeTimeS` is the union of every positive associated stroke count interval. The app excludes intervals whose matching lap event is kickboard. It leaves `strokeTimeS` empty when HealthKit no longer has detailed intervals.
 - Pace per 100 m is `activeTimeS / totalM * 100`. Stroke rate per minute is `strokeCount / strokeTimeS * 60`.
+- `durationS` is workout time and `elapsedTimeS` is wall clock time from the workout start to its end. Pace is `durationS / distanceM`.
+- GPX cadence uses cycles per minute, so the writer divides HealthKit steps per minute by two. Strava doubles that value when it shows running cadence.
+- A full migration reads routes for the full 180 day window once. Later exports refresh routes from today and the previous two calendar days while they keep older GPX paths.

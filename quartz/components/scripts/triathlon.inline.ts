@@ -102,6 +102,7 @@ import {
   triLocale,
 } from '../../util/triathlon-i18n'
 import { isRecord } from '../../util/type-guards'
+import { weeklyChartIndex, weeklyChartX } from '../../util/weekly-target-range'
 
 const applyI18n = (root: HTMLElement): void => {
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
@@ -2345,31 +2346,28 @@ type WkKind = 'load' | 'effort'
 const WKT_H = 34
 const WKT_TOP = 4
 const WKT_BOT = WKT_H - 4
-const WKT_CHRONIC = 4
-const WKT_ALPHA = 1 - Math.exp(-1 / WKT_CHRONIC)
-const WKT_Z = 1.28
 const WKT_ACTS = 4
+const WKT_VISIBLE = 7
 
 const wkVal = (w: Analytics['weekly'][number], kind: WkKind): number =>
   kind === 'load' ? w.load : w.effort
 
-const wkBands = (vals: number[]): ([number, number] | null)[] => {
-  const out: ([number, number] | null)[] = []
-  let m = 0
-  let v = 0
-  for (let i = 0; i < vals.length; i++) {
-    const s = Math.sqrt(v)
-    out.push(i >= WKT_CHRONIC && m > 0 ? [Math.max(0, m - WKT_Z * s), m + WKT_Z * s] : null)
-    if (i === 0) {
-      m = vals[0]
-    } else {
-      const d = vals[i] - m
-      m += WKT_ALPHA * d
-      v = (1 - WKT_ALPHA) * (v + WKT_ALPHA * d * d)
-    }
-  }
-  return out
+interface WkTrendRow {
+  week: Analytics['weekly'][number]
+  sourceIndex: number
+  value: number
+  band: [number, number] | null
 }
+
+const wkTrendRows = (data: Analytics, kind: WkKind): WkTrendRow[] =>
+  data.weekly
+    .map((week, sourceIndex) => ({
+      week,
+      sourceIndex,
+      value: wkVal(week, kind),
+      band: kind === 'load' ? week.loadRange : week.effortRange,
+    }))
+    .slice(-WKT_VISIBLE)
 
 const wkDates = (weekStart: string): string[] =>
   Array.from({ length: 7 }, (_, k) =>
@@ -2386,19 +2384,19 @@ const wkDayLetter = (iso: string): string =>
 
 const renderWkDetail = (block: HTMLElement, data: Analytics, kind: WkKind, i: number): void => {
   const host = block.querySelector<HTMLElement>('.tri-wkdetail')
-  const w = data.weekly[i]
-  if (!host || !w || host.dataset.week === String(i)) return
-  host.dataset.week = String(i)
-  const vals = data.weekly.map(x => wkVal(x, kind))
-  const band = wkBands(vals)[i]
+  const row = wkTrendRows(data, kind)[i]
+  if (!host || !row || host.dataset.week === row.week.weekStart) return
+  host.dataset.week = row.week.weekStart
+  const w = row.week
+  const band = row.band
   const days = wkDates(w.weekStart)
   const head = el('div', 'tri-wkdetail-head')
   head.append(
-    el('span', 'tri-wkdetail-num', String(Math.round(vals[i]))),
+    el('span', 'tri-wkdetail-num', String(Math.round(row.value))),
     el('span', 'tri-wkdetail-range', `${shortDate(days[0])} – ${shortDate(days[6])}`),
   )
   if (band) {
-    const state = vals[i] > band[1] ? 'above' : vals[i] < band[0] ? 'below' : 'in'
+    const state = row.value > band[1] ? 'above' : row.value < band[0] ? 'below' : 'in'
     head.appendChild(
       el('span', `tri-wkdetail-state tri-wkdetail-state--${state}`, tl(`${state} range`)),
     )
@@ -2454,21 +2452,21 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
   block.appendChild(
     kind === 'load' ? anaTitle('weekly load', 'load') : anaTitle('relative effort', 'effort'),
   )
-  const wk = data.weekly
-  if (kind === 'load' ? !wk.length : !wk.some(w => w.effort > 0)) {
+  const rows = wkTrendRows(data, kind)
+  if (kind === 'load' ? !rows.length : !rows.some(row => row.value > 0)) {
     block.appendChild(
       el('div', 'tri-ana-empty', tl(kind === 'load' ? 'no weeks' : 'no effort logged')),
     )
     return block
   }
-  const n = wk.length
-  const vals = wk.map(w => wkVal(w, kind))
-  const bands = wkBands(vals)
+  const n = rows.length
+  const vals = rows.map(row => row.value)
+  const bands = rows.map(row => row.band)
   let mx = 1
   for (const v of vals) if (v > mx) mx = v
   for (const b of bands) if (b && b[1] > mx) mx = b[1]
-  const yMax = niceUp(mx)
-  const x = (i: number): number => ((i + 0.5) / n) * ANA_W
+  const yMax = Math.ceil(mx)
+  const x = (i: number): number => weeklyChartX(i, n) * ANA_W
   const y = (v: number): number => WKT_BOT - (v / yMax) * (WKT_BOT - WKT_TOP)
   const s = svg('svg', {
     class: 'tri-ana-svg tri-wkt-svg',
@@ -2506,6 +2504,8 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
     const g = svg('g', {
       class: i === n - 1 ? 'tri-wkt-pt tri-wkt-pt--now' : 'tri-wkt-pt',
       'data-week': i,
+      'data-source-index': rows[i].sourceIndex,
+      'data-week-start': rows[i].week.weekStart,
     })
     g.appendChild(svg('path', { d, class: 'tri-wkt-halo' }))
     g.appendChild(svg('path', { d, class: 'tri-wkt-o' }))
@@ -2518,8 +2518,8 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
     [yMax, yMax / 2, 0].map(v => ({ label: String(Math.round(v)), vbY: y(v) })),
     WKT_H,
     monthTicks(
-      wk.map(w => w.weekStart),
-      i => ((i + 0.5) / n) * 100,
+      rows.map(row => row.week.weekStart),
+      i => weeklyChartX(i, n) * 100,
     ),
   ) as HTMLElement
   if (pred) {
@@ -5596,13 +5596,13 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min · ${src}`
   })
 
-  const wk = data.weekly
   const bindWkTrend = (blockSel: string, kind: WkKind): void => {
+    const rows = wkTrendRows(data, kind)
     const block = panel.querySelector<HTMLElement>(blockSel)
     const svgEl = block?.querySelector<SVGElement>('.tri-wkt-svg')
     const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
     const wrap = block?.querySelector<HTMLElement>('.tri-wkdetail-wrap')
-    if (!block || !svgEl || !cursor || !wrap || !wk.length) return
+    if (!block || !svgEl || !cursor || !wrap || !rows.length) return
     const pts = Array.from(svgEl.querySelectorAll<SVGElement>('.tri-wkt-pt'))
     const mark = (cls: string, idx: number | null): void => {
       for (const p of pts) p.classList.toggle(cls, p.dataset.week === String(idx))
@@ -5610,12 +5610,12 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const idxAt = (event: MouseEvent): number => {
       const r = svgEl.getBoundingClientRect()
       const f = clampN((event.clientX - r.left) / r.width, 0, 1)
-      return Math.min(wk.length - 1, Math.floor(f * wk.length))
+      return weeklyChartIndex(f, rows.length)
     }
     let sel: number | null = null
     const onMove = (event: MouseEvent): void => {
       const i = idxAt(event)
-      const cx = (((i + 0.5) / wk.length) * ANA_W).toFixed(2)
+      const cx = (weeklyChartX(i, rows.length) * ANA_W).toFixed(2)
       cursor.setAttribute('x1', cx)
       cursor.setAttribute('x2', cx)
       mark('tri-wkt-pt--hot', i)

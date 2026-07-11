@@ -200,11 +200,79 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   let start: String
   let end: String
   let durationS: Int
+  let elapsedTimeS: Int?
+  let distanceM: Double?
+  let activeEnergyKcal: Double?
+  let averageHeartRateBpm: Int?
+  let averageRunningPowerW: Int?
+  let averageCadenceSpm: Int?
+  let lapCount: Int?
+  let source: String?
+  let device: String?
+  let gpxFile: String?
   let heartRate: [AppleHealthHeartRate]
+
+  init(
+    id: String,
+    activity: String,
+    start: String,
+    end: String,
+    durationS: Int,
+    elapsedTimeS: Int? = nil,
+    distanceM: Double? = nil,
+    activeEnergyKcal: Double? = nil,
+    averageHeartRateBpm: Int? = nil,
+    averageRunningPowerW: Int? = nil,
+    averageCadenceSpm: Int? = nil,
+    lapCount: Int? = nil,
+    source: String? = nil,
+    device: String? = nil,
+    gpxFile: String? = nil,
+    heartRate: [AppleHealthHeartRate]
+  ) {
+    self.id = id
+    self.activity = activity
+    self.start = start
+    self.end = end
+    self.durationS = durationS
+    self.elapsedTimeS = elapsedTimeS
+    self.distanceM = distanceM
+    self.activeEnergyKcal = activeEnergyKcal
+    self.averageHeartRateBpm = averageHeartRateBpm
+    self.averageRunningPowerW = averageRunningPowerW
+    self.averageCadenceSpm = averageCadenceSpm
+    self.lapCount = lapCount
+    self.source = source
+    self.device = device
+    self.gpxFile = gpxFile
+    self.heartRate = heartRate
+  }
+
+  func preservingGPXFile(from previous: AppleHealthWorkout?) -> AppleHealthWorkout {
+    guard gpxFile == nil, let previousGPXFile = previous?.gpxFile else { return self }
+    return AppleHealthWorkout(
+      id: id,
+      activity: activity,
+      start: start,
+      end: end,
+      durationS: durationS,
+      elapsedTimeS: elapsedTimeS,
+      distanceM: distanceM,
+      activeEnergyKcal: activeEnergyKcal,
+      averageHeartRateBpm: averageHeartRateBpm,
+      averageRunningPowerW: averageRunningPowerW,
+      averageCadenceSpm: averageCadenceSpm,
+      lapCount: lapCount,
+      source: source,
+      device: device,
+      gpxFile: previousGPXFile,
+      heartRate: heartRate
+    )
+  }
 }
 
 struct HealthExportDocument: Codable, Equatable, Sendable {
-  static let currentVersion = 6
+  static let currentVersion = 7
 
   let version: Int
   let generatedAt: String
@@ -237,6 +305,45 @@ struct HealthExportDocument: Codable, Equatable, Sendable {
       && swims == other.swims
       && workouts == other.workouts
   }
+
+  func preservingWorkoutGPXFiles(from previous: HealthExportDocument?) -> HealthExportDocument {
+    guard let previous else { return self }
+    let previousWorkouts = Dictionary(uniqueKeysWithValues: previous.workouts.map { ($0.id, $0) })
+    return HealthExportDocument(
+      version: version,
+      generatedAt: generatedAt,
+      timezone: timezone,
+      days: days,
+      swims: swims,
+      workouts: workouts.map { $0.preservingGPXFile(from: previousWorkouts[$0.id]) }
+    )
+  }
+}
+
+struct WorkoutRoutePointValue: Equatable, Sendable {
+  let date: Date
+  let latitude: Double
+  let longitude: Double
+  let altitudeM: Double?
+  let heartRateBpm: Int?
+  let cadenceSpm: Double?
+  let powerW: Double?
+}
+
+struct WorkoutRouteValue: Equatable, Sendable {
+  let workoutID: String
+  let activity: String
+  let start: Date
+  let points: [WorkoutRoutePointValue]
+
+  var relativePath: String {
+    "GPX/\(workoutID).gpx"
+  }
+}
+
+struct HealthExportPayload: Equatable, Sendable {
+  let document: HealthExportDocument
+  let routes: [WorkoutRouteValue]
 }
 
 struct HealthExportResult: Equatable, Sendable {
