@@ -6,6 +6,7 @@ struct HealthExportDetails {
   let swimCount: Int
   let workoutCount: Int
   let heartRateCount: Int
+  let routeCount: Int
 
   init(result: HealthExportResult) {
     generatedAt = result.document.generatedAt
@@ -13,6 +14,7 @@ struct HealthExportDetails {
     swimCount = result.document.swims.count
     workoutCount = result.document.workouts.count
     heartRateCount = result.document.workouts.reduce(0) { $0 + $1.heartRate.count }
+    routeCount = result.document.workouts.filter { $0.gpxFile != nil }.count
   }
 }
 

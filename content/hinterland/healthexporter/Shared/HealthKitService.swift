@@ -1,4 +1,5 @@
 #if canImport(HealthKit)
+import CoreLocation
 import Foundation
 import HealthKit
 
@@ -56,6 +57,17 @@ final class HealthKitService: @unchecked Sendable {
     let bpm: Int
   }
 
+  private struct TimedQuantitySample {
+    let startDate: Date
+    let endDate: Date
+    let value: Double
+  }
+
+  private struct WorkoutExportValues {
+    let workouts: [AppleHealthWorkout]
+    let routes: [WorkoutRouteValue]
+  }
+
   private let store = HKHealthStore()
   private let observerLock = NSLock()
   private var observerQuery: HKObserverQuery?
@@ -76,12 +88,15 @@ final class HealthKitService: @unchecked Sendable {
       .distanceSwimming,
       .swimmingStrokeCount,
       .heartRate,
+      .distanceWalkingRunning,
+      .stepCount,
+      .runningPower,
     ]
     return identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
   }
 
   private var allSampleTypes: [HKSampleType] {
-    allQuantityTypes + [HKObjectType.workoutType()]
+    allQuantityTypes + [HKObjectType.workoutType(), HKSeriesType.workoutRoute()]
   }
 
   private var backgroundTriggerTypes: Set<HKSampleType> {
@@ -92,7 +107,7 @@ final class HealthKitService: @unchecked Sendable {
       .vo2Max,
     ]
     let quantities = identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
-    return Set(quantities + [HKObjectType.workoutType()])
+    return Set(quantities + [HKObjectType.workoutType(), HKSeriesType.workoutRoute()])
   }
 
   func requestAuthorization() async throws {
@@ -148,7 +163,11 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
-  func export(daysBack: Int = 180, now: Date = Date()) async throws -> HealthExportDocument {
+  func export(
+    daysBack: Int = 180,
+    routesSince: Date? = nil,
+    now: Date = Date()
+  ) async throws -> HealthExportPayload {
     var currentCalendar = Calendar.autoupdatingCurrent
     currentCalendar.timeZone = .autoupdatingCurrent
     let calendar = currentCalendar
@@ -197,20 +216,27 @@ final class HealthKitService: @unchecked Sendable {
     let queriedWorkouts = try await workoutSamples
     let swimmingScopes = try swimmingScopes(workouts: queriedWorkouts)
     async let swimValues = swimSamples(start: start, end: end, scopes: swimmingScopes)
-    async let workouts = workoutHeartRates(workouts: queriedWorkouts)
+    async let workoutValues = workoutExports(
+      workouts: queriedWorkouts,
+      routesSince: routesSince ?? start
+    )
     var quantitySamples = try await activeEnergy
     quantitySamples += try await basalEnergy
     quantitySamples += try await dietaryEnergy
     quantitySamples += try await bodyMass
     quantitySamples += try await vo2Max
     let swims = try await swimValues
-    return HealthAggregator.document(
-      quantitySamples: quantitySamples,
-      swimSamples: swims.samples,
-      swimSessions: swims.sessions,
-      workouts: try await workouts,
-      generatedAt: now,
-      calendar: calendar
+    let exportedWorkouts = try await workoutValues
+    return HealthExportPayload(
+      document: HealthAggregator.document(
+        quantitySamples: quantitySamples,
+        swimSamples: swims.samples,
+        swimSessions: swims.sessions,
+        workouts: exportedWorkouts.workouts,
+        generatedAt: now,
+        calendar: calendar
+      ),
+      routes: exportedWorkouts.routes
     )
   }
 
@@ -683,6 +709,50 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
+  private func quantitySamples(
+    workouts: [HKWorkout],
+    identifier: HKQuantityTypeIdentifier,
+    unit: HKUnit
+  ) async throws -> [TimedQuantitySample] {
+    guard !workouts.isEmpty else { return [] }
+    let type = try quantityType(identifier)
+    let predicate = NSCompoundPredicate(
+      orPredicateWithSubpredicates: workouts.map {
+        HKQuery.predicateForSamples(
+          withStart: $0.startDate,
+          end: $0.endDate,
+          options: [.strictStartDate]
+        )
+      }
+    )
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+    return try await withCheckedThrowingContinuation { continuation in
+      let query = HKSampleQuery(
+        sampleType: type,
+        predicate: predicate,
+        limit: HKObjectQueryNoLimit,
+        sortDescriptors: [sort]
+      ) { _, samples, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        let values = (samples ?? []).compactMap { sample -> TimedQuantitySample? in
+          guard let sample = sample as? HKQuantitySample else { return nil }
+          let value = sample.quantity.doubleValue(for: unit)
+          guard value.isFinite else { return nil }
+          return TimedQuantitySample(
+            startDate: sample.startDate,
+            endDate: sample.endDate,
+            value: value
+          )
+        }
+        continuation.resume(returning: values)
+      }
+      store.execute(query)
+    }
+  }
+
   private static func lowerBoundHeartRate(_ samples: [HeartRateSample], start: Date) -> Int {
     var low = 0
     var high = samples.count
@@ -697,35 +767,275 @@ final class HealthKitService: @unchecked Sendable {
     return low
   }
 
-  private func workoutHeartRates(workouts: [HKWorkout]) async throws -> [AppleHealthWorkout] {
-    let heartRates = try await heartRateSamples(workouts: workouts)
+  private static func heartRates(
+    _ samples: [HeartRateSample],
+    workout: HKWorkout
+  ) -> [HeartRateSample] {
+    var output: [HeartRateSample] = []
+    var index = lowerBoundHeartRate(samples, start: workout.startDate)
+    while index < samples.count {
+      let sample = samples[index]
+      if sample.startDate > workout.endDate { break }
+      output.append(sample)
+      index += 1
+    }
+    return output
+  }
+
+  private static func quantities(
+    _ samples: [TimedQuantitySample],
+    workout: HKWorkout
+  ) -> [TimedQuantitySample] {
+    samples.filter {
+      $0.startDate >= workout.startDate && $0.startDate <= workout.endDate
+    }
+  }
+
+  private static func sum(
+    workout: HKWorkout,
+    type: HKQuantityType,
+    unit: HKUnit
+  ) -> Double? {
+    let value = workout.statistics(for: type)?.sumQuantity()?.doubleValue(for: unit)
+    guard let value, value.isFinite, value >= 0 else { return nil }
+    return value
+  }
+
+  private static func average(
+    workout: HKWorkout,
+    type: HKQuantityType,
+    unit: HKUnit
+  ) -> Double? {
+    let value = workout.statistics(for: type)?.averageQuantity()?.doubleValue(for: unit)
+    guard let value, value.isFinite, value >= 0 else { return nil }
+    return value
+  }
+
+  private static func mean(_ values: [Double]) -> Double? {
+    guard !values.isEmpty else { return nil }
+    return values.reduce(0, +) / Double(values.count)
+  }
+
+  private func workoutRoutes(for workout: HKWorkout) async throws -> [HKWorkoutRoute] {
+    let type = HKSeriesType.workoutRoute()
+    let predicate = HKQuery.predicateForObjects(from: workout)
+    let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+    return try await withCheckedThrowingContinuation { continuation in
+      let query = HKSampleQuery(
+        sampleType: type,
+        predicate: predicate,
+        limit: HKObjectQueryNoLimit,
+        sortDescriptors: [sort]
+      ) { _, samples, error in
+        if let error {
+          continuation.resume(throwing: error)
+          return
+        }
+        continuation.resume(returning: (samples ?? []).compactMap { $0 as? HKWorkoutRoute })
+      }
+      store.execute(query)
+    }
+  }
+
+  private func locations(for workout: HKWorkout) async throws -> [CLLocation] {
+    var byTimestamp: [Date: CLLocation] = [:]
+    for route in try await workoutRoutes(for: workout) {
+      let locations = HKWorkoutRouteQueryDescriptor(route).results(for: store)
+      for try await location in locations {
+        byTimestamp[location.timestamp] = location
+      }
+    }
+    return byTimestamp.values.sorted { $0.timestamp < $1.timestamp }
+  }
+
+  private static func nearestHeartRate(
+    at date: Date,
+    samples: [HeartRateSample]
+  ) -> Int? {
+    let index = lowerBoundHeartRate(samples, start: date)
+    let candidates = [index - 1, index].compactMap { candidate -> HeartRateSample? in
+      guard samples.indices.contains(candidate) else { return nil }
+      return samples[candidate]
+    }
+    guard let nearest = candidates.min(by: {
+      abs($0.startDate.timeIntervalSince(date)) < abs($1.startDate.timeIntervalSince(date))
+    }), abs(nearest.startDate.timeIntervalSince(date)) <= 10
+    else { return nil }
+    return nearest.bpm
+  }
+
+  private static func quantity(
+    at date: Date,
+    samples: [TimedQuantitySample]
+  ) -> TimedQuantitySample? {
+    var low = 0
+    var high = samples.count
+    while low < high {
+      let mid = (low + high) / 2
+      if samples[mid].startDate < date {
+        low = mid + 1
+      } else {
+        high = mid
+      }
+    }
+    let candidates = [low - 1, low].compactMap { index -> TimedQuantitySample? in
+      guard samples.indices.contains(index) else { return nil }
+      return samples[index]
+    }
+    if let containing = candidates.filter({ $0.startDate <= date && $0.endDate >= date }).min(by: {
+      $0.endDate.timeIntervalSince($0.startDate) < $1.endDate.timeIntervalSince($1.startDate)
+    }) {
+      return containing
+    }
+    return candidates.min(by: {
+      abs($0.startDate.timeIntervalSince(date)) < abs($1.startDate.timeIntervalSince(date))
+    }).flatMap {
+      abs($0.startDate.timeIntervalSince(date)) <= 5 ? $0 : nil
+    }
+  }
+
+  private static func routePoint(
+    _ location: CLLocation,
+    heartRates: [HeartRateSample],
+    powers: [TimedQuantitySample],
+    steps: [TimedQuantitySample]
+  ) -> WorkoutRoutePointValue? {
+    let latitude = location.coordinate.latitude
+    let longitude = location.coordinate.longitude
+    guard
+      latitude.isFinite,
+      longitude.isFinite,
+      (-90...90).contains(latitude),
+      (-180...180).contains(longitude)
+    else { return nil }
+    let stepSample = quantity(at: location.timestamp, samples: steps)
+    let stepDuration = stepSample.map { $0.endDate.timeIntervalSince($0.startDate) }
+    let cadence = stepSample.flatMap { sample -> Double? in
+      guard let stepDuration, stepDuration > 0 else { return nil }
+      let value = sample.value / stepDuration * 60
+      return value.isFinite && value > 0 ? value : nil
+    }
+    let power = quantity(at: location.timestamp, samples: powers)?.value
+    let altitude = location.verticalAccuracy >= 0 && location.altitude.isFinite
+      ? location.altitude
+      : nil
+    return WorkoutRoutePointValue(
+      date: location.timestamp,
+      latitude: latitude,
+      longitude: longitude,
+      altitudeM: altitude,
+      heartRateBpm: nearestHeartRate(at: location.timestamp, samples: heartRates),
+      cadenceSpm: cadence,
+      powerW: power.flatMap { $0 > 0 ? $0 : nil }
+    )
+  }
+
+  private func workoutRoute(
+    for workout: HKWorkout,
+    heartRates: [HeartRateSample],
+    powers: [TimedQuantitySample],
+    steps: [TimedQuantitySample]
+  ) async throws -> WorkoutRouteValue? {
+    let points = try await locations(for: workout).compactMap {
+      Self.routePoint($0, heartRates: heartRates, powers: powers, steps: steps)
+    }
+    guard !points.isEmpty else { return nil }
+    return WorkoutRouteValue(
+      workoutID: workout.uuid.uuidString,
+      activity: Self.workoutActivityName(workout.workoutActivityType),
+      start: workout.startDate,
+      points: points
+    )
+  }
+
+  private func workoutExports(
+    workouts: [HKWorkout],
+    routesSince: Date
+  ) async throws -> WorkoutExportValues {
+    let runningWorkouts = workouts.filter { $0.workoutActivityType == .running }
+    async let heartRateValues = heartRateSamples(workouts: workouts)
+    async let powerValues = quantitySamples(
+      workouts: runningWorkouts,
+      identifier: .runningPower,
+      unit: .watt()
+    )
+    async let stepValues = quantitySamples(
+      workouts: runningWorkouts,
+      identifier: .stepCount,
+      unit: .count()
+    )
+    let heartRates = try await heartRateValues
+    let powers = try await powerValues
+    let steps = try await stepValues
+    let distanceType = try quantityType(.distanceWalkingRunning)
+    let energyType = try quantityType(.activeEnergyBurned)
+    let heartRateType = try quantityType(.heartRate)
+    let powerType = try quantityType(.runningPower)
+    let stepType = try quantityType(.stepCount)
+    let heartRateUnit = HKUnit.count().unitDivided(by: .minute())
+    var routes: [WorkoutRouteValue] = []
+    for workout in runningWorkouts where workout.startDate >= routesSince {
+      let workoutHeartRates = Self.heartRates(heartRates, workout: workout)
+      let workoutPowers = Self.quantities(powers, workout: workout)
+      let workoutSteps = Self.quantities(steps, workout: workout)
+      if let route = try? await workoutRoute(
+        for: workout,
+        heartRates: workoutHeartRates,
+        powers: workoutPowers,
+        steps: workoutSteps
+      ) {
+        routes.append(route)
+      }
+    }
+    let routesByWorkoutID = Dictionary(uniqueKeysWithValues: routes.map { ($0.workoutID, $0) })
     var exports: [AppleHealthWorkout] = []
     for workout in workouts {
-      var heartRate: [AppleHealthHeartRate] = []
-      var index = Self.lowerBoundHeartRate(heartRates, start: workout.startDate)
-      while index < heartRates.count {
-        let sample = heartRates[index]
-        if sample.startDate > workout.endDate { break }
-        heartRate.append(
-          AppleHealthHeartRate(
-            time: HealthExporterFormat.utcTimestampString(sample.startDate),
-            bpm: sample.bpm
-          )
-        )
-        index += 1
-      }
+      let workoutHeartRates = Self.heartRates(heartRates, workout: workout)
+      let workoutPowers = Self.quantities(powers, workout: workout)
+      let workoutSteps = Self.quantities(steps, workout: workout)
+      let durationS = Int(workout.duration.rounded())
+      let averageHeartRate = Self.average(
+        workout: workout,
+        type: heartRateType,
+        unit: heartRateUnit
+      ) ?? Self.mean(workoutHeartRates.map { Double($0.bpm) })
+      let averagePower = Self.average(
+        workout: workout,
+        type: powerType,
+        unit: .watt()
+      ) ?? Self.mean(workoutPowers.map(\.value))
+      let stepCount: Double? = Self.sum(workout: workout, type: stepType, unit: .count())
+        ?? (!workoutSteps.isEmpty ? workoutSteps.reduce(0) { $0 + $1.value } : nil)
+      let cadence = stepCount.flatMap { durationS > 0 ? $0 / Double(durationS) * 60 : nil }
+      let lapCount = workout.workoutEvents?.filter { $0.type == .lap }.count ?? 0
+      let route = routesByWorkoutID[workout.uuid.uuidString]
       exports.append(
         AppleHealthWorkout(
           id: workout.uuid.uuidString,
           activity: Self.workoutActivityName(workout.workoutActivityType),
           start: HealthExporterFormat.utcTimestampString(workout.startDate),
           end: HealthExporterFormat.utcTimestampString(workout.endDate),
-          durationS: Int(workout.duration.rounded()),
-          heartRate: heartRate
+          durationS: durationS,
+          elapsedTimeS: Int(workout.endDate.timeIntervalSince(workout.startDate).rounded()),
+          distanceM: Self.sum(workout: workout, type: distanceType, unit: .meter()),
+          activeEnergyKcal: Self.sum(workout: workout, type: energyType, unit: .kilocalorie()),
+          averageHeartRateBpm: averageHeartRate.map { Int($0.rounded()) },
+          averageRunningPowerW: averagePower.map { Int($0.rounded()) },
+          averageCadenceSpm: cadence.map { Int($0.rounded()) },
+          lapCount: lapCount > 0 ? lapCount : nil,
+          source: workout.sourceRevision.source.name,
+          device: workout.device?.name ?? workout.device?.model,
+          gpxFile: route?.relativePath,
+          heartRate: workoutHeartRates.map {
+            AppleHealthHeartRate(
+              time: HealthExporterFormat.utcTimestampString($0.startDate),
+              bpm: $0.bpm
+            )
+          }
         )
       )
     }
-    return exports
+    return WorkoutExportValues(workouts: exports, routes: routes)
   }
 
   private static func workoutActivityName(_ type: HKWorkoutActivityType) -> String {

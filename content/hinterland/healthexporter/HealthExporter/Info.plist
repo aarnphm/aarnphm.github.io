@@ -25,7 +25,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSHealthShareUsageDescription</key>
-	<string>HealthExporter reads daily training, workout, and heart-rate metrics so the triathlon page can stay current.</string>
+	<string>HealthExporter reads daily training, workout, heart-rate, and workout-route data so the triathlon page can stay current.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>HealthExporter does not write Health data.</string>
 	<key>NSUbiquitousContainers</key>

@@ -3,7 +3,7 @@ import Foundation
 actor HealthExportRuntime {
   static let shared = HealthExportRuntime()
 
-  private enum ExportScope {
+  private enum ExportScope: Equatable {
     case full
     case recent
   }
@@ -152,32 +152,43 @@ actor HealthExportRuntime {
 
   private func performExport(scope: ExportScope) async throws -> HealthExportResult {
     let now = Date()
-    let previous = scope == .recent ? currentExport() : nil
+    let previous = currentExport()
     let needsMigration = previous?.document.version != HealthExportDocument.currentVersion
-    let daysBack = previous == nil || needsMigration ? 180 : Self.recentDaysBack
-    let update = try await health.export(daysBack: daysBack, now: now)
+    let daysBack = scope == .full || previous == nil || needsMigration ? 180 : Self.recentDaysBack
+    var calendar = Calendar.autoupdatingCurrent
+    calendar.timeZone = .autoupdatingCurrent
+    let routeCutoff = previous == nil || needsMigration
+      ? nil
+      : calendar.date(
+        byAdding: .day,
+        value: -Self.recentDaysBack,
+        to: calendar.startOfDay(for: now)
+      )
+    let update = try await health.export(daysBack: daysBack, routesSince: routeCutoff, now: now)
+    let updateDocument = update.document.preservingWorkoutGPXFiles(from: previous?.document)
     let document: HealthExportDocument
-    if let previous, !needsMigration {
-      var calendar = Calendar.autoupdatingCurrent
-      calendar.timeZone = .autoupdatingCurrent
+    if scope == .recent, let previous, !needsMigration {
       let cutoff = calendar.date(
         byAdding: .day,
         value: -Self.recentDaysBack,
         to: calendar.startOfDay(for: now)
       ) ?? calendar.startOfDay(for: now)
       document = previous.document.replacingRecent(
-        with: update,
+        with: updateDocument,
         dayCutoff: HealthExporterFormat.dayString(cutoff, calendar: calendar),
         timestampCutoff: HealthExporterFormat.utcTimestampString(cutoff)
       )
       if document.hasSameHealthData(as: previous.document) {
+        if !update.routes.isEmpty {
+          _ = try writer.write(previous.document, routes: update.routes)
+        }
         PhoneWatchSession.shared.publish(previous)
         return previous
       }
     } else {
-      document = update
+      document = updateDocument
     }
-    let url = try writer.write(document)
+    let url = try writer.write(document, routes: update.routes)
     let result = HealthExportResult(document: document, url: url)
     PhoneWatchSession.shared.publish(result)
     return result

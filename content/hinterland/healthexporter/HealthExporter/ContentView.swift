@@ -65,6 +65,7 @@ struct ContentView: View {
       LabeledContent("Swims", value: details.swimCount.formatted())
       LabeledContent("Workouts", value: details.workoutCount.formatted())
       LabeledContent("HR samples", value: details.heartRateCount.formatted())
+      LabeledContent("GPX routes", value: details.routeCount.formatted())
     case .unavailable:
       Text("No export is available yet.")
         .foregroundStyle(.secondary)

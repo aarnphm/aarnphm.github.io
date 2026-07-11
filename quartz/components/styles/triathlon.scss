@@ -2993,6 +2993,11 @@
   cursor: pointer;
 }
 
+.tri-wkt-svg {
+  aspect-ratio: 100 / 34;
+  min-height: 0;
+}
+
 .tri-bodywt-plot {
   position: relative;
   flex: 1 1 auto;
@@ -7740,6 +7745,10 @@
       gap: 0.6rem;
       align-items: baseline;
       justify-content: space-between;
+
+      &:nth-last-of-type(2) {
+        border-bottom: none !important;
+      }
     }
   }
 

@@ -530,7 +530,7 @@ const en: TriDict = {
     },
     effort: {
       term: 'relative effort',
-      def: 'Strava’s suffer score—duration weighted by how far above resting your heart rate sat. The bars sum each week’s sessions, so it tracks acute training stress across all three sports at once.',
+      def: "Strava's Relative Effort score uses heart rate or perceived exertion. The chart sums every scored activity by calendar week. The shaded target uses the previous three complete weeks.",
     },
     hrv: {
       term: 'HRV',
@@ -1001,7 +1001,7 @@ const fr: TriDict = {
     },
     effort: {
       term: 'effort relatif',
-      def: "le suffer score de Strava — la durée pondérée par l'écart de ta fréquence cardiaque au-dessus du repos. les barres cumulent les séances de chaque semaine, donc il suit le stress aigu sur les trois sports à la fois.",
+      def: "le score d'effort relatif de Strava utilise la fréquence cardiaque ou l'effort perçu. le graphique additionne toutes les activités notées par semaine civile. la zone cible utilise les trois semaines complètes précédentes.",
     },
     hrv: {
       term: 'VFC',
