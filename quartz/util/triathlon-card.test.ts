@@ -38,6 +38,9 @@ import {
   swimActivityHeaderValue,
   swimActivityPointText,
   swimActivityValueText,
+  tl,
+  trendUnavailableText,
+  vo2SourceText,
 } from './triathlon-i18n'
 
 const factory: TriNodeFactory<Element> = {
@@ -77,6 +80,62 @@ test('localizes swim block readouts and accessible values', () => {
   assert.equal(
     swimActivityValueText('stroke', point, 27.9, '0:28'),
     '100 metre block from 0 to 100 metres, 2:11 elapsed, stroke rate 27.9 strokes per minute',
+  )
+})
+
+test('localizes dynamic analytics explanations', () => {
+  const bike: NonNullable<Parameters<typeof vo2SourceText>[1]> = {
+    ftpW: 230,
+    ftpSource: 'athlete',
+    mapW: 307,
+    weightKg: 88.9,
+  }
+  setTriLocale('fr')
+  try {
+    assert.equal(
+      vo2SourceText('garmin', null),
+      "Cette valeur vient de Garmin Connect ou d'une saisie manuelle.",
+    )
+    assert.equal(vo2SourceText('apple', null), "Cette mesure vient de l'Apple Watch.")
+    assert.equal(
+      vo2SourceText('run', null),
+      'Cette estimation utilise la vitesse de course et la fréquence cardiaque.',
+    )
+    assert.equal(
+      vo2SourceText('hrratio', null),
+      'Cette estimation utilise les fréquences cardiaques maximale et au repos.',
+    )
+    assert.equal(vo2SourceText('lab', null), "Cette valeur vient d'un test d'effort progressif.")
+    assert.equal(
+      vo2SourceText('none', null),
+      'Il manque les données de puissance ou de fréquence cardiaque.',
+    )
+    assert.equal(
+      vo2SourceText('bike', bike),
+      'FTP 230 W (athlète). La puissance aérobie maximale estimée est de 307 W. Le poids est de 88,9 kg.',
+    )
+    assert.equal(trendUnavailableText(0, null), "Aucun effort n'a été enregistré.")
+    assert.equal(trendUnavailableText(2, 0), "Le dernier effort date d'aujourd'hui.")
+    assert.equal(trendUnavailableText(2, 1), 'Le dernier effort remonte à 1 jour.')
+    assert.equal(trendUnavailableText(2, 48), 'Le dernier effort remonte à 48 jours.')
+    assert.equal(trendUnavailableText(null, null), 'Données insuffisantes.')
+    assert.equal(tl('reset'), 'réinit.')
+    assert.match(
+      tl('radar stroke rate swim definition'),
+      /^La fréquence de nage est la moyenne des fréquences/,
+    )
+  } finally {
+    setTriLocale('en')
+  }
+  assert.equal(
+    vo2SourceText('bike', bike),
+    'FTP 230 W (athlete). Estimated maximum aerobic power is 307 W. Body weight is 88.9 kg.',
+  )
+  assert.equal(trendUnavailableText(2, 1), 'The latest effort was 1 day ago.')
+  assert.equal(trendUnavailableText(2, 48), 'The latest effort was 48 days ago.')
+  assert.match(
+    tl('radar pace swim definition'),
+    /Fewer seconds per 100 metres give a higher score\.$/,
   )
 })
 

@@ -182,7 +182,7 @@ essentially padding missing attributes with `NULL`
 
 > remember that bag and set operations are different
 
-set union is idempotent, whereas bags union is not.rightarrow
+set union is idempotent, whereas bags union is not.
 
 bag union: $\{1,2,1\} \cup \{1,1,2,3,1\} = \{1,1,1,1,1,2,2,3\}$
 

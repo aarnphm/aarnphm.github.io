@@ -2537,8 +2537,8 @@
 
 .tri-pmc-svg {
   height: auto;
-  aspect-ratio: 10 / 3;
-  min-height: 184px;
+  aspect-ratio: 3 / 1;
+  min-height: 204px;
   cursor: crosshair;
   shape-rendering: geometricPrecision;
 }
@@ -3062,7 +3062,8 @@
   font-size: 0.5rem;
   line-height: 1;
   color: var(--gray);
-  background: var(--light);
+  background: color-mix(in srgb, var(--light) 58%, transparent);
+  backdrop-filter: blur(4px);
 }
 
 .tri-wkt-pt--sel .tri-wkt-o {

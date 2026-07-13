@@ -99,7 +99,9 @@ import {
   swimActivityPointText,
   swimActivityValueText,
   tl,
+  trendUnavailableText,
   triLocale,
+  vo2SourceText,
 } from '../../util/triathlon-i18n'
 import { isRecord } from '../../util/type-guards'
 import { weeklyChartIndex, weeklyChartX } from '../../util/weekly-target-range'
@@ -1950,7 +1952,7 @@ const PMC_H = 82
 const PMC_TOP = 4
 const PMC_BOT = 52
 const PMC_TSB_ZERO = 32
-const PMC_TSB_HALF = 24
+const PMC_TSB_HALF = PMC_BOT - PMC_TSB_ZERO - 2
 const PMC_BAR_TOP = 61
 const PMC_BAR_BOT = 80
 
@@ -2132,9 +2134,6 @@ const buildPmc = (data: Analytics): HTMLElement => {
   s.appendChild(
     svg('line', { x1: 0, y1: PMC_BAR_BOT, x2: ANA_W, y2: PMC_BAR_BOT, class: 'tri-pmc-baseline' }),
   )
-  s.appendChild(
-    svg('line', { x1: 0, y1: PMC_TSB_ZERO, x2: ANA_W, y2: PMC_TSB_ZERO, class: 'tri-ana-zero' }),
-  )
   s.appendChild(svg('line', { x1: nowX, y1: 0, x2: nowX, y2: PMC_BAR_BOT, class: 'tri-pmc-now' }))
   const hits = svg('g', { class: 'tri-pmc-hit-layer' })
   for (let i = 0; i < N; i++) {
@@ -2184,7 +2183,8 @@ const buildPmc = (data: Analytics): HTMLElement => {
       { label: tl('today'), pct: nowX, cls: 'tri-pmc-xt--now' },
       { label: `+${H}d`, pct: 100, cls: 'tri-pmc-xt--end' },
     ],
-    false,
+    true,
+    { top: PMC_TOP, bottom: PMC_BOT },
   ) as HTMLElement
   const readoutEl = el('div', 'tri-chart-readout')
   frame.querySelector('.tri-cax-stage')?.appendChild(readoutEl)
@@ -2648,7 +2648,7 @@ const buildReadiness = (data: Analytics): HTMLElement => {
     meta.appendChild(
       markGloss(
         el('span', 'tri-rdy-forecast', rangeTxt, {
-          title: tl('trend-projected finish · 80% range · incl. T1+T2'),
+          title: tl('projected finish range, including both transitions'),
         }),
         'predtime',
       ),
@@ -2733,9 +2733,9 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     head.appendChild(markGloss(el('span', `tri-ana-conf tri-conf-${th.conf}`, th.conf), 'conf'))
   wrap.appendChild(head)
   if (!tr || tr.method === 'none') {
-    const msg =
-      tr?.note ||
-      (th && th.staleDays > 45 ? `stale · last ${th.staleDays}d ago` : 'not enough data')
+    const daysSinceLastEffort =
+      tr?.daysSinceLastEffort ?? (th && th.staleDays > 45 ? th.staleDays : null)
+    const msg = trendUnavailableText(tr?.sampleSize ?? null, daysSinceLastEffort)
     wrap.appendChild(el('div', 'tri-trend-note', msg))
     return wrap
   }
@@ -4043,11 +4043,11 @@ const buildVo2max = (data: Analytics): HTMLElement => {
   )
   if (v.percentileForAge != null)
     cap.appendChild(el('span', 'tri-ana-k', `p${v.percentileForAge} for age ${v.chronoAge}`))
-  cap.appendChild(el('span', 'tri-ana-k', v.note))
+  cap.appendChild(el('span', 'tri-ana-k', vo2SourceText(v.method, v.bikeSource)))
   cap.appendChild(el('span', 'tri-ana-k', `hrmax ${v.hrMax} (${v.hrMaxSource})`))
   if (v.trend.some(p => p.method === 'bike'))
     cap.appendChild(
-      el('span', 'tri-ana-k tri-vo2-proj-note', tl('dashes = projected from bike power')),
+      el('span', 'tri-ana-k tri-vo2-proj-note', tl('dashed line is projected from bike power')),
     )
   block.appendChild(cap)
   const lab = data.tests.vo2max[data.tests.vo2max.length - 1]
@@ -4684,8 +4684,8 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     return row
   }
   methods.append(
-    methodRow('efficiency chain', 'efficiencyFtp', h.efficiencyFtp, 'tri-ftp-method-fill--eff'),
-    methodRow('ACSM inverse', 'acsmFtp', h.acsmFtp, 'tri-ftp-method-fill--acsm'),
+    methodRow('efficiency estimate', 'efficiencyFtp', h.efficiencyFtp, 'tri-ftp-method-fill--eff'),
+    methodRow('ACSM estimate', 'acsmFtp', h.acsmFtp, 'tri-ftp-method-fill--acsm'),
   )
   block.appendChild(methods)
 
@@ -4699,11 +4699,15 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     return row
   }
   chain.append(
-    chainRow('absolute vo2max', 'absoluteRunningVo2', `${h.absoluteRunningVo2.toFixed(2)} L/min`),
-    chainRow('cycling vo2max', 'cyclingVo2max', `${h.cyclingVo2max.toFixed(2)} L/min`),
-    chainRow('vo2 at threshold', 'thresholdVo2', `${h.thresholdVo2.toFixed(2)} L/min`),
-    chainRow('metabolic power', 'metabolicWatts', `${Math.round(h.metabolicWatts)} W`),
-    chainRow('MAP', 'acsmMapWatts', `${Math.round(h.acsmMapWatts)} W`),
+    chainRow(
+      'total running vo2max',
+      'absoluteRunningVo2',
+      `${h.absoluteRunningVo2.toFixed(2)} L/min`,
+    ),
+    chainRow('estimated cycling vo2max', 'cyclingVo2max', `${h.cyclingVo2max.toFixed(2)} L/min`),
+    chainRow('vo2 used at threshold', 'thresholdVo2', `${h.thresholdVo2.toFixed(2)} L/min`),
+    chainRow('energy used per second', 'metabolicWatts', `${Math.round(h.metabolicWatts)} W`),
+    chainRow('maximum aerobic power', 'acsmMapWatts', `${Math.round(h.acsmMapWatts)} W`),
   )
   block.appendChild(chain)
 
@@ -4733,7 +4737,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
       numIn.inputMode = 'decimal'
       numIn.dataset.ftpNum = key
       numIn.value = display
-      numIn.setAttribute('aria-label', label)
+      numIn.setAttribute('aria-label', tl(label))
       valEl.append(numIn, el('span', 'tri-ftp-ctrl-unit', unit, { 'data-ftp-unit': key }))
     } else {
       valEl = el('span', 'tri-ftp-ctrl-val', `${display}${unit}`, { 'data-ftp-val': key })
@@ -4748,20 +4752,20 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     input.max = String(max)
     input.step = String(step)
     input.value = String(value)
-    input.setAttribute('aria-label', label)
-    wrap.append(row, input, el('span', 'tri-ftp-note', note))
+    input.setAttribute('aria-label', tl(label))
+    wrap.append(row, input, el('span', 'tri-ftp-note', tl(note)))
     return wrap
   }
   controls.append(
     control(
       'mass',
-      'bodyweight',
+      'body weight',
       60,
       110,
       0.1,
       h.massKg,
       ` ${weightUnitLabel()}`,
-      'vo2 report input',
+      'value from vo2 report',
       true,
       wNum(h.massKg, 1, 0),
     ),
@@ -4773,38 +4777,47 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
       0.1,
       h.runningVo2max,
       '',
-      'measured treadmill value',
+      'measured during treadmill test',
       true,
       h.runningVo2max.toFixed(1),
     ),
     control(
       'discount',
-      'cross-modal discount',
+      'running to cycling adjustment',
       0,
       15,
       0.5,
       h.crossModalDiscountPct,
       '%',
-      'running to cycling haircut',
+      'reduces running vo2max for cycling',
     ),
-    control('threshold', 'LT2 fraction', 70, 92, 0.5, h.thresholdPct, '%', 'VT2 was not detected'),
+    control(
+      'threshold',
+      'vo2max used at threshold',
+      70,
+      92,
+      0.5,
+      h.thresholdPct,
+      '%',
+      'estimated because the treadmill test did not find the second threshold',
+    ),
     control(
       'efficiency',
-      'gross efficiency',
+      'cycling efficiency',
       18,
       25,
       0.5,
       h.grossEfficiencyPct,
       '%',
-      'cycling mechanical yield',
+      'share of energy turned into bike power',
     ),
   )
   block.appendChild(controls)
   const foot = el('div', 'tri-ftp-foot')
   foot.append(
     el('span', 'tri-ftp-source', `${tl('lab')} ${h.date}`),
-    el('span', 'tri-ftp-source', h.note),
-    el('button', 'tri-ftp-reset', 'reset', { type: 'button' }),
+    el('span', 'tri-ftp-source', tl(h.note)),
+    el('button', 'tri-ftp-reset', tl('reset'), { type: 'button' }),
   )
   block.appendChild(foot)
   return block
@@ -5460,7 +5473,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
       'tri-engine-row-v',
       m.value != null ? `${m.value}${m.unit === '%' ? '%' : ` ${m.unit}`}` : '—',
     )
-    val.title = m.note
+    val.title = tl(m.note)
     row.appendChild(val)
     row.appendChild(
       el(

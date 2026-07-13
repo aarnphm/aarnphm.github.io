@@ -140,7 +140,7 @@ const en: TriDict = {
     strain: 'strain',
     'fitness age': 'fitness age',
     base: 'base',
-    'ACSM inverse': 'ACSM inverse',
+    'ACSM estimate': 'ACSM estimate',
     rhr: 'rhr',
     sprint: 'sprint',
     threshold: 'threshold',
@@ -242,25 +242,35 @@ const en: TriDict = {
     trunk: 'trunk',
     bmd: 'bmd',
     'no power or hr data yet': 'no power or hr data yet',
+    'This estimate comes from running VO2max.': 'This estimate comes from running VO2max.',
+    'A lower resting heart rate is better.': 'A lower resting heart rate is better.',
+    'The 7 day average is compared with the 28 day baseline.':
+      'The 7 day average is compared with the 28 day baseline.',
+    'This is pace or power per heartbeat.': 'This is pace or power per heartbeat.',
+    'This needs at least 20 minutes with heart rate and pace or power data.':
+      'This needs at least 20 minutes with heart rate and pace or power data.',
+    'Under 5% means steady output.': 'Under 5% means steady output.',
+    'From 5% to 10% means some late fade.': 'From 5% to 10% means some late fade.',
+    'Over 10% means high late fade.': 'Over 10% means high late fade.',
     'no vo2 test logged': 'no vo2 test logged',
     'vt1 · aerobic threshold': 'vt1 · aerobic threshold',
     'no vo2-derived ftp estimate': 'no vo2-derived ftp estimate',
-    'efficiency chain': 'efficiency chain',
-    'absolute vo2max': 'absolute vo2max',
-    'cycling vo2max': 'cycling vo2max',
-    'vo2 at threshold': 'vo2 at threshold',
-    'metabolic power': 'metabolic power',
-    MAP: 'MAP',
-    bodyweight: 'bodyweight',
-    'vo2 report input': 'vo2 report input',
+    'efficiency estimate': 'efficiency estimate',
+    'total running vo2max': 'total running vo2max',
+    'estimated cycling vo2max': 'estimated cycling vo2max',
+    'vo2 used at threshold': 'vo2 used at threshold',
+    'energy used per second': 'energy used per second',
+    'maximum aerobic power': 'maximum aerobic power',
+    'value from vo2 report': 'value from vo2 report',
     'running vo2max': 'running vo2max',
-    'measured treadmill value': 'measured treadmill value',
-    'cross-modal discount': 'cross-modal discount',
-    'running to cycling haircut': 'running to cycling haircut',
-    'LT2 fraction': 'LT2 fraction',
-    'VT2 was not detected': 'VT2 was not detected',
-    'gross efficiency': 'gross efficiency',
-    'cycling mechanical yield': 'cycling mechanical yield',
+    'measured during treadmill test': 'measured during treadmill test',
+    'running to cycling adjustment': 'running to cycling adjustment',
+    'reduces running vo2max for cycling': 'reduces running vo2max for cycling',
+    'vo2max used at threshold': 'vo2max used at threshold',
+    'estimated because the treadmill test did not find the second threshold':
+      'estimated because the treadmill test did not find the second threshold',
+    'cycling efficiency': 'cycling efficiency',
+    'share of energy turned into bike power': 'share of energy turned into bike power',
     reset: 'reset',
     'no heart data yet': 'no heart data yet',
     'map unavailable': 'map unavailable',
@@ -316,7 +326,7 @@ const en: TriDict = {
     average: 'average',
     projected: 'projected',
     projection: 'projection',
-    'dashes = projected from bike power': 'dashes = projected from bike power',
+    'dashed line is projected from bike power': 'dashed line is projected from bike power',
     'vs current': 'vs current',
     finish: 'finish',
     'avg power': 'avg power',
@@ -388,214 +398,214 @@ const en: TriDict = {
     age: 'age',
     feet: 'feet',
     metres: 'metres',
-    'trend-projected finish · 80% range · incl. T1+T2':
-      'trend-projected finish · 80% range · incl. T1+T2',
+    'projected finish range, including both transitions':
+      'The projected finish has an 80% chance of falling in this range. It includes both transitions.',
     'custom date missing': 'custom date missing',
     'radar sprint bike definition':
-      'Sprint is best 5 s bike power divided by body mass. It measures short anaerobic punch before the aerobic system catches up.',
+      'Sprint uses your best 5 second bike power divided by body weight. A higher value means more power for your weight during a short effort.',
     'radar sprint run definition':
-      'Sprint is the best 30 s running speed on record. It measures top-end leg speed rather than aerobic fitness.',
+      'Sprint uses your fastest recorded 30 second running speed. It shows your top speed during a short effort.',
     'radar sprint swim definition':
-      'Sprint is the fastest average speed of any recorded swim. Lap-quantised pool streams make whole-swim speed the honest peak.',
+      'Sprint uses the fastest average speed from one recorded swim. Pool data is recorded by length, so this page does not estimate a shorter peak from within the swim.',
     'radar threshold bike definition':
-      'Threshold is FTP divided by body mass. FTP estimates the power you can hold near steady state for roughly an hour.',
+      'Threshold uses FTP divided by body weight. FTP estimates the bike power you can hold for about one hour.',
     'radar threshold run definition':
-      'Threshold is the grade-adjusted running speed you can hold near steady state, estimated from your fastest sustained efforts.',
+      'Threshold uses the fastest running speed you can hold for a sustained effort after adjusting for hills.',
     'radar threshold swim definition':
-      'Threshold is critical swim speed, the pace you could hold for a long steady swim, estimated from sustained efforts.',
+      'Threshold uses critical swim speed. It estimates the pace you can hold during a long, steady swim from your recorded sustained efforts.',
     'radar endurance definition':
-      "Endurance is this discipline's CTL, the 42-day weighted training load, scored against its target share of total load.",
+      'Endurance uses the 42 day training load for this sport. The score compares that load with the target share of your total training.',
     'radar pace swim definition':
-      'Pace is the fastest valid pace based on active time from one recorded swim activity. Fewer seconds per 100 metres produce a higher score.',
+      'Pace uses the fastest valid average pace from one swim, based on active time. Fewer seconds per 100 metres give a higher score.',
     'radar climb run definition':
-      'Climb is VAM on foot: vertical {unit} gained per hour of moving time on the run.',
+      'Climb uses the vertical {unit} gained per hour of running. It counts moving time.',
     'radar climb bike definition':
-      'Climb is VAM, the rate of vertical gain while moving uphill. Higher VAM means more {unit} climbed per hour.',
+      'Climb uses the vertical {unit} gained per hour of cycling. It counts moving time.',
     'radar cadence bike definition':
-      'Cadence scores how close the average pedal turnover sits to 90 rpm. Overspin and underspin both cost points.',
+      'Cadence compares your average pedal rate with 90 revolutions per minute. The score falls when your rate is above or below 90.',
     'radar cadence run definition':
-      'Cadence scores how close the average stride turnover sits to 180 spm. Overstriding shows up here first.',
+      'Cadence compares your average step rate with 180 steps per minute. The score falls when your rate is above or below 180.',
     'radar stroke rate swim definition':
-      'Stroke rate is the mean of the rates from matched swim activities. Each rate uses the recorded stroke count and the time during which strokes were recorded. The score targets 30 strokes per minute.',
+      'Stroke rate is the average from recorded swims that include both stroke counts and timing. Each rate is the stroke count divided by the time during which strokes were recorded. The target is 30 strokes per minute.',
     'radar recovery definition':
-      'Recovery uses the 14-day mean Oura readiness score when available, then HRV as the fallback signal.',
+      'Recovery uses your average Oura Readiness score over the past 14 days. If Readiness is unavailable, it uses HRV.',
     'radar unit wkg definition':
-      '$\\mathrm{W/kg}$ means watts per kilogram: power divided by body mass, so a 270 W rider at 90 kg reads 3.0 W/kg.',
+      '$\\mathrm{W/kg}$ means watts per kilogram of body weight. A rider producing 270 W at 90 kg has 3.0 W/kg.',
     'radar unit ctl definition':
-      'CTL means Chronic Training Load: a 42-day exponentially weighted training-stress average.',
+      'CTL is your average daily training load over 42 days. Recent days count more.',
     'radar unit fth definition':
-      '$\\mathrm{ft/h}$ means vertical feet per hour, converted from metres at $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.',
+      '$\\mathrm{ft/h}$ means vertical feet climbed per hour. This page converts metres to feet using $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$.',
     'radar unit mh definition':
-      '$\\mathrm{m/h}$ means vertical metres per hour. VAM is $\\mathrm{gain}\\cdot3600/t$ with moving uphill time in seconds.',
+      '$\\mathrm{m/h}$ means vertical metres climbed per hour. This page divides elevation gain by moving uphill time and scales it to one hour.',
     'radar unit mspeed definition':
-      '$\\mathrm{m/s}$ means metres per second of forward speed. Multiply by 3.6 for km/h; $1000/v$ gives seconds per kilometre.',
+      '$\\mathrm{m/s}$ means metres travelled per second. Multiply the value by 3.6 to convert it to kilometres per hour.',
     'radar unit s100m definition':
-      's/100m means seconds per 100 metres. A smaller value is a faster pace.',
+      's/100 m means the seconds needed to swim 100 metres. A smaller value means a faster pace.',
     'radar unit rpm definition':
-      'rpm means revolutions per minute, the pedal-turn rate on the bike.',
-    'radar unit spm definition': 'spm means steps per minute, the stride-turnover rate on the run.',
+      'rpm means revolutions per minute. It measures how fast you turn the pedals.',
+    'radar unit spm definition': 'spm means steps per minute. It measures your running cadence.',
     'radar unit strmin definition':
-      'str/min means strokes per minute. Each activity rate divides its stroke count by the time during which strokes were recorded.',
+      'str/min means strokes per minute. The rate is the stroke count divided by the time during which strokes were recorded.',
     'radar unit readiness definition':
-      "Readiness is Oura's 0-100 daily recovery score from sleep, HRV, resting heart rate, and recent strain.",
+      "Readiness is Oura's daily recovery score from 0 to 100. It uses your sleep and HRV. It also uses resting heart rate and recent activity.",
     'radar unit ms definition':
-      'ms means milliseconds. HRV is the beat-to-beat variation in heart rhythm, with higher values usually reflecting better recovery relative to baseline.',
+      'ms means milliseconds. HRV measures the change in time between heartbeats. A value above your usual range can mean better recovery.',
     'radar unit default definition':
-      'The raw value is the source measurement mapped onto the 0-100 radar score for this axis.',
+      'The raw value is the original measurement used to calculate this score from 0 to 100.',
   },
   gloss: {
     ctl: {
-      term: 'fitness/CTL',
-      def: 'Chronic Training Load is a 42-day weighted average of daily training stress. Climbs slowly with consistent work and is the best single proxy for fitness.',
+      term: 'fitness (CTL)',
+      def: 'Fitness is your average daily training load over the past 42 days. Recent days count more. It rises when you train consistently and falls when you train less.',
     },
     atl: {
-      term: 'fatigue/ATL',
-      def: 'Acute Training Load is a 7-day weighted average of training stress. Spikes after hard days; the proxy for how tired you are right now.',
+      term: 'fatigue (ATL)',
+      def: 'Fatigue is your average daily training load over the past 7 days. Recent days count more. A high value means you have done more training lately.',
     },
     tsb: {
-      term: 'form/TSB',
-      def: 'Training Stress Balance $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$. Positive means fresh and tapered; negative means loaded and carrying fatigue.',
+      term: 'form (TSB)',
+      def: 'Form is fitness minus fatigue. A positive value means your recent load is below your longer term load, so you should be fresher. A negative value means your recent load is higher.',
     },
     acwr: {
       term: 'ACWR',
-      def: 'Acute:Chronic Workload Ratio $\\mathrm{ACWR}=\\text{7d}/\\text{28d}$ load. $0.8\\text{–}1.3$ is the safe zone; above $1.5$ flags an injury-risk spike.',
+      def: 'ACWR divides your training load from the past 7 days by your load from the past 28 days. A value from 0.8 to 1.3 is the target range. A value above 1.5 means your recent load rose sharply.',
     },
     ramp: {
       term: 'ramp',
-      def: 'Week-over-week change in fitness (CTL). Positive is building; large jumps are the classic too-much-too-soon risk.',
+      def: 'Ramp is the change in fitness from one week to the next. A positive value means your training load is building. A large jump means your load increased quickly.',
     },
     monotony: {
       term: 'monotony',
-      def: 'Daily-load sameness across a week, $\\text{monotony}=\\mu/\\sigma$ (mean over standard deviation). Above $\\approx 2$ with high load is Foster’s strain red flag.',
+      def: "Monotony measures how similar your daily training loads were during the week. A higher value means the days had similar loads. A value above about 2, together with a high weekly load, is a warning sign in Foster's method.",
     },
     strain: {
       term: 'strain',
-      def: '$\\text{strain}=\\text{weekly load}\\times\\text{monotony}$. High, unvarying training scores high, often dictates overtraining.',
+      def: 'Strain is your weekly training load multiplied by monotony. It is high when the week had a high load and little change between days.',
     },
     load: {
       term: 'load',
-      def: 'Per-session training stress $\\mathrm{load}\\approx\\mathrm{IF}^2\\cdot t$, scaled so an hour at threshold $\\approx 100$. HR, power and cadence are captured per activity; this load stays pace-derived for now.',
+      def: 'Load estimates how hard each workout was from its pace and duration. About 100 points means one hour at threshold effort. The activity records each sensor value separately. This score uses only pace and duration.',
     },
     score: {
       term: 'readiness',
-      def: 'A 0–100 blend of your fitness against the race demand ($45\\%$) and how much of each leg’s distance you have actually covered in training ($55\\%$).',
+      def: 'Readiness is a score from 0 to 100. Fitness compared with the race demand makes up 45%. The distance you have covered in training for each leg makes up 55%.',
     },
     binding: {
       term: 'binding leg',
-      def: 'The discipline limiting your readiness most — the weakest distance-coverage $\\times$ recency. Train this one first.',
+      def: 'The binding leg is the sport holding your readiness score down the most. It combines how much of the race distance you have covered with how recently you trained that sport. Focus on this sport first.',
     },
     predtime: {
       term: 'predicted time',
-      def: 'Each leg is the pace model’s predicted best split for the race distance, with threshold Riegel decay as the fallback until the model loads, plus a flat $5$ min each for T1 and T2.',
+      def: 'Predicted time is the estimated finish time for all three legs and both transitions. The pace model predicts each leg. Until the model loads, the estimate adjusts your threshold pace for the race distance. Each transition adds 5 minutes.',
     },
     conf: {
       term: 'confidence',
-      def: 'How much data backs the estimate. firm = enough recent efforts; low = only a couple; stale = newest effort over 45 days old; prior = no data, a generic assumption.',
+      def: 'Confidence shows how much recent data supports an estimate. Firm means there are enough recent efforts. Low means there are only a few efforts. Stale means the latest effort is more than 45 days old. Prior means there is no personal data, so the estimate uses a general starting value.',
     },
     threshold: {
       term: 'threshold pace',
-      def: 'Your grade-adjusted pace at roughly 1-hour effort, taken from the 90th percentile of your sessions. The anchor for every prediction.',
+      def: 'Threshold pace is your estimated pace for an effort lasting about one hour. It uses your faster sessions and adjusts running pace for hills. The pace model uses it as a starting point.',
     },
     trend: {
       term: 'pace trend',
-      def: 'Which way your threshold pace is moving, fit by EWMA or least-squares over recent sessions. The shaded band is the forecast’s uncertainty.',
+      def: 'Pace trend shows whether your threshold pace is getting faster or slower. It uses your recent sessions. The shaded area shows the range of likely future values.',
     },
     weight: {
       term: 'body weight',
-      def: 'Daily weigh-ins. Feeds recovery context and the bodyweight-dependent energy estimates.',
+      def: 'Body weight comes from your daily weight records. It is used in recovery charts and in energy estimates that depend on weight.',
     },
     wtrend: {
       term: 'weight trend',
-      def: 'Least-squares slope of your logged weight in kg per week. Negative means trending down.',
+      def: 'Weight trend is the weekly rate of change in your logged weight. A negative value means your weight is decreasing.',
     },
     wgoal: {
       term: 'weight goal',
-      def: 'Target weight from Garmin Connect. The delta is current minus goal; the ETA divides the gap by your current weekly trend, shown only while the trend actually converges.',
+      def: 'Weight goal comes from Garmin Connect. The difference is your current weight minus your goal. The estimated date uses your current weekly trend and appears only when the trend is moving toward the goal.',
     },
     bodyfat: {
       term: 'body fat',
-      def: 'Bio-impedance body-fat percentage from the Index scale. Trend matters more than any single reading — hydration swings a measurement by $\\pm 1\\%$.',
+      def: 'Body fat is the percentage reported by the Garmin Index scale. Use the trend instead of one reading because hydration can change the result by about 1 percentage point.',
     },
     dexa: {
       term: 'DEXA body composition',
-      def: 'Lab scan split into total mass, fat mass, lean mass, and bone mineral content. Use it as the composition anchor; the scale gives the noisier daily trend.',
+      def: 'DEXA is a lab scan that measures total mass and separates fat mass from lean mass. It also measures bone mineral content. Use it as the main body composition reading. The scale is useful for following daily changes.',
     },
     bmi: {
       term: 'BMI',
-      def: 'Body mass index, $\\mathrm{kg}/\\mathrm{m}^2$. Blunt for muscular athletes — read it alongside body fat, not instead of it.',
+      def: 'BMI is your weight in kilograms divided by your height in metres squared. Muscle can raise BMI, so read it together with body fat.',
     },
     bmr: {
-      term: 'BMR (Katch-McArdle)',
-      def: 'Resting daily burn from lean mass, $\\mathrm{BMR}=370+21.6\\,\\mathrm{LBM}$ with $\\mathrm{LBM}=\\text{weight}\\,(1-\\text{bodyfat})$ in kg. Driven by the Index scale’s body-fat reading, so it tracks composition rather than scale weight.',
+      term: 'BMR (Katch McArdle)',
+      def: 'BMR estimates how many calories your body uses each day at rest. This page uses the Katch McArdle formula, which starts from lean mass. The estimate changes when the Garmin Index scale reports a new body fat value.',
     },
     effort: {
       term: 'relative effort',
-      def: "Strava's Relative Effort score uses heart rate or perceived exertion. The chart sums every scored activity by calendar week. The shaded target uses the previous three complete weeks.",
+      def: "Strava's Relative Effort score uses heart rate or your own effort rating. This chart adds the scores from each calendar week. The shaded range is based on the three previous full weeks.",
     },
     hrv: {
       term: 'HRV',
-      def: 'Heart-rate variability (RMSSD, ms). Tracked as the 7-day mean of $\\ln(\\mathrm{RMSSD})$ against a 28-day personal baseline, $z=(\\overline{\\ln\\mathrm{RMSSD}}_{7}-\\mu_{28})/\\sigma_{28}$. Below $-1\\sigma$ flags parasympathetic suppression.',
+      def: 'HRV is the change in time between heartbeats, measured in milliseconds. This chart compares your 7 day average with a 28 day personal baseline. A value more than one standard deviation below your baseline is far below your usual range and can be a sign of poor recovery.',
     },
     rhr: {
-      term: 'resting HR',
-      def: 'Overnight low heart rate in bpm. A rise of $\\ge 5$ bpm or $+1\\sigma$ over the 28-day baseline is an early fatigue or illness signal.',
+      term: 'resting heart rate',
+      def: 'Resting heart rate is your lowest overnight heart rate. A rise of at least 5 bpm, or more than one standard deviation above your 28 day baseline, can be an early sign of fatigue or illness.',
     },
     tempdev: {
-      term: 'temp deviation',
-      def: 'Skin temperature against your personal baseline ($^\\circ\\mathrm{C}$). $\\ge +0.5\\,^\\circ\\mathrm{C}$ reads as a possible immune response, often $24\\text{–}48$ h before symptoms.',
+      term: 'temperature deviation',
+      def: 'Temperature deviation is the change in skin temperature from your personal baseline. An increase of at least 0.5 °C can be a sign that your immune system is responding to something. It may appear 24 to 48 hours before symptoms.',
     },
     sleepdebt: {
       term: 'sleep debt',
-      def: 'Rolling 14-night shortfall against a 7 h target, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. $7$ h is the adult minimum; athletes often need $8\\text{–}10$ h.',
+      def: 'Sleep debt adds up the time you slept below 7 hours during the past 14 nights. This chart uses 7 hours as its target. Athletes often need 8 to 10 hours.',
     },
     overreaching: {
       term: 'overreaching',
-      def: 'Suppressed HRV ($z\\le-1$) while load spikes (ACWR caution/high or ramp $>10\\%$) — the combination that precedes non-functional overreaching.',
+      def: 'Overreaching is flagged when HRV is low while training load rises quickly. Here, low HRV means at least one standard deviation below your baseline. A fast load increase means a high ACWR or a weekly ramp above 10%.',
     },
     oreadiness: {
-      term: 'readiness',
-      def: 'Oura’s $0\\text{–}100$ daily readiness: $\\ge 85$ optimal, $70\\text{–}84$ good, $<70$ pay attention. Streaks under 70 flag accumulated strain.',
+      term: 'Oura Readiness',
+      def: 'Oura Readiness is a daily score from 0 to 100. A score of 85 or higher is optimal. A score from 70 to 84 is good. A score below 70 calls for attention. Several days below 70 can point to accumulated strain.',
     },
     vo2max: {
       term: 'VO₂max',
-      def: 'Maximal oxygen uptake in $\\mathrm{ml/kg/min}$. Bike path: $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ with $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ and FTP as $95\\%$ of best 20-min power.',
+      def: 'VO₂max is the maximum amount of oxygen your body can use during hard exercise. It is measured in millilitres per kilogram per minute. The cycling estimate starts with FTP. This page treats FTP as 95% of your best 20 minute power, then estimates maximum aerobic power and VO₂max.',
     },
     ftp: {
       term: 'FTP hypothesis',
-      def: 'Functional threshold power estimated from a treadmill VO₂max test. The chain crosses sport modality and invents the missing VT2, so use HR zones for training until a bike power test replaces it.',
+      def: 'FTP is the cycling power you may be able to hold for about one hour. This estimate comes from a treadmill VO₂max test, so it crosses from running to cycling and has low confidence. Use your heart rate zones until you complete a bike power test.',
     },
     fitage: {
       term: 'fitness age',
-      def: 'The age whose population-median VO₂max (FRIEND registry, male) equals yours, clamped $20\\text{–}80$. Lower than calendar age means the engine outruns the birthday.',
+      def: 'Fitness age is the age with the same median VO₂max in the male FRIEND reference data. This chart limits the result to ages 20 to 80. A lower fitness age means your VO₂max is above the median for your calendar age.',
     },
     vam: {
       term: 'VAM',
-      def: 'Velocità ascensionale media — vertical metres climbed per hour, $\\mathrm{gain}\\cdot 3600/t$; $\\times 3.281$ for $\\mathrm{ft/h}$. Recreational $\\approx 600\\text{–}1000\\,\\mathrm{m/h}$; pro climbers exceed $1600$.',
+      def: 'VAM is the vertical distance you climb in one hour. This page calculates it from elevation gain and moving time. It shows metres per hour or feet per hour based on your unit setting.',
     },
     radar: {
       term: 'abilities',
-      def: 'Each discipline uses six scores from 0 to 100. Sprint and threshold use bike power or speed in the water and on foot. Endurance uses the training load for that sport over 42 days. Bike and run use climbing rate and cadence for the fourth and fifth axes. Swim uses the fastest valid activity pace and mean activity stroke rate in those positions. Recovery uses mean readiness. The dashed outline projects each axis 28 days from its trend over the last 28 days.',
+      def: 'Each sport has six scores from 0 to 100. Sprint and threshold use power or speed. Endurance uses 42 days of training load. Bike and run also use climbing rate and cadence. Swim uses pace and stroke rate. Recovery uses your average readiness. The dashed line shows the projected score 28 days from now.',
     },
     ef: {
       term: 'efficiency factor',
-      def: 'Aerobic output per heartbeat: $\\mathrm{NP}/\\overline{\\mathrm{HR}}$ on the bike, graded speed per beat on the run. Rising EF at equal effort means the engine is getting cheaper.',
+      def: 'Efficiency factor compares your pace or power with your heart rate. On the bike, it divides normalized power by average heart rate. Normalized power gives more weight to hard efforts. On the run, the calculation divides speed adjusted for hills by average heart rate. A higher value at the same effort means you are producing more output per heartbeat.',
     },
     decouple: {
       term: 'decoupling',
-      def: 'Pw:Hr drift $(E_1-E_2)/E_1$ across session halves. $<5\\%$ means coupled — a durable aerobic base; $>10\\%$ the engine fades late.',
+      def: 'Decoupling compares the pace or power you produced per heartbeat in the first and second half of a workout. A lower value is better. A value under 5% means you stayed steady. A value over 10% means you faded in the second half.',
     },
     legdist: {
       term: 'total distance',
-      def: 'Distance covered in this discipline over the season window. Swims read in metres; ride and run follow the km/mi toggle.',
+      def: 'Total distance is the distance covered in this sport during the selected season. Swim distance is shown in metres. Bike and run distance use the kilometre or mile setting.',
     },
     legcount: {
       term: 'sessions',
-      def: 'Number of workouts logged in this discipline over the window.',
+      def: 'This is the number of workouts logged for this sport during the selected season.',
     },
-    legtime: { term: 'total time', def: 'Total moving time across these sessions.' },
+    legtime: { term: 'total time', def: 'Total time adds the moving time from these workouts.' },
     herodist: {
       term: 'season total',
-      def: 'Combined swim, bike, and run distance over the window. Follows the km/mi toggle.',
+      def: 'Season total adds the distance from all three sports during the selected season. It uses the kilometre or mile setting.',
     },
   },
 }
@@ -612,7 +622,7 @@ const fr: TriDict = {
     strain: 'contrainte',
     'fitness age': 'âge de forme',
     base: 'base',
-    'ACSM inverse': 'ACSM inverse',
+    'ACSM estimate': 'estimation ACSM',
     rhr: 'fc',
     sprint: 'sprint',
     threshold: 'seuil',
@@ -714,25 +724,39 @@ const fr: TriDict = {
     trunk: 'tronc',
     bmd: 'dmo',
     'no power or hr data yet': 'pas encore de données puissance ou fc',
+    'This estimate comes from running VO2max.': 'Cette estimation vient de la VO₂max en course.',
+    'A lower resting heart rate is better.':
+      'Une fréquence cardiaque au repos plus basse est meilleure.',
+    'The 7 day average is compared with the 28 day baseline.':
+      'La moyenne sur 7 jours est comparée à la référence sur 28 jours.',
+    'This is pace or power per heartbeat.':
+      "Il s'agit de l'allure ou de la puissance par battement.",
+    'This needs at least 20 minutes with heart rate and pace or power data.':
+      "Il faut au moins 20 minutes avec la fréquence cardiaque et l'allure ou la puissance.",
+    'Under 5% means steady output.': 'Une valeur sous 5 % signifie un effort stable.',
+    'From 5% to 10% means some late fade.':
+      'Une valeur de 5 % à 10 % signifie une légère baisse en fin de séance.',
+    'Over 10% means high late fade.':
+      'Une valeur au-dessus de 10 % signifie une forte baisse en fin de séance.',
     'no vo2 test logged': 'aucun test vo2',
     'vt1 · aerobic threshold': 'vt1 · seuil aérobie',
     'no vo2-derived ftp estimate': "pas d'estimation ftp via vo2",
-    'efficiency chain': "chaîne d'efficience",
-    'absolute vo2max': 'vo2max absolu',
-    'cycling vo2max': 'vo2max vélo',
-    'vo2 at threshold': 'vo2 au seuil',
-    'metabolic power': 'puissance métabolique',
-    MAP: 'PMA',
-    bodyweight: 'poids',
-    'vo2 report input': 'issu du rapport vo2',
+    'efficiency estimate': "estimation par l'efficacité",
+    'total running vo2max': 'vo2max totale en course',
+    'estimated cycling vo2max': 'vo2max estimée à vélo',
+    'vo2 used at threshold': 'vo2 utilisée au seuil',
+    'energy used per second': 'énergie utilisée par seconde',
+    'maximum aerobic power': 'puissance aérobie maximale',
+    'value from vo2 report': 'valeur du rapport vo2',
     'running vo2max': 'vo2max course',
-    'measured treadmill value': 'mesuré sur tapis',
-    'cross-modal discount': 'décote inter-modale',
-    'running to cycling haircut': 'décote course → vélo',
-    'LT2 fraction': 'fraction LT2',
-    'VT2 was not detected': 'VT2 non détecté',
-    'gross efficiency': 'efficience brute',
-    'cycling mechanical yield': 'rendement mécanique vélo',
+    'measured during treadmill test': 'mesurée pendant le test sur tapis',
+    'running to cycling adjustment': 'ajustement de la course au vélo',
+    'reduces running vo2max for cycling': 'réduit la vo2max en course pour le vélo',
+    'vo2max used at threshold': 'vo2max utilisée au seuil',
+    'estimated because the treadmill test did not find the second threshold':
+      "estimée car le test sur tapis n'a pas trouvé le second seuil",
+    'cycling efficiency': 'efficacité à vélo',
+    'share of energy turned into bike power': "part de l'énergie transformée en puissance à vélo",
     reset: 'réinit.',
     'no heart data yet': 'pas encore de données cardiaques',
     'map unavailable': 'carte indisponible',
@@ -788,7 +812,8 @@ const fr: TriDict = {
     average: 'moyenne',
     projected: 'projetée',
     projection: 'projection',
-    'dashes = projected from bike power': 'tirets = projection via la puissance vélo',
+    'dashed line is projected from bike power':
+      'la ligne pointillée est une projection basée sur la puissance à vélo',
     'vs current': 'vs actuel',
     finish: 'arrivée',
     'avg power': 'puiss moy',
@@ -860,213 +885,218 @@ const fr: TriDict = {
     age: 'âge',
     feet: 'pieds',
     metres: 'mètres',
-    'trend-projected finish · 80% range · incl. T1+T2':
-      'arrivée projetée par tendance · plage 80 % · incl. T1+T2',
+    'projected finish range, including both transitions':
+      "Le temps d'arrivée a 80 % de chances de se trouver dans cette plage. Les deux transitions sont incluses.",
     'custom date missing': 'date perso manquante',
     'radar sprint bike definition':
-      "le sprint est la meilleure puissance vélo sur 5 s divisée par la masse corporelle. il mesure le punch anaérobie court avant que l'aérobie prenne le relais.",
+      'Le sprint utilise ta meilleure puissance à vélo sur 5 secondes, divisée par ton poids. Une valeur plus haute signifie plus de puissance par kilogramme pendant un effort court.',
     'radar sprint run definition':
-      'le sprint est la meilleure vitesse de course sur 30 s enregistrée. il mesure la vitesse max des jambes plutôt que la condition aérobie.',
+      'Le sprint utilise ta vitesse de course la plus rapide sur 30 secondes. Il montre ta vitesse maximale pendant un effort court.',
     'radar sprint swim definition':
-      "le sprint est la vitesse moyenne la plus rapide de n'importe quelle natation enregistrée. les séries de piscine quantifiées au tour rendent la vitesse totale plus honnête comme pic.",
+      "Le sprint utilise la vitesse moyenne la plus rapide d'une séance de natation. Les données de piscine sont enregistrées par longueur, donc cette page n'estime pas un pic plus court au sein de la séance.",
     'radar threshold bike definition':
-      "le seuil est la FTP divisée par la masse corporelle. la FTP estime la puissance tenable près de l'état stable pendant environ une heure.",
+      'Le seuil utilise la FTP divisée par ton poids. La FTP estime la puissance à vélo que tu peux tenir pendant environ une heure.',
     'radar threshold run definition':
-      "le seuil est la vitesse de course ajustée à la pente que tu peux tenir près de l'état stable, estimée depuis tes efforts soutenus les plus rapides.",
+      'Le seuil utilise la vitesse de course la plus rapide que tu peux tenir pendant un effort soutenu, après un ajustement pour les côtes.',
     'radar threshold swim definition':
-      "le seuil est la vitesse critique de natation, l'allure tenable sur une longue nage régulière, estimée depuis les efforts soutenus.",
+      "Le seuil utilise la vitesse critique de natation. Elle estime l'allure que tu peux tenir pendant une longue nage régulière à partir de tes efforts soutenus.",
     'radar endurance definition':
-      'l’endurance est la CTL de cette discipline, une charge pondérée sur 42 jours, notée face à sa part cible de la charge totale.',
+      "L'endurance utilise la charge d'entraînement de ce sport sur 42 jours. La note compare cette charge avec la part cible de ton entraînement total.",
     'radar pace swim definition':
-      "l'allure est la meilleure allure valide en temps actif d'une activité de natation enregistrée. moins de secondes par 100 mètres donne une note plus élevée.",
+      "L'allure utilise la meilleure allure moyenne valide d'une séance de natation, selon le temps actif. Moins de secondes par 100 mètres donne une note plus haute.",
     'radar climb run definition':
-      'la grimpe est la VAM à pied, les {unit} de dénivelé gagnés par heure de temps en mouvement en course.',
+      'La grimpe utilise les {unit} de dénivelé gagnés par heure de course. Elle compte le temps en mouvement.',
     'radar climb bike definition':
-      'la grimpe est la VAM, le rythme de gain vertical en montée. une VAM plus haute veut dire plus de {unit} grimpés par heure.',
+      'La grimpe utilise les {unit} de dénivelé gagnés par heure de vélo. Elle compte le temps en mouvement.',
     'radar cadence bike definition':
-      'la cadence note la proximité du pédalage moyen avec 90 rpm. surmouliner et sous-mouliner coûtent des points.',
+      'La cadence compare ta fréquence moyenne de pédalage avec 90 tours par minute. La note baisse lorsque ta fréquence est au-dessus ou en dessous de 90.',
     'radar cadence run definition':
-      'la cadence note la proximité de la foulée moyenne avec 180 spm. la sur-foulée apparaît ici en premier.',
+      'La cadence compare ta fréquence moyenne de pas avec 180 pas par minute. La note baisse lorsque ta fréquence est au-dessus ou en dessous de 180.',
     'radar stroke rate swim definition':
-      'la fréquence de nage est la moyenne des fréquences des activités de natation appariées. chaque fréquence utilise le nombre de coups et le temps pendant lequel les coups sont enregistrés. la note vise 30 coups par minute.',
+      'La fréquence de nage est la moyenne des fréquences calculées pour les séances qui contiennent un nombre de coups et une durée. Chaque fréquence divise le nombre de coups par le temps pendant lequel ils ont été enregistrés. La cible est de 30 coups par minute.',
     'radar recovery definition':
-      'la récupération utilise la moyenne du score de préparation Oura sur 14 jours quand elle existe, puis la VFC comme signal de repli.',
+      'La récupération utilise ton score Oura moyen des 14 derniers jours. Si le score Oura manque, elle utilise la VFC.',
     'radar unit wkg definition':
-      '$\\mathrm{W/kg}$ signifie watts par kilogramme : puissance divisée par la masse corporelle, donc un cycliste à 270 W et 90 kg vaut 3,0 W/kg.',
+      '$\\mathrm{W/kg}$ signifie watts par kilogramme de poids. Un cycliste qui produit 270 W à 90 kg a 3,0 W/kg.',
     'radar unit ctl definition':
-      "CTL signifie charge chronique d'entraînement : moyenne exponentielle pondérée du stress d'entraînement sur 42 jours.",
+      "La CTL est ta charge d'entraînement quotidienne moyenne sur 42 jours. Les jours récents comptent davantage.",
     'radar unit fth definition':
-      '$\\mathrm{ft/h}$ signifie pieds verticaux par heure, convertis depuis les mètres à $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$. la VAM vaut $\\mathrm{gain}\\cdot3600/t$ avec le temps de montée en mouvement en secondes.',
+      '$\\mathrm{ft/h}$ signifie pieds de dénivelé par heure. Cette page convertit les mètres en pieds avec $1\\,\\mathrm{m}=3.281\\,\\mathrm{ft}$.',
     'radar unit mh definition':
-      '$\\mathrm{m/h}$ signifie mètres verticaux par heure. la VAM vaut $\\mathrm{gain}\\cdot3600/t$ avec le temps de montée en mouvement en secondes.',
+      '$\\mathrm{m/h}$ signifie mètres de dénivelé par heure. Cette page divise le dénivelé par le temps de montée et ramène le résultat à une heure.',
     'radar unit mspeed definition':
-      '$\\mathrm{m/s}$ signifie mètres par seconde de vitesse horizontale. multiplie par 3.6 pour km/h ; $1000/v$ donne les secondes par kilomètre.',
+      '$\\mathrm{m/s}$ signifie mètres parcourus par seconde. Multiplie la valeur par 3,6 pour la convertir en kilomètres par heure.',
     'radar unit s100m definition':
-      's/100 m signifie secondes par 100 mètres. une valeur plus basse correspond à une allure plus rapide.',
-    'radar unit rpm definition': 'rpm signifie tours par minute, la fréquence de pédalage à vélo.',
-    'radar unit spm definition': 'spm signifie pas par minute, la cadence de course.',
+      's/100 m signifie le nombre de secondes nécessaires pour nager 100 mètres. Une valeur plus basse signifie une allure plus rapide.',
+    'radar unit rpm definition':
+      'rpm signifie tours par minute. Cette unité mesure la vitesse de pédalage.',
+    'radar unit spm definition':
+      'spm signifie pas par minute. Cette unité mesure ta cadence de course.',
     'radar unit strmin definition':
-      'str/min signifie coups par minute. chaque fréquence d’activité divise le nombre de coups par le temps pendant lequel les coups sont enregistrés.',
+      'str/min signifie coups par minute. La fréquence divise le nombre de coups par le temps pendant lequel ils ont été enregistrés.',
     'radar unit readiness definition':
-      'la préparation est le score quotidien Oura 0-100 calculé depuis sommeil, VFC, fréquence cardiaque au repos et contrainte récente.',
+      "La préparation est le score quotidien de récupération d'Oura, de 0 à 100. Elle utilise ton sommeil et ta VFC. Elle utilise aussi ta fréquence cardiaque au repos et ton activité récente.",
     'radar unit ms definition':
-      'ms signifie millisecondes. la VFC est la variation battement à battement du rythme cardiaque ; des valeurs plus hautes reflètent souvent une meilleure récupération relative à la référence.',
+      'ms signifie millisecondes. La VFC mesure la variation du temps entre les battements. Une valeur au-dessus de ta plage habituelle peut indiquer une meilleure récupération.',
     'radar unit default definition':
-      'la valeur brute est la mesure source projetée sur le score radar 0-100 de cet axe.',
+      "La valeur brute est la mesure d'origine utilisée pour calculer cette note de 0 à 100.",
   },
   gloss: {
     ctl: {
-      term: 'condition/CTL',
-      def: "la charge d'entraînement chronique est une moyenne pondérée sur 42 jours du stress quotidien. monte lentement avec un travail régulier, le meilleur indicateur de la condition physique.",
+      term: 'condition (CTL)',
+      def: "La condition représente ta charge d'entraînement quotidienne moyenne sur les 42 derniers jours. Les jours récents comptent davantage. Elle monte quand tu t'entraînes régulièrement et baisse quand tu t'entraînes moins.",
     },
     atl: {
-      term: 'fatigue/ATL',
-      def: "la charge d'entraînement aiguë est une moyenne pondérée sur 7 jours du stress. grimpe après les jours durs, l'indicateur de ta fatigue du moment.",
+      term: 'fatigue (ATL)',
+      def: "La fatigue représente ta charge d'entraînement quotidienne moyenne sur les 7 derniers jours. Les jours récents comptent davantage. Une valeur haute signifie que tu t'es plus entraîné récemment.",
     },
     tsb: {
-      term: 'forme/TSB',
-      def: "l'équilibre de stress $\\mathrm{TSB}=\\mathrm{CTL}-\\mathrm{ATL}$. positif = frais et affûté ; négatif = chargé et fatigué.",
+      term: 'forme (TSB)',
+      def: 'La forme est la condition moins la fatigue. Une valeur positive signifie que ta charge récente est sous ta charge à long terme, donc tu devrais être plus frais. Une valeur négative signifie que ta charge récente est plus haute.',
     },
     acwr: {
       term: 'ACWR',
-      def: 'rapport charge aiguë/chronique $\\mathrm{ACWR}=\\text{7d}/\\text{28d}$. $0.8\\text{–}1.3$ est la zone sûre ; au-dessus de $1.5$ signale un pic de risque de blessure.',
+      def: "L'ACWR divise ta charge des 7 derniers jours par ta charge des 28 derniers jours. La plage cible va de 0,8 à 1,3. Une valeur au-dessus de 1,5 signifie que ta charge récente a monté rapidement.",
     },
     ramp: {
       term: 'progression',
-      def: "variation de la condition (CTL) d'une semaine à l'autre. positif = en construction ; les gros sauts sont le risque classique du trop-tôt-trop-vite.",
+      def: "La progression est le changement de condition d'une semaine à l'autre. Une valeur positive signifie que ta charge augmente. Un grand saut signifie que ta charge a augmenté rapidement.",
     },
     monotony: {
       term: 'monotonie',
-      def: "uniformité de la charge quotidienne sur la semaine, $\\text{monotony}=\\mu/\\sigma$ (moyenne sur écart-type). au-dessus de $\\approx 2$ avec une charge élevée, c'est le signal d'alerte de contrainte de Foster.",
+      def: "La monotonie mesure à quel point tes charges quotidiennes se ressemblent pendant la semaine. Une valeur haute signifie que les journées ont des charges proches. Une valeur au-dessus d'environ 2, avec une charge hebdomadaire haute, est un signal d'alerte dans la méthode de Foster.",
     },
     strain: {
       term: 'contrainte',
-      def: '$\\text{strain}=\\text{weekly load}\\times\\text{monotony}$. un entraînement élevé et uniforme score haut, annonce souvent le surentraînement.',
+      def: 'La contrainte est la charge hebdomadaire multipliée par la monotonie. Elle est haute lorsque la semaine a une charge haute et peu de variation entre les jours.',
     },
     load: {
       term: 'charge',
-      def: "stress par séance $\\mathrm{load}\\approx\\mathrm{IF}^2\\cdot t$, calibré pour qu'une heure au seuil $\\approx 100$. fc, puissance et cadence sont relevées par activité ; cette charge reste dérivée de l'allure pour l'instant.",
+      def: "La charge estime la difficulté de chaque séance à partir de l'allure et de la durée. Environ 100 points représentent une heure au seuil. L'activité enregistre aussi chaque valeur de capteur. Cette note utilise seulement l'allure et la durée.",
     },
     score: {
-      term: 'readiness',
-      def: "un mélange 0–100 de ta condition face aux exigences de la course ($45\\%$) et de la part de distance de chaque segment réellement couverte à l'entraînement ($55\\%$).",
+      term: 'préparation',
+      def: "La préparation est une note de 0 à 100. La condition comparée aux exigences de la course représente 45 %. La distance couverte à l'entraînement pour chaque segment représente 55 %.",
     },
     binding: {
       term: 'segment limitant',
-      def: 'la discipline qui plombe le plus ta readiness — la plus faible couverture de distance $\\times$ récence. à travailler en premier.',
+      def: 'Le segment limitant est la discipline qui réduit le plus ta note de préparation. Il combine la part de la distance de course déjà couverte avec la date de ton dernier entraînement dans cette discipline. Travaille ce segment en premier.',
     },
     predtime: {
       term: 'temps estimé',
-      def: 'chaque segment vient de la meilleure allure prédite par le modèle pour la distance de course, avec la décroissance Riegel au seuil en repli tant que le modèle charge, plus $5$ min fixes pour T1 et T2.',
+      def: "Le temps estimé est le temps d'arrivée pour les trois segments et les deux transitions. Le modèle d'allure prédit chaque segment. Pendant son chargement, l'estimation ajuste ton allure seuil à la distance de course. Chaque transition ajoute 5 minutes.",
     },
     conf: {
       term: 'fiabilité',
-      def: "quantité de données derrière l'estimation. firm = assez d'efforts récents ; low = seulement deux ou trois ; stale = effort le plus récent vieux de plus de 45 jours ; prior = aucune donnée, hypothèse générique.",
+      def: 'La fiabilité indique la quantité de données récentes derrière une estimation. "firm" signifie que les efforts récents sont assez nombreux. "low" signifie que les efforts sont peu nombreux. "stale" signifie que le dernier effort date de plus de 45 jours. "prior" signifie que les données personnelles manquent, donc le calcul utilise une valeur de départ générale.',
     },
     threshold: {
       term: 'allure seuil',
-      def: "ton allure ajustée à la pente sur un effort d'environ 1 h, prise au 90e centile de tes séances. l'ancre de toute prédiction.",
+      def: "L'allure seuil estime ton allure pour un effort d'environ une heure. Elle utilise tes séances les plus rapides et ajuste l'allure de course pour les côtes. Le modèle d'allure l'utilise comme point de départ.",
     },
     trend: {
       term: "tendance d'allure",
-      def: "le sens d'évolution de ton allure seuil, ajustée par EWMA ou moindres carrés sur les séances récentes. la bande ombrée est l'incertitude de la prévision.",
+      def: 'La tendance indique si ton allure seuil devient plus rapide ou plus lente. Elle utilise tes séances récentes. La zone ombrée montre la plage des valeurs futures probables.',
     },
     weight: {
       term: 'poids',
-      def: "pesées quotidiennes. alimente le contexte de récupération et les estimations d'énergie dépendantes du poids.",
+      def: "Le poids vient de tes mesures quotidiennes. Il est utilisé dans les graphiques de récupération et dans les estimations d'énergie qui dépendent du poids.",
     },
     wtrend: {
       term: 'tendance de poids',
-      def: 'pente par moindres carrés de ton poids enregistré en kg par semaine. négatif = à la baisse.',
+      def: 'La tendance de poids est le taux de changement hebdomadaire de ton poids enregistré. Une valeur négative signifie que ton poids baisse.',
     },
     wgoal: {
       term: 'objectif de poids',
-      def: "poids cible depuis Garmin Connect. le delta est l'actuel moins l'objectif ; l'échéance divise l'écart par ta tendance hebdo actuelle, affichée seulement tant que la tendance converge vraiment.",
+      def: "L'objectif de poids vient de Garmin Connect. La différence est ton poids actuel moins ton objectif. La date estimée utilise ta tendance hebdomadaire et apparaît seulement lorsque tu te rapproches de l'objectif.",
     },
     bodyfat: {
       term: 'masse grasse',
-      def: "pourcentage de masse grasse par bio-impédance, depuis la balance Index. la tendance compte plus qu'une mesure isolée — l'hydratation fait varier une mesure de $\\pm 1\\%$.",
+      def: "La masse grasse est le pourcentage indiqué par la balance Garmin Index. Utilise la tendance au lieu d'une seule mesure, car l'hydratation peut changer le résultat d'environ 1 point de pourcentage.",
     },
     dexa: {
       term: 'composition corporelle DEXA',
-      def: "scan labo séparant masse totale, masse grasse, masse maigre et contenu minéral osseux. c'est l'ancre de composition ; la balance donne la tendance quotidienne plus bruitée.",
+      def: 'Le DEXA est un scan en laboratoire qui mesure la masse totale et sépare la masse grasse de la masse maigre. Il mesure aussi le contenu minéral osseux. Utilise le DEXA comme mesure principale de composition corporelle. La balance sert à suivre les changements quotidiens.',
     },
     bmi: {
       term: 'IMC',
-      def: 'indice de masse corporelle, $\\mathrm{kg}/\\mathrm{m}^2$. grossier pour les athlètes musclés — à lire avec la masse grasse, pas à sa place.',
+      def: "L'IMC est ton poids en kilogrammes divisé par ta taille en mètres au carré. Les muscles peuvent augmenter l'IMC, donc lis cette valeur avec la masse grasse.",
     },
     bmr: {
-      term: 'MB (Katch-McArdle)',
-      def: "dépense quotidienne au repos d'après la masse maigre, $\\mathrm{BMR}=370+21.6\\,\\mathrm{LBM}$ avec $\\mathrm{LBM}=\\text{weight}\\,(1-\\text{bodyfat})$ en kg. piloté par la mesure de masse grasse de la balance Index, donc il suit la composition plutôt que le poids brut.",
+      term: 'métabolisme de base (Katch McArdle)',
+      def: "Le métabolisme de base estime les calories que ton corps utilise chaque jour au repos. Cette page utilise la formule de Katch McArdle, qui part de la masse maigre. L'estimation change lorsque la balance Garmin Index indique une nouvelle valeur de masse grasse.",
     },
     effort: {
       term: 'effort relatif',
-      def: "le score d'effort relatif de Strava utilise la fréquence cardiaque ou l'effort perçu. le graphique additionne toutes les activités notées par semaine civile. la zone cible utilise les trois semaines complètes précédentes.",
+      def: "Le score d'effort relatif de Strava utilise la fréquence cardiaque ou ta propre note d'effort. Ce graphique additionne les scores de chaque semaine civile. La zone ombrée repose sur les trois semaines complètes précédentes.",
     },
     hrv: {
       term: 'VFC',
-      def: 'variabilité de la fréquence cardiaque (RMSSD, ms). suivie comme la moyenne sur 7 jours de $\\ln(\\mathrm{RMSSD})$ face à une ligne de base personnelle sur 28 jours, $z=(\\overline{\\ln\\mathrm{RMSSD}}_{7}-\\mu_{28})/\\sigma_{28}$. sous $-1\\sigma$, signale une inhibition parasympathique.',
+      def: "La VFC est la variation du temps entre les battements. Elle est mesurée en millisecondes. Ce graphique compare ta moyenne sur 7 jours avec ta référence personnelle sur 28 jours. Une valeur située à plus d'un écart type sous ta référence peut signaler une mauvaise récupération.",
     },
     rhr: {
-      term: 'FC repos',
-      def: 'fréquence cardiaque basse nocturne en bpm. une hausse de $\\ge 5$ bpm ou $+1\\sigma$ au-dessus de la ligne de base sur 28 jours est un signe précoce de fatigue ou de maladie.',
+      term: 'fréquence cardiaque au repos',
+      def: "La fréquence cardiaque au repos est ta fréquence la plus basse pendant la nuit. Une hausse d'au moins 5 bpm, ou de plus d'un écart type au-dessus de ta référence sur 28 jours, peut être un signe précoce de fatigue ou de maladie.",
     },
     tempdev: {
       term: 'écart de température',
-      def: 'température cutanée face à ta ligne de base personnelle ($^\\circ\\mathrm{C}$). $\\ge +0.5\\,^\\circ\\mathrm{C}$ se lit comme une possible réponse immunitaire, souvent $24\\text{–}48$ h avant les symptômes.',
+      def: "L'écart de température est la différence entre ta température cutanée et ta référence personnelle. Une hausse d'au moins 0,5 °C peut signaler une réponse du système immunitaire. Elle peut apparaître 24 à 48 heures avant les symptômes.",
     },
     sleepdebt: {
       term: 'dette de sommeil',
-      def: 'déficit glissant sur 14 nuits face à une cible de 7 h, $D=\\sum_{i=1}^{14}\\max(0,\\,T-s_i)$. $7$ h est le minimum adulte ; les athlètes ont souvent besoin de $8\\text{–}10$ h.',
+      def: 'La dette de sommeil additionne le temps dormi sous 7 heures pendant les 14 dernières nuits. Ce graphique utilise une cible de 7 heures. Les athlètes ont souvent besoin de 8 à 10 heures.',
     },
     overreaching: {
       term: 'surmenage',
-      def: 'VFC abaissée ($z\\le-1$) pendant que la charge grimpe (ACWR caution/high ou progression $>10\\%$) — la combinaison qui précède le surmenage non fonctionnel.',
+      def: 'Le surmenage est signalé lorsque la VFC est basse pendant que la charge augmente rapidement. Ici, une VFC basse signifie au moins un écart type sous ta référence. Une hausse rapide signifie un ACWR élevé ou une progression hebdomadaire au-dessus de 10 %.',
     },
     oreadiness: {
-      term: 'readiness Oura',
-      def: "la readiness quotidienne $0\\text{–}100$ d'Oura : $\\ge 85$ optimal, $70\\text{–}84$ bon, $<70$ vigilance. les séries sous 70 signalent une contrainte accumulée.",
+      term: 'préparation Oura',
+      def: 'La préparation Oura est une note quotidienne de 0 à 100. Une note de 85 ou plus est optimale. Une note de 70 à 84 est bonne. Une note sous 70 demande ton attention. Plusieurs jours sous 70 peuvent signaler une contrainte accumulée.',
     },
     vo2max: {
       term: 'VO₂max',
-      def: "consommation maximale d'oxygène en $\\mathrm{ml/kg/min}$. voie vélo : $\\dot{V}O_2 = 10.8\\,\\mathrm{MAP}/m + 7$ avec $\\mathrm{MAP}=\\mathrm{FTP}/0.75$ et la FTP à $95\\%$ du meilleur 20-min de puissance.",
+      def: "La VO₂max est la quantité maximale d'oxygène que ton corps peut utiliser pendant un effort intense. Elle est mesurée en millilitres par kilogramme par minute. L'estimation à vélo part de la FTP. Cette page estime la FTP à 95 % de ta meilleure puissance sur 20 minutes, puis calcule la puissance aérobie maximale et la VO₂max.",
     },
     ftp: {
       term: 'hypothèse FTP',
-      def: "puissance au seuil fonctionnel estimée depuis un test VO₂max sur tapis. la chaîne traverse les modalités sportives et invente le VT2 manquant, donc utilise les zones de fc à l'entraînement jusqu'à ce qu'un test de puissance à vélo la remplace.",
+      def: "La FTP est la puissance à vélo que tu pourrais tenir pendant environ une heure. Cette estimation vient d'un test de VO₂max sur tapis, donc elle passe de la course au vélo et reste peu fiable. Utilise tes zones de fréquence cardiaque jusqu'à ton prochain test de puissance à vélo.",
     },
     fitage: {
       term: 'âge physiologique',
-      def: "l'âge dont la VO₂max médiane de population (registre FRIEND, hommes) égale la tienne, bornée $20\\text{–}80$. plus bas que l'âge réel = le moteur dépasse l'état civil.",
+      def: "L'âge physiologique est l'âge qui a la même VO₂max médiane dans les données de référence FRIEND pour les hommes. Ce graphique limite le résultat de 20 à 80 ans. Un âge physiologique plus bas signifie que ta VO₂max dépasse la médiane de ton âge réel.",
     },
     vam: {
       term: 'VAM',
-      def: 'velocità ascensionale media — mètres de dénivelé grimpés par heure, $\\mathrm{gain}\\cdot 3600/t$ ; $\\times 3{,}281$ pour $\\mathrm{ft/h}$. amateur $\\approx 600\\text{–}1000\\,\\mathrm{m/h}$ ; les grimpeurs pros dépassent $1600$.',
+      def: "La VAM est le dénivelé grimpé en une heure. Cette page la calcule avec le dénivelé et le temps en mouvement. Elle affiche des mètres par heure ou des pieds par heure selon ton choix d'unités.",
     },
     radar: {
       term: 'aptitudes',
-      def: "chaque discipline utilise six notes de 0 à 100. le sprint et le seuil utilisent la puissance à vélo ou la vitesse dans l'eau et à pied. l'endurance utilise la charge d'entraînement de ce sport sur 42 jours. le vélo et la course utilisent la vitesse de grimpe et la cadence pour les quatrième et cinquième axes. la natation utilise la meilleure allure valide d'une activité et la fréquence de nage moyenne des activités à ces positions. la récupération utilise la préparation moyenne. le contour en pointillés projette chaque axe à 28 jours selon sa tendance des 28 derniers jours.",
+      def: "Chaque sport a six notes de 0 à 100. Le sprint et le seuil utilisent la puissance ou la vitesse. L'endurance utilise 42 jours de charge d'entraînement. Le vélo et la course utilisent aussi la vitesse de grimpe et la cadence. La natation utilise l'allure et la fréquence de nage. La récupération utilise ta préparation moyenne. La ligne pointillée montre la note prévue dans 28 jours.",
     },
     ef: {
       term: "facteur d'efficacité",
-      def: 'production aérobie par battement : $\\mathrm{NP}/\\overline{\\mathrm{HR}}$ à vélo, vitesse ajustée par battement à la course. un EF qui monte à effort égal = le moteur consomme moins.',
+      def: "Le facteur d'efficacité compare ton allure ou ta puissance avec ta fréquence cardiaque. À vélo, il divise la puissance normalisée par la fréquence cardiaque moyenne. La puissance normalisée donne plus de poids aux efforts intenses. En course, le calcul divise la vitesse ajustée pour les côtes par la fréquence cardiaque moyenne. Une valeur plus haute au même effort signifie plus de rendement par battement.",
     },
     decouple: {
       term: 'découplage',
-      def: "dérive Pw:Hr $(E_1-E_2)/E_1$ entre les deux moitiés de séance. $<5\\%$ = couplé, une base aérobie solide ; $>10\\%$ le moteur faiblit en fin d'effort.",
+      def: "Le découplage compare l'allure ou la puissance produite par battement entre les deux moitiés de la séance. Une valeur plus basse est meilleure. Une valeur sous 5 % signifie que l'effort est resté stable. Une valeur au-dessus de 10 % signifie une baisse pendant la seconde moitié.",
     },
     legdist: {
       term: 'distance totale',
-      def: 'distance parcourue dans cette discipline sur la fenêtre de saison. la natation se lit en mètres ; le vélo et la course suivent le bouton km/mi.',
+      def: 'La distance totale est la distance parcourue dans ce sport pendant la saison choisie. La natation est affichée en mètres. Le vélo et la course utilisent le réglage en kilomètres ou en milles.',
     },
     legcount: {
       term: 'séances',
-      def: 'nombre de séances enregistrées dans cette discipline sur la fenêtre.',
+      def: 'Ce nombre est le total des séances enregistrées pour ce sport pendant la saison choisie.',
     },
-    legtime: { term: 'temps total', def: 'temps de déplacement total sur ces séances.' },
+    legtime: {
+      term: 'temps total',
+      def: 'Le temps total additionne le temps en mouvement de ces séances.',
+    },
     herodist: {
       term: 'total saison',
-      def: 'distance combinée natation, vélo et course sur la fenêtre. suit le bouton km/mi.',
+      def: 'Le total saison additionne la distance des trois sports pendant la saison choisie. Il utilise le réglage en kilomètres ou en milles.',
     },
   },
 }
@@ -1074,6 +1104,85 @@ const fr: TriDict = {
 const TRI_I18N: Record<Locale, TriDict> = { en, fr }
 
 export const tl = (s: string): string => TRI_I18N[locale].ui[s] ?? s
+
+type Vo2SourceMethod = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'lab' | 'none'
+
+type Vo2BikeSourceText = {
+  ftpW: number
+  ftpSource: 'athlete' | 'strava' | 'derived'
+  mapW: number
+  weightKg: number
+}
+
+export const vo2SourceText = (method: Vo2SourceMethod, bike: Vo2BikeSourceText | null): string => {
+  if (method === 'garmin')
+    return locale === 'fr'
+      ? "Cette valeur vient de Garmin Connect ou d'une saisie manuelle."
+      : 'This value comes from Garmin Connect or a manual entry.'
+  if (method === 'apple')
+    return locale === 'fr'
+      ? "Cette mesure vient de l'Apple Watch."
+      : 'This is an Apple Watch measurement.'
+  if (method === 'run')
+    return locale === 'fr'
+      ? 'Cette estimation utilise la vitesse de course et la fréquence cardiaque.'
+      : 'This estimate uses running speed and heart rate.'
+  if (method === 'hrratio')
+    return locale === 'fr'
+      ? 'Cette estimation utilise les fréquences cardiaques maximale et au repos.'
+      : 'This estimate uses maximum and resting heart rate.'
+  if (method === 'lab')
+    return locale === 'fr'
+      ? "Cette valeur vient d'un test d'effort progressif."
+      : 'This value comes from a graded exercise test.'
+  if (method === 'bike' && bike != null) {
+    const weight = bike.weightKg.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', {
+      maximumFractionDigits: 1,
+    })
+    const source =
+      bike.ftpSource === 'athlete'
+        ? locale === 'fr'
+          ? 'athlète'
+          : 'athlete'
+        : bike.ftpSource === 'strava'
+          ? 'Strava'
+          : locale === 'fr'
+            ? 'estimée'
+            : 'estimated'
+    return locale === 'fr'
+      ? `FTP ${bike.ftpW} W (${source}). La puissance aérobie maximale estimée est de ${bike.mapW} W. Le poids est de ${weight} kg.`
+      : `FTP ${bike.ftpW} W (${source}). Estimated maximum aerobic power is ${bike.mapW} W. Body weight is ${weight} kg.`
+  }
+  return locale === 'fr'
+    ? 'Il manque les données de puissance ou de fréquence cardiaque.'
+    : 'There is no power or heart rate data.'
+}
+
+export const trendUnavailableText = (
+  sampleSize: number | null,
+  daysSinceLastEffort: number | null,
+): string => {
+  if (sampleSize === 0)
+    return locale === 'fr' ? "Aucun effort n'a été enregistré." : 'No efforts were recorded.'
+  if (daysSinceLastEffort === 0)
+    return locale === 'fr'
+      ? "Le dernier effort date d'aujourd'hui."
+      : 'The latest effort was today.'
+  if (daysSinceLastEffort != null) {
+    const unit =
+      locale === 'fr'
+        ? daysSinceLastEffort === 1
+          ? 'jour'
+          : 'jours'
+        : daysSinceLastEffort === 1
+          ? 'day'
+          : 'days'
+    return locale === 'fr'
+      ? `Le dernier effort remonte à ${daysSinceLastEffort} ${unit}.`
+      : `The latest effort was ${daysSinceLastEffort} ${unit} ago.`
+  }
+  return locale === 'fr' ? 'Données insuffisantes.' : 'Not enough data.'
+}
 
 export const powerCurveReferenceLabel = (year: number | null): string =>
   year == null ? tl('6-week best') : locale === 'fr' ? `meilleur de ${year}` : `${year} best`

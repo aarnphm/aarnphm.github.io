@@ -31,5 +31,5 @@ see also [[thoughts/economies of scale]]
 | $D$      | annual increase in demand                                                |
 | $x$      | time interval between introduction of successive plants (i.e: decision)  |
 | $r$      | annual discount rate                                                     |
-| $f(y)$   | cost of building and operationg a plant of capacity $y$                  |
-| $c(x)$   | discounted cost infinite orizon given a plant opening at $0,x,2x,\ldots$ |
+| $f(y)$   | cost of building and operating a plant of capacity $y$                  |
+| $c(x)$   | discounted cost infinite horizon given a plant opening at $0,x,2x,\ldots$ |

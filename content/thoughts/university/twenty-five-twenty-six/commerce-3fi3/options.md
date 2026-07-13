@@ -24,7 +24,7 @@ title: options market
 > bullish on the direction of the underlying security
 >
 > - profit if price of underlying rises, delta is positive
-> - one option for profit, the other ne for cost strategy
+> - one option for profit, the other one for cost strategy
 > - compared to stock ownership, has limited profit potential and limited risk
 > - spread, debit transaction, cash outflow, expire _in-the-money_
 > - max profit is difference between strikes minus the initial premium paid for the spread.

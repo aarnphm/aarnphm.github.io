@@ -57,7 +57,7 @@ Let $M = | \mathcal{N} | \times | \mathcal{N} |$ matrix
 ## The adjacency list representation
 
 > [!important]
-> Let $A \lbrack 0 \dots |\mathcal{N}|$ be an array of _bags_
+> Let $A \lbrack 0 \dots |\mathcal{N}| \rbrack$ be an array of _bags_
 > For every edge $(m, n \in \mathcal{E})$ add $n$ to $(m,n)$ to bag $A \lbrack id(m) \rbrack$
 
 | ops                                      | complexity                                |
@@ -85,7 +85,7 @@ Let $M = | \mathcal{N} | \times | \mathcal{N} |$ matrix
 \begin{algorithmic}
 \REQUIRE $G = (\mathcal{N}, \mathcal{E}), \text{marked}, n \in \mathcal{N}$
 \FORALL{$ (n, m) \in \mathcal{E} $}
-  \IF{$\neq \text{marked}[m]$}
+  \IF{$\neg \text{marked}[m]$}
     \STATE $\text{marked}[m] \coloneqq \text{true}$
     \STATE $\text{DFS-R}{(G, \text{marked}, m)}$
   \ENDIF

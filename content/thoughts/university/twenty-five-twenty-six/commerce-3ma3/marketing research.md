@@ -9,11 +9,11 @@ title: marketing research
 
 > [!note]
 >
-> process of planning an executing the conception, pricing promotion, and distribution of ideas, goods, and services to create exchanges that satisfy individual and organization objectives
+> process of planning and executing the conception, pricing promotion, and distribution of ideas, goods, and services to create exchanges that satisfy individual and organization objectives
 
 Note on having the ==right== {{sidenotes[principles]: right goods/services to the right people at the right place at the right time at the right price, using the right promotion techniques}}
 
-There are three axis:
+There are three axes:
 
 - Consumer
 - Systems

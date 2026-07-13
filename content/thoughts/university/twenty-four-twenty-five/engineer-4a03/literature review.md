@@ -36,7 +36,7 @@ as well as the ethical implications of AI systems. It will then conclude and pos
 
 [^framing]:
     An intelligent being learns from its experience, then applies such intuition to predict future events. How does one select appropriate context (frame) for a given situation?<br />
-    Dreyfus’ argument is that machines are yet able to represent human’s reliance on many unconscious and subconscious processes [@dreyfus1972what]. A Heideggerian AI would exhibit Dasein (being in the world).
+    Dreyfus’ argument is that machines are not yet able to represent human’s reliance on many unconscious and subconscious processes [@dreyfus1972what]. A Heideggerian AI would exhibit Dasein (being in the world).
 
 [^ssi]: Their goals are to build “artificial super intelligence” (ASI) systems. This target is largely due to certain observer-expectancy effect we observe in the current AI system.
 

@@ -42,7 +42,7 @@ For higher derivatives we have $\mathcal{L}[f^{''}(t)] = s^{2} F(s) - sf(0) - f^
 
 we can replace $s$ with $jw$
 
-ex: $G(jw) = \frac{1}{1+jw \text{RC}}$, so $|G(jw)| = |\frac{1}{1+jw \text{RC}}| = \frac{1}{\sqrt{1+(w \text{RC}^2)}}$
+ex: $G(jw) = \frac{1}{1+jw \text{RC}}$, so $|G(jw)| = |\frac{1}{1+jw \text{RC}}| = \frac{1}{\sqrt{1+(w \text{RC})^2}}$
 
 reasoning: we substitute Laplace transform with [[thoughts/Fourier transform]] with $s=jw$
 
@@ -117,6 +117,6 @@ $s=0,-5$ are poles and $s=-2$ are zeros
 | ------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
 | Basis                     | $\frac{C(z)}{R(z)} = \frac{G(z)}{1+Z[G(s)H(s)]}$                         | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-sampled-data-system.webp]]   |
 | w/ digital sensing device | $C(z) = \frac{Z[G(s)R(s)]}{1+Z(G(s)H(s))}$                               | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-sensing-device.webp]]     |
-| w/ digital controller     | $\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{1}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}$ | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]] |
+| w/ digital controller     | $\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{2}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}$ | ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]] |
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/CCS to DCS]]

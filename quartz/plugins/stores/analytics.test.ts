@@ -181,7 +181,10 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   const v = a.engine.vo2max
   assert.equal(v.method, 'bike')
   assert.equal(v.conf, 'firm')
-  assert.ok(v.note.includes('ftp 213w (strava)'))
+  assert.equal(v.bikeSource?.ftpW, 213)
+  assert.equal(v.bikeSource?.ftpSource, 'strava')
+  assert.equal(v.bikeSource?.mapW, 284)
+  assert.ok(v.bikeSource?.weightKg != null)
   assert.ok(v.value != null && v.value > 25 && v.value < 50)
   assert.ok(v.fitnessAge != null && v.fitnessAge >= 20 && v.fitnessAge <= 80)
   assert.equal(v.chronoAge, 25)
@@ -242,7 +245,8 @@ test('engine derives ftp from 20-min power only when strava declares none', () =
   const v = a.engine.vo2max
   assert.equal(v.method, 'bike')
   assert.equal(v.conf, 'low')
-  assert.ok(v.note.includes('ftp 190w ·'))
+  assert.equal(v.bikeSource?.ftpW, 190)
+  assert.equal(v.bikeSource?.ftpSource, 'derived')
 })
 
 test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => {
@@ -305,7 +309,8 @@ test('athlete ftp override drives analytics when supplied by the emitter', () =>
   const v = a.engine.vo2max
   assert.equal(v.method, 'bike')
   assert.equal(v.conf, 'low')
-  assert.ok(v.note.includes('ftp 230w (athlete)'))
+  assert.equal(v.bikeSource?.ftpW, 230)
+  assert.equal(v.bikeSource?.ftpSource, 'athlete')
   const bike = a.engine.abilities.sports.find(s => s.sport === 'bike')
   const threshold = bike?.axes.find(axis => axis.key === 'threshold')
   assert.equal(threshold?.rawValue, 2.6)
@@ -395,7 +400,7 @@ test('vo2 headline follows the latest garmin mark after an older lab test', () =
   assert.equal(a.engine.vo2max.method, 'garmin')
   assert.equal(a.engine.vo2max.value, 48.1)
   assert.equal(a.engine.vo2max.conf, 'firm')
-  assert.equal(a.engine.vo2max.note, 'garmin connect (device/manual)')
+  assert.equal(a.engine.vo2max.bikeSource, null)
 })
 
 test('calibration tracks newest pace and volume deltas against the prior window', () => {

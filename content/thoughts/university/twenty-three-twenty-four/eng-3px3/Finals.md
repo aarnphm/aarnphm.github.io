@@ -163,7 +163,7 @@ mean value $\mu_{x}$ of a random variable $x$ is its own expected value $\text{E
 > [!important] central limit theorem
 > sample size becomes large enough, the distribution of the sample mean will be approximately normally distributed, regardless of the distribution of the population, using [[thoughts/Monte-Carlo|Monte-Carlo]] simulation
 
-> Expected value of linear and nonlinear functions: suppose $x$ and $y$ are independent random variables with means $\mu_x$ and $\mu_y$, and variances $\sigma^2_x$ and $\sigma^2_y$, then $E[x^{2}] = \sigma_x^2 - \mu_x^2$, $E[xy] = \int \int xyp_xp_ydxdy=\int xp_xdx \int yp_ydy=\mu_x \mu_y$
+> Expected value of linear and nonlinear functions: suppose $x$ and $y$ are independent random variables with means $\mu_x$ and $\mu_y$, and variances $\sigma^2_x$ and $\sigma^2_y$, then $E[x^{2}] = \sigma_x^2 + \mu_x^2$, $E[xy] = \int \int xyp_xp_ydxdy=\int xp_xdx \int yp_ydy=\mu_x \mu_y$
 
 Dealing with 12 months per year: saying outcomes over a year should be **normally distributed** (CLT), with a mean given by expected value of monthly outcome and stddev given stddev of outcome divided by square root of the # of rolls ($\sqrt{12}$)
 

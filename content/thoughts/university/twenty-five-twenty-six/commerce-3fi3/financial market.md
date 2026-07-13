@@ -163,7 +163,7 @@ concerns about _intrinsic value/fair value_
 
 ### bottom-up
 
-- specific businesses, regardless of region -> investment candidates -> list of invest-able companies -> quality/attractiveness of priced companyt -> investment selection
+- specific businesses, regardless of region -> investment candidates -> list of invest-able companies -> quality/attractiveness of priced company -> investment selection
 
 ### characteristics of companies of interest
 

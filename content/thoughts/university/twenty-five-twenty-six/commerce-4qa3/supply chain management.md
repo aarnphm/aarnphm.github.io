@@ -9,7 +9,7 @@ tags:
 title: supply chain management
 ---
 
-> flow of goods and services, involves the movement and storage f raw materials and work-in-progress inventory.
+> flow of goods and services, involves the movement and storage of raw materials and work-in-progress inventory.
 
 Supplier -> Manufacturer -> Retailer -> Consumer
 

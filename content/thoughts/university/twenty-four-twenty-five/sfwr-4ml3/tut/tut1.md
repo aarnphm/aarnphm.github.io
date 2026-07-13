@@ -93,7 +93,7 @@ $L_{\infty}$ norm: $\| x \|_{\infty} = \max_{i}{|x_i|}$
 p-norm: $\| x \|_{p} = (\sum_{i=1}^{n}{|x_i|^p})^{1/p}$
 
 > [!important] Comparison
-> $ \|x\|_{\infty} \leq \|x\|_{2} \leq \|x\|\_{1}$
+> $ \|x\|_{\infty} \leq \|x\|_{2} \leq \|x\|_{1}$
 
 > One can prove this with Cauchy-Schwarz inequality
 

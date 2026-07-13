@@ -92,7 +92,7 @@ Q: $G(s) = \frac{1}{S+2}$. Input: $u(t)$. What is $y(t)$ ?
 $$
 \begin{aligned}
 Y(s) &= G(s)\cdot u(s) \rightarrow Y(s)=\frac{1}{s(s+2)} = \frac{A}{s} + \frac{B}{s+2} = \frac{1}{2\cdot{s}} - \frac{1}{2\cdot{(s+2)}} \\
-y(t) &= -\frac{1}{2}(1-e^{-2t})u(t)
+y(t) &= \frac{1}{2}(1-e^{-2t})u(t)
 \end{aligned}
 $$
 
@@ -144,7 +144,7 @@ $$
 
 > [!important]
 >
-> If $\sigma_i > 0$ then pole is in the left side of imaginary plane, and system is ==**stable** ==
+> If $\sigma_i < 0$ then pole is in the left side of imaginary plane, and system is ==**stable** ==
 
 ### Complex root
 

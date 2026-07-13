@@ -35,5 +35,5 @@ continuous flow of _ionized particles_ emitted by the Sun and other stars.
 Given the Maxwell-Boltzmann distribution, the probability of a particle having a certain velocity is given by:
 
 $$
-\left( \frac{dN}{dv} \right)_{m,T} = v^2 \left( \frac{m}{2 \pi k_B T} \right)^{\frac{3}{2}} \exp \left( -\frac{mv^2}{2k_BT} \right)
+\left( \frac{dN}{dv} \right)_{m,T} = 4\pi v^2 \left( \frac{m}{2 \pi k_B T} \right)^{\frac{3}{2}} \exp \left( -\frac{mv^2}{2k_BT} \right)
 $$

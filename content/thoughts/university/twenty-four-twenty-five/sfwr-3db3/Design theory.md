@@ -152,8 +152,8 @@ goal: avoid redundancy and minimize anomalies (update and deletion) w/o losing i
 >
 > A binary decomposition of $R=(R,F)$ into $R_{1}=(R_{1},F_{1})$ and $R_{2}=(R_{2},F_{2})$ is _lossless_ iff:
 >
-> 1. $(R_{1} \cap R_{2}) \to R_{1}$ is the $F^{+}$
-> 2. $(R_{1} \cap R_{2}) \to R_{2}$ is the $F^{+}$
+> 1. $(R_{1} \cap R_{2}) \to R_{1}$ is in $F^{+}$
+> 2. $(R_{1} \cap R_{2}) \to R_{2}$ is in $F^{+}$
 
 if $R_{1} \cap R_{2}$ form a superkey of either $R_{1}$ or $R_{2}$, then decomposition of $R$ is lossless
 
