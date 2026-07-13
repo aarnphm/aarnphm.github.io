@@ -33,13 +33,13 @@ $$
 
 $$
 \begin{aligned}
-\argmax_{W} P(x | \alpha) P (\alpha) &= \argmax_{W} [\log  P(\alpha) + \sum_{i} \log (x^i, y^i | W)] \\
+\argmax_{W} P(x | \alpha) P (\alpha) &= \argmax_{W} [\log  P(\alpha) + \sum_{i} \log P(x^i, y^i | W)] \\
 &= \argmax_{W} [\ln \frac{1}{\beta} - \lambda {\parallel W \parallel}_{2}^{2} - \frac{({x^i}^T W - y^i)^2}{\sigma^2}]
 \end{aligned}
 $$
 
 $$
-P(W) = \frac{1}{\beta} e^{\lambda \parallel W \parallel_{2}^{2}}
+P(W) = \frac{1}{\beta} e^{-\lambda \parallel W \parallel_{2}^{2}}
 $$
 
 > [!question] What if we have

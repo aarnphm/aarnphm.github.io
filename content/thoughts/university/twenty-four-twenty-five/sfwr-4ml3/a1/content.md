@@ -151,7 +151,7 @@ $$
 \end{aligned}
 $$
 
-Compute $E[xy] = \int_{0}^{1}(2x-x^4-x)dx = \frac{2}{3} - \frac{1}{5} - \frac{1}{2} = - \frac{1}{30}$:
+Compute $E[xy] = \int_{0}^{1}(2x^2-x^4-x)dx = \frac{2}{3} - \frac{1}{5} - \frac{1}{2} = - \frac{1}{30}$:
 
 Therefore we can compute covariance:
 

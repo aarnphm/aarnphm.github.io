@@ -12,7 +12,7 @@ Ref: [[thoughts/university/twenty-three-twenty-four/astron-2e03/06_HeatingCoolin
 
 ### toy modal.
 
-eq: $T_{\text{surf}} ~ 1.32 \times T_{\text{atm, 2}}$
+eq: $T_{\text{surf}} \approx 1.32 \times T_{\text{atm, 2}}$
 
 > [!note] General form of $T_{\text{surf}}$ with $n$ atmospheric layers
 >

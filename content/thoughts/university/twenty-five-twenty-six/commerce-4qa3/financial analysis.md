@@ -50,7 +50,7 @@ where $F$ is the forecast, $D$ is the actual demand
    $$
 2. Moving-Average approach
    $$
-   \text{MA}(n) = F_t = \frac{1}{n}\sum_{i=1}^{t}D_{t-1}
+   \text{MA}(n) = F_t = \frac{1}{n}\sum_{i=1}^{n}D_{t-i}
    $$
 3. exponential-smoothing
 
@@ -58,7 +58,7 @@ where $F$ is the forecast, $D$ is the actual demand
    \begin{aligned}
    F_{t} &= \alpha D_{t-1} + (1-\alpha)F_{t-1} \\
    &= F_{t-1} - \alpha (F_{t-1} - D_{t-1}) \\
-   &+ F_{t-1} - \alpha e_{t-1}
+   &= F_{t-1} - \alpha e_{t-1}
    \end{aligned}
    $$
 

@@ -12,7 +12,7 @@ title: Expolanets
 
 a. _Would you see any of the solar system planets transit?_
 
-For an inclination of $i = 45 \degree$, transits are mostly observed when the orbital plan is edge on to the observer. It is plausible for some planets that is larger sized and orbit closer to ecliptic plane would transit the Sun given the direct line of sight.
+For an inclination of $i = 45 \degree$, transits are mostly observed when the orbital plane is edge on to the observer. It is plausible for some planets that is larger sized and orbit closer to ecliptic plane would transit the Sun given the direct line of sight.
 
 b. _If you monitored the Sun with radial velocity (RV) measurements and your technology was precise enough that you could measure RV signals down to 1 m/s, show and discuss whether you’re able to detect Venus._
 
@@ -247,7 +247,7 @@ $$
 The total mechanical energy $E$ of a planet in orbit around a larger mass is given by
 
 $$
-E = K + U = = \frac{1}{2}mv(\theta)^2 - \frac{GMm}{r(\theta)}
+E = K + U = \frac{1}{2}mv(\theta)^2 - \frac{GMm}{r(\theta)}
 $$
 
 Given that the orbital velocity $v(\theta)$ is given by
@@ -275,7 +275,7 @@ $$
 b. Use Eq. 4 to derive Eq. 3
 
 $$
-E = K + U = = \frac{1}{2}mv(\theta)^2 - \frac{GMm}{r(\theta)}
+E = K + U = \frac{1}{2}mv(\theta)^2 - \frac{GMm}{r(\theta)}
 $$
 
 Since E remains constant, given that the total energy in a bound orbit is negative, we have

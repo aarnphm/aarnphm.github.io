@@ -72,7 +72,7 @@ $$
 Thus the pole for this system:
 
 $$
-s_{1},s_{2}= \frac{-a + \sqrt{a^2 - 4b}}{2}
+s_{1},s_{2}= \frac{-a \pm \sqrt{a^2 - 4b}}{2}
 $$
 
 ### natural frequency
@@ -115,7 +115,7 @@ $$
 | Condition         | Poles                     | pole type | Damping Ratio ($\zeta$) | Natural Response $c(t)$                                                              |
 | ----------------- | ------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------ |
 | Undamped          | $\pm j \omega_n$          | imaginary | $\zeta = 0$             | $A \cos (\omega_n t - \varphi)$                                                      |
-| Underdamped       | $\omega_d \pm j \omega_d$ | complex   | $0 < \zeta < 1$         | $A e^{(-\sigma_d)t} \cos (\omega_d t - \varphi)$ where $w_d = w_n \sqrt{1- \zeta^2}$ |
+| Underdamped       | $-\sigma_d \pm j \omega_d$ | complex   | $0 < \zeta < 1$         | $A e^{(-\sigma_d)t} \cos (\omega_d t - \varphi)$ where $w_d = w_n \sqrt{1- \zeta^2}$ |
 | critically damped | $\sigma_1$                | real      | $\zeta = 1$             | $K t e^{\sigma_1 t}$                                                                 |
 | overdamped        | $\sigma_1 \quad \sigma_2$ | real      | $\zeta > 1$             | $K (e^{\sigma_1 t} + e^{\sigma_2 t})$                                                |
 

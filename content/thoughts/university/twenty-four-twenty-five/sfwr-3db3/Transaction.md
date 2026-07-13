@@ -114,7 +114,7 @@ $$
 >
 > said to be in _conflict_ if they satisfy all of the following:
 >
-> 1. belong to ==different== operations
+> 1. belong to ==different== transactions
 > 2. access the same item $A$
 > 3. at least one of the operations is a `write(A)`
 

@@ -281,7 +281,7 @@ export interface SportTrend {
   level: number | null
   slopePerWeek: number | null
   etaNow: number | null
-  note: string
+  daysSinceLastEffort: number | null
   forecast: SportTrendForecastPoint[]
 }
 
@@ -482,6 +482,13 @@ export interface Vo2Estimate {
   conf: Conf
 }
 
+export interface Vo2BikeSource {
+  ftpW: number
+  ftpSource: 'athlete' | 'strava' | 'derived'
+  mapW: number
+  weightKg: number
+}
+
 export interface Vo2maxBlock {
   value: number | null
   method: Vo2Method
@@ -495,7 +502,7 @@ export interface Vo2maxBlock {
   percentileForAge: number | null
   estimates: Vo2Estimate[]
   trend: Vo2Point[]
-  note: string
+  bikeSource: Vo2BikeSource | null
 }
 
 export interface RadarAxis {
@@ -1053,7 +1060,7 @@ function buildTrend(
       level: null,
       slopePerWeek: null,
       etaNow: null,
-      note: 'no efforts recorded',
+      daysSinceLastEffort: null,
       forecast: [],
     }
   }
@@ -1081,7 +1088,7 @@ function buildTrend(
       level: round(ys[ys.length - 1], 1),
       slopePerWeek: null,
       etaNow: null,
-      note: `last effort ${daysSinceLast}d ago`,
+      daysSinceLastEffort: daysSinceLast,
       forecast: [],
     }
   }
@@ -1116,7 +1123,7 @@ function buildTrend(
       level: round(etaNow, 1),
       slopePerWeek: round(b * 7, 2),
       etaNow: round(etaNow, 1),
-      note: `${n} efforts over ${spanDays}d`,
+      daysSinceLastEffort: daysSinceLast,
       forecast: dampedTrendForecast(today, etaNow, b, halfAt),
     }
   }
@@ -1148,7 +1155,7 @@ function buildTrend(
     level: round(level, 1),
     slopePerWeek,
     etaNow: round(level, 1),
-    note: `${n} efforts, ewma`,
+    daysSinceLastEffort: daysSinceLast,
     forecast: dampedTrendForecast(today, level, slopePerWeek / 7, halfAt),
   }
 }
@@ -1666,7 +1673,7 @@ function emptyMeta(athleteId: number, today: string): AnalyticsMeta {
       ifCap: IF_CAP,
       thresholdWindowDays: 0,
       seededFrom: 'mean daily load over first 14 active days',
-      note: 'pace-derived load; HR, power, and cadence captured per activity',
+      note: 'Load uses pace and duration. Sensor data is recorded separately.',
     },
   }
 }
@@ -2489,7 +2496,7 @@ export function computeFtpHypothesisFromVo2(
     low: round5(ftpMean - FTP_HYPOTHESIS_ERROR_W),
     high: round5(ftpMean + FTP_HYPOTHESIS_ERROR_W),
     wattsPerKg: round(ftp / massKg, 2),
-    note: 'running vo2max to cycling ftp',
+    note: 'This estimate comes from running VO2max.',
   }
 }
 
@@ -2714,7 +2721,7 @@ function emptyEngine(): EngineBlock {
       percentileForAge: null,
       estimates: [],
       trend: [],
-      note: 'no power or hr data',
+      bikeSource: null,
     },
     abilities: { sports: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
@@ -2813,19 +2820,6 @@ function buildEngine(
       conf: 'prior',
     })
 
-  const noteOf = (m: Vo2Method): string => {
-    if (m === 'garmin') return 'garmin connect (device/manual)'
-    if (m === 'apple') return 'apple watch measurement'
-    if (m === 'bike') {
-      const src = ftpSrc === 'athlete' ? ' (athlete)' : ftpSrc === 'strava' ? ' (strava)' : ''
-      return `ftp ${ftp}w${src} · map ${ftp != null ? Math.round(ftp / MAP_FTP_RATIO) : '—'}w · ${bikeKg != null ? round(bikeKg, 1) : '—'}kg`
-    }
-    if (m === 'run') return 'run hr–speed extrapolation'
-    if (m === 'hrratio') return 'upper-bound proxy from sleeping rhr'
-    if (m === 'lab') return 'graded exercise test'
-    return 'no power or hr data'
-  }
-
   const weekOf = (iso: string): string => {
     const ms = dayMs(iso)
     const dow = new Date(ms).getUTCDay()
@@ -2910,6 +2904,15 @@ function buildEngine(
   const ftpHypothesis = vo2Lab
     ? computeFtpHypothesisFromVo2(vo2Lab.date, vo2Lab.value, vo2Lab.massKg ?? body.latestKg ?? 0)
     : null
+  const bikeSource: Vo2BikeSource | null =
+    current?.method === 'bike' && ftp != null && ftpSrc != null && bikeKg != null
+      ? {
+          ftpW: ftp,
+          ftpSource: ftpSrc,
+          mapW: Math.round(ftp / MAP_FTP_RATIO),
+          weightKg: round(bikeKg, 1),
+        }
+      : null
 
   const kgNow = body.latestKg
   let p5: number | null = null
@@ -3263,7 +3266,7 @@ function buildEngine(
               ? 'declining'
               : 'stable',
       sampleSize: rhrYs.length,
-      note: 'falling is improving',
+      note: 'A lower resting heart rate is better.',
     },
     {
       key: 'hrv',
@@ -3280,7 +3283,7 @@ function buildEngine(
               ? 'declining'
               : 'stable',
       sampleSize: hrvYs.length,
-      note: '7d vs 28d baseline',
+      note: 'The 7 day average is compared with the 28 day baseline.',
     },
     {
       key: 'ef',
@@ -3297,7 +3300,7 @@ function buildEngine(
               ? 'declining'
               : 'stable',
       sampleSize: efPool.length,
-      note: 'output per heartbeat',
+      note: 'This is pace or power per heartbeat.',
     },
     {
       key: 'decoupling',
@@ -3316,12 +3319,12 @@ function buildEngine(
       sampleSize: decActs.length,
       note:
         decLatest == null
-          ? 'needs a 60 min+ session with hr'
+          ? 'This needs at least 20 minutes with heart rate and pace or power data.'
           : decLatest < 5
-            ? 'coupled — durable aerobic base'
+            ? 'Under 5% means steady output.'
             : decLatest <= 10
-              ? 'moderate drift'
-              : 'high drift',
+              ? 'From 5% to 10% means some late fade.'
+              : 'Over 10% means high late fade.',
     },
   ]
 
@@ -3339,7 +3342,7 @@ function buildEngine(
       percentileForAge,
       estimates,
       trend,
-      note: noteOf(current?.method ?? 'none'),
+      bikeSource,
     },
     abilities: { sports: SPORT_ORDER.map(buildSportAbilities) },
     cardio: {
@@ -3725,7 +3728,7 @@ export function buildAnalytics(
         ifCap: IF_CAP,
         thresholdWindowDays: 0,
         seededFrom: 'mean daily load over first 14 active days',
-        note: 'pace-derived load; HR, power, and cadence captured per activity',
+        note: 'Load uses pace and duration. Sensor data is recorded separately.',
       },
     },
     calibration,

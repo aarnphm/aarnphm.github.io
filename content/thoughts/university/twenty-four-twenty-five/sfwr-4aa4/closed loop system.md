@@ -70,7 +70,7 @@ $$
 ### using digital controller
 
 $$
-\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{1}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}
+\frac{C(z)}{R(z)} = \frac{G_{1}(z)G_{2}(z)}{1+G_{1}(z)Z(G_{2}(s)H(s))}
 $$
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/closed-loop-tf-digital-controller.webp]]

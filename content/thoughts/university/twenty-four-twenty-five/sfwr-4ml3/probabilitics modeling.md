@@ -49,7 +49,7 @@ Check $\frac{P(y=0 \mid X, \Theta)}{P(y=1 \mid X, \Theta)} \ge 1$
 > Given the label, the coordinates are ==statistically independent==
 >
 > $$
-> P(x \mid y = k, \Theta) = \pi_j P(x_j \mid y=k, \Theta)
+> P(x \mid y = k, \Theta) = \prod_j P(x_j \mid y=k, \Theta)
 > $$
 
 idea: comparison between discriminative and generative models

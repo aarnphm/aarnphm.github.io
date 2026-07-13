@@ -50,7 +50,7 @@ _alter function ` (x; E:F)`_ is defined by
 ```algorithm
 
 (x; E:F)(G) = F if E = G
-(x; E:F)(G) = x(G) if e != G
+(x; E:F)(G) = x(G) if E != G
 ```
 
 For example:

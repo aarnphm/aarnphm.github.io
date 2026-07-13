@@ -74,5 +74,5 @@ _Deriving_ $\zeta$:
 ### %OS (percent overshoot)
 
 $$
-\%OS = e^{\zeta \pi / \sqrt{1-\zeta^2}} \times 100 \%
+\%OS = e^{-\zeta \pi / \sqrt{1-\zeta^2}} \times 100 \%
 $$

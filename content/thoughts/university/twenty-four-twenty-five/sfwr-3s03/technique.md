@@ -38,4 +38,4 @@ Classified by:
 >
 > Testing how the system _perform_ (not what it does)
 >
-> - To find functional defects
+> - To find non-functional defects

@@ -38,7 +38,7 @@ Add an new auxiliary dimension to the input data, $x_{d+1} = 1$
 Solve OLS:
 
 $$
-\min\limits{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
+\min\limits_{W \in \mathbb{R}^{d \times 1}} \|XW - Y\|_2^2
 $$
 
 Gradient for $f: \mathbb{R}^d \rightarrow \mathbb{R}$
@@ -65,7 +65,7 @@ $$
 &\because g(u) = u^T v \implies \triangledown_{w} \space g = v \text{ (gradient) } \\
 \\
 &A \in \mathbb{R}^{n \times n}; u \in \mathbb{R}^n \\
-&\because g(u) = u^T A u \implies \triangledown_{w} \space g = (A + A^T) u^T \text{ (Jacobian) }
+&\because g(u) = u^T A u \implies \triangledown_{w} \space g = (A + A^T) u \text{ (Jacobian) }
 \end{aligned}
 $$
 
@@ -136,7 +136,7 @@ feature map: $\phi{(x)}: R^{d_1} \rightarrow R^{d_2}$ where $d_{2} >> d_{1}$
 
 training:
 
-- $W^{*} = \min\limits{W} \| \phi W - Y \|^{2}_{2} + \lambda \| W \|_{2}^{2}$
+- $W^{*} = \min\limits_{W} \| \phi W - Y \|^{2}_{2} + \lambda \| W \|_{2}^{2}$
 - $W^{*} = (\phi^T \phi  + \lambda I)^{-1} \phi^T Y$
 
 prediction:

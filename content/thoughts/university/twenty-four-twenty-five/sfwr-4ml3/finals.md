@@ -51,7 +51,7 @@ Or we can find the [[thoughts/Vector calculus#Jacobian matrix|Jacobian]] $\mathc
 
 ## classification
 
-or _on-versus-all_ classification
+or _one-versus-all_ classification
 
 idea: train $k$ different binary classifiers:
 

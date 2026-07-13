@@ -15,7 +15,7 @@ title: languages and regex
 
 $$(a|b)^*aa(a|b)^*$$
 
-2. Now give a regular expression of the complement of the above language (without using a complement operator), that is, those sequences over $\{ a, b\}$ that must not contaiin two or more consecutive occurrences of $a$ but still may have an arbitrary number of occurrences of $a$! [^note]
+2. Now give a regular expression of the complement of the above language (without using a complement operator), that is, those sequences over $\{ a, b\}$ that must not contain two or more consecutive occurrences of $a$ but still may have an arbitrary number of occurrences of $a$! [^note]
 
 $$b^*(ab^+)^*a?$$
 

@@ -236,7 +236,7 @@ Therefore BEF is minimal
 
 For Company table:
 
-FD1: $\text{companyID} \rightarrow \text{companyName, cityName, countr, assets}$
+FD1: $\text{companyID} \rightarrow \text{companyName, cityName, country, assets}$
 
 FD2: $\text{companyName, cityName} \rightarrow \text{companyID, country, assets}$
 
