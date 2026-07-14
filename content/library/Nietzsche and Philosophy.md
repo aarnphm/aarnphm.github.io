@@ -8,7 +8,7 @@ finished: 2025
 id: Nietzsche and Philosophy
 language: french
 modified: 2026-06-05 15:07:59 GMT-04:00
-notebook: '[[thoughts/Philosophy and Nietzsche|Nietzche]]'
+notebook: '[[thoughts/Philosophy and Nietzsche|Nietzsche]]'
 posters: '[[library/posters/nietzsche-and-philosophy.jpg]]'
 status: evergreen
 subcategory: multiplicity
@@ -18,7 +18,7 @@ title: Nietzsche and Philosophy
 year: 1962
 ---
 
-_by [[thoughts/Giles Deleuze|Giles Deleuze]]_
+_by [[thoughts/Giles Deleuze|Gilles Deleuze]]_
 
 The decadence of modern philosophy is the theory of value imposes conformism and a new form of submission
 
@@ -34,7 +34,7 @@ Critical philosophy has two inseparable moments: the referring back of all thing
 
 This is Nietzsche's twofold struggle:
 
-- against those who remove values from criticism, contenting themselves with producing inventories of existing values or we criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [[library/Beyond Good and Evil|BGE]] 211)
+- against those who remove values from criticism, contenting themselves with producing inventories of existing values or with criticising things in the name of established values (the "philosophy labourers", Kant and Schopenhauer, [[library/Beyond Good and Evil|BGE]] 211)
 - against those who criticise, or respect, values by deriving them from simple facts, from so-called "objective facts" (the utilitarians, the "scholars", BGE VI).
 
 Nietzsche attacks both the "high" idea of foundation which leaves values indifferent to their own origin and the idea of a simple causal derivation or smooth beginning which suggests an indifferent origin of values
@@ -45,7 +45,7 @@ Genealogy: substitute pathos of difference or distance for both Kantian principl
 
 - there are no _one_ definition of sense
 - We don’t know where the force come from
-- Philosophy is symptomatology, not {{sidenotes[semeiology]: study of signs and symbols and their use or itnerpretation. In a sense, we are performing [[thoughts/hermeneutics|hermeneutics]] practice towards symbols.}}
+- Philosophy is symptomatology, not {{sidenotes[semeiology]: study of signs and symbols and their use or interpretation. In a sense, we are performing [[thoughts/hermeneutics|hermeneutics]] practice towards symbols.}}
 - To interpret and to evaluate is to weigh causal and effects.
 
 > force is not a cause, but a symptom.
@@ -139,9 +139,9 @@ Not a large number of throws produce the repetition of combinations but rather t
 Dice that are thrown once is the affirmation of chance
 Combination of dice that are thrown is the affirmation of necessity
 
-Necessity is affirmed by chances and chances id being affirmed by the act of necessity
+Necessity is affirmed by chances and chances is being affirmed by the act of necessity
 
-### Nietzsche and Mallermé
+### Nietzsche and Mallarmé
 
 1. To think is to send out a dice-throw
 2. Man does not know how to play
@@ -182,7 +182,7 @@ The will in power is the synthesis itself, and in the synthesis in relation to t
 
 - synthesis is one of the force
 - The difference and reproduction is one of the force
-- The _eternal return_ is the synthesis in which its principle is the same ipl to power
+- The _eternal return_ is the synthesis in which its principle is the same will to power
 
 N oppose will to power to Schopenhauerian will to live, only because of the extreme generality of the latter. (P.51)
 

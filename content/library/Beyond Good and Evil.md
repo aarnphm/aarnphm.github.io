@@ -21,7 +21,7 @@ tl/dr: N critiques the herd mentality, rather he challenges the rigid moral bind
 [^advances]:
     The idea that technology dictates progress, an extension of [techno-optimist manifesto](https://a16z.com/the-techno-optimist-manifesto/).
 
-    In essence, it builts on top of the idea for a free market and pushes the wheel of civilisation forward. I'm pretty much a techno-optimist at the core, but consider software and technology as a catalyst for changes.
+    In essence, it builds on top of the idea for a free market and pushes the wheel of civilisation forward. I'm pretty much a techno-optimist at the core, but consider software and technology as a catalyst for changes.
     We still have to fix the human-[[thoughts/Alignment|alignment]] problem in order to create social goods.
 
 ### Prejudices of Philosophers
@@ -46,4 +46,4 @@ Contains a deliberate overlooking or misunderstanding of complexity and depth of
 
 Nietzsche posits that humans have contrived to retain their ignorance in order to enjoy life with freedom, lack of scruple, heartiness, and gaiety. This foundation of ignorance allows knowledge to rise, but it does so on the foundation of a far more powerful [[thoughts/Will|will]] --- will to ignorance to uncertainty, to the untrue.
 
-Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge. Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#active and reactive forces.|force]].
+Nietzsche juxtaposes a paradox at our existence: a foundation of ignorance is actually built upon our will to knowledge. Will to knowledge is not opposed to ignorance, rather a refinement. Will to ignorance is actually a strategy of [[thoughts/Will to Power|power]], as it motivates [[thoughts/Giles Deleuze#forces.|force]].

@@ -24,7 +24,7 @@ Aristotelian logics in classical tradition of philosophy
 Evolutionism developed from Darwinism
 
 - its truth does not follow from what science has rendered probable concerning the facts of evolution
-- motives and interests which inspires it are so exclusively practical, and the problems with which inspires it are so exclusively practical and the problems with it deals are so special, that it can hardly be regarded as really touching any of the questions that to [his] mind constitutes genuine philosophy
+- motives and interests which inspire it are so exclusively practical, and the problems with which it deals are so special, that it can hardly be regarded as really touching any of the questions that to [his] mind constitutes genuine philosophy
 - Bergson's finalism
 
 Instincts and reasons are considered illusory, because the argument for philosophy under the realm of science are not necessarily dogmatic when grounded in facts and matters (p. 27)

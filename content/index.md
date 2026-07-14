@@ -32,8 +32,8 @@ Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm
                   * anything [[thoughts/images/onionnnnnnnnnn.webp|onion-related]] or garlic or beets
                     * collecting watches (horology)
                       * folktronica
-                        * Miles David and the Quintet
-                          * Miles David and the Quintet, Focault and [[thoughts/Wittgenstein]]'s,
+                        * Miles Davis and the Quintet
+                          * Miles Davis and the Quintet, Foucault and [[thoughts/Wittgenstein]]'s,
                           * _my 3 qt stainless clad [saucier](https://madeincookware.com/products/saucier/3-quart) that I use for_
                           * everything,
                             * everything from searing

@@ -72,7 +72,7 @@ Support a small subsets of the features, with wikilinks parsing
     * Nietzsche,
     * Wittgenstein,
 		 * hosting functions,
-	 * and, go on longs walks,
+	 * and, go on long walks,
 	   * building [[thoughts/work|open-source project]],
 	    * this [pan](https://example.com)
 ```
@@ -87,7 +87,7 @@ Support a small subsets of the features, with wikilinks parsing
 >     * Nietzsche,
 >     * Wittgenstein,
 > 		 * hosting functions,
-> 	 * and, go on longs walks,
+> 	 * and, go on long walks,
 > 	   * building [[thoughts/work|open-source project]],
 > 	    * this [pan](https://example.com)
 > ```

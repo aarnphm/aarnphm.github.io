@@ -1,6 +1,6 @@
 ---
 author:
-  - '[[thoughts/Camus|Abert Camus]]'
+  - '[[thoughts/Camus|Albert Camus]]'
 category:
   - p/fiction
 date: '2022-08-21'

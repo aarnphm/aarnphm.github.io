@@ -24,7 +24,7 @@ thank you to my editorial partner in crime opus[1m]
 ```
 
 ```quotes
-I do not ask for your love in return. To love you is enough. To have known you, to have felt alive in your presence-that is my greatest joy, and I will carry it with me always. You cannot imag ine how much happiness you’ve brought into my life. You came like a light in my darkness, a warmth in my cold solitude, and for that, I will always be grateful. Even if it was but for a single moment, I have known what it is to love and be loved, and that moment will be mine forever, untouchable by time or sorrow.
+I do not ask for your love in return. To love you is enough. To have known you, to have felt alive in your presence-that is my greatest joy, and I will carry it with me always. You cannot imagine how much happiness you’ve brought into my life. You came like a light in my darkness, a warmth in my cold solitude, and for that, I will always be grateful. Even if it was but for a single moment, I have known what it is to love and be loved, and that moment will be mine forever, untouchable by time or sorrow.
 
 A
 ```

@@ -36,7 +36,7 @@ friends are still our first and sometimes best model of someone who chooses to b
 Ava, [bookbear express](https://www.avabear.xyz/p/always-on-your-side)
 ```
 
-i like this framing. before romantic love, before family obligation, there's friendship, i.e. the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. yes, i will be there to pick you up from the airport.c.s. lewis wrote that _lovers face each other absorbed in one another while friends stand side by side absorbed in something external_. you become friends by caring about the same problems. this is also why I found work-friends feel {{sidenotes[so intense]: you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week}}.
+i like this framing. before romantic love, before family obligation, there's friendship, i.e. the relationship you choose without biological accident or legal contract. someone looks at you and decides to keep showing up. yes, i will allocate a portion of my waking hours to be with this person. yes, i will be there to pick you up from the airport. c.s. lewis wrote that _lovers face each other absorbed in one another while friends stand side by side absorbed in something external_. you become friends by caring about the same problems. this is also why I found work-friends feel {{sidenotes[so intense]: you're literally shoulder-to-shoulder looking at the same thing for 40+ hours a week}}.
 
 ```quotes
 friendship was what taught me that love is an endurance sport with no finish line.
