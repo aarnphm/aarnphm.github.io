@@ -15,7 +15,7 @@ see also: [[antilibrary.base|base view]]
 
 > In essence, an [antilibrary](https://nesslabs.com/antilibrary) is a collection of unread books. It represents an ode to self that reminds you about topics that one wants to explore.
 
-The Japanese as a term for this: 積ん読 (Tsundoku), i.e the abit of buying books and letting them pile up unread.
+The Japanese has a term for this: 積ん読 (Tsundoku), i.e the habit of buying books and letting them pile up unread.
 
 Some booklist I like:
 

@@ -42,7 +42,7 @@ This is the first shift you have to make. [[thoughts/Ontology|Ontology]] hereby 
 
 Language pictures this reality. A proposition is a logical picture. It shares a form with the fact it represents. If the picture matches the reality, it's true. If it doesn't, it's false. But for it to be a picture at all, it has to share that logical scaffolding.
 
-Though, then, is just the logical picture of facts. And the boundaries of thought are the boundaries of logic. Where you can't build a logical picture—in ethics, in aesthetics, in the "meaning of life"—you can't say anything meaningful. You have to shut up.
+Thought, then, is just the logical picture of facts. And the boundaries of thought are the boundaries of logic. Where you can't build a logical picture—in ethics, in aesthetics, in the "meaning of life"—you can't say anything meaningful. You have to shut up.
 
 ## The Vienna Circle's appropriation (1922–1936)
 

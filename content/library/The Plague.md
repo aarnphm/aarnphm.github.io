@@ -12,7 +12,7 @@ status: finished
 subcategory:
   - absurdism
 author:
-  - '[[thoughts/Camus|Abert Camus]]'
+  - '[[thoughts/Camus|Albert Camus]]'
 posters: '[[library/posters/the-plague.jpg]]'
 category:
   - philosophy

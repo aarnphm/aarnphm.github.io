@@ -11,7 +11,7 @@ subcategory:
   - memoir
   - death
 author:
-  - Hua Tsu
+  - Hua Hsu
 posters: '[[library/posters/stay true.jpg]]'
 category:
   - p/nf

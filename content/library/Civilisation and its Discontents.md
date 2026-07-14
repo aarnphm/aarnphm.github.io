@@ -170,7 +170,7 @@ language plays double role in freud's account:
 
 **constraint on expression**: but same language that transmits norms also constrains what can be expressed. repressed content lacks words—it's precisely what available language can't accommodate. you might feel/want something for which your linguistic repertoire provides no terms. this creates hermeneutic gap: experience that can't be articulated.
 
-connection to [[thoughts/hermeneutics#what it's not|epistemic injustice]]: when your experience lacks public language, you can't articulate it to others or even fully to yourself. repression might be partly linguistic—not just motivated forgetting but lacking vocabulary. desires that don't fit available categories become unsayable and thus, eventually, unthinkable.
+connection to [[thoughts/hermeneutics|epistemic injustice]]: when your experience lacks public language, you can't articulate it to others or even fully to yourself. repression might be partly linguistic—not just motivated forgetting but lacking vocabulary. desires that don't fit available categories become unsayable and thus, eventually, unthinkable.
 
 therapy creates new vocabulary. analyst provides interpretive framework—"what you're describing sounds like…" "maybe you felt…" "this pattern suggests…"—that allows previously inchoate experience to be named. once named, it can be worked with. this is why psychoanalytic concepts (oedipus complex, castration anxiety, penis envy) work even if they're not literally true—they provide vocabulary for experiences that lacked names.
 

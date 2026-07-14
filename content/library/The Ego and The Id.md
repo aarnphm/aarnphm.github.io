@@ -59,11 +59,11 @@ At that time, however, we did not appreciate the full significance of this proce
 
 At the very beginning, in the individual's primitive oral phase, object-cathexis and identification are no doubt indistinguishable from each other. We can only suppose that later on object-cathexis proceed from the id, which feels erotic trends as needs. The ego, which to begin with is still feeble, becomes aware of the object-cathexis, and either acquiesces in them or tries to fend them off by the process of repression.
 
-The super-ego originates from the experience that let to totemism
+The super-ego originates from the experience that led to totemism
 
 Early conflicts of the ego with object-cathexis of the id can be continued in conflicts with their heir, super-ego
 
-If the ego has not succeeded in properly mastering the Oedipus complex, the energic cathexis pf the latter, spring from the id will come into operation once more reaction-formation of the ego ideal.
+If the ego has not succeeded in properly mastering the Oedipus complex, the energic cathexis of the latter, spring from the id will come into operation once more reaction-formation of the ego ideal.
 
 ## key concepts
 

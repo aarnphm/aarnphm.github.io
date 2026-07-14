@@ -10,7 +10,7 @@ finished: 2025
 id: The Gay Science
 language: german
 modified: 2026-06-05 15:07:59 GMT-04:00
-notebook: '[[thoughts/Philosophy and Nietzsche#The Gay Science|field notes on Gay Science]]'
+notebook: '[[thoughts/Philosophy and Nietzsche|field notes on Gay Science]]'
 pdf: '[[thoughts/papers/The Gay Science by Friedrich Nietzsche.pdf]]'
 posters: '[[library/posters/the-gay-science.jpg]]'
 seealso:
@@ -27,9 +27,9 @@ year: 1882
 
 > [!note] The connotation of "gay" in Nietzsche's dialectics
 >
-> The original title was "la gayza scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
+> The original title was "la gaya scienza", and "gay" doesn't necessarily means homosexuality, rather flexible and joyful.
 > If word for word to be transcribed, it would meant The Joyful Science.
 
-Mentions the Death of God and start the introduction to the doctrine of eternal occurrence
+Mentions the Death of God and start the introduction to the doctrine of eternal recurrence
 
 - [ ] aphorism 24

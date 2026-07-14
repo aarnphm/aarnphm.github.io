@@ -166,7 +166,7 @@ The field is moving fast enough that by the time you read this, half the systems
 - https://arxiv.org/abs/2205.14135
 - kipply's blog are also great resources https://kipp.ly/transformer-inference-arithmetic/
 - Jay Alammar's https://jalammar.github.io/illustrated-gpt2/
-- By yours truly [[/posts/structured outputs|structured decoding, a guide for the impatient]]
+- By yours truly [[/posts/structured decoding|structured decoding, a guide for the impatient]]
 - How to Read a Paper (Keshav): https://dl.acm.org/doi/10.1145/1273445.1273458
 
 ---

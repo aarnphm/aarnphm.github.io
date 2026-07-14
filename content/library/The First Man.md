@@ -1,5 +1,5 @@
 ---
-author: '[[thoughts/Camus|Abert Camus]]'
+author: '[[thoughts/Camus|Albert Camus]]'
 category:
   - p/fiction
 date: '2025-10-06'

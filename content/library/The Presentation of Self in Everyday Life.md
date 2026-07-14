@@ -12,8 +12,7 @@ subcategory:
   - being
   - self
 author:
-  - Erving
-  - Goffman
+  - Erving Goffman
 posters: '[[library/posters/the-presentation-of-self-in-everyday-life.jpg]]'
 category:
   - sociology

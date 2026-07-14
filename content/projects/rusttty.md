@@ -17,7 +17,7 @@ yet another terminal emulator written in rust
 
 - with ideas to stream the current running process and make it clickable,
 - vim and emacs integration,
-- - a multiplexer, and streamed tty.
+- a multiplexer, and streamed tty.
 
 ```mermaid
 flowchart TD

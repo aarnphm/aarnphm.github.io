@@ -78,7 +78,7 @@ political feasibility unclear and varies by cultural context. might emerge gradu
 
 ### the legitimacy problem
 
-this raises foucauldian questions about power and subject-formation that bostrom largely brackets. surveillance doesn't just prevent actions, it disciplines, normalizes, constitutes subjects {{sidenotes[(Focault)]: discipline & punish: "he who is subjected to a field of visibility, and who knows it, assumes responsibility for the constraints of power"}}.
+this raises foucauldian questions about power and subject-formation that bostrom largely brackets. surveillance doesn't just prevent actions, it disciplines, normalizes, constitutes subjects {{sidenotes[(Foucault)]: discipline & punish: "he who is subjected to a field of visibility, and who knows it, assumes responsibility for the constraints of power"}}.
 
 the paper acknowledges downsides (totalitarianism risk, chilling effects, loss of privacy) but treats these as separate considerations to be "added to the balance." but what if surveillance-enabled stabilization is self-undermining? what if the apocalyptic residual is endogenous to the governance structure?
 
