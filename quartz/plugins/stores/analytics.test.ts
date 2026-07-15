@@ -175,6 +175,105 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(day?.tempDevC, 0.1)
 })
 
+test('heat block combines WeatherKit and Strava exposure, excludes swims, and decays after three days', () => {
+  const streamCache: Record<string, StravaStreams> = {}
+  const cache: StravaRawCache = {
+    athleteId: 123,
+    auth: { refreshToken: 'heat-test-token', obtainedAt: 0 },
+    lastSync: Date.parse(`${iso(30)}T18:00:00Z`),
+    lastActivityStart: 0,
+    activities: {},
+    streams: streamCache,
+  }
+  const weather: WeatherCache = { version: 1, lastSync: cache.lastSync, activities: {}, days: {} }
+
+  for (let offset = 0; offset < 14; offset++) {
+    const id = 100 + offset
+    const date = iso(offset)
+    cache.activities[String(id)] = activity(id, offset % 2 ? 'Run' : 'Ride', date, 3600, 10000)
+    streamCache[String(id)] = streams(10, 3)
+    weather.activities[String(id)] = {
+      activityId: id,
+      date,
+      start: `${date}T12:00:00.000Z`,
+      end: `${date}T13:01:00.000Z`,
+      latitude: 43.6,
+      longitude: -79.4,
+      durationS: 3660,
+      windKph: null,
+      windDir: null,
+      windDirDeg: null,
+      windGustKph: null,
+      temperatureC: 26,
+      source: 'weatherkit',
+    }
+  }
+
+  const fallbackDate = iso(14)
+  cache.activities['114'] = activity(114, 'Run', fallbackDate, 3600, 10000, { averageTemp: 27 })
+  streamCache['114'] = streams(10, 3)
+
+  const coolDate = iso(29)
+  cache.activities['129'] = activity(129, 'Ride', coolDate, 3600, 10000, { averageTemp: 35 })
+  streamCache['129'] = streams(10, 3)
+  weather.activities['129'] = {
+    activityId: 129,
+    date: coolDate,
+    start: `${coolDate}T12:00:00.000Z`,
+    end: `${coolDate}T13:01:00.000Z`,
+    latitude: 43.6,
+    longitude: -79.4,
+    durationS: 3660,
+    windKph: null,
+    windDir: null,
+    windDirDeg: null,
+    windGustKph: null,
+    temperatureC: 20,
+    source: 'weatherkit',
+  }
+
+  const swimDate = iso(30)
+  cache.activities['130'] = activity(130, 'Swim', swimDate, 3600, 1500, { averageTemp: 37 })
+  streamCache['130'] = streams(10, 1)
+
+  const heat = buildAnalytics(cache, { weather, since: iso(0) }).heat
+  assert.equal(heat.currentPct, 72)
+  assert.equal(heat.state, 'decaying')
+  assert.equal(heat.confidence, 'moderate')
+  assert.equal(heat.coveragePct, 100)
+  assert.equal(heat.lastHeatDate, fallbackDate)
+  assert.equal(heat.lastObservedDate, coolDate)
+  assert.equal(heat.latestTemperatureC, 20)
+  assert.equal(heat.heatDays14d, 0)
+  assert.equal(heat.heatMinutes14d, 0)
+  assert.deepEqual(heat.sourceCounts, { weatherkit: 15, strava: 1 })
+  assert.equal(heat.activities.length, 16)
+  assert.deepEqual(
+    heat.activities.find(activity => activity.id === 114),
+    {
+      id: 114,
+      date: fallbackDate,
+      startedAt: `${fallbackDate}T12:00:00Z`,
+      sport: 'run',
+      name: 'Run 114',
+      temperatureC: 27,
+      source: 'strava',
+      observedMinutes: 61,
+      hotMinutes: 61,
+      dose: 1,
+    },
+  )
+  assert.equal(heat.activities.find(activity => activity.id === 129)?.temperatureC, 20)
+  assert.equal(heat.activities.find(activity => activity.id === 129)?.hotMinutes, 0)
+  assert.equal(
+    heat.activities.some(activity => activity.id === 130),
+    false,
+  )
+  assert.equal(heat.series.find(day => day.date === fallbackDate)?.source, 'strava')
+  assert.equal(heat.series.find(day => day.date === coolDate)?.temperatureC, 20)
+  assert.equal(heat.series.find(day => day.date === swimDate)?.temperatureC, null)
+})
+
 test('engine block bases vo2max on the declared strava ftp and builds six radar axes', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
@@ -841,6 +940,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(ride?.windKph, 18)
   assert.equal(ride?.windDir, 'W')
   assert.equal(ride?.windGustKph, 29)
+  assert.equal(ride?.avgTemp, 22)
 })
 
 test('data feed prefers Garmin run heart rate over Strava heart rate', () => {

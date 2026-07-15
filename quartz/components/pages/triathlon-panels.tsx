@@ -330,6 +330,7 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
     <div class="tri-ana-block" data-chart="pmc" />
     <div class="tri-ana-block" data-chart="weekly" />
     <div class="tri-ana-block" data-chart="effort" />
+    <div class="tri-ana-block" data-chart="heat" />
     <div class="tri-ana-block" data-chart="readiness" />
     <div class="tri-ana-block" data-chart="trend" />
     <div class="tri-ana-block" data-chart="actions" />

@@ -65,6 +65,11 @@ test('weatherActivityFromHours weights wind by activity overlap', () => {
   assert.equal(activity?.windDirDeg, 270)
   assert.equal(activity?.windGustKph, 26)
   assert.equal(activity?.temperatureC, 23)
+  assert.deepEqual(activity?.temperatureSeries, [
+    { elapsedS: 0, temperatureC: 22 },
+    { elapsedS: 1800, temperatureC: 24 },
+    { elapsedS: 5400, temperatureC: 24 },
+  ])
 })
 
 test('summarizeWeatherDays folds activity weather into duration-weighted day wind', () => {
@@ -116,6 +121,10 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
         windDirDeg: 225,
         windGustKph: 28,
         temperatureC: 24,
+        temperatureSeries: [
+          { elapsedS: 0, temperatureC: 23 },
+          { elapsedS: 3600, temperatureC: 24 },
+        ],
       },
       bad: { activityId: 102 },
     },
@@ -124,4 +133,8 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
   assert.equal(cache?.lastSync, 100)
   assert.equal(Object.keys(cache?.activities ?? {}).length, 1)
   assert.equal(cache?.days['2026-06-11'].windKph, 18)
+  assert.deepEqual(cache?.activities.good.temperatureSeries, [
+    { elapsedS: 0, temperatureC: 23 },
+    { elapsedS: 3600, temperatureC: 24 },
+  ])
 })

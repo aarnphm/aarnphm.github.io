@@ -36,7 +36,7 @@ test('emits dense map geometry separately from compact telemetry route', () => {
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
-    activities: { 101: ride() },
+    activities: { 101: ride({ averageTemp: 21 }) },
     streams: {
       101: {
         latlng,
@@ -55,6 +55,7 @@ test('emits dense map geometry separately from compact telemetry route', () => {
   assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
   assert.deepEqual(detail.mapRoute?.[0], { lat: 43, lng: -79 })
   assert.deepEqual(detail.mapRoute?.at(-1), { lat: 43.00999, lng: -79.01998 })
+  assert.ok(detail.route.every(point => point.tempC === 21))
 })
 
 test('keeps dense map route continuous across GPS jumps', () => {
@@ -127,6 +128,18 @@ test('merges WeatherKit wind into activity detail and day health', () => {
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
     activities: { 101: ride() },
+    streams: {
+      101: {
+        time: [0, 3750, 7500],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 90, 85],
+        distance: [0, 30_700, 61_400],
+      },
+    },
   }
   const activity: WeatherActivity = {
     activityId: 101,
@@ -141,10 +154,15 @@ test('merges WeatherKit wind into activity detail and day health', () => {
     windDirDeg: 225,
     windGustKph: 31,
     temperatureC: 24,
+    temperatureSeries: [
+      { elapsedS: 0, temperatureC: 22 },
+      { elapsedS: 3750, temperatureC: 26 },
+      { elapsedS: 7500, temperatureC: 24 },
+    ],
     source: 'weatherkit',
   }
   const weather: WeatherCache = {
-    version: 1,
+    version: 2,
     lastSync: cache.lastSync,
     activities: { 101: activity },
     days: summarizeWeatherDays({ 101: activity }),
@@ -154,6 +172,11 @@ test('merges WeatherKit wind into activity detail and day health', () => {
   assert.equal(payload.details['101'].windKph, 18)
   assert.equal(payload.details['101'].windDir, 'SW')
   assert.equal(payload.details['101'].windGustKph, 31)
+  assert.equal(payload.details['101'].avgTemp, 24)
+  assert.deepEqual(
+    payload.details['101'].route.map(point => point.tempC),
+    [22, 26, 24],
+  )
   assert.equal(payload.health['2026-06-07'].windKph, 18)
   assert.equal(payload.health['2026-06-07'].windDir, 'SW')
 })

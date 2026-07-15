@@ -7,7 +7,7 @@ import type {
   GarminStreams,
 } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
-import type { WeatherCache } from './weather'
+import type { WeatherCache, WeatherTemperatureSample } from './weather'
 import { localIsoDay } from '../../util/local-date'
 import { matchGarminActivity, matchGarminFueling, matchGarminHeartRateActivity } from './garmin'
 
@@ -191,6 +191,7 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  tempC: number | null
   lat: number
   lng: number
 }
@@ -960,6 +961,21 @@ function garminVerification(
   }
 }
 
+function temperatureAt(samples: WeatherTemperatureSample[], elapsedS: number): number | null {
+  if (samples.length === 0) return null
+  if (elapsedS <= samples[0].elapsedS) return samples[0].temperatureC
+  for (let i = 1; i < samples.length; i++) {
+    const previous = samples[i - 1]
+    const next = samples[i]
+    if (elapsedS > next.elapsedS) continue
+    const span = next.elapsedS - previous.elapsedS
+    if (span <= 0) return next.temperatureC
+    const fraction = (elapsedS - previous.elapsedS) / span
+    return previous.temperatureC + (next.temperatureC - previous.temperatureC) * fraction
+  }
+  return samples[samples.length - 1].temperatureC
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
@@ -988,6 +1004,9 @@ function projectDetail(
   const routeHrStream =
     heartRate.stream.length === latlng.length ? heartRate.stream : alignedHrStream
   const cadStream = streams?.cadence ?? []
+  const timeStream = streams && 'time' in streams ? (streams.time ?? []) : []
+  const temperatureSeries = weather?.temperatureSeries ?? []
+  const fallbackTemperatureC = weather?.temperatureC ?? a.averageTemp ?? null
   if (latlng.length >= 2) {
     const altitude = cleanAltitude(streams!.altitude)
     const distance = streams!.distance
@@ -1039,6 +1058,10 @@ function projectDetail(
     minAlt = round(Math.min(...alts), 1)
     maxAlt = round(Math.max(...alts), 1)
     idx.forEach((i, k) => {
+      const elapsedS =
+        timeStream[i] ??
+        ((i - lo0) / Math.max(1, hi0 - lo0)) * Math.max(a.elapsedTime, a.movingTime)
+      const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
@@ -1047,6 +1070,7 @@ function projectDetail(
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(routeHrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
+        tempC: temperatureC == null ? null : round(temperatureC, 1),
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
       })
@@ -1082,10 +1106,10 @@ function projectDetail(
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
     calories: a.calories ? Math.round(a.calories) : (garmin?.totalCalories ?? null),
     avgTemp:
-      a.averageTemp != null
-        ? Math.round(a.averageTemp)
-        : weather?.temperatureC != null
-          ? Math.round(weather.temperatureC)
+      weather?.temperatureC != null
+        ? Math.round(weather.temperatureC)
+        : a.averageTemp != null
+          ? Math.round(a.averageTemp)
           : null,
     windKph: weather?.windKph ?? null,
     windDir: weather?.windDir ?? null,

@@ -112,12 +112,12 @@ $$
 
 ### observations
 
-| Condition         | Poles                     | pole type | Damping Ratio ($\zeta$) | Natural Response $c(t)$                                                              |
-| ----------------- | ------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------ |
-| Undamped          | $\pm j \omega_n$          | imaginary | $\zeta = 0$             | $A \cos (\omega_n t - \varphi)$                                                      |
+| Condition         | Poles                      | pole type | Damping Ratio ($\zeta$) | Natural Response $c(t)$                                                              |
+| ----------------- | -------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| Undamped          | $\pm j \omega_n$           | imaginary | $\zeta = 0$             | $A \cos (\omega_n t - \varphi)$                                                      |
 | Underdamped       | $-\sigma_d \pm j \omega_d$ | complex   | $0 < \zeta < 1$         | $A e^{(-\sigma_d)t} \cos (\omega_d t - \varphi)$ where $w_d = w_n \sqrt{1- \zeta^2}$ |
-| critically damped | $\sigma_1$                | real      | $\zeta = 1$             | $K t e^{\sigma_1 t}$                                                                 |
-| overdamped        | $\sigma_1 \quad \sigma_2$ | real      | $\zeta > 1$             | $K (e^{\sigma_1 t} + e^{\sigma_2 t})$                                                |
+| critically damped | $\sigma_1$                 | real      | $\zeta = 1$             | $K t e^{\sigma_1 t}$                                                                 |
+| overdamped        | $\sigma_1 \quad \sigma_2$  | real      | $\zeta > 1$             | $K (e^{\sigma_1 t} + e^{\sigma_2 t})$                                                |
 
 ![[thoughts/university/twenty-four-twenty-five/sfwr-4aa4/sec-order-impulse-response.webp]]
 

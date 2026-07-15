@@ -12,11 +12,11 @@ title: norm
 >
 > Given a vector space $x$ over a subfield $f \subseteq \mathbb{c}$, a norm is a map $p : x \to \mathbb{r}$ obeying the properties below. for any $u,v \in x$ and scalar $\lambda \in f$:
 >
-> | property              | statement                          | quick intuition                                  |
-> | --------------------- | ---------------------------------- | ------------------------------------------------ |
-> | triangle inequality   | $p(u+v) \le p(u) + p(v)$           | distance never exceeds the path via $u$ then $v$ |
-> | absolute homogeneity  | $p(\lambda u) = |\lambda|\,p(u)$ | scaling vectors scales their length              |
-> | positive definiteness | $p(u) = 0 \Rightarrow u = 0$       | only the zero vector has zero length             |
+> | property              | statement                    | quick intuition                                  |
+> | --------------------- | ---------------------------- | ------------------------------------------------ | ------- | ----------------------------------- |
+> | triangle inequality   | $p(u+v) \le p(u) + p(v)$     | distance never exceeds the path via $u$ then $v$ |
+> | absolute homogeneity  | $p(\lambda u) =              | \lambda                                          | \,p(u)$ | scaling vectors scales their length |
+> | positive definiteness | $p(u) = 0 \Rightarrow u = 0$ | only the zero vector has zero length             |
 
 for a norm $p : x \to \mathbb{r}$ and $z \in x$, write $\lVert z \rVert = p(z)$. every vector space admits norms; $x_{\cdots} = (x_i)_{i \in i}$ is a Hamel [[thoughts/basis]].
 

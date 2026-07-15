@@ -16,17 +16,17 @@ A small iOS + watchOS app that reads Apple Health and writes JSON and GPX files 
 
 A 180-day window back from `now`, bucketed by the device's autoupdating calendar and timezone.
 
-| metric         | HealthKit type                             | reduction                                       |
-| -------------- | ------------------------------------------ | ----------------------------------------------- |
-| active energy  | `activeEnergyBurned`                       | cumulative sum per day                          |
-| basal energy   | `basalEnergyBurned`                        | cumulative sum per day                          |
-| dietary energy | `dietaryEnergyConsumed`                    | cumulative sum per day                          |
-| body mass      | `bodyMass`                                 | latest reading per day                          |
-| VO2 max        | `vo2Max`                                   | latest reading per day                          |
-| swims          | `distanceSwimming` + `swimmingStrokeCount` | one row per swim or multisport swim activity    |
-| workout HR     | `workoutType` + `heartRate`                | one row per workout with its heart rate samples |
+| metric         | HealthKit type                             | reduction                                        |
+| -------------- | ------------------------------------------ | ------------------------------------------------ |
+| active energy  | `activeEnergyBurned`                       | cumulative sum per day                           |
+| basal energy   | `basalEnergyBurned`                        | cumulative sum per day                           |
+| dietary energy | `dietaryEnergyConsumed`                    | cumulative sum per day                           |
+| body mass      | `bodyMass`                                 | latest reading per day                           |
+| VO2 max        | `vo2Max`                                   | latest reading per day                           |
+| swims          | `distanceSwimming` + `swimmingStrokeCount` | one row per swim or multisport swim activity     |
+| workout HR     | `workoutType` + `heartRate`                | one row per workout with its heart rate samples  |
 | run summary    | `workoutType` + running quantity types     | distance, time, energy, power, cadence, and laps |
-| run route      | `workoutRoute`                             | one GPX file per run with a stored route        |
+| run route      | `workoutRoute`                             | one GPX file per run with a stored route         |
 
 ## output
 

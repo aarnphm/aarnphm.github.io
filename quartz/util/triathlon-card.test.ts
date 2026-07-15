@@ -484,7 +484,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   avgCadence: 88,
   sufferScore: null,
   calories: 960,
-  avgTemp: null,
+  avgTemp: 24,
   windKph: null,
   windDir: null,
   windDirDeg: null,
@@ -493,10 +493,21 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   fueling: null,
   garmin: null,
   route: [
-    { x: 0, y: 0, d: 0, alt: 75, w: 160, hr: 130, cad: 82, lat: 43.6, lng: -79.4 },
-    { x: 0.34, y: 0.4, d: 10, alt: 89, w: 200, hr: 145, cad: 86, lat: 43.7, lng: -79.3 },
-    { x: 0.67, y: 0.8, d: 20, alt: 103, w: 215, hr: 153, cad: 90, lat: 43.8, lng: -79.2 },
-    { x: 1, y: 1, d: 30, alt: 110, w: 175, hr: 149, cad: 84, lat: 43.9, lng: -79.1 },
+    { x: 0, y: 0, d: 0, alt: 75, w: 160, hr: 130, cad: 82, tempC: 22, lat: 43.6, lng: -79.4 },
+    { x: 0.34, y: 0.4, d: 10, alt: 89, w: 200, hr: 145, cad: 86, tempC: 23, lat: 43.7, lng: -79.3 },
+    {
+      x: 0.67,
+      y: 0.8,
+      d: 20,
+      alt: 103,
+      w: 215,
+      hr: 153,
+      cad: 90,
+      tempC: 24,
+      lat: 43.8,
+      lng: -79.2,
+    },
+    { x: 1, y: 1, d: 30, alt: 110, w: 175, hr: 149, cad: 84, tempC: 25, lat: 43.9, lng: -79.1 },
   ],
   minAlt: 75,
   maxAlt: 110,
@@ -655,13 +666,22 @@ test('renders route stream graphs in the server activity markup', () => {
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'power', 'cadence'],
+    ['hr', 'power', 'cadence', 'temperature'],
   )
   for (const graph of traces) {
     assert.equal(byClass(graph, 'tri-elev').length, 1)
     assert.equal(byClass(graph, 'tri-elev-area').length, 1)
     assert.equal(byClass(graph, 'tri-elev-line').length, 1)
   }
+  const temperature = traces.find(graph => graph.properties.dataTriTrace === 'temperature')
+  assert.ok(temperature)
+  assert.deepEqual(
+    byClass(temperature, 'tri-elev-cap')
+      .flatMap(cap => byTag(cap, 'span'))
+      .map(text),
+    ['temperature', '24°C avg'],
+  )
+  assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
 })
 
 test('labels the activity disclosure and exposes its expanded state and controlled panel', () => {

@@ -584,6 +584,62 @@ export interface FtpHypothesis {
   note: string
 }
 
+export type HeatAcclimatisationState = 'unexposed' | 'acclimating' | 'maintaining' | 'decaying'
+export type HeatConfidence = 'none' | 'low' | 'moderate'
+export type HeatTemperatureSource = 'weatherkit' | 'strava'
+
+export interface HeatActivityPoint {
+  id: number
+  date: string
+  startedAt: string
+  sport: 'bike' | 'run'
+  name: string
+  temperatureC: number
+  source: HeatTemperatureSource
+  observedMinutes: number
+  hotMinutes: number
+  dose: number
+}
+
+export interface HeatDay {
+  date: string
+  temperatureC: number | null
+  source: HeatTemperatureSource | 'mixed' | null
+  observedMinutes: number
+  hotMinutes: number
+  dose: number
+  acclimatisationPct: number
+}
+
+export interface HeatMethod {
+  eligibleSports: ['bike', 'run']
+  hotThresholdC: number
+  targetMinutesPerDay: number
+  targetDays: number
+  decayGraceDays: number
+  decayPerDay: number
+  coverageDays: number
+  note: string
+}
+
+export interface HeatBlock {
+  currentPct: number | null
+  state: HeatAcclimatisationState
+  confidence: HeatConfidence
+  coveragePct: number
+  eligibleMinutes: number
+  observedMinutes: number
+  latestTemperatureC: number | null
+  lastObservedDate: string | null
+  lastHeatDate: string | null
+  heatMinutes14d: number
+  heatDays14d: number
+  sourceCounts: Record<HeatTemperatureSource, number>
+  activities: HeatActivityPoint[]
+  series: HeatDay[]
+  method: HeatMethod
+}
+
 export interface EngineBlock {
   vo2max: Vo2maxBlock
   abilities: AbilitiesBlock
@@ -613,6 +669,7 @@ export interface Analytics {
   loadShare: Record<Sport, number>
   body: BodyBlock
   recovery: RecoveryBlock
+  heat: HeatBlock
   engine: EngineBlock
   events: RaceEvent[]
   activities: ActivitySummary[]
@@ -674,6 +731,12 @@ const K7 = 1 - Math.exp(-1 / 7)
 const IF_CAP = 1.15
 const CALIBRATION_WINDOW_DAYS = 28
 const CALIBRATION_PROJECTION_DAYS = 14
+const HEAT_THRESHOLD_C = 22
+const HEAT_TARGET_MINUTES = 60
+const HEAT_TARGET_DAYS = 14
+const HEAT_DECAY_GRACE_DAYS = 3
+const HEAT_DECAY_PER_DAY = 0.025
+const HEAT_COVERAGE_DAYS = 42
 
 const SPORT_PRIOR: Record<Sport, number> = { swim: 1.3, bike: 6.9, run: 3.3 }
 const LOAD_SHARE_TARGET: Record<Sport, number> = { swim: 0.2, bike: 0.5, run: 0.3 }
@@ -869,6 +932,224 @@ function buildDaily(
     runCtl += (row.run - runCtl) * K42
   }
   return out
+}
+
+interface HeatActivity {
+  id: number
+  date: string
+  startedAt: string
+  sport: 'bike' | 'run'
+  name: string
+  durationS: number
+  temperatureC: number
+  source: HeatTemperatureSource
+}
+
+interface HeatDayBucket {
+  observedS: number
+  temperatureSeconds: number
+  hotS: number
+  sources: Set<HeatTemperatureSource>
+}
+
+const heatMethod = (): HeatMethod => ({
+  eligibleSports: ['bike', 'run'],
+  hotThresholdC: HEAT_THRESHOLD_C,
+  targetMinutesPerDay: HEAT_TARGET_MINUTES,
+  targetDays: HEAT_TARGET_DAYS,
+  decayGraceDays: HEAT_DECAY_GRACE_DAYS,
+  decayPerDay: HEAT_DECAY_PER_DAY,
+  coverageDays: HEAT_COVERAGE_DAYS,
+  note: 'Ambient-temperature exposure proxy. It does not measure core temperature, humidity, solar load, sweat response, clothing, hydration, or passive heat exposure.',
+})
+
+function emptyHeat(): HeatBlock {
+  return {
+    currentPct: null,
+    state: 'unexposed',
+    confidence: 'none',
+    coveragePct: 0,
+    eligibleMinutes: 0,
+    observedMinutes: 0,
+    latestTemperatureC: null,
+    lastObservedDate: null,
+    lastHeatDate: null,
+    heatMinutes14d: 0,
+    heatDays14d: 0,
+    sourceCounts: { weatherkit: 0, strava: 0 },
+    activities: [],
+    series: [],
+    method: heatMethod(),
+  }
+}
+
+function buildHeat(
+  cache: StravaRawCache,
+  sourceActivities: RawStravaActivity[],
+  weather: WeatherCache | null | undefined,
+  windowFrom: number,
+  windowTo: number,
+): HeatBlock {
+  const eligible: RawStravaActivity[] = []
+  const observed: HeatActivity[] = []
+  const sourceCounts: Record<HeatTemperatureSource, number> = { weatherkit: 0, strava: 0 }
+
+  for (const activity of sourceActivities) {
+    const sport = normalizeKind(activity.sportType)
+    if (sport !== 'bike' && sport !== 'run') continue
+    const route = cache.streams?.[String(activity.id)]?.latlng
+    if (!route || route.length < 2) continue
+    eligible.push(activity)
+
+    const ambient = weather?.activities[String(activity.id)]
+    const temperatureC = ambient?.temperatureC ?? activity.averageTemp ?? null
+    if (temperatureC == null || !Number.isFinite(temperatureC)) continue
+    const durationS = Math.max(
+      1,
+      ambient?.durationS ?? (activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime),
+    )
+    const source: HeatTemperatureSource = ambient?.temperatureC != null ? 'weatherkit' : 'strava'
+    sourceCounts[source] += 1
+    observed.push({
+      id: activity.id,
+      date: activity.startDateLocal.slice(0, 10),
+      startedAt: activity.startDate,
+      sport,
+      name: activity.name,
+      durationS,
+      temperatureC,
+      source,
+    })
+  }
+
+  const byDay = new Map<string, HeatDayBucket>()
+  for (const activity of observed) {
+    const bucket = byDay.get(activity.date) ?? {
+      observedS: 0,
+      temperatureSeconds: 0,
+      hotS: 0,
+      sources: new Set<HeatTemperatureSource>(),
+    }
+    bucket.observedS += activity.durationS
+    bucket.temperatureSeconds += activity.temperatureC * activity.durationS
+    if (activity.temperatureC > HEAT_THRESHOLD_C) bucket.hotS += activity.durationS
+    bucket.sources.add(activity.source)
+    byDay.set(activity.date, bucket)
+  }
+
+  let credits = 0
+  let lastHeatMs: number | null = null
+  let lastHeatDate: string | null = null
+  const series: HeatDay[] = []
+  for (let ms = windowFrom; ms <= windowTo; ms += DAY_MS) {
+    const date = new Date(ms).toISOString().slice(0, 10)
+    const bucket = byDay.get(date)
+    const observedMinutes = (bucket?.observedS ?? 0) / 60
+    const hotMinutes = (bucket?.hotS ?? 0) / 60
+    const dose = clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1)
+    if (dose > 0) {
+      credits = Math.min(HEAT_TARGET_DAYS, credits + dose)
+      lastHeatMs = ms
+      lastHeatDate = date
+    } else if (
+      lastHeatMs != null &&
+      Math.round((ms - lastHeatMs) / DAY_MS) > HEAT_DECAY_GRACE_DAYS
+    ) {
+      credits *= 1 - HEAT_DECAY_PER_DAY
+    }
+    series.push({
+      date,
+      temperatureC:
+        bucket && bucket.observedS > 0
+          ? round(bucket.temperatureSeconds / bucket.observedS, 1)
+          : null,
+      source:
+        bucket == null || bucket.sources.size === 0
+          ? null
+          : bucket.sources.size > 1
+            ? 'mixed'
+            : (bucket.sources.values().next().value ?? null),
+      observedMinutes: round(observedMinutes, 0),
+      hotMinutes: round(hotMinutes, 0),
+      dose: round(dose, 3),
+      acclimatisationPct: round((credits / HEAT_TARGET_DAYS) * 100, 1),
+    })
+  }
+
+  const latestObserved = [...series].reverse().find(day => day.temperatureC != null) ?? null
+  const currentPct = observed.length ? (series[series.length - 1]?.acclimatisationPct ?? 0) : null
+  const coverageFrom = windowTo - (HEAT_COVERAGE_DAYS - 1) * DAY_MS
+  const eligibleRecent = eligible.filter(
+    activity => dayMs(activity.startDateLocal.slice(0, 10)) >= coverageFrom,
+  )
+  const observedRecent = observed.filter(activity => dayMs(activity.date) >= coverageFrom)
+  const eligibleSeconds = eligibleRecent.reduce(
+    (total, activity) =>
+      total + (activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime),
+    0,
+  )
+  const observedSeconds = observedRecent.reduce((total, activity) => total + activity.durationS, 0)
+  const coveragePct =
+    eligibleSeconds > 0 ? round(clamp(observedSeconds / eligibleSeconds, 0, 1) * 100, 0) : 0
+  const latestEligibleDate = eligibleRecent.length
+    ? eligibleRecent[eligibleRecent.length - 1].startDateLocal.slice(0, 10)
+    : null
+  const confidence: HeatConfidence =
+    observedRecent.length === 0
+      ? 'none'
+      : coveragePct < 50 || observedRecent.length < 2 || latestObserved?.date !== latestEligibleDate
+        ? 'low'
+        : 'moderate'
+  const recent14 = series.slice(-14)
+  const heatMinutes14d = round(
+    recent14.reduce((total, day) => total + day.hotMinutes, 0),
+    0,
+  )
+  const heatDays14d = recent14.filter(day => day.dose > 0).length
+  const daysSinceHeat = lastHeatDate ? Math.round((windowTo - dayMs(lastHeatDate)) / DAY_MS) : null
+  const state: HeatAcclimatisationState =
+    currentPct == null || currentPct < 10
+      ? 'unexposed'
+      : daysSinceHeat != null && daysSinceHeat > HEAT_DECAY_GRACE_DAYS
+        ? 'decaying'
+        : currentPct >= 80
+          ? 'maintaining'
+          : 'acclimating'
+
+  return {
+    currentPct,
+    state,
+    confidence,
+    coveragePct,
+    eligibleMinutes: round(eligibleSeconds / 60, 0),
+    observedMinutes: round(observedSeconds / 60, 0),
+    latestTemperatureC: latestObserved?.temperatureC ?? null,
+    lastObservedDate: latestObserved?.date ?? null,
+    lastHeatDate,
+    heatMinutes14d,
+    heatDays14d,
+    sourceCounts,
+    activities: [...observed]
+      .sort((a, b) => a.startedAt.localeCompare(b.startedAt))
+      .map(activity => {
+        const observedMinutes = activity.durationS / 60
+        const hotMinutes = activity.temperatureC > HEAT_THRESHOLD_C ? observedMinutes : 0
+        return {
+          id: activity.id,
+          date: activity.date,
+          startedAt: activity.startedAt,
+          sport: activity.sport,
+          name: activity.name,
+          temperatureC: round(activity.temperatureC, 1),
+          source: activity.source,
+          observedMinutes: round(observedMinutes, 0),
+          hotMinutes: round(hotMinutes, 0),
+          dose: round(clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1), 3),
+        }
+      }),
+    series,
+    method: heatMethod(),
+  }
 }
 
 type WeeklyBucket = {
@@ -3374,6 +3655,7 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     loadShare: { swim: 0, bike: 0, run: 0 },
     body: emptyBody(),
     recovery: emptyRecovery(),
+    heat: emptyHeat(),
     engine: emptyEngine(),
     events: [],
     activities: [],
@@ -3463,6 +3745,7 @@ export function buildAnalytics(
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
 
   const daily = buildDaily(acts, loadById, effortByDay, windowFrom, windowTo)
+  const heat = buildHeat(cache, sourceActivities, inputs.weather, windowFrom, windowTo)
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
   const garminWeightRaw = inputs.garmin?.weight
@@ -3742,6 +4025,7 @@ export function buildAnalytics(
     loadShare,
     body,
     recovery,
+    heat,
     engine,
     events: inputs.events ?? [],
     activities,
@@ -4090,7 +4374,8 @@ export function buildDataFeed(
           strokes: s.strokes,
           calories: raw.calories ?? null,
           sufferScore: raw.sufferScore ?? null,
-          avgTemp: raw.averageTemp ?? null,
+          avgTemp:
+            raw.averageTemp ?? inputs.weather?.activities[String(s.id)]?.temperatureC ?? null,
           windKph: s.windKph,
           windDir: s.windDir,
           windGustKph: s.windGustKph,

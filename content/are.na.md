@@ -7718,7 +7718,7 @@ title: are.na
     - date: 06/20/2026
     - tags: [frontend, vllm]
     - later: true
-- https://github.com/vllm-project/vllm/blob/main/vllm/distributed/kv_transfer/disagg_prefill_workflow.jpg -- vLLM disaggregated prefill workflow diagram
+- https://github.com/vllm-project/vllm/blob/main/vllm/distributed/kv_transfer/disagg_prefill_workflow.webp -- vLLM disaggregated prefill workflow diagram
   - [meta]:
     - date: 06/20/2026
     - tags: [disaggregation, kv transfer, vllm]

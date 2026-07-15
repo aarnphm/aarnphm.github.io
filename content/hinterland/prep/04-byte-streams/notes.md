@@ -193,7 +193,7 @@ NaN is never equal to itself. If you mean bit identity, compare bits.
 Canonical row:
 
 ```text
-00000000  89 50 4e 47 0d 0a 1a 0a  00 00 00 0d 49 48 44 52  |.PNG........IHDR|
+00000000  89 50 4e 47 0d 0a 1a 0a  00 00 00 0d 49 48 44 52  |.webp........IHDR|
 ```
 
 Read it in this order:
