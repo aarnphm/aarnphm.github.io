@@ -31,12 +31,12 @@ the nationality pair splits origin and identity: `Je viens du Canada.` (venir + 
 the classement exercise (cahier, piste 16) sorts nineteen countries into the four `Je viens…` columns. two equivalent readings of the same sort: by the country's article (`le` → `du`, `la`/sans article → `de`, `l'` → `d'`, `les` → `des`), or by the classroom shorthand written over each column: gender picks `du` vs `de`, a starting vowel overrides gender and forces `d'`, plural forces `des`.
 
 | `Je viens du…` (masculin, consonne) | `Je viens de…` (féminin ou île, consonne) | `Je viens d'…` (voyelle) | `Je viens des…` (pluriel : états, îles) |
-| ----------------------------------- | ----------------------------------------- | ------------------------ | ---------------------------------------- |
-| `du Bénin`          | `de Jordanie`                      | `d'Australie`            | `des États-Unis`      |
-| `du Liban`          | `de Norvège`                       | `d'Égypte`               | `des Îles Salomon`    |
-| `du Togo`           | `de Serbie`                        | `d'Haïti`                | `des Pays-Bas`        |
-| `du Venezuela`      | `de Thaïlande`                     | `d'Ouganda`              |                       |
-| `du Vietnam`        | `de Monaco`                        | `d'Uruguay`              |                       |
+| ----------------------------------- | ----------------------------------------- | ------------------------ | --------------------------------------- |
+| `du Bénin`                          | `de Jordanie`                             | `d'Australie`            | `des États-Unis`                        |
+| `du Liban`                          | `de Norvège`                              | `d'Égypte`               | `des Îles Salomon`                      |
+| `du Togo`                           | `de Serbie`                               | `d'Haïti`                | `des Pays-Bas`                          |
+| `du Venezuela`                      | `de Thaïlande`                            | `d'Ouganda`              |                                         |
+| `du Vietnam`                        | `de Monaco`                               | `d'Uruguay`              |                                         |
 
 three traps worth keeping:
 
