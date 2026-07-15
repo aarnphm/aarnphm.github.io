@@ -23,7 +23,7 @@ import {
   type WeatherKitConfig,
 } from '../util/weather-kit'
 
-const CACHE_VERSION = 1
+const CACHE_VERSION = 2
 const HOUR_MS = 3_600_000
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const stravaCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -322,7 +322,11 @@ async function main(): Promise<void> {
   let skipped = 0
   for (const item of candidates) {
     const key = String(item.activityId)
-    if (!force && activities[key]?.start === item.start) {
+    if (
+      !force &&
+      activities[key]?.start === item.start &&
+      (activities[key]?.temperatureSeries?.length ?? 0) >= 2
+    ) {
       skipped += 1
       continue
     }

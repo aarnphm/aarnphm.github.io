@@ -2,7 +2,7 @@
 date: '2025-01-06'
 description: and being shattered into a million pieces, then picking oneself up.
 id: a broken heart
-modified: 2026-06-05 15:08:09 GMT-04:00
+modified: 2026-07-14 22:21:45 GMT-04:00
 socials:
   bluesky: https://bsky.app/profile/aarnphm.xyz/post/3lfcwbep7oc2q
   facebook: https://www.facebook.com/share/19ghibetuE/
@@ -22,57 +22,15 @@ _Thanks JZ, CN, and TA for the editorial notes and feedback_
 
 ![[posts/images/topanga.webp|Some picture I took whilst staying in Topanga, maybe one day :)]]
 
-4:47 AM. The first light was an imperceptible, cold whisper over the ridge. In the valley, a coyote howled—to the gods, or to the void? He sat in the dark room, a canopy of emotions swirling around him like an unseen audience. Trapped in darkness, he watched shadows dance like forgotten marionettes. The ridges silhouetted against the pale sky, shifting in the uncertain light as night yielded to dawn.
+4:47AM.
 
-Dawn broke over the Topanga hills with a pinkish glow, as though the sun itself hesitated. The last of the night clouds clung to the ridge line in ragged strips, pale shadows refusing to yield. The mountains looked half-formed, exhaling faint plumes of fog that caught the earliest hint of rose-gold. If one squinted, one could imagine them breathing, as though the canyons and chaparral were alive with the same uncertainty churning inside him.
+He is crouched at the edge of the deck, looking down at nothing. His arms are folded, his hands clenched, fingers curled toward his body as if trying to draw it in. A distant coyote wails on the ridge; the sound fades, retreating. He moves back to his usual reading chair, studying the hump of the hill beyond the terraced garden. The room behind him stays in shadow, only the loose white curtain fluttering a little in the quiet wind. The sky is shifting now, from the deep indigo black of night to its first inky outlines of mountains. A rosy glow seeps into the eastern sky past the shoulder of Topanga. A few, last ragged night clouds linger in silhouette against it, and suddenly a faint plume of fog uncurls, flaring rose-gold, luminous as breath. The hills swim into half-form, breathing with him. Time still belongs to the realm of uncertainty, the gentle dissolution of dreams. When the light comes fully, it will be time to begin again.
 
-The morning's hue hung dry, a hesitant forewarning of what was to come. A silent tension permeated the air, a hush that resonated with the fibers of each leaf. The filtered light through the cedar walls stirred an unspoken sadness he thought had been laid to rest. In the stillness, he gazed at the timbered ceiling, listening to the faded song of birds, yet hearing only the echo of his own mind. The letter, now adrift in the digital void, had taken with it a _confession_ that could never be reclaimed, leaving behind a hollow silence that mirrored the irreversibility of time itself.
+He comes back into the hollow house. At once the stale smell of coffee pounded head-on in the refractory chill. There was a light hush; stillness stretched for a long time after the abrupt bird-song, the soft rush of breeze against the windows. The living room was in shadow again. Only the faint orange glow from the upstairs hallway slanted across the reading nook. He settled on the sofa. Beside him lay the newspaper that had fallen to the floor. Creased down the middle, it lay open, centre-dome, and his eye fell first on the bold headline: _City Council Calls Local Supporting Candidate for Supervisor_. The rest of the sheet held less pressing news: politics, a possible wildfire this summer. The quiet light touched his bare feet and felt like warm.
 
-Standing at the window, he couldn't discern if the morning's melancholy was originated in the landscape or in his chest. The pastel light trickled over the horizon, a quiet reverberation of his unresolved sorrow. He'd spent the night awake, staring at the blinking cursor. He'd meant to write an appreciation letter to [[posts/her|her]], a warm recounting of shared moments. But the words evaded him, and his heart, true to its nature, metamorphosed into the feelings he'd long suppressed. Within the networked passage of his consciousness, there emerged repeatedly a series of enigmatic images—a gentle smile, whispered conversations that never found their voice, acts of kindness—that resist any coherent interpretation. It was as if his mind, in its inscrutable way, was endeavoring to align these fragmented visions with the contours of his own expectations, as though they were the shadowy outlines of a reality he could never fully grasp.
+He takes orange juice and coffee, pushes the cup and saucer together with a slight clink and carries them out to the back steps where he sits with the newspaper, sips the drinks and reads. The phone rings; once, twice; he does not hear it. Eventually he puts the paper down. Gets up. Goes back to the desk. Turns on the computer. Sits stiffly, waiting. He has promised her he will write a letter of appreciation to Miss McGinnis. He must. Words elude him. He writes almost nothing. The printed draft splutters into the digital void. He turns off the monitor, stares at the blinking cursor. And all the time, somehow, his mind wanders, searching. Always. Always searching. It does not stay lost in pursuit of wisps and echoes. It finds her. A gentle smile at the back of his mind; a whisper of her voice, always so ready for the easy conversation that made them feel so companionably at ease with one another. That feeling in his chest whenever kindness or understanding caught her completely unawares.
 
----
-
-The house smelled of stale coffee, drifting through the wide living room. He shuffled towards a small reading nook by the corner where the light has just started to percolate through. Yesterday's newspaper lay folded, half unread. He founded a peculiar comfort within the boundary of the walls, scanning the headlines he'd ignored: local politics, a possible wildfire risk. The light, in its quiet persistence, offered a semblance of warmth, a shadow of her presence that he clung to, even as the coldness of solitude crept in around the edges. A question floated among many: How many sunsets could we shared on this deck?
-
-In the quiet morning, he made some new coffee. He thought of Kafka's letter to Milena [^kafka], how words can evaporate into nothingness, consumed by the shadows they cast. He wondered if his own messages had met the same fate, intercepted by unseen hands, each sip draining away the intent until only a faint echo remained.
-
-[^kafka]: "Written kisses don't reach their destination, rather they are drunk on the way by the ghosts."
-
-The mountains stood witnesses, their massive forms unchanged by the passage of time or the undertone of the morning light. They held no answers, only the stubborn presence of stone and air, a reminder of the enduring mystery that surrounded him. He poured the fresh coffee, the aroma filling the small space, a temporary warmth against the chill of the room. The door creaked slightly, left ajar to the unknown.
-
-_[In the pale light of dawn, the phone emitted a muzzy ping, like a distant echo in a vast, empty hall]_
-
-Three bubbles appeared and disappeared, pulsating with the rhythm of a heart that had long ceased to beat. He watched them, as if they held the key to a labyrinth he could never escape.
-
-```sms
-I've been thinking about everything you wrote. I want you to know I care for you so much, and I never want you to doubt that. But I don't think I can give you what you're asking for...
-```
-
-Each word was a stone dropped into the deep well of his chest, reverberating with the cold certainty of fate. His heart, once aflutter with the possibility of hope, now lay still, entombed in the icy chambers of reality. She cared, yes, but caring and wanting were two distant stars in the vast cosmos of human emotion. The ache in his chest was a reminder of the bruise time had left, a wound that festered in the shadows.
-
-The room, once a sanctuary, now felt oppressive, suffocated by the warmth of morning light that seemed to mock his despair. The mountains outside, indifferent sentinels of human folly, stood as immutable as the laws of a cruel bureaucracy. They had witnessed countless such moments, where hearts learned and relearned the futility of gravity, where some things fell no matter how carefully one tried to hold them. He sat there, phone in hand, as the second text arrived:
-
-```sms
-I wonder if my presence in your life would hinder your ability to make space for viable romantic connections. I care too much about you to let that happen
-```
-
-The paradox was a riddle posed by a world that thrived on contradictions. His confusion reached a crescendo, a symphony of absurdity in which [[thoughts/logic]] was but a distant spectator. How could one care so deeply and yet declare they couldn't be together? The answer lay in the [[thoughts/Camus|absurd]] nature of existence, where meaning was a fleeting shadow, always just out of reach.
-
-He then realised: _How can one expect reciprocation when one couldn't even stand the being of oneself?_
-
-The mountains still showed no sympathy. They had witnessed countless such moments, he supposed – all these human hearts learning and relearning the same lessons about gravity. About how some things fall no matter how carefully you try to hold them.
-
-The phone buzzed once more, offering a lifeline or a noose:
-
-```sms
-Coffee next week?
-```
-
-And there it was – the careful return to normal, the gentle repositioning of boundaries. She was good at this, he noticed. Too good. She had probably done it before, had probably been on both sides of this conversation enough times to navigate it with expertise.
-
-He looked out at the mountains, their peaks sharp and cruel in the afternoon light. Everything was defined now, as if the world had finally decided to reveal its true, unforgiving nature. He typed back, "Coffee sounds good," and meant it, with a smile he usually had. Because what was the alternative? To surrender to the nothingness, to let absence consume what little remained?
-
-The hummingbird, a messenger of a world he no longer understood, hovered at the window. He watched it disappear, carrying with it the last vestiges of hope, into the remaining light.
+The filtered hush of early morning stirred feelings of sadness again. He sat for a few minutes, not sure whether it was the landscape or his chest that was grieving. When he got back to the room, he sat and stared out over the hued ridge, pastel light on wintery tree limbs, and realized that the sorrow he carried was unresolved. So, the words evaporated. “They never have,” Kafka wrote to Milena. “One day, your written kisses will reach their destination, for we are all surrounded by a great number of invisible ghosts.” It was some minutes later when the phone in his pocket pinged with a muzzy echo. Three tiny bubbles appeared and disappeared on the screen. An SMS cleared up: “I didn’t mean to say any of those things. I know we don’t have anything in common. I meant something else. It’s probably best we don’t see each other any more. But I do care about you. I just can’t give you what I know you’re asking for.” Another click, then another message: “I’ve been trying to find a way to tell you that I think your presence is getting in the way of the space that I need in order to make the kind of romantic connection that I feel you deserve. It’s very strange and absurd, and I’m not sure I can explain it. All I know is that, at this stage in my life, I like being by myself. I want to think about who I am and how I want to live my life. That way, I can figure out the kind of relationship I need to have, and be with someone who will stay with me in my future. Right now, I can’t imagine being in a relationship that deserves the kind of attention and energy you want it to have. That being said, I don’t want you to think that I don’t value how special you are. I’d much rather see you with someone else that isn’t me.” It was some minutes before he responded. He recalled the thoughts and sentiments of Camus and wondered whether they should have resolved things in some way. She clearly knew him better than he did, and maybe he should have known that what he had to offer could not satisfy what she wanted. But how could he have expected her to answer in kind? There were times when he had literally been incapable of standing being himself. He said that he was sorry he had upset her and asked her whether she wanted him to say anything else. She did the same, and he likewise said he had nothing more to say. He received a further ping: “Coffee next week?” He replied that coffee sounded good and smiled in the way he usually did when he smiled.
 
 _[Life moved on, and he thought to himself: "We will be okay."]_
 

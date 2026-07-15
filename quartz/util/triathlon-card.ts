@@ -95,6 +95,11 @@ export const scrubDist = (km: number, sport: ActivityKind): string =>
       : `${km.toFixed(2)} km`
 
 const elevationValue = (meters: number): number => (imperial ? meters * M_TO_FT : meters)
+const temperatureValue = (celsius: number): number => (imperial ? (celsius * 9) / 5 + 32 : celsius)
+const temperatureUnit = (): string => (imperial ? '°F' : '°C')
+
+export const formatTemperature = (celsius: number): string =>
+  `${Math.round(temperatureValue(celsius))}${temperatureUnit()}`
 
 export const formatAltitude = (meters: number): string => {
   const rounded = Math.round(elevationValue(meters))
@@ -175,7 +180,7 @@ export const moreStatRows = (d: StravaActivityDetail): [string, string][] => {
     rows.push(['cadence', d.sport === 'run' ? `${d.avgCadence * 2} spm` : `${d.avgCadence} rpm`])
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
-  if (d.avgTemp != null) rows.push(['temp', `${Math.round((d.avgTemp * 9) / 5 + 32)}°F`])
+  if (d.avgTemp != null) rows.push(['temp', formatTemperature(d.avgTemp)])
   if (d.windKph != null)
     rows.push([
       'wind',
@@ -186,10 +191,11 @@ export const moreStatRows = (d: StravaActivityDetail): [string, string][] => {
 
 export const routeStreamFlags = (
   d: StravaActivityDetail,
-): { power: boolean; hr: boolean; cad: boolean } => ({
+): { power: boolean; hr: boolean; cad: boolean; temp: boolean } => ({
   power: d.deviceWatts && d.route.some(p => p.w > 0),
   hr: d.route.some(p => p.hr > 0),
   cad: d.route.some(p => p.cad > 0),
+  temp: d.route.some(p => p.tempC != null),
 })
 
 export const hasMoreSection = (d: StravaActivityDetail): boolean => {
@@ -200,6 +206,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.power ||
     flags.hr ||
     flags.cad ||
+    flags.temp ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
   )
@@ -350,17 +357,20 @@ export const buildTrace = <N>(
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
+  domain?: { min: number; max: number; intervals?: number },
 ): N => {
   const w = 100
   const h = 30
   const maxD = d.route[d.route.length - 1].d || 1
-  let max = 1
+  let peak = 1
   d.route.forEach((p, i) => {
     const v = pick(p, i)
-    if (v > max) max = v
+    if (v > peak) peak = v
   })
+  const domainMin = domain?.min ?? 0
+  const domainMax = Math.max(domain?.max ?? peak, domainMin + 1)
   const px = (km: number): number => (km / maxD) * w
-  const py = (v: number): number => h - (v / max) * (h - 1)
+  const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
@@ -369,7 +379,7 @@ export const buildTrace = <N>(
     line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
   })
   area += `L ${w} ${h} Z`
-  const yTicks = niceTicks(0, max, 3).map(value => ({
+  const yTicks = niceTicks(domainMin, domainMax, domain?.intervals ?? 3).map(value => ({
     label: value === 0 ? '0' : tick(value),
     vbY: py(value),
   }))
@@ -385,9 +395,34 @@ export const buildTrace = <N>(
   f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
   const capEl = f.el('div', 'tri-elev-cap')
-  f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(max)))
+  f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(peak)))
   f.add(wrap, capEl, axisFrame(f, s, yTicks, h, distanceXTicks(maxD), true, { top: 0, bottom: h }))
   return wrap
+}
+
+const buildTemperatureTrace = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
+  const temperaturesC = d.route
+    .map(point => point.tempC)
+    .filter((value): value is number => value != null)
+  const averageC =
+    d.avgTemp ?? temperaturesC.reduce((total, value) => total + value, 0) / temperaturesC.length
+  const values = temperaturesC.map(temperatureValue)
+  const step = imperial ? 5 : 2
+  let min = Math.floor(Math.min(...values) / step) * step
+  let max = Math.ceil(Math.max(...values) / step) * step
+  if (max <= min) {
+    min -= step
+    max += step
+  }
+  return buildTrace(
+    f,
+    d,
+    point => temperatureValue(point.tempC ?? averageC),
+    'temperature',
+    () => `${formatTemperature(averageC)} avg`,
+    value => `${Math.round(value)}${temperatureUnit()}`,
+    { min, max, intervals: 2 },
+  )
 }
 
 export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
@@ -1838,6 +1873,7 @@ export const buildActivity = <N>(
         ),
       )
     }
+    if (flags.temp) f.add(more, buildTemperatureTrace(f, d))
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)

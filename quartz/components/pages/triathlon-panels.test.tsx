@@ -36,3 +36,15 @@ test('triathlon panels share one dialog shell', () => {
     assert.equal(html.split('role="dialog"').length - 1, 1)
   }
 })
+
+test('analytics reserves one heat chart between effort and readiness', () => {
+  const html = render(<AnalyticsPanel page />)
+  const effort = html.indexOf('data-chart="effort"')
+  const heat = html.indexOf('data-chart="heat"')
+  const readiness = html.indexOf('data-chart="readiness"')
+
+  assert.equal(html.split('data-chart="heat"').length - 1, 1)
+  assert.ok(effort >= 0)
+  assert.ok(heat > effort)
+  assert.ok(readiness > heat)
+})

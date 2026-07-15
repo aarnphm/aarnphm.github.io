@@ -65,6 +65,7 @@ import {
   decodePowerCurve,
   dur,
   formatAltitude,
+  formatTemperature,
   gradeAt,
   isImperialUnit,
   KM_TO_MI,
@@ -739,6 +740,12 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
       surfaces.push({
         wrap: trace,
         fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadenceScale} ${cadenceUnit}`,
+      })
+    else if (trace.dataset.triTrace === 'temperature')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(p.tempC)}`,
       })
   }
   if (surfaces.length > 0 && d.route.length >= 2) {
@@ -3232,6 +3239,198 @@ const missingRuns = <T>(
   return out
 }
 
+const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-accl')
+  block.appendChild(anaTitle('ambient heat · acclimatisation', 'heatacclimation'))
+  const heat = data.heat
+  if (!heat.series.length || heat.currentPct == null) {
+    block.appendChild(el('div', 'tri-ana-empty', tl('no outdoor temperature data')))
+    return block
+  }
+
+  const temperature = (celsius: number): number =>
+    isImperialUnit() ? (celsius * 9) / 5 + 32 : celsius
+  const temperatureUnit = isImperialUnit() ? '°F' : '°C'
+  const temperatureText = (celsius: number, digits = 0): string =>
+    `${temperature(celsius).toFixed(digits)}${temperatureUnit}`
+  const summary = el('div', 'tri-accl-summary')
+  summary.append(
+    el('span', 'tri-accl-summary-v', `${heat.heatDays14d}`),
+    el('span', 'tri-accl-summary-k', tl('heat days')),
+    el('span', 'tri-accl-summary-k tri-accl-summary-dot', '·'),
+    el('span', 'tri-accl-summary-k', tl('14d')),
+    el('span', 'tri-accl-summary-v', `${heat.heatMinutes14d}`),
+    el('span', 'tri-accl-summary-k', tl('hot min')),
+    el('span', 'tri-accl-summary-k tri-accl-summary-dot', '·'),
+    el('span', 'tri-accl-summary-k', tl('14d')),
+  )
+  block.appendChild(summary)
+
+  const legend = el('div', 'tri-accl-legend')
+  const legendItem = (cls: string, text: string): HTMLElement => {
+    const item = el('span', 'tri-accl-legitem')
+    item.append(el('span', `tri-accl-legmark ${cls}`), el('span', '', tl(text)))
+    return item
+  }
+  legend.append(
+    legendItem('tri-accl-leg-temp', 'activity temperature'),
+    legendItem('tri-accl-leg-proxy', 'acclimatisation proxy'),
+    legendItem('tri-accl-leg-dose', 'heat exposure'),
+  )
+  block.appendChild(legend)
+
+  const rows = heat.series
+  const activities = heat.activities
+  const n = rows.length
+  const H = 70
+  const tempTop = 3
+  const tempBottom = 28
+  const acclTop = 40
+  const acclBottom = 66
+  const observed = activities.map(activity => temperature(activity.temperatureC))
+  const threshold = temperature(heat.method.hotThresholdC)
+  let tempLo = Math.floor(Math.min(...observed, threshold) / 5) * 5
+  let tempHi = Math.ceil(Math.max(...observed, threshold) / 5) * 5
+  if (tempHi - tempLo < 10) {
+    tempLo -= 5
+    tempHi += 5
+  }
+  const x = (i: number): number => (n > 1 ? (i / (n - 1)) * ANA_W : ANA_W / 2)
+  const fromMs = Date.parse(`${rows[0].date}T00:00:00Z`)
+  const toMs = Date.parse(`${rows[rows.length - 1].date}T23:59:59Z`)
+  const xActivity = (startedAt: string): number => {
+    const timestamp = Date.parse(startedAt)
+    return Number.isFinite(timestamp) && toMs > fromMs
+      ? clampN((timestamp - fromMs) / (toMs - fromMs), 0, 1) * ANA_W
+      : ANA_W / 2
+  }
+  const yTemp = (value: number): number =>
+    tempBottom - ((temperature(value) - tempLo) / (tempHi - tempLo)) * (tempBottom - tempTop)
+  const yAccl = (value: number): number =>
+    acclBottom - (clampN(value, 0, 100) / 100) * (acclBottom - acclTop)
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-accl-svg',
+    viewBox: `0 0 ${ANA_W} ${H}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': tl('ambient workout temperature and heat acclimatisation proxy over time'),
+  })
+  s.appendChild(
+    svg('rect', {
+      x: 0,
+      y: tempTop,
+      width: ANA_W,
+      height: Math.max(0, yTemp(heat.method.hotThresholdC) - tempTop),
+      class: 'tri-accl-hot-zone',
+    }),
+  )
+  s.appendChild(
+    svg('line', {
+      x1: 0,
+      y1: yTemp(heat.method.hotThresholdC),
+      x2: ANA_W,
+      y2: yTemp(heat.method.hotThresholdC),
+      class: 'tri-accl-threshold',
+    }),
+  )
+  const barWidth = clampN(72 / Math.max(1, n), 0.45, 1.35)
+  for (const [i, day] of rows.entries()) {
+    if (day.dose > 0)
+      s.appendChild(
+        svg('rect', {
+          x: x(i) - barWidth / 2,
+          y: yAccl(day.dose * 100),
+          width: barWidth,
+          height: acclBottom - yAccl(day.dose * 100),
+          class: 'tri-accl-dose',
+        }),
+      )
+  }
+  if (activities.length)
+    s.appendChild(
+      svg('path', {
+        d: polyD(
+          activities.map(activity => [xActivity(activity.startedAt), yTemp(activity.temperatureC)]),
+        ),
+        class: 'tri-accl-temp',
+      }),
+    )
+  s.appendChild(
+    svg('path', {
+      d: polyD(rows.map((day, i) => [x(i), yAccl(day.acclimatisationPct)])),
+      class: 'tri-accl-proxy',
+    }),
+  )
+  s.appendChild(
+    svg('line', {
+      x1: 0,
+      y1: (tempBottom + acclTop) / 2,
+      x2: ANA_W,
+      y2: (tempBottom + acclTop) / 2,
+      class: 'tri-accl-divider',
+    }),
+  )
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
+  const frame = axisFrame(
+    domF,
+    s,
+    [
+      { label: `${tempHi}${temperatureUnit}`, vbY: tempTop },
+      {
+        label: `${Math.round(threshold)}${temperatureUnit}`,
+        vbY: yTemp(heat.method.hotThresholdC),
+      },
+      { label: `${tempLo}${temperatureUnit}`, vbY: tempBottom },
+      { label: '100%', vbY: acclTop },
+      { label: '50%', vbY: yAccl(50) },
+      { label: '0%', vbY: acclBottom },
+    ],
+    H,
+    monthTicks(
+      rows.map(day => day.date),
+      i => x(i),
+    ),
+    false,
+  )
+  frame.classList.add('tri-accl-frame')
+  block.append(frame, el('div', 'tri-chart-readout'))
+
+  const cap = el('div', 'tri-elev-cap tri-accl-cap')
+  if (heat.latestTemperatureC != null && heat.lastObservedDate)
+    cap.appendChild(
+      markGloss(
+        el(
+          'span',
+          'tri-ana-k',
+          `${tl('latest')} ${temperatureText(heat.latestTemperatureC)} · ${shortDate(heat.lastObservedDate)}`,
+        ),
+        'ambienttemp',
+      ),
+    )
+  cap.append(
+    markGloss(
+      el('span', 'tri-ana-k', `${heat.coveragePct}% ${tl('weather coverage')}`),
+      'ambienttemp',
+    ),
+    el('span', 'tri-ana-k', `${tl(heat.confidence)} ${tl('confidence')}`),
+    el(
+      'span',
+      'tri-ana-k',
+      `WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
+    ),
+  )
+  block.appendChild(cap)
+  const method = markGloss(
+    mathK(
+      'tri-accl-method',
+      `>${temperatureText(heat.method.hotThresholdC)} · ${heat.method.targetMinutesPerDay} min = 1 ${tl('exposure')} · ${heat.method.targetDays} ${tl('exposures')} = 100% · ${heat.method.decayPerDay * 100}%/${tl('day')} ${tl('decay after')} ${heat.method.decayGraceDays} ${tl('days')}`,
+    ),
+    'heatdose',
+  )
+  block.appendChild(method)
+  return block
+}
+
 const buildRecoveryChart = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-recovery')
   block.appendChild(anaTitle('recovery · hrv · rhr', 'hrv'))
@@ -5500,6 +5699,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   pmc: buildPmc,
   weekly: buildWeekly,
   effort: buildEffort,
+  heat: buildHeatAcclimatisation,
   readiness: buildReadiness,
   trend: buildTrend,
   actions: buildActions,
@@ -5656,6 +5856,55 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
   }
   bindWkTrend('.tri-ana-weekly', 'load')
   bindWkTrend('.tri-ana-effort', 'effort')
+
+  const heatActivities = data.heat.activities
+  const heatDays = data.heat.series
+  const heatBlock = panel.querySelector<HTMLElement>('.tri-ana-accl')
+  const heatSvg = heatBlock?.querySelector<SVGElement>('.tri-accl-svg')
+  const heatCursor = heatSvg?.querySelector<SVGElement>('.tri-ana-cursor')
+  const heatReadout = heatBlock?.querySelector<HTMLElement>('.tri-chart-readout')
+  if (
+    heatBlock &&
+    heatSvg &&
+    heatCursor &&
+    heatReadout &&
+    heatActivities.length &&
+    heatDays.length
+  ) {
+    const fromMs = Date.parse(`${heatDays[0].date}T00:00:00Z`)
+    const toMs = Date.parse(`${heatDays[heatDays.length - 1].date}T23:59:59Z`)
+    const positioned = heatActivities.map(activity => ({
+      activity,
+      fraction: clampN((Date.parse(activity.startedAt) - fromMs) / (toMs - fromMs), 0, 1),
+    }))
+    const dayByDate = new Map(heatDays.map(day => [day.date, day]))
+    const onMove = (event: MouseEvent): void => {
+      const rect = heatSvg.getBoundingClientRect()
+      const fraction = clampN((event.clientX - rect.left) / rect.width, 0, 1)
+      let nearest = positioned[0]
+      for (const point of positioned)
+        if (Math.abs(point.fraction - fraction) < Math.abs(nearest.fraction - fraction))
+          nearest = point
+      const { activity } = nearest
+      const day = dayByDate.get(activity.date)
+      const temperature = isImperialUnit()
+        ? `${((activity.temperatureC * 9) / 5 + 32).toFixed(0)}°F`
+        : `${activity.temperatureC.toFixed(0)}°C`
+      const source = activity.source === 'weatherkit' ? 'WeatherKit' : 'Strava'
+      const cx = (nearest.fraction * ANA_W).toFixed(2)
+      heatCursor.setAttribute('x1', cx)
+      heatCursor.setAttribute('x2', cx)
+      heatReadout.textContent = `${activity.date} · ${activity.name} · ${temperature} · ${activity.hotMinutes} ${tl('hot min')} · ${tl('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
+      heatBlock.classList.add('tri-chart--hover')
+    }
+    const onLeave = (): void => heatBlock.classList.remove('tri-chart--hover')
+    heatSvg.addEventListener('mousemove', onMove)
+    heatSvg.addEventListener('mouseleave', onLeave)
+    cleanups.push(() => {
+      heatSvg.removeEventListener('mousemove', onMove)
+      heatSvg.removeEventListener('mouseleave', onLeave)
+    })
+  }
 
   const bodySeries = data.body.series
   const bodyBlock = panel.querySelector<HTMLElement>('.tri-ana-bodywt')
@@ -6086,6 +6335,11 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
     hay: 'recovery hrv heart rate variability rhr resting autonomic illness temperature overreaching suppressed fatigue oura',
   },
   {
+    label: 'ambient heat · acclimatisation',
+    chart: 'heat',
+    hay: 'heat temperature ambient thermal hot weather weatherkit acclimatisation acclimation exposure proxy',
+  },
+  {
     label: 'sleep · debt',
     chart: 'sleep',
     hay: 'sleep debt duration score short streak need target rest hours oura',
@@ -6155,6 +6409,9 @@ const GLOSS_CHART: Record<string, string> = {
   hrv: 'recovery',
   rhr: 'recovery',
   tempdev: 'recovery',
+  ambienttemp: 'heat',
+  heatdose: 'heat',
+  heatacclimation: 'heat',
   overreaching: 'recovery',
   oreadiness: 'recovery',
   sleepdebt: 'sleep',

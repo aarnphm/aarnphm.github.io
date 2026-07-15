@@ -26,10 +26,10 @@ $$
 
 see also [[thoughts/economies of scale]]
 
-| variable | description                                                              |
-| -------- | ------------------------------------------------------------------------ |
-| $D$      | annual increase in demand                                                |
-| $x$      | time interval between introduction of successive plants (i.e: decision)  |
-| $r$      | annual discount rate                                                     |
-| $f(y)$   | cost of building and operating a plant of capacity $y$                  |
+| variable | description                                                               |
+| -------- | ------------------------------------------------------------------------- |
+| $D$      | annual increase in demand                                                 |
+| $x$      | time interval between introduction of successive plants (i.e: decision)   |
+| $r$      | annual discount rate                                                      |
+| $f(y)$   | cost of building and operating a plant of capacity $y$                    |
 | $c(x)$   | discounted cost infinite horizon given a plant opening at $0,x,2x,\ldots$ |

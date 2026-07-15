@@ -32,7 +32,13 @@ export interface WeatherActivity {
   windDirDeg: number | null
   windGustKph: number | null
   temperatureC: number | null
+  temperatureSeries?: WeatherTemperatureSample[]
   source: 'weatherkit'
+}
+
+export interface WeatherTemperatureSample {
+  elapsedS: number
+  temperatureC: number
 }
 
 export interface WeatherDay {
@@ -108,6 +114,7 @@ export function weatherActivityFromHours(
   let tempWeight = 0
   let gust: number | null = null
   const directions: { degrees: number; weight: number }[] = []
+  const temperatureSeries: WeatherTemperatureSample[] = []
 
   for (const hour of hours) {
     const hourStart = Date.parse(hour.forecastStart)
@@ -120,6 +127,11 @@ export function weatherActivityFromHours(
     if (hour.temperature != null) {
       tempTotal += hour.temperature * overlap
       tempWeight += overlap
+      const elapsedS = round((Math.max(startMs, hourStart) - startMs) / 1000)
+      const sample = { elapsedS, temperatureC: round(hour.temperature, 1) }
+      const previous = temperatureSeries[temperatureSeries.length - 1]
+      if (previous?.elapsedS === elapsedS) temperatureSeries[temperatureSeries.length - 1] = sample
+      else temperatureSeries.push(sample)
     }
     if (hour.windGust != null) gust = Math.max(gust ?? 0, hour.windGust)
     if (hour.windDirection != null)
@@ -130,6 +142,12 @@ export function weatherActivityFromHours(
   }
 
   if (windWeight <= 0) return null
+  const finalTemperature = temperatureSeries[temperatureSeries.length - 1]
+  if (finalTemperature && finalTemperature.elapsedS < candidate.durationS)
+    temperatureSeries.push({
+      elapsedS: candidate.durationS,
+      temperatureC: finalTemperature.temperatureC,
+    })
   const windKph = round(windTotal / windWeight)
   const windDirDeg = circularMeanDeg(directions)
   return {
@@ -145,6 +163,7 @@ export function weatherActivityFromHours(
     windDirDeg,
     windGustKph: gust == null ? null : round(gust),
     temperatureC: tempWeight > 0 ? round(tempTotal / tempWeight) : null,
+    temperatureSeries,
     source: 'weatherkit',
   }
 }
@@ -213,6 +232,23 @@ function readWeatherActivity(value: unknown): WeatherActivity | null {
     durationS == null
   )
     return null
+  const temperatureSeries: WeatherTemperatureSample[] = []
+  if (Array.isArray(value.temperatureSeries))
+    for (const sample of value.temperatureSeries) {
+      if (!isRecord(sample)) continue
+      const elapsedS = readNumber(sample, 'elapsedS')
+      const temperatureC = readNumber(sample, 'temperatureC')
+      if (
+        elapsedS == null ||
+        elapsedS < 0 ||
+        elapsedS > durationS ||
+        temperatureC == null ||
+        !Number.isFinite(temperatureC)
+      )
+        continue
+      temperatureSeries.push({ elapsedS, temperatureC })
+    }
+  temperatureSeries.sort((a, b) => a.elapsedS - b.elapsedS)
   return {
     activityId,
     date,
@@ -226,6 +262,7 @@ function readWeatherActivity(value: unknown): WeatherActivity | null {
     windDirDeg: readNumber(value, 'windDirDeg') ?? null,
     windGustKph: readNumber(value, 'windGustKph') ?? null,
     temperatureC: readNumber(value, 'temperatureC') ?? null,
+    temperatureSeries,
     source: 'weatherkit',
   }
 }
