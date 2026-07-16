@@ -44,4 +44,22 @@ three traps worth keeping:
 - `de Monaco` : the city-state case (`Cuba`, `Madagascar`, `Singapour` in [[fr/episode-1]]), no article, bare `de` without being feminine.
 - `du Venezuela`, `du Vietnam` : masculine despite the exotic feel; the feminine `-e` heuristic (`Jordanie`, `Norvège`, `Serbie`, `Thaïlande`) is a guide, not a law.
 
+## parler des langues
+
+the classement exercise (cahier, piste 18) hands out fourteen ways to state a language level, ranked 0 à 4 in the corrigé:
+
+| niveau | expressions                                                                                                     |
+| ------ | --------------------------------------------------------------------------------------------------------------- |
+| 0      | `Je ne parle pas…`, `Je ne parle pas du tout…`, `Je ne parle pas un mot de…`                                    |
+| 1      | `Je baragouine le…`[^baragouine], `Je parle un peu…`, `Je ne parle pas beaucoup…`, `Je ne parle pas très bien…` |
+| 2      | `Je me débrouille bien en…`, `Je parle bien…`                                                                   |
+| 3      | `Je parle couramment…`, `J'ai un très bon niveau de…`, `Je parle très bien…`                                    |
+| 4      | `Ma langue maternelle est le…`, `J'ai un excellent niveau de…`                                                  |
+
+the calibration detail: the book ranks `couramment` at 3, below `un excellent niveau` at 4, which shares the top rung with the mother tongue. fluent is not native, and `très bon` sits a full level under `excellent`.
+
+the frame changes with the verb, and that is the part worth drilling. `parler` takes the bare language (`Je parle français`), `niveau` and `mot` take `de` (`un bon niveau de français`, `pas un mot de français`), `se débrouiller` takes `en` (`Je me débrouille bien en français`), and `baragouiner` and `langue maternelle` take the article (`le français`).
+
 related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/orthography-phonetics|orthographe]]
+
+[^baragouine]: `baragouiner`, to jabber, to speak a language brokenly; the book stars it as familier, the same flag it puts on `Hein ?` in [[fr/episode-2]]. likely from Breton `bara` (bread) and `gwin` (wine), what Breton soldiers asking for rations sounded like to French ears.

@@ -4930,13 +4930,28 @@
 .tri-pred-card:hover .tri-pred-bar-range {
   background: color-mix(in srgb, var(--tri-accent) 32%, transparent);
 }
+.tri-pred-result {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 4.4rem;
+  font-variant-numeric: tabular-nums;
+}
 .tri-pred-time {
   flex: none;
-  min-width: 4.4rem;
   text-align: right;
   font-size: 0.72rem;
   color: var(--dark);
-  font-variant-numeric: tabular-nums;
+}
+.tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-swim) 76%, var(--gray));
+  font-size: 0.52rem;
+  line-height: 1.2;
+
+  &:empty {
+    display: none;
+  }
 }
 .tri-pred-delta {
   flex: none;

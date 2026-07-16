@@ -162,7 +162,7 @@ related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/episode-
 
 [^plait]: rectified orthography drops the circumflex over `i` and `u` where it does no work: `plait`, `un diner` (both printed that way in this episode). the full rules live in [[fr/orthography-phonetics]].
 
-[^x]: `pouvoir` and `vouloir` are the only French verbs whose `je`/`tu` present forms end in `-x`; everything else takes `-s`. `devoir`, on the same page, shows the regular pattern.
+[^x]: `pouvoir`, `vouloir` and `valoir` are the only French verbs whose `je`/`tu` present forms end in `-x`; everything else takes `-s`. `devoir`, on the same page, shows the regular pattern.
 
 [^texter]: `texter` is standard in Québec (the OQLF lists it); hexagonal French still mostly says `envoyer un texto` or `un SMS`. the book files it in the infinitive bank next to `fumer` and `manger` without comment, which tells you how ordinary it is here.
 

@@ -211,11 +211,108 @@ def build_dataset(meta: dict, days: dict, acts: list[dict], target: str):
   )
 
 
-def temporal_split(dates: list[str], val_frac: float) -> np.ndarray:
-  order = np.argsort(np.array(dates))
-  n_val = max(1, round(len(dates) * val_frac))
-  val_idx = set(order[-n_val:].tolist())
-  return np.array([i in val_idx for i in range(len(dates))])
+def temporal_split(
+  dates: list[str], sports: list[str] | None, val_frac: float
+) -> np.ndarray:
+  if not 0 < val_frac < 1:
+    raise ValueError('val_frac must be between 0 and 1')
+  date_array = np.array(dates)
+  if sports is None:
+    order = np.argsort(date_array, kind='stable')
+    n_val = max(1, round(len(dates) * val_frac))
+    val_idx = set(order[-n_val:].tolist())
+    return np.array([i in val_idx for i in range(len(dates))])
+  sport_array = np.array(sports)
+  is_val = np.zeros(len(dates), dtype=bool)
+  for sport in SPORTS:
+    indices = np.where(sport_array == sport)[0]
+    if len(indices) < 2:
+      continue
+    ordered = indices[np.argsort(date_array[indices], kind='stable')]
+    n_val = min(max(1, round(len(indices) * val_frac)), len(indices) - 1)
+    is_val[ordered[-n_val:]] = True
+  return is_val
+
+
+def sport_balanced_weights(sports: np.ndarray) -> np.ndarray:
+  weights = np.ones(len(sports), dtype=np.float64)
+  represented = [sport for sport in SPORTS if np.any(sports == sport)]
+  for sport in represented:
+    mask = sports == sport
+    weights[mask] = len(sports) / (len(represented) * int(mask.sum()))
+  return weights
+
+
+def stratified_bootstrap(
+  sports: np.ndarray, rng: np.random.Generator
+) -> np.ndarray:
+  samples = []
+  for sport in SPORTS:
+    indices = np.where(sports == sport)[0]
+    if len(indices):
+      samples.append(rng.choice(indices, size=len(indices), replace=True))
+  boot = np.concatenate(samples)
+  rng.shuffle(boot)
+  return boot
+
+
+def weighted_mean(values: np.ndarray, weights: np.ndarray) -> float:
+  return float(np.sum(values * weights) / np.sum(weights))
+
+
+def sport_metric_values(
+  sport: str, values: np.ndarray, target: str
+) -> tuple[np.ndarray, str]:
+  if target == 'hr':
+    return values, 'hrMax ratio'
+  if sport == 'swim':
+    return 100.0 / values, 's/100m'
+  if sport == 'bike':
+    return values * 3.6, 'km/h'
+  return 1000.0 / values, 's/km'
+
+
+def validation_by_sport(
+  target: str,
+  train_sports: np.ndarray,
+  val_sports: np.ndarray,
+  predicted: np.ndarray,
+  actual: np.ndarray,
+  baseline: np.ndarray,
+) -> dict[str, dict[str, float | int | str | bool]]:
+  metrics = {}
+  for sport in SPORTS:
+    mask = val_sports == sport
+    if not np.any(mask):
+      continue
+    predicted_values, unit = sport_metric_values(
+      sport, predicted[mask], target
+    )
+    actual_values, _ = sport_metric_values(sport, actual[mask], target)
+    baseline_values, _ = sport_metric_values(sport, baseline[mask], target)
+    mae = float(np.mean(np.abs(predicted_values - actual_values)))
+    baseline_mae = float(np.mean(np.abs(baseline_values - actual_values)))
+    metrics[sport] = {
+      'nTrain': int(np.sum(train_sports == sport)),
+      'nVal': int(mask.sum()),
+      'mae': mae,
+      'baselineMae': baseline_mae,
+      'beatsBaseline': mae < baseline_mae,
+      'unit': unit,
+    }
+  return metrics
+
+
+def passes_baseline_gate(
+  target: str,
+  mae: float,
+  baseline_mae: float,
+  by_sport: dict[str, dict[str, float | int | str | bool]],
+) -> bool:
+  return mae < baseline_mae and (
+    target != 'pace'
+    or all(metric['beatsBaseline'] for metric in by_sport.values())
+  )
 
 
 def assemble(raw, pres, impute, mu, sigma):
@@ -258,14 +355,14 @@ def forward(params, x, arch):
   return mu, var
 
 
-def nll_loss(params, x, y, arch, l2):
+def nll_loss(params, x, y, weights, arch, l2):
   mu, var = forward(params, x, arch)
   nll = 0.5 * (jnp.log(var) + (y - mu) ** 2 / var)
   reg = l2 * sum(jnp.sum(p**2) for p in jax.tree.leaves(params))
-  return jnp.mean(nll) + reg
+  return jnp.sum(nll * weights) / jnp.sum(weights) + reg
 
 
-def train_member(xtr, ytr, xva, yva, arch, l2, seed, steps):
+def train_member(xtr, ytr, wtr, xva, yva, wva, arch, l2, seed, steps):
   key = jax.random.PRNGKey(seed)
   params = init_params(key, arch, xtr.shape[1])
   opt = optax.chain(
@@ -273,20 +370,20 @@ def train_member(xtr, ytr, xva, yva, arch, l2, seed, steps):
   )
   state = opt.init(params)
   loss_grad = jax.jit(
-    jax.value_and_grad(lambda p, x, y: nll_loss(p, x, y, arch, l2))
+    jax.value_and_grad(lambda p, x, y, w: nll_loss(p, x, y, w, arch, l2))
   )
 
   @jax.jit
-  def step(params, state, x, y):
-    _, grads = loss_grad(params, x, y)
+  def step(params, state, x, y, weights):
+    _, grads = loss_grad(params, x, y, weights)
     updates, state = opt.update(grads, state, params)
     return optax.apply_updates(params, updates), state
 
   best, best_va = params, float('inf')
   bad = 0
   for _ in range(steps):
-    params, state = step(params, state, xtr, ytr)
-    va = float(nll_loss(params, xva, yva, arch, 0.0))
+    params, state = step(params, state, xtr, ytr, wtr)
+    va = float(nll_loss(params, xva, yva, wva, arch, 0.0))
     if va < best_va - 1e-5:
       best_va, best, bad = va, params, 0
     else:
@@ -361,8 +458,23 @@ def main() -> None:
     print(f'pace_train: only {n} samples for {args.target}; skipping')
     return
 
-  is_val = temporal_split(dates, args.val_frac)
+  is_val = temporal_split(
+    dates, sports if args.target == 'pace' else None, args.val_frac
+  )
   tr, va = ~is_val, is_val
+  sport_array = np.array(sports)
+  train_sports = sport_array[tr]
+  val_sports = sport_array[va]
+  train_weights = (
+    sport_balanced_weights(train_sports)
+    if args.target == 'pace'
+    else np.ones(len(train_sports))
+  )
+  val_weights = (
+    sport_balanced_weights(val_sports)
+    if args.target == 'pace'
+    else np.ones(len(val_sports))
+  )
   impute = np.zeros(DF)
   for j in range(DF):
     obs = raw[tr][pres[tr][:, j] > 0, j]
@@ -377,6 +489,7 @@ def main() -> None:
   x_all = assemble(raw, pres, impute, mu, sigma)
   xtr, ytr = jnp.array(x_all[tr]), jnp.array(y[tr])
   xva, yva = jnp.array(x_all[va]), jnp.array(y[va])
+  wtr, wva = jnp.array(train_weights), jnp.array(val_weights)
 
   best_arch, best_members, best_score = None, None, float('inf')
   for arch in ({'layers': 0}, {'layers': 1, 'hidden': 16}):
@@ -384,13 +497,26 @@ def main() -> None:
     members = []
     for m in range(args.members):
       rng = np.random.default_rng(args.seed + m)
-      boot = rng.integers(0, xtr.shape[0], xtr.shape[0])
+      boot = (
+        stratified_bootstrap(train_sports, rng)
+        if args.target == 'pace'
+        else rng.integers(0, xtr.shape[0], xtr.shape[0])
+      )
       p, _ = train_member(
-        xtr[boot], ytr[boot], xva, yva, arch, l2, args.seed + m, args.steps
+        xtr[boot],
+        ytr[boot],
+        wtr[boot],
+        xva,
+        yva,
+        wva,
+        arch,
+        l2,
+        args.seed + m,
+        args.steps,
       )
       members.append(p)
     mu_sel, _ = ensemble_predict(members, jnp.array(x_all[va]), arch)
-    mae_sel = float(np.mean(np.abs(mu_sel - y[va])))
+    mae_sel = weighted_mean(np.abs(mu_sel - y[va]), val_weights)
     if mae_sel < best_score:
       best_arch, best_members, best_score = arch, members, mae_sel
 
@@ -401,10 +527,10 @@ def main() -> None:
   arch['members'] = args.members
   mu_va, var_va = ensemble_predict(best_members, jnp.array(x_all[va]), arch)
   sd = np.sqrt(var_va)
-  cov80 = float(np.mean(np.abs(mu_va - y[va]) <= 1.2816 * sd))
-  cov90 = float(np.mean(np.abs(mu_va - y[va]) <= 1.6449 * sd))
-  nll_va = float(
-    np.mean(0.5 * (np.log(var_va) + (mu_va - y[va]) ** 2 / var_va))
+  cov80 = weighted_mean(np.abs(mu_va - y[va]) <= 1.2816 * sd, val_weights)
+  cov90 = weighted_mean(np.abs(mu_va - y[va]) <= 1.6449 * sd, val_weights)
+  nll_va = weighted_mean(
+    0.5 * (np.log(var_va) + (mu_va - y[va]) ** 2 / var_va), val_weights
   )
 
   backbone = None
@@ -412,10 +538,13 @@ def main() -> None:
     vbb_va = v_bb_all[va]
     vreal_va = v_real_all[va]
     vhat_va = vbb_va * np.exp(mu_va)
-    mae = float(np.mean(np.abs(vhat_va - vreal_va)))
-    rmse = float(np.sqrt(np.mean((vhat_va - vreal_va) ** 2)))
-    base_mae = float(np.mean(np.abs(vbb_va - vreal_va)))
-    val_space = 'velocity'
+    mae = weighted_mean(np.abs(vhat_va - vreal_va), val_weights)
+    rmse = math.sqrt(weighted_mean((vhat_va - vreal_va) ** 2, val_weights))
+    base_mae = weighted_mean(np.abs(vbb_va - vreal_va), val_weights)
+    val_space = 'sport_balanced_velocity'
+    by_sport = validation_by_sport(
+      args.target, train_sports, val_sports, vhat_va, vreal_va, vbb_va
+    )
     backbone = {
       'kind': 'riegel',
       'tRefS': T_REF_S,
@@ -424,22 +553,31 @@ def main() -> None:
       'sportIndices': {'swim': 0, 'bike': 1, 'run': 2},
     }
   else:
-    mae = float(np.mean(np.abs(mu_va - y[va])))
-    rmse = float(np.sqrt(np.mean((mu_va - y[va]) ** 2)))
+    mae = weighted_mean(np.abs(mu_va - y[va]), val_weights)
+    rmse = math.sqrt(weighted_mean((mu_va - y[va]) ** 2, val_weights))
     sport_mean = {
-      s: float(np.mean(y[tr][np.array(sports)[tr] == s]))
-      for s in set(np.array(sports)[tr])
+      s: float(np.mean(y[tr][train_sports == s])) for s in set(train_sports)
     }
     base_pred = np.array([
-      sport_mean.get(s, float(np.mean(y[tr]))) for s in np.array(sports)[va]
+      sport_mean.get(s, float(np.mean(y[tr]))) for s in val_sports
     ])
-    base_mae = float(np.mean(np.abs(base_pred - y[va])))
+    base_mae = weighted_mean(np.abs(base_pred - y[va]), val_weights)
     val_space = 'ratio'
-  beats_baseline = mae < base_mae
+    by_sport = validation_by_sport(
+      args.target, train_sports, val_sports, mu_va, y[va], base_pred
+    )
+  beats_baseline = passes_baseline_gate(args.target, mae, base_mae, by_sport)
 
   scale_feature = 'vthr' if args.target == 'pace' else 'hr_max'
   golden = []
-  for gi in list(np.where(va)[0])[:8]:
+  val_indices = list(np.where(va)[0])
+  golden_indices = []
+  for sport in SPORTS:
+    sport_indices = [i for i in val_indices if sports[i] == sport]
+    if sport_indices:
+      golden_indices.append(sport_indices[0])
+  golden_indices.extend(i for i in val_indices if i not in golden_indices)
+  for gi in golden_indices[:8]:
     gx = assemble(raw[gi : gi + 1], pres[gi : gi + 1], impute, mu, sigma)
     gmu, gvar = ensemble_predict(best_members, jnp.array(gx), arch)
     golden.append({
@@ -499,16 +637,21 @@ def main() -> None:
       'nTrain': int(tr.sum()),
       'baselineMae': base_mae,
       'beatsBaseline': beats_baseline,
+      'bySport': by_sport,
       'valSpace': val_space,
       'valFromDate': sorted([dates[i] for i in np.where(va)[0]])[0],
     },
     'golden': golden,
   }
   (vdir / 'manifest.json').write_text(json.dumps(manifest, indent=2))
+  sport_summary = ' '.join(
+    f'{sport}={metric["mae"]:.2f}{metric["unit"]}'
+    for sport, metric in by_sport.items()
+  )
   print(
     f'pace_train[{args.target}] v{version}: n={n} arch={arch["layers"]}L '
     f'mae={mae:.4f}({val_space}) baseline={base_mae:.4f} beats={beats_baseline} '
-    f'cov90={cov90:.2f} -> {vdir}'
+    f'cov90={cov90:.2f} {sport_summary} -> {vdir}'
   )
 
 
