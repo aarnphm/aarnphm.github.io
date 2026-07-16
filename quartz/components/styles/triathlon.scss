@@ -4931,27 +4931,42 @@
   background: color-mix(in srgb, var(--tri-accent) 32%, transparent);
 }
 .tri-pred-result {
-  display: flex;
+  display: grid;
   flex: none;
-  flex-direction: column;
-  align-items: flex-end;
+  justify-items: end;
   min-width: 4.4rem;
   font-variant-numeric: tabular-nums;
 }
 .tri-pred-time {
-  flex: none;
+  grid-area: 1 / 1;
   text-align: right;
   font-size: 0.72rem;
   color: var(--dark);
+  transition: opacity 0.15s ease;
 }
 .tri-pred-pace {
+  grid-area: 1 / 1;
+  align-self: center;
+  text-align: right;
+  font-size: 0.62rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+.tri-pred-card[data-sport='swim'] .tri-pred-pace {
   color: color-mix(in srgb, var(--tri-swim) 76%, var(--gray));
-  font-size: 0.52rem;
-  line-height: 1.2;
-
-  &:empty {
-    display: none;
-  }
+}
+.tri-pred-card[data-sport='bike'] .tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-bike) 78%, var(--dark));
+}
+.tri-pred-card[data-sport='run'] .tri-pred-pace {
+  color: color-mix(in srgb, var(--tri-run) 70%, var(--dark));
+}
+.tri-pred-result:hover:has(.tri-pred-pace:not(:empty)) .tri-pred-time {
+  opacity: 0;
+}
+.tri-pred-result:hover .tri-pred-pace:not(:empty) {
+  opacity: 1;
 }
 .tri-pred-delta {
   flex: none;

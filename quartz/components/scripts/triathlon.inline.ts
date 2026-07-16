@@ -9473,7 +9473,7 @@ interface PredResult {
   nowSec: number
   fastSec: number
   slowSec: number
-  swimPaceSec: number | null
+  paceText: string
   delta: number | null
   compareLabel: string
 }
@@ -9944,9 +9944,8 @@ const applyPredResult = (r: PredResult, maxSec: number): void => {
   const timeEl = r.card.querySelector('.tri-pred-time')
   if (timeEl) timeEl.textContent = hms(r.nowSec)
   const paceEl = r.card.querySelector('.tri-pred-pace')
-  const swimPace = r.swimPaceSec == null ? '' : `${clock(r.swimPaceSec)} /100m`
-  if (paceEl) paceEl.textContent = swimPace
-  let tip = `${hms(r.nowSec)}${swimPace ? ` · ${swimPace}` : ''} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
+  if (paceEl) paceEl.textContent = r.paceText
+  let tip = `${hms(r.nowSec)}${r.paceText ? ` · ${r.paceText}` : ''} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
   const deltaEl = r.card.querySelector('.tri-pred-delta')
   if (deltaEl) {
     deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down', 'tri-pred-delta--na')
@@ -9989,8 +9988,8 @@ const inferPredCard = async (
   const fastSec = Math.max(0, nowSec - Z80 * timeSd)
   const slowSec = nowSec + Z80 * timeSd
   const delta = then && then.mu > 0 ? nowSec - meters / then.mu : null
-  const swimPaceSec = sport === 'swim' ? 100 / now.mu : null
-  return { card, nowSec, fastSec, slowSec, swimPaceSec, delta, compareLabel: comparison.label }
+  const paceText = raceLegPace({ sport, legKm: km, splitS: nowSec })
+  return { card, nowSec, fastSec, slowSec, paceText, delta, compareLabel: comparison.label }
 }
 
 async function fillDistancePredictor(scope: ParentNode): Promise<void> {
