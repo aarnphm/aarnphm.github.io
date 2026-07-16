@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-07-07 20:14:26 GMT-04:00
+modified: 2026-07-15 13:33:01 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-15'
@@ -870,9 +870,9 @@ Race fueling:
 
 ![[https://strava-embeds.com/route/3459615466775941042?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=94460b8c-1ff3-4475-b2f1-a5beeb3d47e5&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
 
-![[https://strava-embeds.com/route/3459617551271887794?style=standard&fullWidth=true&clubId=1459904&fromEmbed=true#ns=ba8ee3c9-ca68-41d1-a539-ca0ed0ea208f&hostOrigin=https%3A%2F%2Fsupertri.com&hostPath=%2Ftoronto-triathlon%2Folympic%2F&hostTitle=Supertri+Toronto+Olympic+Triathlon]]
+![[https://strava-embeds.com/route/3459617551271887794?style=standard&terrain=2d&fromEmbed=false&token=OwRoXABZDeHZP91TK9B4XxoSSByBkgNjmdYpHtlWpJ8#ns=13297610-0d59-4ddc-9ef8-f5ed70feaf4b&hostOrigin=https%3A%2F%2Fwww.strava.com&hostPath=%2Froutes%2F3459617551271887794&hostTitle=Supertri+Toronto+2026+-+Bike+Olympic+Distance+%7C+25.1+mi+Cycling+Route+on+Strava&mapHash=10.36/43.6761/-79.3919]]
 
-![[https://strava-embeds.com/route/3459617422094043424?style=standard&amp;fullWidth=true&amp;clubId=1459904&amp;fromEmbed=true#ns=6d5683ba-67f2-4753-b660-9b1e4c7ef5f0&amp;hostOrigin=https%3A%2F%2Fsupertri.com&amp;hostPath=%2Ftoronto-triathlon%2Folympic%2F&amp;hostTitle=Supertri+Toronto+Olympic+Triathlon]]
+![[https://strava-embeds.com/route/3459617422094043424?style=standard&fromEmbed=false&token=7oowr8Y5XzoFgrL8zbP1hHuoGOThXsJi576pA4e5-E4#ns=e51ce2df-4f5a-4afc-9fcc-f53f52c01bce&hostOrigin=https%3A%2F%2Fwww.strava.com&hostPath=%2Froutes%2F3459617422094043424&hostTitle=Supertri+Toronto+2026+-+Run+Olympic+Distance+%7C+6.3+mi+Running+Route+on+Strava]]
 
 [^seiler]: Seiler, "What is best practice for training intensity and duration distribution in endurance athletes?", 2010. https://pubmed.ncbi.nlm.nih.gov/20861519/
 

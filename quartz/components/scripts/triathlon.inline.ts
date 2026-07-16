@@ -9473,6 +9473,7 @@ interface PredResult {
   nowSec: number
   fastSec: number
   slowSec: number
+  swimPaceSec: number | null
   delta: number | null
   compareLabel: string
 }
@@ -9882,6 +9883,8 @@ const renderPredAxis = (track: HTMLElement, maxSec: number): void => {
 
 const resetPredCard = (card: HTMLElement, preserveVisual: boolean): void => {
   const stale = card.dataset.stale === '1'
+  const paceEl = card.querySelector('.tri-pred-pace')
+  if (card.dataset.sport !== 'swim' && paceEl) paceEl.textContent = ''
   delete card.dataset.filled
   delete card.dataset.error
   card.dataset.pending = '1'
@@ -9901,6 +9904,7 @@ const resetPredCard = (card: HTMLElement, preserveVisual: boolean): void => {
   }
   const timeEl = card.querySelector('.tri-pred-time')
   if (timeEl) timeEl.textContent = '…'
+  if (paceEl) paceEl.textContent = ''
   const deltaEl = card.querySelector('.tri-pred-delta')
   if (deltaEl) {
     deltaEl.textContent = ''
@@ -9914,6 +9918,8 @@ const failPredCard = (card: HTMLElement): void => {
   card.dataset.error = '1'
   const timeEl = card.querySelector('.tri-pred-time')
   if (timeEl) timeEl.textContent = '—'
+  const paceEl = card.querySelector('.tri-pred-pace')
+  if (paceEl) paceEl.textContent = ''
   const deltaEl = card.querySelector('.tri-pred-delta')
   if (deltaEl) deltaEl.textContent = ''
   card.dataset.tipH = card.dataset.label ?? ''
@@ -9937,7 +9943,10 @@ const applyPredResult = (r: PredResult, maxSec: number): void => {
   }
   const timeEl = r.card.querySelector('.tri-pred-time')
   if (timeEl) timeEl.textContent = hms(r.nowSec)
-  let tip = `${hms(r.nowSec)} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
+  const paceEl = r.card.querySelector('.tri-pred-pace')
+  const swimPace = r.swimPaceSec == null ? '' : `${clock(r.swimPaceSec)} /100m`
+  if (paceEl) paceEl.textContent = swimPace
+  let tip = `${hms(r.nowSec)}${swimPace ? ` · ${swimPace}` : ''} · ${hms(r.fastSec)}–${hms(r.slowSec)} band`
   const deltaEl = r.card.querySelector('.tri-pred-delta')
   if (deltaEl) {
     deltaEl.classList.remove('tri-pred-delta--up', 'tri-pred-delta--down', 'tri-pred-delta--na')
@@ -9980,7 +9989,8 @@ const inferPredCard = async (
   const fastSec = Math.max(0, nowSec - Z80 * timeSd)
   const slowSec = nowSec + Z80 * timeSd
   const delta = then && then.mu > 0 ? nowSec - meters / then.mu : null
-  return { card, nowSec, fastSec, slowSec, delta, compareLabel: comparison.label }
+  const swimPaceSec = sport === 'swim' ? 100 / now.mu : null
+  return { card, nowSec, fastSec, slowSec, swimPaceSec, delta, compareLabel: comparison.label }
 }
 
 async function fillDistancePredictor(scope: ParentNode): Promise<void> {
@@ -10060,11 +10070,13 @@ const buildDistancePredictor = (): HTMLElement => {
       cards = cfg.dists.map(d => {
         const card = el('div', 'tri-pred-card')
         const track = el('div', 'tri-pred-bar-track')
+        const result = el('span', 'tri-pred-result')
+        result.append(el('span', 'tri-pred-time', '—'), el('span', 'tri-pred-pace'))
         track.append(el('div', 'tri-pred-bar-range'), el('div', 'tri-pred-bar'))
         card.append(
           el('span', 'tri-pred-badge', d.label),
           track,
-          el('span', 'tri-pred-time', '—'),
+          result,
           el('span', 'tri-pred-delta'),
         )
         return card
