@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-09 20:03:43 GMT-04:00
+modified: 2026-07-16 09:04:55 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,41 @@ title: are.na
 
 ## discourse
 
+- https://www.lesswrong.com/posts/yDZcsojmRXo5qKNBm/surprising-facts-about-the-slave-trade -- Surprising facts about the slave trade
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [history, abolition]
+    - later: true
+- https://forum.effectivealtruism.org/posts/33t5jPzxEcFXLCPjq/the-four-pillars-a-hypothesis-for-countering-catastrophic -- The Four Pillars: A Hypothesis for Countering Catastrophic Biological Risk
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [biosecurity, catastrophic risk]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/childhoods -- Childhoods of exceptional people
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [childhood, exceptional people]
+    - later: true
+- https://modeleconomy.substack.com/p/workers-actually-have-significant -- Workers actually have significant leverage right now
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [ai adoption, labor]
+    - later: true
+- https://metalearn.substack.com/p/i-solved-my-mystery-fatigue-with-ai -- I Solved My Mystery Fatigue with AI
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [health, ai]
+    - later: true
+- https://x.com/jacksondahl/status/2075317467501473810 -- Jackson Dahl on Dialectic podcast analysis
+  - [meta]:
+    - date: 07/09/2026
+    - tags: [podcasts, analysis]
+    - later: true
+- https://x.com/TheJakeChristie/status/2075616436874101001 -- Jake Christie on good websites and selling out
+  - [meta]:
+    - date: 07/10/2026
+    - tags: [websites, business]
+    - later: true
 - https://www.astralcodexten.com/p/the-pledge -- Pledge Drive
   - [meta]:
     - date: 07/06/2026
@@ -458,6 +493,31 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/aaaronson/status/2076318921716543860 -- Adam Aaronson on letters in the World Cup semifinals
+  - [meta]:
+    - date: 07/12/2026
+    - tags: [world cup, letters]
+    - later: true
+- https://x.com/azacharyf/status/2074880685462995052 -- Adam Fuller X article
+  - [meta]:
+    - date: 07/08/2026
+    - tags: [article]
+    - later: true
+- https://x.com/satyanadella/status/2076323181154230284 -- Satya Nadella X article
+  - [meta]:
+    - date: 07/12/2026
+    - tags: [article]
+    - later: true
+- https://x.com/dkfromdk/status/2075696599242821979 -- Daniel Kornum X article
+  - [meta]:
+    - date: 07/10/2026
+    - tags: [article]
+    - later: true
+- https://x.com/theo/status/2076078865060151465 -- Theo X article
+  - [meta]:
+    - date: 07/11/2026
+    - tags: [article]
+    - later: true
 - https://x.com/theJayAlto/status/2068024477481398306 -- Jay Alto screenshot note
   - [meta]:
     - date: 06/19/2026
@@ -6654,6 +6714,71 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/ptY6X3BdW4kgqpZFo/using-gpt-4-to-understand-code -- Using GPT-4 to Understand Code
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [gpt-4, code understanding]
+    - later: true
+- https://demishassabis.substack.com/p/a-framework-for-frontier-ai-and-the-dawning-of-a-new-age -- A Framework for Frontier AI and the Dawning of a New Age
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [frontier ai, agi]
+    - later: true
+- https://x.com/eliebakouch/status/2076417092039901505 -- Elie Bakouch on autonomous J-lens experiments
+  - [meta]:
+    - date: 07/12/2026
+    - tags: [j-lens, interpretability]
+    - later: true
+- https://x.com/eliebakouch/status/2074532904009421260 -- Elie Bakouch on universal J-lens geometry
+  - [meta]:
+    - date: 07/07/2026
+    - tags: [j-lens, model geometry]
+    - later: true
+- https://x.com/xeophon/status/2075468440874143767 -- Florian Brand on a multi-model GPT-5.6 workflow
+  - [meta]:
+    - date: 07/10/2026
+    - tags: [agents, workflow]
+    - later: true
+- https://x.com/RichardMCNgo/status/2075301126921175166 -- Richard Ngo on the AI 2040 scenario critique
+  - [meta]:
+    - date: 07/09/2026
+    - tags: [ai futures, critique]
+    - later: true
+- https://x.com/DKokotajlo/status/2075251618728292464 -- Daniel Kokotajlo on AI 2040 Plan A
+  - [meta]:
+    - date: 07/09/2026
+    - tags: [ai futures, plan]
+    - later: true
+- https://x.com/humansand/status/2075618385631862896 -- humans& on policy error and gradient mismatch
+  - [meta]:
+    - date: 07/10/2026
+    - tags: [reinforcement learning, training stability]
+    - later: true
+- https://x.com/AlpinDale/status/2076378221281525974 -- Alpin introduces the Swordfish Kernel
+  - [meta]:
+    - date: 07/12/2026
+    - tags: [blackwell, kernel]
+    - later: true
+- https://x.com/thsottiaux/status/2076543065045795309 -- Tibo on GPT-5.6 trajectory length and billing
+  - [meta]:
+    - date: 07/13/2026
+    - tags: [gpt-5.6, inference]
+    - later: true
+- https://x.com/GoodfireAI/status/2074634702737281303 -- Goodfire introduces Block-Sparse Featurizers
+  - [meta]:
+    - date: 07/07/2026
+    - tags: [interpretability, featurizers]
+    - later: true
+- https://x.com/demishassabis/status/2076957440109625718 -- Demis Hassabis X article
+  - [meta]:
+    - date: 07/14/2026
+    - tags: [frontier ai, article]
+    - later: true
+- https://x.com/eliebakouch/status/2077463243463721085 -- Elie Bakouch on an open-weight thinking-machine model
+  - [meta]:
+    - date: 07/15/2026
+    - tags: [open weights, language models]
+    - later: true
 - https://www.youtube.com/watch?v=YPnDMPYFxBE -- Sid Kamalakara: Foundation Models, Cultural Accidents, and Building in Toronto
   - [meta]:
     - date: 07/04/2026
@@ -10337,6 +10462,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Variable-length_encoding -- Variable-length encoding
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [encoding, coding theory]
+    - later: true
+- https://en.wikipedia.org/wiki/Run-length_encoding -- Run-length encoding
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [compression, encoding]
+    - later: true
+- https://en.wikipedia.org/wiki/Base62 -- Base62
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [encoding, binary-to-text]
+    - later: true
+- https://en.wikipedia.org/wiki/Short-circuit_evaluation -- Short-circuit evaluation
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [programming languages, boolean logic]
+    - later: true
+- https://x.com/doodlestein/status/2075711880426062074 -- Jeffrey Emanuel on RaptorQ fountain codes
+  - [meta]:
+    - date: 07/10/2026
+    - tags: [fountain codes, raptorq]
+    - later: true
 - https://gist.github.com/mfuerstenau/ba870a29e16536fdbaba -- ZigZag encoding/decoding explained
   - [meta]:
     - date: 07/08/2026
@@ -10843,6 +10993,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://en.wikipedia.org/wiki/Lusotropicalism -- Lusotropicalism
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [colonialism, sociology]
+    - later: true
+- https://en.wikipedia.org/wiki/Motte-and-bailey_fallacy -- Motte-and-bailey fallacy
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [fallacies, argumentation]
+    - later: true
 - https://www.youtube.com/watch?v=CDbXzVwdyo8 -- On Betraying Your Own Potential
   - [meta]:
     - date: 07/04/2026
@@ -12501,6 +12661,11 @@ title: are.na
 
 ## design
 
+- https://x.com/HardestFitPics/status/2075784648068596091 -- Vintage Hermes ties
+  - [meta]:
+    - date: 07/11/2026
+    - tags: [fashion, vintage]
+    - later: true
 - https://www.murmur.living/ -- mur mur
   - [meta]:
     - date: 07/06/2026
@@ -14581,6 +14746,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/rosetta-rs/string-rosetta-rs -- string-rosetta-rs
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [rust, strings]
+    - later: true
+- https://github.com/ryota2357/lean_string -- lean_string
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [rust, strings]
+    - later: true
+- https://github.com/kayba-ai/agentic-context-engine -- agentic-context-engine
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [agents, memory]
+    - later: true
+- https://github.com/random-unknown-username/Thintensor -- Thintensor
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [llm, compression]
+    - later: true
 - https://github.com/deepseek-ai/DeepSpec -- DeepSpec
   - [meta]:
     - date: 06/30/2026

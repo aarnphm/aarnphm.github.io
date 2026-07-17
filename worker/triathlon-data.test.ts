@@ -20,7 +20,7 @@ describe('triathlonDataHtml', () => {
     assert.match(html, /^<!doctype html>/)
     assert.match(html, /<title>triathlon\/data<\/title>/)
     assert.match(html, /1 meta · 1 day · 1 activity · 1 week/)
-    assert.match(html, /<a href="\/triathlon\/data\.jsonl">raw jsonl<\/a>/)
+    assert.match(html, /<a href="\/static\/triathlon\/data\.jsonl">raw jsonl<\/a>/)
   })
 
   test('labels records with kind and date fields', () => {

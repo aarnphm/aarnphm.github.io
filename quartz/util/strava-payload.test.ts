@@ -16,6 +16,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   start: '2026-07-09T20:13:31Z',
   distanceKm: 1,
   movingTimeS: 1_590,
+  maxSpeedKph: null,
   elevationM: 0,
   avgHr: 140,
   maxHr: 160,

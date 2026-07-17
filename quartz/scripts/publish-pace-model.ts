@@ -1,8 +1,9 @@
 import { createHash } from 'node:crypto'
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { PaceModel, ensureBackend, parseManifest, parseSafetensors } from '../util/pace-model'
 import { isRecord, readNumber, readString } from '../util/type-guards'
+import { latestModelArchiveEntry } from './pace-model-archive'
 import {
   IMMUTABLE_CC,
   LEGACY_VAL_SPACE,
@@ -18,20 +19,8 @@ const ARCHIVE = process.env.PACE_ARCHIVE ?? '.models-archive'
 const GOLDEN_TOL = 1e-4
 const REGRESS_TOL = 0.15
 
-function latestArchiveEntry(dir: string): { path: string; version: number } | null {
-  if (!existsSync(dir)) return null
-  let best: { path: string; version: number } | null = null
-  for (const name of readdirSync(dir)) {
-    const m = /-v(\d+)$/.exec(name)
-    if (!m) continue
-    const version = Number(m[1])
-    if (!best || version > best.version) best = { path: join(dir, name), version }
-  }
-  return best
-}
-
 async function publishFamily(family: string): Promise<void> {
-  const entry = latestArchiveEntry(join(ARCHIVE, family))
+  const entry = latestModelArchiveEntry(join(ARCHIVE, family))
   if (!entry) {
     console.log(`${family}: nothing archived`)
     return

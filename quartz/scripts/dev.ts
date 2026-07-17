@@ -2,6 +2,7 @@
 import type { ChildProcessByStdio } from 'node:child_process'
 import type { Readable } from 'node:stream'
 import { spawn } from 'node:child_process'
+import { watch, type FSWatcher } from 'node:fs'
 import { open, readFile, rm, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import path from 'node:path'
@@ -14,6 +15,7 @@ import {
   resetQuartzManagerState,
 } from '../util/dev-manager-state'
 import { stopProcessTree, stopProcessTreeByPid } from '../util/process-tree'
+import { syncLatestLocalPaceModels } from './local-pace-models'
 
 const gitRoot = resolveGitRoot()
 const daemonPidFile = path.join(gitRoot, '.dev.pid')
@@ -41,6 +43,9 @@ let quartzOutputBuffer = ''
 let wranglerStartNotBefore = 0
 let wranglerBackoffUntil = 0
 let wranglerStopInFlight: Promise<void> | null = null
+let modelArchiveWatcher: FSWatcher | null = null
+let modelArchiveRetry: ReturnType<typeof setTimeout> | null = null
+let modelSyncTimer: ReturnType<typeof setTimeout> | null = null
 const DEFAULT_DEV_PORT = 7373
 const WS_PORT_OFFSET = 1
 const WRANGLER_PORT_OFFSET = 707
@@ -51,6 +56,8 @@ const WRANGLER_PORT_BACKOFF_MS = 1000
 const WRANGLER_EXIT_BACKOFF_MS = 1500
 const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
 const ANSI_ESCAPE_PATTERN = new RegExp(String.raw`\u001b\[[0-9;]*m`, 'g')
+const modelArchiveRoot = path.join(gitRoot, '.models-archive')
+const publicRoot = path.join(gitRoot, 'public')
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
 const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
@@ -301,6 +308,7 @@ async function main(): Promise<void> {
     return
   }
   log('main', `launching pnpm dev (attempt 1/${totalPnpmDevAttempts})`)
+  watchModelArchive()
   launchPnpmDev()
   registerLifecycle()
   registerCtrlCHandler()
@@ -583,6 +591,10 @@ async function shutdown(code: number, signal?: NodeJS.Signals): Promise<void> {
     process.stdin.removeListener('data', handleStdin)
     rawInputEnabled = false
   }
+  modelArchiveWatcher?.close()
+  modelArchiveWatcher = null
+  if (modelArchiveRetry) clearTimeout(modelArchiveRetry)
+  if (modelSyncTimer) clearTimeout(modelSyncTimer)
   if (wrangler) {
     await stopWrangler('stopping wrangler during shutdown')
   }
@@ -719,6 +731,7 @@ function handleQuartzLine(line: string): void {
 
 function handleQuartzEvent(event: QuartzDevEvent): void {
   const actions = applyQuartzDevEvent(managerState, event, WRANGLER_START_DELAY_MS)
+  if (event.type === 'build:ready' && event.epoch === managerState.currentEpoch) syncLocalModels()
   for (const action of actions) {
     switch (action.type) {
       case 'stop-wrangler':
@@ -729,6 +742,56 @@ function handleQuartzEvent(event: QuartzDevEvent): void {
         requestWranglerStart(action.delayMs)
         break
     }
+  }
+}
+
+function syncLocalModels(): void {
+  if (!managerState.publicAvailable || managerState.quartz !== 'ready') return
+  try {
+    const selections = syncLatestLocalPaceModels(modelArchiveRoot, publicRoot)
+    if (selections.length > 0)
+      log(
+        'main',
+        `local models ${selections.map(({ family, archive }) => `${family}=${archive}`).join(' ')}`,
+      )
+  } catch (err) {
+    log('main', `local model sync failed: ${describeError(err)}`, 'stderr')
+  }
+}
+
+function scheduleLocalModelSync(): void {
+  if (modelSyncTimer) clearTimeout(modelSyncTimer)
+  modelSyncTimer = setTimeout(() => {
+    modelSyncTimer = null
+    syncLocalModels()
+  }, 100)
+}
+
+function watchModelArchive(): void {
+  if (shuttingDown || modelArchiveWatcher) return
+  try {
+    const watcher = watch(modelArchiveRoot, { recursive: true }, scheduleLocalModelSync)
+    modelArchiveWatcher = watcher
+    watcher.once('error', err => {
+      watcher.close()
+      if (modelArchiveWatcher === watcher) modelArchiveWatcher = null
+      if (!shuttingDown) {
+        log('main', `local model watcher failed: ${describeError(err)}`, 'stderr')
+        modelArchiveRetry = setTimeout(() => {
+          modelArchiveRetry = null
+          watchModelArchive()
+        }, 1000)
+      }
+    })
+  } catch (err) {
+    if (!isNotFoundError(err)) {
+      log('main', `local model watcher failed: ${describeError(err)}`, 'stderr')
+      return
+    }
+    modelArchiveRetry = setTimeout(() => {
+      modelArchiveRetry = null
+      watchModelArchive()
+    }, 1000)
   }
 }
 
