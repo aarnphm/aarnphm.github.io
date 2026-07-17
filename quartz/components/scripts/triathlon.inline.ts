@@ -45,6 +45,7 @@ import {
   type ZoneBand,
 } from '../../util/triathlon-calculator'
 import {
+  activityStatRows,
   axisFrame,
   buildActivity as buildActivityNode,
   buildCyclingBestEfforts as buildCyclingBestEffortsNode,
@@ -608,16 +609,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
 
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
-  if (d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga') {
-    sbody.appendChild(statRow('time', dur(d.movingTimeS)))
-  } else {
-    sbody.append(
-      statRow('distance', dist(d.distanceKm, d.sport)),
-      statRow('time', dur(d.movingTimeS)),
-      statRow(d.sport === 'bike' ? 'speed' : 'pace', rate(d.sport, d.distanceKm, d.movingTimeS)),
-    )
-  }
-  if (d.avgHr) sbody.appendChild(statRow('avg hr', `${d.avgHr} bpm`))
+  for (const [label, value] of activityStatRows(d)) sbody.appendChild(statRow(label, value))
   stats.appendChild(sbody)
   wrap.appendChild(stats)
 
@@ -2499,17 +2491,17 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
     s.appendChild(
       svg('line', {
         x1: x(n - 1).toFixed(2),
-        y1: y(pred[1]).toFixed(2),
+        y1: 0,
         x2: x(n - 1).toFixed(2),
-        y2: y(pred[0]).toFixed(2),
-        class: 'tri-wkt-whisk',
+        y2: WKT_H,
+        class: 'tri-wkt-current',
       }),
     )
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: WKT_H, class: 'tri-ana-cursor' }))
   vals.forEach((v, i) => {
     const d = `M ${x(i).toFixed(2)} ${y(v).toFixed(2)} l 0.01 0`
     const g = svg('g', {
-      class: i === n - 1 ? 'tri-wkt-pt tri-wkt-pt--now' : 'tri-wkt-pt',
+      class: i === n - 1 ? 'tri-wkt-pt tri-wkt-pt--now tri-wkt-pt--sel' : 'tri-wkt-pt',
       'data-week': i,
       'data-source-index': rows[i].sourceIndex,
       'data-week-start': rows[i].week.weekStart,
@@ -2539,9 +2531,10 @@ const buildWeekTrend = (data: Analytics, kind: WkKind): HTMLElement => {
       )
   }
   block.appendChild(frame)
-  const wrap = el('div', 'tri-wkdetail-wrap')
+  const wrap = el('div', 'tri-wkdetail-wrap tri-wkdetail-wrap--open')
   wrap.appendChild(el('div', 'tri-wkdetail'))
   block.appendChild(wrap)
+  renderWkDetail(block, data, kind, n - 1)
   return block
 }
 
@@ -5814,9 +5807,12 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const block = panel.querySelector<HTMLElement>(blockSel)
     const svgEl = block?.querySelector<SVGElement>('.tri-wkt-svg')
     const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+    const current = svgEl?.querySelector<SVGElement>('.tri-wkt-current')
     const wrap = block?.querySelector<HTMLElement>('.tri-wkdetail-wrap')
-    if (!block || !svgEl || !cursor || !wrap || !rows.length) return
+    const detail = block?.querySelector<HTMLElement>('.tri-wkdetail')
+    if (!block || !svgEl || !cursor || !wrap || !detail || !rows.length) return
     const pts = Array.from(svgEl.querySelectorAll<SVGElement>('.tri-wkt-pt'))
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const mark = (cls: string, idx: number | null): void => {
       for (const p of pts) p.classList.toggle(cls, p.dataset.week === String(idx))
     }
@@ -5825,25 +5821,46 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       const f = clampN((event.clientX - r.left) / r.width, 0, 1)
       return weeklyChartIndex(f, rows.length)
     }
-    let sel: number | null = null
+    let selected = rows.length - 1
+    let shown = selected
+    let detailAnimation: Animation | null = null
+    const show = (i: number): void => {
+      if (i === shown) return
+      const direction = Math.sign(i - shown)
+      shown = i
+      detailAnimation?.cancel()
+      renderWkDetail(block, data, kind, i)
+      if (reduce) return
+      detailAnimation = detail.animate(
+        [
+          { opacity: 0.45, transform: `translateX(${direction * 6}px)` },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 160, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
+      )
+    }
     const onMove = (event: MouseEvent): void => {
       const i = idxAt(event)
       const cx = (weeklyChartX(i, rows.length) * ANA_W).toFixed(2)
       cursor.setAttribute('x1', cx)
       cursor.setAttribute('x2', cx)
+      show(i)
       mark('tri-wkt-pt--hot', i)
+      block.classList.toggle('tri-wkt--current-hover', current != null && i === rows.length - 1)
       block.classList.add('tri-chart--hover')
     }
     const onLeave = (): void => {
       block.classList.remove('tri-chart--hover')
+      block.classList.remove('tri-wkt--current-hover')
       mark('tri-wkt-pt--hot', null)
+      show(selected)
     }
     const onClick = (event: MouseEvent): void => {
       const i = idxAt(event)
-      sel = sel === i ? null : i
-      if (sel != null) renderWkDetail(block, data, kind, sel)
-      mark('tri-wkt-pt--sel', sel)
-      wrap.classList.toggle('tri-wkdetail-wrap--open', sel != null)
+      selected = i
+      show(i)
+      mark('tri-wkt-pt--sel', i)
+      wrap.classList.add('tri-wkdetail-wrap--open')
     }
     svgEl.addEventListener('mousemove', onMove)
     svgEl.addEventListener('mouseleave', onLeave)
@@ -5852,6 +5869,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       svgEl.removeEventListener('mousemove', onMove)
       svgEl.removeEventListener('mouseleave', onLeave)
       svgEl.removeEventListener('click', onClick)
+      detailAnimation?.cancel()
     })
   }
   bindWkTrend('.tri-ana-weekly', 'load')
@@ -6434,26 +6452,77 @@ const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
 
 const ACTIVITY_FILTER_SPORTS: readonly string[] = ['bike', 'run', 'swim', 'walk']
 const ACTIVITY_SORT_KEYS: readonly string[] = ['distance', 'cadence', 'pace']
+const DATE_FILTER_KEYWORDS: readonly string[] = ['today', 'yesterday', 'week', 'month']
+const DATE_FILTER_UNIT = /^(days?|d|weeks?|w|months?|mo)$/
+const DATE_HINT_SUBS: Record<string, string> = {
+  today: 'completed today',
+  yesterday: 'completed yesterday',
+  week: 'last 7 days',
+  month: 'last month',
+}
+
+interface DateSpan {
+  start: string
+  end: string
+}
 
 interface ActivityQuery {
   filterSport: string | null
+  filterDate: DateSpan | null
   sortKey: string | null
   tokens: string[]
 }
 
+const daySpan = (days: number): DateSpan => {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1))
+  return { start: predDateFromLocal(start), end: predDateFromLocal(now) }
+}
+
+const monthSpan = (months: number): DateSpan => {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth() - months, now.getDate())
+  return { start: predDateFromLocal(start), end: predDateFromLocal(now) }
+}
+
+const dateFilterSpan = (value: string): DateSpan | null => {
+  if (value === 'today') return daySpan(1)
+  if (value === 'yesterday') {
+    const { start } = daySpan(2)
+    return { start, end: start }
+  }
+  if (value === 'week') return daySpan(7)
+  if (value === 'month') return monthSpan(1)
+  const m = /^(\d+)\s*(days?|d|weeks?|w|months?|mo)?$/.exec(value)
+  if (!m) return null
+  const n = Number(m[1])
+  if (n < 1) return null
+  const unit = m[2] ?? 'd'
+  if (unit.startsWith('mo')) return monthSpan(n)
+  return daySpan(unit.startsWith('w') ? n * 7 : n)
+}
+
 const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
   let filterSport: string | null = null
+  let filterDate: DateSpan | null = null
   let sortKey: string | null = null
   const tokens: string[] = []
-  for (const t of rawTokens) {
+  for (let i = 0; i < rawTokens.length; i++) {
+    const t = rawTokens[i]
     if (t.startsWith('filter:')) {
-      const fv = t.slice(7)
-      filterSport = fv === 'hike' ? 'walk' : fv
+      let fv = t.slice(7)
+      if (/^\d+$/.test(fv) && rawTokens[i + 1] && DATE_FILTER_UNIT.test(rawTokens[i + 1])) {
+        fv = `${fv} ${rawTokens[i + 1]}`
+        i++
+      }
+      const span = dateFilterSpan(fv)
+      if (span) filterDate = span
+      else filterSport = fv === 'hike' ? 'walk' : fv
     } else if (t.startsWith('sort:')) {
       sortKey = t.slice(5)
     } else if (t) tokens.push(t)
   }
-  return { filterSport, sortKey, tokens }
+  return { filterSport, filterDate, sortKey, tokens }
 }
 
 const sortActivitiesBy = <
@@ -6483,11 +6552,31 @@ const activityCommandHints = (
   const hints: HTMLElement[] = []
   const filterValue = lastToken.startsWith('filter:') ? lastToken.slice(7) : null
   const sortValue = lastToken.startsWith('sort:') ? lastToken.slice(5) : null
-  if (filterValue !== null && ![...ACTIVITY_FILTER_SPORTS, 'hike'].includes(filterValue)) {
+  if (filterValue !== null && /^\d+$/.test(filterValue)) {
+    const units = filterValue === '1' ? ['day', 'week', 'month'] : ['days', 'weeks', 'months']
+    for (const u of units) {
+      const it = ritem(
+        searchCommandTitle('filter:', `${filterValue} ${u}`),
+        `last ${filterValue} ${u}`,
+      )
+      it.dataset.insert = `filter:${filterValue} ${u}`
+      hints.push(it)
+    }
+  } else if (
+    filterValue !== null &&
+    ![...ACTIVITY_FILTER_SPORTS, 'hike'].includes(filterValue) &&
+    !dateFilterSpan(filterValue)
+  ) {
     for (const f of ACTIVITY_FILTER_SPORTS)
       if (f.startsWith(filterValue)) {
         const it = ritem(searchCommandTitle('filter:', f), `filter ${noun}`)
         it.dataset.insert = `filter:${f}`
+        hints.push(it)
+      }
+    for (const k of DATE_FILTER_KEYWORDS)
+      if (k.startsWith(filterValue)) {
+        const it = ritem(searchCommandTitle('filter:', k), DATE_HINT_SUBS[k])
+        it.dataset.insert = `filter:${k}`
         hints.push(it)
       }
   } else if (sortValue !== null && !ACTIVITY_SORT_KEYS.includes(sortValue)) {
@@ -6498,7 +6587,7 @@ const activityCommandHints = (
         hints.push(it)
       }
   } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-    const it = ritem(searchCommandTitle('filter:'), 'filter by sport (bike, run, swim, walk)')
+    const it = ritem(searchCommandTitle('filter:'), 'filter by sport or date (bike, today, 3 days)')
     it.dataset.insert = 'filter:'
     hints.push(it)
   } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
@@ -6729,13 +6818,13 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
     const rawTokens = q.split(/\s+/)
-    const { filterSport, sortKey, tokens } = parseActivityQuery(rawTokens)
+    const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
 
     const metrics: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1]
     const hints = activityCommandHints(lastToken, ritem, 'activities')
 
-    if (!filterSport && !sortKey) {
+    if (!filterSport && !filterDate && !sortKey) {
       for (const s of SEARCH_SECTIONS)
         if (matchHay(`${s.label} ${tl(s.label)} ${s.hay}`.toLowerCase(), tokens)) {
           const it = ritem(tl(s.label), 'section')
@@ -6755,6 +6844,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     const acts = sortActivitiesBy(
       (data?.activities ?? []).filter(a => {
         if (filterSport && a.sport !== filterSport) return false
+        if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
         return (
           tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
         )
@@ -7693,7 +7783,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     panel.classList.add('tri-map--searching')
     results.setAttribute('aria-hidden', 'false')
     const rawTokens = q.split(/\s+/)
-    const { filterSport, sortKey, tokens } = parseActivityQuery(rawTokens)
+    const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
     const routeSport = ROUTE_SPORTS.find(s => s === filterSport)
     setEnabledSports(routeSport ? new Set([routeSport]) : new Set(ROUTE_SPORTS))
     const lastToken = rawTokens[rawTokens.length - 1]
@@ -7703,6 +7793,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       (data?.activities ?? []).filter(a => {
         if (!ids.has(String(a.id))) return false
         if (filterSport && a.sport !== filterSport) return false
+        if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
         return (
           tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
         )
@@ -10241,7 +10332,7 @@ const paceModelBaseCandidates = (): string[] => {
 
 const initPaceForecaster = async (forecaster: PaceForecaster): Promise<boolean> => {
   for (const base of paceModelBaseCandidates())
-    if (await forecaster.init(base, 'pace', '/triathlon/data.jsonl')) return true
+    if (await forecaster.init(base, 'pace', '/static/triathlon/data.jsonl')) return true
   return false
 }
 

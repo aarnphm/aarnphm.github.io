@@ -13,7 +13,7 @@ import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
-import { FilePath, FullSlug, pathToRoot } from '../../util/path'
+import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
 import {
   appleCachePath,
@@ -45,6 +45,13 @@ import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../
 import { removeWritten, write } from './helpers'
 
 const TRI_SUBVIEWS: TriView[] = ['tools', 'calc', 'analytics', 'maps', 'training', 'feed', 'on']
+const TRIATHLON_DATA_CACHE_DIR = joinSegments(QUARTZ, '.quartz-cache', 'triathlon')
+const TRIATHLON_DATA_CACHE_PATH = joinSegments(TRIATHLON_DATA_CACHE_DIR, 'data.jsonl')
+
+async function cacheDataFeed(content: string): Promise<void> {
+  await fs.mkdir(TRIATHLON_DATA_CACHE_DIR, { recursive: true })
+  await fs.writeFile(TRIATHLON_DATA_CACHE_PATH, content)
+}
 
 async function readCache(): Promise<StravaRawCache | null> {
   try {
@@ -204,9 +211,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         weights: tracking?.days,
         zones: payload.zones,
       })
-      files.push(
-        await write({ ctx, slug: 'triathlon/data' as FullSlug, ext: '.jsonl', content: dataFeed }),
-      )
+      await cacheDataFeed(dataFeed)
       files.push(
         await write({
           ctx,

@@ -58,6 +58,58 @@ test('emits dense map geometry separately from compact telemetry route', () => {
   assert.ok(detail.route.every(point => point.tempC === 21))
 })
 
+function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {
+  const distance = [0]
+  for (let i = 1; i < n; i++) distance.push(distance[i - 1] + increments(i))
+  return {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride({ distance: distance[n - 1], movingTime: n - 1, elapsedTime: n }) },
+    streams: {
+      101: {
+        time: Array.from({ length: n }, (_, i) => i),
+        latlng: Array.from({ length: n }, (_, i) => [43 + i * 0.0001, -79] as [number, number]),
+        altitude: Array.from({ length: n }, () => 80),
+        distance,
+      },
+    },
+  }
+}
+
+test('derives max speed from the timed distance stream', () => {
+  const surge = new Map([
+    [50, 10],
+    [51, 12],
+    [52, 14],
+    [53, 16],
+    [54, 16],
+    [55, 16],
+    [56, 14],
+    [57, 12],
+    [58, 10],
+  ])
+  const cache = timedRideCache(i => surge.get(i) ?? 8)
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(detail.maxSpeedKph, 57.6)
+})
+
+test('rejects GPS teleports when deriving max speed', () => {
+  const glitch = new Map([
+    [50, 0],
+    [51, 0],
+    [52, 0],
+    [53, 52],
+    [54, 52],
+    [55, 52],
+  ])
+  const cache = timedRideCache(i => glitch.get(i) ?? 8)
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(detail.maxSpeedKph, 30)
+})
+
 test('keeps dense map route continuous across GPS jumps', () => {
   const latlng: [number, number][] = [
     [43.64, -79.4],

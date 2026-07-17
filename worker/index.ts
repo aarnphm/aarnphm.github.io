@@ -692,6 +692,13 @@ export default {
     if (url.pathname.startsWith('/models/')) {
       if (request.method !== 'GET' && request.method !== 'HEAD')
         return new Response('method not allowed', { status: 405 })
+      if (localRequest) {
+        const localModel = await env.ASSETS.fetch(request)
+        return withHeaders(localModel, {
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'no-store',
+        })
+      }
       const cacheControl = url.pathname.endsWith('/latest.json')
         ? 'public, max-age=60, must-revalidate'
         : 'public, max-age=31536000, immutable'
@@ -800,7 +807,7 @@ export default {
       }
       case '/triathlon/data': {
         const assetUrl = new URL(request.url)
-        assetUrl.pathname = '/triathlon/data.jsonl'
+        assetUrl.pathname = '/static/triathlon/data.jsonl'
         const assetResp = await env.ASSETS.fetch(new Request(assetUrl.toString(), request))
         const accept = request.headers.get('Accept') ?? ''
         if (assetResp.ok && accept.includes('text/html') && !isAgentUserAgent(request)) {

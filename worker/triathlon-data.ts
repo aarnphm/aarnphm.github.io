@@ -81,7 +81,7 @@ export function triathlonDataHtml(text: string): string {
 <body>
 <header>
 <h1>triathlon/data</h1>
-<p>${escapeHtml(summary)} · <a href="/triathlon/data.jsonl">raw jsonl</a></p>
+<p>${escapeHtml(summary)} · <a href="/static/triathlon/data.jsonl">raw jsonl</a></p>
 </header>
 ${lines.map(renderRecord).join('\n')}
 </body>

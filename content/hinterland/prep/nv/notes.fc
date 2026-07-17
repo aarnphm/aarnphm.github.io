@@ -1,0 +1,212 @@
+---
+title: NVIDIA inference coding recall
+---
+
+Q: What two questions have the closest direct evidence for NVIDIA inference roles?
+A: Serialize and Deserialize Binary Tree, and LRU Cache.
+
+---
+
+Q: What does a public company tag prove?
+A: It places the problem in a broad NVIDIA practice pool. It does not prove that this team asked it.
+
+---
+
+Q: What is the core LRU invariant?
+A: Every live key has exactly one map entry and one list node, and list order represents recency.
+
+---
+
+Q: Which two structures give expected O(1) LRU operations?
+A: A hash map and a doubly linked list.
+
+---
+
+Q: What can invalidate pointers or references into a C++ vector?
+A: Reallocation, and erasure at or before the referenced position.
+
+---
+
+Q: Why are list iterators useful in an LRU cache?
+A: Insert and erase stay constant time, and iterators to other nodes remain valid.
+
+---
+
+Q: What does Kahn's topological sort place in its queue?
+A: Nodes whose remaining indegree is zero.
+
+---
+
+Q: How does Kahn's algorithm detect a cycle?
+A: Fewer than V nodes are emitted.
+
+---
+
+Q: What are the three DFS colors for directed cycle detection?
+A: Unvisited, visiting, and finished. An edge to a visiting node is a cycle.
+
+---
+
+Q: When is BFS the correct shortest-path algorithm?
+A: When every edge has the same cost, including an unweighted graph.
+
+---
+
+Q: What condition does Dijkstra require?
+A: Nonnegative edge weights.
+
+---
+
+Q: What is the stream-median heap invariant?
+A: Every lower-half value is at most every upper-half value, and heap sizes differ by at most one.
+
+---
+
+Q: What does a monotonic deque store for sliding-window maximum?
+A: Live candidate indices in decreasing value order.
+
+---
+
+Q: Why store indices instead of values in a sliding-window deque?
+A: Indices reveal when a candidate leaves the window and distinguish duplicates.
+
+---
+
+Q: What is the prefix-sum equation for subarray sum k?
+A: A subarray ending at prefix sum s needs an earlier prefix sum s minus k.
+
+---
+
+Q: Why does the usual positive-only sliding window fail with signed values?
+A: Expanding or shrinking no longer changes the sum monotonically.
+
+---
+
+Q: What is binary search on the answer looking for?
+A: The boundary where a monotone feasibility predicate changes value.
+
+---
+
+Q: What is the row-major offset for matrix element i, j?
+A: i times the column count plus j.
+
+---
+
+Q: What is the general tensor element offset?
+A: The sum over dimensions of index times element stride.
+
+---
+
+Q: What must be checked before rows times columns?
+A: Shape validity and integer multiplication overflow.
+
+---
+
+Q: Why can tiled transpose be faster than the direct double loop?
+A: A tile reuses cache lines and reduces long-stride memory access.
+
+---
+
+Q: What does x and x minus one do for nonzero unsigned x?
+A: It clears the lowest set bit.
+
+---
+
+Q: What is the power-of-two test?
+A: x is nonzero and x AND x minus one equals zero.
+
+---
+
+Q: What is the power-of-two align-up formula for unsigned x and a?
+A: `(x + a - 1) & ~(a - 1)`, after guarding overflow.
+
+---
+
+Q: What is the quantization formula for asymmetric INT8?
+A: Clamp round(x divided by scale) plus zero point to the INT8 range.
+
+---
+
+Q: What invalid scale must a quantizer reject?
+A: A scale that is zero, negative, NaN, or infinite.
+
+---
+
+Q: What is the beam-search frontier bound at width B and C candidates per beam?
+A: At most B times C candidates are considered at one step before pruning back to B.
+
+---
+
+Q: What makes sequence copying expensive in beam search?
+A: Every expansion can copy a prefix whose length grows with the step count.
+
+---
+
+Q: What invariant must a bounded queue keep?
+A: Its size remains between zero and capacity inclusive.
+
+---
+
+Q: Why must a condition-variable wait use a predicate loop?
+A: Wakeups can be spurious, and another thread can consume the condition before this thread reacquires the lock.
+
+---
+
+Q: When should a producer notify a waiting consumer?
+A: After changing the shared queue state while holding the mutex.
+
+---
+
+Q: What should close mean for a bounded queue?
+A: New pushes fail, and pops drain queued values before reporting end of stream.
+
+---
+
+Q: What is external fragmentation?
+A: Enough free bytes exist in total, while no suitable contiguous block exists.
+
+---
+
+Q: What does coalescing do in a free-list allocator?
+A: It merges adjacent free blocks after release.
+
+---
+
+Q: Why is one min-heap insufficient for GPU assignment with memory limits?
+A: The earliest available GPU may be unable to hold the job, while a later heap entry is eligible.
+
+---
+
+Q: When does a dependency-scheduled task become runnable?
+A: When every predecessor is complete and its remaining dependency count reaches zero.
+
+---
+
+Q: What should a dynamic batcher state before coding?
+A: Queue-order policy, request and token limits, deadline behavior, and tie breaks.
+
+---
+
+Q: What complexity should top-k over m aggregated kernel names target?
+A: O(m log k) with a size-k heap after aggregation.
+
+---
+
+Q: What is the split-invariance property for a streaming parser?
+A: Feeding the whole stream and feeding any chunking must produce the same total output.
+
+---
+
+Q: What four points should be said after every accepted solution?
+A: The invariant, time cost, auxiliary space, and failure cases.
+
+---
+
+Q: What extra C++ points should be said for a mutation-heavy solution?
+A: Ownership, iterator or pointer validity, allocation behavior, and overflow boundaries.
+
+---
+
+Q: When does a problem count as learned in this kit?
+A: After a clean solve, correct complexity explanation, and a clean re-solve on a later day.
+

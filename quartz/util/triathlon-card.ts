@@ -78,13 +78,13 @@ export const prettyDate = (iso: string): string => {
   return `${MONTHS[(m || 1) - 1]} ${d}${suffix}`
 }
 
+export const speedKph = (kmh: number): string =>
+  imperial ? `${(kmh * KM_TO_MI).toFixed(1)} mph` : `${kmh.toFixed(1)} km/h`
+
 export const rate = (sport: ActivityKind, km: number, s: number): string => {
   if (sport === 'swim') return `${clock(s / (km * 10))} /100m`
-  if (imperial) {
-    const mi = km * KM_TO_MI
-    return sport === 'bike' ? `${(mi / (s / 3600)).toFixed(1)} mph` : `${clock(s / mi)} /mi`
-  }
-  return sport === 'bike' ? `${(km / (s / 3600)).toFixed(1)} km/h` : `${clock(s / km)} /km`
+  if (sport === 'bike') return speedKph(km / (s / 3600))
+  return imperial ? `${clock(s / (km * KM_TO_MI))} /mi` : `${clock(s / km)} /km`
 }
 
 export const scrubDist = (km: number, sport: ActivityKind): string =>
@@ -1780,6 +1780,53 @@ export const buildPowerCurve = <N>(
   return wrap
 }
 
+const RUN_TREND_TARGETS = [
+  { distanceKm: 5, label: '5k trend' },
+  { distanceKm: 10, label: '10k trend' },
+  { distanceKm: 21.0975, label: 'half trend' },
+  { distanceKm: 42.195, label: 'marathon trend' },
+]
+const RUN_RIEGEL_EXPONENT = 1.06
+
+const runTrendRow = (distanceKm: number, movingTimeS: number): [string, string] | null => {
+  if (
+    !Number.isFinite(distanceKm) ||
+    !Number.isFinite(movingTimeS) ||
+    distanceKm <= 0 ||
+    movingTimeS <= 0
+  )
+    return null
+  const target = RUN_TREND_TARGETS.find(candidate => distanceKm < candidate.distanceKm)
+  if (!target) return null
+  const predictedTimeS = movingTimeS * Math.pow(target.distanceKm / distanceKm, RUN_RIEGEL_EXPONENT)
+  return [target.label, dur(predictedTimeS)]
+}
+
+export const activityStatRows = (d: StravaActivityDetail): [string, string][] => {
+  if (d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga')
+    return [['time', dur(d.movingTimeS)]]
+  const activityRate =
+    d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
+      ? `${clock(d.swimPaceSPer100m)} /100m`
+      : rate(d.sport, d.distanceKm, d.movingTimeS)
+  const rows: [string, string][] = [
+    ['distance', dist(d.distanceKm, d.sport)],
+    ['time', dur(d.movingTimeS)],
+    [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
+  ]
+  if (d.sport === 'bike' && d.maxSpeedKph != null) rows.push(['max speed', speedKph(d.maxSpeedKph)])
+  if (d.sport === 'run') {
+    const trend = runTrendRow(d.distanceKm, d.movingTimeS)
+    if (trend) rows.push(trend)
+  }
+  if (d.sport === 'swim' && positiveMetric(d.strokeRateSpm))
+    rows.push(['stroke rate', `${swimTrendNumber(d.strokeRateSpm)} str/min`])
+  if (d.sport === 'swim' && positiveMetric(d.strokeCount))
+    rows.push(['strokes', Math.round(d.strokeCount).toLocaleString('en-US')])
+  if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+  return rows
+}
+
 export const buildActivity = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -1791,24 +1838,7 @@ export const buildActivity = <N>(
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
-  const activityRate =
-    d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
-      ? `${clock(d.swimPaceSPer100m)} /100m`
-      : rate(d.sport, d.distanceKm, d.movingTimeS)
-  const rows: [string, string][] =
-    d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga'
-      ? [['time', dur(d.movingTimeS)]]
-      : [
-          ['distance', dist(d.distanceKm, d.sport)],
-          ['time', dur(d.movingTimeS)],
-          [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
-        ]
-  if (d.sport === 'swim' && positiveMetric(d.strokeRateSpm))
-    rows.push(['stroke rate', `${swimTrendNumber(d.strokeRateSpm)} str/min`])
-  if (d.sport === 'swim' && positiveMetric(d.strokeCount))
-    rows.push(['strokes', Math.round(d.strokeCount).toLocaleString('en-US')])
-  if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
-  f.add(wrap, statsTable(f, rows))
+  f.add(wrap, statsTable(f, activityStatRows(d)))
   if (d.fueling) {
     const fueling = buildFueling(f, d.fueling)
     if (fueling) f.add(wrap, fueling)

@@ -2,6 +2,9 @@
 .tri-day-embed,
 .triathlon-popover {
   --tri-accent: #fc4c02;
+  --tri-swim: #3aa99f;
+  --tri-bike: #cdd597;
+  --tri-run: #fdb2a2;
 }
 
 @mixin thin-scrollbar {
@@ -1920,9 +1923,6 @@
 }
 
 .triathlon {
-  --tri-swim: #3aa99f;
-  --tri-bike: #cdd597;
-  --tri-run: #fdb2a2;
   --tri-modal-w: min(79rem, 94vw);
   --tri-modal-h: min(86vh, 1080px);
   --tri-modal-y: -50%;
@@ -3048,11 +3048,20 @@
   opacity: 1;
 }
 
-.tri-wkt-whisk {
+.tri-wkt-current {
   stroke: var(--dark);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
   opacity: 0.7;
+}
+
+.tri-wkt--current-hover .tri-wkt-current {
+  stroke: var(--tri-accent);
+  opacity: 1;
+}
+
+.tri-wkt--current-hover .tri-ana-cursor {
+  opacity: 0;
 }
 
 .tri-wkt-pred {

@@ -115,7 +115,7 @@ test('init keeps dated day states for comparison lookup', async () => {
       ].join('\n'),
     )
   try {
-    assert.equal(await f.init('https://aarnphm.xyz', 'pace', '/triathlon/data.jsonl'), true)
+    assert.equal(await f.init('https://aarnphm.xyz', 'pace', '/static/triathlon/data.jsonl'), true)
     assert.equal(f.day?.date, '2026-06-03')
     assert.equal(f.dayStateAgo(1)?.date, '2026-06-02')
     assert.equal(f.dayStateOnOrBefore('2026-06-02')?.ctl, 2)

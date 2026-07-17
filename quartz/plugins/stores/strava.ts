@@ -262,6 +262,7 @@ export interface StravaActivityDetail {
   start: string
   distanceKm: number
   movingTimeS: number
+  maxSpeedKph: number | null
   elevationM: number
   avgHr: number | null
   maxHr: number | null
@@ -741,6 +742,30 @@ function meanMaxCurve(timeline: EffortTimeline | null): PowerCurvePoint[] {
   }))
 }
 
+const MAX_SPEED_WINDOW_S = 3
+const MAX_ACCEL_MPS2 = 3
+
+function maxSpeedKph(timeline: EffortTimeline | null): number | null {
+  if (!timeline) return null
+  const distanceM = timeline.distanceM
+  if (distanceM.length < 2) return null
+  const speeds = new Float64Array(distanceM.length - 1)
+  let allowed = 0
+  for (let second = 0; second < speeds.length; second++) {
+    allowed = Math.min(distanceM[second + 1] - distanceM[second], allowed + MAX_ACCEL_MPS2)
+    speeds[second] = allowed
+  }
+  const windowS = Math.min(MAX_SPEED_WINDOW_S, speeds.length)
+  let bestM = 0
+  let sumM = 0
+  for (let second = 0; second < speeds.length; second++) {
+    sumM += speeds[second]
+    if (second >= windowS) sumM -= speeds[second - windowS]
+    if (second >= windowS - 1) bestM = Math.max(bestM, sumM)
+  }
+  return bestM > 0 ? round((bestM / windowS) * 3.6, 1) : null
+}
+
 function distanceBestEfforts(timeline: EffortTimeline): CyclingDistanceEffort[] {
   const [hrSum, hrCount] = positivePrefixes(timeline.heartRate)
   const efforts: CyclingDistanceEffort[] = []
@@ -1094,6 +1119,7 @@ function projectDetail(
     start: a.startDate,
     distanceKm: round(a.distance / 1000, sport === 'swim' ? 3 : 1),
     movingTimeS: a.movingTime,
+    maxSpeedKph: maxSpeedKph(timeline),
     elevationM: ascentM,
     avgHr: heartRate.avgHr,
     maxHr: heartRate.maxHr,

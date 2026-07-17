@@ -8,6 +8,7 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import {
+  activityStatRows,
   buildActivity,
   buildCyclingBestEfforts,
   buildDayCard,
@@ -473,6 +474,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   start: '2026-07-09T12:00:00Z',
   distanceKm: 30,
   movingTimeS: 4_800,
+  maxSpeedKph: null,
   elevationM: 100,
   avgHr: 148,
   maxHr: 171,
@@ -745,6 +747,77 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['pace', '1:35 /100m'],
     ['stroke rate', '31.5 str/min'],
     ['strokes', '876'],
+    ['avg hr', '148 bpm'],
+  ])
+})
+
+test('adds max speed directly below the bike speed row', () => {
+  setDistanceUnit(false)
+  const metric = buildActivity(factory, detail({ maxSpeedKph: 41.8 }))
+  const metricStats = byClass(metric, 'tri-act-stats')[0]
+  assert.ok(metricStats)
+  assert.deepEqual(bodyRows(metricStats), [
+    ['distance', '30.0 km'],
+    ['time', "1h20'"],
+    ['speed', '22.5 km/h'],
+    ['max speed', '41.8 km/h'],
+    ['avg hr', '148 bpm'],
+  ])
+
+  setDistanceUnit(true)
+  const imperial = buildActivity(factory, detail({ maxSpeedKph: 41.8 }))
+  const imperialStats = byClass(imperial, 'tri-act-stats')[0]
+  assert.ok(imperialStats)
+  assert.deepEqual(bodyRows(imperialStats), [
+    ['distance', '18.6 mi'],
+    ['time', "1h20'"],
+    ['speed', '14.0 mph'],
+    ['max speed', '26.0 mph'],
+    ['avg hr', '148 bpm'],
+  ])
+  setDistanceUnit(false)
+
+  const withoutMax = buildActivity(factory, detail())
+  const plainStats = byClass(withoutMax, 'tri-act-stats')[0]
+  assert.ok(plainStats)
+  assert.deepEqual(
+    bodyRows(plainStats).map(([label]) => label),
+    ['distance', 'time', 'speed', 'avg hr'],
+  )
+})
+
+test('projects each sub-marathon run to the next standard race distance', () => {
+  const trendLabel = (distanceKm: number): string | null =>
+    activityStatRows(
+      detail({ sport: 'run', distanceKm, movingTimeS: 3_600, maxSpeedKph: null }),
+    ).find(([label]) => label.endsWith(' trend'))?.[0] ?? null
+
+  assert.deepEqual([4.999, 5, 9.999, 10, 21.0974, 21.0975, 42.194, 42.195, 50].map(trendLabel), [
+    '5k trend',
+    '10k trend',
+    '10k trend',
+    'half trend',
+    'half trend',
+    'marathon trend',
+    'marathon trend',
+    null,
+    null,
+  ])
+})
+
+test('renders the run trend between pace and heart rate in server activity markup', () => {
+  setDistanceUnit(false)
+  const rendered = buildActivity(
+    factory,
+    detail({ sport: 'run', distanceKm: 11.1, movingTimeS: 4_320, maxSpeedKph: null }),
+  )
+  const stats = byClass(rendered, 'tri-act-stats')[0]
+  assert.ok(stats)
+  assert.deepEqual(bodyRows(stats), [
+    ['distance', '11.1 km'],
+    ['time', "1h12'"],
+    ['pace', '6:29 /km'],
+    ['half trend', "2h22'"],
     ['avg hr', '148 bpm'],
   ])
 })
