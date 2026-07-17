@@ -215,6 +215,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       files.push(
         await write({
           ctx,
+          slug: 'static/triathlon/data' as FullSlug,
+          ext: '.jsonl',
+          content: dataFeed,
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
           slug: 'triathlon/feed' as FullSlug,
           ext: '.md',
           content: buildFeedMarkdown(dataFeed, analytics, {

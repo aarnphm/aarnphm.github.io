@@ -48,3 +48,14 @@ test('analytics reserves one heat chart between effort and readiness', () => {
   assert.ok(heat > effort)
   assert.ok(readiness > heat)
 })
+
+test('analytics reserves one synchronized lab history mount', () => {
+  const html = render(<AnalyticsPanel page />)
+  const dexa = html.indexOf('data-chart="dexa"')
+  const gauge = html.indexOf('data-chart="gauge"')
+
+  assert.equal(html.split('data-chart="dexa"').length - 1, 1)
+  assert.equal(html.includes('data-chart="vo2test"'), false)
+  assert.ok(dexa >= 0)
+  assert.ok(gauge > dexa)
+})

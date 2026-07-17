@@ -6,6 +6,7 @@ import type {
   Analytics,
   BodyBlock,
   DailyPoint,
+  DexaRecord,
   RaceLeg,
   SportTrend,
   Vo2LabProfile,
@@ -77,6 +78,7 @@ import {
   scrubDist,
   setDistanceUnit,
   shortDate,
+  speedKph,
   statRow as statRowNode,
   swimTrendHoverAt,
   buildTrace as buildTraceNode,
@@ -264,12 +266,290 @@ type ScrubSurface = {
   fmt: (p: StravaActivityDetail['route'][number], i: number) => string
 }
 
+type ActivityAnalysisRange = {
+  button: HTMLButtonElement
+  kind: 'lap' | 'segment' | 'climb'
+  id: string
+  label: string
+  startElapsedS: number
+  endElapsedS: number
+  startDistanceKm: number
+  endDistanceKm: number
+  distanceKm: number
+  durationS: number
+  elevationGainM: number | null
+  averageSpeedKph: number | null
+  averageHeartRate: number | null
+  averageWatts: number | null
+  averageCadence: number | null
+}
+
+const analysisFinite = (value: string | undefined): number | null => {
+  if (value == null || value === '') return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+const analysisRouteIndex = (
+  route: StravaActivityDetail['route'],
+  targetDistanceKm: number,
+): number => {
+  let low = 0
+  let high = route.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (route[middle].d < targetDistanceKm) low = middle + 1
+    else high = middle
+  }
+  if (low === 0) return 0
+  if (low >= route.length) return route.length - 1
+  return targetDistanceKm - route[low - 1].d <= route[low].d - targetDistanceKm ? low - 1 : low
+}
+
+const analysisRate = (sport: ActivityKind, valueKph: number): string => {
+  if (valueKph <= 0) return '—'
+  if (sport === 'bike') return speedKph(valueKph)
+  if (sport === 'swim') return `${clock(360 / valueKph)} /100m`
+  const distanceScale = isImperialUnit() ? KM_TO_MI : 1
+  return `${clock(3600 / (valueKph * distanceScale))} /${isImperialUnit() ? 'mi' : 'km'}`
+}
+
+const analysisRangeFromButton = (button: HTMLButtonElement): ActivityAnalysisRange | null => {
+  const kind = button.dataset.rangeKind
+  const id = button.dataset.rangeId
+  const startElapsedS = analysisFinite(button.dataset.startElapsedS)
+  const endElapsedS = analysisFinite(button.dataset.endElapsedS)
+  const startDistanceKm = analysisFinite(button.dataset.startDistanceKm)
+  const endDistanceKm = analysisFinite(button.dataset.endDistanceKm)
+  if (
+    (kind !== 'lap' && kind !== 'segment' && kind !== 'climb') ||
+    id == null ||
+    startElapsedS == null ||
+    endElapsedS == null ||
+    startDistanceKm == null ||
+    endDistanceKm == null
+  )
+    return null
+  return {
+    button,
+    kind,
+    id,
+    startElapsedS,
+    endElapsedS,
+    label:
+      button.dataset.rangeLabel ??
+      button.querySelector<HTMLElement>('.tri-analysis-range-title')?.textContent?.trim() ??
+      button.textContent?.trim() ??
+      id,
+    startDistanceKm,
+    endDistanceKm,
+    distanceKm: analysisFinite(button.dataset.distanceKm) ?? endDistanceKm - startDistanceKm,
+    durationS: analysisFinite(button.dataset.durationS) ?? 0,
+    elevationGainM: analysisFinite(button.dataset.elevationGainM),
+    averageSpeedKph: analysisFinite(button.dataset.averageSpeedKph),
+    averageHeartRate: analysisFinite(button.dataset.averageHeartRate),
+    averageWatts: analysisFinite(button.dataset.averageWatts),
+    averageCadence: analysisFinite(button.dataset.averageCadence),
+  }
+}
+
+const analysisRoutePath = (
+  route: StravaActivityDetail['route'],
+  range: ActivityAnalysisRange,
+): string => {
+  const start = analysisRouteIndex(route, range.startDistanceKm)
+  const end = analysisRouteIndex(route, range.endDistanceKm)
+  const points = route.slice(Math.min(start, end), Math.max(start, end) + 1)
+  const pad = 6
+  const span = 88
+  return points
+    .map(
+      (point, index) =>
+        `${index === 0 ? 'M' : 'L'} ${(pad + point.x * span).toFixed(2)} ${(pad + (1 - point.y) * span).toFixed(2)}`,
+    )
+    .join(' ')
+}
+
+const hideAnalysisTooltip = (analysis: HTMLElement | null): void => {
+  const tooltip = analysis?.querySelector<HTMLElement>('[data-tri-analysis-tooltip]')
+  if (!tooltip) return
+  tooltip.hidden = true
+  tooltip.dataset.visible = 'false'
+}
+
+const linkActivityAnalysis = (
+  act: HTMLElement,
+  analysis: HTMLElement,
+  detail: StravaActivityDetail,
+): boolean => {
+  const route = detail.route
+  const sport = detail.sport
+  const ranges = Array.from(
+    analysis.querySelectorAll<HTMLButtonElement>('.tri-analysis-range[data-analysis-range]'),
+  )
+    .map(analysisRangeFromButton)
+    .filter((range): range is ActivityAnalysisRange => range != null)
+  if (ranges.length === 0 || route.length < 2) return false
+  if (analysis.dataset.triAnalysisLinked === '1') return true
+  analysis.dataset.triAnalysisLinked = '1'
+
+  const maxDistanceKm = route[route.length - 1].d || 1
+  const routeSelected = act.querySelector<SVGPathElement>('.tri-route-selected')
+  const selections = act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')
+  const readout = analysis.querySelector<HTMLElement>('[data-tri-analysis-readout]')
+  const readoutLabel = readout?.querySelector<HTMLElement>('.tri-analysis-readout-label') ?? null
+  const readoutMetrics =
+    readout?.querySelector<HTMLElement>('.tri-analysis-readout-metrics') ?? null
+  const tooltip = analysis.querySelector<HTMLElement>('[data-tri-analysis-tooltip]')
+  const tooltipLabel = tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-label') ?? null
+  const tooltipMetrics =
+    tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-metrics') ?? null
+  const selectedKind = analysis.dataset.selectedKind
+  const selectedId = analysis.dataset.selectedId
+  let locked =
+    ranges.find(range => range.kind === selectedKind && range.id === selectedId) ??
+    ranges.find(range => range.button.getAttribute('aria-pressed') === 'true') ??
+    null
+  const rangeMetrics = (range: ActivityAnalysisRange): string[] => {
+    const metrics = [scrubDist(range.distanceKm, sport)]
+    if (range.elevationGainM != null) metrics.push(`+${formatAltitude(range.elevationGainM)}`)
+    metrics.push(clock(range.durationS))
+    return metrics
+  }
+  const rangeReadoutMetrics = (range: ActivityAnalysisRange): string[] => {
+    const cadenceScale = sport === 'run' ? 2 : 1
+    const cadenceUnit = sport === 'run' ? 'spm' : 'rpm'
+    const metrics = rangeMetrics(range)
+    if (range.averageSpeedKph != null) metrics.push(analysisRate(sport, range.averageSpeedKph))
+    if (range.averageWatts != null) metrics.push(`${Math.round(range.averageWatts)} W`)
+    if (range.averageHeartRate != null) metrics.push(`${Math.round(range.averageHeartRate)} bpm`)
+    if (range.averageCadence != null)
+      metrics.push(`${Math.round(range.averageCadence * cadenceScale)} ${cadenceUnit}`)
+    return metrics
+  }
+  const showReadout = (range: ActivityAnalysisRange | null): void => {
+    if (!readout) return
+    if (!range) {
+      readout.dataset.visible = 'false'
+      readout.setAttribute('aria-hidden', 'true')
+      return
+    }
+    if (readoutLabel) readoutLabel.textContent = range.label
+    if (readoutMetrics) readoutMetrics.textContent = rangeReadoutMetrics(range).join(' · ')
+    readout.dataset.visible = 'true'
+    readout.setAttribute('aria-hidden', 'false')
+  }
+  const hideTooltip = (): void => {
+    hideAnalysisTooltip(analysis)
+  }
+  const showTooltip = (range: ActivityAnalysisRange): void => {
+    if (!tooltip) return
+    const analysisRect = analysis.getBoundingClientRect()
+    const buttonRect = range.button.getBoundingClientRect()
+    tooltip.style.setProperty(
+      '--tri-analysis-tooltip-x',
+      `${(buttonRect.left + buttonRect.width / 2 - analysisRect.left).toFixed(2)}px`,
+    )
+    tooltip.style.setProperty(
+      '--tri-analysis-tooltip-y',
+      `${(buttonRect.top - analysisRect.top).toFixed(2)}px`,
+    )
+    if (tooltipLabel) tooltipLabel.textContent = range.label
+    if (tooltipMetrics) tooltipMetrics.textContent = rangeMetrics(range).join(' · ')
+    tooltip.hidden = false
+    tooltip.dataset.visible = 'true'
+  }
+  const clearRange = (): void => {
+    for (const selection of selections) {
+      selection.setAttribute('x', '0')
+      selection.setAttribute('width', '0')
+    }
+    routeSelected?.setAttribute('d', '')
+  }
+  const showRange = (range: ActivityAnalysisRange): void => {
+    const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, range.startDistanceKm))
+    const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, range.endDistanceKm))
+    const x = (startDistanceKm / maxDistanceKm) * 100
+    const width = Math.max(0, ((endDistanceKm - startDistanceKm) / maxDistanceKm) * 100)
+    for (const selection of selections) {
+      selection.setAttribute('x', x.toFixed(2))
+      selection.setAttribute('width', width.toFixed(2))
+    }
+    routeSelected?.setAttribute('d', analysisRoutePath(route, range))
+  }
+  const showLocked = (): void => {
+    if (locked) showRange(locked)
+    else clearRange()
+  }
+  const setLocked = (range: ActivityAnalysisRange | null): void => {
+    locked = range
+    if (range) {
+      analysis.dataset.selectedKind = range.kind
+      analysis.dataset.selectedId = range.id
+    } else {
+      delete analysis.dataset.selectedKind
+      delete analysis.dataset.selectedId
+    }
+    for (const candidate of ranges)
+      candidate.button.setAttribute('aria-pressed', String(candidate === range))
+    showReadout(range)
+    showLocked()
+  }
+  for (const range of ranges) {
+    range.button.addEventListener('pointerenter', () => {
+      showRange(range)
+      showTooltip(range)
+    })
+    range.button.addEventListener('pointerleave', () => {
+      hideTooltip()
+      showLocked()
+    })
+    range.button.addEventListener('focus', () => {
+      showRange(range)
+      showTooltip(range)
+    })
+    range.button.addEventListener('blur', () => {
+      if (range.button.matches(':hover')) return
+      hideTooltip()
+      showLocked()
+    })
+    range.button.addEventListener('click', () => {
+      if (locked === range) {
+        setLocked(null)
+        hideTooltip()
+      } else setLocked(range)
+    })
+  }
+  routeSelected?.addEventListener('click', event => {
+    event.stopPropagation()
+    setLocked(null)
+    hideTooltip()
+  })
+  analysis.addEventListener('tri:analysis-restore', event => {
+    if (!(event instanceof CustomEvent) || !isRecord(event.detail)) return
+    if (event.detail.selected !== true) {
+      setLocked(null)
+      hideTooltip()
+      return
+    }
+    const kind = typeof event.detail.kind === 'string' ? event.detail.kind : undefined
+    const id = typeof event.detail.id === 'string' ? event.detail.id : undefined
+    setLocked(ranges.find(range => range.kind === kind && range.id === id) ?? null)
+  })
+  setLocked(locked)
+  hideTooltip()
+  return true
+}
+
 const linkScrub = (
   act: HTMLElement,
   marker: SVGElement | null,
   surfaces: ScrubSurface[],
   route: StravaActivityDetail['route'],
+  detail?: StravaActivityDetail,
 ): void => {
+  const analysis = act.querySelector<HTMLElement>('[data-tri-analysis]')
+  if (analysis && detail) linkActivityAnalysis(act, analysis, detail)
   const maxD = route[route.length - 1].d || 1
   const pad = 6
   const span = 88
@@ -292,21 +572,13 @@ const linkScrub = (
   const indexAt = (clientX: number, svgEl: SVGElement): number => {
     const r = svgEl.getBoundingClientRect()
     const fraction = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
-    const targetD = fraction * maxD
-    let index = 0
-    let best = Infinity
-    for (let k = 0; k < route.length; k++) {
-      const dd = Math.abs(route[k].d - targetD)
-      if (dd < best) {
-        best = dd
-        index = k
-      }
-    }
-    return index
+    return analysisRouteIndex(route, fraction * maxD)
   }
   for (const surf of resolved) {
-    const onMove = (event: MouseEvent) => {
-      const i = indexAt(event.clientX, surf.svgEl)
+    let pendingX: number | null = null
+    let frame: number | null = null
+    const show = (clientX: number) => {
+      const i = indexAt(clientX, surf.svgEl)
       const p = route[i]
       const x = ((p.d / maxD) * 100).toFixed(2)
       for (const r of resolved) {
@@ -317,16 +589,35 @@ const linkScrub = (
         marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
         marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
       }
-      surf.readout.textContent = surf.fmt(p, i)
+      const linkedReadouts = analysis?.dataset.selectedId !== undefined
+      hideAnalysisTooltip(analysis)
+      for (const r of resolved) {
+        if (linkedReadouts || r === surf) r.readout.textContent = r.fmt(p, i)
+      }
       act.classList.add('tri-act--scrub')
-      for (const r of resolved) r.wrap.classList.toggle('tri-elev-wrap--read', r === surf)
+      for (const r of resolved)
+        r.wrap.classList.toggle('tri-elev-wrap--read', linkedReadouts || r === surf)
+    }
+    const onMove = (event: PointerEvent) => {
+      pendingX = event.clientX
+      if (frame != null) return
+      frame = window.requestAnimationFrame(() => {
+        frame = null
+        if (pendingX == null || !surf.svgEl.isConnected) return
+        show(pendingX)
+        pendingX = null
+      })
     }
     const onLeave = () => {
+      if (frame != null) window.cancelAnimationFrame(frame)
+      frame = null
+      pendingX = null
       act.classList.remove('tri-act--scrub')
-      surf.wrap.classList.remove('tri-elev-wrap--read')
+      for (const r of resolved) r.wrap.classList.remove('tri-elev-wrap--read')
     }
-    surf.svgEl.addEventListener('mousemove', onMove)
-    surf.svgEl.addEventListener('mouseleave', onLeave)
+    surf.svgEl.addEventListener('pointermove', onMove)
+    surf.svgEl.addEventListener('pointerleave', onLeave)
+    surf.svgEl.addEventListener('pointercancel', onLeave)
   }
 }
 
@@ -362,21 +653,6 @@ const buildPowerCurve = (d: StravaActivityDetail): HTMLElement | null => {
   const n = powerCurveNode(domF, d, clientCtx())
   if (n) applyI18n(n as HTMLElement)
   return n as HTMLElement | null
-}
-
-const derivePace = (route: StravaActivityDetail['route'], movingTimeS: number): number[] => {
-  const n = route.length
-  const out = Array.from({ length: n }, () => 0)
-  if (n < 2) return out
-  const dtPer = movingTimeS / Math.max(1, n - 1)
-  for (let i = 0; i < n; i++) {
-    const j0 = Math.max(0, i - 2)
-    const j1 = Math.min(n - 1, i + 2)
-    const dKm = route[j1].d - route[j0].d
-    const dt = (j1 - j0) * dtPer
-    out[i] = dt > 0 ? dKm / (dt / 3600) : 0
-  }
-  return out
 }
 
 const buildHeatRoute = (
@@ -481,23 +757,21 @@ interface MapMetric {
 
 const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   const route = d.route
-  const pace = derivePace(route, d.movingTimeS)
+  const pace = route.map(point => point.speedKph)
   const hasPower = d.deviceWatts && route.some(p => p.w > 0)
   const hasHr = route.some(p => p.hr > 0)
   const hasCad = route.some(p => p.cad > 0)
   const hasElev = d.maxAlt > d.minAlt
   const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
   const paceFmt = (kmh: number): string => {
-    if (kmh <= 0) return '—'
-    if (d.sport === 'bike') return `${(kmh * KM_TO_MI).toFixed(1)} mph`
-    if (d.sport === 'swim') return `${clock(3600 / (kmh * 10))} /100m`
-    return `${clock(3600 / (kmh * KM_TO_MI))} /mi`
+    return analysisRate(d.sport, kmh)
   }
   const paceTick = (kmh: number): string => {
     if (kmh <= 0) return '0'
-    if (d.sport === 'bike') return `${(kmh * KM_TO_MI).toFixed(0)}mph`
+    if (d.sport === 'bike')
+      return isImperialUnit() ? `${(kmh * KM_TO_MI).toFixed(0)}mph` : `${kmh.toFixed(0)}km/h`
     if (d.sport === 'swim') return clock(3600 / (kmh * 10))
-    return clock(3600 / (kmh * KM_TO_MI))
+    return clock(3600 / (kmh * (isImperialUnit() ? KM_TO_MI : 1)))
   }
   const paceSpec: MapMetric = {
     label: d.sport === 'bike' ? 'speed' : 'pace',
@@ -675,6 +949,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
         },
       ],
       d.route,
+      d,
     )
     Array.from(tablist.children).forEach((t, i) => {
       const on = i === active
@@ -740,9 +1015,9 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
           `${scrubDist(p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(p.tempC)}`,
       })
   }
-  if (surfaces.length > 0 && d.route.length >= 2) {
+  if ((surfaces.length > 0 || wrap.querySelector('[data-tri-analysis]')) && d.route.length >= 2) {
     const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
-    linkScrub(wrap, routeMarker, surfaces, d.route)
+    linkScrub(wrap, routeMarker, surfaces, d.route, d)
   }
   return wrap
 }
@@ -800,6 +1075,16 @@ const setupDayEmbeds = (): (() => void) | null => {
     let upgraded = false
     let payload: DetailPayload | null = null
     let pendingSwimMode: { index: number; mode: SwimTrendMode } | null = null
+    let pendingAnalysisRange: {
+      activityId: string
+      kind: string
+      id: string
+      selected: boolean
+      restoreFocus: boolean
+    } | null = null
+    let analysisPointerActive = false
+    let analysisReleaseTimer = 0
+    let deferredPayload: DetailPayload | null = null
     const setPendingSwimMode = (target: EventTarget | null): void => {
       if (!(target instanceof Element)) return
       const button = target.closest<HTMLButtonElement>('.tri-swim-mode')
@@ -816,16 +1101,74 @@ const setupDayEmbeds = (): (() => void) | null => {
     const onSwimKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Enter' || event.key === ' ') setPendingSwimMode(event.target)
     }
+    const setPendingAnalysisRange = (target: EventTarget | null, restoreFocus = false): boolean => {
+      if (payload) return false
+      if (!(target instanceof Element)) return false
+      const button = target.closest<HTMLButtonElement>('[data-analysis-range]')
+      const workspace = button?.closest<HTMLElement>('[data-tri-analysis]')
+      const activityId = workspace?.dataset.activityId
+      const kind = button?.dataset.rangeKind
+      const id = button?.dataset.rangeId
+      if (!activityId || !kind || !id) return false
+      pendingAnalysisRange = {
+        activityId,
+        kind,
+        id,
+        selected: button.getAttribute('aria-pressed') !== 'true',
+        restoreFocus,
+      }
+      return true
+    }
+    const releaseAnalysisPointer = (): void => {
+      window.clearTimeout(analysisReleaseTimer)
+      analysisReleaseTimer = 0
+      analysisPointerActive = false
+      if (!deferredPayload) return
+      const data = deferredPayload
+      deferredPayload = null
+      render(data)
+    }
+    const onAnalysisPointerDown = (event: PointerEvent): void => {
+      if (!setPendingAnalysisRange(event.target)) return
+      window.clearTimeout(analysisReleaseTimer)
+      analysisReleaseTimer = 0
+      analysisPointerActive = true
+    }
+    const onAnalysisPointerUp = (): void => {
+      if (!analysisPointerActive) return
+      analysisReleaseTimer = window.setTimeout(releaseAnalysisPointer, 0)
+    }
+    const onAnalysisClick = (event: MouseEvent): void => {
+      if (!pendingAnalysisRange) setPendingAnalysisRange(event.target)
+      releaseAnalysisPointer()
+    }
+    const onAnalysisPointerCancel = (): void => {
+      pendingAnalysisRange = null
+      releaseAnalysisPointer()
+    }
+    const onAnalysisKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Enter' || event.key === ' ') setPendingAnalysisRange(event.target, true)
+    }
     const clearPendingSwimMode = (): void => {
       pendingSwimMode = null
     }
     embed.addEventListener('pointerdown', onSwimPointerDown, { passive: true })
     embed.addEventListener('keydown', onSwimKeyDown)
+    embed.addEventListener('pointerdown', onAnalysisPointerDown, { passive: true })
+    embed.addEventListener('pointerup', onAnalysisPointerUp, { passive: true })
+    embed.addEventListener('click', onAnalysisClick)
+    embed.addEventListener('pointercancel', onAnalysisPointerCancel)
+    embed.addEventListener('keydown', onAnalysisKeyDown)
     embed.addEventListener('click', clearPendingSwimMode)
     embed.addEventListener('pointercancel', clearPendingSwimMode)
     teardowns.push(() => {
       embed.removeEventListener('pointerdown', onSwimPointerDown)
       embed.removeEventListener('keydown', onSwimKeyDown)
+      embed.removeEventListener('pointerdown', onAnalysisPointerDown)
+      embed.removeEventListener('pointerup', onAnalysisPointerUp)
+      embed.removeEventListener('click', onAnalysisClick)
+      embed.removeEventListener('pointercancel', onAnalysisPointerCancel)
+      embed.removeEventListener('keydown', onAnalysisKeyDown)
       embed.removeEventListener('click', clearPendingSwimMode)
       embed.removeEventListener('pointercancel', clearPendingSwimMode)
     })
@@ -867,6 +1210,39 @@ const setupDayEmbeds = (): (() => void) | null => {
       if (pendingSwimMode && swimStates[pendingSwimMode.index])
         swimStates[pendingSwimMode.index].mode = pendingSwimMode.mode
       pendingSwimMode = null
+      const analysisStates = Array.from(
+        embed.querySelectorAll<HTMLElement>('[data-tri-analysis]'),
+        workspace => {
+          const focused =
+            document.activeElement instanceof HTMLButtonElement &&
+            workspace.contains(document.activeElement)
+              ? document.activeElement.closest<HTMLButtonElement>('[data-analysis-range]')
+              : null
+          return {
+            activityId: workspace.dataset.activityId,
+            kind: workspace.dataset.selectedKind,
+            id: workspace.dataset.selectedId,
+            selected: Boolean(workspace.dataset.selectedKind && workspace.dataset.selectedId),
+            focusedKind: focused?.dataset.rangeKind,
+            focusedId: focused?.dataset.rangeId,
+          }
+        },
+      )
+      if (pendingAnalysisRange) {
+        const state = analysisStates.find(
+          candidate => candidate.activityId === pendingAnalysisRange?.activityId,
+        )
+        if (state) {
+          state.selected = pendingAnalysisRange.selected
+          state.kind = pendingAnalysisRange.selected ? pendingAnalysisRange.kind : undefined
+          state.id = pendingAnalysisRange.selected ? pendingAnalysisRange.id : undefined
+          state.focusedKind = pendingAnalysisRange.restoreFocus
+            ? pendingAnalysisRange.kind
+            : undefined
+          state.focusedId = pendingAnalysisRange.restoreFocus ? pendingAnalysisRange.id : undefined
+        }
+      }
+      pendingAnalysisRange = null
       const fresh = buildDayCard(date, data, extras)
       const expanded = Array.from(embed.querySelectorAll('.tri-act'), activity =>
         activity.classList.contains('tri-act--expanded'),
@@ -876,6 +1252,27 @@ const setupDayEmbeds = (): (() => void) | null => {
       })
       embed.replaceChildren(fresh)
       applyI18n(fresh)
+      for (const state of analysisStates) {
+        const workspace = Array.from(
+          fresh.querySelectorAll<HTMLElement>('[data-tri-analysis]'),
+        ).find(candidate => candidate.dataset.activityId === state.activityId)
+        if (!workspace) continue
+        const buttons = Array.from(
+          workspace.querySelectorAll<HTMLButtonElement>('[data-analysis-range]'),
+        )
+        workspace.dispatchEvent(
+          new CustomEvent('tri:analysis-restore', {
+            detail: { selected: state.selected, kind: state.kind, id: state.id },
+          }),
+        )
+        buttons
+          .find(
+            button =>
+              button.dataset.rangeKind === state.focusedKind &&
+              button.dataset.rangeId === state.focusedId,
+          )
+          ?.focus({ preventScroll: true })
+      }
       fresh.querySelectorAll<HTMLElement>('.tri-swim-trends').forEach((section, index) => {
         const state = swimStates[index]
         if (!state) return
@@ -909,6 +1306,10 @@ const setupDayEmbeds = (): (() => void) | null => {
       void loadDetailPayload(detailPath).then(data => {
         if (!live || !embed.isConnected || !data) return
         payload = data
+        if (analysisPointerActive) {
+          deferredPayload = data
+          return
+        }
         render(data)
       })
     }
@@ -918,11 +1319,26 @@ const setupDayEmbeds = (): (() => void) | null => {
     const ssr = embed.querySelector<HTMLElement>(':scope > .tri-pop-card')
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
-      const events = ['pointerenter', 'focusin', 'touchstart'] as const
+      const events = ['pointerdown', 'touchstart'] as const
       for (const ev of events) embed.addEventListener(ev, upgrade, { once: true, passive: true })
+      const onKeyboardFocus = (event: FocusEvent): void => {
+        if (!(event.target instanceof Element) || !event.target.matches(':focus-visible')) return
+        embed.removeEventListener('focusin', onKeyboardFocus)
+        upgrade()
+      }
+      const onChartMove = (event: PointerEvent): void => {
+        if (!(event.target instanceof Element) || !event.target.closest('.tri-elev')) return
+        embed.removeEventListener('pointermove', onChartMove)
+        upgrade()
+      }
+      embed.addEventListener('focusin', onKeyboardFocus)
+      embed.addEventListener('pointermove', onChartMove, { passive: true })
       teardowns.push(() => {
         for (const ev of events) embed.removeEventListener(ev, upgrade)
+        embed.removeEventListener('focusin', onKeyboardFocus)
+        embed.removeEventListener('pointermove', onChartMove)
       })
+      if (extras.expanded) upgrade()
     } else {
       embed.replaceChildren(buildDayCard(date, null, extras))
       upgrade()
@@ -4040,92 +4456,135 @@ const aceBand = (pct: number): string =>
           ? 'average'
           : 'obese'
 
-const buildDexa = (data: Analytics): HTMLElement => {
-  const block = el('div', 'tri-dexa')
-  const titleRow = el('div', 'tri-dexa-titlerow')
-  titleRow.appendChild(anaTitle('body composition', 'dexa'))
-  const d = data.tests.dexa[data.tests.dexa.length - 1]
-  if (!d) {
-    block.appendChild(titleRow)
-    block.appendChild(el('div', 'tri-ana-empty', tl('no dexa scan logged')))
-    return block
-  }
-  titleRow.appendChild(el('span', 'tri-dexa-date', d.date))
-  block.appendChild(titleRow)
+const TRI_LAB_DATE_KEY = 'tri-lab-date'
 
+type DexaChartColumn = {
+  label: string
+  totalLbs: number
+  leanLbs: number
+  fatLbs: number
+  boneLbs: number
+}
+
+const dexaVerticalSegment = (cls: string, lbs: number, totalLbs: number): HTMLElement => {
+  const segment = el('span', `tri-dexa-seg ${cls}`)
+  segment.style.height = `${totalLbs > 0 ? (lbs / totalLbs) * 100 : 0}%`
+  return segment
+}
+
+const buildDexaChart = (d: DexaRecord): HTMLElement | undefined => {
+  const columns: DexaChartColumn[] = []
+  for (const [label, region] of [
+    ['arms', d.arms],
+    ['legs', d.legs],
+    ['trunk', d.trunk],
+  ] as const) {
+    if (!region) continue
+    columns.push({
+      label,
+      totalLbs: region.fat + region.lean + region.bmc,
+      leanLbs: region.lean,
+      fatLbs: region.fat,
+      boneLbs: region.bmc,
+    })
+  }
+  if (columns.length === 0) return
+
+  const displayMass = (lbs: number): number => wConv(lbs * KG_PER_LB)
+  const axisStep = isImperialUnit() ? 20 : 10
+  const axisMax = Math.max(
+    axisStep,
+    Math.ceil(Math.max(...columns.map(column => displayMass(column.totalLbs))) / axisStep) *
+      axisStep,
+  )
+  const chart = el('div', 'tri-dexa-chart', undefined, {
+    role: 'group',
+    'aria-label': tl('body composition by region'),
+  })
+  const axis = el('div', 'tri-dexa-axis', undefined, { 'aria-hidden': 'true' })
+  axis.append(
+    el('span', 'tri-dexa-axis-value is-top', `${axisMax} ${weightUnitLabel()}`),
+    el('span', 'tri-dexa-axis-value is-mid', String(axisMax / 2)),
+    el('span', 'tri-dexa-axis-value is-bottom', '0'),
+  )
+  const plot = el('div', 'tri-dexa-plot')
+  plot.style.gridTemplateColumns = `repeat(${columns.length}, minmax(0, 1fr))`
+  plot.append(
+    el('span', 'tri-dexa-gridline is-top'),
+    el('span', 'tri-dexa-gridline is-mid'),
+    el('span', 'tri-dexa-gridline is-bottom'),
+  )
+  for (const column of columns) {
+    const compositionLbs = column.leanLbs + column.fatLbs + column.boneLbs
+    const leanPct = compositionLbs > 0 ? (column.leanLbs / compositionLbs) * 100 : 0
+    const fatPct = compositionLbs > 0 ? (column.fatLbs / compositionLbs) * 100 : 0
+    const bonePct = compositionLbs > 0 ? (column.boneLbs / compositionLbs) * 100 : 0
+    const item = el('div', 'tri-dexa-column', undefined, {
+      role: 'img',
+      tabindex: '0',
+      'aria-label': `${tl(column.label)}, ${wFmt(column.totalLbs * KG_PER_LB, 1, 1)}, ${tl('lean')} ${wFmt(column.leanLbs * KG_PER_LB, 1, 1)}, ${tl('fat')} ${wFmt(column.fatLbs * KG_PER_LB, 1, 1)}, ${tl('bone')} ${wFmt(column.boneLbs * KG_PER_LB, 1, 1)}`,
+      'data-dexa-region': tl(column.label),
+      'data-dexa-total': wFmt(column.totalLbs * KG_PER_LB, 1, 1),
+      'data-dexa-lean': wFmt(column.leanLbs * KG_PER_LB, 1, 1),
+      'data-dexa-lean-pct': `${leanPct.toFixed(0)}%`,
+      'data-dexa-fat': wFmt(column.fatLbs * KG_PER_LB, 1, 1),
+      'data-dexa-fat-pct': `${fatPct.toFixed(0)}%`,
+      'data-dexa-bone': wFmt(column.boneLbs * KG_PER_LB, 1, 1),
+      'data-dexa-bone-pct': `${bonePct.toFixed(0)}%`,
+    })
+    const track = el('div', 'tri-dexa-column-track')
+    const bar = el('div', 'tri-dexa-column-bar')
+    bar.style.height = `${(displayMass(column.totalLbs) / axisMax) * 100}%`
+    bar.append(
+      dexaVerticalSegment('is-lean', column.leanLbs, compositionLbs),
+      dexaVerticalSegment('is-fat', column.fatLbs, compositionLbs),
+      dexaVerticalSegment('is-bone', column.boneLbs, compositionLbs),
+    )
+    track.appendChild(bar)
+    item.append(
+      track,
+      el('span', 'tri-dexa-column-label', tl(column.label)),
+      el('span', 'tri-dexa-column-value', wFmt(column.totalLbs * KG_PER_LB, 1, 1)),
+      el('span', 'tri-dexa-column-fat', `${fatPct.toFixed(0)}% ${tl('fat')}`),
+    )
+    plot.appendChild(item)
+  }
+  chart.append(axis, plot)
+  return chart
+}
+
+const buildDexaDetail = (d: DexaRecord): HTMLElement => {
+  const detail = el('div', 'tri-dexa-detail-inner')
   const head = el('div', 'tri-dexa-head')
   const bf = el('div', 'tri-dexa-bf', d.bodyFat.toFixed(1))
   bf.appendChild(el('span', 'tri-dexa-unit', tl('% fat')))
   head.append(bf, el('span', 'tri-dexa-cat', `ACE ${aceBand(d.bodyFat)}`))
-  block.appendChild(head)
-
-  const total = d.fatLbs + d.leanLbs + d.bmcLbs
-  const seg = (cls: string, lbs: number, label: string): HTMLElement => {
-    const s = el('span', `tri-dexa-seg ${cls}`)
-    s.style.width = `${(lbs / total) * 100}%`
-    s.title = `${tl(label)} ${wFmt(lbs * KG_PER_LB, 1, 1)} · ${((lbs / total) * 100).toFixed(0)}%`
-    return s
-  }
-  const bar = el('div', 'tri-dexa-bar')
-  bar.append(
-    seg('is-lean', d.leanLbs, 'lean'),
-    seg('is-fat', d.fatLbs, 'fat'),
-    seg('is-bone', d.bmcLbs, 'bone'),
-  )
-  block.appendChild(bar)
+  detail.appendChild(head)
 
   const legend = el('div', 'tri-dexa-legend')
   const leg = (cls: string, name: string, lbs: number): HTMLElement => {
-    const w = el('span', 'tri-dexa-legitem')
-    w.append(
+    const item = el('span', 'tri-dexa-legitem')
+    item.append(
       el('span', `tri-dexa-dot ${cls}`),
       el('span', 'tri-dexa-legname', tl(name)),
       el('span', 'tri-dexa-legval', wFmt(lbs * KG_PER_LB, 1, 1)),
     )
-    return w
+    return item
   }
   legend.append(
     leg('is-lean', 'lean', d.leanLbs),
     leg('is-fat', 'fat', d.fatLbs),
     leg('is-bone', 'bone', d.bmcLbs),
   )
-  block.appendChild(legend)
-
-  const regions = [
-    ['arms', d.arms],
-    ['legs', d.legs],
-    ['trunk', d.trunk],
-  ] as const
-  const reg = el('div', 'tri-dexa-regions')
-  for (const [name, r] of regions) {
-    if (!r) continue
-    const rtot = r.fat + r.lean + r.bmc
-    const row = el('div', 'tri-dexa-region')
-    const rbar = el('div', 'tri-dexa-rbar')
-    const rseg = (cls: string, lbs: number): HTMLElement => {
-      const s = el('span', `tri-dexa-seg ${cls}`)
-      s.style.width = `${(lbs / rtot) * 100}%`
-      return s
-    }
-    rbar.append(rseg('is-lean', r.lean), rseg('is-fat', r.fat), rseg('is-bone', r.bmc))
-    row.append(
-      el('span', 'tri-dexa-rlabel', tl(name)),
-      rbar,
-      el(
-        'span',
-        'tri-dexa-rval',
-        `${wFmt(rtot * KG_PER_LB, 0, 0)} · ${((r.fat / rtot) * 100).toFixed(0)}% fat`,
-      ),
-    )
-    reg.appendChild(row)
-  }
-  block.appendChild(reg)
+  detail.appendChild(legend)
+  const chart = buildDexaChart(d)
+  if (chart) detail.appendChild(chart)
 
   const stats = el('div', 'tri-dexa-stats')
   const stat = (label: string, val: string): void => {
-    const c = el('div', 'tri-dexa-stat')
-    c.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', tl(label)))
-    stats.appendChild(c)
+    const item = el('div', 'tri-dexa-stat')
+    item.append(el('span', 'tri-dexa-statv', val), el('span', 'tri-dexa-statk', tl(label)))
+    stats.appendChild(item)
   }
   stat('lean', wFmt(d.leanLbs * KG_PER_LB, 1, 1))
   if (d.rmr != null) stat('rmr', `${d.rmr} kcal`)
@@ -4134,7 +4593,177 @@ const buildDexa = (data: Analytics): HTMLElement => {
   if (d.vatLbs != null) stat('vat', wFmt(d.vatLbs * KG_PER_LB, 2, 2))
   if (d.rsmi != null) stat('rsmi', d.rsmi.toFixed(1))
   if (d.ag != null) stat('a/g', d.ag.toFixed(2))
-  block.appendChild(stats)
+  detail.appendChild(stats)
+  return detail
+}
+
+const buildLabDateChevron = (): SVGElement => {
+  const icon = svg('svg', {
+    class: 'tri-lab-date-chevron',
+    viewBox: '0 0 16 16',
+    fill: 'none',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+  icon.appendChild(
+    svg('path', {
+      d: 'm4 6 4 4 4-4',
+      stroke: 'currentColor',
+      'stroke-width': '1.4',
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  )
+  return icon
+}
+
+const positionLabDateMenu = (trigger: HTMLElement, menu: HTMLElement): void => {
+  const rect = trigger.getBoundingClientRect()
+  const width = Math.min(rect.width, window.innerWidth - 16)
+  const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8))
+  const gap = 4
+  const below = rect.bottom + gap
+  const height = menu.getBoundingClientRect().height
+  const top = below + height > window.innerHeight - 8 ? Math.max(8, rect.top - height - gap) : below
+  menu.style.inlineSize = `${width}px`
+  menu.style.insetInlineStart = `${left}px`
+  menu.style.insetBlockStart = `${top}px`
+}
+
+const buildDexa = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-dexa')
+  const titleRow = el('div', 'tri-dexa-titlerow')
+  titleRow.appendChild(anaTitle('body composition', 'dexa'))
+  const dexaByDate = new Map(data.tests.dexa.map(scan => [scan.date, scan] as const))
+  const vo2ByDate = new Map(data.tests.vo2max.map(test => [test.date, test] as const))
+  const labDates = [...new Set([...dexaByDate.keys(), ...vo2ByDate.keys()])].sort((a, b) =>
+    a.localeCompare(b),
+  )
+  if (labDates.length === 0) {
+    block.appendChild(titleRow)
+    block.appendChild(el('div', 'tri-ana-empty', tl('no dexa scan logged')))
+    block.appendChild(buildVo2TestRecord())
+    return block
+  }
+
+  const datePicker = el('div', 'tri-lab-date-picker')
+  const dateTrigger = document.createElement('button')
+  dateTrigger.type = 'button'
+  dateTrigger.className = 'tri-lab-date-trigger'
+  dateTrigger.setAttribute('aria-label', tl('lab test date'))
+  dateTrigger.setAttribute('aria-haspopup', 'listbox')
+  dateTrigger.setAttribute('aria-expanded', 'false')
+  const dateValue = el('span', 'tri-lab-date-value')
+  dateTrigger.append(dateValue, buildLabDateChevron())
+
+  const dateMenu = el('div', 'tri-lab-date-menu', undefined, {
+    role: 'listbox',
+    'aria-label': tl('lab test date'),
+    popover: 'auto',
+  })
+  dateMenu.id = `tri-lab-date-menu-${Math.random().toString(36).slice(2)}`
+  dateTrigger.setAttribute('aria-controls', dateMenu.id)
+  const dateOptions: HTMLButtonElement[] = []
+  for (const [index, date] of labDates.entries()) {
+    const option = document.createElement('button')
+    option.type = 'button'
+    option.className = 'tri-lab-date-option'
+    option.dataset.index = String(index)
+    option.setAttribute('role', 'option')
+    option.setAttribute('aria-selected', 'false')
+    option.append(
+      el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
+      el('span', 'tri-lab-date-option-value', date),
+    )
+    dateOptions.push(option)
+    dateMenu.appendChild(option)
+  }
+  datePicker.append(dateTrigger, dateMenu)
+  titleRow.appendChild(datePicker)
+  block.appendChild(titleRow)
+
+  const sessions = labDates.map(date => {
+    const session = el('div', 'tri-lab-session', undefined, { 'data-lab-date': date })
+    const dexa = dexaByDate.get(date)
+    session.appendChild(
+      dexa ? buildDexaDetail(dexa) : el('div', 'tri-ana-empty', tl('no dexa scan logged')),
+    )
+    session.appendChild(buildVo2TestRecord(vo2ByDate.get(date)))
+    session.hidden = true
+    block.appendChild(session)
+    return session
+  })
+  const selectLabDate = (index: number, persist = true): void => {
+    const date = labDates[index]
+    if (!date) return
+    dateValue.textContent = date
+    for (const [optionIndex, option] of dateOptions.entries())
+      option.setAttribute('aria-selected', String(optionIndex === index))
+    for (const [sessionIndex, session] of sessions.entries())
+      session.hidden = sessionIndex !== index
+    if (persist) {
+      try {
+        localStorage.setItem(TRI_LAB_DATE_KEY, date)
+      } catch {}
+    }
+  }
+  const closeDateMenu = (restoreFocus = false): void => {
+    if (dateMenu.matches(':popover-open')) dateMenu.hidePopover()
+    if (restoreFocus) dateTrigger.focus()
+  }
+  const openDateMenu = (): void => {
+    if (dateMenu.matches(':popover-open')) return
+    dateMenu.style.visibility = 'hidden'
+    dateMenu.showPopover()
+    positionLabDateMenu(dateTrigger, dateMenu)
+    dateMenu.style.removeProperty('visibility')
+    dateOptions.find(option => option.getAttribute('aria-selected') === 'true')?.focus()
+  }
+  dateTrigger.addEventListener('click', () => {
+    if (dateMenu.matches(':popover-open')) closeDateMenu()
+    else openDateMenu()
+  })
+  dateTrigger.addEventListener('keydown', event => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    event.preventDefault()
+    openDateMenu()
+  })
+  for (const [index, option] of dateOptions.entries())
+    option.addEventListener('click', () => {
+      selectLabDate(index)
+      closeDateMenu(true)
+    })
+  dateMenu.addEventListener('toggle', () => {
+    dateTrigger.setAttribute('aria-expanded', String(dateMenu.matches(':popover-open')))
+  })
+  dateMenu.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      closeDateMenu(true)
+      return
+    }
+    const activeIndex = dateOptions.findIndex(option => option === document.activeElement)
+    const targetIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? dateOptions.length - 1
+          : event.key === 'ArrowDown'
+            ? Math.min(dateOptions.length - 1, activeIndex + 1)
+            : event.key === 'ArrowUp'
+              ? Math.max(0, activeIndex - 1)
+              : -1
+    if (targetIndex < 0) return
+    event.preventDefault()
+    dateOptions[targetIndex]?.focus()
+  })
+  let initialIndex = labDates.length - 1
+  try {
+    const storedDate = localStorage.getItem(TRI_LAB_DATE_KEY)
+    const storedIndex = labDates.findIndex(date => date === storedDate)
+    if (storedIndex >= 0) initialIndex = storedIndex
+  } catch {}
+  selectLabDate(initialIndex, false)
   return block
 }
 
@@ -4703,13 +5332,11 @@ const appendVo2TestCap = (block: HTMLElement, r: Vo2LabRecord): void => {
   block.appendChild(cap)
 }
 
-const buildVo2test = (data: Analytics): HTMLElement => {
+function buildVo2TestRecord(r?: Vo2LabRecord): HTMLElement {
   const block = el('div', 'tri-vo2t')
   const titleRow = el('div', 'tri-vo2t-titlerow')
   titleRow.appendChild(anaTitle('vo2 test profile', 'vo2test'))
-  const r = data.tests.vo2max[data.tests.vo2max.length - 1]
   if (r?.profile) {
-    titleRow.appendChild(el('span', 'tri-vo2t-date', r.date))
     block.appendChild(titleRow)
     block.appendChild(buildVo2Profile(r.profile))
     appendVo2TestCap(block, r)
@@ -4723,7 +5350,6 @@ const buildVo2test = (data: Analytics): HTMLElement => {
     block.appendChild(el('div', 'tri-ana-empty', tl('no vo2 test logged')))
     return block
   }
-  titleRow.appendChild(el('span', 'tri-vo2t-date', r.date))
   block.appendChild(titleRow)
 
   const maxHr = r.hrAtVo2max ?? r.hrMax ?? anchors[anchors.length - 1].hr
@@ -5686,7 +6312,6 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   recovery: buildRecoveryChart,
   sleep: buildSleep,
   vo2max: buildVo2max,
-  vo2test: buildVo2test,
   abilities: buildAbilities,
   cardio: buildCardio,
   pmc: buildPmc,
@@ -5826,18 +6451,14 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     let detailAnimation: Animation | null = null
     const show = (i: number): void => {
       if (i === shown) return
-      const direction = Math.sign(i - shown)
       shown = i
       detailAnimation?.cancel()
       renderWkDetail(block, data, kind, i)
       if (reduce) return
-      detailAnimation = detail.animate(
-        [
-          { opacity: 0.45, transform: `translateX(${direction * 6}px)` },
-          { opacity: 1, transform: 'none' },
-        ],
-        { duration: 160, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-      )
+      detailAnimation = detail.animate([{ opacity: 0.35 }, { opacity: 1 }], {
+        duration: 140,
+        easing: 'ease-out',
+      })
     }
     const onMove = (event: MouseEvent): void => {
       const i = idxAt(event)
@@ -5977,6 +6598,106 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     cleanups.push(() => {
       bodyPlot.removeEventListener('mousemove', onMove)
       bodyPlot.removeEventListener('mouseleave', onLeave)
+    })
+  }
+
+  const dexaColumns = Array.from(panel.querySelectorAll<HTMLElement>('.tri-dexa-column'))
+  if (dexaColumns.length > 0) {
+    document.body.querySelector('.tri-dexa-tip')?.remove()
+    const tip = el('div', 'tri-gloss tri-dexa-tip')
+    tip.setAttribute('role', 'tooltip')
+    document.body.appendChild(tip)
+    const show = (column: HTMLElement): void => {
+      const head = el('span', 'tri-dexa-tip-head')
+      head.append(
+        el('span', 'tri-gloss-h', column.dataset.dexaRegion ?? ''),
+        el('span', 'tri-dexa-tip-total', column.dataset.dexaTotal ?? ''),
+      )
+      const rows = [
+        ['lean', 'is-lean', column.dataset.dexaLean, column.dataset.dexaLeanPct],
+        ['fat', 'is-fat', column.dataset.dexaFat, column.dataset.dexaFatPct],
+        ['bone', 'is-bone', column.dataset.dexaBone, column.dataset.dexaBonePct],
+      ] as const
+      tip.replaceChildren(
+        head,
+        ...rows.map(([label, cls, value, pct]) => {
+          const row = el('span', 'tri-dexa-tip-row')
+          row.append(
+            el('span', `tri-dexa-dot ${cls}`, undefined, { 'aria-hidden': 'true' }),
+            el('span', 'tri-dexa-tip-label', tl(label)),
+            el('span', 'tri-dexa-tip-value', value ?? ''),
+            el('span', 'tri-dexa-tip-pct', pct ?? ''),
+          )
+          return row
+        }),
+      )
+      tip.classList.add('tri-gloss--on')
+    }
+    const placeAtPointer = (event: MouseEvent): void => {
+      const rect = tip.getBoundingClientRect()
+      const left =
+        event.clientX + 14 + rect.width > window.innerWidth - 8
+          ? event.clientX - 14 - rect.width
+          : event.clientX + 14
+      const top =
+        event.clientY + 14 + rect.height > window.innerHeight - 8
+          ? event.clientY - 14 - rect.height
+          : event.clientY + 14
+      tip.style.left = `${Math.max(8, left).toFixed(0)}px`
+      tip.style.top = `${Math.max(8, top).toFixed(0)}px`
+    }
+    const placeAtColumn = (column: HTMLElement): void => {
+      const columnRect = column.getBoundingClientRect()
+      const tipRect = tip.getBoundingClientRect()
+      const left = clampN(
+        columnRect.left + columnRect.width / 2 - tipRect.width / 2,
+        8,
+        window.innerWidth - tipRect.width - 8,
+      )
+      const above = columnRect.top - tipRect.height - 8
+      const top = above >= 8 ? above : columnRect.bottom + 8
+      tip.style.left = `${left.toFixed(0)}px`
+      tip.style.top = `${Math.min(top, window.innerHeight - tipRect.height - 8).toFixed(0)}px`
+    }
+    const bound: Array<{
+      column: HTMLElement
+      enter: (event: MouseEvent) => void
+      move: (event: MouseEvent) => void
+      leave: () => void
+      focus: () => void
+      blur: () => void
+    }> = []
+    for (const column of dexaColumns) {
+      const enter = (event: MouseEvent): void => {
+        show(column)
+        placeAtPointer(event)
+      }
+      const move = (event: MouseEvent): void => placeAtPointer(event)
+      const leave = (): void => {
+        if (!column.matches(':focus-visible')) tip.classList.remove('tri-gloss--on')
+      }
+      const focus = (): void => {
+        if (!column.matches(':focus-visible')) return
+        show(column)
+        placeAtColumn(column)
+      }
+      const blur = (): void => tip.classList.remove('tri-gloss--on')
+      column.addEventListener('mouseenter', enter)
+      column.addEventListener('mousemove', move)
+      column.addEventListener('mouseleave', leave)
+      column.addEventListener('focus', focus)
+      column.addEventListener('blur', blur)
+      bound.push({ column, enter, move, leave, focus, blur })
+    }
+    cleanups.push(() => {
+      for (const { column, enter, move, leave, focus, blur } of bound) {
+        column.removeEventListener('mouseenter', enter)
+        column.removeEventListener('mousemove', move)
+        column.removeEventListener('mouseleave', leave)
+        column.removeEventListener('focus', focus)
+        column.removeEventListener('blur', blur)
+      }
+      tip.remove()
     })
   }
 
@@ -6136,8 +6857,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     })
   }
 
-  const vo2t = panel.querySelector<HTMLElement>('.tri-vo2t')
-  if (vo2t) {
+  const vo2Tests = Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2t'))
+  if (vo2Tests.length > 0) {
     document.body.querySelector('.tri-vo2t-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2t-tip')
     tip.setAttribute('role', 'tooltip')
@@ -6156,7 +6877,9 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
     }
     const bound: Array<[HTMLElement, (e: MouseEvent) => void, () => void]> = []
-    for (const t of Array.from(vo2t.querySelectorAll<HTMLElement>('[data-tip-h]'))) {
+    for (const t of vo2Tests.flatMap(test =>
+      Array.from(test.querySelectorAll<HTMLElement>('[data-tip-h]')),
+    )) {
       const move = (e: MouseEvent): void => {
         tip.replaceChildren(
           el('span', 'tri-gloss-h', t.dataset.tipH ?? ''),
@@ -6179,8 +6902,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     })
   }
 
-  const vo2p = panel.querySelector<HTMLElement>('.tri-vo2p')
-  if (vo2p) {
+  const vo2Profiles = Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2p'))
+  if (vo2Profiles.length > 0) {
     document.body.querySelector('.tri-vo2p-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2p-tip')
     tip.setAttribute('role', 'tooltip')
@@ -6199,7 +6922,9 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
     }
     const bound: Array<[SVGElement, (e: MouseEvent) => void, () => void]> = []
-    for (const t of Array.from(vo2p.querySelectorAll<SVGElement>('[data-tip-h]'))) {
+    for (const t of vo2Profiles.flatMap(profile =>
+      Array.from(profile.querySelectorAll<SVGElement>('[data-tip-h]')),
+    )) {
       const move = (e: MouseEvent): void => {
         tip.replaceChildren(
           el('span', 'tri-gloss-h', t.getAttribute('data-tip-h') ?? ''),

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-16 09:04:55 GMT-04:00
+modified: 2026-07-16 21:55:33 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -6714,6 +6714,12 @@ title: are.na
   - view: list
   - json: true
 
+- https://thinkingmachines.ai/news/introducing-inkling/ -- Introducing Inkling [**]
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [models, architecture]
+    - importance: 8
+    - pinned: true
 - https://www.lesswrong.com/posts/ptY6X3BdW4kgqpZFo/using-gpt-4-to-understand-code -- Using GPT-4 to Understand Code
   - [meta]:
     - date: 07/16/2026
@@ -14098,6 +14104,16 @@ title: are.na
 
 ## resources
 
+- https://flf.shop/ -- From Lab to Field
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [gels, enhancement]
+- https://www.exolactate.com/ -- ExoLactate
+  - [meta]:
+    - date: 07/16/2026
+    - tags: [gels, enhancement]
+    - pinned: true
+    - importance: 8
 - https://archive.is/uSDrR -- archive.is snapshot
   - [meta]:
     - date: 07/08/2026

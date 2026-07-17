@@ -1749,7 +1749,7 @@ function buildActions(
       actions.push({
         text: `hold ${item.sport} volume`,
         sourceMetric: `${item.sport} ctl`,
-        value: String(round(ctlBySport[item.sport], 1)),
+        value: `${round(ctlBySport[item.sport], 1)} ctl`,
       })
     }
   }

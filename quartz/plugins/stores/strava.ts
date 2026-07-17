@@ -90,6 +90,33 @@ export interface RawStravaActivity {
   calories?: number
 }
 
+export interface RawStravaAnalysisRange {
+  id: string
+  name: string
+  elapsedTime: number
+  movingTime: number
+  startDate: string | null
+  distance: number
+  startIndex: number | null
+  endIndex: number | null
+  totalElevationGain: number | null
+  averageSpeed: number | null
+  averageHeartrate: number | null
+  averageWatts: number | null
+  averageCadence: number | null
+}
+
+export interface RawStravaActivityDetail {
+  calories: number | null
+  laps: RawStravaAnalysisRange[]
+  segmentEfforts: RawStravaAnalysisRange[]
+}
+
+export const hasFetchedActivityDetail = (
+  detail: RawStravaActivityDetail | undefined,
+): detail is RawStravaActivityDetail =>
+  detail !== undefined && Array.isArray(detail.laps) && Array.isArray(detail.segmentEfforts)
+
 export interface StravaStreams {
   time?: number[]
   latlng: [number, number][]
@@ -113,6 +140,7 @@ export interface StravaRawCache {
   lastSync: number
   lastActivityStart: number
   activities: Record<string, RawStravaActivity>
+  activityDetails?: Record<string, RawStravaActivityDetail>
   streams?: Record<string, StravaStreams>
   geo?: Record<string, string>
   zones?: StravaZones
@@ -194,11 +222,32 @@ export interface StravaRoutePoint {
   tempC: number | null
   lat: number
   lng: number
+  elapsedS: number
+  speedKph: number
 }
 
 export interface StravaMapPoint {
   lat: number
   lng: number
+}
+
+export type ActivityAnalysisKind = 'lap' | 'segment' | 'climb'
+
+export interface ActivityAnalysisRange {
+  kind: ActivityAnalysisKind
+  id: string
+  label: string
+  startElapsedS: number
+  endElapsedS: number
+  startDistanceKm: number
+  endDistanceKm: number
+  durationS: number
+  distanceKm: number
+  elevationGainM: number | null
+  averageSpeedKph: number | null
+  averageHeartRate: number | null
+  averageWatts: number | null
+  averageCadence: number | null
 }
 
 export type ActivityHealth = Omit<OuraDaily, 'date'> & {
@@ -284,6 +333,7 @@ export interface StravaActivityDetail {
   garmin: GarminVerification | null
   route: StravaRoutePoint[]
   mapRoute?: StravaMapPoint[]
+  analysisRanges: ActivityAnalysisRange[]
   minAlt: number
   maxAlt: number
   descentM: number
@@ -444,6 +494,21 @@ function sampleIndices(lo: number, hi: number, maxPoints: number): number[] {
   for (let i = lo; i <= hi; i += stride) idx.push(i)
   if (idx[idx.length - 1] !== hi) idx.push(hi)
   return idx
+}
+
+function sampleIndicesWithRequired(
+  lo: number,
+  hi: number,
+  maxPoints: number,
+  required: number[],
+): number[] {
+  if (hi < lo) return []
+  const anchors = [
+    ...new Set([lo, hi, ...required.filter(index => index >= lo && index <= hi)]),
+  ].sort((a, b) => a - b)
+  if (anchors.length >= maxPoints) return anchors
+  const regular = sampleIndices(lo, hi, Math.max(2, maxPoints - anchors.length))
+  return [...new Set([...regular, ...anchors])].sort((a, b) => a - b)
 }
 
 function sampledMapRoute(latlng: [number, number][], lo: number, hi: number): StravaMapPoint[] {
@@ -1001,6 +1066,237 @@ function temperatureAt(samples: WeatherTemperatureSample[], elapsedS: number): n
   return samples[samples.length - 1].temperatureC
 }
 
+interface TimedStreamAlignment {
+  streams: StravaStreams
+  time: number[]
+  distance: number[]
+}
+
+interface ProjectedAnalysis {
+  ranges: ActivityAnalysisRange[]
+  boundaryIndices: number[]
+}
+
+function timedStreamAlignment(
+  streams: StravaStreams | GarminStreams | undefined,
+): TimedStreamAlignment | null {
+  if (!streams || !('time' in streams) || !streams.time) return null
+  const { time, distance } = streams
+  if (time.length < 2 || distance.length !== time.length) return null
+  let previousTime = -Infinity
+  let previousDistance = 0
+  const alignedDistance: number[] = []
+  for (let index = 0; index < time.length; index++) {
+    const elapsedS = time[index]
+    const distanceM = distance[index]
+    if (!Number.isFinite(elapsedS) || elapsedS < previousTime || !Number.isFinite(distanceM))
+      return null
+    previousTime = elapsedS
+    previousDistance = Math.max(previousDistance, distanceM)
+    alignedDistance.push(previousDistance)
+  }
+  return { streams, time, distance: alignedDistance }
+}
+
+function nearestElapsedIndex(time: number[], elapsedS: number): number {
+  let lo = 0
+  let hi = time.length - 1
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2)
+    if (time[mid] < elapsedS) lo = mid + 1
+    else hi = mid
+  }
+  if (lo === 0) return 0
+  return Math.abs(time[lo] - elapsedS) < Math.abs(time[lo - 1] - elapsedS) ? lo : lo - 1
+}
+
+function validStreamIndex(value: number | null, length: number): value is number {
+  return value != null && Number.isInteger(value) && value >= 0 && value < length
+}
+
+function rangeIndices(
+  raw: RawStravaAnalysisRange,
+  alignment: TimedStreamAlignment,
+  activityStartMs: number,
+  fallbackStartElapsedS: number | null,
+): [number, number] | null {
+  if (
+    validStreamIndex(raw.startIndex, alignment.time.length) &&
+    validStreamIndex(raw.endIndex, alignment.time.length) &&
+    raw.endIndex >= raw.startIndex
+  )
+    return [raw.startIndex, raw.endIndex]
+
+  const startMs = raw.startDate ? Date.parse(raw.startDate) : NaN
+  const startElapsedS = Number.isFinite(startMs)
+    ? (startMs - activityStartMs) / 1000
+    : fallbackStartElapsedS
+  if (startElapsedS == null || !Number.isFinite(startElapsedS)) return null
+  const endElapsedS = startElapsedS + raw.elapsedTime
+  return [
+    nearestElapsedIndex(alignment.time, startElapsedS),
+    nearestElapsedIndex(alignment.time, endElapsedS),
+  ]
+}
+
+function nullableRound(value: number | null, dp = 1): number | null {
+  return value == null || !Number.isFinite(value) ? null : round(value, dp)
+}
+
+function projectStravaAnalysisRange(
+  kind: 'lap' | 'segment',
+  raw: RawStravaAnalysisRange,
+  index: number,
+  bounds: [number, number],
+  alignment: TimedStreamAlignment,
+): ActivityAnalysisRange {
+  const [startIndex, endIndex] = bounds
+  return {
+    kind,
+    id: `${kind}:${raw.id}`,
+    label: raw.name || `${kind === 'lap' ? 'Lap' : 'Segment'} ${index + 1}`,
+    startElapsedS: round(alignment.time[startIndex], 3),
+    endElapsedS: round(alignment.time[endIndex], 3),
+    startDistanceKm: round(alignment.distance[startIndex] / 1000, 3),
+    endDistanceKm: round(alignment.distance[endIndex] / 1000, 3),
+    durationS: raw.elapsedTime,
+    distanceKm: round(raw.distance / 1000, 3),
+    elevationGainM: nullableRound(raw.totalElevationGain),
+    averageSpeedKph: nullableRound(raw.averageSpeed == null ? null : raw.averageSpeed * 3.6, 2),
+    averageHeartRate: nullableRound(raw.averageHeartrate),
+    averageWatts: nullableRound(raw.averageWatts),
+    averageCadence: nullableRound(raw.averageCadence),
+  }
+}
+
+function projectAnalysisRanges(
+  a: RawStravaActivity,
+  detail: RawStravaActivityDetail | undefined,
+  streams: StravaStreams | GarminStreams | undefined,
+  climbs: GarminClimbSegment[],
+): ProjectedAnalysis {
+  const alignment = timedStreamAlignment(streams)
+  if (!alignment) return { ranges: [], boundaryIndices: [] }
+  const activityStartMs = Date.parse(a.startDate)
+  if (!Number.isFinite(activityStartMs)) return { ranges: [], boundaryIndices: [] }
+  const ranges: ActivityAnalysisRange[] = []
+  const boundaryIndices: number[] = []
+  let lapElapsedS = 0
+
+  for (const [index, raw] of (detail?.laps ?? []).entries()) {
+    const bounds = rangeIndices(raw, alignment, activityStartMs, lapElapsedS)
+    lapElapsedS += raw.elapsedTime
+    if (!bounds || bounds[1] < bounds[0]) continue
+    ranges.push(projectStravaAnalysisRange('lap', raw, index, bounds, alignment))
+    boundaryIndices.push(...bounds)
+  }
+  for (const [index, raw] of (detail?.segmentEfforts ?? []).entries()) {
+    const bounds = rangeIndices(raw, alignment, activityStartMs, null)
+    if (!bounds || bounds[1] < bounds[0]) continue
+    ranges.push(projectStravaAnalysisRange('segment', raw, index, bounds, alignment))
+    boundaryIndices.push(...bounds)
+  }
+
+  const activityEndElapsedS = alignment.time[alignment.time.length - 1]
+  for (const [index, climb] of climbs.entries()) {
+    const startMs = Date.parse(climb.startDate)
+    const endMs = Date.parse(climb.endDate)
+    if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs <= startMs) continue
+    const unclampedStartS = (startMs - activityStartMs) / 1000
+    const unclampedEndS = (endMs - activityStartMs) / 1000
+    if (unclampedEndS < 0 || unclampedStartS > activityEndElapsedS) continue
+    const startIndex = nearestElapsedIndex(
+      alignment.time,
+      Math.max(0, Math.min(activityEndElapsedS, unclampedStartS)),
+    )
+    const endIndex = nearestElapsedIndex(
+      alignment.time,
+      Math.max(0, Math.min(activityEndElapsedS, unclampedEndS)),
+    )
+    if (endIndex < startIndex) continue
+    ranges.push({
+      kind: 'climb',
+      id: `climb:${index + 1}:${climb.startDate}`,
+      label: `Climb ${index + 1}`,
+      startElapsedS: round(alignment.time[startIndex], 3),
+      endElapsedS: round(alignment.time[endIndex], 3),
+      startDistanceKm: round(alignment.distance[startIndex] / 1000, 3),
+      endDistanceKm: round(alignment.distance[endIndex] / 1000, 3),
+      durationS: climb.durationS,
+      distanceKm: round(climb.distanceM / 1000, 3),
+      elevationGainM: nullableRound(climb.elevationGainM),
+      averageSpeedKph: nullableRound(climb.avgSpeedMps == null ? null : climb.avgSpeedMps * 3.6, 2),
+      averageHeartRate: nullableRound(climb.avgHeartRate),
+      averageWatts: nullableRound(climb.avgPower),
+      averageCadence: nullableRound(climb.avgCadence),
+    })
+    boundaryIndices.push(startIndex, endIndex)
+  }
+
+  const order: Record<ActivityAnalysisKind, number> = { lap: 0, segment: 1, climb: 2 }
+  ranges.sort(
+    (left, right) =>
+      left.startElapsedS - right.startElapsedS ||
+      order[left.kind] - order[right.kind] ||
+      left.id.localeCompare(right.id),
+  )
+  return { ranges, boundaryIndices }
+}
+
+function routeElapsedSeconds(
+  streams: StravaStreams | GarminStreams,
+  movingTimeS: number,
+): number[] | null {
+  const timed = timedStreamAlignment(streams)
+  if (timed && timed.time.length === streams.latlng.length) return timed.time
+  if (
+    streams.latlng.length >= 2 &&
+    Math.abs(streams.latlng.length - movingTimeS) / Math.max(1, movingTimeS) <= 0.15
+  )
+    return Array.from({ length: streams.latlng.length }, (_, index) => index)
+  return null
+}
+
+function localSpeedKph(time: number[], distance: number[]): number[] {
+  const speedKph = Array.from({ length: time.length }, () => 0)
+  const monotonicDistance: number[] = []
+  let previousDistance = 0
+  for (const value of distance) {
+    previousDistance = Math.max(previousDistance, Number.isFinite(value) ? value : 0)
+    monotonicDistance.push(previousDistance)
+  }
+  let windowStart = 0
+  let previousMps = 0
+  for (let index = 1; index < time.length; index++) {
+    while (windowStart + 1 < index && time[index] - time[windowStart] > MAX_SPEED_WINDOW_S)
+      windowStart++
+    const elapsedS = time[index] - time[windowStart]
+    const distanceM = monotonicDistance[index] - monotonicDistance[windowStart]
+    const rawMps = elapsedS > 0 && distanceM > 0 ? distanceM / elapsedS : 0
+    const sampleElapsedS = Math.max(0, Math.min(1, time[index] - time[index - 1]))
+    previousMps = Math.min(rawMps, previousMps + MAX_ACCEL_MPS2 * sampleElapsedS)
+    speedKph[index] = round(previousMps * 3.6, 1)
+  }
+  return speedKph
+}
+
+function privateRouteBounds(
+  latlng: [number, number][],
+  home: [number, number] | null,
+): [number, number] {
+  let lo = 0
+  let hi = latlng.length - 1
+  if (home) {
+    while (
+      lo < latlng.length &&
+      haversineMeters(latlng[lo][0], latlng[lo][1], home[0], home[1]) <= 200
+    )
+      lo++
+    while (hi > lo && haversineMeters(latlng[hi][0], latlng[hi][1], home[0], home[1]) <= 200) hi--
+  }
+  return hi - lo >= 1 ? [lo, hi] : [0, latlng.length - 1]
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
@@ -1012,6 +1308,7 @@ function projectDetail(
   fueling: GarminFueling | null,
   garmin: GarminVerification | null,
   weight: ActivityWeight | null,
+  rawDetail: RawStravaActivityDetail | undefined,
   climbs: GarminClimbSegment[],
   hrBounds: number[],
   powerBounds: number[],
@@ -1020,22 +1317,37 @@ function projectDetail(
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   const mapRoute: StravaMapPoint[] = []
+  const analysis = projectAnalysisRanges(a, rawDetail, effortStreams, climbs)
   let minAlt = 0
   let maxAlt = 0
   let ascentM = 0
   let descentM = 0
-  const latlng = streams?.latlng ?? []
-  const alignedHrStream = streams?.heartrate ?? []
-  const routeHrStream =
-    heartRate.stream.length === latlng.length ? heartRate.stream : alignedHrStream
-  const cadStream = streams?.cadence ?? []
-  const timeStream = streams && 'time' in streams ? (streams.time ?? []) : []
   const temperatureSeries = weather?.temperatureSeries ?? []
   const fallbackTemperatureC = weather?.temperatureC ?? a.averageTemp ?? null
-  if (latlng.length >= 2) {
-    const altitude = cleanAltitude(streams!.altitude)
-    const distance = streams!.distance
-    const watts = streams!.watts ?? []
+  const mapLatlng = streams?.latlng ?? []
+  if (mapLatlng.length >= 2) {
+    const [mapLo, mapHi] = privateRouteBounds(mapLatlng, home)
+    mapRoute.push(...sampledMapRoute(mapLatlng, mapLo, mapHi))
+  }
+  const timedEffort = timedStreamAlignment(effortStreams)
+  const routeStreams =
+    timedEffort && timedEffort.streams.latlng.length === timedEffort.time.length
+      ? timedEffort.streams
+      : streams
+  const routeTime = routeStreams ? routeElapsedSeconds(routeStreams, a.movingTime) : null
+  const latlng = routeTime ? (routeStreams?.latlng ?? []) : []
+  const cadStream = routeStreams?.cadence ?? []
+  if (routeStreams && routeTime && latlng.length >= 2) {
+    const altitude = cleanAltitude(routeStreams.altitude)
+    const distance: number[] = []
+    let previousDistance = 0
+    for (const value of routeStreams.distance) {
+      previousDistance = Math.max(previousDistance, Number.isFinite(value) ? value : 0)
+      distance.push(previousDistance)
+    }
+    const watts = routeStreams.watts ?? []
+    const routeHrStream = routeStreams.heartrate ?? []
+    const speedKph = localSpeedKph(routeTime, distance)
     let ascent = 0
     let descent = 0
     for (let i = 1; i < altitude.length; i++) {
@@ -1045,22 +1357,9 @@ function projectDetail(
     }
     ascentM = Math.round(ascent)
     descentM = Math.round(descent)
-    const n = latlng.length
-    let lo0 = 0
-    let hi0 = n - 1
-    if (home) {
-      while (lo0 < n && haversineMeters(latlng[lo0][0], latlng[lo0][1], home[0], home[1]) <= 200)
-        lo0++
-      while (hi0 > lo0 && haversineMeters(latlng[hi0][0], latlng[hi0][1], home[0], home[1]) <= 200)
-        hi0--
-    }
-    if (hi0 - lo0 < 1) {
-      lo0 = 0
-      hi0 = n - 1
-    }
-    const idx = sampleIndices(lo0, hi0, ROUTE_POINTS)
-    mapRoute.push(...sampledMapRoute(latlng, lo0, hi0))
-    const d0 = distance[lo0] ?? 0
+    const [lo0, hi0] = privateRouteBounds(latlng, home)
+    const requiredIndices = routeStreams === effortStreams ? analysis.boundaryIndices : []
+    const idx = sampleIndicesWithRequired(lo0, hi0, ROUTE_POINTS, requiredIndices)
     let sumLat = 0
     let sumLng = 0
     for (const i of idx) {
@@ -1083,14 +1382,12 @@ function projectDetail(
     minAlt = round(Math.min(...alts), 1)
     maxAlt = round(Math.max(...alts), 1)
     idx.forEach((i, k) => {
-      const elapsedS =
-        timeStream[i] ??
-        ((i - lo0) / Math.max(1, hi0 - lo0)) * Math.max(a.elapsedTime, a.movingTime)
+      const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
-        d: round(((distance[i] ?? 0) - d0) / 1000, 3),
+        d: round((distance[i] ?? 0) / 1000, 3),
         alt: round(alts[k], 1),
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(routeHrStream[i] ?? 0),
@@ -1098,6 +1395,8 @@ function projectDetail(
         tempC: temperatureC == null ? null : round(temperatureC, 1),
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
+        elapsedS: round(elapsedS, 3),
+        speedKph: speedKph[i] ?? 0,
       })
     })
   }
@@ -1130,7 +1429,12 @@ function projectDetail(
     deviceWatts: a.deviceWatts === true,
     avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
-    calories: a.calories ? Math.round(a.calories) : (garmin?.totalCalories ?? null),
+    calories:
+      a.calories != null
+        ? Math.round(a.calories)
+        : rawDetail?.calories != null
+          ? Math.round(rawDetail.calories)
+          : (garmin?.totalCalories ?? null),
     avgTemp:
       weather?.temperatureC != null
         ? Math.round(weather.temperatureC)
@@ -1146,6 +1450,7 @@ function projectDetail(
     garmin,
     route,
     mapRoute,
+    analysisRanges: analysis.ranges,
     minAlt,
     maxAlt,
     descentM,
@@ -1372,6 +1677,7 @@ export function buildPayload(
       matchGarminFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
       activityWeight(garmin, a),
+      cache.activityDetails?.[id],
       garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],
       hrBounds,
       powerBounds,
