@@ -3,11 +3,18 @@ import test from 'node:test'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
 import {
   buildPayload,
+  hasFetchedActivityDetail,
   type RawStravaActivity,
+  type RawStravaAnalysisRange,
   type StravaRawCache,
   type StravaStreams,
 } from './strava'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
+
+test('treats cached empty analysis arrays as a fetched activity detail', () => {
+  assert.equal(hasFetchedActivityDetail(undefined), false)
+  assert.equal(hasFetchedActivityDetail({ calories: null, laps: [], segmentEfforts: [] }), true)
+})
 
 function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
   return {
@@ -36,9 +43,12 @@ test('emits dense map geometry separately from compact telemetry route', () => {
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
-    activities: { 101: ride({ averageTemp: 21 }) },
+    activities: {
+      101: ride({ averageTemp: 21, movingTime: latlng.length - 1, elapsedTime: latlng.length }),
+    },
     streams: {
       101: {
+        time: Array.from({ length: latlng.length }, (_, i) => i),
         latlng,
         altitude: Array.from({ length: latlng.length }, (_, i) => 80 + i / 100),
         distance: Array.from({ length: latlng.length }, (_, i) => i * 61.4),
@@ -56,6 +66,8 @@ test('emits dense map geometry separately from compact telemetry route', () => {
   assert.deepEqual(detail.mapRoute?.[0], { lat: 43, lng: -79 })
   assert.deepEqual(detail.mapRoute?.at(-1), { lat: 43.00999, lng: -79.01998 })
   assert.ok(detail.route.every(point => point.tempC === 21))
+  assert.ok(detail.route.every(point => Number.isFinite(point.elapsedS)))
+  assert.ok(detail.route.every(point => Number.isFinite(point.speedKph)))
 })
 
 function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {
@@ -108,6 +120,126 @@ test('rejects GPS teleports when deriving max speed', () => {
   const cache = timedRideCache(i => glitch.get(i) ?? 8)
   const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
   assert.equal(detail.maxSpeedKph, 30)
+})
+
+function analysisRange(
+  id: string,
+  name: string,
+  overrides: Partial<RawStravaAnalysisRange> = {},
+): RawStravaAnalysisRange {
+  return {
+    id,
+    name,
+    elapsedTime: 10,
+    movingTime: 10,
+    startDate: null,
+    distance: 1_234,
+    startIndex: null,
+    endIndex: null,
+    totalElevationGain: null,
+    averageSpeed: null,
+    averageHeartrate: null,
+    averageWatts: null,
+    averageCadence: null,
+    ...overrides,
+  }
+}
+
+test('emits exact elapsed time and bounded local speed at forced analysis boundaries', () => {
+  const points = 201
+  const time = Array.from({ length: points }, (_, index) => index + (index >= 50 ? 10 : 0))
+  const distance = [0]
+  for (let index = 1; index < points; index++) {
+    const increment = index >= 40 && index <= 50 ? 0 : index === 100 ? 1_000 : 5
+    distance.push(distance[index - 1] + increment)
+  }
+  const activity = ride({
+    distance: distance.at(-1) ?? 0,
+    movingTime: points - 1,
+    elapsedTime: time.at(-1) ?? points - 1,
+  })
+  const cache: StravaRawCache = {
+    version: 3,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    activityDetails: {
+      101: {
+        calories: 500,
+        laps: [
+          analysisRange('lap-2', 'Lap 2', {
+            elapsedTime: 20,
+            startIndex: 45,
+            endIndex: 55,
+            totalElevationGain: 12.5,
+            averageSpeed: 8,
+            averageHeartrate: 151.2,
+            averageWatts: 244.8,
+            averageCadence: 89.4,
+          }),
+        ],
+        segmentEfforts: [
+          analysisRange('segment-9', 'Boardwalk east', { startDate: '2026-06-07T11:31:45Z' }),
+        ],
+      },
+    },
+    streams: {
+      101: {
+        time,
+        latlng: Array.from({ length: points }, (_, index) => [
+          43 + index * 0.00001,
+          -79 - index * 0.00001,
+        ]),
+        altitude: Array.from({ length: points }, () => 80),
+        distance,
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  const paused = detail.route.find(point => point.elapsedS === 45)
+  const teleport = detail.route.find(point => point.elapsedS === 110)
+  assert.ok(paused)
+  assert.ok(teleport)
+  assert.equal(paused.speedKph, 0)
+  assert.equal(teleport.speedKph, 28.8)
+  assert.equal(paused.d, 0.195)
+  assert.deepEqual(detail.analysisRanges, [
+    {
+      kind: 'lap',
+      id: 'lap:lap-2',
+      label: 'Lap 2',
+      startElapsedS: 45,
+      endElapsedS: 65,
+      startDistanceKm: 0.195,
+      endDistanceKm: 0.22,
+      durationS: 20,
+      distanceKm: 1.234,
+      elevationGainM: 12.5,
+      averageSpeedKph: 28.8,
+      averageHeartRate: 151.2,
+      averageWatts: 244.8,
+      averageCadence: 89.4,
+    },
+    {
+      kind: 'segment',
+      id: 'segment:segment-9',
+      label: 'Boardwalk east',
+      startElapsedS: 110,
+      endElapsedS: 120,
+      startDistanceKm: 1.44,
+      endDistanceKm: 1.49,
+      durationS: 10,
+      distanceKm: 1.234,
+      elevationGainM: null,
+      averageSpeedKph: null,
+      averageHeartRate: null,
+      averageWatts: null,
+      averageCadence: null,
+    },
+  ])
 })
 
 test('keeps dense map route continuous across GPS jumps', () => {
@@ -525,6 +657,24 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
   const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
   const efforts = detail.bestEfforts
   assert.ok(efforts)
+  assert.deepEqual(detail.analysisRanges, [
+    {
+      kind: 'climb',
+      id: 'climb:1:2026-06-07T12:00:02.000Z',
+      label: 'Climb 1',
+      startElapsedS: 2,
+      endElapsedS: 12,
+      startDistanceKm: 2,
+      endDistanceKm: 7,
+      durationS: 10,
+      distanceKm: 0.5,
+      elevationGainM: 25,
+      averageSpeedKph: 18,
+      averageHeartRate: 150,
+      averageWatts: 225,
+      averageCadence: 80,
+    },
+  ])
   assert.equal(efforts.weightKg, 75)
   assert.equal(efforts.weightDate, '2026-06-07')
   assert.equal(efforts.distance.find(effort => effort.label === '10K')?.elapsedTimeS, 14)
@@ -555,6 +705,17 @@ test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments',
     Array.from({ length: 15 }, (_, index) => index + 1),
   )
   assert.equal(detail.powerCurve?.find(point => point.s === 15)?.w, 126)
+
+  const baseClimb = garmin.climbs?.edge[0]
+  assert.ok(baseClimb)
+  const clippedClimb = buildPayload(
+    cache,
+    null,
+    { ...garmin, climbs: { edge: [{ ...baseClimb, endDate: '2026-06-07T12:19:35.000Z' }] } },
+    '2026-06-01',
+  ).details['101'].analysisRanges[0]
+  assert.equal(clippedClimb.startElapsedS, 2)
+  assert.equal(clippedClimb.endElapsedS, 14)
 
   const climbOnly = buildPayload({ ...cache, streams: {} }, null, garmin, '2026-06-01').details[
     '101'

@@ -175,6 +175,16 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(day?.tempDevC, 0.1)
 })
 
+test('volume improvement actions include CTL units', () => {
+  const { cache, oura, weights } = fixtures()
+  cache.activities['1'].distance = 40_000
+  cache.activities['2'].distance = 10_000
+  const actions = buildAnalytics(cache, { oura, weights, since: '2026-05-12' }).actions
+  assert.equal(actions.length, 3)
+  assert.ok(actions.every(action => action.sourceMetric.endsWith(' ctl')))
+  assert.ok(actions.every(action => /^\d+(?:\.\d)? ctl$/.test(action.value)))
+})
+
 test('heat block combines WeatherKit and Strava exposure, excludes swims, and decays after three days', () => {
   const streamCache: Record<string, StravaStreams> = {}
   const cache: StravaRawCache = {

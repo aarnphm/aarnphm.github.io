@@ -1,8 +1,11 @@
 import fs from 'node:fs/promises'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import {
+  hasFetchedActivityDetail,
   normalizeKind,
   RawStravaActivity,
+  RawStravaActivityDetail,
+  RawStravaAnalysisRange,
   StravaRawCache,
   StravaStreams,
   StravaZones,
@@ -15,13 +18,13 @@ import {
   stravaFetchAfter,
 } from '../util/strava-sync-window'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
-import { isRecord, readString } from '../util/type-guards'
+import { isRecord, readNumber, readString } from '../util/type-guards'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -227,15 +230,70 @@ async function fetchZones(token: string): Promise<StravaZones | null> {
   return { hr, power, ftp }
 }
 
-async function fetchActivityCalories(token: string, id: number): Promise<number | null> {
+function nullableNumber(record: Record<string, unknown>, key: string): number | null {
+  const value = readNumber(record, key)
+  return value != null && Number.isFinite(value) ? value : null
+}
+
+function parseAnalysisRange(
+  value: unknown,
+  fallbackKind: 'lap' | 'segment',
+  index: number,
+): RawStravaAnalysisRange | null {
+  if (!isRecord(value)) return null
+  const elapsedTime = nullableNumber(value, 'elapsed_time')
+  const distance = nullableNumber(value, 'distance')
+  if (elapsedTime == null || elapsedTime < 0 || distance == null || distance < 0) return null
+  const rawId = value.id
+  const id =
+    typeof rawId === 'number' || typeof rawId === 'string'
+      ? String(rawId)
+      : `${fallbackKind}-${index + 1}`
+  const name =
+    readString(value, 'name')?.trim() ||
+    `${fallbackKind === 'lap' ? 'Lap' : 'Segment'} ${index + 1}`
+  return {
+    id,
+    name,
+    elapsedTime,
+    movingTime: nullableNumber(value, 'moving_time') ?? elapsedTime,
+    startDate: readString(value, 'start_date') ?? null,
+    distance,
+    startIndex: nullableNumber(value, 'start_index'),
+    endIndex: nullableNumber(value, 'end_index'),
+    totalElevationGain: nullableNumber(value, 'total_elevation_gain'),
+    averageSpeed: nullableNumber(value, 'average_speed'),
+    averageHeartrate: nullableNumber(value, 'average_heartrate'),
+    averageWatts: nullableNumber(value, 'average_watts'),
+    averageCadence: nullableNumber(value, 'average_cadence'),
+  }
+}
+
+function parseAnalysisRanges(value: unknown, kind: 'lap' | 'segment'): RawStravaAnalysisRange[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((item, index) => {
+    const range = parseAnalysisRange(item, kind, index)
+    return range ? [range] : []
+  })
+}
+
+async function fetchActivityDetail(
+  token: string,
+  id: number,
+): Promise<RawStravaActivityDetail | null> {
   const res = await fetchWithRetry(
-    apiUrl(`/activities/${id}`),
+    apiUrl(`/activities/${id}`, { include_all_efforts: 'true' }),
     { headers: authHeaders(token) },
     limiter,
   )
   if (!res) return null
-  const data = (await res.json()) as Record<string, unknown>
-  return data.calories === undefined || data.calories === null ? null : Number(data.calories)
+  const data: unknown = await res.json()
+  if (!isRecord(data)) return null
+  return {
+    calories: nullableNumber(data, 'calories'),
+    laps: parseAnalysisRanges(data.laps, 'lap'),
+    segmentEfforts: parseAnalysisRanges(data.segment_efforts, 'segment'),
+  }
 }
 
 async function fetchCity(lat: number, lon: number): Promise<string | null> {
@@ -285,10 +343,14 @@ async function main(): Promise<void> {
 
   const streams: Record<string, StravaStreams> = { ...prev?.streams }
   const geo: Record<string, string> = { ...prev?.geo }
+  const activityDetails: Record<string, RawStravaActivityDetail> = { ...prev?.activityDetails }
   for (const id of reconciled.removedIds) {
     delete streams[id]
     delete geo[id]
+    delete activityDetails[id]
   }
+  for (const id of Object.keys(activityDetails))
+    if (merged[id] === undefined) delete activityDetails[id]
   let zones: StravaZones | undefined = prev?.zones
   const writeCache = async (): Promise<void> => {
     const cache: StravaRawCache = {
@@ -300,6 +362,7 @@ async function main(): Promise<void> {
       activities: Object.fromEntries(
         Object.entries(merged).sort(([a], [b]) => Number(a) - Number(b)),
       ),
+      activityDetails,
       streams,
       geo,
       zones,
@@ -352,23 +415,29 @@ async function main(): Promise<void> {
     if (gi % 8 === 0) checkpoint()
   }
 
-  const needCalories = Object.values(merged)
-    .filter(a => normalizeKind(a.sportType) !== null && a.calories === undefined)
+  const needDetails = Object.values(merged)
+    .filter(
+      a =>
+        normalizeKind(a.sportType) !== null &&
+        !hasFetchedActivityDetail(activityDetails[String(a.id)]),
+    )
     .sort((x, y) => y.startDate.localeCompare(x.startDate))
-  let ci = 0
-  await mapPool(needCalories, CONCURRENCY, async a => {
-    const cal = await fetchActivityCalories(access, a.id)
-    if (cal != null) merged[String(a.id)].calories = cal
-    progress('calories', ++ci, needCalories.length)
-    if (ci % 16 === 0) checkpoint()
+  let di = 0
+  await mapPool(needDetails, CONCURRENCY, async a => {
+    const detail = await fetchActivityDetail(access, a.id)
+    if (detail) {
+      activityDetails[String(a.id)] = detail
+      if (detail.calories != null) merged[String(a.id)].calories = detail.calories
+    }
+    progress('details', ++di, needDetails.length)
+    if (di % 16 === 0) checkpoint()
   })
 
   if (writing) await writing
   await writeCache()
   await refreshTriathlonRouteSource()
-  const withCalories = Object.values(merged).filter(a => a.calories != null).length
   console.log(
-    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(geo).length} located, ${withCalories} with calories → ${cacheFile}`,
+    `[strava] wrote ${Object.keys(merged).length} activities (+${activities.length} new), ${Object.keys(streams).length} streams, ${Object.keys(activityDetails).length} details, ${Object.keys(geo).length} located → ${cacheFile}`,
   )
 }
 

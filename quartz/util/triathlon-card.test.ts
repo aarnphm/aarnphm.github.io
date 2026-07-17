@@ -3,6 +3,7 @@ import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type {
+  ActivityAnalysisRange,
   StravaActivityDetail,
   SwimActivityInterval,
   SwimTrendPoint,
@@ -14,6 +15,7 @@ import {
   buildDayCard,
   buildElevation,
   buildPowerCurve,
+  buildRoute,
   buildSwimTrends,
   buildTrace,
   clock,
@@ -495,8 +497,34 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   fueling: null,
   garmin: null,
   route: [
-    { x: 0, y: 0, d: 0, alt: 75, w: 160, hr: 130, cad: 82, tempC: 22, lat: 43.6, lng: -79.4 },
-    { x: 0.34, y: 0.4, d: 10, alt: 89, w: 200, hr: 145, cad: 86, tempC: 23, lat: 43.7, lng: -79.3 },
+    {
+      x: 0,
+      y: 0,
+      d: 0,
+      alt: 75,
+      w: 160,
+      hr: 130,
+      cad: 82,
+      tempC: 22,
+      lat: 43.6,
+      lng: -79.4,
+      elapsedS: 0,
+      speedKph: 22,
+    },
+    {
+      x: 0.34,
+      y: 0.4,
+      d: 10,
+      alt: 89,
+      w: 200,
+      hr: 145,
+      cad: 86,
+      tempC: 23,
+      lat: 43.7,
+      lng: -79.3,
+      elapsedS: 1_600,
+      speedKph: 24,
+    },
     {
       x: 0.67,
       y: 0.8,
@@ -508,9 +536,25 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       tempC: 24,
       lat: 43.8,
       lng: -79.2,
+      elapsedS: 3_200,
+      speedKph: 25,
     },
-    { x: 1, y: 1, d: 30, alt: 110, w: 175, hr: 149, cad: 84, tempC: 25, lat: 43.9, lng: -79.1 },
+    {
+      x: 1,
+      y: 1,
+      d: 30,
+      alt: 110,
+      w: 175,
+      hr: 149,
+      cad: 84,
+      tempC: 25,
+      lat: 43.9,
+      lng: -79.1,
+      elapsedS: 4_800,
+      speedKph: 23,
+    },
   ],
+  analysisRanges: [],
   minAlt: 75,
   maxAlt: 110,
   descentM: 20,
@@ -562,6 +606,73 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   swimIntervals: [],
   ...overrides,
 })
+
+const analysisRanges = (): ActivityAnalysisRange[] => [
+  {
+    kind: 'segment',
+    id: 'segment-boardwalk',
+    label: 'Boardwalk east',
+    startElapsedS: 2_400,
+    endElapsedS: 3_600,
+    startDistanceKm: 15,
+    endDistanceKm: 22.5,
+    durationS: 1_200,
+    distanceKm: 7.5,
+    elevationGainM: 8,
+    averageSpeedKph: 22.5,
+    averageHeartRate: 154,
+    averageWatts: 205,
+    averageCadence: 89,
+  },
+  {
+    kind: 'climb',
+    id: 'climb-bay',
+    label: 'Bay rise',
+    startElapsedS: 800,
+    endElapsedS: 1_600,
+    startDistanceKm: 5,
+    endDistanceKm: 10,
+    durationS: 800,
+    distanceKm: 5,
+    elevationGainM: 48,
+    averageSpeedKph: 22.5,
+    averageHeartRate: 151,
+    averageWatts: 232,
+    averageCadence: 84,
+  },
+  {
+    kind: 'lap',
+    id: 'lap-2',
+    label: 'Lap 2',
+    startElapsedS: 1_200,
+    endElapsedS: 2_400,
+    startDistanceKm: 7.5,
+    endDistanceKm: 15,
+    durationS: 1_200,
+    distanceKm: 7.5,
+    elevationGainM: 24,
+    averageSpeedKph: 22.5,
+    averageHeartRate: 149,
+    averageWatts: 214,
+    averageCadence: 87,
+  },
+]
+
+const analysisDetail = (): StravaActivityDetail =>
+  detail({
+    analysisRanges: analysisRanges(),
+    mapRoute: [
+      { lat: 43.6, lng: -79.4 },
+      { lat: 43.63, lng: -79.37 },
+      { lat: 43.66, lng: -79.34 },
+      { lat: 43.69, lng: -79.31 },
+      { lat: 43.72, lng: -79.28 },
+      { lat: 43.75, lng: -79.25 },
+      { lat: 43.78, lng: -79.22 },
+      { lat: 43.81, lng: -79.19 },
+      { lat: 43.84, lng: -79.16 },
+    ],
+  })
 
 test('builds semantic distance, power, and climbing tables in metric units', () => {
   setDistanceUnit(false)
@@ -686,6 +797,165 @@ test('renders route stream graphs in the server activity markup', () => {
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
 })
 
+test('renders compact positional analysis bars beneath the existing activity figures', () => {
+  const rendered = buildActivity(factory, analysisDetail(), true)
+  const figures = byClass(rendered, 'tri-act-figs')[0]
+  const analysis = byClass(figures, 'tri-analysis')[0]
+  assert.ok(analysis)
+  assert.equal(analysis.tagName, 'section')
+  assert.equal(analysis.properties.dataActivityId, '101')
+  assert.equal(analysis.properties.dataSelectedKind, undefined)
+  assert.equal(analysis.properties.dataSelectedId, undefined)
+  assert.equal(analysis.properties.ariaLabel, 'Activity analysis')
+
+  const directClasses = figures.children
+    .filter((child): child is Element => child.type === 'element')
+    .map(child => classNames(child))
+  assert.deepEqual(directClasses.slice(0, 3), [['tri-route'], ['tri-elev-wrap'], ['tri-analysis']])
+
+  const route = byClass(figures, 'tri-route')[0]
+  assert.ok(route)
+  assert.equal(route.properties.viewBox, '0 0 100 100')
+  assert.equal(route.properties.preserveAspectRatio, 'xMidYMid meet')
+  assert.equal(byClass(route, 'tri-route-path').length, 1)
+  assert.equal(byClass(route, 'tri-route-selected').length, 1)
+  assert.equal(byClass(route, 'tri-route-cursor').length, 1)
+
+  const bands = byClass(analysis, 'tri-analysis-band')
+  assert.deepEqual(
+    bands.map(band => [
+      band.properties.dataAnalysisKind,
+      band.properties.role,
+      band.properties.ariaLabel,
+    ]),
+    [
+      ['lap', 'group', 'Laps'],
+      ['segment', 'group', 'Segments'],
+      ['climb', 'group', 'Climbs'],
+    ],
+  )
+
+  const buttons = byClass(analysis, 'tri-analysis-range')
+  assert.deepEqual(
+    buttons.map(button => [button.properties.dataRangeKind, button.properties.dataRangeId]),
+    [
+      ['lap', 'lap-2'],
+      ['segment', 'segment-boardwalk'],
+      ['climb', 'climb-bay'],
+    ],
+  )
+  assert.deepEqual(
+    buttons.map(button => button.properties.ariaPressed),
+    ['false', 'false', 'false'],
+  )
+  assert.match(String(buttons[0].properties.style), /--tri-analysis-start:25\.000%/)
+  assert.match(String(buttons[0].properties.style), /--tri-analysis-width:25\.000%/)
+  assert.match(String(buttons[0].properties.style), /--tri-analysis-lane:0/)
+  assert.equal(buttons[0].properties.title, undefined)
+  assert.match(String(buttons[0].properties.ariaLabel), /^Lap 2, 7\.50 km, \+24 m, 20:00/)
+  assert.equal(byClass(analysis, 'tri-analysis-range-title').length, 0)
+  assert.equal(byClass(analysis, 'tri-analysis-range-stats').length, 0)
+
+  const readout = byClass(analysis, 'tri-analysis-readout')[0]
+  assert.ok(readout)
+  assert.equal(readout.properties.dataTriAnalysisReadout, '')
+  assert.equal(readout.properties.dataVisible, 'false')
+  assert.equal(readout.properties.ariaHidden, 'true')
+  assert.equal(readout.properties.ariaLive, 'polite')
+  assert.deepEqual(byClass(readout, 'tri-analysis-readout-label').map(text), [''])
+  assert.deepEqual(byClass(readout, 'tri-analysis-readout-metrics').map(text), [''])
+  const tooltip = byClass(analysis, 'tri-analysis-tooltip')[0]
+  assert.ok(tooltip)
+  assert.equal(tooltip.properties.dataTriAnalysisTooltip, '')
+  assert.equal(tooltip.properties.role, 'tooltip')
+  assert.equal(tooltip.properties.hidden, true)
+  assert.equal(tooltip.properties.style, undefined)
+  assert.deepEqual(byClass(tooltip, 'tri-analysis-tooltip-label').map(text), [''])
+  assert.equal(text(byClass(tooltip, 'tri-analysis-tooltip-metrics')[0]), '')
+})
+
+test('reserves a bottom climb lane when an activity has no climbs', () => {
+  const withoutClimb = analysisDetail()
+  withoutClimb.analysisRanges = withoutClimb.analysisRanges.filter(range => range.kind !== 'climb')
+  const rendered = buildActivity(factory, withoutClimb, true)
+  const analysis = byClass(rendered, 'tri-analysis')[0]
+  assert.ok(analysis)
+
+  const bands = byClass(analysis, 'tri-analysis-band')
+  assert.deepEqual(
+    bands.map(band => band.properties.dataAnalysisKind),
+    ['lap', 'segment', 'climb'],
+  )
+  assert.deepEqual(
+    bands.flatMap(band =>
+      byClass(band, 'tri-analysis-band-items').map(items => items.properties.style),
+    ),
+    ['--tri-analysis-lanes:1', '--tri-analysis-lanes:4', '--tri-analysis-lanes:1'],
+  )
+  const climb = bands[2]
+  assert.equal(climb.properties.role, undefined)
+  assert.equal(climb.properties.ariaLabel, undefined)
+  assert.equal(climb.properties.ariaHidden, 'true')
+  assert.deepEqual(byClass(climb, 'tri-analysis-band-label').map(text), [''])
+  assert.equal(byClass(climb, 'tri-analysis-range').length, 0)
+})
+
+test('starts the route and stream graphs with empty analysis highlights', () => {
+  const rendered = buildActivity(factory, analysisDetail(), true)
+  assert.equal(byClass(rendered, 'tri-analysis-map').length, 0)
+  assert.equal(byClass(rendered, 'tri-analysis-graphs').length, 0)
+  assert.equal(byClass(rendered, 'tri-analysis-trace').length, 0)
+
+  const route = byClass(rendered, 'tri-route')[0]
+  assert.ok(route)
+  const selectedRoute = byClass(route, 'tri-route-selected')[0]
+  assert.ok(selectedRoute)
+  assert.equal(selectedRoute.properties.d, '')
+
+  const selections = byClass(rendered, 'tri-analysis-selection')
+  assert.equal(selections.length, 5)
+  for (const selection of selections) {
+    assert.equal(selection.tagName, 'rect')
+    assert.equal(selection.properties.x, '0.00')
+    assert.equal(selection.properties.width, '0.00')
+  }
+
+  const traces = byClass(rendered, 'tri-elev-wrap').filter(
+    graph => graph.properties.dataTriTrace != null,
+  )
+  assert.deepEqual(
+    traces.map(trace => trace.properties.dataTriTrace),
+    ['hr', 'power', 'cadence', 'temperature'],
+  )
+  assert.equal(byClass(rendered, 'tri-elev-cursor').length, 5)
+})
+
+test('keeps an empty selected-route overlay available after deselection', () => {
+  const route = buildRoute(factory, analysisDetail().route)
+  const selectedRoute = byClass(route, 'tri-route-selected')[0]
+  assert.ok(selectedRoute)
+  assert.equal(selectedRoute.properties.d, '')
+  assert.match(String(byClass(route, 'tri-route-path')[0].properties.d), /^M /)
+})
+
+test('falls back to legacy stream traces without complete analysis telemetry', () => {
+  const fallback = detail({
+    analysisRanges: analysisRanges(),
+    route: detail().route.map((point, index) =>
+      index === 1 ? { ...point, speedKph: Number.NaN } : point,
+    ),
+  })
+  const rendered = buildActivity(factory, fallback, true)
+  assert.equal(byClass(rendered, 'tri-analysis').length, 0)
+  const traces = byClass(rendered, 'tri-elev-wrap').filter(
+    graph => graph.properties.dataTriTrace != null,
+  )
+  assert.deepEqual(
+    traces.map(trace => trace.properties.dataTriTrace),
+    ['hr', 'power', 'cadence', 'temperature'],
+  )
+})
+
 test('labels the activity disclosure and exposes its expanded state and controlled panel', () => {
   const collapsed = buildActivity(factory, detail({ id: 42 }))
   const collapsedToggle = byClass(collapsed, 'tri-act-toggle')[0]
@@ -748,6 +1018,14 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['stroke rate', '31.5 str/min'],
     ['strokes', '876'],
     ['avg hr', '148 bpm'],
+    ['NP', '205 W'],
+    ['avg power', '188 W'],
+    ['max power', '565 W'],
+    ['energy', '900 kJ'],
+    ['calories', '960 kcal'],
+    ['cadence', '88 rpm'],
+    ['max hr', '171 bpm'],
+    ['temp', '24°C'],
   ])
 })
 
@@ -762,6 +1040,14 @@ test('adds max speed directly below the bike speed row', () => {
     ['speed', '22.5 km/h'],
     ['max speed', '41.8 km/h'],
     ['avg hr', '148 bpm'],
+    ['NP', '205 W'],
+    ['avg power', '188 W'],
+    ['max power', '565 W'],
+    ['energy', '900 kJ'],
+    ['calories', '960 kcal'],
+    ['cadence', '88 rpm'],
+    ['max hr', '171 bpm'],
+    ['temp', '24°C'],
   ])
 
   setDistanceUnit(true)
@@ -774,6 +1060,14 @@ test('adds max speed directly below the bike speed row', () => {
     ['speed', '14.0 mph'],
     ['max speed', '26.0 mph'],
     ['avg hr', '148 bpm'],
+    ['NP', '205 W'],
+    ['avg power', '188 W'],
+    ['max power', '565 W'],
+    ['energy', '900 kJ'],
+    ['calories', '960 kcal'],
+    ['cadence', '88 rpm'],
+    ['max hr', '171 bpm'],
+    ['temp', '75°F'],
   ])
   setDistanceUnit(false)
 
@@ -782,8 +1076,46 @@ test('adds max speed directly below the bike speed row', () => {
   assert.ok(plainStats)
   assert.deepEqual(
     bodyRows(plainStats).map(([label]) => label),
-    ['distance', 'time', 'speed', 'avg hr'],
+    [
+      'distance',
+      'time',
+      'speed',
+      'avg hr',
+      'NP',
+      'avg power',
+      'max power',
+      'energy',
+      'calories',
+      'cadence',
+      'max hr',
+      'temp',
+    ],
   )
+})
+
+test('places one combined stats table above route figures without a rows-only disclosure', () => {
+  setDistanceUnit(false)
+  const rendered = buildActivity(factory, detail(), true)
+  const children = rendered.children.filter((child): child is Element => child.type === 'element')
+  const statsIndex = children.findIndex(child => classNames(child).includes('tri-act-stats'))
+  const figuresIndex = children.findIndex(child => classNames(child).includes('tri-act-figs'))
+  assert.ok(statsIndex >= 0)
+  assert.ok(figuresIndex > statsIndex)
+  assert.equal(byClass(rendered, 'tri-act-stats').length, 1)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  assert.equal(byClass(more, 'tri-act-stats').length, 0)
+
+  const rowsOnly = buildActivity(
+    factory,
+    detail({ route: [], analysisRanges: [], bestEfforts: null, deviceWatts: false }),
+  )
+  assert.equal(byClass(rowsOnly, 'tri-act-stats').length, 1)
+  assert.ok(
+    bodyRows(byClass(rowsOnly, 'tri-act-stats')[0]).some(([label]) => label === 'est power'),
+  )
+  assert.equal(byClass(rowsOnly, 'tri-act-toggle').length, 0)
+  assert.equal(byClass(rowsOnly, 'tri-act-more').length, 0)
 })
 
 test('projects each sub-marathon run to the next standard race distance', () => {
@@ -819,6 +1151,14 @@ test('renders the run trend between pace and heart rate in server activity marku
     ['pace', '6:29 /km'],
     ['half trend', "2h22'"],
     ['avg hr', '148 bpm'],
+    ['NP', '205 W'],
+    ['avg power', '188 W'],
+    ['max power', '565 W'],
+    ['energy', '900 kJ'],
+    ['calories', '960 kcal'],
+    ['cadence', '176 spm'],
+    ['max hr', '171 bpm'],
+    ['temp', '24°C'],
   ])
 })
 
