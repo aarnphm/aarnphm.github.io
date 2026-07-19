@@ -323,11 +323,13 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
       { key: 'directPower' },
       { key: 'directHeartRate' },
       { key: 'directBikeCadence' },
+      { key: 'sumElapsedDuration' },
+      { key: 'directRespirationRate' },
     ],
     activityDetailMetrics: [
-      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82] },
-      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88] },
-      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91] },
+      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null] },
+      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42] },
+      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08] },
     ],
   })
 
@@ -341,4 +343,6 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
   assert.deepEqual(streams?.watts, [120, 180, 210])
   assert.deepEqual(streams?.heartrate, [135, 142, 149])
   assert.deepEqual(streams?.cadence, [82, 88, 91])
+  assert.deepEqual(streams?.time, [0, 15, 30])
+  assert.deepEqual(streams?.respiration, [0, 27.42, 31.08])
 })

@@ -141,10 +141,12 @@ const METRIC_KEYS = {
   altitude: 'directElevation',
   cadence: 'directBikeCadence',
   distance: 'sumDistance',
+  elapsedTime: 'sumElapsedDuration',
   heartRate: 'directHeartRate',
   latitude: 'directLatitude',
   longitude: 'directLongitude',
   power: 'directPower',
+  respiration: 'directRespirationRate',
 }
 const WEIGHT_KEYS = [
   'weight',
@@ -623,7 +625,8 @@ function hasStreamData(streams: GarminStreams): boolean {
     streams.distance.length > 0 ||
     (streams.watts?.some(value => value > 0) ?? false) ||
     (streams.heartrate?.some(value => value > 0) ?? false) ||
-    (streams.cadence?.some(value => value > 0) ?? false)
+    (streams.cadence?.some(value => value > 0) ?? false) ||
+    (streams.respiration?.some(value => value > 0) ?? false)
   )
 }
 
@@ -655,22 +658,27 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     altitude: metricIndex(detail, METRIC_KEYS.altitude),
     cadence: metricIndex(detail, METRIC_KEYS.cadence),
     distance: metricIndex(detail, METRIC_KEYS.distance),
+    elapsedTime: metricIndex(detail, METRIC_KEYS.elapsedTime),
     heartRate: metricIndex(detail, METRIC_KEYS.heartRate),
     latitude: metricIndex(detail, METRIC_KEYS.latitude),
     longitude: metricIndex(detail, METRIC_KEYS.longitude),
     power: metricIndex(detail, METRIC_KEYS.power),
+    respiration: metricIndex(detail, METRIC_KEYS.respiration),
   }
   const streams: GarminStreams = {
+    time: indices.elapsedTime == null ? undefined : [],
     latlng: [],
     altitude: [],
     distance: [],
     watts: [],
     heartrate: [],
     cadence: [],
+    respiration: indices.respiration == null ? undefined : [],
   }
 
   const hasLocationMetrics = indices.latitude != null && indices.longitude != null
   let lastDistance = 0
+  let lastElapsedTime = 0
   for (const item of detail.activityDetailMetrics) {
     if (!isRecord(item)) continue
     const lat = metricValue(item, indices.latitude)
@@ -680,12 +688,16 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
 
     const distance = metricValue(item, indices.distance)
     if (distance != null) lastDistance = distance
+    const elapsedTime = metricValue(item, indices.elapsedTime)
+    if (elapsedTime != null) lastElapsedTime = Math.max(lastElapsedTime, elapsedTime)
+    streams.time?.push(lastElapsedTime)
     if (lat != null && lng != null && validLatLng(lat, lng)) streams.latlng.push([lat, lng])
     streams.altitude.push(metricValue(item, indices.altitude) ?? 0)
     streams.distance.push(lastDistance)
     streams.watts?.push(metricValue(item, indices.power) ?? 0)
     streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
     streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
+    streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
   }
 
   if (streams.latlng.length < 2) {

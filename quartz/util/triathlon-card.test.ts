@@ -9,6 +9,7 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import {
+  activitySelectionSummary,
   activityStatRows,
   buildActivity,
   buildCyclingBestEfforts,
@@ -43,6 +44,12 @@ import {
   swimActivityValueText,
   tl,
   trendUnavailableText,
+  triLongDate,
+  triMonth,
+  triMonthYear,
+  triNumber,
+  triShortDate,
+  triWeekdayNarrow,
   vo2SourceText,
 } from './triathlon-i18n'
 
@@ -140,6 +147,71 @@ test('localizes dynamic analytics explanations', () => {
     tl('radar pace swim definition'),
     /Fewer seconds per 100 metres give a higher score\.$/,
   )
+})
+
+test('localizes the triathlon page chrome', () => {
+  setTriLocale('fr')
+  try {
+    assert.deepEqual(
+      [
+        'home',
+        'swim',
+        'bike',
+        'run',
+        'strength',
+        'gear',
+        'pace',
+        'analytics',
+        'map',
+        'training',
+        'calculator',
+        'fuel plan',
+        'inspired by rauno',
+      ].map(tl),
+      [
+        'accueil',
+        'natation',
+        'vélo',
+        'course',
+        'renforcement',
+        'matériel',
+        'allure',
+        'analyses',
+        'carte',
+        'entraînement',
+        'calculateur',
+        'plan nutrition',
+        'inspiré de rauno',
+      ],
+    )
+  } finally {
+    setTriLocale('en')
+  }
+})
+
+test('localizes analytics dates, numbers, and lab chart labels', () => {
+  setTriLocale('fr')
+  try {
+    assert.equal(triShortDate('2026-05-20'), '20 mai')
+    assert.equal(triLongDate('2026-06-25'), '25 juin 2026')
+    assert.equal(triMonth('2026-07-17'), 'juill.')
+    assert.equal(triMonthYear('2026-07-01'), 'juillet 2026')
+    assert.deepEqual(
+      Array.from({ length: 7 }, (_, day) => triWeekdayNarrow(day)),
+      ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+    )
+    assert.equal(triNumber(27.4, 1, 1), '27,4')
+    assert.deepEqual(
+      ['wk', 'BMR', 'FFM', 'obese', 'Metabolic', 'Target', 'Avg', 'HR', 'Cool-Down'].map(tl),
+      ['sem', 'MB', 'MM', 'obésité', 'Métabolique', 'Objectif', 'Moy', 'FC', 'Retour au calme'],
+    )
+  } finally {
+    setTriLocale('en')
+  }
+  assert.equal(triShortDate('2026-05-20'), 'May 20')
+  assert.equal(triLongDate('2026-06-25'), 'Jun 25, 2026')
+  assert.equal(triNumber(27.4, 1, 1), '27.4')
+  assert.equal(triShortDate('invalid'), 'invalid')
 })
 
 test('resolves an exact power duration and its six-week reference value', () => {
@@ -505,6 +577,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 160,
       hr: 130,
       cad: 82,
+      resp: 20,
       tempC: 22,
       lat: 43.6,
       lng: -79.4,
@@ -519,6 +592,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 200,
       hr: 145,
       cad: 86,
+      resp: 24,
       tempC: 23,
       lat: 43.7,
       lng: -79.3,
@@ -533,6 +607,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 215,
       hr: 153,
       cad: 90,
+      resp: 28,
       tempC: 24,
       lat: 43.8,
       lng: -79.2,
@@ -547,6 +622,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 175,
       hr: 149,
       cad: 84,
+      resp: 32,
       tempC: 25,
       lat: 43.9,
       lng: -79.1,
@@ -774,18 +850,32 @@ test('renders route stream graphs in the server activity markup', () => {
     { details: { 101: detail() }, health: {} },
     { expanded: true },
   )
+  const activity = byClass(rendered, 'tri-act')[0]
+  assert.ok(activity)
+  assert.equal(activity.properties.dataActivityId, '101')
   const traces = byClass(rendered, 'tri-elev-wrap').filter(
     graph => graph.properties.dataTriTrace != null,
   )
   assert.deepEqual(
     traces.map(graph => graph.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'temperature'],
+    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
   )
   for (const graph of traces) {
     assert.equal(byClass(graph, 'tri-elev').length, 1)
     assert.equal(byClass(graph, 'tri-elev-area').length, 1)
     assert.equal(byClass(graph, 'tri-elev-line').length, 1)
+    assert.equal(byClass(graph, 'tri-analysis-selection').length, 1)
   }
+  assert.equal(byClass(activity, 'tri-analysis-selection').length, 6)
+  const respiration = traces.find(graph => graph.properties.dataTriTrace === 'respiration')
+  assert.ok(respiration)
+  assert.deepEqual(
+    byClass(respiration, 'tri-elev-cap')
+      .flatMap(cap => byTag(cap, 'span'))
+      .map(text),
+    ['respiration', '26.0 brpm avg'],
+  )
+  assert.deepEqual(byClass(respiration, 'tri-cax-yt').map(text), ['20brpm', '30brpm'])
   const temperature = traces.find(graph => graph.properties.dataTriTrace === 'temperature')
   assert.ok(temperature)
   assert.deepEqual(
@@ -795,6 +885,30 @@ test('renders route stream graphs in the server activity markup', () => {
     ['temperature', '24°C avg'],
   )
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
+})
+
+test('summarizes a dragged graph range from either pointer direction', () => {
+  const route = detail().route
+  const forward = activitySelectionSummary(route, 1, 3)
+  const backward = activitySelectionSummary(route, 3, 1)
+
+  assert.deepEqual(forward, backward)
+  assert.deepEqual(forward, {
+    startElapsedS: 1_600,
+    endElapsedS: 4_800,
+    startDistanceKm: 10,
+    endDistanceKm: 30,
+    durationS: 3_200,
+    distanceKm: 20,
+    elevationGainM: 21,
+    averageSpeedKph: 22.5,
+    averageHeartRate: 150,
+    averageWatts: 201.25,
+    averageCadence: 87.5,
+    averageRespirationRate: 28,
+    averageTemperatureC: 24,
+  })
+  assert.equal(activitySelectionSummary(route, 2, 2), null)
 })
 
 test('renders compact positional analysis bars beneath the existing activity figures', () => {
@@ -913,7 +1027,7 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   assert.equal(selectedRoute.properties.d, '')
 
   const selections = byClass(rendered, 'tri-analysis-selection')
-  assert.equal(selections.length, 5)
+  assert.equal(selections.length, 6)
   for (const selection of selections) {
     assert.equal(selection.tagName, 'rect')
     assert.equal(selection.properties.x, '0.00')
@@ -925,9 +1039,9 @@ test('starts the route and stream graphs with empty analysis highlights', () => 
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'temperature'],
+    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
   )
-  assert.equal(byClass(rendered, 'tri-elev-cursor').length, 5)
+  assert.equal(byClass(rendered, 'tri-elev-cursor').length, 6)
 })
 
 test('keeps an empty selected-route overlay available after deselection', () => {
@@ -952,7 +1066,7 @@ test('falls back to legacy stream traces without complete analysis telemetry', (
   )
   assert.deepEqual(
     traces.map(trace => trace.properties.dataTriTrace),
-    ['hr', 'power', 'cadence', 'temperature'],
+    ['hr', 'power', 'cadence', 'respiration', 'temperature'],
   )
 })
 
@@ -1686,6 +1800,26 @@ test('renders traces with numbered value and distance axes', () => {
       .map(text),
     ['hr', '153 bpm peak'],
   )
+})
+
+test('extends the first measured trace value to distance zero', () => {
+  const trace = buildTrace(
+    factory,
+    detail({
+      route: detail().route.map((point, index) => ({ ...point, d: index === 0 ? 0.183 : point.d })),
+    }),
+    point => point.hr,
+    'hr',
+    max => `${max} bpm peak`,
+    value => `${Math.round(value)}bpm`,
+  )
+  const area = byClass(trace, 'tri-elev-area')[0]
+  const line = byClass(trace, 'tri-elev-line')[0]
+
+  assert.ok(area)
+  assert.ok(line)
+  assert.match(String(area.properties.d), /^M 0 30 L 0 ([\d.]+) L 0\.61 \1 /)
+  assert.match(String(line.properties.d), /^M 0 ([\d.]+) L 0\.61 \1 /)
 })
 
 test('pairs hr/power zones and curve/hist into duos with aligned captions', () => {

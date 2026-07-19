@@ -1032,6 +1032,9 @@
   display: block;
   width: 100%;
   height: 64px;
+  cursor: crosshair;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .tri-elev-wrap > .tri-cax-frame {
@@ -5673,6 +5676,8 @@
 }
 
 .tri-lab-date-picker {
+  position: relative;
+  z-index: 1;
   margin-left: auto;
 }
 
@@ -5695,8 +5700,7 @@
   cursor: pointer;
   transition:
     border-color 0.15s ease,
-    background 0.15s ease,
-    transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
+    background 0.15s ease;
 
   &:hover {
     border-color: color-mix(in srgb, var(--gray) 44%, transparent);
@@ -5708,10 +5712,6 @@
     outline: 0;
     border-color: color-mix(in srgb, var(--tri-accent) 48%, var(--lightgray));
     background: color-mix(in srgb, var(--tri-accent) 8%, var(--light));
-  }
-
-  &:active {
-    transform: scale(0.985);
   }
 }
 
@@ -5735,11 +5735,12 @@
 }
 
 .tri-lab-date-menu {
-  position: fixed;
-  inset: 0 auto auto 0;
+  position: absolute;
+  inset: calc(100% + 0.2rem) 0 auto auto;
   z-index: var(--z-popover);
   display: none;
   box-sizing: border-box;
+  inline-size: 100%;
   gap: 1px;
   margin: 0;
   padding: 0.2rem;
@@ -5750,30 +5751,9 @@
   font-family: var(--codeFont);
   font-size: 0.62rem;
   font-variant-numeric: tabular-nums;
-  opacity: 0;
-  transform: translateY(-0.12rem) scale(0.985);
-  transform-origin: top right;
-  transition:
-    opacity 0.16s cubic-bezier(0.23, 1, 0.32, 1),
-    transform 0.16s cubic-bezier(0.23, 1, 0.32, 1),
-    display 0.16s allow-discrete,
-    overlay 0.16s allow-discrete;
 
-  &:popover-open {
+  &:not([hidden]) {
     display: grid;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  &::backdrop {
-    background: transparent;
-  }
-}
-
-@starting-style {
-  .tri-lab-date-menu:popover-open {
-    opacity: 0;
-    transform: translateY(-0.12rem) scale(0.985);
   }
 }
 
@@ -5828,7 +5808,6 @@
 @media (prefers-reduced-motion: reduce) {
   .tri-lab-date-trigger,
   .tri-lab-date-chevron,
-  .tri-lab-date-menu,
   .tri-lab-date-option {
     transition-duration: 0.01ms;
   }
@@ -7425,6 +7404,10 @@
   min-width: 0;
 }
 
+.tri-map-pane a.mapboxgl-ctrl-logo {
+  background-color: transparent;
+}
+
 .tri-map-canvas {
   width: 100%;
   height: 100%;
@@ -7450,6 +7433,55 @@
   padding: 0.5rem 0.6rem;
   background: color-mix(in srgb, var(--light) 94%, transparent);
   border: 1px solid var(--lightgray);
+}
+
+.tri-map-selection {
+  --tri-analysis-label-width: 3.75rem;
+  container-type: inline-size;
+  position: absolute;
+  right: 0.75rem;
+  bottom: 1.75rem;
+  left: 0.75rem;
+  z-index: 4;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(calc(100% + 1.75rem));
+  transition:
+    opacity 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    visibility 0s linear 120ms;
+}
+
+.tri-map-selection[aria-hidden='false'] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-duration: 180ms, 180ms, 0s;
+  transition-delay: 0s;
+}
+
+.tri-map-selection .tri-analysis {
+  --tri-analysis-label-width: 3.75rem;
+  padding-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-map-selection,
+  .tri-map-selection[aria-hidden='false'] {
+    transform: none;
+    transition:
+      opacity 120ms cubic-bezier(0.23, 1, 0.32, 1),
+      visibility 0s linear 120ms;
+  }
+
+  .tri-map-selection[aria-hidden='false'] {
+    transition-delay: 0s;
+  }
 }
 
 .tri-map-canvas--down ~ .tri-map-overlay,
@@ -7975,8 +8007,9 @@
 
 .tri-map-tablist {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow-x: auto;
 }
 
 .tri-map-tab {
@@ -7986,7 +8019,7 @@
   background: none;
   border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
   border-radius: var(--radius-none);
-  padding: 0.18rem 0.5rem;
+  padding: 0.18rem 0.4rem;
   cursor: pointer;
 
   &:hover {
@@ -7997,6 +8030,10 @@
     color: var(--light);
     background: var(--tri-accent);
     border-color: var(--tri-accent);
+  }
+
+  & + & {
+    border-left: 0;
   }
 }
 
@@ -8417,6 +8454,10 @@ a.tri-pop-date:hover {
 .tri-analysis-selection {
   fill: color-mix(in srgb, var(--gray) 16%, transparent);
   pointer-events: none;
+}
+
+.tri-act--selecting .tri-analysis-selection {
+  fill: color-mix(in srgb, var(--tri-accent) 18%, transparent);
 }
 
 .tri-route-selected {

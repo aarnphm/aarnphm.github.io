@@ -30,7 +30,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 4
+const CACHE_VERSION = 5
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')

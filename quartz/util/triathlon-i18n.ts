@@ -18,6 +18,49 @@ export const setTriLocale = (v: Locale): void => {
   locale = v
 }
 
+const triLocaleTag = (): string => (locale === 'fr' ? 'fr-CA' : 'en-US')
+
+export const triNumber = (
+  value: number,
+  minimumFractionDigits = 0,
+  maximumFractionDigits = minimumFractionDigits,
+): string => value.toLocaleString(triLocaleTag(), { minimumFractionDigits, maximumFractionDigits })
+
+const triDate = (iso: string): Date | null => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  if (!match) return null
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const date = new Date(Date.UTC(year, month - 1, day))
+  return date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+    ? date
+    : null
+}
+
+const triDateText = (iso: string, options: Intl.DateTimeFormatOptions): string => {
+  const date = triDate(iso)
+  return date ? date.toLocaleDateString(triLocaleTag(), { ...options, timeZone: 'UTC' }) : iso
+}
+
+export const triShortDate = (iso: string): string =>
+  triDateText(iso, { month: 'short', day: 'numeric' })
+
+export const triLongDate = (iso: string): string =>
+  triDateText(iso, { year: 'numeric', month: 'short', day: 'numeric' })
+
+export const triMonth = (iso: string): string => triDateText(iso, { month: 'short' })
+
+export const triMonthYear = (iso: string): string =>
+  triDateText(iso, { year: 'numeric', month: 'long' })
+
+export const triWeekdayNarrow = (day: number): string =>
+  new Date(Date.UTC(2024, 0, 7 + Math.min(6, Math.max(0, day))))
+    .toLocaleDateString(triLocaleTag(), { weekday: 'narrow', timeZone: 'UTC' })
+    .toUpperCase()
+
 export type SwimActivityTextPoint = {
   elapsed: string
   cumulativeDistanceM: number
@@ -25,7 +68,7 @@ export type SwimActivityTextPoint = {
 }
 
 const swimTextNumber = (value: number, maximumFractionDigits = 0): string =>
-  value.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', { maximumFractionDigits })
+  triNumber(value, 0, maximumFractionDigits)
 
 export const swimActivityDistanceText = (distanceM: number): string =>
   `${swimTextNumber(distanceM)} m`
@@ -207,6 +250,22 @@ const en: TriDict = {
     'body composition': 'body composition',
     'body composition by region': 'body composition by region',
     'lab test date': 'lab test date',
+    wk: 'wk',
+    BMR: 'BMR',
+    FFM: 'FFM',
+    essential: 'essential',
+    athlete: 'athlete',
+    obese: 'obese',
+    Metabolic: 'Metabolic',
+    Ventilation: 'Ventilation',
+    Target: 'Target',
+    Min: 'Min',
+    Max: 'Max',
+    Avg: 'Avg',
+    HR: 'HR',
+    'Warm-Up': 'Warm-Up',
+    Test: 'Test',
+    'Cool-Down': 'Cool-Down',
     'vo2max · fitness age': 'vo2max · fitness age',
     'vo2 test profile': 'vo2 test profile',
     'ftp hypothesis': 'ftp hypothesis',
@@ -221,6 +280,7 @@ const en: TriDict = {
     'this ride': 'this ride',
     '6-week best': '6-week best',
     'comparison range': 'comparison range',
+    selection: 'selection',
     '6 weeks': '6 weeks',
     'all of': 'all of',
     lengths: 'lengths',
@@ -725,6 +785,22 @@ const fr: TriDict = {
     'body composition': 'composition corporelle',
     'body composition by region': 'composition corporelle par région',
     'lab test date': 'date des tests de laboratoire',
+    wk: 'sem',
+    BMR: 'MB',
+    FFM: 'MM',
+    essential: 'essentiel',
+    athlete: 'athlète',
+    obese: 'obésité',
+    Metabolic: 'Métabolique',
+    Ventilation: 'Ventilation',
+    Target: 'Objectif',
+    Min: 'Min',
+    Max: 'Max',
+    Avg: 'Moy',
+    HR: 'FC',
+    'Warm-Up': 'Échauffement',
+    Test: 'Test',
+    'Cool-Down': 'Retour au calme',
     'vo2max · fitness age': 'vo2max · âge de forme',
     'vo2 test profile': 'profil test vo2',
     'ftp hypothesis': 'hypothèse ftp',
@@ -739,6 +815,7 @@ const fr: TriDict = {
     'this ride': 'cette sortie',
     '6-week best': 'meilleur sur 6 semaines',
     'comparison range': 'période de comparaison',
+    selection: 'sélection',
     '6 weeks': '6 semaines',
     'all of': "toute l'année",
     lengths: 'longueurs',

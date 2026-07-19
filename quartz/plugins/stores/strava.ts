@@ -219,6 +219,7 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  resp: number | null
   tempC: number | null
   lat: number
   lng: number
@@ -503,12 +504,8 @@ function sampleIndicesWithRequired(
   required: number[],
 ): number[] {
   if (hi < lo) return []
-  const anchors = [
-    ...new Set([lo, hi, ...required.filter(index => index >= lo && index <= hi)]),
-  ].sort((a, b) => a - b)
-  if (anchors.length >= maxPoints) return anchors
-  const regular = sampleIndices(lo, hi, Math.max(2, maxPoints - anchors.length))
-  return [...new Set([...regular, ...anchors])].sort((a, b) => a - b)
+  const anchors = required.filter(index => index >= lo && index <= hi)
+  return [...new Set([...sampleIndices(lo, hi, maxPoints), ...anchors])].sort((a, b) => a - b)
 }
 
 function sampledMapRoute(latlng: [number, number][], lo: number, hi: number): StravaMapPoint[] {
@@ -1066,8 +1063,50 @@ function temperatureAt(samples: WeatherTemperatureSample[], elapsedS: number): n
   return samples[samples.length - 1].temperatureC
 }
 
+interface TimedMetricSample {
+  elapsedS: number
+  value: number
+}
+
+function timedMetricAt(samples: TimedMetricSample[], elapsedS: number): number | null {
+  if (samples.length === 0) return null
+  if (elapsedS <= samples[0].elapsedS) return samples[0].value
+  for (let index = 1; index < samples.length; index++) {
+    const previous = samples[index - 1]
+    const next = samples[index]
+    if (elapsedS > next.elapsedS) continue
+    const span = next.elapsedS - previous.elapsedS
+    if (span <= 0) return next.value
+    const fraction = (elapsedS - previous.elapsedS) / span
+    return previous.value + (next.value - previous.value) * fraction
+  }
+  return samples[samples.length - 1].value
+}
+
+function activityRespirationSamples(
+  activity: RawStravaActivity,
+  match: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): TimedMetricSample[] {
+  if (!match) return []
+  const stream = garmin?.streams?.[match.activity.id]
+  const time = stream?.time
+  const respiration = stream?.respiration
+  if (!time || !respiration || time.length !== respiration.length) return []
+  const startOffsetS =
+    (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1000
+  if (!Number.isFinite(startOffsetS)) return []
+  const samples: TimedMetricSample[] = []
+  for (let index = 0; index < time.length; index++) {
+    if (!Number.isFinite(time[index]) || !Number.isFinite(respiration[index])) continue
+    if (respiration[index] <= 0) continue
+    samples.push({ elapsedS: time[index] + startOffsetS, value: respiration[index] })
+  }
+  return samples.sort((left, right) => left.elapsedS - right.elapsedS)
+}
+
 interface TimedStreamAlignment {
-  streams: StravaStreams
+  streams: StravaStreams | GarminStreams
   time: number[]
   distance: number[]
 }
@@ -1303,6 +1342,7 @@ function projectDetail(
   streams: StravaStreams | GarminStreams | undefined,
   effortStreams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
+  respirationSamples: TimedMetricSample[],
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: GarminFueling | null,
@@ -1384,6 +1424,7 @@ function projectDetail(
     idx.forEach((i, k) => {
       const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
+      const respiration = timedMetricAt(respirationSamples, elapsedS)
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
@@ -1392,6 +1433,7 @@ function projectDetail(
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(routeHrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
+        resp: respiration == null ? null : round(respiration, 1),
         tempC: temperatureC == null ? null : round(temperatureC, 1),
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
@@ -1672,6 +1714,7 @@ export function buildPayload(
           garminHeartRateMatches.get(id) ?? null,
           garmin,
         ),
+      activityRespirationSamples(a, garminMatch, garmin),
       weather?.activities[id],
       cache.geo?.[String(a.id)],
       matchGarminFueling(a, sport, garmin),

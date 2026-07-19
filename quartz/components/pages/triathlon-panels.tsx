@@ -462,6 +462,7 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
           </button>
         </div>
       </div>
+      <div class="tri-map-selection" aria-hidden="true" />
       <div class="tri-map-tip" aria-hidden="true" />
     </div>
     <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
@@ -500,14 +501,16 @@ export const TrainingPanel = ({ page }: { page?: boolean }) => (
 
 export const GearPanel = () => (
   <div class="tri-gear-wrap">
-    <button class="tri-gear-btn" type="button">
+    <button class="tri-gear-btn" type="button" data-i18n="gear">
       gear
     </button>
     <div class="tri-gear" aria-hidden="true">
       <div class="tri-gear-scroll">
         {GEAR.map(([label, items]) => (
           <div class="tri-gear-row">
-            <span class="tri-gear-k">{label}</span>
+            <span class="tri-gear-k" data-i18n={label}>
+              {label}
+            </span>
             <span class="tri-gear-v">
               {items.map(it => (
                 <span class="tri-gear-li">· {it}</span>
@@ -522,11 +525,13 @@ export const GearPanel = () => (
 
 export const PacePanel = () => (
   <div class="tri-pace-wrap">
-    <button class="tri-pace-btn" type="button">
+    <button class="tri-pace-btn" type="button" data-i18n="pace">
       pace
     </button>
     <div class="tri-pace" aria-hidden="true">
-      <span class="tri-pace-sec">run</span>
+      <span class="tri-pace-sec" data-i18n="run">
+        run
+      </span>
       <div class="tri-pace-row tri-pace-head">
         <span>/mi</span>
         <span>/km</span>
@@ -546,7 +551,9 @@ export const PacePanel = () => (
           </div>
         )
       })}
-      <span class="tri-pace-sec">swim</span>
+      <span class="tri-pace-sec" data-i18n="swim">
+        swim
+      </span>
       <div class="tri-pace-row tri-pace-head">
         <span>/100m</span>
         <span>/mi</span>
@@ -566,7 +573,9 @@ export const PacePanel = () => (
           </div>
         )
       })}
-      <span class="tri-pace-sec">bike</span>
+      <span class="tri-pace-sec" data-i18n="bike">
+        bike
+      </span>
       <div class="tri-pace-row tri-pace-head">
         <span>/mi</span>
         <span>/km</span>
@@ -593,6 +602,7 @@ export const FuelLink = () => (
     href="/thoughts/pdfs/triathlon.pdf"
     target="_blank"
     rel="noopener noreferrer"
+    data-i18n="fuel plan"
   >
     fuel plan
   </a>
@@ -606,7 +616,9 @@ export const FuelEmbed = () => (
     data-pdf-fit="page"
     tabindex={0}
   >
-    <span class="pdf-embed-loading">Loading PDF</span>
+    <span class="pdf-embed-loading" data-i18n="Loading PDF">
+      Loading PDF
+    </span>
   </div>
 )
 
