@@ -9,7 +9,7 @@ tags:
 title: consulting.
 ---
 
-My consulting [[thoughts/craft|work]] spans [[thoughts/Machine learning|machine learning]] systems, efficient inference engine, and [[research|model behaviour]]. This [[index|website]] represents the non-physical me, my notes, and interests. I mainly work on open source, and plan to keep doing so. As of 07/12/2026, it consists of 792407 [[thoughts/|words]] ([[thoughts/scripts/calculate_tokens.py|calculated from this script]])
+My consulting [[thoughts/craft|work]] spans [[thoughts/Machine learning|machine learning]] systems, efficient inference engine, and [[research|model behaviour]]. This [[index|website]] represents the non-physical me, my notes, and interests. I mainly work on open source, and plan to keep doing so. As of 07/19/2026, it consists of 813433 [[thoughts/|words]] ([[thoughts/scripts/calculate_tokens.py|calculated from this script]])
 
 I'm mostly focused on kernel optimization for AI-specific workload and metrics-oriented deployments. I offer the following services:
 
