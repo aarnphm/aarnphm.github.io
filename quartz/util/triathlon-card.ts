@@ -103,6 +103,9 @@ const temperatureUnit = (): string => (imperial ? '°F' : '°C')
 export const formatTemperature = (celsius: number): string =>
   `${Math.round(temperatureValue(celsius))}${temperatureUnit()}`
 
+export const formatRespirationRate = (breathsPerMinute: number): string =>
+  `${breathsPerMinute.toFixed(1)} brpm`
+
 export const formatAltitude = (meters: number): string => {
   const rounded = Math.round(elevationValue(meters))
   return `${(rounded === 0 ? 0 : rounded).toLocaleString('en-US')} ${imperial ? 'ft' : 'm'}`
@@ -193,12 +196,115 @@ export const moreStatRows = (d: StravaActivityDetail): [string, string][] => {
 
 export const routeStreamFlags = (
   d: StravaActivityDetail,
-): { power: boolean; hr: boolean; cad: boolean; temp: boolean } => ({
+): { power: boolean; hr: boolean; cad: boolean; resp: boolean; temp: boolean } => ({
   power: d.deviceWatts && d.route.some(p => p.w > 0),
   hr: d.route.some(p => p.hr > 0),
   cad: d.route.some(p => p.cad > 0),
+  resp: d.route.some(p => p.resp != null && p.resp > 0),
   temp: d.route.some(p => p.tempC != null),
 })
+
+export type ActivitySelectionSummary = {
+  startElapsedS: number
+  endElapsedS: number
+  startDistanceKm: number
+  endDistanceKm: number
+  durationS: number
+  distanceKm: number
+  elevationGainM: number | null
+  averageSpeedKph: number | null
+  averageHeartRate: number | null
+  averageWatts: number | null
+  averageCadence: number | null
+  averageRespirationRate: number | null
+  averageTemperatureC: number | null
+}
+
+type WeightedRouteMetric = { total: number; durationS: number }
+
+const addWeightedRouteMetric = (
+  metric: WeightedRouteMetric,
+  previous: number | null,
+  next: number | null,
+  durationS: number,
+): void => {
+  if (previous == null || next == null || durationS <= 0) return
+  metric.total += ((previous + next) / 2) * durationS
+  metric.durationS += durationS
+}
+
+const weightedRouteValue = (metric: WeightedRouteMetric): number | null =>
+  metric.durationS > 0 ? metric.total / metric.durationS : null
+
+export const activitySelectionSummary = (
+  route: StravaActivityDetail['route'],
+  anchorIndex: number,
+  focusIndex: number,
+): ActivitySelectionSummary | null => {
+  if (route.length < 2) return null
+  const first = Math.max(0, Math.min(route.length - 1, Math.round(anchorIndex)))
+  const last = Math.max(0, Math.min(route.length - 1, Math.round(focusIndex)))
+  const startIndex = Math.min(first, last)
+  const endIndex = Math.max(first, last)
+  if (startIndex === endIndex) return null
+  const start = route[startIndex]
+  const end = route[endIndex]
+  const durationS = end.elapsedS - start.elapsedS
+  const distanceKm = end.d - start.d
+  if (durationS <= 0 || distanceKm <= 0) return null
+
+  let elevationGainM = 0
+  const heartRate: WeightedRouteMetric = { total: 0, durationS: 0 }
+  const watts: WeightedRouteMetric = { total: 0, durationS: 0 }
+  const cadence: WeightedRouteMetric = { total: 0, durationS: 0 }
+  const respiration: WeightedRouteMetric = { total: 0, durationS: 0 }
+  const temperature: WeightedRouteMetric = { total: 0, durationS: 0 }
+  let hasPower = false
+  let hasCadence = false
+  for (let index = startIndex; index <= endIndex && (!hasPower || !hasCadence); index++) {
+    hasPower ||= route[index].w > 0
+    hasCadence ||= route[index].cad > 0
+  }
+
+  for (let index = startIndex + 1; index <= endIndex; index++) {
+    const previous = route[index - 1]
+    const next = route[index]
+    const elapsedS = next.elapsedS - previous.elapsedS
+    if (elapsedS <= 0) continue
+    elevationGainM += Math.max(0, next.alt - previous.alt)
+    addWeightedRouteMetric(
+      heartRate,
+      previous.hr > 0 ? previous.hr : null,
+      next.hr > 0 ? next.hr : null,
+      elapsedS,
+    )
+    addWeightedRouteMetric(watts, hasPower ? previous.w : null, hasPower ? next.w : null, elapsedS)
+    addWeightedRouteMetric(
+      cadence,
+      hasCadence ? previous.cad : null,
+      hasCadence ? next.cad : null,
+      elapsedS,
+    )
+    addWeightedRouteMetric(respiration, previous.resp, next.resp, elapsedS)
+    addWeightedRouteMetric(temperature, previous.tempC, next.tempC, elapsedS)
+  }
+
+  return {
+    startElapsedS: start.elapsedS,
+    endElapsedS: end.elapsedS,
+    startDistanceKm: start.d,
+    endDistanceKm: end.d,
+    durationS,
+    distanceKm,
+    elevationGainM,
+    averageSpeedKph: (distanceKm / durationS) * 3600,
+    averageHeartRate: weightedRouteValue(heartRate),
+    averageWatts: weightedRouteValue(watts),
+    averageCadence: weightedRouteValue(cadence),
+    averageRespirationRate: weightedRouteValue(respiration),
+    averageTemperatureC: weightedRouteValue(temperature),
+  }
+}
 
 const ANALYSIS_KIND_ORDER: ActivityAnalysisKind[] = ['lap', 'segment', 'climb']
 
@@ -248,6 +354,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.power ||
     flags.hr ||
     flags.cad ||
+    flags.resp ||
     flags.temp ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
@@ -513,12 +620,14 @@ export const buildTrace = <N>(
   const domainMax = Math.max(domain?.max ?? peak, domainMin + 1)
   const px = (km: number): number => (km / maxD) * w
   const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
-  let area = `M 0 ${h} `
-  let line = ''
+  const firstY = py(pick(d.route[0], 0)).toFixed(2)
+  let area = `M 0 ${h} L 0 ${firstY} `
+  let line = `M 0 ${firstY} `
   d.route.forEach((p, i) => {
+    if (i === 0 && p.d === 0) return
     const v = pick(p, i)
     area += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
-    line += `${i ? 'L' : 'M'} ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
+    line += `L ${px(p.d).toFixed(2)} ${py(v).toFixed(2)} `
   })
   area += `L ${w} ${h} Z`
   const yTicks = niceTicks(domainMin, domainMax, domain?.intervals ?? 3).map(value => ({
@@ -568,6 +677,34 @@ const buildTemperatureTrace = <N>(
     'temperature',
     () => `${formatTemperature(averageC)} avg`,
     value => `${Math.round(value)}${temperatureUnit()}`,
+    { min, max, intervals: 2 },
+    selection,
+  )
+}
+
+export const buildRespirationTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N => {
+  const values = d.route
+    .map(point => point.resp)
+    .filter((value): value is number => value != null && value > 0)
+  const average = values.reduce((total, value) => total + value, 0) / values.length
+  const step = 5
+  let min = Math.floor(Math.min(...values) / step) * step
+  let max = Math.ceil(Math.max(...values) / step) * step
+  if (max <= min) {
+    min -= step
+    max += step
+  }
+  return buildTrace(
+    f,
+    d,
+    point => point.resp ?? average,
+    'respiration',
+    () => `${formatRespirationRate(average)} avg`,
+    value => `${Math.round(value)}brpm`,
     { min, max, intervals: 2 },
     selection,
   )
@@ -2114,7 +2251,9 @@ export const buildActivity = <N>(
   ctx?: DetailCtx,
   swimTrend: SwimTrendPoint[] = [],
 ): N => {
-  const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act')
+  const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
+    'data-activity-id': `${d.id}`,
+  })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
@@ -2124,7 +2263,7 @@ export const buildActivity = <N>(
     if (fueling) f.add(wrap, fueling)
   }
   const analysis = buildAnalysisBar(f, d)
-  const analysisSelection = analysis ? null : undefined
+  const analysisSelection = null
   if (d.route.length >= 2) {
     const secondary =
       d.sport === 'swim' ? buildSwimStrokes(f, d) : buildElevation(f, d, analysisSelection)
@@ -2191,6 +2330,7 @@ export const buildActivity = <N>(
         ),
       )
     }
+    if (flags.resp) f.add(more, buildRespirationTrace(f, d, analysisSelection))
     if (flags.temp) f.add(more, buildTemperatureTrace(f, d, analysisSelection))
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))

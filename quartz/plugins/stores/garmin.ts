@@ -70,12 +70,14 @@ export interface GarminClimbSegment {
 }
 
 export interface GarminStreams {
+  time?: number[]
   latlng: [number, number][]
   altitude: number[]
   distance: number[]
   watts?: number[]
   heartrate?: number[]
   cadence?: number[]
+  respiration?: number[]
 }
 
 export interface GarminActivityMatch {

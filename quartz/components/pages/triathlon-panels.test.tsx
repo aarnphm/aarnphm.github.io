@@ -1,7 +1,31 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import render from 'preact-render-to-string'
-import { AnalyticsPanel, MapPanel, TrainingPanel } from './triathlon-panels'
+import {
+  AnalyticsPanel,
+  FuelLink,
+  GearPanel,
+  MapPanel,
+  PacePanel,
+  TrainingPanel,
+} from './triathlon-panels'
+
+test('triathlon navigation controls expose their locale keys', () => {
+  const html = render(
+    <>
+      <GearPanel />
+      <PacePanel />
+      <FuelLink />
+    </>,
+  )
+
+  assert.match(html, /class="tri-gear-btn"[^>]*data-i18n="gear"/)
+  assert.match(html, /class="tri-pace-btn"[^>]*data-i18n="pace"/)
+  assert.match(html, /class="tri-fuel-btn internal"[^>]*data-i18n="fuel plan"/)
+  assert.match(html, /class="tri-pace-sec" data-i18n="run"/)
+  assert.match(html, /class="tri-pace-sec" data-i18n="swim"/)
+  assert.match(html, /class="tri-pace-sec" data-i18n="bike"/)
+})
 
 test('triathlon panels share one dialog shell', () => {
   const cases = [
@@ -58,4 +82,16 @@ test('analytics reserves one synchronized lab history mount', () => {
   assert.equal(html.includes('data-chart="vo2test"'), false)
   assert.ok(dexa >= 0)
   assert.ok(gauge > dexa)
+})
+
+test('map reserves one hidden activity selector over its canvas', () => {
+  const html = render(<MapPanel page />)
+  const canvas = html.indexOf('class="tri-map-canvas"')
+  const selection = html.indexOf('class="tri-map-selection" aria-hidden="true"')
+  const tip = html.indexOf('class="tri-map-tip" aria-hidden="true"')
+
+  assert.equal(html.split('class="tri-map-selection"').length - 1, 1)
+  assert.ok(canvas >= 0)
+  assert.ok(selection > canvas)
+  assert.ok(tip > selection)
 })

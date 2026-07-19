@@ -86,7 +86,7 @@ export default (() => {
               {distCombined(payload.totalKm)}
             </span>
           </a>
-          <a class="tri-total" data-no-popover href="/">
+          <a class="tri-total" data-no-popover href="/" data-i18n="home">
             home
           </a>
         </div>
@@ -154,7 +154,7 @@ export default (() => {
               <span class="tri-leg">
                 <Icon sport={sport} cls="tri-ico tri-leg-ico" />
                 <span class="tri-leg-body">
-                  {SPORT_LABEL[sport]} ·{' '}
+                  <span data-i18n={SPORT_LABEL[sport]}>{SPORT_LABEL[sport]}</span> ·{' '}
                   <span
                     class="tri-dist"
                     data-km={t?.distanceKm ?? 0}
@@ -176,7 +176,7 @@ export default (() => {
             <span class="tri-leg">
               <Icon sport="strength" cls="tri-ico tri-leg-ico" />
               <span class="tri-leg-body">
-                strength ·{' '}
+                <span data-i18n="strength">strength</span> ·{' '}
                 <span data-gloss="legtime" tabindex={0}>
                   {dur(payload.strengthTotal.movingTimeS)}
                 </span>{' '}
@@ -204,9 +204,9 @@ export default (() => {
                     km
                   </button>
                 </th>
-                <th>swim</th>
-                <th>bike</th>
-                <th>run</th>
+                <th data-i18n="swim">swim</th>
+                <th data-i18n="bike">bike</th>
+                <th data-i18n="run">run</th>
               </tr>
             </thead>
             <tbody>
@@ -234,16 +234,16 @@ export default (() => {
           <div class="tri-note-foot">
             <GearPanel />
             <PacePanel />
-            <button class="tri-analytics-btn" type="button">
+            <button class="tri-analytics-btn" type="button" data-i18n="analytics">
               analytics
             </button>
-            <button class="tri-map-btn" type="button">
+            <button class="tri-map-btn" type="button" data-i18n="map">
               map
             </button>
-            <button class="tri-training-btn" type="button">
+            <button class="tri-training-btn" type="button" data-i18n="training">
               training
             </button>
-            <button class="tri-calc-btn" type="button">
+            <button class="tri-calc-btn" type="button" data-i18n="calculator">
               calculator
             </button>
             <FuelLink />
@@ -253,7 +253,7 @@ export default (() => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i>inspired by rauno</i>
+              <i data-i18n="inspired by rauno">inspired by rauno</i>
             </a>
           </div>
         </div>

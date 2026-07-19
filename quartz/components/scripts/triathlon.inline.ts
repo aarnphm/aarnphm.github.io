@@ -46,14 +46,17 @@ import {
   type ZoneBand,
 } from '../../util/triathlon-calculator'
 import {
+  activitySelectionSummary,
   activityStatRows,
   axisFrame,
+  buildAnalysisBar,
   buildActivity as buildActivityNode,
   buildCyclingBestEfforts as buildCyclingBestEffortsNode,
   buildHrZones as hrZonesNode,
   buildPowerCurve as powerCurveNode,
   buildPowerHist as powerHistNode,
   buildPowerZones as powerZonesNode,
+  buildRespirationTrace as buildRespirationTraceNode,
   zoneClock,
   buildDayCard as buildDayCardNode,
   buildElevation as buildElevationNode,
@@ -67,6 +70,7 @@ import {
   decodePowerCurve,
   dur,
   formatAltitude,
+  formatRespirationRate,
   formatTemperature,
   gradeAt,
   isImperialUnit,
@@ -77,13 +81,13 @@ import {
   rate,
   scrubDist,
   setDistanceUnit,
-  shortDate,
   speedKph,
   statRow as statRowNode,
   swimTrendHoverAt,
   buildTrace as buildTraceNode,
   zoneDuo as zoneDuoNode,
   type AxisXTick,
+  type ActivitySelectionSummary,
   type DayCardExtras,
   type DetailCtx,
   type SwimTrendChartPoint,
@@ -104,7 +108,13 @@ import {
   swimActivityValueText,
   tl,
   trendUnavailableText,
+  triLongDate,
   triLocale,
+  triMonth,
+  triMonthYear,
+  triNumber,
+  triShortDate as shortDate,
+  triWeekdayNarrow,
   vo2SourceText,
 } from '../../util/triathlon-i18n'
 import { isRecord } from '../../util/type-guards'
@@ -240,7 +250,7 @@ const domF: TriNodeFactory<HTMLElement | SVGElement> = {
 const buildIcon = (sport: ActivityKind): SVGElement => buildIconNode(domF, sport) as SVGElement
 
 const buildElevation = (d: StravaActivityDetail): HTMLElement =>
-  buildElevationNode(domF, d) as HTMLElement
+  buildElevationNode(domF, d, null) as HTMLElement
 
 const buildPool = (d: StravaActivityDetail): HTMLElement => buildPoolNode(domF, d) as HTMLElement
 
@@ -250,7 +260,7 @@ const buildTrace = (
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
-): HTMLElement => buildTraceNode(domF, d, pick, title, cap, tick) as HTMLElement
+): HTMLElement => buildTraceNode(domF, d, pick, title, cap, tick, undefined, null) as HTMLElement
 
 const zoneDuo = (a: HTMLElement | null, b: HTMLElement | null): HTMLElement | null =>
   zoneDuoNode(domF, a, b) as HTMLElement | null
@@ -266,22 +276,17 @@ type ScrubSurface = {
   fmt: (p: StravaActivityDetail['route'][number], i: number) => string
 }
 
-type ActivityAnalysisRange = {
+type ActivityAnalysisRange = ActivitySelectionSummary & {
+  button: HTMLButtonElement | null
+  kind: 'lap' | 'segment' | 'climb' | null
+  id: string | null
+  label: string
+}
+
+type PresetActivityAnalysisRange = ActivityAnalysisRange & {
   button: HTMLButtonElement
   kind: 'lap' | 'segment' | 'climb'
   id: string
-  label: string
-  startElapsedS: number
-  endElapsedS: number
-  startDistanceKm: number
-  endDistanceKm: number
-  distanceKm: number
-  durationS: number
-  elevationGainM: number | null
-  averageSpeedKph: number | null
-  averageHeartRate: number | null
-  averageWatts: number | null
-  averageCadence: number | null
 }
 
 const analysisFinite = (value: string | undefined): number | null => {
@@ -314,7 +319,7 @@ const analysisRate = (sport: ActivityKind, valueKph: number): string => {
   return `${clock(3600 / (valueKph * distanceScale))} /${isImperialUnit() ? 'mi' : 'km'}`
 }
 
-const analysisRangeFromButton = (button: HTMLButtonElement): ActivityAnalysisRange | null => {
+const analysisRangeFromButton = (button: HTMLButtonElement): PresetActivityAnalysisRange | null => {
   const kind = button.dataset.rangeKind
   const id = button.dataset.rangeId
   const startElapsedS = analysisFinite(button.dataset.startElapsedS)
@@ -350,6 +355,8 @@ const analysisRangeFromButton = (button: HTMLButtonElement): ActivityAnalysisRan
     averageHeartRate: analysisFinite(button.dataset.averageHeartRate),
     averageWatts: analysisFinite(button.dataset.averageWatts),
     averageCadence: analysisFinite(button.dataset.averageCadence),
+    averageRespirationRate: null,
+    averageTemperatureC: null,
   }
 }
 
@@ -377,39 +384,66 @@ const hideAnalysisTooltip = (analysis: HTMLElement | null): void => {
   tooltip.dataset.visible = 'false'
 }
 
+type ActivityAnalysisController = {
+  preview: (range: ActivityAnalysisRange) => void
+  restore: () => void
+  lock: (range: ActivityAnalysisRange) => void
+  clear: () => void
+  hasLocked: () => boolean
+}
+
+const activityAnalysisControllers = new WeakMap<HTMLElement, ActivityAnalysisController>()
+
 const linkActivityAnalysis = (
   act: HTMLElement,
-  analysis: HTMLElement,
+  analysis: HTMLElement | null,
   detail: StravaActivityDetail,
-): boolean => {
+  onRange?: (range: ActivityAnalysisRange | null) => void,
+): ActivityAnalysisController | null => {
+  const existing = analysis ? activityAnalysisControllers.get(act) : undefined
+  if (existing) {
+    existing.restore()
+    return existing
+  }
   const route = detail.route
   const sport = detail.sport
   const ranges = Array.from(
-    analysis.querySelectorAll<HTMLButtonElement>('.tri-analysis-range[data-analysis-range]'),
+    analysis?.querySelectorAll<HTMLButtonElement>('.tri-analysis-range[data-analysis-range]') ?? [],
   )
     .map(analysisRangeFromButton)
-    .filter((range): range is ActivityAnalysisRange => range != null)
-  if (ranges.length === 0 || route.length < 2) return false
-  if (analysis.dataset.triAnalysisLinked === '1') return true
-  analysis.dataset.triAnalysisLinked = '1'
+    .filter((range): range is PresetActivityAnalysisRange => range != null)
+  if (route.length < 2) return null
 
   const maxDistanceKm = route[route.length - 1].d || 1
   const routeSelected = act.querySelector<SVGPathElement>('.tri-route-selected')
-  const selections = act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')
-  const readout = analysis.querySelector<HTMLElement>('[data-tri-analysis-readout]')
+  if (!routeSelected && !act.querySelector('.tri-analysis-selection')) return null
+  const readout = analysis?.querySelector<HTMLElement>('[data-tri-analysis-readout]') ?? null
   const readoutLabel = readout?.querySelector<HTMLElement>('.tri-analysis-readout-label') ?? null
   const readoutMetrics =
     readout?.querySelector<HTMLElement>('.tri-analysis-readout-metrics') ?? null
-  const tooltip = analysis.querySelector<HTMLElement>('[data-tri-analysis-tooltip]')
+  const tooltip = analysis?.querySelector<HTMLElement>('[data-tri-analysis-tooltip]') ?? null
   const tooltipLabel = tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-label') ?? null
   const tooltipMetrics =
     tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-metrics') ?? null
-  const selectedKind = analysis.dataset.selectedKind
-  const selectedId = analysis.dataset.selectedId
-  let locked =
+  const stateHost = analysis ?? act
+  const selectedKind = stateHost.dataset.selectedKind
+  const selectedId = stateHost.dataset.selectedId
+  const storedStartDistanceKm = analysisFinite(stateHost.dataset.selectionStartDistanceKm)
+  const storedEndDistanceKm = analysisFinite(stateHost.dataset.selectionEndDistanceKm)
+  const storedSelection =
+    selectedKind === 'selection' && storedStartDistanceKm != null && storedEndDistanceKm != null
+      ? activitySelectionSummary(
+          route,
+          analysisRouteIndex(route, storedStartDistanceKm),
+          analysisRouteIndex(route, storedEndDistanceKm),
+        )
+      : null
+  let locked: ActivityAnalysisRange | null =
     ranges.find(range => range.kind === selectedKind && range.id === selectedId) ??
     ranges.find(range => range.button.getAttribute('aria-pressed') === 'true') ??
-    null
+    (storedSelection
+      ? { ...storedSelection, button: null, kind: null, id: null, label: tl('selection') }
+      : null)
   const rangeMetrics = (range: ActivityAnalysisRange): string[] => {
     const metrics = [scrubDist(range.distanceKm, sport)]
     if (range.elevationGainM != null) metrics.push(`+${formatAltitude(range.elevationGainM)}`)
@@ -425,6 +459,10 @@ const linkActivityAnalysis = (
     if (range.averageHeartRate != null) metrics.push(`${Math.round(range.averageHeartRate)} bpm`)
     if (range.averageCadence != null)
       metrics.push(`${Math.round(range.averageCadence * cadenceScale)} ${cadenceUnit}`)
+    if (range.averageRespirationRate != null)
+      metrics.push(formatRespirationRate(range.averageRespirationRate))
+    if (range.averageTemperatureC != null)
+      metrics.push(formatTemperature(range.averageTemperatureC))
     return metrics
   }
   const showReadout = (range: ActivityAnalysisRange | null): void => {
@@ -443,7 +481,7 @@ const linkActivityAnalysis = (
     hideAnalysisTooltip(analysis)
   }
   const showTooltip = (range: ActivityAnalysisRange): void => {
-    if (!tooltip) return
+    if (!analysis || !tooltip || !range.button) return
     const analysisRect = analysis.getBoundingClientRect()
     const buttonRect = range.button.getBoundingClientRect()
     tooltip.style.setProperty(
@@ -460,22 +498,26 @@ const linkActivityAnalysis = (
     tooltip.dataset.visible = 'true'
   }
   const clearRange = (): void => {
-    for (const selection of selections) {
+    for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
       selection.setAttribute('x', '0')
       selection.setAttribute('width', '0')
     }
-    routeSelected?.setAttribute('d', '')
+    act.querySelector<SVGPathElement>('.tri-route-selected')?.setAttribute('d', '')
+    onRange?.(null)
   }
   const showRange = (range: ActivityAnalysisRange): void => {
     const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, range.startDistanceKm))
     const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, range.endDistanceKm))
     const x = (startDistanceKm / maxDistanceKm) * 100
     const width = Math.max(0, ((endDistanceKm - startDistanceKm) / maxDistanceKm) * 100)
-    for (const selection of selections) {
+    for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
       selection.setAttribute('x', x.toFixed(2))
       selection.setAttribute('width', width.toFixed(2))
     }
-    routeSelected?.setAttribute('d', analysisRoutePath(route, range))
+    act
+      .querySelector<SVGPathElement>('.tri-route-selected')
+      ?.setAttribute('d', analysisRoutePath(route, range))
+    onRange?.(range)
   }
   const showLocked = (): void => {
     if (locked) showRange(locked)
@@ -483,12 +525,21 @@ const linkActivityAnalysis = (
   }
   const setLocked = (range: ActivityAnalysisRange | null): void => {
     locked = range
-    if (range) {
-      analysis.dataset.selectedKind = range.kind
-      analysis.dataset.selectedId = range.id
+    if (range?.kind && range.id) {
+      stateHost.dataset.selectedKind = range.kind
+      stateHost.dataset.selectedId = range.id
+      delete stateHost.dataset.selectionStartDistanceKm
+      delete stateHost.dataset.selectionEndDistanceKm
+    } else if (range) {
+      stateHost.dataset.selectedKind = 'selection'
+      stateHost.dataset.selectedId = 'selection'
+      stateHost.dataset.selectionStartDistanceKm = `${range.startDistanceKm}`
+      stateHost.dataset.selectionEndDistanceKm = `${range.endDistanceKm}`
     } else {
-      delete analysis.dataset.selectedKind
-      delete analysis.dataset.selectedId
+      delete stateHost.dataset.selectedKind
+      delete stateHost.dataset.selectedId
+      delete stateHost.dataset.selectionStartDistanceKm
+      delete stateHost.dataset.selectionEndDistanceKm
     }
     for (const candidate of ranges)
       candidate.button.setAttribute('aria-pressed', String(candidate === range))
@@ -498,20 +549,24 @@ const linkActivityAnalysis = (
   for (const range of ranges) {
     range.button.addEventListener('pointerenter', () => {
       showRange(range)
+      showReadout(range)
       showTooltip(range)
     })
     range.button.addEventListener('pointerleave', () => {
       hideTooltip()
       showLocked()
+      showReadout(locked)
     })
     range.button.addEventListener('focus', () => {
       showRange(range)
+      showReadout(range)
       showTooltip(range)
     })
     range.button.addEventListener('blur', () => {
       if (range.button.matches(':hover')) return
       hideTooltip()
       showLocked()
+      showReadout(locked)
     })
     range.button.addEventListener('click', () => {
       if (locked === range) {
@@ -525,7 +580,7 @@ const linkActivityAnalysis = (
     setLocked(null)
     hideTooltip()
   })
-  analysis.addEventListener('tri:analysis-restore', event => {
+  const restoreSelection = (event: Event): void => {
     if (!(event instanceof CustomEvent) || !isRecord(event.detail)) return
     if (event.detail.selected !== true) {
       setLocked(null)
@@ -534,11 +589,44 @@ const linkActivityAnalysis = (
     }
     const kind = typeof event.detail.kind === 'string' ? event.detail.kind : undefined
     const id = typeof event.detail.id === 'string' ? event.detail.id : undefined
+    if (kind === 'selection') {
+      const startDistanceKm =
+        typeof event.detail.startDistanceKm === 'number' ? event.detail.startDistanceKm : null
+      const endDistanceKm =
+        typeof event.detail.endDistanceKm === 'number' ? event.detail.endDistanceKm : null
+      if (startDistanceKm != null && endDistanceKm != null) {
+        const summary = activitySelectionSummary(
+          route,
+          analysisRouteIndex(route, startDistanceKm),
+          analysisRouteIndex(route, endDistanceKm),
+        )
+        if (summary) {
+          setLocked({ ...summary, button: null, kind: null, id: null, label: tl('selection') })
+          return
+        }
+      }
+    }
     setLocked(ranges.find(range => range.kind === kind && range.id === id) ?? null)
-  })
+  }
+  if (analysis || act.dataset.activityId)
+    stateHost.addEventListener('tri:analysis-restore', restoreSelection)
   setLocked(locked)
   hideTooltip()
-  return true
+  const controller: ActivityAnalysisController = {
+    preview: range => {
+      showRange(range)
+      showReadout(range)
+    },
+    restore: () => {
+      showLocked()
+      showReadout(locked)
+    },
+    lock: setLocked,
+    clear: () => setLocked(null),
+    hasLocked: () => locked != null,
+  }
+  if (analysis) activityAnalysisControllers.set(act, controller)
+  return controller
 }
 
 const linkScrub = (
@@ -547,9 +635,11 @@ const linkScrub = (
   surfaces: ScrubSurface[],
   route: StravaActivityDetail['route'],
   detail?: StravaActivityDetail,
+  analysisOverride?: HTMLElement | null,
+  onRange?: (range: ActivityAnalysisRange | null) => void,
 ): void => {
-  const analysis = act.querySelector<HTMLElement>('[data-tri-analysis]')
-  if (analysis && detail) linkActivityAnalysis(act, analysis, detail)
+  const analysis = analysisOverride ?? act.querySelector<HTMLElement>('[data-tri-analysis]')
+  const rangeController = detail ? linkActivityAnalysis(act, analysis, detail, onRange) : null
   const maxD = route[route.length - 1].d || 1
   const pad = 6
   const span = 88
@@ -577,9 +667,27 @@ const linkScrub = (
   for (const surf of resolved) {
     let pendingX: number | null = null
     let frame: number | null = null
+    let drag: {
+      pointerId: number
+      startClientX: number
+      anchorIndex: number
+      range: ActivityAnalysisRange | null
+    } | null = null
     const show = (clientX: number) => {
       const i = indexAt(clientX, surf.svgEl)
       const p = route[i]
+      if (drag) {
+        const nextRange =
+          Math.abs(clientX - drag.startClientX) >= 3
+            ? activitySelectionSummary(route, drag.anchorIndex, i)
+            : null
+        drag.range = nextRange
+          ? { ...nextRange, button: null, kind: null, id: null, label: tl('selection') }
+          : null
+        act.classList.toggle('tri-act--selecting', drag.range != null)
+        if (drag.range) rangeController?.preview(drag.range)
+        else rangeController?.restore()
+      }
       const x = ((p.d / maxD) * 100).toFixed(2)
       for (const r of resolved) {
         r.cursor.setAttribute('x1', x)
@@ -589,7 +697,7 @@ const linkScrub = (
         marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
         marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
       }
-      const linkedReadouts = analysis?.dataset.selectedId !== undefined
+      const linkedReadouts = Boolean(rangeController?.hasLocked() || drag?.range)
       hideAnalysisTooltip(analysis)
       for (const r of resolved) {
         if (linkedReadouts || r === surf) r.readout.textContent = r.fmt(p, i)
@@ -599,6 +707,7 @@ const linkScrub = (
         r.wrap.classList.toggle('tri-elev-wrap--read', linkedReadouts || r === surf)
     }
     const onMove = (event: PointerEvent) => {
+      if (drag && event.pointerId !== drag.pointerId) return
       pendingX = event.clientX
       if (frame != null) return
       frame = window.requestAnimationFrame(() => {
@@ -608,16 +717,55 @@ const linkScrub = (
         pendingX = null
       })
     }
+    const finishFrame = (clientX: number): void => {
+      if (frame != null) window.cancelAnimationFrame(frame)
+      frame = null
+      pendingX = clientX
+      show(clientX)
+      pendingX = null
+    }
+    const onDown = (event: PointerEvent): void => {
+      if (!event.isPrimary || event.button !== 0 || drag) return
+      pendingX = event.clientX
+      drag = {
+        pointerId: event.pointerId,
+        startClientX: event.clientX,
+        anchorIndex: indexAt(event.clientX, surf.svgEl),
+        range: null,
+      }
+      surf.svgEl.setPointerCapture(event.pointerId)
+    }
+    const onUp = (event: PointerEvent): void => {
+      if (!drag || event.pointerId !== drag.pointerId) return
+      finishFrame(event.clientX)
+      const selected = drag.range
+      const pointerId = drag.pointerId
+      drag = null
+      act.classList.remove('tri-act--selecting')
+      if (selected) rangeController?.lock(selected)
+      else if (rangeController?.hasLocked()) rangeController.clear()
+      if (surf.svgEl.hasPointerCapture(pointerId)) surf.svgEl.releasePointerCapture(pointerId)
+    }
+    const onCancel = (event: PointerEvent): void => {
+      if (!drag || event.pointerId !== drag.pointerId) return
+      drag = null
+      rangeController?.restore()
+      act.classList.remove('tri-act--selecting')
+      onLeave()
+    }
     const onLeave = () => {
+      if (drag) return
       if (frame != null) window.cancelAnimationFrame(frame)
       frame = null
       pendingX = null
       act.classList.remove('tri-act--scrub')
       for (const r of resolved) r.wrap.classList.remove('tri-elev-wrap--read')
     }
+    surf.svgEl.addEventListener('pointerdown', onDown)
     surf.svgEl.addEventListener('pointermove', onMove)
+    surf.svgEl.addEventListener('pointerup', onUp)
     surf.svgEl.addEventListener('pointerleave', onLeave)
-    surf.svgEl.addEventListener('pointercancel', onLeave)
+    surf.svgEl.addEventListener('pointercancel', onCancel)
   }
 }
 
@@ -693,6 +841,7 @@ const buildHeatRoute = (
     g.appendChild(svg('path', attrs))
   }
   s.appendChild(g)
+  s.appendChild(svg('path', { class: 'tri-route-selected', d: '' }))
   s.appendChild(svg('circle', { class: 'tri-route-cursor', cx: -10, cy: -10, r: 2.6 }))
   return s
 }
@@ -743,9 +892,11 @@ const HR_RAMP = ramp7('#9c7f7a', '#af3029')
 const CAD_RAMP = ramp7('#8a8197', '#5e409d')
 const SPD_RAMP = ramp7('#7d8a96', '#205ea6')
 const ELEV_RAMP = ramp7('#868a72', '#66800b')
+const RESP_RAMP = ramp7('#74898a', '#16878a')
 
 interface MapMetric {
   label: string
+  shortLabel: string
   ramp: string[]
   zeroGap?: boolean
   pick: (p: StravaActivityDetail['route'][number], i: number) => number
@@ -761,6 +912,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   const hasPower = d.deviceWatts && route.some(p => p.w > 0)
   const hasHr = route.some(p => p.hr > 0)
   const hasCad = route.some(p => p.cad > 0)
+  const hasResp = route.some(p => p.resp != null && p.resp > 0)
   const hasElev = d.maxAlt > d.minAlt
   const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
   const paceFmt = (kmh: number): string => {
@@ -775,6 +927,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const paceSpec: MapMetric = {
     label: d.sport === 'bike' ? 'speed' : 'pace',
+    shortLabel: d.sport === 'bike' ? 'S' : 'P',
     ramp: SPD_RAMP,
     pick: (_p, i) => pace[i],
     fmt: paceFmt,
@@ -790,6 +943,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const powerSpec: MapMetric = {
     label: 'power',
+    shortLabel: 'W',
     ramp: HEAT_RAMP,
     pick: p => p.w,
     fmt: v => `${Math.round(v)} W`,
@@ -806,6 +960,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   }
   const hrSpec: MapMetric = {
     label: 'heart rate',
+    shortLabel: 'HR',
     ramp: HR_RAMP,
     pick: p => p.hr,
     fmt: v => `${Math.round(v)} bpm`,
@@ -823,6 +978,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   const cadScale = d.sport === 'run' ? 2 : 1
   const cadSpec: MapMetric = {
     label: 'cadence',
+    shortLabel: 'C',
     ramp: CAD_RAMP,
     zeroGap: true,
     pick: p => p.cad * cadScale,
@@ -837,8 +993,19 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
   }
+  const respirationSpec: MapMetric = {
+    label: 'respiration',
+    shortLabel: 'R',
+    ramp: RESP_RAMP,
+    pick: p => p.resp ?? 0,
+    fmt: formatRespirationRate,
+    profile: () => buildRespirationTraceNode(domF, d, null) as HTMLElement,
+    readout: p =>
+      `${scrubDist(p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
+  }
   const elevSpec: MapMetric = {
     label: 'elevation',
+    shortLabel: 'E',
     ramp: ELEV_RAMP,
     pick: p => p.alt,
     fmt: formatAltitude,
@@ -853,17 +1020,20 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     if (hasPower) specs.push(powerSpec)
     if (hasHr) specs.push(hrSpec)
     if (hasCad) specs.push(cadSpec)
+    if (hasResp) specs.push(respirationSpec)
     specs.push(paceSpec)
     if (hasElev) specs.push(elevSpec)
   } else if (d.sport === 'run') {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
     if (hasCad) specs.push(cadSpec)
+    if (hasResp) specs.push(respirationSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasPower) specs.push(powerSpec)
   } else {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
+    if (hasResp) specs.push(respirationSpec)
   }
   return specs
 }
@@ -873,6 +1043,8 @@ interface MapDetailOpts {
   initialMetric?: number
   onMetric?: (i: number) => void
   onHover?: (p: StravaActivityDetail['route'][number], i: number) => void
+  analysis?: HTMLElement | null
+  onRange?: (range: ActivityAnalysisRange | null) => void
 }
 
 const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLElement => {
@@ -950,6 +1122,8 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       ],
       d.route,
       d,
+      opts?.analysis,
+      opts?.onRange,
     )
     Array.from(tablist.children).forEach((t, i) => {
       const on = i === active
@@ -961,9 +1135,10 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
     opts?.onMetric?.(active)
   }
   specs.forEach((spec, i) => {
-    const tab = el('button', 'tri-map-tab', spec.label)
+    const tab = el('button', 'tri-map-tab', spec.shortLabel)
     tab.setAttribute('type', 'button')
     tab.setAttribute('role', 'tab')
+    tab.setAttribute('aria-label', spec.label)
     tab.addEventListener('click', () => {
       active = i
       draw()
@@ -1007,6 +1182,12 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
       surfaces.push({
         wrap: trace,
         fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadenceScale} ${cadenceUnit}`,
+      })
+    else if (trace.dataset.triTrace === 'respiration')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
       })
     else if (trace.dataset.triTrace === 'temperature')
       surfaces.push({
@@ -1068,6 +1249,24 @@ const setupDayEmbeds = (): (() => void) | null => {
   if (embeds.length === 0) return null
   let live = true
   const teardowns: (() => void)[] = []
+  const upgradeByEmbed = new Map<HTMLElement, () => void>()
+  const upgradeObserver = new IntersectionObserver(
+    entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) continue
+        const upgrade = upgradeByEmbed.get(entry.target)
+        if (!upgrade) continue
+        upgradeObserver.unobserve(entry.target)
+        upgradeByEmbed.delete(entry.target)
+        upgrade()
+      }
+    },
+    { rootMargin: '600px 0px' },
+  )
+  teardowns.push(() => {
+    upgradeObserver.disconnect()
+    upgradeByEmbed.clear()
+  })
   for (const embed of embeds) {
     const date = embed.dataset.triathlonDate!
     const extras = dayExtrasFromDataset(embed.dataset)
@@ -1211,18 +1410,21 @@ const setupDayEmbeds = (): (() => void) | null => {
         swimStates[pendingSwimMode.index].mode = pendingSwimMode.mode
       pendingSwimMode = null
       const analysisStates = Array.from(
-        embed.querySelectorAll<HTMLElement>('[data-tri-analysis]'),
-        workspace => {
+        embed.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
+        activity => {
+          const workspace = activity.querySelector<HTMLElement>('[data-tri-analysis]') ?? activity
           const focused =
             document.activeElement instanceof HTMLButtonElement &&
             workspace.contains(document.activeElement)
               ? document.activeElement.closest<HTMLButtonElement>('[data-analysis-range]')
               : null
           return {
-            activityId: workspace.dataset.activityId,
+            activityId: activity.dataset.activityId,
             kind: workspace.dataset.selectedKind,
             id: workspace.dataset.selectedId,
             selected: Boolean(workspace.dataset.selectedKind && workspace.dataset.selectedId),
+            startDistanceKm: analysisFinite(workspace.dataset.selectionStartDistanceKm),
+            endDistanceKm: analysisFinite(workspace.dataset.selectionEndDistanceKm),
             focusedKind: focused?.dataset.rangeKind,
             focusedId: focused?.dataset.rangeId,
           }
@@ -1253,16 +1455,23 @@ const setupDayEmbeds = (): (() => void) | null => {
       embed.replaceChildren(fresh)
       applyI18n(fresh)
       for (const state of analysisStates) {
-        const workspace = Array.from(
-          fresh.querySelectorAll<HTMLElement>('[data-tri-analysis]'),
+        const activity = Array.from(
+          fresh.querySelectorAll<HTMLElement>('.tri-act[data-activity-id]'),
         ).find(candidate => candidate.dataset.activityId === state.activityId)
-        if (!workspace) continue
+        if (!activity) continue
+        const workspace = activity.querySelector<HTMLElement>('[data-tri-analysis]') ?? activity
         const buttons = Array.from(
           workspace.querySelectorAll<HTMLButtonElement>('[data-analysis-range]'),
         )
         workspace.dispatchEvent(
           new CustomEvent('tri:analysis-restore', {
-            detail: { selected: state.selected, kind: state.kind, id: state.id },
+            detail: {
+              selected: state.selected,
+              kind: state.kind,
+              id: state.id,
+              startDistanceKm: state.startDistanceKm,
+              endDistanceKm: state.endDistanceKm,
+            },
           }),
         )
         buttons
@@ -1303,6 +1512,8 @@ const setupDayEmbeds = (): (() => void) | null => {
     const upgrade = () => {
       if (upgraded) return
       upgraded = true
+      upgradeObserver.unobserve(embed)
+      upgradeByEmbed.delete(embed)
       void loadDetailPayload(detailPath).then(data => {
         if (!live || !embed.isConnected || !data) return
         payload = data
@@ -1333,6 +1544,8 @@ const setupDayEmbeds = (): (() => void) | null => {
       }
       embed.addEventListener('focusin', onKeyboardFocus)
       embed.addEventListener('pointermove', onChartMove, { passive: true })
+      upgradeByEmbed.set(embed, upgrade)
+      upgradeObserver.observe(embed)
       teardowns.push(() => {
         for (const ev of events) embed.removeEventListener(ev, upgrade)
         embed.removeEventListener('focusin', onKeyboardFocus)
@@ -2176,14 +2389,18 @@ const ANA_H = 30
 const KG_PER_LB = 0.45359237
 const weightUnitLabel = (): string => (isImperialUnit() ? 'lb' : 'kg')
 const wConv = (kg: number): number => (isImperialUnit() ? kg / KG_PER_LB : kg)
-const wNum = (kg: number, kgDp = 1, lbDp = 0): string =>
-  wConv(kg).toFixed(isImperialUnit() ? lbDp : kgDp)
+const wNum = (kg: number, kgDp = 1, lbDp = 0): string => {
+  const digits = isImperialUnit() ? lbDp : kgDp
+  return triNumber(wConv(kg), digits, digits)
+}
 const wFmt = (kg: number, kgDp = 1, lbDp = 0): string =>
   `${wNum(kg, kgDp, lbDp)} ${weightUnitLabel()}`
 const wSigned = (kg: number, dp: number): string => {
   const v = wConv(kg)
-  return `${v > 0 ? '+' : ''}${v.toFixed(dp)}`
+  return `${v > 0 ? '+' : ''}${triNumber(v, dp, dp)}`
 }
+const pctFmt = (value: number, digits: number): string =>
+  `${triNumber(value, digits, digits)}${triLocale() === 'fr' ? '\u00a0' : ''}%`
 const weightSwitch = (): HTMLElement => {
   const g = el('div', 'tri-unit-switch', undefined, { role: 'group', 'aria-label': 'weight unit' })
   for (const u of ['kg', 'lb'] as const) {
@@ -2349,20 +2566,6 @@ const buildGauge = (data: Analytics): HTMLElement => {
   return block
 }
 
-const PMC_MONTHS = [
-  'jan',
-  'feb',
-  'mar',
-  'apr',
-  'may',
-  'jun',
-  'jul',
-  'aug',
-  'sep',
-  'oct',
-  'nov',
-  'dec',
-]
 const PMC_H = 82
 const PMC_TOP = 4
 const PMC_BOT = 52
@@ -2384,7 +2587,7 @@ const monthTicks = (dates: string[], xPct: (i: number) => number): AxisXTick[] =
     if (seen.has(mo)) continue
     seen.add(mo)
     out.push({
-      label: PMC_MONTHS[Number(dates[i].slice(5, 7)) - 1],
+      label: triMonth(dates[i]),
       pct: xPct(i),
       cls: i === 0 ? 'tri-cax-xt--first' : undefined,
     })
@@ -3542,42 +3745,51 @@ const buildBody = (data: Analytics): HTMLElement => {
   if (b.trendKgPerWeek != null)
     cap.appendChild(
       markGloss(
-        el('span', 'tri-ana-k', `${wSigned(b.trendKgPerWeek, 2)} ${weightUnitLabel()}/wk`),
+        el('span', 'tri-ana-k', `${wSigned(b.trendKgPerWeek, 2)} ${weightUnitLabel()}/${tl('wk')}`),
         'wtrend',
       ),
     )
   if (b.goalKg != null) {
     const delta =
       b.goalDeltaKg != null ? ` (${wSigned(b.goalDeltaKg, 1)} ${weightUnitLabel()})` : ''
-    const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ wk` : ''
+    const eta = b.goalEtaWeeks != null ? ` · $\\approx${b.goalEtaWeeks}$ ${tl('wk')}` : ''
     cap.appendChild(
       markGloss(mathK('tri-ana-k', `${tl('goal')} ${wFmt(b.goalKg)}${delta}${eta}`), 'wgoal'),
     )
   }
   if (b.goalBmr != null || b.goalLeanBmr != null) {
-    const lean = b.goalLeanBmr != null ? ` · FFM ${b.goalLeanBmr} kcal` : ''
+    const lean = b.goalLeanBmr != null ? ` · ${tl('FFM')} ${b.goalLeanBmr} kcal` : ''
     const text =
-      b.goalBmr != null ? `goal BMR ${b.goalBmr} kcal${lean}` : `goal BMR ${b.goalLeanBmr} kcal`
+      b.goalBmr != null
+        ? `${tl('goal')} ${tl('BMR')} ${b.goalBmr} kcal${lean}`
+        : `${tl('goal')} ${tl('BMR')} ${b.goalLeanBmr} kcal`
     cap.appendChild(markGloss(el('span', 'tri-ana-k tri-bmr-k', text), 'bmr'))
   }
   if (b.bodyFatPct != null)
     cap.appendChild(
-      markGloss(el('span', 'tri-ana-k', `${tl('fat')} ${b.bodyFatPct.toFixed(1)}%`), 'bodyfat'),
+      markGloss(el('span', 'tri-ana-k', `${tl('fat')} ${pctFmt(b.bodyFatPct, 1)}`), 'bodyfat'),
     )
   if (b.bmi != null)
-    cap.appendChild(markGloss(el('span', 'tri-ana-k', `${tl('bmi')} ${b.bmi.toFixed(1)}`), 'bmi'))
+    cap.appendChild(
+      markGloss(el('span', 'tri-ana-k', `${tl('bmi')} ${triNumber(b.bmi, 1, 1)}`), 'bmi'),
+    )
   if (b.latestBmr != null)
-    cap.appendChild(markGloss(el('span', 'tri-ana-k tri-bmr-k', `BMR ${b.latestBmr} kcal`), 'bmr'))
+    cap.appendChild(
+      markGloss(el('span', 'tri-ana-k tri-bmr-k', `${tl('BMR')} ${b.latestBmr} kcal`), 'bmr'),
+    )
   if (b.muscleMassKg != null)
     cap.appendChild(el('span', 'tri-ana-k', `${tl('muscle')} ${wFmt(b.muscleMassKg, 1, 1)}`))
   if (b.boneMassKg != null)
     cap.appendChild(el('span', 'tri-ana-k', `${tl('bone')} ${wFmt(b.boneMassKg, 1, 1)}`))
   if (b.bodyWaterPct != null)
-    cap.appendChild(el('span', 'tri-ana-k', `${tl('water')} ${b.bodyWaterPct.toFixed(1)}%`))
+    cap.appendChild(el('span', 'tri-ana-k', `${tl('water')} ${pctFmt(b.bodyWaterPct, 1)}`))
   const next = (data.events ?? [])
     .filter(e => e.date >= data.meta.today)
     .sort((a, b2) => a.date.localeCompare(b2.date))[0]
-  if (next) cap.appendChild(el('span', 'tri-ana-k', `${next.event ?? tl('race')} · ${next.date}`))
+  if (next)
+    cap.appendChild(
+      el('span', 'tri-ana-k', `${next.event ?? tl('race')} · ${triLongDate(next.date)}`),
+    )
   block.appendChild(cap)
   return block
 }
@@ -4526,11 +4738,11 @@ const buildDexaChart = (d: DexaRecord): HTMLElement | undefined => {
       'data-dexa-region': tl(column.label),
       'data-dexa-total': wFmt(column.totalLbs * KG_PER_LB, 1, 1),
       'data-dexa-lean': wFmt(column.leanLbs * KG_PER_LB, 1, 1),
-      'data-dexa-lean-pct': `${leanPct.toFixed(0)}%`,
+      'data-dexa-lean-pct': pctFmt(leanPct, 0),
       'data-dexa-fat': wFmt(column.fatLbs * KG_PER_LB, 1, 1),
-      'data-dexa-fat-pct': `${fatPct.toFixed(0)}%`,
+      'data-dexa-fat-pct': pctFmt(fatPct, 0),
       'data-dexa-bone': wFmt(column.boneLbs * KG_PER_LB, 1, 1),
-      'data-dexa-bone-pct': `${bonePct.toFixed(0)}%`,
+      'data-dexa-bone-pct': pctFmt(bonePct, 0),
     })
     const track = el('div', 'tri-dexa-column-track')
     const bar = el('div', 'tri-dexa-column-bar')
@@ -4545,7 +4757,7 @@ const buildDexaChart = (d: DexaRecord): HTMLElement | undefined => {
       track,
       el('span', 'tri-dexa-column-label', tl(column.label)),
       el('span', 'tri-dexa-column-value', wFmt(column.totalLbs * KG_PER_LB, 1, 1)),
-      el('span', 'tri-dexa-column-fat', `${fatPct.toFixed(0)}% ${tl('fat')}`),
+      el('span', 'tri-dexa-column-fat', `${pctFmt(fatPct, 0)} ${tl('fat')}`),
     )
     plot.appendChild(item)
   }
@@ -4556,9 +4768,9 @@ const buildDexaChart = (d: DexaRecord): HTMLElement | undefined => {
 const buildDexaDetail = (d: DexaRecord): HTMLElement => {
   const detail = el('div', 'tri-dexa-detail-inner')
   const head = el('div', 'tri-dexa-head')
-  const bf = el('div', 'tri-dexa-bf', d.bodyFat.toFixed(1))
+  const bf = el('div', 'tri-dexa-bf', triNumber(d.bodyFat, 1, 1))
   bf.appendChild(el('span', 'tri-dexa-unit', tl('% fat')))
-  head.append(bf, el('span', 'tri-dexa-cat', `ACE ${aceBand(d.bodyFat)}`))
+  head.append(bf, el('span', 'tri-dexa-cat', `ACE ${tl(aceBand(d.bodyFat))}`))
   detail.appendChild(head)
 
   const legend = el('div', 'tri-dexa-legend')
@@ -4588,11 +4800,13 @@ const buildDexaDetail = (d: DexaRecord): HTMLElement => {
   }
   stat('lean', wFmt(d.leanLbs * KG_PER_LB, 1, 1))
   if (d.rmr != null) stat('rmr', `${d.rmr} kcal`)
-  if (d.bmd != null)
-    stat('bmd', `${d.bmd.toFixed(2)}${d.bmdT != null ? ` · T${signed(d.bmdT)}` : ''}`)
+  if (d.bmd != null) {
+    const tScore = d.bmdT != null ? ` · T${d.bmdT > 0 ? '+' : ''}${triNumber(d.bmdT, 1, 1)}` : ''
+    stat('bmd', `${triNumber(d.bmd, 2, 2)}${tScore}`)
+  }
   if (d.vatLbs != null) stat('vat', wFmt(d.vatLbs * KG_PER_LB, 2, 2))
-  if (d.rsmi != null) stat('rsmi', d.rsmi.toFixed(1))
-  if (d.ag != null) stat('a/g', d.ag.toFixed(2))
+  if (d.rsmi != null) stat('rsmi', triNumber(d.rsmi, 1, 1))
+  if (d.ag != null) stat('a/g', triNumber(d.ag, 2, 2))
   detail.appendChild(stats)
   return detail
 }
@@ -4615,19 +4829,6 @@ const buildLabDateChevron = (): SVGElement => {
     }),
   )
   return icon
-}
-
-const positionLabDateMenu = (trigger: HTMLElement, menu: HTMLElement): void => {
-  const rect = trigger.getBoundingClientRect()
-  const width = Math.min(rect.width, window.innerWidth - 16)
-  const left = Math.max(8, Math.min(rect.right - width, window.innerWidth - width - 8))
-  const gap = 4
-  const below = rect.bottom + gap
-  const height = menu.getBoundingClientRect().height
-  const top = below + height > window.innerHeight - 8 ? Math.max(8, rect.top - height - gap) : below
-  menu.style.inlineSize = `${width}px`
-  menu.style.insetInlineStart = `${left}px`
-  menu.style.insetBlockStart = `${top}px`
 }
 
 const buildDexa = (data: Analytics): HTMLElement => {
@@ -4659,8 +4860,8 @@ const buildDexa = (data: Analytics): HTMLElement => {
   const dateMenu = el('div', 'tri-lab-date-menu', undefined, {
     role: 'listbox',
     'aria-label': tl('lab test date'),
-    popover: 'auto',
   })
+  dateMenu.hidden = true
   dateMenu.id = `tri-lab-date-menu-${Math.random().toString(36).slice(2)}`
   dateTrigger.setAttribute('aria-controls', dateMenu.id)
   const dateOptions: HTMLButtonElement[] = []
@@ -4673,7 +4874,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
     option.setAttribute('aria-selected', 'false')
     option.append(
       el('span', 'tri-lab-date-check', '✓', { 'aria-hidden': 'true' }),
-      el('span', 'tri-lab-date-option-value', date),
+      el('span', 'tri-lab-date-option-value', triLongDate(date)),
     )
     dateOptions.push(option)
     dateMenu.appendChild(option)
@@ -4696,7 +4897,7 @@ const buildDexa = (data: Analytics): HTMLElement => {
   const selectLabDate = (index: number, persist = true): void => {
     const date = labDates[index]
     if (!date) return
-    dateValue.textContent = date
+    dateValue.textContent = triLongDate(date)
     for (const [optionIndex, option] of dateOptions.entries())
       option.setAttribute('aria-selected', String(optionIndex === index))
     for (const [sessionIndex, session] of sessions.entries())
@@ -4708,20 +4909,19 @@ const buildDexa = (data: Analytics): HTMLElement => {
     }
   }
   const closeDateMenu = (restoreFocus = false): void => {
-    if (dateMenu.matches(':popover-open')) dateMenu.hidePopover()
+    dateMenu.hidden = true
+    dateTrigger.setAttribute('aria-expanded', 'false')
     if (restoreFocus) dateTrigger.focus()
   }
   const openDateMenu = (): void => {
-    if (dateMenu.matches(':popover-open')) return
-    dateMenu.style.visibility = 'hidden'
-    dateMenu.showPopover()
-    positionLabDateMenu(dateTrigger, dateMenu)
-    dateMenu.style.removeProperty('visibility')
+    if (!dateMenu.hidden) return
+    dateMenu.hidden = false
+    dateTrigger.setAttribute('aria-expanded', 'true')
     dateOptions.find(option => option.getAttribute('aria-selected') === 'true')?.focus()
   }
   dateTrigger.addEventListener('click', () => {
-    if (dateMenu.matches(':popover-open')) closeDateMenu()
-    else openDateMenu()
+    if (dateMenu.hidden) openDateMenu()
+    else closeDateMenu()
   })
   dateTrigger.addEventListener('keydown', event => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
@@ -4733,12 +4933,10 @@ const buildDexa = (data: Analytics): HTMLElement => {
       selectLabDate(index)
       closeDateMenu(true)
     })
-  dateMenu.addEventListener('toggle', () => {
-    dateTrigger.setAttribute('aria-expanded', String(dateMenu.matches(':popover-open')))
-  })
   dateMenu.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
       event.preventDefault()
+      event.stopPropagation()
       closeDateMenu(true)
       return
     }
@@ -4756,6 +4954,10 @@ const buildDexa = (data: Analytics): HTMLElement => {
     if (targetIndex < 0) return
     event.preventDefault()
     dateOptions[targetIndex]?.focus()
+  })
+  datePicker.addEventListener('focusout', event => {
+    if (event.relatedTarget instanceof Node && datePicker.contains(event.relatedTarget)) return
+    closeDateMenu()
   })
   let initialIndex = labDates.length - 1
   try {
@@ -4885,7 +5087,7 @@ const buildVo2max = (data: Analytics): HTMLElement => {
     if (lab.maxKmh != null)
       labCap.appendChild(el('span', 'tri-ana-k', `vmax ${fmtSpeedKmh(lab.maxKmh, 1, '')}`))
     if (lab.ve != null) labCap.appendChild(el('span', 'tri-ana-k', `ve ${lab.ve}l/min`))
-    labCap.appendChild(el('span', 'tri-ana-k', `${tl('lab')} ${lab.date}`))
+    labCap.appendChild(el('span', 'tri-ana-k', `${tl('lab')} ${triLongDate(lab.date)}`))
     block.appendChild(labCap)
   }
   return block
@@ -4904,8 +5106,8 @@ type Vo2ProfileMetric = 'vo2' | 'hr' | 've' | 'rf' | 'tv'
 type Vo2ProfileChartKind = 'metabolic' | 'ventilation'
 
 const vo2ProfileChartLabel = (kind: Vo2ProfileChartKind): string =>
-  kind === 'metabolic' ? 'Metabolic' : 'Ventilation'
-const vo2ProfileTargetLegend = (): string => `Target[${speedUnitLabel()}]`
+  tl(kind === 'metabolic' ? 'Metabolic' : 'Ventilation')
+const vo2ProfileTargetLegend = (): string => `${tl('Target')}[${speedUnitLabel()}]`
 const vo2ProfileTargetTick = (kmh: number): string =>
   isImperialUnit() ? speedFromKmh(kmh).toFixed(kmh === 0 ? 0 : 1) : kmh.toFixed(0)
 
@@ -4994,12 +5196,12 @@ const vo2ProfileStat = (
   const item = el('span', 'tri-vo2p-stat')
   item.append(
     el('span', `tri-vo2p-stat-name ${cls}`, label),
-    el('span', 'tri-vo2p-stat-k', 'Min:'),
-    el('span', `tri-vo2p-stat-v ${cls}`, stats.min.toFixed(dp)),
-    el('span', 'tri-vo2p-stat-k', 'Max:'),
-    el('span', `tri-vo2p-stat-v ${cls}`, stats.max.toFixed(dp)),
-    el('span', 'tri-vo2p-stat-k', 'Avg:'),
-    el('span', `tri-vo2p-stat-v ${cls}`, stats.avg.toFixed(dp)),
+    el('span', 'tri-vo2p-stat-k', `${tl('Min')}:`),
+    el('span', `tri-vo2p-stat-v ${cls}`, triNumber(stats.min, dp, dp)),
+    el('span', 'tri-vo2p-stat-k', `${tl('Max')}:`),
+    el('span', `tri-vo2p-stat-v ${cls}`, triNumber(stats.max, dp, dp)),
+    el('span', 'tri-vo2p-stat-k', `${tl('Avg')}:`),
+    el('span', `tri-vo2p-stat-v ${cls}`, triNumber(stats.avg, dp, dp)),
   )
   return item
 }
@@ -5103,10 +5305,10 @@ const vo2ProfileZoneHit = (
 const vo2ProfileZoneHits = (s: SVGElement, profile: Vo2LabProfile): void => {
   const warmupEnd = profile.warmupEndSec ?? 0
   const cooldownStart = profile.cooldownStartSec ?? profile.durationSec
-  if (profile.warmupEndSec != null) vo2ProfileZoneHit(s, profile, 0, warmupEnd, 'Warm-Up')
-  vo2ProfileZoneHit(s, profile, warmupEnd, cooldownStart, 'Test')
+  if (profile.warmupEndSec != null) vo2ProfileZoneHit(s, profile, 0, warmupEnd, tl('Warm-Up'))
+  vo2ProfileZoneHit(s, profile, warmupEnd, cooldownStart, tl('Test'))
   if (profile.cooldownStartSec != null)
-    vo2ProfileZoneHit(s, profile, cooldownStart, profile.durationSec, 'Cool-Down')
+    vo2ProfileZoneHit(s, profile, cooldownStart, profile.durationSec, tl('Cool-Down'))
 }
 
 const vo2ProfileMarker = (
@@ -5282,7 +5484,7 @@ const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind)
     kind === 'metabolic'
       ? [
           vo2ProfileStat('VO2', profile.stats.vo2, 'tri-vo2p-blue', 1),
-          vo2ProfileStat('HR', profile.stats.hr, 'tri-vo2p-red', 0),
+          vo2ProfileStat(tl('HR'), profile.stats.hr, 'tri-vo2p-red', 0),
         ]
       : [
           vo2ProfileStat('Tv', profile.stats.tv, 'tri-vo2p-orange', 1),
@@ -5294,7 +5496,7 @@ const buildVo2ProfileChart = (profile: Vo2LabProfile, kind: Vo2ProfileChartKind)
   legend.appendChild(vo2ProfileLegendItem(vo2ProfileTargetLegend(), 'tri-vo2p-target', true))
   if (kind === 'metabolic') {
     legend.appendChild(vo2ProfileLegendItem('VO2[mL/kg/min]', 'tri-vo2p-blue'))
-    legend.appendChild(vo2ProfileLegendItem('HR[bpm]', 'tri-vo2p-red'))
+    legend.appendChild(vo2ProfileLegendItem(`${tl('HR')}[bpm]`, 'tri-vo2p-red'))
   } else {
     legend.appendChild(vo2ProfileLegendItem('Ve[L/min]', 'tri-vo2p-green'))
     legend.appendChild(vo2ProfileLegendItem('Rf[bpm]', 'tri-vo2p-cyan'))
@@ -5317,7 +5519,7 @@ const buildVo2Profile = (profile: Vo2LabProfile): HTMLElement => {
 
 const appendVo2TestCap = (block: HTMLElement, r: Vo2LabRecord): void => {
   const cap = el('div', 'tri-elev-cap')
-  cap.appendChild(el('span', 'tri-ana-k', `vo2max ${r.value.toFixed(1)} ml/kg/min`))
+  cap.appendChild(el('span', 'tri-ana-k', `vo2max ${triNumber(r.value, 1, 1)} ml/kg/min`))
   if (r.percentile != null) cap.appendChild(el('span', 'tri-ana-k', `p${r.percentile}`))
   if (r.vt1Hr != null)
     cap.appendChild(
@@ -5633,7 +5835,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   block.appendChild(controls)
   const foot = el('div', 'tri-ftp-foot')
   foot.append(
-    el('span', 'tri-ftp-source', `${tl('lab')} ${h.date}`),
+    el('span', 'tri-ftp-source', `${tl('lab')} ${triLongDate(h.date)}`),
     el('span', 'tri-ftp-source', tl(h.note)),
     el('button', 'tri-ftp-reset', tl('reset'), { type: 'button' }),
   )
@@ -6533,7 +6735,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       const cx = (nearest.fraction * ANA_W).toFixed(2)
       heatCursor.setAttribute('x1', cx)
       heatCursor.setAttribute('x2', cx)
-      heatReadout.textContent = `${activity.date} · ${activity.name} · ${temperature} · ${activity.hotMinutes} ${tl('hot min')} · ${tl('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
+      heatReadout.textContent = `${shortDate(activity.date)} · ${activity.name} · ${temperature} · ${activity.hotMinutes} ${tl('hot min')} · ${tl('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
       heatBlock.classList.add('tri-chart--hover')
     }
     const onLeave = (): void => heatBlock.classList.remove('tri-chart--hover')
@@ -7409,6 +7611,17 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   let scrubCleanup: (() => void) | null = null
   let selIndex = -1
 
+  const closeLabDateMenuFromOutside = (event: PointerEvent): void => {
+    const picker = panel.querySelector<HTMLElement>('.tri-lab-date-picker')
+    if (!picker || event.composedPath().includes(picker)) return
+    const menu = picker.querySelector<HTMLElement>('.tri-lab-date-menu')
+    if (!menu || menu.hidden) return
+    menu.hidden = true
+    picker
+      .querySelector<HTMLElement>('.tri-lab-date-trigger')
+      ?.setAttribute('aria-expanded', 'false')
+  }
+
   const render = (d: Analytics) => {
     data = d
     scrubCleanup?.()
@@ -7596,7 +7809,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         const head = el('span', 'tri-ana-ritem-h')
         head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
         const sub =
-          `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
+          `${triLongDate(a.date)} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
           (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
         const it = ritem(head, sub)
         it.dataset.id = String(a.id)
@@ -7664,6 +7877,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   results?.addEventListener('click', onResultsClick)
   detail?.addEventListener('click', onCardToggle)
   document.addEventListener('keydown', onKey)
+  document.addEventListener('pointerdown', closeLabDateMenuFromOutside)
   const onUnitChange = () => {
     if (data) {
       render(data)
@@ -7682,6 +7896,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     results?.removeEventListener('click', onResultsClick)
     detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', onKey)
+    document.removeEventListener('pointerdown', closeLabDateMenuFromOutside)
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
     scrubCleanup?.()
@@ -7938,6 +8153,15 @@ const routeFC = (d: StravaActivityDetail): GeoFC => ({
   features: lineFeatures(gpsRoute(d)),
 })
 
+const rangeFC = (d: StravaActivityDetail, range: ActivityAnalysisRange): GeoFC => {
+  const start = analysisRouteIndex(d.route, range.startDistanceKm)
+  const end = analysisRouteIndex(d.route, range.endDistanceKm)
+  return {
+    type: 'FeatureCollection',
+    features: lineFeatures(d.route.slice(Math.min(start, end), Math.max(start, end) + 1)),
+  }
+}
+
 const pointFC = (lng: number, lat: number): GeoFC => ({
   type: 'FeatureCollection',
   features: [
@@ -8026,6 +8250,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   let activeRouteMetric = 0
   const canvas = root.querySelector<HTMLElement>('.tri-map-canvas')
   const overlay = root.querySelector<HTMLElement>('.tri-map-overlay')
+  const selectionOverlay = root.querySelector<HTMLElement>('.tri-map-selection')
   const tip = root.querySelector<HTMLElement>('.tri-map-tip')
   const legendLo = overlay?.querySelector<HTMLElement>('.tri-map-legend-lo') ?? null
   const legendHi = overlay?.querySelector<HTMLElement>('.tri-map-legend-hi') ?? null
@@ -8056,6 +8281,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     let styleSeq = 0
     let eventsBound = false
     let selection: { d: StravaActivityDetail; i: number } | null = null
+    let selectedRange: ActivityAnalysisRange | null = null
     const ready = () => Boolean(map && okFlag)
     const clearHover = () => {
       hoverId = null
@@ -8203,6 +8429,21 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
           ],
         },
       })
+      addSource('tri-range', { type: 'geojson', data: emptyFC() })
+      addLayer({
+        id: 'tri-range-casing',
+        type: 'line',
+        source: 'tri-range',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fff9f3', 'line-width': 5.2 },
+      })
+      addLayer({
+        id: 'tri-range',
+        type: 'line',
+        source: 'tri-range',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#fc4c02', 'line-width': 3.2 },
+      })
       addSource('tri-dot', { type: 'geojson', data: emptyFC() })
       addLayer({
         id: 'tri-dot',
@@ -8277,19 +8518,35 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (!ready()) return
       clearHover()
       map.getSource('tri-sel')?.setData(routeFC(d))
+      map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
       recolor(d, i)
       map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
       map.setPaintProperty('tri-traces', 'line-opacity', 0.06)
       const b = fcBounds(routeFC(d))
-      if (b) map.fitBounds(b, { padding: 40, maxZoom: 15, duration: reduce ? 0 : 600 })
+      const bottom =
+        selectionOverlay?.getAttribute('aria-hidden') === 'false'
+          ? selectionOverlay.offsetHeight + 56
+          : 40
+      if (b)
+        map.fitBounds(b, {
+          padding: { top: 40, right: 40, bottom, left: 40 },
+          maxZoom: 15,
+          duration: reduce ? 0 : 600,
+        })
+    }
+    const selectRange = (d: StravaActivityDetail, range: ActivityAnalysisRange | null) => {
+      selectedRange = range
+      if (ready()) map.getSource('tri-range')?.setData(range ? rangeFC(d, range) : emptyFC())
     }
     const moveDot = (lng: number, lat: number) =>
       ready() ? map.getSource('tri-dot')?.setData(pointFC(lng, lat)) : undefined
     const clearSelection = () => {
       selection = null
+      selectedRange = null
       if (!ready()) return
       clearHover()
       map.getSource('tri-sel')?.setData(emptyFC())
+      map.getSource('tri-range')?.setData(emptyFC())
       map.getSource('tri-dot')?.setData(emptyFC())
       setOverviewData()
     }
@@ -8302,6 +8559,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       okFlag = false
       eventsBound = false
       selection = null
+      selectedRange = null
       if (canvas) (canvas as unknown as { _mapInstance: unknown })._mapInstance = null
     }
     return {
@@ -8310,6 +8568,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       drawOverview,
       applyMode,
       select,
+      selectRange,
       recolor,
       moveDot,
       clearSelection,
@@ -8375,6 +8634,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const finishCloseDetail = () => {
     panel.classList.remove('tri-map--detail')
     if (detail) detail.replaceChildren()
+    if (selectionOverlay) selectionOverlay.replaceChildren()
     activeRouteId = null
     activeRouteMetric = 0
     mapCtl.clearSelection()
@@ -8383,6 +8643,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const closeDetail = (animate = false) => {
     detailAnim?.cancel()
     detailAnim = null
+    selectionOverlay?.setAttribute('aria-hidden', 'true')
     const card = detail?.querySelector<HTMLElement>('.tri-pop-card')
     if (!animate || reduce || !card) {
       finishCloseDetail()
@@ -8428,6 +8689,13 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       const { head, back } = detailHead(shortDate(d.date), d.name || d.sport)
       card.appendChild(head)
       const mapMode = mapCtl.ok()
+      const analysisNode = mapMode ? buildAnalysisBar(domF, d) : null
+      const analysis =
+        analysisNode instanceof HTMLElement && analysisNode.querySelector('[data-analysis-range]')
+          ? analysisNode
+          : null
+      selectionOverlay?.replaceChildren(...(analysis ? [analysis] : []))
+      selectionOverlay?.setAttribute('aria-hidden', 'true')
       card.appendChild(
         renderMapDetail(d, {
           mapMode,
@@ -8437,6 +8705,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
             if (mapMode) mapCtl.recolor(d, i)
           },
           onHover: mapMode ? p => mapCtl.moveDot(p.lng, p.lat) : undefined,
+          analysis,
+          onRange: mapMode ? range => mapCtl.selectRange(d, range) : undefined,
         }),
       )
       detail.replaceChildren(card)
@@ -8446,11 +8716,17 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       back.addEventListener('click', () => closeDetail(true), { once: true })
       if (mapMode && selectMap) {
         requestAnimationFrame(() => {
+          if (analysis && activeRouteId === id)
+            selectionOverlay?.setAttribute('aria-hidden', 'false')
           mapCtl.resize()
           mapCtl.select(d, initialMetric)
         })
       } else if (mapMode) {
-        requestAnimationFrame(() => mapCtl.resize())
+        requestAnimationFrame(() => {
+          if (analysis && activeRouteId === id)
+            selectionOverlay?.setAttribute('aria-hidden', 'false')
+          mapCtl.resize()
+        })
       } else {
         body?.scrollTo({ top: 0 })
       }
@@ -10296,21 +10572,6 @@ interface PredResult {
 
 const PRED_AXIS_FRACS = [0, 0.25, 0.5, 0.75, 1]
 const PRED_DEFAULT_COMPARE: PredCompareKey = '7'
-const PRED_CALENDAR_WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-const PRED_CALENDAR_MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
 let predRunSeq = 0
 
 interface PredDateParts {
@@ -10527,7 +10788,7 @@ const buildPredDatePicker = (
     const maxMonth = parsePredDate(max)
     const prevMonth = addPredMonths(view, -1)
     const nextMonth = addPredMonths(view, 1)
-    const monthTitle = `${PRED_CALENDAR_MONTHS[view.month - 1]} ${view.year}`
+    const monthTitle = triMonthYear(predDateValue(view.year, view.month, 1))
     const head = el('div', 'tri-pred-cal-head')
     const title = el('span', 'tri-pred-cal-title', monthTitle)
     const prev = predButton('tri-pred-cal-nav', undefined, { 'aria-label': 'previous month' })
@@ -10551,8 +10812,8 @@ const buildPredDatePicker = (
     head.append(title, prev, next)
 
     const week = el('div', 'tri-pred-cal-week')
-    for (const day of PRED_CALENDAR_WEEKDAYS)
-      week.appendChild(el('span', 'tri-pred-cal-weekday', day))
+    for (let day = 0; day < 7; day += 1)
+      week.appendChild(el('span', 'tri-pred-cal-weekday', triWeekdayNarrow(day)))
 
     const grid = el('div', 'tri-pred-cal-grid')
     const monthStart = new Date(view.year, view.month - 1, 1)
@@ -10661,7 +10922,7 @@ const syncPredDateControl = (block: HTMLElement, f: PaceForecaster): void => {
   block.dataset.compareMax = bounds.max
   block.dataset.compareDate = date
   trigger.dataset.value = date
-  text.textContent = date
+  text.textContent = triLongDate(date)
   const panel = block.querySelector<HTMLElement>('.tri-pred-calendar')
   if (panel?.matches(':popover-open')) panel.dispatchEvent(new CustomEvent('tri:pred-date-render'))
 }

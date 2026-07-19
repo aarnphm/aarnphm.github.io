@@ -70,6 +70,75 @@ test('emits dense map geometry separately from compact telemetry route', () => {
   assert.ok(detail.route.every(point => Number.isFinite(point.speedKph)))
 })
 
+test('aligns Garmin respiration samples onto the Strava route timeline', () => {
+  const activity = ride({
+    distance: 2_000,
+    movingTime: 20,
+    elapsedTime: 20,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 3,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+    streams: {
+      101: {
+        time: [0, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+      },
+    },
+  }
+  const garmin: GarminCache = {
+    version: 5,
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Respiration ride',
+        sport: 'bike',
+        startDate: '2026-06-07T12:00:02Z',
+        startDateLocal: '2026-06-07T08:00:02',
+        distanceM: 2_000,
+        movingTimeS: 20,
+        elapsedTimeS: 20,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      edge: {
+        time: [0, 10, 20],
+        latlng: [
+          [43.64, -79.4],
+          [43.65, -79.39],
+          [43.66, -79.38],
+        ],
+        altitude: [80, 85, 90],
+        distance: [0, 1_000, 2_000],
+        respiration: [18, 28, 38],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  assert.deepEqual(
+    detail.route.map(point => point.resp),
+    [18, 26, 36],
+  )
+})
+
 function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {
   const distance = [0]
   for (let i = 1; i < n; i++) distance.push(distance[i - 1] + increments(i))
@@ -240,6 +309,48 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
       averageCadence: null,
     },
   ])
+})
+
+test('keeps even route coverage when segment boundaries exceed the sampling budget', () => {
+  const points = 1_000
+  const distance = Array.from({ length: points }, (_, index) => index * 61.4)
+  const cache: StravaRawCache = {
+    version: 3,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride({ movingTime: points - 1, elapsedTime: points }) },
+    activityDetails: {
+      101: {
+        calories: 500,
+        laps: [],
+        segmentEfforts: Array.from({ length: 75 }, (_, index) =>
+          analysisRange(`segment-${index}`, `Segment ${index}`, {
+            startIndex: 10 + index * 3,
+            endIndex: 11 + index * 3,
+          }),
+        ),
+      },
+    },
+    streams: {
+      101: {
+        time: Array.from({ length: points }, (_, index) => index),
+        latlng: Array.from({ length: points }, (_, index) => [
+          43 + index * 0.00001,
+          -79 - index * 0.00002,
+        ]),
+        altitude: Array.from({ length: points }, () => 80),
+        distance,
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
+  assert.equal(detail.analysisRanges.length, 75)
+  assert.ok(detail.route.some(point => point.d === 0.614))
+  for (let index = 1; index < detail.route.length; index++)
+    assert.ok(detail.route[index].d - detail.route[index - 1].d <= 0.5)
 })
 
 test('keeps dense map route continuous across GPS jumps', () => {
