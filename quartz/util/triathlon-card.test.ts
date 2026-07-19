@@ -17,14 +17,22 @@ import {
   buildElevation,
   buildPowerCurve,
   buildRoute,
+  buildRunGroundContactTrace,
+  buildRunStrideTrace,
+  buildRunVerticalOscillationTrace,
   buildSwimTrends,
   buildTrace,
   clock,
   decodePowerCurve,
   encodePowerCurve,
   formatAltitude,
+  formatGroundContactTime,
+  formatStrideLength,
+  formatVerticalOscillation,
   powerCurveFraction,
   powerCurveHoverAt,
+  runStrideLengthM,
+  runStrideLengthValue,
   setDistanceUnit,
   swimActivityBlocks,
   swimActivityPointLabel,
@@ -631,6 +639,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
     },
   ],
   analysisRanges: [],
+  runSplitsMetric: [],
+  runSplitsStandard: [],
   minAlt: 75,
   maxAlt: 110,
   descentM: 20,
@@ -887,6 +897,92 @@ test('renders route stream graphs in the server activity markup', () => {
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
 })
 
+test('renders estimated run stride length without bridging missing cadence samples', () => {
+  setDistanceUnit(false)
+  const run = detail({
+    sport: 'run',
+    deviceWatts: false,
+    route: detail().route.map((point, index) => ({
+      ...point,
+      cad: index === 1 ? 0 : 80 + index * 5,
+      speedKph: index === 1 ? 0 : 10 + index,
+    })),
+  })
+  const first = runStrideLengthM(run.route[0])
+  assert.ok(first)
+  assert.equal(first.toFixed(3), '1.042')
+  assert.equal(runStrideLengthM(run.route[1]), null)
+  assert.equal(formatStrideLength(first), '1.04 m')
+
+  const trace = buildRunStrideTrace(factory, run, null)
+  assert.ok(trace)
+  assert.equal(trace.properties.dataTriTrace, 'estimated stride length')
+  assert.deepEqual(
+    byClass(trace, 'tri-elev-cap')
+      .flatMap(cap => byTag(cap, 'span'))
+      .map(text),
+    ['estimated stride length', '1.10 m avg'],
+  )
+  const line = byClass(trace, 'tri-elev-line')[0]
+  assert.ok(line)
+  assert.equal(String(line.properties.d).match(/M /g)?.length, 2)
+
+  setDistanceUnit(true)
+  assert.equal(formatStrideLength(first), '3.42 ft')
+  setDistanceUnit(false)
+})
+
+test('prefers native running dynamics for the whole activity and preserves sensor gaps', () => {
+  setDistanceUnit(false)
+  const run = detail({
+    sport: 'run',
+    deviceWatts: false,
+    route: detail().route.map((point, index) => ({
+      ...point,
+      speedKph: 10 + index,
+      cad: 80,
+      strideLengthM: index === 1 ? null : 1.1 + index * 0.05,
+      groundContactTimeMs: index === 1 ? null : 245 - index * 3,
+      verticalOscillationCm: index === 1 ? null : 9.8 - index * 0.1,
+    })),
+  })
+
+  assert.equal(runStrideLengthM(run.route[1])?.toFixed(3), '1.146')
+  assert.equal(runStrideLengthValue(run, run.route[1]), null)
+  assert.equal(formatGroundContactTime(241.4), '241 ms')
+  assert.equal(formatVerticalOscillation(9.76), '9.8 cm')
+  setDistanceUnit(true)
+  assert.equal(formatVerticalOscillation(9.76), '3.8 in')
+  setDistanceUnit(false)
+
+  const traces = [
+    buildRunStrideTrace(factory, run, null),
+    buildRunGroundContactTrace(factory, run, null),
+    buildRunVerticalOscillationTrace(factory, run, null),
+  ]
+  assert.ok(traces.every(trace => trace != null))
+  assert.deepEqual(
+    traces.map(trace => trace?.properties.dataTriTrace),
+    ['stride length', 'ground contact time', 'vertical oscillation'],
+  )
+  assert.deepEqual(
+    traces.map(trace =>
+      byClass(trace!, 'tri-elev-cap')
+        .flatMap(cap => byTag(cap, 'span'))
+        .map(text),
+    ),
+    [
+      ['stride length', '1.18 m avg'],
+      ['ground contact time', '240 ms avg'],
+      ['vertical oscillation', '9.6 cm avg'],
+    ],
+  )
+  for (const trace of traces) {
+    const line = byClass(trace!, 'tri-elev-line')[0]
+    assert.equal(String(line.properties.d).match(/M /g)?.length, 2)
+  }
+})
+
 test('summarizes a dragged graph range from either pointer direction', () => {
   const route = detail().route
   const forward = activitySelectionSummary(route, 1, 3)
@@ -986,6 +1082,189 @@ test('renders compact positional analysis bars beneath the existing activity fig
   assert.equal(tooltip.properties.style, undefined)
   assert.deepEqual(byClass(tooltip, 'tri-analysis-tooltip-label').map(text), [''])
   assert.equal(text(byClass(tooltip, 'tri-analysis-tooltip-metrics')[0]), '')
+})
+
+test('renders run laps as selectable pace splits against the lap-weighted average', () => {
+  setDistanceUnit(false)
+  const run = analysisDetail()
+  run.sport = 'run'
+  run.analysisRanges = [
+    {
+      kind: 'lap',
+      id: 'lap-1',
+      label: 'Lap 1',
+      startElapsedS: 0,
+      endElapsedS: 1_600,
+      startDistanceKm: 0,
+      endDistanceKm: 10,
+      durationS: 300,
+      distanceKm: 1,
+      elevationGainM: 4,
+      averageSpeedKph: 12,
+      averageHeartRate: 145,
+      averageWatts: null,
+      averageCadence: 84,
+    },
+    {
+      kind: 'lap',
+      id: 'lap-2',
+      label: 'Lap 2',
+      startElapsedS: 1_600,
+      endElapsedS: 3_200,
+      startDistanceKm: 10,
+      endDistanceKm: 20,
+      durationS: 360,
+      distanceKm: 1,
+      elevationGainM: 5,
+      averageSpeedKph: 10,
+      averageHeartRate: 148,
+      averageWatts: null,
+      averageCadence: 82,
+    },
+    {
+      kind: 'lap',
+      id: 'lap-3',
+      label: 'Lap 3',
+      startElapsedS: 3_200,
+      endElapsedS: 4_800,
+      startDistanceKm: 20,
+      endDistanceKm: 30,
+      durationS: 240,
+      distanceKm: 1,
+      elevationGainM: 3,
+      averageSpeedKph: 15,
+      averageHeartRate: 152,
+      averageWatts: null,
+      averageCadence: 87,
+    },
+    ...analysisRanges().filter(range => range.kind !== 'lap'),
+  ]
+
+  const rendered = buildActivity(factory, run, true)
+  const analysis = byClass(rendered, 'tri-analysis')[0]
+  const more = byClass(rendered, 'tri-act-more')[0]
+  const splits = byClass(more, 'tri-run-splits')[0]
+  assert.ok(splits)
+  assert.equal(splits.tagName, 'section')
+  assert.equal(splits.properties.ariaLabel, 'Run lap splits')
+  assert.deepEqual(byClass(splits, 'tri-run-splits-average').map(text), ['avg 5:00 /km'])
+  assert.deepEqual(
+    byClass(splits, 'tri-run-splits-columns')[0]
+      .children.filter((child): child is Element => child.type === 'element')
+      .map(text),
+    ['split', 'km', 'pace', '+/−'],
+  )
+
+  const rows = byClass(splits, 'tri-run-split')
+  assert.deepEqual(
+    rows.map(row => [row.properties.dataRangeKind, row.properties.dataRangeId]),
+    [
+      ['lap', 'lap-1'],
+      ['lap', 'lap-2'],
+      ['lap', 'lap-3'],
+    ],
+  )
+  assert.deepEqual(byClass(splits, 'tri-run-split-lap').map(text), ['1', '2', '3'])
+  assert.deepEqual(byClass(splits, 'tri-run-split-distance').map(text), ['1.00', '1.00', '1.00'])
+  assert.deepEqual(byClass(splits, 'tri-run-split-pace').map(text), [
+    '5:00 /km',
+    '6:00 /km',
+    '4:00 /km',
+  ])
+  assert.deepEqual(byClass(splits, 'tri-run-split-delta').map(text), ['—', '−1:00', '+2:00'])
+  assert.equal(byClass(splits, 'tri-run-split-delta--slower').length, 1)
+  assert.equal(byClass(splits, 'tri-run-split-delta--faster').length, 1)
+  assert.match(String(rows[0].properties.style), /--tri-run-split-width:80\.000%/)
+  assert.match(String(rows[0].properties.style), /--tri-run-split-average:80\.000%/)
+  assert.equal(rows[0].properties.ariaPressed, 'false')
+  assert.match(String(rows[1].properties.ariaLabel), /−1:00 versus previous lap$/)
+
+  const bands = byClass(analysis, 'tri-analysis-band')
+  assert.deepEqual(
+    bands.map(band => band.properties.dataAnalysisKind),
+    ['lap', 'segment', 'climb'],
+  )
+  assert.equal(byClass(analysis, 'tri-analysis-range').length, 5)
+  assert.deepEqual(
+    more.children
+      .filter((child): child is Element => child.type === 'element')
+      .slice(0, 2)
+      .map(child => classNames(child)),
+    [['tri-run-splits'], ['tri-elev-wrap']],
+  )
+})
+
+test('selects Strava metric or standard run splits from the active distance unit', () => {
+  const run = analysisDetail()
+  run.sport = 'run'
+  run.runSplitsMetric = [
+    {
+      split: 1,
+      distanceKm: 1,
+      elapsedTimeS: 305,
+      movingTimeS: 300,
+      averageSpeedKph: 12,
+      elevationDifferenceM: 4,
+      paceZone: 2,
+    },
+    {
+      split: 2,
+      distanceKm: 0.5,
+      elapsedTimeS: 190,
+      movingTimeS: 180,
+      averageSpeedKph: 10,
+      elevationDifferenceM: -2,
+      paceZone: 3,
+    },
+  ]
+  run.runSplitsStandard = [
+    {
+      split: 1,
+      distanceKm: 1.609344,
+      elapsedTimeS: 490,
+      movingTimeS: 480,
+      averageSpeedKph: 12.07008,
+      elevationDifferenceM: 5,
+      paceZone: 2,
+    },
+    {
+      split: 2,
+      distanceKm: 0.804672,
+      elapsedTimeS: 280,
+      movingTimeS: 270,
+      averageSpeedKph: 10.72896,
+      elevationDifferenceM: -3,
+      paceZone: 3,
+    },
+  ]
+
+  setDistanceUnit(false)
+  const metric = buildActivity(factory, run, true)
+  const metricSplits = byClass(metric, 'tri-run-splits')[0]
+  assert.deepEqual(byClass(metricSplits, 'tri-run-split-distance').map(text), ['1.00', '0.50'])
+  assert.deepEqual(byClass(metricSplits, 'tri-run-split-pace').map(text), ['5:00 /km', '6:00 /km'])
+  assert.deepEqual(
+    byClass(metricSplits, 'tri-run-split').map(row => row.properties.dataRangeId),
+    ['split:metric:1', 'split:metric:2'],
+  )
+
+  setDistanceUnit(true)
+  try {
+    const standard = buildActivity(factory, run, true)
+    const standardSplits = byClass(standard, 'tri-run-splits')[0]
+    assert.deepEqual(byClass(standardSplits, 'tri-run-split-distance').map(text), ['1.00', '0.50'])
+    assert.deepEqual(byClass(standardSplits, 'tri-run-split-pace').map(text), [
+      '8:00 /mi',
+      '9:00 /mi',
+    ])
+    assert.deepEqual(byClass(standardSplits, 'tri-run-split-delta').map(text), ['—', '−1:00'])
+    assert.deepEqual(
+      byClass(standardSplits, 'tri-run-split').map(row => row.properties.dataRangeId),
+      ['split:standard:1', 'split:standard:2'],
+    )
+  } finally {
+    setDistanceUnit(false)
+  }
 })
 
 test('reserves a bottom climb lane when an activity has no climbs', () => {

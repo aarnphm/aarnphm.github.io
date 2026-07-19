@@ -1,12 +1,12 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { AppleCache, AppleSwim } from '../plugins/stores/apple'
+import type { AppleCache, AppleSwim, AppleWorkout } from '../plugins/stores/apple'
 import {
   emptyPayload,
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
-import { enrichSwimMetrics, swimActivityIntervals } from './strava-payload'
+import { enrichRunDynamics, enrichSwimMetrics, swimActivityIntervals } from './strava-payload'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -38,6 +38,8 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   garmin: null,
   route: [],
   analysisRanges: [],
+  runSplitsMetric: [],
+  runSplitsStandard: [],
   minAlt: 0,
   maxAlt: 0,
   descentM: 0,
@@ -70,11 +72,93 @@ const appleSwim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   ...values,
 })
 
+const appleRun = (values: Partial<AppleWorkout> = {}): AppleWorkout => ({
+  id: 'apple-run',
+  activity: 'running',
+  start: '2026-07-17T00:30:45Z',
+  end: '2026-07-17T01:10:45Z',
+  durationS: 2_400,
+  distanceM: 5_643.5,
+  source: 'Runna',
+  device: 'Apple Watch',
+  heartRate: [],
+  strideLengthM: [],
+  groundContactTimeMs: [],
+  verticalOscillationCm: [],
+  ...values,
+})
+
 const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
   const payload = emptyPayload(1)
   for (const item of details) payload.details[String(item.id)] = item
   return payload
 }
+
+test('aligns native Apple running dynamics to the matching run route', () => {
+  const start = '2026-07-17T00:30:45Z'
+  const run = detail({
+    sport: 'run',
+    name: 'Runna run',
+    start,
+    distanceKm: 5.6435,
+    route: [0, 5, 30].map((elapsedS, index) => ({
+      x: index / 2,
+      y: index / 2,
+      d: index,
+      alt: 100,
+      w: 0,
+      hr: 150,
+      cad: 80,
+      resp: null,
+      tempC: null,
+      lat: 43,
+      lng: -79,
+      elapsedS,
+      speedKph: 10,
+    })),
+  })
+  const sparseDuplicate = appleRun({
+    id: 'strava-copy',
+    source: 'Strava',
+    strideLengthM: [{ time: start, value: 1.5 }],
+  })
+  const native = appleRun({
+    strideLengthM: [
+      { time: start, value: 1.18 },
+      { time: '2026-07-17T00:30:50Z', value: 1.21 },
+    ],
+    groundContactTimeMs: [
+      { time: start, value: 241 },
+      { time: '2026-07-17T00:30:50Z', value: 238 },
+    ],
+    verticalOscillationCm: [
+      { time: start, value: 9.8 },
+      { time: '2026-07-17T00:30:50Z', value: 9.6 },
+    ],
+  })
+  const payload = payloadWith(run)
+  const apple: AppleCache = {
+    version: 9,
+    lastSync: 1,
+    days: {},
+    workouts: { [sparseDuplicate.id]: sparseDuplicate, [native.id]: native },
+  }
+
+  enrichRunDynamics(payload, apple)
+
+  assert.deepEqual(
+    payload.details['1'].route.map(point => ({
+      strideLengthM: point.strideLengthM,
+      groundContactTimeMs: point.groundContactTimeMs,
+      verticalOscillationCm: point.verticalOscillationCm,
+    })),
+    [
+      { strideLengthM: 1.18, groundContactTimeMs: 241, verticalOscillationCm: 9.8 },
+      { strideLengthM: 1.21, groundContactTimeMs: 238, verticalOscillationCm: 9.6 },
+      { strideLengthM: null, groundContactTimeMs: null, verticalOscillationCm: null },
+    ],
+  )
+})
 
 test('enriches swim detail and trend with Apple count, rate, and active-time pace', () => {
   const payload = payloadWith(detail())

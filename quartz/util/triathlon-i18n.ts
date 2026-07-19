@@ -189,7 +189,10 @@ const en: TriDict = {
     threshold: 'threshold',
     endurance: 'endurance',
     climb: 'climb',
+    'stride length': 'stride length',
+    'estimated stride length': 'estimated stride length',
     cadence: 'cadence',
+    'vertical oscillation': 'vertical oscillation',
     'stroke rate': 'stroke rate',
     tempo: 'tempo',
     anaerobic: 'anaerobic',
@@ -513,6 +516,10 @@ const en: TriDict = {
       'Stroke rate is the average from recorded swims that include both stroke counts and timing. Each rate is the stroke count divided by the time during which strokes were recorded. The target is 30 strokes per minute.',
     'radar recovery definition':
       'Recovery uses your average Oura Readiness score over the past 14 days. If Readiness is unavailable, it uses HRV.',
+    'radar stride run definition':
+      'Stride length is your 42 day average distance per running step. Native Apple Watch samples take priority. When those samples are unavailable, the value is estimated from speed and cadence. The score shows where the average falls within your recorded range.',
+    'radar oscillation run definition':
+      'Vertical oscillation is your 42 day average vertical movement per running step from Apple Watch. The score is inverted within your recorded range, so less movement plots farther from the centre. Pace, terrain, height, and running style affect the measurement.',
     'radar unit wkg definition':
       '$\\mathrm{W/kg}$ means watts per kilogram of body weight. A rider producing 270 W at 90 kg has 3.0 W/kg.',
     'radar unit ctl definition':
@@ -534,6 +541,10 @@ const en: TriDict = {
       "Readiness is Oura's daily recovery score from 0 to 100. It uses your sleep and HRV. It also uses resting heart rate and recent activity.",
     'radar unit ms definition':
       'ms means milliseconds. HRV measures the change in time between heartbeats. A value above your usual range can mean better recovery.',
+    'radar unit stride definition':
+      'Stride length is stored in metres per step. Imperial mode converts it to feet using 1 m = 3.281 ft.',
+    'radar unit oscillation definition':
+      'Vertical oscillation is stored in centimetres. Imperial mode converts it to inches using 1 in = 2.54 cm.',
     'radar unit default definition':
       'The raw value is the original measurement used to calculate this score from 0 to 100.',
   },
@@ -680,7 +691,7 @@ const en: TriDict = {
     },
     radar: {
       term: 'abilities',
-      def: 'Each sport has six scores from 0 to 100. Sprint and threshold use power or speed. Endurance uses 42 days of training load. Bike and run also use climbing rate and cadence. Swim uses pace and stroke rate. Recovery uses your average readiness. The dashed line shows the projected score 28 days from now.',
+      def: 'Each sport has six scores from 0 to 100. Sprint and threshold use power or speed. Endurance uses 42 days of training load. Run uses stride length, cadence, and vertical oscillation. Bike uses climbing rate and cadence. Swim uses pace and stroke rate. Bike and swim retain recovery. The dashed line shows the projected score 28 days from now.',
     },
     ef: {
       term: 'efficiency factor',
@@ -724,7 +735,10 @@ const fr: TriDict = {
     threshold: 'seuil',
     endurance: 'endurance',
     climb: 'grimpe',
+    'stride length': 'longueur de foulée',
+    'estimated stride length': 'longueur de foulée estimée',
     cadence: 'cadence',
+    'vertical oscillation': 'oscillation verticale',
     'stroke rate': 'fréquence de nage',
     tempo: 'tempo',
     anaerobic: 'anaérobie',
@@ -1053,6 +1067,10 @@ const fr: TriDict = {
       'La fréquence de nage est la moyenne des fréquences calculées pour les séances qui contiennent un nombre de coups et une durée. Chaque fréquence divise le nombre de coups par le temps pendant lequel ils ont été enregistrés. La cible est de 30 coups par minute.',
     'radar recovery definition':
       'La récupération utilise ton score Oura moyen des 14 derniers jours. Si le score Oura manque, elle utilise la VFC.',
+    'radar stride run definition':
+      "La longueur de foulée est ta distance moyenne par pas sur 42 jours. Les mesures natives de l'Apple Watch sont prioritaires. Lorsqu'elles manquent, la valeur est estimée avec la vitesse et la cadence. La note indique où cette moyenne se situe dans ta plage enregistrée.",
+    'radar oscillation run definition':
+      "L'oscillation verticale est ton mouvement vertical moyen par pas sur 42 jours, mesuré par l'Apple Watch. La note est inversée dans ta plage enregistrée, donc moins de mouvement s'affiche plus loin du centre. L'allure, le terrain, la taille et le style de course influencent la mesure.",
     'radar unit wkg definition':
       '$\\mathrm{W/kg}$ signifie watts par kilogramme de poids. Un cycliste qui produit 270 W à 90 kg a 3,0 W/kg.',
     'radar unit ctl definition':
@@ -1075,6 +1093,10 @@ const fr: TriDict = {
       "La préparation est le score quotidien de récupération d'Oura, de 0 à 100. Elle utilise ton sommeil et ta VFC. Elle utilise aussi ta fréquence cardiaque au repos et ton activité récente.",
     'radar unit ms definition':
       'ms signifie millisecondes. La VFC mesure la variation du temps entre les battements. Une valeur au-dessus de ta plage habituelle peut indiquer une meilleure récupération.',
+    'radar unit stride definition':
+      'La longueur de foulée est stockée en mètres par pas. Le mode impérial la convertit en pieds avec 1 m = 3,281 ft.',
+    'radar unit oscillation definition':
+      "L'oscillation verticale est stockée en centimètres. Le mode impérial la convertit en pouces avec 1 in = 2,54 cm.",
     'radar unit default definition':
       "La valeur brute est la mesure d'origine utilisée pour calculer cette note de 0 à 100.",
   },
@@ -1221,7 +1243,7 @@ const fr: TriDict = {
     },
     radar: {
       term: 'aptitudes',
-      def: "Chaque sport a six notes de 0 à 100. Le sprint et le seuil utilisent la puissance ou la vitesse. L'endurance utilise 42 jours de charge d'entraînement. Le vélo et la course utilisent aussi la vitesse de grimpe et la cadence. La natation utilise l'allure et la fréquence de nage. La récupération utilise ta préparation moyenne. La ligne pointillée montre la note prévue dans 28 jours.",
+      def: "Chaque sport a six notes de 0 à 100. Le sprint et le seuil utilisent la puissance ou la vitesse. L'endurance utilise 42 jours de charge d'entraînement. La course utilise la longueur de foulée, la cadence et l'oscillation verticale. Le vélo utilise la vitesse de grimpe et la cadence. La natation utilise l'allure et la fréquence de nage. Le vélo et la natation conservent la récupération. La ligne pointillée montre la note prévue dans 28 jours.",
     },
     ef: {
       term: "facteur d'efficacité",

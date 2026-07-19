@@ -1,5 +1,5 @@
 import { readFileSync, statSync } from 'node:fs'
-import type { AppleCache, AppleSwim } from '../plugins/stores/apple'
+import type { AppleCache, AppleRunningDynamicsSample, AppleSwim } from '../plugins/stores/apple'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { WeatherCache } from '../plugins/stores/weather'
@@ -11,6 +11,7 @@ import {
   type StravaPayload,
   type StravaRawCache,
 } from '../plugins/stores/strava'
+import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims } from './apple-swim-match'
 import { joinSegments, QUARTZ } from './path'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
@@ -169,11 +170,70 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
   payload.swimTrend.sort((a, b) => a.start.localeCompare(b.start) || a.id - b.id)
 }
 
+const RUN_DYNAMICS_SAMPLE_MS = 10_000
+
+function timedRunningDynamics(
+  samples: AppleRunningDynamicsSample[] | undefined,
+): { timeMs: number; value: number }[] {
+  return (samples ?? [])
+    .map(sample => ({ timeMs: Date.parse(sample.time), value: sample.value }))
+    .filter(sample => Number.isFinite(sample.timeMs) && Number.isFinite(sample.value))
+    .sort((left, right) => left.timeMs - right.timeMs)
+}
+
+function runningDynamicsAt(
+  samples: { timeMs: number; value: number }[],
+  timeMs: number,
+): number | null {
+  let low = 0
+  let high = samples.length
+  while (low < high) {
+    const middle = (low + high) >>> 1
+    if (samples[middle].timeMs < timeMs) low = middle + 1
+    else high = middle
+  }
+  const previous = samples[low - 1]
+  const next = samples[low]
+  const nearest =
+    previous && next
+      ? timeMs - previous.timeMs <= next.timeMs - timeMs
+        ? previous
+        : next
+      : (previous ?? next)
+  return nearest && Math.abs(nearest.timeMs - timeMs) <= RUN_DYNAMICS_SAMPLE_MS
+    ? nearest.value
+    : null
+}
+
+export function enrichRunDynamics(payload: StravaPayload, apple: AppleCache | null): void {
+  const workouts = Object.values(apple?.workouts ?? {})
+  if (workouts.length === 0) return
+  for (const detail of Object.values(payload.details)) {
+    if (!detail || detail.sport !== 'run' || detail.route.length < 2) continue
+    const workout = matchAppleRun(
+      { start: detail.start, distanceM: detail.distanceKm * 1_000 },
+      workouts,
+    )
+    if (!workout) continue
+    const detailStartMs = Date.parse(detail.start)
+    const strideLengthM = timedRunningDynamics(workout.strideLengthM)
+    const groundContactTimeMs = timedRunningDynamics(workout.groundContactTimeMs)
+    const verticalOscillationCm = timedRunningDynamics(workout.verticalOscillationCm)
+    for (const point of detail.route) {
+      const pointTimeMs = detailStartMs + point.elapsedS * 1_000
+      point.strideLengthM = runningDynamicsAt(strideLengthM, pointTimeMs)
+      point.groundContactTimeMs = runningDynamicsAt(groundContactTimeMs, pointTimeMs)
+      point.verticalOscillationCm = runningDynamicsAt(verticalOscillationCm, pointTimeMs)
+    }
+  }
+}
+
 let memo: { key: string; payload: StravaPayload } | null = null
 
 export function loadStravaPayloadSync(since?: string): StravaPayload {
   const key = `${since ?? ''}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}`
   if (memo?.key !== key) {
+    const apple = readJson<AppleCache>(appleCachePath)
     const payload = buildPayload(
       readJson<StravaRawCache>(stravaCachePath),
       readJson<OuraCache>(ouraCachePath),
@@ -182,7 +242,8 @@ export function loadStravaPayloadSync(since?: string): StravaPayload {
       readJson<WeatherCache>(weatherCachePath),
       ATHLETE.ftp,
     )
-    enrichSwimMetrics(payload, readJson<AppleCache>(appleCachePath))
+    enrichSwimMetrics(payload, apple)
+    enrichRunDynamics(payload, apple)
     memo = { key, payload }
   }
   return memo.payload

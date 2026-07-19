@@ -106,16 +106,32 @@ export interface RawStravaAnalysisRange {
   averageCadence: number | null
 }
 
+export interface RawStravaRunSplit {
+  split: number
+  distance: number
+  elapsedTime: number
+  movingTime: number
+  averageSpeed: number
+  elevationDifference: number | null
+  paceZone: number | null
+}
+
 export interface RawStravaActivityDetail {
   calories: number | null
   laps: RawStravaAnalysisRange[]
   segmentEfforts: RawStravaAnalysisRange[]
+  splitsMetric: RawStravaRunSplit[]
+  splitsStandard: RawStravaRunSplit[]
 }
 
 export const hasFetchedActivityDetail = (
-  detail: RawStravaActivityDetail | undefined,
+  detail: Partial<RawStravaActivityDetail> | undefined,
 ): detail is RawStravaActivityDetail =>
-  detail !== undefined && Array.isArray(detail.laps) && Array.isArray(detail.segmentEfforts)
+  detail !== undefined &&
+  Array.isArray(detail.laps) &&
+  Array.isArray(detail.segmentEfforts) &&
+  Array.isArray(detail.splitsMetric) &&
+  Array.isArray(detail.splitsStandard)
 
 export interface StravaStreams {
   time?: number[]
@@ -225,6 +241,9 @@ export interface StravaRoutePoint {
   lng: number
   elapsedS: number
   speedKph: number
+  strideLengthM?: number | null
+  groundContactTimeMs?: number | null
+  verticalOscillationCm?: number | null
 }
 
 export interface StravaMapPoint {
@@ -249,6 +268,16 @@ export interface ActivityAnalysisRange {
   averageHeartRate: number | null
   averageWatts: number | null
   averageCadence: number | null
+}
+
+export interface ActivityRunSplit {
+  split: number
+  distanceKm: number
+  elapsedTimeS: number
+  movingTimeS: number
+  averageSpeedKph: number
+  elevationDifferenceM: number | null
+  paceZone: number | null
 }
 
 export type ActivityHealth = Omit<OuraDaily, 'date'> & {
@@ -335,6 +364,8 @@ export interface StravaActivityDetail {
   route: StravaRoutePoint[]
   mapRoute?: StravaMapPoint[]
   analysisRanges: ActivityAnalysisRange[]
+  runSplitsMetric: ActivityRunSplit[]
+  runSplitsStandard: ActivityRunSplit[]
   minAlt: number
   maxAlt: number
   descentM: number
@@ -1208,6 +1239,18 @@ function projectStravaAnalysisRange(
   }
 }
 
+function projectRunSplits(splits: RawStravaRunSplit[] | undefined): ActivityRunSplit[] {
+  return (splits ?? []).map(split => ({
+    split: split.split,
+    distanceKm: round(split.distance / 1000, 3),
+    elapsedTimeS: split.elapsedTime,
+    movingTimeS: split.movingTime,
+    averageSpeedKph: round(split.averageSpeed * 3.6, 2),
+    elevationDifferenceM: nullableRound(split.elevationDifference),
+    paceZone: nullableRound(split.paceZone, 0),
+  }))
+}
+
 function projectAnalysisRanges(
   a: RawStravaActivity,
   detail: RawStravaActivityDetail | undefined,
@@ -1493,6 +1536,8 @@ function projectDetail(
     route,
     mapRoute,
     analysisRanges: analysis.ranges,
+    runSplitsMetric: sport === 'run' ? projectRunSplits(rawDetail?.splitsMetric) : [],
+    runSplitsStandard: sport === 'run' ? projectRunSplits(rawDetail?.splitsStandard) : [],
     minAlt,
     maxAlt,
     descentM,

@@ -28,7 +28,7 @@ import {
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 
-const CACHE_VERSION = 8
+const CACHE_VERSION = 9
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
 const healthExporterICloudContainer = 'iCloud~xyz~aarnphm~healthexporter'
 const healthExporterImportFile = 'apple-health-import.json'

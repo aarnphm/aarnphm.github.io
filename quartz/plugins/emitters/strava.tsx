@@ -17,6 +17,7 @@ import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util
 import { StaticResources } from '../../util/resources'
 import {
   appleCachePath,
+  enrichRunDynamics,
   enrichSwimMetrics,
   garminCachePath,
   ouraCachePath,
@@ -148,6 +149,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           payload.health[t.date] = { ...h, windKph: t.windKph, windDir: t.windDir ?? h.windDir }
         }
       enrichSwimMetrics(payload, apple)
+      enrichRunDynamics(payload, apple)
       files.push(
         await write({
           ctx,

@@ -27,7 +27,7 @@ final class HealthAggregatorTests: XCTestCase {
           intakeKcal: 2601,
           weightKg: nil,
           vo2max: nil
-        ),
+        )
       ]
     )
   }
@@ -52,7 +52,7 @@ final class HealthAggregatorTests: XCTestCase {
           intakeKcal: nil,
           weightKg: 72.3,
           vo2max: 50.2
-        ),
+        )
       ]
     )
   }
@@ -60,7 +60,7 @@ final class HealthAggregatorTests: XCTestCase {
   func testMissingDataStaysNil() {
     let day = date(2026, 6, 19, 8, 0)
     let samples = [
-      QuantitySampleValue(kind: .activeEnergy, startDate: day, endDate: day, value: 10),
+      QuantitySampleValue(kind: .activeEnergy, startDate: day, endDate: day, value: 10)
     ]
 
     XCTAssertEqual(
@@ -73,7 +73,7 @@ final class HealthAggregatorTests: XCTestCase {
           intakeKcal: nil,
           weightKg: nil,
           vo2max: nil
-        ),
+        )
       ]
     )
   }
@@ -179,7 +179,7 @@ final class HealthAggregatorTests: XCTestCase {
               stroke: .kickboard
             ),
           ]
-        ),
+        )
       ]
     )
   }
@@ -232,9 +232,9 @@ final class HealthAggregatorTests: XCTestCase {
               durationS: 60,
               strokeCount: nil,
               stroke: nil
-            ),
+            )
           ]
-        ),
+        )
       ]
     )
   }
@@ -270,7 +270,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 800,
           strokeTimeS: nil,
           strokes: [:]
-        ),
+        )
       ]
     )
   }
@@ -421,7 +421,7 @@ final class HealthAggregatorTests: XCTestCase {
       calendar: calendar
     )
 
-    XCTAssertEqual(document.version, 7)
+    XCTAssertEqual(document.version, 8)
     XCTAssertEqual(document.generatedAt, "2026-06-19T07:30:00-04:00")
     XCTAssertEqual(document.timezone, "America/Toronto")
     XCTAssertEqual(document.days, [])
@@ -440,6 +440,16 @@ final class HealthAggregatorTests: XCTestCase {
       heartRate: [
         AppleHealthHeartRate(time: "2026-07-01T01:11:04Z", bpm: 118),
         AppleHealthHeartRate(time: "2026-07-01T01:11:09Z", bpm: 122),
+      ],
+      strideLengthM: [
+        AppleHealthRunningDynamicsSample(time: "2026-07-01T01:11:04Z", value: 1.18),
+        AppleHealthRunningDynamicsSample(time: "2026-07-01T01:11:09Z", value: 1.21),
+      ],
+      groundContactTimeMs: [
+        AppleHealthRunningDynamicsSample(time: "2026-07-01T01:11:04Z", value: 241)
+      ],
+      verticalOscillationCm: [
+        AppleHealthRunningDynamicsSample(time: "2026-07-01T01:11:04Z", value: 9.8)
       ]
     )
     let document = HealthAggregator.document(
@@ -473,7 +483,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 13.36,
           strokeTimeS: 26.66,
           stroke: .freestyle
-        ),
+        )
       ],
       swimSessions: [
         SwimSessionValue(
@@ -485,7 +495,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 13.36,
           strokeTimeS: 26.66,
           lapCount: 1
-        ),
+        )
       ],
       generatedAt: sessionStart,
       calendar: calendar
@@ -507,7 +517,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 13.4,
           strokeTimeS: 26.7,
           stroke: .freestyle
-        ),
+        )
       ]
     )
     XCTAssertEqual(restored?.document, document)
@@ -559,7 +569,7 @@ final class HealthAggregatorTests: XCTestCase {
           heartRateBpm: 156,
           cadenceSpm: 159,
           powerW: 278
-        ),
+        )
       ]
     )
 
@@ -610,7 +620,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: nil,
           strokeTimeS: nil,
           strokes: ["freestyle": 1500]
-        ),
+        )
       ]
     )
   }
@@ -693,7 +703,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 14,
           strokeTimeS: 27,
           stroke: .freestyle
-        ),
+        )
       ]
     )
   }
@@ -749,7 +759,7 @@ final class HealthAggregatorTests: XCTestCase {
           strokeCount: 14,
           strokeTimeS: 27,
           stroke: .freestyle
-        ),
+        )
       ]
     )
   }
@@ -782,6 +792,9 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertNil(workout.distanceM)
     XCTAssertNil(workout.averageRunningPowerW)
     XCTAssertNil(workout.gpxFile)
+    XCTAssertEqual(workout.strideLengthM, [])
+    XCTAssertEqual(workout.groundContactTimeMs, [])
+    XCTAssertEqual(workout.verticalOscillationCm, [])
   }
 
   func testWorkoutGPXPathSurvivesARecentSummaryRefresh() {
@@ -920,6 +933,7 @@ final class HealthAggregatorTests: XCTestCase {
   }
 
   private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int, _ minute: Int) -> Date {
-    calendar.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
+    calendar.date(
+      from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
   }
 }

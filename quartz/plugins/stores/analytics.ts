@@ -1,5 +1,6 @@
 import type { GarminCache, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
+import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
 import { localIsoDay } from '../../util/local-date'
 import {
@@ -466,7 +467,15 @@ export interface RecoveryBlock {
 }
 
 export type Vo2Method = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'lab' | 'none'
-export type RadarAxisKey = 'sprint' | 'threshold' | 'endurance' | 'climb' | 'cadence' | 'recovery'
+export type RadarAxisKey =
+  | 'sprint'
+  | 'threshold'
+  | 'endurance'
+  | 'climb'
+  | 'stride'
+  | 'cadence'
+  | 'recovery'
+  | 'oscillation'
 export type CardioDir = 'improving' | 'stable' | 'declining' | null
 export type CardioKey = 'rhr' | 'hrv' | 'ef' | 'decoupling'
 
@@ -521,9 +530,11 @@ export interface AbilityTrendPoint {
   sprint: number | null
   threshold: number | null
   endurance: number | null
-  climb: number | null
   cadence: number | null
-  recovery: number | null
+  climb?: number | null
+  stride?: number | null
+  recovery?: number | null
+  oscillation?: number | null
 }
 
 export interface SportAbilities {
@@ -697,6 +708,12 @@ interface SwimActivityMetrics {
   strokes: Record<string, number> | null
 }
 
+interface RunningDynamicsMetrics {
+  strideLengthM: number | null
+  strideSampleCount: number
+  verticalOscillationCm: number | null
+}
+
 const swimMetricsByActivityId = (
   acts: readonly Act[],
   apple: AppleCache | null | undefined,
@@ -720,6 +737,42 @@ const swimMetricsByActivityId = (
       paceSPer100m: applePace ?? swimPaceSeconds(act.a.distance, act.a.movingTime),
       strokeRateSpm: swim ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0) : null,
       strokes: swim && Object.keys(swim.strokes).length > 0 ? swim.strokes : null,
+    })
+  }
+  return out
+}
+
+const runningDynamicsMean = (
+  samples: readonly { value: number }[] | undefined,
+  minimum: number,
+  maximum: number,
+): number | null => {
+  const values = (samples ?? [])
+    .map(sample => sample.value)
+    .filter(value => Number.isFinite(value) && value >= minimum && value <= maximum)
+  return values.length ? values.reduce((total, value) => total + value, 0) / values.length : null
+}
+
+const runningDynamicsByActivityId = (
+  acts: readonly Act[],
+  apple: AppleCache | null | undefined,
+): Map<number, RunningDynamicsMetrics> => {
+  const workouts = Object.values(apple?.workouts ?? {})
+  const out = new Map<number, RunningDynamicsMetrics>()
+  for (const act of acts) {
+    if (act.sport !== 'run') continue
+    const workout = matchAppleRun({ start: act.a.startDate, distanceM: act.a.distance }, workouts)
+    if (!workout) continue
+    const strideSampleCount = workout.strideLengthM?.length ?? 0
+    const verticalOscillationSampleCount = workout.verticalOscillationCm?.length ?? 0
+    out.set(act.a.id, {
+      strideLengthM:
+        strideSampleCount >= 2 ? runningDynamicsMean(workout.strideLengthM, 0.2, 3) : null,
+      strideSampleCount,
+      verticalOscillationCm:
+        verticalOscillationSampleCount >= 2
+          ? runningDynamicsMean(workout.verticalOscillationCm, 1, 30)
+          : null,
     })
   }
   return out
@@ -2708,6 +2761,7 @@ const SPRINT_CAP_MS: Record<'swim' | 'run', number> = { swim: 3, run: 12 }
 const PROJ_WINDOW_D = 28
 const PROJ_HORIZON_D = 28
 const PROJ_MIN_POINTS = 8
+const RUN_FORM_WINDOW_D = 42
 const CAD_TARGET: Record<Sport, number> = {
   swim: SWIM_STROKE_TARGET,
   bike: BIKE_RPM_TARGET,
@@ -2734,6 +2788,35 @@ const ageOn = (iso: string): number =>
   Math.floor((dayMs(iso) - dayMs(ATHLETE.bornAnchor)) / (365.25 * DAY_MS))
 
 const norm01 = (v: number, lo: number, hi: number): number => clamp((v - lo) / (hi - lo), 0, 1)
+const metricBounds = (values: readonly number[]): [number, number] | null => {
+  if (values.length === 0) return null
+  const sorted = [...values].sort((left, right) => left - right)
+  if (sorted.length === 1) {
+    const spread = Math.max(Math.abs(sorted[0]) * 0.1, 0.1)
+    return [sorted[0] - spread, sorted[0] + spread]
+  }
+  const at = (fraction: number): number => {
+    const index = (sorted.length - 1) * fraction
+    const lower = Math.floor(index)
+    const upper = Math.ceil(index)
+    const weight = index - lower
+    return sorted[lower] * (1 - weight) + sorted[upper] * weight
+  }
+  const low = at(0.1)
+  const high = at(0.9)
+  if (high > low) return [low, high]
+  const spread = Math.max(Math.abs(low) * 0.1, 0.1)
+  return [low - spread, high + spread]
+}
+const personalMetricScore = (
+  value: number | null,
+  bounds: [number, number] | null,
+  lowerIsHigher: boolean,
+): number | null => {
+  if (value == null || bounds == null) return null
+  const normalized = norm01(value, bounds[0], bounds[1])
+  return Math.round((lowerIsHigher ? 1 - normalized : normalized) * 100)
+}
 const round5 = (v: number): number => Math.round(v / 5) * 5
 const round10 = (v: number): number => Math.round(v / 10) * 10
 
@@ -3021,6 +3104,7 @@ function buildEngine(
   appleVo2: { date: string; v: number }[],
   heartRateById: Map<number, ActivityHeartRate>,
   swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
+  runningDynamics: ReadonlyMap<number, RunningDynamicsMetrics>,
   vo2Lab: Vo2LabRecord | null,
   ftpOverride: number | null,
 ): EngineBlock {
@@ -3196,6 +3280,7 @@ function buildEngine(
       : null
 
   const kgNow = body.latestKg
+  const engineTodayMs = dayMs(today)
   let p5: number | null = null
   for (const b of bikes) {
     const v = peakMean(wattsOf(b.a.id), BIKE_SPRINT_WIN_S)
@@ -3255,6 +3340,71 @@ function buildEngine(
         ? mine.map(x => swimMetrics.get(x.a.id)?.paceSPer100m).filter((v): v is number => v != null)
         : []
     const bestSwimPace = swimPaces.length ? Math.min(...swimPaces) : null
+    const nativeStride =
+      sport === 'run'
+        ? mine
+            .map(x => ({ day: x.day, value: runningDynamics.get(x.a.id)?.strideLengthM ?? null }))
+            .filter((point): point is { day: string; value: number } => point.value != null)
+        : []
+    const nativeStrideSampleCount =
+      sport === 'run'
+        ? mine.reduce(
+            (total, x) => total + (runningDynamics.get(x.a.id)?.strideSampleCount ?? 0),
+            0,
+          )
+        : 0
+    const estimatedStride =
+      sport === 'run'
+        ? mine
+            .map(x => {
+              const cadence = cadValOf('run', x.a)
+              const value =
+                cadence != null && cadence > 0 ? (x.a.averageSpeed * 60) / cadence : null
+              return {
+                day: x.day,
+                value: value != null && value >= 0.2 && value <= 3 ? value : null,
+              }
+            })
+            .filter((point): point is { day: string; value: number } => point.value != null)
+        : []
+    const stride = nativeStrideSampleCount >= 2 ? nativeStride : estimatedStride
+    const oscillation =
+      sport === 'run'
+        ? mine
+            .map(x => ({
+              day: x.day,
+              value: runningDynamics.get(x.a.id)?.verticalOscillationCm ?? null,
+            }))
+            .filter((point): point is { day: string; value: number } => point.value != null)
+        : []
+    const recentMetricMean = (points: readonly { day: string; value: number }[]): number | null => {
+      const earliest = engineTodayMs - (RUN_FORM_WINDOW_D - 1) * DAY_MS
+      const values = points
+        .filter(point => {
+          const time = dayMs(point.day)
+          return time >= earliest && time <= engineTodayMs
+        })
+        .map(point => point.value)
+      return values.length ? mean(values) : null
+    }
+    const rollingMetricMean = (
+      points: readonly { day: string; value: number }[],
+      cutoff: string,
+    ): number | null => {
+      const cutoffMs = dayMs(cutoff)
+      const earliest = cutoffMs - (RUN_FORM_WINDOW_D - 1) * DAY_MS
+      const values = points
+        .filter(point => {
+          const time = dayMs(point.day)
+          return time >= earliest && time <= cutoffMs
+        })
+        .map(point => point.value)
+      return values.length ? mean(values) : null
+    }
+    const strideBounds = metricBounds(stride.map(point => point.value))
+    const oscillationBounds = metricBounds(oscillation.map(point => point.value))
+    const currentStride = recentMetricMean(stride)
+    const currentOscillation = recentMetricMean(oscillation)
 
     let sprint: RadarAxis
     let threshold: RadarAxis
@@ -3315,9 +3465,9 @@ function buildEngine(
       }
     }
 
-    let climb: RadarAxis
+    let fourth: RadarAxis
     if (sport === 'swim') {
-      climb = {
+      fourth = {
         key: 'climb',
         label: 'pace',
         proj: null,
@@ -3327,14 +3477,14 @@ function buildEngine(
         lo: SWIM_PACE_MIN_S_PER_100M,
         hi: SWIM_PACE_MAX_S_PER_100M,
       }
-    } else {
+    } else if (sport === 'bike') {
       let vam: number | null = null
       for (const x of mine) {
         const v = vamOf(x)
         if (v != null && (vam == null || v > vam)) vam = v
       }
       const anchor = VAM_ANCHOR_OF[sport]
-      climb = {
+      fourth = {
         key: 'climb',
         label: 'climb',
         proj: null,
@@ -3344,11 +3494,48 @@ function buildEngine(
         lo: anchor[0],
         hi: anchor[1],
       }
+    } else {
+      fourth = {
+        key: 'stride',
+        label: nativeStrideSampleCount >= 2 ? 'stride length' : 'estimated stride length',
+        proj: null,
+        score: personalMetricScore(currentStride, strideBounds, false),
+        rawValue: currentStride != null ? round(currentStride, 2) : null,
+        rawUnit: 'm',
+        lo: strideBounds?.[0] ?? 0,
+        hi: strideBounds?.[1] ?? 0,
+      }
     }
 
     const cads = mine
       .map(x => (sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a)))
       .filter((v): v is number => v != null)
+    const sixth: RadarAxis =
+      sport === 'run'
+        ? {
+            key: 'oscillation',
+            label: 'vertical oscillation',
+            proj: null,
+            score: personalMetricScore(currentOscillation, oscillationBounds, true),
+            rawValue: currentOscillation != null ? round(currentOscillation, 1) : null,
+            rawUnit: 'cm',
+            lo: oscillationBounds?.[0] ?? 0,
+            hi: oscillationBounds?.[1] ?? 0,
+          }
+        : {
+            key: 'recovery',
+            label: 'recovery',
+            proj: null,
+            score: recScore,
+            rawValue: rdy14.length
+              ? round(mean(rdy14), 0)
+              : hrv14.length
+                ? round(mean(hrv14), 0)
+                : null,
+            rawUnit: rdy14.length ? 'readiness' : 'ms',
+            lo: 0,
+            hi: 100,
+          }
     const axes: RadarAxis[] = [
       sprint,
       threshold,
@@ -3362,7 +3549,7 @@ function buildEngine(
         lo: CTL_ANCHOR[0],
         hi: ctlHi,
       },
-      climb,
+      fourth,
       {
         key: 'cadence',
         label: sport === 'swim' ? 'stroke rate' : 'cadence',
@@ -3373,20 +3560,7 @@ function buildEngine(
         lo: 0,
         hi: 100,
       },
-      {
-        key: 'recovery',
-        label: 'recovery',
-        proj: null,
-        score: recScore,
-        rawValue: rdy14.length
-          ? round(mean(rdy14), 0)
-          : hrv14.length
-            ? round(mean(hrv14), 0)
-            : null,
-        rawUnit: rdy14.length ? 'readiness' : 'ms',
-        lo: 0,
-        hi: 100,
-      },
+      sixth,
     ]
     const scored = axes.filter(a => a.score != null).map(a => a.score as number)
     const area = scored.length ? Math.round(mean(scored)) : null
@@ -3402,7 +3576,12 @@ function buildEngine(
             : sport === 'run'
               ? (peakRunSpeedOf(x) ?? plausibleVgap(sport, x))
               : plausibleVgap(sport, x),
-        fourth: sport === 'swim' ? swimMetrics.get(x.a.id)?.paceSPer100m : vamOf(x),
+        fourth:
+          sport === 'swim'
+            ? swimMetrics.get(x.a.id)?.paceSPer100m
+            : sport === 'bike'
+              ? vamOf(x)
+              : null,
         fifth: sport === 'swim' ? swimMetrics.get(x.a.id)?.strokeRateSpm : cadValOf(sport, x.a),
       }))
       .sort((p, q) => p.start.localeCompare(q.start) || p.id - q.id)
@@ -3432,20 +3611,30 @@ function buildEngine(
         si++
       }
       const rdyH = winValues(rdyArr, i, 14)
-      history.push({
+      const point: AbilityTrendPoint = {
         date: cutoff,
         sprint: cumSprint != null ? sprintScoreOf(cumSprint) : null,
         threshold: threshold.score,
         endurance: Math.round(norm01(sportCtlOf(daily[i], sport), CTL_ANCHOR[0], ctlHi) * 100),
-        climb:
+        cadence: fifthAcc.length ? cadScoreOf(sport, mean(fifthAcc)) : null,
+      }
+      if (sport === 'run') {
+        point.stride = personalMetricScore(rollingMetricMean(stride, cutoff), strideBounds, false)
+        point.oscillation = personalMetricScore(
+          rollingMetricMean(oscillation, cutoff),
+          oscillationBounds,
+          true,
+        )
+      } else {
+        point.climb =
           cumFourth == null
             ? null
             : sport === 'swim'
               ? swimPaceScoreOf(cumFourth)
-              : Math.round(norm01(cumFourth, ...VAM_ANCHOR_OF[sport]) * 100),
-        cadence: fifthAcc.length ? cadScoreOf(sport, mean(fifthAcc)) : null,
-        recovery: rdyH.length ? Math.round(mean(rdyH)) : null,
-      })
+              : Math.round(norm01(cumFourth, ...VAM_ANCHOR_OF[sport]) * 100)
+        point.recovery = rdyH.length ? Math.round(mean(rdyH)) : null
+      }
+      history.push(point)
     }
     const recent = history.slice(-PROJ_WINDOW_D)
     for (const a of axes) {
@@ -3730,6 +3919,7 @@ export function buildAnalytics(
     vGap: gradeAdjSpeed(a, sport, cache.streams?.[String(a.id)]),
   }))
   const swimMetrics = swimMetricsByActivityId(acts, inputs.apple)
+  const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple)
 
   const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs))
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
@@ -3899,6 +4089,7 @@ export function buildAnalytics(
     appleVo2,
     heartRateById,
     swimMetrics,
+    runningDynamics,
     latestVo2Lab,
     inputs.ftp ?? null,
   )

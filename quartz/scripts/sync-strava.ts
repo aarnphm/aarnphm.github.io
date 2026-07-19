@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import {
   hasFetchedActivityDetail,
@@ -6,6 +8,7 @@ import {
   RawStravaActivity,
   RawStravaActivityDetail,
   RawStravaAnalysisRange,
+  RawStravaRunSplit,
   StravaRawCache,
   StravaStreams,
   StravaZones,
@@ -24,7 +27,7 @@ const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
 const API = normalizeApiBaseUrl(process.env.STRAVA_API_BASE_URL ?? DEFAULT_API_BASE_URL)
 const PER_PAGE = 200
-const CACHE_VERSION = 3
+const CACHE_VERSION = 4
 const ENV_FILE = '.env'
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 const limiter = new AdaptiveRateLimiter(400, 60_000)
@@ -277,6 +280,41 @@ function parseAnalysisRanges(value: unknown, kind: 'lap' | 'segment'): RawStrava
   })
 }
 
+function parseRunSplit(value: unknown, index: number): RawStravaRunSplit | null {
+  if (!isRecord(value)) return null
+  const distance = nullableNumber(value, 'distance')
+  const elapsedTime = nullableNumber(value, 'elapsed_time')
+  const movingTime = nullableNumber(value, 'moving_time') ?? elapsedTime
+  if (
+    distance == null ||
+    distance <= 0 ||
+    elapsedTime == null ||
+    elapsedTime <= 0 ||
+    movingTime == null ||
+    movingTime <= 0
+  )
+    return null
+  const averageSpeed = nullableNumber(value, 'average_speed') ?? distance / movingTime
+  if (!Number.isFinite(averageSpeed) || averageSpeed <= 0) return null
+  return {
+    split: Math.max(1, Math.round(nullableNumber(value, 'split') ?? index + 1)),
+    distance,
+    elapsedTime,
+    movingTime,
+    averageSpeed,
+    elevationDifference: nullableNumber(value, 'elevation_difference'),
+    paceZone: nullableNumber(value, 'pace_zone'),
+  }
+}
+
+export function parseRunSplits(value: unknown): RawStravaRunSplit[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((item, index) => {
+    const split = parseRunSplit(item, index)
+    return split ? [split] : []
+  })
+}
+
 async function fetchActivityDetail(
   token: string,
   id: number,
@@ -293,6 +331,8 @@ async function fetchActivityDetail(
     calories: nullableNumber(data, 'calories'),
     laps: parseAnalysisRanges(data.laps, 'lap'),
     segmentEfforts: parseAnalysisRanges(data.segment_efforts, 'segment'),
+    splitsMetric: parseRunSplits(data.splits_metric),
+    splitsStandard: parseRunSplits(data.splits_standard),
   }
 }
 
@@ -441,7 +481,9 @@ async function main(): Promise<void> {
   )
 }
 
-main().catch(err => {
-  console.error(`[strava] sync failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[strava] sync failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}

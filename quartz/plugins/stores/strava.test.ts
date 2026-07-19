@@ -13,7 +13,17 @@ import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from '.
 
 test('treats cached empty analysis arrays as a fetched activity detail', () => {
   assert.equal(hasFetchedActivityDetail(undefined), false)
-  assert.equal(hasFetchedActivityDetail({ calories: null, laps: [], segmentEfforts: [] }), true)
+  assert.equal(hasFetchedActivityDetail({ calories: null, laps: [], segmentEfforts: [] }), false)
+  assert.equal(
+    hasFetchedActivityDetail({
+      calories: null,
+      laps: [],
+      segmentEfforts: [],
+      splitsMetric: [],
+      splitsStandard: [],
+    }),
+    true,
+  )
 })
 
 function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
@@ -223,6 +233,7 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
     distance.push(distance[index - 1] + increment)
   }
   const activity = ride({
+    sportType: 'Run',
     distance: distance.at(-1) ?? 0,
     movingTime: points - 1,
     elapsedTime: time.at(-1) ?? points - 1,
@@ -251,6 +262,28 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
         ],
         segmentEfforts: [
           analysisRange('segment-9', 'Boardwalk east', { startDate: '2026-06-07T11:31:45Z' }),
+        ],
+        splitsMetric: [
+          {
+            split: 1,
+            distance: 1_000,
+            elapsedTime: 305,
+            movingTime: 300,
+            averageSpeed: 10 / 3,
+            elevationDifference: 4.2,
+            paceZone: 2,
+          },
+        ],
+        splitsStandard: [
+          {
+            split: 1,
+            distance: 1_609.344,
+            elapsedTime: 495,
+            movingTime: 480,
+            averageSpeed: 3.3528,
+            elevationDifference: -2.3,
+            paceZone: 3,
+          },
         ],
       },
     },
@@ -309,6 +342,28 @@ test('emits exact elapsed time and bounded local speed at forced analysis bounda
       averageCadence: null,
     },
   ])
+  assert.deepEqual(detail.runSplitsMetric, [
+    {
+      split: 1,
+      distanceKm: 1,
+      elapsedTimeS: 305,
+      movingTimeS: 300,
+      averageSpeedKph: 12,
+      elevationDifferenceM: 4.2,
+      paceZone: 2,
+    },
+  ])
+  assert.deepEqual(detail.runSplitsStandard, [
+    {
+      split: 1,
+      distanceKm: 1.609,
+      elapsedTimeS: 495,
+      movingTimeS: 480,
+      averageSpeedKph: 12.07,
+      elevationDifferenceM: -2.3,
+      paceZone: 3,
+    },
+  ])
 })
 
 test('keeps even route coverage when segment boundaries exceed the sampling budget', () => {
@@ -331,6 +386,8 @@ test('keeps even route coverage when segment boundaries exceed the sampling budg
             endIndex: 11 + index * 3,
           }),
         ),
+        splitsMetric: [],
+        splitsStandard: [],
       },
     },
     streams: {

@@ -8,6 +8,7 @@ import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
 import {
   ACTIVITY_FIELDS,
+  ATHLETE,
   DAY_FIELDS,
   WEEK_FIELDS,
   buildAnalytics,
@@ -297,7 +298,7 @@ test('engine block bases vo2max on the declared strava ftp and builds six radar 
   assert.ok(v.value != null && v.value > 25 && v.value < 50)
   assert.ok(v.fitnessAge != null && v.fitnessAge >= 20 && v.fitnessAge <= 80)
   assert.equal(v.chronoAge, 25)
-  assert.equal(v.hrMax, 184)
+  assert.equal(v.hrMax, ATHLETE.hrMax)
   assert.equal(v.hrMaxSource, 'declared')
   assert.ok(v.trend.length >= 1)
   assert.ok(a.engine.cardio.metrics.length === 4)
@@ -314,7 +315,9 @@ test('abilities block builds one radar per sport with per-discipline history', (
   for (const s of a.engine.abilities.sports) {
     assert.deepEqual(
       s.axes.map(x => x.key),
-      ['sprint', 'threshold', 'endurance', 'climb', 'cadence', 'recovery'],
+      s.sport === 'run'
+        ? ['sprint', 'threshold', 'endurance', 'stride', 'cadence', 'oscillation']
+        : ['sprint', 'threshold', 'endurance', 'climb', 'cadence', 'recovery'],
     )
     assert.ok(s.history.length >= 2)
     assert.ok(s.area != null && s.area > 0)
@@ -336,16 +339,85 @@ test('abilities block builds one radar per sport with per-discipline history', (
   assert.equal(bike.axes.find(x => x.key === 'climb')?.label, 'climb')
   assert.equal(bike.axes.find(x => x.key === 'cadence')?.label, 'cadence')
   assert.equal(run.axes.find(x => x.key === 'cadence')?.rawValue, 176)
-  assert.equal(run.axes.find(x => x.key === 'climb')?.label, 'climb')
+  assert.equal(run.axes.find(x => x.key === 'stride')?.label, 'estimated stride length')
+  assert.equal(run.axes.find(x => x.key === 'stride')?.rawValue, 1.02)
+  assert.equal(run.axes.find(x => x.key === 'oscillation')?.rawValue, null)
   assert.equal(run.axes.find(x => x.key === 'cadence')?.label, 'cadence')
   assert.equal(run.axes.find(x => x.key === 'threshold')?.score, null)
   const bikeEnd = bike.axes.find(x => x.key === 'endurance')
   assert.equal(bikeEnd?.hi, 50)
   const runLast = run.history[run.history.length - 1]
   assert.ok(runLast.sprint != null)
-  assert.equal(runLast.climb != null, true)
+  assert.equal(runLast.stride != null, true)
+  assert.equal(runLast.oscillation, null)
   const swimLast = swim.history[swim.history.length - 1]
   assert.equal(swimLast.climb, 76)
+})
+
+test('run radar replaces climb and recovery with native stride and oscillation', () => {
+  const { cache, oura, weights } = fixtures()
+  const firstRun = cache.activities['2']
+  const secondDay = iso(25)
+  cache.activities['4'] = activity(4, 'Run', secondDay, 1_800, 6_000)
+  assert.ok(cache.streams)
+  cache.streams['4'] = streams(1_800, 10 / 3)
+  const apple: AppleCache = {
+    version: 9,
+    lastSync: cache.lastSync,
+    days: {},
+    workouts: {
+      first: {
+        id: 'first',
+        activity: 'running',
+        start: firstRun.startDate,
+        end: `${firstRun.startDate.slice(0, 11)}12:26:40Z`,
+        durationS: firstRun.movingTime,
+        distanceM: firstRun.distance,
+        heartRate: [],
+        strideLengthM: [
+          { time: firstRun.startDate, value: 1 },
+          { time: firstRun.startDate, value: 1.1 },
+        ],
+        verticalOscillationCm: [
+          { time: firstRun.startDate, value: 10 },
+          { time: firstRun.startDate, value: 10.2 },
+        ],
+      },
+      second: {
+        id: 'second',
+        activity: 'running',
+        start: cache.activities['4'].startDate,
+        end: `${secondDay}T12:30:00Z`,
+        durationS: 1_800,
+        distanceM: 6_000,
+        heartRate: [],
+        strideLengthM: [
+          { time: cache.activities['4'].startDate, value: 1.2 },
+          { time: cache.activities['4'].startDate, value: 1.3 },
+        ],
+        verticalOscillationCm: [
+          { time: cache.activities['4'].startDate, value: 8 },
+          { time: cache.activities['4'].startDate, value: 8.2 },
+        ],
+      },
+    },
+  }
+
+  const analytics = buildAnalytics(cache, { apple, oura, weights, since: '2026-05-12' })
+  const run = analytics.engine.abilities.sports.find(sport => sport.sport === 'run')
+  const stride = run?.axes.find(axis => axis.key === 'stride')
+  const oscillation = run?.axes.find(axis => axis.key === 'oscillation')
+
+  assert.equal(stride?.label, 'stride length')
+  assert.equal(stride?.rawUnit, 'm')
+  assert.equal(stride?.rawValue, 1.15)
+  assert.equal(stride?.score, 50)
+  assert.equal(oscillation?.label, 'vertical oscillation')
+  assert.equal(oscillation?.rawUnit, 'cm')
+  assert.equal(oscillation?.rawValue, 9.1)
+  assert.equal(oscillation?.score, 50)
+  assert.equal(run?.history.at(-1)?.stride, 50)
+  assert.equal(run?.history.at(-1)?.oscillation, 50)
 })
 
 test('engine derives ftp from 20-min power only when strava declares none', () => {
@@ -912,7 +984,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
-  assert.equal(rows[0].athlete.hrMaxEst, 184)
+  assert.equal(rows[0].athlete.hrMaxEst, ATHLETE.hrMax)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
   assert.deepEqual([...new Set(kinds)], order)
