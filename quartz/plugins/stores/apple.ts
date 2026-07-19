@@ -28,6 +28,11 @@ export interface AppleHeartRateSample {
   bpm: number
 }
 
+export interface AppleRunningDynamicsSample {
+  time: string
+  value: number
+}
+
 export interface AppleWorkout {
   id: string
   activity: string
@@ -45,6 +50,9 @@ export interface AppleWorkout {
   device?: string
   gpxFile?: string
   heartRate: AppleHeartRateSample[]
+  strideLengthM?: AppleRunningDynamicsSample[]
+  groundContactTimeMs?: AppleRunningDynamicsSample[]
+  verticalOscillationCm?: AppleRunningDynamicsSample[]
 }
 
 export interface AppleCache {
@@ -708,6 +716,23 @@ function parseIsoSecond(value: unknown): string | null {
   return new Date(time).toISOString().replace('.000Z', 'Z')
 }
 
+function parseRunningDynamicsSamples(
+  raw: unknown,
+  minimum: number,
+  maximum: number,
+): AppleRunningDynamicsSample[] {
+  if (!Array.isArray(raw)) return []
+  const samples: AppleRunningDynamicsSample[] = []
+  for (const sample of raw) {
+    if (!isRecord(sample)) continue
+    const time = parseIsoSecond(sample.time)
+    const value = readNumber(sample, 'value')
+    if (!time || value == null || value < minimum || value > maximum) continue
+    samples.push({ time, value })
+  }
+  return samples.sort((a, b) => a.time.localeCompare(b.time))
+}
+
 function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
   const workouts = isRecord(raw) ? raw.workouts : undefined
   if (!Array.isArray(workouts)) return []
@@ -748,6 +773,9 @@ function parseAppleJsonWorkouts(raw: unknown): AppleWorkout[] {
       end,
       durationS: Math.round(durationS),
       heartRate: heartRate.sort((a, b) => a.time.localeCompare(b.time)),
+      strideLengthM: parseRunningDynamicsSamples(workout.strideLengthM, 0.2, 3),
+      groundContactTimeMs: parseRunningDynamicsSamples(workout.groundContactTimeMs, 50, 1_000),
+      verticalOscillationCm: parseRunningDynamicsSamples(workout.verticalOscillationCm, 1, 30),
     }
     if (elapsedTimeS != null && elapsedTimeS >= 0) parsed.elapsedTimeS = Math.round(elapsedTimeS)
     if (distanceM != null && distanceM >= 0) parsed.distanceM = Math.round(distanceM * 10) / 10

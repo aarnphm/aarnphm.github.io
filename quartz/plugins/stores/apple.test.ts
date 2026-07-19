@@ -226,6 +226,14 @@ test('JSON import preserves workout heart-rate streams from HealthExporter', () 
             { time: 'wat', bpm: 200 },
             { time: '2026-07-01T01:11:12Z', bpm: 0 },
           ],
+          strideLengthM: [
+            { time: '2026-07-01T01:11:09Z', value: 1.21 },
+            { time: '2026-07-01T01:11:04.000Z', value: 1.18 },
+            { time: 'wat', value: 1.3 },
+            { time: '2026-07-01T01:11:12Z', value: 4 },
+          ],
+          groundContactTimeMs: [{ time: '2026-07-01T01:11:04Z', value: 241 }],
+          verticalOscillationCm: [{ time: '2026-07-01T01:11:04Z', value: 9.8 }],
         },
         {
           id: 'A45B1F35-9F51-4917-B656-C17BF2D07434',
@@ -258,6 +266,12 @@ test('JSON import preserves workout heart-rate streams from HealthExporter', () 
           { time: '2026-07-01T01:11:04Z', bpm: 118 },
           { time: '2026-07-01T01:11:09Z', bpm: 122 },
         ],
+        strideLengthM: [
+          { time: '2026-07-01T01:11:04Z', value: 1.18 },
+          { time: '2026-07-01T01:11:09Z', value: 1.21 },
+        ],
+        groundContactTimeMs: [{ time: '2026-07-01T01:11:04Z', value: 241 }],
+        verticalOscillationCm: [{ time: '2026-07-01T01:11:04Z', value: 9.8 }],
       },
       {
         id: 'A45B1F35-9F51-4917-B656-C17BF2D07434',
@@ -266,6 +280,9 @@ test('JSON import preserves workout heart-rate streams from HealthExporter', () 
         end: '2026-07-02T12:00:00Z',
         durationS: 3600,
         heartRate: [],
+        strideLengthM: [],
+        groundContactTimeMs: [],
+        verticalOscillationCm: [],
       },
     ],
   )

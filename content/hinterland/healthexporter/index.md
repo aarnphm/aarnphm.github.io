@@ -26,6 +26,7 @@ A 180-day window back from `now`, bucketed by the device's autoupdating calendar
 | swims          | `distanceSwimming` + `swimmingStrokeCount` | one row per swim or multisport swim activity     |
 | workout HR     | `workoutType` + `heartRate`                | one row per workout with its heart rate samples  |
 | run summary    | `workoutType` + running quantity types     | distance, time, energy, power, cadence, and laps |
+| run dynamics   | running dynamics quantity types            | stride length, ground contact, vertical movement |
 | run route      | `workoutRoute`                             | one GPX file per run with a stored route         |
 
 ## output
@@ -34,7 +35,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 7,
+  "version": 8,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -94,13 +95,16 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
       "heartRate": [
         { "time": "2026-07-01T01:11:04Z", "bpm": 118 },
         { "time": "2026-07-01T01:11:09Z", "bpm": 122 }
-      ]
+      ],
+      "strideLengthM": [{ "time": "2026-07-01T01:11:04Z", "value": 1.18 }],
+      "groundContactTimeMs": [{ "time": "2026-07-01T01:11:04Z", "value": 241 }],
+      "verticalOscillationCm": [{ "time": "2026-07-01T01:11:04Z", "value": 9.8 }]
     }
   ]
 }
 ```
 
-The exporter writes every workout row, including workouts with no heart rate samples. Run fields stay empty when HealthKit does not provide that value. A swim row uses its workout UUID. A swim inside a `swimBikeRun` workout uses its workout activity UUID. Two swims on the same day remain separate.
+The exporter writes every workout row, including workouts with no heart rate or running dynamics samples. Run fields stay empty when HealthKit does not provide that value. Stride length is metres per step, ground contact time is milliseconds, and vertical oscillation is centimetres. A swim row uses its workout UUID. A swim inside a `swimBikeRun` workout uses its workout activity UUID. Two swims on the same day remain separate.
 
 Each run with route data also gets a GPX file under `iCloud Drive/HealthExporter/GPX/`. The file contains GPS time, elevation, heart rate, running cadence, and running power when HealthKit has those samples. The JSON row stores the relative GPX path.
 

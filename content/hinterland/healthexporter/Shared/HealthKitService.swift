@@ -68,6 +68,12 @@ final class HealthKitService: @unchecked Sendable {
     let routes: [WorkoutRouteValue]
   }
 
+  private struct WorkoutRunningDynamics {
+    let strideLengthM: [TimedQuantitySample]
+    let groundContactTimeMs: [TimedQuantitySample]
+    let verticalOscillationCm: [TimedQuantitySample]
+  }
+
   private let store = HKHealthStore()
   private let observerLock = NSLock()
   private var observerQuery: HKObserverQuery?
@@ -91,6 +97,9 @@ final class HealthKitService: @unchecked Sendable {
       .distanceWalkingRunning,
       .stepCount,
       .runningPower,
+      .runningStrideLength,
+      .runningGroundContactTime,
+      .runningVerticalOscillation,
     ]
     return identifiers.compactMap { HKQuantityType.quantityType(forIdentifier: $0) }
   }
@@ -753,6 +762,91 @@ final class HealthKitService: @unchecked Sendable {
     }
   }
 
+  private func quantitySeriesSamples(
+    workout: HKWorkout,
+    identifier: HKQuantityTypeIdentifier,
+    unit: HKUnit
+  ) async throws -> [TimedQuantitySample] {
+    let type = try quantityType(identifier)
+    let predicate = HKSamplePredicate.quantitySample(
+      type: type,
+      predicate: HKQuery.predicateForObjects(from: workout)
+    )
+    let descriptor = HKQuantitySeriesSampleQueryDescriptor(
+      predicate: predicate,
+      options: [.orderByQuantitySampleStartDate]
+    )
+    var values: [TimedQuantitySample] = []
+    for try await result in descriptor.results(for: store) {
+      let value = result.quantity.doubleValue(for: unit)
+      guard value.isFinite, value > 0 else { continue }
+      values.append(
+        TimedQuantitySample(
+          startDate: result.dateInterval.start,
+          endDate: result.dateInterval.end,
+          value: value
+        )
+      )
+    }
+    return values
+  }
+
+  private func runningDynamics(
+    workout: HKWorkout
+  ) async throws -> WorkoutRunningDynamics {
+    async let strideLengthM = quantitySeriesSamples(
+      workout: workout,
+      identifier: .runningStrideLength,
+      unit: .meter()
+    )
+    async let groundContactTimeMs = quantitySeriesSamples(
+      workout: workout,
+      identifier: .runningGroundContactTime,
+      unit: .secondUnit(with: .milli)
+    )
+    async let verticalOscillationCm = quantitySeriesSamples(
+      workout: workout,
+      identifier: .runningVerticalOscillation,
+      unit: .meterUnit(with: .centi)
+    )
+    return try await WorkoutRunningDynamics(
+      strideLengthM: strideLengthM,
+      groundContactTimeMs: groundContactTimeMs,
+      verticalOscillationCm: verticalOscillationCm
+    )
+  }
+
+  private func runningDynamics(
+    workouts: [HKWorkout]
+  ) async throws -> [UUID: WorkoutRunningDynamics] {
+    try await withThrowingTaskGroup(
+      of: (UUID, WorkoutRunningDynamics).self,
+      returning: [UUID: WorkoutRunningDynamics].self
+    ) { group in
+      for workout in workouts {
+        group.addTask {
+          (workout.uuid, try await self.runningDynamics(workout: workout))
+        }
+      }
+      var values: [UUID: WorkoutRunningDynamics] = [:]
+      for try await (id, dynamics) in group {
+        values[id] = dynamics
+      }
+      return values
+    }
+  }
+
+  private static func runningDynamicsSamples(
+    _ samples: [TimedQuantitySample]
+  ) -> [AppleHealthRunningDynamicsSample] {
+    samples.map {
+      AppleHealthRunningDynamicsSample(
+        time: HealthExporterFormat.utcTimestampString($0.startDate),
+        value: $0.value
+      )
+    }
+  }
+
   private static func lowerBoundHeartRate(_ samples: [HeartRateSample], start: Date) -> Int {
     var low = 0
     var high = samples.count
@@ -964,9 +1058,11 @@ final class HealthKitService: @unchecked Sendable {
       identifier: .stepCount,
       unit: .count()
     )
+    async let runningDynamicsValues = runningDynamics(workouts: runningWorkouts)
     let heartRates = try await heartRateValues
     let powers = try await powerValues
     let steps = try await stepValues
+    let dynamicsByWorkoutID = try await runningDynamicsValues
     let distanceType = try quantityType(.distanceWalkingRunning)
     let energyType = try quantityType(.activeEnergyBurned)
     let heartRateType = try quantityType(.heartRate)
@@ -993,6 +1089,7 @@ final class HealthKitService: @unchecked Sendable {
       let workoutHeartRates = Self.heartRates(heartRates, workout: workout)
       let workoutPowers = Self.quantities(powers, workout: workout)
       let workoutSteps = Self.quantities(steps, workout: workout)
+      let dynamics = dynamicsByWorkoutID[workout.uuid]
       let durationS = Int(workout.duration.rounded())
       let averageHeartRate = Self.average(
         workout: workout,
@@ -1031,7 +1128,10 @@ final class HealthKitService: @unchecked Sendable {
               time: HealthExporterFormat.utcTimestampString($0.startDate),
               bpm: $0.bpm
             )
-          }
+          },
+          strideLengthM: Self.runningDynamicsSamples(dynamics?.strideLengthM ?? []),
+          groundContactTimeMs: Self.runningDynamicsSamples(dynamics?.groundContactTimeMs ?? []),
+          verticalOscillationCm: Self.runningDynamicsSamples(dynamics?.verticalOscillationCm ?? [])
         )
       )
     }

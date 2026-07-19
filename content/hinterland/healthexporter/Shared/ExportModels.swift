@@ -194,6 +194,11 @@ struct AppleHealthHeartRate: Codable, Equatable, Sendable {
   let bpm: Int
 }
 
+struct AppleHealthRunningDynamicsSample: Codable, Equatable, Sendable {
+  let time: String
+  let value: Double
+}
+
 struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   let id: String
   let activity: String
@@ -211,6 +216,9 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   let device: String?
   let gpxFile: String?
   let heartRate: [AppleHealthHeartRate]
+  let strideLengthM: [AppleHealthRunningDynamicsSample]
+  let groundContactTimeMs: [AppleHealthRunningDynamicsSample]
+  let verticalOscillationCm: [AppleHealthRunningDynamicsSample]
 
   init(
     id: String,
@@ -228,7 +236,10 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     source: String? = nil,
     device: String? = nil,
     gpxFile: String? = nil,
-    heartRate: [AppleHealthHeartRate]
+    heartRate: [AppleHealthHeartRate],
+    strideLengthM: [AppleHealthRunningDynamicsSample] = [],
+    groundContactTimeMs: [AppleHealthRunningDynamicsSample] = [],
+    verticalOscillationCm: [AppleHealthRunningDynamicsSample] = []
   ) {
     self.id = id
     self.activity = activity
@@ -246,6 +257,64 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     self.device = device
     self.gpxFile = gpxFile
     self.heartRate = heartRate
+    self.strideLengthM = strideLengthM
+    self.groundContactTimeMs = groundContactTimeMs
+    self.verticalOscillationCm = verticalOscillationCm
+  }
+
+  private enum CodingKeys: String, CodingKey {
+    case id
+    case activity
+    case start
+    case end
+    case durationS
+    case elapsedTimeS
+    case distanceM
+    case activeEnergyKcal
+    case averageHeartRateBpm
+    case averageRunningPowerW
+    case averageCadenceSpm
+    case lapCount
+    case source
+    case device
+    case gpxFile
+    case heartRate
+    case strideLengthM
+    case groundContactTimeMs
+    case verticalOscillationCm
+  }
+
+  init(from decoder: Decoder) throws {
+    let values = try decoder.container(keyedBy: CodingKeys.self)
+    id = try values.decode(String.self, forKey: .id)
+    activity = try values.decode(String.self, forKey: .activity)
+    start = try values.decode(String.self, forKey: .start)
+    end = try values.decode(String.self, forKey: .end)
+    durationS = try values.decode(Int.self, forKey: .durationS)
+    elapsedTimeS = try values.decodeIfPresent(Int.self, forKey: .elapsedTimeS)
+    distanceM = try values.decodeIfPresent(Double.self, forKey: .distanceM)
+    activeEnergyKcal = try values.decodeIfPresent(Double.self, forKey: .activeEnergyKcal)
+    averageHeartRateBpm = try values.decodeIfPresent(Int.self, forKey: .averageHeartRateBpm)
+    averageRunningPowerW = try values.decodeIfPresent(Int.self, forKey: .averageRunningPowerW)
+    averageCadenceSpm = try values.decodeIfPresent(Int.self, forKey: .averageCadenceSpm)
+    lapCount = try values.decodeIfPresent(Int.self, forKey: .lapCount)
+    source = try values.decodeIfPresent(String.self, forKey: .source)
+    device = try values.decodeIfPresent(String.self, forKey: .device)
+    gpxFile = try values.decodeIfPresent(String.self, forKey: .gpxFile)
+    heartRate = try values.decodeIfPresent([AppleHealthHeartRate].self, forKey: .heartRate) ?? []
+    strideLengthM =
+      try values.decodeIfPresent([AppleHealthRunningDynamicsSample].self, forKey: .strideLengthM)
+      ?? []
+    groundContactTimeMs =
+      try values.decodeIfPresent(
+        [AppleHealthRunningDynamicsSample].self,
+        forKey: .groundContactTimeMs
+      ) ?? []
+    verticalOscillationCm =
+      try values.decodeIfPresent(
+        [AppleHealthRunningDynamicsSample].self,
+        forKey: .verticalOscillationCm
+      ) ?? []
   }
 
   func preservingGPXFile(from previous: AppleHealthWorkout?) -> AppleHealthWorkout {
@@ -266,13 +335,16 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
       source: source,
       device: device,
       gpxFile: previousGPXFile,
-      heartRate: heartRate
+      heartRate: heartRate,
+      strideLengthM: strideLengthM,
+      groundContactTimeMs: groundContactTimeMs,
+      verticalOscillationCm: verticalOscillationCm
     )
   }
 }
 
 struct HealthExportDocument: Codable, Equatable, Sendable {
-  static let currentVersion = 7
+  static let currentVersion = 8
 
   let version: Int
   let generatedAt: String

@@ -57,6 +57,10 @@ import {
   buildPowerHist as powerHistNode,
   buildPowerZones as powerZonesNode,
   buildRespirationTrace as buildRespirationTraceNode,
+  buildRunGroundContactTrace as buildRunGroundContactTraceNode,
+  buildRunStrideTrace as buildRunStrideTraceNode,
+  buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode,
+  buildRunLapSplits as buildRunLapSplitsNode,
   zoneClock,
   buildDayCard as buildDayCardNode,
   buildElevation as buildElevationNode,
@@ -70,8 +74,11 @@ import {
   decodePowerCurve,
   dur,
   formatAltitude,
+  formatGroundContactTime,
   formatRespirationRate,
+  formatStrideLength,
   formatTemperature,
+  formatVerticalOscillation,
   gradeAt,
   isImperialUnit,
   KM_TO_MI,
@@ -79,6 +86,10 @@ import {
   powerCurveFraction,
   powerCurveHoverAt,
   rate,
+  runGroundContactTimeMs,
+  runStrideLengthLabel,
+  runStrideLengthValue,
+  runVerticalOscillationCm,
   scrubDist,
   setDistanceUnit,
   speedKph,
@@ -256,7 +267,7 @@ const buildPool = (d: StravaActivityDetail): HTMLElement => buildPoolNode(domF, 
 
 const buildTrace = (
   d: StravaActivityDetail,
-  pick: (p: StravaActivityDetail['route'][number], i: number) => number,
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number | null,
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
@@ -407,9 +418,12 @@ const linkActivityAnalysis = (
   }
   const route = detail.route
   const sport = detail.sport
-  const ranges = Array.from(
-    analysis?.querySelectorAll<HTMLButtonElement>('.tri-analysis-range[data-analysis-range]') ?? [],
+  const rangeButtons = new Set<HTMLButtonElement>(
+    act.querySelectorAll<HTMLButtonElement>('[data-analysis-range]'),
   )
+  for (const button of analysis?.querySelectorAll<HTMLButtonElement>('[data-analysis-range]') ?? [])
+    rangeButtons.add(button)
+  const ranges = Array.from(rangeButtons)
     .map(analysisRangeFromButton)
     .filter((range): range is PresetActivityAnalysisRange => range != null)
   if (route.length < 2) return null
@@ -481,7 +495,7 @@ const linkActivityAnalysis = (
     hideAnalysisTooltip(analysis)
   }
   const showTooltip = (range: ActivityAnalysisRange): void => {
-    if (!analysis || !tooltip || !range.button) return
+    if (!analysis || !tooltip || !range.button || !analysis.contains(range.button)) return
     const analysisRect = analysis.getBoundingClientRect()
     const buttonRect = range.button.getBoundingClientRect()
     tooltip.style.setProperty(
@@ -523,6 +537,18 @@ const linkActivityAnalysis = (
     if (locked) showRange(locked)
     else clearRange()
   }
+  const sameRange = (
+    left: ActivityAnalysisRange | null,
+    right: ActivityAnalysisRange | null,
+  ): boolean =>
+    left != null &&
+    right != null &&
+    left.kind != null &&
+    right.kind != null &&
+    left.id != null &&
+    right.id != null &&
+    left.kind === right.kind &&
+    left.id === right.id
   const setLocked = (range: ActivityAnalysisRange | null): void => {
     locked = range
     if (range?.kind && range.id) {
@@ -542,7 +568,7 @@ const linkActivityAnalysis = (
       delete stateHost.dataset.selectionEndDistanceKm
     }
     for (const candidate of ranges)
-      candidate.button.setAttribute('aria-pressed', String(candidate === range))
+      candidate.button.setAttribute('aria-pressed', String(sameRange(candidate, range)))
     showReadout(range)
     showLocked()
   }
@@ -569,7 +595,7 @@ const linkActivityAnalysis = (
       showReadout(locked)
     })
     range.button.addEventListener('click', () => {
-      if (locked === range) {
+      if (sameRange(locked, range)) {
         setLocked(null)
         hideTooltip()
       } else setLocked(range)
@@ -830,6 +856,7 @@ const buildHeatRoute = (
   })
   const g = svg('g', { class: 'tri-heat' })
   for (let i = 0; i < route.length - 1; i++) {
+    if (zeroGap && (vals[i] <= 0 || vals[i + 1] <= 0)) continue
     const mid = (vals[i] + vals[i + 1]) / 2
     const t = Math.min(1, Math.max(0, (mid - lo) / range))
     const bucket = Math.min(ramp, Math.max(1, Math.ceil(t * ramp) || 1))
@@ -893,6 +920,7 @@ const CAD_RAMP = ramp7('#8a8197', '#5e409d')
 const SPD_RAMP = ramp7('#7d8a96', '#205ea6')
 const ELEV_RAMP = ramp7('#868a72', '#66800b')
 const RESP_RAMP = ramp7('#74898a', '#16878a')
+const STRIDE_RAMP = ramp7('#819078', '#3f7d57')
 
 interface MapMetric {
   label: string
@@ -912,6 +940,13 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   const hasPower = d.deviceWatts && route.some(p => p.w > 0)
   const hasHr = route.some(p => p.hr > 0)
   const hasCad = route.some(p => p.cad > 0)
+  const strideLabel = runStrideLengthLabel(d)
+  const hasStride =
+    d.sport === 'run' && route.filter(p => runStrideLengthValue(d, p) != null).length >= 2
+  const hasGroundContact =
+    d.sport === 'run' && route.filter(p => runGroundContactTimeMs(p) != null).length >= 2
+  const hasVerticalOscillation =
+    d.sport === 'run' && route.filter(p => runVerticalOscillationCm(p) != null).length >= 2
   const hasResp = route.some(p => p.resp != null && p.resp > 0)
   const hasElev = d.maxAlt > d.minAlt
   const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
@@ -993,6 +1028,45 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
   }
+  const strideSpec: MapMetric = {
+    label: strideLabel,
+    shortLabel: 'SL',
+    ramp: STRIDE_RAMP,
+    zeroGap: true,
+    pick: p => runStrideLengthValue(d, p) ?? 0,
+    fmt: value => formatStrideLength(value),
+    profile: () => buildRunStrideTraceNode(domF, d, null) as HTMLElement,
+    readout: p => {
+      const stride = runStrideLengthValue(d, p)
+      return `${scrubDist(p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(stride)}`
+    },
+  }
+  const groundContactSpec: MapMetric = {
+    label: 'ground contact time',
+    shortLabel: 'GCT',
+    ramp: STRIDE_RAMP,
+    zeroGap: true,
+    pick: p => runGroundContactTimeMs(p) ?? 0,
+    fmt: formatGroundContactTime,
+    profile: () => buildRunGroundContactTraceNode(domF, d, null) as HTMLElement,
+    readout: p => {
+      const groundContact = runGroundContactTimeMs(p)
+      return `${scrubDist(p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
+    },
+  }
+  const verticalOscillationSpec: MapMetric = {
+    label: 'vertical oscillation',
+    shortLabel: 'VO',
+    ramp: STRIDE_RAMP,
+    zeroGap: true,
+    pick: p => runVerticalOscillationCm(p) ?? 0,
+    fmt: formatVerticalOscillation,
+    profile: () => buildRunVerticalOscillationTraceNode(domF, d, null) as HTMLElement,
+    readout: p => {
+      const verticalOscillation = runVerticalOscillationCm(p)
+      return `${scrubDist(p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(verticalOscillation)}`
+    },
+  }
   const respirationSpec: MapMetric = {
     label: 'respiration',
     shortLabel: 'R',
@@ -1027,6 +1101,9 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
     if (hasCad) specs.push(cadSpec)
+    if (hasStride) specs.push(strideSpec)
+    if (hasGroundContact) specs.push(groundContactSpec)
+    if (hasVerticalOscillation) specs.push(verticalOscillationSpec)
     if (hasResp) specs.push(respirationSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasPower) specs.push(powerSpec)
@@ -1080,9 +1157,13 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   tablist.setAttribute('role', 'tablist')
   const figs = el('div', 'tri-act-figs tri-map-figs')
   const profileBox = el('div', 'tri-map-profile')
+  const runSplits = buildRunLapSplitsNode(domF, d) as HTMLElement | null
   const zoneBox = el('div', 'tri-act-more')
   const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
-  wrap.append(tablist, figs, profileBox, zoneBox)
+  wrap.append(tablist, figs)
+  if (runSplits) wrap.appendChild(runSplits)
+  wrap.appendChild(profileBox)
+  wrap.appendChild(zoneBox)
 
   let active = Math.min(specs.length - 1, Math.max(0, opts?.initialMetric ?? 0))
   const draw = () => {
@@ -1125,10 +1206,11 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       opts?.analysis,
       opts?.onRange,
     )
-    Array.from(tablist.children).forEach((t, i) => {
+    const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab'))
+    tabs.forEach((tab, i) => {
       const on = i === active
-      t.setAttribute('aria-selected', on ? 'true' : 'false')
-      const tab = t as HTMLElement
+      tab.setAttribute('aria-selected', on ? 'true' : 'false')
+      tab.tabIndex = on ? 0 : -1
       tab.style.background = on ? spec.ramp[6] : ''
       tab.style.borderColor = on ? spec.ramp[6] : ''
     })
@@ -1144,6 +1226,27 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       draw()
     })
     tablist.appendChild(tab)
+  })
+  tablist.addEventListener('keydown', event => {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || event.repeat) return
+    const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab'))
+    let next = -1
+    if (event.key === 'ArrowLeft') next = (active - 1 + tabs.length) % tabs.length
+    else if (event.key === 'ArrowRight') next = (active + 1) % tabs.length
+    else if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = tabs.length - 1
+    else {
+      const key = event.key.toLowerCase()
+      next = specs.findIndex(spec => spec.shortLabel[0].toLowerCase() === key)
+    }
+    if (next < 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    if (next !== active) {
+      active = next
+      draw()
+    }
+    tabs[next]?.focus()
   })
   draw()
   return wrap
@@ -1182,6 +1285,33 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
       surfaces.push({
         wrap: trace,
         fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadenceScale} ${cadenceUnit}`,
+      })
+    else if (
+      trace.dataset.triTrace === 'stride length' ||
+      trace.dataset.triTrace === 'estimated stride length'
+    )
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const stride = runStrideLengthValue(d, p)
+          return `${scrubDist(p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(stride)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'ground contact time')
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const groundContact = runGroundContactTimeMs(p)
+          return `${scrubDist(p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'vertical oscillation')
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const verticalOscillation = runVerticalOscillationCm(p)
+          return `${scrubDist(p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(verticalOscillation)}`
+        },
       })
     else if (trace.dataset.triTrace === 'respiration')
       surfaces.push({
@@ -5874,12 +6004,16 @@ const radarAxisDefinition = (sport: Sport, axis: AbilityAxis): string => {
       if (sport === 'swim') return radarDefinition('radar pace swim definition')
       if (sport === 'run') return radarDefinition('radar climb run definition')
       return radarDefinition('radar climb bike definition')
+    case 'stride':
+      return radarDefinition('radar stride run definition')
     case 'cadence':
       if (sport === 'bike') return radarDefinition('radar cadence bike definition')
       if (sport === 'run') return radarDefinition('radar cadence run definition')
       return radarDefinition('radar stroke rate swim definition')
     case 'recovery':
       return radarDefinition('radar recovery definition')
+    case 'oscillation':
+      return radarDefinition('radar oscillation run definition')
   }
 }
 
@@ -5907,6 +6041,10 @@ const radarNotationDefinition = (axis: AbilityAxis): string => {
       return radarDefinition('radar unit readiness definition')
     case 'ms':
       return radarDefinition('radar unit ms definition')
+    case 'm':
+      return radarDefinition('radar unit stride definition')
+    case 'cm':
+      return radarDefinition('radar unit oscillation definition')
     default:
       return radarDefinition('radar unit default definition')
   }
@@ -6123,9 +6261,18 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   }
 
   const devBox = el('div', 'tri-dev-slot')
-  const legendOn = new Set<string>(['endurance', 'recovery'])
+  const legendOn = new Set<string>(['endurance', 'recovery', 'stride', 'oscillation'])
   let revealDev: (() => void) | null = null
-  const DEV_KEYS = ['endurance', 'recovery', 'cadence', 'sprint', 'threshold', 'climb'] as const
+  const DEV_KEYS = [
+    'endurance',
+    'recovery',
+    'stride',
+    'oscillation',
+    'cadence',
+    'sprint',
+    'threshold',
+    'climb',
+  ] as const
   type DevSeries = {
     key: string
     cls: string
@@ -6175,7 +6322,7 @@ const buildAbilities = (data: Analytics): HTMLElement => {
         cls: `tri-dev-line--${k}`,
         dotCls: `tri-dev-dot--${k}`,
         label: tl(single.axes.find(axis => axis.key === k)?.label ?? k),
-        vals: hist.map(h => h[k]),
+        vals: hist.map(h => h[k] ?? null),
         toggle: true,
       }))
     } else if (avg) {
@@ -6629,6 +6776,7 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min · ${src}`
   })
 
+  const wkSelectPeers = new Map<WkKind, (i: number) => void>()
   const bindWkTrend = (blockSel: string, kind: WkKind): void => {
     const rows = wkTrendRows(data, kind)
     const block = panel.querySelector<HTMLElement>(blockSel)
@@ -6678,17 +6826,23 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       mark('tri-wkt-pt--hot', null)
       show(selected)
     }
-    const onClick = (event: MouseEvent): void => {
-      const i = idxAt(event)
+    const applySelected = (i: number): void => {
       selected = i
       show(i)
       mark('tri-wkt-pt--sel', i)
       wrap.classList.add('tri-wkdetail-wrap--open')
     }
+    const onClick = (event: MouseEvent): void => {
+      const i = idxAt(event)
+      applySelected(i)
+      for (const [peer, apply] of wkSelectPeers) if (peer !== kind) apply(i)
+    }
+    wkSelectPeers.set(kind, applySelected)
     svgEl.addEventListener('mousemove', onMove)
     svgEl.addEventListener('mouseleave', onLeave)
     svgEl.addEventListener('click', onClick)
     cleanups.push(() => {
+      wkSelectPeers.delete(kind)
       svgEl.removeEventListener('mousemove', onMove)
       svgEl.removeEventListener('mouseleave', onLeave)
       svgEl.removeEventListener('click', onClick)
@@ -6966,6 +7120,8 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const rawOf = (sp: SportAbility, a: AbilityAxis): string => {
       const pace = radarPaceHint(sp.sport, a)
       if (a.rawValue == null) return tl('no data')
+      if (a.rawUnit === 'm') return formatStrideLength(a.rawValue)
+      if (a.rawUnit === 'cm') return formatVerticalOscillation(a.rawValue)
       if (a.rawUnit === 's/100m') return `${clock(a.rawValue)} /100m`
       const vamFt = a.rawUnit === 'm/h' && isImperialUnit()
       const value = vamFt ? Math.round(a.rawValue * M_TO_FT) : a.rawValue
@@ -7302,7 +7458,7 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
     label: 'abilities',
     chart: 'abilities',
-    hay: 'abilities radar sprint threshold endurance climb cadence recovery power profile vam wkg swim bike run pace css stroke average',
+    hay: 'abilities radar sprint threshold endurance climb stride length cadence recovery vertical oscillation power profile vam wkg swim bike run pace css stroke average',
   },
   {
     label: 'cardiovascular health',
@@ -8189,13 +8345,11 @@ const gradientExpr = (
   let lastT = -1
   d.route.forEach((p, i) => {
     const v = vals[i]
-    if (zeroGap && v <= 0 && (vals[i - 1] ?? 0) > 0 && (vals[i + 1] ?? 0) > 0) return
     const t = Math.min(1, Math.max(0, p.d / dN))
     if (t <= lastT) return
     lastT = t
-    const bucket =
-      zeroGap && v <= 0 ? 1 : Math.min(7, Math.max(1, Math.ceil(((v - lo) / range) * 7) || 1))
-    pairs.push([t, colors[bucket - 1]])
+    const bucket = Math.min(7, Math.max(1, Math.ceil(((v - lo) / range) * 7) || 1))
+    pairs.push([t, zeroGap && v <= 0 ? 'rgba(0,0,0,0)' : colors[bucket - 1]])
   })
   if (pairs.length === 0) pairs.push([0, colors[3]])
   if (pairs[0][0] > 0) pairs.unshift([0, pairs[0][1]])
@@ -9745,6 +9899,10 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     }
 
     const el = e.target instanceof HTMLElement ? e.target : null
+    if (el?.closest('.tri-map-tablist')) {
+      clearG()
+      return
+    }
     if (
       e.key === '/' &&
       !e.shiftKey &&
