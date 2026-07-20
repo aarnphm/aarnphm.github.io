@@ -19,7 +19,7 @@ title: Hölder's inequality
 
 ## discrete form
 
-for $x,y \in \mathbb{c}^n$ and exponents $p,q \in [1,\infty]$ with $1/p + 1/q = 1$,
+for $x,y \in \mathbb{C}^n$ and exponents $p,q \in [1,\infty]$ with $1/p + 1/q = 1$,
 
 $$\sum_{i=1}^n |x_i y_i| \le \left( \sum_{i=1}^n |x_i|^p \right)^{1/p} \left( \sum_{i=1}^n |y_i|^q \right)^{1/q}.$$
 

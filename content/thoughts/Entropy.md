@@ -14,7 +14,7 @@ idea: quantifies average level of uncertainty information associated with a vari
 
 > [!definition]
 >
-> Given a discrete random variable $\mathcal{X}$, which takes a value in a set $\mathcal{X}$ distributed according to $p : \mathcal{X} \to [0,1]$, the entropy $H(x)$ is defined as
+> Given a discrete random variable $X$, which takes a value in a set $\mathcal{X}$ distributed according to $p : \mathcal{X} \to [0,1]$, the entropy $H(X)$ is defined as
 >
 > $$
 > H(X) \coloneqq - \sum_{x \in \mathcal{X}} p(x) \log p(x)

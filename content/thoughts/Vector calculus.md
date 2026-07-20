@@ -10,7 +10,7 @@ title: Vector calculus
 
 ## divergence
 
-operates on vector field producing a scalar field giving quantity of the gector field's source at each points.
+operates on vector field producing a scalar field giving quantity of the vector field's source at each points.
 
 > represents the volume density of the outward flux of a vector field from an infinitesimal volume around a given point.
 

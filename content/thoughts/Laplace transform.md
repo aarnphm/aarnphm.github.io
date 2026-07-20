@@ -30,7 +30,7 @@ example: Given a unit step function $u(t) = \begin{cases} 0 & t < 0 \\ 1 & t \ge
 
 $$
 \begin{aligned}
-U(s) = \mathcal{L} \{u(t)\} &= \int_{0}^{\infty} u(t) e^{-st} dt = -\frac{1}{s} e^{-st} dt \\
+U(s) = \mathcal{L} \{u(t)\} &= \int_{0}^{\infty} u(t) e^{-st} dt = \left[-\frac{1}{s} e^{-st}\right]_{0}^{\infty} \\
 U(s) &= -\frac{1}{s}(0-1) = \frac{1}{s}
 \end{aligned}
 $$

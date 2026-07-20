@@ -6628,6 +6628,32 @@
   flex: none;
 }
 
+.tri-feed-search-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.tri-feed-results {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  left: 0;
+  z-index: 6;
+  max-height: min(48vh, 24rem);
+  overflow-y: auto;
+  gap: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  @include thin-scrollbar;
+}
+
+.tri-feed--searching .tri-feed-results {
+  display: flex;
+}
+
 .tri-feed-count {
   margin-left: auto;
   font-family: var(--codeFont);
@@ -8417,6 +8443,7 @@ a.tri-pop-date:hover {
   margin-bottom: 0.5rem;
   padding: 0.5rem 0.6rem 0.6rem;
   background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
 }
 
 .tri-run-splits-head {

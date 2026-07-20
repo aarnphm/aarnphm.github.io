@@ -21,7 +21,7 @@ Formally, a topological manifold is a ==second countable Hausdorff space== that 
 Implies that either the point is an isolated point $n=0$, or it has a neighborhood homeomorphic to the open ball:
 
 $$
-\mathbf{B}^n = \{(x_{1},x_{2},\ldots, x_n) \in \mathbb{R}^n : x_1^2 + x_2^2 + \ldots x_n^2 <1\}
+\mathbf{B}^n = \{(x_{1},x_{2},\ldots, x_n) \in \mathbb{R}^n : x_1^2 + x_2^2 + \ldots + x_n^2 <1\}
 $$
 
 ## differentiable manifold

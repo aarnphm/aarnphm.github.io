@@ -39,7 +39,7 @@ where $h_{t-1}$ is the hidden state, and $W$, $b$ form the un-embedding layer.
 Training objective: negative log-likelihood (cross-entropy):
 
 $$
-\mathcal{L} = -\log p(x*t^{\text{true}} \mid x*{<t})
+\mathcal{L} = -\log p(x_t^{\text{true}} \mid x_{<t})
 $$
 
 Our goal is to _sample_ for next-token: $x \sim p(x_{t} \mid x_{<t})$

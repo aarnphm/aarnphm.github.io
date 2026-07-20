@@ -172,13 +172,18 @@ export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
       <span class="tri-ana-title" data-i18n={title === 'feed' ? 'feed' : undefined}>
         {title}
       </span>
-      <input
-        class="tri-ana-search tri-feed-search"
-        type="search"
-        placeholder="search activities"
-        aria-label="filter activities"
-        autocomplete="off"
-      />
+      <div class="tri-feed-search-wrap">
+        <input
+          class="tri-ana-search tri-feed-search"
+          type="search"
+          placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
+          aria-label="search activities"
+          aria-controls="tri-feed-results"
+          aria-expanded="false"
+          autocomplete="off"
+        />
+        <div id="tri-feed-results" class="tri-ana-results tri-feed-results" aria-hidden="true" />
+      </div>
       <span class="tri-feed-count" aria-live="polite" />
     </div>
     <div class="tri-feed-list" role="list" aria-busy="true" />
