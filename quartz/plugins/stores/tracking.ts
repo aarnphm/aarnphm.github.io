@@ -13,9 +13,21 @@ export interface RaceEvent {
   event: string | null
 }
 
+export interface ManualFuelingEntry {
+  date: string
+  activityId: number
+  caloriesConsumed: number
+}
+
 export interface TrackingData {
   days: TrackEntry[]
   races: RaceEvent[]
+  fueling: ManualFuelingEntry[]
+}
+
+export interface ParsedTrackingBlock {
+  day: TrackEntry
+  fueling: ManualFuelingEntry | null
 }
 
 const LB_TO_KG = 0.45359237
@@ -41,7 +53,7 @@ export function parseTrackingMeta(meta: string | null | undefined): {
 export function parseTrackingBlock(
   meta: string | null | undefined,
   value: string,
-): TrackEntry | null {
+): ParsedTrackingBlock | null {
   const body: Record<string, string> = {}
   for (const line of value.split('\n')) {
     const idx = line.indexOf(':')
@@ -64,5 +76,15 @@ export function parseTrackingBlock(
     : null
   const windDir = wind?.[3] ? wind[3].toUpperCase() : null
   const { race, event } = parseTrackingMeta(meta)
-  return { date: date.slice(0, 10), weightLbs, weightKg, windKph, windDir, race, event }
+  const day = { date: date.slice(0, 10), weightLbs, weightKg, windKph, windDir, race, event }
+  const activityId = Number(body.activity)
+  const caloriesConsumed = Number(body.fueling)
+  const fueling =
+    Number.isSafeInteger(activityId) &&
+    activityId > 0 &&
+    Number.isFinite(caloriesConsumed) &&
+    caloriesConsumed > 0
+      ? { date: day.date, activityId, caloriesConsumed }
+      : null
+  return { day, fueling }
 }

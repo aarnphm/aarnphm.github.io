@@ -1,4 +1,6 @@
 import fs from 'node:fs/promises'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { AdaptiveRateLimiter, fetchWithRetry } from '../plugins/stores/citations'
 import { matchGarminActivity, type GarminCache } from '../plugins/stores/garmin'
 import {
@@ -8,6 +10,12 @@ import {
   type StravaRawCache,
 } from '../plugins/stores/strava'
 import { upsertEnvLine } from '../util/env-file'
+import {
+  encodeGarminSwimFit,
+  type GarminFitEncoding,
+  type GarminSwimFitInput,
+  type GarminSwimSample,
+} from '../util/garmin-fit'
 import {
   applyGarminSetCookies,
   cleanGarminConnectBaseUrl,
@@ -22,6 +30,7 @@ import {
 import { updateGarminActivityTitle } from '../util/garmin-title-update'
 import { joinSegments, QUARTZ } from '../util/path'
 import { isRecord, readNumber, readString, type UnknownRecord } from '../util/type-guards'
+import { uploadGarminFit } from './garmin-fit-upload'
 
 const TOKEN_URL = 'https://www.strava.com/oauth/token'
 const DEFAULT_API_BASE_URL = 'https://www.strava.com/api/v3'
@@ -63,7 +72,7 @@ interface BackfillCandidate {
   reason: string
 }
 
-interface TimedStravaStreams {
+export interface TimedStravaStreams {
   time: number[]
   latlng: [number, number][]
   altitude: number[]
@@ -318,6 +327,71 @@ function positive(value: number | undefined): number | null {
   return value != null && Number.isFinite(value) && value > 0 ? value : null
 }
 
+function finite(value: number | undefined): number | undefined {
+  return value != null && Number.isFinite(value) ? value : undefined
+}
+
+function positiveValue(value: number | undefined): number | undefined {
+  return value != null && Number.isFinite(value) && value > 0 ? value : undefined
+}
+
+function swimSample(streams: TimedStravaStreams, index: number): GarminSwimSample {
+  const coordinate =
+    streams.latlng.length === streams.time.length ? streams.latlng[index] : undefined
+  const altitudeMeters = finite(streams.altitude[index])
+  const heartRateBpm = positiveValue(streams.heartrate[index])
+  const cadenceRpm = positiveValue(streams.cadence[index])
+  const powerWatts = positiveValue(streams.watts[index])
+  const temperatureCelsius = finite(streams.temp[index])
+  return {
+    elapsedSeconds: streams.time[index],
+    distanceMeters: finite(streams.distance[index]) ?? 0,
+    ...(coordinate ? { latitudeDegrees: coordinate[0], longitudeDegrees: coordinate[1] } : {}),
+    ...(altitudeMeters != null ? { altitudeMeters } : {}),
+    ...(heartRateBpm != null ? { heartRateBpm } : {}),
+    ...(cadenceRpm != null ? { cadenceRpm } : {}),
+    ...(powerWatts != null ? { powerWatts } : {}),
+    ...(temperatureCelsius != null ? { temperatureCelsius } : {}),
+  }
+}
+
+export function garminSwimFitInput(
+  activity: RawStravaActivity,
+  streams: TimedStravaStreams,
+): GarminSwimFitInput {
+  const startTime = new Date(activity.startDate)
+  if (!Number.isFinite(startTime.getTime()))
+    throw new Error(`Strava activity ${activity.id} has an invalid start time`)
+  if (streams.time.length < 2)
+    throw new Error(`Strava activity ${activity.id} has fewer than two timed samples`)
+  const samples = streams.time.map((_, index) => swimSample(streams, index))
+  const elapsedTimeSeconds = Math.max(
+    activity.elapsedTime,
+    streams.time[streams.time.length - 1] ?? 0,
+  )
+  const calories = positiveValue(activity.calories ?? undefined)
+  const base = {
+    sourceId: activity.id,
+    name: activity.name,
+    startTime,
+    distanceMeters: activity.distance,
+    elapsedTimeSeconds,
+    timerTimeSeconds: Math.min(activity.movingTime, elapsedTimeSeconds),
+    samples,
+    ...(calories != null ? { calories: Math.round(calories) } : {}),
+  }
+  if (streams.latlng.length === streams.time.length && streams.latlng.length >= 2)
+    return { ...base, kind: 'openWater' }
+  return { ...base, kind: 'pool', poolLengthMeters: 25 }
+}
+
+export function encodeGarminSwimBackfill(
+  activity: RawStravaActivity,
+  streams: TimedStravaStreams,
+): GarminFitEncoding {
+  return encodeGarminSwimFit(garminSwimFitInput(activity, streams))
+}
+
 function pointNumber(values: number[], index: number): number | null {
   return positive(values[index])
 }
@@ -439,8 +513,9 @@ function buildTcx(
   ].join('')
 }
 
-function safeFilename(activity: RawStravaActivity): string {
-  return `${activity.startDate.slice(0, 10)}-${activity.id}.tcx`
+export function garminBackfillFilename(activity: RawStravaActivity, sport: BackfillSport): string {
+  const extension = sport === 'swim' ? 'fit' : 'tcx'
+  return `${activity.startDate.slice(0, 10)}-${activity.id}.${extension}`
 }
 
 function outputDir(args: Args): string {
@@ -556,23 +631,36 @@ async function main(): Promise<void> {
   let renamed = 0
   for (const candidate of candidates) {
     const activity = candidate.activity
-    const filename = safeFilename(activity)
+    const filename = garminBackfillFilename(activity, args.sport)
     const streams = await fetchTimedStreams(token.access, activity.id)
-    const tcx = buildTcx(activity, streams, args.sport)
-    const path = joinSegments(targetDir, filename)
-    await fs.writeFile(path, tcx)
-    const result = await uploadTcx(session, uploadBase, filename, tcx)
-    const ids = resultIds(result.json)
-    if (result.status === 409) {
-      duplicates++
-      console.log(
-        `[garmin-backfill] duplicate ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
-      )
-    } else {
+    const pathname = joinSegments(targetDir, filename)
+    let ids: string[]
+    if (args.sport === 'swim') {
+      const encoded = encodeGarminSwimBackfill(activity, streams)
+      if (!encoded.validation.valid)
+        throw new Error(
+          `FIT validation failed for ${activity.id}: ${encoded.validation.errors.join('; ')}`,
+        )
+      await fs.writeFile(pathname, encoded.bytes)
+      ids = [await uploadGarminFit(session, uploadBase, filename, encoded.bytes)]
       uploaded++
-      console.log(
-        `[garmin-backfill] uploaded ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
-      )
+      console.log(`[garmin-backfill] uploaded ${activity.id} ${filename} -> ${ids.join(',')}`)
+    } else {
+      const tcx = buildTcx(activity, streams, args.sport)
+      await fs.writeFile(pathname, tcx)
+      const result = await uploadTcx(session, uploadBase, filename, tcx)
+      ids = resultIds(result.json)
+      if (result.status === 409) {
+        duplicates++
+        console.log(
+          `[garmin-backfill] duplicate ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
+        )
+      } else {
+        uploaded++
+        console.log(
+          `[garmin-backfill] uploaded ${activity.id} ${filename}${ids.length ? ` -> ${ids.join(',')}` : ''}`,
+        )
+      }
     }
     for (const id of ids) {
       await updateGarminActivityTitle(session, titleBase, id, activity.name)
@@ -586,7 +674,9 @@ async function main(): Promise<void> {
   )
 }
 
-main().catch(err => {
-  console.error(`[garmin-backfill] failed: ${err instanceof Error ? err.message : err}`)
-  process.exit(1)
-})
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch(err => {
+    console.error(`[garmin-backfill] failed: ${err instanceof Error ? err.message : err}`)
+    process.exit(1)
+  })
+}

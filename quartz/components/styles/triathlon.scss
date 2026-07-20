@@ -8023,8 +8023,14 @@
 }
 
 .tri-map-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
   font-family: var(--codeFont);
   font-size: 0.62rem;
+  white-space: nowrap;
   color: var(--gray);
   background: none;
   border: 1px solid color-mix(in srgb, var(--gray) 24%, transparent);
@@ -8044,6 +8050,51 @@
 
   & + & {
     border-left: 0;
+  }
+}
+
+.tri-map-tab-shortcut,
+.tri-map-tab-label {
+  display: block;
+  overflow: hidden;
+  transition:
+    inline-size 180ms cubic-bezier(0.2, 0, 0, 1),
+    opacity 120ms linear;
+}
+
+.tri-map-tablist[data-motion='instant'] {
+  .tri-map-tab-shortcut,
+  .tri-map-tab-label {
+    transition-duration: 0s;
+  }
+}
+
+.tri-map-tab-shortcut {
+  inline-size: var(--tri-map-tab-shortcut-width);
+  opacity: 1;
+}
+
+.tri-map-tab-label {
+  inline-size: 0;
+  opacity: 0;
+}
+
+.tri-map-tab[aria-selected='true'] {
+  .tri-map-tab-shortcut {
+    inline-size: 0;
+    opacity: 0;
+  }
+
+  .tri-map-tab-label {
+    inline-size: var(--tri-map-tab-label-width);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tri-map-tab-shortcut,
+  .tri-map-tab-label {
+    transition-duration: 0.01ms;
   }
 }
 
