@@ -26,6 +26,7 @@ import {
   decodePowerCurve,
   encodePowerCurve,
   formatAltitude,
+  fuelingRows,
   formatGroundContactTime,
   formatStrideLength,
   formatVerticalOscillation,
@@ -67,6 +68,41 @@ const factory: TriNodeFactory<Element> = {
   svg: (tag, attrs) => s(tag, attrs),
   add: (parent, ...children) => parent.children.push(...children),
 }
+
+test('renders manual fueling with its source', () => {
+  assert.deepEqual(
+    fuelingRows({
+      caloriesConsumed: 140,
+      carbsConsumedG: null,
+      fluidMl: null,
+      carbsRecommendedG: null,
+      fluidRecommendedMl: null,
+      sweatLossMl: null,
+      sourceDevice: null,
+      source: 'manual',
+    }),
+    [
+      ['consumed', '140 kcal'],
+      ['source', 'manual'],
+    ],
+  )
+  assert.deepEqual(
+    fuelingRows({
+      caloriesConsumed: 200,
+      carbsConsumedG: null,
+      fluidMl: null,
+      carbsRecommendedG: null,
+      fluidRecommendedMl: null,
+      sweatLossMl: null,
+      sourceDevice: 'Edge 1050',
+      source: 'garmin',
+    }),
+    [
+      ['consumed', '200 kcal'],
+      ['source', 'Garmin Edge 1050'],
+    ],
+  )
+})
 
 test('carries rounded pace seconds into the next minute', () => {
   assert.equal(clock(539.6), '9:00')

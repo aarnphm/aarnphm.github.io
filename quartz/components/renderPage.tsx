@@ -1477,7 +1477,10 @@ export function transcludeFinal(
           ...(triathlonSport ? { sport: triathlonSport } : {}),
         }
         const since = page.frontmatter?.['strava']
-        const payload = loadStravaPayloadSync(typeof since === 'string' ? since : undefined)
+        const payload = loadStravaPayloadSync(
+          typeof since === 'string' ? since : undefined,
+          page.tracking?.fueling,
+        )
         const children: ElementContent[] = [
           h(
             '.tri-day-embed',

@@ -39,7 +39,13 @@ import {
 } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
 import { OuraCache } from '../stores/oura'
-import { buildPayload, emptyHealth, StravaPayload, StravaRawCache } from '../stores/strava'
+import {
+  applyManualFueling,
+  buildPayload,
+  emptyHealth,
+  StravaPayload,
+  StravaRawCache,
+} from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
 import { parseWeatherCache, WeatherCache } from '../stores/weather'
 import { defaultProcessedContent, ProcessedContent, QuartzPluginData } from '../vfile'
@@ -143,6 +149,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         ATHLETE.ftp,
         hrBoundsOverride ?? undefined,
       )
+      applyManualFueling(payload, tracking?.fueling ?? [])
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()

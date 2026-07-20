@@ -7,9 +7,15 @@ import type {
   GarminStreams,
 } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
+import type { ManualFuelingEntry } from './tracking'
 import type { WeatherCache, WeatherTemperatureSample } from './weather'
 import { localIsoDay } from '../../util/local-date'
-import { matchGarminActivity, matchGarminFueling, matchGarminHeartRateActivity } from './garmin'
+import {
+  emptyGarminFueling,
+  matchGarminActivity,
+  matchGarminFueling,
+  matchGarminHeartRateActivity,
+} from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
 
@@ -333,6 +339,10 @@ export interface ActivityHeartRate {
   stream: number[]
 }
 
+export interface ActivityFueling extends GarminFueling {
+  source: 'garmin' | 'manual'
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -359,7 +369,7 @@ export interface StravaActivityDetail {
   windDirDeg: number | null
   windGustKph: number | null
   location: string | null
-  fueling: GarminFueling | null
+  fueling: ActivityFueling | null
   garmin: GarminVerification | null
   route: StravaRoutePoint[]
   mapRoute?: StravaMapPoint[]
@@ -1379,6 +1389,15 @@ function privateRouteBounds(
   return hi - lo >= 1 ? [lo, hi] : [0, latlng.length - 1]
 }
 
+function garminActivityFueling(
+  activity: RawStravaActivity,
+  sport: ActivityKind,
+  garmin: GarminCache | null,
+): ActivityFueling | null {
+  const fueling = matchGarminFueling(activity, sport, garmin)
+  return fueling ? { ...fueling, source: 'garmin' } : null
+}
+
 function projectDetail(
   a: RawStravaActivity,
   sport: ActivityKind,
@@ -1388,7 +1407,7 @@ function projectDetail(
   respirationSamples: TimedMetricSample[],
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
-  fueling: GarminFueling | null,
+  fueling: ActivityFueling | null,
   garmin: GarminVerification | null,
   weight: ActivityWeight | null,
   rawDetail: RawStravaActivityDetail | undefined,
@@ -1589,6 +1608,21 @@ export function emptyPayload(athleteId = 0): StravaPayload {
   }
 }
 
+export function applyManualFueling(
+  payload: StravaPayload,
+  entries: readonly ManualFuelingEntry[],
+): void {
+  for (const entry of entries) {
+    const detail = payload.details[String(entry.activityId)]
+    if (!detail || detail.date !== entry.date) continue
+    detail.fueling = {
+      ...emptyGarminFueling(),
+      caloriesConsumed: entry.caloriesConsumed,
+      source: 'manual',
+    }
+  }
+}
+
 export function buildPayload(
   cache: StravaRawCache | null,
   oura: OuraCache | null,
@@ -1762,7 +1796,7 @@ export function buildPayload(
       activityRespirationSamples(a, garminMatch, garmin),
       weather?.activities[id],
       cache.geo?.[String(a.id)],
-      matchGarminFueling(a, sport, garmin),
+      garminActivityFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
       activityWeight(garmin, a),
       cache.activityDetails?.[id],

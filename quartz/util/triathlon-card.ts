@@ -129,7 +129,9 @@ export const formatMl = (value: number): string => {
   return `${liters >= 10 ? liters.toFixed(0) : liters.toFixed(1)} L`
 }
 
-export const formatGarminSource = (value: string | null): string => {
+export const formatFuelingSource = (fueling: ActivityFueling): string => {
+  if (fueling.source === 'manual') return 'manual'
+  const value = fueling.sourceDevice
   const clean = value?.trim()
   if (!clean) return 'Garmin'
   return clean.toLowerCase().includes('garmin') ? clean : `Garmin ${clean}`
@@ -170,7 +172,7 @@ export const fuelingRows = (f: ActivityFueling): [string, string][] => {
   if (target.length > 0) rows.push(['target', target.join(' / ')])
 
   if (f.sweatLossMl != null) rows.push(['sweat', formatMl(f.sweatLossMl)])
-  if (rows.length > 0) rows.push(['source', formatGarminSource(f.sourceDevice)])
+  if (rows.length > 0) rows.push(['source', formatFuelingSource(f)])
   return rows
 }
 

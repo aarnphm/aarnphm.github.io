@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
 import {
+  applyManualFueling,
   buildPayload,
   hasFetchedActivityDetail,
   type RawStravaActivity,
@@ -41,6 +42,54 @@ function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
     ...overrides,
   }
 }
+
+test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
+  const fueling = emptyGarminFueling('Edge 1050')
+  fueling.caloriesConsumed = 200
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride() },
+  }
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Cadence training',
+        sport: 'bike',
+        startDate: '2026-06-07T11:29:55Z',
+        startDateLocal: '2026-06-07T07:29:55',
+        distanceM: 61_400,
+        movingTimeS: 7_200,
+        elapsedTimeS: 7_500,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling,
+      },
+    },
+  }
+  const payload = buildPayload(cache, null, garmin, '2026-06-01')
+
+  assert.equal(payload.details['101'].fueling?.source, 'garmin')
+  applyManualFueling(payload, [{ date: '2026-06-08', activityId: 101, caloriesConsumed: 140 }])
+  assert.equal(payload.details['101'].fueling?.source, 'garmin')
+  applyManualFueling(payload, [{ date: '2026-06-07', activityId: 101, caloriesConsumed: 140 }])
+  assert.deepEqual(payload.details['101'].fueling, {
+    caloriesConsumed: 140,
+    carbsConsumedG: null,
+    fluidMl: null,
+    carbsRecommendedG: null,
+    fluidRecommendedMl: null,
+    sweatLossMl: null,
+    sourceDevice: null,
+    source: 'manual',
+  })
+})
 
 test('emits dense map geometry separately from compact telemetry route', () => {
   const latlng: [number, number][] = Array.from({ length: 1_000 }, (_, i) => [

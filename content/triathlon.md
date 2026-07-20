@@ -36,7 +36,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-07-15 13:33:01 GMT-04:00
+modified: 2026-07-19 22:25:42 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-15'
@@ -629,6 +629,12 @@ wind: 15kph 20NW
 date: 2026-06-11
 weight: 195
 wind: 17kph 230SW
+```
+
+```tracking
+date: 2026-07-19
+activity: 19382727312
+fueling: 140
 ```
 
 <!-- training plan start

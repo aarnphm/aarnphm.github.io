@@ -1166,7 +1166,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   wrap.appendChild(zoneBox)
 
   let active = Math.min(specs.length - 1, Math.max(0, opts?.initialMetric ?? 0))
-  const draw = () => {
+  const draw = (animateTabs = true) => {
     const spec = specs[active]
     const vals = d.route.map((p, i) => spec.pick(p, i))
     const pool = spec.zeroGap ? vals.filter(v => v > 0) : vals
@@ -1207,6 +1207,7 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       opts?.onRange,
     )
     const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab'))
+    if (!animateTabs) tablist.dataset.motion = 'instant'
     tabs.forEach((tab, i) => {
       const on = i === active
       tab.setAttribute('aria-selected', on ? 'true' : 'false')
@@ -1214,16 +1215,28 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       tab.style.background = on ? spec.ramp[6] : ''
       tab.style.borderColor = on ? spec.ramp[6] : ''
     })
+    if (!animateTabs) {
+      tablist.getBoundingClientRect()
+      delete tablist.dataset.motion
+    }
     opts?.onMetric?.(active)
   }
   specs.forEach((spec, i) => {
-    const tab = el('button', 'tri-map-tab', spec.shortLabel)
+    const tab = el('button', 'tri-map-tab')
     tab.setAttribute('type', 'button')
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-label', spec.label)
-    tab.addEventListener('click', () => {
+    tab.dataset.shortcut = spec.shortLabel[0].toLowerCase()
+    tab.style.setProperty('--tri-map-tab-shortcut-width', `${spec.shortLabel.length}ch`)
+    tab.style.setProperty('--tri-map-tab-label-width', `${spec.label.length}ch`)
+    const shortcut = el('span', 'tri-map-tab-shortcut', spec.shortLabel)
+    const label = el('span', 'tri-map-tab-label', spec.label)
+    shortcut.setAttribute('aria-hidden', 'true')
+    label.setAttribute('aria-hidden', 'true')
+    tab.append(shortcut, label)
+    tab.addEventListener('click', event => {
       active = i
-      draw()
+      draw(event.detail > 0)
     })
     tablist.appendChild(tab)
   })
@@ -1237,14 +1250,14 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
     else if (event.key === 'End') next = tabs.length - 1
     else {
       const key = event.key.toLowerCase()
-      next = specs.findIndex(spec => spec.shortLabel[0].toLowerCase() === key)
+      next = tabs.findIndex(tab => tab.dataset.shortcut === key)
     }
     if (next < 0) return
     event.preventDefault()
     event.stopPropagation()
     if (next !== active) {
       active = next
-      draw()
+      draw(false)
     }
     tabs[next]?.focus()
   })
@@ -9621,6 +9634,18 @@ const toggleSearchFocus = (root: HTMLElement, target: HTMLElement | null): boole
   return true
 }
 
+const mapDetailMetricTabForKey = (root: HTMLElement, key: string): HTMLButtonElement | null => {
+  if (key.length !== 1) return null
+  const tablist = root.querySelector<HTMLElement>('.tri-map--detail .tri-map-tablist')
+  if (!tablist) return null
+  const shortcut = key.toLowerCase()
+  return (
+    Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab')).find(
+      tab => tab.dataset.shortcut === shortcut,
+    ) ?? null
+  )
+}
+
 const setupCommandPalette = (root: HTMLElement): (() => void) => {
   const overlay = el('div', 'tri-cmdk', undefined, { 'aria-hidden': 'true' })
   const box = el('div', 'tri-cmdk-box', undefined, {
@@ -9924,6 +9949,16 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
 
     if (e.ctrlKey || e.metaKey || e.altKey) {
       clearG()
+      return
+    }
+
+    const metricTab = e.isComposing || e.repeat ? null : mapDetailMetricTabForKey(root, e.key)
+    if (metricTab) {
+      clearG()
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      metricTab.click()
+      metricTab.focus()
       return
     }
 
