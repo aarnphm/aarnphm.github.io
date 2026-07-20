@@ -865,9 +865,8 @@
 .tri-swim-mode-toggle {
   --tri-swim-mode-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   display: inline-flex;
-  align-items: stretch;
+  align-items: center;
   align-self: flex-end;
-  overflow: hidden;
   font-family: var(--codeFont);
   background: var(--tri-swim-mode-surface);
   border: 1px solid var(--lightgray);
@@ -876,10 +875,11 @@
 }
 
 .tri-swim-mode {
-  padding: 0.22rem 0.7rem;
+  position: relative;
+  padding: 0.14rem 0.46rem;
   font-family: inherit;
-  font-size: 0.66rem;
-  line-height: 1.3;
+  font-size: 0.58rem;
+  line-height: 1;
   color: var(--gray);
   background: transparent;
   border: 0;
@@ -888,6 +888,12 @@
   transition:
     background-color 140ms ease,
     color 140ms ease;
+
+  &::after {
+    position: absolute;
+    inset: -0.3rem 0;
+    content: '';
+  }
 
   &:hover {
     color: var(--dark);

@@ -332,6 +332,7 @@ test('abilities block builds one radar per sport with per-discipline history', (
   assert.equal(swimPace?.rawUnit, 's/100m')
   assert.equal(swimPace?.rawValue, 120)
   assert.equal(swimPace?.score, 76)
+  assert.equal(swim.axes.find(x => x.key === 'sprint')?.score, 76)
   assert.equal(swim.axes.find(x => x.key === 'cadence')?.score, null)
   assert.equal(swim.axes.find(x => x.key === 'sprint')?.rawUnit, 'm/s')
   assert.equal(bike.axes.find(x => x.key === 'sprint')?.rawUnit, 'w/kg')
@@ -352,6 +353,34 @@ test('abilities block builds one radar per sport with per-discipline history', (
   assert.equal(runLast.oscillation, null)
   const swimLast = swim.history[swim.history.length - 1]
   assert.equal(swimLast.climb, 76)
+  assert.equal(swimLast.sprint, 76)
+})
+
+test('swim sprint and threshold share the swim pace scale', () => {
+  const { cache, oura, weights } = fixtures()
+  for (let index = 0; index < 4; index++) {
+    const id = 3 + index
+    const day = iso(24 + index)
+    cache.activities[String(id)] = activity(id, 'Swim', day, 1_000, 708, {
+      averageCadence: undefined,
+    })
+  }
+
+  const analytics = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })
+  const swim = analytics.engine.abilities.sports.find(sport => sport.sport === 'swim')
+  const sprint = swim?.axes.find(axis => axis.key === 'sprint')
+  const threshold = swim?.axes.find(axis => axis.key === 'threshold')
+
+  assert.equal(sprint?.rawValue, 0.71)
+  assert.equal(sprint?.score, 69)
+  assert.equal(threshold?.rawValue, 0.71)
+  assert.equal(threshold?.score, 69)
+  assert.equal(sprint?.lo, 100 / 360)
+  assert.equal(sprint?.hi, 100 / 45)
+  assert.equal(threshold?.lo, sprint?.lo)
+  assert.equal(threshold?.hi, sprint?.hi)
+  assert.equal(swim?.history.at(-1)?.sprint, 69)
+  assert.equal(swim?.history.at(-1)?.threshold, 69)
 })
 
 test('run radar replaces climb and recovery with native stride and oscillation', () => {
