@@ -10,6 +10,7 @@ import type { OuraCache, OuraDaily } from './oura'
 import type { ManualFuelingEntry } from './tracking'
 import type { WeatherCache, WeatherTemperatureSample } from './weather'
 import { localIsoDay } from '../../util/local-date'
+import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
   emptyGarminFueling,
   matchGarminActivity,
@@ -65,7 +66,6 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
 const DAY_MS = 86_400_000
 const WINDOW_DAYS = 364
 const ROUTE_POINTS = 140
-const MAP_ROUTE_POINTS = 1600
 
 export interface StravaAuth {
   refreshToken: string
@@ -168,6 +168,8 @@ export interface StravaRawCache {
   zones?: StravaZones
 }
 
+export type StravaMapPoint = MapRoutePoint
+
 export interface PowerCurvePoint {
   s: number
   w: number
@@ -250,11 +252,6 @@ export interface StravaRoutePoint {
   strideLengthM?: number | null
   groundContactTimeMs?: number | null
   verticalOscillationCm?: number | null
-}
-
-export interface StravaMapPoint {
-  lat: number
-  lng: number
 }
 
 export type ActivityAnalysisKind = 'lap' | 'segment' | 'climb'
@@ -372,7 +369,7 @@ export interface StravaActivityDetail {
   fueling: ActivityFueling | null
   garmin: GarminVerification | null
   route: StravaRoutePoint[]
-  mapRoute?: StravaMapPoint[]
+  mapRoute: StravaMapPoint[][]
   analysisRanges: ActivityAnalysisRange[]
   runSplitsMetric: ActivityRunSplit[]
   runSplitsStandard: ActivityRunSplit[]
@@ -493,7 +490,7 @@ function median(xs: number[]): number {
   return s.length % 2 === 1 ? s[m] : (s[m - 1] + s[m]) / 2
 }
 
-function homeStart(starts: [number, number][]): [number, number] | null {
+export function inferRouteHome(starts: [number, number][]): [number, number] | null {
   if (starts.length < 6) return null
   const seedLat = median(starts.map(p => p[0]))
   const seedLng = median(starts.map(p => p[1]))
@@ -547,14 +544,6 @@ function sampleIndicesWithRequired(
   if (hi < lo) return []
   const anchors = required.filter(index => index >= lo && index <= hi)
   return [...new Set([...sampleIndices(lo, hi, maxPoints), ...anchors])].sort((a, b) => a - b)
-}
-
-function sampledMapRoute(latlng: [number, number][], lo: number, hi: number): StravaMapPoint[] {
-  const route: StravaMapPoint[] = []
-  for (const raw of sampleIndices(lo, hi, MAP_ROUTE_POINTS)) {
-    route.push({ lat: round(latlng[raw][0], 5), lng: round(latlng[raw][1], 5) })
-  }
-  return route
 }
 
 function emptyTotals(): StravaSportTotals[] {
@@ -1372,7 +1361,7 @@ function localSpeedKph(time: number[], distance: number[]): number[] {
   return speedKph
 }
 
-function privateRouteBounds(
+export function privateRouteBounds(
   latlng: [number, number][],
   home: [number, number] | null,
 ): [number, number] {
@@ -1418,7 +1407,7 @@ function projectDetail(
   powerCurve: PowerCurvePoint[] | undefined,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
-  const mapRoute: StravaMapPoint[] = []
+  let mapRoute: StravaMapPoint[][] = []
   const analysis = projectAnalysisRanges(a, rawDetail, effortStreams, climbs)
   let minAlt = 0
   let maxAlt = 0
@@ -1427,9 +1416,19 @@ function projectDetail(
   const temperatureSeries = weather?.temperatureSeries ?? []
   const fallbackTemperatureC = weather?.temperatureC ?? a.averageTemp ?? null
   const mapLatlng = streams?.latlng ?? []
-  if (mapLatlng.length >= 2) {
+  const mapTime = streams
+    ? (routeElapsedSeconds(streams, a.movingTime) ??
+      Array.from({ length: mapLatlng.length }, (_, index) => index))
+    : null
+  if (
+    mapRoute.length === 0 &&
+    streams &&
+    mapTime &&
+    mapLatlng.length >= 2 &&
+    streams.distance.length === mapLatlng.length
+  ) {
     const [mapLo, mapHi] = privateRouteBounds(mapLatlng, home)
-    mapRoute.push(...sampledMapRoute(mapLatlng, mapLo, mapHi))
+    mapRoute = rawMapRouteSegments(mapLatlng, streams.distance, mapTime, mapLo, mapHi)
   }
   const timedEffort = timedStreamAlignment(effortStreams)
   const routeStreams =
@@ -1774,7 +1773,7 @@ export function buildPayload(
     const ll = selectedStreams.get(String(a.id))?.latlng
     if (ll && ll.length >= 2) starts.push([ll[0][0], ll[0][1]])
   }
-  const home = homeStart(starts)
+  const home = inferRouteHome(starts)
 
   const details: Record<string, StravaActivityDetail> = {}
   for (const { a, sport } of activities) {

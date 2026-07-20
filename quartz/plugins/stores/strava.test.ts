@@ -91,7 +91,7 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
   })
 })
 
-test('emits dense map geometry separately from compact telemetry route', () => {
+test('emits geometry-preserved map data separately from compact telemetry route', () => {
   const latlng: [number, number][] = Array.from({ length: 1_000 }, (_, i) => [
     43 + i * 0.00001,
     -79 - i * 0.00002,
@@ -120,10 +120,11 @@ test('emits dense map geometry separately from compact telemetry route', () => {
 
   const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
   assert.ok(detail.route.length <= 141)
-  assert.equal(detail.mapRoute?.length, 1_000)
+  assert.equal(detail.mapRoute.length, 1)
+  assert.equal(detail.mapRoute[0].length, 2)
   assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
-  assert.deepEqual(detail.mapRoute?.[0], { lat: 43, lng: -79 })
-  assert.deepEqual(detail.mapRoute?.at(-1), { lat: 43.00999, lng: -79.01998 })
+  assert.deepEqual(detail.mapRoute[0][0], { lat: 43, lng: -79, d: 0 })
+  assert.deepEqual(detail.mapRoute[0].at(-1), { lat: 43.00999, lng: -79.01998, d: 61.3386 })
   assert.ok(detail.route.every(point => point.tempC === 21))
   assert.ok(detail.route.every(point => Number.isFinite(point.elapsedS)))
   assert.ok(detail.route.every(point => Number.isFinite(point.speedKph)))
@@ -486,7 +487,8 @@ test('keeps dense map route continuous across GPS jumps', () => {
   }
 
   const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
-  assert.equal(detail.mapRoute?.length, 4)
+  assert.equal(detail.mapRoute.length, 1)
+  assert.ok(detail.mapRoute[0].length >= 2)
   assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
 })
 
@@ -517,7 +519,8 @@ test('keeps sparse but plausible map samples continuous', () => {
   }
 
   const detail = buildPayload(cache, null, null, '2026-06-01').details['101']
-  assert.equal(detail.mapRoute?.length, 4)
+  assert.equal(detail.mapRoute.length, 1)
+  assert.ok(detail.mapRoute[0].length >= 2)
   assert.equal(Object.hasOwn(detail, 'mapBreaks'), false)
 })
 

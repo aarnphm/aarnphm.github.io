@@ -77,7 +77,7 @@ Formally, suppose the $k+1$ points $u_0, \ldots, u_k$ are _affinely independent_
 Then simplex determined by them is a set of points:
 
 $$
-C=\{\theta_0 u_0 + \ldots \theta_k u_k \mid \sum_{i=0}^{k} \theta_i = 1 \text{ and } \theta_i \ge 0 \text{ for } i=0,\ldots,k\}
+C=\{\theta_0 u_0 + \ldots + \theta_k u_k \mid \sum_{i=0}^{k} \theta_i = 1 \text{ and } \theta_i \ge 0 \text{ for } i=0,\ldots,k\}
 $$
 
 [^2]: a polytope is a geometric object with flat sides (faces). Polytopes are the generalization of three-dimensional polyhedra to any number of dimensions.

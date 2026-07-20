@@ -53,7 +53,7 @@ $$
 N_{\text{opt}}(C)=G\left(\frac{C}{6}\right)^{\frac{\eta}{\alpha+\eta}},\qquad D_{\text{opt}}(C)=G^{-1}\left(\frac{C}{6}\right)^{\frac{\alpha}{\alpha+\eta}},
 $$
 
-with constants $\alpha,\eta$ fitted from power-law envelopes and $G=(\alpha A/\eta B)^{1/(\alpha+\eta)}$. This predicts that doubling compute should roughly double both optimal parameters and tokens, not just parameters.
+with constants $\alpha,\eta$ fitted from power-law envelopes and $G=(\alpha A/\eta B)^{1/(\alpha+\eta)}$. This predicts that doubling compute should grow both optimal parameters and tokens by roughly $\sqrt{2}$, not just parameters.
 
 ### practical implication
 

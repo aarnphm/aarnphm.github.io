@@ -37,6 +37,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   fueling: null,
   garmin: null,
   route: [],
+  mapRoute: [],
   analysisRanges: [],
   runSplitsMetric: [],
   runSplitsStandard: [],

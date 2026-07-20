@@ -128,6 +128,7 @@ import {
   triWeekdayNarrow,
   vo2SourceText,
 } from '../../util/triathlon-i18n'
+import { clipMapRoute, mapRoutePointAtDistance } from '../../util/triathlon-map-route'
 import { isRecord } from '../../util/type-guards'
 import { weeklyChartIndex, weeklyChartX } from '../../util/weekly-target-range'
 
@@ -3108,7 +3109,6 @@ const WKT_H = 34
 const WKT_TOP = 4
 const WKT_BOT = WKT_H - 4
 const WKT_ACTS = 4
-const WKT_VISIBLE = 7
 
 const wkVal = (w: Analytics['weekly'][number], kind: WkKind): number =>
   kind === 'load' ? w.load : w.effort
@@ -3121,14 +3121,12 @@ interface WkTrendRow {
 }
 
 const wkTrendRows = (data: Analytics, kind: WkKind): WkTrendRow[] =>
-  data.weekly
-    .map((week, sourceIndex) => ({
-      week,
-      sourceIndex,
-      value: wkVal(week, kind),
-      band: kind === 'load' ? week.loadRange : week.effortRange,
-    }))
-    .slice(-WKT_VISIBLE)
+  data.weekly.map((week, sourceIndex) => ({
+    week,
+    sourceIndex,
+    value: wkVal(week, kind),
+    band: kind === 'load' ? week.loadRange : week.effortRange,
+  }))
 
 const wkDates = (weekStart: string): string[] =>
   Array.from({ length: 7 }, (_, k) =>
@@ -7546,6 +7544,33 @@ const searchCommandTitle = (prefix: string, value?: string): HTMLElement => {
   return wrap
 }
 
+const activityResultItem = (title: HTMLElement | string, sub: string): HTMLElement => {
+  const item = el('button', 'tri-ana-ritem')
+  item.setAttribute('type', 'button')
+  const label = el('span', 'tri-ana-ritem-t')
+  if (typeof title === 'string') label.textContent = title
+  else label.appendChild(title)
+  item.append(label, el('span', 'tri-ana-ritem-s', sub))
+  return item
+}
+
+const matchesActivityTokens = (haystack: string, tokens: string[]): boolean =>
+  tokens.every(token => haystack.includes(token))
+
+const activityResultItems = (results: HTMLElement | null): HTMLElement[] =>
+  results ? Array.from(results.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+
+const setActivityResultSelection = (results: HTMLElement | null, index: number): number => {
+  const items = activityResultItems(results)
+  if (items.length === 0) return -1
+  const selected = ((index % items.length) + items.length) % items.length
+  items.forEach((item, itemIndex) =>
+    item.classList.toggle('tri-ana-ritem--sel', itemIndex === selected),
+  )
+  items[selected].scrollIntoView({ block: 'nearest' })
+  return selected
+}
+
 const ACTIVITY_FILTER_SPORTS: readonly string[] = ['bike', 'run', 'swim', 'walk']
 const ACTIVITY_SORT_KEYS: readonly string[] = ['distance', 'cadence', 'pace']
 const DATE_FILTER_KEYWORDS: readonly string[] = ['today', 'yesterday', 'week', 'month']
@@ -7622,13 +7647,14 @@ const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
 }
 
 const sortActivitiesBy = <
-  T extends Pick<ActivitySummary, 'distanceKm' | 'cadence' | 'movingTimeS'>,
+  T extends Pick<ActivitySummary, 'date' | 'distanceKm' | 'cadence' | 'movingTimeS'>,
 >(
   acts: T[],
   sortKey: string | null,
 ): T[] => {
   if (!sortKey) return acts
   return acts.sort((a, b) => {
+    if (sortKey === 'date') return b.date.localeCompare(a.date)
     if (sortKey === 'distance') return b.distanceKm - a.distanceKm
     if (sortKey === 'cadence') return (b.cadence ?? 0) - (a.cadence ?? 0)
     if (sortKey === 'pace') {
@@ -7640,18 +7666,14 @@ const sortActivitiesBy = <
   })
 }
 
-const activityCommandHints = (
-  lastToken: string,
-  ritem: (title: HTMLElement | string, sub: string) => HTMLElement,
-  noun: string,
-): HTMLElement[] => {
+const activityCommandHints = (lastToken: string, noun: string): HTMLElement[] => {
   const hints: HTMLElement[] = []
   const filterValue = lastToken.startsWith('filter:') ? lastToken.slice(7) : null
   const sortValue = lastToken.startsWith('sort:') ? lastToken.slice(5) : null
   if (filterValue !== null && /^\d+$/.test(filterValue)) {
     const units = filterValue === '1' ? ['day', 'week', 'month'] : ['days', 'weeks', 'months']
     for (const u of units) {
-      const it = ritem(
+      const it = activityResultItem(
         searchCommandTitle('filter:', `${filterValue} ${u}`),
         `last ${filterValue} ${u}`,
       )
@@ -7665,29 +7687,32 @@ const activityCommandHints = (
   ) {
     for (const f of ACTIVITY_FILTER_SPORTS)
       if (f.startsWith(filterValue)) {
-        const it = ritem(searchCommandTitle('filter:', f), `filter ${noun}`)
+        const it = activityResultItem(searchCommandTitle('filter:', f), `filter ${noun}`)
         it.dataset.insert = `filter:${f}`
         hints.push(it)
       }
     for (const k of DATE_FILTER_KEYWORDS)
       if (k.startsWith(filterValue)) {
-        const it = ritem(searchCommandTitle('filter:', k), DATE_HINT_SUBS[k])
+        const it = activityResultItem(searchCommandTitle('filter:', k), DATE_HINT_SUBS[k])
         it.dataset.insert = `filter:${k}`
         hints.push(it)
       }
   } else if (sortValue !== null && !ACTIVITY_SORT_KEYS.includes(sortValue)) {
     for (const s of ACTIVITY_SORT_KEYS)
       if (s.startsWith(sortValue)) {
-        const it = ritem(searchCommandTitle('sort:', s), `sort ${noun}`)
+        const it = activityResultItem(searchCommandTitle('sort:', s), `sort ${noun}`)
         it.dataset.insert = `sort:${s}`
         hints.push(it)
       }
   } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
-    const it = ritem(searchCommandTitle('filter:'), 'filter by sport or date (bike, today, 3 days)')
+    const it = activityResultItem(
+      searchCommandTitle('filter:'),
+      'filter by sport or date (bike, today, 3 days)',
+    )
     it.dataset.insert = 'filter:'
     hints.push(it)
   } else if (lastToken.length > 0 && 'sort:'.startsWith(lastToken) && lastToken !== 'sort:') {
-    const it = ritem(searchCommandTitle('sort:'), 'sort by distance, cadence, pace')
+    const it = activityResultItem(searchCommandTitle('sort:'), 'sort by distance, cadence, pace')
     it.dataset.insert = 'sort:'
     hints.push(it)
   }
@@ -7879,27 +7904,9 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     block?.classList.add('tri-ana-block--flash')
     window.setTimeout(() => block?.classList.remove('tri-ana-block--flash'), 900)
   }
-  const ritem = (title: HTMLElement | string, sub: string): HTMLElement => {
-    const it = el('button', 'tri-ana-ritem')
-    it.setAttribute('type', 'button')
-    const t = el('span', 'tri-ana-ritem-t')
-    if (typeof title === 'string') t.textContent = title
-    else t.appendChild(title)
-    it.append(t, el('span', 'tri-ana-ritem-s', sub))
-    return it
-  }
-  const matchHay = (hay: string, tokens: string[]): boolean => tokens.every(t => hay.includes(t))
-  const resultItems = (): HTMLElement[] =>
-    results ? Array.from(results.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+  const resultItems = (): HTMLElement[] => activityResultItems(results)
   const setSel = (i: number) => {
-    const its = resultItems()
-    if (its.length === 0) {
-      selIndex = -1
-      return
-    }
-    selIndex = ((i % its.length) + its.length) % its.length
-    its.forEach((it, k) => it.classList.toggle('tri-ana-ritem--sel', k === selIndex))
-    its[selIndex].scrollIntoView({ block: 'nearest' })
+    selIndex = setActivityResultSelection(results, i)
   }
   const activate = (it: HTMLElement | undefined) => {
     if (!it) return
@@ -7929,19 +7936,19 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
 
     const metrics: HTMLElement[] = []
     const lastToken = rawTokens[rawTokens.length - 1]
-    const hints = activityCommandHints(lastToken, ritem, 'activities')
+    const hints = activityCommandHints(lastToken, 'activities')
 
     if (!filterSport && !filterDate && !sortKey) {
       for (const s of SEARCH_SECTIONS)
-        if (matchHay(`${s.label} ${tl(s.label)} ${s.hay}`.toLowerCase(), tokens)) {
-          const it = ritem(tl(s.label), 'section')
+        if (matchesActivityTokens(`${s.label} ${tl(s.label)} ${s.hay}`.toLowerCase(), tokens)) {
+          const it = activityResultItem(tl(s.label), 'section')
           it.dataset.chart = s.chart
           metrics.push(it)
         }
       for (const key of glossKeys()) {
         const g = glossFor(key)
-        if (g && matchHay(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
-          const it = ritem(g.term, g.def)
+        if (g && matchesActivityTokens(`${key} ${g.term} ${g.def}`.toLowerCase(), tokens)) {
+          const it = activityResultItem(g.term, g.def)
           it.dataset.chart = GLOSS_CHART[key] ?? 'pmc'
           metrics.push(it)
         }
@@ -7953,7 +7960,8 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         if (filterSport && a.sport !== filterSport) return false
         if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
         return (
-          tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+          tokens.length === 0 ||
+          matchesActivityTokens(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
         )
       }),
       sortKey,
@@ -7980,7 +7988,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         const sub =
           `${triLongDate(a.date)} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}` +
           (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
-        const it = ritem(head, sub)
+        const it = activityResultItem(head, sub)
         it.dataset.id = String(a.id)
         grp.appendChild(it)
       }
@@ -8076,11 +8084,12 @@ type GeoFC = { type: 'FeatureCollection'; features: unknown[] }
 const emptyFC = (): GeoFC => ({ type: 'FeatureCollection', features: [] })
 type GeoCoord = [number, number]
 
-const gpsRoute = (d: StravaActivityDetail): readonly StravaMapPoint[] =>
-  d.mapRoute && d.mapRoute.length >= 2 ? d.mapRoute : d.route
-
 const gpsSegments = (d: StravaActivityDetail): readonly (readonly StravaMapPoint[])[] =>
-  gpsRoute(d).length >= 2 ? [gpsRoute(d)] : []
+  d.mapRoute.some(segment => segment.length >= 2)
+    ? d.mapRoute.filter(segment => segment.length >= 2)
+    : d.route.length >= 2
+      ? [d.route]
+      : []
 
 const lineFeatures = (route: readonly StravaMapPoint[], props: Record<string, unknown> = {}) =>
   route.length >= 2
@@ -8088,10 +8097,15 @@ const lineFeatures = (route: readonly StravaMapPoint[], props: Record<string, un
         {
           type: 'Feature',
           properties: props,
-          geometry: { type: 'LineString', coordinates: route.map(p => [p.lng, p.lat] as GeoCoord) },
+          geometry: { type: 'LineString', coordinates: route.map<GeoCoord>(p => [p.lng, p.lat]) },
         },
       ]
     : []
+
+const segmentFeatures = (
+  segments: readonly (readonly StravaMapPoint[])[],
+  props: Record<string, unknown> = {},
+) => segments.flatMap(segment => lineFeatures(segment, props))
 
 type OverviewMode = 'heat' | 'w' | 'hr' | 'cad' | 'spd'
 
@@ -8161,7 +8175,7 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
   const det = dp?.details ?? {}
   for (const k in det) {
     const d = det[k]
-    if (enabled.has(d.sport) && gpsRoute(d).length >= 2) acts.push(d)
+    if (enabled.has(d.sport) && gpsSegments(d).length > 0) acts.push(d)
   }
   const counts = new Map<string, number>()
   for (const d of acts) {
@@ -8270,7 +8284,7 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
           ? Math.min(1, Math.max(0, (v - range[0]) / (range[1] - range[0])))
           : -1
     }
-    traceFeatures.push(...lineFeatures(gpsRoute(d), props))
+    traceFeatures.push(...segmentFeatures(gpsSegments(d), props))
   }
   const legend: Record<OverviewMode, OverviewLegend | null> = {
     heat: { lo: '$1\\times$', hi: `$${maxCount}\\times$` },
@@ -8319,15 +8333,15 @@ const traceOpacityExpr = (k: OverviewMode): unknown[] => ['case', ['<', ['get', 
 
 const routeFC = (d: StravaActivityDetail): GeoFC => ({
   type: 'FeatureCollection',
-  features: lineFeatures(gpsRoute(d)),
+  features: segmentFeatures(gpsSegments(d)),
 })
 
 const rangeFC = (d: StravaActivityDetail, range: ActivityAnalysisRange): GeoFC => {
-  const start = analysisRouteIndex(d.route, range.startDistanceKm)
-  const end = analysisRouteIndex(d.route, range.endDistanceKm)
   return {
     type: 'FeatureCollection',
-    features: lineFeatures(d.route.slice(Math.min(start, end), Math.max(start, end) + 1)),
+    features: segmentFeatures(
+      clipMapRoute(gpsSegments(d), range.startDistanceKm, range.endDistanceKm),
+    ),
   }
 }
 
@@ -8338,14 +8352,27 @@ const pointFC = (lng: number, lat: number): GeoFC => ({
   ],
 })
 
-const gradientExpr = (
+const metricValueAtDistance = (
   d: StravaActivityDetail,
   pick: (p: StravaActivityDetail['route'][number], i: number) => number,
-  colors: string[] = HEAT_RAMP,
-  zeroGap = false,
-): unknown[] => {
+  distanceKm: number,
+): number => {
+  const index = analysisRouteIndex(d.route, distanceKm)
+  const point = d.route[index]
+  if (!point) return 0
+  const otherIndex =
+    point.d <= distanceKm ? Math.min(d.route.length - 1, index + 1) : Math.max(0, index - 1)
+  const other = d.route[otherIndex]
+  if (!other || other.d === point.d) return pick(point, index)
+  const fraction = (distanceKm - point.d) / (other.d - point.d)
+  return pick(point, index) + (pick(other, otherIndex) - pick(point, index)) * fraction
+}
+
+const metricRouteFC = (d: StravaActivityDetail, spec: MapMetric): GeoFC => {
+  if (d.route.length === 0) return emptyFC()
+  const pick = spec.pick
   const vals = d.route.map((p, i) => pick(p, i))
-  const pool = zeroGap ? vals.filter(v => v > 0) : vals
+  const pool = spec.zeroGap ? vals.filter(v => v > 0) : vals
   let lo = Infinity
   let hi = -Infinity
   for (const v of pool.length ? pool : vals) {
@@ -8353,23 +8380,37 @@ const gradientExpr = (
     if (v > hi) hi = v
   }
   const range = hi > lo ? hi - lo : 1
-  const dN = d.route[d.route.length - 1].d || 1
-  const pairs: [number, string][] = []
-  let lastT = -1
-  d.route.forEach((p, i) => {
-    const v = vals[i]
-    const t = Math.min(1, Math.max(0, p.d / dN))
-    if (t <= lastT) return
-    lastT = t
-    const bucket = Math.min(7, Math.max(1, Math.ceil(((v - lo) / range) * 7) || 1))
-    pairs.push([t, zeroGap && v <= 0 ? 'rgba(0,0,0,0)' : colors[bucket - 1]])
-  })
-  if (pairs.length === 0) pairs.push([0, colors[3]])
-  if (pairs[0][0] > 0) pairs.unshift([0, pairs[0][1]])
-  if (pairs[pairs.length - 1][0] < 1) pairs.push([1, pairs[pairs.length - 1][1]])
-  const stops: unknown[] = ['interpolate', ['linear'], ['line-progress']]
-  for (const [t, c] of pairs) stops.push(t, c)
-  return stops
+  const features: unknown[] = []
+  for (const segment of gpsSegments(d)) {
+    let runColor = ''
+    let coordinates: GeoCoord[] = []
+    const flush = (): void => {
+      if (coordinates.length >= 2)
+        features.push({
+          type: 'Feature',
+          properties: { color: runColor },
+          geometry: { type: 'LineString', coordinates },
+        })
+      coordinates = []
+    }
+    for (let index = 1; index < segment.length; index++) {
+      const a = segment[index - 1]
+      const b = segment[index]
+      const value = metricValueAtDistance(d, pick, (a.d + b.d) / 2)
+      const bucket = Math.min(6, Math.max(0, Math.floor(((value - lo) / range) * 7)))
+      const color = spec.zeroGap && value <= 0 ? 'rgba(0,0,0,0)' : spec.ramp[bucket]
+      const start: GeoCoord = [a.lng, a.lat]
+      const end: GeoCoord = [b.lng, b.lat]
+      if (color !== runColor) {
+        flush()
+        runColor = color
+        coordinates = [start]
+      } else if (coordinates.length === 0) coordinates.push(start)
+      coordinates.push(end)
+    }
+    flush()
+  }
+  return { type: 'FeatureCollection', features }
 }
 
 const fcBounds = (fc: GeoFC): [[number, number], [number, number]] | null => {
@@ -8473,12 +8514,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     const recolor = (d: StravaActivityDetail, i: number) => {
       if (!ready()) return
       const spec = metricSpecs(d)[i]
-      if (spec)
-        map.setPaintProperty(
-          'tri-sel',
-          'line-gradient',
-          gradientExpr(d, spec.pick, spec.ramp, spec.zeroGap),
-        )
+      if (spec) map.getSource('tri-sel')?.setData(metricRouteFC(d, spec))
     }
     const addSource = (id: string, source: Record<string, unknown>) => {
       if (!map.getSource(id)) map.addSource(id, source)
@@ -8570,7 +8606,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': '#fc4c02', 'line-width': 2 },
       })
-      addSource('tri-sel', { type: 'geojson', lineMetrics: true, data: emptyFC() })
+      addSource('tri-sel', { type: 'geojson', data: emptyFC() })
       addLayer({
         id: 'tri-sel-casing',
         type: 'line',
@@ -8583,18 +8619,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         type: 'line',
         source: 'tri-sel',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-width': 2.1,
-          'line-gradient': [
-            'interpolate',
-            ['linear'],
-            ['line-progress'],
-            0,
-            '#fc4c02',
-            1,
-            '#fc4c02',
-          ],
-        },
+        paint: { 'line-width': 2.1, 'line-color': ['get', 'color'] },
       })
       addSource('tri-range', { type: 'geojson', data: emptyFC() })
       addLayer({
@@ -8684,7 +8709,6 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       selection = { d, i }
       if (!ready()) return
       clearHover()
-      map.getSource('tri-sel')?.setData(routeFC(d))
       map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
       recolor(d, i)
       map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
@@ -8705,8 +8729,10 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       selectedRange = range
       if (ready()) map.getSource('tri-range')?.setData(range ? rangeFC(d, range) : emptyFC())
     }
-    const moveDot = (lng: number, lat: number) =>
-      ready() ? map.getSource('tri-dot')?.setData(pointFC(lng, lat)) : undefined
+    const moveDot = (d: StravaActivityDetail, distanceKm: number) => {
+      const point = mapRoutePointAtDistance(gpsSegments(d), distanceKm)
+      if (ready() && point) map.getSource('tri-dot')?.setData(pointFC(point.lng, point.lat))
+    }
     const clearSelection = () => {
       selection = null
       selectedRange = null
@@ -8871,7 +8897,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
             activeRouteMetric = i
             if (mapMode) mapCtl.recolor(d, i)
           },
-          onHover: mapMode ? p => mapCtl.moveDot(p.lng, p.lat) : undefined,
+          onHover: mapMode ? p => mapCtl.moveDot(d, p.d) : undefined,
           analysis,
           onRange: mapMode ? range => mapCtl.selectRange(d, range) : undefined,
         }),
@@ -8899,27 +8925,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       }
     })
   }
-  const ritem = (titleEl: HTMLElement | string, sub: string): HTMLElement => {
-    const it = el('button', 'tri-ana-ritem')
-    it.setAttribute('type', 'button')
-    const t = el('span', 'tri-ana-ritem-t')
-    if (typeof titleEl === 'string') t.textContent = titleEl
-    else t.appendChild(titleEl)
-    it.append(t, el('span', 'tri-ana-ritem-s', sub))
-    return it
-  }
-  const matchHay = (hay: string, tokens: string[]): boolean => tokens.every(t => hay.includes(t))
-  const resultItems = (): HTMLElement[] =>
-    results ? Array.from(results.querySelectorAll<HTMLElement>('.tri-ana-ritem')) : []
+  const resultItems = (): HTMLElement[] => activityResultItems(results)
   const setSel = (i: number) => {
-    const its = resultItems()
-    if (its.length === 0) {
-      selIndex = -1
-      return
-    }
-    selIndex = ((i % its.length) + its.length) % its.length
-    its.forEach((it, k) => it.classList.toggle('tri-ana-ritem--sel', k === selIndex))
-    its[selIndex].scrollIntoView({ block: 'nearest' })
+    selIndex = setActivityResultSelection(results, i)
   }
   const activate = (it: HTMLElement | undefined) => {
     if (!it) return
@@ -8955,7 +8963,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     const routeSport = ROUTE_SPORTS.find(s => s === filterSport)
     setEnabledSports(routeSport ? new Set([routeSport]) : new Set(ROUTE_SPORTS))
     const lastToken = rawTokens[rawTokens.length - 1]
-    const hints = activityCommandHints(lastToken, ritem, 'routes')
+    const hints = activityCommandHints(lastToken, 'routes')
     const ids = drawableIds()
     const acts = sortActivitiesBy(
       (data?.activities ?? []).filter(a => {
@@ -8963,7 +8971,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         if (filterSport && a.sport !== filterSport) return false
         if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
         return (
-          tokens.length === 0 || matchHay(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
+          tokens.length === 0 ||
+          matchesActivityTokens(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
         )
       }),
       sortKey,
@@ -8981,7 +8990,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         const head = el('span', 'tri-ana-ritem-h')
         head.append(buildIcon(a.sport), el('span', '', a.name || a.sport))
         const sub = `${a.date} · ${dist(a.distanceKm, a.sport)} · ${dur(a.movingTimeS)}`
-        const it = ritem(head, sub)
+        const it = activityResultItem(head, sub)
         it.dataset.id = String(a.id)
         grp.appendChild(it)
       }
@@ -9591,7 +9600,7 @@ const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon/on', label: 'on', hint: 'by date' },
 ]
 
-type SearchShortcut = { view: string; openClass: string; search: string }
+type SearchShortcut = { view: string; openClass?: string; search: string }
 
 const TRI_SEARCH_SHORTCUTS: SearchShortcut[] = [
   { view: 'analytics', openClass: 'tri-analytics-open', search: '.tri-analytics .tri-ana-search' },
@@ -9601,6 +9610,7 @@ const TRI_SEARCH_SHORTCUTS: SearchShortcut[] = [
     openClass: 'tri-training-open',
     search: '.tri-training .tri-training-search',
   },
+  { view: 'feed', search: '.tri-feed .tri-feed-search' },
 ]
 
 const isEditable = (el: HTMLElement): boolean => {
@@ -9617,7 +9627,9 @@ const isEditable = (el: HTMLElement): boolean => {
 const currentSearchShortcut = (root: HTMLElement): SearchShortcut | undefined => {
   const subView = root.dataset.triView
   if (subView) return TRI_SEARCH_SHORTCUTS.find(shortcut => shortcut.view === subView)
-  return TRI_SEARCH_SHORTCUTS.find(shortcut => root.classList.contains(shortcut.openClass))
+  return TRI_SEARCH_SHORTCUTS.find(
+    shortcut => shortcut.openClass && root.classList.contains(shortcut.openClass),
+  )
 }
 
 const toggleSearchFocus = (root: HTMLElement, target: HTMLElement | null): boolean => {
@@ -10000,26 +10012,22 @@ const setupPaceUnit = (root: HTMLElement): (() => void) | null => {
   }
 }
 
-const FEED_SORTS: Record<string, (a: ActivitySummary, b: ActivitySummary) => number> = {
-  date: (a, b) => b.date.localeCompare(a.date),
-  distance: (a, b) => b.distanceKm - a.distanceKm,
-  pace: (a, b) =>
-    (b.movingTimeS > 0 ? b.distanceKm / b.movingTimeS : 0) -
-    (a.movingTimeS > 0 ? a.distanceKm / a.movingTimeS : 0),
-}
-
 const setupFeed = (root: HTMLElement): (() => void) | null => {
   if (root.dataset.triView !== 'feed') return null
+  const feed = root.querySelector<HTMLElement>('.tri-feed')
   const list = root.querySelector<HTMLElement>('.tri-feed-list')
   const search = root.querySelector<HTMLInputElement>('.tri-feed-search')
+  const searchWrap = root.querySelector<HTMLElement>('.tri-feed-search-wrap')
+  const results = root.querySelector<HTMLElement>('.tri-feed-results')
   const countEl = root.querySelector<HTMLElement>('.tri-feed-count')
   const analyticsPath = root.dataset.analyticsPath
   const detailPath = root.dataset.detailPath
   const datePrefix = root.dataset.feedPrefix ?? ''
-  if (!list || !analyticsPath) return null
+  if (!feed || !list || !search || !searchWrap || !results || !analyticsPath) return null
 
   let acts: ActivitySummary[] = []
   let openId: string | null = null
+  let selIndex = -1
   const detailCache = new Map<string, HTMLElement>()
 
   const buildSub = (a: ActivitySummary): HTMLElement => {
@@ -10085,18 +10093,58 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     row.appendChild(buildDetail(id))
   }
 
+  const hideSuggestions = () => {
+    feed.classList.remove('tri-feed--searching')
+    results.setAttribute('aria-hidden', 'true')
+    search.setAttribute('aria-expanded', 'false')
+    selIndex = -1
+  }
+
+  const resultItems = (): HTMLElement[] => activityResultItems(results)
+  const setSel = (index: number) => {
+    selIndex = setActivityResultSelection(results, index)
+  }
+
+  const renderSuggestions = (rawTokens: string[]) => {
+    results.replaceChildren()
+    if (rawTokens.length === 0) {
+      hideSuggestions()
+      return
+    }
+    const hints = activityCommandHints(rawTokens[rawTokens.length - 1], 'activities')
+    if (hints.length === 0) {
+      hideSuggestions()
+      return
+    }
+    const group = el('div', 'tri-ana-rgroup')
+    group.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))
+    group.append(...hints)
+    results.appendChild(group)
+    feed.classList.add('tri-feed--searching')
+    results.setAttribute('aria-hidden', 'false')
+    search.setAttribute('aria-expanded', 'true')
+    setSel(0)
+  }
+
   const renderList = () => {
-    const q = (search?.value ?? '').trim().toLowerCase()
-    const sortKey = /sort:(distance|pace|date)/.exec(q)?.[1] ?? 'date'
-    const term = q
-      .replace(/sort:\w+/g, '')
-      .replace(/filter:/g, '')
-      .trim()
-    const filtered = (
-      term
-        ? acts.filter(a => `${a.sport} ${a.name} ${a.date}`.toLowerCase().includes(term))
-        : acts.slice()
-    ).sort(FEED_SORTS[sortKey] ?? FEED_SORTS.date)
+    const query = search.value.trim().toLowerCase()
+    const rawTokens = query ? query.split(/\s+/) : []
+    const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
+    const filtered = sortActivitiesBy(
+      acts.filter(activity => {
+        if (filterSport && activity.sport !== filterSport) return false
+        if (filterDate && (activity.date < filterDate.start || activity.date > filterDate.end))
+          return false
+        return (
+          tokens.length === 0 ||
+          matchesActivityTokens(
+            `${activity.sport} ${activity.name} ${activity.date}`.toLowerCase(),
+            tokens,
+          )
+        )
+      }),
+      sortKey ?? 'date',
+    )
     list.replaceChildren(
       ...filtered.map(a => {
         const row = el('div', 'tri-feed-row', undefined, { role: 'listitem' })
@@ -10113,6 +10161,18 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     if (!filtered.length) list.appendChild(el('div', 'tri-ana-empty', tl('no activities')))
     if (countEl) countEl.textContent = String(filtered.length)
     list.setAttribute('aria-busy', 'false')
+    renderSuggestions(rawTokens)
+  }
+
+  const activate = (item: HTMLElement | undefined) => {
+    const insert = item?.dataset.insert
+    if (!insert) return
+    const tokens = search.value.trim().split(/\s+/)
+    tokens[tokens.length - 1] = insert
+    search.value = tokens.join(' ') + (insert.endsWith(':') ? '' : ' ')
+    search.focus()
+    collapse()
+    renderList()
   }
 
   const onListClick = (e: MouseEvent) => {
@@ -10124,6 +10184,30 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     collapse()
     renderList()
   }
+  const onSearchKey = (event: KeyboardEvent) => {
+    if (!feed.classList.contains('tri-feed--searching')) return
+    if (event.key === 'ArrowDown' || (event.ctrlKey && event.key.toLowerCase() === 'n')) {
+      event.preventDefault()
+      setSel(selIndex + 1)
+    } else if (event.key === 'ArrowUp' || (event.ctrlKey && event.key.toLowerCase() === 'p')) {
+      event.preventDefault()
+      setSel(selIndex - 1)
+    } else if (event.key === 'Enter') {
+      event.preventDefault()
+      const items = resultItems()
+      activate(items[selIndex] ?? items[0])
+    }
+  }
+  const onResultsClick = (event: MouseEvent) => {
+    activate(
+      (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem') ?? undefined,
+    )
+  }
+  const onSearchFocusOut = (event: FocusEvent) => {
+    const next = event.relatedTarget
+    if (next instanceof Node && searchWrap.contains(next)) return
+    hideSuggestions()
+  }
   const onUnit = () => {
     detailCache.clear()
     const reopen = openId
@@ -10132,7 +10216,13 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     if (reopen) expand(reopen)
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && openId != null) collapse()
+    if (e.key !== 'Escape') return
+    if (search.value) {
+      search.value = ''
+      onSearch()
+      return
+    }
+    if (openId != null) collapse()
   }
 
   const marquee = marqueeCtl()
@@ -10152,7 +10242,10 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
   list.addEventListener('click', onListClick)
   list.addEventListener('mouseover', onOver)
   list.addEventListener('mouseout', onOut)
-  search?.addEventListener('input', onSearch)
+  search.addEventListener('input', onSearch)
+  search.addEventListener('keydown', onSearchKey)
+  searchWrap.addEventListener('focusout', onSearchFocusOut)
+  results.addEventListener('click', onResultsClick)
   window.addEventListener('tri:unit', onUnit)
   document.addEventListener('keydown', onKey)
 
@@ -10172,7 +10265,10 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     list.removeEventListener('click', onListClick)
     list.removeEventListener('mouseover', onOver)
     list.removeEventListener('mouseout', onOut)
-    search?.removeEventListener('input', onSearch)
+    search.removeEventListener('input', onSearch)
+    search.removeEventListener('keydown', onSearchKey)
+    searchWrap.removeEventListener('focusout', onSearchFocusOut)
+    results.removeEventListener('click', onResultsClick)
     window.removeEventListener('tri:unit', onUnit)
     document.removeEventListener('keydown', onKey)
   }

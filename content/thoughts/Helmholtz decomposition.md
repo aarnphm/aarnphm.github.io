@@ -8,7 +8,7 @@ tags:
 title: Helmholtz decomposition
 ---
 
-> certain differentiable vector fields can be resolved into sum of an _irrotational_ vector field and _solenoidal_ vector vield
+> certain differentiable vector fields can be resolved into sum of an _irrotational_ vector field and _solenoidal_ vector field
 
 > [!definition]
 >

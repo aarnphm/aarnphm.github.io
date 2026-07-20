@@ -3,12 +3,31 @@ import test from 'node:test'
 import render from 'preact-render-to-string'
 import {
   AnalyticsPanel,
+  FeedPanel,
   FuelLink,
   GearPanel,
   MapPanel,
   PacePanel,
   TrainingPanel,
 } from './triathlon-panels'
+
+test('feed exposes the shared activity query controls', () => {
+  const html = render(<FeedPanel />)
+
+  assert.equal(html.includes('class="tri-feed-search-wrap"'), true)
+  assert.equal(html.includes('aria-label="search activities"'), true)
+  assert.equal(html.includes('aria-controls="tri-feed-results" aria-expanded="false"'), true)
+  assert.equal(
+    html.includes('placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"'),
+    true,
+  )
+  assert.equal(
+    html.includes(
+      'id="tri-feed-results" class="tri-ana-results tri-feed-results" aria-hidden="true"',
+    ),
+    true,
+  )
+})
 
 test('triathlon navigation controls expose their locale keys', () => {
   const html = render(

@@ -22,7 +22,7 @@ depends on two sorts of _objects_:
 >
 > - a class $\text{ob}(\mathcal{C})$ whose elements are called _objects_
 > - a class $\text{hom}(\mathcal{C})$
->   - a morphism $f : a \mapsto b$
+>   - a morphism $f : a \to b$
 >   - $\text{hom}(a,b)$, or $\text{hom}_{\mathcal{C}}(a,b), \text{mor}(a,b), \mathcal{C}(a,b)$ denotes _hom-class_ of all morphism from $a$ to $b$
 > - a binary operator $\circ$, or _composition of morphisms_ such that we have:
 >

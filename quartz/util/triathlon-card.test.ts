@@ -674,6 +674,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       speedKph: 23,
     },
   ],
+  mapRoute: [],
   analysisRanges: [],
   runSplitsMetric: [],
   runSplitsStandard: [],
@@ -784,15 +785,17 @@ const analysisDetail = (): StravaActivityDetail =>
   detail({
     analysisRanges: analysisRanges(),
     mapRoute: [
-      { lat: 43.6, lng: -79.4 },
-      { lat: 43.63, lng: -79.37 },
-      { lat: 43.66, lng: -79.34 },
-      { lat: 43.69, lng: -79.31 },
-      { lat: 43.72, lng: -79.28 },
-      { lat: 43.75, lng: -79.25 },
-      { lat: 43.78, lng: -79.22 },
-      { lat: 43.81, lng: -79.19 },
-      { lat: 43.84, lng: -79.16 },
+      [
+        { lat: 43.6, lng: -79.4, d: 0 },
+        { lat: 43.63, lng: -79.37, d: 3.75 },
+        { lat: 43.66, lng: -79.34, d: 7.5 },
+        { lat: 43.69, lng: -79.31, d: 11.25 },
+        { lat: 43.72, lng: -79.28, d: 15 },
+        { lat: 43.75, lng: -79.25, d: 18.75 },
+        { lat: 43.78, lng: -79.22, d: 22.5 },
+        { lat: 43.81, lng: -79.19, d: 26.25 },
+        { lat: 43.84, lng: -79.16, d: 30 },
+      ],
     ],
   })
 
