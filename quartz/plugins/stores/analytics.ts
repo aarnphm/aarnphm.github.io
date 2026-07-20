@@ -2752,9 +2752,11 @@ const RUN_SPM_TARGET = 180
 const BIKE_RPM_TARGET = 90
 const SWIM_STROKE_TARGET = 30
 const RUN_SPRINT_MS: [number, number] = [3, 8]
-const SWIM_SPRINT_MS: [number, number] = [0.8, 2.2]
 const RUN_THR_MS: [number, number] = [2.5, 5.5]
-const SWIM_THR_MS: [number, number] = [0.7, 1.7]
+const SWIM_SPEED_MS: [number, number] = [
+  100 / SWIM_PACE_MAX_S_PER_100M,
+  100 / SWIM_PACE_MIN_S_PER_100M,
+]
 const BIKE_SPRINT_WIN_S = 5
 const RUN_SPRINT_WIN_S = 30
 const SPRINT_CAP_MS: Record<'swim' | 'run', number> = { swim: 3, run: 12 }
@@ -2768,14 +2770,6 @@ const CAD_TARGET: Record<Sport, number> = {
   run: RUN_SPM_TARGET,
 }
 const CAD_UNIT: Record<Sport, string> = { swim: 'str/min', bike: 'rpm', run: 'spm' }
-const SPEED_SPRINT_MS: Record<'swim' | 'run', [number, number]> = {
-  swim: SWIM_SPRINT_MS,
-  run: RUN_SPRINT_MS,
-}
-const SPEED_THR_MS: Record<'swim' | 'run', [number, number]> = {
-  swim: SWIM_THR_MS,
-  run: RUN_THR_MS,
-}
 const VAM_ANCHOR_OF: Record<'bike' | 'run', [number, number]> = {
   bike: VAM_ANCHOR,
   run: RUN_VAM_ANCHOR,
@@ -3326,6 +3320,7 @@ function buildEngine(
     Math.round(clamp(100 - (Math.abs(v - CAD_TARGET[sport]) / CAD_TARGET[sport]) * 200, 0, 100))
   const swimPaceScoreOf = (paceSPer100m: number): number =>
     Math.round((1 - norm01(paceSPer100m, SWIM_PACE_MIN_S_PER_100M, SWIM_PACE_MAX_S_PER_100M)) * 100)
+  const swimSpeedScoreOf = (speedMps: number): number => swimPaceScoreOf(100 / speedMps)
   const sportCtlOf = (d: DailyPoint, sport: Sport): number =>
     sport === 'swim' ? d.swimCtl : sport === 'bike' ? d.bikeCtl : d.runCtl
 
@@ -3441,23 +3436,33 @@ function buildEngine(
           const v = plausibleVgap(sport, x)
           if (v != null && (vs == null || v > vs)) vs = v
         }
-      const sAnchor = SPEED_SPRINT_MS[sport]
+      const sAnchor = sport === 'swim' ? SWIM_SPEED_MS : RUN_SPRINT_MS
       sprint = {
         key: 'sprint',
         label: 'sprint',
         proj: null,
-        score: vs != null ? Math.round(norm01(vs, ...sAnchor) * 100) : null,
+        score:
+          vs != null
+            ? sport === 'swim'
+              ? swimSpeedScoreOf(vs)
+              : Math.round(norm01(vs, ...sAnchor) * 100)
+            : null,
         rawValue: vs != null ? round(vs, 2) : null,
         rawUnit: 'm/s',
         lo: sAnchor[0],
         hi: sAnchor[1],
       }
-      const tAnchor = SPEED_THR_MS[sport]
+      const tAnchor = sport === 'swim' ? SWIM_SPEED_MS : RUN_THR_MS
       threshold = {
         key: 'threshold',
         label: 'threshold',
         proj: null,
-        score: vThrSport != null ? Math.round(norm01(vThrSport, ...tAnchor) * 100) : null,
+        score:
+          vThrSport != null
+            ? sport === 'swim'
+              ? swimSpeedScoreOf(vThrSport)
+              : Math.round(norm01(vThrSport, ...tAnchor) * 100)
+            : null,
         rawValue: vThrSport != null ? round(vThrSport, 2) : null,
         rawUnit: 'm/s',
         lo: tAnchor[0],
@@ -3590,7 +3595,9 @@ function buildEngine(
         ? kgNow
           ? Math.round(norm01(v / kgNow, ...COGGAN_SPRINT_WKG) * 100)
           : null
-        : Math.round(norm01(v, ...SPEED_SPRINT_MS[sport]) * 100)
+        : sport === 'swim'
+          ? swimSpeedScoreOf(v)
+          : Math.round(norm01(v, ...RUN_SPRINT_MS) * 100)
     const rdyArr = daily.map(d => d.readiness)
     const history: AbilityTrendPoint[] = []
     let si = 0

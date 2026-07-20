@@ -1722,6 +1722,8 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   )
   const paceSvg = byClass(pace, 'tri-swim-trend-svg')[0]
   assert.ok(paceSvg)
+  assert.deepEqual(byClass(pace, 'tri-cax-yt').map(text), ['0:00', '0:50', '1:40', '2:30'])
+  assert.deepEqual(byClass(stroke, 'tri-cax-yt').map(text), ['0', '10', '20', '30'])
   assert.equal(paceSvg.properties.role, 'slider')
   assert.equal(paceSvg.properties.tabIndex, 0)
   assert.equal(paceSvg.properties.ariaOrientation, 'horizontal')
@@ -1742,21 +1744,21 @@ test('renders aligned swim trends with the selected value and prior-four delta',
     cumulativeDistanceM: 25,
     value: 100,
     xPct: 25,
-    yPct: 50,
+    yPct: 66.66666666666666,
   })
   assert.deepEqual(paceSeries.at(-1), {
     elapsedS: 144,
     cumulativeDistanceM: 100,
     value: 96,
     xPct: 100,
-    yPct: 0,
+    yPct: 64,
   })
   const pacePath = byClass(paceSvg, 'tri-swim-trend-line')[0]
   const paceArea = byClass(paceSvg, 'tri-swim-trend-area')[0]
   assert.ok(pacePath)
   assert.ok(paceArea)
-  assert.match(String(pacePath.properties.d), /^M 25\.00 15\.00 .* L 100\.00 0\.00$/)
-  assert.match(String(paceArea.properties.d), /^M 25\.00 30 .* L 100\.00 0\.00 L 100\.00 30 Z$/)
+  assert.match(String(pacePath.properties.d), /^M 25\.00 20\.00 .* L 100\.00 19\.20$/)
+  assert.match(String(paceArea.properties.d), /^M 25\.00 30 .* L 100\.00 19\.20 L 100\.00 30 Z$/)
   assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
   assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 2)
   assert.deepEqual(

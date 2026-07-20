@@ -108,6 +108,7 @@ export const GEAR: [string, string[]][] = [
       'mandarins',
       'apple',
       'banana',
+      'cherry tart juice',
       'Nuun Hydration',
       'Precision Fuel & Hydration Chews, Gels, Carb Drinks',
       'Xact Energy Bars & Gels',

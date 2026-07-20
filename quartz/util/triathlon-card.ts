@@ -1428,17 +1428,9 @@ export const swimTrendAriaValue = (
 }
 
 const swimTrendDomain = (values: number[], minimumStep = 0): { min: number; max: number } => {
-  const observedMin = Math.min(...values)
   const observedMax = Math.max(...values)
-  const observedSpan = observedMax - observedMin
-  const step = Math.max(minimumStep, niceStep(observedSpan || Math.max(1, observedMax * 0.05), 3))
-  let min = Math.floor(observedMin / step) * step
-  let max = Math.ceil(observedMax / step) * step
-  if (min === max) {
-    min = Math.max(0, min - step)
-    max += step
-  }
-  return { min, max }
+  const step = Math.max(minimumStep, niceStep(observedMax, 3))
+  return { min: 0, max: Math.max(step, Math.ceil(observedMax / step) * step) }
 }
 
 const swimActivityXTicks = (totalDistanceM: number): AxisXTick[] => {
