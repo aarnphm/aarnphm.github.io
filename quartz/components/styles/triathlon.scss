@@ -25,9 +25,13 @@
 }
 
 .triathlon {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  min-width: 0;
+  max-width: 100%;
+  overscroll-behavior-x: none;
   margin-block: 2rem 3rem;
 }
 
@@ -65,6 +69,26 @@
   margin-block: 1rem 0;
 }
 
+.tri-scroll-shell {
+  --tri-day-gap: 6px;
+  --tri-track-width: max(
+    1px,
+    calc(var(--tri-day-count) * (1px + var(--tri-day-gap)) - var(--tri-day-gap))
+  );
+  container-type: inline-size;
+}
+
+.tri-scroll-shell,
+.tri-scroll-viewport {
+  min-width: 0;
+  width: 100%;
+}
+
+.tri-scroll-viewport {
+  position: relative;
+  overflow: hidden;
+}
+
 .tri-scroll {
   display: flex;
   justify-content: safe center;
@@ -73,6 +97,11 @@
   overflow-y: hidden;
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
+}
+
+.tri-scroll-fade,
+.tri-scroll-range {
+  display: none;
 }
 
 .tri-track {
@@ -85,7 +114,7 @@
 .tri-bars {
   display: flex;
   align-items: flex-end;
-  gap: 6px;
+  gap: var(--tri-day-gap);
   cursor:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 1 L12 6.5 L6.5 12 L1 6.5 Z' fill='none' stroke='%23999' stroke-width='1.4'/%3E%3C/svg%3E")
       6 6,
@@ -105,14 +134,19 @@
   border-top: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
 }
 
-.tri-axis-year {
-  position: absolute;
-  top: 0;
-  padding-top: 0.4rem;
+.tri-axis-year,
+.tri-axis-pinned {
   font-family: var(--codeFont);
   font-size: 0.62rem;
   font-variant-numeric: tabular-nums;
   color: var(--gray);
+}
+
+.tri-axis-year {
+  position: absolute;
+  top: 0;
+  left: calc(var(--tri-year-index) * (1px + var(--tri-day-gap)));
+  padding-top: 0.4rem;
 
   &::before {
     content: '';
@@ -122,6 +156,118 @@
     width: 1px;
     height: 7px;
     background: color-mix(in srgb, var(--gray) 55%, transparent);
+  }
+}
+
+.tri-axis-pinned {
+  display: none;
+}
+
+@media all and (max-width: 48rem) {
+  .tri-scroll-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .tri-scroll {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .tri-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tri-axis-year[data-current='true'] {
+    color: transparent;
+  }
+
+  .tri-axis-pinned {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    display: block;
+    box-sizing: border-box;
+    width: max-content;
+    height: 1.15rem;
+    padding-top: 0.4rem;
+    pointer-events: none;
+  }
+
+  .tri-scroll-fade {
+    position: absolute;
+    inset: 0 0 0 auto;
+    display: block;
+    width: clamp(2.5rem, 14vw, 3.5rem);
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--light) 72%, transparent) 58%,
+      var(--light)
+    );
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 140ms ease;
+  }
+
+  .tri-scroll-shell[data-scroll-end='true'] .tri-scroll-fade,
+  .tri-scroll-shell[data-scrollable='false'] .tri-scroll-fade {
+    opacity: 0;
+  }
+
+  .tri-scroll-range {
+    --tri-scroll-thumb: clamp(2rem, calc(100cqw * (100cqw / var(--tri-track-width))), 100cqw);
+    appearance: none;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    height: 1.15rem;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    cursor: ew-resize;
+
+    &::-webkit-slider-runnable-track {
+      height: 1px;
+      background: color-mix(in srgb, var(--gray) 32%, transparent);
+    }
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: var(--tri-scroll-thumb);
+      height: 0.3rem;
+      margin-top: calc((1px - 0.3rem) / 2);
+      background: color-mix(in srgb, var(--gray) 72%, var(--dark));
+      border: 0;
+      border-radius: var(--radius-none);
+    }
+
+    &::-moz-range-track {
+      height: 1px;
+      background: color-mix(in srgb, var(--gray) 32%, transparent);
+      border: 0;
+    }
+
+    &::-moz-range-thumb {
+      width: var(--tri-scroll-thumb);
+      height: 0.3rem;
+      background: color-mix(in srgb, var(--gray) 72%, var(--dark));
+      border: 0;
+      border-radius: var(--radius-none);
+    }
+  }
+
+  .tri-scroll-shell[data-scrollable='false'] .tri-scroll-range {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tri-scroll-fade {
+      transition: none;
+    }
   }
 }
 
@@ -1990,10 +2136,15 @@
   top: 50%;
   left: 50%;
   z-index: 61;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   width: var(--tri-modal-w);
+  max-width: 100dvw;
   height: var(--tri-modal-h);
+  overflow: hidden;
+  overscroll-behavior-x: none;
   padding: 0;
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
@@ -2245,6 +2396,31 @@
   }
 }
 
+.tri-analytics-search-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media all and (max-width: 48rem) {
+  .tri-ana-search {
+    --tri-search-scale: 0.72;
+    --tri-search-height: 1.65rem;
+    box-sizing: border-box;
+    flex: 0 0 calc(100% / var(--tri-search-scale));
+    width: calc(100% / var(--tri-search-scale));
+    height: calc(var(--tri-search-height) / var(--tri-search-scale));
+    margin-block: calc(
+      (var(--tri-search-height) - var(--tri-search-height) / var(--tri-search-scale)) / 2
+    );
+    margin-right: calc(100% - 100% / var(--tri-search-scale));
+    padding: calc(0.3rem / var(--tri-search-scale)) calc(0.5rem / var(--tri-search-scale));
+    font-size: 16px;
+    transform: scale(var(--tri-search-scale));
+    transform-origin: left center;
+  }
+}
+
 .tri-ana-results {
   display: none;
   flex-direction: column;
@@ -2431,9 +2607,12 @@
   flex-direction: column;
   gap: 1.5rem;
   flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: hidden;
   overflow-y: auto;
   scrollbar-gutter: stable;
-  overscroll-behavior: contain;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: contain;
   @include thin-scrollbar;
   padding: 1.1rem 1.2rem 2rem;
 }
@@ -2680,7 +2859,7 @@
 .tri-ana-pmc .tri-chart-readout {
   position: absolute;
   top: 0.45rem;
-  left: 89%;
+  left: var(--tri-pmc-readout-x, 89%);
   right: auto;
   z-index: 2;
   display: flex;
@@ -2705,6 +2884,20 @@
 .tri-ana-pmc.tri-chart--hover .tri-chart-readout {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+@media all and (max-width: 48rem) {
+  .tri-ana-pmc .tri-chart-readout {
+    right: 0.5rem;
+    left: 0.5rem;
+    width: auto;
+    max-width: none;
+    transform: translateY(-0.2rem);
+  }
+
+  .tri-ana-pmc.tri-chart--hover .tri-chart-readout {
+    transform: translateY(0);
+  }
 }
 
 .tri-pmc-leg-date {
@@ -4501,26 +4694,50 @@
 }
 
 @media all and (max-width: 48rem) {
+  .tri-ana-readiness {
+    display: grid;
+    grid-template-columns: 3.6rem minmax(0, 1fr) repeat(4, max-content);
+    column-gap: clamp(0.3rem, 1.5vw, 0.6rem);
+    row-gap: 0.55rem;
+  }
+
+  .tri-ana-readiness > .tri-ana-block-title {
+    grid-column: 1 / -1;
+  }
+
   .tri-rdy-row {
-    display: flex;
-    gap: clamp(0.3rem, 1.5vw, 0.6rem);
-  }
-
-  .tri-rdy-label {
-    flex: 0 0 3.6rem;
-  }
-
-  .tri-rdy-bar {
-    flex: 1 1 auto;
-    min-width: 0;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    column-gap: inherit;
   }
 
   .tri-rdy-meta {
-    flex: none;
-    grid-template-columns: repeat(4, max-content);
+    grid-column: 3 / -1;
+    grid-template-columns: subgrid;
+    justify-self: stretch;
     width: auto;
-    column-gap: clamp(0.2rem, 1vw, 0.5rem);
+    column-gap: inherit;
     font-size: clamp(0.5rem, 2.5vw, 0.62rem);
+  }
+}
+
+@media all and (max-width: 24rem) {
+  .tri-ana-readiness {
+    display: flex;
+  }
+
+  .tri-rdy-row {
+    grid-column: auto;
+    grid-template-columns: 3.6rem minmax(0, 1fr);
+    column-gap: clamp(0.3rem, 1.5vw, 0.6rem);
+    row-gap: 0.3rem;
+  }
+
+  .tri-rdy-meta {
+    grid-column: 1 / -1;
+    grid-template-columns: 8ch 8ch 7ch 20ch;
+    justify-self: end;
+    column-gap: clamp(0.2rem, 1vw, 0.5rem);
   }
 }
 
@@ -7438,6 +7655,8 @@
   position: relative;
   flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .tri-map-pane a.mapboxgl-ctrl-logo {
@@ -7696,8 +7915,11 @@
 }
 
 .tri-map-sidebar {
+  box-sizing: border-box;
   flex: 0 0 min(34%, 460px);
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   overflow-y: auto;
   @include thin-scrollbar;
   padding: 1rem 1.1rem;
@@ -8038,6 +8260,51 @@
 
   .tri-map--detail .tri-map-sidebar {
     flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .tri-map--detail :is(.tri-effort-table--distance, .tri-effort-table--power) {
+    min-width: 100%;
+
+    th,
+    td {
+      padding-inline: 0.2rem;
+    }
+
+    thead th {
+      line-height: 1.2;
+      white-space: normal;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(2),
+    td:nth-child(2) {
+      width: 18%;
+    }
+
+    th:nth-child(3),
+    td:nth-child(3),
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 24%;
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+      width: 16%;
+    }
+  }
+
+  .tri-map--detail :is(.tri-effort-block--distance, .tri-effort-block--power) {
+    .tri-effort-viewport::after {
+      display: none;
+    }
+
+    .tri-effort-scroll {
+      overflow-x: hidden;
+      padding-inline-end: 0;
+    }
   }
 }
 

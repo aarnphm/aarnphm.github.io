@@ -594,6 +594,10 @@ Probes:
 - Why are object collectives poor for tensor hot paths?
 - What ordering bug can deadlock multiple process groups?
 
+## full-model synthesis lane
+
+P01 through P28 isolate mechanisms. [[hinterland/prep/inferact/model-builds|M01 through M10]] test whether those mechanisms compose into an executable model with stable module, cache, checkpoint, and runtime boundaries. A failed build routes back to the repair drill that owns the invariant; completing a model build does not increase the P-series count.
+
 ## Triton kernel lane
 
 Run this lane after P01 through P24. A kernel answer should always name grid, tile, pointer formula, mask, traffic, occupancy limiter, correctness oracle, and benchmark method.

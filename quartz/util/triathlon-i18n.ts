@@ -256,6 +256,7 @@ const en: TriDict = {
     wk: 'wk',
     BMR: 'BMR',
     FFM: 'FFM',
+    FFMI: 'FFMI',
     essential: 'essential',
     athlete: 'athlete',
     obese: 'obese',
@@ -629,6 +630,10 @@ const en: TriDict = {
       term: 'BMI',
       def: 'BMI is your weight in kilograms divided by your height in metres squared. Muscle can raise BMI, so read it together with body fat.',
     },
+    ffmi: {
+      term: 'FFMI',
+      def: 'Fat-free mass index is your fat-free mass in kilograms divided by your height in metres squared. DEXA supplies the main reading. Daily estimates use weight and body fat from the Garmin Index scale.',
+    },
     bmr: {
       term: 'BMR (Katch McArdle)',
       def: 'BMR estimates how many calories your body uses each day at rest. This page uses the Katch McArdle formula, which starts from lean mass. The estimate changes when the Garmin Index scale reports a new body fat value.',
@@ -802,6 +807,7 @@ const fr: TriDict = {
     wk: 'sem',
     BMR: 'MB',
     FFM: 'MM',
+    FFMI: 'FFMI',
     essential: 'essentiel',
     athlete: 'athlète',
     obese: 'obésité',
@@ -1180,6 +1186,10 @@ const fr: TriDict = {
     bmi: {
       term: 'IMC',
       def: "L'IMC est ton poids en kilogrammes divisé par ta taille en mètres au carré. Les muscles peuvent augmenter l'IMC, donc lis cette valeur avec la masse grasse.",
+    },
+    ffmi: {
+      term: 'FFMI (indice de masse maigre)',
+      def: "L'indice de masse maigre est ta masse maigre en kilogrammes divisée par ta taille en mètres au carré. Le DEXA fournit la mesure principale. Les estimations quotidiennes utilisent le poids et la masse grasse de la balance Garmin Index.",
     },
     bmr: {
       term: 'métabolisme de base (Katch McArdle)',

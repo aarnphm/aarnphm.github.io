@@ -139,12 +139,14 @@ test('encodes a 25 metre pool swim with interpolated length messages', () => {
   assert.equal(lap?.sport, 'swimming')
   assert.equal(lap?.subSport, 'lapSwimming')
   assert.equal(lap?.totalDistance, 100)
+  assert.equal(lap?.totalStrokes, 60)
   assert.equal(lap?.firstLengthIndex, 0)
   assert.equal(lap?.numLengths, 4)
   assert.equal(lap?.numActiveLengths, 4)
   assert.equal(session?.sport, 'swimming')
   assert.equal(session?.subSport, 'lapSwimming')
   assert.equal(session?.totalDistance, 100)
+  assert.equal(session?.totalStrokes, 60)
   assert.equal(session?.poolLength, 25)
   assert.equal(session?.poolLengthUnit, 'metric')
   assert.equal(session?.numLengths, 4)
@@ -170,6 +172,84 @@ test('keeps pool length elapsed time while distributing active timer time', () =
   assert.equal(messages.sessionMesgs?.[0]?.totalTimerTime, 60)
 })
 
+test('preserves explicit pool length strokes, cadence, style, and timing', () => {
+  const input = poolInput()
+  input.distanceMeters = 75
+  input.elapsedTimeSeconds = 100
+  input.timerTimeSeconds = 60
+  input.lengths = [
+    {
+      startElapsedSeconds: 10,
+      endElapsedSeconds: 30,
+      distanceMeters: 25,
+      totalStrokes: 9,
+      strokeTimeSeconds: 20,
+      swimStroke: 'freestyle',
+    },
+    {
+      startElapsedSeconds: 40,
+      endElapsedSeconds: 60,
+      distanceMeters: 25,
+      totalStrokes: 10,
+      strokeTimeSeconds: 20,
+      swimStroke: 'breaststroke',
+    },
+    { startElapsedSeconds: 70, endElapsedSeconds: 100, distanceMeters: 25, swimStroke: 'drill' },
+  ]
+  input.samples = [
+    { elapsedSeconds: 0, distanceMeters: 0, heartRateBpm: 110 },
+    { elapsedSeconds: 30, distanceMeters: 25, heartRateBpm: 120 },
+    { elapsedSeconds: 60, distanceMeters: 50, heartRateBpm: 130 },
+    { elapsedSeconds: 100, distanceMeters: 75, heartRateBpm: 125 },
+  ]
+
+  const encoded = encodeGarminSwimFit(input)
+  const messages = decode(encoded.bytes)
+  const lengths = messages.lengthMesgs ?? []
+
+  assert.equal(encoded.validation.valid, true)
+  assert.deepEqual(
+    lengths.map(length => length.totalStrokes),
+    [9, 10, 0],
+  )
+  assert.deepEqual(
+    lengths.map(length => length.avgSwimmingCadence),
+    [27, 30, undefined],
+  )
+  assert.deepEqual(
+    lengths.map(length => length.swimStroke),
+    ['freestyle', 'breaststroke', 'drill'],
+  )
+  assert.deepEqual(
+    lengths.map(length => length.totalElapsedTime),
+    [20, 20, 30],
+  )
+  assert.equal(messages.lapMesgs?.[0]?.totalStrokes, 19)
+  assert.equal(messages.lapMesgs?.[0]?.avgCadence, 29)
+  assert.equal(messages.sessionMesgs?.[0]?.totalDistance, 75)
+  assert.equal(messages.sessionMesgs?.[0]?.numLengths, 3)
+  assert.equal(messages.sessionMesgs?.[0]?.numActiveLengths, 3)
+  assert.equal(messages.sessionMesgs?.[0]?.swimStroke, 'mixed')
+  assert.equal(messages.sessionMesgs?.[0]?.avgCadence, 29)
+  assert.equal(messages.sessionMesgs?.[0]?.maxCadence, 30)
+  assert.equal(messages.sessionMesgs?.[0]?.maxSpeed, 1.25)
+})
+
+test('rejects explicit lengths whose distance disagrees with the pool activity', () => {
+  const input = poolInput()
+  input.lengths = [
+    {
+      startElapsedSeconds: 0,
+      endElapsedSeconds: 30,
+      distanceMeters: 25,
+      totalStrokes: 10,
+      strokeTimeSeconds: 30,
+    },
+  ]
+
+  assert.throws(() => encodeGarminSwimFit(input), /length distance does not match distanceMeters/)
+})
+
 test('encodes open-water GPS coordinates without pool lengths', () => {
   const encoded = encodeGarminSwimFit(openWaterInput())
   const messages = decode(encoded.bytes)
@@ -186,6 +266,7 @@ test('encodes open-water GPS coordinates without pool lengths', () => {
   assert.equal(session?.sport, 'swimming')
   assert.equal(session?.subSport, 'openWater')
   assert.equal(session?.totalDistance, 200)
+  assert.equal(session?.totalStrokes, 96)
   assert.equal(session?.numLaps, 1)
   assert.equal(messages.activityMesgs?.length, 1)
 })

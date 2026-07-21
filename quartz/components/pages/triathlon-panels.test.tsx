@@ -86,6 +86,8 @@ test('analytics reserves one heat chart between effort and readiness', () => {
   const heat = html.indexOf('data-chart="heat"')
   const readiness = html.indexOf('data-chart="readiness"')
 
+  assert.equal(html.includes('class="tri-analytics-search-wrap"'), true)
+  assert.equal(html.includes('aria-label="search analytics"'), true)
   assert.equal(html.split('data-chart="heat"').length - 1, 1)
   assert.ok(effort >= 0)
   assert.ok(heat > effort)

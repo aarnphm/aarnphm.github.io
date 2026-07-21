@@ -99,6 +99,32 @@ Own these variants:
 - hybrid attention/SSM adds recurrent state with cache semantics distinct from attention KV.
 - speculative decoding adds draft proposals, verification, acceptance, rollback, and lookahead cache.
 
+## model-build order
+
+```text
+contract and config invariants
+  -> module tree and parameter ownership
+  -> buffers, request state, and cache state
+  -> shape ledger
+  -> complete reference forward
+  -> randomized, causal, and step-equivalence oracles
+  -> state_dict, checkpoint keys, and weight tying
+  -> prefill, decode, compile, quantization, and parallelism
+  -> vLLM model-runner and loader boundary
+```
+
+For a paper fragment, write these before code:
+
+1. every learned tensor and projection shape
+2. normalization and residual order
+3. position semantics
+4. attention, recurrent, media, or denoising state
+5. output and loss contract
+6. invalid configs
+7. a decomposed correctness oracle
+
+Use `nn.ModuleList` or `nn.ModuleDict` for dynamic child modules. Use `register_buffer` for non-parameter tensor state that should follow module device and dtype semantics. Keep request caches outside the model unless the exercise explicitly defines model-owned mutable storage.
+
 ## module and inference modes
 
 | mechanism                | changes                                                                                       |
@@ -334,7 +360,10 @@ Bring:
 ## source shortcuts
 
 - [[hinterland/prep/inferact/core|core map]]
+- [[hinterland/prep/inferact/model-builds|PyTorch model builds]]
 - [[hinterland/prep/inferact/role-drills|role drills]]
+- [[hinterland/prep/inferact/study|study route]]
+- [[hinterland/prep/inferact/mocks|timed mocks]]
 - [[thoughts/vllm|vLLM]]
 - [[thoughts/paged attention|PagedAttention]]
 - [[thoughts/Continuous batching|continuous batching]]

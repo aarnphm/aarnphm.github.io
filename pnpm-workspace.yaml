@@ -157,6 +157,7 @@ minimumReleaseAgeExclude:
   - hono@4.12.24
   - oxfmt@0.54.0
   - oxlint@1.69.0
+  - '@chenglou/freerange@0.0.2'
 
 onlyBuiltDependencies:
   - '@parcel/watcher'

@@ -12,6 +12,8 @@ title: Inferact interview mocks
 
 Use a blank editor, real timer, and no agents. The guide tests independent coding despite Inferact's agent-heavy daily workflow.
 
+Alternate mechanism rounds with complete model construction. The four implementation mocks in [[hinterland/prep/inferact/model-builds#model-construction mocks|the model-build lane]] cover architecture-from-prose, cache conversion, runtime porting, and an unfamiliar architecture fragment. At least half of coding rehearsals should end with a functioning `nn.Module` hierarchy rather than a standalone tensor function.
+
 ## coding-round structure
 
 |   minute | action                                                                         |
@@ -82,9 +84,9 @@ route each token to two of E experts
 combine expert outputs by normalized router weight
 ```
 
-**Main, 45 minutes:** implement a small correct PyTorch module with explicit config and tensor contracts.
+**Main, 45 minutes:** implement the architecture delta inside a supplied executable M01-style model. Preserve its config and tensor contracts and prove an end-to-end logits path.
 
-**Extension, 15 minutes:** explain model loading, tensor parallelism, cache state, quantization, and vLLM integration points.
+**Extension, 15 minutes:** add the hidden tests, then explain cached-versus-uncached behavior, model loading, tensor parallelism, quantization, and vLLM integration points.
 
 Probes:
 
@@ -93,6 +95,9 @@ Probes:
 - position semantics
 - expert capacity
 - checkpoint weight mapping
+- baseline recovery when all experts are identical
+- cached-versus-uncached parity
+- exact model, cache, loader, runner, and sampler boundaries
 - compile and custom-op boundaries
 
 ## coding mock 5: persistent batch mutation

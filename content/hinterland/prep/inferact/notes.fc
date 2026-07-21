@@ -244,3 +244,43 @@ A: Code revision, model and precision, hardware and software stack, input and ou
 
 Q: What is the practical ownership split around paged KV?
 A: The scheduler and cache manager own logical blocks, matching, reference counts, and eviction. The model runner owns physical tensors. Block tables and slot mappings connect the two.
+
+---
+
+Q: What order should a paper-to-PyTorch implementation follow?
+A: Config invariants, module and weight map, tensor and state ledger, complete reference forward, correctness oracles, checkpoint behavior, then runtime interfaces.
+
+---
+
+Q: What is the minimum end-to-end oracle for a causal language model build?
+A: Correct logits shape, causal invariance under future-token changes, batch isolation, strict state-dictionary round trip, tied-weight identity when promised, and agreement with an independent attention or layer reference.
+
+---
+
+Q: What oracle proves cached decoding is correct?
+A: At every prefix, cached next-token logits match the uncached model's final-position logits under the same weights, positions, dtype, and tolerance.
+
+---
+
+Q: How should a model build divide state ownership?
+A: Parameters and persistent buffers belong to the model. Positions, lengths, modality identity, and sampling settings belong to request or runtime state. Mutable per-layer K/V or recurrent state belongs to cache storage.
+
+---
+
+Q: Why must repeated model layers use ModuleList instead of a plain Python list?
+A: ModuleList registers child modules so parameters, buffers, device and dtype movement, train and eval mode, serialization, and traversal include every layer.
+
+---
+
+Q: What proves embedding and LM-head weight tying is real?
+A: Both module attributes reference the same Parameter object and retain that identity after construction and checkpoint loading; merely copying equal values does not tie storage.
+
+---
+
+Q: What changes when a padded PyTorch model is ported to a vLLM-shaped forward contract?
+A: Scheduled tokens become flattened rows with explicit positions, the core forward returns hidden states, logits are computed separately, cache writes move behind runtime attention, nested prefixes become stable, and weight loading handles fused and sharded parameters.
+
+---
+
+Q: Why is permissive checkpoint loading insufficient for a model port?
+A: A model can run with missing, duplicate, transposed, mistied, or silently unused weights. A serving loader must account for every target tensor and validate names, shapes, dtypes, packing, sharding, and ties.

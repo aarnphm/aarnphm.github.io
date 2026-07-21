@@ -237,6 +237,7 @@ function routeCenter(latlng: [number, number][]): { latitude: number; longitude:
     longitude += latlng[i][1]
     count += 1
   }
+  if (count === 0) throw new Error('route must contain at least one coordinate')
   return { latitude: latitude / count, longitude: longitude / count }
 }
 

@@ -1710,6 +1710,11 @@ const setupDayEmbeds = (): (() => void) | null => {
 const setup = (root: HTMLElement): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
   const pop = root.querySelector<HTMLElement>('.tri-pop')
+  const timeline = root.querySelector<HTMLElement>('.tri-scroll')
+  const timelineShell = root.querySelector<HTMLElement>('.tri-scroll-shell')
+  const timelineRange = root.querySelector<HTMLInputElement>('.tri-scroll-range')
+  const timelinePinnedYear = root.querySelector<HTMLElement>('.tri-axis-pinned')
+  const timelineYears = Array.from(root.querySelectorAll<HTMLElement>('.tri-axis-year'))
   const bars = Array.from(root.querySelectorAll<HTMLElement>('.tri-bar'))
   if (!barsEl || !pop || bars.length === 0) return null
 
@@ -1721,6 +1726,48 @@ const setup = (root: HTMLElement): (() => void) | null => {
   let pinned = false
   let locked = false
   let hideTimer = 0
+  let timelineFrame = 0
+
+  const updateTimeline = () => {
+    if (!timeline || !timelineShell || !timelineRange) return
+    const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
+    const scrollable = maxScroll > 1
+    const progress = scrollable ? timeline.scrollLeft / maxScroll : 0
+    timelineRange.value = String(Math.round(progress * Number(timelineRange.max)))
+    timelineRange.disabled = !scrollable
+    timelineShell.dataset.scrollable = String(scrollable)
+    timelineShell.dataset.scrollEnd = String(!scrollable || timeline.scrollLeft >= maxScroll - 1)
+    let activeYear = timelineYears[0]
+    for (const year of timelineYears) {
+      if (year.offsetLeft > timeline.scrollLeft + 1) break
+      activeYear = year
+    }
+    for (const year of timelineYears) year.dataset.current = String(year === activeYear)
+    if (timelinePinnedYear && activeYear)
+      timelinePinnedYear.textContent = activeYear.dataset.year ?? activeYear.textContent
+  }
+  const scheduleTimelineUpdate = () => {
+    if (timelineFrame !== 0) return
+    timelineFrame = window.requestAnimationFrame(() => {
+      timelineFrame = 0
+      updateTimeline()
+    })
+  }
+  const onTimelineRange = () => {
+    if (!timeline || !timelineRange) return
+    const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
+    timeline.scrollLeft = (Number(timelineRange.value) / Number(timelineRange.max)) * maxScroll
+    scheduleTimelineUpdate()
+  }
+  const timelineResize = new ResizeObserver(scheduleTimelineUpdate)
+  if (timeline) {
+    timeline.addEventListener('scroll', scheduleTimelineUpdate, { passive: true })
+    timelineResize.observe(timeline)
+    const track = timeline.querySelector<HTMLElement>('.tri-track')
+    if (track) timelineResize.observe(track)
+  }
+  timelineRange?.addEventListener('input', onTimelineRange)
+  scheduleTimelineUpdate()
 
   const scroller = el('div', 'tri-pop-scroll')
   pop.appendChild(scroller)
@@ -1924,6 +1971,11 @@ const setup = (root: HTMLElement): (() => void) | null => {
 
   return () => {
     window.clearTimeout(hideTimer)
+    window.cancelAnimationFrame(timelineFrame)
+    timeline?.removeEventListener('scroll', scheduleTimelineUpdate)
+    timelineRange?.removeEventListener('input', onTimelineRange)
+    timelineResize.disconnect()
+    for (const year of timelineYears) delete year.dataset.current
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
     barsEl.removeEventListener('click', onBarsClick)
@@ -3048,7 +3100,10 @@ const buildPmc = (data: Analytics): HTMLElement => {
     const cx = x(activeIndex).toFixed(2)
     cursor.setAttribute('x1', cx)
     cursor.setAttribute('x2', cx)
-    readoutEl.style.left = `${clampN((x(activeIndex) / ANA_W) * 100, 14, 86).toFixed(2)}%`
+    readoutEl.style.setProperty(
+      '--tri-pmc-readout-x',
+      `${clampN((x(activeIndex) / ANA_W) * 100, 14, 86).toFixed(2)}%`,
+    )
     renderLegend(activeIndex)
     block.classList.toggle('tri-chart--hover', hover)
   }
@@ -3909,6 +3964,10 @@ const buildBody = (data: Analytics): HTMLElement => {
   if (b.bodyFatPct != null)
     cap.appendChild(
       markGloss(el('span', 'tri-ana-k', `${tl('fat')} ${pctFmt(b.bodyFatPct, 1)}`), 'bodyfat'),
+    )
+  if (b.ffmi != null)
+    cap.appendChild(
+      markGloss(el('span', 'tri-ana-k', `${tl('FFMI')} ${triNumber(b.ffmi, 1, 1)}`), 'ffmi'),
     )
   if (b.bmi != null)
     cap.appendChild(
@@ -4940,6 +4999,7 @@ const buildDexaDetail = (d: DexaRecord): HTMLElement => {
     stats.appendChild(item)
   }
   stat('lean', wFmt(d.leanLbs * KG_PER_LB, 1, 1))
+  stat('FFMI', triNumber(d.ffmi, 1, 1))
   if (d.rmr != null) stat('rmr', `${d.rmr} kcal`)
   if (d.bmd != null) {
     const tScore = d.bmdT != null ? ` · T${d.bmdT > 0 ? '+' : ''}${triNumber(d.bmdT, 1, 1)}` : ''
@@ -6922,6 +6982,9 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const bmrByDay = new Map<string, number>()
     for (const p of Array.isArray(data.body.bmrSeries) ? data.body.bmrSeries : [])
       bmrByDay.set(p.date, p.bmr)
+    const ffmiByDay = new Map<string, number>()
+    for (const p of Array.isArray(data.body.ffmiSeries) ? data.body.ffmiSeries : [])
+      ffmiByDay.set(p.date, p.ffmi)
     const bt0 = bdays[0].ts
     const bt1 = bdays[bdays.length - 1].ts
     const bx = (ts: number): number => (bt1 > bt0 ? ((ts - bt0) / (bt1 - bt0)) * 100 : 50)
@@ -6943,14 +7006,16 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
       bodyCursor.setAttribute('x2', cx)
       const bmrV = bmrByDay.get(best.date)
       const bmrTxt = bmrV != null ? ` · BMR ${bmrV} kcal` : ''
+      const ffmiV = ffmiByDay.get(best.date)
+      const ffmiTxt = ffmiV != null ? ` · FFMI ${triNumber(ffmiV, 1, 1)}` : ''
       if (best.samples.length > 1) {
         const delta = best.last - best.first
         setMath(
           bodyReadout,
-          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(best.min)}–${wNum(best.max)} ${weightUnitLabel()} · $\\Delta${wSigned(delta, 1)}$${bmrTxt}`,
+          `${shortDate(best.date)} · $${best.samples.length}\\times$ · ${wNum(best.min)}–${wNum(best.max)} ${weightUnitLabel()} · $\\Delta${wSigned(delta, 1)}$${bmrTxt}${ffmiTxt}`,
         )
       } else {
-        setMath(bodyReadout, `${shortDate(best.date)} · ${wFmt(best.last)}${bmrTxt}`)
+        setMath(bodyReadout, `${shortDate(best.date)} · ${wFmt(best.last)}${bmrTxt}${ffmiTxt}`)
       }
       for (const ln of ranges)
         ln.classList.toggle('tri-bodywt-range--active', ln.dataset.day === best.date)
@@ -7438,7 +7503,7 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
     label: 'body weight',
     chart: 'body',
-    hay: 'body weight kg lbs mass cut goal fat bmi muscle bone water composition scale index',
+    hay: 'body weight kg lbs mass cut goal fat bmi ffmi fat-free mass muscle bone water composition scale index',
   },
   { label: 'form · ramp', chart: 'gauge', hay: 'form ramp gauge taper peak projection' },
   {
@@ -7516,6 +7581,7 @@ const GLOSS_CHART: Record<string, string> = {
   wtrend: 'body',
   wgoal: 'body',
   bodyfat: 'body',
+  ffmi: 'body',
   dexa: 'dexa',
   bmi: 'body',
   hrv: 'recovery',

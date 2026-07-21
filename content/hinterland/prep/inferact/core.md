@@ -72,6 +72,8 @@ Read [`nn.Module`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Modul
 
 ## priority 3: model implementation ladder
 
+Use [[hinterland/prep/inferact/model-builds|the model-build lane]] as the primary coding curriculum. The goal is to turn a config, diagram, or paper fragment into a complete PyTorch module, then connect that module to inference-runtime state. The P-series drills repair individual mechanisms when a full build exposes a gap.
+
 ### dense decoder block
 
 Be able to implement and explain:
@@ -109,7 +111,21 @@ Use [`scaled_dot_product_attention`](https://docs.pytorch.org/docs/stable/genera
 | diffusion serving       | iterative denoising with repeated model calls and scheduler-dependent state | batch evolution, graph capture, latency and memory reuse         |
 | speculative decoding    | draft proposals, target verification, acceptance, rollback, bonus token     | lookahead cache slots, batch dependence, correctness             |
 
-The live Inferact role explicitly values paper-to-code implementation. For an unfamiliar architecture, first write the state and tensor contracts, then implement a reference path, then identify which vLLM interfaces the architecture stresses.
+The live Inferact role explicitly values paper-to-code implementation. For an unfamiliar architecture, first write the config invariants, module tree, state and tensor contracts, and hidden tests. Then implement a reference path and identify which vLLM interfaces the architecture stresses.
+
+The implementation progression is:
+
+```text
+minimal causal LM
+  -> Llama-style GQA, RoPE, RMSNorm, and SwiGLU
+  -> functional prefill and decode cache
+  -> vLLM-shaped flattened-token model port
+  -> MoE and multimodal variants
+  -> hybrid recurrent state or diffusion model
+  -> strict weight loading and paper-fragment capstone
+```
+
+Read the official [PyTorch transformer-building-blocks tutorial](https://docs.pytorch.org/tutorials/intermediate/transformer_building_blocks.html) and [vLLM basic-model implementation guide](https://docs.vllm.ai/en/v0.17.0/contributing/model/basic/) after attempting the reference build.
 
 ## priority 4: PyTorch execution internals
 
