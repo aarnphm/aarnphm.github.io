@@ -41,5 +41,6 @@
   ],
   "uriCallbacks": true,
   "useTab": true,
-  "openBehavior": ""
+  "openBehavior": "",
+  "settingsPopoutWindow": false
 }

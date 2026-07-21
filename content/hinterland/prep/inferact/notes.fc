@@ -1,0 +1,246 @@
+---
+title: Inferact inference systems recall
+---
+
+Q: What three technical rounds does the supplied Inferact guide confirm?
+A: Independent coding in CoderPad, a Socratic technical deep dive on one or two projects, and collaborative system design around an open-ended problem.
+
+---
+
+Q: What coding surface does Inferact name for the inference focus?
+A: PyTorch. Triton is named as a kernel refresher, and general distributed programming may use a preferred language.
+
+---
+
+Q: What tensor metadata should be named before implementing an inference operation?
+A: Shape, stride, storage offset, dtype, device, ownership, aliasing, and mutation behavior.
+
+---
+
+Q: What is the operational difference between `view` and `reshape`?
+A: `view` requires stride-compatible layout and never hides a copy. `reshape` returns a view when possible and may allocate a contiguous copy otherwise.
+
+---
+
+Q: What do `transpose` and `permute` usually change?
+A: They change shape and stride while sharing the same storage, so the result is often noncontiguous without moving data.
+
+---
+
+Q: Why can an expanded PyTorch tensor be dangerous to mutate?
+A: Expansion can create stride-zero dimensions where multiple logical elements refer to one storage location.
+
+---
+
+Q: What rank rule does `torch.gather` impose?
+A: The index tensor must have the same number of dimensions as the input. Input and index do not broadcast against each other.
+
+---
+
+Q: How do `model.eval()` and `torch.no_grad()` differ?
+A: `eval()` changes module behavior such as dropout. `no_grad()` disables autograd recording. They are orthogonal.
+
+---
+
+Q: What extra tradeoff does `torch.inference_mode()` add beyond `no_grad()`?
+A: It removes view tracking and version-counter overhead for more runtime savings, while tensors created inside it face stricter later-autograd restrictions.
+
+---
+
+Q: What is the stable softmax procedure?
+A: Cast to a safe accumulation dtype when needed, subtract the row maximum, exponentiate, sum, and divide. Define the all-masked-row behavior.
+
+---
+
+Q: Why should beam search use `log_softmax` instead of `softmax().log()`?
+A: `log_softmax` computes the log probabilities as one stable operation and avoids the extra probability tensor and unstable logarithm of tiny values.
+
+---
+
+Q: What must hold before `torch.multinomial` samples a row?
+A: Weights must be finite, nonnegative, and have a positive sum.
+
+---
+
+Q: What dropout detail matters in `scaled_dot_product_attention` during inference?
+A: SDPA applies dropout whenever `dropout_p` is greater than zero, regardless of module evaluation mode, so inference must pass zero explicitly.
+
+---
+
+Q: What are the canonical attention shapes?
+A: Q is batch by query heads by query tokens by head dimension. K and V are batch by KV heads by cached tokens by head dimension. Scores are batch by query heads by query tokens by cached tokens.
+
+---
+
+Q: What does grouped-query attention change?
+A: Query heads outnumber KV heads, so groups of query heads share K and V. This lowers KV memory and creates an opportunity to reuse KV reads.
+
+---
+
+Q: What is the decoder-only KV-byte formula per token?
+A: Two times layer count times KV-head count times head dimension times bytes per element, corrected for sharding, block rounding, hybrid caches, scales, and reserved memory.
+
+---
+
+Q: What does a PagedAttention block table map?
+A: It maps each request's logical block indices to physical cache block IDs. Slot mapping then converts token positions to cache slots using the block lookup and within-block offset.
+
+---
+
+Q: What is continuous batching?
+A: The runtime admits and retires requests at iteration boundaries instead of waiting for a static batch to finish.
+
+---
+
+Q: What is the central V1 scheduler invariant?
+A: Each request's computed-token count advances toward all currently known prompt, output, and speculative tokens under per-step token and cache budgets.
+
+---
+
+Q: Which identity data may need to enter a prefix-cache block hash?
+A: Parent block hash, block tokens, LoRA identity, multimodal content, prompt-embedding identity, and cache salt or tenant isolation data.
+
+---
+
+Q: Why can a block with zero references remain valuable?
+A: It can stay in the reusable free pool as a prefix-cache hit until eviction needs the physical page.
+
+---
+
+Q: Why does chunked prefill mix well with decode?
+A: Prefill is usually compute-heavy while decode is usually memory-bandwidth-heavy. A bounded prefill chunk can use remaining step capacity while protecting decode ITL.
+
+---
+
+Q: What does prefill-decode disaggregation optimize?
+A: It lets separate fleets tune TTFT and ITL independently, while KV transfer becomes a new latency, bandwidth, capacity, and failure surface.
+
+---
+
+Q: Does prefill-decode disaggregation guarantee more throughput?
+A: No. It can isolate phase SLOs, while transfer and coordination overhead can leave throughput unchanged or worse.
+
+---
+
+Q: What bounds speculative-decoding speedup?
+A: Accepted tokens per target verification relative to draft cost, verifier cost, cache and scheduling overhead, batch size, and rollback behavior.
+
+---
+
+Q: What state transitions define a correct speculative step?
+A: Draft proposals allocate lookahead state, the target verifies them, accepted tokens commit, rejected suffixes roll back, and the bonus token follows the algorithm's contract.
+
+---
+
+Q: What are the stages of a top-k MoE layer?
+A: Router logits, top-k expert selection, capacity handling, token dispatch, expert compute, weighted combine, and restoration of original token order.
+
+---
+
+Q: What production metric exposes MoE routing imbalance?
+A: Expert token-count skew, paired with all-to-all time, idle rank time, and tokens per second per GPU.
+
+---
+
+Q: Why must multimodal content affect prefix-cache identity?
+A: Text placeholders can be identical while image, audio, or video encoder inputs differ, so text tokens alone cannot identify reusable model state.
+
+---
+
+Q: What makes a hybrid attention and state-space model cache unusual?
+A: Attention layers cache per-token K/V while state-space layers cache recurrent state with different size, alignment, and prefix-validity rules.
+
+---
+
+Q: What is a `torch.compile` guard?
+A: A runtime assumption about inputs, shapes, values, types, or state that makes the captured graph valid. Guard failure can trigger another compiled specialization.
+
+---
+
+Q: What is a graph break?
+A: A boundary where Dynamo stops one captured graph and resumes later because it cannot or should not trace through an operation or control-flow region.
+
+---
+
+Q: Why do CUDA graphs require stable memory addresses?
+A: Replay reuses captured kernel arguments and launch sequence, so input, output, and workspace addresses must remain compatible with the capture.
+
+---
+
+Q: Why does a custom PyTorch operator need a fake or meta implementation for compilation?
+A: Dynamo and FakeTensor need output shape, dtype, and device behavior without running the real device kernel.
+
+---
+
+Q: What does tensor parallelism split and what does it cost?
+A: It shards weight and activation dimensions. Row-parallel linear layers usually all-reduce partial outputs, while column-parallel layers usually keep outputs sharded and only all-gather when a full output is requested.
+
+---
+
+Q: When is pipeline parallelism attractive?
+A: When layers can be split across devices, especially across weaker inter-node links or uneven memory, at the cost of stage imbalance and bubbles.
+
+---
+
+Q: What cache issue does data parallelism create?
+A: Each replica has an independent KV and prefix cache, so even load balancing can destroy prefix locality and create hit-rate skew.
+
+---
+
+Q: What communication dominates expert parallelism?
+A: Token dispatch and collection through all-to-all, with cost amplified by expert-load skew and slow links.
+
+---
+
+Q: What does TTFT measure?
+A: Time from request arrival to the first streamed output token.
+
+---
+
+Q: What does inter-token latency measure?
+A: Each time gap between consecutive output tokens. Its distribution exposes decode jitter and tail stalls.
+
+---
+
+Q: What does time per output token measure?
+A: The per-request mean of the post-first-token gaps, usually decode duration divided by the number of post-first output tokens. It summarizes average decode cadence.
+
+---
+
+Q: What is serving goodput?
+A: Useful throughput from requests or tokens that satisfy the chosen latency and quality SLOs.
+
+---
+
+Q: What sequence should a kernel explanation follow?
+A: Grid, tile, pointer formula, masks, on-chip state, bytes moved, operations, occupancy limiter, correctness oracle, and benchmark evidence.
+
+---
+
+Q: What causal chain should organize the technical deep dive?
+A: Claim, system boundary, workload, baseline evidence, diagnosis, intervention, ablation, correctness, deployment, and residual risk.
+
+---
+
+Q: What must the first system-design step define?
+A: Model, workload and arrival distribution, input and output lengths, hardware, latency SLOs, quality target, and failure assumptions.
+
+---
+
+Q: What three evidence classes does the Inferact prep kit use?
+A: Confirmed process or role evidence, primary technical evidence from official code or papers, and derived practice prompts that Inferact has not confirmed.
+
+---
+
+Q: What attributable public Inferact candidate-question evidence was found by July 21, 2026?
+A: None. The supplied guide is the process source, while the live role and current vLLM sources determine technical weighting.
+
+---
+
+Q: What benchmark metadata must accompany a performance claim?
+A: Code revision, model and precision, hardware and software stack, input and output distribution, concurrency, runtime configuration, warmup, duration, repetitions, variance, and SLO or quality gate.
+
+---
+
+Q: What is the practical ownership split around paged KV?
+A: The scheduler and cache manager own logical blocks, matching, reference counts, and eviction. The model runner owns physical tensors. Block tables and slot mappings connect the two.
