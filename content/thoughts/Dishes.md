@@ -45,4 +45,4 @@ This serves as a ground truth for a collection of dishes throughout.
 
 9. choux au craquelin
 
-- matcha cream, powered sugar, matcha powder.
+- matcha cream, powdered sugar, matcha powder.

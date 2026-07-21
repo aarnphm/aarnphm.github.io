@@ -28,7 +28,7 @@ Cho rất nhiều, song nhận chẳng bao nhiêu;
 Người ta phụ, hoặc thờ ơ, chẳng biết.
 ```
 
-The opening line was paraphrased from Haraucourt: _Partir, c'est mourir n peu_
+The opening line was paraphrased from Haraucourt: _Partir, c'est mourir un peu_
 
 ## Tố Hữu
 

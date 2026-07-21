@@ -23,7 +23,7 @@ Equipment:
 - FX3
   - larger sensor pixel area
 
-> [[thoughts/Lighting|Lightning]] is key
+> [[thoughts/Lighting|Lighting]] is key
 
 [[thoughts/Planimetric composition]]
 

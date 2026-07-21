@@ -15,4 +15,4 @@ title: Routh-Hurwitz criterion
 
 For a system with transfer function $\hat{G}(s) =  \frac{\mathcal{N}(s)}{\mathcal{D}(s)}$
 
-Input-output stability implies that all root of $\mathcal{d}(s)$ are in the Left Half Plane (LHP)
+Input-output stability implies that all root of $\mathcal{D}(s)$ are in the Left Half Plane (LHP)

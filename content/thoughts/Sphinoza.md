@@ -6,13 +6,13 @@ modified: 2026-06-05 15:08:12 GMT-04:00
 tags:
   - philos1aa3
   - philosophy
-title: Sphinoza
+title: Spinoza
 ---
 
 ## Ethics (1677)
 
 Deus sive Nature
-European considered Sphinoza as Atheist => but his works mentioned God
+European considered Spinoza as Atheist => but his works mentioned God
 
 ## God of the Philosophers/Metaphysicians
 
@@ -122,7 +122,7 @@ Ontological Proof: Explain God as a being that cannot not exist. God's essence i
 Cosmological Proof: God is the first cause, the ultimate cause of everything else. Without God the chain of cause and effect would recede forever, and the world would be without a rational foundation.
 Aristotle's proof of the Unmoved Mover in Metaphysics was this type of proof
 
-Teleological Proof ("Design argument"): Nature shows evidence of intelligent design. <- Sphinoza rejects the _Teleological proof_. His three arguments in Proposition 11
+Teleological Proof ("Design argument"): Nature shows evidence of intelligent design. <- Spinoza rejects the _Teleological proof_. His three arguments in Proposition 11
 
 #### Reduction of Absurdity (reductio ad absurdum)
 

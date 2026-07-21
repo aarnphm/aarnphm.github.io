@@ -4,7 +4,7 @@ description: the man that was most mistakenly understood
 id: Nietzsche
 modified: 2026-06-05 15:08:28 GMT-04:00
 seealso:
-  - '[[thoughts/Philosophy and Nietzsche|Deleuze intepretation of Nietzche]]'
+  - '[[thoughts/Philosophy and Nietzsche|Deleuze interpretation of Nietzsche]]'
 tags:
   - philosophy
   - philos1aa3

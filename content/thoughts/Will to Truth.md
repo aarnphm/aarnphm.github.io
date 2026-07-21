@@ -8,7 +8,7 @@ tags:
 title: Will to Truth
 ---
 
-See also: [[thoughts/Philosophy and Nietzsche|Philosophy and Nietzche]]
+See also: [[thoughts/Philosophy and Nietzsche|Philosophy and Nietzsche]]
 
 _excerpt from [[thoughts/Nietzsche|Nietzsche]]'s Beyond Good and Evil_
 

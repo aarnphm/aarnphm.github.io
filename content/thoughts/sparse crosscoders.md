@@ -15,7 +15,7 @@ transclude:
 
 > [!important] maturity
 >
-> a research preview from Anthroppic and this is pretty much still a work in progress
+> a research preview from Anthropic and this is pretty much still a work in progress
 
 see also [reproduction on Gemma 2B](https://colab.research.google.com/drive/124ODki4dUjfi21nuZPHRySALx9I74YHj?usp=sharing) and [github](https://github.com/ckkissane/crosscoder-model-diff-replication)
 
@@ -101,7 +101,7 @@ $$
 \sum_{l\in L}\sum_{i} f_i(x_j) \|W^l_{\text{dec,i}}\| = \sum_{i} f_i(x_j)(\displaystyle\sum_{l \in L} \|W^l_\text{dec,i}\|)
 $$
 
-_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum\limits{l\in L} \|W^l_\text{dec,i}\|$ [^l2weightnorm]
+_weight of L1 regularization penalty by L1 norm of per-layer decoder weight norms_ $\sum\limits_{l\in L} \|W^l_\text{dec,i}\|$ [^l2weightnorm]
 
 [^l2weightnorm]:
     $\|W_\text{dec,i}^l\|$ is the L2 norm of a single feature's decoder vector at a given layer.

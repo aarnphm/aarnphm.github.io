@@ -245,7 +245,7 @@ overlapping strategies:
 
 ### training efficiency
 
-full training run: 2,788,000 H800 GPU hours (~2.664M USD for compute).
+full training run: 2,788,000 H800 GPU hours (~$5.576M USD for compute).
 
 breakdown:
 

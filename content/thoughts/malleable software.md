@@ -52,7 +52,7 @@ We think of these as medium as programmers:
    Thinkers:
    - Andy Clark (Natural born cyborgs):
      - hypermind hypothesis: in relationship between our brains and surrounding
-   - Gorge Lakoff and Mark Johnson (Metaphors We Live By)
+   - George Lakoff and Mark Johnson (Metaphors We Live By)
    - Barbara Tversky (Mind in Motion)
    - Tim Ingold
    - Bruno Latour

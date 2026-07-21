@@ -116,4 +116,4 @@ The updated loops as follow [^internal]:
     )  # batch_size x hidden_representation_size
     ```
 
-![[thoughts/modified_deep_cosine.py]]
+![[thoughts/scripts/modified_deep_cosine.py]]

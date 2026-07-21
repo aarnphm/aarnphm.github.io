@@ -6,7 +6,7 @@ modified: 2026-06-05 15:08:05 GMT-04:00
 tags:
   - philosophy
   - seed
-title: Giles Deleuze
+title: Gilles Deleuze
 ---
 
 French philosopher, known for his work on the concept of multiplicity, being and affirmation.

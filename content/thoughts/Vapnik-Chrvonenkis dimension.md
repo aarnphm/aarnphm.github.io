@@ -6,7 +6,7 @@ modified: 2026-06-05 15:08:37 GMT-04:00
 tags:
   - math
   - ml
-title: Vapnik-Chrvonenkis dimension
+title: Vapnik-Chervonenkis dimension
 ---
 
 fancy name for the measure of size, or the cardinality of the largest sets of points that the algorithm can shatter.

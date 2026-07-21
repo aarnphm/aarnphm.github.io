@@ -59,7 +59,7 @@ $$
 \|\text{Dec}(\text{Sampler}(\text{Enc}(x))) - x\|_2^2
 $$
 
-we want to get the latent space distribution to look something similar to isotopic Gaussian!
+we want to get the latent space distribution to look something similar to isotropic Gaussian!
 
 ![[thoughts/Kullback-Leibler divergence|KL divergence]]
 

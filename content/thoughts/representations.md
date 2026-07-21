@@ -9,7 +9,7 @@ tags:
 title: representations.
 ---
 
-resources: Edward Tuffe's [The Visual Display of Quantitative Information - ISBN-13: 978-1930824133](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/)
+resources: Edward Tufte's [The Visual Display of Quantitative Information - ISBN-13: 978-1930824133](https://www.edwardtufte.com/book/the-visual-display-of-quantitative-information/)
 
 > [!question]
 >
@@ -62,4 +62,4 @@ _Simulacra and Simulation, Jean Baudrillard_
 
 > Art of Cartography attained such Perfection that the map of a single Province occupied the entirely of a City [...] ==saw that that vast Map was Useless...==
 
-_On Exatitude in Science, Jorge Luis Borges_
+_On Exactitude in Science, Jorge Luis Borges_

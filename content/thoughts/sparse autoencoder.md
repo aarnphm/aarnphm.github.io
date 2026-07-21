@@ -11,7 +11,7 @@ transclude:
   title: false
 ---
 
-see also: [landspace](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)
+see also: [landscape](https://docs.google.com/document/d/1lHvRXJsbi41bNGZ_znGN7DmlLXITXyWyISan7Qx2y6s/edit?tab=t.0#heading=h.j9b3g3x1o1z4)
 
 Often contains one layers of MLP with few linear [[thoughts/optimization#ReLU|ReLU]] that is trained on a subset of datasets the main LLMs is trained on.
 
@@ -59,7 +59,7 @@ decoder weights, or constraining norms of columns $W_\text{dec}$ during training
 
 Ideas: output of decoder $f(x)$ has two roles
 
-- detects what features acre active <= L1 is crucial to ensure sparsity in decomposition
+- detects what features are active <= L1 is crucial to ensure sparsity in decomposition
 - _estimates_ magnitudes of active features <= L1 is unwanted bias
 
 ## Gated SAE

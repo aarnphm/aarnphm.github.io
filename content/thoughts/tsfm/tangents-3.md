@@ -22,7 +22,7 @@ num_tokens = 15.5e12
 num_params = 1e12
 
 
-expert_ratio = num_routed_expert / num_experts_per_tok  # 48
+expert_ratio = num_routed_experts / num_experts_per_tok  # 48
 params_per_tok = num_params / expert_ratio  # rough estimate
 
 flops_per_tok = params_per_tok * 6
@@ -235,7 +235,7 @@ $$
 ### all2all
 
 - a distributed transpose
-- each GPU holds $B/N$ of data, sends $B/N^2$ bytes t each other GPUs
+- each GPU holds $B/N$ of data, sends $B/N^2$ bytes to each other GPUs
 
 $$
 \begin{aligned}

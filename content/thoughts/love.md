@@ -291,7 +291,7 @@ regional homogeneity (ReHo) and functional connectivity (FC) across an "in-love"
 
 - ReHo of left dorsal anterior cingulate cortex (dACC) was significantly increased in LG (compared to ELG and SG)
 - ReHo of left dACC was positively correlated with length of time in love in LG, and negatively correlated with the lovelorn duration since breakup in ELG
-- FC within the reward, motivation, and emoation relgulation network (dACC, insula, caudate, amygdala) as well as FC in social cognition network (temporo-parietal junctions, posteriori cingulate cortex, etc.) was significantly increaed in the LG
+- FC within the reward, motivation, and emotion regulation network (dACC, insula, caudate, amygdala) as well as FC in social cognition network (temporo-parietal junctions, posterior cingulate cortex, etc.) was significantly increased in the LG
 - FC was positively correlated with duration of love in the LG but negatively correlated with the lovelorn duration of time since breakup in the ELG.
 
 I found from all of these study that majority of participants are largely female, which dictates whether the data are either skewed or simply biased towards the females' psychology comparing to men.
