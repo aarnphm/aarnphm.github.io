@@ -9,7 +9,7 @@ tags:
 title: Reynolds transport theorem
 ---
 
-Also known as _Leibniz-Reynolds transport therem_
+Also known as _Leibniz-Reynolds transport theorem_
 
 A three-dimensional generalization of Leibniz integral rule
 

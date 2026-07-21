@@ -79,7 +79,7 @@ The following are few of favourite brands, in no particular order:
 | Sefr                                                   | Pretty niche, but some of their beige lazaro shirts are nice.                  |
 | Ted Baker                                              | Holy crap that's half of my closets. Trousers, shirts, suits, cargo, etc.      |
 | Ralph Lauren Polo                                      | Them trench coats are nice, daily driver during winter szn.                    |
-| Mansuir Gavriel                                        | Their bags are my fav.                                                         |
+| Mansur Gavriel                                        | Their bags are my fav.                                                         |
 | Olend Backpacks                                        | For the love of backpacks.                                                     |
 | Bellroy                                                | Tote, durable, flexible.                                                       |
 | Loro Piana                                             | If you can afford go for it                                                    |

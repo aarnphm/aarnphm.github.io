@@ -272,7 +272,7 @@ _deliverable_: complete classification table with $\pi_1$, $H_1$, $\chi$ for $S^
 
 ### project 2 (month 9): poincaré homology sphere
 
-construct it via dehn surgery on trefoil ($(5,2,2)$ surgery). compute $\pi_1 \cong \text{SL}(2,\mathbb{F}_5)/\{\pm I\}$ using seifert-van kampen on heegaard decomposition. verify $H_1 = 0$ but $\pi_1 \neq 0$.
+construct it via dehn surgery on trefoil ($(5,2,2)$ surgery). compute $\pi_1 \cong \text{SL}(2,\mathbb{F}_5)$ using seifert-van kampen on heegaard decomposition. verify $H_1 = 0$ but $\pi_1 \neq 0$.
 
 _deliverable_: write [[thoughts/topology/simply connected#poincaré homology sphere|exposition]] with diagrams.
 

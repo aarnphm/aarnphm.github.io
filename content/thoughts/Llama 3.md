@@ -47,7 +47,7 @@ Training config:
 - 16K H100 clusters (given that this is a production clusters instead of research clusters)
   - 8 pods with 3072 GPUs per pods but around 1:7 oversubscription ratios (or 7x lower bandwidth)
 - took around 54 days for pre-training
-- Theretical FLOPs for H100 is 1,978 TFLOPs BF16
+- Theoretical FLOPs for H100 is 1,978 TFLOPs BF16
 - training days can be calculated as:
   $$
   \text{Training time days} = \frac{\text{total tokens}}{\text{throughput tokens per sec} * 86400}

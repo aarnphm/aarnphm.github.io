@@ -11,7 +11,7 @@ title: Machine learning
 
 Learn patterns from distributions and make useful predictions based on assigned-objectives.
 
-Generally [[thoughts/AGI|AI]] $\subset$ #ml $\subset$ [[thoughts/deep learning|DL]]
+Generally [[thoughts/AGI|AI]] $\supset$ #ml $\supset$ [[thoughts/deep learning|DL]]
 
 Some main exploration:
 

@@ -2430,7 +2430,7 @@ export const ATHLETE = {
   bornAnchor: '2001-03-01',
   hrMax: 187 as number | null,
   vo2max: 47.8 as number | null,
-  ftp: 242 as number | null,
+  ftp: 249 as number | null,
   goalWeightLb: 160 as number | null,
   goalFTP: 290 as number | null,
   heightCm: 188,

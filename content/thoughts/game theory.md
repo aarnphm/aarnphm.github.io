@@ -8,4 +8,4 @@ tags:
 title: game theory
 ---
 
-emerged John von Neumann published the paper _On the Theory of Games of Strategy_, when Neumann's original proff used Brower's fixed-point theorem on continuous mappings into compact convex sets.
+emerged John von Neumann published the paper _On the Theory of Games of Strategy_, when Neumann's original proof used Brouwer's fixed-point theorem on continuous mappings into compact convex sets.

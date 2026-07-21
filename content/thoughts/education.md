@@ -38,6 +38,6 @@ The process of learning should be enduring, but rewarding. It should be a proces
 
 Too many tools and too much space: Large space should start small, and widen, rather than having everything readily available
 
-[^1]: [WEF on relevance of education system](https://www.weforum.org/agenda/2020/04/our-education-system-is-losing-relevance-heres-how-to-update-it/), written in April 13rd 2020
+[^1]: [WEF on relevance of education system](https://www.weforum.org/agenda/2020/04/our-education-system-is-losing-relevance-heres-how-to-update-it/), written in April 13th 2020
 
 [^2]: See [here](https://saskschoolboards.ca/wp-content/uploads/97-07.htm#:~:text=Constructivist%20teaching%20is%20based%20on,rather%20than%20passively%20receiving%20information.)

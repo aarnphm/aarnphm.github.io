@@ -42,8 +42,8 @@ for ep in range(10):
   y_pred = model(X)
   l = loss(Y, y_pred)
   l.backward()
-  optimizer.setp()
-  optimzer.zero_grad()
+  optimizer.step()
+  optimizer.zero_grad()
 ```
 
 ## classification

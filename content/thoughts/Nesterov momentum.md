@@ -32,7 +32,7 @@ idea:
 
 Achieves better convergence rates
 
-| function type            | gradient descent                   | Nesterove AG                            |
+| function type            | gradient descent                   | Nesterov AG                            |
 | ------------------------ | ---------------------------------- | --------------------------------------- |
 | Smooth                   | $\theta(\frac{1}{T})$              | $\theta(\frac{1}{T^{2}})$               |
 | Smooth & Strongly Convex | $\theta(\exp (-\frac{T}{\kappa}))$ | $\theta(\exp -\frac{T}{\sqrt{\kappa}})$ |
