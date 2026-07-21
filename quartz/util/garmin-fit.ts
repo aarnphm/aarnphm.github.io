@@ -34,6 +34,15 @@ export interface GarminSwimSample {
   temperatureCelsius?: number
 }
 
+export interface GarminPoolSwimLength {
+  startElapsedSeconds: number
+  endElapsedSeconds: number
+  distanceMeters: number
+  totalStrokes?: number
+  strokeTimeSeconds?: number
+  swimStroke?: GarminSwimStroke
+}
+
 export interface GarminSwimFitBaseInput {
   sourceId: string | number
   name: string
@@ -50,6 +59,7 @@ export interface GarminSwimFitBaseInput {
 export interface GarminPoolSwimInput extends GarminSwimFitBaseInput {
   kind: 'pool'
   poolLengthMeters?: number
+  lengths?: readonly GarminPoolSwimLength[]
 }
 
 export interface GarminOpenWaterSwimInput extends GarminSwimFitBaseInput {
@@ -84,6 +94,10 @@ export interface GarminFitEncoding {
 
 interface PreparedSample extends GarminSwimSample {
   speedMetersPerSecond: number
+}
+
+interface PreparedPoolLength extends GarminPoolSwimLength {
+  totalStrokes: number
 }
 
 interface SwimStatistics {
@@ -134,6 +148,41 @@ function validateInput(input: GarminSwimFitInput): void {
     const poolLength = input.poolLengthMeters ?? DEFAULT_POOL_LENGTH_METERS
     requireFinite(poolLength, 'poolLengthMeters')
     if (poolLength <= 0) throw new Error('poolLengthMeters must be positive')
+    let previousEnd = 0
+    let lengthDistance = 0
+    for (let index = 0; index < (input.lengths?.length ?? 0); index++) {
+      const length = input.lengths?.[index]
+      if (!length) continue
+      requireFinite(length.startElapsedSeconds, `lengths[${index}].startElapsedSeconds`)
+      requireFinite(length.endElapsedSeconds, `lengths[${index}].endElapsedSeconds`)
+      requireFinite(length.distanceMeters, `lengths[${index}].distanceMeters`)
+      requireOptionalFinite(length.totalStrokes, `lengths[${index}].totalStrokes`)
+      requireOptionalFinite(length.strokeTimeSeconds, `lengths[${index}].strokeTimeSeconds`)
+      if (
+        length.startElapsedSeconds < previousEnd ||
+        length.endElapsedSeconds <= length.startElapsedSeconds ||
+        length.endElapsedSeconds > input.elapsedTimeSeconds
+      )
+        throw new Error(`lengths[${index}] has an invalid activity interval`)
+      if (Math.abs(length.distanceMeters - poolLength) > Math.max(0.5, poolLength * 0.02))
+        throw new Error(`lengths[${index}].distanceMeters does not match poolLengthMeters`)
+      if (length.totalStrokes != null && length.totalStrokes < 0)
+        throw new Error(`lengths[${index}].totalStrokes must be nonnegative`)
+      if (
+        length.strokeTimeSeconds != null &&
+        (length.strokeTimeSeconds <= 0 ||
+          length.strokeTimeSeconds > length.endElapsedSeconds - length.startElapsedSeconds)
+      )
+        throw new Error(`lengths[${index}].strokeTimeSeconds is outside the length duration`)
+      previousEnd = length.endElapsedSeconds
+      lengthDistance += length.distanceMeters
+    }
+    if (
+      input.lengths &&
+      input.lengths.length > 0 &&
+      Math.abs(lengthDistance - input.distanceMeters) > Math.max(1, input.distanceMeters * 0.01)
+    )
+      throw new Error('length distance does not match distanceMeters')
   }
 
   let previousElapsed = -1
@@ -240,7 +289,8 @@ function interpolateSample(
   distanceMeters: number,
 ): PreparedSample {
   const distanceDelta = right.distanceMeters - left.distanceMeters
-  const ratio = distanceDelta > 0 ? (distanceMeters - left.distanceMeters) / distanceDelta : 1
+  const rawRatio = distanceDelta > 0 ? (distanceMeters - left.distanceMeters) / distanceDelta : 1
+  const ratio = Number.isFinite(rawRatio) ? rawRatio : 1
   return {
     elapsedSeconds: left.elapsedSeconds + (right.elapsedSeconds - left.elapsedSeconds) * ratio,
     distanceMeters,
@@ -381,6 +431,25 @@ function totalStrokes(input: GarminSwimFitInput, samples: readonly GarminSwimSam
   return Math.round(strokes)
 }
 
+function preparedPoolLengths(lengths: readonly GarminPoolSwimLength[]): PreparedPoolLength[] {
+  const target = Math.round(
+    lengths.reduce((sum, length) => sum + Math.max(0, length.totalStrokes ?? 0), 0),
+  )
+  const prepared = lengths.map(length => ({
+    ...length,
+    totalStrokes: Math.floor(Math.max(0, length.totalStrokes ?? 0)),
+  }))
+  const assigned = prepared.reduce((sum, length) => sum + length.totalStrokes, 0)
+  const order = lengths
+    .map((length, index) => ({ index, remainder: Math.max(0, length.totalStrokes ?? 0) % 1 }))
+    .sort((left, right) => right.remainder - left.remainder || left.index - right.index)
+  for (let offset = 0; offset < target - assigned; offset++) {
+    const index = order[offset]?.index
+    if (index != null && prepared[index]) prepared[index].totalStrokes++
+  }
+  return prepared
+}
+
 function hashSourceId(sourceId: string | number): number {
   const text = String(sourceId)
   let hash = 2_166_136_261
@@ -475,6 +544,92 @@ function writePoolTimeline(
   }
 }
 
+function writeExplicitPoolTimeline(
+  encoder: Encoder,
+  input: GarminPoolSwimInput,
+  samples: readonly PreparedSample[],
+  lengths: readonly PreparedPoolLength[],
+): void {
+  let sampleIndex = 0
+  for (let lengthIndex = 0; lengthIndex < lengths.length; lengthIndex++) {
+    const length = lengths[lengthIndex]
+    while (
+      sampleIndex < samples.length &&
+      samples[sampleIndex].elapsedSeconds <= length.endElapsedSeconds
+    ) {
+      writeRecord(encoder, input, samples[sampleIndex])
+      sampleIndex++
+    }
+    const elapsedDuration = length.endElapsedSeconds - length.startElapsedSeconds
+    const strokeTime = length.strokeTimeSeconds ?? elapsedDuration
+    const message: LengthMesg = {
+      messageIndex: lengthIndex,
+      timestamp: sampleDate(input.startTime, length.endElapsedSeconds),
+      event: 'length',
+      eventType: 'stop',
+      startTime: sampleDate(input.startTime, length.startElapsedSeconds),
+      totalElapsedTime: elapsedDuration,
+      totalTimerTime: elapsedDuration,
+      totalStrokes: length.totalStrokes,
+      avgSpeed: length.distanceMeters / elapsedDuration,
+      swimStroke: length.swimStroke ?? input.swimStroke ?? 'mixed',
+      avgSwimmingCadence:
+        length.totalStrokes > 0 ? uint8((length.totalStrokes * 60) / strokeTime) : undefined,
+      lengthType: 'active',
+    }
+    encoder.onMesg(Profile.MesgNum.LENGTH, message)
+  }
+  while (sampleIndex < samples.length) {
+    writeRecord(encoder, input, samples[sampleIndex])
+    sampleIndex++
+  }
+}
+
+function poolLengthStatistics(
+  lengths: readonly PreparedPoolLength[],
+): Pick<SwimStatistics, 'avgCadence' | 'maxCadence' | 'maxSpeed'> {
+  const cadenceLengths = lengths.filter(
+    length =>
+      length.totalStrokes > 0 &&
+      (length.strokeTimeSeconds ?? length.endElapsedSeconds - length.startElapsedSeconds) > 0,
+  )
+  const totalStrokes = cadenceLengths.reduce((sum, length) => sum + length.totalStrokes, 0)
+  const totalStrokeTime = cadenceLengths.reduce(
+    (sum, length) =>
+      sum + (length.strokeTimeSeconds ?? length.endElapsedSeconds - length.startElapsedSeconds),
+    0,
+  )
+  const cadences = cadenceLengths.map(
+    length =>
+      (length.totalStrokes * 60) /
+      (length.strokeTimeSeconds ?? length.endElapsedSeconds - length.startElapsedSeconds),
+  )
+  return {
+    avgCadence: totalStrokeTime > 0 ? (totalStrokes * 60) / totalStrokeTime : undefined,
+    maxCadence: maximum(cadences),
+    maxSpeed: Math.max(
+      ...lengths.map(
+        length => length.distanceMeters / (length.endElapsedSeconds - length.startElapsedSeconds),
+      ),
+    ),
+  }
+}
+
+function poolSummaryStroke(
+  input: GarminPoolSwimInput,
+  lengths: readonly PreparedPoolLength[] | undefined,
+): GarminSwimStroke {
+  if (!lengths) return input.swimStroke ?? 'freestyle'
+  const strokes = new Set(
+    lengths
+      .map(length => length.swimStroke)
+      .filter((stroke): stroke is GarminSwimStroke => stroke != null),
+  )
+  const onlyStroke = strokes.size === 1 ? strokes.values().next().value : undefined
+  if (onlyStroke) return onlyStroke
+  return 'mixed'
+}
+
 function applyStatistics(target: LapMesg | SessionMesg, values: SwimStatistics): void {
   if (values.avgHeartRate != null) target.avgHeartRate = uint8(values.avgHeartRate)
   if (values.maxHeartRate != null) target.maxHeartRate = uint8(values.maxHeartRate)
@@ -521,9 +676,11 @@ function writeSummaryMessages(
   strokeCount: number,
   lengthCount: number,
   poolLengthMeters: number | undefined,
+  poolLengths: readonly PreparedPoolLength[] | undefined,
 ): void {
   const endTime = sampleDate(input.startTime, input.elapsedTimeSeconds)
   const values = statistics(samples)
+  if (poolLengths) Object.assign(values, poolLengthStatistics(poolLengths))
   const avgSpeed = distanceMeters / input.timerTimeSeconds
   const timerStop: EventMesg = { timestamp: endTime, event: 'timer', eventType: 'stop' }
   const lap: LapMesg = {
@@ -535,7 +692,7 @@ function writeSummaryMessages(
     totalElapsedTime: input.elapsedTimeSeconds,
     totalTimerTime: input.timerTimeSeconds,
     totalDistance: distanceMeters,
-    totalStrokes: strokeCount,
+    totalCycles: strokeCount,
     totalCalories: input.calories == null ? undefined : uint16(input.calories),
     avgSpeed,
     maxSpeed: values.maxSpeed,
@@ -558,7 +715,7 @@ function writeSummaryMessages(
     totalElapsedTime: input.elapsedTimeSeconds,
     totalTimerTime: input.timerTimeSeconds,
     totalDistance: distanceMeters,
-    totalStrokes: strokeCount,
+    totalCycles: strokeCount,
     totalCalories: input.calories == null ? undefined : uint16(input.calories),
     avgSpeed,
     maxSpeed: values.maxSpeed,
@@ -574,13 +731,14 @@ function writeSummaryMessages(
     session.avgStrokeDistance = distanceMeters / strokeCount
   }
   if (input.kind === 'pool' && poolLengthMeters != null) {
+    const swimStroke = poolSummaryStroke(input, poolLengths)
     lap.firstLengthIndex = 0
     lap.numLengths = lengthCount
     lap.numActiveLengths = lengthCount
-    lap.swimStroke = input.swimStroke ?? 'freestyle'
+    lap.swimStroke = swimStroke
     session.numLengths = lengthCount
     session.numActiveLengths = lengthCount
-    session.swimStroke = input.swimStroke ?? 'freestyle'
+    session.swimStroke = swimStroke
     session.poolLength = poolLengthMeters
     session.poolLengthUnit = 'metric'
   } else {
@@ -685,21 +843,33 @@ export function encodeGarminSwimFit(input: GarminSwimFitInput): GarminFitEncodin
   let samples = normalizedSamples(input)
   let distanceMeters = input.distanceMeters
   let poolLengthMeters: number | undefined
+  let poolLengths: PreparedPoolLength[] | undefined
   let lengthCount = 0
   if (input.kind === 'pool') {
     poolLengthMeters = input.poolLengthMeters ?? DEFAULT_POOL_LENGTH_METERS
-    lengthCount = Math.round(input.distanceMeters / poolLengthMeters)
+    poolLengths = input.lengths?.length ? preparedPoolLengths(input.lengths) : undefined
+    lengthCount = poolLengths?.length ?? Math.round(input.distanceMeters / poolLengthMeters)
     if (lengthCount < 1) throw new Error('pool swim distance must contain at least one length')
-    distanceMeters = lengthCount * poolLengthMeters
-    samples = scalePoolDistances(samples, input.distanceMeters, distanceMeters)
+    if (poolLengths) {
+      distanceMeters = poolLengths.reduce((sum, length) => sum + length.distanceMeters, 0)
+    } else {
+      distanceMeters = lengthCount * poolLengthMeters
+      samples = scalePoolDistances(samples, input.distanceMeters, distanceMeters)
+    }
   }
   const prepared = prepareSamples(samples)
-  const strokeCount = totalStrokes(input, prepared)
+  const strokeCount =
+    poolLengths?.reduce((sum, length) => sum + length.totalStrokes, 0) ??
+    totalStrokes(input, prepared)
   const encoder = new Encoder()
   writeHeaderMessages(encoder, input, hashSourceId(input.sourceId))
   if (input.kind === 'pool' && poolLengthMeters != null) {
-    const lengths = poolLengthSamples(prepared, poolLengthMeters, lengthCount)
-    writePoolTimeline(encoder, input, prepared, lengths, poolLengthMeters, strokeCount)
+    if (poolLengths) {
+      writeExplicitPoolTimeline(encoder, input, prepared, poolLengths)
+    } else {
+      const lengths = poolLengthSamples(prepared, poolLengthMeters, lengthCount)
+      writePoolTimeline(encoder, input, prepared, lengths, poolLengthMeters, strokeCount)
+    }
   } else {
     for (const sample of prepared) writeRecord(encoder, input, sample)
   }
@@ -711,6 +881,7 @@ export function encodeGarminSwimFit(input: GarminSwimFitInput): GarminFitEncodin
     strokeCount,
     lengthCount,
     poolLengthMeters,
+    poolLengths,
   )
   const bytes = encoder.close()
   return { bytes, validation: validateGarminFit(bytes) }

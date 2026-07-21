@@ -92,57 +92,85 @@ export default (() => {
         </div>
 
         <div class="tri-strip">
-          <div class="tri-scroll">
-            <div class="tri-track">
-              <div
-                class="tri-bars"
-                role="img"
-                aria-label={`${payload.totalCount} sessions, bar height by duration`}
-              >
-                {payload.days.map(d => {
-                  const rest = d.items.length === 0
-                  const track = trackByDate.get(d.date)
-                  const restKind = (s: string): boolean => s === 'treatment' || s === 'yoga'
-                  const segRaw = d.items.map(it =>
-                    restKind(it.sport)
-                      ? REST_SEG
-                      : Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
-                  )
-                  const scalable = d.items.reduce(
-                    (a, it, i) => (restKind(it.sport) ? a : a + segRaw[i]),
-                    0,
-                  )
-                  const gaps = Math.max(0, d.items.length - 1) * GAP_PX
-                  const scale = scalable + gaps > MAX_BAR ? (MAX_BAR - gaps) / scalable : 1
-                  return (
-                    <span
-                      class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
-                      data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
-                      data-date-iso={d.date}
-                      data-event={track?.event ?? (track?.race ? 'race' : undefined)}
-                    >
-                      {rest ? (
-                        <span class="tri-seg" style={`height:${REST_SEG}px`} />
-                      ) : (
-                        d.items.map((it, i) => (
-                          <span
-                            class={`tri-seg${restKind(it.sport) ? ' tri-seg--treatment' : ''}`}
-                            style={`height:${(restKind(it.sport) ? segRaw[i] : segRaw[i] * scale).toFixed(1)}px`}
-                          />
-                        ))
-                      )}
-                    </span>
-                  )
-                })}
+          <div
+            class="tri-scroll-shell"
+            data-scrollable="true"
+            data-scroll-end="false"
+            style={`--tri-day-count:${payload.days.length}`}
+          >
+            <div class="tri-scroll-viewport">
+              <div class="tri-scroll" id="tri-activity-timeline">
+                <div class="tri-track">
+                  <div
+                    class="tri-bars"
+                    role="img"
+                    aria-label={`${payload.totalCount} sessions, bar height by duration`}
+                  >
+                    {payload.days.map(d => {
+                      const rest = d.items.length === 0
+                      const track = trackByDate.get(d.date)
+                      const restKind = (s: string): boolean => s === 'treatment' || s === 'yoga'
+                      const segRaw = d.items.map(it =>
+                        restKind(it.sport)
+                          ? REST_SEG
+                          : Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
+                      )
+                      const scalable = d.items.reduce(
+                        (a, it, i) => (restKind(it.sport) ? a : a + segRaw[i]),
+                        0,
+                      )
+                      const gaps = Math.max(0, d.items.length - 1) * GAP_PX
+                      const scale = scalable + gaps > MAX_BAR ? (MAX_BAR - gaps) / scalable : 1
+                      return (
+                        <span
+                          class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
+                          data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
+                          data-date-iso={d.date}
+                          data-event={track?.event ?? (track?.race ? 'race' : undefined)}
+                        >
+                          {rest ? (
+                            <span class="tri-seg" style={`height:${REST_SEG}px`} />
+                          ) : (
+                            d.items.map((it, i) => (
+                              <span
+                                class={`tri-seg${restKind(it.sport) ? ' tri-seg--treatment' : ''}`}
+                                style={`height:${(restKind(it.sport) ? segRaw[i] : segRaw[i] * scale).toFixed(1)}px`}
+                              />
+                            ))
+                          )}
+                        </span>
+                      )
+                    })}
+                  </div>
+                  <div class="tri-axis">
+                    {yearStarts.map(({ year, index }) => (
+                      <span
+                        class="tri-axis-year"
+                        data-year={year}
+                        style={`--tri-year-index:${index}`}
+                      >
+                        {year}
+                      </span>
+                    ))}
+                    {yearStarts[0] && (
+                      <span class="tri-axis-pinned" aria-hidden="true">
+                        {yearStarts[0].year}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div class="tri-axis">
-                {yearStarts.map(({ year, index }) => (
-                  <span class="tri-axis-year" style={`left:${index * 7}px`}>
-                    {year}
-                  </span>
-                ))}
-              </div>
+              <span class="tri-scroll-fade" aria-hidden="true" />
             </div>
+            <input
+              class="tri-scroll-range"
+              type="range"
+              min="0"
+              max="1000"
+              value="0"
+              aria-label="scroll activity timeline"
+              aria-controls="tri-activity-timeline"
+            />
           </div>
           <aside class="tri-pop" aria-hidden="true" />
         </div>

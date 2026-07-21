@@ -159,10 +159,13 @@ export function rawMapRouteSegments(
 
 function interpolatePoint(a: MapRoutePoint, b: MapRoutePoint, distanceKm: number): MapRoutePoint {
   const span = b.d - a.d
-  const fraction = span > 0 ? Math.max(0, Math.min(1, (distanceKm - a.d) / span)) : 0
+  const rawFraction = span > 0 ? (distanceKm - a.d) / span : 0
+  const fraction = Number.isFinite(rawFraction) ? Math.max(0, Math.min(1, rawFraction)) : 0
+  const latitude = a.lat + (b.lat - a.lat) * fraction
+  const longitude = a.lng + (b.lng - a.lng) * fraction
   return roundPoint({
-    lat: a.lat + (b.lat - a.lat) * fraction,
-    lng: a.lng + (b.lng - a.lng) * fraction,
+    lat: Number.isFinite(latitude) ? latitude : a.lat,
+    lng: Number.isFinite(longitude) ? longitude : a.lng,
     d: distanceKm,
   })
 }

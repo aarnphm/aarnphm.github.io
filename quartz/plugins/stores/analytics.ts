@@ -35,6 +35,7 @@ export interface BodyCompositionDay {
   date: string
   kg: number | null
   bmi: number | null
+  ffmi: number | null
   bodyFatPct: number | null
   bodyWaterPct: number | null
   muscleMassKg: number | null
@@ -54,6 +55,7 @@ export interface DexaRecord {
   leanLbs: number
   bmcLbs: number
   ffmLbs: number | null
+  ffmi: number
   bodyFat: number
   vatLbs: number | null
   bmd: number | null
@@ -141,12 +143,14 @@ export interface BodyBlock {
   goalBmr: number | null
   goalLeanBmr: number | null
   bmi: number | null
+  ffmi: number | null
   bodyFatPct: number | null
   bodyWaterPct: number | null
   muscleMassKg: number | null
   boneMassKg: number | null
   series: { date: string; ts: number; kg: number }[]
   bmrSeries: { date: string; ts: number; bmr: number }[]
+  ffmiSeries: { date: string; ts: number; ffmi: number }[]
   latestBmr: number | null
   composition: BodyCompositionDay[]
 }
@@ -779,6 +783,7 @@ const runningDynamicsByActivityId = (
 }
 
 const DAY_MS = 86_400_000
+const KG_PER_LB = 0.45359237
 const K42 = 1 - Math.exp(-1 / 42)
 const K7 = 1 - Math.exp(-1 / 7)
 const IF_CAP = 1.15
@@ -2045,20 +2050,28 @@ const emptyBody = (): BodyBlock => ({
   goalBmr: null,
   goalLeanBmr: null,
   bmi: null,
+  ffmi: null,
   bodyFatPct: null,
   bodyWaterPct: null,
   muscleMassKg: null,
   boneMassKg: null,
   series: [],
   bmrSeries: [],
+  ffmiSeries: [],
   latestBmr: null,
   composition: [],
 })
 
+const fatFreeMassKg = (weightKg: number, bodyFatPct: number): number =>
+  weightKg * (1 - bodyFatPct / 100)
+
+const fatFreeMassIndex = (fatFreeMassKgValue: number, heightCm: number): number =>
+  round(fatFreeMassKgValue / (heightCm / 100) ** 2, 2)
+
 const katchMcArdleBmrFromLeanKg = (leanKg: number): number => Math.round(370 + 21.6 * leanKg)
 
 const katchMcArdleBmr = (weightKg: number, bodyFatPct: number): number =>
-  katchMcArdleBmrFromLeanKg(weightKg * (1 - bodyFatPct / 100))
+  katchMcArdleBmrFromLeanKg(fatFreeMassKg(weightKg, bodyFatPct))
 
 const mifflinStJeorBmr = (
   weightKg: number,
@@ -2436,7 +2449,7 @@ export const ATHLETE = {
   heightCm: 188,
 }
 
-const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * 0.45359237 : null
+const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * KG_PER_LB : null
 
 const isoOf = (v: unknown): string | undefined => {
   if (typeof v === 'string') return v
@@ -2590,13 +2603,15 @@ const parseDexa = (raw: unknown): DexaRecord[] => {
       bodyFat === undefined
     )
       continue
+    const ffmLbs = numAt(item, 'ffmLbs')
     out.push({
       date,
       totalLbs,
       fatLbs,
       leanLbs,
       bmcLbs,
-      ffmLbs: numAt(item, 'ffmLbs'),
+      ffmLbs,
+      ffmi: fatFreeMassIndex((ffmLbs ?? leanLbs + bmcLbs) * KG_PER_LB, ATHLETE.heightCm),
       bodyFat,
       vatLbs: numAt(item, 'vatLbs'),
       bmd: numAt(item, 'bmd'),
@@ -3986,26 +4001,39 @@ export function buildAnalytics(
     .filter(s => s.weightKg != null)
     .map(s => ({ date: s.date, ts: s.ts, kg: s.weightKg as number }))
   const weightSeries = [...trackingPts, ...garminPts].sort((p, q) => p.ts - q.ts)
-  const bmrSeries = garminSamples
-    .filter(s => s.weightKg != null && s.bodyFatPct != null)
-    .map(s => ({
-      date: s.date,
-      ts: s.ts,
-      bmr: katchMcArdleBmr(s.weightKg as number, s.bodyFatPct as number),
-    }))
+  const leanMassSeries = garminSamples
+    .flatMap(s => {
+      const { weightKg, bodyFatPct } = s
+      if (weightKg == null || bodyFatPct == null) return []
+      const leanKg = fatFreeMassKg(weightKg, bodyFatPct)
+      return [
+        {
+          date: s.date,
+          ts: s.ts,
+          bmr: katchMcArdleBmrFromLeanKg(leanKg),
+          ffmi: fatFreeMassIndex(leanKg, ATHLETE.heightCm),
+        },
+      ]
+    })
     .sort((p, q) => p.ts - q.ts)
+  const bmrSeries = leanMassSeries.map(({ date, ts, bmr }) => ({ date, ts, bmr }))
+  const ffmiSeries = leanMassSeries.map(({ date, ts, ffmi }) => ({ date, ts, ffmi }))
   const latestBmr = bmrSeries.length ? bmrSeries[bmrSeries.length - 1].bmr : null
   const composition = garminSamples.map(s => ({
     date: s.date,
     kg: s.weightKg,
     bmi: s.bmi,
+    ffmi:
+      s.weightKg != null && s.bodyFatPct != null
+        ? fatFreeMassIndex(fatFreeMassKg(s.weightKg, s.bodyFatPct), ATHLETE.heightCm)
+        : null,
     bodyFatPct: s.bodyFatPct,
     bodyWaterPct: s.bodyWaterPct,
     muscleMassKg: s.muscleMassKg,
     boneMassKg: s.boneMassKg,
   }))
   const lastComp = (
-    key: 'bmi' | 'bodyFatPct' | 'bodyWaterPct' | 'muscleMassKg' | 'boneMassKg',
+    key: 'bmi' | 'ffmi' | 'bodyFatPct' | 'bodyWaterPct' | 'muscleMassKg' | 'boneMassKg',
   ): number | null => {
     for (let i = composition.length - 1; i >= 0; i--) {
       const v = composition[i][key]
@@ -4028,30 +4056,33 @@ export function buildAnalytics(
   const goalBmr =
     goalKg != null ? mifflinStJeorBmr(goalKg, ATHLETE.heightCm, ageOn(today), ATHLETE.sex) : null
   const goalLeanBmr =
-    latestFfmLbs != null ? katchMcArdleBmrFromLeanKg(latestFfmLbs * 0.45359237) : null
+    latestFfmLbs != null ? katchMcArdleBmrFromLeanKg(latestFfmLbs * KG_PER_LB) : null
   const body: BodyBlock = {
     latestKg,
-    latestLbs: latestKg != null ? round(latestKg / 0.45359237, 1) : null,
+    latestLbs: latestKg != null ? round(latestKg / KG_PER_LB, 1) : null,
     trendKgPerWeek,
     goalKg,
-    goalLbs: goalKg != null ? round(goalKg / 0.45359237, 1) : null,
+    goalLbs: goalKg != null ? round(goalKg / KG_PER_LB, 1) : null,
     goalDeltaKg,
     goalEtaWeeks,
     goalBmr,
     goalLeanBmr,
     bmi: lastComp('bmi'),
+    ffmi: lastComp('ffmi'),
     bodyFatPct: lastComp('bodyFatPct'),
     bodyWaterPct: lastComp('bodyWaterPct'),
     muscleMassKg: lastComp('muscleMassKg'),
     boneMassKg: lastComp('boneMassKg'),
     series: weightSeries,
     bmrSeries,
+    ffmiSeries,
     latestBmr,
     composition,
   }
   if (latestDexa) {
     body.bodyFatPct = latestDexa.bodyFat
-    body.boneMassKg = round(latestDexa.bmcLbs * 0.45359237, 2)
+    body.ffmi = latestDexa.ffmi
+    body.boneMassKg = round(latestDexa.bmcLbs * KG_PER_LB, 2)
   }
   const weekly = buildWeekly(acts, loadById, effortByDay, windowFrom, windowTo)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
@@ -4261,6 +4292,7 @@ export const DAY_FIELDS = [
   'intakeKcal',
   'weightKg',
   'bmi',
+  'ffmi',
   'bodyFatPct',
   'bodyWaterPct',
   'muscleMassKg',
@@ -4362,6 +4394,7 @@ export interface FeedDayRow {
   intakeKcal: number | null
   weightKg: number | null
   bmi: number | null
+  ffmi: number | null
   bodyFatPct: number | null
   bodyWaterPct: number | null
   muscleMassKg: number | null
@@ -4509,6 +4542,10 @@ export function buildDataFeed(
         intakeKcal: d.intakeKcal ?? ap?.intakeKcal ?? null,
         weightKg: d.weightKg ?? ap?.weightKg ?? null,
         bmi: gw?.bmi ?? null,
+        ffmi:
+          gw?.weightKg != null && gw?.bodyFatPct != null
+            ? fatFreeMassIndex(fatFreeMassKg(gw.weightKg, gw.bodyFatPct), ATHLETE.heightCm)
+            : null,
         bodyFatPct: gw?.bodyFatPct ?? null,
         bodyWaterPct: gw?.bodyWaterPct ?? null,
         muscleMassKg: gw?.muscleMassKg ?? null,
@@ -4609,6 +4646,7 @@ export function buildDataFeed(
       sex: ATHLETE.sex,
       born: ATHLETE.born,
       ageYears,
+      heightCm: ATHLETE.heightCm,
       hrMaxEst:
         ATHLETE.hrMax ?? (ageYears != null ? round(TANAKA_A - TANAKA_B * ageYears, 1) : null),
       weightGoalKg: goalWeightKg,
@@ -4641,7 +4679,8 @@ export function buildDataFeed(
       hrMaxEst: 'declared max hr; 208 - 0.7*age (tanaka 2001) when unset',
       weightKg: 'garmin scale primary, tracking forward-filled, apple fallback',
       bodyComposition:
-        'bmi/bodyFatPct/bodyWaterPct/muscleMassKg/boneMassKg from garmin index scale, measurement days only',
+        'bmi/bodyFatPct/bodyWaterPct/muscleMassKg/boneMassKg from garmin index scale; ffmi derived from scale weight and body fat; measurement days only',
+      ffmi: 'fat-free mass kg / height m^2',
       avgWatts: 'strava estimate unless deviceWatts true',
       windDir: 'tracking override, WeatherKit compass fallback',
     },

@@ -84,8 +84,11 @@ The absence of reports means:
 
 ### coding
 
-Expect a small inference mechanism whose tensor shapes and edge cases matter:
+Expect either a complete interview-sized `nn.Module` or an inference mechanism whose tensor shapes and edge cases matter:
 
+- a decoder-only language model assembled from a typed config
+- an existing dense model extended with GQA, KV cache, MoE, or multimodal input
+- a training-oriented model ported into a flattened-token inference contract
 - stable masked logits, top-k, top-p, or beam update
 - attention or grouped-query attention reference code
 - KV-cache append, gather, or block-table lookup
@@ -137,6 +140,8 @@ Expect an inference system with competing goals:
 ### current vLLM orientation
 
 - [vLLM repository](https://github.com/vllm-project/vllm)
+- [basic model implementation](https://docs.vllm.ai/en/v0.17.0/contributing/model/basic/)
+- [model registration](https://docs.vllm.ai/en/v0.17.0/contributing/model/registration/)
 - [architecture overview](https://docs.vllm.ai/en/latest/design/arch_overview/)
 - [performance metrics](https://docs.vllm.ai/projects/spyre/en/latest/user_guide/performance.html)
 - [vLLM roadmap](https://roadmap.vllm.ai/)
@@ -145,6 +150,14 @@ Expect an inference system with competing goals:
 - [Model Runner V2](https://vllm.ai/blog/2026-03-24-mrv2)
 - [Triton attention backend deep dive](https://vllm.ai/blog/2026-03-04-vllm-triton-backend-deep-dive)
 - [PagedAttention paper](https://arxiv.org/abs/2309.06180)
+
+### PyTorch model construction
+
+- [`nn.Module`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html)
+- [module notes](https://docs.pytorch.org/docs/stable/notes/modules.html)
+- [transformer building blocks](https://docs.pytorch.org/tutorials/intermediate/transformer_building_blocks.html)
+- [scaled dot-product attention tutorial](https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html)
+- [where to apply `torch.compile`](https://docs.pytorch.org/docs/main/user_guide/torch_compiler/compile/programming_model.where_to_apply_compile.html)
 
 ## preparation conclusion
 

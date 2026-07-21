@@ -431,6 +431,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@chenglou/freerange':
+        specifier: ^0.0.2
+        version: 0.0.2
       '@cloudflare/workers-types':
         specifier: ^4.20260627.1
         version: 4.20260627.1
@@ -716,6 +719,10 @@ packages:
 
   '@cfworker/json-schema@4.1.1':
     resolution: {integrity: sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og==}
+
+  '@chenglou/freerange@0.0.2':
+    resolution: {integrity: sha512-xUsvKo4YyjuDqIqoOyxdXPPcd58GElU1Je/BX7gCG/DNtXAnRPq6QqivvwsycB0EFvYNsnWAXk7tOYfUzTnR1g==}
+    hasBin: true
 
   '@chevrotain/types@11.1.2':
     resolution: {integrity: sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw==}
@@ -6505,6 +6512,10 @@ snapshots:
   '@bufbuild/protobuf@2.12.1': {}
 
   '@cfworker/json-schema@4.1.1': {}
+
+  '@chenglou/freerange@0.0.2':
+    dependencies:
+      typescript: 6.0.3
 
   '@chevrotain/types@11.1.2': {}
 

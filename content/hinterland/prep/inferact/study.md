@@ -10,16 +10,16 @@ title: Inferact study route
 
 # study route
 
-The default route is fourteen days at three focused hours per day. It yields forty-two hours split roughly 19:8:6:5:4 across PyTorch, vLLM, system design, deep dive, and Triton. The baseline can compress this to seven days. Each day names a primary implementation block that fits inside seventy-five minutes. Stretch drills enter the re-solve queue only after the exit test passes.
+The default route is fourteen days at three focused hours per day. It yields forty-two hours with 45% assigned to PyTorch model construction and mechanism repair. The baseline can compress this to seven days. Each day names a primary implementation block that fits inside seventy-five minutes. Longer model builds continue across named slices. Stretch drills enter the re-solve queue only after the exit test passes.
 
-Every session begins with a blank editor and ends with a written first-wrong-decision log. Passive reading is capped at one third of the block.
+Every standalone drill, first model-build slice, mock, and named clean reconstruction begins with a blank editor. Continuation slices resume the previous build artifact. Every session ends with a written first-wrong-decision log. Passive reading is capped at one third of the block.
 
 ## daily loop
 
 | minutes | action                                                                              |
 | ------: | ----------------------------------------------------------------------------------- |
 |      15 | recall ten cards and state yesterday's weakest invariant                            |
-|      75 | implement one primary PyTorch or Triton drill from an empty file                    |
+|      75 | implement one primary model-build slice, PyTorch repair drill, or Triton drill      |
 |      35 | read one owning code path or official design document, then draw its state boundary |
 |      35 | rehearse one system-design slice or one deep-dive slice aloud                       |
 |      15 | test, profile, and answer Socratic probes                                           |
@@ -59,7 +59,7 @@ Dimensions:
 Route from the total:
 
 - 0 to 7: full fourteen-day route
-- 8 to 11: use days 1 through 10, then days 13 and 14
+- 8 to 11: use days 1 through 10, then days 12 through 14
 - 12 to 15: use the seven-day compression route
 
 Any zero keeps its full study day regardless of total score.
@@ -87,9 +87,9 @@ Read the vLLM sampler files from [[hinterland/prep/inferact/core#current vLLM so
 
 Exit test: implement a complete batched sampler in forty minutes, including the all-masked and temperature-zero contracts.
 
-### day 3: beam state, normalization, and modules
+### day 3: first complete causal LM
 
-Primary block: P14 and P17. Stretch: P12, P13, and P16.
+Primary block: M01 from [[hinterland/prep/inferact/model-builds|the model-build lane]]. Use P03, P05, P17, or P18 only when the build exposes a failed shape, mask, module-state, or attention invariant.
 
 Read:
 
@@ -97,11 +97,11 @@ Read:
 - [autograd mechanics and grad modes](https://docs.pytorch.org/docs/stable/notes/autograd.html)
 - the Llama MLP and decoder-layer classes in local `vllm/model_executor/models/llama.py`
 
-Exit test: explain parameter, buffer, request-state, and cache ownership without mixing them.
+Exit test: reconstruct the module tree, produce logits from input IDs, prove causality, round-trip the state dictionary, and explain parameter, buffer, request-state, and cache ownership without mixing them.
 
-### day 4: RoPE and reference attention
+### day 4: Llama-style model, first slice
 
-Primary block: P18. Stretch: P04, P05, and P15.
+Primary block: the first seventy-five minutes of M02. Finish the typed config, RMSNorm, RoPE, GQA, SwiGLU, and one decoder layer. Use P04, P05, P14, P15, and P18 as targeted repairs.
 
 Read:
 
@@ -109,11 +109,11 @@ Read:
 - local `vllm/model_executor/models/llama.py`
 - local `vllm/model_executor/layers/attention/attention.py`
 
-Draw the dense decoder block and label every tensor shape. Exit only after the PyTorch reference path matches the manual path over randomized small shapes.
+Draw the dense decoder block and label every tensor shape. Exit after one Llama-style decoder layer matches the decomposed reference over randomized small shapes.
 
-### day 5: decode and KV storage
+### day 5: Llama completion and cached decode start
 
-Primary block: P21. Stretch: P19 and P20. The baseline already exercised P19, so schedule it as a later-day re-solve when it scored below three.
+Primary block: finish the remaining forty-five minutes of M02, then spend thirty minutes defining M03's cache, position, and output contracts. Use P19, P20, and P21 only when decode attention, cache append, or logical-to-physical lookup fails.
 
 Read:
 
@@ -122,38 +122,29 @@ Read:
 - local `vllm/v1/kv_cache_interface.py`
 - local `vllm/v1/core/kv_cache_manager.py`
 
-Exit test: derive logical token to physical block and slot, then explain the policy/physical-storage boundary.
+Exit test: the complete Llama-style model produces logits and stable checkpoint names, and M03 has an executable one-layer prefill/decode test.
 
-### day 6: persistent batching and quantization
+### day 6: cache-aware model completion
 
-Primary block: P23 and P24. Stretch: P22.
+Primary block: finish M03. Use P19 through P22 as cache and batching repairs. Use P23 and P24 as quantization follow-ups after cache parity passes.
 
 Read:
 
-- [[thoughts/quantization|quantization]]
 - local `vllm/v1/worker/gpu_model_runner.py` state-update and input-preparation sections
-- local quantization base interfaces and one FP8 method
+- local block-table and attention-metadata preparation
+- [[thoughts/quantization|quantization]] after the reference cache path passes
 
-Exit test: explain what batch state can mutate without invalidating a captured graph and which quantization scales broadcast along each axis.
+Exit test: full prefill, chunked prefill, and token-step decode produce matching logits and cache state. Then explain which mutation and storage choices permit graph replay.
 
-### day 7: model variants
+### day 7: vLLM-shaped model port, first slice
 
-Primary block: P25. Stretch: P26. Use the architecture slice to sketch a tiny dense decoder from config with the mechanisms from P14 through P18.
+Primary block: the first seventy-five minutes of M04. Convert the padded training model into a flattened-token hidden-state model with `embed_input_ids`, explicit positions, unique prefixes, and a separate logits path.
 
-For a paper-to-code rehearsal, take one model diagram and write:
+Read the official vLLM basic-model guide and local Llama model. Draw the ownership boundary among model code, attention operator, model runner, loader, and cache manager.
 
-1. persistent parameters
-2. per-request state
-3. cache state
-4. tensor shapes
-5. reference forward
-6. vLLM interfaces stressed by the architecture
+### day 8: model port completion and compiler boundary
 
-Read the live role again. Explain dense, GQA, MoE, multimodal, hybrid attention/SSM, and diffusion serving at mechanism depth.
-
-### day 8: compiler and CUDA execution
-
-Primary block: P27 and T01 when a Triton environment is available. Stretch: T03.
+Primary block: finish M04's remaining forty-five minutes, including packed-weight loading, then spend thirty minutes on P27. Stretch: T01 or T03 when a Triton environment is available.
 
 Read:
 
@@ -162,23 +153,17 @@ Read:
 - [CUDA semantics](https://docs.pytorch.org/docs/stable/notes/cuda.html)
 - local vLLM compilation decorators, backend, and CUDA-graph dispatcher
 
-Exit test: draw eager execution, compiled execution, a custom-op boundary, and graph replay. Name the guard and stable-address assumptions.
+Exit test: the flattened-token and padded references agree, checkpoint packing is strict, and the model's eager, compiled, custom-op, and graph-replay boundaries can be drawn with their guards.
 
-### day 9: vLLM scheduler and request lifecycle
+### day 9: architecture variant
 
-Read source-tour stops 6 through 9 from [[hinterland/prep/inferact/core|the core map]]. Trace one request through:
+Primary block: the first seventy-five minutes of M05. Use the first thirty minutes of the system/deep-dive slice to finish its acceptance tests, then use the remaining five minutes to state the serving consequence. P25 is the repair drill. M06 and P26 are stretch work when the recruiter signals multimodal implementation.
 
-```text
-waiting -> scheduled tokens -> cache allocation -> model execution -> sampling -> output update -> finish and free
-```
+Read source-tour stops 4 through 8 from [[hinterland/prep/inferact/core|the core map]]. Trace how the chosen architecture changes model construction, cache or encoder state, model-runner inputs, scheduling, parallelism, and weight loading.
 
-Implement one small scheduler simulation or reuse R07 and R15 from [[hinterland/prep/nv/role-drills|the NVIDIA role drills]].
+### day 10: paper-fragment capstone
 
-Run system prompts S03 and S05 for twenty minutes each.
-
-### day 10: distributed inference
-
-Implement P28 or simulate collectives in one process when the environment cannot launch ranks.
+Use the 75-minute implementation block and thirty minutes of the system slice for the first M10 attempt. Preserve the final five minutes of the system slice for the first wrong architecture decision. P28 remains a distributed follow-up rather than the primary implementation.
 
 Read:
 
@@ -187,7 +172,7 @@ Read:
 - [[thoughts/distributed inference|distributed inference]]
 - local `vllm/distributed/parallel_state.py`
 
-Primary system slice: S06. Stretch: S10 and S11. For each attempted prompt, draw rank geometry and place every collective on an edge.
+Exit test: the paper-fragment model reaches end-to-end logits, cached decode parity, and deterministic top-two routing. Grade it with the model-build rubric as the route's targeted model mock. Then draw the TP and EP rank geometry and place every collective on an edge.
 
 ### day 11: Triton performance lane
 
@@ -225,17 +210,19 @@ Use the deep-dive probes in [[hinterland/prep/inferact/role-drills#deep-dive hos
 
 ### day 13: complete mock loop
 
-Run coding mock 2, system mock 1, and a twenty-five-minute deep-dive from [[hinterland/prep/inferact/mocks|the mock set]]. Cap grading at fifteen minutes and put every miss into the next day's repair queue.
+Run the seventy-five-minute M10 re-solve, one forty-five-minute system mock, and a twenty-five-minute deep-dive from [[hinterland/prep/inferact/mocks|the mock set]]. Use the ordinary fifteen-minute test block for grading and put every miss into the next day's repair queue.
 
 Grade each round before reviewing notes. Rewrite only the deep-dive slide that failed under questioning.
 
 ### day 14: repair and taper
 
-Run one forty-five-minute coding mock chosen from the weakest lane. Run one twenty-minute system-design outline. Review the recall deck once.
+Run a seventy-five-minute M01 reconstruction from an empty editor. If M01 is already clean, use the block for the weakest model-build or coding-mock repair. Run one twenty-minute system-design outline, one twenty-minute kernel explanation from grid through benchmark, and review the recall deck once.
 
 Stop adding topics. Finish three hours before sleep. The marginal value of one more blog post is approximately dust.
 
 ## seven-day compression
+
+This route assumes a baseline score of twelve or higher. M02 through M04 use supplied working starter models and test only the named architecture, cache, or runtime delta. They do not claim the full-route reconstruction gates.
 
 ### day 1
 
@@ -243,27 +230,27 @@ Primary block: P03 and P11. Stretch: P06, P08, and P14. Read tensor views and th
 
 ### day 2
 
-Primary block: P18. Stretch: P15, P19, and P20. Draw the dense decoder and attention owner chain.
+Primary block: M01. Use P15 and P18 as repairs. Draw the complete module tree and attention owner chain.
 
 ### day 3
 
-Primary block: P21. Stretch: P23 and P25. Use the architecture slice for one paper-to-code model sketch.
+Primary block: add the M02 Llama-style architecture delta to a supplied working M01 model. Use P04, P05, P14, P15, P16, and P18 as targeted repairs.
 
 ### day 4
 
-Trace the vLLM scheduler, KV cache manager, model runner, and sampler. Primary system slice: S03. Stretch: S05.
+Primary block: add the M03 cache contract to a supplied working M02 model. Trace the vLLM scheduler, KV cache manager, model runner, and sampler. Primary system slice: S03.
 
 ### day 5
 
-Primary block: P27 or T03. Primary system slice: S06. Stretch: S10. Use the deep-dive slice to build the claim, architecture, and evidence spine.
+Primary block: port a supplied working M02 model through the M04 flattened-token and loader contract. Primary system slice: S06. Use the deep-dive slice to build the claim, architecture, and evidence spine.
 
 ### day 6
 
-Run coding mock 2, system mock 1, and a twenty-five-minute hostile deep-dive. Cap grading at fifteen minutes and queue repairs for day 7.
+Run coding mock 4 with the supplied executable baseline, system mock 1, and a twenty-five-minute hostile deep-dive. Cap grading at fifteen minutes and queue repairs for day 7.
 
 ### day 7
 
-Clean re-solves only, one recall pass, one twenty-minute design outline, then stop.
+Run clean re-solves, one recall pass, one twenty-minute design outline, and one twenty-minute kernel explanation from grid through benchmark, then stop.
 
 ## one-day emergency route
 
@@ -277,6 +264,8 @@ This route trains survival, not coverage.
 6. Run S05 in twenty minutes.
 7. Rehearse the project claim, trace, intervention, failure, result, and residual risk in forty minutes.
 8. Review [[hinterland/prep/inferact/cheatsheet|the interview sheet]] once.
+
+If the baseline model-and-attention dimension is zero, replace P03 and P19 with a sixty-minute scaffolded M01 attempt. The emergency route keeps the same total time.
 
 ## redo schedule
 
@@ -304,12 +293,35 @@ clean from blank editor: yes | no
 
 ## readiness gates
 
+### full fourteen-day route
+
 The package is ready when:
 
-- P03, P11, P18, P19, P20, P21, P23, P25, and P27 have clean later-day re-solves
+- P03 and P11 have clean later-day re-solves
+- every P-series mechanism that scored zero or broke a model build has a clean later-day re-solve
+- M01 has one clean reconstruction from an empty editor
+- M03 cached next-token logits match uncached final-position logits across mixed prefix lengths
+- M04 preserves the model's logits while changing its serving contract and checkpoint mapping
+- M05 passes its full hidden-test matrix; M06 replaces day 11's Triton block and its fifteen-minute test block when multimodal implementation is confirmed
+- M10 reaches end-to-end logits in seventy-five minutes and names exact cache, loader, parallelism, and runtime consequences
 - one Triton kernel can be explained from pointer math to benchmark, even if the inference track never asks for code
 - the vLLM request lifecycle can be drawn in five minutes with state owners
 - KV capacity can be estimated from model config and corrected for sharding and blocks
 - three system designs finish inside forty-five minutes with capacity and failure analysis
 - the deep-dive survives thirty hostile questions without inventing data
-- two complete mocks reach the relevant rubric's ready threshold of 24 out of 28, with every dimension at least 2 out of 4
+- one complete coding, system, and deep-dive loop reaches the relevant rubrics' ready thresholds
+- one additional targeted mock reaches 24 out of 28, with every dimension at least 2 out of 4
+
+### seven-day compression
+
+The compressed route is ready when:
+
+- M01 has one clean build from an empty editor
+- the scaffolded M02 architecture delta passes its reference oracle
+- the scaffolded M03 cache path has cached-versus-uncached parity across mixed prefix lengths
+- the scaffolded M04 port preserves logits and validates checkpoint packing
+- coding mock 4 reaches 24 out of 28 with every dimension at least 2
+- one complete coding, system, and deep-dive loop reaches the relevant rubrics' ready thresholds
+- the shared vLLM lifecycle, KV arithmetic, system-design, deep-dive, and kernel-explanation gates above hold
+
+The one-day route is triage. It exposes failure modes and does not claim the package-level readiness gate.

@@ -37,7 +37,7 @@
     "strava:sync": "tsx --env-file=.env quartz/scripts/sync-strava.ts",
     "oura:auth": "tsx --env-file=.env quartz/scripts/auth-oura.ts",
     "oura:sync": "tsx --env-file=.env quartz/scripts/sync-oura.ts",
-    "garmin:sync": "tsx --env-file=.env quartz/scripts/sync-garmin.ts && pnpm garmin:backfill",
+    "garmin:sync": "pnpm apple:sync && tsx --env-file=.env quartz/scripts/sync-garmin.ts && pnpm garmin:backfill",
     "garmin:backfill": "pnpm garmin:backfill-runs --write && pnpm garmin:backfill-swims --write && pnpm garmin:sync-swim-types --write && pnpm garmin:sync-swim-titles --write && pnpm garmin:sync-titles --write && pnpm garmin:sync-titles --kind run --write",
     "garmin:sync-titles": "tsx --env-file=.env quartz/scripts/sync-garmin-titles.ts",
     "garmin:sync-swim-titles": "tsx --env-file=.env quartz/scripts/sync-garmin-titles.ts --kind swim",
@@ -47,7 +47,7 @@
     "apple:sync": "tsx --env-file=.env quartz/scripts/sync-apple.ts",
     "weather:sync": "tsx --env-file=.env quartz/scripts/sync-weather.ts",
     "health": "pnpm strava:sync && pnpm oura:sync && pnpm weather:sync && pnpm apple:sync",
-    "health:all": "pnpm strava:sync && pnpm oura:sync && pnpm garmin:sync && pnpm weather:sync && pnpm apple:sync",
+    "health:all": "pnpm strava:sync && pnpm oura:sync && pnpm garmin:sync && pnpm weather:sync",
     "health:auth": "pnpm strava:auth && pnpm oura:auth",
     "train:pace": "uv run quartz/scripts/pace_train.py --feed quartz/.quartz-cache/triathlon/data.jsonl --target pace",
     "train:hr": "uv run quartz/scripts/pace_train.py --feed quartz/.quartz-cache/triathlon/data.jsonl --target hr",
@@ -211,6 +211,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@chenglou/freerange": "^0.0.2",
     "@cloudflare/workers-types": "^4.20260627.1",
     "@types/d3": "^7.4.3",
     "@types/d3-drag": "^3.0.7",

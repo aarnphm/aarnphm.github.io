@@ -314,13 +314,15 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
     label="triathlon analytics"
     title="analytics"
     search={
-      <input
-        class="tri-ana-search"
-        type="search"
-        placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
-        aria-label="search analytics"
-        autocomplete="off"
-      />
+      <div class="tri-analytics-search-wrap">
+        <input
+          class="tri-ana-search"
+          type="search"
+          placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
+          aria-label="search analytics"
+          autocomplete="off"
+        />
+      </div>
     }
   >
     <div class="tri-ana-results" aria-hidden="true" />

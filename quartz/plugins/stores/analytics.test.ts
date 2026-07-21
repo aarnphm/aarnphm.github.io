@@ -799,7 +799,12 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
   assert.equal(b.muscleMassKg, 35.4)
   assert.equal(b.boneMassKg, 3.7)
   assert.equal(b.bmi, 26.7)
+  assert.equal(b.ffmi, 19.38)
   assert.equal(b.series.length, 4)
+  assert.deepEqual(
+    b.ffmiSeries.map(p => p.ffmi),
+    [19.37, 19.37, 19.38],
+  )
   const day28 = b.series.filter(p => p.date === iso(28))
   assert.equal(day28.length, 2)
   assert.ok(day28[0].ts < day28[1].ts)
@@ -808,6 +813,7 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
     [88.5, 87.2, 87, 86.8],
   )
   assert.equal(b.composition.length, 3)
+  assert.equal(b.composition[0].ffmi, 19.37)
   const day = a.daily.find(d => d.date === iso(26))
   assert.equal(day?.weightKg, 87.2)
   const feed = buildDataFeed(cache, a, { oura, garmin, weights, zones: cache.zones })
@@ -818,13 +824,15 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
   assert.equal(rows[0].athlete.weightGoalKg != null && Math.round(rows[0].athlete.weightGoalKg), 73)
   const scaleDay = rows.find(r => r.kind === 'day' && r.date === iso(25))
   assert.equal(scaleDay.bmi, 26.9)
+  assert.equal(scaleDay.ffmi, 19.37)
   assert.equal(scaleDay.bodyFatPct, 21.5)
   const plainDay = rows.find(r => r.kind === 'day' && r.date === iso(20))
   assert.equal(plainDay.bmi, null)
+  assert.equal(plainDay.ffmi, null)
   assert.equal(plainDay.muscleMassKg, null)
 })
 
-test('body block reports goal-weight bmr estimates from athlete goal and dexa lean mass', () => {
+test('body block reports goal-weight bmr and ffmi from dexa fat-free mass', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics(cache, {
     oura,
@@ -844,6 +852,8 @@ test('body block reports goal-weight bmr estimates from athlete goal and dexa le
   })
   assert.equal(a.body.goalBmr, 1781)
   assert.equal(a.body.goalLeanBmr, 1776)
+  assert.equal(a.tests.dexa[0].ffmi, 18.42)
+  assert.equal(a.body.ffmi, 18.42)
 })
 
 test('apple vo2max wins the estimate priority when present', () => {
@@ -1013,6 +1023,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(rows[0].athlete.sex, 'M')
   assert.equal(rows[0].athlete.born, '2001-03')
   assert.equal(rows[0].athlete.ageYears, 25)
+  assert.equal(rows[0].athlete.heightCm, ATHLETE.heightCm)
   assert.equal(rows[0].athlete.hrMaxEst, ATHLETE.hrMax)
   const kinds = rows.map(r => r.kind)
   const order = ['meta', 'day', 'activity', 'week']
