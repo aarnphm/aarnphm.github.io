@@ -1113,14 +1113,7 @@ test('renders compact positional analysis bars beneath the existing activity fig
   assert.equal(readout.properties.ariaLive, 'polite')
   assert.deepEqual(byClass(readout, 'tri-analysis-readout-label').map(text), [''])
   assert.deepEqual(byClass(readout, 'tri-analysis-readout-metrics').map(text), [''])
-  const tooltip = byClass(analysis, 'tri-analysis-tooltip')[0]
-  assert.ok(tooltip)
-  assert.equal(tooltip.properties.dataTriAnalysisTooltip, '')
-  assert.equal(tooltip.properties.role, 'tooltip')
-  assert.equal(tooltip.properties.hidden, true)
-  assert.equal(tooltip.properties.style, undefined)
-  assert.deepEqual(byClass(tooltip, 'tri-analysis-tooltip-label').map(text), [''])
-  assert.equal(text(byClass(tooltip, 'tri-analysis-tooltip-metrics')[0]), '')
+  assert.equal(byClass(analysis, 'tri-analysis-tooltip').length, 0)
 })
 
 test('renders run laps as selectable pace splits against the lap-weighted average', () => {
