@@ -574,16 +574,50 @@ const axisNumber = (value: number, step: number): string => {
   })
 }
 
-const distanceXTicks = (maxDKm: number): AxisXTick[] => {
-  const displayMaxD = maxDKm * (imperial ? KM_TO_MI : 1)
-  const step = niceStep(displayMaxD, 4)
+export type ActivityGraphDomain = { startDistanceKm: number; endDistanceKm: number }
+
+const resolveActivityGraphDomain = (
+  d: StravaActivityDetail,
+  domain?: ActivityGraphDomain | null,
+): ActivityGraphDomain => {
+  const maxDistanceKm = d.route[d.route.length - 1].d || 1
+  if (!domain) return { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
+  const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, domain.startDistanceKm))
+  const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, domain.endDistanceKm))
+  return endDistanceKm > startDistanceKm
+    ? { startDistanceKm, endDistanceKm }
+    : { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
+}
+
+const distanceXTicks = (startDistanceKm: number, endDistanceKm: number): AxisXTick[] => {
+  const scale = imperial ? KM_TO_MI : 1
+  const displayStart = startDistanceKm * scale
+  const displayEnd = endDistanceKm * scale
+  const displaySpan = displayEnd - displayStart
+  const step = niceStep(displaySpan, 4)
+  const first = Math.ceil(displayStart / step) * step
   const ticks: AxisXTick[] = []
-  for (let value = step; value < displayMaxD - step * 1e-6; value += step)
+  for (let value = first; value < displayEnd - step * 1e-6; value += step) {
+    if (value <= displayStart + step * 1e-6) continue
     ticks.push({
       label: `${axisNumber(value, step)} ${imperial ? 'mi' : 'km'}`,
-      pct: (value / displayMaxD) * 100,
+      pct: ((value - displayStart) / displaySpan) * 100,
     })
+  }
   return ticks
+}
+
+const graphView = (
+  d: StravaActivityDetail,
+  domain?: ActivityGraphDomain | null,
+): ActivityGraphDomain & { start: number; width: number } => {
+  const maxDistanceKm = d.route[d.route.length - 1].d || 1
+  const resolved = resolveActivityGraphDomain(d, domain)
+  return {
+    ...resolved,
+    start: (resolved.startDistanceKm / maxDistanceKm) * 100,
+    width: ((resolved.endDistanceKm - resolved.startDistanceKm) / maxDistanceKm) * 100,
+  }
 }
 
 const routeDistanceAtElapsed = (d: StravaActivityDetail, elapsedS: number): number => {
@@ -631,6 +665,7 @@ export const buildElevation = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  domain?: ActivityGraphDomain | null,
 ): N => {
   const w = 100
   const h = 30
@@ -649,7 +684,8 @@ export const buildElevation = <N>(
     label: `${axisNumber(value, yStep)} ${imperial ? 'ft' : 'm'}`,
     vbY: h - ((value - minAlt) / altSpan) * h,
   }))
-  const xTicks = distanceXTicks(maxD)
+  const view = graphView(d, domain)
+  const xTicks = distanceXTicks(view.startDistanceKm, view.endDistanceKm)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
@@ -659,8 +695,10 @@ export const buildElevation = <N>(
   area += `L ${w} ${h} Z`
   const fig = f.svg('svg', {
     class: 'tri-elev',
-    viewBox: `0 0 ${w} ${h}`,
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${h}`,
     preserveAspectRatio: 'none',
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
   })
   for (const tick of yTicks)
     f.add(fig, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: w, y2: tick.vbY }))
@@ -690,6 +728,7 @@ export const buildTrace = <N>(
   tick: (value: number) => string,
   domain?: { min: number; max: number; intervals?: number },
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N => {
   const w = 100
   const h = 30
@@ -740,10 +779,13 @@ export const buildTrace = <N>(
     label: value === 0 ? '0' : tick(value),
     vbY: py(value),
   }))
+  const view = graphView(d, graphDomain)
   const s = f.svg('svg', {
     class: 'tri-elev',
-    viewBox: `0 0 ${w} ${h}`,
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${h}`,
     preserveAspectRatio: 'none',
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
   })
   for (const t of yTicks)
     f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
@@ -754,7 +796,14 @@ export const buildTrace = <N>(
   const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
   const capEl = f.el('div', 'tri-elev-cap')
   f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(peak)))
-  f.add(wrap, capEl, axisFrame(f, s, yTicks, h, distanceXTicks(maxD), true, { top: 0, bottom: h }))
+  f.add(
+    wrap,
+    capEl,
+    axisFrame(f, s, yTicks, h, distanceXTicks(view.startDistanceKm, view.endDistanceKm), true, {
+      top: 0,
+      bottom: h,
+    }),
+  )
   return wrap
 }
 
@@ -762,6 +811,7 @@ export const buildRunStrideTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const label = runStrideLengthLabel(d)
   const valuesM = d.route
@@ -791,6 +841,7 @@ export const buildRunStrideTrace = <N>(
     value => `${value.toFixed(1)}${unit}`,
     { min, max, intervals: 2 },
     selection,
+    graphDomain,
   )
 }
 
@@ -798,6 +849,7 @@ export const buildRunGroundContactTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const values = d.route
     .map(runGroundContactTimeMs)
@@ -820,6 +872,7 @@ export const buildRunGroundContactTrace = <N>(
     value => `${Math.round(value)}ms`,
     { min, max, intervals: 2 },
     selection,
+    graphDomain,
   )
 }
 
@@ -827,6 +880,7 @@ export const buildRunVerticalOscillationTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const values = d.route
     .map(runVerticalOscillationCm)
@@ -849,6 +903,7 @@ export const buildRunVerticalOscillationTrace = <N>(
     value => `${value.toFixed(1)}cm`,
     { min, max, intervals: 2 },
     selection,
+    graphDomain,
   )
 }
 
@@ -856,6 +911,7 @@ const buildTemperatureTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N => {
   const temperaturesC = d.route
     .map(point => point.tempC)
@@ -879,6 +935,7 @@ const buildTemperatureTrace = <N>(
     value => `${Math.round(value)}${temperatureUnit()}`,
     { min, max, intervals: 2 },
     selection,
+    graphDomain,
   )
 }
 
@@ -886,6 +943,7 @@ export const buildRespirationTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N => {
   const values = d.route
     .map(point => point.resp)
@@ -907,6 +965,7 @@ export const buildRespirationTrace = <N>(
     value => `${Math.round(value)}brpm`,
     { min, max, intervals: 2 },
     selection,
+    graphDomain,
   )
 }
 

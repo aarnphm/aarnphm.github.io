@@ -261,8 +261,10 @@ const domF: TriNodeFactory<HTMLElement | SVGElement> = {
 
 const buildIcon = (sport: ActivityKind): SVGElement => buildIconNode(domF, sport) as SVGElement
 
-const buildElevation = (d: StravaActivityDetail): HTMLElement =>
-  buildElevationNode(domF, d, null) as HTMLElement
+const buildElevation = (
+  d: StravaActivityDetail,
+  graphDomain?: ActivityAnalysisRange | null,
+): HTMLElement => buildElevationNode(domF, d, null, graphDomain) as HTMLElement
 
 const buildPool = (d: StravaActivityDetail): HTMLElement => buildPoolNode(domF, d) as HTMLElement
 
@@ -272,7 +274,9 @@ const buildTrace = (
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
-): HTMLElement => buildTraceNode(domF, d, pick, title, cap, tick, undefined, null) as HTMLElement
+  graphDomain?: ActivityAnalysisRange | null,
+): HTMLElement =>
+  buildTraceNode(domF, d, pick, title, cap, tick, undefined, null, graphDomain) as HTMLElement
 
 const zoneDuo = (a: HTMLElement | null, b: HTMLElement | null): HTMLElement | null =>
   zoneDuoNode(domF, a, b) as HTMLElement | null
@@ -397,13 +401,15 @@ type ActivityAnalysisController = {
   hasLocked: () => boolean
 }
 
+type ActivityRangeChange = (range: ActivityAnalysisRange | null, committed: boolean) => void
+
 const activityAnalysisControllers = new WeakMap<HTMLElement, ActivityAnalysisController>()
 
 const linkActivityAnalysis = (
   act: HTMLElement,
   analysis: HTMLElement | null,
   detail: StravaActivityDetail,
-  onRange?: (range: ActivityAnalysisRange | null) => void,
+  onRange?: ActivityRangeChange,
 ): ActivityAnalysisController | null => {
   const existing = analysis ? activityAnalysisControllers.get(act) : undefined
   if (existing) {
@@ -481,15 +487,15 @@ const linkActivityAnalysis = (
     readout.dataset.visible = 'true'
     readout.setAttribute('aria-hidden', 'false')
   }
-  const clearRange = (): void => {
+  const clearRange = (committed = false): void => {
     for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
       selection.setAttribute('x', '0')
       selection.setAttribute('width', '0')
     }
     act.querySelector<SVGPathElement>('.tri-route-selected')?.setAttribute('d', '')
-    onRange?.(null)
+    onRange?.(null, committed)
   }
-  const showRange = (range: ActivityAnalysisRange): void => {
+  const showRange = (range: ActivityAnalysisRange, committed = false): void => {
     const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, range.startDistanceKm))
     const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, range.endDistanceKm))
     const x = (startDistanceKm / maxDistanceKm) * 100
@@ -501,11 +507,11 @@ const linkActivityAnalysis = (
     act
       .querySelector<SVGPathElement>('.tri-route-selected')
       ?.setAttribute('d', analysisRoutePath(route, range))
-    onRange?.(range)
+    onRange?.(range, committed)
   }
   const showLocked = (): void => {
-    if (locked) showRange(locked)
-    else clearRange()
+    if (locked) showRange(locked, true)
+    else clearRange(true)
   }
   const sameRange = (
     left: ActivityAnalysisRange | null,
@@ -624,7 +630,7 @@ const linkScrub = (
   route: StravaActivityDetail['route'],
   detail?: StravaActivityDetail,
   analysisOverride?: HTMLElement | null,
-  onRange?: (range: ActivityAnalysisRange | null) => void,
+  onRange?: ActivityRangeChange,
 ): void => {
   const analysis = analysisOverride ?? act.querySelector<HTMLElement>('[data-tri-analysis]')
   const rangeController = detail ? linkActivityAnalysis(act, analysis, detail, onRange) : null
@@ -650,7 +656,12 @@ const linkScrub = (
   const indexAt = (clientX: number, svgEl: SVGElement): number => {
     const r = svgEl.getBoundingClientRect()
     const fraction = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
-    return analysisRouteIndex(route, fraction * maxD)
+    const domainStartDistanceKm = analysisFinite(svgEl.dataset.domainStartDistanceKm) ?? 0
+    const domainEndDistanceKm = analysisFinite(svgEl.dataset.domainEndDistanceKm) ?? maxD
+    return analysisRouteIndex(
+      route,
+      domainStartDistanceKm + fraction * (domainEndDistanceKm - domainStartDistanceKm),
+    )
   }
   for (const surf of resolved) {
     let pendingX: number | null = null
@@ -890,7 +901,7 @@ interface MapMetric {
   zeroGap?: boolean
   pick: (p: StravaActivityDetail['route'][number], i: number) => number
   fmt: (v: number) => string
-  profile: () => HTMLElement
+  profile: (graphDomain?: ActivityAnalysisRange | null) => HTMLElement
   readout: (p: StravaActivityDetail['route'][number], i: number) => string
   extra?: () => (HTMLElement | null)[]
 }
@@ -927,13 +938,14 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     ramp: SPD_RAMP,
     pick: (_p, i) => pace[i],
     fmt: paceFmt,
-    profile: () =>
+    profile: graphDomain =>
       buildTrace(
         d,
         (_p, i) => pace[i],
         d.sport === 'bike' ? 'speed' : 'pace',
         () => '',
         paceTick,
+        graphDomain,
       ),
     readout: (p, i) => `${scrubDist(p.d, d.sport)} · ${paceFmt(pace[i])}`,
   }
@@ -943,13 +955,14 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     ramp: HEAT_RAMP,
     pick: p => p.w,
     fmt: v => `${Math.round(v)} W`,
-    profile: () =>
+    profile: graphDomain =>
       buildTrace(
         d,
         p => p.w,
         'power',
         m => `${m} W peak`,
         v => `${Math.round(v)}w`,
+        graphDomain,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.w} W`,
     extra: () => [zoneDuo(buildPowerCurve(d), buildPowerHist(d)), buildPowerZones(d)],
@@ -960,13 +973,14 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     ramp: HR_RAMP,
     pick: p => p.hr,
     fmt: v => `${Math.round(v)} bpm`,
-    profile: () =>
+    profile: graphDomain =>
       buildTrace(
         d,
         p => p.hr,
         'hr',
         m => `${m} bpm peak`,
         v => `${Math.round(v)}bpm`,
+        graphDomain,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm`,
     extra: () => [buildHrZones(d)],
@@ -979,13 +993,14 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     zeroGap: true,
     pick: p => p.cad * cadScale,
     fmt: v => `${Math.round(v)} ${cadUnit}`,
-    profile: () =>
+    profile: graphDomain =>
       buildTrace(
         d,
         p => p.cad * cadScale,
         'cadence',
         m => `${m} ${cadUnit} peak`,
         v => `${Math.round(v)}${cadUnit}`,
+        graphDomain,
       ),
     readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
   }
@@ -996,7 +1011,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     zeroGap: true,
     pick: p => runStrideLengthValue(d, p) ?? 0,
     fmt: value => formatStrideLength(value),
-    profile: () => buildRunStrideTraceNode(domF, d, null) as HTMLElement,
+    profile: graphDomain => buildRunStrideTraceNode(domF, d, null, graphDomain) as HTMLElement,
     readout: p => {
       const stride = runStrideLengthValue(d, p)
       return `${scrubDist(p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(stride)}`
@@ -1009,7 +1024,8 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     zeroGap: true,
     pick: p => runGroundContactTimeMs(p) ?? 0,
     fmt: formatGroundContactTime,
-    profile: () => buildRunGroundContactTraceNode(domF, d, null) as HTMLElement,
+    profile: graphDomain =>
+      buildRunGroundContactTraceNode(domF, d, null, graphDomain) as HTMLElement,
     readout: p => {
       const groundContact = runGroundContactTimeMs(p)
       return `${scrubDist(p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
@@ -1022,7 +1038,8 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     zeroGap: true,
     pick: p => runVerticalOscillationCm(p) ?? 0,
     fmt: formatVerticalOscillation,
-    profile: () => buildRunVerticalOscillationTraceNode(domF, d, null) as HTMLElement,
+    profile: graphDomain =>
+      buildRunVerticalOscillationTraceNode(domF, d, null, graphDomain) as HTMLElement,
     readout: p => {
       const verticalOscillation = runVerticalOscillationCm(p)
       return `${scrubDist(p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(verticalOscillation)}`
@@ -1034,7 +1051,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     ramp: RESP_RAMP,
     pick: p => p.resp ?? 0,
     fmt: formatRespirationRate,
-    profile: () => buildRespirationTraceNode(domF, d, null) as HTMLElement,
+    profile: graphDomain => buildRespirationTraceNode(domF, d, null, graphDomain) as HTMLElement,
     readout: p =>
       `${scrubDist(p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
   }
@@ -1044,7 +1061,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     ramp: ELEV_RAMP,
     pick: p => p.alt,
     fmt: formatAltitude,
-    profile: () => buildElevation(d),
+    profile: graphDomain => buildElevation(d, graphDomain),
     readout: (p, i) => {
       const g = Math.round(gradeAt(route, i) * 10) / 10
       return `${scrubDist(p.d, d.sport)} · ${formatAltitude(p.alt)} · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%`
@@ -1082,7 +1099,7 @@ interface MapDetailOpts {
   onMetric?: (i: number) => void
   onHover?: (p: StravaActivityDetail['route'][number], i: number) => void
   analysis?: HTMLElement | null
-  onRange?: (range: ActivityAnalysisRange | null) => void
+  onRange?: ActivityRangeChange
 }
 
 const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLElement => {
@@ -1127,6 +1144,46 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   wrap.appendChild(zoneBox)
 
   let active = Math.min(specs.length - 1, Math.max(0, opts?.initialMetric ?? 0))
+  let graphDomain: ActivityAnalysisRange | null = null
+  let routeMarker: SVGElement | null = null
+  const sameGraphDomain = (
+    left: ActivityAnalysisRange | null,
+    right: ActivityAnalysisRange | null,
+  ): boolean =>
+    left === right ||
+    (left != null &&
+      right != null &&
+      left.startDistanceKm === right.startDistanceKm &&
+      left.endDistanceKm === right.endDistanceKm)
+  const renderProfile = (): void => {
+    const spec = specs[active]
+    const profile = spec.profile(graphDomain)
+    profileBox.replaceChildren(profile)
+    linkScrub(
+      wrap,
+      routeMarker,
+      [
+        {
+          wrap: profile,
+          fmt: (p, i) => {
+            opts?.onHover?.(p, i)
+            return spec.readout(p, i)
+          },
+        },
+      ],
+      d.route,
+      d,
+      opts?.analysis,
+      onRange,
+    )
+  }
+  const onRange: ActivityRangeChange = (range, committed) => {
+    if (committed && !sameGraphDomain(graphDomain, range)) {
+      graphDomain = range
+      renderProfile()
+    }
+    opts?.onRange?.(range, committed)
+  }
   const draw = (animateTabs = true) => {
     const spec = specs[active]
     const vals = d.route.map((p, i) => spec.pick(p, i))
@@ -1137,36 +1194,18 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
       if (v < lo) lo = v
       if (v > hi) hi = v
     }
-    let marker: SVGElement | null = null
+    routeMarker = null
     if (opts?.mapMode) {
       figs.replaceChildren(buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
     } else {
       const heat = buildHeatRoute(d.route, spec.pick, spec.ramp, spec.zeroGap)
       figs.replaceChildren(heat, buildHeatLegend(lo, hi, spec.fmt, spec.ramp))
-      marker = heat.querySelector<SVGElement>('.tri-route-cursor')
+      routeMarker = heat.querySelector<SVGElement>('.tri-route-cursor')
     }
-    const prof = spec.profile()
-    profileBox.replaceChildren(prof)
+    renderProfile()
     zoneBox.replaceChildren()
     if (spec.extra) for (const z of spec.extra()) if (z) zoneBox.appendChild(z)
     if (bestEfforts) zoneBox.appendChild(bestEfforts)
-    linkScrub(
-      wrap,
-      marker,
-      [
-        {
-          wrap: prof,
-          fmt: (p, i) => {
-            opts?.onHover?.(p, i)
-            return spec.readout(p, i)
-          },
-        },
-      ],
-      d.route,
-      d,
-      opts?.analysis,
-      opts?.onRange,
-    )
     const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab'))
     if (!animateTabs) tablist.dataset.motion = 'instant'
     tabs.forEach((tab, i) => {
@@ -8731,15 +8770,22 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       const b = fcBounds(getOverview().traces)
       if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
     }
-    const select = (d: StravaActivityDetail, i: number) => {
-      selection = { d, i }
+    const sameSelectedRange = (
+      left: ActivityAnalysisRange | null,
+      right: ActivityAnalysisRange | null,
+    ): boolean =>
+      left === right ||
+      (left != null &&
+        right != null &&
+        left.startDistanceKm === right.startDistanceKm &&
+        left.endDistanceKm === right.endDistanceKm)
+    const fitSelection = (
+      d: StravaActivityDetail,
+      range: ActivityAnalysisRange | null,
+      duration: number,
+    ): void => {
       if (!ready()) return
-      clearHover()
-      map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
-      recolor(d, i)
-      map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
-      map.setPaintProperty('tri-traces', 'line-opacity', 0.06)
-      const b = fcBounds(routeFC(d))
+      const b = fcBounds(range ? rangeFC(d, range) : routeFC(d)) ?? fcBounds(routeFC(d))
       const bottom =
         selectionOverlay?.getAttribute('aria-hidden') === 'false'
           ? selectionOverlay.offsetHeight + 56
@@ -8747,13 +8793,30 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (b)
         map.fitBounds(b, {
           padding: { top: 40, right: 40, bottom, left: 40 },
-          maxZoom: 15,
-          duration: reduce ? 0 : 600,
+          maxZoom: range ? 17 : 15,
+          duration: reduce ? 0 : duration,
         })
     }
-    const selectRange = (d: StravaActivityDetail, range: ActivityAnalysisRange | null) => {
-      selectedRange = range
+    const select = (d: StravaActivityDetail, i: number) => {
+      if (selection?.d.id !== d.id) selectedRange = null
+      selection = { d, i }
+      if (!ready()) return
+      clearHover()
+      map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
+      recolor(d, i)
+      map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
+      map.setPaintProperty('tri-traces', 'line-opacity', 0.06)
+      fitSelection(d, selectedRange, 600)
+    }
+    const selectRange = (
+      d: StravaActivityDetail,
+      range: ActivityAnalysisRange | null,
+      committed: boolean,
+    ) => {
       if (ready()) map.getSource('tri-range')?.setData(range ? rangeFC(d, range) : emptyFC())
+      if (!committed || sameSelectedRange(selectedRange, range)) return
+      selectedRange = range
+      fitSelection(d, range, 450)
     }
     const moveDot = (d: StravaActivityDetail, distanceKm: number) => {
       const point = mapRoutePointAtDistance(gpsSegments(d), distanceKm)
@@ -8925,7 +8988,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
           },
           onHover: mapMode ? p => mapCtl.moveDot(d, p.d) : undefined,
           analysis,
-          onRange: mapMode ? range => mapCtl.selectRange(d, range) : undefined,
+          onRange: mapMode
+            ? (range, committed) => mapCtl.selectRange(d, range, committed)
+            : undefined,
         }),
       )
       detail.replaceChildren(card)
