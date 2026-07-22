@@ -2115,6 +2115,35 @@ test('renders traces with numbered value and distance axes', () => {
   )
 })
 
+test('renders activity graphs against a selected distance domain', () => {
+  setDistanceUnit(false)
+  const ride = detail()
+  const domain = { startDistanceKm: 10, endDistanceKm: 20 }
+  const graphs = [
+    buildElevation(factory, ride, null, domain),
+    buildTrace(
+      factory,
+      ride,
+      point => point.hr,
+      'hr',
+      max => `${max} bpm peak`,
+      value => `${Math.round(value)}bpm`,
+      undefined,
+      null,
+      domain,
+    ),
+  ]
+
+  for (const graph of graphs) {
+    const svg = byClass(graph, 'tri-elev')[0]
+    assert.ok(svg)
+    assert.equal(svg.properties.viewBox, '33.3333 0 33.3333 30')
+    assert.equal(svg.properties.dataDomainStartDistanceKm, 10)
+    assert.equal(svg.properties.dataDomainEndDistanceKm, 20)
+    assert.deepEqual(byClass(graph, 'tri-cax-xt').map(text), ['12 km', '14 km', '16 km', '18 km'])
+  }
+})
+
 test('extends the first measured trace value to distance zero', () => {
   const trace = buildTrace(
     factory,
