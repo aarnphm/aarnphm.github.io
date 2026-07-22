@@ -8918,45 +8918,6 @@ a.tri-pop-date:hover {
   background: var(--dark);
 }
 
-.tri-analysis-tooltip {
-  z-index: 1;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  position: absolute;
-  top: var(--tri-analysis-tooltip-y, 0px);
-  left: clamp(4.5rem, var(--tri-analysis-tooltip-x), calc(100% - 4.5rem));
-  display: grid;
-  gap: 0.08rem;
-  width: max-content;
-  max-width: min(12rem, calc(100cqi - 1rem));
-  padding: 0.28rem 0.4rem;
-  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
-  border-radius: var(--radius-none);
-  background: var(--light);
-  color: var(--dark);
-  font-size: 0.54rem;
-  line-height: 1.3;
-  pointer-events: none;
-  transform: translate(-50%, calc(-100% - 0.3rem));
-}
-
-.tri-analysis-tooltip[hidden],
-.tri-analysis-tooltip[data-visible='false'] {
-  display: none;
-}
-
-.tri-analysis-tooltip-label {
-  overflow: hidden;
-  font-size: 0.58rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tri-analysis-tooltip-metrics {
-  color: var(--gray);
-  white-space: normal;
-}
-
 .tri-analysis-selection {
   fill: color-mix(in srgb, var(--gray) 16%, transparent);
   pointer-events: none;
@@ -9000,11 +8961,6 @@ a.tri-pop-date:hover {
 @container tri-activity (max-width: 30rem) {
   .tri-analysis {
     --tri-analysis-label-width: 3.4rem;
-  }
-
-  .tri-analysis-tooltip {
-    left: clamp(3.6rem, var(--tri-analysis-tooltip-x), calc(100% - 3.6rem));
-    max-width: min(9rem, calc(100cqi - 0.75rem));
   }
 
   .tri-analysis-band-label {

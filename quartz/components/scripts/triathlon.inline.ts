@@ -389,13 +389,6 @@ const analysisRoutePath = (
     .join(' ')
 }
 
-const hideAnalysisTooltip = (analysis: HTMLElement | null): void => {
-  const tooltip = analysis?.querySelector<HTMLElement>('[data-tri-analysis-tooltip]')
-  if (!tooltip) return
-  tooltip.hidden = true
-  tooltip.dataset.visible = 'false'
-}
-
 type ActivityAnalysisController = {
   preview: (range: ActivityAnalysisRange) => void
   restore: () => void
@@ -436,10 +429,6 @@ const linkActivityAnalysis = (
   const readoutLabel = readout?.querySelector<HTMLElement>('.tri-analysis-readout-label') ?? null
   const readoutMetrics =
     readout?.querySelector<HTMLElement>('.tri-analysis-readout-metrics') ?? null
-  const tooltip = analysis?.querySelector<HTMLElement>('[data-tri-analysis-tooltip]') ?? null
-  const tooltipLabel = tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-label') ?? null
-  const tooltipMetrics =
-    tooltip?.querySelector<HTMLElement>('.tri-analysis-tooltip-metrics') ?? null
   const stateHost = analysis ?? act
   const selectedKind = stateHost.dataset.selectedKind
   const selectedId = stateHost.dataset.selectedId
@@ -491,26 +480,6 @@ const linkActivityAnalysis = (
     if (readoutMetrics) readoutMetrics.textContent = rangeReadoutMetrics(range).join(' · ')
     readout.dataset.visible = 'true'
     readout.setAttribute('aria-hidden', 'false')
-  }
-  const hideTooltip = (): void => {
-    hideAnalysisTooltip(analysis)
-  }
-  const showTooltip = (range: ActivityAnalysisRange): void => {
-    if (!analysis || !tooltip || !range.button || !analysis.contains(range.button)) return
-    const analysisRect = analysis.getBoundingClientRect()
-    const buttonRect = range.button.getBoundingClientRect()
-    tooltip.style.setProperty(
-      '--tri-analysis-tooltip-x',
-      `${(buttonRect.left + buttonRect.width / 2 - analysisRect.left).toFixed(2)}px`,
-    )
-    tooltip.style.setProperty(
-      '--tri-analysis-tooltip-y',
-      `${(buttonRect.top - analysisRect.top).toFixed(2)}px`,
-    )
-    if (tooltipLabel) tooltipLabel.textContent = range.label
-    if (tooltipMetrics) tooltipMetrics.textContent = rangeMetrics(range).join(' · ')
-    tooltip.hidden = false
-    tooltip.dataset.visible = 'true'
   }
   const clearRange = (): void => {
     for (const selection of act.querySelectorAll<SVGRectElement>('.tri-analysis-selection')) {
@@ -577,41 +546,34 @@ const linkActivityAnalysis = (
     range.button.addEventListener('pointerenter', () => {
       showRange(range)
       showReadout(range)
-      showTooltip(range)
     })
     range.button.addEventListener('pointerleave', () => {
-      hideTooltip()
       showLocked()
       showReadout(locked)
     })
     range.button.addEventListener('focus', () => {
       showRange(range)
       showReadout(range)
-      showTooltip(range)
     })
     range.button.addEventListener('blur', () => {
       if (range.button.matches(':hover')) return
-      hideTooltip()
       showLocked()
       showReadout(locked)
     })
     range.button.addEventListener('click', () => {
       if (sameRange(locked, range)) {
         setLocked(null)
-        hideTooltip()
       } else setLocked(range)
     })
   }
   routeSelected?.addEventListener('click', event => {
     event.stopPropagation()
     setLocked(null)
-    hideTooltip()
   })
   const restoreSelection = (event: Event): void => {
     if (!(event instanceof CustomEvent) || !isRecord(event.detail)) return
     if (event.detail.selected !== true) {
       setLocked(null)
-      hideTooltip()
       return
     }
     const kind = typeof event.detail.kind === 'string' ? event.detail.kind : undefined
@@ -638,7 +600,6 @@ const linkActivityAnalysis = (
   if (analysis || act.dataset.activityId)
     stateHost.addEventListener('tri:analysis-restore', restoreSelection)
   setLocked(locked)
-  hideTooltip()
   const controller: ActivityAnalysisController = {
     preview: range => {
       showRange(range)
@@ -725,7 +686,6 @@ const linkScrub = (
         marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
       }
       const linkedReadouts = Boolean(rangeController?.hasLocked() || drag?.range)
-      hideAnalysisTooltip(analysis)
       for (const r of resolved) {
         if (linkedReadouts || r === surf) r.readout.textContent = r.fmt(p, i)
       }

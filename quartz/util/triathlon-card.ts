@@ -1147,17 +1147,7 @@ export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
     f.el('span', 'tri-analysis-readout-label'),
     f.el('span', 'tri-analysis-readout-metrics'),
   )
-  const tooltip = f.el('div', 'tri-analysis-tooltip', undefined, {
-    'data-tri-analysis-tooltip': '',
-    role: 'tooltip',
-    hidden: '',
-  })
-  f.add(
-    tooltip,
-    f.el('span', 'tri-analysis-tooltip-label'),
-    f.el('span', 'tri-analysis-tooltip-metrics'),
-  )
-  f.add(wrap, readout, tooltip)
+  f.add(wrap, readout)
 
   const rangeBands = f.el('div', 'tri-analysis-ranges')
   const labels: Record<ActivityAnalysisKind, string> = {

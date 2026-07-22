@@ -176,7 +176,7 @@ sequenceDiagram
   Frontend->>Client: detokenized stream
 ```
 
-The V1 scheduler's central invariant is that each request has computed tokens catching up to known prompt, output, and speculative tokens. Scheduling token counts instead of rigid prefill and decode batches permits chunked prefill, prefix hits, lookahead slots, and external KV loads inside one step model.
+The V1 scheduler's central invariant is that each request has computed tokens catching up to known prompt, output, and speculative tokens. Scheduling token counts instead of rigid prefill and decode batches permits chunked prefill, prefix hits, lookahead slots, and external KV loads inside one model step.
 
 The owner chain to explain:
 
