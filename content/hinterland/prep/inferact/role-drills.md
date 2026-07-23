@@ -2,7 +2,7 @@
 date: '2026-07-21'
 description: derived PyTorch, Triton, and systems drills for the Inferact inference role
 id: role-drills
-modified: 2026-07-21 16:12:05 GMT-04:00
+modified: 2026-07-22 18:53:42 GMT-04:00
 tags:
   - cs
 title: Inferact role drills
@@ -244,7 +244,8 @@ Implement `sample_next_token` with temperature, top-k, top-p, and an explicit `t
 Tests:
 
 - equal seeds produce equal samples
-- different seeds can diverge
+- with temperature one and filtering disabled, a controlled finite-logit row exactly matches `torch.multinomial` called with an independently seeded generator
+- two calls with the same generator match two consecutive calls through an independently seeded oracle generator, proving state advances without requiring the sampled tokens to differ
 - greedy path avoids `multinomial`
 - invalid probability rows fail before sampling
 - filtered-out tokens are never selected
@@ -407,6 +408,7 @@ Tests:
 - mixed lengths
 - Q heads can exceed KV heads
 - no cache concatenation inside the hot path
+- caller-owned query, cache, and length tensors remain unchanged
 
 Probes:
 
@@ -598,6 +600,12 @@ Probes:
 
 P01 through P28 isolate mechanisms. [[hinterland/prep/inferact/model-builds|M01 through M10]] test whether those mechanisms compose into an executable model with stable module, cache, checkpoint, and runtime boundaries. A failed build routes back to the repair drill that owns the invariant; completing a model build does not increase the P-series count.
 
+## transfer practice
+
+P01 through P28 remain the canonical mechanism contracts. After the owning P-series repair or M-series build is clean, draw a fresh PT-series variant from [[hinterland/prep/inferact/pytorch-practice|the PyTorch practice bank]]. Its forty cases mutate tensor, module, quantization, attention, cache, adapter, compilation, profiling, and distributed contracts. Its sixty-four oral checks exercise recall and mechanism explanation without code in view.
+
+GP-series cases use their general algorithm or stateful-programming family as the repair boundary. They do not become P-series or M-series prerequisites. Calibrate and route them through [[hinterland/prep/inferact/programming-practice|the programming bank]].
+
 ## Triton kernel lane
 
 Run this lane after P01 through P24. A kernel answer should always name grid, tile, pointer formula, mask, traffic, occupancy limiter, correctness oracle, and benchmark method.
@@ -767,7 +775,7 @@ Prepare one-sentence answers, then expand only under pressure:
 
 ## general systems reuse
 
-Use these existing drills after the PyTorch ladder exposes a general-programming weakness:
+Use these existing drills as canonical owners when the programming calibration exposes a matching weakness:
 
 - R05 byte-bounded KV cache
 - R06 prefix KV cache
@@ -778,4 +786,4 @@ Use these existing drills after the PyTorch ladder exposes a general-programming
 - R15 prefill and decode dispatcher
 - R17 consistent hash ring
 
-They live in [[hinterland/prep/nv/role-drills|the NVIDIA role drills]]. Use [[hinterland/prep/bt/08-queueing/notes|the queueing module]] when arrival, service, backpressure, or tail latency lacks a precise model.
+Conditional preflights add R02 cache-aware transpose, R04 computation-graph validator, R10 complete beam search, R11 fixed-buffer allocator, and R14 tensor offset calculation. They live in [[hinterland/prep/nv/role-drills|the NVIDIA role drills]]. [[hinterland/prep/inferact/programming-practice|The Inferact programming bank]] owns selection and changed-contract transfer. Use [[hinterland/prep/bt/08-queueing/notes|the queueing module]] when arrival, service, backpressure, or tail latency lacks a precise model.

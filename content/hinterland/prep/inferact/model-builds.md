@@ -2,7 +2,7 @@
 date: '2026-07-21'
 description: implementation-first PyTorch model construction for the Inferact inference loop
 id: model-builds
-modified: 2026-07-21 17:31:58 GMT-04:00
+modified: 2026-07-23 03:45:29 GMT-04:00
 tags:
   - cs
 title: Inferact PyTorch model builds
@@ -16,17 +16,17 @@ The default route covers M01 through M05 and M10. It takes ten and a half focuse
 
 ## construction protocol
 
-Before writing `forward`, produce this page:
+Before implementing the artifact, produce this page:
 
 1. input and output contract, including shapes, dtype, device, invalid input, and mutation
 2. config invariants such as head divisibility, vocabulary size, patch size, and layer schedule
 3. module tree with every parameter-owning child
 4. persistent buffers and their `state_dict` behavior
-5. per-call state, per-request state, and mutable cache state
-6. shape ledger through the complete forward path
+5. per-call state, per-request state, and mutable inference state, including cache, scheduler, or loader state when applicable
+6. shape ledger through the complete forward, denoising-step, or load path
 7. reference implementation and numerical-stability choices
 8. hidden-test matrix
-9. prefill, decode, compilation, quantization, and parallelism follow-ups
+9. artifact-specific inference follow-ups: prefill and decode for autoregressive models, denoising and scheduler state for M08, loader mapping and ownership for M09, plus compilation, quantization, and parallelism where applicable
 10. vLLM boundary stressed by the architecture
 
 Use `torch`, `torch.nn`, and `torch.nn.functional`. Avoid NumPy, `transformers`, `einops`, and copied model code during the timed build. CPU correctness comes first. CUDA, compilation, fused kernels, and vLLM integration enter after the reference path passes.
@@ -68,32 +68,36 @@ The interviewer may change field names. Preserve the invariants.
 
 Every model build should survive:
 
-| surface          | tests                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| registration     | all learned tensors appear in `named_parameters`; buffers move with `.to()`; plain tensor attributes are deliberate |
-| serialization    | strict `state_dict` round trip; tied weights remain tied when promised                                              |
-| shapes           | batch and sequence size one, multiple batches, odd valid lengths, invalid divisibility                              |
-| dtype and device | fp32 CPU reference; one lower-precision forward where supported; no accidental CPU tensor creation                  |
-| modes            | `train()` and `eval()` behavior is explicit; the module passes `dropout_p=0.0` to SDPA during evaluation            |
-| numerics         | fp32 reductions where required, finite masked outputs, stable loss and routing probabilities                        |
-| equivalence      | vectorized result against a small loop or decomposed reference                                                      |
-| inference        | `torch.inference_mode()` forward, no unexpected mutation, cache ownership stated                                    |
-| compilation      | top-level compile boundary and likely guards identified, even when compilation is not run                           |
+| surface          | tests                                                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| registration     | all learned tensors appear in `named_parameters`; buffers move with `.to()`; plain tensor attributes are deliberate   |
+| serialization    | strict `state_dict` round trip; tied weights remain tied when promised                                                |
+| shapes           | batch and sequence size one, multiple batches, odd valid lengths, invalid divisibility                                |
+| dtype and device | fp32 CPU reference; one lower-precision forward where supported; no accidental CPU tensor creation                    |
+| modes            | `train()` and `eval()` behavior is explicit; the module passes `dropout_p=0.0` to SDPA during evaluation              |
+| numerics         | fp32 reductions where required, finite masked outputs, stable loss and routing probabilities                          |
+| equivalence      | vectorized result against a small loop or decomposed reference                                                        |
+| inference        | artifact-appropriate inference or load path, no unexpected mutation, and cache, scheduler, or loader ownership stated |
+| compilation      | top-level compile boundary and likely guards identified, even when compilation is not run                             |
 
 ## M01: minimal decoder-only language model
 
 **Priority:** core. **Time:** 75 minutes.
 
+Use tiers 0 and 1 of [[hinterland/prep/inferact/gpt-lab|the tiny GPT lab]] as the executable acceptance harness. Run its checked-in reference canary first, then point the same construction, causal, loss, registration, tying, serialization, and backward tests at the blank-editor implementation. Cache and generation enter with M03.
+
 Implement a complete small causal language model using PyTorch primitives:
 
 ```python
-class TinyCausalLM(nn.Module):
-  def __init__(self, config: DecoderConfig) -> None: ...
+class TinyGPT(nn.Module):
+  def __init__(self, config: GPTConfig) -> None: ...
 
   def forward(
     self, input_ids: Tensor, labels: Tensor | None = None
   ) -> CausalLMOutput: ...
 ```
+
+The lab's `GPTConfig` is the executable M01 specialization of the shared `DecoderConfig` vocabulary. Use its field names for this route so one implementation can continue into the optional simple M03 path. The advanced path translates the same invariants to M02's config and module tree.
 
 The model contains token embeddings, two or more pre-norm decoder layers, causal self-attention through `scaled_dot_product_attention`, a feed-forward sublayer, final normalization, and an LM head. Use ordinary multi-head attention, LayerNorm, and GELU for this first build. Return logits shaped `[B, T, V]` and optional shifted next-token cross-entropy.
 
@@ -151,7 +155,9 @@ Probes:
 
 ## M03: cache-aware prefill and decode
 
-**Priority:** core. **Time:** 105 minutes across two slices.
+**Priority:** core. **Time:** 105 minutes across two full-route slices, or a seventy-five-minute scaffolded delta on the compressed route.
+
+The checked-in cache tier in [[hinterland/prep/inferact/gpt-lab|the tiny GPT lab]] supplies the simple functional canary. Its advanced adapter suite supplies executable mixed-prefix, metadata, ownership, and generation acceptance without constraining the M02-shaped module tree. On the full and intermediate routes, spend this 105-minute block on one path selected before day 5 by the frozen baseline P19 artifact. Choose the blank simple homogeneous-cache GPT when P19 fails padded-length exclusion, full-versus-final-token parity, or caller-owned cache immutability. Choose the M02 extension when all three pass, point the advanced adapter factories at that artifact, and record the branch decision. The simple branch spends day 5's thirty-minute M03 slice on cache construction and day 6's seventy-five-minute block on positions, parity, and generation. The compressed route is a declared scaffolded exception: use its supplied working M02 artifact, implement the advanced cache delta in one uninterrupted seventy-five-minute block, then grade it in the separate fifteen-minute test block.
 
 Extend M02 with an explicit functional KV-cache contract:
 
@@ -169,6 +175,14 @@ class CacheAwareCausalLM(nn.Module):
     cache_start_positions: Tensor | None = None,
     use_cache: bool = False,
   ) -> CausalLMOutput: ...
+
+  def generate(
+    self,
+    input_ids: Tensor,
+    positions: Tensor,
+    max_new_tokens: int,
+    eos_token_id: int | None = None,
+  ) -> Tensor: ...
 ```
 
 Use cache tensors shaped `[B, Hkv, S, D]`, cache lengths shaped `[B]`, and optional absolute cache-start positions shaped `[B]`. Row `b` contains valid past keys in `[0, cache_lengths[b])`; their absolute positions are contiguous from `cache_start_positions[b]`. The reference implementation returns new cache tensors and lengths and does not mutate caller-owned storage. Treat in-place fixed-capacity cache updates as a follow-up design.
@@ -183,6 +197,8 @@ Acceptance:
 - cache length and layer count are validated
 - `use_cache=False` avoids returning cache state
 - caller-owned cache inputs remain unchanged
+- cached greedy generation matches full-prefix recomputation, waits for every batch row to finish, and restores the prior module mode
+- the advanced adapter suite passes through factories that instantiate the actual M02-shaped artifact
 
 Probes:
 
@@ -191,6 +207,40 @@ Probes:
 - Which cache layout supports contiguous attention and which supports paged serving?
 - How would sliding-window or hybrid layers alter the cache contract?
 - Which dimensions are sharded under tensor or context parallelism?
+
+## runtime extension: cross-request prefix caching
+
+Begin with [[hinterland/prep/inferact/gpt-lab#runtime prefix-cache extension|the executable exact-prefix snapshot cache]] over a passing `CacheAwareCausalLM`. It owns block-aligned tuple lookup, cloned full-prefix K/V snapshots, entry-level LRU, and suffix-prefill parity. The model remains a functional K/V producer for one request.
+
+After that implementation is clean, describe how a serving runtime replaces duplicated snapshots with physical block storage, chained lookup, leases, reference counts, and page-table-aware eviction.
+
+Partition the returned per-layer K/V tensors into immutable cloned full blocks shaped `[1, Hkv, B, D]`. Publish only complete blocks. Keep the last partial block request-private until later tokens complete it. Hash each block with SHA-256 over its parent digest, exact block token IDs, model identity, cache-schema identity, adapter identity, media hashes, tenant salt, and absolute block start. A digest selects candidates; exact canonical identity verification decides reuse.
+
+Lookup must return the longest contiguous block-aligned prefix and leave at least one prompt token uncached, so the cap is $B\lfloor(T-1)/B\rfloor$. Lease every hit before exposing storage, increment its reference count, and release it after suffix prefill. Evict the least-recently-used zero-reference chain leaf so a resident child is never stranded behind an evicted ancestor. If every leaf is owned or protected by the current publication, bypass the remaining blocks and let inference complete.
+
+Production follow-up:
+
+- shared prompt branches reuse one physical common block
+- the same tokens under a different model, cache schema, adapter, media input, tenant salt, or absolute start miss
+- a forced SHA-256 collision cannot bypass exact identity verification
+- source K/V tensors, returned materializations, and concurrent leases cannot mutate stored blocks
+- partial tails stay private and become reusable only after sealing a full block
+- live leases prevent eviction, and suffix-first LRU pressure preserves a reachable resident chain
+- cached suffix logits and final K/V state match full `CacheAwareCausalLM` recomputation
+
+Run the straightforward executable reference:
+
+```bash
+uv run --project content/thoughts/tsfm/lecture-3-exercise pytest content/hinterland/prep/inferact/labs/test_prefix_cache.py -q
+```
+
+Probes:
+
+- Why is the hash a lookup accelerator rather than the complete identity contract?
+- Why does an exactly block-aligned prompt still need one recomputed block in this runner?
+- Which identity fields change for RoPE, multimodal inputs, or LoRA?
+- What breaks when eviction ignores request ownership?
+- How would the physical block table replace concatenated model-facing K/V without changing the parity oracle?
 
 ## M04: vLLM-shaped model port
 
@@ -286,7 +336,7 @@ Probes:
 
 ## M06: multimodal causal language model
 
-**Priority:** core. **Time:** 90 minutes.
+**Priority:** stretch. **Time:** 90 minutes.
 
 Build a small vision-language model with a text decoder, patch encoder, modality projector, and placeholder merge:
 
@@ -488,6 +538,8 @@ Check that eager functional cache and static in-place cache produce matching log
 
 Return to one drill that owns the first failed invariant, then resume the model build from the same boundary. Reimplementing six neighboring primitives is penance without information gain.
 
+After the owning repair or M-series boundary passes, draw one connected case from [[hinterland/prep/inferact/pytorch-practice|the PyTorch practice bank]]. A failed build never skips directly to transfer testing. When ragged runtime tensors, cache reordering, speculative state, tensor-parallel layers, or custom operators have no narrower P-series owner, repair the named M-series owner through its acceptance tests before drawing the PT case.
+
 ## model-construction mocks
 
 ### model mock A: architecture from prose
@@ -518,15 +570,17 @@ Choose MoE, multimodal, hybrid recurrent/attention, or DiT. The partner supplies
 
 Score each dimension from zero to four:
 
-| dimension                  | four-point evidence                                                                           |
-| -------------------------- | --------------------------------------------------------------------------------------------- |
-| contract and config        | shapes, errors, mutation, modes, and config invariants are fixed before code                  |
-| module and state ownership | parameters, buffers, children, request state, and cache state have correct owners             |
-| tensor mechanics           | every reshape, broadcast, gather, scatter, and allocation follows the shape ledger            |
-| numerical correctness      | masks, normalization, reductions, loss, and degenerate rows are deliberate                    |
-| complete forward path      | the module composes end to end and produces the promised output structure                     |
-| tests and serialization    | randomized oracle, causal checks, state round trip, tying, dtype, and edge cases pass         |
-| inference reasoning        | prefill, decode, cache, compile, quantization, parallelism, and vLLM boundaries are explained |
+| dimension                  | four-point evidence                                                                                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contract and config        | shapes, errors, mutation, modes, and config invariants are fixed before code                                                                                                                            |
+| module and state ownership | applicable parameters, buffers, children, request state, and cache, scheduler, or loader state have correct owners                                                                                      |
+| tensor mechanics           | every reshape, broadcast, gather, scatter, and allocation follows the shape ledger                                                                                                                      |
+| numerical correctness      | masks, normalization, reductions, loss, and degenerate rows are deliberate                                                                                                                              |
+| complete forward path      | the module composes end to end and produces the promised output structure                                                                                                                               |
+| tests and serialization    | artifact-specific randomized oracle, state round trip, dtype, and edge cases pass; causality and tying are tested when promised                                                                         |
+| inference reasoning        | autoregressive prefill, decode, and cache; M08 denoising and scheduler state; or M09 loader mapping and ownership are explained with applicable compile, quantization, parallelism, and vLLM boundaries |
+
+Award zero when the dimension is absent or wrong, one for fragments that cannot reach a working result without rescue, two for a workable baseline with a material gap, three when one bounded gap prevents the listed four-point evidence, and four only when that evidence survives the probes. Use integer scores only.
 
 A build is ready at 24 out of 28 with every dimension at least 2. A model that emits correctly shaped nonsense scores at most 12. Shape cosplay has had a good run.
 

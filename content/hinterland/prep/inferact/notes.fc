@@ -98,12 +98,42 @@ A: Each request's computed-token count advances toward all currently known promp
 ---
 
 Q: Which identity data may need to enter a prefix-cache block hash?
-A: Parent block hash, block tokens, LoRA identity, multimodal content, prompt-embedding identity, and cache salt or tenant isolation data.
+A: Parent block hash, exact block tokens, model and cache-schema revision, position origin, LoRA identity, multimodal content, prompt-embedding identity, and cache salt or tenant isolation data.
 
 ---
 
 Q: Why can a block with zero references remain valuable?
-A: It can stay in the reusable free pool as a prefix-cache hit until eviction needs the physical page.
+A: Reference count measures live ownership rather than residency. A zero-reference block can remain resident and reusable until block-capacity pressure selects it for eviction.
+
+---
+
+Q: Which part of a request may enter a full-block prefix cache?
+A: Only complete immutable physical blocks. A partial tail remains request-private until it fills a block.
+
+---
+
+Q: Why is prefix-cache reuse capped at `max(0, floor((T - 1) / B) * B)` tokens?
+A: A nonempty request must run at least one prompt token through the model to produce next-token logits. For an exactly block-aligned prompt, the cap makes it recompute the final block.
+
+---
+
+Q: Why does a prefix-cache block hash include its parent hash?
+A: The same block tokens reached after different histories can produce different K/V. Parent chaining binds the block to its full causal prefix.
+
+---
+
+Q: Why must a cache verify exact identity after a digest hit?
+A: A digest match is only a candidate. Exact tokens and namespace verification keep forced or accidental hash collisions from aliasing unrelated K/V.
+
+---
+
+Q: What may a block-capacity LRU evict?
+A: The least-recently-used zero-reference chain leaf. Removing an ancestor first would strand resident descendants behind an unreachable cache hole.
+
+---
+
+Q: What oracle proves runtime prefix-cache reuse is correct?
+A: Run only the uncached suffix, then require next-token logits and the reconstructed K/V at every layer to match a full uncached prefill.
 
 ---
 
@@ -284,3 +314,18 @@ A: Scheduled tokens become flattened rows with explicit positions, the core forw
 
 Q: Why is permissive checkpoint loading insufficient for a model port?
 A: A model can run with missing, duplicate, transposed, mistied, or silently unused weights. A serving loader must account for every target tensor and validate names, shapes, dtypes, packing, sharding, and ties.
+
+---
+
+Q: When is a supplementary PT-series case eligible?
+A: After its connected P-series mechanism or M-series build has a clean solve. The case replaces a repair or mock slot rather than adding required study hours.
+
+---
+
+Q: What proves transfer after a canonical PyTorch repair?
+A: A previously unseen sibling case passes under a changed contract and the same correctness rubric. Repeating the repaired prompt proves recall of that prompt.
+
+---
+
+Q: When does a GP-series programming case enter the Inferact route?
+A: The two mandatory calibrations sit outside the cap. After them, three newly completed and separately graded PyTorch implementation rounds earn one GP slot. An activated sibling spends that slot. A score from 19 through 23 with every dimension at least 2 goes directly to the unseen same-family sibling. A lower score or any dimension below 2 repairs its algorithm or lifecycle owner first.

@@ -75,6 +75,18 @@ export default (() => {
         data-location={location}
       >
         <div class="tri-head">
+          <button
+            class="tri-cmdk-trigger"
+            type="button"
+            aria-label="command palette"
+            aria-controls="tri-command-palette"
+            aria-expanded="false"
+            aria-haspopup="dialog"
+            data-i18n="command"
+            data-i18n-aria-label="command palette"
+          >
+            command
+          </button>
           <a class="tri-total" href={profile} target="_blank" rel="noopener noreferrer">
             <span
               class="tri-dist"
@@ -92,12 +104,7 @@ export default (() => {
         </div>
 
         <div class="tri-strip">
-          <div
-            class="tri-scroll-shell"
-            data-scrollable="true"
-            data-scroll-end="false"
-            style={`--tri-day-count:${payload.days.length}`}
-          >
+          <div class="tri-scroll-shell" data-scrollable="true" data-scroll-end="false">
             <div class="tri-scroll-viewport">
               <div class="tri-scroll" id="tri-activity-timeline">
                 <div class="tri-track">
@@ -162,15 +169,6 @@ export default (() => {
               </div>
               <span class="tri-scroll-fade" aria-hidden="true" />
             </div>
-            <input
-              class="tri-scroll-range"
-              type="range"
-              min="0"
-              max="1000"
-              value="0"
-              aria-label="scroll activity timeline"
-              aria-controls="tri-activity-timeline"
-            />
           </div>
           <aside class="tri-pop" aria-hidden="true" />
         </div>
