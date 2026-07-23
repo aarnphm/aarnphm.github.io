@@ -2,7 +2,7 @@
 date: '2026-07-21'
 description: timed coding, system-design, and technical deep-dive mocks for Inferact
 id: mocks
-modified: 2026-07-21 16:12:05 GMT-04:00
+modified: 2026-07-23 03:45:29 GMT-04:00
 tags:
   - cs
 title: Inferact interview mocks
@@ -10,9 +10,11 @@ title: Inferact interview mocks
 
 # timed mocks
 
-Use a blank editor, real timer, and no agents. The guide tests independent coding despite Inferact's agent-heavy daily workflow.
+Use a real timer and no agents. Start from a blank editor unless the mock explicitly supplies an executable scaffold; coding mock 4 is the named scaffolded exception. The guide tests independent coding despite Inferact's agent-heavy daily workflow.
 
-Alternate mechanism rounds with complete model construction. The four implementation mocks in [[hinterland/prep/inferact/model-builds#model-construction mocks|the model-build lane]] cover architecture-from-prose, cache conversion, runtime porting, and an unfamiliar architecture fragment. At least half of coding rehearsals should end with a functioning `nn.Module` hierarchy rather than a standalone tensor function.
+Alternate mechanism rounds with complete model construction. The four implementation mocks in [[hinterland/prep/inferact/model-builds#model-construction mocks|the model-build lane]] cover architecture-from-prose, cache conversion, runtime porting, and an unfamiliar architecture fragment. [[hinterland/prep/inferact/gpt-lab|The tiny GPT lab]] supplies an executable model and cache canary. [[hinterland/prep/inferact/pytorch-practice|The PyTorch practice bank]] supplies unseen tensor and runtime transfer rounds after canonical owners are clean. [[hinterland/prep/inferact/programming-practice|The programming bank]] supplies general algorithms and stateful-code insurance.
+
+Keep an auditable model-construction ratio in the mock log. Let `n` be all completed PyTorch coding rehearsals selected from fixed mocks 1 through 6, a sampled P-series or PT-series case, or model mock A through D. Model mock C counts once at its full seventy-five minutes. Exclude Triton mock 7, GP mock 8, and route drills that were not run as a mock. Let `m` be the rounds in `n` whose prompt required an `nn.Module` and whose frozen submission executed an end-to-end module path. Coding mock 4 and model mocks A through D can enter `m`; a standalone tensor function cannot. Require `m >= ceil(n / 2)` by interview day.
 
 ## coding-round structure
 
@@ -24,6 +26,20 @@ Alternate mechanism rounds with complete model construction. The four implementa
 | 40 to 50 | test ordinary, degenerate, tail, dtype, and invalid cases                      |
 | 50 to 58 | answer performance or runtime follow-up                                        |
 | 58 to 60 | summarize costs, synchronization, and remaining risk                           |
+
+## coding-mock sampler
+
+Keep the eight fixed coding mocks as calibration rounds. Sample supplementary rounds this way:
+
+1. run the canonical P-series drill or fixed mock while its owner is unresolved
+2. otherwise alternate a model-construction round with one mock-eligible PT-series case from the weakest clean family
+3. exclude the previous two PT IDs, owner families, and contract deltas
+4. for a P-series or PT-series round, run the declared case time inside sixty minutes, use the remainder for hostile probes, and grade the artifact frozen at the declared deadline with the twenty-eight-point coding rubric
+5. for model mocks A, B, or D, run the full sixty minutes and grade with the model-build rubric; run model mock C only in its full seventy-five-minute implementation block and never truncate it into this sixty-minute shell
+6. record the prompt ID, prompt kind, canonical owner, duration, frozen-deadline score, and first wrong decision in the error log
+7. return a failed PT case to its canonical owner and use a fresh sibling for the later transfer check; return a failed model mock to the first failed M-series or P-series owner
+
+After the two uncapped programming calibrations, admit at most one GP-series round per earned replacement slot under [[hinterland/prep/inferact/index#round contracts|the counted-round rule]] when a calibration, mock, or recruiter signal exposes a general weakness and every PyTorch or GPT owner scheduled before or inside that replacement block is clean. An active remediation uses a different unseen sibling from the failed family and overrides the ordinary family exclusions. Otherwise select the weakest general family and exclude the previous two GP IDs and contract shapes. Grade with [[hinterland/prep/inferact/programming-practice#general-programming rubric|the separate general-programming rubric]]. A score from 19 through 23 with every dimension at least 2 goes directly to the sibling. A lower score or any dimension below 2 returns to its named algorithm or lifecycle family first.
 
 ## coding mock 1: batched generation primitives
 
@@ -69,6 +85,33 @@ Probes:
 - page size
 - aliasing shared prefixes
 - eviction policy versus storage layout
+
+### prefix-cache runtime variation
+
+Use this variation instead of coding mock 3's ordinary main and extension. The scaffold supplies the executable `CacheAwareCausalLM` with functional prefill and decode. Do not modify its M03 model contract.
+
+**Main, 45 minutes:** implement a runtime `PrefixCache` and prefill runner over fixed-size physical blocks. Match the longest valid block-aligned prefix, run only the remaining suffix through the model, publish newly complete blocks, and reconstruct the returned per-layer cache.
+
+**Acceptance, inside the same 45 minutes:**
+
+- cache only complete immutable blocks; keep every partial tail request-private
+- chain each block hash from parent hash, exact block tokens, and a namespace covering model and cache revision, position origin, adapters, media or prompt embeddings, and tenant salt
+- cap a prompt of `T` tokens at `max(0, floor((T - 1) / B) * B)` reused tokens so a nonempty request still produces next-token logits
+- verify exact tokens and namespace after a digest hit so a forced hash collision cannot alias state
+- pin every acquired physical block until lease release; a released zero-reference block may remain resident
+- enforce capacity in physical blocks with deterministic LRU eviction restricted to zero-reference chain leaves
+- prove that two branched prompts share their common physical blocks
+
+**Final 15 minutes:** add boundary tests at `0`, `B - 1`, `B`, `B + 1`, and `2B`; force a digest collision; hold two leases through capacity pressure; then prove cached-suffix logits and every layer's reconstructed K/V match full uncached prefill.
+
+Probes:
+
+- why an exactly block-aligned prompt recomputes its final block
+- why the parent hash is part of semantic identity
+- ownership versus residency
+- block capacity versus prefix-entry capacity
+- lock scope and lease cleanup
+- cache invalidation after a model, adapter, media, salt, or position change
 
 ## coding mock 4: model from a paper fragment
 
@@ -147,11 +190,15 @@ Probes:
 
 ## coding mock 8: general distributed programming
 
-**Main, 40 minutes:** implement a bounded dynamic batcher or byte-bounded cache from [[hinterland/prep/nv/role-drills|the NVIDIA role drills]]. Use Python, C++, Rust, or Go.
+When this round replaces an unfinished calibration, implement the exact outstanding case: GP01 in twenty-five minutes, GP10 in forty minutes, or the previously selected GP04 or GP19 in forty-five minutes. Use Python and apply the extension contract below for the remaining thirty-five, twenty, or fifteen minutes. It counts as that calibration rather than a supplementary mock.
 
-**Extension, 20 minutes:** add cancellation, close semantics, and one distributed failure scenario.
+When both calibrations are complete and remediation is active, implement the exact unseen same-family sibling named in the error log for its declared time and use the remainder of sixty minutes for the extension. This round spends the earned GP slot.
 
-Probes:
+**Main after both calibrations and with no active remediation:** implement one core case from [[hinterland/prep/inferact/programming-practice|the programming bank]] for that case's declared twenty-five-to-forty-five-minute timebox. Follow the bank's language rule.
+
+**Extension after both calibrations:** use the remainder of sixty minutes. For a stateful or concurrent case, add cancellation, close semantics, and one distributed failure scenario. For a sequence, graph, or parser case, add an online constraint plus an inference-runtime ownership and failure sketch.
+
+Choose the four relevant probes:
 
 - fairness
 - starvation
@@ -159,6 +206,8 @@ Probes:
 - ownership
 - backpressure
 - deterministic tests
+
+Freeze the base artifact at its declared deadline and grade that snapshot with the general-programming rubric rather than the tensor and numerics rubric below. The remaining mock time is an unscored extension for probes, lifecycle variants, and diagnosis. Post-deadline repairs cannot change the calibration, remediation, or readiness score.
 
 ## system-design structure
 
@@ -295,6 +344,8 @@ Give each dimension zero to four points:
 | performance    | claims speed without a mechanism   | gives broad complexity              | names bytes, operations, synchronization, allocation, bottleneck |
 | communication  | interviewer loses the state        | understandable with gaps            | every change stays attached to an invariant                      |
 
+Award one when some relevant evidence exists but the two-point behavior is not yet workable. Award three only when the two-point behavior is fully satisfied and one bounded gap prevents the four-point description. Use integer scores only.
+
 Interpret the total out of 28:
 
 - 24 to 28 with every dimension at least 2: ready for this shape
@@ -314,6 +365,8 @@ Give each dimension zero to four:
 - failure and overload behavior
 - observability and deciding experiments
 
+Use the same integer scale for every dimension: zero is absent or wrong; one is a fragment that needs rescue; two is a coherent baseline with a material gap; three is independently correct with one bounded gap; four survives the named probes with grounded arithmetic and explicit tradeoffs.
+
 A design is ready at 24 out of 28 with every dimension at least 2. Missing arithmetic caps the score at 20 because the boxes remain ungrounded.
 
 ## deep-dive rubric
@@ -328,17 +381,19 @@ Give each dimension zero to four:
 - failure, deployment, and residual risk
 - counterfactual durability
 
+Use the same integer scale for every dimension: zero is absent, invented, or wrong; one is an unsupported fragment; two is a coherent account with a material evidence gap; three is independently defensible with one bounded gap; four survives hostile probes with ownership and evidence intact.
+
 A deep dive is ready at 24 out of 28 with every dimension at least 2. Any invented metric, hidden co-owner, or causal claim without evidence resets the relevant dimension to zero.
 
 ## full-loop rehearsal
 
-Run this once at least three days before the interview:
+Run this once while at least one later repair day remains. Three or more days before the interview is preferable:
 
 1. one coding mock, 60 minutes
-2. break, 20 minutes
+2. break, 10 minutes
 3. primary-project deep dive, 40 minutes including interruption
-4. break, 20 minutes
+4. break, 10 minutes
 5. one system design, 45 minutes
-6. written repair plan, 20 minutes
+6. written repair plan, 15 minutes
 
-Run a second loop with different prompts only after the repair tasks have clean re-solves.
+The loop totals 180 minutes. Run a second loop with different prompts only after the repair tasks have clean re-solves.

@@ -2,7 +2,7 @@
 date: '2026-07-21'
 description: the PyTorch, model, vLLM, and interview core for Inferact
 id: core
-modified: 2026-07-21 16:12:05 GMT-04:00
+modified: 2026-07-23 03:45:29 GMT-04:00
 tags:
   - cs
 title: Inferact inference core
@@ -72,7 +72,7 @@ Read [`nn.Module`](https://docs.pytorch.org/docs/stable/generated/torch.nn.Modul
 
 ## priority 3: model implementation ladder
 
-Use [[hinterland/prep/inferact/model-builds|the model-build lane]] as the primary coding curriculum. The goal is to turn a config, diagram, or paper fragment into a complete PyTorch module, then connect that module to inference-runtime state. The P-series drills repair individual mechanisms when a full build exposes a gap.
+Use [[hinterland/prep/inferact/model-builds|the model-build lane]] as the primary coding curriculum. The goal is to turn a config, diagram, or paper fragment into a complete PyTorch module, then connect that module to inference-runtime state. The P-series drills repair individual mechanisms when a full build exposes a gap. [[hinterland/prep/inferact/pytorch-practice|The PyTorch practice bank]] tests the repaired mechanism under a fresh contract, debugging case, or runtime transform. [[hinterland/prep/inferact/gpt-lab|The tiny GPT lab]] materializes M01 and the simple homogeneous-cache M03 path as a runnable CPU model and test matrix; the advanced M03 path adapts its parity invariants to mixed cache lengths. Its prefix-cache exercise sits downstream as a separate runtime owner over the functional model cache, so it does not enlarge M03.
 
 ### dense decoder block
 
@@ -151,7 +151,9 @@ Know these tradeoffs:
 - dynamic request batches need padding, piecewise capture, bounded capture sizes, or an eager fallback.
 - profiling must separate compilation and warmup from steady-state execution.
 
-Read [`torch.compile`](https://docs.pytorch.org/docs/stable/generated/torch.compile.html), [custom operators](https://docs.pytorch.org/tutorials/advanced/custom_ops_landing_page.html), [CUDA semantics](https://docs.pytorch.org/docs/stable/notes/cuda.html), and [PyTorch profiler](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html).
+Read [`torch.compile`](https://docs.pytorch.org/docs/stable/generated/torch.compile.html), [`torch.export`](https://docs.pytorch.org/docs/stable/user_guide/torch_compiler/export/programming_model.html), [custom operators](https://docs.pytorch.org/tutorials/advanced/custom_ops_landing_page.html), [CUDA semantics](https://docs.pytorch.org/docs/stable/notes/cuda.html), and [PyTorch profiler](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html).
+
+Use PT31 through PT35 in [[hinterland/prep/inferact/pytorch-practice#compilation, custom operators, and profiling|the execution-internals practice lane]] after the P27 compile probe is clean.
 
 ## priority 5: vLLM request lifecycle
 
@@ -190,6 +192,8 @@ The owner chain to explain:
 
 Read the [architecture overview](https://docs.vllm.ai/en/latest/design/arch_overview/), [[thoughts/vllm|the garden vLLM note]], [[thoughts/Continuous batching|continuous batching]], and [[thoughts/paged attention|paged attention]].
 
+The same owner chain supplies the general-programming bridge. Frontend streaming maps to incremental parsers, scheduler state maps to heaps and queues, cache management maps to hashes, tries, allocators, and reference counts, model-runner metadata maps to stable permutations, and connector transport maps to cancellation and distributed lifecycle. [[hinterland/prep/inferact/programming-practice|The programming bank]] tests those structures without hiding them behind tensor APIs.
+
 ## priority 6: KV and scheduler mechanics
 
 ### KV capacity
@@ -204,7 +208,27 @@ where the factor of two is K and V, the model has `L` layers, `H_KV` KV heads, h
 
 ### prefix caching
 
-vLLM hashes complete blocks from the parent hash, block tokens, and identity data such as LoRA, multimodal, prompt-embedding, and cache-salt information. A useful answer distinguishes matching, ownership, reference counting, reusable free blocks, and eviction order.
+The model forward produces K/V. The runtime cache manager decides whether immutable physical blocks can satisfy a later request. Publish only complete blocks of `B` tokens. A partial tail remains request-private until it fills a block, because publishing a mutable tail would make cache identity and concurrent ownership unstable.
+
+For a prompt of `T` tokens, cap reusable tokens at:
+
+$$
+R = \max\left(0, \left\lfloor \frac{T - 1}{B} \right\rfloor B\right)
+$$
+
+For a nonempty prompt, at least one token must run through the model to produce next-token logits. When `T` is exactly block-aligned, this rule recomputes the final block rather than returning a cache with no logits.
+
+Each complete block uses a chained identity:
+
+$$
+h_i = H(h_{i-1}, \text{tokens}_i, \text{namespace})
+$$
+
+The namespace includes the model and cache-schema revision plus any adapter, multimodal input, prompt embedding, cache salt, tenant boundary, or position origin that can change K/V. The parent hash prevents the same token block after different histories from aliasing. A digest match remains a candidate match; exact canonical identity and tokens must still agree if the implementation promises collision safety.
+
+Acquisition increments a block's live reference count. Release removes ownership while leaving a zero-reference block resident and reusable. Capacity is measured in physical blocks. When capacity is needed, evict the least-recently-used zero-reference chain leaf. Evicting an ancestor first would leave its descendants resident and unreachable. Two branches with the same prefix should point to the same physical prefix blocks rather than duplicate their K/V.
+
+The correctness oracle is end-to-end: run only the uncached suffix after the longest valid hit, then require its logits and the reconstructed per-layer K/V to match a full uncached prefill. [[hinterland/prep/inferact/gpt-lab|The executable prefix-cache extension]] tests that oracle with exact full-prefix snapshots. The physical-block design on this page is the production follow-up.
 
 ### chunked prefill
 
@@ -339,5 +363,5 @@ Every claim should survive these prompts:
 - FlashAttention: [[thoughts/flash attention|FlashAttention]]
 - quantization: [[thoughts/quantization|quantization]]
 - structured outputs: [[thoughts/structured outputs|structured outputs]]
-- general coding: [[hinterland/prep/nv/core|NVIDIA core]]
+- general coding: [[hinterland/prep/inferact/programming-practice|Inferact programming bank]] backed by [[hinterland/prep/nv/core|the NVIDIA core]]
 - queues and streams: [[hinterland/prep/bt/08-queueing/notes|queueing]] and [[hinterland/prep/bt/07-stream-algorithms/notes|stream algorithms]]

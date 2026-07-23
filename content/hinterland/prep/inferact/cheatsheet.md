@@ -2,7 +2,7 @@
 date: '2026-07-21'
 description: PyTorch and vLLM recall sheet for the Inferact technical loop
 id: cheatsheet
-modified: 2026-07-21 16:12:05 GMT-04:00
+modified: 2026-07-23 03:45:29 GMT-04:00
 tags:
   - cs
 title: Inferact inference cheatsheet
@@ -234,7 +234,22 @@ Larger token budget tends toward throughput and long-prompt TTFT. Smaller budget
 
 ### prefix caching
 
-Hash complete blocks with parent identity, tokens, and identity extras such as LoRA, multimodal content, prompt embeddings, and cache salt. Distinguish a reusable block with zero references from an allocated live block. Prefix locality can conflict with even DP load balance.
+The model produces K/V. The runtime cache manager owns cross-request matching, physical blocks, leases, residency, and eviction.
+
+```text
+reuse_cap = max(0, floor((prompt_tokens - 1) / block_size) * block_size)
+block_hash = H(parent_hash, exact_block_tokens, namespace)
+namespace = model/cache revision + position origin + adapter/media/embedding/salt identity
+
+acquire hit       -> verify exact identity -> refcount += 1
+run suffix        -> compare logits and full per-layer K/V with uncached prefill
+complete new block -> publish immutable physical block
+partial tail      -> keep request-private
+release           -> refcount -= 1; zero-ref block may remain resident
+need capacity     -> evict LRU chain leaf with refcount == 0
+```
+
+For a nonempty prompt, the `prompt_tokens - 1` cap leaves model work that can produce next-token logits. An exactly block-aligned prompt therefore recomputes its final block. Parent chaining separates identical token blocks reached through different histories. A digest hit is only a candidate until exact tokens and namespace match. Measure capacity and LRU in physical blocks, since two branches can share the same resident prefix pages. Evict leaves before ancestors so resident capacity remains reachable. Prefix locality can conflict with even DP load balance.
 
 ### disaggregation
 
@@ -361,6 +376,10 @@ Bring:
 
 - [[hinterland/prep/inferact/core|core map]]
 - [[hinterland/prep/inferact/model-builds|PyTorch model builds]]
+- [[hinterland/prep/inferact/gpt-lab|tiny GPT executable lab]]
+- [[hinterland/prep/inferact/gpt-lab|prefix-cache runtime exercise]]
+- [[hinterland/prep/inferact/pytorch-practice|PyTorch practice bank]]
+- [[hinterland/prep/inferact/programming-practice|general programming bank]]
 - [[hinterland/prep/inferact/role-drills|role drills]]
 - [[hinterland/prep/inferact/study|study route]]
 - [[hinterland/prep/inferact/mocks|timed mocks]]
@@ -374,3 +393,20 @@ Bring:
 - [[thoughts/flash attention|FlashAttention]]
 - [[thoughts/quantization|quantization]]
 - [[hinterland/prep/nv/cheatsheet|general coding and systems sheet]]
+
+```text
+failed canonical owner -> repair P or M
+clean owner -> fresh PT variant
+failed PT variant -> return to owner
+passed PT variant -> timed mock
+
+activated GP miss -> wait for earned 3-round replacement slot
+GP score 19-23, every dimension >= 2 -> spend slot on fresh same-family sibling
+GP score < 19 or any dimension < 2 -> repair family -> spend slot on fresh same-family sibling
+passed GP sibling -> close repair; later GP work needs a new signal and slot
+
+M01 implementation -> tiny GPT construction and numerical tiers
+simple M03 path -> tiny GPT cache-parity and generation tiers
+advanced M03 path -> ten-test adapter suite over mixed prefix lengths
+runtime prefix cache -> physical full-block sharing, leases, LRU, and suffix parity
+```

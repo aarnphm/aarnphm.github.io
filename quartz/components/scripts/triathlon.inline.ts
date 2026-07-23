@@ -1711,7 +1711,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
   const pop = root.querySelector<HTMLElement>('.tri-pop')
   const timeline = root.querySelector<HTMLElement>('.tri-scroll')
   const timelineShell = root.querySelector<HTMLElement>('.tri-scroll-shell')
-  const timelineRange = root.querySelector<HTMLInputElement>('.tri-scroll-range')
   const timelinePinnedYear = root.querySelector<HTMLElement>('.tri-axis-pinned')
   const timelineYears = Array.from(root.querySelectorAll<HTMLElement>('.tri-axis-year'))
   const bars = Array.from(root.querySelectorAll<HTMLElement>('.tri-bar'))
@@ -1728,12 +1727,9 @@ const setup = (root: HTMLElement): (() => void) | null => {
   let timelineFrame = 0
 
   const updateTimeline = () => {
-    if (!timeline || !timelineShell || !timelineRange) return
+    if (!timeline || !timelineShell) return
     const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
     const scrollable = maxScroll > 1
-    const progress = scrollable ? timeline.scrollLeft / maxScroll : 0
-    timelineRange.value = String(Math.round(progress * Number(timelineRange.max)))
-    timelineRange.disabled = !scrollable
     timelineShell.dataset.scrollable = String(scrollable)
     timelineShell.dataset.scrollEnd = String(!scrollable || timeline.scrollLeft >= maxScroll - 1)
     let activeYear = timelineYears[0]
@@ -1752,12 +1748,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
       updateTimeline()
     })
   }
-  const onTimelineRange = () => {
-    if (!timeline || !timelineRange) return
-    const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
-    timeline.scrollLeft = (Number(timelineRange.value) / Number(timelineRange.max)) * maxScroll
-    scheduleTimelineUpdate()
-  }
   const timelineResize = new ResizeObserver(scheduleTimelineUpdate)
   if (timeline) {
     timeline.addEventListener('scroll', scheduleTimelineUpdate, { passive: true })
@@ -1765,7 +1755,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
     const track = timeline.querySelector<HTMLElement>('.tri-track')
     if (track) timelineResize.observe(track)
   }
-  timelineRange?.addEventListener('input', onTimelineRange)
   scheduleTimelineUpdate()
 
   const scroller = el('div', 'tri-pop-scroll')
@@ -1972,7 +1961,6 @@ const setup = (root: HTMLElement): (() => void) | null => {
     window.clearTimeout(hideTimer)
     window.cancelAnimationFrame(timelineFrame)
     timeline?.removeEventListener('scroll', scheduleTimelineUpdate)
-    timelineRange?.removeEventListener('input', onTimelineRange)
     timelineResize.disconnect()
     for (const year of timelineYears) delete year.dataset.current
     barsEl.removeEventListener('mousemove', onMove)
@@ -9750,7 +9738,11 @@ const mapDetailMetricTabForKey = (root: HTMLElement, key: string): HTMLButtonEle
 }
 
 const setupCommandPalette = (root: HTMLElement): (() => void) => {
-  const overlay = el('div', 'tri-cmdk', undefined, { 'aria-hidden': 'true' })
+  const trigger = root.querySelector<HTMLButtonElement>('.tri-cmdk-trigger')
+  const overlay = el('div', 'tri-cmdk', undefined, {
+    id: 'tri-command-palette',
+    'aria-hidden': 'true',
+  })
   const box = el('div', 'tri-cmdk-box', undefined, {
     role: 'dialog',
     'aria-label': 'command palette',
@@ -9868,6 +9860,7 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
     render()
     overlay.classList.add('tri-cmdk--on')
     overlay.setAttribute('aria-hidden', 'false')
+    trigger?.setAttribute('aria-expanded', 'true')
     input.focus()
   }
   function close(): void {
@@ -9875,7 +9868,13 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
     isOpen = false
     overlay.classList.remove('tri-cmdk--on')
     overlay.setAttribute('aria-hidden', 'true')
+    trigger?.setAttribute('aria-expanded', 'false')
     input.blur()
+  }
+
+  const togglePalette = (): void => {
+    if (isOpen) close()
+    else openPalette()
   }
 
   const onInput = (): void => {
@@ -9906,8 +9905,7 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       if (toggleSearchFocus(root, null) || currentSearchShortcut(root)) return
       if (root.matches('.tri-analytics-open, .tri-map-open, .tri-training-open, .tri-calc-open'))
         return
-      if (isOpen) close()
-      else openPalette()
+      togglePalette()
     }
   }
   const onScrim = (e: MouseEvent): void => {
@@ -9916,9 +9914,11 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
   input.addEventListener('input', onInput)
   input.addEventListener('keydown', onInputKey)
   overlay.addEventListener('mousedown', onScrim)
+  trigger?.addEventListener('click', togglePalette)
   document.addEventListener('keydown', onDocKey, true)
   return () => {
     document.removeEventListener('keydown', onDocKey, true)
+    trigger?.removeEventListener('click', togglePalette)
     overlay.remove()
   }
 }
