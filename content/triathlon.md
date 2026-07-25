@@ -1,4 +1,6 @@
 ---
+chain:
+  '1': 621mi
 date: '2026-05-29'
 description: training data and tracking
 dexa:
@@ -36,7 +38,7 @@ dexa:
     vatLbs: 1.24
 id: triathlon
 layout: triathlon
-modified: 2026-07-19 22:48:26 GMT-04:00
+modified: 2026-07-25 17:13:50 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-15'

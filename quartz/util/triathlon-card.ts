@@ -1881,8 +1881,19 @@ const zoneRange = (bounds: number[], i: number): string => {
   return `${bounds[i - 1] + 1}–${bounds[i]}`
 }
 
-export const dlabel = (sec: number): string =>
-  sec < 60 ? `${sec}s` : sec < 3600 ? `${sec / 60}m` : `${sec / 3600}h`
+export const dlabel = (sec: number): string => {
+  const seconds = Math.max(0, Math.round(sec))
+  if (seconds < 60) return `${seconds}s`
+  if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60)
+    const remainder = seconds % 60
+    return remainder === 0 ? `${minutes}m` : `${minutes}m${remainder}s`
+  }
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.round((seconds % 3600) / 60)
+  if (minutes === 60) return `${hours + 1}h`
+  return minutes === 0 ? `${hours}h` : `${hours}h${minutes}m`
+}
 
 export type PowerCurveHover = {
   index: number
@@ -1942,7 +1953,7 @@ export const powerCurveFraction = (
   return (Math.log(value) - Math.log(minSeconds)) / (Math.log(maxSeconds) - Math.log(minSeconds))
 }
 
-const nearestPowerCurveIndex = (curve: PowerCurvePoint[], seconds: number): number => {
+const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: number): number => {
   let low = 0
   let high = curve.length - 1
   while (low < high) {
@@ -2762,6 +2773,1529 @@ export const buildActivity = <N>(
     )
   }
   return wrap
+}
+
+export type ActivityComparisonMetric =
+  | 'elevation'
+  | 'speed'
+  | 'hr'
+  | 'power'
+  | 'cadence'
+  | 'respiration'
+  | 'temperature'
+  | 'stride-length'
+  | 'ground-contact-time'
+  | 'vertical-oscillation'
+  | 'swim-pace'
+  | 'stroke-rate'
+
+export const activityComparisonFractionForKey = (
+  key: string,
+  fraction: number,
+  step: number,
+): number | null => {
+  let next: number
+  if (key === 'ArrowLeft' || key === 'ArrowDown') next = fraction - step
+  else if (key === 'ArrowRight' || key === 'ArrowUp') next = fraction + step
+  else if (key === 'Home') next = 0
+  else if (key === 'End') next = 1
+  else return null
+  return Math.min(1, Math.max(0, next))
+}
+
+export type ActivityComparisonProjectedPoint = { distanceKm: number; x: number; y: number }
+
+export type ActivityComparisonProjectedRoute = {
+  activityId: number
+  paths: string[]
+  pointSegments: ActivityComparisonProjectedPoint[][]
+}
+
+export type ActivityComparisonProjection = {
+  width: number
+  height: number
+  routes: ActivityComparisonProjectedRoute[]
+}
+
+type ActivityComparisonGeographicPoint = { lat: number; lng: number; d: number }
+
+type ActivityComparisonMetricPoint = { distanceKm: number; value: number }
+
+type ActivityComparisonSeries = {
+  activity: StravaActivityDetail
+  index: number
+  segments: ActivityComparisonMetricPoint[][]
+  values: number[]
+}
+
+type ActivityComparisonDomain = { min: number; max: number }
+
+type ActivityComparisonMetricSpec = {
+  metric: ActivityComparisonMetric
+  title: string
+  display: (value: number) => number
+  tick: (value: number, sport: ActivityKind) => string
+  includeZero: boolean
+}
+
+const ACTIVITY_COMPARISON_WIDTH = 100
+const ACTIVITY_COMPARISON_HEIGHT = 34
+const ACTIVITY_COMPARISON_MAP_HEIGHT = 72
+const ACTIVITY_COMPARISON_MAP_PADDING = 4
+
+const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
+  ActivityComparisonMetric,
+  ActivityComparisonMetricSpec
+> = {
+  elevation: {
+    metric: 'elevation',
+    title: 'elevation',
+    display: elevationValue,
+    tick: value => `${Math.round(value).toLocaleString('en-US')} ${imperial ? 'ft' : 'm'}`,
+    includeZero: false,
+  },
+  speed: {
+    metric: 'speed',
+    title: 'speed',
+    display: value => value,
+    tick: value => speedKph(value),
+    includeZero: true,
+  },
+  hr: {
+    metric: 'hr',
+    title: 'heart rate',
+    display: value => value,
+    tick: value => `${Math.round(value)} bpm`,
+    includeZero: false,
+  },
+  power: {
+    metric: 'power',
+    title: 'power',
+    display: value => value,
+    tick: value => `${Math.round(value)} W`,
+    includeZero: true,
+  },
+  cadence: {
+    metric: 'cadence',
+    title: 'cadence',
+    display: value => value,
+    tick: (value, sport) => `${Math.round(value)} ${sport === 'run' ? 'spm' : 'rpm'}`,
+    includeZero: false,
+  },
+  respiration: {
+    metric: 'respiration',
+    title: 'respiration',
+    display: value => value,
+    tick: value => `${Math.round(value)} brpm`,
+    includeZero: false,
+  },
+  temperature: {
+    metric: 'temperature',
+    title: 'temperature',
+    display: temperatureValue,
+    tick: value => `${Math.round(value)}${temperatureUnit()}`,
+    includeZero: false,
+  },
+  'stride-length': {
+    metric: 'stride-length',
+    title: 'stride length',
+    display: value => value,
+    tick: formatStrideLength,
+    includeZero: false,
+  },
+  'ground-contact-time': {
+    metric: 'ground-contact-time',
+    title: 'ground contact time',
+    display: value => value,
+    tick: formatGroundContactTime,
+    includeZero: false,
+  },
+  'vertical-oscillation': {
+    metric: 'vertical-oscillation',
+    title: 'vertical oscillation',
+    display: value => value,
+    tick: formatVerticalOscillation,
+    includeZero: false,
+  },
+  'swim-pace': {
+    metric: 'swim-pace',
+    title: 'pace /100m',
+    display: value => value,
+    tick: value => clock(value),
+    includeZero: false,
+  },
+  'stroke-rate': {
+    metric: 'stroke-rate',
+    title: 'stroke rate',
+    display: value => value,
+    tick: value => `${swimTrendNumber(value)} str/min`,
+    includeZero: false,
+  },
+}
+
+const BIKE_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = [
+  'elevation',
+  'speed',
+  'hr',
+  'power',
+  'cadence',
+  'respiration',
+  'temperature',
+]
+
+const RUN_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = [
+  'elevation',
+  'speed',
+  'hr',
+  'power',
+  'cadence',
+  'stride-length',
+  'ground-contact-time',
+  'vertical-oscillation',
+  'temperature',
+]
+
+const SWIM_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = ['swim-pace', 'stroke-rate']
+
+export const activityComparisonMetricsForSport = (
+  sport: ActivityKind,
+): readonly ActivityComparisonMetric[] => {
+  if (sport === 'run') return RUN_COMPARISON_METRICS
+  if (sport === 'swim') return SWIM_COMPARISON_METRICS
+  return BIKE_COMPARISON_METRICS
+}
+
+export const activityCompareColor = (index: number): string => {
+  const position = Number.isFinite(index) ? Math.max(0, Math.trunc(index)) : 0
+  const hue = (25 + position * 137.508) % 360
+  return `oklch(62% 0.18 ${hue.toFixed(2)})`
+}
+
+const comparisonPowerCapable = (activity: StravaActivityDetail): boolean =>
+  activity.deviceWatts || activity.route.some(point => Number.isFinite(point.w) && point.w > 0)
+
+const comparisonMetricPointValue = (
+  activity: StravaActivityDetail,
+  point: StravaActivityDetail['route'][number],
+  metric: ActivityComparisonMetric,
+  powerCapable: boolean,
+): number | null => {
+  let value: number | null
+  switch (metric) {
+    case 'elevation':
+      value = point.alt
+      break
+    case 'speed':
+      value = point.speedKph > 0 ? point.speedKph : null
+      break
+    case 'hr':
+      value = point.hr > 0 ? point.hr : null
+      break
+    case 'power':
+      value = point.w > 0 || (point.w === 0 && powerCapable) ? point.w : null
+      break
+    case 'cadence':
+      value = point.cad > 0 ? point.cad * (activity.sport === 'run' ? 2 : 1) : null
+      break
+    case 'respiration':
+      value = point.resp != null && point.resp > 0 ? point.resp : null
+      break
+    case 'temperature':
+      value = point.tempC
+      break
+    case 'stride-length':
+      value = activity.sport === 'run' ? runStrideLengthValue(activity, point) : null
+      break
+    case 'ground-contact-time':
+      value = activity.sport === 'run' ? runGroundContactTimeMs(point) : null
+      break
+    case 'vertical-oscillation':
+      value = activity.sport === 'run' ? runVerticalOscillationCm(point) : null
+      break
+    case 'swim-pace':
+    case 'stroke-rate':
+      value = null
+      break
+  }
+  return value != null && Number.isFinite(value) ? value : null
+}
+
+const comparisonSwimMetricSegments = (
+  activity: StravaActivityDetail,
+  metric: 'swim-pace' | 'stroke-rate',
+): ActivityComparisonMetricPoint[][] => {
+  if (activity.sport !== 'swim') return []
+  const segments: ActivityComparisonMetricPoint[][] = []
+  let segment: ActivityComparisonMetricPoint[] = []
+  const flush = (): void => {
+    if (segment.length > 0) segments.push(segment)
+    segment = []
+  }
+  for (const interval of activity.swimIntervals) {
+    const distanceKm = interval.cumulativeDistanceM / 1_000
+    const startDistanceKm = (interval.cumulativeDistanceM - interval.distanceM) / 1_000
+    const value = metric === 'swim-pace' ? interval.paceSPer100m : interval.strokeRateSpm
+    if (
+      !Number.isFinite(startDistanceKm) ||
+      !Number.isFinite(distanceKm) ||
+      startDistanceKm < 0 ||
+      distanceKm <= startDistanceKm ||
+      !positiveMetric(value)
+    ) {
+      flush()
+      continue
+    }
+    const previous = segment[segment.length - 1]
+    if (previous && distanceKm < previous.distanceKm) flush()
+    if (segment.length === 0) segment.push({ distanceKm: startDistanceKm, value })
+    const last = segment[segment.length - 1]
+    if (last?.distanceKm === distanceKm) {
+      last.value = value
+      continue
+    }
+    segment.push({ distanceKm, value })
+  }
+  flush()
+  return segments
+}
+
+const comparisonMetricSegments = (
+  activity: StravaActivityDetail,
+  metric: ActivityComparisonMetric,
+): ActivityComparisonMetricPoint[][] => {
+  if (metric === 'swim-pace' || metric === 'stroke-rate')
+    return comparisonSwimMetricSegments(activity, metric)
+  const powerCapable = comparisonPowerCapable(activity)
+  const segments: ActivityComparisonMetricPoint[][] = []
+  let segment: ActivityComparisonMetricPoint[] = []
+  const flush = (): void => {
+    if (segment.length > 0) segments.push(segment)
+    segment = []
+  }
+  for (const point of activity.route) {
+    if (!Number.isFinite(point.d) || point.d < 0) {
+      flush()
+      continue
+    }
+    const value = comparisonMetricPointValue(activity, point, metric, powerCapable)
+    if (value == null) {
+      flush()
+      continue
+    }
+    const previous = segment[segment.length - 1]
+    if (previous && point.d < previous.distanceKm) flush()
+    const last = segment[segment.length - 1]
+    if (last?.distanceKm === point.d) {
+      last.value = value
+      continue
+    }
+    segment.push({ distanceKm: point.d, value })
+  }
+  flush()
+  return segments
+}
+
+export const activityComparisonMetricAtDistance = (
+  activity: StravaActivityDetail,
+  metric: ActivityComparisonMetric,
+  distanceKm: number,
+): number | null => {
+  if (!Number.isFinite(distanceKm)) return null
+  for (const segment of comparisonMetricSegments(activity, metric)) {
+    if (distanceKm < segment[0].distanceKm || distanceKm > segment[segment.length - 1].distanceKm)
+      continue
+    for (let index = 0; index < segment.length; index++) {
+      const point = segment[index]
+      if (distanceKm === point.distanceKm) return point.value
+      if (index === 0 || distanceKm > point.distanceKm) continue
+      const previous = segment[index - 1]
+      const span = point.distanceKm - previous.distanceKm
+      if (span <= 0) return point.value
+      const fraction = (distanceKm - previous.distanceKm) / span
+      return previous.value + (point.value - previous.value) * fraction
+    }
+  }
+  return null
+}
+
+export const activityComparisonDisplayValueAtDistance = (
+  activity: StravaActivityDetail,
+  metric: ActivityComparisonMetric,
+  distanceKm: number,
+): string => {
+  const value = activityComparisonMetricAtDistance(activity, metric, distanceKm)
+  if (value == null) return '—'
+  if (metric === 'elevation') return formatAltitude(value)
+  if (metric === 'speed') return speedKph(value)
+  if (metric === 'hr') return `${Math.round(value)} bpm`
+  if (metric === 'power') return `${Math.round(value)} W`
+  if (metric === 'cadence')
+    return `${Math.round(value)} ${activity.sport === 'run' ? 'spm' : 'rpm'}`
+  if (metric === 'respiration') return formatRespirationRate(value)
+  if (metric === 'stride-length') return formatStrideLength(value)
+  if (metric === 'ground-contact-time') return formatGroundContactTime(value)
+  if (metric === 'vertical-oscillation') return formatVerticalOscillation(value)
+  if (metric === 'swim-pace') return `${clock(value)} /100m`
+  if (metric === 'stroke-rate') return `${swimTrendNumber(value)} str/min`
+  return formatTemperature(value)
+}
+
+const comparisonActivityRoutePoints = (
+  activity: StravaActivityDetail,
+): StravaActivityDetail['route'] =>
+  activity.route.filter(point => Number.isFinite(point.d) && point.d >= 0).sort((a, b) => a.d - b.d)
+
+const comparisonSwimDistanceKm = (activity: StravaActivityDetail): number =>
+  activity.sport === 'swim'
+    ? activity.swimIntervals.reduce(
+        (max, interval) =>
+          Number.isFinite(interval.cumulativeDistanceM)
+            ? Math.max(max, interval.cumulativeDistanceM / 1_000)
+            : max,
+        Number.isFinite(activity.distanceKm) && activity.distanceKm > 0 ? activity.distanceKm : 0,
+      )
+    : 0
+
+const comparisonMaxDistanceKm = (activities: readonly StravaActivityDetail[]): number =>
+  activities.reduce((max, activity) => {
+    const route = comparisonActivityRoutePoints(activity)
+    return Math.max(max, route[route.length - 1]?.d ?? 0, comparisonSwimDistanceKm(activity))
+  }, 0)
+
+const comparisonRouteCapable = (activity: StravaActivityDetail): boolean => {
+  const route = comparisonActivityRoutePoints(activity)
+  return route.length >= 2 && route[route.length - 1].d > route[0].d
+}
+
+const splitComparisonGeographicPoints = (
+  points: readonly ActivityComparisonGeographicPoint[],
+): ActivityComparisonGeographicPoint[][] => {
+  const segments: ActivityComparisonGeographicPoint[][] = []
+  let segment: ActivityComparisonGeographicPoint[] = []
+  const flush = (): void => {
+    if (segment.length >= 2) segments.push(segment)
+    segment = []
+  }
+  for (const point of points) {
+    if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng) || !Number.isFinite(point.d)) {
+      flush()
+      continue
+    }
+    if (segment.length > 0 && point.d < segment[segment.length - 1].d) flush()
+    segment.push({ lat: point.lat, lng: point.lng, d: point.d })
+  }
+  flush()
+  return segments
+}
+
+const comparisonGeographicSegments = (
+  activity: StravaActivityDetail,
+): ActivityComparisonGeographicPoint[][] => {
+  const mapSegments = activity.mapRoute.flatMap(segment => splitComparisonGeographicPoints(segment))
+  if (mapSegments.length > 0) return mapSegments
+  return splitComparisonGeographicPoints(activity.route)
+}
+
+const comparisonTelemetrySegments = (
+  activity: StravaActivityDetail,
+  segments: ActivityComparisonGeographicPoint[][],
+): ActivityComparisonGeographicPoint[][] => {
+  const telemetry = activity.route
+    .filter(
+      point => Number.isFinite(point.lat) && Number.isFinite(point.lng) && Number.isFinite(point.d),
+    )
+    .map(point => ({ lat: point.lat, lng: point.lng, d: point.d }))
+    .sort((a, b) => a.d - b.d)
+  return segments.map(segment => {
+    const startDistanceKm = segment[0].d
+    const endDistanceKm = segment[segment.length - 1].d
+    const candidates =
+      telemetry.length > 0
+        ? telemetry.filter(point => point.d >= startDistanceKm && point.d <= endDistanceKm)
+        : segment
+    const points: ActivityComparisonGeographicPoint[] = []
+    for (const point of candidates) {
+      const previous = points[points.length - 1]
+      if (previous?.d === point.d) {
+        points[points.length - 1] = point
+        continue
+      }
+      points.push(point)
+    }
+    return points.length >= 2 ? points : segment
+  })
+}
+
+export const buildActivityComparisonProjection = (
+  activities: readonly StravaActivityDetail[],
+): ActivityComparisonProjection => {
+  const sources = activities.map(activity => {
+    const segments = comparisonGeographicSegments(activity)
+    return {
+      activity,
+      segments,
+      telemetrySegments: comparisonTelemetrySegments(activity, segments),
+    }
+  })
+  const allPoints = sources.flatMap(source => [
+    ...source.segments.flat(),
+    ...source.telemetrySegments.flat(),
+  ])
+  if (allPoints.length === 0) {
+    const poolDistances = sources.map(source => comparisonSwimDistanceKm(source.activity))
+    const maxPoolDistanceKm = Math.max(0, ...poolDistances)
+    if (maxPoolDistanceKm > 0 && sources.every(source => source.activity.sport === 'swim')) {
+      const usableWidth = ACTIVITY_COMPARISON_WIDTH - ACTIVITY_COMPARISON_MAP_PADDING * 2
+      return {
+        width: ACTIVITY_COMPARISON_WIDTH,
+        height: ACTIVITY_COMPARISON_MAP_HEIGHT,
+        routes: sources.map((source, index) => {
+          const distanceKm = poolDistances[index]
+          if (distanceKm <= 0)
+            return { activityId: source.activity.id, paths: [], pointSegments: [] }
+          const y = ((index + 1) / (sources.length + 1)) * ACTIVITY_COMPARISON_MAP_HEIGHT
+          const startX = ACTIVITY_COMPARISON_MAP_PADDING
+          const endX = startX + (distanceKm / maxPoolDistanceKm) * usableWidth
+          return {
+            activityId: source.activity.id,
+            paths: [`M ${startX.toFixed(2)} ${y.toFixed(2)} L ${endX.toFixed(2)} ${y.toFixed(2)}`],
+            pointSegments: [
+              [
+                { distanceKm: 0, x: startX, y },
+                { distanceKm, x: endX, y },
+              ],
+            ],
+          }
+        }),
+      }
+    }
+    return {
+      width: ACTIVITY_COMPARISON_WIDTH,
+      height: ACTIVITY_COMPARISON_MAP_HEIGHT,
+      routes: sources.map(source => ({
+        activityId: source.activity.id,
+        paths: [],
+        pointSegments: [],
+      })),
+    }
+  }
+  const meanLatitude = allPoints.reduce((total, point) => total + point.lat, 0) / allPoints.length
+  const longitudeScale = Math.max(1e-6, Math.cos((meanLatitude * Math.PI) / 180))
+  const geographic = allPoints.map(point => ({ x: point.lng * longitudeScale, y: point.lat }))
+  let minX = Number.POSITIVE_INFINITY
+  let maxX = Number.NEGATIVE_INFINITY
+  let minY = Number.POSITIVE_INFINITY
+  let maxY = Number.NEGATIVE_INFINITY
+  for (const point of geographic) {
+    minX = Math.min(minX, point.x)
+    maxX = Math.max(maxX, point.x)
+    minY = Math.min(minY, point.y)
+    maxY = Math.max(maxY, point.y)
+  }
+  const centerX = (minX + maxX) / 2
+  const centerY = (minY + maxY) / 2
+  const spanX = maxX - minX
+  const spanY = maxY - minY
+  const usableWidth = ACTIVITY_COMPARISON_WIDTH - ACTIVITY_COMPARISON_MAP_PADDING * 2
+  const usableHeight = ACTIVITY_COMPARISON_MAP_HEIGHT - ACTIVITY_COMPARISON_MAP_PADDING * 2
+  const scaleX = spanX > 0 ? usableWidth / spanX : Number.POSITIVE_INFINITY
+  const scaleY = spanY > 0 ? usableHeight / spanY : Number.POSITIVE_INFINITY
+  const scale = Number.isFinite(scaleX) || Number.isFinite(scaleY) ? Math.min(scaleX, scaleY) : 1
+  const project = (point: ActivityComparisonGeographicPoint): ActivityComparisonProjectedPoint => ({
+    distanceKm: point.d,
+    x: Number(
+      (ACTIVITY_COMPARISON_WIDTH / 2 + (point.lng * longitudeScale - centerX) * scale).toFixed(4),
+    ),
+    y: Number((ACTIVITY_COMPARISON_MAP_HEIGHT / 2 - (point.lat - centerY) * scale).toFixed(4)),
+  })
+  return {
+    width: ACTIVITY_COMPARISON_WIDTH,
+    height: ACTIVITY_COMPARISON_MAP_HEIGHT,
+    routes: sources.map(source => ({
+      activityId: source.activity.id,
+      paths: source.segments.map(segment =>
+        segment
+          .map((point, index) => {
+            const projected = project(point)
+            return `${index === 0 ? 'M' : 'L'} ${projected.x.toFixed(2)} ${projected.y.toFixed(2)}`
+          })
+          .join(' '),
+      ),
+      pointSegments: source.telemetrySegments.map(segment => segment.map(project)),
+    })),
+  }
+}
+
+export const activityComparisonEligible = (activity: StravaActivityDetail): boolean => {
+  const swimTelemetry =
+    activity.sport === 'swim' &&
+    [
+      comparisonSwimMetricSegments(activity, 'swim-pace'),
+      comparisonSwimMetricSegments(activity, 'stroke-rate'),
+    ]
+      .flat()
+      .some(segment => segment.length >= 2)
+  return (
+    swimTelemetry ||
+    (comparisonRouteCapable(activity) && comparisonGeographicSegments(activity).length > 0)
+  )
+}
+
+export const activityComparisonMapPointAtDistance = (
+  pointSegments: readonly (readonly ActivityComparisonProjectedPoint[])[],
+  distanceKm: number,
+): ActivityComparisonProjectedPoint | null => {
+  if (!Number.isFinite(distanceKm)) return null
+  for (const points of pointSegments) {
+    if (
+      points.length === 0 ||
+      distanceKm < points[0].distanceKm ||
+      distanceKm > points[points.length - 1].distanceKm
+    )
+      continue
+    for (let index = 0; index < points.length; index++) {
+      const point = points[index]
+      if (distanceKm === point.distanceKm) return point
+      if (index === 0 || distanceKm > point.distanceKm) continue
+      const previous = points[index - 1]
+      const span = point.distanceKm - previous.distanceKm
+      if (span <= 0) return point
+      const fraction = (distanceKm - previous.distanceKm) / span
+      return {
+        distanceKm,
+        x: previous.x + (point.x - previous.x) * fraction,
+        y: previous.y + (point.y - previous.y) * fraction,
+      }
+    }
+  }
+  return null
+}
+
+export const normalizePowerCurvePoints = (
+  curve: readonly PowerCurvePoint[] | null,
+): PowerCurvePoint[] => {
+  if (!curve) return []
+  const sorted = curve
+    .filter(
+      point => Number.isFinite(point.s) && point.s > 0 && Number.isFinite(point.w) && point.w >= 0,
+    )
+    .map(point => ({ s: point.s, w: point.w }))
+    .sort((a, b) => a.s - b.s)
+  const points: PowerCurvePoint[] = []
+  for (const point of sorted) {
+    if (points[points.length - 1]?.s === point.s) continue
+    points.push(point)
+  }
+  return points
+}
+
+export const nearestPowerCurveValue = (
+  points: readonly PowerCurvePoint[],
+  durationS: number,
+): number | null => {
+  if (
+    points.length === 0 ||
+    !Number.isFinite(durationS) ||
+    durationS < points[0].s ||
+    durationS > points[points.length - 1].s
+  )
+    return null
+  return points[nearestPowerCurveIndex(points, durationS)].w
+}
+
+export const activityZonePercentages = (values: readonly number[] | null | undefined): number[] => {
+  if (!values) return []
+  if (values.some(value => !Number.isFinite(value) || value < 0)) return []
+  const total = values.reduce((sum, value) => sum + value, 0)
+  return total > 0 ? values.map(value => (value / total) * 100) : values.map(() => 0)
+}
+
+export const activityPowerDistributionPercentages = (
+  values: readonly number[] | null | undefined,
+): number[] => (values && values.length >= 2 ? activityZonePercentages(values) : [])
+
+const comparisonMetricSeries = (
+  activity: StravaActivityDetail,
+  index: number,
+  spec: ActivityComparisonMetricSpec,
+): ActivityComparisonSeries => {
+  const segments: ActivityComparisonMetricPoint[][] = []
+  const values: number[] = []
+  for (const rawSegment of comparisonMetricSegments(activity, spec.metric)) {
+    const segment = rawSegment
+      .map(point => ({ distanceKm: point.distanceKm, value: spec.display(point.value) }))
+      .filter(point => Number.isFinite(point.value))
+    if (segment.length < 2) continue
+    segments.push(segment)
+    values.push(...segment.map(point => point.value))
+  }
+  return { activity, index, segments, values }
+}
+
+const comparisonNumericDomain = (
+  values: number[],
+  includeZero: boolean,
+): ActivityComparisonDomain => {
+  if (values.length === 0) return { min: 0, max: 1 }
+  let observedMin = values[0]
+  let observedMax = values[0]
+  for (let index = 1; index < values.length; index++) {
+    observedMin = Math.min(observedMin, values[index])
+    observedMax = Math.max(observedMax, values[index])
+  }
+  const lower = includeZero ? Math.min(0, observedMin) : observedMin
+  const span = observedMax - lower
+  const step = niceStep(span > 0 ? span : Math.max(1, Math.abs(observedMax)), 3)
+  const min = Math.floor(lower / step) * step
+  let max = Math.ceil(observedMax / step) * step
+  if (max <= min) max = min + step
+  return { min, max }
+}
+
+const comparisonSeriesPath = (
+  segments: { distanceKm: number; value: number }[][],
+  maxDistanceKm: number,
+  domain: ActivityComparisonDomain,
+): string => {
+  const distanceSpan = Math.max(1e-6, maxDistanceKm)
+  const valueSpan = Math.max(1e-6, domain.max - domain.min)
+  return segments
+    .map(segment =>
+      segment
+        .map((point, index) => {
+          const x =
+            Math.min(1, Math.max(0, point.distanceKm / distanceSpan)) * ACTIVITY_COMPARISON_WIDTH
+          const y =
+            ACTIVITY_COMPARISON_HEIGHT -
+            ((point.value - domain.min) / valueSpan) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+          return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
+        })
+        .join(' '),
+    )
+    .filter(path => path.length > 0)
+    .join(' ')
+}
+
+const comparisonMapReadout = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+): N => {
+  const readout = f.el('div', 'tri-compare-readout tri-compare-map-readout', undefined, {
+    'data-compare-readout': '',
+    'data-visible': 'false',
+    'aria-hidden': 'true',
+  })
+  for (const [index, activity] of activities.entries()) {
+    const row = f.el('div', 'tri-compare-readout-row', undefined, {
+      'data-activity-id': `${activity.id}`,
+      'data-activity-index': `${index}`,
+      style: `--tri-compare-color:${activityCompareColor(index)}`,
+    })
+    f.add(
+      row,
+      f.el('span', 'tri-compare-readout-swatch', undefined, { 'aria-hidden': 'true' }),
+      f.el('strong', 'tri-compare-readout-value', undefined, { 'data-compare-readout-value': '' }),
+    )
+    f.add(readout, row)
+  }
+  return readout
+}
+
+const comparisonChartHead = <N>(
+  f: TriNodeFactory<N>,
+  title: string,
+  available: number,
+  selected: number,
+): N => {
+  const head = f.el('div', 'tri-compare-chart-head')
+  const coverage = f.el('span', 'tri-compare-coverage', undefined, {
+    'data-available': `${available}`,
+    'data-selected': `${selected}`,
+  })
+  f.add(
+    coverage,
+    f.el('span', 'tri-compare-coverage-count', `${available}/${selected} · `),
+    f.el('span', 'tri-compare-coverage-label', 'sensor coverage', {
+      'data-i18n': 'sensor coverage',
+    }),
+  )
+  f.add(head, f.el('div', 'tri-compare-title', title, { 'data-i18n': title }), coverage)
+  return head
+}
+
+const comparisonGraphAttrs = (
+  chart: string,
+  label: string,
+  valueMin: number,
+  valueMax: number,
+  valueNow: number,
+  valueText: string,
+  available: number,
+): Record<string, string | number> => {
+  const attrs: Record<string, string | number> = {
+    class: 'tri-compare-graph',
+    viewBox: `0 0 ${ACTIVITY_COMPARISON_WIDTH} ${ACTIVITY_COMPARISON_HEIGHT}`,
+    preserveAspectRatio: 'none',
+    'data-compare-chart': chart,
+    'aria-label': label,
+    'data-i18n-aria-label': label,
+  }
+  if (available <= 0) {
+    attrs.role = 'img'
+    attrs['aria-disabled'] = 'true'
+    return attrs
+  }
+  attrs.role = 'slider'
+  attrs.tabindex = 0
+  attrs['aria-orientation'] = 'horizontal'
+  attrs['aria-valuemin'] = valueMin
+  attrs['aria-valuemax'] = valueMax
+  attrs['aria-valuenow'] = valueNow
+  attrs['aria-valuetext'] = valueText
+  return attrs
+}
+
+const addComparisonSelectionRegion = <N>(f: TriNodeFactory<N>, graph: N, clipId: string): void => {
+  const clip = f.svg('clipPath', { id: clipId })
+  f.add(
+    clip,
+    f.svg('rect', {
+      class: 'tri-compare-selection-clip',
+      x: 0,
+      y: 0,
+      width: 0,
+      height: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const defs = f.svg('defs', {})
+  f.add(defs, clip)
+  f.add(
+    graph,
+    defs,
+    f.svg('rect', {
+      class: 'tri-compare-selection-region',
+      x: 0,
+      y: 0,
+      width: 0,
+      height: ACTIVITY_COMPARISON_HEIGHT,
+      'aria-hidden': 'true',
+    }),
+  )
+}
+
+const buildComparisonMetricChart = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+  spec: ActivityComparisonMetricSpec,
+  maxDistanceKm: number,
+): N => {
+  const series = activities.map((activity, index) => comparisonMetricSeries(activity, index, spec))
+  const available = series.filter(item => item.values.length > 0).length
+  const domain = comparisonNumericDomain(
+    series.flatMap(item => item.values),
+    spec.includeZero,
+  )
+  const selectionClipId = `tri-compare-${spec.metric}-selection-clip`
+  const sport = activities[0]?.sport ?? 'bike'
+  const graph = f.svg('svg', {
+    ...comparisonGraphAttrs(
+      spec.metric,
+      spec.title,
+      0,
+      maxDistanceKm,
+      0,
+      scrubDist(0, sport),
+      available,
+    ),
+    class: 'tri-compare-graph tri-compare-distance-graph',
+    'data-domain-x-min': 0,
+    'data-domain-x-max': maxDistanceKm,
+    'data-domain-y-min': domain.min,
+    'data-domain-y-max': domain.max,
+    'data-available': available,
+    'data-selected': activities.length,
+  })
+  addComparisonSelectionRegion(f, graph, selectionClipId)
+  const yTicks = niceTicks(domain.min, domain.max, 3).map(value => ({
+    label: value === 0 ? '0' : spec.tick(value, sport),
+    vbY:
+      ACTIVITY_COMPARISON_HEIGHT -
+      ((value - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-grid',
+        x1: 0,
+        y1: tick.vbY,
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: tick.vbY,
+      }),
+    )
+  for (const item of series) {
+    if (item.values.length === 0) continue
+    const path = comparisonSeriesPath(item.segments, maxDistanceKm, domain)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-line',
+        d: path,
+        'data-activity-id': item.activity.id,
+        'data-activity-index': item.index,
+        style: `--tri-compare-color:${activityCompareColor(item.index)}`,
+      }),
+      f.svg('path', {
+        class: 'tri-compare-selection-line',
+        d: path,
+        'data-activity-id': item.activity.id,
+        'data-activity-index': item.index,
+        style: `--tri-compare-color:${activityCompareColor(item.index)}`,
+        'clip-path': `url(#${selectionClipId})`,
+        'aria-hidden': 'true',
+      }),
+    )
+  }
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-compare-cursor',
+      x1: 0,
+      y1: 0,
+      x2: 0,
+      y2: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const chart = f.el('section', 'tri-compare-chart', undefined, {
+    'data-compare-chart': spec.metric,
+    'data-available': `${available}`,
+    'data-selected': `${activities.length}`,
+  })
+  f.add(
+    chart,
+    comparisonChartHead(f, spec.title, available, activities.length),
+    axisFrame(
+      f,
+      graph,
+      yTicks,
+      ACTIVITY_COMPARISON_HEIGHT,
+      sport === 'swim'
+        ? swimActivityXTicks(maxDistanceKm * 1_000)
+        : distanceXTicks(0, maxDistanceKm),
+      true,
+      { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
+    ),
+  )
+  return chart
+}
+
+const comparisonDurationTicks = (minSeconds: number, maxSeconds: number): AxisXTick[] => {
+  const durations = [minSeconds, 1, 5, 30, 60, 300, 1200, 3600, 10_800, maxSeconds]
+    .filter((seconds, index, values) => {
+      if (seconds < minSeconds || seconds > maxSeconds) return false
+      return values.indexOf(seconds) === index
+    })
+    .sort((a, b) => a - b)
+  return durations.map((seconds, index) => ({
+    label: dlabel(seconds),
+    pct: powerCurveFraction(seconds, minSeconds, maxSeconds) * 100,
+    cls:
+      index === 0
+        ? 'tri-cax-xt--first'
+        : index === durations.length - 1
+          ? 'tri-cax-xt--last'
+          : undefined,
+  }))
+}
+
+const buildComparisonPowerCurve = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+  ctx?: DetailCtx,
+): N => {
+  const curves = activities.map((activity, index) => ({
+    activity,
+    index,
+    points: normalizePowerCurvePoints(activity.powerCurve),
+  }))
+  const availableCurves = curves.filter(curve => curve.points.length >= 2)
+  let minSeconds = 1
+  let maxSeconds = 2
+  if (availableCurves.length > 0) {
+    minSeconds = availableCurves[0].points[0].s
+    maxSeconds = availableCurves[0].points[availableCurves[0].points.length - 1].s
+    for (let index = 1; index < availableCurves.length; index++) {
+      const points = availableCurves[index].points
+      minSeconds = Math.min(minSeconds, points[0].s)
+      maxSeconds = Math.max(maxSeconds, points[points.length - 1].s)
+    }
+  }
+  const reference =
+    availableCurves.length > 0
+      ? normalizePowerCurvePoints(ctx?.curveRef ?? null).filter(
+          point => point.s >= minSeconds && point.s <= maxSeconds,
+        )
+      : []
+  const ftp = availableCurves.length > 0 ? (ctx?.ftp ?? null) : null
+  const goalFtp = availableCurves.length > 0 ? (ctx?.goalFtp ?? null) : null
+  const domain = comparisonNumericDomain(
+    [
+      ...availableCurves.flatMap(curve => curve.points.map(point => point.w)),
+      ...reference.map(point => point.w),
+      ...(ftp == null ? [] : [ftp]),
+      ...(goalFtp == null ? [] : [goalFtp]),
+    ],
+    true,
+  )
+  const graph = f.svg('svg', {
+    ...comparisonGraphAttrs(
+      'power-curve',
+      'power curve',
+      minSeconds,
+      maxSeconds,
+      minSeconds,
+      dlabel(minSeconds),
+      availableCurves.length,
+    ),
+    class: 'tri-compare-graph tri-compare-curve-graph',
+    'data-compare-chart': 'power-curve',
+    'data-domain-x-scale': 'log',
+    'data-domain-x-min': minSeconds,
+    'data-domain-x-max': maxSeconds,
+    'data-domain-y-min': domain.min,
+    'data-domain-y-max': domain.max,
+    'data-available': availableCurves.length,
+    'data-selected': activities.length,
+    ...(reference.length >= 2 ? { 'data-curve-ref': encodePowerCurve(reference) } : {}),
+  })
+  const X = (seconds: number): number =>
+    powerCurveFraction(seconds, minSeconds, maxSeconds) * ACTIVITY_COMPARISON_WIDTH
+  const Y = (watts: number): number =>
+    ACTIVITY_COMPARISON_HEIGHT -
+    ((watts - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+  const toPath = (points: PowerCurvePoint[]): string =>
+    powerCurvePathPoints(points)
+      .map(
+        (point, index) =>
+          `${index === 0 ? 'M' : 'L'} ${X(point.s).toFixed(2)} ${Y(point.w).toFixed(2)}`,
+      )
+      .join(' ')
+  const yTicks = niceTicks(domain.min, domain.max, 3).map(value => ({
+    label: value === 0 ? '0' : `${Math.round(value)} W`,
+    vbY: Y(value),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-grid',
+        x1: 0,
+        y1: tick.vbY,
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: tick.vbY,
+      }),
+    )
+  if (reference.length >= 2)
+    f.add(graph, f.svg('path', { class: 'tri-compare-curve-ref', d: toPath(reference) }))
+  if (ftp != null)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-curve-ftp',
+        x1: 0,
+        y1: Y(ftp).toFixed(2),
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: Y(ftp).toFixed(2),
+      }),
+    )
+  if (goalFtp != null)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-curve-goal',
+        x1: 0,
+        y1: Y(goalFtp).toFixed(2),
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: Y(goalFtp).toFixed(2),
+      }),
+    )
+  for (const curve of availableCurves) {
+    const path = toPath(curve.points)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-line',
+        d: path,
+        'data-activity-id': curve.activity.id,
+        'data-activity-index': curve.index,
+        style: `--tri-compare-color:${activityCompareColor(curve.index)}`,
+      }),
+    )
+  }
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-compare-cursor',
+      x1: 0,
+      y1: 0,
+      x2: 0,
+      y2: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const chart = f.el('section', 'tri-compare-chart', undefined, {
+    'data-compare-chart': 'power-curve',
+    'data-available': `${availableCurves.length}`,
+    'data-selected': `${activities.length}`,
+  })
+  f.add(
+    chart,
+    comparisonChartHead(f, 'power curve', availableCurves.length, activities.length),
+    axisFrame(
+      f,
+      graph,
+      yTicks,
+      ACTIVITY_COMPARISON_HEIGHT,
+      comparisonDurationTicks(minSeconds, maxSeconds),
+      true,
+      { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
+    ),
+  )
+  if (reference.length >= 2 || ftp != null || goalFtp != null) {
+    const cap = f.el('div', 'tri-elev-cap')
+    if (reference.length >= 2)
+      f.add(cap, f.el('span', 'tri-ana-k', '6-week best', { 'data-i18n': '6-week best' }))
+    if (ftp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftp}W`))
+    if (goalFtp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalFtp}W`))
+    f.add(chart, cap)
+  }
+  return chart
+}
+
+const comparisonPowerDistributionTicks = (binCount: number): AxisXTick[] => {
+  const maxWatts = Math.max(25, (binCount - 1) * 25)
+  const stepWatts = maxWatts <= 300 ? 100 : maxWatts <= 700 ? 200 : 300
+  const ticks: AxisXTick[] = []
+  for (let watts = 0; watts <= maxWatts; watts += stepWatts)
+    ticks.push({
+      label: `${watts} W`,
+      pct: (watts / maxWatts) * 100,
+      cls: watts === 0 ? 'tri-cax-xt--first' : watts === maxWatts ? 'tri-cax-xt--last' : undefined,
+    })
+  return ticks
+}
+
+const buildComparisonPowerDistribution = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+): N => {
+  const distributions = activities.map((activity, index) => ({
+    activity,
+    index,
+    percentages: activityPowerDistributionPercentages(activity.powerHist),
+  }))
+  const available = distributions.filter(distribution =>
+    distribution.percentages.some(value => value > 0),
+  )
+  const binCount = Math.max(
+    2,
+    ...distributions.map(distribution => distribution.percentages.length),
+  )
+  const maxWatts = (binCount - 1) * 25
+  const domain = comparisonNumericDomain(
+    available.flatMap(distribution => distribution.percentages),
+    true,
+  )
+  const graph = f.svg('svg', {
+    ...comparisonGraphAttrs(
+      'power-distribution',
+      '25W power distribution',
+      0,
+      maxWatts,
+      0,
+      '0–24 W',
+      available.length,
+    ),
+    class: 'tri-compare-graph tri-compare-distribution-graph',
+    'data-compare-chart': 'power-distribution',
+    'data-domain-x-min': 0,
+    'data-domain-x-max': maxWatts,
+    'data-domain-y-min': domain.min,
+    'data-domain-y-max': domain.max,
+    'data-bin-count': binCount,
+    'data-bin-width-watts': 25,
+    'data-available': available.length,
+    'data-selected': activities.length,
+  })
+  const yTicks = niceTicks(domain.min, domain.max, 3).map(value => ({
+    label: `${Math.round(value)}%`,
+    vbY:
+      ACTIVITY_COMPARISON_HEIGHT -
+      ((value - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-grid',
+        x1: 0,
+        y1: tick.vbY,
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: tick.vbY,
+      }),
+    )
+  for (const distribution of available) {
+    const path = Array.from(
+      { length: binCount },
+      (_, index) => distribution.percentages[index] ?? 0,
+    )
+      .map((value, index) => {
+        const x = (index / (binCount - 1)) * ACTIVITY_COMPARISON_WIDTH
+        const y =
+          ACTIVITY_COMPARISON_HEIGHT -
+          ((value - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
+      })
+      .join(' ')
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-line',
+        d: path,
+        'data-activity-id': distribution.activity.id,
+        'data-activity-index': distribution.index,
+        style: `--tri-compare-color:${activityCompareColor(distribution.index)}`,
+      }),
+    )
+  }
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-compare-cursor',
+      x1: 0,
+      y1: 0,
+      x2: 0,
+      y2: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const chart = f.el('section', 'tri-compare-chart', undefined, {
+    'data-compare-chart': 'power-distribution',
+    'data-available': `${available.length}`,
+    'data-selected': `${activities.length}`,
+  })
+  f.add(
+    chart,
+    comparisonChartHead(f, '25W power distribution', available.length, activities.length),
+    axisFrame(
+      f,
+      graph,
+      yTicks,
+      ACTIVITY_COMPARISON_HEIGHT,
+      comparisonPowerDistributionTicks(binCount),
+      true,
+      { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
+    ),
+  )
+  return chart
+}
+
+const buildComparisonZones = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+  kind: 'hr-zones' | 'power-zones',
+): N => {
+  const values = activities.map((activity, index) => ({
+    activity,
+    index,
+    percentages: activityZonePercentages(
+      kind === 'hr-zones' ? activity.hrZones : activity.powerZones,
+    ),
+  }))
+  const available = values.filter(item => item.percentages.some(value => value > 0))
+  const defaultZoneCount = kind === 'hr-zones' ? 5 : 7
+  const observedZoneCount = values.reduce((max, item) => Math.max(max, item.percentages.length), 0)
+  const zoneCount = observedZoneCount > 0 ? observedZoneCount : defaultZoneCount
+  const domain = { min: 0, max: 100 }
+  const graph = f.svg('svg', {
+    ...comparisonGraphAttrs(
+      kind,
+      kind === 'hr-zones' ? 'heart rate zones' : 'power zones',
+      1,
+      zoneCount,
+      1,
+      'Z1',
+      available.length,
+    ),
+    class: 'tri-compare-graph tri-compare-zone-graph',
+    'data-domain-x-min': 1,
+    'data-domain-x-max': zoneCount,
+    'data-domain-y-min': domain.min,
+    'data-domain-y-max': domain.max,
+    'data-zone-unit': 'percent',
+    'data-available': available.length,
+    'data-selected': activities.length,
+  })
+  const yTicks = [0, 25, 50, 75, 100].map(value => ({
+    label: `${value}%`,
+    vbY: ACTIVITY_COMPARISON_HEIGHT - (value / domain.max) * (ACTIVITY_COMPARISON_HEIGHT - 1),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-grid',
+        x1: 0,
+        y1: tick.vbY,
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: tick.vbY,
+      }),
+    )
+  for (const item of available) {
+    const path = item.percentages
+      .map((value, index) => {
+        const x =
+          zoneCount === 1
+            ? ACTIVITY_COMPARISON_WIDTH / 2
+            : (index / (zoneCount - 1)) * ACTIVITY_COMPARISON_WIDTH
+        const y =
+          ACTIVITY_COMPARISON_HEIGHT - (value / domain.max) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
+      })
+      .join(' ')
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-line',
+        d: path,
+        'data-activity-id': item.activity.id,
+        'data-activity-index': item.index,
+        style: `--tri-compare-color:${activityCompareColor(item.index)}`,
+      }),
+    )
+  }
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-compare-cursor',
+      x1: 0,
+      y1: 0,
+      x2: 0,
+      y2: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const xTicks = Array.from({ length: zoneCount }, (_, index) => ({
+    label: `Z${index + 1}`,
+    pct: zoneCount === 1 ? 50 : (index / (zoneCount - 1)) * 100,
+    cls:
+      index === 0 ? 'tri-cax-xt--first' : index === zoneCount - 1 ? 'tri-cax-xt--last' : undefined,
+  }))
+  const chart = f.el('section', 'tri-compare-chart', undefined, {
+    'data-compare-chart': kind,
+    'data-available': `${available.length}`,
+    'data-selected': `${activities.length}`,
+  })
+  f.add(
+    chart,
+    comparisonChartHead(
+      f,
+      kind === 'hr-zones' ? 'heart rate zones' : 'power zones',
+      available.length,
+      activities.length,
+    ),
+    axisFrame(f, graph, yTicks, ACTIVITY_COMPARISON_HEIGHT, xTicks, true, {
+      top: 0,
+      bottom: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  return chart
+}
+
+const buildComparisonLegend = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+): N => {
+  const legend = f.el('div', 'tri-compare-legend', undefined, {
+    role: 'list',
+    'aria-label': 'selected activities',
+    'data-i18n-aria-label': 'selected activities',
+  })
+  for (const [index, activity] of activities.entries()) {
+    const removeAttrs: Record<string, string> = {
+      type: 'button',
+      'data-compare-activity-remove': `${activity.id}`,
+      'aria-label': 'remove activity',
+      'data-i18n-aria-label': 'remove activity',
+    }
+    if (activities.length <= 2) removeAttrs.disabled = ''
+    const item = f.el('div', 'tri-compare-legend-item', undefined, {
+      role: 'listitem',
+      'data-activity-id': `${activity.id}`,
+      'data-activity-index': `${index}`,
+      style: `--tri-compare-color:${activityCompareColor(index)}`,
+    })
+    const remove = f.el('button', 'tri-compare-legend-remove', undefined, removeAttrs)
+    const removeIcon = f.svg('svg', {
+      class: 'tri-compare-legend-remove-icon',
+      viewBox: '0 0 16 16',
+      fill: 'none',
+      'aria-hidden': 'true',
+    })
+    f.add(
+      removeIcon,
+      f.svg('path', {
+        d: 'M4 4l8 8M12 4 4 12',
+        stroke: 'currentColor',
+        'stroke-width': 1.25,
+        'stroke-linecap': 'round',
+      }),
+    )
+    f.add(remove, removeIcon)
+    f.add(
+      item,
+      f.el('span', 'tri-compare-legend-swatch', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-compare-legend-date', shortDate(activity.date)),
+      f.el('span', 'tri-compare-legend-name', activity.name),
+      remove,
+    )
+    f.add(legend, item)
+  }
+  return legend
+}
+
+const buildComparisonMap = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+): N => {
+  const projection = buildActivityComparisonProjection(activities)
+  const available = projection.routes.filter(route => route.paths.length > 0).length
+  const maxDistanceKm = comparisonMaxDistanceKm(activities)
+  const graphAttrs: Record<string, string | number> = {
+    class: 'tri-compare-map',
+    viewBox: `0 0 ${projection.width} ${projection.height}`,
+    preserveAspectRatio: 'xMidYMid meet',
+    'data-compare-chart': 'route',
+    'data-available': available,
+    'data-selected': activities.length,
+    'data-domain-x-max': maxDistanceKm,
+    'aria-label': 'route overlay',
+    'data-i18n-aria-label': 'route overlay',
+  }
+  if (available > 0 && maxDistanceKm > 0) {
+    graphAttrs.role = 'slider'
+    graphAttrs.tabindex = 0
+    graphAttrs['aria-orientation'] = 'horizontal'
+    graphAttrs['aria-valuemin'] = 0
+    graphAttrs['aria-valuemax'] = maxDistanceKm
+    graphAttrs['aria-valuenow'] = 0
+    graphAttrs['aria-valuetext'] = scrubDist(0, activities[0].sport)
+  } else {
+    graphAttrs.role = 'img'
+    graphAttrs['aria-disabled'] = 'true'
+  }
+  const graph = f.svg('svg', graphAttrs)
+  for (const [activityIndex, route] of projection.routes.entries()) {
+    for (const [segmentIndex, path] of route.paths.entries())
+      f.add(
+        graph,
+        f.svg('path', {
+          class: 'tri-compare-route-line',
+          d: path,
+          'data-activity-id': route.activityId,
+          'data-activity-index': activityIndex,
+          'data-route-segment-index': segmentIndex,
+          style: `--tri-compare-color:${activityCompareColor(activityIndex)}`,
+        }),
+      )
+    f.add(
+      graph,
+      f.svg('circle', {
+        class: 'tri-compare-route-cursor',
+        cx: -10,
+        cy: -10,
+        r: 0.55,
+        'data-activity-id': route.activityId,
+        'data-activity-index': activityIndex,
+        style: `--tri-compare-color:${activityCompareColor(activityIndex)}`,
+        'aria-hidden': 'true',
+      }),
+    )
+  }
+  const panel = f.el('section', 'tri-compare-map-panel', undefined, {
+    'data-compare-chart': 'route',
+    'data-available': `${available}`,
+    'data-selected': `${activities.length}`,
+  })
+  const stage = f.el('div', 'tri-compare-map-stage')
+  f.add(stage, graph, comparisonMapReadout(f, activities))
+  f.add(panel, comparisonChartHead(f, 'route overlay', available, activities.length), stage)
+  return panel
+}
+
+const comparisonState = (
+  activities: readonly StravaActivityDetail[],
+): 'empty' | 'insufficient' | 'mixed-sport' | 'route-unavailable' | 'ready' => {
+  if (activities.length === 0) return 'empty'
+  if (activities.length < 2) return 'insufficient'
+  const sport = activities[0].sport
+  if (activities.some(activity => activity.sport !== sport)) return 'mixed-sport'
+  if (activities.some(activity => !activityComparisonEligible(activity))) return 'route-unavailable'
+  return 'ready'
+}
+
+const comparisonStateText = (
+  state: 'empty' | 'insufficient' | 'mixed-sport' | 'route-unavailable',
+): string => {
+  if (state === 'mixed-sport') return 'Choose activities from one exact sport.'
+  if (state === 'route-unavailable') return 'Route telemetry is unavailable for this comparison.'
+  return 'Choose at least two activities.'
+}
+
+export const buildActivityComparison = <N>(
+  f: TriNodeFactory<N>,
+  activities: StravaActivityDetail[],
+  ctx?: DetailCtx,
+): N => {
+  const state = comparisonState(activities)
+  const rootAttrs: Record<string, string> = {
+    'data-compare-state': state,
+    'data-selected': `${activities.length}`,
+  }
+  if (activities.length > 0 && activities.every(activity => activity.sport === activities[0].sport))
+    rootAttrs['data-sport'] = activities[0].sport
+  const root = f.el('section', `tri-compare tri-compare--${state}`, undefined, rootAttrs)
+  f.add(root, buildComparisonLegend(f, activities))
+  if (state !== 'ready') {
+    f.add(
+      root,
+      f.el('p', 'tri-compare-empty', comparisonStateText(state), { 'data-compare-empty': state }),
+    )
+    return root
+  }
+  const maxDistanceKm = Math.max(comparisonMaxDistanceKm(activities), 1e-6)
+  f.add(root, buildComparisonMap(f, activities))
+  const chartViewport = f.el('div', 'tri-compare-charts-viewport')
+  const charts = f.el('div', 'tri-compare-charts')
+  const sport = activities[0].sport
+  for (const metric of activityComparisonMetricsForSport(sport))
+    f.add(
+      charts,
+      buildComparisonMetricChart(
+        f,
+        activities,
+        ACTIVITY_COMPARISON_METRIC_SPECS[metric],
+        maxDistanceKm,
+      ),
+    )
+  if (sport !== 'swim')
+    f.add(
+      charts,
+      buildComparisonPowerDistribution(f, activities),
+      buildComparisonPowerCurve(f, activities, ctx),
+    )
+  f.add(charts, buildComparisonZones(f, activities, 'hr-zones'))
+  if (sport !== 'swim') f.add(charts, buildComparisonZones(f, activities, 'power-zones'))
+  f.add(chartViewport, charts)
+  f.add(root, chartViewport)
+  return root
 }
 
 export const dayDetails = (payload: DayCardPayload, dateIso: string): StravaActivityDetail[] =>
