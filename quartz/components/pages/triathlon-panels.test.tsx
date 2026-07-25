@@ -3,6 +3,7 @@ import test from 'node:test'
 import render from 'preact-render-to-string'
 import {
   AnalyticsPanel,
+  DISPATCH_ICON,
   FeedPanel,
   FuelLink,
   GearPanel,
@@ -87,7 +88,40 @@ test('analytics reserves one heat chart between effort and readiness', () => {
   const readiness = html.indexOf('data-chart="readiness"')
 
   assert.equal(html.includes('class="tri-analytics-search-wrap"'), true)
-  assert.equal(html.includes('aria-label="search analytics"'), true)
+  assert.equal(
+    html.includes(
+      'class="tri-ana-search" type="search" placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)" aria-label="search analytics" autocomplete="off"',
+    ),
+    true,
+  )
+  assert.equal(html.split('class="tri-ana-compare-toggle"').length - 1, 1)
+  assert.equal(
+    html.includes(
+      'class="tri-ana-compare-toggle" type="button" aria-pressed="false" aria-label="compare activities" aria-controls="tri-analytics-results" data-i18n-aria-label="compare activities"',
+    ),
+    true,
+  )
+  assert.equal(html.split('class="tri-ana-compare-icon"').length - 1, 1)
+  const toggleStart = html.indexOf('<button class="tri-ana-compare-toggle"')
+  const toggleBodyStart = html.indexOf('>', toggleStart) + 1
+  const toggleBodyEnd = html.indexOf('</button>', toggleBodyStart)
+  const toggleBody = html.slice(toggleBodyStart, toggleBodyEnd)
+  const expectedIcon =
+    '<svg class="tri-ana-compare-icon" viewBox="0 0 1000 1000" aria-hidden="true">' +
+    `<path d="${DISPATCH_ICON}"></path>` +
+    '</svg>'
+  assert.equal(toggleBody, expectedIcon)
+  assert.equal(html.includes('class="tri-ana-compare-label"'), false)
+  assert.equal(html.split('id="tri-analytics-results"').length - 1, 1)
+  assert.equal(
+    html.includes('id="tri-analytics-results" class="tri-ana-results" aria-hidden="true"'),
+    true,
+  )
+  assert.equal(html.split('id="tri-analytics-detail"').length - 1, 1)
+  assert.equal(
+    html.includes('id="tri-analytics-detail" class="tri-ana-detail" aria-hidden="true"'),
+    true,
+  )
   assert.equal(html.split('data-chart="heat"').length - 1, 1)
   assert.ok(effort >= 0)
   assert.ok(heat > effort)

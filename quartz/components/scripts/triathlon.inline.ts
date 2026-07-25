@@ -46,11 +46,21 @@ import {
   type ZoneBand,
 } from '../../util/triathlon-calculator'
 import {
+  activityComparisonEligible,
+  activityComparisonMetricsForSport,
   activitySelectionSummary,
   activityStatRows,
+  activityCompareColor,
+  activityComparisonDisplayValueAtDistance,
+  activityComparisonFractionForKey,
+  activityComparisonMapPointAtDistance,
+  activityPowerDistributionPercentages,
+  activityZonePercentages,
   axisFrame,
   buildAnalysisBar,
   buildActivity as buildActivityNode,
+  buildActivityComparison,
+  buildActivityComparisonProjection,
   buildCyclingBestEfforts as buildCyclingBestEffortsNode,
   buildHrZones as hrZonesNode,
   buildPowerCurve as powerCurveNode,
@@ -72,6 +82,7 @@ import {
   dist,
   distCombined,
   decodePowerCurve,
+  dlabel,
   dur,
   formatAltitude,
   formatGroundContactTime,
@@ -83,6 +94,8 @@ import {
   isImperialUnit,
   KM_TO_MI,
   M_TO_FT,
+  nearestPowerCurveValue,
+  normalizePowerCurvePoints,
   powerCurveFraction,
   powerCurveHoverAt,
   rate,
@@ -99,6 +112,7 @@ import {
   zoneDuo as zoneDuoNode,
   type AxisXTick,
   type ActivitySelectionSummary,
+  type ActivityComparisonMetric,
   type DayCardExtras,
   type DetailCtx,
   type SwimTrendChartPoint,
@@ -131,8 +145,14 @@ import {
 import { clipMapRoute, mapRoutePointAtDistance } from '../../util/triathlon-map-route'
 import { isRecord } from '../../util/type-guards'
 import { weeklyChartIndex, weeklyChartX } from '../../util/weekly-target-range'
+import {
+  createStreetMapMatcher,
+  type StreetMapActivity,
+  type StreetMapMatcher,
+  type StreetMetricValues,
+} from './triathlon-map-heat'
 
-const applyI18n = (root: HTMLElement): void => {
+const applyI18n = (root: ParentNode): void => {
   for (const node of root.querySelectorAll<HTMLElement>('[data-i18n]')) {
     const key = node.dataset.i18n
     if (key) node.textContent = tl(key)
@@ -1344,6 +1364,681 @@ const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): 
     linkScrub(wrap, routeMarker, surfaces, d.route, d)
   }
   return wrap
+}
+
+const activityComparisonMetric = (value: string | undefined): ActivityComparisonMetric | null => {
+  if (value === 'elevation') return value
+  if (value === 'speed') return value
+  if (value === 'hr') return value
+  if (value === 'power') return value
+  if (value === 'cadence') return value
+  if (value === 'respiration') return value
+  if (value === 'temperature') return value
+  if (value === 'stride-length') return value
+  if (value === 'ground-contact-time') return value
+  if (value === 'vertical-oscillation') return value
+  if (value === 'swim-pace') return value
+  if (value === 'stroke-rate') return value
+  return null
+}
+
+const activityComparisonMetricLabel = (metric: ActivityComparisonMetric): string =>
+  metric === 'hr'
+    ? 'heart rate'
+    : metric === 'swim-pace'
+      ? 'pace /100m'
+      : metric.replaceAll('-', ' ')
+
+type ActivityComparisonScrubState = { fraction: number }
+type ActivityComparisonSelectionRange = { startFraction: number; endFraction: number }
+
+const positionActivityComparisonCursor = (graph: SVGElement, fraction: number): void => {
+  const normalized = Math.min(1, Math.max(0, fraction))
+  const x = normalized * 100
+  const cursor = graph.querySelector<SVGElement>('.tri-compare-cursor')
+  cursor?.setAttribute('x1', x.toFixed(2))
+  cursor?.setAttribute('x2', x.toFixed(2))
+}
+
+type ActivityComparisonDragSelection = {
+  preview: (anchorFraction: number, focusFraction: number) => void
+  commit: () => void
+  clear: () => void
+  restore: () => void
+}
+
+const bindActivityComparisonGraph = (
+  graph: SVGElement,
+  state: ActivityComparisonScrubState,
+  show: (fraction: number) => void,
+  activate: (source: SVGElement, restore: () => void) => void,
+  render: (source: SVGElement, restore: () => void) => void,
+  deactivate: (source: SVGElement) => void,
+  keyboardStep = 0.01,
+  selection?: ActivityComparisonDragSelection,
+): (() => void) => {
+  let pendingFraction: number | null = null
+  let pendingClientX: number | null = null
+  let frame = 0
+  let pointerActive = false
+  let focused = false
+  let drag: {
+    pointerId: number
+    startClientX: number
+    anchorFraction: number
+    selected: boolean
+  } | null = null
+  const restore = () => show(state.fraction)
+  const flush = () => {
+    frame = 0
+    if (pendingFraction == null) return
+    state.fraction = pendingFraction
+    if (drag && pendingClientX != null) {
+      drag.selected = Math.abs(pendingClientX - drag.startClientX) >= 3
+      if (drag.selected) selection?.preview(drag.anchorFraction, state.fraction)
+      else selection?.restore()
+    }
+    render(graph, restore)
+    pendingFraction = null
+    pendingClientX = null
+  }
+  const queue = (fraction: number, clientX?: number) => {
+    pendingFraction = Math.min(1, Math.max(0, fraction))
+    pendingClientX = clientX ?? null
+    if (!frame) frame = window.requestAnimationFrame(flush)
+  }
+  const fractionAt = (clientX: number): number | null => {
+    const bounds = graph.getBoundingClientRect()
+    if (bounds.width <= 0) return null
+    return Math.min(1, Math.max(0, (clientX - bounds.left) / bounds.width))
+  }
+  const onPointerMove = (event: PointerEvent) => {
+    if (drag && event.pointerId !== drag.pointerId) return
+    const fraction = fractionAt(event.clientX)
+    if (fraction == null) return
+    if (!pointerActive) {
+      pointerActive = true
+      activate(graph, restore)
+    }
+    queue(fraction, event.clientX)
+  }
+  const release = () => {
+    if (pointerActive || focused) return
+    pendingFraction = null
+    pendingClientX = null
+    if (frame) {
+      window.cancelAnimationFrame(frame)
+      frame = 0
+    }
+    deactivate(graph)
+  }
+  const onKeyDown = (event: KeyboardEvent) => {
+    const next = activityComparisonFractionForKey(event.key, state.fraction, keyboardStep)
+    if (next == null) return
+    event.preventDefault()
+    queue(next)
+  }
+  const onPointerLeave = () => {
+    if (drag) return
+    pointerActive = false
+    release()
+  }
+  const onFocus = () => {
+    focused = true
+    activate(graph, restore)
+    render(graph, restore)
+  }
+  const onBlur = () => {
+    focused = false
+    release()
+  }
+  const onPointerDown = (event: PointerEvent) => {
+    if (!selection || !event.isPrimary || event.button !== 0 || drag) return
+    const fraction = fractionAt(event.clientX)
+    if (fraction == null) return
+    drag = {
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      anchorFraction: fraction,
+      selected: false,
+    }
+    pointerActive = true
+    activate(graph, restore)
+    graph.setPointerCapture(event.pointerId)
+    queue(fraction, event.clientX)
+  }
+  const onPointerUp = (event: PointerEvent) => {
+    if (!drag || event.pointerId !== drag.pointerId) return
+    const fraction = fractionAt(event.clientX)
+    if (frame) window.cancelAnimationFrame(frame)
+    frame = 0
+    if (fraction != null) {
+      pendingFraction = fraction
+      pendingClientX = event.clientX
+      flush()
+    }
+    const selected = drag.selected
+    const pointerId = drag.pointerId
+    drag = null
+    if (selected) selection?.commit()
+    else selection?.clear()
+    if (graph.hasPointerCapture(pointerId)) graph.releasePointerCapture(pointerId)
+    if (!graph.matches(':hover')) {
+      pointerActive = false
+      release()
+    }
+  }
+  const onPointerCancel = (event: PointerEvent) => {
+    if (!drag || event.pointerId !== drag.pointerId) return
+    const pointerId = drag.pointerId
+    drag = null
+    selection?.restore()
+    if (graph.hasPointerCapture(pointerId)) graph.releasePointerCapture(pointerId)
+    pointerActive = false
+    release()
+  }
+  graph.addEventListener('pointerdown', onPointerDown)
+  graph.addEventListener('pointermove', onPointerMove)
+  graph.addEventListener('pointerup', onPointerUp)
+  graph.addEventListener('pointerleave', onPointerLeave)
+  graph.addEventListener('pointercancel', onPointerCancel)
+  graph.addEventListener('focus', onFocus)
+  graph.addEventListener('keydown', onKeyDown)
+  graph.addEventListener('blur', onBlur)
+  return () => {
+    graph.removeEventListener('pointerdown', onPointerDown)
+    graph.removeEventListener('pointermove', onPointerMove)
+    graph.removeEventListener('pointerup', onPointerUp)
+    graph.removeEventListener('pointerleave', onPointerLeave)
+    graph.removeEventListener('pointercancel', onPointerCancel)
+    graph.removeEventListener('focus', onFocus)
+    graph.removeEventListener('keydown', onKeyDown)
+    graph.removeEventListener('blur', onBlur)
+    if (frame) window.cancelAnimationFrame(frame)
+    if (drag && graph.hasPointerCapture(drag.pointerId)) graph.releasePointerCapture(drag.pointerId)
+    pendingFraction = null
+    pendingClientX = null
+    drag = null
+    deactivate(graph)
+  }
+}
+
+const wireActivityComparison = (
+  comparison: HTMLElement | SVGElement,
+  activities: StravaActivityDetail[],
+): (() => void) => {
+  const cleanups: (() => void)[] = []
+  const projection = buildActivityComparisonProjection(activities)
+  const charts = Array.from(
+    comparison.querySelectorAll<HTMLElement>('.tri-compare-chart[data-compare-chart]'),
+  )
+  const chartScroller = comparison.querySelector<HTMLElement>('.tri-compare-charts')
+  let chartOverflowFrame = 0
+  const updateChartOverflow = () => {
+    if (!chartScroller) return
+    comparison.classList.toggle('tri-compare--top', chartScroller.scrollTop > 4)
+    comparison.classList.toggle(
+      'tri-compare--more',
+      chartScroller.scrollHeight - chartScroller.clientHeight - chartScroller.scrollTop > 4,
+    )
+  }
+  const scheduleChartOverflowUpdate = () => {
+    if (chartOverflowFrame !== 0) return
+    chartOverflowFrame = window.requestAnimationFrame(() => {
+      chartOverflowFrame = 0
+      updateChartOverflow()
+    })
+  }
+  const chartResize = new ResizeObserver(scheduleChartOverflowUpdate)
+  if (chartScroller) {
+    chartScroller.addEventListener('scroll', scheduleChartOverflowUpdate, { passive: true })
+    chartResize.observe(chartScroller)
+    for (const chart of charts) chartResize.observe(chart)
+    scheduleChartOverflowUpdate()
+    cleanups.push(() => {
+      chartScroller.removeEventListener('scroll', scheduleChartOverflowUpdate)
+      chartResize.disconnect()
+      if (chartOverflowFrame) window.cancelAnimationFrame(chartOverflowFrame)
+      comparison.classList.remove('tri-compare--top', 'tri-compare--more')
+    })
+  }
+  const distanceCharts = charts.flatMap(chart => {
+    const metric = activityComparisonMetric(chart.dataset.compareChart)
+    const graph = chart.querySelector<SVGElement>('.tri-compare-graph')
+    return metric && graph && Number(chart.dataset.available) > 0 ? [{ chart, graph, metric }] : []
+  })
+  const map = comparison.querySelector<SVGSVGElement>('.tri-compare-map')
+  const readout = comparison.querySelector<HTMLElement>('[data-compare-readout]')
+  const maxDistanceKm = Number(
+    map?.dataset.domainXMax ?? distanceCharts[0]?.graph.dataset.domainXMax ?? 0,
+  )
+  const activeSources = new Map<SVGElement, () => void>()
+  let activeSource: SVGElement | null = null
+
+  const setReadout = (
+    mode:
+      | ActivityComparisonMetric
+      | 'power-curve'
+      | 'power-distribution'
+      | 'hr-zones'
+      | 'power-zones',
+    values: { activity: StravaActivityDetail; value: string; missing: boolean }[],
+  ) => {
+    if (!readout) return
+    readout.dataset.visible = 'true'
+    readout.dataset.compareReadoutMode = mode
+    for (const { activity, value, missing } of values) {
+      const row = readout.querySelector<HTMLElement>(
+        `.tri-compare-readout-row[data-activity-id="${activity.id}"]`,
+      )
+      const valueNode = row?.querySelector<HTMLElement>('[data-compare-readout-value]')
+      if (valueNode) valueNode.textContent = value
+      row?.classList.toggle('tri-compare-readout-row--missing', missing)
+    }
+  }
+
+  const showChartCursors = (visible: readonly HTMLElement[]) => {
+    for (const chart of charts)
+      chart.classList.toggle('tri-compare-chart--hover', visible.includes(chart))
+  }
+  const hide = () => {
+    showChartCursors([])
+    if (readout) readout.dataset.visible = 'false'
+    for (const cursor of comparison.querySelectorAll<SVGElement>(
+      '.tri-compare-route-cursor[data-activity-id]',
+    ))
+      cursor.setAttribute('data-visible', 'false')
+  }
+
+  const activate = (source: SVGElement, restore: () => void) => {
+    activeSources.set(source, restore)
+  }
+  const render = (source: SVGElement, restore: () => void) => {
+    activeSources.delete(source)
+    activeSources.set(source, restore)
+    activeSource = source
+    restore()
+  }
+  const deactivate = (source: SVGElement) => {
+    activeSources.delete(source)
+    if (activeSource !== source) return
+    const previous = Array.from(activeSources.entries()).at(-1)
+    activeSource = previous?.[0] ?? null
+    if (previous) previous[1]()
+    else hide()
+  }
+
+  const distanceState: ActivityComparisonScrubState = { fraction: 0 }
+  const comparisonMetrics = activityComparisonMetricsForSport(activities[0].sport)
+  let lockedSelection: ActivityComparisonSelectionRange | null = null
+  let previewSelection: ActivityComparisonSelectionRange | null = null
+  const showSelection = (
+    selection: ActivityComparisonSelectionRange | null,
+    selecting: boolean,
+  ): void => {
+    comparison.classList.toggle('tri-compare--selection', selection != null)
+    comparison.classList.toggle('tri-compare--selecting', selection != null && selecting)
+    const start = selection?.startFraction ?? 0
+    const end = selection?.endFraction ?? 0
+    for (const { graph } of distanceCharts) {
+      const region = graph.querySelector<SVGRectElement>('.tri-compare-selection-region')
+      const clip = graph.querySelector<SVGRectElement>('.tri-compare-selection-clip')
+      const x = (start * 100).toFixed(2)
+      const width = ((end - start) * 100).toFixed(2)
+      region?.setAttribute('x', x)
+      region?.setAttribute('width', width)
+      clip?.setAttribute('x', x)
+      clip?.setAttribute('width', width)
+    }
+  }
+  const distanceSelection: ActivityComparisonDragSelection = {
+    preview: (anchorFraction, focusFraction) => {
+      previewSelection = {
+        startFraction: Math.min(anchorFraction, focusFraction),
+        endFraction: Math.max(anchorFraction, focusFraction),
+      }
+      showSelection(previewSelection, true)
+    },
+    commit: () => {
+      if (!previewSelection) return
+      lockedSelection = previewSelection
+      previewSelection = null
+      showSelection(lockedSelection, false)
+    },
+    clear: () => {
+      lockedSelection = null
+      previewSelection = null
+      showSelection(null, false)
+    },
+    restore: () => {
+      previewSelection = null
+      showSelection(lockedSelection, false)
+    },
+  }
+  let activeMetric: ActivityComparisonMetric = comparisonMetrics[0] ?? 'elevation'
+  const showDistance = (fraction: number, metric: ActivityComparisonMetric = activeMetric) => {
+    if (!Number.isFinite(maxDistanceKm) || maxDistanceKm <= 0) return
+    distanceState.fraction = Math.min(1, Math.max(0, fraction))
+    activeMetric = metric
+    const distanceKm = distanceState.fraction * maxDistanceKm
+    const position = scrubDist(distanceKm, activities[0].sport)
+    showChartCursors(distanceCharts.map(({ chart }) => chart))
+    const readings = activities.map(activity => ({
+      activity,
+      metrics: comparisonMetrics.map(metric => {
+        return {
+          metric,
+          value: activityComparisonDisplayValueAtDistance(activity, metric, distanceKm),
+        }
+      }),
+    }))
+    for (const { graph, metric } of distanceCharts) {
+      positionActivityComparisonCursor(graph, distanceState.fraction)
+      const values = readings.map(({ activity, metrics }) => ({
+        activity,
+        value: metrics.find(reading => reading.metric === metric)?.value ?? '—',
+      }))
+      graph.setAttribute('aria-valuenow', distanceKm.toFixed(3))
+      graph.setAttribute(
+        'aria-valuetext',
+        `${position}; ${values
+          .map(
+            ({ activity, value }) =>
+              `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`,
+          )
+          .join('; ')}`,
+      )
+    }
+    setReadout(
+      activeMetric,
+      readings.map(({ activity, metrics }) => {
+        const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '—'
+        return { activity, value, missing: value === '—' }
+      }),
+    )
+    map?.setAttribute('aria-valuenow', distanceKm.toFixed(3))
+    map?.setAttribute(
+      'aria-valuetext',
+      `${tl(activityComparisonMetricLabel(activeMetric))}; ${position}; ${readings
+        .map(({ activity, metrics }) => {
+          const value = metrics.find(reading => reading.metric === activeMetric)?.value ?? '—'
+          return `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`
+        })
+        .join('; ')}`,
+    )
+    for (const route of projection.routes) {
+      const cursor = comparison.querySelector<SVGElement>(
+        `.tri-compare-route-cursor[data-activity-id="${route.activityId}"]`,
+      )
+      const point = activityComparisonMapPointAtDistance(route.pointSegments, distanceKm)
+      if (!cursor || !point) {
+        cursor?.setAttribute('data-visible', 'false')
+        continue
+      }
+      cursor.setAttribute('cx', point.x.toFixed(2))
+      cursor.setAttribute('cy', point.y.toFixed(2))
+      cursor.setAttribute('data-visible', 'true')
+    }
+  }
+
+  for (const { graph } of distanceCharts)
+    cleanups.push(
+      bindActivityComparisonGraph(
+        graph,
+        distanceState,
+        fraction => {
+          const metric = activityComparisonMetric(graph.dataset.compareChart)
+          if (metric) showDistance(fraction, metric)
+        },
+        activate,
+        render,
+        deactivate,
+        0.01,
+        distanceSelection,
+      ),
+    )
+
+  if (map && Number(map.dataset.available) > 0) {
+    let frame = 0
+    let pending: PointerEvent | null = null
+    let pointerActive = false
+    let focused = false
+    const restore = () => showDistance(distanceState.fraction)
+    const release = () => {
+      if (pointerActive || focused) return
+      pending = null
+      if (frame) {
+        window.cancelAnimationFrame(frame)
+        frame = 0
+      }
+      deactivate(map)
+    }
+    const onMapMove = (event: PointerEvent) => {
+      if (!pointerActive) {
+        pointerActive = true
+        activate(map, restore)
+      }
+      pending = event
+      if (frame) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        if (!pending) return
+        const matrix = map.getScreenCTM()
+        if (!matrix) return
+        const pointer = new DOMPoint(pending.clientX, pending.clientY).matrixTransform(
+          matrix.inverse(),
+        )
+        if (!Number.isFinite(pointer.x) || !Number.isFinite(pointer.y)) return
+        let nearestDistanceKm: number | null = null
+        let nearestSquared = Infinity
+        for (const route of projection.routes)
+          for (const segment of route.pointSegments)
+            for (const point of segment) {
+              const squared = (point.x - pointer.x) ** 2 + (point.y - pointer.y) ** 2
+              if (squared >= nearestSquared) continue
+              nearestSquared = squared
+              nearestDistanceKm = point.distanceKm
+            }
+        if (nearestDistanceKm != null && maxDistanceKm > 0) {
+          distanceState.fraction = nearestDistanceKm / maxDistanceKm
+          render(map, restore)
+        }
+        pending = null
+      })
+    }
+    const onMapLeave = () => {
+      pointerActive = false
+      release()
+    }
+    const onMapFocus = () => {
+      focused = true
+      activate(map, restore)
+      render(map, restore)
+    }
+    const onMapBlur = () => {
+      focused = false
+      release()
+    }
+    const onMapKeyDown = (event: KeyboardEvent) => {
+      const next = activityComparisonFractionForKey(event.key, distanceState.fraction, 0.01)
+      if (next == null) return
+      event.preventDefault()
+      distanceState.fraction = Math.min(1, Math.max(0, next))
+      render(map, restore)
+    }
+    map.addEventListener('pointermove', onMapMove)
+    map.addEventListener('pointerleave', onMapLeave)
+    map.addEventListener('pointercancel', onMapLeave)
+    map.addEventListener('focus', onMapFocus)
+    map.addEventListener('blur', onMapBlur)
+    map.addEventListener('keydown', onMapKeyDown)
+    cleanups.push(() => {
+      map.removeEventListener('pointermove', onMapMove)
+      map.removeEventListener('pointerleave', onMapLeave)
+      map.removeEventListener('pointercancel', onMapLeave)
+      map.removeEventListener('focus', onMapFocus)
+      map.removeEventListener('blur', onMapBlur)
+      map.removeEventListener('keydown', onMapKeyDown)
+      if (frame) window.cancelAnimationFrame(frame)
+      deactivate(map)
+    })
+  }
+
+  const curveChart = charts.find(chart => chart.dataset.compareChart === 'power-curve')
+  const curveGraph = curveChart?.querySelector<SVGElement>('.tri-compare-graph')
+  const powerCurves = activities.map(activity =>
+    normalizePowerCurvePoints(activity.powerCurve ?? []),
+  )
+  const curves = powerCurves.filter(curve => curve.length >= 2)
+  if (curveChart && curveGraph && curves.length > 0) {
+    const curveState: ActivityComparisonScrubState = { fraction: 0 }
+    const minDurationS = Math.min(...curves.map(curve => curve[0].s))
+    const maxDurationS = Math.max(...curves.map(curve => curve[curve.length - 1].s))
+    const curveReference = decodePowerCurve(
+      (curveGraph as SVGSVGElement).dataset.curveRef ?? undefined,
+    )
+    const showCurve = (fraction: number) => {
+      curveState.fraction = Math.min(1, Math.max(0, fraction))
+      const durationS = Math.exp(
+        Math.log(minDurationS) +
+          curveState.fraction * (Math.log(maxDurationS) - Math.log(minDurationS)),
+      )
+      positionActivityComparisonCursor(curveGraph, curveState.fraction)
+      const values = activities.map((activity, index) => {
+        const value = nearestPowerCurveValue(powerCurves[index], durationS)
+        return { activity, value: value == null ? '—' : `${value.toLocaleString()} W` }
+      })
+      showChartCursors([curveChart])
+      setReadout(
+        'power-curve',
+        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+      )
+      const referenceWatts = nearestPowerCurveValue(curveReference, durationS)
+      curveGraph.setAttribute('aria-valuenow', Math.round(durationS).toString())
+      curveGraph.setAttribute(
+        'aria-valuetext',
+        `${dlabel(Math.max(1, Math.round(durationS)))}; ${values
+          .map(
+            ({ activity, value }) =>
+              `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`,
+          )
+          .join('; ')}${
+          referenceWatts == null
+            ? ''
+            : `; ${powerCurveReferenceLabel(null)}: ${referenceWatts.toLocaleString()} W`
+        }`,
+      )
+    }
+    cleanups.push(
+      bindActivityComparisonGraph(curveGraph, curveState, showCurve, activate, render, deactivate),
+    )
+  }
+
+  const distributionChart = charts.find(
+    chart => chart.dataset.compareChart === 'power-distribution',
+  )
+  const distributionGraph = distributionChart?.querySelector<SVGElement>(
+    '.tri-compare-distribution-graph',
+  )
+  const distributions = activities.map(activity =>
+    activityPowerDistributionPercentages(activity.powerHist),
+  )
+  const binCount = Math.max(0, ...distributions.map(values => values.length))
+  if (distributionChart && distributionGraph && binCount >= 2) {
+    const distributionState: ActivityComparisonScrubState = { fraction: 0 }
+    const showDistribution = (fraction: number) => {
+      distributionState.fraction = Math.min(1, Math.max(0, fraction))
+      const index = Math.round(distributionState.fraction * (binCount - 1))
+      const selectedFraction = index / (binCount - 1)
+      const startWatts = index * 25
+      positionActivityComparisonCursor(distributionGraph, selectedFraction)
+      const values = activities.map((activity, activityIndex) => {
+        const distribution = distributions[activityIndex]
+        const value = distribution.length === 0 ? null : (distribution[index] ?? 0)
+        return { activity, value: value == null ? '—' : `${value.toFixed(1)}%` }
+      })
+      showChartCursors([distributionChart])
+      setReadout(
+        'power-distribution',
+        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+      )
+      distributionGraph.setAttribute('aria-valuenow', `${startWatts}`)
+      distributionGraph.setAttribute(
+        'aria-valuetext',
+        `${startWatts}–${startWatts + 24} W; ${values
+          .map(
+            ({ activity, value }) =>
+              `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`,
+          )
+          .join('; ')}`,
+      )
+    }
+    cleanups.push(
+      bindActivityComparisonGraph(
+        distributionGraph,
+        distributionState,
+        showDistribution,
+        activate,
+        render,
+        deactivate,
+        1 / (binCount - 1),
+      ),
+    )
+  }
+
+  const zoneKinds: readonly ('hr' | 'power')[] = ['hr', 'power']
+  for (const kind of zoneKinds) {
+    const chart = charts.find(candidate => candidate.dataset.compareChart === `${kind}-zones`)
+    const graph = chart?.querySelector<SVGElement>('.tri-compare-graph')
+    const zones = activities.map(activity =>
+      activityZonePercentages(kind === 'hr' ? activity.hrZones : activity.powerZones),
+    )
+    const zoneCount = Math.max(0, ...zones.map(values => values.length))
+    if (!chart || !graph || zoneCount === 0) continue
+    const zoneState: ActivityComparisonScrubState = { fraction: 0 }
+    const showZone = (fraction: number) => {
+      zoneState.fraction = Math.min(1, Math.max(0, fraction))
+      const index = Math.round(zoneState.fraction * Math.max(0, zoneCount - 1))
+      const selectedFraction = zoneCount <= 1 ? 0 : index / (zoneCount - 1)
+      positionActivityComparisonCursor(graph, selectedFraction)
+      const values = activities.map((activity, activityIndex) => {
+        const value = zones[activityIndex][index]
+        return { activity, value: value == null ? '—' : `${value.toFixed(1)}%` }
+      })
+      showChartCursors([chart])
+      setReadout(
+        `${kind}-zones`,
+        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+      )
+      graph.setAttribute('aria-valuenow', `${index + 1}`)
+      graph.setAttribute(
+        'aria-valuetext',
+        `Z${index + 1}; ${values
+          .map(
+            ({ activity, value }) =>
+              `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`,
+          )
+          .join('; ')}`,
+      )
+    }
+    const keyboardStep = zoneCount <= 1 ? 1 : 1 / (zoneCount - 1)
+    cleanups.push(
+      bindActivityComparisonGraph(
+        graph,
+        zoneState,
+        showZone,
+        activate,
+        render,
+        deactivate,
+        keyboardStep,
+      ),
+    )
+  }
+
+  return () => {
+    distanceSelection.clear()
+    for (const cleanup of cleanups) cleanup()
+  }
 }
 
 const setActivityExpanded = (activity: HTMLElement, expanded: boolean): void => {
@@ -7819,7 +8514,7 @@ const marqueeCtl = (): { run: (name: HTMLElement) => void; stop: () => void } =>
   return { run, stop }
 }
 
-const detailHead = (date: string, title: string): { head: HTMLElement; back: HTMLElement } => {
+const detailHead = (date: string, title?: string): { head: HTMLElement; back: HTMLElement } => {
   const head = el('div', 'tri-pop-head tri-pop-head--detail')
   const row = el('div', 'tri-pop-head-row')
   const back = el('button', 'tri-ana-back tri-ana-back--ico')
@@ -7829,11 +8524,13 @@ const detailHead = (date: string, title: string): { head: HTMLElement; back: HTM
   ico.appendChild(svg('path', { d: 'M19 12H5M11 6l-6 6 6 6' }))
   back.appendChild(ico)
   row.append(el('span', 'tri-pop-date', date), back)
+  head.appendChild(row)
+  if (!title) return { head, back }
   const titleEl = el('span', 'tri-pop-title', title)
   const marquee = marqueeCtl()
   titleEl.addEventListener('mouseenter', () => marquee.run(titleEl))
   titleEl.addEventListener('mouseleave', marquee.stop)
-  head.append(row, titleEl)
+  head.appendChild(titleEl)
   return { head, back }
 }
 
@@ -7846,16 +8543,22 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const title = root.querySelector<HTMLElement>('.tri-ana-title')
   const search = root.querySelector<HTMLInputElement>('.tri-ana-search')
   const results = root.querySelector<HTMLElement>('.tri-ana-results')
+  const compareToggle = root.querySelector<HTMLButtonElement>('.tri-ana-compare-toggle')
   const pageMode = root.dataset.triView === 'analytics'
   if (!panel || (!btn && !pageMode)) return null
 
   const body = root.querySelector<HTMLElement>('.tri-ana-body')
   const detail = root.querySelector<HTMLElement>('.tri-ana-detail')
+  let live = true
   let loaded = false
   let data: Analytics | null = null
   let detailData: DetailPayload | null = null
-  let detailLoaded = false
+  let detailPromise: Promise<boolean> | null = null
   let scrubCleanup: (() => void) | null = null
+  let compareCleanup: (() => void) | null = null
+  let compareMode = false
+  let compareIds: string[] = []
+  let detailGeneration = 0
   let selIndex = -1
 
   const closeLabDateMenuFromOutside = (event: PointerEvent): void => {
@@ -7881,6 +8584,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     document.dispatchEvent(
       new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
     )
+    if (panel.classList.contains('tri-analytics--searching')) runSearch()
   }
   const load = () => {
     if (loaded) return
@@ -7893,28 +8597,52 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       .catch(() => {})
   }
   const closeDetail = () => {
+    detailGeneration += 1
+    compareCleanup?.()
+    compareCleanup = null
+    panel.classList.remove('tri-analytics--comparison')
     panel.classList.remove('tri-analytics--detail')
-    if (detail) detail.replaceChildren()
+    if (detail) {
+      detail.replaceChildren()
+      detail.setAttribute('aria-hidden', 'true')
+    }
+    if (results)
+      results.setAttribute(
+        'aria-hidden',
+        String(!compareMode && !panel.classList.contains('tri-analytics--searching')),
+      )
+  }
+  const setCompareMode = (enabled: boolean) => {
+    compareMode = enabled
+    panel.classList.toggle('tri-analytics--compare', enabled)
+    compareToggle?.setAttribute('aria-pressed', String(enabled))
+    if (!enabled) compareIds = []
   }
   const toMain = () => {
     closeDetail()
+    setCompareMode(false)
     if (search) search.value = ''
     panel.classList.remove('tri-analytics--searching')
-    if (results) results.replaceChildren()
+    if (results) {
+      results.replaceChildren()
+      results.setAttribute('aria-hidden', 'true')
+    }
     selIndex = -1
   }
   const close = () => {
+    detailGeneration += 1
     root.classList.remove('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'true')
   }
-  const loadDetails = (): Promise<void> => {
-    if (detailLoaded) return Promise.resolve()
-    detailLoaded = true
+  const loadDetails = (): Promise<boolean> => {
+    if (detailData) return Promise.resolve(true)
+    if (detailPromise) return detailPromise
     const p = root.dataset.detailPath
-    if (!p) return Promise.resolve()
-    return fetch(p)
+    if (!p) return Promise.resolve(false)
+    detailPromise = fetch(p)
       .then(res => res.json())
       .then((d: DetailPayload) => {
+        if (!live) return false
         detailData = d
         DETAIL_ZONES = d.zones ?? null
         DETAIL_CURVE_REF = d.powerCurveRef ?? []
@@ -7923,12 +8651,40 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         DETAIL_FTP = d.ftp ?? null
         DETAIL_GOAL_FTP = d.goalFtp ?? null
         DETAIL_VT1 = d.vt1Hr ?? null
+        return true
       })
-      .catch(() => {})
+      .catch(() => {
+        detailPromise = null
+        return false
+      })
+    return detailPromise
+  }
+  const compareActivityEligible = (activity: StravaActivityDetail | undefined): boolean =>
+    activity != null && activityComparisonEligible(activity)
+  const selectedCompareActivities = (): StravaActivityDetail[] =>
+    compareIds.flatMap(id => {
+      const activity = detailData?.details[id]
+      return compareActivityEligible(activity) && activity ? [activity] : []
+    })
+  const compareSport = (): ActivityKind | null => selectedCompareActivities()[0]?.sport ?? null
+  const showDetail = () => {
+    panel.classList.add('tri-analytics--detail')
+    detail?.setAttribute('aria-hidden', 'false')
+    results?.setAttribute('aria-hidden', 'true')
+    body?.scrollTo({ top: 0 })
   }
   const showActivity = (id: string) => {
     if (!detail) return
-    void loadDetails().then(() => {
+    const generation = ++detailGeneration
+    void loadDetails().then(available => {
+      if (
+        !available ||
+        !live ||
+        !panel.isConnected ||
+        compareMode ||
+        generation !== detailGeneration
+      )
+        return
       const d = detailData?.details?.[id]
       if (!d) return
       const card = el('div', 'tri-pop-card')
@@ -7943,10 +8699,49 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
         if (rec) card.appendChild(rec)
       }
       detail.replaceChildren(card)
-      panel.classList.add('tri-analytics--detail')
+      showDetail()
       back.addEventListener('click', closeDetail, { once: true })
-      body?.scrollTo({ top: 0 })
     })
+  }
+  const showComparison = (chartScrollTop = 0) => {
+    if (!detail) return
+    const activities = selectedCompareActivities()
+    if (
+      activities.length < 2 ||
+      activities.some(activity => activity.sport !== activities[0].sport)
+    )
+      return
+    detailGeneration += 1
+    compareCleanup?.()
+    const card = el('div', 'tri-pop-card tri-pop-card--compare')
+    const { head, back } = detailHead(`${activities.length} ${tl('activities')}`)
+    const comparison = buildActivityComparison(domF, activities, clientCtx())
+    applyI18n(comparison)
+    card.append(head, comparison)
+    detail.replaceChildren(card)
+    const interactionCleanup = wireActivityComparison(comparison, activities)
+    const onComparisonClick = (event: Event) => {
+      if (!(event.target instanceof Element)) return
+      const remove = event.target.closest<HTMLButtonElement>('[data-compare-activity-remove]')
+      const activityId = remove?.dataset.compareActivityRemove
+      if (!activityId || compareIds.length <= 2) return
+      event.stopPropagation()
+      const nextScrollTop =
+        comparison.querySelector<HTMLElement>('.tri-compare-charts')?.scrollTop ?? 0
+      compareIds = compareIds.filter(id => id !== activityId)
+      runSearch()
+      showComparison(nextScrollTop)
+    }
+    comparison.addEventListener('click', onComparisonClick)
+    compareCleanup = () => {
+      interactionCleanup()
+      comparison.removeEventListener('click', onComparisonClick)
+    }
+    panel.classList.add('tri-analytics--comparison')
+    showDetail()
+    const chartScroller = comparison.querySelector<HTMLElement>('.tri-compare-charts')
+    if (chartScroller && chartScrollTop > 0) chartScroller.scrollTop = chartScrollTop
+    back.addEventListener('click', closeDetail, { once: true })
   }
 
   const scrollToChart = (chart: string) => {
@@ -7961,11 +8756,83 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   const setSel = (i: number) => {
     selIndex = setActivityResultSelection(results, i)
   }
+  const comparePicker = (): HTMLElement => {
+    const picker = el('div', 'tri-compare-picker')
+    const top = el('div', 'tri-compare-picker-top')
+    const actions = el('div', 'tri-compare-picker-actions')
+    const clear = el('button', 'tri-compare-picker-clear', undefined, {
+      type: 'button',
+      'data-compare-clear': '',
+      'aria-label': tl('clear selection'),
+      'data-i18n-aria-label': 'clear selection',
+      title: tl('clear selection'),
+    })
+    const clearIcon = svg('svg', {
+      class: 'tri-compare-picker-icon',
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      'aria-hidden': 'true',
+    })
+    clearIcon.appendChild(svg('path', { d: 'M6 6l12 12M18 6 6 18' }))
+    clear.appendChild(clearIcon)
+    clear.toggleAttribute('disabled', compareIds.length === 0)
+    const submit = el('button', 'tri-compare-picker-submit', undefined, {
+      type: 'button',
+      'data-compare-submit': '',
+      'aria-label': tl('compare selected'),
+      'data-i18n-aria-label': 'compare selected',
+      'aria-describedby': 'tri-compare-picker-submit-help',
+    })
+    const submitIcon = svg('svg', {
+      class: 'tri-compare-picker-icon',
+      viewBox: '0 0 24 24',
+      fill: 'none',
+      'aria-hidden': 'true',
+    })
+    submitIcon.appendChild(svg('path', { d: 'M12 4.5 19.5 12 12 19.5 4.5 12Z' }))
+    submit.appendChild(submitIcon)
+    submit.toggleAttribute('disabled', compareIds.length < 2)
+    const submitWrap = el('span', 'tri-compare-picker-submit-wrap')
+    const submitHelp = el('span', 'tri-compare-picker-tooltip', tl('compare activities'), {
+      id: 'tri-compare-picker-submit-help',
+      role: 'tooltip',
+      'data-i18n': 'compare activities',
+    })
+    submitWrap.append(submit, submitHelp)
+    actions.append(clear, submitWrap)
+    top.append(
+      actions,
+      el(
+        'span',
+        'tri-compare-picker-instruction',
+        tl('choose 2 or more activities from one sport'),
+        { 'data-i18n': 'choose 2 or more activities from one sport' },
+      ),
+    )
+    picker.appendChild(top)
+    return picker
+  }
+  const toggleCompareActivity = (id: string) => {
+    const selected = compareIds.indexOf(id)
+    if (selected >= 0) {
+      compareIds.splice(selected, 1)
+      runSearch()
+      return
+    }
+    const activity = detailData?.details[id]
+    if (!compareActivityEligible(activity) || !activity) return
+    const sport = compareSport()
+    if (sport && activity.sport !== sport) return
+    compareIds.push(id)
+    runSearch()
+  }
   const activate = (it: HTMLElement | undefined) => {
     if (!it) return
     if (it.dataset.chart) scrollToChart(it.dataset.chart)
-    else if (it.dataset.id) showActivity(it.dataset.id)
-    else if (it.dataset.insert) {
+    else if (it.dataset.id) {
+      if (compareMode) toggleCompareActivity(it.dataset.id)
+      else showActivity(it.dataset.id)
+    } else if (it.dataset.insert) {
       const tokens = search!.value.trim().split(/\s+/)
       tokens[tokens.length - 1] = it.dataset.insert
       search!.value = tokens.join(' ') + (it.dataset.insert.endsWith(':') ? '' : ' ')
@@ -7977,21 +8844,24 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     if (!search || !results) return
     const q = search.value.trim().toLowerCase()
     results.replaceChildren()
-    if (!q) {
+    if (!q && !compareMode) {
       panel.classList.remove('tri-analytics--searching')
       results.setAttribute('aria-hidden', 'true')
       return
     }
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
-    const rawTokens = q.split(/\s+/)
+    if (compareMode) results.appendChild(comparePicker())
+    const resultList = compareMode ? el('div', 'tri-compare-activity-list') : results
+    if (compareMode) results.appendChild(resultList)
+    const rawTokens = q ? q.split(/\s+/) : []
     const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
 
     const metrics: HTMLElement[] = []
-    const lastToken = rawTokens[rawTokens.length - 1]
-    const hints = activityCommandHints(lastToken, 'activities')
+    const lastToken = rawTokens[rawTokens.length - 1] ?? ''
+    const hints = rawTokens.length ? activityCommandHints(lastToken, 'activities') : []
 
-    if (!filterSport && !filterDate && !sortKey) {
+    if (!compareMode && !filterSport && !filterDate && !sortKey) {
       for (const s of SEARCH_SECTIONS)
         if (matchesActivityTokens(`${s.label} ${tl(s.label)} ${s.hay}`.toLowerCase(), tokens)) {
           const it = activityResultItem(tl(s.label), 'section')
@@ -8012,6 +8882,12 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       (data?.activities ?? []).filter(a => {
         if (filterSport && a.sport !== filterSport) return false
         if (filterDate && (a.date < filterDate.start || a.date > filterDate.end)) return false
+        if (compareMode) {
+          const activity = detailData?.details[String(a.id)]
+          if (!compareActivityEligible(activity)) return false
+          const sport = compareSport()
+          if (sport && a.sport !== sport) return false
+        }
         return (
           tokens.length === 0 ||
           matchesActivityTokens(`${a.name} ${a.sport} ${a.date}`.toLowerCase(), tokens)
@@ -8024,13 +8900,13 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', 'suggestions'))
       for (const it of hints) grp.appendChild(it)
-      results.appendChild(grp)
+      resultList.appendChild(grp)
     }
     if (metrics.length) {
       const grp = el('div', 'tri-ana-rgroup')
       grp.appendChild(el('div', 'tri-ana-rlabel', tl('metrics & terms')))
       for (const it of metrics.slice(0, 8)) grp.appendChild(it)
-      results.appendChild(grp)
+      resultList.appendChild(grp)
     }
     if (acts.length) {
       const grp = el('div', 'tri-ana-rgroup')
@@ -8043,18 +8919,40 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
           (a.cadence ? (a.sport === 'run' ? ` · ${a.cadence * 2} spm` : ` · ${a.cadence} rpm`) : '')
         const it = activityResultItem(head, sub)
         it.dataset.id = String(a.id)
+        if (compareMode) {
+          const selected = compareIds.indexOf(it.dataset.id)
+          const chosen = selected >= 0
+          it.setAttribute('aria-pressed', String(chosen))
+          it.classList.toggle('tri-ana-ritem--chosen', chosen)
+          if (chosen) {
+            it.style.setProperty('--tri-compare-color', activityCompareColor(selected))
+            head.prepend(el('span', 'tri-compare-swatch', undefined, { 'aria-hidden': 'true' }))
+          }
+        }
         grp.appendChild(it)
       }
-      results.appendChild(grp)
+      resultList.appendChild(grp)
     }
     if (!metrics.length && !acts.length && !hints.length)
-      results.appendChild(el('div', 'tri-ana-empty', tl('no matches')))
+      resultList.appendChild(el('div', 'tri-ana-empty', tl('no matches')))
     setSel(0)
   }
   const onResultsClick = (event: MouseEvent) => {
-    activate(
-      (event.target as HTMLElement | null)?.closest<HTMLElement>('.tri-ana-ritem') ?? undefined,
-    )
+    if (!(event.target instanceof Element)) return
+    if (event.target.closest('[data-compare-clear]')) {
+      compareIds = []
+      runSearch()
+      return
+    }
+    if (event.target.closest('[data-compare-retry]')) {
+      enterCompare()
+      return
+    }
+    if (event.target.closest('[data-compare-submit]')) {
+      showComparison()
+      return
+    }
+    activate(event.target.closest<HTMLElement>('.tri-ana-ritem') ?? undefined)
   }
   const onSearchKey = (event: KeyboardEvent) => {
     if (!panel.classList.contains('tri-analytics--searching')) return
@@ -8074,6 +8972,49 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     }
   }
 
+  const enterCompare = () => {
+    closeDetail()
+    setCompareMode(true)
+    const generation = detailGeneration
+    panel.classList.add('tri-analytics--searching')
+    if (results) {
+      results.setAttribute('aria-hidden', 'false')
+      results.replaceChildren(el('div', 'tri-ana-empty', tl('loading…')))
+    }
+    void loadDetails().then(available => {
+      if (
+        !live ||
+        !compareMode ||
+        !panel.isConnected ||
+        panel.getAttribute('aria-hidden') === 'true' ||
+        generation !== detailGeneration
+      )
+        return
+      if (!available) {
+        if (results) {
+          const error = el('div', 'tri-compare-load-error')
+          error.append(
+            el('span', 'tri-ana-empty', tl('activity data unavailable'), {
+              'data-i18n': 'activity data unavailable',
+            }),
+            el('button', 'tri-compare-load-retry', tl('retry'), {
+              type: 'button',
+              'data-compare-retry': '',
+              'data-i18n': 'retry',
+            }),
+          )
+          results.replaceChildren(error)
+        }
+        return
+      }
+      runSearch()
+      search?.focus()
+    })
+  }
+  const onCompareToggle = () => {
+    if (compareMode) toMain()
+    else enterCompare()
+  }
   const open = () => {
     toMain()
     root.classList.add('tri-analytics-open')
@@ -8091,6 +9032,10 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
       runSearch()
       return
     }
+    if (compareMode) {
+      toMain()
+      return
+    }
     close()
   }
 
@@ -8104,31 +9049,40 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
   search?.addEventListener('input', runSearch)
   search?.addEventListener('keydown', onSearchKey)
+  compareToggle?.addEventListener('click', onCompareToggle)
   results?.addEventListener('click', onResultsClick)
   detail?.addEventListener('click', onCardToggle)
   document.addEventListener('keydown', onKey)
   document.addEventListener('pointerdown', closeLabDateMenuFromOutside)
   const onUnitChange = () => {
+    const comparisonVisible =
+      panel.classList.contains('tri-analytics--detail') &&
+      detail?.querySelector('.tri-compare') != null
     if (data) {
       render(data)
     }
+    if (comparisonVisible) showComparison()
+    else if (compareMode) runSearch()
   }
   window.addEventListener('tri:unit', onUnitChange)
   window.addEventListener('tri:locale', onUnitChange)
 
   return () => {
+    live = false
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)
     scrim?.removeEventListener('click', close)
     search?.removeEventListener('input', runSearch)
     search?.removeEventListener('keydown', onSearchKey)
+    compareToggle?.removeEventListener('click', onCompareToggle)
     results?.removeEventListener('click', onResultsClick)
     detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('pointerdown', closeLabDateMenuFromOutside)
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
+    compareCleanup?.()
     scrubCleanup?.()
   }
 }
@@ -8168,7 +9122,8 @@ interface OverviewLegend {
 }
 
 interface Overview {
-  heat: GeoFC
+  streetActivities: StreetMapActivity[]
+  maximumVisits: number
   traces: GeoFC
   legend: Record<OverviewMode, OverviewLegend | null>
 }
@@ -8179,12 +9134,6 @@ const OVERVIEW_CELL = 0.0008
 
 const overviewCellKey = (lng: number, lat: number): string =>
   `${Math.round(lng / OVERVIEW_CELL)},${Math.round(lat / OVERVIEW_CELL)}`
-
-const HEAT_SNAP = 0.0003
-const HEAT_PRUNE_DENSITY = 4
-
-const heatKey = (lng: number, lat: number): string =>
-  `${Math.round(lng / HEAT_SNAP)},${Math.round(lat / HEAT_SNAP)}`
 
 const stampSegment = (a: StravaMapPoint, b: StravaMapPoint, into: Set<string>) => {
   const steps = Math.max(
@@ -8223,6 +9172,25 @@ const overviewFmt = (
   return `${clock(3600 / (v * KM_TO_MI))} /mi`
 }
 
+const normalizedOverviewMetrics = (
+  activity: StravaActivityDetail,
+  ranges: ReadonlyMap<string, [number, number]>,
+): StreetMetricValues => {
+  const normalized = (metric: (typeof OVERVIEW_METRICS)[number]): number => {
+    const value = overviewMetric(activity, metric)
+    const range = ranges.get(`${metric}:${activity.sport}`)
+    return value != null && value > 0 && range
+      ? Math.min(1, Math.max(0, (value - range[0]) / (range[1] - range[0])))
+      : -1
+  }
+  return {
+    w: normalized('w'),
+    hr: normalized('hr'),
+    cad: normalized('cad'),
+    spd: normalized('spd'),
+  }
+}
+
 const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKind>): Overview => {
   const acts: StravaActivityDetail[] = []
   const det = dp?.details ?? {}
@@ -8239,82 +9207,6 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
   }
   let maxCount = 1
   for (const c of counts.values()) if (c > maxCount) maxCount = c
-  const bucketOf = (c: number): number =>
-    maxCount > 1
-      ? Math.min(7, Math.max(1, 1 + Math.round((6 * Math.log(c)) / Math.log(maxCount))))
-      : 1
-  const nodeAcc = new Map<string, [number, number, number]>()
-  for (const d of acts)
-    for (const r of gpsSegments(d))
-      for (const p of r) {
-        const k = heatKey(p.lng, p.lat)
-        const a = nodeAcc.get(k)
-        if (a) {
-          a[0] += p.lng
-          a[1] += p.lat
-          a[2] += 1
-        } else nodeAcc.set(k, [p.lng, p.lat, 1])
-      }
-  const nodeCoord = (k: string): GeoCoord => {
-    const a = nodeAcc.get(k)!
-    return [a[0] / a[2], a[1] / a[2]]
-  }
-  const edgeKey = (ka: string, kb: string): string => (ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`)
-  const seqs: string[][] = []
-  const edgeCount = new Map<string, number>()
-  for (const d of acts) {
-    const seen = new Set<string>()
-    for (const r of gpsSegments(d)) {
-      const seq: string[] = []
-      for (const p of r) {
-        const k = heatKey(p.lng, p.lat)
-        if (seq.length && seq[seq.length - 1] === k) continue
-        seq.push(k)
-      }
-      if (seq.length >= 2) seqs.push(seq)
-      for (let i = 0; i < seq.length - 1; i++) seen.add(edgeKey(seq[i], seq[i + 1]))
-    }
-    for (const e of seen) edgeCount.set(e, (edgeCount.get(e) ?? 0) + 1)
-  }
-  const heatFeatures: unknown[] = []
-  const drawnEdges = new Set<string>()
-  for (const seq of seqs) {
-    let runB = -1
-    let coords: GeoCoord[] = []
-    const flush = () => {
-      if (coords.length >= 2)
-        heatFeatures.push({
-          type: 'Feature',
-          properties: { heat: runB },
-          geometry: { type: 'LineString', coordinates: coords },
-        })
-      coords = []
-      runB = -1
-    }
-    for (let i = 0; i < seq.length - 1; i++) {
-      const edge = edgeKey(seq[i], seq[i + 1])
-      if (drawnEdges.has(edge)) {
-        flush()
-        continue
-      }
-      const ca = nodeCoord(seq[i])
-      const cb = nodeCoord(seq[i + 1])
-      const cell = counts.get(overviewCellKey((ca[0] + cb[0]) / 2, (ca[1] + cb[1]) / 2)) ?? 1
-      if ((edgeCount.get(edge) ?? 0) < 2 && cell >= HEAT_PRUNE_DENSITY) {
-        flush()
-        continue
-      }
-      drawnEdges.add(edge)
-      const bucket = bucketOf(cell)
-      if (bucket !== runB) {
-        flush()
-        coords = [ca]
-        runB = bucket
-      }
-      coords.push(cb)
-    }
-    flush()
-  }
   const ranges = new Map<string, [number, number]>()
   for (const k of OVERVIEW_METRICS)
     for (const sport of ROUTE_SPORTS) {
@@ -8327,17 +9219,11 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
       if (vals.length) ranges.set(`${k}:${sport}`, pctRange(vals))
     }
   const traceFeatures: unknown[] = []
+  const streetActivities: StreetMapActivity[] = []
   for (const d of acts) {
-    const props: Record<string, unknown> = { id: d.id }
-    for (const k of OVERVIEW_METRICS) {
-      const v = overviewMetric(d, k)
-      const range = ranges.get(`${k}:${d.sport}`)
-      props[k] =
-        v != null && v > 0 && range
-          ? Math.min(1, Math.max(0, (v - range[0]) / (range[1] - range[0])))
-          : -1
-    }
-    traceFeatures.push(...segmentFeatures(gpsSegments(d), props))
+    const segments = gpsSegments(d)
+    streetActivities.push({ id: d.id, segments, metrics: normalizedOverviewMetrics(d, ranges) })
+    traceFeatures.push(...segmentFeatures(segments, { id: d.id }))
   }
   const legend: Record<OverviewMode, OverviewLegend | null> = {
     heat: { lo: '$1\\times$', hi: `$${maxCount}\\times$` },
@@ -8354,7 +9240,8 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
     }
   }
   return {
-    heat: { type: 'FeatureCollection', features: heatFeatures },
+    streetActivities,
+    maximumVisits: maxCount,
     traces: { type: 'FeatureCollection', features: traceFeatures },
     legend,
   }
@@ -8376,13 +9263,30 @@ const heatWidthExpr: unknown[] = (() => {
 const overviewRamp = (m: OverviewMode): string[] =>
   m === 'hr' ? HR_RAMP : m === 'cad' ? CAD_RAMP : m === 'spd' ? SPD_RAMP : HEAT_RAMP
 
-const traceColorExpr = (k: OverviewMode): unknown[] => {
+const streetMetricColorExpr = (k: OverviewMode): unknown[] => {
   const ramp: unknown[] = ['interpolate', ['linear'], ['get', k]]
   overviewRamp(k).forEach((c, i) => ramp.push(i / 6, c))
   return ['case', ['<', ['get', k], 0], '#b7b3ac', ramp]
 }
 
-const traceOpacityExpr = (k: OverviewMode): unknown[] => ['case', ['<', ['get', k], 0], 0.12, 0.6]
+const streetMetricOpacityExpr = (k: OverviewMode): unknown[] => [
+  'case',
+  ['<', ['get', k], 0],
+  0.12,
+  0.6,
+]
+
+const streetMetricWidthExpr: unknown[] = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  10,
+  0.75,
+  14,
+  1.2,
+  16,
+  1.8,
+]
 
 const routeFC = (d: StravaActivityDetail): GeoFC => ({
   type: 'FeatureCollection',
@@ -8541,6 +9445,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     let hoverId: string | null = null
     let styleSeq = 0
     let eventsBound = false
+    let streetSequence = 0
+    let matchedOverview: Overview | null = null
+    let streetMapMatcher: StreetMapMatcher | null = null
     let selection: { d: StravaActivityDetail; i: number } | null = null
     let selectedRange: ActivityAnalysisRange | null = null
     const ready = () => Boolean(map && okFlag)
@@ -8552,17 +9459,26 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     }
     const applyMode = () => {
       if (!ready()) return
-      map.setLayoutProperty('tri-heat', 'visibility', mode === 'heat' ? 'visible' : 'none')
-      map.setLayoutProperty('tri-traces', 'visibility', mode === 'heat' ? 'none' : 'visible')
-      map.setPaintProperty('tri-heat', 'line-opacity', heatOpacityExpr)
-      if (mode !== 'heat') {
-        map.setPaintProperty('tri-traces', 'line-color', traceColorExpr(mode))
-        map.setPaintProperty('tri-traces', 'line-opacity', traceOpacityExpr(mode))
-      }
+      map.setPaintProperty(
+        'tri-heat',
+        'line-color',
+        mode === 'heat' ? heatColorExpr : streetMetricColorExpr(mode),
+      )
+      map.setPaintProperty(
+        'tri-heat',
+        'line-opacity',
+        mode === 'heat' ? heatOpacityExpr : streetMetricOpacityExpr(mode),
+      )
+      map.setPaintProperty(
+        'tri-heat',
+        'line-width',
+        mode === 'heat' ? heatWidthExpr : streetMetricWidthExpr,
+      )
       const lg = getOverview().legend[mode]
       if (legendLo) setMath(legendLo, lg?.lo ?? 'low')
       if (legendHi) setMath(legendHi, lg?.hi ?? 'high')
       if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
+      scheduleStreetMap()
     }
     const recolor = (d: StravaActivityDetail, i: number) => {
       if (!ready()) return
@@ -8572,9 +9488,43 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     const addSource = (id: string, source: Record<string, unknown>) => {
       if (!map.getSource(id)) map.addSource(id, source)
     }
-    const addLayer = (layer: Record<string, unknown>) => {
+    const addLayer = (layer: Record<string, unknown>, beforeId?: string) => {
       const id = layer.id
-      if (typeof id === 'string' && !map.getLayer(id)) map.addLayer(layer)
+      if (typeof id === 'string' && !map.getLayer(id)) map.addLayer(layer, beforeId)
+    }
+    const drawStreetMap = () => {
+      if (!ready()) return
+      const roadLayers = map
+        .getStyle()
+        ?.layers?.filter(
+          (layer: { id?: unknown; type?: unknown; 'source-layer'?: unknown }) =>
+            typeof layer.id === 'string' &&
+            layer.type === 'line' &&
+            layer['source-layer'] === 'road' &&
+            !layer.id.includes('rail'),
+        )
+      if (!roadLayers?.length) return
+      const overview = getOverview()
+      if (matchedOverview !== overview) {
+        matchedOverview = overview
+        streetMapMatcher = createStreetMapMatcher(overview.streetActivities, overview.maximumVisits)
+      }
+      map
+        .getSource('tri-heat')
+        ?.setData(
+          streetMapMatcher?.(
+            map.queryRenderedFeatures({
+              layers: roadLayers.map((layer: { id: string }) => layer.id),
+            }),
+          ) ?? emptyFC(),
+        )
+    }
+    const scheduleStreetMap = () => {
+      if (!ready()) return
+      const sequence = ++streetSequence
+      map.once('idle', () => {
+        if (sequence === streetSequence) drawStreetMap()
+      })
     }
     const onTraceMove = (e: any) => {
       if (panel.classList.contains('tri-map--detail')) return
@@ -8608,35 +9558,34 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       map.on('mousemove', 'tri-hit', onTraceMove)
       map.on('mouseleave', 'tri-hit', clearHover)
       map.on('click', 'tri-hit', onTraceClick)
+      map.on('moveend', scheduleStreetMap)
       eventsBound = true
     }
     const installLayers = () => {
       if (!map) return
       if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(map)
+      const firstLabelLayer = map
+        .getStyle()
+        ?.layers?.find(
+          (layer: { id?: unknown; type?: unknown }) =>
+            typeof layer.id === 'string' && layer.type === 'symbol',
+        )
       addSource('tri-heat', { type: 'geojson', data: emptyFC() })
-      addLayer({
-        id: 'tri-heat',
-        type: 'line',
-        source: 'tri-heat',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': heatColorExpr,
-          'line-opacity': heatOpacityExpr,
-          'line-width': heatWidthExpr,
+      addLayer(
+        {
+          id: 'tri-heat',
+          type: 'line',
+          source: 'tri-heat',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': heatColorExpr,
+            'line-opacity': heatOpacityExpr,
+            'line-width': heatWidthExpr,
+          },
         },
-      })
+        typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
+      )
       addSource('tri-traces', { type: 'geojson', data: emptyFC() })
-      addLayer({
-        id: 'tri-traces',
-        type: 'line',
-        source: 'tri-traces',
-        layout: { 'line-cap': 'round', 'line-join': 'round', visibility: 'none' },
-        paint: {
-          'line-color': '#fc4c02',
-          'line-opacity': 0.44,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.75, 14, 1.2, 16, 1.8],
-        },
-      })
       addLayer({
         id: 'tri-hit',
         type: 'line',
@@ -8748,7 +9697,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     const setOverviewData = () => {
       if (!ready()) return
       const ov = getOverview()
-      map.getSource('tri-heat')?.setData(ov.heat)
+      map.getSource('tri-heat')?.setData(emptyFC())
       map.getSource('tri-traces')?.setData(ov.traces)
       applyMode()
     }
@@ -8793,7 +9742,6 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
       recolor(d, i)
       map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
-      map.setPaintProperty('tri-traces', 'line-opacity', 0.06)
       fitSelection(d, selectedRange, 600)
     }
     const selectRange = (
@@ -8828,6 +9776,8 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       started = false
       okFlag = false
       eventsBound = false
+      matchedOverview = null
+      streetMapMatcher = null
       selection = null
       selectedRange = null
       if (canvas) (canvas as unknown as { _mapInstance: unknown })._mapInstance = null

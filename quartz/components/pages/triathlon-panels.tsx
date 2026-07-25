@@ -4,6 +4,9 @@ import { SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
 
+export const DISPATCH_ICON =
+  'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
+
 const MAP_SPORTS = ['bike', 'run', 'walk'] as const
 
 const NAV = [
@@ -322,11 +325,23 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
           aria-label="search analytics"
           autocomplete="off"
         />
+        <button
+          class="tri-ana-compare-toggle"
+          type="button"
+          aria-pressed="false"
+          aria-label="compare activities"
+          aria-controls="tri-analytics-results"
+          data-i18n-aria-label="compare activities"
+        >
+          <svg class="tri-ana-compare-icon" viewBox="0 0 1000 1000" aria-hidden="true">
+            <path d={DISPATCH_ICON} />
+          </svg>
+        </button>
       </div>
     }
   >
-    <div class="tri-ana-results" aria-hidden="true" />
-    <div class="tri-ana-detail" aria-hidden="true" />
+    <div id="tri-analytics-results" class="tri-ana-results" aria-hidden="true" />
+    <div id="tri-analytics-detail" class="tri-ana-detail" aria-hidden="true" />
     <div class="tri-ana-block" data-chart="body" />
     <div class="tri-ana-block" data-chart="dexa" />
     <div class="tri-ana-block" data-chart="gauge" />
