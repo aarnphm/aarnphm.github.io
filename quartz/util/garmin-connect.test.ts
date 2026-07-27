@@ -74,6 +74,29 @@ test('normalizes Garmin Connect activity details into the Garmin cache shape', (
   })
 })
 
+test('prefers elapsed duration over timer duration', () => {
+  const fallback = {
+    activityId: 124,
+    activityName: 'Race swim',
+    activityType: { typeKey: 'open_water_swimming' },
+    startTimeGMT: '2026-07-26 12:43:52',
+  }
+  const activity = garminConnectActivity(
+    {
+      ...fallback,
+      distance: 1_500,
+      duration: 2_460,
+      movingDuration: 2_460,
+      elapsedDuration: 2_468,
+    },
+    fallback,
+    0,
+  )
+
+  assert.equal(activity?.movingTimeS, 2_460)
+  assert.equal(activity?.elapsedTimeS, 2_468)
+})
+
 test('keeps Garmin Connect fueling fields when they appear in nested records', () => {
   const fallback = {
     activityId: 456,

@@ -23,10 +23,14 @@ test('parses manual fueling against a Strava activity ID', () => {
   )
 })
 
-test('requires both a positive Strava activity ID and fueling value', () => {
+test('accepts explicit zero fueling and rejects missing IDs or negative values', () => {
   assert.equal(parseTrackingBlock(null, 'date: 2026-07-19\nfueling: 140')?.fueling, null)
-  assert.equal(
+  assert.deepEqual(
     parseTrackingBlock(null, 'date: 2026-07-19\nactivity: 19382727312\nfueling: 0')?.fueling,
+    { date: '2026-07-19', activityId: 19382727312, caloriesConsumed: 0 },
+  )
+  assert.equal(
+    parseTrackingBlock(null, 'date: 2026-07-19\nactivity: 19382727312\nfueling: -1')?.fueling,
     null,
   )
 })

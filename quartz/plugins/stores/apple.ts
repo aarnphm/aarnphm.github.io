@@ -21,7 +21,11 @@ export interface AppleSwim {
   strokeTimeS: number | null
   strokes: Record<string, number>
   intervals?: AppleSwimInterval[]
+  location: SwimLocation | null
+  waterTemperatureC: number | null
 }
+
+export type SwimLocation = 'pool' | 'openWater'
 
 export interface AppleHeartRateSample {
   time: string
@@ -570,6 +574,8 @@ export function aggregateSwimLaps(
         strokeTimeS: strokeTotals.timeS > 0 ? Math.round(strokeTotals.timeS) : null,
         strokes,
         intervals,
+        location: null,
+        waterTemperatureC: null,
       }
     })
     .filter(swim => swim !== null)
@@ -582,6 +588,10 @@ export function aggregateSwimLaps(
 
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null
+}
+
+function swimLocation(value: unknown): SwimLocation | null {
+  return value === 'pool' || value === 'openWater' ? value : null
 }
 
 function parseAppleJsonDays(raw: unknown): AppleDaily[] {
@@ -634,6 +644,12 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
     const activeTimeS = num(swim.activeTimeS)
     const strokeCount = num(swim.strokeCount)
     const strokeTimeS = num(swim.strokeTimeS)
+    const location = swimLocation(swim.location)
+    const rawWaterTemperatureC = num(swim.waterTemperatureC)
+    const waterTemperatureC =
+      rawWaterTemperatureC != null && rawWaterTemperatureC >= -5 && rawWaterTemperatureC <= 60
+        ? Math.round(rawWaterTemperatureC * 10) / 10
+        : null
     const rawStrokes = isRecord(swim.strokes) ? swim.strokes : null
     if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date) || totalM == null || laps == null || !rawStrokes)
       continue
@@ -700,6 +716,8 @@ function parseAppleJsonSwims(raw: unknown): AppleSwim[] {
       strokeTimeS: strokeTimeS != null && strokeTimeS >= 0 ? Math.round(strokeTimeS) : null,
       strokes,
       intervals,
+      location,
+      waterTemperatureC,
     })
   }
   return out.sort(

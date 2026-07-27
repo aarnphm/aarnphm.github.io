@@ -46,14 +46,14 @@ const DISTANCE_KM_KEYS = ['distanceKm', 'distanceKilometers']
 const MOVING_S_KEYS = ['movingDuration', 'movingDurationS', 'movingTimeS']
 const MOVING_MS_KEYS = ['movingDurationMs', 'movingTimeMs']
 const ELAPSED_S_KEYS = [
-  'duration',
-  'durationInSeconds',
-  'durationS',
   'elapsedDuration',
   'elapsedDurationS',
   'elapsedTimeS',
+  'duration',
+  'durationInSeconds',
+  'durationS',
 ]
-const ELAPSED_MS_KEYS = ['durationMs', 'elapsedDurationMs', 'elapsedTimeMs']
+const ELAPSED_MS_KEYS = ['elapsedDurationMs', 'elapsedTimeMs', 'durationMs']
 const DEVICE_KEYS = [
   'activityDeviceName',
   'deviceDisplayName',

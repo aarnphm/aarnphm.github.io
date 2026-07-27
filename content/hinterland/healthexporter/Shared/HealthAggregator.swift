@@ -193,7 +193,9 @@ struct HealthAggregator {
         strokeCount: bucket.session.strokeCount.map { Int($0.rounded()) },
         strokeTimeS: bucket.session.strokeTimeS.map { Int($0.rounded()) },
         strokes: strokes,
-        intervals: intervals
+        intervals: intervals,
+        location: bucket.session.location,
+        waterTemperatureC: bucket.session.waterTemperatureC
       )
     }.sorted {
       ($0.start ?? $0.date, $0.id) < ($1.start ?? $1.date, $1.id)

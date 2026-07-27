@@ -18,6 +18,10 @@ export interface TrainingPayload {
 const START = 'training plan start'
 const END = 'training plan end'
 
+type TrainingPlanMeta = Pick<TrainingPlan, 'meta' | 'distance' | 'date' | 'target' | 'author'> & {
+  endDate: string
+}
+
 const isComment = (n: RootContent): n is Comment => n.type === 'comment'
 const isFootnotes = (n: RootContent): n is Element =>
   n.type === 'element' && n.tagName === 'section' && n.properties?.dataFootnotes === ''
@@ -47,11 +51,39 @@ function tagDateCells(nodes: RootContent[]): void {
   }
 }
 
-function parseMeta(value: string): Omit<TrainingPlan, 'id' | 'html'> {
-  const fields = { meta: '', distance: '', date: '', target: '', author: '' }
+function parseMeta(value: string): TrainingPlanMeta {
+  const fields: TrainingPlanMeta = {
+    meta: '',
+    distance: '',
+    date: '',
+    endDate: '',
+    target: '',
+    author: '',
+  }
   for (const line of value.split('\n')) {
-    const m = /^\s*(meta|distance|date|target|author)\s*:\s*(.+?)\s*$/.exec(line)
-    if (m) (fields as Record<string, string>)[m[1]] = m[2]
+    const match = /^\s*(meta|distance|date|endDate|target|author)\s*:\s*(.+?)\s*$/.exec(line)
+    if (!match) continue
+    const [, field, value] = match
+    switch (field) {
+      case 'meta':
+        fields.meta = value
+        break
+      case 'distance':
+        fields.distance = value
+        break
+      case 'date':
+        fields.date = value
+        break
+      case 'endDate':
+        fields.endDate = value
+        break
+      case 'target':
+        fields.target = value
+        break
+      case 'author':
+        fields.author = value
+        break
+    }
   }
   return fields
 }
@@ -59,7 +91,7 @@ function parseMeta(value: string): Omit<TrainingPlan, 'id' | 'html'> {
 export function parseTrainingPlans(tree: HtmlRoot): TrainingPlan[] {
   const kids = tree.children
   const footnotes = kids.find(isFootnotes) ?? null
-  const plans: TrainingPlan[] = []
+  const plans: Omit<TrainingPlan, 'id'>[] = []
   let i = 0
   while (i < kids.length) {
     const node = kids[i]
@@ -79,8 +111,11 @@ export function parseTrainingPlans(tree: HtmlRoot): TrainingPlan[] {
     if (footnotes && !body.includes(footnotes)) body.push(footnotes)
     tagDateCells(body)
     const html = toHtml({ type: 'root', children: body } as HtmlRoot, { allowDangerousHtml: true })
-    plans.push({ id: `plan-${plans.length}`, ...fields, html })
+    const { endDate, ...meta } = fields
+    plans.push({ ...meta, date: endDate ? `${meta.date} to ${endDate}` : meta.date, html })
     i = j + 1
   }
   return plans
+    .sort((left, right) => right.date.localeCompare(left.date))
+    .map((plan, index) => ({ id: `plan-${index}`, ...plan }))
 }

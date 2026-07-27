@@ -8,6 +8,10 @@ export interface SwimActivityCandidate {
 }
 
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000
+const SWIM_TELEMETRY_WINDOW_MS = 15 * 60 * 1000
+const MISSING_WATER_TEMPERATURE_PENALTY_MS = 60 * 1000
+const MISSING_STROKE_RATE_PENALTY_MS = 60 * 1000
+const MISSING_SWIM_LOCATION_PENALTY_MS = 10 * 1000
 
 const parsedTime = (value: string | null): number | null => {
   if (!value) return null
@@ -71,3 +75,59 @@ export function matchAppleSwims(
 
   return matches
 }
+
+export function matchAppleSwimTelemetry(
+  swims: Iterable<AppleSwim>,
+  activities: Iterable<SwimActivityCandidate>,
+): Map<number, AppleSwim> {
+  const available = [...swims].filter(
+    swim =>
+      parsedTime(swim.start) != null &&
+      (swim.location != null ||
+        swim.waterTemperatureC != null ||
+        swim.strokeCount != null ||
+        Object.keys(swim.strokes).length > 0),
+  )
+  const orderedActivities = [...activities]
+    .filter(activity => parsedTime(activity.start) != null)
+    .sort((left, right) => left.start.localeCompare(right.start) || left.id - right.id)
+  const used = new Set<AppleSwim>()
+  const matches = new Map<number, AppleSwim>()
+
+  for (const activity of orderedActivities) {
+    const activityTime = parsedTime(activity.start)
+    if (activityTime == null) continue
+    let selected: AppleSwim | null = null
+    let selectedScore = Infinity
+    for (const swim of available) {
+      if (used.has(swim) || swim.date !== activity.date) continue
+      const swimTime = parsedTime(swim.start)
+      if (swimTime == null) continue
+      const timeDelta = Math.abs(activityTime - swimTime)
+      if (timeDelta > SWIM_TELEMETRY_WINDOW_MS) continue
+      const score =
+        timeDelta +
+        (swim.waterTemperatureC == null ? MISSING_WATER_TEMPERATURE_PENALTY_MS : 0) +
+        (swimStrokeRateAvailable(swim) ? 0 : MISSING_STROKE_RATE_PENALTY_MS) +
+        (swim.location == null ? MISSING_SWIM_LOCATION_PENALTY_MS : 0)
+      if (
+        score < selectedScore ||
+        (score === selectedScore && (swim.id ?? '').localeCompare(selected?.id ?? '') < 0)
+      ) {
+        selected = swim
+        selectedScore = score
+      }
+    }
+    if (!selected) continue
+    used.add(selected)
+    matches.set(activity.id, selected)
+  }
+
+  return matches
+}
+
+const swimStrokeRateAvailable = (swim: AppleSwim): boolean =>
+  swim.strokeCount != null &&
+  swim.strokeCount > 0 &&
+  swim.strokeTimeS != null &&
+  swim.strokeTimeS > 0

@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleSwim } from '../plugins/stores/apple'
-import { matchAppleSwims, type SwimActivityCandidate } from './apple-swim-match'
+import {
+  matchAppleSwimTelemetry,
+  matchAppleSwims,
+  type SwimActivityCandidate,
+} from './apple-swim-match'
 
 const swim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   id: 'swim-1',
@@ -14,6 +18,8 @@ const swim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   strokes: { freestyle: 1_000 },
   strokeCount: 700,
   strokeTimeS: 1_500,
+  location: 'pool',
+  waterTemperatureC: 27.8,
   ...values,
 })
 
@@ -65,4 +71,30 @@ test('prefers session rows when a cache still contains a legacy row for the same
   const matches = matchAppleSwims([legacy, session], [activity(1, '2026-07-09T20:13:31Z', 1_000)])
 
   assert.equal(matches.get(1)?.id, 'session')
+})
+
+test('keeps corrected race distance and measured water environment on separate matches', () => {
+  const measured = swim({
+    id: 'apple-watch',
+    date: '2026-07-26',
+    start: '2026-07-26T12:43:52Z',
+    end: '2026-07-26T13:24:52Z',
+    totalM: 438.9,
+    location: 'openWater',
+    waterTemperatureC: 14.4,
+  })
+  const corrected = swim({
+    id: 'strava-copy',
+    date: '2026-07-26',
+    start: '2026-07-26T12:43:54Z',
+    end: '2026-07-26T13:24:54Z',
+    totalM: 1_500,
+    activeTimeS: 2_460,
+    location: null,
+    waterTemperatureC: null,
+  })
+  const race = activity(1, '2026-07-26T12:43:52Z', 1_500)
+
+  assert.equal(matchAppleSwims([measured, corrected], [race]).get(1)?.id, 'strava-copy')
+  assert.equal(matchAppleSwimTelemetry([measured, corrected], [race]).get(1)?.id, 'apple-watch')
 })

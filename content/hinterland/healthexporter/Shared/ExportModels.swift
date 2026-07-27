@@ -24,6 +24,11 @@ enum SwimStrokeName: String, Codable, CaseIterable, Sendable {
   case kickboard
 }
 
+enum SwimLocationName: String, Codable, Sendable {
+  case pool
+  case openWater
+}
+
 struct SwimSessionValue: Equatable, Sendable {
   let id: String
   let startDate: Date
@@ -33,6 +38,32 @@ struct SwimSessionValue: Equatable, Sendable {
   let strokeCount: Double?
   let strokeTimeS: TimeInterval?
   let lapCount: Int?
+  let location: SwimLocationName?
+  let waterTemperatureC: Double?
+
+  init(
+    id: String,
+    startDate: Date,
+    endDate: Date,
+    distanceMeters: Double?,
+    activeTimeS: TimeInterval,
+    strokeCount: Double?,
+    strokeTimeS: TimeInterval?,
+    lapCount: Int?,
+    location: SwimLocationName? = nil,
+    waterTemperatureC: Double? = nil
+  ) {
+    self.id = id
+    self.startDate = startDate
+    self.endDate = endDate
+    self.distanceMeters = distanceMeters
+    self.activeTimeS = activeTimeS
+    self.strokeCount = strokeCount
+    self.strokeTimeS = strokeTimeS
+    self.lapCount = lapCount
+    self.location = location
+    self.waterTemperatureC = waterTemperatureC
+  }
 }
 
 struct SwimStrokeIntervalValue: Equatable, Sendable {
@@ -132,6 +163,8 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
   let strokeTimeS: Int?
   let strokes: [String: Int]
   let intervals: [AppleHealthSwimInterval]
+  let location: SwimLocationName?
+  let waterTemperatureC: Double?
 
   init(
     id: String,
@@ -144,7 +177,9 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     strokeCount: Int?,
     strokeTimeS: Int?,
     strokes: [String: Int],
-    intervals: [AppleHealthSwimInterval] = []
+    intervals: [AppleHealthSwimInterval] = [],
+    location: SwimLocationName? = nil,
+    waterTemperatureC: Double? = nil
   ) {
     self.id = id
     self.date = date
@@ -157,6 +192,8 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     self.strokeTimeS = strokeTimeS
     self.strokes = strokes
     self.intervals = intervals
+    self.location = location
+    self.waterTemperatureC = waterTemperatureC
   }
 
   private enum CodingKeys: String, CodingKey {
@@ -171,6 +208,8 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     case strokeTimeS
     case strokes
     case intervals
+    case location
+    case waterTemperatureC
   }
 
   init(from decoder: Decoder) throws {
@@ -186,6 +225,8 @@ struct AppleHealthSwim: Codable, Equatable, Identifiable, Sendable {
     strokeTimeS = try values.decodeIfPresent(Int.self, forKey: .strokeTimeS)
     strokes = try values.decode([String: Int].self, forKey: .strokes)
     intervals = try values.decodeIfPresent([AppleHealthSwimInterval].self, forKey: .intervals) ?? []
+    location = try values.decodeIfPresent(SwimLocationName.self, forKey: .location)
+    waterTemperatureC = try values.decodeIfPresent(Double.self, forKey: .waterTemperatureC)
   }
 }
 
@@ -200,6 +241,55 @@ struct AppleHealthRunningDynamicsSample: Codable, Equatable, Sendable {
 }
 
 struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
+  struct Activity: Codable, Equatable, Identifiable, Sendable {
+    let id: String
+    let activity: String
+    let start: String
+    let end: String
+    let durationS: Int
+    let elapsedTimeS: Int
+    let distanceM: Double?
+    let activeEnergyKcal: Double?
+    let averageHeartRateBpm: Int?
+    let averagePowerW: Int?
+    let averageCadencePerMinute: Int?
+    let lapCount: Int?
+    let swimmingLocation: SwimLocationName?
+    let waterTemperatureC: Double?
+
+    init(
+      id: String,
+      activity: String,
+      start: String,
+      end: String,
+      durationS: Int,
+      elapsedTimeS: Int,
+      distanceM: Double? = nil,
+      activeEnergyKcal: Double? = nil,
+      averageHeartRateBpm: Int? = nil,
+      averagePowerW: Int? = nil,
+      averageCadencePerMinute: Int? = nil,
+      lapCount: Int? = nil,
+      swimmingLocation: SwimLocationName? = nil,
+      waterTemperatureC: Double? = nil
+    ) {
+      self.id = id
+      self.activity = activity
+      self.start = start
+      self.end = end
+      self.durationS = durationS
+      self.elapsedTimeS = elapsedTimeS
+      self.distanceM = distanceM
+      self.activeEnergyKcal = activeEnergyKcal
+      self.averageHeartRateBpm = averageHeartRateBpm
+      self.averagePowerW = averagePowerW
+      self.averageCadencePerMinute = averageCadencePerMinute
+      self.lapCount = lapCount
+      self.swimmingLocation = swimmingLocation
+      self.waterTemperatureC = waterTemperatureC
+    }
+  }
+
   let id: String
   let activity: String
   let start: String
@@ -216,6 +306,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
   let device: String?
   let gpxFile: String?
   let heartRate: [AppleHealthHeartRate]
+  let activities: [Activity]
   let strideLengthM: [AppleHealthRunningDynamicsSample]
   let groundContactTimeMs: [AppleHealthRunningDynamicsSample]
   let verticalOscillationCm: [AppleHealthRunningDynamicsSample]
@@ -237,6 +328,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     device: String? = nil,
     gpxFile: String? = nil,
     heartRate: [AppleHealthHeartRate],
+    activities: [Activity] = [],
     strideLengthM: [AppleHealthRunningDynamicsSample] = [],
     groundContactTimeMs: [AppleHealthRunningDynamicsSample] = [],
     verticalOscillationCm: [AppleHealthRunningDynamicsSample] = []
@@ -257,6 +349,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     self.device = device
     self.gpxFile = gpxFile
     self.heartRate = heartRate
+    self.activities = activities
     self.strideLengthM = strideLengthM
     self.groundContactTimeMs = groundContactTimeMs
     self.verticalOscillationCm = verticalOscillationCm
@@ -279,6 +372,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     case device
     case gpxFile
     case heartRate
+    case activities
     case strideLengthM
     case groundContactTimeMs
     case verticalOscillationCm
@@ -302,6 +396,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
     device = try values.decodeIfPresent(String.self, forKey: .device)
     gpxFile = try values.decodeIfPresent(String.self, forKey: .gpxFile)
     heartRate = try values.decodeIfPresent([AppleHealthHeartRate].self, forKey: .heartRate) ?? []
+    activities = try values.decodeIfPresent([Activity].self, forKey: .activities) ?? []
     strideLengthM =
       try values.decodeIfPresent([AppleHealthRunningDynamicsSample].self, forKey: .strideLengthM)
       ?? []
@@ -336,6 +431,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
       device: device,
       gpxFile: previousGPXFile,
       heartRate: heartRate,
+      activities: activities,
       strideLengthM: strideLengthM,
       groundContactTimeMs: groundContactTimeMs,
       verticalOscillationCm: verticalOscillationCm
@@ -344,7 +440,7 @@ struct AppleHealthWorkout: Codable, Equatable, Identifiable, Sendable {
 }
 
 struct HealthExportDocument: Codable, Equatable, Sendable {
-  static let currentVersion = 8
+  static let currentVersion = 10
 
   let version: Int
   let generatedAt: String
@@ -398,7 +494,7 @@ struct WorkoutRoutePointValue: Equatable, Sendable {
   let longitude: Double
   let altitudeM: Double?
   let heartRateBpm: Int?
-  let cadenceSpm: Double?
+  let cadenceRpm: Double?
   let powerW: Double?
 }
 
@@ -427,6 +523,16 @@ private final class HealthExporterFormatterCache: @unchecked Sendable {
   private let lock = NSLock()
   private var dayFormatters: [String: DateFormatter] = [:]
   private var timestampFormatters: [String: ISO8601DateFormatter] = [:]
+  private let utcFractionalTimestampFormatter: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [
+      .withInternetDateTime,
+      .withColonSeparatorInTimeZone,
+      .withFractionalSeconds,
+    ]
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    return formatter
+  }()
 
   func dayString(_ date: Date, calendar: Calendar) -> String {
     let key = "\(calendar.identifier):\(calendar.timeZone.identifier)"
@@ -465,6 +571,13 @@ private final class HealthExporterFormatterCache: @unchecked Sendable {
     lock.unlock()
     return result
   }
+
+  func utcFractionalTimestampString(_ date: Date) -> String {
+    lock.lock()
+    let result = utcFractionalTimestampFormatter.string(from: date)
+    lock.unlock()
+    return result
+  }
 }
 
 enum HealthExporterFormat {
@@ -481,5 +594,9 @@ enum HealthExporterFormat {
   static func utcTimestampString(_ date: Date) -> String {
     let timeZone = TimeZone(secondsFromGMT: 0) ?? TimeZone(identifier: "UTC") ?? .current
     return timestampString(date, timeZone: timeZone)
+  }
+
+  static func utcFractionalTimestampString(_ date: Date) -> String {
+    cache.utcFractionalTimestampString(date)
   }
 }

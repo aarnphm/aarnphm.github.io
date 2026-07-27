@@ -6,7 +6,6 @@ import { h, s } from 'hastscript'
 import { JSX } from 'preact'
 import { render } from 'preact-render-to-string'
 import { EXIT, visit } from 'unist-util-visit'
-import type { ActivityKind } from '../plugins/stores/strava'
 import type { TranscludeOptions } from '../plugins/transformers/frontmatter'
 import { i18n } from '../i18n'
 import { ATHLETE } from '../plugins/stores/analytics'
@@ -96,6 +95,7 @@ import {
   triathlonDayCard,
   triathlonDayExtras,
   triathlonDayProps,
+  triathlonEmbedAnchorFromSource,
 } from './triathlon-day-card'
 
 interface RenderComponents {
@@ -736,15 +736,6 @@ function collectRenderTreeFeatures(root: Root): RenderTreeFeatures {
     }
   })
   return features
-}
-
-const TRI_SPORT_ANCHOR: Record<string, ActivityKind> = {
-  swim: 'swim',
-  bike: 'bike',
-  cycling: 'bike',
-  cycle: 'bike',
-  run: 'run',
-  walk: 'walk',
 }
 
 type FootnoteInfo = {
@@ -1451,30 +1442,25 @@ export function transcludeFinal(
       }
 
       let triathlonDate: string | undefined
-      let triathlonSport: ActivityKind | undefined
+      let triathlonEmbedExtras: Pick<DayCardExtras, 'sport' | 'excludedActivityIds'> | null = null
       if (page.frontmatter?.layout === 'triathlon') {
         triathlonDate = blockRef ? DATE_ANCHOR_RE.exec(blockRef)?.[1] : undefined
-        const anchorPath = node.properties?.dataAnchorPath
-        if (!triathlonDate && typeof anchorPath === 'string') {
-          try {
-            const segs = JSON.parse(anchorPath) as string[]
-            if (
-              segs.length === 2 &&
-              /^\d{4}-\d{2}-\d{2}$/.test(segs[0]) &&
-              TRI_SPORT_ANCHOR[segs[1]]
-            ) {
-              triathlonDate = segs[0]
-              triathlonSport = TRI_SPORT_ANCHOR[segs[1]]
-            }
-          } catch {
-            // ignore malformed anchor path
+        if (!triathlonDate) {
+          const anchorPath = node.properties?.dataAnchorPath
+          const anchor = triathlonEmbedAnchorFromSource(
+            typeof anchorPath === 'string' ? anchorPath : undefined,
+            fileData.rawMarkdownSource,
+          )
+          if (anchor) {
+            triathlonDate = anchor.date
+            triathlonEmbedExtras = anchor
           }
         }
       }
       if (triathlonDate) {
         const extras: DayCardExtras = {
           ...triathlonDayExtras(page, triathlonDate),
-          ...(triathlonSport ? { sport: triathlonSport } : {}),
+          ...triathlonEmbedExtras,
         }
         const since = page.frontmatter?.['strava']
         const payload = loadStravaPayloadSync(

@@ -98,6 +98,7 @@ import {
   normalizePowerCurvePoints,
   powerCurveFraction,
   powerCurveHoverAt,
+  parseExcludedActivityIds,
   rate,
   runGroundContactTimeMs,
   runStrideLengthLabel,
@@ -1285,13 +1286,18 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
   return wrap
 }
 
-const renderDetail = (d: StravaActivityDetail, payload?: DetailPayload | null): HTMLElement => {
+const renderDetail = (
+  d: StravaActivityDetail,
+  payload?: DetailPayload | null,
+  fillMissingRunPower = false,
+): HTMLElement => {
   const wrap = buildActivityNode(
     domF,
     d,
     false,
     clientCtx(),
     payload?.swimTrend ?? [],
+    fillMissingRunPower,
   ) as HTMLElement
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>('.tri-act-figs .tri-elev-wrap')
@@ -2061,7 +2067,7 @@ const buildDayCard = (
   extras: DayCardExtras = {},
 ): HTMLElement => {
   const card = buildDayCardNode(domF, dateIso, payload, extras, detail =>
-    renderDetail(detail, payload),
+    renderDetail(detail, payload, extras.event != null),
   ) as HTMLElement
   if (extras.expanded) {
     card
@@ -2072,13 +2078,17 @@ const buildDayCard = (
   return card
 }
 
-const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => ({
-  location: data.triathlonLoc,
-  event: data.triathlonEvent,
-  sport: data.triathlonSport as DayCardExtras['sport'],
-  expanded: data.triathlonExpanded === '1',
-  dateHref: data.triathlonDateHref,
-})
+const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
+  const excludedActivityIds = parseExcludedActivityIds(data.triathlonFilter)
+  return {
+    location: data.triathlonLoc,
+    event: data.triathlonEvent,
+    sport: data.triathlonSport as DayCardExtras['sport'],
+    ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
+    expanded: data.triathlonExpanded === '1',
+    dateHref: data.triathlonDateHref,
+  }
+}
 
 const setupDayEmbeds = (): (() => void) | null => {
   const embeds = Array.from(
@@ -2189,6 +2199,14 @@ const setupDayEmbeds = (): (() => void) | null => {
     const clearPendingSwimMode = (): void => {
       pendingSwimMode = null
     }
+    const onRunSplitScroll = (event: Event): void => {
+      if (!(event.target instanceof Element) || !event.target.matches('.tri-run-splits-list'))
+        return
+      event.target.toggleAttribute(
+        'data-scroll-end',
+        event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight - 1,
+      )
+    }
     embed.addEventListener('pointerdown', onSwimPointerDown, { passive: true })
     embed.addEventListener('keydown', onSwimKeyDown)
     embed.addEventListener('pointerdown', onAnalysisPointerDown, { passive: true })
@@ -2198,6 +2216,7 @@ const setupDayEmbeds = (): (() => void) | null => {
     embed.addEventListener('keydown', onAnalysisKeyDown)
     embed.addEventListener('click', clearPendingSwimMode)
     embed.addEventListener('pointercancel', clearPendingSwimMode)
+    embed.addEventListener('scroll', onRunSplitScroll, { capture: true, passive: true })
     teardowns.push(() => {
       embed.removeEventListener('pointerdown', onSwimPointerDown)
       embed.removeEventListener('keydown', onSwimKeyDown)
@@ -2208,6 +2227,7 @@ const setupDayEmbeds = (): (() => void) | null => {
       embed.removeEventListener('keydown', onAnalysisKeyDown)
       embed.removeEventListener('click', clearPendingSwimMode)
       embed.removeEventListener('pointercancel', clearPendingSwimMode)
+      embed.removeEventListener('scroll', onRunSplitScroll, true)
     })
     const render = (data: DetailPayload) => {
       const swimStates: {

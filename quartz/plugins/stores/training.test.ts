@@ -95,6 +95,34 @@ test('parseTrainingPlans extracts meta and renders the body slice', () => {
   assert.match(p.html, /<h3>weekly build<\/h3>/)
 })
 
+test('parseTrainingPlans sorts newest first and formats end dates as ranges', () => {
+  const t = tree()
+  t.children.push(
+    {
+      type: 'comment',
+      value:
+        ' training plan start\nmeta: 45 minute climb\ndistance: cycling\ndate: 2026-07-27\nendDate: 2026-08-24\ntarget: climbing threshold durability\n',
+    },
+    {
+      type: 'element',
+      tagName: 'p',
+      properties: {},
+      children: [{ type: 'text', value: 'climbing body' }],
+    },
+    { type: 'comment', value: ' training plan end ' },
+  )
+
+  const plans = parseTrainingPlans(t)
+
+  assert.deepEqual(
+    plans.map(({ id, meta, date }) => ({ id, meta, date })),
+    [
+      { id: 'plan-0', meta: '45 minute climb', date: '2026-07-27 to 2026-08-24' },
+      { id: 'plan-1', meta: 'supertri toronto 2026', date: '2026-07-26' },
+    ],
+  )
+})
+
 test('parseTrainingPlans excludes content outside the markers', () => {
   const p = parseTrainingPlans(tree())[0]
   assert.doesNotMatch(p.html, /before/)
