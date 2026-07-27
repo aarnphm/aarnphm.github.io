@@ -36,9 +36,18 @@ dexa:
       lean: 55
     vatAreaIn2: 8.64
     vatLbs: 1.24
+events:
+  supertri:
+    T1: 00:08:42
+    T2: 00:03:05
+    bike: 01:11:11
+    distance: olympic
+    overall: 02:57:19
+    run: 00:53:15
+    swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-07-25 17:13:50 GMT-04:00
+modified: 2026-07-26 18:37:11 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
 strava: '2026-05-15'
@@ -47,7 +56,7 @@ tags:
   - self
   - evergreen
 title: triathlon
-triathlon: olympic
+triathlon: '70.3'
 vo2max:
   - caloriesAtVt1: 850
     date: '2026-06-25'
@@ -651,6 +660,46 @@ activity: 19382727312
 fueling: 140
 ```
 
+```tracking race=true event="SuperTri Toronto 2026"
+date: 2026-07-26
+```
+
+```tracking
+date: 2026-07-26
+activity: 19476884095
+fueling: 30
+```
+
+```tracking
+date: 2026-07-26
+activity: 19477798013
+fueling: 120
+```
+
+```tracking
+date: 2026-07-26
+activity: 19477089243
+fueling: 120
+```
+
+```tracking
+date: 2026-07-26
+activity: 19476629599
+fueling: 0
+```
+
+```tracking
+date: 2026-07-26
+activity: 19471122670
+fueling: 0
+```
+
+```tracking
+date: 2026-07-26
+activity: 19477504076
+fueling: 150
+```
+
 <!-- training plan start
 meta: supertri toronto 2026
 distance: olympic
@@ -915,7 +964,8 @@ Race fueling:
 <!-- training plan start
 meta: 45 minute climb
 distance: cycling
-date: 2026-07-27 to 2026-08-24
+date: 2026-07-27
+endDate: 2026-08-24
 target: climbing threshold durability
 author: strava,cts
 -->

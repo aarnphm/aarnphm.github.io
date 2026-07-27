@@ -79,19 +79,21 @@ struct HealthExportWriter {
     if let altitudeM = point.altitudeM {
       lines.append("    <ele>\(decimal(altitudeM, places: 1))</ele>")
     }
-    lines.append("    <time>\(HealthExporterFormat.utcTimestampString(point.date))</time>")
-    if point.heartRateBpm != nil || point.cadenceSpm != nil || point.powerW != nil {
+    lines.append(
+      "    <time>\(HealthExporterFormat.utcFractionalTimestampString(point.date))</time>"
+    )
+    if point.heartRateBpm != nil || point.cadenceRpm != nil || point.powerW != nil {
       lines.append("    <extensions>")
       if let powerW = point.powerW {
         lines.append("     <power>\(Int(powerW.rounded()))</power>")
       }
-      if point.heartRateBpm != nil || point.cadenceSpm != nil {
+      if point.heartRateBpm != nil || point.cadenceRpm != nil {
         lines.append("     <gpxtpx:TrackPointExtension>")
         if let heartRateBpm = point.heartRateBpm {
           lines.append("      <gpxtpx:hr>\(heartRateBpm)</gpxtpx:hr>")
         }
-        if let cadenceSpm = point.cadenceSpm {
-          lines.append("      <gpxtpx:cad>\(Int((cadenceSpm / 2).rounded()))</gpxtpx:cad>")
+        if let cadenceRpm = point.cadenceRpm {
+          lines.append("      <gpxtpx:cad>\(Int(cadenceRpm.rounded()))</gpxtpx:cad>")
         }
         lines.append("     </gpxtpx:TrackPointExtension>")
       }

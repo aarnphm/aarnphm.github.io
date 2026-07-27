@@ -9427,6 +9427,7 @@ a.tri-pop-date:hover {
 }
 
 .tri-run-splits-columns {
+  min-height: calc(0.48rem * 1.2);
   padding: 0 0.35rem;
   color: var(--gray);
   font-size: 0.48rem;
@@ -9441,6 +9442,16 @@ a.tri-pop-date:hover {
 .tri-run-splits-list {
   display: grid;
   min-width: 0;
+}
+
+.tri-run-splits-empty {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 1.8rem;
+  padding: 0.2rem 0.35rem;
+  color: var(--gray);
+  font-size: 0.54rem;
 }
 
 .tri-run-split {
@@ -9668,5 +9679,75 @@ a.tri-pop-date:hover {
   .tri-run-split-pace {
     padding-inline: 0.35rem;
     font-size: 0.52rem;
+  }
+}
+
+:not(.tri-day-page) > .tri-day-embed {
+  .tri-run-splits {
+    position: relative;
+    box-sizing: border-box;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    max-height: 16.5rem;
+
+    &:has(> .tri-run-splits-list:not([data-scroll-end]) > .tri-run-split:nth-child(8))::after {
+      position: absolute;
+      right: 0.9rem;
+      bottom: 0.6rem;
+      left: 0.6rem;
+      height: 1.8rem;
+      pointer-events: none;
+      content: '';
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        color-mix(in srgb, var(--lightgray) 34%, var(--light))
+      );
+    }
+  }
+
+  .tri-run-splits-list {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    @include thin-scrollbar;
+  }
+
+  .tri-run-splits-columns,
+  .tri-run-split {
+    grid-template-columns: 1.5rem 2.8rem minmax(0, 1fr) 2.8rem;
+    gap: 0.3rem;
+  }
+
+  .tri-run-splits-columns > :first-child {
+    white-space: nowrap;
+  }
+
+  .tri-run-split-track {
+    height: auto;
+    background: transparent;
+  }
+
+  .tri-run-split-fill,
+  .tri-run-split-average-marker {
+    display: none;
+  }
+
+  .tri-run-split-pace {
+    padding: 0;
+    font-size: 0.52rem;
+    font-variant-numeric: tabular-nums;
+    line-height: normal;
+  }
+
+  .tri-run-split-delta {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tri-run-split[aria-pressed='true'] {
+    background: color-mix(in srgb, var(--tri-run) 20%, transparent);
+  }
+
+  .tri-run-split[aria-pressed='true'] .tri-run-split-track {
+    outline: 0;
   }
 }

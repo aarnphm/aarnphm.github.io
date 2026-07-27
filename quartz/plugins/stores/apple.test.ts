@@ -107,6 +107,8 @@ test('JSON import preserves swim aggregates from HealthExporter', () => {
         strokeTimeS: null,
         strokes: { freestyle: 1450, breaststroke: 50 },
         intervals: [],
+        location: null,
+        waterTemperatureC: null,
       },
     ],
   )
@@ -128,6 +130,8 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
           strokeCount: 960.2,
           strokeTimeS: 1700.4,
           strokes: { freestyle: 1500 },
+          location: 'openWater',
+          waterTemperatureC: 14.44,
           intervals: [
             {
               start: '2026-06-19T11:00:05.000Z',
@@ -154,6 +158,8 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
           strokeCount: 600,
           strokeTimeS: 1200,
           strokes: { breaststroke: 1000 },
+          location: 'river',
+          waterTemperatureC: 100,
         },
       ],
     }).swims,
@@ -169,6 +175,8 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
         strokeCount: 960,
         strokeTimeS: 1700,
         strokes: { freestyle: 1500 },
+        location: 'openWater',
+        waterTemperatureC: 14.4,
         intervals: [
           {
             start: '2026-06-19T11:00:05Z',
@@ -195,6 +203,8 @@ test('JSON import keeps separate swim sessions and their rate inputs', () => {
         strokeTimeS: 1200,
         strokes: { breaststroke: 1000 },
         intervals: [],
+        location: null,
+        waterTemperatureC: null,
       },
     ],
   )
@@ -424,6 +434,8 @@ test('aggregateSwimLaps keeps sessions separate and unions overlapping rate inte
       strokeCount: 24,
       strokeTimeS: 35,
       strokes: { freestyle: 25 },
+      location: null,
+      waterTemperatureC: null,
       intervals: [
         {
           start: '2026-05-17T17:19:25Z',
@@ -449,6 +461,8 @@ test('aggregateSwimLaps keeps sessions separate and unions overlapping rate inte
       strokeCount: 16,
       strokeTimeS: 30,
       strokes: { breaststroke: 50 },
+      location: null,
+      waterTemperatureC: null,
       intervals: [
         {
           start: '2026-05-17T22:10:00Z',
@@ -557,6 +571,8 @@ test('aggregateSwimLaps preserves distance-only sessions without inventing dista
       strokeTimeS: null,
       strokes: {},
       intervals: [],
+      location: null,
+      waterTemperatureC: null,
     },
     {
       id: 'evening',
@@ -569,6 +585,8 @@ test('aggregateSwimLaps preserves distance-only sessions without inventing dista
       strokeCount: null,
       strokeTimeS: null,
       strokes: {},
+      location: null,
+      waterTemperatureC: null,
       intervals: [
         {
           start: '2026-05-17T22:10:00Z',

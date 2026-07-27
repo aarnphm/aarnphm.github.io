@@ -64,6 +64,8 @@ function swim(id: string | null, date = '2026-06-19'): AppleSwim {
     strokeCount: id ? 900 : null,
     strokeTimeS: id ? 1700 : null,
     strokes: { freestyle: 1500 },
+    location: 'pool',
+    waterTemperatureC: 27.8,
   }
 }
 

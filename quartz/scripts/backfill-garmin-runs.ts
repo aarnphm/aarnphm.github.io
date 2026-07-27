@@ -500,6 +500,31 @@ function swimSample(streams: TimedStravaStreams, index: number): GarminSwimSampl
   }
 }
 
+function strictlyTimedSwimSamples(streams: TimedStravaStreams): GarminSwimSample[] {
+  const samples: GarminSwimSample[] = []
+  for (let index = 0; index < streams.time.length; index++) {
+    const sample = swimSample(streams, index)
+    const previous = samples[samples.length - 1]
+    if (!previous) {
+      samples.push(sample)
+      continue
+    }
+    if (sample.elapsedSeconds < previous.elapsedSeconds)
+      throw new Error('Strava swim stream times must be nondecreasing')
+    if (sample.elapsedSeconds > previous.elapsedSeconds) {
+      samples.push(sample)
+      continue
+    }
+    samples[samples.length - 1] = {
+      ...previous,
+      ...sample,
+      distanceMeters:
+        sample.elapsedSeconds === 0 ? 0 : Math.max(previous.distanceMeters, sample.distanceMeters),
+    }
+  }
+  return samples
+}
+
 export function garminSwimFitInput(
   activity: RawStravaActivity,
   streams: TimedStravaStreams,
@@ -510,7 +535,9 @@ export function garminSwimFitInput(
     throw new Error(`Strava activity ${activity.id} has an invalid start time`)
   if (streams.time.length < 2)
     throw new Error(`Strava activity ${activity.id} has fewer than two timed samples`)
-  let samples = streams.time.map((_, index) => swimSample(streams, index))
+  let samples = strictlyTimedSwimSamples(streams)
+  if (samples.length < 2)
+    throw new Error(`Strava activity ${activity.id} has fewer than two distinct timed samples`)
   let elapsedTimeSeconds = Math.max(
     activity.elapsedTime,
     streams.time[streams.time.length - 1] ?? 0,
@@ -786,7 +813,7 @@ async function main(): Promise<void> {
     const appleSwim = appleMatches.get(candidate.activity.id)
     const appleStatus =
       args.sport === 'swim'
-        ? ` | Apple ${applePoolSwimProjection(candidate.activity, appleSwim) ? 'lengths' : 'pending'}`
+        ? ` | Apple ${applePoolSwimProjection(candidate.activity, appleSwim) ? 'lengths' : appleSwim ? 'summary' : 'pending'}`
         : ''
     console.log(`[garmin-backfill] candidate ${describe(candidate.activity)}${appleStatus}`)
   }

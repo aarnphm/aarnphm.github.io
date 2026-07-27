@@ -229,6 +229,15 @@ describe('remarkWikilink integration', () => {
       assert(html.includes('<a href="notes#summary"'))
     })
 
+    test('preserves raw nested transclude anchors', () => {
+      const html = processToHTML('![[triathlon#2026-07-26#filter=19471122670&19476629599]]')
+      assert(
+        html.includes(
+          'data-anchor-path="[&#x22;2026-07-26&#x22;,&#x22;filter=19471122670&#x26;19476629599&#x22;]"',
+        ),
+      )
+    })
+
     test('converts base view transclude', () => {
       const html = processToHTML('![[data.base#editors]]')
       assert(html.includes('<blockquote class="transclude"'))

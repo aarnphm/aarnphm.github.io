@@ -52,6 +52,8 @@ function appleSwim(values: Partial<AppleSwim> = {}): AppleSwim {
     strokeCount: 9,
     strokeTimeS: 20,
     strokes: { freestyle: 25, kickboard: 25 },
+    location: 'pool',
+    waterTemperatureC: 27.8,
     intervals: [
       {
         start: '2026-07-19T01:03:00Z',
@@ -98,6 +100,39 @@ test('projects future swim backfills into pool or open-water FIT inputs', () => 
   const openWater = garminSwimFitInput(stravaActivity(), gpsStreams)
   assert.equal(openWater.kind, 'openWater')
   assert.equal(openWater.samples[2]?.latitudeDegrees, 43.3)
+})
+
+test('merges swim stream samples that Strava rounds onto the same elapsed second', () => {
+  const activity = stravaActivity()
+  const streams = timedStreams()
+  streams.time = [0, 0, 30, 60, 60]
+  streams.latlng = [
+    [43.1, -79.1],
+    [43.1, -79.1],
+    [43.2, -79.2],
+    [43.3, -79.3],
+    [43.3, -79.3],
+  ]
+  streams.altitude = [75, 75, 76, 77, 77]
+  streams.distance = [0, 0, 25, 49, 50]
+  streams.heartrate = [110, 112, 120, 125, 130]
+
+  const input = garminSwimFitInput(activity, streams)
+
+  assert.equal(input.kind, 'openWater')
+  assert.deepEqual(
+    input.samples.map(sample => sample.elapsedSeconds),
+    [0, 30, 60],
+  )
+  assert.deepEqual(
+    input.samples.map(sample => sample.distanceMeters),
+    [0, 25, 50],
+  )
+  assert.deepEqual(
+    input.samples.map(sample => sample.heartRateBpm),
+    [112, 120, 130],
+  )
+  assert.equal(encodeGarminSwimBackfill(activity, streams).validation.valid, true)
 })
 
 test('encodes every future pool swim as a validated FIT activity', () => {

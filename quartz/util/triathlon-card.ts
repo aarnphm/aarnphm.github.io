@@ -1,4 +1,4 @@
-import { STROKE_LABEL, SWIM_STROKES } from '../plugins/stores/apple'
+import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
 import {
   SPORT_ICON,
   type ActivityAnalysisKind,
@@ -23,6 +23,7 @@ export type DayCardExtras = {
   location?: string
   event?: string
   sport?: ActivityKind
+  excludedActivityIds?: readonly string[]
   expanded?: boolean
   dateHref?: string
 }
@@ -46,6 +47,12 @@ export const setDistanceUnit = (v: boolean): void => {
 }
 export const isImperialUnit = (): boolean => imperial
 
+export const parseExcludedActivityIds = (value: string | undefined): string[] => {
+  const filter = value?.startsWith('filter=') ? value.slice('filter='.length) : value
+  if (!filter || !/^\d+(?:&\d+)*$/.test(filter)) return []
+  return [...new Set(filter.split('&'))]
+}
+
 export const dist = (km: number, sport: ActivityKind): string => {
   if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
   return imperial ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
@@ -57,8 +64,9 @@ export const distCombined = (km: number): string =>
     : `${Math.round(km).toLocaleString('en-US')} km`
 
 export const dur = (s: number): string => {
-  const h = Math.floor(s / 3600)
-  const m = Math.round((s % 3600) / 60)
+  const totalMinutes = Math.round(s / 60)
+  const h = Math.floor(totalMinutes / 60)
+  const m = totalMinutes % 60
   return h > 0 ? `${h}h${m.toString().padStart(2, '0')}'` : `${m}'`
 }
 
@@ -176,18 +184,28 @@ export const fuelingRows = (f: ActivityFueling): [string, string][] => {
   return rows
 }
 
-export const moreStatRows = (d: StravaActivityDetail): [string, string][] => {
+export const moreStatRows = (
+  d: StravaActivityDetail,
+  fillMissingRunPower = false,
+): [string, string][] => {
   const rows: [string, string][] = []
+  const showRunPower = fillMissingRunPower && d.sport === 'run'
   if (d.deviceWatts && d.npWatts != null) rows.push(['NP', `${d.npWatts} W`])
+  else if (showRunPower) rows.push(['NP', '—'])
   if (d.avgWatts != null) rows.push([d.deviceWatts ? 'avg power' : 'est power', `${d.avgWatts} W`])
+  else if (showRunPower) rows.push(['avg power', '—'])
   if (d.deviceWatts && d.maxWatts != null) rows.push(['max power', `${d.maxWatts} W`])
+  else if (showRunPower) rows.push(['max power', '—'])
   if (d.kilojoules != null) rows.push(['energy', `${d.kilojoules} kJ`])
+  else if (showRunPower) rows.push(['energy', '—'])
   if (d.calories != null) rows.push(['calories', `${d.calories.toLocaleString('en-US')} kcal`])
-  if (d.avgCadence != null)
+  if (d.avgCadence != null && d.sport !== 'swim')
     rows.push(['cadence', d.sport === 'run' ? `${d.avgCadence * 2} spm` : `${d.avgCadence} rpm`])
+  else if (d.sport === 'run') rows.push(['cadence', '—'])
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
-  if (d.avgTemp != null) rows.push(['temp', formatTemperature(d.avgTemp)])
+  if (d.avgTemp != null)
+    rows.push([d.sport === 'swim' ? 'air temp' : 'temp', formatTemperature(d.avgTemp)])
   if (d.windKph != null)
     rows.push([
       'wind',
@@ -423,8 +441,7 @@ const hasAnalysisWorkspace = (d: StravaActivityDetail): boolean =>
       Number.isFinite(point.speedKph) &&
       Number.isFinite(point.lat) &&
       Number.isFinite(point.lng),
-  ) &&
-  validAnalysisRanges(d).length > 0
+  )
 
 export const hasMoreSection = (d: StravaActivityDetail): boolean => {
   const flags = routeStreamFlags(d)
@@ -438,7 +455,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.verticalOscillation ||
     flags.resp ||
     flags.temp ||
-    (d.sport === 'run' && runLapSplits(d).length > 0) ||
+    d.sport === 'run' ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
   )
@@ -1099,18 +1116,24 @@ const paceDelta = (seconds: number | null): string => {
 export const buildRunLapSplits = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'run') return null
   const splits = runLapSplits(d)
-  if (splits.length === 0) return null
+  const wrap = f.el('section', 'tri-run-splits', undefined, { 'aria-label': 'Run lap splits' })
+  const head = f.el('div', 'tri-run-splits-head')
+  f.add(head, f.el('span', 'tri-run-splits-title', 'lap splits'))
+  if (splits.length === 0) {
+    const columns = f.el('div', 'tri-run-splits-columns', undefined, { 'aria-hidden': 'true' })
+    const list = f.el('div', 'tri-run-splits-list')
+    f.add(list, f.el('span', 'tri-run-splits-empty', 'no lap found'))
+    f.add(wrap, head, columns, list)
+    return wrap
+  }
   const maxSpeedKph = Math.max(...splits.map(split => split.speedKph))
   const totalDistanceKm = splits.reduce((total, split) => total + split.range.distanceKm, 0)
   const totalDurationS = splits.reduce((total, split) => total + split.range.durationS, 0)
   const averageSpeedKph = (totalDistanceKm / totalDurationS) * 3600
   const averagePct = Math.max(0, Math.min(100, (averageSpeedKph / maxSpeedKph) * 100))
   const paceUnit = imperial ? '/mi' : '/km'
-  const wrap = f.el('section', 'tri-run-splits', undefined, { 'aria-label': 'Run lap splits' })
-  const head = f.el('div', 'tri-run-splits-head')
   f.add(
     head,
-    f.el('span', 'tri-run-splits-title', 'lap splits'),
     f.el(
       'span',
       'tri-run-splits-average',
@@ -1190,11 +1213,13 @@ const positionAnalysisRanges = (
 export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const ranges = validAnalysisRanges(d)
   if (!hasAnalysisWorkspace(d)) return null
-  const wrap = f.el('section', 'tri-analysis', undefined, {
+  const wrapAttrs: Record<string, string> = {
     'data-tri-analysis': '',
     'data-activity-id': `${d.id}`,
-    'aria-label': 'Activity analysis',
-  })
+  }
+  if (ranges.length === 0) wrapAttrs['aria-hidden'] = 'true'
+  else wrapAttrs['aria-label'] = 'Activity analysis'
+  const wrap = f.el('section', 'tri-analysis', undefined, wrapAttrs)
   const readout = f.el('div', 'tri-analysis-readout', undefined, {
     'data-tri-analysis-readout': '',
     'data-visible': 'false',
@@ -1217,7 +1242,6 @@ export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
   for (const kind of ANALYSIS_KIND_ORDER) {
     const groupRanges = ranges.filter(range => range.kind === kind)
     const empty = groupRanges.length === 0
-    if (empty && kind !== 'climb') continue
     const laneLimit = kind === 'lap' || kind === 'climb' ? 1 : 4
     const positioned = positionAnalysisRanges(groupRanges, laneLimit)
     const bandAttrs: Record<string, string> = { 'data-analysis-kind': kind }
@@ -2611,6 +2635,7 @@ const RUN_TREND_TARGETS = [
   { distanceKm: 42.195, label: 'marathon trend' },
 ]
 const RUN_RIEGEL_EXPONENT = 1.06
+const SWIM_PROJECTION_LENGTHS = [19, 38]
 
 const runTrendRow = (distanceKm: number, movingTimeS: number): [string, string] | null => {
   if (
@@ -2624,6 +2649,33 @@ const runTrendRow = (distanceKm: number, movingTimeS: number): [string, string] 
   if (!target) return null
   const predictedTimeS = movingTimeS * Math.pow(target.distanceKm / distanceKm, RUN_RIEGEL_EXPONENT)
   return [target.label, dur(predictedTimeS)]
+}
+
+const swimProjection = (d: StravaActivityDetail): string => {
+  const pace = positiveMetric(d.swimPaceSPer100m)
+    ? d.swimPaceSPer100m
+    : swimPaceSeconds(d.distanceKm * 1_000, d.movingTimeS)
+  return positiveMetric(pace)
+    ? SWIM_PROJECTION_LENGTHS.map(length => dur(pace * length)).join(' / ')
+    : '—'
+}
+
+const swimStrokeProfile = (d: StravaActivityDetail): string => {
+  const entries: [SwimStroke, number][] = SWIM_STROKES.map((stroke): [SwimStroke, number] => [
+    stroke,
+    d.strokes?.[stroke] ?? 0,
+  ])
+    .filter(([, distanceM]) => distanceM > 0)
+    .sort((left, right) => right[1] - left[1])
+  const totalM = entries.reduce((total, [, distanceM]) => total + distanceM, 0)
+  if (entries.length === 0 || totalM <= 0) return 'freestyle · 100%'
+  const visible = entries.slice(0, 2)
+  const values = visible.map(
+    ([stroke, distanceM]) => `${STROKE_LABEL[stroke]} ${Math.round((distanceM / totalM) * 100)}%`,
+  )
+  const remainingM = entries.slice(2).reduce((total, [, distanceM]) => total + distanceM, 0)
+  if (remainingM > 0) values.push(`other ${Math.round((remainingM / totalM) * 100)}%`)
+  return values.join(' / ')
 }
 
 export const activityStatRows = (d: StravaActivityDetail): [string, string][] => {
@@ -2643,10 +2695,33 @@ export const activityStatRows = (d: StravaActivityDetail): [string, string][] =>
     const trend = runTrendRow(d.distanceKm, d.movingTimeS)
     if (trend) rows.push(trend)
   }
-  if (d.sport === 'swim' && positiveMetric(d.strokeRateSpm))
-    rows.push(['stroke rate', `${swimTrendNumber(d.strokeRateSpm)} str/min`])
-  if (d.sport === 'swim' && positiveMetric(d.strokeCount))
-    rows.push(['strokes', Math.round(d.strokeCount).toLocaleString('en-US')])
+  if (d.sport === 'swim') {
+    if (d.swimLocation !== 'pool') {
+      rows.push([
+        'water temp',
+        d.waterTemperatureC == null ? '—' : formatTemperature(d.waterTemperatureC),
+      ])
+    }
+    rows.push([
+      'stroke rate',
+      positiveMetric(d.strokeRateSpm) ? `${swimTrendNumber(d.strokeRateSpm)} str/min` : '—',
+    ])
+    rows.push([
+      'cadence',
+      positiveMetric(d.avgCadence) ? `${swimTrendNumber(d.avgCadence)} spm` : '—',
+    ])
+    rows.push(['1.9k / 3.8k', swimProjection(d)])
+    rows.push(['stroke type', swimStrokeProfile(d)])
+    rows.push([
+      'strokes',
+      positiveMetric(d.strokeCount)
+        ? `${Math.round(d.strokeCount).toLocaleString('en-US')} · ${(
+            (d.distanceKm * 1_000) /
+            d.strokeCount
+          ).toFixed(2)} m/str`
+        : '—',
+    ])
+  }
   if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
   return rows
 }
@@ -2657,6 +2732,7 @@ export const buildActivity = <N>(
   expanded = false,
   ctx?: DetailCtx,
   swimTrend: SwimTrendPoint[] = [],
+  fillMissingRunPower = false,
 ): N => {
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     'data-activity-id': `${d.id}`,
@@ -2664,7 +2740,7 @@ export const buildActivity = <N>(
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
-  f.add(wrap, statsTable(f, [...activityStatRows(d), ...moreStatRows(d)]))
+  f.add(wrap, statsTable(f, [...activityStatRows(d), ...moreStatRows(d, fillMissingRunPower)]))
   if (d.fueling) {
     const fueling = buildFueling(f, d.fueling)
     if (fueling) f.add(wrap, fueling)
@@ -4319,7 +4395,14 @@ export const buildDayCard = <N>(
   const render =
     activity ??
     ((d: StravaActivityDetail) =>
-      buildActivity(f, d, !!extras.sport || !!extras.expanded, ctx, payload?.swimTrend ?? []))
+      buildActivity(
+        f,
+        d,
+        !!extras.sport || !!extras.expanded,
+        ctx,
+        payload?.swimTrend ?? [],
+        extras.event != null,
+      ))
   const card = f.el('div', 'tri-pop-card')
   const head = f.el('div', 'tri-pop-head')
   f.add(
@@ -4329,7 +4412,10 @@ export const buildDayCard = <N>(
       : f.el('span', 'tri-pop-date', prettyDate(dateIso)),
   )
   const allDay = payload ? dayDetails(payload, dateIso) : []
-  const day = extras.sport ? allDay.filter(d => d.sport === extras.sport) : allDay
+  const excludedActivityIds = new Set(extras.excludedActivityIds)
+  const visibleDay =
+    excludedActivityIds.size > 0 ? allDay.filter(d => !excludedActivityIds.has(`${d.id}`)) : allDay
+  const day = extras.sport ? visibleDay.filter(d => d.sport === extras.sport) : visibleDay
   if (day.length > 0) {
     f.add(
       head,

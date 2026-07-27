@@ -44,6 +44,7 @@ import {
   formatVerticalOscillation,
   nearestPowerCurveValue,
   normalizePowerCurvePoints,
+  parseExcludedActivityIds,
   powerCurveFraction,
   powerCurveHoverAt,
   runStrideLengthM,
@@ -86,7 +87,7 @@ const factory: TriNodeFactory<Element> = {
 test('renders manual fueling with its source', () => {
   assert.deepEqual(
     fuelingRows({
-      caloriesConsumed: 140,
+      caloriesConsumed: 0,
       carbsConsumedG: null,
       fluidMl: null,
       carbsRecommendedG: null,
@@ -96,7 +97,7 @@ test('renders manual fueling with its source', () => {
       source: 'manual',
     }),
     [
-      ['consumed', '140 kcal'],
+      ['consumed', '0 kcal'],
       ['source', 'manual'],
     ],
   )
@@ -746,6 +747,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   swimPaceSPer100m: null,
   swimDurationS: null,
   swimIntervals: [],
+  swimLocation: null,
+  waterTemperatureC: null,
   ...overrides,
 })
 
@@ -1227,6 +1230,9 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   assert.equal(byClass(splits, 'tri-run-split-delta--faster').length, 1)
   assert.match(String(rows[0].properties.style), /--tri-run-split-width:80\.000%/)
   assert.match(String(rows[0].properties.style), /--tri-run-split-average:80\.000%/)
+  assert.equal(byClass(splits, 'tri-run-split-track').length, 3)
+  assert.equal(byClass(splits, 'tri-run-split-fill').length, 3)
+  assert.equal(byClass(splits, 'tri-run-split-average-marker').length, 3)
   assert.equal(rows[0].properties.ariaPressed, 'false')
   assert.match(String(rows[1].properties.ariaLabel), /−1:00 versus previous lap$/)
 
@@ -1318,10 +1324,10 @@ test('selects Strava metric or standard run splits from the active distance unit
   }
 })
 
-test('reserves a bottom climb lane when an activity has no climbs', () => {
-  const withoutClimb = analysisDetail()
-  withoutClimb.analysisRanges = withoutClimb.analysisRanges.filter(range => range.kind !== 'climb')
-  const rendered = buildActivity(factory, withoutClimb, true)
+test('reserves fixed segment and climb lanes when an activity only has laps', () => {
+  const lapsOnly = analysisDetail()
+  lapsOnly.analysisRanges = lapsOnly.analysisRanges.filter(range => range.kind === 'lap')
+  const rendered = buildActivity(factory, lapsOnly, true)
   const analysis = byClass(rendered, 'tri-analysis')[0]
   assert.ok(analysis)
 
@@ -1336,12 +1342,37 @@ test('reserves a bottom climb lane when an activity has no climbs', () => {
     ),
     ['--tri-analysis-lanes:1', '--tri-analysis-lanes:4', '--tri-analysis-lanes:1'],
   )
-  const climb = bands[2]
-  assert.equal(climb.properties.role, undefined)
-  assert.equal(climb.properties.ariaLabel, undefined)
-  assert.equal(climb.properties.ariaHidden, 'true')
-  assert.deepEqual(byClass(climb, 'tri-analysis-band-label').map(text), [''])
-  assert.equal(byClass(climb, 'tri-analysis-range').length, 0)
+  for (const emptyBand of bands.slice(1)) {
+    assert.equal(emptyBand.properties.role, undefined)
+    assert.equal(emptyBand.properties.ariaLabel, undefined)
+    assert.equal(emptyBand.properties.ariaHidden, 'true')
+    assert.deepEqual(byClass(emptyBand, 'tri-analysis-band-label').map(text), [''])
+    assert.equal(byClass(emptyBand, 'tri-analysis-range').length, 0)
+  }
+})
+
+test('reserves an inaccessible analysis stack when a routed activity has no valid ranges', () => {
+  const rendered = buildActivity(factory, detail({ analysisRanges: [] }), true)
+  const analysis = byClass(rendered, 'tri-analysis')[0]
+  assert.ok(analysis)
+  assert.equal(analysis.properties.ariaLabel, undefined)
+  assert.equal(analysis.properties.ariaHidden, 'true')
+
+  const bands = byClass(analysis, 'tri-analysis-band')
+  assert.deepEqual(
+    bands.map(band => band.properties.dataAnalysisKind),
+    ['lap', 'segment', 'climb'],
+  )
+  assert.deepEqual(
+    bands.flatMap(band =>
+      byClass(band, 'tri-analysis-band-items').map(items => items.properties.style),
+    ),
+    ['--tri-analysis-lanes:1', '--tri-analysis-lanes:4', '--tri-analysis-lanes:1'],
+  )
+  for (const band of bands) {
+    assert.equal(band.properties.ariaHidden, 'true')
+    assert.equal(byClass(band, 'tri-analysis-range').length, 0)
+  }
 })
 
 test('starts the route and stream graphs with empty analysis highlights', () => {
@@ -1380,6 +1411,23 @@ test('keeps an empty selected-route overlay available after deselection', () => 
   assert.ok(selectedRoute)
   assert.equal(selectedRoute.properties.d, '')
   assert.match(String(byClass(route, 'tri-route-path')[0].properties.d), /^M /)
+})
+
+test('keeps the run lap block visible when no lap is available', () => {
+  const rendered = buildActivity(
+    factory,
+    detail({ sport: 'run', route: [], bestEfforts: null }),
+    true,
+  )
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  const splits = byClass(more, 'tri-run-splits')[0]
+  assert.ok(splits)
+  assert.equal(splits.properties.ariaLabel, 'Run lap splits')
+  assert.deepEqual(byClass(splits, 'tri-run-splits-title').map(text), ['lap splits'])
+  assert.deepEqual(byClass(splits, 'tri-run-splits-columns').map(text), [''])
+  assert.deepEqual(byClass(splits, 'tri-run-splits-empty').map(text), ['no lap found'])
+  assert.equal(byClass(splits, 'tri-run-split').length, 0)
 })
 
 test('falls back to legacy stream traces without complete analysis telemetry', () => {
@@ -1451,6 +1499,9 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
       swimPaceSPer100m: 95.4,
       strokeRateSpm: 31.5,
       strokeCount: 876,
+      avgCadence: 32,
+      strokes: { freestyle: 800, breaststroke: 200 },
+      swimLocation: 'pool',
     }),
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
@@ -1460,16 +1511,81 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['time', "20'"],
     ['pace', '1:35 /100m'],
     ['stroke rate', '31.5 str/min'],
-    ['strokes', '876'],
+    ['cadence', '32 spm'],
+    ['1.9k / 3.8k', "30' / 1h00'"],
+    ['stroke type', 'freestyle 80% / breast 20%'],
+    ['strokes', '876 · 1.14 m/str'],
     ['avg hr', '148 bpm'],
     ['NP', '205 W'],
     ['avg power', '188 W'],
     ['max power', '565 W'],
     ['energy', '900 kJ'],
     ['calories', '960 kcal'],
-    ['cadence', '88 rpm'],
     ['max hr', '171 bpm'],
-    ['temp', '24°C'],
+    ['air temp', '24°C'],
+  ])
+})
+
+test('keeps a missing swim stroke rate visible as an em dash', () => {
+  const rendered = buildActivity(
+    factory,
+    detail({
+      sport: 'swim',
+      distanceKm: 1.5,
+      movingTimeS: 2_460,
+      route: [],
+      bestEfforts: null,
+      strokeRateSpm: null,
+      strokeCount: null,
+      avgCadence: null,
+      swimLocation: 'pool',
+    }),
+  )
+  const stats = byClass(rendered, 'tri-act-stats')[0]
+  assert.ok(stats)
+  assert.deepEqual(bodyRows(stats).slice(0, 9), [
+    ['distance', '1,500 m'],
+    ['time', "41'"],
+    ['pace', '2:44 /100m'],
+    ['stroke rate', '—'],
+    ['cadence', '—'],
+    ['1.9k / 3.8k', "52' / 1h44'"],
+    ['stroke type', 'freestyle · 100%'],
+    ['strokes', '—'],
+    ['avg hr', '148 bpm'],
+  ])
+})
+
+test('keeps water temperature and adds the full open-water swim profile', () => {
+  setDistanceUnit(false)
+  const rendered = buildActivity(
+    factory,
+    detail({
+      sport: 'swim',
+      distanceKm: 1.5,
+      movingTimeS: 2_460,
+      route: [],
+      bestEfforts: null,
+      strokeRateSpm: 31.5,
+      strokeCount: null,
+      avgCadence: null,
+      swimLocation: 'openWater',
+      waterTemperatureC: 14.4,
+    }),
+  )
+  const stats = byClass(rendered, 'tri-act-stats')[0]
+  assert.ok(stats)
+  assert.deepEqual(bodyRows(stats).slice(0, 10), [
+    ['distance', '1,500 m'],
+    ['time', "41'"],
+    ['pace', '2:44 /100m'],
+    ['water temp', '14°C'],
+    ['stroke rate', '31.5 str/min'],
+    ['cadence', '—'],
+    ['1.9k / 3.8k', "52' / 1h44'"],
+    ['stroke type', 'freestyle · 100%'],
+    ['strokes', '—'],
+    ['avg hr', '148 bpm'],
   ])
 })
 
@@ -1603,6 +1719,28 @@ test('renders the run trend between pace and heart rate in server activity marku
     ['cadence', '176 spm'],
     ['max hr', '171 bpm'],
     ['temp', '24°C'],
+  ])
+})
+
+test('keeps a missing run cadence visible as an em dash', () => {
+  const rendered = buildActivity(
+    factory,
+    detail({
+      sport: 'run',
+      distanceKm: 9.5,
+      movingTimeS: 3_220,
+      maxSpeedKph: null,
+      avgCadence: null,
+    }),
+  )
+  const stats = byClass(rendered, 'tri-act-stats')[0]
+  assert.ok(stats)
+  const rows = bodyRows(stats)
+  const cadenceIndex = rows.findIndex(([label]) => label === 'cadence')
+  assert.deepEqual(rows.slice(cadenceIndex - 1, cadenceIndex + 2), [
+    ['calories', '960 kcal'],
+    ['cadence', '—'],
+    ['max hr', '171 bpm'],
   ])
 })
 
@@ -2006,6 +2144,37 @@ test('includes swim trends in the default server-rendered day card', () => {
   assert.equal(byClass(rendered, 'tri-act-more').length, 1)
 })
 
+test('parses ampersand-separated activity exclusions', () => {
+  assert.deepEqual(parseExcludedActivityIds('filter=19471122670&19476629599&19471122670'), [
+    '19471122670',
+    '19476629599',
+  ])
+  assert.deepEqual(parseExcludedActivityIds('filter=19471122670&&19476629599'), [])
+  assert.deepEqual(parseExcludedActivityIds('filter='), [])
+})
+
+test('omits excluded activities from a day card', () => {
+  const activities = [
+    detail({ id: 19471122670, date: '2026-07-26', name: 'Warmup legs for SuperTri' }),
+    detail({ id: 19475891673, date: '2026-07-26', name: 'SuperTri 2026 Bike Leg' }),
+    detail({ id: 19476629599, date: '2026-07-26', name: 'Warm down' }),
+  ]
+  const rendered = buildDayCard(
+    factory,
+    '2026-07-26',
+    {
+      details: Object.fromEntries(activities.map(activity => [activity.id, activity])),
+      health: {},
+    },
+    { excludedActivityIds: ['19471122670', '19476629599'] },
+  )
+
+  assert.deepEqual(
+    byClass(rendered, 'tri-act').map(activity => activity.properties.dataActivityId),
+    ['19475891673'],
+  )
+})
+
 test('day-card date renders as a month link only when extras provide an href', () => {
   const current = detail({ id: 7, date: '2026-07-09' })
   const payload = { details: { 7: current }, health: {} }
@@ -2035,6 +2204,67 @@ test('expanded day-card extras render every activity pre-expanded', () => {
     assert.equal(text(toggle), '− see less')
     assert.equal(toggle.properties.ariaExpanded, 'true')
   }
+})
+
+test('race cards preserve missing run power rows for transitions', () => {
+  const transitions = [
+    detail({
+      id: 1,
+      name: 'SuperTri T1',
+      sport: 'run',
+      avgWatts: null,
+      npWatts: null,
+      maxWatts: null,
+      kilojoules: null,
+      deviceWatts: false,
+    }),
+    detail({
+      id: 2,
+      name: 'SuperTri T2',
+      sport: 'run',
+      avgWatts: null,
+      npWatts: null,
+      maxWatts: null,
+      kilojoules: null,
+      deviceWatts: false,
+    }),
+  ]
+  const rendered = buildDayCard(
+    factory,
+    '2026-07-09',
+    {
+      details: Object.fromEntries(transitions.map(transition => [transition.id, transition])),
+      health: {},
+    },
+    { event: 'SuperTri' },
+  )
+
+  for (const activity of byClass(rendered, 'tri-act')) {
+    const stats = byClass(activity, 'tri-act-stats')[0]
+    assert.ok(stats)
+    assert.deepEqual(
+      bodyRows(stats).filter(([label]) =>
+        ['NP', 'avg power', 'max power', 'energy'].includes(label),
+      ),
+      [
+        ['NP', '—'],
+        ['avg power', '—'],
+        ['max power', '—'],
+        ['energy', '—'],
+      ],
+    )
+  }
+
+  const ordinaryRun = buildDayCard(factory, '2026-07-09', {
+    details: { 1: transitions[0] },
+    health: {},
+  })
+  const ordinaryStats = byClass(ordinaryRun, 'tri-act-stats')[0]
+  assert.ok(ordinaryStats)
+  assert.equal(
+    bodyRows(ordinaryStats).some(([label]) => label === 'NP'),
+    false,
+  )
 })
 
 test('renders imperial effort values and elevation axes with feet grid increments', () => {

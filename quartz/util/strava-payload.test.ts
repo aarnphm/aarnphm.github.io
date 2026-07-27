@@ -55,6 +55,8 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   swimPaceSPer100m: null,
   swimDurationS: null,
   swimIntervals: [],
+  swimLocation: null,
+  waterTemperatureC: null,
   ...values,
 })
 
@@ -70,6 +72,8 @@ const appleSwim = (values: Partial<AppleSwim> = {}): AppleSwim => ({
   strokeCount: 700,
   strokeTimeS: 1_500,
   intervals: [],
+  location: 'pool',
+  waterTemperatureC: 27.8,
   ...values,
 })
 
@@ -198,6 +202,8 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
   assert.equal(payload.details['1'].strokeRateSpm, 28)
   assert.equal(payload.details['1'].swimPaceSPer100m, 160)
   assert.equal(payload.details['1'].swimDurationS, 1_600)
+  assert.equal(payload.details['1'].swimLocation, 'pool')
+  assert.equal(payload.details['1'].waterTemperatureC, 27.8)
   assert.deepEqual(payload.details['1'].swimIntervals, [
     {
       startElapsedS: 0,
@@ -233,6 +239,60 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
       strokeRateSpm: 28,
     },
   ])
+})
+
+test('uses corrected distance metrics with measured open-water environment', () => {
+  const start = '2026-07-26T12:43:52Z'
+  const payload = payloadWith(
+    detail({
+      name: 'Toronto Triathlon Festival',
+      date: '2026-07-26',
+      start,
+      distanceKm: 1.5,
+      movingTimeS: 2_460,
+    }),
+  )
+  const measured = appleSwim({
+    id: 'apple-watch',
+    date: '2026-07-26',
+    start,
+    end: '2026-07-26T13:24:52Z',
+    totalM: 438.9,
+    activeTimeS: 2_460,
+    strokeCount: 1_314,
+    strokeTimeS: 2_465,
+    strokes: {},
+    location: 'openWater',
+    waterTemperatureC: 14.4,
+  })
+  const corrected = appleSwim({
+    id: 'strava-copy',
+    date: '2026-07-26',
+    start: '2026-07-26T12:43:54Z',
+    end: '2026-07-26T13:24:54Z',
+    totalM: 1_500,
+    activeTimeS: 2_460,
+    strokeCount: null,
+    strokeTimeS: null,
+    strokes: {},
+    location: null,
+    waterTemperatureC: null,
+  })
+  const apple: AppleCache = {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    swims: { measured, corrected },
+    workouts: {},
+  }
+
+  enrichSwimMetrics(payload, apple)
+
+  assert.equal(payload.details['1'].swimPaceSPer100m, 164)
+  assert.equal(payload.details['1'].swimLocation, 'openWater')
+  assert.equal(payload.details['1'].waterTemperatureC, 14.4)
+  assert.equal(payload.details['1'].strokeCount, 1_314)
+  assert.equal(payload.details['1'].strokeRateSpm, 32)
 })
 
 test('keeps kickboard lengths in the distance series without inventing stroke rate', () => {

@@ -83,7 +83,7 @@ export function parseTrackingBlock(
     Number.isSafeInteger(activityId) &&
     activityId > 0 &&
     Number.isFinite(caloriesConsumed) &&
-    caloriesConsumed > 0
+    caloriesConsumed >= 0
       ? { date: day.date, activityId, caloriesConsumed }
       : null
   return { day, fueling }

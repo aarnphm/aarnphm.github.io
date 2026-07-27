@@ -249,7 +249,9 @@ final class HealthAggregatorTests: XCTestCase {
       activeTimeS: 1750,
       strokeCount: 800,
       strokeTimeS: nil,
-      lapCount: 60
+      lapCount: 60,
+      location: .openWater,
+      waterTemperatureC: 14.4
     )
 
     XCTAssertEqual(
@@ -269,7 +271,9 @@ final class HealthAggregatorTests: XCTestCase {
           activeTimeS: 1750,
           strokeCount: 800,
           strokeTimeS: nil,
-          strokes: [:]
+          strokes: [:],
+          location: .openWater,
+          waterTemperatureC: 14.4
         )
       ]
     )
@@ -421,7 +425,7 @@ final class HealthAggregatorTests: XCTestCase {
       calendar: calendar
     )
 
-    XCTAssertEqual(document.version, 8)
+    XCTAssertEqual(document.version, 10)
     XCTAssertEqual(document.generatedAt, "2026-06-19T07:30:00-04:00")
     XCTAssertEqual(document.timezone, "America/Toronto")
     XCTAssertEqual(document.days, [])
@@ -461,6 +465,28 @@ final class HealthAggregatorTests: XCTestCase {
     )
 
     XCTAssertEqual(document.workouts, [workout])
+  }
+
+  func testHeartRateTimesPreserveSubsecondPrecision() {
+    let start = date(2026, 7, 26, 11, 39)
+    let heartRate = [
+      AppleHealthHeartRate(
+        time: HealthExporterFormat.utcFractionalTimestampString(
+          start.addingTimeInterval(6.125)
+        ),
+        bpm: 82
+      ),
+      AppleHealthHeartRate(
+        time: HealthExporterFormat.utcFractionalTimestampString(
+          start.addingTimeInterval(6.875)
+        ),
+        bpm: 177
+      ),
+    ]
+
+    XCTAssertEqual(heartRate[0].time, "2026-07-26T15:39:06.125Z")
+    XCTAssertEqual(heartRate[1].time, "2026-07-26T15:39:06.875Z")
+    XCTAssertNotEqual(heartRate[0].time, heartRate[1].time)
   }
 
   func testWriterRestoresTheLastExport() throws {
@@ -524,6 +550,106 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertEqual(restored?.url, writtenURL)
   }
 
+  func testWriterRoundTripsNestedMultisportActivities() throws {
+    let container = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: container) }
+    let writer = HealthExportWriter(containerURL: container)
+    let activities = [
+      AppleHealthWorkout.Activity(
+        id: "54A05FB9-60F9-4D04-A6B1-7239AAB19DCC",
+        activity: "swimming",
+        start: "2026-07-26T12:43:52Z",
+        end: "2026-07-26T13:25:11Z",
+        durationS: 2467,
+        elapsedTimeS: 2479,
+        distanceM: 438.8,
+        activeEnergyKcal: 562.4,
+        averageHeartRateBpm: 151,
+        averageCadencePerMinute: 32,
+        lapCount: 9,
+        swimmingLocation: .openWater,
+        waterTemperatureC: 14.4
+      ),
+      AppleHealthWorkout.Activity(
+        id: "9C718390-60C2-47EC-A666-DCDBDD7FD3D1",
+        activity: "transition",
+        start: "2026-07-26T13:25:11Z",
+        end: "2026-07-26T13:27:15Z",
+        durationS: 124,
+        elapsedTimeS: 124,
+        activeEnergyKcal: 12.8,
+        averageHeartRateBpm: 158
+      ),
+      AppleHealthWorkout.Activity(
+        id: "F63E15EA-B312-4982-B08F-CBE758BEAD20",
+        activity: "cycling",
+        start: "2026-07-26T13:27:15Z",
+        end: "2026-07-26T14:44:41Z",
+        durationS: 4646,
+        elapsedTimeS: 4646,
+        distanceM: 39_473.8,
+        activeEnergyKcal: 998.6,
+        averageHeartRateBpm: 164,
+        averagePowerW: 210,
+        averageCadencePerMinute: 81,
+        lapCount: 1
+      ),
+      AppleHealthWorkout.Activity(
+        id: "CBF5531D-1D7D-4D20-AEAB-A517FC45AA2E",
+        activity: "transition",
+        start: "2026-07-26T14:44:41Z",
+        end: "2026-07-26T14:47:40Z",
+        durationS: 179,
+        elapsedTimeS: 179,
+        activeEnergyKcal: 18.2,
+        averageHeartRateBpm: 166
+      ),
+      AppleHealthWorkout.Activity(
+        id: "38AA52BA-D02A-4D93-9314-5025459103D1",
+        activity: "running",
+        start: "2026-07-26T14:47:40Z",
+        end: "2026-07-26T15:41:19Z",
+        durationS: 3219,
+        elapsedTimeS: 3219,
+        distanceM: 9495.1,
+        activeEnergyKcal: 1195.4,
+        averageHeartRateBpm: 169,
+        averagePowerW: 273,
+        averageCadencePerMinute: 160,
+        lapCount: 1
+      ),
+    ]
+    let workout = AppleHealthWorkout(
+      id: "501220B5-1D70-4C31-94FB-0CB0F712740B",
+      activity: "swimBikeRun",
+      start: "2026-07-26T12:43:52Z",
+      end: "2026-07-26T15:41:27Z",
+      durationS: 10_502,
+      elapsedTimeS: 10_654,
+      activeEnergyKcal: 2787.5,
+      averageHeartRateBpm: 164,
+      source: "appl-watch-ultra-3",
+      device: "Apple Watch",
+      heartRate: [],
+      activities: activities
+    )
+    let document = HealthExportDocument(
+      version: HealthExportDocument.currentVersion,
+      generatedAt: "2026-07-26T13:56:05-04:00",
+      timezone: "America/Toronto",
+      days: [],
+      swims: [],
+      workouts: [workout]
+    )
+
+    _ = try writer.write(document)
+    let restored = try XCTUnwrap(writer.read()?.document)
+
+    XCTAssertEqual(restored.workouts.first?.activities, activities)
+    XCTAssertEqual(restored, document)
+  }
+
   func testWriterExportsRunGPXWithSensorExtensions() throws {
     let container = FileManager.default.temporaryDirectory
       .appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -567,7 +693,7 @@ final class HealthAggregatorTests: XCTestCase {
           longitude: -79.401239,
           altitudeM: 88.9,
           heartRateBpm: 156,
-          cadenceSpm: 159,
+          cadenceRpm: 80,
           powerW: 278
         )
       ]
@@ -582,6 +708,87 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertTrue(gpx.contains("<gpxtpx:hr>156</gpxtpx:hr>"))
     XCTAssertTrue(gpx.contains("<gpxtpx:cad>80</gpxtpx:cad>"))
     XCTAssertTrue(gpx.contains("<power>278</power>"))
+    XCTAssertTrue(XMLParser(data: Data(gpx.utf8)).parse())
+  }
+
+  func testWriterPreservesDistinctSubsecondRoutePointTimes() throws {
+    let container = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: container) }
+    let writer = HealthExportWriter(containerURL: container)
+    let start = date(2026, 7, 10, 18, 10)
+    let document = HealthAggregator.document(
+      quantitySamples: [],
+      swimSamples: [],
+      generatedAt: start,
+      calendar: calendar
+    )
+    let offsets = [0.125, 0.375, 0.625, 0.875]
+    let route = WorkoutRouteValue(
+      workoutID: "3B207025-810E-4C8A-8C26-E5FEDE0A934E",
+      activity: "running",
+      start: start,
+      points: offsets.enumerated().map { index, offset in
+        WorkoutRoutePointValue(
+          date: start.addingTimeInterval(offset),
+          latitude: 43.645581 + Double(index) / 1_000_000,
+          longitude: -79.401239,
+          altitudeM: 88.9,
+          heartRateBpm: 156,
+          cadenceRpm: 80,
+          powerW: 278
+        )
+      }
+    )
+
+    let documentURL = try writer.write(document, routes: [route])
+    let gpxURL = documentURL.deletingLastPathComponent().appendingPathComponent(route.relativePath)
+    let gpx = try String(contentsOf: gpxURL, encoding: .utf8)
+
+    XCTAssertTrue(gpx.contains("  <time>2026-07-10T22:10:00Z</time>"))
+    XCTAssertTrue(gpx.contains("    <time>2026-07-10T22:10:00.125Z</time>"))
+    XCTAssertTrue(gpx.contains("    <time>2026-07-10T22:10:00.375Z</time>"))
+    XCTAssertTrue(gpx.contains("    <time>2026-07-10T22:10:00.625Z</time>"))
+    XCTAssertTrue(gpx.contains("    <time>2026-07-10T22:10:00.875Z</time>"))
+    XCTAssertTrue(XMLParser(data: Data(gpx.utf8)).parse())
+  }
+
+  func testWriterKeepsCyclingCadenceInRevolutionsPerMinute() throws {
+    let container = FileManager.default.temporaryDirectory
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    defer { try? FileManager.default.removeItem(at: container) }
+    let writer = HealthExportWriter(containerURL: container)
+    let start = date(2026, 7, 26, 9, 33)
+    let document = HealthAggregator.document(
+      quantitySamples: [],
+      swimSamples: [],
+      generatedAt: start,
+      calendar: calendar
+    )
+    let route = WorkoutRouteValue(
+      workoutID: "F63E15EA-B312-4982-B08F-CBE758BEAD20",
+      activity: "cycling",
+      start: start,
+      points: [
+        WorkoutRoutePointValue(
+          date: start,
+          latitude: 43.6426,
+          longitude: -79.3868,
+          altitudeM: 83.4,
+          heartRateBpm: 164,
+          cadenceRpm: 81,
+          powerW: 210
+        )
+      ]
+    )
+
+    let documentURL = try writer.write(document, routes: [route])
+    let gpxURL = documentURL.deletingLastPathComponent().appendingPathComponent(route.relativePath)
+    let gpx = try String(contentsOf: gpxURL, encoding: .utf8)
+
+    XCTAssertTrue(gpx.contains("<gpxtpx:cad>81</gpxtpx:cad>"))
+    XCTAssertFalse(gpx.contains("<gpxtpx:cad>41</gpxtpx:cad>"))
+    XCTAssertTrue(gpx.contains("<power>210</power>"))
     XCTAssertTrue(XMLParser(data: Data(gpx.utf8)).parse())
   }
 
@@ -792,9 +999,37 @@ final class HealthAggregatorTests: XCTestCase {
     XCTAssertNil(workout.distanceM)
     XCTAssertNil(workout.averageRunningPowerW)
     XCTAssertNil(workout.gpxFile)
+    XCTAssertEqual(workout.activities, [])
     XCTAssertEqual(workout.strideLengthM, [])
     XCTAssertEqual(workout.groundContactTimeMs, [])
     XCTAssertEqual(workout.verticalOscillationCm, [])
+  }
+
+  func testVersionEightWorkoutDecodesWithoutNestedActivities() throws {
+    let json = """
+      {
+        "version": 8,
+        "generatedAt": "2026-07-26T13:56:05-04:00",
+        "timezone": "America/Toronto",
+        "days": [],
+        "swims": [],
+        "workouts": [
+          {
+            "id": "501220B5-1D70-4C31-94FB-0CB0F712740B",
+            "activity": "swimBikeRun",
+            "start": "2026-07-26T12:43:52Z",
+            "end": "2026-07-26T15:41:27Z",
+            "durationS": 10502,
+            "elapsedTimeS": 10654,
+            "heartRate": []
+          }
+        ]
+      }
+      """
+
+    let document = try JSONDecoder().decode(HealthExportDocument.self, from: Data(json.utf8))
+
+    XCTAssertEqual(document.workouts.first?.activities, [])
   }
 
   func testWorkoutGPXPathSurvivesARecentSummaryRefresh() {
