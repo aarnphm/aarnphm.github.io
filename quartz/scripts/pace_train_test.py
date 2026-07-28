@@ -54,6 +54,26 @@ def test_build_dataset_includes_feed_today(target: str) -> None:
   assert dates == ['2099-01-01', '2099-01-02']
 
 
+@pytest.mark.parametrize('target', ('pace', 'hr'))
+def test_build_dataset_excludes_skip_training_activities(target: str) -> None:
+  meta = {
+    'today': '2099-01-02',
+    'thresholds': [{'sport': 'run', 'vThr': 3.0}],
+    'athlete': {'hrMaxEst': 190.0},
+  }
+  excluded = activity('2099-01-01', 150.0)
+  excluded['skipTraining'] = True
+  included = activity('2099-01-02', 151.0)
+  included['skipTraining'] = False
+
+  _, _, y, dates, _, _, _ = pace_train.build_dataset(
+    meta, {}, [excluded, included], target
+  )
+
+  assert len(y) == 1
+  assert dates == ['2099-01-02']
+
+
 def test_build_dataset_includes_swim_pace_residual() -> None:
   meta = {
     'today': '2099-01-01',

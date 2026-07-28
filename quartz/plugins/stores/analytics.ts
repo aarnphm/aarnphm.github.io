@@ -1,4 +1,4 @@
-import type { GarminCache, GarminWeightSample } from './garmin'
+import type { GarminCache, GarminStreams, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
@@ -12,7 +12,7 @@ import {
 import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
-import { matchGarminHeartRateActivity } from './garmin'
+import { matchGarminActivity, matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
 import {
   type Sport,
@@ -29,7 +29,7 @@ import {
   type StravaRawCache,
   type StravaZones,
 } from './strava'
-import { RaceEvent, TrackEntry } from './tracking'
+import { RaceEvent, TrackEntry, TrainingExclusion } from './tracking'
 
 export interface BodyCompositionDay {
   date: string
@@ -577,11 +577,27 @@ export interface FtpHypothesisParams {
   grossEfficiencyPct: number
 }
 
+export type FtpHypothesisMassSource = 'daily' | 'lab'
+export type FtpHypothesisVo2maxSource = 'garmin' | 'lab' | 'default'
+
+export interface FtpHypothesisSources {
+  massDate: string
+  massSource: FtpHypothesisMassSource
+  vo2maxDate: string
+  vo2maxSource: FtpHypothesisVo2maxSource
+  defaultRunningVo2max: number | null
+}
+
 export interface FtpHypothesis {
   date: string
   conf: Conf
   massKg: number
+  massDate: string
+  massSource: FtpHypothesisMassSource
   runningVo2max: number
+  vo2maxDate: string
+  vo2maxSource: FtpHypothesisVo2maxSource
+  defaultRunningVo2max: number | null
   crossModalDiscountPct: number
   thresholdPct: number
   grossEfficiencyPct: number
@@ -601,7 +617,7 @@ export interface FtpHypothesis {
 
 export type HeatAcclimatisationState = 'unexposed' | 'acclimating' | 'maintaining' | 'decaying'
 export type HeatConfidence = 'none' | 'low' | 'moderate'
-export type HeatTemperatureSource = 'weatherkit' | 'strava'
+export type HeatTemperatureSource = 'core' | 'weatherkit' | 'strava'
 
 export interface HeatActivityPoint {
   id: number
@@ -610,6 +626,7 @@ export interface HeatActivityPoint {
   sport: 'bike' | 'run'
   name: string
   temperatureC: number
+  heatStrainIndex: number | null
   source: HeatTemperatureSource
   observedMinutes: number
   hotMinutes: number
@@ -619,6 +636,7 @@ export interface HeatActivityPoint {
 export interface HeatDay {
   date: string
   temperatureC: number | null
+  heatStrainIndex: number | null
   source: HeatTemperatureSource | 'mixed' | null
   observedMinutes: number
   hotMinutes: number
@@ -629,6 +647,7 @@ export interface HeatDay {
 export interface HeatMethod {
   eligibleSports: ['bike', 'run']
   hotThresholdC: number
+  heatStrainThreshold: number
   targetMinutesPerDay: number
   targetDays: number
   decayGraceDays: number
@@ -668,6 +687,7 @@ export interface DataFeedInputs {
   weather?: WeatherCache | null
   garmin?: GarminCache | null
   weights?: TrackEntry[]
+  trainingExclusions?: TrainingExclusion[]
   zones?: StravaZones | null
 }
 
@@ -790,6 +810,7 @@ const IF_CAP = 1.15
 const CALIBRATION_WINDOW_DAYS = 28
 const CALIBRATION_PROJECTION_DAYS = 14
 const HEAT_THRESHOLD_C = 22
+const HEAT_STRAIN_THRESHOLD = 3
 const HEAT_TARGET_MINUTES = 60
 const HEAT_TARGET_DAYS = 14
 const HEAT_DECAY_GRACE_DAYS = 3
@@ -1000,25 +1021,38 @@ interface HeatActivity {
   name: string
   durationS: number
   temperatureC: number
+  heatStrainIndex: number | null
+  hotS: number
   source: HeatTemperatureSource
 }
 
 interface HeatDayBucket {
   observedS: number
-  temperatureSeconds: number
   hotS: number
+  coreObservedS: number
+  coreTemperatureSeconds: number
+  heatStrainSeconds: number
+  ambientObservedS: number
+  ambientTemperatureSeconds: number
   sources: Set<HeatTemperatureSource>
 }
 
 const heatMethod = (): HeatMethod => ({
   eligibleSports: ['bike', 'run'],
   hotThresholdC: HEAT_THRESHOLD_C,
+  heatStrainThreshold: HEAT_STRAIN_THRESHOLD,
   targetMinutesPerDay: HEAT_TARGET_MINUTES,
   targetDays: HEAT_TARGET_DAYS,
   decayGraceDays: HEAT_DECAY_GRACE_DAYS,
   decayPerDay: HEAT_DECAY_PER_DAY,
   coverageDays: HEAT_COVERAGE_DAYS,
-  note: 'Ambient-temperature exposure proxy. It does not measure core temperature, humidity, solar load, sweat response, clothing, hydration, or passive heat exposure.',
+  note: 'CORE Heat Strain Index is primary when recorded. WeatherKit ambient temperature fills activities without CORE data, then Strava device temperature fills remaining gaps.',
+})
+
+const emptyHeatSourceCounts = (): Record<HeatTemperatureSource, number> => ({
+  core: 0,
+  weatherkit: 0,
+  strava: 0,
 })
 
 function emptyHeat(): HeatBlock {
@@ -1034,10 +1068,74 @@ function emptyHeat(): HeatBlock {
     lastHeatDate: null,
     heatMinutes14d: 0,
     heatDays14d: 0,
-    sourceCounts: { weatherkit: 0, strava: 0 },
+    sourceCounts: emptyHeatSourceCounts(),
     activities: [],
     series: [],
     method: heatMethod(),
+  }
+}
+
+interface CoreHeatObservation {
+  durationS: number
+  hotS: number
+  coreTemperatureC: number
+  heatStrainIndex: number
+}
+
+function coreHeatObservation(
+  activity: RawStravaActivity,
+  sport: 'bike' | 'run',
+  garmin: GarminCache | null | undefined,
+): CoreHeatObservation | null {
+  const match = matchGarminActivity(activity, sport, garmin ?? null)
+  const stream: GarminStreams | undefined = match ? garmin?.streams?.[match.activity.id] : undefined
+  const time = stream?.time
+  const heatStrain = stream?.heatStrainIndex
+  const coreTemperature = stream?.coreTemperatureC
+  if (
+    !time ||
+    !heatStrain ||
+    !coreTemperature ||
+    time.length < 2 ||
+    heatStrain.length !== time.length ||
+    coreTemperature.length !== time.length
+  )
+    return null
+
+  const activityDurationS = Math.max(
+    1,
+    activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime,
+  )
+  let observedS = 0
+  let hotS = 0
+  let heatStrainSeconds = 0
+  let coreObservedS = 0
+  let coreTemperatureSeconds = 0
+  for (let index = 0; index < time.length; index++) {
+    const start = clamp(time[index], 0, activityDurationS)
+    const end = clamp(time[index + 1] ?? activityDurationS, start, activityDurationS)
+    const durationS = end - start
+    if (!(durationS > 0)) continue
+
+    const heatStrainIndex = heatStrain[index]
+    if (Number.isFinite(heatStrainIndex) && heatStrainIndex >= 0 && heatStrainIndex <= 20) {
+      observedS += durationS
+      heatStrainSeconds += heatStrainIndex * durationS
+      if (heatStrainIndex >= HEAT_STRAIN_THRESHOLD) hotS += durationS
+    }
+
+    const temperatureC = coreTemperature[index]
+    if (Number.isFinite(temperatureC) && temperatureC >= 25 && temperatureC <= 45) {
+      coreObservedS += durationS
+      coreTemperatureSeconds += temperatureC * durationS
+    }
+  }
+  if (!(observedS > 0) || !(coreObservedS > 0)) return null
+  return {
+    durationS: observedS,
+    hotS,
+    coreTemperatureC: coreTemperatureSeconds / coreObservedS,
+    heatStrainIndex: heatStrainSeconds / observedS,
   }
 }
 
@@ -1045,12 +1143,13 @@ function buildHeat(
   cache: StravaRawCache,
   sourceActivities: RawStravaActivity[],
   weather: WeatherCache | null | undefined,
+  garmin: GarminCache | null | undefined,
   windowFrom: number,
   windowTo: number,
 ): HeatBlock {
   const eligible: RawStravaActivity[] = []
   const observed: HeatActivity[] = []
-  const sourceCounts: Record<HeatTemperatureSource, number> = { weatherkit: 0, strava: 0 }
+  const sourceCounts = emptyHeatSourceCounts()
 
   for (const activity of sourceActivities) {
     const sport = normalizeKind(activity.sportType)
@@ -1058,6 +1157,24 @@ function buildHeat(
     const route = cache.streams?.[String(activity.id)]?.latlng
     if (!route || route.length < 2) continue
     eligible.push(activity)
+
+    const core = coreHeatObservation(activity, sport, garmin)
+    if (core) {
+      sourceCounts.core += 1
+      observed.push({
+        id: activity.id,
+        date: activity.startDateLocal.slice(0, 10),
+        startedAt: activity.startDate,
+        sport,
+        name: activity.name,
+        durationS: core.durationS,
+        temperatureC: core.coreTemperatureC,
+        heatStrainIndex: core.heatStrainIndex,
+        hotS: core.hotS,
+        source: 'core',
+      })
+      continue
+    }
 
     const ambient = weather?.activities[String(activity.id)]
     const temperatureC = ambient?.temperatureC ?? activity.averageTemp ?? null
@@ -1076,6 +1193,8 @@ function buildHeat(
       name: activity.name,
       durationS,
       temperatureC,
+      heatStrainIndex: null,
+      hotS: temperatureC > HEAT_THRESHOLD_C ? durationS : 0,
       source,
     })
   }
@@ -1084,13 +1203,24 @@ function buildHeat(
   for (const activity of observed) {
     const bucket = byDay.get(activity.date) ?? {
       observedS: 0,
-      temperatureSeconds: 0,
       hotS: 0,
+      coreObservedS: 0,
+      coreTemperatureSeconds: 0,
+      heatStrainSeconds: 0,
+      ambientObservedS: 0,
+      ambientTemperatureSeconds: 0,
       sources: new Set<HeatTemperatureSource>(),
     }
     bucket.observedS += activity.durationS
-    bucket.temperatureSeconds += activity.temperatureC * activity.durationS
-    if (activity.temperatureC > HEAT_THRESHOLD_C) bucket.hotS += activity.durationS
+    bucket.hotS += activity.hotS
+    if (activity.source === 'core') {
+      bucket.coreObservedS += activity.durationS
+      bucket.coreTemperatureSeconds += activity.temperatureC * activity.durationS
+      bucket.heatStrainSeconds += (activity.heatStrainIndex ?? 0) * activity.durationS
+    } else {
+      bucket.ambientObservedS += activity.durationS
+      bucket.ambientTemperatureSeconds += activity.temperatureC * activity.durationS
+    }
     bucket.sources.add(activity.source)
     byDay.set(activity.date, bucket)
   }
@@ -1118,15 +1248,23 @@ function buildHeat(
     series.push({
       date,
       temperatureC:
-        bucket && bucket.observedS > 0
-          ? round(bucket.temperatureSeconds / bucket.observedS, 1)
+        bucket && bucket.coreObservedS > 0
+          ? round(bucket.coreTemperatureSeconds / bucket.coreObservedS, 2)
+          : bucket && bucket.ambientObservedS > 0
+            ? round(bucket.ambientTemperatureSeconds / bucket.ambientObservedS, 1)
+            : null,
+      heatStrainIndex:
+        bucket && bucket.coreObservedS > 0
+          ? round(bucket.heatStrainSeconds / bucket.coreObservedS, 1)
           : null,
       source:
         bucket == null || bucket.sources.size === 0
           ? null
-          : bucket.sources.size > 1
-            ? 'mixed'
-            : (bucket.sources.values().next().value ?? null),
+          : bucket.sources.has('core')
+            ? 'core'
+            : bucket.sources.size > 1
+              ? 'mixed'
+              : (bucket.sources.values().next().value ?? null),
       observedMinutes: round(observedMinutes, 0),
       hotMinutes: round(hotMinutes, 0),
       dose: round(dose, 3),
@@ -1191,14 +1329,16 @@ function buildHeat(
       .sort((a, b) => a.startedAt.localeCompare(b.startedAt))
       .map(activity => {
         const observedMinutes = activity.durationS / 60
-        const hotMinutes = activity.temperatureC > HEAT_THRESHOLD_C ? observedMinutes : 0
+        const hotMinutes = activity.hotS / 60
         return {
           id: activity.id,
           date: activity.date,
           startedAt: activity.startedAt,
           sport: activity.sport,
           name: activity.name,
-          temperatureC: round(activity.temperatureC, 1),
+          temperatureC: round(activity.temperatureC, activity.source === 'core' ? 2 : 1),
+          heatStrainIndex:
+            activity.heatStrainIndex == null ? null : round(activity.heatStrainIndex, 1),
           source: activity.source,
           observedMinutes: round(observedMinutes, 0),
           hotMinutes: round(hotMinutes, 0),
@@ -2834,6 +2974,13 @@ export function computeFtpHypothesisFromVo2(
   runningVo2max: number,
   massKg: number,
   params: FtpHypothesisParams = FTP_HYPOTHESIS_DEFAULTS,
+  sources: FtpHypothesisSources = {
+    massDate: date,
+    massSource: 'lab',
+    vo2maxDate: date,
+    vo2maxSource: 'lab',
+    defaultRunningVo2max: runningVo2max,
+  },
 ): FtpHypothesis | null {
   if (!(runningVo2max > 0) || !(massKg > 0)) return null
   const discount = params.crossModalDiscountPct / 100
@@ -2854,7 +3001,13 @@ export function computeFtpHypothesisFromVo2(
     date,
     conf: 'low',
     massKg: round(massKg, 1),
+    massDate: sources.massDate,
+    massSource: sources.massSource,
     runningVo2max: round(runningVo2max, 1),
+    vo2maxDate: sources.vo2maxDate,
+    vo2maxSource: sources.vo2maxSource,
+    defaultRunningVo2max:
+      sources.defaultRunningVo2max == null ? null : round(sources.defaultRunningVo2max, 1),
     crossModalDiscountPct: params.crossModalDiscountPct,
     thresholdPct: params.thresholdPct,
     grossEfficiencyPct: params.grossEfficiencyPct,
@@ -3102,6 +3255,12 @@ function emptyEngine(): EngineBlock {
   }
 }
 
+interface GarminVo2Point {
+  date: string
+  v: number
+  generic: number | null
+}
+
 function buildEngine(
   cache: StravaRawCache,
   acts: Act[],
@@ -3109,7 +3268,7 @@ function buildEngine(
   body: BodyBlock,
   thresholds: Map<Sport, ThresholdEstimate>,
   today: string,
-  garminVo2: { date: string; v: number }[],
+  garminVo2: GarminVo2Point[],
   appleVo2: { date: string; v: number }[],
   heartRateById: Map<number, ActivityHeartRate>,
   swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
@@ -3275,9 +3434,32 @@ function buildEngine(
   const fitnessAge = vo2 != null ? Math.round(clamp(invLerp(FRIEND_MED_M, vo2), 20, 80)) : null
   const ageDeltaYears = fitnessAge != null ? fitnessAge - age : null
   const percentileForAge = vo2 != null ? pctForAge(vo2, age) : null
-  const ftpHypothesis = vo2Lab
-    ? computeFtpHypothesisFromVo2(vo2Lab.date, vo2Lab.value, vo2Lab.massKg ?? body.latestKg ?? 0)
-    : null
+  let latestGarminRunningVo2: { date: string; v: number } | null = null
+  for (const point of garminVo2)
+    if (point.generic != null) latestGarminRunningVo2 = { date: point.date, v: point.generic }
+  const useLabVo2 =
+    vo2Lab != null && (latestGarminRunningVo2 == null || vo2Lab.date >= latestGarminRunningVo2.date)
+  const runningVo2max = useLabVo2 ? vo2Lab.value : (latestGarminRunningVo2?.v ?? ATHLETE.vo2max)
+  const vo2maxDate = useLabVo2 ? vo2Lab.date : (latestGarminRunningVo2?.date ?? today)
+  const vo2maxSource: FtpHypothesisVo2maxSource = useLabVo2
+    ? 'lab'
+    : latestGarminRunningVo2
+      ? 'garmin'
+      : 'default'
+  const massKg = body.latestKg ?? vo2Lab?.massKg ?? null
+  const massDate =
+    body.latestKg != null ? (body.series.at(-1)?.date ?? today) : (vo2Lab?.date ?? today)
+  const massSource: FtpHypothesisMassSource = body.latestKg != null ? 'daily' : 'lab'
+  const ftpHypothesis =
+    runningVo2max != null && massKg != null
+      ? computeFtpHypothesisFromVo2(
+          massDate > vo2maxDate ? massDate : vo2maxDate,
+          runningVo2max,
+          massKg,
+          FTP_HYPOTHESIS_DEFAULTS,
+          { massDate, massSource, vo2maxDate, vo2maxSource, defaultRunningVo2max: ATHLETE.vo2max },
+        )
+      : null
   const bikeSource: Vo2BikeSource | null =
     current?.method === 'bike' && ftp != null && ftpSrc != null && bikeKg != null
       ? {
@@ -3957,7 +4139,14 @@ export function buildAnalytics(
   const windowTo = Math.max(todayMs, dayMs(lastActDay))
 
   const daily = buildDaily(acts, loadById, effortByDay, windowFrom, windowTo)
-  const heat = buildHeat(cache, sourceActivities, inputs.weather, windowFrom, windowTo)
+  const heat = buildHeat(
+    cache,
+    sourceActivities,
+    inputs.weather,
+    inputs.garmin,
+    windowFrom,
+    windowTo,
+  )
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
   const garminWeightRaw = inputs.garmin?.weight
@@ -4110,10 +4299,10 @@ export function buildAnalytics(
   for (const d of Object.values(appleDays))
     if (d.vo2max != null) appleVo2.push({ date: d.date, v: d.vo2max })
   appleVo2.sort((p, q) => p.date.localeCompare(q.date))
-  const garminVo2: { date: string; v: number }[] = []
+  const garminVo2: GarminVo2Point[] = []
   for (const d of Object.values(inputs.garmin?.vo2max ?? {})) {
     const v = d.generic ?? d.cycling
-    if (v != null) garminVo2.push({ date: d.date, v })
+    if (v != null) garminVo2.push({ date: d.date, v, generic: d.generic })
   }
   garminVo2.sort((p, q) => p.date.localeCompare(q.date))
   const engine = buildEngine(
@@ -4328,6 +4517,7 @@ export const ACTIVITY_FIELDS = [
   'windKph',
   'windDir',
   'windGustKph',
+  'skipTraining',
   'vGap',
   'intensity',
   'load',
@@ -4429,6 +4619,7 @@ export interface FeedActivityRow {
   windKph: number | null
   windDir: string | null
   windGustKph: number | null
+  skipTraining: boolean
   vGap: number
   intensity: number | null
   load: number
@@ -4482,6 +4673,9 @@ export function buildDataFeed(
   const ouraDays = inputs.oura?.days ?? {}
   const appleDays = inputs.apple?.days ?? {}
   const vThrBySport = new Map(analytics.thresholds.map(t => [t.sport, t.vThr]))
+  const skipTrainingActivityIds = new Set(
+    (inputs.trainingExclusions ?? []).map(entry => entry.activityId),
+  )
   const sorted = [...analytics.activities].sort(
     (p, q) => p.date.localeCompare(q.date) || p.id - q.id,
   )
@@ -4614,6 +4808,7 @@ export function buildDataFeed(
           windKph: s.windKph,
           windDir: s.windDir,
           windGustKph: s.windGustKph,
+          skipTraining: skipTrainingActivityIds.has(s.id),
           vGap: round(vGap, 3),
           intensity: vThr > 0 ? round(vGap / vThr, 3) : null,
           load: s.load,

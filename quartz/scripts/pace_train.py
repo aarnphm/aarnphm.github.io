@@ -158,6 +158,8 @@ def build_dataset(meta: dict, days: dict, acts: list[dict], target: str):
   rows_raw, rows_pres, ys, dates, sports = [], [], [], [], []
   vbbs, vreals = [], []
   for act in acts:
+    if act.get('skipTraining') is True:
+      continue
     sport = act.get('sport')
     if sport not in SPORTS:
       continue

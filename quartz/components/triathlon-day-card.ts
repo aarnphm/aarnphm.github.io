@@ -111,6 +111,7 @@ export const triathlonDayProps = (extras: DayCardExtras, date: string): Record<s
   if (extras.excludedActivityIds?.length)
     props['data-triathlon-filter'] = extras.excludedActivityIds.join('&')
   if (extras.expanded) props['data-triathlon-expanded'] = '1'
+  if (extras.embedded) props['data-triathlon-embedded'] = '1'
   if (extras.dateHref) props['data-triathlon-date-href'] = extras.dateHref
   return props
 }

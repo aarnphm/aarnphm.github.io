@@ -148,6 +148,8 @@ const METRIC_KEYS = {
   power: 'directPower',
   respiration: 'directRespirationRate',
 }
+const CORE_CONNECT_IQ_APP_ID = '6957fe68-83fe-4ed6-8613-413f70624bb5'
+const CORE_DEVELOPER_FIELDS = { coreTemperatureC: 0, skinTemperatureC: 10, heatStrainIndex: 95 }
 const WEIGHT_KEYS = [
   'weight',
   'weightKg',
@@ -597,15 +599,36 @@ export function garminConnectClimbSegments(raw: unknown): GarminClimbSegment[] {
   return out.sort((a, b) => a.startDate.localeCompare(b.startDate))
 }
 
-function metricIndex(detail: UnknownRecord, key: string): number | null {
+function descriptorMetricIndex(
+  detail: UnknownRecord,
+  matches: (descriptor: UnknownRecord) => boolean,
+): number | null {
   const descriptors = detail.metricDescriptors
   if (!Array.isArray(descriptors)) return null
   for (let i = 0; i < descriptors.length; i++) {
     const descriptor = descriptors[i]
-    if (isRecord(descriptor) && readString(descriptor, 'key') === key) return i
+    if (!isRecord(descriptor) || !matches(descriptor)) continue
+    const metricsIndex = readNumber(descriptor, 'metricsIndex')
+    return metricsIndex != null && Number.isInteger(metricsIndex) && metricsIndex >= 0
+      ? metricsIndex
+      : i
   }
   return null
 }
+
+const metricIndex = (detail: UnknownRecord, key: string): number | null =>
+  descriptorMetricIndex(detail, descriptor => readString(descriptor, 'key') === key)
+
+const coreMetricIndex = (
+  detail: UnknownRecord,
+  field: keyof typeof CORE_DEVELOPER_FIELDS,
+): number | null =>
+  descriptorMetricIndex(
+    detail,
+    descriptor =>
+      readString(descriptor, 'appID')?.toLowerCase() === CORE_CONNECT_IQ_APP_ID &&
+      readNumber(descriptor, 'developerFieldNumber') === CORE_DEVELOPER_FIELDS[field],
+  )
 
 function metricValue(row: UnknownRecord, index: number | null): number | null {
   if (index == null) return null
@@ -626,7 +649,10 @@ function hasStreamData(streams: GarminStreams): boolean {
     (streams.watts?.some(value => value > 0) ?? false) ||
     (streams.heartrate?.some(value => value > 0) ?? false) ||
     (streams.cadence?.some(value => value > 0) ?? false) ||
-    (streams.respiration?.some(value => value > 0) ?? false)
+    (streams.respiration?.some(value => value > 0) ?? false) ||
+    (streams.heatStrainIndex?.some(value => value >= 0) ?? false) ||
+    (streams.coreTemperatureC?.some(value => value > 0) ?? false) ||
+    (streams.skinTemperatureC?.some(value => value > 0) ?? false)
   )
 }
 
@@ -664,6 +690,9 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     longitude: metricIndex(detail, METRIC_KEYS.longitude),
     power: metricIndex(detail, METRIC_KEYS.power),
     respiration: metricIndex(detail, METRIC_KEYS.respiration),
+    heatStrainIndex: coreMetricIndex(detail, 'heatStrainIndex'),
+    coreTemperatureC: coreMetricIndex(detail, 'coreTemperatureC'),
+    skinTemperatureC: coreMetricIndex(detail, 'skinTemperatureC'),
   }
   const streams: GarminStreams = {
     time: indices.elapsedTime == null ? undefined : [],
@@ -674,6 +703,9 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     heartrate: [],
     cadence: [],
     respiration: indices.respiration == null ? undefined : [],
+    heatStrainIndex: indices.heatStrainIndex == null ? undefined : [],
+    coreTemperatureC: indices.coreTemperatureC == null ? undefined : [],
+    skinTemperatureC: indices.skinTemperatureC == null ? undefined : [],
   }
 
   const hasLocationMetrics = indices.latitude != null && indices.longitude != null
@@ -698,6 +730,9 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
     streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
     streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
+    streams.heatStrainIndex?.push(metricValue(item, indices.heatStrainIndex) ?? -1)
+    streams.coreTemperatureC?.push(metricValue(item, indices.coreTemperatureC) ?? -1)
+    streams.skinTemperatureC?.push(metricValue(item, indices.skinTemperatureC) ?? -1)
   }
 
   if (streams.latlng.length < 2) {

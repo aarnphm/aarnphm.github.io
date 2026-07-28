@@ -47,9 +47,9 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-07-26 18:37:11 GMT-04:00
+modified: 2026-07-28 15:15:39 GMT-04:00
 seealso:
-  - '[[thoughts/pdfs/triathlon.pdf|fuel plan]]'
+  - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
 tags:
   - life
@@ -686,12 +686,26 @@ fueling: 120
 date: 2026-07-26
 activity: 19476629599
 fueling: 0
+skipTraining: true
+```
+
+```tracking
+date: 2026-07-26
+activity: 19476629599
+skipTraining: true
+```
+
+```tracking
+date: 2026-07-26
+activity: 19471122670
+skipTraining: true
 ```
 
 ```tracking
 date: 2026-07-26
 activity: 19471122670
 fueling: 0
+skipTraining: true
 ```
 
 ```tracking
@@ -1001,5 +1015,430 @@ Date gate: this anchor starts the day after Supertri race day, so no cycling wor
 | SS   | lactate threshold   |          7/10 |          198-207 W | threshold-adjacent, limit during Runna weeks |
 | CR   | climbing threshold  |          8/10 |          219-230 W | after-race climb strength; skip during taper |
 | OU   | threshold surges    |          9/10 |  198-207/219-230 W | after-race surge work; skip during taper     |
+
+<!-- training plan end -->
+
+<!-- training plan start
+meta: ironman 70.3 new york
+distance: 70.3
+date: 2026-07-28
+endDate: 2026-09-26
+target: sub-5
+author: claude-opus-5,strava
+-->
+
+Northwell IRONMAN 70.3 New York, Saturday 2026-09-26 at Jones Beach: 1.9 km in Zach's Bay, 90 km on the closed Wantagh Parkway, 21.1 km out and back on the boardwalk. Flat, sea level, no shade, and exposed to whatever the Atlantic is doing that morning. Sixty days from 07-28.[^course]
+
+SuperTri on 07-26 measured six things worth planning around.
+
+- Swim 1500 m in 41:00 at 160 bpm average and 173 peak. That is 2:44/100 m at 88% of the 182 bpm max, sitting 15 bpm above VT1 for the whole leg. Pool sessions through June and July ran 2:33-2:58/100 m, so race day was not a bad day. It was the fitness.
+- Swim volume was 0.5-3.8 km/week against a plan asking for 6-8 km. Sessions were 400-1050 m, mostly 100s with long rest. The engine reads swim threshold at 2:23/100 m because it is fit on those reps. Continuous open water came in 21 s/100 m slower.
+- Bike 39.5 km in 70:02 at 210 W average, best hour 215 W, HR 164, cadence 81. That is 33.8 km/h off the back of a 41-minute swim and a 722 m T1 run. The bike does not need more watts.
+- Run 9.51 km in 53:40 at 5:38/km, HR opening at 165 and drifting to 176. Best kilometre inside it was 5:08. VT1 speed is 10.5 km/h and race speed was 10.6 km/h, so the 10 km was run at aerobic-threshold pace while the heart rate sat 23 bpm above aerobic threshold. Raising VT1 speed is the whole run job.
+- Four samples in the run stream fall to 1.2-1.8 m/s. Aid stations. About 2 minutes lost over 10 km, which scales to 8-10 minutes over a half if the habit survives.
+- State on 07-28: CTL 94.3, ATL 109.8, TSB -15.5, 87.8 kg trending -0.67 kg/week. Longest ride 72.7 km, longest run 14.8 km. The model scores 70.3 readiness 91 with bike coverage 0.81 and run coverage 0.70, and predicts 6:28:27 against a fast case of 5:54:40.
+
+## the trade
+
+The last five complete weeks averaged 9.5 hours: 6.4 on the bike, 2.2 running, 0.9 swimming. Bike owns 67% of training time and is the leg already ahead of schedule. Swim owns 9% and costs the most minutes on race day.
+
+Sub-5 in sixty days does buy hours, and it takes them from the bike. Peak weeks land near 14 h against the 11.5 h of the week of 07-13, split roughly 31% swim, 39% bike, 30% run. Pool time goes from 0.9 h/week to 4.3 and run time from 2.2 to 3.9, while bike hours fall from 8.5 at their peak to 5.5. The bike lane loses volume and gains shape, which is the trade the aero section prices out.
+
+Two coverage gates decide the model score, and both are single sessions rather than seasons of work: one ride at or past 90 km, one run at or past 21 km. They sit on 09-05 and 09-06.
+
+## split budget
+
+Sub-5 on 09-26. Not a horizon, the number this block is built to hit.
+
+Two corrections to the earlier arithmetic make it live. The CSS ladder was written as though the race happened in a pool, which double-counted the wetsuit: Zach's Bay is salt water and almost certainly wetsuit legal, and the buoyancy gain runs largest for exactly the swimmer you are, one whose limiter is hip position rather than engine.[^wetsuit] Competitive swimmers get nothing measurable from neoprene; triathletes with poor buoyancy get up to 11%. At 2:44 the 6-10% band is 10-16 s/100 m, already paid for. Second, the aero deadline matters more than the aero purchase, because a shape bought in September is a shape you cannot hold for 90 km. Setup final by 08-22 leaves five weeks to make the position durable, and that date is the load-bearing one in this whole block.
+
+Fitting $P = \frac{1}{2}\rho C_dA v^3 + C_{rr} m g v$ to 210 W at 9.394 m/s on 07-26 gives $C_dA \approx 0.32$ at $C_{rr} = 0.005$ and 88 kg all-in, with the out-and-back cancelling the 223 m of climbing. That is a road bike ridden on the hoods. Everything below runs off that fit.
+
+| leg         |                      07-26 | plan                             |  target |
+| ----------- | -------------------------: | -------------------------------- | ------: |
+| swim 1.9 km |          2:44/100 m, 51:56 | 2:12-2:16/100 m in the wetsuit   |   42:00 |
+| T1          |     8:42 on a 722 m run-up | practised strip, no sitting down |    3:00 |
+| bike 90 km  | 210 W, CdA 0.32, 33.8 km/h | 205 W, CdA 0.22-0.23, 37.5 km/h  | 2:24:00 |
+| T2          |                       3:05 | rack, shoes, go                  |    2:00 |
+| run 21.1 km |           5:38/km at 10 km | 5:04-5:10/km, 8:09-8:19/mile     | 1:47:00 |
+| total       |             6:28 predicted |                                  | 4:58:00 |
+
+Two minutes of margin against a 6:28 prediction. Every one of the five conditions below has to land.
+
+## the five conditions
+
+| #   | condition        | pass mark                                        |  date | if it misses          |
+| --- | ---------------- | ------------------------------------------------ | ----: | --------------------- |
+| 1   | swim CSS         | 2:18/100 m in the pool                           | 09-09 | 2:26 costs 3:00       |
+| 2   | wetsuit gain     | 8 s/100 m or better against pool pace, measured  | 08-21 | no wetsuit costs 6:00 |
+| 3   | CdA              | 0.23 or better on the race setup                 | 09-12 | 0.26 costs 6:30       |
+| 4   | bike durability  | 205 W for 90 km with the brick run still on pace | 09-05 | 195 W costs 4:00      |
+| 5   | run off the bike | 30 min at 5:04-5:10/km off a 70 km ride          | 09-12 | 5:25/km costs 6:30    |
+
+Each of the five is individually plausible and none of them is free. Jointly, allowing for the correlation that comes from simply doing the work, sub-5 is roughly a one-in-five day. The median outcome of this block is 5:10-5:20 and the floor is 5:30, which is still 58 to 78 minutes faster than what the model predicts today. Aim at the one-in-five, because the training that chases it is the training that guarantees the median.
+
+Condition 5 is the one that binds, so the run lane takes the volume the bike gives up: 40-42 km at peak instead of 35, race-pace blocks inside the long run growing to 14 km, and two double days a week once the aerobic base holds.
+
+### swim: 2:14 in the wetsuit, 2:18 CSS in the pool
+
+Race pace over 1.9 km sits at CSS plus 6-12 s/100 m in a pool. Open water in salt and neoprene gives most of that back, and gives more of it back to a heavy swimmer with sinking hips than to a light one with good position.[^wetsuit] So the pool requirement is 2:18 CSS, not the 2:10-2:14 the earlier pass demanded. That is a different and much more reachable ask.
+
+| swim pace | 1.9 km | source                            |
+| --------- | -----: | --------------------------------- |
+| 2:44      |  51:56 | measured on 07-26                 |
+| 2:32      |  48:05 | volume alone, in the wetsuit      |
+| 2:22      |  44:55 | CSS 2:26 plus wetsuit             |
+| 2:14      |  42:25 | CSS 2:18 plus wetsuit, the target |
+
+The rungs: CSS 2:35 on 07-29, 2:26 on 08-19, 2:18 on 09-09. Going from 2.5 km/week to 10 km/week is a fourfold increase in a lane you have never actually trained, and 15-20 s/100 m over eight weeks is the ordinary result of that, not the heroic one. Of the five conditions this is the most likely to land.
+
+Three things make it happen. A filmed technique session on 08-03, because at 88 kg and 188 cm swimming 2:44 at 160 bpm is drag rather than engine. Pace-specific hundreds at 2:12-2:18 from week 3, since you cannot race a pace you have never held. And the wetsuit treated as equipment to be trained rather than a race-day bonus: every open-water session in it from 08-21, with the delta measured that day over a repeated 400 m.
+
+Add drafting. Sitting on feet in a rolling start is worth 3-6% of energy cost at the same speed, which on this leg is free and which nobody practises.
+
+### bike: buy the drag before you buy the watts
+
+Hold 195 W and change nothing else about the engine:
+
+|  CdA | setup                                 | km/h |   90 km |
+| ---: | ------------------------------------- | ---: | ------: |
+| 0.32 | today, hoods, road bike               | 32.9 | 2:43:55 |
+| 0.28 | clip-ons, saddle forward and up       | 34.3 | 2:37:25 |
+| 0.26 | plus aero helmet and skinsuit         | 35.1 | 2:33:40 |
+| 0.24 | plus position held for the full 90 km | 36.0 | 2:30:10 |
+| 0.22 | TT bike, dialled                      | 37.0 | 2:26:05 |
+
+0.32 to 0.24 is **13:45 at identical power**. Going 195 W to 240 W at today's shape buys 12:40 and costs an FTP of 300. The drag lane is larger, buyable, and does not compete with the run for recovery, which is why the bike work now sorts by shape first and watts second.
+
+Watts still rank, they just rank second. Best hour on 07-26 was 215 W and best twenty minutes 220 W, so FTP is 235-245 now, and 2-4% a month puts it at 252-260 by 09-26. Thursday is threshold at 230-245 W to make that happen. Race power is 205 W, which is IF 0.80 against the September number. That is the top of the raceable band and it is conditional: if the brick run off 09-05 comes in slow, race power drops to 195 W and the day becomes a 5:02.
+
+At 205 W the table shifts up by about six minutes per row, so CdA 0.23 gives 36.8 km/h and 2:26:45, and CdA 0.22 gives 37.7 km/h and 2:23:20. The budget takes the middle at 2:24.
+
+The dates matter more than the parts. Decide and order by 08-08, fit and final by 08-22, then five weeks of holding it. A CdA of 0.22 measured in a 20-minute test and lost by kilometre 60 is worth nothing, so the pass mark is the position held for the whole of 09-05 with power inside 3% of hoods power.
+
+### run: 7:30/mile is a rep pace, not a race pace
+
+7:30/mile is 4:40/km, which is 12.9 km/h, which is 86% of the 15.0 km/h vVO2max measured on 06-25 and 23% above VT1 speed. Holding 86% of vVO2max for 98 minutes needs a VO2max in the high fifties. You are at 47.8, and this is after 90 km of cycling.
+
+Where the number does belong is Wednesday. Best 400 m inside the SuperTri run was 118 s, which is 7:55/mile at 97% of max heart rate. Reps at 7:30/mile off full recovery are about 6% faster than that, which is the right stimulus and is reachable by September. So 7:30/mile becomes the rep target, building 400 m to 1 km, and race pace lands at 9:00-9:23/mile.
+
+| run pace | 21.1 km | source                                |
+| -------- | ------: | ------------------------------------- |
+| 6:26/km  | 2:15:50 | model prediction on 07-28             |
+| 5:50/km  | 2:03:10 | plan floor                            |
+| 5:35/km  | 1:57:50 | plan target                           |
+| 5:25/km  | 1:54:20 | the median outcome of this block      |
+| 5:05/km  | 1:47:15 | the sub-5 row, needs VT1 at 11.8 km/h |
+| 4:53/km  | 1:43:00 | the 4:40 run, needs VO2max near 60    |
+
+The sub-5 row asks VT1 speed to go from 10.5 km/h to 11.8, which is +12% in eight weeks. About a quarter of that comes from mass, since 83 kg against 87.8 is -5.5% and buys 2-3% of speed at the same aerobic power. The rest has to come from run volume you have never run: 2.2 h/week across the last five weeks, going to 4.0. That is the ordinary response for someone whose aerobic base is the untrained thing, and it is still the least likely of the five conditions.
+
+So the run lane takes the hours the bike gives up. Peak 42 km/week. Long runs to 21 km with race-pace blocks growing from 4 km to 14 km. Run days go from four to six from 08-24, with the two new ones being 30-35 minutes of genuinely easy work on Monday and Thursday, because at this stage frequency raises VT1 faster than length does.
+
+Six run days at 42 km is where this plan can hurt you. The knees complained on 07-23 and the added days are the reason the easy pace is written at 6:15-6:45/km rather than left to feel. Two consecutive runs with the same ache means the Wednesday reps go, then a day off, then the easy days come back first. Losing the reps costs about 20 seconds on race day. Losing three weeks costs the race.
+
+Adding it up: 42:00 swim, 3:00, 2:24 bike, 2:00, 1:47 run gives **4:58**.
+
+## aero
+
+The bike lane's largest lever, ranked by what it returns rather than by what people buy first. Deltas are planning estimates until the field test replaces them with measurements.
+
+| lever                                              |          cost |    $\Delta C_dA$ | 90 km at 195 W |
+| -------------------------------------------------- | ------------: | ---------------: | -------------: |
+| clip-on extensions, saddle forward and up          |      $150-300 |   -0.03 to -0.06 |     6:00-11:00 |
+| position work: flat back, narrow elbows, head down | free, 8 weeks |  -0.015 to -0.03 |      3:00-6:00 |
+| aero helmet                                        |      $200-400 | -0.005 to -0.015 |      1:00-3:00 |
+| skinsuit instead of a loose tri kit                |      $200-350 | -0.005 to -0.015 |      1:00-3:00 |
+| deep front wheel                                   |      $400-900 | -0.003 to -0.008 |      0:40-1:40 |
+| TT frame over good clip-ons                        |        $$$$$$ |   -0.01 to -0.02 |      2:00-4:00 |
+
+The first two rows are 60-70% of the total and cost about $250 plus eight weeks of hip flexor tolerance. Buy in that order, decide by 08-08, and have the setup final by 08-22. After that date the block stops changing the bike and starts making the shape durable, because a CdA you measure in a twenty-minute test and lose by kilometre 60 is not a CdA you raced.
+
+Field test, run three times. Flat closed loop of 3-5 km, out and back, wind under 10 km/h, same tyres and pressure, same bottles:
+
+- Four laps at a fixed 190 W, coasting nothing, recording speed and elapsed.
+- Solve the steady-state fit for $C_dA = \dfrac{2(P\eta - C_{rr} m g v)}{\rho v^3}$, or run the file through a virtual-elevation fit, which handles the wind better.
+- Change exactly one thing between tests. Two changes at once and the number tells you nothing.
+
+Dates: 08-01 baseline on the current setup, 08-22 after the position change, 09-12 on the full race setup inside rehearsal 2.
+
+Position durability is the part that gets skipped. A shape you can hold for twenty minutes is worth nothing over 90 km, so every EM ride holds the position for a set fraction, from half the ride in August to all of the long rides by 09-05. The pass mark is power in position within 3% of power on the hoods, measured on the 08-27 and 09-03 threshold sessions.
+
+## reconciliation with the CTS anchor
+
+The Forty-five Minute Climb block above still owns 07-27 to 08-24. Three changes, and nothing else moves:
+
+- 07-28 to 08-02 is easy aerobic only. No SS, no T. The race counts as the hard session for that week.
+- CR and OU are dropped. Climbing threshold and surge work build the wrong thing for a flat 90 km at 0.78 IF.
+- The 08-08 uphill TT becomes the FTP test, and the Sunday CTS ride merges into Saturday so Sunday can hold the long run.
+
+EM, T, and SS stay as the bike vocabulary through 08-23. From 08-24 this block owns the bike lane outright.
+
+## intensity anchors
+
+Lab HR zones from 06-25 are unchanged and still govern.
+
+| lane     | HR          | run speed    | use                                    |
+| -------- | ----------- | ------------ | -------------------------------------- |
+| warm     | <121 bpm    | <8 km/h      | warmup, cooldown, recovery             |
+| fat burn | 121-142 bpm | 8-10.5 km/h  | most easy volume, all long-run mileage |
+| VT1 cap  | 143-145 bpm | 10.5 km/h    | ceiling for ordinary endurance         |
+| race     | 146-160 bpm | 10.5-12 km/h | 70.3 run pace and tempo work           |
+| hard     | 161-170 bpm | 12-14 km/h   | one run session per week, nothing more |
+| VO2      | 171+ bpm    | 14-15 km/h   | not used in this block                 |
+
+Swim, keyed to a measured CSS rather than the modelled 2:23. Test on 07-29 with a 400 m and a 200 m time trial off full rest, then
+
+$$
+\text{CSS pace}_{/100\,\text{m}} = \frac{t_{400} - t_{200}}{2}
+$$
+
+and rebuild the lanes from whatever number comes back.[^css] Expect 2:32-2:40. Retest 08-19 and 09-09. The 2:20 race goal needs CSS on this ladder: 2:35 on 07-29, 2:26 on 08-19, 2:14-2:18 on 09-09. Missing a rung is the signal to add a fifth swim rather than to swim the same sessions harder.
+
+- Easy: CSS + 20 s/100 m, nasal-calm, stroke intact.
+- CSS: the measured number, held for 200-400 m repeats on short rest.
+- Goal pace: 2:15-2:20/100 m on 100s from week 3. You cannot race a pace you have never swum.
+- Race: CSS + 6-10 s/100 m for 1.9 km. Faster in a wetsuit and salt water, which is loot rather than plan.
+- Fast: 25-50 m only, and only when form holds.
+
+Bike. The 215 W best hour was set inside a race, after a 41-minute swim at 160 bpm, so fresh FTP is 235-245 W rather than the old 230 W hypothesis. Test 08-08, retest 09-09, and rewrite these each time:
+
+- Easy, EM: 120-165 W, HR under 142.
+- Tempo, T: 180-200 W. Race-power durability.
+- Sweet spot, SS: 195-210 W in blocks of 12-20 minutes.
+- Threshold: 230-245 W in blocks of 8-12 minutes. This is the lane that moves FTP toward 240-250, and it lives on Thursday only.
+- Race power: 190-200 W, 80-85 rpm, no surge past 250 W except to clear traffic.
+
+Run. Race pace is 5:35-5:50/km at 148-158 bpm. Easy is 6:15-6:45/km at 121-142 bpm, which is 40-60 s/km slower than the easy runs actually logged in June and July. Reps are 7:30-7:50/mile off full recovery, one session a week. Strides of 6x20 s go on the Tuesday easy run and one other easy day, because 7:30/mile is a mechanics problem before it is a fitness problem.
+
+## the three fixes
+
+**Swim frequency plus a technique intervention.** Four sessions a week rising to five in the build, volume from 6 km to 8.5 km, and every week carries one continuous timed swim building from 1200 m to 2400 m. The 100s-with-rest diet is what produced a 2:23 threshold estimate that a 1.9 km continuous swim will not honour. Volume alone lands around 2:32 and saves 3:50 over the leg. Getting to 2:20 needs the drag fixed, so 08-03 is a filmed session with someone who can see the body position, and every session after it opens with the two cues that come out of it. Moving 2:44 to 2:20 saves 7:36 and drops arrival heart rate by 10-15 bpm before a three-hour ride, which is the larger of the two prizes.
+
+**Easy runs have to actually be easy.** Logged easy runs sat at 5:30-5:53/km with relative effort in the 50-67 band for 40-50 minutes. That is tempo wearing an easy label, and it is why the long run has been stuck at 15 km and why the knees complained on 07-23. Run easy at 6:15-6:45/km and the weekly mileage can go 16 km to 35 km without a new injury. The 7:30/mile reps only work if everything around them is slow.[^seiler]
+
+**Bike: threshold on Thursday, race power everywhere else.** June and July held threshold sets, 5x1 minute efforts, three max sprints, and climbing intervals, which is a criterium diet. The FTP goal needs one honest threshold session a week at 230-245 W, alternating with sweet spot so the run ramp survives it. The long ride carries 20-25 minute blocks at 190-200 W and nothing steeper, because race-power durability is what the flat parkway actually asks for. Cycling and running load the same aerobic system through different recruitment, so the transfer is real only when the bike work looks like the race.[^triphys]
+
+## weekly build
+
+| week    |          dates | load ceiling | swim        | bike  | run   | key proof                                                  |
+| ------- | -------------: | -----------: | ----------- | ----- | ----- | ---------------------------------------------------------- |
+| reset   | 07-28 to 08-02 |      500-570 | 6.0 km / 4  | 3.5 h | 20 km | absorb the race, CSS test, CdA baseline                    |
+| base 1  | 08-03 to 08-09 |      700-780 | 7.5 km / 4  | 5.0 h | 27 km | filmed swim session, FTP test, aero parts ordered          |
+| base 2  | 08-10 to 08-16 |      790-870 | 9.0 km / 5  | 5.5 h | 32 km | 2:30 ride, 17 km long run, 2000 m continuous               |
+| down    | 08-17 to 08-23 |      580-650 | 7.5 km / 4  | 4.0 h | 24 km | CSS rung 2:26, wetsuit delta measured, setup final         |
+| build 1 | 08-24 to 08-30 |      870-950 | 10.0 km / 5 | 5.0 h | 37 km | doubles start, 19 km long run, 100s at 2:14-2:18           |
+| peak    | 08-31 to 09-06 |     980-1080 | 10.0 km / 5 | 5.5 h | 42 km | 90 km at 205 W, 21 km with 8 km at race pace               |
+| sharpen | 09-07 to 09-13 |      870-950 | 8.5 km / 5  | 5.0 h | 38 km | CSS rung 2:18, condition-5 brick, 18 km with 12 km at 5:10 |
+| taper 1 | 09-14 to 09-20 |      590-670 | 6.5 km / 4  | 3.5 h | 26 km | volume down 35%, intensity alive                           |
+| race    | 09-21 to 09-26 |  350-430 pre | 3.0 km / 3  | 2.5 h | 14 km | openers, arrive at TSB +10 to +20                          |
+
+Load ceiling is total weekly load in the same unit the engine emits. The engine publishes a `loadRange` of $[0.75, 1.5] \times \text{CTL} \times 7$ each week, so read the ceilings as fractions of that: 0.80 on reset and deload weeks, 1.10-1.25 through base, 1.30-1.40 at peak, 0.85 in taper. At CTL 94 that top band is 1015. CTL should reach 108-115 by 09-06 and then fall. Weekly ramp stays under +25% and monotony stays under 2.0, which the week of 06-29 failed at 2.55.[^taper]
+
+Point Runna at a half marathon plan with a 09-26 date and let it own the Wednesday quality run and the Sunday long run. Keep the weekly mileage inside the band above. If it schedules a third hard run, delete it.
+
+## calendar
+
+| date  | run                                                  | swim                                                                  | bike                                                                     |
+| ----- | ---------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 07-28 | off                                                  | 1600 m technique, no timing                                           | 30-40 min spin, HR under 130                                             |
+| 07-29 | 40 min easy plus 6x20 s strides                      | CSS test: 400 m and 200 m TT inside 1800 m                            | off                                                                      |
+| 07-30 | off                                                  | off                                                                   | EM 60-75 min, HR under 142                                               |
+| 07-31 | 30 min easy or off                                   | 1800-2000 m, 1200 m of it continuous                                  | off                                                                      |
+| 08-01 | 15 min brick off the bike, 6:15/km                   | off                                                                   | CdA baseline test inside EM 1h45-2h00, current setup                     |
+| 08-02 | 14 km easy, HR under 145                             | 1000 m easy, drills only                                              | off                                                                      |
+| 08-03 | off                                                  | filmed technique session, 1800 m, keep the two cues                   | off; strength 40 min                                                     |
+| 08-04 | 40 min easy plus 6x20 s strides                      | off                                                                   | EM 60-75 min                                                             |
+| 08-05 | quality: 6x400 m at 7:50/mile, 90 s jog              | S2, 2000 m endurance                                                  | off                                                                      |
+| 08-06 | off                                                  | off                                                                   | threshold: 3x10 min at 225-240 W inside 75 min                           |
+| 08-07 | off                                                  | 1800 m continuous, timed                                              | off                                                                      |
+| 08-08 | 15 min brick                                         | 1000 m easy on the 08-03 cues                                         | FTP test inside 2h00: 45 min uphill TT or 2x20                           |
+| 08-09 | 15 km easy                                           | off                                                                   | off                                                                      |
+| 08-10 | off                                                  | S1, 2200 m with 8x100 m descending to 2:20                            | off; strength 40 min                                                     |
+| 08-11 | 45 min easy plus 6x20 s strides                      | off                                                                   | EM 75 min                                                                |
+| 08-12 | quality: 8x400 m at 7:40/mile, 90 s jog              | S2, 2400 m                                                            | off                                                                      |
+| 08-13 | off                                                  | off                                                                   | SS, 85 min with 3x15 min at 195-210 W                                    |
+| 08-14 | off                                                  | 2000 m continuous, timed                                              | off                                                                      |
+| 08-15 | 20 min brick at 6:00/km                              | 1000 m easy                                                           | 2h30 with 2x25 min at 190-200 W, 60 g carbs/h                            |
+| 08-16 | 17 km, last 4 km at 5:30/km                          | off                                                                   | off                                                                      |
+| 08-17 | off                                                  | 2000 m technique                                                      | off; strength 40 min                                                     |
+| 08-18 | 35 min easy plus strides                             | off                                                                   | EM 60 min                                                                |
+| 08-19 | 40 min easy                                          | CSS retest inside 1800 m; the rung is 2:26                            | off                                                                      |
+| 08-20 | off                                                  | off                                                                   | threshold: 3x10 min at 230-245 W inside 60 min                           |
+| 08-21 | off                                                  | wetsuit delta test: 400 m with, 400 m without, then 1200 m open water | off                                                                      |
+| 08-22 | 15 min brick                                         | off                                                                   | CdA retest inside EM 1h45, clip-ons and new saddle position              |
+| 08-23 | 13 km easy                                           | 1000 m easy                                                           | off                                                                      |
+| 08-24 | 35 min easy                                          | S1, 2400 m with 10x100 m at 2:18-2:22                                 | off; strength 40 min                                                     |
+| 08-25 | 45 min easy plus 6x20 s strides                      | 1000 m easy, drills                                                   | EM 75 min                                                                |
+| 08-26 | quality: 6x600 m at 7:35/mile, 2 min jog             | S2, 2600 m                                                            | off                                                                      |
+| 08-27 | 35 min easy                                          | 1000 m easy                                                           | SS, 90 min with 4x15 min at 195-210 W                                    |
+| 08-28 | off                                                  | 2200 m continuous, timed                                              | off                                                                      |
+| 08-29 | 20 min brick at 5:30/km                              | off                                                                   | 3h00 / 75-80 km, 3x20 min at 190-200 W, 70 g/h                           |
+| 08-30 | 19 km, last 6 km at 5:20/km, 40 g carbs/h            | off                                                                   | off                                                                      |
+| 08-31 | 35 min easy                                          | S1, 2400 m with 6x200 m at 2:20-2:24                                  | off; strength 30 min                                                     |
+| 09-01 | 45 min easy plus 6x20 s strides                      | 1000 m easy                                                           | EM 75 min                                                                |
+| 09-02 | quality: 5x800 m at 7:30/mile, 2 min jog             | S2, 2800 m                                                            | off                                                                      |
+| 09-03 | 35 min easy                                          | 1000 m easy                                                           | threshold: 4x10 min at 230-245 W inside 75 min                           |
+| 09-04 | off                                                  | open water 2000-2400 m, sight every 6-8 strokes                       | off                                                                      |
+| 09-05 | 25 min brick at 5:05-5:10/km                         | off                                                                   | rehearsal 1: 90 km at 205 W, 90 g/h, full race setup                     |
+| 09-06 | 21 km with 8 km at 5:10/km, 60 g carbs/h, race shoes | off                                                                   | off                                                                      |
+| 09-07 | 35 min easy                                          | 2000 m easy                                                           | off; mobility 30 min                                                     |
+| 09-08 | 40 min easy plus strides                             | off                                                                   | EM 60 min                                                                |
+| 09-09 | quality: 6x800 m at 7:30/mile, 2 min jog             | CSS retest inside 2600 m; the rung is 2:14-2:18                       | off                                                                      |
+| 09-10 | 30 min easy                                          | off                                                                   | T, 75 min with 3x15 min at 195-205 W                                     |
+| 09-11 | off                                                  | 2000 m race kit, 8x50 m fast                                          | off                                                                      |
+| 09-12 | condition 5: 30 min at 5:04-5:10/km                  | off                                                                   | rehearsal 2: 65-70 km at 190-200 W, full fuel, CdA confirm on race setup |
+| 09-13 | 18 km with 12 km at 5:10/km                          | 1000 m easy                                                           | off                                                                      |
+| 09-14 | off                                                  | 1800 m technique                                                      | off; mobility 30 min                                                     |
+| 09-15 | 35 min easy plus strides                             | off                                                                   | EM 50 min                                                                |
+| 09-16 | quality: 4x1 km at 7:35/mile, 2 min jog              | 2000 m with 4x200 m at CSS                                            | off                                                                      |
+| 09-17 | off                                                  | off                                                                   | 60 min with 3x8 min at 200-215 W                                         |
+| 09-18 | off                                                  | 1500 m open water in the race wetsuit                                 | off                                                                      |
+| 09-19 | 15 min brick at race pace                            | off                                                                   | 1h45 with 3x10 min at 190-200 W, then 6x T1 and T2 drills                |
+| 09-20 | 12 km easy                                           | 1000 m easy                                                           | off                                                                      |
+| 09-21 | off                                                  | 1500 m easy with 6x50 m fast                                          | off; mobility                                                            |
+| 09-22 | 30 min with 4x1 min at race pace                     | off                                                                   | 50 min with 4x3 min at race power                                        |
+| 09-23 | off                                                  | 1200 m easy                                                           | off; travel day                                                          |
+| 09-24 | 20 min easy                                          | off                                                                   | 40 min easy with 3x2 min openers                                         |
+| 09-25 | 10 min shakeout                                      | 10-15 min in Zach's Bay if the practice swim is open                  | 20 min with 3x30 s openers, then rack                                    |
+| 09-26 | race: 21.1 km, first 3 km at 5:50-6:00/km            | race: 1.9 km, settle by 300 m                                         | race: 90 km, cap the first 20 min at 175 W                               |
+
+## session library
+
+S1, technique and CSS:
+
+- 300 m easy, then 8x50 m drill/swim by 25 m on 15-20 s rest, opening on the 08-03 cues.
+- 8-12x100 m at measured CSS on 15 s rest, adding one rep per week before adding speed.
+- From week 3 the last 4 of those hundreds descend to 2:15-2:20, which is the pace the race goal is written in.
+- 4x50 m fast, full control.
+- 200 m easy.
+
+S2, endurance:
+
+- 400 m easy.
+- 4-6x300 m or 3-4x400 m at CSS + 4-6 s/100 m on 30-45 s rest.
+- 200 m pull.
+- 200 m easy.
+
+S3, continuous:
+
+- 200 m easy, then the whole prescribed distance unbroken and timed.
+- Sight every 6-8 strokes for the last third even in the pool.
+- This is the session the race actually resembles. Do not break it up because the clock is ugly.
+
+S4, open water:
+
+- Enter cold, exhale hard for the first 200 m until breathing settles.
+- Two 400-600 m efforts at race effort with sighting, 2 min easy between.
+- Practice the wetsuit strip on the beach afterwards. Twice.
+
+B1, EM:
+
+- 120-165 W, HR under 142, 80-90 rpm.
+- Aero position for at least half the ride once the position is comfortable.
+
+B2, tempo and sweet spot:
+
+- 15 min warmup.
+- Sweet spot weeks: progress 3x15 min at 195-210 W to 4x15 min, 5 min easy between.
+- Threshold weeks: 3-4x10 min at 230-245 W, 5 min easy between. This is the FTP lever and it alternates with the sweet-spot version so the run ramp survives.
+- Cadence 80-90 rpm, seated, no surges out of corners. End the session if power drops below target on two consecutive reps.
+
+B3, long with race-power blocks:
+
+- Ride the first 30 min at EM.
+- Race-power blocks of 20-25 min at 190-200 W with 8-10 min easy between, building 2 blocks to 4.
+- 60 g carbs/h from 08-15, 70 g/h from 08-29, 90 g/h from 09-05.
+
+B4, race rehearsal:
+
+- Race kit, race bottles, race breakfast, race start time if the weekend allows.
+- 09-05 is the full one: 90 km at 190-200 W, 90 g carbs/h, then 20 minutes running at 5:40-5:50/km.
+- If the ride takes more than 2h40 on the race setup in normal wind, the budget moves to the swim.
+
+R1, easy:
+
+- 6:15-6:45/km, HR 121-142, cadence light.
+- If HR crosses 145 without intent, walk 30 s and restart slower. The pace is not the point.
+
+R2, quality:
+
+- One per week, Wednesday, and the bike that day is off.
+- Reps at 7:30-7:50/mile off full recovery, building 400 m to 1 km across the block. Stop while form holds.
+- Race-pace durability lives in the Sunday long run, not here. This session exists to make 7:30/mile feel like a pace rather than a sprint.
+
+R3, long:
+
+- Start 15 s/km slower than target and never negative-split by accident.
+- Fuel 40-60 g carbs/h past 75 minutes.
+- From 08-30, finish the last 3-4 km at 70.3 race pace so the legs learn what tired-but-controlled feels like.
+
+R4, brick:
+
+- Off the bike within 4 minutes, no sitting.
+- First kilometre 20-30 s/km slower than target, then settle.
+- Practise the cup pinch and running through an imaginary aid station every 3 km.
+
+## fuelling and gut training
+
+A 5:55 race at 88 kg needs roughly 350-400 g of carbohydrate on course. That is above the single-transporter ceiling, so the mix has to be glucose plus fructose at about 1:0.8 and the gut has to be trained to take it.[^multitransport][^gut]
+
+- Bike: 70 g/h from 08-29, 90 g/h from 09-05, and 80-90 g/h on race day across 2h55. Sodium 600-900 mg/h.
+- Run: 50-60 g/h. Late September at Jones Beach is usually 18-24 °C, so the fluid need is moderate and the sodium need is ordinary.
+- Breakfast 3 hours before: 2 g/kg carbs, about 170 g, low fibre, nothing new.
+- Every long ride from 08-15 rehearses the exact bottles, flasks, and gel count. Gut distress on race day is a training error with a date attached.
+- Daily carbs: 250-350 g on normal days, 400-550 g on long or rehearsal days, 200-250 g on rest days.[^carb]
+- Protein floor 165 g, target 185 g, split across four feedings.[^protein]
+
+## body composition
+
+87.8 kg on 07-28, trending -0.67 kg/week, which is at the top of the 0.5-0.7% band.
+
+- Hold -0.6 kg/week through 09-12. That lands 83.0-83.5 kg, about 183-184 lb, two weeks out, and 83 kg is what the 5:05/km run row assumes.
+- Flat from 09-14. No deficit inside the taper and none in race week.
+- Four kilos off 87.8 kg is 4.6% of body mass, worth roughly 1.5-2.5 s/km on the run, so 2:00 to 3:30 over the half, plus about 4 W of rolling resistance on the bike. Real, and still smaller than what the swim and the aero are worth. Do not trade interval quality for it.[^weightloss]
+- Deficit sits on rest and easy days. Rehearsal days on 08-29, 09-05, and 09-12 are maintenance.
+- Kill the deficit if sleep score drops under 75 for two nights, RHR sits 5 bpm over baseline, or the Wednesday quality run flattens.
+
+## recovery gates
+
+- Readiness under 70 for two straight days, HRV z below -1, RHR 5 bpm over baseline, or TSB below -25: swap the next quality session for 45-60 min at EM or a technique swim.
+- 09-05 and 09-06 are the largest 48 hours in the block. Run the gate on 09-04. If TSB is below -25, move the long run to 09-07 and shorten it to 16 km rather than shortening the ride, because the ride is the coverage gate.
+- Knees complained on 07-23. The run ramp is the injury risk in this plan, not the volume total. If anything hurts on two consecutive runs, cut the quality session first and keep the easy mileage.
+- Race week arrives at TSB +10 to +20. Anything above +25 means the taper went too deep and the openers on 09-22 and 09-24 matter more.
+
+## race execution
+
+Swim. Zach's Bay is protected salt water and almost certainly wetsuit legal, so it swims faster than anything in Lake Ontario this summer. Confirm at check-in. Seed honestly in the rolling start, take the first 200 m at 2:45/100 m while breathing settles, then hold CSS + 8 s. Sight every 6-8 strokes and take the feet in front when they are going the right way.
+
+Bike. The parkway is flat and fully exposed, which is the course that rewards shape over watts more than any other. Stay in the extensions. Every minute spent sitting up costs about 12 seconds over 90 km, so the aid stations and the turnarounds are where the split leaks. Cap the first 20 minutes at 185 W no matter how good the legs feel out of T1, then hold 205 W and let the wind decide the speed. Watch power, not the speed field. Every gel goes in on schedule rather than by feel. If 09-05 said 205 W leaves nothing for the run, this number is 195 W on race morning and the decision was made three weeks earlier, not at kilometre 40.
+
+Run. First 3 km at 5:15-5:20/km even though it will feel absurd, then settle to 5:04-5:10. Heart rate over 162 inside the first 5 km means slow down; a sub-5 run held at 168 for 107 minutes does not exist. The boardwalk has no shade and no gradient, so the only variable is discipline. Run through every aid station with a pinched cup, which is worth 8-10 minutes against the SuperTri habit. Anything left after 16 km goes into the last 5.
+
+Sub-5 lives or dies between kilometre 8 and kilometre 16 of the run. Everything upstream is arithmetic and equipment. That stretch is the only part of the day where the answer is not already known by 09-12.
+
+If a condition misses, the plan does not change, the number does. Swim at 2:32 costs 3:00 and the day is 5:01. CdA at 0.26 costs 6:30 and the day is 5:05. Both, and it is 5:08. None of those are failures against a 6:28 prediction, and none of them are reasons to ride harder on the day to make up the difference. That is how a 5:05 becomes a 5:40.
+
+## the ladder to sub-5 and 4:40
+
+| horizon     |          swim |                         bike |     run | total | what has to be true                                                 |
+| ----------- | ------------: | ---------------------------: | ------: | ----: | ------------------------------------------------------------------- |
+| 09-26 2026  | 42:00 at 2:14 | 2:24 at 205 W, CdA 0.22-0.23 | 1:47:15 |  4:58 | the five conditions, all of them, about a one-in-five day           |
+| spring 2027 | 41:00 at 2:10 |      2:22 at 210 W, CdA 0.22 | 1:47:00 |  4:57 | FTP 265-270, VO2max 53-55, 82 kg, a winter at 50 km/week running    |
+| 2028        | 36:00 at 1:54 |      2:15 at 240 W, CdA 0.22 | 1:43:00 |  4:40 | FTP 300-310, VO2max 58-62, 79 kg, stroke rebuilt from the catch out |
+
+The 2026 row is the one this block chases and it has no slack in it. The rows below exist because a 4:58 on 09-26 is a one-in-five day rather than a plan, and the version of this that ends well has both a September attempt and a spring one. VO2max going 47.8 to 54 and FTP going 240 to 270 are ordinary two-season adaptations at 25 off volume you already tolerate. They arrive on their own schedule whether or not Jones Beach cooperates.
+
+The one thing worth saying about 4:40: at that level the swim is 1:54/100 m, which is 50 seconds per 100 faster than 07-26. Nothing else in the table is a delta that size. Whatever the year, the water is where your race is decided, and the eight weeks starting tomorrow are the first eight you will have ever spent training it properly.
+
+[^course]: Race facts from the event listing and course description: swim in Zach's Bay, bike on the closed Wantagh Parkway, run on the Jones Beach boardwalk. https://www.ironman.com/races/im703-new-york Verify distances, wetsuit call, and transition layout in the athlete guide when it publishes.
+
+[^wetsuit]: Chatard et al., "Wet suit effect: a comparison between competitive swimmers and triathletes", Medicine and Science in Sports and Exercise, 1995. https://pubmed.ncbi.nlm.nih.gov/7791590/ Competitive swimmers showed no significant change over 400 m; triathletes went 19 s faster with lower energy cost, and the effect scaled with how inefficient and how poorly buoyant the swimmer was. See also the 2021 narrative review in IJSPP, which puts the ceiling near 11%. https://journals.humankinetics.com/view/journals/ijspp/16/9/article-p1217.xml
+
+[^gut]: Jeukendrup, "Training the Gut for Athletes", Sports Medicine, 2017. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5371619/
+
+[^multitransport]: Jeukendrup, "A step towards personalized sports nutrition: carbohydrate intake during exercise", Sports Medicine, 2014. https://pubmed.ncbi.nlm.nih.gov/24791919/
+
+[^triphys]: Millet, Vleck and Bentley, "Physiological differences between cycling and running: lessons from triathletes", Sports Medicine, 2009. https://pubmed.ncbi.nlm.nih.gov/19453206/
 
 <!-- training plan end -->

@@ -1191,6 +1191,15 @@
   }
 }
 
+.tri-elev-unavailable {
+  display: grid;
+  place-items: center;
+  height: 80px;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  color: var(--gray);
+}
+
 .tri-elev-cap {
   display: flex;
   flex-wrap: wrap;
@@ -1257,7 +1266,6 @@
   }
 }
 
-.tri-fuel-btn,
 .tri-calc-btn,
 .tri-gear-btn,
 .tri-pace-btn,
@@ -1279,16 +1287,6 @@
   &:hover {
     color: var(--dark);
     border-bottom-color: var(--dark);
-  }
-}
-
-.tri-fuel-btn {
-  white-space: nowrap;
-
-  &:hover {
-    background: transparent;
-    color: var(--dark);
-    border-bottom-color: color-mix(in srgb, var(--gray) 50%, transparent);
   }
 }
 
@@ -2346,14 +2344,6 @@
 }
 .tri-tools .tri-pace .tri-pace-row > :nth-child(3) {
   text-align: right;
-}
-
-.tri-fuel-embed {
-  width: 100%;
-  height: min(74vh, 780px);
-  border: 1px solid var(--lightgray);
-  border-radius: var(--radius-none);
-  overflow: hidden;
 }
 
 .tri-calc--page {
@@ -4241,6 +4231,13 @@
 .tri-accl-temp {
   stroke: var(--tri-run);
   stroke-width: 1.25;
+}
+
+.tri-accl-temp-point {
+  stroke: var(--tri-run);
+  stroke-width: 4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .tri-accl-proxy {

@@ -257,7 +257,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
   assert.equal(heat.latestTemperatureC, 20)
   assert.equal(heat.heatDays14d, 0)
   assert.equal(heat.heatMinutes14d, 0)
-  assert.deepEqual(heat.sourceCounts, { weatherkit: 15, strava: 1 })
+  assert.deepEqual(heat.sourceCounts, { core: 0, weatherkit: 15, strava: 1 })
   assert.equal(heat.activities.length, 16)
   assert.deepEqual(
     heat.activities.find(activity => activity.id === 114),
@@ -268,6 +268,7 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
       sport: 'run',
       name: 'Run 114',
       temperatureC: 27,
+      heatStrainIndex: null,
       source: 'strava',
       observedMinutes: 61,
       hotMinutes: 61,
@@ -283,6 +284,91 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
   assert.equal(heat.series.find(day => day.date === fallbackDate)?.source, 'strava')
   assert.equal(heat.series.find(day => day.date === coolDate)?.temperatureC, 20)
   assert.equal(heat.series.find(day => day.date === swimDate)?.temperatureC, null)
+})
+
+test('heat block uses CORE heat strain before WeatherKit ambient temperature', () => {
+  const date = iso(20)
+  const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
+  const cache: StravaRawCache = {
+    athleteId: 123,
+    auth: { refreshToken: 'core-heat-test-token', obtainedAt: 0 },
+    lastSync: Date.parse(`${date}T18:00:00Z`),
+    lastActivityStart: 0,
+    activities: { 201: rideActivity },
+    streams: { 201: streams(10, 3) },
+  }
+  const weather: WeatherCache = {
+    version: 1,
+    lastSync: cache.lastSync,
+    activities: {
+      201: {
+        activityId: 201,
+        date,
+        start: `${date}T12:00:00.000Z`,
+        end: `${date}T13:01:00.000Z`,
+        latitude: 43.6,
+        longitude: -79.4,
+        durationS: 3660,
+        windKph: null,
+        windDir: null,
+        windDirDeg: null,
+        windGustKph: null,
+        temperatureC: 40,
+        source: 'weatherkit',
+      },
+    },
+    days: {},
+  }
+  const garmin: GarminCache = {
+    version: 6,
+    lastSync: cache.lastSync,
+    activities: {
+      core: {
+        id: 'core',
+        name: 'CORE ride',
+        sport: 'bike',
+        startDate: rideActivity.startDate,
+        startDateLocal: rideActivity.startDateLocal,
+        distanceM: rideActivity.distance,
+        movingTimeS: rideActivity.movingTime,
+        elapsedTimeS: rideActivity.elapsedTime,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      core: {
+        time: [0, 900, 1800, 2700, 3600],
+        latlng: [],
+        altitude: [],
+        distance: [0, 5_000, 10_000, 15_000, 20_000],
+        heatStrainIndex: [0, 2.9, 3, 4, 2],
+        coreTemperatureC: [37, 37.1, 37.2, 37.3, 37.4],
+      },
+    },
+  }
+
+  const heat = buildAnalytics(cache, { weather, garmin, since: date }).heat
+  assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
+  assert.equal(heat.latestTemperatureC, 37.15)
+  assert.equal(heat.heatMinutes14d, 30)
+  assert.deepEqual(heat.activities[0], {
+    id: 201,
+    date,
+    startedAt: `${date}T12:00:00Z`,
+    sport: 'bike',
+    name: 'Ride 201',
+    temperatureC: 37.15,
+    heatStrainIndex: 2.5,
+    source: 'core',
+    observedMinutes: 61,
+    hotMinutes: 30,
+    dose: 0.5,
+  })
+  assert.equal(heat.series[0].source, 'core')
+  assert.equal(heat.series[0].heatStrainIndex, 2.5)
 })
 
 test('engine block bases vo2max on the declared strava ftp and builds six radar axes', () => {
@@ -472,6 +558,11 @@ test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => 
   assert.equal(h.high, 260)
   assert.equal(h.wattsPerKg, 2.59)
   assert.equal(h.conf, 'low')
+  assert.equal(h.massDate, '2026-06-25')
+  assert.equal(h.massSource, 'lab')
+  assert.equal(h.vo2maxDate, '2026-06-25')
+  assert.equal(h.vo2maxSource, 'lab')
+  assert.equal(h.defaultRunningVo2max, 47.8)
 })
 
 test('vo2 lab profile samples survive analytics parsing', () => {
@@ -611,6 +702,52 @@ test('vo2 headline follows the latest garmin mark after an older lab test', () =
   assert.equal(a.engine.vo2max.value, 48.1)
   assert.equal(a.engine.vo2max.conf, 'firm')
   assert.equal(a.engine.vo2max.bikeSource, null)
+})
+
+test('ftp hypothesis follows daily weight and newest Garmin running vo2 with the athlete default as fallback', () => {
+  const { cache, oura, weights } = fixtures()
+  const garmin: GarminCache = {
+    lastSync: cache.lastSync,
+    activities: {},
+    vo2max: { [iso(29)]: { date: iso(29), generic: 50.5, cycling: 49.2 } },
+    weight: [
+      {
+        ts: Date.parse(`${iso(28)}T07:00:00.000Z`),
+        date: iso(28),
+        weightKg: 86.8,
+        bmi: 26.7,
+        bodyFatPct: 21.1,
+        bodyWaterPct: 55.3,
+        muscleMassKg: 35.4,
+        boneMassKg: 3.7,
+      },
+    ],
+  }
+  const live = buildAnalytics(cache, {
+    oura,
+    garmin,
+    weights,
+    since: '2026-05-12',
+    vo2labs: [{ date: iso(23), value: 47.8, massKg: 88.9 }],
+  }).engine.ftpHypothesis
+  assert.ok(live)
+  assert.equal(live.massKg, 86.8)
+  assert.equal(live.massDate, iso(28))
+  assert.equal(live.massSource, 'daily')
+  assert.equal(live.runningVo2max, 50.5)
+  assert.equal(live.vo2maxDate, iso(29))
+  assert.equal(live.vo2maxSource, 'garmin')
+  assert.equal(live.defaultRunningVo2max, ATHLETE.vo2max)
+  assert.equal(live.ftp, 240)
+
+  const fallback = buildAnalytics(cache, { oura, weights, since: '2026-05-12' }).engine
+    .ftpHypothesis
+  assert.ok(fallback)
+  assert.equal(fallback.massKg, 88.5)
+  assert.equal(fallback.massDate, iso(15))
+  assert.equal(fallback.massSource, 'daily')
+  assert.equal(fallback.runningVo2max, ATHLETE.vo2max)
+  assert.equal(fallback.vo2maxSource, 'default')
 })
 
 test('calibration tracks newest pace and volume deltas against the prior window', () => {
@@ -789,9 +926,9 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
   const a = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
   const b = a.body
   assert.equal(b.latestKg, 86.8)
-  assert.equal(b.goalKg != null && Math.round(b.goalKg), 73)
-  assert.equal(b.goalLbs, 160)
-  assert.equal(b.goalDeltaKg, 14.2)
+  assert.equal(b.goalKg != null && Math.round(b.goalKg), 77)
+  assert.equal(b.goalLbs, 170)
+  assert.equal(b.goalDeltaKg, 9.7)
   assert.ok(b.trendKgPerWeek != null && b.trendKgPerWeek < 0)
   assert.ok(b.goalEtaWeeks != null && b.goalEtaWeeks > 0 && b.goalEtaWeeks <= 104)
   assert.equal(b.bodyFatPct, 21.1)
@@ -821,7 +958,7 @@ test('garmin scale drives body composition, multi-weigh-in series, weight merge,
     .trimEnd()
     .split('\n')
     .map(l => JSON.parse(l))
-  assert.equal(rows[0].athlete.weightGoalKg != null && Math.round(rows[0].athlete.weightGoalKg), 73)
+  assert.equal(rows[0].athlete.weightGoalKg != null && Math.round(rows[0].athlete.weightGoalKg), 77)
   const scaleDay = rows.find(r => r.kind === 'day' && r.date === iso(25))
   assert.equal(scaleDay.bmi, 26.9)
   assert.equal(scaleDay.ffmi, 19.37)
@@ -850,7 +987,7 @@ test('body block reports goal-weight bmr and ffmi from dexa fat-free mass', () =
       },
     ],
   })
-  assert.equal(a.body.goalBmr, 1781)
+  assert.equal(a.body.goalBmr, 1826)
   assert.equal(a.body.goalLeanBmr, 1776)
   assert.equal(a.tests.dexa[0].ffmi, 18.42)
   assert.equal(a.body.ffmi, 18.42)
@@ -1018,7 +1155,13 @@ test('swim radar rejects invalid Apple metrics and falls back to Strava activity
 test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', () => {
   const { cache, oura, weights, weather } = fixtures()
   const a = buildAnalytics(cache, { oura, weights, weather, since: '2026-05-12' })
-  const feed = buildDataFeed(cache, a, { oura, weather, weights, zones: cache.zones })
+  const feed = buildDataFeed(cache, a, {
+    oura,
+    weather,
+    weights,
+    trainingExclusions: [{ date: iso(20), activityId: 1 }],
+    zones: cache.zones,
+  })
   assert.ok(feed.endsWith('\n'))
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
@@ -1071,6 +1214,9 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   assert.equal(ride?.windDir, 'W')
   assert.equal(ride?.windGustKph, 29)
   assert.equal(ride?.avgTemp, 22)
+  assert.equal(ride?.skipTraining, true)
+  const run = rows.find(r => r.kind === 'activity' && r.id === 2)
+  assert.equal(run?.skipTraining, false)
 })
 
 test('data feed prefers Garmin run heart rate over Strava heart rate', () => {

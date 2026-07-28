@@ -17,6 +17,7 @@ import type {
 } from '../../plugins/stores/analytics'
 import type { OuraDayDetail, OuraSeries } from '../../plugins/stores/oura'
 import {
+  ROUTE_SPORTS,
   type ActivityHealth,
   type ActivityKind,
   type StravaMapPoint,
@@ -89,6 +90,7 @@ import {
   formatRespirationRate,
   formatStrideLength,
   formatTemperature,
+  formatThermalTemperature,
   formatVerticalOscillation,
   gradeAt,
   isImperialUnit,
@@ -1290,6 +1292,7 @@ const renderDetail = (
   d: StravaActivityDetail,
   payload?: DetailPayload | null,
   fillMissingRunPower = false,
+  showUnavailableElevation = false,
 ): HTMLElement => {
   const wrap = buildActivityNode(
     domF,
@@ -1298,9 +1301,12 @@ const renderDetail = (
     clientCtx(),
     payload?.swimTrend ?? [],
     fillMissingRunPower,
+    showUnavailableElevation,
   ) as HTMLElement
   const surfaces: ScrubSurface[] = []
-  const elev = wrap.querySelector<HTMLElement>('.tri-act-figs .tri-elev-wrap')
+  const elev = wrap.querySelector<HTMLElement>(
+    '.tri-act-figs .tri-elev-wrap:not(.tri-elev-wrap--unavailable)',
+  )
   if (elev) {
     surfaces.push({
       wrap: elev,
@@ -1363,6 +1369,24 @@ const renderDetail = (
         wrap: trace,
         fmt: p =>
           `${scrubDist(p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(p.tempC)}`,
+      })
+    else if (trace.dataset.triTrace === 'heat strain index')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(p.d, d.sport)} · ${p.heatStrainIndex == null ? '—' : p.heatStrainIndex.toFixed(1)}`,
+      })
+    else if (trace.dataset.triTrace === 'CORE temperature')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(p.d, d.sport)} · ${p.coreTemperatureC == null ? '—' : formatThermalTemperature(p.coreTemperatureC)}`,
+      })
+    else if (trace.dataset.triTrace === 'skin temperature')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(p.d, d.sport)} · ${p.skinTemperatureC == null ? '—' : formatThermalTemperature(p.skinTemperatureC)}`,
       })
   }
   if ((surfaces.length > 0 || wrap.querySelector('[data-tri-analysis]')) && d.route.length >= 2) {
@@ -2067,7 +2091,7 @@ const buildDayCard = (
   extras: DayCardExtras = {},
 ): HTMLElement => {
   const card = buildDayCardNode(domF, dateIso, payload, extras, detail =>
-    renderDetail(detail, payload, extras.event != null),
+    renderDetail(detail, payload, extras.event != null, extras.embedded === true),
   ) as HTMLElement
   if (extras.expanded) {
     card
@@ -2086,6 +2110,7 @@ const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
     sport: data.triathlonSport as DayCardExtras['sport'],
     ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
     expanded: data.triathlonExpanded === '1',
+    embedded: data.triathlonEmbedded === '1',
     dateHref: data.triathlonDateHref,
   }
 }
@@ -4764,10 +4789,17 @@ const missingRuns = <T>(
 
 const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-ana-accl')
-  block.appendChild(anaTitle('ambient heat · acclimatisation', 'heatacclimation'))
   const heat = data.heat
+  const coreActivities = heat.activities.filter(activity => activity.heatStrainIndex != null)
+  const usesCore = coreActivities.length > 0
+  block.appendChild(
+    anaTitle(
+      usesCore ? 'heat strain · acclimatisation' : 'ambient heat · acclimatisation',
+      'heatacclimation',
+    ),
+  )
   if (!heat.series.length || heat.currentPct == null) {
-    block.appendChild(el('div', 'tri-ana-empty', tl('no outdoor temperature data')))
+    block.appendChild(el('div', 'tri-ana-empty', tl('no thermal data')))
     return block
   }
 
@@ -4796,27 +4828,33 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     return item
   }
   legend.append(
-    legendItem('tri-accl-leg-temp', 'activity temperature'),
+    legendItem('tri-accl-leg-temp', usesCore ? 'heat strain index' : 'activity temperature'),
     legendItem('tri-accl-leg-proxy', 'acclimatisation proxy'),
     legendItem('tri-accl-leg-dose', 'heat exposure'),
   )
   block.appendChild(legend)
 
   const rows = heat.series
-  const activities = heat.activities
+  const activities = usesCore ? coreActivities : heat.activities
   const n = rows.length
   const H = 70
   const tempTop = 3
   const tempBottom = 28
   const acclTop = 40
   const acclBottom = 66
-  const observed = activities.map(activity => temperature(activity.temperatureC))
-  const threshold = temperature(heat.method.hotThresholdC)
-  let tempLo = Math.floor(Math.min(...observed, threshold) / 5) * 5
-  let tempHi = Math.ceil(Math.max(...observed, threshold) / 5) * 5
-  if (tempHi - tempLo < 10) {
-    tempLo -= 5
-    tempHi += 5
+  const signal = (activity: (typeof activities)[number]): number =>
+    usesCore ? (activity.heatStrainIndex ?? 0) : temperature(activity.temperatureC)
+  const observed = activities.map(signal)
+  const threshold = usesCore
+    ? heat.method.heatStrainThreshold
+    : temperature(heat.method.hotThresholdC)
+  const signalStep = usesCore ? 1 : 5
+  const minimumSpan = usesCore ? 2 : 10
+  let signalLo = Math.floor(Math.min(...observed, threshold) / signalStep) * signalStep
+  let signalHi = Math.ceil(Math.max(...observed, threshold) / signalStep) * signalStep
+  if (signalHi - signalLo < minimumSpan) {
+    signalLo -= signalStep
+    signalHi += signalStep
   }
   const x = (i: number): number => (n > 1 ? (i / (n - 1)) * ANA_W : ANA_W / 2)
   const fromMs = Date.parse(`${rows[0].date}T00:00:00Z`)
@@ -4827,8 +4865,8 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
       ? clampN((timestamp - fromMs) / (toMs - fromMs), 0, 1) * ANA_W
       : ANA_W / 2
   }
-  const yTemp = (value: number): number =>
-    tempBottom - ((temperature(value) - tempLo) / (tempHi - tempLo)) * (tempBottom - tempTop)
+  const ySignal = (value: number): number =>
+    tempBottom - ((value - signalLo) / (signalHi - signalLo)) * (tempBottom - tempTop)
   const yAccl = (value: number): number =>
     acclBottom - (clampN(value, 0, 100) / 100) * (acclBottom - acclTop)
   const s = svg('svg', {
@@ -4836,23 +4874,27 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     viewBox: `0 0 ${ANA_W} ${H}`,
     preserveAspectRatio: 'none',
     role: 'img',
-    'aria-label': tl('ambient workout temperature and heat acclimatisation proxy over time'),
+    'aria-label': tl(
+      usesCore
+        ? 'CORE heat strain and heat acclimatisation over time'
+        : 'ambient workout temperature and heat acclimatisation proxy over time',
+    ),
   })
   s.appendChild(
     svg('rect', {
       x: 0,
       y: tempTop,
       width: ANA_W,
-      height: Math.max(0, yTemp(heat.method.hotThresholdC) - tempTop),
+      height: Math.max(0, ySignal(threshold) - tempTop),
       class: 'tri-accl-hot-zone',
     }),
   )
   s.appendChild(
     svg('line', {
       x1: 0,
-      y1: yTemp(heat.method.hotThresholdC),
+      y1: ySignal(threshold),
       x2: ANA_W,
-      y2: yTemp(heat.method.hotThresholdC),
+      y2: ySignal(threshold),
       class: 'tri-accl-threshold',
     }),
   )
@@ -4873,7 +4915,7 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     s.appendChild(
       svg('path', {
         d: polyD(
-          activities.map(activity => [xActivity(activity.startedAt), yTemp(activity.temperatureC)]),
+          activities.map(activity => [xActivity(activity.startedAt), ySignal(signal(activity))]),
         ),
         class: 'tri-accl-temp',
       }),
@@ -4894,16 +4936,30 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     }),
   )
   s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: H, class: 'tri-ana-cursor' }))
+  if (usesCore)
+    for (const activity of activities) {
+      const pointX = xActivity(activity.startedAt)
+      const pointY = ySignal(signal(activity))
+      s.appendChild(
+        svg('line', {
+          x1: pointX - 0.001,
+          y1: pointY,
+          x2: pointX + 0.001,
+          y2: pointY,
+          class: 'tri-accl-temp-point',
+        }),
+      )
+    }
   const frame = axisFrame(
     domF,
     s,
     [
-      { label: `${tempHi}${temperatureUnit}`, vbY: tempTop },
+      { label: `${signalHi}${usesCore ? '' : temperatureUnit}`, vbY: tempTop },
       {
-        label: `${Math.round(threshold)}${temperatureUnit}`,
-        vbY: yTemp(heat.method.hotThresholdC),
+        label: `${usesCore ? threshold.toFixed(1) : Math.round(threshold)}${usesCore ? '' : temperatureUnit}`,
+        vbY: ySignal(threshold),
       },
-      { label: `${tempLo}${temperatureUnit}`, vbY: tempBottom },
+      { label: `${signalLo}${usesCore ? '' : temperatureUnit}`, vbY: tempBottom },
       { label: '100%', vbY: acclTop },
       { label: '50%', vbY: yAccl(50) },
       { label: '0%', vbY: acclBottom },
@@ -4919,7 +4975,19 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
   block.append(frame, el('div', 'tri-chart-readout'))
 
   const cap = el('div', 'tri-elev-cap tri-accl-cap')
-  if (heat.latestTemperatureC != null && heat.lastObservedDate)
+  const latestCore = coreActivities.at(-1)
+  if (usesCore && latestCore)
+    cap.appendChild(
+      markGloss(
+        el(
+          'span',
+          'tri-ana-k',
+          `${tl('latest')} CORE ${temperatureText(latestCore.temperatureC, 2)} · HSI ${latestCore.heatStrainIndex?.toFixed(1) ?? '—'} · ${shortDate(latestCore.date)}`,
+        ),
+        'heatstrain',
+      ),
+    )
+  else if (heat.latestTemperatureC != null && heat.lastObservedDate)
     cap.appendChild(
       markGloss(
         el(
@@ -4932,21 +5000,21 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     )
   cap.append(
     markGloss(
-      el('span', 'tri-ana-k', `${heat.coveragePct}% ${tl('weather coverage')}`),
-      'ambienttemp',
+      el('span', 'tri-ana-k', `${heat.coveragePct}% ${tl('thermal coverage')}`),
+      usesCore ? 'heatstrain' : 'ambienttemp',
     ),
     el('span', 'tri-ana-k', `${tl(heat.confidence)} ${tl('confidence')}`),
     el(
       'span',
       'tri-ana-k',
-      `WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
+      `CORE ${heat.sourceCounts.core} · WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
     ),
   )
   block.appendChild(cap)
   const method = markGloss(
     mathK(
       'tri-accl-method',
-      `>${temperatureText(heat.method.hotThresholdC)} · ${heat.method.targetMinutesPerDay} min = 1 ${tl('exposure')} · ${heat.method.targetDays} ${tl('exposures')} = 100% · ${heat.method.decayPerDay * 100}%/${tl('day')} ${tl('decay after')} ${heat.method.decayGraceDays} ${tl('days')}`,
+      `${usesCore ? `HSI ≥${heat.method.heatStrainThreshold.toFixed(1)} · ${tl('fallback')} >${temperatureText(heat.method.hotThresholdC)}` : `>${temperatureText(heat.method.hotThresholdC)}`} · ${heat.method.targetMinutesPerDay} min = 1 ${tl('exposure')} · ${heat.method.targetDays} ${tl('exposures')} = 100% · ${heat.method.decayPerDay * 100}%/${tl('day')} ${tl('decay after')} ${heat.method.decayGraceDays} ${tl('days')}`,
     ),
     'heatdose',
   )
@@ -6576,6 +6644,20 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
     block.appendChild(el('div', 'tri-ana-empty', tl('no vo2-derived ftp estimate')))
     return block
   }
+  const massNote =
+    h.massSource === 'daily'
+      ? `${tl('latest daily weight')} · ${triLongDate(h.massDate)}`
+      : `${tl('value from vo2 report')} · ${triLongDate(h.massDate)}`
+  const vo2Fallback =
+    h.vo2maxSource === 'garmin' && h.defaultRunningVo2max != null
+      ? ` · ${tl('fallback')} ${h.defaultRunningVo2max.toFixed(1)}`
+      : ''
+  const vo2Note =
+    h.vo2maxSource === 'garmin'
+      ? `Garmin · ${triLongDate(h.vo2maxDate)}${vo2Fallback}`
+      : h.vo2maxSource === 'lab'
+        ? `${tl('measured during treadmill test')} · ${triLongDate(h.vo2maxDate)}`
+        : `${tl('athlete default')} · ${h.runningVo2max.toFixed(1)}`
 
   const head = el('div', 'tri-ftp-head')
   const headline = el('div', 'tri-ftp-main')
@@ -6688,7 +6770,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
       0.1,
       h.massKg,
       ` ${weightUnitLabel()}`,
-      'value from vo2 report',
+      massNote,
       true,
       wNum(h.massKg, 1, 0),
     ),
@@ -6700,7 +6782,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
       0.1,
       h.runningVo2max,
       '',
-      'measured during treadmill test',
+      vo2Note,
       true,
       h.runningVo2max.toFixed(1),
     ),
@@ -6738,7 +6820,7 @@ const buildFtpHypothesis = (data: Analytics): HTMLElement => {
   block.appendChild(controls)
   const foot = el('div', 'tri-ftp-foot')
   foot.append(
-    el('span', 'tri-ftp-source', `${tl('lab')} ${triLongDate(h.date)}`),
+    el('span', 'tri-ftp-source', triLongDate(h.date)),
     el('span', 'tri-ftp-source', tl(h.note)),
     el('button', 'tri-ftp-reset', tl('reset'), { type: 'button' }),
   )
@@ -7655,14 +7737,22 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
           nearest = point
       const { activity } = nearest
       const day = dayByDate.get(activity.date)
+      const temperatureDigits = activity.source === 'core' ? 2 : 0
       const temperature = isImperialUnit()
-        ? `${((activity.temperatureC * 9) / 5 + 32).toFixed(0)}°F`
-        : `${activity.temperatureC.toFixed(0)}°C`
-      const source = activity.source === 'weatherkit' ? 'WeatherKit' : 'Strava'
+        ? `${((activity.temperatureC * 9) / 5 + 32).toFixed(temperatureDigits)}°F`
+        : `${activity.temperatureC.toFixed(temperatureDigits)}°C`
+      const heatStrain =
+        activity.heatStrainIndex == null ? '' : ` · HSI ${activity.heatStrainIndex.toFixed(1)}`
+      const source =
+        activity.source === 'core'
+          ? 'CORE'
+          : activity.source === 'weatherkit'
+            ? 'WeatherKit'
+            : 'Strava'
       const cx = (nearest.fraction * ANA_W).toFixed(2)
       heatCursor.setAttribute('x1', cx)
       heatCursor.setAttribute('x2', cx)
-      heatReadout.textContent = `${shortDate(activity.date)} · ${activity.name} · ${temperature} · ${activity.hotMinutes} ${tl('hot min')} · ${tl('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
+      heatReadout.textContent = `${shortDate(activity.date)} · ${activity.name} · ${temperature}${heatStrain} · ${activity.hotMinutes} ${tl('hot min')} · ${tl('proxy')} ${day?.acclimatisationPct.toFixed(0) ?? '—'}% · ${source}`
       heatBlock.classList.add('tri-chart--hover')
     }
     const onLeave = (): void => heatBlock.classList.remove('tri-chart--hover')
@@ -8214,9 +8304,9 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
     hay: 'recovery hrv heart rate variability rhr resting autonomic illness temperature overreaching suppressed fatigue oura',
   },
   {
-    label: 'ambient heat · acclimatisation',
+    label: 'heat strain · acclimatisation',
     chart: 'heat',
-    hay: 'heat temperature ambient thermal hot weather weatherkit acclimatisation acclimation exposure proxy',
+    hay: 'heat strain hsi core body skin temperature ambient thermal hot weather weatherkit acclimatisation acclimation exposure proxy',
   },
   {
     label: 'sleep · debt',
@@ -8290,6 +8380,7 @@ const GLOSS_CHART: Record<string, string> = {
   rhr: 'recovery',
   tempdev: 'recovery',
   ambienttemp: 'heat',
+  heatstrain: 'heat',
   heatdose: 'heat',
   heatacclimation: 'heat',
   overreaching: 'recovery',
@@ -9148,8 +9239,12 @@ interface Overview {
   legend: Record<OverviewMode, OverviewLegend | null>
 }
 
+interface OverviewDrawOptions {
+  fit?: boolean
+  redrawStreetMap?: boolean
+}
+
 const OVERVIEW_METRICS = ['w', 'hr', 'cad', 'spd'] as const
-const ROUTE_SPORTS = ['bike', 'run', 'walk'] as const
 const OVERVIEW_CELL = 0.0008
 
 const overviewCellKey = (lng: number, lat: number): string =>
@@ -9176,7 +9271,7 @@ const pctRange = (vals: number[]): [number, number] => {
 const overviewMetric = (d: StravaActivityDetail, k: (typeof OVERVIEW_METRICS)[number]) => {
   if (k === 'w') return d.deviceWatts && d.avgWatts ? d.avgWatts : null
   if (k === 'hr') return d.avgHr
-  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'bike' ? 1 : 2)
+  if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'run' ? 2 : 1)
   return d.movingTimeS > 0 ? d.distanceKm / (d.movingTimeS / 3600) : null
 }
 
@@ -9189,6 +9284,7 @@ const overviewFmt = (
   if (k === 'hr') return `${Math.round(v)} bpm`
   if (k === 'cad') return `${Math.round(v)} ${sport === 'bike' ? 'rpm' : 'spm'}`
   if (sport === 'bike') return `${(v * KM_TO_MI).toFixed(1)} mph`
+  if (sport === 'swim') return `${clock(360 / v)} /100m`
   return `${clock(3600 / (v * KM_TO_MI))} /mi`
 }
 
@@ -9220,6 +9316,7 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
   }
   const counts = new Map<string, number>()
   for (const d of acts) {
+    if (d.sport === 'swim') continue
     const cells = new Set<string>()
     for (const r of gpsSegments(d))
       for (let i = 0; i < r.length - 1; i++) stampSegment(r[i], r[i + 1], cells)
@@ -9242,8 +9339,9 @@ const buildOverview = (dp: DetailPayload | null, enabled: ReadonlySet<ActivityKi
   const streetActivities: StreetMapActivity[] = []
   for (const d of acts) {
     const segments = gpsSegments(d)
-    streetActivities.push({ id: d.id, segments, metrics: normalizedOverviewMetrics(d, ranges) })
-    traceFeatures.push(...segmentFeatures(segments, { id: d.id }))
+    const metrics = normalizedOverviewMetrics(d, ranges)
+    if (d.sport !== 'swim') streetActivities.push({ id: d.id, segments, metrics })
+    traceFeatures.push(...segmentFeatures(segments, { id: d.id, sport: d.sport, ...metrics }))
   }
   const legend: Record<OverviewMode, OverviewLegend | null> = {
     heat: { lo: '$1\\times$', hi: `$${maxCount}\\times$` },
@@ -9477,7 +9575,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (map) map.getCanvas().style.cursor = ''
       tip?.classList.remove('tri-map-tip--on')
     }
-    const applyMode = () => {
+    const applyMode = (scheduleStreet = true) => {
       if (!ready()) return
       map.setPaintProperty(
         'tri-heat',
@@ -9494,11 +9592,21 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         'line-width',
         mode === 'heat' ? heatWidthExpr : streetMetricWidthExpr,
       )
+      map.setPaintProperty(
+        'tri-swim',
+        'line-color',
+        mode === 'heat' ? HEAT_RAMP[6] : streetMetricColorExpr(mode),
+      )
+      map.setPaintProperty(
+        'tri-swim',
+        'line-opacity',
+        mode === 'heat' ? 0.7 : streetMetricOpacityExpr(mode),
+      )
       const lg = getOverview().legend[mode]
       if (legendLo) setMath(legendLo, lg?.lo ?? 'low')
       if (legendHi) setMath(legendHi, lg?.hi ?? 'high')
       if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
-      scheduleStreetMap()
+      if (scheduleStreet) scheduleStreetMap()
     }
     const recolor = (d: StravaActivityDetail, i: number) => {
       if (!ready()) return
@@ -9606,6 +9714,21 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
       )
       addSource('tri-traces', { type: 'geojson', data: emptyFC() })
+      addLayer(
+        {
+          id: 'tri-swim',
+          type: 'line',
+          source: 'tri-traces',
+          filter: ['==', ['get', 'sport'], 'swim'],
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': HEAT_RAMP[6],
+            'line-opacity': 0.7,
+            'line-width': streetMetricWidthExpr,
+          },
+        },
+        typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
+      )
       addLayer({
         id: 'tri-hit',
         type: 'line',
@@ -9714,18 +9837,19 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       await new Promise<void>(resolve => map.once('load', () => resolve()))
       installLayers()
     }
-    const setOverviewData = () => {
+    const setOverviewData = (redrawStreetMap = true) => {
       if (!ready()) return
+      clearHover()
       const ov = getOverview()
-      map.getSource('tri-heat')?.setData(emptyFC())
+      if (redrawStreetMap) map.getSource('tri-heat')?.setData(emptyFC())
       map.getSource('tri-traces')?.setData(ov.traces)
-      applyMode()
+      applyMode(redrawStreetMap)
     }
-    const drawOverview = () => {
+    const drawOverview = ({ fit = true, redrawStreetMap = true }: OverviewDrawOptions = {}) => {
       if (!ready()) return
-      setOverviewData()
+      setOverviewData(redrawStreetMap)
       const b = fcBounds(getOverview().traces)
-      if (b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
+      if (fit && b) map.fitBounds(b, { padding: 48, maxZoom: 13, duration: reduce ? 0 : 600 })
     }
     const sameSelectedRange = (
       left: ActivityAnalysisRange | null,
@@ -9759,6 +9883,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       selection = { d, i }
       if (!ready()) return
       clearHover()
+      map.getSource('tri-traces')?.setData(emptyFC())
       map.getSource('tri-range')?.setData(selectedRange ? rangeFC(d, selectedRange) : emptyFC())
       recolor(d, i)
       map.setPaintProperty('tri-heat', 'line-opacity', 0.06)
@@ -9857,18 +9982,18 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     for (const b of sportBtns)
       b.setAttribute('aria-pressed', String(enabledSports.has(b.dataset.sport as ActivityKind)))
   }
-  const setEnabledSports = (next: ReadonlySet<ActivityKind>) => {
+  const setEnabledSports = (next: ReadonlySet<ActivityKind>, options?: OverviewDrawOptions) => {
     if (next.size === enabledSports.size && [...next].every(s => enabledSports.has(s))) return
     enabledSports.clear()
     for (const s of next) enabledSports.add(s)
     syncSportBtns()
-    mapCtl.drawOverview()
+    mapCtl.drawOverview(options)
   }
   const toggleSport = (sport: ActivityKind) => {
     const next = new Set(enabledSports)
     if (next.has(sport)) next.delete(sport)
     else next.add(sport)
-    setEnabledSports(next)
+    setEnabledSports(next, { fit: false, redrawStreetMap: sport !== 'swim' })
   }
   let detailAnim: Animation | null = null
   const finishCloseDetail = () => {
@@ -9992,7 +10117,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const drawableIds = (): Set<string> => {
     const ids = new Set<string>()
     const det = detailData?.details ?? {}
-    for (const k in det) if ((det[k].route?.length ?? 0) >= 2) ids.add(k)
+    for (const k in det) if (gpsSegments(det[k]).length > 0) ids.add(k)
     return ids
   }
   const runSearch = () => {
@@ -10971,10 +11096,6 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     }
     if (key === 'h') {
       go('/')
-      return true
-    }
-    if (key === 'f') {
-      root.querySelector<HTMLElement>('.tri-fuel-btn')?.click()
       return true
     }
     return false

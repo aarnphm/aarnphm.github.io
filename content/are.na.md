@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-16 21:55:33 GMT-04:00
+modified: 2026-07-28 17:36:19 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -2527,6 +2527,10 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://guglieri.com/about -- Claudio Guglieri
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [designer]
 - https://seanxthielen.com/ -- Sean Thielen-Esparza
   - [meta]:
     - date: 07/01/2026

@@ -30,7 +30,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 5
+const CACHE_VERSION = 6
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
@@ -64,6 +64,34 @@ export function initialGarminSyncRecords<T>(
   partial: boolean,
 ): Record<string, T> {
   return partial ? { ...previous } : {}
+}
+
+export function mergeGarminVo2Range(
+  previous: Record<string, GarminVo2Day>,
+  fetched: Record<string, GarminVo2Day>,
+  start: string,
+  end: string,
+): Record<string, GarminVo2Day> {
+  const merged: Record<string, GarminVo2Day> = {}
+  for (const [date, value] of Object.entries(previous))
+    if (date < start || date > end) merged[date] = value
+  for (const [date, value] of Object.entries(fetched)) merged[date] = value
+  return Object.fromEntries(
+    Object.entries(merged).sort(([left], [right]) => left.localeCompare(right)),
+  )
+}
+
+export function mergeGarminWeightRange(
+  previous: GarminWeightSample[],
+  fetched: GarminWeightSample[],
+  start: string,
+  end: string,
+): GarminWeightSample[] {
+  const merged = new Map<number, GarminWeightSample>()
+  for (const sample of previous)
+    if (sample.date < start || sample.date > end) merged.set(sample.ts, sample)
+  for (const sample of fetched) merged.set(sample.ts, sample)
+  return [...merged.values()].sort((left, right) => left.ts - right.ts)
 }
 
 async function readCache(): Promise<GarminCache | null> {
@@ -316,7 +344,9 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(`[garmin] vo2max fetch failed: ${err instanceof Error ? err.message : err}`)
   }
-  const vo2max = resolveGarminFetch(vo2Outcome, previous?.vo2max) ?? {}
+  const vo2max = vo2Outcome.ok
+    ? mergeGarminVo2Range(previous?.vo2max ?? {}, vo2Outcome.value ?? {}, start, end)
+    : (previous?.vo2max ?? {})
 
   let weightOutcome: GarminFetchOutcome<GarminWeightSample[]> = { ok: false }
   try {
@@ -358,7 +388,9 @@ async function main(): Promise<void> {
   } catch (err) {
     console.warn(`[garmin] weight fetch failed: ${err instanceof Error ? err.message : err}`)
   }
-  const weight = resolveGarminFetch(weightOutcome, previous?.weight) ?? []
+  const weight = weightOutcome.ok
+    ? mergeGarminWeightRange(previous?.weight ?? [], weightOutcome.value ?? [], start, end)
+    : (previous?.weight ?? [])
 
   const sorted: Record<string, GarminActivity> = {}
   for (const activity of Object.values(activities).sort((a, b) =>

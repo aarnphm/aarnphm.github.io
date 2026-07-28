@@ -25,6 +25,7 @@ export type DayCardExtras = {
   sport?: ActivityKind
   excludedActivityIds?: readonly string[]
   expanded?: boolean
+  embedded?: boolean
   dateHref?: string
 }
 
@@ -110,6 +111,9 @@ const temperatureUnit = (): string => (imperial ? '°F' : '°C')
 
 export const formatTemperature = (celsius: number): string =>
   `${Math.round(temperatureValue(celsius))}${temperatureUnit()}`
+
+export const formatThermalTemperature = (celsius: number): string =>
+  `${temperatureValue(celsius).toFixed(2)}${temperatureUnit()}`
 
 export const formatRespirationRate = (breathsPerMinute: number): string =>
   `${breathsPerMinute.toFixed(1)} brpm`
@@ -225,6 +229,9 @@ export const routeStreamFlags = (
   verticalOscillation: boolean
   resp: boolean
   temp: boolean
+  heatStrain: boolean
+  coreTemperature: boolean
+  skinTemperature: boolean
 } => ({
   power: d.deviceWatts && d.route.some(p => p.w > 0),
   hr: d.route.some(p => p.hr > 0),
@@ -239,6 +246,12 @@ export const routeStreamFlags = (
     d.route.filter(point => runVerticalOscillationCm(point) != null).length >= 2,
   resp: d.route.some(p => p.resp != null && p.resp > 0),
   temp: d.route.some(p => p.tempC != null),
+  heatStrain:
+    d.sport === 'bike' && d.route.filter(point => point.heatStrainIndex != null).length >= 2,
+  coreTemperature:
+    d.sport === 'bike' && d.route.filter(point => point.coreTemperatureC != null).length >= 2,
+  skinTemperature:
+    d.sport === 'bike' && d.route.filter(point => point.skinTemperatureC != null).length >= 2,
 })
 
 const nativeRunStrideLengthM = (point: StravaActivityDetail['route'][number]): number | null => {
@@ -455,6 +468,9 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.verticalOscillation ||
     flags.resp ||
     flags.temp ||
+    flags.heatStrain ||
+    flags.coreTemperature ||
+    flags.skinTemperature ||
     d.sport === 'run' ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
@@ -736,6 +752,15 @@ export const buildElevation = <N>(
   return wrap
 }
 
+const buildUnavailableElevation = <N>(f: TriNodeFactory<N>): N => {
+  const wrap = f.el('div', 'tri-elev-wrap tri-elev-wrap--unavailable')
+  const unavailable = f.el('div', 'tri-elev-unavailable', 'no data available', {
+    'data-i18n': 'no data available',
+  })
+  f.add(wrap, axisFrame(f, unavailable, [], 30, [], false))
+  return wrap
+}
+
 export const buildTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -756,7 +781,8 @@ export const buildTrace = <N>(
     if (value != null && Number.isFinite(value) && value > peak) peak = value
   })
   const domainMin = domain?.min ?? 0
-  const domainMax = Math.max(domain?.max ?? peak, domainMin + 1)
+  const candidateMax = domain?.max ?? peak
+  const domainMax = candidateMax > domainMin ? candidateMax : domainMin + 1
   const px = (km: number): number => (km / maxD) * w
   const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
   let area = ''
@@ -950,6 +976,77 @@ const buildTemperatureTrace = <N>(
     'temperature',
     () => `${formatTemperature(averageC)} avg`,
     value => `${Math.round(value)}${temperatureUnit()}`,
+    { min, max, intervals: 2 },
+    selection,
+    graphDomain,
+  )
+}
+
+const traceResolution = (values: number[], fallback: number): number => {
+  const unique = [...new Set(values)].sort((left, right) => left - right)
+  let resolution = Infinity
+  for (let index = 1; index < unique.length; index++) {
+    const delta = unique[index] - unique[index - 1]
+    if (delta > 1e-6 && delta < resolution) resolution = delta
+  }
+  return Number.isFinite(resolution) ? resolution : fallback
+}
+
+const thermalTemperatureTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  pickCelsius: (point: StravaActivityDetail['route'][number]) => number | null,
+  title: string,
+  fallbackResolutionC: number,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const valuesC = d.route.map(pickCelsius).filter((value): value is number => value != null)
+  if (d.sport !== 'bike' || valuesC.length < 2) return null
+  const displayValues = valuesC.map(temperatureValue)
+  const fallbackResolution = imperial ? (fallbackResolutionC * 9) / 5 : fallbackResolutionC
+  const resolution = traceResolution(displayValues, fallbackResolution)
+  const min = Math.min(...displayValues) - resolution
+  const max = Math.max(...displayValues) + resolution
+  const averageC = valuesC.reduce((total, value) => total + value, 0) / valuesC.length
+  const digits = resolution < 0.1 ? 2 : 1
+  return buildTrace(
+    f,
+    d,
+    point => {
+      const celsius = pickCelsius(point)
+      return celsius == null ? null : temperatureValue(celsius)
+    },
+    title,
+    () => `${formatThermalTemperature(averageC)} avg`,
+    value => `${value.toFixed(digits)}${temperatureUnit()}`,
+    { min, max, intervals: 2 },
+    selection,
+    graphDomain,
+  )
+}
+
+const buildHeatStrainTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null => {
+  const values = d.route
+    .map(point => point.heatStrainIndex)
+    .filter((value): value is number => value != null)
+  if (d.sport !== 'bike' || values.length < 2) return null
+  const resolution = traceResolution(values, 0.1)
+  const min = Math.max(0, Math.min(...values) - resolution)
+  const max = Math.max(...values) + resolution
+  const average = values.reduce((total, value) => total + value, 0) / values.length
+  return buildTrace(
+    f,
+    d,
+    point => point.heatStrainIndex,
+    'heat strain index',
+    () => `${average.toFixed(1)} avg`,
+    value => value.toFixed(1),
     { min, max, intervals: 2 },
     selection,
     graphDomain,
@@ -2733,6 +2830,7 @@ export const buildActivity = <N>(
   ctx?: DetailCtx,
   swimTrend: SwimTrendPoint[] = [],
   fillMissingRunPower = false,
+  showUnavailableElevation = false,
 ): N => {
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     'data-activity-id': `${d.id}`,
@@ -2749,7 +2847,10 @@ export const buildActivity = <N>(
   const analysisSelection = null
   if (d.route.length >= 2) {
     const secondary =
-      d.sport === 'swim' ? buildSwimStrokes(f, d) : buildElevation(f, d, analysisSelection)
+      d.sport === 'swim'
+        ? (buildSwimStrokes(f, d) ??
+          (showUnavailableElevation ? buildUnavailableElevation(f) : null))
+        : buildElevation(f, d, analysisSelection)
     const figs = f.el(
       'div',
       `tri-act-figs tri-act-figs--route${secondary ? ' tri-act-figs--split' : ''}`,
@@ -2829,6 +2930,32 @@ export const buildActivity = <N>(
     }
     if (flags.resp) f.add(more, buildRespirationTrace(f, d, analysisSelection))
     if (flags.temp) f.add(more, buildTemperatureTrace(f, d, analysisSelection))
+    if (flags.heatStrain) {
+      const heatStrain = buildHeatStrainTrace(f, d, analysisSelection)
+      if (heatStrain) f.add(more, heatStrain)
+    }
+    if (flags.coreTemperature) {
+      const coreTemperature = thermalTemperatureTrace(
+        f,
+        d,
+        point => point.coreTemperatureC,
+        'CORE temperature',
+        0.01,
+        analysisSelection,
+      )
+      if (coreTemperature) f.add(more, coreTemperature)
+    }
+    if (flags.skinTemperature) {
+      const skinTemperature = thermalTemperatureTrace(
+        f,
+        d,
+        point => point.skinTemperatureC,
+        'skin temperature',
+        0.05,
+        analysisSelection,
+      )
+      if (skinTemperature) f.add(more, skinTemperature)
+    }
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)
@@ -4402,6 +4529,7 @@ export const buildDayCard = <N>(
         ctx,
         payload?.swimTrend ?? [],
         extras.event != null,
+        extras.embedded === true,
       ))
   const card = f.el('div', 'tri-pop-card')
   const head = f.el('div', 'tri-pop-head')
