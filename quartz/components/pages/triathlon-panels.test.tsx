@@ -5,7 +5,6 @@ import {
   AnalyticsPanel,
   DISPATCH_ICON,
   FeedPanel,
-  FuelLink,
   GearPanel,
   MapPanel,
   PacePanel,
@@ -35,13 +34,11 @@ test('triathlon navigation controls expose their locale keys', () => {
     <>
       <GearPanel />
       <PacePanel />
-      <FuelLink />
     </>,
   )
 
   assert.match(html, /class="tri-gear-btn"[^>]*data-i18n="gear"/)
   assert.match(html, /class="tri-pace-btn"[^>]*data-i18n="pace"/)
-  assert.match(html, /class="tri-fuel-btn internal"[^>]*data-i18n="fuel plan"/)
   assert.match(html, /class="tri-pace-sec" data-i18n="run"/)
   assert.match(html, /class="tri-pace-sec" data-i18n="swim"/)
   assert.match(html, /class="tri-pace-sec" data-i18n="bike"/)
@@ -144,8 +141,14 @@ test('map reserves one hidden activity selector over its canvas', () => {
   const canvas = html.indexOf('class="tri-map-canvas"')
   const selection = html.indexOf('class="tri-map-selection" aria-hidden="true"')
   const tip = html.indexOf('class="tri-map-tip" aria-hidden="true"')
+  const sportOffsets = ['bike', 'run', 'swim', 'walk'].map(sport =>
+    html.indexOf(`data-sport="${sport}"`),
+  )
 
   assert.equal(html.split('class="tri-map-selection"').length - 1, 1)
+  assert.equal(html.split('class="tri-map-sport"').length - 1, 4)
+  assert.ok(sportOffsets.every(offset => offset >= 0))
+  assert.ok(sportOffsets.every((offset, index) => index === 0 || offset > sportOffsets[index - 1]))
   assert.ok(canvas >= 0)
   assert.ok(selection > canvas)
   assert.ok(tip > selection)

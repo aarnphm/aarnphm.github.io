@@ -218,6 +218,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         weather,
         garmin,
         weights: tracking?.days,
+        trainingExclusions: tracking?.trainingExclusions,
         zones: payload.zones,
       })
       await cacheDataFeed(dataFeed)

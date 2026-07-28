@@ -339,20 +339,44 @@ test('normalizes Garmin ClimbPro parent splits and excludes their sections', () 
 test('normalizes Garmin Connect detail metrics into streams', () => {
   const streams = garminConnectStreams({
     metricDescriptors: [
-      { key: 'sumDistance' },
-      { key: 'directLatitude' },
-      { key: 'directLongitude' },
-      { key: 'directElevation' },
-      { key: 'directPower' },
-      { key: 'directHeartRate' },
-      { key: 'directBikeCadence' },
-      { key: 'sumElapsedDuration' },
-      { key: 'directRespirationRate' },
+      { metricsIndex: 7, key: 'sumElapsedDuration' },
+      {
+        metricsIndex: 11,
+        key: 'connectIQDeveloperField-07',
+        appID: '6957fe68-83fe-4ed6-8613-413f70624bb5',
+        developerFieldNumber: 0,
+      },
+      { metricsIndex: 0, key: 'sumDistance' },
+      { metricsIndex: 1, key: 'directLatitude' },
+      {
+        metricsIndex: 10,
+        key: 'connectIQDeveloperField-11',
+        appID: '6957fe68-83fe-4ed6-8613-413f70624bb5',
+        developerFieldNumber: 95,
+      },
+      { metricsIndex: 2, key: 'directLongitude' },
+      { metricsIndex: 3, key: 'directElevation' },
+      { metricsIndex: 4, key: 'directPower' },
+      { metricsIndex: 5, key: 'directHeartRate' },
+      {
+        metricsIndex: 12,
+        key: 'connectIQDeveloperField-08',
+        appID: '6957fe68-83fe-4ed6-8613-413f70624bb5',
+        developerFieldNumber: 10,
+      },
+      { metricsIndex: 6, key: 'directBikeCadence' },
+      { metricsIndex: 8, key: 'directRespirationRate' },
+      {
+        metricsIndex: 9,
+        key: 'connectIQDeveloperField-12',
+        appID: '6957fe68-83fe-4ed6-8613-413f70624bb5',
+        developerFieldNumber: 81,
+      },
     ],
     activityDetailMetrics: [
-      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null] },
-      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42] },
-      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08] },
+      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null, 98.6, 0, 37, null] },
+      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42, 99.5, 1.4, 37.01, 33.45] },
+      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08, 100.4, 3, 37.03, 33.5] },
     ],
   })
 
@@ -368,4 +392,7 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
   assert.deepEqual(streams?.cadence, [82, 88, 91])
   assert.deepEqual(streams?.time, [0, 15, 30])
   assert.deepEqual(streams?.respiration, [0, 27.42, 31.08])
+  assert.deepEqual(streams?.heatStrainIndex, [0, 1.4, 3])
+  assert.deepEqual(streams?.coreTemperatureC, [37, 37.01, 37.03])
+  assert.deepEqual(streams?.skinTemperatureC, [-1, 33.45, 33.5])
 })

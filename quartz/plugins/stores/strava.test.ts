@@ -130,7 +130,7 @@ test('emits geometry-preserved map data separately from compact telemetry route'
   assert.ok(detail.route.every(point => Number.isFinite(point.speedKph)))
 })
 
-test('aligns Garmin respiration samples onto the Strava route timeline', () => {
+test('aligns Garmin respiration and CORE samples onto the Strava route timeline', () => {
   const activity = ride({
     distance: 2_000,
     movingTime: 20,
@@ -188,6 +188,9 @@ test('aligns Garmin respiration samples onto the Strava route timeline', () => {
         altitude: [80, 85, 90],
         distance: [0, 1_000, 2_000],
         respiration: [18, 28, 38],
+        heatStrainIndex: [0, 1.4, 3],
+        coreTemperatureC: [37.16, 37.17, 37.19],
+        skinTemperatureC: [33.4, 33.45, 33.5],
       },
     },
   }
@@ -196,6 +199,18 @@ test('aligns Garmin respiration samples onto the Strava route timeline', () => {
   assert.deepEqual(
     detail.route.map(point => point.resp),
     [18, 26, 36],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.heatStrainIndex),
+    [0, 1.1, 2.7],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.coreTemperatureC),
+    [37.16, 37.17, 37.19],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.skinTemperatureC),
+    [33.4, 33.44, 33.49],
   )
 })
 

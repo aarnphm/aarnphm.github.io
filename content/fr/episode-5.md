@@ -116,6 +116,21 @@ and the two verbs in full:
 
 `avoir` pour la possession et l'âge (`Ils ont une auto et une maison.`, `J'ai 28 ans.`, `Elle a 3 enfants.`); `être` pour la nationalité, la profession et l'état civil (`Je suis portugais.`, `Il est électricien.`, `Elles sont célibataires.`).
 
+## le pronom relatif
+
+the photo captions want more than `C'est mon cousin.`: the class ([[fr/lessons/260727]]) extends the presenting frame with a relative clause, `Sur cette photo, c'est mon chat qui se prépare pour Noël.` the `c'est … qui …` cleft is the présentatif above plus a description glued on.[^relatif]
+
+pick the pronoun by what is missing inside the relative clause:
+
+| pronom | remplace              | test                        | exemple                                         |
+| ------ | --------------------- | --------------------------- | ----------------------------------------------- |
+| `qui`  | le sujet              | un verbe suit directement   | `J'ai un frère qui habite à Montréal.`          |
+| `que`  | le complément direct  | un sujet + verbe suivent    | `C'est le chat que j'aime.`                     |
+| `dont` | un complément en `de` | le verbe se construit en `de` | `le chat dont je parle` (`parler de`)          |
+| `où`   | un lieu ou un temps   | l'antécédent est lieu/temps | `la ville où j'habite`, `le jour où je suis né` |
+
+the elision is asymmetric: `que` drops its vowel (`le livre qu'il lit`) and `qui` never does (`la femme qui est là`). `dont` covers every `de`-construction, `parler de`, `avoir besoin de` (the [[fr/episode-8]] messages: `les ciseaux dont il a besoin`), and possession (`la femme dont le fils est médecin`).
+
 ## faire connaissance
 
 the meeting expressions split by register, and this time the split is `tu` against `vous`:
@@ -182,3 +197,5 @@ related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/episode-
 [^garcon]: the book's own examples use it: `Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`, `Ton garçon a 14 ans.` `fils` also appears (`Mon fils s'appelle Martin.`); `garçon` is the warmer, spoken choice, the same word [[fr/episode-1]] used to count `2 garçons`.
 
 [^nom]: the children are `Côté-Dupuis`, mother's name plus father's name. since 1981 the Code civil du Québec has spouses keep their birth names (a wife cannot legally take her husband's name, even if she wants to), and children may receive either parent's name or both, hyphenated. the tree draws the law.
+
+[^relatif]: `qui/que/dont/où` runs ahead of the A1 syllabus (the book's épisode 5 stops at the présentatifs); the class introduced all four for recognition, so the section lives here where the `c'est … qui` cleft naturally attaches.

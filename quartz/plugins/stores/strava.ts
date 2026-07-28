@@ -23,6 +23,7 @@ export type Sport = 'swim' | 'bike' | 'run'
 export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment'
 
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
+export const ROUTE_SPORTS: readonly ActivityKind[] = ['bike', 'run', 'swim', 'walk']
 
 export const SPORT_ICON: Record<ActivityKind, string[]> = {
   run: [
@@ -245,6 +246,9 @@ export interface StravaRoutePoint {
   cad: number
   resp: number | null
   tempC: number | null
+  heatStrainIndex: number | null
+  coreTemperatureC: number | null
+  skinTemperatureC: number | null
   lat: number
   lng: number
   elapsedS: number
@@ -1100,6 +1104,13 @@ interface TimedMetricSample {
   value: number
 }
 
+interface ActivityGarminMetricSamples {
+  respiration: TimedMetricSample[]
+  heatStrainIndex: TimedMetricSample[]
+  coreTemperatureC: TimedMetricSample[]
+  skinTemperatureC: TimedMetricSample[]
+}
+
 function timedMetricAt(samples: TimedMetricSample[], elapsedS: number): number | null {
   if (samples.length === 0) return null
   if (elapsedS <= samples[0].elapsedS) return samples[0].value
@@ -1115,26 +1126,52 @@ function timedMetricAt(samples: TimedMetricSample[], elapsedS: number): number |
   return samples[samples.length - 1].value
 }
 
-function activityRespirationSamples(
+type GarminMetricStreamKey =
+  | 'respiration'
+  | 'heatStrainIndex'
+  | 'coreTemperatureC'
+  | 'skinTemperatureC'
+
+function activityGarminMetricSamples(
   activity: RawStravaActivity,
   match: GarminActivityMatch | null,
   garmin: GarminCache | null,
-): TimedMetricSample[] {
-  if (!match) return []
+): ActivityGarminMetricSamples {
+  const empty = (): ActivityGarminMetricSamples => ({
+    respiration: [],
+    heatStrainIndex: [],
+    coreTemperatureC: [],
+    skinTemperatureC: [],
+  })
+  if (!match) return empty()
   const stream = garmin?.streams?.[match.activity.id]
   const time = stream?.time
-  const respiration = stream?.respiration
-  if (!time || !respiration || time.length !== respiration.length) return []
+  if (!time) return empty()
   const startOffsetS =
     (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1000
-  if (!Number.isFinite(startOffsetS)) return []
-  const samples: TimedMetricSample[] = []
-  for (let index = 0; index < time.length; index++) {
-    if (!Number.isFinite(time[index]) || !Number.isFinite(respiration[index])) continue
-    if (respiration[index] <= 0) continue
-    samples.push({ elapsedS: time[index] + startOffsetS, value: respiration[index] })
+  if (!Number.isFinite(startOffsetS)) return empty()
+
+  const collect = (
+    key: GarminMetricStreamKey,
+    valid: (value: number) => boolean,
+  ): TimedMetricSample[] => {
+    const values = stream?.[key]
+    if (!values || time.length !== values.length) return []
+    const samples: TimedMetricSample[] = []
+    for (let index = 0; index < time.length; index++) {
+      if (!Number.isFinite(time[index]) || !Number.isFinite(values[index])) continue
+      if (!valid(values[index])) continue
+      samples.push({ elapsedS: time[index] + startOffsetS, value: values[index] })
+    }
+    return samples.sort((left, right) => left.elapsedS - right.elapsedS)
   }
-  return samples.sort((left, right) => left.elapsedS - right.elapsedS)
+
+  return {
+    respiration: collect('respiration', value => value > 0),
+    heatStrainIndex: collect('heatStrainIndex', value => value >= 0 && value <= 20),
+    coreTemperatureC: collect('coreTemperatureC', value => value >= 25 && value <= 45),
+    skinTemperatureC: collect('skinTemperatureC', value => value >= 0 && value <= 50),
+  }
 }
 
 interface TimedStreamAlignment {
@@ -1395,7 +1432,7 @@ function projectDetail(
   streams: StravaStreams | GarminStreams | undefined,
   effortStreams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
-  respirationSamples: TimedMetricSample[],
+  garminMetricSamples: ActivityGarminMetricSamples,
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: ActivityFueling | null,
@@ -1487,7 +1524,10 @@ function projectDetail(
     idx.forEach((i, k) => {
       const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
-      const respiration = timedMetricAt(respirationSamples, elapsedS)
+      const respiration = timedMetricAt(garminMetricSamples.respiration, elapsedS)
+      const heatStrainIndex = timedMetricAt(garminMetricSamples.heatStrainIndex, elapsedS)
+      const coreTemperatureC = timedMetricAt(garminMetricSamples.coreTemperatureC, elapsedS)
+      const skinTemperatureC = timedMetricAt(garminMetricSamples.skinTemperatureC, elapsedS)
       route.push({
         x: round((xs[k] - minX) / span + offX, 4),
         y: round((ys[k] - minY) / span + offY, 4),
@@ -1498,6 +1538,9 @@ function projectDetail(
         cad: Math.round(cadStream[i] ?? 0),
         resp: respiration == null ? null : round(respiration, 1),
         tempC: temperatureC == null ? null : round(temperatureC, 1),
+        heatStrainIndex: heatStrainIndex == null ? null : round(heatStrainIndex, 1),
+        coreTemperatureC: coreTemperatureC == null ? null : round(coreTemperatureC, 2),
+        skinTemperatureC: skinTemperatureC == null ? null : round(skinTemperatureC, 2),
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
         elapsedS: round(elapsedS, 3),
@@ -1796,7 +1839,7 @@ export function buildPayload(
           garminHeartRateMatches.get(id) ?? null,
           garmin,
         ),
-      activityRespirationSamples(a, garminMatch, garmin),
+      activityGarminMetricSamples(a, garminMatch, garmin),
       weather?.activities[id],
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),

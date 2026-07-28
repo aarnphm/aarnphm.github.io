@@ -19,15 +19,22 @@ export interface ManualFuelingEntry {
   caloriesConsumed: number
 }
 
+export interface TrainingExclusion {
+  date: string
+  activityId: number
+}
+
 export interface TrackingData {
   days: TrackEntry[]
   races: RaceEvent[]
   fueling: ManualFuelingEntry[]
+  trainingExclusions: TrainingExclusion[]
 }
 
 export interface ParsedTrackingBlock {
   day: TrackEntry
   fueling: ManualFuelingEntry | null
+  trainingExclusion: TrainingExclusion | null
 }
 
 const LB_TO_KG = 0.45359237
@@ -86,5 +93,10 @@ export function parseTrackingBlock(
     caloriesConsumed >= 0
       ? { date: day.date, activityId, caloriesConsumed }
       : null
-  return { day, fueling }
+  const skipTraining = ['true', '1', 'yes'].includes(body.skiptraining?.toLowerCase() ?? '')
+  const trainingExclusion =
+    skipTraining && Number.isSafeInteger(activityId) && activityId > 0
+      ? { date: day.date, activityId }
+      : null
+  return { day, fueling, trainingExclusion }
 }

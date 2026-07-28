@@ -21,7 +21,6 @@ import {
   AnalyticsPanel,
   CalcPanel,
   CONVERSIONS,
-  FuelLink,
   GearPanel,
   MapPanel,
   PacePanel,
@@ -272,7 +271,6 @@ export default (() => {
             <button class="tri-calc-btn" type="button" data-i18n="calculator">
               calculator
             </button>
-            <FuelLink />
             <a
               class="tri-credit"
               href="https://rauno.me/run"

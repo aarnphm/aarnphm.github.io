@@ -34,7 +34,14 @@ test('recovers activity exclusions from source when the cached anchor is slugged
 
 test('carries activity exclusions into hydrated day-card props', () => {
   assert.deepEqual(
-    triathlonDayProps({ excludedActivityIds: ['19471122670', '19476629599'] }, '2026-07-26'),
-    { 'data-triathlon-date': '2026-07-26', 'data-triathlon-filter': '19471122670&19476629599' },
+    triathlonDayProps(
+      { excludedActivityIds: ['19471122670', '19476629599'], embedded: true },
+      '2026-07-26',
+    ),
+    {
+      'data-triathlon-date': '2026-07-26',
+      'data-triathlon-filter': '19471122670&19476629599',
+      'data-triathlon-embedded': '1',
+    },
   )
 })

@@ -194,6 +194,7 @@ test('localizes dynamic analytics explanations', () => {
     assert.equal(trendUnavailableText(2, 48), 'Le dernier effort remonte à 48 jours.')
     assert.equal(trendUnavailableText(null, null), 'Données insuffisantes.')
     assert.equal(tl('reset'), 'réinit.')
+    assert.equal(tl('no data available'), 'aucune donnée disponible')
     assert.match(
       tl('radar stroke rate swim definition'),
       /^La fréquence de nage est la moyenne des fréquences/,
@@ -229,7 +230,6 @@ test('localizes the triathlon page chrome', () => {
         'map',
         'training',
         'calculator',
-        'fuel plan',
         'inspired by rauno',
       ].map(tl),
       [
@@ -244,7 +244,6 @@ test('localizes the triathlon page chrome', () => {
         'carte',
         'entraînement',
         'calculateur',
-        'plan nutrition',
         'inspiré de rauno',
       ],
     )
@@ -643,6 +642,9 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       cad: 82,
       resp: 20,
       tempC: 22,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
       lat: 43.6,
       lng: -79.4,
       elapsedS: 0,
@@ -658,6 +660,9 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       cad: 86,
       resp: 24,
       tempC: 23,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
       lat: 43.7,
       lng: -79.3,
       elapsedS: 1_600,
@@ -673,6 +678,9 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       cad: 90,
       resp: 28,
       tempC: 24,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
       lat: 43.8,
       lng: -79.2,
       elapsedS: 3_200,
@@ -688,6 +696,9 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       cad: 84,
       resp: 32,
       tempC: 25,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
       lat: 43.9,
       lng: -79.1,
       elapsedS: 4_800,
@@ -956,6 +967,51 @@ test('renders route stream graphs in the server activity markup', () => {
     ['temperature', '24°C avg'],
   )
   assert.deepEqual(byClass(temperature, 'tri-cax-yt').map(text), ['22°C', '24°C', '26°C'])
+})
+
+test('renders CORE bike graphs after ambient temperature with sub-degree domains', () => {
+  const thermal = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      heatStrainIndex: [0, 1.4, 3, 3.1][index],
+      coreTemperatureC: [37.16, 37.17, 37.19, 37.18][index],
+      skinTemperatureC: [33.4, 33.45, 33.5, 33.55][index],
+    })),
+  })
+  const rendered = buildActivity(factory, thermal, true)
+  const traces = byClass(rendered, 'tri-elev-wrap').filter(
+    graph => graph.properties.dataTriTrace != null,
+  )
+  assert.deepEqual(
+    traces.map(graph => graph.properties.dataTriTrace),
+    [
+      'hr',
+      'power',
+      'cadence',
+      'respiration',
+      'temperature',
+      'heat strain index',
+      'CORE temperature',
+      'skin temperature',
+    ],
+  )
+
+  const coreTemperature = traces.find(graph => graph.properties.dataTriTrace === 'CORE temperature')
+  assert.ok(coreTemperature)
+  assert.deepEqual(byClass(coreTemperature, 'tri-cax-yt').map(text), [
+    '37.16°C',
+    '37.18°C',
+    '37.20°C',
+  ])
+  assert.match(text(byClass(coreTemperature, 'tri-elev-cap')[0]), /37\.17°C avg/)
+
+  const skinTemperature = traces.find(graph => graph.properties.dataTriTrace === 'skin temperature')
+  assert.ok(skinTemperature)
+  assert.ok(
+    byClass(skinTemperature, 'tri-cax-yt')
+      .map(text)
+      .every(label => /^\d+\.\d{2}°C$/.test(label)),
+  )
 })
 
 test('renders estimated run stride length without bridging missing cadence samples', () => {
@@ -1482,9 +1538,28 @@ test('marks every routed sport for the shared desktop figure split', () => {
   assert.equal(byClass(swim, 'tri-act-figs--route').length, 1)
   assert.equal(byClass(swim, 'tri-act-figs--split').length, 1)
 
-  const routeOnlySwim = buildActivity(factory, detail({ sport: 'swim', strokes: null }), true)
-  assert.equal(byClass(routeOnlySwim, 'tri-act-figs--route').length, 1)
-  assert.equal(byClass(routeOnlySwim, 'tri-act-figs--split').length, 0)
+  const routeOnlySwim = detail({ id: 2026, date: '2026-07-26', sport: 'swim', strokes: null })
+  const routeOnlyPayload = { details: { 2026: routeOnlySwim }, health: {} }
+  const fullPageSwim = buildDayCard(factory, routeOnlySwim.date, routeOnlyPayload, {
+    expanded: true,
+  })
+  assert.equal(byClass(fullPageSwim, 'tri-act-figs--route').length, 1)
+  assert.equal(byClass(fullPageSwim, 'tri-act-figs--split').length, 0)
+  assert.equal(byClass(fullPageSwim, 'tri-elev-unavailable').length, 0)
+
+  const embeddedSwim = buildDayCard(factory, routeOnlySwim.date, routeOnlyPayload, {
+    embedded: true,
+  })
+  assert.equal(byClass(embeddedSwim, 'tri-act-figs--route').length, 1)
+  assert.equal(byClass(embeddedSwim, 'tri-act-figs--split').length, 1)
+  const unavailable = byClass(embeddedSwim, 'tri-elev-unavailable')[0]
+  assert.ok(unavailable)
+  assert.equal(unavailable.tagName, 'div')
+  assert.equal(text(unavailable), 'no data available')
+  assert.equal(unavailable.properties.dataI18n, 'no data available')
+  const unavailableWrap = byClass(embeddedSwim, 'tri-elev-wrap--unavailable')[0]
+  assert.ok(unavailableWrap)
+  assert.equal(byClass(unavailableWrap, 'tri-elev').length, 0)
 })
 
 test('prefers active swim pace and adds stroke rate and count to the main stats', () => {

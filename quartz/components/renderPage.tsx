@@ -1461,6 +1461,7 @@ export function transcludeFinal(
         const extras: DayCardExtras = {
           ...triathlonDayExtras(page, triathlonDate),
           ...triathlonEmbedExtras,
+          embedded: true,
         }
         const since = page.frontmatter?.['strava']
         const payload = loadStravaPayloadSync(

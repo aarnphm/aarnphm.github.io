@@ -78,6 +78,9 @@ export interface GarminStreams {
   heartrate?: number[]
   cadence?: number[]
   respiration?: number[]
+  heatStrainIndex?: number[]
+  coreTemperatureC?: number[]
+  skinTemperatureC?: number[]
 }
 
 export interface GarminActivityMatch {
