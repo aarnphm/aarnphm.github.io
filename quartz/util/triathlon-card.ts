@@ -757,7 +757,10 @@ const buildUnavailableElevation = <N>(f: TriNodeFactory<N>): N => {
   const unavailable = f.el('div', 'tri-elev-unavailable', 'no data available', {
     'data-i18n': 'no data available',
   })
-  f.add(wrap, axisFrame(f, unavailable, [], 30, [], false))
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--unavailable', undefined, {
+    'aria-hidden': 'true',
+  })
+  f.add(wrap, axisFrame(f, unavailable, [], 30, [], false), cap)
   return wrap
 }
 
