@@ -1211,6 +1211,10 @@
   color: var(--gray);
 }
 
+.tri-elev-cap--unavailable {
+  min-height: 1lh;
+}
+
 .tri-elev-d {
   color: var(--darkgray);
 }
@@ -9142,6 +9146,17 @@
 .tri-day-embed {
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
 
+  .table-container > .tri-act-stats {
+    > * {
+      line-height: 1.6rem;
+    }
+
+    th,
+    td {
+      min-width: 0;
+    }
+  }
+
   .tri-pop-card {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
@@ -9684,22 +9699,7 @@ a.tri-pop-date:hover {
     position: relative;
     box-sizing: border-box;
     grid-template-rows: auto auto minmax(0, 1fr);
-    max-height: 16.5rem;
-
-    &:has(> .tri-run-splits-list:not([data-scroll-end]) > .tri-run-split:nth-child(8))::after {
-      position: absolute;
-      right: 0.9rem;
-      bottom: 0.6rem;
-      left: 0.6rem;
-      height: 1.8rem;
-      pointer-events: none;
-      content: '';
-      background: linear-gradient(
-        to bottom,
-        transparent,
-        color-mix(in srgb, var(--lightgray) 34%, var(--light))
-      );
-    }
+    height: 16.5rem;
   }
 
   .tri-run-splits-list {

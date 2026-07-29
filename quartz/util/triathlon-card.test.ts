@@ -1560,6 +1560,9 @@ test('marks every routed sport for the shared desktop figure split', () => {
   const unavailableWrap = byClass(embeddedSwim, 'tri-elev-wrap--unavailable')[0]
   assert.ok(unavailableWrap)
   assert.equal(byClass(unavailableWrap, 'tri-elev').length, 0)
+  const unavailableCap = byClass(unavailableWrap, 'tri-elev-cap--unavailable')[0]
+  assert.ok(unavailableCap)
+  assert.equal(unavailableCap.properties.ariaHidden, 'true')
 })
 
 test('prefers active swim pace and adds stroke rate and count to the main stats', () => {

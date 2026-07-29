@@ -2224,14 +2224,6 @@ const setupDayEmbeds = (): (() => void) | null => {
     const clearPendingSwimMode = (): void => {
       pendingSwimMode = null
     }
-    const onRunSplitScroll = (event: Event): void => {
-      if (!(event.target instanceof Element) || !event.target.matches('.tri-run-splits-list'))
-        return
-      event.target.toggleAttribute(
-        'data-scroll-end',
-        event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight - 1,
-      )
-    }
     embed.addEventListener('pointerdown', onSwimPointerDown, { passive: true })
     embed.addEventListener('keydown', onSwimKeyDown)
     embed.addEventListener('pointerdown', onAnalysisPointerDown, { passive: true })
@@ -2241,7 +2233,6 @@ const setupDayEmbeds = (): (() => void) | null => {
     embed.addEventListener('keydown', onAnalysisKeyDown)
     embed.addEventListener('click', clearPendingSwimMode)
     embed.addEventListener('pointercancel', clearPendingSwimMode)
-    embed.addEventListener('scroll', onRunSplitScroll, { capture: true, passive: true })
     teardowns.push(() => {
       embed.removeEventListener('pointerdown', onSwimPointerDown)
       embed.removeEventListener('keydown', onSwimKeyDown)
@@ -2252,7 +2243,6 @@ const setupDayEmbeds = (): (() => void) | null => {
       embed.removeEventListener('keydown', onAnalysisKeyDown)
       embed.removeEventListener('click', clearPendingSwimMode)
       embed.removeEventListener('pointercancel', clearPendingSwimMode)
-      embed.removeEventListener('scroll', onRunSplitScroll, true)
     })
     const render = (data: DetailPayload) => {
       const swimStates: {
