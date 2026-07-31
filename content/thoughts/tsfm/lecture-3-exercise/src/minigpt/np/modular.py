@@ -89,7 +89,10 @@ def layer_norm_bwd(
 
   d_X_hat = d_out * gamma
   d_var = np.sum(d_X_hat * x_mu * (-0.5) * inv_std**3, axis=-1, keepdims=True)
-  d_mu = np.sum(-d_X_hat * inv_std, axis=-1, keepdims=True) + d_var * np.sum(-2.0 * x_mu, axis=-1, keepdims=True) / D
+  d_mu = (
+    np.sum(-d_X_hat * inv_std, axis=-1, keepdims=True)
+    + d_var * np.sum(-2.0 * x_mu, axis=-1, keepdims=True) / D
+  )
   d_X = d_X_hat * inv_std + d_var * 2.0 * x_mu / D + d_mu / D
   return d_X, d_gamma, d_beta
 
@@ -349,7 +352,9 @@ def ffn_cached(
   return y, cache
 
 
-def ffn_bwd_from_cache(d_y, cache: tuple) -> tuple[_ArrayFloat32_co, _ArrayFloat32_co, _ArrayFloat32_co]:
+def ffn_bwd_from_cache(
+  d_y, cache: tuple
+) -> tuple[_ArrayFloat32_co, _ArrayFloat32_co, _ArrayFloat32_co]:
   x, w_1, w_2 = cache
   return ffn_bwd(x, w_1, w_2, d_y)
 
@@ -425,7 +430,9 @@ def block_bwd(
   b, s, d_model = x.shape
   d_qkv = attn_pre.shape[-1]
 
-  d_attn_pre_2d, d_w_o = matmul_bwd(attn_pre.reshape(-1, d_qkv), w_o, d_res1.reshape(-1, d_model))
+  d_attn_pre_2d, d_w_o = matmul_bwd(
+    attn_pre.reshape(-1, d_qkv), w_o, d_res1.reshape(-1, d_model)
+  )
   d_attn_pre = d_attn_pre_2d.reshape(b, s, d_qkv)
 
   # Support both 3D and 4D attention tensors
@@ -440,7 +447,9 @@ def block_bwd(
     )
     d_q, d_k, d_v = d_q4[:, 0], d_k4[:, 0], d_v4[:, 0]
   else:
-    d_q, d_k, d_v = mha_bwd(q, k, v, d_attn_pre, causal=causal, attn_mask=attn_mask)
+    d_q, d_k, d_v = mha_bwd(
+      q, k, v, d_attn_pre, causal=causal, attn_mask=attn_mask
+    )
 
   x2d = x.reshape(-1, d_model)
   d_X_q, d_W_Q = matmul_bwd(x2d, w_q, d_q.reshape(-1, d_qkv))
@@ -513,7 +522,9 @@ def torch_mha_bwd(q_np, k_np, v_np, d_out_np, *, causal=False):
     mask = torch.tril(torch.ones((s, s), dtype=torch.bool))
     if attn_scores.dim() == 4:
       mask = mask.unsqueeze(0).unsqueeze(0)  # (1,1,S,S)
-    attn_scores = torch.where(mask, attn_scores, torch.tensor(1e-9, dtype=attn_scores.dtype))
+    attn_scores = torch.where(
+      mask, attn_scores, torch.tensor(1e-9, dtype=attn_scores.dtype)
+    )
   attn_weights = F.softmax(attn_scores, dim=-1)
   output = attn_weights @ v_t
 
@@ -534,7 +545,9 @@ def torch_qkv_proj_bwd(x_np, w_q_np, w_k_np, w_v_np, d_out_flat):
   w_q_t = torch.from_numpy(w_q_np).float().requires_grad_(True)
   w_k_t = torch.from_numpy(w_k_np).float().requires_grad_(True)
   w_v_t = torch.from_numpy(w_v_np).float().requires_grad_(True)
-  d_out_t = torch.from_numpy(d_out_flat.reshape(batch_size, seq_len, d_qkv)).float()
+  d_out_t = torch.from_numpy(
+    d_out_flat.reshape(batch_size, seq_len, d_qkv)
+  ).float()
 
   # QKV projection forward pass
   q_t = x_t @ w_q_t
@@ -560,7 +573,9 @@ def torch_layer_norm_bwd(x_np, gamma_np, beta_np, d_out_np, eps=1e-6):
   d_out_t = torch.from_numpy(d_out_np).float()
 
   d_dim = x_np.shape[-1]
-  y = F.layer_norm(x_t, normalized_shape=(d_dim,), weight=gamma_t, bias=beta_t, eps=eps)
+  y = F.layer_norm(
+    x_t, normalized_shape=(d_dim,), weight=gamma_t, bias=beta_t, eps=eps
+  )
   y.backward(d_out_t)
 
   return (
@@ -607,7 +622,9 @@ def torch_block_bwd(
   w_v_t = torch.from_numpy(w_v_np).float().requires_grad_(True)
   w_o_t = torch.from_numpy(w_o_np).float().requires_grad_(True)
   w_ff_expand_t = torch.from_numpy(w_ff_expand_np).float().requires_grad_(True)
-  w_ff_contract_t = torch.from_numpy(w_ff_contract_np).float().requires_grad_(True)
+  w_ff_contract_t = (
+    torch.from_numpy(w_ff_contract_np).float().requires_grad_(True)
+  )
   gamma_t = torch.from_numpy(gamma_np).float().requires_grad_(True)
   beta_t = torch.from_numpy(beta_np).float().requires_grad_(True)
   d_out_t = torch.from_numpy(d_out_np).float()
@@ -623,7 +640,9 @@ def torch_block_bwd(
   if causal:
     s = scores.shape[-1]
     mask = torch.tril(torch.ones((s, s), dtype=torch.bool))
-    scores = torch.where(mask, scores, torch.tensor(float('-inf'), dtype=scores.dtype))
+    scores = torch.where(
+      mask, scores, torch.tensor(float('-inf'), dtype=scores.dtype)
+    )
   weights = torch.softmax(scores, dim=-1)
   attn_out = weights @ v_t
 

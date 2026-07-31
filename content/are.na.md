@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-28 17:36:19 GMT-04:00
+modified: 2026-07-30 15:59:09 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -3590,11 +3590,11 @@ title: are.na
 
 ## places
 
-- https://en.wikipedia.org/wiki/Sammamish,_Washington -- Sammamish, Washington
+- https://maps.app.goo.gl/D8ekLSaxuA25ofGSA -- Gloria In The Great Hall
   - [meta]:
-    - date: 06/10/2026
-    - tags: [city, washington]
-    - later: true
+    - date: 07/30/2026
+    - tags: [brunch]
+    - coord: [43.6432589, -79.424651]
 - https://maps.app.goo.gl/3T93xsip4wVikdKJ9 -- Misha Coffee
   - [meta]:
     - date: 12/18/2025
@@ -3881,6 +3881,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://thelampmagazine.com/blog/how-to-write-english-prose -- How to Write English Prose
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [prose, writing]
+    - later: true
 - https://paulgraham.com/startuplessons.html -- The Hardest Lessons for Startups to Learn
   - [meta]:
     - date: 07/06/2026
@@ -6718,6 +6723,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/kimbochen/status/2081859505734725933 -- Kimbo on linear attention serving
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [linear attention, serving]
+    - later: true
 - https://thinkingmachines.ai/news/introducing-inkling/ -- Introducing Inkling [**]
   - [meta]:
     - date: 07/16/2026
@@ -9303,6 +9313,16 @@ title: are.na
 
 ## opinions
 
+- https://www.wsj.com/opinion/the-ai-future-is-for-everyone-a0c24e20 -- The AI Future Is for Everyone
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [ai, open weights]
+    - later: true
+- https://images.nvidia.com/pdf/Open-Weights-and-American-AI-Leadership.pdf -- Open Weights and American AI Leadership
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [open weights, ai policy]
+    - later: true
 - https://removepaywalls.com/https://www.bloomberg.com/news/newsletters/2026-07-06/donald-trump-changed-presidential-power-will-democrats-keep-it -- Trump has expanded presidential power. Will the next Democrat keep it?
   - [meta]:
     - date: 07/08/2026
@@ -9823,6 +9843,16 @@ title: are.na
 
 ## life is literature
 
+- https://amivora.substack.com/p/becoming-my-own-burnout-spotter -- Becoming my own "burnout spotter"
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [burnout, selfhood]
+    - later: true
+- https://joshuamuthu.substack.com/p/notes-on-replacing-guilt -- Notes on Replacing Guilt
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [guilt, values]
+    - later: true
 - https://nailujmay.substack.com/p/goodbye-bay -- Goodbye Bay
   - [meta]:
     - date: 07/06/2026
@@ -14766,6 +14796,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/MoonshotAI/Kimi-K3 -- Kimi K3
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [language models, open weights]
+    - later: true
+- https://github.com/MoonshotAI/Attention-Residuals -- Attention Residuals
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [transformers, residuals]
+    - later: true
+- https://github.com/MoonshotAI/MoonEP -- MoonEP
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [expert parallelism, moe]
+    - later: true
+- https://github.com/MoonshotAI/FlashKDA -- FlashKDA
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [kimi delta attention, cuda]
+    - later: true
 - https://github.com/rosetta-rs/string-rosetta-rs -- string-rosetta-rs
   - [meta]:
     - date: 07/16/2026
@@ -17113,6 +17163,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2607.24136 -- How to read Mathematics? A study guide
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [math, study guide]
+    - later: true
 - https://www.youtube.com/watch?v=tY7jac-iPA4 -- how to understand all of lie algebras with one picture
   - [meta]:
     - date: 07/04/2026
@@ -17885,6 +17940,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://www-cdn.anthropic.com/c5fbac3f0b1280a933ebd26d3cb8bb9f5bdeaf48/Claude%20Opus%205%20System%20Card.pdf -- Claude Opus 5 System Card
+  - [meta]:
+    - date: 07/28/2026
+    - tags: [system card, safety]
+    - later: true
 - https://arxiv.org/abs/2606.09589
   - [meta]:
     - date: 06/30/2026
