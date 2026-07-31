@@ -6,6 +6,13 @@ import type { ManualFuelingEntry } from '../plugins/stores/tracking'
 import type { WeatherCache } from '../plugins/stores/weather'
 import { ATHLETE } from '../plugins/stores/analytics'
 import {
+  coreBodyTemperatureSamplesForWindow,
+  isUsableCoreTemperatureSample,
+  parseCoreBodyTemperatureCache,
+  type CoreBodyTemperatureActivitySample,
+  type CoreBodyTemperatureCache,
+} from '../plugins/stores/core-body-temperature'
+import {
   applyManualFueling,
   buildPayload,
   type SwimActivityInterval,
@@ -22,6 +29,11 @@ export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.jso
 export const ouraCachePath = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
 export const garminCachePath = joinSegments(QUARTZ, '.quartz-cache', 'garmin.json')
 export const appleCachePath = joinSegments(QUARTZ, '.quartz-cache', 'apple-health.json')
+export const coreBodyTemperatureCachePath = joinSegments(
+  QUARTZ,
+  '.quartz-cache',
+  'core-body-temperature.json',
+)
 export const weatherCachePath = joinSegments(QUARTZ, '.quartz-cache', 'weather.json')
 
 const readJson = <T>(path: string): T | null => {
@@ -245,6 +257,78 @@ export function enrichRunDynamics(payload: StravaPayload, apple: AppleCache | nu
   }
 }
 
+const CORE_SAMPLE_MAX_DISTANCE_S = 90
+
+type CoreMetric = 'coreTemperatureC' | 'skinTemperatureC' | 'heatStrainIndex'
+
+function coreMetricAt(
+  samples: CoreBodyTemperatureActivitySample[],
+  elapsedS: number,
+  metric: CoreMetric,
+): number | null {
+  const values = samples
+    .map(sample => ({ elapsedS: sample.elapsedS, value: sample[metric] }))
+    .filter(
+      (sample): sample is { elapsedS: number; value: number } =>
+        sample.value != null && Number.isFinite(sample.value),
+    )
+  if (values.length === 0) return null
+  let low = 0
+  let high = values.length
+  while (low < high) {
+    const middle = (low + high) >>> 1
+    if (values[middle].elapsedS < elapsedS) low = middle + 1
+    else high = middle
+  }
+  const previous = values[low - 1]
+  const next = values[low]
+  if (!previous && !next) return null
+  const nearest =
+    previous && next
+      ? elapsedS - previous.elapsedS <= next.elapsedS - elapsedS
+        ? previous
+        : next
+      : (previous ?? next)
+  if (Math.abs(nearest.elapsedS - elapsedS) > CORE_SAMPLE_MAX_DISTANCE_S) return null
+  if (!previous || !next || next.elapsedS === previous.elapsedS) return nearest.value
+  if (
+    elapsedS < previous.elapsedS ||
+    elapsedS > next.elapsedS ||
+    next.elapsedS - previous.elapsedS > CORE_SAMPLE_MAX_DISTANCE_S * 2
+  )
+    return nearest.value
+  const fraction = (elapsedS - previous.elapsedS) / (next.elapsedS - previous.elapsedS)
+  return previous.value + (next.value - previous.value) * fraction
+}
+
+export function enrichCoreBodyTemperature(
+  payload: StravaPayload,
+  core: CoreBodyTemperatureCache | null,
+): void {
+  if (!core) return
+  for (const detail of Object.values(payload.details)) {
+    if (!detail || (detail.sport !== 'bike' && detail.sport !== 'run') || detail.route.length < 2)
+      continue
+    const durationS = detail.route.at(-1)?.elapsedS ?? detail.movingTimeS
+    const samples = coreBodyTemperatureSamplesForWindow(detail.start, durationS, core).filter(
+      sample => isUsableCoreTemperatureSample(sample),
+    )
+    if (samples.length === 0) continue
+    for (const point of detail.route) {
+      const coreTemperatureC = coreMetricAt(samples, point.elapsedS, 'coreTemperatureC')
+      const skinTemperatureC = coreMetricAt(samples, point.elapsedS, 'skinTemperatureC')
+      const heatStrainIndex = coreMetricAt(samples, point.elapsedS, 'heatStrainIndex')
+      if (coreTemperatureC != null)
+        point.coreTemperatureC = Math.round(coreTemperatureC * 100) / 100
+      if (skinTemperatureC != null)
+        point.skinTemperatureC = Math.round(skinTemperatureC * 100) / 100
+      if (heatStrainIndex != null) point.heatStrainIndex = Math.round(heatStrainIndex * 10) / 10
+      if (coreTemperatureC != null || skinTemperatureC != null || heatStrainIndex != null)
+        point.coreTemperatureSource = 'core-app'
+    }
+  }
+}
+
 let memo: { key: string; payload: StravaPayload } | null = null
 
 export function loadStravaPayloadSync(
@@ -254,9 +338,10 @@ export function loadStravaPayloadSync(
   const manualKey = manualFueling
     .map(entry => `${entry.activityId}:${entry.caloriesConsumed}`)
     .join(',')
-  const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}`
+  const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
   if (memo?.key !== key) {
     const apple = readJson<AppleCache>(appleCachePath)
+    const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
     const payload = buildPayload(
       readJson<StravaRawCache>(stravaCachePath),
       readJson<OuraCache>(ouraCachePath),
@@ -268,6 +353,7 @@ export function loadStravaPayloadSync(
     applyManualFueling(payload, manualFueling)
     enrichSwimMetrics(payload, apple)
     enrichRunDynamics(payload, apple)
+    enrichCoreBodyTemperature(payload, core)
     memo = { key, payload }
   }
   return memo.payload
