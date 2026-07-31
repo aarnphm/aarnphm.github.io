@@ -6,7 +6,7 @@ type ReadyMessage = { type: 'ready' }
 
 type ResultMessage = { type: 'search-result'; seq: number; semantic: SemanticResult[] }
 
-type ErrorMessage = { type: 'error'; seq?: number; message: string }
+type ErrorMessage = { type: 'error'; seq?: number; message: string; retryWithoutCache?: boolean }
 
 type SearchPayload = { semantic: SemanticResult[] }
 
@@ -30,6 +30,7 @@ export class SemanticClient {
   private disposed = false
   private readySettled = false
   private configured = false
+  private cacheRecoveryAttempted = false
   private lastError: Error | null = null
 
   constructor(private cfg?: SemanticConfig) {
@@ -47,10 +48,10 @@ export class SemanticClient {
       return
     }
 
-    this.boot()
+    this.startWorker(Boolean(this.cfg?.disableCache))
   }
 
-  private boot() {
+  private startWorker(disableCache: boolean) {
     try {
       this.worker = new Worker(new URL('semantic.worker.js', import.meta.url), { type: 'module' })
     } catch (err) {
@@ -58,7 +59,7 @@ export class SemanticClient {
       return
     }
     this.setupWorker()
-    this.startInit()
+    this.worker.postMessage({ type: 'init', cfg: this.cfg, disableCache })
   }
 
   private setupWorker() {
@@ -91,6 +92,8 @@ export class SemanticClient {
             this.pending.delete(msg.seq)
             pending.reject(new Error(msg.message))
           }
+        } else if (msg.retryWithoutCache && this.retryWithoutCache()) {
+          return
         } else {
           this.handleFatal(msg.message)
         }
@@ -98,10 +101,15 @@ export class SemanticClient {
     }
   }
 
-  private startInit() {
-    if (!this.worker) return
-    const disableCache = Boolean(this.cfg?.disableCache)
-    this.worker.postMessage({ type: 'init', cfg: this.cfg, disableCache })
+  private retryWithoutCache(): boolean {
+    if (this.disposed || this.configured || this.cacheRecoveryAttempted || this.cfg?.disableCache) {
+      return false
+    }
+    this.cacheRecoveryAttempted = true
+    this.worker?.terminate()
+    this.worker = null
+    this.startWorker(true)
+    return true
   }
 
   private rejectAll(err: Error, fatal = false) {
@@ -123,7 +131,6 @@ export class SemanticClient {
     console.error('[SemanticClient] initialization failure:', error)
     this.rejectAll(error, true)
     if (this.worker) {
-      this.worker.postMessage({ type: 'reset' })
       this.worker.terminate()
       this.worker = null
     }
@@ -156,7 +163,6 @@ export class SemanticClient {
     this.disposed = true
     this.rejectAll(new Error('semantic client disposed'))
     if (this.worker) {
-      this.worker.postMessage({ type: 'reset' })
       this.worker.terminate()
     }
     this.worker = null
