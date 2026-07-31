@@ -93,7 +93,9 @@ import {
   formatThermalTemperature,
   formatVerticalOscillation,
   gradeAt,
+  interpolatePositiveMetricSeries,
   isImperialUnit,
+  isZeroPowerExcluded,
   KM_TO_MI,
   M_TO_FT,
   nearestPowerCurveValue,
@@ -101,6 +103,8 @@ import {
   powerCurveFraction,
   powerCurveHoverAt,
   parseExcludedActivityIds,
+  positiveMetricDomain,
+  powerViewActivity,
   rate,
   runGroundContactTimeMs,
   runStrideLengthLabel,
@@ -108,12 +112,14 @@ import {
   runVerticalOscillationCm,
   scrubDist,
   setDistanceUnit,
+  setZeroPowerExcluded,
   speedKph,
   statRow as statRowNode,
   swimTrendHoverAt,
   buildTrace as buildTraceNode,
   zoneDuo as zoneDuoNode,
   type AxisXTick,
+  type ActivityTraceDomain,
   type ActivitySelectionSummary,
   type ActivityComparisonMetric,
   type DayCardExtras,
@@ -298,8 +304,9 @@ const buildTrace = (
   cap: (max: number) => string,
   tick: (value: number) => string,
   graphDomain?: ActivityAnalysisRange | null,
+  domain?: ActivityTraceDomain,
 ): HTMLElement =>
-  buildTraceNode(domF, d, pick, title, cap, tick, undefined, null, graphDomain) as HTMLElement
+  buildTraceNode(domF, d, pick, title, cap, tick, domain, null, graphDomain) as HTMLElement
 
 const zoneDuo = (a: HTMLElement | null, b: HTMLElement | null): HTMLElement | null =>
   zoneDuoNode(domF, a, b) as HTMLElement | null
@@ -931,6 +938,11 @@ interface MapMetric {
 
 const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
   const route = d.route
+  const filterPowerZeros = d.sport === 'bike' && isZeroPowerExcluded()
+  const powerValues = filterPowerZeros
+    ? interpolatePositiveMetricSeries(route, point => point.w)
+    : route.map(point => point.w)
+  const powerDomain = filterPowerZeros ? positiveMetricDomain(powerValues) : undefined
   const pace = route.map(point => point.speedKph)
   const hasPower = d.deviceWatts && route.some(p => p.w > 0)
   const hasHr = route.some(p => p.hr > 0)
@@ -976,18 +988,19 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     label: 'power',
     shortLabel: 'W',
     ramp: HEAT_RAMP,
-    pick: p => p.w,
+    pick: (p, i) => powerValues[i] ?? p.w,
     fmt: v => `${Math.round(v)} W`,
     profile: graphDomain =>
       buildTrace(
         d,
-        p => p.w,
+        (p, i) => powerValues[i] ?? p.w,
         'power',
         m => `${m} W peak`,
         v => `${Math.round(v)}w`,
         graphDomain,
+        powerDomain,
       ),
-    readout: p => `${scrubDist(p.d, d.sport)} · ${p.w} W`,
+    readout: (p, i) => `${scrubDist(p.d, d.sport)} · ${Math.round(powerValues[i] ?? p.w)} W`,
     extra: () => [zoneDuo(buildPowerCurve(d), buildPowerHist(d)), buildPowerZones(d)],
   }
   const hrSpec: MapMetric = {
@@ -1009,23 +1022,29 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     extra: () => [buildHrZones(d)],
   }
   const cadScale = d.sport === 'run' ? 2 : 1
+  const cadenceValues = filterPowerZeros
+    ? interpolatePositiveMetricSeries(route, point => point.cad * cadScale)
+    : route.map(point => point.cad * cadScale)
+  const cadenceDomain = filterPowerZeros ? positiveMetricDomain(cadenceValues) : undefined
   const cadSpec: MapMetric = {
     label: 'cadence',
     shortLabel: 'C',
     ramp: CAD_RAMP,
-    zeroGap: true,
-    pick: p => p.cad * cadScale,
+    zeroGap: !filterPowerZeros,
+    pick: (p, i) => cadenceValues[i] ?? p.cad * cadScale,
     fmt: v => `${Math.round(v)} ${cadUnit}`,
     profile: graphDomain =>
       buildTrace(
         d,
-        p => p.cad * cadScale,
+        (p, i) => cadenceValues[i] ?? p.cad * cadScale,
         'cadence',
         m => `${m} ${cadUnit} peak`,
         v => `${Math.round(v)}${cadUnit}`,
         graphDomain,
+        cadenceDomain,
       ),
-    readout: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadScale} ${cadUnit}`,
+    readout: (p, i) =>
+      `${scrubDist(p.d, d.sport)} · ${Math.round(cadenceValues[i] ?? p.cad * cadScale)} ${cadUnit}`,
   }
   const strideSpec: MapMetric = {
     label: strideLabel,
@@ -1125,7 +1144,8 @@ interface MapDetailOpts {
   onRange?: ActivityRangeChange
 }
 
-const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLElement => {
+const renderMapDetail = (source: StravaActivityDetail, opts?: MapDetailOpts): HTMLElement => {
+  const d = powerViewActivity(source)
   const wrap = el('section', 'tri-act tri-act--expanded')
   const head = el('div', 'tri-act-head')
   head.appendChild(buildIcon(d.sport))
@@ -1289,11 +1309,16 @@ const renderMapDetail = (d: StravaActivityDetail, opts?: MapDetailOpts): HTMLEle
 }
 
 const renderDetail = (
-  d: StravaActivityDetail,
+  source: StravaActivityDetail,
   payload?: DetailPayload | null,
   fillMissingRunPower = false,
   showUnavailableElevation = false,
 ): HTMLElement => {
+  const d = powerViewActivity(source)
+  const normalizeBikeMetrics = d.sport === 'bike' && isZeroPowerExcluded()
+  const powerValues = normalizeBikeMetrics
+    ? interpolatePositiveMetricSeries(d.route, point => point.w)
+    : null
   const wrap = buildActivityNode(
     domF,
     d,
@@ -1321,15 +1346,22 @@ const renderDetail = (
   }
   const cadenceScale = d.sport === 'run' ? 2 : 1
   const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
+  const cadenceValues = normalizeBikeMetrics
+    ? interpolatePositiveMetricSeries(d.route, point => point.cad * cadenceScale)
+    : null
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
     if (trace.dataset.triTrace === 'hr')
       surfaces.push({ wrap: trace, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
     else if (trace.dataset.triTrace === 'power')
-      surfaces.push({ wrap: trace, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.w} W` })
+      surfaces.push({
+        wrap: trace,
+        fmt: (p, i) => `${scrubDist(p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`,
+      })
     else if (trace.dataset.triTrace === 'cadence')
       surfaces.push({
         wrap: trace,
-        fmt: p => `${scrubDist(p.d, d.sport)} · ${p.cad * cadenceScale} ${cadenceUnit}`,
+        fmt: (p, i) =>
+          `${scrubDist(p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`,
       })
     else if (
       trace.dataset.triTrace === 'stride length' ||
@@ -2462,7 +2494,11 @@ const setupDayEmbeds = (): (() => void) | null => {
     }
     const onUnit = () => (payload ? render(payload) : upgrade())
     window.addEventListener('tri:unit', onUnit)
-    teardowns.push(() => window.removeEventListener('tri:unit', onUnit))
+    window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
+    teardowns.push(() => {
+      window.removeEventListener('tri:unit', onUnit)
+      window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
+    })
     const ssr = embed.querySelector<HTMLElement>(':scope > .tri-pop-card')
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
@@ -2749,6 +2785,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('keydown', onKey)
   window.addEventListener('tri:focus-day', onFocusDay)
   window.addEventListener('tri:unit', onUnit)
+  window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
 
   return () => {
     window.clearTimeout(hideTimer)
@@ -2768,6 +2805,7 @@ const setup = (root: HTMLElement): (() => void) | null => {
     window.removeEventListener('keydown', armAudio)
     window.removeEventListener('tri:focus-day', onFocusDay)
     window.removeEventListener('tri:unit', onUnit)
+    window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
     void audio?.close()
   }
 }
@@ -4331,6 +4369,86 @@ const sampleTrend = (
   return { value: at(s.centers), lo: at(s.los), hi: at(s.his), days: q }
 }
 
+const appendTrendChart = (
+  wrap: HTMLElement,
+  sport: Sport,
+  invert: boolean,
+  samples: TrendSamples,
+  capBand = true,
+): void => {
+  const { centers, los, his, days: M } = samples
+  const level = centers[0]
+  const weeks = M / 7
+  let cLo = Infinity
+  let cHi = -Infinity
+  for (let i = 0; i <= M; i++) {
+    if (centers[i] > cHi) cHi = centers[i]
+    if (centers[i] < cLo) cLo = centers[i]
+  }
+  const scale = Math.max(cHi - cLo, Math.abs(level) * 0.05, 1e-6)
+  const coneMax = scale * 0.5
+  const halfAt = (i: number): number =>
+    capBand ? Math.min((his[i] - los[i]) / 2, coneMax) : (his[i] - los[i]) / 2
+  let lo = cLo
+  let hi = cHi
+  for (let i = 0; i <= M; i++) {
+    const half = halfAt(i)
+    if (centers[i] + half > hi) hi = centers[i] + half
+    if (centers[i] - half < lo) lo = centers[i] - half
+  }
+  const pad = scale * 0.3
+  lo -= pad
+  hi += pad
+  const span = Math.max(1e-6, hi - lo)
+  const top = 4
+  const bot = 24
+  const xOf = (i: number): number => (i / M) * ANA_W
+  const y = (value: number): number => {
+    const t = (value - lo) / span
+    return invert ? top + t * (bot - top) : bot - t * (bot - top)
+  }
+  const yClamped = (value: number): number => clampN(y(value), 0.5, ANA_H - 0.5)
+  const s = svg('svg', {
+    class: 'tri-ana-svg tri-trend-svg',
+    viewBox: `0 0 ${ANA_W} ${ANA_H}`,
+    preserveAspectRatio: 'none',
+  })
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
+  s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
+  const hiPts: [number, number][] = []
+  const loPts: [number, number][] = []
+  const midPts: [number, number][] = []
+  for (let i = 0; i <= M; i++) {
+    const half = halfAt(i)
+    hiPts.push([xOf(i), yClamped(centers[i] + half)])
+    loPts.push([xOf(i), yClamped(centers[i] - half)])
+    midPts.push([xOf(i), yClamped(centers[i])])
+  }
+  s.appendChild(
+    svg('path', {
+      d: `${polyD([...hiPts, ...loPts.reverse()])} Z`,
+      class: `tri-trend-band tri-fill-${sport}`,
+    }),
+  )
+  s.appendChild(svg('path', { d: polyD(midPts), class: `tri-trend-proj tri-line-${sport}` }))
+  s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
+  const track = el('div', 'tri-trend-track')
+  const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
+  dot.style.left = '0%'
+  dot.style.top = `${clampN((y(level) / ANA_H) * 100, 4, 96)}%`
+  track.append(s, dot)
+  const yax = el('div', 'tri-trend-yax')
+  yax.append(
+    el('span', '', fmtTrendShort(sport, invert ? lo : hi)),
+    el('span', '', fmtTrendShort(sport, invert ? hi : lo)),
+  )
+  const chart = el('div', 'tri-trend-chart')
+  chart.append(yax, track)
+  const xax = el('div', 'tri-trend-xax')
+  xax.append(el('span', '', tl('now')), el('span', '', `+${Math.round(weeks)} wk`))
+  wrap.append(chart, xax, el('div', 'tri-chart-readout'))
+}
+
 const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
   const tr = bySport(data.trends, sport)
   const th = bySport(data.thresholds, sport)
@@ -4352,78 +4470,7 @@ const buildTrendPanel = (data: Analytics, sport: Sport): HTMLElement => {
     return wrap
   }
   const samples = trendSamples(tr)
-  if (samples) {
-    const { centers, los, his, days: M } = samples
-    const level = centers[0]
-    const weeks = M / 7
-    let cLo = Infinity
-    let cHi = -Infinity
-    for (let i = 0; i <= M; i++) {
-      if (centers[i] > cHi) cHi = centers[i]
-      if (centers[i] < cLo) cLo = centers[i]
-    }
-    const scale = Math.max(cHi - cLo, Math.abs(level) * 0.05, 1e-6)
-    const coneMax = scale * 0.5
-    const halfAt = (i: number): number => Math.min((his[i] - los[i]) / 2, coneMax)
-    let lo = cLo
-    let hi = cHi
-    for (let i = 0; i <= M; i++) {
-      const h = halfAt(i)
-      if (centers[i] + h > hi) hi = centers[i] + h
-      if (centers[i] - h < lo) lo = centers[i] - h
-    }
-    const pad = scale * 0.3
-    lo -= pad
-    hi += pad
-    const span = Math.max(1e-6, hi - lo)
-    const top = 4
-    const bot = 24
-    const xOf = (i: number): number => (i / M) * ANA_W
-    const Y = (v: number): number => {
-      const t = (v - lo) / span
-      return tr.invert ? top + t * (bot - top) : bot - t * (bot - top)
-    }
-    const Yc = (v: number): number => clampN(Y(v), 0.5, ANA_H - 0.5)
-    const s = svg('svg', {
-      class: 'tri-ana-svg tri-trend-svg',
-      viewBox: `0 0 ${ANA_W} ${ANA_H}`,
-      preserveAspectRatio: 'none',
-    })
-    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-trend-axis' }))
-    s.appendChild(svg('line', { x1: 0, y1: ANA_H, x2: ANA_W, y2: ANA_H, class: 'tri-trend-axis' }))
-    const hiPts: [number, number][] = []
-    const loPts: [number, number][] = []
-    const midPts: [number, number][] = []
-    for (let i = 0; i <= M; i++) {
-      const h = halfAt(i)
-      hiPts.push([xOf(i), Yc(centers[i] + h)])
-      loPts.push([xOf(i), Yc(centers[i] - h)])
-      midPts.push([xOf(i), Yc(centers[i])])
-    }
-    s.appendChild(
-      svg('path', {
-        d: `${polyD([...hiPts, ...loPts.reverse()])} Z`,
-        class: `tri-trend-band tri-fill-${sport}`,
-      }),
-    )
-    s.appendChild(svg('path', { d: polyD(midPts), class: `tri-trend-proj tri-line-${sport}` }))
-    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: ANA_H, class: 'tri-ana-cursor' }))
-    const track = el('div', 'tri-trend-track')
-    const dot = el('span', `tri-trend-dot tri-bg-${sport}`)
-    dot.style.left = '0%'
-    dot.style.top = `${clampN((Y(level) / ANA_H) * 100, 4, 96)}%`
-    track.append(s, dot)
-    const yax = el('div', 'tri-trend-yax')
-    yax.append(
-      el('span', '', fmtTrendShort(sport, tr.invert ? lo : hi)),
-      el('span', '', fmtTrendShort(sport, tr.invert ? hi : lo)),
-    )
-    const chart = el('div', 'tri-trend-chart')
-    chart.append(yax, track)
-    const xax = el('div', 'tri-trend-xax')
-    xax.append(el('span', '', tl('now')), el('span', '', `+${Math.round(weeks)} wk`))
-    wrap.append(chart, xax, el('div', 'tri-chart-readout'))
-  }
+  if (samples) appendTrendChart(wrap, sport, tr.invert, samples)
   const cal = bySport(data.calibration.paces, sport)
   if (cal) {
     const cap = el('div', 'tri-elev-cap tri-trend-cap')
@@ -4482,6 +4529,102 @@ const buildTrend = (data: Analytics): HTMLElement => {
   for (const sport of ['swim', 'bike', 'run'] as Sport[])
     block.appendChild(buildTrendPanel(data, sport))
   block.appendChild(buildDistancePredictor())
+  return block
+}
+
+type LactateThresholdProjection = Analytics['engine']['lactateThreshold']['sports'][number]
+
+const lactateThresholdSamples = (projection: LactateThresholdProjection): TrendSamples | null => {
+  if (projection.points.length < 2) return null
+  return {
+    centers: projection.points.map(point => point.value),
+    los: projection.points.map(point => point.lo),
+    his: projection.points.map(point => point.hi),
+    days: projection.points.length - 1,
+  }
+}
+
+const buildLactateThresholdPanel = (data: Analytics, sport: Sport): HTMLElement => {
+  const projection = bySport(data.engine.lactateThreshold.sports, sport)
+  const threshold = bySport(data.thresholds, sport)
+  const wrap = el(
+    'div',
+    `tri-trend-panel tri-lt-panel${projection?.projected == null ? ' tri-trend-stale' : ''}`,
+  )
+  wrap.dataset.sport = sport
+  const head = el('div', 'tri-trend-head')
+  head.append(
+    buildIconLeg(sport),
+    markGloss(
+      el(
+        'span',
+        'tri-trend-unit',
+        projection
+          ? `LT2 ${fmtTrendVal(sport, projection.current)}`
+          : (threshold?.paceLabel ?? sport),
+      ),
+      'lactate',
+    ),
+  )
+  if (projection)
+    head.appendChild(
+      markGloss(el('span', `tri-ana-conf tri-conf-${projection.conf}`, projection.conf), 'conf'),
+    )
+  wrap.appendChild(head)
+  if (!projection || projection.projected == null) {
+    wrap.appendChild(
+      el(
+        'div',
+        'tri-trend-note',
+        trendUnavailableText(projection?.sampleSize ?? null, threshold?.staleDays ?? null),
+      ),
+    )
+    return wrap
+  }
+  const samples = lactateThresholdSamples(projection)
+  if (samples) appendTrendChart(wrap, sport, sport !== 'bike', samples, false)
+  const cap = el('div', 'tri-elev-cap tri-trend-cap')
+  cap.append(
+    el('span', 'tri-ana-k', `${tl('projected')} ${fmtTrendVal(sport, projection.projected)}`),
+    el(
+      'span',
+      `tri-ana-k tri-dir-${(projection.deltaPct ?? 0) > 0 ? 'up' : (projection.deltaPct ?? 0) < 0 ? 'down' : 'flat'}`,
+      `${signedFixed(projection.deltaPct ?? 0, 1)}% · ${projection.horizonDays}d`,
+    ),
+  )
+  if (projection.low != null && projection.high != null)
+    cap.appendChild(
+      el(
+        'span',
+        'tri-ana-k',
+        `${tl('80% range')} ${fmtTrendShort(sport, projection.low)}–${fmtTrendShort(sport, projection.high)}`,
+      ),
+    )
+  cap.appendChild(el('span', 'tri-ana-k', `n ${projection.sampleSize}`))
+  wrap.appendChild(cap)
+  const note = el('div', 'tri-trend-note')
+  note.append(
+    el('span', 'tri-ana-k', tl('training-derived LT2 proxy, not a blood lactate measurement')),
+    buildMethod(projection.method, projection.sampleSize),
+  )
+  wrap.appendChild(note)
+  return wrap
+}
+
+const buildLactateThreshold = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-ana-lactate')
+  block.appendChild(anaTitle('lactate threshold projection', 'lactate'))
+  const heartRate = data.engine.lactateThreshold.heartRate
+  if (heartRate) {
+    const cap = el('div', 'tri-elev-cap')
+    cap.append(
+      markGloss(el('span', 'tri-ana-k', `LTHR ${heartRate.value} ${heartRate.unit}`), 'lactate'),
+      el('span', 'tri-ana-k', tl('declared heart-rate anchor')),
+    )
+    block.appendChild(cap)
+  }
+  for (const sport of ['swim', 'bike', 'run'] as Sport[])
+    block.appendChild(buildLactateThresholdPanel(data, sport))
   return block
 }
 
@@ -6105,6 +6248,24 @@ const buildVo2max = (data: Analytics): HTMLElement => {
     el('span', 'tri-ana-k', v.method),
     markGloss(el('span', `tri-ana-k tri-conf-${v.conf}`, v.conf), 'conf'),
   )
+  if (v.trendSummary.change28d != null) {
+    const direction = v.trendSummary.direction
+    cap.append(
+      markGloss(
+        el(
+          'span',
+          `tri-ana-k tri-dir-${direction === 'improving' ? 'up' : direction === 'declining' ? 'down' : 'flat'}`,
+          `${tl('28d trend')} ${signedFixed(v.trendSummary.change28d, 1)}`,
+        ),
+        'vo2max',
+      ),
+      el(
+        'span',
+        'tri-ana-k',
+        `${signedFixed(v.trendSummary.slopePerWeek ?? 0, 2)} ${tl('per week')} · n ${v.trendSummary.sampleSize}`,
+      ),
+    )
+  }
   if (v.percentileForAge != null)
     cap.appendChild(el('span', 'tri-ana-k', `p${v.percentileForAge} for age ${v.chronoAge}`))
   cap.appendChild(el('span', 'tri-ana-k', vo2SourceText(v.method, v.bikeSource)))
@@ -7586,6 +7747,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   recovery: buildRecoveryChart,
   sleep: buildSleep,
   vo2max: buildVo2max,
+  lactate: buildLactateThreshold,
   abilities: buildAbilities,
   cardio: buildCardio,
   pmc: buildPmc,
@@ -8049,6 +8211,32 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     cleanups.push(scrubGroup(items, f => f * ANA_W))
   }
 
+  const lactateBlock = panel.querySelector<HTMLElement>('.tri-ana-lactate')
+  if (lactateBlock) {
+    const items: ScrubItem[] = []
+    for (const sport of ['swim', 'bike', 'run'] as Sport[]) {
+      const wrap = lactateBlock.querySelector<HTMLElement>(`.tri-lt-panel[data-sport="${sport}"]`)
+      const svgEl = wrap?.querySelector<SVGElement>('.tri-trend-svg')
+      const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
+      const readout = wrap?.querySelector<HTMLElement>('.tri-chart-readout')
+      const projection = bySport(data.engine.lactateThreshold.sports, sport)
+      const samples = projection ? lactateThresholdSamples(projection) : null
+      if (!wrap || !svgEl || !cursor || !readout || !projection || !samples) continue
+      items.push({
+        svgEl,
+        cursor,
+        readout,
+        hover: wrap,
+        textOf: f => {
+          const at = sampleTrend(samples, f)
+          const band = `${fmtTrendShort(sport, Math.min(at.lo, at.hi))}–${fmtTrendShort(sport, Math.max(at.lo, at.hi))}`
+          return `+${(at.days / 7).toFixed(1)} wk · LT2 ${fmtTrendVal(sport, at.value)} · ${band}`
+        },
+      })
+    }
+    cleanups.push(scrubGroup(items, f => f * ANA_W))
+  }
+
   const radarBlock = panel.querySelector<HTMLElement>('.tri-engine-radar')
   const radarSvg = radarBlock?.querySelector<SVGElement>('.tri-radar-svg')
   if (radarBlock && radarSvg) {
@@ -8388,7 +8576,12 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
   {
     label: 'vo2max · fitness age',
     chart: 'vo2max',
-    hay: 'vo2max vo2 max aerobic fitness age friend percentile engine ftp map',
+    hay: 'vo2max vo2 max aerobic fitness age friend percentile engine ftp map trend',
+  },
+  {
+    label: 'lactate threshold projection',
+    chart: 'lactate',
+    hay: 'lactate threshold projection lt lthr lt2 mlss heart rate bpm pace power proxy forecast',
   },
   {
     label: 'ftp hypothesis',
@@ -8459,6 +8652,7 @@ const GLOSS_CHART: Record<string, string> = {
   oreadiness: 'recovery',
   sleepdebt: 'sleep',
   vo2max: 'vo2max',
+  lactate: 'lactate',
   ftp: 'ftp',
   watts: 'ftp',
   fitage: 'vo2max',
@@ -8888,7 +9082,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   }
   const showComparison = (chartScrollTop = 0) => {
     if (!detail) return
-    const activities = selectedCompareActivities()
+    const activities = selectedCompareActivities().map(powerViewActivity)
     if (
       activities.length < 2 ||
       activities.some(activity => activity.sport !== activities[0].sport)
@@ -9241,14 +9435,18 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     const comparisonVisible =
       panel.classList.contains('tri-analytics--detail') &&
       detail?.querySelector('.tri-compare') != null
+    const activityId = detail?.querySelector<HTMLElement>('.tri-act[data-activity-id]')?.dataset
+      .activityId
     if (data) {
       render(data)
     }
     if (comparisonVisible) showComparison()
+    else if (activityId) showActivity(activityId)
     else if (compareMode) runSearch()
   }
   window.addEventListener('tri:unit', onUnitChange)
   window.addEventListener('tri:locale', onUnitChange)
+  window.addEventListener(TRI_POWER_FILTER_EVENT, onUnitChange)
 
   return () => {
     live = false
@@ -9265,6 +9463,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     document.removeEventListener('pointerdown', closeLabDateMenuFromOutside)
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
+    window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnitChange)
     compareCleanup?.()
     scrubCleanup?.()
   }
@@ -9340,7 +9539,8 @@ const pctRange = (vals: number[]): [number, number] => {
   return hi > lo ? [lo, hi] : [lo, lo + 1]
 }
 
-const overviewMetric = (d: StravaActivityDetail, k: (typeof OVERVIEW_METRICS)[number]) => {
+const overviewMetric = (activity: StravaActivityDetail, k: (typeof OVERVIEW_METRICS)[number]) => {
+  const d = powerViewActivity(activity)
   if (k === 'w') return d.deviceWatts && d.avgWatts ? d.avgWatts : null
   if (k === 'hr') return d.avgHr
   if (k === 'cad') return d.avgCadence == null ? null : d.avgCadence * (d.sport === 'run' ? 2 : 1)
@@ -10341,6 +10541,11 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   const onUnit = () => {
     if (activeRouteId) showRoute(activeRouteId, activeRouteMetric, false)
   }
+  const onPowerFilter = () => {
+    overviewCache.clear()
+    if (activeRouteId) showRoute(activeRouteId, activeRouteMetric, false)
+    else mapCtl.drawOverview({ fit: false })
+  }
   syncStyleBtn()
 
   if (pageMode) {
@@ -10365,6 +10570,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   document.addEventListener('keydown', onKey)
   window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
   window.addEventListener('tri:unit', onUnit)
+  window.addEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
 
   return () => {
     btn?.removeEventListener('click', open)
@@ -10383,6 +10589,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     document.removeEventListener('keydown', onKey)
     window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
     window.removeEventListener('tri:unit', onUnit)
+    window.removeEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
     mapCtl.dispose()
   }
 }
@@ -10788,6 +10995,8 @@ const setupAxisLabels = (root: HTMLElement): (() => void) | null => {
 }
 
 const TRI_UNIT_KEY = 'tri-dist-unit'
+const TRI_POWER_FILTER_KEY = 'tri-power-zero-filter'
+const TRI_POWER_FILTER_EVENT = 'tri:power-zero-filter'
 const TRI_MAP_STYLE_KEY = 'tri-map-style'
 const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
 const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
@@ -10833,6 +11042,17 @@ const toggleTriUnit = (): void => {
     /* ignore */
   }
   window.dispatchEvent(new CustomEvent('tri:unit'))
+}
+
+const toggleTriPowerFilter = (): void => {
+  const next = !isZeroPowerExcluded()
+  setZeroPowerExcluded(next)
+  try {
+    localStorage.setItem(TRI_POWER_FILTER_KEY, next ? 'exclude' : 'include')
+  } catch {
+    /* ignore */
+  }
+  window.dispatchEvent(new CustomEvent(TRI_POWER_FILTER_EVENT))
 }
 
 const TRI_PAGES: { path: string; label: string; hint: string }[] = [
@@ -10951,6 +11171,20 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       keys: 'toggle units km mi miles kg lb imperial metric pace distance speed weight',
       run: () => {
         toggleTriUnit()
+        render()
+      },
+    },
+    {
+      label: () =>
+        tl(
+          isZeroPowerExcluded()
+            ? 'power averages · zeros excluded'
+            : 'power averages · zeros included',
+        ),
+      hint: 'power',
+      keys: 'power watts zero zeros include exclude coasting freewheel downhill traffic stop',
+      run: () => {
+        toggleTriPowerFilter()
         render()
       },
     },
@@ -11501,6 +11735,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
   searchWrap.addEventListener('focusout', onSearchFocusOut)
   results.addEventListener('click', onResultsClick)
   window.addEventListener('tri:unit', onUnit)
+  window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
   document.addEventListener('keydown', onKey)
 
   fetch(analyticsPath)
@@ -11524,6 +11759,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     searchWrap.removeEventListener('focusout', onSearchFocusOut)
     results.removeEventListener('click', onResultsClick)
     window.removeEventListener('tri:unit', onUnit)
+    window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
     document.removeEventListener('keydown', onKey)
   }
 }
@@ -12913,6 +13149,7 @@ const mountTriathlon = (): (() => void) => {
   }
   try {
     setDistanceUnit(localStorage.getItem(TRI_UNIT_KEY) === 'mi')
+    setZeroPowerExcluded(localStorage.getItem(TRI_POWER_FILTER_KEY) === 'exclude')
   } catch {}
   const root = document.querySelector<HTMLElement>('.triathlon')
   if (root) initTriLocale()

@@ -42,14 +42,17 @@ import {
   formatGroundContactTime,
   formatStrideLength,
   formatVerticalOscillation,
+  interpolatePositiveMetricSeries,
   nearestPowerCurveValue,
   normalizePowerCurvePoints,
   parseExcludedActivityIds,
   powerCurveFraction,
   powerCurveHoverAt,
+  powerViewActivity,
   runStrideLengthM,
   runStrideLengthValue,
   setDistanceUnit,
+  setZeroPowerExcluded,
   swimActivityBlocks,
   swimActivityPointLabel,
   swimTrendHoverAt,
@@ -719,6 +722,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   hrZones: null,
   powerZones: null,
   powerHist: null,
+  powerWithoutZeros: null,
   powerCurve: null,
   bestEfforts: {
     weightKg: 87.55,
@@ -765,6 +769,94 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   swimLocation: null,
   waterTemperatureC: null,
   ...overrides,
+})
+
+test('keeps inclusive cycling power by default and exposes the zero-excluded view on demand', () => {
+  const source = detail({
+    avgWatts: 150,
+    npWatts: 210,
+    powerZones: [20, 10],
+    powerHist: [8, 4],
+    powerWithoutZeros: { avgWatts: 200, powerZones: [12, 10], powerHist: [0, 4] },
+  })
+
+  try {
+    setZeroPowerExcluded(false)
+    assert.equal(powerViewActivity(source), source)
+
+    setZeroPowerExcluded(true)
+    const filtered = powerViewActivity(source)
+    assert.notEqual(filtered, source)
+    assert.equal(filtered.avgWatts, 200)
+    assert.equal(filtered.npWatts, 210)
+    assert.deepEqual(filtered.powerZones, [12, 10])
+    assert.deepEqual(filtered.powerHist, [0, 4])
+    assert.equal(powerViewActivity(detail({ sport: 'run' })).sport, 'run')
+  } finally {
+    setZeroPowerExcluded(false)
+  }
+})
+
+test('interpolates omitted cycling samples on the existing distance axis', () => {
+  const route = detail().route.map((point, index) => ({
+    ...point,
+    d: [0, 5, 20, 30][index],
+    w: [100, 0, 300, 0][index],
+  }))
+
+  assert.deepEqual(
+    interpolatePositiveMetricSeries(route, point => point.w),
+    [100, 150, 300, 300],
+  )
+})
+
+test('normalizes zero-excluded bike power and cadence traces', () => {
+  const route = detail().route.map((point, index) => ({
+    ...point,
+    w: [100, 0, 0, 400][index],
+    cad: [80, 0, 0, 110][index],
+  }))
+
+  try {
+    setZeroPowerExcluded(false)
+    const inclusive = buildActivity(factory, detail({ route }), true)
+    const inclusivePower = byClass(inclusive, 'tri-elev-wrap').find(
+      graph => graph.properties.dataTriTrace === 'power',
+    )
+    assert.ok(inclusivePower)
+    assert.match(
+      String(byClass(inclusivePower, 'tri-elev-line')[0].properties.d),
+      /L 33\.33 30\.00 L 66\.67 30\.00/,
+    )
+
+    setZeroPowerExcluded(true)
+    const normalized = buildActivity(factory, detail({ route }), true)
+    const power = byClass(normalized, 'tri-elev-wrap').find(
+      graph => graph.properties.dataTriTrace === 'power',
+    )
+    const cadence = byClass(normalized, 'tri-elev-wrap').find(
+      graph => graph.properties.dataTriTrace === 'cadence',
+    )
+    assert.ok(power)
+    assert.ok(cadence)
+    assert.deepEqual(byClass(power, 'tri-cax-yt').map(text), ['100w', '200w', '300w', '400w'])
+    assert.deepEqual(byClass(cadence, 'tri-cax-yt').map(text), [
+      '80rpm',
+      '90rpm',
+      '100rpm',
+      '110rpm',
+    ])
+    assert.match(
+      String(byClass(power, 'tri-elev-line')[0].properties.d),
+      /M 0 30\.00 L 33\.33 20\.33 L 66\.67 10\.67 L 100\.00 1\.00/,
+    )
+    assert.match(
+      String(byClass(cadence, 'tri-elev-line')[0].properties.d),
+      /M 0 30\.00 L 33\.33 20\.33 L 66\.67 10\.67 L 100\.00 1\.00/,
+    )
+  } finally {
+    setZeroPowerExcluded(false)
+  }
 })
 
 const analysisRanges = (): ActivityAnalysisRange[] => [
@@ -2897,6 +2989,28 @@ test('formats only the active comparison metric and clamps keyboard navigation',
   assert.equal(activityComparisonFractionForKey('Home', 0.7, 0.1), 0)
   assert.equal(activityComparisonFractionForKey('End', 0.2, 0.1), 1)
   assert.equal(activityComparisonFractionForKey('Enter', 0.2, 0.1), null)
+})
+
+test('uses normalized bike power and cadence values in comparison readouts', () => {
+  const activity = comparisonActivity(210, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      w: [100, 0, 300, 400][index],
+      cad: [80, 0, 100, 110][index],
+    })),
+  })
+
+  try {
+    setZeroPowerExcluded(false)
+    assert.equal(activityComparisonMetricAtDistance(activity, 'power', 10), 0)
+    assert.equal(activityComparisonMetricAtDistance(activity, 'cadence', 10), null)
+
+    setZeroPowerExcluded(true)
+    assert.equal(activityComparisonMetricAtDistance(activity, 'power', 10), 200)
+    assert.equal(activityComparisonMetricAtDistance(activity, 'cadence', 10), 90)
+  } finally {
+    setZeroPowerExcluded(false)
+  }
 })
 
 test('renders every comparison graph with stable selectors, cursors, and readout rows', () => {

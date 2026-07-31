@@ -1182,7 +1182,7 @@ EM, T, and SS stay as the bike vocabulary through 08-23. From 08-24 this block o
 
 ## intensity anchors
 
-Lab HR zones from 06-25 are unchanged and still govern.
+The 06-25 lab HR zones remain the measured baseline. The declared lactate-threshold heart rate is 166 bpm; it is a planning anchor separate from the lab, whose VT2 field remains unresolved.
 
 | lane     | HR          | run speed    | use                                    |
 | -------- | ----------- | ------------ | -------------------------------------- |

@@ -157,6 +157,17 @@ async function processOgImage(
   return copyFile(cachePath, dest)
 }
 
+export async function createOgImageGenerator(
+  ctx: BuildCtx,
+  userOpts: Partial<SocialImageOptions> = {},
+): Promise<(fileData: QuartzPluginData) => Promise<FilePath>> {
+  const fullOptions = { ...defaultOptions, ...userOpts }
+  const cfg = ctx.cfg.configuration
+  const fonts = await getSatoriFonts(cfg, cfg.theme.typography.header, cfg.theme.typography.body)
+  const fontsSignature = fontSignature(fonts)
+  return fileData => processOgImage(ctx, fileData, fonts, fullOptions, fontsSignature)
+}
+
 export const CustomOgImagesEmitterName = 'CustomOgImages'
 export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = userOpts => {
   const fullOptions = { ...defaultOptions, ...userOpts }
@@ -169,31 +180,23 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
     async *emit(ctx, content, _resources) {
       if (ctx.argv.watch && !ctx.argv.force) return []
 
-      const cfg = ctx.cfg.configuration
-      const headerFont = cfg.theme.typography.header
-      const bodyFont = cfg.theme.typography.body
-      const fonts = await getSatoriFonts(cfg, headerFont, bodyFont)
-      const fontsSignature = fontSignature(fonts)
+      const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
       for (const [_tree, vfile] of content) {
         if (vfile.data.frontmatter?.socialImage !== undefined) continue
-        yield processOgImage(ctx, vfile.data, fonts, fullOptions, fontsSignature)
+        yield generateOgImage(vfile.data)
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
       if (ctx.argv.watch && !ctx.argv.force) return []
 
-      const cfg = ctx.cfg.configuration
-      const headerFont = cfg.theme.typography.header
-      const bodyFont = cfg.theme.typography.body
-      const fonts = await getSatoriFonts(cfg, headerFont, bodyFont)
-      const fontsSignature = fontSignature(fonts)
+      const generateOgImage = await createOgImageGenerator(ctx, fullOptions)
 
       // find all slugs that changed or were added
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
         if (changeEvent.file.data.frontmatter?.socialImage !== undefined) continue
         if (changeEvent.type === 'add' || changeEvent.type === 'change') {
-          yield processOgImage(ctx, changeEvent.file.data, fonts, fullOptions, fontsSignature)
+          yield generateOgImage(changeEvent.file.data)
         }
       }
     },
@@ -207,8 +210,10 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
         additionalHead: [
           pageData => {
             const isRealFile = pageData.filePath !== undefined
+            const hasGeneratedOgImage =
+              isRealFile || pageData.frontmatter?.generatedSocialImage === true
             const userDefinedOgImagePath = pageData.frontmatter?.socialImage
-            const generatedOgImagePath = isRealFile
+            const generatedOgImagePath = hasGeneratedOgImage
               ? `https://${baseUrl}/${pageData.slug!}-og-image.webp`
               : undefined
             const defaultOgImagePath = `https://${baseUrl}/static/og-image.webp`

@@ -45,6 +45,10 @@ export interface FeedMarkdownOpts {
   details?: Record<string, StravaActivityDetail>
   baseUrl?: string
   generatedAt?: string
+  title?: string
+  sourcePath?: string
+  scopePrefix?: string
+  includeActivityDetails?: boolean
 }
 
 export function buildFeedMarkdown(
@@ -56,13 +60,25 @@ export function buildFeedMarkdown(
     .split('\n')
     .filter(Boolean)
     .map(line => JSON.parse(line) as { kind: string } & Record<string, unknown>)
+  const scopePrefix = opts.scopePrefix ?? ''
   const activities = (rows.filter(r => r.kind === 'activity') as unknown as FeedActivityRow[])
+    .filter(row => row.date.startsWith(scopePrefix))
     .slice()
     .reverse()
-  const days = (rows.filter(r => r.kind === 'day') as unknown as FeedDayRow[]).slice().reverse()
-  const weeks = (rows.filter(r => r.kind === 'week') as unknown as FeedWeekRow[]).slice().reverse()
+  const days = (rows.filter(r => r.kind === 'day') as unknown as FeedDayRow[])
+    .filter(row => row.date.startsWith(scopePrefix))
+    .slice()
+    .reverse()
+  const weeks = (rows.filter(r => r.kind === 'week') as unknown as FeedWeekRow[])
+    .filter(row => row.weekStart.startsWith(scopePrefix))
+    .slice()
+    .reverse()
   const details = opts.details ?? {}
   const m = analytics.meta
+  const title = opts.title ?? 'triathlon activity feed'
+  const sourcePath = opts.sourcePath ?? '/triathlon/on'
+  const baseUrl = opts.baseUrl ? `https://${opts.baseUrl}` : ''
+  const dates = activities.map(activity => activity.date).sort()
 
   const totals: Record<string, { count: number; km: number; sec: number }> = {}
   for (const a of activities) {
@@ -79,7 +95,12 @@ export function buildFeedMarkdown(
   )
 
   const summary = {
-    window: { from: m.windowFrom, to: m.windowTo, today: m.today, activities: m.activityCount },
+    window: {
+      from: dates[0] ?? m.windowFrom,
+      to: dates[dates.length - 1] ?? m.windowTo,
+      today: m.today,
+      activities: activities.length,
+    },
     athlete: {
       sex: ATHLETE.sex,
       born: ATHLETE.born,
@@ -104,16 +125,17 @@ export function buildFeedMarkdown(
 
   const header = [
     '---',
-    'title: triathlon activity feed',
-    `source: ${opts.baseUrl ? `https://${opts.baseUrl}` : ''}/triathlon/on`,
+    `title: ${title}`,
+    `source: ${baseUrl}${sourcePath}`,
+    `permalink: ${baseUrl}${sourcePath}.md`,
     `generated: ${opts.generatedAt ?? m.today}`,
     'units: distance km (swim m), pace min/km, swim min/100m, speed km/h, time h:mm, weight kg, hr bpm, power w',
-    'description: Full triathlon training feed — season summary plus every activity with its numbers as JSON, for machine reading.',
+    `description: Generated triathlon training data for ${scopePrefix || 'the full activity window'}, with exact measured values in JSON.`,
     '---',
     '',
-    '# triathlon activity feed',
+    `# ${title}`,
     '',
-    `Training log for ${ATHLETE.sex === 'M' ? 'a male' : 'a'} athlete (age ${ageOn(m.today)}), ${m.activityCount} activities from ${m.windowFrom} to ${m.windowTo}. Each activity below carries a JSON block of its measured numbers; the summary holds season totals, current form, thresholds, lab tests, and bests. All distances are kilometres, paces minutes per kilometre (swim per 100 m), speeds km/h, unless noted.`,
+    `Training log for ${ATHLETE.sex === 'M' ? 'a male' : 'a'} athlete (age ${ageOn(m.today)}), ${activities.length} activities from ${dates[0] ?? m.windowFrom} to ${dates[dates.length - 1] ?? m.windowTo}. Each activity below carries a JSON block of its measured numbers; the summary holds season totals, current form, thresholds, lab tests, and bests. All distances are kilometres, paces minutes per kilometre (swim per 100 m), speeds km/h, unless noted.`,
     '',
     block('summary', summary),
     '',
@@ -125,12 +147,14 @@ export function buildFeedMarkdown(
   const acts = activities
     .map(a => {
       const det = details[String(a.id)]
-      const full = {
-        ...a,
-        hrZones: det?.hrZones ?? null,
-        powerZones: det?.powerZones ?? null,
-        strokes: det?.strokes ?? null,
-      }
+      const full = opts.includeActivityDetails
+        ? { ...a, detail: det ?? null }
+        : {
+            ...a,
+            hrZones: det?.hrZones ?? null,
+            powerZones: det?.powerZones ?? null,
+            strokes: det?.strokes ?? null,
+          }
       const gloss = [
         distGloss(a.sport, a.distanceKm),
         hms(a.movingTimeS),

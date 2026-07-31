@@ -773,6 +773,39 @@ test('caps per-second power curves at three hours', () => {
   assert.deepEqual(payload.powerCurveRef.at(-1), { s: maxDurationS, w: 200 })
 })
 
+test('keeps Strava power inclusive while projecting a zero-excluded cycling view', () => {
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({ movingTime: 4, elapsedTime: 4, averageWatts: 150, deviceWatts: true }),
+    },
+    streams: {
+      101: {
+        time: [0, 1, 2, 3],
+        latlng: [],
+        altitude: [0, 0, 0, 0],
+        distance: [0, 1, 2, 3],
+        watts: [0, 100, 200, 300],
+      },
+    },
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01', null, 200).details['101']
+
+  assert.equal(detail.avgWatts, 150)
+  assert.deepEqual(detail.powerZones, [2, 0, 0, 1, 0, 1, 0])
+  assert.equal(detail.powerHist?.[0], 1)
+  assert.deepEqual(detail.powerWithoutZeros, {
+    avgWatts: 200,
+    powerZones: [1, 0, 0, 1, 0, 1, 0],
+    powerHist: [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+  })
+})
+
 test('derives elapsed cycling efforts with Garmin weight and ClimbPro segments', () => {
   const activity = ride({
     distance: 10_000,

@@ -495,6 +495,15 @@ export interface Vo2Point {
   method: Vo2Method
 }
 
+export interface Vo2TrendSummary {
+  direction: CardioDir
+  slopePerWeek: number | null
+  change28d: number | null
+  sampleSize: number
+  spanDays: number
+  method: Vo2Method
+}
+
 export interface Vo2Estimate {
   method: Vo2Method
   vo2max: number
@@ -521,7 +530,42 @@ export interface Vo2maxBlock {
   percentileForAge: number | null
   estimates: Vo2Estimate[]
   trend: Vo2Point[]
+  trendSummary: Vo2TrendSummary
   bikeSource: Vo2BikeSource | null
+}
+
+export interface LactateThresholdProjectionPoint {
+  date: string
+  value: number
+  lo: number
+  hi: number
+}
+
+export interface LactateThresholdHeartRate {
+  value: number
+  unit: 'bpm'
+  source: 'declared'
+}
+
+export interface LactateThresholdSportProjection {
+  sport: Sport
+  unit: string
+  current: number
+  projected: number | null
+  low: number | null
+  high: number | null
+  deltaPct: number | null
+  conf: Conf
+  method: TrendMethod
+  sampleSize: number
+  horizonDays: number
+  source: 'training-pace-trend'
+  points: LactateThresholdProjectionPoint[]
+}
+
+export interface LactateThresholdBlock {
+  heartRate: LactateThresholdHeartRate | null
+  sports: LactateThresholdSportProjection[]
 }
 
 export interface RadarAxis {
@@ -684,6 +728,7 @@ export interface HeatBlock {
 
 export interface EngineBlock {
   vo2max: Vo2maxBlock
+  lactateThreshold: LactateThresholdBlock
   abilities: AbilitiesBlock
   cardio: CardioBlock
   ftpHypothesis: FtpHypothesis | null
@@ -2070,6 +2115,66 @@ const directionOf = (pct: number | null): CalibrationDirection => {
 const thresholdHuman = (threshold: ThresholdEstimate): number | null =>
   threshold.vThr > 0 ? humanPaceValue(threshold.sport, threshold.vThr) : null
 
+const declaredLactateThresholdHeartRate = (): LactateThresholdHeartRate | null =>
+  ATHLETE.lt == null ? null : { value: ATHLETE.lt, unit: 'bpm', source: 'declared' }
+
+const buildLactateThreshold = (
+  thresholds: ReadonlyMap<Sport, ThresholdEstimate>,
+  trends: ReadonlyMap<Sport, SportTrend>,
+  today: string,
+): LactateThresholdBlock => ({
+  heartRate: declaredLactateThresholdHeartRate(),
+  sports: SPORT_ORDER.map(sport => {
+    const threshold = thresholds.get(sport)!
+    const trend = trends.get(sport)
+    const level = trend?.level
+    const current = thresholdHuman(threshold)!
+    const usable =
+      threshold.conf !== 'prior' &&
+      threshold.conf !== 'stale' &&
+      trend != null &&
+      !trend.stale &&
+      level != null &&
+      level > 0 &&
+      trend.forecast.length > 0 &&
+      trend.forecast.every(
+        point => point.lo > 0 && point.lo <= point.value && point.value <= point.hi,
+      )
+    const points: LactateThresholdProjectionPoint[] = [
+      { date: today, value: current, lo: current, hi: current },
+    ]
+    if (usable) {
+      for (const point of trend.forecast) {
+        const ratio = clamp(point.value / level, 1 - TREND_PROJ_CLAMP, 1 + TREND_PROJ_CLAMP)
+        const value = current * ratio
+        const halfFrac = (point.hi - point.lo) / (2 * point.value)
+        points.push({
+          date: point.date,
+          value: round(value, 1),
+          lo: round(value * (1 - halfFrac), 1),
+          hi: round(value * (1 + halfFrac), 1),
+        })
+      }
+    }
+    const end = usable ? points[points.length - 1] : null
+    return {
+      sport,
+      unit: threshold.unit,
+      current,
+      projected: end?.value ?? null,
+      low: end?.lo ?? null,
+      high: end?.hi ?? null,
+      deltaPct: end ? fasterPct(sport, end.value, current) : null,
+      conf: usable ? 'low' : threshold.conf,
+      method: usable ? trend.method : 'none',
+      sampleSize: trend?.sampleSize ?? 0,
+      horizonDays: usable ? TREND_FORECAST_DAYS : 0,
+      source: 'training-pace-trend',
+      points: usable ? points : [],
+    }
+  }),
+})
+
 const projectedHuman = (
   average: number | null,
   trend: SportTrend | undefined,
@@ -2663,6 +2768,7 @@ export const ATHLETE = {
   hrMax: 196 as number | null,
   vo2max: 47.8 as number | null,
   ftp: 261 as number | null,
+  lt: 166 as number | null,
   goalWeightLb: 170 as number | null,
   goalFTP: 350 as number | null,
   heightCm: 188,
@@ -3326,8 +3432,17 @@ function emptyEngine(): EngineBlock {
       percentileForAge: null,
       estimates: [],
       trend: [],
+      trendSummary: {
+        direction: null,
+        slopePerWeek: null,
+        change28d: null,
+        sampleSize: 0,
+        spanDays: 0,
+        method: 'none',
+      },
       bikeSource: null,
     },
+    lactateThreshold: { heartRate: declaredLactateThresholdHeartRate(), sports: [] },
     abilities: { sports: [] },
     cardio: { metrics: [], rhrSeries: [], hrvSeries: [], efSeries: [], decouplingSeries: [] },
     ftpHypothesis: null,
@@ -3340,12 +3455,74 @@ interface GarminVo2Point {
   generic: number | null
 }
 
+const VO2_TREND_DAYS = 84
+const VO2_TREND_STABLE_PER_WEEK = 0.1
+
+const buildVo2TrendSummary = (trend: Vo2Point[]): Vo2TrendSummary => {
+  const latest = trend[trend.length - 1]
+  if (!latest)
+    return {
+      direction: null,
+      slopePerWeek: null,
+      change28d: null,
+      sampleSize: 0,
+      spanDays: 0,
+      method: 'none',
+    }
+  const cutoff = dayMs(latest.weekStart) - VO2_TREND_DAYS * DAY_MS
+  const comparable = trend.filter(
+    point => point.method === latest.method && dayMs(point.weekStart) >= cutoff,
+  )
+  const first = comparable[0]
+  const spanDays = first
+    ? Math.round((dayMs(latest.weekStart) - dayMs(first.weekStart)) / DAY_MS)
+    : 0
+  if (comparable.length < 2 || spanDays < 7)
+    return {
+      direction: null,
+      slopePerWeek: null,
+      change28d: null,
+      sampleSize: comparable.length,
+      spanDays,
+      method: latest.method,
+    }
+  const firstMs = dayMs(first.weekStart)
+  const xs = comparable.map(point => (dayMs(point.weekStart) - firstMs) / (7 * DAY_MS))
+  const slope = olsSlope(
+    xs,
+    comparable.map(point => point.vo2max),
+  )
+  if (slope == null)
+    return {
+      direction: null,
+      slopePerWeek: null,
+      change28d: null,
+      sampleSize: comparable.length,
+      spanDays,
+      method: latest.method,
+    }
+  return {
+    direction:
+      Math.abs(slope) < VO2_TREND_STABLE_PER_WEEK
+        ? 'stable'
+        : slope > 0
+          ? 'improving'
+          : 'declining',
+    slopePerWeek: round(slope, 2),
+    change28d: round(slope * 4, 1),
+    sampleSize: comparable.length,
+    spanDays,
+    method: latest.method,
+  }
+}
+
 function buildEngine(
   cache: StravaRawCache,
   acts: Act[],
   daily: DailyPoint[],
   body: BodyBlock,
   thresholds: Map<Sport, ThresholdEstimate>,
+  trends: Map<Sport, SportTrend>,
   today: string,
   garminVo2: GarminVo2Point[],
   appleVo2: { date: string; v: number }[],
@@ -3463,20 +3640,20 @@ function buildEngine(
   for (const g of garminVo2) weekAt(g.date).garmin = g.v
   for (const p of appleVo2) weekAt(p.date).apple = p.v
   const trend: Vo2Point[] = []
-  let last: Vo2Point | null = null
   let kgCarry: number | null = null
   for (const ws of [...weeks.keys()].sort()) {
     const w = weeks.get(ws)!
     if (w.kg != null) kgCarry = w.kg
     const measured = w.garmin ?? w.apple
+    let point: Vo2Point | null = null
     if (measured != null)
-      last = {
+      point = {
         weekStart: ws,
         vo2max: round(clamp(measured, VO2_FLOOR, VO2_CEIL), 1),
         method: w.garmin != null ? 'garmin' : 'apple',
       }
     else if (w.p20 != null && kgCarry != null && kgCarry > 0)
-      last = {
+      point = {
         weekStart: ws,
         vo2max: round(
           clamp(
@@ -3488,7 +3665,7 @@ function buildEngine(
         ),
         method: 'bike',
       }
-    if (last) trend.push(last.weekStart === ws ? last : { ...last, weekStart: ws })
+    if (point) trend.push(point)
   }
   if (vo2Lab) {
     const lw = weekOf(vo2Lab.date)
@@ -4095,8 +4272,10 @@ function buildEngine(
       percentileForAge,
       estimates,
       trend,
+      trendSummary: buildVo2TrendSummary(trend),
       bikeSource,
     },
+    lactateThreshold: buildLactateThreshold(thresholds, trends, today),
     abilities: { sports: SPORT_ORDER.map(buildSportAbilities) },
     cardio: {
       metrics,
@@ -4391,6 +4570,7 @@ export function buildAnalytics(
     daily,
     body,
     thresholds,
+    trendMap,
     today,
     garminVo2,
     appleVo2,
