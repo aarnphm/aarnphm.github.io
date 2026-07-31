@@ -47,7 +47,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-07-28 15:15:39 GMT-04:00
+modified: 2026-07-31 11:09:03 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -658,6 +658,12 @@ fueling: 120
 date: 2026-07-19
 activity: 19382727312
 fueling: 140
+```
+
+```tracking
+date: 2026-07-20
+activity: 19394486061
+fueling: 0
 ```
 
 ```tracking race=true event="SuperTri Toronto 2026"

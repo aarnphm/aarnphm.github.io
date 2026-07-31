@@ -2115,6 +2115,67 @@ const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
   }
 }
 
+const setupActivityTitleTooltip = (embeds: readonly HTMLElement[]): (() => void) | null => {
+  if (embeds.length === 0 || !window.matchMedia('(hover: hover) and (pointer: fine)').matches)
+    return null
+  document.body.querySelector('.tri-activity-title-tip')?.remove()
+  const tip = el('div', 'tri-gloss tri-activity-title-tip', undefined, {
+    role: 'tooltip',
+    'aria-hidden': 'true',
+  })
+  document.body.appendChild(tip)
+  let current: HTMLElement | null = null
+  const hide = (): void => {
+    current = null
+    tip.classList.remove('tri-gloss--on')
+    tip.setAttribute('aria-hidden', 'true')
+  }
+  const move = (event: PointerEvent): void => {
+    const icon =
+      event.target instanceof Element
+        ? event.target.closest<SVGElement>('.tri-act-head > .tri-ico')
+        : null
+    const activity = icon?.closest<HTMLElement>('.tri-act[data-activity-title]') ?? null
+    const title = activity?.dataset.activityTitle
+    if (!activity || !title) {
+      hide()
+      return
+    }
+    if (activity !== current) {
+      current = activity
+      tip.textContent = title
+      tip.classList.add('tri-gloss--on')
+      tip.setAttribute('aria-hidden', 'false')
+    }
+    const rect = tip.getBoundingClientRect()
+    const offset = 12
+    const edge = 8
+    const preferredLeft = event.clientX + offset
+    const preferredTop = event.clientY + offset
+    const left =
+      preferredLeft + rect.width <= window.innerWidth - edge
+        ? preferredLeft
+        : event.clientX - offset - rect.width
+    const top =
+      preferredTop + rect.height <= window.innerHeight - edge
+        ? preferredTop
+        : event.clientY - offset - rect.height
+    tip.style.left = `${Math.min(Math.max(edge, left), window.innerWidth - edge - rect.width)}px`
+    tip.style.top = `${Math.min(Math.max(edge, top), window.innerHeight - edge - rect.height)}px`
+  }
+  for (const embed of embeds) {
+    embed.addEventListener('pointermove', move, { passive: true })
+    embed.addEventListener('pointerleave', hide)
+  }
+  return () => {
+    for (const embed of embeds) {
+      embed.removeEventListener('pointermove', move)
+      embed.removeEventListener('pointerleave', hide)
+    }
+    tip.remove()
+  }
+}
+
 const setupDayEmbeds = (): (() => void) | null => {
   const embeds = Array.from(
     document.querySelectorAll<HTMLElement>('.tri-day-embed[data-triathlon-date]'),
@@ -2122,6 +2183,8 @@ const setupDayEmbeds = (): (() => void) | null => {
   if (embeds.length === 0) return null
   let live = true
   const teardowns: (() => void)[] = []
+  const activityTitleTooltipCleanup = setupActivityTitleTooltip(embeds)
+  if (activityTitleTooltipCleanup) teardowns.push(activityTitleTooltipCleanup)
   const upgradeByEmbed = new Map<HTMLElement, () => void>()
   const upgradeObserver = new IntersectionObserver(
     entries => {
