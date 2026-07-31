@@ -38,9 +38,7 @@ type InitMessage = { type: 'init'; cfg?: SemanticWorkerConfig; disableCache?: bo
 
 type SearchMessage = { type: 'search'; text: string; k: number; seq: number }
 
-type ResetMessage = { type: 'reset' }
-
-type WorkerMessage = InitMessage | SearchMessage | ResetMessage
+type WorkerMessage = InitMessage | SearchMessage
 
 type ReadyMessage = { type: 'ready' }
 
@@ -50,7 +48,7 @@ type SearchHit = { id: number; score: number }
 
 type SearchResultMessage = { type: 'search-result'; seq: number; semantic: SearchHit[] }
 
-type ErrorMessage = { type: 'error'; seq?: number; message: string }
+type ErrorMessage = { type: 'error'; seq?: number; message: string; retryWithoutCache?: boolean }
 
 type WorkerState = 'idle' | 'loading' | 'ready' | 'error'
 
@@ -62,13 +60,17 @@ type RuntimeDType = 'fp16' | 'fp32'
 
 type SemanticWorkerConfig = { model?: string; dtype?: RuntimeDType; disableCache?: boolean }
 
-const DB_NAME = 'semantic-search-cache'
+class PersistentCacheError extends Error {}
+
+const PGLITE_VERSION = dependencies['@electric-sql/pglite']
+const PGVECTOR_VERSION = dependencies['@electric-sql/pglite-pgvector']
+const DB_NAME = `semantic-search-cache-${PGLITE_VERSION}-${PGVECTOR_VERSION}`
 const META_TABLE = 'semantic_meta'
 const EMBEDDINGS_TABLE = 'semantic_embeddings'
 const INDEX_NAME = 'semantic_embeddings_vec_hnsw'
 const MANIFEST_URL = '/embeddings/manifest.json'
-const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${dependencies['@electric-sql/pglite'].slice(1)}/dist`
-const PGVECTOR_CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite-pgvector@${dependencies['@electric-sql/pglite-pgvector'].slice(1)}/dist`
+const CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite@${PGLITE_VERSION}/dist`
+const PGVECTOR_CDN_BASE = `https://cdn.jsdelivr.net/npm/@electric-sql/pglite-pgvector@${PGVECTOR_VERSION}/dist`
 const ORT_CDN_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${dependencies['onnxruntime-web'].slice(1)}/dist/`
 const ORT_WASM_PATHS = {
   mjs: `${ORT_CDN_BASE}ort-wasm-simd-threaded.asyncify.mjs`,
@@ -155,13 +157,6 @@ async function openDatabase(disableCache: boolean | undefined): Promise<PGlite> 
     })()
   }
   return dbPromise
-}
-
-async function closeDatabase(): Promise<void> {
-  if (!dbPromise) return
-  const db = await dbPromise
-  await db.close()
-  dbPromise = null
 }
 
 async function ensureJax(): Promise<void> {
@@ -461,7 +456,12 @@ async function handleInit(msg: InitMessage) {
     dims = manifest.dims
     manifestId = buildManifestId(manifest)
 
-    const [db] = await Promise.all([openDatabase(Boolean(msg.disableCache)), ensureJax()])
+    const persistentCache = !msg.disableCache
+    const database = openDatabase(Boolean(msg.disableCache)).catch((err: unknown) => {
+      if (!persistentCache) throw err
+      throw new PersistentCacheError(err instanceof Error ? err.message : String(err))
+    })
+    const [db] = await Promise.all([database, ensureJax()])
     await ensureSchema(db, manifest, manifestId)
 
     state = 'ready'
@@ -505,37 +505,18 @@ async function handleSearch(msg: SearchMessage) {
   self.postMessage(message)
 }
 
-function handleReset() {
-  abortController?.abort()
-  abortController = null
-  state = 'idle'
-  manifest = null
-  cfg = null
-  dims = 0
-  tokenizer = null
-  model = null
-  envConfigured = false
-  manifestId = null
-  jaxPromise = null
-  void closeDatabase()
-}
-
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
   const origin = typeof event.origin === 'string' ? event.origin : ''
   if (origin && origin !== self.location.origin) return
 
   const data = event.data
 
-  if (data.type === 'reset') {
-    handleReset()
-    return
-  }
-
   if (data.type === 'init') {
     void handleInit(data).catch((err: unknown) => {
       const message: ErrorMessage = {
         type: 'error',
         message: err instanceof Error ? err.message : String(err),
+        retryWithoutCache: err instanceof PersistentCacheError,
       }
       self.postMessage(message)
     })
