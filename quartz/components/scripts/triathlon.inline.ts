@@ -4972,7 +4972,7 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
         el(
           'span',
           'tri-ana-k',
-          `${tl('latest')} CORE ${temperatureText(latestCore.temperatureC, 2)} · HSI ${latestCore.heatStrainIndex?.toFixed(1) ?? '—'} · ${shortDate(latestCore.date)}`,
+          `${tl('latest')} ${latestCore.coreOrigin === 'app' ? 'CORE app' : 'CORE FIT'} ${temperatureText(latestCore.temperatureC, 2)} · HSI ${latestCore.heatStrainIndex?.toFixed(1) ?? '—'} · ${shortDate(latestCore.date)}`,
         ),
         'heatstrain',
       ),
@@ -4997,7 +4997,7 @@ const buildHeatAcclimatisation = (data: Analytics): HTMLElement => {
     el(
       'span',
       'tri-ana-k',
-      `CORE ${heat.sourceCounts.core} · WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
+      `CORE app ${heat.coreSourceCounts.app} · CORE FIT ${heat.coreSourceCounts.fit} · WeatherKit ${heat.sourceCounts.weatherkit} · Strava ${heat.sourceCounts.strava}`,
     ),
   )
   block.appendChild(cap)
@@ -7735,7 +7735,9 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
         activity.heatStrainIndex == null ? '' : ` · HSI ${activity.heatStrainIndex.toFixed(1)}`
       const source =
         activity.source === 'core'
-          ? 'CORE'
+          ? activity.coreOrigin === 'app'
+            ? 'CORE app'
+            : 'CORE FIT'
           : activity.source === 'weatherkit'
             ? 'WeatherKit'
             : 'Strava'

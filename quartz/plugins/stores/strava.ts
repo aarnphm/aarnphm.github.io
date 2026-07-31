@@ -249,6 +249,7 @@ export interface StravaRoutePoint {
   heatStrainIndex: number | null
   coreTemperatureC: number | null
   skinTemperatureC: number | null
+  coreTemperatureSource: 'core-app' | 'core-fit' | null
   lat: number
   lng: number
   elapsedS: number
@@ -1541,6 +1542,10 @@ function projectDetail(
         heatStrainIndex: heatStrainIndex == null ? null : round(heatStrainIndex, 1),
         coreTemperatureC: coreTemperatureC == null ? null : round(coreTemperatureC, 2),
         skinTemperatureC: skinTemperatureC == null ? null : round(skinTemperatureC, 2),
+        coreTemperatureSource:
+          heatStrainIndex == null && coreTemperatureC == null && skinTemperatureC == null
+            ? null
+            : 'core-fit',
         lat: round(latlng[i][0], 5),
         lng: round(latlng[i][1], 5),
         elapsedS: round(elapsedS, 3),

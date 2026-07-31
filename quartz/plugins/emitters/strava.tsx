@@ -17,6 +17,8 @@ import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util
 import { StaticResources } from '../../util/resources'
 import {
   appleCachePath,
+  coreBodyTemperatureCachePath,
+  enrichCoreBodyTemperature,
   enrichRunDynamics,
   enrichSwimMetrics,
   garminCachePath,
@@ -38,6 +40,10 @@ import {
   parseVo2Lab,
 } from '../stores/analytics'
 import { AppleCache } from '../stores/apple'
+import {
+  parseCoreBodyTemperatureCache,
+  type CoreBodyTemperatureCache,
+} from '../stores/core-body-temperature'
 import { OuraCache } from '../stores/oura'
 import {
   applyManualFueling,
@@ -92,6 +98,16 @@ async function readApple(): Promise<AppleCache | null> {
   }
 }
 
+async function readCoreBodyTemperature(): Promise<CoreBodyTemperatureCache | null> {
+  try {
+    return parseCoreBodyTemperatureCache(
+      JSON.parse(await fs.readFile(coreBodyTemperatureCachePath, 'utf8')),
+    )
+  } catch {
+    return null
+  }
+}
+
 async function readWeather(): Promise<WeatherCache | null> {
   try {
     return parseWeatherCache(JSON.parse(await fs.readFile(weatherCachePath, 'utf8')))
@@ -128,6 +144,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     const oura = await readOura()
     const garmin = await readGarmin()
     const apple = await readApple()
+    const core = await readCoreBodyTemperature()
     const weather = await readWeather()
     const files: FilePath[] = []
     const nextTemporalSlugs = new Set<FullSlug>()
@@ -157,6 +174,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         }
       enrichSwimMetrics(payload, apple)
       enrichRunDynamics(payload, apple)
+      enrichCoreBodyTemperature(payload, core)
       files.push(
         await write({
           ctx,
@@ -179,6 +197,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const analytics = buildAnalytics(cache, {
         oura,
         apple,
+        core,
         garmin,
         weather,
         weights: tracking?.days,

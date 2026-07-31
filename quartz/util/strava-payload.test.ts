@@ -1,12 +1,18 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleCache, AppleSwim, AppleWorkout } from '../plugins/stores/apple'
+import type { CoreBodyTemperatureCache } from '../plugins/stores/core-body-temperature'
 import {
   emptyPayload,
   type StravaActivityDetail,
   type StravaPayload,
 } from '../plugins/stores/strava'
-import { enrichRunDynamics, enrichSwimMetrics, swimActivityIntervals } from './strava-payload'
+import {
+  enrichCoreBodyTemperature,
+  enrichRunDynamics,
+  enrichSwimMetrics,
+  swimActivityIntervals,
+} from './strava-payload'
 
 const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 1,
@@ -119,6 +125,7 @@ test('aligns native Apple running dynamics to the matching run route', () => {
       heatStrainIndex: null,
       coreTemperatureC: null,
       skinTemperatureC: null,
+      coreTemperatureSource: null,
       lat: 43,
       lng: -79,
       elapsedS,
@@ -164,6 +171,73 @@ test('aligns native Apple running dynamics to the matching run route', () => {
       { strideLengthM: 1.18, groundContactTimeMs: 241, verticalOscillationCm: 9.8 },
       { strideLengthM: 1.21, groundContactTimeMs: 238, verticalOscillationCm: 9.6 },
       { strideLengthM: null, groundContactTimeMs: null, verticalOscillationCm: null },
+    ],
+  )
+})
+
+test('CORE app samples override FIT thermal values only near onboard timestamps', () => {
+  const start = '2026-07-29T19:00:00.000Z'
+  const run = detail({
+    sport: 'run',
+    start,
+    route: [0, 60, 120, 300].map((elapsedS, index) => ({
+      x: index / 3,
+      y: index / 3,
+      d: index,
+      alt: 100,
+      w: 0,
+      hr: 150,
+      cad: 80,
+      resp: null,
+      tempC: 25,
+      heatStrainIndex: 1,
+      coreTemperatureC: 37,
+      skinTemperatureC: 31,
+      coreTemperatureSource: 'core-fit',
+      lat: 43,
+      lng: -79,
+      elapsedS,
+      speedKph: 10,
+    })),
+  })
+  const payload = payloadWith(run)
+  const core: CoreBodyTemperatureCache = {
+    version: 1,
+    lastSync: 1,
+    samples: [
+      {
+        time: start,
+        coreTemperatureC: 37.5,
+        skinTemperatureC: 32,
+        heatStrainIndex: 2,
+        quality: 4,
+        heartRate: 150,
+      },
+      {
+        time: '2026-07-29T19:02:00.000Z',
+        coreTemperatureC: 37.7,
+        skinTemperatureC: 33,
+        heatStrainIndex: 3,
+        quality: 4,
+        heartRate: 155,
+      },
+    ],
+  }
+
+  enrichCoreBodyTemperature(payload, core)
+
+  assert.deepEqual(
+    run.route.map(point => ({
+      coreTemperatureC: point.coreTemperatureC,
+      skinTemperatureC: point.skinTemperatureC,
+      heatStrainIndex: point.heatStrainIndex,
+      source: point.coreTemperatureSource,
+    })),
+    [
+      { coreTemperatureC: 37.5, skinTemperatureC: 32, heatStrainIndex: 2, source: 'core-app' },
+      { coreTemperatureC: 37.6, skinTemperatureC: 32.5, heatStrainIndex: 2.5, source: 'core-app' },
+      { coreTemperatureC: 37.7, skinTemperatureC: 33, heatStrainIndex: 3, source: 'core-app' },
+      { coreTemperatureC: 37, skinTemperatureC: 31, heatStrainIndex: 1, source: 'core-fit' },
     ],
   )
 })

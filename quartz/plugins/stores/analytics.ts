@@ -12,6 +12,11 @@ import {
 import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
+import {
+  isUsableCoreTemperatureSample,
+  matchCoreBodyTemperatureActivity,
+  type CoreBodyTemperatureCache,
+} from './core-body-temperature'
 import { matchGarminActivity, matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
 import {
@@ -174,6 +179,7 @@ export interface ActivitySummary {
 export interface AnalyticsInputs {
   oura?: OuraCache | null
   apple?: AppleCache | null
+  core?: CoreBodyTemperatureCache | null
   garmin?: GarminCache | null
   weather?: WeatherCache | null
   weights?: TrackEntry[]
@@ -628,6 +634,7 @@ export interface HeatActivityPoint {
   temperatureC: number
   heatStrainIndex: number | null
   source: HeatTemperatureSource
+  coreOrigin: CoreTemperatureOrigin | null
   observedMinutes: number
   hotMinutes: number
   dose: number
@@ -669,6 +676,7 @@ export interface HeatBlock {
   heatMinutes14d: number
   heatDays14d: number
   sourceCounts: Record<HeatTemperatureSource, number>
+  coreSourceCounts: Record<CoreTemperatureOrigin, number>
   activities: HeatActivityPoint[]
   series: HeatDay[]
   method: HeatMethod
@@ -1024,6 +1032,7 @@ interface HeatActivity {
   heatStrainIndex: number | null
   hotS: number
   source: HeatTemperatureSource
+  coreOrigin: CoreTemperatureOrigin | null
 }
 
 interface HeatDayBucket {
@@ -1046,14 +1055,18 @@ const heatMethod = (): HeatMethod => ({
   decayGraceDays: HEAT_DECAY_GRACE_DAYS,
   decayPerDay: HEAT_DECAY_PER_DAY,
   coverageDays: HEAT_COVERAGE_DAYS,
-  note: 'CORE Heat Strain Index is primary when recorded. WeatherKit ambient temperature fills activities without CORE data, then Strava device temperature fills remaining gaps.',
+  note: 'CORE app onboard data is primary, followed by CORE recorded in Garmin FIT. WeatherKit ambient temperature fills activities without CORE data, then Strava device temperature fills remaining gaps.',
 })
+
+export type CoreTemperatureOrigin = 'app' | 'fit'
 
 const emptyHeatSourceCounts = (): Record<HeatTemperatureSource, number> => ({
   core: 0,
   weatherkit: 0,
   strava: 0,
 })
+
+const emptyCoreSourceCounts = (): Record<CoreTemperatureOrigin, number> => ({ app: 0, fit: 0 })
 
 function emptyHeat(): HeatBlock {
   return {
@@ -1069,6 +1082,7 @@ function emptyHeat(): HeatBlock {
     heatMinutes14d: 0,
     heatDays14d: 0,
     sourceCounts: emptyHeatSourceCounts(),
+    coreSourceCounts: emptyCoreSourceCounts(),
     activities: [],
     series: [],
     method: heatMethod(),
@@ -1080,9 +1094,57 @@ interface CoreHeatObservation {
   hotS: number
   coreTemperatureC: number
   heatStrainIndex: number
+  origin: CoreTemperatureOrigin
 }
 
-function coreHeatObservation(
+function coreAppHeatObservation(
+  activity: RawStravaActivity,
+  core: CoreBodyTemperatureCache | null | undefined,
+): CoreHeatObservation | null {
+  const samples = matchCoreBodyTemperatureActivity(activity, core).filter(sample =>
+    isUsableCoreTemperatureSample(sample),
+  )
+  if (samples.length === 0) return null
+  const activityDurationS = Math.max(
+    1,
+    activity.elapsedTime > 0 ? activity.elapsedTime : activity.movingTime,
+  )
+  let observedS = 0
+  let hotS = 0
+  let heatStrainSeconds = 0
+  let coreTemperatureSeconds = 0
+  for (let index = 0; index < samples.length; index++) {
+    const sample = samples[index]
+    const heatStrainIndex = sample.heatStrainIndex
+    const coreTemperatureC = sample.coreTemperatureC
+    if (
+      heatStrainIndex == null ||
+      heatStrainIndex < 0 ||
+      heatStrainIndex > 20 ||
+      coreTemperatureC == null
+    )
+      continue
+    const start = clamp(sample.elapsedS, 0, activityDurationS)
+    const next = samples[index + 1]?.elapsedS ?? start + 60
+    const end = clamp(Math.min(next, start + 90), start, activityDurationS)
+    const durationS = end - start
+    if (!(durationS > 0)) continue
+    observedS += durationS
+    heatStrainSeconds += heatStrainIndex * durationS
+    coreTemperatureSeconds += coreTemperatureC * durationS
+    if (heatStrainIndex >= HEAT_STRAIN_THRESHOLD) hotS += durationS
+  }
+  if (!(observedS > 0)) return null
+  return {
+    durationS: observedS,
+    hotS,
+    coreTemperatureC: coreTemperatureSeconds / observedS,
+    heatStrainIndex: heatStrainSeconds / observedS,
+    origin: 'app',
+  }
+}
+
+function coreFitHeatObservation(
   activity: RawStravaActivity,
   sport: 'bike' | 'run',
   garmin: GarminCache | null | undefined,
@@ -1136,13 +1198,24 @@ function coreHeatObservation(
     hotS,
     coreTemperatureC: coreTemperatureSeconds / coreObservedS,
     heatStrainIndex: heatStrainSeconds / observedS,
+    origin: 'fit',
   }
+}
+
+function coreHeatObservation(
+  activity: RawStravaActivity,
+  sport: 'bike' | 'run',
+  core: CoreBodyTemperatureCache | null | undefined,
+  garmin: GarminCache | null | undefined,
+): CoreHeatObservation | null {
+  return coreAppHeatObservation(activity, core) ?? coreFitHeatObservation(activity, sport, garmin)
 }
 
 function buildHeat(
   cache: StravaRawCache,
   sourceActivities: RawStravaActivity[],
   weather: WeatherCache | null | undefined,
+  coreCache: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
   windowFrom: number,
   windowTo: number,
@@ -1150,6 +1223,7 @@ function buildHeat(
   const eligible: RawStravaActivity[] = []
   const observed: HeatActivity[] = []
   const sourceCounts = emptyHeatSourceCounts()
+  const coreSourceCounts = emptyCoreSourceCounts()
 
   for (const activity of sourceActivities) {
     const sport = normalizeKind(activity.sportType)
@@ -1158,9 +1232,10 @@ function buildHeat(
     if (!route || route.length < 2) continue
     eligible.push(activity)
 
-    const core = coreHeatObservation(activity, sport, garmin)
+    const core = coreHeatObservation(activity, sport, coreCache, garmin)
     if (core) {
       sourceCounts.core += 1
+      coreSourceCounts[core.origin] += 1
       observed.push({
         id: activity.id,
         date: activity.startDateLocal.slice(0, 10),
@@ -1172,6 +1247,7 @@ function buildHeat(
         heatStrainIndex: core.heatStrainIndex,
         hotS: core.hotS,
         source: 'core',
+        coreOrigin: core.origin,
       })
       continue
     }
@@ -1196,6 +1272,7 @@ function buildHeat(
       heatStrainIndex: null,
       hotS: temperatureC > HEAT_THRESHOLD_C ? durationS : 0,
       source,
+      coreOrigin: null,
     })
   }
 
@@ -1325,6 +1402,7 @@ function buildHeat(
     heatMinutes14d,
     heatDays14d,
     sourceCounts,
+    coreSourceCounts,
     activities: [...observed]
       .sort((a, b) => a.startedAt.localeCompare(b.startedAt))
       .map(activity => {
@@ -1340,6 +1418,7 @@ function buildHeat(
           heatStrainIndex:
             activity.heatStrainIndex == null ? null : round(activity.heatStrainIndex, 1),
           source: activity.source,
+          coreOrigin: activity.coreOrigin,
           observedMinutes: round(observedMinutes, 0),
           hotMinutes: round(hotMinutes, 0),
           dose: round(clamp(hotMinutes / HEAT_TARGET_MINUTES, 0, 1), 3),
@@ -2581,7 +2660,7 @@ export const ATHLETE = {
   sex: 'M' as 'M' | 'F',
   born: '2001-03',
   bornAnchor: '2001-03-01',
-  hrMax: 187 as number | null,
+  hrMax: 196 as number | null,
   vo2max: 47.8 as number | null,
   ftp: 260 as number | null,
   goalWeightLb: 170 as number | null,
@@ -4143,6 +4222,7 @@ export function buildAnalytics(
     cache,
     sourceActivities,
     inputs.weather,
+    inputs.core,
     inputs.garmin,
     windowFrom,
     windowTo,
