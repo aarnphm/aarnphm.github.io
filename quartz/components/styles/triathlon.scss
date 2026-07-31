@@ -3427,7 +3427,8 @@
   shape-rendering: crispEdges;
 }
 
-.tri-pmc-bar--now {
+.tri-pmc-bar--now,
+.tri-pmc-bar--race {
   fill: var(--tri-accent);
 }
 
@@ -3442,6 +3443,19 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.tri-pmc-race-marker {
+  position: absolute;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1.5px solid var(--tri-pmc-fit);
+  border-radius: 50%;
+  background: var(--light);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .tri-pmc-l-fat {
