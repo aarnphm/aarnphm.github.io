@@ -53,6 +53,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   hrZones: null,
   powerZones: null,
   powerHist: null,
+  powerWithoutZeros: null,
   powerCurve: null,
   bestEfforts: null,
   strokes: null,

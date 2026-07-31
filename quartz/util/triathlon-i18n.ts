@@ -411,6 +411,8 @@ const en: TriDict = {
     'no commands': 'no commands',
     'imperial → metric': 'imperial → metric',
     'metric → imperial': 'metric → imperial',
+    'power averages · zeros included': 'power averages · zeros included',
+    'power averages · zeros excluded': 'power averages · zeros excluded',
     'distance · pace · weight · composition': 'distance · pace · weight · composition',
     'overview · bars': 'overview · bars',
     tools: 'tools',
@@ -443,6 +445,13 @@ const en: TriDict = {
     average: 'average',
     projected: 'projected',
     projection: 'projection',
+    '28d trend': '28d trend',
+    'per week': 'per week',
+    '80% range': '80% range',
+    'lactate threshold projection': 'lactate threshold projection',
+    'declared heart-rate anchor': 'declared heart-rate anchor',
+    'training-derived LT2 proxy, not a blood lactate measurement':
+      'training-derived LT2 proxy, not a blood lactate measurement',
     'dashed line is projected from bike power': 'dashed line is projected from bike power',
     'vs current': 'vs current',
     finish: 'finish',
@@ -630,6 +639,10 @@ const en: TriDict = {
       term: 'threshold pace',
       def: 'Threshold pace is your estimated pace for an effort lasting about one hour. It uses your faster sessions and adjusts running pace for hills. The pace model uses it as a starting point.',
     },
+    lactate: {
+      term: 'lactate threshold',
+      def: 'LTHR is the declared heart-rate anchor. The sport values project the current one hour pace or power threshold over 14 days using recent training trends. Their shaded areas are 80% model ranges, not blood lactate measurements or measured ventilatory thresholds.',
+    },
     trend: {
       term: 'pace trend',
       def: 'Pace trend shows whether your threshold pace is getting faster or slower. It uses your recent sessions. The shaded area shows the range of likely future values.',
@@ -712,7 +725,7 @@ const en: TriDict = {
     },
     vo2max: {
       term: 'VO₂max',
-      def: 'VO₂max is the maximum amount of oxygen your body can use during hard exercise. It is measured in millilitres per kilogram per minute. The cycling estimate starts with FTP. This page treats FTP as 95% of your best 20 minute power, then estimates maximum aerobic power and VO₂max.',
+      def: 'VO₂max is the maximum amount of oxygen your body can use during hard exercise. It is measured in millilitres per kilogram per minute. The 28 day trend uses observed values from the latest measurement method over at most 12 weeks. The cycling estimate starts with FTP, estimates maximum aerobic power, then estimates VO₂max.',
     },
     ftp: {
       term: 'FTP hypothesis',
@@ -998,6 +1011,8 @@ const fr: TriDict = {
     'no commands': 'aucune commande',
     'imperial → metric': 'impérial → métrique',
     'metric → imperial': 'métrique → impérial',
+    'power averages · zeros included': 'moyennes de puissance · zéros inclus',
+    'power averages · zeros excluded': 'moyennes de puissance · zéros exclus',
     'distance · pace · weight · composition': 'distance · allure · poids · composition',
     'overview · bars': "vue d'ensemble · barres",
     tools: 'outils',
@@ -1030,6 +1045,13 @@ const fr: TriDict = {
     average: 'moyenne',
     projected: 'projetée',
     projection: 'projection',
+    '28d trend': 'tendance sur 28 j',
+    'per week': 'par semaine',
+    '80% range': 'plage à 80 %',
+    'lactate threshold projection': 'projection du seuil lactique',
+    'declared heart-rate anchor': 'repère de fréquence cardiaque déclaré',
+    'training-derived LT2 proxy, not a blood lactate measurement':
+      "indice LT2 dérivé de l'entraînement, pas une mesure du lactate sanguin",
     'dashed line is projected from bike power':
       'la ligne pointillée est une projection basée sur la puissance à vélo',
     'vs current': 'vs actuel',
@@ -1219,6 +1241,10 @@ const fr: TriDict = {
       term: 'allure seuil',
       def: "L'allure seuil estime ton allure pour un effort d'environ une heure. Elle utilise tes séances les plus rapides et ajuste l'allure de course pour les côtes. Le modèle d'allure l'utilise comme point de départ.",
     },
+    lactate: {
+      term: 'seuil lactique',
+      def: "La FCSL est le repère de fréquence cardiaque déclaré. Les valeurs par sport projettent sur 14 jours le seuil actuel d'allure ou de puissance à partir des tendances d'entraînement récentes. Leurs zones ombrées sont des plages du modèle à 80 %, pas des mesures du lactate sanguin ni des seuils ventilatoires mesurés.",
+    },
     trend: {
       term: "tendance d'allure",
       def: 'La tendance indique si ton allure seuil devient plus rapide ou plus lente. Elle utilise tes séances récentes. La zone ombrée montre la plage des valeurs futures probables.',
@@ -1301,7 +1327,7 @@ const fr: TriDict = {
     },
     vo2max: {
       term: 'VO₂max',
-      def: "La VO₂max est la quantité maximale d'oxygène que ton corps peut utiliser pendant un effort intense. Elle est mesurée en millilitres par kilogramme par minute. L'estimation à vélo part de la FTP. Cette page estime la FTP à 95 % de ta meilleure puissance sur 20 minutes, puis calcule la puissance aérobie maximale et la VO₂max.",
+      def: "La VO₂max est la quantité maximale d'oxygène que ton corps peut utiliser pendant un effort intense. Elle est mesurée en millilitres par kilogramme par minute. La tendance sur 28 jours utilise les valeurs observées de la méthode la plus récente sur au plus 12 semaines. L'estimation à vélo part de la FTP, calcule la puissance aérobie maximale, puis estime la VO₂max.",
     },
     ftp: {
       term: 'hypothèse FTP',

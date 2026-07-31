@@ -48,6 +48,60 @@ export const setDistanceUnit = (v: boolean): void => {
 }
 export const isImperialUnit = (): boolean => imperial
 
+let zeroPowerExcluded = false
+export const setZeroPowerExcluded = (value: boolean): void => {
+  zeroPowerExcluded = value
+}
+export const isZeroPowerExcluded = (): boolean => zeroPowerExcluded
+export const powerViewActivity = (activity: StravaActivityDetail): StravaActivityDetail => {
+  const filtered = activity.powerWithoutZeros
+  if (!zeroPowerExcluded || activity.sport !== 'bike' || !filtered) return activity
+  return {
+    ...activity,
+    avgWatts: filtered.avgWatts ?? activity.avgWatts,
+    powerZones: filtered.powerZones ?? activity.powerZones,
+    powerHist: filtered.powerHist ?? activity.powerHist,
+  }
+}
+
+export const interpolatePositiveMetricSeries = (
+  route: StravaActivityDetail['route'],
+  pick: (point: StravaActivityDetail['route'][number], index: number) => number | null | undefined,
+): (number | null)[] => {
+  const values = route.map((point, index) => {
+    const value = pick(point, index)
+    return value != null && Number.isFinite(value) && value > 0 ? value : null
+  })
+  const previous = Array.from({ length: values.length }, () => -1)
+  const next = Array.from({ length: values.length }, () => -1)
+  let measured = -1
+  for (let index = 0; index < values.length; index++) {
+    previous[index] = measured
+    if (values[index] != null) measured = index
+  }
+  measured = -1
+  for (let index = values.length - 1; index >= 0; index--) {
+    next[index] = measured
+    if (values[index] != null) measured = index
+  }
+  return values.map((value, index) => {
+    if (value != null) return value
+    const left = previous[index]
+    const right = next[index]
+    if (left < 0) return right < 0 ? null : values[right]
+    if (right < 0) return values[left]
+    const leftValue = values[left]
+    const rightValue = values[right]
+    if (leftValue == null || rightValue == null) return leftValue ?? rightValue
+    const distanceSpan = route[right].d - route[left].d
+    const fraction =
+      distanceSpan > 0
+        ? (route[index].d - route[left].d) / distanceSpan
+        : (index - left) / (right - left)
+    return leftValue + (rightValue - leftValue) * Math.max(0, Math.min(1, fraction))
+  })
+}
+
 export const parseExcludedActivityIds = (value: string | undefined): string[] => {
   const filter = value?.startsWith('filter=') ? value.slice('filter='.length) : value
   if (!filter || !/^\d+(?:&\d+)*$/.test(filter)) return []
@@ -608,6 +662,22 @@ const axisNumber = (value: number, step: number): string => {
 }
 
 export type ActivityGraphDomain = { startDistanceKm: number; endDistanceKm: number }
+export type ActivityTraceDomain = { min: number; max: number; intervals?: number }
+
+export const positiveMetricDomain = (
+  values: readonly (number | null)[],
+  intervals = 3,
+): ActivityTraceDomain | undefined => {
+  const measured = values.filter(
+    (value): value is number => value != null && Number.isFinite(value) && value > 0,
+  )
+  if (measured.length === 0) return undefined
+  const min = Math.min(...measured)
+  const max = Math.max(...measured)
+  if (max > min) return { min, max, intervals }
+  const pad = Math.max(1, max * 0.05)
+  return { min: Math.max(Number.EPSILON, min - pad), max: max + pad, intervals }
+}
 
 const resolveActivityGraphDomain = (
   d: StravaActivityDetail,
@@ -771,7 +841,7 @@ export const buildTrace = <N>(
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
-  domain?: { min: number; max: number; intervals?: number },
+  domain?: ActivityTraceDomain,
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N => {
@@ -2835,6 +2905,13 @@ export const buildActivity = <N>(
   fillMissingRunPower = false,
   showUnavailableElevation = false,
 ): N => {
+  const normalizeBikeMetrics = zeroPowerExcluded && d.sport === 'bike'
+  const normalizedPower = normalizeBikeMetrics
+    ? interpolatePositiveMetricSeries(d.route, point => point.w)
+    : null
+  const normalizedCadence = normalizeBikeMetrics
+    ? interpolatePositiveMetricSeries(d.route, point => point.cad)
+    : null
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     'data-activity-id': `${d.id}`,
     'data-activity-title': d.name || d.sport,
@@ -2895,11 +2972,11 @@ export const buildActivity = <N>(
         buildTrace(
           f,
           d,
-          point => point.w,
+          (point, index) => normalizedPower?.[index] ?? point.w,
           'power',
           max => `${max} W peak`,
           value => `${Math.round(value)}w`,
-          undefined,
+          normalizedPower ? positiveMetricDomain(normalizedPower) : undefined,
           analysisSelection,
         ),
       )
@@ -2911,11 +2988,13 @@ export const buildActivity = <N>(
         buildTrace(
           f,
           d,
-          point => point.cad * cadenceScale,
+          (point, index) => (normalizedCadence?.[index] ?? point.cad) * cadenceScale,
           'cadence',
           max => `${max} ${cadenceUnit} peak`,
           value => `${Math.round(value)}${cadenceUnit}`,
-          undefined,
+          normalizedCadence
+            ? positiveMetricDomain(normalizedCadence.map(value => (value ?? 0) * cadenceScale))
+            : undefined,
           analysisSelection,
         ),
       )
@@ -3199,7 +3278,11 @@ const comparisonMetricPointValue = (
       value = point.hr > 0 ? point.hr : null
       break
     case 'power':
-      value = point.w > 0 || (point.w === 0 && powerCapable) ? point.w : null
+      value =
+        point.w > 0 ||
+        (point.w === 0 && powerCapable && !(zeroPowerExcluded && activity.sport === 'bike'))
+          ? point.w
+          : null
       break
     case 'cadence':
       value = point.cad > 0 ? point.cad * (activity.sport === 'run' ? 2 : 1) : null
@@ -3273,18 +3356,25 @@ const comparisonMetricSegments = (
   if (metric === 'swim-pace' || metric === 'stroke-rate')
     return comparisonSwimMetricSegments(activity, metric)
   const powerCapable = comparisonPowerCapable(activity)
+  const normalizedValues =
+    zeroPowerExcluded && activity.sport === 'bike' && (metric === 'power' || metric === 'cadence')
+      ? interpolatePositiveMetricSeries(activity.route, point =>
+          comparisonMetricPointValue(activity, point, metric, powerCapable),
+        )
+      : null
   const segments: ActivityComparisonMetricPoint[][] = []
   let segment: ActivityComparisonMetricPoint[] = []
   const flush = (): void => {
     if (segment.length > 0) segments.push(segment)
     segment = []
   }
-  for (const point of activity.route) {
+  for (const [index, point] of activity.route.entries()) {
     if (!Number.isFinite(point.d) || point.d < 0) {
       flush()
       continue
     }
-    const value = comparisonMetricPointValue(activity, point, metric, powerCapable)
+    const value =
+      normalizedValues?.[index] ?? comparisonMetricPointValue(activity, point, metric, powerCapable)
     if (value == null) {
       flush()
       continue
@@ -3800,7 +3890,7 @@ const buildComparisonMetricChart = <N>(
   const available = series.filter(item => item.values.length > 0).length
   const domain = comparisonNumericDomain(
     series.flatMap(item => item.values),
-    spec.includeZero,
+    spec.metric === 'power' && zeroPowerExcluded ? false : spec.includeZero,
   )
   const selectionClipId = `tri-compare-${spec.metric}-selection-clip`
   const sport = activities[0]?.sport ?? 'bike'

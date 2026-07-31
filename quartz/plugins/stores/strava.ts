@@ -345,6 +345,12 @@ export interface ActivityFueling extends GarminFueling {
   source: 'garmin' | 'manual'
 }
 
+export interface ActivityPowerWithoutZeros {
+  avgWatts: number | null
+  powerZones: number[] | null
+  powerHist: number[] | null
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -384,6 +390,7 @@ export interface StravaActivityDetail {
   hrZones: number[] | null
   powerZones: number[] | null
   powerHist: number[] | null
+  powerWithoutZeros: ActivityPowerWithoutZeros | null
   powerCurve: PowerCurvePoint[] | null
   bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
@@ -973,14 +980,18 @@ function durationZoneTimes(stream: number[], uppers: number[], movingTimeS: numb
   return counts.map(count => Math.round(count * scale))
 }
 
-function powerHistogram(w: number[], bin = 25): number[] {
+function powerHistogram(w: number[], countZero = true, bin = 25): number[] {
   let maxB = 0
   for (const raw of w) {
+    if (raw <= 0 && !countZero) continue
     const b = Math.floor((raw > 0 ? raw : 0) / bin)
     if (b > maxB) maxB = b
   }
   const out = Array.from({ length: maxB + 1 }, () => 0)
-  for (const raw of w) out[Math.floor((raw > 0 ? raw : 0) / bin)]++
+  for (const raw of w) {
+    if (raw <= 0 && !countZero) continue
+    out[Math.floor((raw > 0 ? raw : 0) / bin)]++
+  }
   return out
 }
 
@@ -1557,6 +1568,15 @@ function projectDetail(
   const hasHr = heartRate.stream.some(v => v > 0)
   const hasW = wFull.some(v => v > 0)
   const hasEffortPower = effortStreams?.watts?.some(v => v > 0) ?? false
+  const avgWattsWithoutZeros = hasW ? avgPos(wFull) : roundPos(garmin?.avgPower)
+  const powerWithoutZeros =
+    sport === 'bike' && avgWattsWithoutZeros != null
+      ? {
+          avgWatts: avgWattsWithoutZeros,
+          powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, false) : null,
+          powerHist: hasW ? powerHistogram(wFull, false) : null,
+        }
+      : null
   const timeline =
     sport === 'bike' || hasEffortPower ? effortTimeline(effortStreams, a.movingTime) : null
   const elapsedTimeline =
@@ -1615,6 +1635,7 @@ function projectDetail(
         : null,
     powerZones: hasW && powerBounds.length > 0 ? zoneTimes(wFull, powerBounds, true) : null,
     powerHist: hasW ? powerHistogram(wFull) : null,
+    powerWithoutZeros,
     powerCurve: hasEffortPower && timeline ? (powerCurve ?? meanMaxCurve(timeline)) : null,
     bestEfforts:
       sport === 'bike' && (elapsedTimeline || climbs.length > 0)

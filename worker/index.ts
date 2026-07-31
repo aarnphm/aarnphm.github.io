@@ -28,7 +28,14 @@ import { handleLeanVerify } from './lean'
 import Garden from './mcp'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
-import { isLocalRequest, resolveBaseUrl } from './request-utils'
+import {
+  isAgentUserAgent,
+  isLocalRequest,
+  markdownPathname,
+  resolveBaseUrl,
+  shouldRewriteMarkdown,
+  shouldTreatAsDocument,
+} from './request-utils'
 import { handleStackedNoteDataRequest, handleStackedNotesRequest } from './stacked'
 import {
   cacheHeadersForStaticAsset,
@@ -43,6 +50,7 @@ const MIME = 'application/vnd.git-lfs+json'
 const KEEP_HEADERS = 'Cache-Control'
 const HTML_CONTENT_TYPE = 'text/html; charset=utf-8'
 const PREVIEW_USER_AGENT = 'Mozilla/5.0 (compatible; AarnphmGarden/1.0; +https://aarnphm.xyz)'
+const TRIATHLON_MARKDOWN_PATH = /^\/triathlon(?:\/.*)?\.md$/
 
 const COOP_COEP_HEADERS: Record<string, string> = {
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -143,67 +151,22 @@ function withHeadersFromSource(response: Response, source: Response, headers: st
   return withHeaders(response, map)
 }
 
+function withTriathlonMarkdownHeaders(response: Response): Response {
+  return withHeaders(response, {
+    'Content-Type': 'text/markdown; charset=utf-8',
+    'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
+    'Access-Control-Allow-Origin': '*',
+    'X-Content-Type-Options': 'nosniff',
+    Vary: 'Accept, User-Agent',
+  })
+}
+
 function headersToObject(headers: Headers): Record<string, string> {
   const o: Record<string, string> = {}
   headers.forEach((value, key) => {
     o[key] = value
   })
   return o
-}
-
-function getExtension(pathname: string): string | null {
-  const last = pathname.split('/').pop() ?? ''
-  const idx = last.lastIndexOf('.')
-  return idx === -1 ? null : last.slice(idx + 1).toLowerCase()
-}
-
-function shouldTreatAsDocument(pathname: string): boolean {
-  const ext = getExtension(pathname)
-  if (!ext) return true
-  return ext === 'html' || ext === 'htm'
-}
-
-function isAgentUserAgent(request: Request): boolean {
-  const ua = request.headers.get('User-Agent')?.toLowerCase() ?? ''
-  if (!ua) return false
-  return (
-    ua.includes('chatgpt') ||
-    ua.includes('claude') ||
-    ua.includes('anthropic') ||
-    ua.includes('openai') ||
-    ua.includes('gptbot')
-  )
-}
-
-function wantsMarkdown(request: Request): boolean {
-  const accept = request.headers.get('Accept')?.toLowerCase() ?? ''
-  if (accept.includes('text/markdown')) return true
-  return isAgentUserAgent(request)
-}
-
-function markdownPathname(pathname: string): string {
-  if (pathname === '/') return '/index.md'
-  if (pathname.endsWith('/')) return `${pathname.slice(0, -1)}.md`
-  return `${pathname}.md`
-}
-
-function shouldRewriteMarkdown(request: Request, url: URL): boolean {
-  if (request.method !== 'GET' && request.method !== 'HEAD') return false
-  if (!wantsMarkdown(request)) return false
-  if (url.pathname.endsWith('.md')) return false
-  if (getExtension(url.pathname)) return false
-  if (url.pathname.startsWith('/api/')) return false
-  if (url.pathname === '/triathlon/data') return false
-  if (url.pathname.startsWith('/comments/')) return false
-  if (url.pathname.startsWith('/mcp')) return false
-  if (url.pathname.startsWith('/sse')) return false
-  if (url.pathname.startsWith('/authorize')) return false
-  if (url.pathname.startsWith('/register')) return false
-  if (url.pathname.startsWith('/token')) return false
-  if (url.pathname.startsWith('/.well-known/')) return false
-  if (url.pathname.startsWith('/_plausible/')) return false
-  if (url.pathname.startsWith('/fonts/')) return false
-  return true
 }
 
 const commentAuthorRenameAuthorPrefix = 'comment-author-rename:author:'
@@ -710,7 +673,14 @@ export default {
       markdownUrl.pathname = markdownPathname(url.pathname)
       const markdownReq = new Request(markdownUrl.toString(), request)
       const markdownResp = await env.ASSETS.fetch(markdownReq)
+      if (TRIATHLON_MARKDOWN_PATH.test(markdownUrl.pathname)) {
+        return withTriathlonMarkdownHeaders(markdownResp)
+      }
       return withHeaders(markdownResp, { Vary: 'Accept, User-Agent' })
+    }
+
+    if (TRIATHLON_MARKDOWN_PATH.test(url.pathname)) {
+      return withTriathlonMarkdownHeaders(await env.ASSETS.fetch(new Request(request.url, request)))
     }
 
     const apiHeaders: Record<string, string> = {
@@ -821,15 +791,6 @@ export default {
         }
         return withHeaders(assetResp, {
           'Content-Type': 'application/x-ndjson; charset=utf-8',
-          'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
-          'Access-Control-Allow-Origin': '*',
-          Vary: 'Accept, User-Agent',
-        })
-      }
-      case '/triathlon/feed.md': {
-        const assetResp = await env.ASSETS.fetch(new Request(request.url, request))
-        return withHeaders(assetResp, {
-          'Content-Type': 'text/markdown; charset=utf-8',
           'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
           'Access-Control-Allow-Origin': '*',
           Vary: 'Accept, User-Agent',

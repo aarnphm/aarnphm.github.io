@@ -720,6 +720,34 @@ test('garmin readings drive the vo2 trend and the bike proxy only fills earlier 
   assert.equal(trend[1].vo2max, 54)
 })
 
+test('vo2 trend summary uses comparable observed weeks without carrying stale values forward', () => {
+  const { cache, oura, weights } = fixtures()
+  const readings = [48, 49, 50, 51, 52]
+  const vo2max = Object.fromEntries(
+    readings.map((generic, index) => {
+      const date = iso(1 + index * 7)
+      return [date, { date, generic, cycling: null }]
+    }),
+  )
+  const garmin: GarminCache = { lastSync: cache.lastSync, activities: {}, vo2max }
+
+  const analytics = buildAnalytics(cache, { oura, garmin, weights, since: '2026-05-12' })
+  const observed = analytics.engine.vo2max.trend.filter(point => point.method === 'garmin')
+  const summary = analytics.engine.vo2max.trendSummary
+
+  assert.equal(observed.length, readings.length)
+  assert.deepEqual(
+    observed.map(point => point.vo2max),
+    readings,
+  )
+  assert.equal(summary.method, 'garmin')
+  assert.equal(summary.sampleSize, readings.length)
+  assert.equal(summary.spanDays, 28)
+  assert.equal(summary.slopePerWeek, 1)
+  assert.equal(summary.change28d, 4)
+  assert.equal(summary.direction, 'improving')
+})
+
 test('lab test outranks a garmin reading in the same trend week', () => {
   const { cache, oura, weights } = fixtures()
   const garmin: GarminCache = {
@@ -851,6 +879,38 @@ test('calibration tracks newest pace and volume deltas against the prior window'
   const activeWeek = a.weekly.find(w => w.sessions === 2 && w.runKm === 10)
   assert.ok(activeWeek)
   assert.equal(activeWeek.runHours, 0.8)
+})
+
+test('lactate threshold projection stays a low-confidence training proxy with its model band', () => {
+  const { cache } = fixtures()
+  const durations = [1800, 1740, 1680, 1620, 1560, 1500]
+  cache.activities = Object.fromEntries(
+    durations.map((movingTime, index) => {
+      const id = 20 + index
+      const day = iso(-6 + index * 7)
+      return [String(id), activity(id, 'Run', day, movingTime, 5000, { totalElevationGain: 0 })]
+    }),
+  )
+  cache.streams = {}
+
+  const analytics = buildAnalytics(cache, { since: '2026-05-01' })
+  const projection = analytics.engine.lactateThreshold.sports.find(sport => sport.sport === 'run')
+
+  assert.deepEqual(analytics.engine.lactateThreshold.heartRate, {
+    value: ATHLETE.lt,
+    unit: 'bpm',
+    source: 'declared',
+  })
+  assert.ok(projection)
+  assert.equal(projection.source, 'training-pace-trend')
+  assert.equal(projection.method, 'ols')
+  assert.equal(projection.conf, 'low')
+  assert.equal(projection.horizonDays, 14)
+  assert.equal(projection.points.length, 15)
+  assert.ok(projection.projected != null && projection.projected < projection.current)
+  assert.ok(projection.deltaPct != null && projection.deltaPct > 0)
+  assert.ok(projection.low != null && projection.projected >= projection.low)
+  assert.ok(projection.high != null && projection.projected <= projection.high)
 })
 
 test('suffer score flows into daily effort, activity summaries, and weekly totals', () => {

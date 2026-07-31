@@ -635,6 +635,18 @@ document.addEventListener('nav', () => {
       },
     },
     {
+      name: 'triathlon',
+      auxInnerHtml: '<kbd>↵</kbd> training',
+      onClick: () => {
+        window.spaNavigate(
+          new URL(
+            resolveRelative(currentSlug, '/triathlon' as FullSlug),
+            window.location.toString(),
+          ),
+        )
+      },
+    },
+    {
       name: 'friends',
       auxInnerHtml: '<kbd>↵</kbd> as virtuosic',
       onClick: () => {
