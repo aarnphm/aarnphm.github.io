@@ -3589,6 +3589,7 @@ const buildPmc = (data: Analytics): HTMLElement => {
     if (current) current.push(activity)
     else activitiesByDate.set(activity.date, [activity])
   }
+  const raceDates = new Set(data.events.map(event => event.date))
   const r = data.risk
   const ago = Math.max(0, n - 8)
   const delta = (get: (d: DailyPoint) => number): number =>
@@ -3712,16 +3713,20 @@ const buildPmc = (data: Analytics): HTMLElement => {
   )
   const bw = (ANA_W / N) * 0.62
   for (let i = 0; i < n; i++) {
-    const load = daily[i].load
+    const day = daily[i]
+    const load = day.load
     if (load <= 0) continue
     const by = yBar(load)
+    const classes = ['tri-pmc-bar']
+    if (raceDates.has(day.date)) classes.push('tri-pmc-bar--race')
+    if (i === n - 1) classes.push('tri-pmc-bar--now')
     s.appendChild(
       svg('rect', {
         x: (x(i) - bw / 2).toFixed(2),
         y: by.toFixed(2),
         width: bw.toFixed(2),
         height: (PMC_BAR_BOT - by).toFixed(2),
-        class: i === n - 1 ? 'tri-pmc-bar tri-pmc-bar--now' : 'tri-pmc-bar',
+        class: classes.join(' '),
       }),
     )
   }
@@ -3781,7 +3786,19 @@ const buildPmc = (data: Analytics): HTMLElement => {
     { top: PMC_TOP, bottom: PMC_BOT },
   ) as HTMLElement
   const readoutEl = el('div', 'tri-chart-readout')
-  frame.querySelector('.tri-cax-stage')?.appendChild(readoutEl)
+  const stage = frame.querySelector<HTMLElement>('.tri-cax-stage')
+  for (let i = 0; i < n; i++) {
+    const day = daily[i]
+    if (!raceDates.has(day.date)) continue
+    stage?.appendChild(
+      el('span', 'tri-pmc-race-marker', undefined, {
+        style: `left:${((x(i) / ANA_W) * 100).toFixed(2)}%;top:${((yFit(day.ctl) / PMC_H) * 100).toFixed(2)}%`,
+        'data-date': day.date,
+        'aria-hidden': 'true',
+      }),
+    )
+  }
+  stage?.appendChild(readoutEl)
   block.appendChild(frame)
 
   const ctrl = el('div', 'tri-pmc-ctrl')
