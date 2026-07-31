@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-30 15:59:09 GMT-04:00
+modified: 2026-07-31 11:21:59 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://turntrout.com/why-i-left-google-deepmind -- Why I Left Google DeepMind
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [deepmind, ai labs]
+    - later: true
 - https://www.lesswrong.com/posts/yDZcsojmRXo5qKNBm/surprising-facts-about-the-slave-trade -- Surprising facts about the slave trade
   - [meta]:
     - date: 07/16/2026
@@ -493,6 +498,51 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/tenderizzation/status/2081901890481349000 -- tender on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/nabeelqu/status/2080358917675106415 -- Nabeel S. Qureshi on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/ekzhang1/status/2080328004773851297 -- Eric Zhang on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/edwardW2/status/1295606393982967810 -- Edward W. on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/nrehiew_/status/2082462519273422957 -- wh on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/typedfemale/status/2082957416216568175 -- typedfemale on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/DanHollick/status/2082838163605598632 -- Dan Hollick on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/emilkowalski/status/2083126666205737395 -- Emil Kowalski on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/Sauers_/status/2082998108208673266 -- Sauers on X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
 - https://x.com/aaaronson/status/2076318921716543860 -- Adam Aaronson on letters in the World Cup semifinals
   - [meta]:
     - date: 07/12/2026
@@ -1836,6 +1886,56 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://nyanthropic.com/ -- The New York Anthropic Fan Club
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [fan site, anthropic]
+    - later: true
+- https://dialectic.azfuller.com/ -- Dialectic Analytics
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [analytics, personal site]
+    - later: true
+- https://www.dangertesting.com/ -- Danger Testing
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [software, testing]
+    - later: true
+- https://omgokhale.com/ -- Om Gokhale
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [personal site]
+    - later: true
+- https://www.antislop.xyz/ -- antislop
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [personal site]
+    - later: true
+- https://www.mylenesmind.com/ -- mylene's mind
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [personal site, writing]
+    - later: true
+- https://www.nonfigurativ.com/ -- Bjorn Staal
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [artist, personal site]
+    - later: true
+- https://www.thisishollyli.com/ -- Holly Li
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [designer, personal site]
+    - later: true
+- https://www.timourkosters.com/ -- Timour Kosters
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [personal site]
+    - later: true
+- https://kennethkuh.info/ -- Kenneth Kuh
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [personal site]
+    - later: true
 - https://internetlabs.co/
   - [meta]:
     - date: 07/06/2026
@@ -2527,6 +2627,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://ashe.ai/frontier-tech-series/ -- Ashe Magalhaes
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [engineer, founder]
+    - later: true
 - https://guglieri.com/about -- Claudio Guglieri
   - [meta]:
     - date: 07/28/2026
@@ -3881,6 +3986,66 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://ruixu.us/posts/six-things-robotics-startup -- Six Things I Learned Watching a Robotics Startup Die from the Inside
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [robotics, startups]
+    - later: true
+- https://blog.cjquines.com/post/echoes -- Echoes
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [writing, memory]
+    - later: true
+- https://blog.jse.li/posts/smith9street -- Estimating the heights of New Yorkers from their scuff marks
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [cities, observation]
+    - later: true
+- https://lareviewofbooks.org/article/against-high-brodernism/ -- Against High Brodernism
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [culture, criticism]
+    - later: true
+- https://geohot.github.io//blog/jekyll/update/2026/07/11/ai-2040.html -- AI 2040 and the Cult of Intelligence
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [ai, culture]
+    - later: true
+- https://www.astralcodexten.com/p/the-dilbert-afterlife -- The Dilbert Afterlife
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [culture, comics]
+    - later: true
+- https://thepointmag.com/examined-life/art-is-for-seeing-evil/ -- Art Is for Seeing Evil
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [art, ethics]
+    - later: true
+- https://www.karanjanthe.me/posts/inaction-is-not-an-option -- Inaction Is Easy
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [agency, writing]
+    - later: true
+- https://fennetic.net/pub/agalmics.html -- Agalmics: The Marginalization of Scarcity
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [economics, scarcity]
+    - later: true
+- https://blog.samaltman.com/the-days-are-long-but-the-decades-are-short -- The days are long but the decades are short
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [time, startups]
+    - later: true
+- https://samoburja.com/great-founder-theory/ -- Great Founder Theory
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [founders, history]
+    - later: true
+- https://granta.com/auslander-michael-moritz/ -- Auslander
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [fiction, literature]
+    - later: true
 - https://thelampmagazine.com/blog/how-to-write-english-prose -- How to Write English Prose
   - [meta]:
     - date: 07/28/2026
@@ -6635,6 +6800,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://courses.ics.hawaii.edu/ReviewICS312/morea/BitOperations/ics312_bitmasks.pdf -- ICS 312 Bit Operations and Bitmasks
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [bit operations, computer architecture]
+    - later: true
 - https://www.youtube.com/watch?v=WRibE2nt8wM -- Lecture 1: Introduction to Individual Decision-Making
   - [meta]:
     - date: 07/04/2026
@@ -6723,6 +6893,86 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.anthropic.com/research/claude-values-models-languages -- How Claude's values vary by model and language
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [claude, values]
+    - later: true
+- https://www.anthropic.com/research/global-workspace -- A global workspace in language models
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [interpretability, representations]
+    - later: true
+- https://openai.com/index/gpt-5-6/ -- GPT-5.6
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [openai, language models]
+    - later: true
+- https://alephneuro.com/blog/silent-speech -- Silent speech with ultrasound
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speech, neurotechnology]
+    - later: true
+- https://eliebak.com/viz/jspace-open-v2 -- J-space, open models v2
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [representations, visualization]
+    - later: true
+- https://transformer-circuits.pub/2026/workspace/index.html -- Verbalizable Representations Form a Global Workspace in Language Models
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [interpretability, global workspace]
+    - later: true
+- https://blog.alpindale.net/posts/swordfish/ -- Swordfish, a Weight-Quantized GEMM Family for NVIDIA Blackwell
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [quantization, gemm]
+    - later: true
+- https://cohere.com/blog/hardware-aware-dynamic-speculative-decoding -- Hardware-Aware, Dynamic Speculative Decoding
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, inference]
+    - later: true
+- https://www.beren.io/2026-07-26-How-Can-LLM-RL-Work-Despite-Information-Theoretic-Inefficiency/ -- How can LLM RL Work Despite Information-Theoretic Inefficiency
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [reinforcement learning, llms]
+    - later: true
+- https://web.stanford.edu/~cgpotts/blog/cot/ -- The fragile foundations of CoT monitoring
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [chain of thought, monitoring]
+    - later: true
+- https://www.paradigm3.org/research/composer -- Coding vs thinking
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [coding agents, reasoning]
+    - later: true
+- https://openai.com/index/safety-alignment-long-horizon-models/ -- Safety alignment for long-horizon models
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [alignment, agents]
+    - later: true
+- https://cells2pixels.github.io/ -- Neural Cellular Automata: From Cells to Pixels
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [neural cellular automata, generative]
+    - later: true
+- https://sohl-dickstein.github.io/2024/02/12/fractal.html -- Neural network training makes beautiful fractals
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [training, visualization]
+    - later: true
+- https://matx.com/research/sd_nsa -- Speculative Decoding with Blockwise Sparse Attention
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, sparse attention]
+    - later: true
+- https://www.anthropic.com/research/AI-assistance-coding-skills -- How AI assistance impacts the formation of coding skills
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [coding agents, learning]
+    - later: true
 - https://x.com/kimbochen/status/2081859505734725933 -- Kimbo on linear attention serving
   - [meta]:
     - date: 07/28/2026
@@ -9313,6 +9563,41 @@ title: are.na
 
 ## opinions
 
+- https://newsletter.semianalysis.com/p/the-future-of-meta-superintelligence -- The Future of Meta Superintelligence: A 1 Year Progress Update
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [meta, superintelligence]
+    - later: true
+- https://thinkingmachines.ai/blog/the-future-worth-building-is-human/ -- The Future Worth Building Is Human
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [ai, humanity]
+    - later: true
+- https://asteriskmag.com/issues/12/is-the-internet-making-culture-worse -- Is the Internet Making Culture Worse?
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [internet, culture]
+    - later: true
+- https://www.theatlantic.com/ideas/2026/06/ai-open-ai-anthropic/687689/ -- The People Who Will Thrive in the AI Age
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [ai, work]
+    - later: true
+- https://asteriskmag.com/issues/12/can-you-just-do-things -- Can You Just Do Things?
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [agency, institutions]
+    - later: true
+- https://ampblog.substack.com/p/what-makes-slop-slop -- What makes slop, slop?
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [ai, culture]
+    - later: true
+- https://www.axios.com/2026/07/26/union-contracts-ai-workplace-disruption -- Union contracts and AI workplace disruption
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [ai, labor]
+    - later: true
 - https://www.wsj.com/opinion/the-ai-future-is-for-everyone-a0c24e20 -- The AI Future Is for Everyone
   - [meta]:
     - date: 07/28/2026
@@ -9843,6 +10128,51 @@ title: are.na
 
 ## life is literature
 
+- https://www.nanransohoff.com/Relationship-primitives-146f658571ff8100a7a7ec231fde64e6 -- Relationship primitives
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [relationships, social software]
+    - later: true
+- https://nabeelqu.co/principles -- Principles
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [principles, life]
+    - later: true
+- https://www.sherryning.com/p/diary-of-a-people-watcher-3 -- Diary of a people watcher, 3
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [diary, observation]
+    - later: true
+- https://amivora.substack.com/p/seeing-yourself-through-others-eyes -- Seeing Yourself through Others' Eyes
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [selfhood, relationships]
+    - later: true
+- https://jasminexli.substack.com/p/2026-h2-personal-goals -- my 2026 H2 personal goals
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [goals, planning]
+    - later: true
+- https://mingyuan.substack.com/p/the-need-to-capture-the-moment -- The need to capture the moment
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [memory, attention]
+    - later: true
+- https://gracebyron.substack.com/p/just-notice-that -- Just Notice That
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [attention, life]
+    - later: true
+- https://minutes.substack.com/p/post-scarcity-is-the-beast-of-revelation -- Post-Scarcity Is the Beast Of Revelation
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [religion, post-scarcity]
+    - later: true
+- https://paulinewee.substack.com/p/first-person-singular -- first person singular
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [identity, writing]
+    - later: true
 - https://amivora.substack.com/p/becoming-my-own-burnout-spotter -- Becoming my own "burnout spotter"
   - [meta]:
     - date: 07/28/2026
@@ -10502,6 +10832,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus -- BFloat16: The secret to high performance on Cloud TPUs
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [bfloat16, tpus]
+    - later: true
+- https://groups.google.com/g/protobuf/c/ebS47B_LDf8 -- Zig Zag Encoding versus two's complement encoding
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [protobuf, encoding]
+    - later: true
+- https://news.ycombinator.com/item?id=33774373 -- Const vs. constexpr vs. consteval vs. constinit in C++20
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [c++, constants]
+    - later: true
+- https://www.ibm.com/docs/en/aix/7.2.0?topic=types-signed-unsigned-integers -- Signed and unsigned integers
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [integers, c]
+    - later: true
+- https://jzhao.xyz/posts/beating-myers-on-large-diffs -- Beating Myers algorithm on large diffs
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [diffs, algorithms]
+    - later: true
+- https://wiki.xxiivv.com/site/interaction_nets.html -- interaction nets
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [interaction nets, programming languages]
+    - later: true
+- https://mitchellh.com/writing/everyone-should-know-simd -- Everyone Should Know SIMD
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [simd, performance]
+    - later: true
 - https://en.wikipedia.org/wiki/Variable-length_encoding -- Variable-length encoding
   - [meta]:
     - date: 07/16/2026
@@ -11033,6 +11398,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://thesephist.com/posts/epistemic-calibration/ -- Epistemic calibration and searching the space of truth
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [epistemology, calibration]
+    - later: true
+- https://classics.mit.edu/Aristotle/nicomachaen.1.i.html -- Nicomachean Ethics
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [aristotle, ethics]
+    - later: true
 - https://en.wikipedia.org/wiki/Lusotropicalism -- Lusotropicalism
   - [meta]:
     - date: 07/16/2026
@@ -12635,6 +13010,11 @@ title: are.na
 
 ## poetry
 
+- https://www.gleech.org/fav_poems/ -- Favourite poems
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [poetry, anthology]
+    - later: true
 - https://poets.org/poem/failing-and-flying -- Failing and Flying
   - [meta]:
     - date: 07/06/2026
@@ -12701,6 +13081,26 @@ title: are.na
 
 ## design
 
+- https://avely.me/work_louder -- work louder
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [workspace, sound]
+    - later: true
+- https://www.tripwire.sh/dither-kit -- dither-kit
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [data visualization, components]
+    - later: true
+- https://www.twohydesign.works/ -- Twohy Design Works
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [design studio]
+    - later: true
+- https://christianselig.com/2026/07/vision-pro-house/ -- The coolest use for the Vision Pro
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [vision pro, interface]
+    - later: true
 - https://x.com/HardestFitPics/status/2075784648068596091 -- Vintage Hermes ties
   - [meta]:
     - date: 07/11/2026
@@ -13823,6 +14223,16 @@ title: are.na
 
 ## tools
 
+- https://www.cyclist.co.uk/in-depth/lactate-gels -- Lactate gels
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [cycling, lactate]
+    - later: true
+- https://developers.google.com/maps/documentation/isochrones/overview -- Isochrones API
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [maps, routing]
+    - later: true
 - https://www.midlife.engineering/ -- Midlife Engineering
   - [meta]:
     - date: 07/06/2026
@@ -13908,6 +14318,16 @@ title: are.na
 
 ## arts
 
+- https://localroger.com/prime-intellect/mopiidx.html -- The Metamorphosis of Prime Intellect
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [science fiction, novel]
+    - later: true
+- https://studios.disneyresearch.com/2026/07/16/a-generative-motion-rig-for-artist-driven-motion-authoring/ -- A Generative Motion Rig for Artist-Driven Motion Authoring
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [animation, generative]
+    - later: true
 - https://www.youtube.com/watch?v=I90ZluYvHic -- Martin Scorsese on the Importance of Visual Literacy
   - [meta]:
     - date: 07/03/2026
@@ -14138,6 +14558,26 @@ title: are.na
 
 ## resources
 
+- https://drive.google.com/drive/folders/1OvLx39wnCGy_WKq8SiVKf7YcxxYI3WCH -- 2025_08_shanghai_meetup
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [meetup, files]
+    - later: true
+- https://billiondollarpdf.com/ -- Billion Dollar PDFs
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [pdfs, collection]
+    - later: true
+- https://infowetrust.com/ -- Info We Trust
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [data visualization, information]
+    - later: true
+- https://www.cineplex.com/my-ticket?guid=4568378bcaf94be69e8cf5e19a3d3074 -- Cineplex ticket
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [cinema, ticket]
+    - later: true
 - https://flf.shop/ -- From Lab to Field
   - [meta]:
     - date: 07/16/2026
@@ -14604,6 +15044,11 @@ title: are.na
 
 ## typography
 
+- https://tex.stackexchange.com/questions/1319/showcase-of-beautiful-typography-done-in-tex-friends -- Showcase of beautiful typography done in TeX and friends
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [tex, typography]
+    - later: true
 - https://www.virgileflores.com/typefoundry -- Virgile Flores
   - [meta]:
     - date: 06/22/2026
@@ -14796,6 +15241,51 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/vllm-project/tml-fa4/ -- vllm-project/tml-fa4
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [flashattention, attention]
+    - later: true
+- https://github.com/lucidrains/rotary-embedding-torch/blob/main/rotary_embedding_torch/flash_attn_with_rotary.py -- flash_attn_with_rotary.py
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [rotary embeddings, flash attention]
+    - later: true
+- https://github.com/ShouqiaoW/erdos/blob/main/788/prompt.md -- erdos prompt
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [prompts, math]
+    - later: true
+- https://github.com/marcelroed/gigatoken/ -- gigatoken
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [tokenization, performance]
+    - later: true
+- https://github.com/lightseekorg/tokenspeed/blob/main/tokenspeed-scheduler/csrc/core/token_container.h -- tokenspeed token_container.h
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [scheduling, inference]
+    - later: true
+- https://github.com/vllm-project/vllm/pull/47189 -- Cohere chat v2 API support
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [vllm, api]
+    - later: true
+- https://github.com/vllm-project/vllm/issues/43015 -- Cohere v2 chat API RFC
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [vllm, api]
+    - later: true
+- https://github.com/z-lab/dflash -- DFlash
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, diffusion]
+    - later: true
+- https://github.com/Tencent/AngelSpec -- AngelSpec
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, training]
+    - later: true
 - https://github.com/MoonshotAI/Kimi-K3 -- Kimi K3
   - [meta]:
     - date: 07/28/2026
@@ -16022,6 +16512,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://beej.us/blog/data/ai-making/ -- On Making
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [software, ai]
+    - later: true
+- https://mariozechner.at/posts/2025-11-30-pi-coding-agent/ -- What I learned building an opinionated and minimal coding agent
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [coding agents, engineering]
+    - later: true
+- https://www.amazon.science/blog/how-we-built-cedar-with-automated-reasoning-and-differential-testing -- How we built Cedar with automated reasoning and differential testing
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [automated reasoning, testing]
+    - later: true
+- https://aws.amazon.com/blogs/security/an-unexpected-discovery-automated-reasoning-often-makes-systems-more-efficient-and-easier-to-maintain/ -- Automated reasoning makes systems more efficient and easier to maintain
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [automated reasoning, maintenance]
+    - later: true
 - https://engineering.fb.com/2026/07/01/data-infrastructure/metas-ai-storage-blueprint-at-scale/ -- Meta's AI Storage Blueprint at Scale
   - [meta]:
     - date: 07/06/2026
@@ -16961,6 +17471,11 @@ title: are.na
 
 ## organizations
 
+- https://www.oxman.com/mission -- OXMAN
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [design, research]
+    - later: true
 - https://www.laude.org/updates/slingshots-two -- Slingshots // TWO
   - [meta]:
     - date: 06/28/2026
@@ -17163,6 +17678,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Jacobian_conjecture -- Jacobian conjecture
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [algebra, conjecture]
+    - later: true
+- https://terrytao.wordpress.com/2026/07/21/a-digestion-of-the-jacobian-conjecture-counterexample/ -- A digestion of the Jacobian conjecture counterexample
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [jacobian conjecture, algebra]
+    - later: true
 - https://arxiv.org/abs/2607.24136 -- How to read Mathematics? A study guide
   - [meta]:
     - date: 07/28/2026
@@ -17940,6 +18465,51 @@ title: are.na
   - view: list
   - json: true
 
+- https://cs.stanford.edu/~knuth/papers/claude-cycles.pdf -- Claude Cycles
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [claude, language models]
+    - later: true
+- https://arxiv.org/pdf/1910.07467 -- Root Mean Square Layer Normalization
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [normalization, transformers]
+    - later: true
+- https://mcgill.scholaris.ca/items/1b3679ae-317c-4c21-a37c-8b715232b6ab -- Value estimation with finite data
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [value estimation, reinforcement learning]
+    - later: true
+- https://arxiv.org/pdf/2605.12888 -- Seed Bank, Co-op, Stoop Swap: Metaphors for Governing Language Model Data for Creative Writing
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [language models, creative writing]
+    - later: true
+- https://arxiv.org/abs/2408.11049 -- MagicDec: Breaking the Latency-Throughput Tradeoff for Long Context Generation with Speculative Decoding
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, long context]
+    - later: true
+- https://pangram-public.s3.us-east-1.amazonaws.com/pdf/pangram_4_technical_report.pdf -- Pangram 4 Technical Report
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [language models, technical report]
+    - later: true
+- https://arxiv.org/pdf/2607.05147 -- DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [speculative decoding, semi-autoregressive]
+    - later: true
+- https://arxiv.org/pdf/2512.07805 -- Group Representational Position Encoding
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [positional encodings, attention]
+    - later: true
+- https://arxiv.org/abs/2602.20021 -- Agents of Chaos
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [agents, language models]
+    - later: true
 - https://www-cdn.anthropic.com/c5fbac3f0b1280a933ebd26d3cb8bb9f5bdeaf48/Claude%20Opus%205%20System%20Card.pdf -- Claude Opus 5 System Card
   - [meta]:
     - date: 07/28/2026

@@ -2837,6 +2837,7 @@ export const buildActivity = <N>(
 ): N => {
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     'data-activity-id': `${d.id}`,
+    'data-activity-title': d.name || d.sport,
   })
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))

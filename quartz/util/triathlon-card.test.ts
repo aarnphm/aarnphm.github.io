@@ -939,6 +939,7 @@ test('renders route stream graphs in the server activity markup', () => {
   const activity = byClass(rendered, 'tri-act')[0]
   assert.ok(activity)
   assert.equal(activity.properties.dataActivityId, '101')
+  assert.equal(activity.properties.dataActivityTitle, 'Threshold ride')
   const traces = byClass(rendered, 'tri-elev-wrap').filter(
     graph => graph.properties.dataTriTrace != null,
   )

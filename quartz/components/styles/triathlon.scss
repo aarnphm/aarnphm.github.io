@@ -6532,6 +6532,18 @@
   opacity: 1;
 }
 
+.tri-activity-title-tip {
+  box-sizing: border-box;
+  max-width: calc(100vw - 1rem);
+  overflow: hidden;
+  font-family: var(--codeFont);
+  font-size: 0.62rem;
+  line-height: 1.35;
+  color: var(--dark);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tri-gloss-h {
   font-family: var(--codeFont);
   font-size: 0.6rem;
@@ -7993,6 +8005,7 @@
   font-family: var(--codeFont);
   font-size: 0.58rem;
   color: var(--gray);
+  margin-top: 0.32rem;
 }
 
 .tri-curve-head {
@@ -9246,6 +9259,10 @@
       grid-column: 1 / -1;
     }
 
+    > .tri-act-fueling {
+      grid-column: 1 / -1;
+    }
+
     > .tri-act-head {
       grid-row: 1;
     }
@@ -9699,9 +9716,11 @@ a.tri-pop-date:hover {
     box-sizing: border-box;
     grid-template-rows: auto auto minmax(0, 1fr);
     height: 16.5rem;
+    margin-bottom: 0;
   }
 
   .tri-run-splits-list {
+    align-content: start;
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
