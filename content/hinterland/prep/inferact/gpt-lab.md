@@ -216,9 +216,7 @@ def append_kv_cache(
 
 class KVCache:
   def append(
-    self,
-    past_key_values: tuple[tuple[Tensor, Tensor], ...],
-    positions: Tensor,
+    self, past_key_values: tuple[tuple[Tensor, Tensor], ...], positions: Tensor
   ) -> None: ...
 
   def load(
@@ -231,9 +229,7 @@ class KVCache:
   def model_inputs(
     self,
   ) -> tuple[
-    tuple[tuple[Tensor, Tensor], ...] | None,
-    Tensor | None,
-    Tensor | None,
+    tuple[tuple[Tensor, Tensor], ...] | None, Tensor | None, Tensor | None
   ]: ...
 ```
 

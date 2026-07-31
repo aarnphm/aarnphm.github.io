@@ -5,7 +5,7 @@ aliases:
 date: '2025-05-21'
 description: draft-and-verify using smaller models to generate a head tokens
 id: Speculative decoding
-modified: 2026-06-05 15:08:24 GMT-04:00
+modified: 2026-07-29 12:48:12 GMT-04:00
 socials:
   slides: https://docs.google.com/presentation/d/1p1xE-EbSAnXpTSiSI0gmy_wdwxN5XaULO3AnCWWoRe4/edit#slide=id.p
 tags:
@@ -691,3 +691,10 @@ If we get an improvement for $\gamma$, we'd also get improvement for any $0 < \g
 ### blog post draft
 
 https://philkrav.com/posts/speculative/, @zhou2024distillspecimprovingspeculativedecoding
+
+entropy of the target models
+
+- dflash for 1 shot if model with low-entropy (symbolic math, tool calling)
+- eagle for high-entropy (training, reasoning, RL for token efficiency -> thinking traces more compact)
+
+hidden states for EAGLE -> disagg training (NIXL connector + vLLM -> hidden state to training server -> disagg training systems + Megatron for training draft)

@@ -122,12 +122,12 @@ the photo captions want more than `C'est mon cousin.`: the class ([[fr/lessons/2
 
 pick the pronoun by what is missing inside the relative clause:
 
-| pronom | remplace              | test                        | exemple                                         |
-| ------ | --------------------- | --------------------------- | ----------------------------------------------- |
-| `qui`  | le sujet              | un verbe suit directement   | `J'ai un frère qui habite à Montréal.`          |
-| `que`  | le complément direct  | un sujet + verbe suivent    | `C'est le chat que j'aime.`                     |
-| `dont` | un complément en `de` | le verbe se construit en `de` | `le chat dont je parle` (`parler de`)          |
-| `où`   | un lieu ou un temps   | l'antécédent est lieu/temps | `la ville où j'habite`, `le jour où je suis né` |
+| pronom | remplace              | test                          | exemple                                         |
+| ------ | --------------------- | ----------------------------- | ----------------------------------------------- |
+| `qui`  | le sujet              | un verbe suit directement     | `J'ai un frère qui habite à Montréal.`          |
+| `que`  | le complément direct  | un sujet + verbe suivent      | `C'est le chat que j'aime.`                     |
+| `dont` | un complément en `de` | le verbe se construit en `de` | `le chat dont je parle` (`parler de`)           |
+| `où`   | un lieu ou un temps   | l'antécédent est lieu/temps   | `la ville où j'habite`, `le jour où je suis né` |
 
 the elision is asymmetric: `que` drops its vowel (`le livre qu'il lit`) and `qui` never does (`la femme qui est là`). `dont` covers every `de`-construction, `parler de`, `avoir besoin de` (the [[fr/episode-8]] messages: `les ciseaux dont il a besoin`), and possession (`la femme dont le fils est médecin`).
 
