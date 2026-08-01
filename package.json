@@ -135,7 +135,7 @@
     "hono": "^4.12.27",
     "image-size": "^2.0.2",
     "is-absolute-url": "^5.0.0",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^5.2.2",
     "katex": "^0.17.0",
     "lightningcss": "^1.32.0",
     "marked": "^18.0.5",
