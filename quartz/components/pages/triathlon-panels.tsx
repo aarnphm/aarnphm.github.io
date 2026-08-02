@@ -618,232 +618,249 @@ export const PacePanel = () => (
   </div>
 )
 
-export const CalcPanel = ({ page }: { page?: boolean }) => (
-  <aside
-    class={`tri-calc${page ? ' tri-calc--page' : ''}`}
-    aria-hidden={page ? 'false' : 'true'}
-    role="dialog"
-    aria-label="triathlon calculator"
-    data-swim="1.5"
-    data-bike="40"
-    data-run="10"
-  >
-    <div class="tri-calc-bar">
-      <span class="tri-calc-title">triathlon calculator</span>
-      <button
-        class="tri-calc-copy"
-        type="button"
-        aria-label="Copy embed link"
-        title="Copy embed link"
-      >
-        <svg
-          class="copy-icon"
-          width="16"
-          height="16"
-          viewBox="-4 -4 24 24"
-          fill="currentColor"
-          aria-hidden="true"
+export const CalcPanel = ({
+  page,
+  defaultDistance,
+}: {
+  page?: boolean
+  defaultDistance?: unknown
+}) => {
+  const [defaultLabel, defaultSwim, defaultBike, defaultRun] =
+    TRI_RACE_DISTANCES.find(([label]) => label === defaultDistance) ?? TRI_RACE_DISTANCES[1]
+
+  return (
+    <aside
+      class={`tri-calc${page ? ' tri-calc--page' : ''}`}
+      aria-hidden={page ? 'false' : 'true'}
+      role="dialog"
+      aria-label="triathlon calculator"
+      data-swim={defaultSwim}
+      data-bike={defaultBike}
+      data-run={defaultRun}
+    >
+      <div class="tri-calc-bar">
+        <span class="tri-calc-title">triathlon calculator</span>
+        <button
+          class="tri-calc-copy"
+          type="button"
+          aria-label="Copy embed link"
+          title="Copy embed link"
         >
-          <use href="#github-copy" />
-        </svg>
-        <svg
-          class="check-icon"
-          width="16"
-          height="16"
-          viewBox="-4 -4 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <use href="#github-check" />
-        </svg>
-      </button>
-      <button class="tri-calc-close" type="button" aria-label="Close">
-        ×
-      </button>
-    </div>
-    <div class="tri-calc-cell">
-      <div class="tri-calc-presets">
-        {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
-          <button class="tri-calc-preset" type="button" data-swim={s} data-bike={b} data-run={r}>
-            {label}
-          </button>
-        ))}
+          <svg
+            class="copy-icon"
+            width="16"
+            height="16"
+            viewBox="-4 -4 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <use href="#github-copy" />
+          </svg>
+          <svg
+            class="check-icon"
+            width="16"
+            height="16"
+            viewBox="-4 -4 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <use href="#github-check" />
+          </svg>
+        </button>
+        <button class="tri-calc-close" type="button" aria-label="Close">
+          ×
+        </button>
       </div>
-      <div class="tri-calc-source" hidden>
-        <div class="tri-calc-srcs" role="tablist" aria-label="pace source">
-          <button
-            class="tri-calc-src tri-calc-src--on"
-            type="button"
-            role="tab"
-            aria-selected="true"
-            data-src="avg"
-          >
-            average
-          </button>
-          <button
-            class="tri-calc-src"
-            type="button"
-            role="tab"
-            aria-selected="false"
-            data-src="pred"
-          >
-            projected
-          </button>
-          <button
-            class="tri-calc-src tri-calc-src--proj"
-            type="button"
-            role="tab"
-            aria-selected="false"
-            data-src="proj"
-            data-i18n="projection"
-            hidden
-          >
-            projection
-          </button>
+      <div class="tri-calc-cell">
+        <div class="tri-calc-presets">
+          {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
+            <button
+              class={`tri-calc-preset${label === defaultLabel ? ' tri-calc-preset--on' : ''}`}
+              type="button"
+              data-swim={s}
+              data-bike={b}
+              data-run={r}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div class="tri-calc-source" hidden>
+          <div class="tri-calc-srcs" role="tablist" aria-label="pace source">
+            <button
+              class="tri-calc-src tri-calc-src--on"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              data-src="avg"
+            >
+              average
+            </button>
+            <button
+              class="tri-calc-src"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-src="pred"
+            >
+              projected
+            </button>
+            <button
+              class="tri-calc-src tri-calc-src--proj"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              data-src="proj"
+              data-i18n="projection"
+              hidden
+            >
+              projection
+            </button>
+          </div>
+        </div>
+        <div class="tri-calc-box">
+          <table class="tri-calc-io">
+            <tbody>
+              <tr>
+                <th>swim</th>
+                <td>
+                  <input
+                    class="tri-calc-in"
+                    data-k="swim"
+                    type="text"
+                    value="2:00"
+                    aria-label="swim pace"
+                    inputMode="numeric"
+                  />
+                </td>
+                <td class="tri-calc-u">/100m</td>
+                <td class="tri-calc-r" data-leg="swim">
+                  <input
+                    class="tri-calc-in tri-calc-legtime"
+                    data-legtime="swim"
+                    type="text"
+                    value=""
+                    placeholder="—"
+                    aria-label="swim time"
+                    inputMode="numeric"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th>T1</th>
+                <td>
+                  <input
+                    class="tri-calc-in"
+                    data-k="t1"
+                    type="text"
+                    value="2:00"
+                    aria-label="T1 time"
+                    inputMode="numeric"
+                  />
+                </td>
+                <td class="tri-calc-u">min</td>
+                <td class="tri-calc-r" data-leg="t1">
+                  —
+                </td>
+              </tr>
+              <tr>
+                <th>bike</th>
+                <td>
+                  <input
+                    class="tri-calc-in"
+                    data-k="bike"
+                    type="text"
+                    value="18"
+                    aria-label="bike speed"
+                    inputMode="decimal"
+                  />
+                </td>
+                <td class="tri-calc-u" data-u="bike">
+                  mph
+                </td>
+                <td class="tri-calc-r" data-leg="bike">
+                  <input
+                    class="tri-calc-in tri-calc-legtime"
+                    data-legtime="bike"
+                    type="text"
+                    value=""
+                    placeholder="—"
+                    aria-label="bike time"
+                    inputMode="numeric"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th>T2</th>
+                <td>
+                  <input
+                    class="tri-calc-in"
+                    data-k="t2"
+                    type="text"
+                    value="1:30"
+                    aria-label="T2 time"
+                    inputMode="numeric"
+                  />
+                </td>
+                <td class="tri-calc-u">min</td>
+                <td class="tri-calc-r" data-leg="t2">
+                  —
+                </td>
+              </tr>
+              <tr>
+                <th>run</th>
+                <td>
+                  <input
+                    class="tri-calc-in"
+                    data-k="run"
+                    type="text"
+                    value="9:00"
+                    aria-label="run pace"
+                    inputMode="numeric"
+                  />
+                </td>
+                <td class="tri-calc-u" data-u="run">
+                  /mi
+                </td>
+                <td class="tri-calc-r" data-leg="run">
+                  <input
+                    class="tri-calc-in tri-calc-legtime"
+                    data-legtime="run"
+                    type="text"
+                    value=""
+                    placeholder="—"
+                    aria-label="run time"
+                    inputMode="numeric"
+                  />
+                </td>
+              </tr>
+              <tr class="tri-calc-total">
+                <th>finish</th>
+                <td />
+                <td />
+                <td class="tri-calc-r tri-calc-target-cell" data-leg="total">
+                  <input
+                    class="tri-calc-in tri-calc-target"
+                    data-k="target"
+                    type="text"
+                    value=""
+                    placeholder="—"
+                    aria-label="target finish time"
+                    inputMode="numeric"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="tri-calc-box">
-        <table class="tri-calc-io">
-          <tbody>
-            <tr>
-              <th>swim</th>
-              <td>
-                <input
-                  class="tri-calc-in"
-                  data-k="swim"
-                  type="text"
-                  value="2:00"
-                  aria-label="swim pace"
-                  inputMode="numeric"
-                />
-              </td>
-              <td class="tri-calc-u">/100m</td>
-              <td class="tri-calc-r" data-leg="swim">
-                <input
-                  class="tri-calc-in tri-calc-legtime"
-                  data-legtime="swim"
-                  type="text"
-                  value=""
-                  placeholder="—"
-                  aria-label="swim time"
-                  inputMode="numeric"
-                />
-              </td>
-            </tr>
-            <tr>
-              <th>T1</th>
-              <td>
-                <input
-                  class="tri-calc-in"
-                  data-k="t1"
-                  type="text"
-                  value="2:00"
-                  aria-label="T1 time"
-                  inputMode="numeric"
-                />
-              </td>
-              <td class="tri-calc-u">min</td>
-              <td class="tri-calc-r" data-leg="t1">
-                —
-              </td>
-            </tr>
-            <tr>
-              <th>bike</th>
-              <td>
-                <input
-                  class="tri-calc-in"
-                  data-k="bike"
-                  type="text"
-                  value="18"
-                  aria-label="bike speed"
-                  inputMode="decimal"
-                />
-              </td>
-              <td class="tri-calc-u" data-u="bike">
-                mph
-              </td>
-              <td class="tri-calc-r" data-leg="bike">
-                <input
-                  class="tri-calc-in tri-calc-legtime"
-                  data-legtime="bike"
-                  type="text"
-                  value=""
-                  placeholder="—"
-                  aria-label="bike time"
-                  inputMode="numeric"
-                />
-              </td>
-            </tr>
-            <tr>
-              <th>T2</th>
-              <td>
-                <input
-                  class="tri-calc-in"
-                  data-k="t2"
-                  type="text"
-                  value="1:30"
-                  aria-label="T2 time"
-                  inputMode="numeric"
-                />
-              </td>
-              <td class="tri-calc-u">min</td>
-              <td class="tri-calc-r" data-leg="t2">
-                —
-              </td>
-            </tr>
-            <tr>
-              <th>run</th>
-              <td>
-                <input
-                  class="tri-calc-in"
-                  data-k="run"
-                  type="text"
-                  value="9:00"
-                  aria-label="run pace"
-                  inputMode="numeric"
-                />
-              </td>
-              <td class="tri-calc-u" data-u="run">
-                /mi
-              </td>
-              <td class="tri-calc-r" data-leg="run">
-                <input
-                  class="tri-calc-in tri-calc-legtime"
-                  data-legtime="run"
-                  type="text"
-                  value=""
-                  placeholder="—"
-                  aria-label="run time"
-                  inputMode="numeric"
-                />
-              </td>
-            </tr>
-            <tr class="tri-calc-total">
-              <th>finish</th>
-              <td />
-              <td />
-              <td class="tri-calc-r tri-calc-target-cell" data-leg="total">
-                <input
-                  class="tri-calc-in tri-calc-target"
-                  data-k="target"
-                  type="text"
-                  value=""
-                  placeholder="—"
-                  aria-label="target finish time"
-                  inputMode="numeric"
-                />
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="tri-calc-proj" hidden>
+        <div class="tri-calc-proj-zones" role="tablist" aria-label="heart rate zone" />
+        <div class="tri-calc-proj-out" aria-live="polite" />
       </div>
-    </div>
-    <div class="tri-calc-proj" hidden>
-      <div class="tri-calc-proj-zones" role="tablist" aria-label="heart rate zone" />
-      <div class="tri-calc-proj-out" aria-live="polite" />
-    </div>
-  </aside>
-)
+    </aside>
+  )
+}
 
 export const ToolsPanel = () => (
   <div class="tri-tools">

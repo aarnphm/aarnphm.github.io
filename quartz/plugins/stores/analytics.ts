@@ -1775,11 +1775,16 @@ function buildBest(acts: Act[], sport: Sport): SportBest {
   const minTimeS = sport === 'swim' ? 0 : 20 * 60
   const better = (rate: number, best: number): boolean =>
     sport === 'bike' ? rate > best : rate < best
+  const qualifyingRate = (act: Act): number | null => {
+    if (act.a.distance < minDistM || act.a.movingTime < minTimeS) return null
+    if (sport === 'swim') return swimPaceSeconds(act.a.distance, act.a.movingTime)
+    return toRate(act.vGap)
+  }
 
   let fastest: number | null = null
   for (const x of mine) {
-    if (x.a.distance < minDistM || x.a.movingTime < minTimeS) continue
-    const rate = toRate(x.vGap)
+    const rate = qualifyingRate(x)
+    if (rate == null) continue
     if (fastest === null || better(rate, fastest)) fastest = rate
   }
 
@@ -1791,7 +1796,8 @@ function buildBest(acts: Act[], sport: Sport): SportBest {
   const bestToDate: { date: string; rate: number }[] = []
   let running: number | null = null
   for (const x of mine) {
-    const rate = toRate(x.vGap)
+    const rate = qualifyingRate(x)
+    if (rate == null) continue
     if (running === null || better(rate, running)) running = rate
     bestToDate.push({ date: x.day, rate: running })
   }

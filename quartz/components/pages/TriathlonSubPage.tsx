@@ -18,7 +18,15 @@ import {
   type TriView,
 } from './triathlon-panels'
 
-const PANEL: Record<Exclude<TriView, 'on' | 'feed'>, (props: { page?: boolean }) => JSX.Element> = {
+interface TriathlonSubPanelProps {
+  page?: boolean
+  defaultDistance?: unknown
+}
+
+const PANEL: Record<
+  Exclude<TriView, 'on' | 'feed'>,
+  (props: TriathlonSubPanelProps) => JSX.Element
+> = {
   tools: ToolsPanel,
   calc: CalcPanel,
   analytics: AnalyticsPanel,
@@ -26,7 +34,7 @@ const PANEL: Record<Exclude<TriView, 'on' | 'feed'>, (props: { page?: boolean })
   training: TrainingPanel,
 }
 
-export const TriathlonSubPage = (view: TriView): QuartzComponent => {
+export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): QuartzComponent => {
   const Page: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
     const root = pathToRoot(fileData.slug!)
     const feedScope = view === 'on' ? triathlonFeedScopeFromSlug(fileData.slug!) : null
@@ -49,7 +57,7 @@ export const TriathlonSubPage = (view: TriView): QuartzComponent => {
         ) : view === 'feed' ? (
           <FeedPanel />
         ) : (
-          PANEL[view]({ page: true })
+          PANEL[view]({ page: true, defaultDistance })
         )}
       </div>
     )

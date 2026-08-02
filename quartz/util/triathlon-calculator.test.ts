@@ -1,15 +1,57 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { buildAnalytics } from '../plugins/stores/analytics'
 import {
   computeTriathlonCalcTimes,
   deriveZoneBands,
   formatDurationClock,
   parseClockSeconds,
   projectZoneTimes,
+  resolveTriathlonCalcPace,
   solveTriathlonCalcTarget,
   type SportThresholdVel,
   type TriathlonCalcInput,
 } from './triathlon-calculator'
+
+test('resolves projected calculator pace from the personal best', () => {
+  const analytics = buildAnalytics(null)
+  analytics.calibration.paces = [
+    {
+      sport: 'run',
+      unit: 's/km',
+      average: 350,
+      projected: 340,
+      previous: null,
+      delta: null,
+      deltaPct: null,
+      projectedDelta: -10,
+      projectedDeltaPct: 2.9,
+      direction: 'unknown',
+      sampleSize: 1,
+      previousSampleSize: 0,
+      latestDate: '2026-07-31',
+      points: [],
+    },
+  ]
+  analytics.bests = [
+    {
+      sport: 'run',
+      count: 1,
+      totalKm: 5,
+      totalTimeS: 1500,
+      fastestRate: 300,
+      fastestUnit: 's/km',
+      longestKm: 5,
+      biggestClimbM: 0,
+      bestToDate: [{ date: '2026-07-31', rate: 300 }],
+    },
+  ]
+
+  assert.equal(resolveTriathlonCalcPace(analytics, 'avg', 'run'), 350)
+  assert.equal(resolveTriathlonCalcPace(analytics, 'pred', 'run'), 300)
+  analytics.bests = []
+  assert.equal(resolveTriathlonCalcPace(analytics, 'pred', 'run'), 340)
+})
 
 const olympicInput: TriathlonCalcInput = {
   swimKm: 1.5,
