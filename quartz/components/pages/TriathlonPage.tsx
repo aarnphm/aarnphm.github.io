@@ -281,7 +281,7 @@ export default (() => {
             </a>
           </div>
         </div>
-        <CalcPanel />
+        <CalcPanel defaultDistance={target} />
 
         <AnalyticsPanel />
         <MapPanel />

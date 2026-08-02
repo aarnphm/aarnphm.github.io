@@ -354,7 +354,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ctx,
           subSlug,
           subData,
-          { ...opts, pageBody: TriathlonSubPage(view) },
+          { ...opts, pageBody: TriathlonSubPage(view, file.data.frontmatter?.['triathlon']) },
           subResources,
           true,
         )

@@ -1,3 +1,5 @@
+import type { Analytics } from '../plugins/stores/analytics'
+import type { Sport } from '../plugins/stores/strava'
 import { KM_TO_MI, clock, type TriNodeFactory } from './triathlon-card'
 import { tl } from './triathlon-i18n'
 
@@ -9,6 +11,40 @@ export const TRI_RACE_DISTANCES: [string, number, number, number][] = [
 ]
 
 export const CALC_ANCHOR_PREFIX = 'calculator-'
+
+export const resolveTriathlonCalcPace = (
+  analytics: Analytics,
+  source: 'avg' | 'pred',
+  sport: Sport,
+): number | null => {
+  const valid = (value: number | null | undefined): value is number =>
+    value != null && Number.isFinite(value) && value > 0
+  const calibration = analytics.calibration.paces.find(item => item.sport === sport)
+  const personalBest = analytics.bests.find(item => item.sport === sport)?.fastestRate
+  const calibrated =
+    source === 'avg'
+      ? calibration?.average
+      : valid(personalBest)
+        ? personalBest
+        : calibration?.projected
+  if (valid(calibrated)) return calibrated
+
+  const threshold = analytics.thresholds.find(item => item.sport === sport)
+  if (!threshold || !(threshold.vThr > 0)) return null
+  const average =
+    sport === 'swim'
+      ? 100 / threshold.vThr
+      : sport === 'bike'
+        ? threshold.vThr * 3.6
+        : 1000 / threshold.vThr
+  if (source === 'avg') return average
+
+  const trend = analytics.trends.find(item => item.sport === sport)
+  if (!trend || !trend.level) return average
+  const end = trend.forecast[trend.forecast.length - 1]?.value ?? trend.level
+  const ratio = end / trend.level
+  return Number.isFinite(ratio) && ratio > 0 ? average * ratio : average
+}
 
 export interface CalcShare {
   presetIdx: number

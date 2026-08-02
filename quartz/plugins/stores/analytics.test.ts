@@ -881,6 +881,26 @@ test('calibration tracks newest pace and volume deltas against the prior window'
   assert.equal(activeWeek.runHours, 0.8)
 })
 
+test('personal bests reject implausible swim results', () => {
+  const { cache } = fixtures()
+  cache.activities = {
+    '10': activity(10, 'Swim', iso(18), 1200, 1000, { totalElevationGain: 0 }),
+    '11': activity(11, 'Swim', iso(20), 306, 2300, { totalElevationGain: 0 }),
+    '12': activity(12, 'Swim', iso(22), 1000, 1000, { totalElevationGain: 0 }),
+  }
+  cache.streams = {}
+
+  const swim = buildAnalytics(cache, { since: '2026-05-01' }).bests.find(
+    best => best.sport === 'swim',
+  )
+
+  assert.equal(swim?.fastestRate, 100)
+  assert.deepEqual(swim?.bestToDate, [
+    { date: iso(18), rate: 120 },
+    { date: iso(22), rate: 100 },
+  ])
+})
+
 test('lactate threshold projection stays a low-confidence training proxy with its model band', () => {
   const { cache } = fixtures()
   const durations = [1800, 1740, 1680, 1620, 1560, 1500]

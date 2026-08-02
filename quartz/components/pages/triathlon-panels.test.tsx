@@ -3,6 +3,7 @@ import test from 'node:test'
 import render from 'preact-render-to-string'
 import {
   AnalyticsPanel,
+  CalcPanel,
   DISPATCH_ICON,
   FeedPanel,
   GearPanel,
@@ -10,6 +11,37 @@ import {
   PacePanel,
   TrainingPanel,
 } from './triathlon-panels'
+
+test('calculator defaults to the configured race distance with an olympic fallback', () => {
+  const half = render(<CalcPanel defaultDistance="70.3" />)
+
+  assert.equal(
+    half.includes(
+      'aria-label="triathlon calculator" data-swim="1.9" data-bike="90" data-run="21.1"',
+    ),
+    true,
+  )
+  assert.equal(
+    half.includes(
+      'class="tri-calc-preset tri-calc-preset--on" type="button" data-swim="1.9" data-bike="90" data-run="21.1">70.3</button>',
+    ),
+    true,
+  )
+
+  const fallback = render(<CalcPanel defaultDistance="unsupported" />)
+  assert.equal(
+    fallback.includes(
+      'aria-label="triathlon calculator" data-swim="1.5" data-bike="40" data-run="10"',
+    ),
+    true,
+  )
+  assert.equal(
+    fallback.includes(
+      'class="tri-calc-preset tri-calc-preset--on" type="button" data-swim="1.5" data-bike="40" data-run="10">olympic</button>',
+    ),
+    true,
+  )
+})
 
 test('feed exposes the shared activity query controls', () => {
   const html = render(<FeedPanel />)

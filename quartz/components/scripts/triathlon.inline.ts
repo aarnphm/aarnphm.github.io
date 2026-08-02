@@ -38,6 +38,7 @@ import {
   parseClockSeconds,
   type ProjectedLeg,
   projectZoneTimes,
+  resolveTriathlonCalcPace,
   type SportThresholdVel,
   solveTriathlonCalcLeg,
   solveTriathlonCalcTarget,
@@ -2906,21 +2907,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   let projActive = false
   let projModelKey = ''
   let projModel: { mu: number; sigma: number } | null = null
-  const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null => {
-    if (!analytics) return null
-    const cal = bySport(analytics.calibration.paces, sport)
-    const calibrated = which === 'avg' ? cal?.average : cal?.projected
-    if (calibrated != null && Number.isFinite(calibrated) && calibrated > 0) return calibrated
-    const th = bySport(analytics.thresholds, sport)
-    if (!th || !(th.vThr > 0)) return null
-    const avg = sport === 'swim' ? 100 / th.vThr : sport === 'bike' ? th.vThr * 3.6 : 1000 / th.vThr
-    if (which === 'avg') return avg
-    const tr = bySport(analytics.trends, sport)
-    if (!tr || !tr.level) return avg
-    const end = tr.forecast[tr.forecast.length - 1]?.value ?? tr.level
-    const ratio = end / tr.level
-    return Number.isFinite(ratio) && ratio > 0 ? avg * ratio : avg
-  }
+  const paceHuman = (which: 'avg' | 'pred', sport: Sport): number | null =>
+    analytics ? resolveTriathlonCalcPace(analytics, which, sport) : null
   const toCalcInput = (sport: Sport, v: number): string =>
     sport === 'bike'
       ? (isImperialUnit() ? v * KM_TO_MI : v).toFixed(1)
@@ -3247,7 +3235,6 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   window.addEventListener('tri:unit', onUnit)
   syncUnitLabels()
   if (!isImperialUnit()) onUnit()
-  calc.querySelectorAll('.tri-calc-preset')[1]?.classList.add('tri-calc-preset--on')
 
   const apath = root.dataset.analyticsPath
   if (apath)
