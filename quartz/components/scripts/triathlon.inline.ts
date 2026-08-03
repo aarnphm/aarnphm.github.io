@@ -10986,6 +10986,7 @@ const TRI_POWER_FILTER_KEY = 'tri-power-zero-filter'
 const TRI_POWER_FILTER_EVENT = 'tri:power-zero-filter'
 const TRI_MAP_STYLE_KEY = 'tri-map-style'
 const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
+const TRI_PANELS_FULLSCREEN_KEY = 'tri-panels-fullscreen'
 const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
 type TriMapStyle = (typeof TRI_MAP_STYLES)[number]
 
@@ -11019,6 +11020,24 @@ const nextTriMapStyle = (): TriMapStyle =>
   TRI_MAP_STYLES[(TRI_MAP_STYLES.indexOf(readTriMapStyle()) + 1) % TRI_MAP_STYLES.length]
 
 const toggleTriMapStyle = (): void => setTriMapStyle(nextTriMapStyle())
+
+const readTriPanelsFullscreen = (): boolean => {
+  try {
+    return localStorage.getItem(TRI_PANELS_FULLSCREEN_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+const toggleTriPanelsFullscreen = (root: HTMLElement): void => {
+  const next = !root.classList.contains('tri-panels-fullscreen')
+  root.classList.toggle('tri-panels-fullscreen', next)
+  try {
+    localStorage.setItem(TRI_PANELS_FULLSCREEN_KEY, String(next))
+  } catch {
+    void 0
+  }
+}
 
 const toggleTriUnit = (): void => {
   const next = !isImperialUnit()
@@ -11193,6 +11212,20 @@ const setupCommandPalette = (root: HTMLElement): (() => void) => {
       keys: 'map style roads streets monochrome mono satellite imagery mapbox route road',
       run: () => {
         toggleTriMapStyle()
+        render()
+      },
+    },
+    {
+      label: () =>
+        tl(
+          root.classList.contains('tri-panels-fullscreen')
+            ? 'panels · windowed'
+            : 'panels · full screen',
+        ),
+      hint: 'layout',
+      keys: 'toggle panels fullscreen full screen windowed desktop mobile analytics map training layout',
+      run: () => {
+        toggleTriPanelsFullscreen(root)
         render()
       },
     },
@@ -13139,7 +13172,11 @@ const mountTriathlon = (): (() => void) => {
     setZeroPowerExcluded(localStorage.getItem(TRI_POWER_FILTER_KEY) === 'exclude')
   } catch {}
   const root = document.querySelector<HTMLElement>('.triathlon')
-  if (root) initTriLocale()
+  if (root) {
+    if (!root.dataset.triView)
+      root.classList.toggle('tri-panels-fullscreen', readTriPanelsFullscreen())
+    initTriLocale()
+  }
   const embedCleanup = setupDayEmbeds()
   addCleanup(embedCleanup)
   addCleanup(setupChartScrub(document.body))
