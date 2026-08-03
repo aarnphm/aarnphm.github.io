@@ -2081,6 +2081,17 @@
   --tri-modal-y: -50%;
 }
 
+.triathlon.tri-panels-fullscreen {
+  --tri-modal-w: 100vw;
+  --tri-modal-h: 100dvh;
+}
+
+.triathlon.tri-panels-fullscreen .tri-analytics,
+.triathlon.tri-panels-fullscreen .tri-map,
+.triathlon.tri-panels-fullscreen .tri-training {
+  border: none;
+}
+
 @media all and (max-width: 48rem) {
   .triathlon {
     --tri-modal-w: 100vw;
