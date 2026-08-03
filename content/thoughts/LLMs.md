@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-06-06 01:47:46 GMT-04:00
+modified: 2026-08-03 14:18:16 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -37,7 +37,7 @@ I did a [[thoughts/images/htn-openllm.pdf|talk at HackTheNorth 2023]] on this to
 
 - [[thoughts/quantization|Quantization]]: reduce computational and memory costs of running inference with representing the weight and activations with low-precision data type
 - [[thoughts/Continuous batching]]: Implementing [[thoughts/paged attention|Paged Attention]] with custom scheduler to manage swapping kv-cache for better resource utilisation
-- Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of Flash Attention 3, Radix Attention, TreeAttention, etc.)
+- Different [[thoughts/Attention|Attention]] variants, for better kernels and hardware optimisation (Think of [[thoughts/flash attention|Flash Attention 3]], [[thoughts/radix attention|Radix Attention]], [[thoughts/tree attention|TreeAttention]], etc.)
 - [[thoughts/Transformers#Byte-Latent Transformer]]: idea to use entropy-based sampling to choose next tokens instead of token-level decoding. [^blt]
 
 [^blt]: Think of decoding each text into dynamic patches, and thus actually improving inference efficiency. See also [link](https://ai.meta.com/research/publications/byte-latent-transformer-patches-scale-better-than-tokens/)

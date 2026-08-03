@@ -62,7 +62,6 @@
 
 .tri-cmdk-trigger {
   appearance: none;
-  display: none;
   margin: 0;
   padding: 0;
   line-height: inherit;
@@ -72,6 +71,28 @@
   border-left: 0;
   border-radius: var(--radius-none);
   cursor: pointer;
+
+  display: inline-block;
+  transition:
+    color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease-out;
+
+  &:focus-visible {
+    color: var(--dark);
+    border-color: var(--dark);
+    outline: 2px solid color-mix(in srgb, var(--secondary) 55%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &[aria-expanded='true'] {
+    color: var(--tri-accent);
+    border-color: var(--tri-accent);
+  }
 }
 
 .tri-strip {
@@ -176,30 +197,6 @@
 }
 
 @media all and (max-width: 48rem) {
-  .tri-cmdk-trigger {
-    display: inline-block;
-    transition:
-      color 120ms ease,
-      border-color 120ms ease,
-      transform 120ms ease-out;
-
-    &:focus-visible {
-      color: var(--dark);
-      border-color: var(--dark);
-      outline: 2px solid color-mix(in srgb, var(--secondary) 55%, transparent);
-      outline-offset: 2px;
-    }
-
-    &:active {
-      transform: scale(0.97);
-    }
-
-    &[aria-expanded='true'] {
-      color: var(--tri-accent);
-      border-color: var(--tri-accent);
-    }
-  }
-
   .tri-scroll-shell {
     display: flex;
     flex-direction: column;
