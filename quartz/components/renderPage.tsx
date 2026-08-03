@@ -96,6 +96,7 @@ import {
   triathlonDayExtras,
   triathlonDayProps,
   triathlonEmbedAnchorFromSource,
+  triathlonEmbedDayHref,
 } from './triathlon-day-card'
 
 interface RenderComponents {
@@ -1458,6 +1459,8 @@ export function transcludeFinal(
         }
       }
       if (triathlonDate) {
+        const dayHref = triathlonEmbedDayHref(pathToRoot(slug), triathlonDate)
+        if (!dayHref) return
         const extras: DayCardExtras = {
           ...triathlonDayExtras(page, triathlonDate),
           ...triathlonEmbedExtras,
@@ -1490,7 +1493,7 @@ export function transcludeFinal(
         ]
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
-            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
+            h('a', { href: dayHref, class: 'internal transclude-src' }, [
               {
                 type: 'text',
                 value:

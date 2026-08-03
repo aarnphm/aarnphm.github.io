@@ -1,7 +1,7 @@
 import type { Element } from 'hast'
 import { h, s } from 'hastscript'
 import type { QuartzPluginData } from '../plugins/vfile'
-import { slugAnchor } from '../util/path'
+import { joinSegments, slugAnchor } from '../util/path'
 import {
   buildDayCard,
   type DayCardExtras,
@@ -10,8 +10,8 @@ import {
   type TriNodeFactory,
   parseExcludedActivityIds,
 } from '../util/triathlon-card'
+import { triathlonDaySlug } from '../util/triathlon-date-route'
 
-const TRIATHLON_DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 const TRIATHLON_SPORT_ANCHOR: Record<string, NonNullable<DayCardExtras['sport']>> = {
   swim: 'swim',
   bike: 'bike',
@@ -40,7 +40,7 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
   }
   if (!isStringArray(segments) || segments.length < 2) return null
   const [date, ...options] = segments
-  if (!TRIATHLON_DATE_RE.test(date)) return null
+  if (triathlonDaySlug(date) === null) return null
 
   let sport: TriathlonEmbedAnchor['sport']
   let excludedActivityIds: string[] | undefined
@@ -82,6 +82,11 @@ export const triathlonEmbedAnchorFromSource = (
     if (recovered) return recovered
   }
   return null
+}
+
+export const triathlonEmbedDayHref = (root: string, date: string): string | null => {
+  const daySlug = triathlonDaySlug(date)
+  return daySlug ? joinSegments(root, daySlug) : null
 }
 
 export const triathlonCardFactory: TriNodeFactory<Element> = {

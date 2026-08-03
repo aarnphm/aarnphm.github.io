@@ -4,6 +4,7 @@ import {
   triathlonDayProps,
   triathlonEmbedAnchor,
   triathlonEmbedAnchorFromSource,
+  triathlonEmbedDayHref,
 } from './triathlon-day-card'
 
 test('parses triathlon embed sport and activity exclusions', () => {
@@ -14,6 +15,7 @@ test('parses triathlon embed sport and activity exclusions', () => {
 })
 
 test('rejects malformed triathlon embed filters', () => {
+  assert.equal(triathlonEmbedAnchor('["2026-02-29","cycling"]'), null)
   assert.equal(triathlonEmbedAnchor('["2026-07-26","filter=19471122670&&19476629599"]'), null)
   assert.equal(triathlonEmbedAnchor('["2026-07-26","filter="]'), null)
   assert.equal(triathlonEmbedAnchor('["2026-07-26","unknown"]'), null)
@@ -30,6 +32,14 @@ test('recovers activity exclusions from source when the cached anchor is slugged
     ),
     { date: '2026-07-26', excludedActivityIds: ['19471122670', '19476629599'] },
   )
+})
+
+test('routes triathlon embeds to their generated day pages', () => {
+  assert.equal(
+    triathlonEmbedDayHref('../../../..', '2026-07-26'),
+    '../../../../triathlon/on/2026/07/26',
+  )
+  assert.equal(triathlonEmbedDayHref('.', '2026-02-29'), null)
 })
 
 test('carries activity exclusions into hydrated day-card props', () => {
