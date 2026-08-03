@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-07-21 18:32:11 GMT-04:00
+modified: 2026-08-03 13:33:01 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -305,3 +305,5 @@ title: lists
 - rollicking
 - consign
 - mitochondrial biogenesis
+- sesquipedalian
+- transient ischemic attack
