@@ -7,6 +7,7 @@ import type {
   BodyBlock,
   DailyPoint,
   DexaRecord,
+  PowerCurveBlock,
   RaceLeg,
   SportTrend,
   Vo2LabProfile,
@@ -58,6 +59,7 @@ import {
   activityComparisonMapPointAtDistance,
   activityPowerDistributionPercentages,
   activityZonePercentages,
+  axisNumber,
   axisFrame,
   buildAnalysisBar,
   buildActivity as buildActivityNode,
@@ -100,9 +102,11 @@ import {
   KM_TO_MI,
   M_TO_FT,
   nearestPowerCurveValue,
+  niceStep,
   normalizePowerCurvePoints,
   powerCurveFraction,
   powerCurveHoverAt,
+  powerCurvePathPoints,
   parseExcludedActivityIds,
   positiveMetricDomain,
   powerViewActivity,
@@ -7727,6 +7731,209 @@ const buildCardio = (data: Analytics): HTMLElement => {
   return block
 }
 
+type BestPowerSeriesKey = 'six-weeks' | 'year'
+
+const bestPowerSeriesLabel = (power: PowerCurveBlock, key: BestPowerSeriesKey): string =>
+  key === 'six-weeks'
+    ? tl('last 6 weeks')
+    : power.yearLabel == null
+      ? tl('calendar year')
+      : `${tl('all of')} ${power.yearLabel}`
+
+const bestPowerSeries = (
+  power: PowerCurveBlock,
+): Array<{ key: BestPowerSeriesKey; curve: PowerCurvePoint[] }> => [
+  { key: 'six-weeks', curve: power.sixWeeks },
+  { key: 'year', curve: power.year },
+]
+
+const buildBestPowerCurve = (data: Analytics): HTMLElement => {
+  const block = el('section', 'tri-best-power')
+  const power = data.powerCurve
+  const head = el('div', 'tri-best-power-head')
+  head.appendChild(anaTitle('best efforts · power curve'))
+  const controls = el('div', 'tri-best-power-controls', undefined, {
+    role: 'group',
+    'aria-label': tl('power curve periods'),
+  })
+  const series = bestPowerSeries(power)
+  for (const { key, curve } of series) {
+    const available = curve.length >= 2
+    const attrs: Record<string, string> = {
+      type: 'button',
+      'data-power-series': key,
+      'aria-pressed': String(available),
+    }
+    if (!available) attrs.disabled = ''
+    const button = el('button', 'tri-best-power-toggle', undefined, attrs)
+    button.append(
+      el('span', `tri-best-power-swatch tri-best-power-swatch--${key}`, undefined, {
+        'aria-hidden': 'true',
+      }),
+      el('span', undefined, bestPowerSeriesLabel(power, key)),
+    )
+    controls.appendChild(button)
+  }
+  head.appendChild(controls)
+  block.appendChild(head)
+
+  const available = series.filter(({ curve }) => curve.length >= 2)
+  if (available.length === 0) {
+    block.appendChild(el('div', 'tri-ana-empty', tl('no cycling power data')))
+    return block
+  }
+
+  block.appendChild(
+    el('p', 'tri-best-power-note', tl('maximal average power sustained for each duration')),
+  )
+  const minSeconds = Math.min(...available.map(({ curve }) => curve[0].s))
+  const maxSeconds = Math.max(...available.map(({ curve }) => curve[curve.length - 1].s))
+  const W = 100
+  const H = 34
+  const observedMax = Math.max(
+    1,
+    ...available.flatMap(({ curve }) => curve.map(point => point.w)),
+    power.ftp ?? 0,
+    power.goalFtp ?? 0,
+  )
+  const step = niceStep(observedMax, 4)
+  const domainMax = Math.ceil(observedMax / step) * step
+  const X = (seconds: number): number => powerCurveFraction(seconds, minSeconds, maxSeconds) * W
+  const Y = (watts: number): number => H - (watts / domainMax) * (H - 1)
+  const yTicks = Array.from(
+    { length: Math.round(domainMax / step) + 1 },
+    (_, index) => index * step,
+  ).map(value => ({ label: value === 0 ? '0' : `${axisNumber(value, step)}w`, vbY: Y(value) }))
+  const path = (curve: PowerCurvePoint[]): string =>
+    powerCurvePathPoints(curve)
+      .map(
+        (point, index) =>
+          `${index === 0 ? 'M' : 'L'} ${X(point.s).toFixed(2)} ${Y(point.w).toFixed(2)}`,
+      )
+      .join(' ')
+  const anchor = available[0].curve
+  const initial = powerCurveHoverAt(
+    anchor,
+    [],
+    powerCurveFraction(300, anchor[0].s, anchor[anchor.length - 1].s),
+  )
+  const selectedSeconds = initial?.durationS ?? anchor[0].s
+  const graph = svg('svg', {
+    class: 'tri-best-power-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': tl('best efforts power curve'),
+    'aria-orientation': 'horizontal',
+    'aria-valuemin': minSeconds,
+    'aria-valuemax': maxSeconds,
+    'aria-valuenow': selectedSeconds,
+    'data-power-selected-seconds': selectedSeconds,
+    'data-power-domain-max': domainMax,
+  })
+  for (const tick of yTicks)
+    graph.appendChild(
+      svg('line', {
+        class: 'tri-best-power-grid',
+        x1: 0,
+        y1: tick.vbY.toFixed(2),
+        x2: W,
+        y2: tick.vbY.toFixed(2),
+        'aria-hidden': 'true',
+      }),
+    )
+  for (const { key, curve } of available)
+    graph.appendChild(
+      svg('path', {
+        class: `tri-best-power-line tri-best-power-line--${key}`,
+        d: path(curve),
+        'data-power-series': key,
+        'aria-hidden': 'true',
+      }),
+    )
+  if (power.ftp != null)
+    graph.appendChild(
+      svg('line', {
+        class: 'tri-best-power-ftp',
+        x1: 0,
+        y1: Y(power.ftp).toFixed(2),
+        x2: W,
+        y2: Y(power.ftp).toFixed(2),
+      }),
+    )
+  if (power.goalFtp != null)
+    graph.appendChild(
+      svg('line', {
+        class: 'tri-best-power-goal',
+        x1: 0,
+        y1: Y(power.goalFtp).toFixed(2),
+        x2: W,
+        y2: Y(power.goalFtp).toFixed(2),
+      }),
+    )
+  graph.appendChild(
+    svg('line', {
+      class: 'tri-best-power-cursor',
+      x1: X(selectedSeconds).toFixed(2),
+      y1: 0,
+      x2: X(selectedSeconds).toFixed(2),
+      y2: H,
+    }),
+  )
+
+  const overlays: Array<HTMLElement | SVGElement> = []
+  const readout = el('div', 'tri-best-power-readout')
+  readout.appendChild(el('span', 'tri-best-power-duration', zoneClock(selectedSeconds)))
+  for (const { key, curve } of available) {
+    const watts = nearestPowerCurveValue(curve, selectedSeconds)
+    const point = el('span', `tri-best-power-point tri-best-power-point--${key}`, undefined, {
+      'data-power-series': key,
+      'aria-hidden': 'true',
+    })
+    if (watts != null)
+      point.setAttribute(
+        'style',
+        `left:${X(selectedSeconds).toFixed(2)}%;top:${((Y(watts) / H) * 100).toFixed(2)}%`,
+      )
+    const row = el('span', 'tri-best-power-readout-row', undefined, { 'data-power-series': key })
+    row.append(
+      el('span', `tri-best-power-swatch tri-best-power-swatch--${key}`, undefined, {
+        'aria-hidden': 'true',
+      }),
+      el('strong', 'tri-best-power-value', watts == null ? '—' : `${watts.toLocaleString()} W`),
+      el('span', 'tri-best-power-label', bestPowerSeriesLabel(power, key)),
+    )
+    overlays.push(point)
+    readout.appendChild(row)
+  }
+  overlays.push(readout)
+
+  const durationTicks: AxisXTick[] = [
+    1, 15, 60, 300, 600, 1_200, 1_800, 2_700, 3_600, 5_400, 7_200, 10_800, 14_400, 18_000,
+  ]
+    .filter(seconds => seconds >= minSeconds && seconds <= maxSeconds)
+    .map((seconds, index, ticks) => ({
+      label: dlabel(seconds),
+      pct: X(seconds),
+      cls: `tri-best-power-tick${index === 0 ? ' tri-cax-xt--first' : index === ticks.length - 1 ? ' tri-cax-xt--last' : ''}`,
+      tag: 'button',
+      attrs: {
+        type: 'button',
+        'data-power-seconds': String(seconds),
+        'aria-pressed': String(seconds === selectedSeconds),
+      },
+    }))
+  block.appendChild(axisFrame(domF, graph, yTicks, H, durationTicks, true, undefined, overlays))
+
+  const cap = el('div', 'tri-best-power-cap')
+  if (power.ftp != null) cap.appendChild(el('span', undefined, `FTP ${power.ftp}W`))
+  if (power.goalFtp != null)
+    cap.appendChild(el('span', 'tri-best-power-cap-goal', `${tl('goal')} ${power.goalFtp}W`))
+  block.appendChild(cap)
+  return block
+}
+
 const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   body: buildBody,
   dexa: buildDexa,
@@ -7735,6 +7942,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   sleep: buildSleep,
   vo2max: buildVo2max,
   lactate: buildLactateThreshold,
+  power: buildBestPowerCurve,
   abilities: buildAbilities,
   cardio: buildCardio,
   pmc: buildPmc,
@@ -7849,6 +8057,175 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
     const src = p.method === 'bike' ? `bike (${tl('projected')})` : p.method
     return `${p.weekStart} · ${p.vo2max.toFixed(1)} ml/kg/min · ${src}`
   })
+
+  const powerBlock = panel.querySelector<HTMLElement>('.tri-best-power')
+  const powerSvg = powerBlock?.querySelector<SVGSVGElement>('.tri-best-power-svg')
+  const power = data.powerCurve
+  const powerSeries = bestPowerSeries(power)
+  const activePowerSeries = new Set<BestPowerSeriesKey>(
+    powerSeries.filter(({ curve }) => curve.length >= 2).map(({ key }) => key),
+  )
+  if (powerBlock && powerSvg && activePowerSeries.size > 0) {
+    const cursor = powerSvg.querySelector<SVGLineElement>('.tri-best-power-cursor')
+    const duration = powerBlock.querySelector<HTMLElement>('.tri-best-power-duration')
+    const axisTicks = Array.from(
+      powerBlock.querySelectorAll<HTMLButtonElement>('.tri-best-power-tick'),
+    )
+    const minSeconds = Number(powerSvg.getAttribute('aria-valuemin'))
+    const maxSeconds = Number(powerSvg.getAttribute('aria-valuemax'))
+    const domainMax = Number(powerSvg.dataset.powerDomainMax)
+    const height = powerSvg.viewBox.baseVal.height
+    let selectedSeconds = Number(powerSvg.dataset.powerSelectedSeconds)
+    const curveFor = (key: BestPowerSeriesKey): PowerCurvePoint[] =>
+      key === 'six-weeks' ? power.sixWeeks : power.year
+    const activeAnchor = (): PowerCurvePoint[] => {
+      const key = activePowerSeries.has('six-weeks') ? 'six-weeks' : 'year'
+      return curveFor(key)
+    }
+    const showSeconds = (requestedSeconds: number, commit: boolean): void => {
+      const anchor = activeAnchor()
+      const selected = powerCurveHoverAt(
+        anchor,
+        [],
+        powerCurveFraction(requestedSeconds, anchor[0].s, anchor[anchor.length - 1].s),
+      )
+      if (!selected) return
+      const seconds = selected.durationS
+      if (commit) {
+        selectedSeconds = seconds
+        powerSvg.dataset.powerSelectedSeconds = String(seconds)
+        for (const tick of axisTicks)
+          tick.setAttribute(
+            'aria-pressed',
+            String(Number(tick.dataset.powerSeconds) === selectedSeconds),
+          )
+      }
+      const xPct = powerCurveFraction(seconds, minSeconds, maxSeconds) * 100
+      cursor?.setAttribute('x1', xPct.toFixed(2))
+      cursor?.setAttribute('x2', xPct.toFixed(2))
+      if (duration) duration.textContent = zoneClock(seconds)
+      const valueText: string[] = []
+      for (const { key, curve } of powerSeries) {
+        const enabled = activePowerSeries.has(key)
+        const watts = enabled ? nearestPowerCurveValue(curve, seconds) : null
+        const point = powerBlock.querySelector<HTMLElement>(
+          `.tri-best-power-point[data-power-series="${key}"]`,
+        )
+        const row = powerBlock.querySelector<HTMLElement>(
+          `.tri-best-power-readout-row[data-power-series="${key}"]`,
+        )
+        if (point) {
+          point.hidden = watts == null
+          if (watts != null && domainMax > 0 && height > 0) {
+            const y = height - (Math.min(domainMax, Math.max(0, watts)) / domainMax) * (height - 1)
+            point.style.left = `${xPct.toFixed(2)}%`
+            point.style.top = `${((y / height) * 100).toFixed(2)}%`
+          }
+        }
+        if (row) {
+          row.hidden = !enabled
+          const value = row.querySelector<HTMLElement>('.tri-best-power-value')
+          if (value) value.textContent = watts == null ? '—' : `${watts.toLocaleString()} W`
+        }
+        if (watts != null)
+          valueText.push(`${bestPowerSeriesLabel(power, key)} ${watts.toLocaleString()} W`)
+      }
+      powerSvg.setAttribute('aria-valuenow', String(seconds))
+      powerSvg.setAttribute('aria-valuetext', `${zoneClock(seconds)}; ${valueText.join('; ')}`)
+    }
+    const showFraction = (fraction: number, commit: boolean): void => {
+      const seconds = Math.exp(
+        Math.log(minSeconds) +
+          clampN(fraction, 0, 1) * (Math.log(maxSeconds) - Math.log(minSeconds)),
+      )
+      showSeconds(seconds, commit)
+    }
+    const onPowerMove = (event: PointerEvent): void => {
+      const rect = powerSvg.getBoundingClientRect()
+      if (rect.width <= 0) return
+      showFraction((event.clientX - rect.left) / rect.width, false)
+    }
+    const onPowerDown = (event: PointerEvent): void => {
+      const rect = powerSvg.getBoundingClientRect()
+      if (rect.width <= 0) return
+      showFraction((event.clientX - rect.left) / rect.width, true)
+      powerSvg.focus({ preventScroll: true })
+    }
+    const onPowerLeave = (): void => showSeconds(selectedSeconds, false)
+    const onPowerKey = (event: KeyboardEvent): void => {
+      const anchor = activeAnchor()
+      const selected = powerCurveHoverAt(
+        anchor,
+        [],
+        powerCurveFraction(selectedSeconds, anchor[0].s, anchor[anchor.length - 1].s),
+      )
+      if (!selected) return
+      let nextIndex: number | null = null
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') nextIndex = selected.index - 1
+      else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') nextIndex = selected.index + 1
+      else if (event.key === 'Home') nextIndex = 0
+      else if (event.key === 'End') nextIndex = anchor.length - 1
+      else if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopPropagation()
+        powerSvg.blur()
+        return
+      }
+      if (nextIndex == null) return
+      event.preventDefault()
+      event.stopPropagation()
+      showSeconds(anchor[clampN(nextIndex, 0, anchor.length - 1)].s, true)
+    }
+    const onPowerClick = (event: MouseEvent): void => {
+      if (!(event.target instanceof Element)) return
+      const tick = event.target.closest<HTMLButtonElement>('.tri-best-power-tick')
+      if (tick) {
+        const seconds = Number(tick.dataset.powerSeconds)
+        if (seconds > 0) {
+          showSeconds(seconds, true)
+          powerSvg.focus({ preventScroll: true })
+        }
+        return
+      }
+      const axis = event.target.closest<HTMLElement>('.tri-cax-xax')
+      if (axis && powerBlock.contains(axis)) {
+        const rect = axis.getBoundingClientRect()
+        if (rect.width > 0) {
+          showFraction((event.clientX - rect.left) / rect.width, true)
+          powerSvg.focus({ preventScroll: true })
+        }
+        return
+      }
+      const button = event.target.closest<HTMLButtonElement>('.tri-best-power-toggle')
+      if (!button || button.disabled) return
+      const key: BestPowerSeriesKey = button.dataset.powerSeries === 'year' ? 'year' : 'six-weeks'
+      const enabled = activePowerSeries.has(key)
+      if (enabled && activePowerSeries.size === 1) return
+      if (enabled) activePowerSeries.delete(key)
+      else activePowerSeries.add(key)
+      button.setAttribute('aria-pressed', String(!enabled))
+      const line = powerSvg.querySelector<SVGElement>(
+        `.tri-best-power-line[data-power-series="${key}"]`,
+      )
+      line?.toggleAttribute('hidden', enabled)
+      showSeconds(selectedSeconds, false)
+    }
+    powerSvg.addEventListener('pointermove', onPowerMove)
+    powerSvg.addEventListener('pointerdown', onPowerDown)
+    powerSvg.addEventListener('pointerleave', onPowerLeave)
+    powerSvg.addEventListener('pointercancel', onPowerLeave)
+    powerSvg.addEventListener('keydown', onPowerKey)
+    powerBlock.addEventListener('click', onPowerClick)
+    showSeconds(selectedSeconds, true)
+    cleanups.push(() => {
+      powerSvg.removeEventListener('pointermove', onPowerMove)
+      powerSvg.removeEventListener('pointerdown', onPowerDown)
+      powerSvg.removeEventListener('pointerleave', onPowerLeave)
+      powerSvg.removeEventListener('pointercancel', onPowerLeave)
+      powerSvg.removeEventListener('keydown', onPowerKey)
+      powerBlock.removeEventListener('click', onPowerClick)
+    })
+  }
 
   const wkSelectPeers = new Map<WkKind, (i: number) => void>()
   const bindWkTrend = (blockSel: string, kind: WkKind): void => {
@@ -8571,6 +8948,11 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
     hay: 'lactate threshold projection lt lthr lt2 mlss heart rate bpm pace power proxy forecast',
   },
   {
+    label: 'best efforts · power curve',
+    chart: 'power',
+    hay: 'best efforts power curve critical power cycling watts duration ftp six weeks year',
+  },
+  {
     label: 'ftp hypothesis',
     chart: 'ftp',
     hay: 'ftp watts power vo2 hypothesis slider acsm efficiency threshold lt2 vt2 cycling',
@@ -8641,7 +9023,7 @@ const GLOSS_CHART: Record<string, string> = {
   vo2max: 'vo2max',
   lactate: 'lactate',
   ftp: 'ftp',
-  watts: 'ftp',
+  watts: 'power',
   fitage: 'vo2max',
   vam: 'abilities',
   radar: 'abilities',
@@ -11878,7 +12260,7 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     return Number.isInteger(year) ? year : null
   }
   const selectedCurveIndex = (svg: SVGSVGElement): number => {
-    const value = Number(svg.dataset.curveIndex ?? 0)
+    const value = Number(svg.dataset.curveSelectedIndex ?? 0)
     return Number.isInteger(value) ? value : 0
   }
   const selectedSwimIndex = (svg: SVGSVGElement): number => {
@@ -11936,7 +12318,12 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     point.style.left = `${x.toFixed(2)}%`
     point.style.top = `${((y / height) * 100).toFixed(2)}%`
   }
-  const showCurve = (svg: SVGSVGElement, fraction: number, activateChart = true): void => {
+  const showCurve = (
+    svg: SVGSVGElement,
+    fraction: number,
+    activateChart = true,
+    commit = false,
+  ): void => {
     const wrap = svg.closest<HTMLElement>('.tri-zone')
     const cursor = svg.querySelector<SVGElement>('.tri-chart-cursor')
     const readout = wrap?.querySelector<HTMLElement>('.tri-curve-readout')
@@ -11946,6 +12333,14 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     const reference = curveReference(svg, data)
     const hover = powerCurveHoverAt(curve, reference, fraction)
     if (!hover) return
+    if (commit) {
+      svg.dataset.curveSelectedIndex = String(hover.index)
+      for (const tick of wrap.querySelectorAll<HTMLButtonElement>('.tri-curve-tick'))
+        tick.setAttribute(
+          'aria-pressed',
+          String(Number(tick.dataset.curveSeconds) === hover.durationS),
+        )
+    }
     if (svg.dataset.curveIndex !== String(hover.index)) {
       cursor?.setAttribute('x1', hover.xPct.toFixed(2))
       cursor?.setAttribute('x2', hover.xPct.toFixed(2))
@@ -11996,6 +12391,7 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     svg: SVGSVGElement,
     requestedIndex: number,
     activateChart = true,
+    commit = false,
   ): void => {
     const { curve } = curveData(svg)
     if (curve.length < 2) return
@@ -12004,6 +12400,7 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
       svg,
       powerCurveFraction(curve[index].s, curve[0].s, curve[curve.length - 1].s),
       activateChart,
+      commit,
     )
   }
   const showSwim = (svg: SVGSVGElement, fraction: number, activateChart = true): void => {
@@ -12083,7 +12480,12 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     const r = svg.getBoundingClientRect()
     const frac = r.width > 0 ? Math.max(0, Math.min(1, (event.clientX - r.left) / r.width)) : 0
     if (svg.classList.contains('tri-curve-svg')) {
-      showCurve(svg, frac)
+      const commit = event.type === 'pointerdown'
+      showCurve(svg, frac, true, commit)
+      if (commit) {
+        focusedSvg = svg
+        svg.focus({ preventScroll: true })
+      }
       return
     }
     if (svg.classList.contains('tri-swim-trend-svg')) {
@@ -12144,7 +12546,7 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     if (next == null) return
     event.preventDefault()
     focusedSvg = svg
-    if (isCurve) showCurveIndex(svg, next)
+    if (isCurve) showCurveIndex(svg, next, true, true)
     else showSwimIndex(svg, next)
   }
   const setSwimLayer = (svg: SVGSVGElement, mode: SwimTrendMode, animate: boolean): void => {
@@ -12201,6 +12603,30 @@ const setupChartScrub = (scope: HTMLElement): (() => void) => {
     if (swimButton && swimSection) {
       const mode: SwimTrendMode = swimButton.dataset.swimMode === '100m' ? '100m' : 'lengths'
       setSwimMode(swimSection, mode, event.detail > 0)
+      return
+    }
+    const curveTick = event.target.closest<HTMLButtonElement>('.tri-curve-tick')
+    const curveAxis = event.target.closest<HTMLElement>('.tri-curve-chart .tri-cax-xax')
+    const curveWrap = (curveTick ?? curveAxis)?.closest<HTMLElement>('.tri-curve-chart')
+    const curveSvg = curveWrap?.querySelector<SVGSVGElement>('.tri-curve-svg')
+    if (curveWrap && curveSvg) {
+      if (curveTick) {
+        const seconds = Number(curveTick.dataset.curveSeconds)
+        const data = curveData(curveSvg).curve
+        if (seconds > 0 && data.length >= 2)
+          showCurve(
+            curveSvg,
+            powerCurveFraction(seconds, data[0].s, data[data.length - 1].s),
+            true,
+            true,
+          )
+      } else if (curveAxis) {
+        const rect = curveAxis.getBoundingClientRect()
+        if (rect.width > 0)
+          showCurve(curveSvg, (event.clientX - rect.left) / rect.width, true, true)
+      }
+      focusedSvg = curveSvg
+      curveSvg.focus({ preventScroll: true })
       return
     }
     const button = event.target.closest<HTMLButtonElement>('.tri-curve-range')

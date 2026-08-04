@@ -168,6 +168,18 @@ test('analytics reserves one synchronized lab history mount', () => {
   assert.ok(gauge > dexa)
 })
 
+test('analytics reserves the best-efforts power curve after lactate threshold', () => {
+  const html = render(<AnalyticsPanel page />)
+  const lactate = html.indexOf('data-chart="lactate"')
+  const power = html.indexOf('data-chart="power"')
+  const abilities = html.indexOf('data-chart="abilities"')
+
+  assert.equal(html.split('data-chart="power"').length - 1, 1)
+  assert.ok(lactate >= 0)
+  assert.ok(power > lactate)
+  assert.ok(abilities > power)
+})
+
 test('map reserves one hidden activity selector over its canvas', () => {
   const html = render(<MapPanel page />)
   const canvas = html.indexOf('class="tri-map-canvas"')

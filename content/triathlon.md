@@ -47,7 +47,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-07-31 11:09:03 GMT-04:00
+modified: 2026-08-03 20:25:25 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -718,6 +718,12 @@ skipTraining: true
 date: 2026-07-26
 activity: 19477504076
 fueling: 150
+```
+
+```tracking
+date: 2026-08-03
+activity: 19589639194
+fueling: 0
 ```
 
 <!-- training plan start

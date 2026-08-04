@@ -2089,6 +2089,10 @@
   border: none;
 }
 
+.triathlon.tri-panels-fullscreen .tri-map.tri-map--detail {
+  width: var(--tri-modal-w);
+}
+
 @media all and (max-width: 48rem) {
   .triathlon {
     --tri-modal-w: 100vw;
@@ -2717,6 +2721,279 @@
 .tri-trend-note {
   font-size: 0.66rem;
   color: color-mix(in srgb, var(--gray) 85%, transparent);
+}
+
+.tri-best-power {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+
+  > .tri-cax-frame {
+    grid-template-columns: 2.2rem minmax(0, 1fr);
+  }
+}
+
+.tri-best-power-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 1rem;
+
+  > .tri-ana-block-title {
+    margin-bottom: 0;
+  }
+}
+
+.tri-best-power-controls {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+  margin-left: auto;
+}
+
+.tri-best-power-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.08rem 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: 0.58rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    border-bottom-color: currentColor;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.35;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-toggle:not(:disabled):hover {
+    color: var(--dark);
+  }
+}
+
+.tri-best-power-swatch {
+  display: inline-block;
+  width: 0.85rem;
+  height: 2px;
+  background: var(--tri-accent);
+}
+
+.tri-best-power-swatch--year {
+  background: color-mix(in srgb, var(--tri-accent) 32%, var(--gray));
+}
+
+.tri-best-power-note,
+.tri-best-power-cap {
+  margin: 0;
+  color: var(--gray);
+  font-size: 0.56rem;
+}
+
+.tri-best-power-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 184px;
+  aspect-ratio: 10 / 3;
+  overflow: visible;
+  cursor: crosshair;
+  touch-action: pan-y;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+.tri-best-power .tri-cax-xax,
+.tri-curve-chart .tri-cax-xax {
+  cursor: crosshair;
+}
+
+.tri-best-power-tick,
+.tri-curve-tick {
+  appearance: none;
+  margin: -0.18rem -0.22rem 0;
+  padding: 0.18rem 0.22rem;
+  border: 0;
+  color: var(--gray);
+  font: inherit;
+  font-size: 0.5rem;
+  line-height: 1;
+  background: transparent;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    color: var(--dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.16rem;
+  }
+
+  &:focus-visible {
+    color: var(--dark);
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 1px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-tick:hover,
+  .tri-curve-tick:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-best-power-line {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-best-power-grid {
+  stroke: color-mix(in srgb, var(--gray) 24%, transparent);
+  stroke-width: 0.55;
+  stroke-dasharray: 1 1.6;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.tri-best-power-line--year {
+  stroke: color-mix(in srgb, var(--tri-accent) 32%, var(--gray));
+  stroke-width: 0.8;
+}
+
+.tri-best-power-ftp,
+.tri-best-power-goal {
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-ftp {
+  stroke: color-mix(in srgb, var(--gray) 60%, transparent);
+  stroke-width: 0.7;
+  stroke-dasharray: 2 2;
+}
+
+.tri-best-power-goal {
+  stroke: color-mix(in srgb, var(--tri-accent) 70%, transparent);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 2;
+}
+
+.tri-best-power-cursor {
+  stroke: var(--dark);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.tri-best-power-point {
+  position: absolute;
+  z-index: 2;
+  box-sizing: border-box;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: var(--light);
+  border: 1px solid var(--tri-accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.tri-best-power-point--year {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: color-mix(in srgb, var(--tri-accent) 12%, var(--light));
+  border-color: color-mix(in srgb, var(--tri-accent) 38%, var(--gray));
+}
+
+.tri-best-power-readout {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 0.85rem max-content minmax(0, 1fr);
+  gap: 0.18rem 0.34rem;
+  min-width: 10rem;
+  padding: 0.38rem 0.48rem;
+  color: var(--dark);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  background: color-mix(in srgb, var(--light) 90%, transparent);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+.tri-best-power-duration {
+  grid-column: 1 / -1;
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.tri-best-power-readout-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  line-height: 1.25;
+}
+
+.tri-best-power-value {
+  justify-self: end;
+  font-weight: 600;
+}
+
+.tri-best-power-label {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--gray);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-best-power-cap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.9rem;
+  padding-left: 2.6rem;
+}
+
+.tri-best-power-cap-goal {
+  color: color-mix(in srgb, var(--tri-accent) 75%, var(--dark));
 }
 
 .tri-compare-picker {
@@ -6481,6 +6758,18 @@
 @media all and (max-width: 48rem) {
   .tri-analytics {
     width: 100vw;
+  }
+
+  .tri-best-power-controls {
+    margin-left: 0;
+  }
+
+  .tri-best-power .tri-cax-xt:nth-child(even):not(:last-child) {
+    display: none;
+  }
+
+  .tri-best-power-readout {
+    max-width: calc(100% - 0.84rem);
   }
 
   .tri-ftp-head {
