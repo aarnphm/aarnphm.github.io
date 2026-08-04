@@ -1609,6 +1609,13 @@
   vector-effect: non-scaling-stroke;
 }
 
+.tri-elev-line--missing {
+  stroke-width: 0.7;
+  stroke-dasharray: 0.5 2.5;
+  stroke-linecap: round;
+  opacity: 0.62;
+}
+
 @media (max-width: 600px) {
   .tri-effort-table {
     min-width: 27rem;
