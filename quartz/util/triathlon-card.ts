@@ -844,6 +844,7 @@ export const buildTrace = <N>(
   domain?: ActivityTraceDomain,
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
+  missing?: 'dotted',
 ): N => {
   const w = 100
   const h = 30
@@ -860,6 +861,7 @@ export const buildTrace = <N>(
   const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
   let area = ''
   let line = ''
+  let missingLine = ''
   let segmentStart = -1
   const closeSegment = (start: number, end: number): void => {
     const first = values[start]
@@ -891,6 +893,27 @@ export const buildTrace = <N>(
       segmentStart = -1
     }
   })
+  if (missing === 'dotted') {
+    let previous = -1
+    values.forEach((value, index) => {
+      if (value == null || !Number.isFinite(value)) return
+      const x = px(d.route[index].d).toFixed(2)
+      const y = py(value).toFixed(2)
+      if (previous < 0 && index > 0) missingLine += `M 0 ${y} L ${x} ${y} `
+      else if (previous >= 0 && index > previous + 1) {
+        const previousValue = values[previous]
+        if (previousValue != null) {
+          missingLine += `M ${px(d.route[previous].d).toFixed(2)} ${py(previousValue).toFixed(2)} L ${x} ${y} `
+        }
+      }
+      previous = index
+    })
+    if (previous >= 0 && previous < values.length - 1) {
+      const value = values[previous]
+      if (value != null)
+        missingLine += `M ${px(d.route[previous].d).toFixed(2)} ${py(value).toFixed(2)} L ${w} ${py(value).toFixed(2)} `
+    }
+  }
   const yTicks = niceTicks(domainMin, domainMax, domain?.intervals ?? 3).map(value => ({
     label: value === 0 ? '0' : tick(value),
     vbY: py(value),
@@ -907,6 +930,8 @@ export const buildTrace = <N>(
     f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
   f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
   if (selection !== undefined) f.add(s, buildAnalysisSelection(f, d, h, selection))
+  if (missingLine)
+    f.add(s, f.svg('path', { d: missingLine, class: 'tri-elev-line tri-elev-line--missing' }))
   f.add(s, f.svg('path', { d: line, class: 'tri-elev-line' }))
   f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
@@ -1123,6 +1148,7 @@ const buildHeatStrainTrace = <N>(
     { min, max, intervals: 2 },
     selection,
     graphDomain,
+    'dotted',
   )
 }
 

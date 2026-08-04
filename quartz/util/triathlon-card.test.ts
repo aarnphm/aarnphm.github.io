@@ -1139,6 +1139,27 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
   )
 })
 
+test('connects every missing heat strain range with dotted straight lines', () => {
+  const source = detail()
+  const route = Array.from({ length: 7 }, (_, index) => ({
+    ...source.route[Math.min(index, source.route.length - 1)],
+    d: index * 5,
+    heatStrainIndex: [null, 1.4, null, null, 3, null, null][index],
+  }))
+  const rendered = buildActivity(factory, detail({ route }), true)
+  const heatStrain = byClass(rendered, 'tri-elev-wrap').find(
+    graph => graph.properties.dataTriTrace === 'heat strain index',
+  )
+  assert.ok(heatStrain)
+  const missing = byClass(heatStrain, 'tri-elev-line--missing')[0]
+  assert.ok(missing)
+  const path = String(missing.properties.d)
+  assert.equal(path.match(/M /g)?.length, 3)
+  assert.match(path, /^M 0 ([\d.]+) L 16\.67 \1 /)
+  assert.match(path, /M 16\.67 [\d.]+ L 66\.67 [\d.]+/)
+  assert.match(path, /M 66\.67 ([\d.]+) L 100 \1 $/)
+})
+
 test('renders estimated run stride length without bridging missing cadence samples', () => {
   setDistanceUnit(false)
   const run = detail({
