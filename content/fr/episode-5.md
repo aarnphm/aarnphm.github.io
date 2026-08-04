@@ -152,7 +152,9 @@ the tu↔vous conversion table:
 | `Ton garçon a 14 ans.`                      | `Votre garçon a 14 ans.`                    |
 | `Est-ce que tes enfants parlent français ?` | `Est-ce que vos enfants parlent français ?` |
 
-the reformulation drill does the same at question level:
+the conversion is lossy in one direction only: `ton` et `ta` tombent tous les deux sur `votre`, so going to `vous` throws the noun's gender away, and coming back has to put it back (`Votre garçon` ne peut redevenir que `ton garçon`, jamais `ta`). three forms map onto two, then two map back onto three. note also that no verb moves in this table: `tu`/`vous` is only the possessor here, so `est`, `a` et `parlent` continue d'accorder avec `nom`, `femme`, `garçon`, `enfants`.
+
+the reformulation drill does the same at question level, and there the verb does move:
 
 | situation informelle                   | situation formelle                     |
 | -------------------------------------- | -------------------------------------- |
@@ -172,7 +174,22 @@ une question fermée gets `oui` or `non` for an answer. three builds, same sente
 - `est-ce que` en début de phrase : `Est-ce que tu habites à Montréal ?`
 - inversion verbe-pronom : `Habites-tu à Montréal ?`
 
-the Mémo's own model runs on `vous` : `Vous êtes dentiste ?`, `Est-ce que vous êtes dentiste ?`, `Êtes-vous dentiste ?`
+the Mémo's own model runs on `vous` : `Vous êtes dentiste ?`, `Est-ce que vous êtes dentiste ?`, `Êtes-vous dentiste ?` the three climb in register, intonation à l'oral, `est-ce que` partout, inversion à l'écrit ou en situation formelle, and the drill runs every sentence through all three:
+
+| intonation                     | `est-ce que`                              | inversion                      |
+| ------------------------------ | ----------------------------------------- | ------------------------------ |
+| `Vous êtes étudiant ?`         | `Est-ce que vous êtes étudiant ?`         | `Êtes-vous étudiant ?`         |
+| `Tu es avocate ?`              | `Est-ce que tu es avocate ?`              | `Es-tu avocate ?`              |
+| `Tu as une auto ?`             | `Est-ce que tu as une auto ?`             | `As-tu une auto ?`             |
+| `Vous avez l'heure ?`          | `Est-ce que vous avez l'heure ?`          | `Avez-vous l'heure ?`          |
+| `Vous avez un chien ?`         | `Est-ce que vous avez un chien ?`         | `Avez-vous un chien ?`         |
+| `Tu es célibataire ?`          | `Est-ce que tu es célibataire ?`          | `Es-tu célibataire ?`          |
+| `Tu as des enfants ?`          | `Est-ce que tu as des enfants ?`          | `As-tu des enfants ?`          |
+| `Tu parles une autre langue ?` | `Est-ce que tu parles une autre langue ?` | `Parles-tu une autre langue ?` |
+
+`Avez-vous l'heure ?` is [[fr/episode-3]]'s asking-the-time frame arriving as plain inversion. the row that teaches something is the last one: `Parles-tu` garde le `-s` que l'impératif efface (`Parle plus fort !`, `Tourne à gauche.` in [[fr/episode-6]]). same verb, same person, and the `-s` survives only because the pronoun is still attached. every other verb here is `être` ou `avoir`, so it is the one place the rule shows.
+
+the hyphen in the inversion is obligatory, and as soon as the subject is `il`, `elle` ou `on` behind a vowel-final verb, a euphonic `-t-` has to fill the gap: `A-t-il une auto ?`, `Parle-t-elle français ?`
 
 une question ouverte starts from un mot interrogatif (`comment`, `quand`, `où`, `combien`, `c'est quoi`, `c'est qui`), and register decides its position:
 
@@ -182,6 +199,37 @@ une question ouverte starts from un mot interrogatif (`comment`, `quand`, `où`,
 | formelle, à l'écrit  | en début de phrase, suivi du verbe et du pronom | `Où habitez-vous ?`, `Comment t'appelles-tu ?`                                           |
 
 the transformations go both ways: `D'où viens-tu ?` devient `Tu viens d'où ?`, and `Vous vous appelez comment ?` devient `Comment vous appelez-vous ?`
+
+the matching drill joins a question word to its tail:
+
+| début        | fin                  | question                       |
+| ------------ | -------------------- | ------------------------------ |
+| `Combien`    | `d'enfants as-tu ?`  | `Combien d'enfants as-tu ?`    |
+| `Comment`    | `vous appelez-vous ?` | `Comment vous appelez-vous ?` |
+| `Où`         | `habites-tu ?`       | `Où habites-tu ?`              |
+| `D'où`       | `vous venez ?`       | `D'où vous venez ?`            |
+| `C'est quoi` | `ta nationalité ?`   | `C'est quoi ta nationalité ?`  |
+
+the pairing is deterministic, not guesswork: four tails open with a verb and exactly one, `ta nationalité ?`, is a bare noun phrase. `c'est quoi` is the only début that takes a noun, since its question word already sits inside its own clause, so that pair locks first and the rest follow by sense.
+
+two selection rules fall out. `combien` never touches its noun directly, it goes through `de` : `combien d'enfants`, `combien de frères`. and the verb chooses the preposition riding on the question word: `venir de` gives `D'où vous venez ?` while `habiter à` leaves plain `Où habites-tu ?`, the same `de`-selection that decides `dont` above. the five answers also straddle both columns of the Mémo: `as-tu`, `vous appelez-vous` et `habites-tu` sont des inversions, `D'où vous venez ?` garde l'ordre sujet-verbe et `C'est quoi ta nationalité ?` reste informelle.
+
+the conversion drill runs the same sentences both ways:
+
+| donné                            | transformé                       |
+| -------------------------------- | -------------------------------- |
+| `D'où viens-tu ?`                | `Tu viens d'où ?`                |
+| `Vous vous appelez comment ?`    | `Comment vous appelez-vous ?`    |
+| `Combien d'enfants avez-vous ?`  | `Vous avez combien d'enfants ?`  |
+| `C'est quoi ton adresse ?`       | `Quelle est votre adresse ?`     |
+| `À quelle heure travailles-tu ?` | `Tu travailles à quelle heure ?` |
+| `Avec qui vous habitez ?`        | `Avec qui habitez-vous ?`        |
+| `Quand êtes-vous arrivé ?`       | `Vous êtes arrivé quand ?`       |
+| `Vous habitez où ?`              | `Où habitez-vous ?`              |
+
+the question word travels as a block, never alone: `combien d'enfants`, `à quelle heure`, `avec qui` relocate whole, preposition and noun included, and splitting them is the standard error. `c'est quoi` is the exception that changes construction instead of inverting: its formal partner is `quel` plus `être`, with `quel` accordé au nom (`Quelle est votre adresse ?`, `Quel est votre nom ?`), jamais `Quoi est ton adresse ?`. the register flip alone would give `Quelle est ton adresse ?`; the book pairs the formal build with `vous`.
+
+`Quand êtes-vous arrivé ?` slips in a passé composé.[^passe] only the auxiliary inverts, `êtes-vous arrivé` et non `êtes arrivé-vous`, and the participle agrees with the subject because `arriver` se conjugue avec `être`.
 
 > [!note] faits d'ici
 > the `Ailleurs, autrement ?` box (dire oui, avec sa tête) : au Canada, aux États-Unis, dans plusieurs pays d'Europe et d'Asie, on hoche la tête de haut en bas pour dire oui. en Bulgarie, en Syrie, en Grèce et en Turquie, on hoche la tête de gauche à droite pour dire oui.
@@ -199,3 +247,5 @@ related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/episode-
 [^nom]: the children are `Côté-Dupuis`, mother's name plus father's name. since 1981 the Code civil du Québec has spouses keep their birth names (a wife cannot legally take her husband's name, even if she wants to), and children may receive either parent's name or both, hyphenated. the tree draws the law.
 
 [^relatif]: `qui/que/dont/où` runs ahead of the A1 syllabus (the book's épisode 5 stops at the présentatifs); the class introduced all four for recognition, so the section lives here where the `c'est … qui` cleft naturally attaches.
+
+[^passe]: the course has not taught the passé composé yet; it arrives here the way the imparfait arrives in [[fr/episode-8]]'s school messages, for recognition only. `Quand êtes-vous arrivé ?` = auxiliaire `être` au présent + participe passé, and the `-é` takes the subject's gender and number with an `être` verb (`Quand êtes-vous arrivée ?` à une femme).

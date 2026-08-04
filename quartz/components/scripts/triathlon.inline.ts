@@ -16,6 +16,7 @@ import type {
   Vo2LabRecord,
   Vo2LabTargetStep,
 } from '../../plugins/stores/analytics'
+import type { MatchedRunsBlock } from '../../plugins/stores/matched-runs'
 import type { OuraDayDetail, OuraSeries } from '../../plugins/stores/oura'
 import {
   ROUTE_SPORTS,
@@ -133,6 +134,7 @@ import {
   type SwimTrendMode,
   type TriNodeFactory,
 } from '../../util/triathlon-card'
+import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import {
   applyTriLocale,
   glossFor,
@@ -198,6 +200,7 @@ type DetailPayload = {
   ftp?: number | null
   goalFtp?: number | null
   vt1Hr?: number | null
+  matchedRuns?: MatchedRunsBlock
 }
 
 type TrainingPlan = {
@@ -1333,6 +1336,13 @@ const renderDetail = (
     fillMissingRunPower,
     showUnavailableElevation,
   ) as HTMLElement
+  if (d.sport === 'run') {
+    const matchedGroup = payload?.matchedRuns?.groups.find(group =>
+      group.efforts.some(effort => effort.id === d.id),
+    )
+    const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
+    if (matchedGroup && more) more.appendChild(buildMatchedRunGroup(matchedGroup, d.id))
+  }
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>(
     '.tri-act-figs .tri-elev-wrap:not(.tri-elev-wrap--unavailable)',
@@ -7731,6 +7741,305 @@ const buildCardio = (data: Analytics): HTMLElement => {
   return block
 }
 
+type MatchedRunGroup = MatchedRunsBlock['groups'][number]
+
+const matchedRunUnitScale = (): number => (isImperialUnit() ? KM_TO_MI : 1)
+const matchedRunDisplayPace = (paceSPerKm: number): number => paceSPerKm / matchedRunUnitScale()
+const matchedRunPace = (paceSPerKm: number): string =>
+  `${clock(matchedRunDisplayPace(paceSPerKm))}${isImperialUnit() ? '/mi' : '/km'}`
+const matchedRunDelta = (paceSPerKm: number, averagePaceSPerKm: number): string => {
+  const delta = Math.round((paceSPerKm - averagePaceSPerKm) / matchedRunUnitScale())
+  const sign = delta > 0 ? '+' : delta < 0 ? '-' : ''
+  return `${sign}${Math.abs(delta)}s${isImperialUnit() ? '/mi' : '/km'}`
+}
+const matchedRunDirection = (
+  paceSPerKm: number,
+  averagePaceSPerKm: number,
+): 'faster' | 'slower' | 'equal' =>
+  paceSPerKm < averagePaceSPerKm ? 'faster' : paceSPerKm > averagePaceSPerKm ? 'slower' : 'equal'
+
+const matchedRunDate = (iso: string): string => {
+  const date = new Date(`${iso}T12:00:00Z`)
+  return Number.isNaN(date.getTime())
+    ? iso
+    : date.toLocaleDateString(triLocale() === 'fr' ? 'fr-CA' : 'en-US', {
+        year: '2-digit',
+        month: 'numeric',
+        day: 'numeric',
+        timeZone: 'UTC',
+      })
+}
+
+const matchedRunTrendingAverage = (group: MatchedRunGroup): number[] =>
+  group.efforts.map((_, index) => {
+    const window = group.efforts.slice(0, index + 1)
+    return window.reduce((total, effort) => total + effort.paceSPerKm, 0) / window.length
+  })
+
+const matchedRunSmoothPath = (
+  values: number[],
+  xOf: (index: number) => number,
+  yOf: (value: number) => number,
+): string => {
+  const points = values.map((value, index) => ({ x: xOf(index), y: yOf(value) }))
+  if (points.length < 2) return ''
+  if (points.length === 2)
+    return `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)} L ${points[1].x.toFixed(2)} ${points[1].y.toFixed(2)}`
+  let path = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`
+  for (let index = 0; index < points.length - 1; index++) {
+    const previous = points[Math.max(0, index - 1)]
+    const start = points[index]
+    const end = points[index + 1]
+    const next = points[Math.min(points.length - 1, index + 2)]
+    const firstX = start.x + (end.x - previous.x) * 0.15
+    const firstY = start.y + (end.y - previous.y) * 0.15
+    const secondX = end.x - (next.x - start.x) * 0.15
+    const secondY = end.y - (next.y - start.y) * 0.15
+    path += ` C ${firstX.toFixed(2)} ${firstY.toFixed(2)} ${secondX.toFixed(2)} ${secondY.toFixed(2)} ${end.x.toFixed(2)} ${end.y.toFixed(2)}`
+  }
+  return path
+}
+
+const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number): HTMLElement => {
+  const wrap = el('section', 'tri-matched tri-matched-group', undefined, {
+    'data-matched-group': group.id,
+  })
+  const efforts = group.efforts
+  const fastestIndex = efforts.reduce(
+    (best, effort, index) => (effort.paceSPerKm < efforts[best].paceSPerKm ? index : best),
+    0,
+  )
+  const currentIndex = Math.max(
+    0,
+    efforts.findIndex(effort => effort.id === currentActivityId),
+  )
+  wrap.dataset.matchedCurrentIndex = String(currentIndex)
+  const W = 100
+  const H = 100
+  const PLOT_END = 87.64
+  const AXIS_END = 86.52
+  const EFFORT_SLOTS = Math.max(10, efforts.length)
+  const X_DENOMINATOR = EFFORT_SLOTS * 4 - 2
+  const paces = efforts.map(effort => effort.paceSPerKm)
+  const trendingAverage = matchedRunTrendingAverage(group)
+  const fastestPace = matchedRunDisplayPace(group.fastestPaceSPerKm)
+  const slowestPace = matchedRunDisplayPace(group.slowestPaceSPerKm)
+  const paceCenter = (fastestPace + slowestPace) / 2
+  const paceSpan = Math.max(5, slowestPace - fastestPace)
+  const paceFastest = paceCenter - paceSpan / 2
+  const paceSlowest = paceCenter + paceSpan / 2
+  const FASTEST_Y = 35
+  const SLOWEST_Y = 90
+  const paceMin = paceFastest - (paceSpan * FASTEST_Y) / (SLOWEST_Y - FASTEST_Y)
+  const paceMax = paceSlowest + (paceSpan * (H - SLOWEST_Y)) / (SLOWEST_Y - FASTEST_Y)
+  const X = (index: number): number => (AXIS_END * (index * 4 + 1)) / X_DENOMINATOR
+  const displayY = (pace: number): number =>
+    FASTEST_Y + ((pace - paceFastest) / paceSpan) * (SLOWEST_Y - FASTEST_Y)
+  const Y = (pace: number): number => displayY(matchedRunDisplayPace(pace))
+  const chartPath = (values: number[]): string =>
+    values
+      .map(
+        (value, index) =>
+          `${index === 0 ? 'M' : 'L'} ${X(index).toFixed(2)} ${Y(value).toFixed(2)}`,
+      )
+      .join(' ')
+
+  const head = el('div', 'tri-matched-head')
+  head.appendChild(anaTitle('matched runs'))
+  wrap.append(
+    head,
+    el('p', 'tri-matched-note', tl('repeated routes grouped from private GPS traces')),
+  )
+
+  const chart = el('div', 'tri-matched-chart')
+  const graph = svg('svg', {
+    class: 'tri-ana-svg tri-matched-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': tl('matched runs pace over time'),
+  })
+  const tickStep = niceStep(paceMax - paceMin, 5)
+  const yTicks: { label: string; vbY: number }[] = []
+  for (
+    let value = Math.ceil(paceMin / tickStep) * tickStep;
+    value <= paceMax + tickStep * 1e-6;
+    value += tickStep
+  )
+    yTicks.push({
+      label: `${clock(value)}${isImperialUnit() ? '/mi' : '/km'}`,
+      vbY: displayY(value),
+    })
+  graph.append(
+    svg('line', {
+      class: 'tri-matched-boundary',
+      x1: 0,
+      y1: Y(group.fastestPaceSPerKm).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.fastestPaceSPerKm).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-average',
+      x1: 0,
+      y1: Y(group.averagePaceSPerKm).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.averagePaceSPerKm).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-boundary',
+      x1: 0,
+      y1: Y(group.slowestPaceSPerKm).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.slowestPaceSPerKm).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('path', { class: 'tri-matched-effort-line', d: chartPath(paces), 'aria-hidden': 'true' }),
+    svg('path', {
+      class: 'tri-matched-trend-line',
+      d: matchedRunSmoothPath(trendingAverage, X, Y),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-cursor',
+      x1: X(currentIndex).toFixed(2),
+      y1: 0,
+      x2: X(currentIndex).toFixed(2),
+      y2: H,
+      'aria-hidden': 'true',
+    }),
+  )
+  const overlays: HTMLElement[] = [el('span', 'tri-matched-axis-label', tl('pace'))]
+  const annotations: {
+    kind: 'fastest' | 'average' | 'slowest'
+    label: 'matched fastest' | 'all-time avg' | 'matched slowest'
+    value: number
+  }[] = [
+    { kind: 'fastest', label: 'matched fastest', value: group.fastestPaceSPerKm },
+    { kind: 'average', label: 'all-time avg', value: group.averagePaceSPerKm },
+    { kind: 'slowest', label: 'matched slowest', value: group.slowestPaceSPerKm },
+  ]
+  for (const annotation of annotations) {
+    const item = el(
+      'span',
+      `tri-matched-annotation tri-matched-annotation--${annotation.kind}`,
+      undefined,
+      { style: `left:${(PLOT_END + 1.1).toFixed(2)}%;top:${Y(annotation.value).toFixed(2)}%` },
+    )
+    item.append(
+      el('span', 'tri-matched-annotation-label', tl(annotation.label)),
+      el('strong', 'tri-matched-annotation-value', matchedRunPace(annotation.value)),
+    )
+    overlays.push(item)
+  }
+  for (const [index, effort] of efforts.entries()) {
+    const point = el(
+      'button',
+      `tri-matched-point${index === fastestIndex ? ' tri-matched-point--fastest' : ''}${index === currentIndex ? ' tri-matched-point--current' : ''}`,
+      undefined,
+      {
+        type: 'button',
+        'data-matched-index': String(index),
+        'data-matched-x': X(index).toFixed(2),
+        'data-matched-title': index === currentIndex ? tl('this run') : matchedRunDate(effort.date),
+        'data-matched-pace': matchedRunPace(effort.paceSPerKm),
+        'data-matched-delta': matchedRunDelta(effort.paceSPerKm, group.averagePaceSPerKm),
+        'data-matched-direction': matchedRunDirection(effort.paceSPerKm, group.averagePaceSPerKm),
+        'data-selected': String(index === currentIndex),
+        'aria-pressed': String(index === currentIndex),
+        'aria-label': `${triLongDate(effort.date)} · ${matchedRunPace(effort.paceSPerKm)}`,
+        style: `left:${X(index).toFixed(2)}%;top:${((Y(effort.paceSPerKm) / H) * 100).toFixed(2)}%`,
+      },
+    )
+    overlays.push(point)
+  }
+  const current = efforts[currentIndex]
+  const readout = el('div', 'tri-matched-readout', undefined, {
+    'aria-live': 'polite',
+    'data-direction': matchedRunDirection(current.paceSPerKm, group.averagePaceSPerKm),
+    style: `left:${X(currentIndex).toFixed(2)}%`,
+  })
+  readout.append(
+    el('span', 'tri-matched-readout-title', tl('this run')),
+    el('strong', 'tri-matched-readout-pace', matchedRunPace(current.paceSPerKm)),
+    el(
+      'span',
+      'tri-matched-readout-delta',
+      matchedRunDelta(current.paceSPerKm, group.averagePaceSPerKm),
+    ),
+  )
+  overlays.push(readout)
+  const xTicks: AxisXTick[] = [{ label: matchedRunDate(current.date), pct: X(currentIndex) }]
+  chart.appendChild(
+    axisFrame(domF, graph, yTicks, H, xTicks, true, { top: 0, bottom: H }, overlays),
+  )
+  const legend = el('div', 'tri-matched-legend')
+  const count = el('span', 'tri-matched-legend-count')
+  count.append(el('strong', undefined, String(efforts.length)), ` ${tl('runs')}`)
+  const trend = el('span', 'tri-matched-legend-item')
+  trend.append(
+    el('span', 'tri-matched-legend-line', undefined, { 'aria-hidden': 'true' }),
+    el('span', undefined, tl('trending average')),
+  )
+  legend.append(count, trend)
+  chart.appendChild(legend)
+  wrap.appendChild(chart)
+
+  const viewport = el('div', 'tri-effort-viewport tri-matched-viewport')
+  const scroll = el('div', 'tri-effort-scroll')
+  const table = el('table', 'tri-effort-table tri-matched-table', undefined, {
+    'aria-label': tl('matched runs history'),
+  })
+  const thead = document.createElement('thead')
+  const headRow = document.createElement('tr')
+  for (const label of [
+    'date',
+    'activity',
+    'pace',
+    'vs route avg',
+    'moving time',
+    'relative effort',
+  ])
+    headRow.appendChild(el('th', undefined, tl(label), { scope: 'col' }))
+  thead.appendChild(headRow)
+  const tbody = document.createElement('tbody')
+  for (let index = efforts.length - 1; index >= 0; index--) {
+    const effort = efforts[index]
+    const row = el('tr', undefined, undefined, {
+      'data-matched-index': String(index),
+      'data-selected': String(index === currentIndex),
+      'data-current': String(index === currentIndex),
+    })
+    const activityCell = document.createElement('td')
+    if (index === fastestIndex)
+      activityCell.appendChild(el('span', 'tri-matched-fastest', tl('fastest')))
+    const daySlug = triathlonDaySlug(effort.date)
+    activityCell.appendChild(
+      daySlug
+        ? el('a', 'tri-matched-activity internal', effort.name, {
+            href: `/${daySlug}`,
+            ...(index === currentIndex ? { 'aria-current': 'true' } : {}),
+          })
+        : el('span', 'tri-matched-activity', effort.name),
+    )
+    row.append(
+      el('th', undefined, shortDate(effort.date), { scope: 'row' }),
+      activityCell,
+      el('td', undefined, matchedRunPace(effort.paceSPerKm)),
+      el('td', undefined, matchedRunDelta(effort.paceSPerKm, group.averagePaceSPerKm)),
+      el('td', undefined, hms(effort.movingTimeS)),
+      el('td', undefined, effort.relativeEffort == null ? '—' : String(effort.relativeEffort)),
+    )
+    tbody.appendChild(row)
+  }
+  table.append(thead, tbody)
+  scroll.appendChild(table)
+  viewport.appendChild(scroll)
+  wrap.appendChild(viewport)
+  return wrap
+}
+
 type BestPowerSeriesKey = 'six-weeks' | 'year'
 
 const bestPowerSeriesLabel = (power: PowerCurveBlock, key: BestPowerSeriesKey): string =>
@@ -12181,6 +12490,137 @@ const setupI18n = (root: HTMLElement): (() => void) => {
   return () => window.removeEventListener('tri:locale', apply)
 }
 
+const setupMatchedRuns = (scope: HTMLElement): (() => void) => {
+  const indexOf = (element: HTMLElement): number | null => {
+    const index = Number(element.dataset.matchedIndex)
+    return Number.isInteger(index) && index >= 0 ? index : null
+  }
+  const show = (section: HTMLElement, index: number): void => {
+    const points = section.querySelectorAll<HTMLElement>('.tri-matched-point')
+    const rows = section.querySelectorAll<HTMLElement>('.tri-matched-table [data-matched-index]')
+    let selected: HTMLElement | null = null
+    for (const point of points) {
+      const active = indexOf(point) === index
+      point.dataset.selected = String(active)
+      point.setAttribute('aria-pressed', String(active))
+      if (active) selected = point
+    }
+    for (const row of rows) row.dataset.selected = String(indexOf(row) === index)
+    if (!selected) return
+    const cursor = section.querySelector<SVGLineElement>('.tri-matched-cursor')
+    const x = selected.dataset.matchedX
+    if (cursor && x) {
+      cursor.setAttribute('x1', x)
+      cursor.setAttribute('x2', x)
+    }
+    const readout = section.querySelector<HTMLElement>('.tri-matched-readout')
+    if (readout && x) {
+      readout.style.left = `${x}%`
+      readout.dataset.direction = selected.dataset.matchedDirection ?? 'equal'
+    }
+    const title = section.querySelector<HTMLElement>('.tri-matched-readout-title')
+    const pace = section.querySelector<HTMLElement>('.tri-matched-readout-pace')
+    const delta = section.querySelector<HTMLElement>('.tri-matched-readout-delta')
+    if (title) title.textContent = selected.dataset.matchedTitle ?? ''
+    if (pace) pace.textContent = selected.dataset.matchedPace ?? ''
+    if (delta) delta.textContent = selected.dataset.matchedDelta ?? ''
+  }
+  const restore = (section: HTMLElement): void => {
+    const index = Number(section.dataset.matchedCurrentIndex)
+    if (Number.isInteger(index)) show(section, index)
+  }
+  const sectionFor = (target: EventTarget | null): HTMLElement | null =>
+    target instanceof Element ? target.closest<HTMLElement>('.tri-matched') : null
+  const selectableFor = (target: EventTarget | null): HTMLElement | null =>
+    target instanceof Element
+      ? target.closest<HTMLElement>('.tri-matched-point, .tri-matched-table [data-matched-index]')
+      : null
+  const selectTarget = (target: EventTarget | null): boolean => {
+    const selectable = selectableFor(target)
+    const section = sectionFor(selectable)
+    if (!selectable || !section) return false
+    const index = indexOf(selectable)
+    if (index == null) return false
+    show(section, index)
+    return true
+  }
+  const onPointerMove = (event: PointerEvent): void => {
+    if (selectTarget(event.target)) return
+    if (!(event.target instanceof Element)) return
+    const graph = event.target.closest<SVGSVGElement>('.tri-matched-svg')
+    const section = sectionFor(graph)
+    if (!graph || !section) return
+    const bounds = graph.getBoundingClientRect()
+    if (bounds.width <= 0) return
+    const x = Math.min(100, Math.max(0, ((event.clientX - bounds.left) / bounds.width) * 100))
+    let nearest: HTMLElement | null = null
+    let nearestDistance = Infinity
+    for (const point of section.querySelectorAll<HTMLElement>('.tri-matched-point')) {
+      const pointX = Number(point.dataset.matchedX)
+      if (!Number.isFinite(pointX)) continue
+      const distance = Math.abs(pointX - x)
+      if (distance < nearestDistance) {
+        nearest = point
+        nearestDistance = distance
+      }
+    }
+    if (nearest) selectTarget(nearest)
+  }
+  const restoreAfterExit = (event: PointerEvent | FocusEvent): void => {
+    const section = sectionFor(event.target)
+    if (!section) return
+    if (event.relatedTarget instanceof Node && section.contains(event.relatedTarget)) return
+    restore(section)
+  }
+  const onFocusIn = (event: FocusEvent): void => {
+    selectTarget(event.target)
+  }
+  const onClick = (event: MouseEvent): void => {
+    selectTarget(event.target)
+  }
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const point = event.target.closest<HTMLButtonElement>('.tri-matched-point')
+    const section = sectionFor(point)
+    if (!point || !section) return
+    const points = [...section.querySelectorAll<HTMLButtonElement>('.tri-matched-point')]
+    const index = points.indexOf(point)
+    if (index < 0) return
+    let nextIndex: number | null = null
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') nextIndex = Math.max(0, index - 1)
+    if (event.key === 'ArrowRight' || event.key === 'ArrowUp')
+      nextIndex = Math.min(points.length - 1, index + 1)
+    if (event.key === 'Home') nextIndex = 0
+    if (event.key === 'End') nextIndex = points.length - 1
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      restore(section)
+      const currentIndex = Number(section.dataset.matchedCurrentIndex)
+      if (Number.isInteger(currentIndex)) points[currentIndex]?.focus()
+      return
+    }
+    if (nextIndex == null) return
+    event.preventDefault()
+    points[nextIndex].focus()
+    show(section, nextIndex)
+  }
+
+  scope.addEventListener('pointermove', onPointerMove)
+  scope.addEventListener('pointerout', restoreAfterExit)
+  scope.addEventListener('focusin', onFocusIn)
+  scope.addEventListener('focusout', restoreAfterExit)
+  scope.addEventListener('click', onClick)
+  scope.addEventListener('keydown', onKeyDown)
+  return () => {
+    scope.removeEventListener('pointermove', onPointerMove)
+    scope.removeEventListener('pointerout', restoreAfterExit)
+    scope.removeEventListener('focusin', onFocusIn)
+    scope.removeEventListener('focusout', restoreAfterExit)
+    scope.removeEventListener('click', onClick)
+    scope.removeEventListener('keydown', onKeyDown)
+  }
+}
+
 const setupChartScrub = (scope: HTMLElement): (() => void) => {
   type CurveRange = 'six-weeks' | 'year'
   let activeWrap: HTMLElement | null = null
@@ -13606,6 +14046,7 @@ const mountTriathlon = (): (() => void) => {
   const embedCleanup = setupDayEmbeds()
   addCleanup(embedCleanup)
   addCleanup(setupChartScrub(document.body))
+  addCleanup(setupMatchedRuns(document.body))
   if (root) {
     addCleanup(setupI18n(root))
     addCleanup(setupCommandPalette(root))

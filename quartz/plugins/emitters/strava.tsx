@@ -45,6 +45,7 @@ import {
   parseCoreBodyTemperatureCache,
   type CoreBodyTemperatureCache,
 } from '../stores/core-body-temperature'
+import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { OuraCache } from '../stores/oura'
 import {
   applyManualFueling,
@@ -213,6 +214,15 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       enrichSwimMetrics(payload, apple)
       enrichRunDynamics(payload, apple)
       enrichCoreBodyTemperature(payload, core)
+      const detailActivityIds = new Set(Object.keys(payload.details))
+      const matchedRuns = cache
+        ? buildMatchedRuns(
+            Object.values(cache.activities).filter(activity =>
+              detailActivityIds.has(String(activity.id)),
+            ),
+            cache.streams ?? {},
+          )
+        : emptyMatchedRuns()
       files.push(
         await write({
           ctx,
@@ -229,6 +239,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             ftp: ATHLETE.ftp,
             goalFtp: ATHLETE.goalFTP,
             vt1Hr: latestVo2?.vt1Hr ?? null,
+            matchedRuns,
           }),
         }),
       )
