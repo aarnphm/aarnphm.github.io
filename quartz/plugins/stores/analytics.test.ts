@@ -177,6 +177,32 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(day?.tempDevC, 0.1)
 })
 
+test('carries build-time power curve periods and references into analytics', () => {
+  const { cache } = fixtures()
+  const powerCurve = {
+    sixWeeks: [
+      { s: 1, w: 1_050 },
+      { s: 300, w: 274 },
+    ],
+    year: [
+      { s: 1, w: 1_108 },
+      { s: 300, w: 274 },
+    ],
+    yearLabel: 2026,
+    ftp: 272,
+    goalFtp: 350,
+  }
+
+  assert.deepEqual(buildAnalytics(cache, { powerCurve }).powerCurve, powerCurve)
+  assert.deepEqual(buildAnalytics(null).powerCurve, {
+    sixWeeks: [],
+    year: [],
+    yearLabel: null,
+    ftp: null,
+    goalFtp: null,
+  })
+})
+
 test('volume improvement actions include CTL units', () => {
   const { cache, oura, weights } = fixtures()
   cache.activities['1'].distance = 40_000

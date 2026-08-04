@@ -30,6 +30,7 @@ import {
   resolveActivityHeartRate,
   type ActivityHeartRate,
   type RawStravaActivity,
+  type PowerCurvePoint,
   type StravaStreams,
   type StravaRawCache,
   type StravaZones,
@@ -187,8 +188,17 @@ export interface AnalyticsInputs {
   dexa?: unknown
   vo2labs?: unknown
   ftp?: number | null
+  powerCurve?: PowerCurveBlock
   since?: string
   timeZone?: string
+}
+
+export interface PowerCurveBlock {
+  sixWeeks: PowerCurvePoint[]
+  year: PowerCurvePoint[]
+  yearLabel: number | null
+  ftp: number | null
+  goalFtp: number | null
 }
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
@@ -757,6 +767,7 @@ export interface Analytics {
   loadShare: Record<Sport, number>
   body: BodyBlock
   recovery: RecoveryBlock
+  powerCurve: PowerCurveBlock
   heat: HeatBlock
   engine: EngineBlock
   events: RaceEvent[]
@@ -765,6 +776,14 @@ export interface Analytics {
   actions: TrainingAction[]
   tests: LabTests
 }
+
+const emptyPowerCurve = (): PowerCurveBlock => ({
+  sixWeeks: [],
+  year: [],
+  yearLabel: null,
+  ftp: null,
+  goalFtp: null,
+})
 
 interface Act {
   a: RawStravaActivity
@@ -2773,8 +2792,8 @@ export const ATHLETE = {
   bornAnchor: '2001-03-01',
   hrMax: 196 as number | null,
   vo2max: 47.8 as number | null,
-  ftp: 261 as number | null,
-  lt: 166 as number | null,
+  ftp: 272 as number | null,
+  lt: 167 as number | null,
   goalWeightLb: 170 as number | null,
   goalFTP: 350 as number | null,
   heightCm: 188,
@@ -4312,6 +4331,7 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     loadShare: { swim: 0, bike: 0, run: 0 },
     body: emptyBody(),
     recovery: emptyRecovery(),
+    powerCurve: emptyPowerCurve(),
     heat: emptyHeat(),
     engine: emptyEngine(),
     events: [],
@@ -4709,6 +4729,7 @@ export function buildAnalytics(
     loadShare,
     body,
     recovery,
+    powerCurve: inputs.powerCurve ?? emptyPowerCurve(),
     heat,
     engine,
     events: inputs.events ?? [],

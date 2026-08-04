@@ -218,9 +218,9 @@ export const recoveryRows = (h: ActivityHealth): [string, string][] => {
       `${h.windKph} km/h${h.windDir ? ` ${h.windDir}` : ''}${h.windGustKph != null ? ` / gust ${h.windGustKph}` : ''}`,
     ])
   if (h.totalCalories != null)
-    rows.push(['day burn', `${Math.round(h.totalCalories).toLocaleString('en-US')} kcal`])
+    rows.push(['total burn', `${Math.round(h.totalCalories).toLocaleString('en-US')} kcal`])
   if (h.activeCalories != null)
-    rows.push(['day active', `${Math.round(h.activeCalories).toLocaleString('en-US')} kcal`])
+    rows.push(['active burn', `${Math.round(h.activeCalories).toLocaleString('en-US')} kcal`])
   return rows
 }
 
@@ -634,7 +634,7 @@ export const buildRoute = <N>(
   return fig
 }
 
-const niceStep = (span: number, intervals: number): number => {
+export const niceStep = (span: number, intervals: number): number => {
   if (!Number.isFinite(span) || span <= 0) return 1
   const raw = span / Math.max(1, intervals)
   const magnitude = 10 ** Math.floor(Math.log10(raw))
@@ -653,7 +653,7 @@ const niceTicks = (min: number, max: number, intervals: number): number[] => {
   return [min, max]
 }
 
-const axisNumber = (value: number, step: number): string => {
+export const axisNumber = (value: number, step: number): string => {
   const decimals = step >= 1 ? 0 : Math.min(2, Math.ceil(-Math.log10(step)))
   return value.toLocaleString('en-US', {
     minimumFractionDigits: decimals,
@@ -2046,7 +2046,13 @@ export interface DetailCtx {
   vt1: number | null
 }
 
-export type AxisXTick = { label: string; pct: number; cls?: string }
+export type AxisXTick = {
+  label: string
+  pct: number
+  cls?: string
+  tag?: 'span' | 'button'
+  attrs?: Record<string, string>
+}
 
 const HR_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
 const POWER_ZONE_NAMES = [
@@ -2164,7 +2170,7 @@ const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: numb
   return low
 }
 
-const powerCurvePathPoints = (curve: PowerCurvePoint[]): PowerCurvePoint[] => {
+export const powerCurvePathPoints = (curve: PowerCurvePoint[]): PowerCurvePoint[] => {
   if (curve.length <= POWER_CURVE_PATH_POINTS) return curve
   const minSeconds = curve[0].s
   const maxSeconds = curve[curve.length - 1].s
@@ -2414,7 +2420,8 @@ export const axisFrame = <N>(
   for (const t of xTicks)
     f.add(
       xax,
-      f.el('span', `tri-cax-xt${t.cls ? ` ${t.cls}` : ''}`, t.label, {
+      f.el(t.tag ?? 'span', `tri-cax-xt${t.cls ? ` ${t.cls}` : ''}`, t.label, {
+        ...t.attrs,
         style: `left:${t.pct.toFixed(2)}%`,
       }),
     )
@@ -2590,7 +2597,7 @@ export const buildPowerCurve = <N>(
   const yearRef = ctx.curveYearRef
   const ftpRef = ctx.ftp
   const goalRef = ctx.goalFtp
-  const wrap = f.el('div', 'tri-zone')
+  const wrap = f.el('div', 'tri-zone tri-curve-chart')
   const W = 100
   const H = 34
   const secs = curve.map(c => c.s)
@@ -2658,6 +2665,7 @@ export const buildPowerCurve = <N>(
     'data-curve-range': defaultRange,
     'data-curve-year': ctx.curveYear ?? '',
     'data-curve-domain-max': curveMax,
+    'data-curve-selected-index': 0,
     'data-i18n-aria-label': 'power curve',
     role: 'slider',
     tabindex: 0,
@@ -2775,12 +2783,13 @@ export const buildPowerCurve = <N>(
       curveDurTicks.map((sec, idx) => ({
         label: dlabel(sec),
         pct: X(sec),
-        cls:
-          idx === 0
-            ? 'tri-cax-xt--first'
-            : sec === secs[secs.length - 1]
-              ? 'tri-cax-xt--last'
-              : undefined,
+        cls: `tri-curve-tick${idx === 0 ? ' tri-cax-xt--first' : sec === secs[secs.length - 1] ? ' tri-cax-xt--last' : ''}`,
+        tag: 'button',
+        attrs: {
+          type: 'button',
+          'data-curve-seconds': String(sec),
+          'aria-pressed': String(sec === curve[0].s),
+        },
       })),
       true,
       undefined,

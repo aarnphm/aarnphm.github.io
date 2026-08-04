@@ -243,6 +243,13 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         dexa: file.data.frontmatter?.['dexa'],
         vo2labs: file.data.frontmatter?.['vo2max'],
         ftp: ATHLETE.ftp,
+        powerCurve: {
+          sixWeeks: payload.powerCurveRef,
+          year: payload.powerCurveYearRef,
+          yearLabel: payload.powerCurveYear,
+          ftp: ATHLETE.ftp,
+          goalFtp: ATHLETE.goalFTP,
+        },
         since: typeof since === 'string' ? since : undefined,
       })
       files.push(

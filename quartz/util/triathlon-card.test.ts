@@ -20,6 +20,7 @@ import {
   activitySelectionSummary,
   activityStatRows,
   activityZonePercentages,
+  axisFrame,
   buildActivity,
   buildActivityComparison,
   buildActivityComparisonProjection,
@@ -605,6 +606,33 @@ const bodyRows = (root: Element): string[][] => {
     row.children.filter((child): child is Element => child.type === 'element').map(text),
   )
 }
+
+test('renders exact interactive targets on an x axis', () => {
+  const graph = factory.svg('svg', {})
+  const frame = axisFrame(
+    factory,
+    graph,
+    [],
+    100,
+    [
+      {
+        label: '5m',
+        pct: 50,
+        tag: 'button',
+        attrs: { type: 'button', 'data-power-seconds': '300', 'aria-pressed': 'true' },
+      },
+    ],
+    false,
+  )
+  const tick = byClass(frame, 'tri-cax-xt')[0]
+
+  assert.ok(tick)
+  assert.equal(tick.tagName, 'button')
+  assert.equal(tick.properties.type, 'button')
+  assert.equal(tick.properties.dataPowerSeconds, '300')
+  assert.equal(tick.properties.ariaPressed, 'true')
+  assert.equal(tick.properties.style, 'left:50.00%')
+})
 
 const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDetail => ({
   id: 101,
@@ -2657,6 +2685,19 @@ test('labels a three-hour power curve through its endpoint', () => {
   const lastTick = byClass(curve, 'tri-cax-xt').at(-1)
   assert.ok(lastTick)
   assert.equal(classNames(lastTick).includes('tri-cax-xt--last'), true)
+  const ticks = byClass(curve, 'tri-curve-tick')
+  assert.equal(
+    ticks.every(tick => tick.tagName === 'button'),
+    true,
+  )
+  assert.deepEqual(
+    ticks.map(tick => tick.properties.dataCurveSeconds),
+    ['1', '5', '30', '60', '300', '1200', '3600', '10800'],
+  )
+  assert.deepEqual(
+    ticks.map(tick => tick.properties.ariaPressed),
+    ['true', 'false', 'false', 'false', 'false', 'false', 'false', 'false'],
+  )
 })
 
 test('keeps every hover value while bounding a dense power curve path', () => {
