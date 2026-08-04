@@ -16,6 +16,7 @@ import type {
   Vo2LabRecord,
   Vo2LabTargetStep,
 } from '../../plugins/stores/analytics'
+import type { MatchedRidesBlock } from '../../plugins/stores/matched-rides'
 import type { MatchedRunsBlock } from '../../plugins/stores/matched-runs'
 import type { OuraDayDetail, OuraSeries } from '../../plugins/stores/oura'
 import {
@@ -201,6 +202,7 @@ type DetailPayload = {
   goalFtp?: number | null
   vt1Hr?: number | null
   matchedRuns?: MatchedRunsBlock
+  matchedRides?: MatchedRidesBlock
 }
 
 type TrainingPlan = {
@@ -1342,6 +1344,13 @@ const renderDetail = (
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
     if (matchedGroup && more) more.appendChild(buildMatchedRunGroup(matchedGroup, d.id))
+  }
+  if (d.sport === 'bike') {
+    const matchedGroup = payload?.matchedRides?.groups.find(group =>
+      group.efforts.some(effort => effort.id === d.id),
+    )
+    const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
+    if (matchedGroup && more) more.appendChild(buildMatchedRideGroup(matchedGroup, d.id))
   }
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>(
@@ -7742,6 +7751,7 @@ const buildCardio = (data: Analytics): HTMLElement => {
 }
 
 type MatchedRunGroup = MatchedRunsBlock['groups'][number]
+type MatchedRideGroup = MatchedRidesBlock['groups'][number]
 
 const matchedRunUnitScale = (): number => (isImperialUnit() ? KM_TO_MI : 1)
 const matchedRunDisplayPace = (paceSPerKm: number): number => paceSPerKm / matchedRunUnitScale()
@@ -7758,7 +7768,7 @@ const matchedRunDirection = (
 ): 'faster' | 'slower' | 'equal' =>
   paceSPerKm < averagePaceSPerKm ? 'faster' : paceSPerKm > averagePaceSPerKm ? 'slower' : 'equal'
 
-const matchedRunDate = (iso: string): string => {
+const matchedActivityDate = (iso: string): string => {
   const date = new Date(`${iso}T12:00:00Z`)
   return Number.isNaN(date.getTime())
     ? iso
@@ -7770,13 +7780,39 @@ const matchedRunDate = (iso: string): string => {
       })
 }
 
+const matchedRidePower = (
+  effort: MatchedRideGroup['efforts'][number],
+  metric: MatchedRideGroup['powerMetric'],
+): number =>
+  metric === 'normalized' ? (effort.normalizedWatts ?? effort.averageWatts) : effort.averageWatts
+
+const matchedRidePowerText = (watts: number): string => `${Math.round(watts)} W`
+
+const matchedRidePowerDelta = (watts: number, averageWatts: number): string => {
+  const delta = Math.round(watts - averageWatts)
+  return `${delta > 0 ? '+' : delta < 0 ? '-' : ''}${Math.abs(delta)} W`
+}
+
+const matchedRideClimbing = (metersPerKm: number): string =>
+  isImperialUnit()
+    ? `${Math.round((metersPerKm * M_TO_FT) / KM_TO_MI)} ft/mi`
+    : `${Math.round(metersPerKm)} m/km`
+
+const matchedRideEffortPower = (
+  effort: MatchedRideGroup['efforts'][number],
+  value: number | null,
+): string =>
+  value == null
+    ? '—'
+    : `${matchedRidePowerText(value)}${effort.powerSource === 'estimate' ? ` ${tl('estimated')}` : ''}`
+
 const matchedRunTrendingAverage = (group: MatchedRunGroup): number[] =>
   group.efforts.map((_, index) => {
     const window = group.efforts.slice(0, index + 1)
     return window.reduce((total, effort) => total + effort.paceSPerKm, 0) / window.length
   })
 
-const matchedRunSmoothPath = (
+const matchedSmoothPath = (
   values: number[],
   xOf: (index: number) => number,
   yOf: (value: number) => number,
@@ -7898,7 +7934,7 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
     svg('path', { class: 'tri-matched-effort-line', d: chartPath(paces), 'aria-hidden': 'true' }),
     svg('path', {
       class: 'tri-matched-trend-line',
-      d: matchedRunSmoothPath(trendingAverage, X, Y),
+      d: matchedSmoothPath(trendingAverage, X, Y),
       'aria-hidden': 'true',
     }),
     svg('line', {
@@ -7942,8 +7978,9 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
         type: 'button',
         'data-matched-index': String(index),
         'data-matched-x': X(index).toFixed(2),
-        'data-matched-title': index === currentIndex ? tl('this run') : matchedRunDate(effort.date),
-        'data-matched-pace': matchedRunPace(effort.paceSPerKm),
+        'data-matched-title':
+          index === currentIndex ? tl('this run') : matchedActivityDate(effort.date),
+        'data-matched-value': matchedRunPace(effort.paceSPerKm),
         'data-matched-delta': matchedRunDelta(effort.paceSPerKm, group.averagePaceSPerKm),
         'data-matched-direction': matchedRunDirection(effort.paceSPerKm, group.averagePaceSPerKm),
         'data-selected': String(index === currentIndex),
@@ -7962,7 +7999,7 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
   })
   readout.append(
     el('span', 'tri-matched-readout-title', tl('this run')),
-    el('strong', 'tri-matched-readout-pace', matchedRunPace(current.paceSPerKm)),
+    el('strong', 'tri-matched-readout-value', matchedRunPace(current.paceSPerKm)),
     el(
       'span',
       'tri-matched-readout-delta',
@@ -7970,7 +8007,7 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
     ),
   )
   overlays.push(readout)
-  const xTicks: AxisXTick[] = [{ label: matchedRunDate(current.date), pct: X(currentIndex) }]
+  const xTicks: AxisXTick[] = [{ label: matchedActivityDate(current.date), pct: X(currentIndex) }]
   chart.appendChild(
     axisFrame(domF, graph, yTicks, H, xTicks, true, { top: 0, bottom: H }, overlays),
   )
@@ -8030,6 +8067,278 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
       el('td', undefined, matchedRunDelta(effort.paceSPerKm, group.averagePaceSPerKm)),
       el('td', undefined, hms(effort.movingTimeS)),
       el('td', undefined, effort.relativeEffort == null ? '—' : String(effort.relativeEffort)),
+    )
+    tbody.appendChild(row)
+  }
+  table.append(thead, tbody)
+  scroll.appendChild(table)
+  viewport.appendChild(scroll)
+  wrap.appendChild(viewport)
+  return wrap
+}
+
+const buildMatchedRideGroup = (group: MatchedRideGroup, currentActivityId: number): HTMLElement => {
+  const wrap = el('section', 'tri-matched tri-matched-group tri-matched--ride', undefined, {
+    'data-matched-group': group.id,
+  })
+  const efforts = group.efforts
+  const powers = efforts.map(effort => matchedRidePower(effort, group.powerMetric))
+  const highestIndex = powers.reduce(
+    (best, power, index) => (power > powers[best] ? index : best),
+    0,
+  )
+  const currentIndex = Math.max(
+    0,
+    efforts.findIndex(effort => effort.id === currentActivityId),
+  )
+  wrap.dataset.matchedCurrentIndex = String(currentIndex)
+  const W = 100
+  const H = 100
+  const PLOT_END = 87.64
+  const AXIS_END = 86.52
+  const EFFORT_SLOTS = Math.max(10, efforts.length)
+  const X_DENOMINATOR = EFFORT_SLOTS * 4 - 2
+  const trendingAverage = powers.map((_, index) => {
+    const window = powers.slice(0, index + 1)
+    return window.reduce((total, power) => total + power, 0) / window.length
+  })
+  const powerCenter = (group.highestPowerWatts + group.lowestPowerWatts) / 2
+  const powerSpan = Math.max(10, group.highestPowerWatts - group.lowestPowerWatts)
+  const chartHighest = powerCenter + powerSpan / 2
+  const chartLowest = powerCenter - powerSpan / 2
+  const HIGHEST_Y = 35
+  const LOWEST_Y = 90
+  const powerAtY = (y: number): number =>
+    chartHighest + ((y - HIGHEST_Y) / (LOWEST_Y - HIGHEST_Y)) * (chartLowest - chartHighest)
+  const axisFirst = powerAtY(0)
+  const axisLast = powerAtY(H)
+  const powerMin = Math.min(axisFirst, axisLast)
+  const powerMax = Math.max(axisFirst, axisLast)
+  const X = (index: number): number => (AXIS_END * (index * 4 + 1)) / X_DENOMINATOR
+  const Y = (power: number): number =>
+    HIGHEST_Y + ((power - chartHighest) / (chartLowest - chartHighest)) * (LOWEST_Y - HIGHEST_Y)
+  const chartPath = (values: number[]): string =>
+    values
+      .map(
+        (value, index) =>
+          `${index === 0 ? 'M' : 'L'} ${X(index).toFixed(2)} ${Y(value).toFixed(2)}`,
+      )
+      .join(' ')
+
+  const head = el('div', 'tri-matched-head')
+  head.append(
+    anaTitle('matched rides'),
+    el(
+      'span',
+      'tri-matched-method',
+      tl(group.match === 'route' ? 'route match' : 'characteristics match'),
+    ),
+  )
+  wrap.append(
+    head,
+    el(
+      'p',
+      'tri-matched-note',
+      tl(
+        group.match === 'route'
+          ? 'repeated ride routes grouped from private GPS traces'
+          : 'rides grouped by similar distance, elevation, climbing density, and power provenance',
+      ),
+    ),
+  )
+
+  const chart = el('div', 'tri-matched-chart')
+  const graph = svg('svg', {
+    class: 'tri-ana-svg tri-matched-svg',
+    viewBox: `0 0 ${W} ${H}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': tl('matched rides power over time'),
+  })
+  const tickStep = niceStep(powerMax - powerMin, 5)
+  const yTicks: { label: string; vbY: number }[] = []
+  for (
+    let value = Math.ceil(powerMin / tickStep) * tickStep;
+    value <= powerMax + tickStep * 1e-6;
+    value += tickStep
+  )
+    yTicks.push({ label: `${Math.round(value)}W`, vbY: Y(value) })
+  graph.append(
+    svg('line', {
+      class: 'tri-matched-boundary',
+      x1: 0,
+      y1: Y(group.highestPowerWatts).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.highestPowerWatts).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-average',
+      x1: 0,
+      y1: Y(group.averagePowerWatts).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.averagePowerWatts).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-boundary',
+      x1: 0,
+      y1: Y(group.lowestPowerWatts).toFixed(2),
+      x2: PLOT_END,
+      y2: Y(group.lowestPowerWatts).toFixed(2),
+      'aria-hidden': 'true',
+    }),
+    svg('path', { class: 'tri-matched-effort-line', d: chartPath(powers), 'aria-hidden': 'true' }),
+    svg('path', {
+      class: 'tri-matched-trend-line',
+      d: matchedSmoothPath(trendingAverage, X, Y),
+      'aria-hidden': 'true',
+    }),
+    svg('line', {
+      class: 'tri-matched-cursor',
+      x1: X(currentIndex).toFixed(2),
+      y1: 0,
+      x2: X(currentIndex).toFixed(2),
+      y2: H,
+      'aria-hidden': 'true',
+    }),
+  )
+  const axisLabel = group.powerMetric === 'normalized' ? 'normalized power' : 'average power'
+  const overlays: HTMLElement[] = [el('span', 'tri-matched-axis-label', tl(axisLabel))]
+  const annotations: {
+    kind: 'highest' | 'average' | 'lowest'
+    label: 'matched highest power' | 'group avg' | 'matched lowest power'
+    value: number
+  }[] = [
+    { kind: 'highest', label: 'matched highest power', value: group.highestPowerWatts },
+    { kind: 'average', label: 'group avg', value: group.averagePowerWatts },
+    { kind: 'lowest', label: 'matched lowest power', value: group.lowestPowerWatts },
+  ]
+  for (const annotation of annotations) {
+    const item = el(
+      'span',
+      `tri-matched-annotation tri-matched-annotation--${annotation.kind}`,
+      undefined,
+      { style: `left:${(PLOT_END + 1.1).toFixed(2)}%;top:${Y(annotation.value).toFixed(2)}%` },
+    )
+    item.append(
+      el('span', 'tri-matched-annotation-label', tl(annotation.label)),
+      el('strong', 'tri-matched-annotation-value', matchedRidePowerText(annotation.value)),
+    )
+    overlays.push(item)
+  }
+  for (const [index, effort] of efforts.entries()) {
+    const power = powers[index]
+    const point = el(
+      'button',
+      `tri-matched-point${index === highestIndex ? ' tri-matched-point--highest' : ''}${index === currentIndex ? ' tri-matched-point--current' : ''}`,
+      undefined,
+      {
+        type: 'button',
+        'data-matched-index': String(index),
+        'data-matched-x': X(index).toFixed(2),
+        'data-matched-title':
+          index === currentIndex ? tl('this ride') : matchedActivityDate(effort.date),
+        'data-matched-value': matchedRidePowerText(power),
+        'data-matched-delta': matchedRidePowerDelta(power, group.averagePowerWatts),
+        'data-matched-direction': 'equal',
+        'data-selected': String(index === currentIndex),
+        'aria-pressed': String(index === currentIndex),
+        'aria-label': `${triLongDate(effort.date)} · ${matchedRidePowerText(power)}`,
+        style: `left:${X(index).toFixed(2)}%;top:${((Y(power) / H) * 100).toFixed(2)}%`,
+      },
+    )
+    overlays.push(point)
+  }
+  const current = efforts[currentIndex]
+  const currentPower = powers[currentIndex]
+  const readout = el('div', 'tri-matched-readout', undefined, {
+    'aria-live': 'polite',
+    'data-direction': 'equal',
+    style: `left:${X(currentIndex).toFixed(2)}%`,
+  })
+  readout.append(
+    el('span', 'tri-matched-readout-title', tl('this ride')),
+    el('strong', 'tri-matched-readout-value', matchedRidePowerText(currentPower)),
+    el(
+      'span',
+      'tri-matched-readout-delta',
+      matchedRidePowerDelta(currentPower, group.averagePowerWatts),
+    ),
+  )
+  overlays.push(readout)
+  const xTicks: AxisXTick[] = [{ label: matchedActivityDate(current.date), pct: X(currentIndex) }]
+  chart.appendChild(
+    axisFrame(domF, graph, yTicks, H, xTicks, true, { top: 0, bottom: H }, overlays),
+  )
+  const legend = el('div', 'tri-matched-legend')
+  const count = el('span', 'tri-matched-legend-count')
+  count.append(el('strong', undefined, String(efforts.length)), ` ${tl('rides')}`)
+  const trend = el('span', 'tri-matched-legend-item')
+  trend.append(
+    el('span', 'tri-matched-legend-line', undefined, { 'aria-hidden': 'true' }),
+    el('span', undefined, tl('trending average')),
+  )
+  const characteristics = el(
+    'span',
+    'tri-matched-legend-item',
+    `${dist(group.averageDistanceKm, 'bike')} · +${formatAltitude(group.averageElevationM)} · ${matchedRideClimbing(group.averageClimbingMPerKm)}`,
+  )
+  legend.append(count, trend, characteristics)
+  chart.appendChild(legend)
+  wrap.appendChild(chart)
+
+  const viewport = el('div', 'tri-effort-viewport tri-matched-viewport')
+  const scroll = el('div', 'tri-effort-scroll')
+  const table = el(
+    'table',
+    'tri-effort-table tri-matched-table tri-matched-table--ride',
+    undefined,
+    { 'aria-label': tl('matched rides history') },
+  )
+  const thead = document.createElement('thead')
+  const headRow = document.createElement('tr')
+  for (const label of [
+    'date',
+    'activity',
+    'distance',
+    'elevation',
+    'climbing density',
+    'average power',
+    'normalized power',
+    'moving time',
+  ])
+    headRow.appendChild(el('th', undefined, tl(label), { scope: 'col' }))
+  thead.appendChild(headRow)
+  const tbody = document.createElement('tbody')
+  for (let index = efforts.length - 1; index >= 0; index--) {
+    const effort = efforts[index]
+    const row = el('tr', undefined, undefined, {
+      'data-matched-index': String(index),
+      'data-selected': String(index === currentIndex),
+      'data-current': String(index === currentIndex),
+    })
+    const activityCell = document.createElement('td')
+    if (index === highestIndex)
+      activityCell.appendChild(el('span', 'tri-matched-highest', tl('highest')))
+    const daySlug = triathlonDaySlug(effort.date)
+    activityCell.appendChild(
+      daySlug
+        ? el('a', 'tri-matched-activity internal', effort.name, {
+            href: `/${daySlug}`,
+            ...(index === currentIndex ? { 'aria-current': 'true' } : {}),
+          })
+        : el('span', 'tri-matched-activity', effort.name),
+    )
+    row.append(
+      el('th', undefined, shortDate(effort.date), { scope: 'row' }),
+      activityCell,
+      el('td', undefined, dist(effort.distanceKm, 'bike')),
+      el('td', undefined, `+${formatAltitude(effort.elevationM)}`),
+      el('td', undefined, matchedRideClimbing(effort.climbingMPerKm)),
+      el('td', undefined, matchedRideEffortPower(effort, effort.averageWatts)),
+      el('td', undefined, matchedRideEffortPower(effort, effort.normalizedWatts)),
+      el('td', undefined, hms(effort.movingTimeS)),
     )
     tbody.appendChild(row)
   }
@@ -12490,7 +12799,7 @@ const setupI18n = (root: HTMLElement): (() => void) => {
   return () => window.removeEventListener('tri:locale', apply)
 }
 
-const setupMatchedRuns = (scope: HTMLElement): (() => void) => {
+const setupMatchedActivities = (scope: HTMLElement): (() => void) => {
   const indexOf = (element: HTMLElement): number | null => {
     const index = Number(element.dataset.matchedIndex)
     return Number.isInteger(index) && index >= 0 ? index : null
@@ -12519,10 +12828,10 @@ const setupMatchedRuns = (scope: HTMLElement): (() => void) => {
       readout.dataset.direction = selected.dataset.matchedDirection ?? 'equal'
     }
     const title = section.querySelector<HTMLElement>('.tri-matched-readout-title')
-    const pace = section.querySelector<HTMLElement>('.tri-matched-readout-pace')
+    const value = section.querySelector<HTMLElement>('.tri-matched-readout-value')
     const delta = section.querySelector<HTMLElement>('.tri-matched-readout-delta')
     if (title) title.textContent = selected.dataset.matchedTitle ?? ''
-    if (pace) pace.textContent = selected.dataset.matchedPace ?? ''
+    if (value) value.textContent = selected.dataset.matchedValue ?? ''
     if (delta) delta.textContent = selected.dataset.matchedDelta ?? ''
   }
   const restore = (section: HTMLElement): void => {
@@ -14046,7 +14355,7 @@ const mountTriathlon = (): (() => void) => {
   const embedCleanup = setupDayEmbeds()
   addCleanup(embedCleanup)
   addCleanup(setupChartScrub(document.body))
-  addCleanup(setupMatchedRuns(document.body))
+  addCleanup(setupMatchedActivities(document.body))
   if (root) {
     addCleanup(setupI18n(root))
     addCleanup(setupCommandPalette(root))

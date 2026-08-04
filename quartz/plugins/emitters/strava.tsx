@@ -45,6 +45,7 @@ import {
   parseCoreBodyTemperatureCache,
   type CoreBodyTemperatureCache,
 } from '../stores/core-body-temperature'
+import { buildMatchedRides, emptyMatchedRides } from '../stores/matched-rides'
 import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { OuraCache } from '../stores/oura'
 import {
@@ -215,14 +216,17 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       enrichRunDynamics(payload, apple)
       enrichCoreBodyTemperature(payload, core)
       const detailActivityIds = new Set(Object.keys(payload.details))
-      const matchedRuns = cache
-        ? buildMatchedRuns(
-            Object.values(cache.activities).filter(activity =>
-              detailActivityIds.has(String(activity.id)),
-            ),
-            cache.streams ?? {},
+      const matchedActivities = cache
+        ? Object.values(cache.activities).filter(activity =>
+            detailActivityIds.has(String(activity.id)),
           )
+        : []
+      const matchedRuns = cache
+        ? buildMatchedRuns(matchedActivities, cache.streams ?? {})
         : emptyMatchedRuns()
+      const matchedRides = cache
+        ? buildMatchedRides(matchedActivities, cache.streams ?? {})
+        : emptyMatchedRides()
       files.push(
         await write({
           ctx,
@@ -240,6 +244,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             goalFtp: ATHLETE.goalFTP,
             vt1Hr: latestVo2?.vt1Hr ?? null,
             matchedRuns,
+            matchedRides,
           }),
         }),
       )

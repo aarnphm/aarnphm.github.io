@@ -793,6 +793,14 @@
   color: var(--gray);
 }
 
+.tri-matched-method {
+  font-family: var(--codeFont);
+  font-size: 0.48rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .tri-matched-chart {
   --tri-matched-plot-end: 87.64%;
   --tri-matched-series: #22a8df;
@@ -939,7 +947,8 @@
   }
 }
 
-.tri-matched-point--fastest:not([data-selected='true']) {
+.tri-matched-point--fastest:not([data-selected='true']),
+.tri-matched-point--highest:not([data-selected='true']) {
   width: 0.94rem;
   height: 0.94rem;
   background: var(--light);
@@ -984,7 +993,7 @@
   color: var(--dark);
 }
 
-.tri-matched-readout-pace {
+.tri-matched-readout-value {
   color: var(--gray);
   font-size: 0.54rem;
   font-weight: 400;
@@ -1003,6 +1012,10 @@
 }
 
 .tri-matched-readout[data-direction='equal'] .tri-matched-readout-delta {
+  color: var(--gray);
+}
+
+.tri-matched--ride .tri-matched-readout-delta {
   color: var(--gray);
 }
 
@@ -1058,6 +1071,19 @@
   }
 }
 
+.tri-matched--ride .tri-matched-table tr[data-selected='true'] > * {
+  background: color-mix(in srgb, var(--tri-bike) 22%, transparent);
+}
+
+.tri-matched-table--ride {
+  min-width: 64rem;
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 30%;
+  }
+}
+
 .triathlon a.tri-matched-activity {
   display: inline-block;
   max-width: 22rem;
@@ -1078,7 +1104,8 @@
   }
 }
 
-.tri-matched-fastest {
+.tri-matched-fastest,
+.tri-matched-highest {
   display: inline-block;
   margin-right: 0.42rem;
   color: color-mix(in srgb, #dca317 76%, var(--dark));
