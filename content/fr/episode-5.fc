@@ -254,3 +254,98 @@ C: `[où]` covers place and time antecedents: `la ville où j'habite`, `le jour 
 
 Q: The one-line test for choosing `qui`, `que`, `dont`, `où`?
 A: Look at what is missing inside the relative clause: its subject (`qui`), its direct object (`que`), a `de`-complement (`dont`), or nothing because the antecedent is a place or time (`où`).
+
+---
+
+C: Converting to `vous` merges two forms into one: `ton nom` et `ta femme` deviennent tous les deux `[votre]` nom, `[votre]` femme, et `tes enfants` devient `[vos]` enfants.
+
+---
+
+Q: Why is the `vous` → `tu` direction harder than `tu` → `vous`?
+A: `ton` and `ta` both collapse into `votre`, so `vous` hides the noun's gender. Coming back you must recover it: `Votre garçon a 14 ans.` can only be `Ton garçon a 14 ans.`, never `ta`.
+
+---
+
+Q: In `Ta femme est québécoise.` → `Votre femme est québécoise.`, why does the verb stay `est`?
+A: `tu`/`vous` is only the possessor, not the subject. The verb keeps agreeing with `femme`. The verb moves only when the person is the subject: `Est-ce que tu as des enfants ?` → `Avez-vous des enfants ?`
+
+---
+
+C: The three builds of a closed question climb in register: `Tu as une auto ?` is [intonation], `Est-ce que tu as une auto ?` is the [est-ce que] build, `As-tu une auto ?` is [inversion].
+
+---
+
+Q: Put `Est-ce que vous êtes étudiant ?` into the other two builds.
+A: Intonation `Vous êtes étudiant ?` and inversion `Êtes-vous étudiant ?`
+
+---
+
+Q: Put `As-tu des enfants ?` into the other two builds.
+A: Intonation `Tu as des enfants ?` and `est-ce que` form `Est-ce que tu as des enfants ?`
+
+---
+
+C: In the inversion, an `-er` verb keeps the `-s` it loses in the imperative: `[Parles]-tu une autre langue ?` against `[Parle] plus fort !` ([[fr/episode-6]]).
+
+---
+
+Q: Why does `Parles-tu` keep its `-s` while the imperative `Parle !` drops it?
+A: The `-s` survives because the pronoun is still attached in the inversion; the imperative conjugates without a pronoun, so an `-er` verb loses it.
+
+---
+
+C: When `il`, `elle` or `on` follows a vowel-final verb in an inversion, a euphonic `-t-` fills the gap: `A[-t-]il une auto ?`
+
+---
+
+C: `Combien` never touches its noun directly, it goes through `de`: `Combien [d']enfants as-tu ?`, `Combien [de] frères as-tu ?`
+
+---
+
+Q: In the matching drill, why can `C'est quoi` only pair with `ta nationalité ?`
+A: `c'est quoi` is the one question opener that takes a noun phrase, since its question word already sits inside its own clause. The other four openers are followed by a verb.
+
+---
+
+C: The verb picks the preposition on the question word: `venir de` gives `[D'où] vous venez ?`, `habiter à` gives plain `[Où] habites-tu ?`
+
+---
+
+Q: Give the formal, inverted version of `D'où vous venez ?`
+A: `D'où venez-vous ?`
+
+---
+
+C: Formal written build, question word then verb then pronoun: `[Comment] vous appelez-vous ?` and `[Où] habites-tu ?`
+
+---
+
+C: The question word moves as a whole block: `Combien d'enfants avez-vous ?` devient `Vous avez [combien d'enfants] ?` and `À quelle heure travailles-tu ?` devient `Tu travailles [à quelle heure] ?`
+
+---
+
+Q: What is the standard error when moving a question word to the end of the sentence?
+A: Splitting the block. The preposition and noun travel with the question word: `Vous avez combien d'enfants ?`, never `Combien vous avez d'enfants ?`
+
+---
+
+Q: Formalize `C'est quoi ton adresse ?`
+A: `Quelle est votre adresse ?` The `c'est quoi` frame does not invert; its formal partner is `quel` plus `être`, with `quel` agreeing with the noun.
+
+---
+
+C: `quel` agrees with the noun it questions: `[Quelle] est votre adresse ?` but `[Quel] est votre nom ?`
+
+---
+
+Q: Formalize `Avec qui vous habitez ?`
+A: `Avec qui habitez-vous ?` The preposition stays welded to `qui` at the front; only the verb and pronoun invert.
+
+---
+
+Q: In `Quand êtes-vous arrivé ?`, what exactly inverts?
+A: Only the auxiliary: `êtes-vous arrivé`, never `êtes arrivé-vous`. In a compound tense the participle stays put.
+
+---
+
+C: `arriver` takes `être`, so the participle agrees with the subject: `Quand êtes-vous [arrivée] ?` addressed to a woman.
