@@ -11,11 +11,30 @@ import {
 import { triathlonShortcutRedirectUrl } from '../quartz/util/triathlon-shortcut'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
+  API_CATALOG_LINK,
+  API_CATALOG_PATH,
+  API_DOCUMENTATION_PATH,
+  API_HEALTH_PATH,
+  OPENAPI_PATH,
+  apiCatalogResponse,
+  apiDocumentationResponse,
+  apiHealthResponse,
+  isHomepagePathname,
+  openApiResponse,
+} from './api-catalog'
+import {
   handleArenaEmbedCapability,
   handleArenaEmbedCapture,
   handleArenaEmbedHtml,
 } from './arena-embed'
 import handleArxiv from './arxiv'
+import {
+  handleAuthMarkdown,
+  OAUTH_AUTHORIZATION_SERVER_PATH,
+  OAUTH_SCOPES,
+  oauthProtectedResourceMetadata,
+  withAgentAuthMetadata,
+} from './auth-md'
 import {
   getGithubCommentAuthor,
   normalizeAuthor,
@@ -26,6 +45,7 @@ import handleCurius from './curius'
 import { handleFlashcardsReview, handleFlashcardsState } from './flashcards'
 import { handleLeanVerify } from './lean'
 import Garden from './mcp'
+import { MCP_SERVER_CARD_PATH, mcpServerCardResponse } from './mcp-server-card'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
 import {
@@ -145,6 +165,18 @@ function withHeaders(response: Response, newHeaders: Record<string, string | nul
   })
 }
 
+function mergeVary(response: Response, ...values: string[]): string {
+  const current = response.headers.get('Vary')
+  if (current?.trim() === '*') return '*'
+  const vary = new Map<string, string>()
+  for (const value of current?.split(',') ?? []) {
+    const trimmed = value.trim()
+    if (trimmed) vary.set(trimmed.toLowerCase(), trimmed)
+  }
+  for (const value of values) vary.set(value.toLowerCase(), value)
+  return [...vary.values()].join(', ')
+}
+
 function withHeadersFromSource(response: Response, source: Response, headers: string[]): Response {
   const map: Record<string, string | null> = {}
   for (const h of headers) map[h] = source.headers.get(h)
@@ -157,7 +189,7 @@ function withTriathlonMarkdownHeaders(response: Response): Response {
     'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
     'Access-Control-Allow-Origin': '*',
     'X-Content-Type-Options': 'nosniff',
-    Vary: 'Accept, User-Agent',
+    Vary: mergeVary(response, 'Accept', 'User-Agent'),
   })
 }
 
@@ -431,6 +463,7 @@ export default {
       request = new Request(url.toString(), request as any) as any
     }
 
+    const baseUrl = resolveBaseUrl(env, request)
     const provider = new OAuthProvider({
       apiHandlers: {
         '/mcp': Garden.serve('/mcp', { binding: 'MCP_OBJECT' }),
@@ -441,13 +474,25 @@ export default {
       // @ts-ignore
       defaultHandler: GitHubHandler,
       tokenEndpoint: '/token',
+      scopesSupported: [...OAUTH_SCOPES],
+      resourceMetadata: oauthProtectedResourceMetadata(baseUrl),
     })
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: buildCorsHeaders(env, request) })
     }
 
+    const authMarkdownResponse = handleAuthMarkdown(request, baseUrl)
+    if (authMarkdownResponse) return authMarkdownResponse
+
     const providerResp = await provider.fetch(request, env, ctx)
+    if (
+      request.method === 'GET' &&
+      url.pathname === OAUTH_AUTHORIZATION_SERVER_PATH &&
+      providerResp.ok
+    ) {
+      return withAgentAuthMetadata(providerResp, baseUrl)
+    }
     if (providerResp.status !== 404) return providerResp
 
     const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
@@ -676,7 +721,10 @@ export default {
       if (TRIATHLON_MARKDOWN_PATH.test(markdownUrl.pathname)) {
         return withTriathlonMarkdownHeaders(markdownResp)
       }
-      return withHeaders(markdownResp, { Vary: 'Accept, User-Agent' })
+      return withHeaders(markdownResp, {
+        'Content-Type': 'text/markdown; charset=utf-8',
+        Vary: mergeVary(markdownResp, 'Accept', 'User-Agent'),
+      })
     }
 
     if (TRIATHLON_MARKDOWN_PATH.test(url.pathname)) {
@@ -704,45 +752,16 @@ export default {
         return Response.redirect('https://stream.aarnphm.xyz', 308)
       case '/.lfsconfig':
         return new Response(null, { status: 404 })
-      case '/.well-known/oauth-protected-resource': {
-        const base = resolveBaseUrl(env, request)
-        const body = JSON.stringify({
-          resource: `${base}/mcp`,
-          authorization_servers: [base],
-          bearer_methods_supported: ['header'],
-          resource_documentation: `${base}/`,
-        })
-        return new Response(body, {
-          headers: { 'Content-Type': 'application/json', ...apiHeaders },
-        })
-      }
-      case '/.well-known/oauth-protected-resource/mcp': {
-        const base = resolveBaseUrl(env, request)
-        const body = JSON.stringify({
-          name: 'mcp',
-          sse_url: `${base}/mcp`,
-          token_url: `${base}/token`,
-        })
-        return new Response(body, {
-          headers: { 'Content-Type': 'application/json', ...apiHeaders },
-        })
-      }
-      case '/.well-known/oauth-authorization-server': {
-        const base = resolveBaseUrl(env, request)
-        const body = JSON.stringify({
-          issuer: base,
-          authorization_endpoint: `${base}/authorize`,
-          token_endpoint: `${base}/token`,
-          registration_endpoint: `${base}/register`,
-          response_types_supported: ['code'],
-          grant_types_supported: ['authorization_code'],
-          code_challenge_methods_supported: ['S256'],
-          token_endpoint_auth_methods_supported: ['none'],
-        })
-        return new Response(body, {
-          headers: { 'Content-Type': 'application/json', ...apiHeaders },
-        })
-      }
+      case API_CATALOG_PATH:
+        return apiCatalogResponse(request, baseUrl, apiHeaders)
+      case OPENAPI_PATH:
+        return openApiResponse(request, baseUrl, apiHeaders)
+      case API_DOCUMENTATION_PATH:
+        return apiDocumentationResponse(request, baseUrl, apiHeaders)
+      case API_HEALTH_PATH:
+        return apiHealthResponse(request, apiHeaders)
+      case MCP_SERVER_CARD_PATH:
+        return mcpServerCardResponse(request, baseUrl)
       case '/.well-known/openid-configuration': {
         const base = resolveBaseUrl(env, request)
         const body = JSON.stringify({
@@ -1203,6 +1222,7 @@ export default {
           : {}),
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
+        ...(isHomepagePathname(url.pathname) ? { Link: API_CATALOG_LINK } : {}),
       })
     }
     return withHeaders(resp, staticAssetHeaders)

@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { McpAgent } from 'agents/mcp'
 import { z } from 'zod'
+import { MCP_SERVER_INFO } from './mcp-server-card'
 import { semanticSearch } from './semantic'
 import { isRecord } from './type-guards'
 
@@ -209,7 +210,7 @@ function scoreEntry(e: ContentIndexEntry, query: string): number {
 type Props = { login: string; name: string; email: string; accessToken: string }
 
 export class Garden extends McpAgent<Env, Record<string, never>, Props> {
-  server = new McpServer({ name: 'aarnphm.xyz', version: '1.0.0' })
+  server = new McpServer(MCP_SERVER_INFO)
 
   async init() {
     this.server.tool(

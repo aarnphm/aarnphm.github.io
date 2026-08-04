@@ -1,4 +1,4 @@
-export function resolveBaseUrl(env: Env, request: Request): string {
+export function resolveBaseUrl(env: { PUBLIC_BASE_URL?: string }, request: Request): string {
   if (env.PUBLIC_BASE_URL) return env.PUBLIC_BASE_URL.replace(/\/$/, '')
   const u = new URL(request.url)
   u.pathname = ''
@@ -41,14 +41,24 @@ export function isAgentUserAgent(request: Request): boolean {
   return AGENT_USER_AGENT_MARKERS.some(marker => userAgent.includes(marker))
 }
 
-export function wantsMarkdown(request: Request): boolean {
+export function acceptsMarkdown(request: Request): boolean {
   const accept = request.headers.get('Accept')?.toLowerCase() ?? ''
-  if (accept.includes('text/markdown')) return true
-  return isAgentUserAgent(request)
+  return accept.split(',').some(value => {
+    const [mediaType, ...parameters] = value.split(';').map(part => part.trim())
+    if (mediaType !== 'text/markdown') return false
+    const quality = parameters.find(parameter => parameter.startsWith('q='))
+    if (!quality) return true
+    const weight = Number(quality.slice(2))
+    return Number.isFinite(weight) && weight > 0
+  })
+}
+
+export function wantsMarkdown(request: Request): boolean {
+  return acceptsMarkdown(request) || isAgentUserAgent(request)
 }
 
 export function markdownPathname(pathname: string): string {
-  if (pathname === '/') return '/index.md'
+  if (pathname === '/') return '/llms.txt'
   if (pathname.endsWith('/')) return `${pathname.slice(0, -1)}.md`
   return `${pathname}.md`
 }

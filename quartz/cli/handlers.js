@@ -15,7 +15,13 @@ import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
 const sourceWatchWriteStabilityMs = 250
-export const sourceWatchRoots = ['quartz.config.ts', 'quartz.layout.ts', 'quartz', 'package.json']
+export const sourceWatchRoots = [
+  'quartz.config.ts',
+  'quartz.layout.ts',
+  'quartz',
+  '.claude/skills',
+  'package.json',
+]
 export const sourceWatchPatterns = [
   'quartz.config.ts',
   'quartz.layout.ts',
@@ -26,6 +32,7 @@ export const sourceWatchPatterns = [
   'quartz/cli/*.js',
   'quartz/static/**/*',
   'quartz/extensions/**/*',
+  '.claude/skills/**/*',
   'package.json',
 ]
 
@@ -44,6 +51,7 @@ export const isTestSourcePath = fp => {
 export const isSourceWatchPath = fp => {
   const normalized = normalizeWatchedPath(fp)
   if (isTestSourcePath(normalized)) return false
+  if (normalized.startsWith('.claude/skills/')) return true
   if (
     normalized === 'quartz.config.ts' ||
     normalized === 'quartz.layout.ts' ||

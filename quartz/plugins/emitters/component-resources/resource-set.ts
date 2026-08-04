@@ -22,6 +22,7 @@ const petInlineEntry = 'quartz/components/scripts/pet.inline.ts'
 const popoverInlineEntry = 'quartz/components/scripts/popover.inline.ts'
 const protectedInlineEntry = 'quartz/components/scripts/protected.inline.ts'
 const spaInlineEntry = 'quartz/components/scripts/spa.inline.ts'
+const webMcpInlineEntry = 'quartz/components/scripts/webmcp.inline.ts'
 
 export type ComponentResourceSet = {
   css: string[]
@@ -94,6 +95,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     markerScript,
     petScript,
     protectedScript,
+    webMcpScript,
     spaRouterScript,
   ] = await Promise.all([
     bundleInlineScript(notFoundInlineEntry),
@@ -105,6 +107,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     bundleInlineScript(markerInlineEntry),
     bundleInlineScript(petInlineEntry),
     bundleInlineScript(protectedInlineEntry),
+    bundleInlineScript(webMcpInlineEntry),
     bundleInlineScript(spaInlineEntry),
   ])
 
@@ -124,6 +127,7 @@ async function addGlobalPageResources(ctx: BuildCtx, componentResources: Compone
     baseMapScript,
     collaborativeCommentsScript,
     petScript,
+    webMcpScript,
   )
 
   if (cfg.analytics?.provider === 'plausible') {
