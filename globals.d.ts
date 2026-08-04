@@ -1,4 +1,21 @@
 export declare global {
+  interface WebMcpToolAnnotations {
+    readOnlyHint?: boolean
+    untrustedContentHint?: boolean
+  }
+
+  interface WebMcpTool {
+    name: string
+    description: string
+    inputSchema: Record<string, unknown>
+    execute(input: unknown): Promise<unknown> | unknown
+    annotations?: WebMcpToolAnnotations
+  }
+
+  interface WebMcpModelContext {
+    provideContext(context: { tools: WebMcpTool[] }): void
+  }
+
   interface Document {
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
@@ -11,8 +28,12 @@ export declare global {
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): boolean
   }
 
+  interface Navigator {
+    readonly modelContext?: WebMcpModelContext
+  }
+
   interface Window {
-    spaNavigate(url: URL, isBack: boolean = false)
+    spaNavigate(url: URL, isBack?: boolean): Promise<boolean | void>
     notifyNav(url: FullSlug)
     addCleanup(fn: () => void)
     quartzNavLifecycle?: { listening: boolean; controller?: AbortController }

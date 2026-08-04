@@ -29,6 +29,29 @@ const searchIndex = new FlexSearch.Document<SearchItem>({
 const itemsById = new Map<number, SearchItem>()
 let isPopulated = false
 
+async function queryFields(
+  query: string,
+  fields: Array<'title' | 'name' | 'aliases' | 'content'>,
+  limit: number,
+): Promise<SearchItem[]> {
+  if (!query || query.trim() === '') {
+    return [...itemsById.values()].slice(0, limit)
+  }
+
+  const results = await searchIndex.searchAsync({ query, limit, index: fields })
+  const allIds = new Set<number>()
+  for (const fieldResult of results) {
+    for (const id of fieldResult.result as number[]) {
+      allIds.add(id)
+    }
+  }
+
+  return [...allIds]
+    .map(id => itemsById.get(id))
+    .filter((item): item is SearchItem => item !== undefined)
+    .slice(0, limit)
+}
+
 export async function populateSearchIndex(data: ContentIndex): Promise<void> {
   if (isPopulated) return
 
@@ -55,25 +78,12 @@ export async function populateSearchIndex(data: ContentIndex): Promise<void> {
 }
 
 export async function querySearchIndex(query: string, limit: number = 10): Promise<SearchItem[]> {
-  if (!query || query.trim() === '') {
-    return [...itemsById.values()].slice(0, limit)
-  }
+  return queryFields(query, ['title', 'name', 'aliases'], limit)
+}
 
-  const results = await searchIndex.searchAsync({
-    query,
-    limit,
-    index: ['title', 'name', 'aliases'],
-  })
-
-  const allIds = new Set<number>()
-  for (const fieldResult of results) {
-    for (const id of fieldResult.result as number[]) {
-      allIds.add(id)
-    }
-  }
-
-  return [...allIds]
-    .map(id => itemsById.get(id))
-    .filter((item): item is SearchItem => item !== undefined)
-    .slice(0, limit)
+export async function querySiteSearchIndex(
+  query: string,
+  limit: number = 10,
+): Promise<SearchItem[]> {
+  return queryFields(query, ['title', 'name', 'aliases', 'content'], limit)
 }

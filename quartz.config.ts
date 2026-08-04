@@ -253,6 +253,7 @@ const config: QuartzConfig = {
       Plugin.SemanticIndex(configuration.semanticSearch!),
       Plugin.Assets(),
       Plugin.Static(),
+      Plugin.AgentSkills(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
       Plugin.CustomOgImages(),
