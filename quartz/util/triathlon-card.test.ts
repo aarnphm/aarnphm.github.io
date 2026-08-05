@@ -1226,7 +1226,7 @@ test('prefers native running dynamics for the whole activity and preserves senso
   assert.ok(traces.every(trace => trace != null))
   assert.deepEqual(
     traces.map(trace => trace?.properties.dataTriTrace),
-    ['stride length', 'ground contact time', 'vertical oscillation'],
+    ['stride length', 'ground contact time', 'v-oscillation'],
   )
   assert.deepEqual(
     traces.map(trace =>

@@ -6,6 +6,7 @@ import {
   triathlonDateFromSlug,
   triathlonDateRouteFromSlug,
   triathlonDateTree,
+  triathlonDayHrefFromReference,
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
   triathlonOnSlugFromShortcutPath,
@@ -14,6 +15,23 @@ import {
 test('converts stored local activity dates to nested triathlon slugs', () => {
   assert.equal(triathlonDaySlug('2026-07-09'), 'triathlon/on/2026/07/09')
   assert.equal(triathlonDateFromSlug('triathlon/on/2026/07/09'), '2026-07-09')
+})
+
+test('resolves activity day links from the embedding directive origin', () => {
+  assert.equal(triathlonDayHrefFromReference('2026-07-31'), '/triathlon/on/2026/07/31')
+  assert.equal(triathlonDayHrefFromReference('2026-07-31', 'not a URL'), '/triathlon/on/2026/07/31')
+  assert.equal(
+    triathlonDayHrefFromReference('2026-07-31', 'https://aarnphm.xyz/triathlon/on/2026/08/03'),
+    'https://aarnphm.xyz/triathlon/on/2026/07/31',
+  )
+  assert.equal(
+    triathlonDayHrefFromReference('2026-07-31', 'http://localhost:7373/triathlon/on/2026/08/03'),
+    'http://localhost:7373/triathlon/on/2026/07/31',
+  )
+  assert.equal(
+    triathlonDayHrefFromReference('2026-02-29', 'https://aarnphm.xyz/triathlon/on'),
+    null,
+  )
 })
 
 test('rejects malformed and impossible triathlon dates', () => {

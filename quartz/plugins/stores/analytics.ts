@@ -3997,7 +3997,7 @@ function buildEngine(
       sport === 'run'
         ? {
             key: 'oscillation',
-            label: 'vertical oscillation',
+            label: 'v-oscillation',
             proj: null,
             score: personalMetricScore(currentOscillation, oscillationBounds, true),
             rawValue: currentOscillation != null ? round(currentOscillation, 1) : null,
