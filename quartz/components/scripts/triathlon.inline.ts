@@ -137,6 +137,12 @@ import {
 } from '../../util/triathlon-card'
 import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import {
+  gearCassettePreset,
+  gearRatioMatrix,
+  type GearCassettePreset,
+  type GearRatioMatrix,
+} from '../../util/triathlon-gear-ratio'
+import {
   applyTriLocale,
   glossFor,
   glossKeys,
@@ -3355,6 +3361,245 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const buildGearRatioTable = (matrix: GearRatioMatrix): HTMLTableElement => {
+  const table = document.createElement('table')
+  table.className = 'tri-ratio-table'
+  table.setAttribute('aria-label', tl('gear ratios'))
+
+  const thead = document.createElement('thead')
+  const header = document.createElement('tr')
+  header.appendChild(
+    el('th', undefined, 'T', { scope: 'col', 'aria-label': 'chainring and cassette teeth' }),
+  )
+  const cogs = matrix.rows[0]?.cells ?? []
+  for (const cell of cogs)
+    header.appendChild(el('th', undefined, String(cell.cog), { scope: 'col' }))
+  thead.appendChild(header)
+
+  const tbody = document.createElement('tbody')
+  matrix.rows.forEach((row, rowIndex) => {
+    const tr = el('tr', `tri-ratio-row tri-ratio-row--${rowIndex + 1}`)
+    tr.appendChild(
+      el('th', undefined, String(row.chainring), {
+        scope: 'row',
+        'aria-label': `${row.chainring} tooth chainring`,
+      }),
+    )
+    for (const cell of row.cells) {
+      const ratio = cell.ratio.toFixed(2)
+      const td = el('td', undefined, ratio, {
+        'data-ratio-chainring': String(row.chainring),
+        'data-ratio-cog': String(cell.cog),
+        'data-ratio-value': ratio,
+        title: `${row.chainring}T ÷ ${cell.cog}T = ${ratio}`,
+      })
+      td.style.setProperty('--tri-ratio-level', `${(18 + cell.level * 52).toFixed(1)}%`)
+      tr.appendChild(td)
+    }
+    tbody.appendChild(tr)
+  })
+  if (matrix.rows.length === 1) {
+    const placeholder = el('tr', 'tri-ratio-row tri-ratio-row--placeholder')
+    placeholder.setAttribute('aria-hidden', 'true')
+    placeholder.appendChild(el('th', undefined, '\u00a0'))
+    for (const _ of cogs) placeholder.appendChild(el('td', undefined, '\u00a0'))
+    tbody.appendChild(placeholder)
+  }
+  table.append(thead, tbody)
+  return table
+}
+
+const setupGearRatios = (root: HTMLElement): (() => void) | null => {
+  const calculator = root.querySelector<HTMLElement>('.tri-ratio')
+  const chart = calculator?.querySelector<HTMLElement>('.tri-ratio-chart')
+  const range = calculator?.querySelector<HTMLOutputElement>('.tri-ratio-range')
+  const cassettePicker = calculator?.querySelector<HTMLElement>('.tri-ratio-cassette-picker')
+  const cassetteTrigger = calculator?.querySelector<HTMLButtonElement>(
+    '.tri-ratio-cassette-trigger',
+  )
+  const cassetteMenu = calculator?.querySelector<HTMLElement>('.tri-ratio-cassette-menu')
+  const cassetteValue = calculator?.querySelector<HTMLElement>('.tri-ratio-cassette-value')
+  const cassetteOptions = Array.from(
+    calculator?.querySelectorAll<HTMLButtonElement>('.tri-ratio-cassette-option') ?? [],
+  )
+  const ringInputs = calculator?.querySelectorAll<HTMLInputElement>('.tri-ratio-ring-input')
+  const secondRing = calculator?.querySelector<HTMLElement>('[data-ratio-ring="2"]')
+  const layoutButtons = calculator?.querySelectorAll<HTMLButtonElement>('.tri-ratio-layout-btn')
+  const firstInput = ringInputs?.[0]
+  const secondInput = ringInputs?.[1]
+  const initialCassetteId = cassetteOptions.find(
+    option => option.getAttribute('aria-selected') === 'true',
+  )?.dataset.cassetteId
+  if (
+    !calculator ||
+    !chart ||
+    !range ||
+    !cassettePicker ||
+    !cassetteTrigger ||
+    !cassetteMenu ||
+    !cassetteValue ||
+    !cassetteOptions.length ||
+    !initialCassetteId ||
+    !firstInput ||
+    !secondInput ||
+    !secondRing ||
+    !layoutButtons?.length
+  )
+    return null
+
+  let chainringCount = 2
+  let cassetteId = initialCassetteId
+
+  const selectedCassette = (): GearCassettePreset | null => gearCassettePreset(cassetteId)
+
+  const readChainring = (input: HTMLInputElement): number | null => {
+    const value = input.valueAsNumber
+    const valid = Number.isInteger(value) && value >= 24 && value <= 64
+    if (valid) input.removeAttribute('aria-invalid')
+    else input.setAttribute('aria-invalid', 'true')
+    return valid ? value : null
+  }
+
+  const render = (preset: GearCassettePreset): void => {
+    const first = readChainring(firstInput)
+    const second = chainringCount === 2 ? readChainring(secondInput) : null
+    if (first == null || (chainringCount === 2 && second == null)) {
+      range.textContent = '—'
+      chart.setAttribute('aria-invalid', 'true')
+      return
+    }
+    const chainrings = chainringCount === 2 && second != null ? [first, second] : [first]
+    const matrix = gearRatioMatrix(chainrings, preset.cogs)
+    if (!matrix) return
+    range.textContent = `${matrix.minimum.toFixed(2)}–${matrix.maximum.toFixed(2)}`
+    chart.removeAttribute('aria-invalid')
+    chart.replaceChildren(buildGearRatioTable(matrix))
+  }
+
+  const applyLayout = (nextCount: number, preset: GearCassettePreset): void => {
+    chainringCount = nextCount === 1 || preset.maximumChainrings === 1 ? 1 : 2
+    secondRing.classList.toggle('tri-ratio-ring--inactive', chainringCount === 1)
+    secondRing.setAttribute('aria-disabled', String(chainringCount === 1))
+    secondInput.disabled = chainringCount === 1
+    for (const button of layoutButtons) {
+      const count = Number(button.dataset.ratioLayout)
+      const active = count === chainringCount
+      button.classList.toggle('tri-ratio-layout-btn--on', active)
+      button.setAttribute('aria-pressed', String(active))
+      button.disabled = count === 2 && preset.maximumChainrings === 1
+    }
+    render(preset)
+  }
+
+  const onLayout = (event: Event): void => {
+    if (!(event.currentTarget instanceof HTMLButtonElement)) return
+    const preset = selectedCassette()
+    if (!preset) return
+    applyLayout(Number(event.currentTarget.dataset.ratioLayout), preset)
+  }
+  const onInput = (): void => {
+    const preset = selectedCassette()
+    if (preset) render(preset)
+  }
+
+  const closeCassetteMenu = (restoreFocus = false): void => {
+    cassetteMenu.hidden = true
+    cassetteTrigger.setAttribute('aria-expanded', 'false')
+    if (restoreFocus) cassetteTrigger.focus()
+  }
+  const openCassetteMenu = (): void => {
+    if (!cassetteMenu.hidden) return
+    cassetteMenu.hidden = false
+    cassetteTrigger.setAttribute('aria-expanded', 'true')
+    cassetteOptions.find(option => option.dataset.cassetteId === cassetteId)?.focus()
+  }
+  const selectCassette = (option: HTMLButtonElement): void => {
+    const nextId = option.dataset.cassetteId
+    if (!nextId) return
+    const preset = gearCassettePreset(nextId)
+    if (!preset) return
+    cassetteId = nextId
+    cassetteValue.textContent = preset.label
+    for (const candidate of cassetteOptions)
+      candidate.setAttribute('aria-selected', String(candidate === option))
+    applyLayout(chainringCount, preset)
+  }
+  const onCassetteTriggerClick = (): void => {
+    if (cassetteMenu.hidden) openCassetteMenu()
+    else closeCassetteMenu()
+  }
+  const onCassetteTriggerKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    event.preventDefault()
+    openCassetteMenu()
+  }
+  const onCassetteOptionClick = (event: Event): void => {
+    if (!(event.currentTarget instanceof HTMLButtonElement)) return
+    selectCassette(event.currentTarget)
+    closeCassetteMenu(true)
+  }
+  const onCassetteMenuKeydown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+      closeCassetteMenu(true)
+      return
+    }
+    const activeIndex = cassetteOptions.findIndex(option => option === document.activeElement)
+    const targetIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? cassetteOptions.length - 1
+          : event.key === 'ArrowDown'
+            ? Math.min(cassetteOptions.length - 1, activeIndex + 1)
+            : event.key === 'ArrowUp'
+              ? Math.max(0, activeIndex - 1)
+              : -1
+    if (targetIndex < 0) return
+    event.preventDefault()
+    cassetteOptions[targetIndex]?.focus()
+  }
+  const onCassetteFocusout = (event: FocusEvent): void => {
+    if (event.relatedTarget instanceof Node && cassettePicker.contains(event.relatedTarget)) return
+    closeCassetteMenu()
+  }
+  const onCassetteOutsidePointerdown = (event: PointerEvent): void => {
+    if (event.composedPath().includes(cassettePicker)) return
+    closeCassetteMenu()
+  }
+  const onLocale = (): void => {
+    const preset = selectedCassette()
+    if (preset) render(preset)
+  }
+
+  for (const button of layoutButtons) button.addEventListener('click', onLayout)
+  for (const option of cassetteOptions) option.addEventListener('click', onCassetteOptionClick)
+  firstInput.addEventListener('input', onInput)
+  secondInput.addEventListener('input', onInput)
+  cassetteTrigger.addEventListener('click', onCassetteTriggerClick)
+  cassetteTrigger.addEventListener('keydown', onCassetteTriggerKeydown)
+  cassetteMenu.addEventListener('keydown', onCassetteMenuKeydown)
+  cassettePicker.addEventListener('focusout', onCassetteFocusout)
+  document.addEventListener('pointerdown', onCassetteOutsidePointerdown)
+  window.addEventListener('tri:locale', onLocale)
+  const initialCassette = selectedCassette()
+  if (initialCassette) applyLayout(chainringCount, initialCassette)
+
+  return () => {
+    for (const button of layoutButtons) button.removeEventListener('click', onLayout)
+    for (const option of cassetteOptions) option.removeEventListener('click', onCassetteOptionClick)
+    firstInput.removeEventListener('input', onInput)
+    secondInput.removeEventListener('input', onInput)
+    cassetteTrigger.removeEventListener('click', onCassetteTriggerClick)
+    cassetteTrigger.removeEventListener('keydown', onCassetteTriggerKeydown)
+    cassetteMenu.removeEventListener('keydown', onCassetteMenuKeydown)
+    cassettePicker.removeEventListener('focusout', onCassetteFocusout)
+    document.removeEventListener('pointerdown', onCassetteOutsidePointerdown)
+    window.removeEventListener('tri:locale', onLocale)
+  }
+}
+
 const setupDropdown = (
   root: HTMLElement,
   wrapSel: string,
@@ -3362,7 +3607,7 @@ const setupDropdown = (
   panelSel: string,
   openClass: string,
 ): (() => void) | null => {
-  const btn = root.querySelector<HTMLElement>(btnSel)
+  const btn = root.querySelector<HTMLButtonElement>(btnSel)
   const wrap = root.querySelector<HTMLElement>(wrapSel)
   const panel = root.querySelector<HTMLElement>(panelSel)
   if (!btn || !wrap || !panel) return null
@@ -3378,20 +3623,23 @@ const setupDropdown = (
     )
   }
 
-  const close = () => {
+  const close = (restoreFocus = false) => {
     wrap.classList.remove(openClass)
     panel.setAttribute('aria-hidden', 'true')
+    btn.setAttribute('aria-expanded', 'false')
+    if (restoreFocus) btn.focus()
   }
   const onBtn = () => {
     const open = wrap.classList.toggle(openClass)
     panel.setAttribute('aria-hidden', open ? 'false' : 'true')
+    btn.setAttribute('aria-expanded', String(open))
     if (open) updateFade()
   }
   const onDocClick = (event: MouseEvent) => {
-    if (!wrap.contains(event.target as Node)) close()
+    if (event.target instanceof Node && !wrap.contains(event.target)) close()
   }
   const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') close()
+    if (event.key === 'Escape' && wrap.classList.contains(openClass)) close(true)
   }
 
   btn.addEventListener('click', onBtn)
@@ -14362,6 +14610,7 @@ const mountTriathlon = (): (() => void) => {
     addCleanup(setup(root))
     addCleanup(setupCalc(root))
     addCleanup(setupPaceForecast(root))
+    addCleanup(setupGearRatios(root))
     addCleanup(setupDropdown(root, '.tri-gear-wrap', '.tri-gear-btn', '.tri-gear', 'tri-gear-open'))
     addCleanup(setupDropdown(root, '.tri-pace-wrap', '.tri-pace-btn', '.tri-pace', 'tri-pace-open'))
     addCleanup(setupPaceUnit(root))

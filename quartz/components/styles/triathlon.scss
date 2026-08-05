@@ -1695,10 +1695,10 @@
   bottom: calc(100% + 0.6rem);
   left: 0;
   z-index: 40;
+  box-sizing: border-box;
   height: 640px;
   max-height: 50vh;
-  width: 400px;
-  max-width: 86vw;
+  width: min(32rem, calc(100vw - 2rem));
   overflow: hidden;
   background: color-mix(in srgb, var(--light) 92%, transparent);
   backdrop-filter: blur(10px);
@@ -1714,6 +1714,7 @@
 }
 
 .tri-gear-scroll {
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -1722,6 +1723,449 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   @include thin-scrollbar;
+}
+
+.tri-ratio {
+  container-name: tri-ratio;
+  container-type: inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+}
+
+.tri-ratio-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.58rem;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tri-ratio-range {
+  font-size: 0.64rem;
+  color: var(--dark);
+  letter-spacing: 0;
+}
+
+.tri-ratio-controls {
+  display: grid;
+  grid-template-columns: max-content minmax(16rem, 28rem) max-content;
+  justify-content: center;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.tri-ratio-rings {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  legend {
+    margin-bottom: 0.25rem;
+    padding: 0;
+    font-size: 0.54rem;
+    color: var(--gray);
+  }
+}
+
+.tri-ratio-layout,
+.tri-ratio-ring-inputs,
+.tri-ratio-ring {
+  display: flex;
+  align-items: center;
+}
+
+.tri-ratio-layout,
+.tri-ratio-ring-inputs {
+  gap: 0.2rem;
+}
+
+.tri-ratio-layout-btn {
+  appearance: none;
+  box-sizing: border-box;
+  min-width: 2rem;
+  height: 1.7rem;
+  margin: 0;
+  padding: 0 0.42rem;
+  font: inherit;
+  font-size: 0.58rem;
+  justify-content: center;
+  align-items: center;
+  color: var(--gray);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease;
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--secondary) 55%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  &--on {
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-bike) 38%, var(--light));
+    border-color: color-mix(in srgb, var(--tri-bike) 72%, var(--dark));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-ratio-layout-btn:not(:disabled):hover {
+    color: var(--dark);
+    border-color: var(--dark);
+  }
+}
+
+.tri-ratio-ring {
+  box-sizing: border-box;
+  height: 1.7rem;
+  color: var(--gray);
+  border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.tri-ratio-ring:has(.tri-ratio-ring-input:focus-visible) {
+  background-color: color-mix(in srgb, var(--tri-accent) 6%, var(--light));
+  border-color: color-mix(in srgb, var(--tri-accent) 48%, var(--lightgray));
+}
+
+.tri-ratio-ring--inactive {
+  opacity: 0.35;
+}
+
+.tri-ratio-ring-input {
+  appearance: textfield;
+  box-sizing: border-box;
+  width: 2.7rem;
+  height: 100%;
+  margin: 0;
+  padding: 0 0.25rem;
+  font: inherit;
+  font-size: 0.62rem;
+  color: var(--dark);
+  text-align: right;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+  outline: 0;
+
+  &:focus-visible {
+    outline: 0;
+  }
+
+  &[aria-invalid='true'] {
+    color: var(--tri-accent);
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+}
+
+.tri-ratio-ring > span {
+  padding-right: 0.28rem;
+  font-size: 0.52rem;
+}
+
+.tri-ratio-cassette {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.54rem;
+  color: var(--gray);
+}
+
+.tri-ratio-cassette-picker {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.tri-ratio-cassette-trigger {
+  appearance: none;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  width: 100%;
+  height: 1.7rem;
+  margin: 0;
+  padding: 0 0.45rem;
+  font: inherit;
+  font-size: 0.58rem;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 45%, transparent);
+  border-radius: var(--radius-none);
+  cursor: pointer;
+
+  &:focus-visible,
+  &[aria-expanded='true'] {
+    outline: 0;
+    background: color-mix(in srgb, var(--tri-accent) 8%, var(--light));
+    border-color: color-mix(in srgb, var(--tri-accent) 48%, var(--lightgray));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-ratio-cassette-trigger:hover {
+    background: color-mix(in srgb, var(--tri-accent) 5%, var(--light));
+    border-color: color-mix(in srgb, var(--gray) 58%, transparent);
+  }
+}
+
+.tri-ratio-cassette-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-ratio-cassette-chevron {
+  flex: none;
+  width: 0.72rem;
+  height: 0.72rem;
+  color: color-mix(in srgb, var(--gray) 78%, var(--dark));
+}
+
+.tri-ratio-cassette-trigger[aria-expanded='true'] .tri-ratio-cassette-chevron {
+  transform: rotate(180deg);
+}
+
+.tri-ratio-cassette-menu {
+  position: absolute;
+  inset: calc(100% + 0.2rem) 0 auto;
+  z-index: var(--z-popover);
+  display: none;
+  box-sizing: border-box;
+  width: 100%;
+  max-height: min(22rem, 50vh);
+  margin: 0;
+  padding: 0.2rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  color: var(--dark);
+  background: color-mix(in srgb, var(--light) 96%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gray) 34%, transparent);
+  border-radius: var(--radius-none);
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  font-variant-numeric: tabular-nums;
+  @include thin-scrollbar;
+
+  &:not([hidden]) {
+    display: grid;
+  }
+}
+
+.tri-gear .tri-ratio-cassette-menu {
+  max-height: min(22rem, calc(50vh - 9.25rem));
+}
+
+.tri-ratio-cassette-group {
+  display: grid;
+  gap: 1px;
+}
+
+.tri-ratio-cassette-group + .tri-ratio-cassette-group {
+  margin-top: 0.2rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+}
+
+.tri-ratio-cassette-group-label {
+  padding: 0.22rem 0.34rem 0.14rem 1.44rem;
+  overflow: hidden;
+  color: var(--gray);
+  font-size: 0.5rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tri-ratio-cassette-option {
+  display: grid;
+  grid-template-columns: 0.75rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.3rem 0.34rem;
+  color: color-mix(in srgb, var(--gray) 86%, var(--dark));
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-none);
+  font: inherit;
+  font-variant-numeric: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 0;
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-accent) 10%, var(--light));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-ratio-cassette-option:hover {
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-accent) 10%, var(--light));
+  }
+}
+
+.tri-ratio-cassette-check {
+  color: var(--tri-accent);
+  opacity: 0;
+}
+
+.tri-ratio-cassette-option[aria-selected='true'] .tri-ratio-cassette-check {
+  opacity: 1;
+}
+
+.tri-ratio-cassette-option-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tri-ratio-chart-scroll {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-bottom: 0.2rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--gray) 45%, transparent) transparent;
+}
+
+.tri-ratio-chart[aria-invalid='true'] {
+  opacity: 0.45;
+}
+
+.tri-ratio-chart {
+  width: 100%;
+  min-width: 0;
+  min-height: 6.25rem;
+  margin-inline: auto;
+}
+
+.tri-ratio-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+  font-size: 0.5rem;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    box-sizing: border-box;
+    width: auto;
+    min-width: 0;
+    height: 1.9rem;
+    padding: 0.16rem 0.25rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    width: 2.1rem;
+    min-width: 2.1rem;
+    background: var(--light);
+    border-inline-end: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+  }
+
+  thead th {
+    font-weight: inherit;
+    color: var(--gray);
+  }
+
+  tbody th {
+    font-weight: inherit;
+    color: var(--dark);
+    background: color-mix(in srgb, var(--gray) 12%, transparent);
+  }
+
+  td {
+    color: var(--dark);
+    background: color-mix(in srgb, var(--tri-ratio-color) var(--tri-ratio-level), var(--light));
+  }
+}
+
+.tri-ratio-row--1 {
+  --tri-ratio-color: var(--tri-bike);
+}
+
+.tri-ratio-row--2 {
+  --tri-ratio-color: var(--tri-run);
+}
+
+.tri-ratio-row--placeholder {
+  th,
+  td {
+    color: transparent;
+    background: color-mix(in srgb, var(--gray) 8%, transparent);
+  }
+}
+
+@container tri-ratio (max-width: 29rem) {
+  .tri-ratio-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-ratio-rings,
+  .tri-ratio-layout {
+    justify-self: center;
+  }
+
+  .tri-ratio-table {
+    border-spacing: 1px;
+    font-size: 0.45rem;
+
+    th,
+    td {
+      width: auto;
+      min-width: 0;
+      padding-inline: 0.05rem;
+    }
+
+    th:first-child {
+      width: 1.7rem;
+      min-width: 1.7rem;
+    }
+  }
 }
 
 .tri-gear--more::after,
@@ -2726,6 +3170,10 @@
 .tri-tools .tri-gear-scroll {
   max-height: none;
   overflow: visible;
+}
+
+.tri-tools .tri-ratio-cassette-menu {
+  max-height: min(22rem, 50vh);
 }
 
 .tri-tools .tri-pace .tri-pace-row > :nth-child(1) {

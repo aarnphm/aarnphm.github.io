@@ -51,29 +51,29 @@ Hélène cherche les vestiaires de la piscine et s'y prend à deux reprises (CD1
 > Hélène : `Bon, parfait ! Merci beaucoup !`
 > Homme : `Ça me fait plaisir.`
 
-| question                                                    | réponse                                     |
-| ----------------------------------------------------------- | ------------------------------------------- |
-| quelle expression pour s'adresser à la femme ?              | `Pardon, madame ?`                          |
-| que cherche Hélène ?                                        | `les vestiaires de la piscine`              |
-| quelle est la réponse de la femme ?                         | `Elle ne sait pas où sont les vestiaires.`  |
-| qu'est-ce qu'Hélène dit à l'homme ?                         | `Je cherche les vestiaires de la piscine.`  |
-| selon l'homme, Hélène est…                                  | `près des vestiaires`                       |
-| est-ce que l'homme donne des indications ?                  | `oui`                                       |
+| question                                       | réponse                                    |
+| ---------------------------------------------- | ------------------------------------------ |
+| quelle expression pour s'adresser à la femme ? | `Pardon, madame ?`                         |
+| que cherche Hélène ?                           | `les vestiaires de la piscine`             |
+| quelle est la réponse de la femme ?            | `Elle ne sait pas où sont les vestiaires.` |
+| qu'est-ce qu'Hélène dit à l'homme ?            | `Je cherche les vestiaires de la piscine.` |
+| selon l'homme, Hélène est…                     | `près des vestiaires`                      |
+| est-ce que l'homme donne des indications ?     | `oui`                                      |
 
 two encounters, and every distractor is cross-wired between them: `Excusez-moi, madame.` transplants the man's opener onto the woman, and `Où sont les vestiaires…` transplants the woman's question onto the man. the trap is answering from the right dialogue but the wrong half. the `près/loin` item is a litotes: `vous n'êtes pas très loin` veut dire `près`.
 
 the exchange also carries the politeness that the frames alone do not:
 
-| expression            | emploi                                                                       |
-| --------------------- | ---------------------------------------------------------------------------- |
-| `s'adresser à qqn`    | commencer à parler à quelqu'un                                               |
-| `chercher qqch`       | to look for, with no preposition; French never adds one after `chercher`     |
-| `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                          |
-| `Merci quand même.`   | thanks anyway, when the answer did not come                                  |
-| `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                    |
-| `selon`               | according to: `selon l'homme, Hélène est près des vestiaires`                |
-| `ouvert` >< `fermé`   | open against closed                                                          |
-| `au mauvais étage`    | on the wrong floor, `mauvais` opposé de `bon`                                |
+| expression            | emploi                                                                   |
+| --------------------- | ------------------------------------------------------------------------ |
+| `s'adresser à qqn`    | commencer à parler à quelqu'un                                           |
+| `chercher qqch`       | to look for, with no preposition; French never adds one after `chercher` |
+| `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                      |
+| `Merci quand même.`   | thanks anyway, when the answer did not come                              |
+| `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                |
+| `selon`               | according to: `selon l'homme, Hélène est près des vestiaires`            |
+| `ouvert` >< `fermé`   | open against closed                                                      |
+| `au mauvais étage`    | on the wrong floor, `mauvais` opposé de `bon`                            |
 
 `Vous allez voir le vestiaire des hommes` is a futur proche, `aller` au présent plus l'infinitif, and `celui des femmes` replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
 
