@@ -206,6 +206,7 @@ document.addEventListener('nav', () => {
   void Promise.all(
     tools.map(tool => modelContext.registerTool(tool, { signal: controller.signal })),
   ).catch(error => {
+    if (controller.signal.aborted) return
     controller.abort(error)
     console.error('Failed to register WebMCP tools', error)
   })
