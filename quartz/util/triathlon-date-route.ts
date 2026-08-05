@@ -58,6 +58,17 @@ export const triathlonDaySlug = (date: string): FullSlug | null => {
   return `${TRIATHLON_ON_SLUG}/${match[1]}/${match[2]}/${match[3]}` as FullSlug
 }
 
+export const triathlonDayHrefFromReference = (
+  date: string,
+  referenceHref?: string,
+): string | null => {
+  const slug = triathlonDaySlug(date)
+  if (!slug) return null
+  const path = `/${slug}`
+  if (!referenceHref || !URL.canParse(referenceHref)) return path
+  return new URL(path, referenceHref).toString()
+}
+
 export const triathlonDateRouteFromSlug = (slug: string): TriathlonDateRoute | null => {
   if (slug === TRIATHLON_ON_SLUG) return { kind: 'index' }
   const day = TRIATHLON_DAY_SLUG.exec(slug)

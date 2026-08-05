@@ -135,7 +135,7 @@ import {
   type SwimTrendMode,
   type TriNodeFactory,
 } from '../../util/triathlon-card'
-import { triathlonDaySlug } from '../../util/triathlon-date-route'
+import { triathlonDayHrefFromReference } from '../../util/triathlon-date-route'
 import {
   gearCassettePreset,
   gearRatioMatrix,
@@ -1090,7 +1090,7 @@ const metricSpecs = (d: StravaActivityDetail): MapMetric[] => {
     },
   }
   const verticalOscillationSpec: MapMetric = {
-    label: 'vertical oscillation',
+    label: 'v-oscillation',
     shortLabel: 'VO',
     ramp: STRIDE_RAMP,
     zeroGap: true,
@@ -1329,6 +1329,7 @@ const renderDetail = (
   payload?: DetailPayload | null,
   fillMissingRunPower = false,
   showUnavailableElevation = false,
+  dayRouteHref?: string,
 ): HTMLElement => {
   const d = powerViewActivity(source)
   const normalizeBikeMetrics = d.sport === 'bike' && isZeroPowerExcluded()
@@ -1349,14 +1350,16 @@ const renderDetail = (
       group.efforts.some(effort => effort.id === d.id),
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
-    if (matchedGroup && more) more.appendChild(buildMatchedRunGroup(matchedGroup, d.id))
+    if (matchedGroup && more)
+      more.appendChild(buildMatchedRunGroup(matchedGroup, d.id, dayRouteHref))
   }
   if (d.sport === 'bike') {
     const matchedGroup = payload?.matchedRides?.groups.find(group =>
       group.efforts.some(effort => effort.id === d.id),
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
-    if (matchedGroup && more) more.appendChild(buildMatchedRideGroup(matchedGroup, d.id))
+    if (matchedGroup && more)
+      more.appendChild(buildMatchedRideGroup(matchedGroup, d.id, dayRouteHref))
   }
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>(
@@ -1412,7 +1415,7 @@ const renderDetail = (
           return `${scrubDist(p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
         },
       })
-    else if (trace.dataset.triTrace === 'vertical oscillation')
+    else if (trace.dataset.triTrace === 'v-oscillation')
       surfaces.push({
         wrap: trace,
         fmt: p => {
@@ -2153,7 +2156,13 @@ const buildDayCard = (
   extras: DayCardExtras = {},
 ): HTMLElement => {
   const card = buildDayCardNode(domF, dateIso, payload, extras, detail =>
-    renderDetail(detail, payload, extras.event != null, extras.embedded === true),
+    renderDetail(
+      detail,
+      payload,
+      extras.event != null,
+      extras.embedded === true,
+      extras.dayRouteHref,
+    ),
   ) as HTMLElement
   if (extras.expanded) {
     card
@@ -2267,7 +2276,13 @@ const setupDayEmbeds = (): (() => void) | null => {
   })
   for (const embed of embeds) {
     const date = embed.dataset.triathlonDate!
-    const extras = dayExtrasFromDataset(embed.dataset)
+    const sourceHref = embed
+      .closest('.transclude')
+      ?.querySelector<HTMLAnchorElement>('.transclude-src')?.href
+    const extras: DayCardExtras = {
+      ...dayExtrasFromDataset(embed.dataset),
+      ...(sourceHref ? { dayRouteHref: sourceHref } : {}),
+    }
     const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
     let upgraded = false
     let payload: DetailPayload | null = null
@@ -8084,7 +8099,11 @@ const matchedSmoothPath = (
   return path
 }
 
-const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number): HTMLElement => {
+const buildMatchedRunGroup = (
+  group: MatchedRunGroup,
+  currentActivityId: number,
+  dayRouteHref?: string,
+): HTMLElement => {
   const wrap = el('section', 'tri-matched tri-matched-group', undefined, {
     'data-matched-group': group.id,
   })
@@ -8299,11 +8318,11 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
     const activityCell = document.createElement('td')
     if (index === fastestIndex)
       activityCell.appendChild(el('span', 'tri-matched-fastest', tl('fastest')))
-    const daySlug = triathlonDaySlug(effort.date)
+    const dayHref = triathlonDayHrefFromReference(effort.date, dayRouteHref)
     activityCell.appendChild(
-      daySlug
+      dayHref
         ? el('a', 'tri-matched-activity internal', effort.name, {
-            href: `/${daySlug}`,
+            href: dayHref,
             ...(index === currentIndex ? { 'aria-current': 'true' } : {}),
           })
         : el('span', 'tri-matched-activity', effort.name),
@@ -8325,7 +8344,11 @@ const buildMatchedRunGroup = (group: MatchedRunGroup, currentActivityId: number)
   return wrap
 }
 
-const buildMatchedRideGroup = (group: MatchedRideGroup, currentActivityId: number): HTMLElement => {
+const buildMatchedRideGroup = (
+  group: MatchedRideGroup,
+  currentActivityId: number,
+  dayRouteHref?: string,
+): HTMLElement => {
   const wrap = el('section', 'tri-matched tri-matched-group tri-matched--ride', undefined, {
     'data-matched-group': group.id,
   })
@@ -8569,11 +8592,11 @@ const buildMatchedRideGroup = (group: MatchedRideGroup, currentActivityId: numbe
     const activityCell = document.createElement('td')
     if (index === highestIndex)
       activityCell.appendChild(el('span', 'tri-matched-highest', tl('highest')))
-    const daySlug = triathlonDaySlug(effort.date)
+    const dayHref = triathlonDayHrefFromReference(effort.date, dayRouteHref)
     activityCell.appendChild(
-      daySlug
+      dayHref
         ? el('a', 'tri-matched-activity internal', effort.name, {
-            href: `/${daySlug}`,
+            href: dayHref,
             ...(index === currentIndex ? { 'aria-current': 'true' } : {}),
           })
         : el('span', 'tri-matched-activity', effort.name),

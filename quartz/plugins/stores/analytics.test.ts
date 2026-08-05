@@ -620,7 +620,7 @@ test('run radar replaces climb and recovery with native stride and oscillation',
   assert.equal(stride?.rawUnit, 'm')
   assert.equal(stride?.rawValue, 1.15)
   assert.equal(stride?.score, 50)
-  assert.equal(oscillation?.label, 'vertical oscillation')
+  assert.equal(oscillation?.label, 'v-oscillation')
   assert.equal(oscillation?.rawUnit, 'cm')
   assert.equal(oscillation?.rawValue, 9.1)
   assert.equal(oscillation?.score, 50)

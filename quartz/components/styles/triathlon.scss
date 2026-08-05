@@ -1577,6 +1577,12 @@
   color: var(--gray);
 }
 
+.tri-elev-cap--summary {
+  flex-wrap: nowrap;
+  column-gap: 0.2rem;
+  white-space: nowrap;
+}
+
 .tri-elev-cap--unavailable {
   min-height: 1lh;
 }

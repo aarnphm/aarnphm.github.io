@@ -27,6 +27,7 @@ export type DayCardExtras = {
   expanded?: boolean
   embedded?: boolean
   dateHref?: string
+  dayRouteHref?: string
 }
 
 export type DayCardPayload = {
@@ -810,7 +811,7 @@ export const buildElevation = <N>(
   f.add(fig, f.svg('path', { d: line, class: 'tri-elev-line' }))
   f.add(fig, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = f.el('div', 'tri-elev-wrap')
-  const cap = f.el('div', 'tri-elev-cap')
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   f.add(
     cap,
     f.el('span', 'tri-elev-d', `+${formatElevationGain(d.elevationM)}`),
@@ -1039,7 +1040,7 @@ export const buildRunVerticalOscillationTrace = <N>(
     f,
     d,
     runVerticalOscillationCm,
-    'vertical oscillation',
+    'v-oscillation',
     () => `${formatVerticalOscillation(average)} avg`,
     value => `${value.toFixed(1)}cm`,
     { min, max, intervals: 2 },
@@ -3233,7 +3234,7 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
   },
   'vertical-oscillation': {
     metric: 'vertical-oscillation',
-    title: 'vertical oscillation',
+    title: 'v-oscillation',
     display: value => value,
     tick: formatVerticalOscillation,
     includeZero: false,
