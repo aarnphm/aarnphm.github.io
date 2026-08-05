@@ -197,4 +197,17 @@ const openPageTool: WebMcpTool = {
 }
 
 const tools = [searchSiteTool, readPageTool, openPageTool]
-navigator.modelContext?.provideContext({ tools })
+
+document.addEventListener('nav', () => {
+  const modelContext = navigator.modelContext
+  if (!modelContext) return
+
+  const controller = new AbortController()
+  void Promise.all(
+    tools.map(tool => modelContext.registerTool(tool, { signal: controller.signal })),
+  ).catch(error => {
+    controller.abort(error)
+    console.error('Failed to register WebMCP tools', error)
+  })
+  window.addCleanup(() => controller.abort())
+})
