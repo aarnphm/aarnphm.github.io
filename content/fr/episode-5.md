@@ -202,13 +202,13 @@ the transformations go both ways: `D'où viens-tu ?` devient `Tu viens d'où ?`,
 
 the matching drill joins a question word to its tail:
 
-| début        | fin                  | question                       |
-| ------------ | -------------------- | ------------------------------ |
-| `Combien`    | `d'enfants as-tu ?`  | `Combien d'enfants as-tu ?`    |
+| début        | fin                   | question                      |
+| ------------ | --------------------- | ----------------------------- |
+| `Combien`    | `d'enfants as-tu ?`   | `Combien d'enfants as-tu ?`   |
 | `Comment`    | `vous appelez-vous ?` | `Comment vous appelez-vous ?` |
-| `Où`         | `habites-tu ?`       | `Où habites-tu ?`              |
-| `D'où`       | `vous venez ?`       | `D'où vous venez ?`            |
-| `C'est quoi` | `ta nationalité ?`   | `C'est quoi ta nationalité ?`  |
+| `Où`         | `habites-tu ?`        | `Où habites-tu ?`             |
+| `D'où`       | `vous venez ?`        | `D'où vous venez ?`           |
+| `C'est quoi` | `ta nationalité ?`    | `C'est quoi ta nationalité ?` |
 
 the pairing is deterministic, not guesswork: four tails open with a verb and exactly one, `ta nationalité ?`, is a bare noun phrase. `c'est quoi` is the only début that takes a noun, since its question word already sits inside its own clause, so that pair locks first and the rest follow by sense.
 

@@ -10,6 +10,7 @@ import {
   MapPanel,
   PacePanel,
   TrainingPanel,
+  ToolsPanel,
 } from './triathlon-panels'
 
 test('calculator defaults to the configured race distance with an olympic fallback', () => {
@@ -74,6 +75,60 @@ test('triathlon navigation controls expose their locale keys', () => {
   assert.match(html, /class="tri-pace-sec" data-i18n="run"/)
   assert.match(html, /class="tri-pace-sec" data-i18n="swim"/)
   assert.match(html, /class="tri-pace-sec" data-i18n="bike"/)
+})
+
+test('gear ratios render the declared drivetrain and cassette families', () => {
+  const html = render(<GearPanel />)
+
+  assert.equal(html.split('class="tri-ratio-table"').length - 1, 1)
+  assert.equal(html.includes('aria-expanded="false" aria-controls="tri-gear-panel"'), true)
+  assert.equal(html.includes('id="tri-gear-panel" class="tri-gear" aria-hidden="true"'), true)
+  assert.equal(html.includes('data-ratio-chainring="52" data-ratio-cog="11"'), true)
+  assert.equal(html.includes('data-ratio-value="4.73"'), true)
+  assert.equal(html.includes('data-ratio-chainring="36" data-ratio-cog="34"'), true)
+  assert.equal(html.includes('data-ratio-value="1.06"'), true)
+  assert.equal(html.includes('<select'), false)
+  assert.equal(
+    html.indexOf('class="tri-ratio-ring-inputs"') < html.indexOf('class="tri-ratio-cassette"') &&
+      html.indexOf('class="tri-ratio-cassette"') < html.indexOf('class="tri-ratio-layout"'),
+    true,
+  )
+  assert.equal(
+    html.includes(
+      'class="tri-ratio-cassette-trigger" type="button" aria-labelledby="tri-ratio-cassette-label tri-ratio-cassette-value" aria-haspopup="listbox" aria-expanded="false" aria-controls="tri-ratio-cassette-menu"',
+    ),
+    true,
+  )
+  assert.equal(
+    html.includes(
+      'id="tri-ratio-cassette-menu" class="tri-ratio-cassette-menu" role="listbox" aria-labelledby="tri-ratio-cassette-label" hidden',
+    ),
+    true,
+  )
+  assert.equal(
+    html.includes(
+      'role="option" aria-selected="true" data-cassette-id="shimano-ultegra-r8100-11-34"',
+    ),
+    true,
+  )
+  assert.equal(html.includes('Ultegra R8000 · 11–32 · 11s'), true)
+  assert.equal(html.includes('Dura-Ace R9200 · 11–34 · 12s'), true)
+  assert.equal(html.includes('RED XG-1290 · 10–36 · 12s'), true)
+  assert.equal(html.includes('RED XPLR XG-1391 · 10–46 · 13s'), true)
+  assert.equal(html.includes('Super Record 13 · 10–29 · 13s'), true)
+  assert.equal(html.includes('Super Record Wireless · 10–29 · 12s'), true)
+  assert.equal(html.includes('Chorus · 11–34 · 12s'), true)
+  assert.equal(html.includes('Ekar · 9–42 · 13s'), true)
+})
+
+test('tools exposes gear and pace controls outside hidden dropdowns', () => {
+  const html = render(<ToolsPanel />)
+
+  assert.equal(html.split('class="tri-ratio-table"').length - 1, 1)
+  assert.equal(html.includes('class="tri-gear-btn"'), false)
+  assert.equal(html.includes('class="tri-pace-btn"'), false)
+  assert.equal(html.includes('class="tri-gear" aria-hidden="false"'), true)
+  assert.equal(html.includes('class="tri-pace" aria-hidden="false"'), true)
 })
 
 test('triathlon panels share one dialog shell', () => {

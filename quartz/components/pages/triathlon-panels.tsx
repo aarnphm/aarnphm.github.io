@@ -3,6 +3,12 @@ import type { TriathlonTreeYear } from '../../util/triathlon-date-route'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
+import {
+  DEFAULT_GEAR_CASSETTE,
+  GEAR_CASSETTE_PRESET_GROUPS,
+  gearRatioMatrix,
+  type GearCassettePreset,
+} from '../../util/triathlon-gear-ratio'
 
 export const DISPATCH_ICON =
   'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
@@ -522,13 +528,199 @@ export const TrainingPanel = ({ page }: { page?: boolean }) => (
   </TriPanelShell>
 )
 
-export const GearPanel = () => (
+const DEFAULT_GEAR_CHAINRINGS: readonly number[] = [52, 36]
+
+const GearRatioTable = ({
+  chainrings,
+  cassette,
+}: {
+  chainrings: readonly number[]
+  cassette: GearCassettePreset
+}) => {
+  const matrix = gearRatioMatrix(chainrings, cassette.cogs)
+  if (!matrix) return null
+  return (
+    <table class="tri-ratio-table" aria-label="gear ratio chart" data-i18n-aria-label="gear ratios">
+      <thead>
+        <tr>
+          <th scope="col" aria-label="chainring and cassette teeth">
+            T
+          </th>
+          {cassette.cogs.map(cog => (
+            <th scope="col">{cog}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {matrix.rows.map((row, rowIndex) => (
+          <tr class={`tri-ratio-row tri-ratio-row--${rowIndex + 1}`}>
+            <th scope="row" aria-label={`${row.chainring} tooth chainring`}>
+              {row.chainring}
+            </th>
+            {row.cells.map(cell => (
+              <td
+                data-ratio-chainring={row.chainring}
+                data-ratio-cog={cell.cog}
+                data-ratio-value={cell.ratio.toFixed(2)}
+                title={`${row.chainring}T ÷ ${cell.cog}T = ${cell.ratio.toFixed(2)}`}
+                style={`--tri-ratio-level:${(18 + cell.level * 52).toFixed(1)}%`}
+              >
+                {cell.ratio.toFixed(2)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+const GearRatioCalculator = () => {
+  const matrix = gearRatioMatrix(DEFAULT_GEAR_CHAINRINGS, DEFAULT_GEAR_CASSETTE.cogs)
+  return (
+    <section
+      class="tri-ratio"
+      aria-label="gear ratio calculator"
+      data-i18n-aria-label="gear ratios"
+    >
+      <div class="tri-ratio-head">
+        <span data-i18n="gear ratios">gear ratios</span>
+        <output class="tri-ratio-range" aria-live="polite">
+          {matrix ? `${matrix.minimum.toFixed(2)}–${matrix.maximum.toFixed(2)}` : ''}
+        </output>
+      </div>
+      <div class="tri-ratio-controls">
+        <fieldset class="tri-ratio-rings">
+          <legend data-i18n="chainrings">chainrings</legend>
+          <div class="tri-ratio-ring-inputs">
+            {DEFAULT_GEAR_CHAINRINGS.map((chainring, index) => (
+              <label class="tri-ratio-ring" data-ratio-ring={index + 1}>
+                <input
+                  class="tri-ratio-ring-input"
+                  type="number"
+                  value={chainring}
+                  min="24"
+                  max="64"
+                  step="1"
+                  inputMode="numeric"
+                  aria-label={`chainring ${index + 1} teeth`}
+                />
+                <span aria-hidden="true">T</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <div class="tri-ratio-cassette">
+          <span id="tri-ratio-cassette-label" data-i18n="cassette">
+            cassette
+          </span>
+          <div class="tri-ratio-cassette-picker">
+            <button
+              class="tri-ratio-cassette-trigger"
+              type="button"
+              aria-labelledby="tri-ratio-cassette-label tri-ratio-cassette-value"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="tri-ratio-cassette-menu"
+            >
+              <span id="tri-ratio-cassette-value" class="tri-ratio-cassette-value">
+                {DEFAULT_GEAR_CASSETTE.label}
+              </span>
+              <svg
+                class="tri-ratio-cassette-chevron"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="m4 6 4 4 4-4"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <div
+              id="tri-ratio-cassette-menu"
+              class="tri-ratio-cassette-menu"
+              role="listbox"
+              aria-labelledby="tri-ratio-cassette-label"
+              hidden
+            >
+              {GEAR_CASSETTE_PRESET_GROUPS.map(group => (
+                <div class="tri-ratio-cassette-group" role="group" aria-label={group.label}>
+                  <span class="tri-ratio-cassette-group-label" aria-hidden="true">
+                    {group.label}
+                  </span>
+                  {group.presets.map(preset => (
+                    <button
+                      class="tri-ratio-cassette-option"
+                      type="button"
+                      role="option"
+                      aria-selected={preset.id === DEFAULT_GEAR_CASSETTE.id}
+                      data-cassette-id={preset.id}
+                    >
+                      <span class="tri-ratio-cassette-check" aria-hidden="true">
+                        ✓
+                      </span>
+                      <span class="tri-ratio-cassette-option-value">{preset.label}</span>
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div class="tri-ratio-layout" role="group" aria-label="chainring count">
+          <button
+            class="tri-ratio-layout-btn tri-ratio-layout-btn--on"
+            type="button"
+            data-ratio-layout="2"
+            aria-pressed="true"
+          >
+            2×
+          </button>
+          <button
+            class="tri-ratio-layout-btn"
+            type="button"
+            data-ratio-layout="1"
+            aria-pressed="false"
+          >
+            1×
+          </button>
+        </div>
+      </div>
+      <div class="tri-ratio-chart-scroll">
+        <div class="tri-ratio-chart">
+          <GearRatioTable chainrings={DEFAULT_GEAR_CHAINRINGS} cassette={DEFAULT_GEAR_CASSETTE} />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export const GearPanel = ({ page }: { page?: boolean }) => (
   <div class="tri-gear-wrap">
-    <button class="tri-gear-btn" type="button" data-i18n="gear">
-      gear
-    </button>
-    <div class="tri-gear" aria-hidden="true">
+    {!page && (
+      <button
+        class="tri-gear-btn"
+        type="button"
+        data-i18n="gear"
+        aria-expanded="false"
+        aria-controls="tri-gear-panel"
+      >
+        gear
+      </button>
+    )}
+    <div
+      id={page ? undefined : 'tri-gear-panel'}
+      class="tri-gear"
+      aria-hidden={page ? 'false' : 'true'}
+    >
       <div class="tri-gear-scroll">
+        <GearRatioCalculator />
         {GEAR.map(([label, items]) => (
           <div class="tri-gear-row">
             <span class="tri-gear-k" data-i18n={label}>
@@ -546,12 +738,24 @@ export const GearPanel = () => (
   </div>
 )
 
-export const PacePanel = () => (
+export const PacePanel = ({ page }: { page?: boolean }) => (
   <div class="tri-pace-wrap">
-    <button class="tri-pace-btn" type="button" data-i18n="pace">
-      pace
-    </button>
-    <div class="tri-pace" aria-hidden="true">
+    {!page && (
+      <button
+        class="tri-pace-btn"
+        type="button"
+        data-i18n="pace"
+        aria-expanded="false"
+        aria-controls="tri-pace-panel"
+      >
+        pace
+      </button>
+    )}
+    <div
+      id={page ? undefined : 'tri-pace-panel'}
+      class="tri-pace"
+      aria-hidden={page ? 'false' : 'true'}
+    >
       <span class="tri-pace-sec" data-i18n="run">
         run
       </span>
@@ -869,13 +1073,13 @@ export const ToolsPanel = () => (
       <h2 class="tri-tools-h" data-i18n="gear">
         gear
       </h2>
-      <GearPanel />
+      <GearPanel page />
     </section>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="pace">
         pace
       </h2>
-      <PacePanel />
+      <PacePanel page />
     </section>
   </div>
 )
