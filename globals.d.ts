@@ -13,7 +13,7 @@ export declare global {
   }
 
   interface WebMcpModelContext {
-    provideContext(context: { tools: WebMcpTool[] }): void
+    registerTool(tool: WebMcpTool, options?: { signal?: AbortSignal }): Promise<void>
   }
 
   interface Document {
