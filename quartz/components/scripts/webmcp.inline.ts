@@ -199,7 +199,7 @@ const openPageTool: WebMcpTool = {
 const tools = [searchSiteTool, readPageTool, openPageTool]
 
 document.addEventListener('nav', () => {
-  const modelContext = navigator.modelContext
+  const modelContext = document.modelContext
   if (!modelContext) return
 
   const controller = new AbortController()

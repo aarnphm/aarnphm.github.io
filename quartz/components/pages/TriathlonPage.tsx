@@ -29,6 +29,7 @@ import {
 
 const SPORT_LABEL: Record<Sport, string> = { swim: 'swim', bike: 'bike', run: 'run' }
 const PX_PER_MIN = 2.4
+const BIKE_PX_PER_MIN = 1.2
 const MAX_BAR = 300
 const MIN_SEG = 3
 const REST_SEG = 7
@@ -110,7 +111,7 @@ export default (() => {
                   <div
                     class="tri-bars"
                     role="img"
-                    aria-label={`${payload.totalCount} sessions, bar height by duration`}
+                    aria-label={`${payload.totalCount} sessions, bar height by duration with cycling normalized`}
                   >
                     {payload.days.map(d => {
                       const rest = d.items.length === 0
@@ -119,7 +120,11 @@ export default (() => {
                       const segRaw = d.items.map(it =>
                         restKind(it.sport)
                           ? REST_SEG
-                          : Math.max(MIN_SEG, (it.durationS / 60) * PX_PER_MIN),
+                          : Math.max(
+                              MIN_SEG,
+                              (it.durationS / 60) *
+                                (it.sport === 'bike' ? BIKE_PX_PER_MIN : PX_PER_MIN),
+                            ),
                       )
                       const scalable = d.items.reduce(
                         (a, it, i) => (restKind(it.sport) ? a : a + segRaw[i]),

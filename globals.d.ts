@@ -17,6 +17,7 @@ export declare global {
   }
 
   interface Document {
+    readonly modelContext?: WebMcpModelContext
     addEventListener<K extends keyof CustomEventMap>(
       type: K,
       listener: (this: Document, ev: CustomEventMap[K]) => void,
@@ -26,10 +27,6 @@ export declare global {
       listener: (this: Document, ev: CustomEventMap[K]) => void,
     ): void
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): boolean
-  }
-
-  interface Navigator {
-    readonly modelContext?: WebMcpModelContext
   }
 
   interface Window {
