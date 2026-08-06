@@ -29,12 +29,12 @@ adding `madame` ou `monsieur` is the politer half of each pair, and the choice o
 
 then the ask itself, four frames printed on five lines (the `Pouvez-vous` frame gets two lines because the embedded verb agrees):
 
-| frame                                    | exemple                                                        | ce qu'elle fait                                        |
-| ---------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------ |
-| `Je cherche…`                            | `Je cherche les vestiaires de la piscine.`                     | une affirmation, la plus directe, aucune question posée |
-| `Pouvez-vous me dire où est/sont… ?`     | `Pouvez-vous me dire où est le secrétariat / la sortie / l'ascenseur ?`, `Pouvez-vous me dire où sont les toilettes / les escaliers ?` | la plus polie, la question logée dans une demande      |
-| `…, s'il vous plait.`                    | `Les toilettes / la cafétéria / la sortie, s'il vous plait.`   | le nom seul, la formule de politesse tient lieu du reste |
-| `…, c'est à quel endroit ?`              | `Le photocopieur / la cafétéria, c'est à quel endroit ?`       | le nom d'abord, la question ensuite                     |
+| frame                                | exemple                                                                                                                                | ce qu'elle fait                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `Je cherche…`                        | `Je cherche les vestiaires de la piscine.`                                                                                             | une affirmation, la plus directe, aucune question posée  |
+| `Pouvez-vous me dire où est/sont… ?` | `Pouvez-vous me dire où est le secrétariat / la sortie / l'ascenseur ?`, `Pouvez-vous me dire où sont les toilettes / les escaliers ?` | la plus polie, la question logée dans une demande        |
+| `…, s'il vous plait.`                | `Les toilettes / la cafétéria / la sortie, s'il vous plait.`                                                                           | le nom seul, la formule de politesse tient lieu du reste |
+| `…, c'est à quel endroit ?`          | `Le photocopieur / la cafétéria, c'est à quel endroit ?`                                                                               | le nom d'abord, la question ensuite                      |
 
 three details live in these lines.
 
@@ -46,11 +46,11 @@ and the embedded question keeps the verb in front of its noun subject: `où est 
 
 the découvrez listening runs the same request through three of the frames, the bare question (`Où sont les vestiaires de la piscine ?`), the embedded polite one (`Pouvez-vous me dire où sont les vestiaires de la piscine ?`), and the flat statement (`Je cherche les vestiaires de la piscine.`), all three land the same.
 
-| mot            | sens                                                                                 |
-| -------------- | ------------------------------------------------------------------------------------ |
-| `interpeler`   | to call out to someone, to get their attention before speaking                       |
-| `un endroit`   | a spot, a place; `c'est à quel endroit ?` is the everyday `where is it ?`            |
-| `s'il vous plait` | please, vous form; it closes the sentence rather than opening it                  |
+| mot               | sens                                                                      |
+| ----------------- | ------------------------------------------------------------------------- |
+| `interpeler`      | to call out to someone, to get their attention before speaking            |
+| `un endroit`      | a spot, a place; `c'est à quel endroit ?` is the everyday `where is it ?` |
+| `s'il vous plait` | please, vous form; it closes the sentence rather than opening it          |
 
 ### le dialogue du découvrez
 
@@ -288,16 +288,16 @@ the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `d
 
 set (1) in [[fr/episode-3]] (`sur, dans, devant, derrière, sous, entre`) parks the cat around the furniture. set (2) points and measures:
 
-| préposition       | gloss                | rôle      | exemple du livre                                              |
-| ----------------- | -------------------- | --------- | ------------------------------------------------------------- |
-| `à gauche de`     | to the left of       | direction | `La mère est à gauche du nid.`                                |
-| `à droite de`     | to the right of      | direction | `La plante est à droite de la porte.`                         |
-| `en face de`      | across from, facing  | direction | `Les toilettes sont en face de l'escalier et de l'ascenseur.` |
-| `à côté de`       | next to, beside      | direction | `La cafétéria, c'est à côté du secrétariat.`                  |
-| `au bout de`      | at the end of        | direction | `La sortie, c'est au bout du corridor.`                       |
-| `loin de`         | far from             | distance  | `Ma classe est loin des toilettes.`                           |
-| `près de`         | near, close to       | distance  | `L'ordinateur est près de la fenêtre.`                        |
-| `au-dessus de`    | above, over          | hauteur   | `L'aigle est au-dessus de l'arbre.`                           |
+| préposition    | gloss               | rôle      | exemple du livre                                              |
+| -------------- | ------------------- | --------- | ------------------------------------------------------------- |
+| `à gauche de`  | to the left of      | direction | `La mère est à gauche du nid.`                                |
+| `à droite de`  | to the right of     | direction | `La plante est à droite de la porte.`                         |
+| `en face de`   | across from, facing | direction | `Les toilettes sont en face de l'escalier et de l'ascenseur.` |
+| `à côté de`    | next to, beside     | direction | `La cafétéria, c'est à côté du secrétariat.`                  |
+| `au bout de`   | at the end of       | direction | `La sortie, c'est au bout du corridor.`                       |
+| `loin de`      | far from            | distance  | `Ma classe est loin des toilettes.`                           |
+| `près de`      | near, close to      | distance  | `L'ordinateur est près de la fenêtre.`                        |
+| `au-dessus de` | above, over         | hauteur   | `L'aigle est au-dessus de l'arbre.`                           |
 
 the structural break between the two sets is the `de`. set (1) takes its noun bare, `sur la table`, `dans le sac`; every one of set (2) needs `de` first, `à côté de la table`, `au bout du corridor`. that is why the Mémo prints the eight words with a bracket pointing at `de`: the word alone is not usable.
 
@@ -346,10 +346,10 @@ the table is three rows deep and that is the whole tense: there is no `je`, no `
 
 that `nous` row is not a command to a group, it is the english let's: `allons` means let's go, `continuons` let's keep going, `montons` let's go up. giving directions you will almost never use it; you use it to propose.
 
-| forme    | à qui               | valeur                                          |
-| -------- | ------------------- | ----------------------------------------------- |
-| `(tu)`   | une personne, tutoiement | un ordre direct: `Va tout droit.`          |
-| `(nous)` | le groupe, moi inclus    | une proposition: `Allons au sous-sol.`     |
+| forme    | à qui                    | valeur                                                       |
+| -------- | ------------------------ | ------------------------------------------------------------ |
+| `(tu)`   | une personne, tutoiement | un ordre direct: `Va tout droit.`                            |
+| `(nous)` | le groupe, moi inclus    | une proposition: `Allons au sous-sol.`                       |
 | `(vous)` | vouvoiement ou pluriel   | l'ordre poli, le défaut avec un inconnu: `Allez tout droit.` |
 
 with a stranger in an édifice it is always the `vous` column, which is why every printed direction in the episode reads `Tournez`, `Continuez`, `Montez`, `Descendez`, `Prenez`.

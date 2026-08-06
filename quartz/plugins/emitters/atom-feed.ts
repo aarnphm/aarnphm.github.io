@@ -1,30 +1,53 @@
-<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"
-  xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:quartz="https://quartz.jzhao.xyz/ns">
+import { escapeHTML } from '../../util/escape'
+
+export const atomFeedStylesheetHref = '/static/feed.xsl'
+export const xhtmlNamespace = 'http://www.w3.org/1999/xhtml'
+
+export type AtomFeedPresentation = { stylesheetHref: string; polyfillSrc: string }
+
+export type AtomFeedStylesheets = { indexStylesheetHref: string; componentStylesheetHref: string }
+
+export function atomFeedDocument(feedContent: string, presentation: AtomFeedPresentation): string {
+  return `<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet href="${escapeHTML(presentation.stylesheetHref)}" type="text/xsl" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:quartz="https://quartz.jzhao.xyz/ns">
+  <script xmlns="${xhtmlNamespace}" src="${escapeHTML(presentation.polyfillSrc)}"></script>
+${feedContent}
+</feed>`
+}
+
+export function atomFeedStylesheet(stylesheets: AtomFeedStylesheets): string {
+  const indexStylesheetHref = escapeHTML(stylesheets.indexStylesheetHref)
+  const componentStylesheetHref = escapeHTML(stylesheets.componentStylesheetHref)
+
+  return `<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns="${xhtmlNamespace}" xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:quartz="https://quartz.jzhao.xyz/ns" exclude-result-prefixes="atom quartz">
   <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes" />
   <xsl:template match="/">
-    <html xmlns="http://www.w3.org/1999/xhtml">
+    <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <title>Atom - <xsl:value-of select="/atom:feed/atom:title" /></title>
-        <link rel="icon" href="./static/icon.webp" />
-        <link href="/index.css" rel="stylesheet" type="text/css" />
+        <link rel="icon" href="/static/icon.webp" />
+        <link href="${indexStylesheetHref}" rel="stylesheet" type="text/css" />
+        <link href="${componentStylesheetHref}" rel="stylesheet" type="text/css" />
         <style type="text/css">
-          body{max-width:768px;margin:0 auto}section{margin:30px 15px}hgroup{margin-bottom:2rem}a{text-decoration:none}header>:nth-last-child(2){margin-left:0px}@media (max-width: 800px){body{padding: 0 32px}}
+          body{max-width:768px;margin:0 auto}section{margin:30px 15px}hgroup{margin-bottom:2rem}a{text-decoration:none}header&gt;:nth-last-child(2){margin-left:0px}@media (max-width: 800px){body{padding:0 32px}}
         </style>
       </head>
       <body>
         <xsl:apply-templates select="atom:feed" />
         <hr />
-        <main xmlns="http://www.w3.org/1999/xhtml">
+        <main>
           <hgroup style="border-bottom:1px solid var(--lightgray);">
             <h2>Recent Items</h2>
             <p>
               <xsl:value-of select="atom:feed/atom:subtitle" />
             </p>
           </hgroup>
-          <ul class="section-ul" xmlns="http://www.w3.org/1999/xhtml">
+          <ul class="section-ul">
             <xsl:apply-templates select="atom:feed/atom:entry" />
           </ul>
         </main>
@@ -33,7 +56,7 @@
   </xsl:template>
 
   <xsl:template match="atom:feed">
-    <header class="rss" xmlns="http://www.w3.org/1999/xhtml">
+    <header class="rss">
       <h1 class="article-title">
         <xsl:value-of select="atom:title" />
       </h1>
@@ -45,14 +68,14 @@
           <p>You have stumbled upon the <a
               href="https://www.ietf.org/rfc/rfc4287.txt" target="_blank"
               class="anchor-like">atom feed</a> of my working notes, as
-            do to all paths of this digital garden. Much of these notes/writings are written for my own
+            do all paths of this digital garden. Much of these notes/writings are written for my own
             consumption, a sort of <a target="_blank"
               href="https://aarnphm.xyz/tags/evergreen">
               <span>evergreen</span>
             </a> notes. <br />If any of these doesn't make sense for
-            you, it is probably because I didn't write it for you. The main atom feed can be a bit spammy, but there is also sub-folder atom feed (if you want to follow specific topics), which is usually more sporadic. <br /> 👋 you can reach out to me on <a
+            you, it is probably because I didn't write it for you. The main atom feed can be a bit spammy, but there are also sub-folder atom feeds (if you want to follow specific topics), which are usually more sporadic. <br /> 👋 you can reach out to me on <a
               href="https://twitter.com/aarnphm" target="_blank">twitter</a> (Yep, I refused to call it
-            call it X) </p>
+            X) </p>
         </xsl:otherwise>
       </xsl:choose>
       <a target="_blank">
@@ -63,8 +86,7 @@
       <p style="margin-left: 0">Visit <a href="https://aboutfeeds.com/">About
           Feeds</a> to get started with newsreaders and subscribing. It’s free. </p>
 
-      <blockquote
-        class="callout tip" data-callout="tip">
+      <blockquote class="callout tip" data-callout="tip">
         <div class="callout-title" dir="auto">
           <div class="callout-title-inner" dir="auto">
             <p dir="auto">subscribe</p>
@@ -102,5 +124,6 @@
       </a>
     </li>
   </xsl:template>
-
 </xsl:stylesheet>
+`
+}

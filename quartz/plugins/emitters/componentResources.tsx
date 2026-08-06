@@ -27,6 +27,7 @@ import {
   writeGenericWorkerAssets,
   writeSemanticWorkerAssets,
 } from './component-resources/worker-assets'
+import { writeXsltPolyfillAsset } from './component-resources/xslt-polyfill-assets'
 
 const name = 'ComponentResources'
 
@@ -41,13 +42,19 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
     name,
     async *emit(ctx, _content, resources) {
       const componentResources = await currentComponentResources(ctx)
-      const [notebookRuntimeFiles, collaborativeCommentsFiles, semanticWorkerFiles, emojiFiles] =
-        await Promise.all([
-          writeNotebookRuntimeAssets(ctx),
-          writeCollaborativeCommentsAssets(ctx),
-          writeSemanticWorkerAssets(ctx),
-          writeEmojiAssets(ctx),
-        ])
+      const [
+        notebookRuntimeFiles,
+        collaborativeCommentsFiles,
+        semanticWorkerFiles,
+        emojiFiles,
+        xsltPolyfillFile,
+      ] = await Promise.all([
+        writeNotebookRuntimeAssets(ctx),
+        writeCollaborativeCommentsAssets(ctx),
+        writeSemanticWorkerAssets(ctx),
+        writeEmojiAssets(ctx),
+        writeXsltPolyfillAsset(ctx),
+      ])
       resolveComponentResourceAssets(ctx, componentResources)
 
       const fontAssets = await writeFontAssets(ctx)
@@ -63,6 +70,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
       yield* yieldFiles(collaborativeCommentsFiles)
       yield* yieldFiles(semanticWorkerFiles)
       yield* yieldFiles(emojiFiles)
+      yield xsltPolyfillFile
       yield writeAssetManifest(ctx)
     },
     async *partialEmit(ctx, _content, resources, changeEvents) {
@@ -114,6 +122,10 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
 
       if (changes.emoji) {
         yield* yieldFiles(await writeEmojiAssets(ctx))
+      }
+
+      if (changes.xsltPolyfill) {
+        yield await writeXsltPolyfillAsset(ctx)
       }
 
       for (const changeEvent of changes.genericWorkerChanges) {

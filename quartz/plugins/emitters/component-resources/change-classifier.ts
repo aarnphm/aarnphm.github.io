@@ -9,6 +9,7 @@ import {
   notebookRuntimeInlineEntry,
   semanticWorkerAssetEntries,
   semanticWorkerEntry,
+  xsltPolyfillAssetEntries,
 } from './asset-paths'
 
 const indexStylesheetComponentStyles = new Set([
@@ -45,6 +46,7 @@ export type ComponentResourceChanges = {
   semanticWorker: boolean
   semanticWorkerDeleted: boolean
   emoji: boolean
+  xsltPolyfill: boolean
   genericWorkerChanges: ChangeEvent[]
 }
 
@@ -135,6 +137,7 @@ export function classifyResourceChanges(
       changeEvent => changeEvent.path === semanticWorkerEntry && changeEvent.type === 'delete',
     ),
     emoji: changeEvents.some(changeEvent => isEmojiAssetChange(changeEvent.path)),
+    xsltPolyfill: changeEvents.some(changeEvent => xsltPolyfillAssetEntries.has(changeEvent.path)),
     genericWorkerChanges: changeEvents.filter(
       changeEvent =>
         isWorkerEntryPath(changeEvent.path) && changeEvent.path !== semanticWorkerEntry,
@@ -155,6 +158,7 @@ export function hasComponentResourceChanges(changes: ComponentResourceChanges): 
     changes.semanticWorker ||
     changes.semanticWorkerDeleted ||
     changes.emoji ||
+    changes.xsltPolyfill ||
     changes.genericWorkerChanges.length > 0
   )
 }

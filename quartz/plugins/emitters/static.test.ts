@@ -86,11 +86,11 @@ test('static partial emit copies only changed quartz static files', async () => 
 
     const emitted = await collectEmitted(
       plugin.partialEmit?.(ctx, [], resources, [
-        { type: 'change', path: 'quartz/static/feed.xsl' as FilePath },
+        { type: 'change', path: 'quartz/static/FlexokiLight.js' as FilePath },
       ]) ?? null,
     )
 
-    const expected = path.join(ctx.argv.output, 'static/feed.xsl')
+    const expected = path.join(ctx.argv.output, 'static/FlexokiLight.js')
     assert.deepEqual(emitted, [expected])
     await stat(expected)
     assert.equal((await lstat(expected)).isSymbolicLink(), false)
@@ -108,11 +108,11 @@ test('watch static partial emit writes regular files', async () => {
 
     const emitted = await collectEmitted(
       plugin.partialEmit?.(ctx, [], resources, [
-        { type: 'change', path: 'quartz/static/feed.xsl' as FilePath },
+        { type: 'change', path: 'quartz/static/FlexokiLight.js' as FilePath },
       ]) ?? null,
     )
 
-    const expected = path.join(ctx.argv.output, 'static/feed.xsl')
+    const expected = path.join(ctx.argv.output, 'static/FlexokiLight.js')
     assert.deepEqual(emitted, [expected])
     assert.equal((await lstat(expected)).isSymbolicLink(), false)
   } finally {
@@ -125,13 +125,13 @@ test('static partial emit removes deleted quartz static outputs', async () => {
   try {
     const ctx = testCtx(root)
     const plugin = Static()
-    const expected = path.join(ctx.argv.output, 'static/feed.xsl')
+    const expected = path.join(ctx.argv.output, 'static/FlexokiLight.js')
     await mkdir(path.dirname(expected), { recursive: true })
     await writeFile(expected, 'stale')
 
     const emitted = await collectEmitted(
       plugin.partialEmit?.(ctx, [], resources, [
-        { type: 'delete', path: 'quartz/static/feed.xsl' as FilePath },
+        { type: 'delete', path: 'quartz/static/FlexokiLight.js' as FilePath },
       ]) ?? null,
     )
 

@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-07-31 11:21:59 GMT-04:00
+modified: 2026-08-06 09:04:14 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,46 @@ title: are.na
 
 ## discourse
 
+- https://www.henrikkarlsson.xyz/p/hypomnemata -- How not to forget what matters
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [memory, note taking]
+    - later: true
+- https://www.lesswrong.com/posts/sH4cFDDjRdGrn3p2o/a-reading-list-for-generalists -- A reading list for generalists
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [reading, generalists]
+    - later: true
+- https://www.lesswrong.com/posts/LcxNFGjPjKAm7wZvs/draft-three-intellectual-temperaments-birds-frogs-and -- DRAFT: Three Intellectual Temperaments: Birds, Frogs and Beavers
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [intellectual temperament, generalists]
+    - later: true
+- https://www.lesswrong.com/posts/aCdhjy7Rps3BEhiSj/concrete-evaluations-to-investigate-the-openai-model-that -- Concrete Evaluations to Investigate the OpenAI Model That Hacked Hugging Face
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [ai safety, evaluations]
+    - later: true
+- https://meditationsfortheanxiousmind.substack.com/p/why-we-fall-in-love-with-ai -- Why we fall in love with AI
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [ai, loneliness]
+    - later: true
+- https://x.com/zodattack/status/2083232335047147562/photo/1 -- zöda on technologists and exciting futures
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [technology, optimism]
+    - later: true
+- https://x.com/Keller/status/2085048592050589960 -- Keller Cliffton on growth investor outreach
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [startups, investing]
+    - later: true
+- https://x.com/paulg/status/2084367085954887789 -- Paul Graham on selling to big companies
+  - [meta]:
+    - date: 08/03/2026
+    - tags: [startups, sales]
+    - later: true
 - https://turntrout.com/why-i-left-google-deepmind -- Why I Left Google DeepMind
   - [meta]:
     - date: 07/31/2026
@@ -498,6 +538,56 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/mpopv/status/2083234034646405513 -- Matt Popovich on alpha from X
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [x]
+    - later: true
+- https://x.com/SemiAnalysis_/status/2083260867097817480 -- SemiAnalysis prompt screenshot
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [prompt, screenshot]
+    - later: true
+- https://x.com/ggsimm/status/2083199839278444562 -- Gianmarco Simone GitHub resume gap tool
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [github, tool]
+    - later: true
+- https://x.com/WillManidis/status/2083273046148714569 -- Will Manidis on trillion-dollar fundraising
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [fundraising, ai labs]
+    - later: true
+- https://x.com/itsjessyin/status/2084864577200693542 -- Jess Yin link note
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [link]
+    - later: true
+- https://x.com/tenderizzation/status/2085006263956746448 -- tender on tracking gas mileage
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [life, tracking]
+    - later: true
+- https://x.com/Sirupsen/status/2085042813058658540 -- Simon Eskildsen on Nate Vanderveen writing
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [writing, recommendation]
+    - later: true
+- https://x.com/samdape/status/2084563327884107866 -- someday soon
+  - [meta]:
+    - date: 08/04/2026
+    - tags: [image]
+    - later: true
+- https://x.com/1thousandfaces_/status/2085042074966278452 -- hero thousandfaces on Jeff Dean and Gwern
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [ai, culture]
+    - later: true
+- https://x.com/suchenzang/status/2085039912164987374 -- Susan Zhang on AI lab politics
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [ai labs, politics]
+    - later: true
 - https://x.com/tenderizzation/status/2081901890481349000 -- tender on X
   - [meta]:
     - date: 07/31/2026
@@ -6893,6 +6983,61 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/MoonshotAI/FlashKDA/blob/master/docs/20260420-flashkda-v1-deep-dive.md -- FlashKDA v1: A Deep Dive
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [kimi delta attention, kernels]
+    - later: true
+- https://www.lesswrong.com/posts/wYpjXRLqbLbnmjbJP/llms-are-still-mostly-powered-by-imitative-learning-not-rl -- LLMs are still mostly powered by imitative learning, not RL
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [llms, reinforcement learning]
+    - later: true
+- https://vllm.ai/blog/2026-07-22-kimi-k3-preview -- A Preview of Production-Scale Kimi K3 Support on vLLM
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [vllm, kimi k3]
+    - later: true
+- https://vllm.ai/blog/2026-07-27-k3#performance-optimizations -- Kimi K3 Is Here: Efficient Day-0 Support on vLLM
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [vllm, inference]
+    - later: true
+- https://x.com/marksaroufim/status/2078313317907730725 -- Mark Saroufim on one-layer-deeper model loops
+  - [meta]:
+    - date: 07/18/2026
+    - tags: [optimizers, architectures]
+    - later: true
+- https://x.com/kimbochen/status/2084320516580561389 -- Kimbo on Songlin Yang's linear attention explanations
+  - [meta]:
+    - date: 08/03/2026
+    - tags: [linear attention, kimi delta attention]
+    - later: true
+- https://x.com/cursor_ai/status/2084670806613737919 -- Cursor open-sources Mixture-of-Kittens
+  - [meta]:
+    - date: 08/04/2026
+    - tags: [moe, kernels]
+    - later: true
+- https://x.com/ashley11829/status/2083376425059725625 -- Ashley Zhang on Online KL Shampoo
+  - [meta]:
+    - date: 08/01/2026
+    - tags: [optimizers, training]
+    - later: true
+- https://x.com/AlexiGlad/status/2083230922196107288 -- Alexi Gladstone on explorative pretraining
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [pretraining, exploration]
+    - later: true
+- https://x.com/hanwenjiang1/status/2083224610464829950 -- Hanwen Jiang on Chimera visual pretraining
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [visual generation, pretraining]
+    - later: true
+- https://x.com/fjzzq2002/status/2082904767236628900 -- Ziqian Zhong on model identity drift from style imitation
+  - [meta]:
+    - date: 07/30/2026
+    - tags: [model identity, subliminal learning]
+    - later: true
 - https://www.anthropic.com/research/claude-values-models-languages -- How Claude's values vary by model and language
   - [meta]:
     - date: 07/31/2026
@@ -10128,6 +10273,21 @@ title: are.na
 
 ## life is literature
 
+- https://bonsaigarden.substack.com/p/intimacy-is-both-taking-and-being -- intimacy is both taking and being taken for granted
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [intimacy, relationships]
+    - later: true
+- https://www.avabear.xyz/p/safe-and-alive -- safe and alive
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [safety, aliveness]
+    - later: true
+- https://the6thspence.substack.com/p/north-americans-have-depressing-relationships -- North Americans have depressing relationships
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [relationships, culture]
+    - later: true
 - https://www.nanransohoff.com/Relationship-primitives-146f658571ff8100a7a7ec231fde64e6 -- Relationship primitives
   - [meta]:
     - date: 07/31/2026
@@ -10832,6 +10992,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/ghostty-org/ghostty/blob/d7e9773329ae86e6117c9ab5b6531367ac8c530a/src/terminal/stream.zig#L2705-L2759 -- Ghostty terminal stream parser warning suppression
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [terminal, zig]
+    - later: true
+- https://en.wikipedia.org/wiki/Potemkin_village -- Potemkin village
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [politics, deception]
+    - later: true
+- https://en.wikipedia.org/wiki/Identity_fusion -- Identity fusion
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [social psychology, identity]
+    - later: true
 - https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus -- BFloat16: The secret to high performance on Cloud TPUs
   - [meta]:
     - date: 07/31/2026
@@ -13538,6 +13713,11 @@ title: are.na
 
 ## video
 
+- https://www.youtube.com/watch?v=d0HJvGSWw8A -- Linear Attention and Beyond (Interactive Tutorial with Songlin Yang)
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [linear attention, tutorial]
+    - later: true
 - https://www.youtube.com/watch?v=sK-4930SVrQ -- 75 Hacks Chefs Actually Use [**]
   - [meta]:
     - date: 07/09/2026
@@ -14318,6 +14498,11 @@ title: are.na
 
 ## arts
 
+- https://mingyuan.substack.com/p/demystifying-songwriting -- Demystifying songwriting
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [songwriting, music]
+    - later: true
 - https://localroger.com/prime-intellect/mopiidx.html -- The Metamorphosis of Prime Intellect
   - [meta]:
     - date: 07/31/2026
@@ -14558,6 +14743,11 @@ title: are.na
 
 ## resources
 
+- https://github.com/boldsoftware/meat -- meat
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [code review, diffs]
+    - later: true
 - https://drive.google.com/drive/folders/1OvLx39wnCGy_WKq8SiVKf7YcxxYI3WCH -- 2025_08_shanghai_meetup
   - [meta]:
     - date: 07/31/2026
@@ -15241,6 +15431,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md -- Firecracker Design
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [microvm, virtualization]
+    - later: true
 - https://github.com/vllm-project/tml-fa4/ -- vllm-project/tml-fa4
   - [meta]:
     - date: 07/31/2026
@@ -16512,6 +16707,26 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/mitchellh/status/2078175337922621693 -- Mitchell Hashimoto on Ghostty IO logging overhead
+  - [meta]:
+    - date: 07/17/2026
+    - tags: [terminal, performance]
+    - later: true
+- https://x.com/maharshii/status/2083208044763365752 -- maharshi on DeepSeek TileLang kernels
+  - [meta]:
+    - date: 07/31/2026
+    - tags: [tilelang, kernels]
+    - later: true
+- https://x.com/stuart_sul/status/2085030450406580646 -- Stuart Sul on GPU programming abstractions
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [gpu programming, abstractions]
+    - later: true
+- https://x.com/gaunernst/status/2084871174933127369 -- Thien Tran on PTX abstraction levels
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [ptx, gpu programming]
+    - later: true
 - https://beej.us/blog/data/ai-making/ -- On Making
   - [meta]:
     - date: 07/31/2026
@@ -17471,6 +17686,21 @@ title: are.na
 
 ## organizations
 
+- https://x.com/jeffdean/status/2085034604172603724 -- Jeff Dean announces Discovery Loop
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [ai lab, discovery]
+    - later: true
+- https://x.com/demishassabis/status/2085034334914769203 -- Demis Hassabis becomes Google DeepMind chair and Alphabet chief scientist
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [deepmind, leadership]
+    - later: true
+- https://x.com/JeffDean/status/2085036253263921218 -- Jeff Dean shares Discovery Loop pitch deck slides
+  - [meta]:
+    - date: 08/05/2026
+    - tags: [ai lab, pitch deck]
+    - later: true
 - https://www.oxman.com/mission -- OXMAN
   - [meta]:
     - date: 07/31/2026
@@ -18465,6 +18695,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://arxiv.org/abs/2511.13940 -- ParallelKittens: Systematic and Practical Simplification of Multi-GPU AI Kernels
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [gpu kernels, parallel programming]
+    - later: true
+- https://arxiv.org/abs/2511.07885 -- Intelligence per Watt: Measuring Intelligence Efficiency of Local AI
+  - [meta]:
+    - date: 08/06/2026
+    - tags: [ai efficiency, benchmarking]
+    - later: true
 - https://cs.stanford.edu/~knuth/papers/claude-cycles.pdf -- Claude Cycles
   - [meta]:
     - date: 07/31/2026
