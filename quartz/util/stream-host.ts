@@ -32,6 +32,24 @@ export function streamAssetPathname(pathname: string, isDocument: boolean): stri
   return canonical === '/' ? STREAM_PREFIX : `${STREAM_PREFIX}${canonical}`
 }
 
+export function streamDocumentRedirectUrl(
+  baseUrl: string,
+  requestUrl: string | URL,
+): string | null {
+  const source = requestUrl instanceof URL ? requestUrl : new URL(requestUrl)
+  const pathname = streamHostPathname(source.pathname)
+  if (pathname === '/' || isStreamRoutePathname(pathname)) return null
+
+  const target = new URL(baseUrl)
+  if (target.hostname === source.hostname && target.hostname.startsWith('stream.')) {
+    target.hostname = target.hostname.replace(/^stream\./, '')
+  }
+  target.pathname = pathname
+  target.search = source.search
+  target.hash = source.hash
+  return target.toString()
+}
+
 export function streamHostUrl(href: string): string {
   const parsed = new URL(href, `https://${STREAM_HOSTNAME}`)
   parsed.pathname = streamHostPathname(parsed.pathname)

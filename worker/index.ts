@@ -5,6 +5,7 @@ import { sepEntryUrl, sepTargetFromSearchParams } from '../quartz/util/sep'
 import { readSepPreviewHtml } from '../quartz/util/sep-preview'
 import {
   streamAssetPathname,
+  streamDocumentRedirectUrl,
   streamHostPathname,
   STREAM_HOSTNAME,
 } from '../quartz/util/stream-host'
@@ -1106,12 +1107,17 @@ export default {
       }
 
       const pathname = sanitizedPathname
+      const isDocument = shouldTreatAsDocument(pathname)
+      const baseUrl = resolveBaseUrl(env, request)
+      const redirectUrl = isDocument ? streamDocumentRedirectUrl(baseUrl, url) : null
 
-      const base = new URL(resolveBaseUrl(env, request))
+      if (redirectUrl) return Response.redirect(redirectUrl, 308)
+
+      const base = new URL(baseUrl)
       if (base.hostname === url.hostname && base.hostname.startsWith('stream.')) {
         base.hostname = base.hostname.replace(/^stream\./, '')
       }
-      base.pathname = streamAssetPathname(pathname, shouldTreatAsDocument(pathname))
+      base.pathname = streamAssetPathname(pathname, isDocument)
       base.search = url.search
       base.hash = url.hash
       const newReq = requestWithoutStaticAssetCache(new Request(base.toString(), request), pathname)

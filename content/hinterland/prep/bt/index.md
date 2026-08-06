@@ -3,10 +3,10 @@ date: '2026-07-05'
 description: interview preparation
 id: index
 layout: L->ET|A
-modified: 2026-07-06 13:05:30 GMT-04:00
+modified: 2026-08-05 22:28:14 GMT-04:00
 tags:
   - cs
-title: prep
+title: Baseten interview prep
 ---
 
 Prep for a 60-minute algorithmic code screen on encoding and decoding.

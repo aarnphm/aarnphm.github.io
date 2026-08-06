@@ -4,6 +4,7 @@ import {
   isStreamHostname,
   isStreamRoutePathname,
   streamAssetPathname,
+  streamDocumentRedirectUrl,
   streamHostPathname,
   streamHostUrl,
 } from './stream-host'
@@ -37,6 +38,37 @@ test('detects stream route pathnames', () => {
   assert.equal(isStreamRoutePathname('/stream/on/2026/06/27'), true)
   assert.equal(isStreamRoutePathname('/on/2026/06/27'), true)
   assert.equal(isStreamRoutePathname('/triathlon'), false)
+})
+
+test('redirects non-stream documents to the canonical site', () => {
+  assert.equal(
+    streamDocumentRedirectUrl(
+      'https://stream.aarnphm.xyz',
+      new URL('https://stream.aarnphm.xyz/triathlon/on/2026/08/03?activity=ride#power'),
+    ),
+    'https://aarnphm.xyz/triathlon/on/2026/08/03?activity=ride#power',
+  )
+  assert.equal(
+    streamDocumentRedirectUrl(
+      'https://preview.aarnphm.xyz',
+      'https://stream.aarnphm.xyz/thoughts?view=reader',
+    ),
+    'https://preview.aarnphm.xyz/thoughts?view=reader',
+  )
+})
+
+test('keeps stream documents on the stream host', () => {
+  assert.equal(
+    streamDocumentRedirectUrl('https://stream.aarnphm.xyz', 'https://stream.aarnphm.xyz/'),
+    null,
+  )
+  assert.equal(
+    streamDocumentRedirectUrl(
+      'https://stream.aarnphm.xyz',
+      'https://stream.aarnphm.xyz/on/2026/08/03',
+    ),
+    null,
+  )
 })
 
 test('builds canonical stream host URLs', () => {
