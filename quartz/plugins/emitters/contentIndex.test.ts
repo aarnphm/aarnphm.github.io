@@ -6,7 +6,9 @@ import test from 'node:test'
 import type { BuildCtx } from '../../util/ctx'
 import type { FilePath, FullSlug, SimpleSlug } from '../../util/path'
 import type { StaticResources } from '../../util/resources'
+import { componentCssBundleKey } from '../../util/resource-bundles'
 import { defaultProcessedContent } from '../vfile'
+import { xsltPolyfillPath } from './component-resources/asset-paths'
 import { ContentIndex } from './contentIndex'
 
 function testCtx(root: string): BuildCtx {
@@ -40,6 +42,11 @@ function testCtx(root: string): BuildCtx {
     allSlugs: ['bases/ideas' as FullSlug, 'thoughts/lecture/notebook' as FullSlug],
     allFiles: ['bases/ideas.base' as FilePath, 'thoughts/lecture/notebook.ipynb' as FilePath],
     incremental: false,
+    assetManifest: new Map([
+      ['index.css', 'index-test.css'],
+      [xsltPolyfillPath, 'static/scripts/xslt-polyfill-test.js'],
+    ]),
+    extractedStaticResources: new Map([[componentCssBundleKey, 'static/component-test.css']]),
   }
 }
 

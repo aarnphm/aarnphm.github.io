@@ -12,6 +12,7 @@ import { GlobalConfiguration } from '../../cfg'
 import { formatDate, getDate } from '../../components/Date'
 import { i18n } from '../../i18n'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import { resolveAsset, resolveExtractedStaticResource } from '../../util/asset-manifest'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { escapeHTML } from '../../util/escape'
 import {
@@ -31,9 +32,17 @@ import {
   slugifyFilePath,
 } from '../../util/path'
 import { logBuildSpan, PerfTimer } from '../../util/perf'
+import { componentCssBundleKey } from '../../util/resource-bundles'
 import { pageTitlePatchEvents } from '../../util/title-patch'
 import { ArenaData } from '../transformers/arena'
 import { ProcessedContent, QuartzPluginData } from '../vfile'
+import {
+  atomFeedDocument,
+  atomFeedStylesheet,
+  atomFeedStylesheetHref,
+  type AtomFeedPresentation,
+} from './atom-feed'
+import { xsltPolyfillPath } from './component-resources/asset-paths'
 import { write, writeKnownChanged } from './helpers'
 
 export type ContentIndexMap = Map<FullSlug, ContentDetails>
@@ -399,6 +408,7 @@ function atomFeedEntry(
 function generateAtomFeed(
   cfg: GlobalConfiguration,
   idx: ContentIndexMap,
+  presentation: AtomFeedPresentation,
   options: AtomFeedOptions = {},
   previous?: AtomFeedCache,
   changedSlugs?: ReadonlySet<FullSlug>,
@@ -444,10 +454,7 @@ function generateAtomFeed(
   const feedId = options.linkPath ? absoluteLink : `https://${base}`
   const introHtml = sanitizeNullable(options.introHtml)
 
-  const feed = `<?xml version="1.0" encoding="UTF-8" ?>
-<?xml-stylesheet href="/static/feed.xsl" type="text/xsl" ?>
-<feed xmlns="http://www.w3.org/2005/Atom" xmlns:quartz="https://quartz.jzhao.xyz/ns">
-  <title>${feedTitle}</title>
+  const feedContent = `  <title>${feedTitle}</title>
   <subtitle>${feedSubtitle}</subtitle>
   <link href="${absoluteLink}" />
   <link rel="alternate" type="text/html" href="${absoluteLink}" />
@@ -463,8 +470,8 @@ function generateAtomFeed(
   <generator>Quartz v${version} -- quartz.jzhao.xyz</generator>
   <rights type="html">${escapeHTML(`&amp;copy; ${new Date().getFullYear()} Aaron Pham`)}</rights>
   ${introHtml ? `<quartz:intro>${introHtml}</quartz:intro>` : ''}
-  ${items.join('')}
-</feed>`
+  ${items.join('')}`
+  const feed = atomFeedDocument(feedContent, presentation)
   return { content: feed, cache: { entries: entryCache } }
 }
 
@@ -918,6 +925,25 @@ async function writeSiteMap(
   })
 }
 
+function atomFeedPresentation(ctx: BuildCtx): AtomFeedPresentation {
+  return {
+    stylesheetHref: atomFeedStylesheetHref,
+    polyfillSrc: `/${resolveAsset(ctx, xsltPolyfillPath)}`,
+  }
+}
+
+async function writeAtomFeedStylesheet(ctx: BuildCtx): Promise<FilePath> {
+  return write({
+    ctx,
+    content: atomFeedStylesheet({
+      indexStylesheetHref: `/${resolveAsset(ctx, 'index.css')}`,
+      componentStylesheetHref: `/${resolveExtractedStaticResource(ctx, componentCssBundleKey)}`,
+    }),
+    slug: joinSegments('static', 'feed'),
+    ext: '.xsl',
+  })
+}
+
 async function writeRootAtomFeed(
   ctx: BuildCtx,
   cfg: GlobalConfiguration,
@@ -927,7 +953,14 @@ async function writeRootAtomFeed(
   changedSlugs?: ReadonlySet<FullSlug>,
   knownChanged = false,
 ): Promise<{ file: FilePath; cache: AtomFeedCache }> {
-  const feed = generateAtomFeed(cfg, linkIndex, { limit: opts.atomLimit }, previous, changedSlugs)
+  const feed = generateAtomFeed(
+    cfg,
+    linkIndex,
+    atomFeedPresentation(ctx),
+    { limit: opts.atomLimit },
+    previous,
+    changedSlugs,
+  )
   const file = knownChanged
     ? await writeKnownChanged({
         ctx,
@@ -1004,7 +1037,7 @@ async function writeFolderAtomFeed(
   const folderIntroHtml = typeof rawIntro === 'string' ? rawIntro : undefined
   const subtitle = `${i18n(cfg.locale).pages.rss.recentNotes} in ${title} on ${cfg.pageTitle}`
 
-  const feed = generateAtomFeed(cfg, folderIndex, {
+  const feed = generateAtomFeed(cfg, folderIndex, atomFeedPresentation(ctx), {
     limit: opts.atomLimit,
     title,
     subtitle,
@@ -1488,6 +1521,7 @@ Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.x
       }
 
       if (writesAtom) {
+        yield writeAtomFeedStylesheet(ctx)
         const rootFeedWrite = await writeRootAtomFeed(ctx, cfg, linkIndex, opts)
         cachedRootAtomFeed = rootFeedWrite.cache
         yield rootFeedWrite.file

@@ -18,6 +18,7 @@ test('classifies component resource partial emit changes by asset family', () =>
     change('quartz/components/multiplayer/ws.ts'),
     change('quartz/workers/semantic.worker.ts'),
     change('quartz/util/emojimap/codepoint-to-name.json'),
+    change('quartz/plugins/emitters/component-resources/xslt-polyfill-assets.ts'),
     change('quartz/workers/example.worker.ts', 'add'),
     change('quartz/workers/stale.worker.ts', 'delete'),
   ])
@@ -33,6 +34,7 @@ test('classifies component resource partial emit changes by asset family', () =>
   assert.equal(changes.semanticWorker, true)
   assert.equal(changes.semanticWorkerDeleted, false)
   assert.equal(changes.emoji, true)
+  assert.equal(changes.xsltPolyfill, true)
   assert.deepEqual(
     changes.genericWorkerChanges.map(changeEvent => [changeEvent.type, changeEvent.path]),
     [

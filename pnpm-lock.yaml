@@ -527,6 +527,9 @@ importers:
       wrangler:
         specifier: ^4.118.0
         version: 4.118.0(@cloudflare/workers-types@4.20260702.1)
+      xslt-polyfill:
+        specifier: 1.0.23
+        version: 1.0.23
 
 packages:
 
@@ -6407,6 +6410,9 @@ packages:
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
+
+  xslt-polyfill@1.0.23:
+    resolution: {integrity: sha512-zd72YusvHjDrYHR/a/Xf6y1PsfElPFNJUJ+TFBA9D/oj/N7aC8GPsdI2oe3PWoJwXfLej1Af+cSymrOjT9Jd5Q==}
 
   y18n@5.0.8:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
@@ -12767,6 +12773,8 @@ snapshots:
   xml-parser-xo@4.1.6: {}
 
   xmlchars@2.2.0: {}
+
+  xslt-polyfill@1.0.23: {}
 
   y18n@5.0.8: {}
 

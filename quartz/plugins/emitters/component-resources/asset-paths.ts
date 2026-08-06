@@ -37,6 +37,7 @@ export const basedpyrightInternalSourcePackageName = 'basedpyright-internal-sour
 export const notebookPyrightWorkerOutputName = 'notebook-pyright-worker'
 export const semanticWorkerEntry = 'quartz/workers/semantic.worker.ts'
 export const semanticWorkerPath = `${staticScriptsDir}/semantic.worker.js`
+export const xsltPolyfillPath = `${staticScriptsDir}/xslt-polyfill.js`
 export const emojiAssetSourceDir = 'quartz/util/emojimap'
 export const notebookRuntimeClientPath = `${staticScriptsDir}/${notebookRuntimeClientAsset}`
 export const notebookRuntimeWorkerPath = `${staticScriptsDir}/${notebookRuntimeWorkerAsset}`
@@ -85,3 +86,11 @@ export const collaborativeCommentsAssetEntries = new Set([
 ])
 
 export const semanticWorkerAssetEntries = new Set([semanticWorkerEntry, 'package.json'])
+
+export const xsltPolyfillAssetEntries = new Set([
+  componentResourcesEntry,
+  'package.json',
+  'pnpm-lock.yaml',
+  'quartz/plugins/emitters/component-resources/asset-paths.ts',
+  'quartz/plugins/emitters/component-resources/xslt-polyfill-assets.ts',
+])
