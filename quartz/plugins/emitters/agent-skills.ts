@@ -3,9 +3,12 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { gzipSync } from 'node:zlib'
-import type { QuartzEmitterPlugin } from '../../types/plugin'
+import type { ChangeEvent, QuartzEmitterPlugin } from '../../types/plugin'
+import type { BuildCtx } from '../../util/ctx'
 import { isRecord } from '../../util/type-guards'
-import { write } from './helpers'
+import { resetWriteCache, write } from './helpers'
+
+export const AGENT_SKILLS_SOURCE_DIRECTORY = '.claude/skills'
 
 const AGENT_SKILLS_SCHEMA = 'https://schemas.agentskills.io/discovery/0.2.0/schema.json'
 const DISCOVERY_ROOT = '.well-known/agent-skills'
@@ -203,20 +206,39 @@ export async function loadAgentSkillSources(directory: string): Promise<AgentSki
   return sources
 }
 
+function hasAgentSkillChanges(changeEvents: readonly ChangeEvent[], directory: string): boolean {
+  return changeEvents.some(changeEvent => {
+    const changedPath = path.resolve(changeEvent.path)
+    return changedPath === directory || changedPath.startsWith(`${directory}${path.sep}`)
+  })
+}
+
+async function* writeAgentSkillsPublication(ctx: BuildCtx, publication: AgentSkillsPublication) {
+  for (const artifact of publication.artifacts) {
+    yield write({ ctx, ...artifact })
+  }
+  yield write({
+    ctx,
+    slug: `${DISCOVERY_ROOT}/index`,
+    ext: '.json',
+    content: `${JSON.stringify(publication.index, null, 2)}\n`,
+  })
+}
+
 export const AgentSkills: QuartzEmitterPlugin<AgentSkillsOptions> = options => ({
   name: 'AgentSkills',
-  async *emit(ctx) {
-    const directory = path.resolve(options?.directory ?? '.claude/skills')
-    const publication = createAgentSkillsPublication(await loadAgentSkillSources(directory))
+  async *partialEmit(ctx, _content, _resources, changeEvents) {
+    const directory = path.resolve(options?.directory ?? AGENT_SKILLS_SOURCE_DIRECTORY)
+    if (!hasAgentSkillChanges(changeEvents, directory)) return
 
-    for (const artifact of publication.artifacts) {
-      yield write({ ctx, ...artifact })
-    }
-    yield write({
-      ctx,
-      slug: `${DISCOVERY_ROOT}/index`,
-      ext: '.json',
-      content: `${JSON.stringify(publication.index, null, 2)}\n`,
-    })
+    const publication = createAgentSkillsPublication(await loadAgentSkillSources(directory))
+    await fs.rm(path.join(ctx.argv.output, DISCOVERY_ROOT), { recursive: true, force: true })
+    resetWriteCache()
+    yield* writeAgentSkillsPublication(ctx, publication)
+  },
+  async *emit(ctx) {
+    const directory = path.resolve(options?.directory ?? AGENT_SKILLS_SOURCE_DIRECTORY)
+    const publication = createAgentSkillsPublication(await loadAgentSkillSources(directory))
+    yield* writeAgentSkillsPublication(ctx, publication)
   },
 })

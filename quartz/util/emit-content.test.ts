@@ -3,7 +3,7 @@ import test from 'node:test'
 import type { QuartzConfig } from '../cfg'
 import type { QuartzEmitterPluginInstance } from '../types/plugin'
 import type { BuildCtx } from './ctx'
-import { emitContent } from '../processors/emit'
+import { emitContent, emitPartialEmitter } from '../processors/emit'
 import { FilePath, isFilePath } from './path'
 
 const testTheme = {
@@ -125,4 +125,18 @@ test('incremental emit falls back to full emit when a plugin has no partial path
   await emitContent(ctx, [], [{ type: 'change', path: filePath('note.md') }])
 
   assert.deepEqual(calls, ['ComponentResources:partial:note.md', 'LegacyEmitter:emit'])
+})
+
+test('targeted partial emit dispatches only the named emitter', async () => {
+  const calls: string[] = []
+  const ctx = testCtx([emitter('AgentSkills', calls), emitter('ContentPage', calls)])
+
+  await emitPartialEmitter(
+    ctx,
+    [],
+    [{ type: 'change', path: filePath('/tmp/skills/core/SKILL.md') }],
+    'AgentSkills',
+  )
+
+  assert.deepEqual(calls, ['AgentSkills:partial:/tmp/skills/core/SKILL.md'])
 })

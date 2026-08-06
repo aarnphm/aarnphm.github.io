@@ -2092,6 +2092,15 @@
   line-height: 1.45;
   font-variant-numeric: tabular-nums;
 
+  caption {
+    caption-side: bottom;
+    padding-block-start: 0.28rem;
+    color: var(--gray);
+    font-size: 0.45rem;
+    line-height: 1.25;
+    text-align: right;
+  }
+
   th,
   td {
     box-sizing: border-box;
@@ -2130,12 +2139,101 @@
   }
 }
 
+.tri-ratio-source-links {
+  display: inline-flex;
+  gap: 0.12rem;
+  white-space: nowrap;
+}
+
+.tri-ratio-source-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 0.12em;
+
+  &:focus-visible {
+    color: var(--dark);
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+    outline-offset: 1px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-ratio-source-link:hover {
+    color: var(--dark);
+  }
+}
+
 .tri-ratio-row--1 {
   --tri-ratio-color: var(--tri-bike);
 }
 
 .tri-ratio-row--2 {
   --tri-ratio-color: var(--tri-run);
+}
+
+.tri-ratio-efficiency-row {
+  font-size: 0.9em;
+
+  th,
+  td {
+    height: 1.25rem;
+    padding-block: 0.05rem;
+    color: var(--gray);
+    background: color-mix(
+      in srgb,
+      var(--tri-ratio-color) var(--tri-efficiency-level, 8%),
+      var(--light)
+    );
+  }
+
+  td[data-efficiency-delta] {
+    cursor: help;
+
+    &:focus-visible {
+      outline: 1px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.tri-ratio-efficiency-value--compact {
+  display: none;
+}
+
+.tri-ratio-efficiency-tip {
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 1rem);
+  gap: 0.18rem;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+  line-height: 1.35;
+  color: var(--dark);
+  transition: none;
+}
+
+.tri-ratio-efficiency-tip-heading {
+  margin-block-end: 0.12rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+  text-transform: uppercase;
+}
+
+.tri-ratio-efficiency-tip-row {
+  display: grid;
+  grid-template-columns: max-content minmax(3.5rem, 1fr);
+  gap: 0.8rem;
+  align-items: baseline;
+}
+
+.tri-ratio-efficiency-tip-label {
+  color: var(--gray);
+}
+
+.tri-ratio-efficiency-tip-value {
+  justify-self: end;
+  font-variant-numeric: tabular-nums;
 }
 
 .tri-ratio-row--placeholder {
@@ -2157,6 +2255,7 @@
   }
 
   .tri-ratio-table {
+    min-width: 21rem;
     border-spacing: 1px;
     font-size: 0.45rem;
 
@@ -2171,6 +2270,14 @@
       width: 1.7rem;
       min-width: 1.7rem;
     }
+  }
+
+  .tri-ratio-efficiency-value--full {
+    display: none;
+  }
+
+  .tri-ratio-efficiency-value--compact {
+    display: inline;
   }
 }
 

@@ -1,11 +1,17 @@
 import type { ComponentChildren } from 'preact'
 import type { TriathlonTreeYear } from '../../util/triathlon-date-route'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
+import { InlineMath } from '../../util/math-text'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
 import {
+  CERAMICSPEED_CROSS_CHAIN_RESEARCH,
+  CERAMICSPEED_TEST_CADENCE_RPM,
+  CERAMICSPEED_TEST_CHAINSTAY_MM,
+  CERAMICSPEED_TEST_OUTPUT_WATTS,
   DEFAULT_GEAR_CASSETTE,
   GEAR_CASSETTE_PRESET_GROUPS,
+  formatGearEfficiencyDeltaPercent,
   gearRatioMatrix,
   type GearCassettePreset,
 } from '../../util/triathlon-gear-ratio'
@@ -530,6 +536,9 @@ export const TrainingPanel = ({ page }: { page?: boolean }) => (
 
 const DEFAULT_GEAR_CHAINRINGS: readonly number[] = [52, 36]
 
+const gearEfficiencyLevel = (crossChainLossWatts: number): string =>
+  `${(8 + Math.min(crossChainLossWatts / 2.5, 1) * 32).toFixed(1)}%`
+
 const GearRatioTable = ({
   chainrings,
   cassette,
@@ -541,6 +550,25 @@ const GearRatioTable = ({
   if (!matrix) return null
   return (
     <table class="tri-ratio-table" aria-label="gear ratio chart" data-i18n-aria-label="gear ratios">
+      <caption>
+        <InlineMath className="tri-math" tex="\Delta\eta" /> est. vs. ideal · CeramicSpeed{' '}
+        <span class="tri-ratio-source-links" aria-label="CeramicSpeed research sources">
+          {CERAMICSPEED_CROSS_CHAIN_RESEARCH.sources.map(source => (
+            <a
+              class="tri-ratio-source-link"
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={source.title}
+              aria-label={`source ${source.id}: ${source.title}, opens in new tab`}
+            >
+              [{source.id}]
+            </a>
+          ))}
+        </span>{' '}
+        · {CERAMICSPEED_TEST_OUTPUT_WATTS} W · {CERAMICSPEED_TEST_CADENCE_RPM} rpm ·{' '}
+        {CERAMICSPEED_TEST_CHAINSTAY_MM} mm chainstay
+      </caption>
       <thead>
         <tr>
           <th scope="col" aria-label="chainring and cassette teeth">
@@ -553,22 +581,67 @@ const GearRatioTable = ({
       </thead>
       <tbody>
         {matrix.rows.map((row, rowIndex) => (
-          <tr class={`tri-ratio-row tri-ratio-row--${rowIndex + 1}`}>
-            <th scope="row" aria-label={`${row.chainring} tooth chainring`}>
-              {row.chainring}
-            </th>
-            {row.cells.map(cell => (
-              <td
-                data-ratio-chainring={row.chainring}
-                data-ratio-cog={cell.cog}
-                data-ratio-value={cell.ratio.toFixed(2)}
-                title={`${row.chainring}T ÷ ${cell.cog}T = ${cell.ratio.toFixed(2)}`}
-                style={`--tri-ratio-level:${(18 + cell.level * 52).toFixed(1)}%`}
+          <>
+            <tr class={`tri-ratio-row tri-ratio-row--${rowIndex + 1}`}>
+              <th scope="row" aria-label={`${row.chainring} tooth chainring`}>
+                {row.chainring}
+              </th>
+              {row.cells.map(cell => (
+                <td
+                  data-ratio-chainring={row.chainring}
+                  data-ratio-cog={cell.cog}
+                  data-ratio-value={cell.ratio.toFixed(2)}
+                  title={`${row.chainring}T ÷ ${cell.cog}T = ${cell.ratio.toFixed(2)}`}
+                  style={`--tri-ratio-level:${(18 + cell.level * 52).toFixed(1)}%`}
+                >
+                  {cell.ratio.toFixed(2)}
+                </td>
+              ))}
+            </tr>
+            <tr class={`tri-ratio-efficiency-row tri-ratio-row--${rowIndex + 1}`}>
+              <th
+                scope="row"
+                aria-label={`estimated CeramicSpeed drivetrain efficiency difference from ideal for ${row.chainring} tooth chainring`}
               >
-                {cell.ratio.toFixed(2)}
-              </td>
-            ))}
-          </tr>
+                <InlineMath className="tri-math" tex="\Delta\eta" />
+              </th>
+              {row.cells.map((cell, cellIndex) => {
+                const efficiency = cell.drivetrainEfficiency.toFixed(3)
+                const efficiencyDelta = formatGearEfficiencyDeltaPercent(
+                  cell.drivetrainEfficiency,
+                  3,
+                )
+                const visibleEfficiencyDelta = formatGearEfficiencyDeltaPercent(
+                  cell.drivetrainEfficiency,
+                  2,
+                )
+                const compactEfficiencyDelta = formatGearEfficiencyDeltaPercent(
+                  cell.drivetrainEfficiency,
+                  1,
+                )
+                return (
+                  <td
+                    data-efficiency-chainring={row.chainring}
+                    data-efficiency-cog={cell.cog}
+                    data-efficiency-value={efficiency}
+                    data-efficiency-delta={efficiencyDelta}
+                    data-loss-watts={cell.drivetrainLossWatts.toFixed(2)}
+                    data-cross-chain-loss-watts={cell.crossChainLossWatts.toFixed(2)}
+                    aria-label={`${visibleEfficiencyDelta}% estimated drivetrain efficiency difference from ideal; ${cell.drivetrainEfficiency.toFixed(2)}% estimated drivetrain efficiency; ${cell.drivetrainLossWatts.toFixed(2)} watts drivetrain loss; ${cell.crossChainLossWatts.toFixed(2)} watts cross-chain loss`}
+                    tabindex={rowIndex === 0 && cellIndex === 0 ? 0 : -1}
+                    style={`--tri-efficiency-level:${gearEfficiencyLevel(cell.crossChainLossWatts)}`}
+                  >
+                    <span class="tri-ratio-efficiency-value tri-ratio-efficiency-value--full">
+                      <InlineMath className="tri-math" tex={`${visibleEfficiencyDelta}\\%`} />
+                    </span>
+                    <span class="tri-ratio-efficiency-value tri-ratio-efficiency-value--compact">
+                      <InlineMath className="tri-math" tex={`${compactEfficiencyDelta}\\%`} />
+                    </span>
+                  </td>
+                )
+              })}
+            </tr>
+          </>
         ))}
       </tbody>
     </table>
