@@ -76,6 +76,30 @@ function runPartialEmitter(
   return runEmitterOutput(emitter, ctx, log, output)
 }
 
+export async function emitPartialEmitter(
+  ctx: BuildCtx,
+  content: ProcessedContent[],
+  changeEvents: ChangeEvent[],
+  emitterName: string,
+): Promise<void> {
+  const emitter = ctx.cfg.plugins.emitters.find(candidate => candidate.name === emitterName)
+  if (!emitter) throw new Error(`missing emitter: ${emitterName}`)
+
+  const perf = new PerfTimer()
+  const log = new QuartzLogger(ctx.argv.verbose)
+  const staticResources = getStaticResourcesFromPlugins(ctx)
+  log.start(``)
+  const emittedFiles = await runPartialEmitter(
+    emitter,
+    ctx,
+    content,
+    staticResources,
+    log,
+    changeEvents,
+  )
+  log.end(`Emitted ${emittedFiles} files to \`${ctx.argv.output}\` in ${perf.timeSince()}`)
+}
+
 export async function emitContent(
   ctx: BuildCtx,
   content: ProcessedContent[],

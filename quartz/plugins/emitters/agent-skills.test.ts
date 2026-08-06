@@ -1,13 +1,102 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { mkdir, mkdtemp, rm, stat, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import test from 'node:test'
 import { gunzipSync } from 'node:zlib'
+import type { QuartzConfig } from '../../cfg'
+import type { BuildCtx } from '../../util/ctx'
+import type { StaticResources } from '../../util/resources'
+import { type FilePath, isFilePath } from '../../util/path'
 import {
+  AgentSkills,
   createAgentSkillsPublication,
   loadAgentSkillSources,
   type AgentSkillFile,
   type AgentSkillSource,
-} from './agentSkills'
+} from './agent-skills'
+
+const testTheme = {
+  typography: { header: 'system-ui', body: 'system-ui', code: 'monospace' },
+  cdnCaching: false,
+  colors: {
+    lightMode: {
+      light: '#ffffff',
+      lightgray: '#eeeeee',
+      gray: '#999999',
+      darkgray: '#555555',
+      dark: '#000000',
+      secondary: '#000000',
+      tertiary: '#000000',
+      highlight: '#eeeeee',
+      textHighlight: '#eeeeee',
+    },
+    darkMode: {
+      light: '#000000',
+      lightgray: '#222222',
+      gray: '#999999',
+      darkgray: '#dddddd',
+      dark: '#ffffff',
+      secondary: '#ffffff',
+      tertiary: '#ffffff',
+      highlight: '#222222',
+      textHighlight: '#222222',
+    },
+  },
+  fontOrigin: 'local',
+} satisfies QuartzConfig['configuration']['theme']
+
+const resources: StaticResources = { css: [], js: [], additionalHead: [] }
+
+function filePath(value: string): FilePath {
+  if (isFilePath(value)) return value
+  throw new Error(`invalid file path ${value}`)
+}
+
+function testCtx(root: string): BuildCtx {
+  return {
+    buildId: 'test',
+    argv: {
+      directory: path.join(root, 'content'),
+      verbose: false,
+      output: path.join(root, 'public'),
+      serve: false,
+      watch: true,
+      port: 8080,
+      wsPort: 3001,
+      force: false,
+    },
+    cfg: {
+      configuration: {
+        pageTitle: 'test',
+        enableSPA: true,
+        enablePopovers: true,
+        analytics: null,
+        ignorePatterns: [],
+        defaultDateType: 'created',
+        theme: testTheme,
+        locale: 'en-US',
+      },
+      plugins: { transformers: [], filters: [], emitters: [] },
+    },
+    allSlugs: [],
+    allFiles: [],
+    incremental: true,
+  }
+}
+
+async function collectEmitted(
+  emitted: Promise<FilePath[]> | AsyncGenerator<FilePath> | null,
+): Promise<FilePath[]> {
+  const result = await emitted
+  if (result === null) return []
+  if (!(Symbol.asyncIterator in result)) return result
+
+  const files: FilePath[] = []
+  for await (const emittedFile of result) files.push(emittedFile)
+  return files
+}
 
 function file(path: string, content: string): AgentSkillFile {
   return { path, content: Buffer.from(content), mode: 0o644 }
@@ -99,6 +188,48 @@ test('rejects invalid names and missing skill metadata', () => {
   )
 })
 
+test('partial emitter replaces the publication after skill source changes', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-agent-skills-partial-'))
+  try {
+    const sourceDirectory = path.join(root, 'skills')
+    const skillDirectory = path.join(sourceDirectory, 'code-review')
+    await mkdir(skillDirectory, { recursive: true })
+    await writeFile(
+      path.join(skillDirectory, 'SKILL.md'),
+      '---\nname: code-review\ndescription: Review code.\n---\n',
+    )
+
+    const ctx = testCtx(root)
+    const plugin = AgentSkills({ directory: sourceDirectory })
+    const partialEmit = plugin.partialEmit
+    assert.ok(partialEmit)
+    await collectEmitted(plugin.emit(ctx, [], resources))
+
+    const unrelated = await collectEmitted(
+      partialEmit(ctx, [], resources, [
+        { type: 'change', path: filePath(path.join(root, 'content', 'note.md')) },
+      ]),
+    )
+    assert.deepEqual(unrelated, [])
+
+    const staleOutput = path.join(ctx.argv.output, '.well-known/agent-skills/removed/SKILL.md')
+    await mkdir(path.dirname(staleOutput), { recursive: true })
+    await writeFile(staleOutput, 'stale')
+
+    const emitted = await collectEmitted(
+      partialEmit(ctx, [], resources, [
+        { type: 'change', path: filePath(path.join(skillDirectory, 'SKILL.md')) },
+      ]),
+    )
+
+    assert.equal(emitted.length, 2)
+    await stat(path.join(ctx.argv.output, '.well-known/agent-skills/index.json'))
+    await assert.rejects(stat(staleOutput))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('loads every tracked garden skill into an RFC-valid publication', async () => {
   const publication = createAgentSkillsPublication(await loadAgentSkillSources('.claude/skills'))
   assert.deepEqual(
@@ -109,7 +240,6 @@ test('loads every tracked garden skill into an RFC-valid publication', async () 
       'flashcards',
       'interactive-diagrams',
       'quartz-plugins',
-      'rfcs',
       'sfwr-4tb3',
     ],
   )

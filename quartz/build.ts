@@ -7,11 +7,12 @@ import path from 'path'
 import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
 import cfg from '../quartz.config'
+import { AGENT_SKILLS_SOURCE_DIRECTORY } from './plugins/emitters/agent-skills'
 import { contentAssetClaims } from './plugins/emitters/assets'
 import { resetWriteCache } from './plugins/emitters/helpers'
 import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/static'
 import { ProcessedContent } from './plugins/vfile'
-import { emitContent } from './processors/emit'
+import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
 import { parseMarkdown, resetProcessedContentCache } from './processors/parse'
 import { ChangeEvent } from './types/plugin'
@@ -64,6 +65,7 @@ type BuildData = {
   mut: Mutex
   contentMap: Map<FilePath, ProcessedContent>
   pending: PendingChanges
+  agentSkillsPending: PendingChanges
 }
 
 type WatchRuntime = { dispose(): Promise<void> }
@@ -248,6 +250,7 @@ async function startWatching(
     ignored,
     contentMap: indexContent(initialContent),
     pending: new Map(),
+    agentSkillsPending: new Map(),
   }
 
   const watcher = chokidar.watch('.', {
@@ -269,9 +272,24 @@ async function startWatching(
     .on('change', fp => enqueue(fp, 'change'))
     .on('unlink', fp => enqueue(fp, 'delete'))
 
+  const agentSkillsWatcher = chokidar.watch(path.resolve(AGENT_SKILLS_SOURCE_DIRECTORY), {
+    awaitWriteFinish: { stabilityThreshold: 250 },
+    persistent: true,
+    ignoreInitial: true,
+  })
+  const agentSkillsQueue: RebuildQueue = { running: false, requested: false }
+  const enqueueAgentSkills = (fp: string, type: ChangeEvent['type']) => {
+    buildData.agentSkillsPending.set(toPosixPath(fp) as FilePath, type)
+    void requestAgentSkillsRebuild(agentSkillsQueue, clientRefresh, buildData)
+  }
+  agentSkillsWatcher
+    .on('add', fp => enqueueAgentSkills(fp, 'add'))
+    .on('change', fp => enqueueAgentSkills(fp, 'change'))
+    .on('unlink', fp => enqueueAgentSkills(fp, 'delete'))
+
   return {
     async dispose() {
-      await watcher.close()
+      await Promise.all([watcher.close(), agentSkillsWatcher.close()])
     },
   }
 }
@@ -314,6 +332,67 @@ async function requestRebuild(
     }
   } finally {
     queue.running = false
+  }
+}
+
+async function requestAgentSkillsRebuild(
+  queue: RebuildQueue,
+  clientRefresh: () => void,
+  buildData: BuildData,
+) {
+  queue.requested = true
+  if (queue.running) return
+  queue.running = true
+  try {
+    while (queue.requested) {
+      queue.requested = false
+      const pending: PendingChanges = new Map(buildData.agentSkillsPending)
+      buildData.agentSkillsPending.clear()
+      await rebuildAgentSkills(clientRefresh, buildData, pending)
+    }
+  } finally {
+    queue.running = false
+  }
+}
+
+async function rebuildAgentSkills(
+  clientRefresh: () => void,
+  buildData: BuildData,
+  pending: PendingChanges,
+) {
+  const { ctx, mut, contentMap } = buildData
+  const release = await mut.acquire()
+  const buildId = randomIdNonSecure()
+  let shouldRefresh = false
+
+  try {
+    ctx.buildId = buildId
+    emitQuartzDevEvent({ type: 'build:start', epoch: buildId, reason: 'content' })
+
+    const perf = new PerfTimer()
+    console.log(styleText('yellow', 'Detected agent skill change, rebuilding...'))
+    const changeEvents = [...pending].map(([path, type]) => ({ path, type }))
+    await emitPartialEmitter(ctx, [...contentMap.values()], changeEvents, 'AgentSkills')
+    console.log(styleText('green', `Done rebuilding agent skills in ${perf.timeSince()}`))
+    emitQuartzDevEvent({
+      type: 'build:ready',
+      epoch: buildId,
+      files: ctx.allFiles.filter(isMarkdownPath).length,
+      elapsedMs: perf.elapsedMs(),
+    })
+    shouldRefresh = ctx.buildId === buildId
+  } catch (err) {
+    emitQuartzDevEvent({ type: 'build:error', epoch: buildId, message: describeBuildError(err) })
+    trace(
+      'Failed to rebuild agent skills',
+      err instanceof Error ? err : new Error(describeBuildError(err)),
+    )
+  } finally {
+    release()
+  }
+
+  if (shouldRefresh) {
+    clientRefresh()
   }
 }
 

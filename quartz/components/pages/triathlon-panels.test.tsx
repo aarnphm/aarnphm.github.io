@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import render from 'preact-render-to-string'
+import { CERAMICSPEED_CROSS_CHAIN_RESEARCH } from '../../util/triathlon-gear-ratio'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -87,6 +88,30 @@ test('gear ratios render the declared drivetrain and cassette families', () => {
   assert.equal(html.includes('data-ratio-value="4.73"'), true)
   assert.equal(html.includes('data-ratio-chainring="36" data-ratio-cog="34"'), true)
   assert.equal(html.includes('data-ratio-value="1.06"'), true)
+  assert.equal(html.split('class="tri-ratio-efficiency-row').length - 1, 2)
+  assert.equal(html.includes('est. vs. ideal · CeramicSpeed'), true)
+  for (const source of CERAMICSPEED_CROSS_CHAIN_RESEARCH.sources) {
+    assert.equal(html.includes(`href="${source.url}"`), true)
+    assert.equal(html.includes(`>[${source.id}]</a>`), true)
+  }
+  assert.equal(html.includes('· 250 W · 95 rpm · 385 mm chainstay'), true)
+  assert.equal(html.includes('class="tri-math"'), true)
+  assert.equal(html.includes('class="katex"'), true)
+  assert.equal(html.includes('data-efficiency-chainring="52" data-efficiency-cog="11"'), true)
+  assert.equal(html.includes('data-efficiency-delta="-3.520"'), true)
+  assert.equal(html.includes('tri-ratio-efficiency-value--full'), true)
+  assert.equal(html.includes('tri-ratio-efficiency-value--compact'), true)
+  assert.equal(html.split('tabindex="0"').length - 1, 1)
+  assert.equal(html.includes('watts drivetrain loss;'), true)
+  assert.equal(html.includes('watts cross-chain loss'), true)
+  assert.equal(html.includes('data-cross-chain-loss-watts="'), true)
+  assert.equal(
+    html.indexOf('class="tri-ratio-row tri-ratio-row--1"') <
+      html.indexOf('class="tri-ratio-efficiency-row tri-ratio-row--1"') &&
+      html.indexOf('class="tri-ratio-efficiency-row tri-ratio-row--1"') <
+        html.indexOf('class="tri-ratio-row tri-ratio-row--2"'),
+    true,
+  )
   assert.equal(html.includes('<select'), false)
   assert.equal(
     html.indexOf('class="tri-ratio-ring-inputs"') < html.indexOf('class="tri-ratio-cassette"') &&

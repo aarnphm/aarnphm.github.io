@@ -137,6 +137,11 @@ import {
 } from '../../util/triathlon-card'
 import { triathlonDayHrefFromReference } from '../../util/triathlon-date-route'
 import {
+  CERAMICSPEED_CROSS_CHAIN_RESEARCH,
+  CERAMICSPEED_TEST_CADENCE_RPM,
+  CERAMICSPEED_TEST_CHAINSTAY_MM,
+  CERAMICSPEED_TEST_OUTPUT_WATTS,
+  formatGearEfficiencyDeltaPercent,
   gearCassettePreset,
   gearRatioMatrix,
   type GearCassettePreset,
@@ -3376,10 +3381,58 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
   }
 }
 
+const gearEfficiencyLevel = (crossChainLossWatts: number): string =>
+  `${(8 + Math.min(crossChainLossWatts / 2.5, 1) * 32).toFixed(1)}%`
+
+const appendGearEfficiencyValues = (host: HTMLElement, efficiency: number): void => {
+  const full = el('span', 'tri-ratio-efficiency-value tri-ratio-efficiency-value--full')
+  const compact = el('span', 'tri-ratio-efficiency-value tri-ratio-efficiency-value--compact')
+  setMath(full, `$${formatGearEfficiencyDeltaPercent(efficiency, 2)}\\%$`)
+  setMath(compact, `$${formatGearEfficiencyDeltaPercent(efficiency, 1)}\\%$`)
+  host.append(full, compact)
+}
+
+const buildGearRatioPlaceholderRow = (
+  cogs: GearRatioMatrix['rows'][number]['cells'],
+  efficiency = false,
+): HTMLTableRowElement => {
+  const row = document.createElement('tr')
+  row.className = efficiency
+    ? 'tri-ratio-efficiency-row tri-ratio-row--placeholder'
+    : 'tri-ratio-row tri-ratio-row--placeholder'
+  row.setAttribute('aria-hidden', 'true')
+  row.appendChild(el('th', undefined, '\u00a0'))
+  for (const _ of cogs) row.appendChild(el('td', undefined, '\u00a0'))
+  return row
+}
+
 const buildGearRatioTable = (matrix: GearRatioMatrix): HTMLTableElement => {
   const table = document.createElement('table')
   table.className = 'tri-ratio-table'
   table.setAttribute('aria-label', tl('gear ratios'))
+
+  const caption = el('caption')
+  const sourceLinks = el('span', 'tri-ratio-source-links', undefined, {
+    'aria-label': 'CeramicSpeed research sources',
+  })
+  for (const source of CERAMICSPEED_CROSS_CHAIN_RESEARCH.sources) {
+    sourceLinks.appendChild(
+      el('a', 'tri-ratio-source-link', `[${source.id}]`, {
+        href: source.url,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        title: source.title,
+        'aria-label': `source ${source.id}: ${source.title}, opens in new tab`,
+      }),
+    )
+  }
+  caption.append(
+    ...mathFrag('$\\Delta\\eta$ est. vs. ideal · CeramicSpeed '),
+    sourceLinks,
+    document.createTextNode(
+      ` · ${CERAMICSPEED_TEST_OUTPUT_WATTS} W · ${CERAMICSPEED_TEST_CADENCE_RPM} rpm · ${CERAMICSPEED_TEST_CHAINSTAY_MM} mm chainstay`,
+    ),
+  )
 
   const thead = document.createElement('thead')
   const header = document.createElement('tr')
@@ -3411,16 +3464,39 @@ const buildGearRatioTable = (matrix: GearRatioMatrix): HTMLTableElement => {
       td.style.setProperty('--tri-ratio-level', `${(18 + cell.level * 52).toFixed(1)}%`)
       tr.appendChild(td)
     }
-    tbody.appendChild(tr)
+    const efficiencyRow = el('tr', `tri-ratio-efficiency-row tri-ratio-row--${rowIndex + 1}`)
+    const efficiencyHeader = el('th', undefined, undefined, {
+      scope: 'row',
+      'aria-label': `estimated CeramicSpeed drivetrain efficiency difference from ideal for ${row.chainring} tooth chainring`,
+    })
+    setMath(efficiencyHeader, '$\\Delta\\eta$')
+    efficiencyRow.appendChild(efficiencyHeader)
+    for (const [cellIndex, cell] of row.cells.entries()) {
+      const efficiency = cell.drivetrainEfficiency.toFixed(3)
+      const efficiencyDelta = formatGearEfficiencyDeltaPercent(cell.drivetrainEfficiency, 3)
+      const visibleEfficiencyDelta = formatGearEfficiencyDeltaPercent(cell.drivetrainEfficiency, 2)
+      const drivetrainLossWatts = cell.drivetrainLossWatts.toFixed(2)
+      const crossChainLossWatts = cell.crossChainLossWatts.toFixed(2)
+      const td = el('td', undefined, undefined, {
+        'data-efficiency-chainring': String(row.chainring),
+        'data-efficiency-cog': String(cell.cog),
+        'data-efficiency-value': efficiency,
+        'data-efficiency-delta': String(efficiencyDelta),
+        'data-loss-watts': drivetrainLossWatts,
+        'data-cross-chain-loss-watts': crossChainLossWatts,
+        'aria-label': `${visibleEfficiencyDelta}% estimated drivetrain efficiency difference from ideal; ${cell.drivetrainEfficiency.toFixed(2)}% estimated drivetrain efficiency; ${drivetrainLossWatts} watts drivetrain loss; ${crossChainLossWatts} watts cross-chain loss`,
+        tabindex: rowIndex === 0 && cellIndex === 0 ? '0' : '-1',
+      })
+      appendGearEfficiencyValues(td, cell.drivetrainEfficiency)
+      td.style.setProperty('--tri-efficiency-level', gearEfficiencyLevel(cell.crossChainLossWatts))
+      efficiencyRow.appendChild(td)
+    }
+    tbody.append(tr, efficiencyRow)
   })
   if (matrix.rows.length === 1) {
-    const placeholder = el('tr', 'tri-ratio-row tri-ratio-row--placeholder')
-    placeholder.setAttribute('aria-hidden', 'true')
-    placeholder.appendChild(el('th', undefined, '\u00a0'))
-    for (const _ of cogs) placeholder.appendChild(el('td', undefined, '\u00a0'))
-    tbody.appendChild(placeholder)
+    tbody.append(buildGearRatioPlaceholderRow(cogs), buildGearRatioPlaceholderRow(cogs, true))
   }
-  table.append(thead, tbody)
+  table.append(caption, thead, tbody)
   return table
 }
 
@@ -3464,6 +3540,164 @@ const setupGearRatios = (root: HTMLElement): (() => void) | null => {
 
   let chainringCount = 2
   let cassetteId = initialCassetteId
+  document.body.querySelector('.tri-ratio-efficiency-tip')?.remove()
+  const efficiencyTip = el('div', 'tri-gloss tri-ratio-efficiency-tip', undefined, {
+    id: 'tri-ratio-efficiency-tip',
+    role: 'tooltip',
+    'aria-hidden': 'true',
+  })
+  document.body.appendChild(efficiencyTip)
+  let activeEfficiencyCell: HTMLTableCellElement | null = null
+  let hoveredEfficiencyCell: HTMLTableCellElement | null = null
+  let focusedEfficiencyCell: HTMLTableCellElement | null = null
+  let efficiencyTipDismissed = false
+
+  const efficiencyCell = (target: EventTarget | null): HTMLTableCellElement | null =>
+    target instanceof Element
+      ? target.closest<HTMLTableCellElement>('td[data-efficiency-delta]')
+      : null
+
+  const placeEfficiencyTip = (): void => {
+    if (!activeEfficiencyCell) return
+    const target = activeEfficiencyCell.getBoundingClientRect()
+    const tip = efficiencyTip.getBoundingClientRect()
+    const edge = 8
+    const gap = 8
+    const centered = target.left + (target.width - tip.width) / 2
+    const left = Math.min(Math.max(edge, centered), window.innerWidth - edge - tip.width)
+    const above = target.top - gap - tip.height
+    const below = Math.min(target.bottom + gap, window.innerHeight - edge - tip.height)
+    const top = above >= edge ? above : below
+    const maximumTop = Math.max(edge, window.innerHeight - edge - tip.height)
+    efficiencyTip.style.left = `${left}px`
+    efficiencyTip.style.top = `${Math.min(Math.max(edge, top), maximumTop)}px`
+  }
+
+  const hideEfficiencyTip = (): void => {
+    activeEfficiencyCell?.removeAttribute('aria-describedby')
+    activeEfficiencyCell = null
+    efficiencyTip.classList.remove('tri-gloss--on')
+    efficiencyTip.setAttribute('aria-hidden', 'true')
+  }
+
+  const showEfficiencyTip = (cell: HTMLTableCellElement): void => {
+    const { efficiencyChainring, efficiencyCog, efficiencyValue, efficiencyDelta } = cell.dataset
+    const lossWatts = cell.dataset.lossWatts
+    const crossChainLossWatts = cell.dataset.crossChainLossWatts
+    if (
+      !efficiencyChainring ||
+      !efficiencyCog ||
+      !efficiencyValue ||
+      !efficiencyDelta ||
+      !lossWatts ||
+      !crossChainLossWatts
+    )
+      return
+    activeEfficiencyCell?.removeAttribute('aria-describedby')
+    activeEfficiencyCell = cell
+    const heading = el(
+      'span',
+      'tri-ratio-efficiency-tip-heading',
+      `${efficiencyChainring}T × ${efficiencyCog}T`,
+    )
+    const row = (label: string, value: string, math = false): HTMLElement => {
+      const item = el('span', 'tri-ratio-efficiency-tip-row')
+      const labelElement = el('span', 'tri-ratio-efficiency-tip-label', label)
+      const valueElement = el('span', 'tri-ratio-efficiency-tip-value')
+      if (math) setMath(valueElement, `$${value}$`)
+      else valueElement.textContent = value
+      item.append(labelElement, valueElement)
+      return item
+    }
+    efficiencyTip.replaceChildren(
+      heading,
+      row(tl('vs. ideal'), `${efficiencyDelta}\\%`, true),
+      row(tl('efficiency'), `${efficiencyValue}\\%`, true),
+      row(tl('drivetrain loss'), `${lossWatts} W`),
+      row(tl('cross-chain loss'), `${crossChainLossWatts} W`),
+    )
+    cell.setAttribute('aria-describedby', efficiencyTip.id)
+    efficiencyTip.classList.add('tri-gloss--on')
+    efficiencyTip.setAttribute('aria-hidden', 'false')
+    placeEfficiencyTip()
+  }
+
+  const syncEfficiencyTip = (): void => {
+    if (efficiencyTipDismissed) {
+      hideEfficiencyTip()
+      return
+    }
+    const cell = hoveredEfficiencyCell ?? focusedEfficiencyCell
+    if (cell) showEfficiencyTip(cell)
+    else hideEfficiencyTip()
+  }
+
+  const onEfficiencyPointerOver = (event: PointerEvent): void => {
+    const cell = efficiencyCell(event.target)
+    if (!cell || cell === hoveredEfficiencyCell) return
+    hoveredEfficiencyCell = cell
+    efficiencyTipDismissed = false
+    syncEfficiencyTip()
+  }
+  const onEfficiencyPointerOut = (event: PointerEvent): void => {
+    const cell = efficiencyCell(event.target)
+    if (!cell || efficiencyCell(event.relatedTarget) === cell) return
+    if (hoveredEfficiencyCell === cell) hoveredEfficiencyCell = null
+    syncEfficiencyTip()
+  }
+  const onEfficiencyFocusIn = (event: FocusEvent): void => {
+    const cell = efficiencyCell(event.target)
+    if (!cell) return
+    focusedEfficiencyCell = cell
+    efficiencyTipDismissed = false
+    for (const candidate of chart.querySelectorAll<HTMLTableCellElement>(
+      'td[data-efficiency-delta]',
+    ))
+      candidate.tabIndex = candidate === cell ? 0 : -1
+    syncEfficiencyTip()
+  }
+  const onEfficiencyFocusOut = (event: FocusEvent): void => {
+    const cell = efficiencyCell(event.target)
+    if (cell && focusedEfficiencyCell === cell) focusedEfficiencyCell = null
+    efficiencyTipDismissed = false
+    syncEfficiencyTip()
+  }
+  const onEfficiencyKeydown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape' && efficiencyTip.getAttribute('aria-hidden') === 'false') {
+      event.preventDefault()
+      event.stopPropagation()
+      efficiencyTipDismissed = true
+      hideEfficiencyTip()
+      return
+    }
+    const cell = efficiencyCell(event.target)
+    const row = cell?.parentElement
+    if (!cell || !(row instanceof HTMLTableRowElement)) return
+    const rows = Array.from(
+      chart.querySelectorAll<HTMLTableRowElement>(
+        '.tri-ratio-efficiency-row:not(.tri-ratio-row--placeholder)',
+      ),
+    )
+    const cells = Array.from(
+      row.querySelectorAll<HTMLTableCellElement>('td[data-efficiency-delta]'),
+    )
+    const rowIndex = rows.indexOf(row)
+    const cellIndex = cells.indexOf(cell)
+    let target: HTMLTableCellElement | null = null
+    if (event.key === 'ArrowLeft') target = cells[cellIndex - 1] ?? null
+    if (event.key === 'ArrowRight') target = cells[cellIndex + 1] ?? null
+    if (event.key === 'Home') target = cells[0] ?? null
+    if (event.key === 'End') target = cells.at(-1) ?? null
+    if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      const targetRow = rows[rowIndex + (event.key === 'ArrowUp' ? -1 : 1)]
+      target =
+        targetRow?.querySelectorAll<HTMLTableCellElement>('td[data-efficiency-delta]')[cellIndex] ??
+        null
+    }
+    if (!target) return
+    event.preventDefault()
+    target.focus()
+  }
 
   const selectedCassette = (): GearCassettePreset | null => gearCassettePreset(cassetteId)
 
@@ -3476,6 +3710,10 @@ const setupGearRatios = (root: HTMLElement): (() => void) | null => {
   }
 
   const render = (preset: GearCassettePreset): void => {
+    hoveredEfficiencyCell = null
+    focusedEfficiencyCell = null
+    efficiencyTipDismissed = false
+    hideEfficiencyTip()
     const first = readChainring(firstInput)
     const second = chainringCount === 2 ? readChainring(secondInput) : null
     if (first == null || (chainringCount === 2 && second == null)) {
@@ -3597,6 +3835,13 @@ const setupGearRatios = (root: HTMLElement): (() => void) | null => {
   cassetteMenu.addEventListener('keydown', onCassetteMenuKeydown)
   cassettePicker.addEventListener('focusout', onCassetteFocusout)
   document.addEventListener('pointerdown', onCassetteOutsidePointerdown)
+  chart.addEventListener('pointerover', onEfficiencyPointerOver)
+  chart.addEventListener('pointerout', onEfficiencyPointerOut)
+  chart.addEventListener('focusin', onEfficiencyFocusIn)
+  chart.addEventListener('focusout', onEfficiencyFocusOut)
+  chart.addEventListener('keydown', onEfficiencyKeydown)
+  window.addEventListener('resize', placeEfficiencyTip)
+  window.addEventListener('scroll', placeEfficiencyTip, true)
   window.addEventListener('tri:locale', onLocale)
   const initialCassette = selectedCassette()
   if (initialCassette) applyLayout(chainringCount, initialCassette)
@@ -3611,7 +3856,16 @@ const setupGearRatios = (root: HTMLElement): (() => void) | null => {
     cassetteMenu.removeEventListener('keydown', onCassetteMenuKeydown)
     cassettePicker.removeEventListener('focusout', onCassetteFocusout)
     document.removeEventListener('pointerdown', onCassetteOutsidePointerdown)
+    chart.removeEventListener('pointerover', onEfficiencyPointerOver)
+    chart.removeEventListener('pointerout', onEfficiencyPointerOut)
+    chart.removeEventListener('focusin', onEfficiencyFocusIn)
+    chart.removeEventListener('focusout', onEfficiencyFocusOut)
+    chart.removeEventListener('keydown', onEfficiencyKeydown)
+    window.removeEventListener('resize', placeEfficiencyTip)
+    window.removeEventListener('scroll', placeEfficiencyTip, true)
     window.removeEventListener('tri:locale', onLocale)
+    hideEfficiencyTip()
+    efficiencyTip.remove()
   }
 }
 
