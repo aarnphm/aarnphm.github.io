@@ -5248,6 +5248,7 @@ const buildBody = (data: Analytics): HTMLElement => {
   block.appendChild(head)
   const pts = b.series
   if (pts.length >= 2) {
+    const bmr = Array.isArray(b.bmrSeries) ? b.bmrSeries : []
     let min = Infinity
     let max = -Infinity
     for (const p of pts) {
@@ -5276,8 +5277,20 @@ const buildBody = (data: Analytics): HTMLElement => {
       viewBox: '0 0 100 100',
       preserveAspectRatio: 'none',
     })
-    for (const gy of [0, 50, 100])
+    for (const gy of [0, 50])
       s.appendChild(svg('line', { x1: 0, y1: gy, x2: 100, y2: gy, class: 'tri-bodywt-grid' }))
+    s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 100, class: 'tri-bodywt-axis' }))
+    s.appendChild(svg('line', { x1: 0, y1: 100, x2: 100, y2: 100, class: 'tri-bodywt-axis' }))
+    if (bmr.length >= 2)
+      s.appendChild(
+        svg('line', {
+          x1: 100,
+          y1: 0,
+          x2: 100,
+          y2: 100,
+          class: 'tri-bodywt-axis tri-bodywt-axis--bmr',
+        }),
+      )
     if (b.goalKg != null)
       s.appendChild(
         svg('line', {
@@ -5327,7 +5340,6 @@ const buildBody = (data: Analytics): HTMLElement => {
       })
     })
     let yaxR: HTMLElement | null = null
-    const bmr = Array.isArray(b.bmrSeries) ? b.bmrSeries : []
     if (bmr.length >= 2) {
       const byDayB = new Map<string, { ts: number; bmr: number }>()
       for (const p of bmr) {
