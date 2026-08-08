@@ -3800,6 +3800,10 @@
   }
 }
 
+.tri-curve-tick {
+  padding-inline: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .tri-best-power-tick:hover,
   .tri-curve-tick:hover {
@@ -7701,7 +7705,25 @@
     margin-left: 0;
   }
 
-  .tri-best-power .tri-cax-xt:nth-child(even):not(:last-child) {
+  .tri-best-power-tick {
+    padding-inline: 0;
+  }
+
+  .tri-best-power-tick,
+  .tri-curve-tick {
+    font-size: 0.45rem;
+  }
+
+  .tri-best-power-tick:is(
+      [data-power-seconds='15'],
+      [data-power-seconds='600'],
+      [data-power-seconds='1800'],
+      [data-power-seconds='2700'],
+      [data-power-seconds='5400'],
+      [data-power-seconds='7200'],
+      [data-power-seconds='14400'],
+      [data-power-seconds='18000']
+    ):not(:last-child) {
     display: none;
   }
 
