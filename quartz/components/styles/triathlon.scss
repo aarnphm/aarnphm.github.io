@@ -9102,6 +9102,16 @@
   stroke: color-mix(in srgb, var(--gray) 11%, transparent);
 }
 
+.tri-bodywt-axis {
+  stroke: color-mix(in srgb, var(--gray) 50%, transparent);
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-bodywt-axis--bmr {
+  stroke: color-mix(in srgb, var(--tri-swim) 50%, transparent);
+}
+
 .tri-bodywt-line {
   fill: none;
   stroke: var(--dark);

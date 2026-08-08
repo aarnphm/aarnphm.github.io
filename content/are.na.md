@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-06 09:04:14 GMT-04:00
+modified: 2026-08-07 09:02:46 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,11 @@ title: are.na
 
 ## discourse
 
+- https://www.youtube.com/watch?v=FplYsFIlVC4 -- AI's Reluctant Believer: Preparing for AGI and Finding Meaning on the Other Side
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [agi, meaning]
+    - later: true
 - https://www.henrikkarlsson.xyz/p/hypomnemata -- How not to forget what matters
   - [meta]:
     - date: 08/06/2026
@@ -6988,6 +6993,11 @@ title: are.na
     - date: 08/06/2026
     - tags: [kimi delta attention, kernels]
     - later: true
+- https://www.youtube.com/watch?v=RTJKXK5L8gw -- Lecture 60: Optimizing Linear Attention
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [linear attention, gpu kernels]
+    - later: true
 - https://www.lesswrong.com/posts/wYpjXRLqbLbnmjbJP/llms-are-still-mostly-powered-by-imitative-learning-not-rl -- LLMs are still mostly powered by imitative learning, not RL
   - [meta]:
     - date: 08/06/2026
@@ -11578,6 +11588,11 @@ title: are.na
     - date: 07/31/2026
     - tags: [epistemology, calibration]
     - later: true
+- https://www.youtube.com/watch?v=P8KI3CzWLi0 -- Amia Srinivasan is the modern philosopher
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [amia srinivasan, political philosophy]
+    - later: true
 - https://classics.mit.edu/Aristotle/nicomachaen.1.i.html -- Nicomachean Ethics
   - [meta]:
     - date: 07/31/2026
@@ -14498,6 +14513,21 @@ title: are.na
 
 ## arts
 
+- https://www.youtube.com/watch?v=_ngs24AMCo8 -- The weird thing every Robert Pattinson movie has in common
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [film, robert pattinson]
+    - later: true
+- https://www.youtube.com/watch?v=Ne_sp04IpVY -- the rejection myth
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [artists, rejection]
+    - later: true
+- https://www.youtube.com/watch?v=mnjjM2e5oAI -- WTF is the "Intersection of Art and Technology"
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [art, technology]
+    - later: true
 - https://mingyuan.substack.com/p/demystifying-songwriting -- Demystifying songwriting
   - [meta]:
     - date: 08/06/2026
@@ -17912,6 +17942,21 @@ title: are.na
   - [meta]:
     - date: 07/31/2026
     - tags: [algebra, conjecture]
+    - later: true
+- https://www.youtube.com/watch?v=MaOLt7gr7xY -- Begin Proof - Daniel Litt
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [proofs, mathematics]
+    - later: true
+- https://www.youtube.com/watch?v=3N9R0QIwDDQ -- AI solves ten major open math problems, OpenAI announces all ten in one single announcement
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [math, ai]
+    - later: true
+- https://www.youtube.com/watch?v=sXZYo9pPaaA -- Terry Tao's GPT chatlog re: Jacobian conjecture
+  - [meta]:
+    - date: 08/07/2026
+    - tags: [terence tao, jacobian conjecture]
     - later: true
 - https://terrytao.wordpress.com/2026/07/21/a-digestion-of-the-jacobian-conjecture-counterexample/ -- A digestion of the Jacobian conjecture counterexample
   - [meta]:

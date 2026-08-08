@@ -78,6 +78,7 @@ function resolveGitRoot(): string {
 interface RuntimeConfig {
   port: number
   wsPort: number
+  serve: boolean
   wranglerPort: number
   pnpmDevArgs: string[]
   wranglerArgs: string[]
@@ -155,6 +156,7 @@ function resolveRuntimeConfig(argv: string[]): RuntimeConfig {
   return {
     port: effectivePort,
     wsPort,
+    serve,
     wranglerPort,
     pnpmDevArgs,
     wranglerArgs,
@@ -299,10 +301,12 @@ async function main(): Promise<void> {
     await killDaemon()
     return
   }
-  log(
-    'main',
-    `using dev port ${runtimeConfig.port}, ws ${runtimeConfig.wsPort}, wrangler ${runtimeConfig.wranglerPort}`,
-  )
+  const ports = []
+  if (runtimeConfig.serve) {
+    ports.push(`dev port ${runtimeConfig.port}`, `ws ${runtimeConfig.wsPort}`)
+  }
+  ports.push(`wrangler ${runtimeConfig.wranglerPort}`)
+  log('main', `using ${ports.join(', ')}`)
   if (runtimeConfig.daemon) {
     await startDaemon()
     return
