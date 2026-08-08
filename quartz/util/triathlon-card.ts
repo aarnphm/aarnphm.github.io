@@ -2180,6 +2180,17 @@ export const powerCurveFraction = (
   return (Math.log(value) - Math.log(minSeconds)) / (Math.log(maxSeconds) - Math.log(minSeconds))
 }
 
+const POWER_CURVE_AXIS_MARKERS = [5, 10, 20, 30, 120]
+
+export const powerCurveDurationTicks = (
+  minSeconds: number,
+  maxSeconds: number,
+  durations: readonly number[],
+): number[] =>
+  [...new Set([...durations, ...POWER_CURVE_AXIS_MARKERS])]
+    .filter(seconds => seconds >= minSeconds && seconds <= maxSeconds)
+    .sort((left, right) => left - right)
+
 const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: number): number => {
   let low = 0
   let high = curve.length - 1
@@ -2747,8 +2758,10 @@ export const buildPowerCurve = <N>(
     )
   f.add(s, f.svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const curveDurTicks = [1, 5, 30, 60, 300, 1200, 3600, 10_800].filter(
-    sec => sec >= secs[0] && sec <= secs[secs.length - 1],
+  const curveDurTicks = powerCurveDurationTicks(
+    secs[0],
+    secs[secs.length - 1],
+    [1, 60, 300, 1200, 3600, 10_800],
   )
   const pointMarkers: N[] = []
   if (visibleRef.length > 0) {

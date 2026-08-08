@@ -47,6 +47,7 @@ import {
   nearestPowerCurveValue,
   normalizePowerCurvePoints,
   parseExcludedActivityIds,
+  powerCurveDurationTicks,
   powerCurveFraction,
   powerCurveHoverAt,
   powerViewActivity,
@@ -2696,8 +2697,11 @@ test('labels a three-hour power curve through its endpoint', () => {
   assert.deepEqual(byClass(curve, 'tri-cax-xt').map(text), [
     '1s',
     '5s',
+    '10s',
+    '20s',
     '30s',
     '1m',
+    '2m',
     '5m',
     '20m',
     '1h',
@@ -2713,11 +2717,30 @@ test('labels a three-hour power curve through its endpoint', () => {
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.dataCurveSeconds),
-    ['1', '5', '30', '60', '300', '1200', '3600', '10800'],
+    ['1', '5', '10', '20', '30', '60', '120', '300', '1200', '3600', '10800'],
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.ariaPressed),
-    ['true', 'false', 'false', 'false', 'false', 'false', 'false', 'false'],
+    [
+      'true',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+      'false',
+    ],
+  )
+})
+
+test('keeps shared power curve duration markers inside the visible domain', () => {
+  assert.deepEqual(
+    powerCurveDurationTicks(5, 300, [1, 15, 60, 300, 600]),
+    [5, 10, 15, 20, 30, 60, 120, 300],
   )
 })
 

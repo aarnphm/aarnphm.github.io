@@ -106,6 +106,7 @@ import {
   nearestPowerCurveValue,
   niceStep,
   normalizePowerCurvePoints,
+  powerCurveDurationTicks,
   powerCurveFraction,
   powerCurveHoverAt,
   powerCurvePathPoints,
@@ -9064,21 +9065,21 @@ const buildBestPowerCurve = (data: Analytics): HTMLElement => {
   }
   overlays.push(readout)
 
-  const durationTicks: AxisXTick[] = [
-    1, 15, 60, 300, 600, 1_200, 1_800, 2_700, 3_600, 5_400, 7_200, 10_800, 14_400, 18_000,
-  ]
-    .filter(seconds => seconds >= minSeconds && seconds <= maxSeconds)
-    .map((seconds, index, ticks) => ({
-      label: dlabel(seconds),
-      pct: X(seconds),
-      cls: `tri-best-power-tick${index === 0 ? ' tri-cax-xt--first' : index === ticks.length - 1 ? ' tri-cax-xt--last' : ''}`,
-      tag: 'button',
-      attrs: {
-        type: 'button',
-        'data-power-seconds': String(seconds),
-        'aria-pressed': String(seconds === selectedSeconds),
-      },
-    }))
+  const durationTicks: AxisXTick[] = powerCurveDurationTicks(
+    minSeconds,
+    maxSeconds,
+    [1, 15, 60, 300, 600, 1_200, 1_800, 2_700, 3_600, 5_400, 7_200, 10_800, 14_400, 18_000],
+  ).map((seconds, index, ticks) => ({
+    label: dlabel(seconds),
+    pct: X(seconds),
+    cls: `tri-best-power-tick${index === 0 ? ' tri-cax-xt--first' : index === ticks.length - 1 ? ' tri-cax-xt--last' : ''}`,
+    tag: 'button',
+    attrs: {
+      type: 'button',
+      'data-power-seconds': String(seconds),
+      'aria-pressed': String(seconds === selectedSeconds),
+    },
+  }))
   block.appendChild(axisFrame(domF, graph, yTicks, H, durationTicks, true, undefined, overlays))
 
   const cap = el('div', 'tri-best-power-cap')
@@ -12655,6 +12656,15 @@ const toggleSearchFocus = (root: HTMLElement, target: HTMLElement | null): boole
   return true
 }
 
+const blurFocusedPanelSearch = (root: HTMLElement): boolean => {
+  const shortcut = currentSearchShortcut(root)
+  if (!shortcut?.openClass) return false
+  const search = root.querySelector<HTMLInputElement>(shortcut.search)
+  if (!search || document.activeElement !== search) return false
+  search.blur()
+  return true
+}
+
 const mapDetailMetricTabForKey = (root: HTMLElement, key: string): HTMLButtonElement | null => {
   if (key.length !== 1) return null
   const tablist = root.querySelector<HTMLElement>('.tri-map--detail .tri-map-tablist')
@@ -12981,6 +12991,12 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     }
 
     const el = e.target instanceof HTMLElement ? e.target : null
+    if (e.key === 'Escape' && blurFocusedPanelSearch(root)) {
+      clearG()
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      return
+    }
     if (el?.closest('.tri-map-tablist')) {
       clearG()
       return
