@@ -9,6 +9,7 @@ import {
   FeedPanel,
   GearPanel,
   MapPanel,
+  OnTreePanel,
   PacePanel,
   TrainingPanel,
   ToolsPanel,
@@ -23,6 +24,8 @@ test('calculator defaults to the configured race distance with an olympic fallba
     ),
     true,
   )
+  assert.equal(half.includes('tabindex="-1" data-keyboard-scroll-scope'), true)
+  assert.equal(half.includes('data-keyboard-scroll="true"'), true)
   assert.equal(
     half.includes(
       'class="tri-calc-preset tri-calc-preset--on" type="button" data-swim="1.9" data-bike="90" data-run="21.1">70.3</button>',
@@ -48,6 +51,8 @@ test('calculator defaults to the configured race distance with an olympic fallba
 test('feed exposes the shared activity query controls', () => {
   const html = render(<FeedPanel />)
 
+  assert.equal(html.includes('data-keyboard-scroll-scope'), true)
+  assert.equal(html.includes('aria-label="activity feed" tabindex="-1"'), true)
   assert.equal(html.includes('class="tri-feed-search-wrap"'), true)
   assert.equal(html.includes('aria-label="search activities"'), true)
   assert.equal(html.includes('aria-controls="tri-feed-results" aria-expanded="false"'), true)
@@ -61,6 +66,18 @@ test('feed exposes the shared activity query controls', () => {
     ),
     true,
   )
+  assert.equal(
+    html.includes('class="tri-feed-list" role="list" aria-busy="true" data-keyboard-scroll="true"'),
+    true,
+  )
+})
+
+test('dated activity tree exposes its keyboard scroll region', () => {
+  const html = render(<OnTreePanel tree={[]} root=".." />)
+
+  assert.equal(html.includes('data-keyboard-scroll-scope'), true)
+  assert.equal(html.includes('aria-label="training log by date" tabindex="-1"'), true)
+  assert.equal(html.includes('class="tri-tree-list" data-keyboard-scroll="true"'), true)
 })
 
 test('triathlon navigation controls expose their locale keys', () => {
@@ -149,6 +166,7 @@ test('gear ratios render the declared drivetrain and cassette families', () => {
 test('tools exposes gear and pace controls outside hidden dropdowns', () => {
   const html = render(<ToolsPanel />)
 
+  assert.equal(html.includes('class="tri-tools" data-keyboard-scroll="true"'), true)
   assert.equal(html.split('class="tri-ratio-table"').length - 1, 1)
   assert.equal(html.includes('class="tri-gear-btn"'), false)
   assert.equal(html.includes('class="tri-pace-btn"'), false)
@@ -185,9 +203,24 @@ test('triathlon panels share one dialog shell', () => {
     assert.equal(html.includes(`class="${scrimClass}" aria-hidden="true"`), true)
     assert.equal(html.includes(`class="${rootClass}" aria-hidden="false"`), true)
     assert.equal(html.includes(`role="dialog" aria-label="${label}"`), true)
+    assert.equal(html.includes('tabindex="-1" data-keyboard-scroll-scope'), true)
+    assert.equal(html.includes('data-keyboard-scroll="true"'), true)
     assert.equal(html.includes(`class="${closeClass}" type="button" aria-label="Close"`), true)
     assert.equal(html.split('role="dialog"').length - 1, 1)
   }
+
+  assert.equal(
+    cases[1].html.includes(
+      'class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" data-keyboard-scroll="true"',
+    ),
+    true,
+  )
+  assert.equal(
+    cases[2].html.includes(
+      'class="tri-ana-detail tri-training-doc" aria-hidden="true" data-keyboard-scroll="true"',
+    ),
+    true,
+  )
 })
 
 test('analytics reserves one heat chart between effort and readiness', () => {
@@ -196,6 +229,9 @@ test('analytics reserves one heat chart between effort and readiness', () => {
   const heat = html.indexOf('data-chart="heat"')
   const readiness = html.indexOf('data-chart="readiness"')
 
+  assert.equal(html.includes('data-keyboard-scroll-scope'), true)
+  assert.equal(html.includes('tabindex="-1"'), true)
+  assert.equal(html.includes('class="tri-ana-body" data-keyboard-scroll'), true)
   assert.equal(html.includes('class="tri-analytics-search-wrap"'), true)
   assert.equal(
     html.includes(

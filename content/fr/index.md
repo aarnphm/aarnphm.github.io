@@ -9,4 +9,4 @@ tags:
 title: French
 ---
 
-avec moir
+avec moi
