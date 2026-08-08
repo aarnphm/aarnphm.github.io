@@ -23,7 +23,7 @@ title: LLMs
 
 Have "capabilities" to understand [[thoughts/NLP|natural language]].
 
-Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], but probably not [[thoughts/AGI|AGI]] due to [[thoughts/observer-expectancy effect]]. ^emergent
+Exhibits [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]]. ^emergent
 
 One way or another is a form of [[thoughts/Behavirourism|behaviourism]], through [[thoughts/Machine learning|reinforcement learning]]. It is being "told" what is good or bad, and thus act accordingly towards the users. However, this induces [[thoughts/confirmation bias]] where one aligns and contains his/her prejudices towards the problem.
 

@@ -30,7 +30,7 @@ https://x.com/andy_matuschak/status/1081382567100600321
 
 I found that to [read more](https://borretti.me/article/how-to-read-more) requires somewhat of a concurrent model, where you will incrementally work on 5-10 books at a time. However, this approach is very much succumb to [cognitive overload](https://en.wikipedia.org/wiki/Cognitive_load)
 
-## how rtq read
+## how rfq read
 
 _https://internetprincess.substack.com/p/how-i-read_
 

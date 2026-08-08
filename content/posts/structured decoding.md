@@ -85,7 +85,7 @@ Concurrently, Donald Norman's Parallel Distributed Processing [@10.7551/mitpress
 
 In retrospect, GOFAI are [[thoughts/Determinism|deterministic]] in a sense that intentionality is injected within symbolic tokens through explicit programming.
 [[thoughts/Connectionist network]], on the other hand, are often considered as black-box models, given their hidden nature of intermediate representations of perceptron.
-Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. Although these models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]], one should be aware that this is not [[thoughts/AGI|artificial general intelligence]] _yet_, largely due to researchers' [[thoughts/observer-expectancy effect]].
+Unlike GOFAI, its internal representation is determined by the state of the entire network states rather than one singular unit. These models exhibit [[thoughts/emergent behaviour]] of [[thoughts/intelligence|intelligence]].
 
 In **summary**:
 

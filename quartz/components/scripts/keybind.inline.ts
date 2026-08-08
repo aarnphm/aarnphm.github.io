@@ -169,7 +169,6 @@ document.addEventListener('nav', () => {
   const signal = currentNavSignal()
   if (navigationKeybindSignal === signal) return
   const container = document.getElementById('shortcut-container') as HTMLDivElement | null
-  if (!container) return
   navigationKeybindSignal = signal
   signal.addEventListener(
     'abort',
@@ -184,11 +183,11 @@ document.addEventListener('nav', () => {
 
   // Close shortcut modal on ESC
   const closeShortcutModal = () => {
-    container.classList.remove('active')
+    container?.classList.remove('active')
   }
 
   const handleEscapeKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && container.classList.contains('active')) {
+    if (e.key === 'Escape' && container?.classList.contains('active')) {
       e.preventDefault()
       closeShortcutModal()
     }
@@ -199,9 +198,9 @@ document.addEventListener('nav', () => {
 
   // Close modal when clicking outside
   const handleClickOutside = (e: MouseEvent) => {
-    const shortcutSpace = container.querySelector('#shortcut-space')
+    const shortcutSpace = container?.querySelector('#shortcut-space')
     if (
-      container.classList.contains('active') &&
+      container?.classList.contains('active') &&
       shortcutSpace &&
       !shortcutSpace.contains(e.target as Node)
     ) {
@@ -257,6 +256,61 @@ document.addEventListener('nav', () => {
   const scrollToPageRatio = (ratio: number): void => {
     window.scrollTo({ top: maxScrollY() * ratio, behavior: 'smooth' })
   }
+  const isScrollableRegion = (element: HTMLElement): boolean => {
+    const overflowY = window.getComputedStyle(element).overflowY
+    return (
+      (overflowY === 'auto' || overflowY === 'scroll') &&
+      element.scrollHeight > element.clientHeight
+    )
+  }
+  const nearestScrollableRegion = (element: Element): HTMLElement | null => {
+    let candidate: Element | null = element
+    while (candidate && candidate !== document.body && candidate !== document.documentElement) {
+      if (candidate instanceof HTMLElement && isScrollableRegion(candidate)) return candidate
+      candidate = candidate.parentElement
+    }
+    return null
+  }
+  const scopedScrollRegion = (element: Element): HTMLElement | null => {
+    const direct = nearestScrollableRegion(element)
+    if (direct) return direct
+    const scope = element.closest<HTMLElement>('[data-keyboard-scroll-scope]')
+    return (
+      Array.from(scope?.querySelectorAll<HTMLElement>('[data-keyboard-scroll]') ?? []).find(
+        isScrollableRegion,
+      ) ?? null
+    )
+  }
+  let activeScrollRegion: HTMLElement | null = null
+  const updateActiveScrollRegion = (event: Event): void => {
+    activeScrollRegion = event.target instanceof Element ? scopedScrollRegion(event.target) : null
+  }
+  const currentScrollTarget = (event: KeyboardEvent): HTMLElement | Window => {
+    const direct = event.target instanceof Element ? scopedScrollRegion(event.target) : null
+    if (direct) activeScrollRegion = direct
+    if (
+      activeScrollRegion?.isConnected &&
+      window.getComputedStyle(activeScrollRegion).visibility !== 'hidden' &&
+      isScrollableRegion(activeScrollRegion)
+    )
+      return activeScrollRegion
+    activeScrollRegion = null
+    return window
+  }
+  const scrollTargetBy = (
+    target: HTMLElement | Window,
+    top: number,
+    behavior: ScrollBehavior,
+  ): void => {
+    target.scrollBy({ top, behavior })
+  }
+
+  document.addEventListener('focusin', updateActiveScrollRegion, true)
+  document.addEventListener('pointerdown', updateActiveScrollRegion, true)
+  window.addCleanup(() => {
+    document.removeEventListener('focusin', updateActiveScrollRegion, true)
+    document.removeEventListener('pointerdown', updateActiveScrollRegion, true)
+  })
 
   const suppressPaletteBindings = (e: KeyboardEvent) => {
     if (!isPaletteActive()) return
@@ -581,12 +635,12 @@ document.addEventListener('nav', () => {
 
       case 'j':
         e.preventDefault()
-        window.scrollBy({ top: SCROLL_AMOUNT_SMALL, behavior: 'smooth' })
+        scrollTargetBy(currentScrollTarget(e), SCROLL_AMOUNT_SMALL, 'smooth')
         break
 
       case 'k':
         e.preventDefault()
-        window.scrollBy({ top: -SCROLL_AMOUNT_SMALL, behavior: 'smooth' })
+        scrollTargetBy(currentScrollTarget(e), -SCROLL_AMOUNT_SMALL, 'smooth')
         break
 
       case 'G':
@@ -636,18 +690,24 @@ document.addEventListener('nav', () => {
     if (isPaletteActive()) return
     if (!e.ctrlKey || e.metaKey) return
 
-    const halfPage = window.innerHeight / 2
-
     switch (e.key) {
-      case 'd':
+      case 'd': {
+        const target = currentScrollTarget(e)
+        const halfPage =
+          (target instanceof HTMLElement ? target.clientHeight : window.innerHeight) / 2
         e.preventDefault()
-        window.scrollBy({ top: halfPage, behavior: 'instant' })
+        scrollTargetBy(target, halfPage, 'instant')
         break
+      }
 
-      case 'u':
+      case 'u': {
+        const target = currentScrollTarget(e)
+        const halfPage =
+          (target instanceof HTMLElement ? target.clientHeight : window.innerHeight) / 2
         e.preventDefault()
-        window.scrollBy({ top: -halfPage, behavior: 'instant' })
+        scrollTargetBy(target, -halfPage, 'instant')
         break
+      }
 
       case 'e':
         e.preventDefault()
@@ -680,9 +740,9 @@ document.addEventListener('nav', () => {
     clearGPrefix()
   })
 
-  const shortcuts = container.querySelectorAll(
-    'ul[id="shortcut-list"] > li > div[id="shortcuts"]',
-  ) as NodeListOf<HTMLElement>
+  const shortcuts =
+    container?.querySelectorAll<HTMLElement>('ul[id="shortcut-list"] > li > div[id="shortcuts"]') ??
+    []
   const renderShortcut = (node: HTMLElement, binding: string, span: string, prefix?: string) => {
     node.replaceChildren()
     const key = document.createElement('kbd')

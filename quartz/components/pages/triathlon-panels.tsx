@@ -180,7 +180,7 @@ export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: stri
 )
 
 export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
-  <section class="tri-feed" aria-label="activity feed">
+  <section class="tri-feed" aria-label="activity feed" tabindex={-1} data-keyboard-scroll-scope>
     <div class="tri-ana-bar tri-feed-bar">
       <span class="tri-ana-title" data-i18n={title === 'feed' ? 'feed' : undefined}>
         {title}
@@ -199,7 +199,7 @@ export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
       </div>
       <span class="tri-feed-count" aria-live="polite" />
     </div>
-    <div class="tri-feed-list" role="list" aria-busy="true" />
+    <div class="tri-feed-list" role="list" aria-busy="true" data-keyboard-scroll />
   </section>
 )
 
@@ -228,14 +228,19 @@ export const OnTreePanel = ({
   title?: string
   root: string
 }) => (
-  <section class="tri-feed tri-tree" aria-label="training log by date">
+  <section
+    class="tri-feed tri-tree"
+    aria-label="training log by date"
+    tabindex={-1}
+    data-keyboard-scroll-scope
+  >
     <div class="tri-ana-bar tri-feed-bar">
       <span class="tri-ana-title" data-i18n={title === 'on' ? 'on' : undefined}>
         {title}
       </span>
       <span class="tri-feed-count">{tree.reduce((total, year) => total + year.count, 0)}</span>
     </div>
-    <div class="tri-tree-list">
+    <div class="tri-tree-list" data-keyboard-scroll>
       {tree.map(year => (
         <section class="tri-tree-year">
           <div class="tri-tree-row tri-tree-row--year">
@@ -300,6 +305,8 @@ const TriPanelShell = ({
         aria-hidden={page ? 'false' : 'true'}
         role="dialog"
         aria-label={label}
+        tabindex={-1}
+        data-keyboard-scroll-scope
       >
         <div class={`tri-ana-bar${barClass ? ` ${barClass}` : ''}`}>
           <span class={`tri-ana-title${titleClass ? ` ${titleClass}` : ''}`} data-i18n={title}>
@@ -314,7 +321,9 @@ const TriPanelShell = ({
             ×
           </button>
         </div>
-        <div class={`tri-ana-body${bodyClass ? ` ${bodyClass}` : ''}`}>{children}</div>
+        <div class={`tri-ana-body${bodyClass ? ` ${bodyClass}` : ''}`} data-keyboard-scroll>
+          {children}
+        </div>
       </aside>
     </>
   )
@@ -500,7 +509,11 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
       <div class="tri-map-selection" aria-hidden="true" />
       <div class="tri-map-tip" aria-hidden="true" />
     </div>
-    <div class="tri-ana-detail tri-map-detail tri-map-sidebar" aria-hidden="true" />
+    <div
+      class="tri-ana-detail tri-map-detail tri-map-sidebar"
+      aria-hidden="true"
+      data-keyboard-scroll
+    />
   </TriPanelShell>
 )
 
@@ -530,7 +543,7 @@ export const TrainingPanel = ({ page }: { page?: boolean }) => (
       <div class="tri-training-plans" aria-label="training plans" />
       <div class="tri-training-tree" aria-label="plan sections" />
     </div>
-    <div class="tri-ana-detail tri-training-doc" aria-hidden="true" />
+    <div class="tri-ana-detail tri-training-doc" aria-hidden="true" data-keyboard-scroll />
   </TriPanelShell>
 )
 
@@ -915,6 +928,9 @@ export const CalcPanel = ({
       data-swim={defaultSwim}
       data-bike={defaultBike}
       data-run={defaultRun}
+      tabindex={-1}
+      data-keyboard-scroll-scope
+      data-keyboard-scroll
     >
       <div class="tri-calc-bar">
         <span class="tri-calc-title">triathlon calculator</span>
@@ -1141,7 +1157,7 @@ export const CalcPanel = ({
 }
 
 export const ToolsPanel = () => (
-  <div class="tri-tools">
+  <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
         gear

@@ -3177,10 +3177,15 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     root.classList.add('tri-calc-open')
     calc.setAttribute('aria-hidden', 'false')
     compute()
+    requestAnimationFrame(() => {
+      if (root.classList.contains('tri-calc-open')) calc.focus({ preventScroll: true })
+    })
   }
   const close = () => {
+    const wasOpen = root.classList.contains('tri-calc-open')
     root.classList.remove('tri-calc-open')
     calc.setAttribute('aria-hidden', 'true')
+    if (wasOpen && !pageMode) btn?.focus({ preventScroll: true })
   }
   const onCalcClick = (event: MouseEvent) => {
     const target = event.target
@@ -10532,9 +10537,11 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     selIndex = -1
   }
   const close = () => {
+    const wasOpen = root.classList.contains('tri-analytics-open')
     detailGeneration += 1
     root.classList.remove('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'true')
+    if (wasOpen && !pageMode) btn?.focus({ preventScroll: true })
   }
   const loadDetails = (): Promise<boolean> => {
     if (detailData) return Promise.resolve(true)
@@ -10922,6 +10929,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     root.classList.add('tri-analytics-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
+    panel.focus({ preventScroll: true })
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
@@ -11488,7 +11496,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     }
     const installLayers = () => {
       if (!map) return
-      if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(map)
+      const theme = readTriMapTheme()
+      const casingColor = theme === 'dark' ? '#100f0f' : '#fff9f3'
+      if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(map, theme)
       const firstLabelLayer = map
         .getStyle()
         ?.layers?.find(
@@ -11539,7 +11549,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         type: 'line',
         source: 'tri-hov',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fff9f3', 'line-width': 3.2 },
+        paint: { 'line-color': casingColor, 'line-width': 3.2 },
       })
       addLayer({
         id: 'tri-hov',
@@ -11554,7 +11564,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         type: 'line',
         source: 'tri-sel',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fff9f3', 'line-width': 3.4 },
+        paint: { 'line-color': casingColor, 'line-width': 3.4 },
       })
       addLayer({
         id: 'tri-sel',
@@ -11569,7 +11579,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
         type: 'line',
         source: 'tri-range',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { 'line-color': '#fff9f3', 'line-width': 5.2 },
+        paint: { 'line-color': casingColor, 'line-width': 5.2 },
       })
       addLayer({
         id: 'tri-range',
@@ -11587,7 +11597,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
           'circle-radius': 3.5,
           'circle-color': '#fc4c02',
           'circle-stroke-width': 1.5,
-          'circle-stroke-color': '#fff9f3',
+          'circle-stroke-color': casingColor,
         },
       })
       bindEvents()
@@ -11598,12 +11608,12 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       if (selection) select(selection.d, selection.i)
       else drawOverview()
     }
-    const applyMapStyle = () => {
+    const applyMapStyle = (theme: TriMapTheme = readTriMapTheme()) => {
       if (!map) return
       const seq = ++styleSeq
       okFlag = false
       clearHover()
-      map.setStyle(mapboxStyleUrl(readTriMapStyle()))
+      map.setStyle(mapboxStyleUrl(readTriMapStyle(), theme))
       map.once('style.load', () => {
         if (!map || seq !== styleSeq) return
         installLayers()
@@ -11625,7 +11635,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       canvas.textContent = ''
       map = new mapboxgl.Map({
         container: canvas,
-        style: mapboxStyleUrl(readTriMapStyle()),
+        style: mapboxStyleUrl(readTriMapStyle(), readTriMapTheme()),
         center: [-79.4, 43.7],
         zoom: 9,
         attributionControl: false,
@@ -11835,8 +11845,10 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     setEnabledSports(new Set(ROUTE_SPORTS))
   }
   const close = () => {
+    const wasOpen = root.classList.contains('tri-map-open')
     root.classList.remove('tri-map-open')
     panel.setAttribute('aria-hidden', 'true')
+    if (wasOpen && !pageMode) btn?.focus({ preventScroll: true })
   }
   const showRoute = (id: string, initialMetric = 0, selectMap = true) => {
     if (!detail) return
@@ -12005,6 +12017,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     load()
     void loadDetails()
     startMap()
+    panel.focus({ preventScroll: true })
   }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
@@ -12063,6 +12076,9 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     syncStyleBtn()
     mapCtl.applyMapStyle()
   }
+  const onThemeChange = (event: CustomEventMap['themechange']) => {
+    if (readTriMapStyle() !== 'satellite') mapCtl.applyMapStyle(event.detail.theme)
+  }
   const onUnit = () => {
     if (activeRouteId) showRoute(activeRouteId, activeRouteMetric, false)
   }
@@ -12093,6 +12109,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
   sideFold?.addEventListener('click', onFold)
   styleBtn?.addEventListener('click', onStyleClick)
   document.addEventListener('keydown', onKey)
+  document.addEventListener('themechange', onThemeChange)
   window.addEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
   window.addEventListener('tri:unit', onUnit)
   window.addEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
@@ -12112,6 +12129,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     sideFold?.removeEventListener('click', onFold)
     styleBtn?.removeEventListener('click', onStyleClick)
     document.removeEventListener('keydown', onKey)
+    document.removeEventListener('themechange', onThemeChange)
     window.removeEventListener(TRI_MAP_STYLE_EVENT, onMapStyle)
     window.removeEventListener('tri:unit', onUnit)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onPowerFilter)
@@ -12314,10 +12332,13 @@ const setupTraining = (root: HTMLElement): (() => void) | null => {
     root.classList.add('tri-training-open')
     panel.setAttribute('aria-hidden', 'false')
     load()
+    panel.focus({ preventScroll: true })
   }
   const close = () => {
+    const wasOpen = root.classList.contains('tri-training-open')
     root.classList.remove('tri-training-open')
     panel.setAttribute('aria-hidden', 'true')
+    if (wasOpen && !pageMode) btn?.focus({ preventScroll: true })
   }
 
   const runSearch = () => {
@@ -12527,6 +12548,7 @@ const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
 const TRI_PANELS_FULLSCREEN_KEY = 'tri-panels-fullscreen'
 const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
 type TriMapStyle = (typeof TRI_MAP_STYLES)[number]
+type TriMapTheme = 'light' | 'dark'
 
 const readTriMapStyle = (): TriMapStyle => {
   try {
@@ -12538,12 +12560,16 @@ const readTriMapStyle = (): TriMapStyle => {
   return 'mono'
 }
 
-const mapboxStyleUrl = (style: TriMapStyle): string =>
-  style === 'streets'
+const readTriMapTheme = (): TriMapTheme =>
+  document.documentElement.getAttribute('saved-theme') === 'dark' ? 'dark' : 'light'
+
+const mapboxStyleUrl = (style: TriMapStyle, theme: TriMapTheme): string => {
+  if (style === 'satellite') return 'mapbox://styles/mapbox/satellite-streets-v12'
+  if (theme === 'dark') return 'mapbox://styles/mapbox/dark-v11'
+  return style === 'streets'
     ? 'mapbox://styles/mapbox/streets-v12'
-    : style === 'satellite'
-      ? 'mapbox://styles/mapbox/satellite-streets-v12'
-      : 'mapbox://styles/mapbox/light-v11'
+    : 'mapbox://styles/mapbox/light-v11'
+}
 
 const setTriMapStyle = (next: TriMapStyle): void => {
   try {
@@ -12920,6 +12946,51 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
     h: '/triathlon',
   }
 
+  if (subView) {
+    const keyboardScrollScope =
+      root.querySelector<HTMLElement>('[data-keyboard-scroll-scope]') ??
+      (root.matches('[data-keyboard-scroll-scope]') ? root : null)
+    keyboardScrollScope?.focus({ preventScroll: true })
+  }
+
+  const listItems = (): HTMLElement[] => {
+    if (subView === 'feed')
+      return Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-feed-head'))
+    if (subView === 'on')
+      return Array.from(root.querySelectorAll<HTMLAnchorElement>('.tri-tree-list a[href]'))
+    return []
+  }
+  const focusedListItem = (items: HTMLElement[]): HTMLElement | null => {
+    const active = document.activeElement
+    return active instanceof HTMLElement && items.includes(active) ? active : null
+  }
+  const handleListKey = (event: KeyboardEvent): boolean => {
+    if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey)
+      return false
+    const items = listItems()
+    if (items.length === 0) return false
+    const focused = focusedListItem(items)
+    if (event.key === 'Enter' && focused && !event.repeat) {
+      focused.click()
+      return true
+    }
+    if (event.key === 'Escape' && focused && !event.repeat) {
+      if (focused.matches('.tri-feed-head[aria-expanded="true"]')) focused.click()
+      else focused.blur()
+      return true
+    }
+    if (event.key !== 'j' && event.key !== 'k') return false
+    const current = focused ? items.indexOf(focused) : event.key === 'j' ? -1 : items.length
+    const nextIndex = Math.min(
+      Math.max(current + (event.key === 'j' ? 1 : -1), 0),
+      items.length - 1,
+    )
+    const next = items[nextIndex]
+    next.focus({ preventScroll: true })
+    next.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'nearest' })
+    return true
+  }
+
   const modalChords: Record<string, { btn: string; openClass: string; close: string }> = {
     a: { btn: '.tri-analytics-btn', openClass: 'tri-analytics-open', close: '.tri-ana-close' },
     c: { btn: '.tri-calc-btn', openClass: 'tri-calc-open', close: '.tri-calc-close' },
@@ -13017,6 +13088,13 @@ const setupShortcuts = (root: HTMLElement): (() => void) => {
 
     if (el && isEditable(el)) {
       clearG()
+      return
+    }
+
+    if (handleListKey(e)) {
+      clearG()
+      e.preventDefault()
+      e.stopImmediatePropagation()
       return
     }
 

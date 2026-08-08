@@ -2476,6 +2476,10 @@
   opacity: 1;
   visibility: visible;
   transform: translate(-50%, var(--tri-modal-y)) scale(1);
+  transition:
+    opacity 0.2s ease,
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
 }
 
 .tri-calc-bar {
@@ -3142,6 +3146,10 @@
   margin-block: 0;
   padding: 1.6rem 0;
   box-sizing: border-box;
+}
+
+.triathlon [data-keyboard-scroll-scope]:focus {
+  outline: 0;
 }
 
 .tri-day-page > .tri-day-embed {
@@ -8895,6 +8903,12 @@
   color: var(--tri-accent);
 }
 
+.tri-feed-head:focus-visible {
+  color: var(--dark);
+  background: var(--secondary);
+  outline: 0;
+}
+
 .tri-feed-head svg {
   flex: none;
   width: 0.95rem;
@@ -8976,6 +8990,17 @@
   color: var(--tri-accent);
 }
 
+.tri-tree-row:has(a:focus-visible),
+.tri-tree-day:focus-visible {
+  background: var(--secondary);
+}
+
+.tri-tree-row a:focus-visible,
+.tri-tree-day:focus-visible {
+  color: var(--dark);
+  outline: 0;
+}
+
 .tri-tree-row--year {
   font-size: 0.9rem;
   border-bottom: 1px solid var(--gray);
@@ -9033,7 +9058,8 @@
   color: var(--tri-accent);
 }
 
-.tri-tree-day:hover .tri-tree-sum {
+.tri-tree-day:hover .tri-tree-sum,
+.tri-tree-day:focus-visible .tri-tree-sum {
   color: inherit;
 }
 
@@ -9052,7 +9078,8 @@
   white-space: nowrap;
 }
 
-.tri-tree-day:hover .tri-tree-day-sports {
+.tri-tree-day:hover .tri-tree-day-sports,
+.tri-tree-day:focus-visible .tri-tree-day-sports {
   color: inherit;
 }
 
@@ -10340,6 +10367,10 @@
     color: var(--light);
     background: var(--tri-accent);
     border-color: var(--tri-accent);
+  }
+
+  &[aria-selected='true']:focus-visible {
+    outline: 0;
   }
 
   & + & {

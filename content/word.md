@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-08-05 18:31:02 GMT-04:00
+modified: 2026-08-07 23:19:50 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -314,3 +314,4 @@ title: lists
 - CBT
 - immiseration
 - salaciously
+- picador

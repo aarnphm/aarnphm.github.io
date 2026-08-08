@@ -46,6 +46,8 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
         data-analytics-path={joinSegments(root, 'static/analytics.json')}
         data-oura-detail-path={joinSegments(root, 'static/oura-detail.json')}
         data-training-path={joinSegments(root, 'static/training.json')}
+        tabindex={-1}
+        data-keyboard-scroll-scope
       >
         <TriathlonSubnav active={view} root={root} />
         {view === 'on' ? (

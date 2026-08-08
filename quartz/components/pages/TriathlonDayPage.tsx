@@ -49,6 +49,8 @@ export default (() => {
           'popover-hint',
         )}
         data-tri-view="day"
+        tabindex={-1}
+        data-keyboard-scroll-scope
       >
         <TriathlonSubnav active="on" root={root} />
         <div
