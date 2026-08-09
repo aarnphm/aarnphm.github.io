@@ -29,45 +29,48 @@ title: a letter from 10 Downing Street
 
 ## solution
 
-We can convert this into a $12 \times 12$ grid of pairs $(A,B)$ is a graph where:
+Treat each ordered pair as a cell in a $12 \times 12$ grid. Ben claims one unclaimed cell. Lily claims two unclaimed adjacent cells.
 
-- ben removes 1 cell per turn
-- lily removes 2 adjacent cells (a domino) per turn
-- game ends when lily can't find adjacent cells
+### ben can hold lily to $72$
 
-this is an _adversarial [[thoughts/domino tiling]]_ problem.
+Color the grid as a checkerboard. There are $72$ white cells and $72$ black cells. Every Lily move claims one cell of each color.
 
-### the checkerboard invariant
-
-color cells $(i,j)$ where $i+j \equiv 0 \pmod 2$ as "white", others "black". we get 72 white, 72 black cells.
-
-note: every domino spans exactly ==1 white + 1 black== cell (adjacent cells always differ in color).
-
-### ben's optimal strategy
-
-ben targets one color class (say white). after round $k$:
+Ben claims a white cell whenever one remains. Before Ben's $k$th turn, each player has already moved $k-1$ times. If Ben has always taken a white cell, the number of unclaimed white cells is
 
 $$
-\begin{aligned}
-\text{white\_remaining} &= 72 - k_{\text{lily}} - k_{\text{ben}} = 72 - 2k \\
-\text{black\_remaining} &= 72 - k_{\text{lily}} = 72 - k \\
-\end{aligned}
+72-(k-1)-(k-1)=74-2k.
 $$
 
-white exhausts when $72 - 2k = 0$, i.e., $k = 36$.
+This is at least $2$ for $1 \leq k \leq 36$, so Ben can keep choosing white cells through his $36$th turn. If Lily has a $36$th move, that move claims the last white cell. Ben's next move can only remove a black cell. The remaining unclaimed cells are black, so Lily has no $37$th move. She can claim at most
 
-at that point, 36 black cells remain. but black cells are mutually ::NON-ADJACENT:: (checkerboard property)—the remaining graph has no edges.
+$$
+2\cdot36=72
+$$
 
-therefore, lily can't move.
+cells.
 
-> [!important]
->
-> For the game to end at round $k$, remaining cells must form an independent set. in a checkerboard grid, max independent set is 72 (i.e: one color class)
+### lily can secure $72$
 
-thus, ben needs to exhaust one color. he contributes $k$ picks; lily contributes $k$ (forced). to exhaust 72 whites: $2k \geq 72 \Rightarrow k \geq 36$.
+Before play, partition the board into $72$ horizontal dominoes:
 
-so round 36 is the earliest possible end. Here, lily gets $36 \times 2 = 72$ cells.
+$$
+\bigl((i,2j-1),(i,2j)\bigr),
+\qquad 1 \leq i \leq 12,
+\qquad 1 \leq j \leq 6.
+$$
 
-lily's domino constraint forces her to remove 1 white + 1 black each turn. she cannot slow down white depletion against ben's targeting strategy, therefore the minmax value would be $12 \times  12 / 2 = 72$
+Lily claims any intact domino from this fixed set. Before her $k$th turn, she has claimed $k-1$ dominoes from the partition. Ben has claimed $k$ cells, so he can have spoiled at most $k$ additional dominoes. At least
+
+$$
+72-(k-1)-k=73-2k
+$$
+
+intact dominoes remain. This is at least $1$ for every $1 \leq k \leq 36$. Lily can make $36$ moves and claim at least
+
+$$
+2\cdot36=72
+$$
+
+cells. The bounds match. Lily can guarantee $72$ cells, exactly half the grid.
 
 ![[puzzle/ten_downing.py]]

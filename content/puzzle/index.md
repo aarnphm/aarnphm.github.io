@@ -9,9 +9,6 @@ tags:
 title: puzzle
 ---
 
-[[puzzle/aoc]]: Advent of Code
-[[puzzle/lc]]: LeetCode
-
 | foundry        | links          |
 | -------------- | -------------- |
 | Advent of Code | [[puzzle/aoc]] |
