@@ -32,6 +32,10 @@ const NAV = [
 export type TriView = (typeof NAV)[number][0]
 
 const PACE_MI = [
+  '3:30',
+  '4:00',
+  '4:30',
+  '5:00',
   '5:30',
   '6:00',
   '6:30',
@@ -44,9 +48,25 @@ const PACE_MI = [
   '10:00',
   '10:30',
   '11:00',
+  '11:30',
+  '12:00',
+  '12:30',
 ]
 const SWIM_100 = ['1:20', '1:30', '1:40', '1:50', '2:00', '2:10', '2:20', '2:30']
-const BIKE_KMH = [25, 28, 30, 32, 35, 38, 40, 45]
+const TOUR_DE_FRANCE_2026_AVERAGE_KMH = 3197 / (73 + 56 / 60 + 26 / 3600)
+const BIKE_SPEEDS = [
+  { kmh: 25 },
+  { kmh: 28 },
+  { kmh: 30 },
+  { kmh: 32 },
+  { kmh: 35 },
+  { kmh: 38 },
+  { kmh: 40 },
+  { kmh: TOUR_DE_FRANCE_2026_AVERAGE_KMH, reference: 'TdF' },
+  { kmh: 45 },
+  { kmh: 30 / KM_TO_MI },
+  { kmh: 35 / KM_TO_MI },
+]
 
 export const CONVERSIONS: [string, string][] = [
   ['pace', '/100m × 16.09 → /mi'],
@@ -57,8 +77,8 @@ export const GEAR: [string, string[]][] = [
   [
     'Cervélo Soloist',
     [
-      'Size 56 - 170mm, 7.39 kgs',
-      'Cervélo All-Carbon, Tapered Soloist Fork',
+      'Size: 56, Black, 7.39 kgs',
+      'Fork: Cervélo All-Carbon, Tapered Soloist',
       'Handlebar: Cervélo HB13 Carbon, 31.8mm clamp',
       'Handlebar Sizing: Size 56 - 40cm',
       'Stem: Cervélo ST36 Alloy',
@@ -87,6 +107,41 @@ export const GEAR: [string, string[]][] = [
       'Scale: Garmin Index S2',
       'Shoes: SPECIALIZED TORCH 2.0',
       'Socks: DANISH ENDURANCE Aero Socks',
+      'Helmet: KASK Valegro',
+    ],
+  ],
+  [
+    'Canyon Speedmax CFR Di2 2026',
+    [
+      'Size: M, Pro Black, 9.3 kg',
+      'Frame: Canyon Speedmax CFR, CFR carbon, 12x142mm',
+      'Fork: Canyon Speedmax, CF carbon, 12x100mm',
+      'Cockpit: Canyon AeroShield Pro (forearm length > 395mm, shell size 215mm)',
+      'Cockpit Post: Long-Mid',
+      'Hydration: Canyon AeroModule FUEL 650',
+      'Seatpost: Canyon Splitter Plate Pro, carbon',
+      'Saddle: Fizik Transiro Aeris LD R1 Adaptive',
+      'Bottom Bracket: Shimano Pressfit BB92',
+      'Front Wheel: Zipp 858 NSW',
+      'Rear Wheel: Zipp Super-9',
+      'Front Tire: Continental Aero 111, 700x26c',
+      'Rear Tire: Continental GP5000 TT TR, 700x28c',
+      'Shifters: Shimano Dura-Ace Di2 R9160 Remote TT',
+      'Crankset: Shimano Dura-Ace R9200, 165mm, 54/40T',
+      'Chainring: Carbon-Ti 1x, 58T',
+      'Chain: Shimano XTR',
+      'Cassette: Shimano Dura-Ace CS-R9200, 11-30T, 12-Speed',
+      'Front Derailleur: Shimano Dura-Ace Di2 FD-R9250',
+      'Rear Derailleur: Shimano Dura-Ace Di2 RD-R9250',
+      'Shift/Brake Levers: Shimano Dura-Ace Di2 ST-R9180',
+      'Brake Rotors: Shimano Dura-Ace RT-CL900, 160mm front / 140mm rear',
+      'Powermeter: Shimano Dura-Ace R9200, dual-sided',
+      'Bottle: Canyon FUEL Aero Bottle',
+      'Bottle Cage: XLAB Gorilla XT Carbon',
+      'Pedals: LOOK',
+      'Bike Computer: Wahoo ELEMNT BOLT',
+      "Shoes: Fi'zi:k Transiro Hydra Aeroweave Carbone",
+      'Helmet: MET Drone Wide Body III',
     ],
   ],
   [
@@ -152,6 +207,7 @@ const swimKmh = (p: string): string => {
   return sec > 0 ? ((100 / sec) * 3.6).toFixed(1) : '0'
 }
 const kmhToMph = (kmh: number): string => (kmh * KM_TO_MI).toFixed(1)
+const bikeKmh = (kmh: number): string => (Number.isInteger(kmh) ? String(kmh) : kmh.toFixed(1))
 const clockFromSec = (sec: number): string => {
   const s = Math.round(sec)
   return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
@@ -189,7 +245,7 @@ export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
         <input
           class="tri-ana-search tri-feed-search"
           type="search"
-          placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
+          placeholder="search (filter:bike|run|swim|walk|strength|yoga, sort:distance|cadence|pace)"
           aria-label="search activities"
           aria-controls="tri-feed-results"
           aria-expanded="false"
@@ -340,7 +396,7 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
         <input
           class="tri-ana-search"
           type="search"
-          placeholder="search (filter:bike|run|swim|walk, sort:distance|cadence|pace)"
+          placeholder="search (filter:bike|run|swim|walk|strength|yoga, sort:distance|cadence|pace)"
           aria-label="search analytics"
           autocomplete="off"
         />
@@ -896,12 +952,19 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
           km/h
         </button>
       </div>
-      {BIKE_KMH.map(kmh => (
+      {BIKE_SPEEDS.map(({ kmh, reference }) => (
         <div class="tri-pace-row">
           <span class="tri-pace-mi">{bikePaceMi(kmh)}</span>
           <span class="tri-pace-km">{bikePaceKm(kmh)}</span>
-          <span class="tri-pace-spd" data-kph={kmh} data-mph={kmhToMph(kmh)}>
-            {kmh}
+          <span class="tri-pace-spd">
+            <span data-kph={bikeKmh(kmh)} data-mph={kmhToMph(kmh)}>
+              {bikeKmh(kmh)}
+            </span>
+            {reference && (
+              <abbr class="tri-pace-ref" title="2026 Tour de France winner average">
+                {reference}
+              </abbr>
+            )}
           </span>
         </div>
       ))}

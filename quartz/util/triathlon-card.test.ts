@@ -662,6 +662,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   windGustKph: null,
   location: 'Toronto',
   fueling: null,
+  strength: null,
   garmin: null,
   route: [
     {
@@ -798,6 +799,66 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   swimLocation: null,
   waterTemperatureC: null,
   ...overrides,
+})
+
+test('renders strength volume, totals, exercises, and exact loaded sets', () => {
+  const strength: NonNullable<StravaActivityDetail['strength']> = {
+    volumeKg: 816.512,
+    totalSets: 15,
+    totalReps: 90,
+    exercises: [
+      {
+        name: 'Press Up Position Walk Out',
+        setCount: 2,
+        repetitions: 20,
+        durationS: null,
+        sets: [],
+      },
+      {
+        name: 'KB Straight Leg Deadlift',
+        setCount: 2,
+        repetitions: 20,
+        durationS: null,
+        sets: [
+          { repetitions: 10, durationS: null, weightKg: 22.68 },
+          { repetitions: 10, durationS: null, weightKg: 22.68 },
+        ],
+      },
+    ],
+    source: 'manual',
+  }
+  try {
+    setDistanceUnit(true)
+    const activity = detail({
+      sport: 'strength',
+      movingTimeS: 533,
+      avgHr: 101,
+      strength,
+      route: [],
+      bestEfforts: null,
+    })
+    assert.deepEqual(activityStatRows(activity), [
+      ['time', "9'"],
+      ['volume', '1,800.1 lb'],
+      ['sets', '15'],
+      ['reps', '90'],
+      ['avg hr', '101 bpm'],
+    ])
+    const rendered = buildActivity(factory, activity)
+    assert.deepEqual(byClass(rendered, 'tri-strength-exercise-name').map(text), [
+      'Press Up Position Walk Out',
+      'KB Straight Leg Deadlift',
+    ])
+    assert.deepEqual(byClass(rendered, 'tri-strength-exercise-summary').map(text), [
+      '2 sets · 20 reps',
+      '2 sets · 10 reps @ 50 lb each',
+    ])
+
+    setDistanceUnit(false)
+    assert.equal(activityStatRows(activity)[1][1], '816.5 kg')
+  } finally {
+    setDistanceUnit(false)
+  }
 })
 
 test('keeps inclusive cycling power by default and exposes the zero-excluded view on demand', () => {
@@ -2735,6 +2796,34 @@ test('labels a three-hour power curve through its endpoint', () => {
       'false',
     ],
   )
+})
+
+test('uses sparse second markers in embedded power curves', () => {
+  const activity = detail({
+    date: '2026-08-04',
+    powerCurve: [
+      { s: 1, w: 565 },
+      { s: 3_600, w: 180 },
+    ],
+  })
+  const card = buildDayCard(
+    factory,
+    activity.date,
+    { details: { [activity.id]: activity }, health: {} },
+    { embedded: true, expanded: true },
+    undefined,
+    ctx(),
+  )
+  assert.deepEqual(byClass(card, 'tri-curve-tick').map(text), [
+    '1s',
+    '5s',
+    '30s',
+    '1m',
+    '2m',
+    '5m',
+    '20m',
+    '1h',
+  ])
 })
 
 test('keeps shared power curve duration markers inside the visible domain', () => {

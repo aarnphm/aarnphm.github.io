@@ -1334,7 +1334,7 @@ const renderDetail = (
   source: StravaActivityDetail,
   payload?: DetailPayload | null,
   fillMissingRunPower = false,
-  showUnavailableElevation = false,
+  embedded = false,
   dayRouteHref?: string,
 ): HTMLElement => {
   const d = powerViewActivity(source)
@@ -1349,7 +1349,7 @@ const renderDetail = (
     clientCtx(),
     payload?.swimTrend ?? [],
     fillMissingRunPower,
-    showUnavailableElevation,
+    embedded,
   ) as HTMLElement
   if (d.sport === 'run') {
     const matchedGroup = payload?.matchedRuns?.groups.find(group =>
@@ -10226,7 +10226,19 @@ const setActivityResultSelection = (results: HTMLElement | null, index: number):
   return selected
 }
 
-const ACTIVITY_FILTER_SPORTS: readonly string[] = ['bike', 'run', 'swim', 'walk']
+const ACTIVITY_FILTER_SPORTS: readonly ActivityKind[] = [
+  'bike',
+  'run',
+  'swim',
+  'walk',
+  'strength',
+  'yoga',
+]
+const ACTIVITY_FILTER_ALIASES: Readonly<Record<string, ActivityKind>> = {
+  hike: 'walk',
+  weight: 'strength',
+  gym: 'strength',
+}
 const ACTIVITY_SORT_KEYS: readonly string[] = ['distance', 'cadence', 'pace']
 const DATE_FILTER_KEYWORDS: readonly string[] = ['today', 'yesterday', 'week', 'month']
 const DATE_FILTER_UNIT = /^(days?|d|weeks?|w|months?|mo)$/
@@ -10278,6 +10290,19 @@ const dateFilterSpan = (value: string): DateSpan | null => {
   return daySpan(unit.startsWith('w') ? n * 7 : n)
 }
 
+const resolveActivityFilterSport = (value: string): ActivityKind | null =>
+  ACTIVITY_FILTER_ALIASES[value] ?? ACTIVITY_FILTER_SPORTS.find(sport => sport === value) ?? null
+
+const aliasesForActivityFilterSport = (sport: ActivityKind): string[] =>
+  Object.entries(ACTIVITY_FILTER_ALIASES).flatMap(([alias, canonical]) =>
+    canonical === sport ? [alias] : [],
+  )
+
+const isActivityFilterSport = (value: string, sports: readonly ActivityKind[]): boolean => {
+  const sport = resolveActivityFilterSport(value)
+  return sport !== null && sports.includes(sport)
+}
+
 const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
   let filterSport: string | null = null
   let filterDate: DateSpan | null = null
@@ -10293,7 +10318,7 @@ const parseActivityQuery = (rawTokens: string[]): ActivityQuery => {
       }
       const span = dateFilterSpan(fv)
       if (span) filterDate = span
-      else filterSport = fv === 'hike' ? 'walk' : fv
+      else filterSport = resolveActivityFilterSport(fv) ?? fv
     } else if (t.startsWith('sort:')) {
       sortKey = t.slice(5)
     } else if (t) tokens.push(t)
@@ -10321,7 +10346,11 @@ const sortActivitiesBy = <
   })
 }
 
-const activityCommandHints = (lastToken: string, noun: string): HTMLElement[] => {
+const activityCommandHints = (
+  lastToken: string,
+  noun: string,
+  filterSports: readonly ActivityKind[] = ACTIVITY_FILTER_SPORTS,
+): HTMLElement[] => {
   const hints: HTMLElement[] = []
   const filterValue = lastToken.startsWith('filter:') ? lastToken.slice(7) : null
   const sortValue = lastToken.startsWith('sort:') ? lastToken.slice(5) : null
@@ -10337,15 +10366,21 @@ const activityCommandHints = (lastToken: string, noun: string): HTMLElement[] =>
     }
   } else if (
     filterValue !== null &&
-    ![...ACTIVITY_FILTER_SPORTS, 'hike'].includes(filterValue) &&
+    !isActivityFilterSport(filterValue, filterSports) &&
     !dateFilterSpan(filterValue)
   ) {
-    for (const f of ACTIVITY_FILTER_SPORTS)
-      if (f.startsWith(filterValue)) {
-        const it = activityResultItem(searchCommandTitle('filter:', f), `filter ${noun}`)
-        it.dataset.insert = `filter:${f}`
+    for (const sport of filterSports) {
+      const alias = aliasesForActivityFilterSport(sport).find(value =>
+        value.startsWith(filterValue),
+      )
+      const value = sport.startsWith(filterValue) ? sport : alias
+      if (value) {
+        const sub = value === sport ? `filter ${noun}` : `filter ${noun} (${sport})`
+        const it = activityResultItem(searchCommandTitle('filter:', value), sub)
+        it.dataset.insert = `filter:${value}`
         hints.push(it)
       }
+    }
     for (const k of DATE_FILTER_KEYWORDS)
       if (k.startsWith(filterValue)) {
         const it = activityResultItem(searchCommandTitle('filter:', k), DATE_HINT_SUBS[k])
@@ -10362,7 +10397,7 @@ const activityCommandHints = (lastToken: string, noun: string): HTMLElement[] =>
   } else if (lastToken.length > 0 && 'filter:'.startsWith(lastToken) && lastToken !== 'filter:') {
     const it = activityResultItem(
       searchCommandTitle('filter:'),
-      'filter by sport or date (bike, today, 3 days)',
+      'filter by sport or date (bike, strength, yoga, today, 3 days)',
     )
     it.dataset.insert = 'filter:'
     hints.push(it)
@@ -10888,7 +10923,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     panel.classList.add('tri-analytics--searching')
     if (results) {
       results.setAttribute('aria-hidden', 'false')
-      results.replaceChildren(el('div', 'tri-ana-empty', tl('loading…')))
+      results.replaceChildren(el('div', 'tri-ana-empty', tl('loading')))
     }
     void loadDetails().then(available => {
       if (
@@ -11946,7 +11981,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
     const routeSport = ROUTE_SPORTS.find(s => s === filterSport)
     setEnabledSports(routeSport ? new Set([routeSport]) : new Set(ROUTE_SPORTS))
     const lastToken = rawTokens[rawTokens.length - 1]
-    const hints = activityCommandHints(lastToken, 'routes')
+    const hints = activityCommandHints(lastToken, 'routes', ROUTE_SPORTS)
     const ids = drawableIds()
     const acts = sortActivitiesBy(
       (data?.activities ?? []).filter(a => {
@@ -11980,7 +12015,7 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       results.appendChild(grp)
     }
     if (!acts.length && !hints.length)
-      results.appendChild(el('div', 'tri-ana-empty', detailLoaded ? 'no routes' : 'loading…'))
+      results.appendChild(el('div', 'tri-ana-empty', detailLoaded ? 'no routes' : 'loading'))
     setSel(0)
   }
   const onResultsClick = (event: MouseEvent) => {
@@ -13188,7 +13223,7 @@ const setupFeed = (root: HTMLElement): (() => void) | null => {
     const cached = detailCache.get(id)
     if (cached) return cached
     const wrap = el('div', 'tri-feed-detail')
-    wrap.appendChild(el('div', 'tri-ana-empty', tl('loading…')))
+    wrap.appendChild(el('div', 'tri-ana-empty', tl('loading')))
     detailCache.set(id, wrap)
     if (detailPath)
       void loadDetailPayload(detailPath).then(payload => {

@@ -19,6 +19,29 @@ export interface ManualFuelingEntry {
   caloriesConsumed: number
 }
 
+export interface StrengthSet {
+  repetitions: number | null
+  durationS: number | null
+  weightKg: number | null
+}
+
+export interface StrengthExercise {
+  name: string
+  setCount: number
+  repetitions: number | null
+  durationS: number | null
+  sets: StrengthSet[]
+}
+
+export interface ManualStrengthEntry {
+  date: string
+  activityId: number
+  volumeKg: number | null
+  totalSets: number | null
+  totalReps: number | null
+  exercises: StrengthExercise[]
+}
+
 export interface TrainingExclusion {
   date: string
   activityId: number
@@ -28,16 +51,73 @@ export interface TrackingData {
   days: TrackEntry[]
   races: RaceEvent[]
   fueling: ManualFuelingEntry[]
+  strength: ManualStrengthEntry[]
   trainingExclusions: TrainingExclusion[]
 }
 
 export interface ParsedTrackingBlock {
   day: TrackEntry
   fueling: ManualFuelingEntry | null
+  strength: ManualStrengthEntry | null
   trainingExclusion: TrainingExclusion | null
 }
 
 const LB_TO_KG = 0.45359237
+
+const massKg = (value: number, unit: string): number =>
+  Math.round(value * (unit.toLowerCase().startsWith('lb') ? LB_TO_KG : 1) * 1_000) / 1_000
+
+const parseStrengthDuration = (value: string): number | null => {
+  const match = /^(?:(\d+)m)?\s*(?:(\d+)s)?$/i.exec(value.trim())
+  if (!match || (match[1] == null && match[2] == null)) return null
+  return Number(match[1] ?? 0) * 60 + Number(match[2] ?? 0)
+}
+
+const parseStrengthEffort = (value: string): StrengthSet | null => {
+  const parts = value.split(/\s*@\s*/)
+  if (parts.length > 2) return null
+  const repetitions = /^(\d+)\s+reps?$/i.exec(parts[0])
+  const durationS = repetitions ? null : parseStrengthDuration(parts[0])
+  if (!repetitions && durationS == null) return null
+  let weightKg: number | null = null
+  if (parts[1] != null) {
+    const weight = /^(\d+(?:\.\d+)?)\s*(kg|lbs?)$/i.exec(parts[1])
+    if (!weight) return null
+    weightKg = massKg(Number(weight[1]), weight[2])
+  }
+  return { repetitions: repetitions ? Number(repetitions[1]) : null, durationS, weightKg }
+}
+
+const parseStrengthExercise = (value: string): StrengthExercise | null => {
+  const [rawName, ...rawEfforts] = value.split('|').map(part => part.trim())
+  if (!rawName || rawEfforts.length === 0 || rawEfforts.some(effort => !effort)) return null
+  if (rawEfforts.length === 1) {
+    const aggregate = /^(\d+)\s+sets?(?:\s*\/\s*(.+))?$/i.exec(rawEfforts[0])
+    if (aggregate) {
+      const effort = aggregate[2] ? parseStrengthEffort(aggregate[2]) : null
+      if (aggregate[2] && !effort) return null
+      return {
+        name: rawName,
+        setCount: Number(aggregate[1]),
+        repetitions: effort?.repetitions ?? null,
+        durationS: effort?.durationS ?? null,
+        sets: [],
+      }
+    }
+  }
+  const sets = rawEfforts.map(parseStrengthEffort)
+  if (sets.some(set => set == null)) return null
+  const parsedSets = sets.filter((set): set is StrengthSet => set != null)
+  const repetitions = parsedSets.reduce((total, set) => total + (set.repetitions ?? 0), 0)
+  const durationS = parsedSets.reduce((total, set) => total + (set.durationS ?? 0), 0)
+  return {
+    name: rawName,
+    setCount: parsedSets.length,
+    repetitions: parsedSets.some(set => set.repetitions != null) ? repetitions : null,
+    durationS: parsedSets.some(set => set.durationS != null) ? durationS : null,
+    sets: parsedSets,
+  }
+}
 
 export function parseTrackingMeta(meta: string | null | undefined): {
   race: boolean
@@ -62,12 +142,14 @@ export function parseTrackingBlock(
   value: string,
 ): ParsedTrackingBlock | null {
   const body: Record<string, string> = {}
+  const exerciseValues: string[] = []
   for (const line of value.split('\n')) {
     const idx = line.indexOf(':')
     if (idx < 0) continue
     const k = line.slice(0, idx).trim().toLowerCase()
     const v = line.slice(idx + 1).trim()
-    if (k) body[k] = v
+    if (k === 'exercise') exerciseValues.push(v)
+    else if (k) body[k] = v
   }
   const date = body.date
   if (!date || !/^\d{4}-\d{2}-\d{2}/.test(date)) return null
@@ -93,10 +175,32 @@ export function parseTrackingBlock(
     caloriesConsumed >= 0
       ? { date: day.date, activityId, caloriesConsumed }
       : null
+  const strengthVolume = /^(\d+(?:\.\d+)?)\s*(kg|lbs?)$/i.exec(body.strengthvolume ?? '')
+  const totalSets = Number(body.strengthsets)
+  const totalReps = Number(body.strengthreps)
+  const exercises = exerciseValues
+    .map(parseStrengthExercise)
+    .filter((exercise): exercise is StrengthExercise => exercise != null)
+  const hasStrengthData =
+    strengthVolume != null ||
+    (Number.isSafeInteger(totalSets) && totalSets > 0) ||
+    (Number.isSafeInteger(totalReps) && totalReps >= 0) ||
+    exercises.length > 0
+  const strength =
+    hasStrengthData && Number.isSafeInteger(activityId) && activityId > 0
+      ? {
+          date: day.date,
+          activityId,
+          volumeKg: strengthVolume ? massKg(Number(strengthVolume[1]), strengthVolume[2]) : null,
+          totalSets: Number.isSafeInteger(totalSets) && totalSets > 0 ? totalSets : null,
+          totalReps: Number.isSafeInteger(totalReps) && totalReps >= 0 ? totalReps : null,
+          exercises,
+        }
+      : null
   const skipTraining = ['true', '1', 'yes'].includes(body.skiptraining?.toLowerCase() ?? '')
   const trainingExclusion =
     skipTraining && Number.isSafeInteger(activityId) && activityId > 0
       ? { date: day.date, activityId }
       : null
-  return { day, fueling, trainingExclusion }
+  return { day, fueling, strength, trainingExclusion }
 }

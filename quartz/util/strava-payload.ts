@@ -2,7 +2,7 @@ import { readFileSync, statSync } from 'node:fs'
 import type { AppleCache, AppleRunningDynamicsSample, AppleSwim } from '../plugins/stores/apple'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
-import type { ManualFuelingEntry } from '../plugins/stores/tracking'
+import type { ManualFuelingEntry, ManualStrengthEntry } from '../plugins/stores/tracking'
 import type { WeatherCache } from '../plugins/stores/weather'
 import { ATHLETE } from '../plugins/stores/analytics'
 import {
@@ -14,6 +14,7 @@ import {
 } from '../plugins/stores/core-body-temperature'
 import {
   applyManualFueling,
+  applyManualStrength,
   buildPayload,
   type SwimActivityInterval,
   type StravaActivityDetail,
@@ -334,10 +335,9 @@ let memo: { key: string; payload: StravaPayload } | null = null
 export function loadStravaPayloadSync(
   since?: string,
   manualFueling: readonly ManualFuelingEntry[] = [],
+  manualStrength: readonly ManualStrengthEntry[] = [],
 ): StravaPayload {
-  const manualKey = manualFueling
-    .map(entry => `${entry.activityId}:${entry.caloriesConsumed}`)
-    .join(',')
+  const manualKey = JSON.stringify({ fueling: manualFueling, strength: manualStrength })
   const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
   if (memo?.key !== key) {
     const apple = readJson<AppleCache>(appleCachePath)
@@ -351,6 +351,7 @@ export function loadStravaPayloadSync(
       ATHLETE.ftp,
     )
     applyManualFueling(payload, manualFueling)
+    applyManualStrength(payload, manualStrength)
     enrichSwimMetrics(payload, apple)
     enrichRunDynamics(payload, apple)
     enrichCoreBodyTemperature(payload, core)

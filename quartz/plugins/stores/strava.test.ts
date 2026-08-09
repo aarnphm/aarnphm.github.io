@@ -3,6 +3,7 @@ import test from 'node:test'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
 import {
   applyManualFueling,
+  applyManualStrength,
   buildPayload,
   hasFetchedActivityDetail,
   type RawStravaActivity,
@@ -87,6 +88,48 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
     fluidRecommendedMl: null,
     sweatLossMl: null,
     sourceDevice: null,
+    source: 'manual',
+  })
+})
+
+test('manual strength attaches only to the matching strength activity and date', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride({ name: 'Strength', sportType: 'WeightTraining', distance: 0 }) },
+  }
+  const payload = buildPayload(cache, null, null, '2026-06-01')
+  const entry = {
+    date: '2026-06-07',
+    activityId: 101,
+    volumeKg: 816.512,
+    totalSets: 15,
+    totalReps: 90,
+    exercises: [
+      {
+        name: 'KB Straight Leg Deadlift',
+        setCount: 2,
+        repetitions: 20,
+        durationS: null,
+        sets: [
+          { repetitions: 10, durationS: null, weightKg: 22.68 },
+          { repetitions: 10, durationS: null, weightKg: 22.68 },
+        ],
+      },
+    ],
+  }
+
+  applyManualStrength(payload, [{ ...entry, date: '2026-06-08' }])
+  assert.equal(payload.details['101'].strength, null)
+  applyManualStrength(payload, [entry])
+  assert.deepEqual(payload.details['101'].strength, {
+    volumeKg: 816.512,
+    totalSets: 15,
+    totalReps: 90,
+    exercises: entry.exercises,
     source: 'manual',
   })
 })

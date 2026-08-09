@@ -3,6 +3,7 @@ import test from 'node:test'
 import {
   garminManualSleepPayload,
   manualSleepMatches,
+  ouraSleepDurations,
   seriesSamples,
   sleepStages,
 } from './sync-oura-garmin'
@@ -45,6 +46,41 @@ test('seriesSamples rejects an unparseable series start', () => {
         SLEEP_START,
       ),
     /not a timestamp/,
+  )
+})
+
+test('ouraSleepDurations uses Oura exact totals instead of five-minute stage estimates', () => {
+  assert.deepEqual(
+    ouraSleepDurations({
+      timeInBedS: 24_546,
+      totalSleepS: 21_510,
+      deepS: 5_340,
+      lightS: 11_460,
+      remS: 4_710,
+      awakeS: 3_036,
+    }),
+    {
+      timeInBedSeconds: 24_546,
+      totalSleepSeconds: 21_510,
+      deepSeconds: 5_340,
+      lightSeconds: 11_460,
+      remSeconds: 4_710,
+      awakeSeconds: 3_036,
+    },
+  )
+})
+
+test('ouraSleepDurations rejects incomplete duration summaries', () => {
+  assert.equal(
+    ouraSleepDurations({
+      timeInBedS: 24_546,
+      totalSleepS: 21_510,
+      deepS: 5_340,
+      lightS: 11_460,
+      remS: null,
+      awakeS: 3_036,
+    }),
+    null,
   )
 })
 

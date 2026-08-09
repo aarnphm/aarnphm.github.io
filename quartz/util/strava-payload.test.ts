@@ -41,6 +41,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   windGustKph: null,
   location: null,
   fueling: null,
+  strength: null,
   garmin: null,
   route: [],
   mapRoute: [],

@@ -596,6 +596,51 @@
   }
 }
 
+.tri-act-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.55rem;
+  margin-top: 0.35rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
+}
+
+.tri-act-strength-h {
+  margin: 0;
+  font-family: var(--codeFont);
+  font-size: 0.56rem;
+  font-weight: inherit;
+  color: var(--tri-accent);
+}
+
+.tri-strength-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tri-strength-exercise {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.35rem 0.8rem;
+  align-items: baseline;
+  font-family: var(--codeFont);
+  font-size: 0.58rem;
+}
+
+.tri-strength-exercise-name {
+  color: var(--dark);
+}
+
+.tri-strength-exercise-summary {
+  max-width: 20rem;
+  color: var(--darkgray);
+  text-align: right;
+}
+
 .tri-act-stat-k {
   text-align: left;
   font-size: 0.62rem;
@@ -948,22 +993,10 @@
 
 .tri-matched-point--fastest:not([data-selected='true']),
 .tri-matched-point--highest:not([data-selected='true']) {
-  width: 0.94rem;
-  height: 0.94rem;
-  background: var(--light);
-  border: 2px solid #ff9f1a;
-
-  &::after {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0.42rem;
-    height: 0.42rem;
-    background: #ff9f1a;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    content: '';
-  }
+  width: 0.54rem;
+  height: 0.54rem;
+  background: #ff9f1a;
+  border: 0;
 }
 
 .tri-matched-readout {
@@ -1061,17 +1094,15 @@
     text-align: left;
   }
 
-  tr[data-selected='true'] > * {
-    background: color-mix(in srgb, var(--tri-run) 16%, transparent);
+  tr[data-selected='true'] > :first-child {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
   }
 
   tr[data-current='true'] > :first-child {
     color: var(--tri-accent);
   }
-}
-
-.tri-matched--ride .tri-matched-table tr[data-selected='true'] > * {
-  background: color-mix(in srgb, var(--tri-bike) 22%, transparent);
 }
 
 .tri-matched-table--ride {
@@ -2197,6 +2228,10 @@
   }
 }
 
+:root[saved-theme='dark'] .tri-ratio .tri-math {
+  color: var(--dark);
+}
+
 .tri-ratio-efficiency-value--compact {
   display: none;
 }
@@ -2400,6 +2435,13 @@
 
 .tri-pace-spd {
   color: var(--gray);
+}
+
+.tri-pace-ref {
+  margin-inline-start: 0.2rem;
+  font-size: 0.5rem;
+  color: var(--darkgray);
+  text-decoration: none;
 }
 
 .tri-pace-unit {
@@ -3148,6 +3190,7 @@
   box-sizing: border-box;
 }
 
+.triathlon[data-keyboard-scroll-scope]:focus,
 .triathlon [data-keyboard-scroll-scope]:focus {
   outline: 0;
 }
@@ -3666,6 +3709,7 @@
 .tri-trend-note {
   font-size: 0.66rem;
   color: color-mix(in srgb, var(--gray) 85%, transparent);
+  font-style: italic;
 }
 
 .tri-best-power {
@@ -7865,6 +7909,22 @@
   margin-bottom: 0;
 }
 
+.tri-dexa,
+.tri-dexa-tip {
+  --tri-dexa-muted: var(--gray);
+  --tri-dexa-bone: color-mix(in srgb, var(--gray) 50%, transparent);
+  --tri-dexa-grid: color-mix(in srgb, var(--gray) 16%, transparent);
+  --tri-dexa-divider: color-mix(in srgb, var(--gray) 26%, transparent);
+}
+
+:root[saved-theme='dark'] .tri-dexa,
+:root[saved-theme='dark'] .tri-dexa-tip {
+  --tri-dexa-muted: color-mix(in oklab, var(--dark) 80%, var(--gray));
+  --tri-dexa-bone: color-mix(in oklab, var(--dark) 42%, var(--gray));
+  --tri-dexa-grid: color-mix(in oklab, var(--darkgray) 48%, transparent);
+  --tri-dexa-divider: color-mix(in oklab, var(--darkgray) 64%, transparent);
+}
+
 .tri-dexa-titlerow {
   display: flex;
   align-items: baseline;
@@ -8037,13 +8097,13 @@
 .tri-dexa-unit {
   margin-left: 0.15rem;
   font-size: 0.62rem;
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-cat {
   font-family: var(--codeFont);
   font-size: 0.62rem;
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-seg {
@@ -8060,7 +8120,7 @@
 }
 
 .tri-dexa-seg.is-bone {
-  background: color-mix(in srgb, var(--gray) 50%, transparent);
+  background: var(--tri-dexa-bone);
 }
 
 .tri-dexa-legend {
@@ -8094,11 +8154,11 @@
 }
 
 .tri-dexa-dot.is-bone {
-  background: color-mix(in srgb, var(--gray) 50%, transparent);
+  background: var(--tri-dexa-bone);
 }
 
 .tri-dexa-legname {
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-legval {
@@ -8119,7 +8179,7 @@
   font-family: var(--codeFont);
   font-size: 0.55rem;
   font-variant-numeric: tabular-nums;
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-axis-value {
@@ -8153,7 +8213,7 @@
   right: 0;
   left: 0;
   height: 1px;
-  background: color-mix(in srgb, var(--gray) 16%, transparent);
+  background: var(--tri-dexa-grid);
   pointer-events: none;
 
   &.is-top {
@@ -8222,7 +8282,7 @@
 }
 
 .tri-dexa-column-fat {
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-tip {
@@ -8260,7 +8320,7 @@
 
 .tri-dexa-tip-label,
 .tri-dexa-tip-pct {
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-dexa-tip-label {
@@ -8277,7 +8337,7 @@
   gap: 0.4rem 0.6rem;
   margin-top: 0.1rem;
   padding-top: 0.5rem;
-  border-top: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
+  border-top: 1px solid var(--tri-dexa-divider);
 }
 
 .tri-dexa-stat {
@@ -8295,7 +8355,7 @@
 
 .tri-dexa-statk {
   font-size: 0.56rem;
-  color: var(--gray);
+  color: var(--tri-dexa-muted);
 }
 
 .tri-vo2-lab {
@@ -8904,9 +8964,15 @@
 }
 
 .tri-feed-head:focus-visible {
-  color: var(--dark);
-  background: var(--secondary);
   outline: 0;
+}
+
+.tri-feed-head:focus-visible .tri-feed-name,
+.tri-tree-row a:focus-visible,
+.tri-tree-day:focus-visible .tri-tree-day-sports {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
 }
 
 .tri-feed-head svg {
@@ -8988,11 +9054,6 @@
 
 .tri-tree-row a:hover {
   color: var(--tri-accent);
-}
-
-.tri-tree-row:has(a:focus-visible),
-.tri-tree-day:focus-visible {
-  background: var(--secondary);
 }
 
 .tri-tree-row a:focus-visible,
@@ -10587,7 +10648,8 @@
       grid-column: 1;
     }
 
-    > .tri-act-stats {
+    > .tri-act-stats,
+    > .tri-act-strength {
       grid-column: 1 / -1;
     }
 
@@ -11017,6 +11079,14 @@ a.tri-pop-date:hover {
 }
 
 @container tri-activity (max-width: 30rem) {
+  .tri-strength-exercise {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tri-strength-exercise-summary {
+    text-align: left;
+  }
+
   .tri-analysis {
     --tri-analysis-label-width: 3.4rem;
   }

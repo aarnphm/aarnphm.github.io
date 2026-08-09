@@ -1470,6 +1470,7 @@ export function transcludeFinal(
         const payload = loadStravaPayloadSync(
           typeof since === 'string' ? since : undefined,
           page.tracking?.fueling,
+          page.tracking?.strength,
         )
         const children: ElementContent[] = [
           h(
