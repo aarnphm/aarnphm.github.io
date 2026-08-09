@@ -3,7 +3,7 @@ abstract: large language models will probably be the most important piece of tec
 date: '2024-02-07'
 description: a mathematical framework for intelligence
 id: LLMs
-modified: 2026-08-03 14:18:16 GMT-04:00
+modified: 2026-08-08 20:58:39 GMT-04:00
 seealso:
   - '[[thoughts/mechanistic interpretability]]'
   - '[[thoughts/Alignment|Alignment]]'
@@ -15,7 +15,7 @@ tags:
 title: LLMs
 ---
 
-[[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models.
+[[thoughts/Machine learning|large language]] models, often implemented as [[thoughts/Autoregressive models|autoregressive]] [[thoughts/Transformers|transformers]] models. Though there are variants that uses [[thoughts/Diffusion|diffusion]]-based models for more low-[[thoughts/Entropy|entropy]] workload.
 
 > [!note] GPTs and friends
 >

@@ -37,9 +37,13 @@ export type DayCardPayload = {
 }
 
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
+export type ActivityStrength = NonNullable<StravaActivityDetail['strength']>
+export type ActivityStrengthExercise = ActivityStrength['exercises'][number]
+export type ActivityStrengthSet = ActivityStrengthExercise['sets'][number]
 
 export const KM_TO_MI = 0.621371
 export const M_TO_FT = 3.28084
+const LB_TO_KG = 0.45359237
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -2628,6 +2632,7 @@ export const buildPowerCurve = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   ctx: DetailCtx,
+  embedded = false,
 ): N | null => {
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
@@ -2762,7 +2767,7 @@ export const buildPowerCurve = <N>(
     secs[0],
     secs[secs.length - 1],
     [1, 60, 300, 1200, 3600, 10_800],
-  )
+  ).filter(seconds => !embedded || (seconds !== 10 && seconds !== 20))
   const pointMarkers: N[] = []
   if (visibleRef.length > 0) {
     const initialRef = visibleRef.find(point => point.s === curve[0].s)
@@ -2897,9 +2902,66 @@ const swimStrokeProfile = (d: StravaActivityDetail): string => {
   return values.join(' / ')
 }
 
+const strengthMass = (kilograms: number): string => {
+  const value = imperial ? kilograms / LB_TO_KG : kilograms
+  const rounded = Math.round(value * 10) / 10
+  return `${rounded.toLocaleString('en-US', { maximumFractionDigits: 1 })} ${imperial ? 'lb' : 'kg'}`
+}
+
+const strengthEffort = (set: ActivityStrengthSet): string => {
+  const effort =
+    set.repetitions != null
+      ? `${set.repetitions} ${set.repetitions === 1 ? 'rep' : 'reps'}`
+      : set.durationS != null
+        ? dlabel(set.durationS)
+        : 'set'
+  return set.weightKg == null ? effort : `${effort} @ ${strengthMass(set.weightKg)}`
+}
+
+export const strengthExerciseSummary = (exercise: ActivityStrengthExercise): string => {
+  const sets = `${exercise.setCount} ${exercise.setCount === 1 ? 'set' : 'sets'}`
+  if (exercise.sets.length === 0) {
+    if (exercise.repetitions != null)
+      return `${sets} · ${exercise.repetitions} ${exercise.repetitions === 1 ? 'rep' : 'reps'}`
+    if (exercise.durationS != null) return `${sets} · ${dlabel(exercise.durationS)}`
+    return sets
+  }
+  const efforts = exercise.sets.map(strengthEffort)
+  if (efforts.every(effort => effort === efforts[0])) return `${sets} · ${efforts[0]} each`
+  return `${sets} · ${efforts.join(', ')}`
+}
+
+export const buildStrengthExercises = <N>(
+  f: TriNodeFactory<N>,
+  strength: ActivityStrength,
+): N | null => {
+  if (strength.exercises.length === 0) return null
+  const wrap = f.el('section', 'tri-act-strength')
+  f.add(wrap, f.el('h3', 'tri-act-strength-h', 'exercises'))
+  const list = f.el('ol', 'tri-strength-exercises')
+  for (const exercise of strength.exercises) {
+    const item = f.el('li', 'tri-strength-exercise')
+    f.add(
+      item,
+      f.el('span', 'tri-strength-exercise-name', exercise.name),
+      f.el('span', 'tri-strength-exercise-summary', strengthExerciseSummary(exercise)),
+    )
+    f.add(list, item)
+  }
+  f.add(wrap, list)
+  return wrap
+}
+
 export const activityStatRows = (d: StravaActivityDetail): [string, string][] => {
-  if (d.sport === 'strength' || d.sport === 'treatment' || d.sport === 'yoga')
-    return [['time', dur(d.movingTimeS)]]
+  if (d.sport === 'strength') {
+    const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
+    if (d.strength?.volumeKg != null) rows.push(['volume', strengthMass(d.strength.volumeKg)])
+    if (d.strength?.totalSets != null) rows.push(['sets', String(d.strength.totalSets)])
+    if (d.strength?.totalReps != null) rows.push(['reps', String(d.strength.totalReps)])
+    if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+    return rows
+  }
+  if (d.sport === 'treatment' || d.sport === 'yoga') return [['time', dur(d.movingTimeS)]]
   const activityRate =
     d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
       ? `${clock(d.swimPaceSPer100m)} /100m`
@@ -2952,7 +3014,7 @@ export const buildActivity = <N>(
   ctx?: DetailCtx,
   swimTrend: SwimTrendPoint[] = [],
   fillMissingRunPower = false,
-  showUnavailableElevation = false,
+  embedded = false,
 ): N => {
   const normalizeBikeMetrics = zeroPowerExcluded && d.sport === 'bike'
   const normalizedPower = normalizeBikeMetrics
@@ -2969,6 +3031,10 @@ export const buildActivity = <N>(
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
   f.add(wrap, statsTable(f, [...activityStatRows(d), ...moreStatRows(d, fillMissingRunPower)]))
+  if (d.strength) {
+    const strength = buildStrengthExercises(f, d.strength)
+    if (strength) f.add(wrap, strength)
+  }
   if (d.fueling) {
     const fueling = buildFueling(f, d.fueling)
     if (fueling) f.add(wrap, fueling)
@@ -2978,8 +3044,7 @@ export const buildActivity = <N>(
   if (d.route.length >= 2) {
     const secondary =
       d.sport === 'swim'
-        ? (buildSwimStrokes(f, d) ??
-          (showUnavailableElevation ? buildUnavailableElevation(f) : null))
+        ? (buildSwimStrokes(f, d) ?? (embedded ? buildUnavailableElevation(f) : null))
         : buildElevation(f, d, analysisSelection)
     const figs = f.el(
       'div',
@@ -3091,7 +3156,7 @@ export const buildActivity = <N>(
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)
-      const charts = zoneDuo(f, buildPowerCurve(f, d, ctx), buildPowerHist(f, d))
+      const charts = zoneDuo(f, buildPowerCurve(f, d, ctx, embedded), buildPowerHist(f, d))
       if (charts) f.add(more, charts)
     }
     const bestEfforts = buildCyclingBestEfforts(f, d)

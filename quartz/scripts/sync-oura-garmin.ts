@@ -25,6 +25,20 @@ export interface HeartRateSample {
   heartRateBpm: number
 }
 
+export interface OuraSleepDurations {
+  timeInBedSeconds: number
+  totalSleepSeconds: number
+  deepSeconds: number
+  lightSeconds: number
+  remSeconds: number
+  awakeSeconds: number
+}
+
+type OuraSleepDurationFields = Pick<
+  OuraDayDetail,
+  'timeInBedS' | 'totalSleepS' | 'deepS' | 'lightS' | 'remS' | 'awakeS'
+>
+
 export interface GarminManualSleepPayload {
   calendarDate: string
   sleepStartTimestampGMT: number
@@ -58,6 +72,7 @@ interface Night {
   sleepStart: Date
   sleepEnd: Date
   stages: SleepStage[]
+  durations: OuraSleepDurations | null
   heartRate: HeartRateSample[]
   restingHeartRate: number | null
 }
@@ -130,6 +145,31 @@ export function seriesSamples(
   return out
 }
 
+function isDurationSeconds(value: number | null): value is number {
+  return value != null && Number.isFinite(value) && value >= 0
+}
+
+export function ouraSleepDurations(detail: OuraSleepDurationFields): OuraSleepDurations | null {
+  const { timeInBedS, totalSleepS, deepS, lightS, remS, awakeS } = detail
+  if (
+    !isDurationSeconds(timeInBedS) ||
+    !isDurationSeconds(totalSleepS) ||
+    !isDurationSeconds(deepS) ||
+    !isDurationSeconds(lightS) ||
+    !isDurationSeconds(remS) ||
+    !isDurationSeconds(awakeS)
+  )
+    return null
+  return {
+    timeInBedSeconds: timeInBedS,
+    totalSleepSeconds: totalSleepS,
+    deepSeconds: deepS,
+    lightSeconds: lightS,
+    remSeconds: remS,
+    awakeSeconds: awakeS,
+  }
+}
+
 export function garminManualSleepPayload(
   day: string,
   sleepStart: Date,
@@ -181,6 +221,7 @@ function toNight(detail: OuraDayDetail): Night | null {
     sleepStart,
     sleepEnd,
     stages,
+    durations: ouraSleepDurations(detail),
     heartRate: detail.hr ? seriesSamples(detail.hr, sleepStart, sleepEnd) : [],
     restingHeartRate: detail.lowestHr,
   }
@@ -208,29 +249,21 @@ function isOuraCache(value: unknown): value is OuraCache {
   )
 }
 
-function stageMinutes(night: Night): Record<SleepLevel, number> {
-  const totals: Record<SleepLevel, number> = {
-    unmeasurable: 0,
-    awake: 0,
-    light: 0,
-    deep: 0,
-    rem: 0,
-  }
-  for (let i = 0; i < night.stages.length; i++) {
-    const end = night.stages[i + 1]?.startTime ?? night.sleepEnd
-    totals[night.stages[i].level] += (end.valueOf() - night.stages[i].startTime.valueOf()) / 60_000
-  }
-  return totals
+function durationMinutes(seconds: number): string {
+  return `${Math.round(seconds / 60)}min`
 }
 
 function describe(night: Night): string {
-  const minutes = stageMinutes(night)
-  const asleep = minutes.deep + minutes.light + minutes.rem
-  const interval = (night.sleepEnd.valueOf() - night.sleepStart.valueOf()) / 60_000
+  const durations = night.durations
+  const summary = durations
+    ? [
+        `  Oura ${night.stages.length} five-minute stages, asleep ${durationMinutes(durations.totalSleepSeconds)} of ${durationMinutes(durations.timeInBedSeconds)} in bed`,
+        `  deep ${durationMinutes(durations.deepSeconds)} light ${durationMinutes(durations.lightSeconds)} rem ${durationMinutes(durations.remSeconds)} awake ${durationMinutes(durations.awakeSeconds)}`,
+      ]
+    : [`  Oura ${night.stages.length} five-minute stages, exact duration totals unavailable`]
   return [
     `${night.day} ${night.sleepStart.toISOString()} → ${night.sleepEnd.toISOString()}`,
-    `  Oura ${night.stages.length} five-minute stages, asleep ${Math.round(asleep)}min of ${Math.round(interval)}min in bed`,
-    `  deep ${Math.round(minutes.deep)}min light ${Math.round(minutes.light)}min rem ${Math.round(minutes.rem)}min awake ${Math.round(minutes.awake)}min`,
+    ...summary,
     `  heart rate ${night.heartRate.length} samples, resting ${night.restingHeartRate ?? 'n/a'}`,
     '  Garmin manual sleep stores the bed/wake interval; stages and heart rate remain Oura-sourced',
   ].join('\n')

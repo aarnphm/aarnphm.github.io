@@ -50,6 +50,7 @@ import { buildMatchedRuns, emptyMatchedRuns } from '../stores/matched-runs'
 import { OuraCache } from '../stores/oura'
 import {
   applyManualFueling,
+  applyManualStrength,
   buildPayload,
   emptyHealth,
   StravaPayload,
@@ -207,6 +208,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         hrBoundsOverride ?? undefined,
       )
       applyManualFueling(payload, tracking?.fueling ?? [])
+      applyManualStrength(payload, tracking?.strength ?? [])
       for (const t of tracking?.days ?? [])
         if (t.windKph != null) {
           const h = payload.health[t.date] ?? emptyHealth()

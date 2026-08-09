@@ -7,7 +7,7 @@ import type {
   GarminStreams,
 } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
-import type { ManualFuelingEntry } from './tracking'
+import type { ManualFuelingEntry, ManualStrengthEntry, StrengthExercise } from './tracking'
 import type { WeatherCache, WeatherTemperatureSample } from './weather'
 import { localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
@@ -345,6 +345,14 @@ export interface ActivityFueling extends GarminFueling {
   source: 'garmin' | 'manual'
 }
 
+export interface ActivityStrength {
+  volumeKg: number | null
+  totalSets: number | null
+  totalReps: number | null
+  exercises: StrengthExercise[]
+  source: 'manual' | 'strava'
+}
+
 export interface ActivityPowerWithoutZeros {
   avgWatts: number | null
   powerZones: number[] | null
@@ -378,6 +386,7 @@ export interface StravaActivityDetail {
   windGustKph: number | null
   location: string | null
   fueling: ActivityFueling | null
+  strength: ActivityStrength | null
   garmin: GarminVerification | null
   route: StravaRoutePoint[]
   mapRoute: StravaMapPoint[][]
@@ -1620,6 +1629,7 @@ function projectDetail(
     windGustKph: weather?.windGustKph ?? null,
     location: geo ?? null,
     fueling,
+    strength: null,
     garmin,
     route,
     mapRoute,
@@ -1690,6 +1700,23 @@ export function applyManualFueling(
     detail.fueling = {
       ...emptyGarminFueling(),
       caloriesConsumed: entry.caloriesConsumed,
+      source: 'manual',
+    }
+  }
+}
+
+export function applyManualStrength(
+  payload: StravaPayload,
+  entries: readonly ManualStrengthEntry[],
+): void {
+  for (const entry of entries) {
+    const detail = payload.details[String(entry.activityId)]
+    if (!detail || detail.date !== entry.date || detail.sport !== 'strength') continue
+    detail.strength = {
+      volumeKg: entry.volumeKg,
+      totalSets: entry.totalSets,
+      totalReps: entry.totalReps,
+      exercises: entry.exercises,
       source: 'manual',
     }
   }

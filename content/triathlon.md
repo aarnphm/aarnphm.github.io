@@ -47,7 +47,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-03 20:25:25 GMT-04:00
+modified: 2026-08-09 00:03:32 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -640,6 +640,87 @@ wind: 15kph 20NW
 date: 2026-06-11
 weight: 195
 wind: 17kph 230SW
+activity: 18883655985
+strengthVolume: 1395 lb
+strengthSets: 36
+strengthReps: 173
+exercise: Fire Hydrants | 30s | 30s
+exercise: Press Up Position Walk Out | 30s | 30s
+exercise: Toe Walks | 30s | 30s
+exercise: Walking Lunge | 30s | 30s
+exercise: Goblet Squat | 5 reps @ 6.8 kg | 5 reps @ 6.8 kg | 5 reps @ 6.8 kg
+exercise: Box Jump Down Tuck Jump | 8 reps | 8 reps | 8 reps
+exercise: SL DB RDL Knee Drive | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg
+exercise: Single Leg Calf Raise | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg
+exercise: Lateral Walk | 8 reps | 8 reps
+exercise: Hurdle Hops | 10 reps | 10 reps
+exercise: Single Leg Squat | 5 reps | 5 reps
+exercise: Hip Drop | 10 reps | 10 reps
+exercise: Walking Calf Raises | 40s | 40s
+exercise: Double Arm Clean | 10 reps @ 6.8 kg | 10 reps @ 13.6 kg
+exercise: Plank | 60s | 60s
+exercise: Side Plank | 40s | 40s
+```
+
+```tracking
+date: 2026-06-14
+activity: 18922702826
+strengthVolume: 2475 lb
+strengthSets: 22
+strengthReps: 164
+exercise: SL Iso Hamstring Hold | 25s | 25s | 25s
+exercise: Standing Single Arm Shoulder Press | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg
+exercise: Step Down | 8 reps | 8 reps
+exercise: Incline Dumbbell Bench Press | 15 reps @ 27.2 kg | 15 reps @ 24.9 kg
+exercise: Abductor Side Leg Raise | 8 reps | 8 reps
+exercise: Single Arm Clean And Press | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg
+exercise: Front Leg Raised Lunge | 8 reps | 8 reps
+exercise: Lunge Hold Calf Raise | 8 reps | 8 reps
+exercise: Figure Of 8s | 10 reps | 10 reps
+exercise: DI Skipping | 40s | 40s
+```
+
+```tracking
+date: 2026-06-28
+activity: 19103999093
+strengthVolume: 6720 lb
+strengthSets: 39
+strengthReps: 264
+exercise: Bodyweight Squat | 3 sets
+exercise: Press Up | 3 sets
+exercise: Standing March | 3 sets
+exercise: Heel Walks | 3 sets
+exercise: KB Swings | 3 sets
+exercise: Side Plank Leg Raise | 3 sets
+exercise: Step Down | 3 sets
+exercise: Bent Knee Calf Raise | 3 sets
+exercise: Walking Lunge | 2 sets
+exercise: Double Leg Calf Raise on Step | 2 sets
+exercise: Single Leg Squat | 2 sets
+exercise: Hip Drop | 2 sets
+exercise: Single Leg Isometric Hamstring Holds | 2 sets
+exercise: Thruster | 2 sets
+exercise: Russian Twist | 2 sets
+exercise: Side Plank with Hip Flexion | 2 sets
+```
+
+```tracking
+date: 2026-06-29
+activity: 19116631915
+strengthVolume: 720 lb
+strengthSets: 28
+strengthReps: 68
+exercise: Side Leg Swings | 20s | 20s | 20s
+exercise: Press Up Position Walk Out | 20s | 20s | 20s
+exercise: Clam Shells | 20s | 20s | 20s
+exercise: Diagonal Toe Tap | 20s | 20s | 20s
+exercise: DI Skipping | 40s | 40s
+exercise: Single Arm Clean And Press | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg
+exercise: Single Leg Calf Raise | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg
+exercise: Lunge And Press | 8 reps @ 6.8 kg | 8 reps @ 6.8 kg
+exercise: Walking Calf Raises | 40s | 40s
+exercise: Straight Leg Raise | 10 reps | 10 reps
+exercise: Side Plank | 40s | 40s
 ```
 
 ```tracking
@@ -724,6 +805,37 @@ fueling: 150
 date: 2026-08-03
 activity: 19589639194
 fueling: 0
+```
+
+```tracking
+date: 2026-08-04
+activity: 19601467439
+strengthVolume: 800 lb
+strengthSets: 13
+strengthReps: 81
+exercise: Standing March | 30s | 30s
+exercise: Mountain Climber | 30s
+exercise: Clam Shells | 30s | 30s
+exercise: Step Up | 30s | 30s
+exercise: Seated Calf Raise | 20 reps @ 9.1 kg | 20 reps @ 9.1 kg
+exercise: Pogo Jumps | 41 reps
+```
+
+```tracking
+date: 2026-08-06
+activity: 19633452010
+strengthVolume: 1800.1 lb
+strengthSets: 15
+strengthReps: 90
+exercise: Lunge Hold Calf Raise | 2 sets / 1m
+exercise: Press Up Position Walk Out | 2 sets / 20 reps
+exercise: Toe Walks | 2 sets / 1m
+exercise: Fire Hydrants | 2 sets / 20 reps
+exercise: Loaded Walking Calf Raises | 2 sets / 20 reps
+exercise: KB Straight Leg Deadlift | 10 reps @ 50 lb | 10 reps @ 50 lb
+exercise: Pogo Jumps | 1 set / 10 reps
+exercise: Plank | 1 set / 30s
+exercise: Plank Hold | 1 set / 30s
 ```
 
 <!-- training plan start
