@@ -1,6 +1,6 @@
 ---
 date: '2025-12-12'
-description: and programming puzzle
+description: programming puzzles from Advent of Code
 id: index
 modified: 2026-06-05 15:08:12 GMT-04:00
 tags:
@@ -8,4 +8,4 @@ tags:
 title: advent of code
 ---
 
-includes are previous attempts of advent of code.
+I keep Advent of Code attempts here: [[puzzle/aoc/25|2025]].
