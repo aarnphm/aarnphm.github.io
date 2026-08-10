@@ -1,15 +1,9 @@
 import { streamHostPathname, STREAM_HOSTNAME } from '../../util/stream-host'
+import { parseStreamManifest, type StreamManifestGroup } from '../../util/stream-manifest'
+import { currentNavSignal } from './nav-lifecycle'
+import { setupStreamSearch } from './stream-search.inline'
 
-function hydrateStreamInteractions() {
-  const el = document.querySelector<HTMLElement>('.stream')
-  if (!el) return
-
-  const timeElements = el.querySelectorAll<HTMLTimeElement>(
-    '.stream-entry-date[datetime], .stream-entry-date time[datetime]',
-  )
-
-  if (timeElements.length === 0) return
-
+const formatEntryTimes = (scope: ParentNode): void => {
   const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
@@ -19,219 +13,322 @@ function hydrateStreamInteractions() {
     hour12: false,
     timeZoneName: 'shortOffset',
   })
-
-  timeElements.forEach(timeEl => {
-    const isoDate = timeEl.getAttribute('datetime')
-    if (!isoDate) return
-
+  for (const time of scope.querySelectorAll<HTMLTimeElement>(
+    '.stream-entry-date[datetime], .stream-entry-date time[datetime]',
+  )) {
+    const isoDate = time.getAttribute('datetime')
+    if (!isoDate) continue
     const date = new Date(isoDate)
-    if (Number.isNaN(date.getTime())) return
+    if (!Number.isNaN(date.getTime())) time.textContent = formatter.format(date)
+  }
+}
 
-    timeEl.textContent = formatter.format(date)
+const fetchStreamManifest = async (signal: AbortSignal): Promise<StreamManifestGroup[]> => {
+  const response = await fetch('/streams.jsonl', { signal })
+  if (!response.ok) throw new Error(`stream manifest request failed with ${response.status}`)
+  return parseStreamManifest(await response.text())
+}
+
+const notifyContentMounted = (entry: HTMLElement, slug?: string): void => {
+  const event: CustomEventMap['contentdecrypted'] = new CustomEvent('contentdecrypted', {
+    detail: { article: entry, content: entry, slug },
   })
+  document.dispatchEvent(event)
+}
 
-  const entries = Array.from(el.querySelectorAll<HTMLElement>('.stream-entry'))
-  if (entries.length === 0) return
-
-  const notifyProtectedContent = () => {
-    document.dispatchEvent(new CustomEvent('protectedcontentloaded', { detail: { container: el } }))
+const entriesForGroup = async (
+  group: StreamManifestGroup,
+  canonicalizePath: (path: string) => string,
+  signal: AbortSignal,
+): Promise<HTMLElement[]> => {
+  if (!group.path) return []
+  const response = await fetch(canonicalizePath(group.path), { signal })
+  if (!response.ok) throw new Error(`stream group request failed with ${response.status}`)
+  const parsed = new DOMParser().parseFromString(await response.text(), 'text/html')
+  const sourceEntries = new Map<string, HTMLElement>()
+  for (const entry of parsed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]')) {
+    const id = entry.dataset.entryId
+    if (id) sourceEntries.set(id, entry)
   }
 
-  const entryById = new Map<string, HTMLElement>()
-  entries.forEach(entry => {
-    const entryId = entry.dataset.entryId
-    if (entryId) entryById.set(entryId, entry)
+  return group.entries.map(entry => {
+    const source = sourceEntries.get(entry.id)
+    if (!source) throw new Error(`stream group ${group.groupId} is missing ${entry.id}`)
+    return document.importNode(source, true)
   })
+}
 
-  const updateEntryFilter = (targetEntryId: string | null) => {
-    const hasTarget = targetEntryId !== null && entryById.has(targetEntryId)
-
-    if (hasTarget && targetEntryId) {
-      el.dataset.streamActiveEntry = targetEntryId
-    } else {
-      el.removeAttribute('data-stream-active-entry')
-    }
-
-    entries.forEach(entry => {
-      const matches = hasTarget && entry.dataset.entryId === targetEntryId
-      entry.hidden = hasTarget ? !matches : false
-      entry.classList.toggle('stream-entry-active', matches)
-    })
-
-    notifyProtectedContent()
-  }
-
-  const getEntryFilterFromLocation = () =>
-    new URL(window.location.href).searchParams.get('entry')?.trim() || null
-
-  updateEntryFilter(getEntryFilterFromLocation())
-
-  const interactiveLinks = Array.from(
-    el.querySelectorAll<HTMLAnchorElement>(
-      '.stream-entry-date[data-stream-link][data-stream-timestamp]',
+const setupLazyFeed = (
+  root: HTMLElement,
+  feed: HTMLOListElement,
+  sentinel: HTMLElement,
+  getManifest: () => Promise<StreamManifestGroup[]>,
+  canonicalizePath: (path: string) => string,
+  signal: AbortSignal,
+  mountEntry: (entry: HTMLElement, group: StreamManifestGroup) => void,
+): (() => void) => {
+  const loadedEntryIds = new Set(
+    Array.from(feed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]')).flatMap(entry =>
+      entry.dataset.entryId ? [entry.dataset.entryId] : [],
     ),
   )
+  let nextGroupIndex = 0
+  let loading = false
 
-  if (interactiveLinks.length === 0) return
-
-  const isStreamHost = window.location.hostname === STREAM_HOSTNAME
-  const canonicalizePath = (path: string) => (isStreamHost ? streamHostPathname(path) : path)
-  const timestampHrefMap = new Map<string, string>()
-  interactiveLinks.forEach(link => {
-    const timestamp = link.dataset.streamTimestamp
-    const href = link.dataset.streamHref
-    if (timestamp && href) {
-      timestampHrefMap.set(timestamp, canonicalizePath(href))
-    }
-  })
-
-  if (timestampHrefMap.size <= 1) {
-    el.removeAttribute('data-stream-active-timestamp')
-    const handleEntryPopstate = () => updateEntryFilter(getEntryFilterFromLocation())
-    window.addEventListener('popstate', handleEntryPopstate)
-    window.addCleanup(() => window.removeEventListener('popstate', handleEntryPopstate))
-    return
+  const showArchiveFallback = (): void => {
+    const link = document.createElement('a')
+    link.href = canonicalizePath('/stream/on')
+    link.className = 'internal'
+    link.textContent = 'open the stream archive'
+    sentinel.replaceChildren('older entries are unavailable. ', link)
+    sentinel.dataset.streamLoading = 'error'
   }
 
-  const canonicalPath = canonicalizePath(el.dataset.streamCanonical || '/stream')
+  const updateSentinel = (state: 'idle' | 'loading'): void => {
+    sentinel.dataset.streamLoading = state
+    sentinel.textContent = state === 'loading' ? 'loading older entries…' : ''
+  }
+
+  const observer = new IntersectionObserver(
+    entries => {
+      if (
+        entries.some(entry => entry.isIntersecting) &&
+        root.dataset.streamSearchActive !== 'true'
+      ) {
+        void loadNextGroups()
+      }
+    },
+    { rootMargin: '1600px 0px' },
+  )
+
+  const loadNextGroups = async (): Promise<void> => {
+    if (loading || signal.aborted) return
+    loading = true
+    updateSentinel('loading')
+    const batchStart = nextGroupIndex
+    try {
+      const groups = await getManifest()
+      const nextGroups: StreamManifestGroup[] = []
+      while (nextGroupIndex < groups.length && nextGroups.length < 2) {
+        const group = groups[nextGroupIndex]
+        nextGroupIndex += 1
+        const loaded = group.entries.every(entry => loadedEntryIds.has(entry.id))
+        if (!loaded && group.path) nextGroups.push(group)
+      }
+
+      if (nextGroups.length === 0) {
+        observer.disconnect()
+        sentinel.remove()
+        return
+      }
+
+      const batches = await Promise.all(
+        nextGroups.map(group => entriesForGroup(group, canonicalizePath, signal)),
+      )
+      nextGroups.forEach((group, index) => {
+        for (const entry of batches[index]) {
+          const entryId = entry.dataset.entryId
+          if (!entryId || loadedEntryIds.has(entryId)) continue
+          loadedEntryIds.add(entryId)
+          feed.append(entry)
+          mountEntry(entry, group)
+        }
+      })
+
+      updateSentinel('idle')
+      observer.unobserve(sentinel)
+      if (nextGroupIndex >= groups.length) {
+        observer.disconnect()
+        sentinel.remove()
+      } else {
+        observer.observe(sentinel)
+      }
+    } catch (error) {
+      if (signal.aborted) return
+      nextGroupIndex = batchStart
+      console.error(error)
+      observer.disconnect()
+      showArchiveFallback()
+    } finally {
+      loading = false
+    }
+  }
+
+  observer.observe(sentinel)
+  return () => observer.disconnect()
+}
+
+const hydrateStream = (): void => {
+  const root = document.querySelector<HTMLElement>('.stream')
+  const feed = root?.querySelector<HTMLOListElement>('.stream-feed')
+  if (!root || !feed) return
+  const signal = currentNavSignal()
+  const isRoot = root.dataset.streamView === 'root'
+  const isStreamHost = window.location.hostname === STREAM_HOSTNAME
+  const canonicalizePath = (path: string): string =>
+    isStreamHost ? streamHostPathname(path) : path
+  const canonicalPath = canonicalizePath(root.dataset.streamCanonical ?? '/stream')
+  const sentinel = root.querySelector<HTMLElement>('[data-stream-feed-sentinel]')
   const originalUrl = new URL(window.location.href)
   const originalSearch = originalUrl.search
   const originalHash = originalUrl.hash
-
   let activeTimestamp: string | null = null
+  let manifestRequest: Promise<StreamManifestGroup[]> | null = null
 
-  const applyHistory = (targetPath: string | null) => {
+  const getManifest = (): Promise<StreamManifestGroup[]> => {
+    manifestRequest ??= fetchStreamManifest(signal)
+    return manifestRequest
+  }
+
+  const streamEntries = (): HTMLElement[] =>
+    Array.from(feed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]'))
+
+  const streamLinks = (): HTMLAnchorElement[] =>
+    Array.from(
+      feed.querySelectorAll<HTMLAnchorElement>(
+        '.stream-entry-date[data-stream-link][data-stream-timestamp]',
+      ),
+    )
+
+  const notifyProtectedContent = (): void => {
+    document.dispatchEvent(
+      new CustomEvent('protectedcontentloaded', { detail: { container: root } }),
+    )
+  }
+
+  const targetEntryId = (): string | null =>
+    new URL(window.location.href).searchParams.get('entry')?.trim() || null
+
+  const applyFilters = (): void => {
+    const entries = streamEntries()
+    const entryId = targetEntryId()
+    const hasEntryTarget =
+      entryId !== null && entries.some(entry => entry.dataset.entryId === entryId)
+    root.toggleAttribute('data-stream-active-entry', hasEntryTarget)
+    if (hasEntryTarget && entryId) root.dataset.streamActiveEntry = entryId
+    else root.removeAttribute('data-stream-active-entry')
+
+    if (activeTimestamp) root.dataset.streamActiveTimestamp = activeTimestamp
+    else root.removeAttribute('data-stream-active-timestamp')
+
+    for (const entry of entries) {
+      const matchesEntry = hasEntryTarget && entry.dataset.entryId === entryId
+      const matchesTimestamp =
+        activeTimestamp !== null && entry.dataset.streamTimestamp === activeTimestamp
+      const visible = hasEntryTarget ? matchesEntry : activeTimestamp === null || matchesTimestamp
+      entry.hidden = !visible
+      entry.classList.toggle('stream-entry-active', matchesEntry || matchesTimestamp)
+    }
+    for (const link of streamLinks()) {
+      const active = activeTimestamp !== null && link.dataset.streamTimestamp === activeTimestamp
+      link.classList.toggle('is-active', active)
+      if (active) link.setAttribute('aria-current', 'page')
+      else link.removeAttribute('aria-current')
+    }
+    if (sentinel?.isConnected) {
+      sentinel.hidden = activeTimestamp !== null || root.dataset.streamSearchActive === 'true'
+    }
+    notifyProtectedContent()
+  }
+
+  const applyHistory = (path: string): void => {
     const url = new URL(window.location.href)
-    url.pathname = targetPath ?? canonicalPath
+    url.pathname = path
     url.search = originalSearch
     url.hash = originalHash
     window.history.replaceState(window.history.state, '', url)
   }
 
-  const updateEntries = (
-    targetTimestamp: string | null,
-    opts: { updateHistory?: boolean } = {},
-  ) => {
-    const { updateHistory = true } = opts
-    activeTimestamp = targetTimestamp
-
-    if (!targetTimestamp) {
-      el.removeAttribute('data-stream-active-timestamp')
-    } else {
-      el.dataset.streamActiveTimestamp = targetTimestamp
-    }
-
-    entries.forEach(entry => {
-      const entryTimestamp = entry.dataset.streamTimestamp ?? null
-      const matches = targetTimestamp !== null && entryTimestamp === targetTimestamp
-
-      if (!targetTimestamp || matches) {
-        entry.hidden = false
-      } else {
-        entry.hidden = true
-      }
-
-      entry.classList.toggle('stream-entry-active', matches)
-    })
-
-    interactiveLinks.forEach(link => {
-      const matches = targetTimestamp !== null && link.dataset.streamTimestamp === targetTimestamp
-      link.classList.toggle('is-active', matches)
-      if (matches) {
-        link.setAttribute('aria-current', 'page')
-      } else {
-        link.removeAttribute('aria-current')
-      }
-    })
-
-    notifyProtectedContent()
-
-    if (!updateHistory) return
-
-    if (targetTimestamp) {
-      const targetPath = timestampHrefMap.get(targetTimestamp)
-      if (targetPath) {
-        applyHistory(targetPath)
-      }
-    } else if (window.location.pathname !== canonicalPath) {
-      applyHistory(null)
-    }
-  }
-
-  const clearIfOutside = () => {
-    window.setTimeout(() => {
-      const activeElement = document.activeElement as HTMLElement | null
-      if (!activeElement || !el.contains(activeElement)) {
-        if (activeTimestamp !== null) {
-          updateEntries(null)
-        }
-      }
-    }, 0)
-  }
-
-  const handleRootKeydown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      updateEntries(null)
-    }
-  }
-
-  el.addEventListener('keydown', handleRootKeydown)
-  el.addEventListener('focusout', clearIfOutside, true)
-  window.addCleanup(() => el.removeEventListener('keydown', handleRootKeydown))
-  window.addCleanup(() => el.removeEventListener('focusout', clearIfOutside, true))
-
-  const getTimestampForPath = (path: string): string | null => {
-    for (const [timestamp, href] of timestampHrefMap.entries()) {
-      if (href === path) {
-        return timestamp
-      }
+  const timestampForPath = (path: string): string | null => {
+    for (const link of streamLinks()) {
+      const href = link.dataset.streamHref
+      if (href && canonicalizePath(href) === path) return link.dataset.streamTimestamp ?? null
     }
     return null
   }
 
-  interactiveLinks.forEach(link => {
+  const mountEntry = (entry: HTMLElement, group: StreamManifestGroup): void => {
+    formatEntryTimes(entry)
+    applyFilters()
+    notifyContentMounted(entry, group.path?.replace(/^\//, ''))
+  }
+
+  formatEntryTimes(root)
+  applyFilters()
+
+  const cleanups: (() => void)[] = []
+  if (isRoot && sentinel) {
+    cleanups.push(
+      setupLazyFeed(root, feed, sentinel, getManifest, canonicalizePath, signal, mountEntry),
+    )
+  }
+  if (isRoot) {
+    const searchCleanup = setupStreamSearch({
+      root,
+      feed,
+      sentinel,
+      getManifest,
+      canonicalizePath,
+      signal,
+    })
+    if (searchCleanup) cleanups.push(searchCleanup)
+  }
+
+  const onClick = (event: MouseEvent): void => {
+    if (!isRoot || root.dataset.streamSearchActive === 'true') return
+    const target = event.target
+    if (!(target instanceof Element)) return
+    const link = target.closest<HTMLAnchorElement>(
+      '.stream-entry-date[data-stream-link][data-stream-timestamp]',
+    )
+    if (!link || !feed.contains(link)) return
     const timestamp = link.dataset.streamTimestamp
-    if (!timestamp) return
+    const href = link.dataset.streamHref
+    if (!timestamp || !href) return
+    event.preventDefault()
+    activeTimestamp = activeTimestamp === timestamp ? null : timestamp
+    applyHistory(activeTimestamp ? canonicalizePath(href) : canonicalPath)
+    applyFilters()
+    link.focus()
+  }
 
-    const onClick = (event: MouseEvent) => {
-      event.preventDefault()
-      updateEntries(activeTimestamp === timestamp ? null : timestamp)
-      link.focus()
-    }
+  const onKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape' || activeTimestamp === null) return
+    event.preventDefault()
+    activeTimestamp = null
+    applyHistory(canonicalPath)
+    applyFilters()
+  }
 
-    const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        updateEntries(activeTimestamp === timestamp ? null : timestamp)
-      } else if (event.key === 'Escape' && activeTimestamp !== null) {
-        event.preventDefault()
-        updateEntries(null)
-      }
-    }
+  const onFocusout = (): void => {
+    window.setTimeout(() => {
+      if (activeTimestamp === null) return
+      const active = document.activeElement
+      if (active instanceof Node && root.contains(active)) return
+      activeTimestamp = null
+      applyHistory(canonicalPath)
+      applyFilters()
+    }, 0)
+  }
 
-    link.addEventListener('click', onClick)
-    link.addEventListener('keydown', onKeydown)
+  const onPopstate = (): void => {
+    activeTimestamp = isRoot ? timestampForPath(window.location.pathname) : null
+    applyFilters()
+  }
 
-    window.addCleanup(() => link.removeEventListener('click', onClick))
-    window.addCleanup(() => link.removeEventListener('keydown', onKeydown))
+  root.addEventListener('click', onClick, { signal })
+  root.addEventListener('keydown', onKeydown, { signal })
+  root.addEventListener('focusout', onFocusout, { capture: true, signal })
+  window.addEventListener('popstate', onPopstate, { signal })
+
+  if (isRoot) activeTimestamp = timestampForPath(window.location.pathname)
+  applyFilters()
+
+  window.addCleanup(() => {
+    for (let index = cleanups.length - 1; index >= 0; index -= 1) cleanups[index]()
   })
-
-  const handlePopstate = () => {
-    const timestamp = getTimestampForPath(window.location.pathname)
-    updateEntries(timestamp, { updateHistory: false })
-  }
-
-  window.addEventListener('popstate', handlePopstate)
-  window.addCleanup(() => window.removeEventListener('popstate', handlePopstate))
-
-  const initialTimestamp = getTimestampForPath(window.location.pathname)
-  if (initialTimestamp) {
-    updateEntries(initialTimestamp, { updateHistory: false })
-  } else if (window.location.pathname !== canonicalPath) {
-    updateEntries(null, { updateHistory: true })
-  } else {
-    updateEntries(null, { updateHistory: false })
-  }
 }
 
-document.addEventListener('nav', hydrateStreamInteractions)
+document.addEventListener('nav', () => {
+  hydrateStream()
+})

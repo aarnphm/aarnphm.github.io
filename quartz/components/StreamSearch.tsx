@@ -1,6 +1,4 @@
 import { QuartzComponent, QuartzComponentConstructor } from '../types/component'
-// @ts-ignore
-import script from './scripts/stream-search.inline'
 import style from './styles/streamSearch.scss'
 
 export interface StreamSearchOptions {
@@ -29,7 +27,6 @@ export default ((userOpts?: Partial<StreamSearchOptions>) => {
     )
   }
 
-  StreamSearch.afterDOMLoaded = script
   StreamSearch.css = style
 
   return StreamSearch

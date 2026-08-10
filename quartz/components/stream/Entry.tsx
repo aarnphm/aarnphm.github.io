@@ -1,6 +1,5 @@
 import type { ElementContent, Root as HastRoot } from 'hast'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
-import { toString as hastToString } from 'hast-util-to-string'
 import { ComponentChild } from 'preact'
 import { render } from 'preact-render-to-string'
 import type { StreamEntry } from '../../plugins/transformers/stream'
@@ -16,6 +15,7 @@ import {
   isRestrictedEntry,
   truthyStreamFlag,
 } from '../../util/stream'
+import { getStreamEntrySearchText, getStreamEntryWordCount } from '../../util/stream-manifest'
 import { StreamUnlockIcon } from './UnlockIcon'
 
 export interface StreamEntryRenderOptions {
@@ -38,23 +38,6 @@ const nodesToJsx = (filePath: FilePath, nodes: ElementContent[]): ComponentChild
   })
 }
 
-const countWords = (value: string): number => {
-  const trimmed = value.trim()
-  if (!trimmed) return 0
-  return trimmed.split(/\s+/).filter(token => token.length > 0).length
-}
-
-const streamEntryText = (entry: StreamEntry): string => {
-  const root: HastRoot = { type: 'root', children: entry.content }
-  const contentText = hastToString(root)
-  const titleText = entry.title ? String(entry.title) : ''
-  const descriptionText = entry.description ? String(entry.description) : ''
-  return [titleText, descriptionText, contentText]
-    .filter(part => part.length > 0)
-    .join(' ')
-    .trim()
-}
-
 const descriptionToJsx = (filePath: FilePath, descriptionHtml: string): ComponentChild => {
   const root = fromHtmlIsomorphic(descriptionHtml, { fragment: true })
   return htmlToJsx(filePath, root)
@@ -68,9 +51,7 @@ const renderEntryTitle = (entry: StreamEntry): ComponentChild =>
   ) : null
 
 export { isDraftEntry, isPrivateEntry, isProtectedEntry, isRestrictedEntry, truthyStreamFlag }
-
-export const getStreamEntryWordCount = (entry: StreamEntry): number =>
-  countWords(streamEntryText(entry))
+export { getStreamEntrySearchText, getStreamEntryWordCount }
 
 export const formatWordCount = (count: number): string =>
   count === 1 ? '1 word' : `${count} words`

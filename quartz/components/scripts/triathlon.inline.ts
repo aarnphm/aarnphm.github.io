@@ -2346,9 +2346,8 @@ const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
   }
 }
 
-const setupActivityTitleTooltip = (embeds: readonly HTMLElement[]): (() => void) | null => {
-  if (embeds.length === 0 || !window.matchMedia('(hover: hover) and (pointer: fine)').matches)
-    return null
+const setupActivityTitleTooltip = (): (() => void) | null => {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return null
   document.body.querySelector('.tri-activity-title-tip')?.remove()
   const tip = el('div', 'tri-gloss tri-activity-title-tip', undefined, {
     role: 'tooltip',
@@ -2394,28 +2393,20 @@ const setupActivityTitleTooltip = (embeds: readonly HTMLElement[]): (() => void)
     tip.style.left = `${Math.min(Math.max(edge, left), window.innerWidth - edge - rect.width)}px`
     tip.style.top = `${Math.min(Math.max(edge, top), window.innerHeight - edge - rect.height)}px`
   }
-  for (const embed of embeds) {
-    embed.addEventListener('pointermove', move, { passive: true })
-    embed.addEventListener('pointerleave', hide)
-  }
+  document.body.addEventListener('pointermove', move, { passive: true })
+  document.body.addEventListener('pointerleave', hide)
   return () => {
-    for (const embed of embeds) {
-      embed.removeEventListener('pointermove', move)
-      embed.removeEventListener('pointerleave', hide)
-    }
+    document.body.removeEventListener('pointermove', move)
+    document.body.removeEventListener('pointerleave', hide)
     tip.remove()
   }
 }
 
 const setupDayEmbeds = (): (() => void) | null => {
-  const embeds = Array.from(
-    document.querySelectorAll<HTMLElement>('.tri-day-embed[data-triathlon-date]'),
-  )
-  if (embeds.length === 0) return null
   let live = true
   const teardowns: (() => void)[] = []
-  const activityTitleTooltipCleanup = setupActivityTitleTooltip(embeds)
-  if (activityTitleTooltipCleanup) teardowns.push(activityTitleTooltipCleanup)
+  const registered = new Set<HTMLElement>()
+  let activityTitleTooltipReady = false
   const upgradeByEmbed = new Map<HTMLElement, () => void>()
   const upgradeObserver = new IntersectionObserver(
     entries => {
@@ -2434,7 +2425,14 @@ const setupDayEmbeds = (): (() => void) | null => {
     upgradeObserver.disconnect()
     upgradeByEmbed.clear()
   })
-  for (const embed of embeds) {
+  const setupEmbed = (embed: HTMLElement): void => {
+    if (registered.has(embed)) return
+    registered.add(embed)
+    if (!activityTitleTooltipReady) {
+      activityTitleTooltipReady = true
+      const cleanup = setupActivityTitleTooltip()
+      if (cleanup) teardowns.push(cleanup)
+    }
     const date = embed.dataset.triathlonDate!
     const sourceHref = embed
       .closest('.transclude')
@@ -2734,19 +2732,29 @@ const setupDayEmbeds = (): (() => void) | null => {
       upgrade()
     }
   }
+  const setupWithin = (root: ParentNode): void => {
+    if (root instanceof HTMLElement && root.matches('.tri-day-embed[data-triathlon-date]'))
+      setupEmbed(root)
+    for (const embed of root.querySelectorAll<HTMLElement>('.tri-day-embed[data-triathlon-date]'))
+      setupEmbed(embed)
+  }
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']): void => {
+    setupWithin(event.detail.content)
+  }
+  setupWithin(document)
+  document.addEventListener('contentdecrypted', onContentMounted)
+  teardowns.push(() => document.removeEventListener('contentdecrypted', onContentMounted))
   return () => {
     live = false
     for (const td of teardowns) td()
+    registered.clear()
   }
 }
 
 const setupActivityComparisonEmbeds = (): (() => void) | null => {
-  const embeds = Array.from(
-    document.querySelectorAll<HTMLElement>('.tri-compare-embed[data-compare-anchor]'),
-  )
-  if (embeds.length === 0) return null
   let live = true
   const teardowns: (() => void)[] = []
+  const registered = new Set<HTMLElement>()
   const upgradeByEmbed = new Map<HTMLElement, () => void>()
   const observer = new IntersectionObserver(
     entries => {
@@ -2762,9 +2770,11 @@ const setupActivityComparisonEmbeds = (): (() => void) | null => {
     upgradeByEmbed.clear()
   })
 
-  for (const embed of embeds) {
+  const setupEmbed = (embed: HTMLElement): void => {
+    if (registered.has(embed)) return
+    registered.add(embed)
     const activityIds = decodeActivityComparisonAnchor(embed.dataset.compareAnchor ?? '')
-    if (!activityIds) continue
+    if (!activityIds) return
     const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
     let upgraded = false
     let payload: DetailPayload | null = null
@@ -2814,9 +2824,25 @@ const setupActivityComparisonEmbeds = (): (() => void) | null => {
     })
   }
 
+  const setupWithin = (root: ParentNode): void => {
+    if (root instanceof HTMLElement && root.matches('.tri-compare-embed[data-compare-anchor]'))
+      setupEmbed(root)
+    for (const embed of root.querySelectorAll<HTMLElement>(
+      '.tri-compare-embed[data-compare-anchor]',
+    ))
+      setupEmbed(embed)
+  }
+  const onContentMounted = (event: CustomEventMap['contentdecrypted']): void => {
+    setupWithin(event.detail.content)
+  }
+  setupWithin(document)
+  document.addEventListener('contentdecrypted', onContentMounted)
+  teardowns.push(() => document.removeEventListener('contentdecrypted', onContentMounted))
+
   return () => {
     live = false
     for (const teardown of teardowns) teardown()
+    registered.clear()
   }
 }
 

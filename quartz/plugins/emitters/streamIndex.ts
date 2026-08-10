@@ -1,6 +1,4 @@
 import type { Root } from 'hast'
-import { Fragment, h } from 'preact'
-import { render } from 'preact-render-to-string'
 import type { FullPageLayout } from '../../cfg'
 import type { QuartzComponentProps } from '../../types/component'
 import type { StaticResources } from '../../util/resources'
@@ -11,7 +9,7 @@ import { sharedPageComponents, defaultContentPageLayout } from '../../../quartz.
 import HeaderConstructor from '../../components/Header'
 import StreamPageComponent from '../../components/pages/StreamPage'
 import { pageResources, renderPage } from '../../components/renderPage'
-import { renderStreamEntry, renderProtectedEntryBody } from '../../components/stream/Entry'
+import { renderProtectedEntryBody } from '../../components/stream/Entry'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
@@ -22,14 +20,13 @@ import {
   buildStreamMonthPath,
   buildStreamOnPath,
   buildStreamYearPath,
-  formatStreamDate,
   groupStreamEntries,
   groupStreamEntriesByYear,
   isDraftEntry,
   isProtectedEntry,
-  isRestrictedEntry,
 } from '../../util/stream'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
+import { buildStreamManifestGroup } from '../../util/stream-manifest'
 import {
   buildStreamRouteTree,
   cloneStreamEntries,
@@ -109,46 +106,8 @@ async function* processStreamIndex(
   if (groups.length === 0) return
 
   const lines = groups
-    .map(group => {
-      const isoSource =
-        group.isoDate ??
-        group.entries.find(entry => entry.date)?.date ??
-        (group.timestamp ? new Date(group.timestamp).toISOString() : null)
-
-      const path = buildStreamDayPathFromIso(isoSource) ?? null
-      const publicEntries = group.entries.filter(entry => !isRestrictedEntry(entry))
-      if (publicEntries.length === 0) return null
-
-      const entries = publicEntries.map(entry => {
-        const vnode = renderStreamEntry(entry, fileData!.filePath!, {
-          groupId: group.id,
-          timestampValue: group.timestamp,
-          showDate: true,
-          resolvedIsoDate: entry.date ?? group.isoDate,
-          mode: 'listing',
-        })
-
-        return {
-          id: entry.id,
-          html: render(h(Fragment, null, vnode)),
-          metadata: entry.metadata,
-          isoDate: entry.date ?? group.isoDate ?? null,
-          displayDate:
-            formatIsoAsYMD(entry.date ?? group.isoDate ?? isoSource) ??
-            formatStreamDate(entry.date ?? group.isoDate) ??
-            null,
-        }
-      })
-
-      return JSON.stringify({
-        groupId: group.id,
-        timestamp: group.timestamp ?? null,
-        isoDate: group.isoDate ?? null,
-        groupSize: publicEntries.length,
-        path,
-        entries,
-      })
-    })
+    .map(buildStreamManifestGroup)
+    .map(group => (group ? JSON.stringify(group) : null))
     .filter((line): line is string => line !== null)
 
   const payload = lines.join('\n')

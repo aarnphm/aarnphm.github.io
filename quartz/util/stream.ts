@@ -211,6 +211,14 @@ export function groupStreamEntries(entries: StreamEntry[]): StreamEntryGroup[] {
   return groups
 }
 
+export const selectStreamFeedGroups = (
+  groups: StreamEntryGroup[],
+  isRoot: boolean,
+): { feedGroups: StreamEntryGroup[]; hasLazyGroups: boolean } => {
+  const feedGroups = isRoot ? groups.slice(0, 1) : groups
+  return { feedGroups, hasLazyGroups: isRoot && feedGroups.length < groups.length }
+}
+
 export function groupStreamEntriesByYear(entries: StreamEntry[]): StreamYearGroup[] {
   const years: StreamYearGroup[] = []
   const yearIndex = new Map<string, StreamYearGroup>()
