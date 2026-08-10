@@ -1,186 +1,64 @@
-import FlexSearch from 'flexsearch'
+import FlexSearch, { type Document as FlexSearchDocument } from 'flexsearch'
+import type { StreamManifestEntry, StreamManifestGroup } from '../../util/stream-manifest'
 import { encode, tokenizeTerm } from '../../util/search-text'
-import { isStreamHostname } from '../../util/stream-host'
-import { currentNavSignal } from './nav-lifecycle'
 
-interface StreamEntry {
-  id: string
-  html: string
-  metadata: unknown
-  isoDate: string | null
-  displayDate: string | null
-}
-
-interface StreamGroup {
-  groupId: string
-  timestamp: number | null
-  isoDate: string | null
-  groupSize: number
-  path: string | null
-  entries: StreamEntry[]
+interface StreamSearchSetup {
+  root: HTMLElement
+  feed: HTMLOListElement
+  sentinel: HTMLElement | null
+  getManifest: () => Promise<StreamManifestGroup[]>
+  canonicalizePath: (path: string) => string
+  signal: AbortSignal
 }
 
 interface IndexedEntry {
   id: number
-  entryId: string
-  groupId: string
-  content: string
-  metadata: string
-  isoDate: string
-  displayDate: string
-  tags: string[]
+  entry: StreamManifestEntry
+  group: StreamManifestGroup
 }
 
-function extractMetadata(raw: unknown): { tags: string[]; metadataString: string } {
-  let metadataObj: Record<string, unknown> = {}
-  let metadataString = '{}'
-
-  if (typeof raw === 'string') {
-    metadataObj = JSON.parse(raw)
-  } else if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
-    metadataObj = raw as Record<string, unknown>
-    metadataString = JSON.stringify(metadataObj)
-  }
-
-  const rawTags = Array.isArray(metadataObj.tags) ? metadataObj.tags : []
-  const tags = rawTags.map(tag => String(tag).trim()).filter(tag => tag.length > 0)
-
-  return { tags, metadataString }
+interface SearchData {
+  index: FlexSearchDocument
+  entries: IndexedEntry[]
 }
 
-let searchIndex: any | null = null
-let indexedEntries: IndexedEntry[] = []
-let isIndexBuilt = false
-let searchTimeout: number | null = null
-
-function stripHtml(html: string): string {
-  const tmp = document.createElement('div')
-  tmp.innerHTML = html
-  return tmp.textContent || tmp.innerText || ''
+const tagsForEntry = (entry: StreamManifestEntry): string[] => {
+  if (!entry.metadata || typeof entry.metadata !== 'object' || Array.isArray(entry.metadata))
+    return []
+  const tags = Reflect.get(entry.metadata, 'tags')
+  if (!Array.isArray(tags)) return []
+  return tags.map(tag => String(tag).trim()).filter(tag => tag.length > 0)
 }
 
-async function buildSearchIndex() {
-  if (isIndexBuilt) return
+const buildSearchData = async (groups: StreamManifestGroup[]): Promise<SearchData> => {
+  const entries = groups.flatMap(group => group.entries.map(entry => ({ id: 0, entry, group })))
+  entries.forEach((entry, index) => {
+    entry.id = index
+  })
 
-  const endpoint = isStreamHostname(window.location.hostname)
-    ? `${window.location.origin}/streams.jsonl`
-    : '/streams.jsonl'
-  const response = await fetch(endpoint)
-
-  const text = await response.text()
-  const lines = text.trim().split('\n')
-
-  let entryIndex = 0
-  for (const line of lines) {
-    if (!line.trim()) continue
-
-    const group: StreamGroup = JSON.parse(line)
-
-    for (const entry of group.entries) {
-      const { tags, metadataString } = extractMetadata(entry.metadata)
-
-      const indexedEntry: IndexedEntry = {
-        id: entryIndex++,
-        entryId: entry.id,
-        groupId: group.groupId,
-        content: stripHtml(entry.html),
-        metadata: metadataString,
-        isoDate: entry.isoDate || group.isoDate || '',
-        displayDate: entry.displayDate || group.isoDate || '',
-        tags,
-      }
-      indexedEntries.push(indexedEntry)
-    }
-  }
-
-  searchIndex = new FlexSearch.Document({
+  const index = new FlexSearch.Document({
     tokenize: 'forward',
     encode,
     document: { id: 'id', index: ['content', 'metadata', 'isoDate', 'displayDate', 'tags'] },
   })
 
-  for (const entry of indexedEntries) {
-    const tagsField = entry.tags
-      .flatMap(tag => [tag, `#${tag}`])
-      .join(' ')
-      .trim()
-
-    await searchIndex.addAsync({ ...entry, tags: tagsField })
+  for (const indexed of entries) {
+    const tags = tagsForEntry(indexed.entry)
+    await index.addAsync({
+      id: indexed.id,
+      content: indexed.entry.text,
+      metadata: JSON.stringify(indexed.entry.metadata ?? {}),
+      isoDate: indexed.entry.isoDate ?? indexed.group.isoDate ?? '',
+      displayDate: indexed.entry.displayDate ?? indexed.group.isoDate ?? '',
+      tags: tags.flatMap(tag => [tag, `#${tag}`]).join(' '),
+    })
   }
 
-  isIndexBuilt = true
+  return { index, entries }
 }
 
-function highlightTextNodes(element: HTMLElement, searchTerm: string) {
-  const tokens = tokenizeTerm(searchTerm)
-  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null)
-
-  const nodesToReplace: { node: Text; parent: Node }[] = []
-  let currentNode: Node | null
-
-  while ((currentNode = walker.nextNode())) {
-    const textNode = currentNode as Text
-    const text = textNode.nodeValue || ''
-
-    let hasMatch = false
-    for (const token of tokens) {
-      if (text.toLowerCase().includes(token.toLowerCase())) {
-        hasMatch = true
-        break
-      }
-    }
-
-    if (hasMatch && textNode.parentNode) {
-      nodesToReplace.push({ node: textNode, parent: textNode.parentNode })
-    }
-  }
-
-  for (const { node, parent } of nodesToReplace) {
-    const text = node.nodeValue || ''
-    const fragment = document.createDocumentFragment()
-    let lastIndex = 0
-    let modified = false
-
-    for (const token of tokens) {
-      const regex = new RegExp(token, 'gi')
-      let match: RegExpExecArray | null
-
-      while ((match = regex.exec(text))) {
-        modified = true
-
-        if (match.index > lastIndex) {
-          fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)))
-        }
-
-        const mark = document.createElement('mark')
-        mark.className = 'search-highlight'
-        mark.textContent = match[0]
-        fragment.appendChild(mark)
-
-        lastIndex = match.index + match[0].length
-      }
-    }
-
-    if (modified) {
-      if (lastIndex < text.length) {
-        fragment.appendChild(document.createTextNode(text.slice(lastIndex)))
-      }
-      parent.replaceChild(fragment, node)
-    }
-  }
-}
-
-function clearHighlights() {
-  const highlights = document.querySelectorAll('.stream-entry .search-highlight')
-  highlights.forEach(mark => {
-    const text = mark.textContent || ''
-    const textNode = document.createTextNode(text)
-    mark.parentNode?.replaceChild(textNode, mark)
-  })
-}
-
-function parseTagTokens(query: string): string[] {
-  return Array.from(
+const tagTokens = (query: string): string[] =>
+  Array.from(
     new Set(
       query
         .trim()
@@ -189,207 +67,317 @@ function parseTagTokens(query: string): string[] {
         .filter(token => token.length > 0),
     ),
   )
-}
 
-async function filterStreamEntries(query: string) {
-  if (!searchIndex || !isIndexBuilt) {
-    await buildSearchIndex()
+const matchedEntries = async (data: SearchData, query: string): Promise<IndexedEntry[]> => {
+  const normalizedQuery = query.trim().toLowerCase()
+  if (normalizedQuery.startsWith('#')) {
+    const queryTags = tagTokens(normalizedQuery)
+    if (queryTags.length === 0) return []
+    return data.entries.filter(({ entry }) => {
+      const tags = tagsForEntry(entry).map(tag => tag.toLowerCase())
+      return queryTags.every(queryTag => tags.some(tag => tag.startsWith(queryTag)))
+    })
   }
 
-  const trimmedQuery = query.trim()
-  const streamEntries = document.querySelectorAll<HTMLElement>('.stream-entry')
+  const results = await data.index.searchAsync({
+    query,
+    limit: 500,
+    index: ['content', 'metadata', 'isoDate', 'displayDate', 'tags'],
+  })
+  const ids = new Set<number>()
+  for (const result of results) {
+    for (const id of result.result) {
+      const numericId = Number(id)
+      if (Number.isInteger(numericId)) ids.add(numericId)
+    }
+  }
+  return data.entries.filter(entry => ids.has(entry.id))
+}
 
-  clearHighlights()
-
-  if (!trimmedQuery) {
-    streamEntries.forEach(entry => {
-      entry.style.display = ''
-    })
-    updateSearchStatus('')
+const appendHighlightedText = (target: HTMLElement, value: string, rawTokens: string[]): void => {
+  const tokens = Array.from(new Set(rawTokens.map(token => token.toLowerCase()).filter(Boolean)))
+  if (tokens.length === 0) {
+    target.textContent = value
     return
   }
 
-  const lowerQuery = trimmedQuery.toLowerCase()
-  const isTagQuery = lowerQuery.startsWith('#')
-  const tagTokens = isTagQuery ? parseTagTokens(lowerQuery) : []
-  const matchedEntryIds = new Set<string>()
-  let highlightTerm = trimmedQuery
-
-  if (isTagQuery) {
-    if (tagTokens.length === 0) {
-      streamEntries.forEach(entry => {
-        entry.style.display = ''
-      })
-      updateSearchStatus("type a tag name after '#'")
-      return
-    }
-
-    for (const entry of indexedEntries) {
-      const normalizedTags = entry.tags.map(tag => tag.toLowerCase())
-      const matchesAll = tagTokens.every(token =>
-        normalizedTags.some(entryTag => entryTag.startsWith(token)),
-      )
-      if (matchesAll) {
-        matchedEntryIds.add(entry.entryId)
-      }
-    }
-
-    highlightTerm = tagTokens.join(' ')
-  } else {
-    try {
-      const results = await searchIndex.searchAsync({
-        query: trimmedQuery,
-        limit: 500,
-        index: ['content', 'metadata', 'isoDate', 'displayDate', 'tags'],
-      })
-
-      for (const fieldResult of Object.values(results)) {
-        if (fieldResult && (fieldResult as any).result) {
-          for (const id of (fieldResult as any).result) {
-            const entry = indexedEntries[Number(id)]
-            if (entry) {
-              matchedEntryIds.add(entry.entryId)
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error('[StreamSearch] Search failed:', err)
-      updateSearchStatus('search error')
-      return
-    }
-  }
-
-  let visibleCount = 0
-  streamEntries.forEach(entry => {
-    const entryId = entry.dataset.entryId
-    if (entryId && matchedEntryIds.has(entryId)) {
-      entry.style.display = ''
-
-      const contentEl = entry.querySelector('.stream-entry-content') as HTMLElement
-      if (contentEl && highlightTerm) {
-        highlightTextNodes(contentEl, highlightTerm)
-      }
-
-      if (isTagQuery && highlightTerm) {
-        const tagElements = entry.querySelectorAll('.stream-entry-tag')
-        tagElements.forEach(tagEl => {
-          highlightTextNodes(tagEl as HTMLElement, highlightTerm)
-        })
-      }
-      visibleCount++
-    } else {
-      entry.style.display = 'none'
-    }
-  })
-
-  if (isTagQuery) {
-    const readableTags = tagTokens.map(tag => `#${tag}`).join(' ')
-    updateSearchStatus(
-      visibleCount > 0
-        ? `showing ${visibleCount} ${visibleCount === 1 ? 'entry' : 'entries'} tagged ${readableTags}`
-        : `no entries tagged ${readableTags}`,
-    )
-  } else {
-    updateSearchStatus(
-      visibleCount > 0
-        ? `showing ${visibleCount} ${visibleCount === 1 ? 'entry' : 'entries'}`
-        : `no results for "${trimmedQuery}"`,
-    )
-  }
-}
-
-function updateSearchStatus(message: string) {
-  let statusEl = document.querySelector('.stream-search-status') as HTMLElement
-  if (!statusEl && message) {
-    statusEl = document.createElement('div')
-    statusEl.className = 'stream-search-status'
-    const form = document.querySelector('.stream-search-form')
-    if (form) {
-      form.after(statusEl)
-    }
-  }
-
-  if (statusEl) {
-    if (message) {
-      statusEl.textContent = message
-      statusEl.style.display = 'block'
-    } else {
-      statusEl.style.display = 'none'
-    }
-  }
-}
-
-let activeStreamSearchSignal: AbortSignal | undefined
-
-document.addEventListener('nav', async () => {
-  const currentPath = window.location.pathname
-  const isStreamPage =
-    currentPath === '/stream' ||
-    currentPath.startsWith('/stream/') ||
-    isStreamHostname(window.location.hostname)
-  if (!isStreamPage) return
-  const signal = currentNavSignal()
-  if (activeStreamSearchSignal === signal) return
-  activeStreamSearchSignal = signal
-  signal.addEventListener(
-    'abort',
-    () => {
-      if (searchTimeout !== null) {
-        window.clearTimeout(searchTimeout)
-        searchTimeout = null
-      }
-      if (activeStreamSearchSignal === signal) activeStreamSearchSignal = undefined
-    },
-    { once: true },
-  )
-
-  await buildSearchIndex()
-  if (signal.aborted) return
-
-  const form = document.querySelector<HTMLFormElement>('.stream-search-form')
-  const searchInput = document.querySelector<HTMLInputElement>('.stream-search-input')
-
-  if (!form || !searchInput) return
-
-  const focusShortcutHandler = (event: KeyboardEvent) => {
-    const key = event.key.toLowerCase()
-    const isMetaDot = event.metaKey && key === '.'
-    const isCommandK = (event.metaKey || event.ctrlKey) && key === 'k'
-    if (!isMetaDot && !isCommandK) return
-
-    const target = event.target as Element | null
-    if (target) {
-      const tag = target.tagName?.toLowerCase()
-      const isStreamSearchTarget = searchInput.contains(target)
+  const lowerValue = value.toLowerCase()
+  let cursor = 0
+  while (cursor < value.length) {
+    let matchIndex = -1
+    let matchToken = ''
+    for (const token of tokens) {
+      const index = lowerValue.indexOf(token, cursor)
+      if (index === -1) continue
       if (
-        (tag === 'input' || tag === 'textarea' || (target as HTMLElement).isContentEditable) &&
-        !isStreamSearchTarget
+        matchIndex === -1 ||
+        index < matchIndex ||
+        (index === matchIndex && token.length > matchToken.length)
       ) {
+        matchIndex = index
+        matchToken = token
+      }
+    }
+    if (matchIndex === -1) {
+      target.append(value.slice(cursor))
+      return
+    }
+    if (matchIndex > cursor) target.append(value.slice(cursor, matchIndex))
+    const mark = document.createElement('mark')
+    mark.className = 'search-highlight'
+    mark.textContent = value.slice(matchIndex, matchIndex + matchToken.length)
+    target.append(mark)
+    cursor = matchIndex + matchToken.length
+  }
+}
+
+const entryHref = (
+  entry: StreamManifestEntry,
+  group: StreamManifestGroup,
+  canonicalizePath: (path: string) => string,
+): string => {
+  const path = canonicalizePath(group.path ?? '/stream')
+  const url = new URL(path, window.location.origin)
+  url.searchParams.set('entry', entry.id)
+  url.hash = entry.id
+  return `${url.pathname}${url.search}${url.hash}`
+}
+
+const renderSearchResult = (
+  indexed: IndexedEntry,
+  tokens: string[],
+  canonicalizePath: (path: string) => string,
+): HTMLLIElement => {
+  const { entry, group } = indexed
+  const item = document.createElement('li')
+  item.className = 'stream-entry stream-entry-search-result'
+  item.dataset.entryId = entry.id
+  item.dataset.streamGroupId = group.groupId
+  if (group.timestamp !== null) item.dataset.streamTimestamp = String(group.timestamp)
+
+  const meta = document.createElement('div')
+  meta.className = 'stream-entry-meta'
+  if (group.path) {
+    const date = document.createElement('a')
+    date.className = 'stream-entry-date internal'
+    date.href = canonicalizePath(group.path)
+    date.dataset.slug = group.path.replace(/^\//, '')
+    date.dataset.noPopover = ''
+    const time = document.createElement('time')
+    if (entry.isoDate) time.dateTime = entry.isoDate
+    time.textContent = entry.displayDate ?? group.isoDate ?? 'undated'
+    date.append(time)
+    meta.append(date)
+  }
+
+  const tags = tagsForEntry(entry)
+  if (tags.length > 0) {
+    const tagList = document.createElement('div')
+    tagList.className = 'stream-entry-tags'
+    for (const tag of tags) {
+      const tagElement = document.createElement('span')
+      tagElement.className = 'stream-entry-tag'
+      appendHighlightedText(tagElement, tag, tokens)
+      tagList.append(tagElement)
+    }
+    meta.append(tagList)
+  }
+
+  const body = document.createElement('div')
+  body.className = 'stream-entry-body'
+  const title = document.createElement('h2')
+  title.className = 'stream-entry-title'
+  const link = document.createElement('a')
+  link.className = 'internal stream-entry-search-link'
+  link.href = entryHref(entry, group, canonicalizePath)
+  link.dataset.slug = (group.path ?? '/stream').replace(/^\//, '')
+  appendHighlightedText(link, entry.title ?? entry.description ?? 'entry', tokens)
+  title.append(link)
+  body.append(title)
+
+  if (entry.title && entry.description && entry.description !== entry.title) {
+    const description = document.createElement('p')
+    description.className = 'stream-entry-description stream-entry-search-description'
+    appendHighlightedText(description, entry.description, tokens)
+    body.append(description)
+  }
+  if (entry.wordCount > 0) {
+    const wordCount = document.createElement('div')
+    wordCount.className = 'stream-entry-wordcount'
+    const emphasis = document.createElement('em')
+    emphasis.textContent = entry.wordCount === 1 ? '1 word' : `${entry.wordCount} words`
+    wordCount.append(emphasis)
+    body.append(wordCount)
+  }
+
+  item.append(meta, body)
+  return item
+}
+
+const updateStatus = (form: HTMLFormElement, message: string): void => {
+  let status = form.parentElement?.querySelector<HTMLElement>('.stream-search-status') ?? null
+  if (!status && message) {
+    status = document.createElement('div')
+    status.className = 'stream-search-status'
+    status.setAttribute('role', 'status')
+    form.after(status)
+  }
+  if (!status) return
+  status.textContent = message
+  status.hidden = message.length === 0
+}
+
+export const setupStreamSearch = ({
+  root,
+  feed,
+  sentinel,
+  getManifest,
+  canonicalizePath,
+  signal,
+}: StreamSearchSetup): (() => void) | null => {
+  const form = root.querySelector<HTMLFormElement>('.stream-search-form')
+  const input = root.querySelector<HTMLInputElement>('.stream-search-input')
+  if (!form || !input) return null
+
+  const resultsFeed = document.createElement('ol')
+  resultsFeed.className = 'stream-feed stream-search-results'
+  resultsFeed.hidden = true
+  feed.after(resultsFeed)
+
+  let searchData: Promise<SearchData> | null = null
+  let searchTimeout: number | null = null
+  let searchVersion = 0
+  let browseScrollY = 0
+  let browseScrollCaptured = false
+  let searchActive = false
+
+  const prepare = (): Promise<SearchData> => {
+    searchData ??= getManifest().then(buildSearchData)
+    return searchData
+  }
+
+  const restoreBrowse = (): void => {
+    if (!searchActive) return
+    searchActive = false
+    browseScrollCaptured = false
+    root.removeAttribute('data-stream-search-active')
+    resultsFeed.hidden = true
+    resultsFeed.replaceChildren()
+    feed.hidden = false
+    if (sentinel) sentinel.hidden = false
+    updateStatus(form, '')
+    input.blur()
+    window.requestAnimationFrame(() => window.scrollTo({ top: browseScrollY, behavior: 'auto' }))
+  }
+
+  const search = async (query: string, version: number): Promise<void> => {
+    const trimmed = query.trim()
+    if (!trimmed) {
+      restoreBrowse()
+      return
+    }
+
+    updateStatus(form, 'searching…')
+    const data = await prepare()
+    if (signal.aborted || version !== searchVersion) return
+    const matches = await matchedEntries(data, trimmed)
+    if (signal.aborted || version !== searchVersion) return
+
+    if (!searchActive) {
+      if (!browseScrollCaptured) browseScrollY = window.scrollY
+      searchActive = true
+    }
+    root.dataset.streamSearchActive = 'true'
+    feed.hidden = true
+    if (sentinel) sentinel.hidden = true
+    resultsFeed.hidden = false
+    const tokens = trimmed.startsWith('#') ? tagTokens(trimmed) : tokenizeTerm(trimmed)
+    resultsFeed.replaceChildren(
+      ...matches.map(entry => renderSearchResult(entry, tokens, canonicalizePath)),
+    )
+
+    if (trimmed.startsWith('#')) {
+      const readableTags = tagTokens(trimmed)
+        .map(tag => `#${tag}`)
+        .join(' ')
+      if (!readableTags) {
+        updateStatus(form, "type a tag name after '#'")
         return
       }
+      updateStatus(
+        form,
+        matches.length > 0
+          ? `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'} tagged ${readableTags}`
+          : `no entries tagged ${readableTags}`,
+      )
+      return
     }
-
-    event.preventDefault()
-    event.stopPropagation()
-    event.stopImmediatePropagation()
-
-    searchInput.focus()
-    searchInput.select()
+    updateStatus(
+      form,
+      matches.length > 0
+        ? `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'}`
+        : `no results for “${trimmed}”`,
+    )
   }
 
-  const focusListenerOptions: AddEventListenerOptions = { capture: true, signal }
-  document.addEventListener('keydown', focusShortcutHandler, focusListenerOptions)
-
-  const handleInput = () => {
+  const onInput = (): void => {
+    searchVersion += 1
+    const version = searchVersion
     if (searchTimeout !== null) window.clearTimeout(searchTimeout)
-    searchTimeout = window.setTimeout(async () => {
-      await filterStreamEntries(searchInput.value)
+    searchTimeout = window.setTimeout(() => {
+      void search(input.value, version).catch(error => {
+        if (signal.aborted || version !== searchVersion) return
+        console.error(error)
+        updateStatus(form, 'search unavailable')
+      })
     }, 300)
   }
 
-  const handleSubmit = (e: Event) => e.preventDefault()
+  const onShortcut = (event: KeyboardEvent): void => {
+    const key = event.key.toLowerCase()
+    const shortcut = event.metaKey && key === '.'
+    const commandSearch = (event.metaKey || event.ctrlKey) && key === 'k'
+    if (!shortcut && !commandSearch) return
+    const target = event.target
+    if (target instanceof HTMLElement) {
+      const editable =
+        target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+      if (editable && target !== input) return
+    }
+    event.preventDefault()
+    event.stopPropagation()
+    event.stopImmediatePropagation()
+    if (!searchActive) {
+      browseScrollY = window.scrollY
+      browseScrollCaptured = true
+    }
+    input.focus()
+    input.select()
+    void prepare().catch(() => {})
+  }
 
-  searchInput.addEventListener('input', handleInput, { signal })
-  form.addEventListener('submit', handleSubmit, { signal })
-})
+  const onSubmit = (event: SubmitEvent): void => event.preventDefault()
+  const onPointerdown = (): void => {
+    if (searchActive) return
+    browseScrollY = window.scrollY
+    browseScrollCaptured = true
+  }
+  const onFocus = (): void => {
+    void prepare().catch(() => {})
+  }
+
+  input.addEventListener('pointerdown', onPointerdown, { signal })
+  input.addEventListener('focus', onFocus, { signal })
+  input.addEventListener('input', onInput, { signal })
+  form.addEventListener('submit', onSubmit, { signal })
+  document.addEventListener('keydown', onShortcut, { capture: true, signal })
+
+  return () => {
+    searchVersion += 1
+    if (searchTimeout !== null) window.clearTimeout(searchTimeout)
+    resultsFeed.remove()
+    feed.hidden = false
+    if (sentinel) sentinel.hidden = false
+    void searchData?.then(data => data.index.destroy()).catch(() => {})
+  }
+}

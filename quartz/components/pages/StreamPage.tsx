@@ -9,6 +9,7 @@ import {
   buildStreamEntryPathFromIso,
   groupStreamEntries,
   groupStreamEntriesByYear,
+  selectStreamFeedGroups,
   type StreamMonthGroup,
   type StreamYearGroup,
 } from '../../util/stream'
@@ -165,7 +166,8 @@ export default (() => {
     const isDailyView = streamView.kind === 'day'
 
     const groups = groupStreamEntries(fileData.streamData.entries)
-    const entriesWithContext = groups.flatMap(group =>
+    const { feedGroups, hasLazyGroups } = selectStreamFeedGroups(groups, streamView.kind === 'root')
+    const entriesWithContext = feedGroups.flatMap(group =>
       group.entries.map(entry => ({ entry, group })),
     )
     const protectedPayloads = fileData.streamData.protectedPayloads
@@ -203,7 +205,11 @@ export default (() => {
       <>
         {streamView.kind === 'root' && <StreamSearch {...props} />}
         {isDailyView && renderUnlockPanel()}
-        <ol class="stream-feed">
+        <ol
+          class="stream-feed"
+          data-stream-lazy={hasLazyGroups ? 'true' : undefined}
+          data-stream-initial-group={feedGroups[0]?.id}
+        >
           {entriesWithContext.map(({ entry, group }) =>
             renderStreamEntry(entry, fileData.filePath!, {
               groupId: group.id,
@@ -217,6 +223,21 @@ export default (() => {
             }),
           )}
         </ol>
+        {hasLazyGroups && (
+          <div
+            class="stream-feed-sentinel"
+            data-stream-feed-sentinel
+            role="status"
+            aria-live="polite"
+          ></div>
+        )}
+        {streamView.kind === 'root' && (
+          <noscript>
+            <p class="stream-feed-archive">
+              <a href="/stream/on">browse the stream archive</a>
+            </p>
+          </noscript>
+        )}
       </>
     )
 

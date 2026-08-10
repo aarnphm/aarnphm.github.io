@@ -5,6 +5,7 @@ import type { BuildCtx } from '../../util/ctx'
 import type { FilePath, FullSlug } from '../../util/path'
 import type { QuartzPluginData } from '../vfile'
 import { generateStreamAtomFeed } from '../../util/stream-feed'
+import { buildStreamManifestGroup } from '../../util/stream-manifest'
 import { isRecord, type UnknownRecord } from '../../util/type-guards'
 
 function testCtx(): BuildCtx {
@@ -129,6 +130,47 @@ test('stream atom feed uses entry descriptions as metadata summaries', () => {
 
   assert.equal(readString(publicEntry, 'summary'), 'public summary')
   assert.equal(readString(readRecord(publicEntry, 'content'), '#text'), '<p>body only</p>')
+})
+
+test('stream manifest keeps searchable public metadata without rendered entry markup', () => {
+  const manifest = buildStreamManifestGroup({
+    id: 'day-2026-06-09',
+    timestamp: Date.parse('2026-06-09T00:00:00.000Z'),
+    isoDate: '2026-06-09T00:00:00.000Z',
+    entries: [
+      {
+        id: 'public-entry',
+        title: 'public title',
+        description: 'public summary',
+        metadata: { tags: ['note'] },
+        content: [
+          {
+            type: 'element',
+            tagName: 'p',
+            properties: {},
+            children: [{ type: 'text', value: 'body only' }],
+          },
+        ],
+        date: '2026-06-09T01:00:00.000Z',
+      },
+      {
+        id: 'private-entry',
+        title: 'private title',
+        metadata: { private: true },
+        content: [{ type: 'text', value: 'secret body' }],
+        date: '2026-06-09T02:00:00.000Z',
+      },
+    ],
+  })
+
+  assert.ok(manifest)
+  assert.equal(manifest.path, '/stream/on/2026/06/09')
+  assert.equal(manifest.groupSize, 1)
+  assert.equal(manifest.entries.length, 1)
+  assert.equal(manifest.entries[0].id, 'public-entry')
+  assert.equal(manifest.entries[0].text, 'public title public summary body only')
+  assert.equal(manifest.entries[0].wordCount, 6)
+  assert.equal(Object.hasOwn(manifest.entries[0], 'html'), false)
 })
 
 test('stream atom feed uses the canonical stream host for feed and entry URLs', () => {

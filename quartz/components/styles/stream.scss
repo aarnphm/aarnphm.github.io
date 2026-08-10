@@ -101,6 +101,57 @@
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+
+    &[data-stream-lazy='true'] > .stream-entry {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 40rem;
+    }
+  }
+
+  .stream-feed-sentinel {
+    min-height: 1px;
+    margin-top: 1rem;
+    color: var(--gray);
+    font-size: 0.85rem;
+    text-align: center;
+
+    &[data-stream-loading='loading'],
+    &[data-stream-loading='error'] {
+      min-height: 2rem;
+      padding: 0.5rem 0;
+    }
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .stream-feed-archive {
+    margin: 1.5rem 0 0;
+    color: var(--gray);
+    font-size: 0.85rem;
+
+    a {
+      color: inherit;
+    }
+  }
+
+  .stream-entry-search-link {
+    color: var(--dark);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  .stream-entry-search-result .search-highlight {
+    padding: 0.05em 0.15em;
+    color: var(--dark);
+    background: color-mix(in srgb, var(--secondary) 25%, transparent);
+    border-radius: var(--radius-none);
+    font-weight: 500;
   }
 
   .stream-protected-unlock {
