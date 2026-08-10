@@ -1,6 +1,7 @@
 ---
 chain:
-  '1': 621mi
+  '1': 621 mile
+  '2': 419.42 mile
 date: '2026-05-29'
 description: training data and tracking
 dexa:
@@ -37,7 +38,15 @@ dexa:
     vatAreaIn2: 8.64
     vatLbs: 1.24
 events:
-  supertri:
+  ironman-70.3--nyc--26:
+    T1: null
+    T2: null
+    bike: null
+    distance: null
+    overall: null
+    run: null
+    swim: null
+  supertri--tor--26:
     T1: 00:08:42
     T2: 00:03:05
     bike: 01:11:11
@@ -47,7 +56,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-09 00:03:32 GMT-04:00
+modified: 2026-08-10 17:50:39 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'

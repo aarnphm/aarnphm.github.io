@@ -5,6 +5,7 @@ import type {
   ActivitySummary,
   Analytics,
   BodyBlock,
+  CardioKey,
   DailyPoint,
   DexaRecord,
   PowerCurveBlock,
@@ -8517,21 +8518,58 @@ const buildAbilities = (data: Analytics): HTMLElement => {
   return block
 }
 
+type CardioSeriesPoint = { date: string; value: number }
+
+const cardioSeriesOf = (
+  cardio: Analytics['engine']['cardio'],
+  key: CardioKey,
+): CardioSeriesPoint[] => {
+  if (key === 'rhr') return cardio.rhrSeries.map(point => ({ date: point.date, value: point.rhr }))
+  if (key === 'hrv') return cardio.hrvSeries.map(point => ({ date: point.date, value: point.hrv }))
+  if (key === 'ef') return cardio.efSeries.map(point => ({ date: point.date, value: point.ef }))
+  return cardio.decouplingSeries.map(point => ({ date: point.date, value: point.pct }))
+}
+
+const cardioValueText = (value: number, unit: string): string => {
+  const decimals = unit === 'bpm' || unit === 'ms' ? 0 : unit === '%' ? 1 : 2
+  const text = value.toFixed(decimals)
+  return unit === '%' ? `${text}%` : unit ? `${text} ${unit}` : text
+}
+
 const buildCardio = (data: Analytics): HTMLElement => {
   const block = el('div', 'tri-engine-cardio')
-  block.appendChild(anaTitle('cardiovascular health', 'ef'))
   const c = data.engine.cardio
+  const head = el('div', 'tri-engine-cardio-head')
+  head.appendChild(anaTitle('cardiovascular health', 'ef'))
+  const readout = el('div', 'tri-chart-readout tri-cardio-readout', undefined, {
+    'aria-hidden': 'true',
+  })
+  readout.appendChild(el('span', 'tri-cardio-readout-date'))
+  const readoutTable = el('table', 'tri-cardio-readout-table')
+  const readoutBody = el('tbody')
+  for (const metric of c.metrics) {
+    const row = el('tr')
+    row.append(
+      el('th', 'tri-cardio-readout-metric', tl(metric.label), { scope: 'row' }),
+      el('td', 'tri-cardio-readout-value', '—', { 'data-cardio-metric': metric.key }),
+    )
+    readoutBody.appendChild(row)
+  }
+  readoutTable.appendChild(readoutBody)
+  readout.appendChild(readoutTable)
+  block.append(head, readout)
   if (!c.metrics.length || c.metrics.every(m => m.value == null)) {
     block.appendChild(el('div', 'tri-ana-empty', tl('no heart data yet')))
     return block
   }
-  const seriesOf = (key: string): number[] => {
-    if (key === 'rhr') return c.rhrSeries.map(p => p.rhr)
-    if (key === 'hrv') return c.hrvSeries.map(p => p.hrv)
-    if (key === 'ef') return c.efSeries.map(p => p.ef)
-    if (key === 'decoupling') return c.decouplingSeries.map(p => p.pct)
-    return []
-  }
+  const dates = [
+    ...new Set(c.metrics.flatMap(metric => cardioSeriesOf(c, metric.key).map(p => p.date))),
+  ].sort()
+  const domainStartMs = Date.parse(`${dates[0] ?? data.meta.windowFrom}T00:00:00Z`)
+  const domainEndMs = Date.parse(`${dates[dates.length - 1] ?? data.meta.windowTo}T00:00:00Z`)
+  const domainSpanMs = Math.max(1, domainEndMs - domainStartMs)
+  const xAt = (date: string): number =>
+    clampN(((Date.parse(`${date}T00:00:00Z`) - domainStartMs) / domainSpanMs) * 100, 0, 100)
   const glossOf: Record<string, string> = {
     rhr: 'rhr',
     hrv: 'hrv',
@@ -8541,56 +8579,89 @@ const buildCardio = (data: Analytics): HTMLElement => {
   for (const m of c.metrics) {
     const row = el('div', 'tri-engine-row')
     row.dataset.metric = m.key
-    row.dataset.label = m.label
-    row.dataset.unit = m.unit
-    row.appendChild(markGloss(el('span', 'tri-engine-row-k', tl(m.label)), glossOf[m.key] ?? 'ef'))
-    const ys = seriesOf(m.key)
-    if (ys.length > 1) {
-      const n = ys.length
-      let lo = Infinity
-      let hi = -Infinity
-      for (const yv of ys) {
-        if (yv < lo) lo = yv
-        if (yv > hi) hi = yv
-      }
-      if (hi - lo === 0) {
-        hi += 1
-        lo -= 1
-      }
-      const s = svg('svg', {
-        class: 'tri-engine-spark',
-        viewBox: '0 0 100 24',
-        preserveAspectRatio: 'none',
-      })
-      s.appendChild(
-        svg('path', {
-          d: polyD(
-            ys.map(
-              (yv, i) =>
-                [(i / (n - 1)) * 100, 21 - ((yv - lo) / (hi - lo)) * 18] as [number, number],
-            ),
-          ),
-          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : m.key === 'rhr' ? 'tri-line-run' : ''}`,
-        }),
-      )
-      s.appendChild(svg('line', { x1: 0, y1: 0, x2: 0, y2: 24, class: 'tri-ana-cursor' }))
-      row.appendChild(s)
-      row.appendChild(el('div', 'tri-chart-readout'))
-    } else row.appendChild(el('span', 'tri-engine-spark'))
+    const meta = el('div', 'tri-engine-row-meta')
+    meta.appendChild(markGloss(el('span', 'tri-engine-row-k', tl(m.label)), glossOf[m.key] ?? 'ef'))
+    const status = el('div', 'tri-engine-row-status')
     const val = el(
       'span',
       'tri-engine-row-v',
-      m.value != null ? `${m.value}${m.unit === '%' ? '%' : ` ${m.unit}`}` : '—',
+      m.value != null ? cardioValueText(m.value, m.unit) : '—',
     )
     val.title = tl(m.note)
-    row.appendChild(val)
-    row.appendChild(
+    status.append(
+      val,
       el(
         'span',
         `tri-engine-row-dir ${m.dir === 'improving' ? 'tri-dir-up' : m.dir === 'declining' ? 'tri-dir-down' : 'tri-dir-flat'}`,
         m.dir === 'improving' ? '▲' : m.dir === 'declining' ? '▼' : m.dir === 'stable' ? '■' : '',
       ),
     )
+    meta.appendChild(status)
+    row.appendChild(meta)
+    const points = cardioSeriesOf(c, m.key)
+    const ys = points.map(point => point.value)
+    if (ys.length > 1) {
+      const rawMin = Math.min(...ys)
+      const rawMax = Math.max(...ys)
+      const minimumPadding = m.key === 'ef' ? 0.02 : m.key === 'decoupling' ? 0.5 : 2
+      const padding = Math.max((rawMax - rawMin) * 0.1, minimumPadding)
+      const step = niceStep(rawMax - rawMin + padding * 2, 3)
+      const domainMin = Math.floor((rawMin - padding) / step) * step
+      const domainMax = Math.ceil((rawMax + padding) / step) * step
+      const chartHeight = 42
+      const chartTop = 3
+      const chartBottom = 39
+      const yAt = (value: number): number =>
+        chartBottom -
+        ((value - domainMin) / Math.max(step, domainMax - domainMin)) * (chartBottom - chartTop)
+      const ticks: number[] = []
+      for (let tick = domainMin; tick <= domainMax + step * 1e-6; tick += step)
+        ticks.push(Math.round(tick * 1e6) / 1e6)
+      const s = svg('svg', {
+        class: 'tri-engine-spark',
+        viewBox: `0 0 100 ${chartHeight}`,
+        preserveAspectRatio: 'none',
+        role: 'slider',
+        tabindex: 0,
+        'aria-label': tl(m.label),
+        'aria-orientation': 'horizontal',
+        'aria-valuemin': 1,
+        'aria-valuemax': Math.max(1, dates.length),
+        'aria-valuenow': Math.max(1, dates.length),
+      })
+      for (const tick of ticks)
+        s.appendChild(
+          svg('line', {
+            class: 'tri-engine-grid',
+            x1: 0,
+            y1: yAt(tick),
+            x2: 100,
+            y2: yAt(tick),
+            'aria-hidden': 'true',
+          }),
+        )
+      const pathPoints: [number, number][] = points.map(point => [
+        xAt(point.date),
+        yAt(point.value),
+      ])
+      s.appendChild(
+        svg('path', {
+          d: polyD(pathPoints),
+          class: `tri-elev-line ${m.key === 'hrv' ? 'tri-line-bike' : m.key === 'ef' ? 'tri-line-swim' : m.key === 'rhr' ? 'tri-line-run' : ''}`,
+        }),
+      )
+      s.appendChild(
+        svg('line', { x1: 0, y1: chartTop, x2: 0, y2: chartBottom, class: 'tri-ana-cursor' }),
+      )
+      row.appendChild(s)
+      const axis = el('div', 'tri-engine-domain', undefined, { 'aria-hidden': 'true' })
+      for (const tick of ticks) {
+        const label = el('span', 'tri-engine-domain-tick', axisNumber(tick, step))
+        label.style.top = `${((yAt(tick) / chartHeight) * 100).toFixed(2)}%`
+        axis.appendChild(label)
+      }
+      row.appendChild(axis)
+    } else row.append(el('span', 'tri-engine-spark'), el('span', 'tri-engine-domain'))
     block.appendChild(row)
   }
   return block
@@ -9650,35 +9721,32 @@ const buildDistributions = (data: Analytics): HTMLElement => {
     key: 'power' | 'cadence' | 'skin' | 'hsi'
     label: string
     value: (point: ActivityDistributionPoint) => number | null
-    text: (point: ActivityDistributionPoint, value: number) => string
+    text: (value: number, point: ActivityDistributionPoint) => string
   }
   const metrics: DistributionMetric[] = [
     {
       key: 'power',
       label: 'average power',
       value: point => point.averagePowerWatts,
-      text: (point, value) =>
-        `${Math.round(value)} W${point.powerSource ? ` · ${tl(point.powerSource)}` : ''}`,
+      text: value => `${Math.round(value)} W`,
     },
     {
       key: 'cadence',
       label: 'cadence',
       value: point => point.cadence,
-      text: (point, value) => `${Math.round(value)} ${point.cadenceUnit}`,
+      text: (value, point) => `${Math.round(value)} ${point.cadenceUnit}`,
     },
     {
       key: 'skin',
       label: 'skin temperature',
       value: point => point.skinTemperatureC,
-      text: (point, value) =>
-        `${formatThermalTemperature(value)}${point.skinThermalSource ? ` · ${point.skinThermalSource === 'core-app' ? 'CORE app' : 'CORE FIT'}` : ''}`,
+      text: value => formatThermalTemperature(value),
     },
     {
       key: 'hsi',
       label: 'heat strain index',
       value: point => point.heatStrainIndex,
-      text: (point, value) =>
-        `HSI ${value.toFixed(1)}${point.heatStrainThermalSource ? ` · ${point.heatStrainThermalSource === 'core-app' ? 'CORE app' : 'CORE FIT'}` : ''}`,
+      text: value => `HSI ${value.toFixed(1)}`,
     },
   ]
 
@@ -9712,6 +9780,7 @@ const buildDistributions = (data: Analytics): HTMLElement => {
       `${available.length}/${points.length} ${tl('activities with telemetry')}`,
     )
     const cursorLines: SVGElement[] = []
+    const graphs: SVGElement[] = []
 
     for (const metric of metrics) {
       const values = points
@@ -9735,7 +9804,7 @@ const buildDistributions = (data: Analytics): HTMLElement => {
       meta.append(
         el('span', 'tri-dist-metric-name', tl(metric.label)),
         latest && latestValue != null
-          ? el('span', 'tri-dist-metric-latest', metric.text(latest, latestValue))
+          ? el('span', 'tri-dist-metric-latest', metric.text(latestValue, latest))
           : el('span', 'tri-dist-metric-latest', '—'),
       )
       const graph = svg('svg', {
@@ -9745,6 +9814,7 @@ const buildDistributions = (data: Analytics): HTMLElement => {
         role: 'img',
         'aria-label': `${tl(metric.label)} · ${domainText(rawMin)}–${domainText(rawMax)}`,
       })
+      graphs.push(graph)
       graph.append(
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 4, x2: 100, y2: 4 }),
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 17, x2: 100, y2: 17 }),
@@ -9807,6 +9877,13 @@ const buildDistributions = (data: Analytics): HTMLElement => {
       telemetryPanel.classList.remove('tri-chart--hover')
     }
     let activePointIndex = available.length - 1
+    const graphAnchorX = (fraction: number): number => {
+      const plotsRect = plots.getBoundingClientRect()
+      const graphRect = graphs[0]?.getBoundingClientRect()
+      return graphRect
+        ? graphRect.left - plotsRect.left + clampN(fraction, 0, 1) * graphRect.width
+        : clampN(fraction, 0, 1) * plots.clientWidth
+    }
     const positionReadout = (anchorX: number, anchorY: number): void => {
       const plotWidth = plots.clientWidth
       const plotHeight = plots.clientHeight
@@ -9833,16 +9910,15 @@ const buildDistributions = (data: Analytics): HTMLElement => {
     }
     const showPoint = (
       point: ActivityDistributionPoint,
-      anchorX = (pointX(point) / 100) * plots.clientWidth,
+      anchorX = graphAnchorX(pointX(point) / 100),
       anchorY = plots.clientHeight / 2,
     ): void => {
-      const rows: HTMLElement[] = [
-        el(
-          'span',
-          'tri-dist-readout-head',
-          `${shortDate(point.date)} · ${tl(point.sport)} · ${point.name}`,
-        ),
-      ]
+      const date = shortDate(point.date)
+      const table = el('table', 'tri-dist-readout-table', undefined, {
+        'aria-label': tl('activity telemetry'),
+      })
+      const body = el('tbody')
+      const ariaValues = [date]
       for (const metric of metrics) {
         const value = metric.value(point)
         if (value == null) continue
@@ -9858,20 +9934,23 @@ const buildDistributions = (data: Analytics): HTMLElement => {
             : ` (${value >= previousValue ? '+' : ''}${(value - previousValue).toFixed(
                 metric.key === 'skin' || metric.key === 'hsi' ? 1 : 0,
               )})`
-        rows.push(
-          el(
-            'span',
-            'tri-dist-readout-value',
-            `${tl(metric.label)} ${metric.text(point, value)}${delta}`,
-          ),
+        const formattedValue = metric.text(value, point)
+        const row = el('tr')
+        row.append(
+          el('th', 'tri-dist-readout-metric', tl(metric.label), { scope: 'row' }),
+          el('td', 'tri-dist-readout-value', formattedValue),
+          el('td', 'tri-dist-readout-delta', delta.trim()),
         )
+        body.appendChild(row)
+        ariaValues.push(`${tl(metric.label)} ${formattedValue}${delta}`)
       }
-      readout.replaceChildren(...rows)
+      table.appendChild(body)
+      readout.replaceChildren(el('span', 'tri-dist-readout-head', date), table)
       const availableIndex = available.indexOf(point)
       if (availableIndex >= 0) {
         activePointIndex = availableIndex
         plots.setAttribute('aria-valuenow', String(availableIndex + 1))
-        plots.setAttribute('aria-valuetext', rows.map(row => row.textContent ?? '').join(' · '))
+        plots.setAttribute('aria-valuetext', ariaValues.join(' · '))
       }
       const x = pointX(point).toFixed(2)
       for (const cursor of cursorLines) {
@@ -9885,8 +9964,9 @@ const buildDistributions = (data: Analytics): HTMLElement => {
       showPoint(available[clampN(index, 0, available.length - 1)])
     }
     const onMove = (event: PointerEvent): void => {
-      const rect = plots.getBoundingClientRect()
-      const fraction = clampN((event.clientX - rect.left) / rect.width, 0, 1)
+      const plotsRect = plots.getBoundingClientRect()
+      const graphRect = graphs[0]?.getBoundingClientRect() ?? plotsRect
+      const fraction = clampN((event.clientX - graphRect.left) / graphRect.width, 0, 1)
       const targetMs = rangeStartMs + fraction * rangeSpanMs
       let nearest = available[0]
       for (const point of available)
@@ -9895,7 +9975,11 @@ const buildDistributions = (data: Analytics): HTMLElement => {
           Math.abs(Date.parse(nearest.startedAt) - targetMs)
         )
           nearest = point
-      showPoint(nearest, event.clientX - rect.left, event.clientY - rect.top)
+      showPoint(
+        nearest,
+        clampN(event.clientX - plotsRect.left, 0, plotsRect.width),
+        event.clientY - plotsRect.top,
+      )
     }
     plots.addEventListener('pointermove', onMove)
     plots.addEventListener('pointerleave', () => {
@@ -10541,27 +10625,170 @@ const wireScrub = (panel: HTMLElement, data: Analytics): (() => void) => {
 
   const cardioBlock = panel.querySelector<HTMLElement>('.tri-engine-cardio')
   if (cardioBlock) {
-    const ser: Record<string, { date: string; v: number }[]> = {
-      rhr: data.engine.cardio.rhrSeries.map(p => ({ date: p.date, v: p.rhr })),
-      hrv: data.engine.cardio.hrvSeries.map(p => ({ date: p.date, v: p.hrv })),
-      ef: data.engine.cardio.efSeries.map(p => ({ date: p.date, v: p.ef })),
-      decoupling: data.engine.cardio.decouplingSeries.map(p => ({ date: p.date, v: p.pct })),
-    }
-    for (const row of Array.from(cardioBlock.querySelectorAll<HTMLElement>('.tri-engine-row'))) {
-      const points = ser[row.dataset.metric ?? '']
-      const svgEl = row.querySelector<SVGElement>('.tri-engine-spark')
+    const seriesByMetric = new Map(
+      data.engine.cardio.metrics.map(metric => [
+        metric.key,
+        cardioSeriesOf(data.engine.cardio, metric.key),
+      ]),
+    )
+    const dates = [
+      ...new Set([...seriesByMetric.values()].flatMap(points => points.map(p => p.date))),
+    ].sort()
+    const valuesByMetric = new Map(
+      [...seriesByMetric].map(([key, points]) => [
+        key,
+        new Map(points.map(point => [point.date, point.value])),
+      ]),
+    )
+    const dateReadout = cardioBlock.querySelector<HTMLElement>('.tri-cardio-readout-date')
+    const readout = cardioBlock.querySelector<HTMLElement>('.tri-cardio-readout')
+    const valueCells = new Map<CardioKey, HTMLElement>()
+    const items: Array<{ svgEl: SVGElement; cursor: SVGElement }> = []
+    for (const metric of data.engine.cardio.metrics) {
+      const row = cardioBlock.querySelector<HTMLElement>(
+        `.tri-engine-row[data-metric="${metric.key}"]`,
+      )
+      const svgEl = row?.querySelector<SVGElement>('.tri-engine-spark')
       const cursor = svgEl?.querySelector<SVGElement>('.tri-ana-cursor')
-      const readout = row.querySelector<HTMLElement>('.tri-chart-readout')
-      if (svgEl && cursor && readout && points && points.length > 1) {
-        const label = row.dataset.label ?? ''
-        const unit = row.dataset.unit ?? ''
-        cleanups.push(
-          scrubBind(row, svgEl, cursor, readout, points.length, 100, i => {
-            const p = points[i]
-            return `${p.date} · ${label} ${p.v}${unit ? ` ${unit}` : ''}`
-          }),
-        )
+      if (svgEl && cursor) items.push({ svgEl, cursor })
+      const valueCell = cardioBlock.querySelector<HTMLElement>(
+        `.tri-cardio-readout-value[data-cardio-metric="${metric.key}"]`,
+      )
+      if (valueCell) valueCells.set(metric.key, valueCell)
+    }
+    if (dates.length > 0 && dateReadout && readout && items.length > 0) {
+      const startMs = Date.parse(`${dates[0]}T00:00:00Z`)
+      const endMs = Date.parse(`${dates[dates.length - 1]}T00:00:00Z`)
+      const spanMs = Math.max(1, endMs - startMs)
+      const dateIndexAt = (fraction: number): number => {
+        const targetMs = startMs + clampN(fraction, 0, 1) * spanMs
+        let nearestIndex = 0
+        for (let index = 1; index < dates.length; index++)
+          if (
+            Math.abs(Date.parse(`${dates[index]}T00:00:00Z`) - targetMs) <
+            Math.abs(Date.parse(`${dates[nearestIndex]}T00:00:00Z`) - targetMs)
+          )
+            nearestIndex = index
+        return nearestIndex
       }
+      let activeIndex = dates.length - 1
+      const positionReadout = (
+        item: { svgEl: SVGElement },
+        fraction: number,
+        pointerY?: number,
+      ): void => {
+        const blockRect = cardioBlock.getBoundingClientRect()
+        const graphRect = item.svgEl.getBoundingClientRect()
+        const anchorX = graphRect.left - blockRect.left + clampN(fraction, 0, 1) * graphRect.width
+        const anchorY =
+          pointerY != null
+            ? pointerY - blockRect.top
+            : graphRect.top - blockRect.top + graphRect.height / 2
+        const readoutWidth = readout.offsetWidth
+        const readoutHeight = readout.offsetHeight
+        const gap = 10
+        const inset = 4
+        const rightSpace = blockRect.width - anchorX
+        const leftSpace = anchorX
+        const opensRight = rightSpace >= readoutWidth + gap || rightSpace >= leftSpace
+        const left = clampN(
+          opensRight ? anchorX + gap : anchorX - readoutWidth - gap,
+          inset,
+          Math.max(inset, blockRect.width - readoutWidth - inset),
+        )
+        const top = clampN(
+          anchorY,
+          readoutHeight / 2 + inset,
+          Math.max(readoutHeight / 2 + inset, blockRect.height - readoutHeight / 2 - inset),
+        )
+        readout.dataset.side = left < anchorX ? 'left' : 'right'
+        readout.style.setProperty('--tri-cardio-readout-x', `${left}px`)
+        readout.style.setProperty('--tri-cardio-readout-y', `${top}px`)
+      }
+      const showIndex = (
+        requestedIndex: number,
+        item: { svgEl: SVGElement },
+        pointerY?: number,
+      ): void => {
+        const nextIndex = clampN(requestedIndex, 0, dates.length - 1)
+        activeIndex = nextIndex
+        const date = dates[activeIndex]
+        const dateMs = Date.parse(`${date}T00:00:00Z`)
+        const cursorFraction = clampN((dateMs - startMs) / spanMs, 0, 1)
+        const cursorX = (cursorFraction * 100).toFixed(2)
+        dateReadout.textContent = shortDate(date)
+        const ariaValues = [date]
+        for (const metric of data.engine.cardio.metrics) {
+          const value = valuesByMetric.get(metric.key)?.get(date)
+          const valueText = value != null ? cardioValueText(value, metric.unit) : '—'
+          const valueCell = valueCells.get(metric.key)
+          if (valueCell) valueCell.textContent = valueText
+          ariaValues.push(`${tl(metric.label)} ${valueText}`)
+        }
+        const ariaValueText = ariaValues.join(' · ')
+        for (const item of items) {
+          item.cursor.setAttribute('x1', cursorX)
+          item.cursor.setAttribute('x2', cursorX)
+          item.svgEl.setAttribute('aria-valuenow', String(activeIndex + 1))
+          item.svgEl.setAttribute('aria-valuetext', ariaValueText)
+        }
+        cardioBlock.classList.add('tri-chart--hover')
+        positionReadout(item, cursorFraction, pointerY)
+      }
+      const hide = (): void => cardioBlock.classList.remove('tri-chart--hover')
+      const bound: Array<{
+        svgEl: SVGElement
+        move: (event: MouseEvent) => void
+        leave: () => void
+        focus: () => void
+        blur: () => void
+        keydown: (event: KeyboardEvent) => void
+      }> = []
+      for (const item of items) {
+        const move = (event: MouseEvent): void => {
+          const rect = item.svgEl.getBoundingClientRect()
+          showIndex(dateIndexAt((event.clientX - rect.left) / rect.width), item, event.clientY)
+        }
+        const leave = (): void => {
+          if (!item.svgEl.matches(':focus-visible')) hide()
+        }
+        const focus = (): void => showIndex(activeIndex, item)
+        const blur = (): void => {
+          window.queueMicrotask(() => {
+            if (!cardioBlock.contains(document.activeElement)) hide()
+          })
+        }
+        const keydown = (event: KeyboardEvent): void => {
+          const nextIndex =
+            event.key === 'ArrowLeft'
+              ? activeIndex - 1
+              : event.key === 'ArrowRight'
+                ? activeIndex + 1
+                : event.key === 'Home'
+                  ? 0
+                  : event.key === 'End'
+                    ? dates.length - 1
+                    : null
+          if (nextIndex == null) return
+          event.preventDefault()
+          showIndex(nextIndex, item)
+        }
+        item.svgEl.addEventListener('mousemove', move)
+        item.svgEl.addEventListener('mouseleave', leave)
+        item.svgEl.addEventListener('focus', focus)
+        item.svgEl.addEventListener('blur', blur)
+        item.svgEl.addEventListener('keydown', keydown)
+        bound.push({ svgEl: item.svgEl, move, leave, focus, blur, keydown })
+      }
+      cleanups.push(() => {
+        for (const item of bound) {
+          item.svgEl.removeEventListener('mousemove', item.move)
+          item.svgEl.removeEventListener('mouseleave', item.leave)
+          item.svgEl.removeEventListener('focus', item.focus)
+          item.svgEl.removeEventListener('blur', item.blur)
+          item.svgEl.removeEventListener('keydown', item.keydown)
+        }
+      })
     }
   }
 
@@ -13401,15 +13628,18 @@ const setupGloss = (root: HTMLElement): (() => void) => {
   pop.setAttribute('role', 'tooltip')
   root.appendChild(pop)
   let current: HTMLElement | null = null
-  const place = (term: HTMLElement) => {
+  const place = (term: HTMLElement, pointer?: { x: number; y: number }) => {
     const r = term.getBoundingClientRect()
     const pr = pop.getBoundingClientRect()
-    let left = r.left
-    if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - 8 - pr.width
-    let top = r.bottom + 6
-    if (top + pr.height > window.innerHeight - 8) top = r.top - 6 - pr.height
-    pop.style.left = `${Math.max(8, left)}px`
-    pop.style.top = `${Math.max(8, top)}px`
+    const followsPointer = pointer != null && term.closest('.tri-engine-cardio') != null
+    let left = followsPointer ? pointer.x + 12 : r.left
+    if (left + pr.width > window.innerWidth - 8)
+      left = followsPointer ? pointer.x - 12 - pr.width : window.innerWidth - 8 - pr.width
+    let top = followsPointer ? pointer.y + 12 : r.bottom + 6
+    if (top + pr.height > window.innerHeight - 8)
+      top = followsPointer ? pointer.y - 12 - pr.height : r.top - 6 - pr.height
+    pop.style.left = `${clampN(left, 8, Math.max(8, window.innerWidth - 8 - pr.width))}px`
+    pop.style.top = `${clampN(top, 8, Math.max(8, window.innerHeight - 8 - pr.height))}px`
   }
   const show = (term: HTMLElement) => {
     const key = term.dataset.gloss ?? ''
@@ -13437,16 +13667,22 @@ const setupGloss = (root: HTMLElement): (() => void) => {
     if (to && t.contains(to)) return
     hide(t)
   }
+  const onMove = (event: MouseEvent) => {
+    const t = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-gloss]')
+    if (t && t === current) place(t, { x: event.clientX, y: event.clientY })
+  }
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape') hide()
   }
   root.addEventListener('mouseover', onOver)
+  root.addEventListener('mousemove', onMove)
   root.addEventListener('mouseout', onOut)
   root.addEventListener('focusin', onOver)
   root.addEventListener('focusout', onOut)
   document.addEventListener('keydown', onKey)
   return () => {
     root.removeEventListener('mouseover', onOver)
+    root.removeEventListener('mousemove', onMove)
     root.removeEventListener('mouseout', onOut)
     root.removeEventListener('focusin', onOver)
     root.removeEventListener('focusout', onOut)
