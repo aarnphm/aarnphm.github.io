@@ -94,21 +94,21 @@ End with the redo list:
 
 - Re-solve every miss from a clean stub.
 - Review every deck once.
-- Read [[hinterland/prep/cheatsheet]] once, slowly.
+- Read [[hinterland/prep/bt/cheatsheet]] once, slowly.
 - Stop adding new topics.
 
 ## 1-day cram
 
 Five hours. No heroics. The point is to be correct under time pressure.
 
-| block     | work                                                                   |
-| --------- | ---------------------------------------------------------------------- |
-| 0:00-0:35 | read [[hinterland/prep/cheatsheet]] and hand-write the uvarint vectors |
-| 0:35-1:50 | solve `03-varint` core stubs                                           |
-| 1:50-2:50 | solve `05-decode` core stubs                                           |
-| 2:50-3:10 | break, no screen                                                       |
-| 3:10-4:10 | run the 60-minute varint mock from day 2                               |
-| 4:10-4:40 | grade misses and re-solve one clean                                    |
-| 4:40-5:00 | review all flashcards for 03, 05, 04, and 06                           |
+| block     | work                                                                      |
+| --------- | ------------------------------------------------------------------------- |
+| 0:00-0:35 | read [[hinterland/prep/bt/cheatsheet]] and hand-write the uvarint vectors |
+| 0:35-1:50 | solve `03-varint` core stubs                                              |
+| 1:50-2:50 | solve `05-decode` core stubs                                              |
+| 2:50-3:10 | break, no screen                                                          |
+| 3:10-4:10 | run the 60-minute varint mock from day 2                                  |
+| 4:10-4:40 | grade misses and re-solve one clean                                       |
+| 4:40-5:00 | review all flashcards for 03, 05, 04, and 06                              |
 
 If the real screen turns into UTF-8, RLE, buffered readers, sketches, or rate limits, use the cheatsheet rows as the fallback map.

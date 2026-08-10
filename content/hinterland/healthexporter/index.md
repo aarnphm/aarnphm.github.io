@@ -35,7 +35,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
 
 ```json
 {
-  "version": 8,
+  "version": 10,
   "generatedAt": "2026-06-19T20:27:00-04:00",
   "timezone": "America/Toronto",
   "days": [
@@ -96,6 +96,7 @@ Encodes `apple-health-import.json` into the ubiquity container `iCloud.xyz.aarnp
         { "time": "2026-07-01T01:11:04Z", "bpm": 118 },
         { "time": "2026-07-01T01:11:09Z", "bpm": 122 }
       ],
+      "activities": [],
       "strideLengthM": [{ "time": "2026-07-01T01:11:04Z", "value": 1.18 }],
       "groundContactTimeMs": [{ "time": "2026-07-01T01:11:04Z", "value": 241 }],
       "verticalOscillationCm": [{ "time": "2026-07-01T01:11:04Z", "value": 9.8 }]

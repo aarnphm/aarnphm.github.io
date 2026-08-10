@@ -67,6 +67,12 @@ function streamEntries(xml: string): UnknownRecord[] {
   return [entries]
 }
 
+function streamFeed(xml: string): UnknownRecord {
+  const parsed: unknown = new XMLParser({ ignoreAttributes: false }).parse(xml)
+  assert.ok(isRecord(parsed))
+  return readRecord(parsed, 'feed')
+}
+
 test('stream atom feed uses entry descriptions as metadata summaries', () => {
   const fileData: QuartzPluginData = {
     slug: 'stream' as FullSlug,
@@ -123,4 +129,46 @@ test('stream atom feed uses entry descriptions as metadata summaries', () => {
 
   assert.equal(readString(publicEntry, 'summary'), 'public summary')
   assert.equal(readString(readRecord(publicEntry, 'content'), '#text'), '<p>body only</p>')
+})
+
+test('stream atom feed uses the canonical stream host for feed and entry URLs', () => {
+  const fileData: QuartzPluginData = {
+    slug: 'stream' as FullSlug,
+    filePath: 'stream.md' as FilePath,
+    frontmatter: { title: 'stream', pageLayout: 'default', modified: '2026-06-11T00:00:00.000Z' },
+    streamData: {
+      entries: [
+        {
+          id: 'public-entry',
+          title: 'public title',
+          metadata: {},
+          content: [],
+          date: '2026-06-09T00:00:00.000Z',
+          timestamp: Date.parse('2026-06-09T00:00:00.000Z'),
+        },
+      ],
+    },
+  }
+
+  const feed = streamFeed(generateStreamAtomFeed(testCtx(), fileData))
+  const links = feed.link
+  assert.ok(Array.isArray(links))
+  assert.ok(links.every(isRecord))
+  assert.deepEqual(
+    links.map(link => link['@_href']),
+    ['https://stream.aarnphm.xyz/', 'https://stream.aarnphm.xyz/'],
+  )
+  assert.equal(readString(feed, 'id'), 'https://stream.aarnphm.xyz/')
+  assert.equal(readString(feed, 'logo'), 'https://stream.aarnphm.xyz/icon.png')
+  assert.equal(readString(feed, 'icon'), 'https://stream.aarnphm.xyz/icon.png')
+
+  const [entry] = streamEntries(generateStreamAtomFeed(testCtx(), fileData))
+  assert.equal(
+    readRecord(entry, 'link')['@_href'],
+    'https://stream.aarnphm.xyz/on/2026/06/09?entry=public-entry',
+  )
+  assert.equal(
+    readString(entry, 'id'),
+    'https://stream.aarnphm.xyz/on/2026/06/09?entry=public-entry#public-entry',
+  )
 })

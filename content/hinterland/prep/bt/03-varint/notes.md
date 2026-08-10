@@ -17,7 +17,7 @@ This is the most likely live prompt.
 3. Read `zigzag`.
 4. Solve `zigzag_encode`, `zigzag_decode`, `encode_svarint`, and `decode_svarint`.
 5. Solve `decode_uvarint_seq`.
-6. Review [[hinterland/prep/03-varint/notes.fc]].
+6. Review [[hinterland/prep/bt/03-varint/notes.fc]].
 
 Depth: `encode_vlq`, `decode_vlq`, `pv_encode`, and `pv_decode`.
 

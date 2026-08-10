@@ -1,6 +1,6 @@
 ---
 date: '2025-12-12'
-description: solutions et al., and runners
+description: LeetCode solutions and a local runner.
 id: index
 modified: 2026-06-05 15:08:11 GMT-04:00
 tags:
@@ -8,13 +8,12 @@ tags:
 title: leetcode
 ---
 
-I also implemented a smol `lc` runner in Rust such that we can just run lc problem locally
+I wrote a smol `lc` runner in Rust so I can run LeetCode solutions locally.
 
-to build:
+From the garden root:
 
 ```bash
-
-cargo build --release && lc run 312.cpp
+cargo run --release --manifest-path content/puzzle/lc/cli/Cargo.toml -- run 312.cpp
 ```
 
-Currently supports C++ and Rust implementation of solutions.
+The runner supports solutions written in C++ and Rust.

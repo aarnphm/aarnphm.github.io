@@ -16,7 +16,7 @@ This module is about turning byte positions into values.
 3. Read `floats` if the prompt mentions IEEE 754.
 4. Solve `float32_parts`, `float_to_bits`, and `bits_to_float`.
 5. Solve `hexdump`.
-6. Review [[hinterland/prep/04-byte-streams/notes.fc]].
+6. Review [[hinterland/prep/bt/04-byte-streams/notes.fc]].
 
 ## picture
 

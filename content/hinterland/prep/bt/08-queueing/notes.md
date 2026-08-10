@@ -18,7 +18,7 @@ This module turns overloaded systems into math you can say in an interview.
 4. Solve `pk_wq`, `kingman_wq`, and `simulate_fifo`.
 5. Read `rate limiters`.
 6. Solve `TokenBucket`, `SlidingWindowCounter`, and `BoundedQueue`.
-7. Review [[hinterland/prep/08-queueing/notes.fc]].
+7. Review [[hinterland/prep/bt/08-queueing/notes.fc]].
 
 Depth: `two_choices`.
 

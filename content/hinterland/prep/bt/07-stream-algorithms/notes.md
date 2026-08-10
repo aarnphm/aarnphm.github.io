@@ -17,7 +17,7 @@ This module is for adjacent systems screens and follow-ups.
 3. Read `sketches`.
 4. Solve `misra_gries`, `CountMinSketch`, and `SwagWindow`.
 5. Skim `systems stream vocabulary`.
-6. Review [[hinterland/prep/07-stream-algorithms/notes.fc]].
+6. Review [[hinterland/prep/bt/07-stream-algorithms/notes.fc]].
 
 ## choice map
 

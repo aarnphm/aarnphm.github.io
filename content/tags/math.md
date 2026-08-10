@@ -4,7 +4,7 @@ description: mathematics, tools for thinking
 title: math
 ---
 
-I do read quite abit of maths during downtime, and this includes some notes I have while getting snipped on certain topics.
+I read quite a bit of maths during downtime, and these are notes on some of those topics.
 
 Courses to do:
 

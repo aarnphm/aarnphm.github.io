@@ -8,4 +8,4 @@ title: pattern
 >
 > —p. xviii
 
-These are atomic concepts and observations that permeates through my thought trace.
+These are atomic concepts and observations that permeate my thought trace.

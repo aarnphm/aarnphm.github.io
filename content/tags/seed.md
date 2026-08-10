@@ -4,6 +4,6 @@ description: bookmarks
 title: seed
 ---
 
-I tend to spend a lot of my time on the internet, and these notes are considered as bookmarks I want to visit again. They are seeds that form the basis of my thoughts and work.
+I spend a lot of time on the internet. These notes are bookmarks I want to visit again, and seeds for later thoughts and work.
 
-see also [[arena|my version of a rundown are.na]]
+see also [[arena|my version of a rundown of are.na]]
