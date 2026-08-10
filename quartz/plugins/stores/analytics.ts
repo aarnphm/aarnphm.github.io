@@ -13,7 +13,6 @@ import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
 import {
-  isUsableCoreTemperatureSample,
   matchCoreBodyTemperatureActivity,
   type CoreBodyTemperatureCache,
 } from './core-body-temperature'
@@ -31,6 +30,7 @@ import {
   type ActivityHeartRate,
   type RawStravaActivity,
   type PowerCurvePoint,
+  type StravaActivityDetail,
   type StravaStreams,
   type StravaRawCache,
   type StravaZones,
@@ -189,6 +189,8 @@ export interface AnalyticsInputs {
   vo2labs?: unknown
   ftp?: number | null
   powerCurve?: PowerCurveBlock
+  zones?: StravaZones | null
+  activityDetails?: Readonly<Record<string, StravaActivityDetail>>
   since?: string
   timeZone?: string
 }
@@ -736,6 +738,35 @@ export interface HeatBlock {
   method: HeatMethod
 }
 
+export type DistributionPowerSource = 'device' | 'estimated'
+export type DistributionCadenceUnit = 'rpm' | 'spm' | 'str/min'
+export type DistributionThermalSource = 'core-app' | 'core-fit'
+
+export interface ActivityDistributionPoint {
+  id: number
+  date: string
+  startedAt: string
+  sport: Sport
+  name: string
+  movingTimeS: number
+  heartRateZoneSeconds: number[] | null
+  averagePowerWatts: number | null
+  powerSource: DistributionPowerSource | null
+  cadence: number | null
+  cadenceUnit: DistributionCadenceUnit
+  skinTemperatureC: number | null
+  heatStrainIndex: number | null
+  skinThermalSource: DistributionThermalSource | null
+  heatStrainThermalSource: DistributionThermalSource | null
+  skinObservedSeconds: number
+  heatStrainObservedSeconds: number
+}
+
+export interface DistributionsBlock {
+  heartRateZoneBounds: number[]
+  activities: ActivityDistributionPoint[]
+}
+
 export interface EngineBlock {
   vo2max: Vo2maxBlock
   lactateThreshold: LactateThresholdBlock
@@ -769,6 +800,7 @@ export interface Analytics {
   recovery: RecoveryBlock
   powerCurve: PowerCurveBlock
   heat: HeatBlock
+  distributions: DistributionsBlock
   engine: EngineBlock
   events: RaceEvent[]
   activities: ActivitySummary[]
@@ -784,6 +816,8 @@ const emptyPowerCurve = (): PowerCurveBlock => ({
   ftp: null,
   goalFtp: null,
 })
+
+const emptyDistributions = (): DistributionsBlock => ({ heartRateZoneBounds: [], activities: [] })
 
 interface Act {
   a: RawStravaActivity
@@ -1156,8 +1190,11 @@ function emptyHeat(): HeatBlock {
 interface CoreHeatObservation {
   durationS: number
   hotS: number
-  coreTemperatureC: number
-  heatStrainIndex: number
+  coreTemperatureC: number | null
+  heatStrainIndex: number | null
+  heatStrainObservedS: number
+  skinTemperatureC: number | null
+  skinObservedS: number
   origin: CoreTemperatureOrigin
 }
 
@@ -1165,8 +1202,8 @@ function coreAppHeatObservation(
   activity: RawStravaActivity,
   core: CoreBodyTemperatureCache | null | undefined,
 ): CoreHeatObservation | null {
-  const samples = matchCoreBodyTemperatureActivity(activity, core).filter(sample =>
-    isUsableCoreTemperatureSample(sample),
+  const samples = matchCoreBodyTemperatureActivity(activity, core).filter(
+    sample => sample.quality == null || sample.quality >= 2,
   )
   if (samples.length === 0) return null
   const activityDurationS = Math.max(
@@ -1176,41 +1213,53 @@ function coreAppHeatObservation(
   let observedS = 0
   let hotS = 0
   let heatStrainSeconds = 0
+  let skinObservedS = 0
+  let skinTemperatureSeconds = 0
+  let coreObservedS = 0
   let coreTemperatureSeconds = 0
   for (let index = 0; index < samples.length; index++) {
     const sample = samples[index]
-    const heatStrainIndex = sample.heatStrainIndex
-    const coreTemperatureC = sample.coreTemperatureC
-    if (
-      heatStrainIndex == null ||
-      heatStrainIndex < 0 ||
-      heatStrainIndex > 20 ||
-      coreTemperatureC == null
-    )
-      continue
     const start = clamp(sample.elapsedS, 0, activityDurationS)
     const next = samples[index + 1]?.elapsedS ?? start + 60
     const end = clamp(Math.min(next, start + 90), start, activityDurationS)
     const durationS = end - start
     if (!(durationS > 0)) continue
-    observedS += durationS
-    heatStrainSeconds += heatStrainIndex * durationS
-    coreTemperatureSeconds += coreTemperatureC * durationS
-    if (heatStrainIndex >= HEAT_STRAIN_THRESHOLD) hotS += durationS
+
+    const heatStrainIndex = sample.heatStrainIndex
+    if (heatStrainIndex != null && heatStrainIndex >= 0 && heatStrainIndex <= 20) {
+      observedS += durationS
+      heatStrainSeconds += heatStrainIndex * durationS
+      if (heatStrainIndex >= HEAT_STRAIN_THRESHOLD) hotS += durationS
+    }
+
+    const coreTemperatureC = sample.coreTemperatureC
+    if (coreTemperatureC != null && coreTemperatureC >= 25 && coreTemperatureC <= 45) {
+      coreObservedS += durationS
+      coreTemperatureSeconds += coreTemperatureC * durationS
+    }
+
+    const skinTemperatureC = sample.skinTemperatureC
+    if (skinTemperatureC != null && skinTemperatureC >= 0 && skinTemperatureC <= 50) {
+      skinObservedS += durationS
+      skinTemperatureSeconds += skinTemperatureC * durationS
+    }
   }
-  if (!(observedS > 0)) return null
+  if (!(observedS > 0) && !(skinObservedS > 0)) return null
   return {
     durationS: observedS,
     hotS,
-    coreTemperatureC: coreTemperatureSeconds / observedS,
-    heatStrainIndex: heatStrainSeconds / observedS,
+    coreTemperatureC: coreObservedS > 0 ? coreTemperatureSeconds / coreObservedS : null,
+    heatStrainIndex: observedS > 0 ? heatStrainSeconds / observedS : null,
+    heatStrainObservedS: observedS,
+    skinTemperatureC: skinObservedS > 0 ? skinTemperatureSeconds / skinObservedS : null,
+    skinObservedS,
     origin: 'app',
   }
 }
 
 function coreFitHeatObservation(
   activity: RawStravaActivity,
-  sport: 'bike' | 'run',
+  sport: Sport,
   garmin: GarminCache | null | undefined,
 ): CoreHeatObservation | null {
   const match = matchGarminActivity(activity, sport, garmin ?? null)
@@ -1218,15 +1267,12 @@ function coreFitHeatObservation(
   const time = stream?.time
   const heatStrain = stream?.heatStrainIndex
   const coreTemperature = stream?.coreTemperatureC
-  if (
-    !time ||
-    !heatStrain ||
-    !coreTemperature ||
-    time.length < 2 ||
-    heatStrain.length !== time.length ||
-    coreTemperature.length !== time.length
-  )
-    return null
+  const skinTemperature = stream?.skinTemperatureC
+  if (!time || time.length < 2) return null
+  const validHeatStrain = heatStrain?.length === time.length ? heatStrain : null
+  const validCoreTemperature = coreTemperature?.length === time.length ? coreTemperature : null
+  const validSkinTemperature = skinTemperature?.length === time.length ? skinTemperature : null
+  if (!validHeatStrain && !validSkinTemperature) return null
 
   const activityDurationS = Math.max(
     1,
@@ -1237,42 +1283,156 @@ function coreFitHeatObservation(
   let heatStrainSeconds = 0
   let coreObservedS = 0
   let coreTemperatureSeconds = 0
+  let skinObservedS = 0
+  let skinTemperatureSeconds = 0
   for (let index = 0; index < time.length; index++) {
     const start = clamp(time[index], 0, activityDurationS)
     const end = clamp(time[index + 1] ?? activityDurationS, start, activityDurationS)
     const durationS = end - start
     if (!(durationS > 0)) continue
 
-    const heatStrainIndex = heatStrain[index]
-    if (Number.isFinite(heatStrainIndex) && heatStrainIndex >= 0 && heatStrainIndex <= 20) {
+    const heatStrainIndex = validHeatStrain?.[index]
+    if (
+      heatStrainIndex != null &&
+      Number.isFinite(heatStrainIndex) &&
+      heatStrainIndex >= 0 &&
+      heatStrainIndex <= 20
+    ) {
       observedS += durationS
       heatStrainSeconds += heatStrainIndex * durationS
       if (heatStrainIndex >= HEAT_STRAIN_THRESHOLD) hotS += durationS
     }
 
-    const temperatureC = coreTemperature[index]
-    if (Number.isFinite(temperatureC) && temperatureC >= 25 && temperatureC <= 45) {
+    const temperatureC = validCoreTemperature?.[index]
+    if (
+      temperatureC != null &&
+      Number.isFinite(temperatureC) &&
+      temperatureC >= 25 &&
+      temperatureC <= 45
+    ) {
       coreObservedS += durationS
       coreTemperatureSeconds += temperatureC * durationS
     }
+
+    const skinC = validSkinTemperature?.[index]
+    if (skinC != null && Number.isFinite(skinC) && skinC >= 0 && skinC <= 50) {
+      skinObservedS += durationS
+      skinTemperatureSeconds += skinC * durationS
+    }
   }
-  if (!(observedS > 0) || !(coreObservedS > 0)) return null
+  if (!(observedS > 0) && !(skinObservedS > 0)) return null
   return {
     durationS: observedS,
     hotS,
-    coreTemperatureC: coreTemperatureSeconds / coreObservedS,
-    heatStrainIndex: heatStrainSeconds / observedS,
+    coreTemperatureC: coreObservedS > 0 ? coreTemperatureSeconds / coreObservedS : null,
+    heatStrainIndex: observedS > 0 ? heatStrainSeconds / observedS : null,
+    heatStrainObservedS: observedS,
+    skinTemperatureC: skinObservedS > 0 ? skinTemperatureSeconds / skinObservedS : null,
+    skinObservedS,
     origin: 'fit',
   }
 }
 
 function coreHeatObservation(
   activity: RawStravaActivity,
-  sport: 'bike' | 'run',
+  sport: Sport,
   core: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
 ): CoreHeatObservation | null {
-  return coreAppHeatObservation(activity, core) ?? coreFitHeatObservation(activity, sport, garmin)
+  const app = coreAppHeatObservation(activity, core)
+  if (app && app.durationS > 0 && app.coreTemperatureC != null && app.heatStrainIndex != null)
+    return app
+  const fit = coreFitHeatObservation(activity, sport, garmin)
+  return fit && fit.durationS > 0 && fit.coreTemperatureC != null && fit.heatStrainIndex != null
+    ? fit
+    : null
+}
+
+function coreThermalObservation(
+  activity: RawStravaActivity,
+  sport: Sport,
+  core: CoreBodyTemperatureCache | null | undefined,
+  garmin: GarminCache | null | undefined,
+): {
+  skinTemperatureC: number | null
+  skinObservedS: number
+  skinSource: DistributionThermalSource | null
+  heatStrainIndex: number | null
+  heatStrainObservedS: number
+  heatStrainSource: DistributionThermalSource | null
+} | null {
+  const app = coreAppHeatObservation(activity, core)
+  const fit = coreFitHeatObservation(activity, sport, garmin)
+  const skin = app?.skinTemperatureC != null ? app : fit
+  const heatStrain = app?.heatStrainIndex != null ? app : fit
+  if (skin?.skinTemperatureC == null && heatStrain?.heatStrainIndex == null) return null
+  return {
+    skinTemperatureC: skin?.skinTemperatureC ?? null,
+    skinObservedS: skin?.skinObservedS ?? 0,
+    skinSource:
+      skin?.skinTemperatureC != null ? (skin.origin === 'app' ? 'core-app' : 'core-fit') : null,
+    heatStrainIndex: heatStrain?.heatStrainIndex ?? null,
+    heatStrainObservedS: heatStrain?.heatStrainObservedS ?? 0,
+    heatStrainSource:
+      heatStrain?.heatStrainIndex != null
+        ? heatStrain.origin === 'app'
+          ? 'core-app'
+          : 'core-fit'
+        : null,
+  }
+}
+
+function buildDistributions(
+  acts: readonly Act[],
+  zones: StravaZones | null | undefined,
+  activityDetails: Readonly<Record<string, StravaActivityDetail>> | undefined,
+  swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
+  core: CoreBodyTemperatureCache | null | undefined,
+  garmin: GarminCache | null | undefined,
+): DistributionsBlock {
+  const heartRateZoneBounds = [...(zones?.hr ?? [])]
+  const activities = acts.map(({ a, sport, day }): ActivityDistributionPoint => {
+    const detail = activityDetails?.[String(a.id)]
+    const averagePower = detail?.avgWatts ?? a.averageWatts ?? null
+    const averagePowerWatts =
+      averagePower != null && Number.isFinite(averagePower) && averagePower > 0
+        ? round(averagePower, 0)
+        : null
+    const rawCadence = detail?.avgCadence ?? a.averageCadence ?? null
+    const cadence =
+      sport === 'swim'
+        ? (swimMetrics.get(a.id)?.strokeRateSpm ?? null)
+        : rawCadence != null && Number.isFinite(rawCadence) && rawCadence > 0
+          ? rawCadence * (sport === 'run' ? 2 : 1)
+          : null
+    const thermal = sport === 'swim' ? null : coreThermalObservation(a, sport, core, garmin)
+    return {
+      id: a.id,
+      date: day,
+      startedAt: a.startDate,
+      sport,
+      name: a.name,
+      movingTimeS: a.movingTime,
+      heartRateZoneSeconds: detail?.hrZones ? [...detail.hrZones] : null,
+      averagePowerWatts,
+      powerSource:
+        averagePowerWatts == null
+          ? null
+          : detail?.deviceWatts === true || (detail == null && a.deviceWatts === true)
+            ? 'device'
+            : 'estimated',
+      cadence: cadence == null ? null : round(cadence, sport === 'swim' ? 1 : 0),
+      cadenceUnit: sport === 'bike' ? 'rpm' : sport === 'run' ? 'spm' : 'str/min',
+      skinTemperatureC:
+        thermal?.skinTemperatureC == null ? null : round(thermal.skinTemperatureC, 2),
+      heatStrainIndex: thermal?.heatStrainIndex == null ? null : round(thermal.heatStrainIndex, 1),
+      skinThermalSource: thermal?.skinSource ?? null,
+      heatStrainThermalSource: thermal?.heatStrainSource ?? null,
+      skinObservedSeconds: Math.round(thermal?.skinObservedS ?? 0),
+      heatStrainObservedSeconds: Math.round(thermal?.heatStrainObservedS ?? 0),
+    }
+  })
+  return { heartRateZoneBounds, activities }
 }
 
 function buildHeat(
@@ -1297,7 +1457,12 @@ function buildHeat(
     eligible.push(activity)
 
     const core = coreHeatObservation(activity, sport, coreCache, garmin)
-    if (core) {
+    if (
+      core &&
+      core.durationS > 0 &&
+      core.coreTemperatureC != null &&
+      core.heatStrainIndex != null
+    ) {
       sourceCounts.core += 1
       coreSourceCounts[core.origin] += 1
       observed.push({
@@ -4333,6 +4498,7 @@ function emptyAnalytics(athleteId: number, today: string): Analytics {
     recovery: emptyRecovery(),
     powerCurve: emptyPowerCurve(),
     heat: emptyHeat(),
+    distributions: emptyDistributions(),
     engine: emptyEngine(),
     events: [],
     activities: [],
@@ -4408,6 +4574,14 @@ export function buildAnalytics(
   }))
   const swimMetrics = swimMetricsByActivityId(acts, inputs.apple)
   const runningDynamics = runningDynamicsByActivityId(acts, inputs.apple)
+  const distributions = buildDistributions(
+    acts,
+    inputs.zones,
+    inputs.activityDetails,
+    swimMetrics,
+    inputs.core,
+    inputs.garmin,
+  )
 
   const thresholdList = SPORT_ORDER.map(sport => estimateThreshold(acts, sport, todayMs))
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
@@ -4731,6 +4905,7 @@ export function buildAnalytics(
     recovery,
     powerCurve: inputs.powerCurve ?? emptyPowerCurve(),
     heat,
+    distributions,
     engine,
     events: inputs.events ?? [],
     activities,

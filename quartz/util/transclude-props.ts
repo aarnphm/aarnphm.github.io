@@ -7,6 +7,7 @@ export type TranscludeTarget = {
   targetSlug: FullSlug
   url: string
   alias: string
+  anchorPath?: string
   blockRef?: string
   rawMetadata?: string
 }
@@ -82,9 +83,14 @@ export function readTranscludeTarget(node: Element): TranscludeTarget | undefine
       dataEmbedAlias !== undefined && dataEmbedAlias !== 'undefined'
         ? dataEmbedAlias
         : (blockRef ?? ''),
+    anchorPath: readHastStringProperty(node.properties, 'dataAnchorPath', 'data-anchor-path'),
     blockRef,
     rawMetadata: readHastStringProperty(node.properties, 'dataMetadata', 'data-metadata'),
   }
+}
+
+export function transcludeVisitKey(target: TranscludeTarget): FullSlug {
+  return `${target.targetSlug}${target.anchorPath ?? target.blockRef ?? ''}` as FullSlug
 }
 
 function findHeadingElement(node: RootContent, id?: string): Element | undefined {

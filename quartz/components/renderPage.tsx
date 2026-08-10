@@ -64,9 +64,16 @@ import {
   getHastClassNames,
   hasHastClass,
   readTranscludeTarget,
+  transcludeVisitKey,
 } from '../util/transclude-props'
 import { buildTriathlonCalcCard, decodeCalcShare } from '../util/triathlon-calculator'
-import { type DayCardExtras, type DetailCtx } from '../util/triathlon-card'
+import {
+  buildActivityComparison,
+  powerViewActivity,
+  type DayCardExtras,
+  type DetailCtx,
+} from '../util/triathlon-card'
+import { decodeActivityComparisonAnchor } from '../util/triathlon-comparison'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -1379,9 +1386,9 @@ export function transcludeFinal(
       }
       const transclude = readTranscludeTarget(node)
       if (!transclude) return
-      const { inner, targetSlug: transcludeTarget, url, alias } = transclude
+      const { anchorPath, inner, targetSlug: transcludeTarget, url, alias } = transclude
       let blockRef = transclude.blockRef
-      const visitKey = `${transcludeTarget}${blockRef ?? ''}` as FullSlug
+      const visitKey = transcludeVisitKey(transclude)
       if (visited.has(visitKey)) return
       visited.add(visitKey)
 
@@ -1447,11 +1454,7 @@ export function transcludeFinal(
       if (page.frontmatter?.layout === 'triathlon') {
         triathlonDate = blockRef ? DATE_ANCHOR_RE.exec(blockRef)?.[1] : undefined
         if (!triathlonDate) {
-          const anchorPath = node.properties?.dataAnchorPath
-          const anchor = triathlonEmbedAnchorFromSource(
-            typeof anchorPath === 'string' ? anchorPath : undefined,
-            fileData.rawMarkdownSource,
-          )
+          const anchor = triathlonEmbedAnchorFromSource(anchorPath, fileData.rawMarkdownSource)
           if (anchor) {
             triathlonDate = anchor.date
             triathlonEmbedExtras = anchor
@@ -1495,6 +1498,66 @@ export function transcludeFinal(
         if (fileData.frontmatter?.pageLayout !== 'reflection') {
           children.push(
             h('a', { href: dayHref, class: 'internal transclude-src' }, [
+              {
+                type: 'text',
+                value:
+                  page.frontmatter?.title ?? i18n(cfg.locale).components.transcludes.linkToOriginal,
+              },
+            ]),
+          )
+        }
+        node.children = children
+        return
+      }
+
+      const comparisonAnchor =
+        blockRef && page.frontmatter?.layout === 'triathlon'
+          ? blockRef.startsWith('#')
+            ? blockRef.slice(1)
+            : blockRef
+          : null
+      const comparisonIds = comparisonAnchor
+        ? decodeActivityComparisonAnchor(comparisonAnchor)
+        : null
+      if (comparisonIds && comparisonAnchor) {
+        const since = page.frontmatter?.['strava']
+        const payload = loadStravaPayloadSync(
+          typeof since === 'string' ? since : undefined,
+          page.tracking?.fueling,
+          page.tracking?.strength,
+        )
+        const activities = comparisonIds.flatMap(activityId => {
+          const activity = payload.details[activityId]
+          return activity ? [powerViewActivity(activity)] : []
+        })
+        const children: ElementContent[] = [
+          h(
+            '.tri-compare-embed',
+            {
+              'data-compare-anchor': comparisonAnchor,
+              'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
+            },
+            [
+              buildActivityComparison(
+                triathlonCardFactory,
+                activities,
+                {
+                  zones: payload.zones,
+                  curveRef: payload.powerCurveRef,
+                  curveYearRef: payload.powerCurveYearRef,
+                  curveYear: payload.powerCurveYear,
+                  ftp: ATHLETE.ftp,
+                  goalFtp: ATHLETE.goalFTP,
+                  vt1: null,
+                } satisfies DetailCtx,
+                { removable: false },
+              ),
+            ],
+          ),
+        ]
+        if (fileData.frontmatter?.pageLayout !== 'reflection') {
+          children.push(
+            h('a', { href: inner.properties?.href, class: 'internal transclude-src' }, [
               {
                 type: 'text',
                 value:

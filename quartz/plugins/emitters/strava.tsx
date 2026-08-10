@@ -268,6 +268,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ftp: ATHLETE.ftp,
           goalFtp: ATHLETE.goalFTP,
         },
+        zones: payload.zones,
+        activityDetails: payload.details,
         since: typeof since === 'string' ? since : undefined,
       })
       files.push(

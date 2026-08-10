@@ -5,6 +5,7 @@ import type {
   GarminActivity,
   GarminCache,
   GarminClimbSegment,
+  GarminGearShift,
   GarminStreams,
   GarminVo2Day,
   GarminWeightSample,
@@ -18,9 +19,11 @@ import {
   garminConnectWeightSamples,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
+import { garminGearShiftsFromArchive } from '../util/garmin-fit'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
+  fetchGarminBytes,
   fetchGarminJson,
   readGarminConnectSession,
   type GarminConnectSession,
@@ -30,7 +33,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 6
+const CACHE_VERSION = 7
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
@@ -231,6 +234,19 @@ async function fetchActivityClimbDetail(
   return isRecord(raw) ? raw : null
 }
 
+async function fetchActivityGearShifts(
+  session: GarminConnectSession,
+  base: string,
+  id: string,
+): Promise<GarminGearShift[]> {
+  const archive = await fetchGarminBytes(
+    session,
+    base,
+    `/download-service/files/activity/${encodeURIComponent(id)}`,
+  )
+  return garminGearShiftsFromArchive(archive)
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -260,9 +276,11 @@ async function main(): Promise<void> {
   const partial = maxActivities > 0
   const activities = initialGarminSyncRecords(previous?.activities, partial)
   const streams = initialGarminSyncRecords(previous?.streams, partial)
+  const gearShifts = initialGarminSyncRecords(previous?.gearShifts, partial)
   const climbs = initialGarminSyncRecords(previous?.climbs, partial)
   let details = 0
   let streamDetails = 0
+  let shiftArchives = 0
   let climbDetails = 0
   let skipped = 0
   for (let i = 0; i < list.length; i++) {
@@ -306,6 +324,25 @@ async function main(): Promise<void> {
       if (stream) streams[activity.id] = stream
       else delete streams[activity.id]
       if (activity.sport === 'bike') {
+        const previousShifts =
+          previous?.gearShifts?.[activity.id] ?? previous?.gearShifts?.[cacheId]
+        let shiftOutcome: GarminFetchOutcome<GarminGearShift[]> = { ok: false }
+        if (previousShifts != null) shiftOutcome = { ok: true, value: previousShifts }
+        else {
+          try {
+            const shifts = await fetchActivityGearShifts(session, base, item.id)
+            shiftArchives++
+            shiftOutcome = { ok: true, value: shifts }
+          } catch (err) {
+            console.warn(
+              `[garmin] shifts ${item.id} failed: ${err instanceof Error ? err.message : err}`,
+            )
+          }
+        }
+        const shifts = resolveGarminFetch(shiftOutcome, previousShifts)
+        if (shifts) gearShifts[activity.id] = shifts
+        else delete gearShifts[activity.id]
+
         let climbOutcome: GarminFetchOutcome<GarminClimbSegment[]> = { ok: false }
         try {
           const climbDetail = await fetchActivityClimbDetail(session, base, item.id)
@@ -402,6 +439,8 @@ async function main(): Promise<void> {
   const now = Date.now()
   const sortedStreams: Record<string, GarminStreams> = {}
   for (const id of Object.keys(sorted)) if (streams[id]) sortedStreams[id] = streams[id]
+  const sortedGearShifts: Record<string, GarminGearShift[]> = {}
+  for (const id of Object.keys(sorted)) if (gearShifts[id]) sortedGearShifts[id] = gearShifts[id]
   const sortedClimbs: Record<string, GarminClimbSegment[]> = {}
   for (const id of Object.keys(sorted)) if (climbs[id]) sortedClimbs[id] = climbs[id]
   const cache: GarminCache = {
@@ -409,6 +448,7 @@ async function main(): Promise<void> {
     lastSync: now,
     activities: sorted,
     streams: sortedStreams,
+    gearShifts: sortedGearShifts,
     climbs: sortedClimbs,
     vo2max,
     weight,
@@ -417,7 +457,7 @@ async function main(): Promise<void> {
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${skipped} skipped) -> ${cacheFile}`,
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${shiftArchives} shift archives, ${Object.values(sortedGearShifts).reduce((sum, shifts) => sum + shifts.length, 0)} shift states, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${skipped} skipped) -> ${cacheFile}`,
   )
 }
 

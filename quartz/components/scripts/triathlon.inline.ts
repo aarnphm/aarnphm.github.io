@@ -59,6 +59,7 @@ import {
   activityComparisonDisplayValueAtDistance,
   activityComparisonFractionForKey,
   activityComparisonMapPointAtDistance,
+  activityGearRatioDistribution,
   activityPowerDistributionPercentages,
   activityZonePercentages,
   axisNumber,
@@ -98,6 +99,7 @@ import {
   formatThermalTemperature,
   formatVerticalOscillation,
   gradeAt,
+  gearShiftAtFraction,
   interpolatePositiveMetricSeries,
   isImperialUnit,
   isZeroPowerExcluded,
@@ -136,6 +138,10 @@ import {
   type SwimTrendMode,
   type TriNodeFactory,
 } from '../../util/triathlon-card'
+import {
+  activityComparisonEmbed,
+  decodeActivityComparisonAnchor,
+} from '../../util/triathlon-comparison'
 import { triathlonDayHrefFromReference } from '../../util/triathlon-date-route'
 import {
   CERAMICSPEED_CROSS_CHAIN_RESEARCH,
@@ -1365,7 +1371,10 @@ const renderDetail = (
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
     if (matchedGroup && more)
-      more.appendChild(buildMatchedRideGroup(matchedGroup, d.id, dayRouteHref))
+      more.insertBefore(
+        buildMatchedRideGroup(matchedGroup, d.id, dayRouteHref),
+        more.querySelector(':scope > .tri-efforts'),
+      )
   }
   const surfaces: ScrubSurface[] = []
   const elev = wrap.querySelector<HTMLElement>(
@@ -1388,6 +1397,7 @@ const renderDetail = (
   const cadenceValues = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.cad * cadenceScale)
     : null
+  const shiftingDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
     if (trace.dataset.triTrace === 'hr')
       surfaces.push({ wrap: trace, fmt: p => `${scrubDist(p.d, d.sport)} · ${p.hr} bpm` })
@@ -1395,6 +1405,18 @@ const renderDetail = (
       surfaces.push({
         wrap: trace,
         fmt: (p, i) => `${scrubDist(p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`,
+      })
+    else if (trace.dataset.triTrace === 'electronic shifting')
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const shift = gearShiftAtFraction(
+            d.gearShifts,
+            shiftingDistanceKm,
+            p.d / shiftingDistanceKm,
+          )
+          return `${zoneClock(p.elapsedS)} · ${scrubDist(p.d, d.sport)}${shift ? ` · ${shift.frontTeeth}×${shift.rearTeeth}` : ''}`
+        },
       })
     else if (trace.dataset.triTrace === 'cadence')
       surfaces.push({
@@ -1475,6 +1497,7 @@ const activityComparisonMetric = (value: string | undefined): ActivityComparison
   if (value === 'cadence') return value
   if (value === 'respiration') return value
   if (value === 'temperature') return value
+  if (value === 'skin-temperature') return value
   if (value === 'stride-length') return value
   if (value === 'ground-contact-time') return value
   if (value === 'vertical-oscillation') return value
@@ -1490,7 +1513,7 @@ const activityComparisonMetricLabel = (metric: ActivityComparisonMetric): string
       ? 'pace /100m'
       : metric.replaceAll('-', ' ')
 
-type ActivityComparisonScrubState = { fraction: number }
+type ActivityComparisonScrubState = { fraction: number; selectedFraction?: number }
 type ActivityComparisonSelectionRange = { startFraction: number; endFraction: number }
 
 const positionActivityComparisonCursor = (graph: SVGElement, fraction: number): void => {
@@ -1529,7 +1552,8 @@ const bindActivityComparisonGraph = (
     anchorFraction: number
     selected: boolean
   } | null = null
-  const restore = () => show(state.fraction)
+  const selectedFraction = (): number => state.selectedFraction ?? state.fraction
+  const restore = () => show(selectedFraction())
   const flush = () => {
     frame = 0
     if (pendingFraction == null) return
@@ -1574,18 +1598,24 @@ const bindActivityComparisonGraph = (
     deactivate(graph)
   }
   const onKeyDown = (event: KeyboardEvent) => {
-    const next = activityComparisonFractionForKey(event.key, state.fraction, keyboardStep)
+    const next = activityComparisonFractionForKey(event.key, selectedFraction(), keyboardStep)
     if (next == null) return
     event.preventDefault()
+    if (state.selectedFraction != null) state.selectedFraction = next
     queue(next)
   }
   const onPointerLeave = () => {
     if (drag) return
+    if (state.selectedFraction != null) {
+      state.fraction = state.selectedFraction
+      show(state.selectedFraction)
+    }
     pointerActive = false
     release()
   }
   const onFocus = () => {
     focused = true
+    state.fraction = selectedFraction()
     activate(graph, restore)
     render(graph, restore)
   }
@@ -1594,9 +1624,19 @@ const bindActivityComparisonGraph = (
     release()
   }
   const onPointerDown = (event: PointerEvent) => {
-    if (!selection || !event.isPrimary || event.button !== 0 || drag) return
+    if (!event.isPrimary || event.button !== 0 || drag) return
     const fraction = fractionAt(event.clientX)
     if (fraction == null) return
+    if (!selection) {
+      if (state.selectedFraction == null) return
+      state.fraction = fraction
+      state.selectedFraction = fraction
+      pointerActive = true
+      activate(graph, restore)
+      render(graph, restore)
+      graph.focus({ preventScroll: true })
+      return
+    }
     drag = {
       pointerId: event.pointerId,
       startClientX: event.clientX,
@@ -1721,6 +1761,7 @@ const wireActivityComparison = (
       | ActivityComparisonMetric
       | 'power-curve'
       | 'power-distribution'
+      | 'gear-ratio-distribution'
       | 'hr-zones'
       | 'power-zones',
     values: { activity: StravaActivityDetail; value: string; missing: boolean }[],
@@ -1992,18 +2033,27 @@ const wireActivityComparison = (
   )
   const curves = powerCurves.filter(curve => curve.length >= 2)
   if (curveChart && curveGraph && curves.length > 0) {
-    const curveState: ActivityComparisonScrubState = { fraction: 0 }
+    type ComparisonCurveRange = 'six-weeks' | 'year'
+    const curveState: ActivityComparisonScrubState = { fraction: 0, selectedFraction: 0 }
     const minDurationS = Math.min(...curves.map(curve => curve[0].s))
     const maxDurationS = Math.max(...curves.map(curve => curve[curve.length - 1].s))
-    const curveReference = decodePowerCurve(
-      (curveGraph as SVGSVGElement).dataset.curveRef ?? undefined,
-    )
+    const curveReferences: Record<ComparisonCurveRange, PowerCurvePoint[]> = {
+      'six-weeks': decodePowerCurve(curveGraph.dataset.curveRefSixWeeks),
+      year: decodePowerCurve(curveGraph.dataset.curveRefYear),
+    }
+    let curveRange: ComparisonCurveRange =
+      curveGraph.dataset.curveRange === 'year' ? 'year' : 'six-weeks'
+    const rawCurveYear = Number(curveGraph.dataset.curveYear)
+    const curveYear =
+      curveGraph.dataset.curveYear && Number.isInteger(rawCurveYear) ? rawCurveYear : null
+    const durationAt = (fraction: number): number =>
+      Math.exp(
+        Math.log(minDurationS) +
+          Math.min(1, Math.max(0, fraction)) * (Math.log(maxDurationS) - Math.log(minDurationS)),
+      )
     const showCurve = (fraction: number) => {
       curveState.fraction = Math.min(1, Math.max(0, fraction))
-      const durationS = Math.exp(
-        Math.log(minDurationS) +
-          curveState.fraction * (Math.log(maxDurationS) - Math.log(minDurationS)),
-      )
+      const durationS = durationAt(curveState.fraction)
       positionActivityComparisonCursor(curveGraph, curveState.fraction)
       const values = activities.map((activity, index) => {
         const value = nearestPowerCurveValue(powerCurves[index], durationS)
@@ -2014,7 +2064,13 @@ const wireActivityComparison = (
         'power-curve',
         values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
       )
-      const referenceWatts = nearestPowerCurveValue(curveReference, durationS)
+      const referenceWatts = nearestPowerCurveValue(curveReferences[curveRange], durationS)
+      const selectedSeconds = Math.max(1, Math.round(durationAt(curveState.selectedFraction ?? 0)))
+      for (const tick of curveChart.querySelectorAll<HTMLButtonElement>('.tri-curve-tick'))
+        tick.setAttribute(
+          'aria-pressed',
+          String(Number(tick.dataset.curveSeconds) === selectedSeconds),
+        )
       curveGraph.setAttribute('aria-valuenow', Math.round(durationS).toString())
       curveGraph.setAttribute(
         'aria-valuetext',
@@ -2026,12 +2082,57 @@ const wireActivityComparison = (
           .join('; ')}${
           referenceWatts == null
             ? ''
-            : `; ${powerCurveReferenceLabel(null)}: ${referenceWatts.toLocaleString()} W`
+            : `; ${powerCurveReferenceLabel(curveRange === 'year' ? curveYear : null)}: ${referenceWatts.toLocaleString()} W`
         }`,
       )
     }
+    const selectCurve = (fraction: number) => {
+      const selected = Math.min(1, Math.max(0, fraction))
+      curveState.fraction = selected
+      curveState.selectedFraction = selected
+      showCurve(selected)
+      curveGraph.focus({ preventScroll: true })
+    }
+    const selectCurveRange = (range: ComparisonCurveRange) => {
+      if (curveReferences[range].length < 2) return
+      curveRange = range
+      curveGraph.dataset.curveRange = range
+      for (const option of curveChart.querySelectorAll<HTMLButtonElement>('.tri-curve-range'))
+        option.setAttribute('aria-pressed', String(option.dataset.curveRange === range))
+      for (const path of curveGraph.querySelectorAll<SVGElement>(
+        '.tri-compare-curve-ref[data-curve-range]',
+      ))
+        path.toggleAttribute('hidden', path.dataset.curveRange !== range)
+      const label = curveChart.querySelector<HTMLElement>('.tri-compare-curve-reference-label')
+      if (label) {
+        label.removeAttribute('data-i18n')
+        label.textContent = powerCurveReferenceLabel(range === 'year' ? curveYear : null)
+      }
+      showCurve(curveState.selectedFraction ?? curveState.fraction)
+    }
+    const onCurveClick = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) return
+      const rangeButton = event.target.closest<HTMLButtonElement>('.tri-curve-range')
+      if (rangeButton && !rangeButton.disabled) {
+        selectCurveRange(rangeButton.dataset.curveRange === 'year' ? 'year' : 'six-weeks')
+        curveGraph.focus({ preventScroll: true })
+        return
+      }
+      const tick = event.target.closest<HTMLButtonElement>('.tri-curve-tick')
+      if (tick) {
+        const seconds = Number(tick.dataset.curveSeconds)
+        if (seconds > 0) selectCurve(powerCurveFraction(seconds, minDurationS, maxDurationS))
+        return
+      }
+      const axis = event.target.closest<HTMLElement>('.tri-cax-xax')
+      if (!axis || !curveChart.contains(axis)) return
+      const bounds = axis.getBoundingClientRect()
+      if (bounds.width > 0) selectCurve((event.clientX - bounds.left) / bounds.width)
+    }
+    curveChart.addEventListener('click', onCurveClick)
     cleanups.push(
       bindActivityComparisonGraph(curveGraph, curveState, showCurve, activate, render, deactivate),
+      () => curveChart.removeEventListener('click', onCurveClick),
     )
   }
 
@@ -2083,6 +2184,59 @@ const wireActivityComparison = (
         render,
         deactivate,
         1 / (binCount - 1),
+      ),
+    )
+  }
+
+  const gearRatioChart = charts.find(
+    chart => chart.dataset.compareChart === 'gear-ratio-distribution',
+  )
+  const gearRatioGraph = gearRatioChart?.querySelector<SVGElement>(
+    '.tri-compare-distribution-graph',
+  )
+  const gearRatioDistributions = activities.map(activity => activityGearRatioDistribution(activity))
+  const gearRatios = [
+    ...new Set(gearRatioDistributions.flatMap(points => points.map(point => point.ratio))),
+  ].sort((left, right) => left - right)
+  if (gearRatioChart && gearRatioGraph && gearRatios.length > 0) {
+    const gearRatioState: ActivityComparisonScrubState = { fraction: 0 }
+    const showGearRatio = (fraction: number) => {
+      const index = Math.round(Math.min(1, Math.max(0, fraction)) * (gearRatios.length - 1))
+      const selectedFraction = gearRatios.length <= 1 ? 0.5 : index / (gearRatios.length - 1)
+      gearRatioState.fraction = selectedFraction
+      const ratio = gearRatios[index]
+      positionActivityComparisonCursor(gearRatioGraph, selectedFraction)
+      const values = activities.map((activity, activityIndex) => {
+        const distribution = gearRatioDistributions[activityIndex]
+        const percentage = distribution.find(point => point.ratio === ratio)?.percentage
+        const value = distribution.length === 0 ? '—' : `${(percentage ?? 0).toFixed(1)}%`
+        return { activity, value }
+      })
+      showChartCursors([gearRatioChart])
+      setReadout(
+        'gear-ratio-distribution',
+        values.map(({ activity, value }) => ({ activity, value, missing: value === '—' })),
+      )
+      gearRatioGraph.setAttribute('aria-valuenow', `${index}`)
+      gearRatioGraph.setAttribute(
+        'aria-valuetext',
+        `${ratio.toFixed(2)}×; ${values
+          .map(
+            ({ activity, value }) =>
+              `${activity.name || tl(activity.sport)}: ${value === '—' ? tl('no data') : value}`,
+          )
+          .join('; ')}`,
+      )
+    }
+    cleanups.push(
+      bindActivityComparisonGraph(
+        gearRatioGraph,
+        gearRatioState,
+        showGearRatio,
+        activate,
+        render,
+        deactivate,
+        gearRatios.length <= 1 ? 1 : 1 / (gearRatios.length - 1),
       ),
     )
   }
@@ -2586,6 +2740,86 @@ const setupDayEmbeds = (): (() => void) | null => {
   }
 }
 
+const setupActivityComparisonEmbeds = (): (() => void) | null => {
+  const embeds = Array.from(
+    document.querySelectorAll<HTMLElement>('.tri-compare-embed[data-compare-anchor]'),
+  )
+  if (embeds.length === 0) return null
+  let live = true
+  const teardowns: (() => void)[] = []
+  const upgradeByEmbed = new Map<HTMLElement, () => void>()
+  const observer = new IntersectionObserver(
+    entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) continue
+        upgradeByEmbed.get(entry.target)?.()
+      }
+    },
+    { rootMargin: '600px 0px' },
+  )
+  teardowns.push(() => {
+    observer.disconnect()
+    upgradeByEmbed.clear()
+  })
+
+  for (const embed of embeds) {
+    const activityIds = decodeActivityComparisonAnchor(embed.dataset.compareAnchor ?? '')
+    if (!activityIds) continue
+    const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
+    let upgraded = false
+    let payload: DetailPayload | null = null
+    let interactionCleanup: (() => void) | null = null
+    const render = (data: DetailPayload) => {
+      interactionCleanup?.()
+      const activities = activityIds.flatMap(activityId => {
+        const activity = data.details[activityId]
+        return activity ? [powerViewActivity(activity)] : []
+      })
+      const comparison = buildActivityComparison(domF, activities, clientCtx(), {
+        removable: false,
+      })
+      applyI18n(comparison)
+      embed.replaceChildren(comparison)
+      interactionCleanup =
+        comparison.dataset.compareState === 'ready'
+          ? wireActivityComparison(comparison, activities)
+          : null
+    }
+    const upgrade = () => {
+      if (upgraded) return
+      upgraded = true
+      observer.unobserve(embed)
+      upgradeByEmbed.delete(embed)
+      void loadDetailPayload(detailPath).then(data => {
+        if (!live || !embed.isConnected || !data) return
+        payload = data
+        render(data)
+      })
+    }
+    const onPresentationChange = () => (payload ? render(payload) : upgrade())
+    window.addEventListener('tri:unit', onPresentationChange)
+    window.addEventListener('tri:locale', onPresentationChange)
+    window.addEventListener(TRI_POWER_FILTER_EVENT, onPresentationChange)
+    const events = ['pointerdown', 'touchstart'] as const
+    for (const event of events)
+      embed.addEventListener(event, upgrade, { once: true, passive: true })
+    upgradeByEmbed.set(embed, upgrade)
+    observer.observe(embed)
+    teardowns.push(() => {
+      interactionCleanup?.()
+      window.removeEventListener('tri:unit', onPresentationChange)
+      window.removeEventListener('tri:locale', onPresentationChange)
+      window.removeEventListener(TRI_POWER_FILTER_EVENT, onPresentationChange)
+      for (const event of events) embed.removeEventListener(event, upgrade)
+    })
+  }
+
+  return () => {
+    live = false
+    for (const teardown of teardowns) teardown()
+  }
+}
+
 const setup = (root: HTMLElement): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
   const pop = root.querySelector<HTMLElement>('.tri-pop')
@@ -2858,6 +3092,38 @@ const setup = (root: HTMLElement): (() => void) | null => {
     window.removeEventListener('tri:unit', onUnit)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
     void audio?.close()
+  }
+}
+
+const wireEmbedCopy = (button: HTMLElement | null, source: () => string | null): (() => void) => {
+  if (!button) return () => {}
+  let timer = 0
+  const reset = () => {
+    timer = 0
+    button.classList.remove('check')
+    button.setAttribute('aria-label', tl('Copy embed link'))
+    button.setAttribute('title', tl('Copy embed link'))
+  }
+  const onCopy = () => {
+    const text = source()
+    if (!text) return
+    const write = navigator.clipboard?.writeText(text)
+    if (!write) return
+    void write.then(
+      () => {
+        button.classList.add('check')
+        button.setAttribute('aria-label', tl('copied'))
+        button.setAttribute('title', tl('copied'))
+        window.clearTimeout(timer)
+        timer = window.setTimeout(reset, 2000)
+      },
+      () => {},
+    )
+  }
+  button.addEventListener('click', onCopy)
+  return () => {
+    button.removeEventListener('click', onCopy)
+    window.clearTimeout(timer)
   }
 }
 
@@ -3331,17 +3597,10 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
       runPaceSec: ci.runPaceSec,
     }
   }
-  let copyTimer: number | null = null
-  const onCopy = () => {
-    const text = `![[triathlon#${CALC_ANCHOR_PREFIX}${encodeCalcShare(currentShare())}]]`
-    void navigator.clipboard?.writeText(text).then(() => {
-      if (!copyBtn) return
-      copyBtn.classList.add('check')
-      if (copyTimer) clearTimeout(copyTimer)
-      copyTimer = window.setTimeout(() => copyBtn.classList.remove('check'), 2000)
-    })
-  }
-  copyBtn?.addEventListener('click', onCopy)
+  const copyCleanup = wireEmbedCopy(
+    copyBtn,
+    () => `![[triathlon#${CALC_ANCHOR_PREFIX}${encodeCalcShare(currentShare())}]]`,
+  )
 
   const onCalcFill = (event: Event): void => {
     const share = (event as CustomEvent).detail?.share as CalcShare | undefined
@@ -3381,9 +3640,8 @@ const setupCalc = (root: HTMLElement): (() => void) | null => {
     calc.removeEventListener('keydown', onCalcKey)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('tri:unit', onUnit)
-    copyBtn?.removeEventListener('click', onCopy)
+    copyCleanup()
     window.removeEventListener('tri:calc-fill', onCalcFill)
-    if (copyTimer) clearTimeout(copyTimer)
   }
 }
 
@@ -4007,6 +4265,12 @@ const raceLegTip = (leg: RaceLegSplit): string =>
   `${tl(leg.sport)} · ${hms(leg.splitS)} · ${raceLegDistance(leg)} · ${raceLegPace(leg)}`
 const markGloss = (e: HTMLElement, key: string): HTMLElement => {
   e.dataset.gloss = key
+  e.tabIndex = 0
+  return e
+}
+const markGlossDefinition = (e: HTMLElement, definition: string): HTMLElement => {
+  e.dataset.gloss = ''
+  e.dataset.glossDef = definition
   e.tabIndex = 0
   return e
 }
@@ -5509,6 +5773,27 @@ const segRuns = <T>(
     cur.push([x(i), y(v)])
   })
   if (cur.length > 1) out.push(cur)
+  return out
+}
+
+const missingBridges = <T>(
+  rows: T[],
+  sel: (r: T) => number | null,
+  x: (i: number) => number,
+  y: (v: number) => number,
+): [number, number][][] => {
+  const out: [number, number][][] = []
+  let previous: { index: number; value: number } | null = null
+  for (const [index, row] of rows.entries()) {
+    const value = sel(row)
+    if (value == null) continue
+    if (previous != null && index > previous.index + 1)
+      out.push([
+        [x(previous.index), y(previous.value)],
+        [x(index), y(value)],
+      ])
+    previous = { index, value }
+  }
   return out
 }
 
@@ -8420,11 +8705,13 @@ const buildMatchedRunGroup = (
       .join(' ')
 
   const head = el('div', 'tri-matched-head')
-  head.appendChild(anaTitle('matched runs'))
-  wrap.append(
-    head,
-    el('p', 'tri-matched-note', tl('repeated routes grouped from private GPS traces')),
+  head.appendChild(
+    markGlossDefinition(
+      anaTitle('matched runs'),
+      tl('repeated routes grouped from private GPS traces'),
+    ),
   )
+  wrap.appendChild(head)
 
   const chart = el('div', 'tri-matched-chart')
   const graph = svg('svg', {
@@ -8588,10 +8875,11 @@ const buildMatchedRunGroup = (
       'data-current': String(index === currentIndex),
     })
     const activityCell = document.createElement('td')
+    const activityLane = el('span', 'tri-matched-activity-lane')
     if (index === fastestIndex)
-      activityCell.appendChild(el('span', 'tri-matched-fastest', tl('fastest')))
+      activityLane.appendChild(el('span', 'tri-matched-fastest', tl('fastest')))
     const dayHref = triathlonDayHrefFromReference(effort.date, dayRouteHref)
-    activityCell.appendChild(
+    activityLane.appendChild(
       dayHref
         ? el('a', 'tri-matched-activity internal', effort.name, {
             href: dayHref,
@@ -8599,6 +8887,7 @@ const buildMatchedRunGroup = (
           })
         : el('span', 'tri-matched-activity', effort.name),
     )
+    activityCell.appendChild(activityLane)
     row.append(
       el('th', undefined, shortDate(effort.date), { scope: 'row' }),
       activityCell,
@@ -8668,27 +8957,21 @@ const buildMatchedRideGroup = (
       )
       .join(' ')
 
+  const description = tl(
+    group.match === 'route'
+      ? 'repeated ride routes grouped from private GPS traces'
+      : 'rides grouped by similar distance, elevation, climbing density, and power provenance',
+  )
   const head = el('div', 'tri-matched-head')
   head.append(
-    anaTitle('matched rides'),
+    markGlossDefinition(anaTitle('matched rides'), description),
     el(
       'span',
       'tri-matched-method',
       tl(group.match === 'route' ? 'route match' : 'characteristics match'),
     ),
   )
-  wrap.append(
-    head,
-    el(
-      'p',
-      'tri-matched-note',
-      tl(
-        group.match === 'route'
-          ? 'repeated ride routes grouped from private GPS traces'
-          : 'rides grouped by similar distance, elevation, climbing density, and power provenance',
-      ),
-    ),
-  )
+  wrap.appendChild(head)
 
   const chart = el('div', 'tri-matched-chart')
   const graph = svg('svg', {
@@ -8862,10 +9145,11 @@ const buildMatchedRideGroup = (
       'data-current': String(index === currentIndex),
     })
     const activityCell = document.createElement('td')
+    const activityLane = el('span', 'tri-matched-activity-lane')
     if (index === highestIndex)
-      activityCell.appendChild(el('span', 'tri-matched-highest', tl('highest')))
+      activityLane.appendChild(el('span', 'tri-matched-highest', tl('highest')))
     const dayHref = triathlonDayHrefFromReference(effort.date, dayRouteHref)
-    activityCell.appendChild(
+    activityLane.appendChild(
       dayHref
         ? el('a', 'tri-matched-activity internal', effort.name, {
             href: dayHref,
@@ -8873,6 +9157,7 @@ const buildMatchedRideGroup = (
           })
         : el('span', 'tri-matched-activity', effort.name),
     )
+    activityCell.appendChild(activityLane)
     row.append(
       el('th', undefined, shortDate(effort.date), { scope: 'row' }),
       activityCell,
@@ -9095,6 +9380,549 @@ const buildBestPowerCurve = (data: Analytics): HTMLElement => {
   return block
 }
 
+type DistributionSport = Sport
+type DistributionRange = '7' | '14' | '30' | '60' | 'custom'
+type ActivityDistributionPoint = Analytics['distributions']['activities'][number]
+
+const TRI_DISTRIBUTION_SELECTION_KEY = 'tri-distribution-selection'
+const DISTRIBUTION_RANGES: { key: DistributionRange; label: string; days: number | null }[] = [
+  { key: '7', label: '7d', days: 7 },
+  { key: '14', label: '14d', days: 14 },
+  { key: '30', label: '30d', days: 30 },
+  { key: '60', label: '60d', days: 60 },
+  { key: 'custom', label: 'custom', days: null },
+]
+const DISTRIBUTION_DAY_MS = 86_400_000
+const DISTRIBUTION_ZONE_NAMES = ['recovery', 'endurance', 'tempo', 'threshold', 'anaerobic']
+
+const distributionDateShift = (date: string, days: number): string =>
+  new Date(Date.parse(`${date}T00:00:00Z`) + days * DISTRIBUTION_DAY_MS).toISOString().slice(0, 10)
+
+const distributionZoneRange = (bounds: readonly number[], index: number): string => {
+  if (bounds.length === 0) return ''
+  if (index === 0) return `≤${bounds[0]} bpm`
+  if (index >= bounds.length) return `${bounds[bounds.length - 1] + 1}+ bpm`
+  return `${bounds[index - 1] + 1}–${bounds[index]} bpm`
+}
+
+const buildDistributions = (data: Analytics): HTMLElement => {
+  const block = el('div', 'tri-training-distribution')
+  const { activities, heartRateZoneBounds } = data.distributions
+  if (activities.length === 0) {
+    block.append(anaTitle('training distributions', 'hrzones'))
+    block.appendChild(el('div', 'tri-ana-empty', tl('no activity distribution data')))
+    return block
+  }
+
+  const minimumDate = data.meta.windowFrom
+  const maximumDate = data.meta.windowTo
+  let sport: DistributionSport = activities.some(point => point.sport === 'bike')
+    ? 'bike'
+    : activities[0].sport
+  let range: DistributionRange = '30'
+  let startDate = distributionDateShift(maximumDate, -29)
+
+  try {
+    const stored: unknown = JSON.parse(
+      localStorage.getItem(TRI_DISTRIBUTION_SELECTION_KEY) ?? 'null',
+    )
+    if (isRecord(stored)) {
+      const storedSport = stored.sport
+      if (storedSport === 'swim' || storedSport === 'bike' || storedSport === 'run')
+        sport = storedSport
+      const storedRange = stored.range
+      if (
+        storedRange === '7' ||
+        storedRange === '14' ||
+        storedRange === '30' ||
+        storedRange === '60' ||
+        storedRange === 'custom'
+      )
+        range = storedRange
+      if (
+        typeof stored.startDate === 'string' &&
+        parsePredDate(stored.startDate) &&
+        stored.startDate >= minimumDate &&
+        stored.startDate <= maximumDate
+      )
+        startDate = stored.startDate
+    }
+  } catch {}
+
+  const rangeOption = (): (typeof DISTRIBUTION_RANGES)[number] =>
+    DISTRIBUTION_RANGES.find(option => option.key === range) ?? DISTRIBUTION_RANGES[2]
+  const syncStartDate = (): void => {
+    const days = rangeOption().days
+    if (days != null)
+      startDate = clampPredDate(
+        distributionDateShift(maximumDate, -(days - 1)),
+        minimumDate,
+        maximumDate,
+      )
+    else startDate = clampPredDate(startDate, minimumDate, maximumDate)
+  }
+  syncStartDate()
+
+  const persist = (): void => {
+    try {
+      localStorage.setItem(
+        TRI_DISTRIBUTION_SELECTION_KEY,
+        JSON.stringify({ sport, range, startDate }),
+      )
+    } catch {}
+  }
+
+  const head = el('div', 'tri-dist-head')
+  head.appendChild(anaTitle('heart rate zone distribution', 'hrzones'))
+  const controls = el('div', 'tri-dist-controls')
+  const sportControls = el('div', 'tri-dist-sports', undefined, {
+    role: 'group',
+    'aria-label': tl('distribution sport'),
+  })
+  const sportButtons = new Map<DistributionSport, HTMLButtonElement>()
+  for (const option of ['swim', 'bike', 'run'] as DistributionSport[]) {
+    const button = el(
+      'button',
+      `tri-radar-sport tri-dist-sport tri-radar-sport--${option}`,
+      undefined,
+      {
+        type: 'button',
+        'aria-label': tl(option),
+        'aria-pressed': String(option === sport),
+        title: tl(option),
+      },
+    ) as HTMLButtonElement
+    button.appendChild(buildIcon(option))
+    button.addEventListener('click', () => {
+      sport = option
+      persist()
+      render()
+    })
+    sportButtons.set(option, button)
+    sportControls.appendChild(button)
+  }
+
+  const rangeControls = el('div', 'tri-dist-ranges', undefined, {
+    role: 'group',
+    'aria-label': tl('date range'),
+  })
+  const rangeButtons = new Map<DistributionRange, HTMLButtonElement>()
+  for (const option of DISTRIBUTION_RANGES) {
+    const button = el('button', 'tri-dist-range', tl(option.label), {
+      type: 'button',
+      'aria-pressed': String(option.key === range),
+    }) as HTMLButtonElement
+    button.addEventListener('click', () => {
+      range = option.key
+      syncStartDate()
+      persist()
+      render()
+      if (range === 'custom') queueMicrotask(() => startPicker.trigger.click())
+    })
+    rangeButtons.set(option.key, button)
+    rangeControls.appendChild(button)
+  }
+
+  const startPicker = buildDatePicker({
+    label: tl('range start'),
+    selected: () => startDate,
+    min: () => minimumDate,
+    max: () => maximumDate,
+    onOpen: () => {
+      range = 'custom'
+      persist()
+      render()
+    },
+    onSelect: date => {
+      range = 'custom'
+      startDate = clampPredDate(date, minimumDate, maximumDate)
+      persist()
+      render()
+    },
+    onClear: () => {
+      range = '30'
+      syncStartDate()
+      persist()
+      render()
+    },
+  })
+  startPicker.wrap.classList.add('tri-dist-date')
+  controls.append(sportControls, rangeControls, startPicker.wrap)
+  head.appendChild(controls)
+  block.appendChild(head)
+
+  const zonePanel = el('section', 'tri-hr-distribution')
+  const telemetryPanel = el('section', 'tri-activity-telemetry')
+  block.append(zonePanel, telemetryPanel)
+
+  const selectedActivities = (): ActivityDistributionPoint[] =>
+    activities.filter(
+      point => point.sport === sport && point.date >= startDate && point.date <= maximumDate,
+    )
+
+  const renderZones = (points: ActivityDistributionPoint[]): void => {
+    const zoneCount = heartRateZoneBounds.length > 0 ? heartRateZoneBounds.length + 1 : 0
+    const seconds = Array.from({ length: zoneCount }, () => 0)
+    let observedActivities = 0
+    for (const point of points) {
+      if (!point.heartRateZoneSeconds?.some(value => value > 0)) continue
+      observedActivities += 1
+      point.heartRateZoneSeconds.forEach((value, index) => {
+        if (index < seconds.length && Number.isFinite(value) && value > 0) seconds[index] += value
+      })
+    }
+    const total = seconds.reduce((sum, value) => sum + value, 0)
+    zonePanel.replaceChildren()
+    if (total <= 0) {
+      zonePanel.appendChild(el('div', 'tri-ana-empty', tl('no heart rate zone data')))
+      return
+    }
+    let majority = 0
+    for (let index = 1; index < seconds.length; index++)
+      if (seconds[index] > seconds[majority]) majority = index
+    const majorityPct = (seconds[majority] / total) * 100
+    const summary = el(
+      'div',
+      'tri-hr-majority',
+      `${tl('majority zone')} · Z${majority + 1} ${tl(DISTRIBUTION_ZONE_NAMES[majority] ?? '')} · ${majorityPct.toFixed(1)}%`,
+      { 'aria-live': 'polite' },
+    )
+    const stack = el('div', 'tri-hr-stack', undefined, {
+      role: 'img',
+      'aria-label': `${tl('heart rate zone distribution')} · ${seconds
+        .map((value, index) => `Z${index + 1} ${((value / total) * 100).toFixed(1)}%`)
+        .join(' · ')}`,
+    })
+    seconds.forEach((value, index) => {
+      if (value <= 0) return
+      const segment = el('span', `tri-hr-segment tri-hr-segment--${index + 1}`)
+      segment.style.width = `${(value / total) * 100}%`
+      segment.title = `Z${index + 1} · ${zoneClock(value)} · ${((value / total) * 100).toFixed(1)}%`
+      stack.appendChild(segment)
+    })
+    const legend = el('div', 'tri-hr-legend')
+    seconds.forEach((value, index) => {
+      const row = el('div', `tri-hr-zone${index === majority ? ' tri-hr-zone--majority' : ''}`)
+      row.append(
+        el('span', `tri-hr-swatch tri-hr-swatch--${index + 1}`),
+        el('span', 'tri-hr-zone-name', `Z${index + 1} ${tl(DISTRIBUTION_ZONE_NAMES[index] ?? '')}`),
+        el('span', 'tri-hr-zone-range', distributionZoneRange(heartRateZoneBounds, index)),
+        el('span', 'tri-hr-zone-time', zoneClock(value)),
+        el('span', 'tri-hr-zone-pct', `${((value / total) * 100).toFixed(1)}%`),
+      )
+      legend.appendChild(row)
+    })
+    const coverage = el(
+      'div',
+      'tri-dist-cap',
+      `${observedActivities}/${points.length} ${tl('activities')} · ${zoneClock(total)} ${tl('training time')} · ${triLongDate(startDate)}–${triLongDate(maximumDate)}`,
+    )
+    zonePanel.append(summary, stack, legend, coverage)
+  }
+
+  interface DistributionMetric {
+    key: 'power' | 'cadence' | 'skin' | 'hsi'
+    label: string
+    value: (point: ActivityDistributionPoint) => number | null
+    text: (point: ActivityDistributionPoint, value: number) => string
+  }
+  const metrics: DistributionMetric[] = [
+    {
+      key: 'power',
+      label: 'average power',
+      value: point => point.averagePowerWatts,
+      text: (point, value) =>
+        `${Math.round(value)} W${point.powerSource ? ` · ${tl(point.powerSource)}` : ''}`,
+    },
+    {
+      key: 'cadence',
+      label: 'cadence',
+      value: point => point.cadence,
+      text: (point, value) => `${Math.round(value)} ${point.cadenceUnit}`,
+    },
+    {
+      key: 'skin',
+      label: 'skin temperature',
+      value: point => point.skinTemperatureC,
+      text: (point, value) =>
+        `${formatThermalTemperature(value)}${point.skinThermalSource ? ` · ${point.skinThermalSource === 'core-app' ? 'CORE app' : 'CORE FIT'}` : ''}`,
+    },
+    {
+      key: 'hsi',
+      label: 'heat strain index',
+      value: point => point.heatStrainIndex,
+      text: (point, value) =>
+        `HSI ${value.toFixed(1)}${point.heatStrainThermalSource ? ` · ${point.heatStrainThermalSource === 'core-app' ? 'CORE app' : 'CORE FIT'}` : ''}`,
+    },
+  ]
+
+  const renderTelemetry = (points: ActivityDistributionPoint[]): void => {
+    telemetryPanel.replaceChildren()
+    const title = anaTitle('activity telemetry over time', 'activitytelemetry')
+    telemetryPanel.appendChild(title)
+    const available = points.filter(point => metrics.some(metric => metric.value(point) != null))
+    if (available.length === 0) {
+      telemetryPanel.appendChild(el('div', 'tri-ana-empty', tl('no telemetry data')))
+      return
+    }
+
+    const rangeStartMs = Date.parse(`${startDate}T00:00:00Z`)
+    const rangeEndMs = Date.parse(`${maximumDate}T23:59:59Z`)
+    const rangeSpanMs = Math.max(1, rangeEndMs - rangeStartMs)
+    const pointX = (point: ActivityDistributionPoint): number =>
+      clampN(((Date.parse(point.startedAt) - rangeStartMs) / rangeSpanMs) * 100, 0, 100)
+    const plots = el('div', 'tri-dist-plots', undefined, {
+      role: 'slider',
+      tabindex: '0',
+      'aria-label': tl('activity telemetry scrubber'),
+      'aria-orientation': 'horizontal',
+      'aria-valuemin': '1',
+      'aria-valuemax': String(available.length),
+      'aria-valuenow': String(available.length),
+    })
+    const readout = el(
+      'div',
+      'tri-chart-readout tri-dist-readout',
+      `${available.length}/${points.length} ${tl('activities with telemetry')}`,
+    )
+    const cursorLines: SVGElement[] = []
+
+    for (const metric of metrics) {
+      const values = points
+        .map(point => metric.value(point))
+        .filter((value): value is number => value != null && Number.isFinite(value))
+      if (values.length === 0) continue
+      const rawMin = Math.min(...values)
+      const rawMax = Math.max(...values)
+      const padding = Math.max((rawMax - rawMin) * 0.12, metric.key === 'hsi' ? 0.25 : 1)
+      const domainMin = rawMin - padding
+      const domainMax = rawMax + padding
+      const domainText = (value: number): string =>
+        metric.key === 'skin'
+          ? formatThermalTemperature(value)
+          : value.toFixed(metric.key === 'hsi' ? 1 : 0)
+      const y = (value: number): number => 30 - ((value - domainMin) / (domainMax - domainMin)) * 26
+      const row = el('div', `tri-dist-metric tri-dist-metric--${metric.key}`)
+      const meta = el('div', 'tri-dist-metric-meta')
+      const latest = [...points].reverse().find(point => metric.value(point) != null)
+      const latestValue = latest ? metric.value(latest) : null
+      meta.append(
+        el('span', 'tri-dist-metric-name', tl(metric.label)),
+        latest && latestValue != null
+          ? el('span', 'tri-dist-metric-latest', metric.text(latest, latestValue))
+          : el('span', 'tri-dist-metric-latest', '—'),
+      )
+      const graph = svg('svg', {
+        class: 'tri-dist-metric-svg',
+        viewBox: '0 0 100 34',
+        preserveAspectRatio: 'none',
+        role: 'img',
+        'aria-label': `${tl(metric.label)} · ${domainText(rawMin)}–${domainText(rawMax)}`,
+      })
+      graph.append(
+        svg('line', { class: 'tri-dist-grid', x1: 0, y1: 4, x2: 100, y2: 4 }),
+        svg('line', { class: 'tri-dist-grid', x1: 0, y1: 17, x2: 100, y2: 17 }),
+        svg('line', { class: 'tri-dist-grid', x1: 0, y1: 30, x2: 100, y2: 30 }),
+      )
+      for (const bridge of missingBridges(
+        points,
+        point => metric.value(point),
+        index => pointX(points[index]),
+        y,
+      ))
+        graph.appendChild(
+          svg('path', {
+            class: `tri-dist-line tri-dist-line--${metric.key} tri-dist-line--missing`,
+            d: polyD(bridge),
+          }),
+        )
+      for (const segment of segRuns(
+        points,
+        point => metric.value(point),
+        index => pointX(points[index]),
+        y,
+      ))
+        graph.appendChild(
+          svg('path', { class: `tri-dist-line tri-dist-line--${metric.key}`, d: polyD(segment) }),
+        )
+      for (const point of points) {
+        const value = metric.value(point)
+        if (value == null) continue
+        const pointY = y(value)
+        graph.appendChild(
+          svg('line', {
+            class: `tri-dist-point tri-dist-point--${metric.key}${metric.key === 'power' && point.powerSource === 'estimated' ? ' tri-dist-point--estimated' : ''}`,
+            x1: pointX(point),
+            x2: pointX(point),
+            y1: pointY - 0.85,
+            y2: pointY + 0.85,
+          }),
+        )
+      }
+      const cursor = svg('line', { class: 'tri-ana-cursor', x1: 0, y1: 3, x2: 0, y2: 31 })
+      graph.appendChild(cursor)
+      cursorLines.push(cursor)
+      const domain = el('div', 'tri-dist-domain')
+      domain.append(
+        el('span', undefined, domainText(rawMax)),
+        el('span', undefined, domainText(rawMin)),
+      )
+      row.append(meta, graph, domain)
+      plots.appendChild(row)
+    }
+
+    const axis = el('div', 'tri-dist-time-axis')
+    axis.append(
+      el('span', undefined, shortDate(startDate)),
+      el('span', undefined, shortDate(maximumDate)),
+    )
+    const resetReadout = (): void => {
+      readout.textContent = `${available.length}/${points.length} ${tl('activities with telemetry')} · ${triLongDate(startDate)}–${triLongDate(maximumDate)}`
+      telemetryPanel.classList.remove('tri-chart--hover')
+    }
+    let activePointIndex = available.length - 1
+    const positionReadout = (anchorX: number, anchorY: number): void => {
+      const plotWidth = plots.clientWidth
+      const plotHeight = plots.clientHeight
+      const readoutWidth = readout.offsetWidth
+      const readoutHeight = readout.offsetHeight
+      const gap = 10
+      const inset = 4
+      const rightSpace = plotWidth - anchorX
+      const leftSpace = anchorX
+      const opensRight = rightSpace >= readoutWidth + gap || rightSpace >= leftSpace
+      const left = clampN(
+        opensRight ? anchorX + gap : anchorX - readoutWidth - gap,
+        inset,
+        Math.max(inset, plotWidth - readoutWidth - inset),
+      )
+      const top = clampN(
+        anchorY,
+        readoutHeight / 2 + inset,
+        Math.max(readoutHeight / 2 + inset, plotHeight - readoutHeight / 2 - inset),
+      )
+      readout.dataset.side = left < anchorX ? 'left' : 'right'
+      readout.style.setProperty('--tri-dist-readout-x', `${left}px`)
+      readout.style.setProperty('--tri-dist-readout-y', `${top}px`)
+    }
+    const showPoint = (
+      point: ActivityDistributionPoint,
+      anchorX = (pointX(point) / 100) * plots.clientWidth,
+      anchorY = plots.clientHeight / 2,
+    ): void => {
+      const rows: HTMLElement[] = [
+        el(
+          'span',
+          'tri-dist-readout-head',
+          `${shortDate(point.date)} · ${tl(point.sport)} · ${point.name}`,
+        ),
+      ]
+      for (const metric of metrics) {
+        const value = metric.value(point)
+        if (value == null) continue
+        const pointIndex = points.indexOf(point)
+        const previous = points
+          .slice(0, Math.max(0, pointIndex))
+          .reverse()
+          .find(candidate => metric.value(candidate) != null)
+        const previousValue = previous ? metric.value(previous) : null
+        const delta =
+          previousValue == null
+            ? ''
+            : ` (${value >= previousValue ? '+' : ''}${(value - previousValue).toFixed(
+                metric.key === 'skin' || metric.key === 'hsi' ? 1 : 0,
+              )})`
+        rows.push(
+          el(
+            'span',
+            'tri-dist-readout-value',
+            `${tl(metric.label)} ${metric.text(point, value)}${delta}`,
+          ),
+        )
+      }
+      readout.replaceChildren(...rows)
+      const availableIndex = available.indexOf(point)
+      if (availableIndex >= 0) {
+        activePointIndex = availableIndex
+        plots.setAttribute('aria-valuenow', String(availableIndex + 1))
+        plots.setAttribute('aria-valuetext', rows.map(row => row.textContent ?? '').join(' · '))
+      }
+      const x = pointX(point).toFixed(2)
+      for (const cursor of cursorLines) {
+        cursor.setAttribute('x1', x)
+        cursor.setAttribute('x2', x)
+      }
+      telemetryPanel.classList.add('tri-chart--hover')
+      positionReadout(anchorX, anchorY)
+    }
+    const showPointAt = (index: number): void => {
+      showPoint(available[clampN(index, 0, available.length - 1)])
+    }
+    const onMove = (event: PointerEvent): void => {
+      const rect = plots.getBoundingClientRect()
+      const fraction = clampN((event.clientX - rect.left) / rect.width, 0, 1)
+      const targetMs = rangeStartMs + fraction * rangeSpanMs
+      let nearest = available[0]
+      for (const point of available)
+        if (
+          Math.abs(Date.parse(point.startedAt) - targetMs) <
+          Math.abs(Date.parse(nearest.startedAt) - targetMs)
+        )
+          nearest = point
+      showPoint(nearest, event.clientX - rect.left, event.clientY - rect.top)
+    }
+    plots.addEventListener('pointermove', onMove)
+    plots.addEventListener('pointerleave', () => {
+      if (document.activeElement !== plots) resetReadout()
+    })
+    plots.addEventListener('focus', () => showPointAt(activePointIndex))
+    plots.addEventListener('blur', resetReadout)
+    plots.addEventListener('keydown', event => {
+      const nextIndex =
+        event.key === 'ArrowLeft'
+          ? activePointIndex - 1
+          : event.key === 'ArrowRight'
+            ? activePointIndex + 1
+            : event.key === 'Home'
+              ? 0
+              : event.key === 'End'
+                ? available.length - 1
+                : null
+      if (nextIndex == null) return
+      event.preventDefault()
+      showPointAt(nextIndex)
+    })
+    plots.appendChild(readout)
+    telemetryPanel.append(plots, axis)
+    showPointAt(activePointIndex)
+    resetReadout()
+  }
+
+  function render(): void {
+    syncStartDate()
+    block.dataset.sport = sport
+    block.dataset.range = range
+    block.dataset.rangeStart = startDate
+    for (const [option, button] of sportButtons)
+      button.setAttribute('aria-pressed', String(option === sport))
+    for (const [option, button] of rangeButtons) {
+      const selected = option === range
+      button.classList.toggle('tri-dist-range--on', selected)
+      button.setAttribute('aria-pressed', String(selected))
+    }
+    const dateText = startPicker.trigger.querySelector<HTMLElement>('.tri-pred-date-text')
+    if (dateText) dateText.textContent = shortDate(startDate)
+    startPicker.trigger.dataset.value = startDate
+    if (startPicker.panel.matches(':popover-open')) startPicker.render()
+    const points = selectedActivities()
+    renderZones(points)
+    renderTelemetry(points)
+  }
+
+  render()
+  return block
+}
+
 const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   body: buildBody,
   dexa: buildDexa,
@@ -9105,6 +9933,7 @@ const ANALYTICS_BUILDERS: Record<string, (data: Analytics) => HTMLElement> = {
   lactate: buildLactateThreshold,
   power: buildBestPowerCurve,
   abilities: buildAbilities,
+  distributions: buildDistributions,
   cardio: buildCardio,
   pmc: buildPmc,
   weekly: buildWeekly,
@@ -10124,6 +10953,11 @@ const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = [
     hay: 'abilities radar sprint threshold endurance climb stride length cadence recovery vertical oscillation power profile vam wkg swim bike run pace css stroke average',
   },
   {
+    label: 'training distributions',
+    chart: 'distributions',
+    hay: 'heart rate zones distribution majority training time average power cadence skin temperature heat strain index hsi telemetry swim bike run date range',
+  },
+  {
     label: 'cardiovascular health',
     chart: 'cardio',
     hay: 'cardio cardiovascular heart rhr hrv efficiency factor decoupling aerobic drift',
@@ -10188,6 +11022,8 @@ const GLOSS_CHART: Record<string, string> = {
   fitage: 'vo2max',
   vam: 'abilities',
   radar: 'abilities',
+  hrzones: 'distributions',
+  activitytelemetry: 'distributions',
   ef: 'cardio',
   decouple: 'cardio',
 }
@@ -10238,6 +11074,7 @@ const ACTIVITY_FILTER_ALIASES: Readonly<Record<string, ActivityKind>> = {
   hike: 'walk',
   weight: 'strength',
   gym: 'strength',
+  pilates: 'yoga',
 }
 const ACTIVITY_SORT_KEYS: readonly string[] = ['distance', 'cadence', 'pace']
 const DATE_FILTER_KEYWORDS: readonly string[] = ['today', 'yesterday', 'week', 'month']
@@ -10456,24 +11293,29 @@ const marqueeCtl = (): { run: (name: HTMLElement) => void; stop: () => void } =>
   return { run, stop }
 }
 
-const detailHead = (date: string, title?: string): { head: HTMLElement; back: HTMLElement } => {
+const detailHead = (
+  date: string,
+  title?: string,
+): { head: HTMLElement; back: HTMLElement; actions: HTMLElement } => {
   const head = el('div', 'tri-pop-head tri-pop-head--detail')
   const row = el('div', 'tri-pop-head-row')
+  const actions = el('div', 'tri-pop-head-actions')
   const back = el('button', 'tri-ana-back tri-ana-back--ico')
   back.setAttribute('type', 'button')
   back.setAttribute('aria-label', tl('go back'))
   const ico = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' })
   ico.appendChild(svg('path', { d: 'M19 12H5M11 6l-6 6 6 6' }))
   back.appendChild(ico)
-  row.append(el('span', 'tri-pop-date', date), back)
+  actions.appendChild(back)
+  row.append(el('span', 'tri-pop-date', date), actions)
   head.appendChild(row)
-  if (!title) return { head, back }
+  if (!title) return { head, back, actions }
   const titleEl = el('span', 'tri-pop-title', title)
   const marquee = marqueeCtl()
   titleEl.addEventListener('mouseenter', () => marquee.run(titleEl))
   titleEl.addEventListener('mouseleave', marquee.stop)
   head.appendChild(titleEl)
-  return { head, back }
+  return { head, back, actions }
 }
 
 const setupAnalytics = (root: HTMLElement): (() => void) | null => {
@@ -10658,7 +11500,33 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     detailGeneration += 1
     compareCleanup?.()
     const card = el('div', 'tri-pop-card tri-pop-card--compare')
-    const { head, back } = detailHead(`${activities.length} ${tl('activities')}`)
+    const { head, back, actions } = detailHead(`${activities.length} ${tl('activities')}`)
+    const copy = el('button', 'tri-compare-copy', undefined, {
+      type: 'button',
+      'aria-label': tl('Copy embed link'),
+      title: tl('Copy embed link'),
+    })
+    const copyIcon = svg('svg', {
+      class: 'copy-icon',
+      width: '16',
+      height: '16',
+      viewBox: '-4 -4 24 24',
+      fill: 'currentColor',
+      'aria-hidden': 'true',
+    })
+    copyIcon.appendChild(svg('use', { href: '#github-copy' }))
+    const checkIcon = svg('svg', {
+      class: 'check-icon',
+      width: '16',
+      height: '16',
+      viewBox: '-4 -4 24 24',
+      fill: 'currentColor',
+      'aria-hidden': 'true',
+    })
+    checkIcon.appendChild(svg('use', { href: '#github-check' }))
+    copy.append(copyIcon, checkIcon)
+    actions.prepend(copy)
+    const copyCleanup = wireEmbedCopy(copy, () => activityComparisonEmbed(compareIds))
     const comparison = buildActivityComparison(domF, activities, clientCtx())
     applyI18n(comparison)
     card.append(head, comparison)
@@ -10678,6 +11546,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     }
     comparison.addEventListener('click', onComparisonClick)
     compareCleanup = () => {
+      copyCleanup()
       interactionCleanup()
       comparison.removeEventListener('click', onComparisonClick)
     }
@@ -10966,6 +11835,45 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     load()
     panel.focus({ preventScroll: true })
   }
+  const onComparisonFill = (event: Event) => {
+    if (!(event instanceof CustomEvent) || !isRecord(event.detail)) return
+    const anchor = event.detail.anchor
+    const activityIds = typeof anchor === 'string' ? decodeActivityComparisonAnchor(anchor) : null
+    if (!activityIds) return
+    if (pageMode) {
+      toMain()
+      panel.setAttribute('aria-hidden', 'false')
+      load()
+    } else {
+      open()
+    }
+    enterCompare()
+    const generation = detailGeneration
+    void loadDetails().then(available => {
+      if (
+        !available ||
+        !live ||
+        !compareMode ||
+        !panel.isConnected ||
+        generation !== detailGeneration
+      )
+        return
+      const activities = activityIds.flatMap(activityId => {
+        const activity = detailData?.details[activityId]
+        return activity ? [activity] : []
+      })
+      const sport = activities[0]?.sport
+      if (
+        activities.length !== activityIds.length ||
+        !sport ||
+        activities.some(activity => activity.sport !== sport || !compareActivityEligible(activity))
+      )
+        return
+      compareIds = [...activityIds]
+      runSearch()
+      showComparison()
+    })
+  }
   const onKey = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return
     if (panel.classList.contains('tri-analytics--detail')) {
@@ -10999,6 +11907,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
   detail?.addEventListener('click', onCardToggle)
   document.addEventListener('keydown', onKey)
   document.addEventListener('pointerdown', closeLabDateMenuFromOutside)
+  window.addEventListener('tri:comparison-fill', onComparisonFill)
   const onUnitChange = () => {
     const comparisonVisible =
       panel.classList.contains('tri-analytics--detail') &&
@@ -11029,6 +11938,7 @@ const setupAnalytics = (root: HTMLElement): (() => void) | null => {
     detail?.removeEventListener('click', onCardToggle)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('pointerdown', closeLabDateMenuFromOutside)
+    window.removeEventListener('tri:comparison-fill', onComparisonFill)
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnitChange)
@@ -11798,27 +12708,26 @@ const setupMap = (root: HTMLElement): (() => void) | null => {
       })
       .catch(() => {})
   }
-  const loadDetails = (): Promise<void> => {
-    if (detailLoaded) return Promise.resolve()
+  const loadDetails = async (): Promise<void> => {
+    if (detailLoaded) return
     detailLoaded = true
     const p = root.dataset.detailPath
-    if (!p) return Promise.resolve()
-    return fetch(p)
-      .then(res => res.json())
-      .then((d: DetailPayload) => {
-        detailData = d
-        DETAIL_ZONES = d.zones ?? null
-        DETAIL_CURVE_REF = d.powerCurveRef ?? []
-        DETAIL_CURVE_YEAR_REF = d.powerCurveYearRef ?? []
-        DETAIL_CURVE_YEAR = d.powerCurveYear ?? null
-        DETAIL_FTP = d.ftp ?? null
-        DETAIL_GOAL_FTP = d.goalFtp ?? null
-        DETAIL_VT1 = d.vt1Hr ?? null
-        overviewCache.clear()
-        mapCtl.drawOverview()
-        if (search?.value) runSearch()
-      })
-      .catch(() => {})
+    if (!p) return
+    try {
+      const response = await fetch(p)
+      const d: DetailPayload = await response.json()
+      detailData = d
+      DETAIL_ZONES = d.zones ?? null
+      DETAIL_CURVE_REF = d.powerCurveRef ?? []
+      DETAIL_CURVE_YEAR_REF = d.powerCurveYearRef ?? []
+      DETAIL_CURVE_YEAR = d.powerCurveYear ?? null
+      DETAIL_FTP = d.ftp ?? null
+      DETAIL_GOAL_FTP = d.goalFtp ?? null
+      DETAIL_VT1 = d.vt1Hr ?? null
+      overviewCache.clear()
+      mapCtl.drawOverview()
+      if (search?.value) runSearch()
+    } catch {}
   }
   const syncSportBtns = () => {
     for (const b of sportBtns)
@@ -12461,11 +13370,7 @@ const renderGlossDef = (def: string): HTMLElement => {
   return span
 }
 
-const setupGloss = (root: HTMLElement): (() => void) | null => {
-  const zones = ['.tri-analytics', '.tri-foot', '.tri-head']
-    .map(s => root.querySelector<HTMLElement>(s))
-    .filter((z): z is HTMLElement => z != null)
-  if (zones.length === 0) return null
+const setupGloss = (root: HTMLElement): (() => void) => {
   const pop = el('div', 'tri-gloss')
   pop.setAttribute('role', 'tooltip')
   root.appendChild(pop)
@@ -12482,7 +13387,8 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
   }
   const show = (term: HTMLElement) => {
     const key = term.dataset.gloss ?? ''
-    const g = glossFor(key)
+    const definition = term.dataset.glossDef
+    const g = definition ? { term: term.textContent?.trim() ?? '', def: definition } : glossFor(key)
     if (!g) return
     current = term
     pop.replaceChildren(el('span', 'tri-gloss-h', g.term), renderGlossDef(g.def))
@@ -12508,20 +13414,16 @@ const setupGloss = (root: HTMLElement): (() => void) | null => {
   const onKey = (event: KeyboardEvent) => {
     if (event.key === 'Escape') hide()
   }
-  for (const z of zones) {
-    z.addEventListener('mouseover', onOver)
-    z.addEventListener('mouseout', onOut)
-    z.addEventListener('focusin', onOver)
-    z.addEventListener('focusout', onOut)
-  }
+  root.addEventListener('mouseover', onOver)
+  root.addEventListener('mouseout', onOut)
+  root.addEventListener('focusin', onOver)
+  root.addEventListener('focusout', onOut)
   document.addEventListener('keydown', onKey)
   return () => {
-    for (const z of zones) {
-      z.removeEventListener('mouseover', onOver)
-      z.removeEventListener('mouseout', onOut)
-      z.removeEventListener('focusin', onOver)
-      z.removeEventListener('focusout', onOut)
-    }
+    root.removeEventListener('mouseover', onOver)
+    root.removeEventListener('mouseout', onOut)
+    root.removeEventListener('focusin', onOver)
+    root.removeEventListener('focusout', onOut)
     document.removeEventListener('keydown', onKey)
     pop.remove()
   }
@@ -13466,6 +14368,7 @@ const setupI18n = (root: HTMLElement): (() => void) => {
 }
 
 const setupMatchedActivities = (scope: HTMLElement): (() => void) => {
+  const marquee = marqueeCtl()
   const indexOf = (element: HTMLElement): number | null => {
     const index = Number(element.dataset.matchedIndex)
     return Number.isInteger(index) && index >= 0 ? index : null
@@ -13510,6 +14413,18 @@ const setupMatchedActivities = (scope: HTMLElement): (() => void) => {
     target instanceof Element
       ? target.closest<HTMLElement>('.tri-matched-point, .tri-matched-table [data-matched-index]')
       : null
+  const activityFor = (target: EventTarget | null): HTMLElement | null =>
+    target instanceof Element ? target.closest<HTMLElement>('.tri-matched-activity') : null
+  const runActivityMarquee = (target: EventTarget | null): void => {
+    const activity = activityFor(target)
+    if (activity) marquee.run(activity)
+  }
+  const stopActivityMarquee = (event: PointerEvent | FocusEvent): void => {
+    const activity = activityFor(event.target)
+    if (!activity) return
+    if (event.relatedTarget instanceof Node && activity.contains(event.relatedTarget)) return
+    marquee.stop()
+  }
   const selectTarget = (target: EventTarget | null): boolean => {
     const selectable = selectableFor(target)
     const section = sectionFor(selectable)
@@ -13547,8 +14462,20 @@ const setupMatchedActivities = (scope: HTMLElement): (() => void) => {
     if (event.relatedTarget instanceof Node && section.contains(event.relatedTarget)) return
     restore(section)
   }
+  const onPointerOver = (event: PointerEvent): void => {
+    runActivityMarquee(event.target)
+  }
+  const onPointerOut = (event: PointerEvent): void => {
+    stopActivityMarquee(event)
+    restoreAfterExit(event)
+  }
   const onFocusIn = (event: FocusEvent): void => {
     selectTarget(event.target)
+    runActivityMarquee(event.target)
+  }
+  const onFocusOut = (event: FocusEvent): void => {
+    stopActivityMarquee(event)
+    restoreAfterExit(event)
   }
   const onClick = (event: MouseEvent): void => {
     selectTarget(event.target)
@@ -13580,17 +14507,20 @@ const setupMatchedActivities = (scope: HTMLElement): (() => void) => {
     show(section, nextIndex)
   }
 
+  scope.addEventListener('pointerover', onPointerOver)
   scope.addEventListener('pointermove', onPointerMove)
-  scope.addEventListener('pointerout', restoreAfterExit)
+  scope.addEventListener('pointerout', onPointerOut)
   scope.addEventListener('focusin', onFocusIn)
-  scope.addEventListener('focusout', restoreAfterExit)
+  scope.addEventListener('focusout', onFocusOut)
   scope.addEventListener('click', onClick)
   scope.addEventListener('keydown', onKeyDown)
   return () => {
+    marquee.stop()
+    scope.removeEventListener('pointerover', onPointerOver)
     scope.removeEventListener('pointermove', onPointerMove)
-    scope.removeEventListener('pointerout', restoreAfterExit)
+    scope.removeEventListener('pointerout', onPointerOut)
     scope.removeEventListener('focusin', onFocusIn)
-    scope.removeEventListener('focusout', restoreAfterExit)
+    scope.removeEventListener('focusout', onFocusOut)
     scope.removeEventListener('click', onClick)
     scope.removeEventListener('keydown', onKeyDown)
   }
@@ -14233,6 +15163,16 @@ interface PredDatePicker {
   close: () => void
 }
 
+interface DatePickerOptions {
+  label: string
+  selected: () => string | undefined
+  min: () => string | undefined
+  max: () => string | undefined
+  onOpen: () => void
+  onSelect: (date: string) => void
+  onClear: () => void
+}
+
 const predDatePad = (value: number): string => String(value).padStart(2, '0')
 
 const predDateValue = (year: number, month: number, day: number): string =>
@@ -14371,19 +15311,14 @@ const movePredCalendarFocus = (panel: HTMLElement, offset: number): void => {
   const nextParts = parsePredDate(next)
   if (!nextParts) return
   panel.dataset.viewMonth = predMonthValue(predMonthFromDate(nextParts))
-  panel.dispatchEvent(new CustomEvent('tri:pred-date-render'))
+  panel.dispatchEvent(new CustomEvent('tri:date-render'))
   panel.querySelector<HTMLButtonElement>(`.tri-pred-cal-day[data-date="${next}"]`)?.focus()
 }
 
-const buildPredDatePicker = (
-  block: HTMLElement,
-  onOpen: () => void,
-  onSelect: (date: string) => void,
-  onClear: () => void,
-): PredDatePicker => {
+const buildDatePicker = (options: DatePickerOptions): PredDatePicker => {
   const wrap = el('div', 'tri-pred-date-wrap')
   const trigger = predButton('tri-pred-date', undefined, {
-    'aria-label': 'comparison date',
+    'aria-label': options.label,
     'aria-haspopup': 'dialog',
     'aria-expanded': 'false',
   })
@@ -14391,7 +15326,7 @@ const buildPredDatePicker = (
   trigger.append(text, buildPredCalendarIcon())
   const panel = el('div', 'tri-pred-calendar', undefined, {
     role: 'dialog',
-    'aria-label': 'comparison date picker',
+    'aria-label': `${options.label} · ${tl('date picker')}`,
     popover: 'auto',
   })
   panel.id = `tri-pred-calendar-${Math.random().toString(36).slice(2)}`
@@ -14407,11 +15342,11 @@ const buildPredDatePicker = (
   }
 
   const render = (): void => {
-    const min = block.dataset.compareMin
-    const max = block.dataset.compareMax
+    const min = options.min()
+    const max = options.max()
     const today = predDateFromLocal(new Date())
     const selected =
-      block.dataset.compareDate ??
+      options.selected() ??
       max ??
       min ??
       predDateValue(predTodayParts().year, predTodayParts().month, predTodayParts().day)
@@ -14431,8 +15366,8 @@ const buildPredDatePicker = (
     const monthTitle = triMonthYear(predDateValue(view.year, view.month, 1))
     const head = el('div', 'tri-pred-cal-head')
     const title = el('span', 'tri-pred-cal-title', monthTitle)
-    const prev = predButton('tri-pred-cal-nav', undefined, { 'aria-label': 'previous month' })
-    const next = predButton('tri-pred-cal-nav', undefined, { 'aria-label': 'next month' })
+    const prev = predButton('tri-pred-cal-nav', undefined, { 'aria-label': tl('previous month') })
+    const next = predButton('tri-pred-cal-nav', undefined, { 'aria-label': tl('next month') })
     prev.appendChild(buildPredCalendarArrow(-1))
     next.appendChild(buildPredCalendarArrow(1))
     if (minMonth && predMonthValue(prevMonth) < predMonthValue(predMonthFromDate(minMonth)))
@@ -14474,21 +15409,21 @@ const buildPredDatePicker = (
       if ((min && value < min) || (max && value > max)) day.disabled = true
       else
         day.addEventListener('click', () => {
-          onSelect(value)
+          options.onSelect(value)
           close()
         })
       grid.appendChild(day)
     }
 
     const foot = el('div', 'tri-pred-cal-foot')
-    const clear = predButton('tri-pred-cal-action', 'clear')
-    const now = predButton('tri-pred-cal-action', 'today')
+    const clear = predButton('tri-pred-cal-action', tl('clear'))
+    const now = predButton('tri-pred-cal-action', tl('today'))
     clear.addEventListener('click', () => {
-      onClear()
+      options.onClear()
       close()
     })
     now.addEventListener('click', () => {
-      onSelect(clampPredDate(today, min, max))
+      options.onSelect(clampPredDate(today, min, max))
       close()
     })
     foot.append(clear, now)
@@ -14500,8 +15435,8 @@ const buildPredDatePicker = (
       close()
       return
     }
-    onOpen()
-    const selected = parsePredDate(block.dataset.compareDate)
+    options.onOpen()
+    const selected = parsePredDate(options.selected())
     if (selected) panel.dataset.viewMonth = predMonthValue(predMonthFromDate(selected))
     render()
     positionPredCalendar(trigger, panel)
@@ -14534,10 +15469,26 @@ const buildPredDatePicker = (
     event.preventDefault()
     movePredCalendarFocus(panel, offset)
   })
-  panel.addEventListener('tri:pred-date-render', () => render())
+  panel.addEventListener('tri:date-render', () => render())
 
   return { wrap, trigger, panel, render, close }
 }
+
+const buildPredDatePicker = (
+  block: HTMLElement,
+  onOpen: () => void,
+  onSelect: (date: string) => void,
+  onClear: () => void,
+): PredDatePicker =>
+  buildDatePicker({
+    label: tl('comparison date'),
+    selected: () => block.dataset.compareDate,
+    min: () => block.dataset.compareMin,
+    max: () => block.dataset.compareMax,
+    onOpen,
+    onSelect,
+    onClear,
+  })
 
 const isPredCompareKey = (value: string | undefined): value is PredCompareKey =>
   PRED_COMPARE_OPTIONS.some(option => option.key === value)
@@ -14564,7 +15515,7 @@ const syncPredDateControl = (block: HTMLElement, f: PaceForecaster): void => {
   trigger.dataset.value = date
   text.textContent = triLongDate(date)
   const panel = block.querySelector<HTMLElement>('.tri-pred-calendar')
-  if (panel?.matches(':popover-open')) panel.dispatchEvent(new CustomEvent('tri:pred-date-render'))
+  if (panel?.matches(':popover-open')) panel.dispatchEvent(new CustomEvent('tri:date-render'))
 }
 
 const predComparison = (f: PaceForecaster, block: HTMLElement): PredComparison => {
@@ -15018,10 +15969,11 @@ const mountTriathlon = (): (() => void) => {
       root.classList.toggle('tri-panels-fullscreen', readTriPanelsFullscreen())
     initTriLocale()
   }
-  const embedCleanup = setupDayEmbeds()
-  addCleanup(embedCleanup)
+  addCleanup(setupDayEmbeds())
+  addCleanup(setupActivityComparisonEmbeds())
   addCleanup(setupChartScrub(document.body))
   addCleanup(setupMatchedActivities(document.body))
+  addCleanup(setupGloss(document.body))
   if (root) {
     addCleanup(setupI18n(root))
     addCleanup(setupCommandPalette(root))
@@ -15037,7 +15989,6 @@ const mountTriathlon = (): (() => void) => {
     addCleanup(setupFeed(root))
     addCleanup(setupTraining(root))
     addCleanup(setupMap(root))
-    addCleanup(setupGloss(root))
     addCleanup(setupAxisLabels(root))
     addCleanup(setupShortcuts(root))
     const hashDate = /^#(\d{4}-\d{2}-\d{2})$/.exec(window.location.hash)?.[1]
@@ -15047,6 +15998,10 @@ const mountTriathlon = (): (() => void) => {
     const calcShare = calcHash ? decodeCalcShare(calcHash) : null
     if (calcShare)
       window.dispatchEvent(new CustomEvent('tri:calc-fill', { detail: { share: calcShare } }))
+    if (decodeActivityComparisonAnchor(window.location.hash))
+      window.dispatchEvent(
+        new CustomEvent('tri:comparison-fill', { detail: { anchor: window.location.hash } }),
+      )
   }
   return () => {
     for (let i = cleanups.length - 1; i >= 0; i--) cleanups[i]()

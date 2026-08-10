@@ -6,6 +6,7 @@ import {
   getHastClassNames,
   hasHastClass,
   readTranscludeTarget,
+  transcludeVisitKey,
 } from './transclude-props'
 
 function transcludeElement(
@@ -75,6 +76,49 @@ test('reads dashed transclude target properties from serialized-style HAST', () 
   assert.equal(target.url, 'thoughts/craft')
   assert.equal(target.blockRef, '#open-source')
   assert.equal(target.alias, '#open-source')
+})
+
+test('distinguishes nested transcludes that share a terminal anchor', () => {
+  const fondos = readTranscludeTarget(
+    transcludeElement(
+      {
+        className: ['transclude'],
+        dataUrl: 'triathlon',
+        dataBlock: '#cycling',
+        dataAnchorPath: '["2026-08-01","cycling"]',
+      },
+      { href: './triathlon#cycling', dataSlug: 'triathlon' },
+    ),
+  )
+  const julyThirty = readTranscludeTarget(
+    transcludeElement(
+      {
+        className: ['transclude'],
+        dataUrl: 'triathlon',
+        dataBlock: '#cycling',
+        'data-anchor-path': '["2026-07-30","cycling"]',
+      },
+      { href: './triathlon#cycling', dataSlug: 'triathlon' },
+    ),
+  )
+
+  assert.ok(fondos)
+  assert.ok(julyThirty)
+  assert.equal(transcludeVisitKey(fondos), 'triathlon["2026-08-01","cycling"]')
+  assert.equal(transcludeVisitKey(julyThirty), 'triathlon["2026-07-30","cycling"]')
+  assert.notEqual(transcludeVisitKey(fondos), transcludeVisitKey(julyThirty))
+})
+
+test('keeps whole-page transcludes keyed by target slug', () => {
+  const target = readTranscludeTarget(
+    transcludeElement(
+      { className: ['transclude'], dataUrl: 'thoughts/craft' },
+      { href: './thoughts/craft', dataSlug: 'thoughts/craft' },
+    ),
+  )
+
+  assert.ok(target)
+  assert.equal(transcludeVisitKey(target), target.targetSlug)
 })
 
 test('reads HAST classes from parser and render property names', () => {
