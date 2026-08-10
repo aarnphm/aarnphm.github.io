@@ -1,14 +1,113 @@
-import { Decoder, Stream, type FitMessages } from '@garmin/fitsdk'
+import {
+  Decoder,
+  Encoder,
+  Profile,
+  Stream,
+  type EventMesg,
+  type FileIdMesg,
+  type FitMessages,
+} from '@garmin/fitsdk'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { deflateRawSync } from 'node:zlib'
 import {
+  decodeGarminGearShifts,
   encodeGarminSwimFit,
+  garminFitBytesFromArchive,
+  garminGearShiftsFromArchive,
   validateGarminFit,
   type GarminOpenWaterSwimInput,
   type GarminPoolSwimInput,
 } from './garmin-fit'
 
 const START = new Date('2026-07-19T12:00:00.000Z')
+
+function gearChangeData(
+  frontGearNum: number,
+  frontTeeth: number,
+  rearGearNum: number,
+  rearTeeth: number,
+): number {
+  return (rearGearNum | (rearTeeth << 8) | (frontGearNum << 16) | (frontTeeth << 24)) >>> 0
+}
+
+function gearFit(): Uint8Array {
+  const encoder = new Encoder()
+  const fileId: FileIdMesg = {
+    type: 'activity',
+    manufacturer: 'development',
+    product: 1,
+    serialNumber: 1,
+    timeCreated: START,
+  }
+  encoder.onMesg(Profile.MesgNum.FILE_ID, fileId)
+  const events = [
+    { timestamp: START, frontGearNum: 2, frontTeeth: 52, rearGearNum: 3, rearTeeth: 27 },
+    {
+      timestamp: new Date(START.getTime() + 5_000),
+      frontGearNum: 2,
+      frontTeeth: 52,
+      rearGearNum: 3,
+      rearTeeth: 27,
+    },
+    {
+      timestamp: new Date(START.getTime() + 10_000),
+      frontGearNum: 1,
+      frontTeeth: 36,
+      rearGearNum: 5,
+      rearTeeth: 21,
+    },
+  ]
+  for (const event of events) {
+    const message: EventMesg = {
+      timestamp: event.timestamp,
+      event: 'rearGearChange',
+      eventType: 'marker',
+      data: gearChangeData(
+        event.frontGearNum,
+        event.frontTeeth,
+        event.rearGearNum,
+        event.rearTeeth,
+      ),
+    }
+    encoder.onMesg(Profile.MesgNum.EVENT, message)
+  }
+  return encoder.close()
+}
+
+function zipFit(fit: Uint8Array): Uint8Array {
+  const name = Buffer.from('activity.fit')
+  const compressed = deflateRawSync(fit)
+  const local = Buffer.alloc(30 + name.length)
+  local.writeUInt32LE(0x04034b50, 0)
+  local.writeUInt16LE(20, 4)
+  local.writeUInt16LE(0, 6)
+  local.writeUInt16LE(8, 8)
+  local.writeUInt32LE(0, 14)
+  local.writeUInt32LE(compressed.length, 18)
+  local.writeUInt32LE(fit.length, 22)
+  local.writeUInt16LE(name.length, 26)
+  name.copy(local, 30)
+  const central = Buffer.alloc(46 + name.length)
+  central.writeUInt32LE(0x02014b50, 0)
+  central.writeUInt16LE(20, 4)
+  central.writeUInt16LE(20, 6)
+  central.writeUInt16LE(0, 8)
+  central.writeUInt16LE(8, 10)
+  central.writeUInt32LE(0, 16)
+  central.writeUInt32LE(compressed.length, 20)
+  central.writeUInt32LE(fit.length, 24)
+  central.writeUInt16LE(name.length, 28)
+  central.writeUInt32LE(0, 42)
+  name.copy(central, 46)
+  const end = Buffer.alloc(22)
+  end.writeUInt32LE(0x06054b50, 0)
+  end.writeUInt16LE(1, 8)
+  end.writeUInt16LE(1, 10)
+  end.writeUInt32LE(central.length, 12)
+  end.writeUInt32LE(local.length + compressed.length, 16)
+  return Uint8Array.from(Buffer.concat([local, compressed, central, end]))
+}
 
 function decode(bytes: Uint8Array): FitMessages {
   const result = new Decoder(Stream.fromByteArray(bytes)).read()
@@ -100,6 +199,37 @@ function openWaterInput(): GarminOpenWaterSwimInput {
     ],
   }
 }
+
+test('decodes electronic shifting state from Garmin FIT events', () => {
+  assert.deepEqual(decodeGarminGearShifts(gearFit()), [
+    {
+      timestamp: '2026-07-19T12:00:00.000Z',
+      frontGearNum: 2,
+      frontTeeth: 52,
+      rearGearNum: 3,
+      rearTeeth: 27,
+    },
+    {
+      timestamp: '2026-07-19T12:00:10.000Z',
+      frontGearNum: 1,
+      frontTeeth: 36,
+      rearGearNum: 5,
+      rearTeeth: 21,
+    },
+  ])
+})
+
+test('extracts and decodes a deflated FIT member from the Garmin archive', () => {
+  const fit = gearFit()
+  const archive = zipFit(fit)
+
+  assert.deepEqual(garminFitBytesFromArchive(archive), fit)
+  assert.deepEqual(garminGearShiftsFromArchive(archive), decodeGarminGearShifts(fit))
+})
+
+test('rejects a Garmin archive without a FIT member', () => {
+  assert.throws(() => garminFitBytesFromArchive(new Uint8Array([1, 2, 3, 4])), /ZIP end record/)
+})
 
 test('encodes a 25 metre pool swim with interpolated length messages', () => {
   const encoded = encodeGarminSwimFit(poolInput())

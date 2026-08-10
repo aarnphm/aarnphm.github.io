@@ -234,3 +234,24 @@ export async function fetchGarminJson(
     throw new Error(`Garmin Connect returned non-JSON: ${garminResponseSummary(res, text)}`)
   return JSON.parse(text) as unknown
 }
+
+export async function fetchGarminBytes(
+  session: GarminConnectSession,
+  base: string,
+  path: string,
+  params?: URLSearchParams,
+): Promise<Uint8Array> {
+  const res = await fetch(garminUrlFor(base, path, params), {
+    headers: garminConnectRequestHeaders(session),
+  })
+  applyGarminSetCookies(session, res.headers)
+  if (res.status === 401 || res.status === 403)
+    throw new Error(`Garmin Connect session rejected (${res.status}); refresh the cookie`)
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(
+      `Garmin Connect request failed: ${res.status} ${garminResponseSummary(res, text)}`,
+    )
+  }
+  return new Uint8Array(await res.arrayBuffer())
+}

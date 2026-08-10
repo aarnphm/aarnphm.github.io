@@ -4,7 +4,6 @@ import type { AppleCache } from './apple'
 import type { CoreBodyTemperatureCache } from './core-body-temperature'
 import type { GarminCache } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
-import type { RawStravaActivity, StravaRawCache, StravaStreams } from './strava'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
 import {
@@ -17,6 +16,12 @@ import {
   computeFtpHypothesisFromVo2,
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
+import {
+  buildPayload,
+  type RawStravaActivity,
+  type StravaRawCache,
+  type StravaStreams,
+} from './strava'
 
 const DAY = 86_400_000
 
@@ -160,6 +165,84 @@ function fixtures(): {
   }
   return { cache, oura, weights, weather }
 }
+
+test('distributions use payload heart-rate zones and canonical cadence and power units', () => {
+  const { cache } = fixtures()
+  const run = cache.activities['2']
+  cache.activities['1'] = { ...cache.activities['1'], averageTemp: 42 }
+  cache.activities['2'] = { ...run, averageWatts: 240, deviceWatts: false }
+  const heartRateZoneBounds = [130, 145, 160, 175]
+  const payload = buildPayload(
+    cache,
+    null,
+    null,
+    '2026-05-12',
+    null,
+    ATHLETE.ftp,
+    heartRateZoneBounds,
+  )
+  const swimDay = iso(24)
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {},
+    swims: {
+      swim: {
+        id: 'swim',
+        date: swimDay,
+        start: `${swimDay}T12:00:00Z`,
+        end: `${swimDay}T12:30:00Z`,
+        totalM: 1_500,
+        laps: 30,
+        activeTimeS: 1_500,
+        strokeCount: 750,
+        strokeTimeS: 1_500,
+        strokes: { freestyle: 1_500 },
+        location: 'pool',
+        waterTemperatureC: null,
+      },
+    },
+  }
+
+  const distributions = buildAnalytics(cache, {
+    apple,
+    zones: payload.zones,
+    activityDetails: payload.details,
+    since: '2026-05-12',
+  }).distributions
+
+  assert.deepEqual(distributions.heartRateZoneBounds, heartRateZoneBounds)
+  assert.equal(distributions.activities.length, 3)
+  for (const point of distributions.activities) {
+    assert.equal(point.heartRateZoneSeconds?.length, heartRateZoneBounds.length + 1)
+    assert.equal(
+      point.heartRateZoneSeconds?.reduce((total, seconds) => total + seconds, 0),
+      point.movingTimeS,
+    )
+  }
+  const bike = distributions.activities.find(point => point.sport === 'bike')
+  const runPoint = distributions.activities.find(point => point.sport === 'run')
+  const swim = distributions.activities.find(point => point.sport === 'swim')
+  assert.equal(bike?.averagePowerWatts, 200)
+  assert.equal(bike?.powerSource, 'device')
+  assert.equal(bike?.cadence, 85)
+  assert.equal(bike?.cadenceUnit, 'rpm')
+  assert.equal(bike?.skinTemperatureC, null)
+  assert.equal(bike?.heatStrainIndex, null)
+  assert.equal(bike?.skinThermalSource, null)
+  assert.equal(bike?.heatStrainThermalSource, null)
+  assert.equal(runPoint?.averagePowerWatts, 240)
+  assert.equal(runPoint?.powerSource, 'estimated')
+  assert.equal(runPoint?.cadence, 176)
+  assert.equal(runPoint?.cadenceUnit, 'spm')
+  assert.equal(swim?.averagePowerWatts, null)
+  assert.equal(swim?.powerSource, null)
+  assert.equal(swim?.cadence, 30)
+  assert.equal(swim?.cadenceUnit, 'str/min')
+})
+
+test('empty analytics include an empty distributions block', () => {
+  assert.deepEqual(buildAnalytics(null).distributions, { heartRateZoneBounds: [], activities: [] })
+})
 
 test('recovery block computes baselines, series, and flags from oura-merged daily', () => {
   const { cache, oura, weights } = fixtures()
@@ -374,11 +457,13 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
         distance: [0, 5_000, 10_000, 15_000, 20_000],
         heatStrainIndex: [0, 2.9, 3, 4, 2],
         coreTemperatureC: [37, 37.1, 37.2, 37.3, 37.4],
+        skinTemperatureC: [30, Number.NaN, 34, Number.NaN, 38],
       },
     },
   }
 
-  const heat = buildAnalytics(cache, { weather, garmin, since: date }).heat
+  const analytics = buildAnalytics(cache, { weather, garmin, since: date })
+  const heat = analytics.heat
   assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
   assert.deepEqual(heat.coreSourceCounts, { app: 0, fit: 1 })
   assert.equal(heat.latestTemperatureC, 37.15)
@@ -399,6 +484,25 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   })
   assert.equal(heat.series[0].source, 'core')
   assert.equal(heat.series[0].heatStrainIndex, 2.5)
+  assert.deepEqual(analytics.distributions.activities[0], {
+    id: 201,
+    date,
+    startedAt: `${date}T12:00:00Z`,
+    sport: 'bike',
+    name: 'Ride 201',
+    movingTimeS: 3600,
+    heartRateZoneSeconds: null,
+    averagePowerWatts: null,
+    powerSource: null,
+    cadence: 85,
+    cadenceUnit: 'rpm',
+    skinTemperatureC: 32.19,
+    heatStrainIndex: 2.5,
+    skinThermalSource: 'core-fit',
+    heatStrainThermalSource: 'core-fit',
+    skinObservedSeconds: 1860,
+    heatStrainObservedSeconds: 3660,
+  })
 })
 
 test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () => {
@@ -455,13 +559,85 @@ test('heat block prefers CORE app onboard samples over CORE FIT telemetry', () =
     },
   }
 
-  const heat = buildAnalytics(cache, { core, garmin, since: date }).heat
+  const analytics = buildAnalytics(cache, { core, garmin, since: date })
+  const heat = analytics.heat
   assert.deepEqual(heat.sourceCounts, { core: 1, weatherkit: 0, strava: 0 })
   assert.deepEqual(heat.coreSourceCounts, { app: 1, fit: 0 })
   assert.equal(heat.activities[0].coreOrigin, 'app')
   assert.equal(heat.activities[0].temperatureC, 38.03)
   assert.equal(heat.activities[0].heatStrainIndex, 4)
   assert.equal(heat.activities[0].hotMinutes, 61)
+  assert.equal(analytics.distributions.activities[0].skinTemperatureC, 33)
+  assert.equal(analytics.distributions.activities[0].heatStrainIndex, 4)
+  assert.equal(analytics.distributions.activities[0].skinThermalSource, 'core-app')
+  assert.equal(analytics.distributions.activities[0].heatStrainThermalSource, 'core-app')
+  assert.equal(analytics.distributions.activities[0].skinObservedSeconds, 3660)
+  assert.equal(analytics.distributions.activities[0].heatStrainObservedSeconds, 3660)
+})
+
+test('activity telemetry resolves sparse CORE app and FIT metrics independently', () => {
+  const date = iso(20)
+  const rideActivity = activity(201, 'Ride', date, 3600, 20_000)
+  const cache: StravaRawCache = {
+    athleteId: 123,
+    auth: { refreshToken: 'core-sparse-test-token', obtainedAt: 0 },
+    lastSync: Date.parse(`${date}T18:00:00Z`),
+    lastActivityStart: 0,
+    activities: { 201: rideActivity },
+    streams: { 201: streams(10, 3) },
+  }
+  const core: CoreBodyTemperatureCache = {
+    version: 1,
+    lastSync: cache.lastSync,
+    samples: [
+      {
+        time: rideActivity.startDate,
+        coreTemperatureC: null,
+        skinTemperatureC: 34,
+        heatStrainIndex: null,
+        quality: 4,
+        heartRate: null,
+      },
+    ],
+  }
+  const garmin: GarminCache = {
+    version: 6,
+    lastSync: cache.lastSync,
+    activities: {
+      core: {
+        id: 'core',
+        name: 'CORE ride',
+        sport: 'bike',
+        startDate: rideActivity.startDate,
+        startDateLocal: rideActivity.startDateLocal,
+        distanceM: rideActivity.distance,
+        movingTimeS: rideActivity.movingTime,
+        elapsedTimeS: rideActivity.elapsedTime,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      core: {
+        time: [0, 1800, 3600],
+        latlng: [],
+        altitude: [],
+        distance: [0, 10_000, 20_000],
+        heatStrainIndex: [2, 3, 4],
+        coreTemperatureC: [37, 37.1, 37.2],
+      },
+    },
+  }
+
+  const point = buildAnalytics(cache, { core, garmin, since: date }).distributions.activities[0]
+  assert.equal(point.skinTemperatureC, 34)
+  assert.equal(point.skinThermalSource, 'core-app')
+  assert.equal(point.skinObservedSeconds, 60)
+  assert.equal(point.heatStrainIndex, 2.5)
+  assert.equal(point.heatStrainThermalSource, 'core-fit')
+  assert.equal(point.heatStrainObservedSeconds, 3660)
 })
 
 test('engine block bases vo2max on the declared strava ftp and builds six radar axes', () => {

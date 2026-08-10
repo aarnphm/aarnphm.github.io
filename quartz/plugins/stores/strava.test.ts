@@ -257,6 +257,79 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   )
 })
 
+test('projects Garmin FIT gear states onto ride distance', () => {
+  const activity = ride({
+    distance: 2_000,
+    movingTime: 20,
+    elapsedTime: 20,
+    startDate: '2026-06-07T12:00:00Z',
+    startDateLocal: '2026-06-07T08:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 3,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(activity.startDate) / 1000),
+    activities: { 101: activity },
+  }
+  const garmin: GarminCache = {
+    version: 7,
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Electronic shifting ride',
+        sport: 'bike',
+        startDate: '2026-06-07T12:00:02Z',
+        startDateLocal: '2026-06-07T08:00:02',
+        distanceM: 2_000,
+        movingTimeS: 20,
+        elapsedTimeS: 20,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+    streams: {
+      edge: { time: [0, 10, 20], latlng: [], altitude: [0, 0, 0], distance: [0, 1_000, 2_000] },
+    },
+    gearShifts: {
+      edge: [
+        {
+          timestamp: '2026-06-07T12:00:02.000Z',
+          frontGearNum: 2,
+          frontTeeth: 52,
+          rearGearNum: 3,
+          rearTeeth: 27,
+        },
+        {
+          timestamp: '2026-06-07T12:00:12.000Z',
+          frontGearNum: 2,
+          frontTeeth: 52,
+          rearGearNum: 6,
+          rearTeeth: 19,
+        },
+        {
+          timestamp: '2026-06-07T12:00:22.000Z',
+          frontGearNum: 1,
+          frontTeeth: 36,
+          rearGearNum: 8,
+          rearTeeth: 15,
+        },
+      ],
+    },
+  }
+
+  const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  assert.deepEqual(detail.gearShifts, [
+    { elapsedS: 2, distanceKm: 0, frontGearNum: 2, frontTeeth: 52, rearGearNum: 3, rearTeeth: 27 },
+    { elapsedS: 12, distanceKm: 1, frontGearNum: 2, frontTeeth: 52, rearGearNum: 6, rearTeeth: 19 },
+    { elapsedS: 20, distanceKm: 2, frontGearNum: 1, frontTeeth: 36, rearGearNum: 8, rearTeeth: 15 },
+  ])
+})
+
 function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {
   const distance = [0]
   for (let i = 1; i < n; i++) distance.push(distance[i - 1] + increments(i))

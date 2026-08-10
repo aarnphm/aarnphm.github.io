@@ -16,6 +16,7 @@ import {
   activityComparisonMapPointAtDistance,
   activityComparisonMetricAtDistance,
   activityComparisonMetricsForSport,
+  activityGearRatioDistribution,
   activityPowerDistributionPercentages,
   activitySelectionSummary,
   activityStatRows,
@@ -28,6 +29,7 @@ import {
   buildDayCard,
   buildElevation,
   buildPowerCurve,
+  buildShiftingChart,
   buildRoute,
   buildRunGroundContactTrace,
   buildRunStrideTrace,
@@ -43,6 +45,7 @@ import {
   formatGroundContactTime,
   formatStrideLength,
   formatVerticalOscillation,
+  gearShiftAtFraction,
   interpolatePositiveMetricSeries,
   nearestPowerCurveValue,
   normalizePowerCurvePoints,
@@ -664,6 +667,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   fueling: null,
   strength: null,
   garmin: null,
+  gearShifts: [],
   route: [
     {
       x: 0,
@@ -2616,6 +2620,44 @@ const zonedDetail = (): StravaActivityDetail =>
     ],
   })
 
+const shiftedDetail = (): StravaActivityDetail =>
+  detail({
+    gearShifts: [
+      {
+        elapsedS: 0,
+        distanceKm: 0,
+        frontGearNum: 2,
+        frontTeeth: 52,
+        rearGearNum: 3,
+        rearTeeth: 27,
+      },
+      {
+        elapsedS: 1_600,
+        distanceKm: 10,
+        frontGearNum: 2,
+        frontTeeth: 52,
+        rearGearNum: 6,
+        rearTeeth: 19,
+      },
+      {
+        elapsedS: 3_200,
+        distanceKm: 20,
+        frontGearNum: 1,
+        frontTeeth: 36,
+        rearGearNum: 6,
+        rearTeeth: 19,
+      },
+      {
+        elapsedS: 4_800,
+        distanceKm: 30,
+        frontGearNum: 1,
+        frontTeeth: 36,
+        rearGearNum: 11,
+        rearTeeth: 11,
+      },
+    ],
+  })
+
 const ctx = (overrides: Partial<DetailCtx> = {}): DetailCtx => ({
   zones: { hr: [120, 140, 160, 180], power: [150, 200, 250, 300, 350, 400], ftp: 260 },
   curveRef: [],
@@ -2677,6 +2719,92 @@ test('renders activity graphs against a selected distance domain', () => {
     assert.equal(svg.properties.dataDomainEndDistanceKm, 20)
     assert.deepEqual(byClass(graph, 'tri-cax-xt').map(text), ['12 km', '14 km', '16 km', '18 km'])
   }
+})
+
+test('resolves the active shifting pairing at distance', () => {
+  const shifts = shiftedDetail().gearShifts
+
+  assert.deepEqual(gearShiftAtFraction(shifts, 30, 0.4), { ...shifts[1], index: 1, xPct: 40 })
+  assert.equal(gearShiftAtFraction(shifts, 30, -1)?.index, 0)
+  assert.equal(gearShiftAtFraction(shifts, 30, 2)?.index, 3)
+})
+
+test('renders front and rear shifting on separate overlaid y axes', () => {
+  setDistanceUnit(false)
+  const chart = buildShiftingChart(factory, shiftedDetail(), null)
+  assert.ok(chart)
+  assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['electronic shifting'])
+  assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['52×27 · 26:40'])
+  assert.deepEqual(byClass(chart, 'tri-shift-legend-item').map(text), ['front', 'rear'])
+  assert.equal(byClass(chart, 'tri-shift-legend-line').length, 2)
+  assert.equal(
+    classNames(byClass(chart, 'tri-elev-cap')[0]).includes('tri-elev-cap--summary'),
+    true,
+  )
+  assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['36T', '52T'])
+  assert.equal(byClass(chart, 'tri-cax-yt--right').length, 0)
+  assert.deepEqual(byClass(chart, 'tri-cax-xt').map(text), ['10 km', '20 km'])
+  assert.equal(byClass(chart, 'tri-shift-line').length, 2)
+  assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
+  assert.equal(chart.properties.dataTriTrace, 'electronic shifting')
+  const svg = byClass(chart, 'tri-shift-svg')[0]
+  assert.ok(svg)
+  assert.equal(classNames(svg).includes('tri-elev'), true)
+  assert.equal(byClass(svg, 'tri-elev-cursor').length, 1)
+})
+
+test('aggregates repeated visits when choosing the longest-held gear pairing', () => {
+  const ride = shiftedDetail()
+  ride.gearShifts = [
+    { ...ride.gearShifts[0], elapsedS: 0, distanceKm: 0, frontTeeth: 52, rearTeeth: 19 },
+    { ...ride.gearShifts[1], elapsedS: 600, distanceKm: 4, frontTeeth: 36, rearTeeth: 27 },
+    { ...ride.gearShifts[2], elapsedS: 1_200, distanceKm: 8, frontTeeth: 52, rearTeeth: 19 },
+    { ...ride.gearShifts[3], elapsedS: 3_600, distanceKm: 24, frontTeeth: 36, rearTeeth: 11 },
+  ]
+  const chart = buildShiftingChart(factory, ride)
+  assert.ok(chart)
+  assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['52×19 · 50:00'])
+})
+
+test('normalizes electronic shifting time by exact gear ratio', () => {
+  const ride = shiftedDetail()
+  ride.gearShifts = [
+    { ...ride.gearShifts[0], elapsedS: 0, frontTeeth: 52, rearTeeth: 19 },
+    { ...ride.gearShifts[1], elapsedS: 600, frontTeeth: 36, rearTeeth: 27 },
+    { ...ride.gearShifts[2], elapsedS: 1_200, frontTeeth: 52, rearTeeth: 19 },
+    { ...ride.gearShifts[3], elapsedS: 3_600, frontTeeth: 36, rearTeeth: 11 },
+  ]
+
+  assert.deepEqual(activityGearRatioDistribution(ride), [
+    { ratio: 1.333333, percentage: 12.5 },
+    { ratio: 2.736842, percentage: 62.5 },
+    { ratio: 3.272727, percentage: 25 },
+  ])
+  assert.deepEqual(activityGearRatioDistribution({ ...ride, sport: 'run' }), [])
+})
+
+test('places electronic shifting immediately below the ride power trace', () => {
+  const rendered = buildActivity(factory, shiftedDetail(), true)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
+  assert.ok(powerIndex >= 0)
+  assert.equal(classNames(children[powerIndex + 1]).includes('tri-shift-chart'), true)
+})
+
+test('centres a fixed front chainring while the rear cassette changes', () => {
+  const ride = shiftedDetail()
+  ride.gearShifts = ride.gearShifts.map(shift => ({ ...shift, frontGearNum: 1, frontTeeth: 40 }))
+  const chart = buildShiftingChart(factory, ride)
+  assert.ok(chart)
+  assert.deepEqual(
+    byClass(chart, 'tri-cax-yt')
+      .filter(tick => !classNames(tick).includes('tri-cax-yt--right'))
+      .map(text),
+    ['40T'],
+  )
+  assert.match(String(byClass(chart, 'tri-shift-line--front')[0].properties.d), /^M 0 15\.00/)
 })
 
 test('extends the first measured trace value to distance zero', () => {
@@ -3189,6 +3317,11 @@ test('uses normalized bike power and cadence values in comparison readouts', () 
 
 test('renders every comparison graph with stable selectors, cursors, and readout rows', () => {
   const first = comparisonActivity(211, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      skinTemperatureC: 33.4 + index * 0.05,
+    })),
+    gearShifts: shiftedDetail().gearShifts,
     powerCurve: [
       { s: 1, w: 700 },
       { s: 60, w: 400 },
@@ -3199,6 +3332,14 @@ test('renders every comparison graph with stable selectors, cursors, and readout
     powerZones: [50, 100, 200, 300, 200, 100, 50],
   })
   const second = comparisonActivity(212, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      skinTemperatureC: 33.5 + index * 0.05,
+    })),
+    gearShifts: shiftedDetail().gearShifts.map(shift => ({
+      ...shift,
+      rearTeeth: shift.rearTeeth === 19 ? 17 : shift.rearTeeth,
+    })),
     powerCurve: [
       { s: 1, w: 680 },
       { s: 60, w: 390 },
@@ -3259,6 +3400,8 @@ test('renders every comparison graph with stable selectors, cursors, and readout
       'cadence',
       'respiration',
       'temperature',
+      'skin-temperature',
+      'gear-ratio-distribution',
       'power-distribution',
       'power-curve',
       'hr-zones',
@@ -3284,6 +3427,7 @@ test('renders every comparison graph with stable selectors, cursors, and readout
       'cadence',
       'respiration',
       'temperature',
+      'skin-temperature',
     ].includes(String(chart.properties.dataCompareChart))
     assert.equal(selection.length, distanceChart ? 1 : 0)
     assert.equal(selectionClip.length, distanceChart ? 1 : 0)
@@ -3378,6 +3522,14 @@ test('renders every comparison graph with stable selectors, cursors, and readout
     byClass(removable, 'tri-compare-legend-remove').map(button => button.properties.disabled),
     [undefined, undefined, undefined],
   )
+  const embedded = buildActivityComparison(
+    factory,
+    [first, second, comparisonActivity(213)],
+    undefined,
+    { removable: false },
+  )
+  assert.equal(byClass(embedded, 'tri-compare-legend-remove').length, 0)
+  assert.equal(byClass(embedded, 'tri-compare-legend--static').length, 1)
 })
 
 test('uses running dynamics instead of respiration for run comparisons', () => {
@@ -3621,7 +3773,7 @@ test('overlays the six-week best and threshold lines on the comparison power cur
   assert.ok(refPath)
   assert.ok(Number(graph.properties.dataDomainYMax) >= 1_100)
   assert.deepEqual(
-    decodePowerCurve(String(graph.properties.dataCurveRef)),
+    decodePowerCurve(String(graph.properties.dataCurveRefSixWeeks)),
     [
       { s: 1, w: 1_100 },
       { s: 5, w: 900 },
@@ -3662,6 +3814,60 @@ test('overlays the six-week best and threshold lines on the comparison power cur
   assert.ok(refIndex < lineIndex, 'reference sits under the compared activities')
 })
 
+test('gives comparison power curves the shared ranges and clickable duration segments', () => {
+  const curve = [
+    { s: 1, w: 700 },
+    { s: 5, w: 620 },
+    { s: 60, w: 380 },
+    { s: 300, w: 300 },
+    { s: 1_200, w: 260 },
+  ]
+  const first = comparisonActivity(245, { powerCurve: curve })
+  const second = comparisonActivity(246, {
+    powerCurve: curve.map(point => ({ s: point.s, w: point.w - 40 })),
+  })
+  const chart = comparisonChart(
+    buildActivityComparison(
+      factory,
+      [first, second],
+      ctx({
+        curveRef: curve.map(point => ({ s: point.s, w: point.w + 40 })),
+        curveYearRef: curve.map(point => ({ s: point.s, w: point.w + 80 })),
+        curveYear: 2026,
+      }),
+    ),
+    'power-curve',
+  )
+  const graph = byClass(chart, 'tri-compare-curve-graph')[0]
+  const ranges = byClass(chart, 'tri-curve-range')
+  const references = byClass(chart, 'tri-compare-curve-ref')
+  const ticks = byClass(chart, 'tri-curve-tick')
+
+  assert.deepEqual(ranges.map(text), ['6 weeks', 'all of 2026'])
+  assert.deepEqual(
+    ranges.map(button => button.properties.ariaPressed),
+    ['true', 'false'],
+  )
+  assert.equal(graph.properties.dataCurveRange, 'six-weeks')
+  assert.equal(graph.properties.dataCurveYear, 2026)
+  assert.equal(decodePowerCurve(String(graph.properties.dataCurveRefSixWeeks))[0].w, 740)
+  assert.equal(decodePowerCurve(String(graph.properties.dataCurveRefYear))[0].w, 780)
+  assert.equal(references.length, 2)
+  assert.equal('hidden' in references[0].properties, false)
+  assert.equal('hidden' in references[1].properties, true)
+  assert.deepEqual(ticks.map(text), ['1s', '5s', '10s', '20s', '30s', '1m', '2m', '5m', '20m'])
+  assert.equal(
+    ticks.every(tick => tick.tagName === 'button'),
+    true,
+  )
+  assert.deepEqual(
+    ticks.map(tick => tick.properties.dataCurveSeconds),
+    ['1', '5', '10', '20', '30', '60', '120', '300', '1200'],
+  )
+  assert.equal(ticks[0].properties.ariaPressed, 'true')
+  assert.deepEqual(byClass(chart, 'tri-compare-curve-reference-label').map(text), ['6-week best'])
+})
+
 test('normalizes and overlays 25W power distributions on one percentage domain', () => {
   const first = comparisonActivity(239, { powerHist: [10, 30, 50, 10] })
   const second = comparisonActivity(240, { powerHist: [20, 40, 30, 10, 0] })
@@ -3689,6 +3895,74 @@ test('normalizes and overlays 25W power distributions on one percentage domain',
   assert.deepEqual(byClass(chart, 'tri-cax-xt').map(text), ['0 W', '100 W'])
 })
 
+test('compares precise skin temperature and time-normalized gear ratios between rides', () => {
+  setDistanceUnit(false)
+  const first = comparisonActivity(243, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      skinTemperatureC: 33.4 + index * 0.05,
+    })),
+    gearShifts: shiftedDetail().gearShifts.map((shift, index) => ({
+      ...shift,
+      elapsedS: index === 3 ? 4_000 : shift.elapsedS,
+    })),
+  })
+  const second = comparisonActivity(244, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      skinTemperatureC: 33.5 + index * 0.05,
+    })),
+    gearShifts: shiftedDetail().gearShifts.map((shift, index) => ({
+      ...shift,
+      elapsedS: index === 3 ? 4_000 : shift.elapsedS,
+      rearTeeth: shift.rearTeeth === 19 ? 17 : shift.rearTeeth,
+    })),
+  })
+  const rendered = buildActivityComparison(factory, [first, second])
+  const skin = comparisonChart(rendered, 'skin-temperature')
+  const skinGraph = byClass(skin, 'tri-compare-graph')[0]
+  const ratios = comparisonChart(rendered, 'gear-ratio-distribution')
+  const ratioGraph = byClass(ratios, 'tri-compare-distribution-graph')[0]
+
+  assert.deepEqual(activityComparisonMetricsForSport('bike'), [
+    'elevation',
+    'speed',
+    'hr',
+    'power',
+    'cadence',
+    'respiration',
+    'temperature',
+    'skin-temperature',
+  ])
+  assert.equal(activityComparisonDisplayValueAtDistance(first, 'skin-temperature', 10), '33.45°C')
+  assert.equal(skin.properties.dataAvailable, '2')
+  assert.equal(byClass(skin, 'tri-compare-line').length, 2)
+  assert.ok(Math.abs(Number(skinGraph.properties.dataDomainYMin) - 33.35) < 1e-9)
+  assert.ok(Math.abs(Number(skinGraph.properties.dataDomainYMax) - 33.7) < 1e-9)
+  for (const tick of byClass(skin, 'tri-cax-yt').map(text)) assert.match(tick, /^\d+\.\d{2}°C$/)
+
+  assert.equal(ratios.properties.dataAvailable, '2')
+  assert.equal(ratioGraph.properties.dataRatioCount, 6)
+  assert.equal(ratioGraph.properties.dataDomainXMin, 0)
+  assert.equal(ratioGraph.properties.dataDomainXMax, 5)
+  assert.equal(byClass(ratios, 'tri-compare-line').length, 2)
+  assert.deepEqual(byClass(ratios, 'tri-cax-xt').map(text), [
+    '1.89×',
+    '1.93×',
+    '2.12×',
+    '2.74×',
+    '3.06×',
+    '3.27×',
+  ])
+  for (const activity of [first, second]) {
+    const total = activityGearRatioDistribution(activity).reduce(
+      (sum, point) => sum + point.percentage,
+      0,
+    )
+    assert.ok(Math.abs(total - 100) < 1e-9)
+  }
+})
+
 test('normalizes heart-rate and power zone overlays to percentages', () => {
   const first = comparisonActivity(241, { hrZones: [60, 40], powerZones: [900, 100] })
   const second = comparisonActivity(242, { hrZones: [10, 90], powerZones: [1, 1] })
@@ -3708,7 +3982,12 @@ test('normalizes heart-rate and power zone overlays to percentages', () => {
 })
 
 test('reports mixed sensor coverage without turning missing samples into zero lines', () => {
-  const measured = comparisonActivity(251)
+  const measured = comparisonActivity(251, {
+    route: detail().route.map((point, index) => ({
+      ...point,
+      skinTemperatureC: 33.4 + index * 0.05,
+    })),
+  })
   const missing = comparisonActivity(252, {
     deviceWatts: false,
     route: detail().route.map(point => ({
@@ -3718,11 +3997,12 @@ test('reports mixed sensor coverage without turning missing samples into zero li
       cad: 0,
       resp: null,
       tempC: null,
+      skinTemperatureC: null,
     })),
   })
   const rendered = buildActivityComparison(factory, [measured, missing])
 
-  for (const kind of ['hr', 'power', 'cadence', 'respiration', 'temperature']) {
+  for (const kind of ['hr', 'power', 'cadence', 'respiration', 'temperature', 'skin-temperature']) {
     const chart = comparisonChart(rendered, kind)
     assert.equal(chart.properties.dataAvailable, '1')
     assert.equal(chart.properties.dataSelected, '2')
@@ -3747,7 +4027,14 @@ test('keeps zero-coverage and single-sample plots visible but noninteractive', (
   })
   const rendered = buildActivityComparison(factory, [singleSample, missing])
 
-  for (const kind of ['hr', 'power-curve', 'power-distribution', 'hr-zones', 'power-zones']) {
+  for (const kind of [
+    'hr',
+    'gear-ratio-distribution',
+    'power-curve',
+    'power-distribution',
+    'hr-zones',
+    'power-zones',
+  ]) {
     const chart = comparisonChart(rendered, kind)
     const graph = byClass(chart, 'tri-compare-graph')[0]
     assert.ok(graph)

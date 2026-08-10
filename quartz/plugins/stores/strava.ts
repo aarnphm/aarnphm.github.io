@@ -259,6 +259,15 @@ export interface StravaRoutePoint {
   verticalOscillationCm?: number | null
 }
 
+export interface ActivityGearShift {
+  elapsedS: number
+  distanceKm: number
+  frontGearNum: number
+  frontTeeth: number
+  rearGearNum: number
+  rearTeeth: number
+}
+
 export type ActivityAnalysisKind = 'lap' | 'segment' | 'climb'
 
 export interface ActivityAnalysisRange {
@@ -388,6 +397,7 @@ export interface StravaActivityDetail {
   fueling: ActivityFueling | null
   strength: ActivityStrength | null
   garmin: GarminVerification | null
+  gearShifts: ActivityGearShift[]
   route: StravaRoutePoint[]
   mapRoute: StravaMapPoint[][]
   analysisRanges: ActivityAnalysisRange[]
@@ -1227,6 +1237,58 @@ function timedStreamAlignment(
   return { streams, time, distance: alignedDistance }
 }
 
+function alignedDistanceAt(alignment: TimedStreamAlignment, elapsedS: number): number {
+  const { time, distance } = alignment
+  if (elapsedS <= time[0]) return distance[0]
+  if (elapsedS >= time[time.length - 1]) return distance[distance.length - 1]
+  let low = 0
+  let high = time.length - 1
+  while (low + 1 < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (time[middle] <= elapsedS) low = middle
+    else high = middle
+  }
+  const span = time[high] - time[low]
+  if (span <= 0) return distance[high]
+  const fraction = (elapsedS - time[low]) / span
+  return distance[low] + (distance[high] - distance[low]) * fraction
+}
+
+function activityGearShifts(
+  activity: RawStravaActivity,
+  match: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): ActivityGearShift[] {
+  if (!match) return []
+  const shifts = garmin?.gearShifts?.[match.activity.id]
+  if (!shifts?.length) return []
+  const activityStartMs = Date.parse(activity.startDate)
+  const garminStartMs = Date.parse(match.activity.startDate)
+  if (!Number.isFinite(activityStartMs) || !Number.isFinite(garminStartMs)) return []
+  const alignment = timedStreamAlignment(garmin?.streams?.[match.activity.id])
+  const durationS = Math.max(activity.elapsedTime, activity.movingTime, 1)
+  return shifts.flatMap(shift => {
+    const timestampMs = Date.parse(shift.timestamp)
+    if (!Number.isFinite(timestampMs)) return []
+    const elapsedS = (timestampMs - activityStartMs) / 1000
+    const garminElapsedS = (timestampMs - garminStartMs) / 1000
+    if (garminElapsedS < -60 || garminElapsedS > durationS + 60) return []
+    const distanceM = alignment
+      ? alignedDistanceAt(alignment, garminElapsedS)
+      : (Math.min(durationS, Math.max(0, elapsedS)) / durationS) * activity.distance
+    return [
+      {
+        elapsedS: round(Math.min(durationS, Math.max(0, elapsedS)), 3),
+        distanceKm: round(Math.min(activity.distance, Math.max(0, distanceM)) / 1_000, 3),
+        frontGearNum: shift.frontGearNum,
+        frontTeeth: shift.frontTeeth,
+        rearGearNum: shift.rearGearNum,
+        rearTeeth: shift.rearTeeth,
+      },
+    ]
+  })
+}
+
 function nearestElapsedIndex(time: number[], elapsedS: number): number {
   let lo = 0
   let hi = time.length - 1
@@ -1454,6 +1516,7 @@ function projectDetail(
   effortStreams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
   garminMetricSamples: ActivityGarminMetricSamples,
+  gearShifts: ActivityGearShift[],
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: ActivityFueling | null,
@@ -1631,6 +1694,7 @@ function projectDetail(
     fueling,
     strength: null,
     garmin,
+    gearShifts,
     route,
     mapRoute,
     analysisRanges: analysis.ranges,
@@ -1893,6 +1957,7 @@ export function buildPayload(
           garmin,
         ),
       activityGarminMetricSamples(a, garminMatch, garmin),
+      activityGearShifts(a, garminMatch, garmin),
       weather?.activities[id],
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),

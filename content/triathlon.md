@@ -823,7 +823,7 @@ exercise: Pogo Jumps | 41 reps
 
 ```tracking
 date: 2026-08-06
-activity: 19633452010
+activity: 19675482685
 strengthVolume: 1800.1 lb
 strengthSets: 15
 strengthReps: 90
@@ -836,6 +836,36 @@ exercise: KB Straight Leg Deadlift | 10 reps @ 50 lb | 10 reps @ 50 lb
 exercise: Pogo Jumps | 1 set / 10 reps
 exercise: Plank | 1 set / 30s
 exercise: Plank Hold | 1 set / 30s
+```
+
+```tracking
+date: 2026-08-09
+activity: 19675225006
+strengthVolume: 1700 lb
+strengthSets: 12
+strengthReps: 44
+exercise: Diagonal Toe Tap | 20s | 20s
+exercise: Bodyweight Squat | 20s | 20s
+exercise: Travelling Press Up Walk Out | 20s | 20s
+exercise: Press Up Position Diagonal Toe Tap | 20s | 20s
+exercise: Push Press | 12 reps @ 22.7 kg | 12 reps @ 22.7 kg
+exercise: Single Arm Row | 10 reps @ 11.3 kg | 10 reps @ 11.3 kg
+```
+
+```tracking
+date: 2026-08-09
+activity: 19675276797
+strengthVolume: 1900 lb
+strengthSets: 16
+strengthReps: 80
+exercise: Squat To Calf Raise | 20s | 20s
+exercise: Press Up Position Walk Out | 20s | 20s
+exercise: Floating Heel Drop | 20s @ 11.3 kg | 20s @ 11.3 kg
+exercise: Press Up | 20s | 20s
+exercise: Double Arm Clean | 10 reps @ 9.1 kg | 10 reps @ 11.3 kg
+exercise: Barbell Deadlift | 10 reps @ 22.7 kg | 10 reps @ 27.2 kg
+exercise: Hanging Knee Raise | 10 reps | 10 reps
+exercise: Single Arm Clean And Press | 10 reps @ 9.1 kg | 10 reps @ 6.8 kg
 ```
 
 <!-- training plan start

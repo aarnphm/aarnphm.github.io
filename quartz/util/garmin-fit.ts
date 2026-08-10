@@ -12,6 +12,8 @@ import {
   type RecordMesg,
   type SessionMesg,
 } from '@garmin/fitsdk'
+import { inflateRawSync } from 'node:zlib'
+import type { GarminGearShift } from '../plugins/stores/garmin'
 
 export type GarminSwimStroke =
   | 'freestyle'
@@ -115,8 +117,158 @@ interface SwimStatistics {
   maxSpeed: number
 }
 
+interface ZipEntry {
+  compressedSize: number
+  compressionMethod: number
+  flags: number
+  localHeaderOffset: number
+  name: string
+  uncompressedSize: number
+}
+
 const DEFAULT_POOL_LENGTH_METERS = 25
 const SEMICIRCLES_PER_DEGREE = 2 ** 31 / 180
+const ZIP_CENTRAL_HEADER = 0x02014b50
+const ZIP_END = 0x06054b50
+const ZIP_LOCAL_HEADER = 0x04034b50
+const ZIP_MAX_END_SEARCH = 65_557
+
+function requireZipRange(bytes: Uint8Array, offset: number, length: number): void {
+  if (
+    !Number.isInteger(offset) ||
+    !Number.isInteger(length) ||
+    offset < 0 ||
+    length < 0 ||
+    offset + length > bytes.byteLength
+  )
+    throw new Error('Garmin activity archive is truncated')
+}
+
+function zipEndOffset(bytes: Uint8Array, view: DataView): number {
+  const start = Math.max(0, bytes.byteLength - ZIP_MAX_END_SEARCH)
+  for (let offset = bytes.byteLength - 22; offset >= start; offset--)
+    if (view.getUint32(offset, true) === ZIP_END) return offset
+  throw new Error('Garmin activity archive has no ZIP end record')
+}
+
+function zipEntries(bytes: Uint8Array, view: DataView): ZipEntry[] {
+  const end = zipEndOffset(bytes, view)
+  requireZipRange(bytes, end, 22)
+  const count = view.getUint16(end + 10, true)
+  const centralSize = view.getUint32(end + 12, true)
+  const centralOffset = view.getUint32(end + 16, true)
+  requireZipRange(bytes, centralOffset, centralSize)
+  const decoder = new TextDecoder()
+  const entries: ZipEntry[] = []
+  let offset = centralOffset
+  for (let index = 0; index < count; index++) {
+    requireZipRange(bytes, offset, 46)
+    if (view.getUint32(offset, true) !== ZIP_CENTRAL_HEADER)
+      throw new Error('Garmin activity archive has an invalid ZIP directory')
+    const nameLength = view.getUint16(offset + 28, true)
+    const extraLength = view.getUint16(offset + 30, true)
+    const commentLength = view.getUint16(offset + 32, true)
+    const entryLength = 46 + nameLength + extraLength + commentLength
+    requireZipRange(bytes, offset, entryLength)
+    const compressedSize = view.getUint32(offset + 20, true)
+    const uncompressedSize = view.getUint32(offset + 24, true)
+    const localHeaderOffset = view.getUint32(offset + 42, true)
+    if (
+      compressedSize === 0xffffffff ||
+      uncompressedSize === 0xffffffff ||
+      localHeaderOffset === 0xffffffff
+    )
+      throw new Error('Garmin activity archive uses unsupported ZIP64 fields')
+    entries.push({
+      flags: view.getUint16(offset + 8, true),
+      compressionMethod: view.getUint16(offset + 10, true),
+      compressedSize,
+      uncompressedSize,
+      localHeaderOffset,
+      name: decoder.decode(bytes.subarray(offset + 46, offset + 46 + nameLength)),
+    })
+    offset += entryLength
+  }
+  return entries
+}
+
+export function garminFitBytesFromArchive(archive: Uint8Array): Uint8Array {
+  const view = new DataView(archive.buffer, archive.byteOffset, archive.byteLength)
+  const entry = zipEntries(archive, view).find(candidate =>
+    candidate.name.toLowerCase().endsWith('.fit'),
+  )
+  if (!entry) throw new Error('Garmin activity archive contains no FIT file')
+  if ((entry.flags & 1) !== 0) throw new Error('Garmin activity FIT file is encrypted')
+  if (entry.compressionMethod !== 0 && entry.compressionMethod !== 8)
+    throw new Error(`Garmin activity FIT uses unsupported ZIP method ${entry.compressionMethod}`)
+  requireZipRange(archive, entry.localHeaderOffset, 30)
+  if (view.getUint32(entry.localHeaderOffset, true) !== ZIP_LOCAL_HEADER)
+    throw new Error('Garmin activity archive has an invalid FIT entry')
+  const nameLength = view.getUint16(entry.localHeaderOffset + 26, true)
+  const extraLength = view.getUint16(entry.localHeaderOffset + 28, true)
+  const dataOffset = entry.localHeaderOffset + 30 + nameLength + extraLength
+  requireZipRange(archive, dataOffset, entry.compressedSize)
+  const compressed = archive.subarray(dataOffset, dataOffset + entry.compressedSize)
+  const fit =
+    entry.compressionMethod === 0
+      ? Uint8Array.from(compressed)
+      : Uint8Array.from(inflateRawSync(compressed))
+  if (fit.byteLength !== entry.uncompressedSize)
+    throw new Error('Garmin activity FIT size does not match its ZIP entry')
+  return fit
+}
+
+function positiveGearField(value: number | undefined): number | null {
+  return value != null && Number.isInteger(value) && value > 0 && value < 255 ? value : null
+}
+
+export function decodeGarminGearShifts(bytes: Uint8Array): GarminGearShift[] {
+  if (!Decoder.isFIT(Stream.fromByteArray(bytes))) throw new Error('Garmin activity is not FIT')
+  if (!new Decoder(Stream.fromByteArray(bytes)).checkIntegrity())
+    throw new Error('Garmin activity FIT integrity check failed')
+  const decoded = new Decoder(Stream.fromByteArray(bytes)).read()
+  if (decoded.errors.length > 0)
+    throw new Error(decoded.errors.map(error => error.message).join('; '))
+  const shifts: GarminGearShift[] = []
+  for (const event of decoded.messages.eventMesgs ?? []) {
+    if (event.event !== 'frontGearChange' && event.event !== 'rearGearChange') continue
+    const timestamp = event.timestamp instanceof Date ? event.timestamp : null
+    const frontGearNum = positiveGearField(event.frontGearNum)
+    const frontTeeth = positiveGearField(event.frontGear)
+    const rearGearNum = positiveGearField(event.rearGearNum)
+    const rearTeeth = positiveGearField(event.rearGear)
+    if (
+      !timestamp ||
+      !Number.isFinite(timestamp.getTime()) ||
+      frontGearNum == null ||
+      frontTeeth == null ||
+      rearGearNum == null ||
+      rearTeeth == null
+    )
+      continue
+    const shift = {
+      timestamp: timestamp.toISOString(),
+      frontGearNum,
+      frontTeeth,
+      rearGearNum,
+      rearTeeth,
+    }
+    const previous = shifts[shifts.length - 1]
+    if (
+      previous?.frontGearNum === shift.frontGearNum &&
+      previous.frontTeeth === shift.frontTeeth &&
+      previous.rearGearNum === shift.rearGearNum &&
+      previous.rearTeeth === shift.rearTeeth
+    )
+      continue
+    shifts.push(shift)
+  }
+  return shifts.sort((left, right) => left.timestamp.localeCompare(right.timestamp))
+}
+
+export function garminGearShiftsFromArchive(archive: Uint8Array): GarminGearShift[] {
+  return decodeGarminGearShifts(garminFitBytesFromArchive(archive))
+}
 
 function requireFinite(value: number, label: string): void {
   if (!Number.isFinite(value)) throw new Error(`${label} must be finite`)

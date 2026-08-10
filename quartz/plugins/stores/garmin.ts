@@ -83,6 +83,14 @@ export interface GarminStreams {
   skinTemperatureC?: number[]
 }
 
+export interface GarminGearShift {
+  timestamp: string
+  frontGearNum: number
+  frontTeeth: number
+  rearGearNum: number
+  rearTeeth: number
+}
+
 export interface GarminActivityMatch {
   activity: GarminActivity
   score: number
@@ -113,6 +121,7 @@ export interface GarminCache {
   lastSync: number
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
+  gearShifts?: Record<string, GarminGearShift[]>
   climbs?: Record<string, GarminClimbSegment[]>
   vo2max?: Record<string, GarminVo2Day>
   weight?: GarminWeightSample[]

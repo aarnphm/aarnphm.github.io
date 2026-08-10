@@ -3,6 +3,7 @@ import {
   SPORT_ICON,
   type ActivityAnalysisKind,
   type ActivityAnalysisRange,
+  type ActivityGearShift,
   type ActivityHealth,
   type ActivityKind,
   type PowerCurvePoint,
@@ -530,6 +531,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.heatStrain ||
     flags.coreTemperature ||
     flags.skinTemperature ||
+    d.gearShifts.length > 0 ||
     d.sport === 'run' ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
@@ -949,6 +951,218 @@ export const buildTrace = <N>(
       top: 0,
       bottom: h,
     }),
+  )
+  return wrap
+}
+
+export type GearShiftHover = ActivityGearShift & { index: number; xPct: number }
+
+export function gearShiftAtFraction(
+  shifts: readonly ActivityGearShift[],
+  maxDistanceKm: number,
+  fraction: number,
+): GearShiftHover | null {
+  if (shifts.length === 0 || !Number.isFinite(maxDistanceKm) || maxDistanceKm <= 0) return null
+  const normalized = Number.isFinite(fraction) ? Math.min(1, Math.max(0, fraction)) : 0
+  const distanceKm = normalized * maxDistanceKm
+  let low = 0
+  let high = shifts.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (shifts[middle].distanceKm <= distanceKm) low = middle + 1
+    else high = middle
+  }
+  const index = Math.min(shifts.length - 1, Math.max(0, low - 1))
+  return { ...shifts[index], index, xPct: normalized * 100 }
+}
+
+function sampledGearTicks(values: readonly number[], limit = 4): number[] {
+  const unique = [...new Set(values)].sort((left, right) => left - right)
+  if (unique.length <= limit) return unique
+  return Array.from(
+    new Set(
+      Array.from(
+        { length: limit },
+        (_, index) => unique[Math.round((index / (limit - 1)) * (unique.length - 1))],
+      ),
+    ),
+  )
+}
+
+function gearY(value: number, min: number, max: number, height: number): number {
+  return max > min ? height - ((value - min) / (max - min)) * (height - 1) : height / 2
+}
+
+function gearStepPath(
+  shifts: readonly ActivityGearShift[],
+  read: (shift: ActivityGearShift) => number,
+  y: (value: number) => number,
+  maxDistanceKm: number,
+  width: number,
+): string {
+  const x = (distanceKm: number): number =>
+    (Math.min(maxDistanceKm, Math.max(0, distanceKm)) / maxDistanceKm) * width
+  let path = `M 0 ${y(read(shifts[0])).toFixed(2)}`
+  let previous = read(shifts[0])
+  for (let index = 1; index < shifts.length; index++) {
+    const current = read(shifts[index])
+    const nextX = x(shifts[index].distanceKm).toFixed(2)
+    path += ` L ${nextX} ${y(previous).toFixed(2)} L ${nextX} ${y(current).toFixed(2)}`
+    previous = current
+  }
+  return `${path} L ${width} ${y(previous).toFixed(2)}`
+}
+
+interface GearPairingDuration {
+  frontTeeth: number
+  rearTeeth: number
+  durationS: number
+}
+
+function gearPairingDurations(
+  shifts: readonly ActivityGearShift[],
+  workoutEndElapsedS: number,
+): GearPairingDuration[] {
+  if (shifts.length === 0 || !Number.isFinite(workoutEndElapsedS) || workoutEndElapsedS <= 0)
+    return []
+  const endElapsedS = Math.max(workoutEndElapsedS, shifts.at(-1)?.elapsedS ?? 0)
+  const durations = new Map<string, GearPairingDuration>()
+  for (let index = 0; index < shifts.length; index++) {
+    const shift = shifts[index]
+    const next = shifts[index + 1]
+    const startElapsedS = index === 0 ? 0 : Math.min(endElapsedS, Math.max(0, shift.elapsedS))
+    const nextElapsedS = next
+      ? Math.min(endElapsedS, Math.max(startElapsedS, next.elapsedS))
+      : endElapsedS
+    const durationS = nextElapsedS - startElapsedS
+    if (durationS <= 0) continue
+    const key = `${shift.frontTeeth}:${shift.rearTeeth}`
+    const existing = durations.get(key)
+    if (existing) existing.durationS += durationS
+    else durations.set(key, { frontTeeth: shift.frontTeeth, rearTeeth: shift.rearTeeth, durationS })
+  }
+  return [...durations.values()]
+}
+
+function dominantGearPairing(
+  shifts: readonly ActivityGearShift[],
+  workoutEndElapsedS: number,
+): GearPairingDuration | null {
+  let dominant: GearPairingDuration | null = null
+  for (const pairing of gearPairingDurations(shifts, workoutEndElapsedS))
+    if (!dominant || pairing.durationS > dominant.durationS) dominant = pairing
+  return dominant
+}
+
+export interface ActivityGearRatioDistributionPoint {
+  ratio: number
+  percentage: number
+}
+
+export const activityGearRatioDistribution = (
+  activity: StravaActivityDetail,
+): ActivityGearRatioDistributionPoint[] => {
+  if (activity.sport !== 'bike') return []
+  const workoutEndElapsedS = Math.max(activity.movingTimeS, activity.route.at(-1)?.elapsedS ?? 0)
+  const durations = new Map<number, number>()
+  for (const pairing of gearPairingDurations(activity.gearShifts, workoutEndElapsedS)) {
+    if (
+      !Number.isFinite(pairing.frontTeeth) ||
+      !Number.isFinite(pairing.rearTeeth) ||
+      pairing.frontTeeth <= 0 ||
+      pairing.rearTeeth <= 0
+    )
+      continue
+    const ratio = Number((pairing.frontTeeth / pairing.rearTeeth).toFixed(6))
+    durations.set(ratio, (durations.get(ratio) ?? 0) + pairing.durationS)
+  }
+  const totalDurationS = [...durations.values()].reduce((total, durationS) => total + durationS, 0)
+  if (totalDurationS <= 0) return []
+  return [...durations.entries()]
+    .sort(([left], [right]) => left - right)
+    .map(([ratio, durationS]) => ({ ratio, percentage: (durationS / totalDurationS) * 100 }))
+}
+
+export const buildShiftingChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  const shifts = d.gearShifts
+  if (d.sport !== 'bike' || shifts.length === 0) return null
+  const width = 100
+  const height = 30
+  const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const frontValues = shifts.map(shift => shift.frontTeeth)
+  const rearValues = shifts.map(shift => shift.rearTeeth)
+  const frontMin = Math.min(...frontValues)
+  const frontMax = Math.max(...frontValues)
+  const rearMin = Math.min(...rearValues)
+  const rearMax = Math.max(...rearValues)
+  const dominant = dominantGearPairing(
+    shifts,
+    Math.max(d.movingTimeS, d.route.at(-1)?.elapsedS ?? 0),
+  )
+  const frontY = (value: number): number => gearY(value, frontMin, frontMax, height)
+  const rearY = (value: number): number => gearY(value, rearMin, rearMax, height)
+  const svgEl = f.svg('svg', {
+    class: 'tri-elev tri-shift-svg',
+    viewBox: `0 0 ${width} ${height}`,
+    preserveAspectRatio: 'none',
+  })
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  f.add(
+    svgEl,
+    f.svg('path', {
+      d: gearStepPath(shifts, shift => shift.frontTeeth, frontY, maxDistanceKm, width),
+      class: 'tri-shift-line tri-shift-line--front',
+    }),
+    f.svg('path', {
+      d: gearStepPath(shifts, shift => shift.rearTeeth, rearY, maxDistanceKm, width),
+      class: 'tri-shift-line tri-shift-line--rear',
+    }),
+    f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
+  )
+  const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-shift-chart', undefined, {
+    'data-tri-trace': 'electronic shifting',
+  })
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  const summary = f.el('span', 'tri-shift-summary')
+  if (dominant)
+    f.add(
+      summary,
+      f.el(
+        'span',
+        'tri-elev-range',
+        `${dominant.frontTeeth}×${dominant.rearTeeth} · ${zoneClock(dominant.durationS)}`,
+      ),
+    )
+  for (const kind of ['front', 'rear'] as const) {
+    const item = f.el('span', `tri-shift-legend-item tri-shift-legend-item--${kind}`)
+    f.add(
+      item,
+      f.el('span', 'tri-shift-legend-line', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-shift-legend-label', kind, { 'data-i18n': kind }),
+    )
+    f.add(summary, item)
+  }
+  f.add(
+    cap,
+    f.el('span', 'tri-elev-d', 'electronic shifting', { 'data-i18n': 'electronic shifting' }),
+    summary,
+  )
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
+      height,
+      distanceXTicks(0, maxDistanceKm),
+      true,
+      { top: 0, bottom: height },
+    ),
   )
   return wrap
 }
@@ -2436,8 +2650,9 @@ export const axisFrame = <N>(
   axes = true,
   axisRange?: { top: number; bottom: number },
   stageOverlays: N[] = [],
+  rightYTicks: { label: string; vbY: number }[] = [],
 ): N => {
-  const frame = f.el('div', 'tri-cax-frame')
+  const frame = f.el('div', `tri-cax-frame${rightYTicks.length > 0 ? ' tri-cax-frame--dual' : ''}`)
   const yax = f.el('div', 'tri-cax-yax')
   for (const t of yTicks)
     f.add(
@@ -2467,7 +2682,17 @@ export const axisFrame = <N>(
         style: `left:${t.pct.toFixed(2)}%`,
       }),
     )
-  f.add(frame, yax, stage, xax)
+  if (rightYTicks.length > 0) {
+    const rightYax = f.el('div', 'tri-cax-yax tri-cax-yax--right')
+    for (const t of rightYTicks)
+      f.add(
+        rightYax,
+        f.el('span', 'tri-cax-yt tri-cax-yt--right', t.label, {
+          style: `top:${((t.vbY / vbH) * 100).toFixed(2)}%`,
+        }),
+      )
+    f.add(frame, yax, stage, rightYax, xax)
+  } else f.add(frame, yax, stage, xax)
   return frame
 }
 
@@ -2628,6 +2853,42 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
   return wrap
 }
 
+type PowerCurveRange = 'six-weeks' | 'year'
+
+const buildPowerCurveRanges = <N>(
+  f: TriNodeFactory<N>,
+  selected: PowerCurveRange,
+  year: number | null,
+  sixWeeksAvailable: boolean,
+  yearAvailable: boolean,
+): N | null => {
+  if (year == null || !yearAvailable) return null
+  const ranges = f.el('div', 'tri-curve-ranges', undefined, {
+    role: 'group',
+    'aria-label': 'comparison range',
+    'data-i18n-aria-label': 'comparison range',
+  })
+  const sixWeekAttrs: Record<string, string> = {
+    type: 'button',
+    'data-curve-range': 'six-weeks',
+    'aria-pressed': String(selected === 'six-weeks'),
+    'data-i18n': '6 weeks',
+  }
+  if (!sixWeeksAvailable) sixWeekAttrs.disabled = ''
+  const yearButton = f.el('button', 'tri-curve-range', undefined, {
+    type: 'button',
+    'data-curve-range': 'year',
+    'aria-pressed': String(selected === 'year'),
+  })
+  f.add(
+    yearButton,
+    f.el('span', undefined, 'all of', { 'data-i18n': 'all of' }),
+    f.el('span', undefined, ` ${year}`),
+  )
+  f.add(ranges, f.el('button', 'tri-curve-range', '6 weeks', sixWeekAttrs), yearButton)
+  return ranges
+}
+
 export const buildPowerCurve = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -2650,32 +2911,14 @@ export const buildPowerCurve = <N>(
   const visibleRef = defaultRange === 'six-weeks' ? visibleSixWeekRef : visibleYearRef
   const head = f.el('div', 'tri-curve-head')
   f.add(head, f.el('div', 'tri-zone-title', 'power curve', { 'data-i18n': 'power curve' }))
-  if (ctx.curveYear != null && visibleYearRef.length > 0) {
-    const ranges = f.el('div', 'tri-curve-ranges', undefined, {
-      role: 'group',
-      'aria-label': 'comparison range',
-      'data-i18n-aria-label': 'comparison range',
-    })
-    const sixWeekAttrs: Record<string, string> = {
-      type: 'button',
-      'data-curve-range': 'six-weeks',
-      'aria-pressed': String(defaultRange === 'six-weeks'),
-      'data-i18n': '6 weeks',
-    }
-    if (visibleSixWeekRef.length === 0) sixWeekAttrs.disabled = ''
-    const yearButton = f.el('button', 'tri-curve-range', undefined, {
-      type: 'button',
-      'data-curve-range': 'year',
-      'aria-pressed': String(defaultRange === 'year'),
-    })
-    f.add(
-      yearButton,
-      f.el('span', undefined, 'all of', { 'data-i18n': 'all of' }),
-      f.el('span', undefined, ` ${ctx.curveYear}`),
-    )
-    f.add(ranges, f.el('button', 'tri-curve-range', '6 weeks', sixWeekAttrs), yearButton)
-    f.add(head, ranges)
-  }
+  const ranges = buildPowerCurveRanges(
+    f,
+    defaultRange,
+    ctx.curveYear,
+    visibleSixWeekRef.length > 0,
+    visibleYearRef.length > 0,
+  )
+  if (ranges) f.add(head, ranges)
   f.add(wrap, head)
   const observedMaxW = Math.max(
     1,
@@ -3094,6 +3337,8 @@ export const buildActivity = <N>(
           analysisSelection,
         ),
       )
+    const shifting = buildShiftingChart(f, d, analysisSelection)
+    if (shifting) f.add(more, shifting)
     if (flags.cad) {
       const cadenceScale = d.sport === 'run' ? 2 : 1
       const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
@@ -3183,6 +3428,7 @@ export type ActivityComparisonMetric =
   | 'cadence'
   | 'respiration'
   | 'temperature'
+  | 'skin-temperature'
   | 'stride-length'
   | 'ground-contact-time'
   | 'vertical-oscillation'
@@ -3236,6 +3482,7 @@ type ActivityComparisonMetricSpec = {
   display: (value: number) => number
   tick: (value: number, sport: ActivityKind) => string
   includeZero: boolean
+  domain?: (values: number[]) => ActivityComparisonDomain
 }
 
 const ACTIVITY_COMPARISON_WIDTH = 100
@@ -3296,6 +3543,18 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
     tick: value => `${Math.round(value)}${temperatureUnit()}`,
     includeZero: false,
   },
+  'skin-temperature': {
+    metric: 'skin-temperature',
+    title: 'skin temperature',
+    display: temperatureValue,
+    tick: value => `${value.toFixed(2)}${temperatureUnit()}`,
+    includeZero: false,
+    domain: values => {
+      if (values.length === 0) return { min: 0, max: 1 }
+      const resolution = traceResolution(values, imperial ? 0.09 : 0.05)
+      return { min: Math.min(...values) - resolution, max: Math.max(...values) + resolution }
+    },
+  },
   'stride-length': {
     metric: 'stride-length',
     title: 'stride length',
@@ -3341,6 +3600,7 @@ const BIKE_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = [
   'cadence',
   'respiration',
   'temperature',
+  'skin-temperature',
 ]
 
 const RUN_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = [
@@ -3406,6 +3666,9 @@ const comparisonMetricPointValue = (
       break
     case 'temperature':
       value = point.tempC
+      break
+    case 'skin-temperature':
+      value = point.skinTemperatureC
       break
     case 'stride-length':
       value = activity.sport === 'run' ? runStrideLengthValue(activity, point) : null
@@ -3548,6 +3811,7 @@ export const activityComparisonDisplayValueAtDistance = (
   if (metric === 'vertical-oscillation') return formatVerticalOscillation(value)
   if (metric === 'swim-pace') return `${clock(value)} /100m`
   if (metric === 'stroke-rate') return `${swimTrendNumber(value)} str/min`
+  if (metric === 'skin-temperature') return formatThermalTemperature(value)
   return formatTemperature(value)
 }
 
@@ -3917,6 +4181,7 @@ const comparisonChartHead = <N>(
   title: string,
   available: number,
   selected: number,
+  controls?: N,
 ): N => {
   const head = f.el('div', 'tri-compare-chart-head')
   const coverage = f.el('span', 'tri-compare-coverage', undefined, {
@@ -3930,7 +4195,12 @@ const comparisonChartHead = <N>(
       'data-i18n': 'sensor coverage',
     }),
   )
-  f.add(head, f.el('div', 'tri-compare-title', title, { 'data-i18n': title }), coverage)
+  f.add(
+    head,
+    f.el('div', 'tri-compare-title', title, { 'data-i18n': title }),
+    ...(controls === undefined ? [] : [controls]),
+    coverage,
+  )
   return head
 }
 
@@ -4002,10 +4272,13 @@ const buildComparisonMetricChart = <N>(
 ): N => {
   const series = activities.map((activity, index) => comparisonMetricSeries(activity, index, spec))
   const available = series.filter(item => item.values.length > 0).length
-  const domain = comparisonNumericDomain(
-    series.flatMap(item => item.values),
-    spec.metric === 'power' && zeroPowerExcluded ? false : spec.includeZero,
-  )
+  const values = series.flatMap(item => item.values)
+  const domain = spec.domain
+    ? spec.domain(values)
+    : comparisonNumericDomain(
+        values,
+        spec.metric === 'power' && zeroPowerExcluded ? false : spec.includeZero,
+      )
   const selectionClipId = `tri-compare-${spec.metric}-selection-clip`
   const sport = activities[0]?.sport ?? 'bike'
   const graph = f.svg('svg', {
@@ -4100,22 +4373,31 @@ const buildComparisonMetricChart = <N>(
   return chart
 }
 
-const comparisonDurationTicks = (minSeconds: number, maxSeconds: number): AxisXTick[] => {
-  const durations = [minSeconds, 1, 5, 30, 60, 300, 1200, 3600, 10_800, maxSeconds]
-    .filter((seconds, index, values) => {
-      if (seconds < minSeconds || seconds > maxSeconds) return false
-      return values.indexOf(seconds) === index
-    })
-    .sort((a, b) => a - b)
+const comparisonDurationTicks = (
+  minSeconds: number,
+  maxSeconds: number,
+  selectedSeconds: number,
+): AxisXTick[] => {
+  const durations = powerCurveDurationTicks(minSeconds, maxSeconds, [
+    minSeconds,
+    1,
+    60,
+    300,
+    1_200,
+    3_600,
+    10_800,
+    maxSeconds,
+  ])
   return durations.map((seconds, index) => ({
     label: dlabel(seconds),
     pct: powerCurveFraction(seconds, minSeconds, maxSeconds) * 100,
-    cls:
-      index === 0
-        ? 'tri-cax-xt--first'
-        : index === durations.length - 1
-          ? 'tri-cax-xt--last'
-          : undefined,
+    cls: `tri-curve-tick${index === 0 ? ' tri-cax-xt--first' : index === durations.length - 1 ? ' tri-cax-xt--last' : ''}`,
+    tag: 'button',
+    attrs: {
+      type: 'button',
+      'data-curve-seconds': String(seconds),
+      'aria-pressed': String(seconds === selectedSeconds),
+    },
   }))
 }
 
@@ -4141,18 +4423,27 @@ const buildComparisonPowerCurve = <N>(
       maxSeconds = Math.max(maxSeconds, points[points.length - 1].s)
     }
   }
-  const reference =
+  const sixWeekReference =
     availableCurves.length > 0
       ? normalizePowerCurvePoints(ctx?.curveRef ?? null).filter(
           point => point.s >= minSeconds && point.s <= maxSeconds,
         )
       : []
+  const yearReference =
+    availableCurves.length > 0
+      ? normalizePowerCurvePoints(ctx?.curveYearRef ?? null).filter(
+          point => point.s >= minSeconds && point.s <= maxSeconds,
+        )
+      : []
+  const defaultRange = sixWeekReference.length >= 2 ? 'six-weeks' : 'year'
+  const reference = defaultRange === 'six-weeks' ? sixWeekReference : yearReference
   const ftp = availableCurves.length > 0 ? (ctx?.ftp ?? null) : null
   const goalFtp = availableCurves.length > 0 ? (ctx?.goalFtp ?? null) : null
   const domain = comparisonNumericDomain(
     [
       ...availableCurves.flatMap(curve => curve.points.map(point => point.w)),
-      ...reference.map(point => point.w),
+      ...sixWeekReference.map(point => point.w),
+      ...yearReference.map(point => point.w),
       ...(ftp == null ? [] : [ftp]),
       ...(goalFtp == null ? [] : [goalFtp]),
     ],
@@ -4177,7 +4468,10 @@ const buildComparisonPowerCurve = <N>(
     'data-domain-y-max': domain.max,
     'data-available': availableCurves.length,
     'data-selected': activities.length,
-    ...(reference.length >= 2 ? { 'data-curve-ref': encodePowerCurve(reference) } : {}),
+    'data-curve-ref-six-weeks': encodePowerCurve(sixWeekReference),
+    'data-curve-ref-year': encodePowerCurve(yearReference),
+    'data-curve-range': defaultRange,
+    'data-curve-year': ctx?.curveYear ?? '',
   })
   const X = (seconds: number): number =>
     powerCurveFraction(seconds, minSeconds, maxSeconds) * ACTIVITY_COMPARISON_WIDTH
@@ -4206,8 +4500,26 @@ const buildComparisonPowerCurve = <N>(
         y2: tick.vbY,
       }),
     )
-  if (reference.length >= 2)
-    f.add(graph, f.svg('path', { class: 'tri-compare-curve-ref', d: toPath(reference) }))
+  if (sixWeekReference.length >= 2)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-curve-ref',
+        d: toPath(sixWeekReference),
+        'data-curve-range': 'six-weeks',
+        ...(defaultRange === 'six-weeks' ? {} : { hidden: '' }),
+      }),
+    )
+  if (yearReference.length >= 2)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-curve-ref',
+        d: toPath(yearReference),
+        'data-curve-range': 'year',
+        ...(defaultRange === 'year' ? {} : { hidden: '' }),
+      }),
+    )
   if (ftp != null)
     f.add(
       graph,
@@ -4258,23 +4570,46 @@ const buildComparisonPowerCurve = <N>(
     'data-available': `${availableCurves.length}`,
     'data-selected': `${activities.length}`,
   })
+  const ranges = buildPowerCurveRanges(
+    f,
+    defaultRange,
+    ctx?.curveYear ?? null,
+    sixWeekReference.length >= 2,
+    yearReference.length >= 2,
+  )
   f.add(
     chart,
-    comparisonChartHead(f, 'power curve', availableCurves.length, activities.length),
+    comparisonChartHead(
+      f,
+      'power curve',
+      availableCurves.length,
+      activities.length,
+      ranges ?? undefined,
+    ),
     axisFrame(
       f,
       graph,
       yTicks,
       ACTIVITY_COMPARISON_HEIGHT,
-      comparisonDurationTicks(minSeconds, maxSeconds),
+      comparisonDurationTicks(minSeconds, maxSeconds, minSeconds),
       true,
       { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
     ),
   )
-  if (reference.length >= 2 || ftp != null || goalFtp != null) {
+  if (sixWeekReference.length >= 2 || yearReference.length >= 2 || ftp != null || goalFtp != null) {
     const cap = f.el('div', 'tri-elev-cap')
     if (reference.length >= 2)
-      f.add(cap, f.el('span', 'tri-ana-k', '6-week best', { 'data-i18n': '6-week best' }))
+      f.add(
+        cap,
+        f.el(
+          'span',
+          'tri-ana-k tri-compare-curve-reference-label',
+          defaultRange === 'year' && ctx?.curveYear != null
+            ? `${ctx.curveYear} best`
+            : '6-week best',
+          defaultRange === 'six-weeks' ? { 'data-i18n': '6-week best' } : undefined,
+        ),
+      )
     if (ftp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftp}W`))
     if (goalFtp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalFtp}W`))
     f.add(chart, cap)
@@ -4409,6 +4744,131 @@ const buildComparisonPowerDistribution = <N>(
   return chart
 }
 
+const buildComparisonGearRatioDistribution = <N>(
+  f: TriNodeFactory<N>,
+  activities: readonly StravaActivityDetail[],
+): N => {
+  const distributions = activities.map((activity, index) => ({
+    activity,
+    index,
+    points: activityGearRatioDistribution(activity),
+  }))
+  const available = distributions.filter(distribution => distribution.points.length > 0)
+  const ratios = [
+    ...new Set(
+      distributions.flatMap(distribution => distribution.points.map(point => point.ratio)),
+    ),
+  ].sort((left, right) => left - right)
+  const ratioCount = ratios.length
+  const domain = comparisonNumericDomain(
+    available.flatMap(distribution => distribution.points.map(point => point.percentage)),
+    true,
+  )
+  const graph = f.svg('svg', {
+    ...comparisonGraphAttrs(
+      'gear-ratio-distribution',
+      'gear ratio distribution',
+      0,
+      Math.max(1, ratioCount - 1),
+      0,
+      ratios[0] == null ? 'no data' : `${ratios[0].toFixed(2)}×`,
+      available.length,
+    ),
+    class: 'tri-compare-graph tri-compare-distribution-graph',
+    'data-compare-chart': 'gear-ratio-distribution',
+    'data-domain-x-min': 0,
+    'data-domain-x-max': Math.max(1, ratioCount - 1),
+    'data-domain-y-min': domain.min,
+    'data-domain-y-max': domain.max,
+    'data-ratio-count': ratioCount,
+    'data-available': available.length,
+    'data-selected': activities.length,
+  })
+  const yTicks = niceTicks(domain.min, domain.max, 3).map(value => ({
+    label: `${Math.round(value)}%`,
+    vbY:
+      ACTIVITY_COMPARISON_HEIGHT -
+      ((value - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1),
+  }))
+  for (const tick of yTicks)
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-grid',
+        x1: 0,
+        y1: tick.vbY,
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: tick.vbY,
+      }),
+    )
+  for (const distribution of available) {
+    const percentages = new Map(
+      distribution.points.map(point => [point.ratio, point.percentage] as const),
+    )
+    const path = ratios
+      .map((ratio, index) => {
+        const value = percentages.get(ratio) ?? 0
+        const x =
+          ratioCount <= 1
+            ? ACTIVITY_COMPARISON_WIDTH / 2
+            : (index / (ratioCount - 1)) * ACTIVITY_COMPARISON_WIDTH
+        const y =
+          ACTIVITY_COMPARISON_HEIGHT -
+          ((value - domain.min) / (domain.max - domain.min)) * (ACTIVITY_COMPARISON_HEIGHT - 1)
+        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`
+      })
+      .join(' ')
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-line',
+        d: path,
+        'data-activity-id': distribution.activity.id,
+        'data-activity-index': distribution.index,
+        style: `--tri-compare-color:${activityCompareColor(distribution.index)}`,
+      }),
+    )
+  }
+  f.add(
+    graph,
+    f.svg('line', {
+      class: 'tri-compare-cursor',
+      x1: ratioCount <= 1 ? ACTIVITY_COMPARISON_WIDTH / 2 : 0,
+      y1: 0,
+      x2: ratioCount <= 1 ? ACTIVITY_COMPARISON_WIDTH / 2 : 0,
+      y2: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  const sampledRatios = sampledGearTicks(ratios, 6)
+  const xTicks = sampledRatios.map(ratio => {
+    const index = ratios.indexOf(ratio)
+    return {
+      label: `${ratio.toFixed(2)}×`,
+      pct: ratioCount <= 1 ? 50 : (index / (ratioCount - 1)) * 100,
+      cls:
+        index === 0
+          ? 'tri-cax-xt--first'
+          : index === ratioCount - 1
+            ? 'tri-cax-xt--last'
+            : undefined,
+    }
+  })
+  const chart = f.el('section', 'tri-compare-chart', undefined, {
+    'data-compare-chart': 'gear-ratio-distribution',
+    'data-available': `${available.length}`,
+    'data-selected': `${activities.length}`,
+  })
+  f.add(
+    chart,
+    comparisonChartHead(f, 'gear ratio distribution', available.length, activities.length),
+    axisFrame(f, graph, yTicks, ACTIVITY_COMPARISON_HEIGHT, xTicks, true, {
+      top: 0,
+      bottom: ACTIVITY_COMPARISON_HEIGHT,
+    }),
+  )
+  return chart
+}
+
 const buildComparisonZones = <N>(
   f: TriNodeFactory<N>,
   activities: readonly StravaActivityDetail[],
@@ -4523,50 +4983,58 @@ const buildComparisonZones = <N>(
 const buildComparisonLegend = <N>(
   f: TriNodeFactory<N>,
   activities: readonly StravaActivityDetail[],
+  removable: boolean,
 ): N => {
-  const legend = f.el('div', 'tri-compare-legend', undefined, {
-    role: 'list',
-    'aria-label': 'selected activities',
-    'data-i18n-aria-label': 'selected activities',
-  })
+  const legend = f.el(
+    'div',
+    `tri-compare-legend${removable ? '' : ' tri-compare-legend--static'}`,
+    undefined,
+    {
+      role: 'list',
+      'aria-label': 'selected activities',
+      'data-i18n-aria-label': 'selected activities',
+    },
+  )
   for (const [index, activity] of activities.entries()) {
-    const removeAttrs: Record<string, string> = {
-      type: 'button',
-      'data-compare-activity-remove': `${activity.id}`,
-      'aria-label': 'remove activity',
-      'data-i18n-aria-label': 'remove activity',
-    }
-    if (activities.length <= 2) removeAttrs.disabled = ''
     const item = f.el('div', 'tri-compare-legend-item', undefined, {
       role: 'listitem',
       'data-activity-id': `${activity.id}`,
       'data-activity-index': `${index}`,
       style: `--tri-compare-color:${activityCompareColor(index)}`,
     })
-    const remove = f.el('button', 'tri-compare-legend-remove', undefined, removeAttrs)
-    const removeIcon = f.svg('svg', {
-      class: 'tri-compare-legend-remove-icon',
-      viewBox: '0 0 16 16',
-      fill: 'none',
-      'aria-hidden': 'true',
-    })
-    f.add(
-      removeIcon,
-      f.svg('path', {
-        d: 'M4 4l8 8M12 4 4 12',
-        stroke: 'currentColor',
-        'stroke-width': 1.25,
-        'stroke-linecap': 'round',
-      }),
-    )
-    f.add(remove, removeIcon)
     f.add(
       item,
       f.el('span', 'tri-compare-legend-swatch', undefined, { 'aria-hidden': 'true' }),
       f.el('span', 'tri-compare-legend-date', shortDate(activity.date)),
       f.el('span', 'tri-compare-legend-name', activity.name),
-      remove,
     )
+    if (removable) {
+      const removeAttrs: Record<string, string> = {
+        type: 'button',
+        'data-compare-activity-remove': `${activity.id}`,
+        'aria-label': 'remove activity',
+        'data-i18n-aria-label': 'remove activity',
+      }
+      if (activities.length <= 2) removeAttrs.disabled = ''
+      const remove = f.el('button', 'tri-compare-legend-remove', undefined, removeAttrs)
+      const removeIcon = f.svg('svg', {
+        class: 'tri-compare-legend-remove-icon',
+        viewBox: '0 0 16 16',
+        fill: 'none',
+        'aria-hidden': 'true',
+      })
+      f.add(
+        removeIcon,
+        f.svg('path', {
+          d: 'M4 4l8 8M12 4 4 12',
+          stroke: 'currentColor',
+          'stroke-width': 1.25,
+          'stroke-linecap': 'round',
+        }),
+      )
+      f.add(remove, removeIcon)
+      f.add(item, remove)
+    }
     f.add(legend, item)
   }
   return legend
@@ -4664,6 +5132,7 @@ export const buildActivityComparison = <N>(
   f: TriNodeFactory<N>,
   activities: StravaActivityDetail[],
   ctx?: DetailCtx,
+  options: { removable?: boolean } = {},
 ): N => {
   const state = comparisonState(activities)
   const rootAttrs: Record<string, string> = {
@@ -4673,7 +5142,7 @@ export const buildActivityComparison = <N>(
   if (activities.length > 0 && activities.every(activity => activity.sport === activities[0].sport))
     rootAttrs['data-sport'] = activities[0].sport
   const root = f.el('section', `tri-compare tri-compare--${state}`, undefined, rootAttrs)
-  f.add(root, buildComparisonLegend(f, activities))
+  f.add(root, buildComparisonLegend(f, activities, options.removable !== false))
   if (state !== 'ready') {
     f.add(
       root,
@@ -4696,6 +5165,7 @@ export const buildActivityComparison = <N>(
         maxDistanceKm,
       ),
     )
+  if (sport === 'bike') f.add(charts, buildComparisonGearRatioDistribution(f, activities))
   if (sport !== 'swim')
     f.add(
       charts,
