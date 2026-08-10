@@ -373,7 +373,7 @@ export default (() => {
         )}
         {isDailyView && (
           <div class="stream-backlink">
-            <a href="/stream">← back to stream</a>
+            <a href="/">← back to stream</a>
           </div>
         )}
       </article>

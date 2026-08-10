@@ -18,7 +18,7 @@ This module is breadth after varints and streams.
 4. Solve `delta_varint_encode` and `delta_varint_decode`.
 5. Read `bitpacking` and `checksums`.
 6. Solve `bitpack`, `bitunpack`, and `fletcher16`.
-7. Review [[hinterland/prep/06-codecs/notes.fc]].
+7. Review [[hinterland/prep/bt/06-codecs/notes.fc]].
 
 ## picture
 

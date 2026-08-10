@@ -17,7 +17,7 @@ This module turns one-shot decoders into state machines.
 3. Read `framing`.
 4. Solve `FrameDeframer` and `TlvStreamParser`.
 5. Skim `utf-8`, `cobs`, and `chunked` for follow-ups.
-6. Review [[hinterland/prep/05-decode/notes.fc]].
+6. Review [[hinterland/prep/bt/05-decode/notes.fc]].
 
 Depth: `Utf8StreamValidator`, `cobs_encode`, `cobs_decode`, and `ChunkedDecoder`.
 
@@ -117,7 +117,7 @@ stateDiagram-v2
   ReadingPayload --> ReadingLength: payload complete
 ```
 
-TLV gives forward compatibility: unknown tag plus known length means skip and continue. Protobuf is varint-key TLV: key = `(field_number << 3) | wire_type`.
+TLV gives forward compatibility: unknown tag plus known length means skip and continue. Protobuf is a tagged wire format. Its key is $\text{key}=(\text{field number}\ll 3)\mathbin{\vert}\text{wire type}$. Only wire type 2 has a length-delimited value.
 
 ## utf-8
 

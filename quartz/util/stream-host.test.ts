@@ -25,6 +25,8 @@ test('maps stream host document paths to emitted stream assets', () => {
   assert.equal(streamAssetPathname('/', true), '/stream')
   assert.equal(streamAssetPathname('/on/2026/06/27', true), '/stream/on/2026/06/27')
   assert.equal(streamAssetPathname('/stream/on/2026/06/27', true), '/stream/on/2026/06/27')
+  assert.equal(streamAssetPathname('/index.xml', false), '/stream/index.xml')
+  assert.equal(streamAssetPathname('/stream/index.xml', false), '/stream/index.xml')
   assert.equal(streamAssetPathname('/index-3e33b904.css', false), '/index-3e33b904.css')
   assert.equal(streamAssetPathname('/static/site.js', false), '/static/site.js')
   assert.equal(

@@ -16,7 +16,7 @@ This module makes width and layout explicit.
 3. Read `alignment`.
 4. Solve `align_up`, `align_down`, and `is_aligned`.
 5. Skim `struct layout` before solving `struct_layout`.
-6. Review [[hinterland/prep/02-unsigned-alignment/notes.fc]].
+6. Review [[hinterland/prep/bt/02-unsigned-alignment/notes.fc]].
 
 Depth: `c_promote_trap` and `reorder_fields`.
 

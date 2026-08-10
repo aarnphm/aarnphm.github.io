@@ -28,6 +28,7 @@ export function streamHostPathname(pathname: string): string {
 
 export function streamAssetPathname(pathname: string, isDocument: boolean): string {
   const canonical = streamHostPathname(pathname)
+  if (canonical === '/index.xml') return `${STREAM_PREFIX}/index.xml`
   if (!isDocument) return canonical
   return canonical === '/' ? STREAM_PREFIX : `${STREAM_PREFIX}${canonical}`
 }

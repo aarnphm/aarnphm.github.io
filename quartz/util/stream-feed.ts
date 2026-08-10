@@ -6,7 +6,6 @@ import type { BuildCtx } from './ctx'
 import { version } from '../../package.json'
 import { descriptionToPlainText } from './description'
 import { escapeHTML } from './escape'
-import { joinSegments } from './path'
 import {
   buildStreamEntryPathFromIso,
   formatStreamDate,
@@ -15,6 +14,7 @@ import {
   isProtectedEntry,
   isRestrictedEntry,
 } from './stream'
+import { streamHostUrl } from './stream-host'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
   if (!iso) return null
@@ -102,14 +102,8 @@ const entryContentHtml = (entry: StreamEntry): string => {
 const resolveEntryDate = (entry: StreamEntry, fallback: Date): Date =>
   parseDateValue(entry.date) ?? parseDateValue(entry.timestamp) ?? fallback
 
-const absolutePath = (baseUrl: string, path: string): string => {
-  const normalized = path.replace(/^\/+/, '')
-  return `https://${joinSegments(baseUrl, encodeURI(normalized))}`
-}
-
 export const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData): string => {
   const cfg = ctx.cfg.configuration
-  const base = cfg.baseUrl ?? 'example.com'
   const streamData = fileData.streamData
   const entries = (streamData?.entries ?? []).filter(entry => !isDraftEntry(entry))
   const fallbackDate =
@@ -117,7 +111,7 @@ export const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData
     parseDateValue(fileData.frontmatter?.date) ??
     new Date()
   const streamPath = '/stream'
-  const streamLink = absolutePath(base, streamPath)
+  const streamLink = streamHostUrl(streamPath)
   const introHtml =
     typeof fileData.frontmatter?.rss === 'string'
       ? sanitizeNullable(fileData.frontmatter.rss)
@@ -141,7 +135,7 @@ export const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData
 
       const isoPublished = published.toISOString()
       const itemPath = buildStreamEntryPathFromIso(entry.date, entry.id) ?? streamPath
-      const itemLink = absolutePath(base, itemPath)
+      const itemLink = streamHostUrl(itemPath)
       const itemId = `${itemLink}#${entry.id}`
       const titleSource = sanitizeNullable(entry.title?.trim()) ?? `stream entry ${idx + 1}`
       const restricted = isRestrictedEntry(entry)
@@ -182,8 +176,8 @@ export const generateStreamAtomFeed = (ctx: BuildCtx, fileData: QuartzPluginData
     <name>Aaron Pham</name>
     <email>contact@aarnphm.xyz</email>
   </contributor>
-  <logo>https://${base}/icon.png</logo>
-  <icon>https://${base}/icon.png</icon>
+  <logo>${streamHostUrl('/icon.png')}</logo>
+  <icon>${streamHostUrl('/icon.png')}</icon>
   <generator>Quartz v${version} -- quartz.jzhao.xyz</generator>
   <rights type="html">${escapeHTML(`&amp;copy; ${new Date().getFullYear()} Aaron Pham`)}</rights>
   ${introHtml ? `<quartz:intro>${introHtml}</quartz:intro>` : ''}

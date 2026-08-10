@@ -16,7 +16,7 @@ Learn this file as machinery for the rest of the kit.
 2. Solve `pack_rgba`, `unpack_rgba`, `extract_field`, and `insert_field`.
 3. Read `power tools`.
 4. Solve `next_pow2`, `reverse_bits32`, and `sar32`.
-5. Review [[hinterland/prep/01-bits/notes.fc]].
+5. Review [[hinterland/prep/bt/01-bits/notes.fc]].
 
 Depth after that: `popcount_swar` and `submasks`.
 
@@ -59,13 +59,13 @@ logical = (x & M32) >> n
 
 Count bit positions from the least-significant bit, starting at 0.
 
-| task               | expression       |
-| ------------------ | ---------------- | --------- |
-| test bit `k`       | `(x >> k) & 1`   |
-| set bit `k`        | `x               | (1 << k)` |
-| clear bit `k`      | `x & ~(1 << k)`  |
-| toggle bit `k`     | `x ^ (1 << k)`   |
-| set bit `k` to `v` | `(x & ~(1 << k)) | (v << k)` |
+| task               | expression                     |
+| ------------------ | ------------------------------ |
+| test bit `k`       | `(x >> k) & 1`                 |
+| set bit `k`        | `x \| (1 << k)`                |
+| clear bit `k`      | `x & ~(1 << k)`                |
+| toggle bit `k`     | `x ^ (1 << k)`                 |
+| set bit `k` to `v` | `(x & ~(1 << k)) \| (v << k)` |
 
 The reusable field recipe:
 
@@ -123,12 +123,12 @@ C has the inverse problem: unsigned arithmetic wraps by definition, signed overf
 
 The lowest-set-bit family:
 
-| expression     | result                   |
-| -------------- | ------------------------ | ------------------------------------- |
-| `x & -x`       | isolate lowest set bit   |
-| `x & (x - 1)`  | clear lowest set bit     |
-| `x             | (x - 1)`                 | set all bits below the lowest set bit |
-| `~x & (x + 1)` | isolate lowest clear bit |
+| expression       | result                                |
+| ---------------- | ------------------------------------- |
+| `x & -x`         | isolate lowest set bit                |
+| `x & (x - 1)`    | clear lowest set bit                  |
+| `x \| (x - 1)`   | set all bits below the lowest set bit |
+| `~x & (x + 1)`   | isolate lowest clear bit              |
 
 Power of two:
 
@@ -214,7 +214,7 @@ Two bugs:
 - `(1 << 31)` is undefined in C if `1` is signed `int`; use `1u`.
 - `(1 << width) - 1` is undefined in C when `width` equals the word size.
 - `char` may be signed in C; decode bytes through `uint8_t`.
-- `-7 >> 1` is `-4`; C `-7 / 2` is `-3`.
+- In Python, `-7 >> 1` is `-4`; C `-7 / 2` is `-3`.
 - integer bit layout is not byte order. Endianness starts at the wire or memory boundary.
 
 ## drills

@@ -4,4 +4,4 @@ description: computers
 title: technical
 ---
 
-a list of notes/works that tackles technical topics that I'm particular interested in. Mostly computing-related.
+a list of notes and work on technical topics I care about. Mostly computing-related.
