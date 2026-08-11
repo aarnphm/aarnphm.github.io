@@ -32,6 +32,26 @@ the Mémo scales the pronoun along the same axes as the greetings of [[fr/episod
 | âge       | personnes plus jeunes | personnes plus âgées |
 | situation | informelle            | formelle             |
 
+the blue bars in the Mémo are continua, not three switches. moving right on any axis makes `vous` more likely:
+
+- from a friend toward a stranger;
+- from someone younger toward someone older;
+- from an informal situation toward a formal one.
+
+the axes can disagree. an older friend may still be `tu`; a young stranger at a service counter may still be `vous`. the Mémo gives no fixed priority among the three, so the relationship and local convention settle conflicts. when the context is uncertain, start with `vous`: the other person can invite the switch with `On peut se tutoyer.`
+
+| verbe         | sens                        | exemple                                       |
+| ------------- | --------------------------- | --------------------------------------------- |
+| `tutoyer`     | address someone with `tu`   | `Je tutoie mes amis.`                         |
+| `vouvoyer`    | address someone with `vous` | `Je vouvoie une personne que je connais peu.` |
+| `se tutoyer`  | use `tu` with each other    | `On peut se tutoyer.`                         |
+| `se vouvoyer` | use `vous` with each other  | `Ils se vouvoient au travail.`                |
+
+`vous` also serves two jobs. it is the polite singular in `Vous pouvez entrer, madame.` and the ordinary plural in `Vous pouvez entrer, les enfants.` the verb form is identical, so the surrounding noun or situation tells you whether one person or several are being addressed.
+
+> [!warning] agreement follows the real addressee
+> polite singular `vous` still refers to one person. the adjective or participle agrees with that person's gender and number: `Madame, vous êtes arrivée.`; `Monsieur, vous êtes arrivé.` plural `vous` takes plural agreement: `Mesdames, vous êtes arrivées.`
+
 > [!note] faits d'ici
 > the `Ailleurs, autrement ?` box: au Canada, on dit parfois `vous`, parfois `tu` à son professeur ou sa professeure (the `-eure` feminization again). certains professeurs préfèrent qu'on les vouvoie, d'autres préfèrent qu'on les tutoie. dans votre pays d'origine, est-ce obligatoire de vouvoyer son enseignante ou son enseignant ?
 
@@ -94,6 +114,44 @@ five frames, all + verbe à l'infinitif + `?`:
 - `C'est permis de/d'… ?`
 
 `Je peux entrer ?` is the minimal version, rising intonation doing all the work. the à-vous exercise models `Est-ce que je peux manger dans la classe ?`
+
+### poser une question selon la situation
+
+the exercise changes the relationship while keeping the grammatical subject fixed. in every row, the speaker asks permission for themself, so the verb remains `je peux`, even when the addressee receives `vous`.
+
+| situation                                      | relation                                          | exemples de questions                                                                |
+| ---------------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| au bureau, un employé à son chef               | formal, normally `vous`                           | `Est-ce que je peux arriver à 8 heures ?`<br>`Puis-je partir plus tôt aujourd'hui ?` |
+| en classe, une étudiante à son professeur      | usually formal; follow the professor's preference | `Est-ce que je peux manger dans la classe ?`<br>`Puis-je utiliser mon cellulaire ?`  |
+| à la maison, un enfant à sa mère ou à son père | familiar, `tu`                                    | `Est-ce que je peux regarder la télévision ?`<br>`Je peux inviter mon ami ?`         |
+| dans un magasin, une cliente à une vendeuse    | formal service encounter, `vous`                  | `Est-ce que je peux essayer ce chandail ?`<br>`Puis-je payer par carte ?`            |
+
+the short `Je peux… ?` frame fits home and familiar speech. `Est-ce que je peux… ?` is neutral and works everywhere. `Puis-je… ?` is the most formal of the three and fits a workplace, classroom, or service encounter.
+
+> [!warning] `je peux` and `pouvez-vous` ask different things
+> `Est-ce que je peux partir ?` asks permission for the speaker to leave. `Pouvez-vous partir ?` asks whether the other person can leave. changing `peux` to `pouvez` changes the subject and therefore the requested action.
+
+### exemples produits en classe
+
+the screenshot preserves one visible question from case 1, then the complete text of cases 2 and 3. these are normalized for spelling, word order, and agreement:
+
+| cas | situation                                      | demande de permission                                           | justification ou contexte                                                                 |
+| --- | ---------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 1   | au bureau, un employé à son chef               | `Je peux arriver 30 minutes en retard demain matin ?`           | the more formal alternative is `Puis-je arriver avec 30 minutes de retard demain matin ?` |
+| 2   | en classe, une étudiante à son professeur      | `Puis-je jouer à un jeu vidéo ?`                                | `J'ai fini mes exercices.`                                                                |
+| 2   | en classe, une étudiante à son professeur      | `Est-ce que je peux téléphoner à la maison ?`                   | `C'est urgent.` or the original `Il y a une affaire urgente.`                             |
+| 2   | en classe, une étudiante à son professeur      | `Je peux être absente demain matin ?`                           | `absent` becomes `absente` for the female speaker in this case                            |
+| 3   | à la maison, un enfant à sa mère ou à son père | `Est-ce que je peux rester à la maison aujourd'hui ?`           | `Je suis un peu fatigué(e).`                                                              |
+| 3   | à la maison, un enfant à sa mère ou à son père | `Je peux faire la fête à la maison avec mes amis demain soir ?` | the screenshot's `mes mis` is `mes amis`                                                  |
+| 3   | à la maison, un enfant à sa mère ou à son père | `Puis-je manger des bonbons et boire du thé au lait ?`          | `puis-je` is grammatical at home, though deliberately formal                              |
+
+two sentence shapes recur:
+
+1. demande, then completed action as justification: `Puis-je jouer à un jeu vidéo ? J'ai fini mes exercices.`
+2. demande, then reason: `Est-ce que je peux rester à la maison aujourd'hui ? Je suis un peu fatigué(e).`
+
+> [!note] expressing a delay
+> say `arriver 30 minutes en retard` or `arriver avec 30 minutes de retard`. `arriver en retard de 30 minutes` is understandable, though it is not the idiomatic word order used here.
 
 ## le pluriel des noms
 

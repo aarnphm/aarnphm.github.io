@@ -1,6 +1,7 @@
 import type { Root as HtmlRoot } from 'hast'
 import fs from 'node:fs/promises'
 import { Node } from 'unist'
+import type { TriathlonRenderData } from '../../components/triathlon/render-data'
 import type { GarminCache } from '../stores/garmin'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
@@ -289,6 +290,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         }),
       )
       const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
+      const triathlonRenderData: TriathlonRenderData = { analytics, plans }
       files.push(
         await write({
           ctx,
@@ -319,7 +321,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const externalResources = pageResources(pathToRoot(slug), resources, ctx)
       const componentData: QuartzComponentProps = {
         ctx,
-        fileData: { ...file.data, stravaPayload: payload },
+        fileData: { ...file.data, stravaPayload: payload, triathlonRenderData },
         externalResources,
         cfg: ctx.cfg.configuration,
         children: [],
@@ -370,7 +372,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         const subResources = pageResources(pathToRoot(subSlug), resources, ctx)
         const subData: QuartzComponentProps = {
           ctx,
-          fileData: { ...subFile.data, stravaPayload: payload },
+          fileData: { ...subFile.data, stravaPayload: payload, triathlonRenderData },
           externalResources: subResources,
           cfg: ctx.cfg.configuration,
           children: [],
@@ -535,5 +537,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
 declare module 'vfile' {
   interface DataMap {
     stravaPayload: StravaPayload
+    triathlonRenderData: TriathlonRenderData
   }
 }

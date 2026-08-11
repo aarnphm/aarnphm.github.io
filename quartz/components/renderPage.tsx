@@ -74,6 +74,7 @@ import {
   type DetailCtx,
 } from '../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../util/triathlon-comparison'
+import { DEFAULT_TRIATHLON_PRESENTATION } from '../util/triathlon-presentation'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -1528,7 +1529,7 @@ export function transcludeFinal(
         )
         const activities = comparisonIds.flatMap(activityId => {
           const activity = payload.details[activityId]
-          return activity ? [powerViewActivity(activity)] : []
+          return activity ? [powerViewActivity(DEFAULT_TRIATHLON_PRESENTATION, activity)] : []
         })
         const children: ElementContent[] = [
           h(

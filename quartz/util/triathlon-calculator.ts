@@ -1,7 +1,7 @@
 import type { Analytics } from '../plugins/stores/analytics'
 import type { Sport } from '../plugins/stores/strava'
 import { KM_TO_MI, clock, type TriNodeFactory } from './triathlon-card'
-import { tl } from './triathlon-i18n'
+import { triText } from './triathlon-i18n'
 
 export const TRI_RACE_DISTANCES: [string, number, number, number][] = [
   ['sprint', 0.75, 20, 5],
@@ -110,6 +110,7 @@ export function calcShareToInput(s: CalcShare): TriathlonCalcInput {
 }
 
 export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare): N => {
+  const text = (key: string): string => triText(f.presentation.locale, key)
   const imperial = share.unit === 'i'
   const [label] = TRI_RACE_DISTANCES[share.presetIdx] ?? TRI_RACE_DISTANCES[1]
   const times = computeTriathlonCalcTimes(calcShareToInput(share))
@@ -123,7 +124,7 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
     f.el(
       'span',
       'tri-calc-card-tab tri-calc-card-tab--on',
-      share.mode === 'a' ? tl('average') : tl('projected'),
+      share.mode === 'a' ? text('average') : text('projected'),
     ),
   )
   f.add(head, tabs)
@@ -132,11 +133,11 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
   const bikeDisp = (imperial ? share.bikeMph : share.bikeMph / KM_TO_MI).toFixed(1)
   const runDisp = clock(imperial ? share.runPaceSec : share.runPaceSec * KM_TO_MI)
   const rows: [string, string, number][] = [
-    [tl('swim'), `${clock(share.swimPaceSec)} /100m`, times.swimSec],
+    [text('swim'), `${clock(share.swimPaceSec)} /100m`, times.swimSec],
     ['T1', `${clock(share.t1Sec)} min`, times.t1Sec],
-    [tl('bike'), `${bikeDisp} ${imperial ? 'mph' : 'km/h'}`, times.bikeSec],
+    [text('bike'), `${bikeDisp} ${imperial ? 'mph' : 'km/h'}`, times.bikeSec],
     ['T2', `${clock(share.t2Sec)} min`, times.t2Sec],
-    [tl('run'), `${runDisp} ${imperial ? '/mi' : '/km'}`, times.runSec],
+    [text('run'), `${runDisp} ${imperial ? '/mi' : '/km'}`, times.runSec],
   ]
   const table = f.el('table', 'tri-calc-card-io')
   const tbody = f.el('tbody')
@@ -153,7 +154,7 @@ export const buildTriathlonCalcCard = <N>(f: TriNodeFactory<N>, share: CalcShare
   const total = f.el('tr', 'tri-calc-card-row tri-calc-card-total')
   f.add(
     total,
-    f.el('th', 'tri-calc-card-k', tl('finish')),
+    f.el('th', 'tri-calc-card-k', text('finish')),
     f.el('td', 'tri-calc-card-v', ''),
     f.el('td', 'tri-calc-card-split', formatDurationClock(times.totalSec)),
   )

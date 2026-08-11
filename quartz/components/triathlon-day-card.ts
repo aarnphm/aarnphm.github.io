@@ -11,6 +11,7 @@ import {
   parseExcludedActivityIds,
 } from '../util/triathlon-card'
 import { triathlonDaySlug } from '../util/triathlon-date-route'
+import { DEFAULT_TRIATHLON_PRESENTATION } from '../util/triathlon-presentation'
 
 const TRIATHLON_SPORT_ANCHOR: Record<string, NonNullable<DayCardExtras['sport']>> = {
   swim: 'swim',
@@ -90,6 +91,7 @@ export const triathlonEmbedDayHref = (root: string, date: string): string | null
 }
 
 export const triathlonCardFactory: TriNodeFactory<Element> = {
+  presentation: DEFAULT_TRIATHLON_PRESENTATION,
   el: (tag, cls, text, attrs) =>
     h(tag, { ...(cls ? { class: cls } : {}), ...attrs }, text === undefined ? [] : [text]),
   svg: (tag, attrs) => s(tag, attrs),

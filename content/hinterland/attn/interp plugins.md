@@ -24,10 +24,9 @@ register_sae_model = "vllm_sae_plugin:register"
 def register() -> None:
   from vllm import ModelRegistry
 
-  if "SAECausalLM" not in ModelRegistry.get_supported_archs():
+  if 'SAECausalLM' not in ModelRegistry.get_supported_archs():
     ModelRegistry.register_model(
-      "SAECausalLM",
-      "vllm_sae_plugin.model:SAECausalLM",
+      'SAECausalLM', 'vllm_sae_plugin.model:SAECausalLM'
     )
 ```
 
@@ -45,7 +44,7 @@ from typing import Literal
 @dataclass(frozen=True)
 class TapSpec:
   layer: int
-  kind: Literal["attn", "mlp"]
+  kind: Literal['attn', 'mlp']
 ```
 
 The custom model places each attention tap after the output projection and before the residual addition. It places each MLP tap after the down projection and before its residual addition. The checkpoint must be trained on that same tensor. Module names are too weak for this contract because vLLM models can use different layer layouts and output shapes.

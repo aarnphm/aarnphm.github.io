@@ -1,5 +1,7 @@
-import type { ComponentChildren } from 'preact'
+import type { ComponentChildren, JSX } from 'preact'
+import type { TrainingPlan } from '../../plugins/stores/training'
 import type { TriathlonTreeYear } from '../../util/triathlon-date-route'
+import type { TriathlonRenderData } from '../triathlon/render-data'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { InlineMath } from '../../util/math-text'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
@@ -15,6 +17,9 @@ import {
   gearRatioMatrix,
   type GearCassettePreset,
 } from '../../util/triathlon-gear-ratio'
+import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
+import { AnalyticsServerPanel } from '../triathlon/analytics/render'
+import { deriveTrainingDocument, type TrainingTreeNode } from '../triathlon/training/tree'
 
 export const DISPATCH_ICON =
   'M189 375Q189 338 207 306.5Q225 275 256.5 257Q288 239 325 239H675Q712 239 743.5 257Q775 275 793 306.5Q811 338 811 375V775Q811 812 793 843.5Q775 875 743.5 893Q712 911 675 911H325Q288 911 256.5 893Q225 875 207 843.5Q189 812 189 775ZM261 375V775Q261 802 279.5 820.5Q298 839 325 839H675Q702 839 720.5 820.5Q739 802 739 775V375Q739 348 720.5 329.5Q702 311 675 311H325Q298 311 279.5 329.5Q261 348 261 375ZM411 275H339V100Q339 85 349.5 74.5Q360 64 375 64Q390 64 400.5 74.5Q411 85 411 100ZM661 275H589V150Q589 135 599.5 124.5Q610 114 625 114Q640 114 650.5 124.5Q661 135 661 150ZM375 539H625A36 36 0 0 1 625 611H375A36 36 0 0 1 375 539Z'
@@ -385,7 +390,13 @@ const TriPanelShell = ({
   )
 }
 
-export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
+export const AnalyticsPanel = ({
+  page,
+  renderData,
+}: {
+  page?: boolean
+  renderData?: TriathlonRenderData
+}) => (
   <TriPanelShell
     kind="analytics"
     page={page}
@@ -417,25 +428,13 @@ export const AnalyticsPanel = ({ page }: { page?: boolean }) => (
   >
     <div id="tri-analytics-results" class="tri-ana-results" aria-hidden="true" />
     <div id="tri-analytics-detail" class="tri-ana-detail" aria-hidden="true" />
-    <div class="tri-ana-block" data-chart="body" />
-    <div class="tri-ana-block" data-chart="dexa" />
-    <div class="tri-ana-block" data-chart="gauge" />
-    <div class="tri-ana-block" data-chart="recovery" />
-    <div class="tri-ana-block" data-chart="sleep" />
-    <div class="tri-ana-block" data-chart="vo2max" />
-    <div class="tri-ana-block" data-chart="lactate" />
-    <div class="tri-ana-block" data-chart="power" />
-    <div class="tri-ana-block" data-chart="abilities" />
-    <div class="tri-ana-block" data-chart="distributions" />
-    <div class="tri-ana-block" data-chart="cardio" />
-    <div class="tri-ana-block" data-chart="pmc" />
-    <div class="tri-ana-block" data-chart="weekly" />
-    <div class="tri-ana-block" data-chart="effort" />
-    <div class="tri-ana-block" data-chart="heat" />
-    <div class="tri-ana-block" data-chart="readiness" />
-    <div class="tri-ana-block" data-chart="trend" />
-    <div class="tri-ana-block" data-chart="actions" />
-    <div class="tri-ana-block" data-chart="ftp" />
+    {ANALYTICS_CATALOG.map(definition => (
+      <div class="tri-ana-block" data-chart={definition.key}>
+        {page && renderData && (
+          <AnalyticsServerPanel definition={definition} data={renderData.analytics} />
+        )}
+      </div>
+    ))}
   </TriPanelShell>
 )
 
@@ -574,7 +573,109 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
   </TriPanelShell>
 )
 
-export const TrainingPanel = ({ page }: { page?: boolean }) => (
+const TrainingTree = ({ nodes }: { nodes: readonly TrainingTreeNode[] }) => {
+  const lines: JSX.Element[] = []
+  const blank = ' '
+  const segment = (bar: boolean): string => (bar ? `│${blank.repeat(3)}` : blank.repeat(4))
+  const visit = (node: TrainingTreeNode, last: boolean, ancestors: boolean[]): void => {
+    const prefix = ancestors.map(segment).join('') + (last ? '└── ' : '├── ')
+    lines.push(
+      <div class="tri-training-tree-line">
+        <span class="tri-training-tree-prefix">{prefix}</span>
+        <button class="tri-training-tree-link" type="button" data-target={node.id}>
+          {node.label}
+        </button>
+      </div>,
+    )
+    node.children.forEach((child, index) =>
+      visit(child, index === node.children.length - 1, [...ancestors, !last]),
+    )
+  }
+  nodes.forEach((node, index) => visit(node, index === nodes.length - 1, []))
+  return <>{lines}</>
+}
+
+const TrainingPlanDocument = ({ plans }: { plans: readonly TrainingPlan[] }) => {
+  const plan = plans[0]
+  if (!plan) return null
+  const renderDocument = deriveTrainingDocument(plan)
+  const authors = plan.author
+    .split(',')
+    .map(author => author.trim())
+    .filter(Boolean)
+    .join(', ')
+  return (
+    <>
+      <div class="tri-training-list">
+        <div class="tri-training-plans" aria-label="training plans" data-tri-ssr="true">
+          {plans.map((item, index) => (
+            <button
+              class={`tri-ana-ritem${index === 0 ? ' tri-ana-ritem--sel' : ''}`}
+              type="button"
+              data-plan={index}
+            >
+              <span class="tri-ana-ritem-t">{item.meta}</span>
+              <span class="tri-ana-ritem-s">
+                {[item.distance, item.target].filter(Boolean).join(' · ')}
+              </span>
+            </button>
+          ))}
+        </div>
+        <div class="tri-training-tree" aria-label="plan sections" data-tri-ssr="true">
+          <TrainingTree nodes={renderDocument.tree} />
+        </div>
+      </div>
+      <div
+        class="tri-ana-detail tri-training-doc"
+        aria-hidden="false"
+        data-keyboard-scroll
+        data-tri-ssr="true"
+      >
+        <div class="tri-pop-head tri-training-head">
+          <span class="tri-pop-date tri-training-meta-name">{plan.meta}</span>
+          <ul class="tri-training-meta">
+            {plan.distance && (
+              <li>
+                <span class="tri-training-meta-k">distance</span>
+                <span class="tri-training-meta-v">{plan.distance}</span>
+              </li>
+            )}
+            {plan.date && (
+              <li>
+                <span class="tri-training-meta-k">date</span>
+                <span class="tri-training-meta-v">{plan.date}</span>
+              </li>
+            )}
+            {plan.target && (
+              <li>
+                <span class="tri-training-meta-k">objectif</span>
+                <span class="tri-training-meta-v">{plan.target}</span>
+              </li>
+            )}
+            {authors && (
+              <li>
+                <span class="tri-training-meta-k">avec</span>
+                <span class="tri-training-meta-v">{authors}</span>
+              </li>
+            )}
+          </ul>
+        </div>
+        <div
+          class="tri-training-render"
+          dangerouslySetInnerHTML={{ __html: renderDocument.html }}
+        />
+      </div>
+    </>
+  )
+}
+
+export const TrainingPanel = ({
+  page,
+  renderData,
+}: {
+  page?: boolean
+  renderData?: TriathlonRenderData
+}) => (
   <TriPanelShell
     kind="training"
     page={page}
@@ -596,11 +697,17 @@ export const TrainingPanel = ({ page }: { page?: boolean }) => (
       </div>
     }
   >
-    <div class="tri-training-list">
-      <div class="tri-training-plans" aria-label="training plans" />
-      <div class="tri-training-tree" aria-label="plan sections" />
-    </div>
-    <div class="tri-ana-detail tri-training-doc" aria-hidden="true" data-keyboard-scroll />
+    {page && renderData?.plans[0] ? (
+      <TrainingPlanDocument plans={renderData.plans} />
+    ) : (
+      <>
+        <div class="tri-training-list">
+          <div class="tri-training-plans" aria-label="training plans" />
+          <div class="tri-training-tree" aria-label="plan sections" />
+        </div>
+        <div class="tri-ana-detail tri-training-doc" aria-hidden="true" data-keyboard-scroll />
+      </>
+    )}
   </TriPanelShell>
 )
 
