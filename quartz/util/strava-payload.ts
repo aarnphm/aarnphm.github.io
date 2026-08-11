@@ -145,6 +145,23 @@ export function swimActivityIntervals(swim: AppleSwim): {
   return { durationS, intervals }
 }
 
+const completeSwimIntervalPace = (
+  swim: AppleSwim,
+  intervals: SwimActivityInterval[],
+): number | null => {
+  if (!Number.isFinite(swim.totalM) || swim.totalM <= 0) return null
+  let distanceM = 0
+  let activeTimeS = 0
+  for (const interval of intervals) {
+    if (interval.paceSPer100m == null) continue
+    distanceM += interval.distanceM
+    activeTimeS += interval.durationS
+  }
+  const toleranceM = Math.max(1, swim.totalM * 0.001)
+  if (Math.abs(distanceM - swim.totalM) > toleranceM) return null
+  return swimPaceSeconds(distanceM, activeTimeS)
+}
+
 export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | null): void {
   const details = Object.values(payload.details).filter(
     (detail): detail is StravaActivityDetail => detail.sport === 'swim',
@@ -167,7 +184,11 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
       candidate => candidate != null && Object.keys(candidate.strokes).length > 0,
     )
     if (strokeDistribution) detail.strokes = strokeDistribution.strokes
-    const applePace = swim ? swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0) : null
+    const activity = swim ? swimActivityIntervals(swim) : null
+    const applePace = swim
+      ? (completeSwimIntervalPace(swim, activity?.intervals ?? []) ??
+        swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0))
+      : null
     detail.swimPaceSPer100m =
       applePace ?? swimPaceSeconds(detail.distanceKm * 1_000, detail.movingTimeS)
     const matchedStrokeRate = swim
@@ -183,7 +204,6 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
           ? (telemetry?.strokeCount ?? null)
           : (swim?.strokeCount ?? telemetry?.strokeCount ?? null)
     detail.strokeRateSpm = matchedStrokeRate ?? telemetryStrokeRate
-    const activity = swim ? swimActivityIntervals(swim) : null
     detail.swimDurationS = activity?.durationS ?? null
     detail.swimIntervals = activity?.intervals ?? []
     detail.swimLocation = telemetry?.location ?? null

@@ -104,6 +104,13 @@ export const buildPmc = (
       'tsb',
       r.tsbZone,
     ),
+    stat(
+      'tri-pmc-tss',
+      'tss',
+      String(Math.round(daily[n - 1].load)),
+      delta(d => d.load),
+      'tss',
+    ),
   )
   block.appendChild(readout)
 
@@ -126,16 +133,17 @@ export const buildPmc = (
 
   let maxFitRaw = 1
   let tsbAbsRaw = 10
-  let maxLoad = 1
+  let maxTssRaw = 1
   let loadSum = 0
   for (const d of daily) {
     maxFitRaw = Math.max(maxFitRaw, d.ctl, d.atl)
     tsbAbsRaw = Math.max(tsbAbsRaw, Math.abs(d.tsb))
-    maxLoad = Math.max(maxLoad, d.load)
+    maxTssRaw = Math.max(maxTssRaw, d.load)
   }
   for (const d of daily.slice(Math.max(0, n - 14))) loadSum += d.load
   const avgRecent = Math.round(loadSum / Math.min(14, n))
   const LOAD_MAX = niceUp(Math.max(120, Math.round(avgRecent * 1.4)))
+  const maxTss = niceUp(Math.max(maxTssRaw, LOAD_MAX))
   const performanceBounds = { lastObservedIndex: n - 1, maximumIndex: N - 1, maximumLoad: LOAD_MAX }
   let model = initialPerformanceModel(avgRecent, performanceBounds)
   let futLoad = model.futureDailyLoad
@@ -147,10 +155,12 @@ export const buildPmc = (
 
   const x = (i: number): number => (i / (N - 1)) * ANA_W
   const yFit = (v: number): number => PMC_BOT - (v / maxFit) * (PMC_BOT - PMC_TOP)
+  const yTss = (v: number): number => PMC_BOT - (v / maxTss) * (PMC_BOT - PMC_TOP)
   const yTsb = (v: number): number => PMC_TSB_ZERO - (v / tsbAbs) * PMC_TSB_HALF
-  const yBar = (v: number): number => PMC_BAR_BOT - (v / maxLoad) * (PMC_BAR_BOT - PMC_BAR_TOP)
+  const yBar = (v: number): number => PMC_BAR_BOT - (v / maxTss) * (PMC_BAR_BOT - PMC_BAR_TOP)
   const nowX = x(n - 1)
 
+  const tssPts = daily.map((d, i) => [x(i), yTss(d.load)] as [number, number])
   const ctlPts = daily.map((d, i) => [x(i), yFit(d.ctl)] as [number, number])
   const atlPts = daily.map((d, i) => [x(i), yFit(d.atl)] as [number, number])
   const tsbPts = daily.map((d, i) => [x(i), yTsb(d.tsb)] as [number, number])
@@ -187,7 +197,7 @@ export const buildPmc = (
     const load = day.load
     if (load <= 0) continue
     const by = yBar(load)
-    const classes = ['tri-pmc-bar']
+    const classes = ['tri-pmc-bar', 'tri-pmc-tss']
     if (raceDates.has(day.date)) classes.push('tri-pmc-bar--race')
     if (i === n - 1) classes.push('tri-pmc-bar--now')
     s.appendChild(
@@ -219,9 +229,14 @@ export const buildPmc = (
       }),
     )
   }
+  s.appendChild(svg('path', { d: polyD(tssPts), class: 'tri-pmc-l-tss' }))
   s.appendChild(svg('path', { d: polyD(tsbPts), class: 'tri-pmc-l-form' }))
   s.appendChild(svg('path', { d: polyD(atlPts), class: 'tri-pmc-l-fat' }))
   s.appendChild(svg('path', { d: polyD(ctlPts), class: 'tri-pmc-l-fit' }))
+  const tssProj = svg('path', {
+    d: projPath(daily[n - 1].load, () => futLoad, yTss),
+    class: 'tri-pmc-l-tss tri-pmc-proj',
+  })
   const tsbProj = svg('path', {
     d: projPath(daily[n - 1].tsb, p => p.tsb, yTsb),
     class: 'tri-pmc-l-form tri-pmc-proj',
@@ -234,7 +249,7 @@ export const buildPmc = (
     d: projPath(daily[n - 1].ctl, p => p.ctl, yFit),
     class: 'tri-pmc-l-fit tri-pmc-proj',
   })
-  s.append(tsbProj, atlProj, ctlProj)
+  s.append(tssProj, tsbProj, atlProj, ctlProj)
   const cursor = svg('line', { x1: 0, y1: 0, x2: 0, y2: PMC_H, class: 'tri-ana-cursor' })
   s.appendChild(cursor)
   s.appendChild(hits)
@@ -255,6 +270,8 @@ export const buildPmc = (
     ],
     true,
     { top: PMC_TOP, bottom: PMC_BOT },
+    [],
+    [maxTss, maxTss / 2, 0].map(value => ({ label: String(Math.round(value)), vbY: yTss(value) })),
   ) as HTMLElement
   const readoutEl = el('div', 'tri-chart-readout')
   const stage = frame.querySelector<HTMLElement>('.tri-cax-stage')
@@ -279,10 +296,10 @@ export const buildPmc = (
   slider.max = String(LOAD_MAX)
   slider.step = '5'
   slider.value = String(futLoad)
-  slider.setAttribute('aria-label', 'assumed future daily load')
+  slider.setAttribute('aria-label', context.formatter.text('assumed future daily TSS'))
   const ctrlLab = el('span', 'tri-pmc-ctrl-lab')
   ctrl.append(
-    el('span', 'tri-pmc-ctrl-k', context.formatter.text('projected load')),
+    el('span', 'tri-pmc-ctrl-k', context.formatter.text('projected TSS')),
     slider,
     ctrlLab,
   )
@@ -345,6 +362,7 @@ export const buildPmc = (
       legendRow('tri-pmc-fit', 'fitness', String(Math.round(p.ctl))),
       legendRow('tri-pmc-fat', 'fatigue', String(Math.round(p.atl))),
       legendRow('tri-pmc-form', 'form', signed(Math.round(p.tsb))),
+      legendRow('tri-pmc-tss', 'tss', String(Math.round(proj ? futLoad : daily[i].load))),
     )
     readoutEl.replaceChildren(
       el(
@@ -361,11 +379,6 @@ export const buildPmc = (
           'span',
           'tri-pmc-leg-load',
           `${context.formatter.text('swim')} ${Math.round(d.swimCtl)} · ${context.formatter.text('bike')} ${Math.round(d.bikeCtl)} · ${context.formatter.text('run')} ${Math.round(d.runCtl)}`,
-        ),
-        el(
-          'span',
-          'tri-pmc-leg-load',
-          `${context.formatter.text('training impulse')} ${Math.round(d.load)}`,
         ),
       )
       readoutEl.append(entryList)
@@ -401,6 +414,10 @@ export const buildPmc = (
     )
     futLoad = model.futureDailyLoad
     projSeries = project(futLoad)
+    tssProj.setAttribute(
+      'd',
+      projPath(daily[n - 1].load, () => futLoad, yTss),
+    )
     tsbProj.setAttribute(
       'd',
       projPath(daily[n - 1].tsb, p => p.tsb, yTsb),
