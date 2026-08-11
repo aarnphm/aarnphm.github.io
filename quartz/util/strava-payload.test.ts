@@ -321,6 +321,61 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
   ])
 })
 
+test('prefers a complete measured-length pace over workout duration for pool swims', () => {
+  const payload = payloadWith(detail({ distanceKm: 0.1, movingTimeS: 160, swimLocation: 'pool' }))
+  const swim = appleSwim({
+    totalM: 100,
+    activeTimeS: 160,
+    laps: 4,
+    intervals: [
+      {
+        start: '2026-07-09T20:13:30Z',
+        end: '2026-07-09T20:13:55Z',
+        distanceM: 25,
+        strokeCount: 10,
+        strokeTimeS: 25,
+        stroke: 'freestyle',
+      },
+      {
+        start: '2026-07-09T20:14:10Z',
+        end: '2026-07-09T20:14:40Z',
+        distanceM: 25,
+        strokeCount: 11,
+        strokeTimeS: 30,
+        stroke: 'freestyle',
+      },
+      {
+        start: '2026-07-09T20:15:00Z',
+        end: '2026-07-09T20:15:35Z',
+        distanceM: 25,
+        strokeCount: 12,
+        strokeTimeS: 35,
+        stroke: 'freestyle',
+      },
+      {
+        start: '2026-07-09T20:16:00Z',
+        end: '2026-07-09T20:16:40Z',
+        distanceM: 25,
+        strokeCount: 13,
+        strokeTimeS: 40,
+        stroke: 'freestyle',
+      },
+    ],
+  })
+  const apple: AppleCache = {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    swims: { [swim.id ?? swim.date]: swim },
+    workouts: {},
+  }
+
+  enrichSwimMetrics(payload, apple)
+
+  assert.equal(payload.details['1'].swimPaceSPer100m, 130)
+  assert.equal(payload.swimTrend[0]?.paceSPer100m, 130)
+})
+
 test('uses corrected distance metrics with measured open-water environment', () => {
   const start = '2026-07-26T12:43:52Z'
   const payload = payloadWith(

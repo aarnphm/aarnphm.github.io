@@ -1,7 +1,17 @@
 ---
 chain:
-  '1': 621 mile
-  '2': 419.42 mile
+  '1':
+    distance: 621 mile
+    lubricant: Muc-Off Dry Lube
+    waxed: false
+  '2':
+    distance: 419.42 mile
+    lubricant: Muc-Off Dry Lube
+    waxed: false
+  '3':
+    distance: null
+    lubricant: UFO Wax Drip-On
+    waxed: true
 date: '2026-05-29'
 description: training data and tracking
 dexa:
@@ -56,7 +66,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-10 17:50:39 GMT-04:00
+modified: 2026-08-11 14:08:29 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -64,6 +74,43 @@ tags:
   - life
   - self
   - evergreen
+tires:
+  front:
+    tires:
+      - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
+        - distance: 751.81 mile
+        - start: '2026-05-16'
+        - end: '2026-07-16'
+        - reason: training to race tires
+      - - type: Pirelli P Zero Race TLR SL-R 700x28c
+        - distance: 619.84 mile
+        - start: '2026-07-16'
+        - end: '2026-08-10'
+        - reason: punctures
+    tube:
+      - - type: Pirelli P Zero TPU
+        - distance: 619.84 mile
+        - start: '2026-07-16'
+        - end: '2026-08-10'
+        - reason: punctures
+  rear:
+    tires:
+      - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
+        - distance: 751.81 mile
+        - start: '2026-05-16'
+        - end: '2026-07-16'
+        - reason: training to race tires
+      - - type: Pirelli P Zero Race TLR SL-R 700x28c
+        - distance: 619.84 mile
+        - start: '2026-07-16'
+        - end: '2026-08-10'
+        - reason: punctures and big ruptures
+    tube:
+      - - type: Pirelli P Zero TPU
+        - distance: null
+        - start: '2026-07-16'
+        - end: null
+        - reason: null
 title: triathlon
 triathlon: '70.3'
 vo2max:
@@ -875,6 +922,34 @@ exercise: Double Arm Clean | 10 reps @ 9.1 kg | 10 reps @ 11.3 kg
 exercise: Barbell Deadlift | 10 reps @ 22.7 kg | 10 reps @ 27.2 kg
 exercise: Hanging Knee Raise | 10 reps | 10 reps
 exercise: Single Arm Clean And Press | 10 reps @ 9.1 kg | 10 reps @ 6.8 kg
+```
+
+```tracking
+date: 2026-08-10
+activity: 19686646479
+fueling: 30
+```
+
+```tracking
+date: 2026-08-10
+activity: 19687998926
+fueling: 120
+```
+
+```tracking
+date: 2026-08-11
+activity: 19702087850
+strengthVolume: 2475 lb
+strengthSets: 20
+strengthReps: 128
+exercise: Standing March | 30s | 30s
+exercise: Travelling Press Up Walk Out | 30s | 30s
+exercise: Squat To Calf Raise | 30s | 30s
+exercise: Mountain Climber | 30s | 30s
+exercise: Sl Db Rdl Knee Drive | 5 reps @ 13.6 kg | 5 reps @ 6.8 kg | 10 reps @ 6.8 kg
+exercise: Single Arm Row | 10 reps @ 11.3 kg | 10 reps @ 11.3 kg | 10 reps @ 11.3 kg
+exercise: Diagonal Toe Tap | 11 reps | 11 reps | 11 reps
+exercise: Single Leg Calf Raise | 15 reps @ 13.6 kg | 15 reps @ 13.6 kg | 15 reps @ 13.6 kg
 ```
 
 <!-- training plan start

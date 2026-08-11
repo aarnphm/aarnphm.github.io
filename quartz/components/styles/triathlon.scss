@@ -4793,14 +4793,16 @@
 }
 
 .tri-ana-pmc {
+  --tri-pmc-tss: color-mix(in srgb, var(--gray) 58%, var(--dark));
   --tri-pmc-fit: var(--tri-accent);
   --tri-pmc-fat: color-mix(in srgb, var(--gray) 72%, var(--dark));
   --tri-pmc-form: #2f7480;
 }
 
 .tri-pmc-now-row {
-  display: flex;
-  gap: 1.7rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
   margin-bottom: 0.7rem;
 }
 
@@ -4825,6 +4827,10 @@
 
 .tri-pmc-fit .tri-pmc-dot {
   background: var(--tri-pmc-fit);
+}
+.tri-pmc-tss .tri-pmc-dot {
+  border-radius: 1px;
+  background: var(--tri-pmc-tss);
 }
 .tri-pmc-fat .tri-pmc-dot {
   background: var(--tri-pmc-fat);
@@ -4878,7 +4884,7 @@
 }
 
 .tri-pmc-bar {
-  fill: color-mix(in srgb, var(--gray) 30%, transparent);
+  fill: color-mix(in srgb, var(--tri-pmc-tss) 30%, transparent);
   shape-rendering: crispEdges;
 }
 
@@ -4889,6 +4895,16 @@
 
 .tri-pmc-area {
   fill: color-mix(in srgb, var(--tri-pmc-fit) 15%, transparent);
+}
+
+.tri-pmc-l-tss {
+  fill: none;
+  stroke: var(--tri-pmc-tss);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.78;
+  vector-effect: non-scaling-stroke;
 }
 
 .tri-pmc-l-fit {
@@ -4934,6 +4950,10 @@
 .tri-pmc-proj {
   stroke-dasharray: 2.6 2;
   opacity: 0.72;
+}
+
+.tri-ana-pmc .tri-cax-yt--right {
+  color: var(--tri-pmc-tss);
 }
 
 .tri-pmc-hit {
@@ -5000,7 +5020,7 @@
 .tri-ana-pmc .tri-chart-readout {
   position: absolute;
   top: 0.45rem;
-  left: var(--tri-pmc-readout-x, 89%);
+  left: clamp(11rem, var(--tri-pmc-readout-x, 89%), calc(100% - 11rem));
   right: auto;
   z-index: 2;
   display: flex;
@@ -5009,7 +5029,7 @@
   gap: 0.34rem;
   box-sizing: border-box;
   width: max-content;
-  max-width: min(16rem, calc(100% - 1rem));
+  max-width: min(22rem, calc(100% - 1rem));
   padding: 0.55rem 0.65rem;
   background: color-mix(in srgb, var(--light) 94%, transparent);
   border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
@@ -5056,7 +5076,7 @@
 
 .tri-pmc-leg-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.4rem;
 }
 

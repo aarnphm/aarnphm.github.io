@@ -1,0 +1,64 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import type { DailyPoint } from '../../../plugins/stores/analytics'
+import { buildAnalytics } from '../../../plugins/stores/analytics'
+import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
+import { analyticsPanelDefinition } from './catalog'
+import { GLOSS_CHART, SEARCH_SECTIONS } from './search'
+
+const daily: DailyPoint = {
+  date: '2026-08-11',
+  load: 72.4,
+  effort: 0,
+  swimLoad: 12.4,
+  bikeLoad: 40,
+  runLoad: 20,
+  ctl: 81.2,
+  atl: 96.7,
+  tsb: -15.5,
+  swimCtl: 10,
+  bikeCtl: 50,
+  runCtl: 21.2,
+  readiness: null,
+  hrv: null,
+  rhr: null,
+  sleepScore: null,
+  sleepDurationS: null,
+  tempDevC: null,
+  weightKg: null,
+  totalCalories: null,
+  intakeKcal: null,
+  warmup: false,
+}
+
+test('performance management exposes daily TSS with CTL, ATL, and TSB', () => {
+  const empty = buildAnalytics(null)
+  const analytics = {
+    ...empty,
+    daily: [daily],
+    risk: { ...empty.risk, ctl: daily.ctl, atl: daily.atl, tsb: daily.tsb },
+  }
+  const panel = analyticsPanelDefinition('pmc')
+  assert.ok(panel)
+
+  const summary = panel.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.equal(summary.title, 'fitness · fatigue · form · TSS')
+  assert.deepEqual(summary.values, [
+    { label: 'fitness', value: '81.2' },
+    { label: 'fatigue', value: '96.7' },
+    { label: 'form', value: '-15.5' },
+    { label: 'TSS', value: '72.4' },
+  ])
+  assert.deepEqual(summary.series, [
+    { label: 'fitness', values: [81.2] },
+    { label: 'fatigue', values: [96.7] },
+    { label: 'form', values: [-15.5] },
+    { label: 'TSS', values: [72.4] },
+  ])
+})
+
+test('TSS search and glossary navigation resolve to performance management', () => {
+  const section = SEARCH_SECTIONS.find(item => item.chart === 'pmc')
+  assert.ok(section?.hay.includes('tss'))
+  assert.equal(GLOSS_CHART.tss, 'pmc')
+})

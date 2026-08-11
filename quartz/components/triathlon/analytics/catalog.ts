@@ -383,19 +383,21 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   pmc: {
     key: 'pmc',
     label: 'performance management',
-    search: 'pmc fitness fatigue form ctl atl tsb projection',
+    search: 'pmc training stress score tss fitness fatigue form ctl atl tsb projection',
     render: buildPmc,
     server: data => ({
-      title: 'fitness · fatigue · form',
+      title: 'fitness · fatigue · form · TSS',
       values: [
         { label: 'fitness', value: value(data.risk.ctl, '', 1) },
         { label: 'fatigue', value: value(data.risk.atl, '', 1) },
         { label: 'form', value: value(data.risk.tsb, '', 1) },
+        { label: 'TSS', value: value(data.daily.at(-1)?.load, '', 1) },
       ],
       series: [
         { label: 'fitness', values: data.daily.map(day => day.ctl) },
         { label: 'fatigue', values: data.daily.map(day => day.atl) },
         { label: 'form', values: data.daily.map(day => day.tsb) },
+        { label: 'TSS', values: data.daily.map(day => day.load) },
       ],
     }),
   },

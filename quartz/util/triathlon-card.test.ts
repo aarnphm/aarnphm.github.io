@@ -2204,8 +2204,14 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   const paceArea = byClass(paceSvg, 'tri-swim-trend-area')[0]
   assert.ok(pacePath)
   assert.ok(paceArea)
-  assert.match(String(pacePath.properties.d), /^M 25\.00 20\.00 .* L 100\.00 19\.20$/)
-  assert.match(String(paceArea.properties.d), /^M 25\.00 30 .* L 100\.00 19\.20 L 100\.00 30 Z$/)
+  assert.match(
+    String(pacePath.properties.d),
+    /^M 0\.00 20\.00 L 25\.00 20\.00 .* L 100\.00 19\.20$/,
+  )
+  assert.match(
+    String(paceArea.properties.d),
+    /^M 0\.00 30 L 0\.00 20\.00 L 25\.00 20\.00 .* L 100\.00 19\.20 L 100\.00 30 Z$/,
+  )
   assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
   assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 2)
   assert.deepEqual(
@@ -2273,6 +2279,14 @@ test('renders one shared lengths and 100 metre toggle for both swim charts', () 
       [200, 30],
     ],
   )
+  assert.match(
+    String(byClass(paceSvg, 'tri-swim-trend-line--100m')[0]?.properties.d),
+    /^M 0\.00 .* L 50\.00 .* L 50\.00 .* L 100\.00/,
+  )
+  assert.match(
+    String(byClass(strokeSvg, 'tri-swim-trend-area--100m')[0]?.properties.d),
+    /^M 0\.00 30 L 0\.00 .* L 50\.00 .* L 50\.00 .* L 100\.00 .* L 100\.00 30 Z$/,
+  )
   assert.equal(paceSvg.properties.dataSwimMode, 'lengths')
   assert.equal(strokeSvg.properties.dataSwimMode, 'lengths')
   assert.equal(byClass(rendered, 'tri-swim-series').length, 4)
@@ -2329,8 +2343,11 @@ test('keeps missing stroke intervals as graph gaps and renders pace alone when n
   assert.ok(paceSvg)
   assert.ok(strokeSvg)
   assert.ok(strokePath)
-  assert.equal(String(strokePath.properties.d).match(/[ML]/g)?.length, 3)
-  assert.match(String(strokePath.properties.d), /^M 25\.00 .* L 50\.00 .* M 100\.00/)
+  assert.equal(String(strokePath.properties.d).match(/[ML]/g)?.length, 6)
+  assert.match(
+    String(strokePath.properties.d),
+    /^M 0\.00 .* L 25\.00 .* L 25\.00 .* L 50\.00 .* M 75\.00 .* L 100\.00/,
+  )
   const paceSeries = JSON.parse(
     String(paceSvg.properties.dataSwimSeriesLengths),
   ) as SwimTrendChartPoint[]

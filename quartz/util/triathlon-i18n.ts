@@ -109,6 +109,7 @@ export const detectLocale = (): Locale => {
 
 const en: TriDict = {
   ui: {
+    tss: 'TSS',
     fitness: 'fitness',
     fatigue: 'fatigue',
     form: 'form',
@@ -162,7 +163,6 @@ const en: TriDict = {
     'active wk': 'active wk',
     avg: 'avg',
     'wtd avg': 'wtd avg',
-    'training impulse': 'training impulse',
     'vs last': 'vs last',
     'training load · injury risk': 'training load · injury risk',
     'weekly load': 'weekly load',
@@ -340,8 +340,8 @@ const en: TriDict = {
     'building base — ACWR needs ~4 weeks': 'building base — ACWR needs ~4 weeks',
     'not enough data': 'not enough data',
     today: 'today',
-    'projected load': 'projected load',
-    'assumed future daily load': 'assumed future daily load',
+    'projected TSS': 'projected TSS',
+    'assumed future daily TSS': 'assumed future daily TSS',
     'no activity': 'no activity',
     'no weeks': 'no weeks',
     'above range': 'above range',
@@ -600,6 +600,10 @@ const en: TriDict = {
       'The raw value is the original measurement used to calculate this score from 0 to 100.',
   },
   gloss: {
+    tss: {
+      term: 'training stress score (TSS)',
+      def: 'TSS is the daily sum of session stress. Each session uses intensity factor squared, multiplied by duration in hours and 100. Intensity is estimated from threshold-adjusted speed.',
+    },
     ctl: {
       term: 'fitness (CTL)',
       def: 'Fitness is your average daily training load over the past 42 days. Recent days count more. It rises when you train consistently and falls when you train less.',
@@ -790,6 +794,7 @@ const en: TriDict = {
 
 const fr: TriDict = {
   ui: {
+    tss: 'TSS',
     fitness: 'condition',
     fatigue: 'fatigue',
     form: 'forme',
@@ -843,7 +848,6 @@ const fr: TriDict = {
     'active wk': 'sem actives',
     avg: 'moy',
     'wtd avg': 'moy pond',
-    'training impulse': 'charge séance',
     'vs last': 'vs préc',
     'training load · injury risk': 'charge · risque de blessure',
     'weekly load': 'charge hebdo',
@@ -1022,8 +1026,8 @@ const fr: TriDict = {
     'building base — ACWR needs ~4 weeks': "constitution de la base — l'ACWR nécessite ~4 semaines",
     'not enough data': 'données insuffisantes',
     today: 'auj.',
-    'projected load': 'charge projetée',
-    'assumed future daily load': 'charge quotidienne future supposée',
+    'projected TSS': 'TSS projeté',
+    'assumed future daily TSS': 'TSS quotidien futur supposé',
     'no activity': 'aucune activité',
     'no weeks': 'aucune semaine',
     'above range': 'au-dessus de la plage',
@@ -1288,6 +1292,10 @@ const fr: TriDict = {
       "La valeur brute est la mesure d'origine utilisée pour calculer cette note de 0 à 100.",
   },
   gloss: {
+    tss: {
+      term: "score de stress d'entraînement (TSS)",
+      def: "Le TSS est la somme quotidienne du stress des séances. Chaque séance utilise le facteur d'intensité au carré, multiplié par la durée en heures et par 100. L'intensité est estimée à partir de la vitesse ajustée au seuil.",
+    },
     ctl: {
       term: 'condition (CTL)',
       def: "La condition représente ta charge d'entraînement quotidienne moyenne sur les 42 derniers jours. Les jours récents comptent davantage. Elle monte quand tu t'entraînes régulièrement et baisse quand tu t'entraînes moins.",

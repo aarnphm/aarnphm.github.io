@@ -62,9 +62,9 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
     hay: 'cardio cardiovascular heart rhr hrv efficiency factor decoupling aerobic drift',
   },
   {
-    label: 'fitness · fatigue · form',
+    label: 'TSS · fitness · fatigue · form',
     chart: 'pmc',
-    hay: 'pmc fitness fatigue form ctl atl tsb discipline swim bike run',
+    hay: 'pmc training stress score tss fitness fatigue form ctl atl tsb discipline swim bike run',
   },
   { label: 'weekly load', chart: 'weekly', hay: 'weekly load volume tss' },
   { label: 'relative effort', chart: 'effort', hay: 'relative effort suffer score weekly' },
@@ -82,6 +82,7 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
 ]
 
 export const GLOSS_CHART: Record<string, string> = {
+  tss: 'pmc',
   ctl: 'pmc',
   atl: 'pmc',
   tsb: 'gauge',

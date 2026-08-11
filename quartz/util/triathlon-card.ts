@@ -2107,6 +2107,10 @@ const buildSwimTrendChart = <N>(
     metrics: SwimActivityMetric[],
     mode: SwimTrendMode,
   ): { points: SwimTrendChartPoint[]; linePath: string; areaPath: string } => {
+    const startX = (metric: SwimActivityMetric): number =>
+      ((metric.observation.interval.cumulativeDistanceM - metric.observation.interval.distanceM) /
+        totalDistanceM) *
+      W
     const points = metrics.map(metric => ({
       elapsedS: metric.observation.interval.endElapsedS,
       cumulativeDistanceM: metric.observation.interval.cumulativeDistanceM,
@@ -2133,20 +2137,22 @@ const buildSwimTrendChart = <N>(
         run
           .map(
             (metric, index) =>
-              `${index === 0 ? 'M' : 'L'} ${X(metric.observation).toFixed(2)} ${Y(metric.value).toFixed(2)}`,
+              `${index === 0 ? 'M' : 'L'} ${startX(metric).toFixed(2)} ${Y(metric.value).toFixed(2)} L ${X(metric.observation).toFixed(2)} ${Y(metric.value).toFixed(2)}`,
           )
           .join(' '),
       )
       .join(' ')
     const areaPath = runs
-      .filter(run => run.length > 1)
       .map(run => {
         const first = run[0]
         const last = run[run.length - 1]
         const values = run
-          .map(metric => `L ${X(metric.observation).toFixed(2)} ${Y(metric.value).toFixed(2)}`)
+          .map(
+            metric =>
+              `L ${startX(metric).toFixed(2)} ${Y(metric.value).toFixed(2)} L ${X(metric.observation).toFixed(2)} ${Y(metric.value).toFixed(2)}`,
+          )
           .join(' ')
-        return `M ${X(first.observation).toFixed(2)} ${H} ${values} L ${X(last.observation).toFixed(2)} ${H} Z`
+        return `M ${startX(first).toFixed(2)} ${H} ${values} L ${X(last.observation).toFixed(2)} ${H} Z`
       })
       .join(' ')
     return { points, linePath, areaPath }
