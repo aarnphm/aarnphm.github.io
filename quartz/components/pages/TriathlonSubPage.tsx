@@ -1,4 +1,5 @@
 import { JSX } from 'preact'
+import type { TriathlonRenderData } from '../triathlon/render-data'
 import { QuartzComponent, QuartzComponentProps } from '../../types/component'
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
@@ -21,6 +22,7 @@ import {
 interface TriathlonSubPanelProps {
   page?: boolean
   defaultDistance?: unknown
+  renderData?: TriathlonRenderData
 }
 
 const PANEL: Record<
@@ -59,7 +61,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
         ) : view === 'feed' ? (
           <FeedPanel />
         ) : (
-          PANEL[view]({ page: true, defaultDistance })
+          PANEL[view]({ page: true, defaultDistance, renderData: fileData.triathlonRenderData })
         )}
       </div>
     )

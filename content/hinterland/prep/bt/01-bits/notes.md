@@ -59,12 +59,12 @@ logical = (x & M32) >> n
 
 Count bit positions from the least-significant bit, starting at 0.
 
-| task               | expression                     |
-| ------------------ | ------------------------------ |
-| test bit `k`       | `(x >> k) & 1`                 |
-| set bit `k`        | `x \| (1 << k)`                |
-| clear bit `k`      | `x & ~(1 << k)`                |
-| toggle bit `k`     | `x ^ (1 << k)`                 |
+| task               | expression                    |
+| ------------------ | ----------------------------- |
+| test bit `k`       | `(x >> k) & 1`                |
+| set bit `k`        | `x \| (1 << k)`               |
+| clear bit `k`      | `x & ~(1 << k)`               |
+| toggle bit `k`     | `x ^ (1 << k)`                |
 | set bit `k` to `v` | `(x & ~(1 << k)) \| (v << k)` |
 
 The reusable field recipe:
@@ -123,12 +123,12 @@ C has the inverse problem: unsigned arithmetic wraps by definition, signed overf
 
 The lowest-set-bit family:
 
-| expression       | result                                |
-| ---------------- | ------------------------------------- |
-| `x & -x`         | isolate lowest set bit                |
-| `x & (x - 1)`    | clear lowest set bit                  |
-| `x \| (x - 1)`   | set all bits below the lowest set bit |
-| `~x & (x + 1)`   | isolate lowest clear bit              |
+| expression     | result                                |
+| -------------- | ------------------------------------- |
+| `x & -x`       | isolate lowest set bit                |
+| `x & (x - 1)`  | clear lowest set bit                  |
+| `x \| (x - 1)` | set all bits below the lowest set bit |
+| `~x & (x + 1)` | isolate lowest clear bit              |
 
 Power of two:
 

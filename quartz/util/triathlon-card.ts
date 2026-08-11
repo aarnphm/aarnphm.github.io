@@ -1,3 +1,4 @@
+import type { TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
 import {
   SPORT_ICON,
@@ -13,8 +14,10 @@ import {
   type SwimTrendPoint,
 } from '../plugins/stores/strava'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
+import { triText } from './triathlon-i18n'
 
 export interface TriNodeFactory<N> {
+  presentation: TriathlonPresentation
   el: (tag: string, cls?: string, text?: string, attrs?: Record<string, string>) => N
   svg: (tag: string, attrs: Record<string, string | number>) => N
   add: (parent: N, ...children: N[]) => void
@@ -48,20 +51,18 @@ const LB_TO_KG = 0.45359237
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-let imperial = false
-export const setDistanceUnit = (v: boolean): void => {
-  imperial = v
-}
-export const isImperialUnit = (): boolean => imperial
+const isImperial = (presentation: TriathlonPresentation): boolean =>
+  presentation.distance === 'imperial'
 
-let zeroPowerExcluded = false
-export const setZeroPowerExcluded = (value: boolean): void => {
-  zeroPowerExcluded = value
-}
-export const isZeroPowerExcluded = (): boolean => zeroPowerExcluded
-export const powerViewActivity = (activity: StravaActivityDetail): StravaActivityDetail => {
+const excludesZeroPower = (presentation: TriathlonPresentation): boolean =>
+  presentation.powerSamples === 'exclude-zero'
+
+export const powerViewActivity = (
+  presentation: TriathlonPresentation,
+  activity: StravaActivityDetail,
+): StravaActivityDetail => {
   const filtered = activity.powerWithoutZeros
-  if (!zeroPowerExcluded || activity.sport !== 'bike' || !filtered) return activity
+  if (!excludesZeroPower(presentation) || activity.sport !== 'bike' || !filtered) return activity
   return {
     ...activity,
     avgWatts: filtered.avgWatts ?? activity.avgWatts,
@@ -114,13 +115,17 @@ export const parseExcludedActivityIds = (value: string | undefined): string[] =>
   return [...new Set(filter.split('&'))]
 }
 
-export const dist = (km: number, sport: ActivityKind): string => {
+export const dist = (
+  presentation: TriathlonPresentation,
+  km: number,
+  sport: ActivityKind,
+): string => {
   if (sport === 'swim') return `${Math.round(km * 1000).toLocaleString('en-US')} m`
-  return imperial ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
+  return isImperial(presentation) ? `${(km * KM_TO_MI).toFixed(1)} mi` : `${km.toFixed(1)} km`
 }
 
-export const distCombined = (km: number): string =>
-  imperial
+export const distCombined = (presentation: TriathlonPresentation, km: number): string =>
+  isImperial(presentation)
     ? `${Math.round(km * KM_TO_MI).toLocaleString('en-US')} mi`
     : `${Math.round(km).toLocaleString('en-US')} km`
 
@@ -149,44 +154,59 @@ export const prettyDate = (iso: string): string => {
   return `${MONTHS[(m || 1) - 1]} ${d}${suffix}`
 }
 
-export const speedKph = (kmh: number): string =>
-  imperial ? `${(kmh * KM_TO_MI).toFixed(1)} mph` : `${kmh.toFixed(1)} km/h`
+export const speedKph = (presentation: TriathlonPresentation, kmh: number): string =>
+  isImperial(presentation) ? `${(kmh * KM_TO_MI).toFixed(1)} mph` : `${kmh.toFixed(1)} km/h`
 
-export const rate = (sport: ActivityKind, km: number, s: number): string => {
+export const rate = (
+  presentation: TriathlonPresentation,
+  sport: ActivityKind,
+  km: number,
+  s: number,
+): string => {
   if (sport === 'swim') return `${clock(s / (km * 10))} /100m`
-  if (sport === 'bike') return speedKph(km / (s / 3600))
-  return imperial ? `${clock(s / (km * KM_TO_MI))} /mi` : `${clock(s / km)} /km`
+  if (sport === 'bike') return speedKph(presentation, km / (s / 3600))
+  return isImperial(presentation) ? `${clock(s / (km * KM_TO_MI))} /mi` : `${clock(s / km)} /km`
 }
 
-export const scrubDist = (km: number, sport: ActivityKind): string =>
+export const scrubDist = (
+  presentation: TriathlonPresentation,
+  km: number,
+  sport: ActivityKind,
+): string =>
   sport === 'swim'
     ? `${Math.round(km * 1000).toLocaleString('en-US')} m`
-    : imperial
+    : isImperial(presentation)
       ? `${(km * KM_TO_MI).toFixed(2)} mi`
       : `${km.toFixed(2)} km`
 
-const elevationValue = (meters: number): number => (imperial ? meters * M_TO_FT : meters)
-const temperatureValue = (celsius: number): number => (imperial ? (celsius * 9) / 5 + 32 : celsius)
-const temperatureUnit = (): string => (imperial ? '°F' : '°C')
+const elevationValue = (presentation: TriathlonPresentation, meters: number): number =>
+  isImperial(presentation) ? meters * M_TO_FT : meters
+const temperatureValue = (presentation: TriathlonPresentation, celsius: number): number =>
+  isImperial(presentation) ? (celsius * 9) / 5 + 32 : celsius
+const temperatureUnit = (presentation: TriathlonPresentation): string =>
+  isImperial(presentation) ? '°F' : '°C'
 
-export const formatTemperature = (celsius: number): string =>
-  `${Math.round(temperatureValue(celsius))}${temperatureUnit()}`
+export const formatTemperature = (presentation: TriathlonPresentation, celsius: number): string =>
+  `${Math.round(temperatureValue(presentation, celsius))}${temperatureUnit(presentation)}`
 
-export const formatThermalTemperature = (celsius: number): string =>
-  `${temperatureValue(celsius).toFixed(2)}${temperatureUnit()}`
+export const formatThermalTemperature = (
+  presentation: TriathlonPresentation,
+  celsius: number,
+): string => `${temperatureValue(presentation, celsius).toFixed(2)}${temperatureUnit(presentation)}`
 
 export const formatRespirationRate = (breathsPerMinute: number): string =>
   `${breathsPerMinute.toFixed(1)} brpm`
 
-export const formatAltitude = (meters: number): string => {
-  const rounded = Math.round(elevationValue(meters))
-  return `${(rounded === 0 ? 0 : rounded).toLocaleString('en-US')} ${imperial ? 'ft' : 'm'}`
+export const formatAltitude = (presentation: TriathlonPresentation, meters: number): string => {
+  const rounded = Math.round(elevationValue(presentation, meters))
+  return `${(rounded === 0 ? 0 : rounded).toLocaleString('en-US')} ${isImperial(presentation) ? 'ft' : 'm'}`
 }
 
-export const formatElevationGain = (meters: number): string => formatAltitude(meters)
+export const formatElevationGain = (presentation: TriathlonPresentation, meters: number): string =>
+  formatAltitude(presentation, meters)
 
-export const formatVam = (metersPerHour: number): string =>
-  `${Math.round(elevationValue(metersPerHour)).toLocaleString('en-US')} ${imperial ? 'ft/h' : 'm/h'}`
+export const formatVam = (presentation: TriathlonPresentation, metersPerHour: number): string =>
+  `${Math.round(elevationValue(presentation, metersPerHour)).toLocaleString('en-US')} ${isImperial(presentation) ? 'ft/h' : 'm/h'}`
 
 export const gradeAt = (route: StravaActivityDetail['route'], i: number): number => {
   const j0 = Math.max(0, i - 2)
@@ -249,6 +269,7 @@ export const fuelingRows = (f: ActivityFueling): [string, string][] => {
 }
 
 export const moreStatRows = (
+  presentation: TriathlonPresentation,
   d: StravaActivityDetail,
   fillMissingRunPower = false,
 ): [string, string][] => {
@@ -269,7 +290,10 @@ export const moreStatRows = (
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null)
-    rows.push([d.sport === 'swim' ? 'air temp' : 'temp', formatTemperature(d.avgTemp)])
+    rows.push([
+      d.sport === 'swim' ? 'air temp' : 'temp',
+      formatTemperature(presentation, d.avgTemp),
+    ])
   if (d.windKph != null)
     rows.push([
       'wind',
@@ -365,14 +389,19 @@ export const runVerticalOscillationCm = (
     : null
 }
 
-export const formatStrideLength = (meters: number): string =>
-  imperial ? `${(meters * M_TO_FT).toFixed(2)} ft` : `${meters.toFixed(2)} m`
+export const formatStrideLength = (presentation: TriathlonPresentation, meters: number): string =>
+  isImperial(presentation) ? `${(meters * M_TO_FT).toFixed(2)} ft` : `${meters.toFixed(2)} m`
 
 export const formatGroundContactTime = (milliseconds: number): string =>
   `${Math.round(milliseconds)} ms`
 
-export const formatVerticalOscillation = (centimeters: number): string =>
-  imperial ? `${(centimeters / 2.54).toFixed(1)} in` : `${centimeters.toFixed(1)} cm`
+export const formatVerticalOscillation = (
+  presentation: TriathlonPresentation,
+  centimeters: number,
+): string =>
+  isImperial(presentation)
+    ? `${(centimeters / 2.54).toFixed(1)} in`
+    : `${centimeters.toFixed(1)} cm`
 
 export type ActivitySelectionSummary = {
   startElapsedS: number
@@ -699,7 +728,12 @@ const resolveActivityGraphDomain = (
     : { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
 }
 
-const distanceXTicks = (startDistanceKm: number, endDistanceKm: number): AxisXTick[] => {
+const distanceXTicks = (
+  presentation: TriathlonPresentation,
+  startDistanceKm: number,
+  endDistanceKm: number,
+): AxisXTick[] => {
+  const imperial = isImperial(presentation)
   const scale = imperial ? KM_TO_MI : 1
   const displayStart = startDistanceKm * scale
   const displayEnd = endDistanceKm * scale
@@ -780,14 +814,16 @@ export const buildElevation = <N>(
   const w = 100
   const h = 30
   const maxD = d.route[d.route.length - 1].d || 1
-  const displayMinAlt = elevationValue(d.minAlt)
-  const displayMaxAlt = elevationValue(d.maxAlt)
+  const imperial = isImperial(f.presentation)
+  const displayMinAlt = elevationValue(f.presentation, d.minAlt)
+  const displayMaxAlt = elevationValue(f.presentation, d.maxAlt)
   const altPad = displayMinAlt === displayMaxAlt ? 1 : 0
   const minAlt = displayMinAlt - altPad
   const maxAlt = displayMaxAlt + altPad
   const altSpan = Math.max(1e-6, maxAlt - minAlt)
   const px = (km: number): number => (km / maxD) * w
-  const py = (alt: number): number => h - ((elevationValue(alt) - minAlt) / altSpan) * h
+  const py = (alt: number): number =>
+    h - ((elevationValue(f.presentation, alt) - minAlt) / altSpan) * h
   const yValues = niceTicks(minAlt, maxAlt, 4)
   const yStep = niceStep(maxAlt - minAlt, 4)
   const yTicks = yValues.map(value => ({
@@ -795,7 +831,7 @@ export const buildElevation = <N>(
     vbY: h - ((value - minAlt) / altSpan) * h,
   }))
   const view = graphView(d, domain)
-  const xTicks = distanceXTicks(view.startDistanceKm, view.endDistanceKm)
+  const xTicks = distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm)
   let area = `M 0 ${h} `
   let line = ''
   d.route.forEach((p, i) => {
@@ -820,9 +856,13 @@ export const buildElevation = <N>(
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   f.add(
     cap,
-    f.el('span', 'tri-elev-d', `+${formatElevationGain(d.elevationM)}`),
-    f.el('span', 'tri-elev-d', `−${formatElevationGain(d.descentM)}`),
-    f.el('span', 'tri-elev-range', `${formatAltitude(d.minAlt)}–${formatAltitude(d.maxAlt)}`),
+    f.el('span', 'tri-elev-d', `+${formatElevationGain(f.presentation, d.elevationM)}`),
+    f.el('span', 'tri-elev-d', `−${formatElevationGain(f.presentation, d.descentM)}`),
+    f.el(
+      'span',
+      'tri-elev-range',
+      `${formatAltitude(f.presentation, d.minAlt)}–${formatAltitude(f.presentation, d.maxAlt)}`,
+    ),
   )
   const frame = axisFrame(f, fig, yTicks, h, xTicks, true, { top: 0, bottom: h })
   f.add(wrap, frame, cap)
@@ -943,14 +983,23 @@ export const buildTrace = <N>(
   f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
   const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
   const capEl = f.el('div', 'tri-elev-cap')
-  f.add(capEl, f.el('span', 'tri-elev-d', title), f.el('span', 'tri-elev-range', cap(peak)))
+  f.add(
+    capEl,
+    f.el('span', 'tri-elev-d', triText(f.presentation.locale, title)),
+    f.el('span', 'tri-elev-range', cap(peak)),
+  )
   f.add(
     wrap,
     capEl,
-    axisFrame(f, s, yTicks, h, distanceXTicks(view.startDistanceKm, view.endDistanceKm), true, {
-      top: 0,
-      bottom: h,
-    }),
+    axisFrame(
+      f,
+      s,
+      yTicks,
+      h,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: h },
+    ),
   )
   return wrap
 }
@@ -1159,7 +1208,7 @@ export const buildShiftingChart = <N>(
       svgEl,
       sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
       height,
-      distanceXTicks(0, maxDistanceKm),
+      distanceXTicks(f.presentation, 0, maxDistanceKm),
       true,
       { top: 0, bottom: height },
     ),
@@ -1173,6 +1222,7 @@ export const buildRunStrideTrace = <N>(
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
+  const imperial = isImperial(f.presentation)
   const label = runStrideLengthLabel(d)
   const valuesM = d.route
     .map(point => runStrideLengthValue(d, point))
@@ -1197,7 +1247,7 @@ export const buildRunStrideTrace = <N>(
       return meters == null ? null : displayValue(meters)
     },
     label,
-    () => `${formatStrideLength(averageM)} avg`,
+    () => `${formatStrideLength(f.presentation, averageM)} avg`,
     value => `${value.toFixed(1)}${unit}`,
     { min, max, intervals: 2 },
     selection,
@@ -1259,7 +1309,7 @@ export const buildRunVerticalOscillationTrace = <N>(
     d,
     runVerticalOscillationCm,
     'v-oscillation',
-    () => `${formatVerticalOscillation(average)} avg`,
+    () => `${formatVerticalOscillation(f.presentation, average)} avg`,
     value => `${value.toFixed(1)}cm`,
     { min, max, intervals: 2 },
     selection,
@@ -1273,12 +1323,13 @@ const buildTemperatureTrace = <N>(
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N => {
+  const imperial = isImperial(f.presentation)
   const temperaturesC = d.route
     .map(point => point.tempC)
     .filter((value): value is number => value != null)
   const averageC =
     d.avgTemp ?? temperaturesC.reduce((total, value) => total + value, 0) / temperaturesC.length
-  const values = temperaturesC.map(temperatureValue)
+  const values = temperaturesC.map(value => temperatureValue(f.presentation, value))
   const step = imperial ? 5 : 2
   let min = Math.floor(Math.min(...values) / step) * step
   let max = Math.ceil(Math.max(...values) / step) * step
@@ -1289,10 +1340,10 @@ const buildTemperatureTrace = <N>(
   return buildTrace(
     f,
     d,
-    point => temperatureValue(point.tempC ?? averageC),
+    point => temperatureValue(f.presentation, point.tempC ?? averageC),
     'temperature',
-    () => `${formatTemperature(averageC)} avg`,
-    value => `${Math.round(value)}${temperatureUnit()}`,
+    () => `${formatTemperature(f.presentation, averageC)} avg`,
+    value => `${Math.round(value)}${temperatureUnit(f.presentation)}`,
     { min, max, intervals: 2 },
     selection,
     graphDomain,
@@ -1318,9 +1369,10 @@ const thermalTemperatureTrace = <N>(
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
+  const imperial = isImperial(f.presentation)
   const valuesC = d.route.map(pickCelsius).filter((value): value is number => value != null)
   if (d.sport !== 'bike' || valuesC.length < 2) return null
-  const displayValues = valuesC.map(temperatureValue)
+  const displayValues = valuesC.map(value => temperatureValue(f.presentation, value))
   const fallbackResolution = imperial ? (fallbackResolutionC * 9) / 5 : fallbackResolutionC
   const resolution = traceResolution(displayValues, fallbackResolution)
   const min = Math.min(...displayValues) - resolution
@@ -1332,11 +1384,11 @@ const thermalTemperatureTrace = <N>(
     d,
     point => {
       const celsius = pickCelsius(point)
-      return celsius == null ? null : temperatureValue(celsius)
+      return celsius == null ? null : temperatureValue(f.presentation, celsius)
     },
     title,
-    () => `${formatThermalTemperature(averageC)} avg`,
-    value => `${value.toFixed(digits)}${temperatureUnit()}`,
+    () => `${formatThermalTemperature(f.presentation, averageC)} avg`,
+    value => `${value.toFixed(digits)}${temperatureUnit(f.presentation)}`,
     { min, max, intervals: 2 },
     selection,
     graphDomain,
@@ -1423,19 +1475,30 @@ const analysisRangeAttrs = (range: ActivityAnalysisRange): Record<string, string
   return attrs
 }
 
-const analysisRangeRate = (sport: ActivityKind, speedKphValue: number): string => {
-  if (sport === 'bike') return speedKph(speedKphValue)
+const analysisRangeRate = (
+  presentation: TriathlonPresentation,
+  sport: ActivityKind,
+  speedKphValue: number,
+): string => {
+  const imperial = isImperial(presentation)
+  if (sport === 'bike') return speedKph(presentation, speedKphValue)
   if (sport === 'swim') return `${clock(360 / speedKphValue)} /100m`
   return `${clock(3600 / (speedKphValue * (imperial ? KM_TO_MI : 1)))} /${imperial ? 'mi' : 'km'}`
 }
 
-const analysisRangeMetrics = (d: StravaActivityDetail, range: ActivityAnalysisRange): string[] => {
+const analysisRangeMetrics = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+  range: ActivityAnalysisRange,
+): string[] => {
   const cadenceUnit = d.sport === 'run' ? 'spm' : 'rpm'
   const cadenceScale = d.sport === 'run' ? 2 : 1
-  const values = [scrubDist(range.distanceKm, d.sport)]
-  if (range.elevationGainM != null) values.push(`+${formatElevationGain(range.elevationGainM)}`)
+  const values = [scrubDist(presentation, range.distanceKm, d.sport)]
+  if (range.elevationGainM != null)
+    values.push(`+${formatElevationGain(presentation, range.elevationGainM)}`)
   values.push(clock(range.durationS))
-  if (range.averageSpeedKph != null) values.push(analysisRangeRate(d.sport, range.averageSpeedKph))
+  if (range.averageSpeedKph != null)
+    values.push(analysisRangeRate(presentation, d.sport, range.averageSpeedKph))
   if (range.averageWatts != null) values.push(`${Math.round(range.averageWatts)} W`)
   if (range.averageHeartRate != null) values.push(`${Math.round(range.averageHeartRate)} bpm`)
   if (range.averageCadence != null)
@@ -1451,9 +1514,14 @@ type RunLapSplit = {
   deltaS: number | null
 }
 
-const runPaceSeconds = (speedKph: number): number => 3600 / (speedKph * (imperial ? KM_TO_MI : 1))
+const runPaceSeconds = (presentation: TriathlonPresentation, speedKph: number): number =>
+  3600 / (speedKph * (isImperial(presentation) ? KM_TO_MI : 1))
 
-const projectedRunSplits = (d: StravaActivityDetail): ActivityAnalysisRange[] => {
+const projectedRunSplits = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): ActivityAnalysisRange[] => {
+  const imperial = isImperial(presentation)
   const source = imperial ? (d.runSplitsStandard ?? []) : (d.runSplitsMetric ?? [])
   const ranges: ActivityAnalysisRange[] = []
   let startDistanceKm = 0
@@ -1494,8 +1562,11 @@ const projectedRunSplits = (d: StravaActivityDetail): ActivityAnalysisRange[] =>
   return ranges
 }
 
-const runLapSplits = (d: StravaActivityDetail): RunLapSplit[] => {
-  const nativeSplits = projectedRunSplits(d)
+const runLapSplits = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): RunLapSplit[] => {
+  const nativeSplits = projectedRunSplits(presentation, d)
   const ranges =
     nativeSplits.length > 0
       ? nativeSplits
@@ -1508,7 +1579,7 @@ const runLapSplits = (d: StravaActivityDetail): RunLapSplit[] => {
         ? range.averageSpeedKph
         : (range.distanceKm / range.durationS) * 3600
     if (!Number.isFinite(speedKph) || speedKph <= 0) continue
-    const paceS = runPaceSeconds(speedKph)
+    const paceS = runPaceSeconds(presentation, speedKph)
     splits.push({
       range,
       index: index + 1,
@@ -1530,7 +1601,8 @@ const paceDelta = (seconds: number | null): string => {
 
 export const buildRunLapSplits = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'run') return null
-  const splits = runLapSplits(d)
+  const imperial = isImperial(f.presentation)
+  const splits = runLapSplits(f.presentation, d)
   const wrap = f.el('section', 'tri-run-splits', undefined, { 'aria-label': 'Run lap splits' })
   const head = f.el('div', 'tri-run-splits-head')
   f.add(head, f.el('span', 'tri-run-splits-title', 'lap splits'))
@@ -1552,7 +1624,7 @@ export const buildRunLapSplits = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
     f.el(
       'span',
       'tri-run-splits-average',
-      `avg ${clock(runPaceSeconds(averageSpeedKph))} ${paceUnit}`,
+      `avg ${clock(runPaceSeconds(f.presentation, averageSpeedKph))} ${paceUnit}`,
     ),
   )
   const columns = f.el('div', 'tri-run-splits-columns', undefined, { 'aria-hidden': 'true' })
@@ -1565,7 +1637,7 @@ export const buildRunLapSplits = <N>(f: TriNodeFactory<N>, d: StravaActivityDeta
   )
   const list = f.el('div', 'tri-run-splits-list')
   for (const split of splits) {
-    const metrics = analysisRangeMetrics(d, split.range)
+    const metrics = analysisRangeMetrics(f.presentation, d, split.range)
     const attrs = analysisRangeAttrs(split.range)
     const delta = paceDelta(split.deltaS)
     attrs['aria-pressed'] = 'false'
@@ -1670,7 +1742,7 @@ export const buildAnalysisBar = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
       style: `--tri-analysis-lanes:${laneLimit}`,
     })
     for (const { range, lane } of positioned) {
-      const metrics = analysisRangeMetrics(d, range)
+      const metrics = analysisRangeMetrics(f.presentation, d, range)
       const bounds = analysisSelectionBounds(d, range)
       const attrs = analysisRangeAttrs(range)
       attrs['aria-pressed'] = 'false'
@@ -2494,8 +2566,8 @@ const effortDuration = (seconds: number): string => {
   return zoneClock(seconds)
 }
 
-const cyclingSpeed = (kph: number): string =>
-  imperial ? `${(kph * KM_TO_MI).toFixed(1)} mph` : `${kph.toFixed(1)} km/h`
+const cyclingSpeed = (presentation: TriathlonPresentation, kph: number): string =>
+  isImperial(presentation) ? `${(kph * KM_TO_MI).toFixed(1)} mph` : `${kph.toFixed(1)} km/h`
 
 const heartRate = (bpm: number | null): string => (bpm == null ? '—' : `${Math.round(bpm)} bpm`)
 
@@ -2566,11 +2638,11 @@ export const buildCyclingBestEfforts = <N>(
         'distance',
         ['Distance', 'Time', 'Speed', 'Heart rate', 'Elev'],
         efforts.distance.map(row => [
-          row.label || scrubDist(row.targetDistanceM / 1000, 'bike'),
+          row.label || scrubDist(f.presentation, row.targetDistanceM / 1000, 'bike'),
           zoneClock(row.elapsedTimeS),
-          cyclingSpeed(row.averageSpeedKph),
+          cyclingSpeed(f.presentation, row.averageSpeedKph),
           heartRate(row.averageHeartRate),
-          formatAltitude(row.elevationDeltaM),
+          formatAltitude(f.presentation, row.elevationDeltaM),
         ]),
       ),
     )
@@ -2587,7 +2659,7 @@ export const buildCyclingBestEfforts = <N>(
           watts(row.averageWatts),
           wattsPerKg(row.wattsPerKg),
           heartRate(row.averageHeartRate),
-          formatAltitude(row.elevationDeltaM),
+          formatAltitude(f.presentation, row.elevationDeltaM),
         ]),
       ),
     )
@@ -2614,14 +2686,14 @@ export const buildCyclingBestEfforts = <N>(
         efforts.climbs.map((row, index) => [
           row.name || `Climb ${index + 1}`,
           zoneClock(row.durationS),
-          scrubDist(row.distanceM / 1000, 'bike'),
-          formatElevationGain(row.elevationGainM),
+          scrubDist(f.presentation, row.distanceM / 1000, 'bike'),
+          formatElevationGain(f.presentation, row.elevationGainM),
           `${row.averageGradePct.toFixed(1)}%`,
-          cyclingSpeed(row.averageSpeedKph),
+          cyclingSpeed(f.presentation, row.averageSpeedKph),
           heartRate(row.averageHeartRate),
           watts(row.averageWatts),
           wattsPerKg(row.wattsPerKg),
-          formatVam(row.vamMPerHour),
+          formatVam(f.presentation, row.vamMPerHour),
         ]),
       ),
     )
@@ -3145,23 +3217,27 @@ const swimStrokeProfile = (d: StravaActivityDetail): string => {
   return values.join(' / ')
 }
 
-const strengthMass = (kilograms: number): string => {
+const strengthMass = (presentation: TriathlonPresentation, kilograms: number): string => {
+  const imperial = isImperial(presentation)
   const value = imperial ? kilograms / LB_TO_KG : kilograms
   const rounded = Math.round(value * 10) / 10
   return `${rounded.toLocaleString('en-US', { maximumFractionDigits: 1 })} ${imperial ? 'lb' : 'kg'}`
 }
 
-const strengthEffort = (set: ActivityStrengthSet): string => {
+const strengthEffort = (presentation: TriathlonPresentation, set: ActivityStrengthSet): string => {
   const effort =
     set.repetitions != null
       ? `${set.repetitions} ${set.repetitions === 1 ? 'rep' : 'reps'}`
       : set.durationS != null
         ? dlabel(set.durationS)
         : 'set'
-  return set.weightKg == null ? effort : `${effort} @ ${strengthMass(set.weightKg)}`
+  return set.weightKg == null ? effort : `${effort} @ ${strengthMass(presentation, set.weightKg)}`
 }
 
-export const strengthExerciseSummary = (exercise: ActivityStrengthExercise): string => {
+export const strengthExerciseSummary = (
+  presentation: TriathlonPresentation,
+  exercise: ActivityStrengthExercise,
+): string => {
   const sets = `${exercise.setCount} ${exercise.setCount === 1 ? 'set' : 'sets'}`
   if (exercise.sets.length === 0) {
     if (exercise.repetitions != null)
@@ -3169,7 +3245,7 @@ export const strengthExerciseSummary = (exercise: ActivityStrengthExercise): str
     if (exercise.durationS != null) return `${sets} · ${dlabel(exercise.durationS)}`
     return sets
   }
-  const efforts = exercise.sets.map(strengthEffort)
+  const efforts = exercise.sets.map(set => strengthEffort(presentation, set))
   if (efforts.every(effort => effort === efforts[0])) return `${sets} · ${efforts[0]} each`
   return `${sets} · ${efforts.join(', ')}`
 }
@@ -3187,7 +3263,11 @@ export const buildStrengthExercises = <N>(
     f.add(
       item,
       f.el('span', 'tri-strength-exercise-name', exercise.name),
-      f.el('span', 'tri-strength-exercise-summary', strengthExerciseSummary(exercise)),
+      f.el(
+        'span',
+        'tri-strength-exercise-summary',
+        strengthExerciseSummary(f.presentation, exercise),
+      ),
     )
     f.add(list, item)
   }
@@ -3195,10 +3275,14 @@ export const buildStrengthExercises = <N>(
   return wrap
 }
 
-export const activityStatRows = (d: StravaActivityDetail): [string, string][] => {
+export const activityStatRows = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): [string, string][] => {
   if (d.sport === 'strength') {
     const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
-    if (d.strength?.volumeKg != null) rows.push(['volume', strengthMass(d.strength.volumeKg)])
+    if (d.strength?.volumeKg != null)
+      rows.push(['volume', strengthMass(presentation, d.strength.volumeKg)])
     if (d.strength?.totalSets != null) rows.push(['sets', String(d.strength.totalSets)])
     if (d.strength?.totalReps != null) rows.push(['reps', String(d.strength.totalReps)])
     if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
@@ -3208,13 +3292,14 @@ export const activityStatRows = (d: StravaActivityDetail): [string, string][] =>
   const activityRate =
     d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
       ? `${clock(d.swimPaceSPer100m)} /100m`
-      : rate(d.sport, d.distanceKm, d.movingTimeS)
+      : rate(presentation, d.sport, d.distanceKm, d.movingTimeS)
   const rows: [string, string][] = [
-    ['distance', dist(d.distanceKm, d.sport)],
+    ['distance', dist(presentation, d.distanceKm, d.sport)],
     ['time', dur(d.movingTimeS)],
     [d.sport === 'bike' ? 'speed' : 'pace', activityRate],
   ]
-  if (d.sport === 'bike' && d.maxSpeedKph != null) rows.push(['max speed', speedKph(d.maxSpeedKph)])
+  if (d.sport === 'bike' && d.maxSpeedKph != null)
+    rows.push(['max speed', speedKph(presentation, d.maxSpeedKph)])
   if (d.sport === 'run') {
     const trend = runTrendRow(d.distanceKm, d.movingTimeS)
     if (trend) rows.push(trend)
@@ -3223,7 +3308,7 @@ export const activityStatRows = (d: StravaActivityDetail): [string, string][] =>
     if (d.swimLocation !== 'pool') {
       rows.push([
         'water temp',
-        d.waterTemperatureC == null ? '—' : formatTemperature(d.waterTemperatureC),
+        d.waterTemperatureC == null ? '—' : formatTemperature(presentation, d.waterTemperatureC),
       ])
     }
     rows.push([
@@ -3259,7 +3344,7 @@ export const buildActivity = <N>(
   fillMissingRunPower = false,
   embedded = false,
 ): N => {
-  const normalizeBikeMetrics = zeroPowerExcluded && d.sport === 'bike'
+  const normalizeBikeMetrics = excludesZeroPower(f.presentation) && d.sport === 'bike'
   const normalizedPower = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.w)
     : null
@@ -3273,7 +3358,13 @@ export const buildActivity = <N>(
   const head = f.el('div', 'tri-act-head')
   f.add(head, buildIcon(f, d.sport))
   f.add(wrap, head)
-  f.add(wrap, statsTable(f, [...activityStatRows(d), ...moreStatRows(d, fillMissingRunPower)]))
+  f.add(
+    wrap,
+    statsTable(f, [
+      ...activityStatRows(f.presentation, d),
+      ...moreStatRows(f.presentation, d, fillMissingRunPower),
+    ]),
+  )
   if (d.strength) {
     const strength = buildStrengthExercises(f, d.strength)
     if (strength) f.add(wrap, strength)
@@ -3490,22 +3581,22 @@ const ACTIVITY_COMPARISON_HEIGHT = 34
 const ACTIVITY_COMPARISON_MAP_HEIGHT = 72
 const ACTIVITY_COMPARISON_MAP_PADDING = 4
 
-const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
-  ActivityComparisonMetric,
-  ActivityComparisonMetricSpec
-> = {
+const activityComparisonMetricSpecs = (
+  presentation: TriathlonPresentation,
+): Record<ActivityComparisonMetric, ActivityComparisonMetricSpec> => ({
   elevation: {
     metric: 'elevation',
     title: 'elevation',
-    display: elevationValue,
-    tick: value => `${Math.round(value).toLocaleString('en-US')} ${imperial ? 'ft' : 'm'}`,
+    display: value => elevationValue(presentation, value),
+    tick: value =>
+      `${Math.round(value).toLocaleString('en-US')} ${isImperial(presentation) ? 'ft' : 'm'}`,
     includeZero: false,
   },
   speed: {
     metric: 'speed',
     title: 'speed',
     display: value => value,
-    tick: value => speedKph(value),
+    tick: value => speedKph(presentation, value),
     includeZero: true,
   },
   hr: {
@@ -3539,19 +3630,19 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
   temperature: {
     metric: 'temperature',
     title: 'temperature',
-    display: temperatureValue,
-    tick: value => `${Math.round(value)}${temperatureUnit()}`,
+    display: value => temperatureValue(presentation, value),
+    tick: value => `${Math.round(value)}${temperatureUnit(presentation)}`,
     includeZero: false,
   },
   'skin-temperature': {
     metric: 'skin-temperature',
     title: 'skin temperature',
-    display: temperatureValue,
-    tick: value => `${value.toFixed(2)}${temperatureUnit()}`,
+    display: value => temperatureValue(presentation, value),
+    tick: value => `${value.toFixed(2)}${temperatureUnit(presentation)}`,
     includeZero: false,
     domain: values => {
       if (values.length === 0) return { min: 0, max: 1 }
-      const resolution = traceResolution(values, imperial ? 0.09 : 0.05)
+      const resolution = traceResolution(values, isImperial(presentation) ? 0.09 : 0.05)
       return { min: Math.min(...values) - resolution, max: Math.max(...values) + resolution }
     },
   },
@@ -3559,7 +3650,7 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
     metric: 'stride-length',
     title: 'stride length',
     display: value => value,
-    tick: formatStrideLength,
+    tick: value => formatStrideLength(presentation, value),
     includeZero: false,
   },
   'ground-contact-time': {
@@ -3573,7 +3664,7 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
     metric: 'vertical-oscillation',
     title: 'v-oscillation',
     display: value => value,
-    tick: formatVerticalOscillation,
+    tick: value => formatVerticalOscillation(presentation, value),
     includeZero: false,
   },
   'swim-pace': {
@@ -3590,7 +3681,7 @@ const ACTIVITY_COMPARISON_METRIC_SPECS: Record<
     tick: value => `${swimTrendNumber(value)} str/min`,
     includeZero: false,
   },
-}
+})
 
 const BIKE_COMPARISON_METRICS: readonly ActivityComparisonMetric[] = [
   'elevation',
@@ -3635,6 +3726,7 @@ const comparisonPowerCapable = (activity: StravaActivityDetail): boolean =>
   activity.deviceWatts || activity.route.some(point => Number.isFinite(point.w) && point.w > 0)
 
 const comparisonMetricPointValue = (
+  presentation: TriathlonPresentation,
   activity: StravaActivityDetail,
   point: StravaActivityDetail['route'][number],
   metric: ActivityComparisonMetric,
@@ -3654,7 +3746,9 @@ const comparisonMetricPointValue = (
     case 'power':
       value =
         point.w > 0 ||
-        (point.w === 0 && powerCapable && !(zeroPowerExcluded && activity.sport === 'bike'))
+        (point.w === 0 &&
+          powerCapable &&
+          !(excludesZeroPower(presentation) && activity.sport === 'bike'))
           ? point.w
           : null
       break
@@ -3727,6 +3821,7 @@ const comparisonSwimMetricSegments = (
 }
 
 const comparisonMetricSegments = (
+  presentation: TriathlonPresentation,
   activity: StravaActivityDetail,
   metric: ActivityComparisonMetric,
 ): ActivityComparisonMetricPoint[][] => {
@@ -3734,9 +3829,11 @@ const comparisonMetricSegments = (
     return comparisonSwimMetricSegments(activity, metric)
   const powerCapable = comparisonPowerCapable(activity)
   const normalizedValues =
-    zeroPowerExcluded && activity.sport === 'bike' && (metric === 'power' || metric === 'cadence')
+    excludesZeroPower(presentation) &&
+    activity.sport === 'bike' &&
+    (metric === 'power' || metric === 'cadence')
       ? interpolatePositiveMetricSeries(activity.route, point =>
-          comparisonMetricPointValue(activity, point, metric, powerCapable),
+          comparisonMetricPointValue(presentation, activity, point, metric, powerCapable),
         )
       : null
   const segments: ActivityComparisonMetricPoint[][] = []
@@ -3751,7 +3848,8 @@ const comparisonMetricSegments = (
       continue
     }
     const value =
-      normalizedValues?.[index] ?? comparisonMetricPointValue(activity, point, metric, powerCapable)
+      normalizedValues?.[index] ??
+      comparisonMetricPointValue(presentation, activity, point, metric, powerCapable)
     if (value == null) {
       flush()
       continue
@@ -3770,12 +3868,13 @@ const comparisonMetricSegments = (
 }
 
 export const activityComparisonMetricAtDistance = (
+  presentation: TriathlonPresentation,
   activity: StravaActivityDetail,
   metric: ActivityComparisonMetric,
   distanceKm: number,
 ): number | null => {
   if (!Number.isFinite(distanceKm)) return null
-  for (const segment of comparisonMetricSegments(activity, metric)) {
+  for (const segment of comparisonMetricSegments(presentation, activity, metric)) {
     if (distanceKm < segment[0].distanceKm || distanceKm > segment[segment.length - 1].distanceKm)
       continue
     for (let index = 0; index < segment.length; index++) {
@@ -3793,26 +3892,27 @@ export const activityComparisonMetricAtDistance = (
 }
 
 export const activityComparisonDisplayValueAtDistance = (
+  presentation: TriathlonPresentation,
   activity: StravaActivityDetail,
   metric: ActivityComparisonMetric,
   distanceKm: number,
 ): string => {
-  const value = activityComparisonMetricAtDistance(activity, metric, distanceKm)
+  const value = activityComparisonMetricAtDistance(presentation, activity, metric, distanceKm)
   if (value == null) return '—'
-  if (metric === 'elevation') return formatAltitude(value)
-  if (metric === 'speed') return speedKph(value)
+  if (metric === 'elevation') return formatAltitude(presentation, value)
+  if (metric === 'speed') return speedKph(presentation, value)
   if (metric === 'hr') return `${Math.round(value)} bpm`
   if (metric === 'power') return `${Math.round(value)} W`
   if (metric === 'cadence')
     return `${Math.round(value)} ${activity.sport === 'run' ? 'spm' : 'rpm'}`
   if (metric === 'respiration') return formatRespirationRate(value)
-  if (metric === 'stride-length') return formatStrideLength(value)
+  if (metric === 'stride-length') return formatStrideLength(presentation, value)
   if (metric === 'ground-contact-time') return formatGroundContactTime(value)
-  if (metric === 'vertical-oscillation') return formatVerticalOscillation(value)
+  if (metric === 'vertical-oscillation') return formatVerticalOscillation(presentation, value)
   if (metric === 'swim-pace') return `${clock(value)} /100m`
   if (metric === 'stroke-rate') return `${swimTrendNumber(value)} str/min`
-  if (metric === 'skin-temperature') return formatThermalTemperature(value)
-  return formatTemperature(value)
+  if (metric === 'skin-temperature') return formatThermalTemperature(presentation, value)
+  return formatTemperature(presentation, value)
 }
 
 const comparisonActivityRoutePoints = (
@@ -4090,13 +4190,14 @@ export const activityPowerDistributionPercentages = (
 ): number[] => (values && values.length >= 2 ? activityZonePercentages(values) : [])
 
 const comparisonMetricSeries = (
+  presentation: TriathlonPresentation,
   activity: StravaActivityDetail,
   index: number,
   spec: ActivityComparisonMetricSpec,
 ): ActivityComparisonSeries => {
   const segments: ActivityComparisonMetricPoint[][] = []
   const values: number[] = []
-  for (const rawSegment of comparisonMetricSegments(activity, spec.metric)) {
+  for (const rawSegment of comparisonMetricSegments(presentation, activity, spec.metric)) {
     const segment = rawSegment
       .map(point => ({ distanceKm: point.distanceKm, value: spec.display(point.value) }))
       .filter(point => Number.isFinite(point.value))
@@ -4270,14 +4371,16 @@ const buildComparisonMetricChart = <N>(
   spec: ActivityComparisonMetricSpec,
   maxDistanceKm: number,
 ): N => {
-  const series = activities.map((activity, index) => comparisonMetricSeries(activity, index, spec))
+  const series = activities.map((activity, index) =>
+    comparisonMetricSeries(f.presentation, activity, index, spec),
+  )
   const available = series.filter(item => item.values.length > 0).length
   const values = series.flatMap(item => item.values)
   const domain = spec.domain
     ? spec.domain(values)
     : comparisonNumericDomain(
         values,
-        spec.metric === 'power' && zeroPowerExcluded ? false : spec.includeZero,
+        spec.metric === 'power' && excludesZeroPower(f.presentation) ? false : spec.includeZero,
       )
   const selectionClipId = `tri-compare-${spec.metric}-selection-clip`
   const sport = activities[0]?.sport ?? 'bike'
@@ -4288,7 +4391,7 @@ const buildComparisonMetricChart = <N>(
       0,
       maxDistanceKm,
       0,
-      scrubDist(0, sport),
+      scrubDist(f.presentation, 0, sport),
       available,
     ),
     class: 'tri-compare-graph tri-compare-distance-graph',
@@ -4365,7 +4468,7 @@ const buildComparisonMetricChart = <N>(
       ACTIVITY_COMPARISON_HEIGHT,
       sport === 'swim'
         ? swimActivityXTicks(maxDistanceKm * 1_000)
-        : distanceXTicks(0, maxDistanceKm),
+        : distanceXTicks(f.presentation, 0, maxDistanceKm),
       true,
       { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
     ),
@@ -5065,7 +5168,7 @@ const buildComparisonMap = <N>(
     graphAttrs['aria-valuemin'] = 0
     graphAttrs['aria-valuemax'] = maxDistanceKm
     graphAttrs['aria-valuenow'] = 0
-    graphAttrs['aria-valuetext'] = scrubDist(0, activities[0].sport)
+    graphAttrs['aria-valuetext'] = scrubDist(f.presentation, 0, activities[0].sport)
   } else {
     graphAttrs.role = 'img'
     graphAttrs['aria-disabled'] = 'true'
@@ -5155,16 +5258,9 @@ export const buildActivityComparison = <N>(
   const chartViewport = f.el('div', 'tri-compare-charts-viewport')
   const charts = f.el('div', 'tri-compare-charts')
   const sport = activities[0].sport
+  const metricSpecs = activityComparisonMetricSpecs(f.presentation)
   for (const metric of activityComparisonMetricsForSport(sport))
-    f.add(
-      charts,
-      buildComparisonMetricChart(
-        f,
-        activities,
-        ACTIVITY_COMPARISON_METRIC_SPECS[metric],
-        maxDistanceKm,
-      ),
-    )
+    f.add(charts, buildComparisonMetricChart(f, activities, metricSpecs[metric], maxDistanceKm))
   if (sport === 'bike') f.add(charts, buildComparisonGearRatioDistribution(f, activities))
   if (sport !== 'swim')
     f.add(

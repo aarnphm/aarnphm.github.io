@@ -14,6 +14,7 @@ import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { dist, distCombined, dur } from '../../util/triathlon-card'
+import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
@@ -102,7 +103,7 @@ export default (() => {
               data-gloss="herodist"
               tabindex={0}
             >
-              {distCombined(payload.totalKm)}
+              {distCombined(DEFAULT_TRIATHLON_PRESENTATION, payload.totalKm)}
             </span>
           </a>
           <a class="tri-total" data-no-popover href="/" data-i18n="home">
@@ -195,7 +196,7 @@ export default (() => {
                     data-gloss="legdist"
                     tabindex={0}
                   >
-                    {dist(t?.distanceKm ?? 0, sport)}
+                    {dist(DEFAULT_TRIATHLON_PRESENTATION, t?.distanceKm ?? 0, sport)}
                   </span>{' '}
                   ·{' '}
                   <span data-gloss="legcount" tabindex={0}>

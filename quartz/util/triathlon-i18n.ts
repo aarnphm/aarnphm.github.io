@@ -1,4 +1,4 @@
-export type Locale = 'en' | 'fr'
+import type { Locale } from './triathlon-presentation'
 
 interface Gloss {
   term: string
@@ -10,135 +10,91 @@ interface TriDict {
   gloss: Record<string, Gloss>
 }
 
-const TRI_LOCALE_KEY = 'tri-locale'
-let locale: Locale = 'en'
-
-export const triLocale = (): Locale => locale
-export const setTriLocale = (v: Locale): void => {
-  locale = v
-}
-
-const triLocaleTag = (): string => (locale === 'fr' ? 'fr-CA' : 'en-US')
-
-export const triNumber = (
-  value: number,
-  minimumFractionDigits = 0,
-  maximumFractionDigits = minimumFractionDigits,
-): string => value.toLocaleString(triLocaleTag(), { minimumFractionDigits, maximumFractionDigits })
-
-const triDate = (iso: string): Date | null => {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
-  if (!match) return null
-  const year = Number(match[1])
-  const month = Number(match[2])
-  const day = Number(match[3])
-  const date = new Date(Date.UTC(year, month - 1, day))
-  return date.getUTCFullYear() === year &&
-    date.getUTCMonth() === month - 1 &&
-    date.getUTCDate() === day
-    ? date
-    : null
-}
-
-const triDateText = (iso: string, options: Intl.DateTimeFormatOptions): string => {
-  const date = triDate(iso)
-  return date ? date.toLocaleDateString(triLocaleTag(), { ...options, timeZone: 'UTC' }) : iso
-}
-
-export const triShortDate = (iso: string): string =>
-  triDateText(iso, { month: 'short', day: 'numeric' })
-
-export const triLongDate = (iso: string): string =>
-  triDateText(iso, { year: 'numeric', month: 'short', day: 'numeric' })
-
-export const triMonth = (iso: string): string => triDateText(iso, { month: 'short' })
-
-export const triMonthYear = (iso: string): string =>
-  triDateText(iso, { year: 'numeric', month: 'long' })
-
-export const triWeekdayNarrow = (day: number): string =>
-  new Date(Date.UTC(2024, 0, 7 + Math.min(6, Math.max(0, day))))
-    .toLocaleDateString(triLocaleTag(), { weekday: 'narrow', timeZone: 'UTC' })
-    .toUpperCase()
-
 export type SwimActivityTextPoint = {
   elapsed: string
   cumulativeDistanceM: number
   windowStartDistanceM?: number
 }
 
-const swimTextNumber = (value: number, maximumFractionDigits = 0): string =>
-  triNumber(value, 0, maximumFractionDigits)
+const swimTextNumber = (target: Locale, value: number, maximumFractionDigits = 0): string =>
+  value.toLocaleString(target === 'fr' ? 'fr-CA' : 'en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits,
+  })
 
-export const swimActivityDistanceText = (distanceM: number): string =>
-  `${swimTextNumber(distanceM)} m`
+export const swimActivityDistanceText = (target: Locale, distanceM: number): string =>
+  `${swimTextNumber(target, distanceM)} m`
 
 export const swimActivityHeaderValue = (
+  target: Locale,
   kind: 'pace' | 'stroke',
   value: number,
   pace: string,
-): string => (kind === 'pace' ? pace : swimTextNumber(value, 1))
+): string => (kind === 'pace' ? pace : swimTextNumber(target, value, 1))
 
-export const swimActivityPointText = (point: SwimActivityTextPoint): string => {
-  const end = swimTextNumber(point.cumulativeDistanceM)
+export const swimActivityPointText = (target: Locale, point: SwimActivityTextPoint): string => {
+  const end = swimTextNumber(target, point.cumulativeDistanceM)
   const distance =
     point.windowStartDistanceM == null
       ? `${end} m`
-      : `${swimTextNumber(point.windowStartDistanceM)}–${end} m`
-  return `${distance} · ${point.elapsed} ${locale === 'fr' ? 'écoulé' : 'elapsed'}`
+      : `${swimTextNumber(target, point.windowStartDistanceM)}–${end} m`
+  return `${distance} · ${point.elapsed} ${target === 'fr' ? 'écoulé' : 'elapsed'}`
 }
 
 export const swimActivityDisplayValue = (
+  target: Locale,
   kind: 'pace' | 'stroke',
   value: number,
   pace: string,
 ): string =>
   kind === 'pace'
     ? `${pace} /100m`
-    : `${swimTextNumber(value, 1)} ${locale === 'fr' ? 'coups/min' : 'str/min'}`
+    : `${swimTextNumber(target, value, 1)} ${target === 'fr' ? 'coups/min' : 'str/min'}`
 
 export const swimActivityValueText = (
+  target: Locale,
   kind: 'pace' | 'stroke',
   point: SwimActivityTextPoint,
   value: number,
   pace: string,
 ): string => {
-  const end = swimTextNumber(point.cumulativeDistanceM)
+  const end = swimTextNumber(target, point.cumulativeDistanceM)
   const position =
     point.windowStartDistanceM == null
-      ? locale === 'fr'
+      ? target === 'fr'
         ? `${end} mètres, temps écoulé ${point.elapsed}`
         : `${end} metres, ${point.elapsed} elapsed`
-      : locale === 'fr'
-        ? `bloc de ${swimTextNumber(point.cumulativeDistanceM - point.windowStartDistanceM)} mètres, de ${swimTextNumber(point.windowStartDistanceM)} à ${end} mètres, temps écoulé ${point.elapsed}`
-        : `${swimTextNumber(point.cumulativeDistanceM - point.windowStartDistanceM)} metre block from ${swimTextNumber(point.windowStartDistanceM)} to ${end} metres, ${point.elapsed} elapsed`
+      : target === 'fr'
+        ? `bloc de ${swimTextNumber(target, point.cumulativeDistanceM - point.windowStartDistanceM)} mètres, de ${swimTextNumber(target, point.windowStartDistanceM)} à ${end} mètres, temps écoulé ${point.elapsed}`
+        : `${swimTextNumber(target, point.cumulativeDistanceM - point.windowStartDistanceM)} metre block from ${swimTextNumber(target, point.windowStartDistanceM)} to ${end} metres, ${point.elapsed} elapsed`
   if (kind === 'pace')
-    return locale === 'fr'
+    return target === 'fr'
       ? `${position}, allure de nage ${pace} par 100 mètres`
       : `${position}, swim pace ${pace} per 100 metres`
-  const rate = swimTextNumber(value, 1)
-  return locale === 'fr'
+  const rate = swimTextNumber(target, value, 1)
+  return target === 'fr'
     ? `${position}, fréquence de nage ${rate} coups par minute`
     : `${position}, stroke rate ${rate} strokes per minute`
 }
 
 export const swimActivityComparisonText = (
+  target: Locale,
   kind: 'pace' | 'stroke',
   delta: number | null,
   priorCount: number | null,
 ): string => {
-  if (delta == null || priorCount == null) return locale === 'fr' ? 'moy. activité' : 'activity avg'
+  if (delta == null || priorCount == null) return target === 'fr' ? 'moy. activité' : 'activity avg'
   if (Math.abs(delta) < 0.05)
-    return locale === 'fr'
+    return target === 'fr'
       ? `identique aux ${priorCount} précédentes`
       : `same as prior ${priorCount}`
-  const magnitude = swimTextNumber(Math.abs(delta), 1)
+  const magnitude = swimTextNumber(target, Math.abs(delta), 1)
   if (kind === 'pace')
-    return locale === 'fr'
+    return target === 'fr'
       ? `${magnitude} s ${delta < 0 ? 'plus rapide' : 'plus lente'} que les ${priorCount} précédentes`
       : `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
   const signed = `${delta > 0 ? '+' : '−'}${magnitude}`
-  return locale === 'fr'
+  return target === 'fr'
     ? `${signed} coups/min vs ${priorCount} précédentes`
     : `${signed} str/min vs prior ${priorCount}`
 }
@@ -149,26 +105,6 @@ export const detectLocale = (): Locale => {
   } catch {
     return 'en'
   }
-}
-
-export const initTriLocale = (): void => {
-  try {
-    const saved = localStorage.getItem(TRI_LOCALE_KEY)
-    locale = saved === 'fr' || saved === 'en' ? saved : detectLocale()
-  } catch {
-    locale = 'en'
-  }
-}
-
-export const applyTriLocale = (next: Locale): void => {
-  if (next === locale) return
-  locale = next
-  try {
-    localStorage.setItem(TRI_LOCALE_KEY, next)
-  } catch {
-    /* ignore */
-  }
-  window.dispatchEvent(new CustomEvent('tri:locale'))
 }
 
 const en: TriDict = {
@@ -1545,7 +1481,7 @@ const fr: TriDict = {
 
 const TRI_I18N: Record<Locale, TriDict> = { en, fr }
 
-export const tl = (s: string): string => TRI_I18N[locale].ui[s] ?? s
+export const triText = (target: Locale, key: string): string => TRI_I18N[target].ui[key] ?? key
 
 type Vo2SourceMethod = 'garmin' | 'apple' | 'bike' | 'run' | 'hrratio' | 'lab' | 'none'
 
@@ -1556,80 +1492,89 @@ type Vo2BikeSourceText = {
   weightKg: number
 }
 
-export const vo2SourceText = (method: Vo2SourceMethod, bike: Vo2BikeSourceText | null): string => {
+export const vo2SourceText = (
+  target: Locale,
+  method: Vo2SourceMethod,
+  bike: Vo2BikeSourceText | null,
+): string => {
   if (method === 'garmin')
-    return locale === 'fr'
+    return target === 'fr'
       ? "Cette valeur vient de Garmin Connect ou d'une saisie manuelle."
       : 'This value comes from Garmin Connect or a manual entry.'
   if (method === 'apple')
-    return locale === 'fr'
+    return target === 'fr'
       ? "Cette mesure vient de l'Apple Watch."
       : 'This is an Apple Watch measurement.'
   if (method === 'run')
-    return locale === 'fr'
+    return target === 'fr'
       ? 'Cette estimation utilise la vitesse de course et la fréquence cardiaque.'
       : 'This estimate uses running speed and heart rate.'
   if (method === 'hrratio')
-    return locale === 'fr'
+    return target === 'fr'
       ? 'Cette estimation utilise les fréquences cardiaques maximale et au repos.'
       : 'This estimate uses maximum and resting heart rate.'
   if (method === 'lab')
-    return locale === 'fr'
+    return target === 'fr'
       ? "Cette valeur vient d'un test d'effort progressif."
       : 'This value comes from a graded exercise test.'
   if (method === 'bike' && bike != null) {
-    const weight = bike.weightKg.toLocaleString(locale === 'fr' ? 'fr-CA' : 'en-US', {
+    const weight = bike.weightKg.toLocaleString(target === 'fr' ? 'fr-CA' : 'en-US', {
       maximumFractionDigits: 1,
     })
     const source =
       bike.ftpSource === 'athlete'
-        ? locale === 'fr'
+        ? target === 'fr'
           ? 'athlète'
           : 'athlete'
         : bike.ftpSource === 'strava'
           ? 'Strava'
-          : locale === 'fr'
+          : target === 'fr'
             ? 'estimée'
             : 'estimated'
-    return locale === 'fr'
+    return target === 'fr'
       ? `FTP ${bike.ftpW} W (${source}). La puissance aérobie maximale estimée est de ${bike.mapW} W. Le poids est de ${weight} kg.`
       : `FTP ${bike.ftpW} W (${source}). Estimated maximum aerobic power is ${bike.mapW} W. Body weight is ${weight} kg.`
   }
-  return locale === 'fr'
+  return target === 'fr'
     ? 'Il manque les données de puissance ou de fréquence cardiaque.'
     : 'There is no power or heart rate data.'
 }
 
 export const trendUnavailableText = (
+  target: Locale,
   sampleSize: number | null,
   daysSinceLastEffort: number | null,
 ): string => {
   if (sampleSize === 0)
-    return locale === 'fr' ? "Aucun effort n'a été enregistré." : 'No efforts were recorded.'
+    return target === 'fr' ? "Aucun effort n'a été enregistré." : 'No efforts were recorded.'
   if (daysSinceLastEffort === 0)
-    return locale === 'fr'
+    return target === 'fr'
       ? "Le dernier effort date d'aujourd'hui."
       : 'The latest effort was today.'
   if (daysSinceLastEffort != null) {
     const unit =
-      locale === 'fr'
+      target === 'fr'
         ? daysSinceLastEffort === 1
           ? 'jour'
           : 'jours'
         : daysSinceLastEffort === 1
           ? 'day'
           : 'days'
-    return locale === 'fr'
+    return target === 'fr'
       ? `Le dernier effort remonte à ${daysSinceLastEffort} ${unit}.`
       : `The latest effort was ${daysSinceLastEffort} ${unit} ago.`
   }
-  return locale === 'fr' ? 'Données insuffisantes.' : 'Not enough data.'
+  return target === 'fr' ? 'Données insuffisantes.' : 'Not enough data.'
 }
 
-export const powerCurveReferenceLabel = (year: number | null): string =>
-  year == null ? tl('6-week best') : locale === 'fr' ? `meilleur de ${year}` : `${year} best`
+export const powerCurveReferenceLabel = (target: Locale, year: number | null): string =>
+  year == null
+    ? triText(target, '6-week best')
+    : target === 'fr'
+      ? `meilleur de ${year}`
+      : `${year} best`
 
-export const glossFor = (key: string): Gloss | undefined =>
-  TRI_I18N[locale].gloss[key] ?? en.gloss[key]
+export const glossFor = (target: Locale, key: string): Gloss | undefined =>
+  TRI_I18N[target].gloss[key] ?? en.gloss[key]
 
 export const glossKeys = (): string[] => Object.keys(en.gloss)
