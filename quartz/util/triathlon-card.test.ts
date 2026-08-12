@@ -166,8 +166,10 @@ test('formats arbitrary power durations without decimal-hour noise', () => {
 test('localizes swim block readouts and accessible values', () => {
   const point = { elapsed: '2:11', cumulativeDistanceM: 100, windowStartDistanceM: 0 }
   assert.equal(swimActivityPointText('fr', point), '0–100 m · 2:11 écoulé')
-  assert.equal(swimActivityDisplayValue('fr', 'stroke', 27.9, '0:28'), '27,9 coups/min')
-  assert.equal(swimActivityHeaderValue('fr', 'stroke', 27.9, '0:28'), '27,9')
+  assert.equal(swimActivityDisplayValue('fr', 'cadence', 13.8, '0:14'), '13,8 coups/longueur')
+  assert.equal(swimActivityHeaderValue('fr', 'cadence', 13.8, '0:14'), '13,8')
+  assert.equal(swimActivityDisplayValue('fr', 'swolf', 46.3, '0:46'), '46 SWOLF')
+  assert.equal(swimActivityHeaderValue('fr', 'swolf', 46.3, '0:46'), '46')
   assert.equal(swimActivityDistanceText('fr', 1_000), '1 000 m')
   assert.equal(
     swimActivityComparisonText('fr', 'pace', -0.9, 4),
@@ -180,10 +182,14 @@ test('localizes swim block readouts and accessible values', () => {
   assert.equal(swimActivityPointText('en', point), '0–100 m · 2:11 elapsed')
   assert.equal(swimActivityHeaderValue('en', 'pace', 107, '1:47'), '1:47')
   assert.equal(swimActivityDistanceText('en', 1_000), '1,000 m')
-  assert.equal(swimActivityComparisonText('en', 'stroke', 0.4, 4), '+0.4 str/min vs prior 4')
+  assert.equal(swimActivityComparisonText('en', 'cadence', 0.4, 4), '+0.4 str/length vs prior 4')
   assert.equal(
-    swimActivityValueText('en', 'stroke', point, 27.9, '0:28'),
-    '100 metre block from 0 to 100 metres, 2:11 elapsed, stroke rate 27.9 strokes per minute',
+    swimActivityValueText('en', 'cadence', point, 13.8, '0:14'),
+    '100 metre block from 0 to 100 metres, 2:11 elapsed, swim cadence 13.8 strokes per length',
+  )
+  assert.equal(
+    swimActivityValueText('en', 'swolf', point, 46.3, '0:46'),
+    '100 metre block from 0 to 100 metres, 2:11 elapsed, SWOLF score 46',
   )
 })
 
@@ -445,6 +451,8 @@ test('aggregates measured lengths into a weighted 100 metre block without rest t
       strokeTimeS: 74.4,
       strokeRateSpm: 26.6,
       stroke: null,
+      strokesPerLength: 11,
+      swolf: 36,
     },
   ])
 })
@@ -479,6 +487,8 @@ test('normalizes raw swim samples after aggregation instead of trusting filtered
       strokeTimeS: 80,
       strokeRateSpm: 48.8,
       stroke: null,
+      strokesPerLength: 16.3,
+      swolf: 56.3,
     },
   ])
 })
@@ -523,6 +533,8 @@ test('splits a length at the 100 metre boundary and keeps the final partial bloc
       strokeTimeS: 100,
       strokeRateSpm: 26.4,
       stroke: null,
+      strokesPerLength: 26.4,
+      swolf: 98.4,
     },
     {
       startElapsedS: 160,
@@ -535,6 +547,8 @@ test('splits a length at the 100 metre boundary and keeps the final partial bloc
       strokeTimeS: 20,
       strokeRateSpm: 30,
       stroke: null,
+      strokesPerLength: 30,
+      swolf: 120,
     },
   ])
   assert.equal(
@@ -563,6 +577,8 @@ test('keeps a normalized stroke block empty when a non-kickboard length lacks st
   assert.equal(block.strokeCount, null)
   assert.equal(block.strokeTimeS, null)
   assert.equal(block.strokeRateSpm, null)
+  assert.equal(block.strokesPerLength, null)
+  assert.equal(block.swolf, null)
 })
 
 const classNames = (element: Element): string[] => {
@@ -1763,7 +1779,32 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
       swimPaceSPer100m: 95.4,
       strokeRateSpm: 31.5,
       strokeCount: 876,
-      avgCadence: 32,
+      swimIntervals: [
+        {
+          startElapsedS: 0,
+          endElapsedS: 25,
+          distanceM: 25,
+          durationS: 25,
+          cumulativeDistanceM: 25,
+          paceSPer100m: 100,
+          strokeCount: 10,
+          strokeTimeS: 25,
+          strokeRateSpm: 24,
+          stroke: 'freestyle',
+        },
+        {
+          startElapsedS: 30,
+          endElapsedS: 56,
+          distanceM: 25,
+          durationS: 26,
+          cumulativeDistanceM: 50,
+          paceSPer100m: 104,
+          strokeCount: 11,
+          strokeTimeS: 26,
+          strokeRateSpm: 25.4,
+          stroke: 'freestyle',
+        },
+      ],
       strokes: { freestyle: 800, breaststroke: 200 },
       swimLocation: 'pool',
     }),
@@ -1774,8 +1815,9 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['distance', '1,000 m'],
     ['time', "20'"],
     ['pace', '1:35 /100m'],
-    ['stroke rate', '31.5 str/min'],
-    ['cadence', '32 spm'],
+    ['stroke rate', '32 spm'],
+    ['cadence', '10.5 /length'],
+    ['SWOLF', '36'],
     ['1.9k / 3.8k', "30' / 1h00'"],
     ['stroke type', 'freestyle 80% / breast 20%'],
     ['strokes', '876 · 1.14 m/str'],
@@ -1807,12 +1849,13 @@ test('keeps a missing swim stroke rate visible as an em dash', () => {
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
-  assert.deepEqual(bodyRows(stats).slice(0, 9), [
+  assert.deepEqual(bodyRows(stats).slice(0, 10), [
     ['distance', '1,500 m'],
     ['time', "41'"],
     ['pace', '2:44 /100m'],
     ['stroke rate', '—'],
     ['cadence', '—'],
+    ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle · 100%'],
     ['strokes', '—'],
@@ -1838,13 +1881,14 @@ test('keeps water temperature and adds the full open-water swim profile', () => 
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
-  assert.deepEqual(bodyRows(stats).slice(0, 10), [
+  assert.deepEqual(bodyRows(stats).slice(0, 11), [
     ['distance', '1,500 m'],
     ['time', "41'"],
     ['pace', '2:44 /100m'],
     ['water temp', '14°C'],
-    ['stroke rate', '31.5 str/min'],
+    ['stroke rate', '32 spm'],
     ['cadence', '—'],
+    ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle · 100%'],
     ['strokes', '—'],
@@ -2017,6 +2061,7 @@ const swimTrendDetail = (overrides: Partial<StravaActivityDetail> = {}): StravaA
     strokeRateSpm: 28,
     strokeCount: 700,
     swimDurationS: 180,
+    swimLocation: 'pool',
     swimIntervals: [
       {
         startElapsedS: 0,
@@ -2146,31 +2191,43 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   assert.equal(rendered.properties.ariaLabel, 'Swim activity analysis')
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-title').map(text), [
     'pace /100m',
-    'stroke rate str/min',
+    'cadence str/length',
+    'SWOLF',
   ])
-  assert.deepEqual(byClass(rendered, 'tri-swim-trend-value').map(text), ['1:40', '28'])
+  assert.deepEqual(byClass(rendered, 'tri-swim-trend-value').map(text), ['1:40', '11', '36'])
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-delta').map(text), [
     '9s faster vs prior 4',
-    '+5 str/min vs prior 4',
+    'activity avg',
+    'activity avg',
   ])
 
   const pace = byClass(rendered, 'tri-swim-trend--pace')[0]
-  const stroke = byClass(rendered, 'tri-swim-trend--stroke')[0]
+  const cadence = byClass(rendered, 'tri-swim-trend--cadence')[0]
+  const swolf = byClass(rendered, 'tri-swim-trend--swolf')[0]
   assert.ok(pace)
-  assert.ok(stroke)
-  assert.equal(byClass(rendered, 'tri-zone-duo').length, 1)
+  assert.ok(cadence)
+  assert.ok(swolf)
+  assert.equal(byClass(rendered, 'tri-swim-chart-grid').length, 1)
   assert.equal(byClass(rendered, 'tri-swim-mode-toggle').length, 0)
   assert.ok(classNames(pace).includes('tri-zone'))
-  assert.ok(classNames(stroke).includes('tri-zone'))
+  assert.ok(classNames(cadence).includes('tri-zone'))
+  assert.ok(classNames(swolf).includes('tri-zone'))
   assert.deepEqual(byClass(pace, 'tri-cax-xt').map(text), ['0 m', '50 m', '100 m'])
   assert.deepEqual(
-    byClass(stroke, 'tri-cax-xt').map(tick => [text(tick), tick.properties.style]),
+    byClass(cadence, 'tri-cax-xt').map(tick => [text(tick), tick.properties.style]),
     byClass(pace, 'tri-cax-xt').map(tick => [text(tick), tick.properties.style]),
   )
   const paceSvg = byClass(pace, 'tri-swim-trend-svg')[0]
   assert.ok(paceSvg)
   assert.deepEqual(byClass(pace, 'tri-cax-yt').map(text), ['0:00', '0:50', '1:40', '2:30'])
-  assert.deepEqual(byClass(stroke, 'tri-cax-yt').map(text), ['0', '10', '20', '30'])
+  assert.deepEqual(byClass(cadence, 'tri-cax-yt').map(text), [
+    '10.0',
+    '10.5',
+    '11.0',
+    '11.5',
+    '12.0',
+  ])
+  assert.deepEqual(byClass(swolf, 'tri-cax-yt').map(text), ['35.0', '35.5', '36.0', '36.5', '37.0'])
   assert.equal(paceSvg.properties.role, 'slider')
   assert.equal(paceSvg.properties.tabIndex, 0)
   assert.equal(paceSvg.properties.ariaOrientation, 'horizontal')
@@ -2213,18 +2270,18 @@ test('renders aligned swim trends with the selected value and prior-four delta',
     /^M 0\.00 30 L 0\.00 20\.00 L 25\.00 20\.00 .* L 100\.00 19\.20 L 100\.00 30 Z$/,
   )
   assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
-  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 2)
+  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 3)
   assert.deepEqual(
     byClass(rendered, 'tri-swim-trend-hover').map(point => point.properties.hidden),
-    [true, true],
+    [true, true, true],
   )
-  assert.equal(byClass(rendered, 'tri-chart-cursor').length, 2)
+  assert.equal(byClass(rendered, 'tri-chart-cursor').length, 3)
   assert.deepEqual(byClass(pace, 'tri-swim-trend-readout').map(text), [
     '100 m · 2:24 elapsed1:36 /100m',
   ])
 })
 
-test('renders one shared lengths and 100 metre toggle for both swim charts', () => {
+test('renders one shared lengths and 100 metre toggle for all swim charts', () => {
   const rendered = buildSwimTrends(factory, swimToggleDetail(), swimTrendPoints)
   assert.ok(rendered)
   const toggle = byClass(rendered, 'tri-swim-mode-toggle')[0]
@@ -2246,17 +2303,22 @@ test('renders one shared lengths and 100 metre toggle for both swim charts', () 
   )
 
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
-  const strokeSvg = byClass(rendered, 'tri-swim-trend-svg--stroke')[0]
+  const cadenceSvg = byClass(rendered, 'tri-swim-trend-svg--cadence')[0]
+  const swolfSvg = byClass(rendered, 'tri-swim-trend-svg--swolf')[0]
   assert.ok(paceSvg)
-  assert.ok(strokeSvg)
+  assert.ok(cadenceSvg)
+  assert.ok(swolfSvg)
   const paceLengths = JSON.parse(
     String(paceSvg.properties.dataSwimSeriesLengths),
   ) as SwimTrendChartPoint[]
   const paceHundreds = JSON.parse(
     String(paceSvg.properties.dataSwimSeriesHundred),
   ) as SwimTrendChartPoint[]
-  const strokeHundreds = JSON.parse(
-    String(strokeSvg.properties.dataSwimSeriesHundred),
+  const cadenceHundreds = JSON.parse(
+    String(cadenceSvg.properties.dataSwimSeriesHundred),
+  ) as SwimTrendChartPoint[]
+  const swolfHundreds = JSON.parse(
+    String(swolfSvg.properties.dataSwimSeriesHundred),
   ) as SwimTrendChartPoint[]
   assert.equal(paceLengths.length, 8)
   assert.deepEqual(
@@ -2273,10 +2335,17 @@ test('renders one shared lengths and 100 metre toggle for both swim charts', () 
     ],
   )
   assert.deepEqual(
-    strokeHundreds.map(point => [point.cumulativeDistanceM, point.value]),
+    cadenceHundreds.map(point => [point.cumulativeDistanceM, point.value]),
     [
-      [100, 24],
-      [200, 30],
+      [100, 8],
+      [200, 12],
+    ],
+  )
+  assert.deepEqual(
+    swolfHundreds.map(point => [point.cumulativeDistanceM, point.value]),
+    [
+      [100, 33],
+      [200, 42],
     ],
   )
   assert.match(
@@ -2284,14 +2353,15 @@ test('renders one shared lengths and 100 metre toggle for both swim charts', () 
     /^M 0\.00 .* L 50\.00 .* L 50\.00 .* L 100\.00/,
   )
   assert.match(
-    String(byClass(strokeSvg, 'tri-swim-trend-area--100m')[0]?.properties.d),
+    String(byClass(cadenceSvg, 'tri-swim-trend-area--100m')[0]?.properties.d),
     /^M 0\.00 30 L 0\.00 .* L 50\.00 .* L 50\.00 .* L 100\.00 .* L 100\.00 30 Z$/,
   )
   assert.equal(paceSvg.properties.dataSwimMode, 'lengths')
-  assert.equal(strokeSvg.properties.dataSwimMode, 'lengths')
-  assert.equal(byClass(rendered, 'tri-swim-series').length, 4)
-  assert.equal(byClass(rendered, 'tri-swim-series--active').length, 2)
-  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 4)
+  assert.equal(cadenceSvg.properties.dataSwimMode, 'lengths')
+  assert.equal(swolfSvg.properties.dataSwimMode, 'lengths')
+  assert.equal(byClass(rendered, 'tri-swim-series').length, 6)
+  assert.equal(byClass(rendered, 'tri-swim-series--active').length, 3)
+  assert.equal(byClass(rendered, 'tri-swim-trend-area').length, 6)
   assert.equal(byClass(rendered, 'tri-swim-trend-current').length, 0)
 })
 
@@ -2326,44 +2396,58 @@ test('plots only the selected swim intervals even when history contains same-dat
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-readout-position').map(text), [
     '100 m · 2:24 elapsed',
     '100 m · 2:24 elapsed',
+    '100 m · 2:24 elapsed',
   ])
 })
 
-test('keeps missing stroke intervals as graph gaps and renders pace alone when needed', () => {
+test('keeps missing length metrics as graph gaps and renders pace alone when needed', () => {
   const current = swimTrendDetail()
   const rendered = buildSwimTrends(factory, current, swimTrendPoints)
   assert.ok(rendered)
-  assert.equal(byClass(rendered, 'tri-swim-trend').length, 2)
+  assert.equal(byClass(rendered, 'tri-swim-trend').length, 3)
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
-  const strokeSvg = byClass(rendered, 'tri-swim-trend-svg--stroke')[0]
-  const strokePath = byClass(
-    byClass(rendered, 'tri-swim-trend--stroke')[0],
+  const cadenceSvg = byClass(rendered, 'tri-swim-trend-svg--cadence')[0]
+  const swolfSvg = byClass(rendered, 'tri-swim-trend-svg--swolf')[0]
+  const cadencePath = byClass(
+    byClass(rendered, 'tri-swim-trend--cadence')[0],
     'tri-swim-trend-line',
   )[0]
   assert.ok(paceSvg)
-  assert.ok(strokeSvg)
-  assert.ok(strokePath)
-  assert.equal(String(strokePath.properties.d).match(/[ML]/g)?.length, 6)
+  assert.ok(cadenceSvg)
+  assert.ok(swolfSvg)
+  assert.ok(cadencePath)
+  assert.equal(String(cadencePath.properties.d).match(/[ML]/g)?.length, 6)
   assert.match(
-    String(strokePath.properties.d),
+    String(cadencePath.properties.d),
     /^M 0\.00 .* L 25\.00 .* L 25\.00 .* L 50\.00 .* M 75\.00 .* L 100\.00/,
   )
   const paceSeries = JSON.parse(
     String(paceSvg.properties.dataSwimSeriesLengths),
   ) as SwimTrendChartPoint[]
-  const strokeSeries = JSON.parse(
-    String(strokeSvg.properties.dataSwimSeriesLengths),
+  const cadenceSeries = JSON.parse(
+    String(cadenceSvg.properties.dataSwimSeriesLengths),
+  ) as SwimTrendChartPoint[]
+  const swolfSeries = JSON.parse(
+    String(swolfSvg.properties.dataSwimSeriesLengths),
   ) as SwimTrendChartPoint[]
   assert.deepEqual(
     paceSeries.map(point => point.xPct),
     [25, 50, 75, 100],
   )
   assert.deepEqual(
-    strokeSeries.map(point => [point.cumulativeDistanceM, point.xPct]),
+    cadenceSeries.map(point => [point.cumulativeDistanceM, point.value, point.xPct]),
     [
-      [25, 25],
-      [50, 50],
-      [100, 100],
+      [25, 10, 25],
+      [50, 11, 50],
+      [100, 12, 100],
+    ],
+  )
+  assert.deepEqual(
+    swolfSeries.map(point => [point.cumulativeDistanceM, point.value, point.xPct]),
+    [
+      [25, 35, 25],
+      [50, 37, 50],
+      [100, 36, 100],
     ],
   )
 
@@ -2371,14 +2455,19 @@ test('keeps missing stroke intervals as graph gaps and renders pace alone when n
     factory,
     swimTrendDetail({
       strokeRateSpm: null,
-      swimIntervals: current.swimIntervals.map(interval => ({ ...interval, strokeRateSpm: null })),
+      swimIntervals: current.swimIntervals.map(interval => ({
+        ...interval,
+        strokeCount: null,
+        strokeTimeS: null,
+        strokeRateSpm: null,
+      })),
     }),
     swimTrendPoints,
   )
   assert.ok(paceOnly)
   assert.equal(byClass(paceOnly, 'tri-swim-trend--pace').length, 1)
-  assert.equal(byClass(paceOnly, 'tri-swim-trend--stroke').length, 0)
-  assert.equal(byClass(paceOnly, 'tri-zone-duo').length, 0)
+  assert.equal(byClass(paceOnly, 'tri-swim-trend--cadence').length, 0)
+  assert.equal(byClass(paceOnly, 'tri-swim-trend--swolf').length, 0)
 
   assert.equal(
     buildSwimTrends(
@@ -2390,7 +2479,7 @@ test('keeps missing stroke intervals as graph gaps and renders pace alone when n
   )
 })
 
-test('renders a stroke-rate trend independently when pace is unavailable', () => {
+test('renders cadence and SWOLF independently when pace is unavailable', () => {
   const current = swimTrendDetail()
   const rendered = buildSwimTrends(
     factory,
@@ -2403,7 +2492,8 @@ test('renders a stroke-rate trend independently when pace is unavailable', () =>
 
   assert.ok(rendered)
   assert.equal(byClass(rendered, 'tri-swim-trend--pace').length, 0)
-  assert.equal(byClass(rendered, 'tri-swim-trend--stroke').length, 1)
+  assert.equal(byClass(rendered, 'tri-swim-trend--cadence').length, 1)
+  assert.equal(byClass(rendered, 'tri-swim-trend--swolf').length, 1)
 })
 
 test('includes swim trends in the default server-rendered day card', () => {

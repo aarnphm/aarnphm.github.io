@@ -336,6 +336,7 @@ export interface GarminVerification {
   avgHeartRateDelta: number | null
   avgPower: number | null
   avgPowerDelta: number | null
+  avgCadence: number | null
   normalizedPower: number | null
   maxPower: number | null
   totalWorkKJ: number | null
@@ -1106,6 +1107,7 @@ function garminVerification(
     avgHeartRateDelta: delta(metrics.avgHeartRate, a.averageHeartrate),
     avgPower: metrics.avgPower,
     avgPowerDelta: delta(metrics.avgPower, a.averageWatts),
+    avgCadence: metrics.avgCadence,
     normalizedPower: metrics.normalizedPower,
     maxPower: metrics.maxPower,
     totalWorkKJ: metrics.totalWorkKJ,
@@ -1672,7 +1674,10 @@ function projectDetail(
     maxWatts: a.maxWatts != null ? Math.round(a.maxWatts) : null,
     kilojoules: a.kilojoules != null ? Math.round(a.kilojoules) : null,
     deviceWatts: a.deviceWatts === true,
-    avgCadence: a.averageCadence != null ? Math.round(a.averageCadence) : avgPos(cadStream),
+    avgCadence:
+      a.averageCadence != null
+        ? Math.round(a.averageCadence)
+        : (avgPos(cadStream) ?? roundPos(garmin?.avgCadence)),
     sufferScore: a.sufferScore != null ? Math.round(a.sufferScore) : null,
     calories:
       a.calories != null

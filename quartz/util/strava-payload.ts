@@ -203,7 +203,10 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
         : telemetryStrokeRate != null
           ? (telemetry?.strokeCount ?? null)
           : (swim?.strokeCount ?? telemetry?.strokeCount ?? null)
-    detail.strokeRateSpm = matchedStrokeRate ?? telemetryStrokeRate
+    detail.strokeRateSpm =
+      matchedStrokeRate ??
+      telemetryStrokeRate ??
+      (detail.avgCadence != null && detail.avgCadence > 0 ? detail.avgCadence : null)
     detail.swimDurationS = activity?.durationS ?? null
     detail.swimIntervals = activity?.intervals ?? []
     detail.swimLocation = telemetry?.location ?? null

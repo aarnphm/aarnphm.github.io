@@ -321,6 +321,15 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
   ])
 })
 
+test('uses the device cadence as swim stroke rate when Apple stroke timing is unavailable', () => {
+  const payload = payloadWith(detail({ avgCadence: 26 }))
+
+  enrichSwimMetrics(payload, null)
+
+  assert.equal(payload.details['1'].strokeRateSpm, 26)
+  assert.equal(payload.swimTrend[0]?.strokeRateSpm, 26)
+})
+
 test('prefers a complete measured-length pace over workout duration for pool swims', () => {
   const payload = payloadWith(detail({ distanceKm: 0.1, movingTimeS: 160, swimLocation: 'pool' }))
   const swim = appleSwim({

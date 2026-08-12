@@ -2,6 +2,7 @@ import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { SwimTrendChartPoint } from '../../../util/triathlon-card'
 import type { SwimTrendMode } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
+import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { clock } from '../../../util/triathlon-card'
 import { decodePowerCurve } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
@@ -113,11 +114,10 @@ export const setupChartScrub = (
     referenceWatts: number | null,
   ): string =>
     `${zoneClock(point.s)}, ${text('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}`
-  const swimKind = (svg: SVGSVGElement): 'pace' | 'stroke' =>
-    svg.dataset.swimKind === 'stroke' ? 'stroke' : 'pace'
+  const swimKind = (svg: SVGSVGElement): SwimChartMetric => swimChartMetric(svg.dataset.swimKind)
   const swimAriaLabel = (svg: SVGSVGElement): string =>
-    `${text('swim')} ${text(swimKind(svg) === 'pace' ? 'pace' : 'stroke rate')} · ${text(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
-  const swimDisplayValue = (kind: 'pace' | 'stroke', value: number): string =>
+    `${text('swim')} ${text(swimKind(svg) === 'pace' ? 'pace' : swimKind(svg) === 'cadence' ? 'cadence' : 'SWOLF')} · ${text(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
+  const swimDisplayValue = (kind: SwimChartMetric, value: number): string =>
     swimActivityDisplayValue(presentation().locale, kind, value, clock(value))
   const swimTextPoint = (point: SwimTrendChartPoint) => ({
     elapsed: clock(point.elapsedS),
@@ -126,7 +126,7 @@ export const setupChartScrub = (
       ? {}
       : { windowStartDistanceM: point.windowStartDistanceM }),
   })
-  const swimValueText = (kind: 'pace' | 'stroke', point: SwimTrendChartPoint): string =>
+  const swimValueText = (kind: SwimChartMetric, point: SwimTrendChartPoint): string =>
     swimActivityValueText(
       presentation().locale,
       kind,
@@ -498,7 +498,7 @@ export const setupChartScrub = (
   }
   const onLocale = (): void => {
     for (const delta of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-delta')) {
-      const kind = delta.dataset.swimComparisonKind === 'stroke' ? 'stroke' : 'pace'
+      const kind = swimChartMetric(delta.dataset.swimComparisonKind)
       const rawDelta = delta.dataset.swimComparisonDelta
       const rawPrior = delta.dataset.swimComparisonPrior
       const comparisonDelta = rawDelta == null ? null : Number(rawDelta)
@@ -511,7 +511,7 @@ export const setupChartScrub = (
       )
     }
     for (const average of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-value')) {
-      const kind = average.dataset.swimAverageKind === 'stroke' ? 'stroke' : 'pace'
+      const kind = swimChartMetric(average.dataset.swimAverageKind)
       const value = Number(average.dataset.swimAverageValue)
       if (Number.isFinite(value))
         average.textContent = swimActivityHeaderValue(

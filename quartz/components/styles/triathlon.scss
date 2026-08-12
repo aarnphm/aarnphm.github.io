@@ -295,7 +295,7 @@
   top: 0;
   left: 0;
   z-index: 50;
-  width: min(300px, 84vw);
+  width: min(420px, 84vw);
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
@@ -1411,6 +1411,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.68rem;
+  min-width: 0;
+}
+
+.tri-swim-chart-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
   min-width: 0;
 }
 
@@ -6610,6 +6617,7 @@
 .tri-activity-telemetry {
   --tri-dist-label-width: 7.25rem;
   --tri-dist-domain-width: 2.7rem;
+  --tri-dist-column-gap: 0.58rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -6642,9 +6650,9 @@
 .tri-dist-metric {
   position: relative;
   display: grid;
-  grid-template-columns: var(--tri-dist-label-width) minmax(0, 1fr) var(--tri-dist-domain-width);
+  grid-template-columns: var(--tri-dist-domain-width) minmax(0, 1fr) var(--tri-dist-label-width);
   align-items: stretch;
-  column-gap: 0.58rem;
+  column-gap: var(--tri-dist-column-gap);
   min-width: 0;
 }
 
@@ -6677,13 +6685,19 @@
 .tri-dist-metric-svg {
   display: block;
   inline-size: 100%;
-  block-size: 5.4rem;
+  block-size: 7rem;
   overflow: hidden;
 }
 
 .tri-dist-grid {
   stroke: color-mix(in srgb, var(--gray) 18%, transparent);
   stroke-width: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-dist-axis {
+  stroke: color-mix(in srgb, var(--gray) 62%, var(--dark));
+  stroke-width: 0.7;
   vector-effect: non-scaling-stroke;
 }
 
@@ -6741,22 +6755,33 @@
 .tri-dist-domain {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   justify-content: space-between;
   padding-block: 0.28rem;
-  color: color-mix(in srgb, var(--gray) 78%, transparent);
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
   font-family: var(--codeFont);
   font-size: 0.48rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   pointer-events: none;
+  text-align: right;
 }
 
 .tri-dist-time-axis {
+  display: grid;
+  grid-template-columns: var(--tri-dist-domain-width) minmax(0, 1fr) var(--tri-dist-label-width);
+  column-gap: var(--tri-dist-column-gap);
+  min-width: 0;
+}
+
+.tri-dist-time-scale {
+  grid-column: 2;
   display: flex;
   justify-content: space-between;
-  color: var(--gray);
+  min-width: 0;
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
   font-family: var(--codeFont);
-  font-size: 0.52rem;
+  font-size: 0.54rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -6863,10 +6888,7 @@
   .tri-activity-telemetry {
     --tri-dist-label-width: 5.5rem;
     --tri-dist-domain-width: 2.35rem;
-  }
-
-  .tri-dist-metric {
-    column-gap: 0.36rem;
+    --tri-dist-column-gap: 0.36rem;
   }
 
   .tri-dist-metric-meta {
@@ -6874,7 +6896,7 @@
   }
 
   .tri-dist-metric-svg {
-    block-size: 4.8rem;
+    block-size: 6.25rem;
   }
 }
 
@@ -7137,6 +7159,7 @@
 .tri-engine-cardio {
   --tri-cardio-label-width: 6.6rem;
   --tri-cardio-domain-width: 2.55rem;
+  --tri-cardio-column-gap: 0.58rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -7216,9 +7239,9 @@
 
 .tri-engine-row {
   display: grid;
-  grid-template-columns: var(--tri-cardio-label-width) minmax(0, 1fr) var(--tri-cardio-domain-width);
+  grid-template-columns: var(--tri-cardio-domain-width) minmax(0, 1fr) var(--tri-cardio-label-width);
   align-items: stretch;
-  column-gap: 0.58rem;
+  column-gap: var(--tri-cardio-column-gap);
   min-width: 0;
 }
 
@@ -7246,7 +7269,7 @@
 .tri-engine-spark {
   display: block;
   inline-size: 100%;
-  block-size: 4.8rem;
+  block-size: 6.25rem;
   min-width: 0;
   overflow: hidden;
   cursor: crosshair;
@@ -7263,21 +7286,47 @@
   vector-effect: non-scaling-stroke;
 }
 
+.tri-engine-axis {
+  stroke: color-mix(in srgb, var(--gray) 62%, var(--dark));
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
 .tri-engine-domain {
   position: relative;
-  block-size: 4.8rem;
-  color: color-mix(in srgb, var(--gray) 78%, transparent);
+  block-size: 6.25rem;
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
   font-family: var(--codeFont);
   font-size: 0.48rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   pointer-events: none;
+  text-align: right;
 }
 
 .tri-engine-domain-tick {
   position: absolute;
-  inset-inline-start: 0;
+  inset-inline-end: 0;
   transform: translateY(-50%);
+}
+
+.tri-cardio-time-axis {
+  display: grid;
+  grid-template-columns: var(--tri-cardio-domain-width) minmax(0, 1fr) var(--tri-cardio-label-width);
+  column-gap: var(--tri-cardio-column-gap);
+  min-width: 0;
+  margin-top: -0.5rem;
+}
+
+.tri-cardio-time-scale {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
+  min-width: 0;
+  color: color-mix(in srgb, var(--gray) 68%, var(--dark));
+  font-family: var(--codeFont);
+  font-size: 0.54rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .tri-engine-row-v {
@@ -7296,14 +7345,11 @@
   .tri-engine-cardio {
     --tri-cardio-label-width: 5.45rem;
     --tri-cardio-domain-width: 2.2rem;
+    --tri-cardio-column-gap: 0.36rem;
   }
 
   .tri-engine-cardio .tri-cardio-readout {
     font-size: 0.52rem;
-  }
-
-  .tri-engine-row {
-    column-gap: 0.36rem;
   }
 
   .tri-engine-row-k,
@@ -7313,7 +7359,7 @@
 
   .tri-engine-spark,
   .tri-engine-domain {
-    block-size: 4.35rem;
+    block-size: 5.65rem;
   }
 }
 
@@ -10239,6 +10285,11 @@
       min-height: 184px;
     }
   }
+
+  .tri-swim-chart-grid .tri-swim-trend-svg {
+    aspect-ratio: 20 / 3;
+    min-height: 96px;
+  }
 }
 
 .tri-zone-title {
@@ -11521,6 +11572,10 @@
 }
 
 :not(.tri-day-page) > .tri-day-embed:has(.tri-act--expanded:only-of-type .tri-zone-duo) {
+  width: min(42rem, 100%);
+}
+
+:not(.tri-day-page) > .tri-day-embed:has(.tri-act--expanded:only-of-type .tri-swim-chart-grid) {
   width: min(42rem, 100%);
 }
 

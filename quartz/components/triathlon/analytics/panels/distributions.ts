@@ -322,6 +322,8 @@ export const buildDistributions = (
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 4, x2: 100, y2: 4 }),
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 17, x2: 100, y2: 17 }),
         svg('line', { class: 'tri-dist-grid', x1: 0, y1: 30, x2: 100, y2: 30 }),
+        svg('line', { class: 'tri-dist-axis', x1: 0, y1: 4, x2: 0, y2: 30 }),
+        svg('line', { class: 'tri-dist-axis', x1: 0, y1: 30, x2: 100, y2: 30 }),
       )
       for (const bridge of missingBridges(
         points,
@@ -366,15 +368,17 @@ export const buildDistributions = (
         el('span', undefined, domainText(rawMax)),
         el('span', undefined, domainText(rawMin)),
       )
-      row.append(meta, graph, domain)
+      row.append(domain, graph, meta)
       plots.appendChild(row)
     }
 
-    const axis = el('div', 'tri-dist-time-axis')
-    axis.append(
+    const axis = el('div', 'tri-dist-time-axis', undefined, { 'aria-hidden': 'true' })
+    const timeScale = el('div', 'tri-dist-time-scale')
+    timeScale.append(
       el('span', undefined, context.formatter.shortDate(startDate)),
       el('span', undefined, context.formatter.shortDate(maximumDate)),
     )
+    axis.appendChild(timeScale)
     const resetReadout = (): void => {
       readout.textContent = `${available.length}/${points.length} ${text('activities with telemetry')} · ${context.formatter.longDate(startDate)}–${context.formatter.longDate(maximumDate)}`
       telemetryPanel.classList.remove('tri-chart--hover')

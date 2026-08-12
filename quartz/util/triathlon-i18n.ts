@@ -1,3 +1,4 @@
+import type { SwimChartMetric } from './swim-metrics'
 import type { Locale } from './triathlon-presentation'
 
 interface Gloss {
@@ -27,10 +28,10 @@ export const swimActivityDistanceText = (target: Locale, distanceM: number): str
 
 export const swimActivityHeaderValue = (
   target: Locale,
-  kind: 'pace' | 'stroke',
+  kind: SwimChartMetric,
   value: number,
   pace: string,
-): string => (kind === 'pace' ? pace : swimTextNumber(target, value, 1))
+): string => (kind === 'pace' ? pace : swimTextNumber(target, value, kind === 'cadence' ? 1 : 0))
 
 export const swimActivityPointText = (target: Locale, point: SwimActivityTextPoint): string => {
   const end = swimTextNumber(target, point.cumulativeDistanceM)
@@ -43,17 +44,19 @@ export const swimActivityPointText = (target: Locale, point: SwimActivityTextPoi
 
 export const swimActivityDisplayValue = (
   target: Locale,
-  kind: 'pace' | 'stroke',
+  kind: SwimChartMetric,
   value: number,
   pace: string,
 ): string =>
   kind === 'pace'
     ? `${pace} /100m`
-    : `${swimTextNumber(target, value, 1)} ${target === 'fr' ? 'coups/min' : 'str/min'}`
+    : kind === 'cadence'
+      ? `${swimTextNumber(target, value, 1)} ${target === 'fr' ? 'coups/longueur' : 'str/length'}`
+      : `${swimTextNumber(target, value)} SWOLF`
 
 export const swimActivityValueText = (
   target: Locale,
-  kind: 'pace' | 'stroke',
+  kind: SwimChartMetric,
   point: SwimActivityTextPoint,
   value: number,
   pace: string,
@@ -71,15 +74,19 @@ export const swimActivityValueText = (
     return target === 'fr'
       ? `${position}, allure de nage ${pace} par 100 mètres`
       : `${position}, swim pace ${pace} per 100 metres`
-  const rate = swimTextNumber(target, value, 1)
-  return target === 'fr'
-    ? `${position}, fréquence de nage ${rate} coups par minute`
-    : `${position}, stroke rate ${rate} strokes per minute`
+  if (kind === 'cadence') {
+    const cadence = swimTextNumber(target, value, 1)
+    return target === 'fr'
+      ? `${position}, cadence de nage ${cadence} coups par longueur`
+      : `${position}, swim cadence ${cadence} strokes per length`
+  }
+  const swolf = swimTextNumber(target, value)
+  return target === 'fr' ? `${position}, score SWOLF ${swolf}` : `${position}, SWOLF score ${swolf}`
 }
 
 export const swimActivityComparisonText = (
   target: Locale,
-  kind: 'pace' | 'stroke',
+  kind: SwimChartMetric,
   delta: number | null,
   priorCount: number | null,
 ): string => {
@@ -94,9 +101,13 @@ export const swimActivityComparisonText = (
       ? `${magnitude} s ${delta < 0 ? 'plus rapide' : 'plus lente'} que les ${priorCount} précédentes`
       : `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
   const signed = `${delta > 0 ? '+' : '−'}${magnitude}`
+  if (kind === 'cadence')
+    return target === 'fr'
+      ? `${signed} coups/longueur vs ${priorCount} précédentes`
+      : `${signed} str/length vs prior ${priorCount}`
   return target === 'fr'
-    ? `${signed} coups/min vs ${priorCount} précédentes`
-    : `${signed} str/min vs prior ${priorCount}`
+    ? `${signed} SWOLF vs ${priorCount} précédentes`
+    : `${signed} SWOLF vs prior ${priorCount}`
 }
 
 export const detectLocale = (): Locale => {
@@ -290,7 +301,8 @@ const en: TriDict = {
     'swim chart aggregation': 'swim chart aggregation',
     'swim activity analysis': 'swim activity analysis',
     'pace /100m': 'pace /100m',
-    'stroke rate str/min': 'stroke rate str/min',
+    'cadence str/length': 'cadence str/length',
+    SWOLF: 'SWOLF',
     'matched runs': 'matched runs',
     runs: 'runs',
     'route avg': 'route avg',
@@ -976,7 +988,8 @@ const fr: TriDict = {
     'swim chart aggregation': 'agrégation des graphiques de natation',
     'swim activity analysis': "analyse de l'activité de natation",
     'pace /100m': 'allure /100 m',
-    'stroke rate str/min': 'fréquence de nage coups/min',
+    'cadence str/length': 'cadence coups/longueur',
+    SWOLF: 'SWOLF',
     'matched runs': 'parcours répétés',
     runs: 'courses',
     'route avg': 'moy. parcours',
