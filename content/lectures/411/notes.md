@@ -151,7 +151,7 @@ $$A^\top A\,x=A^\top b.$$
 
   are $\alpha_1 = \dots = \alpha_k = 0$. Otherwise they are **linearly dependent**.
 
-- Intuition: no vector in the set is “redundant”; none can be written in terms of the others. If they are dependent, at least one is redundant.
+- intuition: a finite set is dependent exactly when at least one vector lies in the span of the others. this includes the zero vector, which lies in the span of the empty set.
 
 ### linear maps & composition
 
@@ -185,7 +185,7 @@ $$A^\top A\,x=A^\top b.$$
     T(\mathrm{Span}(S)) = \mathrm{Span}(T(S)).
   $$
 
-  And if vectors in $S$ are linearly dependent, then their images under $T$ are also linearly dependent (unless $T$ kills some of them).
+  if vectors in $S$ are linearly dependent, their images under $T$ are also linearly dependent. mapping some of them to zero is one way dependence can arise.
 
 > [!notes] applications
 >
@@ -535,7 +535,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 | Rank                       | Number of pivots                                                           | Same (number of pivots)                                                            |
 | Row space basis            | Nonzero rows span the row space                                            | Nonzero rows form a canonical basis of the row space                               |
 | Column space basis         | Pivot columns of the original matrix (pivot locations found from REF/RREF) | Same pivot columns in the original matrix                                          |
-| Inversion via augmentation | Work on \[A \| I\] to reach \[I \| A^{-1}\]                                | RREF required to obtain the identity on the left                                   |
+| Inversion via augmentation | Work on $[A\mid I]$ to reach $[I\mid A^{-1}]$                                | RREF required to obtain the identity on the left                                   |
 | Cost (dense $n \times n$)  | ~ $\tfrac{2}{3}n^3$ flops (forward)                                        | Slightly higher (clear above pivots too; $\approx n^3$)                            |
 | Numerical note             | Use partial pivoting ($PA=LU$) for stability                               | More operations can amplify roundoff; prefer factorization (LU/QR) for numerics    |
 
@@ -788,7 +788,7 @@ where $P$ is a permutation, $L$ is unit lower‑triangular, and $U$ is upper‑t
 
 > [!tip] ML/Stats link
 >
-> Cholesky ($A=R^\top R$) is the LU of a symmetric positive‑definite system; used in linear regression normal equations and Gaussian models. For ill‑conditioned problems, prefer QR/SVD.
+> Cholesky ($A=R^\top R$) is a symmetry-preserving factorization for positive-definite systems. it uses about half the work of a general LU factorization. for ill-conditioned least-squares problems, solve with QR or SVD instead of forming normal equations.
 
 ### computation via elimination
 
@@ -1004,7 +1004,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 > [!example] Worked micro-examples (LU and QR)
 >
-> - LU (no pivot): $A=\begin{bmatrix}2&3\\6&8\end{bmatrix}=\underbrace{\begin{bmatrix}1&0\\3&1\end{bmatrix}}_{L}\underbrace{\begin{bmatrix}2&3\\0&-1\end{bmatrix}}_{U}$. Solve $Ax=b$ via $Ly=c$, then $Ux=c$.
+> - LU (no pivot): $A=\begin{bmatrix}2&3\\6&8\end{bmatrix}=\underbrace{\begin{bmatrix}1&0\\3&1\end{bmatrix}}_{L}\underbrace{\begin{bmatrix}2&3\\0&-1\end{bmatrix}}_{U}$. solve $Ax=b$ via $Ly=b$, then $Ux=y$.
 > - QR (Gram–Schmidt on $\mathbb R^{2\times 2}$): with $A=\begin{bmatrix}1&1\\1&0\end{bmatrix}$,
 >   $$
 >   Q=\frac{1}{\sqrt2}\begin{bmatrix}1&1\\1&-1\end{bmatrix},\quad R=\begin{bmatrix}\sqrt2&1/\sqrt2\\0&1/\sqrt2\end{bmatrix},\quad A=QR
@@ -1020,7 +1020,7 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 
 ### Positive (semi)definite (PSD) matrices
 
-- $A\succeq 0$ iff $x^\top A x\ge 0\;\forall x$ (strict $>$ for PD). For symmetric $A$, equivalent to all eigenvalues $\ge 0$ ($>0$).
+- for symmetric $A$, $A\succeq0$ iff $x^TAx\ge0$ for every $x$. positive definiteness requires $x^TAx>0$ for every nonzero $x$. these are equivalent to nonnegative and positive eigenvalues, respectively.
 - Sylvester criterion (symmetric): PD iff all leading principal minors are positive.
 - PSD implies $A=R^\top R$ for some $R$ (e.g., Cholesky for PD).
 
@@ -1052,17 +1052,17 @@ In linear algebra, and especially in advanced topics (multivar calculus, differe
 >
 > - Composition: matrices are coordinates of linear maps; $(AB)x=A(Bx)$ forces the summation rule.
 > - Column/row/outer views: the same rule yields multiple, useful mental models (apply to columns, dot rows with columns, sum of rank-1 outer products).
-> - Frobenius inner product: $\langle X,AB\rangle=\operatorname{tr}(X^\top AB)=\operatorname{tr}((AX)^\top B)=\langle AX,B\rangle$; gradients and identities follow from this invariance.
+> - Frobenius inner product: $\langle X,AB\rangle=\operatorname{tr}(X^\top AB)=\langle A^TX,B\rangle$. left multiplication by $A$ therefore has adjoint left multiplication by $A^T$.
 
 ### Decompositions and calculus
 
 - Outer-product sum (rank-1 expansion): $\displaystyle AB=\sum_{k=1}^{n} A_{:k}\,B_{k:}$; useful to reason about low-rank updates and matrix factorizations.
 - Bilinearity: linear in each argument separately; supports distributing derivatives: $\mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$.
-- Frobenius inner product: $\langle X,Y\rangle=\operatorname{tr}(X^\top Y)$ with $\|X\|_F^2=\langle X,X\rangle$; note $\operatorname{tr}(X^\top AB)=\operatorname{tr}((AX)^\top B)=\operatorname{tr}(X^\top BA)$ when shapes match.
+- Frobenius inner product: $\langle X,Y\rangle=\operatorname{tr}(X^\top Y)$ with $\|X\|_F^2=\langle X,X\rangle$; note $\operatorname{tr}(X^\top AB)=\operatorname{tr}((A^TX)^TB)$.
 - Quick calculus identities (shapes compatible):
 - $\dfrac{\partial}{\partial X}\,\tfrac12\|AX-B\|_F^2 = A^\top(AX-B)$,
 - $\dfrac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$,
-- $\dfrac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B^\top + A^\top X B$ (when $A,B$ symmetric, simplifies to $2AXB$).
+- $\dfrac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B+A^\top X B^\top$ (when $A,B$ are symmetric, this simplifies to $2AXB$).
 
 ### Algebraic properties
 
@@ -1313,10 +1313,18 @@ for i in 0..m step Mb:                # block rows of A/C
 >   cublasLtMatmulPreference_t pref; cublasLtMatmulPreferenceCreate(&pref);
 >   size_t wsSz=1<<20; void* ws=nullptr; cudaMalloc(&ws, wsSz);
 >   cublasLtMatmulHeuristicResult_t heur; int returned=0;
->   cublasLtMatmulAlgo_t algo; // will copy from heur
 >   cublasLtMatmulAlgoGetHeuristic(lt, op, Ad, Bd, Cd, Cd, pref, 1, &heur, &returned);
->   if(returned>0) algo = heur.algo;
->   cublasLtMatmul(lt, op, &alpha, A, Ad, B, Bd, &beta, C, Cd, C, Cd, &algo, ws, wsSz, 0);
+>   if(returned==0) {
+>     cudaFree(ws);
+>     cublasLtMatmulPreferenceDestroy(pref);
+>     cublasLtMatrixLayoutDestroy(Ad);
+>     cublasLtMatrixLayoutDestroy(Bd);
+>     cublasLtMatrixLayoutDestroy(Cd);
+>     cublasLtMatmulDescDestroy(op);
+>     cublasLtDestroy(lt);
+>     return;
+>   }
+>   cublasLtMatmul(lt, op, &alpha, A, Ad, B, Bd, &beta, C, Cd, C, Cd, &heur.algo, ws, wsSz, 0);
 >   cudaFree(ws);
 >   cublasLtMatmulPreferenceDestroy(pref);
 >   cublasLtMatrixLayoutDestroy(Ad);
@@ -1341,16 +1349,16 @@ for i in 0..m step Mb:                # block rows of A/C
   Let $A=\begin{bmatrix}A_{11}&A_{12}\\A_{21}&A_{22}\end{bmatrix}$, $B=\begin{bmatrix}B_{11}&B_{12}\\B_{21}&B_{22}\end{bmatrix}$ and define
   $$
   \begin{align*}
-  M*1&=(A*{11}+A*{22})(B*{11}+B*{22}), & M_2&=(A*{21}+A*{22})B*{11}, & M*3&=A*{11}(B*{12}-B*{22}),\\
-  M*4&=A*{22}(B*{21}-B*{11}), & M*5&=(A*{11}+A*{12})B*{22}, & M*6&=(A*{21}-A*{11})(B*{11}+B*{12}),\\
-  M_7&=(A*{12}-A*{22})(B*{21}+B_{22}),
+  M_1&=(A_{11}+A_{22})(B_{11}+B_{22}), & M_2&=(A_{21}+A_{22})B_{11}, & M_3&=A_{11}(B_{12}-B_{22}),\\
+  M_4&=A_{22}(B_{21}-B_{11}), & M_5&=(A_{11}+A_{12})B_{22}, & M_6&=(A_{21}-A_{11})(B_{11}+B_{12}),\\
+  M_7&=(A_{12}-A_{22})(B_{21}+B_{22}),
   \end{align*}
   $$
   then
   $$
   \begin{align*}
-  C*{11}&=M_1+M_4-M_5+M_7, & C*{12}&=M*3+M_5,\\
-  C*{21}&=M*2+M_4, & C*{22}&=M_1-M_2+M_3+M_6.
+  C_{11}&=M_1+M_4-M_5+M_7, & C_{12}&=M_3+M_5,\\
+  C_{21}&=M_2+M_4, & C_{22}&=M_1-M_2+M_3+M_6.
   \end{align*}
   $$
 - Practical use:
@@ -1520,7 +1528,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 ```
 
 > [!tip] Reading the picture
-> The outermost ellipse tangent to the unit circle identifies the directions maximizing $x^\top A x$ on $\|x\|=1$: those tangency points are eigenvectors, and the maximal value is the top eigenvalue.
+> the eigenvectors of a symmetric matrix are the stationary directions of $x^TAx$ on the unit circle. the drawing is schematic; an arbitrary ellipse tangent to the circle does not prove that its tangent points are eigenvectors of the stated matrix.
 
 > [!example] Symmetric 2×2 stretch
 > $A=\begin{bmatrix}3&1\\1&2\end{bmatrix}$ has eigenvalues $\lambda_{1,2}=\tfrac{5\pm\sqrt5}{2}\approx 3.618,\,1.382$ with orthogonal eigenvectors. The unit circle becomes an ellipse whose axes are those eigenvectors and radii $\lambda_{1,2}$.
@@ -1534,7 +1542,13 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 - Markov chains: for a row‑stochastic matrix $P$, $P\mathbf{1}=\mathbf{1}$ (eigenvalue 1). A stationary distribution $\pi^\top$ obeys $\pi^\top P=\pi^\top$ (left‑eigenvector) or $P^\top \pi=\pi$.
 
 > [!example] Stable/unstable directions in dynamics
-> For $\dot x = A x$, solve $x(t)=e^{At}x(0)$. Along an eigenvector $v$, $x(t)=e^{\lambda t}(v^\top x(0))v$. If $\Re\,\lambda<0$, the mode decays; if $\Re\,\lambda>0$, it grows. The eigenbasis decouples the system.
+> for $\dot x=Ax$ with $A=V\Lambda V^{-1}$, write $c=V^{-1}x(0)$. then
+>
+> $$
+> x(t)=\sum_i e^{\lambda_i t}c_i v_i.
+> $$
+>
+> the coefficient is $v_i^Tx(0)$ only when the eigenvectors form an orthonormal basis, as they do for a real symmetric matrix.
 
 ### Computation and caveats
 
@@ -1581,12 +1595,12 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   % S_*: best 1D subspace aligned with q1
   \draw[rotate=\theta, very thick, green!60!black] (-2,0) -- (2,0) node[right]{$S_*\ (k=1)$};
   % a suboptimal 1D subspace S
-  \draw[rotate=0, thick, gray!70, dashed] (-2,0.6) -- (2,0.6) node[right]{$S$};
+  \draw[rotate=-18, thick, gray!70, dashed] (-2,0) -- (2,0) node[right]{$S$};
   % intersections with unit circle (schematic markers)
   \fill[green!60!black]  ({cos(\theta)},{sin(\theta)}) circle (1.3pt);
   \fill[green!60!black]  ({-cos(\theta)},{-sin(\theta)}) circle (1.3pt);
-  \fill[gray!80] (1,0.6) circle (1.2pt);
-  \fill[gray!80] (-1,0.6) circle (1.2pt);
+  \fill[gray!80] ({cos(-18)},{sin(-18)}) circle (1.2pt);
+  \fill[gray!80] ({-cos(-18)},{-sin(-18)}) circle (1.2pt);
   % annotations of values
   \node[blue!70!black] at (1.25,1.55) {$R_A(x)$ large near $q_1$ ($\lambda_{\max}$)};
   \node[blue!70!black] at (-0.9,0.2) {$R_A(x)$ small near $q_2$ ($\lambda_{\min}$)};
@@ -1686,7 +1700,14 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 - Vector triple products: $a\times(b\times c)=(a\cdot c)\,b-(a\cdot b)\,c$ and $(a\times b)\times c=(a\cdot c)\,b-(b\cdot c)\,a$.
 - Skew‑symmetric matrix representation: for $\omega\in\mathbb R^3$, define
   $$[\omega]_\times=\begin{bmatrix}0&-\omega_3&\omega_2\\\omega_3&0&-\omega_1\\-\omega_2&\omega_1&0\end{bmatrix},\quad [\omega]_\times v=\omega\times v.$$
-  Then $\exp([\omega]_\times\theta)=I+\sin\theta\,[\omega]_\times+(1-\cos\theta)[\omega]_\times^2$ is a rotation (Rodrigues’ formula).
+  for a unit axis $\lVert\omega\rVert_2=1$, Rodrigues' formula is
+
+  $$
+  \exp([\omega]_\times\theta)
+  =I+\sin\theta\,[\omega]_\times+(1-\cos\theta)[\omega]_\times^2.
+  $$
+
+  for a nonunit axis, normalize it and move its norm into the rotation angle.
 - Exterior algebra view (reason for “3D special”): $a\times b=\;*\,(a\wedge b)$ where $*$ is the Hodge star under the Euclidean metric and fixed orientation in $\mathbb R^3$. Genuine cross products exist only in dimensions $3$ and $7$.
 
 > [!example] Normal to a plane and area
@@ -1758,8 +1779,13 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 - Gradient flow (continuous limit of GD): $\dot x=-\nabla f(x)$. Energy descent: $\tfrac{d}{dt}f(x(t))= -\|\nabla f(x)\|^2\le0$. Mirror/natural gradient flows: $\dot{\theta}=-G(\theta)^{-1}\nabla f(\theta)$ with metric $G$ (links to information geometry).
 - Accelerated methods as ODEs: Su–Boyd–Candès model for Nesterov $\ddot x+\tfrac{3}{t}\dot x+\nabla f(x)=0$; damping term controls convergence rate, clarifying stability vs. speed trade‑offs.
 - ResNets as ODE discretizations: $x_{k+1}=x_k+h\,f_k(x_k)$ is forward Euler for $\dot x=f(t,x)$. Stability relates to the Jacobian spectrum $\lambda(J_f)$ and step size $h$; spectral normalization limits growth.
-- Neural ODEs: $\dot z=f_\theta(t,z)$; solution $z(t_1)=z(t_0)+\int_{t_0}^{t_1} f_\theta(t,z)\,dt$. Training via the adjoint ODE: if $a=\partial\mathcal L/\partial z$, then $\tfrac{d}{dt}a= -\big(\partial f_\theta/\partial z\big)^\top a$, and
-  $$\frac{\partial \mathcal L}{\partial \theta}=\int_{t_1}^{t_0} a(t)^\top\,\frac{\partial f_\theta}{\partial \theta}(t,z(t))\,dt.$$
+- Neural ODEs: $\dot z=f_\theta(t,z)$; solution $z(t_1)=z(t_0)+\int_{t_0}^{t_1}f_\theta(t,z(t))\,dt$. for a terminal loss and column adjoint $a=\partial\mathcal L/\partial z$, the adjoint satisfies $\dot a=-(\partial f_\theta/\partial z)^Ta$, and
+
+  $$
+  \frac{\partial\mathcal L}{\partial\theta}
+  =\int_{t_0}^{t_1}a(t)^T
+  \frac{\partial f_\theta}{\partial\theta}(t,z(t))\,dt.
+  $$
 - Continuous normalizing flows (CNFs): density evolves by $\tfrac{d}{dt}\log p_t(z)=-\operatorname{tr}\,\big(\partial f_\theta/\partial z\big)$. Use Hutchinson’s estimator for the trace; probability‑flow ODE in diffusion models gives deterministic sampling.
 - Diffusion models: forward SDE corrupts data; sampling can follow a reverse‑time SDE or the associated probability‑flow ODE using the learned score $\nabla\log p_t$. ODE solvers (DDIM‑style) trade steps for quality/speed.
 - Implicit layers/DEQs: fixed points $z^\ast=f_\theta(z^\ast,x)$ viewed as steady states of dynamics; gradients via implicit function theorem mirror adjoint ideas and avoid backprop through long unrolled networks.
@@ -1810,5 +1836,5 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 | $\partial/\partial x$ of least squares   | $$\displaystyle \frac{\partial}{\partial x}\,\tfrac12\|Ax-b\|_2^2 = A^\top(Ax-b)$$                     | .                        |
 | $\partial/\partial A$ of Frobenius LS    | $$\displaystyle \frac{\partial}{\partial A}\,\tfrac12\|AX-B\|_F^2 = (AX-B)X^\top$$                     | .                        |
 | $\partial/\partial A$ of trace           | $$\displaystyle \frac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$$                           | .                        |
-| $\partial/\partial X$ of quadratic trace | $$\displaystyle \frac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B^\top + A^\top X B$$ | Symmetric $A,B$ → $2AXB$ |
+| $\partial/\partial X$ of quadratic trace | $$\displaystyle \frac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B + A^\top X B^\top$$ | Symmetric $A,B$ gives $2AXB$ |
 | Differential product rule                | $$\displaystyle \mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$$                                         | .                        |

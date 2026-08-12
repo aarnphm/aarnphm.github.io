@@ -2,7 +2,7 @@
 date: '2025-10-30'
 description: anatomy of an inference engine
 id: index
-modified: 2026-06-07 01:28:34 GMT-04:00
+modified: 2026-08-12 11:31:40 GMT-04:00
 tags:
   - ml
   - workshop
@@ -167,10 +167,17 @@ logical blocks    physical blocks
 
 **block size calculation**:
 
-```python
-2 × block_size (default=16) × num_kv_heads × head_size × dtype_bytes
-# typically: 2 × 16 × 32 × 128 × 2 = 524KB per block
-```
+For one layer, a block stores both keys and values:
+
+$$
+M_{\text{layer block}}
+=2B H_{\mathrm{KV}}D_h b
+=2\cdot16\cdot32\cdot128\cdot2
+=262{,}144\text{ bytes}
+=256\text{ KiB}.
+$$
+
+Across $L$ layers, the same block index occupies $L M_{\text{layer block}}$ bytes.
 
 **when a request needs more space**:
 
@@ -281,7 +288,9 @@ let's walk through a concrete example of how continuous batching and paged atten
 prompts = ['Hi, my name is', 'Today is a beautiful summer day', 'Hello there']
 ```
 
-**after tokenization** (simplified: block_size = 4):
+**after tokenization** (toy token IDs, `block_size = 4`):
+
+real token IDs come from the model tokenizer. these small integers keep the slot arithmetic visible.
 
 ```
 sequence 1: [1,2,3,4,5]           # 5 tokens
@@ -315,7 +324,7 @@ positions = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2]
 **slot_mapping tells us where KVs go in paged memory**:
 
 ```python
-slot_mapping = [4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+slot_mapping = [4, 5, 6, 7, 8, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22]
 # e.g., sequence 2 goes to slots [12,13,14,15,16,17,18]
 # why? it has blocks 3 and 4, and block_size=4
 # so slots start at 12 (3×4) and cover 7 tokens
@@ -350,7 +359,7 @@ attention metadata:
 **decode step** - sample tokens [14,15,16] across 3 sequences:
 
 ```python
-# continuous batching appends new tokens
+# continuous batching appends new toy token IDs
 input_ids = [1, 2, 3, 4, 5, 14, 1, 6, 5, 7, 8, 9, 10, 15, 1, 12, 13, 16]
 positions = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3]
 slot_mapping = [
@@ -577,7 +586,8 @@ step 2: fill bitmask per request
 ┌─────────────────────────────────────────────────────┐
 │ request_A (JSON FSM):                               │
 │   current state: expect '{' or whitespace           │
-│   allowed tokens: [123, 32, 9, 10] ('{', ' ', ...)  │
+│   allowed token IDs come from the active tokenizer  │
+│   examples: id('{'), id(' '), id('\n')              │
 │                                                     │
 │   bitmask[0] = [0b...10010...00001]                 │
 │                  bit i = 1 if token_i allowed       │
@@ -649,79 +659,43 @@ step 2: large model verifies all 5 in parallel
 step 3: sample t4 from large model
 ```
 
-**KV cache allocation** (the clever part):
+**KV cache reservation**:
 
-vLLM allocates **num_speculative_tokens + 1** blocks in a speculative branch:
+The scheduler counts token slots. `allocate_slots` converts the scheduled tokens and any lookahead into physical blocks. It allocates a new block only when those positions cross a block boundary.
 
-```
-main KV cache (verified tokens):
-┌────────────────────────────────────┐
-│ [tok A] [tok B] [tok C] [tok D]    │ ← committed blocks
-└────────────────────────────────────┘
-                    │
-                    ├─ fork point
-                    ↓
-spec branch (num_speculative_tokens=3):
-┌───────────────────────────────────────┐
-│ [+1 block] [spec 1] [spec 2] [spec 3] │
-└───────────────────────────────────────┘
-   ↑         ↑        ↑        ↑
-   verified  draft    draft    draft
-```
+For block size $B$, $n$ computed positions, $a$ allocated blocks, $s$ scheduled positions, and $\ell$ lookahead positions, the extra block count is
 
-**why num_speculative_tokens + 1?**
+$$
+N_{\text{new}}
+=\max\left(0,
+\left\lceil\frac{n+s+\ell}{B}\right\rceil-a
+\right).
+$$
 
-- **num_speculative_tokens blocks**: for speculative tokens from draft model
-- **+1 block**: for verified token, ensures forward progress even if all rejected
+Verifying $k$ draft tokens needs target-model work for those drafts plus a bonus position. The scheduler may request up to $k+1$ token positions. It fills unused slots at the end of the current block before allocating another block.
 
-**concrete example** (num_speculative_tokens=3):
+**verification**:
 
-```
-step 1: allocate spec branch
-main:  [A][B][C][D] → blocks[0,1] (assume block_size=2)
-spec:  allocate 4 blocks → [blk_S0, blk_S1, blk_S2, blk_S3]
+On rejection, exact speculative sampling draws from the positive residual:
 
-step 2: draft generates [E', F', G']
-store KVs:
-  blk_S0: placeholder for verified token
-  blk_S1: KV for E'
-  blk_S2: KV for F'
-  blk_S3: KV for G'
-
-step 3: large model verifies in parallel
-case 1 - all accepted:
-  ┌─────────────────────────────────────┐
-  │ commit all 4 blocks to main         │
-  │ main: [A][B][C][D][E][F][G]         │
-  │ blocks: [0,1,S0,S1,S2]              │
-  └─────────────────────────────────────┘
-
-case 2 - partial (E' accepted, F' rejected):
-  ┌─────────────────────────────────────┐
-  │ commit blk_S0, blk_S1               │
-  │ free blk_S2, blk_S3                 │
-  │ sample correct F from large model   │
-  │ main: [A][B][C][D][E][F]            │
-  └─────────────────────────────────────┘
-
-case 3 - all rejected:
-  ┌─────────────────────────────────────┐
-  │ free blk_S1, blk_S2, blk_S3         │
-  │ use blk_S0 for verified token       │
-  │ main: [A][B][C][D][E_verified]      │
-  └─────────────────────────────────────┘
-  ↑ the +1 ensures we always make progress
-```
-
-**verification** (the interesting part):
+$$
+p_{\mathrm{recover}}(x)
+=\frac{\max(p_{\mathrm{target}}(x)-p_{\mathrm{draft}}(x),0)}
+{\sum_y\max(p_{\mathrm{target}}(y)-p_{\mathrm{draft}}(y),0)}.
+$$
 
 ```python
 # maintain the large model's distribution exactly
-for i, (p_l, p_d) in enumerate(zip(large_probs, draft_probs)):
-  if p_l >= p_d or random() < p_l / p_d:
-    accepted_tokens.append(draft_tokens[i])
+for token, p_target, p_draft in zip(draft_tokens, target_probs, draft_probs):
+  accept_prob = min(1.0, p_target[token] / p_draft[token])
+  if random() < accept_prob:
+    accepted_tokens.append(token)
   else:
-    break  # reject and resample from large model
+    residual = maximum(p_target - p_draft, 0.0)
+    accepted_tokens.append(sample(residual / residual.sum()))
+    break
+else:
+  accepted_tokens.append(sample(target_bonus_probs))
 ```
 
 ![[thoughts/Speculative decoding#von Neumann acceptance rejection]]
@@ -820,27 +794,27 @@ graph LR
 
 ## context parallelism
 
-split attention heads across GPUs for long contexts.
+split the context length across GPUs. for prefill, each GPU computes a chunk of the new query positions. for decode, the paged KV cache is sharded along its token dimension. head and KV-head sharding belong to tensor parallelism.
 
 ```
-GPU 0: computes attention for heads [0-7]
-GPU 1: computes attention for heads [8-15]
-GPU 2: computes attention for heads [16-23]
-GPU 3: computes attention for heads [24-31]
-         ↓
-    AllReduce to combine
+GPU 0: cached positions where i % 4 == 0
+GPU 1: cached positions where i % 4 == 1
+GPU 2: cached positions where i % 4 == 2
+GPU 3: cached positions where i % 4 == 3
+        ↓
+combine partial attention results
 ```
 
-**enables**: 128K+ context with minimal latency increase
+**benefit**: less per-GPU KV duplication for long-context decode. **cost**: another communication step.
 
 ## parallelism comparison
 
-| strategy | splits          | communication    | use case                  |
-| -------- | --------------- | ---------------- | ------------------------- |
-| TP       | weights         | high (AllReduce) | large models, low latency |
-| DP       | requests        | none             | high throughput           |
-| PP       | layers          | medium (p2p)     | very large models         |
-| context  | attention heads | medium           | long contexts             |
+| strategy | splits          | communication    | use case                           |
+| -------- | --------------- | ---------------- | ---------------------------------- |
+| TP       | weights         | high (AllReduce) | large models, low latency          |
+| DP       | requests        | none             | high throughput                    |
+| PP       | layers          | medium (p2p)     | very large models                  |
+| context  | sequence tokens | medium/high      | long contexts, less KV duplication |
 
 ## distributed inference
 

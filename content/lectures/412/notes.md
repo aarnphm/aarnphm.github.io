@@ -34,7 +34,7 @@ Let $d_{model}$ denote the residual stream width and $T$ the sequence length. Re
 ### embeddings and residual coordinates
 
 - token embedding: $X_0 = S E$ where $S\in\mathbb{R}^{T\times |\mathcal{V}|}$ is a one-hot indicator matrix and $E\in\mathbb{R}^{|\mathcal{V}|\times d_{model}}$ is the learned embedding.
-  - Rotary or sinusoidal position encodings add $P\in\mathbb{R}^{T\times d_{model}}$ before the first block, keeping the update linear in $E$ and $P$. [@vaswani2023attentionneed]
+  - learned absolute and sinusoidal encodings add a position vector to the residual stream. RoPE instead rotates query and key coordinates inside attention, so it is not an additive matrix $P$ in $X_0$. [@vaswani2023attentionneed]
 - layer norm: treat pre-normalization as an affine map $\mathcal{N}(x)=D(x)(x-\mu(x))$ with diagonal scaling $D(x)$. In practice we approximate $D$ as invertible on the support of interest to reason about nearby linearizations.
 - residual stream: every block writes back to $X$ through additive updates, so we model the stack as
 
@@ -46,20 +46,32 @@ where $F_{\ell}$ sums attention and mlp contributions.
 
 **Definition (token embedding map).** The map $\varepsilon: \{1,\dots,|\mathcal{V}|\}\to\mathbb{R}^{d_{model}}$ satisfies $\varepsilon(i)=e_i^\top E$ with $e_i$ the $i$th standard basis vector. For a one-hot token matrix $S$, the initial residual matrix is $X_0 = S E$.
 
-**Lemma (distinguishability with positional encodings).** Suppose positions $0\le i<j<T_{max}$ have distinct positional vectors $p_i\ne p_j$ and that $\operatorname{span}\{E\}-\operatorname{span}\{P\}$ intersects only at $0$. Then the combined embedding map $\tilde\varepsilon(i,\text{pos}) = \varepsilon(i)+p_{\text{pos}}$ is injective over token-position pairs.
+**Lemma (injectivity for additive position vectors).** The map $\widetilde\varepsilon(a,i)=\varepsilon(a)+p_i$ is injective exactly when
 
-_Proof._ If $\tilde\varepsilon(i,\text{pos})=\tilde\varepsilon(j,\text{pos}')$, subtracting yields $\varepsilon(i)-\varepsilon(j)=p_{\text{pos}'}-p_{\text{pos}}$. By the direct-sum assumption the two sides lie in complementary subspaces, forcing both to be zero. Distinct positional vectors give $\text{pos}=\text{pos}'$, and injectivity of $\varepsilon$ then implies $i=j$. [^embed-proof]
+$$
+\varepsilon(a)-\varepsilon(b)\ne p_j-p_i
+$$
 
-**Lemma (layer norm linearization).** For inputs constrained to a neighborhood where $\sigma(x)>0$, the layer norm $\mathcal{N}(x) = \gamma\odot \frac{x-\mu}{\sqrt{\sigma^2+\epsilon}} + \beta$ admits a first-order linearization $J_{\mathcal{N}}(x) = \frac{1}{\sqrt{\sigma^2+\epsilon}} \operatorname{diag}(\gamma)B_x$ where $B_x$ is a projection matrix projecting onto the subspace orthogonal to both $\mathbf{1}$ and $x-\mu\mathbf{1}$.
+for every distinct pair $(a,i)\ne(b,j)$.
 
-_Proof._ Differentiate the mean and variance terms to obtain $\nabla_x \mu = \tfrac{1}{d}\mathbf{1}$ and $\nabla_x \sigma = \tfrac{1}{d\sigma}(x-\mu\mathbf{1})$. Substituting into the Jacobian yields $B_x = I - \tfrac{1}{d}\mathbf{1}\mathbf{1}^\top - \frac{(x-\mu\mathbf{1})(x-\mu\mathbf{1})^\top}{d\sigma^2}$, which is linear and projects onto the hyperplane orthogonal to $\mathbf{1}$. [^layernorm-proof]
+_Proof._ Equality of two combined embeddings is equivalent to $\varepsilon(a)-\varepsilon(b)=p_j-p_i$. excluding that equality for every distinct pair is precisely injectivity. distinct token embeddings and distinct position vectors alone are insufficient because their differences can cancel. [^embed-proof]
+
+**Lemma (layer norm linearization).** Let $z=x-\mu\mathbf1$ and $s=\sqrt{d^{-1}\lVert z\rVert_2^2+\epsilon}$. the Jacobian of $\mathcal N(x)=\gamma\odot z/s+\beta$ is
+
+$$
+J_{\mathcal N}(x)
+=\frac{\operatorname{diag}(\gamma)}{s}
+\left(I-\frac{\mathbf1\mathbf1^T}{d}-\frac{zz^T}{ds^2}\right).
+$$
+
+_Proof._ Differentiate $\mu$, $z$, and $s$, then collect the three terms. the bracketed matrix annihilates $\mathbf1$, so layer norm is not locally invertible. when $\epsilon>0$ it is not a projection: its eigenvalue along $z$ is $\epsilon/s^2$. [^layernorm-proof]
 
 ### single-head attention as a tensor product
 
 Fix a head $h$ inside layer $\ell$. Following the transformer-circuits factorization we write the attention output as a Kronecker-style product[^Kronecker] acting on $X_{\ell}$:[@elhage2021mathematical]
 
 $$
-H^{(h)}(X_{\ell}) = A^{(h)}(X_{\ell}) \otimes W_{OV}^{(h)} X_{\ell}
+H^{(h)}(X_{\ell}) = A^{(h)}(X_{\ell})X_{\ell}W_{OV}^{(h)}
 $$
 
 [^Kronecker]:
@@ -102,7 +114,7 @@ $$
 
       (though one wouldn’t computationally represent them in that form). More formally, $A$ and $W$ are “type $(1,1)$” tensors (matrices mapping vectors to vectors), and $A \otimes W$ is a “type $(2,2)$” tensor (which can map matrices to matrices).
 
-with $A^{(h)}(X_{\ell})\in\mathbb{R}^{T\times T}$ encoding token-to-token routing and $W_{OV}^{(h)} = W_O^{(h)}W_V^{(h)}\in\mathbb{R}^{d_{model}\times d_{model}}$ a low-rank map ($\mathrm{rank} \le d_{head}$).
+with $A^{(h)}(X_{\ell})\in\mathbb{R}^{T\times T}$ encoding token-to-token routing and $W_{OV}^{(h)} = W_V^{(h)}W_O^{(h)}\in\mathbb{R}^{d_{model}\times d_{model}}$ a low-rank map ($\mathrm{rank} \le d_{head}$).
 
 - Because the only nonlinearity resides in the softmax defining $A^{(h)}$, freezing $A^{(h)}$ linearizes the head completely.
 - the idea of [[thoughts/mathematical framework transformers circuits#attention heads as information movement|information movement]] comes from the fact attention compute value vectors for each tokens from residual stream, and linearly combine each of those vectors based on attention pattern.
@@ -110,35 +122,41 @@ with $A^{(h)}(X_{\ell})\in\mathbb{R}^{T\times T}$ encoding token-to-token routin
 - This enables path analysis:
   - expand logits as sums of products of $W_{OV}$ and $W_{QK}$ matrices and map each product to a circuit acting on a basis vector in the residual stream. [@elhage2021mathematical]
 
-- An attention head is really applying two linear operations,$A$ and $W_O W_V$ which operate on different dimensions and act independently.
+- An attention head applies two linear operations, $A$ across positions and $W_VW_O$ across residual coordinates.
   - $A$ governs which token's information to move from and to
-  - $W_O W_V$ governs which information is read from the source token and how it is written to the destination token.
+  - $W_VW_O$ governs which information is read from the source token and how it is written to the destination token.
 
 > [!tip] intuition
 > think of $W_{OV}$ as choosing a subspace to copy from the source token and another to write into at the destination. singular vectors of $W_{OV}$ highlight reusable features; tracking them across layers surfaces induction heads and copy circuits.
 
-- causal mask: define $M\in\mathbb{R}^{T\times T}$ with $M_{ij}=0$ for $j\le i$ and $M_{ij}=-\infty$ otherwise. Then $A^{(h)} = \operatorname{softmax}\!\left(\frac{Q^{(h)}K^{(h)\top}}{\sqrt{d_k}} + M\right)$ is strictly lower triangular, ensuring autoregressive causality.
-- stochasticity: each row of $A^{(h)}$ sums to 1 because $\operatorname{softmax}$ outputs a probability simplex vector, so attention matrices lie in the Birkhoff polytope[^birkhoff] intersected with the causal mask.
+- causal mask: define $M\in\mathbb{R}^{T\times T}$ with $M_{ij}=0$ for $j\le i$ and $M_{ij}=-\infty$ otherwise. then $A^{(h)} = \operatorname{softmax}\!\left(\frac{Q^{(h)}K^{(h)\top}}{\sqrt{d_k}} + M\right)$ is lower triangular and can have a nonzero diagonal because a token may attend to itself.
+- stochasticity: each row of $A^{(h)}$ sums to $1$. causal attention is generally not column-stochastic, so it does not lie in the Birkhoff polytope.[^birkhoff]
 
-**Proposition (masked attention operators).** Let $L\in\mathbb{R}^{T\times T}$ be strictly lower triangular. Then $A = \operatorname{softmax}(L)$ is nilpotent of index $T$ when interpreted as an operator on the quotient space mod residual self-contributions.
+**Proposition (causal support is closed under composition).** If $A,B\in\mathbb R^{T\times T}$ are lower triangular attention matrices, then $AB$ is lower triangular.
 
-_Proof._ The masked structure forces $A$ to have zeros on and above the diagonal. Because multiplication of strictly lower triangular matrices increases the subdiagonal width, $A^T=0$.
+_Proof._ For $j>i$,
+
+$$
+(AB)_{ij}=\sum_k A_{ik}B_{kj}=0,
+$$
+
+because a nonzero summand would require both $k\le i$ and $j\le k$, which is impossible. the product remains causal. it is not generally nilpotent because its diagonal can be nonzero.
 
 #### observations on single-head attention
 
 - $A$ is the **only non-linear part** of this equation (being computed from a softmax). This means that if we fix the attention pattern, attention heads perform a linear operation. This also means that, **without fixing** $A$, attention heads are “half-linear” in some sense, since the per-token linear operation is constant.
 - $W_Q$ and $W_K$ always operate together. They’re never independent. Similarly, $W_O$ and $W_V$ always operate together as well.
-  - Although they’re parameterized as separate matrices, $W_O W_V$ and $W_Q^T W_K$ can always be thought of as individual, low-rank matrices.
+  - Although they’re parameterized as separate matrices, $W_V W_O$ and $W_Q W_K^T$ can be treated as individual low-rank maps under the row-activation convention.
   - Keys, queries and value vectors are, in some sense, superficial. They're intermediary by-products of computing these low-rank matrices. One could easily reparameterize both factors of the low-rank matrices to create different vectors, but still function identically.
-  - Because $W_O W_V$ and $W_Q W_K$ always operate together, we like to define variables representing these combined matrices, $W_{OV} = W_O W_V$ and $W_{QK} = W_Q^T W_K$.
+  - define $W_{OV}=W_VW_O$ and $W_{QK}=W_QW_K^T$ to keep the row-activation convention explicit.
 - Products of attention heads behave much like attention heads themselves. By the distributive property,
 
   $$
-    (A^{h_2} \otimes W_{OV}^{h_2}) \cdot (A^{h_1} \otimes W_{OV}^{h_1})
-    = (A^{h_2} A^{h_1}) \otimes (W_{OV}^{h_2} W_{OV}^{h_1}).
+    H^{(h_2)}(H^{(h_1)}(X))
+    =(A^{h_2}A^{h_1})X(W_{OV}^{h_1}W_{OV}^{h_2}).
   $$
 
-  The result of this product can be seen as functionally equivalent to an attention head, with an attention pattern which is the composition of the two heads $A^{h_2} A^{h_1}$ and an output-value matrix $W_{OV}^{h_2} W_{OV}^{h_1}$. We call these “virtual attention heads”, discussed in more depth later.
+  the composite has sequence operator $A^{h_2}A^{h_1}$ and residual operator $W_{OV}^{h_1}W_{OV}^{h_2}$. this is the virtual-head bookkeeping device.
 
 ### block-level composition
 
@@ -150,19 +168,20 @@ $$
 
 and the residual update becomes $X_{\ell+1}=X_{\ell}+M_{\ell}(X_{\ell})+G_{\ell}(X_{\ell})$ where $G_{\ell}$ is the mlp contribution.
 
-- mlp as rank-expansion: in decoder-only GPT blocks, $G_{\ell}(x)=W_2\,\phi(W_1 x)$ with $W_1\in\mathbb{R}^{d_{ff}\times d_{model}}$, $W_2\in\mathbb{R}^{d_{model}\times d_{ff}}$. linearize by freezing the diagonal Jacobian of $\phi$ to obtain a low-rank update governed by $W_2\operatorname{diag}(\phi'(W_1 x))W_1$.
+- mlp as rank-expansion: with row activations, $G_\ell(x)=\phi(xW_1)W_2$, where $W_1\in\mathbb R^{d_{model}\times d_{ff}}$ and $W_2\in\mathbb R^{d_{ff}\times d_{model}}$. freezing the diagonal activation Jacobian gives the local residual-coordinate map $W_1\operatorname{diag}(\phi'(xW_1))W_2$.
 - key-value memory view: geva et al. show that feed-forward neurons implement key-value associative memories; $W_1$ encodes keys, the activation acts as a selector, and $W_2$ writes cached values back into the residual stream, matching the residual-circuit picture.[@geva2021transformerfeedforwardlayerskeyvalue]
-- virtual heads: products like $H^{(h_2)}\circ H^{(h_1)}$ manifest as new low-rank operators with attention $A^{(h_2)}A^{(h_1)}$ and OV matrix $W_{OV}^{(h_2)}W_{OV}^{(h_1)}$. these virtual heads explain induction circuits spanning multiple layers.[@elhage2021mathematical]
+- virtual heads: products like $H^{(h_2)}\circ H^{(h_1)}$ have attention map $A^{(h_2)}A^{(h_1)}$ and row-convention OV map $W_{OV}^{(h_1)}W_{OV}^{(h_2)}$.[@elhage2021mathematical]
 
-**Proposition (Residual path expansion).** Freezing softmax weights in every attention head induces a linear map $T:\mathbb{R}^{T\times d_{model}}\to\mathbb{R}^{T\times |\mathcal{V}|}$ whose matrix factors into a sum over directed paths $p$ through attention and mlp nodes: $T=\sum_{p}W_U^{(p)} W_{OV}^{(p_k)}\cdots W_{OV}^{(p_1)}$.
-
-_Proof._ If we rewrite each attention head as $A^{(h)}W_{OV}^{(h)}$ and each mlp as $D_{\phi}(x)W_2W_1$. When the routing matrices $A^{(h)}$ are held fixed, every block becomes affine-linear. Unrolling the $L$ residual blocks yields
+**Proposition (linearized residual path expansion).** Freeze the attention patterns, layer-norm Jacobians, and MLP activation Jacobians at one input. each layer is then a linear operator $I+B_\ell$ on $\operatorname{vec}(X)$, where $B_\ell$ contains both sequence-routing and residual-space factors. the unembedded output is
 
 $$
-X_L = X_0 + \sum_{\ell=0}^{L-1} F_{\ell}(X_{\ell})
+\operatorname{vec}(\operatorname{logits})
+=(W_U^T\otimes I_T)
+\prod_{\ell=0}^{L-1}(I+B_\ell)
+\operatorname{vec}(X_0).
 $$
 
-and inductively substituting $X_{\ell}$ produces a Neumann-like expansion where each term is a product of head/ff matrices applied to the seed $X_0$. Grouping by unique sequences of heads gives the stated sum; tails that end at the unembedding $W_U$ map residual features into logits.[@elhage2021mathematical][^path-proof]
+_Proof._ Expanding the ordered product chooses either the identity or one update from each layer. every term is therefore an ordered residual path. attention terms retain both $A^{(\ell,h)}$ and $W_{OV}^{(\ell,h)}$; MLP terms retain their local Jacobians. the unembedding maps the final residual coordinates to logits.[@elhage2021mathematical][^path-proof]
 
 ### mlp superposition (geva et al.)
 
@@ -208,11 +227,11 @@ where $v_j$ is the $j$th column of $V^\top$. Each neuron contributes a rank-one 
 > ![[lectures/412/images/qwen3-0.6b_layer12_head8_absurdity_spectrum.webp]]
 > ![[lectures/412/images/qwen3-0.6b_layer12_head8_absurdity_heatmap.webp]]
 
-[^embed-proof]: The argument simply states that the column space of $E$ (token features) and the span of positional vectors intersect only at the zero vector. Thus the only way a token difference can equal a positional difference is if both sides vanish, forcing the tokens and positions to match.
+[^embed-proof]: This condition is finite and exact for a fixed vocabulary and context window. a direct-sum assumption on the token-difference and position-difference spans would be sufficient, though stronger than necessary.
 
-[^layernorm-proof]: Taking derivatives shows layer norm subtracts the mean direction and rescales by variance. The Jacobian therefore projects onto the mean-zero hyperplane while applying the learned gain $\gamma$, which is the linear approximation used in analyses.
+[^layernorm-proof]: Centering makes the constant direction a null direction. the variance term changes the centered radial direction, with the $\epsilon=0$ formula gaining a second null direction.
 
-[^path-proof]: Expanding the residual recursion is equivalent to unrolling a power series: every term corresponds to a path that alternates attention and MLP updates before finally mapping to logits via $W_U$.
+[^path-proof]: Expanding the ordered product yields one term for every choice of layer updates. a path term must keep its sequence and residual-coordinate operators; dropping the attention matrices loses token routing.
 
 [^geva-proof]: Geva et al. show that each neuron behaves like a key–value pair: $K_j$ is a key direction, the activation gate decides whether to fire it, and $v_j$ is the value written back. Summing $a_j v_j$ across neurons reconstructs the residual update while exposing where features overlap.
 
@@ -220,7 +239,7 @@ where $v_j$ is the $j$th column of $V^\top$. Each neuron contributes a rank-one 
 
 [^moe-proof]: When the router enforces equal traffic per expert, the Gram matrix $R^\top R$ becomes diagonal. This means expert activations do not interfere (off-diagonal zero) and each diagonal entry reflects uniform utilisation, the condition required by the balancing loss.
 
-[^birkhoff]: The Birkhoff polytope is the convex hull of permutation matrices. Any row-stochastic attention matrix (non-negative rows summing to one) lies inside it, meaning attention can be interpreted as a probabilistic mixture of permutations that route information between tokens (with causality enforced via masking).
+[^birkhoff]: The Birkhoff polytope contains doubly stochastic matrices, whose rows and columns both sum to $1$. softmax supplies only the row condition.
 
 [^sigma-footnote]: Singular values measure how much an operator stretches orthogonal directions; plotting them on a log scale reveals how quickly the energy decays. Interpreting $\sigma_i^2$ as variances explains why effective rank and cumulative energy summarise the head’s behaviour.
 
@@ -261,13 +280,19 @@ _Proof._ For binary top-1 routing, each token is assigned to exactly one expert,
 
 ### [[thoughts/MLA|MLA]]
 
-- kv compression: mla computes token-level latent codes $Z\in\mathbb{R}^{T\times d_{latent}}$ via a learned projection $W_{latent}$, storing $Z$ instead of full key/value tensors. During inference, queries multiply the latent cache through shared mixing matrices, approximating the original attention scores while shrinking memory by >90% on DeepSeek-V2.[@deepseekai2024deepseekv2strongeconomicalefficient]
-- matrix factorization: interpret mla as factoring the key matrix $K=W_K X$ into $K=U Z$ with $U\in\mathbb{R}^{d_{model}\times d_{latent}}$. Selecting $d_{latent}\ll d_{model}$ enforces a low-rank structure; the reconstruction error aligns with the neglected singular values of $K$.
-- latency gains: the compressed cache allows wider batch sizes because attention now costs $O(T d_{latent})$ per head instead of $O(T d_{model})$. The trade-off surfaces as condition number growth in $U$; monitor $\kappa_2(U)$ to guard against numerical drift at long context lengths.
+- kv compression: MLA computes one latent $\mathbf c_t^{KV}\in\mathbb R^{d_c}$ per token and caches it with a shared RoPE key. content-key and value up-projections are absorbed into the query and output paths during inference.[@deepseekai2024deepseekv2strongeconomicalefficient]
+- matrix factorization: stacking the dense content-key maps gives a shared factorization $W^K=UW^{DKV}$ with rank at most $d_c$. the factors are learned with the model; they are not produced by truncating the SVD of the realized key activations.
+- latency gains: the cache width falls from $2n_hd_h$ to $d_c+d_R$. this reduces memory traffic and can admit larger batches. kernel shapes and the extra latent-width contractions determine the actual latency.
 
-**Proposition (spectral error bound).** Let $K = U Z$ be the rank-$d_{latent}$ approximation from the mla factorization and $\sigma_i$ the singular values of the original key matrix. Then $\|K - K_{\text{full}}\|_F^2 = \sum_{i>d_{latent}} \sigma_i^2$, so truncating at $d_{latent}$ discards precisely the tail energy.
+**Proposition (best fixed low-rank approximation).** For a fixed matrix $W$ with singular values $\sigma_1\ge\sigma_2\ge\cdots$, the best rank-$d_c$ approximation satisfies
 
-_Proof._ Apply the Eckart–Young–Mirsky theorem to the SVD of $K_{\text{full}}$.
+$$
+\min_{\operatorname{rank}(\widehat W)\le d_c}
+\lVert W-\widehat W\rVert_F^2
+=\sum_{i>d_c}\sigma_i^2.
+$$
+
+_Proof._ This is the Eckart-Young-Mirsky theorem. it bounds a chosen linear map, not the output error of a trained attention layer.
 
 ---
 
@@ -284,7 +309,7 @@ A highway block for a vector $x \in \mathbb{R}^d$ computes:
 
 $$
 \begin{aligned}
-H(x) &= \mathrm{Transform}(x) = W_H x + b_H \quad (\text{linear} + \text{nonlinearity}) \\
+H(x) &= \mathrm{Transform}(x) = \phi(W_H x + b_H) \\
 T(x) &= \mathrm{Gate}(x) = \sigma(W_T x + b_T) \\
 C(x) &= 1 - T(x) \quad (\text{carry gate}) \\
 y &= H(x) \odot T(x) \;+\; x \odot C(x) \\
@@ -302,7 +327,7 @@ Put differently, it’s a gated residual: not always add everything, but _weight
 
 A common variant (the “coupled” version) enforces $C(x) = 1 - T(x)$ so we don’t need a separate carry gate. [@greff2017highwayresidualnetworkslearn]
 
-When $T(x)\equiv 1$ always, the highway block reduces to a plain transformed layer; when $T(x)\equiv 0$, it passes identity (just skip). If gates are always “open” (always carry), it reduces to residual. Thus highway nets generalize residuals by _learning_ gating. [@greff2017highwayresidualnetworkslearn]
+when $T(x)\equiv1$, the block returns $H(x)$. when $T(x)\equiv0$, it returns $x$. a residual block has the different form $x+F(x)$, so the coupled highway equation does not become a residual block merely by fixing its gate. [@greff2017highwayresidualnetworkslearn]
 
 ### derivation & path decomposition
 
@@ -440,7 +465,7 @@ So if you double context length $n$, compute cost quadruples ($n^2$), memory dou
 | --------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Standard / ordinary / (matrix) product**                | Matrices / linear maps                                                   | If $A$ is $m \times p$ and $B$ is $p \times n$, then $(AB)_{ij} = \sum_{k=1}^p A_{ik} B_{kj}$.                                                                                                                                                                                                                                     | Associative, non‐commutative in general; has identity; distributes over addition.                                                                                                |
 | **Dot (scalar) product**                                  | Vectors in $\mathbb{R}^n$ (or inner‐product spaces)                      | $\mathbf{x} \cdot \mathbf{y} = \sum_i x_i y_i$ (real) or involves conjugation if complex.                                                                                                                                                                                                                                          | Bilinear (or sesquilinear), symmetric (or Hermitian symmetric), positive definite, yields norm via $\|\cdot\| = \sqrt{\langle x, x\rangle}$.                                     |
-| **Inner product**                                         | In any real/complex vector space (or other modules) with extra structure | Generalizes dot product: a map $\langle \cdot , \cdot \rangle: V \times V \to \mathbb{F}$ satisfying linearity, conjugate symmetry (if over $\mathbb{C}$), positive definiteness.                                                                                                                                                  | Induces norm, angle, orthogonality; symmetric/Hermitian; positive definite; linear in first (or second) argument depending on convention.                                        |
+| **Inner product**                                         | Real or complex vector spaces                                            | A map $\langle\cdot,\cdot\rangle:V\times V\to\mathbb F$ that is linear in one argument, conjugate-linear in the other over $\mathbb C$, conjugate symmetric, and positive definite: $\langle x,x\rangle>0$ for $x\ne0$.                                                                                                         | Induces norm, angle, and orthogonality; the convention determines which argument is linear.                                                                                      |
 | **Frobenius inner product**                               | Matrices of same size                                                    | $\langle A, B \rangle_F = \sum_{i,j} \overline{A}_{ij} B_{ij} = \mathrm{Tr}(A^\dagger B)$.                                                                                                                                                                                                                                         | It’s an inner product on the vector space of matrices; induces Frobenius norm; behaves nicely w.r.t. vectorization.                                                              |
 | **Hadamard product (entry-wise product / Schur product)** | Matrices (same size)                                                     | $(A \odot B)_{ij} = A_{ij} \cdot B_{ij}$.                                                                                                                                                                                                                                                                                          | Commutative, associative; distributes over addition; different from matrix multiplication. Preserves positive semi-definiteness under some conditions (“Schur product theorem”). |
 | **Kronecker product**                                     | Two matrices (any sizes) → block matrix                                  | If $A$ is $m \times n$, $B$ is $p \times q$: $ A \otimes B$ is an $mp \times nq$ block matrix where each entry $a_{ij}$ is replaced by $a_{ij} B$.                                                                                                                                                                                 | Large dimension blow-up; satisfies mixed product properties; related to tensor product; useful for vectorization tricks.                                                         |

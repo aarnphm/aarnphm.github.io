@@ -27,7 +27,7 @@ The practical game is budgeting bits and bandwidth where they buy the most accur
 
 ### kv cache
 
-In decoding, the KV cache grows linearly with sequence length and quickly dominates HBM. In most systems the cache is quantised on write (per new token) and de‑quantised on read for attention, reducing bandwidth pressure while keeping math in FP16/FP32. The trade is straightforward: more tokens and larger batches for a small degradation in fidelity.
+in decoding, the KV cache grows linearly with sequence length and batch size. systems may store it in the model dtype or quantize it on write and dequantize it inside the attention path. lower precision saves capacity and bandwidth while adding conversion work and model-dependent error.
 
 Compression pursues the same objective from the algorithmic side: store fewer or smaller KV entries while keeping the next‑token distribution intact. Useful signals include per‑head attention patterns, layer‑wise information flow, and approximately low‑rank structure in the KV space.
 
@@ -49,7 +49,7 @@ $$CR=\frac{m}{T},\quad\text{memory saved}= (1-CR)\times100\%.$$
 
 #### multi-latent attention
 
-Background and notation [^mla]. With $n_h$ heads of width $d_h$ per layer:
+background and notation [^mla]. with $n_h$ query heads of width $d_h$ per layer:
 
 - MHA stores $K,V\in\mathbb{R}^{T\times n_h d_h}$ per token: per‑token cost $\approx 2 n_h d_h$.
 - GQA shares K/V within $n_g$ groups: cost $\approx 2 n_g d_h$ (with $n_g<n_h$).
@@ -59,31 +59,49 @@ KV cost comparison (per layer, per token):
 
 - MHA: $2 n_h d_h$; GQA: $2 n_g d_h$; MQA: $2 d_h$; MLA: $d_c + d^{R}_h$.
 
-Setting, e.g., $d_c=4 d_h$ and $d^{R}_h=\tfrac{1}{2}d_h$ yields a cache cost comparable to GQA with roughly $\sim 2.25$ groups, yet empirically tracks MHA quality on long‑context tasks. Reported results show KV size reductions of about 90%+ and multi‑× decode throughput on large models when combined with MoE and careful implementation.
+for DeepSeek-V3, $n_h=128$, $d_h=128$, $d_c=512$, and $d_h^R=64$. the dense MHA cache width would be $32{,}768$ values per layer and token. MLA stores $576$:
 
-The content latent $c_t$ preserves head‑specific structure via learned per‑head decoders $W^Q_i,W^K_i,W^V_i$, restoring diversity that MQA/GQA sacrifice. The separate RoPE branch avoids entangling position into the compressed content, which would otherwise force the latent to redundantly encode sinusoidal structure.
+$$
+\frac{2n_hd_h}{d_c+d_h^R}
+=\frac{32{,}768}{576}
+\approx56.9.
+$$
+
+head-specific query, key, and value maps remain in the parameters. inference absorbs the content-key map into the query path and the value map into the output projection, so it can attend over the latent cache without reconstructing every historical key and value.
 
 [^mla]: Construction of MLA
 
-    Instead of storing per‑head K/V, MLA stores a compact per‑token latent $c_t\in\mathbb{R}^{d_c}$ and reconstructs per‑head tensors on demand via small decoders. A practical design splits “content” from “position” to handle RoPE cleanly:
+    MLA uses separate query and KV latents:
 
     $$
     \begin{aligned}
-    \text{(content branch)}\quad &c_t = W^{C} h_t,\\
-    q^{C}_{t,i} &= W^{Q}_i c_t,\quad k^{C}_{t,i} = W^{K}_i c_t,\quad v^{C}_{t,i} = W^{V}_i c_t;\\[2pt]
-    \text{(rotary branch)}\quad &q^{R}_{t,i} = \operatorname{RoPE}(W^{QR}_i h_t),\quad k^{R}_{t} = \operatorname{RoPE}(W^{KR} h_t).
+    c_t^{KV}&=W^{DKV}h_t, & c_t^Q&=W^{DQ}h_t,\\
+    q^C_{t,i}&=W_i^{UQ}c_t^Q, & k^C_{t,i}&=W_i^{UK}c_t^{KV},\\
+    v^C_{t,i}&=W_i^{UV}c_t^{KV}.&&
     \end{aligned}
     $$
 
-    Each head uses a concatenation of content and a small RoPE component:
+    RoPE stays on a separate path:
 
-    $$q_{t,i} = [q^{C}_{t,i};\, q^{R}_{t,i}],\quad k_{t,i} = [k^{C}_{t,i};\, k^{R}_{t}],\quad o_{t,i} = \sum_{j\le t} \operatorname{softmax}_j\!\Big(\tfrac{q_{t,i}^\top k_{j,i}}{\sqrt{d_h+d^{R}_h}}\Big) v^{C}_{j,i}.$$
+    $$
+    q^R_{t,i}=\operatorname{RoPE}(W_i^{QR}c_t^Q),
+    \qquad
+    k^R_t=\operatorname{RoPE}(W^{KR}h_t).
+    $$
 
-    Here the cache holds only $c_t$ and $k^{R}_t$ per token. The small per‑head projections $W^Q_i,W^K_i,W^V_i$ are parameters, not cache.
+    each head scores the concatenated content and position components:
+
+    $$
+    q_{t,i}=[q^C_{t,i};q^R_{t,i}],
+    \qquad
+    k_{t,i}=[k^C_{t,i};k^R_t].
+    $$
+
+    the cache holds only $c_t^{KV}$ and $k_t^R$. $c_t^Q$ and both query branches exist only for the current query.
 
 ## distributed inference & kv-cache management
 
-Prefill and decode serve different SLOs (TTFT vs TPOT). Co‑locating them degrades batching and cache locality. Systems like DistServe separate the phases and place them independently, improving goodput under SLOs (reports up to ~7.4× more requests in controlled settings).
+prefill and decode stress different resources and SLOs. disaggregated systems place them in separate instances so each pool can be sized and batched independently. the KV transfer and extra routing are real costs, so colocated and disaggregated serving must be compared under the same prompt, output, and concurrency distribution.
 
 ### KV disaggregation
 
@@ -128,10 +146,10 @@ Lower $B_{\mathrm{kv}}$ with FP8/INT8 caches or architectural changes (GQA/MQA/M
 
 ### putting it together (p/d pipeline)
 
-1. Prefill GPU(s) compute prompt KVs.
-2. Transfer KVs via LMCache→NIXL to decode worker(s).
-3. Decode GPU(s) stream tokens; reuse KVs; prefix hits accelerate branches.
-4. Optionally offload old KVs to DRAM/SSD and prefetch on branch resume.
+1. the producer computes prompt KVs.
+2. the configured connector transfers those KVs and returns transfer metadata.
+3. a proxy forwards that metadata to the consumer, which continues decode.
+4. an offload layer may move cold blocks to DRAM or storage if the serving stack supports it.
 
 ---
 

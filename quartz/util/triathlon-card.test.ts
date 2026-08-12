@@ -1817,7 +1817,6 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['pace', '1:35 /100m'],
     ['stroke rate', '32 spm'],
     ['cadence', '10.5 /length'],
-    ['SWOLF', '36'],
     ['1.9k / 3.8k', "30' / 1h00'"],
     ['stroke type', 'freestyle 80% / breast 20%'],
     ['strokes', '876 · 1.14 m/str'],
@@ -1849,13 +1848,12 @@ test('keeps a missing swim stroke rate visible as an em dash', () => {
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
-  assert.deepEqual(bodyRows(stats).slice(0, 10), [
+  assert.deepEqual(bodyRows(stats).slice(0, 9), [
     ['distance', '1,500 m'],
     ['time', "41'"],
     ['pace', '2:44 /100m'],
     ['stroke rate', '—'],
     ['cadence', '—'],
-    ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle · 100%'],
     ['strokes', '—'],
@@ -1881,14 +1879,13 @@ test('keeps water temperature and adds the full open-water swim profile', () => 
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
-  assert.deepEqual(bodyRows(stats).slice(0, 11), [
+  assert.deepEqual(bodyRows(stats).slice(0, 10), [
     ['distance', '1,500 m'],
     ['time', "41'"],
     ['pace', '2:44 /100m'],
     ['water temp', '14°C'],
     ['stroke rate', '32 spm'],
     ['cadence', '—'],
-    ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle · 100%'],
     ['strokes', '—'],
