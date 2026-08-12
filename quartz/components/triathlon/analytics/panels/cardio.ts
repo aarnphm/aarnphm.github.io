@@ -92,7 +92,6 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
       ),
     )
     meta.appendChild(status)
-    row.appendChild(meta)
     const points = cardioSeriesOf(c, m.key)
     const ys = points.map(point => point.value)
     if (ys.length > 1) {
@@ -135,6 +134,24 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
             'aria-hidden': 'true',
           }),
         )
+      s.append(
+        svg('line', {
+          class: 'tri-engine-axis',
+          x1: 0,
+          y1: chartTop,
+          x2: 0,
+          y2: chartBottom,
+          'aria-hidden': 'true',
+        }),
+        svg('line', {
+          class: 'tri-engine-axis',
+          x1: 0,
+          y1: chartBottom,
+          x2: 100,
+          y2: chartBottom,
+          'aria-hidden': 'true',
+        }),
+      )
       const pathPoints: [number, number][] = points.map(point => [
         xAt(point.date),
         yAt(point.value),
@@ -148,16 +165,25 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
       s.appendChild(
         svg('line', { x1: 0, y1: chartTop, x2: 0, y2: chartBottom, class: 'tri-ana-cursor' }),
       )
-      row.appendChild(s)
       const axis = el('div', 'tri-engine-domain', undefined, { 'aria-hidden': 'true' })
       for (const tick of ticks) {
         const label = el('span', 'tri-engine-domain-tick', axisNumber(tick, step))
         label.style.top = `${((yAt(tick) / chartHeight) * 100).toFixed(2)}%`
         axis.appendChild(label)
       }
-      row.appendChild(axis)
-    } else row.append(el('span', 'tri-engine-spark'), el('span', 'tri-engine-domain'))
+      row.append(axis, s, meta)
+    } else row.append(el('span', 'tri-engine-domain'), el('span', 'tri-engine-spark'), meta)
     block.appendChild(row)
+  }
+  if (dates.length > 1) {
+    const timeAxis = el('div', 'tri-cardio-time-axis', undefined, { 'aria-hidden': 'true' })
+    const timeScale = el('div', 'tri-cardio-time-scale')
+    timeScale.append(
+      el('span', undefined, context.formatter.shortDate(dates[0])),
+      el('span', undefined, context.formatter.shortDate(dates[dates.length - 1])),
+    )
+    timeAxis.appendChild(timeScale)
+    block.appendChild(timeAxis)
   }
   return block
 }

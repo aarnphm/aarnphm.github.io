@@ -3,6 +3,7 @@ import type { SwimTrendMode } from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { TriathlonContext } from '../runtime/context'
 import type { DetailPayload } from './data'
+import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { buildActivityComparison } from '../../../util/triathlon-card'
 import { buildDayCard as buildDayCardNode } from '../../../util/triathlon-card'
 import { parseExcludedActivityIds } from '../../../util/triathlon-card'
@@ -281,12 +282,12 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       const swimStates: {
         mode: SwimTrendMode
         focusedMode: SwimTrendMode | null
-        charts: { kind: 'pace' | 'stroke'; distanceM: number; active: boolean; focused: boolean }[]
+        charts: { kind: SwimChartMetric; distanceM: number; active: boolean; focused: boolean }[]
       }[] = Array.from(embed.querySelectorAll<HTMLElement>('.tri-swim-trends'), section => {
         const toggle = section.querySelector<HTMLElement>('.tri-swim-mode-toggle')
         const active = document.activeElement
         const charts: {
-          kind: 'pace' | 'stroke'
+          kind: SwimChartMetric
           distanceM: number
           active: boolean
           focused: boolean
@@ -295,7 +296,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
           const distanceM = Number(chart.getAttribute('aria-valuenow'))
           if (!Number.isFinite(distanceM)) continue
           charts.push({
-            kind: chart.dataset.swimKind === 'stroke' ? 'stroke' : 'pace',
+            kind: swimChartMetric(chart.dataset.swimKind),
             distanceM,
             active: chart.closest('.tri-zone')?.classList.contains('tri-chart--hover') ?? false,
             focused: active === chart,
