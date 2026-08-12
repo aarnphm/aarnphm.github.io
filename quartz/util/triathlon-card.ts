@@ -3405,7 +3405,6 @@ export const activityStatRows = (
       'cadence',
       poolMetrics ? `${swimTrendNumber(poolMetrics.strokesPerLength)} /length` : '—',
     ])
-    rows.push(['SWOLF', poolMetrics ? Math.round(poolMetrics.swolf).toLocaleString('en-US') : '—'])
     rows.push(['1.9k / 3.8k', swimProjection(d)])
     rows.push(['stroke type', swimStrokeProfile(d)])
     rows.push([

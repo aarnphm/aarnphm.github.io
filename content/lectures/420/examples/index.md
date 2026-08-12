@@ -1,6 +1,6 @@
 ---
 date: '2025-09-30'
-description: runnable, verifiable cuda kernels demonstrating gpu programming concepts from lecture 0.420, requiring volta or newer architecture.
+description: teaching kernels for checking CUDA indexing, memory access, reductions, CuTe layouts, and paged attention.
 id: index
 modified: 2026-06-05 15:08:04 GMT-04:00
 tags:
@@ -10,7 +10,7 @@ tags:
 title: CUDA programming examples
 ---
 
-Runnable, verifiable CUDA kernels demonstrating concepts from Lecture 0.420.
+These are teaching kernels. `verify.sh` checks the basic build and numerical outputs on the local GPU. performance claims require a profiler trace from the same device, clock state, compiler, and input shape.
 
 ## Prerequisites
 
@@ -73,12 +73,10 @@ Demonstrates:
 - [[lectures/420#kernel-launch-from-host-to-device|Kernel launch: from host to device]]
 - [[lectures/420#level-4-warps-and-threads|Level 4: warps and threads]]
 
-Expected output:
+representative output shape:
 
 ```
 Launch config: 4096 blocks × 256 threads = 1048576 total threads
-Kernel execution time: ~0.5 ms
-Throughput: ~200 GB/s
 Verification: PASSED
 ```
 
@@ -91,27 +89,15 @@ Verification: PASSED
 Demonstrates:
 
 - Scalar vs vectorized loads (`float` vs `float4`)
-- 128-bit memory transactions
-- Memory bandwidth optimization
+- per-lane vector load instructions
+- alignment and memory coalescing
 
 **Key concepts from lecture**:
 
 - [[lectures/420#memory-coalescing|Vectorized loads]]
-- 4× instruction reduction using `float4`
+- instruction-count comparison using `float4`
 
-Expected speedup: **1.5-2×** with vectorized loads
-
-Expected output:
-
-```
-Scalar loads:
-  Time: ~8 ms
-  Bandwidth: ~200 GB/s
-
-Vectorized loads (float4):
-  Time: ~4 ms
-  Bandwidth: ~400 GB/s
-```
+the vector version moves more values per lane instruction. inspect SASS and DRAM-sector metrics because coalescing, memory traffic, and instruction count are separate quantities.
 
 ---
 
@@ -131,10 +117,7 @@ Demonstrates:
 - [[lectures/420#shared-memory-and-bank-conflicts|shared memory]]
 - Arithmetic intensity improvement
 
-Expected performance (1024×1024):
-
-- Naive: ~100 GFLOP/s (memory-bound)
-- Tiled: ~300-500 GFLOP/s (reduced memory traffic)
+the timing output compares these two kernels on the current device. neither kernel is a tensor-core performance reference.
 
 **Formula**:
 
@@ -159,8 +142,6 @@ Demonstrates:
 - [[lectures/420#memory-coalescing|memory coalescing]]
 - [[lectures/420#memory-coalescing|Warp-level thread mapping]]
 
-Expected speedup: **2-3×** with proper coalescing
-
 Access patterns:
 
 ```
@@ -178,7 +159,6 @@ Demonstrates:
 
 - Dynamic shared memory allocation
 - Warp-level synchronization optimization
-- Recursive kernel launches
 - Bank conflict avoidance
 
 **Key concepts from lecture**:
@@ -192,10 +172,7 @@ Optimizations:
 1. **Basic**: Simple shared memory reduction
 2. **Optimized**: First-level reduction during global load, unrolled last warp
 
-Expected performance (16M elements):
-
-- Basic: ~300 GB/s
-- Optimized: ~400 GB/s
+both paths are checked against the CPU result. compare elapsed time only after confirming that the byte-count formula and synchronization path match.
 
 ---
 
@@ -240,7 +217,7 @@ Tensor indexing: A(0)=... A(1)=...
 Demonstrates:
 
 - Matrix transpose without swizzling (bank conflicts)
-- Matrix transpose with `Swizzle<3,3,3>` (conflict-free)
+- Matrix transpose with a composed `Swizzle<3,3,3>` layout
 - Swizzle pattern visualization
 - Performance comparison
 
@@ -249,13 +226,11 @@ Demonstrates:
 - [[lectures/420#shared-memory-and-bank-conflicts|shared memory bank conflicts]]
 - [[lectures/420#shared-memory-and-bank-conflicts|Swizzle patterns]]
 
-Expected speedup: **1.3-1.6×** with proper swizzling on Hopper
-
 Swizzle pattern:
 
 ```cpp
 using SmemLayout = decltype(composition(
-    Swizzle<3, 3, 3>{},  // 128-byte swizzle for conflict avoidance
+    Swizzle<3, 3, 3>{},
     Layout<Shape<Int<TILE_M>, Int<TILE_N>>, Stride<Int<TILE_N>, Int<1>>>{}));
 ```
 
@@ -278,7 +253,7 @@ Demonstrates:
 - [[lectures/420#hierarchical-tiling-with-local_tile|Hierarchical tiling]]
 - [[lectures/420#hierarchical-tiling-with-local_tile|CuTe tiling primitives]]
 
-Expected performance (512×512 GEMM): **~500 GFLOP/s**
+this example exercises layout composition. its scalar compute path is not a CUTLASS collective or a tensor-core performance target.
 
 Tiling hierarchy:
 
@@ -308,10 +283,10 @@ Demonstrates:
 
 Key benefits:
 
-1. **No fragmentation**: Fixed page size (16 tokens/page)
+1. **Bounded internal waste**: At most one partially filled final page per sequence
 2. **Dynamic growth**: Allocate pages as needed
 3. **Page sharing**: Common prefixes share pages
-4. **Memory efficiency**: ~60-75% savings vs pre-allocation
+4. **Memory efficiency**: Capacity grows in page-size increments
 
 Architecture:
 
@@ -494,20 +469,9 @@ Or specify at build time:
 make ARCH="-arch=sm_90" 01_vector_add
 ```
 
-## Expected Performance Ranges
+## performance records
 
-On **NVIDIA H100** (reference):
-
-| Example          | Metric      | Expected Value   |
-| ---------------- | ----------- | ---------------- |
-| Vector Add       | Bandwidth   | 2,000-3,000 GB/s |
-| Vectorized Loads | Bandwidth   | 2,500-3,200 GB/s |
-| Matmul Naive     | Performance | 100-200 GFLOP/s  |
-| Matmul Tiled     | Performance | 300-650 GFLOP/s  |
-| Coalescing       | Speedup     | 2-3×             |
-| Reduction        | Bandwidth   | 400-600 GB/s     |
-
-Performance will scale with your GPU's capabilities.
+record GPU model, application clocks, CUDA and compiler versions, input shape, warm-up count, median kernel time, bytes transferred, and profiler metrics. a hardware name by itself does not define an expected range for these teaching kernels.
 
 ## Profiling with Nsight Compute
 

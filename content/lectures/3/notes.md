@@ -22,19 +22,31 @@ see also [[lectures/3/quantisation basics]]
 
 - **Naïve decode (no KV cache)**
 
-  For step $t$: each layer recomputes attention over all $t$ tokens.
+  At step $t$, the model reruns the full prefix. each layer projects all $t$ hidden states and computes causal attention for all prefix positions. the attention part is
 
-  Roughly per layer: form $q_t\in\mathbb{R}^{h\times d}$, recompute $\{k_i,v_i\}_{i\le t}$, and score all pairs
+  $$
+  \mathcal O(Lhd_h t^2)
+  $$
 
-  $\Rightarrow$ **work $\propto t$** _per layer per head_; across $L$ layers $\approx \mathcal{O}(L\cdot h\cdot d\cdot t)$.
+  per decoding step, plus the projection and MLP work for all $t$ positions. summing the attention term over a generation of length $T$ gives
+
+  $$
+  \sum_{t=1}^T\mathcal O(t^2)=\mathcal O(T^3).
+  $$
 
 - **With KV cache**
 
   Past $\{k_i,v_i\}$ are stored once; at step $t$ we only:
-  1. project $x_t\to q_t,k_t,v_t$ (cost \~$\mathcal{O}(h\cdot d)$),
-  2. do the dot-products $q_t K_{1:t}^\top$ and the weighted sum with $V_{1:t}$ (cost \~$\mathcal{O}(h\cdot d\cdot t)$).
+  1. project the new hidden state to $q_t,k_t,v_t$,
+  2. compute $q_tK_{1:t}^T$ and mix $V_{1:t}$, at cost $\mathcal O(hd_ht)$ per layer, or $\mathcal O(Lhd_ht)$ across the model.
 
-     Prefill pays the “quadratic” part once; **subsequent steps avoid re-projecting old tokens** (the big win). [arXiv][1]
+  prefill pays the quadratic attention pass once. cached decode sums its attention work as
+
+  $$
+  \sum_{t=1}^T\mathcal O(t)=\mathcal O(T^2).
+  $$
+
+  the cache changes repeated prefix computation into persistent memory traffic. [arXiv][1]
 
 - **When is KV cache worth it?**
   - Always for autoregressive LLMs: you remove the "recompute all past K/V every step" cost;

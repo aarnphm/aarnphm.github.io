@@ -187,31 +187,27 @@ To illustrate the scale difference, compare a high-end server CPU with H100:
 > | Metric                    | AMD EPYC 9654             | NVIDIA H100              | Ratio  |
 > | ------------------------- | ------------------------- | ------------------------ | ------ |
 > | Physical cores            | 96 cores                  | 132 SMs                  | 1.4×   |
-> | Hardware threads per core | 2 (SMT)                   | 2,048 (64 warps × 32)    | 1,024× |
-> | Total concurrent threads  | 192                       | 270,336                  | 1,408× |
-> | Context switch overhead   | ~1,000 cycles (µs)        | 0 cycles                 | ∞×     |
+> | Resident contexts         | 2 SMT threads per core    | up to 64 warps per SM    | n/a    |
+> | Maximum resident contexts | 192 CPU threads           | 270,336 CUDA threads     | n/a    |
+> | Scheduling                | OS and hardware scheduling | ready-warp selection     | n/a    |
 > | Clock frequency           | 3.7 GHz boost             | 1.41 GHz                 | 0.38×  |
 > | Thread execution          | Out-of-order, speculative | In-order, no speculation | n/a    |
 > | L3 Cache                  | 384 MB                    | 60 MB L2 (no L3)         | n/a    |
 > | Memory bandwidth          | 460 GB/s (DDR5)           | 3,350 GB/s (HBM3)        | 7.3×   |
 > | TDP                       | 360W                      | 700W                     | 1.9×   |
 
-> [!note] Hopper concurrency multiplier
+> [!note] These counts measure different things
 >
-> H100 runs 1,408× more threads concurrently than a 96-core EPYC CPU. This massive thread count enables:
->
-> - Latency hiding: While 64 warps wait on memory (400 cycles), the remaining ~63 warps keep execution units busy
-> - Throughput optimization: Even if each thread is 10× slower than a CPU thread, 1,408× more threads = 140× higher aggregate throughput
-> - Memory bandwidth utilization: 270K threads can saturate 3.35 TB/s HBM3 bandwidth; 192 CPU threads cannot saturate 460 GB/s DDR5
+> A resident CUDA thread is a lane in a scheduled warp, not an independently scheduled CPU hardware thread. the count explains how an SM keeps many warps available while other warps wait. it does not imply a throughput ratio.
 
 - EPYC 9654: 96 physical cores × 2-way SMT = 192 hardware threads
   - Each core runs 2 threads via simultaneous multithreading (SMT)
-  - Context switching between threads takes ~1,000 cycles (OS scheduler overhead)
+  - SMT siblings share one core; an OS context switch is a separate event
   - Total: 192 threads across entire CPU
 
 - H100: 132 SMs × 64 warps/SM × 32 threads/warp = 270,336 concurrent threads
   - Each SM runs 64 warps (2,048 threads) simultaneously
-  - Warp scheduler switches between warps in 0 cycles (hardware-managed)
+  - warp state stays resident while schedulers select ready instructions
   - Each warp executes 32 threads in lockstep (SIMT)
   - Total: 270,336 threads across entire GPU
 
@@ -273,26 +269,24 @@ The GPU's performance model relies on latency hiding: while one warp waits for m
 
 > [!example] Latency hiding in action
 >
-> Consider an SM with 64 resident warps:
+> Consider an SM with several resident warps:
 >
 > ```
-> Cycle 0:  Warp 0  issues memory load (400 cycles latency)
-> Cycle 1:  Warp 1  issues memory load
-> Cycle 2:  Warp 2  issues memory load
-> ...
-> Cycle 63: Warp 63 issues memory load
-> Cycle 64: Warp 0  data arrives! Execute computation
-> Cycle 65: Warp 1  data arrives! Execute computation
-> ...
+> Warp 0: issues a load, then waits on its dependency
+> Warp 1: ready arithmetic instruction
+> Warp 2: ready independent load
+> Warp 3: blocked at a barrier
+>
+> the scheduler chooses an eligible warp each issue opportunity
 > ```
 >
-> The SM never stalls because it has 64 warps in flight. By the time Warp 0's memory request completes, all other warps have issued their requests. This requires 400 / 64 ≈ 6.25 warps per cycle issue rate, well within the SM's capability.
+> occupancy creates a pool of eligible work. it does not guarantee latency hiding: the SM stalls when every resident warp is waiting, and issue bandwidth, dependencies, memory-level parallelism, and resource pressure determine how much latency is covered.
 
 Occupancy measures how many warps are resident on an SM:
 
 $$\text{Occupancy} = \frac{\text{Active warps per SM}}{\text{Maximum warps per SM}} = \frac{\text{Active warps}}{64}$$
 
-Higher occupancy → more latency hiding → higher throughput.
+higher occupancy can expose more independent work. after the active bottleneck is covered, extra occupancy need not increase throughput.
 
 > [!warning] CPU architectural constraints
 >
@@ -1008,45 +1002,25 @@ float value = A[threadIdx.x * N + col];  // ✗ Bad (if N > 32)
 > - Uncoalesced: up to 32 transactions per warp (32× slower in the worst case).
 
 > [!note] Vectorized loads
-> Hopper issues 128-bit `LDG.128` or `LDGSTS.128` instructions when data is 16-byte aligned, reducing instruction count by 4×.
-
-When accessing aligned data, GPUs can issue wide vectorized load instructions that fetch multiple elements atomically in a single instruction.
-
-**Basic example**:
+> A vector type can let one lane request several adjacent elements with one load instruction. it reduces instruction count when the compiler preserves the vector access. it does not reduce the number of bytes requested or guarantee fewer memory transactions.
 
 ```cuda
-// Scalar loads (4 instructions)
 float a0 = A[idx + 0];
 float a1 = A[idx + 1];
 float a2 = A[idx + 2];
 float a3 = A[idx + 3];
 
-// Vectorized load (1 instruction)
 float4 data = *reinterpret_cast<float4*>(&A[idx]);
-// Equivalent to: float4 data; data.x = A[idx]; data.y = A[idx+1]; ...
 ```
 
-**Requirements for vectorized loads**:
+the vector access requires `&A[idx]` to satisfy `float4` alignment. across a warp, each lane executes the same vector instruction, so $32$ lanes load $32\cdot16=512$ bytes. the memory subsystem coalesces those lane requests into the necessary aligned sectors.
+
+requirements:
 
 - Address must be 16-byte aligned (for `float4`, `int4`, `double2`)
 - Data must be contiguous in memory
-- Loads 128 bits atomically
-- **4× fewer memory instructions** compared to scalar loads
-- Available for: `float4`, `float2`, `int4`, `int2`, `double2`, `half8`, etc.
-
-> [!success] Performance benefits
->
-> | Load Type      | Instructions | Bytes per Instruction | Efficiency |
-> | -------------- | ------------ | --------------------- | ---------- |
-> | Scalar `float` | 4            | 4 bytes               | 1×         |
-> | `float2`       | 2            | 8 bytes               | 2×         |
-> | `float4`       | 1            | 16 bytes              | 4×         |
->
-> For a warp loading 128 bytes total:
->
-> - Scalar loads: $32 \text{ threads} \times 4 \text{ bytes} = 32$ instructions per warp
-> - Vectorized `float4`: $32 \text{ threads} \times 16 \text{ bytes} = 8$ `float4` loads = $8$ instructions per warp
-> - **$4 \times$ instruction reduction** $\to$ higher memory throughput, lower register pressure
+- the work decomposition must actually need all vector lanes
+- inspect generated SASS or profile instruction counts before claiming a speedup
 
 **PTX assembly**:
 
@@ -1058,45 +1032,13 @@ ld.global.f32 %f0, [%r0];           // Load 4 bytes
 ld.global.v4.f32 {%f0,%f1,%f2,%f3}, [%r0];  // Load 16 bytes atomically
 ```
 
-**Practical usage in matrix operations**:
-
-```cuda
-// Loading row of matrix A (assuming 16-byte alignment)
-__global__ void matmul_vectorized(float* A, float* B, float* C, int N) {
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-
-    float sum = 0.0f;
-
-    // Process 4 elements at a time using vectorized loads
-    for (int k = 0; k < N; k += 4) {
-        // Load 4 consecutive elements from A and B
-        float4 a_vec = *reinterpret_cast<float4*>(&A[row * N + k]);
-        float4 b_vec = *reinterpret_cast<float4*>(&B[k * N + col]);
-
-        // Accumulate
-        sum += a_vec.x * b_vec.x;
-        sum += a_vec.y * b_vec.y;
-        sum += a_vec.z * b_vec.z;
-        sum += a_vec.w * b_vec.w;
-    }
-
-    C[row * N + col] = sum;
-}
-```
-
 > [!warning] Alignment requirements
 >
-> Misaligned access forces the hardware to split the load into multiple transactions:
+> Converting a misaligned pointer to `float4*` violates the alignment requirement. do not use that cast as a fallback. handle a scalar prefix or choose an aligned tile boundary.
 >
 > ```cuda
-> // Aligned (good)
 > float4* ptr_aligned = (float4*)&A[0];   // A[0] at 16-byte boundary
-> float4 data = *ptr_aligned;             // Single 128-bit load
->
-> // Misaligned (bad)
-> float4* ptr_misaligned = (float4*)&A[1]; // A[1] not at 16-byte boundary
-> float4 data = *ptr_misaligned;           // Splits into 2 transactions!
+> float4 data = *ptr_aligned;
 > ```
 >
 > Ensure arrays are allocated with proper alignment:
@@ -1147,11 +1089,11 @@ __global__ void matmul_vectorized(float* A, float* B, float* C, int N) {
 ```cuda
 __shared__ float smem[32][32];
 
-// Conflict-free: each thread accesses different bank
-float val = smem[threadIdx.x][col];  // ✓ Good
+// Row access: adjacent columns map to adjacent banks
+float row_value = smem[row][threadIdx.x];
 
-// 32-way conflict: all threads access bank 0
-float val = smem[col][0];  // ✗ Bad
+// Column access: a row stride of 32 words aliases one bank
+float column_value = smem[threadIdx.x][col];
 ```
 
 > [!tip] Swizzling
@@ -1543,13 +1485,13 @@ GEMM accounts for 80-90% of compute in transformer training and inference. Optim
 >
 > Computational complexity:
 > - FLOPs: 2MNK (K multiplies + K-1 adds per output element)
-> - Memory (naive): (MK + KN + MN) elements
-> - Arithmetic intensity (naive): 2MNK / 2(MK+KN+MN) bytes
+> - Compulsory matrix footprint: $(MK+KN+MN)$ elements
+> - Actual traffic: depends on cache reuse and the kernel's tiling
 >
 > For square matrices (M=N=K):
 > - FLOPs: 2N³
-> - Memory: 3N² elements = 6N² bytes (FP16)
-> - Arithmetic intensity: 2N³ / 6N² = N/3 FLOPs/byte
+> - Compulsory footprint: $3N^2$ elements, or $6N^2$ bytes for FP16
+> - The upper-bound intensity from one read of each input and one write of the output is $N/3$ FLOP/byte
 >
 > Example: N=4096
 > - FLOPs: ~137 GFLOP
@@ -1580,17 +1522,20 @@ Performance analysis:
 
 - Each thread loads $2K$ values from global memory (two loads per MAC)
 - Computes $2K$ FLOPs
-- Arithmetic intensity: $\frac{2K}{2K \times 2 \text{ bytes}} = \frac{1}{2}$ FLOPs/byte (0.5 FLOP/byte)
-- Roofline bound on H100: $0.5 \times 3.35\,\text{TB/s} = 1.68\,\text{TFLOP/s}$
-- Utilization vs 1,979 TFLOP/s peak: $1.68 / 1,979 \approx 0.08\%$
+- arithmetic intensity for the FP32 code above is approximately
 
-> [!calculation] 4096×4096×4096 FP16 matmul: naive kernel roofline
+$$
+I\approx\frac{2K}{2K\cdot4\ \text{bytes}}=0.25\ \text{FLOP/byte}.
+$$
+
+- its H100 bandwidth roof is about $0.84\ \text{TFLOP/s}$. the tensor-core peak is irrelevant because this scalar FP32 loop does not issue tensor-core instructions.
+
+> [!calculation] $4096\times4096\times4096$ FP32 naive-kernel roofline
 >
 > - Total FLOPs: $2N^3 = 2 \times 4096^3 = 1.3744 \times 10^{11}$ (137.4 GFLOP)
-> - Global traffic: each MAC issues two 2-byte loads ⇒ $2N^3 \times 2 = 2.75 \times 10^{11}$ bytes plus $N^2 \times 2 = 3.4 \times 10^7$ bytes for the store → $2.75\times10^{11}$ bytes (256 GiB)
-> - Arithmetic intensity: $1.3744\times10^{11} / 2.75\times10^{11} = 0.5$ FLOP/byte
-> - Peak sustained throughput bounded by HBM3 bandwidth (3.35 TB/s): $0.5 \times 3.35 = 1.68$ TFLOP/s
-> - Runtime lower bound: $2.75\times10^{11} / 3.35\times10^{12} = 8.2\times10^{-2}$ s ⇒ $\ge 82$ ms for the naive kernel at scale 4096
+> - Without cache reuse, each multiply-accumulate reads two $4$-byte operands, for about $5.50\times10^{11}$ bytes plus the output stores
+> - Arithmetic intensity: $1.3744\times10^{11}/5.50\times10^{11}\approx0.25$ FLOP/byte
+> - HBM bandwidth floor: $5.50\times10^{11}/3.35\times10^{12}\approx0.164$ seconds
 
 Bottleneck: Memory bandwidth. Each value of $A$ and $B$ is loaded multiple times from global memory.
 
@@ -1638,59 +1583,29 @@ Partition into tiles:
 > [!calculation] 128×128×32 tile bandwidth math (FP16 on H100)
 >
 > - Per $K$-slice we load $128\times32$ elements from $A$ and $B$ each ⇒ $8192$ halfs = 16 KB
-> - With $K = 4096$ there are 128 such slices, so an output tile pulls $128 \times 16$ KB = 2.10 MB from HBM and writes a 128×128 tile (128 KB)
+> - With $K = 4096$ there are $128$ such slices, so an output tile pulls about $2.10$ MB from HBM and writes a $128\times128$ FP16 tile of $32$ KB
 > - Summed over all tiles of a 4096³ GEMM, global traffic drops to 2.18 GB (down from 256 GB in the naive kernel)
 > - Arithmetic intensity climbs to $2N^3 / 2.18\,\text{GB} = 63$ FLOP/byte ⇒ roofline cap $63 \times 3.35 = 211$ TFLOP/s
 > - Bandwidth-limited runtime floor: $2.18\,\text{GB} / 3.35\,\text{TB/s} = 0.65$ ms, a 126× reduction in bytes moved compared to the naive loop
 
-[^matmul-tiling]: Each thread block computes a 128×128 tile of output C. Input tiles are loaded into shared memory (128×32 slices from A and B), reused across all 128×128=16,384 threads. The K dimension is tiled into chunks of 32; the outer loop steps through K/32 iterations. This represents a baseline $O(MK + KN + MN)$ memory footprint for the inputs and output sizes, whereas tiled memory traffic scales as $O(\frac{MNK}{B_{\text{tile}}})$, boosting arithmetic intensity by >120×. With FP16 inputs (2-byte elements) the same blocking yields $I \approx 64$ FLOP/byte; further hierarchy-aware staging (L2 residency, tensor memory accelerator) can push toward the $I \approx 10^3$ regime needed to become compute-bound on Hopper.
+[^matmul-tiling]: A thread block can own a $128\times128$ output tile, but it cannot launch one thread per output because CUDA permits at most $1024$ threads in a block. a valid kernel assigns several output elements to each thread or warp. it loads $128\times32$ slices of $A$ and $B$, reuses them across the CTA, and repeats for $K/32$ slices. with FP16 inputs, the idealized HBM arithmetic intensity is about $64$ FLOP/byte before cache effects.
 
-Algorithm:
+implementation constraints:
 
-```cuda
-__global__ void matmul_tiled(float* A, float* B, float* C, int M, int N, int K) {
-    __shared__ float As[128][32];
-    __shared__ float Bs[32][128];
+- the block has at most $1024$ threads, so each thread or warp owns several accumulators
+- all threads cooperate on the $A$ and $B$ loads, including boundary predicates
+- the shared-memory layout must match the compute instruction and avoid bank conflicts
+- accumulator count, shared memory, and registers jointly limit occupancy
 
-    int tx = threadIdx.x, ty = threadIdx.y;
-    int row = blockIdx.y * 128 + ty;
-    int col = blockIdx.x * 128 + tx;
+the idealized input arithmetic intensity for the stated FP16 tile is
 
-    float sum = 0.0f;
+$$
+I=\frac{2\cdot128\cdot128\cdot32}
+{2\cdot128\cdot32\cdot2}
+=64\ \text{FLOP/byte}.
+$$
 
-    // Loop over K dimension in tiles
-    for (int tile = 0; tile < K; tile += 32) {
-        // Cooperatively load tile into shared memory
-        As[ty][tx] = A[row * K + (tile + tx)];
-        Bs[ty][tx] = B[(tile + ty) * N + col];
-        __syncthreads();
-
-        // Compute using shared memory
-        for (int k = 0; k < 32; ++k) {
-            sum += As[ty][k] * Bs[k][tx];
-        }
-        __syncthreads();
-    }
-
-    C[row * N + col] = sum;
-}
-```
-
-Performance analysis:
-
-- Each tile loaded once from global memory
-- Reused across 128 thread computations
-- Arithmetic intensity: $\frac{2 \times 128 \times 128 \times 32}{2 \times 128 \times 32 \times 2} \approx 64$ FLOPs/byte
-- Performance: ~300 TFLOP/s
-- Utilization: 15%
-
-Improvement: 10× faster than naive implementation
-
-Remaining issues:
-
-- Not using tensor cores (matrix multiply accelerators)
-- Bank conflicts in shared memory
-- Register spilling (too many live values)
+that gives a roofline bound, not a measured kernel speed. use the executable example for a scalar teaching kernel and CUTLASS for a production tensor-core implementation.
 
 ## tensor cores and mixed precision
 
@@ -1911,9 +1826,7 @@ __global__ void matmul_wmma_bf16(
 }
 ```
 
-Performance: ~650 TFLOP/s (BF16 input, FP32 accumulation on H100)
-
-Improvement: 20× faster than tiled FP32 implementation
+this code fragment has no benchmark harness, so it supports correctness and instruction mapping only. report throughput from a complete kernel with matrix shapes, clocks, warm-up, and profiler output.
 
 ## CUTLASS
 
@@ -2388,33 +2301,18 @@ float val = smem[threadIdx.x][col];  // All threads hit same bank
 > Result: 32 transactions (1 per thread, serialized)  │ Bank 31: [idle]          │
 >                                                     └──────────────────────────┘
 >
-> With XOR Swizzle - Bank Spreading (conflict-free):
+> With a pedagogical XOR layout:
 > ══════════════════════════════════════════════════
-> swizzled_col = col ^ ((row >> shift) & mask)
+> physical_col = logical_col ^ (row & 31)
 >
 >   Thread  Row  Swizzle          Bank  ┌─────────────────────────┐
->    T0  →  0   0 ^ (0>>5 & 7)=0    0   │ Bank 0:  T0             │ ← 1 access
->    T1  →  1   0 ^ (1>>5 & 7)=0    0   │ Bank 1:  [idle]         │
+>    T0  →  0   0 ^ (0 & 31)=0       0   │ Bank 0:  T0             │
+>    T1  →  1   0 ^ (1 & 31)=1       1   │ Bank 1:  T1             │
 >   ...                                 │  ...                    │
->   T31  → 31   0 ^ (31>>5 & 7)=0   0   │ Bank 31: [idle]         │
+>   T31  → 31   0 ^ (31 & 31)=31    31   │ Bank 31: T31            │
 >                                       └─────────────────────────┘
 >
-> Better example with row >> 3 (for 8 rows per bank rotation):
->
->   T0  → row 0:  col ^ (0>>3 & 7) = col ^ 0  → Bank col%32
->   T8  → row 8:  col ^ (8>>3 & 7) = col ^ 1  → Bank (col^1)%32
->   T16 → row 16: col ^ (16>>3 & 7) = col ^ 2 → Bank (col^2)%32
->   T24 → row 24: col ^ (24>>3 & 7) = col ^ 3 → Bank (col^3)%32
->
-> When accessing same column across rows, XOR rotates bank assignment:
->
->   Row 0-7:   Banks 0,1,2,3,...31     (no rotation)
->   Row 8-15:  Banks 1,0,3,2,...30     (XOR with 1)
->   Row 16-23: Banks 2,3,0,1,...29     (XOR with 2)
->   Row 24-31: Banks 3,2,1,0,...28     (XOR with 3)
->
-> Result: 1 transaction for warp (all threads access different banks)
-> Speedup: 32× fewer transactions!
+> the store and load must use the same logical-to-physical mapping. the access is conflict-free because the $32$ lanes map bijectively to the $32$ banks for a fixed logical column.
 > ```
 
 #### Swizzle function design
@@ -2427,25 +2325,22 @@ $$S(\text{row}, \text{col}) = \text{row} \cdot W + (\text{col} \oplus f(\text{ro
 
 where $\oplus$ is bitwise XOR and $f$ is a shift/mask function.
 
-Common pattern: $f(\text{row}) = (\text{row} \gg \text{shift}) \& \text{mask}$
-
-Solution: Apply swizzle function to permute addresses:
+one simple teaching layout for a $32$-column `float` tile is:
 
 ```cpp
-// XOR-based swizzle with shift=5, mask=7 (for 128-byte swizzle)
-constexpr int SHIFT = 5;  // log2(32)
-constexpr int MASK = 7;   // For 8-element rotation
-int swizzled_col = col ^ ((row >> SHIFT) & MASK);
-float val = smem[row][swizzled_col];  // Conflict-free
+int physical_col = logical_col ^ (row & 31);
+float val = smem[row][physical_col];
 ```
+
+production layouts must also match the tensor-core instruction's operand layout and TMA descriptor. a bank permutation that fixes one access pattern can hurt another.
 
 #### CuTe swizzle atoms
 
 CuTe encodes swizzle patterns as layout transformations via `Swizzle<B, M, S>` atoms:
 
-- B: Base-2 logarithm of swizzle width (e.g., 3 for 8-byte, 7 for 128-byte)
-- M: Mask bits controlling XOR pattern
-- S: Shift bits controlling row contribution
+- B: number of address bits in the XOR mask
+- M: number of low address bits preserved
+- S: displacement between the two bit fields
 
 ```cpp
 // 128-byte swizzle for FP16 matrix (most common for tensor cores)
@@ -2459,32 +2354,7 @@ __shared__ alignas(128) half_t smem[decltype(shape(SmemLayoutSwizzled{}))];
 auto smem_tensor = make_tensor(make_smem_ptr(smem), SmemLayoutSwizzled{});
 ```
 
-#### Swizzle modes by data width
-
-Different swizzle patterns optimize for different element sizes and tensor core operand layouts:
-
-> [!info] NVIDIA swizzle modes
->
-> | Mode               | Swizzle Width | Element Size     | Typical Use Case        |
-> | ------------------ | ------------- | ---------------- | ----------------------- |
-> | `Swizzle<2, 0, 3>` | 32B           | 4B (FP32, INT32) | CUDA core matmul        |
-> | `Swizzle<3, 2, 3>` | 64B           | 2B (FP16, BF16)  | Ampere tensor cores     |
-> | `Swizzle<3, 3, 3>` | 128B          | 2B (FP16, BF16)  | Hopper WGMMA            |
-> | `Swizzle<4, 3, 3>` | 128B          | 1B (FP8, INT8)   | Hopper FP8 tensor cores |
-
-128-byte swizzle pattern (most important for Hopper):
-
-```cpp
-// Explicit swizzle for 128×128 FP16 tile
-template <int ROW, int COL>
-constexpr int swizzle_128B(int row, int col) {
-    // Swizzle<3,3,3>: XOR across 16-byte groups
-    int col_major = col >> 3;  // Divide by 8 (16 bytes / 2 bytes per FP16)
-    int row_contrib = (row >> 3) & 0x7;  // Take bits [5:3] of row
-    int swizzled_major = col_major ^ row_contrib;
-    return (swizzled_major << 3) | (col & 0x7);
-}
-```
+the tuple alone does not name a byte width. byte width also depends on the element size and the base layout to which the swizzle is composed. copy a swizzle atom from the matching CUTLASS collective or derive the bank mapping for the exact access pattern.
 
 #### Swizzle layout algebra
 
@@ -2516,17 +2386,7 @@ ncu --metrics l1tex_data_bank_conflicts_pipe_lsu_mem_shared_op_ld.sum \
     --launch-skip 10 --launch-count 1 ./matmul_kernel
 ```
 
-> [!success] Measured impact
->
-> Matrix transpose benchmark (128×128 FP16):
->
-> | Configuration          | Bandwidth | Bank Conflicts/Warp | Speedup |
-> | ---------------------- | --------- | ------------------- | ------- |
-> | No swizzle             | 450 GB/s  | 31.2                | 1.0×    |
-> | Padding (`[128][129]`) | 680 GB/s  | 0.0                 | 1.51×   |
-> | 128B swizzle           | 710 GB/s  | 0.0                 | 1.58×   |
->
-> Swizzling achieves better bandwidth than padding by maintaining cache line alignment and avoiding wasted shared memory.
+the profiler must establish both parts of the claim: the bank-conflict metric should fall for the intended load or store, and kernel time should improve. a conflict-free layout can still lose through extra address arithmetic or an incompatible tensor-core layout.
 
 > [!example] Shared memory bank conflicts and swizzling [^swizzling]
 >
@@ -2555,15 +2415,21 @@ ncu --metrics l1tex_data_bank_conflicts_pipe_lsu_mem_shared_op_ld.sum \
 >
 > Column Access: Threads → Different banks = Conflict-free!
 >
-> XOR Function: col_swizzled = col ^ (row >> shift)
+> Teaching function: physical_col = logical_col ^ (row & 31)
 > ```
 
-[^swizzling]: Without swizzling, shared memory banks align with columns. When a warp reads down a column (threads 0-31 each reading row i, column 0), all threads hit bank 0, causing a 32-way conflict serializing the access. Swizzling applies an XOR permutation that rotates the bank assignment per row. Now threads reading column 0 hit banks 0,1,2,...,31 across different rows, eliminating conflicts. The XOR pattern is cheap (one instruction) and mathematically proven conflict-free for power-of-2 dimensions. CuTe's Swizzle<3,3,3> atoms encode this transformation in the layout type system, so the compiler generates swizzled addresses automatically.
+[^swizzling]: Without swizzling, a warp reading one column of a $32$-column `float` tile maps every lane to the same bank. the teaching XOR maps row bits into the column bits, so the $32$ rows map to $32$ banks. CuTe represents related address permutations in its layout type system, but a concrete atom is valid only with its element type, base layout, and consumer instruction.
 
 Theorem (Swizzle Conflict-Free Access).
-Let $S: \mathbb{N} \to \mathbb{N}$ be a swizzle function such that $S(i) \equiv i \pmod{32}$ has bijection within warp-stride. Then column access via $S$ is bank-conflict-free.
+Let $a_i$ be the shared-memory word address requested by lane $i$. the access is bank-conflict-free exactly when the map
 
-_Proof._ Bank assignment depends on address $\bmod 32$. Bijection ensures threads map to distinct banks. $\square$
+$$
+i\longmapsto a_i\bmod32
+$$
+
+is injective over the active lanes, apart from lanes that read the same address and use broadcast.
+
+_Proof._ bank assignment for a $32$-bit word is its word address modulo $32$. distinct residues select distinct banks; an address collision is handled as broadcast. $\square$
 
 ## advanced optimizations
 
@@ -2683,7 +2549,7 @@ Benefits:
 - Amortize kernel launch overhead
 - Keep L2 cache warm
 - Enable software pipelining across work items
-- Performance: 317 TFLOP/s → 660 TFLOP/s (persistent kernels)
+- throughput changes only when launch overhead, scheduling gaps, or cache reuse were material bottlenecks; measure them before choosing persistence
 
 #### asynchronous pipelines
 
@@ -2728,7 +2594,7 @@ Synchronization primitives:
 - `wgmma::commit_group()`: Commit warpgroup MMA operations
 - `wgmma::wait_group<N>()`: Wait for N most recent wgmma operations
 
-Performance impact: 660 TFLOP/s → 764 TFLOP/s (asynchronous pipelines)
+the pipeline can hide transfer latency when the producer stays ahead of the consumer. stage count and throughput come from the compiled kernel's resource use and the measured trace.
 
 > [!example] Flash Attention pipeline stages [^fa]
 >
@@ -2758,24 +2624,19 @@ Performance impact: 660 TFLOP/s → 764 TFLOP/s (asynchronous pipelines)
 > shared memory holds q/k/v tiles; registers retain {max, sum, out} accumulators per row.
 > ```
 
-[^fa]: flash attention keeps the $QK^T$ tiles in shared memory and streams softmax statistics so load, compute, softmax, and value accumulation stages overlap. the modal reverse-engineering traces show the asynchronous pipeline reaching 764 tflop/s on h100, a 2.5× improvement over naïve attention.
+[^fa]: flash attention tiles the score computation and maintains online-softmax state without writing the full $QK^T$ matrix to HBM. concrete implementations place tiles and accumulators across registers and shared memory according to the target architecture.
 
-#### Cubic polynomial exponential approximation
+#### exponential evaluation
 
-Standard: $e^x$ requires expensive transcendental operation
+softmax kernels subtract the row maximum before evaluating exponentials:
 
-Approximation: $e^x \approx a_3 x^3 + a_2 x^2 + a_1 x + a_0$
+$$
+p_i=\frac{\exp(x_i-m)}{\sum_j\exp(x_j-m)},
+\qquad
+m=\max_j x_j.
+$$
 
-Coefficients chosen to minimize error over typical softmax input range:
-
-- $a_3 \approx 0.0139$
-- $a_2 \approx 0.0878$
-- $a_1 \approx 0.5 $
-- $a_0 \approx 1.0$
-
-Dynamic switching: Use exact $e^x$ for extreme values (very large/small), approximation for typical range.
-
-Performance: 10× fewer exponential operations, ~15% speedup overall.
+an implementation may use hardware approximate instructions, range reduction, or a polynomial selected for a documented error budget. coefficients without an interval, approximation norm, dtype, and measured error do not specify an approximation.
 
 ## paged attention, CuTe implementation
 
@@ -2864,9 +2725,9 @@ Benefits:
 > ─────────────
 > 1. Virtual address space: Each sequence sees contiguous logical pages [0,1,2,...]
 > 2. Physical pages: Scattered across GPU memory (like OS virtual memory)
-> 3. Block table: Translation lookaside buffer (TLB) for page mapping
+> 3. Block table: application-level page table for logical-to-physical blocks
 > 4. Attention kernel: Translates virtual page → physical page per access
-> 5. Benefits: Zero fragmentation, dynamic growth, page sharing for prefixes
+> 5. Benefits: bounded internal waste, dynamic growth, and prefix-page sharing
 >
 > Memory Access Pattern in Kernel:
 > ────────────────────────────────
@@ -2877,7 +2738,7 @@ Benefits:
 >     ...
 > ```
 
-[^paged-attention]: Instead of allocating contiguous memory for each sequence's KV cache, paged attention uses fixed-size pages (e.g., 16 tokens) that can be scattered in memory. A block table maps logical sequence positions to physical pages. Seq 0 tokens 0-15 live in page 0, tokens 16-31 in page 7 (non-contiguous!), tokens 32-47 in page 12. This eliminates fragmentation from varying sequence lengths, enables dynamic growth without reallocation, and allows page sharing across sequences for prefix caching (multiple prompts sharing the same prefix reuse the same physical pages).
+[^paged-attention]: Instead of allocating one contiguous KV region for each sequence, paged attention uses fixed-size blocks that can be scattered in memory. a block table maps logical token blocks to physical blocks. the final block can still waste unused token slots, so fragmentation is bounded by the block size rather than eliminated. the layout supports growth without relocating earlier blocks and lets identical prefix blocks share physical storage.
 
 ### paged attention algorithm
 
@@ -3272,11 +3133,17 @@ Example for matmul on H100:
 
 - Memory bandwidth: 3.35 TB/s
 - Peak FP16 tensor core: 1979 TFLOP/s
-- Ridge point: $I_{\text{ridge}} = 1979 / 3350 \approx 0.59$ FLOP/byte
+- Ridge point:
 
-For $I < 0.59$: memory-bound, for $I > 0.59$: compute-bound.
+$$
+I_{\text{ridge}}
+=\frac{1979\ \text{TFLOP/s}}{3.35\ \text{TB/s}}
+\approx591\ \text{FLOP/byte}.
+$$
 
-Tiled matmul with blocking achieves $I \approx 64$ FLOP/byte → compute-bound.
+for $I<591\ \text{FLOP/byte}$ the roofline is memory-bound. above that ridge, the stated tensor-core peak becomes the bound.
+
+a tile with $I\approx64\ \text{FLOP/byte}$ is still below the ridge in this model, with a bandwidth roof near $214\ \text{TFLOP/s}$.
 
 ### occupancy tuning
 

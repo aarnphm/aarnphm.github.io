@@ -56,9 +56,9 @@ Self-speculation reuses the same model (or the input context) to draft tokens th
     - encourage earlier layers to be predictive while preserving final-layer quality.
     - Exits are trained to be accurate enough for drafting.
   - Inference:
-    - Compute up to an exit layer to propose a draft token; continue through later layers to verify.
-    - If the exit token matches the final prediction, later-layer compute can be partially skipped.
-    - Otherwise, the full stack corrects the draft (akin to rejection).
+    - Use the first $E$ layers to draft several tokens autoregressively through the shared LM head.
+    - Verify the whole draft block with the remaining $L-E$ layers in one forward pass, reusing the draft states and KV / exit-query (KVQ) cache.
+    - Accept the matching prefix, append the next verified token at the first mismatch, then resume drafting.
   - Properties:
     - Single-model pipeline that reuses activations;
     - reduced memory and duplicate compute versus two-model drafting.

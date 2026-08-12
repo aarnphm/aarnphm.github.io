@@ -20,7 +20,7 @@ megathread: [[thoughts/Speculative decoding]]
 >
 > Fix a target [[thoughts/LLMs|LLM]] with next-token distribution $P(\cdot\mid s)$ at prefix $s$.
 >
-> A decoding procedure is **lossless (w.r.t. policy $\pi$)** if the law of its emitted next token equals the law $\pi[P(\cdot\mid s)]$ (e.g., $\pi=\mathrm{id}$ for raw sampling; $\pi=\text{nucleus}\_{p}$ for top-$p$).
+> A decoding procedure is **lossless (w.r.t. policy $\pi$)** if the law of its emitted next token equals the law $\pi[P(\cdot\mid s)]$ (e.g., $\pi=\mathrm{id}$ for raw sampling; $\pi=\text{nucleus}_{p}$ for top-$p$).
 >
 > Speculative decoding à la Leviathan/Chen is lossless by construction via a rejection-correction that preserves the target law [@leviathan2023fastinferencetransformersspeculative]
 
@@ -225,8 +225,8 @@ The draft now predicts $f_{t+2}$ (the feature after that token) instead of $f_{t
   $$
   \begin{aligned}
   L_{\text{reg}} &= \text{SmoothL1}(f_{i+1}, \text{Draft}(T_{2:i+1}, F_{1:i})) \\
-  p_{i+2} &= \text{Softmax}(\text{LM\_Head}(f_{i+1})) \\
-  \hat{p_{i+2}} &= \text{Softmax}(\text{LM\_Head}(\hat{f_{i+1}})) \\
+  p_{i+2} &= \operatorname{softmax}(\operatorname{LMHead}(f_{i+1})) \\
+  \hat{p_{i+2}} &= \operatorname{softmax}(\operatorname{LMHead}(\hat{f}_{i+1})) \\
   L_{\text{cls}} &= \text{CrossEntropy}(p_{i+2},\hat{p_{i+2}})
   \end{aligned}
   $$
@@ -297,147 +297,46 @@ The result: a new **scaling law** (acceptance length rises with more draft data)
 
 ### why predicting features is a bottleneck
 
-_the nullspace argument_
+EAGLE-3's bottleneck claim is architectural. The paper assumes that the LM head is full-rank, so the proposed nullspace penalty does not exist.
 
-Let $W\in\mathbb{R}^{V\times d}$ be the target LM head, $f_{t+1}\in\mathbb{R}^d$ the true next feature, and $p_{t+1}=\mathrm{softmax}(W f_{t})$ the next‑token law. EAGLE‑1 trains a draft $g$ to minimize
-
-$$
-\begin{aligned}
-\mathcal{L}_{\text{E1}}
- &= \underbrace{\|\,f_{t+1}-\hat f_{t+1}\|^2}\_{\text{feature loss}} \\
- &+\;\lambda\;\underbrace{\mathrm{CE}\left(\mathrm{softmax}(W f_{t+1}),
-                                           \mathrm{softmax}(W \hat f_{t+1})\right)}\_{\text{token loss}}, \\
-\quad \hat f_{t+1}&=g(\cdot).
-\end{aligned}
-$$
-
-Decompose the feature error $\Delta=\hat f\_{t+1}-f\_{t+1}$ into **rowspace/ nullspace** of $W$:
+Earlier EAGLE versions trained with a feature-regression loss and a token loss:
 
 $$
-\Delta=\Delta_{\parallel}+\Delta_{\perp},\quad
-\Delta_{\parallel}\in\mathrm{Row}(W)^{\top},\;\;
-\Delta_{\perp}\in\mathrm{Null}(W).
+\mathcal{L}_{\mathrm{EAGLE}}
+=\ell_{\mathrm{fea}}+\ell_{\mathrm{token}}.
 $$
 
-Only $\Delta\_{\parallel}$ influences logits: $W\Delta=W\Delta\_{\parallel}$ and $W\Delta\_{\perp}=0$ [^figure].
+Serving only uses the draft to propose tokens. EAGLE-3 drops $\ell_{\mathrm{fea}}$ and trains the draft on token prediction, which removes the extra feature-matching constraint. Table 2 measures the gain from this change.
 
-> The **CE term** depends only on $\Delta\_{\parallel}$ (up to a smooth local quadratic), while the **feature loss** penalizes $|\Delta|^2=|\Delta\_{\parallel}|^2+|\Delta\_{\perp}|^2$.
+### why fuse low, middle, and high features?
 
-[^figure]: code to generate some ASCII:
-
-    ```bash
-    cat <<'FIG'
-    ┌────────────────────────────────────────────────────────────────────────────┐
-    │                 Geometry of the LM‑head map  W : R^d → R^V                 │
-    │                                                                            │
-    │                 Row(W)^T  ⟂  Null(W)   (in feature space R^d)              │
-    │                                                                            │
-    │                        ↑  Null(W) (logit‑irrelevant; W·Δ⊥ = 0)             │
-    │                        │                                                   │
-    │                    Δ⊥  │                                                   │
-    │                        │                                                   │
-    │   origin  o────────────┼──────────────────────────────→  Row(W)^T          │
-    │                        │                   Δ∥                              │
-    │                        │                                                   │
-    │                                                                            │
-    │   Decomposition:  Δ =  Δ∥  +  Δ⊥     with     WΔ = WΔ∥ ,   WΔ⊥ = 0         │
-    │                                                                            │
-    │   Dimension bookkeeping:  dim Row(W)^T = rank(W) = r,    dim Null(W) = d−r │
-    └────────────────────────────────────────────────────────────────────────────┘
-
-    ┌───────────────────────────────────────────────────────────────────────────────────────┐
-    │         Objective contrast (what gets penalized during draft training)                │
-    │                                                                                       │
-    │   EAGLE‑1 (feature regression + CE over logits):                                      │
-    │       minimize   ||Δ∥||^2  +  ||Δ⊥||^2     +   CE( softmax(W f), softmax(W (f+Δ)) )   │
-    │                            ^^^^^^^^                                                   │
-    │                  wastes capacity on Null(W) directions (logit‑irrelevant)             │
-    │                                                                                       │
-    │   EAGLE‑3 (direct token/logit training + TTT):                                        │
-    │       minimize   CE( softmax(W f), softmax(W (f+Δ∥)) )                                │
-    │                                            ^^^^^                                      │
-    │                  focuses only on Row(W)^T (logit‑relevant);                           │
-    │                  drops feature loss → better scaling & acceptance.                    │
-    └───────────────────────────────────────────────────────────────────────────────────────┘
-    FIG
-    ```
-
-> [!important] Consequence
->
-> - With finite capacity/data, optimizing $\mathcal{L}_{\text{E1}}$ allocates learning budget to drive **both** components small, wasting sample capacity on $\Delta_{\perp}$ (logit‑irrelevant directions).
-> - The effective regression dimension is $d$, not $\mathrm{rank}(W)\le d$; generalization/sample complexity scales with the larger $d$.
-
-> [!proposition] 3.1 (sample‑complexity gap)
->
-> Suppose locally the CE term is quadratic in the logit error $\delta\ell=W\Delta$ with Hessian $H\succ 0$. Then the joint objective behaves like
->
-> $$
-> \mathbb{E}\big[\Delta^\top(W^\top H W + \lambda I)\Delta\big].
-> $$
-
-- regressing **logits directly** (or tokens directly) only controls the $r=\mathrm{rank}(W)$ directions, yielding an effective estimation dimension $r$;
-- regressing **full features** forces estimation in $d$ directions.
-- standard well‑specified linear regression with noise variance $\sigma^2$: the excess risk scales like $\sigma^2\cdot\frac{\text{dimension}}{n}$.
-
-Thus **feature regression** pays $\Theta(\tfrac{d}{n})$ while **logit/token regression** pays $\Theta(\tfrac{r}{n})$ with $r\le d$, explaining why data scaling helps far less under the feature constraint.
-
-EAGLE‑3 **removes** the feature term, targets tokens/logits directly, and thereby avoids burning capacity on the nullspace. The paper's ablations and text point to precisely this motivation.
-
-### are top‑layer features enough for multi‑step drafting?
-
-_No_
-
-EAGLE‑1/2 reused the **top layer** feature (immediately before $W$).
-
-> EAGLE‑3 notes this layer is **optimized for the next token**; it is a strong sufficient statistic for $x_{t+1}$ **but not** for $x_{t+2}$ under a small draft. They therefore **fuse low/mid/high features** as input to the draft.
-
-Let $Z_H,Z_M,Z_L$ be high/mid/low features of the _target_ model at step $t+1$ and $Y=x\_{t+1}$. Then
+The top layer is trained for the next token. EAGLE-3 uses low, middle, and high target-model features because a small draft has to predict several steps beyond it:
 
 $$
-I(Y;\,[Z_H,Z_M,Z_L])\;\ge\; I(Y;\,Z_H),
+g_i=W_{\mathrm{proj}}[l_i;m_i;h_i].
 $$
 
-with strict inequality whenever $Z_M$ or $Z_L$ carry token‑relevant bits not fully determined by $Z_H$. By the Bayes–risk identity for classification,
+The ablation in Table 2 supports the fused input. The paper does not claim a general information-theoretic theorem for the fusion.
+
+### training-time test reduces training/inference mismatch
+
+Feature drafting sees target-model features during ordinary training, then consumes its own draft outputs during inference. EAGLE-3 simulates that loop while training:
 
 $$
-\inf_{q(\cdot|Z)}\mathbb{E}\big[\mathrm{CE}(p(\cdot|Z),q(\cdot|Z))\big]
-\;=\; \mathbb{E}\big[H(Y|Z)\big],
+g_{t+j}\ \text{unavailable}
+\quad\Longrightarrow\quad
+a_{t+j}\ \text{feeds the next draft step}.
 $$
 
-> [!important]
->
-> so adding features **cannot worsen** and will often **reduce** the Bayes optimal cross‑entropy: $H(Y|Z_H)\ge H(Y|Z_H,Z_M,Z_L)$.
->
-> ==A small draft network benefits disproportionately from the richer $[H,M,L]$ view==
-
-> Intuition: the top layer is laser‑focused on $x\_{t+1}$. Lower layers retain lexical/syntactic detail that helps the draft predict _coherently_ for the next few steps with tiny capacity.
-
-### training‑time test (TTT) eliminates off‑policy drift
-
-Teacher‑forced training (only ground‑truth contexts) suffers **exposure bias**:
-
-- at inference the draft must condition on _its own_ predicted tokens, a different state distribution.
-- TTT simulates a short multi‑step roll‑out **during training**, i.e.:
-  - it mixes in the draft's predicted tokens as inputs so training matches test‑time usage.
-  - This is the same fix that underlies **scheduled sampling** and **DAgger** in sequence prediction/imitation learning. [@bengio2015scheduledsamplingsequenceprediction]
-
-> [!proposition] 3.2 (distribution‑matching reduces compounding error)
->
-> Let $\rho\_{\text{TF}}$ be the teacher‑forced state distribution and $\rho\_\theta$ the draft’s induced distribution.
->
-> If training minimizes CE under $\rho\_{\text{TF}}$ but testing occurs under $\rho\_\theta$, the step‑$k$ loss can grow linearly with $k$ due to covariate shift.
->
-> Aggregating data under $\rho\_\theta$ (as TTT/scheduled sampling/DAgger do) bounds the _induced_ test loss by the training loss plus regret terms that no longer scale with horizon $k$ (cf. no‑regret reductions).
-
-This prevents the multi‑step acceptance rate from collapsing.
+Scheduled sampling studies the same training/inference mismatch. DAgger is the related imitation-learning method for collecting data under induced states. EAGLE-3 does not prove a DAgger-style no-regret bound. Its direct evidence is Figure 7, where acceptance stays stable as the number of estimated draft inputs grows.
 
 ### acceptance length
 
 At a given step with target $p$ and draft $q$, the **single‑token acceptance probability** under lossless speculative sampling is
 
 $$
-\mathbb{E}\_{x\sim q}\big[\min\{1,\tfrac{p(x)}{q(x)}\}\big]
-\;=\;\sum\_{x}\min\{p(x),q(x)\}
+\mathbb{E}_{x\sim q}\big[\min\{1,\tfrac{p(x)}{q(x)}\}\big]
+\;=\;\sum_{x}\min\{p(x),q(x)\}
 \;=\;1-\mathrm{TV}(p,q).
 $$
 
@@ -447,130 +346,13 @@ $$
 \mathrm{TV}(p,q)\;\le\;\sqrt{\tfrac{1}{2}\,\mathrm{KL}(p\|q)} \quad \text{(Pinsker)},
 $$
 
-so every bit of CE/KL improvement _provably_ pushes acceptance upward. Over a chain, the expected accepted length improves multiplicatively; with per‑step acceptance $\alpha_i=1-\mathrm{TV}(p_i,q_i)$, the chance of accepting $m$ in a row is $\prod\_{i=1}^m \alpha_i$.
+Lower KL tightens this upper bound on rejection risk. It does not prove that the realized TV fell. EAGLE-3's acceptance claim rests on its measured acceptance lengths and the Figure 7 depth curve.
 
 ### remarks
 
-- **Objective:** remove feature loss $\ell\_{\text{fea}}$, **predict tokens directly**; train with short **on‑policy rollouts** (TTT)
+- **Objective:** remove feature loss $\ell_{\mathrm{fea}}$, **predict tokens directly**; train with short **on‑policy rollouts** (TTT)
 - **Inputs to draft:** swap “top‑layer only” for **fused low/mid/high features** of the target; drafts remain tiny (often \~1 transformer layer) yet much more accurate due to better inputs and on‑policy training.
 - **Outcomes:** higher acceptance length, **new scaling law** (acceptance rises as you add data), and **6.5×** speedups; \~**1.4×** over EAGLE‑2 in comparable settings; still **lossless** verification.
-
-### lemma
-
-> [!lemma] 3.3, nullspace penalty
->
-> _(why feature regression throttles scaling)_
->
-> Let $W\in\mathbb{R}^{V\times d}$ be the target LM head. Write the feature error $\Delta=\hat f_{t+1}-f_{t+1}\in\mathbb{R}^d$ as
->
-> $$
-> \Delta=\Delta_{\parallel}+\Delta_{\perp},\quad
-> \Delta_{\parallel}\in \mathrm{Row}(W)^{\top},\;\; \Delta_{\perp}\in \mathrm{Null}(W),
-> $$
->
-> which exist and are orthogonal complements by the Fundamental Theorem of Linear Algebra. Then:
->
-> 1. The token cross‑entropy term depends only on $\Delta_{\parallel}$: locally,
->
->    $$
->    \mathrm{CE}\!\Big(\mathrm{softmax}(W f_{t+1}),\mathrm{softmax}(W \hat f_{t+1})\Big)
->    \;\approx\; \tfrac12\,\Delta^{\top}\,W^{\top} H W\,\Delta
->    \;=\; \tfrac12\,\Delta_{\parallel}^{\top} W^{\top} H W\,\Delta_{\parallel},
->    $$
->
->    with $H\succeq 0$ the Fisher/softmax Hessian evaluated at $W f_{t+1}$.
->
-> 2. Adding a **feature regression penalty** $\|\Delta\|^2=\|\Delta_{\parallel}\|^2+\|\Delta_{\perp}\|^2$ forces the learner to estimate $d$ directions, including the **logit‑irrelevant** nullspace part $\Delta_{\perp}$, whereas direct logit/token training only needs the $r=\mathrm{rank}(W)$ **rowspace** directions. With finite data $n$, the minimax excess risk scales as $\Theta(d/n)$ vs. $\Theta(r/n)$, i.e., feature matching pays an avoidable $\Theta((d-r)/n)$ sample‑complexity tax
-
-_proof_
-
-(Orthogonal decomposition.) $\mathrm{Row}(W)^{\top}$ and $\mathrm{Null}(W)$ are orthogonal complements in $\mathbb{R}^d$ (part of the “four fundamental subspaces”). So any $\Delta$ splits uniquely as $\Delta_{\parallel}+\Delta_{\perp}$ with $W\Delta_{\perp}=0$.
-
-(Localization of CE to rowspace.) The next‑token logits are $\ell = W f_{t+1}$ and $\hat\ell=W\hat f_{t+1}=\ell+W\Delta$. A second‑order Taylor expansion of CE around $\ell$ gives the quadratic form $\tfrac12\Delta^{\top}W^{\top} H W\Delta$ (with $H$ the softmax Fisher/Hessian at $\ell$). Because $W\Delta = W\Delta_{\parallel}$ and $W\Delta_{\perp}=0$, the quadratic depends only on $\Delta_{\parallel}$. (This is the standard local equivalence of CE to a Fisher‑weighted squared logit error.)
-
-(Sample‑complexity gap.) Consider the surrogate quadratic objective
-
-$$
-\mathcal{L}(\Delta)\;=\; \tfrac12\,\Delta^{\top}W^{\top} H W\,\Delta\;+\;\tfrac{\lambda}{2}\|\Delta\|^2,
-$$
-
-fitted from $n$ samples with noise.
-
-This is a (random‑design) **linear regression** in $d$ parameters if you include the feature penalty, but only in $r\le d$ parameters if you drop the nullspace via direct logit/token training (the quadratic then lives on $\mathrm{Row}(W)^\top$).
-
-For random‑design least squares, the **minimax excess risk** is $\Theta(d/n)$; replacing $d$ by the effective parameter count $r$ yields $\Theta(r/n)$.
-
-Hence the penalty on $\Delta_{\perp}$ induces the $\Theta((d-r)/n)$ overhead. (See also [minimax risk for linear least squares](https://projecteuclid.org/journals/annals-of-statistics/volume-50/issue-4/Exact-minimax-risk-for-linear-least-squares-and-the-lower/10.1214/22-AOS2181.full), [lecture notes](https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/lectures/review.pdf), [distribution-free robust linear regression](https://jaouadmourtada.github.io/files/slides/robust-linear-slides.pdf)) $\boxed{}$
-
-> [!lemma] 3.4, H–M–L features strictly improve Bayes cross-entropy
->
-> _(when informative)_
->
-> Let $Y=x_{t+1}$ and let $Z_H,Z_M,Z_L$ be high/mid/low‑layer target‑model features at step $t+1$. Then the Bayes‑optimal expected cross‑entropy for predicting $Y$ from features $Z$ is
->
-> $$
-> \inf_{q(\cdot\mid Z)} \mathbb{E}\big[\,\mathrm{CE}(p(\cdot\mid Z),\,q(\cdot\mid Z))\,\big]
-> = \mathbb{E}\big[ H(Y\mid Z)\big],
-> $$
->
-> achieved at $q=p(\cdot\mid Z)$. Consequently,
->
-> $$
-> \mathbb{E}\!\left[H\!\left(Y \mid Z_H\right)\right] \;\ge\;
-> \mathbb{E}\!\left[H\!\left(Y \mid Z_H,Z_M,Z_L\right)\right],
-> $$
->
-> with strict inequality when $I\!\left(Y; Z_M,Z_L\mid Z_H\right)>0$. Thus fusing $(H,M,L)$ can only lower the optimal CE (and usually does).
-
-_proof_
-
-For discrete $Y$, the expected cross‑entropy under the true conditional $p(y\mid Z)$ and any predictor $q(y\mid Z)$ decomposes as
-
-$$
-\mathbb{E}\big[{-\log q(Y\mid Z)}\big]
-= \mathbb{E}\big[{-\log p(Y\mid Z)}\big] \;+\; \mathbb{E}\big[ \mathrm{KL}\!\big(p(\cdot\mid Z)\,\|\,q(\cdot\mid Z)\big)\big],
-$$
-
-i.e., $= \mathbb{E}[H(Y\mid Z)] + \mathbb{E}[\mathrm{KL}(\cdot)]$, minimized at $q=p$. Hence the optimum equals conditional entropy. Monotonicity of conditional entropy gives $H(Y\mid Z_H)\ge H(Y\mid Z_H,Z_M,Z_L)$, with a strict drop whenever the added features convey conditional mutual information about $Y$. (identity) $\boxed{}$
-
-> [!lemma] 3.5, acceptance = $1-\mathrm{TV}(p,q)$, hence CE↓ ⇒ TV↓ ⇒ acceptance↑
->
-> In one‑step lossless speculative decoding that proposes $x\sim q$ and accepts with probability $\alpha(x)=\min\{1,p(x)/q(x)\}$ (the standard correction),
-> the acceptance probability is
->
-> $$
-> \begin{aligned}
-> &\mathbb{E}_{x\sim q}\big[\alpha(x)\big] \\
-> &= \sum_{x} \min\{p(x),q(x)\} \\
-> &= 1 - \mathrm{TV}(p,q).
-> \end{aligned}
-> $$
->
-> By Pinsker, $\mathrm{TV}(p,q)\le \sqrt{\tfrac12\mathrm{KL}(p\|q)}$, so **every bit** of CE/KL improvement provably raises acceptance.
-
-_proof_
-
-The identity $\sum_x \min(p(x),q(x)) = 1 - \tfrac12 \sum_x |p(x)-q(x)|$ is elementary; the second term is the discrete total variation. Therefore
-
-$$
-\mathbb{E}_{q}\!\left[\min\!\left(1,\frac{p}{q}\right)\right]
-=\sum_x q(x)\min\!\left(1,\frac{p(x)}{q(x)}\right)
-=\sum_x \min\{q(x),p(x)\}=1-\mathrm{TV}(p,q).
-$$
-
-Formal analyses of speculative decoding express expected rejections/acceptance directly in terms of TV; see Yin et al. (Theorem 1), which ties unbiasedness and efficiency to $\mathrm{TV}(p,q)$. Pinsker then gives the KL→TV bound. $\boxed{}$
-
-**Consequence for EAGLE‑3.** Since EAGLE‑3 trains the draft on tokens directly (dropping feature loss) and feeds H–M–L inputs plus training‑time test (below), it directly reduces CE/KL between draft and target next‑token laws, hence reduces TV, hence raises acceptance multiplicatively across steps, exactly what their scaling curve shows.
-
-> [!lemma] 3.6 Training‑time test (on‑policy rollouts) controls compounding error
->
-> Let $\rho_{\mathrm{TF}}$ be the _teacher‑forced_ state distribution and $\rho_\theta$ the _on‑policy_ state distribution induced by the draft.
->
-> If we minimize CE only under $\rho_{\mathrm{TF}}$, the test loss under $\rho_\theta$ can grow with horizon due to covariate shift (“exposure bias”).
->
-> If instead we aggregate training data under $\rho_\theta$ (by mixing in the model’s own predictions during training, i.e., **training‑time test** / scheduled sampling / DAgger), the on‑policy risk is bounded by the training risk plus no‑regret terms that **do not** scale with horizon; compounding error is controlled.
-
-See also @bengio2015scheduledsamplingsequenceprediction
 
 ## MTP
 
@@ -638,7 +420,13 @@ $$
 A \;=\; \sum_x \min\{p(x),q(x)\} \;=\; 1-\mathrm{TV}(p,q).
 $$
 
-Pinsker gives $\mathrm{TV}\le \sqrt{\tfrac12\mathrm{KL}(p\|q)}$, so improving CE/KL directly raises acceptance.
+Pinsker gives
+
+$$
+\mathrm{TV}(p,q)\le \sqrt{\frac{1}{2}\mathrm{KL}(p\|q)}.
+$$
+
+CE/KL is a proxy for the TV term that controls acceptance. The acceptance increase still has to come from measured acceptance or measured TV.
 
 **MTP (2‑token) expected speed.** The main model always outputs $x_{t+1}$; MTP proposes $x_{t+2}$ with acceptance $A_2$. Expected tokens per verifier pass:
 
@@ -648,27 +436,24 @@ $$
 
 With $A_2 \in [0.85,0.90]$, speed $\approx 1.85\!-\!1.90\times$, consistent with the reported **\~1.8×**
 
-**EAGLE‑3 (depth $K$) expected accepted length.** If per‑step acceptances are $\alpha_1,\dots,\alpha_K$,
+**EAGLE‑3 (depth $K$) tokens per target pass.** If the conditional acceptance probabilities are $\alpha_1,\dots,\alpha_K$,
 
 $$
-\mathbb{E}[L] \;=\; \sum_{i=1}^{K}\prod_{j=1}^{i}\alpha_j.
+\mathbb{E}[N_{\mathrm{out}}]
+=1+\sum_{i=1}^{K}\prod_{j=1}^{i}\alpha_j.
 $$
 
-speed factor relative to one token/pass. EAGLE‑3's training reduces KL → increasing each $\alpha_i$, hence larger $L$ and bigger speedups.
+The leading $1$ is the target token produced at the first rejected position, or the bonus token when every draft is accepted. Wall-clock speed also includes draft cost and verifier overhead.
 
 ### engineering consideration
 
-- **If you _own_ training**: MTP is a near‑free lunch, offering better quality and an inference “peek” that nets **\~1.8×** with minimal serving complexity.
-- **If you only control serving**: EAGLE‑3 is the scalpel, acting as a drop‑in draft with **big upside** (multi‑token acceptance) but requiring model‑specific draft weights (or train them).
+- **If you train the base model:** MTP can improve the training objective and provide a built-in speculative head. The reported serving result is **\~1.8×**.
+- **If you only control serving:** EAGLE-3 leaves the target weights unchanged and requires a draft trained for that target model.
 
 > [!question] MTP rooflines?
 >
 > - With $D$ chained MTP modules, expected tokens per pass is $1+\alpha_2+\alpha_2\alpha_3+\cdots$, where $\alpha_k = 1-\mathrm{TV}(p_k,q_k)$.
->   - Beyond $D=1$ you’ll need on‑policy tricks (EAGLE‑style “training‑time test”) to prevent drift as the chain lengthens.
-> - Parallel‑head MTP (Gloeckle) vs sequential MTP (DeepSeek):
->   - Parallel heads give broader supervision and self‑speculation options,
->   - **sequential** preserves causality and empirically yields a very high $A_2$.
->   - Hybrid designs (sequential + cross‑depth regularizers) are a plausible next step.
+> - Longer chains expose the draft to more of its own outputs. Measure the conditional $\alpha_k$ values instead of assuming that a training heuristic controls the whole chain.
 
 ### [[thoughts/vllm|vLLM]]
 
@@ -698,7 +483,7 @@ EOF
 
 - **Causality vs. parallel heads.** DeepSeek’s MTP keeps a _sequential_ causal chain across its modules (not parallel independent heads), which empirically improves coherence and acceptance of the peek token. That design choice is explicit in the figure and text.
 - **Upper bound intuition.** If you only ever “peek” one token ahead, your ceiling is **2×**; EAGLE‑3’s ceiling scales with accepted depth. (That’s why its reported maximums are much larger.)
-- **Where EAGLE‑3’s gain comes from.** Removing feature loss eliminates the **nullspace tax**; H–M–L features reduce Bayes CE; training‑time test kills exposure bias (all three lower KL→TV, raising acceptance per Section 4).
+- **Where EAGLE-3's gain comes from.** The paper attributes the gain to removing the feature-prediction constraint, fusing low/mid/high target features, and training-time test. Table 2 and Figure 7 provide the direct evidence.
 - **Draft size.** In practice, EAGLE‑3 drafts are tiny (often a _single_ transformer layer) because the heavy lifting is in the target’s H–M–L features.
 
 ### some notes on training details
