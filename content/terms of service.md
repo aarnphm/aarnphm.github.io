@@ -1,9 +1,9 @@
 ---
 date: '2025-02-21'
-description: for Stripe, but shouldn't affect general sites interaction
+description: terms for using this site, its interactive features, and its original content
 id: terms of service
 layout: technical
-modified: 2026-06-05 15:08:04 GMT-04:00
+modified: 2026-08-13 00:00:00 GMT-04:00
 noindex: true
 permalinks:
   - /tos
@@ -17,54 +17,48 @@ transclude:
 
 **Effective date**: February 21, 2025
 
-These Terms of Service ("Terms") govern your access to and use of https://aarnphm.xyz (the "Service"), operated by Aaron ("we," "us," or "our"). By accessing or
-using the Service, you agree to be bound by these Terms. If you do not agree, you may not use the Service.
+_Last updated_: August 13, 2026
 
-### Services Provided
+These terms govern access to `aarnphm.xyz` and its subdomains, operated by Aaron. By using the site, you agree to these terms.
 
-The Service offers nothing, but showcasing our work, interests, and research. Users can use/read/discuss any of the topics that is currently displayed/hosted on the Service.
-The reason for ToS of the Service is because of Substack subscription (if the user enjoys our writing and want to support, best way is via coffee :smiley:).
+## the site
 
-### Payment Processing
+The site publishes notes, essays, research, software demonstrations, health and training data, and other personal material. It also offers interactive features such as comments, optional GitHub authentication, flashcards, notebooks, and exercises. Features can change or disappear without notice.
 
-In the case the user want to provide support, all payments made through the Service are processed by Stripe, Inc. ("Stripe"), a third-party payment processor.
-By using the Service for payments, you agree to Stripe's Services Agreement and Privacy Policy. You are responsible for any transaction fees, if applicable (but do let us know and we can figure out a way to reimburse).
+## comments and acceptable use
 
-Refunds: follows usual Substack/Stripe policies here.
+You are responsible for material you submit. Do not submit unlawful, threatening, harassing, defamatory, infringing, deceptive, or malicious content. Do not probe private data, bypass authorization, disrupt the service, automate abusive traffic, or upload code or content intended to harm other people or systems.
 
-### User Conduct
+You keep ownership of your comment. You give Aaron a non-exclusive licence to store, display, reproduce, and modify it only as needed to operate, moderate, back up, and synchronize the comment feature. Comments can be removed or restricted when needed to protect the site or other people.
 
-You agree to use the Service lawfully and in compliance with these Terms. Prohibited activities include:
+Optional GitHub authentication identifies a comment author or authorizes a protected feature. You are responsible for access through your GitHub account.
 
-- Engaging in illegal or fraudulent behavior.
-- Harassing, threatening, or harming others.
-- Uploading or sharing defamatory, obscene, or infringing content.
-- Attempting unauthorized access to the Service or its systems.
+## subscriptions and payments
 
-In other word, _just behave, and be nice!_
+The site does not process payments directly. Any paid newsletter subscription or other support transaction takes place on the named external service, such as Substack, and is processed under that service's terms, refund policy, and privacy policy. Stripe may process a payment for that external service. These terms do not replace the agreement shown at checkout.
 
-### Privacy and Data Protection
+## licences
 
-We collect and use your personal information as described in our [[privacy policy|Privacy Policy]], which is incorporated into these Terms.
-By using the Service, you consent to our data practices.
+Unless a page says otherwise, Aaron's original notes are licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Original repository code is licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0). Third-party text, images, code, fonts, embeds, and linked material remain under their owners' licences. A licence applies only to material Aaron has the right to license.
 
-### Intellectual Property
+Trademarks and personal names are not licensed by those grants.
 
-You can use all content on the Service, including text, graphics, and software, but would be greatly appreciate if you can reference the source. We will try our best to always credit and reference third-party sources.
+## privacy
 
-### Disclaimers and Limitations of Liability
+The [[privacy policy|Privacy Policy]] describes information processed by the site and its service providers.
 
-_the following is just legalese, but it's chill_
+## no professional advice
 
-The Service is provided "as is" without warranties. We do not guarantee uninterrupted, error-free, or secure access.
-To the fullest extent permitted by law, we disclaim liability for indirect, incidental, or consequential damages.
-Our total liability shall not exceed the amount you paid us in the past 12 months. You agree to indemnify
-us against claims arising from your use of the Service or violation of these Terms.
+The site contains personal working notes. Material about health, training, law, finance, security, engineering, or any other field is provided for information and can be incomplete or wrong. Use an appropriate professional or primary source when a decision carries material risk.
 
-Make sure to also comply to [Stripe Service Agreement in Canada](https://stripe.com/en-ca/legal/ssa)
+## availability and liability
 
-### Miscellaneous
+The site is provided as available, without a promise that every page, feature, link, or stored comment will remain available, accurate, secure, or error-free. To the extent permitted by law, Aaron is not liable for indirect, incidental, special, or consequential loss arising from use of the site.
 
-- Governing Law: These Terms are governed by the laws of Ontario, Canada.
-- Changes to Terms: We may update these Terms and will notify you by posting the changes. Continued use constitutes acceptance.
-- Contact Us: For questions, email [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz).
+Nothing in these terms excludes a right or liability that cannot legally be excluded.
+
+## changes and governing law
+
+Changes appear on this page with a new last-updated date. Ontario law governs these terms, subject to any mandatory law that applies where you live.
+
+Questions can be sent to [contact@aarnphm.xyz](mailto:contact@aarnphm.xyz).

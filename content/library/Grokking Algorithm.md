@@ -4,13 +4,13 @@ category: technology
 date: '2025-10-07'
 description: illustrated introduction to algorithms that explains core ideas like recursion, graphs, and big o through simple, friendly examples.
 external: https://www.manning.com/books/grokking-algorithms
-id: Grokking Algorithm
+id: Grokking Algorithms
 modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/grokking-algorithm.jpg]]'
 status: to read
 subcategory: computing
 tags:
   - algorithm
-title: Grokking Algorithm
+title: Grokking Algorithms
 year: 2016
 ---

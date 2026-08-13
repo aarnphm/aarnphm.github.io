@@ -99,7 +99,7 @@ transclude:
     </div>
   </div>
 
-  <div class="timeline-item" data-year="1904" data-type="history" data-hover-text="The fire started just after 8 PM on April 19th in the E. & S. Currie Neckwear factory elevator shaft at 58 Wellington Street West. It burned for 9 hours, destroying 104 buildings and causing $10.3 million in damage (equivalent to $1.3 billion today). Remarkably, there were no deaths." data-image-url="https://www.toronto.ca/explore-enjoy/history-art-culture/online-exhibits/web-exhibits/web-exhibits-significant-events/the-great-fire-of-1904/">
+  <div class="timeline-item" data-year="1904" data-type="history" data-hover-text="The fire was discovered shortly after 8 PM on April 19 in the E. & S. Currie Building on Wellington Street West. Its cause was never determined. It burned through the night and destroyed more than 100 buildings. No one died." data-image-url="https://www.toronto.ca/explore-enjoy/history-art-culture/online-exhibits/web-exhibits/web-exhibits-significant-events/the-great-fire-of-1904/">
     <div class="timeline-marker">
       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -118,7 +118,7 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <h3>resevoir lounge</h3>
+      <h3>reservoir lounge</h3>
       <p>toronto's original swing-jazz speakeasy. jazz, blues, soul they got it all.</p>
     </div>
   </div>
@@ -155,7 +155,7 @@ transclude:
     </div>
     <div class="timeline-content">
       <h3>high park</h3>
-      <p>Toronto's largest public park featuring hiking trails, a zoo, cherry blossoms in spring, and beautiful lakeside views.</p>
+      <p>A large public park with hiking trails, a zoo, cherry blossoms, and access to Grenadier Pond.</p>
     </div>
   </div>
 
@@ -191,7 +191,7 @@ transclude:
       </svg>
     </div>
     <div class="timeline-content">
-      <img src="/thoughts/images/toronto-amalgamation-1988.ignore.jpg" alt="Toronto amalgamation in 1988" /> </div>
+      <img src="/thoughts/images/toronto-amalgamation-1988.ignore.jpg" alt="Toronto amalgamation in 1998" /> </div>
   </div>
 
   <div class="timeline-item timeline-left" data-type="place" data-lat="43.667795" data-lon="-79.394212">

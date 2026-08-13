@@ -3,7 +3,7 @@ author: Dr. Anna Lembke
 category:
   - p/nf
 date: '2022-08-21'
-description: examines addiction and pleasure in a dopamine saturated world, showing how compulsive behavior rewires the brain and how to rebalance it.
+description: examines how repeated pursuit of pleasure can increase distress, using addiction cases to explain the pleasure-pain balance and recovery.
 finished: 2023
 id: Dopamine Nation
 modified: 2026-06-05 15:07:57 GMT-04:00

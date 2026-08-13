@@ -4,7 +4,7 @@ tags:
 id: Language, Truth & Logic
 title: Language, Truth & Logic
 date: 2025-12-18
-description: ayer's logical positivist manifesto arguing that meaningful statements must be verifiable through experience, establishing the verification principle.
+description: ayer argues that cognitively meaningful propositions are either analytic or open to empirical verification.
 finished: 2026
 year: 1936
 status: finished

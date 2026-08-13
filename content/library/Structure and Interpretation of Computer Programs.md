@@ -4,6 +4,7 @@ aliases:
 author:
   - Harold Abelson
   - Gerald Jay Sussman
+  - Julie Sussman
 category: technology
 date: '2025-10-06'
 description: classic computer science text using scheme to teach abstraction, recursion, interpreters, and how to think about programs as building blocks.

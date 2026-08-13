@@ -10,7 +10,7 @@ transclude:
   title: false
 ---
 
-I'm interested in [[thoughts/mechanistic interpretability|model behaviour]] and efficient #ml system.
+I'm interested in [[thoughts/mechanistic interpretability|model behaviour]] and efficient #ml systems.
 
 ## For non-ML folks
 
@@ -20,7 +20,7 @@ It dawned on me that we inference engineers should do a better job explaining ou
 
 ### **Q**: _What is inference actually?_
 
-**A**: Etymology of the word "inference" refers to steps in logical reasoning, moving from premises to logical consequences; to "carry forward." It is usually divided into either _deduction_ (deriving conclusions from given premises), or _induction_ (inferring general rules from a priori observations). But most of the time these two methods are interchangeable. In statistical inference, we draw conclusions about a population (or underlying probability distribution) given a set of data.
+**A**: The word "inference" refers to moving from premises or observations toward a conclusion. Deduction derives consequences from stated premises. Induction estimates a broader pattern from observations. Statistical work can combine them by deducing what a model predicts and then using data to estimate which model or parameters fit.
 
 From the objective of world [[thoughts/representations]], mathematicians and engineers have been using probability distributions/equations to model phenomena in life, as early as Laplace's work on celestial mechanics. The same intellectual lineage runs through modern ML systems—we're still trying to compress the world into mathematical forms, just with more parameters now.
 
@@ -54,7 +54,15 @@ They're also designed for parallel computation across massive batches, but users
 
 [^ntp]: or people refer to it as "next-token prediction"
 
-Consider the memory problem. Every token you generate needs to attend to every previous token — that's the KV cache, and it grows quadratically. For a 70B parameter model serving 100 users with 2K context each, you're looking at hundreds of gigabytes just for temporary state [^solutions]
+Consider the memory problem. The KV cache stores a key and value for each cached token at each attention layer, so its memory use grows linearly with the number of cached tokens. The attention work for one decode step also grows with context length. Across a long autoregressive generation, those decode steps can add up to quadratic work in the generated length.[^solutions]
+
+For one sequence, a useful first estimate is
+
+$$
+M_{\mathrm{KV}} = 2L n_{\mathrm{kv}} d_h b s,
+$$
+
+where $L$ is the layer count, $n_{\mathrm{kv}}$ is the number of key-value heads, $d_h$ is the head dimension, $b$ is bytes per stored element, and $s$ is the cached sequence length. The factor $2$ accounts for keys and values.
 
 ![[thoughts/images/page_layout_flashinfer.webp|Paged KV layout in FlashInfer]]
 
@@ -64,11 +72,11 @@ There's also scheduling: how do you decide which request to process next when th
 
 [^scheduling-solution]: vLLM popularized [[thoughts/Continuous batching|continuous batching]] — instead of waiting for all requests in a batch to finish, you continuously add and remove requests. Orca took this further with iteration-level scheduling. SGLang went another direction entirely with [[thoughts/radix attention]], building a tree of shared prefixes so common prompts don't get recomputed, but similar idea.
 
-Then there's also the kernel problem [^kernel]. Deep learning comprises a lot of matmuls (matrix multiplication, or also known as [[lectures/411/notes#Hadamard and Kronecker products|Kronecker products]]) and other [transcendental](https://en.wikipedia.org/wiki/Transcendental_function) ops, happening in CUDA kernels that need to be meticulously optimized. [^kernel-solution]
+Then there is the kernel problem.[^kernel] Deep learning uses dense matrix multiplications, reductions, normalization, and elementwise operations. Matrix multiplication is distinct from both the Hadamard product and the [[lectures/411/notes#Hadamard and Kronecker products|Kronecker product]]. These operations run in accelerator kernels whose memory access and parallel work must be tuned together.[^kernel-solution]
 
-[^kernel]: You can think of kernel (or we often refer to them as CUDA kernels, because NVIDIA was the first one to do it efficiently) as functions that allow programmers to define a custom computation that accesses local resources (like memory) and uses the [G|I|T]PUs (processing units) as very fast parallel compute units.
+[^kernel]: A GPU kernel is a function executed by many parallel threads on an accelerator. The implementation controls how those threads divide work and move data through registers, shared memory, and device memory.
 
-[^kernel-solution]: FlashAttention showed us that memory bandwidth, not compute, is often the bottleneck. So we fuse operations, we quantize weights, we rewrite algorithms to minimize memory transfers. There are compilers/DSLs such as Triton, CUTLASS, torch.compile, CuTe DSL, tile-lang, all aiming to solve these problems of generating the fastest GEMM, GEMV kernels.
+[^kernel-solution]: The bottleneck depends on the phase and workload. Long prefill batches often have enough arithmetic intensity to be compute-bound. Single-token decode is commonly limited by memory bandwidth because each step reads large weights and cache state for little new work. FlashAttention reduces attention's memory traffic by changing its tiling. Fusion, quantization, and specialized GEMM or GEMV kernels address different points on that roofline. See [Preble's prefill and decode measurements](https://arxiv.org/abs/2407.00023).
 
 ### **Q**: _Can you walk through what actually happens during inference?_
 
@@ -78,15 +86,15 @@ Then there's also the kernel problem [^kernel]. Deep learning comprises a lot of
 
 Your prompt arrives and gets tokenized. The scheduler looks at current system load and decides whether to process it immediately or queue it. If processing, it needs to allocate KV cache blocks — these are fixed-size chunks of GPU memory managed by the KV manager (that setup metadata to be ingested by the PagedAttention kernels).
 
-Prefill happens first — processing all input tokens in parallel. This is bandwidth-bound, reading weights from HBM to compute attention and FFN layers. vLLM might batch your prefill with other requests' decode steps (that's "continuous batching"). The even cleverer bit: if your prompt shares a prefix with something already in cache, we can actually skip this step entirely[^chunked-prefill].
+Prefill happens first, processing the input tokens in parallel. For long prompts and useful batch sizes, the dense layers usually make this phase compute-bound. vLLM can batch prefill work with other requests' decode steps. If part of the prompt matches a prefix already in the KV cache, prefix caching can skip computation for that cached part.[^chunked-prefill]
 
 [^chunked-prefill]: This is also known as prefix caching. This is a bit different from chunked prefill, where chunked prefill is a technique for handling long prompts by splitting their prefill step into smaller chunks. Without it, we could end up with a single very long request monopolizing one engine step disallowing other prefill requests to run. That would postpone all other requests and increase their latency.
 
-Then decode begins — generating one token at a time. Each step needs the KV cache from all previous tokens. With PagedAttention, these might be scattered across different memory blocks, even different GPUs. The block manager handles this like a tiny OS, with block tables mapping logical to physical addresses.
+Then decode begins, generating one token at a time. Each step reads the KV cache from previous tokens. With PagedAttention, a request's blocks can occupy noncontiguous locations in the local KV-cache pool. A block table maps logical blocks to physical blocks. Cross-GPU KV placement requires a separate distributed serving design.
 
-But here's where it gets interesting: speculative decoding might kick in. Instead of generating one token, a smaller "draft" model races ahead, generating multiple tokens. The main model verifies these in parallel — accepting what matches, rejecting what doesn't. It's like branch prediction in CPUs, except we're predicting language.
+Speculative decoding can propose several tokens with a smaller draft model, then score the whole proposal with the target model in parallel. For sampling, acceptance uses a modified rejection-sampling rule based on the draft and target probabilities. If a token is rejected, the algorithm samples a correction from a residual distribution. This preserves the target model's output distribution rather than accepting only literal token matches. See [Leviathan, Kalman, and Matias](https://arxiv.org/abs/2211.17192).
 
-Throughout all this, there's scheduling decisions. Preemption might kick in if a higher-priority request arrives. Memory pressure might trigger recomputation instead of caching. The continuous batcher is constantly reordering, merging, splitting requests to maximize throughput without violating latency SLAs.
+The scheduler can preempt work when memory is scarce or a policy gives another request priority. Continuous batching adds and removes active sequences at iteration boundaries. Splitting prompts into chunks, merging work, and priority ordering are separate scheduling policies.
 
 ### **Q**: _What are the key architectural decisions that actually matter?_
 
@@ -124,9 +132,9 @@ Right now, we treat models like functions — input in, output out. But what if 
 
 > Software co-designing hardware has always been, and will always be relevant in the world, even in the event we do reach [[thoughts/AGI]].
 
-The H100 introduces TMA, WGMMA, more asynchrony, AMD's MI300X, custom ASICs like Groq's LPU, [[thoughts/Tenstorrent]] — they're all betting that inference, not training, is where the market is.
+NVIDIA's H100 adds TMA and WGMMA instructions that support more asynchronous data movement and matrix work. AMD's MI300X, Groq's LPU, and [[thoughts/Tenstorrent|Tenstorrent's]] accelerators make different choices about memory, execution, and programmability.
 
-These chips are optimized for different points in the design space. Groq removes caches entirely, betting on deterministic dataflow. Others are adding massive HBM for caching everything. Then Tenstorrent is building the whole thing on RISC-V, fully open-source! The diversity is good — it prevents us from overfitting to one architecture.
+These chips occupy different points in the design space. Groq uses deterministic dataflow and software scheduling. Other accelerators add large HBM capacity. Tenstorrent exposes RISC-V control processors alongside Tensix matrix and vector engines through an open-source software stack.
 
 > The tooling is maturing too.
 
@@ -150,7 +158,7 @@ The field is moving fast enough that by the time you read this, half the systems
 
 ### **Q**: _Is this also about saving money?_
 
-**A**: Yes and no. Efficiency also makes experiences feel instant, enables on-device use, and shortens iteration cycles so ideas ship faster. See [[thoughts/Speculative decoding]] and [[thoughts/quantization]]. But cost-saving is a huge motivator. But then so does everything else in life 😅
+**A**: Inference efficiency reduces accelerator time and memory per request, which lowers serving cost. The same work can reduce latency or make a model fit on a smaller device. See [[thoughts/Speculative decoding]] and [[thoughts/quantization]].
 
 ### **Q**: _What’s the point of interpretability? Why look inside models if they “work”?_
 
@@ -177,15 +185,15 @@ The field is moving fast enough that by the time you read this, half the systems
 
 A lot of work recently focuses on disaggregated serving architectures of these models.
 
-- @qin2024mooncakekvcachecentricdisaggregatedarchitecture achieves 525% throughput increases (i.e Mooncake) [^notes]
+- @qin2024mooncakekvcachecentricdisaggregatedarchitecture reports up to a 525% throughput increase for Mooncake against the paper's serving baselines.[^notes]
 - @li2025flowkvdisaggregatedinferenceframework reduces KV transfer latency by 96%.
 
 [^notes]: ==cross-stage communication under dynamic workloads== and how to allocate resources when both stages compete for the same hardware is a pretty cool system problems.
 
 I do think that, speculation should move beyond naive draft-verify paradigm:
 
-- Slice-level scheduling [@cheng2025slicelevelschedulinghighthroughput] shows 315.8% improvements by treating speculation as a scheduling problem.
-- SpecDec++ [@huang2025specdecboostingspeculativedecoding] demonstrates 2.26× speedups with adaptive speculation that adjusts to rejection patterns.
+- Slice-level scheduling [@cheng2025slicelevelschedulinghighthroughput] reports up to a 315.8% improvement for its evaluated workloads and baselines.
+- SpecDec++ [@huang2025specdecboostingspeculativedecoding] reports speedups of up to $2.26\times$ with adaptive speculation that responds to rejection patterns.
 - Also SD for [Blockwise Sparse Attention](https://matx.com/research/sd_nsa) are relevant in working with long context tasks. See also @song2025prosparseintroducingenhancingintrinsic
 - Greedy verification algorithm is also suboptimal, especially with softmax instability.
 

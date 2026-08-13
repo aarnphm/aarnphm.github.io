@@ -91,7 +91,7 @@ The Loner Cluster is the one that you're the least of all 16 types. Life's a sim
 Your Type: 5 - The Analyst 🕵
 
 - fuel your thirst for knowledge by diving into complex ideas and skills, thrive on autonomy and innovation, but sometimes struggle with self-absorption, pessimism, and solitude.
-- **fundamental fear:** being vulnerable and inadquate
+- **fundamental fear:** being vulnerable and inadequate
 - **mental habit:** Frugality
 - **core aspiration:** Mastery, insight
 - **antidote:** Objectivity
@@ -126,7 +126,7 @@ Type 9 [████████████░░░░░░░░] 60%
 
 > [!note]- top scores
 >
-> top two Enneagram scores are only 1 points apart. While we've highlighted your highest-scoring type above, you likely share traits with multiple types. Consider exploring both Type 5 and Type 8 to better understand your personality.
+> top two Enneagram scores are only 1 point apart. While we've highlighted your highest-scoring type above, you likely share traits with multiple types. Consider exploring both Type 5 and Type 8 to better understand your personality.
 >
 > ![[thoughts/images/enneagram.webp]]
 

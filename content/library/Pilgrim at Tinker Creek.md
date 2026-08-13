@@ -11,8 +11,7 @@ modified: 2026-06-05 15:08:01 GMT-04:00
 posters: '[[library/posters/pilgrim-at-tinker-creek.jpg]]'
 status: to read
 subcategory:
-  - fiction
-  - love
+  - nature
 tags:
   - o/life
   - r/nf

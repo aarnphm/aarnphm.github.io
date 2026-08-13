@@ -1,7 +1,7 @@
 ---
 category: projets
 date: '2022-01-25'
-description: but for image-gen
+description: structured outputs for image generation.
 id: constrained decoding imagegen
 modified: 2026-06-05 15:08:02 GMT-04:00
 notebook: '[[thoughts/vllm]]'

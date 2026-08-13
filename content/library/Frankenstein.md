@@ -4,7 +4,7 @@ author:
 category:
   - p/fiction
 date: '2026-01-07'
-description: or modern day Prometheus
+description: Shelley's novel about Victor Frankenstein and the living creature he makes and abandons, published as Frankenstein; Or, The Modern Prometheus.
 external: https://www.gutenberg.org/files/42324/42324-h/42324-h.htm
 finished: null
 id: Frankenstein

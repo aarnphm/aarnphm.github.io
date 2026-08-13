@@ -317,6 +317,7 @@ export const routeStreamFlags = (
   stride: boolean
   groundContact: boolean
   verticalOscillation: boolean
+  stamina: boolean
   resp: boolean
   temp: boolean
   heatStrain: boolean
@@ -334,6 +335,9 @@ export const routeStreamFlags = (
   verticalOscillation:
     d.sport === 'run' &&
     d.route.filter(point => runVerticalOscillationCm(point) != null).length >= 2,
+  stamina:
+    d.sport === 'bike' &&
+    d.route.filter(point => point.stamina != null && point.potentialStamina != null).length >= 2,
   resp: d.route.some(p => p.resp != null && p.resp > 0),
   temp: d.route.some(p => p.tempC != null),
   heatStrain:
@@ -561,6 +565,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.stride ||
     flags.groundContact ||
     flags.verticalOscillation ||
+    flags.stamina ||
     flags.resp ||
     flags.temp ||
     flags.heatStrain ||
@@ -1031,6 +1036,120 @@ export function gearShiftAtFraction(
   return { ...shifts[index], index, xPct: normalized * 100 }
 }
 
+const staminaSeriesPath = (
+  d: StravaActivityDetail,
+  pick: (point: StravaActivityDetail['route'][number]) => number | null,
+  closeArea: boolean,
+): string => {
+  const width = 100
+  const height = 30
+  const maxDistanceKm = d.route.at(-1)?.d || 1
+  const px = (distanceKm: number): number => (distanceKm / maxDistanceKm) * width
+  const py = (value: number): number => height - (Math.min(100, Math.max(0, value)) / 100) * height
+  let path = ''
+  let segmentStart = -1
+  const closeSegment = (start: number, end: number): void => {
+    const first = pick(d.route[start])
+    if (first == null) return
+    const firstX = px(d.route[start].d)
+    if (closeArea)
+      path += `M ${firstX.toFixed(2)} ${height} L ${firstX.toFixed(2)} ${py(first).toFixed(2)} `
+    else path += `M ${firstX.toFixed(2)} ${py(first).toFixed(2)} `
+    for (let index = start + 1; index <= end; index++) {
+      const value = pick(d.route[index])
+      if (value == null) continue
+      path += `L ${px(d.route[index].d).toFixed(2)} ${py(value).toFixed(2)} `
+    }
+    if (closeArea) path += `L ${px(d.route[end].d).toFixed(2)} ${height} Z `
+  }
+  d.route.forEach((point, index) => {
+    const value = pick(point)
+    const valid = value != null && Number.isFinite(value) && value >= 0 && value <= 100
+    if (valid && segmentStart < 0) segmentStart = index
+    if (segmentStart >= 0 && (!valid || index === d.route.length - 1)) {
+      closeSegment(segmentStart, valid ? index : index - 1)
+      segmentStart = -1
+    }
+  })
+  return path
+}
+
+export const buildStaminaChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  const points = d.route.filter(point => point.stamina != null && point.potentialStamina != null)
+  if (d.sport !== 'bike' || points.length < 2) return null
+  const width = 100
+  const height = 30
+  const view = graphView(d)
+  const yTicks = [0, 25, 50, 75, 100].map(value => ({
+    label: `${value}%`,
+    vbY: height - (value / 100) * height,
+  }))
+  const svgEl = f.svg('svg', {
+    class: 'tri-elev tri-stamina-svg',
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
+    preserveAspectRatio: 'none',
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svgEl,
+      f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: width, y2: tick.vbY }),
+    )
+  f.add(
+    svgEl,
+    f.svg('path', {
+      d: staminaSeriesPath(d, point => point.stamina, true),
+      class: 'tri-stamina-area',
+    }),
+  )
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  f.add(
+    svgEl,
+    f.svg('path', {
+      d: staminaSeriesPath(d, point => point.stamina, false),
+      class: 'tri-stamina-line tri-stamina-line--current',
+    }),
+    f.svg('path', {
+      d: staminaSeriesPath(d, point => point.potentialStamina, false),
+      class: 'tri-stamina-line tri-stamina-line--potential',
+    }),
+    f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
+  )
+  const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-stamina-chart', undefined, {
+    'data-tri-trace': 'stamina',
+  })
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  f.add(cap, f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'stamina')))
+  for (const kind of ['current', 'potential'] as const) {
+    const item = f.el('span', `tri-stamina-legend-item tri-stamina-legend-item--${kind}`)
+    f.add(
+      item,
+      f.el('span', 'tri-stamina-legend-line', undefined, { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-stamina-legend-label', triText(f.presentation.locale, kind)),
+    )
+    f.add(cap, item)
+  }
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      yTicks,
+      height,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: height },
+    ),
+  )
+  return wrap
+}
+
 function sampledGearTicks(values: readonly number[], limit = 4): number[] {
   const unique = [...new Set(values)].sort((left, right) => left - right)
   if (unique.length <= limit) return unique
@@ -1314,7 +1433,7 @@ export const buildRunVerticalOscillationTrace = <N>(
     f,
     d,
     runVerticalOscillationCm,
-    'v-oscillation',
+    'vertical oscillation',
     () => `${formatVerticalOscillation(f.presentation, average)} avg`,
     value => `${value.toFixed(1)}cm`,
     { min, max, intervals: 2 },
@@ -2556,15 +2675,21 @@ export const powerCurveFraction = (
 }
 
 const POWER_CURVE_AXIS_MARKERS = [5, 10, 20, 30, 120]
+const POWER_CURVE_ENDPOINT_GAP = 0.12
 
 export const powerCurveDurationTicks = (
   minSeconds: number,
   maxSeconds: number,
   durations: readonly number[],
 ): number[] =>
-  [...new Set([...durations, ...POWER_CURVE_AXIS_MARKERS])]
+  [...new Set([...durations, ...POWER_CURVE_AXIS_MARKERS, maxSeconds])]
     .filter(seconds => seconds >= minSeconds && seconds <= maxSeconds)
     .sort((left, right) => left - right)
+    .filter(
+      seconds =>
+        seconds === maxSeconds ||
+        powerCurveFraction(seconds, minSeconds, maxSeconds) <= 1 - POWER_CURVE_ENDPOINT_GAP,
+    )
 
 const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: number): number => {
   let low = 0
@@ -3284,22 +3409,14 @@ const swimProjection = (d: StravaActivityDetail): string => {
     : '—'
 }
 
-const swimStrokeProfile = (d: StravaActivityDetail): string => {
+const primarySwimStroke = (d: StravaActivityDetail): string => {
   const entries: [SwimStroke, number][] = SWIM_STROKES.map((stroke): [SwimStroke, number] => [
     stroke,
     d.strokes?.[stroke] ?? 0,
   ])
     .filter(([, distanceM]) => distanceM > 0)
     .sort((left, right) => right[1] - left[1])
-  const totalM = entries.reduce((total, [, distanceM]) => total + distanceM, 0)
-  if (entries.length === 0 || totalM <= 0) return 'freestyle · 100%'
-  const visible = entries.slice(0, 2)
-  const values = visible.map(
-    ([stroke, distanceM]) => `${STROKE_LABEL[stroke]} ${Math.round((distanceM / totalM) * 100)}%`,
-  )
-  const remainingM = entries.slice(2).reduce((total, [, distanceM]) => total + distanceM, 0)
-  if (remainingM > 0) values.push(`other ${Math.round((remainingM / totalM) * 100)}%`)
-  return values.join(' / ')
+  return entries[0] ? STROKE_LABEL[entries[0][0]] : STROKE_LABEL.freestyle
 }
 
 const strengthMass = (presentation: TriathlonPresentation, kilograms: number): string => {
@@ -3406,7 +3523,7 @@ export const activityStatRows = (
       poolMetrics ? `${swimTrendNumber(poolMetrics.strokesPerLength)} /length` : '—',
     ])
     rows.push(['1.9k / 3.8k', swimProjection(d)])
-    rows.push(['stroke type', swimStrokeProfile(d)])
+    rows.push(['stroke type', primarySwimStroke(d)])
     rows.push([
       'strokes',
       positiveMetric(d.strokeCount)
@@ -3475,7 +3592,7 @@ export const buildActivity = <N>(
     if (analysis) f.add(figs, analysis)
     f.add(wrap, figs)
   } else if (d.sport === 'swim') {
-    const figs = f.el('div', 'tri-act-figs')
+    const figs = f.el('div', 'tri-act-figs tri-act-figs--pool')
     f.add(figs, buildPool(f, d))
     f.add(wrap, figs)
   }
@@ -3514,6 +3631,8 @@ export const buildActivity = <N>(
           analysisSelection,
         ),
       )
+    const stamina = buildStaminaChart(f, d, analysisSelection)
+    if (stamina) f.add(more, stamina)
     const shifting = buildShiftingChart(f, d, analysisSelection)
     if (shifting) f.add(more, shifting)
     if (flags.cad) {
@@ -3575,6 +3694,7 @@ export const buildActivity = <N>(
       )
       if (skinTemperature) f.add(more, skinTemperature)
     }
+    if (swimTrends) f.add(more, swimTrends)
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)
@@ -3583,7 +3703,6 @@ export const buildActivity = <N>(
     }
     const bestEfforts = buildCyclingBestEfforts(f, d)
     if (bestEfforts) f.add(more, bestEfforts)
-    if (swimTrends) f.add(more, swimTrends)
     f.add(
       wrap,
       f.el('button', 'tri-act-toggle', expanded ? '− see less' : '+ see more', {
@@ -3748,7 +3867,7 @@ const activityComparisonMetricSpecs = (
   },
   'vertical-oscillation': {
     metric: 'vertical-oscillation',
-    title: 'v-oscillation',
+    title: 'vertical oscillation',
     display: value => value,
     tick: value => formatVerticalOscillation(presentation, value),
     includeZero: false,
@@ -4575,7 +4694,6 @@ const comparisonDurationTicks = (
     1_200,
     3_600,
     10_800,
-    maxSeconds,
   ])
   return durations.map((seconds, index) => ({
     label: dlabel(seconds),

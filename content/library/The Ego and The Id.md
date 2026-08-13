@@ -2,7 +2,7 @@
 author: '[[thoughts/Freud|Sigmund Freud]]'
 category: philosophy
 date: '2025-05-31'
-description: freud text that introduces the structural model of id, ego, and superego, linking conflict, repression, and neurosis.
+description: freud introduces the structural model of id, ego, and superego, then uses it to describe internal conflict, identification, and guilt.
 finished: 2025
 id: The Ego and The Id
 language: german
@@ -17,90 +17,30 @@ title: The Ego and The Id
 year: 1923
 ---
 
-> The state of consciousness is very transitory
+Freud begins by revising the earlier division between conscious, preconscious, and unconscious mental processes. Repressed material is unconscious, yet the unconscious also includes processes that were never repressed. Consciousness alone therefore cannot describe the organization of the mind.
 
-### Cs, Pcs, Ucs.
+## the ego and the id
 
-Two kinds of consciousness but in a dynamic sense it is one
+The ego is the organized part of mental life connected to perception and action. It develops from the id through contact with the external world. The id contains drives and wishes that do not follow the ego's ordinary tests of consistency or external reality.
 
-The ego is a coherent organisation of mental processes, that the consciousness is attached to.
+Freud describes the ego as trying to impose the reality principle on the id's pursuit of pleasure. The ego controls action when it can, delays satisfaction, and tries to join the demands of the id to the conditions of the world. Its control is limited because much of the ego is also unconscious.
 
-> But what about those in the processes which we may—roughly and inexactly— up under the name of thought-processes? They represent displacements of mental energy which are effected, where in the interior of the apparatus as this energy proceed on its way towards action. Do they advance to the sur which causes consciousness to be generated? Or does sciousness make its way to them? This is clearly one of the difficulties that arise when one begins to take the spatial or topological idea of mental life logically.
+## identification
 
-Both are equally unimaginable. There must be a third alternative.
+An object-cathexis directs libidinal energy toward another person. When that relation is lost or abandoned, the ego can take the object into itself through identification. Freud uses melancholia as an early example: identification with the lost object changes the ego and allows the relation to persist internally.
 
-In itself something unconscious become preconscious such that how can we make something that is repressed (pre)conscious would be answered:
+He then gives identification a wider role in character. The ego contains traces of past object choices. This is one reason the structural model does not treat a person as a transparent, unified agent.
 
-Internal perception yields sensation of processes arising in the most diverse strata of the mental apparatus.
+## the superego
 
-These sensations are my views about their idea for this. These sensations are multilocular, like external perceptions; they may come from different places simultaneously and may thus have different or even opposite qualities.
+The superego, also called the ego ideal in parts of the text, develops from early identifications and the dissolution of the Oedipus complex. It preserves parental authority within the mind. It judges the ego, supplies ideals, and becomes a source of conscience and guilt.
 
-```quotes
-Sensations of a pleasurable nature have not anything inherently impelling about them, whereas unpleasurable ones have it in the highest degree. The latter impel towards change, towards discharge, and that is why we interpret un-pleasure as implying a heightening and pleasure a lowering of energic cathexis.' Let us call what becomes conscious as pleasure and unpleasure a quantitative and qualitative
-```
+This internal authority can be severe. Aggression that might have been directed outward can be taken up by the superego and turned against the ego. Freud later develops that account of guilt in [[library/Civilisation and its Discontents]].
 
-'something' in the course of mental events; the question then is whether this 'something' can become conscious in the place where it is, or whether it must first be transmitted to the system Pept.
+## a divided ego
 
-Clinical experience decides for the latter. It shows us that this something' behaves like a repressed impulse. It can exert driving force without the ego noticing the compulsion.
+The ego faces pressure from the external world, the id, and the superego. These demands can conflict. A wish may seek immediate satisfaction, reality may block it, and the superego may condemn it before any action occurs. Freud uses this structure to explain why conscious intention gives an incomplete account of conduct.
 
-> [!important] The Ego
->
-> The ego is the id modified by influence of perceptual system
+The book is a theoretical model, not brain anatomy. It gives Freud distinctions for describing conflict inside a person. Those distinctions depend on assumptions about drives, development, and the Oedipus complex, which later psychology does not treat as settled fact.
 
-object-cathexis and Oedipus complex to describe the form of ego
-
-### Object-choices and identification
-
-```quotes
-At this point we must widen our range a little. We succeeded in explaining the painful disorder of melancholia by supposing that [in those suffering from it] an object which was lost has been set up again inside the ego-that is, that an object-cathexis has been replaced by an identification.
-```
-
-At that time, however, we did not appreciate the full significance of this process and did not know how common and how typical it is. Since then we have come to understand that this kind of substitution has a great share in determining the form taken by the ego and that it makes an essential contribution towards building up what is called its 'character
-
-At the very beginning, in the individual's primitive oral phase, object-cathexis and identification are no doubt indistinguishable from each other. We can only suppose that later on object-cathexis proceed from the id, which feels erotic trends as needs. The ego, which to begin with is still feeble, becomes aware of the object-cathexis, and either acquiesces in them or tries to fend them off by the process of repression.
-
-The super-ego originates from the experience that led to totemism
-
-Early conflicts of the ego with object-cathexis of the id can be continued in conflicts with their heir, super-ego
-
-If the ego has not succeeded in properly mastering the Oedipus complex, the energic cathexis of the latter, spring from the id will come into operation once more reaction-formation of the ego ideal.
-
-## key concepts
-
-### repression and civilization
-
-[[thoughts/repression|repression]] is the central mechanism through which civilization shapes psyche. what can't be expressed within available social practices gets pushed out of consciousness, but returns in disguised form—symptoms, slips, dreams.
-
-see: [[library/Civilisation and its Discontents|Civilisation and its Discontents]] for extended analysis of how civilization requires instinctual renunciation, creating internal conflicts between id (desires), ego (rational mediator), and superego (internalized social norms).
-
-### guilt and the superego
-
-[[thoughts/guilt|guilt]] arises from internalized aggression. civilization prohibits outward aggression; the superego redirects it inward, attacking the ego. this creates self-policing subjects who feel guilty even for forbidden thoughts.
-
-connection to [[thoughts/Wittgenstein|wittgenstein]]: guilt operates through language. superego forms through linguistic prohibitions ("don't do that," "you should"). even private conscience relies on socially learned language games. guilt presupposes community whose norms you've internalized.
-
-### performativity and authenticity
-
-[[thoughts/performativity|civilization requires performance]]. you can't simply "be yourself"—that would mean expressing id impulses directly. by the time you speak (ego function), you've already suppressed id content and ventriloquized superego prohibitions. what gets communicated is what survives psychic censorship.
-
-question: is authentic relationship possible? or does civilization make all social interaction into performance? see connections to sartre's bad faith, goffman's dramaturgy, butler's performativity.
-
-### language and socialization
-
-superego is linguistically transmitted. parents speak societal norms; child internalizes the speech itself. language is vehicle through which civilization enters psyche. every "don't," "should," "must" inscribes social norms into internal structure.
-
-connection to [[thoughts/Wittgenstein#language games|wittgenstein's language games]]: learning language and acquiring superego might be same process. you simultaneously learn linguistic meaning, social practice, and moral prohibition. language games are inherently normative.
-
-see: [[library/Civilisation and its Discontents#exploratory connections freud and wittgenstein on language games|freud-wittgenstein connections]] for detailed exploration of how psychoanalysis and philosophy of language might illuminate each other.
-
-## related works
-
-- [[library/Civilisation and its Discontents|Civilisation and its Discontents]] (1930): civilization requires instinctual renunciation, creating neurosis
-- [[library/Beyond The Pleasure Principle|Beyond The Pleasure Principle]]: introduces death drive (thanatos) alongside life drive (eros)
-
-## connections to other frameworks
-
-- [[thoughts/identity|identity formation]]: psyche's tripartite structure shapes who you become
-- [[thoughts/love|love and relationships]]: erotic love resists sublimation, creating tension with civilization
-- [[thoughts/hermeneutics|hermeneutics]]: therapy as interpretive practice, making unconscious conscious
-- [[thoughts/forms of life|forms of life]]: different civilizations shape different psychic structures
+source: [public English edition of _The Ego and the Id_](https://www.sigmundfreud.net/ebooks/the-ego-and-the-id.pdf)

@@ -31,6 +31,7 @@ import {
   buildElevation,
   buildPowerCurve,
   buildShiftingChart,
+  buildStaminaChart,
   buildRoute,
   buildRunGroundContactTrace,
   buildRunStrideTrace,
@@ -705,6 +706,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 160,
       hr: 130,
       cad: 82,
+      stamina: null,
+      potentialStamina: null,
       resp: 20,
       tempC: 22,
       heatStrainIndex: null,
@@ -724,6 +727,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 200,
       hr: 145,
       cad: 86,
+      stamina: null,
+      potentialStamina: null,
       resp: 24,
       tempC: 23,
       heatStrainIndex: null,
@@ -743,6 +748,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 215,
       hr: 153,
       cad: 90,
+      stamina: null,
+      potentialStamina: null,
       resp: 28,
       tempC: 24,
       heatStrainIndex: null,
@@ -762,6 +769,8 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
       w: 175,
       hr: 149,
       cad: 84,
+      stamina: null,
+      potentialStamina: null,
       resp: 32,
       tempC: 25,
       heatStrainIndex: null,
@@ -1289,7 +1298,7 @@ test('prefers native running dynamics for the whole activity and preserves senso
   assert.ok(traces.every(trace => trace != null))
   assert.deepEqual(
     traces.map(trace => trace?.properties.dataTriTrace),
-    ['stride length', 'ground contact time', 'v-oscillation'],
+    ['stride length', 'ground contact time', 'vertical oscillation'],
   )
   assert.deepEqual(
     traces.map(trace =>
@@ -1807,10 +1816,14 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
       ],
       strokes: { freestyle: 800, breaststroke: 200 },
       swimLocation: 'pool',
+      windKph: 18,
+      windDir: 'SW',
+      windGustKph: 31,
     }),
   )
   const stats = byClass(rendered, 'tri-act-stats')[0]
   assert.ok(stats)
+  assert.equal(byClass(rendered, 'tri-act-figs--pool').length, 1)
   assert.deepEqual(bodyRows(stats), [
     ['distance', '1,000 m'],
     ['time', "20'"],
@@ -1818,7 +1831,7 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['stroke rate', '32 spm'],
     ['cadence', '10.5 /length'],
     ['1.9k / 3.8k', "30' / 1h00'"],
-    ['stroke type', 'freestyle 80% / breast 20%'],
+    ['stroke type', 'freestyle'],
     ['strokes', '876 · 1.14 m/str'],
     ['avg hr', '148 bpm'],
     ['NP', '205 W'],
@@ -1828,6 +1841,7 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['calories', '960 kcal'],
     ['max hr', '171 bpm'],
     ['air temp', '24°C'],
+    ['wind', '18 km/h SW / gust 31'],
   ])
 })
 
@@ -1855,7 +1869,7 @@ test('keeps a missing swim stroke rate visible as an em dash', () => {
     ['stroke rate', '—'],
     ['cadence', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
-    ['stroke type', 'freestyle · 100%'],
+    ['stroke type', 'freestyle'],
     ['strokes', '—'],
     ['avg hr', '148 bpm'],
   ])
@@ -1887,7 +1901,7 @@ test('keeps water temperature and adds the full open-water swim profile', () => 
     ['stroke rate', '32 spm'],
     ['cadence', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
-    ['stroke type', 'freestyle · 100%'],
+    ['stroke type', 'freestyle'],
     ['strokes', '—'],
     ['avg hr', '148 bpm'],
   ])
@@ -2795,6 +2809,44 @@ test('resolves the active shifting pairing at distance', () => {
   assert.equal(gearShiftAtFraction(shifts, 30, 2)?.index, 3)
 })
 
+test('renders Garmin stamina and potential stamina on one fixed percentage scale', () => {
+  const ride = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      stamina: [100, 76, 54, 32][index],
+      potentialStamina: [100, 88, 67, 40][index],
+    })),
+  })
+  const chart = buildStaminaChart(factory, ride, null)
+  assert.ok(chart)
+  assert.equal(chart.properties.dataTriTrace, 'stamina')
+  assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['stamina'])
+  assert.deepEqual(byClass(chart, 'tri-stamina-legend-item').map(text), ['current', 'potential'])
+  assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['0%', '25%', '50%', '75%', '100%'])
+  assert.equal(byClass(chart, 'tri-stamina-area').length, 1)
+  assert.equal(byClass(chart, 'tri-stamina-line--current').length, 1)
+  assert.equal(byClass(chart, 'tri-stamina-line--potential').length, 1)
+  assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
+  assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+})
+
+test('places stamina below power and above electronic shifting', () => {
+  const ride = shiftedDetail()
+  ride.route = ride.route.map((point, index) => ({
+    ...point,
+    stamina: [100, 76, 54, 32][index],
+    potentialStamina: [100, 88, 67, 40][index],
+  }))
+  const rendered = buildActivity(factory, ride, true)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
+  assert.ok(powerIndex >= 0)
+  assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'stamina')
+  assert.equal(children[powerIndex + 2].properties.dataTriTrace, 'electronic shifting')
+})
+
 test('renders front and rear shifting on separate overlaid y axes', () => {
   const chart = buildShiftingChart(factory, shiftedDetail(), null)
   assert.ok(chart)
@@ -2910,6 +2962,26 @@ test('pairs hr/power zones and curve/hist into duos with aligned captions', () =
   ])
 })
 
+test('places swim charts before heart rate zones in expanded details', () => {
+  const rendered = buildActivity(
+    factory,
+    swimTrendDetail({ hrZones: [20, 40, 30, 10, 0] }),
+    true,
+    ctx(),
+    swimTrendPoints,
+  )
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const swimIndex = children.findIndex(child => classNames(child).includes('tri-swim-trends'))
+  const zonesIndex = children.findIndex(child =>
+    byClass(child, 'tri-zone-title').some(title => text(title) === 'heart rate zones'),
+  )
+
+  assert.equal(swimIndex, 0)
+  assert.ok(zonesIndex > swimIndex)
+})
+
 test('places cycling efforts after the expanded charts', () => {
   const rendered = buildActivity(factory, zonedDetail(), true, ctx())
   const more = byClass(rendered, 'tri-act-more')[0]
@@ -2934,13 +3006,13 @@ test('scales power curve y axis with nice watt ticks', () => {
   ])
 })
 
-test('labels a three-hour power curve through its endpoint', () => {
+test('labels a power curve through its endpoint beyond three hours', () => {
   const curve = buildPowerCurve(
     factory,
     detail({
       powerCurve: [
         { s: 1, w: 565 },
-        { s: 10_800, w: 180 },
+        { s: 20_107, w: 180 },
       ],
     }),
     ctx(),
@@ -2957,7 +3029,7 @@ test('labels a three-hour power curve through its endpoint', () => {
     '5m',
     '20m',
     '1h',
-    '3h',
+    '5h35m',
   ])
   const lastTick = byClass(curve, 'tri-cax-xt').at(-1)
   assert.ok(lastTick)
@@ -2969,7 +3041,7 @@ test('labels a three-hour power curve through its endpoint', () => {
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.dataCurveSeconds),
-    ['1', '5', '10', '20', '30', '60', '120', '300', '1200', '3600', '10800'],
+    ['1', '5', '10', '20', '30', '60', '120', '300', '1200', '3600', '20107'],
   )
   assert.deepEqual(
     ticks.map(tick => tick.properties.ariaPressed),
@@ -3021,6 +3093,10 @@ test('keeps shared power curve duration markers inside the visible domain', () =
   assert.deepEqual(
     powerCurveDurationTicks(5, 300, [1, 15, 60, 300, 600]),
     [5, 10, 15, 20, 30, 60, 120, 300],
+  )
+  assert.deepEqual(
+    powerCurveDurationTicks(1, 20_107, [1, 60, 300, 1_200, 3_600, 10_800]),
+    [1, 5, 10, 20, 30, 60, 120, 300, 1_200, 3_600, 20_107],
   )
 })
 

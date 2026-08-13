@@ -15,6 +15,4 @@ title: Thus Spake Zarathustra
 year: 1883
 ---
 
-[[thoughts/Consciousness]] is what you make of it. The values you gather through experience are curated largely based on your environment, and Zarathustra guides you on acting morally.
-
-People are innately good, but circumstances make them act a certain way.
+Zarathustra attacks inherited categories of good and evil and asks how new values can be created. The overman names a direction of self-overcoming rather than a rule for conventional moral conduct. The eternal recurrence tests whether one could affirm a life in every detail.

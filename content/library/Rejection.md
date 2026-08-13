@@ -3,7 +3,7 @@ author: Tony Tulathimutte
 category:
   - p/fiction
 date: '2025-03-05'
-description: short fiction about rejection, ambition, and creative failure, tracing how the desire to be chosen warps work and relationships.
+description: seven connected stories about sex, relationships, identity, and life online, following characters whose attempts at connection end in self-deception and rejection.
 id: Rejection
 modified: 2026-06-05 15:07:58 GMT-04:00
 posters: '[[library/posters/rejection.jpg]]'

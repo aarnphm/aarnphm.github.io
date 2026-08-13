@@ -2,7 +2,7 @@
 author: Bertrand Russell
 category: philosophy
 date: '2025-10-07'
-description: russell practical guide to avoiding boredom, envy, and anxiety, outlining habits that foster modest, durable happiness.
+description: Russell's practical guide to avoiding boredom, envy, and anxiety, outlining habits that foster modest, durable happiness.
 external: https://russell-j.com/beginner/COH-TEXT.HTM
 id: The Conquest of Happiness
 modified: 2026-06-05 15:07:59 GMT-04:00

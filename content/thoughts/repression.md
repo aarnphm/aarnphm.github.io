@@ -17,7 +17,7 @@ repression is the central mechanism of [[thoughts/Freud|freudian]] psychoanalysi
 
 repression operates as forced forgetting, but not ordinary forgetting. you don't simply fail to remember; you actively (though unconsciously) prevent certain content from becoming conscious. the content threatens the ego—contradicts self-image, violates internalized norms, produces unbearable anxiety. so it gets pushed out of awareness.
 
-but repressed content doesn't disappear. it remains psychically active, consuming energy, seeking expression. this is [[library/Civilisation and its Discontents#the return of the repressed in social interaction|what freud calls "the return of the repressed"]]—content returns in disguised form as symptoms, slips, dreams, compulsions.
+but repressed content doesn't disappear. it remains psychically active, consuming energy, seeking expression. in [[thoughts/Freud|freud's account]], content returns in disguised form as symptoms, slips, dreams, and compulsions.
 
 key features:
 

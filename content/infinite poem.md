@@ -27,7 +27,7 @@ const rules = {
   emotion: 'love | happiness | wonder | gratitude | peace',
 }
 
-// Generate and print the poem 5 times
+// Generate and print the poem 10 times
 for (let i = 0; i < 10; i++) {
   console.log(`Poem ${i + 1}:`)
   console.log(RiTa.grammar(rules).expand())

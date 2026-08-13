@@ -10,7 +10,6 @@ posters: '[[library/posters/play-it-as-it-lays.jpg]]'
 status: to read
 subcategory: love
 tags:
-  - fruit
   - novel
 title: Play It as It Lays
 year: 1970

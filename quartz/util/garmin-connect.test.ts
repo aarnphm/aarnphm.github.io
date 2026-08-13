@@ -357,6 +357,8 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
       { metricsIndex: 2, key: 'directLongitude' },
       { metricsIndex: 3, key: 'directElevation' },
       { metricsIndex: 4, key: 'directPower' },
+      { metricsIndex: 13, key: 'directAvailableStamina' },
+      { metricsIndex: 14, key: 'directPotentialStamina' },
       { metricsIndex: 5, key: 'directHeartRate' },
       {
         metricsIndex: 12,
@@ -374,9 +376,11 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
       },
     ],
     activityDetailMetrics: [
-      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null, 98.6, 0, 37, null] },
-      { metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42, 99.5, 1.4, 37.01, 33.45] },
-      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08, 100.4, 3, 37.03, 33.5] },
+      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null, 98.6, 0, 37, null, 100, 100] },
+      {
+        metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42, 99.5, 1.4, 37.01, 33.45, 78, 86],
+      },
+      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08, 100.4, 3, 37.03, 33.5, 60, 71] },
     ],
   })
 
@@ -391,6 +395,8 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
   assert.deepEqual(streams?.heartrate, [135, 142, 149])
   assert.deepEqual(streams?.cadence, [82, 88, 91])
   assert.deepEqual(streams?.time, [0, 15, 30])
+  assert.deepEqual(streams?.stamina, [100, 78, 60])
+  assert.deepEqual(streams?.potentialStamina, [100, 86, 71])
   assert.deepEqual(streams?.respiration, [0, 27.42, 31.08])
   assert.deepEqual(streams?.heatStrainIndex, [0, 1.4, 3])
   assert.deepEqual(streams?.coreTemperatureC, [37, 37.01, 37.03])

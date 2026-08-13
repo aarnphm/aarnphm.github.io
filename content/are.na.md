@@ -15,15 +15,15 @@ claude:
       where:
       - `[**]` denotes this block is highlighted
       - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by @quartz/plugins/emitters/arena.ts, to the consumed with @quartz/components/pages/ArenaIndex.tsx @quartz/components/pages/ChannelContent.tsx
+      - any subsequent list items denote notes, footnotes, or highlights and follow the normal markdown structure.
+    This will be handled by @quartz/plugins/emitters/arena.ts, to be consumed by @quartz/components/pages/ArenaIndex.tsx and @quartz/components/pages/ChannelContent.tsx
 codex:
   structure: |-
     - When I refer to <channel>, it is the H2 heading
-    - When I refer to a <channel>, it is per list entry under a <channel>
+    - When I refer to a <block>, it is one list entry under a <channel>
     For example:
       - "With regards to <discourse#block-1>, I want to expand on certain topics about money".
-        In this example, <discource#block-1> refers to "section discourse first list item"
+        In this example, <discourse#block-1> refers to the first list item in the discourse section
     A block will have the following structure:
     - ```markdown
       - <link> [separator:=--] <title>[optional] [**][optional]
@@ -34,8 +34,8 @@ codex:
     - where:
       - `[**]` denotes this block is highlighted
       - `[meta]` holds a yaml-markdown list of metadata for a given block
-      - any consequent list items denotes notes/footnotes/highlights, follows the normal markdown structure.
-    This will be handled by quartz/plugins/emitters/arena.ts, to the consumed with quartz/components/pages/ArenaIndex.tsx quartz/components/pages/ChannelContent.tsx
+      - any subsequent list items denote notes, footnotes, or highlights and follow the normal markdown structure.
+    This will be handled by quartz/plugins/emitters/arena.ts, to be consumed by quartz/components/pages/ArenaIndex.tsx and quartz/components/pages/ChannelContent.tsx
 cssclasses:
   - nolist
 date: "2024-10-24"
@@ -2386,7 +2386,7 @@ title: are.na
   - [meta]:
     - date: 11/09/2025
     - tags: [masonry]
-  - Quartz version can be found [[images|here]]
+  - Quartz version can be found [[vibes|here]]
 - [[lyd]] -- postcards, toronto
   - [meta]:
     - date: 11/04/2025
@@ -5749,7 +5749,7 @@ title: are.na
     - tags: [writing, llm]
     - later: true
   - This is hard because LLMs are still advancing so fast. If I had written this in 2020, aimed at the original `davinci`, it would now be hopelessly obsolete; and the (still-unreleased and presumably still improving) o1 or [GPT-5](https://openai.com/gpt-5/) might render much of this moot. Perhaps there is not really anything a human can write now for LLMs beyond brute factual observations not yet recorded anywhere in black-and-white, or researchers at the frontier documenting their most esoteric findings, and we should drop “writing for LLMs” as a goal entirely, and write for all the other reasons there are to write? Still, I’m going to give it a try.
-  - see also: [[thoughts/writing#for shoggoth]]
+  - see also: [[thoughts/writing]]
 - https://www.nytimes.com/2025/12/03/magazine/chatbot-writing-style.html -- Why does AI write like... that?
   - [meta]:
     - date: 12/07/2025
@@ -9231,7 +9231,7 @@ title: are.na
   - https://leimao.github.io/blog/CuTe-Blocked-Raked-Products/
   - https://leimao.github.io/blog/CuTe-Index-To-Coordinate/
   - https://leimao.github.io/blog/CUDA-Driver-Runtime-Load-Run-Kernel/
-- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: 4× Smaller and 3× Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs
+- https://hanlab.mit.edu/blog/svdquant-nvfp4 -- SVDQuant Meets NVFP4: $4\times$ Smaller and $3\times$ Faster FLUX with 16-bit Quality on NVIDIA Blackwell GPUs
   - [meta]:
     - date: 10/06/2025
     - tags: [inference, optimization]
@@ -9383,7 +9383,7 @@ title: are.na
   - [meta]:
     - date: 10/03/2025
     - tags: [interpretability, techniques]
-- https://x.com/leloykun/status/1941067659157913625 -- Adam with Aggressive Gradient Value/Norm Clipping ≈ Smoothed SignSGD/NormSGD
+- https://x.com/leloykun/status/1941067659157913625 -- Adam with Aggressive Gradient Value/Norm Clipping $\approx$ Smoothed SignSGD/NormSGD
   - [meta]:
     - date: 10/03/2025
     - tags: [optimizer]
@@ -12158,7 +12158,6 @@ title: are.na
   - [meta]:
     - date: 01/15/2026
     - tags: [metaphysics, ethics]
-  - seealso: [[thoughts/Disagreement]]
 - https://www.youtube.com/watch?v=HvCEf7n9-Ps -- Why we make art?
   - [meta]:
     - date: 01/13/2026
@@ -17401,7 +17400,7 @@ title: are.na
     - date: 12/12/2025
     - tags: [systems, os]
     - pinned: true
-- [[aoc/25/d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
+- [[puzzle/aoc/25/d11.cu]] -- Day 11 implementation of AOC 2025 in CUDA
   - [meta]:
     - date: 12/11/2025
     - tags: [code, puzzle]

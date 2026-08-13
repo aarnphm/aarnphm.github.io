@@ -19,11 +19,11 @@ tags:
 title: affecter.
 ---
 
-I think a lot about that one [[quotes#^life-jobs-smart|quote]] from Steve Jobs, and realised that you are who you surrounded yourself with. Whether online, daily, we often populate our minds and time by the people we hang around or work with.
+I think a lot about that one [[quotes#^life-jobs-smart|quote]] from Steve Jobs, and realised that we become shaped by the people around us. Online and in daily life, we populate our minds and time with the people we follow or work with.
 
-The following lists of people who I owed a lot. I would separate from top-to-bottom a list from "people-i-know-that-makes-me-whole" to "humans-being-in-the-wild-that-reminds-me-how-beautiful-life-really-is" (separated with `**`):
+The following is a list of people I owe a lot. It moves from people I know who make me whole to people in the wild who remind me how beautiful life is. The groups are separated with `**`.
 
-- [Jacky](https://jzhao.xyz/), for always encouraging me to think hardly, even from afar
+- [Jacky](https://jzhao.xyz/), for always encouraging me to think hard, even from afar
 - [Chaoyu](https://twitter.com/chaoyu_), for taking a bet on me, four years ago.
 - [Sean](https://www.linkedin.com/in/ssheng/), whom I consider as a friend both professionally and personally.
 - All my colleagues at [that infrastructure startup](https://bentoml.com/), for your trust in me.
@@ -35,13 +35,13 @@ The following lists of people who I owed a lot. I would separate from top-to-bot
 - [Parth](https://x.com/thanosthinking), for your trust.
 - L, for your trust and love.
 - C, for your care and endless laughter.
-- N, for being the one that stay while the rest of the world walk away.
+- N, for being the one who stays while the rest of the world walks away.
 - J, for your endurance, for reminding me that I don't have to walk through this dark forest alone.
 - M and TA, for being anchors to my fading roots, [[thoughts/being|being]] Vietnamese, and _frozen grapes influencer_.
 - my mom, for being the coolest human being, albeit with some minor hiccups (but you know, generational difference).
 - my dad, for his silence, love through actions.
 - my brother, for being nothing less but an inspiration for me to always keep pushing forward.
-- Anh Q and chi L, for being the ==True North== that light the path whenever I felt loss.
+- Anh Q and chi L, for being the ==True North== that lights the path whenever I felt lost.
 
 \*\*\*
 

@@ -15,6 +15,6 @@ status: to read
 subcategory: communal
 tags:
   - r/pattern
-title: 'A Pattern Language: Towns, Building, Construction'
+title: 'A Pattern Language: Towns, Buildings, Construction'
 year: 1977
 ---

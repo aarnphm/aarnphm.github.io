@@ -39,25 +39,25 @@ I will validate the report, determine severity and scope, identify affected vers
 
 ### Threat model
 
-Assumptions: this is a personal site with minimal data collection (see [[privacy policy|Privacy Policy]]). Primary risks include supply‑chain vulnerabilities, XSS from user‑generated or third‑party embeds, misconfigured headers/CSP, token/secret exposure in Workers, SSRF to cloud metadata, and denial of service. There are no authenticated user areas.
+Assumptions: this is a personal site with limited data collection (see [[privacy policy|Privacy Policy]]). Primary risks include supply-chain vulnerabilities, XSS from user-generated comments or third-party embeds, misconfigured headers or CSP, token and secret exposure in Workers, SSRF to cloud metadata, OAuth failures, authorization bypass, and denial of service. GitHub OAuth is used for comment identity and protected MCP authorization flows.
 
 ### Issue severity
 
 Severity reflects likelihood and impact (inspired by CVSS). Ranges are indicative.
 
-#### CRITICAL (CVSS ≥ 9.0)
+#### CRITICAL (CVSS $\geq 9.0$)
 
 Remote code execution, secret/key exfiltration, domain/account takeover, or full compromise of confidentiality, integrity, or availability without special conditions.
 
-#### HIGH (7.0–8.9)
+#### HIGH (CVSS $7.0$ to $8.9$)
 
 Serious impact requiring certain conditions or privileges, e.g., XSS enabling persistent content injection, SSRF reaching sensitive metadata, privilege escalation in operational tooling, or significant data loss.
 
-#### MODERATE (4.0–6.9)
+#### MODERATE (CVSS $4.0$ to $6.9$)
 
 Denial of service, reflected XSS with limited impact, open redirect enabling phishing, or vulnerabilities with meaningful but contained blast radius.
 
-#### LOW (< 4.0)
+#### LOW (CVSS $< 4.0$)
 
 Informational issues or low‑risk weaknesses such as overly permissive headers with no practical exploit, minor CSP gaps, or verbose error messages.
 

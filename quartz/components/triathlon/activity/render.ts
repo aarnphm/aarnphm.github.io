@@ -34,6 +34,7 @@ import { runStrideLengthValue } from '../../../util/triathlon-card'
 import { runVerticalOscillationCm } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
+import { triText } from '../../../util/triathlon-i18n'
 import { buildMatchedRideGroup } from '../analytics/panels/matched'
 import { buildMatchedRunGroup } from '../analytics/panels/matched'
 import {
@@ -294,7 +295,7 @@ export const metricSpecs = (
     },
   }
   const verticalOscillationSpec: MapMetric = {
-    label: 'v-oscillation',
+    label: 'vertical oscillation',
     shortLabel: 'VO',
     ramp: STRIDE_RAMP,
     zeroGap: true,
@@ -671,6 +672,12 @@ export const renderDetail = (
           return `${zoneClock(p.elapsedS)} · ${scrubDist(presentation, p.d, d.sport)}${shift ? ` · ${shift.frontTeeth}×${shift.rearTeeth}` : ''}`
         },
       })
+    else if (trace.dataset.triTrace === 'stamina')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${triText(presentation.locale, 'current')} ${p.stamina == null ? '—' : `${Math.round(p.stamina)}%`} · ${triText(presentation.locale, 'potential')} ${p.potentialStamina == null ? '—' : `${Math.round(p.potentialStamina)}%`}`,
+      })
     else if (trace.dataset.triTrace === 'cadence')
       surfaces.push({
         wrap: trace,
@@ -696,7 +703,7 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
         },
       })
-    else if (trace.dataset.triTrace === 'v-oscillation')
+    else if (trace.dataset.triTrace === 'vertical oscillation')
       surfaces.push({
         wrap: trace,
         fmt: p => {

@@ -33,6 +33,7 @@ async function convertMedia(contentDir: string) {
         '**/library',
         '**/healthexporter',
         'content/thoughts/university/twenty-five-twenty-six/**/*',
+        'content/hinterland/**/*',
       ],
       absolute: true,
     })
@@ -83,6 +84,7 @@ async function convertMedia(contentDir: string) {
         '**/healthexporter',
         '**/trtllm structured outputs with speculative decoding.md',
         'content/thoughts/university/twenty-five-twenty-six/**/*.md',
+        'content/hinterland/**/*',
       ],
     })
 

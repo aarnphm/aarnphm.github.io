@@ -10,7 +10,6 @@ modified: 2026-06-05 15:07:59 GMT-04:00
 posters: '[[library/posters/the-secret-history.jpg]]'
 status: to read
 tags:
-  - p/scifi
   - r/sociology
 title: The Secret History
 year: 1992

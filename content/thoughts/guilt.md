@@ -19,7 +19,7 @@ guilt is civilization's internalized police force. it's how social control opera
 
 ## freud's account: aggression turned inward
 
-[[library/Civilisation and its Discontents#chapter 5 aggression turned inward|freud's radical claim]]: guilt is internalized aggression. you want to attack others (they frustrate you, have what you want, threaten you). civilization prohibits outward aggression. you can't eliminate the aggressive impulse, so it inverts. the [[thoughts/repression|superego]] attacks the ego with violence that would otherwise be directed outward.
+In [[library/Civilisation and its Discontents|Freud's account]], guilt arises when aggression is redirected inward. Civilization restricts outward aggression, and the [[thoughts/repression|superego]] turns part of that aggression against the ego.
 
 the mechanism:
 

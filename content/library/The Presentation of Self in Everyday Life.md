@@ -17,7 +17,7 @@ posters: '[[library/posters/the-presentation-of-self-in-everyday-life.jpg]]'
 category:
   - sociology
 translator:
-description: " The imagery of theatre to portray the importance of human social interaction. This approach became known as Goffman's dramaturgical analysis."
+description: Goffman uses a dramaturgical model to explain how people manage the impressions they give during social interaction.
 notebook:
 aliases:
 pdf: https://monoskop.org/images/1/19/Goffman_Erving_The_Presentation_of_Self_in_Everyday_Life.pdf

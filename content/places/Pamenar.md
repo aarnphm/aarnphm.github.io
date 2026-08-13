@@ -1,4 +1,9 @@
 ---
+aliases:
+  - Cafe Pamenar
+visits:
+  - '2025-08-05'
+  - '2025-11-17'
 address: 307 Augusta Ave, Toronto, ON M5T 2M2, Canada
 category:
   - '[[places to go]]'

@@ -4,7 +4,7 @@ tags:
 id: actual air
 title: actual air
 date: 2025-12-09
-description: berman's debut poetry collection of subtly radical poems that reinvent overlooked american details, called a master work of shared memory and post-postmodern awareness.
+description: berman's 1999 debut poetry collection, with poems about memory, landscape, music, work, and everyday American life.
 finished:
 year: 1999
 status: to read

@@ -16,7 +16,7 @@ posters: '[[library/posters/html-parser.png]]'
 category:
   - technology
 translator:
-description: how to build a HTML parser
+description: notes on HTML parser edge cases and the tree-building rules that make browser parsing unusual.
 notebook:
 aliases:
 ---

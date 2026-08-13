@@ -16,5 +16,5 @@ title: llmfile
 dockerfile for llm workloads
 
 - inspired by [ollama](https://github.com/ollama/ollama)'s modelfile
-- a dockerfile frontend with [[thoughts/BuildKit]] and [[thoughts/OCI]]-compliant frontend
+- a [[thoughts/BuildKit]] frontend for LLM workloads that produces [[thoughts/OCI]]-compliant images
 - ideally staying away from docker as a product.

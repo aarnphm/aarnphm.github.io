@@ -4,7 +4,7 @@ category: technology
 date: '2025-11-04'
 description: a hands on book that builds a language and bytecode interpreter step by step, teaching compilers and language design by example.
 external: https://craftinginterpreters.com/
-id: Crafting Interpreter
+id: Crafting Interpreters
 modified: 2026-06-05 15:07:57 GMT-04:00
 posters: '[[library/posters/crafting-interpreter.png]]'
 status: to read
@@ -13,6 +13,6 @@ subcategory:
   - ir
 tags:
   - technical
-title: Crafting Interpreter
+title: Crafting Interpreters
 year: 2021
 ---

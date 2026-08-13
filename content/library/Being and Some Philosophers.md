@@ -4,7 +4,7 @@ category: philosophy
 date: '2025-10-07'
 description: historical survey of how major philosophers conceive being, tracing shifts in metaphysics from plato to modern thought.
 id: Being and Some Philosophers
-language: french
+language: english
 modified: 2026-06-05 15:07:59 GMT-04:00
 pdf: '[[thoughts/papers/Being and Some Philosophers.pdf]]'
 posters: '[[library/posters/being-and-some-philosophers.jpg]]'

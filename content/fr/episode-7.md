@@ -198,16 +198,88 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 `ouvert` and `fermé` do the state; the schedule around them is the horaire vocabulary of [[fr/episode-3]].
 
-the second exercise reads a school's message board to parents, four rubriques:
+### les quatre rubriques du babillard de l'école
 
-| rubrique               | la règle                                                                                                                                                 |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Diner et collation`   | fruits, légumes et fromage `permis`; croustilles, chocolat, bonbons et boissons gazeuses `pas permis`; arachides `interdites`                            |
-| `Tenue vestimentaire`  | récréation à l'extérieur tous les jours, même par temps froid; tuque, gants ou mitaines, pantalon de neige et bottes `obligatoires` contre les engelures |
-| `Rencontre de parents` | première soirée le 4 décembre à compter de 16 h; l'enseignante ou l'enseignant contacte les parents pour fixer l'heure                                   |
-| `Photos de classe`     | prise de photos le mardi 2 novembre; photos prêtes avant le congé des Fêtes; photo de groupe remise gratuitement                                         |
+#### 1. diner et collation
 
-the board is a lexical field of QC school life: `un diner` (the midday meal France calls `déjeuner`), `une collation` (snack), `les croustilles` (chips), `la tuque` and `les mitaines`,[^tuque] `le congé des Fêtes` (the winter holidays). the episode's whole register reappears in miniature: permis, pas permis, interdites, obligatoires.
+- `C'est permis d'apporter des fruits, des légumes et du fromage pour la collation.`
+- `Les croustilles, le chocolat, les bonbons et les boissons gazeuses ne sont pas permis.`
+- `Pour la santé des enfants allergiques, les arachides sont interdites.`
+
+**sens en anglais:** fruit, vegetables, and cheese are allowed for the snack. chips, chocolate, candy, and soft drinks are not allowed. peanuts are prohibited because some children have allergies.
+
+`C'est permis d'apporter…` présente une action permise avec `de + infinitif`. `Les croustilles ne sont pas permises` présente plutôt la chose qui n'est pas permise. dans l'image, `permis` s'accorde avec une liste mixte qui contient des noms masculins, tandis que `les arachides sont interdites` s'accorde au féminin pluriel.
+
+#### 2. tenue vestimentaire
+
+- `À la récréation, les enfants vont à l'extérieur tous les jours, même par temps froid.`
+- `La tuque, les gants ou les mitaines, le pantalon de neige et les bottes sont obligatoires pour éviter les engelures.`
+
+**sens en anglais:** the children go outside at recess every day, including in cold weather. a toque, gloves or mittens, snow pants, and boots are required to prevent frostbite.
+
+`la tenue vestimentaire` désigne les vêtements attendus dans une situation. `un vêtement` est un seul article; `les vêtements` désigne l'ensemble. `pour éviter` introduit le but de la règle: les vêtements d'hiver sont obligatoires afin d'éviter les engelures.
+
+#### 3. rencontre de parents
+
+- `La première soirée de rencontre avec les parents aura lieu le 4 décembre à compter de 16 h.`
+- `L'enseignante ou l'enseignant de votre enfant vous contactera pour déterminer l'heure de cette rencontre.`
+
+**sens en anglais:** the first parent-teacher evening will take place on December 4, starting at 4 p.m. your child's teacher will contact you to set the meeting time.
+
+`avoir lieu` signifie se passer, et `à compter de` signifie à partir de. `aura lieu` et `contactera` sont au futur simple parce que l'école annonce des évènements futurs. `16 h` correspond à 4 p.m. dans le système sur 24 heures de [[fr/episode-3]].
+
+#### 4. photos de classe
+
+- `La prise de photos aura lieu le mardi 2 novembre.`
+- `Les photos seront prêtes avant le congé des Fêtes.`
+- `La photo de groupe sera remise gratuitement à tous les enfants.`
+
+**sens en anglais:** photos will be taken on Tuesday, November 2. they will be ready before the holiday break. every child will receive the group photo free of charge.
+
+`la prise de photos` désigne l'action de prendre des photographies. `seront prêtes` réunit le futur du verbe `être` et l'adjectif féminin pluriel `prêtes`. `sera remise` est une forme passive: la photo de groupe sera donnée aux enfants. `à tous les enfants` indique les destinataires.
+
+### mots et expressions du babillard
+
+| mot ou expression                 | définition en français                                             | anglais                         |
+| --------------------------------- | ------------------------------------------------------------------ | ------------------------------- |
+| `un diner`                        | le repas du milieu de la journée                                   | lunch                           |
+| `une collation`                   | un petit repas entre les repas principaux                          | snack                           |
+| `des croustilles`                 | de fines tranches de pomme de terre frites                         | potato chips                    |
+| `une boisson gazeuse`             | une boisson sucrée contenant du gaz                                | soft drink, soda                |
+| `une arachide`                    | une graine qui peut provoquer une allergie                         | peanut                          |
+| `allergique`                      | qui a une réaction physique à un aliment ou à une substance        | allergic                        |
+| `la tenue vestimentaire`          | l'ensemble des vêtements portés ou exigés                          | clothing, dress requirements    |
+| `un vêtement`, `les vêtements`    | un article porté sur le corps, puis l'ensemble de ces articles     | an item of clothing, clothes    |
+| `la récréation`                   | la pause des élèves pendant la journée scolaire                    | recess                          |
+| `à l'extérieur`                   | dehors                                                             | outside                         |
+| `même par temps froid`            | y compris lorsque la température est froide                        | even in cold weather            |
+| `une tuque`                       | un bonnet chaud porté en hiver                                     | toque, winter hat               |
+| `un gant`, `une mitaine`          | deux vêtements qui protègent les mains                             | glove, mitten                   |
+| `un pantalon de neige`            | un pantalon isolé et imperméable pour jouer dans la neige          | snow pants                      |
+| `une botte`                       | une chaussure haute qui protège le pied et la cheville              | boot                            |
+| `une engelure`                    | une lésion causée par une exposition prolongée au froid            | frostbite                       |
+| `avoir lieu`                      | se passer à une date ou à un endroit                               | to take place                   |
+| `à compter de`                    | à partir de                                                       | starting at, as of              |
+| `déterminer l'heure`              | choisir ou fixer l'heure                                           | to set the time                 |
+| `la prise de photos`              | l'action de prendre des photographies                              | photo-taking                    |
+| `le congé des Fêtes`              | la période de vacances autour de Noël et du jour de l'An            | holiday break                   |
+| `remettre quelque chose à quelqu'un` | donner ou livrer quelque chose à une personne                    | to give, hand something to someone |
+| `gratuitement`                    | sans demander de paiement                                          | free of charge                  |
+
+### points de langue
+
+| fonction       | structure                                    | exemple du babillard                                      |
+| -------------- | -------------------------------------------- | --------------------------------------------------------- |
+| permission     | `C'est permis de/d' + infinitif`             | `C'est permis d'apporter des fruits.`                     |
+| non-permission | `nom + ne pas être permis`                   | `Les boissons gazeuses ne sont pas permises.`             |
+| interdiction   | `nom + être interdit`                        | `Les arachides sont interdites.`                          |
+| obligation     | `nom + être obligatoire`                     | `Les bottes sont obligatoires.`                           |
+| but            | `pour + infinitif`                           | `pour éviter les engelures`                               |
+| évènement futur | `avoir lieu` au futur                       | `La prise de photos aura lieu le mardi 2 novembre.`       |
+| résultat futur | `être` au futur + adjectif                   | `Les photos seront prêtes.`                               |
+| passif futur   | `être` au futur + participe passé            | `La photo de groupe sera remise gratuitement.`            |
+
+tout le registre de l'épisode réapparait ici: permis, pas permis, interdites, obligatoires. les formes au futur ajoutent les dates et les arrangements dont les parents ont besoin.
 
 the vrai/faux then re-reads the board through `pouvoir`: `Mon enfant ne peut pas apporter d'arachides à l'école.` (vrai). the negation squeezes the article to `d'arachides`, the same move as `pas d'enfants` in [[fr/episode-1]].
 

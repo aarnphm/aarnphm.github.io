@@ -6,7 +6,7 @@ author:
 category:
   - math
 date: '2026-01-15'
-description: A broad introduction to algorithms for decision making under uncertainty, introducing the underlying mathematical problem formulations and the algorithms for solving them.Automated decision-making
+description: A broad introduction to mathematical models and algorithms for decision making under uncertainty.
 external: https://algorithmsbook.com/decisionmaking
 id: Algorithms for Decision Making
 modified: 2026-06-05 15:08:01 GMT-04:00

@@ -77,6 +77,8 @@ export interface GarminStreams {
   watts?: number[]
   heartrate?: number[]
   cadence?: number[]
+  stamina?: number[]
+  potentialStamina?: number[]
   respiration?: number[]
   heatStrainIndex?: number[]
   coreTemperatureC?: number[]
