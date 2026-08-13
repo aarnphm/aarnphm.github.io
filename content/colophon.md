@@ -12,7 +12,7 @@ tags:
 title: colophon
 ---
 
-**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiV file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSONCanvas supports]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
+**#technical** -- a [heavily modified fork](https://en.wikipedia.org/wiki/Ship_of_Theseus) of [Quartz](https://quartz.jzhao.xyz/), hosted with Cloudflare Workers, with support for arXiv file pulling, [telescopic](https://github.com/jackyzha0/telescopic-text) [[/index|text]], a [note view](https://notes.aarnphm.xyz/notes?stackedNotes=bm90ZXM), [[/singularity|JSON Canvas support]], [[cinematheque.base|Obsidian Bases support]] hierarchical grid layout, comment room support, reader view with custom [[/thoughts|folder]] and [[/tags|tags]] view, nested [[/index.xml|rss]] [[/posts/index.xml|feed]], [[queries|Jupyter]] [[thoughts/university/twenty-five-twenty-six/sfwr-4tb3/10 Generalized Parsing/00 Generalized Parsing|Notebooks]] support for client-side interaction, [[thoughts/Sets.fc|flashcards]], [[triathlon|a bunch of triathlon/tracking/analytics/health stuff]], {{sidenotes[tufte]: This is a tiny sidenote, supporting dynamic view size. Very much along the lines of [Tufte CSS](https://edwardtufte.github.io/tufte-css/)}} sidenotes, sidepanels [^sidepanel], modified [Flexoki](https://stephango.com/flexoki). I also host all of the LFS on Cloudflare R2, and have a middleware as a proxy client.
 
 [^sidepanel]: You can hold <kbd>alt+click</kbd> on any internal links to [popover](https://x.com/aarnphm/status/1884954569341272345) a side panel 😃
 
@@ -73,7 +73,7 @@ Support a small subsets of the features, with wikilinks parsing
     * Wittgenstein,
 		 * hosting functions,
 	 * and, go on long walks,
-	   * building [[thoughts/work|open-source project]],
+	   * building [[thoughts/craft|open-source projects]],
 	    * this [pan](https://example.com)
 ```
 
@@ -88,7 +88,7 @@ Support a small subsets of the features, with wikilinks parsing
 >     * Wittgenstein,
 > 		 * hosting functions,
 > 	 * and, go on long walks,
-> 	   * building [[thoughts/work|open-source project]],
+> 	   * building [[thoughts/craft|open-source projects]],
 > 	    * this [pan](https://example.com)
 > ```
 > ````
@@ -134,11 +134,11 @@ U &
 \State $s \gets ()$
 \For{$i \gets 1, L$}
 \State $\alpha \gets \text{LM}(s, \theta)$
-\State Sample $s \sim \text{Categorical}(\alpha)$
-\If{$s = \text{EOS}$}
+\State Sample $w \sim \text{Categorical}(\alpha)$
+\If{$w = \text{EOS}$}
 \State \textbf{break}
 \EndIf
-\State $s \gets \text{append}(s, s)$
+\State $s \gets \operatorname{append}(s, w)$
 \EndFor
 \State \Return $s$
 \EndFunction
@@ -157,11 +157,11 @@ U &
 > \State $s \gets ()$
 > \For{$i \gets 1, L$}
 > \State $\alpha \gets \text{LM}(s, \theta)$
-> \State Sample $s \sim \text{Categorical}(\alpha)$
-> \If{$s = \text{EOS}$}
+> \State Sample $w \sim \text{Categorical}(\alpha)$
+> \If{$w = \text{EOS}$}
 > \State \textbf{break}
 > \EndIf
-> \State $s \gets \text{append}(s, s)$
+> \State $s \gets \operatorname{append}(s, w)$
 > \EndFor
 > \State \Return $s$
 > \EndFunction

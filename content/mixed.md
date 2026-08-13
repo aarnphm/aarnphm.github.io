@@ -19,7 +19,7 @@ transclude:
 - ![[https://music.youtube.com/playlist?list=PLsRPzRsbp3lBbddid9loYh6o9gz004N7k&si=MBTa6UT63IIo5xHt]]
 - ![[https://music.youtube.com/playlist?list=PLhdidoMrFypF_OzJlr5YRR9lTswRdVsKD]]
 - ![[https://music.youtube.com/playlist?list=PLosoS0uWFKCsILMfLRRzAqasL_72xHmir]]
-- Love In Us All by Pharaoh Sanders
+- Love In Us All by Pharoah Sanders
 - https://capitald.bandcamp.com/album/songs-pt-2
   - 415, or Boss
 
@@ -39,8 +39,8 @@ jazz and blues:
 - The Milcho Leviev Quartet - Blues for the fisherman
   - London, June 1980
 - Billie Holiday - Platinum Collection
-- Howard Stabin - Daddy Plays The Horn
-- Ella Fitgerald - Live at Montreux 1969
+- Dexter Gordon - Daddy Plays the Horn
+- Ella Fitzgerald - Live at Montreux 1969
 - Grant Green - I Want to Hold Your Hand
 - Charlie Parker - Charlie Parker with Strings
   - supervised by Norman Granz
@@ -61,9 +61,9 @@ classical:
   - by London Philharmonic Orchestra w/ Yehudi Menuhin, Violin
   - by Menuhin Festival Orchestra w/ Sir Adrian Boult, Conductor
 - Dvořák - symphony No. 5 in F major Op. 24 (76) & Overture "My Home" from Op. 62
-  - by London Symphony Orchestra w/ jjaIstvan Kertesz, Conductor
+  - by London Symphony Orchestra w/ István Kertész, conductor
 - Stravinsky - The Firebird Suite (1919)
-  - by Chicago Symphony Orchestra w/ Carlo Maria Guilini
+  - by Chicago Symphony Orchestra w/ Carlo Maria Giulini
 - Mein schönstes Wunschkonzert Nr. 6
   - Willhelm Tell -- Ouvertüre (G.Rossini)
   - Capriccio italien (P. I. Tschaikowsky)
@@ -77,21 +77,21 @@ rock, pop:
 - AC/DC - Back in Black
 - Led Zeppelin - II
 - Fleetwood Mac - Rumours
-- Fleetwood Mac - Bare Tree
+- Fleetwood Mac - Bare Trees
 - Jefferson Starship - Freedom at Point Zero
 - Bob Dylan - Self Portrait
 - The Steve Miller Band - Brave New World
 - Johnny Cash - At Folsom Prison
 - David Bowie - The Man Who $old The World
-- David Bowie - A Second Fac
+- David Bowie - A Second Face
 - The Beatles - Help
 - The Beatles - Abbey Road
 - The Beatles - Rubber Soul
 
 house/folktronica/melodic/techno/garage:
 
-- Floating Point, Pharaoh Sanders & The London Symphony Orchestra - Promises
-- James Blake - Friends That Breaks Your Heart
+- Floating Points, Pharoah Sanders & The London Symphony Orchestra - Promises
+- James Blake - Friends That Break Your Heart
 - Autechre - LP5
 - Autechre - Amber (1994)
 - Autechre - Chiastic Slide
@@ -108,9 +108,9 @@ house/folktronica/melodic/techno/garage:
 - Bernard Parmegiani & François Bayle - Divine Comédie (1995)
   - 1995 Press releases
 - Fred again. - USB
-- Floating Point - Reflections - Mojave Desert
-- Floating Point - Crush
+- Floating Points - Reflections - Mojave Desert
+- Floating Points - Crush
 - Bonobo - Dial 'M' for Monkey
-- Floating Point - Cascade
+- Floating Points - Cascade
 - Brian Eno - Another Green World
 - Brian Eno - Reflection

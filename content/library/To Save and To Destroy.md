@@ -2,8 +2,8 @@
 tags:
   - essays
   - philosophy
-id: To Save and To Destroy
-title: To Save and To Destroy
+id: 'To Save and to Destroy: Writing as an Other'
+title: 'To Save and to Destroy: Writing as an Other'
 date: 2025-12-23
 finished:
 year: 2025
@@ -16,7 +16,7 @@ posters: '[[library/posters/to-save-and-to-destroy.jpg]]'
 category:
   - philosophy
 translator:
-description: A moving and unflinchingly personal meditation on the literary forms of otherness and a bold call for expansive political solidarity.
+description: Six essays adapted from Nguyen's 2023 to 2024 Norton Lectures on writing as an other and building solidarity beyond racial identity.
 notebook:
 aliases:
 ---

@@ -55,7 +55,7 @@ transclude:
 >
 > John Wick, P4
 
-> We live in a world where ther eis more and more information, and less and less meaning
+> We live in a world where there is more and more information, and less and less meaning
 >
 > Jean Baudrillard
 
@@ -275,7 +275,7 @@ transclude:
 
 > There is no conceivable professional [[library/The Prince|advantage]] for me in talking to you
 >
-> Johnathan Franzen
+> Jonathan Franzen
 
 > I think we ought to read only the kind of books that wound and stab us. If the book we’re reading doesn’t wake us up with a blow on the head, what are we reading it for? So that it will make us happy, as you write? Good Lord, we would be happy precisely if we had no books, and the kind of books that make us happy are the kind we could write ourselves if we had to. But we need the books that affect us like a disaster, that grieve us deeply, like the death of someone we loved more than ourselves, like being banished into forests far from everyone, like a suicide. A book must be the axe for the frozen sea inside us. That is my belief.
 >
@@ -283,7 +283,7 @@ transclude:
 
 > Good design is as little design as possible. ^mtf
 >
-> some German motherfucker
+> Dieter Rams
 
 > I suspect your current parameters want you to feel gratified by your captivity.
 >
@@ -387,7 +387,7 @@ transclude:
 
 > 20 years from now you will be more disappointed by the things that you didn’t do than by the ones you did do. So throw off the bowlines. Sail away from the safe harbour. Catch the trade winds in your sails. Explore. Dream. Discover.
 >
-> Mark Twain
+> Sarah Frances Brown, quoted in H. Jackson Brown Jr.'s _P.S. I Love You_
 
 > Sometimes, we [care] too much about potential, less on credentials
 >
@@ -447,13 +447,13 @@ transclude:
 
 > The longer I live, the more deeply I learn that love whether we call it friendship or family or romance is the work of mirroring and magnifying each other’s light. Gentle work. Steadfast work. Life-saving work in those moments when life and shame and sorrow occlude our own light from our view, but there is still a clear-eyed loving person to beam it back. In our best moments, we are that person for another.
 >
-> James Baldwin, Nothing Personal
+> Maria Popova
 
 > I would say that free will is nothing but our conscious experience of deciding what to do, which I know I am experiencing as I write this review, and this experience is not invalidated by the reflection that physical laws made it inevitable that I would want to make these decisions.
 >
 > Steven Weinberg
 
-> I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to right ahead and sort of invent it. I invent it for you
+> I always have such need to merely talk to you. Even when I have nothing to talk about - with you I just seem to go right ahead and sort of invent it. I invent it for you
 >
 > Virginia Woolf, from a letter to _Vita Sackville West_
 
@@ -527,11 +527,11 @@ transclude:
 
 > I always feel happy, you know why? Because I don’t expect anything from anyone. Expectations always hurt. Life is short. So love your life. Be Happy. & Keep smiling. Just live for yourself & before you speak, listen. Before you write, think. Before you spend, earn. Before you pray, forgive. Before you hurt, feel. Before you hate, love. Before you quit, try. Before you die, live.
 >
-> William Shakespeare
+> source unknown; the closing sequence is commonly adapted from William Arthur Ward
 
 > A pessimist sees the difficulty in every opportunity; an optimist sees the opportunity in every difficulty.
 >
-> Winston Churchill
+> source unknown
 
 > Finish each day and be done with it. You have done what you could. Some blunders and [[thoughts/Camus#definition of absurd|absurdities]] no doubt crept in; forget them as soon as you can. Tomorrow is a new day; begin it well and serenely and with too high a spirit to be cumbered with your old nonsense.
 >
@@ -599,7 +599,7 @@ transclude:
 
 > Success consists of going from failure to failure without loss of enthusiasm.
 >
-> Winston Churchill
+> source unknown
 
 > [One] who works with the door open gets all kinds of interruptions, but [they] also occasionally gets clues as to what the world is and what might be important.
 >

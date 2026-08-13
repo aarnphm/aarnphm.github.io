@@ -221,41 +221,7 @@ examples (PI §23): giving orders, describing, reporting, speculating, storytell
 
 each game has rules (often implicit), point or purpose, criteria for correctness, training methods. games are many and diverse—no single essence. meaning is use in the game.
 
-see: [[library/Philosophical Investigations#language games|detailed discussion in PI notes]]
-
-### connections to psychoanalysis
-
-late wittgenstein's emphasis on social practices, language games, and public criteria creates interesting tensions and complementarities with [[thoughts/Freud|freudian]] psychoanalysis:
-
-**language acquisition as socialization**: when child learns language, they simultaneously learn social norms. the prohibitions that form [[thoughts/guilt|superego]] ("don't do that," "you should") are linguistically transmitted. language games aren't just descriptive but normative—embedding rules about what's permitted/forbidden.
-
-see: [[library/Civilisation and its Discontents#language games and socialization|language games and civilization]]
-
-**private language and the unconscious**: wittgenstein argues private language is impossible—meaning requires public criteria. but [[thoughts/Freud|freud's unconscious]] is private by definition. tension or complementarity? maybe: unconscious content only becomes meaningful when articulated in therapy—when entered into psychoanalytic language game.
-
-see: [[library/Civilisation and its Discontents#private language argument and the unconscious|private language and unconscious]]
-
-**showing vs. saying in symptoms**: early wittgenstein distinguished what can be said from what shows itself (TLP 4.1212). freud's neurotic symptoms show what can't be said (because it's [[thoughts/repression|repressed]]). therapy enables saying what was previously only shown.
-
-see: [[library/Civilisation and its Discontents#showing vs saying in symptoms|symptoms and showing/saying]]
-
-**forms of life and reality principle**: wittgenstein's forms of life—shared practices that ground meaning—connect to freud's reality principle. learning to defer gratification, accept constraints, operate within limits. but "reality" isn't objective—it's specific to forms of life. different civilizations have different reality principles.
-
-see: [[library/Civilisation and its Discontents#forms of life and the reality principle|forms of life and civilization]]
-
-**therapy as language game**: both offer therapeutic approaches. wittgenstein dissolves philosophical confusions by showing how language misleads. freud dissolves neurotic symptoms by making unconscious conscious. psychoanalysis itself is language game with specific practices (free association, interpretation, transference).
-
-see: [[library/Civilisation and its Discontents#therapeutic practice as language game|psychoanalysis as practice]]
-
-### rule-following and internalization
-
-rule-following considerations (PI §§185-242): following rule isn't private mental process but social practice maintained by community correction. "to obey a rule, to make a report, to give an order, to play a game of chess, are customs (uses, institutions)" (PI §199).
-
-connection to freud: superego internalizes external authority. parents enforce rules externally, child internalizes them, superego continues enforcement internally. but wittgenstein shows even private conscience relies on socially learned practices.
-
-key difference: wittgenstein describes smooth operation of rule-following (mostly). freud describes systematic conflict—civilization's rules directly contradict psychic demands (id impulses). rule-following isn't smooth enculturation but constant struggle producing neurosis.
-
-see: [[thoughts/guilt|guilt and social control]], [[library/Civilisation and its Discontents#rule-following and internalized norms|rule-following tensions]]
+see: [[library/Philosophical Investigations#language-games and use|detailed discussion in PI notes]]
 
 ### therapeutic philosophy
 

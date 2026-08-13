@@ -1,10 +1,10 @@
 ---
-address: 468, Wellington Street West, Wellington Place, Spadina—Fort York, Toronto, Golden Horseshoe, Ontario, M5V 1E3, Canada
+address: 61 Spadina Avenue, Toronto, ON M5V 2J2, Canada
 category:
   - '[[places to go]]'
 coordinates:
-  - '43.6441297'
-  - '-79.3981767'
+  - '43.6450460'
+  - '-79.3945242'
 date: '2025-11-22'
 description: modern king west coffee bar with clean lines
 id: NEO COFFEE BAR KING X SPADINA

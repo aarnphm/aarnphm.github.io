@@ -7,12 +7,12 @@ coordinates:
   - '-79.3981767'
 date: '2025-11-22'
 description: longstanding french bistro with classic parisian atmosphere
-id: Le Seléct Bistro
+id: Le Sélect Bistro
 modified: 2026-06-05 15:08:03 GMT-04:00
 rating: 5
 tags:
   - places
-title: Le Seléct Bistro
+title: Le Sélect Bistro
 type:
   - restaurant
 url: https://maps.app.goo.gl/vrdhF4JNipS8txQk6

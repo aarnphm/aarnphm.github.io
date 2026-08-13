@@ -17,7 +17,7 @@ posters: '[[library/posters/22-cell-in-nuremberg.jpg]]'
 category:
   - p/nf
 translator:
-description: The depiction of those who were in trials at Nuremberg, circa Kelley's work on Göring
+description: Kelley's account of psychiatric interviews and tests of 22 Nazi defendants held for the Nuremberg trials, including Hermann Göring.
 notebook:
 aliases:
 external:

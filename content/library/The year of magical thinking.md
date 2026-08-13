@@ -1,9 +1,9 @@
 ---
 author: Joan Didion
 category:
-  - p/fiction
+  - p/nf
 date: '2025-10-16'
-description: memoir on grief after sudden loss, tracing how didion mind loops through memories, rituals, and magical thinking.
+description: memoir on grief after sudden loss, tracing how Didion's mind loops through memories, rituals, and magical thinking.
 finished: null
 id: The year of magical thinking
 modified: 2026-06-05 15:07:59 GMT-04:00

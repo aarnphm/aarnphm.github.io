@@ -195,16 +195,16 @@ cooking
 </section>
 
 [^shape]:
-    The pasta I make varies in shape, but it's always uovo pasta—egg-based pasta made with a mix of 00-flour and semolina flour. I usually go for 80-20, but you can go without semolina. Note that semolina is based on durum wheat, so for folks that got allergy, I tend to exclude semolina.
+    The pasta I make varies in shape, but it is always uovo pasta made with eggs and a mix of 00 flour and semolina. I usually use an 80:20 ratio. Both flours contain wheat and gluten, so this recipe is unsafe for a wheat allergy or celiac disease. A gluten-free meal needs different ingredients and protection from cross-contact.
 
     I hit the farmers' market every Sunday morning to get the freshest eggs possible. Ideally, the yolks should be super orange (I know this is hard to find in Ontario), but slightly yellow yolks work fine too.
 
-    For trickier shapes like buccatini, I use the stand mixer to roll and cut the dough. Otherwise, I always roll by hand. Here's a recipe I've found that works well for four servings:
+    For bucatini, I use the stand mixer's pasta press. I roll sheet pasta and flat strands by hand. Here is a recipe that works for four servings:
 
     - $\frac{3}{2}$ cups of flour | 227 grams (mixed at ratio mentioned above)
     - 1 tablespoon extra-virgin olive oil
     - 3 yolks + 1 whole eggs
-    - distilled water (or any sort of water that has pH <= 7) to smooth the dough.
+    - water as needed to bring the dough together
 
     You can use a food processor to mix the dough (this is the most efficient way to do this, if you are short in time). However, I prefer the traditional way, which is making a well, and develop the gluten by hand.
 
@@ -234,7 +234,7 @@ design
   - My main design philosophy inspiration includes Bauhaus and Kanso (簡素)
 - I follow Fashion Week quite extensively, especially NYFW and Milan Fashion Week
   - Collina Strada and Sandy Liang are a few favorites of mine lately.
-- I'm a bit of a horology nerd. Watches are generally good investment, and nice accessory, if you know your stuff.
+- I'm a bit of a horology nerd. I care about the movements, cases, and design history.
   > [!note]- my collection so far
   >
   > ![[watch]]
@@ -247,11 +247,11 @@ design
 
 - ![[thoughts/writing#^ava-writing]]
 - I mainly write for myself, and this garden is my simulacrum.
-  - I use [curius](curius.app) to save links on the go, but often transfer them back here later.
+  - I use [Curius](https://curius.app/aaron-pham) to save links on the go, but often transfer them back here later.
   - If you're interested in [[colophon|how this website was built]]
 - I find essay and fiction formats very refreshing.
   - I'm heavily influenced by Michel Foucault, Albert Camus, Ludwig Wittgenstein, Franz Kafka, Raymond Carver, and a few more researchers (that I can proudly call them my friends)
-- I also maintain a [[books|antilibrary]] of literature that I've enjoyed.
+- I also maintain an [[antilibrary.base|antilibrary]] of literature that I've enjoyed.
 - I read [[/arena/papers|papers]] and #math textbooks for fun sometimes.
   - Yes, I know, it is a thing.
 

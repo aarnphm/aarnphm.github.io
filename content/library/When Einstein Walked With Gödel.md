@@ -12,7 +12,7 @@ notebook: null
 posters: '[[library/posters/when-einstein.jpg]]'
 status: to read
 subcategory:
-  - autobiography
+  - essays
 tags:
   - history
 title: '"When Einstein Walked With Gödel: Excursions to the Edge of Thought"'

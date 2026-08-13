@@ -6,7 +6,7 @@ coordinates:
   - '43.6431257'
   - '-79.4230246'
 date: '2025-11-22'
-description: theatre district restaurant with seasonal small plates
+description: queen west pizza bar with beer, cocktails, and wine
 id: Bar Poet
 modified: 2026-06-05 15:08:11 GMT-04:00
 rating: 5

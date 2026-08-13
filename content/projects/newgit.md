@@ -15,7 +15,7 @@ title: newgit
 
 pain:
 
-- each node is essentially a miniature filesystem (tree + blob), which is cheap, but the object model knows almost nothing about operations. move/rename/copy is not supported; renames are mostly heuristic (-m). good enough for most cases.
+- each node is essentially a miniature filesystem (tree + blob), which is cheap, but the object model knows almost nothing about operations. move/rename/copy is not supported; renames are mostly heuristic (-M). good enough for most cases.
 - it doesn’t actually track rename, which is annoying; it only infers them during diff/merge via similarity. mercurial really does support renames.
 - merge is not associative/commutative at all; merges are a mess. there is room for a crdt here.
 - contents are essentially opaque blobs. git only merges line-wise, but we have ast parsers now, so merges could be ast-based.

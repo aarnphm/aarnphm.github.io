@@ -19,10 +19,10 @@ Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm
 * present.
   * present, but you will find
   *  me
-    * me working on [[thoughts/work|open-source projects]],
-      * me working on [[thoughts/work|open-source projects]],
+    * me working on [[thoughts/craft|open-source projects]],
+      * me working on [[thoughts/craft|open-source projects]],
       * and spending too much time fixing this [site](https://aarnphm.xyz/view-source),
-        * and commiting to the bit.
+        * and committing to the bit.
         * I enjoy
           * I enjoy long walks,
           * nerd-snipping on the next [[/tags/math|math]] topics,
@@ -66,8 +66,8 @@ Hi, my name is Aaron. I'm best reached via [twitter](https://twitter.com/aarnphm
                                                 * about their intrinsic [[thoughts/Agency|drive]].
 ```
 
-I [[thoughts/craft|work]] on #ml [[research|systems]] (i.e. [[thoughts/Transformers#inference.|inference]] engine), and they work with me. My frequent interlocutors includes _my close friends_.
+I [[thoughts/craft|work]] on #ml [[research|systems]] (i.e. [[thoughts/Transformers#inference.|inference]] engine), and they work with me. My frequent interlocutors include _my close friends_.
 
-As far as [[thoughts/aesthetic value|aesthetic]] goes, I enjoy [[cinematheque.base|cinema]], training the [[antilibrary.base|mind]] and the [[triathlon|body]] [[queries|puzzles]], and [[vibes|collect images]] on the internet.
+As far as [[thoughts/aesthetic value|aesthetic]] goes, I enjoy [[cinematheque.base|cinema]], training the [[antilibrary.base|mind]] and the [[triathlon|body]], solving [[queries|puzzles]], and [[vibes|collecting images]] on the internet.
 
 I just like writing code, and I tend to do this for as long as I can.

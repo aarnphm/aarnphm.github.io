@@ -4,7 +4,7 @@ tags:
 id: Think
 title: Think
 date: 2025-12-17
-description: a compelling introduction to philosophy, intended to serve as an introduction to philosophy
+description: introduction to philosophical problems about knowledge, mind, free will, God, reasoning, and the self.
 finished:
 year: 1999
 status: to read

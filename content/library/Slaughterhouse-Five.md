@@ -3,7 +3,7 @@ author: Kurt Vonnegut
 category:
   - p/fiction
 date: '2025-10-07'
-description: antiwar novel about dresden and billy pilgrim time travel, blending trauma, absurdity, and science fiction refrain so it goes.
+description: an antiwar novel in which Billy Pilgrim moves through the Dresden bombing, postwar life, and encounters with Tralfamadore.
 finished: 2025
 id: Slaughterhouse-Five
 modified: 2026-06-05 15:07:58 GMT-04:00

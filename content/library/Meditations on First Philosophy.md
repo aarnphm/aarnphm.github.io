@@ -14,7 +14,7 @@ subcategory: theology
 tags:
   - philosophy
 title: Meditations on First Philosophy
+translator:
+  - Donald A. Cress
 year: 1641
 ---
-
-French edition.

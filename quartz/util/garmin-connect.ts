@@ -145,8 +145,10 @@ const METRIC_KEYS = {
   heartRate: 'directHeartRate',
   latitude: 'directLatitude',
   longitude: 'directLongitude',
+  potentialStamina: 'directPotentialStamina',
   power: 'directPower',
   respiration: 'directRespirationRate',
+  stamina: 'directAvailableStamina',
 }
 const CORE_CONNECT_IQ_APP_ID = '6957fe68-83fe-4ed6-8613-413f70624bb5'
 const CORE_DEVELOPER_FIELDS = { coreTemperatureC: 0, skinTemperatureC: 10, heatStrainIndex: 95 }
@@ -649,6 +651,8 @@ function hasStreamData(streams: GarminStreams): boolean {
     (streams.watts?.some(value => value > 0) ?? false) ||
     (streams.heartrate?.some(value => value > 0) ?? false) ||
     (streams.cadence?.some(value => value > 0) ?? false) ||
+    (streams.stamina?.some(value => value >= 0) ?? false) ||
+    (streams.potentialStamina?.some(value => value >= 0) ?? false) ||
     (streams.respiration?.some(value => value > 0) ?? false) ||
     (streams.heatStrainIndex?.some(value => value >= 0) ?? false) ||
     (streams.coreTemperatureC?.some(value => value > 0) ?? false) ||
@@ -688,8 +692,10 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     heartRate: metricIndex(detail, METRIC_KEYS.heartRate),
     latitude: metricIndex(detail, METRIC_KEYS.latitude),
     longitude: metricIndex(detail, METRIC_KEYS.longitude),
+    potentialStamina: metricIndex(detail, METRIC_KEYS.potentialStamina),
     power: metricIndex(detail, METRIC_KEYS.power),
     respiration: metricIndex(detail, METRIC_KEYS.respiration),
+    stamina: metricIndex(detail, METRIC_KEYS.stamina),
     heatStrainIndex: coreMetricIndex(detail, 'heatStrainIndex'),
     coreTemperatureC: coreMetricIndex(detail, 'coreTemperatureC'),
     skinTemperatureC: coreMetricIndex(detail, 'skinTemperatureC'),
@@ -702,6 +708,8 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     watts: [],
     heartrate: [],
     cadence: [],
+    stamina: indices.stamina == null ? undefined : [],
+    potentialStamina: indices.potentialStamina == null ? undefined : [],
     respiration: indices.respiration == null ? undefined : [],
     heatStrainIndex: indices.heatStrainIndex == null ? undefined : [],
     coreTemperatureC: indices.coreTemperatureC == null ? undefined : [],
@@ -729,6 +737,8 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.watts?.push(metricValue(item, indices.power) ?? 0)
     streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
     streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
+    streams.stamina?.push(metricValue(item, indices.stamina) ?? -1)
+    streams.potentialStamina?.push(metricValue(item, indices.potentialStamina) ?? -1)
     streams.respiration?.push(metricValue(item, indices.respiration) ?? 0)
     streams.heatStrainIndex?.push(metricValue(item, indices.heatStrainIndex) ?? -1)
     streams.coreTemperatureC?.push(metricValue(item, indices.coreTemperatureC) ?? -1)

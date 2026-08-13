@@ -3,7 +3,7 @@ author: François Fleuret
 category:
   - p/nf
 date: '2022-08-21'
-description: compact introduction to deep learning theory and practice, emphasizing intuition, proofs, and small code examples over heavy frameworks.
+description: compact introduction to the background needed to understand deep learning models, covering training, model components, architectures, and applications.
 external: https://fleuret.org/public/lbdl.pdf
 finished: 2024
 id: The Little Book of Deep Learning

@@ -230,6 +230,8 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
         ],
         altitude: [80, 85, 90],
         distance: [0, 1_000, 2_000],
+        stamina: [100, 80, 60],
+        potentialStamina: [100, 92, 78],
         respiration: [18, 28, 38],
         heatStrainIndex: [0, 1.4, 3],
         coreTemperatureC: [37.16, 37.17, 37.19],
@@ -239,6 +241,14 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  assert.deepEqual(
+    detail.route.map(point => point.stamina),
+    [100, 84, 64],
+  )
+  assert.deepEqual(
+    detail.route.map(point => point.potentialStamina),
+    [100, 93.6, 80.8],
+  )
   assert.deepEqual(
     detail.route.map(point => point.resp),
     [18, 26, 36],
@@ -716,6 +726,54 @@ test('merges WeatherKit wind into activity detail and day health', () => {
   assert.equal(payload.health['2026-06-07'].windDir, 'SW')
 })
 
+test('uses nearest same-day weather for a route-less swim', () => {
+  const swim = ride({
+    id: 102,
+    name: 'Pool swim',
+    sportType: 'Swim',
+    distance: 900,
+    movingTime: 1_200,
+    elapsedTime: 1_800,
+    startDate: '2026-06-07T14:00:00Z',
+    startDateLocal: '2026-06-07T10:00:00',
+  })
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse(swim.startDate) / 1000),
+    activities: { 101: ride(), 102: swim },
+  }
+  const activity: WeatherActivity = {
+    activityId: 101,
+    date: '2026-06-07',
+    start: '2026-06-07T11:29:55.000Z',
+    end: '2026-06-07T13:34:55.000Z',
+    latitude: 43.64,
+    longitude: -79.4,
+    durationS: 7_500,
+    windKph: 18,
+    windDir: 'SW',
+    windDirDeg: 225,
+    windGustKph: 31,
+    temperatureC: 24,
+    source: 'weatherkit',
+  }
+  const weather: WeatherCache = {
+    version: 2,
+    lastSync: cache.lastSync,
+    activities: { 101: activity },
+    days: summarizeWeatherDays({ 101: activity }),
+  }
+
+  const detail = buildPayload(cache, null, null, '2026-06-01', weather).details['102']
+  assert.equal(detail.avgTemp, 24)
+  assert.equal(detail.windKph, 18)
+  assert.equal(detail.windDir, 'SW')
+  assert.equal(detail.windGustKph, 31)
+})
+
 test('buildPayload keeps late evening syncs on the local calendar day', () => {
   const cache: StravaRawCache = {
     version: 1,
@@ -856,9 +914,8 @@ test('samples every second for the full power curve', () => {
   assert.equal(payload.powerCurveRef.find(point => point.s === 2_340)?.w, 200)
 })
 
-test('caps per-second power curves at three hours', () => {
-  const maxDurationS = 3 * 60 * 60
-  const streamDurationS = maxDurationS + 1
+test('samples per-second power curves through the full stream duration', () => {
+  const streamDurationS = 3 * 60 * 60 + 1
   const seconds = Array.from({ length: streamDurationS }, (_, index) => index)
   const cache: StravaRawCache = {
     version: 2,
@@ -883,10 +940,10 @@ test('caps per-second power curves at three hours', () => {
   const payload = buildPayload(cache, null, null, '2026-06-01')
   const curve = payload.details['101'].powerCurve
   assert.ok(curve)
-  assert.equal(curve.length, maxDurationS)
-  assert.deepEqual(curve.at(-1), { s: maxDurationS, w: 200 })
-  assert.equal(payload.powerCurveRef.length, maxDurationS)
-  assert.deepEqual(payload.powerCurveRef.at(-1), { s: maxDurationS, w: 200 })
+  assert.equal(curve.length, streamDurationS)
+  assert.deepEqual(curve.at(-1), { s: streamDurationS, w: 200 })
+  assert.equal(payload.powerCurveRef.length, streamDurationS)
+  assert.deepEqual(payload.powerCurveRef.at(-1), { s: streamDurationS, w: 200 })
 })
 
 test('keeps Strava power inclusive while projecting a zero-excluded cycling view', () => {

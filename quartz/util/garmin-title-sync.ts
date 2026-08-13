@@ -46,6 +46,11 @@ export interface GarminActivityTypeUpdate {
   durationDiffS: number | null
 }
 
+interface UniqueGarminMatch {
+  activity: RawStravaActivity
+  match: GarminActivityMatch
+}
+
 function cleanTitle(value: string | null | undefined): string {
   return (value ?? '').trim().replace(/\s+/g, ' ')
 }
@@ -61,6 +66,24 @@ function startDay(activity: RawStravaActivity): string {
 
 function startValue(activity: RawStravaActivity): string {
   return activity.startDateLocal || activity.startDate
+}
+
+function uniqueGarminMatches(
+  activities: RawStravaActivity[],
+  kind: ActivityKind,
+  garmin: GarminCache,
+): UniqueGarminMatch[] {
+  const bestByGarminId = new Map<string, UniqueGarminMatch>()
+  for (const activity of activities) {
+    const match = matchGarminActivity(activity, kind, garmin)
+    if (!match) continue
+    const best = bestByGarminId.get(match.activity.id)
+    if (!best || match.score < best.match.score)
+      bestByGarminId.set(match.activity.id, { activity, match })
+  }
+  return [...bestByGarminId.values()].sort((left, right) =>
+    startValue(left.activity).localeCompare(startValue(right.activity)),
+  )
 }
 
 function updateFor(
@@ -125,9 +148,7 @@ export function selectGarminTitleUpdates(
     .filter(activity => !options.since || startDay(activity) >= options.since)
     .sort((left, right) => startValue(left).localeCompare(startValue(right)))
 
-  for (const activity of activities) {
-    const match = matchGarminActivity(activity, kind, garmin)
-    if (!match) continue
+  for (const { activity, match } of uniqueGarminMatches(activities, kind, garmin)) {
     const update = updateFor(activity, match)
     if (update) updates.push(update)
   }
@@ -149,9 +170,7 @@ export function selectGarminActivityTypeUpdates(
     .filter(activity => !options.since || startDay(activity) >= options.since)
     .sort((left, right) => startValue(left).localeCompare(startValue(right)))
 
-  for (const activity of activities) {
-    const match = matchGarminActivity(activity, kind, garmin)
-    if (!match) continue
+  for (const { activity, match } of uniqueGarminMatches(activities, kind, garmin)) {
     const update = typeUpdateFor(activity, match)
     if (update) updates.push(update)
   }

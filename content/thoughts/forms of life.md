@@ -87,22 +87,6 @@ this is both humbling and dangerous:
 
 **dangerous**: can seem to justify anything. "that's just our practice" might excuse oppression, violence, injustice. wittgenstein's philosophy sometimes accused of conservative quietism—accepting what is rather than critiquing it.
 
-## forms of life and psychoanalysis
-
-[[library/Civilisation and its Discontents#exploratory connections freud and wittgenstein on language games|potential connections]] to freud:
-
-**civilization as form of life**: freud's "civilization" could be understood as particular form(s) of life. specific ways of managing drives, structuring relationships, organizing society. [[thoughts/Freud|freud's]] account describes how particular (western, bourgeois, early 20th century) form of life shapes psyche.
-
-**reality principle as form of life**: [[library/Civilisation and its Discontents#chapter 2 happiness and its discontents|freud's reality principle]]—accepting limits, deferring gratification, operating within constraints—isn't discovering objective reality but being inducted into particular form of life. what counts as "realistic" vs. "unrealistic" varies by form of life.
-
-**superego as internalized form of life**: [[thoughts/guilt|superego]] transmits norms of your community. it's literally internalized form of life speaking from within. what you feel guilty about depends on which forms of life shaped you.
-
-**language games of psychoanalysis**: [[library/Civilisation and its Discontents#therapeutic practice as language game|therapy itself is form of life]] with specific practices (free association, interpretation, transference, working through). psychoanalysis doesn't discover universal truths but offers particular interpretive practice—a language game for making sense of psychic distress.
-
-**symptoms as between forms of life**: neurotic symptoms might occur when someone can't fully participate in dominant form of life. they're shaped by one form of life but can't express themselves within it. symptom shows what can't be said given available language games.
-
-**cross-cultural variation**: if forms of life vary, and superego formation depends on form of life, then psychic structure varies culturally. what gets [[thoughts/repression|repressed]], what symptoms emerge, what counts as healthy—all relative to forms of life.
-
 ## forms of life and relativism
 
 does acknowledging multiple forms of life mean radical relativism? "anything goes"?

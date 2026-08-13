@@ -92,6 +92,48 @@ test('skips non-bike, same-title, nonnumeric Garmin ids, and filtered activities
   assert.equal(selectGarminTitleUpdates(cache, garminCache(), { since: '2026-06-02' }).length, 0)
 })
 
+test('assigns an overlapping Garmin activity to the strongest Strava match once', () => {
+  const cache = stravaCache([
+    strava({
+      id: 18883895771,
+      name: 'Warm down treadmill',
+      sportType: 'Run',
+      distance: 1897.3,
+      movingTime: 1173,
+      elapsedTime: 1173,
+      startDate: '2026-06-11T22:17:03Z',
+      startDateLocal: '2026-06-11T18:17:03Z',
+    }),
+    strava({
+      id: 18910052530,
+      name: 'Broken Miles but it is 1 mile only',
+      sportType: 'Run',
+      distance: 1645.1,
+      movingTime: 737,
+      elapsedTime: 737,
+      startDate: '2026-06-11T22:19:39Z',
+      startDateLocal: '2026-06-11T18:19:39Z',
+    }),
+  ])
+
+  const updates = selectGarminTitleUpdates(
+    cache,
+    garminCache({
+      id: 'connect:23217057031',
+      name: 'Warm down treadmill',
+      sport: 'run',
+      startDate: '2026-06-11T22:17:02Z',
+      startDateLocal: '2026-06-11T18:17:02',
+      distanceM: 1897,
+      movingTimeS: 905,
+      elapsedTimeS: 1174,
+    }),
+    { kind: 'run' },
+  )
+
+  assert.deepEqual(updates, [])
+})
+
 test('normalizes Garmin Connect numeric activity ids', () => {
   assert.equal(garminConnectNumericActivityId('connect:123'), '123')
   assert.equal(garminConnectNumericActivityId('123'), '123')

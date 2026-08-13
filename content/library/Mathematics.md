@@ -10,14 +10,14 @@ status: finished
 subcategory:
   - love
 author:
-  -  Jane Hirshfield
+  - Jane Hirshfield
 posters: '[[library/posters/mathematics.png]]'
 category:
   - poetry
 translator:
 notebook:
 aliases:
-description: a love letter to mathematics, and the way of living as a mathematician
+description: a poem about envy of tangible work and the question of whether a poem can enlarge the world.
 ---
 
 ```poetry

@@ -2,7 +2,7 @@
 author: Maurice Merleau-Ponty
 category: philosophy
 date: '2025-10-07'
-description: merleau ponty account of embodied perception, arguing that subject and world intertwine through lived, pre reflective experience.
+description: Merleau-Ponty's account of embodied perception, arguing that subject and world intertwine through lived, pre-reflective experience.
 id: Phenomenology of Perception
 language: french
 modified: 2026-06-05 15:07:56 GMT-04:00

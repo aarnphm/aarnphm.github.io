@@ -17,4 +17,4 @@ yet another dsl
 
 - https://github.com/tile-ai/tilelang
 - https://github.com/triton-lang/triton/tree/main/python/triton/experimental
-- https://docs.nvidia.com/cutlass/media/docs/pythonDSL/cute_dsl.html
+- https://docs.nvidia.com/cutlass/latest/media/docs/pythonDSL/cute_dsl.html

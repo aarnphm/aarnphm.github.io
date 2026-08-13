@@ -4,7 +4,7 @@ tags:
 id: As We May Think
 title: As We May Think
 date: 2025-12-17
-description: vannevar bush's 1945 vision of the memex, a machine to organize and access humanity's collective knowledge, anticipating hypertext and modern information systems.
+description: vannevar bush's 1945 proposal for a personal memex that stores an individual's files and links them through associative trails.
 finished:
 year: 1945
 status: to read

@@ -23,11 +23,3 @@ notebook:
 aliases:
 pdf:
 ---
-
-three volume.
-
-## vol 1.
-
-## vol 2.
-
-## vol 3.

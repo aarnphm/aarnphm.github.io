@@ -1,9 +1,9 @@
 ---
 date: '2025-02-21'
-description: for Stripe, but shouldn't affect general sites interaction
+description: what this site collects, where it is stored, and how to request access, correction, or deletion
 id: privacy policy
 layout: technical
-modified: 2026-06-05 15:08:11 GMT-04:00
+modified: 2026-08-13 00:00:00 GMT-04:00
 noindex: true
 permalinks:
   - /privacy
@@ -17,58 +17,75 @@ transclude:
 
 **Effective date**: February 21, 2025
 
-_Last updated_: February 21, 2025
+_Last updated_: August 13, 2026
 
-This Privacy Policy applies to https://aarnphm.xyz and its subdomains (collectively, "the Site"), a personal website
-operated by Aaron ([[/|me]]), showcasing my work, interests, and research. By using the Site, you agree to this policy.
+This policy applies to `aarnphm.xyz` and its subdomains. The site is a personal website operated by Aaron.
 
-### Information we collect
+## information collected
 
-I don’t actively collect personal information unless you choose to email me. Here’s what happens:
+### ordinary visits
 
-1. Email Contact: If you email me at [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz), I collect your
-   email address and any details you provide to respond to you.
-2. I use [Plausible](https://plausible.io/) for analytics (a simple, privacy Google Analytics alternatives). You should refer to their sites if you have any concern.
-3. I host and use everything on Cloudflare (Workers, R2, D1, KV, Email), and their analytics gives me more performance-related metrics, and I don't think that they track IP there? (If this is not the case, let me know!).
-4. There is a small SQLite db that is used for storing comments, but that depends on _you to disclose whatever information you want to_. Know that this feature is mostly built for friends/acquaintance to give me notes on writings, ideas on this website. So don't give me information that you don't want to share.
+The site uses Plausible Analytics and Cloudflare analytics to measure visits, popular pages, referrers, approximate geography, performance, and errors. I use these measurements to understand whether the site works and which pages people read.
 
-### Uses of information
+Cloudflare processes requests before they reach the site. Its service can process IP addresses, routing data, request metadata, system information, and security signals. Cloudflare describes this processing in its [Privacy Policy](https://www.cloudflare.com/policies/privacy/). Cloudflare Web Analytics says it does not use cookies, local storage, or fingerprinting to identify visitors for analytics.
 
-I only collect the stats and just want to understand the distributions of continents visitors stumble upon my sites. :smiley:
-At the end of the day, this is my personal site, _I'm not going to sell you anything_ [^stripe]
+Plausible provides aggregate website analytics under its own [data policy](https://plausible.io/data-policy).
 
-I don’t share your personal data with anyone, except if legally required (e.g., by a court order).
-Third-party services like Cloudflare may process data for security, per their own policies. But tbf I don't collect any, so not entirely sure how :smiley:
+### comments
 
-[^stripe]: The only reason this page exists is because Stripe requires a Privacy Policy for my [Substack](https://livingalonealone.com/). I'm very fortunate to have a full-time jobs while still able to enjoy the art of [[thoughts/writing|writing]]
+The comment system stores the information needed to place and display a comment:
 
-### Rights
+- the author name you choose
+- the comment text
+- the page and text anchor attached to the comment
+- creation, update, resolution, and deletion times
+- recovery data used when the surrounding page changes
 
-You have all the rights lmao I don't collect anything.
+If you sign in with GitHub for comment identity, the site stores your GitHub login, display name, avatar URL, first-seen time, last-seen time, and the comment name associated with that login. GitHub also processes the OAuth request under its own policies.
 
-Don't email me if you prefer not to share your info -- it's optional! Though would always like to grab a coffee chat if you have anything interests to talk about. Though I would recommend going visiting [my working notes](https://notes.aarnphm.xyz) to see what I'm up to nowadays.
+The site limits comment-author renames. To enforce that limit, the Worker stores keys derived from the old author name, new author name, and connecting IP address in Cloudflare KV for 90 days. The IP address can therefore appear in a KV key during that period. WebSocket comment sessions also use the connecting IP in memory for the active session.
 
-### Security
+Comments and their history are stored in Cloudflare D1 and Durable Objects. Deleted and resolved comments can remain in storage so synchronization and moderation continue to work.
 
-SSL and everything standard web security stuff are enabled by default. DDOS and different CDN zones are also enabled for best browsing experience. I tried my best for web [[colophon|accessibility]] but there are certain ceiling that I can compromise without ruining the sites' experience.
+### browser storage
 
-### International users
+The site uses local storage or session storage for features you choose to use. Examples include theme, navigation state, search mode, comment identity, pending comment operations, notebook source, editor preferences, flashcard login state, and triathlon display preferences. This data normally stays in your browser. A feature sends the relevant value to the server when the feature requires it, such as submitting a comment or using GitHub identity.
 
-The Site is hosted on Cloudflare, and I'm currently reside in Canada, so policies and relevant enquires are subjected to both Canadian and US laws.
+### direct contact
 
-### Children’s privacy
+If you email me, I receive your email address and everything you include in the message. I use it to read and answer the message.
 
-The Site isn't for kids, in general. If you are a parent and think that your kids shouldn't use this website, then teach them, I don't have any responsibilities for how your kids browse the internet :smiley:
+## how the information is used
 
-### Changes
+I use this information to:
 
-I might tweak this policy later. Changes will be posted here with an updated date.
-Check back if you’re curious.
+- serve and secure the site
+- operate comments, authentication, and interactive features
+- prevent abuse and enforce rate limits
+- diagnose errors and improve performance
+- measure aggregate readership
+- answer direct messages
 
-### Contact
+I do not sell personal information or use it for targeted advertising.
 
-Questions? Contact me at [contact\[at\]aarnphm.xyz](mailto:contact@aarnphm.xyz).
+## service providers
 
-### Legal
+Cloudflare hosts the site and its Worker, D1, Durable Object, KV, R2, analytics, security, and network services. Plausible provides analytics. GitHub provides optional OAuth identity. These providers process data under their own terms and privacy policies. Information can be processed in Canada, the United States, and other places where these providers operate.
 
-This policy and the Site are governed by Ontario, Canada laws. Any disputes go to courts there.
+## retention and deletion
+
+The comment rename limit expires after 90 days. Browser storage remains until you clear it or the site removes it. Analytics retention follows the settings and policies of Cloudflare and Plausible. Comment records and GitHub identity mappings remain until they are removed from the site's storage.
+
+You can ask for access, correction, or deletion of information associated with you by emailing [contact@aarnphm.xyz](mailto:contact@aarnphm.xyz). Include enough detail to locate the relevant comment, login, or message. I may need to verify that the request concerns your information.
+
+## children
+
+This site is intended for a general audience and is not directed at children. Do not submit a comment or other personal information if you are not old enough to consent where you live.
+
+## changes
+
+Changes appear on this page with a new last-updated date.
+
+## contact
+
+Privacy requests can be sent to [contact@aarnphm.xyz](mailto:contact@aarnphm.xyz).

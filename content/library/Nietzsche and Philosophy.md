@@ -196,9 +196,9 @@ The concept of force is, by nature, victorious because the relation of force to 
 
 > The will to power is thus added to force, but as the differential and genetic element, as the internal element of its production. It is in no way anthropomorphic. More precisely, it is added to force as the internal principle of the determination of its quality in a relation (x + dx) and as the internal principle of the quantitative determination of this relation itself (dy/dx).
 
-> The will to power must be described as the genealogical element of force and of forces. Thus it is always through the will to power that one force prevails over others and dominates or commands them. Moreover it is also the will to power (dy) which makes a force obey within a relation; it is through will to power that it obeys."
+> The will to power must be described as the genealogical element of force and of forces. Thus it is always through the will to power that one force prevails over others and dominates or commands them. Moreover it is also the will to power (dy) which makes a force obey within a relation; it is through will to power that it obeys.
 
-We have already encountered the relationship between the eternal and the [[thoughts/Will to Power|will to power]], but we have neither elucidated nor analysed it.
+We have already encountered the relationship between the eternal return and the [[thoughts/Will to Power|will to power]], but we have neither elucidated nor analysed it.
 
 > [!question]
 >

@@ -9,7 +9,7 @@ description: foundational text of transcendental phenomenology, outlining the me
 finished: null
 id: Ideas
 modified: 2026-06-05 15:08:01 GMT-04:00
-pdf: https://cdn.preterhuman.net/texts/thought_and_writing/philosophy/Husserl,%20Edmund/Husserl%20-%20Ideas%20Pertaining%20To%20A%20Pure%20Phenomenology%20And%20To%20A%20Phenomenological%20Philosophy%20II.pdf
+pdf: null
 posters: '[[library/posters/ideas.jpg]]'
 socials:
   michael sugrue: https://www.youtube.com/watch?v=y0sLHfcsPAA

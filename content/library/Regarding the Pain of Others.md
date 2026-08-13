@@ -1,6 +1,7 @@
 ---
 tags:
-  - o/eschatology
+  - photography
+  - war
   - death
 id: Regarding the Pain of Others
 title: Regarding the Pain of Others
@@ -10,13 +11,13 @@ finished:
 year: 2003
 status: to read
 subcategory:
-  - suicide
-  - absurdism
+  - war
+  - photography
 author:
   - Susan Sontag
 posters: '[[library/posters/regarding-pain-of-others.jpg]]'
 category:
-  - p/fiction
+  - p/nf
 translator:
 notebook:
 aliases:

@@ -1,7 +1,7 @@
 ---
 category: letters
 date: '2022-01-25'
-description: a working-in-progress hypothesis on love
+description: a work-in-progress hypothesis on love
 id: on love
 modified: 2026-06-05 15:08:02 GMT-04:00
 notebook: '[[thoughts/love]]'

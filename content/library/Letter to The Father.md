@@ -2,7 +2,7 @@
 author: Franz Kafka
 category: letters
 date: '2025-11-27'
-description: A collection of letters that Kafka wrote for his father, never to be seen by his own father.
+description: a letter Kafka wrote to his father in 1919; Julie Kafka returned it without delivering it.
 id: Letter to The Father
 language: german
 modified: 2026-06-05 15:07:56 GMT-04:00

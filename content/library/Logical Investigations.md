@@ -2,7 +2,7 @@
 author: Edmund Husserl
 category: philosophy
 date: '2025-10-26'
-description: husserl early phenomenological work, analyzing meaning, intentionality, and logic to ground philosophy in rigorous description of consciousness.
+description: Husserl's early phenomenological work, analyzing meaning, intentionality, and logic to ground philosophy in rigorous description of consciousness.
 id: Logical Investigations
 language: german
 modified: 2026-06-05 15:07:56 GMT-04:00

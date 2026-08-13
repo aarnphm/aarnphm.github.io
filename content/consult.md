@@ -9,11 +9,11 @@ tags:
 title: consulting.
 ---
 
-My consulting [[thoughts/craft|work]] spans [[thoughts/Machine learning|machine learning]] systems, efficient inference engine, and [[research|model behaviour]]. This [[index|website]] represents the non-physical me, my notes, and interests. I mainly work on open source, and plan to keep doing so. As of 08/09/2026, it consists of 860756 [[thoughts/|words]] ([[thoughts/scripts/calculate_tokens.py|calculated from this script]])
+My consulting [[thoughts/craft|work]] spans [[thoughts/Machine learning|machine learning]] systems, efficient inference engines, and [[research|model behaviour]]. This [[index|website]] represents the non-physical me, my notes, and interests. I mainly work on open source, and plan to keep doing so. As of 08/09/2026, it consists of 860756 [[thoughts/|words]] ([[thoughts/scripts/calculate_tokens.py|calculated from this script]])
 
-I'm mostly focused on kernel optimization for AI-specific workload and metrics-oriented deployments. I offer the following services:
+I'm mostly focused on kernel optimization for AI-specific workloads and metrics-oriented deployments. I offer the following services:
 
-- prefill/decode custom kernels for latency/high-throughput specific LLMs deployment
+- custom prefill and decode kernels for latency-sensitive or high-throughput LLM deployments
 - distributed serving and NCCL
 
 If you would like to work with me, please contact me at [services@aarnphm.xyz](mailto:services@aarnphm.xyz)

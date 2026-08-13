@@ -8,7 +8,7 @@ import type {
 } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { ManualFuelingEntry, ManualStrengthEntry, StrengthExercise } from './tracking'
-import type { WeatherCache, WeatherTemperatureSample } from './weather'
+import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './weather'
 import { localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
@@ -244,6 +244,8 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  stamina: number | null
+  potentialStamina: number | null
   resp: number | null
   tempC: number | null
   heatStrainIndex: number | null
@@ -698,8 +700,6 @@ export function resolveActivityHeartRate(
 
 const MILE_M = 1609.344
 const MAX_EFFORT_TIMELINE_S = (7 * DAY_MS) / 1000
-const POWER_CURVE_MAX_S = 3 * 60 * 60
-const CURVE_SECS = Array.from({ length: POWER_CURVE_MAX_S }, (_, index) => index + 1)
 const POWER_EFFORT_SECS = [
   5, 15, 30, 60, 120, 180, 300, 480, 600, 900, 1200, 1800, 2700, 3600, 7200,
 ]
@@ -862,7 +862,8 @@ function bestPowerWindows(
 
 function meanMaxCurve(timeline: EffortTimeline | null): PowerCurvePoint[] {
   if (!timeline) return []
-  return bestPowerWindows(timeline, CURVE_SECS).map(window => ({
+  const durations = Array.from({ length: timeline.watts.length }, (_, index) => index + 1)
+  return bestPowerWindows(timeline, durations).map(window => ({
     s: window.durationS,
     w: window.averageWatts,
   }))
@@ -1026,7 +1027,7 @@ function derivePowerBounds(ftp: number): number[] {
 function mergeMaxCurves(curves: PowerCurvePoint[][]): PowerCurvePoint[] {
   const best = new Map<number, number>()
   for (const c of curves) for (const p of c) best.set(p.s, Math.max(best.get(p.s) ?? 0, p.w))
-  return CURVE_SECS.filter(s => best.has(s)).map(s => ({ s, w: best.get(s)! }))
+  return [...best].sort(([left], [right]) => left - right).map(([s, w]) => ({ s, w }))
 }
 
 function delta(
@@ -1138,6 +1139,8 @@ interface TimedMetricSample {
 }
 
 interface ActivityGarminMetricSamples {
+  stamina: TimedMetricSample[]
+  potentialStamina: TimedMetricSample[]
   respiration: TimedMetricSample[]
   heatStrainIndex: TimedMetricSample[]
   coreTemperatureC: TimedMetricSample[]
@@ -1160,6 +1163,8 @@ function timedMetricAt(samples: TimedMetricSample[], elapsedS: number): number |
 }
 
 type GarminMetricStreamKey =
+  | 'stamina'
+  | 'potentialStamina'
   | 'respiration'
   | 'heatStrainIndex'
   | 'coreTemperatureC'
@@ -1171,6 +1176,8 @@ function activityGarminMetricSamples(
   garmin: GarminCache | null,
 ): ActivityGarminMetricSamples {
   const empty = (): ActivityGarminMetricSamples => ({
+    stamina: [],
+    potentialStamina: [],
     respiration: [],
     heatStrainIndex: [],
     coreTemperatureC: [],
@@ -1200,6 +1207,8 @@ function activityGarminMetricSamples(
   }
 
   return {
+    stamina: collect('stamina', value => value >= 0 && value <= 100),
+    potentialStamina: collect('potentialStamina', value => value >= 0 && value <= 100),
     respiration: collect('respiration', value => value > 0),
     heatStrainIndex: collect('heatStrainIndex', value => value >= 0 && value <= 20),
     coreTemperatureC: collect('coreTemperatureC', value => value >= 25 && value <= 45),
@@ -1610,6 +1619,8 @@ function projectDetail(
     idx.forEach((i, k) => {
       const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
+      const stamina = timedMetricAt(garminMetricSamples.stamina, elapsedS)
+      const potentialStamina = timedMetricAt(garminMetricSamples.potentialStamina, elapsedS)
       const respiration = timedMetricAt(garminMetricSamples.respiration, elapsedS)
       const heatStrainIndex = timedMetricAt(garminMetricSamples.heatStrainIndex, elapsedS)
       const coreTemperatureC = timedMetricAt(garminMetricSamples.coreTemperatureC, elapsedS)
@@ -1622,6 +1633,8 @@ function projectDetail(
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(routeHrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
+        stamina: stamina == null ? null : round(stamina, 1),
+        potentialStamina: potentialStamina == null ? null : round(potentialStamina, 1),
         resp: respiration == null ? null : round(respiration, 1),
         tempC: temperatureC == null ? null : round(temperatureC, 1),
         heatStrainIndex: heatStrainIndex == null ? null : round(heatStrainIndex, 1),
@@ -1791,6 +1804,27 @@ export function applyManualStrength(
   }
 }
 
+function nearestSameDayWeather(
+  weather: WeatherCache,
+  activity: RawStravaActivity,
+): WeatherActivity | undefined {
+  const date = activity.startDateLocal.slice(0, 10)
+  const startMs = Date.parse(activity.startDate)
+  if (!Number.isFinite(startMs)) return undefined
+  let nearest: WeatherActivity | undefined
+  let nearestDifferenceMs = Number.POSITIVE_INFINITY
+  for (const candidate of Object.values(weather.activities)) {
+    if (candidate.date !== date) continue
+    const candidateStartMs = Date.parse(candidate.start)
+    if (!Number.isFinite(candidateStartMs)) continue
+    const differenceMs = Math.abs(candidateStartMs - startMs)
+    if (differenceMs >= nearestDifferenceMs) continue
+    nearest = candidate
+    nearestDifferenceMs = differenceMs
+  }
+  return nearest
+}
+
 export function buildPayload(
   cache: StravaRawCache | null,
   oura: OuraCache | null,
@@ -1948,22 +1982,29 @@ export function buildPayload(
   for (const { a, sport } of activities) {
     const id = String(a.id)
     const garminMatch = garminMatches.get(id) ?? null
+    const selectedStream = selectedStreams.get(id)
+    const exactWeather = weather?.activities[id]
+    const activityWeather =
+      exactWeather ??
+      (weather && sport === 'swim' && (!selectedStream || selectedStream.latlng.length < 2)
+        ? nearestSameDayWeather(weather, a)
+        : undefined)
     details[String(a.id)] = projectDetail(
       a,
       sport,
-      selectedStreams.get(id),
-      selectEffortStreams(cache.streams?.[id], selectedStreams.get(id)),
+      selectedStream,
+      selectEffortStreams(cache.streams?.[id], selectedStream),
       heartRates.get(id) ??
         resolveActivityHeartRate(
           a,
           sport,
-          selectedStreams.get(id),
+          selectedStream,
           garminHeartRateMatches.get(id) ?? null,
           garmin,
         ),
       activityGarminMetricSamples(a, garminMatch, garmin),
       activityGearShifts(a, garminMatch, garmin),
-      weather?.activities[id],
+      activityWeather,
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),
       garminVerification(a, garminMatch),
