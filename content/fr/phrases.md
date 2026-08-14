@@ -30,7 +30,7 @@ the nationality pair splits origin and identity: `Je viens du Canada.` (venir + 
 
 the classement exercise (cahier, piste 16) sorts nineteen countries into the four `Je viens…` columns. two equivalent readings of the same sort: by the country's article (`le` → `du`, `la`/sans article → `de`, `l'` → `d'`, `les` → `des`), or by the classroom shorthand written over each column: gender picks `du` vs `de`, a starting vowel overrides gender and forces `d'`, plural forces `des`.
 
-| `Je viens du…` (masculin, consonne) | `Je viens de…` (féminin ou île, consonne) | `Je viens d'…` (voyelle) | `Je viens des…` (pluriel : états, îles) |
+| `Je viens du…` (masculin, consonne) | `Je viens de…` (pays féminin ou sans article, consonne) | `Je viens d'…` (voyelle) | `Je viens des…` (pluriel : états, îles) |
 | ----------------------------------- | ----------------------------------------- | ------------------------ | --------------------------------------- |
 | `du Bénin`                          | `de Jordanie`                             | `d'Australie`            | `des États-Unis`                        |
 | `du Liban`                          | `de Norvège`                              | `d'Égypte`               | `des Îles Salomon`                      |
@@ -41,7 +41,7 @@ the classement exercise (cahier, piste 16) sorts nineteen countries into the fou
 three traps worth keeping:
 
 - `d'Haïti` : no article and an `h muet`, so it elides like a vowel; it never sits in the `de` column.
-- `de Monaco` : the city-state case (`Cuba`, `Madagascar`, `Singapour` in [[fr/episode-1]]), no article, bare `de` without being feminine.
+- `de Monaco` : `Monaco` belongs to the lexical group of country names normally used without an article.
 - `du Venezuela`, `du Vietnam` : masculine despite the exotic feel; the feminine `-e` heuristic (`Jordanie`, `Norvège`, `Serbie`, `Thaïlande`) is a guide, not a law.
 
 ## parler des langues

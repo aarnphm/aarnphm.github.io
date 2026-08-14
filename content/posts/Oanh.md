@@ -12,7 +12,3 @@ tags:
   - growth
 title: I saw a dog and a duck sitting on a bench the other day.
 ---
-
-```quotes
-
-```

@@ -91,7 +91,7 @@ ten kinship riddles, each `C'est … de mon/ma …` over three checkbox choices.
 | i   | `C'est le conjoint de ma fille.`      | `mon gendre`, `mon neveu`, `mon fils`                     | `mon gendre`         |
 | j   | `C'est la sœur de mon conjoint.`      | `ma belle-sœur`, `ma tante`, `ma belle-mère`              | `ma belle-sœur`      |
 
-the distractors are the near-misses one generation off (`nièce` for `tante`, `cousin` for `neveu`), and the second column of the family tree, the in-laws, runs entirely through `beau-/belle-` plus the two odd ones out, `mon gendre` et `ma belle-fille`, for the children's spouses.
+the distractors are the near-misses one generation off (`nièce` for `tante`, `cousin` for `neveu`). the in-law answers use `beau-` or `belle-` in `beau-frère`, `belle-sœur`, and `belle-fille`. `gendre` is the separate term for a daughter's spouse.
 
 ### 2. trouvez l'erreur…
 

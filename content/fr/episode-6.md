@@ -42,7 +42,7 @@ the verb agrees with the thing you seek, `où est la sortie ?` mais `où sont le
 
 the pronoun `me` attaches to the infinitive it belongs to, not to the conjugated verb: `Pouvez-vous me dire…`, jamais `Pouvez-me-vous dire…`. it is `dire` that is done to you, so `me` sits in front of `dire`.
 
-and the embedded question keeps the verb in front of its noun subject: `où est le secrétariat`, not `où le secrétariat est`. english does the opposite, flattening "where IS the office" into "can you tell me where the office IS", so the anglophone reflex is exactly backwards here.
+`Pouvez-vous me dire où est le secrétariat ?` uses a postposed noun subject, a standard order after `où`. the ban applies to pronominal inversion: `Je me demande où il est`, never `Je me demande où est-il`.
 
 the découvrez listening runs the same request through three of the frames, the bare question (`Où sont les vestiaires de la piscine ?`), the embedded polite one (`Pouvez-vous me dire où sont les vestiaires de la piscine ?`), and the flat statement (`Je cherche les vestiaires de la piscine.`), all three land the same.
 
@@ -84,7 +84,7 @@ the exchange also carries the politeness that the frames alone do not:
 | expression            | emploi                                                                   |
 | --------------------- | ------------------------------------------------------------------------ |
 | `s'adresser à qqn`    | commencer à parler à quelqu'un                                           |
-| `chercher qqch`       | to look for, with no preposition; French never adds one after `chercher` |
+| `chercher qqch`       | to look for something; in this sense, the object is direct: `Je cherche les vestiaires` |
 | `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                      |
 | `Merci quand même.`   | thanks anyway, when the answer did not come                              |
 | `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                |
@@ -277,7 +277,7 @@ the exercise is spoken, so the table has to come back out as sentences:
 - `Le bureau de Sylvie Leclerc, dentiste, est au deuxième étage.`
 - `La réception et la sécurité sont au rez-de-chaussée.`
 
-saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` contracted, so a numbered floor is always masculine singular. two floors at once pluralize the whole tail: `aux quatrième et cinquième étages`, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, `au sous-sol` et `au rez-de-chaussée`, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
+saying them exposes what the table hides. the frame is `au` plus the ordinal plus `étage`, `au` being `à` plus `le` contracted. a single numbered floor uses the masculine singular: `au troisième étage`. two numbered floors use the plural: `aux quatrième et cinquième étages`, with `aux` for `à les` and one shared `étages` carrying both ordinals. and the two floors that are named rather than numbered take no ordinal at all, `au sous-sol` et `au rez-de-chaussée`, because those are nouns in their own right. the last line also swaps the verb, `La réception et la sécurité sont…`, two subjects joined by `et` taking the plural.
 
 the Mémo builds les déterminants ordinaux by adding `-ième` to the number: `deuxième (2e)`, `troisième (3e)`, up to `douzième (12e)`. at five spots the spelling shifts, `le «e» final disparait ou la dernière lettre du nombre change`: `quatre → quatrième`, `onze → onzième`, `douze → douzième` (final `e` drops), `cinq → cinquième` (gains a `u`), `neuf → neuvième` (`f` becomes `v`). number 1 gets its own pair, `premier (1er)` / `première (1re)`, and the end gets `dernier` / `dernière`. the cardinal inventory lives in [[fr/les-nombres]].
 
@@ -342,9 +342,9 @@ directions come in the impératif, which conjugates sans pronom personnel: the `
 
 the book never states it as a rule, its table simply shows it: `-er` verbs and `aller` lose the `-s` of the tu form (`tourne`, `continue`, `monte`, `va`), while `descendre` and `prendre` keep theirs (`descends`, `prends`). the `-s` comes back the moment a pronoun returns, which is why [[fr/episode-5]] has `Parles-tu une autre langue ?` against `Parle plus fort !`
 
-the table is three rows deep and that is the whole tense: there is no `je`, no `il`, no `ils`. an order can only reach someone standing there, so the impératif keeps exactly the persons you can address, `tu` and `vous`, plus `nous` for the group you are inside of. every form is just the present indicative with the pronoun deleted.
+the table is three rows deep and that is the whole tense: there is no `je`, no `il`, no `ils`. an order can only reach someone standing there, so the impératif keeps exactly the persons you can address, `tu` and `vous`, plus `nous` for the group you are inside of. most imperative forms match the present-indicative `tu`, `nous`, or `vous` form without the subject pronoun. the `tu` form of `-er` verbs and `aller` normally loses its final `-s`, while `être`, `avoir`, `savoir`, and `vouloir` use irregular forms.
 
-that `nous` row is not a command to a group, it is the english let's: `allons` means let's go, `continuons` let's keep going, `montons` let's go up. giving directions you will almost never use it; you use it to propose.
+the `nous` form proposes or urges shared action, the usual French equivalent of English “let's”: `Allons au sous-sol.` giving directions you will almost never use it; you use it to propose.
 
 | forme    | à qui                    | valeur                                                       |
 | -------- | ------------------------ | ------------------------------------------------------------ |
@@ -385,7 +385,7 @@ the answer stacks three imperatives and lands on an ordinal, `le 2e à gauche`, 
 > les centres communautaires au Canada et leurs services : les centres de santé communautaires (vaccins, prises de sang, suivi des nouveau-né(e)s), les centres de loisirs (activités sportives, cours, soutien scolaire, camps de jour), les organismes à but non lucratif (OBNL) (recherche d'emploi, conseils, cours, repas, défense des droits), les associations nationales (cours, évènements culturels : soupers, conférences, danse). `évènements` wears the rectified grave accent, and `un souper` is the Québécois evening meal.
 
 > [!note] ailleurs, autrement ?
-> des édifices « records » : l'Empire State Building à New York a 102 étages, le premier édifice de plus de 100 étages sur la planète. la tour CN à Toronto est le 6e édifice le plus haut au monde. les ascenseurs de la tour de Shanghai montent au 119e étage en 55 secondes, a bit over 2 étages par seconde.
+> des édifices « records » : l'Empire State Building à New York a 102 étages, le premier édifice de plus de 100 étages sur la planète. la tour CN à Toronto mesure 553,33 m. the workbook calls it the world's sixth-highest structure, a ranking tied to the source's date and definition of `édifice`. les ascenseurs de la tour de Shanghai montent au 119e étage en 55 secondes, a bit over 2 étages par seconde.
 
 vous pouvez maintenant demander des indications dans un édifice et donner des indications dans un édifice : interpeler, ask with `Pouvez-vous me dire où est… ?`, then parse (or produce) an answer made of imperatives, prépositions de localisation, and an étage.
 

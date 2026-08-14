@@ -146,7 +146,7 @@ the bilan teaches almost nothing, and the exceptions cluster in the game:
 
 - `Qu'est-ce que c'est ?` asks what a thing is; the answer is `C'est un/une …` : `C'est un stylo.`, `C'est un bureau.`
 - `Que veut dire « X » ?` asks what X means : `« M. » veut dire Monsieur.` the titles themselves live in [[fr/episode-2]].
-- `Voici` presents something to the listener, and `de` marks the owner : `Voici les livres de France.`, no apostrophe-s anywhere in the language.
+- `Voici` presents something to the listener, and `de` marks the owner: `Voici les livres de France.` French does not use the English possessive `'s`.
 - `se trouver` doubles `être situé` : `3 objets qui se trouvent dans votre sac` are just objects that are in your bag.
 - classroom action verbs in the vous-imperative, extending the consignes of [[fr/episode-3]]:
 

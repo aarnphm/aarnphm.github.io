@@ -1,6 +1,6 @@
 ---
 date: '2025-04-19'
-description: on nature of North-American pedagogy
+description: on the nature of North American pedagogy
 draft: true
 id: capstone
 modified: 2026-06-05 15:08:09 GMT-04:00
@@ -8,11 +8,3 @@ tags:
   - philosophy
 title: how to capstone
 ---
-
-```text
-I haven't been able to post lately due to busy work schedule and working on this capstone, but I want to hold myself accountable for more consistent writing this summer. Have a few notes definitely will need some refinement, but stay tuned!
-```
-
----
-
-Capstone

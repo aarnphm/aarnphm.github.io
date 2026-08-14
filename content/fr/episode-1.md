@@ -61,7 +61,7 @@ the episode lists the alphabet and six accents et signes: l'accent grave (`Àà`
 
 ## dire sa profession
 
-profession takes `être` with no article: `Je suis infirmière.`, never `Je suis une infirmière.` the four jobs of the listening exercise: `enseignant`, `éducatrice en garderie`, `ingénieure en mécanique`, `technicien en laboratoire`. `une garderie` is the Québécois word for a daycare.
+when you state a profession, the usual frame is `être` without an article: `Je suis infirmière.` an article returns when the profession noun is modified: `Je suis une infirmière expérimentée.` the four jobs of the listening exercise: `enseignant`, `éducatrice en garderie`, `ingénieure en mécanique`, `technicien en laboratoire`. `une garderie` is the Québécois word for a daycare.
 
 the Mémo sorts the feminine by ending:
 
@@ -89,7 +89,7 @@ the `-eure` line is the Québécois signature: the feminized forms (`ingénieure
 | `les`           | `les Philippines`, `les États-Unis`                                           | `des États-Unis` |
 | sans article    | `Cuba`, `Madagascar`, `Singapour`                                             | `de Cuba`        |
 
-islands and city-states drop the article, so the origin is bare `de`.
+`Cuba`, `Madagascar`, and `Singapour` belong to the small group of country names normally used without an article, so origin takes bare `de`.
 
 résidence is one frame, `J'habite à` plus the city name: `J'habite à Québec.`, `J'habite à Montréal.`, `J'habite à Rome.`
 
@@ -134,4 +134,4 @@ related: [[fr/episode-2|épisode 2]], [[fr/episode-3|épisode 3]], [[fr/orthogra
 
 [^eure]: the `-eure` feminizations come from the OQLF, which recommended them in 1979; the Académie française only accepted the `ingénieure`-type forms in 2019, a 40-year lag. hexagonal French long preferred `une ingénieur` or the `-euse`/`-trice` routes where they exist.
 
-[^majuscule]: lowercase because it is an adjective: `Je suis canadienne.` the noun takes the capital (`un Canadien`), and the book's own résumé writes `Je suis Canadien.` in that noun style. languages stay lowercase too: `le français`.
+[^majuscule]: a nationality adjective stays lowercase: `Je suis canadienne.` a nationality noun takes a capital: `un Canadien`. if the résumé prints `Je suis Canadien.`, that capitalization is nonstandard because `Canadien` is still an adjective after `être`. languages stay lowercase too: `le français`.
