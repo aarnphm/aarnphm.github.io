@@ -42,6 +42,14 @@ test('normalizes Garmin Connect activity details into the Garmin cache shape', (
       kilojoules: 775.4,
       trainingStressScore: 67.8,
       intensityFactor: 0.713,
+      summaryDTO: {
+        trainingEffect: 4.5,
+        anaerobicTrainingEffect: 0,
+        activityTrainingLoad: 301.7034912109375,
+        trainingEffectLabel: 'AEROBIC_BASE',
+        aerobicTrainingEffectMessage: 'HIGHLY_IMPROVING_AEROBIC_ENDURANCE_10',
+        anaerobicTrainingEffectMessage: 'NO_ANAEROBIC_BENEFIT_0',
+      },
       deviceName: 'Edge 1050',
     },
     items[0].record,
@@ -71,6 +79,12 @@ test('normalizes Garmin Connect activity details into the Garmin cache shape', (
     totalWorkKJ: 775.4,
     trainingStressScore: 67.8,
     intensityFactor: 0.713,
+    aerobicTrainingEffect: 4.5,
+    anaerobicTrainingEffect: 0,
+    exerciseLoad: 301.7,
+    trainingEffectLabel: 'AEROBIC_BASE',
+    aerobicTrainingEffectMessage: 'HIGHLY_IMPROVING_AEROBIC_ENDURANCE_10',
+    anaerobicTrainingEffectMessage: 'NO_ANAEROBIC_BENEFIT_0',
   })
 })
 
@@ -357,6 +371,7 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
       { metricsIndex: 2, key: 'directLongitude' },
       { metricsIndex: 3, key: 'directElevation' },
       { metricsIndex: 4, key: 'directPower' },
+      { metricsIndex: 15, key: 'directRightBalance' },
       { metricsIndex: 13, key: 'directAvailableStamina' },
       { metricsIndex: 14, key: 'directPotentialStamina' },
       { metricsIndex: 5, key: 'directHeartRate' },
@@ -376,11 +391,17 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
       },
     ],
     activityDetailMetrics: [
-      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null, 98.6, 0, 37, null, 100, 100] },
+      { metrics: [0, 43.1, -79.1, 101, 120, 135, 82, 0, null, 98.6, 0, 37, null, 100, 100, 48] },
       {
-        metrics: [500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42, 99.5, 1.4, 37.01, 33.45, 78, 86],
+        metrics: [
+          500, 43.2, -79.2, 104, 180, 142, 88, 15, 27.42, 99.5, 1.4, 37.01, 33.45, 78, 86, 49.5,
+        ],
       },
-      { metrics: [1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08, 100.4, 3, 37.03, 33.5, 60, 71] },
+      {
+        metrics: [
+          1000, 43.3, -79.3, 109, 210, 149, 91, 30, 31.08, 100.4, 3, 37.03, 33.5, 60, 71, 51,
+        ],
+      },
     ],
   })
 
@@ -392,6 +413,7 @@ test('normalizes Garmin Connect detail metrics into streams', () => {
   assert.deepEqual(streams?.distance, [0, 500, 1000])
   assert.deepEqual(streams?.altitude, [101, 104, 109])
   assert.deepEqual(streams?.watts, [120, 180, 210])
+  assert.deepEqual(streams?.rightBalance, [48, 49.5, 51])
   assert.deepEqual(streams?.heartrate, [135, 142, 149])
   assert.deepEqual(streams?.cadence, [82, 88, 91])
   assert.deepEqual(streams?.time, [0, 15, 30])

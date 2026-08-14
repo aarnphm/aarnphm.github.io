@@ -7,6 +7,7 @@ const TRIATHLON_YEAR_SLUG = /^triathlon\/on\/(\d{4})$/
 const TRIATHLON_MONTH_SLUG = /^triathlon\/on\/(\d{4})\/(\d{2})$/
 const TRIATHLON_DAY_SLUG = /^triathlon\/on\/(\d{4})\/(\d{2})\/(\d{2})$/
 const SHORTCUT_DATE_PATH = /^\/(\d{4})(?:\/(\d{2})(?:\/(\d{2}))?)?\/?$/
+const ACTIVITY_ID = /^\d+$/
 
 export type TriathlonDateRoute =
   | { kind: 'index' }
@@ -67,6 +68,21 @@ export const triathlonDayHrefFromReference = (
   const path = `/${slug}`
   if (!referenceHref || !URL.canParse(referenceHref)) return path
   return new URL(path, referenceHref).toString()
+}
+
+export const triathlonActivityAnchor = (activityId: number | string): string | null => {
+  const value = String(activityId)
+  return ACTIVITY_ID.test(value) ? `tri-activity-${value}` : null
+}
+
+export const triathlonActivityHref = (
+  date: string,
+  activityId: number | string,
+  referenceHref?: string,
+): string | null => {
+  const dayHref = triathlonDayHrefFromReference(date, referenceHref)
+  const anchor = triathlonActivityAnchor(activityId)
+  return dayHref && anchor ? `${dayHref}#${anchor}` : null
 }
 
 export const triathlonDateRouteFromSlug = (slug: string): TriathlonDateRoute | null => {

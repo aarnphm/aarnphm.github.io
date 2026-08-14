@@ -9,6 +9,7 @@ import { buildDayCard as buildDayCardNode } from '../../../util/triathlon-card'
 import { parseExcludedActivityIds } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
+import { parseTriathlonTraceSettings } from '../../../util/triathlon-trace-settings'
 import { applyI18n } from '../runtime/dom'
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
@@ -36,6 +37,7 @@ export const buildDayCard = (
       extras.event != null,
       extras.embedded === true,
       extras.dayRouteHref,
+      extras.settings,
     )
     activityViews.push(view)
     return view.element
@@ -60,11 +62,13 @@ export const buildDayCard = (
 
 export const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
   const excludedActivityIds = parseExcludedActivityIds(data.triathlonFilter)
+  const settings = parseTriathlonTraceSettings(data.triathlonSettings)
   return {
     location: data.triathlonLoc,
     event: data.triathlonEvent,
     sport: data.triathlonSport as DayCardExtras['sport'],
     ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
+    ...(settings ? { settings } : {}),
     expanded: data.triathlonExpanded === '1',
     embedded: data.triathlonEmbedded === '1',
     dateHref: data.triathlonDateHref,

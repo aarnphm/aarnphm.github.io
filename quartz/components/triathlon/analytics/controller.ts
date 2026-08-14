@@ -669,6 +669,13 @@ export const setupAnalytics = (
     },
   })
 
+  const powerActivityCleanup = context.events.subscribe('powerActivity', request => {
+    if (!panel.contains(request.source)) return
+    request.handled = true
+    if (inCompareMode()) setCompareMode(false)
+    program.dispatch({ type: 'show-activity', id: request.activityId })
+  })
+
   if (pageMode) {
     load()
   } else {
@@ -717,6 +724,7 @@ export const setupAnalytics = (
     window.removeEventListener('tri:unit', onUnitChange)
     window.removeEventListener('tri:locale', onUnitChange)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnitChange)
+    powerActivityCleanup()
     compareCleanup?.()
     activityCleanup?.()
     for (const cleanup of panelCleanups.values()) cleanup()

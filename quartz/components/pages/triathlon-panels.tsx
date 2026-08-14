@@ -99,6 +99,7 @@ export const GEAR: [string, string[]][] = [
       'Front Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
       'Tube: Pirelli P Zero TPU',
+      'Tires: Pirelli P Zero Race SL-R 700x28c',
       'Tires: Pirelli P Zero Race TLR SL-R 700x28c',
       'Tires: Vittoria Corsa N.EXT TLR G2.0 700x29c',
       'Shifter/Break: Shimano Ultegra, R8170',

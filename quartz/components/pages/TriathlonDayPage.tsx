@@ -33,6 +33,8 @@ export default (() => {
       curveRef: payload.powerCurveRef,
       curveYearRef: payload.powerCurveYearRef,
       curveYear: payload.powerCurveYear,
+      criticalPower: payload.criticalPower,
+      criticalPowerYear: payload.criticalPowerYear,
       ftp: ATHLETE.ftp,
       goalFtp: ATHLETE.goalFTP,
       vt1: null,

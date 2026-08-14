@@ -184,17 +184,17 @@ To illustrate the scale difference, compare a high-end server CPU with H100:
 
 > [!example] AMD EPYC 9654 (Zen 4) vs NVIDIA H100 thread counts
 >
-> | Metric                    | AMD EPYC 9654             | NVIDIA H100              | Ratio  |
-> | ------------------------- | ------------------------- | ------------------------ | ------ |
-> | Physical cores            | 96 cores                  | 132 SMs                  | 1.4×   |
-> | Resident contexts         | 2 SMT threads per core    | up to 64 warps per SM    | n/a    |
-> | Maximum resident contexts | 192 CPU threads           | 270,336 CUDA threads     | n/a    |
-> | Scheduling                | OS and hardware scheduling | ready-warp selection     | n/a    |
-> | Clock frequency           | 3.7 GHz boost             | 1.41 GHz                 | 0.38×  |
-> | Thread execution          | Out-of-order, speculative | In-order, no speculation | n/a    |
-> | L3 Cache                  | 384 MB                    | 60 MB L2 (no L3)         | n/a    |
-> | Memory bandwidth          | 460 GB/s (DDR5)           | 3,350 GB/s (HBM3)        | 7.3×   |
-> | TDP                       | 360W                      | 700W                     | 1.9×   |
+> | Metric                    | AMD EPYC 9654              | NVIDIA H100              | Ratio |
+> | ------------------------- | -------------------------- | ------------------------ | ----- |
+> | Physical cores            | 96 cores                   | 132 SMs                  | 1.4×  |
+> | Resident contexts         | 2 SMT threads per core     | up to 64 warps per SM    | n/a   |
+> | Maximum resident contexts | 192 CPU threads            | 270,336 CUDA threads     | n/a   |
+> | Scheduling                | OS and hardware scheduling | ready-warp selection     | n/a   |
+> | Clock frequency           | 3.7 GHz boost              | 1.41 GHz                 | 0.38× |
+> | Thread execution          | Out-of-order, speculative  | In-order, no speculation | n/a   |
+> | L3 Cache                  | 384 MB                     | 60 MB L2 (no L3)         | n/a   |
+> | Memory bandwidth          | 460 GB/s (DDR5)            | 3,350 GB/s (HBM3)        | 7.3×  |
+> | TDP                       | 360W                       | 700W                     | 1.9×  |
 
 > [!note] These counts measure different things
 >

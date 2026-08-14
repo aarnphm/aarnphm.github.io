@@ -535,7 +535,7 @@ because $n$ = number of columns = dimension of the domain of the linear map $x \
 | Rank                       | Number of pivots                                                           | Same (number of pivots)                                                            |
 | Row space basis            | Nonzero rows span the row space                                            | Nonzero rows form a canonical basis of the row space                               |
 | Column space basis         | Pivot columns of the original matrix (pivot locations found from REF/RREF) | Same pivot columns in the original matrix                                          |
-| Inversion via augmentation | Work on $[A\mid I]$ to reach $[I\mid A^{-1}]$                                | RREF required to obtain the identity on the left                                   |
+| Inversion via augmentation | Work on $[A\mid I]$ to reach $[I\mid A^{-1}]$                              | RREF required to obtain the identity on the left                                   |
 | Cost (dense $n \times n$)  | ~ $\tfrac{2}{3}n^3$ flops (forward)                                        | Slightly higher (clear above pivots too; $\approx n^3$)                            |
 | Numerical note             | Use partial pivoting ($PA=LU$) for stability                               | More operations can amplify roundoff; prefer factorization (LU/QR) for numerics    |
 
@@ -1708,6 +1708,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   $$
 
   for a nonunit axis, normalize it and move its norm into the rotation angle.
+
 - Exterior algebra view (reason for “3D special”): $a\times b=\;*\,(a\wedge b)$ where $*$ is the Hodge star under the Euclidean metric and fixed orientation in $\mathbb R^3$. Genuine cross products exist only in dimensions $3$ and $7$.
 
 > [!example] Normal to a plane and area
@@ -1786,6 +1787,7 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
   =\int_{t_0}^{t_1}a(t)^T
   \frac{\partial f_\theta}{\partial\theta}(t,z(t))\,dt.
   $$
+
 - Continuous normalizing flows (CNFs): density evolves by $\tfrac{d}{dt}\log p_t(z)=-\operatorname{tr}\,\big(\partial f_\theta/\partial z\big)$. Use Hutchinson’s estimator for the trace; probability‑flow ODE in diffusion models gives deterministic sampling.
 - Diffusion models: forward SDE corrupts data; sampling can follow a reverse‑time SDE or the associated probability‑flow ODE using the learned score $\nabla\log p_t$. ODE solvers (DDIM‑style) trade steps for quality/speed.
 - Implicit layers/DEQs: fixed points $z^\ast=f_\theta(z^\ast,x)$ viewed as steady states of dynamics; gradients via implicit function theorem mirror adjoint ideas and avoid backprop through long unrolled networks.
@@ -1831,10 +1833,10 @@ Project onto $\mathrm{span}\{a\}$ with $a\ne0$: $P=\dfrac{a a^\top}{a^\top a}$, 
 
 ### Matrix calculus (common gradients)
 
-| Quantity                                 | Formula                                                                                                | Notes                    |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------ |
-| $\partial/\partial x$ of least squares   | $$\displaystyle \frac{\partial}{\partial x}\,\tfrac12\|Ax-b\|_2^2 = A^\top(Ax-b)$$                     | .                        |
-| $\partial/\partial A$ of Frobenius LS    | $$\displaystyle \frac{\partial}{\partial A}\,\tfrac12\|AX-B\|_F^2 = (AX-B)X^\top$$                     | .                        |
-| $\partial/\partial A$ of trace           | $$\displaystyle \frac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$$                           | .                        |
+| Quantity                                 | Formula                                                                                                | Notes                        |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- |
+| $\partial/\partial x$ of least squares   | $$\displaystyle \frac{\partial}{\partial x}\,\tfrac12\|Ax-b\|_2^2 = A^\top(Ax-b)$$                     | .                            |
+| $\partial/\partial A$ of Frobenius LS    | $$\displaystyle \frac{\partial}{\partial A}\,\tfrac12\|AX-B\|_F^2 = (AX-B)X^\top$$                     | .                            |
+| $\partial/\partial A$ of trace           | $$\displaystyle \frac{\partial}{\partial A}\,\operatorname{tr}(A^\top X)=X$$                           | .                            |
 | $\partial/\partial X$ of quadratic trace | $$\displaystyle \frac{\partial}{\partial X}\,\operatorname{tr}(X^\top A X B)=A X B + A^\top X B^\top$$ | Symmetric $A,B$ gives $2AXB$ |
-| Differential product rule                | $$\displaystyle \mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$$                                         | .                        |
+| Differential product rule                | $$\displaystyle \mathrm{d}(AB)=(\mathrm{d}A)B+A(\mathrm{d}B)$$                                         | .                            |

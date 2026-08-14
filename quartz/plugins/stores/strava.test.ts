@@ -92,6 +92,114 @@ test('manual fueling overrides Garmin fueling by Strava activity ID', () => {
   })
 })
 
+test('projects Garmin intensity, training effect, and exercise load into activity details', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride() },
+  }
+  const metrics = emptyGarminMetrics()
+  metrics.intensityFactor = 0.803
+  metrics.aerobicTrainingEffect = 4.5
+  metrics.anaerobicTrainingEffect = 2.7
+  metrics.exerciseLoad = 301.7
+  metrics.trainingEffectLabel = 'AEROBIC_BASE'
+  metrics.aerobicTrainingEffectMessage = 'HIGHLY_IMPROVING_AEROBIC_ENDURANCE_10'
+  metrics.anaerobicTrainingEffectMessage = 'MAINTAINING_FAST_FORCE_PRODUCTION_6'
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      edge: {
+        id: 'edge',
+        name: 'Cadence training',
+        sport: 'bike',
+        startDate: '2026-06-07T11:29:55Z',
+        startDateLocal: '2026-06-07T07:29:55',
+        distanceM: 61_400,
+        movingTimeS: 7_200,
+        elapsedTimeS: 7_500,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics,
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+    },
+  }
+
+  const verification = buildPayload(cache, null, garmin, '2026-06-01').details['101'].garmin
+
+  assert.equal(verification?.intensityFactor, 0.803)
+  assert.equal(verification?.trainingEffectActivityId, 'edge')
+  assert.equal(verification?.aerobicTrainingEffect, 4.5)
+  assert.equal(verification?.anaerobicTrainingEffect, 2.7)
+  assert.equal(verification?.exerciseLoad, 301.7)
+  assert.equal(verification?.trainingEffectLabel, 'AEROBIC_BASE')
+  assert.equal(verification?.aerobicTrainingEffectMessage, 'HIGHLY_IMPROVING_AEROBIC_ENDURANCE_10')
+  assert.equal(verification?.anaerobicTrainingEffectMessage, 'MAINTAINING_FAST_FORCE_PRODUCTION_6')
+})
+
+test('uses an overlapping Garmin recording for training effect without replacing the primary match', () => {
+  const cache: StravaRawCache = {
+    version: 1,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: { 101: ride() },
+  }
+  const trainingEffect = emptyGarminMetrics()
+  trainingEffect.aerobicTrainingEffect = 4.3
+  trainingEffect.anaerobicTrainingEffect = 0.7
+  trainingEffect.exerciseLoad = 215
+  trainingEffect.trainingEffectLabel = 'LACTATE_THRESHOLD'
+  const garmin: GarminCache = {
+    lastSync: Date.now(),
+    activities: {
+      primary: {
+        id: 'primary',
+        name: 'Cadence training',
+        sport: 'bike',
+        startDate: '2026-06-07T11:29:55Z',
+        startDateLocal: '2026-06-07T07:29:55',
+        distanceM: 61_400,
+        movingTimeS: 7_200,
+        elapsedTimeS: 7_500,
+        sourceDevice: 'Edge 1050',
+        sourceFile: null,
+        metrics: emptyGarminMetrics(),
+        fueling: emptyGarminFueling('Edge 1050'),
+      },
+      trainingEffect: {
+        id: 'training-effect',
+        name: 'Cadence training',
+        sport: 'bike',
+        startDate: '2026-06-07T11:30:25Z',
+        startDateLocal: '2026-06-07T07:30:25',
+        distanceM: 72_000,
+        movingTimeS: 8_000,
+        elapsedTimeS: 8_200,
+        sourceDevice: 'Forerunner 965',
+        sourceFile: null,
+        metrics: trainingEffect,
+        fueling: emptyGarminFueling('Forerunner 965'),
+      },
+    },
+  }
+
+  const verification = buildPayload(cache, null, garmin, '2026-06-01').details['101'].garmin
+
+  assert.equal(verification?.activityId, 'primary')
+  assert.equal(verification?.distanceM, 61_400)
+  assert.equal(verification?.trainingEffectActivityId, 'training-effect')
+  assert.equal(verification?.aerobicTrainingEffect, 4.3)
+  assert.equal(verification?.anaerobicTrainingEffect, 0.7)
+  assert.equal(verification?.exerciseLoad, 215)
+  assert.equal(verification?.trainingEffectLabel, 'LACTATE_THRESHOLD')
+})
+
 test('manual strength attaches only to the matching strength activity and date', () => {
   const cache: StravaRawCache = {
     version: 1,
@@ -230,6 +338,7 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
         ],
         altitude: [80, 85, 90],
         distance: [0, 1_000, 2_000],
+        rightBalance: [47, 49, 52],
         stamina: [100, 80, 60],
         potentialStamina: [100, 92, 78],
         respiration: [18, 28, 38],
@@ -241,6 +350,10 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
+  assert.deepEqual(
+    detail.route.map(point => point.rightPowerPct),
+    [47, 48.6, 51.4],
+  )
   assert.deepEqual(
     detail.route.map(point => point.stamina),
     [100, 84, 64],
@@ -726,7 +839,7 @@ test('merges WeatherKit wind into activity detail and day health', () => {
   assert.equal(payload.health['2026-06-07'].windDir, 'SW')
 })
 
-test('uses nearest same-day weather for a route-less swim', () => {
+test('uses nearest same-day weather for route-less swim and strength activities', () => {
   const swim = ride({
     id: 102,
     name: 'Pool swim',
@@ -737,13 +850,23 @@ test('uses nearest same-day weather for a route-less swim', () => {
     startDate: '2026-06-07T14:00:00Z',
     startDateLocal: '2026-06-07T10:00:00',
   })
+  const strength = ride({
+    id: 103,
+    name: 'Weight training',
+    sportType: 'WeightTraining',
+    distance: 0,
+    movingTime: 1_800,
+    elapsedTime: 2_000,
+    startDate: '2026-06-07T15:00:00Z',
+    startDateLocal: '2026-06-07T11:00:00',
+  })
   const cache: StravaRawCache = {
     version: 1,
     athleteId: 1,
     auth: { refreshToken: '', obtainedAt: Date.now() },
     lastSync: Date.parse('2026-06-08T00:00:00Z'),
     lastActivityStart: Math.floor(Date.parse(swim.startDate) / 1000),
-    activities: { 101: ride(), 102: swim },
+    activities: { 101: ride(), 102: swim, 103: strength },
   }
   const activity: WeatherActivity = {
     activityId: 101,
@@ -767,11 +890,14 @@ test('uses nearest same-day weather for a route-less swim', () => {
     days: summarizeWeatherDays({ 101: activity }),
   }
 
-  const detail = buildPayload(cache, null, null, '2026-06-01', weather).details['102']
-  assert.equal(detail.avgTemp, 24)
-  assert.equal(detail.windKph, 18)
-  assert.equal(detail.windDir, 'SW')
-  assert.equal(detail.windGustKph, 31)
+  const payload = buildPayload(cache, null, null, '2026-06-01', weather)
+  for (const id of ['102', '103']) {
+    const detail = payload.details[id]
+    assert.equal(detail.avgTemp, 24)
+    assert.equal(detail.windKph, 18)
+    assert.equal(detail.windDir, 'SW')
+    assert.equal(detail.windGustKph, 31)
+  }
 })
 
 test('buildPayload keeps late evening syncs on the local calendar day', () => {
@@ -828,7 +954,10 @@ test('uses an inclusive 42-day window for the six-week power reference', () => {
   }
 
   const payload = buildPayload(cache, null, null, '2026-06-01', null, null, null, 'UTC')
-  assert.equal(payload.powerCurveRef.find(point => point.s === 1)?.w, 500)
+  assert.deepEqual(
+    payload.powerCurveRef.find(point => point.s === 1),
+    { s: 1, w: 500, activityId: 102, activityDate: '2026-06-02' },
+  )
 })
 
 test('builds the calendar-year power reference outside the visible activity window', () => {
@@ -872,10 +1001,129 @@ test('builds the calendar-year power reference outside the visible activity wind
   }
 
   const payload = buildPayload(cache, null, null, '2026-05-15', null, null, null, 'UTC')
-  assert.equal(payload.details['101'], undefined)
-  assert.equal(payload.powerCurveRef.find(point => point.s === 1)?.w, 500)
-  assert.equal(payload.powerCurveYearRef.find(point => point.s === 1)?.w, 900)
+  assert.equal(payload.details['101']?.date, '2026-01-15')
+  assert.deepEqual(
+    payload.powerCurveRef.find(point => point.s === 1),
+    { s: 1, w: 500, activityId: 102, activityDate: '2026-06-02' },
+  )
+  assert.deepEqual(
+    payload.powerCurveYearRef.find(point => point.s === 1),
+    { s: 1, w: 900, activityId: 101, activityDate: '2026-01-15' },
+  )
   assert.equal(payload.powerCurveYear, 2026)
+})
+
+test('retains the winning activity at every aggregate power duration', () => {
+  const stream = (watts: number[]): StravaStreams => ({
+    time: [0, 1, 2, 3],
+    latlng: [],
+    altitude: [0, 0, 0, 0],
+    distance: [0, 1, 2, 3],
+    watts,
+  })
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-08-13T12:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-08-12T12:00:00Z') / 1000),
+    activities: {
+      101: ride({
+        id: 101,
+        movingTime: 4,
+        elapsedTime: 4,
+        startDate: '2026-08-11T12:00:00Z',
+        startDateLocal: '2026-08-11T08:00:00',
+      }),
+      102: ride({
+        id: 102,
+        movingTime: 4,
+        elapsedTime: 4,
+        startDate: '2026-08-12T12:00:00Z',
+        startDateLocal: '2026-08-12T08:00:00',
+      }),
+    },
+    streams: { 101: stream([500, 0, 0, 0]), 102: stream([350, 350, 350, 350]) },
+  }
+
+  const curve = buildPayload(cache, null, null, '2026-08-01', null, null, null, 'UTC').powerCurveRef
+  assert.deepEqual(
+    curve.find(point => point.s === 1),
+    { s: 1, w: 500, activityId: 101, activityDate: '2026-08-11' },
+  )
+  assert.deepEqual(
+    curve.find(point => point.s === 2),
+    { s: 2, w: 350, activityId: 102, activityDate: '2026-08-12' },
+  )
+})
+
+test('fits critical power from complete device-power windows', () => {
+  const power = (durationS: number): number => 250 + 10_000 / durationS
+  const stream = (durationS: number, watts: number, missingSecond?: number): StravaStreams => {
+    const time = Array.from({ length: durationS }, (_, index) => index).filter(
+      second => second !== missingSecond,
+    )
+    return {
+      time,
+      latlng: [],
+      altitude: time.map(() => 0),
+      distance: time.map(second => second),
+      watts: time.map(() => watts),
+    }
+  }
+  const activity = (id: number, durationS: number, deviceWatts = true): RawStravaActivity =>
+    ride({
+      id,
+      movingTime: durationS,
+      elapsedTime: durationS,
+      deviceWatts,
+      startDate: `2026-08-0${id}T12:00:00Z`,
+      startDateLocal: `2026-08-0${id}T08:00:00`,
+    })
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-08-13T12:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-08-05T12:00:00Z') / 1000),
+    activities: {
+      1: activity(1, 180),
+      2: activity(2, 420),
+      3: activity(3, 720),
+      4: activity(4, 180),
+      5: activity(5, 180, false),
+      6: activity(6, 720, false),
+    },
+    streams: {
+      1: stream(180, power(180)),
+      2: stream(420, power(420)),
+      3: stream(720, power(720)),
+      4: stream(180, 600, 90),
+      5: stream(180, 700),
+      6: stream(720, 800),
+    },
+  }
+
+  const payload = buildPayload(cache, null, null, '2026-08-06', null, null, null, 'UTC')
+
+  assert.ok(payload.criticalPower)
+  assert.equal(payload.criticalPower.criticalPowerWatts, 250)
+  assert.ok(Math.abs(payload.criticalPower.wPrimeJoules - 10_000) <= 2)
+  assert.equal(payload.criticalPower.independentEffortCount, 3)
+  assert.equal(payload.criticalPower.confidence, 'medium')
+  assert.deepEqual(
+    payload.criticalPower.anchors.map(anchor => anchor.activityId),
+    [1, 2, 3],
+  )
+  assert.deepEqual(payload.criticalPowerYear, {
+    ...payload.criticalPower,
+    window: 'calendar-year',
+    windowFrom: '2026-01-01',
+  })
+  assert.deepEqual(
+    [1, 2, 3, 6].map(id => payload.details[String(id)]?.id),
+    [1, 2, 3, 6],
+  )
 })
 
 test('samples every second for the full power curve', () => {
@@ -943,7 +1191,12 @@ test('samples per-second power curves through the full stream duration', () => {
   assert.equal(curve.length, streamDurationS)
   assert.deepEqual(curve.at(-1), { s: streamDurationS, w: 200 })
   assert.equal(payload.powerCurveRef.length, streamDurationS)
-  assert.deepEqual(payload.powerCurveRef.at(-1), { s: streamDurationS, w: 200 })
+  assert.deepEqual(payload.powerCurveRef.at(-1), {
+    s: streamDurationS,
+    w: 200,
+    activityId: 101,
+    activityDate: '2026-06-07',
+  })
 })
 
 test('keeps Strava power inclusive while projecting a zero-excluded cycling view', () => {

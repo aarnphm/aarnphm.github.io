@@ -238,6 +238,17 @@ describe('remarkWikilink integration', () => {
       )
     })
 
+    test('preserves triathlon trace settings in nested transclude anchors', () => {
+      const html = processToHTML(
+        '![[triathlon#2026-08-10#cycling#settings=matched-rides:false&matched-runs:true]]',
+      )
+      assert(
+        html.includes(
+          'data-anchor-path="[&#x22;2026-08-10&#x22;,&#x22;cycling&#x22;,&#x22;settings=matched-rides:false&#x26;matched-runs:true&#x22;]"',
+        ),
+      )
+    })
+
     test('converts base view transclude', () => {
       const html = processToHTML('![[data.base#editors]]')
       assert(html.includes('<blockquote class="transclude"'))

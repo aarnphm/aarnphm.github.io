@@ -1,3 +1,4 @@
+import type { CriticalPowerEstimate } from '../../../../plugins/stores/critical-power'
 import type { MatchedRidesBlock } from '../../../../plugins/stores/matched-rides'
 import type { MatchedRunsBlock } from '../../../../plugins/stores/matched-runs'
 import type { AxisXTick } from '../../../../util/triathlon-card'
@@ -10,6 +11,10 @@ import { KM_TO_MI } from '../../../../util/triathlon-card'
 import { M_TO_FT } from '../../../../util/triathlon-card'
 import { niceStep } from '../../../../util/triathlon-card'
 import { triathlonDayHrefFromReference } from '../../../../util/triathlon-date-route'
+import {
+  criticalPowerEvidenceText,
+  criticalPowerSummaryText,
+} from '../../../../util/triathlon-i18n'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
@@ -131,6 +136,7 @@ export const buildMatchedRunGroup = (
   const text = (key: string): string => formatter.text(key)
   const wrap = el('section', 'tri-matched tri-matched-group', undefined, {
     'data-matched-group': group.id,
+    'data-tri-trace': 'matched-runs',
   })
   const efforts = group.efforts
   const fastestIndex = efforts.reduce(
@@ -401,11 +407,13 @@ export const buildMatchedRideGroup = (
   group: MatchedRideGroup,
   currentActivityId: number,
   dayRouteHref?: string,
+  criticalPower?: CriticalPowerEstimate | null,
 ): HTMLElement => {
   const formatter = createTriathlonFormatter(presentation)
   const text = (key: string): string => formatter.text(key)
   const wrap = el('section', 'tri-matched tri-matched-group tri-matched--ride', undefined, {
     'data-matched-group': group.id,
+    'data-tri-trace': 'matched-rides',
   })
   const efforts = group.efforts
   const powers = efforts.map(effort => matchedRidePower(effort, group.powerMetric))
@@ -466,6 +474,17 @@ export const buildMatchedRideGroup = (
     ),
   )
   wrap.appendChild(head)
+  if (criticalPower)
+    wrap.appendChild(
+      markGlossDefinition(
+        el(
+          'p',
+          'tri-matched-critical-power',
+          criticalPowerSummaryText(presentation.locale, criticalPower),
+        ),
+        criticalPowerEvidenceText(presentation.locale, criticalPower),
+      ),
+    )
 
   const chart = el('div', 'tri-matched-chart')
   const graph = svg('svg', {

@@ -3,7 +3,11 @@ import type {
   ActivityKind,
   StravaActivityDetail,
 } from '../../../plugins/stores/strava'
-import type { ActivityTraceDomain, DetailCtx } from '../../../util/triathlon-card'
+import type {
+  ActivityTraceDomain,
+  ActivityTraceReference,
+  DetailCtx,
+} from '../../../util/triathlon-card'
 import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { ActivityAnalysisRange } from './analysis'
 import {
@@ -55,6 +59,7 @@ export const buildTrace = (
   tick: (value: number) => string,
   graphDomain?: ActivityAnalysisRange | null,
   domain?: ActivityTraceDomain,
+  reference?: ActivityTraceReference | null,
 ): HTMLElement =>
   htmlElement(
     buildTraceNode(
@@ -67,6 +72,8 @@ export const buildTrace = (
       domain,
       null,
       graphDomain,
+      undefined,
+      reference,
     ),
   )
 
@@ -83,7 +90,8 @@ export const statRow = (
   presentation: TriathlonPresentation,
   label: string,
   value: string,
-): HTMLElement => htmlElement(buildStatRowNode(createDomFactory(presentation), label, value))
+  attrs?: Record<string, string>,
+): HTMLElement => htmlElement(buildStatRowNode(createDomFactory(presentation), label, value, attrs))
 
 export const buildRecovery = (
   presentation: TriathlonPresentation,

@@ -151,7 +151,11 @@ const en: TriDict = {
     'air temp': 'air temp',
     'water temp': 'water temp',
     tempo: 'tempo',
+    aerobic: 'aerobic',
     anaerobic: 'anaerobic',
+    'intensity factor': 'intensity factor',
+    'training effect': 'training effect',
+    'exercise load': 'exercise load',
     VO2max: 'VO2max',
     neuromuscular: 'neuromuscular',
     'warm up': 'warm up',
@@ -263,10 +267,15 @@ const en: TriDict = {
     '25W power distribution': '25W power distribution',
     'gear ratio distribution': 'gear ratio distribution',
     'power curve': 'power curve',
+    'critical power model': 'critical power model',
+    'estimated critical power': 'estimated critical power',
+    'power balance': 'power balance',
     'electronic shifting': 'electronic shifting',
     stamina: 'stamina',
     current: 'current',
     potential: 'potential',
+    left: 'left',
+    right: 'right',
     front: 'front',
     rear: 'rear',
     'best efforts · power curve': 'best efforts · power curve',
@@ -619,6 +628,14 @@ const en: TriDict = {
       term: 'training stress score (TSS)',
       def: 'TSS is the daily sum of session stress. Each session uses intensity factor squared, multiplied by duration in hours and 100. Intensity is estimated from threshold-adjusted speed.',
     },
+    cp: {
+      term: 'critical power (CP)',
+      def: 'Critical power is the sustainable-power asymptote fitted from maximal 3, 7, and 12 minute cycling efforts. This site estimates it from complete device-power windows and reports the fit provenance.',
+    },
+    wprime: {
+      term: 'W′',
+      def: 'W′ is the finite work capacity above critical power. It is the slope of the fitted power-duration model and is reported in kilojoules.',
+    },
     ctl: {
       term: 'fitness (CTL)',
       def: 'Fitness is your average daily training load over the past 42 days. Recent days count more. It rises when you train consistently and falls when you train less.',
@@ -840,7 +857,11 @@ const fr: TriDict = {
     'air temp': "température de l'air",
     'water temp': "température de l'eau",
     tempo: 'tempo',
+    aerobic: 'aérobie',
     anaerobic: 'anaérobie',
+    'intensity factor': "facteur d'intensité",
+    'training effect': "effet d'entraînement",
+    'exercise load': "charge d'exercice",
     VO2max: 'VO2max',
     neuromuscular: 'neuromusculaire',
     'warm up': 'échauffement',
@@ -953,10 +974,15 @@ const fr: TriDict = {
     '25W power distribution': 'répartition puissance 25W',
     'gear ratio distribution': 'répartition des rapports',
     'power curve': 'courbe de puissance',
+    'critical power model': 'modèle de puissance critique',
+    'estimated critical power': 'puissance critique estimée',
+    'power balance': 'équilibre de puissance',
     'electronic shifting': 'changement de vitesse électronique',
     stamina: 'stamina',
     current: 'actuelle',
     potential: 'potentielle',
+    left: 'gauche',
+    right: 'droite',
     front: 'avant',
     rear: 'arrière',
     'best efforts · power curve': 'meilleurs efforts · courbe de puissance',
@@ -1315,6 +1341,14 @@ const fr: TriDict = {
       term: "score de stress d'entraînement (TSS)",
       def: "Le TSS est la somme quotidienne du stress des séances. Chaque séance utilise le facteur d'intensité au carré, multiplié par la durée en heures et par 100. L'intensité est estimée à partir de la vitesse ajustée au seuil.",
     },
+    cp: {
+      term: 'puissance critique (CP)',
+      def: "La puissance critique est l'asymptote de puissance soutenable ajustée aux efforts maximaux de 3, 7 et 12 minutes. Ce site l'estime à partir de fenêtres complètes de puissance mesurée et indique leur provenance.",
+    },
+    wprime: {
+      term: 'W′',
+      def: "W′ est la capacité de travail finie au-dessus de la puissance critique. Elle correspond à la pente du modèle puissance-durée et s'exprime en kilojoules.",
+    },
     ctl: {
       term: 'condition (CTL)',
       def: "La condition représente ta charge d'entraînement quotidienne moyenne sur les 42 derniers jours. Les jours récents comptent davantage. Elle monte quand tu t'entraînes régulièrement et baisse quand tu t'entraînes moins.",
@@ -1600,6 +1634,49 @@ export const powerCurveReferenceLabel = (target: Locale, year: number | null): s
     : target === 'fr'
       ? `meilleur de ${year}`
       : `${year} best`
+
+type CriticalPowerSummary = {
+  criticalPowerWatts: number
+  wPrimeJoules: number
+  independentEffortCount: number
+  confidence: 'medium' | 'provisional'
+}
+
+export const criticalPowerSummaryParts = (
+  target: Locale,
+  estimate: CriticalPowerSummary,
+): { criticalPower: string; wPrime: string; evidence: string } => {
+  const cp = estimate.criticalPowerWatts.toLocaleString(target === 'fr' ? 'fr-CA' : 'en-US', {
+    maximumFractionDigits: 1,
+  })
+  const wPrime = (estimate.wPrimeJoules / 1_000).toLocaleString(
+    target === 'fr' ? 'fr-CA' : 'en-US',
+    { minimumFractionDigits: 1, maximumFractionDigits: 1 },
+  )
+  const efforts = estimate.independentEffortCount
+  if (target === 'fr')
+    return {
+      criticalPower: `eCP ${cp} W`,
+      wPrime: `eW′ ${wPrime} kJ`,
+      evidence: `${efforts} effort${efforts === 1 ? '' : 's'} indépendant${efforts === 1 ? '' : 's'} · ${estimate.confidence === 'medium' ? 'confiance moyenne' : 'provisoire'}`,
+    }
+  return {
+    criticalPower: `eCP ${cp} W`,
+    wPrime: `eW′ ${wPrime} kJ`,
+    evidence: `${efforts} independent effort${efforts === 1 ? '' : 's'} · ${estimate.confidence}`,
+  }
+}
+
+export const criticalPowerSummaryText = (
+  target: Locale,
+  estimate: CriticalPowerSummary,
+): string => {
+  const summary = criticalPowerSummaryParts(target, estimate)
+  return `${summary.criticalPower} · ${summary.wPrime}`
+}
+
+export const criticalPowerEvidenceText = (target: Locale, estimate: CriticalPowerSummary): string =>
+  criticalPowerSummaryParts(target, estimate).evidence
 
 export const glossFor = (target: Locale, key: string): Gloss | undefined =>
   TRI_I18N[target].gloss[key] ?? en.gloss[key]

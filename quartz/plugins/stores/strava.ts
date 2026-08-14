@@ -12,10 +12,17 @@ import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './
 import { localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
+  CRITICAL_POWER_DURATIONS_S,
+  fitCriticalPower,
+  type CriticalPowerAnchor,
+  type CriticalPowerEstimate,
+} from './critical-power'
+import {
   emptyGarminFueling,
   matchGarminActivity,
   matchGarminFueling,
   matchGarminHeartRateActivity,
+  matchGarminTrainingEffectActivity,
 } from './garmin'
 
 export type Sport = 'swim' | 'bike' | 'run'
@@ -174,6 +181,8 @@ export type StravaMapPoint = MapRoutePoint
 export interface PowerCurvePoint {
   s: number
   w: number
+  activityId?: number
+  activityDate?: string
 }
 
 export interface CyclingDistanceEffort {
@@ -244,6 +253,7 @@ export interface StravaRoutePoint {
   w: number
   hr: number
   cad: number
+  rightPowerPct?: number | null
   stamina: number | null
   potentialStamina: number | null
   resp: number | null
@@ -345,6 +355,13 @@ export interface GarminVerification {
   totalWorkDeltaKJ: number | null
   trainingStressScore: number | null
   intensityFactor: number | null
+  trainingEffectActivityId: string | null
+  aerobicTrainingEffect: number | null
+  anaerobicTrainingEffect: number | null
+  exerciseLoad: number | null
+  trainingEffectLabel: string | null
+  aerobicTrainingEffectMessage: string | null
+  anaerobicTrainingEffectMessage: string | null
 }
 
 export interface ActivityHeartRate {
@@ -462,6 +479,8 @@ export interface StravaPayload {
   powerCurveRef: PowerCurvePoint[]
   powerCurveYearRef: PowerCurvePoint[]
   powerCurveYear: number | null
+  criticalPower: CriticalPowerEstimate | null
+  criticalPowerYear: CriticalPowerEstimate | null
 }
 
 export function normalizeSport(sportType: string): Sport | null {
@@ -723,6 +742,7 @@ interface EffortTimeline {
   distanceM: Float64Array
   altitudeM: Float64Array
   watts: Float64Array
+  wattsObserved: Uint8Array
   heartRate: Float64Array
 }
 
@@ -762,6 +782,7 @@ function effortTimeline(
   const distanceM = new Float64Array(length)
   const altitudeM = new Float64Array(length)
   const watts = new Float64Array(length)
+  const wattsObserved = new Uint8Array(length)
   const heartRate = new Float64Array(length)
   const distanceSet = new Uint8Array(length)
   const altitudeSet = new Uint8Array(length)
@@ -785,6 +806,7 @@ function effortTimeline(
     if (Number.isFinite(power)) {
       watts[second] += Math.max(0, power ?? 0)
       wattCount[second]++
+      wattsObserved[second] = 1
     }
     const hr = streams.heartrate?.[i]
     if (Number.isFinite(hr) && (hr ?? 0) > 0) {
@@ -803,7 +825,7 @@ function effortTimeline(
     if (wattCount[second]) watts[second] /= wattCount[second]
     if (heartRateCount[second]) heartRate[second] /= heartRateCount[second]
   }
-  return { distanceM, altitudeM, watts, heartRate }
+  return { distanceM, altitudeM, watts, wattsObserved, heartRate }
 }
 
 function sumPrefix(values: Float64Array): Float64Array {
@@ -855,6 +877,40 @@ function bestPowerWindows(
       start: bestStart,
       end: bestStart + durationS,
       averageWatts: Math.floor(Math.max(0, bestSum / durationS)),
+    })
+  }
+  return windows
+}
+
+function bestObservedPowerWindows(
+  timeline: EffortTimeline,
+  durations: readonly number[],
+): BestPowerWindow[] {
+  const powerPrefix = sumPrefix(timeline.watts)
+  const observedPrefix = new Uint32Array(timeline.wattsObserved.length + 1)
+  for (let index = 0; index < timeline.wattsObserved.length; index++)
+    observedPrefix[index + 1] = observedPrefix[index] + timeline.wattsObserved[index]
+
+  const windows: BestPowerWindow[] = []
+  for (const durationS of durations) {
+    if (durationS > timeline.watts.length) break
+    let bestSum = -1
+    let bestStart = 0
+    for (let start = 0; start + durationS <= timeline.watts.length; start++) {
+      const end = start + durationS
+      if (observedPrefix[end] - observedPrefix[start] !== durationS) continue
+      const sum = powerPrefix[end] - powerPrefix[start]
+      if (sum > bestSum) {
+        bestSum = sum
+        bestStart = start
+      }
+    }
+    if (bestSum < 0) continue
+    windows.push({
+      durationS,
+      start: bestStart,
+      end: bestStart + durationS,
+      averageWatts: round(bestSum / durationS, 2),
     })
   }
   return windows
@@ -1024,10 +1080,26 @@ function derivePowerBounds(ftp: number): number[] {
   return [0.55, 0.75, 0.9, 1.05, 1.2, 1.5].map(p => Math.round(ftp * p))
 }
 
-function mergeMaxCurves(curves: PowerCurvePoint[][]): PowerCurvePoint[] {
-  const best = new Map<number, number>()
-  for (const c of curves) for (const p of c) best.set(p.s, Math.max(best.get(p.s) ?? 0, p.w))
-  return [...best].sort(([left], [right]) => left - right).map(([s, w]) => ({ s, w }))
+interface PowerCurveSource {
+  activityId: number
+  activityDate: string
+  curve: PowerCurvePoint[]
+}
+
+function mergeMaxCurves(sources: PowerCurveSource[]): PowerCurvePoint[] {
+  const best = new Map<number, PowerCurvePoint>()
+  for (const source of sources)
+    for (const point of source.curve) {
+      const current = best.get(point.s)
+      if (current && current.w >= point.w) continue
+      best.set(point.s, {
+        s: point.s,
+        w: point.w,
+        activityId: source.activityId,
+        activityDate: source.activityDate,
+      })
+    }
+  return [...best.values()].sort((left, right) => left.s - right.s)
 }
 
 function delta(
@@ -1081,10 +1153,12 @@ function activityWeight(
 function garminVerification(
   a: RawStravaActivity,
   match: GarminActivityMatch | null,
+  trainingEffectMatch: GarminActivityMatch | null,
 ): GarminVerification | null {
   if (!match) return null
   const activity = match.activity
   const metrics = activity.metrics
+  const trainingEffectMetrics = trainingEffectMatch?.activity.metrics ?? metrics
   const distanceDeltaM = delta(activity.distanceM, a.distance)
   return {
     activityId: activity.id,
@@ -1115,6 +1189,13 @@ function garminVerification(
     totalWorkDeltaKJ: deltaFloat(metrics.totalWorkKJ, a.kilojoules, 1),
     trainingStressScore: metrics.trainingStressScore,
     intensityFactor: metrics.intensityFactor,
+    trainingEffectActivityId: trainingEffectMatch?.activity.id ?? null,
+    aerobicTrainingEffect: trainingEffectMetrics.aerobicTrainingEffect,
+    anaerobicTrainingEffect: trainingEffectMetrics.anaerobicTrainingEffect,
+    exerciseLoad: trainingEffectMetrics.exerciseLoad,
+    trainingEffectLabel: trainingEffectMetrics.trainingEffectLabel,
+    aerobicTrainingEffectMessage: trainingEffectMetrics.aerobicTrainingEffectMessage,
+    anaerobicTrainingEffectMessage: trainingEffectMetrics.anaerobicTrainingEffectMessage,
   }
 }
 
@@ -1139,6 +1220,7 @@ interface TimedMetricSample {
 }
 
 interface ActivityGarminMetricSamples {
+  rightBalance: TimedMetricSample[]
   stamina: TimedMetricSample[]
   potentialStamina: TimedMetricSample[]
   respiration: TimedMetricSample[]
@@ -1163,6 +1245,7 @@ function timedMetricAt(samples: TimedMetricSample[], elapsedS: number): number |
 }
 
 type GarminMetricStreamKey =
+  | 'rightBalance'
   | 'stamina'
   | 'potentialStamina'
   | 'respiration'
@@ -1176,6 +1259,7 @@ function activityGarminMetricSamples(
   garmin: GarminCache | null,
 ): ActivityGarminMetricSamples {
   const empty = (): ActivityGarminMetricSamples => ({
+    rightBalance: [],
     stamina: [],
     potentialStamina: [],
     respiration: [],
@@ -1207,6 +1291,7 @@ function activityGarminMetricSamples(
   }
 
   return {
+    rightBalance: collect('rightBalance', value => value >= 0 && value <= 100),
     stamina: collect('stamina', value => value >= 0 && value <= 100),
     potentialStamina: collect('potentialStamina', value => value >= 0 && value <= 100),
     respiration: collect('respiration', value => value > 0),
@@ -1619,6 +1704,7 @@ function projectDetail(
     idx.forEach((i, k) => {
       const elapsedS = routeTime[i]
       const temperatureC = temperatureAt(temperatureSeries, elapsedS) ?? fallbackTemperatureC
+      const rightPowerPct = timedMetricAt(garminMetricSamples.rightBalance, elapsedS)
       const stamina = timedMetricAt(garminMetricSamples.stamina, elapsedS)
       const potentialStamina = timedMetricAt(garminMetricSamples.potentialStamina, elapsedS)
       const respiration = timedMetricAt(garminMetricSamples.respiration, elapsedS)
@@ -1633,6 +1719,7 @@ function projectDetail(
         w: Math.round(watts[i] ?? 0),
         hr: Math.round(routeHrStream[i] ?? 0),
         cad: Math.round(cadStream[i] ?? 0),
+        ...(rightPowerPct == null ? {} : { rightPowerPct: round(rightPowerPct, 1) }),
         stamina: stamina == null ? null : round(stamina, 1),
         potentialStamina: potentialStamina == null ? null : round(potentialStamina, 1),
         resp: respiration == null ? null : round(respiration, 1),
@@ -1769,6 +1856,8 @@ export function emptyPayload(athleteId = 0): StravaPayload {
     powerCurveRef: [],
     powerCurveYearRef: [],
     powerCurveYear: null,
+    criticalPower: null,
+    criticalPowerYear: null,
   }
 }
 
@@ -1853,15 +1942,18 @@ export function buildPayload(
   if (activities.length === 0) return emptyPayload(cache.athleteId)
 
   const garminMatches = new Map<string, GarminActivityMatch | null>()
+  const garminTrainingEffectMatches = new Map<string, GarminActivityMatch | null>()
   const garminHeartRateMatches = new Map<string, GarminActivityMatch | null>()
   const selectedStreams = new Map<string, StravaStreams | GarminStreams | undefined>()
   const heartRates = new Map<string, ActivityHeartRate>()
   for (const { a, sport } of activities) {
     const id = String(a.id)
     const match = matchGarminActivity(a, sport, garmin)
+    const trainingEffectMatch = matchGarminTrainingEffectActivity(a, sport, garmin, match)
     const hrMatch = matchGarminHeartRateActivity(a, sport, garmin)
     const streams = selectStreams(cache.streams?.[id], match, garmin)
     garminMatches.set(id, match)
+    garminTrainingEffectMatches.set(id, trainingEffectMatch)
     garminHeartRateMatches.set(id, hrMatch)
     selectedStreams.set(id, streams)
     heartRates.set(id, resolveActivityHeartRate(a, sport, streams, hrMatch, garmin))
@@ -1933,8 +2025,10 @@ export function buildPayload(
   const detailIds = new Set(activities.map(({ a }) => String(a.id)))
   let best20 = 0
   const powerCurves = new Map<string, PowerCurvePoint[]>()
-  const recentCurves: PowerCurvePoint[][] = []
-  const yearCurves: PowerCurvePoint[][] = []
+  const recentCurves: PowerCurveSource[] = []
+  const yearCurves: PowerCurveSource[] = []
+  const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
+  const yearCriticalPowerAnchors: CriticalPowerAnchor[] = []
   for (const { a, sport } of allActivities) {
     if (sport !== 'bike') continue
     const id = String(a.id)
@@ -1945,17 +2039,64 @@ export function buildPayload(
     const selected =
       selectedStreams.get(id) ??
       selectStreams(cache.streams?.[id], matchGarminActivity(a, sport, garmin), garmin)
+    if (!selectedStreams.has(id)) selectedStreams.set(id, selected)
     const streams = selectEffortStreams(cache.streams?.[id], selected)
     if (!streams?.watts?.some(v => v > 0)) continue
-    const c = meanMaxCurve(effortTimeline(streams, a.movingTime))
+    const timeline = effortTimeline(streams, a.movingTime)
+    const c = meanMaxCurve(timeline)
     powerCurves.set(id, c)
     if (detailIds.has(id)) {
       const p20 = c.find(p => p.s === 1200)
       if (p20 && p20.w > best20) best20 = p20.w
     }
-    if (inRecentWindow) recentCurves.push(c)
-    if (inYear) yearCurves.push(c)
+    const source = { activityId: a.id, activityDate: a.startDateLocal.slice(0, 10), curve: c }
+    if (inRecentWindow) recentCurves.push(source)
+    if (inYear) yearCurves.push(source)
+    if (a.deviceWatts && timeline) {
+      const activityDate = a.startDateLocal.slice(0, 10)
+      const anchors = bestObservedPowerWindows(timeline, CRITICAL_POWER_DURATIONS_S).map(
+        (window): CriticalPowerAnchor => ({
+          durationS: window.durationS,
+          meanPowerWatts: window.averageWatts,
+          activityId: a.id,
+          activityDate,
+          startElapsedS: window.start,
+          endElapsedS: window.end,
+        }),
+      )
+      if (inRecentWindow) recentCriticalPowerAnchors.push(...anchors)
+      if (inYear) yearCriticalPowerAnchors.push(...anchors)
+    }
   }
+  const powerCurveRef = mergeMaxCurves(recentCurves)
+  const powerCurveYearRef = mergeMaxCurves(yearCurves)
+  const windowTo = new Date(end).toISOString().slice(0, 10)
+  const criticalPower = fitCriticalPower(
+    recentCriticalPowerAnchors,
+    'six-weeks',
+    new Date(recentCut).toISOString().slice(0, 10),
+    windowTo,
+  )
+  const criticalPowerYear = fitCriticalPower(
+    yearCriticalPowerAnchors,
+    'calendar-year',
+    `${powerCurveYear}-01-01`,
+    windowTo,
+  )
+  const powerCurveActivityIds = new Set([
+    ...[...powerCurveRef, ...powerCurveYearRef].flatMap(point =>
+      point.activityId == null ? [] : [String(point.activityId)],
+    ),
+    ...[criticalPower, criticalPowerYear].flatMap(estimate =>
+      estimate ? estimate.anchors.map(anchor => String(anchor.activityId)) : [],
+    ),
+  ])
+  const projectedActivities = [
+    ...activities,
+    ...allActivities.filter(
+      ({ a }) => !detailIds.has(String(a.id)) && powerCurveActivityIds.has(String(a.id)),
+    ),
+  ]
   const ftp = inputFtp ?? cache.zones?.ftp ?? (best20 > 0 ? Math.round(best20 * 0.95) : null)
   const hrBounds = inputHrBounds?.length
     ? inputHrBounds
@@ -1979,35 +2120,35 @@ export function buildPayload(
   const home = inferRouteHome(starts)
 
   const details: Record<string, StravaActivityDetail> = {}
-  for (const { a, sport } of activities) {
+  for (const { a, sport } of projectedActivities) {
     const id = String(a.id)
-    const garminMatch = garminMatches.get(id) ?? null
+    const garminMatch = garminMatches.get(id) ?? matchGarminActivity(a, sport, garmin)
+    const garminTrainingEffectMatch =
+      garminTrainingEffectMatches.get(id) ??
+      matchGarminTrainingEffectActivity(a, sport, garmin, garminMatch)
+    const garminHeartRateMatch =
+      garminHeartRateMatches.get(id) ?? matchGarminHeartRateActivity(a, sport, garmin)
     const selectedStream = selectedStreams.get(id)
     const exactWeather = weather?.activities[id]
+    const usesRouteLessWeather =
+      (sport === 'swim' || sport === 'strength') &&
+      (!selectedStream || selectedStream.latlng.length < 2)
     const activityWeather =
       exactWeather ??
-      (weather && sport === 'swim' && (!selectedStream || selectedStream.latlng.length < 2)
-        ? nearestSameDayWeather(weather, a)
-        : undefined)
+      (weather && usesRouteLessWeather ? nearestSameDayWeather(weather, a) : undefined)
     details[String(a.id)] = projectDetail(
       a,
       sport,
       selectedStream,
       selectEffortStreams(cache.streams?.[id], selectedStream),
       heartRates.get(id) ??
-        resolveActivityHeartRate(
-          a,
-          sport,
-          selectedStream,
-          garminHeartRateMatches.get(id) ?? null,
-          garmin,
-        ),
+        resolveActivityHeartRate(a, sport, selectedStream, garminHeartRateMatch, garmin),
       activityGarminMetricSamples(a, garminMatch, garmin),
       activityGearShifts(a, garminMatch, garmin),
       activityWeather,
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),
-      garminVerification(a, garminMatch),
+      garminVerification(a, garminMatch, garminTrainingEffectMatch),
       activityWeight(garmin, a),
       cache.activityDetails?.[id],
       garminMatch ? (garmin?.climbs?.[garminMatch.activity.id] ?? []) : [],
@@ -2048,8 +2189,10 @@ export function buildPayload(
     swimTrend: [],
     health,
     zones: { hr: hrBounds, power: powerBounds, ftp },
-    powerCurveRef: mergeMaxCurves(recentCurves),
-    powerCurveYearRef: mergeMaxCurves(yearCurves),
+    powerCurveRef,
+    powerCurveYearRef,
     powerCurveYear,
+    criticalPower,
+    criticalPowerYear,
   }
 }

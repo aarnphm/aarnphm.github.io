@@ -3,6 +3,7 @@ import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparis
 import { setupActivityComparisonEmbeds } from '../activity/embeds'
 import { setupDayEmbeds } from '../activity/embeds'
 import { setupMatchedActivities } from '../activity/matched'
+import { setupPowerCurveActivityLinks } from '../activity/power-links'
 import { createDayCardFacade, type DayCardFacade } from '../activity/public-api'
 import { setupChartScrub } from '../activity/scrub'
 import { setupAnalytics } from '../analytics/controller'
@@ -43,6 +44,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   }
   addCleanup(setupDayEmbeds(context))
   addCleanup(setupActivityComparisonEmbeds(context))
+  addCleanup(setupPowerCurveActivityLinks(document.body, context))
   addCleanup(setupChartScrub(document.body, () => context.presentation))
   addCleanup(setupMatchedActivities(document.body))
   addCleanup(setupGloss(document.body, () => context.presentation.locale))

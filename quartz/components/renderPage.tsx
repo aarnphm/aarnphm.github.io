@@ -1451,7 +1451,10 @@ export function transcludeFinal(
       }
 
       let triathlonDate: string | undefined
-      let triathlonEmbedExtras: Pick<DayCardExtras, 'sport' | 'excludedActivityIds'> | null = null
+      let triathlonEmbedExtras: Pick<
+        DayCardExtras,
+        'sport' | 'excludedActivityIds' | 'settings'
+      > | null = null
       if (page.frontmatter?.layout === 'triathlon') {
         triathlonDate = blockRef ? DATE_ANCHOR_RE.exec(blockRef)?.[1] : undefined
         if (!triathlonDate) {
@@ -1489,6 +1492,8 @@ export function transcludeFinal(
                 curveRef: payload.powerCurveRef,
                 curveYearRef: payload.powerCurveYearRef,
                 curveYear: payload.powerCurveYear,
+                criticalPower: payload.criticalPower,
+                criticalPowerYear: payload.criticalPowerYear,
                 ftp: ATHLETE.ftp,
                 goalFtp: ATHLETE.goalFTP,
                 vt1: null,
@@ -1547,6 +1552,8 @@ export function transcludeFinal(
                   curveRef: payload.powerCurveRef,
                   curveYearRef: payload.powerCurveYearRef,
                   curveYear: payload.powerCurveYear,
+                  criticalPower: payload.criticalPower,
+                  criticalPowerYear: payload.criticalPowerYear,
                   ftp: ATHLETE.ftp,
                   goalFtp: ATHLETE.goalFTP,
                   vt1: null,

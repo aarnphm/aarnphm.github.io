@@ -12,6 +12,12 @@ import {
 } from '../util/triathlon-card'
 import { triathlonDaySlug } from '../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../util/triathlon-presentation'
+import {
+  parseTriathlonTraceSettings,
+  serializeTriathlonTraceSettings,
+  triathlonTraceEnabled,
+  type TriathlonTraceSettings,
+} from '../util/triathlon-trace-settings'
 
 const TRIATHLON_SPORT_ANCHOR: Record<string, NonNullable<DayCardExtras['sport']>> = {
   swim: 'swim',
@@ -29,6 +35,7 @@ export type TriathlonEmbedAnchor = {
   date: string
   sport?: NonNullable<DayCardExtras['sport']>
   excludedActivityIds?: string[]
+  settings?: TriathlonTraceSettings
 }
 
 export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedAnchor | null => {
@@ -45,6 +52,7 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
 
   let sport: TriathlonEmbedAnchor['sport']
   let excludedActivityIds: string[] | undefined
+  let settings: TriathlonTraceSettings | undefined
   for (const option of options) {
     const activityKind = TRIATHLON_SPORT_ANCHOR[option]
     if (activityKind) {
@@ -59,6 +67,13 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
       excludedActivityIds = parsed
       continue
     }
+    if (option.startsWith('settings=')) {
+      if (settings) return null
+      const parsed = parseTriathlonTraceSettings(option)
+      if (!parsed) return null
+      settings = parsed
+      continue
+    }
     return null
   }
 
@@ -66,6 +81,7 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
     date,
     ...(sport ? { sport } : {}),
     ...(excludedActivityIds ? { excludedActivityIds } : {}),
+    ...(settings ? { settings } : {}),
   }
 }
 
@@ -117,10 +133,25 @@ export const triathlonDayProps = (extras: DayCardExtras, date: string): Record<s
   if (extras.sport) props['data-triathlon-sport'] = extras.sport
   if (extras.excludedActivityIds?.length)
     props['data-triathlon-filter'] = extras.excludedActivityIds.join('&')
+  if (extras.settings)
+    props['data-triathlon-settings'] = serializeTriathlonTraceSettings(extras.settings)
   if (extras.expanded) props['data-triathlon-expanded'] = '1'
   if (extras.embedded) props['data-triathlon-embedded'] = '1'
   if (extras.dateHref) props['data-triathlon-date-href'] = extras.dateHref
   return props
+}
+
+export const filterTriathlonTraceElements = (
+  root: Element,
+  settings: TriathlonTraceSettings | undefined,
+): void => {
+  root.children = root.children.filter(child => {
+    if (child.type !== 'element') return true
+    const trace = child.properties.dataTriTrace
+    if (typeof trace === 'string' && !triathlonTraceEnabled(settings, trace)) return false
+    filterTriathlonTraceElements(child, settings)
+    return true
+  })
 }
 
 export const triathlonDayCard = (
@@ -128,4 +159,8 @@ export const triathlonDayCard = (
   payload: DayCardPayload | null,
   extras: DayCardExtras,
   ctx: DetailCtx,
-): Element => buildDayCard(triathlonCardFactory, date, payload, extras, undefined, ctx)
+): Element => {
+  const card = buildDayCard(triathlonCardFactory, date, payload, extras, undefined, ctx)
+  filterTriathlonTraceElements(card, extras.settings)
+  return card
+}

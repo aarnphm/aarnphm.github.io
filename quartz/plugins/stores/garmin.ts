@@ -30,6 +30,12 @@ export interface GarminMetrics {
   totalWorkKJ: number | null
   trainingStressScore: number | null
   intensityFactor: number | null
+  aerobicTrainingEffect: number | null
+  anaerobicTrainingEffect: number | null
+  exerciseLoad: number | null
+  trainingEffectLabel: string | null
+  aerobicTrainingEffectMessage: string | null
+  anaerobicTrainingEffectMessage: string | null
 }
 
 export interface GarminActivity {
@@ -75,6 +81,7 @@ export interface GarminStreams {
   altitude: number[]
   distance: number[]
   watts?: number[]
+  rightBalance?: number[]
   heartrate?: number[]
   cadence?: number[]
   stamina?: number[]
@@ -144,6 +151,12 @@ export function emptyGarminMetrics(): GarminMetrics {
     totalWorkKJ: null,
     trainingStressScore: null,
     intensityFactor: null,
+    aerobicTrainingEffect: null,
+    anaerobicTrainingEffect: null,
+    exerciseLoad: null,
+    trainingEffectLabel: null,
+    aerobicTrainingEffectMessage: null,
+    anaerobicTrainingEffectMessage: null,
   }
 }
 
@@ -261,6 +274,59 @@ export function matchGarminActivity(
     if (tScore == null) continue
 
     const score = startDiff / 60_000 + dScore + tScore
+    if (!best || score < best.score) best = { score, activity }
+  }
+
+  if (!best) return null
+  return {
+    activity: best.activity,
+    score: best.score,
+    startDiffMs: Math.abs(Date.parse(best.activity.startDate) - stravaStart),
+    distanceDiffM: distanceDiffM(strava.distance, best.activity.distanceM),
+    durationDiffS: durationDiffS(strava, best.activity),
+  }
+}
+
+function hasTrainingEffect(metrics: GarminMetrics): boolean {
+  return (
+    metrics.aerobicTrainingEffect != null ||
+    metrics.anaerobicTrainingEffect != null ||
+    metrics.exerciseLoad != null ||
+    metrics.trainingEffectLabel != null ||
+    metrics.aerobicTrainingEffectMessage != null ||
+    metrics.anaerobicTrainingEffectMessage != null
+  )
+}
+
+function matchingActivityName(stravaName: string, garminName: string | null): boolean {
+  if (!garminName) return false
+  const strava = stravaName.trim().toLocaleLowerCase()
+  const garmin = garminName.trim().toLocaleLowerCase()
+  if (strava.length < 8 || garmin.length < 8) return strava === garmin
+  return strava.startsWith(garmin) || garmin.startsWith(strava)
+}
+
+export function matchGarminTrainingEffectActivity(
+  strava: RawStravaActivity,
+  sport: ActivityKind,
+  cache: GarminCache | null,
+  primary: GarminActivityMatch | null,
+): GarminActivityMatch | null {
+  if (!cache) return null
+  if (primary && hasTrainingEffect(primary.activity.metrics)) return primary
+  const stravaStart = Date.parse(strava.startDate)
+  if (!Number.isFinite(stravaStart)) return null
+
+  let best: { score: number; activity: GarminActivity } | null = null
+  for (const activity of Object.values(cache.activities)) {
+    if (activity.sport != null && activity.sport !== sport) continue
+    if (!hasTrainingEffect(activity.metrics)) continue
+    if (!matchingActivityName(strava.name, activity.name)) continue
+    const garminStart = Date.parse(activity.startDate)
+    if (!Number.isFinite(garminStart)) continue
+    const startDiff = Math.abs(garminStart - stravaStart)
+    if (startDiff > START_TOLERANCE_MS) continue
+    const score = startDiff / 60_000
     if (!best || score < best.score) best = { score, activity }
   }
 

@@ -1,5 +1,6 @@
 import type { TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
+import { criticalPowerCurve, type CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import {
   SPORT_ICON,
   type ActivityAnalysisKind,
@@ -20,7 +21,10 @@ import {
   swimStrokeRate,
   type SwimChartMetric,
 } from './swim-metrics'
-import { triText } from './triathlon-i18n'
+import { triathlonActivityAnchor } from './triathlon-date-route'
+import { criticalPowerEvidenceText, criticalPowerSummaryText, triText } from './triathlon-i18n'
+import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
+import { triathlonTraceName, type TriathlonTraceSettings } from './triathlon-trace-settings'
 
 export interface TriNodeFactory<N> {
   presentation: TriathlonPresentation
@@ -34,6 +38,7 @@ export type DayCardExtras = {
   event?: string
   sport?: ActivityKind
   excludedActivityIds?: readonly string[]
+  settings?: TriathlonTraceSettings
   expanded?: boolean
   embedded?: boolean
   dateHref?: string
@@ -297,7 +302,7 @@ export const moreStatRows = (
   if (d.sufferScore != null) rows.push(['effort', `${d.sufferScore}`])
   if (d.avgTemp != null)
     rows.push([
-      d.sport === 'swim' ? 'air temp' : 'temp',
+      d.sport === 'swim' || d.sport === 'strength' ? 'air temp' : 'temp',
       formatTemperature(presentation, d.avgTemp),
     ])
   if (d.windKph != null)
@@ -312,6 +317,7 @@ export const routeStreamFlags = (
   d: StravaActivityDetail,
 ): {
   power: boolean
+  powerBalance: boolean
   hr: boolean
   cad: boolean
   stride: boolean
@@ -325,6 +331,16 @@ export const routeStreamFlags = (
   skinTemperature: boolean
 } => ({
   power: d.deviceWatts && d.route.some(p => p.w > 0),
+  powerBalance:
+    d.sport === 'bike' &&
+    d.route.filter(
+      point =>
+        point.rightPowerPct != null &&
+        Number.isFinite(point.rightPowerPct) &&
+        point.rightPowerPct >= 0 &&
+        point.rightPowerPct <= 100 &&
+        point.w > 0,
+    ).length >= 2,
   hr: d.route.some(p => p.hr > 0),
   cad: d.route.some(p => p.cad > 0),
   stride:
@@ -558,8 +574,10 @@ const hasAnalysisWorkspace = (d: StravaActivityDetail): boolean =>
 export const hasMoreSection = (d: StravaActivityDetail): boolean => {
   const flags = routeStreamFlags(d)
   const efforts = d.bestEfforts
+  const garmin = d.garmin
   return (
     flags.power ||
+    flags.powerBalance ||
     flags.hr ||
     flags.cad ||
     flags.stride ||
@@ -572,6 +590,10 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.coreTemperature ||
     flags.skinTemperature ||
     d.gearShifts.length > 0 ||
+    garmin?.aerobicTrainingEffect != null ||
+    garmin?.anaerobicTrainingEffect != null ||
+    garmin?.aerobicTrainingEffectMessage != null ||
+    garmin?.anaerobicTrainingEffectMessage != null ||
     d.sport === 'run' ||
     !!(efforts && (efforts.distance.length || efforts.power.length || efforts.climbs.length)) ||
     !!(d.hrZones || d.powerZones || d.powerHist || d.powerCurve)
@@ -710,6 +732,7 @@ export const axisNumber = (value: number, step: number): string => {
 
 export type ActivityGraphDomain = { startDistanceKm: number; endDistanceKm: number }
 export type ActivityTraceDomain = { min: number; max: number; intervals?: number }
+export type ActivityTraceReference = { value: number; label: string }
 
 export const positiveMetricDomain = (
   values: readonly (number | null)[],
@@ -903,6 +926,7 @@ export const buildTrace = <N>(
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
   missing?: 'dotted',
+  reference?: ActivityTraceReference | null,
 ): N => {
   const w = 100
   const h = 30
@@ -912,8 +936,8 @@ export const buildTrace = <N>(
   values.forEach(value => {
     if (value != null && Number.isFinite(value) && value > peak) peak = value
   })
-  const domainMin = domain?.min ?? 0
-  const candidateMax = domain?.max ?? peak
+  const domainMin = Math.min(domain?.min ?? 0, reference?.value ?? Number.POSITIVE_INFINITY)
+  const candidateMax = Math.max(domain?.max ?? peak, reference?.value ?? Number.NEGATIVE_INFINITY)
   const domainMax = candidateMax > domainMin ? candidateMax : domainMin + 1
   const px = (km: number): number => (km / maxD) * w
   const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
@@ -990,15 +1014,29 @@ export const buildTrace = <N>(
   if (selection !== undefined) f.add(s, buildAnalysisSelection(f, d, h, selection))
   if (missingLine)
     f.add(s, f.svg('path', { d: missingLine, class: 'tri-elev-line tri-elev-line--missing' }))
+  if (reference)
+    f.add(
+      s,
+      f.svg('line', {
+        class: 'tri-trace-reference',
+        x1: 0,
+        y1: py(reference.value).toFixed(2),
+        x2: w,
+        y2: py(reference.value).toFixed(2),
+      }),
+    )
   f.add(s, f.svg('path', { d: line, class: 'tri-elev-line' }))
   f.add(s, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: h }))
-  const wrap = f.el('div', 'tri-elev-wrap', undefined, { 'data-tri-trace': title })
+  const wrap = f.el('div', 'tri-elev-wrap', undefined, {
+    'data-tri-trace': triathlonTraceName(title),
+  })
   const capEl = f.el('div', 'tri-elev-cap')
   f.add(
     capEl,
     f.el('span', 'tri-elev-d', triText(f.presentation.locale, title)),
     f.el('span', 'tri-elev-range', cap(peak)),
   )
+  if (reference) f.add(capEl, f.el('span', 'tri-elev-range tri-trace-reference-k', reference.label))
   f.add(
     wrap,
     capEl,
@@ -1010,6 +1048,206 @@ export const buildTrace = <N>(
       distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
       { top: 0, bottom: h },
+    ),
+  )
+  return wrap
+}
+
+const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): number | null => {
+  const value = point.rightPowerPct
+  return value != null && Number.isFinite(value) && value >= 0 && value <= 100 && point.w > 0
+    ? value
+    : null
+}
+
+export const powerBalanceText = (rightPowerPct: number): string =>
+  `L ${(100 - rightPowerPct).toFixed(1)}% / R ${rightPowerPct.toFixed(1)}%`
+
+const activityRightPowerPct = (d: StravaActivityDetail): number | null => {
+  let work = 0
+  let rightWork = 0
+  for (let index = 1; index < d.route.length; index++) {
+    const previous = d.route[index - 1]
+    const next = d.route[index]
+    const previousRight = routeRightPowerPct(previous)
+    const nextRight = routeRightPowerPct(next)
+    const elapsedS = next.elapsedS - previous.elapsedS
+    if (previousRight == null || nextRight == null || elapsedS <= 0) continue
+    work += ((previous.w + next.w) / 2) * elapsedS
+    rightWork += ((previous.w * previousRight + next.w * nextRight) / 2) * elapsedS
+  }
+  return work > 0 ? rightWork / work : null
+}
+
+interface PowerBalancePaths {
+  measured: string
+  bridges: string
+}
+
+const powerBalancePaths = (
+  d: StravaActivityDetail,
+  pick: (rightPowerPct: number) => number,
+  domainMin: number,
+  domainMax: number,
+  width: number,
+  height: number,
+): PowerBalancePaths => {
+  const maxDistanceKm = d.route.at(-1)?.d || 1
+  const px = (distanceKm: number): number => (distanceKm / maxDistanceKm) * width
+  const py = (value: number): number => {
+    const bounded = Math.min(domainMax, Math.max(domainMin, value))
+    return height - ((bounded - domainMin) / (domainMax - domainMin)) * (height - 1)
+  }
+  let measured = ''
+  let bridges = ''
+  let segmentStart = -1
+  let previousValid = -1
+  const closeSegment = (start: number, end: number): void => {
+    for (let index = start; index <= end; index++) {
+      const rightPowerPct = routeRightPowerPct(d.route[index])
+      if (rightPowerPct == null) continue
+      measured += `${index === start ? 'M' : 'L'} ${px(d.route[index].d).toFixed(2)} ${py(pick(rightPowerPct)).toFixed(2)} `
+    }
+  }
+  d.route.forEach((point, index) => {
+    const rightPowerPct = routeRightPowerPct(point)
+    const valid = rightPowerPct != null
+    if (valid && previousValid >= 0 && index > previousValid + 1) {
+      const previousRightPowerPct = routeRightPowerPct(d.route[previousValid])
+      if (previousRightPowerPct != null)
+        bridges += `M ${px(d.route[previousValid].d).toFixed(2)} ${py(pick(previousRightPowerPct)).toFixed(2)} L ${px(point.d).toFixed(2)} ${py(pick(rightPowerPct)).toFixed(2)} `
+    }
+    if (valid) previousValid = index
+    if (valid && segmentStart < 0) segmentStart = index
+    if (segmentStart >= 0 && (!valid || index === d.route.length - 1)) {
+      closeSegment(segmentStart, valid ? index : index - 1)
+      segmentStart = -1
+    }
+  })
+  return { measured, bridges }
+}
+
+export const buildPowerBalanceChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  embedded = false,
+): N | null => {
+  const rightValues = d.route.flatMap(point => {
+    const value = routeRightPowerPct(point)
+    return value == null ? [] : [value]
+  })
+  if (d.sport !== 'bike' || rightValues.length < 2) return null
+  const width = 100
+  const height = 30
+  const deviations = rightValues.map(value => Math.abs(value - 50)).sort((a, b) => a - b)
+  const observed = deviations[Math.round((deviations.length - 1) * 0.9)]
+  const span = Math.min(25, Math.max(5, Math.ceil(observed / 2) * 2))
+  const domainMin = 50 - span
+  const domainMax = 50 + span
+  const py = (value: number): number =>
+    height - ((value - domainMin) / (domainMax - domainMin)) * (height - 1)
+  const yTicks = [domainMin, 50, domainMax].map(value => ({ label: `${value}%`, vbY: py(value) }))
+  const view = graphView(d)
+  const leftPaths = powerBalancePaths(
+    d,
+    rightPowerPct => 100 - rightPowerPct,
+    domainMin,
+    domainMax,
+    width,
+    height,
+  )
+  const rightPaths = powerBalancePaths(
+    d,
+    rightPowerPct => rightPowerPct,
+    domainMin,
+    domainMax,
+    width,
+    height,
+  )
+  const svgEl = f.svg('svg', {
+    class: 'tri-elev tri-power-balance-svg',
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, 'power balance'),
+    'data-i18n-aria-label': 'power balance',
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svgEl,
+      f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: width, y2: tick.vbY }),
+    )
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  if (leftPaths.bridges)
+    f.add(
+      svgEl,
+      f.svg('path', {
+        d: leftPaths.bridges,
+        class:
+          'tri-power-balance-line tri-power-balance-line--left tri-power-balance-line--missing',
+      }),
+    )
+  if (rightPaths.bridges)
+    f.add(
+      svgEl,
+      f.svg('path', {
+        d: rightPaths.bridges,
+        class:
+          'tri-power-balance-line tri-power-balance-line--right tri-power-balance-line--missing',
+      }),
+    )
+  f.add(
+    svgEl,
+    f.svg('path', {
+      d: leftPaths.measured,
+      class: 'tri-power-balance-line tri-power-balance-line--left',
+    }),
+    f.svg('path', {
+      d: rightPaths.measured,
+      class: 'tri-power-balance-line tri-power-balance-line--right',
+    }),
+    f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
+  )
+  const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-power-balance-chart', undefined, {
+    'data-tri-trace': 'power-balance',
+  })
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  const summary = f.el('span', 'tri-power-balance-summary')
+  const rightAverage = activityRightPowerPct(d)
+  if (rightAverage != null)
+    f.add(
+      summary,
+      f.el('span', 'tri-elev-range', `${powerBalanceText(rightAverage)}${embedded ? '' : ' avg'}`),
+    )
+  if (!embedded) {
+    for (const side of ['left', 'right'] as const) {
+      const item = f.el(
+        'span',
+        `tri-power-balance-legend-item tri-power-balance-legend-item--${side}`,
+      )
+      f.add(
+        item,
+        f.el('span', 'tri-power-balance-legend-line', undefined, { 'aria-hidden': 'true' }),
+        f.el('span', 'tri-power-balance-legend-label', side, { 'data-i18n': side }),
+      )
+      f.add(summary, item)
+    }
+  }
+  f.add(cap, f.el('span', 'tri-elev-d', 'power balance', { 'data-i18n': 'power balance' }), summary)
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      yTicks,
+      height,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: height },
     ),
   )
   return wrap
@@ -1298,7 +1536,7 @@ export const buildShiftingChart = <N>(
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-shift-chart', undefined, {
-    'data-tri-trace': 'electronic shifting',
+    'data-tri-trace': 'electronic-shifting',
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-shift-summary')
@@ -2527,16 +2765,29 @@ export const buildSwimTrends = <N>(
   return wrap
 }
 
-export const statRow = <N>(f: TriNodeFactory<N>, label: string, value: string): N => {
-  const tr = f.el('tr')
-  f.add(tr, f.el('th', 'tri-act-stat-k', label), f.el('td', 'tri-act-stat-v', value))
+export const statRow = <N>(
+  f: TriNodeFactory<N>,
+  label: string,
+  value: string,
+  attrs?: Record<string, string>,
+): N => {
+  const tr = f.el('tr', undefined, undefined, { ...attrs, 'data-stat-key': label })
+  f.add(
+    tr,
+    f.el('th', 'tri-act-stat-k', label, { 'data-i18n': label }),
+    f.el('td', 'tri-act-stat-v', value),
+  )
   return tr
 }
 
-export const statsTable = <N>(f: TriNodeFactory<N>, rows: [string, string][]): N => {
+export const statsTable = <N>(
+  f: TriNodeFactory<N>,
+  rows: [string, string][],
+  rowAttrs?: (label: string) => Record<string, string> | undefined,
+): N => {
   const table = f.el('table', 'tri-act-stats')
   const tbody = f.el('tbody')
-  for (const [k, v] of rows) f.add(tbody, statRow(f, k, v))
+  for (const [k, v] of rows) f.add(tbody, statRow(f, k, v, rowAttrs?.(k)))
   f.add(table, tbody)
   return table
 }
@@ -2562,6 +2813,8 @@ export interface DetailCtx {
   curveRef: PowerCurvePoint[]
   curveYearRef: PowerCurvePoint[]
   curveYear: number | null
+  criticalPower: CriticalPowerEstimate | null
+  criticalPowerYear: CriticalPowerEstimate | null
   ftp: number | null
   goalFtp: number | null
   vt1: number | null
@@ -2626,19 +2879,81 @@ export type PowerCurveHover = {
 
 const POWER_CURVE_PATH_POINTS = 1_024
 
+const encodePowerCurveActivities = (curve: readonly PowerCurvePoint[]): string => {
+  if (
+    curve.length === 0 ||
+    curve.some(
+      point =>
+        point.activityId == null ||
+        !Number.isInteger(point.activityId) ||
+        point.activityId < 0 ||
+        point.activityDate == null ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(point.activityDate),
+    )
+  )
+    return ''
+  const segments: string[] = []
+  let start = 0
+  for (let index = 1; index <= curve.length; index++) {
+    const previous = curve[index - 1]
+    const point = curve[index]
+    if (
+      point &&
+      point.activityId === previous.activityId &&
+      point.activityDate === previous.activityDate
+    )
+      continue
+    segments.push(`${previous.activityId},${previous.activityDate},${index - start}`)
+    start = index
+  }
+  return segments.join(';')
+}
+
 export const encodePowerCurve = (curve: PowerCurvePoint[]): string => {
   if (curve.length === 0) return ''
   const consecutive = curve.every((point, index) => point.s === curve[0].s + index)
-  return consecutive
+  const encoded = consecutive
     ? `d|${curve[0].s}|${curve.map(point => point.w).join(',')}`
     : `s|${curve.map(point => `${point.s}:${point.w}`).join(',')}`
+  const activities = encodePowerCurveActivities(curve)
+  return activities ? `${encoded}|${activities}` : encoded
+}
+
+const decodePowerCurveActivities = (
+  points: PowerCurvePoint[],
+  encoded: string | undefined,
+): boolean => {
+  if (encoded == null) return true
+  if (encoded.length === 0) return false
+  let index = 0
+  for (const segment of encoded.split(';')) {
+    const fields = segment.split(',')
+    if (fields.length !== 3) return false
+    const activityId = Number(fields[0])
+    const activityDate = fields[1]
+    const count = Number(fields[2])
+    if (
+      !Number.isInteger(activityId) ||
+      activityId < 0 ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(activityDate) ||
+      !Number.isInteger(count) ||
+      count <= 0 ||
+      index + count > points.length
+    )
+      return false
+    for (let offset = 0; offset < count; offset++) {
+      points[index] = { ...points[index], activityId, activityDate }
+      index += 1
+    }
+  }
+  return index === points.length
 }
 
 export const decodePowerCurve = (encoded: string | undefined): PowerCurvePoint[] => {
   if (!encoded) return []
   const fields = encoded.split('|')
   const points: PowerCurvePoint[] = []
-  if (fields[0] === 'd' && fields.length === 3) {
+  if (fields[0] === 'd' && (fields.length === 3 || fields.length === 4)) {
     const start = Number(fields[1])
     if (!Number.isInteger(start) || start <= 0 || fields[2].length === 0) return []
     for (const [index, raw] of fields[2].split(',').entries()) {
@@ -2647,9 +2962,10 @@ export const decodePowerCurve = (encoded: string | undefined): PowerCurvePoint[]
       if (!Number.isFinite(watts)) return []
       points.push({ s: start + index, w: watts })
     }
-    return points
+    return decodePowerCurveActivities(points, fields[3]) ? points : []
   }
-  if (fields[0] !== 's' || fields.length !== 2 || fields[1].length === 0) return []
+  if (fields[0] !== 's' || (fields.length !== 2 && fields.length !== 3) || fields[1].length === 0)
+    return []
   let previousSeconds = 0
   for (const raw of fields[1].split(',')) {
     const separator = raw.indexOf(':')
@@ -2661,7 +2977,7 @@ export const decodePowerCurve = (encoded: string | undefined): PowerCurvePoint[]
     points.push({ s: seconds, w: watts })
     previousSeconds = seconds
   }
-  return points
+  return decodePowerCurveActivities(points, fields[2]) ? points : []
 }
 
 export const powerCurveFraction = (
@@ -3074,6 +3390,7 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
   )
   const H = 34
   const n = hist.length
+  const histMaxWatt = n * 25
   let mx = 1
   for (const t of hist) if (t > mx) mx = t
   const s = f.svg('svg', {
@@ -3104,7 +3421,6 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
       f.svg('line', { x1: np / 25 + 0.5, y1: 0, x2: np / 25 + 0.5, y2: H, class: 'tri-hist-avg' }),
     )
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const histMaxWatt = n * 25
   const histStepW = histMaxWatt <= 300 ? 100 : histMaxWatt <= 700 ? 200 : 300
   const histXTicks: AxisXTick[] = []
   for (let w = 0; w < histMaxWatt; w += histStepW)
@@ -3136,6 +3452,100 @@ export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail)
 }
 
 type PowerCurveRange = 'six-weeks' | 'year'
+
+export const buildCriticalPowerAnchorLinks = <N>(
+  f: TriNodeFactory<N>,
+  estimate: CriticalPowerEstimate,
+  range: PowerCurveRange,
+  selected: boolean,
+  excludeActivityId?: number | string,
+): N => {
+  const links = f.el('span', 'tri-critical-power-anchors', undefined, {
+    'data-critical-power-range': range,
+    ...(selected ? {} : { hidden: '' }),
+  })
+  for (const anchor of estimate.anchors) {
+    const powerPoint = {
+      s: anchor.durationS,
+      w: anchor.meanPowerWatts,
+      activityId: anchor.activityId,
+      activityDate: anchor.activityDate,
+    }
+    const link = f.el(
+      'a',
+      'tri-critical-power-anchor',
+      undefined,
+      powerCurveActivityLinkAttributes(powerPoint, excludeActivityId),
+    )
+    f.add(
+      link,
+      f.el('span', 'tri-critical-power-anchor-duration', dlabel(anchor.durationS)),
+      f.el('span', 'tri-critical-power-anchor-separator', '·', { 'aria-hidden': 'true' }),
+      f.el('span', 'tri-critical-power-anchor-date', anchor.activityDate),
+      f.el('span', 'tri-critical-power-anchor-separator', '·', { 'aria-hidden': 'true' }),
+      f.el(
+        'span',
+        'tri-critical-power-anchor-power',
+        `${anchor.meanPowerWatts.toLocaleString(f.presentation.locale === 'fr' ? 'fr-CA' : 'en-US', { maximumFractionDigits: 1 })}W`,
+      ),
+    )
+    f.add(links, link)
+  }
+  return links
+}
+
+const addPowerCurveThresholdCaption = <N>(
+  f: TriNodeFactory<N>,
+  caption: N,
+  estimates: ReadonlyArray<readonly [PowerCurveRange, CriticalPowerEstimate | null]>,
+  selectedRange: PowerCurveRange,
+  ftp: number | null,
+  goalFtp: number | null,
+  excludeActivityId?: number | string,
+  showAnchors = true,
+): void => {
+  const thresholds = f.el('span', 'tri-curve-thresholds')
+  const anchorRows: N[] = []
+  let hasThreshold = false
+  for (const [range, estimate] of estimates) {
+    if (!estimate) continue
+    f.add(
+      thresholds,
+      f.el(
+        'span',
+        'tri-ana-k tri-curve-cp-k',
+        criticalPowerSummaryText(f.presentation.locale, estimate),
+        {
+          'data-critical-power-range': range,
+          'data-gloss': '',
+          'data-gloss-def': criticalPowerEvidenceText(f.presentation.locale, estimate),
+          tabindex: '0',
+          ...(selectedRange === range ? {} : { hidden: '' }),
+        },
+      ),
+    )
+    if (showAnchors)
+      anchorRows.push(
+        buildCriticalPowerAnchorLinks(
+          f,
+          estimate,
+          range,
+          selectedRange === range,
+          excludeActivityId,
+        ),
+      )
+    hasThreshold = true
+  }
+  if (ftp != null) {
+    f.add(thresholds, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftp}W`))
+    hasThreshold = true
+  }
+  if (goalFtp != null) {
+    f.add(thresholds, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalFtp}W`))
+    hasThreshold = true
+  }
+  if (hasThreshold) f.add(caption, thresholds, ...anchorRows)
+}
 
 const buildPowerCurveRanges = <N>(
   f: TriNodeFactory<N>,
@@ -3179,10 +3589,21 @@ export const buildPowerCurve = <N>(
 ): N | null => {
   const curve = d.powerCurve
   if (!curve || curve.length < 2) return null
-  const sixWeekRef = ctx.curveRef
-  const yearRef = ctx.curveYearRef
-  const ftpRef = ctx.ftp
-  const goalRef = ctx.goalFtp
+  const isBike = d.sport === 'bike'
+  const sixWeekRef = isBike ? ctx.curveRef : []
+  const yearRef = isBike ? ctx.curveYearRef : []
+  const criticalPower = isBike ? ctx.criticalPower : null
+  const criticalPowerYear = isBike ? ctx.criticalPowerYear : null
+  const sixWeekModel =
+    criticalPower != null
+      ? criticalPowerCurve(criticalPower, curve[0].s, curve[curve.length - 1].s)
+      : []
+  const yearModel =
+    criticalPowerYear != null
+      ? criticalPowerCurve(criticalPowerYear, curve[0].s, curve[curve.length - 1].s)
+      : []
+  const ftpRef = isBike ? ctx.ftp : null
+  const goalRef = isBike ? ctx.goalFtp : null
   const wrap = f.el('div', 'tri-zone tri-curve-chart')
   const W = 100
   const H = 34
@@ -3207,6 +3628,10 @@ export const buildPowerCurve = <N>(
     ...curve.map(c => c.w),
     ...visibleSixWeekRef.map(c => c.w),
     ...visibleYearRef.map(c => c.w),
+    ...sixWeekModel.map(c => c.w),
+    ...yearModel.map(c => c.w),
+    criticalPower?.criticalPowerWatts ?? 0,
+    criticalPowerYear?.criticalPowerWatts ?? 0,
     ftpRef ?? 0,
     goalRef ?? 0,
   )
@@ -3264,6 +3689,44 @@ export const buildPowerCurve = <N>(
         ...(defaultRange === 'year' ? {} : { hidden: '' }),
       }),
     )
+  if (sixWeekModel.length >= 2)
+    f.add(
+      s,
+      f.svg('path', {
+        d: toPath(sixWeekModel),
+        class: 'tri-curve-model',
+        'data-critical-power-range': 'six-weeks',
+        ...(defaultRange === 'six-weeks' ? {} : { hidden: '' }),
+      }),
+    )
+  if (yearModel.length >= 2)
+    f.add(
+      s,
+      f.svg('path', {
+        d: toPath(yearModel),
+        class: 'tri-curve-model',
+        'data-critical-power-range': 'year',
+        ...(defaultRange === 'year' ? {} : { hidden: '' }),
+      }),
+    )
+  for (const [range, estimate] of [
+    ['six-weeks', ctx.criticalPower],
+    ['year', ctx.criticalPowerYear],
+  ] as const) {
+    if (d.sport !== 'bike' || !estimate) continue
+    f.add(
+      s,
+      f.svg('line', {
+        x1: 0,
+        y1: Y(estimate.criticalPowerWatts).toFixed(2),
+        x2: W,
+        y2: Y(estimate.criticalPowerWatts).toFixed(2),
+        class: 'tri-curve-cp',
+        'data-critical-power-range': range,
+        ...(defaultRange === range ? {} : { hidden: '' }),
+      }),
+    )
+  }
   if (ftpRef != null)
     f.add(
       s,
@@ -3309,9 +3772,7 @@ export const buildPowerCurve = <N>(
       style: `left:${X(curve[0].s).toFixed(2)}%;top:${((Y(curve[0].w) / H) * 100).toFixed(2)}%`,
     }),
   )
-  const readout = f.el('div', 'tri-chart-readout tri-curve-readout', undefined, {
-    'aria-hidden': 'true',
-  })
+  const readout = f.el('div', 'tri-chart-readout tri-curve-readout')
   f.add(readout, f.el('span', 'tri-curve-readout-duration'))
   const rideRow = f.el('span', 'tri-curve-readout-row')
   f.add(
@@ -3324,7 +3785,12 @@ export const buildPowerCurve = <N>(
   )
   f.add(readout, rideRow)
   if (visibleRef.length > 0) {
-    const referenceRow = f.el('span', 'tri-curve-readout-row tri-curve-readout-row--ref')
+    const referenceRow = f.el(
+      'a',
+      'tri-curve-readout-row tri-curve-readout-row--ref',
+      undefined,
+      powerCurveActivityLinkAttributes(nearestPowerCurvePoint(visibleRef, curve[0].s), d.id),
+    )
     f.add(
       referenceRow,
       f.el('span', 'tri-curve-readout-swatch tri-curve-readout-swatch--ref', undefined, {
@@ -3371,8 +3837,19 @@ export const buildPowerCurve = <N>(
     const p = curve.find(c => c.s === sec)
     if (p) f.add(cap, f.el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
   }
-  if (ftpRef != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftpRef}W`))
-  if (goalRef != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalRef}W`))
+  addPowerCurveThresholdCaption(
+    f,
+    cap,
+    [
+      ['six-weeks', criticalPower],
+      ['year', criticalPowerYear],
+    ],
+    defaultRange,
+    ftpRef,
+    goalRef,
+    d.id,
+    !embedded,
+  )
   f.add(wrap, cap)
   return wrap
 }
@@ -3436,6 +3913,162 @@ const strengthEffort = (presentation: TriathlonPresentation, set: ActivityStreng
   return set.weightKg == null ? effort : `${effort} @ ${strengthMass(presentation, set.weightKg)}`
 }
 
+const activityTrainingRows = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+): [string, string][] => {
+  const garmin = d.garmin
+  if (!garmin) return []
+  const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
+  const rows: [string, string][] = []
+  if (garmin.intensityFactor != null)
+    rows.push([
+      'intensity factor',
+      garmin.intensityFactor.toLocaleString(locale, {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+      }),
+    ])
+  const dominantEffect = formatTrainingEffectLabel(garmin.trainingEffectLabel)
+  if (dominantEffect) rows.push(['training effect', triText(presentation.locale, dominantEffect)])
+  if (garmin.exerciseLoad != null)
+    rows.push(['exercise load', Math.round(garmin.exerciseLoad).toLocaleString(locale)])
+  return rows
+}
+
+const TRAINING_EFFECT_LABELS: Record<string, string> = {
+  RECOVERY: 'recovery',
+  AEROBIC_BASE: 'base',
+  TEMPO: 'tempo',
+  LACTATE_THRESHOLD: 'threshold',
+  THRESHOLD: 'threshold',
+  VO2_MAX: 'VO2max',
+  VO2MAX: 'VO2max',
+  ANAEROBIC_CAPACITY: 'anaerobic',
+  ANAEROBIC: 'anaerobic',
+  SPEED: 'speed',
+  SPRINT: 'sprint',
+}
+
+export const formatTrainingEffectLabel = (value: string | null): string | null => {
+  const key = value?.trim().toUpperCase()
+  if (!key) return null
+  return TRAINING_EFFECT_LABELS[key] ?? key.replaceAll('_', ' ').toLowerCase()
+}
+
+export const formatTrainingEffectNote = (value: string | null): string | null => {
+  const key = value?.trim()
+  if (!key) return null
+  return key
+    .replace(/_\d+$/, '')
+    .replaceAll('_', ' ')
+    .toLowerCase()
+    .replace(/\bvo2 max\b/g, 'VO2max')
+}
+
+type TrainingEffectGroup = 'low-aerobic' | 'high-aerobic' | 'anaerobic'
+
+export const dominantTrainingEffectGroup = (dominant: string | null): TrainingEffectGroup => {
+  const key = dominant?.trim().toUpperCase() ?? ''
+  if (/ANAEROBIC|SPEED|SPRINT/.test(key)) return 'anaerobic'
+  return /TEMPO|THRESHOLD|VO2/.test(key) ? 'high-aerobic' : 'low-aerobic'
+}
+
+const trainingEffectGroup = (
+  effect: 'aerobic' | 'anaerobic',
+  message: string | null,
+  dominant: string | null,
+): TrainingEffectGroup => {
+  if (effect === 'anaerobic') return 'anaerobic'
+  const key = `${message ?? ''} ${dominant ?? ''}`.toUpperCase()
+  return /TEMPO|THRESHOLD|VO2/.test(key) ? 'high-aerobic' : 'low-aerobic'
+}
+
+const trainingEffectScore = (score: number | null): number | null =>
+  score == null || !Number.isFinite(score) ? null : Math.min(5, Math.max(0, score))
+
+export const buildTrainingEffectDetails = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+): N | null => {
+  const garmin = d.garmin
+  if (!garmin) return null
+  const locale = f.presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
+  const effects = [
+    {
+      label: 'aerobic',
+      score: garmin.aerobicTrainingEffect,
+      note: formatTrainingEffectNote(garmin.aerobicTrainingEffectMessage),
+      group: trainingEffectGroup(
+        'aerobic',
+        garmin.aerobicTrainingEffectMessage,
+        garmin.trainingEffectLabel,
+      ),
+    },
+    {
+      label: 'anaerobic',
+      score: garmin.anaerobicTrainingEffect,
+      note: formatTrainingEffectNote(garmin.anaerobicTrainingEffectMessage),
+      group: trainingEffectGroup(
+        'anaerobic',
+        garmin.anaerobicTrainingEffectMessage,
+        garmin.trainingEffectLabel,
+      ),
+    },
+  ].filter(effect => effect.score != null || effect.note != null)
+  if (effects.length === 0) return null
+  const wrap = f.el('section', 'tri-zone tri-training-effect', undefined, {
+    'aria-label': 'training effect',
+    'data-i18n-aria-label': 'training effect',
+  })
+  f.add(wrap, f.el('div', 'tri-zone-title', 'training effect', { 'data-i18n': 'training effect' }))
+  const list = f.el('div', 'tri-training-effect-list')
+  for (const effect of effects) {
+    const score = trainingEffectScore(effect.score)
+    const item = f.el('div', 'tri-training-effect-item', undefined, {
+      'data-training-effect-group': effect.group,
+    })
+    const meter = f.el(
+      'div',
+      'tri-training-effect-meter',
+      undefined,
+      score == null
+        ? { 'aria-hidden': 'true' }
+        : {
+            role: 'meter',
+            'aria-label': effect.label,
+            'data-i18n-aria-label': effect.label,
+            'aria-valuemin': '0',
+            'aria-valuemax': '5',
+            'aria-valuenow': `${score}`,
+          },
+    )
+    f.add(
+      meter,
+      f.el('span', 'tri-training-effect-meter-fill', undefined, {
+        style: `--tri-training-effect-progress:${((score ?? 0) * 20).toFixed(1)}%`,
+      }),
+    )
+    f.add(
+      item,
+      f.el('span', 'tri-training-effect-label', effect.label, { 'data-i18n': effect.label }),
+      meter,
+      f.el(
+        'span',
+        'tri-training-effect-score',
+        effect.score?.toLocaleString(locale, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) ?? '—',
+      ),
+    )
+    if (effect.note) f.add(item, f.el('p', 'tri-training-effect-note', effect.note))
+    f.add(list, item)
+  }
+  f.add(wrap, list)
+  return wrap
+}
+
 export const strengthExerciseSummary = (
   presentation: TriathlonPresentation,
   exercise: ActivityStrengthExercise,
@@ -3488,9 +4121,11 @@ export const activityStatRows = (
     if (d.strength?.totalSets != null) rows.push(['sets', String(d.strength.totalSets)])
     if (d.strength?.totalReps != null) rows.push(['reps', String(d.strength.totalReps)])
     if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+    rows.push(...activityTrainingRows(presentation, d))
     return rows
   }
-  if (d.sport === 'treatment' || d.sport === 'yoga') return [['time', dur(d.movingTimeS)]]
+  if (d.sport === 'treatment' || d.sport === 'yoga')
+    return [['time', dur(d.movingTimeS)], ...activityTrainingRows(presentation, d)]
   const activityRate =
     d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
       ? `${clock(d.swimPaceSPer100m)} /100m`
@@ -3535,6 +4170,7 @@ export const activityStatRows = (
     ])
   }
   if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+  rows.push(...activityTrainingRows(presentation, d))
   return rows
 }
 
@@ -3554,7 +4190,12 @@ export const buildActivity = <N>(
   const normalizedCadence = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.cad)
     : null
+  const activityAnchor = triathlonActivityAnchor(d.id)
+  const summaryTrainingEffectGroup = d.garmin?.trainingEffectLabel
+    ? dominantTrainingEffectGroup(d.garmin.trainingEffectLabel)
+    : null
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
+    ...(activityAnchor ? { id: activityAnchor } : {}),
     'data-activity-id': `${d.id}`,
     'data-activity-title': d.name || d.sport,
   })
@@ -3563,10 +4204,17 @@ export const buildActivity = <N>(
   f.add(wrap, head)
   f.add(
     wrap,
-    statsTable(f, [
-      ...activityStatRows(f.presentation, d),
-      ...moreStatRows(f.presentation, d, fillMissingRunPower),
-    ]),
+    statsTable(
+      f,
+      [
+        ...activityStatRows(f.presentation, d),
+        ...moreStatRows(f.presentation, d, fillMissingRunPower),
+      ],
+      label =>
+        label === 'training effect' && summaryTrainingEffectGroup
+          ? { 'data-training-effect-group': summaryTrainingEffectGroup }
+          : undefined,
+    ),
   )
   if (d.strength) {
     const strength = buildStrengthExercises(f, d.strength)
@@ -3629,8 +4277,18 @@ export const buildActivity = <N>(
           value => `${Math.round(value)}w`,
           normalizedPower ? positiveMetricDomain(normalizedPower) : undefined,
           analysisSelection,
+          undefined,
+          undefined,
+          d.sport === 'bike' && ctx?.criticalPower
+            ? {
+                value: ctx.criticalPower.criticalPowerWatts,
+                label: `eCP ${ctx.criticalPower.criticalPowerWatts} W`,
+              }
+            : null,
         ),
       )
+    const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
+    if (powerBalance) f.add(more, powerBalance)
     const stamina = buildStaminaChart(f, d, analysisSelection)
     if (stamina) f.add(more, stamina)
     const shifting = buildShiftingChart(f, d, analysisSelection)
@@ -3695,6 +4353,8 @@ export const buildActivity = <N>(
       if (skinTemperature) f.add(more, skinTemperature)
     }
     if (swimTrends) f.add(more, swimTrends)
+    const trainingEffect = buildTrainingEffectDetails(f, d)
+    if (trainingEffect) f.add(more, trainingEffect)
     if (ctx) {
       const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
       if (zones) f.add(more, zones)
@@ -4359,7 +5019,12 @@ export const normalizePowerCurvePoints = (
     .filter(
       point => Number.isFinite(point.s) && point.s > 0 && Number.isFinite(point.w) && point.w >= 0,
     )
-    .map(point => ({ s: point.s, w: point.w }))
+    .map(point => ({
+      s: point.s,
+      w: point.w,
+      ...(point.activityId == null ? {} : { activityId: point.activityId }),
+      ...(point.activityDate == null ? {} : { activityDate: point.activityDate }),
+    }))
     .sort((a, b) => a.s - b.s)
   const points: PowerCurvePoint[] = []
   for (const point of sorted) {
@@ -4369,10 +5034,10 @@ export const normalizePowerCurvePoints = (
   return points
 }
 
-export const nearestPowerCurveValue = (
+export const nearestPowerCurvePoint = (
   points: readonly PowerCurvePoint[],
   durationS: number,
-): number | null => {
+): PowerCurvePoint | null => {
   if (
     points.length === 0 ||
     !Number.isFinite(durationS) ||
@@ -4380,8 +5045,13 @@ export const nearestPowerCurveValue = (
     durationS > points[points.length - 1].s
   )
     return null
-  return points[nearestPowerCurveIndex(points, durationS)].w
+  return points[nearestPowerCurveIndex(points, durationS)]
 }
+
+export const nearestPowerCurveValue = (
+  points: readonly PowerCurvePoint[],
+  durationS: number,
+): number | null => nearestPowerCurvePoint(points, durationS)?.w ?? null
 
 export const activityZonePercentages = (values: readonly number[] | null | undefined): number[] => {
   if (!values) return []
@@ -4713,6 +5383,7 @@ const buildComparisonPowerCurve = <N>(
   activities: readonly StravaActivityDetail[],
   ctx?: DetailCtx,
 ): N => {
+  const isBike = activities.length > 0 && activities.every(activity => activity.sport === 'bike')
   const curves = activities.map((activity, index) => ({
     activity,
     index,
@@ -4731,26 +5402,40 @@ const buildComparisonPowerCurve = <N>(
     }
   }
   const sixWeekReference =
-    availableCurves.length > 0
+    isBike && availableCurves.length > 0
       ? normalizePowerCurvePoints(ctx?.curveRef ?? null).filter(
           point => point.s >= minSeconds && point.s <= maxSeconds,
         )
       : []
   const yearReference =
-    availableCurves.length > 0
+    isBike && availableCurves.length > 0
       ? normalizePowerCurvePoints(ctx?.curveYearRef ?? null).filter(
           point => point.s >= minSeconds && point.s <= maxSeconds,
         )
       : []
+  const sixWeekModel =
+    isBike && availableCurves.length > 0 && ctx?.criticalPower
+      ? criticalPowerCurve(ctx.criticalPower, minSeconds, maxSeconds)
+      : []
+  const yearModel =
+    isBike && availableCurves.length > 0 && ctx?.criticalPowerYear
+      ? criticalPowerCurve(ctx.criticalPowerYear, minSeconds, maxSeconds)
+      : []
   const defaultRange = sixWeekReference.length >= 2 ? 'six-weeks' : 'year'
   const reference = defaultRange === 'six-weeks' ? sixWeekReference : yearReference
-  const ftp = availableCurves.length > 0 ? (ctx?.ftp ?? null) : null
-  const goalFtp = availableCurves.length > 0 ? (ctx?.goalFtp ?? null) : null
+  const ftp = isBike && availableCurves.length > 0 ? (ctx?.ftp ?? null) : null
+  const goalFtp = isBike && availableCurves.length > 0 ? (ctx?.goalFtp ?? null) : null
   const domain = comparisonNumericDomain(
     [
       ...availableCurves.flatMap(curve => curve.points.map(point => point.w)),
       ...sixWeekReference.map(point => point.w),
       ...yearReference.map(point => point.w),
+      ...sixWeekModel.map(point => point.w),
+      ...yearModel.map(point => point.w),
+      ...(!isBike || ctx?.criticalPower == null ? [] : [ctx.criticalPower.criticalPowerWatts]),
+      ...(!isBike || ctx?.criticalPowerYear == null
+        ? []
+        : [ctx.criticalPowerYear.criticalPowerWatts]),
       ...(ftp == null ? [] : [ftp]),
       ...(goalFtp == null ? [] : [goalFtp]),
     ],
@@ -4827,6 +5512,44 @@ const buildComparisonPowerCurve = <N>(
         ...(defaultRange === 'year' ? {} : { hidden: '' }),
       }),
     )
+  if (sixWeekModel.length >= 2)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-curve-model',
+        d: toPath(sixWeekModel),
+        'data-critical-power-range': 'six-weeks',
+        ...(defaultRange === 'six-weeks' ? {} : { hidden: '' }),
+      }),
+    )
+  if (yearModel.length >= 2)
+    f.add(
+      graph,
+      f.svg('path', {
+        class: 'tri-compare-curve-model',
+        d: toPath(yearModel),
+        'data-critical-power-range': 'year',
+        ...(defaultRange === 'year' ? {} : { hidden: '' }),
+      }),
+    )
+  for (const [range, estimate] of [
+    ['six-weeks', isBike ? (ctx?.criticalPower ?? null) : null],
+    ['year', isBike ? (ctx?.criticalPowerYear ?? null) : null],
+  ] as const) {
+    if (!estimate) continue
+    f.add(
+      graph,
+      f.svg('line', {
+        class: 'tri-compare-curve-cp',
+        x1: 0,
+        y1: Y(estimate.criticalPowerWatts).toFixed(2),
+        x2: ACTIVITY_COMPARISON_WIDTH,
+        y2: Y(estimate.criticalPowerWatts).toFixed(2),
+        'data-critical-power-range': range,
+        ...(defaultRange === range ? {} : { hidden: '' }),
+      }),
+    )
+  }
   if (ftp != null)
     f.add(
       graph,
@@ -4903,7 +5626,14 @@ const buildComparisonPowerCurve = <N>(
       { top: 0, bottom: ACTIVITY_COMPARISON_HEIGHT },
     ),
   )
-  if (sixWeekReference.length >= 2 || yearReference.length >= 2 || ftp != null || goalFtp != null) {
+  if (
+    sixWeekReference.length >= 2 ||
+    yearReference.length >= 2 ||
+    (isBike && ctx?.criticalPower != null) ||
+    (isBike && ctx?.criticalPowerYear != null) ||
+    ftp != null ||
+    goalFtp != null
+  ) {
     const cap = f.el('div', 'tri-elev-cap')
     if (reference.length >= 2)
       f.add(
@@ -4917,8 +5647,17 @@ const buildComparisonPowerCurve = <N>(
           defaultRange === 'six-weeks' ? { 'data-i18n': '6-week best' } : undefined,
         ),
       )
-    if (ftp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftp}W`))
-    if (goalFtp != null) f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalFtp}W`))
+    addPowerCurveThresholdCaption(
+      f,
+      cap,
+      [
+        ['six-weeks', isBike ? (ctx?.criticalPower ?? null) : null],
+        ['year', isBike ? (ctx?.criticalPowerYear ?? null) : null],
+      ],
+      defaultRange,
+      ftp,
+      goalFtp,
+    )
     f.add(chart, cap)
   }
   return chart
@@ -5509,7 +6248,27 @@ export const buildDayCard = <N>(
         extras.event != null,
         extras.embedded === true,
       ))
-  const card = f.el('div', 'tri-pop-card')
+  const allDay = payload ? dayDetails(payload, dateIso) : []
+  const excludedActivityIds = new Set(extras.excludedActivityIds)
+  const visibleDay =
+    excludedActivityIds.size > 0 ? allDay.filter(d => !excludedActivityIds.has(`${d.id}`)) : allDay
+  const day = extras.sport ? visibleDay.filter(d => d.sport === extras.sport) : visibleDay
+  const summaryRows =
+    extras.embedded === true && day.length > 1
+      ? Math.max(
+          ...day.map(
+            d =>
+              activityStatRows(f.presentation, d).length +
+              moreStatRows(f.presentation, d, extras.event != null).length,
+          ),
+        )
+      : null
+  const card = f.el(
+    'div',
+    'tri-pop-card',
+    undefined,
+    summaryRows == null ? undefined : { style: `--tri-embedded-summary-rows:${summaryRows}` },
+  )
   const head = f.el('div', 'tri-pop-head')
   f.add(
     head,
@@ -5517,11 +6276,6 @@ export const buildDayCard = <N>(
       ? f.el('a', 'tri-pop-date', prettyDate(dateIso), { href: extras.dateHref })
       : f.el('span', 'tri-pop-date', prettyDate(dateIso)),
   )
-  const allDay = payload ? dayDetails(payload, dateIso) : []
-  const excludedActivityIds = new Set(extras.excludedActivityIds)
-  const visibleDay =
-    excludedActivityIds.size > 0 ? allDay.filter(d => !excludedActivityIds.has(`${d.id}`)) : allDay
-  const day = extras.sport ? visibleDay.filter(d => d.sport === extras.sport) : visibleDay
   if (day.length > 0) {
     f.add(
       head,

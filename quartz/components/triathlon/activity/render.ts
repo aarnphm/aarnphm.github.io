@@ -14,7 +14,9 @@ import { buildRunGroundContactTrace as buildRunGroundContactTraceNode } from '..
 import { buildRunLapSplits as buildRunLapSplitsNode } from '../../../util/triathlon-card'
 import { buildRunStrideTrace as buildRunStrideTraceNode } from '../../../util/triathlon-card'
 import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode } from '../../../util/triathlon-card'
+import { buildTrainingEffectDetails as buildTrainingEffectDetailsNode } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
+import { dominantTrainingEffectGroup } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
 import { formatGroundContactTime } from '../../../util/triathlon-card'
 import { formatRespirationRate } from '../../../util/triathlon-card'
@@ -28,6 +30,7 @@ import { interpolatePositiveMetricSeries } from '../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../util/triathlon-card'
 import { positiveMetricDomain } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
+import { powerBalanceText } from '../../../util/triathlon-card'
 import { runGroundContactTimeMs } from '../../../util/triathlon-card'
 import { runStrideLengthLabel } from '../../../util/triathlon-card'
 import { runStrideLengthValue } from '../../../util/triathlon-card'
@@ -35,6 +38,10 @@ import { runVerticalOscillationCm } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
+import {
+  triathlonTraceEnabled,
+  type TriathlonTraceSettings,
+} from '../../../util/triathlon-trace-settings'
 import { buildMatchedRideGroup } from '../analytics/panels/matched'
 import { buildMatchedRunGroup } from '../analytics/panels/matched'
 import {
@@ -210,6 +217,12 @@ export const metricSpecs = (
         v => `${Math.round(v)}w`,
         graphDomain,
         powerDomain,
+        d.sport === 'bike' && detailContext.criticalPower
+          ? {
+              value: detailContext.criticalPower.criticalPowerWatts,
+              label: `eCP ${detailContext.criticalPower.criticalPowerWatts} W`,
+            }
+          : null,
       ),
     readout: (p, i) =>
       `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues[i] ?? p.w)} W`,
@@ -239,7 +252,10 @@ export const metricSpecs = (
         graphDomain,
       ),
     readout: p => `${scrubDist(presentation, p.d, d.sport)} · ${p.hr} bpm`,
-    extra: () => [buildHrZones(presentation, d, detailContext)],
+    extra: () => [
+      buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null,
+      buildHrZones(presentation, d, detailContext),
+    ],
   }
   const cadScale = d.sport === 'run' ? 2 : 1
   const cadenceValues = filterPowerZeros
@@ -385,8 +401,20 @@ export const renderMapDetail = (
 
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
+  const summaryTrainingEffectGroup = d.garmin?.trainingEffectLabel
+    ? dominantTrainingEffectGroup(d.garmin.trainingEffectLabel)
+    : null
   for (const [label, value] of activityStatRows(presentation, d))
-    sbody.appendChild(statRow(presentation, label, value))
+    sbody.appendChild(
+      statRow(
+        presentation,
+        label,
+        value,
+        label === 'training effect' && summaryTrainingEffectGroup
+          ? { 'data-training-effect-group': summaryTrainingEffectGroup }
+          : undefined,
+      ),
+    )
   stats.appendChild(sbody)
   wrap.appendChild(stats)
 
@@ -400,7 +428,9 @@ export const renderMapDetail = (
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
+    const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
+      trainingEffect,
       zoneDuo(
         presentation,
         buildHrZones(presentation, d, opts?.detailContext ?? detailContextFromPayload()),
@@ -591,6 +621,7 @@ export const renderDetail = (
   fillMissingRunPower = false,
   embedded = false,
   dayRouteHref?: string,
+  traceSettings?: TriathlonTraceSettings,
 ): ActivityView => {
   const domF = createDomFactory(presentation)
   const d = powerViewActivity(presentation, source)
@@ -598,11 +629,12 @@ export const renderDetail = (
   const powerValues = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.w)
     : null
+  const detailContext = detailContextFromPayload(payload)
   const wrap = buildActivityNode(
     domF,
     d,
     false,
-    detailContextFromPayload(payload),
+    detailContext,
     payload?.swimTrend ?? [],
     fillMissingRunPower,
     embedded,
@@ -612,7 +644,7 @@ export const renderDetail = (
       group.efforts.some(effort => effort.id === d.id),
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
-    if (matchedGroup && more)
+    if (matchedGroup && more && triathlonTraceEnabled(traceSettings, 'matched-runs'))
       more.appendChild(buildMatchedRunGroup(presentation, matchedGroup, d.id, dayRouteHref))
   }
   if (d.sport === 'bike') {
@@ -620,13 +652,23 @@ export const renderDetail = (
       group.efforts.some(effort => effort.id === d.id),
     )
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
-    if (matchedGroup && more)
+    if (matchedGroup && more && triathlonTraceEnabled(traceSettings, 'matched-rides'))
       more.insertBefore(
-        buildMatchedRideGroup(presentation, matchedGroup, d.id, dayRouteHref),
+        buildMatchedRideGroup(
+          presentation,
+          matchedGroup,
+          d.id,
+          dayRouteHref,
+          detailContext.criticalPower,
+        ),
         more.querySelector(':scope > .tri-efforts'),
       )
   }
   const surfaces: ScrubSurface[] = []
+  for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
+    const name = trace.dataset.triTrace
+    if (!name || !triathlonTraceEnabled(traceSettings, name)) trace.remove()
+  }
   const elev = wrap.querySelector<HTMLElement>(
     '.tri-act-figs .tri-elev-wrap:not(.tri-elev-wrap--unavailable)',
   )
@@ -660,7 +702,13 @@ export const renderDetail = (
         fmt: (p, i) =>
           `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`,
       })
-    else if (trace.dataset.triTrace === 'electronic shifting')
+    else if (trace.dataset.triTrace === 'power-balance')
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${p.rightPowerPct == null || p.w <= 0 ? '—' : powerBalanceText(p.rightPowerPct)}`,
+      })
+    else if (trace.dataset.triTrace === 'electronic-shifting')
       surfaces.push({
         wrap: trace,
         fmt: p => {
@@ -685,8 +733,8 @@ export const renderDetail = (
           `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`,
       })
     else if (
-      trace.dataset.triTrace === 'stride length' ||
-      trace.dataset.triTrace === 'estimated stride length'
+      trace.dataset.triTrace === 'stride-length' ||
+      trace.dataset.triTrace === 'estimated-stride-length'
     )
       surfaces.push({
         wrap: trace,
@@ -695,7 +743,7 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(presentation, stride)}`
         },
       })
-    else if (trace.dataset.triTrace === 'ground contact time')
+    else if (trace.dataset.triTrace === 'ground-contact-time')
       surfaces.push({
         wrap: trace,
         fmt: p => {
@@ -703,7 +751,7 @@ export const renderDetail = (
           return `${scrubDist(presentation, p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
         },
       })
-    else if (trace.dataset.triTrace === 'vertical oscillation')
+    else if (trace.dataset.triTrace === 'vertical-oscillation')
       surfaces.push({
         wrap: trace,
         fmt: p => {
@@ -723,19 +771,19 @@ export const renderDetail = (
         fmt: p =>
           `${scrubDist(presentation, p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(presentation, p.tempC)}`,
       })
-    else if (trace.dataset.triTrace === 'heat strain index')
+    else if (trace.dataset.triTrace === 'heat-strain-index')
       surfaces.push({
         wrap: trace,
         fmt: p =>
           `${scrubDist(presentation, p.d, d.sport)} · ${p.heatStrainIndex == null ? '—' : p.heatStrainIndex.toFixed(1)}`,
       })
-    else if (trace.dataset.triTrace === 'CORE temperature')
+    else if (trace.dataset.triTrace === 'core-temperature')
       surfaces.push({
         wrap: trace,
         fmt: p =>
           `${scrubDist(presentation, p.d, d.sport)} · ${p.coreTemperatureC == null ? '—' : formatThermalTemperature(presentation, p.coreTemperatureC)}`,
       })
-    else if (trace.dataset.triTrace === 'skin temperature')
+    else if (trace.dataset.triTrace === 'skin-temperature')
       surfaces.push({
         wrap: trace,
         fmt: p =>

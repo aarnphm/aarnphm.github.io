@@ -240,44 +240,44 @@ posted messages state a condition in the third person (`ouvert`, `fermé`, `perm
 
 ### mots et expressions du babillard
 
-| mot ou expression                 | définition en français                                             | anglais                         |
-| --------------------------------- | ------------------------------------------------------------------ | ------------------------------- |
-| `un diner`                        | le repas du milieu de la journée                                   | lunch                           |
-| `une collation`                   | un petit repas entre les repas principaux                          | snack                           |
-| `des croustilles`                 | de fines tranches de pomme de terre frites                         | potato chips                    |
-| `une boisson gazeuse`             | une boisson sucrée contenant du gaz                                | soft drink, soda                |
-| `une arachide`                    | une graine qui peut provoquer une allergie                         | peanut                          |
-| `allergique`                      | qui a une réaction physique à un aliment ou à une substance        | allergic                        |
-| `la tenue vestimentaire`          | l'ensemble des vêtements portés ou exigés                          | clothing, dress requirements    |
-| `un vêtement`, `les vêtements`    | un article porté sur le corps, puis l'ensemble de ces articles     | an item of clothing, clothes    |
-| `la récréation`                   | la pause des élèves pendant la journée scolaire                    | recess                          |
-| `à l'extérieur`                   | dehors                                                             | outside                         |
-| `même par temps froid`            | y compris lorsque la température est froide                        | even in cold weather            |
-| `une tuque`                       | un bonnet chaud porté en hiver                                     | toque, winter hat               |
-| `un gant`, `une mitaine`          | deux vêtements qui protègent les mains                             | glove, mitten                   |
-| `un pantalon de neige`            | un pantalon isolé et imperméable pour jouer dans la neige          | snow pants                      |
-| `une botte`                       | une chaussure haute qui protège le pied et la cheville              | boot                            |
-| `une engelure`                    | une lésion causée par une exposition prolongée au froid            | frostbite                       |
-| `avoir lieu`                      | se passer à une date ou à un endroit                               | to take place                   |
-| `à compter de`                    | à partir de                                                       | starting at, as of              |
-| `déterminer l'heure`              | choisir ou fixer l'heure                                           | to set the time                 |
-| `la prise de photos`              | l'action de prendre des photographies                              | photo-taking                    |
-| `le congé des Fêtes`              | la période de vacances autour de Noël et du jour de l'An            | holiday break                   |
-| `remettre quelque chose à quelqu'un` | donner ou livrer quelque chose à une personne                    | to give, hand something to someone |
-| `gratuitement`                    | sans demander de paiement                                          | free of charge                  |
+| mot ou expression                    | définition en français                                         | anglais                            |
+| ------------------------------------ | -------------------------------------------------------------- | ---------------------------------- |
+| `un diner`                           | le repas du milieu de la journée                               | lunch                              |
+| `une collation`                      | un petit repas entre les repas principaux                      | snack                              |
+| `des croustilles`                    | de fines tranches de pomme de terre frites                     | potato chips                       |
+| `une boisson gazeuse`                | une boisson sucrée contenant du gaz                            | soft drink, soda                   |
+| `une arachide`                       | une graine qui peut provoquer une allergie                     | peanut                             |
+| `allergique`                         | qui a une réaction physique à un aliment ou à une substance    | allergic                           |
+| `la tenue vestimentaire`             | l'ensemble des vêtements portés ou exigés                      | clothing, dress requirements       |
+| `un vêtement`, `les vêtements`       | un article porté sur le corps, puis l'ensemble de ces articles | an item of clothing, clothes       |
+| `la récréation`                      | la pause des élèves pendant la journée scolaire                | recess                             |
+| `à l'extérieur`                      | dehors                                                         | outside                            |
+| `même par temps froid`               | y compris lorsque la température est froide                    | even in cold weather               |
+| `une tuque`                          | un bonnet chaud porté en hiver                                 | toque, winter hat                  |
+| `un gant`, `une mitaine`             | deux vêtements qui protègent les mains                         | glove, mitten                      |
+| `un pantalon de neige`               | un pantalon isolé et imperméable pour jouer dans la neige      | snow pants                         |
+| `une botte`                          | une chaussure haute qui protège le pied et la cheville         | boot                               |
+| `une engelure`                       | une lésion causée par une exposition prolongée au froid        | frostbite                          |
+| `avoir lieu`                         | se passer à une date ou à un endroit                           | to take place                      |
+| `à compter de`                       | à partir de                                                    | starting at, as of                 |
+| `déterminer l'heure`                 | choisir ou fixer l'heure                                       | to set the time                    |
+| `la prise de photos`                 | l'action de prendre des photographies                          | photo-taking                       |
+| `le congé des Fêtes`                 | la période de vacances autour de Noël et du jour de l'An       | holiday break                      |
+| `remettre quelque chose à quelqu'un` | donner ou livrer quelque chose à une personne                  | to give, hand something to someone |
+| `gratuitement`                       | sans demander de paiement                                      | free of charge                     |
 
 ### points de langue
 
-| fonction       | structure                                    | exemple du babillard                                      |
-| -------------- | -------------------------------------------- | --------------------------------------------------------- |
-| permission     | `C'est permis de/d' + infinitif`             | `C'est permis d'apporter des fruits.`                     |
-| non-permission | `nom + ne pas être permis`                   | `Les boissons gazeuses ne sont pas permises.`             |
-| interdiction   | `nom + être interdit`                        | `Les arachides sont interdites.`                          |
-| obligation     | `nom + être obligatoire`                     | `Les bottes sont obligatoires.`                           |
-| but            | `pour + infinitif`                           | `pour éviter les engelures`                               |
-| évènement futur | `avoir lieu` au futur                       | `La prise de photos aura lieu le mardi 2 novembre.`       |
-| résultat futur | `être` au futur + adjectif                   | `Les photos seront prêtes.`                               |
-| passif futur   | `être` au futur + participe passé            | `La photo de groupe sera remise gratuitement.`            |
+| fonction        | structure                         | exemple du babillard                                |
+| --------------- | --------------------------------- | --------------------------------------------------- |
+| permission      | `C'est permis de/d' + infinitif`  | `C'est permis d'apporter des fruits.`               |
+| non-permission  | `nom + ne pas être permis`        | `Les boissons gazeuses ne sont pas permises.`       |
+| interdiction    | `nom + être interdit`             | `Les arachides sont interdites.`                    |
+| obligation      | `nom + être obligatoire`          | `Les bottes sont obligatoires.`                     |
+| but             | `pour + infinitif`                | `pour éviter les engelures`                         |
+| évènement futur | `avoir lieu` au futur             | `La prise de photos aura lieu le mardi 2 novembre.` |
+| résultat futur  | `être` au futur + adjectif        | `Les photos seront prêtes.`                         |
+| passif futur    | `être` au futur + participe passé | `La photo de groupe sera remise gratuitement.`      |
 
 tout le registre de l'épisode réapparait ici: permis, pas permis, interdites, obligatoires. les formes au futur ajoutent les dates et les arrangements dont les parents ont besoin.
 

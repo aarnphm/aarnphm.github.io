@@ -2,6 +2,7 @@ import type { Element, ElementContent } from 'hast'
 import { h, s } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import type { CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import type {
   ActivityAnalysisRange,
   StravaActivityDetail,
@@ -29,9 +30,13 @@ import {
   buildCyclingBestEfforts,
   buildDayCard,
   buildElevation,
+  buildPowerBalanceChart,
   buildPowerCurve,
+  buildPowerHist,
   buildShiftingChart,
   buildStaminaChart,
+  buildTrainingEffectDetails,
+  dominantTrainingEffectGroup,
   buildRoute,
   buildRunGroundContactTrace,
   buildRunStrideTrace,
@@ -47,9 +52,13 @@ import {
   formatGroundContactTime,
   formatStrideLength,
   formatVerticalOscillation,
+  formatTrainingEffectLabel,
+  formatTrainingEffectNote,
   gearShiftAtFraction,
   interpolatePositiveMetricSeries,
+  nearestPowerCurvePoint,
   nearestPowerCurveValue,
+  moreStatRows,
   normalizePowerCurvePoints,
   parseExcludedActivityIds,
   powerCurveDurationTicks,
@@ -67,6 +76,8 @@ import {
   type TriNodeFactory,
 } from './triathlon-card'
 import {
+  criticalPowerEvidenceText,
+  criticalPowerSummaryText,
   swimActivityComparisonText,
   swimActivityDistanceText,
   swimActivityDisplayValue,
@@ -247,6 +258,16 @@ test('localizes dynamic analytics explanations', () => {
     triText('en', 'radar pace swim definition'),
     /Fewer seconds per 100 metres give a higher score\.$/,
   )
+  assert.equal(criticalPowerSummaryText('en', criticalPower()), 'eCP 249 W · eW′ 10.3 kJ')
+  assert.equal(criticalPowerSummaryText('fr', criticalPower()), 'eCP 249 W · eW′ 10,3 kJ')
+  assert.equal(
+    criticalPowerEvidenceText('en', criticalPower()),
+    '2 independent efforts · provisional',
+  )
+  assert.equal(
+    criticalPowerEvidenceText('fr', criticalPower()),
+    '2 efforts indépendants · provisoire',
+  )
 })
 
 test('localizes the triathlon page chrome', () => {
@@ -360,10 +381,18 @@ test('round trips dense and sparse power curve attributes', () => {
     { s: 5, w: 590 },
     { s: 60, w: 350 },
   ]
+  const sourced = [
+    { s: 1, w: 700, activityId: 11, activityDate: '2026-08-01' },
+    { s: 2, w: 660, activityId: 11, activityDate: '2026-08-01' },
+    { s: 3, w: 635, activityId: 12, activityDate: '2026-08-02' },
+  ]
   assert.deepEqual(decodePowerCurve(encodePowerCurve(dense)), dense)
   assert.deepEqual(decodePowerCurve(encodePowerCurve(sparse)), sparse)
+  assert.deepEqual(decodePowerCurve(encodePowerCurve(sourced)), sourced)
+  assert.deepEqual(nearestPowerCurvePoint(sourced, 2.7), sourced[2])
   assert.deepEqual(decodePowerCurve('d|1|700,nope'), [])
   assert.deepEqual(decodePowerCurve('d|1|700,'), [])
+  assert.deepEqual(decodePowerCurve('d|1|700|11,2026-08-01,2'), [])
   assert.deepEqual(decodePowerCurve('s|1:700,2:'), [])
 })
 
@@ -842,6 +871,182 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   ...overrides,
 })
 
+const garminVerification = (
+  overrides: Partial<NonNullable<StravaActivityDetail['garmin']>> = {},
+): NonNullable<StravaActivityDetail['garmin']> => ({
+  activityId: 'connect:123',
+  name: 'Threshold ride',
+  sourceDevice: 'Edge 1050',
+  startDate: '2026-07-09T12:00:00Z',
+  startDiffS: 0,
+  distanceM: 30_000,
+  distanceDeltaM: 0,
+  distanceDeltaPct: 0,
+  movingTimeS: 4_800,
+  movingTimeDeltaS: 0,
+  elapsedTimeS: 4_800,
+  elapsedTimeDeltaS: 0,
+  totalCalories: null,
+  caloriesDelta: null,
+  avgHeartRate: null,
+  avgHeartRateDelta: null,
+  avgPower: null,
+  avgPowerDelta: null,
+  avgCadence: null,
+  normalizedPower: null,
+  maxPower: null,
+  totalWorkKJ: null,
+  totalWorkDeltaKJ: null,
+  trainingStressScore: null,
+  intensityFactor: null,
+  trainingEffectActivityId: null,
+  aerobicTrainingEffect: null,
+  anaerobicTrainingEffect: null,
+  exerciseLoad: null,
+  trainingEffectLabel: null,
+  aerobicTrainingEffectMessage: null,
+  anaerobicTrainingEffectMessage: null,
+  ...overrides,
+})
+
+test('summarizes Garmin training metrics with the dominant effect for every activity kind', () => {
+  const garmin = garminVerification({
+    intensityFactor: 0.803,
+    aerobicTrainingEffect: 4.5,
+    anaerobicTrainingEffect: 0,
+    exerciseLoad: 301.7,
+    trainingEffectLabel: 'AEROBIC_BASE',
+    aerobicTrainingEffectMessage: 'HIGHLY_IMPROVING_AEROBIC_ENDURANCE_10',
+    anaerobicTrainingEffectMessage: 'NO_ANAEROBIC_BENEFIT_0',
+  })
+  const expected: [string, string][] = [
+    ['intensity factor', '0.803'],
+    ['training effect', 'base'],
+    ['exercise load', '302'],
+  ]
+
+  assert.deepEqual(
+    activityStatRows(DEFAULT_TRIATHLON_PRESENTATION, detail({ garmin })).slice(-3),
+    expected,
+  )
+  assert.deepEqual(
+    activityStatRows(
+      DEFAULT_TRIATHLON_PRESENTATION,
+      detail({ sport: 'strength', route: [], bestEfforts: null, garmin }),
+    ).slice(-3),
+    expected,
+  )
+  assert.deepEqual(activityStatRows(frenchPresentation, detail({ garmin })).slice(-3), [
+    ['intensity factor', '0,803'],
+    ['training effect', 'base'],
+    ['exercise load', '302'],
+  ])
+
+  const rendered = buildActivity(factory, detail({ garmin }))
+  const labels = byClass(rendered, 'tri-act-stat-k')
+  const exerciseLoad = labels.find(label => text(label) === 'exercise load')
+  assert.equal(exerciseLoad?.properties.dataI18n, 'exercise load')
+  const summaryEffect = byTag(rendered, 'tr').find(
+    row => row.properties.dataStatKey === 'training effect',
+  )
+  assert.equal(summaryEffect?.properties.dataTrainingEffectGroup, 'low-aerobic')
+
+  const highAerobic = buildActivity(
+    factory,
+    detail({ garmin: garminVerification({ trainingEffectLabel: 'VO2_MAX' }) }),
+  )
+  assert.equal(
+    byTag(highAerobic, 'tr').find(row => row.properties.dataStatKey === 'training effect')
+      ?.properties.dataTrainingEffectGroup,
+    'high-aerobic',
+  )
+
+  const anaerobic = buildActivity(
+    factory,
+    detail({ garmin: garminVerification({ trainingEffectLabel: 'ANAEROBIC_CAPACITY' }) }),
+  )
+  assert.equal(
+    byTag(anaerobic, 'tr').find(row => row.properties.dataStatKey === 'training effect')?.properties
+      .dataTrainingEffectGroup,
+    'anaerobic',
+  )
+})
+
+test('renders Garmin training effect scores and notes immediately above heart rate zones', () => {
+  const garmin = garminVerification({
+    aerobicTrainingEffect: 4.5,
+    anaerobicTrainingEffect: 2.7,
+    trainingEffectLabel: 'VO2_MAX',
+    aerobicTrainingEffectMessage: 'HIGHLY_IMPROVING_VO2_MAX_11',
+    anaerobicTrainingEffectMessage: 'MAINTAINING_FAST_FORCE_PRODUCTION_6',
+  })
+  const activity = detail({ garmin, hrZones: [300, 600, 900, 120, 30] })
+  const rendered = buildActivity(factory, activity, true, ctx())
+  const details = byClass(rendered, 'tri-training-effect')[0]
+  assert.ok(details)
+  assert.deepEqual(byClass(details, 'tri-training-effect-label').map(text), [
+    'aerobic',
+    'anaerobic',
+  ])
+  assert.deepEqual(byClass(details, 'tri-training-effect-score').map(text), ['4.5', '2.7'])
+  assert.deepEqual(byClass(details, 'tri-training-effect-note').map(text), [
+    'highly improving VO2max',
+    'maintaining fast force production',
+  ])
+  const items = byClass(details, 'tri-training-effect-item')
+  assert.deepEqual(
+    items.map(item => item.properties.dataTrainingEffectGroup),
+    ['high-aerobic', 'anaerobic'],
+  )
+  assert.deepEqual(
+    byClass(details, 'tri-training-effect-meter').map(meter => [
+      meter.properties.role,
+      meter.properties.ariaValueMin,
+      meter.properties.ariaValueMax,
+      meter.properties.ariaValueNow,
+    ]),
+    [
+      ['meter', 0, 5, 4.5],
+      ['meter', 0, 5, 2.7],
+    ],
+  )
+  assert.deepEqual(
+    byClass(details, 'tri-training-effect-meter-fill').map(fill => fill.properties.style),
+    ['--tri-training-effect-progress:90.0%', '--tri-training-effect-progress:54.0%'],
+  )
+  const baseDetails = buildTrainingEffectDetails(
+    factory,
+    detail({
+      garmin: garminVerification({
+        aerobicTrainingEffect: 3.2,
+        trainingEffectLabel: 'AEROBIC_BASE',
+        aerobicTrainingEffectMessage: 'IMPROVING_AEROBIC_BASE_8',
+      }),
+    }),
+  )
+  assert.ok(baseDetails)
+  assert.equal(
+    byClass(baseDetails, 'tri-training-effect-item')[0].properties.dataTrainingEffectGroup,
+    'low-aerobic',
+  )
+  const more = byClass(rendered, 'tri-act-more')[0]
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const detailIndex = children.findIndex(child => classNames(child).includes('tri-training-effect'))
+  const zonesIndex = children.findIndex(child =>
+    byClass(child, 'tri-zone-title').some(title => text(title) === 'heart rate zones'),
+  )
+  assert.equal(detailIndex + 1, zonesIndex)
+  assert.equal(formatTrainingEffectLabel('AEROBIC_BASE'), 'base')
+  assert.equal(formatTrainingEffectLabel('LACTATE_THRESHOLD'), 'threshold')
+  assert.equal(formatTrainingEffectLabel('VO2_MAX'), 'VO2max')
+  assert.equal(formatTrainingEffectLabel('SPEED'), 'speed')
+  assert.equal(dominantTrainingEffectGroup('RECOVERY'), 'low-aerobic')
+  assert.equal(dominantTrainingEffectGroup('LACTATE_THRESHOLD'), 'high-aerobic')
+  assert.equal(dominantTrainingEffectGroup('SPRINT'), 'anaerobic')
+  assert.equal(formatTrainingEffectNote('NO_ANAEROBIC_BENEFIT_0'), 'no anaerobic benefit')
+  assert.ok(buildTrainingEffectDetails(factory, activity))
+})
+
 test('renders strength volume, totals, exercises, and exact loaded sets', () => {
   const strength: NonNullable<StravaActivityDetail['strength']> = {
     volumeKg: 816.512,
@@ -872,6 +1077,9 @@ test('renders strength volume, totals, exercises, and exact loaded sets', () => 
     sport: 'strength',
     movingTimeS: 533,
     avgHr: 101,
+    windKph: 18,
+    windDir: 'SW',
+    windGustKph: 31,
     strength,
     route: [],
     bestEfforts: null,
@@ -894,6 +1102,10 @@ test('renders strength volume, totals, exercises, and exact loaded sets', () => 
   ])
 
   assert.equal(activityStatRows(DEFAULT_TRIATHLON_PRESENTATION, activity)[1][1], '816.5 kg')
+  assert.deepEqual(moreStatRows(DEFAULT_TRIATHLON_PRESENTATION, activity).slice(-2), [
+    ['air temp', '24°C'],
+    ['wind', '18 km/h SW / gust 31'],
+  ])
 })
 
 test('keeps inclusive cycling power by default and exposes the zero-excluded view on demand', () => {
@@ -1193,13 +1405,13 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
       'cadence',
       'respiration',
       'temperature',
-      'heat strain index',
-      'CORE temperature',
-      'skin temperature',
+      'heat-strain-index',
+      'core-temperature',
+      'skin-temperature',
     ],
   )
 
-  const coreTemperature = traces.find(graph => graph.properties.dataTriTrace === 'CORE temperature')
+  const coreTemperature = traces.find(graph => graph.properties.dataTriTrace === 'core-temperature')
   assert.ok(coreTemperature)
   assert.deepEqual(byClass(coreTemperature, 'tri-cax-yt').map(text), [
     '37.16°C',
@@ -1208,7 +1420,7 @@ test('renders CORE bike graphs after ambient temperature with sub-degree domains
   ])
   assert.match(text(byClass(coreTemperature, 'tri-elev-cap')[0]), /37\.17°C avg/)
 
-  const skinTemperature = traces.find(graph => graph.properties.dataTriTrace === 'skin temperature')
+  const skinTemperature = traces.find(graph => graph.properties.dataTriTrace === 'skin-temperature')
   assert.ok(skinTemperature)
   assert.ok(
     byClass(skinTemperature, 'tri-cax-yt')
@@ -1226,7 +1438,7 @@ test('connects every missing heat strain range with dotted straight lines', () =
   }))
   const rendered = buildActivity(factory, detail({ route }), true)
   const heatStrain = byClass(rendered, 'tri-elev-wrap').find(
-    graph => graph.properties.dataTriTrace === 'heat strain index',
+    graph => graph.properties.dataTriTrace === 'heat-strain-index',
   )
   assert.ok(heatStrain)
   const missing = byClass(heatStrain, 'tri-elev-line--missing')[0]
@@ -1256,7 +1468,7 @@ test('renders estimated run stride length without bridging missing cadence sampl
 
   const trace = buildRunStrideTrace(factory, run, null)
   assert.ok(trace)
-  assert.equal(trace.properties.dataTriTrace, 'estimated stride length')
+  assert.equal(trace.properties.dataTriTrace, 'estimated-stride-length')
   assert.deepEqual(
     byClass(trace, 'tri-elev-cap')
       .flatMap(cap => byTag(cap, 'span'))
@@ -1298,7 +1510,7 @@ test('prefers native running dynamics for the whole activity and preserves senso
   assert.ok(traces.every(trace => trace != null))
   assert.deepEqual(
     traces.map(trace => trace?.properties.dataTriTrace),
-    ['stride length', 'ground contact time', 'vertical oscillation'],
+    ['stride-length', 'ground-contact-time', 'vertical-oscillation'],
   )
   assert.deepEqual(
     traces.map(trace =>
@@ -1721,6 +1933,7 @@ test('labels the activity disclosure and exposes its expanded state and controll
   const collapsedPanel = byClass(collapsed, 'tri-act-more')[0]
   assert.ok(collapsedToggle)
   assert.ok(collapsedPanel)
+  assert.equal(collapsed.properties.id, 'tri-activity-42')
   assert.equal(text(collapsedToggle), '+ see more')
   assert.equal(collapsedToggle.properties.ariaExpanded, 'false')
   assert.deepEqual(collapsedToggle.properties.ariaControls, ['tri-act-more-42'])
@@ -2564,6 +2777,39 @@ test('day-card date renders as a month link only when extras provide an href', (
   assert.equal(byClass(plain, 'tri-pop-date')[0].tagName, 'span')
 })
 
+test('embedded day cards align activity summaries to their largest row count', () => {
+  const ride = detail({ id: 1, date: '2026-07-09', windKph: 10, windDir: 'NW', windGustKph: 21 })
+  const run = detail({
+    id: 2,
+    date: '2026-07-09',
+    sport: 'run',
+    avgWatts: null,
+    npWatts: null,
+    maxWatts: null,
+    kilojoules: null,
+    deviceWatts: false,
+  })
+  const payload = { details: { 1: ride, 2: run }, health: {} }
+  const embedded = buildDayCard(factory, '2026-07-09', payload, { embedded: true })
+  const rowCounts = byClass(embedded, 'tri-act').map(
+    activity => byTag(byClass(activity, 'tri-act-stats')[0], 'tr').length,
+  )
+
+  assert.equal(embedded.properties.style, `--tri-embedded-summary-rows:${Math.max(...rowCounts)}`)
+  const wind = byTag(embedded, 'tr').find(row => text(byClass(row, 'tri-act-stat-k')[0]) === 'wind')
+  assert.equal(wind?.properties.dataStatKey, 'wind')
+
+  const stacked = buildDayCard(factory, '2026-07-09', payload)
+  const single = buildDayCard(
+    factory,
+    '2026-07-09',
+    { details: { 1: ride }, health: {} },
+    { embedded: true },
+  )
+  assert.equal(stacked.properties.style, undefined)
+  assert.equal(single.properties.style, undefined)
+})
+
 test('expanded day-card extras render every activity pre-expanded', () => {
   const first = detail({ id: 1, date: '2026-07-09' })
   const second = detail({ id: 2, date: '2026-07-09', sport: 'run' })
@@ -2745,10 +2991,53 @@ const ctx = (overrides: Partial<DetailCtx> = {}): DetailCtx => ({
   curveRef: [],
   curveYearRef: [],
   curveYear: null,
+  criticalPower: null,
+  criticalPowerYear: null,
   ftp: 260,
   goalFtp: 280,
   vt1: 150,
   ...overrides,
+})
+
+const criticalPower = (
+  window: CriticalPowerEstimate['window'] = 'six-weeks',
+): CriticalPowerEstimate => ({
+  criticalPowerWatts: 249,
+  wPrimeJoules: 10_300,
+  method: 'two-parameter-power-space',
+  window,
+  windowFrom: window === 'six-weeks' ? '2026-07-03' : '2026-01-01',
+  windowTo: '2026-08-13',
+  anchors: [
+    {
+      durationS: 180,
+      meanPowerWatts: 306.5,
+      activityId: 102,
+      activityDate: '2026-08-09',
+      startElapsedS: 6_618,
+      endElapsedS: 6_798,
+    },
+    {
+      durationS: 420,
+      meanPowerWatts: 272,
+      activityId: 103,
+      activityDate: '2026-08-05',
+      startElapsedS: 1_018,
+      endElapsedS: 1_438,
+    },
+    {
+      durationS: 720,
+      meanPowerWatts: 264.3,
+      activityId: 103,
+      activityDate: '2026-08-05',
+      startElapsedS: 1_018,
+      endElapsedS: 1_738,
+    },
+  ],
+  independentEffortCount: 2,
+  rmseWatts: 1.4,
+  normalizedRmse: 0.005,
+  confidence: 'provisional',
 })
 
 test('renders traces with numbered value and distance axes', () => {
@@ -2830,6 +3119,73 @@ test('renders Garmin stamina and potential stamina on one fixed percentage scale
   assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
 })
 
+test('renders power-weighted left and right pedal balance on a symmetric percentage scale', () => {
+  const ride = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      rightPowerPct: [48, 49, 52, 51][index],
+    })),
+  })
+  const chart = buildPowerBalanceChart(factory, ride, null)
+  assert.ok(chart)
+  assert.equal(chart.properties.dataTriTrace, 'power-balance')
+  assert.equal(byClass(chart, 'tri-power-balance-svg')[0].properties.ariaLabel, 'power balance')
+  assert.deepEqual(byClass(chart, 'tri-elev-d').map(text), ['power balance'])
+  assert.deepEqual(byClass(chart, 'tri-elev-range').map(text), ['L 49.7% / R 50.3% avg'])
+  assert.deepEqual(byClass(chart, 'tri-power-balance-legend-item').map(text), ['left', 'right'])
+  assert.deepEqual(byClass(chart, 'tri-cax-yt').map(text), ['45%', '50%', '55%'])
+  assert.equal(byClass(chart, 'tri-power-balance-line--left').length, 1)
+  assert.equal(byClass(chart, 'tri-power-balance-line--right').length, 1)
+  assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
+  assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
+
+  const embedded = buildActivity(factory, ride, true, undefined, [], false, true)
+  const embeddedChart = byClass(embedded, 'tri-power-balance-chart')[0]
+  assert.ok(embeddedChart)
+  assert.deepEqual(byClass(embeddedChart, 'tri-elev-d').map(text), ['power balance'])
+  assert.deepEqual(byClass(embeddedChart, 'tri-elev-range').map(text), ['L 49.7% / R 50.3%'])
+  assert.deepEqual(byClass(embeddedChart, 'tri-power-balance-legend-item').map(text), [])
+  assert.equal(
+    byClass(embeddedChart, 'tri-power-balance-svg')[0].properties.ariaLabel,
+    'power balance',
+  )
+})
+
+test('bridges zero-power pedal balance ranges with dotted left and right traces', () => {
+  const ride = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      w: [180, 0, 0, 220][index],
+      rightPowerPct: [48, 50, 50, 52][index],
+    })),
+  })
+  const chart = buildPowerBalanceChart(factory, ride, null)
+  assert.ok(chart)
+  const missing = byClass(chart, 'tri-power-balance-line--missing')
+  assert.equal(missing.length, 2)
+  assert.ok(
+    missing.every(path => String(path.properties.d).match(/^M [\d.]+ [\d.]+ L [\d.]+ [\d.]+ $/)),
+  )
+  assert.equal(byClass(chart, 'tri-power-balance-line--left').length, 2)
+  assert.equal(byClass(chart, 'tri-power-balance-line--right').length, 2)
+})
+
+test('places pedal balance immediately below the ride power trace', () => {
+  const ride = detail({
+    route: detail().route.map((point, index) => ({
+      ...point,
+      rightPowerPct: [48, 49, 52, 51][index],
+    })),
+  })
+  const rendered = buildActivity(factory, ride, true)
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(more)
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
+  assert.ok(powerIndex >= 0)
+  assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'power-balance')
+})
+
 test('places stamina below power and above electronic shifting', () => {
   const ride = shiftedDetail()
   ride.route = ride.route.map((point, index) => ({
@@ -2844,7 +3200,7 @@ test('places stamina below power and above electronic shifting', () => {
   const powerIndex = children.findIndex(child => child.properties.dataTriTrace === 'power')
   assert.ok(powerIndex >= 0)
   assert.equal(children[powerIndex + 1].properties.dataTriTrace, 'stamina')
-  assert.equal(children[powerIndex + 2].properties.dataTriTrace, 'electronic shifting')
+  assert.equal(children[powerIndex + 2].properties.dataTriTrace, 'electronic-shifting')
 })
 
 test('renders front and rear shifting on separate overlaid y axes', () => {
@@ -2863,7 +3219,7 @@ test('renders front and rear shifting on separate overlaid y axes', () => {
   assert.deepEqual(byClass(chart, 'tri-cax-xt').map(text), ['10 km', '20 km'])
   assert.equal(byClass(chart, 'tri-shift-line').length, 2)
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
-  assert.equal(chart.properties.dataTriTrace, 'electronic shifting')
+  assert.equal(chart.properties.dataTriTrace, 'electronic-shifting')
   const svg = byClass(chart, 'tri-shift-svg')[0]
   assert.ok(svg)
   assert.equal(classNames(svg).includes('tri-elev'), true)
@@ -3171,9 +3527,9 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
     zonedDetail(),
     ctx({
       curveRef: [
-        { s: 1, w: 700 },
-        { s: 60, w: 400 },
-        { s: 3_600, w: 220 },
+        { s: 1, w: 700, activityId: 102, activityDate: '2026-07-10' },
+        { s: 60, w: 400, activityId: 102, activityDate: '2026-07-10' },
+        { s: 3_600, w: 220, activityId: 103, activityDate: '2026-07-11' },
       ],
       curveYearRef: [
         { s: 1, w: 1_060 },
@@ -3212,6 +3568,116 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
   const stage = byClass(curve, 'tri-cax-stage')[0]
   assert.ok(stage)
   assert.equal(byClass(stage, 'tri-curve-readout').length, 1)
+  const referenceRow = byClass(stage, 'tri-curve-readout-row--ref')[0]
+  assert.equal(referenceRow.tagName, 'a')
+  assert.equal(referenceRow.properties.href, '/triathlon/on/2026/07/10#tri-activity-102')
+  assert.equal(referenceRow.properties.dataPowerActivityId, '102')
+})
+
+test('renders critical power models, asymptotes, and provenance on bike power charts', () => {
+  const sixWeeks = criticalPower()
+  const year = { ...criticalPower('calendar-year'), criticalPowerWatts: 252 }
+  const context = ctx({
+    curveRef: [
+      { s: 1, w: 700 },
+      { s: 180, w: 307 },
+      { s: 720, w: 264 },
+    ],
+    curveYearRef: [
+      { s: 1, w: 720 },
+      { s: 180, w: 310 },
+      { s: 720, w: 267 },
+    ],
+    curveYear: 2026,
+    criticalPower: sixWeeks,
+    criticalPowerYear: year,
+  })
+  const bike = zonedDetail()
+  bike.powerHist = Array.from({ length: 13 }, () => 1)
+  const curve = buildPowerCurve(factory, bike, context)
+  assert.ok(curve)
+  assert.equal(byClass(curve, 'tri-curve-model').length, 2)
+  assert.equal(byClass(curve, 'tri-curve-cp').length, 2)
+  const summaries = byClass(curve, 'tri-curve-cp-k')
+  assert.equal(summaries.length, 2)
+  assert.equal(text(summaries[0]), 'eCP 249 W · eW′ 10.3 kJ')
+  assert.equal(summaries[0].properties.dataGlossDef, '2 independent efforts · provisional')
+  assert.equal(summaries[0].properties.tabIndex, 0)
+  assert.equal('hidden' in summaries[0].properties, false)
+  assert.equal('hidden' in summaries[1].properties, true)
+  const anchors = byClass(curve, 'tri-critical-power-anchor')
+  assert.equal(anchors.length, 6)
+  assert.equal(anchors[0].properties.href, '/triathlon/on/2026/08/09#tri-activity-102')
+  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-duration').map(text), ['3m'])
+  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-date').map(text), ['2026-08-09'])
+  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-power').map(text), ['306.5W'])
+  const thresholds = byClass(curve, 'tri-curve-thresholds')
+  assert.equal(thresholds.length, 1)
+  assert.deepEqual((thresholds[0].children as Element[]).map(text), [
+    'eCP 249 W · eW′ 10.3 kJ',
+    'eCP 252 W · eW′ 10.3 kJ',
+    'FTP 260W',
+    'goal 280W',
+  ])
+  const cap = byClass(curve, 'tri-elev-cap')[0]
+  const capChildren = cap.children as Element[]
+  const anchorRows = byClass(curve, 'tri-critical-power-anchors')
+  assert.ok(capChildren.indexOf(thresholds[0]) < capChildren.indexOf(anchorRows[0]))
+
+  const embeddedCurve = buildPowerCurve(factory, bike, context, true)
+  assert.ok(embeddedCurve)
+  assert.equal(byClass(embeddedCurve, 'tri-critical-power-anchor').length, 0)
+  assert.equal(byClass(embeddedCurve, 'tri-critical-power-anchor-duration').length, 0)
+  assert.equal(byClass(embeddedCurve, 'tri-curve-thresholds').length, 1)
+  assert.equal(text(byClass(embeddedCurve, 'tri-curve-cp-k')[0]), 'eCP 249 W · eW′ 10.3 kJ')
+
+  const histogram = buildPowerHist(factory, bike)
+  assert.ok(histogram)
+  assert.equal(byClass(histogram, 'tri-hist-cp').length, 0)
+  assert.equal(byClass(histogram, 'tri-hist-cp-k').length, 0)
+
+  const activity = buildActivity(factory, bike, true, context)
+  assert.equal(byClass(activity, 'tri-trace-reference').length, 1)
+  assert.equal(text(byClass(activity, 'tri-trace-reference-k')[0]), 'eCP 249 W')
+})
+
+test('keeps critical power references off run power charts', () => {
+  const run = detail({
+    sport: 'run',
+    deviceWatts: true,
+    powerCurve: zonedDetail().powerCurve,
+    powerHist: Array.from({ length: 13 }, () => 1),
+  })
+  const context = ctx({ criticalPower: criticalPower() })
+  const curve = buildPowerCurve(factory, run, context)
+  assert.ok(curve)
+  assert.equal(byClass(curve, 'tri-curve-model').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-cp').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-ref').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-ftp').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-goal').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-thresholds').length, 0)
+  const histogram = buildPowerHist(factory, run)
+  assert.ok(histogram)
+  assert.equal(byClass(histogram, 'tri-hist-cp').length, 0)
+})
+
+test('suppresses a power reference link back to its enclosing activity', () => {
+  const curve = buildPowerCurve(
+    factory,
+    zonedDetail(),
+    ctx({
+      curveRef: [
+        { s: 1, w: 700, activityId: 101, activityDate: '2026-07-09' },
+        { s: 60, w: 400, activityId: 101, activityDate: '2026-07-09' },
+      ],
+    }),
+  )
+  assert.ok(curve)
+  const referenceRow = byClass(curve, 'tri-curve-readout-row--ref')[0]
+  assert.equal(referenceRow.properties.ariaDisabled, 'true')
+  assert.equal('href' in referenceRow.properties, false)
+  assert.equal(byClass(curve, 'tri-curve-readout-row')[0].tagName, 'span')
 })
 
 test('uses the calendar year when no six-week power reference exists', () => {
@@ -3931,9 +4397,12 @@ test('overlays the six-week best and threshold lines on the comparison power cur
   const cap = byClass(chart, 'tri-elev-cap')[0]
   assert.ok(cap)
   assert.ok((chart.children as Element[]).includes(cap))
-  assert.deepEqual(
-    (cap.children as Element[]).map(child => (child.children[0] as { value: string }).value),
-    ['6-week best', 'FTP 260W', 'goal 290W'],
+  assert.deepEqual(byClass(cap, 'tri-compare-curve-reference-label').map(text), ['6-week best'])
+  const thresholds = byClass(cap, 'tri-curve-thresholds')[0]
+  assert.deepEqual((thresholds.children as Element[]).map(text), ['FTP 260W', 'goal 290W'])
+  assert.ok(
+    (cap.children as Element[]).indexOf(byClass(cap, 'tri-compare-curve-reference-label')[0]) <
+      (cap.children as Element[]).indexOf(thresholds),
   )
 
   const marks = graph.children as Element[]
@@ -3943,6 +4412,84 @@ test('overlays the six-week best and threshold lines on the comparison power cur
   )
   assert.ok(refIndex >= 0 && lineIndex >= 0)
   assert.ok(refIndex < lineIndex, 'reference sits under the compared activities')
+})
+
+test('adds critical power references to bike comparison charts', () => {
+  const curve = Array.from({ length: 900 }, (_, index) => ({
+    s: index + 1,
+    w: Math.round(700 - Math.log(index + 1) * 60),
+  }))
+  const powerHist = Array.from({ length: 13 }, () => 1)
+  const first = comparisonActivity(243, { powerCurve: curve, powerHist })
+  const second = comparisonActivity(244, {
+    powerCurve: curve.map(point => ({ s: point.s, w: point.w - 20 })),
+    powerHist,
+  })
+  const rendered = buildActivityComparison(
+    factory,
+    [first, second],
+    ctx({
+      criticalPower: criticalPower(),
+      criticalPowerYear: criticalPower('calendar-year'),
+      curveRef: curve,
+      curveYearRef: curve,
+      curveYear: 2026,
+    }),
+  )
+  const powerCurve = comparisonChart(rendered, 'power-curve')
+  assert.equal(byClass(powerCurve, 'tri-compare-curve-model').length, 2)
+  assert.equal(byClass(powerCurve, 'tri-compare-curve-cp').length, 2)
+  const summaries = byClass(powerCurve, 'tri-curve-cp-k')
+  assert.equal(summaries.length, 2)
+  assert.equal(text(summaries[0]), 'eCP 249 W · eW′ 10.3 kJ')
+  assert.equal(summaries[0].properties.dataGlossDef, '2 independent efforts · provisional')
+  assert.equal(byClass(powerCurve, 'tri-critical-power-anchor').length, 6)
+  assert.deepEqual(
+    (byClass(powerCurve, 'tri-curve-thresholds')[0].children as Element[]).map(text),
+    ['eCP 249 W · eW′ 10.3 kJ', 'eCP 249 W · eW′ 10.3 kJ', 'FTP 260W', 'goal 280W'],
+  )
+  const distribution = comparisonChart(rendered, 'power-distribution')
+  assert.equal(byClass(distribution, 'tri-compare-distribution-cp').length, 0)
+  assert.equal(byClass(distribution, 'tri-hist-cp-k').length, 0)
+})
+
+test('keeps cycling power references off run comparison charts', () => {
+  const curve = [
+    { s: 1, w: 500 },
+    { s: 180, w: 280 },
+    { s: 420, w: 250 },
+    { s: 720, w: 240 },
+  ]
+  const first = comparisonActivity(251, { sport: 'run', powerCurve: curve })
+  const second = comparisonActivity(252, {
+    sport: 'run',
+    powerCurve: curve.map(point => ({ ...point, w: point.w - 20 })),
+  })
+  const bare = comparisonChart(buildActivityComparison(factory, [first, second]), 'power-curve')
+  const rendered = comparisonChart(
+    buildActivityComparison(
+      factory,
+      [first, second],
+      ctx({
+        criticalPower: criticalPower(),
+        criticalPowerYear: criticalPower('calendar-year'),
+        curveRef: curve,
+        curveYearRef: curve,
+      }),
+    ),
+    'power-curve',
+  )
+
+  assert.equal(byClass(rendered, 'tri-compare-curve-ref').length, 0)
+  assert.equal(byClass(rendered, 'tri-compare-curve-model').length, 0)
+  assert.equal(byClass(rendered, 'tri-compare-curve-cp').length, 0)
+  assert.equal(byClass(rendered, 'tri-compare-curve-ftp').length, 0)
+  assert.equal(byClass(rendered, 'tri-compare-curve-goal').length, 0)
+  assert.equal(byClass(rendered, 'tri-curve-thresholds').length, 0)
+  assert.equal(
+    byClass(rendered, 'tri-compare-curve-graph')[0].properties.dataDomainYMax,
+    byClass(bare, 'tri-compare-curve-graph')[0].properties.dataDomainYMax,
+  )
 })
 
 test('gives comparison power curves the shared ranges and clickable duration segments', () => {

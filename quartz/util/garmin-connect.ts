@@ -87,6 +87,12 @@ const WORK_KJ_KEYS = ['kilojoules', 'totalWorkKJ']
 const WORK_KCAL_KEYS = ['totalWork']
 const TSS_KEYS = ['trainingStressScore', 'tss']
 const IF_KEYS = ['intensityFactor']
+const AEROBIC_TRAINING_EFFECT_KEYS = ['aerobicTrainingEffect', 'trainingEffect']
+const ANAEROBIC_TRAINING_EFFECT_KEYS = ['anaerobicTrainingEffect']
+const EXERCISE_LOAD_KEYS = ['activityTrainingLoad', 'exerciseLoad']
+const TRAINING_EFFECT_LABEL_KEYS = ['trainingEffectLabel']
+const AEROBIC_TRAINING_EFFECT_MESSAGE_KEYS = ['aerobicTrainingEffectMessage']
+const ANAEROBIC_TRAINING_EFFECT_MESSAGE_KEYS = ['anaerobicTrainingEffectMessage']
 const KJ_PER_KCAL = 4.184
 const CLIMB_SPLIT_TYPE = 'CLIMB_PRO_CYCLING_CLIMB'
 
@@ -147,6 +153,7 @@ const METRIC_KEYS = {
   longitude: 'directLongitude',
   potentialStamina: 'directPotentialStamina',
   power: 'directPower',
+  rightBalance: 'directRightBalance',
   respiration: 'directRespirationRate',
   stamina: 'directAvailableStamina',
 }
@@ -240,6 +247,12 @@ function roundedFloat(value: number | null, dp: number): number | null {
   if (n == null) return null
   const factor = 10 ** dp
   return Math.round(n * factor) / factor
+}
+
+function roundedNonnegativeFloat(value: number | null, dp: number): number | null {
+  if (value == null || !Number.isFinite(value) || value < 0) return null
+  const factor = 10 ** dp
+  return Math.round(value * factor) / factor
 }
 
 function collectRecords(root: UnknownRecord): UnknownRecord[] {
@@ -649,6 +662,7 @@ function hasStreamData(streams: GarminStreams): boolean {
     streams.altitude.length > 0 ||
     streams.distance.length > 0 ||
     (streams.watts?.some(value => value > 0) ?? false) ||
+    (streams.rightBalance?.some(value => value >= 0 && value <= 100) ?? false) ||
     (streams.heartrate?.some(value => value > 0) ?? false) ||
     (streams.cadence?.some(value => value > 0) ?? false) ||
     (streams.stamina?.some(value => value >= 0) ?? false) ||
@@ -694,6 +708,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     longitude: metricIndex(detail, METRIC_KEYS.longitude),
     potentialStamina: metricIndex(detail, METRIC_KEYS.potentialStamina),
     power: metricIndex(detail, METRIC_KEYS.power),
+    rightBalance: metricIndex(detail, METRIC_KEYS.rightBalance),
     respiration: metricIndex(detail, METRIC_KEYS.respiration),
     stamina: metricIndex(detail, METRIC_KEYS.stamina),
     heatStrainIndex: coreMetricIndex(detail, 'heatStrainIndex'),
@@ -706,6 +721,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     altitude: [],
     distance: [],
     watts: [],
+    rightBalance: indices.rightBalance == null ? undefined : [],
     heartrate: [],
     cadence: [],
     stamina: indices.stamina == null ? undefined : [],
@@ -735,6 +751,7 @@ export function garminConnectStreams(detail: UnknownRecord | null): GarminStream
     streams.altitude.push(metricValue(item, indices.altitude) ?? 0)
     streams.distance.push(lastDistance)
     streams.watts?.push(metricValue(item, indices.power) ?? 0)
+    streams.rightBalance?.push(metricValue(item, indices.rightBalance) ?? -1)
     streams.heartrate?.push(metricValue(item, indices.heartRate) ?? 0)
     streams.cadence?.push(metricValue(item, indices.cadence) ?? 0)
     streams.stamina?.push(metricValue(item, indices.stamina) ?? -1)
@@ -797,6 +814,21 @@ export function garminConnectActivity(
     roundedFloat((firstNumber(records, WORK_KCAL_KEYS) ?? 0) * KJ_PER_KCAL, 1)
   metrics.trainingStressScore = roundedFloat(firstNumber(records, TSS_KEYS), 1)
   metrics.intensityFactor = roundedFloat(firstNumber(records, IF_KEYS), 3)
+  metrics.aerobicTrainingEffect = roundedNonnegativeFloat(
+    firstNumber(records, AEROBIC_TRAINING_EFFECT_KEYS),
+    1,
+  )
+  metrics.anaerobicTrainingEffect = roundedNonnegativeFloat(
+    firstNumber(records, ANAEROBIC_TRAINING_EFFECT_KEYS),
+    1,
+  )
+  metrics.exerciseLoad = roundedNonnegativeFloat(firstNumber(records, EXERCISE_LOAD_KEYS), 1)
+  metrics.trainingEffectLabel = firstString(records, TRAINING_EFFECT_LABEL_KEYS)
+  metrics.aerobicTrainingEffectMessage = firstString(records, AEROBIC_TRAINING_EFFECT_MESSAGE_KEYS)
+  metrics.anaerobicTrainingEffectMessage = firstString(
+    records,
+    ANAEROBIC_TRAINING_EFFECT_MESSAGE_KEYS,
+  )
 
   const fueling = emptyGarminFueling(sourceDevice)
   fueling.caloriesConsumed = rounded(firstNumber(records, CALORIES_CONSUMED_KEYS))
