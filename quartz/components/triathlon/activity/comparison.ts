@@ -432,6 +432,10 @@ export const wireActivityComparison = (
         '.tri-compare-curve-ref[data-curve-range]',
       ))
         path.toggleAttribute('hidden', path.dataset.curveRange !== range)
+      for (const element of curveChart.querySelectorAll<HTMLElement | SVGElement>(
+        '[data-critical-power-range]',
+      ))
+        element.toggleAttribute('hidden', element.dataset.criticalPowerRange !== range)
       const label = curveChart.querySelector<HTMLElement>('.tri-compare-curve-reference-label')
       if (label) {
         label.removeAttribute('data-i18n')

@@ -2,6 +2,7 @@ export interface TriathlonEvents {
   presentation: { previous: TriathlonPresentation; current: TriathlonPresentation }
   command: { name: string; value?: string }
   analyticsWeek: { source: 'load' | 'effort'; index: number }
+  powerActivity: { activityId: string; date: string; source: HTMLAnchorElement; handled: boolean }
 }
 
 export type TriathlonEventName = keyof TriathlonEvents

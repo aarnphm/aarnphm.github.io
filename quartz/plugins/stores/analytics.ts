@@ -1,3 +1,4 @@
+import type { CriticalPowerEstimate } from './critical-power'
 import type { GarminCache, GarminStreams, GarminWeightSample } from './garmin'
 import type { WeatherCache } from './weather'
 import { matchAppleRun } from '../../util/apple-run-match'
@@ -199,6 +200,8 @@ export interface PowerCurveBlock {
   sixWeeks: PowerCurvePoint[]
   year: PowerCurvePoint[]
   yearLabel: number | null
+  criticalPower: CriticalPowerEstimate | null
+  criticalPowerYear: CriticalPowerEstimate | null
   ftp: number | null
   goalFtp: number | null
 }
@@ -813,6 +816,8 @@ const emptyPowerCurve = (): PowerCurveBlock => ({
   sixWeeks: [],
   year: [],
   yearLabel: null,
+  criticalPower: null,
+  criticalPowerYear: null,
   ftp: null,
   goalFtp: null,
 })
@@ -5293,7 +5298,7 @@ export function buildDataFeed(
       : null
   const meta = {
     kind: 'meta',
-    v: 3,
+    v: 4,
     generatedAt: cache?.lastSync ?? 0,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,
@@ -5313,6 +5318,8 @@ export function buildDataFeed(
     zones: inputs.zones
       ? { hr: inputs.zones.hr, power: inputs.zones.power, ftp: inputs.zones.ftp }
       : null,
+    criticalPower: analytics.powerCurve.criticalPower,
+    criticalPowerYear: analytics.powerCurve.criticalPowerYear,
     thresholds: analytics.thresholds.map(t => ({
       sport: t.sport,
       vThr: t.vThr,
@@ -5339,6 +5346,7 @@ export function buildDataFeed(
         'bmi/bodyFatPct/bodyWaterPct/muscleMassKg/boneMassKg from garmin index scale; ffmi derived from scale weight and body fat; measurement days only',
       ffmi: 'fat-free mass kg / height m^2',
       avgWatts: 'strava estimate unless deviceWatts true',
+      criticalPower: 'P(t)=CP+Wprime/t, OLS in power space at 180/420/720s',
       windDir: 'tracking override, WeatherKit compass fallback',
     },
   }

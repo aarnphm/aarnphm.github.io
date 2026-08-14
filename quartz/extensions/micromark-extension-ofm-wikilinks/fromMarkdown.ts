@@ -626,7 +626,8 @@ function annotateTransclude(
           'data-anchor-path': JSON.stringify(
             anchorSegments.map(segment => {
               const value = segment.trim()
-              return target.trim() === 'triathlon' && value.startsWith('filter=')
+              return target.trim() === 'triathlon' &&
+                (value.startsWith('filter=') || value.startsWith('settings='))
                 ? value
                 : slugAnchor(value)
             }),

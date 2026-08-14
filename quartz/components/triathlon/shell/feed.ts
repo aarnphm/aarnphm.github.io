@@ -266,6 +266,24 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
     marquee.stop()
   }
 
+  const powerActivityCleanup = context.events.subscribe('powerActivity', request => {
+    if (
+      !feed.contains(request.source) ||
+      !acts.some(activity => String(activity.id) === request.activityId)
+    )
+      return
+    request.handled = true
+    collapse()
+    if (search.value) {
+      search.value = ''
+      renderList()
+    }
+    expand(request.activityId)
+    const row = list.querySelector<HTMLElement>(`.tri-feed-row[data-id="${request.activityId}"]`)
+    row?.scrollIntoView({ block: 'nearest' })
+    row?.querySelector<HTMLButtonElement>('.tri-feed-head')?.focus({ preventScroll: true })
+  })
+
   list.addEventListener('click', onListClick)
   list.addEventListener('mouseover', onOver)
   list.addEventListener('mouseout', onOut)
@@ -303,6 +321,7 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
     window.removeEventListener('tri:unit', onUnit)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
     document.removeEventListener('keydown', onKey)
+    powerActivityCleanup()
     for (const cleanup of detailCleanups.values()) cleanup()
     detailCleanups.clear()
   }

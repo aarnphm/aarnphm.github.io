@@ -62,3 +62,32 @@ test('TSS search and glossary navigation resolve to performance management', () 
   assert.ok(section?.hay.includes('tss'))
   assert.equal(GLOSS_CHART.tss, 'pmc')
 })
+
+test('critical power search and calendar-year SSR resolve to the power curve', () => {
+  assert.equal(GLOSS_CHART.cp, 'power')
+  assert.equal(GLOSS_CHART.wprime, 'power')
+  const section = SEARCH_SECTIONS.find(item => item.chart === 'power')
+  assert.ok(section?.hay.includes('critical power'))
+  const analytics = buildAnalytics(null)
+  analytics.powerCurve.criticalPowerYear = {
+    criticalPowerWatts: 249,
+    wPrimeJoules: 10_300,
+    method: 'two-parameter-power-space',
+    window: 'calendar-year',
+    windowFrom: '2026-01-01',
+    windowTo: '2026-08-13',
+    anchors: [],
+    independentEffortCount: 2,
+    rmseWatts: 1.2,
+    normalizedRmse: 0.004,
+    confidence: 'provisional',
+  }
+  const panel = analyticsPanelDefinition('power')
+  assert.ok(panel)
+  const summary = panel.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.deepEqual(summary.values.slice(0, 3), [
+    { label: 'FTP', value: '—' },
+    { label: 'eCP', value: '249 W' },
+    { label: 'eW′', value: '10.3 kJ' },
+  ])
+})

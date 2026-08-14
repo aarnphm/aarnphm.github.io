@@ -272,6 +272,8 @@ test('carries build-time power curve periods and references into analytics', () 
       { s: 300, w: 274 },
     ],
     yearLabel: 2026,
+    criticalPower: null,
+    criticalPowerYear: null,
     ftp: 272,
     goalFtp: 350,
   }
@@ -281,6 +283,8 @@ test('carries build-time power curve periods and references into analytics', () 
     sixWeeks: [],
     year: [],
     yearLabel: null,
+    criticalPower: null,
+    criticalPowerYear: null,
     ftp: null,
     goalFtp: null,
   })
@@ -1515,7 +1519,9 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
   assert.equal(rows[0].kind, 'meta')
-  assert.equal(rows[0].v, 3)
+  assert.equal(rows[0].v, 4)
+  assert.equal(rows[0].criticalPower, null)
+  assert.equal(rows[0].criticalPowerYear, null)
   assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
   assert.deepEqual(rows[0].fields.activity, [...ACTIVITY_FIELDS])
   assert.deepEqual(rows[0].fields.week, [...WEEK_FIELDS])

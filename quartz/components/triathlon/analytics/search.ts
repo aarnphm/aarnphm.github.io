@@ -83,6 +83,8 @@ export const SEARCH_SECTIONS: { label: string; chart: string; hay: string }[] = 
 
 export const GLOSS_CHART: Record<string, string> = {
   tss: 'pmc',
+  cp: 'power',
+  wprime: 'power',
   ctl: 'pmc',
   atl: 'pmc',
   tsb: 'gauge',

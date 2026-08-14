@@ -5,7 +5,7 @@ date: '2024-10-10'
 description: a bag of chips/words/vernacular
 id: word
 layout: technical
-modified: 2026-08-10 17:36:04 GMT-04:00
+modified: 2026-08-13 22:55:57 GMT-04:00
 tags:
   - evergreen
 title: lists
@@ -316,3 +316,4 @@ title: lists
 - salaciously
 - picador
 - mastication
+- sisu

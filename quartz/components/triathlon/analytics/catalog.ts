@@ -272,7 +272,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   power: {
     key: 'power',
     label: 'power curve',
-    search: 'cycling power curve ftp watts duration best efforts',
+    search: 'cycling power curve critical power cp w prime ftp watts duration best efforts',
     render: (data, context) =>
       withPanelMount(buildBestPowerCurve(data, context), [
         root => mountPrimaryPanel('power', root, data, context),
@@ -281,6 +281,25 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
       title: 'cycling · best power curve',
       values: [
         { label: 'FTP', value: value(data.powerCurve.ftp, ' W') },
+        {
+          label: 'eCP',
+          value: value(
+            (data.powerCurve.criticalPower ?? data.powerCurve.criticalPowerYear)
+              ?.criticalPowerWatts ?? null,
+            ' W',
+          ),
+        },
+        {
+          label: 'eW′',
+          value: value(
+            (data.powerCurve.criticalPower ?? data.powerCurve.criticalPowerYear) == null
+              ? null
+              : ((data.powerCurve.criticalPower ?? data.powerCurve.criticalPowerYear)
+                  ?.wPrimeJoules ?? 0) / 1000,
+            ' kJ',
+            1,
+          ),
+        },
         { label: '6 week points', value: String(data.powerCurve.sixWeeks.length) },
         { label: 'year points', value: String(data.powerCurve.year.length) },
       ],

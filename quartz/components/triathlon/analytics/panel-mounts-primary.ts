@@ -3,12 +3,14 @@ import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
 import type { WkKind } from './panels/performance'
 import type { BestPowerSeriesKey } from './panels/power'
-import { nearestPowerCurveValue } from '../../../util/triathlon-card'
+import { criticalPowerAtDuration } from '../../../plugins/stores/critical-power'
+import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { weeklyChartIndex } from '../../../util/weekly-target-range'
 import { weeklyChartX } from '../../../util/weekly-target-range'
+import { syncPowerCurveActivityLink } from '../activity/power-links'
 import { el } from '../runtime/dom'
 import { setMath } from '../runtime/dom'
 import { groupBodyByDay } from './panels/body'
@@ -16,6 +18,7 @@ import { renderWkDetail } from './panels/performance'
 import { wkTrendRows } from './panels/performance'
 import { bestPowerSeries } from './panels/power'
 import { bestPowerSeriesLabel } from './panels/power'
+import { criticalPowerForSeries } from './panels/power'
 import { scrubBind } from './scrub-primitives'
 import { ANA_W } from './shared'
 import { clampN } from './shared'
@@ -110,6 +113,18 @@ export const mountPrimaryPanel = (
       const key = activePowerSeries.has('six-weeks') ? 'six-weeks' : 'year'
       return curveFor(key)
     }
+    const syncPowerCaption = (): void => {
+      const captions = Array.from(
+        powerBlock.querySelectorAll<HTMLElement>('[data-power-cap-series]'),
+      )
+      const selected = (['six-weeks', 'year'] as const).find(
+        key =>
+          activePowerSeries.has(key) &&
+          captions.some(caption => caption.dataset.powerCapSeries === key),
+      )
+      for (const caption of captions)
+        caption.toggleAttribute('hidden', caption.dataset.powerCapSeries !== selected)
+    }
     const showSeconds = (requestedSeconds: number, commit: boolean): void => {
       const anchor = activeAnchor()
       const selected = powerCurveHoverAt(
@@ -135,11 +150,12 @@ export const mountPrimaryPanel = (
       const valueText: string[] = []
       for (const { key, curve } of powerSeries) {
         const enabled = activePowerSeries.has(key)
-        const watts = enabled ? nearestPowerCurveValue(curve, seconds) : null
+        const selectedPoint = enabled ? nearestPowerCurvePoint(curve, seconds) : null
+        const watts = selectedPoint?.w ?? null
         const point = powerBlock.querySelector<HTMLElement>(
           `.tri-best-power-point[data-power-series="${key}"]`,
         )
-        const row = powerBlock.querySelector<HTMLElement>(
+        const row = powerBlock.querySelector<HTMLAnchorElement>(
           `.tri-best-power-readout-row[data-power-series="${key}"]`,
         )
         if (point) {
@@ -152,12 +168,31 @@ export const mountPrimaryPanel = (
         }
         if (row) {
           row.hidden = !enabled
+          syncPowerCurveActivityLink(row, selectedPoint)
           const value = row.querySelector<HTMLElement>('.tri-best-power-value')
           if (value) value.textContent = watts == null ? '—' : `${watts.toLocaleString()} W`
         }
         if (watts != null)
           valueText.push(
             `${bestPowerSeriesLabel(context.formatter, power, key)} ${watts.toLocaleString()} W`,
+          )
+        const estimate = enabled ? criticalPowerForSeries(power, key) : null
+        const modelWatts =
+          estimate && seconds >= 180 && seconds <= 720
+            ? Math.round(criticalPowerAtDuration(estimate, seconds))
+            : null
+        const modelRow = powerBlock.querySelector<HTMLElement>(
+          `.tri-best-power-readout-row--model[data-power-model-series="${key}"]`,
+        )
+        if (modelRow) {
+          modelRow.hidden = modelWatts == null
+          const value = modelRow.querySelector<HTMLElement>('.tri-best-power-value')
+          if (value)
+            value.textContent = modelWatts == null ? '—' : `${modelWatts.toLocaleString()} W`
+        }
+        if (modelWatts != null)
+          valueText.push(
+            `${bestPowerSeriesLabel(context.formatter, power, key)} ${context.formatter.text('critical power model')} ${modelWatts.toLocaleString()} W`,
           )
       }
       powerSvg.setAttribute('aria-valuenow', String(seconds))
@@ -238,6 +273,11 @@ export const mountPrimaryPanel = (
         `.tri-best-power-line[data-power-series="${key}"]`,
       )
       line?.toggleAttribute('hidden', enabled)
+      for (const element of powerBlock.querySelectorAll<HTMLElement | SVGElement>(
+        `[data-power-model-series="${key}"]`,
+      ))
+        element.toggleAttribute('hidden', enabled)
+      syncPowerCaption()
       showSeconds(selectedSeconds, false)
     }
     powerSvg.addEventListener('pointermove', onPowerMove)
@@ -246,6 +286,7 @@ export const mountPrimaryPanel = (
     powerSvg.addEventListener('pointercancel', onPowerLeave)
     powerSvg.addEventListener('keydown', onPowerKey)
     powerBlock.addEventListener('click', onPowerClick)
+    syncPowerCaption()
     showSeconds(selectedSeconds, true)
     cleanups.push(() => {
       powerSvg.removeEventListener('pointermove', onPowerMove)

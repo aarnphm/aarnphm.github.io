@@ -3,14 +3,17 @@ chain:
   '1':
     distance: 621 mile
     lubricant: Muc-Off Dry Lube
+    since: '2026-05-16'
     waxed: false
   '2':
     distance: 419.42 mile
     lubricant: Muc-Off Dry Lube
+    since: '2026-07-16'
     waxed: false
   '3':
     distance: null
     lubricant: UFO Wax Drip-On
+    since: '2026-08-10'
     waxed: true
 date: '2026-05-29'
 description: training data and tracking
@@ -66,7 +69,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-11 14:08:29 GMT-04:00
+modified: 2026-08-13 19:51:45 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -87,12 +90,22 @@ tires:
         - start: '2026-07-16'
         - end: '2026-08-10'
         - reason: punctures
+      - - type: Pirelli P Zero Race SL-R 700x28c
+        - distance: null
+        - start: '2026-08-12'
+        - end: null
+        - reason: null
     tube:
       - - type: Pirelli P Zero TPU
         - distance: 619.84 mile
         - start: '2026-07-16'
         - end: '2026-08-10'
         - reason: punctures
+      - - type: Pirelli P Zero TPU
+        - distance: null
+        - start: '2026-08-12'
+        - end: null
+        - reason: null
   rear:
     tires:
       - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
@@ -105,6 +118,11 @@ tires:
         - start: '2026-07-16'
         - end: '2026-08-10'
         - reason: punctures and big ruptures
+      - - type: Pirelli P Zero Race SL-R 700x28c
+        - distance: null
+        - start: '2026-08-12'
+        - end: null
+        - reason: null
     tube:
       - - type: Pirelli P Zero TPU
         - distance: null
@@ -1350,6 +1368,8 @@ Hold 195 W and change nothing else about the engine:
 
 Watts still rank, they just rank second. Best hour on 07-26 was 215 W and best twenty minutes 220 W, so FTP is 235-245 now, and 2-4% a month puts it at 252-260 by 09-26. Thursday is threshold at 230-245 W to make that happen. Race power is 205 W, which is IF 0.80 against the September number. That is the top of the raceable band and it is conditional: if the brick run off 09-05 comes in slow, race power drops to 195 W and the day becomes a 5:02.
 
+The automated power-duration fit on 08-13 gives **eCP 248.9 W and eW′ 10.3 kJ** from complete device-power windows at 3, 7, and 12 minutes. The 3-minute anchor comes from 08-09. The 7- and 12-minute anchors overlap inside one effort on 08-05, so this is provisional evidence from two independent efforts. The site fits $P(t)=CP+W′/t$ in power space, keeps recorded zeroes, rejects windows with missing seconds, and exposes each winning activity. A third independent maximal effort would turn the estimate into a usable field measurement. FTP continues to own the existing zones and workout prescriptions because CP and FTP are different thresholds.[^critical-power]
+
 At 205 W the table shifts up by about six minutes per row, so CdA 0.23 gives 36.8 km/h and 2:26:45, and CdA 0.22 gives 37.7 km/h and 2:23:20. The budget takes the middle at 2:24.
 
 The dates matter more than the parts. Decide and order by 08-08, fit and final by 08-22, then five weeks of holding it. A CdA of 0.22 measured in a 20-minute test and lost by kilometre 60 is worth nothing, so the pass mark is the position held for the whole of 09-05 with power inside 3% of hoods power.
@@ -1678,5 +1698,7 @@ The one thing worth saying about 4:40: at that level the swim is 1:54/100 m, whi
 [^multitransport]: Jeukendrup, "A step towards personalized sports nutrition: carbohydrate intake during exercise", Sports Medicine, 2014. https://pubmed.ncbi.nlm.nih.gov/24791919/
 
 [^triphys]: Millet, Vleck and Bentley, "Physiological differences between cycling and running: lessons from triathletes", Sports Medicine, 2009. https://pubmed.ncbi.nlm.nih.gov/19453206/
+
+[^critical-power]: Karsten et al., "Validity and reliability of critical power field testing", European Journal of Applied Physiology, 2015. https://doi.org/10.1007/s00421-014-3001-z Maturana et al., "Critical power: How different protocols and models affect its determination", Journal of Science and Medicine in Sport, 2018. https://doi.org/10.1016/j.jsams.2017.11.015
 
 <!-- training plan end -->

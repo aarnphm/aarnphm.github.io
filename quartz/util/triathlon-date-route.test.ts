@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  triathlonActivityAnchor,
   triathlonActivityDates,
   triathlonActivityFeedRoutes,
+  triathlonActivityHref,
   triathlonDateFromSlug,
   triathlonDateRouteFromSlug,
   triathlonDateTree,
@@ -32,6 +34,20 @@ test('resolves activity day links from the embedding directive origin', () => {
     triathlonDayHrefFromReference('2026-02-29', 'https://aarnphm.xyz/triathlon/on'),
     null,
   )
+})
+
+test('targets one activity within its canonical day route', () => {
+  assert.equal(triathlonActivityAnchor(19701457132), 'tri-activity-19701457132')
+  assert.equal(
+    triathlonActivityHref('2026-08-11', 19701457132),
+    '/triathlon/on/2026/08/11#tri-activity-19701457132',
+  )
+  assert.equal(
+    triathlonActivityHref('2026-08-11', 19701457132, 'http://localhost:7373/triathlon/analytics'),
+    'http://localhost:7373/triathlon/on/2026/08/11#tri-activity-19701457132',
+  )
+  assert.equal(triathlonActivityHref('2026-02-29', 19701457132), null)
+  assert.equal(triathlonActivityHref('2026-08-11', 'ride'), null)
 })
 
 test('rejects malformed and impossible triathlon dates', () => {

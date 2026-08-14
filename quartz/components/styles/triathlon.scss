@@ -570,6 +570,9 @@
 
 .tri-act {
   --tri-activity-chart-height: 80px;
+  --tri-training-effect-anaerobic: #5c46df;
+  --tri-training-effect-high-aerobic: #e5782e;
+  --tri-training-effect-low-aerobic: #45a078;
   container: tri-activity / inline-size;
   display: flex;
   flex-direction: column;
@@ -611,7 +614,6 @@
   gap: 0.45rem;
   padding-top: 0.55rem;
   margin-top: 0.35rem;
-  border-top: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
 }
 
 .tri-act-strength-h {
@@ -663,6 +665,35 @@
   color: var(--dark);
 }
 
+.tri-act-stats tr[data-stat-key='wind'] .tri-act-stat-v {
+  white-space: nowrap;
+}
+
+.tri-act-stats tr[data-stat-key='training effect'],
+.tri-training-effect-item {
+  --tri-training-effect-color: var(--tri-training-effect-low-aerobic);
+}
+
+.tri-act-stats tr[data-training-effect-group='high-aerobic'],
+.tri-training-effect-item[data-training-effect-group='high-aerobic'] {
+  --tri-training-effect-color: var(--tri-training-effect-high-aerobic);
+}
+
+.tri-act-stats tr[data-training-effect-group='anaerobic'],
+.tri-training-effect-item[data-training-effect-group='anaerobic'] {
+  --tri-training-effect-color: var(--tri-training-effect-anaerobic);
+}
+
+.tri-act-stats tr[data-stat-key='training effect'] .tri-act-stat-v::before {
+  display: inline-block;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--tri-training-effect-color);
+  content: '';
+}
+
 .tri-act-toggle {
   align-self: flex-start;
   margin: 0;
@@ -683,6 +714,72 @@
   display: none;
   flex-direction: column;
   gap: 0.7rem;
+}
+
+.tri-training-effect-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.tri-training-effect-item {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, max-content) minmax(4rem, 1fr) 3ch;
+  gap: 0.2rem 0.7rem;
+  align-items: center;
+  min-width: 0;
+  font-family: var(--codeFont);
+}
+
+.tri-training-effect-label,
+.tri-training-effect-note {
+  color: var(--gray);
+}
+
+.tri-training-effect-label,
+.tri-training-effect-score,
+.tri-training-effect-meter {
+  font-size: 0.62rem;
+}
+
+.tri-training-effect-label {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.tri-training-effect-label::before {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: var(--tri-training-effect-color);
+  content: '';
+}
+
+.tri-training-effect-meter {
+  height: 0.32rem;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--tri-training-effect-color) 18%, transparent);
+}
+
+.tri-training-effect-meter-fill {
+  display: block;
+  width: var(--tri-training-effect-progress);
+  height: 100%;
+  background: var(--tri-training-effect-color);
+}
+
+.tri-training-effect-score {
+  color: var(--tri-training-effect-color);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-training-effect-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.56rem;
+  line-height: 1.4;
 }
 
 .tri-efforts {
@@ -848,6 +945,13 @@
   color: var(--gray);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.tri-matched-critical-power {
+  margin: 0.35rem 0 0;
+  font-family: var(--codeFont);
+  font-size: 0.52rem;
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
 }
 
 .tri-matched-chart {
@@ -1676,6 +1780,17 @@
   stroke-dasharray: 0.5 2.5;
   stroke-linecap: round;
   opacity: 0.62;
+}
+
+.tri-trace-reference {
+  stroke: color-mix(in srgb, var(--tri-accent) 68%, var(--dark));
+  stroke-width: 0.7;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-trace-reference-k {
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
 }
 
 @media (max-width: 600px) {
@@ -3959,6 +4074,22 @@
   background: color-mix(in srgb, var(--tri-accent) 32%, var(--gray));
 }
 
+.tri-best-power-swatch--model {
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-accent) 58%, var(--dark)) 0 0.22rem,
+    transparent 0.22rem 0.32rem
+  );
+}
+
+.tri-best-power-swatch--model-year {
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-accent) 34%, var(--gray)) 0 0.22rem,
+    transparent 0.22rem 0.32rem
+  );
+}
+
 .tri-best-power-note,
 .tri-best-power-cap {
   margin: 0;
@@ -4054,6 +4185,35 @@
   stroke-width: 0.8;
 }
 
+.tri-best-power-model-line {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.9;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-model-line--year {
+  stroke: color-mix(in srgb, var(--tri-accent) 34%, var(--gray));
+}
+
+.tri-best-power-cp {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.65;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-best-power-cp--year {
+  stroke: color-mix(in srgb, var(--tri-accent) 34%, var(--gray));
+}
+
+.tri-best-power-readout-row[hidden],
+.tri-best-power-model-line[hidden],
+.tri-best-power-cp[hidden] {
+  display: none;
+}
+
 .tri-best-power-ftp,
 .tri-best-power-goal {
   vector-effect: non-scaling-stroke;
@@ -4128,7 +4288,33 @@
   display: grid;
   grid-template-columns: subgrid;
   align-items: center;
+  color: inherit;
   line-height: 1.25;
+  text-decoration: none;
+
+  &[href] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  &[href]:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-best-power-readout-row[href]:hover {
+    background: transparent;
+
+    .tri-best-power-value,
+    .tri-best-power-label {
+      color: var(--dark);
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.12rem;
+    }
+  }
 }
 
 .tri-best-power-value {
@@ -4144,11 +4330,24 @@
   white-space: nowrap;
 }
 
+.tri-best-power-readout-row--model:not([hidden]) {
+  margin-top: 0.28rem;
+}
+
+.tri-best-power-readout-row--model:not([hidden])
+  ~ .tri-best-power-readout-row--model:not([hidden]) {
+  margin-top: 0;
+}
+
 .tri-best-power-cap {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 0.9rem;
   padding-left: 2.6rem;
+}
+
+.tri-best-power-cap-cp {
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
 }
 
 .tri-best-power-cap-goal {
@@ -4562,6 +4761,26 @@
   &[hidden] {
     display: none;
   }
+}
+
+.tri-compare-curve-model {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.9;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-curve-cp {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.65;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-compare-curve-model[hidden],
+.tri-compare-curve-cp[hidden] {
+  display: none;
 }
 
 .tri-compare-curve-ftp {
@@ -10463,6 +10682,76 @@
   vector-effect: non-scaling-stroke;
 }
 
+.tri-curve-cp-k {
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+}
+
+.tri-curve-thresholds {
+  display: flex;
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  align-items: baseline;
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-critical-power-anchors {
+  display: grid;
+  flex: 0 0 100%;
+  grid-template-columns: max-content max-content max-content max-content max-content;
+  gap: 0.2rem 0.35rem;
+  align-items: baseline;
+  max-width: 100%;
+  font-variant-numeric: tabular-nums;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.tri-critical-power-anchor {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  color: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  line-height: 1.35;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.12s ease-out;
+}
+
+.tri-critical-power-anchor-duration,
+.tri-critical-power-anchor-power {
+  justify-self: end;
+}
+
+.tri-curve-cp-k[data-gloss],
+.tri-best-power-model[data-gloss],
+.tri-matched-critical-power[data-gloss] {
+  text-decoration: none;
+  transition: color 0.12s ease-out;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-critical-power-anchor[href]:hover {
+    background: transparent;
+    color: var(--dark);
+  }
+
+  .tri-curve-cp-k[data-gloss]:hover,
+  .tri-best-power-model[data-gloss]:hover,
+  .tri-matched-critical-power[data-gloss]:hover {
+    color: var(--dark);
+  }
+}
+
+.tri-critical-power-anchor[href]:focus-visible {
+  color: var(--dark);
+  outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+  outline-offset: 2px;
+}
+
 .tri-chart-cursor {
   stroke: var(--tri-accent);
   stroke-width: 0.5;
@@ -10496,6 +10785,10 @@
   opacity: 1;
 }
 
+.tri-curve-chart:focus-within .tri-chart-readout {
+  opacity: 1;
+}
+
 .tri-curve-readout {
   top: 0.4rem;
   z-index: 2;
@@ -10518,7 +10811,33 @@
   display: grid;
   grid-template-columns: subgrid;
   align-items: center;
+  color: inherit;
   line-height: 1.25;
+  text-decoration: none;
+
+  &[href] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  &[href]:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-curve-readout-row[href]:hover {
+    background: transparent;
+
+    .tri-curve-readout-value,
+    .tri-curve-readout-label {
+      color: var(--dark);
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.12rem;
+    }
+  }
 }
 
 .tri-curve-readout-swatch {
@@ -10579,6 +10898,27 @@
   display: none;
 }
 
+.tri-curve-model {
+  fill: none;
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.9;
+  stroke-dasharray: 4 1.5 1 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-curve-cp {
+  stroke: color-mix(in srgb, var(--tri-accent) 58%, var(--dark));
+  stroke-width: 0.65;
+  stroke-dasharray: 5 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-curve-model[hidden],
+.tri-curve-cp[hidden],
+.tri-curve-cp-k[hidden] {
+  display: none;
+}
+
 .tri-curve-point {
   position: absolute;
   z-index: 1;
@@ -10629,9 +10969,59 @@
   color: color-mix(in srgb, var(--tri-accent) 75%, var(--dark));
 }
 
-.tri-shift-svg {
+.tri-shift-svg,
+.tri-power-balance-svg {
   height: 80px;
   overflow: visible;
+}
+
+.tri-zone.tri-power-balance-chart > .tri-cax-frame {
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+}
+
+.tri-power-balance-summary,
+.tri-power-balance-legend-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tri-power-balance-summary {
+  gap: 0.45rem;
+}
+
+.tri-power-balance-legend-item {
+  gap: 0.18rem;
+}
+
+.tri-power-balance-legend-line {
+  display: inline-block;
+  width: 0.82rem;
+  height: 1px;
+  background: var(--tri-accent);
+}
+
+.tri-power-balance-legend-item--right .tri-power-balance-legend-line {
+  background: var(--darkgray);
+}
+
+.tri-power-balance-line {
+  fill: none;
+  stroke: var(--tri-accent);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.tri-power-balance-line--right {
+  stroke: var(--darkgray);
+  stroke-width: 0.9;
+}
+
+.tri-power-balance-line--missing {
+  stroke-width: 0.7;
+  stroke-dasharray: 0.5 2.5;
+  opacity: 0.62;
 }
 
 .tri-stamina-legend-item {
@@ -11603,20 +11993,55 @@
 }
 
 @container tri-day-card (min-width: 26rem) {
+  .tri-day-embed[data-triathlon-embedded='1'] .tri-pop-card:has(> .tri-act + .tri-act) {
+    --tri-embedded-stat-row-height: 1.94rem;
+    --tri-embedded-primary-height: clamp(190px, 24cqi, 280px);
+    --tri-embedded-secondary-height: 13.3rem;
+    --tri-embedded-visual-height: calc(
+      var(--tri-embedded-primary-height) + var(--tri-embedded-secondary-height) + 0.6rem
+    );
+
+    > .tri-act {
+      > .tri-act-stats tbody,
+      > .table-container > .tri-act-stats tbody {
+        display: grid;
+        grid-template-rows: repeat(
+          var(--tri-embedded-summary-rows),
+          var(--tri-embedded-stat-row-height)
+        );
+      }
+
+      > .tri-act-stats tr,
+      > .table-container > .tri-act-stats tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        align-items: baseline;
+      }
+
+      > .tri-act-strength {
+        box-sizing: border-box;
+        height: var(--tri-embedded-visual-height);
+        margin-top: 0;
+      }
+
+      .tri-strength-exercises {
+        min-height: 0;
+        padding-inline-end: 0.35rem;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+        scrollbar-gutter: stable;
+        @include thin-scrollbar;
+      }
+    }
+  }
+
   .tri-day-embed[data-triathlon-embedded='1']
     .tri-pop-card:has(> .tri-act + .tri-act)
     > .tri-act:has(> .tri-act-figs--pool) {
-    --tri-embedded-stat-row-height: 1.94rem;
-    --tri-embedded-secondary-height: 13.3rem;
-
-    > .tri-act-figs--pool {
-      margin-top: var(--tri-embedded-stat-row-height);
-    }
-
     .tri-pool-wrap {
       display: grid;
       grid-template-rows:
-        clamp(190px, 24cqi, 280px)
+        var(--tri-embedded-primary-height)
         var(--tri-embedded-secondary-height);
       align-items: stretch;
       gap: 0.6rem;

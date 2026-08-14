@@ -1,3 +1,4 @@
+import type { CriticalPowerEstimate } from '../../../plugins/stores/critical-power'
 import type { MatchedRidesBlock } from '../../../plugins/stores/matched-rides'
 import type { MatchedRunsBlock } from '../../../plugins/stores/matched-runs'
 import type { ActivityHealth } from '../../../plugins/stores/strava'
@@ -15,6 +16,8 @@ export type DetailPayload = {
   powerCurveRef?: PowerCurvePoint[]
   powerCurveYearRef?: PowerCurvePoint[]
   powerCurveYear?: number | null
+  criticalPower?: CriticalPowerEstimate | null
+  criticalPowerYear?: CriticalPowerEstimate | null
   ftp?: number | null
   goalFtp?: number | null
   vt1Hr?: number | null
@@ -27,6 +30,8 @@ export const detailContextFromPayload = (payload?: DetailPayload | null): Detail
   curveRef: payload?.powerCurveRef ?? [],
   curveYearRef: payload?.powerCurveYearRef ?? [],
   curveYear: payload?.powerCurveYear ?? null,
+  criticalPower: payload?.criticalPower ?? null,
+  criticalPowerYear: payload?.criticalPowerYear ?? null,
   ftp: payload?.ftp ?? null,
   goalFtp: payload?.goalFtp ?? null,
   vt1: payload?.vt1Hr ?? null,

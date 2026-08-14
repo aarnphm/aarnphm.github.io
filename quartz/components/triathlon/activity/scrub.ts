@@ -5,6 +5,7 @@ import type { TriathlonPresentation } from '../../../util/triathlon-presentation
 import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { clock } from '../../../util/triathlon-card'
 import { decodePowerCurve } from '../../../util/triathlon-card'
+import { nearestPowerCurvePoint } from '../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { swimTrendHoverAt } from '../../../util/triathlon-card'
@@ -17,6 +18,7 @@ import { swimActivityHeaderValue } from '../../../util/triathlon-i18n'
 import { swimActivityPointText } from '../../../util/triathlon-i18n'
 import { swimActivityValueText } from '../../../util/triathlon-i18n'
 import { triText } from '../../../util/triathlon-i18n'
+import { syncPowerCurveActivityLink } from './power-links'
 
 export const setupChartScrub = (
   scope: HTMLElement,
@@ -216,6 +218,11 @@ export const setupChartScrub = (
       if (duration) duration.textContent = zoneClock(hover.durationS)
       if (ride) ride.textContent = `${hover.watts.toLocaleString()} W`
       if (referenceRow) referenceRow.hidden = hover.referenceWatts == null
+      syncPowerCurveActivityLink(
+        referenceRow instanceof HTMLAnchorElement ? referenceRow : null,
+        nearestPowerCurvePoint(reference, hover.durationS),
+        wrap.closest<HTMLElement>('.tri-act[data-activity-id]')?.dataset.activityId,
+      )
       if (referenceValue && hover.referenceWatts != null)
         referenceValue.textContent = `${hover.referenceWatts.toLocaleString()} W`
       if (referenceLabel)
@@ -493,6 +500,10 @@ export const setupChartScrub = (
       option.setAttribute('aria-pressed', String(option.dataset.curveRange === range))
     for (const path of svg.querySelectorAll<SVGElement>('.tri-curve-ref[data-curve-range]'))
       path.toggleAttribute('hidden', path.dataset.curveRange !== range)
+    for (const element of wrap.querySelectorAll<HTMLElement | SVGElement>(
+      '[data-critical-power-range]',
+    ))
+      element.toggleAttribute('hidden', element.dataset.criticalPowerRange !== range)
     delete svg.dataset.curveIndex
     showCurveIndex(svg, index, wasActive)
   }

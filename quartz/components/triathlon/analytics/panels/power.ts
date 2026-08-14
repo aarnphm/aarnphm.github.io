@@ -1,19 +1,23 @@
 import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { PowerCurveBlock } from '../../../../plugins/stores/analytics'
+import type { CriticalPowerEstimate } from '../../../../plugins/stores/critical-power'
 import type { PowerCurvePoint } from '../../../../plugins/stores/strava'
 import type { AxisXTick } from '../../../../util/triathlon-card'
 import type { TriathlonContext } from '../../runtime/context'
 import type { TriathlonFormatter } from '../../runtime/formatter'
+import { criticalPowerAtDuration } from '../../../../plugins/stores/critical-power'
+import { criticalPowerCurve } from '../../../../plugins/stores/critical-power'
 import { axisFrame } from '../../../../util/triathlon-card'
 import { axisNumber } from '../../../../util/triathlon-card'
 import { dlabel } from '../../../../util/triathlon-card'
-import { nearestPowerCurveValue } from '../../../../util/triathlon-card'
+import { nearestPowerCurvePoint } from '../../../../util/triathlon-card'
 import { niceStep } from '../../../../util/triathlon-card'
 import { powerCurveDurationTicks } from '../../../../util/triathlon-card'
 import { powerCurveFraction } from '../../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../../util/triathlon-card'
 import { powerCurvePathPoints } from '../../../../util/triathlon-card'
 import { zoneClock } from '../../../../util/triathlon-card'
+import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
@@ -38,6 +42,12 @@ export const bestPowerSeries = (
   { key: 'six-weeks', curve: power.sixWeeks },
   { key: 'year', curve: power.year },
 ]
+
+export const criticalPowerForSeries = (
+  power: PowerCurveBlock,
+  key: BestPowerSeriesKey,
+): CriticalPowerEstimate | null =>
+  key === 'six-weeks' ? power.criticalPower : power.criticalPowerYear
 
 export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext): HTMLElement => {
   const block = el('section', 'tri-best-power')
@@ -91,6 +101,10 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
     ...available.flatMap(({ curve }) => curve.map(point => point.w)),
     power.ftp ?? 0,
     power.goalFtp ?? 0,
+    ...series.flatMap(({ key }) => {
+      const estimate = criticalPowerForSeries(power, key)
+      return estimate ? [estimate.criticalPowerWatts + estimate.wPrimeJoules / 180] : []
+    }),
   )
   const step = niceStep(observedMax, 4)
   const domainMax = Math.ceil(observedMax / step) * step
@@ -148,6 +162,31 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
         'aria-hidden': 'true',
       }),
     )
+  for (const { key } of available) {
+    const estimate = criticalPowerForSeries(power, key)
+    if (!estimate) continue
+    const model = criticalPowerCurve(estimate, minSeconds, maxSeconds)
+    if (model.length >= 2)
+      graph.appendChild(
+        svg('path', {
+          class: `tri-best-power-model-line tri-best-power-model-line--${key}`,
+          d: path(model),
+          'data-power-model-series': key,
+          'aria-hidden': 'true',
+        }),
+      )
+    graph.appendChild(
+      svg('line', {
+        class: `tri-best-power-cp tri-best-power-cp--${key}`,
+        x1: 0,
+        y1: Y(estimate.criticalPowerWatts).toFixed(2),
+        x2: W,
+        y2: Y(estimate.criticalPowerWatts).toFixed(2),
+        'data-power-model-series': key,
+        'aria-hidden': 'true',
+      }),
+    )
+  }
   if (power.ftp != null)
     graph.appendChild(
       svg('line', {
@@ -182,7 +221,8 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
   const readout = el('div', 'tri-best-power-readout')
   readout.appendChild(el('span', 'tri-best-power-duration', zoneClock(selectedSeconds)))
   for (const { key, curve } of available) {
-    const watts = nearestPowerCurveValue(curve, selectedSeconds)
+    const selectedPoint = nearestPowerCurvePoint(curve, selectedSeconds)
+    const watts = selectedPoint?.w ?? null
     const point = el('span', `tri-best-power-point tri-best-power-point--${key}`, undefined, {
       'data-power-series': key,
       'aria-hidden': 'true',
@@ -192,7 +232,10 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
         'style',
         `left:${X(selectedSeconds).toFixed(2)}%;top:${((Y(watts) / H) * 100).toFixed(2)}%`,
       )
-    const row = el('span', 'tri-best-power-readout-row', undefined, { 'data-power-series': key })
+    const row = el('a', 'tri-best-power-readout-row', undefined, {
+      'data-power-series': key,
+      ...powerCurveActivityLinkAttributes(selectedPoint),
+    })
     row.append(
       el('span', `tri-best-power-swatch tri-best-power-swatch--${key}`, undefined, {
         'aria-hidden': 'true',
@@ -201,6 +244,30 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
       el('span', 'tri-best-power-label', bestPowerSeriesLabel(context.formatter, power, key)),
     )
     overlays.push(point)
+    readout.appendChild(row)
+  }
+  for (const { key } of available) {
+    const estimate = criticalPowerForSeries(power, key)
+    if (!estimate) continue
+    const visible = selectedSeconds >= 180 && selectedSeconds <= 720
+    const watts = visible ? Math.round(criticalPowerAtDuration(estimate, selectedSeconds)) : null
+    const row = el(
+      'span',
+      'tri-best-power-readout-row tri-best-power-readout-row--model',
+      undefined,
+      { 'data-power-model-series': key },
+    )
+    row.hidden = !visible
+    row.append(
+      el(
+        'span',
+        `tri-best-power-swatch tri-best-power-swatch--model tri-best-power-swatch--model-${key}`,
+        undefined,
+        { 'aria-hidden': 'true' },
+      ),
+      el('strong', 'tri-best-power-value', watts == null ? '—' : `${watts.toLocaleString()} W`),
+      el('span', 'tri-best-power-label', bestPowerSeriesLabel(context.formatter, power, key)),
+    )
     readout.appendChild(row)
   }
   overlays.push(readout)
@@ -233,12 +300,43 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
     ),
   )
 
-  const cap = el('div', 'tri-best-power-cap')
-  if (power.ftp != null) cap.appendChild(el('span', undefined, `FTP ${power.ftp}W`))
-  if (power.goalFtp != null)
-    cap.appendChild(
-      el('span', 'tri-best-power-cap-goal', `${context.formatter.text('goal')} ${power.goalFtp}W`),
-    )
-  block.appendChild(cap)
+  const criticalPowerCaptions = [
+    ['six-weeks', power.criticalPower],
+    ['year', power.criticalPowerYear],
+  ] as const
+  if (
+    power.ftp != null ||
+    criticalPowerCaptions.some(([, estimate]) => estimate != null) ||
+    power.goalFtp != null
+  ) {
+    const cap = el('div', 'tri-best-power-cap')
+    if (power.ftp != null)
+      cap.appendChild(el('span', 'tri-best-power-cap-ftp', `FTP ${power.ftp}W`))
+    let hasCriticalPowerCaption = false
+    for (const [key, estimate] of criticalPowerCaptions) {
+      if (!estimate) continue
+      cap.appendChild(
+        el(
+          'span',
+          'tri-best-power-cap-cp',
+          `eCP ${estimate.criticalPowerWatts.toLocaleString(
+            context.presentation.locale === 'fr' ? 'fr-CA' : 'en-US',
+            { maximumFractionDigits: 1 },
+          )}W`,
+          { 'data-power-cap-series': key, ...(hasCriticalPowerCaption ? { hidden: '' } : {}) },
+        ),
+      )
+      hasCriticalPowerCaption = true
+    }
+    if (power.goalFtp != null)
+      cap.appendChild(
+        el(
+          'span',
+          'tri-best-power-cap-goal',
+          `${context.formatter.text('goal')} ${power.goalFtp}W`,
+        ),
+      )
+    block.appendChild(cap)
+  }
   return block
 }

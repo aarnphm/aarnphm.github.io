@@ -118,6 +118,8 @@ export function buildFeedMarkdown(
     body: analytics.body,
     thresholds: analytics.thresholds,
     bests: analytics.bests,
+    criticalPower: analytics.powerCurve.criticalPower,
+    criticalPowerYear: analytics.powerCurve.criticalPowerYear,
     upcoming: (analytics.events ?? []).filter(e => e.date >= m.today),
     races: analytics.races,
     tests: analytics.tests,
