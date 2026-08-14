@@ -1,6 +1,6 @@
 ---
 date: '2025-07-13'
-description: and growing, friendship
+description: on friendship, boundaries, and romantic confusion.
 draft: true
 id: confusion
 modified: 2026-06-05 15:08:10 GMT-04:00
@@ -19,26 +19,14 @@ I'm stuck, I don't know how to proceed with her.
 - I thought I don't have to put up an act
   - I guess I'm wrong
 
-"On Friendship" by Montaigne, he wrote:
+What did I do wrong?
 
-What I did wrong?
-
-- Seemingly bring down the barrier I thought it was safe to brought down
-- Misunderstood the boundaries that we have as a friends
+- I lowered a barrier I thought it was safe to bring down
+- I misunderstood the boundaries we had as friends
 - The enthusiasm of sharing seemingly to be misplaced, and mistaken with romantic gestures
   - coupled with the fact that one expressed previous romantic feelings
-  - But I thought that once you told me to stop, I stop.
+  - But I thought that once you told me to stop, I stopped.
   - Naive heart longing for connection
-    - Montaigne wrote this in P.10-11: "One has to tread this friendship with care and caution"
+    - Montaigne distinguishes his ideal friendship with La Boétie from ordinary friendships that require care and caution.
     - I felt like I'm about to lose her, forever
-  - It felt brittle, as if just one more mistakes, then its gone.
-    - Baseball simile
-    -
-
----
-
-What do I do when she doesn't want me?
-
-What is this feeling of being in love, yet so confused about things going slow?
-
-What did I do wrong mostly? It felt like I didn't even know how to behave correctly? I can't just seemingly to love one to the full extend
+  - It felt brittle, as if one more mistake would end it.

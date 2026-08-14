@@ -139,7 +139,7 @@ les expressions pour indiquer qu'on ne comprend pas:
 | ----------- | -------------- | -------------------------- |
 | `M.`        | `Monsieur`     | un homme                   |
 | `Mme`       | `Madame`       | une femme                  |
-| `Mlle`      | `Mademoiselle` | une jeune femme non mariée |
+| `Mlle`      | `Mademoiselle` | une très jeune fille, ou une femme qui demande ce titre |
 
 ### l'adresse : abréviations courantes
 
@@ -170,4 +170,4 @@ exemple rempli: `Hélène Ferron`, `H2P 4T8`, `mariet@editionsmd.ca`.
 - la date de naissance : `AAAA-MM-JJ`, mois en minuscule, `aout` sans circonflexe.
 - le `1` d'une date se dit `premier`, s'écrit `1er` ; les autres jours sont cardinaux.
 - `@` = `arobas` ; un email = un `courriel`.
-- `vous` pour le formel, `tu` pour l'informel.
+- `vous` marks politeness or plural address, while `tu` marks singular familiar address. question syntax supplies a separate register contrast: `Vous avez quel âge ?` is conversational, while `Quel âge avez-vous ?` uses formal inversion.

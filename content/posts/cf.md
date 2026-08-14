@@ -1,6 +1,6 @@
 ---
 date: '2025-08-04'
-description: And maybe you should, or shouldn't.
+description: why I moved this Quartz site to Cloudflare Workers.
 id: cf
 modified: 2026-06-06 00:12:35 GMT-04:00
 socials:
@@ -11,105 +11,37 @@ tags:
 title: Moving to Cloudflare
 ---
 
-> Preface: I just want to say that I absolutely adore the Vercel team and love everything they have been working on so far.
-> But Cloudflare is based (just see their recent [blog catalog](https://blog.cloudflare.com/), and the main thing that sold me on Cloudflare was [Quicksilver](https://blog.cloudflare.com/introducing-quicksilver-configuration-distribution-at-internet-scale/), but enough glaze 😅)
->
-> Also I'm not a frontend engineer by trade, so I'm not going into too much details about the benefits between these providers for specific frameworks. So I want you,
-> the reader to treat this from a perspective of a consumer, who enjoy writing somewhat fruitful static files on his weekend. 🙂
+Over two weekends, I moved this site from a split Vercel and Cloudflare setup to Cloudflare Workers. This is an account of what changed for one custom Quartz site.
 
-I finally found some pockets of time over the last two weekends slowly migrating all of [[/|this]] site infrastructure to Cloudflare. I would want to say so far, the experience has been nothing but great.
+The decision came from the shape of this project. Cloudflare already managed the domain, DNS, and the R2 bucket that held large files. Moving the site and its server code to Workers put the parts I operated most often in one place.
 
-Previously, this site were being run with a mixed between Vercel (functions) and Cloudflare (Domains and DNS), which in turn has caused me a lot of friction for prototyping/adding new features I want to build.
-This post will demonstrate what I enjoy about using both and what both providers can improve, and will explain the decision behind going with Cloudflare versus other alternatives.
+## how the site reached that point
 
-## "genealogy" of the sites
+This site uses a customized version of [Quartz](https://quartz.jzhao.xyz/). Its deployment changed in four stages.
 
-This website is entirely built with a customised version of [Quartz](https://quartz.jzhao.xyz/) (you can find more details [[thoughts/craft#^quartz|here]]):
+1. In [812ac42](https://github.com/aarnphm/aarnphm.github.io/commit/812ac42097844bd0470b1b7fbb7ac6ed66e772e6), I first open-sourced this implementation at the request of a few friends. GitHub Pages served the static files. Gen.xyz managed DNS. Vercel Functions handled the [[/curius|Curius feed]], arXiv popovers, and code rendering.
+2. In [ce7bcee](https://github.com/aarnphm/aarnphm.github.io/commit/ce7bcee77f7e2e6e4b688c831201fadc9cd2d18b), I started prototyping the site around [Andy Matuschak's notes](https://notes.andymatuschak.org/About_these_notes). I added Vercel Middleware for routing between `notes.aarnphm.xyz` and `aarnphm.xyz`. That left me operating two deployments of the same site.
+3. I later exceeded the GitHub LFS Free allowance while hosting PDFs. I moved those assets to Cloudflare R2, then moved DNS and the static deployment to Cloudflare Pages. At that point, Cloudflare already owned most of the path from the domain to the files.
+4. In [6aadff3](https://github.com/aarnphm/aarnphm.github.io/commit/6aadff359a5e8ccb7879e6e8a69e79c8ba1542cd), I moved the site from Pages to Workers while upgrading Quartz. Cloudflare's [migration guide](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/) covered the static asset changes. `wrangler types` generated TypeScript types for bindings, and `wrangler dev` gave me the local Worker runtime I needed.
 
-- [812ac42](https://github.com/aarnphm/aarnphm.github.io/commit/812ac42097844bd0470b1b7fbb7ac6ed66e772e6): I first open-source this implementations, requested by a few friends
-  - Hosted with GitHub Pages, DNS managed by [gen.xyz](https://gen.xyz/)
-  - Vercel Functions for [[/curius|curius feed]], arXiV popover, and code rendering
-    - This is functional, but rather pretty slow, given that there are a few round-trip needed to be done
-      between GitHub Pages and Vercel
-- [ce7bcee](https://github.com/aarnphm/aarnphm.github.io/commit/ce7bcee77f7e2e6e4b688c831201fadc9cd2d18b): The first initial version of prototyping [Andy Matuschak's notes](https://notes.andymatuschak.org/About_these_notes) with Quartz
-  - https://github.com/jackyzha0/quartz/issues/128 requests for a view with default Quartz
-  - Added Vercel Middleware to redirect DNS
-    - Given that [notes.aarnphm.xyz](https://notes.aarnphm.xyz) and [aarnphm.xyz](https://aarnphm.xyz) points to the same source,
-      I end up having to setup build process on Vercel similar to GitHub Pages.
-    - Which ends up having two copies of the exact same sites over two different cloud buckets!
-      > Retrospectively, I could have moved all over to Vercel at this point, but I was trying to skim through the free offering from both providers.
-- At some point along the way, I had exceed the limits for GitHub LFS Free tier.
-  - I was tempted to just add more storages, but it is pretty expensive (ik $10 is 2 cups of coffee, but if you can do it for free, why not)
-  - Found https://github.com/milkey-mouse/git-lfs-s3-proxy and https://github.com/milkey-mouse/git-lfs-client-worker contains setup for your own Git LFS with Cloudflare R2
-    - Cloudflare is relatively generous with their quotas and storages for [free tier](https://www.cloudflare.com/en-gb/lp/pg-r2-comparison-2)
-    - I did a quick comparison with [Vercel Blob](https://vercel.com/docs/vercel-blob/usage-and-pricing). However, the pricing seems to be a bit more on the expensive side.
-    - For the tasks that I want to achieve (which is current hosting PDFs), Cloudflare is a better choice here
-- Moved all DNS, domain to Cloudflare, and migrated to Cloudflare [Pages](https://pages.cloudflare.com/)
-  - I was also considering to use Vercel DNS, but given that I have already been on R2 at this point, it seems prudent to use Cloudflare for the sake of simplicity
-    - Lee Rob from Vercel reached out for [feedback](https://x.com/aarnphm/status/1882982597908955548?s=46&t=K6_tWk-1vuN4JVbmPrSC7A), so I'm indeed bullish on Vercel on their care/dedications to their customers.
-  - Their free tier encapsulates pretty much all features I would ever needed, for now.
-  - The only reasons I haven't yet migrated to Cloudflare fully is because `wrangler` 3 was rather hard to use with TypeScript, and Vercel supports for TypeScript is superior at this point.
-- [6aadff3](https://github.com/aarnphm/aarnphm.github.io/commit/6aadff359a5e8ccb7879e6e8a69e79c8ba1542cd): Migrated to Cloudflare Workers
-  - Upgrading Quartz to the latest 4.5.x requires a major changes into how it handles incremental builds,
-    so I found that this was a good time to switch/migrate fully to Cloudflare Workers.
-    - They have now a lot better TS supports, with `wrangler types` and `wrangler dev`, which simplifies the setup a ton with Quartz.
-    - Migrating from Pages and Workers are very refreshing, as their [docs](https://developers.cloudflare.com/workers/static-assets/migration-guides/migrate-from-pages/) details all that you need to look out for.
-      - I haven't seen a lot of good documentations, other than Cloudflare, Amazon, and Vercel.
+None of these stages was a controlled provider comparison. Each solved the next problem in a site that had already accumulated parts from both platforms.
 
-## pros and "not-pros-yet".
+## why Workers fit this site
 
-You can pretty much [Google](https://www.google.com/search?q=cloudflare+vs+vercel&oq=cloudflare+vs+vercel&gs_lcrp=EgZjaHJvbWUqBwgAEAAYgAQyBwgAEAAYgAQyDAgBEAAYFBiHAhiABDIMCAIQABgUGIcCGIAEMgcIAxAAGIAEMgcIBBAAGIAEMggIBRAAGBYYHjIICAYQABgWGB4yCAgHEAAYFhgeMggICBAAGBYYHjIICAkQABgWGB7SAQgyNjcxajBqNKgCALACAQ&sourceid=chrome&ie=UTF-8) comparison
-all day long to see whether it is sensible to migrate your whole infrastructure between these two providers.
+The main gain was operational. DNS, static assets, R2 files, and Worker code now shared one provider and one deployment path. A feature that needed a server route could live beside the site instead of crossing from GitHub Pages to a Vercel Function.
 
-At the end of the day, the following are what _I care about_ when building a functional website:
+The second gain was configuration I could keep in the repository. Quartz had no Vercel preset for this deployment, so I would have maintained its build and routing configuration myself. Vercel supports many frameworks and also exposes framework-neutral project configuration. The issue was the work required for this Quartz fork, rather than a general limit of the platform.
 
-- Performance: I want people who cares about optimizing for miliseconds
-- Security: reduce crawlers, fast, 100% uptime, so that I don't have to worry about them.
-- Intuitive UX: follows zero-config philosophy (I think [Ghostty](https://ghostty.org/docs/config) is a prime example of this). I don't have to configure a tons of stuff and can simply toggle items on the dashboard
-- Friendly developer tooling: I want to write code, so tooling must be good.
-- Pricing: free offering, otherwise pay-per-usage billing. Lenient on storage is a huge plus.
+Cloudflare documents standard unmetered DDoS protection across its plans.[^ddos] That was useful for a public site. It does not establish perfect security or `100%` uptime, and I did not collect enough production data to compare either provider on those measures.
 
-| Criteria                   | Cloudflare   | Vercel                |
-| -------------------------- | ------------ | --------------------- |
-| Performance                | ✅           | 🚧 [^vercel-perf]     |
-| Security                   | ✅           | 🚧 [^vercel-security] |
-| Intuitive UX               | ✅           | ✅                    |
-| Friendly developer tooling | 🚧 [^cf-dev] | ✅                    |
-| Pricing                    | ✅           | 🚧                    |
+R2 mattered because the large objects were already there. Moving them again would have added work without solving a problem I had. The storage decision made the later hosting decision easier.
 
-[^vercel-perf]:
-    There is a case to be made that if I migrated everything on Vercel, it would be a lot smoother. However, this is not the case given that Vercel is designed to integrated well with Next, and supports for
-    platform-agnostic framework (such as Quartz) are rather limited. I prefer not to spend that much time on making it work with Vercel. Also the pricing is also a big hurdles for me.
+## what this decision does not show
 
-[^vercel-security]:
-    There has always been a huge hurdles around Vercel's security on Twitter and the internet in general. The team works very well to circumvent these problems, but as a user it didn't give me a lot of conviction
-    when comparing to other alternatives (such as Cloudflare, AWS, GCP)
+This migration does not show that Cloudflare is faster than Vercel, or that one provider is safer. I did not run latency tests, keep a fixed observation window, or compare equivalent paid plans. The old scorecard in this note pretended those measurements existed, so I removed it.
 
-[^cf-dev]:
-    `wrangler` has been historically harder to use comparing to vercel setup. However, with the recent v4, it has become a lot more simpler and easier to use.
-    But credits where credits are due, Vercel triumphs in terms of users experience here.
+Vercel's framework presets, dashboard, and deployment workflow can be a better fit for a project built around one of those presets. Cloudflare fit this site because the domain, object storage, and edge code were already there. The ratio of migration work to removed operational work was favorable for this repository.
 
-    Their KV as well as D1 databases are a safe bet for me to prototype with a few more features I want to build for the sites. Their AI gateway is also a plus.
+That is the whole recommendation. Map the pieces you already operate, identify the boundaries that cause repeated work, and choose the deployment that removes those boundaries. For this Quartz site in August 2025, that deployment was Cloudflare Workers.
 
-From this comparison, Cloudflare did seem to come out on top, for my use-case.
-However, I don't think this would be a signal for you to move to Cloudflare completely.
-
-Vercel is good for you if:
-
-- developer UX and building sites with supported frameworks. Next, Svelte, Solid are all amazing to work with when using `vercel` (from my experience on other projects)
-- seamless user experience with observability and metrics from their dashboard.
-- suite of products and resources for you to build your next 1M ARR business you're willing to 😃
-
-Cloudflare is good for you if:
-
-- If you care about security and don't have to worry too much about the minor details
-- static sites
-- free plan
-
-> [!note] AI-related supports
->
-> They both have AI-related products, but I'm not going to compare it here given that I don't use them extensively.
-
-Finally, I do have a lot of conviction in Cloudflare, through their [open source](https://github.com/cloudflare)and their leadership.
-However, it goes without saying that Vercel is still considered as a startup, comparing to Cloudflare, a publicly traded company.
-The mere sizes comparison between the two shows how far Vercel has come and essentially brings competition to these giants, and I can't wait for one day, for Vercel to win.
+[^ddos]: Cloudflare lists standard unmetered DDoS protection as available across its plans in the [DDoS Protection documentation](https://developers.cloudflare.com/ddos-protection/).

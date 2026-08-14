@@ -129,7 +129,7 @@ pick the pronoun by what is missing inside the relative clause:
 | `dont` | un complément en `de` | le verbe se construit en `de` | `le chat dont je parle` (`parler de`)           |
 | `où`   | un lieu ou un temps   | l'antécédent est lieu/temps   | `la ville où j'habite`, `le jour où je suis né` |
 
-the elision is asymmetric: `que` drops its vowel (`le livre qu'il lit`) and `qui` never does (`la femme qui est là`). `dont` covers every `de`-construction, `parler de`, `avoir besoin de` (the [[fr/episode-8]] messages: `les ciseaux dont il a besoin`), and possession (`la femme dont le fils est médecin`).
+the elision is asymmetric: `que` drops its vowel (`le livre qu'il lit`) and `qui` never does (`la femme qui est là`). `dont` replaces a complement introduced by `de`, as in `le chat dont je parle`, `les ciseaux dont il a besoin`, and `la femme dont le fils est médecin`. it cannot be combined with another `de` complement, a possessive determiner, or `en` that repeats the same relation.
 
 ## faire connaissance
 
@@ -152,7 +152,7 @@ the tu↔vous conversion table:
 | `Ton garçon a 14 ans.`                      | `Votre garçon a 14 ans.`                    |
 | `Est-ce que tes enfants parlent français ?` | `Est-ce que vos enfants parlent français ?` |
 
-the conversion is lossy in one direction only: `ton` et `ta` tombent tous les deux sur `votre`, so going to `vous` throws the noun's gender away, and coming back has to put it back (`Votre garçon` ne peut redevenir que `ton garçon`, jamais `ta`). three forms map onto two, then two map back onto three. note also that no verb moves in this table: `tu`/`vous` is only the possessor here, so `est`, `a` et `parlent` continue d'accorder avec `nom`, `femme`, `garçon`, `enfants`.
+`ton` and `ta` both become `votre`, while `tes` becomes `vos`. the noun still determines the informal form: `Votre garçon` becomes `ton garçon`, `Votre femme` becomes `ta femme`, and `Vos enfants` becomes `tes enfants`. no information is lost when the full noun phrase is kept. note also that no verb moves in this table: `tu`/`vous` is only the possessor here, so `est`, `a` et `parlent` continue d'accorder avec `nom`, `femme`, `garçon`, `enfants`.
 
 the reformulation drill does the same at question level, and there the verb does move:
 
@@ -244,7 +244,7 @@ related: [[fr/episode-1|épisode 1]], [[fr/episode-2|épisode 2]], [[fr/episode-
 
 [^garcon]: the book's own examples use it: `Mon conjoint s'appelle Michel et mon garçon s'appelle Théo.`, `Ton garçon a 14 ans.` `fils` also appears (`Mon fils s'appelle Martin.`); `garçon` is the warmer, spoken choice, the same word [[fr/episode-1]] used to count `2 garçons`.
 
-[^nom]: the children are `Côté-Dupuis`, mother's name plus father's name. since 1981 the Code civil du Québec has spouses keep their birth names (a wife cannot legally take her husband's name, even if she wants to), and children may receive either parent's name or both, hyphenated. the tree draws the law.
+[^nom]: the children are `Côté-Dupuis`, combining surnames from both parents. in Québec, marriage does not change either spouse's surname for the exercise of civil rights, though a spouse may use the other spouse's surname socially. a child may receive a simple or compound surname formed from the parents' surnames.
 
 [^relatif]: `qui/que/dont/où` runs ahead of the A1 syllabus (the book's épisode 5 stops at the présentatifs); the class introduced all four for recognition, so the section lives here where the `c'est … qui` cleft naturally attaches.
 

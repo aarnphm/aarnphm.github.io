@@ -9,4 +9,4 @@ tags:
 title: French
 ---
 
-avec moi
+notes de français québécois: [[fr/episode-1|épisodes]], [[fr/phrases|phrases]], [[fr/les-nombres|nombres]], [[fr/orthography-phonetics|sons et orthographe]].

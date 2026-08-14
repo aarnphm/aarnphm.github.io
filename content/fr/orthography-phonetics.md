@@ -70,7 +70,7 @@ written accents mark vowel quality, spelling history, or homograph distinctions.
 
 the `u`/`ou` pair is the high-value minimal pair: `tu` /ty/ vs `tout` /tu/ differ only by front-rounded /y/ against back-rounded /u/.
 
-open vs closed alternates with the syllable for `e` and `o` too. `o` is /o/ in an open syllable (`mot` /mo/) and /ɔ/ before a pronounced consonant (`porte` /pɔʁt/); `é` /e/ vs `è` /ɛ/ runs the same contrast (`été` vs `père`).
+French often favors a close-mid vowel in an open syllable and an open-mid vowel in a closed syllable, but lexical and spelling exceptions remain. written `é` usually represents /e/, while `è` usually represents /ɛ/.
 
 ## nasal vowels
 

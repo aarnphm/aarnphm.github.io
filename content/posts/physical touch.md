@@ -1,53 +1,28 @@
 ---
 date: '2025-01-22'
-description: and on embodied experience.
+description: notes on letters and Don Shirley in Green Book.
 draft: true
 id: physical touch
 modified: 2026-06-05 15:08:09 GMT-04:00
 tags:
   - growth
   - love
-title: Green Books makes me want to write physical letters again.
+title: Green Book makes me want to write physical letters again.
 ---
 
-I kept seeing a TikTok about "Green Book", and got intrigued by the scene where the drivers trying to write a letter to his wife, and the protagonist was in a sense rewrite the letters given how rugged this italian man is with his words.
+I kept seeing a clip from [_Green Book_](https://www.universalpictures.com/movies/green-book). Tony Lip is trying to write a letter to his wife. Don Shirley listens, then helps him say what he means.
 
-we are introduced with the Italian driver, back in the 1950, where discrimination are still rampant in the city of new york
+The film follows Shirley, a Black concert pianist, and Tony, the white Italian American bouncer hired to drive him through a 1962 tour of the American South. Shirley has more money and status. Jim Crow still denies him freedoms that Tony can take for granted. The relation cannot be reduced to class because racial power runs through every stop.
 
-In essence we observe a conflict between the worker, whose skins were white, versus a person whose whole identity surround being a talented black musician, (Dr. Shirley)
+These are the scenes I want to return to:
 
-(28:11): the juxtaposition of the servant where the doctor went through a religious procedure, while the driver Tony just stand there watching.
+- At `28:11`, Tony first meets Shirley in a formal home setting he does not yet know how to read.
+- At `41:18`, Shirley tells Tony that he has choices unavailable to the other attendants. I need to rewatch the scene before making a larger claim about it.
+- At `46:14`, Shirley tells Tony to return the jade stone he took. The immediate question is honesty.
+- At `49:56`, Shirley begins to let Tony see the person behind the public role.
+- At `1:07:56`, they work on a letter to Tony's wife. Tony's blunt speech meets Shirley's care for taste and restraint.
+- At `1:33:32`, Shirley says that he is denied a stable place among the identities other people assign to him. The scene gives the stage persona a cost.
 
-In a sense, his ignorance was being judged by the Indian servant, resembling the same idea that this Italian man has yet to uncover the talents of Dr. Shirley
+The letters interest me because they carry physical evidence of revision. A sentence can be crossed out. The pressure of the pen remains on the paper. Shirley helps Tony find better words, while Tony still has to sign and send them.
 
-The absurd difference between two classes (Dr is seemingly have a lot higher comparing to the Italian)
-
-tony views upon the world as-is
-
-profanity => the push for taste and elegant from Dr (D Shirley world: high-class) <= intelligence (sound compromise)
-
-There was a scene about Dr Shirley telling Tony about he had a choice to be inside, whereas others valet didn't. In essence, he was telling Tony the value of experience? (41:18)
-
-(46:14): Importance about integrity, because Dr.Shirley has to gone through a lot of turbulence within his life. (with a jaded stone at the stop)
-
-We can talk about the stark difference between this contrast, what makes movie brilliant (whats drive these narrative forward)
-
-conflict => crux => resolution
-
-I guess Dr. Sherley brings out the protectiveness of the Italian
-
-He wrote these rugged letter to his wife (in a sense, it is the love that transcend place and time.)
-
-(49:56): opening up (peeling the layers of onion)
-
-(1:07:56): This is the scene where they write letters to his wife.
-
-A gay black musician in 1970s, in the south tour, oh well.
-
-_He wants to do this_
-
-Behind every facade of the perceived image, is a very broken human being.
-
-> We are just fragments of our life being held and glued together.
-
-(1:33:32): not man, not white, not black enough. The stage is a play for him, the mask he put upon. His idea of the world around him (third culture kid)
+That division matters. Help can improve the expression without replacing the person who means it. I want to write physical letters again because the object keeps that history of effort.

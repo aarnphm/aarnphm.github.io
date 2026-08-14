@@ -146,7 +146,7 @@ the cat sits in six places, one preposition each.
 
 ## comprendre une consigne
 
-a consigne is a written instruction. they come in the impératif with `vous`, and the episode draws six.
+une `consigne` is an instruction. in this exercise, the six `consignes` are written in the `vous` form of the imperative.
 
 | consigne    | gloss         |
 | ----------- | ------------- |
