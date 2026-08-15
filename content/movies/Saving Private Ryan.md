@@ -3,7 +3,7 @@ category:
   - drama
   - buster
 date: '2024-02-07'
-description: omaha beach opening as visceral horror—spielberg filming d-day casualties then sending tom hanks squad to find one paratrooper, the mission questioning whether one life justifies eight, war as jeremiad calling america back to mythic greatest generation.
+description: captain miller survives the omaha beach landing, then leads seven soldiers behind german lines to find private james ryan. the mission keeps asking how many lives should be risked to send one man home.
 director: Steven Spielberg
 id: saving-private-ryan
 modified: 2026-06-05 15:08:14 GMT-04:00

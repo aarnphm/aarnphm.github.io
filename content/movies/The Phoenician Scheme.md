@@ -3,7 +3,7 @@ category:
   - philosophy
   - sociology
 date: '2026-05-09'
-description: Wealthy businessman, Zsa-zsa Korda appoints his only daughter, a nun, as sole heir to his estate. As Korda embarks on a new enterprise, they soon become the target of scheming tycoons, foreign terrorists, and determined assassins.
+description: Tycoon Zsa-zsa Korda names his only daughter, the nun Liesl, as his sole heir and brings her into his new infrastructure scheme.
 director:
   - Wes Anderson
 id: The Phoenician Scheme

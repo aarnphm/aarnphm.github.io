@@ -1,5 +1,7 @@
 ---
-category: thriller
+category:
+  - love
+  - drama
 date: '2024-02-07'
 description: jazz purist and actress choosing dreams over each other—chazelle filming los angeles as musical fantasy where ambition wins, the epilogue showing the life they could have had if love mattered more than success.
 director: Damien Chazelle
@@ -10,7 +12,7 @@ rating: 8
 status: recurring
 studio: summit
 tags:
-  - thriller
+  - love
 title: La La Land
 year: 2016
 ---

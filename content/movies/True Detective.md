@@ -1,7 +1,7 @@
 ---
 category: shows
 date: '2024-02-07'
-description: louisiana detectives chasing ritual killer across seventeen years—fukunaga filming mcconaughey's nihilist philosopher and harrelson's everyman, time is a flat circle, yellow king mythology bleeding into swamp, eight episodes proving procedurals can be poetry.
+description: detectives rust cohle and marty hart investigate a ritual murder in louisiana. later interviews reveal how the case and their partnership changed over seventeen years.
 director: Cary Fukunaga
 id: true-detective
 modified: 2026-06-05 15:08:12 GMT-04:00

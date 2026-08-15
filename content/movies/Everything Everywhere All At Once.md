@@ -3,7 +3,7 @@ category:
   - buster
   - actions
 date: '2024-02-07'
-description: the multiverse as immigrant generational trauma—nihilism shaped like a bagel, absurdity as the only response to infinite meaninglessness, choosing kindness anyway.
+description: the multiverse turns evelyn's missed lives into an argument with joy. she answers the bagel's nihilism by choosing attention and kindness in each version of their relationship.
 director:
   - Daniel Scheinert
   - Daniel Kwan

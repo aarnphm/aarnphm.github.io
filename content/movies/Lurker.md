@@ -14,7 +14,7 @@ status: to watch
 studio: mubi
 tags:
   - thriller
-  - horrors
+  - drama
 title: Lurker
 watched: null
 year: 2025

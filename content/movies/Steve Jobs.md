@@ -3,7 +3,7 @@ category:
   - o/life
   - drama
 date: '2026-05-09'
-description: three product launches as pressure-cooker chambers - boyle films sorkin's dialogue as combat, jobs engineering machines and emotional debt in equal measure.
+description: Boyle stages the film backstage at three Apple product launches, where Jobs confronts colleagues and family members.
 director:
   - Danny Boyle
 id: Steve Jobs

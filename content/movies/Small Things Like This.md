@@ -3,14 +3,14 @@ category:
   - theology
   - religion
 date: '2024-02-07'
-description: irish coalman discovering girl locked in convent coal bin—mielants filming cillian murphy's quiet confrontation with magdalene laundries, 1980s ireland where catholic church tortured unwed mothers, christianity wavering when cruelty hides behind faith, choosing conscience over complicity.
+description: in 1985, coal merchant bill furlong finds a girl confined at a convent and confronts the town's silence around its abuses. the film asks what his conscience requires when the church controls the town and his family depends on his business.
 director: Tim Mielants
 id: small-things-like-this
 modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/small-things-like-this.jpg]]'
 rating: 7.8
-status: to watch
-studio: '[independent]'
+status: finished
+studio: lionsgate
 tags:
   - history
   - r/politics

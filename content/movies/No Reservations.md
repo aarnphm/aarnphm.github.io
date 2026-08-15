@@ -4,7 +4,7 @@ category:
   - o/relationship
   - comedy
 date: '2024-02-07'
-description: perfectionist chef forced to raise orphaned niece—hicks remaking mostly martha as hollywood rom-com, catherine zeta-jones learning control is illusion when eckhart's sous chef and breslin's child crack open her shut-down life, food and love requiring same vulnerability.
+description: a rigid new york chef takes in her niece after her sister dies and clashes with the new sous-chef at her restaurant. kate knows how to control a kitchen. she has to learn how to care for zoe and make room for nick.
 director: Scott Hicks
 id: no-reservations
 modified: 2026-06-05 15:08:13 GMT-04:00

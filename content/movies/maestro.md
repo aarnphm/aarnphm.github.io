@@ -4,7 +4,7 @@ category:
   - drama
   - marriage
 date: '2024-02-07'
-description: leonard bernstein's marriage as performance—cooper directing himself through makeup and conducting, felicia montealegre enduring his contradictions, the real estate of the film dedicated to love existing alongside truths they both knew but couldn't reconcile.
+description: leonard bernstein and felicia montealegre build a marriage around his public life. cooper stays with their affection as fame and illness change what each asks of the other.
 director: Bradley Cooper
 id: maestro
 modified: 2026-06-05 15:08:17 GMT-04:00

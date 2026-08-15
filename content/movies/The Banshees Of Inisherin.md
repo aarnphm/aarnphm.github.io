@@ -1,7 +1,7 @@
 ---
 category: thriller
 date: '2024-02-07'
-description: friendship ending without explanation on irish island—mcdonagh filming colm cutting off fingers every time pádraic tries talking to him, civil war smoke drifting over from the mainland while two men destroy each other over boredom and mortality, the kindest person you know becoming your enemy because he'd rather be remembered than loved.
+description: colm abruptly ends his lifelong friendship with pádraic, then threatens to cut off a finger each time pádraic speaks to him. pádraic refuses to accept the break, and their quarrel becomes mutual ruin while the civil war continues across the water.
 director: Martin McDonagh
 id: the-banshees-of-inisherin
 modified: 2026-06-05 15:08:17 GMT-04:00

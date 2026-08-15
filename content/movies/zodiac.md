@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
 date: '2024-02-07'
-description: meticulous chronicle of the decades-long investigation into the zodiac killer, following cartoonist, reporter, and detective consumed by obsession with unsolved mystery.
+description: the film follows the long manhunt for the zodiac killer. cartoonist robert graysmith keeps searching after the official investigation stalls.
 director:
   - David Fincher
 id: zodiac

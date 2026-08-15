@@ -11,14 +11,6 @@ title: movies.
 
 see also: [[cinematheque.base|base view]]
 
-a (mostly) up-to-date [[thoughts/Cinematography|film]], movies, shows that I have consumed, or on the watch list.
+this is my index for [[thoughts/Cinematography|films]] and shows. i use it for watched items and the watch list.
 
-> similar to an [[books|antilibrary]], an anti-blockbusters is a collection of movies, short films that represents the art of film-making.
-
-honourable mentions: [mubi](https://mubi.com/en/ca) and [a24](https://a24films.com/) are both awesome distributions and production companies that one should check out, (_if you have never heard about them_)
-
-if you want a more complete list, check out [this entries on letterboxd](https://letterboxd.com/bailey0/list/movies-everyone-tells-you-are-the-best-movies/)
-
-## notes on cinema
-
-what makes a [Lynchian](https://en.wikipedia.org/wiki/David_Lynch) movie?
+for discovery, i check [mubi](https://mubi.com/en/ca), [a24](https://a24films.com/), or this [letterboxd list](https://letterboxd.com/bailey0/list/movies-everyone-tells-you-are-the-best-movies/).

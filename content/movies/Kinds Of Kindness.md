@@ -9,7 +9,7 @@ id: kinds-of-kindness
 modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/kinds-of-kindness.jpg]]'
 rating: 7.9
-status: to watch
+status: finished
 studio: searchlight
 tags:
   - absurdism

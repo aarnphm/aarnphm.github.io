@@ -14,6 +14,6 @@ studio: ifc films
 tags:
   - thriller
   - meta
-title: Late Night with The Devil
+title: Late Night with the Devil
 year: 2024
 ---

@@ -2,13 +2,13 @@
 category:
   - immigration
 date: '2024-02-07'
-description: ex-revolutionary dragged back into fighting fascist rival—anderson spending blockbuster budget on political satire, dicaprio careening through gunfights and stoner mishaps, the personal colliding with political as authoritarianism reveals itself as pathetic idiocy wearing different masks.
+description: a washed-up revolutionary searches for his daughter when the enemy who broke his old group returns after sixteen years. anderson turns bob's stoned paranoia into a political action comedy about the consequences his daughter inherits.
 director: Paul Thomas Anderson
 id: one-battle-after-another
 modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/one-battle-after-another.jpg]]'
 rating: 7.4
-status: to watch
+status: finished
 studio: warner bros
 tags:
   - absurdism

@@ -4,7 +4,7 @@ category:
   - comedy
   - drama
 date: '2024-02-07'
-description: carpe diem as fatal advice—weir filming the romance of rebellion until the institution crushes it, robin williams teaching boys to stand on desks then watching one jump from a window instead.
+description: carpe diem as fatal advice. weir follows neil from keating's classroom to the stage, then to his suicide after his father orders him out of welton and into military school.
 director: Peter Weir
 id: dead-poets-society
 modified: 2026-06-05 15:08:17 GMT-04:00

@@ -2,7 +2,7 @@
 category:
   - love
 date: '2026-05-09'
-description: Something terrible happened to Agnes. But life goes on for everyone else. When a friend visits on the brink of an important milestone, Agnes realizes how stuck she's been, in this bittersweet story of finding your way after your world comes crashing down.
+description: A college professor confronts her past when her former roommate comes to stay.
 director:
   - Eva Victor
 id: Sorry Baby

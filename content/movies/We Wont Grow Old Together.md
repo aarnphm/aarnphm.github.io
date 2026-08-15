@@ -1,7 +1,7 @@
 ---
 category: vintage
 date: '2024-02-07'
-description: married man's six-year affair with younger woman reaching its end—pialat filming relationship as endless argument, french intimacy where love and hatred become indistinguishable, couples who can't leave each other but can't stand staying.
+description: jean and catherine have been lovers for six years. during the final three months, each quarrel ends in reconciliation until catherine refuses the next reunion.
 director: Maurice Pialat
 id: we-wont-grow-old-together
 modified: 2026-06-05 15:08:17 GMT-04:00

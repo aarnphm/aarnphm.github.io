@@ -2,7 +2,7 @@
 category:
   - drama
 date: '2024-02-07'
-description: morbidly obese professor trying to reconnect with daughter before dying—aronofsky filming brendan fraser's body as prison and shame, eating himself to death while teaching essay about moby dick, redemption measured in whether honesty can repair what abandonment destroyed.
+description: charlie is a reclusive english teacher with severe obesity who wants to repair his relationship with his daughter before his health fails. his demand for honest writing exposes how often he uses apology to avoid the damage he caused.
 director: Darren Aronofsky
 id: the-whale
 modified: 2026-06-05 15:08:18 GMT-04:00
@@ -13,5 +13,5 @@ studio: a24
 tags:
   - a24
 title: The Whale
-year: 2023
+year: 2022
 ---

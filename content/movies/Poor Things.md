@@ -4,7 +4,7 @@ category:
   - comedy
   - drama
 date: '2024-02-07'
-description: woman resurrected with infant brain discovering the world—lanthimos filming emma stone's bella baxter growing from baby to enlightened being, steampunk frankenstein where sexual liberation meets victorian hypocrisy, the journey from innocence to consciousness revealing what humanity actually costs.
+description: a surgeon revives a dead woman by placing the brain of her unborn child in her body and calls the result bella baxter. bella leaves his house and learns how money and sex shape other people's power over her.
 director: Yorgos Lanthimos
 id: poor-things
 modified: 2026-06-05 15:08:15 GMT-04:00

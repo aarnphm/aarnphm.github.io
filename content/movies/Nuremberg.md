@@ -3,7 +3,7 @@ category:
   - history
   - r/psychology
 date: '2026-01-11'
-description: As the Nuremberg trials are set to begin, a U.S. Army psychiatrist gets locked in a dramatic psychological showdown with accused Nazi war criminal Hermann Göring.
+description: Before the Nuremberg trials, a U.S. Army psychiatrist evaluates Hermann Göring in prison.
 director:
   - James Vanderbilt
 id: Nuremberg

@@ -3,7 +3,7 @@ category:
   - o/life
   - drama
 date: '2026-01-08'
-description: flannery o'connor's interior war - hawke threads illness, faith, and fiction into a composite of her stories, maya hawke embodying the author as both witness and weapon.
+description: Ethan Hawke moves between Flannery O'Connor's life and scenes from her fiction as she returns to Georgia after a lupus diagnosis.
 director:
   - Ethan Hawke
 id: Wildcat
