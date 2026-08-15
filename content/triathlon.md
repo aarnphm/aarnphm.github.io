@@ -69,7 +69,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-14 21:25:17 GMT-04:00
+modified: 2026-08-15 12:25:19 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -997,6 +997,1359 @@ exercise: Static Lunge | 10 reps @ 22.7 kg | 10 reps | 10 reps
 exercise: Lunge And Press | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg
 exercise: Press-up Position With Single Arm Extensions | 10 reps | 10 reps | 10 reps
 ```
+
+<!-- training plan start
+meta: equation references
+date: 2026-06-07
+-->
+
+## equation reference
+
+This is the current calculation sheet for the triathlon activity cards and analytics. It describes what the site computes, rather than every value a provider may send. Unless a formula says otherwise, distance is in metres, time is in seconds, speed is in metres per second, heart rate is in beats per minute, and grade is a decimal rather than a percentage.
+
+### source precedence
+
+The activity-card values use these ordered sources:
+
+1. Intensity factor uses Garmin's native value when it exists.
+2. Missing intensity factor is calculated from device power for a bike, pace for a run or swim, then heart rate as the remaining fallback.
+3. Exercise load uses Garmin's native value when it exists.
+4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
+5. Garmin aerobic and anaerobic training effect scores, messages, and labels stay provider-native. There is no local EPOC or training-effect reconstruction.
+
+The analytics load that drives CTL, ATL, TSB, ACWR, weekly load, and calibration is a separate, internally consistent pace-duration load. It uses grade-adjusted speed for every sport, including cycling. This keeps the longitudinal model on one scale, so it can differ from the exercise-load number shown on an activity card.
+
+Training-effect scores are only clamped for display:
+
+$$
+\mathrm{TE}_{\mathrm{display}}
+=
+\operatorname{clamp}
+\left(
+\mathrm{TE}_{\mathrm{Garmin}},
+0,
+5
+\right).
+$$
+
+When Garmin sends a score without a message, the local prose bins are
+
+$$
+\operatorname{label}(\mathrm{TE}) =
+\begin{cases}
+\text{no benefit}, & 0\le\mathrm{TE}<1,\\
+\text{minor benefit}, & 1\le\mathrm{TE}<2,\\
+\text{maintaining fitness}, & 2\le\mathrm{TE}<3,\\
+\text{improving fitness}, & 3\le\mathrm{TE}<4,\\
+\text{highly improving fitness}, & 4\le\mathrm{TE}<5,\\
+\text{overreaching effect}, & \mathrm{TE}=5.
+\end{cases}
+$$
+
+These labels interpret Garmin's score. They do not calculate the underlying aerobic or anaerobic training effect.
+
+### speed, pace, and grade adjustment
+
+Raw speed and the human pace displays are
+
+$$
+v = \frac{d}{t},
+\qquad
+p_{100} = \frac{100t}{d},
+\qquad
+p_{\mathrm{km}} = \frac{1000t}{d},
+\qquad
+v_{\mathrm{km/h}} = 3.6v.
+$$
+
+For a segment with elevation change $\Delta h$ and horizontal distance $\Delta d$,
+
+$$
+g = \operatorname{clamp}\left(\frac{\Delta h}{\Delta d}, -0.30, 0.30\right).
+$$
+
+The run grade-cost factor is
+
+$$
+F_{\mathrm{run}}(g) =
+\begin{cases}
+1 + 8.85g + 44g^2, & g \ge 0,\\
+\max\left(0.83,\ 1 + 8g + 44g^2\right), & g < 0.
+\end{cases}
+$$
+
+With segment lengths $\ell_i$, run grade-adjusted speed is
+
+$$
+v_{\mathrm{GAP,run}}
+=
+v \times
+\frac{\sum_i F_{\mathrm{run}}(g_i)\ell_i}
+{\sum_i \ell_i}.
+$$
+
+When segment altitude and distance are unavailable, the same factor is applied to the activity's overall grade. Cycling uses total climbing over distance,
+
+$$
+g_{\mathrm{overall}} = \frac{h_{\mathrm{gain}}}{d},
+$$
+
+and
+
+$$
+v_{\mathrm{GAP,bike}}
+=
+v \times
+\min\left(
+1 + 3.5\max(g_{\mathrm{overall}},0),
+1.25
+\right).
+$$
+
+Swimming receives no grade correction:
+
+$$
+v_{\mathrm{GAP,swim}} = v.
+$$
+
+### modeled threshold speed
+
+Each activity receives the duration weight
+
+$$
+w_i = \left\lfloor \frac{t_i}{600} \right\rfloor + 1.
+$$
+
+The current threshold estimate for a sport is
+
+$$
+v_{\mathrm{thr}} =
+\begin{cases}
+Q_{0.90}\!\left(v_{\mathrm{GAP},i};w_i\right), & n \ge 4,\\
+0.97\max_i v_{\mathrm{GAP},i}, & 2 \le n < 4,\\
+v_{\mathrm{prior}}, & n < 2,
+\end{cases}
+$$
+
+where $Q_{0.90}$ is the duration-weighted 90th percentile. The priors are
+
+$$
+v_{\mathrm{prior}} =
+\begin{cases}
+1.3, & \text{swim},\\
+6.9, & \text{bike},\\
+3.3, & \text{run}.
+\end{cases}
+$$
+
+A run threshold becomes stale after 45 days without a run. The model applies the current threshold retroactively to the activities in the analytics window.
+
+### intensity factor
+
+The three local IF equations are
+
+$$
+\mathrm{IF}_{\mathrm{power}}
+=
+\frac{\mathrm{NP}}{\mathrm{FTP}},
+$$
+
+$$
+\mathrm{IF}_{\mathrm{pace}}
+=
+\frac{v_{\mathrm{GAP}}}{v_{\mathrm{thr}}},
+$$
+
+and
+
+$$
+\mathrm{IF}_{\mathrm{HR}}
+=
+\frac{\mathrm{HR}_{\mathrm{avg}}}{\mathrm{LTHR}}.
+$$
+
+The activity-card fallback selects them in this order:
+
+$$
+\mathrm{IF}_{\mathrm{local}} =
+\begin{cases}
+\mathrm{NP}/\mathrm{FTP},
+& \text{bike with device power, valid NP, and FTP},\\
+v_{\mathrm{GAP}}/v_{\mathrm{thr}},
+& \text{run or swim with a modeled pace IF},\\
+\mathrm{HR}_{\mathrm{avg}}/\mathrm{LTHR},
+& \text{valid HR and declared LTHR},\\
+\varnothing,
+& \text{otherwise}.
+\end{cases}
+$$
+
+Treatment activities receive no calculated IF. Local IF is rounded to three decimals and remains unclamped, so a hard short activity can exceed $1$.
+
+### exercise load and TSS-like load
+
+Define the capped intensity used for load:
+
+$$
+I = \min(\mathrm{IF},1.15).
+$$
+
+The missing-card exercise-load fallback is
+
+$$
+L_{\mathrm{card}}
+=
+\operatorname{round}_{0.1}
+\left(
+100
+\frac{t}{3600}
+I^2
+\right).
+$$
+
+The effective IF for this formula is
+
+$$
+\mathrm{IF}_{\mathrm{effective}}
+=
+\begin{cases}
+\mathrm{IF}_{\mathrm{Garmin}}, & \text{when Garmin IF exists},\\
+\mathrm{IF}_{\mathrm{local}}, & \text{otherwise}.
+\end{cases}
+$$
+
+This has the same algebraic form as power TSS when $\mathrm{IF}=\mathrm{NP}/\mathrm{FTP}$:
+
+$$
+\mathrm{TSS}
+=
+\frac{t \times \mathrm{NP} \times \mathrm{IF}}
+{\mathrm{FTP}\times3600}
+\times 100
+=
+100\frac{t}{3600}\mathrm{IF}^2.
+$$
+
+The site generalizes the final form to pace-derived and heart-rate-derived IF, then caps IF at $1.15$ to stop short anomalous efforts from dominating load.
+
+The load used by the longitudinal analytics is always
+
+$$
+L_{\mathrm{PMC},i}
+=
+\operatorname{round}_{0.1}
+\left[
+100
+\frac{t_i}{3600}
+\min\left(
+\frac{v_{\mathrm{GAP},i}}{v_{\mathrm{thr},s(i)}},
+1.15
+\right)^2
+\right].
+$$
+
+Daily load is the sum of activity loads:
+
+$$
+L_d = \sum_{i\in d} L_{\mathrm{PMC},i}.
+$$
+
+Garmin exercise load is a provider fact. The local fallback is a TSS-like estimate and does not claim to reproduce Garmin's EPOC model.
+
+### performance management chart
+
+For a time constant $\tau$ in days,
+
+$$
+K_{\tau} = 1 - e^{-1/\tau}.
+$$
+
+The site uses
+
+$$
+K_{42} = 1-e^{-1/42},
+\qquad
+K_7 = 1-e^{-1/7}.
+$$
+
+Chronic and acute load evolve as
+
+$$
+\mathrm{CTL}_{d+1}
+=
+\mathrm{CTL}_d
++
+\left(L_d-\mathrm{CTL}_d\right)K_{42},
+$$
+
+$$
+\mathrm{ATL}_{d+1}
+=
+\mathrm{ATL}_d
++
+\left(L_d-\mathrm{ATL}_d\right)K_7,
+$$
+
+with form
+
+$$
+\mathrm{TSB}_d = \mathrm{CTL}_d-\mathrm{ATL}_d.
+$$
+
+The displayed value for day $d$ is the pre-update state, so load on day $d$ first appears in the state for day $d+1$. CTL and ATL start from the mean daily load over the first 14 active days:
+
+$$
+\mathrm{seed}
+=
+\frac{1}{n}
+\sum_{d\in\text{first 14 active days}}L_d.
+$$
+
+Sport-specific CTL uses the same 42-day recurrence with sport load. Its initial seeds are
+
+$$
+\mathrm{CTL}_{0,\mathrm{swim}}=0.20\,\mathrm{seed},
+\qquad
+\mathrm{CTL}_{0,\mathrm{bike}}=0.50\,\mathrm{seed},
+\qquad
+\mathrm{CTL}_{0,\mathrm{run}}=0.30\,\mathrm{seed}.
+$$
+
+TSB zones are
+
+$$
+\operatorname{zone}(\mathrm{TSB}) =
+\begin{cases}
+\text{fresh}, & \mathrm{TSB}>5,\\
+\text{neutral}, & -10<\mathrm{TSB}\le5,\\
+\text{fatigued}, & -30<\mathrm{TSB}\le-10,\\
+\text{deep}, & \mathrm{TSB}\le-30.
+\end{cases}
+$$
+
+### weekly load and risk
+
+Week-over-week ramp is
+
+$$
+r_w
+=
+\frac{L_w-L_{w-1}}{L_{w-1}}.
+$$
+
+For the loads of individual sessions in a week,
+
+$$
+\bar L_{\mathrm{session}}
+=
+\frac{1}{n}\sum_{i=1}^{n}L_i,
+$$
+
+$$
+s_L
+=
+\sqrt{
+\frac{\sum_{i=1}^{n}(L_i-\bar L_{\mathrm{session}})^2}
+{n-1}
+},
+$$
+
+$$
+\mathrm{monotony}
+=
+\frac{\bar L_{\mathrm{session}}}{s_L},
+\qquad
+\mathrm{strain}
+=
+L_w\times\mathrm{monotony}.
+$$
+
+This implementation uses session loads for monotony, rather than seven daily totals.
+
+Acute:chronic workload ratio is
+
+$$
+\mathrm{ACWR}
+=
+\frac{
+\sum_{d=-6}^{0}L_d
+}{
+\frac{1}{4}\sum_{d=-27}^{0}L_d
+}.
+$$
+
+It is withheld until there are at least 14 earlier active days and the 28-day load is at least $5$. The display states are
+
+$$
+\operatorname{state}(\mathrm{ACWR}) =
+\begin{cases}
+\text{low}, & \mathrm{ACWR}<0.8,\\
+\text{ok}, & 0.8\le\mathrm{ACWR}\le1.3,\\
+\text{caution}, & 1.3<\mathrm{ACWR}\le1.5,\\
+\text{high}, & \mathrm{ACWR}>1.5.
+\end{cases}
+$$
+
+Once three completed observed weeks exist, the weekly target baseline is
+
+$$
+B_w = \frac{L_{w-1}+L_{w-2}+L_{w-3}}{3},
+$$
+
+and the target range is
+
+$$
+L_w^{\mathrm{target}}\in[0.60B_w,\ 1.20B_w].
+$$
+
+During the first three weeks, the warmup baseline updates as
+
+$$
+B_{j+1}=B_j+0.5(L_j-B_j).
+$$
+
+### swimming
+
+Active swim pace is
+
+$$
+p_{100}
+=
+100\frac{t_{\mathrm{active}}}{d}.
+$$
+
+The site accepts activity pace only in the range
+
+$$
+45 \le p_{100}\le360
+\quad\text{seconds per 100 m}.
+$$
+
+Stroke rate is
+
+$$
+\mathrm{SR}
+=
+60\frac{N_{\mathrm{strokes}}}{t_{\mathrm{stroke}}},
+$$
+
+with a valid range of $5$ to $100$ strokes per minute. Distance per stroke is
+
+$$
+d_{\mathrm{stroke}}
+=
+\frac{d}{N_{\mathrm{strokes}}}.
+$$
+
+For a valid measured pool length $\ell$,
+
+$$
+\mathrm{strokes/length}_{\ell}
+=
+N_{\mathrm{strokes},\ell},
+$$
+
+$$
+\mathrm{SWOLF}_{\ell}
+=
+\operatorname{round}
+\left(
+t_{\ell}+N_{\mathrm{strokes},\ell}
+\right).
+$$
+
+Activity strokes per length and SWOLF are arithmetic means across valid measured lengths:
+
+$$
+\overline{\mathrm{strokes/length}}
+=
+\frac{1}{n}\sum_{\ell=1}^{n}
+N_{\mathrm{strokes},\ell},
+$$
+
+$$
+\overline{\mathrm{SWOLF}}
+=
+\frac{1}{n}\sum_{\ell=1}^{n}
+\mathrm{SWOLF}_{\ell}.
+$$
+
+Kickboard lengths and lengths missing valid stroke data are excluded.
+
+Critical swim speed from 400 m and 200 m tests is
+
+$$
+v_{\mathrm{CSS}}
+=
+\frac{400-200}{t_{400}-t_{200}}
+=
+\frac{200}{t_{400}-t_{200}},
+$$
+
+which is equivalent to the displayed pace per 100 m:
+
+$$
+p_{\mathrm{CSS},100}
+=
+\frac{t_{400}-t_{200}}{2}.
+$$
+
+The simple activity-card projections are
+
+$$
+t_{1.9\mathrm{k}}=19p_{100},
+\qquad
+t_{3.8\mathrm{k}}=38p_{100}.
+$$
+
+### cycling power and mechanics
+
+For $M$ one-hertz power samples, the local 30-second normalized-power calculation is
+
+$$
+\bar P_{30,k}
+=
+\frac{1}{30}
+\sum_{j=k-29}^{k}P_j,
+\qquad
+30\le k\le M,
+$$
+
+$$
+\mathrm{NP}
+=
+\left(
+\frac{1}{M-29}
+\sum_{k=30}^{M}
+\bar P_{30,k}^{\,4}
+\right)^{1/4}.
+$$
+
+The local NP calculation is used inside bike decoupling. The activity card ordinarily receives weighted or normalized power from the activity providers.
+
+When FTP is derived from a best 20-minute device-power effort,
+
+$$
+\mathrm{FTP}=0.95P_{20}.
+$$
+
+The corresponding maximal aerobic power estimate is
+
+$$
+\mathrm{MAP}=\frac{\mathrm{FTP}}{0.75},
+$$
+
+and power to weight is
+
+$$
+\mathrm{W/kg}=\frac{P}{m}.
+$$
+
+Vertical ascent rate is
+
+$$
+\mathrm{VAM}
+=
+3600\frac{h_{\mathrm{gain}}}{t}.
+$$
+
+The two-parameter critical-power model is
+
+$$
+P(t)=\mathrm{CP}+\frac{W'}{t}.
+$$
+
+The fit uses the best exact $180$, $420$, and $720$ second device-power windows. With
+
+$$
+x_i=\frac{1}{t_i},
+\qquad
+y_i=P_i,
+$$
+
+ordinary least squares gives
+
+$$
+W'
+=
+\frac{
+\sum_i(x_i-\bar x)(y_i-\bar y)
+}{
+\sum_i(x_i-\bar x)^2
+},
+$$
+
+$$
+\mathrm{CP}
+=
+\bar y-W'\bar x.
+$$
+
+Fit error is
+
+$$
+\mathrm{RMSE}
+=
+\sqrt{
+\frac{1}{n}
+\sum_i
+\left(
+P_i-\mathrm{CP}-\frac{W'}{t_i}
+\right)^2
+},
+$$
+
+$$
+\mathrm{nRMSE}
+=
+\frac{\mathrm{RMSE}}{\bar P}.
+$$
+
+The fit is rejected when $\mathrm{nRMSE}>0.05$, $\mathrm{CP}\le0$, $W'\le0$, or $\mathrm{CP}$ is not below every anchor power. Confidence is medium only when all three anchors are independent non-overlapping efforts; otherwise it is provisional.
+
+Steady-state wheel power is modeled as
+
+$$
+P_{\mathrm{wheel}}
+=
+\frac{1}{2}\rho C_dA v^3
++
+C_{rr}mgv.
+$$
+
+Solving for drag area with drivetrain efficiency $\eta$ gives
+
+$$
+C_dA
+=
+\frac{
+2\left(P_{\mathrm{crank}}\eta-C_{rr}mgv\right)
+}{
+\rho v^3
+}.
+$$
+
+Gear ratio is
+
+$$
+R=\frac{N_{\mathrm{chainring}}}{N_{\mathrm{cog}}}.
+$$
+
+The drivetrain visual models
+
+$$
+L_{\mathrm{total}}
+=
+L_{\mathrm{aligned}}(N_{\mathrm{chainring}},R)
++
+L_{\mathrm{cross-chain}},
+$$
+
+$$
+\eta_{\mathrm{drivetrain}}
+=
+100\times
+\frac{250-L_{\mathrm{total}}}{250}.
+$$
+
+Aligned loss is linear in ratio, with its slope and intercept linearly interpolated between the CeramicSpeed 39-tooth and 53-tooth fits. Cross-chain loss is piecewise-linear in cog offset from the aligned cog.
+
+### efficiency, decoupling, cadence, and stride
+
+Bike efficiency factor is
+
+$$
+\mathrm{EF}_{\mathrm{bike}}
+=
+\frac{\mathrm{NP}}{\mathrm{HR}_{\mathrm{avg}}}
+\quad
+\left[
+\frac{\mathrm{W}}{\mathrm{bpm}}
+\right].
+$$
+
+Run and swim efficiency factor are
+
+$$
+\mathrm{EF}_{\mathrm{run/swim}}
+=
+\frac{60v_{\mathrm{GAP}}}{\mathrm{HR}_{\mathrm{avg}}}
+\quad
+\left[
+\frac{\mathrm{m/min}}{\mathrm{bpm}}
+\right].
+$$
+
+For activities of at least 20 minutes with approximately one-hertz streams, aerobic decoupling is
+
+$$
+\mathrm{decoupling}
+=
+100
+\frac{\mathrm{EF}_{1}-\mathrm{EF}_{2}}
+{\mathrm{EF}_{1}}.
+$$
+
+The halves split the sample stream at its midpoint. Bike half-efficiency uses locally calculated NP divided by mean HR. Run half-efficiency uses distance-derived speed divided by mean HR. Swimming has no decoupling value.
+
+When native running stride is absent, estimated stride length is
+
+$$
+\ell_{\mathrm{stride}}
+=
+\frac{60v}{c},
+$$
+
+where $c$ is total steps per minute. Strava's run cadence is doubled before use because its activity field reports cycles per minute.
+
+### trend and calibration
+
+The 28-day calibration average first computes duration-weighted grade-adjusted speed:
+
+$$
+\bar v_{\mathrm{GAP}}
+=
+\frac{
+\sum_i v_{\mathrm{GAP},i}t_i
+}{
+\sum_i t_i
+}.
+$$
+
+It then converts that speed to seconds per 100 m for swimming, seconds per kilometre for running, or kilometres per hour for cycling.
+
+The signed faster percentage is
+
+$$
+\Delta_{\mathrm{bike}}
+=
+100\frac{x_{\mathrm{current}}-x_{\mathrm{previous}}}
+{x_{\mathrm{previous}}},
+$$
+
+$$
+\Delta_{\mathrm{run/swim}}
+=
+100\frac{x_{\mathrm{previous}}-x_{\mathrm{current}}}
+{x_{\mathrm{previous}}}.
+$$
+
+For a dense sport history, the pace trend uses exponentially weighted OLS. With activity age $a_i$ in days,
+
+$$
+w_i=2^{-a_i/28},
+$$
+
+$$
+\bar x_w
+=
+\frac{\sum_iw_ix_i}{\sum_iw_i},
+\qquad
+\bar y_w
+=
+\frac{\sum_iw_iy_i}{\sum_iw_i},
+$$
+
+$$
+b
+=
+\frac{
+\sum_iw_i(x_i-\bar x_w)(y_i-\bar y_w)
+}{
+\sum_iw_i(x_i-\bar x_w)^2
+},
+\qquad
+a=\bar y_w-b\bar x_w.
+$$
+
+The 14-day forecast damps the daily slope by $\phi=0.94$:
+
+$$
+\hat y_d
+=
+\eta_{\mathrm{now}}
++
+b\sum_{j=1}^{d}\phi^j,
+\qquad
+1\le d\le14.
+$$
+
+The weighted effective sample size and residual scale are
+
+$$
+n_{\mathrm{eff}}
+=
+\frac{\left(\sum_iw_i\right)^2}
+{\sum_iw_i^2},
+$$
+
+$$
+s_e
+=
+\sqrt{
+\frac{\sum_iw_i(y_i-a-bx_i)^2}
+{\sum_iw_i}
+}
+\sqrt{
+\frac{n_{\mathrm{eff}}}
+{\max(1,n_{\mathrm{eff}}-2)}
+}.
+$$
+
+The forecast half-width is
+
+$$
+h_d
+=
+1.28s_e
+\sqrt{
+\frac{1}{n_{\mathrm{eff}}}
++
+\frac{(x_{\mathrm{now}}+d-\bar x_w)^2}
+{\sum_iw_i(x_i-\bar x_w)^2}
+}.
+$$
+
+This OLS path requires at least six activities, a span of at least 21 days, and no gap over 14 days. Sparser non-stale histories use an exponentially weighted level:
+
+$$
+\ell_i
+=
+\ell_{i-1}
++
+0.3(y_i-\ell_{i-1}).
+$$
+
+### activity and race projections
+
+The activity-card running projection uses the Riegel equation
+
+$$
+T_2
+=
+T_1
+\left(
+\frac{D_2}{D_1}
+\right)^{1.06}
+$$
+
+for the next standard distance above the completed activity.
+
+The race model defines a one-hour threshold reference distance
+
+$$
+D_{\mathrm{ref}}
+=
+\frac{3600v_{\mathrm{thr}}}{1000}
+\quad\text{kilometres}.
+$$
+
+For race-leg distance $D_s$,
+
+$$
+T_s
+=
+3600
+\left(
+\frac{D_s}{D_{\mathrm{ref},s}}
+\right)^{k_s},
+$$
+
+with
+
+$$
+k_{\mathrm{swim}}=1.03,
+\qquad
+k_{\mathrm{bike}}=1.05,
+\qquad
+k_{\mathrm{run}}=1.06.
+$$
+
+The run split receives the brick multiplier
+
+$$
+f_{\mathrm{brick}}
+=
+\begin{cases}
+1.02, & \text{sprint},\\
+1.04, & \text{olympic},\\
+1.07, & \text{70.3},\\
+1.12, & \text{ironman}.
+\end{cases}
+$$
+
+Total predicted time is
+
+$$
+T_{\mathrm{race}}
+=
+T_{\mathrm{swim}}
++
+T_{\mathrm{bike}}
++
+f_{\mathrm{brick}}T_{\mathrm{run}}
++
+300
++
+300.
+$$
+
+Trend-derived velocity ratios are clamped to $\pm8\%$ before they modify threshold speed. The uncertainty half-fraction is clamped to $12\%$.
+
+For each sport,
+
+$$
+\mathrm{coverage}_s
+=
+\operatorname{clamp}
+\left(
+\frac{D_{\mathrm{longest},s}}{D_{\mathrm{race},s}},
+0,
+1
+\right).
+$$
+
+The threshold-recency gate is
+
+$$
+g_s =
+\begin{cases}
+1.0, & \text{stale days}\le21,\\
+0.6, & 21<\text{stale days}\le42,\\
+0.3, & \text{stale days}>42.
+\end{cases}
+$$
+
+Fitness readiness is
+
+$$
+F
+=
+\operatorname{clamp}
+\left(
+\frac{\mathrm{CTL}}{\mathrm{CTL}_{\mathrm{race}}},
+0,
+1
+\right),
+$$
+
+with race references
+
+$$
+\mathrm{CTL}_{\mathrm{race}}
+=
+\begin{cases}
+35, & \text{sprint},\\
+50, & \text{olympic},\\
+70, & \text{70.3},\\
+90, & \text{ironman}.
+\end{cases}
+$$
+
+The readiness score is
+
+$$
+\mathrm{readiness}
+=
+\operatorname{round}
+\left[
+100
+\left(
+0.45F
++
+0.55
+\frac{1}{3}
+\sum_{s\in\{\mathrm{swim,bike,run}\}}
+\mathrm{coverage}_s g_s
+\right)
+\right].
+$$
+
+The binding leg is the sport with the smallest $\mathrm{coverage}_s g_s$.
+
+### heart rate and aerobic capacity
+
+When declared or observed maximum heart rate is unavailable, Tanaka's estimate is
+
+$$
+\mathrm{HR}_{\max}
+=
+208-0.7\,\mathrm{age}.
+$$
+
+Daniels' oxygen-cost equation uses speed $v_{\min}$ in metres per minute:
+
+$$
+\mathrm{VO}_{2,\mathrm{Daniels}}
+=
+-4.6
++
+0.182258v_{\min}
++
+0.000104v_{\min}^2.
+$$
+
+The heart-rate-ratio estimate is
+
+$$
+\mathrm{VO}_{2\max}
+=
+15.3
+\frac{\mathrm{HR}_{\max}}
+{\mathrm{HR}_{\mathrm{rest}}}.
+$$
+
+The cycling estimate from MAP is
+
+$$
+\mathrm{VO}_{2\max}
+=
+10.8
+\frac{\mathrm{MAP}}{m}
++
+7.
+$$
+
+For the run-stream regression, the model fits
+
+$$
+\mathrm{HR}=a+bv,
+$$
+
+then estimates
+
+$$
+v_{\mathrm{VO2}}
+=
+\operatorname{clamp}
+\left(
+\frac{\mathrm{HR}_{\max}-a}{b},
+v_{\max,\mathrm{observed}},
+1.4v_{\max,\mathrm{observed}}
+\right)
+$$
+
+before applying Daniels' equation. When that regression is unavailable, each qualifying run uses heart-rate reserve fraction
+
+$$
+f_{\mathrm{HRR}}
+=
+\frac{
+\mathrm{HR}_{\mathrm{avg}}-\mathrm{HR}_{\mathrm{rest}}
+}{
+\mathrm{HR}_{\max}-\mathrm{HR}_{\mathrm{rest}}
+},
+$$
+
+and
+
+$$
+\mathrm{VO}_{2\max,i}
+=
+\frac{
+\mathrm{VO}_{2,\mathrm{Daniels}}(v_{\mathrm{GAP},i})
+}{
+f_{\mathrm{HRR},i}
+}.
+$$
+
+Only runs with $f_{\mathrm{HRR}}>0.4$ enter that fallback mean.
+
+### FTP hypothesis from running VO2max
+
+Let running VO2max be $V_r$ in $\mathrm{mL\,kg^{-1}\,min^{-1}}$, body mass be $m$, cross-modal discount be $d=0.08$, threshold fraction be $q=0.85$, and gross efficiency be $\eta=0.21$.
+
+Absolute running oxygen use is
+
+$$
+\dot V_{O_2,r}
+=
+\frac{V_rm}{1000}
+\quad
+\left[
+\mathrm{L/min}
+\right].
+$$
+
+The cycling and threshold estimates are
+
+$$
+\dot V_{O_2,c}
+=
+\dot V_{O_2,r}(1-d),
+$$
+
+$$
+\dot V_{O_2,\mathrm{thr}}
+=
+q\dot V_{O_2,c}.
+$$
+
+Using $20.9\ \mathrm{kJ}$ per litre of oxygen,
+
+$$
+P_{\mathrm{met}}
+=
+\dot V_{O_2,\mathrm{thr}}
+\frac{20.9\times1000}{60},
+$$
+
+$$
+\mathrm{FTP}_{\mathrm{eff}}
+=
+\eta P_{\mathrm{met}}.
+$$
+
+The independent ACSM path is
+
+$$
+\mathrm{MAP}_{\mathrm{ACSM}}
+=
+\frac{
+\max\left(0,V_r(1-d)-7\right)m
+}{
+1.8\times6.12
+},
+$$
+
+$$
+\mathrm{FTP}_{\mathrm{ACSM}}
+=
+0.75\,\mathrm{MAP}_{\mathrm{ACSM}}.
+$$
+
+The hypothesis is the nearest 10 W to the mean of both paths:
+
+$$
+\mathrm{FTP}_{\mathrm{hyp}}
+=
+\operatorname{round}_{10}
+\left(
+\frac{
+\mathrm{FTP}_{\mathrm{eff}}
++
+\mathrm{FTP}_{\mathrm{ACSM}}
+}{2}
+\right).
+$$
+
+Its displayed low and high bounds are the unrounded mean minus and plus $25$ W, each rounded to the nearest $5$ W.
+
+### body composition and energy
+
+The standard BMI definition is
+
+$$
+\mathrm{BMI}
+=
+\frac{m}{h^2}.
+$$
+
+The displayed BMI comes from the Garmin scale rather than a local recomputation. Fat-free mass and FFMI are locally derived when scale weight and body-fat percentage are present:
+
+$$
+\mathrm{FFM}
+=
+m
+\left(
+1-\frac{\mathrm{body\ fat\ \%}}{100}
+\right),
+$$
+
+$$
+\mathrm{FFMI}
+=
+\frac{\mathrm{FFM}}{h^2}.
+$$
+
+Katch-McArdle BMR is
+
+$$
+\mathrm{BMR}_{\mathrm{KM}}
+=
+370+21.6\,\mathrm{FFM}_{\mathrm{kg}}.
+$$
+
+The male Mifflin-St Jeor goal-weight estimate is
+
+$$
+\mathrm{BMR}_{\mathrm{MSJ}}
+=
+10m_{\mathrm{kg}}
++
+6.25h_{\mathrm{cm}}
+-
+5\,\mathrm{age}
++
+5.
+$$
+
+Weight trend is the OLS slope of daily weight against day, multiplied by seven:
+
+$$
+\Delta m_{\mathrm{week}}
+=
+7
+\frac{
+\sum_i(t_i-\bar t)(m_i-\bar m)
+}{
+\sum_i(t_i-\bar t)^2
+}.
+$$
+
+When trend is moving toward the target, goal ETA is
+
+$$
+\mathrm{weeks}_{\mathrm{goal}}
+=
+\min
+\left(
+104,
+\left\lceil
+\left|
+\frac{m_{\mathrm{current}}-m_{\mathrm{goal}}}
+{\Delta m_{\mathrm{week}}}
+\right|
+\right\rceil
+\right).
+$$
+
+### recovery
+
+For samples $x_1,\ldots,x_n$,
+
+$$
+\bar x=\frac{1}{n}\sum_{i=1}^{n}x_i,
+\qquad
+s_x
+=
+\sqrt{
+\frac{
+\sum_{i=1}^{n}(x_i-\bar x)^2
+}{n-1}
+}.
+$$
+
+HRV uses $y_i=\ln(\mathrm{HRV}_i)$. Its baseline is the latest 28-day window with at least 14 samples, and its acute window is seven days with at least three samples:
+
+$$
+z_{\mathrm{HRV}}
+=
+\frac{
+\bar y_{7}-\bar y_{28}
+}{
+s_{y,28}
+}.
+$$
+
+The displayed HRV baseline converts the log mean back:
+
+$$
+\mathrm{HRV}_{\mathrm{baseline}}
+=
+e^{\bar y_{28}}.
+$$
+
+RHR uses the same windows without the log transform:
+
+$$
+z_{\mathrm{RHR}}
+=
+\frac{
+\overline{\mathrm{RHR}}_{7}
+-
+\overline{\mathrm{RHR}}_{28}
+}{
+s_{\mathrm{RHR},28}
+}.
+$$
+
+Fourteen-night sleep debt uses a seven-hour target:
+
+$$
+\mathrm{debt}_{14}
+=
+\sum_{i=1}^{14}
+\operatorname{clamp}
+\left(
+7\ \mathrm{h}-\mathrm{sleep}_i,
+0,
+7\ \mathrm{h}
+\right).
+$$
+
+Readiness baseline is a 28-day arithmetic mean with at least seven samples. Sleep baseline is a 28-day median with at least seven samples.
+
+### heat acclimatisation
+
+For duration-weighted observations,
+
+$$
+\bar x
+=
+\frac{
+\sum_i x_i\Delta t_i
+}{
+\sum_i\Delta t_i
+}.
+$$
+
+CORE heat is counted when heat strain index is at least $3$. When CORE data is unavailable, ambient heat is counted when temperature exceeds $22^\circ\mathrm{C}$. Source order is CORE app, CORE FIT, WeatherKit, then Strava device temperature.
+
+Daily heat dose is
+
+$$
+D_d
+=
+\operatorname{clamp}
+\left(
+\frac{\mathrm{hot\ minutes}_d}{60},
+0,
+1
+\right).
+$$
+
+Heat credits evolve as
+
+$$
+C_{d+1}
+=
+\begin{cases}
+\min(14,C_d+D_d), & D_d>0,\\
+0.975C_d, & D_d=0\ \text{and more than 3 days since heat},\\
+C_d, & \text{otherwise}.
+\end{cases}
+$$
+
+Acclimatisation is
+
+$$
+\mathrm{heat\ acclimatisation\ \%}
+=
+100\frac{C_d}{14}.
+$$
+
+Forty-two-day observation coverage is
+
+$$
+\mathrm{coverage\ \%}
+=
+100
+\operatorname{clamp}
+\left(
+\frac{
+\mathrm{observed\ eligible\ seconds}
+}{
+\mathrm{all\ eligible\ seconds}
+},
+0,
+1
+\right).
+$$
+
+Only routed bike and run activities are eligible for this heat model.
+
+<!-- training plan end -->
 
 <!-- training plan start
 meta: supertri toronto 2026

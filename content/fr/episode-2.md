@@ -135,10 +135,10 @@ les expressions pour indiquer qu'on ne comprend pas:
 
 ### titres de civilité
 
-| abréviation | titre          | pour                       |
-| ----------- | -------------- | -------------------------- |
-| `M.`        | `Monsieur`     | un homme                   |
-| `Mme`       | `Madame`       | une femme                  |
+| abréviation | titre          | pour                                                    |
+| ----------- | -------------- | ------------------------------------------------------- |
+| `M.`        | `Monsieur`     | un homme                                                |
+| `Mme`       | `Madame`       | une femme                                               |
 | `Mlle`      | `Mademoiselle` | une très jeune fille, ou une femme qui demande ce titre |
 
 ### l'adresse : abréviations courantes

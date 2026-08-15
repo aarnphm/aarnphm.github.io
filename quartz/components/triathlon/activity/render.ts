@@ -610,6 +610,42 @@ export const renderMapDetail = (
   }
 }
 
+export const setupStrengthExerciseOverflow = (root: ParentNode): (() => void) => {
+  const cleanups = Array.from(root.querySelectorAll<HTMLElement>('.tri-act-strength'), strength => {
+    const exercises = strength.querySelector<HTMLElement>('.tri-strength-exercises')
+    if (!exercises) return () => {}
+    let frame = 0
+    const update = () => {
+      const maxScroll = Math.max(0, exercises.scrollHeight - exercises.clientHeight)
+      const scrollable = maxScroll > 1
+      strength.dataset.scrollable = String(scrollable)
+      strength.dataset.scrollEnd = String(!scrollable || exercises.scrollTop >= maxScroll - 1)
+    }
+    const schedule = () => {
+      if (frame !== 0) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        update()
+      })
+    }
+    const resize = new ResizeObserver(schedule)
+    exercises.addEventListener('scroll', schedule, { passive: true })
+    resize.observe(exercises)
+    for (const exercise of exercises.children) resize.observe(exercise)
+    schedule()
+    return () => {
+      exercises.removeEventListener('scroll', schedule)
+      resize.disconnect()
+      if (frame !== 0) window.cancelAnimationFrame(frame)
+      strength.removeAttribute('data-scrollable')
+      strength.removeAttribute('data-scroll-end')
+    }
+  })
+  return () => {
+    for (const cleanup of cleanups) cleanup()
+  }
+}
+
 export const renderDetail = (
   presentation: TriathlonPresentation,
   source: StravaActivityDetail,
@@ -631,7 +667,6 @@ export const renderDetail = (
     d,
     false,
     detailContext,
-    payload?.swimTrend ?? [],
     fillMissingRunPower,
     embedded,
   ) as HTMLElement
@@ -842,10 +877,14 @@ export const renderDetail = (
   return {
     element: wrap,
     mount: () => {
-      if (!interactive) return () => {}
+      const cleanupExerciseOverflow = setupStrengthExerciseOverflow(wrap)
+      if (!interactive) return cleanupExerciseOverflow
       const routeMarker = wrap.querySelector<SVGElement>('.tri-route-cursor')
       const controller = linkScrub(presentation, wrap, routeMarker, surfaces, d.route, d)
-      return () => controller?.dispose()
+      return () => {
+        cleanupExerciseOverflow()
+        controller?.dispose()
+      }
     },
   }
 }

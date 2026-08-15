@@ -305,7 +305,13 @@ export const moreStatRows = (
   if (d.kilojoules != null) rows.push(['energy', `${d.kilojoules} kJ`])
   else if (showRunPower) rows.push(['energy', '—'])
   if (d.calories != null) rows.push(['calories', `${d.calories.toLocaleString('en-US')} kcal`])
-  if (d.avgCadence != null && d.sport !== 'swim')
+  if (d.sport === 'swim') {
+    const poolMetrics = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
+    rows.push([
+      'cadence',
+      poolMetrics ? `${swimTrendNumber(poolMetrics.strokesPerLength)} /length` : '—',
+    ])
+  } else if (d.avgCadence != null)
     rows.push(['cadence', d.sport === 'run' ? `${d.avgCadence * 2} spm` : `${d.avgCadence} rpm`])
   else if (d.sport === 'run') rows.push(['cadence', '—'])
   if (d.maxHr != null) rows.push(['max hr', `${d.maxHr} bpm`])
@@ -2747,8 +2753,6 @@ export type SwimActivityBlock = SwimActivityInterval & {
 
 type SwimActivityMetric = { observation: SwimActivityObservation; value: number }
 
-type SwimActivityComparison = { delta: number; priorCount: number }
-
 export type SwimTrendMode = 'lengths' | '100m'
 
 export type SwimTrendChartPoint = {
@@ -2881,28 +2885,8 @@ export const swimActivityBlocks = (
   return blocks
 }
 
-const swimTrendDayTime = (date: string): number | null => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
-  const time = Date.parse(`${date}T00:00:00Z`)
-  return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === date ? time : null
-}
-
-const swimTrendTime = (start: string | null | undefined, date: string): number | null => {
-  const dayTime = swimTrendDayTime(date)
-  if (dayTime == null) return null
-  if (!start || !/^\d{4}-\d{2}-\d{2}T/.test(start)) return dayTime
-  const time = Date.parse(start)
-  return Number.isFinite(time) ? time : dayTime
-}
-
 const swimTrendNumber = (value: number): string =>
   value.toLocaleString('en-US', { maximumFractionDigits: 1 })
-
-const swimPaceDelta = (delta: number, priorCount: number): string => {
-  const magnitude = swimTrendNumber(Math.abs(delta))
-  if (Math.abs(delta) < 0.05) return `same as prior ${priorCount}`
-  return `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
-}
 
 const swimTrendDisplayValue = (kind: SwimChartMetric, value: number): string =>
   kind === 'pace'
@@ -2976,27 +2960,6 @@ const swimActivityXTicks = (totalDistanceM: number): AxisXTick[] => {
   ]
 }
 
-const swimActivityComparison = (
-  d: StravaActivityDetail,
-  points: SwimTrendPoint[],
-  current: number,
-): SwimActivityComparison | null => {
-  const selectedTime = swimTrendTime(d.start, d.date)
-  if (selectedTime == null) return null
-  const candidates: { point: SwimTrendPoint; time: number; value: number }[] = []
-  for (const point of points) {
-    if (point.id === d.id) continue
-    const time = swimTrendTime(point.start, point.date)
-    const value = point.paceSPer100m
-    if (time == null || time > selectedTime || !positiveMetric(value)) continue
-    candidates.push({ point, time, value })
-  }
-  const prior = candidates.sort((a, b) => a.time - b.time || a.point.id - b.point.id).slice(-4)
-  if (prior.length === 0) return null
-  const baseline = prior.reduce((sum, observation) => sum + observation.value, 0) / prior.length
-  return { delta: current - baseline, priorCount: prior.length }
-}
-
 const buildSwimModeToggle = <N>(f: TriNodeFactory<N>): N => {
   const toggle = f.el('div', 'tri-swim-mode-toggle', undefined, {
     role: 'group',
@@ -3029,7 +2992,6 @@ const buildSwimTrendChart = <N>(
   totalDistanceM: number,
   kind: SwimChartMetric,
   average: number | null,
-  comparison: SwimActivityComparison | null,
   pick: (observation: SwimActivityObservation) => number | null,
   modeToggle?: N,
 ): N | null => {
@@ -3050,15 +3012,6 @@ const buildSwimTrendChart = <N>(
     : series.reduce((sum, metric) => sum + metric.value, 0) / series.length
   const title = swimTrendTitle(kind)
   const value = swimTrendHeaderValue(kind, activityAverage)
-  const deltaText = comparison
-    ? swimPaceDelta(comparison.delta, comparison.priorCount)
-    : 'activity avg'
-  const ariaDelta =
-    comparison == null
-      ? 'activity average'
-      : Math.abs(comparison.delta) < 0.05
-        ? `same as prior ${comparison.priorCount}`
-        : `${swimTrendNumber(Math.abs(comparison.delta))} seconds ${comparison.delta < 0 ? 'faster' : 'slower'} than prior ${comparison.priorCount}`
   const wrap = f.el('article', `tri-zone tri-swim-trend tri-swim-trend--${kind}`)
   const head = f.el(
     'div',
@@ -3072,15 +3025,6 @@ const buildSwimTrendChart = <N>(
     f.el('strong', 'tri-swim-trend-value', value, {
       'data-swim-average-kind': kind,
       'data-swim-average-value': activityAverage.toString(),
-    }),
-    f.el('span', 'tri-swim-trend-delta', deltaText, {
-      'data-swim-comparison-kind': kind,
-      ...(comparison
-        ? {
-            'data-swim-comparison-delta': comparison.delta.toString(),
-            'data-swim-comparison-prior': comparison.priorCount.toString(),
-          }
-        : {}),
     }),
   )
   const W = 100
@@ -3170,7 +3114,7 @@ const buildSwimTrendChart = <N>(
     'aria-valuemin': 0,
     'aria-valuemax': Math.round(totalDistanceM),
     'aria-valuenow': Math.round(currentChartPoint.cumulativeDistanceM),
-    'aria-valuetext': `${swimTrendAriaValue(kind, currentChartPoint)}. Activity average ${swimTrendDisplayValue(kind, activityAverage)}. ${ariaDelta}.`,
+    'aria-valuetext': `${swimTrendAriaValue(kind, currentChartPoint)}. Activity average ${swimTrendDisplayValue(kind, activityAverage)}.`,
     'data-swim-series-lengths': JSON.stringify(lengthsChart.points),
     'data-swim-series-hundred': JSON.stringify(hundredMetreChart.points),
     'data-swim-mode': 'lengths',
@@ -3245,11 +3189,7 @@ const buildSwimTrendChart = <N>(
   return wrap
 }
 
-export const buildSwimTrends = <N>(
-  f: TriNodeFactory<N>,
-  d: StravaActivityDetail,
-  points: SwimTrendPoint[],
-): N | null => {
+export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   if (d.sport !== 'swim') return null
   const observations = d.swimIntervals
     .filter(
@@ -3299,7 +3239,6 @@ export const buildSwimTrends = <N>(
     totalDistanceM,
     'pace',
     paceAverage,
-    paceAverage == null ? null : swimActivityComparison(d, points, paceAverage),
     observation => observation.interval.paceSPer100m,
     paceVisible ? modeToggle : undefined,
   )
@@ -3310,7 +3249,6 @@ export const buildSwimTrends = <N>(
     totalDistanceM,
     'cadence',
     lengthAverages?.strokesPerLength ?? null,
-    null,
     observation => observation.strokesPerLength,
     !paceVisible && cadenceVisible ? modeToggle : undefined,
   )
@@ -3321,7 +3259,6 @@ export const buildSwimTrends = <N>(
     totalDistanceM,
     'swolf',
     lengthAverages?.swolf ?? null,
-    null,
     observation => observation.swolf,
     !paceVisible && !cadenceVisible && swolfVisible ? modeToggle : undefined,
   )
@@ -4096,7 +4033,6 @@ const addPowerCurveThresholdCaption = <N>(
   ftp: number | null,
   goalFtp: number | null,
   excludeActivityId?: number | string,
-  showAnchors = true,
 ): void => {
   const thresholds = f.el('span', 'tri-curve-thresholds')
   const anchorRows: N[] = []
@@ -4118,16 +4054,9 @@ const addPowerCurveThresholdCaption = <N>(
         },
       ),
     )
-    if (showAnchors)
-      anchorRows.push(
-        buildCriticalPowerAnchorLinks(
-          f,
-          estimate,
-          range,
-          selectedRange === range,
-          excludeActivityId,
-        ),
-      )
+    anchorRows.push(
+      buildCriticalPowerAnchorLinks(f, estimate, range, selectedRange === range, excludeActivityId),
+    )
     hasThreshold = true
   }
   if (ftp != null) {
@@ -4430,19 +4359,19 @@ export const buildPowerCurve = <N>(
     const p = curve.find(c => c.s === sec)
     if (p) f.add(cap, f.el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
   }
-  addPowerCurveThresholdCaption(
-    f,
-    cap,
-    [
-      ['six-weeks', criticalPower],
-      ['year', criticalPowerYear],
-    ],
-    defaultRange,
-    ftpRef,
-    goalRef,
-    d.id,
-    !embedded,
-  )
+  if (!embedded)
+    addPowerCurveThresholdCaption(
+      f,
+      cap,
+      [
+        ['six-weeks', criticalPower],
+        ['year', criticalPowerYear],
+      ],
+      defaultRange,
+      ftpRef,
+      goalRef,
+      d.id,
+    )
   f.add(wrap, cap)
   return wrap
 }
@@ -4523,8 +4452,9 @@ const activityTrainingRows = (
       }),
     ])
   rows.push(['training effect', triText(presentation.locale, activityTrainingEffectLabel(d))])
-  if (garmin?.exerciseLoad != null)
-    rows.push(['exercise load', Math.round(garmin.exerciseLoad).toLocaleString(locale)])
+  const exerciseLoad = garmin?.exerciseLoad ?? d.calculatedExerciseLoad?.value
+  if (exerciseLoad != null)
+    rows.push(['exercise load', Math.round(exerciseLoad).toLocaleString(locale)])
   return rows
 }
 
@@ -4765,6 +4695,13 @@ export const activityStatRows = (
     const trend = runTrendRow(d.distanceKm, d.movingTimeS)
     if (trend) rows.push(trend)
   }
+  if (d.sport === 'swim')
+    rows.push([
+      'stroke rate',
+      positiveMetric(d.strokeRateSpm) ? `${Math.round(d.strokeRateSpm)} spm` : '—',
+    ])
+  if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+  rows.push(...activityTrainingRows(presentation, d))
   if (d.sport === 'swim') {
     const poolMetrics = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
     if (d.swimLocation !== 'pool') {
@@ -4773,14 +4710,6 @@ export const activityStatRows = (
         d.waterTemperatureC == null ? '—' : formatTemperature(presentation, d.waterTemperatureC),
       ])
     }
-    rows.push([
-      'stroke rate',
-      positiveMetric(d.strokeRateSpm) ? `${Math.round(d.strokeRateSpm)} spm` : '—',
-    ])
-    rows.push([
-      'cadence',
-      poolMetrics ? `${swimTrendNumber(poolMetrics.strokesPerLength)} /length` : '—',
-    ])
     const swolf = poolMetrics
       ? swimActivityHeaderValue(presentation.locale, 'swolf', poolMetrics.swolf, '')
       : '—'
@@ -4797,8 +4726,6 @@ export const activityStatRows = (
         : '—',
     ])
   }
-  if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
-  rows.push(...activityTrainingRows(presentation, d))
   return rows
 }
 
@@ -4807,7 +4734,6 @@ export const buildActivity = <N>(
   d: StravaActivityDetail,
   expanded = false,
   ctx?: DetailCtx,
-  swimTrend: SwimTrendPoint[] = [],
   fillMissingRunPower = false,
   embedded = false,
 ): N => {
@@ -4870,7 +4796,7 @@ export const buildActivity = <N>(
     f.add(figs, buildPool(f, d))
     f.add(wrap, figs)
   }
-  const swimTrends = buildSwimTrends(f, d, swimTrend)
+  const swimTrends = buildSwimTrends(f, d)
   if (hasMoreSection(d) || swimTrends) {
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
@@ -6865,7 +6791,6 @@ export const buildDayCard = <N>(
         d,
         dayCardActivitiesExpanded(extras),
         ctx,
-        payload?.swimTrend ?? [],
         extras.event != null,
         extras.embedded === true,
       ))

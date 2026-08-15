@@ -11,7 +11,6 @@ import { powerCurveHoverAt } from '../../../util/triathlon-card'
 import { swimTrendHoverAt } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { powerCurveReferenceLabel } from '../../../util/triathlon-i18n'
-import { swimActivityComparisonText } from '../../../util/triathlon-i18n'
 import { swimActivityDisplayValue } from '../../../util/triathlon-i18n'
 import { swimActivityDistanceText } from '../../../util/triathlon-i18n'
 import { swimActivityHeaderValue } from '../../../util/triathlon-i18n'
@@ -508,19 +507,6 @@ export const setupChartScrub = (
     showCurveIndex(svg, index, wasActive)
   }
   const onLocale = (): void => {
-    for (const delta of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-delta')) {
-      const kind = swimChartMetric(delta.dataset.swimComparisonKind)
-      const rawDelta = delta.dataset.swimComparisonDelta
-      const rawPrior = delta.dataset.swimComparisonPrior
-      const comparisonDelta = rawDelta == null ? null : Number(rawDelta)
-      const comparisonPrior = rawPrior == null ? null : Number(rawPrior)
-      delta.textContent = swimActivityComparisonText(
-        presentation().locale,
-        kind,
-        comparisonDelta != null && Number.isFinite(comparisonDelta) ? comparisonDelta : null,
-        comparisonPrior != null && Number.isInteger(comparisonPrior) ? comparisonPrior : null,
-      )
-    }
     for (const average of scope.querySelectorAll<HTMLElement>('.tri-swim-trend-value')) {
       const kind = swimChartMetric(average.dataset.swimAverageKind)
       const value = Number(average.dataset.swimAverageValue)

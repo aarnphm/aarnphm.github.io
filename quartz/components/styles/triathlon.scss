@@ -719,8 +719,18 @@
 
 .tri-training-effect-list {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  justify-content: space-between;
   gap: 0.55rem;
+}
+
+.tri-training-effect {
+  min-height: calc(var(--tri-activity-chart-height, 104px) + 2.7rem);
+
+  > .tri-zone-title {
+    font-size: 0.66rem;
+  }
 }
 
 .tri-training-effect-item {
@@ -1451,7 +1461,6 @@
   flex-direction: column;
   gap: 0.35rem;
   width: 100%;
-  max-width: 240px;
 }
 
 .tri-stroke-bar {
@@ -1473,7 +1482,7 @@
   align-self: stretch;
   gap: 0.2rem;
   margin: 0;
-  padding: 0;
+  padding: 0 !important;
   list-style: none;
 }
 
@@ -1559,6 +1568,7 @@
   border: 0;
   border-radius: var(--radius-none);
   cursor: pointer;
+  white-space: nowrap;
   transition:
     background-color 140ms ease,
     color 140ms ease;
@@ -1596,14 +1606,16 @@
   grid-template-columns: minmax(0, 1fr) max-content;
   align-items: baseline;
   gap: 0.12rem 0.7rem;
+  min-height: 1.122rem;
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
+  margin-top: 0.32rem;
 }
 
 .tri-swim-trend-head--with-mode {
   > .tri-swim-mode-toggle {
     grid-column: 1;
-    grid-row: 1 / span 2;
+    grid-row: 1;
     align-self: center;
     justify-self: start;
   }
@@ -1612,15 +1624,10 @@
     grid-column: 2;
     grid-row: 1;
   }
-
-  > .tri-swim-trend-delta {
-    grid-column: 2;
-    grid-row: 2;
-  }
 }
 
 .tri-swim-trend-title {
-  grid-row: 1 / span 2;
+  grid-row: 1;
   font-size: 0.58rem;
   color: var(--gray);
 }
@@ -1631,14 +1638,6 @@
   line-height: 1.1;
   text-align: right;
   color: var(--dark);
-}
-
-.tri-swim-trend-delta {
-  grid-column: 2;
-  font-size: 0.5rem;
-  line-height: 1.2;
-  text-align: right;
-  color: var(--gray);
 }
 
 .tri-swim-trend > .tri-cax-frame {
@@ -12092,7 +12091,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
     align-items: start;
-    gap: 1.2rem 2.2rem;
+    gap: 1.2rem 1.6rem;
 
     > .tri-act-health {
       grid-column: 1 / -1;
@@ -12136,6 +12135,59 @@
   }
 }
 
+.tri-day-embed[data-triathlon-embedded='1'] > .tri-pop-card {
+  display: flex;
+  flex-flow: row wrap;
+
+  > .tri-pop-head,
+  > .tri-pop-rest,
+  > .tri-act-health {
+    flex: 0 0 100%;
+    min-width: 0;
+  }
+
+  > .tri-act {
+    flex: 1 1 12rem;
+    min-width: min(12rem, 100%);
+  }
+}
+
+.tri-day-embed[data-triathlon-embedded='1'] .tri-training-effect {
+  min-height: calc(var(--tri-activity-chart-height, 104px) + 2.9rem);
+}
+
+.stream .tri-day-embed[data-triathlon-embedded='1'] {
+  .tri-elev-wrap > .tri-elev-cap:has(> .tri-elev-d) {
+    flex-wrap: nowrap;
+    column-gap: 0.45rem;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+
+    > .tri-elev-d {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    > :not(.tri-elev-d) {
+      display: none;
+    }
+  }
+
+  .tri-fig-readout {
+    top: 1.5rem;
+    right: 0;
+    width: max-content;
+    max-width: calc(100% - 2.4rem);
+    overflow-wrap: anywhere;
+    text-align: right;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 @container tri-day-card (min-width: 26.2rem) {
   .tri-day-embed[data-triathlon-embedded='1']
     > .tri-pop-card
@@ -12157,6 +12209,10 @@
 }
 
 @container tri-day-card (min-width: 54.6rem) {
+  .tri-day-embed[data-triathlon-embedded='1'] > .tri-pop-card > .tri-act {
+    min-width: 0;
+  }
+
   .tri-day-embed[data-triathlon-embedded='1']
     > .tri-pop-card
     > .tri-act-health
@@ -12193,9 +12249,31 @@
       }
 
       > .tri-act-strength {
+        position: relative;
         box-sizing: border-box;
         height: var(--tri-embedded-visual-height);
         margin-top: 0;
+        overflow: hidden;
+
+        &::after {
+          position: absolute;
+          inset: auto 0.35rem 0 0;
+          z-index: 1;
+          height: 3.25rem;
+          background: color-mix(in srgb, var(--light) 78%, transparent);
+          -webkit-backdrop-filter: blur(5px);
+          backdrop-filter: blur(5px);
+          content: '';
+          opacity: 0;
+          pointer-events: none;
+          -webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%);
+          mask-image: linear-gradient(to bottom, transparent, #000 45%);
+          transition: opacity 140ms ease;
+        }
+
+        &[data-scrollable='true'][data-scroll-end='false']::after {
+          opacity: 1;
+        }
       }
 
       .tri-strength-exercises {
@@ -12206,6 +12284,15 @@
         scrollbar-gutter: stable;
         @include thin-scrollbar;
       }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tri-day-embed[data-triathlon-embedded='1']
+      .tri-pop-card:has(> .tri-act + .tri-act)
+      > .tri-act
+      > .tri-act-strength::after {
+      transition: none;
     }
   }
 
@@ -12761,8 +12848,7 @@ a.tri-pop-date:hover {
     box-sizing: border-box;
     grid-template-rows: auto auto minmax(0, 1fr);
     height: calc(
-      var(--tri-activity-chart-height, 104px) + var(--tri-activity-chart-height, 104px) + 6.5rem +
-        var(--tri-run-splits-extra-height, 0rem)
+      var(--tri-activity-chart-height, 104px) + var(--tri-activity-chart-height, 104px) + 6.5rem
     );
     margin-bottom: 0;
   }
@@ -12812,13 +12898,5 @@ a.tri-pop-date:hover {
 
   .tri-run-split[aria-pressed='true'] .tri-run-split-track {
     outline: 0;
-  }
-}
-
-@container tri-day-card (min-width: 26rem) {
-  :not(.tri-day-page)
-    > .tri-day-embed:has(.tri-act + .tri-act):has(.tri-swim-mode-toggle)
-    .tri-pop-card {
-    --tri-run-splits-extra-height: 1.9rem;
   }
 }

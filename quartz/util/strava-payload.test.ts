@@ -8,6 +8,8 @@ import {
   type StravaPayload,
 } from '../plugins/stores/strava'
 import {
+  enrichCalculatedExerciseLoads,
+  enrichCalculatedIntensityFactors,
   enrichCoreBodyTemperature,
   enrichRunDynamics,
   enrichSwimMetrics,
@@ -44,6 +46,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   strength: null,
   garmin: null,
   calculatedIntensityFactor: null,
+  calculatedExerciseLoad: null,
   gearShifts: [],
   cyclingDynamics: null,
   route: [],
@@ -110,6 +113,17 @@ const payloadWith = (...details: StravaActivityDetail[]): StravaPayload => {
   for (const item of details) payload.details[String(item.id)] = item
   return payload
 }
+
+test('enriches SSR payloads with pace-derived intensity factors and exercise loads', () => {
+  const swim = detail()
+  const payload = payloadWith(swim)
+
+  enrichCalculatedIntensityFactors(payload, [{ id: swim.id, paceIntensityFactor: 1.011 }], 249, 173)
+  enrichCalculatedExerciseLoads(payload)
+
+  assert.deepEqual(swim.calculatedIntensityFactor, { value: 1.011, source: 'pace' })
+  assert.deepEqual(swim.calculatedExerciseLoad, { value: 45.1, source: 'pace' })
+})
 
 test('aligns native Apple running dynamics to the matching run route', () => {
   const start = '2026-07-17T00:30:45Z'
