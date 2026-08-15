@@ -179,6 +179,32 @@ export const trendDir = (invert: boolean, slope: number | null): number => {
   return (invert ? slope < 0 : slope > 0) ? 1 : -1
 }
 
+export type TrendGlyphDirection = 'up' | 'down' | 'flat'
+
+export const buildTrendGlyph = (
+  direction: TrendGlyphDirection,
+  label: string,
+  className: string,
+): SVGElement => {
+  const glyph = svg('svg', {
+    class: `tri-trend-glyph tri-dir-${direction} ${className}`,
+    viewBox: '0 0 8 8',
+    role: 'img',
+    'aria-label': label,
+  })
+  glyph.appendChild(
+    svg('path', {
+      d:
+        direction === 'up'
+          ? 'M4 1.25 7 6.75H1Z'
+          : direction === 'down'
+            ? 'M1 1.25h6L4 6.75Z'
+            : 'M1.5 1.5h5v5h-5Z',
+    }),
+  )
+  return glyph
+}
+
 export const buildGauge = (data: Analytics, context: TriathlonContext): HTMLElement => {
   const text = (key: string): string => context.formatter.text(key)
   const block = el('div', 'tri-ana-gauge')

@@ -6,6 +6,7 @@ import type { DetailPayload } from './data'
 import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metrics'
 import { buildActivityComparison } from '../../../util/triathlon-card'
 import { buildDayCard as buildDayCardNode } from '../../../util/triathlon-card'
+import { dayCardActivitiesExpanded } from '../../../util/triathlon-card'
 import { parseExcludedActivityIds } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
@@ -42,7 +43,7 @@ export const buildDayCard = (
     activityViews.push(view)
     return view.element
   }) as HTMLElement
-  if (extras.expanded) {
+  if (dayCardActivitiesExpanded(extras)) {
     card
       .querySelectorAll<HTMLElement>('.tri-act')
       .forEach(activity => setActivityExpanded(activity, true))
@@ -67,6 +68,7 @@ export const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
     location: data.triathlonLoc,
     event: data.triathlonEvent,
     sport: data.triathlonSport as DayCardExtras['sport'],
+    activityId: data.triathlonActivityId,
     ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
     ...(settings ? { settings } : {}),
     expanded: data.triathlonExpanded === '1',

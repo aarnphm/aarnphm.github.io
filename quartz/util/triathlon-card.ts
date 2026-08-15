@@ -5,6 +5,7 @@ import {
   SPORT_ICON,
   type ActivityAnalysisKind,
   type ActivityAnalysisRange,
+  type ActivityCyclingDynamics,
   type ActivityGearShift,
   type ActivityHealth,
   type ActivityKind,
@@ -22,7 +23,12 @@ import {
   type SwimChartMetric,
 } from './swim-metrics'
 import { triathlonActivityAnchor } from './triathlon-date-route'
-import { criticalPowerEvidenceText, criticalPowerSummaryText, triText } from './triathlon-i18n'
+import {
+  criticalPowerEvidenceText,
+  criticalPowerSummaryText,
+  swimActivityHeaderValue,
+  triText,
+} from './triathlon-i18n'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
 import { triathlonTraceName, type TriathlonTraceSettings } from './triathlon-trace-settings'
 
@@ -37,6 +43,7 @@ export type DayCardExtras = {
   location?: string
   event?: string
   sport?: ActivityKind
+  activityId?: string
   excludedActivityIds?: readonly string[]
   settings?: TriathlonTraceSettings
   expanded?: boolean
@@ -50,6 +57,9 @@ export type DayCardPayload = {
   swimTrend?: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
 }
+
+export const dayCardActivitiesExpanded = (extras: DayCardExtras): boolean =>
+  Boolean(extras.sport || extras.activityId || extras.expanded)
 
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
 export type ActivityStrength = NonNullable<StravaActivityDetail['strength']>
@@ -341,7 +351,7 @@ export const routeStreamFlags = (
         point.rightPowerPct <= 100 &&
         point.w > 0,
     ).length >= 2,
-  hr: d.route.some(p => p.hr > 0),
+  hr: hasHeartRateTrace(d),
   cad: d.route.some(p => p.cad > 0),
   stride:
     d.sport === 'run' &&
@@ -356,12 +366,9 @@ export const routeStreamFlags = (
     d.route.filter(point => point.stamina != null && point.potentialStamina != null).length >= 2,
   resp: d.route.some(p => p.resp != null && p.resp > 0),
   temp: d.route.some(p => p.tempC != null),
-  heatStrain:
-    d.sport === 'bike' && d.route.filter(point => point.heatStrainIndex != null).length >= 2,
-  coreTemperature:
-    d.sport === 'bike' && d.route.filter(point => point.coreTemperatureC != null).length >= 2,
-  skinTemperature:
-    d.sport === 'bike' && d.route.filter(point => point.skinTemperatureC != null).length >= 2,
+  heatStrain: d.route.filter(point => point.heatStrainIndex != null).length >= 2,
+  coreTemperature: d.route.filter(point => point.coreTemperatureC != null).length >= 2,
+  skinTemperature: d.route.filter(point => point.skinTemperatureC != null).length >= 2,
 })
 
 const nativeRunStrideLengthM = (point: StravaActivityDetail['route'][number]): number | null => {
@@ -590,6 +597,7 @@ export const hasMoreSection = (d: StravaActivityDetail): boolean => {
     flags.coreTemperature ||
     flags.skinTemperature ||
     d.gearShifts.length > 0 ||
+    d.cyclingDynamics != null ||
     garmin?.aerobicTrainingEffect != null ||
     garmin?.anaerobicTrainingEffect != null ||
     garmin?.aerobicTrainingEffectMessage != null ||
@@ -749,19 +757,6 @@ export const positiveMetricDomain = (
   return { min: Math.max(Number.EPSILON, min - pad), max: max + pad, intervals }
 }
 
-const resolveActivityGraphDomain = (
-  d: StravaActivityDetail,
-  domain?: ActivityGraphDomain | null,
-): ActivityGraphDomain => {
-  const maxDistanceKm = d.route[d.route.length - 1].d || 1
-  if (!domain) return { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
-  const startDistanceKm = Math.max(0, Math.min(maxDistanceKm, domain.startDistanceKm))
-  const endDistanceKm = Math.max(startDistanceKm, Math.min(maxDistanceKm, domain.endDistanceKm))
-  return endDistanceKm > startDistanceKm
-    ? { startDistanceKm, endDistanceKm }
-    : { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
-}
-
 const distanceXTicks = (
   presentation: TriathlonPresentation,
   startDistanceKm: number,
@@ -785,16 +780,36 @@ const distanceXTicks = (
   return ticks
 }
 
+const elapsedActivityXTicks = (totalElapsedS: number): AxisXTick[] => [
+  { label: zoneClock(0), pct: 0, cls: 'tri-cax-xt--first' },
+  { label: zoneClock(totalElapsedS / 2), pct: 50 },
+  { label: zoneClock(totalElapsedS), pct: 100, cls: 'tri-cax-xt--last' },
+]
+
 const graphView = (
   d: StravaActivityDetail,
   domain?: ActivityGraphDomain | null,
+): ActivityGraphDomain & { start: number; width: number } =>
+  graphViewForDistance(d.route[d.route.length - 1].d || 1, domain)
+
+const graphViewForDistance = (
+  maxDistanceKm: number,
+  domain?: ActivityGraphDomain | null,
 ): ActivityGraphDomain & { start: number; width: number } => {
-  const maxDistanceKm = d.route[d.route.length - 1].d || 1
-  const resolved = resolveActivityGraphDomain(d, domain)
+  const resolved = domain
+    ? {
+        startDistanceKm: Math.max(0, Math.min(maxDistanceKm, domain.startDistanceKm)),
+        endDistanceKm: Math.max(0, Math.min(maxDistanceKm, domain.endDistanceKm)),
+      }
+    : { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
+  const valid =
+    resolved.endDistanceKm > resolved.startDistanceKm
+      ? resolved
+      : { startDistanceKm: 0, endDistanceKm: maxDistanceKm }
   return {
-    ...resolved,
-    start: (resolved.startDistanceKm / maxDistanceKm) * 100,
-    width: ((resolved.endDistanceKm - resolved.startDistanceKm) / maxDistanceKm) * 100,
+    ...valid,
+    start: (valid.startDistanceKm / maxDistanceKm) * 100,
+    width: ((valid.endDistanceKm - valid.startDistanceKm) / maxDistanceKm) * 100,
   }
 }
 
@@ -915,10 +930,11 @@ const buildUnavailableElevation = <N>(f: TriNodeFactory<N>): N => {
   return wrap
 }
 
-export const buildTrace = <N>(
+const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
-  pick: (p: StravaActivityDetail['route'][number], i: number) => number | null,
+  points: readonly P[],
+  pick: (point: P, index: number) => number | null,
   title: string,
   cap: (max: number) => string,
   tick: (value: number) => string,
@@ -930,9 +946,9 @@ export const buildTrace = <N>(
 ): N => {
   const w = 100
   const h = 30
-  const maxD = d.route[d.route.length - 1].d || 1
+  const maxD = points.at(-1)?.d || d.distanceKm || 1
   let peak = 1
-  const values = d.route.map(pick)
+  const values = points.map(pick)
   values.forEach(value => {
     if (value != null && Number.isFinite(value) && value > peak) peak = value
   })
@@ -940,7 +956,8 @@ export const buildTrace = <N>(
   const candidateMax = Math.max(domain?.max ?? peak, reference?.value ?? Number.NEGATIVE_INFINITY)
   const domainMax = candidateMax > domainMin ? candidateMax : domainMin + 1
   const px = (km: number): number => (km / maxD) * w
-  const py = (v: number): number => h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)
+  const py = (v: number): number =>
+    Math.min(h, Math.max(0, h - ((v - domainMin) / (domainMax - domainMin)) * (h - 1)))
   let area = ''
   let line = ''
   let missingLine = ''
@@ -948,8 +965,8 @@ export const buildTrace = <N>(
   const closeSegment = (start: number, end: number): void => {
     const first = values[start]
     if (first == null) return
-    const startX = start === 0 ? 0 : px(d.route[start].d)
-    const firstX = px(d.route[start].d)
+    const startX = start === 0 ? 0 : px(points[start].d)
+    const firstX = px(points[start].d)
     const firstY = py(first).toFixed(2)
     area += `M ${startX.toFixed(2).replace('.00', '')} ${h} L ${startX.toFixed(2).replace('.00', '')} ${firstY} `
     line += `M ${startX.toFixed(2).replace('.00', '')} ${firstY} `
@@ -960,12 +977,12 @@ export const buildTrace = <N>(
     for (let i = start + 1; i <= end; i++) {
       const value = values[i]
       if (value == null) continue
-      const x = px(d.route[i].d).toFixed(2)
+      const x = px(points[i].d).toFixed(2)
       const y = py(value).toFixed(2)
       area += `L ${x} ${y} `
       line += `L ${x} ${y} `
     }
-    area += `L ${px(d.route[end].d).toFixed(2)} ${h} Z `
+    area += `L ${px(points[end].d).toFixed(2)} ${h} Z `
   }
   values.forEach((value, index) => {
     const valid = value != null && Number.isFinite(value)
@@ -979,13 +996,13 @@ export const buildTrace = <N>(
     let previous = -1
     values.forEach((value, index) => {
       if (value == null || !Number.isFinite(value)) return
-      const x = px(d.route[index].d).toFixed(2)
+      const x = px(points[index].d).toFixed(2)
       const y = py(value).toFixed(2)
       if (previous < 0 && index > 0) missingLine += `M 0 ${y} L ${x} ${y} `
       else if (previous >= 0 && index > previous + 1) {
         const previousValue = values[previous]
         if (previousValue != null) {
-          missingLine += `M ${px(d.route[previous].d).toFixed(2)} ${py(previousValue).toFixed(2)} L ${x} ${y} `
+          missingLine += `M ${px(points[previous].d).toFixed(2)} ${py(previousValue).toFixed(2)} L ${x} ${y} `
         }
       }
       previous = index
@@ -993,25 +1010,33 @@ export const buildTrace = <N>(
     if (previous >= 0 && previous < values.length - 1) {
       const value = values[previous]
       if (value != null)
-        missingLine += `M ${px(d.route[previous].d).toFixed(2)} ${py(value).toFixed(2)} L ${w} ${py(value).toFixed(2)} `
+        missingLine += `M ${px(points[previous].d).toFixed(2)} ${py(value).toFixed(2)} L ${w} ${py(value).toFixed(2)} `
     }
   }
   const yTicks = niceTicks(domainMin, domainMax, domain?.intervals ?? 3).map(value => ({
     label: value === 0 ? '0' : tick(value),
     vbY: py(value),
   }))
-  const view = graphView(d, graphDomain)
+  const view = graphViewForDistance(maxD, graphDomain)
   const s = f.svg('svg', {
     class: 'tri-elev',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${h}`,
     preserveAspectRatio: 'none',
-    'data-domain-start-distance-km': view.startDistanceKm,
-    'data-domain-end-distance-km': view.endDistanceKm,
+    ...(d.sport === 'strength'
+      ? {
+          'data-domain-start-elapsed-s': view.startDistanceKm,
+          'data-domain-end-elapsed-s': view.endDistanceKm,
+        }
+      : {
+          'data-domain-start-distance-km': view.startDistanceKm,
+          'data-domain-end-distance-km': view.endDistanceKm,
+        }),
   })
   for (const t of yTicks)
     f.add(s, f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: t.vbY, x2: w, y2: t.vbY }))
   f.add(s, f.svg('path', { d: area, class: 'tri-elev-area' }))
-  if (selection !== undefined) f.add(s, buildAnalysisSelection(f, d, h, selection))
+  if (selection !== undefined && d.route.length >= 2)
+    f.add(s, buildAnalysisSelection(f, d, h, selection))
   if (missingLine)
     f.add(s, f.svg('path', { d: missingLine, class: 'tri-elev-line tri-elev-line--missing' }))
   if (reference)
@@ -1045,12 +1070,90 @@ export const buildTrace = <N>(
       s,
       yTicks,
       h,
-      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      d.sport === 'swim'
+        ? swimActivityXTicks(maxD * 1_000)
+        : d.sport === 'strength'
+          ? elapsedActivityXTicks(maxD)
+          : distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
       { top: 0, bottom: h },
     ),
   )
   return wrap
+}
+
+export const buildTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  pick: (p: StravaActivityDetail['route'][number], i: number) => number | null,
+  title: string,
+  cap: (max: number) => string,
+  tick: (value: number) => string,
+  domain?: ActivityTraceDomain,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+  missing?: 'dotted',
+  reference?: ActivityTraceReference | null,
+): N =>
+  buildTraceSeries(
+    f,
+    d,
+    d.route,
+    pick,
+    title,
+    cap,
+    tick,
+    domain,
+    d.route.length >= 2 ? selection : undefined,
+    graphDomain,
+    missing,
+    reference,
+  )
+
+const HEART_RATE_TRACE_MIN_BPM = 80
+
+const heartRateTracePoints = (
+  d: StravaActivityDetail,
+): { d: number; elapsedS: number; heartRate: number | null }[] => {
+  const route = d.route.map(point => ({
+    d: point.d,
+    elapsedS: point.elapsedS,
+    heartRate: point.hr > 0 ? point.hr : null,
+  }))
+  if (route.filter(point => point.heartRate != null).length >= 2) return route
+  return d.heartRateTrace.map(point => ({
+    d: d.sport === 'strength' ? point.elapsedS : point.distanceKm,
+    elapsedS: point.elapsedS,
+    heartRate: point.heartRate,
+  }))
+}
+
+export const hasHeartRateTrace = (d: StravaActivityDetail): boolean =>
+  heartRateTracePoints(d).filter(point => point.heartRate != null).length >= 2
+
+export const buildHeartRateTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N => {
+  const points = heartRateTracePoints(d)
+  const maximum = Math.max(
+    HEART_RATE_TRACE_MIN_BPM + 20,
+    ...points.flatMap(point => (point.heartRate == null ? [] : [point.heartRate])),
+  )
+  return buildTraceSeries(
+    f,
+    d,
+    points,
+    point => point.heartRate,
+    'hr',
+    peak => `${peak} bpm peak`,
+    value => `${Math.round(value)}bpm`,
+    { min: HEART_RATE_TRACE_MIN_BPM, max: maximum, intervals: 4 },
+    selection,
+    graphDomain,
+  )
 }
 
 const routeRightPowerPct = (point: StravaActivityDetail['route'][number]): number | null => {
@@ -1237,6 +1340,468 @@ export const buildPowerBalanceChart = <N>(
     }
   }
   f.add(cap, f.el('span', 'tri-elev-d', 'power balance', { 'data-i18n': 'power balance' }), summary)
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      yTicks,
+      height,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: height },
+    ),
+  )
+  return wrap
+}
+
+type CyclingDynamicsPercentMetric = 'pedalSmoothness' | 'torqueEffectiveness'
+
+type CyclingDynamicsSeriesKey =
+  | 'leftPedalSmoothness'
+  | 'rightPedalSmoothness'
+  | 'leftTorqueEffectiveness'
+  | 'rightTorqueEffectiveness'
+  | 'leftPowerPhaseStart'
+  | 'leftPowerPhaseEnd'
+  | 'rightPowerPhaseStart'
+  | 'rightPowerPhaseEnd'
+
+const cyclingDynamicsSampleCount = (dynamics: ActivityCyclingDynamics): number => {
+  const length = dynamics.elapsedS.length
+  return length >= 2 && dynamics.distanceKm.length === length ? length : 0
+}
+
+const cyclingDynamicsValues = (
+  dynamics: ActivityCyclingDynamics,
+  key: CyclingDynamicsSeriesKey,
+): (number | null)[] => {
+  const values = dynamics[key]
+  return values.length === cyclingDynamicsSampleCount(dynamics) ? values : []
+}
+
+const validCyclingDynamicsValue = (value: number | null): value is number =>
+  value != null && Number.isFinite(value)
+
+export const cyclingDynamicsIndexAtDistance = (
+  dynamics: ActivityCyclingDynamics,
+  distanceKm: number,
+): number => {
+  const length = cyclingDynamicsSampleCount(dynamics)
+  if (length === 0) return -1
+  let low = 0
+  let high = length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (dynamics.distanceKm[middle] < distanceKm) low = middle + 1
+    else high = middle
+  }
+  if (low === 0) return 0
+  if (low >= length) return length - 1
+  return distanceKm - dynamics.distanceKm[low - 1] <= dynamics.distanceKm[low] - distanceKm
+    ? low - 1
+    : low
+}
+
+export const riderPositionAtDistance = (
+  dynamics: ActivityCyclingDynamics,
+  distanceKm: number,
+): 'seated' | 'standing' | null => {
+  const changes = dynamics.positionChanges
+  if (changes.length === 0 || distanceKm < changes[0].distanceKm) return null
+  let low = 0
+  let high = changes.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (changes[middle].distanceKm <= distanceKm) low = middle + 1
+    else high = middle
+  }
+  return changes[Math.max(0, low - 1)]?.position ?? null
+}
+
+interface CyclingDynamicsPaths {
+  measured: string
+  bridges: string
+}
+
+const cyclingDynamicsPaths = (
+  dynamics: ActivityCyclingDynamics,
+  values: readonly (number | null)[],
+  maxDistanceKm: number,
+  py: (value: number) => number,
+  circular = false,
+): CyclingDynamicsPaths => {
+  const px = (distanceKm: number): number =>
+    (Math.min(maxDistanceKm, Math.max(0, distanceKm)) / maxDistanceKm) * 100
+  let measured = ''
+  let bridges = ''
+  let previousValid = -1
+  let segmentOpen = false
+  for (let index = 0; index < values.length; index++) {
+    const value = values[index]
+    if (!validCyclingDynamicsValue(value)) {
+      segmentOpen = false
+      continue
+    }
+    const previousValue = previousValid >= 0 ? values[previousValid] : null
+    const wraps =
+      circular && validCyclingDynamicsValue(previousValue) && Math.abs(previousValue - value) > 180
+    const gap =
+      previousValid >= 0 &&
+      (index > previousValid + 1 ||
+        dynamics.elapsedS[index] - dynamics.elapsedS[previousValid] > 60 ||
+        wraps)
+    if (gap && !wraps && validCyclingDynamicsValue(previousValue))
+      bridges += `M ${px(dynamics.distanceKm[previousValid]).toFixed(2)} ${py(previousValue).toFixed(2)} L ${px(dynamics.distanceKm[index]).toFixed(2)} ${py(value).toFixed(2)} `
+    measured += `${segmentOpen && !gap ? 'L' : 'M'} ${px(dynamics.distanceKm[index]).toFixed(2)} ${py(value).toFixed(2)} `
+    previousValid = index
+    segmentOpen = true
+  }
+  return { measured, bridges }
+}
+
+const cyclingDynamicsDomain = (values: readonly number[]): [number, number] => {
+  const sorted = [...values].sort((left, right) => left - right)
+  const low = sorted[Math.round((sorted.length - 1) * 0.05)]
+  const high = sorted[Math.round((sorted.length - 1) * 0.95)]
+  const padding = Math.max(5, (high - low) * 0.15)
+  let min = Math.max(0, Math.floor((low - padding) / 5) * 5)
+  let max = Math.min(100, Math.ceil((high + padding) / 5) * 5)
+  if (max - min < 20) {
+    const middle = (min + max) / 2
+    min = Math.max(0, Math.floor((middle - 10) / 5) * 5)
+    max = Math.min(100, Math.ceil((middle + 10) / 5) * 5)
+  }
+  return max > min ? [min, max] : [0, 100]
+}
+
+const cyclingDynamicsAverage = (values: readonly (number | null)[]): number | null => {
+  let sum = 0
+  let count = 0
+  for (const value of values) {
+    if (!validCyclingDynamicsValue(value)) continue
+    sum += value
+    count++
+  }
+  return count > 0 ? sum / count : null
+}
+
+const buildCyclingDynamicsLegend = <N>(
+  f: TriNodeFactory<N>,
+  side: 'left' | 'right',
+  suffix = '',
+): N => {
+  const item = f.el(
+    'span',
+    `tri-cycling-dynamics-legend-item tri-cycling-dynamics-legend-item--${side}${suffix ? ` tri-cycling-dynamics-legend-item--${suffix}` : ''}`,
+  )
+  f.add(
+    item,
+    f.el('span', 'tri-cycling-dynamics-legend-line', undefined, { 'aria-hidden': 'true' }),
+    f.el(
+      'span',
+      'tri-cycling-dynamics-legend-label',
+      `${triText(f.presentation.locale, side)}${suffix ? ` ${triText(f.presentation.locale, suffix)}` : ''}`,
+    ),
+  )
+  return item
+}
+
+type CyclingDynamicsGlossTitle = 'torque effectiveness' | 'pedal smoothness' | 'power phase'
+
+const buildCyclingDynamicsTitle = <N>(f: TriNodeFactory<N>, title: CyclingDynamicsGlossTitle): N =>
+  f.el('span', 'tri-elev-d', triText(f.presentation.locale, title), {
+    'data-gloss': title,
+    tabindex: '0',
+  })
+
+const buildCyclingDynamicsPercentChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  metric: CyclingDynamicsPercentMetric,
+  selection?: ActivityAnalysisRange | null,
+  embedded = false,
+): N | null => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics || cyclingDynamicsSampleCount(dynamics) < 2) return null
+  const leftKey = metric === 'pedalSmoothness' ? 'leftPedalSmoothness' : 'leftTorqueEffectiveness'
+  const rightKey =
+    metric === 'pedalSmoothness' ? 'rightPedalSmoothness' : 'rightTorqueEffectiveness'
+  const left = cyclingDynamicsValues(dynamics, leftKey)
+  const right = cyclingDynamicsValues(dynamics, rightKey)
+  const observed = [...left, ...right].filter(validCyclingDynamicsValue)
+  if (observed.length < 2) return null
+  const [domainMin, domainMax] = cyclingDynamicsDomain(observed)
+  const height = 30
+  const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const py = (value: number): number =>
+    height -
+    ((Math.min(domainMax, Math.max(domainMin, value)) - domainMin) / (domainMax - domainMin)) *
+      (height - 1)
+  const middle = Math.round((domainMin + domainMax) / 2)
+  const yTicks = [domainMin, middle, domainMax].map(value => ({
+    label: `${value}%`,
+    vbY: py(value),
+  }))
+  const view = graphView(d)
+  const title = metric === 'pedalSmoothness' ? 'pedal smoothness' : 'torque effectiveness'
+  const className = metric === 'pedalSmoothness' ? 'pedal-smoothness' : 'torque-effectiveness'
+  const svgEl = f.svg('svg', {
+    class: `tri-elev tri-cycling-dynamics-svg tri-${className}-svg`,
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, title),
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svgEl,
+      f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: 100, y2: tick.vbY }),
+    )
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  for (const [side, values] of [
+    ['left', left],
+    ['right', right],
+  ] as const) {
+    const paths = cyclingDynamicsPaths(dynamics, values, maxDistanceKm, py)
+    if (paths.bridges)
+      f.add(
+        svgEl,
+        f.svg('path', {
+          d: paths.bridges,
+          class: `tri-cycling-dynamics-line tri-cycling-dynamics-line--${side} tri-cycling-dynamics-line--missing`,
+        }),
+      )
+    if (paths.measured)
+      f.add(
+        svgEl,
+        f.svg('path', {
+          d: paths.measured,
+          class: `tri-cycling-dynamics-line tri-cycling-dynamics-line--${side}`,
+        }),
+      )
+  }
+  f.add(svgEl, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }))
+  const wrap = f.el(
+    'div',
+    `tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-${className}-chart`,
+    undefined,
+    { 'data-tri-trace': className },
+  )
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  const summary = f.el('span', 'tri-cycling-dynamics-summary')
+  const leftAverage = cyclingDynamicsAverage(left)
+  const rightAverage = cyclingDynamicsAverage(right)
+  if (leftAverage != null && rightAverage != null)
+    f.add(
+      summary,
+      f.el(
+        'span',
+        'tri-elev-range',
+        `L ${leftAverage.toFixed(1)}% / R ${rightAverage.toFixed(1)}% avg`,
+      ),
+    )
+  if (!embedded)
+    f.add(summary, buildCyclingDynamicsLegend(f, 'left'), buildCyclingDynamicsLegend(f, 'right'))
+  f.add(cap, buildCyclingDynamicsTitle(f, title), summary)
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      yTicks,
+      height,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: height },
+    ),
+  )
+  return wrap
+}
+
+export const buildTorqueEffectivenessChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  embedded = false,
+): N | null => buildCyclingDynamicsPercentChart(f, d, 'torqueEffectiveness', selection, embedded)
+
+export const buildPedalSmoothnessChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  embedded = false,
+): N | null => buildCyclingDynamicsPercentChart(f, d, 'pedalSmoothness', selection, embedded)
+
+export const buildPowerPhaseChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics || cyclingDynamicsSampleCount(dynamics) < 2) return null
+  const series = [
+    ['left', 'start', cyclingDynamicsValues(dynamics, 'leftPowerPhaseStart')],
+    ['left', 'end', cyclingDynamicsValues(dynamics, 'leftPowerPhaseEnd')],
+    ['right', 'start', cyclingDynamicsValues(dynamics, 'rightPowerPhaseStart')],
+    ['right', 'end', cyclingDynamicsValues(dynamics, 'rightPowerPhaseEnd')],
+  ] as const
+  if (series.flatMap(([, , values]) => values).filter(validCyclingDynamicsValue).length < 2)
+    return null
+  const height = 36
+  const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const py = (value: number): number => height - (Math.min(360, Math.max(0, value)) / 360) * height
+  const yTicks = [0, 90, 180, 270, 360].map(value => ({ label: `${value}°`, vbY: py(value) }))
+  const view = graphView(d)
+  const svgEl = f.svg('svg', {
+    class: 'tri-elev tri-cycling-dynamics-svg tri-power-phase-svg',
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, 'power phase'),
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svgEl,
+      f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: 100, y2: tick.vbY }),
+    )
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  for (const [side, boundary, values] of series) {
+    const paths = cyclingDynamicsPaths(dynamics, values, maxDistanceKm, py, true)
+    if (paths.bridges)
+      f.add(
+        svgEl,
+        f.svg('path', {
+          d: paths.bridges,
+          class: `tri-cycling-dynamics-line tri-cycling-dynamics-line--${side} tri-power-phase-line--${boundary} tri-cycling-dynamics-line--missing`,
+        }),
+      )
+    if (paths.measured)
+      f.add(
+        svgEl,
+        f.svg('path', {
+          d: paths.measured,
+          class: `tri-cycling-dynamics-line tri-cycling-dynamics-line--${side} tri-power-phase-line--${boundary}`,
+        }),
+      )
+  }
+  f.add(svgEl, f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }))
+  const wrap = f.el(
+    'div',
+    'tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-power-phase-chart',
+    undefined,
+    { 'data-tri-trace': 'power-phase' },
+  )
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  const summary = f.el('span', 'tri-cycling-dynamics-summary tri-power-phase-summary')
+  for (const side of ['left', 'right'] as const)
+    for (const boundary of ['start', 'end'] as const)
+      f.add(summary, buildCyclingDynamicsLegend(f, side, boundary))
+  f.add(cap, buildCyclingDynamicsTitle(f, 'power phase'), summary)
+  f.add(
+    wrap,
+    cap,
+    axisFrame(
+      f,
+      svgEl,
+      yTicks,
+      height,
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
+      true,
+      { top: 0, bottom: height },
+    ),
+  )
+  return wrap
+}
+
+export const buildRiderPositionChart = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+): N | null => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics || dynamics.positionChanges.length === 0) return null
+  const height = 24
+  const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const px = (distanceKm: number): number =>
+    (Math.min(maxDistanceKm, Math.max(0, distanceKm)) / maxDistanceKm) * 100
+  const py = (position: 'seated' | 'standing'): number => (position === 'standing' ? 4 : 20)
+  const yTicks = [
+    { label: triText(f.presentation.locale, 'standing'), vbY: py('standing') },
+    { label: triText(f.presentation.locale, 'seated'), vbY: py('seated') },
+  ]
+  const changes = dynamics.positionChanges
+    .filter(change => change.distanceKm >= 0 && change.distanceKm <= maxDistanceKm)
+    .sort((left, right) => left.distanceKm - right.distanceKm)
+  if (changes.length === 0) return null
+  const view = graphView(d)
+  const svgEl = f.svg('svg', {
+    class: 'tri-elev tri-cycling-dynamics-svg tri-rider-position-svg',
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
+    preserveAspectRatio: 'none',
+    role: 'img',
+    'aria-label': triText(f.presentation.locale, 'rider position'),
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
+  })
+  for (const tick of yTicks)
+    f.add(
+      svgEl,
+      f.svg('line', { class: 'tri-elev-grid', x1: 0, y1: tick.vbY, x2: 100, y2: tick.vbY }),
+    )
+  for (let index = 0; index < changes.length; index++) {
+    if (changes[index].position !== 'standing') continue
+    const start = px(changes[index].distanceKm)
+    const end = px(changes[index + 1]?.distanceKm ?? maxDistanceKm)
+    if (end <= start) continue
+    f.add(
+      svgEl,
+      f.svg('rect', {
+        class: 'tri-rider-position-standing',
+        x: start.toFixed(2),
+        y: 0,
+        width: (end - start).toFixed(2),
+        height,
+      }),
+    )
+  }
+  if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
+  let path = `M ${px(changes[0].distanceKm).toFixed(2)} ${py(changes[0].position).toFixed(2)} `
+  for (let index = 1; index < changes.length; index++) {
+    const x = px(changes[index].distanceKm)
+    path += `L ${x.toFixed(2)} ${py(changes[index - 1].position).toFixed(2)} L ${x.toFixed(2)} ${py(changes[index].position).toFixed(2)} `
+  }
+  path += `L 100 ${py(changes[changes.length - 1].position).toFixed(2)}`
+  f.add(
+    svgEl,
+    f.svg('path', { d: path, class: 'tri-rider-position-line' }),
+    f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
+  )
+  const wrap = f.el(
+    'div',
+    'tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-rider-position-chart',
+    undefined,
+    { 'data-tri-trace': 'rider-position' },
+  )
+  const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
+  const standing = dynamics.standingTimeS
+  const seated = dynamics.seatedTimeS
+  const total = (standing ?? 0) + (seated ?? 0)
+  const summary =
+    standing == null
+      ? null
+      : `${triText(f.presentation.locale, 'standing')} ${zoneClock(standing)}${total > 0 ? ` · ${((standing / total) * 100).toFixed(1)}%` : ''}`
+  f.add(
+    cap,
+    f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'rider position')),
+    ...(summary ? [f.el('span', 'tri-elev-range', summary)] : []),
+  )
   f.add(
     wrap,
     cap,
@@ -1734,7 +2299,7 @@ const thermalTemperatureTrace = <N>(
 ): N | null => {
   const imperial = isImperial(f.presentation)
   const valuesC = d.route.map(pickCelsius).filter((value): value is number => value != null)
-  if (d.sport !== 'bike' || valuesC.length < 2) return null
+  if (valuesC.length < 2) return null
   const displayValues = valuesC.map(value => temperatureValue(f.presentation, value))
   const fallbackResolution = imperial ? (fallbackResolutionC * 9) / 5 : fallbackResolutionC
   const resolution = traceResolution(displayValues, fallbackResolution)
@@ -1767,7 +2332,7 @@ const buildHeatStrainTrace = <N>(
   const values = d.route
     .map(point => point.heatStrainIndex)
     .filter((value): value is number => value != null)
-  if (d.sport !== 'bike' || values.length < 2) return null
+  if (values.length < 2) return null
   const resolution = traceResolution(values, 0.1)
   const min = Math.max(0, Math.min(...values) - resolution)
   const max = Math.max(...values) + resolution
@@ -2432,6 +2997,31 @@ const swimActivityComparison = (
   return { delta: current - baseline, priorCount: prior.length }
 }
 
+const buildSwimModeToggle = <N>(f: TriNodeFactory<N>): N => {
+  const toggle = f.el('div', 'tri-swim-mode-toggle', undefined, {
+    role: 'group',
+    'aria-label': 'swim chart aggregation',
+    'data-i18n-aria-label': 'swim chart aggregation',
+    'data-swim-mode': 'lengths',
+  })
+  f.add(
+    toggle,
+    f.el('button', 'tri-swim-mode', 'lengths', {
+      type: 'button',
+      'data-swim-mode': 'lengths',
+      'aria-pressed': 'true',
+      'data-i18n': 'lengths',
+    }),
+    f.el('button', 'tri-swim-mode', '100 m', {
+      type: 'button',
+      'data-swim-mode': '100m',
+      'aria-pressed': 'false',
+      'data-i18n': '100 m',
+    }),
+  )
+  return toggle
+}
+
 const buildSwimTrendChart = <N>(
   f: TriNodeFactory<N>,
   observations: SwimActivityObservation[],
@@ -2441,6 +3031,7 @@ const buildSwimTrendChart = <N>(
   average: number | null,
   comparison: SwimActivityComparison | null,
   pick: (observation: SwimActivityObservation) => number | null,
+  modeToggle?: N,
 ): N | null => {
   const metricSeries = (source: SwimActivityObservation[]): SwimActivityMetric[] => {
     const metrics: SwimActivityMetric[] = []
@@ -2469,10 +3060,15 @@ const buildSwimTrendChart = <N>(
         ? `same as prior ${comparison.priorCount}`
         : `${swimTrendNumber(Math.abs(comparison.delta))} seconds ${comparison.delta < 0 ? 'faster' : 'slower'} than prior ${comparison.priorCount}`
   const wrap = f.el('article', `tri-zone tri-swim-trend tri-swim-trend--${kind}`)
-  const head = f.el('div', 'tri-swim-trend-head')
+  const head = f.el(
+    'div',
+    `tri-swim-trend-head${modeToggle === undefined ? '' : ' tri-swim-trend-head--with-mode'}`,
+  )
+  if (modeToggle === undefined)
+    f.add(head, f.el('span', 'tri-swim-trend-title', title, { 'data-i18n': title }))
+  else f.add(head, modeToggle)
   f.add(
     head,
-    f.el('span', 'tri-swim-trend-title', title, { 'data-i18n': title }),
     f.el('strong', 'tri-swim-trend-value', value, {
       'data-swim-average-kind': kind,
       'data-swim-average-value': activityAverage.toString(),
@@ -2693,6 +3289,7 @@ export const buildSwimTrends = <N>(
       hasSeries(hundredMetreObservations, observation => observation.strokesPerLength)) &&
     (!swolfVisible || hasSeries(hundredMetreObservations, observation => observation.swolf))
   const normalizedObservations = canToggle ? hundredMetreObservations : []
+  const modeToggle = canToggle ? buildSwimModeToggle(f) : undefined
   const paceAverage = positiveMetric(d.swimPaceSPer100m) ? d.swimPaceSPer100m : null
   const lengthAverages = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
   const pace = buildSwimTrendChart(
@@ -2704,6 +3301,7 @@ export const buildSwimTrends = <N>(
     paceAverage,
     paceAverage == null ? null : swimActivityComparison(d, points, paceAverage),
     observation => observation.interval.paceSPer100m,
+    paceVisible ? modeToggle : undefined,
   )
   const cadence = buildSwimTrendChart(
     f,
@@ -2714,6 +3312,7 @@ export const buildSwimTrends = <N>(
     lengthAverages?.strokesPerLength ?? null,
     null,
     observation => observation.strokesPerLength,
+    !paceVisible && cadenceVisible ? modeToggle : undefined,
   )
   const swolf = buildSwimTrendChart(
     f,
@@ -2724,6 +3323,7 @@ export const buildSwimTrends = <N>(
     lengthAverages?.swolf ?? null,
     null,
     observation => observation.swolf,
+    !paceVisible && !cadenceVisible && swolfVisible ? modeToggle : undefined,
   )
   const trends = f.el('div', 'tri-swim-chart-grid')
   let chartCount = 0
@@ -2737,30 +3337,6 @@ export const buildSwimTrends = <N>(
     'aria-label': 'Swim activity analysis',
     'data-i18n-aria-label': 'swim activity analysis',
   })
-  if (canToggle) {
-    const toggle = f.el('div', 'tri-swim-mode-toggle', undefined, {
-      role: 'group',
-      'aria-label': 'swim chart aggregation',
-      'data-i18n-aria-label': 'swim chart aggregation',
-      'data-swim-mode': 'lengths',
-    })
-    f.add(
-      toggle,
-      f.el('button', 'tri-swim-mode', 'lengths', {
-        type: 'button',
-        'data-swim-mode': 'lengths',
-        'aria-pressed': 'true',
-        'data-i18n': 'lengths',
-      }),
-      f.el('button', 'tri-swim-mode', '100 m', {
-        type: 'button',
-        'data-swim-mode': '100m',
-        'aria-pressed': 'false',
-        'data-i18n': '100 m',
-      }),
-    )
-    f.add(wrap, toggle)
-  }
   f.add(wrap, trends)
   return wrap
 }
@@ -2992,6 +3568,7 @@ export const powerCurveFraction = (
 
 const POWER_CURVE_AXIS_MARKERS = [5, 10, 20, 30, 120]
 const POWER_CURVE_ENDPOINT_GAP = 0.12
+const EMBEDDED_POWER_CURVE_PRECISE_ENDPOINT_GAP = 0.14
 
 export const powerCurveDurationTicks = (
   minSeconds: number,
@@ -3006,6 +3583,23 @@ export const powerCurveDurationTicks = (
         seconds === maxSeconds ||
         powerCurveFraction(seconds, minSeconds, maxSeconds) <= 1 - POWER_CURVE_ENDPOINT_GAP,
     )
+
+const embeddedPowerCurveDurationTicks = (
+  minSeconds: number,
+  maxSeconds: number,
+  durations: readonly number[],
+): number[] => {
+  const endpointGap = dlabel(maxSeconds).endsWith('s')
+    ? EMBEDDED_POWER_CURVE_PRECISE_ENDPOINT_GAP
+    : POWER_CURVE_ENDPOINT_GAP
+  return powerCurveDurationTicks(minSeconds, maxSeconds, durations).filter(
+    seconds =>
+      seconds !== 10 &&
+      seconds !== 20 &&
+      (seconds === maxSeconds ||
+        powerCurveFraction(seconds, minSeconds, maxSeconds) <= 1 - endpointGap),
+  )
+}
 
 const nearestPowerCurveIndex = (curve: readonly PowerCurvePoint[], seconds: number): number => {
   let low = 0
@@ -3751,11 +4345,10 @@ export const buildPowerCurve = <N>(
     )
   f.add(s, f.svg('path', { d: toPath(curve), class: 'tri-curve-line' }))
   f.add(s, f.svg('line', { class: 'tri-chart-cursor', x1: 0, y1: 0, x2: 0, y2: H }))
-  const curveDurTicks = powerCurveDurationTicks(
-    secs[0],
-    secs[secs.length - 1],
-    [1, 60, 300, 1200, 3600, 10_800],
-  ).filter(seconds => !embedded || (seconds !== 10 && seconds !== 20))
+  const durationMarkers = [1, 60, 300, 1200, 3600, 10_800]
+  const curveDurTicks = embedded
+    ? embeddedPowerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
+    : powerCurveDurationTicks(secs[0], secs[secs.length - 1], durationMarkers)
   const pointMarkers: N[] = []
   if (visibleRef.length > 0) {
     const initialRef = visibleRef.find(point => point.s === curve[0].s)
@@ -3918,20 +4511,19 @@ const activityTrainingRows = (
   d: StravaActivityDetail,
 ): [string, string][] => {
   const garmin = d.garmin
-  if (!garmin) return []
   const locale = presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
   const rows: [string, string][] = []
-  if (garmin.intensityFactor != null)
+  const intensityFactor = garmin?.intensityFactor ?? d.calculatedIntensityFactor?.value
+  if (intensityFactor != null)
     rows.push([
       'intensity factor',
-      garmin.intensityFactor.toLocaleString(locale, {
+      intensityFactor.toLocaleString(locale, {
         minimumFractionDigits: 3,
         maximumFractionDigits: 3,
       }),
     ])
-  const dominantEffect = formatTrainingEffectLabel(garmin.trainingEffectLabel)
-  if (dominantEffect) rows.push(['training effect', triText(presentation.locale, dominantEffect)])
-  if (garmin.exerciseLoad != null)
+  rows.push(['training effect', triText(presentation.locale, activityTrainingEffectLabel(d))])
+  if (garmin?.exerciseLoad != null)
     rows.push(['exercise load', Math.round(garmin.exerciseLoad).toLocaleString(locale)])
   return rows
 }
@@ -3955,6 +4547,10 @@ export const formatTrainingEffectLabel = (value: string | null): string | null =
   if (!key) return null
   return TRAINING_EFFECT_LABELS[key] ?? key.replaceAll('_', ' ').toLowerCase()
 }
+
+export const activityTrainingEffectLabel = (d: StravaActivityDetail): string =>
+  formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null) ??
+  (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' ? 'recovery' : 'base')
 
 export const formatTrainingEffectNote = (value: string | null): string | null => {
   const key = value?.trim()
@@ -3987,6 +4583,26 @@ const trainingEffectGroup = (
 const trainingEffectScore = (score: number | null): number | null =>
   score == null || !Number.isFinite(score) ? null : Math.min(5, Math.max(0, score))
 
+const fallbackTrainingEffectNote = (
+  effect: 'aerobic' | 'anaerobic',
+  score: number | null,
+): string | null => {
+  const value = trainingEffectScore(score)
+  if (value == null) return null
+  if (value < 1) return `no ${effect} benefit`
+  if (value < 2) return `minor ${effect} benefit`
+  if (value < 3) return `maintaining ${effect} fitness`
+  if (value < 4) return `improving ${effect} fitness`
+  if (value < 5) return `highly improving ${effect} fitness`
+  return `overreaching ${effect} effect`
+}
+
+const trainingEffectNote = (
+  effect: 'aerobic' | 'anaerobic',
+  score: number | null,
+  message: string | null,
+): string | null => formatTrainingEffectNote(message) ?? fallbackTrainingEffectNote(effect, score)
+
 export const buildTrainingEffectDetails = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
@@ -3998,7 +4614,11 @@ export const buildTrainingEffectDetails = <N>(
     {
       label: 'aerobic',
       score: garmin.aerobicTrainingEffect,
-      note: formatTrainingEffectNote(garmin.aerobicTrainingEffectMessage),
+      note: trainingEffectNote(
+        'aerobic',
+        garmin.aerobicTrainingEffect,
+        garmin.aerobicTrainingEffectMessage,
+      ),
       group: trainingEffectGroup(
         'aerobic',
         garmin.aerobicTrainingEffectMessage,
@@ -4008,7 +4628,11 @@ export const buildTrainingEffectDetails = <N>(
     {
       label: 'anaerobic',
       score: garmin.anaerobicTrainingEffect,
-      note: formatTrainingEffectNote(garmin.anaerobicTrainingEffectMessage),
+      note: trainingEffectNote(
+        'anaerobic',
+        garmin.anaerobicTrainingEffect,
+        garmin.anaerobicTrainingEffectMessage,
+      ),
       group: trainingEffectGroup(
         'anaerobic',
         garmin.anaerobicTrainingEffectMessage,
@@ -4157,6 +4781,10 @@ export const activityStatRows = (
       'cadence',
       poolMetrics ? `${swimTrendNumber(poolMetrics.strokesPerLength)} /length` : '—',
     ])
+    const swolf = poolMetrics
+      ? swimActivityHeaderValue(presentation.locale, 'swolf', poolMetrics.swolf, '')
+      : '—'
+    rows.push(['SWOLF', swolf])
     rows.push(['1.9k / 3.8k', swimProjection(d)])
     rows.push(['stroke type', primarySwimStroke(d)])
     rows.push([
@@ -4191,9 +4819,7 @@ export const buildActivity = <N>(
     ? interpolatePositiveMetricSeries(d.route, point => point.cad)
     : null
   const activityAnchor = triathlonActivityAnchor(d.id)
-  const summaryTrainingEffectGroup = d.garmin?.trainingEffectLabel
-    ? dominantTrainingEffectGroup(d.garmin.trainingEffectLabel)
-    : null
+  const summaryTrainingEffectGroup = dominantTrainingEffectGroup(activityTrainingEffectLabel(d))
   const wrap = f.el('section', expanded ? 'tri-act tri-act--expanded' : 'tri-act', undefined, {
     ...(activityAnchor ? { id: activityAnchor } : {}),
     'data-activity-id': `${d.id}`,
@@ -4211,7 +4837,7 @@ export const buildActivity = <N>(
         ...moreStatRows(f.presentation, d, fillMissingRunPower),
       ],
       label =>
-        label === 'training effect' && summaryTrainingEffectGroup
+        label === 'training effect'
           ? { 'data-training-effect-group': summaryTrainingEffectGroup }
           : undefined,
     ),
@@ -4251,20 +4877,7 @@ export const buildActivity = <N>(
     const flags = routeStreamFlags(d)
     const runSplits = buildRunLapSplits(f, d)
     if (runSplits) f.add(more, runSplits)
-    if (flags.hr)
-      f.add(
-        more,
-        buildTrace(
-          f,
-          d,
-          point => point.hr,
-          'hr',
-          max => `${max} bpm peak`,
-          value => `${Math.round(value)}bpm`,
-          undefined,
-          analysisSelection,
-        ),
-      )
+    if (flags.hr) f.add(more, buildHeartRateTrace(f, d, analysisSelection))
     if (flags.power)
       f.add(
         more,
@@ -4289,6 +4902,14 @@ export const buildActivity = <N>(
       )
     const powerBalance = buildPowerBalanceChart(f, d, analysisSelection, embedded)
     if (powerBalance) f.add(more, powerBalance)
+    const torqueEffectiveness = buildTorqueEffectivenessChart(f, d, analysisSelection, embedded)
+    if (torqueEffectiveness) f.add(more, torqueEffectiveness)
+    const pedalSmoothness = buildPedalSmoothnessChart(f, d, analysisSelection, embedded)
+    if (pedalSmoothness) f.add(more, pedalSmoothness)
+    const powerPhase = buildPowerPhaseChart(f, d, analysisSelection)
+    if (powerPhase) f.add(more, powerPhase)
+    const riderPosition = buildRiderPositionChart(f, d, analysisSelection)
+    if (riderPosition) f.add(more, riderPosition)
     const stamina = buildStaminaChart(f, d, analysisSelection)
     if (stamina) f.add(more, stamina)
     const shifting = buildShiftingChart(f, d, analysisSelection)
@@ -6242,16 +6863,21 @@ export const buildDayCard = <N>(
       buildActivity(
         f,
         d,
-        !!extras.sport || !!extras.expanded,
+        dayCardActivitiesExpanded(extras),
         ctx,
         payload?.swimTrend ?? [],
         extras.event != null,
         extras.embedded === true,
       ))
   const allDay = payload ? dayDetails(payload, dateIso) : []
+  const selectedDay = extras.activityId
+    ? allDay.filter(d => `${d.id}` === extras.activityId)
+    : allDay
   const excludedActivityIds = new Set(extras.excludedActivityIds)
   const visibleDay =
-    excludedActivityIds.size > 0 ? allDay.filter(d => !excludedActivityIds.has(`${d.id}`)) : allDay
+    excludedActivityIds.size > 0
+      ? selectedDay.filter(d => !excludedActivityIds.has(`${d.id}`))
+      : selectedDay
   const day = extras.sport ? visibleDay.filter(d => d.sport === extras.sport) : visibleDay
   const summaryRows =
     extras.embedded === true && day.length > 1
@@ -6305,7 +6931,7 @@ export const buildDayCard = <N>(
   } else {
     for (const d of day) f.add(card, render(d))
   }
-  if (!extras.sport) {
+  if (!extras.sport && !extras.activityId) {
     const dh = payload?.health[dateIso]
     if (dh) {
       const rec = buildRecovery(f, dh)

@@ -69,7 +69,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-13 19:51:45 GMT-04:00
+modified: 2026-08-14 21:25:17 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -968,6 +968,34 @@ exercise: Sl Db Rdl Knee Drive | 5 reps @ 13.6 kg | 5 reps @ 6.8 kg | 10 reps @ 
 exercise: Single Arm Row | 10 reps @ 11.3 kg | 10 reps @ 11.3 kg | 10 reps @ 11.3 kg
 exercise: Diagonal Toe Tap | 11 reps | 11 reps | 11 reps
 exercise: Single Leg Calf Raise | 15 reps @ 13.6 kg | 15 reps @ 13.6 kg | 15 reps @ 13.6 kg
+```
+
+```tracking
+date: 2026-08-14
+activity: 19743413900
+fueling: 250
+```
+
+```tracking
+date: 2026-08-14
+activity: 19744319497
+fueling: 230
+```
+
+```tracking
+date: 2026-08-14
+activity: 19744639984
+strengthVolume: 950 lb
+strengthSets: 20
+strengthReps: 120
+exercise: Walking Lunge | 40s | 40s
+exercise: Press Up | 40s | 40s
+exercise: Toe Walks | 40s | 40s
+exercise: Clam Shells | 40s | 40s
+exercise: Step Down | 10 reps | 10 reps | 10 reps
+exercise: Static Lunge | 10 reps @ 22.7 kg | 10 reps | 10 reps
+exercise: Lunge And Press | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg
+exercise: Press-up Position With Single Arm Extensions | 10 reps | 10 reps | 10 reps
 ```
 
 <!-- training plan start

@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { initialDistributionModel, updateDistributions } from './distributions-model'
+import {
+  initialDistributionModel,
+  telemetryTrend,
+  telemetryWeightedAverage,
+  updateDistributions,
+} from './distributions-model'
 
 test('distribution reducer owns sport, range, custom date, and restored selection', () => {
   const bounds = {
@@ -29,4 +34,31 @@ test('distribution reducer owns sport, range, custom date, and restored selectio
     range: '30',
     startDate: '2026-03-02',
   })
+})
+
+test('telemetry trend compares the latest two observed activities', () => {
+  assert.equal(telemetryTrend([120, null, 138]), 'up')
+  assert.equal(telemetryTrend([81, 76]), 'down')
+  assert.equal(telemetryTrend([33.4, Number.NaN, 33.4]), 'flat')
+  assert.equal(telemetryTrend([null, 2.1]), null)
+})
+
+test('telemetry range summaries weight values by their observed duration', () => {
+  assert.equal(
+    telemetryWeightedAverage([
+      { value: 100, observedSeconds: 1_800 },
+      { value: 200, observedSeconds: 3_600 },
+    ]),
+    500 / 3,
+  )
+  assert.equal(
+    telemetryWeightedAverage([
+      { value: 32, observedSeconds: 900 },
+      { value: null, observedSeconds: 3_600 },
+      { value: Number.NaN, observedSeconds: 1_800 },
+      { value: 36, observedSeconds: 0 },
+    ]),
+    32,
+  )
+  assert.equal(telemetryWeightedAverage([{ value: 120, observedSeconds: 0 }]), null)
 })

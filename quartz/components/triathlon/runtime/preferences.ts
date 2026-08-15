@@ -15,6 +15,8 @@ export const TRI_MAP_STYLE_KEY = 'tri-map-style'
 
 export const TRI_MAP_STYLE_EVENT = 'tri:mapstyle'
 
+export const TRI_MAP_3D_KEY = 'tri-map-3d'
+
 export const TRI_PANELS_FULLSCREEN_KEY = 'tri-panels-fullscreen'
 
 export const TRI_MAP_STYLES = ['mono', 'streets', 'satellite'] as const
@@ -135,6 +137,22 @@ export const nextTriMapStyle = (): TriMapStyle =>
   TRI_MAP_STYLES[(TRI_MAP_STYLES.indexOf(readTriMapStyle()) + 1) % TRI_MAP_STYLES.length]
 
 export const toggleTriMapStyle = (): void => setTriMapStyle(nextTriMapStyle())
+
+export const readTriMap3d = (): boolean => {
+  try {
+    return localStorage.getItem(TRI_MAP_3D_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+export const setTriMap3d = (enabled: boolean): void => {
+  try {
+    localStorage.setItem(TRI_MAP_3D_KEY, String(enabled))
+  } catch {
+    void 0
+  }
+}
 
 export const readTriPanelsFullscreen = (): boolean => {
   try {

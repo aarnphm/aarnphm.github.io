@@ -13,8 +13,10 @@ import { detailHead } from '../analytics/search'
 import { createDomFactory, el, setMath } from '../runtime/dom'
 import {
   mapboxStyleUrl,
+  readTriMap3d,
   readTriMapStyle,
   readTriMapTheme,
+  setTriMap3d,
   setTriMapStyle,
   TRI_MAP_STYLE_EVENT,
   TRI_POWER_FILTER_EVENT,
@@ -79,7 +81,9 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   const sportBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('.tri-map-sport'))
   const side = root.querySelector<HTMLElement>('.tri-map-side')
   const sideFold = side?.querySelector<HTMLButtonElement>('.tri-map-side-fold') ?? null
+  const threeDimensionalBtn = side?.querySelector<HTMLButtonElement>('.tri-map-3d') ?? null
   const styleBtn = side?.querySelector<HTMLButtonElement>('.tri-map-style') ?? null
+  let threeDimensional = readTriMap3d()
   const sportFilter = createRouteSportFilter(sportBtns)
   const overview = createOverviewProvider(
     () => context.presentation,
@@ -239,6 +243,55 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       current.on('moveend', scheduleStreetMap)
       eventsBound = true
     }
+    const installThreeDimensionalLayers = (theme: TriMapTheme, beforeId?: string) => {
+      if (!map || !threeDimensional) return
+      addSource('tri-terrain', {
+        type: 'raster-dem',
+        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+        tileSize: 512,
+        maxzoom: 14,
+      })
+      map.setTerrain({ source: 'tri-terrain', exaggeration: 1.25 })
+      addLayer(
+        {
+          id: 'tri-3d-buildings',
+          source: 'composite',
+          'source-layer': 'building',
+          filter: ['==', ['get', 'extrude'], 'true'],
+          type: 'fill-extrusion',
+          minzoom: 14.5,
+          paint: {
+            'fill-extrusion-color':
+              readTriMapStyle() === 'satellite'
+                ? '#b8b5af'
+                : theme === 'dark'
+                  ? '#34312d'
+                  : '#d8cec1',
+            'fill-extrusion-height': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              14.5,
+              0,
+              14.75,
+              ['coalesce', ['get', 'height'], 3],
+            ],
+            'fill-extrusion-base': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              14.5,
+              0,
+              14.75,
+              ['coalesce', ['get', 'min_height'], 0],
+            ],
+            'fill-extrusion-opacity': 0.72,
+            'fill-extrusion-vertical-gradient': true,
+          },
+        },
+        beforeId,
+      )
+    }
     const installLayers = () => {
       if (!map) return
       const theme = readTriMapTheme()
@@ -250,6 +303,8 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
           (layer: { id?: unknown; type?: unknown }) =>
             typeof layer.id === 'string' && layer.type === 'symbol',
         )
+      const firstLabelId = typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined
+      installThreeDimensionalLayers(theme, firstLabelId)
       addSource('tri-heat', { type: 'geojson', data: emptyFC() })
       addLayer(
         {
@@ -263,7 +318,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
             'line-width': heatWidthExpr,
           },
         },
-        typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
+        firstLabelId,
       )
       addSource('tri-traces', { type: 'geojson', data: emptyFC() })
       addLayer(
@@ -279,7 +334,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
             'line-width': streetMetricWidthExpr,
           },
         },
-        typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
+        firstLabelId,
       )
       addLayer({
         id: 'tri-hit',
@@ -375,6 +430,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const created = await createMapboxMap(
         canvas,
         mapboxStyleUrl(readTriMapStyle(), readTriMapTheme()),
+        threeDimensional,
       )
       if (context.signal.aborted || !live) {
         created?.remove()
@@ -458,6 +514,27 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       setOverviewData()
     }
     const resize = () => map?.resize()
+    const applyThreeDimensional = () => {
+      const current = readyMap()
+      if (!current) return
+      if (threeDimensional) {
+        const firstLabelLayer = current
+          .getStyle()
+          ?.layers?.find(
+            (layer: { id?: unknown; type?: unknown }) =>
+              typeof layer.id === 'string' && layer.type === 'symbol',
+          )
+        installThreeDimensionalLayers(
+          readTriMapTheme(),
+          typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined,
+        )
+      } else {
+        current.setTerrain(null)
+        if (current.getLayer('tri-3d-buildings')) current.removeLayer('tri-3d-buildings')
+        if (current.getSource('tri-terrain')) current.removeSource('tri-terrain')
+      }
+      current.easeTo({ pitch: threeDimensional ? 55 : 0, duration: reduce ? 0 : 240 })
+    }
     const dispose = () => {
       clearHover()
       if (map?.remove) map.remove()
@@ -480,6 +557,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       moveDot,
       clearSelection,
       applyMapStyle,
+      applyThreeDimensional,
       resize,
       dispose,
     }
@@ -641,6 +719,14 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   }
   const syncStyleBtn = () =>
     styleBtn?.setAttribute('aria-pressed', String(readTriMapStyle() === 'satellite'))
+  const syncThreeDimensionalBtn = () =>
+    threeDimensionalBtn?.setAttribute('aria-pressed', String(threeDimensional))
+  const onThreeDimensionalClick = () => {
+    threeDimensional = !threeDimensional
+    setTriMap3d(threeDimensional)
+    syncThreeDimensionalBtn()
+    mapCtl.applyThreeDimensional()
+  }
   const onStyleClick = () =>
     setTriMapStyle(readTriMapStyle() === 'satellite' ? 'mono' : 'satellite')
   const onFold = () => {
@@ -737,6 +823,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     },
   })
   syncStyleBtn()
+  syncThreeDimensionalBtn()
 
   if (pageMode) {
     load()
@@ -751,6 +838,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
   overlay?.addEventListener('click', onModeClick)
   side?.addEventListener('click', onSportClick)
   sideFold?.addEventListener('click', onFold)
+  threeDimensionalBtn?.addEventListener('click', onThreeDimensionalClick)
   styleBtn?.addEventListener('click', onStyleClick)
   document.addEventListener('keydown', onKey)
   document.addEventListener('themechange', onThemeChange)
@@ -768,6 +856,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     overlay?.removeEventListener('click', onModeClick)
     side?.removeEventListener('click', onSportClick)
     sideFold?.removeEventListener('click', onFold)
+    threeDimensionalBtn?.removeEventListener('click', onThreeDimensionalClick)
     styleBtn?.removeEventListener('click', onStyleClick)
     document.removeEventListener('keydown', onKey)
     document.removeEventListener('themechange', onThemeChange)

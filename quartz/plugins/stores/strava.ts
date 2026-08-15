@@ -3,7 +3,9 @@ import type {
   GarminActivityMatch,
   GarminCache,
   GarminClimbSegment,
+  GarminCyclingDynamics,
   GarminFueling,
+  GarminRiderPosition,
   GarminStreams,
 } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
@@ -29,8 +31,20 @@ export type Sport = 'swim' | 'bike' | 'run'
 
 export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment'
 
+export const ACTIVITY_KINDS: readonly ActivityKind[] = [
+  'swim',
+  'bike',
+  'run',
+  'strength',
+  'walk',
+  'yoga',
+  'treatment',
+]
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 export const ROUTE_SPORTS: readonly ActivityKind[] = ['bike', 'run', 'swim', 'walk']
+
+export const isActivityKind = (value: unknown): value is ActivityKind =>
+  ACTIVITY_KINDS.some(kind => kind === value)
 
 export const SPORT_ICON: Record<ActivityKind, string[]> = {
   run: [
@@ -280,6 +294,28 @@ export interface ActivityGearShift {
   rearTeeth: number
 }
 
+export interface ActivityRiderPositionChange {
+  elapsedS: number
+  distanceKm: number
+  position: GarminRiderPosition
+}
+
+export interface ActivityCyclingDynamics {
+  elapsedS: number[]
+  distanceKm: number[]
+  leftPedalSmoothness: (number | null)[]
+  rightPedalSmoothness: (number | null)[]
+  leftTorqueEffectiveness: (number | null)[]
+  rightTorqueEffectiveness: (number | null)[]
+  leftPowerPhaseStart: (number | null)[]
+  leftPowerPhaseEnd: (number | null)[]
+  rightPowerPhaseStart: (number | null)[]
+  rightPowerPhaseEnd: (number | null)[]
+  positionChanges: ActivityRiderPositionChange[]
+  seatedTimeS: number | null
+  standingTimeS: number | null
+}
+
 export type ActivityAnalysisKind = 'lap' | 'segment' | 'climb'
 
 export interface ActivityAnalysisRange {
@@ -370,6 +406,12 @@ export interface ActivityHeartRate {
   stream: number[]
 }
 
+export interface ActivityHeartRateTracePoint {
+  distanceKm: number
+  elapsedS: number
+  heartRate: number | null
+}
+
 export interface ActivityFueling extends GarminFueling {
   source: 'garmin' | 'manual'
 }
@@ -386,6 +428,11 @@ export interface ActivityPowerWithoutZeros {
   avgWatts: number | null
   powerZones: number[] | null
   powerHist: number[] | null
+}
+
+export interface CalculatedIntensityFactor {
+  value: number
+  source: 'pace' | 'power' | 'heart-rate'
 }
 
 export interface StravaActivityDetail {
@@ -417,8 +464,11 @@ export interface StravaActivityDetail {
   fueling: ActivityFueling | null
   strength: ActivityStrength | null
   garmin: GarminVerification | null
+  calculatedIntensityFactor: CalculatedIntensityFactor | null
   gearShifts: ActivityGearShift[]
+  cyclingDynamics: ActivityCyclingDynamics | null
   route: StravaRoutePoint[]
+  heartRateTrace: ActivityHeartRateTracePoint[]
   mapRoute: StravaMapPoint[][]
   analysisRanges: ActivityAnalysisRange[]
   runSplitsMetric: ActivityRunSplit[]
@@ -530,6 +580,38 @@ export function isTreatment(sportType: string, name: string | null | undefined):
 export function round(value: number, dp: number): number {
   const f = 10 ** dp
   return Math.round(value * f) / f
+}
+
+export const calculateActivityIntensityFactor = (
+  activity: Pick<StravaActivityDetail, 'sport' | 'avgHr' | 'npWatts' | 'deviceWatts' | 'garmin'>,
+  paceIntensityFactor: number | null,
+  ftp: number | null,
+  lactateThresholdHr: number | null,
+): CalculatedIntensityFactor | null => {
+  if (activity.garmin?.intensityFactor != null || activity.sport === 'treatment') return null
+  if (
+    activity.sport === 'bike' &&
+    activity.deviceWatts &&
+    activity.npWatts != null &&
+    activity.npWatts > 0 &&
+    ftp != null &&
+    ftp > 0
+  )
+    return { value: round(activity.npWatts / ftp, 3), source: 'power' }
+  if (
+    (activity.sport === 'run' || activity.sport === 'swim') &&
+    paceIntensityFactor != null &&
+    paceIntensityFactor > 0
+  )
+    return { value: round(paceIntensityFactor, 3), source: 'pace' }
+  if (
+    activity.avgHr != null &&
+    activity.avgHr > 0 &&
+    lactateThresholdHr != null &&
+    lactateThresholdHr > 0
+  )
+    return { value: round(activity.avgHr / lactateThresholdHr, 3), source: 'heart-rate' }
+  return null
 }
 
 export function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -1333,6 +1415,39 @@ function timedStreamAlignment(
   return { streams, time, distance: alignedDistance }
 }
 
+function projectRouteLessHeartRateTrace(
+  sport: ActivityKind,
+  streams: StravaStreams | GarminStreams | undefined,
+  heartRate: ActivityHeartRate,
+): ActivityHeartRateTracePoint[] {
+  if (sport !== 'swim' && sport !== 'strength') return []
+  const time = streams?.time
+  const values = heartRate.stream
+  if (!time || time.length < 2 || time.length !== values.length) return []
+  let previousTime = -Infinity
+  for (const elapsedS of time) {
+    if (!Number.isFinite(elapsedS) || elapsedS < 0 || elapsedS < previousTime) return []
+    previousTime = elapsedS
+  }
+  if (time[time.length - 1] <= time[0]) return []
+  const swimAlignment = sport === 'swim' ? timedStreamAlignment(streams) : null
+  if (sport === 'swim' && !swimAlignment) return []
+  const available = values.map(value => Number.isFinite(value) && value > 0)
+  if (available.filter(Boolean).length < 2) return []
+  const required: number[] = []
+  let peakIndex = -1
+  for (let index = 1; index < available.length; index++)
+    if (available[index] !== available[index - 1]) required.push(index - 1, index)
+  for (let index = 0; index < values.length; index++)
+    if (available[index] && (peakIndex < 0 || values[index] > values[peakIndex])) peakIndex = index
+  if (peakIndex >= 0) required.push(peakIndex)
+  return sampleIndicesWithRequired(0, values.length - 1, ROUTE_POINTS, required).map(index => ({
+    distanceKm: swimAlignment ? round(swimAlignment.distance[index] / 1_000, 3) : 0,
+    elapsedS: round(time[index], 3),
+    heartRate: available[index] ? Math.round(values[index]) : null,
+  }))
+}
+
 function alignedDistanceAt(alignment: TimedStreamAlignment, elapsedS: number): number {
   const { time, distance } = alignment
   if (elapsedS <= time[0]) return distance[0]
@@ -1383,6 +1498,82 @@ function activityGearShifts(
       },
     ]
   })
+}
+
+const cyclingDynamicsMetricKeys = [
+  'leftPedalSmoothness',
+  'rightPedalSmoothness',
+  'leftTorqueEffectiveness',
+  'rightTorqueEffectiveness',
+  'leftPowerPhaseStart',
+  'leftPowerPhaseEnd',
+  'rightPowerPhaseStart',
+  'rightPowerPhaseEnd',
+] as const
+
+function validCyclingDynamicsSamples(dynamics: GarminCyclingDynamics): boolean {
+  const length = dynamics.time.length
+  return (
+    length >= 2 &&
+    dynamics.distance.length === length &&
+    cyclingDynamicsMetricKeys.every(key => dynamics[key].length === length)
+  )
+}
+
+function activityCyclingDynamics(
+  activity: RawStravaActivity,
+  match: GarminActivityMatch | null,
+  garmin: GarminCache | null,
+): ActivityCyclingDynamics | null {
+  if (!match) return null
+  const dynamics = garmin?.cyclingDynamics?.[match.activity.id]
+  if (!dynamics) return null
+  const startOffsetS =
+    (Date.parse(match.activity.startDate) - Date.parse(activity.startDate)) / 1000
+  if (!Number.isFinite(startOffsetS)) return null
+  const hasSamples = validCyclingDynamicsSamples(dynamics)
+  const maxDistanceM = Math.max(activity.distance, 0)
+  const metric = (key: (typeof cyclingDynamicsMetricKeys)[number]): (number | null)[] =>
+    hasSamples
+      ? dynamics[key].map(value =>
+          value == null || !Number.isFinite(value) ? null : round(value, 1),
+        )
+      : []
+  const positionChanges = dynamics.positionChanges
+    .map(change => ({
+      elapsedS: round(Math.max(0, change.elapsedS + startOffsetS), 3),
+      distanceKm: round(Math.min(maxDistanceM, Math.max(0, change.distanceM)) / 1_000, 3),
+      position: change.position,
+    }))
+    .filter(
+      (change, index, changes) => index === 0 || changes[index - 1].position !== change.position,
+    )
+  if (!hasSamples && positionChanges.length === 0) return null
+  return {
+    elapsedS: hasSamples
+      ? dynamics.time.map(value => round(Math.max(0, value + startOffsetS), 3))
+      : [],
+    distanceKm: hasSamples
+      ? dynamics.distance.map(value => round(Math.min(maxDistanceM, Math.max(0, value)) / 1_000, 3))
+      : [],
+    leftPedalSmoothness: metric('leftPedalSmoothness'),
+    rightPedalSmoothness: metric('rightPedalSmoothness'),
+    leftTorqueEffectiveness: metric('leftTorqueEffectiveness'),
+    rightTorqueEffectiveness: metric('rightTorqueEffectiveness'),
+    leftPowerPhaseStart: metric('leftPowerPhaseStart'),
+    leftPowerPhaseEnd: metric('leftPowerPhaseEnd'),
+    rightPowerPhaseStart: metric('rightPowerPhaseStart'),
+    rightPowerPhaseEnd: metric('rightPowerPhaseEnd'),
+    positionChanges,
+    seatedTimeS:
+      dynamics.seatedTimeS == null || !Number.isFinite(dynamics.seatedTimeS)
+        ? null
+        : round(dynamics.seatedTimeS, 3),
+    standingTimeS:
+      dynamics.standingTimeS == null || !Number.isFinite(dynamics.standingTimeS)
+        ? null
+        : round(dynamics.standingTimeS, 3),
+  }
 }
 
 function nearestElapsedIndex(time: number[], elapsedS: number): number {
@@ -1613,6 +1804,7 @@ function projectDetail(
   heartRate: ActivityHeartRate,
   garminMetricSamples: ActivityGarminMetricSamples,
   gearShifts: ActivityGearShift[],
+  cyclingDynamics: ActivityCyclingDynamics | null,
   weather: WeatherCache['activities'][string] | undefined,
   geo: string | undefined,
   fueling: ActivityFueling | null,
@@ -1799,8 +1991,12 @@ function projectDetail(
     fueling,
     strength: null,
     garmin,
+    calculatedIntensityFactor: null,
     gearShifts,
+    cyclingDynamics,
     route,
+    heartRateTrace:
+      route.length >= 2 ? [] : projectRouteLessHeartRateTrace(sport, streams, heartRate),
     mapRoute,
     analysisRanges: analysis.ranges,
     runSplitsMetric: sport === 'run' ? projectRunSplits(rawDetail?.splitsMetric) : [],
@@ -2145,6 +2341,7 @@ export function buildPayload(
         resolveActivityHeartRate(a, sport, selectedStream, garminHeartRateMatch, garmin),
       activityGarminMetricSamples(a, garminMatch, garmin),
       activityGearShifts(a, garminMatch, garmin),
+      activityCyclingDynamics(a, garminMatch, garmin),
       activityWeather,
       cache.geo?.[String(a.id)],
       garminActivityFueling(a, sport, garmin),

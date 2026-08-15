@@ -6,15 +6,18 @@ import {
   type EventMesg,
   type FileIdMesg,
   type FitMessages,
+  type LapMesg,
+  type RecordMesg,
+  type SessionMesg,
 } from '@garmin/fitsdk'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { deflateRawSync } from 'node:zlib'
 import {
-  decodeGarminGearShifts,
+  decodeGarminRideFit,
   encodeGarminSwimFit,
   garminFitBytesFromArchive,
-  garminGearShiftsFromArchive,
+  garminRideFitFromArchive,
   validateGarminFit,
   type GarminOpenWaterSwimInput,
   type GarminPoolSwimInput,
@@ -72,6 +75,97 @@ function gearFit(): Uint8Array {
     }
     encoder.onMesg(Profile.MesgNum.EVENT, message)
   }
+  return encoder.close()
+}
+
+function cyclingDynamicsFit(): Uint8Array {
+  const encoder = new Encoder()
+  const fileId: FileIdMesg = {
+    type: 'activity',
+    manufacturer: 'development',
+    product: 1,
+    serialNumber: 1,
+    timeCreated: START,
+  }
+  encoder.onMesg(Profile.MesgNum.FILE_ID, fileId)
+  const records: RecordMesg[] = [
+    {
+      timestamp: START,
+      distance: 0,
+      power: 200,
+      leftPedalSmoothness: 21,
+      rightPedalSmoothness: 23,
+      leftTorqueEffectiveness: 70,
+      rightTorqueEffectiveness: 72,
+      leftPowerPhase: [350, 190],
+      rightPowerPhase: [348, 198],
+    },
+    {
+      timestamp: new Date(START.getTime() + 10_000),
+      distance: 100,
+      power: 220,
+      leftPedalSmoothness: 22,
+      rightPedalSmoothness: 24,
+      leftTorqueEffectiveness: 74,
+      rightTorqueEffectiveness: 76,
+      leftPowerPhase: [352, 192],
+      rightPowerPhase: [350, 200],
+    },
+    {
+      timestamp: new Date(START.getTime() + 20_000),
+      distance: 200,
+      power: 240,
+      leftPedalSmoothness: 0,
+      rightPedalSmoothness: 25,
+      leftTorqueEffectiveness: 0,
+      rightTorqueEffectiveness: 78,
+      leftPowerPhase: [0, 194],
+      rightPowerPhase: [352, 202],
+    },
+  ]
+  for (const record of records) encoder.onMesg(Profile.MesgNum.RECORD, record)
+  const positions: EventMesg[] = [
+    {
+      timestamp: START,
+      event: 'riderPositionChange',
+      eventType: 'marker',
+      data: 0,
+      riderPosition: 'seated',
+    },
+    {
+      timestamp: new Date(START.getTime() + 5_000),
+      event: 'riderPositionChange',
+      eventType: 'marker',
+      data: 1,
+      riderPosition: 'standing',
+    },
+    {
+      timestamp: new Date(START.getTime() + 15_000),
+      event: 'riderPositionChange',
+      eventType: 'marker',
+      data: 0,
+      riderPosition: 'seated',
+    },
+  ]
+  for (const position of positions) encoder.onMesg(Profile.MesgNum.EVENT, position)
+  const lap: LapMesg = {
+    timestamp: new Date(START.getTime() + 20_000),
+    startTime: START,
+    totalElapsedTime: 20,
+    totalTimerTime: 20,
+    timeStanding: 10,
+  }
+  encoder.onMesg(Profile.MesgNum.LAP, lap)
+  const session: SessionMesg = {
+    timestamp: new Date(START.getTime() + 20_000),
+    startTime: START,
+    totalElapsedTime: 20,
+    totalTimerTime: 20,
+    sport: 'cycling',
+    totalTrainingEffect: 3,
+    totalAnaerobicTrainingEffect: 1.3,
+  }
+  encoder.onMesg(Profile.MesgNum.SESSION, session)
   return encoder.close()
 }
 
@@ -201,7 +295,7 @@ function openWaterInput(): GarminOpenWaterSwimInput {
 }
 
 test('decodes electronic shifting state from Garmin FIT events', () => {
-  assert.deepEqual(decodeGarminGearShifts(gearFit()), [
+  assert.deepEqual(decodeGarminRideFit(gearFit()).gearShifts, [
     {
       timestamp: '2026-07-19T12:00:00.000Z',
       frontGearNum: 2,
@@ -224,7 +318,34 @@ test('extracts and decodes a deflated FIT member from the Garmin archive', () =>
   const archive = zipFit(fit)
 
   assert.deepEqual(garminFitBytesFromArchive(archive), fit)
-  assert.deepEqual(garminGearShiftsFromArchive(archive), decodeGarminGearShifts(fit))
+  assert.deepEqual(
+    garminRideFitFromArchive(archive).gearShifts,
+    decodeGarminRideFit(fit).gearShifts,
+  )
+})
+
+test('decodes cycling dynamics and rider position from Garmin FIT records', () => {
+  const ride = decodeGarminRideFit(cyclingDynamicsFit())
+  const dynamics = ride.cyclingDynamics
+
+  assert.deepEqual(dynamics.time, [0, 10, 20])
+  assert.deepEqual(dynamics.distance, [0, 100, 200])
+  assert.deepEqual(dynamics.leftPedalSmoothness, [21, 22, null])
+  assert.deepEqual(dynamics.rightPedalSmoothness, [23, 24, 25])
+  assert.deepEqual(dynamics.leftTorqueEffectiveness, [70, 74, null])
+  assert.deepEqual(dynamics.rightTorqueEffectiveness, [72, 76, 78])
+  assert.deepEqual(dynamics.leftPowerPhaseStart, [350.2, 351.6, 0])
+  assert.deepEqual(dynamics.leftPowerPhaseEnd, [189.8, 192.7, 194.1])
+  assert.deepEqual(dynamics.rightPowerPhaseStart, [347.3, 350.2, 351.6])
+  assert.deepEqual(dynamics.rightPowerPhaseEnd, [198.3, 199.7, 202.5])
+  assert.deepEqual(dynamics.positionChanges, [
+    { elapsedS: 0, distanceM: 0, position: 'seated' },
+    { elapsedS: 5, distanceM: 50, position: 'standing' },
+    { elapsedS: 15, distanceM: 150, position: 'seated' },
+  ])
+  assert.equal(dynamics.seatedTimeS, 10)
+  assert.equal(dynamics.standingTimeS, 10)
+  assert.deepEqual(ride.trainingEffect, { aerobic: 3, anaerobic: 1.3 })
 })
 
 test('rejects a Garmin archive without a FIT member', () => {

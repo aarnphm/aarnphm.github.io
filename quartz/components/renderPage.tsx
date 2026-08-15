@@ -103,8 +103,10 @@ import {
   triathlonDayCard,
   triathlonDayExtras,
   triathlonDayProps,
+  triathlonEmbedAnchorFromBlockRef,
   triathlonEmbedAnchorFromSource,
   triathlonEmbedDayHref,
+  resolveTriathlonEmbedDate,
 } from './triathlon-day-card'
 
 interface RenderComponents {
@@ -1453,32 +1455,37 @@ export function transcludeFinal(
       let triathlonDate: string | undefined
       let triathlonEmbedExtras: Pick<
         DayCardExtras,
-        'sport' | 'excludedActivityIds' | 'settings'
+        'sport' | 'activityId' | 'excludedActivityIds' | 'settings'
       > | null = null
+      let triathlonPayload: ReturnType<typeof loadStravaPayloadSync> | null = null
       if (page.frontmatter?.layout === 'triathlon') {
-        triathlonDate = blockRef ? DATE_ANCHOR_RE.exec(blockRef)?.[1] : undefined
-        if (!triathlonDate) {
-          const anchor = triathlonEmbedAnchorFromSource(anchorPath, fileData.rawMarkdownSource)
-          if (anchor) {
-            triathlonDate = anchor.date
-            triathlonEmbedExtras = anchor
-          }
+        const anchor =
+          triathlonEmbedAnchorFromBlockRef(blockRef) ??
+          triathlonEmbedAnchorFromSource(anchorPath, fileData.rawMarkdownSource)
+        if (anchor) {
+          const since = page.frontmatter?.['strava']
+          triathlonPayload = loadStravaPayloadSync(
+            typeof since === 'string' ? since : undefined,
+            page.tracking?.fueling,
+            page.tracking?.strength,
+          )
+          triathlonDate = resolveTriathlonEmbedDate(anchor, triathlonPayload) ?? undefined
+          triathlonEmbedExtras = 'date' in anchor ? anchor : { activityId: anchor.activityId }
         }
       }
-      if (triathlonDate) {
-        const dayHref = triathlonEmbedDayHref(pathToRoot(slug), triathlonDate)
+      if (triathlonDate && triathlonPayload) {
+        const dayHref = triathlonEmbedDayHref(
+          pathToRoot(slug),
+          triathlonDate,
+          triathlonEmbedExtras?.activityId,
+        )
         if (!dayHref) return
         const extras: DayCardExtras = {
           ...triathlonDayExtras(page, triathlonDate),
           ...triathlonEmbedExtras,
           embedded: true,
         }
-        const since = page.frontmatter?.['strava']
-        const payload = loadStravaPayloadSync(
-          typeof since === 'string' ? since : undefined,
-          page.tracking?.fueling,
-          page.tracking?.strength,
-        )
+        const payload = triathlonPayload
         const children: ElementContent[] = [
           h(
             '.tri-day-embed',

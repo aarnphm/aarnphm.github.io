@@ -10,7 +10,7 @@ import {
   type TriNodeFactory,
   parseExcludedActivityIds,
 } from '../util/triathlon-card'
-import { triathlonDaySlug } from '../util/triathlon-date-route'
+import { triathlonActivityAnchor, triathlonDaySlug } from '../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../util/triathlon-presentation'
 import {
   parseTriathlonTraceSettings,
@@ -31,12 +31,16 @@ const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(segment => typeof segment === 'string')
 const TRIATHLON_EMBED_RE = /!\[\[triathlon#([^\]|]+)(?:\|[^\]]*)?\]\]/g
 
-export type TriathlonEmbedAnchor = {
+type TriathlonDateEmbedAnchor = {
   date: string
   sport?: NonNullable<DayCardExtras['sport']>
   excludedActivityIds?: string[]
   settings?: TriathlonTraceSettings
 }
+
+type TriathlonActivityEmbedAnchor = { activityId: string }
+
+export type TriathlonEmbedAnchor = TriathlonDateEmbedAnchor | TriathlonActivityEmbedAnchor
 
 export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedAnchor | null => {
   if (!value) return null
@@ -46,11 +50,15 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
   } catch {
     return null
   }
-  if (!isStringArray(segments) || segments.length < 2) return null
-  const [date, ...options] = segments
-  if (triathlonDaySlug(date) === null) return null
+  if (!isStringArray(segments) || segments.length < 1) return null
+  const [reference, ...options] = segments
+  if (triathlonDaySlug(reference) === null) {
+    return options.length === 0 && triathlonActivityAnchor(reference) !== null
+      ? { activityId: reference }
+      : null
+  }
 
-  let sport: TriathlonEmbedAnchor['sport']
+  let sport: TriathlonDateEmbedAnchor['sport']
   let excludedActivityIds: string[] | undefined
   let settings: TriathlonTraceSettings | undefined
   for (const option of options) {
@@ -78,11 +86,19 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
   }
 
   return {
-    date,
+    date: reference,
     ...(sport ? { sport } : {}),
     ...(excludedActivityIds ? { excludedActivityIds } : {}),
     ...(settings ? { settings } : {}),
   }
+}
+
+export const triathlonEmbedAnchorFromBlockRef = (
+  value: string | undefined,
+): TriathlonEmbedAnchor | null => {
+  if (!value) return null
+  const reference = value.startsWith('#') ? value.slice(1) : value
+  return triathlonEmbedAnchor(JSON.stringify([reference]))
 }
 
 export const triathlonEmbedAnchorFromSource = (
@@ -101,9 +117,23 @@ export const triathlonEmbedAnchorFromSource = (
   return null
 }
 
-export const triathlonEmbedDayHref = (root: string, date: string): string | null => {
+export const resolveTriathlonEmbedDate = (
+  anchor: TriathlonEmbedAnchor,
+  payload: { details: Readonly<Record<string, { date: string }>> },
+): string | null =>
+  'date' in anchor ? anchor.date : (payload.details[anchor.activityId]?.date ?? null)
+
+export const triathlonEmbedDayHref = (
+  root: string,
+  date: string,
+  activityId?: string,
+): string | null => {
   const daySlug = triathlonDaySlug(date)
-  return daySlug ? joinSegments(root, daySlug) : null
+  if (!daySlug) return null
+  const dayHref = joinSegments(root, daySlug)
+  if (!activityId) return dayHref
+  const activityAnchor = triathlonActivityAnchor(activityId)
+  return activityAnchor ? `${dayHref}#${activityAnchor}` : null
 }
 
 export const triathlonCardFactory: TriNodeFactory<Element> = {
@@ -131,6 +161,7 @@ export const triathlonDayProps = (extras: DayCardExtras, date: string): Record<s
   if (extras.location) props['data-triathlon-loc'] = extras.location
   if (extras.event) props['data-triathlon-event'] = extras.event
   if (extras.sport) props['data-triathlon-sport'] = extras.sport
+  if (extras.activityId) props['data-triathlon-activity-id'] = extras.activityId
   if (extras.excludedActivityIds?.length)
     props['data-triathlon-filter'] = extras.excludedActivityIds.join('&')
   if (extras.settings)

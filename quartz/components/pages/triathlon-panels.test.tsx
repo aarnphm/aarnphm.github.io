@@ -8,7 +8,7 @@ import type { TrainingPlan } from '../../plugins/stores/training'
 import type { TriathlonRenderData } from '../triathlon/render-data'
 import { buildAnalytics } from '../../plugins/stores/analytics'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
-import { AnalyticsPanel, TrainingPanel } from './triathlon-panels'
+import { AnalyticsPanel, MapPanel, TrainingPanel } from './triathlon-panels'
 
 const plans: TrainingPlan[] = [
   {
@@ -80,6 +80,19 @@ test('overview analytics markup retains empty lazy placeholders', () => {
   assert.equal(
     elements(root, element => classes(element).includes('tri-ana-block')).length,
     ANALYTICS_CATALOG.length,
+  )
+})
+
+test('map controls expose an SVG 3D terrain and buildings toggle', () => {
+  const root = rendered(<MapPanel />)
+  const buttons = elements(root, element => classes(element).includes('tri-map-3d'))
+  assert.equal(buttons.length, 1)
+  assert.equal(buttons[0].properties?.ariaPressed, 'false')
+  assert.equal(buttons[0].properties?.ariaLabel, '3D terrain and buildings')
+  assert.equal(
+    elements({ type: 'root', children: buttons[0].children }, element => element.tagName === 'path')
+      .length,
+    3,
   )
 })
 

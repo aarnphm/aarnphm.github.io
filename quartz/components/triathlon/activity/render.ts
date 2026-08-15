@@ -7,6 +7,7 @@ import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
 import { activityStatRows } from '../../../util/triathlon-card'
+import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
 import { buildRespirationTrace as buildRespirationTraceNode } from '../../../util/triathlon-card'
@@ -16,6 +17,7 @@ import { buildRunStrideTrace as buildRunStrideTraceNode } from '../../../util/tr
 import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode } from '../../../util/triathlon-card'
 import { buildTrainingEffectDetails as buildTrainingEffectDetailsNode } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
+import { cyclingDynamicsIndexAtDistance } from '../../../util/triathlon-card'
 import { dominantTrainingEffectGroup } from '../../../util/triathlon-card'
 import { formatAltitude } from '../../../util/triathlon-card'
 import { formatGroundContactTime } from '../../../util/triathlon-card'
@@ -26,6 +28,7 @@ import { formatThermalTemperature } from '../../../util/triathlon-card'
 import { formatVerticalOscillation } from '../../../util/triathlon-card'
 import { gearShiftAtFraction } from '../../../util/triathlon-card'
 import { gradeAt } from '../../../util/triathlon-card'
+import { hasHeartRateTrace } from '../../../util/triathlon-card'
 import { interpolatePositiveMetricSeries } from '../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../util/triathlon-card'
 import { positiveMetricDomain } from '../../../util/triathlon-card'
@@ -35,6 +38,7 @@ import { runGroundContactTimeMs } from '../../../util/triathlon-card'
 import { runStrideLengthLabel } from '../../../util/triathlon-card'
 import { runStrideLengthValue } from '../../../util/triathlon-card'
 import { runVerticalOscillationCm } from '../../../util/triathlon-card'
+import { riderPositionAtDistance } from '../../../util/triathlon-card'
 import { scrubDist } from '../../../util/triathlon-card'
 import { zoneClock } from '../../../util/triathlon-card'
 import { triText } from '../../../util/triathlon-i18n'
@@ -62,6 +66,7 @@ import { linkScrub } from './analysis'
 import { detailContextFromPayload } from './data'
 import {
   buildElevation,
+  buildHeartRateTrace,
   buildHrZones,
   buildIcon,
   buildPool,
@@ -161,7 +166,7 @@ export const metricSpecs = (
   const powerDomain = filterPowerZeros ? positiveMetricDomain(powerValues) : undefined
   const pace = route.map(point => point.speedKph)
   const hasPower = d.deviceWatts && route.some(p => p.w > 0)
-  const hasHr = route.some(p => p.hr > 0)
+  const hasHr = hasHeartRateTrace(d)
   const hasCad = route.some(p => p.cad > 0)
   const strideLabel = runStrideLengthLabel(d)
   const hasStride =
@@ -241,16 +246,7 @@ export const metricSpecs = (
     ramp: HR_RAMP,
     pick: p => p.hr,
     fmt: v => `${Math.round(v)} bpm`,
-    profile: graphDomain =>
-      buildTrace(
-        presentation,
-        d,
-        p => p.hr,
-        'hr',
-        m => `${m} bpm peak`,
-        v => `${Math.round(v)}bpm`,
-        graphDomain,
-      ),
+    profile: graphDomain => buildHeartRateTrace(presentation, d, graphDomain),
     readout: p => `${scrubDist(presentation, p.d, d.sport)} · ${p.hr} bpm`,
     extra: () => [
       buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null,
@@ -401,16 +397,14 @@ export const renderMapDetail = (
 
   const stats = el('table', 'tri-act-stats')
   const sbody = document.createElement('tbody')
-  const summaryTrainingEffectGroup = d.garmin?.trainingEffectLabel
-    ? dominantTrainingEffectGroup(d.garmin.trainingEffectLabel)
-    : null
+  const summaryTrainingEffectGroup = dominantTrainingEffectGroup(activityTrainingEffectLabel(d))
   for (const [label, value] of activityStatRows(presentation, d))
     sbody.appendChild(
       statRow(
         presentation,
         label,
         value,
-        label === 'training effect' && summaryTrainingEffectGroup
+        label === 'training effect'
           ? { 'data-training-effect-group': summaryTrainingEffectGroup }
           : undefined,
       ),
@@ -428,8 +422,10 @@ export const renderMapDetail = (
     if (figs.childElementCount > 0) wrap.appendChild(figs)
     const more = el('div', 'tri-act-more')
     const bestEfforts = buildCyclingBestEffortsNode(domF, d) as HTMLElement | null
+    const heartRate = hasHeartRateTrace(d) ? buildHeartRateTrace(presentation, d) : null
     const trainingEffect = buildTrainingEffectDetailsNode(domF, d) as HTMLElement | null
     for (const z of [
+      heartRate,
       trainingEffect,
       zoneDuo(
         presentation,
@@ -690,6 +686,20 @@ export const renderDetail = (
     ? interpolatePositiveMetricSeries(d.route, point => point.cad * cadenceScale)
     : null
   const shiftingDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const cyclingDynamicsPair = (
+    p: StravaActivityDetail['route'][number],
+    left: readonly (number | null)[],
+    right: readonly (number | null)[],
+    suffix: string,
+  ): string => {
+    const dynamics = d.cyclingDynamics
+    if (!dynamics) return '—'
+    const index = cyclingDynamicsIndexAtDistance(dynamics, p.d)
+    if (index < 0) return '—'
+    const format = (value: number | null | undefined): string =>
+      value == null || !Number.isFinite(value) ? '—' : `${value.toFixed(1)}${suffix}`
+    return `L ${format(left[index])} · R ${format(right[index])}`
+  }
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
     if (trace.dataset.triTrace === 'hr')
       surfaces.push({
@@ -707,6 +717,43 @@ export const renderDetail = (
         wrap: trace,
         fmt: p =>
           `${scrubDist(presentation, p.d, d.sport)} · ${p.rightPowerPct == null || p.w <= 0 ? '—' : powerBalanceText(p.rightPowerPct)}`,
+      })
+    else if (trace.dataset.triTrace === 'torque-effectiveness' && d.cyclingDynamics)
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPair(p, d.cyclingDynamics?.leftTorqueEffectiveness ?? [], d.cyclingDynamics?.rightTorqueEffectiveness ?? [], '%')}`,
+      })
+    else if (trace.dataset.triTrace === 'pedal-smoothness' && d.cyclingDynamics)
+      surfaces.push({
+        wrap: trace,
+        fmt: p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPair(p, d.cyclingDynamics?.leftPedalSmoothness ?? [], d.cyclingDynamics?.rightPedalSmoothness ?? [], '%')}`,
+      })
+    else if (trace.dataset.triTrace === 'power-phase' && d.cyclingDynamics)
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const dynamics = d.cyclingDynamics
+          if (!dynamics) return `${scrubDist(presentation, p.d, d.sport)} · —`
+          const index = cyclingDynamicsIndexAtDistance(dynamics, p.d)
+          const phase = (
+            start: number | null | undefined,
+            end: number | null | undefined,
+          ): string =>
+            start == null || end == null ? '—' : `${Math.round(start)}°→${Math.round(end)}°`
+          return `${scrubDist(presentation, p.d, d.sport)} · L ${phase(dynamics.leftPowerPhaseStart[index], dynamics.leftPowerPhaseEnd[index])} · R ${phase(dynamics.rightPowerPhaseStart[index], dynamics.rightPowerPhaseEnd[index])}`
+        },
+      })
+    else if (trace.dataset.triTrace === 'rider-position' && d.cyclingDynamics)
+      surfaces.push({
+        wrap: trace,
+        fmt: p => {
+          const dynamics = d.cyclingDynamics
+          if (!dynamics) return `${scrubDist(presentation, p.d, d.sport)} · —`
+          const position = riderPositionAtDistance(dynamics, p.d)
+          return `${scrubDist(presentation, p.d, d.sport)} · ${position == null ? '—' : triText(presentation.locale, position)}`
+        },
       })
     else if (trace.dataset.triTrace === 'electronic-shifting')
       surfaces.push({

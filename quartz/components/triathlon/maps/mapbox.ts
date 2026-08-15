@@ -22,6 +22,7 @@ export interface MapboxSource {
 export interface TriathlonMapboxMap {
   addLayer(layer: Record<string, unknown>, beforeId?: string): void
   addSource(id: string, source: Record<string, unknown>): void
+  easeTo(options: { pitch: number; duration: number }): void
   fitBounds(
     bounds: [[number, number], [number, number]],
     options: {
@@ -39,10 +40,13 @@ export interface TriathlonMapboxMap {
   on(type: 'moveend', listener: () => void): void
   once(type: 'idle' | 'load' | 'style.load', listener: () => void): void
   queryRenderedFeatures(options: { layers: string[] }): MapboxFeature[]
+  removeLayer(id: string): void
+  removeSource(id: string): void
   remove(): void
   resize(): void
   setPaintProperty(layer: string, property: string, value: unknown): void
   setStyle(style: string): void
+  setTerrain(terrain: { source: string; exaggeration: number } | null): void
 }
 
 interface MapboxLibrary {
@@ -52,12 +56,15 @@ interface MapboxLibrary {
     center: [number, number]
     zoom: number
     attributionControl: boolean
+    antialias: boolean
+    pitch: number
   }) => TriathlonMapboxMap
 }
 
 export const createMapboxMap = async (
   container: HTMLElement,
   style: string,
+  threeDimensional: boolean,
 ): Promise<TriathlonMapboxMap | null> => {
   const library: MapboxLibrary | null = await loadMapbox()
   if (!library) return null
@@ -67,5 +74,7 @@ export const createMapboxMap = async (
     center: [-79.4, 43.7],
     zoom: 9,
     attributionControl: false,
+    antialias: true,
+    pitch: threeDimensional ? 55 : 0,
   })
 }

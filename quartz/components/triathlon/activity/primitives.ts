@@ -12,6 +12,7 @@ import type { TriathlonPresentation } from '../../../util/triathlon-presentation
 import type { ActivityAnalysisRange } from './analysis'
 import {
   buildElevation as buildElevationNode,
+  buildHeartRateTrace as buildHeartRateTraceNode,
   buildHrZones as buildHrZonesNode,
   buildIcon as buildIconNode,
   buildPool as buildPoolNode,
@@ -76,6 +77,13 @@ export const buildTrace = (
       reference,
     ),
   )
+
+export const buildHeartRateTrace = (
+  presentation: TriathlonPresentation,
+  activity: StravaActivityDetail,
+  graphDomain?: ActivityAnalysisRange | null,
+): HTMLElement =>
+  htmlElement(buildHeartRateTraceNode(createDomFactory(presentation), activity, null, graphDomain))
 
 export const zoneDuo = (
   presentation: TriathlonPresentation,

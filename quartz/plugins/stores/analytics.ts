@@ -170,6 +170,7 @@ export interface ActivitySummary {
   distanceKm: number
   movingTimeS: number
   load: number
+  paceIntensityFactor: number | null
   effort: number | null
   cadence: number | null
   strokes: Record<string, number> | null
@@ -4592,9 +4593,11 @@ export function buildAnalytics(
   const thresholds = new Map<Sport, ThresholdEstimate>(thresholdList.map(t => [t.sport, t]))
 
   const loadById = new Map<number, number>()
+  const paceIntensityFactorById = new Map<number, number>()
   for (const act of acts) {
     const vThr = thresholds.get(act.sport)!.vThr
     loadById.set(act.a.id, activityLoad(act, vThr))
+    if (act.sport !== 'bike') paceIntensityFactorById.set(act.a.id, round(act.vGap / vThr, 3))
   }
 
   const firstDay = sinceDay ?? sourceActivities[0].startDateLocal.slice(0, 10)
@@ -4797,6 +4800,7 @@ export function buildAnalytics(
       distanceKm: round(a.distance / 1000, 1),
       movingTimeS: a.movingTime,
       load: 0,
+      paceIntensityFactor: null,
       effort: a.sufferScore ?? null,
       cadence: a.averageCadence ?? null,
       strokes: null,
@@ -4815,6 +4819,7 @@ export function buildAnalytics(
       distanceKm: 0,
       movingTimeS: a.movingTime,
       load: 0,
+      paceIntensityFactor: null,
       effort: a.sufferScore ?? null,
       cadence: null,
       strokes: null,
@@ -4833,6 +4838,7 @@ export function buildAnalytics(
       distanceKm: 0,
       movingTimeS: a.movingTime,
       load: 0,
+      paceIntensityFactor: null,
       effort: a.sufferScore ?? null,
       cadence: null,
       strokes: null,
@@ -4851,6 +4857,7 @@ export function buildAnalytics(
       distanceKm: 0,
       movingTimeS: a.movingTime,
       load: 0,
+      paceIntensityFactor: null,
       effort: a.sufferScore ?? null,
       cadence: null,
       strokes: null,
@@ -4867,6 +4874,7 @@ export function buildAnalytics(
       distanceKm: act.distanceKm,
       movingTimeS: act.a.movingTime,
       load: round(loadById.get(act.a.id) ?? 0, 1),
+      paceIntensityFactor: paceIntensityFactorById.get(act.a.id) ?? null,
       effort: act.a.sufferScore ?? null,
       cadence: act.a.averageCadence ?? null,
       strokes: swimMetrics.get(act.a.id)?.strokes ?? null,
