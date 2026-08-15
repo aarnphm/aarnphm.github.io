@@ -63,6 +63,11 @@ test('map reducer rejects stale loads and resets route state', () => {
       averageTemperatureC: null,
     },
   })
+  const cleared = updateMap(ranged.model, { type: 'clear-route' })
+  assert.equal(cleared.model.selectedRouteId, null)
+  assert.equal(cleared.model.analysisRange, null)
+  assert.deepEqual(cleared.effects, [{ type: 'draw-overview', options: { fit: false } }])
+
   const reset = updateMap(ranged.model, { type: 'reset' })
   assert.equal(reset.model.selectedRouteId, null)
   assert.equal(reset.model.analysisRange, null)

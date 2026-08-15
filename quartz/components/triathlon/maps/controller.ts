@@ -112,42 +112,46 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     const applyMode = (scheduleStreet = true) => {
       const current = readyMap()
       if (!current) return
+      const mode = program.retrieve().mode
+      const lineWidth = mode === 'heat' ? heatWidthExpr : streetMetricWidthExpr
       current.setPaintProperty(
         'tri-heat',
         'line-color',
-        program.retrieve().mode === 'heat'
-          ? heatColorExpr
-          : streetMetricColorExpr(program.retrieve().mode),
+        mode === 'heat' ? heatColorExpr : streetMetricColorExpr(mode),
       )
       current.setPaintProperty(
         'tri-heat',
         'line-opacity',
-        program.retrieve().mode === 'heat'
-          ? heatOpacityExpr
-          : streetMetricOpacityExpr(program.retrieve().mode),
+        mode === 'heat' ? heatOpacityExpr : streetMetricOpacityExpr(mode),
       )
+      current.setPaintProperty('tri-heat', 'line-width', lineWidth)
       current.setPaintProperty(
-        'tri-heat',
-        'line-width',
-        program.retrieve().mode === 'heat' ? heatWidthExpr : streetMetricWidthExpr,
+        'tri-heat-casing',
+        'line-opacity',
+        readTriMapStyle() === 'satellite' ? 0.82 : 0,
       )
+      current.setPaintProperty('tri-heat-casing', 'line-width', ['+', lineWidth, 2.4])
       current.setPaintProperty(
         'tri-swim',
         'line-color',
-        program.retrieve().mode === 'heat'
-          ? HEAT_RAMP[6]
-          : streetMetricColorExpr(program.retrieve().mode),
+        mode === 'heat' ? HEAT_RAMP[6] : streetMetricColorExpr(mode),
       )
       current.setPaintProperty(
         'tri-swim',
         'line-opacity',
-        program.retrieve().mode === 'heat' ? 0.7 : streetMetricOpacityExpr(program.retrieve().mode),
+        mode === 'heat' ? 0.7 : streetMetricOpacityExpr(mode),
       )
-      const lg = overview.current().legend[program.retrieve().mode]
+      current.setPaintProperty('tri-swim', 'line-width', lineWidth)
+      current.setPaintProperty(
+        'tri-swim-casing',
+        'line-opacity',
+        readTriMapStyle() === 'satellite' ? 0.82 : 0,
+      )
+      current.setPaintProperty('tri-swim-casing', 'line-width', ['+', lineWidth, 2.4])
+      const lg = overview.current().legend[mode]
       if (legendLo) setMath(legendLo, lg?.lo ?? 'low')
       if (legendHi) setMath(legendHi, lg?.hi ?? 'high')
-      if (legendBar)
-        legendBar.style.background = rampGradient(overviewRamp(program.retrieve().mode))
+      if (legendBar) legendBar.style.background = rampGradient(overviewRamp(mode))
       if (scheduleStreet) scheduleStreetMap()
     }
     const recolor = (d: StravaActivityDetail, i: number) => {
@@ -295,8 +299,10 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     const installLayers = () => {
       if (!map) return
       const theme = readTriMapTheme()
-      const casingColor = theme === 'dark' ? '#100f0f' : '#fff9f3'
-      if (readTriMapStyle() === 'mono') applyMonochromeMapPalette(map, theme)
+      const style = readTriMapStyle()
+      const satellite = style === 'satellite'
+      const casingColor = satellite ? '#fff9f3' : theme === 'dark' ? '#100f0f' : '#fff9f3'
+      if (style === 'mono') applyMonochromeMapPalette(map, theme)
       const firstLabelLayer = map
         .getStyle()
         ?.layers?.find(
@@ -306,6 +312,20 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       const firstLabelId = typeof firstLabelLayer?.id === 'string' ? firstLabelLayer.id : undefined
       installThreeDimensionalLayers(theme, firstLabelId)
       addSource('tri-heat', { type: 'geojson', data: emptyFC() })
+      addLayer(
+        {
+          id: 'tri-heat-casing',
+          type: 'line',
+          source: 'tri-heat',
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': '#100f0f',
+            'line-opacity': satellite ? 0.82 : 0,
+            'line-width': ['+', heatWidthExpr, 2.4],
+          },
+        },
+        firstLabelId,
+      )
       addLayer(
         {
           id: 'tri-heat',
@@ -321,6 +341,21 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
         firstLabelId,
       )
       addSource('tri-traces', { type: 'geojson', data: emptyFC() })
+      addLayer(
+        {
+          id: 'tri-swim-casing',
+          type: 'line',
+          source: 'tri-traces',
+          filter: ['==', ['get', 'sport'], 'swim'],
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': '#100f0f',
+            'line-opacity': satellite ? 0.82 : 0,
+            'line-width': ['+', streetMetricWidthExpr, 2.4],
+          },
+        },
+        firstLabelId,
+      )
       addLayer(
         {
           id: 'tri-swim',
@@ -404,9 +439,9 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       okFlag = true
       applyMode()
     }
-    const refreshMapData = () => {
-      if (selection) select(selection.d, selection.i)
-      else drawOverview()
+    const refreshMapData = (fit: boolean) => {
+      if (selection) select(selection.d, selection.i, fit)
+      else drawOverview({ fit })
     }
     const applyMapStyle = (theme: TriMapTheme = readTriMapTheme()) => {
       const current = map
@@ -418,7 +453,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       current.once('style.load', () => {
         if (!map || seq !== styleSeq) return
         installLayers()
-        refreshMapData()
+        refreshMapData(false)
       })
     }
     const init = async (): Promise<void> => {
@@ -481,7 +516,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
           duration: reduce ? 0 : duration,
         })
     }
-    const select = (d: StravaActivityDetail, i: number) => {
+    const select = (d: StravaActivityDetail, i: number, fit = true) => {
       selection = { d, i }
       const current = readyMap()
       if (!current) return
@@ -491,7 +526,8 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       current.getSource('tri-range')?.setData(range ? rangeFC(d, range) : emptyFC())
       recolor(d, i)
       current.setPaintProperty('tri-heat', 'line-opacity', 0.06)
-      fitSelection(d, range, 600)
+      current.setPaintProperty('tri-heat-casing', 'line-opacity', 0)
+      if (fit) fitSelection(d, range, 600)
     }
     const selectRange = (d: StravaActivityDetail, range: MapAnalysisRange | null, fit: boolean) => {
       readyMap()
@@ -511,7 +547,6 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
       current.getSource('tri-sel')?.setData(emptyFC())
       current.getSource('tri-range')?.setData(emptyFC())
       current.getSource('tri-dot')?.setData(emptyFC())
-      setOverviewData()
     }
     const resize = () => map?.resize()
     const applyThreeDimensional = () => {
