@@ -9,7 +9,13 @@ import {
   streamHostPathname,
   STREAM_HOSTNAME,
 } from '../quartz/util/stream-host'
-import { triathlonShortcutRedirectUrl } from '../quartz/util/triathlon-shortcut'
+import {
+  isStravaActivityIndex,
+  STRAVA_ACTIVITY_INDEX_PATH,
+  stravaActivityIdFromShortcutPath,
+  triathlonActivityShortcutRedirectUrl,
+  triathlonShortcutRedirectUrl,
+} from '../quartz/util/triathlon-shortcut'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
   API_CATALOG_LINK,
@@ -1087,6 +1093,34 @@ export default {
     }
 
     if (url.hostname === 't.aarnphm.xyz' && !url.pathname.startsWith('/fonts/')) {
+      const activityId = stravaActivityIdFromShortcutPath(url.pathname)
+      if (activityId) {
+        const indexUrl = new URL(STRAVA_ACTIVITY_INDEX_PATH, url)
+        const indexResponse = await env.ASSETS.fetch(
+          new Request(indexUrl.toString(), { headers: { Accept: 'application/json' } }),
+        )
+        const index: unknown = indexResponse.ok
+          ? await indexResponse.json().catch(() => null)
+          : null
+        if (!isStravaActivityIndex(index)) {
+          return new Response('Strava activity index unavailable', {
+            status: 503,
+            headers: { 'Cache-Control': 'no-store' },
+          })
+        }
+        const redirectUrl = triathlonActivityShortcutRedirectUrl(
+          resolveBaseUrl(env, request),
+          url,
+          index.activities,
+        )
+        if (!redirectUrl) {
+          return new Response(`Strava activity ${activityId} not found`, {
+            status: 404,
+            headers: { 'Cache-Control': 'no-store' },
+          })
+        }
+        return Response.redirect(redirectUrl, 308)
+      }
       return Response.redirect(
         triathlonShortcutRedirectUrl(
           resolveBaseUrl(env, request),

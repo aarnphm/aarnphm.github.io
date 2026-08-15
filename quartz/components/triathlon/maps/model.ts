@@ -514,7 +514,7 @@ export const updateMap = (
     case 'clear-route':
       return {
         model: { ...model, selectedRouteId: null, metric: 0, analysisRange: null },
-        effects: [{ type: 'draw-overview' }],
+        effects: [{ type: 'draw-overview', options: { fit: false } }],
       }
     case 'set-style':
       return {

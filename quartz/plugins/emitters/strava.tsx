@@ -35,6 +35,7 @@ import {
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
+import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
 import {
   ATHLETE,
   buildAnalytics,
@@ -305,6 +306,14 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           slug: 'static/strava-detail' as FullSlug,
           ext: '.json',
           content: detailArtifacts.manifest,
+        }),
+      )
+      files.push(
+        await write({
+          ctx,
+          slug: 'static/strava-activity-index' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(buildStravaActivityIndex(payload.details)),
         }),
       )
       files.push(
