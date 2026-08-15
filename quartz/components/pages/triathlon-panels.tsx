@@ -552,6 +552,19 @@ export const MapPanel = ({ page }: { page?: boolean }) => (
           ))}
           <span class="tri-map-side-rule" />
           <button
+            class="tri-map-3d"
+            type="button"
+            aria-pressed="false"
+            aria-label="3D terrain and buildings"
+            title="3D terrain and buildings"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 20 7.5 12 12 4 7.5 12 3Z" />
+              <path d="M4 7.5v9L12 21v-9" />
+              <path d="M20 7.5v9L12 21" />
+            </svg>
+          </button>
+          <button
             class="tri-map-style"
             type="button"
             aria-pressed="false"

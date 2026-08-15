@@ -4,6 +4,8 @@ export type DistributionSport = Sport
 
 export type DistributionRange = '7' | '14' | '30' | '60' | 'custom'
 
+export type TelemetryTrend = 'up' | 'down' | 'flat'
+
 export interface DistributionModel {
   sport: DistributionSport
   range: DistributionRange
@@ -36,6 +38,35 @@ export const DISTRIBUTION_RANGES: { key: DistributionRange; label: string; days:
 
 export const distributionDateShift = (date: string, days: number): string =>
   new Date(Date.parse(`${date}T00:00:00Z`) + days * DISTRIBUTION_DAY_MS).toISOString().slice(0, 10)
+
+export const telemetryTrend = (values: readonly (number | null)[]): TelemetryTrend | null => {
+  const observed = values.filter(
+    (value): value is number => value != null && Number.isFinite(value),
+  )
+  if (observed.length < 2) return null
+  const previous = observed[observed.length - 2]
+  const latest = observed[observed.length - 1]
+  return latest > previous ? 'up' : latest < previous ? 'down' : 'flat'
+}
+
+export const telemetryWeightedAverage = (
+  observations: readonly { value: number | null; observedSeconds: number }[],
+): number | null => {
+  let valueSeconds = 0
+  let observedSeconds = 0
+  for (const observation of observations) {
+    if (
+      observation.value == null ||
+      !Number.isFinite(observation.value) ||
+      !Number.isFinite(observation.observedSeconds) ||
+      observation.observedSeconds <= 0
+    )
+      continue
+    valueSeconds += observation.value * observation.observedSeconds
+    observedSeconds += observation.observedSeconds
+  }
+  return observedSeconds > 0 ? valueSeconds / observedSeconds : null
+}
 
 const clampDate = (date: string, bounds: DistributionBounds): string =>
   date < bounds.minimumDate

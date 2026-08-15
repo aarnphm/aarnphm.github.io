@@ -5,6 +5,7 @@ import {
   applyManualFueling,
   applyManualStrength,
   buildPayload,
+  calculateActivityIntensityFactor,
   hasFetchedActivityDetail,
   type RawStravaActivity,
   type RawStravaAnalysisRange,
@@ -12,6 +13,45 @@ import {
   type StravaStreams,
 } from './strava'
 import { summarizeWeatherDays, type WeatherActivity, type WeatherCache } from './weather'
+
+test('calculates activity intensity from the sport-specific threshold signal', () => {
+  assert.deepEqual(
+    calculateActivityIntensityFactor(
+      { sport: 'run', avgHr: 152, npWatts: null, deviceWatts: false, garmin: null },
+      0.9094,
+      282,
+      173,
+    ),
+    { value: 0.909, source: 'pace' },
+  )
+  assert.deepEqual(
+    calculateActivityIntensityFactor(
+      { sport: 'bike', avgHr: 152, npWatts: 205, deviceWatts: true, garmin: null },
+      null,
+      250,
+      173,
+    ),
+    { value: 0.82, source: 'power' },
+  )
+  assert.deepEqual(
+    calculateActivityIntensityFactor(
+      { sport: 'strength', avgHr: 138, npWatts: null, deviceWatts: false, garmin: null },
+      null,
+      282,
+      173,
+    ),
+    { value: 0.798, source: 'heart-rate' },
+  )
+  assert.equal(
+    calculateActivityIntensityFactor(
+      { sport: 'strength', avgHr: null, npWatts: null, deviceWatts: false, garmin: null },
+      null,
+      282,
+      173,
+    ),
+    null,
+  )
+})
 
 test('treats cached empty analysis arrays as a fetched activity detail', () => {
   assert.equal(hasFetchedActivityDetail(undefined), false)
@@ -26,6 +66,119 @@ test('treats cached empty analysis arrays as a fetched activity detail', () => {
     }),
     true,
   )
+})
+
+test('projects a distance-aligned heart rate trace for route-less pool swims', () => {
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Pool swim',
+        sportType: 'Swim',
+        distance: 75,
+        movingTime: 90,
+        elapsedTime: 90,
+      }),
+    },
+    streams: {
+      101: {
+        time: [0, 30, 60, 90],
+        latlng: [],
+        altitude: [],
+        distance: [0, 25, 50, 75],
+        heartrate: [90, 110, 0, 130],
+      },
+    },
+  }
+
+  const activity = buildPayload(cache, null, null, '2026-06-01').details['101']
+
+  assert.deepEqual(activity.route, [])
+  assert.deepEqual(activity.heartRateTrace, [
+    { distanceKm: 0, elapsedS: 0, heartRate: 90 },
+    { distanceKm: 0.025, elapsedS: 30, heartRate: 110 },
+    { distanceKm: 0.05, elapsedS: 60, heartRate: null },
+    { distanceKm: 0.075, elapsedS: 90, heartRate: 130 },
+  ])
+})
+
+test('projects a time-aligned heart rate trace for route-less strength training', () => {
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Strength training',
+        sportType: 'WeightTraining',
+        distance: 0,
+        movingTime: 90,
+        elapsedTime: 90,
+      }),
+    },
+    streams: {
+      101: {
+        time: [0, 30, 60, 90],
+        latlng: [],
+        altitude: [],
+        distance: [],
+        heartrate: [90, 110, 0, 130],
+      },
+    },
+  }
+
+  const activity = buildPayload(cache, null, null, '2026-06-01').details['101']
+
+  assert.deepEqual(activity.route, [])
+  assert.deepEqual(activity.heartRateTrace, [
+    { distanceKm: 0, elapsedS: 0, heartRate: 90 },
+    { distanceKm: 0, elapsedS: 30, heartRate: 110 },
+    { distanceKm: 0, elapsedS: 60, heartRate: null },
+    { distanceKm: 0, elapsedS: 90, heartRate: 130 },
+  ])
+})
+
+test('preserves the recorded peak when sampling route-less heart rate', () => {
+  const sampleCount = 294
+  const heartrate = Array.from({ length: sampleCount }, () => 100)
+  heartrate[118] = 135
+  heartrate[203] = 135
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Strength training',
+        sportType: 'WeightTraining',
+        distance: 0,
+        movingTime: sampleCount - 1,
+        elapsedTime: sampleCount - 1,
+      }),
+    },
+    streams: {
+      101: {
+        time: Array.from({ length: sampleCount }, (_, index) => index),
+        latlng: [],
+        altitude: [],
+        distance: [],
+        heartrate,
+      },
+    },
+  }
+
+  const trace = buildPayload(cache, null, null, '2026-06-01').details['101'].heartRateTrace
+
+  assert.equal(Math.max(...trace.map(point => point.heartRate ?? 0)), 135)
+  assert.ok(trace.length <= 140)
 })
 
 function ride(overrides: Partial<RawStravaActivity> = {}): RawStravaActivity {
@@ -380,7 +533,7 @@ test('aligns Garmin respiration and CORE samples onto the Strava route timeline'
   )
 })
 
-test('projects Garmin FIT gear states onto ride distance', () => {
+test('projects Garmin FIT gear states and cycling dynamics onto ride distance', () => {
   const activity = ride({
     distance: 2_000,
     movingTime: 20,
@@ -443,6 +596,27 @@ test('projects Garmin FIT gear states onto ride distance', () => {
         },
       ],
     },
+    cyclingDynamics: {
+      edge: {
+        time: [0, 10, 20],
+        distance: [0, 1_000, 2_000],
+        leftPedalSmoothness: [21, 22, null],
+        rightPedalSmoothness: [23, 24, 25],
+        leftTorqueEffectiveness: [70, 74, null],
+        rightTorqueEffectiveness: [72, 76, 78],
+        leftPowerPhaseStart: [350, 352, 0],
+        leftPowerPhaseEnd: [190, 192, 194],
+        rightPowerPhaseStart: [348, 350, 352],
+        rightPowerPhaseEnd: [198, 200, 202],
+        positionChanges: [
+          { elapsedS: 0, distanceM: 0, position: 'seated' },
+          { elapsedS: 5, distanceM: 500, position: 'standing' },
+          { elapsedS: 15, distanceM: 1_500, position: 'seated' },
+        ],
+        seatedTimeS: 10,
+        standingTimeS: 10,
+      },
+    },
   }
 
   const detail = buildPayload(cache, null, garmin, '2026-06-01').details['101']
@@ -451,6 +625,25 @@ test('projects Garmin FIT gear states onto ride distance', () => {
     { elapsedS: 12, distanceKm: 1, frontGearNum: 2, frontTeeth: 52, rearGearNum: 6, rearTeeth: 19 },
     { elapsedS: 20, distanceKm: 2, frontGearNum: 1, frontTeeth: 36, rearGearNum: 8, rearTeeth: 15 },
   ])
+  assert.deepEqual(detail.cyclingDynamics, {
+    elapsedS: [2, 12, 22],
+    distanceKm: [0, 1, 2],
+    leftPedalSmoothness: [21, 22, null],
+    rightPedalSmoothness: [23, 24, 25],
+    leftTorqueEffectiveness: [70, 74, null],
+    rightTorqueEffectiveness: [72, 76, 78],
+    leftPowerPhaseStart: [350, 352, 0],
+    leftPowerPhaseEnd: [190, 192, 194],
+    rightPowerPhaseStart: [348, 350, 352],
+    rightPowerPhaseEnd: [198, 200, 202],
+    positionChanges: [
+      { elapsedS: 2, distanceKm: 0, position: 'seated' },
+      { elapsedS: 7, distanceKm: 0.5, position: 'standing' },
+      { elapsedS: 17, distanceKm: 1.5, position: 'seated' },
+    ],
+    seatedTimeS: 10,
+    standingTimeS: 10,
+  })
 })
 
 function timedRideCache(increments: (i: number) => number, n = 100): StravaRawCache {

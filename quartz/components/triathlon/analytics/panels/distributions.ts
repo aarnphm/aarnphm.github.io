@@ -9,6 +9,7 @@ import { svg } from '../../runtime/dom'
 import { buildDatePicker } from '../../tools/date-picker'
 import { parsePredDate } from '../../tools/date-picker'
 import { anaTitle } from '../shared'
+import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
 import { polyD } from '../shared'
 import { missingBridges } from './body'
@@ -16,6 +17,8 @@ import { segRuns } from './body'
 import {
   DISTRIBUTION_RANGES,
   initialDistributionModel,
+  telemetryTrend,
+  telemetryWeightedAverage,
   updateDistributions,
   type DistributionRange,
   type DistributionSport,
@@ -218,6 +221,7 @@ export const buildDistributions = (
     key: 'power' | 'cadence' | 'skin' | 'hsi'
     label: string
     value: (point: ActivityDistributionPoint) => number | null
+    observedSeconds: (point: ActivityDistributionPoint) => number
     text: (value: number, point: ActivityDistributionPoint) => string
   }
   const metrics: DistributionMetric[] = [
@@ -225,24 +229,28 @@ export const buildDistributions = (
       key: 'power',
       label: 'average power',
       value: point => point.averagePowerWatts,
+      observedSeconds: point => point.movingTimeS,
       text: value => `${Math.round(value)} W`,
     },
     {
       key: 'cadence',
       label: 'cadence',
       value: point => point.cadence,
+      observedSeconds: point => point.movingTimeS,
       text: (value, point) => `${Math.round(value)} ${point.cadenceUnit}`,
     },
     {
       key: 'skin',
       label: 'skin temperature',
       value: point => point.skinTemperatureC,
+      observedSeconds: point => point.skinObservedSeconds,
       text: value => formatThermalTemperature(context.presentation, value),
     },
     {
       key: 'hsi',
       label: 'heat strain index',
       value: point => point.heatStrainIndex,
+      observedSeconds: point => point.heatStrainObservedSeconds,
       text: value => `HSI ${value.toFixed(1)}`,
     },
   ]
@@ -302,14 +310,35 @@ export const buildDistributions = (
       const y = (value: number): number => 30 - ((value - domainMin) / (domainMax - domainMin)) * 26
       const row = el('div', `tri-dist-metric tri-dist-metric--${metric.key}`)
       const meta = el('div', 'tri-dist-metric-meta')
-      const latest = [...points].reverse().find(point => metric.value(point) != null)
-      const latestValue = latest ? metric.value(latest) : null
-      meta.append(
-        el('span', 'tri-dist-metric-name', text(metric.label)),
-        latest && latestValue != null
-          ? el('span', 'tri-dist-metric-latest', metric.text(latestValue, latest))
+      const summaryPoint = points.find(point => metric.value(point) != null)
+      const summaryValue = telemetryWeightedAverage(
+        points.map(point => ({
+          value: metric.value(point),
+          observedSeconds: metric.observedSeconds(point),
+        })),
+      )
+      const trend = telemetryTrend(points.map(point => metric.value(point)))
+      const status = el('div', 'tri-dist-metric-status')
+      status.appendChild(
+        summaryPoint && summaryValue != null
+          ? el('span', 'tri-dist-metric-latest', metric.text(summaryValue, summaryPoint))
           : el('span', 'tri-dist-metric-latest', '—'),
       )
+      if (trend)
+        status.appendChild(
+          buildTrendGlyph(
+            trend,
+            text(
+              trend === 'up'
+                ? 'higher than previous activity'
+                : trend === 'down'
+                  ? 'lower than previous activity'
+                  : 'unchanged from previous activity',
+            ),
+            'tri-dist-metric-trend',
+          ),
+        )
+      meta.append(el('span', 'tri-dist-metric-name', text(metric.label)), status)
       const graph = svg('svg', {
         class: 'tri-dist-metric-svg',
         viewBox: '0 0 100 34',

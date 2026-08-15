@@ -16,6 +16,7 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
+import { serializeStravaDetails, type StravaDetailPayload } from '../../util/strava-detail'
 import {
   appleCachePath,
   coreBodyTemperatureCachePath,
@@ -53,6 +54,7 @@ import {
   applyManualFueling,
   applyManualStrength,
   buildPayload,
+  calculateActivityIntensityFactor,
   emptyHealth,
   StravaPayload,
   StravaRawCache,
@@ -230,29 +232,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const matchedRides = cache
         ? buildMatchedRides(matchedActivities, cache.streams ?? {})
         : emptyMatchedRides()
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/strava-detail' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify({
-            details: payload.details,
-            swimTrend: payload.swimTrend,
-            health: payload.health,
-            zones: payload.zones,
-            powerCurveRef: payload.powerCurveRef,
-            powerCurveYearRef: payload.powerCurveYearRef,
-            powerCurveYear: payload.powerCurveYear,
-            criticalPower: payload.criticalPower,
-            criticalPowerYear: payload.criticalPowerYear,
-            ftp: ATHLETE.ftp,
-            goalFtp: ATHLETE.goalFTP,
-            vt1Hr: latestVo2?.vt1Hr ?? null,
-            matchedRuns,
-            matchedRides,
-          }),
-        }),
-      )
       const analytics = buildAnalytics(cache, {
         oura,
         apple,
@@ -277,6 +256,57 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         activityDetails: payload.details,
         since: typeof since === 'string' ? since : undefined,
       })
+      const paceIntensityFactors = new Map(
+        analytics.activities.flatMap(activity =>
+          activity.paceIntensityFactor == null
+            ? []
+            : [[activity.id, activity.paceIntensityFactor] as const],
+        ),
+      )
+      for (const detail of Object.values(payload.details))
+        detail.calculatedIntensityFactor = calculateActivityIntensityFactor(
+          detail,
+          paceIntensityFactors.get(detail.id) ?? null,
+          ATHLETE.ftp,
+          ATHLETE.lt,
+        )
+      const detailPayload: StravaDetailPayload = {
+        details: payload.details,
+        swimTrend: payload.swimTrend,
+        health: payload.health,
+        zones: payload.zones,
+        powerCurveRef: payload.powerCurveRef,
+        powerCurveYearRef: payload.powerCurveYearRef,
+        powerCurveYear: payload.powerCurveYear,
+        criticalPower: payload.criticalPower,
+        criticalPowerYear: payload.criticalPowerYear,
+        ftp: ATHLETE.ftp,
+        goalFtp: ATHLETE.goalFTP,
+        vt1Hr: latestVo2?.vt1Hr ?? null,
+        matchedRuns,
+        matchedRides,
+      }
+      const detailArtifacts = serializeStravaDetails(detailPayload)
+      files.push(
+        ...(await Promise.all(
+          detailArtifacts.shards.map(shard =>
+            write({
+              ctx,
+              slug: `static/strava-detail/${shard.name}`,
+              ext: '.json',
+              content: shard.content,
+            }),
+          ),
+        )),
+      )
+      files.push(
+        await write({
+          ctx,
+          slug: 'static/strava-detail' as FullSlug,
+          ext: '.json',
+          content: detailArtifacts.manifest,
+        }),
+      )
       files.push(
         await write({
           ctx,

@@ -100,6 +100,35 @@ export interface GarminGearShift {
   rearTeeth: number
 }
 
+export type GarminRiderPosition = 'seated' | 'standing'
+
+export interface GarminRiderPositionChange {
+  elapsedS: number
+  distanceM: number
+  position: GarminRiderPosition
+}
+
+export interface GarminCyclingDynamics {
+  time: number[]
+  distance: number[]
+  leftPedalSmoothness: (number | null)[]
+  rightPedalSmoothness: (number | null)[]
+  leftTorqueEffectiveness: (number | null)[]
+  rightTorqueEffectiveness: (number | null)[]
+  leftPowerPhaseStart: (number | null)[]
+  leftPowerPhaseEnd: (number | null)[]
+  rightPowerPhaseStart: (number | null)[]
+  rightPowerPhaseEnd: (number | null)[]
+  positionChanges: GarminRiderPositionChange[]
+  seatedTimeS: number | null
+  standingTimeS: number | null
+}
+
+export interface GarminFitTrainingEffect {
+  aerobic: number | null
+  anaerobic: number | null
+}
+
 export interface GarminActivityMatch {
   activity: GarminActivity
   score: number
@@ -131,6 +160,8 @@ export interface GarminCache {
   activities: Record<string, GarminActivity>
   streams?: Record<string, GarminStreams>
   gearShifts?: Record<string, GarminGearShift[]>
+  cyclingDynamics?: Record<string, GarminCyclingDynamics>
+  fitTrainingEffects?: Record<string, GarminFitTrainingEffect>
   climbs?: Record<string, GarminClimbSegment[]>
   vo2max?: Record<string, GarminVo2Day>
   weight?: GarminWeightSample[]

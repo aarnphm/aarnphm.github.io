@@ -244,6 +244,24 @@ test('empty analytics include an empty distributions block', () => {
   assert.deepEqual(buildAnalytics(null).distributions, { heartRateZoneBounds: [], activities: [] })
 })
 
+test('activity summaries expose normalized pace intensity for run and swim', () => {
+  const { cache } = fixtures()
+  const analytics = buildAnalytics(cache, { since: '2026-05-12' })
+
+  assert.equal(
+    analytics.activities.find(activity => activity.sport === 'run')?.paceIntensityFactor,
+    0.909,
+  )
+  assert.equal(
+    analytics.activities.find(activity => activity.sport === 'swim')?.paceIntensityFactor,
+    0.641,
+  )
+  assert.equal(
+    analytics.activities.find(activity => activity.sport === 'bike')?.paceIntensityFactor,
+    null,
+  )
+})
+
 test('recovery block computes baselines, series, and flags from oura-merged daily', () => {
   const { cache, oura, weights } = fixtures()
   const a = buildAnalytics(cache, { oura, weights, since: '2026-05-12' })

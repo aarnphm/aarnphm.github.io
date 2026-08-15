@@ -6,6 +6,7 @@ import { niceStep } from '../../../../util/triathlon-card'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
 import { anaTitle } from '../shared'
+import { buildTrendGlyph } from '../shared'
 import { clampN } from '../shared'
 import { markGloss } from '../shared'
 import { polyD } from '../shared'
@@ -83,14 +84,15 @@ export const buildCardio = (data: Analytics, context: TriathlonContext): HTMLEle
       m.value != null ? cardioValueText(m.value, m.unit) : '—',
     )
     val.title = text(m.note)
-    status.append(
-      val,
-      el(
-        'span',
-        `tri-engine-row-dir ${m.dir === 'improving' ? 'tri-dir-up' : m.dir === 'declining' ? 'tri-dir-down' : 'tri-dir-flat'}`,
-        m.dir === 'improving' ? '▲' : m.dir === 'declining' ? '▼' : m.dir === 'stable' ? '■' : '',
-      ),
-    )
+    status.appendChild(val)
+    if (m.dir)
+      status.appendChild(
+        buildTrendGlyph(
+          m.dir === 'improving' ? 'up' : m.dir === 'declining' ? 'down' : 'flat',
+          text(m.dir),
+          'tri-engine-row-dir',
+        ),
+      )
     meta.appendChild(status)
     const points = cardioSeriesOf(c, m.key)
     const ys = points.map(point => point.value)

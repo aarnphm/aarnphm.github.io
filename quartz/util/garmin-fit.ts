@@ -7,13 +7,20 @@ import {
   type DeviceInfoMesg,
   type EventMesg,
   type FileIdMesg,
+  type FitMessages,
   type LapMesg,
   type LengthMesg,
   type RecordMesg,
   type SessionMesg,
 } from '@garmin/fitsdk'
 import { inflateRawSync } from 'node:zlib'
-import type { GarminGearShift } from '../plugins/stores/garmin'
+import type {
+  GarminCyclingDynamics,
+  GarminFitTrainingEffect,
+  GarminGearShift,
+  GarminRiderPosition,
+  GarminRiderPositionChange,
+} from '../plugins/stores/garmin'
 
 export type GarminSwimStroke =
   | 'freestyle'
@@ -132,6 +139,7 @@ const ZIP_CENTRAL_HEADER = 0x02014b50
 const ZIP_END = 0x06054b50
 const ZIP_LOCAL_HEADER = 0x04034b50
 const ZIP_MAX_END_SEARCH = 65_557
+const MAX_CYCLING_DYNAMICS_SAMPLES = 900
 
 function requireZipRange(bytes: Uint8Array, offset: number, length: number): void {
   if (
@@ -222,15 +230,22 @@ function positiveGearField(value: number | undefined): number | null {
   return value != null && Number.isInteger(value) && value > 0 && value < 255 ? value : null
 }
 
-export function decodeGarminGearShifts(bytes: Uint8Array): GarminGearShift[] {
+function decodeGarminMessages(bytes: Uint8Array): FitMessages {
   if (!Decoder.isFIT(Stream.fromByteArray(bytes))) throw new Error('Garmin activity is not FIT')
   if (!new Decoder(Stream.fromByteArray(bytes)).checkIntegrity())
     throw new Error('Garmin activity FIT integrity check failed')
-  const decoded = new Decoder(Stream.fromByteArray(bytes)).read()
+  const decoded = new Decoder(Stream.fromByteArray(bytes)).read({
+    expandSubFields: true,
+    expandComponents: true,
+  })
   if (decoded.errors.length > 0)
     throw new Error(decoded.errors.map(error => error.message).join('; '))
+  return decoded.messages
+}
+
+function garminGearShifts(messages: FitMessages): GarminGearShift[] {
   const shifts: GarminGearShift[] = []
-  for (const event of decoded.messages.eventMesgs ?? []) {
+  for (const event of messages.eventMesgs ?? []) {
     if (event.event !== 'frontGearChange' && event.event !== 'rearGearChange') continue
     const timestamp = event.timestamp instanceof Date ? event.timestamp : null
     const frontGearNum = positiveGearField(event.frontGearNum)
@@ -266,8 +281,228 @@ export function decodeGarminGearShifts(bytes: Uint8Array): GarminGearShift[] {
   return shifts.sort((left, right) => left.timestamp.localeCompare(right.timestamp))
 }
 
-export function garminGearShiftsFromArchive(archive: Uint8Array): GarminGearShift[] {
-  return decodeGarminGearShifts(garminFitBytesFromArchive(archive))
+function roundedFit(value: number, dp: number): number {
+  const factor = 10 ** dp
+  return Math.round(value * factor) / factor
+}
+
+function fitTimestamp(value: Date | number | 'min' | undefined): number | null {
+  const timestamp = value instanceof Date ? value.getTime() : NaN
+  return Number.isFinite(timestamp) ? timestamp : null
+}
+
+function fitPercent(value: number | undefined): number | null {
+  return value != null && Number.isFinite(value) && value > 0 && value <= 100
+    ? roundedFit(value, 1)
+    : null
+}
+
+function fitPhase(value: number[] | undefined): [number, number] | null {
+  if (!value || value.length < 2) return null
+  const start = value[0]
+  const end = value[1]
+  if (
+    !Number.isFinite(start) ||
+    !Number.isFinite(end) ||
+    start < 0 ||
+    start > 360 ||
+    end <= 0 ||
+    end > 360
+  )
+    return null
+  return [roundedFit(start, 1), roundedFit(end, 1)]
+}
+
+function evenlySampledIndices(length: number, limit: number): number[] {
+  if (length <= limit) return Array.from({ length }, (_, index) => index)
+  return Array.from(
+    new Set(
+      Array.from({ length: limit }, (_, index) =>
+        Math.round((index / Math.max(1, limit - 1)) * (length - 1)),
+      ),
+    ),
+  )
+}
+
+function fitDistanceAt(records: readonly RecordMesg[], timestampMs: number): number {
+  if (records.length === 0) return 0
+  let low = 0
+  let high = records.length - 1
+  while (low + 1 < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    const timestamp = fitTimestamp(records[middle].timestamp)
+    if (timestamp == null || timestamp > timestampMs) high = middle
+    else low = middle
+  }
+  const leftTime = fitTimestamp(records[low].timestamp)
+  const rightTime = fitTimestamp(records[high].timestamp)
+  const leftDistance = records[low].distance
+  const rightDistance = records[high].distance
+  if (
+    leftTime == null ||
+    rightTime == null ||
+    leftDistance == null ||
+    rightDistance == null ||
+    !Number.isFinite(leftDistance) ||
+    !Number.isFinite(rightDistance) ||
+    rightTime <= leftTime
+  )
+    return Number.isFinite(leftDistance) ? Math.max(0, leftDistance ?? 0) : 0
+  const fraction = Math.min(1, Math.max(0, (timestampMs - leftTime) / (rightTime - leftTime)))
+  return Math.max(0, leftDistance + (rightDistance - leftDistance) * fraction)
+}
+
+function riderPosition(value: unknown): GarminRiderPosition | null {
+  return value === 'seated' || value === 'standing' ? value : null
+}
+
+function emptyCyclingDynamics(): GarminCyclingDynamics {
+  return {
+    time: [],
+    distance: [],
+    leftPedalSmoothness: [],
+    rightPedalSmoothness: [],
+    leftTorqueEffectiveness: [],
+    rightTorqueEffectiveness: [],
+    leftPowerPhaseStart: [],
+    leftPowerPhaseEnd: [],
+    rightPowerPhaseStart: [],
+    rightPowerPhaseEnd: [],
+    positionChanges: [],
+    seatedTimeS: null,
+    standingTimeS: null,
+  }
+}
+
+function garminCyclingDynamics(messages: FitMessages): GarminCyclingDynamics {
+  const records = (messages.recordMesgs ?? []).filter(record => {
+    const timestamp = fitTimestamp(record.timestamp)
+    return timestamp != null && record.distance != null && Number.isFinite(record.distance)
+  })
+  const startMs =
+    fitTimestamp(messages.sessionMesgs?.[0]?.startTime) ??
+    fitTimestamp(records[0]?.timestamp) ??
+    null
+  if (startMs == null) return emptyCyclingDynamics()
+
+  const candidates = records.flatMap(record => {
+    const timestampMs = fitTimestamp(record.timestamp)
+    if (timestampMs == null || record.distance == null) return []
+    const leftPowerPhase = fitPhase(record.leftPowerPhase)
+    const rightPowerPhase = fitPhase(record.rightPowerPhase)
+    const sample = {
+      time: roundedFit(Math.max(0, (timestampMs - startMs) / 1000), 3),
+      distance: roundedFit(Math.max(0, record.distance), 2),
+      leftPedalSmoothness: fitPercent(record.leftPedalSmoothness),
+      rightPedalSmoothness: fitPercent(record.rightPedalSmoothness),
+      leftTorqueEffectiveness: fitPercent(record.leftTorqueEffectiveness),
+      rightTorqueEffectiveness: fitPercent(record.rightTorqueEffectiveness),
+      leftPowerPhaseStart: leftPowerPhase?.[0] ?? null,
+      leftPowerPhaseEnd: leftPowerPhase?.[1] ?? null,
+      rightPowerPhaseStart: rightPowerPhase?.[0] ?? null,
+      rightPowerPhaseEnd: rightPowerPhase?.[1] ?? null,
+    }
+    return [
+      sample.leftPedalSmoothness,
+      sample.rightPedalSmoothness,
+      sample.leftTorqueEffectiveness,
+      sample.rightTorqueEffectiveness,
+      sample.leftPowerPhaseStart,
+      sample.leftPowerPhaseEnd,
+      sample.rightPowerPhaseStart,
+      sample.rightPowerPhaseEnd,
+    ].some(value => value != null)
+      ? [sample]
+      : []
+  })
+  const sampled = evenlySampledIndices(candidates.length, MAX_CYCLING_DYNAMICS_SAMPLES).map(
+    index => candidates[index],
+  )
+
+  const positionChanges: GarminRiderPositionChange[] = []
+  for (const event of messages.eventMesgs ?? []) {
+    if (event.event !== 'riderPositionChange') continue
+    const position = riderPosition(event.riderPosition)
+    const timestampMs = fitTimestamp(event.timestamp)
+    if (position == null || timestampMs == null) continue
+    const previous = positionChanges[positionChanges.length - 1]
+    if (previous?.position === position) continue
+    positionChanges.push({
+      elapsedS: roundedFit(Math.max(0, (timestampMs - startMs) / 1000), 3),
+      distanceM: roundedFit(fitDistanceAt(records, timestampMs), 2),
+      position,
+    })
+  }
+
+  const standingTimeS = roundedFit(
+    (messages.lapMesgs ?? []).reduce(
+      (sum, lap) =>
+        sum +
+        (lap.timeStanding != null && Number.isFinite(lap.timeStanding) ? lap.timeStanding : 0),
+      0,
+    ),
+    3,
+  )
+  const totalTimerTime = messages.sessionMesgs?.reduce(
+    (sum, session) =>
+      sum +
+      (session.totalTimerTime != null && Number.isFinite(session.totalTimerTime)
+        ? session.totalTimerTime
+        : 0),
+    0,
+  )
+  const seatedTimeS =
+    totalTimerTime != null && totalTimerTime > 0
+      ? roundedFit(Math.max(0, totalTimerTime - standingTimeS), 3)
+      : null
+
+  return {
+    time: sampled.map(sample => sample.time),
+    distance: sampled.map(sample => sample.distance),
+    leftPedalSmoothness: sampled.map(sample => sample.leftPedalSmoothness),
+    rightPedalSmoothness: sampled.map(sample => sample.rightPedalSmoothness),
+    leftTorqueEffectiveness: sampled.map(sample => sample.leftTorqueEffectiveness),
+    rightTorqueEffectiveness: sampled.map(sample => sample.rightTorqueEffectiveness),
+    leftPowerPhaseStart: sampled.map(sample => sample.leftPowerPhaseStart),
+    leftPowerPhaseEnd: sampled.map(sample => sample.leftPowerPhaseEnd),
+    rightPowerPhaseStart: sampled.map(sample => sample.rightPowerPhaseStart),
+    rightPowerPhaseEnd: sampled.map(sample => sample.rightPowerPhaseEnd),
+    positionChanges,
+    seatedTimeS,
+    standingTimeS: standingTimeS > 0 ? standingTimeS : null,
+  }
+}
+
+export interface GarminRideFitData {
+  gearShifts: GarminGearShift[]
+  cyclingDynamics: GarminCyclingDynamics
+  trainingEffect: GarminFitTrainingEffect
+}
+
+function garminFitTrainingEffect(messages: FitMessages): GarminFitTrainingEffect {
+  const session = messages.sessionMesgs?.find(
+    candidate =>
+      candidate.totalTrainingEffect != null || candidate.totalAnaerobicTrainingEffect != null,
+  )
+  const metric = (value: number | null | undefined): number | null =>
+    value != null && Number.isFinite(value) && value >= 0 ? roundedFit(value, 1) : null
+  return {
+    aerobic: metric(session?.totalTrainingEffect),
+    anaerobic: metric(session?.totalAnaerobicTrainingEffect),
+  }
+}
+
+export function decodeGarminRideFit(bytes: Uint8Array): GarminRideFitData {
+  const messages = decodeGarminMessages(bytes)
+  return {
+    gearShifts: garminGearShifts(messages),
+    cyclingDynamics: garminCyclingDynamics(messages),
+    trainingEffect: garminFitTrainingEffect(messages),
+  }
+}
+
+export function garminRideFitFromArchive(archive: Uint8Array): GarminRideFitData {
+  return decodeGarminRideFit(garminFitBytesFromArchive(archive))
 }
 
 function requireFinite(value: number, label: string): void {

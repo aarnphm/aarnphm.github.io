@@ -5,6 +5,8 @@ import type {
   GarminActivity,
   GarminCache,
   GarminClimbSegment,
+  GarminCyclingDynamics,
+  GarminFitTrainingEffect,
   GarminGearShift,
   GarminStreams,
   GarminVo2Day,
@@ -19,7 +21,7 @@ import {
   garminConnectWeightSamples,
   type GarminConnectActivityListItem,
 } from '../util/garmin-connect'
-import { garminGearShiftsFromArchive } from '../util/garmin-fit'
+import { garminRideFitFromArchive, type GarminRideFitData } from '../util/garmin-fit'
 import {
   cleanGarminConnectBaseUrl,
   DEFAULT_GARMIN_CONNECT_BASE,
@@ -33,7 +35,7 @@ import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord, type UnknownRecord } from '../util/type-guards'
 
-const CACHE_VERSION = 9
+const CACHE_VERSION = 11
 const DEFAULT_PAGE_SIZE = 100
 const DEFAULT_DELAY_MS = 1200
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
@@ -67,6 +69,23 @@ export function initialGarminSyncRecords<T>(
   partial: boolean,
 ): Record<string, T> {
   return partial ? { ...previous } : {}
+}
+
+export function mergeGarminFitTrainingEffect(
+  activity: GarminActivity,
+  fit: GarminFitTrainingEffect | undefined,
+): GarminActivity {
+  const aerobicTrainingEffect = activity.metrics.aerobicTrainingEffect ?? fit?.aerobic ?? null
+  const anaerobicTrainingEffect = activity.metrics.anaerobicTrainingEffect ?? fit?.anaerobic ?? null
+  if (
+    aerobicTrainingEffect === activity.metrics.aerobicTrainingEffect &&
+    anaerobicTrainingEffect === activity.metrics.anaerobicTrainingEffect
+  )
+    return activity
+  return {
+    ...activity,
+    metrics: { ...activity.metrics, aerobicTrainingEffect, anaerobicTrainingEffect },
+  }
 }
 
 export function mergeGarminVo2Range(
@@ -234,17 +253,17 @@ async function fetchActivityClimbDetail(
   return isRecord(raw) ? raw : null
 }
 
-async function fetchActivityGearShifts(
+async function fetchActivityRideFit(
   session: GarminConnectSession,
   base: string,
   id: string,
-): Promise<GarminGearShift[]> {
+): Promise<GarminRideFitData> {
   const archive = await fetchGarminBytes(
     session,
     base,
     `/download-service/files/activity/${encodeURIComponent(id)}`,
   )
-  return garminGearShiftsFromArchive(archive)
+  return garminRideFitFromArchive(archive)
 }
 
 function sleep(ms: number): Promise<void> {
@@ -277,10 +296,12 @@ async function main(): Promise<void> {
   const activities = initialGarminSyncRecords(previous?.activities, partial)
   const streams = initialGarminSyncRecords(previous?.streams, partial)
   const gearShifts = initialGarminSyncRecords(previous?.gearShifts, partial)
+  const cyclingDynamics = initialGarminSyncRecords(previous?.cyclingDynamics, partial)
+  const fitTrainingEffects = initialGarminSyncRecords(previous?.fitTrainingEffects, partial)
   const climbs = initialGarminSyncRecords(previous?.climbs, partial)
   let details = 0
   let streamDetails = 0
-  let shiftArchives = 0
+  let rideArchives = 0
   let climbDetails = 0
   let skipped = 0
   for (let i = 0; i < list.length; i++) {
@@ -326,22 +347,48 @@ async function main(): Promise<void> {
       if (activity.sport === 'bike') {
         const previousShifts =
           previous?.gearShifts?.[activity.id] ?? previous?.gearShifts?.[cacheId]
+        const previousDynamics =
+          previous?.cyclingDynamics?.[activity.id] ?? previous?.cyclingDynamics?.[cacheId]
+        const previousTrainingEffect =
+          previous?.fitTrainingEffects?.[activity.id] ?? previous?.fitTrainingEffects?.[cacheId]
+        const hasPreviousDynamics =
+          Object.hasOwn(previous?.cyclingDynamics ?? {}, activity.id) ||
+          Object.hasOwn(previous?.cyclingDynamics ?? {}, cacheId)
+        const hasPreviousTrainingEffect =
+          Object.hasOwn(previous?.fitTrainingEffects ?? {}, activity.id) ||
+          Object.hasOwn(previous?.fitTrainingEffects ?? {}, cacheId)
         let shiftOutcome: GarminFetchOutcome<GarminGearShift[]> = { ok: false }
-        if (previousShifts != null) shiftOutcome = { ok: true, value: previousShifts }
-        else {
+        let dynamicsOutcome: GarminFetchOutcome<GarminCyclingDynamics> = { ok: false }
+        let trainingEffectOutcome: GarminFetchOutcome<GarminFitTrainingEffect> = { ok: false }
+        if (previousShifts != null && hasPreviousDynamics && hasPreviousTrainingEffect) {
+          shiftOutcome = { ok: true, value: previousShifts }
+          dynamicsOutcome = previousDynamics ? { ok: true, value: previousDynamics } : { ok: true }
+          trainingEffectOutcome = previousTrainingEffect
+            ? { ok: true, value: previousTrainingEffect }
+            : { ok: true }
+        } else {
           try {
-            const shifts = await fetchActivityGearShifts(session, base, item.id)
-            shiftArchives++
-            shiftOutcome = { ok: true, value: shifts }
+            const ride = await fetchActivityRideFit(session, base, item.id)
+            rideArchives++
+            shiftOutcome = { ok: true, value: ride.gearShifts }
+            dynamicsOutcome = { ok: true, value: ride.cyclingDynamics }
+            trainingEffectOutcome = { ok: true, value: ride.trainingEffect }
           } catch (err) {
             console.warn(
-              `[garmin] shifts ${item.id} failed: ${err instanceof Error ? err.message : err}`,
+              `[garmin] ride FIT ${item.id} failed: ${err instanceof Error ? err.message : err}`,
             )
           }
         }
         const shifts = resolveGarminFetch(shiftOutcome, previousShifts)
         if (shifts) gearShifts[activity.id] = shifts
         else delete gearShifts[activity.id]
+        const dynamics = resolveGarminFetch(dynamicsOutcome, previousDynamics)
+        if (dynamics) cyclingDynamics[activity.id] = dynamics
+        else delete cyclingDynamics[activity.id]
+        const trainingEffect = resolveGarminFetch(trainingEffectOutcome, previousTrainingEffect)
+        if (trainingEffect) fitTrainingEffects[activity.id] = trainingEffect
+        else delete fitTrainingEffects[activity.id]
+        activities[activity.id] = mergeGarminFitTrainingEffect(activity, trainingEffect)
 
         let climbOutcome: GarminFetchOutcome<GarminClimbSegment[]> = { ok: false }
         try {
@@ -441,6 +488,12 @@ async function main(): Promise<void> {
   for (const id of Object.keys(sorted)) if (streams[id]) sortedStreams[id] = streams[id]
   const sortedGearShifts: Record<string, GarminGearShift[]> = {}
   for (const id of Object.keys(sorted)) if (gearShifts[id]) sortedGearShifts[id] = gearShifts[id]
+  const sortedCyclingDynamics: Record<string, GarminCyclingDynamics> = {}
+  for (const id of Object.keys(sorted))
+    if (cyclingDynamics[id]) sortedCyclingDynamics[id] = cyclingDynamics[id]
+  const sortedFitTrainingEffects: Record<string, GarminFitTrainingEffect> = {}
+  for (const id of Object.keys(sorted))
+    if (fitTrainingEffects[id]) sortedFitTrainingEffects[id] = fitTrainingEffects[id]
   const sortedClimbs: Record<string, GarminClimbSegment[]> = {}
   for (const id of Object.keys(sorted)) if (climbs[id]) sortedClimbs[id] = climbs[id]
   const cache: GarminCache = {
@@ -449,6 +502,8 @@ async function main(): Promise<void> {
     activities: sorted,
     streams: sortedStreams,
     gearShifts: sortedGearShifts,
+    cyclingDynamics: sortedCyclingDynamics,
+    fitTrainingEffects: sortedFitTrainingEffects,
     climbs: sortedClimbs,
     vo2max,
     weight,
@@ -457,7 +512,7 @@ async function main(): Promise<void> {
   await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
   await refreshTriathlonRouteSource()
   console.log(
-    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${shiftArchives} shift archives, ${Object.values(sortedGearShifts).reduce((sum, shifts) => sum + shifts.length, 0)} shift states, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${skipped} skipped) -> ${cacheFile}`,
+    `[garmin] wrote ${Object.keys(sorted).length} activities (${details} detail responses, ${streamDetails} stream responses, ${rideArchives} ride archives, ${Object.values(sortedGearShifts).reduce((sum, shifts) => sum + shifts.length, 0)} shift states, ${Object.values(sortedCyclingDynamics).reduce((sum, dynamics) => sum + dynamics.time.length, 0)} cycling dynamics samples, ${climbDetails} climb responses, ${Object.values(sortedClimbs).reduce((sum, segments) => sum + segments.length, 0)} climbs, ${skipped} skipped) -> ${cacheFile}`,
   )
 }
 

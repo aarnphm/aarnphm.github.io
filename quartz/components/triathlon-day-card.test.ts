@@ -4,8 +4,10 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   filterTriathlonTraceElements,
+  resolveTriathlonEmbedDate,
   triathlonDayProps,
   triathlonEmbedAnchor,
+  triathlonEmbedAnchorFromBlockRef,
   triathlonEmbedAnchorFromSource,
   triathlonEmbedDayHref,
 } from './triathlon-day-card'
@@ -15,6 +17,12 @@ test('parses triathlon embed sport and activity exclusions', () => {
     triathlonEmbedAnchor('["2026-07-26","cycling","filter=19471122670&19476629599"]'),
     { date: '2026-07-26', sport: 'bike', excludedActivityIds: ['19471122670', '19476629599'] },
   )
+})
+
+test('parses a direct triathlon activity ID block reference', () => {
+  assert.deepEqual(triathlonEmbedAnchor('["19731411847"]'), { activityId: '19731411847' })
+  assert.deepEqual(triathlonEmbedAnchorFromBlockRef('#19731411847'), { activityId: '19731411847' })
+  assert.deepEqual(triathlonEmbedAnchorFromBlockRef('#2026-08-13'), { date: '2026-08-13' })
 })
 
 test('parses ampersand-separated triathlon trace settings', () => {
@@ -41,6 +49,17 @@ test('rejects malformed triathlon embed options', () => {
     null,
   )
   assert.equal(triathlonEmbedAnchor('["2026-07-26","unknown"]'), null)
+  assert.equal(triathlonEmbedAnchor('["19731411847","cycling"]'), null)
+})
+
+test('resolves a direct activity embed to the activity date', () => {
+  const anchor = triathlonEmbedAnchor('["19731411847"]')
+  assert.ok(anchor)
+  assert.equal(
+    resolveTriathlonEmbedDate(anchor, { details: { 19731411847: { date: '2026-08-13' } } }),
+    '2026-08-13',
+  )
+  assert.equal(resolveTriathlonEmbedDate(anchor, { details: {} }), null)
 })
 
 test('recovers activity exclusions from source when the cached anchor is slugged', () => {
@@ -75,7 +94,19 @@ test('routes triathlon embeds to their generated day pages', () => {
     triathlonEmbedDayHref('../../../..', '2026-07-26'),
     '../../../../triathlon/on/2026/07/26',
   )
+  assert.equal(
+    triathlonEmbedDayHref('../../../..', '2026-08-13', '19731411847'),
+    '../../../../triathlon/on/2026/08/13#tri-activity-19731411847',
+  )
   assert.equal(triathlonEmbedDayHref('.', '2026-02-29'), null)
+})
+
+test('carries a direct activity selection into hydrated day-card props', () => {
+  assert.deepEqual(triathlonDayProps({ activityId: '19731411847', embedded: true }, '2026-08-13'), {
+    'data-triathlon-date': '2026-08-13',
+    'data-triathlon-activity-id': '19731411847',
+    'data-triathlon-embedded': '1',
+  })
 })
 
 test('carries activity exclusions into hydrated day-card props', () => {
