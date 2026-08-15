@@ -2,7 +2,7 @@
 category: shows
 date: '2024-02-07'
 description: depression as talking horse in hollywood—six seasons asking whether self-awareness makes you better or just more articulate about staying the same, animated because real actors couldn't sustain this much despair.
-director: Raphael Bob-Waksberg
+director: Various
 id: bojack-horseman
 modified: 2026-06-05 15:08:12 GMT-04:00
 posters: '[[movies/posters/bojack-horseman.jpg]]'
@@ -11,6 +11,6 @@ status: recurring
 studio: netflix
 tags:
   - shows
-title: Bojack Horseman
+title: BoJack Horseman
 year: 2014
 ---

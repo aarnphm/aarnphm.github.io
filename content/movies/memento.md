@@ -3,7 +3,7 @@ category:
   - thriller
   - drama
 date: '2024-02-07'
-description: memory as the only thread connecting us to ourselves, and what happens when that thread frays—identity becomes a story we tell, unreliable and reconstructed each morning.
+description: leonard shelby cannot form new memories, so he turns photographs and tattoos into instructions for hunting the man he believes killed his wife. the reverse chronology shows how easily he edits the story he lives by.
 director: Christopher Nolan
 id: memento
 modified: 2026-06-05 15:08:15 GMT-04:00

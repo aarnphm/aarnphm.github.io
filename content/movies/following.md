@@ -2,7 +2,7 @@
 category:
   - thriller
 date: '2024-02-07'
-description: nolan's debut—a writer stalking strangers to steal their stories, identity blurring between observer and observed until neither knows who's manipulating whom.
+description: a writer follows strangers for material, then copies cobb's burglaries and habits. the fractured order hides that cobb has been using him as a fall guy.
 director: Christopher Nolan
 id: following
 modified: 2026-06-05 15:08:19 GMT-04:00

@@ -1,7 +1,7 @@
 ---
 category: thriller
 date: '2024-02-07'
-description: drummer pushed to breaking point by abusive instructor—chazelle filming simmons' fletcher hurling chairs and insults while teller bleeds on drums, jazz school as psychological warfare, asking whether greatness requires cruelty or just makes cruelty feel justified.
+description: andrew wants to become a great jazz drummer. fletcher uses humiliation and violence to push him, and andrew accepts the abuse as part of becoming great.
 director: Damien Chazelle
 id: whiplash
 modified: 2026-06-05 15:08:13 GMT-04:00

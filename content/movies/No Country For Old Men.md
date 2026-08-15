@@ -1,7 +1,7 @@
 ---
 category: thriller
 date: '2024-02-07'
-description: man stealing drug money hunted by inhuman killer—coens adapting cormac mccarthy into west texas nightmare, javier bardem's anton chigurh as evil itself with cattle gun and bad haircut, tommy lee jones always one step behind realizing the world's darkness has no off switch.
+description: llewelyn moss takes two million dollars from a drug deal and draws anton chigurh after him. sheriff bell follows the bodies while realizing that age has made the violence harder for him to understand.
 director: Coen Brothers
 id: no-country-for-old-men
 modified: 2026-06-05 15:08:17 GMT-04:00

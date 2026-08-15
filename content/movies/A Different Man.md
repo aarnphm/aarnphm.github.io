@@ -9,7 +9,7 @@ id: a-different-man
 modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/a-different-man.jpg]]'
 rating: 7.1
-status: to watch
+status: finished
 studio: a24
 tags:
   - a24

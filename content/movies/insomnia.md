@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:18 GMT-04:00
 posters: '[[movies/posters/insomnia.jpg]]'
 rating: 7.2
 status: recurring
-studio: syncopy
+studio: alcon entertainment
 tags:
   - thriller
   - r/psychology

@@ -10,7 +10,7 @@ modified: 2026-06-05 15:08:16 GMT-04:00
 posters: '[[movies/posters/die my love.jpg]]'
 rating: 8.2
 status: finished
-studio: a24
+studio: mubi
 tags:
   - thriller
   - philosophy

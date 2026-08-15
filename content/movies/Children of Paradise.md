@@ -5,7 +5,7 @@ category:
   - drama
   - o/vintage
 date: '2026-05-09'
-description: 1830s paris theater world - a courtesan is loved by a mime, an actor, a criminal, and an aristocrat, love and performance collapsing into the same stagecraft.
+description: In the theater world of 1830s Paris, Garance is loved by an actor, a criminal, a count, and a mime. Their affairs move between the stage and the Boulevard du Crime.
 director:
   - Marcel Carné
 id: Children of Paradise

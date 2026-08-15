@@ -11,7 +11,7 @@ modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/sometimes-i-think-about-dying.jpg]]'
 rating: 6.6
 status: to watch
-studio: '[independent]'
+studio: oscilloscope laboratories
 tags:
   - o/life
   - r/psychology

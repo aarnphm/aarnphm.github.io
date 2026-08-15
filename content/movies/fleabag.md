@@ -5,7 +5,9 @@ category:
   - drama
 date: '2024-02-07'
 description: waller-bridge breaking fourth wall as coping mechanism—grief disguised as comedy, sex as performance for the camera, therapy conducted between viewer and protagonist until priest notices her glances and ruins everything.
-director: Phoebe Waller-Bridge
+director:
+  - Harry Bradbeer
+  - Tim Kirkby
 id: fleabag
 modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/fleabag.jpg]]'

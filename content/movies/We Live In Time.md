@@ -3,7 +3,7 @@ category:
   - o/eschatology
   - grief
 date: '2024-02-07'
-description: couple's decade told non-chronologically from first meeting to cancer—crowley filming pugh and garfield's love story scrambled through time, moments of joy intercut with loss, romance structured like memory where past and present collapse into each other.
+description: almut and tobias get ten years together, shown through three timelines. her cancer diagnosis changes how they use the time left.
 director: John Crowley
 id: we-live-in-time
 modified: 2026-06-05 15:08:17 GMT-04:00

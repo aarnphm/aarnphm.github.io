@@ -3,7 +3,7 @@ category:
   - thriller
   - p/fiction
 date: '2024-02-07'
-description: turing test as seduction—garland asking who's manipulating whom, the ai learning humanity means learning deception, alicia vikander's dance the only truth.
+description: caleb arrives to test ava and becomes part of nathan's test himself. ava uses his attraction to escape, while nathan and kyoko's dance makes his control look ridiculous.
 director: Alex Garland
 id: ex-machina
 modified: 2026-06-05 15:08:13 GMT-04:00
@@ -13,6 +13,6 @@ status: recurring
 studio: a24
 tags:
   - a24
-title: Ex machina
+title: Ex Machina
 year: 2015
 ---

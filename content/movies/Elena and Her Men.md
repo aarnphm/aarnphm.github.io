@@ -5,7 +5,7 @@ category:
   - drama
   - vintage
 date: '2026-05-09'
-description: a general's widow drifts through romance and politics - renoir treats flirtation like a plot engine.
+description: An impoverished Polish princess draws the attention of a famous general and becomes part of a political scheme. Renoir lets her romantic choices steer the plot.
 director:
   - Jean Renoir
 id: Elena and Her Men

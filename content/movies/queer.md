@@ -2,7 +2,7 @@
 category:
   - homosexuality
 date: '2024-02-07'
-description: burroughs' early confessional novel as fever dream—guadagnino filming daniel craig's william lee pursuing beautiful young man through mexico city cantinas, insisting on being queer and masculine simultaneously, ayahuasca hallucinations colliding past and future into broken love story.
+description: william lee lives alone among american expatriates in 1950s mexico city until he becomes fixated on the younger eugene allerton. guadagnino stays with lee's need for a connection that allerton does not return in the same form.
 director: Luca Guadagnino
 id: queer
 modified: 2026-06-05 15:08:13 GMT-04:00

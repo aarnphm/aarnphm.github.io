@@ -3,7 +3,7 @@ category:
   - o/relationship
   - love
 date: '2026-05-09'
-description: A woman becomes a competitive swimmer after surviving an abusive childhood.
+description: Lidia escapes a home marked by violence and alcohol and enters university, where she finds refuge in literature.
 director:
   - Kristen Stewart
 id: The Chronology of Water

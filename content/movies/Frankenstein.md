@@ -5,9 +5,9 @@ category:
   - thriller
   - temporal
 date: '2026-05-09'
-description: A brilliant but egotistical scientist brings a monstrous creature to life in a daring experiment that ultimately leads to the undoing of both the creator and his tragic creation. Guillermo rendition of Shelley's 1818 novel.
+description: Guillermo del Toro adapts Mary Shelley's 1818 novel about Victor Frankenstein, an egotistical scientist who brings a creature to life and causes the undoing of both creator and creation.
 director:
-  - Guillermo Del Toro
+  - Guillermo del Toro
 id: Frankenstein
 modified: 2026-06-05 15:08:17 GMT-04:00
 posters: '[[movies/posters/frankenstein.jpg]]'

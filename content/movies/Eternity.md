@@ -9,7 +9,7 @@ id: Eternity
 modified: 2026-06-05 15:08:14 GMT-04:00
 posters: '[[movies/posters/eternity.webp]]'
 rating: 7.2
-status: to watch
+status: finished
 studio: a24
 tags:
   - love

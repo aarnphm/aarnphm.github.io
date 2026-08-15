@@ -8,7 +8,7 @@ id: i-saw-the-tv-glow
 modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/i-saw-the-tv-glow.jpg]]'
 rating: 7.3
-status: to watch
+status: finished
 studio: a24
 tags:
   - a24
@@ -18,5 +18,3 @@ title: I Saw the TV Glow
 watched: '2025-08-05'
 year: 2024
 ---
-
-What makes a [Lychian] (https://en.wikipedia.org/wiki/David_Lynch) movie?

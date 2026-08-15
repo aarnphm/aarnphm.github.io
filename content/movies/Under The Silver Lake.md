@@ -1,7 +1,7 @@
 ---
 category: general
 date: '2024-02-07'
-description: slacker searching for disappeared neighbor down los angeles conspiracy rabbit hole—mitchell filming garfield's paranoid odyssey through pop culture codes and hidden messages, noir where everything means something and nothing, the conspiracy is that there is no conspiracy.
+description: sam starts decoding messages across los angeles after his neighbor disappears. the search leads him into the city's scandals and conspiracies.
 director: David Robert Mitchell
 id: under-the-silver-lake
 modified: 2026-06-05 15:08:16 GMT-04:00

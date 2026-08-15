@@ -4,8 +4,8 @@ category:
   - absurdism
   - thriller
 date: '2024-02-07'
-description: stoner mistaken for millionaire dragged into kidnapping plot—coens filming the dude's laid-back philosophy colliding with walter's rigidity and nihilists' emptiness, white russian-drinking slacker abiding through LA noir absurdity, the whole point being that caring too much is the real enemy.
-director: Coen Brothers
+description: debt collectors attack the dude because they mistake him for another jeffrey lebowski. his effort to replace a ruined rug pulls him into a fake kidnapping and exposes walter's need for conflict.
+director: Joel Coen
 id: the-big-lebowski
 modified: 2026-06-05 15:08:19 GMT-04:00
 posters: '[[movies/posters/the-big-lebowski.jpg]]'

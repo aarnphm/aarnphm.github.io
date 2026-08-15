@@ -3,7 +3,7 @@ category:
   - drama
   - love
 date: '2026-06-05'
-description: An explosive confession throws the wedding of a seemingly perfect couple off the rails as they spiral to confront whether they can truly make it to "I do."
+description: A confession during Charlie and Emma's wedding week forces them to decide whether to marry.
 director:
   - Kristoffer Borgli
 id: The Drama

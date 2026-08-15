@@ -1,7 +1,7 @@
 ---
 category: vintage
 date: '2024-02-07'
-description: bounty hunter dragging mob accountant cross-country—brest pairing de niro's cynicism with grodin's neurotic chatter, buddy comedy where emotional growth matters as much as the car chases, proving de niro could do comedy without sacrificing the bruised heart underneath.
+description: a bounty hunter has five days to bring a mob accountant from new york to los angeles while several pursuers close in. de niro's anger and grodin's needling turn captivity into a friendship neither man can admit.
 director: Martin Brest
 id: midnight-run
 modified: 2026-06-05 15:08:14 GMT-04:00

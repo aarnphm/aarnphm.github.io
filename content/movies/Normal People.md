@@ -4,8 +4,10 @@ category:
   - love
   - o/relationship
 date: '2024-02-07'
-description: irish teenagers orbiting each other through school and college—abrahamson adapting sally rooney's tender precision, edgar-jones and mescal filming connection that survives class divisions and miscommunication, twelve episodes proving intimacy doesn't require understanding, just willingness to keep trying.
-director: Lenny Abrahamson
+description: marianne and connell move from a secret school relationship to years of separation and reunion at trinity college. abrahamson and macdonald stay close to the damage caused when class and shame keep them from saying what they need.
+director:
+  - Lenny Abrahamson
+  - Hettie Macdonald
 id: normal-people
 modified: 2026-06-05 15:08:15 GMT-04:00
 posters: '[[movies/posters/normal-people.jpg]]'

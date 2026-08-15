@@ -2,7 +2,7 @@
 category:
   - horror
 date: '2026-05-09'
-description: In 1630 New England, panic and despair envelops a farmer, his wife and their children when youngest son Samuel suddenly vanishes. The family blames Thomasin, the oldest daughter who was watching the boy at the time of his disappearance. With suspicion and paranoia mounting, twin siblings Mercy and Jonas suspect Thomasin of witchcraft, testing the clan's faith, loyalty and love to one another.
+description: in 1630s new england, samuel vanishes while thomasin is watching him. her family begins to suspect witchcraft as the farm fails and the children turn on one another.
 director:
   - Robert Eggers
 id: The Witch
