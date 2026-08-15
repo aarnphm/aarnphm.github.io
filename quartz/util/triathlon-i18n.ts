@@ -84,32 +84,6 @@ export const swimActivityValueText = (
   return target === 'fr' ? `${position}, score SWOLF ${swolf}` : `${position}, SWOLF score ${swolf}`
 }
 
-export const swimActivityComparisonText = (
-  target: Locale,
-  kind: SwimChartMetric,
-  delta: number | null,
-  priorCount: number | null,
-): string => {
-  if (delta == null || priorCount == null) return target === 'fr' ? 'moy. activité' : 'activity avg'
-  if (Math.abs(delta) < 0.05)
-    return target === 'fr'
-      ? `identique aux ${priorCount} précédentes`
-      : `same as prior ${priorCount}`
-  const magnitude = swimTextNumber(target, Math.abs(delta), 1)
-  if (kind === 'pace')
-    return target === 'fr'
-      ? `${magnitude} s ${delta < 0 ? 'plus rapide' : 'plus lente'} que les ${priorCount} précédentes`
-      : `${magnitude}s ${delta < 0 ? 'faster' : 'slower'} vs prior ${priorCount}`
-  const signed = `${delta > 0 ? '+' : '−'}${magnitude}`
-  if (kind === 'cadence')
-    return target === 'fr'
-      ? `${signed} coups/longueur vs ${priorCount} précédentes`
-      : `${signed} str/length vs prior ${priorCount}`
-  return target === 'fr'
-    ? `${signed} SWOLF vs ${priorCount} précédentes`
-    : `${signed} SWOLF vs prior ${priorCount}`
-}
-
 export const detectLocale = (): Locale => {
   try {
     return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en'

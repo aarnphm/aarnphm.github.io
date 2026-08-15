@@ -20,6 +20,8 @@ import { serializeStravaDetails, type StravaDetailPayload } from '../../util/str
 import {
   appleCachePath,
   coreBodyTemperatureCachePath,
+  enrichCalculatedExerciseLoads,
+  enrichCalculatedIntensityFactors,
   enrichCoreBodyTemperature,
   enrichRunDynamics,
   enrichSwimMetrics,
@@ -55,7 +57,6 @@ import {
   applyManualFueling,
   applyManualStrength,
   buildPayload,
-  calculateActivityIntensityFactor,
   emptyHealth,
   StravaPayload,
   StravaRawCache,
@@ -257,20 +258,8 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         activityDetails: payload.details,
         since: typeof since === 'string' ? since : undefined,
       })
-      const paceIntensityFactors = new Map(
-        analytics.activities.flatMap(activity =>
-          activity.paceIntensityFactor == null
-            ? []
-            : [[activity.id, activity.paceIntensityFactor] as const],
-        ),
-      )
-      for (const detail of Object.values(payload.details))
-        detail.calculatedIntensityFactor = calculateActivityIntensityFactor(
-          detail,
-          paceIntensityFactors.get(detail.id) ?? null,
-          ATHLETE.ftp,
-          ATHLETE.lt,
-        )
+      enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
+      enrichCalculatedExerciseLoads(payload)
       const detailPayload: StravaDetailPayload = {
         details: payload.details,
         swimTrend: payload.swimTrend,

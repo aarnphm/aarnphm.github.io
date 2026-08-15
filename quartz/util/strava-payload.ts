@@ -4,7 +4,7 @@ import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { ManualFuelingEntry, ManualStrengthEntry } from '../plugins/stores/tracking'
 import type { WeatherCache } from '../plugins/stores/weather'
-import { ATHLETE } from '../plugins/stores/analytics'
+import { ATHLETE, buildAnalytics, type ActivitySummary } from '../plugins/stores/analytics'
 import {
   coreBodyTemperatureSamplesForWindow,
   isUsableCoreTemperatureSample,
@@ -16,6 +16,8 @@ import {
   applyManualFueling,
   applyManualStrength,
   buildPayload,
+  calculateActivityExerciseLoad,
+  calculateActivityIntensityFactor,
   type SwimActivityInterval,
   type StravaActivityDetail,
   type StravaPayload,
@@ -36,6 +38,33 @@ export const coreBodyTemperatureCachePath = joinSegments(
   'core-body-temperature.json',
 )
 export const weatherCachePath = joinSegments(QUARTZ, '.quartz-cache', 'weather.json')
+
+export function enrichCalculatedIntensityFactors(
+  payload: StravaPayload,
+  activities: readonly Pick<ActivitySummary, 'id' | 'paceIntensityFactor'>[],
+  ftp: number | null,
+  lactateThresholdHr: number | null,
+): void {
+  const paceIntensityFactors = new Map(
+    activities.flatMap(activity =>
+      activity.paceIntensityFactor == null
+        ? []
+        : [[activity.id, activity.paceIntensityFactor] as const],
+    ),
+  )
+  for (const detail of Object.values(payload.details))
+    detail.calculatedIntensityFactor = calculateActivityIntensityFactor(
+      detail,
+      paceIntensityFactors.get(detail.id) ?? null,
+      ftp,
+      lactateThresholdHr,
+    )
+}
+
+export function enrichCalculatedExerciseLoads(payload: StravaPayload): void {
+  for (const detail of Object.values(payload.details))
+    detail.calculatedExerciseLoad = calculateActivityExerciseLoad(detail)
+}
 
 const readJson = <T>(path: string): T | null => {
   try {
@@ -363,21 +392,21 @@ export function loadStravaPayloadSync(
   const manualKey = JSON.stringify({ fueling: manualFueling, strength: manualStrength })
   const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
   if (memo?.key !== key) {
+    const strava = readJson<StravaRawCache>(stravaCachePath)
+    const oura = readJson<OuraCache>(ouraCachePath)
+    const garmin = readJson<GarminCache>(garminCachePath)
     const apple = readJson<AppleCache>(appleCachePath)
     const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
-    const payload = buildPayload(
-      readJson<StravaRawCache>(stravaCachePath),
-      readJson<OuraCache>(ouraCachePath),
-      readJson<GarminCache>(garminCachePath),
-      since,
-      readJson<WeatherCache>(weatherCachePath),
-      ATHLETE.ftp,
-    )
+    const weather = readJson<WeatherCache>(weatherCachePath)
+    const payload = buildPayload(strava, oura, garmin, since, weather, ATHLETE.ftp)
     applyManualFueling(payload, manualFueling)
     applyManualStrength(payload, manualStrength)
     enrichSwimMetrics(payload, apple)
     enrichRunDynamics(payload, apple)
     enrichCoreBodyTemperature(payload, core)
+    const analytics = buildAnalytics(strava, { oura, apple, core, garmin, weather, since })
+    enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
+    enrichCalculatedExerciseLoads(payload)
     memo = { key, payload }
   }
   return memo.payload

@@ -435,6 +435,11 @@ export interface CalculatedIntensityFactor {
   source: 'pace' | 'power' | 'heart-rate'
 }
 
+export interface CalculatedExerciseLoad {
+  value: number
+  source: CalculatedIntensityFactor['source'] | 'garmin'
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -465,6 +470,7 @@ export interface StravaActivityDetail {
   strength: ActivityStrength | null
   garmin: GarminVerification | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
+  calculatedExerciseLoad: CalculatedExerciseLoad | null
   gearShifts: ActivityGearShift[]
   cyclingDynamics: ActivityCyclingDynamics | null
   route: StravaRoutePoint[]
@@ -612,6 +618,39 @@ export const calculateActivityIntensityFactor = (
   )
     return { value: round(activity.avgHr / lactateThresholdHr, 3), source: 'heart-rate' }
   return null
+}
+
+export const ACTIVITY_LOAD_INTENSITY_FACTOR_CAP = 1.15
+
+export const calculateExerciseLoad = (
+  intensityFactor: number,
+  movingTimeS: number,
+): number | null => {
+  if (
+    !Number.isFinite(intensityFactor) ||
+    intensityFactor <= 0 ||
+    !Number.isFinite(movingTimeS) ||
+    movingTimeS <= 0
+  )
+    return null
+  const intensity = Math.min(intensityFactor, ACTIVITY_LOAD_INTENSITY_FACTOR_CAP)
+  const load = intensity * intensity * (movingTimeS / 3600) * 100
+  return round(load + Number.EPSILON * load, 1)
+}
+
+export const calculateActivityExerciseLoad = (
+  activity: Pick<StravaActivityDetail, 'movingTimeS' | 'garmin' | 'calculatedIntensityFactor'>,
+): CalculatedExerciseLoad | null => {
+  if (activity.garmin?.exerciseLoad != null) return null
+  const source =
+    activity.garmin?.intensityFactor != null
+      ? 'garmin'
+      : (activity.calculatedIntensityFactor?.source ?? null)
+  const intensityFactor =
+    activity.garmin?.intensityFactor ?? activity.calculatedIntensityFactor?.value
+  if (source == null || intensityFactor == null) return null
+  const value = calculateExerciseLoad(intensityFactor, activity.movingTimeS)
+  return value == null ? null : { value, source }
 }
 
 export function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -1992,6 +2031,7 @@ function projectDetail(
     strength: null,
     garmin,
     calculatedIntensityFactor: null,
+    calculatedExerciseLoad: null,
     gearShifts,
     cyclingDynamics,
     route,

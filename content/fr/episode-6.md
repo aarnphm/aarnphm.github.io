@@ -81,16 +81,16 @@ two encounters, and every distractor is cross-wired between them: `Excusez-moi, 
 
 the exchange also carries the politeness that the frames alone do not:
 
-| expression            | emploi                                                                   |
-| --------------------- | ------------------------------------------------------------------------ |
-| `s'adresser à qqn`    | commencer à parler à quelqu'un                                           |
+| expression            | emploi                                                                                  |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| `s'adresser à qqn`    | commencer à parler à quelqu'un                                                          |
 | `chercher qqch`       | to look for something; in this sense, the object is direct: `Je cherche les vestiaires` |
-| `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                      |
-| `Merci quand même.`   | thanks anyway, when the answer did not come                              |
-| `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                |
-| `selon`               | according to: `selon l'homme, Hélène est près des vestiaires`            |
-| `ouvert` >< `fermé`   | open against closed                                                      |
-| `au mauvais étage`    | on the wrong floor, `mauvais` opposé de `bon`                            |
+| `Je suis désolé(e).`  | l'excuse quand on ne peut pas aider                                                     |
+| `Merci quand même.`   | thanks anyway, when the answer did not come                                             |
+| `Ça me fait plaisir.` | you're welcome, la réponse québécoise à `merci`[^plaisir]                               |
+| `selon`               | according to: `selon l'homme, Hélène est près des vestiaires`                           |
+| `ouvert` >< `fermé`   | open against closed                                                                     |
+| `au mauvais étage`    | on the wrong floor, `mauvais` opposé de `bon`                                           |
 
 `Vous allez voir le vestiaire des hommes` is a futur proche, `aller` au présent plus l'infinitif, and `celui des femmes` replaces `le vestiaire des femmes` with a demonstrative pronoun.[^celui]
 

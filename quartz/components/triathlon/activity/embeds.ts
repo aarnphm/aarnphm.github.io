@@ -21,6 +21,7 @@ import { setActivityExpanded } from './comparison'
 import { wireActivityComparison } from './comparison'
 import { detailContextFromPayload } from './data'
 import { renderDetail } from './render'
+import { setupStrengthExerciseOverflow } from './render'
 
 export const buildDayCard = (
   presentation: TriathlonPresentation,
@@ -450,6 +451,11 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     const ssr = embed.querySelector<HTMLElement>(':scope > .tri-pop-card')
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
+      const cleanupStrengthOverflow = setupStrengthExerciseOverflow(ssr)
+      cardCleanup = () => {
+        ssr.removeEventListener('click', onCardToggle)
+        cleanupStrengthOverflow()
+      }
       const events = ['pointerdown', 'touchstart'] as const
       for (const ev of events) embed.addEventListener(ev, upgrade, { once: true, passive: true })
       const onKeyboardFocus = (event: FocusEvent): void => {

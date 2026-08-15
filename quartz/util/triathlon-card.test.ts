@@ -10,7 +10,7 @@ import type {
   SwimTrendPoint,
 } from '../plugins/stores/strava'
 import { createTriathlonFormatter } from '../components/triathlon/runtime/formatter'
-import { emptyHealth } from '../plugins/stores/strava'
+import { calculateActivityExerciseLoad, emptyHealth } from '../plugins/stores/strava'
 import {
   activityCompareColor,
   activityComparisonDisplayValueAtDistance as displayValueAtDistance,
@@ -83,7 +83,6 @@ import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
   glossFor,
-  swimActivityComparisonText,
   swimActivityDistanceText,
   swimActivityDisplayValue,
   swimActivityHeaderValue,
@@ -189,17 +188,12 @@ test('localizes swim block readouts and accessible values', () => {
   assert.equal(swimActivityHeaderValue('fr', 'swolf', 46.3, '0:46'), '46')
   assert.equal(swimActivityDistanceText('fr', 1_000), '1 000 m')
   assert.equal(
-    swimActivityComparisonText('fr', 'pace', -0.9, 4),
-    '0,9 s plus rapide que les 4 précédentes',
-  )
-  assert.equal(
     swimActivityValueText('fr', 'pace', point, 107, '1:47'),
     'bloc de 100 mètres, de 0 à 100 mètres, temps écoulé 2:11, allure de nage 1:47 par 100 mètres',
   )
   assert.equal(swimActivityPointText('en', point), '0–100 m · 2:11 elapsed')
   assert.equal(swimActivityHeaderValue('en', 'pace', 107, '1:47'), '1:47')
   assert.equal(swimActivityDistanceText('en', 1_000), '1,000 m')
-  assert.equal(swimActivityComparisonText('en', 'cadence', 0.4, 4), '+0.4 str/length vs prior 4')
   assert.equal(
     swimActivityValueText('en', 'cadence', point, 13.8, '0:14'),
     '100 metre block from 0 to 100 metres, 2:11 elapsed, swim cadence 13.8 strokes per length',
@@ -731,6 +725,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   strength: null,
   garmin: null,
   calculatedIntensityFactor: null,
+  calculatedExerciseLoad: null,
   gearShifts: [],
   cyclingDynamics: null,
   route: [
@@ -915,6 +910,21 @@ const garminVerification = (
   aerobicTrainingEffectMessage: null,
   anaerobicTrainingEffectMessage: null,
   ...overrides,
+})
+
+test('calculates missing exercise load from Garmin intensity without replacing native load', () => {
+  assert.deepEqual(
+    calculateActivityExerciseLoad(
+      detail({ garmin: garminVerification({ intensityFactor: 0.803 }) }),
+    ),
+    { value: 86, source: 'garmin' },
+  )
+  assert.equal(
+    calculateActivityExerciseLoad(
+      detail({ garmin: garminVerification({ intensityFactor: 0.803, exerciseLoad: 301.7 }) }),
+    ),
+    null,
+  )
 })
 
 test('summarizes Garmin training metrics with the dominant effect for every activity kind', () => {
@@ -2179,6 +2189,8 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
       swimPaceSPer100m: 95.4,
       strokeRateSpm: 31.5,
       strokeCount: 876,
+      calculatedIntensityFactor: { value: 1.011, source: 'pace' },
+      calculatedExerciseLoad: { value: 25.6, source: 'pace' },
       swimIntervals: [
         {
           startElapsedS: 0,
@@ -2220,18 +2232,20 @@ test('prefers active swim pace and adds stroke rate and count to the main stats'
     ['time', "20'"],
     ['pace', '1:35 /100m'],
     ['stroke rate', '32 spm'],
-    ['cadence', '10.5 /length'],
+    ['avg hr', '148 bpm'],
+    ['intensity factor', '1.011'],
+    ['training effect', 'base'],
+    ['exercise load', '26'],
     ['SWOLF', '36'],
     ['1.9k / 3.8k', "30' / 1h00'"],
     ['stroke type', 'freestyle'],
     ['strokes', '876 · 1.14 m/str'],
-    ['avg hr', '148 bpm'],
-    ['training effect', 'base'],
     ['NP', '205 W'],
     ['avg power', '188 W'],
     ['max power', '565 W'],
     ['energy', '900 kJ'],
     ['calories', '960 kcal'],
+    ['cadence', '10.5 /length'],
     ['max hr', '171 bpm'],
     ['air temp', '24°C'],
     ['wind', '18 km/h SW / gust 31'],
@@ -2260,12 +2274,12 @@ test('keeps a missing swim stroke rate visible as an em dash', () => {
     ['time', "41'"],
     ['pace', '2:44 /100m'],
     ['stroke rate', '—'],
-    ['cadence', '—'],
+    ['avg hr', '148 bpm'],
+    ['training effect', 'base'],
     ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle'],
     ['strokes', '—'],
-    ['avg hr', '148 bpm'],
   ])
 })
 
@@ -2291,14 +2305,14 @@ test('keeps water temperature and adds the full open-water swim profile', () => 
     ['distance', '1,500 m'],
     ['time', "41'"],
     ['pace', '2:44 /100m'],
-    ['water temp', '14°C'],
     ['stroke rate', '32 spm'],
-    ['cadence', '—'],
+    ['avg hr', '148 bpm'],
+    ['training effect', 'base'],
+    ['water temp', '14°C'],
     ['SWOLF', '—'],
     ['1.9k / 3.8k', "52' / 1h44'"],
     ['stroke type', 'freestyle'],
     ['strokes', '—'],
-    ['avg hr', '148 bpm'],
   ])
 })
 
@@ -2594,8 +2608,8 @@ const swimTrendPoints: SwimTrendPoint[] = [
   { id: 6, date: '2026-07-06', start: '2026-07-06T12:00:00Z', paceSPer100m: 90, strokeRateSpm: 40 },
 ]
 
-test('renders aligned swim trends with the selected value and prior-four delta', () => {
-  const rendered = buildSwimTrends(factory, swimTrendDetail(), swimTrendPoints)
+test('renders aligned swim trends with the selected activity average', () => {
+  const rendered = buildSwimTrends(factory, swimTrendDetail())
   assert.ok(rendered)
   assert.equal(rendered.tagName, 'section')
   assert.equal(rendered.properties.ariaLabel, 'Swim activity analysis')
@@ -2605,11 +2619,7 @@ test('renders aligned swim trends with the selected value and prior-four delta',
     'SWOLF',
   ])
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-value').map(text), ['1:40', '11', '36'])
-  assert.deepEqual(byClass(rendered, 'tri-swim-trend-delta').map(text), [
-    '9s faster vs prior 4',
-    'activity avg',
-    'activity avg',
-  ])
+  assert.equal(byClass(rendered, 'tri-swim-trend-delta').length, 0)
 
   const pace = byClass(rendered, 'tri-swim-trend--pace')[0]
   const cadence = byClass(rendered, 'tri-swim-trend--cadence')[0]
@@ -2646,7 +2656,7 @@ test('renders aligned swim trends with the selected value and prior-four delta',
   assert.equal(paceSvg.properties.ariaValueNow, 100)
   assert.match(
     String(paceSvg.properties.ariaValueText),
-    /100 metres, 2:24 elapsed, swim pace 1:36 per 100 metres\. Activity average 1:40 \/100m\. 9 seconds faster than prior 4\./,
+    /100 metres, 2:24 elapsed, swim pace 1:36 per 100 metres\. Activity average 1:40 \/100m\./,
   )
   assert.equal(paceSvg.properties.dataSwimKind, 'pace')
   assert.equal(paceSvg.properties.dataSwimIndex, 3)
@@ -2692,7 +2702,7 @@ test('renders aligned swim trends with the selected value and prior-four delta',
 })
 
 test('renders one shared lengths and 100 metre toggle for all swim charts', () => {
-  const rendered = buildSwimTrends(factory, swimToggleDetail(), swimTrendPoints)
+  const rendered = buildSwimTrends(factory, swimToggleDetail())
   assert.ok(rendered)
   const toggle = byClass(rendered, 'tri-swim-mode-toggle')[0]
   assert.ok(toggle)
@@ -2792,7 +2802,6 @@ test('plots only the selected swim intervals even when history contains same-dat
       swimPaceSPer100m: 90,
       strokeRateSpm: 40,
     }),
-    swimTrendPoints,
   )
   assert.ok(rendered)
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
@@ -2820,7 +2829,7 @@ test('plots only the selected swim intervals even when history contains same-dat
 
 test('keeps missing length metrics as graph gaps and renders pace alone when needed', () => {
   const current = swimTrendDetail()
-  const rendered = buildSwimTrends(factory, current, swimTrendPoints)
+  const rendered = buildSwimTrends(factory, current)
   assert.ok(rendered)
   assert.equal(byClass(rendered, 'tri-swim-trend').length, 3)
   const paceSvg = byClass(rendered, 'tri-swim-trend-svg--pace')[0]
@@ -2880,7 +2889,6 @@ test('keeps missing length metrics as graph gaps and renders pace alone when nee
         strokeRateSpm: null,
       })),
     }),
-    swimTrendPoints,
   )
   assert.ok(paceOnly)
   assert.equal(byClass(paceOnly, 'tri-swim-trend--pace').length, 1)
@@ -2888,11 +2896,7 @@ test('keeps missing length metrics as graph gaps and renders pace alone when nee
   assert.equal(byClass(paceOnly, 'tri-swim-trend--swolf').length, 0)
 
   assert.equal(
-    buildSwimTrends(
-      factory,
-      swimTrendDetail({ swimIntervals: current.swimIntervals.slice(0, 1) }),
-      swimTrendPoints,
-    ),
+    buildSwimTrends(factory, swimTrendDetail({ swimIntervals: current.swimIntervals.slice(0, 1) })),
     null,
   )
 })
@@ -2905,7 +2909,6 @@ test('renders cadence and SWOLF independently when pace is unavailable', () => {
       swimPaceSPer100m: null,
       swimIntervals: current.swimIntervals.map(interval => ({ ...interval, paceSPer100m: null })),
     }),
-    swimTrendPoints,
   )
 
   assert.ok(rendered)
@@ -3424,7 +3427,7 @@ test('renders power-weighted left and right pedal balance on a symmetric percent
   assert.equal(byClass(chart, 'tri-analysis-selection').length, 1)
   assert.equal(byClass(chart, 'tri-elev-cursor').length, 1)
 
-  const embedded = buildActivity(factory, ride, true, undefined, [], false, true)
+  const embedded = buildActivity(factory, ride, true, undefined, false, true)
   const embeddedChart = byClass(embedded, 'tri-power-balance-chart')[0]
   assert.ok(embeddedChart)
   assert.deepEqual(byClass(embeddedChart, 'tri-elev-d').map(text), ['power balance'])
@@ -3532,7 +3535,7 @@ test('renders cycling dynamics and rider position immediately below pedal balanc
   assert.equal(cyclingDynamicsIndexAtDistance(ride.cyclingDynamics, 16), 2)
   assert.equal(riderPositionAtDistance(ride.cyclingDynamics, 15), 'standing')
 
-  const embedded = buildActivity(factory, ride, true, undefined, [], false, true)
+  const embedded = buildActivity(factory, ride, true, undefined, false, true)
   const embeddedTorque = byClass(embedded, 'tri-torque-effectiveness-chart')[0]
   const embeddedSmoothness = byClass(embedded, 'tri-pedal-smoothness-chart')[0]
   const embeddedPhase = byClass(embedded, 'tri-power-phase-chart')[0]
@@ -3682,7 +3685,6 @@ test('places swim charts before heart rate zones in expanded details', () => {
     swimTrendDetail({ hrZones: [20, 40, 30, 10, 0] }),
     true,
     ctx(),
-    swimTrendPoints,
   )
   const more = byClass(rendered, 'tri-act-more')[0]
   assert.ok(more)
@@ -4013,8 +4015,10 @@ test('renders critical power models, asymptotes, and provenance on bike power ch
   assert.ok(embeddedCurve)
   assert.equal(byClass(embeddedCurve, 'tri-critical-power-anchor').length, 0)
   assert.equal(byClass(embeddedCurve, 'tri-critical-power-anchor-duration').length, 0)
-  assert.equal(byClass(embeddedCurve, 'tri-curve-thresholds').length, 1)
-  assert.equal(text(byClass(embeddedCurve, 'tri-curve-cp-k')[0]), 'eCP 249 W · eW′ 10.3 kJ')
+  assert.equal(byClass(embeddedCurve, 'tri-curve-thresholds').length, 0)
+  assert.equal(byClass(embeddedCurve, 'tri-curve-cp-k').length, 0)
+  assert.equal(byClass(embeddedCurve, 'tri-curve-ftp-k').length, 0)
+  assert.equal(byClass(embeddedCurve, 'tri-curve-goal-k').length, 0)
 
   const histogram = buildPowerHist(factory, bike)
   assert.ok(histogram)

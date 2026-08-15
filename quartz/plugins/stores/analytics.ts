@@ -27,6 +27,8 @@ import {
   normalizeKind,
   isTreatment,
   round,
+  ACTIVITY_LOAD_INTENSITY_FACTOR_CAP,
+  calculateExerciseLoad,
   resolveActivityHeartRate,
   type ActivityHeartRate,
   type RawStravaActivity,
@@ -918,7 +920,7 @@ const DAY_MS = 86_400_000
 const KG_PER_LB = 0.45359237
 const K42 = 1 - Math.exp(-1 / 42)
 const K7 = 1 - Math.exp(-1 / 7)
-const IF_CAP = 1.15
+const IF_CAP = ACTIVITY_LOAD_INTENSITY_FACTOR_CAP
 const CALIBRATION_WINDOW_DAYS = 28
 const CALIBRATION_PROJECTION_DAYS = 14
 const HEAT_THRESHOLD_C = 22
@@ -1048,9 +1050,7 @@ function estimateThreshold(acts: Act[], sport: Sport, today: number): ThresholdE
 }
 
 function activityLoad(act: Act, vThr: number): number {
-  const intensity = clamp(act.vGap / vThr, 0, IF_CAP)
-  const load = intensity * intensity * (act.a.movingTime / 3600) * 100
-  return round(load, 1)
+  return calculateExerciseLoad(act.vGap / vThr, act.a.movingTime) ?? 0
 }
 
 function buildDaily(

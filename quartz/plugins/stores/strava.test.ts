@@ -6,6 +6,7 @@ import {
   applyManualStrength,
   buildPayload,
   calculateActivityIntensityFactor,
+  calculateExerciseLoad,
   hasFetchedActivityDetail,
   type RawStravaActivity,
   type RawStravaAnalysisRange,
@@ -51,6 +52,14 @@ test('calculates activity intensity from the sport-specific threshold signal', (
     ),
     null,
   )
+})
+
+test('calculates exercise load from capped intensity and moving duration', () => {
+  assert.equal(calculateExerciseLoad(0.8, 3_600), 64)
+  assert.equal(calculateExerciseLoad(1.011, 900), 25.6)
+  assert.equal(calculateExerciseLoad(2, 3_600), 132.3)
+  assert.equal(calculateExerciseLoad(0, 3_600), null)
+  assert.equal(calculateExerciseLoad(0.8, 0), null)
 })
 
 test('treats cached empty analysis arrays as a fetched activity detail', () => {
