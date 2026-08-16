@@ -13,7 +13,7 @@ export interface StreamManifestEntry {
   id: string
   title: string | null
   description: string | null
-  text: string
+  content: string
   metadata: unknown
   isoDate: string | null
   displayDate: string | null
@@ -28,6 +28,13 @@ export interface StreamManifestGroup {
   path: string | null
   entries: StreamManifestEntry[]
 }
+
+interface StreamEntryContent {
+  content: string
+  wordCount: number
+}
+
+type StreamEntryContentForManifest = (entry: StreamEntry) => StreamEntryContent
 
 export const getStreamEntrySearchText = (entry: StreamEntry): string => {
   const root: HastRoot = { type: 'root', children: entry.content }
@@ -56,7 +63,10 @@ const formatIsoAsYMD = (iso?: string | null): string | null => {
   return `${year}/${month}/${day}`
 }
 
-export const buildStreamManifestGroup = (group: StreamEntryGroup): StreamManifestGroup | null => {
+export const buildStreamManifestGroup = (
+  group: StreamEntryGroup,
+  contentForEntry: StreamEntryContentForManifest,
+): StreamManifestGroup | null => {
   const isoSource =
     group.isoDate ??
     group.entries.find(entry => entry.date)?.date ??
@@ -71,19 +81,23 @@ export const buildStreamManifestGroup = (group: StreamEntryGroup): StreamManifes
     isoDate: group.isoDate ?? null,
     groupSize: publicEntries.length,
     path,
-    entries: publicEntries.map(entry => ({
-      id: entry.id,
-      title: entry.title ?? null,
-      description: entry.description ?? null,
-      text: getStreamEntrySearchText(entry),
-      metadata: entry.metadata,
-      isoDate: entry.date ?? group.isoDate ?? null,
-      displayDate:
-        formatIsoAsYMD(entry.date ?? group.isoDate ?? isoSource) ??
-        formatStreamDate(entry.date ?? group.isoDate) ??
-        null,
-      wordCount: getStreamEntryWordCount(entry),
-    })),
+    entries: publicEntries.map(entry => {
+      const rendered = contentForEntry(entry)
+
+      return {
+        id: entry.id,
+        title: entry.title ?? null,
+        description: entry.description ?? null,
+        content: rendered.content,
+        metadata: entry.metadata,
+        isoDate: entry.date ?? group.isoDate ?? null,
+        displayDate:
+          formatIsoAsYMD(entry.date ?? group.isoDate ?? isoSource) ??
+          formatStreamDate(entry.date ?? group.isoDate) ??
+          null,
+        wordCount: rendered.wordCount,
+      }
+    }),
   }
 }
 
@@ -98,7 +112,7 @@ const readStreamManifestEntry = (value: unknown): StreamManifestEntry | null => 
   if (typeof value.id !== 'string') return null
   if (!nullableString(value.title)) return null
   if (!nullableString(value.description)) return null
-  if (typeof value.text !== 'string') return null
+  if (typeof value.content !== 'string') return null
   if (!nullableString(value.isoDate)) return null
   if (!nullableString(value.displayDate)) return null
   if (typeof value.wordCount !== 'number' || !Number.isFinite(value.wordCount)) return null
@@ -107,7 +121,7 @@ const readStreamManifestEntry = (value: unknown): StreamManifestEntry | null => 
     id: value.id,
     title: value.title,
     description: value.description,
-    text: value.text,
+    content: value.content,
     metadata: value.metadata,
     isoDate: value.isoDate,
     displayDate: value.displayDate,

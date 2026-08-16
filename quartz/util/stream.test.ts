@@ -40,7 +40,7 @@ test('parses newline-delimited stream manifest groups', () => {
             id: 'entry-1',
             title: 'entry',
             description: null,
-            text: 'entry body',
+            content: 'entry body',
             metadata: { tags: ['note'] },
             isoDate: '2026-06-09T00:00:00.000Z',
             displayDate: '2026/06/09',

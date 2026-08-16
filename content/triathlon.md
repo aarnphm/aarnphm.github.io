@@ -69,7 +69,7 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-15 12:25:19 GMT-04:00
+modified: 2026-08-15 23:31:45 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
 strava: '2026-05-15'
@@ -996,6 +996,12 @@ exercise: Step Down | 10 reps | 10 reps | 10 reps
 exercise: Static Lunge | 10 reps @ 22.7 kg | 10 reps | 10 reps
 exercise: Lunge And Press | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg | 10 reps @ 6.8 kg
 exercise: Press-up Position With Single Arm Extensions | 10 reps | 10 reps | 10 reps
+```
+
+```tracking
+date: 2026-08-15
+activity: 19759842400
+fueling: 240
 ```
 
 <!-- training plan start

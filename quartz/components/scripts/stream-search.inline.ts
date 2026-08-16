@@ -8,6 +8,8 @@ interface StreamSearchSetup {
   sentinel: HTMLElement | null
   getManifest: () => Promise<StreamManifestGroup[]>
   canonicalizePath: (path: string) => string
+  loadEntry: (entry: StreamManifestEntry, group: StreamManifestGroup) => Promise<HTMLElement>
+  mountEntry: (entry: HTMLElement, group: StreamManifestGroup) => void
   signal: AbortSignal
 }
 
@@ -46,7 +48,9 @@ const buildSearchData = async (groups: StreamManifestGroup[]): Promise<SearchDat
     const tags = tagsForEntry(indexed.entry)
     await index.addAsync({
       id: indexed.id,
-      content: indexed.entry.text,
+      content: [indexed.entry.title, indexed.entry.description, indexed.entry.content]
+        .filter(value => value !== null && value.length > 0)
+        .join(' '),
       metadata: JSON.stringify(indexed.entry.metadata ?? {}),
       isoDate: indexed.entry.isoDate ?? indexed.group.isoDate ?? '',
       displayDate: indexed.entry.displayDate ?? indexed.group.isoDate ?? '',
@@ -94,7 +98,7 @@ const matchedEntries = async (data: SearchData, query: string): Promise<IndexedE
   return data.entries.filter(entry => ids.has(entry.id))
 }
 
-const appendHighlightedText = (target: HTMLElement, value: string, rawTokens: string[]): void => {
+const appendHighlightedText = (target: ParentNode, value: string, rawTokens: string[]): void => {
   const tokens = Array.from(new Set(rawTokens.map(token => token.toLowerCase()).filter(Boolean)))
   if (tokens.length === 0) {
     target.textContent = value
@@ -131,6 +135,37 @@ const appendHighlightedText = (target: HTMLElement, value: string, rawTokens: st
   }
 }
 
+const highlightEntry = (entry: HTMLElement, rawTokens: string[]): void => {
+  const tokens = Array.from(new Set(rawTokens.map(token => token.toLowerCase()).filter(Boolean)))
+  if (tokens.length === 0) return
+  const matchingNodes: Text[] = []
+  const walker = document.createTreeWalker(entry, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const value = node.textContent
+      const parent = node.parentElement
+      if (
+        !value ||
+        !parent ||
+        parent.closest('script, style, template, svg, mark') ||
+        !tokens.some(token => value.toLowerCase().includes(token))
+      ) {
+        return NodeFilter.FILTER_REJECT
+      }
+      return NodeFilter.FILTER_ACCEPT
+    },
+  })
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (node instanceof Text) matchingNodes.push(node)
+  }
+  for (const node of matchingNodes) {
+    const value = node.textContent
+    if (!value) continue
+    const fragment = document.createDocumentFragment()
+    appendHighlightedText(fragment, value, tokens)
+    node.replaceWith(fragment)
+  }
+}
+
 const entryHref = (
   entry: StreamManifestEntry,
   group: StreamManifestGroup,
@@ -143,17 +178,14 @@ const entryHref = (
   return `${url.pathname}${url.search}${url.hash}`
 }
 
-const renderSearchResult = (
+const renderLoadingResult = (
   indexed: IndexedEntry,
-  tokens: string[],
   canonicalizePath: (path: string) => string,
 ): HTMLLIElement => {
   const { entry, group } = indexed
   const item = document.createElement('li')
-  item.className = 'stream-entry stream-entry-search-result'
-  item.dataset.entryId = entry.id
-  item.dataset.streamGroupId = group.groupId
-  if (group.timestamp !== null) item.dataset.streamTimestamp = String(group.timestamp)
+  item.className = 'stream-entry stream-search-loading'
+  item.setAttribute('aria-busy', 'true')
 
   const meta = document.createElement('div')
   meta.className = 'stream-entry-meta'
@@ -170,48 +202,55 @@ const renderSearchResult = (
     meta.append(date)
   }
 
-  const tags = tagsForEntry(entry)
-  if (tags.length > 0) {
-    const tagList = document.createElement('div')
-    tagList.className = 'stream-entry-tags'
-    for (const tag of tags) {
-      const tagElement = document.createElement('span')
-      tagElement.className = 'stream-entry-tag'
-      appendHighlightedText(tagElement, tag, tokens)
-      tagList.append(tagElement)
-    }
-    meta.append(tagList)
-  }
-
   const body = document.createElement('div')
   body.className = 'stream-entry-body'
-  const title = document.createElement('h2')
-  title.className = 'stream-entry-title'
-  const link = document.createElement('a')
-  link.className = 'internal stream-entry-search-link'
-  link.href = entryHref(entry, group, canonicalizePath)
-  link.dataset.slug = (group.path ?? '/stream').replace(/^\//, '')
-  appendHighlightedText(link, entry.title ?? entry.description ?? 'entry', tokens)
-  title.append(link)
-  body.append(title)
-
-  if (entry.title && entry.description && entry.description !== entry.title) {
-    const description = document.createElement('p')
-    description.className = 'stream-entry-description stream-entry-search-description'
-    appendHighlightedText(description, entry.description, tokens)
-    body.append(description)
-  }
-  if (entry.wordCount > 0) {
-    const wordCount = document.createElement('div')
-    wordCount.className = 'stream-entry-wordcount'
-    const emphasis = document.createElement('em')
-    emphasis.textContent = entry.wordCount === 1 ? '1 word' : `${entry.wordCount} words`
-    wordCount.append(emphasis)
-    body.append(wordCount)
-  }
+  const message = document.createElement('p')
+  message.className = 'stream-search-loading-label'
+  message.textContent = `loading “${entry.title ?? entry.description ?? 'entry'}”…`
+  body.append(message)
 
   item.append(meta, body)
   return item
+}
+
+const renderLoadFailure = (
+  indexed: IndexedEntry,
+  canonicalizePath: (path: string) => string,
+): HTMLLIElement => {
+  const item = document.createElement('li')
+  item.className = 'stream-entry stream-search-load-error'
+  const meta = document.createElement('div')
+  meta.className = 'stream-entry-meta'
+  meta.textContent = indexed.entry.displayDate ?? indexed.group.isoDate ?? 'undated'
+  const body = document.createElement('div')
+  body.className = 'stream-entry-body'
+  body.append('could not load this entry. ')
+  const link = document.createElement('a')
+  link.className = 'internal'
+  link.href = entryHref(indexed.entry, indexed.group, canonicalizePath)
+  link.textContent = 'open its daily page'
+  body.append(link)
+  item.append(meta, body)
+  return item
+}
+
+export const mapWithConcurrency = async <Input, Output>(
+  values: readonly Input[],
+  concurrency: number,
+  transform: (value: Input, index: number) => Promise<Output>,
+): Promise<Output[]> => {
+  const results: Output[] = []
+  let cursor = 0
+  const worker = async (): Promise<void> => {
+    while (cursor < values.length) {
+      const index = cursor
+      cursor += 1
+      results[index] = await transform(values[index], index)
+    }
+  }
+  const workerCount = Math.min(values.length, Math.max(1, Math.floor(concurrency)))
+  await Promise.all(Array.from({ length: workerCount }, worker))
+  return results
 }
 
 const updateStatus = (form: HTMLFormElement, message: string): void => {
@@ -233,6 +272,8 @@ export const setupStreamSearch = ({
   sentinel,
   getManifest,
   canonicalizePath,
+  loadEntry,
+  mountEntry,
   signal,
 }: StreamSearchSetup): (() => void) | null => {
   const form = root.querySelector<HTMLFormElement>('.stream-search-form')
@@ -256,6 +297,17 @@ export const setupStreamSearch = ({
     return searchData
   }
 
+  const activateSearch = (): void => {
+    if (!searchActive) {
+      if (!browseScrollCaptured) browseScrollY = window.scrollY
+      searchActive = true
+      feed.remove()
+    }
+    root.dataset.streamSearchActive = 'true'
+    if (sentinel) sentinel.hidden = true
+    resultsFeed.hidden = false
+  }
+
   const restoreBrowse = (): void => {
     if (!searchActive) return
     searchActive = false
@@ -263,8 +315,9 @@ export const setupStreamSearch = ({
     root.removeAttribute('data-stream-search-active')
     resultsFeed.hidden = true
     resultsFeed.replaceChildren()
-    feed.hidden = false
+    resultsFeed.before(feed)
     if (sentinel) sentinel.hidden = false
+    resultsFeed.removeAttribute('aria-busy')
     updateStatus(form, '')
     input.blur()
     window.requestAnimationFrame(() => window.scrollTo({ top: browseScrollY, behavior: 'auto' }))
@@ -277,47 +330,71 @@ export const setupStreamSearch = ({
       return
     }
 
+    activateSearch()
+    resultsFeed.replaceChildren()
+    resultsFeed.setAttribute('aria-busy', 'true')
     updateStatus(form, 'searching…')
     const data = await prepare()
     if (signal.aborted || version !== searchVersion) return
     const matches = await matchedEntries(data, trimmed)
     if (signal.aborted || version !== searchVersion) return
 
-    if (!searchActive) {
-      if (!browseScrollCaptured) browseScrollY = window.scrollY
-      searchActive = true
-    }
-    root.dataset.streamSearchActive = 'true'
-    feed.hidden = true
-    if (sentinel) sentinel.hidden = true
-    resultsFeed.hidden = false
     const tokens = trimmed.startsWith('#') ? tagTokens(trimmed) : tokenizeTerm(trimmed)
-    resultsFeed.replaceChildren(
-      ...matches.map(entry => renderSearchResult(entry, tokens, canonicalizePath)),
-    )
+    if (matches.length === 0) {
+      resultsFeed.removeAttribute('aria-busy')
+      if (trimmed.startsWith('#')) {
+        const readableTags = tagTokens(trimmed)
+          .map(tag => `#${tag}`)
+          .join(' ')
+        updateStatus(
+          form,
+          readableTags ? `no entries tagged ${readableTags}` : "type a tag name after '#'",
+        )
+      } else {
+        updateStatus(form, `no results for “${trimmed}”`)
+      }
+      return
+    }
+
+    const placeholders = matches.map(entry => renderLoadingResult(entry, canonicalizePath))
+    resultsFeed.replaceChildren(...placeholders)
+    updateStatus(form, `loading ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'}…`)
+
+    const loaded = await mapWithConcurrency(matches, 4, async (indexed, index) => {
+      try {
+        const element = await loadEntry(indexed.entry, indexed.group)
+        if (signal.aborted || version !== searchVersion) return false
+        element.classList.add('stream-entry-search-result')
+        highlightEntry(element, tokens)
+        placeholders[index].replaceWith(element)
+        mountEntry(element, indexed.group)
+        return true
+      } catch (error) {
+        if (signal.aborted || version !== searchVersion) return false
+        console.error(error)
+        placeholders[index].replaceWith(renderLoadFailure(indexed, canonicalizePath))
+        return false
+      }
+    })
+    if (signal.aborted || version !== searchVersion) return
+    resultsFeed.removeAttribute('aria-busy')
+    const loadedCount = loaded.filter(Boolean).length
+    if (loadedCount !== matches.length) {
+      updateStatus(form, `loaded ${loadedCount} of ${matches.length} entries`)
+      return
+    }
 
     if (trimmed.startsWith('#')) {
       const readableTags = tagTokens(trimmed)
         .map(tag => `#${tag}`)
         .join(' ')
-      if (!readableTags) {
-        updateStatus(form, "type a tag name after '#'")
-        return
-      }
       updateStatus(
         form,
-        matches.length > 0
-          ? `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'} tagged ${readableTags}`
-          : `no entries tagged ${readableTags}`,
+        `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'} tagged ${readableTags}`,
       )
       return
     }
-    updateStatus(
-      form,
-      matches.length > 0
-        ? `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'}`
-        : `no results for “${trimmed}”`,
-    )
+    updateStatus(form, `showing ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'}`)
   }
 
   const onInput = (): void => {
@@ -375,8 +452,8 @@ export const setupStreamSearch = ({
   return () => {
     searchVersion += 1
     if (searchTimeout !== null) window.clearTimeout(searchTimeout)
+    if (!feed.isConnected && resultsFeed.isConnected) resultsFeed.before(feed)
     resultsFeed.remove()
-    feed.hidden = false
     if (sentinel) sentinel.hidden = false
     void searchData?.then(data => data.index.destroy()).catch(() => {})
   }

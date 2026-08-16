@@ -1,5 +1,9 @@
 import { streamHostPathname, STREAM_HOSTNAME } from '../../util/stream-host'
-import { parseStreamManifest, type StreamManifestGroup } from '../../util/stream-manifest'
+import {
+  parseStreamManifest,
+  type StreamManifestEntry,
+  type StreamManifestGroup,
+} from '../../util/stream-manifest'
 import { currentNavSignal } from './nav-lifecycle'
 import { setupStreamSearch } from './stream-search.inline'
 
@@ -36,15 +40,18 @@ const notifyContentMounted = (entry: HTMLElement, slug?: string): void => {
   document.dispatchEvent(event)
 }
 
-const entriesForGroup = async (
+const fetchGroupDocument = async (
   group: StreamManifestGroup,
   canonicalizePath: (path: string) => string,
   signal: AbortSignal,
-): Promise<HTMLElement[]> => {
-  if (!group.path) return []
+): Promise<Document> => {
+  if (!group.path) throw new Error(`stream group ${group.groupId} has no path`)
   const response = await fetch(canonicalizePath(group.path), { signal })
   if (!response.ok) throw new Error(`stream group request failed with ${response.status}`)
-  const parsed = new DOMParser().parseFromString(await response.text(), 'text/html')
+  return new DOMParser().parseFromString(await response.text(), 'text/html')
+}
+
+const entriesForGroup = (parsed: Document, group: StreamManifestGroup): HTMLElement[] => {
   const sourceEntries = new Map<string, HTMLElement>()
   for (const entry of parsed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]')) {
     const id = entry.dataset.entryId
@@ -58,11 +65,23 @@ const entriesForGroup = async (
   })
 }
 
+const entryForGroup = (
+  parsed: Document,
+  group: StreamManifestGroup,
+  manifestEntry: StreamManifestEntry,
+): HTMLElement => {
+  for (const source of parsed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]')) {
+    if (source.dataset.entryId === manifestEntry.id) return document.importNode(source, true)
+  }
+  throw new Error(`stream group ${group.groupId} is missing ${manifestEntry.id}`)
+}
+
 const setupLazyFeed = (
   root: HTMLElement,
   feed: HTMLOListElement,
   sentinel: HTMLElement,
   getManifest: () => Promise<StreamManifestGroup[]>,
+  getGroupDocument: (group: StreamManifestGroup) => Promise<Document>,
   canonicalizePath: (path: string) => string,
   signal: AbortSignal,
   mountEntry: (entry: HTMLElement, group: StreamManifestGroup) => void,
@@ -123,7 +142,7 @@ const setupLazyFeed = (
       }
 
       const batches = await Promise.all(
-        nextGroups.map(group => entriesForGroup(group, canonicalizePath, signal)),
+        nextGroups.map(async group => entriesForGroup(await getGroupDocument(group), group)),
       )
       nextGroups.forEach((group, index) => {
         for (const entry of batches[index]) {
@@ -174,11 +193,29 @@ const hydrateStream = (): void => {
   const originalHash = originalUrl.hash
   let activeTimestamp: string | null = null
   let manifestRequest: Promise<StreamManifestGroup[]> | null = null
+  const groupDocumentRequests = new Map<string, Promise<Document>>()
 
   const getManifest = (): Promise<StreamManifestGroup[]> => {
     manifestRequest ??= fetchStreamManifest(signal)
     return manifestRequest
   }
+
+  const getGroupDocument = (group: StreamManifestGroup): Promise<Document> => {
+    if (!group.path) return Promise.reject(new Error(`stream group ${group.groupId} has no path`))
+    const existing = groupDocumentRequests.get(group.path)
+    if (existing) return existing
+    const request = fetchGroupDocument(group, canonicalizePath, signal).catch(error => {
+      groupDocumentRequests.delete(group.path ?? '')
+      throw error
+    })
+    groupDocumentRequests.set(group.path, request)
+    return request
+  }
+
+  const loadEntry = async (
+    entry: StreamManifestEntry,
+    group: StreamManifestGroup,
+  ): Promise<HTMLElement> => entryForGroup(await getGroupDocument(group), group, entry)
 
   const streamEntries = (): HTMLElement[] =>
     Array.from(feed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]'))
@@ -259,7 +296,16 @@ const hydrateStream = (): void => {
   const cleanups: (() => void)[] = []
   if (isRoot && sentinel) {
     cleanups.push(
-      setupLazyFeed(root, feed, sentinel, getManifest, canonicalizePath, signal, mountEntry),
+      setupLazyFeed(
+        root,
+        feed,
+        sentinel,
+        getManifest,
+        getGroupDocument,
+        canonicalizePath,
+        signal,
+        mountEntry,
+      ),
     )
   }
   if (isRoot) {
@@ -269,6 +315,8 @@ const hydrateStream = (): void => {
       sentinel,
       getManifest,
       canonicalizePath,
+      loadEntry,
+      mountEntry,
       signal,
     })
     if (searchCleanup) cleanups.push(searchCleanup)

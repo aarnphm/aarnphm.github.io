@@ -975,6 +975,12 @@
   margin-top: 1.15rem;
 }
 
+.tri-day-embed[data-triathlon-embedded='1']
+  .tri-matched[data-tri-trace='matched-runs']
+  .tri-matched-chart {
+  margin-top: calc(1.15rem + 1.6rem);
+}
+
 .tri-matched-chart > .tri-cax-frame {
   grid-template-columns: 3.85rem minmax(0, 1fr);
   column-gap: 0.5rem;
