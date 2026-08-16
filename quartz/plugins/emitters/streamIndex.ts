@@ -33,6 +33,7 @@ import {
   rebaseStreamEntries,
 } from '../../util/stream-route-tree'
 import { write } from './helpers'
+import { renderedStreamEntries } from './streamRenderedText'
 
 const formatIsoAsYMD = (iso?: string | null): string | null => {
   if (!iso) return null
@@ -45,6 +46,18 @@ const formatIsoAsYMD = (iso?: string | null): string | null => {
 }
 
 const streamSlugFromPath = (path: string): FullSlug => path.replace(/^\//, '') as FullSlug
+
+const manifestForRenderedGroup = (
+  group: ReturnType<typeof groupStreamEntries>[number],
+  html: string,
+) => {
+  const entries = renderedStreamEntries(html)
+  return buildStreamManifestGroup(group, entry => {
+    const rendered = entries.get(entry.id)
+    if (rendered === undefined) throw new Error(`missing rendered stream content for ${entry.id}`)
+    return rendered
+  })
+}
 
 const renderStreamRoute = async (
   ctx: BuildCtx,
@@ -104,15 +117,6 @@ async function* processStreamIndex(
   const visibleEntries = fileData!.streamData!.entries.filter(entry => !isDraftEntry(entry))
   const groups = groupStreamEntries(visibleEntries)
   if (groups.length === 0) return
-
-  const lines = groups
-    .map(buildStreamManifestGroup)
-    .map(group => (group ? JSON.stringify(group) : null))
-    .filter((line): line is string => line !== null)
-
-  const payload = lines.join('\n')
-
-  yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: payload })
 
   const yearGroups = groupStreamEntriesByYear(visibleEntries)
   const legendPageLayout: ContentLayout = 'default'
@@ -245,11 +249,20 @@ async function* processStreamIndex(
       }
     }
 
-    return write({ ctx, slug, ext: '.html', content: html })
+    return {
+      file: await write({ ctx, slug, ext: '.html', content: html }),
+      manifest: manifestForRenderedGroup(group, html),
+    }
   })
 
-  for (const file of groupFiles) {
-    if (file) yield file
+  const lines = groupFiles
+    .map(result => result?.manifest)
+    .filter(group => group !== undefined && group !== null)
+    .map(group => JSON.stringify(group))
+  yield write({ ctx, slug: 'streams' as FullSlug, ext: '.jsonl', content: lines.join('\n') })
+
+  for (const result of groupFiles) {
+    if (result) yield result.file
   }
 }
 

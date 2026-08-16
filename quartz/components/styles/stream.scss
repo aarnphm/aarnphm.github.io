@@ -102,6 +102,10 @@
     flex-direction: column;
     gap: 1.2rem;
 
+    &[hidden] {
+      display: none;
+    }
+
     &[data-stream-lazy='true'] > .stream-entry {
       content-visibility: auto;
       contain-intrinsic-size: auto 40rem;
@@ -136,22 +140,18 @@
     }
   }
 
-  .stream-entry-search-link {
-    color: var(--dark);
-    text-decoration: none;
-
-    &:hover,
-    &:focus-visible {
-      text-decoration: underline;
-    }
-  }
-
   .stream-entry-search-result .search-highlight {
     padding: 0.05em 0.15em;
     color: var(--dark);
     background: color-mix(in srgb, var(--secondary) 25%, transparent);
     border-radius: var(--radius-none);
     font-weight: 500;
+  }
+
+  .stream-search-loading-label,
+  .stream-search-load-error .stream-entry-body {
+    margin: 0;
+    color: var(--gray);
   }
 
   .stream-protected-unlock {
