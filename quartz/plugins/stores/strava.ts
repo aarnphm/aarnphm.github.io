@@ -440,6 +440,11 @@ export interface CalculatedExerciseLoad {
   source: CalculatedIntensityFactor['source'] | 'garmin'
 }
 
+export interface CalculatedTrainingEffect {
+  aerobic: number
+  anaerobic: number
+}
+
 export interface StravaActivityDetail {
   id: number
   sport: ActivityKind
@@ -471,6 +476,7 @@ export interface StravaActivityDetail {
   garmin: GarminVerification | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
+  calculatedTrainingEffect: CalculatedTrainingEffect | null
   gearShifts: ActivityGearShift[]
   cyclingDynamics: ActivityCyclingDynamics | null
   route: StravaRoutePoint[]
@@ -487,6 +493,7 @@ export interface StravaActivityDetail {
   powerHist: number[] | null
   powerWithoutZeros: ActivityPowerWithoutZeros | null
   powerCurve: PowerCurvePoint[] | null
+  activityCriticalPower: CriticalPowerEstimate | null
   bestEfforts: CyclingBestEfforts | null
   strokes?: Record<string, number> | null
   strokeCount: number | null
@@ -651,6 +658,192 @@ export const calculateActivityExerciseLoad = (
   if (source == null || intensityFactor == null) return null
   const value = calculateExerciseLoad(intensityFactor, activity.movingTimeS)
   return value == null ? null : { value, source }
+}
+
+type TrainingEffectScale = readonly [
+  readonly [number, number],
+  ...ReadonlyArray<readonly [number, number]>,
+]
+
+const RELATIVE_EFFORT_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
+  [0, 0],
+  [4, 1],
+  [11, 2],
+  [30, 3],
+  [75, 4],
+  [150, 5],
+]
+
+const EXERCISE_LOAD_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
+  [0, 0],
+  [8, 1],
+  [20, 2],
+  [40, 3],
+  [75, 4],
+  [130, 5],
+]
+
+const HIGH_HEART_RATE_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
+  [0, 0],
+  [30, 0.1],
+  [60, 0.5],
+  [120, 1],
+  [240, 2],
+  [480, 2.5],
+]
+
+const HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE: TrainingEffectScale = [
+  [0, 0],
+  [10, 0.5],
+  [30, 1],
+  [60, 2],
+  [120, 3],
+  [240, 4],
+  [480, 5],
+]
+
+const trainingEffectFromScale = (value: number, scale: TrainingEffectScale): number => {
+  if (!Number.isFinite(value) || value <= scale[0][0]) return scale[0][1]
+  for (let index = 1; index < scale.length; index++) {
+    const [upperValue, upperEffect] = scale[index]
+    if (value > upperValue) continue
+    const [lowerValue, lowerEffect] = scale[index - 1]
+    const fraction = (value - lowerValue) / (upperValue - lowerValue)
+    return lowerEffect + fraction * (upperEffect - lowerEffect)
+  }
+  return scale[scale.length - 1][1]
+}
+
+interface TrainingEffectPaceEffort {
+  durationS: number
+  distanceM: number
+}
+
+const swimTrainingEffectPaceEfforts = (
+  intervals: readonly SwimActivityInterval[],
+): TrainingEffectPaceEffort[] => {
+  const efforts: TrainingEffectPaceEffort[] = []
+  let current: (TrainingEffectPaceEffort & { endElapsedS: number }) | null = null
+  for (const interval of intervals) {
+    if (!current || interval.startElapsedS - current.endElapsedS > 12) {
+      if (current) efforts.push(current)
+      current = {
+        durationS: interval.durationS,
+        distanceM: interval.distanceM,
+        endElapsedS: interval.endElapsedS,
+      }
+      continue
+    }
+    current.durationS += interval.durationS
+    current.distanceM += interval.distanceM
+    current.endElapsedS = interval.endElapsedS
+  }
+  if (current) efforts.push(current)
+  return efforts
+}
+
+const trainingEffectPaceEfforts = (
+  activity: Pick<StravaActivityDetail, 'sport' | 'analysisRanges' | 'swimIntervals'>,
+): TrainingEffectPaceEffort[] =>
+  activity.sport === 'run'
+    ? activity.analysisRanges.flatMap(range =>
+        range.kind !== 'lap' ||
+        range.durationS < 10 ||
+        range.durationS > 180 ||
+        range.averageSpeedKph == null ||
+        range.averageSpeedKph <= 0
+          ? []
+          : [
+              {
+                durationS: range.durationS,
+                distanceM: (range.averageSpeedKph / 3.6) * range.durationS,
+              },
+            ],
+      )
+    : swimTrainingEffectPaceEfforts(activity.swimIntervals)
+
+const calculatedAnaerobicTrainingEffect = (
+  activity: Pick<
+    StravaActivityDetail,
+    | 'sport'
+    | 'distanceKm'
+    | 'movingTimeS'
+    | 'calculatedIntensityFactor'
+    | 'hrZones'
+    | 'analysisRanges'
+    | 'swimPaceSPer100m'
+    | 'swimIntervals'
+  >,
+): number => {
+  const highHeartRateS = (activity.hrZones ?? []).slice(-2).reduce((sum, value) => sum + value, 0)
+  const heartRateEffect = trainingEffectFromScale(
+    highHeartRateS,
+    HIGH_HEART_RATE_TRAINING_EFFECT_SCALE,
+  )
+  const intensityFactor = activity.calculatedIntensityFactor
+  if (
+    intensityFactor?.source !== 'pace' ||
+    intensityFactor.value <= 0 ||
+    intensityFactor.value > 1.5 ||
+    activity.movingTimeS <= 0
+  )
+    return heartRateEffect
+  const averageSpeedMps =
+    activity.sport === 'swim' && activity.swimPaceSPer100m != null && activity.swimPaceSPer100m > 0
+      ? 100 / activity.swimPaceSPer100m
+      : (activity.distanceKm * 1_000) / activity.movingTimeS
+  const thresholdSpeedMps = averageSpeedMps / intensityFactor.value
+  if (!Number.isFinite(thresholdSpeedMps) || thresholdSpeedMps <= 0) return heartRateEffect
+  const intervalLoad = trainingEffectPaceEfforts(activity).reduce((sum, effort) => {
+    if (effort.durationS <= 0 || effort.distanceM <= 0) return sum
+    const relativeIntensity = effort.distanceM / effort.durationS / thresholdSpeedMps
+    if (relativeIntensity <= 1.05 || relativeIntensity > 1.5) return sum
+    const intensityWeight = Math.min(1, (relativeIntensity - 1.05) / 0.25)
+    return sum + Math.min(120, effort.durationS) * intensityWeight
+  }, 0)
+  return Math.max(
+    heartRateEffect,
+    trainingEffectFromScale(intervalLoad, HIGH_INTENSITY_INTERVAL_TRAINING_EFFECT_SCALE),
+  )
+}
+
+export const calculateActivityTrainingEffect = (
+  activity: Pick<
+    StravaActivityDetail,
+    | 'sport'
+    | 'distanceKm'
+    | 'movingTimeS'
+    | 'sufferScore'
+    | 'garmin'
+    | 'calculatedIntensityFactor'
+    | 'calculatedExerciseLoad'
+    | 'hrZones'
+    | 'analysisRanges'
+    | 'swimPaceSPer100m'
+    | 'swimIntervals'
+  >,
+): CalculatedTrainingEffect | null => {
+  if (activity.sport !== 'run' && activity.sport !== 'swim') return null
+  const garmin = activity.garmin
+  if (
+    garmin?.aerobicTrainingEffect != null ||
+    garmin?.anaerobicTrainingEffect != null ||
+    garmin?.aerobicTrainingEffectMessage != null ||
+    garmin?.anaerobicTrainingEffectMessage != null
+  )
+    return null
+  const relativeEffort =
+    activity.sufferScore != null && activity.sufferScore > 0 ? activity.sufferScore : null
+  const aerobicLoad = relativeEffort ?? activity.calculatedExerciseLoad?.value ?? null
+  if (aerobicLoad == null || !Number.isFinite(aerobicLoad) || aerobicLoad < 0) return null
+  const aerobic = trainingEffectFromScale(
+    aerobicLoad,
+    relativeEffort == null
+      ? EXERCISE_LOAD_TRAINING_EFFECT_SCALE
+      : RELATIVE_EFFORT_TRAINING_EFFECT_SCALE,
+  )
+  const anaerobic = calculatedAnaerobicTrainingEffect(activity)
+  return { aerobic: round(aerobic, 1), anaerobic: round(anaerobic, 1) }
 }
 
 export function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -1855,6 +2048,7 @@ function projectDetail(
   powerBounds: number[],
   home: [number, number] | null,
   powerCurve: PowerCurvePoint[] | undefined,
+  activityCriticalPower: CriticalPowerEstimate | null,
 ): StravaActivityDetail {
   const route: StravaRoutePoint[] = []
   let mapRoute: StravaMapPoint[][] = []
@@ -2032,6 +2226,7 @@ function projectDetail(
     garmin,
     calculatedIntensityFactor: null,
     calculatedExerciseLoad: null,
+    calculatedTrainingEffect: null,
     gearShifts,
     cyclingDynamics,
     route,
@@ -2052,6 +2247,7 @@ function projectDetail(
     powerHist: hasW ? powerHistogram(wFull) : null,
     powerWithoutZeros,
     powerCurve: hasEffortPower && timeline ? (powerCurve ?? meanMaxCurve(timeline)) : null,
+    activityCriticalPower,
     bestEfforts:
       sport === 'bike' && (elapsedTimeline || climbs.length > 0)
         ? {
@@ -2263,6 +2459,7 @@ export function buildPayload(
   const powerCurves = new Map<string, PowerCurvePoint[]>()
   const recentCurves: PowerCurveSource[] = []
   const yearCurves: PowerCurveSource[] = []
+  const activityCriticalPowers = new Map<string, CriticalPowerEstimate>()
   const recentCriticalPowerAnchors: CriticalPowerAnchor[] = []
   const yearCriticalPowerAnchors: CriticalPowerAnchor[] = []
   for (const { a, sport } of allActivities) {
@@ -2300,6 +2497,13 @@ export function buildPayload(
           endElapsedS: window.end,
         }),
       )
+      const activityCriticalPower = fitCriticalPower(
+        anchors,
+        'activity',
+        activityDate,
+        activityDate,
+      )
+      if (activityCriticalPower) activityCriticalPowers.set(id, activityCriticalPower)
       if (inRecentWindow) recentCriticalPowerAnchors.push(...anchors)
       if (inYear) yearCriticalPowerAnchors.push(...anchors)
     }
@@ -2393,6 +2597,7 @@ export function buildPayload(
       powerBounds,
       home,
       powerCurves.get(id),
+      activityCriticalPowers.get(id) ?? null,
     )
   }
 

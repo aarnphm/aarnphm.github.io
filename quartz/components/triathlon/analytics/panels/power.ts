@@ -17,6 +17,7 @@ import { powerCurveFraction } from '../../../../util/triathlon-card'
 import { powerCurveHoverAt } from '../../../../util/triathlon-card'
 import { powerCurvePathPoints } from '../../../../util/triathlon-card'
 import { zoneClock } from '../../../../util/triathlon-card'
+import { criticalPowerSummaryText } from '../../../../util/triathlon-i18n'
 import { powerCurveActivityLinkAttributes } from '../../../../util/triathlon-power-activity'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
@@ -319,10 +320,7 @@ export const buildBestPowerCurve = (data: Analytics, context: TriathlonContext):
         el(
           'span',
           'tri-best-power-cap-cp',
-          `eCP ${estimate.criticalPowerWatts.toLocaleString(
-            context.presentation.locale === 'fr' ? 'fr-CA' : 'en-US',
-            { maximumFractionDigits: 1 },
-          )}W`,
+          criticalPowerSummaryText(context.presentation.locale, estimate),
           { 'data-power-cap-series': key, ...(hasCriticalPowerCaption ? { hidden: '' } : {}) },
         ),
       )

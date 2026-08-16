@@ -99,7 +99,7 @@ export const setupChartScrub = (
   const curveReferenceYear = (svg: SVGSVGElement): number | null => {
     if (curveRange(svg) !== 'year') return null
     const year = Number(svg.dataset.curveYear)
-    return Number.isInteger(year) ? year : null
+    return Number.isInteger(year) && year > 0 ? year : null
   }
   const selectedCurveIndex = (svg: SVGSVGElement): number => {
     const value = Number(svg.dataset.curveSelectedIndex ?? 0)
@@ -109,12 +109,38 @@ export const setupChartScrub = (
     const value = Number(svg.dataset.swimIndex ?? 0)
     return Number.isInteger(value) ? value : 0
   }
+  type CurveModelValue = { label: string; watts: number }
+  const syncCurveModelReadouts = (wrap: HTMLElement, seconds: number): CurveModelValue[] => {
+    const values: CurveModelValue[] = []
+    for (const row of wrap.querySelectorAll<HTMLElement>('.tri-curve-readout-row--model')) {
+      const criticalPower = Number(row.dataset.curveCriticalPower)
+      const wPrime = Number(row.dataset.curveWPrime)
+      const minSeconds = Number(row.dataset.curveModelMinSeconds)
+      const maxSeconds = Number(row.dataset.curveModelMaxSeconds)
+      const visible =
+        Number.isFinite(criticalPower) &&
+        Number.isFinite(wPrime) &&
+        Number.isFinite(minSeconds) &&
+        Number.isFinite(maxSeconds) &&
+        seconds >= minSeconds &&
+        seconds <= maxSeconds
+      row.hidden = !visible
+      if (!visible) continue
+      const watts = Math.round(criticalPower + wPrime / seconds)
+      const value = row.querySelector<HTMLElement>('.tri-curve-readout-value--model')
+      const label = row.querySelector<HTMLElement>('.tri-curve-readout-label--model')
+      if (value) value.textContent = `${watts.toLocaleString()} W`
+      values.push({ label: label?.textContent ?? 'eCP model', watts })
+    }
+    return values
+  }
   const curveValueText = (
     svg: SVGSVGElement,
     point: PowerCurvePoint,
     referenceWatts: number | null,
+    modelValues: readonly CurveModelValue[],
   ): string =>
-    `${zoneClock(point.s)}, ${text('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}`
+    `${zoneClock(point.s)}, ${text('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}${modelValues.map(model => `, ${model.label} ${model.watts.toLocaleString()} watts`).join('')}`
   const swimKind = (svg: SVGSVGElement): SwimChartMetric => swimChartMetric(svg.dataset.swimKind)
   const swimAriaLabel = (svg: SVGSVGElement): string =>
     `${text('swim')} ${text(swimKind(svg) === 'pace' ? 'pace' : swimKind(svg) === 'cadence' ? 'cadence' : 'SWOLF')} · ${text(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
@@ -229,11 +255,17 @@ export const setupChartScrub = (
           presentation().locale,
           curveReferenceYear(svg),
         )
+      const modelValues = syncCurveModelReadouts(wrap, hover.durationS)
       svg.dataset.curveIndex = String(hover.index)
       svg.setAttribute('aria-valuenow', String(hover.durationS))
       svg.setAttribute(
         'aria-valuetext',
-        curveValueText(svg, { s: hover.durationS, w: hover.watts }, hover.referenceWatts),
+        curveValueText(
+          svg,
+          { s: hover.durationS, w: hover.watts },
+          hover.referenceWatts,
+          modelValues,
+        ),
       )
     }
     if (activateChart) {
@@ -499,10 +531,6 @@ export const setupChartScrub = (
       option.setAttribute('aria-pressed', String(option.dataset.curveRange === range))
     for (const path of svg.querySelectorAll<SVGElement>('.tri-curve-ref[data-curve-range]'))
       path.toggleAttribute('hidden', path.dataset.curveRange !== range)
-    for (const element of wrap.querySelectorAll<HTMLElement | SVGElement>(
-      '[data-critical-power-range]',
-    ))
-      element.toggleAttribute('hidden', element.dataset.criticalPowerRange !== range)
     delete svg.dataset.curveIndex
     showCurveIndex(svg, index, wasActive)
   }
@@ -526,17 +554,21 @@ export const setupChartScrub = (
       const index = Math.min(curve.length - 1, Math.max(0, selectedCurveIndex(svg)))
       const point = curve[index]
       const referenceWatts = reference.find(candidate => candidate.s === point.s)?.w ?? null
-      const referenceLabel = svg
-        .closest<HTMLElement>('.tri-zone')
-        ?.querySelector<HTMLElement>('.tri-curve-readout-label--ref')
+      const wrap = svg.closest<HTMLElement>('.tri-zone')
+      const referenceLabel = wrap?.querySelector<HTMLElement>('.tri-curve-readout-label--ref')
       if (referenceLabel)
         referenceLabel.textContent = powerCurveReferenceLabel(
           presentation().locale,
           curveReferenceYear(svg),
         )
+      const rideModelLabel = wrap?.querySelector<HTMLElement>(
+        '.tri-curve-readout-row--model-ride .tri-curve-readout-label--model',
+      )
+      if (rideModelLabel) rideModelLabel.textContent = text('this ride eCP model')
+      const modelValues = wrap ? syncCurveModelReadouts(wrap, point.s) : []
       svg.setAttribute('aria-label', text('power curve'))
       svg.setAttribute('aria-valuenow', String(point.s))
-      svg.setAttribute('aria-valuetext', curveValueText(svg, point, referenceWatts))
+      svg.setAttribute('aria-valuetext', curveValueText(svg, point, referenceWatts, modelValues))
     }
     for (const svg of scope.querySelectorAll<SVGSVGElement>('.tri-swim-trend-svg')) {
       svg.setAttribute('aria-label', swimAriaLabel(svg))

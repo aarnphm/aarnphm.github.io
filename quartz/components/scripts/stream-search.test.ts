@@ -1,23 +1,49 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { mapWithConcurrency } from './stream-search.inline'
+import type { StreamManifestGroup } from '../../util/stream-manifest'
+import { buildStreamSearchData, matchStreamEntries } from './stream-search-index'
 
-test('stream fragment loading preserves result order and bounds concurrent requests', async () => {
-  let active = 0
-  let maximumActive = 0
-  const values = [18, 2, 12, 1, 6]
+const manifest: StreamManifestGroup[] = [
+  {
+    groupId: '2026-07-26',
+    timestamp: 1785100000000,
+    isoDate: '2026-07-26T12:00:00.000Z',
+    groupSize: 2,
+    path: '/stream/on/2026/07/26',
+    entries: [
+      {
+        id: 'stream-entry-14',
+        title: 'sub-3 triathlete, bib 6243',
+        description: 'SuperTri Toronto 2026',
+        content: 'distance 39.5 km time 1h10 speed 33.8 km/h',
+        metadata: { tags: ['training'] },
+        isoDate: '2026-07-26T12:00:00.000Z',
+        displayDate: '2026/07/26',
+        wordCount: 536,
+      },
+      {
+        id: 'stream-entry-15',
+        title: 'recovery',
+        description: 'easy day',
+        content: 'slept eight hours',
+        metadata: { tags: ['life'] },
+        isoDate: '2026-07-26T11:00:00.000Z',
+        displayDate: '2026/07/26',
+        wordCount: 20,
+      },
+    ],
+  },
+]
 
-  const results = await mapWithConcurrency(values, 2, async value => {
-    active += 1
-    maximumActive = Math.max(maximumActive, active)
-    await new Promise(resolve => setTimeout(resolve, value))
-    active -= 1
-    return `loaded-${value}`
-  })
+test('stream search matches rendered fragment text and preserves manifest order', async () => {
+  const data = await buildStreamSearchData(manifest)
 
   assert.deepEqual(
-    results,
-    values.map(value => `loaded-${value}`),
+    (await matchStreamEntries(data, '39.5 km')).map(result => result.entry.id),
+    ['stream-entry-14'],
   )
-  assert.equal(maximumActive, 2)
+  assert.deepEqual(
+    (await matchStreamEntries(data, 'bib')).map(result => result.entry.id),
+    ['stream-entry-14'],
+  )
 })

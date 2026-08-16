@@ -1,20 +1,4 @@
 ---
-chain:
-  '1':
-    distance: 621 mile
-    lubricant: Muc-Off Dry Lube
-    since: '2026-05-16'
-    waxed: false
-  '2':
-    distance: 419.42 mile
-    lubricant: Muc-Off Dry Lube
-    since: '2026-07-16'
-    waxed: false
-  '3':
-    distance: null
-    lubricant: UFO Wax Drip-On
-    since: '2026-08-10'
-    waxed: true
 date: '2026-05-29'
 description: training data and tracking
 dexa:
@@ -69,66 +53,84 @@ events:
     swim: 00:41:08
 id: triathlon
 layout: triathlon
-modified: 2026-08-15 23:31:45 GMT-04:00
+maintenance:
+  chain:
+    '1':
+      distance: 621 mile
+      lubricant: Muc-Off Dry Lube
+      since: '2026-05-16'
+      waxed: false
+    '2':
+      distance: 419.42 mile
+      lubricant: Muc-Off Dry Lube
+      since: '2026-07-16'
+      waxed: false
+    '3':
+      distance: null
+      lubricant: UFO Wax Drip-On
+      since: '2026-08-10'
+      waxed: true
+  tires:
+    front:
+      tires:
+        - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
+          - distance: 751.81 mile
+          - start: '2026-05-16'
+          - end: '2026-07-16'
+          - reason: training to race tires
+        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+          - distance: 619.84 mile
+          - start: '2026-07-16'
+          - end: '2026-08-10'
+          - reason: punctures
+        - - type: Pirelli P Zero Race SL-R 700x28c
+          - distance: null
+          - start: '2026-08-12'
+          - end: null
+          - reason: null
+      tube:
+        - - type: Pirelli P Zero TPU
+          - distance: 619.84 mile
+          - start: '2026-07-16'
+          - end: '2026-08-10'
+          - reason: punctures
+        - - type: Pirelli P Zero TPU
+          - distance: null
+          - start: '2026-08-12'
+          - end: null
+          - reason: null
+    rear:
+      tires:
+        - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
+          - distance: 751.81 mile
+          - start: '2026-05-16'
+          - end: '2026-07-16'
+          - reason: training to race tires
+        - - type: Pirelli P Zero Race TLR SL-R 700x28c
+          - distance: 619.84 mile
+          - start: '2026-07-16'
+          - end: '2026-08-10'
+          - reason: punctures and big ruptures
+        - - type: Pirelli P Zero Race SL-R 700x28c
+          - distance: null
+          - start: '2026-08-12'
+          - end: null
+          - reason: null
+      tube:
+        - - type: Pirelli P Zero TPU
+          - distance: null
+          - start: '2026-07-16'
+          - end: null
+          - reason: null
+modified: 2026-08-16 00:06:33 GMT-04:00
 seealso:
-  - '[[thoughts/pdfs/triathlon.pdf|fuel plan for olympic distance]]'
+  - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
+  - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
 strava: '2026-05-15'
 tags:
   - life
   - self
   - evergreen
-tires:
-  front:
-    tires:
-      - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-        - distance: 751.81 mile
-        - start: '2026-05-16'
-        - end: '2026-07-16'
-        - reason: training to race tires
-      - - type: Pirelli P Zero Race TLR SL-R 700x28c
-        - distance: 619.84 mile
-        - start: '2026-07-16'
-        - end: '2026-08-10'
-        - reason: punctures
-      - - type: Pirelli P Zero Race SL-R 700x28c
-        - distance: null
-        - start: '2026-08-12'
-        - end: null
-        - reason: null
-    tube:
-      - - type: Pirelli P Zero TPU
-        - distance: 619.84 mile
-        - start: '2026-07-16'
-        - end: '2026-08-10'
-        - reason: punctures
-      - - type: Pirelli P Zero TPU
-        - distance: null
-        - start: '2026-08-12'
-        - end: null
-        - reason: null
-  rear:
-    tires:
-      - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-        - distance: 751.81 mile
-        - start: '2026-05-16'
-        - end: '2026-07-16'
-        - reason: training to race tires
-      - - type: Pirelli P Zero Race TLR SL-R 700x28c
-        - distance: 619.84 mile
-        - start: '2026-07-16'
-        - end: '2026-08-10'
-        - reason: punctures and big ruptures
-      - - type: Pirelli P Zero Race SL-R 700x28c
-        - distance: null
-        - start: '2026-08-12'
-        - end: null
-        - reason: null
-    tube:
-      - - type: Pirelli P Zero TPU
-        - distance: null
-        - start: '2026-07-16'
-        - end: null
-        - reason: null
 title: triathlon
 triathlon: '70.3'
 vo2max:
@@ -3075,6 +3077,14 @@ If a condition misses, the plan does not change, the number does. Swim at 2:32 c
 The 2026 row is the one this block chases and it has no slack in it. The rows below exist because a 4:58 on 09-26 is a one-in-five day rather than a plan, and the version of this that ends well has both a September attempt and a spring one. VO2max going 47.8 to 54 and FTP going 240 to 270 are ordinary two-season adaptations at 25 off volume you already tolerate. They arrive on their own schedule whether or not Jones Beach cooperates.
 
 The one thing worth saying about 4:40: at that level the swim is 1:54/100 m, which is 50 seconds per 100 faster than 07-26. Nothing else in the table is a delta that size. Whatever the year, the water is where your race is decided, and the eight weeks starting tomorrow are the first eight you will have ever spent training it properly.
+
+## race track
+
+![[https://strava-embeds.com/route/3324107673389453392?fullWidth=true&style=standard&fromEmbed=false&token=_ysuM2AX063todCjermYmjJxxB2o05KyoEMT8ssfkqs#ns=cea1e019-a86f-4bf5-bfb7-d774447445dc&hostOrigin=https%3A%2F%2Fwww.strava.com&hostPath=%2Froutes%2F3324107673389453392&hostTitle=Northwell+IRONMAN+70.3+New+York+-+ROKA+Swim+Course+%7C+1.2+mi+Swimming+Route+on+Strava&mapHash=14.76/40.60027/-73.49691]]
+
+![[https://strava-embeds.com/route/3383142967244101934?fullWidth=true&style=standard&fromEmbed=false&token=jMWVjLJB_BJkPCRvgRcEgXJ9Yt_K-6RCtWJjBqM0JNE#ns=75651fc9-e9a8-4647-b6be-7b2f8c350636&hostOrigin=https%3A%2F%2Fwww.strava.com&hostPath=%2Froutes%2F3383142967244101934&hostTitle=Northwell+IRONMAN+70.3+New+York+-+ZOOT+Bike+Course+%7C+56.1+mi+Cycling+Route+on+Strava&mapHash=9.48/40.6845/-73.5328]]
+
+![[https://strava-embeds.com/route/3383142695097847704?style=standard&fromEmbed=false&token=-QsWuWzWajzV7xLQy-4o85pCSQFh3qfFercdPyWyvUo#ns=a607c16e-561d-4082-ab58-bf79d1448e9d&hostOrigin=https%3A%2F%2Fwww.strava.com&hostPath=%2Froutes%2F3383142695097847704&hostTitle=Northwell+IRONMAN+70.3+New+York+-+HOKA+Run+Course+%7C+13.3+mi+Running+Route+on+Strava]]
 
 [^course]: Race facts from the event listing and course description: swim in Zach's Bay, bike on the closed Wantagh Parkway, run on the Jones Beach boardwalk. https://www.ironman.com/races/im703-new-york Verify distances, wetsuit call, and transition layout in the athlete guide when it publishes.
 

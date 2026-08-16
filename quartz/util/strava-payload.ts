@@ -18,6 +18,7 @@ import {
   buildPayload,
   calculateActivityExerciseLoad,
   calculateActivityIntensityFactor,
+  calculateActivityTrainingEffect,
   type SwimActivityInterval,
   type StravaActivityDetail,
   type StravaPayload,
@@ -64,6 +65,11 @@ export function enrichCalculatedIntensityFactors(
 export function enrichCalculatedExerciseLoads(payload: StravaPayload): void {
   for (const detail of Object.values(payload.details))
     detail.calculatedExerciseLoad = calculateActivityExerciseLoad(detail)
+}
+
+export function enrichCalculatedTrainingEffects(payload: StravaPayload): void {
+  for (const detail of Object.values(payload.details))
+    detail.calculatedTrainingEffect = calculateActivityTrainingEffect(detail)
 }
 
 const readJson = <T>(path: string): T | null => {
@@ -407,6 +413,7 @@ export function loadStravaPayloadSync(
     const analytics = buildAnalytics(strava, { oura, apple, core, garmin, weather, since })
     enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
     enrichCalculatedExerciseLoads(payload)
+    enrichCalculatedTrainingEffects(payload)
     memo = { key, payload }
   }
   return memo.payload

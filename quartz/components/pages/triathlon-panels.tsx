@@ -1,6 +1,7 @@
 import type { ComponentChildren, JSX } from 'preact'
 import type { TrainingPlan } from '../../plugins/stores/training'
 import type { TriathlonTreeYear } from '../../util/triathlon-date-route'
+import type { TriathlonMaintenance } from '../../util/triathlon-maintenance'
 import type { TriathlonRenderData } from '../triathlon/render-data'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { InlineMath } from '../../util/math-text'
@@ -19,6 +20,7 @@ import {
 } from '../../util/triathlon-gear-ratio'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
+import { Maintenance } from '../triathlon/tools/Maintenance'
 import { deriveTrainingDocument, type TrainingTreeNode } from '../triathlon/training/tree'
 
 export const DISPATCH_ICON =
@@ -194,6 +196,8 @@ export const GEAR: [string, string[]][] = [
     ],
   ],
 ]
+
+const BIKE_GEAR_GROUP_COUNT = 2
 
 const paceKm = (mi: string): string => {
   const [m = '0', s = '0'] = mi.split(':')
@@ -968,7 +972,30 @@ const GearRatioCalculator = () => {
   )
 }
 
-export const GearPanel = ({ page }: { page?: boolean }) => (
+const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly string[]]> }) => (
+  <>
+    {groups.map(([label, items]) => (
+      <div class="tri-gear-row">
+        <span class="tri-gear-k" data-i18n={label}>
+          {label}
+        </span>
+        <span class="tri-gear-v">
+          {items.map(it => (
+            <span class="tri-gear-li">· {it}</span>
+          ))}
+        </span>
+      </div>
+    ))}
+  </>
+)
+
+export const GearPanel = ({
+  page,
+  maintenance = null,
+}: {
+  page?: boolean
+  maintenance?: TriathlonMaintenance | null
+}) => (
   <div class="tri-gear-wrap">
     {!page && (
       <button
@@ -988,18 +1015,9 @@ export const GearPanel = ({ page }: { page?: boolean }) => (
     >
       <div class="tri-gear-scroll">
         <GearRatioCalculator />
-        {GEAR.map(([label, items]) => (
-          <div class="tri-gear-row">
-            <span class="tri-gear-k" data-i18n={label}>
-              {label}
-            </span>
-            <span class="tri-gear-v">
-              {items.map(it => (
-                <span class="tri-gear-li">· {it}</span>
-              ))}
-            </span>
-          </div>
-        ))}
+        <GearRows groups={GEAR.slice(0, BIKE_GEAR_GROUP_COUNT)} />
+        <Maintenance maintenance={maintenance} />
+        <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} />
       </div>
     </div>
   </div>
@@ -1344,13 +1362,13 @@ export const CalcPanel = ({
   )
 }
 
-export const ToolsPanel = () => (
+export const ToolsPanel = ({ maintenance }: { maintenance?: TriathlonMaintenance | null }) => (
   <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
         gear
       </h2>
-      <GearPanel page />
+      <GearPanel page maintenance={maintenance} />
     </section>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="pace">

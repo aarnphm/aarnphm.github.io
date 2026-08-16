@@ -11,6 +11,7 @@ import { parseExcludedActivityIds } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
 import { parseTriathlonTraceSettings } from '../../../util/triathlon-trace-settings'
+import { rootNavSignal } from '../../scripts/root-lifecycle'
 import { applyI18n } from '../runtime/dom'
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
@@ -137,7 +138,7 @@ export const setupActivityTitleTooltip = (): (() => void) | null => {
 export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null => {
   let live = true
   const teardowns: (() => void)[] = []
-  const registered = new Set<HTMLElement>()
+  const registered = new Map<HTMLElement, () => void>()
   let activityTitleTooltipReady = false
   const upgradeByEmbed = new Map<HTMLElement, () => void>()
   const upgradeObserver = new IntersectionObserver(
@@ -159,7 +160,22 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
   })
   const setupEmbed = (embed: HTMLElement): void => {
     if (registered.has(embed)) return
-    registered.add(embed)
+    const lifecycleSignal = rootNavSignal(embed)
+    const embedTeardowns: (() => void)[] = []
+    let cleaned = false
+    const cleanupEmbed = (): void => {
+      if (cleaned) return
+      cleaned = true
+      lifecycleSignal.removeEventListener('abort', cleanupEmbed)
+      upgradeObserver.unobserve(embed)
+      upgradeByEmbed.delete(embed)
+      registered.delete(embed)
+      for (let index = embedTeardowns.length - 1; index >= 0; index -= 1) {
+        embedTeardowns[index]()
+      }
+    }
+    registered.set(embed, cleanupEmbed)
+    lifecycleSignal.addEventListener('abort', cleanupEmbed, { once: true })
     if (!activityTitleTooltipReady) {
       activityTitleTooltipReady = true
       const cleanup = setupActivityTitleTooltip()
@@ -188,7 +204,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     let analysisReleaseTimer = 0
     let deferredPayload: DetailPayload | null = null
     let cardCleanup: (() => void) | null = null
-    teardowns.push(() => {
+    embedTeardowns.push(() => {
       cardCleanup?.()
       cardCleanup = null
     })
@@ -253,7 +269,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       pendingAnalysisRange = null
       releaseAnalysisPointer()
     }
-    teardowns.push(() => {
+    embedTeardowns.push(() => {
       window.clearTimeout(analysisReleaseTimer)
       analysisReleaseTimer = 0
       analysisPointerActive = false
@@ -274,7 +290,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     embed.addEventListener('keydown', onAnalysisKeyDown)
     embed.addEventListener('click', clearPendingSwimMode)
     embed.addEventListener('pointercancel', clearPendingSwimMode)
-    teardowns.push(() => {
+    embedTeardowns.push(() => {
       embed.removeEventListener('pointerdown', onSwimPointerDown)
       embed.removeEventListener('keydown', onSwimKeyDown)
       embed.removeEventListener('pointerdown', onAnalysisPointerDown)
@@ -431,7 +447,8 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       upgradeObserver.unobserve(embed)
       upgradeByEmbed.delete(embed)
       void context.resources.detail.load(detailPath).then(result => {
-        if (!live || !embed.isConnected || result.status !== 'ready') return
+        if (!live || lifecycleSignal.aborted || !embed.isConnected || result.status !== 'ready')
+          return
         const data = result.value
         payload = data
         if (analysisPointerActive) {
@@ -444,7 +461,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     const onUnit = () => (payload ? render(payload) : upgrade())
     window.addEventListener('tri:unit', onUnit)
     window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
-    teardowns.push(() => {
+    embedTeardowns.push(() => {
       window.removeEventListener('tri:unit', onUnit)
       window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
     })
@@ -472,7 +489,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
       embed.addEventListener('pointermove', onChartMove, { passive: true })
       upgradeByEmbed.set(embed, upgrade)
       upgradeObserver.observe(embed)
-      teardowns.push(() => {
+      embedTeardowns.push(() => {
         for (const ev of events) embed.removeEventListener(ev, upgrade)
         embed.removeEventListener('focusin', onKeyboardFocus)
         embed.removeEventListener('pointermove', onChartMove)
@@ -499,15 +516,15 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
   teardowns.push(() => document.removeEventListener('contentdecrypted', onContentMounted))
   return () => {
     live = false
+    for (const cleanup of Array.from(registered.values())) cleanup()
     for (const td of teardowns) td()
-    registered.clear()
   }
 }
 
 export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() => void) | null => {
   let live = true
   const teardowns: (() => void)[] = []
-  const registered = new Set<HTMLElement>()
+  const registered = new Map<HTMLElement, () => void>()
   const upgradeByEmbed = new Map<HTMLElement, () => void>()
   const observer = new IntersectionObserver(
     entries => {
@@ -525,9 +542,24 @@ export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() =>
 
   const setupEmbed = (embed: HTMLElement): void => {
     if (registered.has(embed)) return
-    registered.add(embed)
     const activityIds = decodeActivityComparisonAnchor(embed.dataset.compareAnchor ?? '')
     if (!activityIds) return
+    const lifecycleSignal = rootNavSignal(embed)
+    const embedTeardowns: (() => void)[] = []
+    let cleaned = false
+    const cleanupEmbed = (): void => {
+      if (cleaned) return
+      cleaned = true
+      lifecycleSignal.removeEventListener('abort', cleanupEmbed)
+      observer.unobserve(embed)
+      upgradeByEmbed.delete(embed)
+      registered.delete(embed)
+      for (let index = embedTeardowns.length - 1; index >= 0; index -= 1) {
+        embedTeardowns[index]()
+      }
+    }
+    registered.set(embed, cleanupEmbed)
+    lifecycleSignal.addEventListener('abort', cleanupEmbed, { once: true })
     const detailPath = embed.dataset.detailPath ?? '/static/strava-detail.json'
     let upgraded = false
     let payload: DetailPayload | null = null
@@ -557,7 +589,8 @@ export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() =>
       observer.unobserve(embed)
       upgradeByEmbed.delete(embed)
       void context.resources.detail.load(detailPath).then(result => {
-        if (!live || !embed.isConnected || result.status !== 'ready') return
+        if (!live || lifecycleSignal.aborted || !embed.isConnected || result.status !== 'ready')
+          return
         payload = result.value
         render(result.value)
       })
@@ -571,7 +604,7 @@ export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() =>
       embed.addEventListener(event, upgrade, { once: true, passive: true })
     upgradeByEmbed.set(embed, upgrade)
     observer.observe(embed)
-    teardowns.push(() => {
+    embedTeardowns.push(() => {
       interactionCleanup?.()
       window.removeEventListener('tri:unit', onPresentationChange)
       window.removeEventListener('tri:locale', onPresentationChange)
@@ -597,7 +630,7 @@ export const setupActivityComparisonEmbeds = (context: TriathlonContext): (() =>
 
   return () => {
     live = false
+    for (const cleanup of Array.from(registered.values())) cleanup()
     for (const teardown of teardowns) teardown()
-    registered.clear()
   }
 }

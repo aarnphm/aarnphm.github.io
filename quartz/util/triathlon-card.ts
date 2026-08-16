@@ -4070,6 +4070,28 @@ const addPowerCurveThresholdCaption = <N>(
   if (hasThreshold) f.add(caption, thresholds, ...anchorRows)
 }
 
+const addActivityCriticalPowerCaption = <N>(
+  f: TriNodeFactory<N>,
+  caption: N,
+  estimate: CriticalPowerEstimate,
+): void => {
+  const thresholds = f.el('span', 'tri-curve-thresholds')
+  f.add(
+    thresholds,
+    f.el(
+      'span',
+      'tri-ana-k tri-curve-cp-k tri-curve-cp-k--ride',
+      `${triText(f.presentation.locale, 'this ride')} · ${criticalPowerSummaryText(f.presentation.locale, estimate)}`,
+      {
+        'data-gloss': '',
+        'data-gloss-def': criticalPowerEvidenceText(f.presentation.locale, estimate),
+        tabindex: '0',
+      },
+    ),
+  )
+  f.add(caption, thresholds)
+}
+
 const buildPowerCurveRanges = <N>(
   f: TriNodeFactory<N>,
   selected: PowerCurveRange,
@@ -4115,15 +4137,10 @@ export const buildPowerCurve = <N>(
   const isBike = d.sport === 'bike'
   const sixWeekRef = isBike ? ctx.curveRef : []
   const yearRef = isBike ? ctx.curveYearRef : []
-  const criticalPower = isBike ? ctx.criticalPower : null
-  const criticalPowerYear = isBike ? ctx.criticalPowerYear : null
-  const sixWeekModel =
-    criticalPower != null
-      ? criticalPowerCurve(criticalPower, curve[0].s, curve[curve.length - 1].s)
-      : []
-  const yearModel =
-    criticalPowerYear != null
-      ? criticalPowerCurve(criticalPowerYear, curve[0].s, curve[curve.length - 1].s)
+  const activityCriticalPower = isBike ? d.activityCriticalPower : null
+  const activityModel =
+    activityCriticalPower != null
+      ? criticalPowerCurve(activityCriticalPower, curve[0].s, curve[curve.length - 1].s)
       : []
   const ftpRef = isBike ? ctx.ftp : null
   const goalRef = isBike ? ctx.goalFtp : null
@@ -4151,10 +4168,8 @@ export const buildPowerCurve = <N>(
     ...curve.map(c => c.w),
     ...visibleSixWeekRef.map(c => c.w),
     ...visibleYearRef.map(c => c.w),
-    ...sixWeekModel.map(c => c.w),
-    ...yearModel.map(c => c.w),
-    criticalPower?.criticalPowerWatts ?? 0,
-    criticalPowerYear?.criticalPowerWatts ?? 0,
+    ...activityModel.map(c => c.w),
+    activityCriticalPower?.criticalPowerWatts ?? 0,
     ftpRef ?? 0,
     goalRef ?? 0,
   )
@@ -4212,44 +4227,27 @@ export const buildPowerCurve = <N>(
         ...(defaultRange === 'year' ? {} : { hidden: '' }),
       }),
     )
-  if (sixWeekModel.length >= 2)
+  if (activityModel.length >= 2)
     f.add(
       s,
       f.svg('path', {
-        d: toPath(sixWeekModel),
-        class: 'tri-curve-model',
-        'data-critical-power-range': 'six-weeks',
-        ...(defaultRange === 'six-weeks' ? {} : { hidden: '' }),
+        d: toPath(activityModel),
+        class: 'tri-curve-model tri-curve-model--ride',
+        'aria-hidden': 'true',
       }),
     )
-  if (yearModel.length >= 2)
-    f.add(
-      s,
-      f.svg('path', {
-        d: toPath(yearModel),
-        class: 'tri-curve-model',
-        'data-critical-power-range': 'year',
-        ...(defaultRange === 'year' ? {} : { hidden: '' }),
-      }),
-    )
-  for (const [range, estimate] of [
-    ['six-weeks', ctx.criticalPower],
-    ['year', ctx.criticalPowerYear],
-  ] as const) {
-    if (d.sport !== 'bike' || !estimate) continue
+  if (activityCriticalPower)
     f.add(
       s,
       f.svg('line', {
         x1: 0,
-        y1: Y(estimate.criticalPowerWatts).toFixed(2),
+        y1: Y(activityCriticalPower.criticalPowerWatts).toFixed(2),
         x2: W,
-        y2: Y(estimate.criticalPowerWatts).toFixed(2),
-        class: 'tri-curve-cp',
-        'data-critical-power-range': range,
-        ...(defaultRange === range ? {} : { hidden: '' }),
+        y2: Y(activityCriticalPower.criticalPowerWatts).toFixed(2),
+        class: 'tri-curve-cp tri-curve-cp--ride',
+        'aria-hidden': 'true',
       }),
     )
-  }
   if (ftpRef != null)
     f.add(
       s,
@@ -4328,6 +4326,41 @@ export const buildPowerCurve = <N>(
     )
     f.add(readout, referenceRow)
   }
+  const addCriticalPowerReadout = (estimate: CriticalPowerEstimate, label: string): void => {
+    const durations = estimate.anchors.map(anchor => anchor.durationS)
+    const minDuration = Math.min(...durations)
+    const maxDuration = Math.max(...durations)
+    const attrs: Record<string, string> = {
+      'data-curve-critical-power': String(estimate.criticalPowerWatts),
+      'data-curve-w-prime': String(estimate.wPrimeJoules),
+      'data-curve-model-min-seconds': String(minDuration),
+      'data-curve-model-max-seconds': String(maxDuration),
+      hidden: '',
+    }
+    const row = f.el(
+      'span',
+      'tri-curve-readout-row tri-curve-readout-row--model tri-curve-readout-row--model-ride',
+      undefined,
+      attrs,
+    )
+    f.add(
+      row,
+      f.el(
+        'span',
+        'tri-curve-readout-swatch tri-curve-readout-swatch--model tri-curve-readout-swatch--model-ride',
+        undefined,
+        { 'aria-hidden': 'true' },
+      ),
+      f.el('strong', 'tri-curve-readout-value tri-curve-readout-value--model'),
+      f.el('span', 'tri-curve-readout-label tri-curve-readout-label--model', label),
+    )
+    f.add(readout, row)
+  }
+  if (activityCriticalPower)
+    addCriticalPowerReadout(
+      activityCriticalPower,
+      triText(f.presentation.locale, 'this ride eCP model'),
+    )
   f.add(
     wrap,
     axisFrame(
@@ -4359,19 +4392,12 @@ export const buildPowerCurve = <N>(
     const p = curve.find(c => c.s === sec)
     if (p) f.add(cap, f.el('span', 'tri-ana-k', `${dlabel(sec)} ${p.w}W`))
   }
-  if (!embedded)
-    addPowerCurveThresholdCaption(
-      f,
-      cap,
-      [
-        ['six-weeks', criticalPower],
-        ['year', criticalPowerYear],
-      ],
-      defaultRange,
-      ftpRef,
-      goalRef,
-      d.id,
-    )
+  if (!embedded && ftpRef != null)
+    f.add(cap, f.el('span', 'tri-ana-k tri-curve-ftp-k', `FTP ${ftpRef}W`))
+  if (!embedded && goalRef != null)
+    f.add(cap, f.el('span', 'tri-ana-k tri-curve-goal-k', `goal ${goalRef}W`))
+  if (!embedded && activityCriticalPower)
+    addActivityCriticalPowerCaption(f, cap, activityCriticalPower)
   f.add(wrap, cap)
   return wrap
 }
@@ -4538,44 +4564,57 @@ export const buildTrainingEffectDetails = <N>(
   d: StravaActivityDetail,
 ): N | null => {
   const garmin = d.garmin
-  if (!garmin) return null
+  const hasGarminDetails =
+    garmin?.aerobicTrainingEffect != null ||
+    garmin?.anaerobicTrainingEffect != null ||
+    garmin?.aerobicTrainingEffectMessage != null ||
+    garmin?.anaerobicTrainingEffectMessage != null
+  const calculated = hasGarminDetails ? null : d.calculatedTrainingEffect
+  if (!hasGarminDetails && !calculated) return null
   const locale = f.presentation.locale === 'fr' ? 'fr-CA' : 'en-US'
   const effects = [
     {
       label: 'aerobic',
-      score: garmin.aerobicTrainingEffect,
+      score: garmin?.aerobicTrainingEffect ?? calculated?.aerobic ?? null,
       note: trainingEffectNote(
         'aerobic',
-        garmin.aerobicTrainingEffect,
-        garmin.aerobicTrainingEffectMessage,
+        garmin?.aerobicTrainingEffect ?? calculated?.aerobic ?? null,
+        hasGarminDetails ? (garmin?.aerobicTrainingEffectMessage ?? null) : null,
       ),
       group: trainingEffectGroup(
         'aerobic',
-        garmin.aerobicTrainingEffectMessage,
-        garmin.trainingEffectLabel,
+        hasGarminDetails ? (garmin?.aerobicTrainingEffectMessage ?? null) : null,
+        hasGarminDetails ? (garmin?.trainingEffectLabel ?? null) : null,
       ),
     },
     {
       label: 'anaerobic',
-      score: garmin.anaerobicTrainingEffect,
+      score: garmin?.anaerobicTrainingEffect ?? calculated?.anaerobic ?? null,
       note: trainingEffectNote(
         'anaerobic',
-        garmin.anaerobicTrainingEffect,
-        garmin.anaerobicTrainingEffectMessage,
+        garmin?.anaerobicTrainingEffect ?? calculated?.anaerobic ?? null,
+        hasGarminDetails ? (garmin?.anaerobicTrainingEffectMessage ?? null) : null,
       ),
       group: trainingEffectGroup(
         'anaerobic',
-        garmin.anaerobicTrainingEffectMessage,
-        garmin.trainingEffectLabel,
+        hasGarminDetails ? (garmin?.anaerobicTrainingEffectMessage ?? null) : null,
+        hasGarminDetails ? (garmin?.trainingEffectLabel ?? null) : null,
       ),
     },
   ].filter(effect => effect.score != null || effect.note != null)
   if (effects.length === 0) return null
+  const titleKey = 'training effect'
   const wrap = f.el('section', 'tri-zone tri-training-effect', undefined, {
-    'aria-label': 'training effect',
-    'data-i18n-aria-label': 'training effect',
+    'aria-label': triText(f.presentation.locale, titleKey),
+    'data-i18n-aria-label': titleKey,
+    'data-training-effect-source': calculated ? 'calculated' : 'garmin',
   })
-  f.add(wrap, f.el('div', 'tri-zone-title', 'training effect', { 'data-i18n': 'training effect' }))
+  f.add(
+    wrap,
+    f.el('div', 'tri-zone-title', triText(f.presentation.locale, titleKey), {
+      'data-i18n': titleKey,
+    }),
+  )
   const list = f.el('div', 'tri-training-effect-list')
   for (const effect of effects) {
     const score = trainingEffectScore(effect.score)
@@ -4818,10 +4857,10 @@ export const buildActivity = <N>(
           analysisSelection,
           undefined,
           undefined,
-          d.sport === 'bike' && ctx?.criticalPower
+          d.sport === 'bike' && d.activityCriticalPower
             ? {
-                value: ctx.criticalPower.criticalPowerWatts,
-                label: `eCP ${ctx.criticalPower.criticalPowerWatts} W`,
+                value: d.activityCriticalPower.criticalPowerWatts,
+                label: `eCP ${d.activityCriticalPower.criticalPowerWatts} W`,
               }
             : null,
         ),

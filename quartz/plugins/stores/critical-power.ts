@@ -1,6 +1,6 @@
 export const CRITICAL_POWER_DURATIONS_S = [180, 420, 720] as const
 
-export type CriticalPowerWindow = 'six-weeks' | 'calendar-year'
+export type CriticalPowerWindow = 'activity' | 'six-weeks' | 'calendar-year'
 export type CriticalPowerConfidence = 'medium' | 'provisional'
 
 export interface CriticalPowerAnchor {
