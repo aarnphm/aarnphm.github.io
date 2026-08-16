@@ -10,6 +10,7 @@ import {
 import {
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
+  enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
   enrichRunDynamics,
   enrichSwimMetrics,
@@ -47,6 +48,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   garmin: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
+  calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
   route: [],
@@ -63,6 +65,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   powerHist: null,
   powerWithoutZeros: null,
   powerCurve: null,
+  activityCriticalPower: null,
   bestEfforts: null,
   strokes: null,
   strokeCount: null,
@@ -120,9 +123,11 @@ test('enriches SSR payloads with pace-derived intensity factors and exercise loa
 
   enrichCalculatedIntensityFactors(payload, [{ id: swim.id, paceIntensityFactor: 1.011 }], 249, 173)
   enrichCalculatedExerciseLoads(payload)
+  enrichCalculatedTrainingEffects(payload)
 
   assert.deepEqual(swim.calculatedIntensityFactor, { value: 1.011, source: 'pace' })
   assert.deepEqual(swim.calculatedExerciseLoad, { value: 45.1, source: 'pace' })
+  assert.deepEqual(swim.calculatedTrainingEffect, { aerobic: 3.1, anaerobic: 0 })
 })
 
 test('aligns native Apple running dynamics to the matching run route', () => {

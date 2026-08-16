@@ -106,9 +106,12 @@
       display: none;
     }
 
-    &[data-stream-lazy='true'] > .stream-entry {
-      content-visibility: auto;
-      contain-intrinsic-size: auto 40rem;
+    > .stream-entry-spacer {
+      display: block;
+      inline-size: 100%;
+      min-block-size: 1px;
+      contain: strict;
+      pointer-events: none;
     }
   }
 
@@ -152,6 +155,10 @@
   .stream-search-load-error .stream-entry-body {
     margin: 0;
     color: var(--gray);
+  }
+
+  .stream-search-loading {
+    min-block-size: 40rem;
   }
 
   .stream-protected-unlock {

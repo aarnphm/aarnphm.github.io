@@ -96,6 +96,28 @@ const options = (
     tools: {
       conversions: [['pace', '/100m x 16.09 -> /mi']],
       gear: [['bike', ['Cervelo Soloist']]],
+      maintenance: {
+        chains: [
+          {
+            id: '3',
+            distance: null,
+            lubricant: 'UFO Wax Drip-On',
+            since: '2026-08-10',
+            waxed: true,
+          },
+        ],
+        wheels: [
+          {
+            position: 'rear',
+            part: 'tire',
+            type: 'Pirelli P Zero Race SL-R',
+            distance: null,
+            start: '2026-08-12',
+            end: null,
+            reason: null,
+          },
+        ],
+      },
     },
   }
 }
@@ -122,6 +144,9 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(training, /\| day \| session \|\n\| --- \| --- \|/)
   assert.match(training, /\| Monday \| Swim<br>easy \|/)
   assert.match(tools, /\| distance \| swim km \| bike km \| run km \|/)
+  assert.match(tools, /## maintenance/)
+  assert.match(tools, /chain 3: UFO Wax Drip-On; since 2026-08-10; waxed yes/)
+  assert.match(tools, /rear tire: Pirelli P Zero Race SL-R; 2026-08-12 to current/)
   assert.match(tools, /### bike\n\n- Cervelo Soloist/)
 })
 

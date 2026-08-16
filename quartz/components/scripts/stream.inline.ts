@@ -6,6 +6,7 @@ import {
 } from '../../util/stream-manifest'
 import { currentNavSignal } from './nav-lifecycle'
 import { setupStreamSearch } from './stream-search.inline'
+import { setupStreamVirtualizer, type StreamVirtualSource } from './stream-virtualizer'
 
 const formatEntryTimes = (scope: ParentNode): void => {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -84,7 +85,7 @@ const setupLazyFeed = (
   getGroupDocument: (group: StreamManifestGroup) => Promise<Document>,
   canonicalizePath: (path: string) => string,
   signal: AbortSignal,
-  mountEntry: (entry: HTMLElement, group: StreamManifestGroup) => void,
+  appendEntry: (entry: HTMLElement, group: StreamManifestGroup) => void,
 ): (() => void) => {
   const loadedEntryIds = new Set(
     Array.from(feed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]')).flatMap(entry =>
@@ -93,6 +94,11 @@ const setupLazyFeed = (
   )
   let nextGroupIndex = 0
   let loading = false
+  const isLoaded = (entryId: string): boolean =>
+    loadedEntryIds.has(entryId) ||
+    Array.from(feed.children).some(
+      child => child instanceof HTMLElement && child.dataset.entryId === entryId,
+    )
 
   const showArchiveFallback = (): void => {
     const link = document.createElement('a')
@@ -131,7 +137,7 @@ const setupLazyFeed = (
       while (nextGroupIndex < groups.length && nextGroups.length < 2) {
         const group = groups[nextGroupIndex]
         nextGroupIndex += 1
-        const loaded = group.entries.every(entry => loadedEntryIds.has(entry.id))
+        const loaded = group.entries.every(entry => isLoaded(entry.id))
         if (!loaded && group.path) nextGroups.push(group)
       }
 
@@ -147,10 +153,10 @@ const setupLazyFeed = (
       nextGroups.forEach((group, index) => {
         for (const entry of batches[index]) {
           const entryId = entry.dataset.entryId
-          if (!entryId || loadedEntryIds.has(entryId)) continue
+          if (!entryId || isLoaded(entryId)) continue
           loadedEntryIds.add(entryId)
           feed.append(entry)
-          mountEntry(entry, group)
+          appendEntry(entry, group)
         }
       })
 
@@ -194,6 +200,7 @@ const hydrateStream = (): void => {
   let activeTimestamp: string | null = null
   let manifestRequest: Promise<StreamManifestGroup[]> | null = null
   const groupDocumentRequests = new Map<string, Promise<Document>>()
+  let refreshVirtualFeed = (): void => {}
 
   const getManifest = (): Promise<StreamManifestGroup[]> => {
     manifestRequest ??= fetchStreamManifest(signal)
@@ -218,7 +225,7 @@ const hydrateStream = (): void => {
   ): Promise<HTMLElement> => entryForGroup(await getGroupDocument(group), group, entry)
 
   const streamEntries = (): HTMLElement[] =>
-    Array.from(feed.querySelectorAll<HTMLElement>('.stream-entry[data-entry-id]'))
+    Array.from(feed.querySelectorAll<HTMLElement>(':scope > [data-entry-id]'))
 
   const streamLinks = (): HTMLAnchorElement[] =>
     Array.from(
@@ -233,8 +240,12 @@ const hydrateStream = (): void => {
     )
   }
 
-  const targetEntryId = (): string | null =>
-    new URL(window.location.href).searchParams.get('entry')?.trim() || null
+  const targetEntryId = (): string | null => {
+    const url = new URL(window.location.href)
+    return (
+      url.searchParams.get('entry')?.trim() || decodeURIComponent(url.hash.slice(1)).trim() || null
+    )
+  }
 
   const applyFilters = (): void => {
     const entries = streamEntries()
@@ -265,6 +276,7 @@ const hydrateStream = (): void => {
     if (sentinel?.isConnected) {
       sentinel.hidden = activeTimestamp !== null || root.dataset.streamSearchActive === 'true'
     }
+    refreshVirtualFeed()
     notifyProtectedContent()
   }
 
@@ -277,6 +289,10 @@ const hydrateStream = (): void => {
   }
 
   const timestampForPath = (path: string): string | null => {
+    for (const entry of streamEntries()) {
+      const href = entry.dataset.streamHref
+      if (href && canonicalizePath(href) === path) return entry.dataset.streamTimestamp ?? null
+    }
     for (const link of streamLinks()) {
       const href = link.dataset.streamHref
       if (href && canonicalizePath(href) === path) return link.dataset.streamTimestamp ?? null
@@ -294,7 +310,79 @@ const hydrateStream = (): void => {
   applyFilters()
 
   const cleanups: (() => void)[] = []
-  if (isRoot && sentinel) {
+  const virtualizer = isRoot ? setupStreamVirtualizer(feed, signal) : null
+  if (virtualizer) {
+    refreshVirtualFeed = virtualizer.refresh
+    cleanups.push(virtualizer.destroy)
+    const sourceForEntry = (
+      entryId: string,
+      knownGroup?: StreamManifestGroup,
+    ): StreamVirtualSource => {
+      let resolvedGroup = knownGroup
+      return {
+        entryId,
+        load: async () => {
+          if (!resolvedGroup) {
+            const groups = await getManifest()
+            resolvedGroup = groups.find(group => group.entries.some(entry => entry.id === entryId))
+          }
+          const group = resolvedGroup
+          const manifestEntry = group?.entries.find(entry => entry.id === entryId)
+          if (!group || !manifestEntry) throw new Error(`stream manifest is missing ${entryId}`)
+          return loadEntry(manifestEntry, group)
+        },
+        mount: entry => {
+          if (!resolvedGroup) throw new Error(`stream manifest is missing group for ${entryId}`)
+          mountEntry(entry, resolvedGroup)
+        },
+      }
+    }
+    for (const entry of streamEntries()) {
+      const entryId = entry.dataset.entryId
+      if (entryId) virtualizer.registerMounted(entry, sourceForEntry(entryId))
+    }
+
+    const appendEntry = (entry: HTMLElement, group: StreamManifestGroup): void => {
+      mountEntry(entry, group)
+      const entryId = entry.dataset.entryId
+      if (entryId) virtualizer.registerMounted(entry, sourceForEntry(entryId, group))
+    }
+    if (sentinel) {
+      cleanups.push(
+        setupLazyFeed(
+          root,
+          feed,
+          sentinel,
+          getManifest,
+          getGroupDocument,
+          canonicalizePath,
+          signal,
+          appendEntry,
+        ),
+      )
+    }
+    const ensureTargetEntry = async (): Promise<void> => {
+      const entryId = targetEntryId()
+      if (!entryId || streamEntries().some(entry => entry.dataset.entryId === entryId)) return
+      const groups = await getManifest()
+      const group = groups.find(candidate => candidate.entries.some(entry => entry.id === entryId))
+      const manifestEntry = group?.entries.find(entry => entry.id === entryId)
+      if (!group || !manifestEntry || signal.aborted || targetEntryId() !== entryId) return
+      const entry = await loadEntry(manifestEntry, group)
+      if (signal.aborted || targetEntryId() !== entryId) return
+      const existing = streamEntries().find(candidate => candidate.dataset.entryId === entryId)
+      if (existing) {
+        existing.scrollIntoView({ block: 'start' })
+        return
+      }
+      feed.append(entry)
+      appendEntry(entry, group)
+      window.requestAnimationFrame(() => entry.scrollIntoView({ block: 'start' }))
+    }
+    void ensureTargetEntry().catch(error => {
+      if (!signal.aborted) console.error(error)
+    })
+  } else if (isRoot && sentinel) {
     cleanups.push(
       setupLazyFeed(
         root,

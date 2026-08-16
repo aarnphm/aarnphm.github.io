@@ -3,6 +3,7 @@ import type { Analytics } from '../plugins/stores/analytics'
 import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/strava'
 import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
+import type { TriathlonMaintenance } from './triathlon-maintenance'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import { buildFeedMarkdown } from './triathlon-feed'
 
@@ -19,6 +20,7 @@ export type TriathlonMarkdownView =
 export interface TriathlonMarkdownTools {
   conversions: ReadonlyArray<readonly [string, string]>
   gear: ReadonlyArray<readonly [string, readonly string[]]>
+  maintenance: TriathlonMaintenance | null
 }
 
 export interface TriathlonMarkdownOptions {
@@ -209,6 +211,26 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
   const gear = opts.tools.gear
     .map(([label, items]) => [`### ${label}`, '', ...items.map(item => `- ${item}`)].join('\n'))
     .join('\n\n')
+  const maintenance = opts.tools.maintenance
+    ? [
+        '## maintenance',
+        '',
+        '### chains',
+        '',
+        ...opts.tools.maintenance.chains.map(
+          entry =>
+            `- chain ${entry.id}: ${entry.lubricant}; since ${entry.since}${entry.distance ? `; ${entry.distance}` : ''}; waxed ${entry.waxed ? 'yes' : 'no'}`,
+        ),
+        '',
+        '### tires',
+        '',
+        ...opts.tools.maintenance.wheels.map(
+          entry =>
+            `- ${entry.position} ${entry.part}: ${entry.type}; ${entry.start} to ${entry.end ?? 'current'}${entry.distance ? `; ${entry.distance}` : ''}${entry.reason ? `; reason: ${entry.reason}` : ''}`,
+        ),
+        '',
+      ]
+    : []
   return document(
     opts,
     [
@@ -220,6 +242,7 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
       '',
       distances,
       '',
+      ...maintenance,
       '## gear and fuel',
       '',
       gear,

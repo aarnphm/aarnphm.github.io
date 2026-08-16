@@ -726,6 +726,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   garmin: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
+  calculatedTrainingEffect: null,
   gearShifts: [],
   cyclingDynamics: null,
   route: [
@@ -827,6 +828,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   powerHist: null,
   powerWithoutZeros: null,
   powerCurve: null,
+  activityCriticalPower: null,
   bestEfforts: {
     weightKg: 87.55,
     weightDate: '2026-07-09',
@@ -1094,6 +1096,7 @@ test('renders Garmin training effect scores and notes immediately above heart ra
   const rendered = buildActivity(factory, activity, true, ctx())
   const details = byClass(rendered, 'tri-training-effect')[0]
   assert.ok(details)
+  assert.equal(details.properties.dataTrainingEffectSource, 'garmin')
   assert.deepEqual(byClass(details, 'tri-training-effect-label').map(text), [
     'aerobic',
     'anaerobic',
@@ -1167,6 +1170,41 @@ test('renders Garmin training effect scores and notes immediately above heart ra
     'improving aerobic fitness',
     'minor anaerobic benefit',
   ])
+
+  const calculatedDetails = buildTrainingEffectDetails(
+    factory,
+    detail({ sport: 'run', calculatedTrainingEffect: { aerobic: 3.4, anaerobic: 1.2 } }),
+  )
+  assert.ok(calculatedDetails)
+  assert.equal(calculatedDetails.properties.dataTrainingEffectSource, 'calculated')
+  assert.equal(text(byClass(calculatedDetails, 'tri-zone-title')[0]), 'training effect')
+  assert.deepEqual(byClass(calculatedDetails, 'tri-training-effect-score').map(text), [
+    '3.4',
+    '1.2',
+  ])
+  assert.deepEqual(byClass(calculatedDetails, 'tri-training-effect-note').map(text), [
+    'improving aerobic fitness',
+    'minor anaerobic benefit',
+  ])
+  assert.deepEqual(
+    byClass(calculatedDetails, 'tri-training-effect-meter-fill').map(fill => fill.properties.style),
+    ['--tri-training-effect-progress:68.0%', '--tri-training-effect-progress:24.0%'],
+  )
+  const frenchCalculatedDetails = buildTrainingEffectDetails(
+    factoryFor(frenchPresentation),
+    detail({ sport: 'swim', calculatedTrainingEffect: { aerobic: 2.4, anaerobic: 0.4 } }),
+  )
+  assert.ok(frenchCalculatedDetails)
+  assert.equal(frenchCalculatedDetails.properties.ariaLabel, "effet d'entraînement")
+  assert.equal(text(byClass(frenchCalculatedDetails, 'tri-zone-title')[0]), "effet d'entraînement")
+
+  const nativeDetails = buildTrainingEffectDetails(
+    factory,
+    detail({ garmin, calculatedTrainingEffect: { aerobic: 1.1, anaerobic: 4.9 } }),
+  )
+  assert.ok(nativeDetails)
+  assert.equal(nativeDetails.properties.dataTrainingEffectSource, 'garmin')
+  assert.deepEqual(byClass(nativeDetails, 'tri-training-effect-score').map(text), ['4.5', '2.7'])
 })
 
 test('renders strength volume, totals, exercises, and exact loaded sets', () => {
@@ -3259,8 +3297,9 @@ const criticalPower = (
   wPrimeJoules: 10_300,
   method: 'two-parameter-power-space',
   window,
-  windowFrom: window === 'six-weeks' ? '2026-07-03' : '2026-01-01',
-  windowTo: '2026-08-13',
+  windowFrom:
+    window === 'activity' ? '2026-07-09' : window === 'six-weeks' ? '2026-07-03' : '2026-01-01',
+  windowTo: window === 'activity' ? '2026-07-09' : '2026-08-13',
   anchors: [
     {
       durationS: 180,
@@ -3961,9 +4000,20 @@ test('renders six-week and calendar-year comparison ranges on one watt domain', 
   assert.equal(referenceRow.properties.dataPowerActivityId, '102')
 })
 
-test('renders critical power models, asymptotes, and provenance on bike power charts', () => {
+test('renders only the ride critical power model and keeps FTP and goal in the efforts row', () => {
   const sixWeeks = criticalPower()
   const year = { ...criticalPower('calendar-year'), criticalPowerWatts: 252 }
+  const ride = {
+    ...criticalPower('activity'),
+    criticalPowerWatts: 245,
+    wPrimeJoules: 9_600,
+    anchors: criticalPower('activity').anchors.map(anchor => ({
+      ...anchor,
+      activityId: 101,
+      activityDate: '2026-07-09',
+    })),
+    independentEffortCount: 1,
+  }
   const context = ctx({
     curveRef: [
       { s: 1, w: 700 },
@@ -3980,36 +4030,48 @@ test('renders critical power models, asymptotes, and provenance on bike power ch
     criticalPowerYear: year,
   })
   const bike = zonedDetail()
+  bike.activityCriticalPower = ride
   bike.powerHist = Array.from({ length: 13 }, () => 1)
   const curve = buildPowerCurve(factory, bike, context)
   assert.ok(curve)
-  assert.equal(byClass(curve, 'tri-curve-model').length, 2)
-  assert.equal(byClass(curve, 'tri-curve-cp').length, 2)
+  assert.equal(byClass(curve, 'tri-curve-model').length, 1)
+  assert.equal(byClass(curve, 'tri-curve-model--ride').length, 1)
+  assert.equal(byClass(curve, 'tri-curve-model--ref').length, 0)
+  assert.equal(byClass(curve, 'tri-curve-cp').length, 1)
+  assert.equal(byClass(curve, 'tri-curve-cp--ride').length, 1)
+  const modelRows = byClass(curve, 'tri-curve-readout-row--model')
+  assert.equal(modelRows.length, 1)
+  assert.deepEqual(byClass(curve, 'tri-curve-readout-label--model').map(text), [
+    'this ride eCP model',
+  ])
+  assert.equal(modelRows[0].properties.dataCurveCriticalPower, '245')
+  assert.equal(modelRows[0].properties.dataCurveWPrime, '9600')
+  assert.equal(modelRows[0].properties.dataCurveModelMinSeconds, '180')
+  assert.equal(modelRows[0].properties.dataCurveModelMaxSeconds, '720')
   const summaries = byClass(curve, 'tri-curve-cp-k')
-  assert.equal(summaries.length, 2)
-  assert.equal(text(summaries[0]), 'eCP 249 W · eW′ 10.3 kJ')
-  assert.equal(summaries[0].properties.dataGlossDef, '2 independent efforts · provisional')
+  assert.equal(summaries.length, 1)
+  assert.equal(text(summaries[0]), 'this ride · eCP 245 W · eW′ 9.6 kJ')
+  assert.equal(summaries[0].properties.dataGlossDef, '1 independent effort · provisional')
   assert.equal(summaries[0].properties.tabIndex, 0)
   assert.equal('hidden' in summaries[0].properties, false)
-  assert.equal('hidden' in summaries[1].properties, true)
   const anchors = byClass(curve, 'tri-critical-power-anchor')
-  assert.equal(anchors.length, 6)
-  assert.equal(anchors[0].properties.href, '/triathlon/on/2026/08/09#tri-activity-102')
-  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-duration').map(text), ['3m'])
-  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-date').map(text), ['2026-08-09'])
-  assert.deepEqual(byClass(anchors[0], 'tri-critical-power-anchor-power').map(text), ['306.5W'])
+  assert.equal(anchors.length, 0)
   const thresholds = byClass(curve, 'tri-curve-thresholds')
   assert.equal(thresholds.length, 1)
   assert.deepEqual((thresholds[0].children as Element[]).map(text), [
-    'eCP 249 W · eW′ 10.3 kJ',
-    'eCP 252 W · eW′ 10.3 kJ',
-    'FTP 260W',
-    'goal 280W',
+    'this ride · eCP 245 W · eW′ 9.6 kJ',
   ])
   const cap = byClass(curve, 'tri-elev-cap')[0]
   const capChildren = cap.children as Element[]
-  const anchorRows = byClass(curve, 'tri-critical-power-anchors')
-  assert.ok(capChildren.indexOf(thresholds[0]) < capChildren.indexOf(anchorRows[0]))
+  assert.deepEqual(capChildren.slice(0, 6).map(text), [
+    '5s 540W',
+    '1m 320W',
+    '5m 250W',
+    '20m 230W',
+    'FTP 260W',
+    'goal 280W',
+  ])
+  assert.equal(capChildren[6], thresholds[0])
 
   const embeddedCurve = buildPowerCurve(factory, bike, context, true)
   assert.ok(embeddedCurve)
@@ -4027,7 +4089,7 @@ test('renders critical power models, asymptotes, and provenance on bike power ch
 
   const activity = buildActivity(factory, bike, true, context)
   assert.equal(byClass(activity, 'tri-trace-reference').length, 1)
-  assert.equal(text(byClass(activity, 'tri-trace-reference-k')[0]), 'eCP 249 W')
+  assert.equal(text(byClass(activity, 'tri-trace-reference-k')[0]), 'eCP 245 W')
 })
 
 test('keeps critical power references off run power charts', () => {

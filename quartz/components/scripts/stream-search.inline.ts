@@ -1,6 +1,13 @@
-import FlexSearch, { type Document as FlexSearchDocument } from 'flexsearch'
 import type { StreamManifestEntry, StreamManifestGroup } from '../../util/stream-manifest'
-import { encode, tokenizeTerm } from '../../util/search-text'
+import { tokenizeTerm } from '../../util/search-text'
+import {
+  buildStreamSearchData,
+  matchStreamEntries,
+  tagTokens,
+  type IndexedStreamEntry,
+  type StreamSearchData,
+} from './stream-search-index'
+import { setupStreamVirtualizer, type StreamVirtualizer } from './stream-virtualizer'
 
 interface StreamSearchSetup {
   root: HTMLElement
@@ -11,91 +18,6 @@ interface StreamSearchSetup {
   loadEntry: (entry: StreamManifestEntry, group: StreamManifestGroup) => Promise<HTMLElement>
   mountEntry: (entry: HTMLElement, group: StreamManifestGroup) => void
   signal: AbortSignal
-}
-
-interface IndexedEntry {
-  id: number
-  entry: StreamManifestEntry
-  group: StreamManifestGroup
-}
-
-interface SearchData {
-  index: FlexSearchDocument
-  entries: IndexedEntry[]
-}
-
-const tagsForEntry = (entry: StreamManifestEntry): string[] => {
-  if (!entry.metadata || typeof entry.metadata !== 'object' || Array.isArray(entry.metadata))
-    return []
-  const tags = Reflect.get(entry.metadata, 'tags')
-  if (!Array.isArray(tags)) return []
-  return tags.map(tag => String(tag).trim()).filter(tag => tag.length > 0)
-}
-
-const buildSearchData = async (groups: StreamManifestGroup[]): Promise<SearchData> => {
-  const entries = groups.flatMap(group => group.entries.map(entry => ({ id: 0, entry, group })))
-  entries.forEach((entry, index) => {
-    entry.id = index
-  })
-
-  const index = new FlexSearch.Document({
-    tokenize: 'forward',
-    encode,
-    document: { id: 'id', index: ['content', 'metadata', 'isoDate', 'displayDate', 'tags'] },
-  })
-
-  for (const indexed of entries) {
-    const tags = tagsForEntry(indexed.entry)
-    await index.addAsync({
-      id: indexed.id,
-      content: [indexed.entry.title, indexed.entry.description, indexed.entry.content]
-        .filter(value => value !== null && value.length > 0)
-        .join(' '),
-      metadata: JSON.stringify(indexed.entry.metadata ?? {}),
-      isoDate: indexed.entry.isoDate ?? indexed.group.isoDate ?? '',
-      displayDate: indexed.entry.displayDate ?? indexed.group.isoDate ?? '',
-      tags: tags.flatMap(tag => [tag, `#${tag}`]).join(' '),
-    })
-  }
-
-  return { index, entries }
-}
-
-const tagTokens = (query: string): string[] =>
-  Array.from(
-    new Set(
-      query
-        .trim()
-        .split(/\s+/)
-        .map(token => (token.startsWith('#') ? token.slice(1) : ''))
-        .filter(token => token.length > 0),
-    ),
-  )
-
-const matchedEntries = async (data: SearchData, query: string): Promise<IndexedEntry[]> => {
-  const normalizedQuery = query.trim().toLowerCase()
-  if (normalizedQuery.startsWith('#')) {
-    const queryTags = tagTokens(normalizedQuery)
-    if (queryTags.length === 0) return []
-    return data.entries.filter(({ entry }) => {
-      const tags = tagsForEntry(entry).map(tag => tag.toLowerCase())
-      return queryTags.every(queryTag => tags.some(tag => tag.startsWith(queryTag)))
-    })
-  }
-
-  const results = await data.index.searchAsync({
-    query,
-    limit: 500,
-    index: ['content', 'metadata', 'isoDate', 'displayDate', 'tags'],
-  })
-  const ids = new Set<number>()
-  for (const result of results) {
-    for (const id of result.result) {
-      const numericId = Number(id)
-      if (Number.isInteger(numericId)) ids.add(numericId)
-    }
-  }
-  return data.entries.filter(entry => ids.has(entry.id))
 }
 
 const appendHighlightedText = (target: ParentNode, value: string, rawTokens: string[]): void => {
@@ -179,13 +101,16 @@ const entryHref = (
 }
 
 const renderLoadingResult = (
-  indexed: IndexedEntry,
+  indexed: IndexedStreamEntry,
   canonicalizePath: (path: string) => string,
 ): HTMLLIElement => {
   const { entry, group } = indexed
   const item = document.createElement('li')
   item.className = 'stream-entry stream-search-loading'
   item.setAttribute('aria-busy', 'true')
+  item.dataset.entryId = entry.id
+  item.dataset.streamGroupId = group.groupId
+  if (group.timestamp) item.dataset.streamTimestamp = group.timestamp.toString()
 
   const meta = document.createElement('div')
   meta.className = 'stream-entry-meta'
@@ -214,7 +139,7 @@ const renderLoadingResult = (
 }
 
 const renderLoadFailure = (
-  indexed: IndexedEntry,
+  indexed: IndexedStreamEntry,
   canonicalizePath: (path: string) => string,
 ): HTMLLIElement => {
   const item = document.createElement('li')
@@ -232,25 +157,6 @@ const renderLoadFailure = (
   body.append(link)
   item.append(meta, body)
   return item
-}
-
-export const mapWithConcurrency = async <Input, Output>(
-  values: readonly Input[],
-  concurrency: number,
-  transform: (value: Input, index: number) => Promise<Output>,
-): Promise<Output[]> => {
-  const results: Output[] = []
-  let cursor = 0
-  const worker = async (): Promise<void> => {
-    while (cursor < values.length) {
-      const index = cursor
-      cursor += 1
-      results[index] = await transform(values[index], index)
-    }
-  }
-  const workerCount = Math.min(values.length, Math.max(1, Math.floor(concurrency)))
-  await Promise.all(Array.from({ length: workerCount }, worker))
-  return results
 }
 
 const updateStatus = (form: HTMLFormElement, message: string): void => {
@@ -285,15 +191,16 @@ export const setupStreamSearch = ({
   resultsFeed.hidden = true
   feed.after(resultsFeed)
 
-  let searchData: Promise<SearchData> | null = null
+  let searchData: Promise<StreamSearchData> | null = null
   let searchTimeout: number | null = null
   let searchVersion = 0
   let browseScrollY = 0
   let browseScrollCaptured = false
   let searchActive = false
+  let resultVirtualizer: StreamVirtualizer | null = null
 
-  const prepare = (): Promise<SearchData> => {
-    searchData ??= getManifest().then(buildSearchData)
+  const prepare = (): Promise<StreamSearchData> => {
+    searchData ??= getManifest().then(buildStreamSearchData)
     return searchData
   }
 
@@ -308,13 +215,19 @@ export const setupStreamSearch = ({
     resultsFeed.hidden = false
   }
 
+  const clearResults = (): void => {
+    resultVirtualizer?.destroy()
+    resultVirtualizer = null
+    resultsFeed.replaceChildren()
+  }
+
   const restoreBrowse = (): void => {
     if (!searchActive) return
     searchActive = false
     browseScrollCaptured = false
     root.removeAttribute('data-stream-search-active')
     resultsFeed.hidden = true
-    resultsFeed.replaceChildren()
+    clearResults()
     resultsFeed.before(feed)
     if (sentinel) sentinel.hidden = false
     resultsFeed.removeAttribute('aria-busy')
@@ -331,12 +244,12 @@ export const setupStreamSearch = ({
     }
 
     activateSearch()
-    resultsFeed.replaceChildren()
+    clearResults()
     resultsFeed.setAttribute('aria-busy', 'true')
     updateStatus(form, 'searching…')
     const data = await prepare()
     if (signal.aborted || version !== searchVersion) return
-    const matches = await matchedEntries(data, trimmed)
+    const matches = await matchStreamEntries(data, trimmed)
     if (signal.aborted || version !== searchVersion) return
 
     const tokens = trimmed.startsWith('#') ? tagTokens(trimmed) : tokenizeTerm(trimmed)
@@ -358,31 +271,28 @@ export const setupStreamSearch = ({
 
     const placeholders = matches.map(entry => renderLoadingResult(entry, canonicalizePath))
     resultsFeed.replaceChildren(...placeholders)
-    updateStatus(form, `loading ${matches.length} ${matches.length === 1 ? 'entry' : 'entries'}…`)
-
-    const loaded = await mapWithConcurrency(matches, 4, async (indexed, index) => {
-      try {
-        const element = await loadEntry(indexed.entry, indexed.group)
-        if (signal.aborted || version !== searchVersion) return false
-        element.classList.add('stream-entry-search-result')
-        highlightEntry(element, tokens)
-        placeholders[index].replaceWith(element)
-        mountEntry(element, indexed.group)
-        return true
-      } catch (error) {
-        if (signal.aborted || version !== searchVersion) return false
-        console.error(error)
-        placeholders[index].replaceWith(renderLoadFailure(indexed, canonicalizePath))
-        return false
-      }
-    })
-    if (signal.aborted || version !== searchVersion) return
     resultsFeed.removeAttribute('aria-busy')
-    const loadedCount = loaded.filter(Boolean).length
-    if (loadedCount !== matches.length) {
-      updateStatus(form, `loaded ${loadedCount} of ${matches.length} entries`)
-      return
-    }
+    const virtualizer = setupStreamVirtualizer(resultsFeed, signal)
+    resultVirtualizer = virtualizer
+    matches.forEach((indexed, index) => {
+      virtualizer.registerPlaceholder(placeholders[index], {
+        entryId: indexed.entry.id,
+        load: async () => {
+          const element = await loadEntry(indexed.entry, indexed.group)
+          if (signal.aborted || version !== searchVersion) {
+            throw new DOMException('stale search result', 'AbortError')
+          }
+          element.classList.add('stream-entry-search-result')
+          highlightEntry(element, tokens)
+          return element
+        },
+        mount: element => mountEntry(element, indexed.group),
+        failure: error => {
+          if (!(error instanceof DOMException && error.name === 'AbortError')) console.error(error)
+          return renderLoadFailure(indexed, canonicalizePath)
+        },
+      })
+    })
 
     if (trimmed.startsWith('#')) {
       const readableTags = tagTokens(trimmed)
@@ -452,6 +362,7 @@ export const setupStreamSearch = ({
   return () => {
     searchVersion += 1
     if (searchTimeout !== null) window.clearTimeout(searchTimeout)
+    resultVirtualizer?.destroy()
     if (!feed.isConnected && resultsFeed.isConnected) resultsFeed.before(feed)
     resultsFeed.remove()
     if (sentinel) sentinel.hidden = false

@@ -22,6 +22,7 @@ import {
   coreBodyTemperatureCachePath,
   enrichCalculatedExerciseLoads,
   enrichCalculatedIntensityFactors,
+  enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
   enrichRunDynamics,
   enrichSwimMetrics,
@@ -36,6 +37,10 @@ import {
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
+import {
+  parseTriathlonMaintenance,
+  type TriathlonMaintenance,
+} from '../../util/triathlon-maintenance'
 import { buildTriathlonMarkdown } from '../../util/triathlon-markdown'
 import { buildStravaActivityIndex } from '../../util/triathlon-shortcut'
 import {
@@ -199,6 +204,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     for (const [tree, file] of content) {
       if (!isTriathlon(file.data)) continue
       const since = file.data.frontmatter?.['strava']
+      const maintenance = parseTriathlonMaintenance(file.data.frontmatter?.['maintenance'])
       const tracking = file.data.tracking
       const vo2labs = parseVo2Lab(file.data.frontmatter?.['vo2max'])
       const latestVo2 = vo2labs.length ? vo2labs[vo2labs.length - 1] : null
@@ -260,6 +266,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       })
       enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
       enrichCalculatedExerciseLoads(payload)
+      enrichCalculatedTrainingEffects(payload)
       const detailPayload: StravaDetailPayload = {
         details: payload.details,
         swimTrend: payload.swimTrend,
@@ -353,7 +360,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       const externalResources = pageResources(pathToRoot(slug), resources, ctx)
       const componentData: QuartzComponentProps = {
         ctx,
-        fileData: { ...file.data, stravaPayload: payload, triathlonRenderData },
+        fileData: {
+          ...file.data,
+          stravaPayload: payload,
+          triathlonMaintenance: maintenance,
+          triathlonRenderData,
+        },
         externalResources,
         cfg: ctx.cfg.configuration,
         children: [],
@@ -386,7 +398,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           analytics,
           payload,
           plans,
-          tools: { conversions: CONVERSIONS, gear: GEAR },
+          tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
         })
         const [subTree, subFile] = defaultProcessedContent({
           slug: subSlug,
@@ -404,7 +416,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         const subResources = pageResources(pathToRoot(subSlug), resources, ctx)
         const subData: QuartzComponentProps = {
           ctx,
-          fileData: { ...subFile.data, stravaPayload: payload, triathlonRenderData },
+          fileData: {
+            ...subFile.data,
+            stravaPayload: payload,
+            triathlonMaintenance: maintenance,
+            triathlonRenderData,
+          },
           externalResources: subResources,
           cfg: ctx.cfg.configuration,
           children: [],
@@ -481,7 +498,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
                 analytics,
                 payload,
                 plans,
-                tools: { conversions: CONVERSIONS, gear: GEAR },
+                tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
               })
               const [dayTree, dayFile] = defaultProcessedContent({
                 slug: daySlug,
@@ -569,6 +586,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
 declare module 'vfile' {
   interface DataMap {
     stravaPayload: StravaPayload
+    triathlonMaintenance: TriathlonMaintenance | null
     triathlonRenderData: TriathlonRenderData
   }
 }

@@ -40,12 +40,13 @@ test('fits critical power and W prime in power space', () => {
 test('marks overlapping anchors from one effort as provisional', () => {
   const estimate = fitCriticalPower(
     [anchor(180, 1, 1_000), anchor(420, 1, 1_000), anchor(720, 1, 1_000)],
-    'calendar-year',
-    '2026-01-01',
-    '2026-08-13',
+    'activity',
+    '2026-08-01',
+    '2026-08-01',
   )
 
   assert.ok(estimate)
+  assert.equal(estimate.window, 'activity')
   assert.equal(estimate.independentEffortCount, 1)
   assert.equal(estimate.confidence, 'provisional')
 })

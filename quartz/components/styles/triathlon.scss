@@ -1937,6 +1937,102 @@
   @include thin-scrollbar;
 }
 
+.tri-maintenance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+}
+
+.tri-maintenance-heading {
+  color: var(--dark);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tri-maintenance-group {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.tri-maintenance-group-label {
+  color: var(--gray);
+  font-size: 0.58rem;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+
+.tri-maintenance-list {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tri-maintenance-entry {
+  display: grid;
+  gap: 0.14rem;
+  min-width: 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 18%, transparent);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+.tri-maintenance-entry-head {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: baseline;
+  font-size: 0.64rem;
+  line-height: 1.4;
+}
+
+.tri-maintenance-entry-label {
+  color: var(--gray);
+  white-space: nowrap;
+}
+
+.tri-maintenance-entry-name {
+  min-width: 0;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+}
+
+.tri-maintenance-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.08rem 0.45rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+  line-height: 1.45;
+
+  > span + span::before {
+    content: '·';
+    margin-inline-end: 0.45rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .tri-maintenance-group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+  }
+
+  .tri-maintenance-entry-head {
+    grid-template-columns: 4.1rem minmax(0, 1fr);
+  }
+}
+
 .tri-ratio {
   container-name: tri-ratio;
   container-type: inline-size;
@@ -4305,8 +4401,7 @@
   color: var(--dark);
   font-size: 0.58rem;
   font-variant-numeric: tabular-nums;
-  background: color-mix(in srgb, var(--light) 90%, transparent);
-  backdrop-filter: blur(3px);
+  background: var(--light);
   pointer-events: none;
 }
 
@@ -10862,6 +10957,8 @@
   row-gap: 0.18rem;
   min-width: 8.75rem;
   padding: 0.38rem 0.48rem;
+  background: var(--light);
+  backdrop-filter: none;
 }
 
 .tri-curve-readout-duration {
@@ -10890,6 +10987,10 @@
   }
 }
 
+.tri-curve-readout-row--model[hidden] {
+  display: none;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .tri-curve-readout-row[href]:hover {
     background: transparent;
@@ -10912,6 +11013,14 @@
 
 .tri-curve-readout-swatch--ref {
   background: color-mix(in srgb, var(--tri-accent) 32%, transparent);
+}
+
+.tri-curve-readout-swatch--model {
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in srgb, var(--tri-accent) 58%, var(--dark)) 0 4px,
+    transparent 4px 6px
+  );
 }
 
 .tri-curve-readout-value {

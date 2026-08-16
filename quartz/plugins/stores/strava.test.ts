@@ -6,6 +6,7 @@ import {
   applyManualStrength,
   buildPayload,
   calculateActivityIntensityFactor,
+  calculateActivityTrainingEffect,
   calculateExerciseLoad,
   hasFetchedActivityDetail,
   type RawStravaActivity,
@@ -60,6 +61,25 @@ test('calculates exercise load from capped intensity and moving duration', () =>
   assert.equal(calculateExerciseLoad(2, 3_600), 132.3)
   assert.equal(calculateExerciseLoad(0, 3_600), null)
   assert.equal(calculateExerciseLoad(0.8, 0), null)
+})
+
+test('calculates missing run training effect from relative effort and upper-zone time', () => {
+  assert.deepEqual(
+    calculateActivityTrainingEffect({
+      sport: 'run',
+      distanceKm: 10,
+      movingTimeS: 3_600,
+      sufferScore: 30,
+      garmin: null,
+      calculatedIntensityFactor: { value: 0.9, source: 'pace' },
+      calculatedExerciseLoad: { value: 81, source: 'pace' },
+      hrZones: [0, 0, 3_360, 240, 0],
+      analysisRanges: [],
+      swimPaceSPer100m: null,
+      swimIntervals: [],
+    }),
+    { aerobic: 3, anaerobic: 2 },
+  )
 })
 
 test('treats cached empty analysis arrays as a fetched activity detail', () => {
@@ -1325,6 +1345,45 @@ test('fits critical power from complete device-power windows', () => {
   assert.deepEqual(
     [1, 2, 3, 6].map(id => payload.details[String(id)]?.id),
     [1, 2, 3, 6],
+  )
+})
+
+test('fits activity critical power from one ride only', () => {
+  const durationS = 720
+  const time = Array.from({ length: durationS }, (_, index) => index)
+  const watts = time.map(second => (second < 180 ? 250 + 10_000 / 180 : 250))
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-08-13T12:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-08-12T12:00:00Z') / 1000),
+    activities: {
+      101: ride({
+        id: 101,
+        movingTime: durationS,
+        elapsedTime: durationS,
+        deviceWatts: true,
+        startDate: '2026-08-12T12:00:00Z',
+        startDateLocal: '2026-08-12T08:00:00',
+      }),
+    },
+    streams: { 101: { time, latlng: [], altitude: time.map(() => 0), distance: time, watts } },
+  }
+
+  const estimate = buildPayload(cache, null, null, '2026-08-01').details['101']
+    .activityCriticalPower
+
+  assert.ok(estimate)
+  assert.equal(estimate.window, 'activity')
+  assert.equal(estimate.windowFrom, '2026-08-12')
+  assert.equal(estimate.windowTo, '2026-08-12')
+  assert.equal(estimate.criticalPowerWatts, 250)
+  assert.ok(Math.abs(estimate.wPrimeJoules - 10_000) <= 2)
+  assert.equal(estimate.independentEffortCount, 1)
+  assert.deepEqual(
+    estimate.anchors.map(anchor => anchor.activityId),
+    [101, 101, 101],
   )
 })
 
