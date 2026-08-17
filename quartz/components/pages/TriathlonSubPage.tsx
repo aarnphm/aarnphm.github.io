@@ -8,6 +8,7 @@ import { triathlonDateTree, triathlonFeedScopeFromSlug } from '../../util/triath
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
+import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -74,9 +75,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
     )
   }
   Page.css = style
-  if (view === 'analytics') {
-    Page.beforeDOMLoaded = "document.documentElement.classList.add('tri-analytics-booting')"
-  }
+  Page.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
   Page.afterDOMLoaded = script
   return Page
 }

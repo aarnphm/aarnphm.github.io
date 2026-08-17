@@ -178,6 +178,9 @@ test('gear surfaces place daily tire pressure after bike inventory and before ma
     assert.match(html, /mixed<\/strong><span>−3 PSI/)
     assert.match(html, /wet<\/strong><span>−8 PSI/)
     assert.match(html, /most Toronto roads, aged asphalt and seams/)
+    assert.equal(html.match(/data-pressure-surface-tip/g)?.length, 1)
+    assert.equal(html.match(/data-pressure-surface-option/g)?.length, 4)
+    assert.doesNotMatch(html, /tri-pressure-spec/)
     assert.doesNotMatch(html, /tri-pressure-speed-presets/)
 
     const sections = [

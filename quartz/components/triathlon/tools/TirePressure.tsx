@@ -7,11 +7,11 @@ import {
   latestMorningBodyWeight,
   PIRELLI_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_BIKES,
-  TIRE_PRESSURE_MEASURED_WIDTH_MM,
   TIRE_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_SURFACES,
   TIRE_PRESSURE_TIRES,
   TIRE_PRESSURE_WHEELS,
+  tirePressureSurface,
 } from '../../../util/triathlon-tire-pressure'
 
 interface TirePressureProps {
@@ -30,6 +30,7 @@ const weatherCondition = (weather: WeatherSnapshot): string => {
 
 export const TirePressure = ({ composition = [], weather = null }: TirePressureProps) => {
   const morningWeight = latestMorningBodyWeight(composition)
+  const defaultSurface = tirePressureSurface(DEFAULT_TIRE_PRESSURE_SELECTION.surface)
   const recommendation = morningWeight
     ? calculateTirePressure(morningWeight.kg, DEFAULT_TIRE_PRESSURE_SELECTION)
     : null
@@ -136,7 +137,7 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
           <legend data-i18n="surface">surface</legend>
           <div class="tri-pressure-options tri-pressure-options--surface">
             {TIRE_PRESSURE_SURFACES.map(surface => (
-              <label class="tri-pressure-option">
+              <label class="tri-pressure-option" data-pressure-surface-option={surface.id}>
                 <input
                   type="radio"
                   name="tri-pressure-surface"
@@ -146,12 +147,12 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
                   aria-label={`${surface.label}, SILCA coefficient ${surface.coefficient}, ${surface.note}`}
                 />
                 <span>{surface.label}</span>
-                <span class="tri-pressure-surface-tip" aria-hidden="true">
-                  <strong>{surface.coefficient}</strong>
-                  <span>{surface.note}</span>
-                </span>
               </label>
             ))}
+            <span class="tri-pressure-surface-tip" aria-hidden="true" data-pressure-surface-tip>
+              <strong data-pressure-surface-coefficient>{defaultSurface.coefficient}</strong>
+              <span data-pressure-surface-note>{defaultSurface.note}</span>
+            </span>
           </div>
         </fieldset>
         <fieldset class="tri-pressure-field" data-pressure-group="tire">
@@ -185,14 +186,6 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
             <span>mph</span>
           </span>
         </label>
-      </div>
-      <div class="tri-pressure-spec">
-        <span data-pressure-tire>Pirelli P Zero Race SL-R + P Zero TPU tube</span>
-        <span>
-          {TIRE_PRESSURE_MEASURED_WIDTH_MM} mm measured · <span data-pressure-diameter>622</span> mm
-          BSD · dry
-        </span>
-        <span data-pressure-rim>22 mm internal</span>
       </div>
       <aside class="tri-pressure-weather" aria-label="weather pressure guidance">
         <div class="tri-pressure-weather-head">

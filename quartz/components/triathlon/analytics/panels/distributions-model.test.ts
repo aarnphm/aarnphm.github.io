@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  completeDistributionPaceRanges,
   distributionMetricForSport,
   distributionMetrics,
   initialDistributionModel,
@@ -8,6 +9,48 @@ import {
   telemetryWeightedAverage,
   updateDistributions,
 } from './distributions-model'
+
+test('pace ranges complete open outer zones and single missing interior zones', () => {
+  assert.deepEqual(
+    completeDistributionPaceRanges([
+      { fastestSPerKm: 406.3, slowestSPerKm: 1074.6 },
+      { fastestSPerKm: 333.3, slowestSPerKm: 381.8 },
+      { fastestSPerKm: 308.7, slowestSPerKm: 350.9 },
+      null,
+      { fastestSPerKm: 268.9, slowestSPerKm: 270.3 },
+      null,
+    ]),
+    [
+      { fastestSPerKm: 406.3, slowestSPerKm: null, fillGap: false },
+      { fastestSPerKm: 333.3, slowestSPerKm: 381.8, fillGap: false },
+      { fastestSPerKm: 308.7, slowestSPerKm: 350.9, fillGap: false },
+      { fastestSPerKm: 270.3, slowestSPerKm: 308.7, fillGap: true },
+      { fastestSPerKm: 268.9, slowestSPerKm: 270.3, fillGap: false },
+      { fastestSPerKm: null, slowestSPerKm: 268.9, fillGap: false },
+    ],
+  )
+})
+
+test('pace range completion does not fabricate boundaries across multiple missing zones', () => {
+  assert.deepEqual(
+    completeDistributionPaceRanges([
+      null,
+      { fastestSPerKm: 330, slowestSPerKm: 390 },
+      null,
+      null,
+      { fastestSPerKm: 270, slowestSPerKm: 280 },
+      null,
+    ]),
+    [
+      { fastestSPerKm: 390, slowestSPerKm: null, fillGap: false },
+      { fastestSPerKm: 330, slowestSPerKm: 390, fillGap: false },
+      null,
+      null,
+      { fastestSPerKm: 270, slowestSPerKm: 280, fillGap: false },
+      { fastestSPerKm: null, slowestSPerKm: 270, fillGap: false },
+    ],
+  )
+})
 
 test('distribution reducer owns sport, range, custom date, and restored selection', () => {
   const bounds = {
@@ -62,6 +105,38 @@ test('distribution metrics follow each sport and preserve heart rate across spor
   assert.equal(distributionMetricForSport('run', 'heart-rate'), 'heart-rate')
   assert.equal(distributionMetricForSport('run', 'power'), 'pace')
   assert.equal(distributionMetricForSport('swim', 'pace'), 'heart-rate')
+})
+
+test('distribution metric selection switches both directions for bike and run', () => {
+  const bounds = {
+    minimumDate: '2026-01-01',
+    maximumDate: '2026-03-31',
+    sports: ['swim', 'bike', 'run'] as const,
+  }
+  const bikePower = initialDistributionModel(bounds)
+  const bikeHeartRate = updateDistributions(
+    bikePower,
+    { type: 'select-metric', metric: 'heart-rate' },
+    bounds,
+  )
+  assert.equal(bikeHeartRate.metric, 'heart-rate')
+  assert.equal(
+    updateDistributions(bikeHeartRate, { type: 'select-metric', metric: 'power' }, bounds).metric,
+    'power',
+  )
+
+  const runPace = updateDistributions(bikePower, { type: 'select-sport', sport: 'run' }, bounds)
+  assert.equal(runPace.metric, 'pace')
+  const runHeartRate = updateDistributions(
+    runPace,
+    { type: 'select-metric', metric: 'heart-rate' },
+    bounds,
+  )
+  assert.equal(runHeartRate.metric, 'heart-rate')
+  assert.equal(
+    updateDistributions(runHeartRate, { type: 'select-metric', metric: 'pace' }, bounds).metric,
+    'pace',
+  )
 })
 
 test('telemetry trend compares the latest two observed activities', () => {
