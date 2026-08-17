@@ -21,7 +21,7 @@ David Whyte
 
 Hope you are enjoying your break and having some time off.
 
-There's something about watching someone work at their life with such care. Simone Weil in "First and Last Notebook" once said "[[thoughts/Attention|attention]] is the purest form of generosity". I think about that when I see your posts pop up, even if they're fewer these days.
+There's something about watching someone work at their life with such care. In an April 13, 1942 letter to Joë Bousquet, Simone Weil wrote, "[[thoughts/Attention|Attention]] is the rarest and purest form of generosity." I think about that when I see your posts pop up, even if they're fewer these days.
 
 You've built something real out there in San Francisco. Not the big, showy kind of real. The quiet kind. The kind that comes from showing up to the same place,
 same time, week after week. Making those cups and bowls. Running those streets before dawn. It reminds me of that Carver story, "Cathedral," where the real connection happens not in some big moment,

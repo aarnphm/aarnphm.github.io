@@ -8,6 +8,7 @@ import CanvasContainer from './Canvas'
 import CodeCopy from './CodeCopy'
 import Comments from './Comments'
 import ContentMeta from './ContentMeta'
+import Cursor from './Cursor'
 import Darkmode from './Darkmode'
 import DesktopOnly from './DesktopOnly'
 import Explorer from './Explorer'
@@ -68,6 +69,7 @@ export {
   Head,
   PageTitle,
   ContentMeta,
+  Cursor,
   Spacer,
   TableOfContents,
   Explorer,

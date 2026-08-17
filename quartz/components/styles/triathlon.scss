@@ -154,15 +154,15 @@
   align-items: flex-end;
   gap: var(--tri-day-gap);
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 1 L12 6.5 L6.5 12 L1 6.5 Z' fill='none' stroke='%23999' stroke-width='1.4'/%3E%3C/svg%3E")
-      6 6,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='25'%3E%3Cpath d='M6.5 1 V24' fill='none' stroke='%23999' stroke-width='1.4'/%3E%3C/svg%3E")
+      6 12,
     crosshair;
 }
 
 .tri-bars.tri-bars--locked {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13'%3E%3Cpath d='M6.5 1 L12 6.5 L6.5 12 L1 6.5 Z' fill='none' stroke='%23fc4c02' stroke-width='1.7'/%3E%3C/svg%3E")
-      6 6,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='25'%3E%3Cpath d='M6.5 1 V24' fill='none' stroke='%23fc4c02' stroke-width='1.7'/%3E%3C/svg%3E")
+      6 12,
     crosshair;
 }
 
@@ -270,13 +270,11 @@
   gap: 2px;
   flex: 0 0 1px;
   width: 1px;
-  transition: opacity 0.12s ease;
 }
 
 .tri-seg {
   width: 1px;
   background: var(--lightgray);
-  transition: background 0.12s ease;
 }
 
 .tri-bar--day .tri-seg {
@@ -285,10 +283,6 @@
 
 .tri-bar--race .tri-seg {
   background: var(--tri-accent);
-}
-
-.tri-hovering .tri-bar:not(.tri-bar--active) {
-  opacity: 0.3;
 }
 
 .tri-bar.tri-bar--active .tri-seg {
@@ -304,8 +298,7 @@
   overflow: hidden;
   opacity: 0;
   visibility: hidden;
-  background: color-mix(in srgb, var(--light) 88%, transparent);
-  backdrop-filter: blur(10px);
+  background-color: var(--light);
   border: 1px solid color-mix(in srgb, var(--gray) 26%, transparent);
   border-radius: var(--radius-none);
   transition:
@@ -314,7 +307,7 @@
 }
 
 .tri-pop-scroll {
-  max-height: min(82vh, 38rem);
+  max-height: min(82vh, 28rem);
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -4757,15 +4750,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   border: 0;
   border-bottom: 1px solid transparent;
   cursor: pointer;
-  transition: transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
 
   &[aria-pressed='true'] {
     color: var(--dark);
     border-bottom-color: currentColor;
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.97);
   }
 
   &:focus-visible {

@@ -30,10 +30,17 @@ import { KG_PER_LB } from './shared'
 import { weightUnitLabel } from './shared'
 import { wNum } from './shared'
 
-export type SecondaryScrubPanel = 'cardio' | 'trend' | 'lactate' | 'abilities' | 'vo2max' | 'ftp'
+export type SecondaryPanelKind =
+  | 'cardio'
+  | 'trend'
+  | 'lactate'
+  | 'abilities'
+  | 'vo2max'
+  | 'dexa'
+  | 'ftp'
 
 export const mountSecondaryPanel = (
-  kind: SecondaryScrubPanel,
+  kind: SecondaryPanelKind,
   panel: HTMLElement,
   data: Analytics,
   context: TriathlonContext,
@@ -374,9 +381,13 @@ export const mountSecondaryPanel = (
     })
   }
 
-  const vo2Tests =
-    kind === 'vo2max' ? Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2t')) : []
-  if (vo2Tests.length > 0) {
+  const vo2TestTargets = Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2t')).flatMap(
+    test =>
+      Array.from(test.querySelectorAll<HTMLElement>('[data-tip-h]')).filter(
+        target => !target.closest('.tri-vo2p'),
+      ),
+  )
+  if (vo2TestTargets.length > 0) {
     document.body.querySelector('.tri-vo2t-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2t-tip')
     tip.setAttribute('role', 'tooltip')
@@ -395,9 +406,7 @@ export const mountSecondaryPanel = (
       tip.style.top = `${Math.max(8, top).toFixed(0)}px`
     }
     const bound: Array<[HTMLElement, (e: MouseEvent) => void, () => void]> = []
-    for (const t of vo2Tests.flatMap(test =>
-      Array.from(test.querySelectorAll<HTMLElement>('[data-tip-h]')),
-    )) {
+    for (const t of vo2TestTargets) {
       const move = (e: MouseEvent): void => {
         tip.replaceChildren(
           el('span', 'tri-gloss-h', t.dataset.tipH ?? ''),
@@ -420,8 +429,7 @@ export const mountSecondaryPanel = (
     })
   }
 
-  const vo2Profiles =
-    kind === 'vo2max' ? Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2p')) : []
+  const vo2Profiles = Array.from(panel.querySelectorAll<HTMLElement>('.tri-vo2p'))
   if (vo2Profiles.length > 0) {
     document.body.querySelector('.tri-vo2p-tip')?.remove()
     const tip = el('div', 'tri-gloss tri-vo2p-tip')

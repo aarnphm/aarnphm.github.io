@@ -15,8 +15,8 @@ title: to mimi and tuong an
 
 I've been thinking lately about how every social media channel demands a different self, as if each platform
 is its own small world. What I’d put on Twitter might be all wrong for Instagram; what I craft on Instagram feels out of place on Facebook.
-It reminds me of a shifting [[thoughts/Overton Window]]. Maybe we’re all just framing ourselves according to each platform's
-rules, or they are incongruent to each other..
+It reminds me of a shifting [[thoughts/Overton Window]]. Maybe we're all just framing ourselves around each platform's
+rules, or maybe the rules just don't match.
 
 But there’s also a delicate kind of intimacy in our connection, the way we talk as if we already know each other’s tastes,
 humor, and quiet insecurities. Perhaps it’s thanks to V, or because we exchange messages in Vietnamese.

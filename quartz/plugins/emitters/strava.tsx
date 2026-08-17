@@ -5,7 +5,7 @@ import type { TriathlonRenderData } from '../../components/triathlon/render-data
 import type { GarminCache } from '../stores/garmin'
 import { defaultContentPageLayout, sharedPageComponents } from '../../../quartz.layout'
 import { FullPageLayout } from '../../cfg'
-import { TriathlonPage } from '../../components'
+import { Cursor, TriathlonPage } from '../../components'
 import HeaderConstructor from '../../components/Header'
 import { CONVERSIONS, GEAR, type TriView } from '../../components/pages/triathlon-panels'
 import TriathlonDayPage from '../../components/pages/TriathlonDayPage'
@@ -167,7 +167,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     ...userOpts,
     header: [],
     beforeBody: [],
-    afterBody: [],
+    afterBody: [Cursor()],
     sidebar: [],
     pageBody: TriathlonPage(),
   }

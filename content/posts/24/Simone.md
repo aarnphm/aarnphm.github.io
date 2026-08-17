@@ -20,7 +20,7 @@ I love that we got to see each other once in a blue moon, just to catch up.
 
 I love that you called me whenever you need someone to talk to.
 
-I'm sure there are many things happening your life, I know that you will eventually get it done (esp. getting a big gurl corporate job this year :smiley:)
+I know life is throwing a lot at you right now. You'll get it done, especially the big gurl corporate job this year :smiley:
 
 I hope you find moments of peace during the holiday season. May the new year bring you closer to your goals, but more importantly, closer to your own truth.
 

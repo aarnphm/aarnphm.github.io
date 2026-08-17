@@ -144,6 +144,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
     render: (data, context) =>
       withPanelMount(buildDexa(data, context), [
         root => mountPrimaryPanel('dexa', root, data, context),
+        root => mountSecondaryPanel('dexa', root, data, context),
       ]),
     server: data => ({
       title: 'DEXA · body composition',
