@@ -424,10 +424,14 @@ export const buildOuraDayDetail = (
       ),
     )
   head.appendChild(cap)
-  const closeBtn = el('button', 'tri-sleep-day-close', '×', {
+  const closeBtn = el('button', 'tri-sleep-day-close', undefined, {
     type: 'button',
     'aria-label': formatter.text('Close'),
+    'data-site-cursor-close': '',
   })
+  closeBtn.appendChild(
+    el('span', undefined, '×', { 'aria-hidden': 'true', 'data-site-cursor-icon': '' }),
+  )
   head.appendChild(closeBtn)
   wrap.appendChild(head)
   const hyp = buildHypnogram(formatter, d)

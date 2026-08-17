@@ -1,5 +1,6 @@
 import style from '../styles/cursor.scss'
 import { QuartzComponent, QuartzComponentConstructor } from '../types/component'
+// @ts-ignore
 import script from './scripts/cursor.inline'
 
 export default (() => {

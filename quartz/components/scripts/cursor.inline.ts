@@ -1,6 +1,10 @@
-import { rootNavSignal } from './root-lifecycle'
+import { beginSitePerformanceSample, endSitePerformanceSample } from './performance-sample'
 
-const configuredCursors = new WeakMap<HTMLElement, AbortSignal>()
+const configuredCursors = new WeakMap<HTMLElement, AbortController>()
+
+const CLOSE_CURSOR_SELECTOR = "[data-site-cursor-close], button[aria-label^='close' i]"
+const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]'
+const MAGNETIC_ICON_SELECTOR = '[data-site-cursor-icon], svg'
 
 const HELP_CURSOR_SELECTOR = [
   '[data-gloss]',
@@ -94,31 +98,93 @@ document.addEventListener('nav', () => {
   document.body.appendChild(cursor)
   const line = cursor.querySelector<HTMLElement>('.site-cursor-line')
   if (!line) return
-  const signal = rootNavSignal(cursor)
-  if (configuredCursors.get(cursor) === signal) return
-  configuredCursors.set(cursor, signal)
+  configuredCursors.get(cursor)?.abort()
+  const controller = new AbortController()
+  const signal = controller.signal
+  configuredCursors.set(cursor, controller)
 
   let frame = 0
   let x = -40
   let y = -40
-  let mode: 'crosshair' | 'diamond' | 'help' | 'pointer' | 'text' | 'timeline' = 'diamond'
+  let mode:
+    | 'action'
+    | 'close'
+    | 'crosshair'
+    | 'diamond'
+    | 'help'
+    | 'pointer'
+    | 'text'
+    | 'timeline' = 'diamond'
   let visible = false
   let lineScale = 1
   let pointerTarget: Element | null = null
+  let magneticTarget: HTMLElement | null = null
+  let magneticTimer = 0
+  let measuredMagnetic: HTMLElement | null = null
+  let measuredMagneticRect: DOMRect | null = null
+  let measuredBars: HTMLElement | null = null
+  let measuredBarsRect: DOMRect | null = null
+  let measuredTimelineRect: DOMRect | null = null
+  let geometryDirty = true
+
+  const setMagneticTarget = (target: HTMLElement | null): void => {
+    if (target === magneticTarget) return
+    magneticTarget?.removeAttribute('data-site-cursor-active')
+    magneticTarget = target
+    window.clearTimeout(magneticTimer)
+    magneticTimer = 0
+    if (target) {
+      target.dataset.siteCursorActive = 'true'
+      cursor.dataset.magnetic = 'true'
+    } else {
+      cursor.dataset.magnetic = 'release'
+      magneticTimer = window.setTimeout(() => {
+        magneticTimer = 0
+        if (!magneticTarget) delete cursor.dataset.magnetic
+      }, 110)
+    }
+  }
 
   const render = (): void => {
+    const startedAt = beginSitePerformanceSample()
     frame = 0
+    let renderX = x
+    let renderY = y
+    const close = pointerTarget?.closest<HTMLElement>(CLOSE_CURSOR_SELECTOR) ?? null
+    const action = pointerTarget?.closest<HTMLElement>(ACTION_CURSOR_SELECTOR) ?? null
+    const magnetic = close ?? action
     const bars = pointerTarget?.closest<HTMLElement>('.tri-bars') ?? null
-    if (bars) {
-      const barsRect = bars.getBoundingClientRect()
-      const timelineRect = bars.closest<HTMLElement>('.tri-scroll')?.getBoundingClientRect()
+    if (magnetic) {
+      const anchor = magnetic.querySelector<HTMLElement>(MAGNETIC_ICON_SELECTOR) ?? magnetic
+      if (geometryDirty || magnetic !== measuredMagnetic || !measuredMagneticRect) {
+        measuredMagnetic = magnetic
+        measuredMagneticRect = anchor.getBoundingClientRect()
+      }
+      const rect = measuredMagneticRect
+      setMagneticTarget(magnetic)
+      renderX = rect.left + rect.width / 2
+      renderY = rect.top + rect.height / 2
+      lineScale = 1
+      mode = close ? 'close' : 'action'
+      visible = true
+    } else if (bars) {
+      setMagneticTarget(null)
+      if (geometryDirty || bars !== measuredBars || !measuredBarsRect) {
+        measuredBars = bars
+        measuredBarsRect = bars.getBoundingClientRect()
+        measuredTimelineRect =
+          bars.closest<HTMLElement>('.tri-scroll')?.getBoundingClientRect() ?? null
+      }
+      const barsRect = measuredBarsRect
+      const timelineRect = measuredTimelineRect
       const lineBottom = Math.max(barsRect.bottom, timelineRect?.bottom ?? barsRect.bottom)
       const lineHeight = lineBottom - barsRect.top
-      y = barsRect.top + lineHeight / 2
+      renderY = barsRect.top + lineHeight / 2
       lineScale = Math.max(1, lineHeight / 24)
       mode = 'timeline'
       visible = true
     } else {
+      setMagneticTarget(null)
       const help = pointerTarget?.closest<HTMLElement>(HELP_CURSOR_SELECTOR) ?? null
       const pointer = pointerTarget?.closest<HTMLElement>(POINTER_CURSOR_SELECTOR) ?? null
       const text = pointerTarget?.closest<HTMLElement>(TEXT_CURSOR_SELECTOR) ?? null
@@ -142,11 +208,13 @@ document.addEventListener('nav', () => {
         visible = pointerTarget != null
       }
     }
-    cursor.style.transform = `translate3d(${x - 12}px, ${y - 12}px, 0)`
+    cursor.style.transform = `translate3d(${renderX - 12}px, ${renderY - 12}px, 0)`
     line.style.transform = `translate(-50%, -50%) scaleY(${lineScale.toFixed(3)})`
     if (cursor.dataset.mode !== mode) cursor.dataset.mode = mode
     const nextVisible = String(visible)
     if (cursor.dataset.visible !== nextVisible) cursor.dataset.visible = nextVisible
+    geometryDirty = false
+    endSitePerformanceSample('cursor', startedAt)
   }
 
   const schedule = (): void => {
@@ -164,6 +232,14 @@ document.addEventListener('nav', () => {
 
   const onClick = (event: MouseEvent): void => {
     const target = event.target instanceof Element ? event.target : null
+    if (target?.closest(CLOSE_CURSOR_SELECTOR)) {
+      const nextTarget = document.elementFromPoint(event.clientX, event.clientY)
+      pointerTarget = nextTarget?.closest(CLOSE_CURSOR_SELECTOR) ? null : nextTarget
+      x = event.clientX
+      y = event.clientY
+      schedule()
+      return
+    }
     if (!target?.closest('.tri-bars')) return
     pointerTarget = target
     x = event.clientX
@@ -178,19 +254,28 @@ document.addEventListener('nav', () => {
     schedule()
   }
 
+  const invalidateGeometry = (): void => {
+    geometryDirty = true
+    if (pointerTarget) schedule()
+  }
+
   document.documentElement.classList.add('site-cursor-ready')
   document.addEventListener('pointermove', onMove, { signal })
   document.addEventListener('click', onClick, { signal })
   document.addEventListener('pointerleave', hide, { signal })
   window.addEventListener('blur', hide, { signal })
-  signal.addEventListener(
-    'abort',
-    () => {
-      if (frame !== 0) window.cancelAnimationFrame(frame)
-      frame = 0
+  window.addEventListener('resize', invalidateGeometry, { signal })
+  window.addEventListener('scroll', invalidateGeometry, { capture: true, passive: true, signal })
+  window.addCleanup(() => {
+    controller.abort()
+    if (frame !== 0) window.cancelAnimationFrame(frame)
+    window.clearTimeout(magneticTimer)
+    magneticTarget?.removeAttribute('data-site-cursor-active')
+    frame = 0
+    delete cursor.dataset.magnetic
+    if (configuredCursors.get(cursor) === controller) {
       document.documentElement.classList.remove('site-cursor-ready')
       configuredCursors.delete(cursor)
-    },
-    { once: true },
-  )
+    }
+  })
 })

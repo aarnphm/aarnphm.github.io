@@ -224,10 +224,14 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
         '',
         '### tires',
         '',
-        ...opts.tools.maintenance.wheels.map(
-          entry =>
-            `- ${entry.position} ${entry.part}: ${entry.type}; ${entry.start} to ${entry.end ?? 'current'}${entry.distance ? `; ${entry.distance}` : ''}${entry.reason ? `; reason: ${entry.reason}` : ''}`,
-        ),
+        ...opts.tools.maintenance.wheels.map(entry => {
+          const ranges = entry.ranges
+            .map(range => `${range.start} to ${range.end ?? 'current'}`)
+            .join(', ')
+          const repaired =
+            entry.repaired === null ? '' : `; repaired ${entry.repaired ? 'yes' : 'no'}`
+          return `- ${entry.position} ${entry.part}: ${entry.type}; ${ranges}${entry.distance ? `; ${entry.distance}` : ''}${repaired}${entry.reason ? `; reason: ${entry.reason}` : ''}`
+        }),
         '',
       ]
     : []

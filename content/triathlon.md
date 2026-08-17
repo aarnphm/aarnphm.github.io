@@ -75,29 +75,34 @@ maintenance:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
           - distance: 751.81 mile
-          - start: '2026-05-16'
-          - end: '2026-07-16'
+          - range:
+              - end: '2026-07-16'
+                start: '2026-05-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race TLR SL-R 700x28c
           - distance: 619.84 mile
-          - start: '2026-07-16'
-          - end: '2026-08-10'
+          - range:
+              - end: '2026-08-10'
+                start: '2026-07-16'
           - reason: punctures
         - - type: Pirelli P Zero Race SL-R 700x28c
           - distance: null
-          - start: '2026-08-12'
-          - end: null
+          - range:
+              - end: null
+                start: '2026-08-12'
           - reason: null
       tube:
         - - type: Pirelli P Zero TPU
           - distance: 619.84 mile
-          - start: '2026-07-16'
-          - end: '2026-08-10'
+          - range:
+              - end: '2026-08-10'
+                start: '2026-07-16'
           - reason: punctures
         - - type: Pirelli P Zero TPU
           - distance: null
-          - start: '2026-08-12'
-          - end: null
+          - range:
+              - end: null
+                start: '2026-08-12'
           - reason: null
     rear:
       tires:
@@ -106,23 +111,34 @@ maintenance:
           - start: '2026-05-16'
           - end: '2026-07-16'
           - reason: training to race tires
-        - - type: Pirelli P Zero Race TLR SL-R 700x28c
-          - distance: 619.84 mile
-          - start: '2026-07-16'
-          - end: '2026-08-10'
-          - reason: punctures and big ruptures
         - - type: Pirelli P Zero Race SL-R 700x28c
           - distance: null
-          - start: '2026-08-12'
-          - end: null
-          - reason: null
+          - range:
+              - end: '2026-08-10'
+                start: '2026-07-16'
+              - end: null
+                start: '2026-08-18'
+          - reason: punctures and big ruptures, but fixed
+        - - type: Pirelli P Zero Race SL-R 700x28c
+          - distance: 258.65 mile
+          - range:
+              - end: '2026-08-17'
+                start: '2026-08-12'
+          - reason: big punctures cut
       tube:
         - - type: Pirelli P Zero TPU
-          - distance: null
+          - distance: 878.49 mile
           - start: '2026-07-16'
+          - end: '2026-08-17'
+          - reason: big punctures
+          - repaired: false
+        - - type: Pirelli P Zero TPU
+          - distance: null
+          - start: '2026-08-17'
           - end: null
           - reason: null
-modified: 2026-08-16 22:02:06 GMT-04:00
+          - repaired: null
+modified: 2026-08-17 17:46:54 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
