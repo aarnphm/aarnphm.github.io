@@ -14,6 +14,7 @@ import { setupCommandPalette } from '../shell/command-palette'
 import { setupDropdown } from '../shell/dropdown'
 import { setupFeed } from '../shell/feed'
 import { setupGloss } from '../shell/glossary'
+import { setupPerformanceDebug } from '../shell/performance-debug'
 import { setupDistanceUnits, setupI18n, setupPaceUnit } from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
 import { setup } from '../shell/timeline'
@@ -55,6 +56,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setupTirePressure(root))
     addCleanup(setupCommandPalette(root, context))
     addCleanup(setup(root, context))
+    addCleanup(setupPerformanceDebug(root))
     addCleanup(setupCalc(root, context))
     addCleanup(setupPaceForecast(root, context))
     addCleanup(setupGearRatios(root, context))

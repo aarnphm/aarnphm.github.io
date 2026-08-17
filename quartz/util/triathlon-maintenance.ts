@@ -11,14 +11,19 @@ export interface TriathlonChainMaintenance {
   waxed: boolean
 }
 
+export interface TriathlonMaintenanceRange {
+  start: string
+  end: string | null
+}
+
 export interface TriathlonWheelMaintenance {
   position: TriathlonMaintenancePosition
   part: TriathlonMaintenancePart
   type: string
   distance: string | null
-  start: string
-  end: string | null
+  ranges: TriathlonMaintenanceRange[]
   reason: string | null
+  repaired: boolean | null
 }
 
 export interface TriathlonMaintenance {
@@ -59,6 +64,30 @@ const mergeMaintenanceFields = (value: unknown): UnknownRecord | null => {
   return record
 }
 
+const parseRange = (value: unknown): TriathlonMaintenanceRange | null => {
+  if (!isRecord(value)) return null
+  const start = value.start
+  const end = nullableString(value, 'end')
+  if (typeof start !== 'string' || end === undefined) return null
+  return { start, end }
+}
+
+const parseRanges = (record: UnknownRecord): TriathlonMaintenanceRange[] | null => {
+  if (record.range !== undefined) {
+    if (!Array.isArray(record.range) || record.range.length === 0) return null
+    const ranges: TriathlonMaintenanceRange[] = []
+    for (const value of record.range) {
+      const range = parseRange(value)
+      if (!range) return null
+      ranges.push(range)
+    }
+    return ranges.sort((left, right) => left.start.localeCompare(right.start))
+  }
+
+  const range = parseRange(record)
+  return range ? [range] : null
+}
+
 const parseWheelEntry = (
   position: TriathlonMaintenancePosition,
   part: TriathlonMaintenancePart,
@@ -68,19 +97,27 @@ const parseWheelEntry = (
   if (!record) return null
   const type = record.type
   const distance = nullableString(record, 'distance')
-  const start = record.start
-  const end = nullableString(record, 'end')
+  const ranges = parseRanges(record)
   const reason = nullableString(record, 'reason')
+  const repaired = record.repaired
   if (
     typeof type !== 'string' ||
     distance === undefined ||
-    typeof start !== 'string' ||
-    end === undefined ||
-    reason === undefined
+    !ranges ||
+    reason === undefined ||
+    (repaired !== undefined && repaired !== null && typeof repaired !== 'boolean')
   ) {
     return null
   }
-  return { position, part, type, distance, start, end, reason }
+  return {
+    position,
+    part,
+    type,
+    distance,
+    ranges,
+    reason,
+    repaired: typeof repaired === 'boolean' ? repaired : null,
+  }
 }
 
 const parseChains = (value: unknown): TriathlonChainMaintenance[] => {
@@ -115,9 +152,13 @@ const parseWheels = (value: unknown): TriathlonWheelMaintenance[] => {
     }
   }
   return entries.sort((left, right) => {
-    if (left.end === null && right.end !== null) return -1
-    if (left.end !== null && right.end === null) return 1
-    return right.start.localeCompare(left.start)
+    const leftCurrent = left.ranges.some(range => range.end === null)
+    const rightCurrent = right.ranges.some(range => range.end === null)
+    if (leftCurrent && !rightCurrent) return -1
+    if (!leftCurrent && rightCurrent) return 1
+    const leftLatest = left.ranges[left.ranges.length - 1]
+    const rightLatest = right.ranges[right.ranges.length - 1]
+    return rightLatest.start.localeCompare(leftLatest.start)
   })
 }
 

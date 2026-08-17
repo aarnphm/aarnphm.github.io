@@ -1,6 +1,10 @@
 import type { DetailPayload } from '../activity/data'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
+import {
+  beginSitePerformanceSample,
+  endSitePerformanceSample,
+} from '../../scripts/performance-sample'
 import { setActivityExpanded } from '../activity/comparison'
 import { buildDayCard } from '../activity/embeds'
 import { el } from '../runtime/dom'
@@ -33,6 +37,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   let repositionActive: (() => void) | null = null
 
   const updateTimeline = () => {
+    const startedAt = beginSitePerformanceSample()
     const barsRect = barsEl.getBoundingClientRect()
     barsLeft = barsRect.left
     if (geometryDirty) {
@@ -44,6 +49,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     }
     if (!timeline || !timelineShell) {
       repositionActive?.()
+      endSitePerformanceSample('timeline', startedAt)
       return
     }
     const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
@@ -59,6 +65,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     if (timelinePinnedYear && activeYear)
       timelinePinnedYear.textContent = activeYear.dataset.year ?? activeYear.textContent
     repositionActive?.()
+    endSitePerformanceSample('timeline', startedAt)
   }
   const scheduleTimelineUpdate = () => {
     if (timelineFrame !== 0) return
@@ -190,6 +197,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   }
 
   const showFor = (idx: number) => {
+    const startedAt = beginSitePerformanceSample()
     const bar = bars[idx]
     if (bar !== active) {
       if (active) active.classList.remove('tri-bar--active')
@@ -202,6 +210,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     }
     place(bar)
     root.classList.add('tri-hovering')
+    endSitePerformanceSample('popover', startedAt)
   }
 
   const setExpanded = (on: boolean) => {

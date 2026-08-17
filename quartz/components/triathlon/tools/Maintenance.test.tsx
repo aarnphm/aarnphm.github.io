@@ -16,18 +16,21 @@ const maintenance: TriathlonMaintenance = {
       part: 'tire',
       type: 'Pirelli P Zero Race SL-R 700x28c',
       distance: null,
-      start: '2026-08-12',
-      end: null,
-      reason: null,
+      ranges: [
+        { start: '2026-07-16', end: '2026-08-10' },
+        { start: '2026-08-18', end: null },
+      ],
+      reason: 'punctures, repaired',
+      repaired: true,
     },
     {
       position: 'rear',
       part: 'tire',
       type: 'Pirelli P Zero Race TLR SL-R 700x28c',
       distance: '619.84 mile',
-      start: '2026-07-16',
-      end: '2026-08-10',
+      ranges: [{ start: '2026-07-16', end: '2026-08-10' }],
       reason: 'punctures and big ruptures',
+      repaired: false,
     },
   ],
 }
@@ -56,7 +59,11 @@ test('renders chain, current tire, and retired tire maintenance records', () => 
   assert.equal(elements(root, element => hasClass(element, 'tri-maintenance-entry')).length, 3)
   assert.match(html, /UFO Wax Drip-On/)
   assert.match(html, /Pirelli P Zero Race SL-R 700x28c/)
-  assert.match(html, /2026-08-12 →/)
+  assert.match(html, /2026-07-16 → 2026-08-10/)
+  assert.match(html, /2026-08-18 →/)
+  assert.match(html, /data-i18n="repaired">repaired/)
+  assert.match(html, /data-i18n="yes">yes/)
+  assert.match(html, /data-i18n="no">no/)
   assert.match(html, /punctures and big ruptures/)
 })
 

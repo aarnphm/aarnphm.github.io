@@ -51,10 +51,20 @@ const WheelRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) =>
               <span class="tri-maintenance-entry-name">{entry.type}</span>
             </div>
             <span class="tri-maintenance-meta">
-              <span>
-                {entry.start} → {entry.end ?? <span data-i18n="current">current</span>}
-              </span>
+              {entry.ranges.map(range => (
+                <span>
+                  {range.start} → {range.end ?? <span data-i18n="current">current</span>}
+                </span>
+              ))}
               {entry.distance && <span>{entry.distance}</span>}
+              {entry.repaired !== null && (
+                <span>
+                  <span data-i18n="repaired">repaired</span>{' '}
+                  <span data-i18n={entry.repaired ? 'yes' : 'no'}>
+                    {entry.repaired ? 'yes' : 'no'}
+                  </span>
+                </span>
+              )}
               {entry.reason && (
                 <span>
                   <span data-i18n="reason">reason</span>: {entry.reason}

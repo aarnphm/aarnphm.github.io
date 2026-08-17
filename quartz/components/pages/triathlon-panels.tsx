@@ -388,8 +388,11 @@ const TriPanelShell = ({
             class={`tri-ana-close${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
             type="button"
             aria-label="Close"
+            data-site-cursor-close
           >
-            ×
+            <span aria-hidden="true" data-site-cursor-icon>
+              ×
+            </span>
           </button>
         </div>
         <div class={`tri-ana-body${bodyClass ? ` ${bodyClass}` : ''}`} data-keyboard-scroll>
@@ -428,6 +431,7 @@ export const AnalyticsPanel = ({
           aria-label="compare activities"
           aria-controls="tri-analytics-results"
           data-i18n-aria-label="compare activities"
+          data-site-cursor-action
         >
           <svg class="tri-ana-compare-icon" viewBox="0 0 1000 1000" aria-hidden="true">
             <path d={DISPATCH_ICON} />
@@ -1175,8 +1179,10 @@ export const CalcPanel = ({
             <use href="#github-check" />
           </svg>
         </button>
-        <button class="tri-calc-close" type="button" aria-label="Close">
-          ×
+        <button class="tri-calc-close" type="button" aria-label="Close" data-site-cursor-close>
+          <span aria-hidden="true" data-site-cursor-icon>
+            ×
+          </span>
         </button>
       </div>
       <div class="tri-calc-cell">
