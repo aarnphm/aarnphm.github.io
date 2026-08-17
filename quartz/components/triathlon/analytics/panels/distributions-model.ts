@@ -4,10 +4,13 @@ export type DistributionSport = Sport
 
 export type DistributionRange = '7' | '14' | '30' | '60' | 'custom'
 
+export type DistributionMetric = 'heart-rate' | 'power' | 'pace'
+
 export type TelemetryTrend = 'up' | 'down' | 'flat'
 
 export interface DistributionModel {
   sport: DistributionSport
+  metric: DistributionMetric
   range: DistributionRange
   startDate: string
 }
@@ -21,11 +24,30 @@ export interface DistributionBounds {
 export type DistributionMessage =
   | { type: 'restore'; model: DistributionModel }
   | { type: 'select-sport'; sport: DistributionSport }
+  | { type: 'select-metric'; metric: DistributionMetric }
   | { type: 'select-range'; range: DistributionRange }
   | { type: 'select-date'; date: string }
   | { type: 'clear-date' }
 
 export const DISTRIBUTION_DAY_MS = 86_400_000
+
+export const distributionMetrics = (sport: DistributionSport): readonly DistributionMetric[] =>
+  sport === 'bike'
+    ? ['heart-rate', 'power']
+    : sport === 'run'
+      ? ['heart-rate', 'pace']
+      : ['heart-rate']
+
+export const distributionMetricForSport = (
+  sport: DistributionSport,
+  preferred?: DistributionMetric,
+): DistributionMetric => {
+  const metrics = distributionMetrics(sport)
+  if (preferred && metrics.includes(preferred)) return preferred
+  if (preferred && preferred !== 'heart-rate')
+    return sport === 'bike' ? 'power' : sport === 'run' ? 'pace' : 'heart-rate'
+  return preferred ?? (sport === 'bike' ? 'power' : sport === 'run' ? 'pace' : 'heart-rate')
+}
 
 export const DISTRIBUTION_RANGES: { key: DistributionRange; label: string; days: number | null }[] =
   [
@@ -88,7 +110,12 @@ const startForRange = (
 
 export const initialDistributionModel = (bounds: DistributionBounds): DistributionModel => {
   const sport = bounds.sports.includes('bike') ? 'bike' : (bounds.sports[0] ?? 'run')
-  return { sport, range: '30', startDate: startForRange('30', bounds.maximumDate, bounds) }
+  return {
+    sport,
+    metric: distributionMetricForSport(sport),
+    range: '30',
+    startDate: startForRange('30', bounds.maximumDate, bounds),
+  }
 }
 
 export const updateDistributions = (
@@ -96,7 +123,14 @@ export const updateDistributions = (
   message: DistributionMessage,
   bounds: DistributionBounds,
 ): DistributionModel => {
-  if (message.type === 'select-sport') return { ...model, sport: message.sport }
+  if (message.type === 'select-sport')
+    return {
+      ...model,
+      sport: message.sport,
+      metric: distributionMetricForSport(message.sport, model.metric),
+    }
+  if (message.type === 'select-metric')
+    return { ...model, metric: distributionMetricForSport(model.sport, message.metric) }
   if (message.type === 'select-range')
     return {
       ...model,
@@ -109,6 +143,7 @@ export const updateDistributions = (
     return { ...model, range: '30', startDate: startForRange('30', model.startDate, bounds) }
   return {
     sport: message.model.sport,
+    metric: distributionMetricForSport(message.model.sport, message.model.metric),
     range: message.model.range,
     startDate: startForRange(message.model.range, message.model.startDate, bounds),
   }

@@ -1,3 +1,4 @@
+import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
 import type { TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
 import { criticalPowerCurve, type CriticalPowerEstimate } from '../plugins/stores/critical-power'
@@ -46,6 +47,7 @@ export type DayCardExtras = {
   activityId?: string
   excludedActivityIds?: readonly string[]
   settings?: TriathlonTraceSettings
+  analytics?: boolean
   expanded?: boolean
   embedded?: boolean
   dateHref?: string
@@ -56,6 +58,7 @@ export type DayCardPayload = {
   details: Record<string, StravaActivityDetail>
   swimTrend?: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
+  dailyAnalytics?: TriathlonDailyAnalytics
 }
 
 export const dayCardActivitiesExpanded = (extras: DayCardExtras): boolean =>
@@ -149,6 +152,12 @@ export const distCombined = (presentation: TriathlonPresentation, km: number): s
   isImperial(presentation)
     ? `${Math.round(km * KM_TO_MI).toLocaleString('en-US')} mi`
     : `${Math.round(km).toLocaleString('en-US')} km`
+
+export const raceDistanceValue = (presentation: TriathlonPresentation, km: number): string => {
+  if (!isImperial(presentation)) return String(km)
+  const miles = km * KM_TO_MI
+  return miles < 10 ? miles.toFixed(2) : miles.toFixed(1)
+}
 
 export const dur = (s: number): string => {
   const totalMinutes = Math.round(s / 60)
@@ -329,6 +338,30 @@ export const moreStatRows = (
   return rows
 }
 
+export type ActivityThermalTracePoint = {
+  d: number
+  elapsedS: number
+  heatStrainIndex: number | null
+  coreTemperatureC: number | null
+  skinTemperatureC: number | null
+}
+
+const routeLessTraceDistance = (
+  d: StravaActivityDetail,
+  point: StravaActivityDetail['heartRateTrace'][number],
+): number => (d.sport === 'swim' ? point.distanceKm : point.elapsedS)
+
+export const activityThermalTracePoints = (d: StravaActivityDetail): ActivityThermalTracePoint[] =>
+  d.route.length >= 2
+    ? d.route
+    : d.heartRateTrace.map(point => ({
+        d: routeLessTraceDistance(d, point),
+        elapsedS: point.elapsedS,
+        heatStrainIndex: point.heatStrainIndex,
+        coreTemperatureC: point.coreTemperatureC,
+        skinTemperatureC: point.skinTemperatureC,
+      }))
+
 export const routeStreamFlags = (
   d: StravaActivityDetail,
 ): {
@@ -345,37 +378,41 @@ export const routeStreamFlags = (
   heatStrain: boolean
   coreTemperature: boolean
   skinTemperature: boolean
-} => ({
-  power: d.deviceWatts && d.route.some(p => p.w > 0),
-  powerBalance:
-    d.sport === 'bike' &&
-    d.route.filter(
-      point =>
-        point.rightPowerPct != null &&
-        Number.isFinite(point.rightPowerPct) &&
-        point.rightPowerPct >= 0 &&
-        point.rightPowerPct <= 100 &&
-        point.w > 0,
-    ).length >= 2,
-  hr: hasHeartRateTrace(d),
-  cad: d.route.some(p => p.cad > 0),
-  stride:
-    d.sport === 'run' &&
-    d.route.filter(point => runStrideLengthValue(d, point) != null).length >= 2,
-  groundContact:
-    d.sport === 'run' && d.route.filter(point => runGroundContactTimeMs(point) != null).length >= 2,
-  verticalOscillation:
-    d.sport === 'run' &&
-    d.route.filter(point => runVerticalOscillationCm(point) != null).length >= 2,
-  stamina:
-    d.sport === 'bike' &&
-    d.route.filter(point => point.stamina != null && point.potentialStamina != null).length >= 2,
-  resp: d.route.some(p => p.resp != null && p.resp > 0),
-  temp: d.route.some(p => p.tempC != null),
-  heatStrain: d.route.filter(point => point.heatStrainIndex != null).length >= 2,
-  coreTemperature: d.route.filter(point => point.coreTemperatureC != null).length >= 2,
-  skinTemperature: d.route.filter(point => point.skinTemperatureC != null).length >= 2,
-})
+} => {
+  const thermalPoints = activityThermalTracePoints(d)
+  return {
+    power: d.deviceWatts && d.route.some(p => p.w > 0),
+    powerBalance:
+      d.sport === 'bike' &&
+      d.route.filter(
+        point =>
+          point.rightPowerPct != null &&
+          Number.isFinite(point.rightPowerPct) &&
+          point.rightPowerPct >= 0 &&
+          point.rightPowerPct <= 100 &&
+          point.w > 0,
+      ).length >= 2,
+    hr: hasHeartRateTrace(d),
+    cad: d.route.some(p => p.cad > 0),
+    stride:
+      d.sport === 'run' &&
+      d.route.filter(point => runStrideLengthValue(d, point) != null).length >= 2,
+    groundContact:
+      d.sport === 'run' &&
+      d.route.filter(point => runGroundContactTimeMs(point) != null).length >= 2,
+    verticalOscillation:
+      d.sport === 'run' &&
+      d.route.filter(point => runVerticalOscillationCm(point) != null).length >= 2,
+    stamina:
+      d.sport === 'bike' &&
+      d.route.filter(point => point.stamina != null && point.potentialStamina != null).length >= 2,
+    resp: d.route.some(p => p.resp != null && p.resp > 0),
+    temp: d.route.some(p => p.tempC != null),
+    heatStrain: thermalPoints.filter(point => point.heatStrainIndex != null).length >= 2,
+    coreTemperature: thermalPoints.filter(point => point.coreTemperatureC != null).length >= 2,
+    skinTemperature: thermalPoints.filter(point => point.skinTemperatureC != null).length >= 2,
+  }
+}
 
 const nativeRunStrideLengthM = (point: StravaActivityDetail['route'][number]): number | null => {
   const meters = point.strideLengthM
@@ -1024,11 +1061,12 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
     vbY: py(value),
   }))
   const view = graphViewForDistance(maxD, graphDomain)
+  const usesElapsedAxis = d.route.length < 2 && d.sport !== 'swim'
   const s = f.svg('svg', {
     class: 'tri-elev',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${h}`,
     preserveAspectRatio: 'none',
-    ...(d.sport === 'strength'
+    ...(usesElapsedAxis
       ? {
           'data-domain-start-elapsed-s': view.startDistanceKm,
           'data-domain-end-elapsed-s': view.endDistanceKm,
@@ -1078,7 +1116,7 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
       h,
       d.sport === 'swim'
         ? swimActivityXTicks(maxD * 1_000)
-        : d.sport === 'strength'
+        : usesElapsedAxis
           ? elapsedActivityXTicks(maxD)
           : distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
@@ -1118,7 +1156,7 @@ export const buildTrace = <N>(
 
 const HEART_RATE_TRACE_MIN_BPM = 80
 
-const heartRateTracePoints = (
+export const activityHeartRateTracePoints = (
   d: StravaActivityDetail,
 ): { d: number; elapsedS: number; heartRate: number | null }[] => {
   const route = d.route.map(point => ({
@@ -1128,14 +1166,14 @@ const heartRateTracePoints = (
   }))
   if (route.filter(point => point.heartRate != null).length >= 2) return route
   return d.heartRateTrace.map(point => ({
-    d: d.sport === 'strength' ? point.elapsedS : point.distanceKm,
+    d: routeLessTraceDistance(d, point),
     elapsedS: point.elapsedS,
     heartRate: point.heartRate,
   }))
 }
 
 export const hasHeartRateTrace = (d: StravaActivityDetail): boolean =>
-  heartRateTracePoints(d).filter(point => point.heartRate != null).length >= 2
+  activityHeartRateTracePoints(d).filter(point => point.heartRate != null).length >= 2
 
 export const buildHeartRateTrace = <N>(
   f: TriNodeFactory<N>,
@@ -1143,7 +1181,7 @@ export const buildHeartRateTrace = <N>(
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N => {
-  const points = heartRateTracePoints(d)
+  const points = activityHeartRateTracePoints(d)
   const maximum = Math.max(
     HEART_RATE_TRACE_MIN_BPM + 20,
     ...points.flatMap(point => (point.heartRate == null ? [] : [point.heartRate])),
@@ -1241,6 +1279,7 @@ export const buildPowerBalanceChart = <N>(
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
   embedded = false,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const rightValues = d.route.flatMap(point => {
     const value = routeRightPowerPct(point)
@@ -1257,7 +1296,7 @@ export const buildPowerBalanceChart = <N>(
   const py = (value: number): number =>
     height - ((value - domainMin) / (domainMax - domainMin)) * (height - 1)
   const yTicks = [domainMin, 50, domainMax].map(value => ({ label: `${value}%`, vbY: py(value) }))
-  const view = graphView(d)
+  const view = graphView(d, graphDomain)
   const leftPaths = powerBalancePaths(
     d,
     rightPowerPct => 100 - rightPowerPct,
@@ -1528,6 +1567,7 @@ const buildCyclingDynamicsPercentChart = <N>(
   metric: CyclingDynamicsPercentMetric,
   selection?: ActivityAnalysisRange | null,
   embedded = false,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const dynamics = d.cyclingDynamics
   if (!dynamics || cyclingDynamicsSampleCount(dynamics) < 2) return null
@@ -1550,7 +1590,7 @@ const buildCyclingDynamicsPercentChart = <N>(
     label: `${value}%`,
     vbY: py(value),
   }))
-  const view = graphView(d)
+  const view = graphView(d, graphDomain)
   const title = metric === 'pedalSmoothness' ? 'pedal smoothness' : 'torque effectiveness'
   const className = metric === 'pedalSmoothness' ? 'pedal-smoothness' : 'torque-effectiveness'
   const svgEl = f.svg('svg', {
@@ -1634,19 +1674,24 @@ export const buildTorqueEffectivenessChart = <N>(
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
   embedded = false,
-): N | null => buildCyclingDynamicsPercentChart(f, d, 'torqueEffectiveness', selection, embedded)
+  graphDomain?: ActivityGraphDomain | null,
+): N | null =>
+  buildCyclingDynamicsPercentChart(f, d, 'torqueEffectiveness', selection, embedded, graphDomain)
 
 export const buildPedalSmoothnessChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
   embedded = false,
-): N | null => buildCyclingDynamicsPercentChart(f, d, 'pedalSmoothness', selection, embedded)
+  graphDomain?: ActivityGraphDomain | null,
+): N | null =>
+  buildCyclingDynamicsPercentChart(f, d, 'pedalSmoothness', selection, embedded, graphDomain)
 
 export const buildPowerPhaseChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const dynamics = d.cyclingDynamics
   if (!dynamics || cyclingDynamicsSampleCount(dynamics) < 2) return null
@@ -1662,7 +1707,7 @@ export const buildPowerPhaseChart = <N>(
   const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
   const py = (value: number): number => height - (Math.min(360, Math.max(0, value)) / 360) * height
   const yTicks = [0, 90, 180, 270, 360].map(value => ({ label: `${value}°`, vbY: py(value) }))
-  const view = graphView(d)
+  const view = graphView(d, graphDomain)
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-cycling-dynamics-svg tri-power-phase-svg',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -1730,6 +1775,7 @@ export const buildRiderPositionChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const dynamics = d.cyclingDynamics
   if (!dynamics || dynamics.positionChanges.length === 0) return null
@@ -1746,7 +1792,7 @@ export const buildRiderPositionChart = <N>(
     .filter(change => change.distanceKm >= 0 && change.distanceKm <= maxDistanceKm)
     .sort((left, right) => left.distanceKm - right.distanceKm)
   if (changes.length === 0) return null
-  const view = graphView(d)
+  const view = graphView(d, graphDomain)
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-cycling-dynamics-svg tri-rider-position-svg',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
@@ -1887,12 +1933,13 @@ export const buildStaminaChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const points = d.route.filter(point => point.stamina != null && point.potentialStamina != null)
   if (d.sport !== 'bike' || points.length < 2) return null
   const width = 100
   const height = 30
-  const view = graphView(d)
+  const view = graphView(d, graphDomain)
   const yTicks = [0, 25, 50, 75, 100].map(value => ({
     label: `${value}%`,
     vbY: height - (value / 100) * height,
@@ -2070,6 +2117,7 @@ export const buildShiftingChart = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const shifts = d.gearShifts
   if (d.sport !== 'bike' || shifts.length === 0) return null
@@ -2086,12 +2134,15 @@ export const buildShiftingChart = <N>(
     shifts,
     Math.max(d.movingTimeS, d.route.at(-1)?.elapsedS ?? 0),
   )
+  const view = graphViewForDistance(maxDistanceKm, graphDomain)
   const frontY = (value: number): number => gearY(value, frontMin, frontMax, height)
   const rearY = (value: number): number => gearY(value, rearMin, rearMax, height)
   const svgEl = f.svg('svg', {
     class: 'tri-elev tri-shift-svg',
-    viewBox: `0 0 ${width} ${height}`,
+    viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${height}`,
     preserveAspectRatio: 'none',
+    'data-domain-start-distance-km': view.startDistanceKm,
+    'data-domain-end-distance-km': view.endDistanceKm,
   })
   if (selection !== undefined) f.add(svgEl, buildAnalysisSelection(f, d, height, selection))
   f.add(
@@ -2142,7 +2193,7 @@ export const buildShiftingChart = <N>(
       svgEl,
       sampledGearTicks(frontValues).map(value => ({ label: `${value}T`, vbY: frontY(value) })),
       height,
-      distanceXTicks(f.presentation, 0, maxDistanceKm),
+      distanceXTicks(f.presentation, view.startDistanceKm, view.endDistanceKm),
       true,
       { top: 0, bottom: height },
     ),
@@ -2251,7 +2302,7 @@ export const buildRunVerticalOscillationTrace = <N>(
   )
 }
 
-const buildTemperatureTrace = <N>(
+export const buildTemperatureTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
@@ -2297,14 +2348,15 @@ const traceResolution = (values: number[], fallback: number): number => {
 const thermalTemperatureTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
-  pickCelsius: (point: StravaActivityDetail['route'][number]) => number | null,
+  pickCelsius: (point: ActivityThermalTracePoint) => number | null,
   title: string,
   fallbackResolutionC: number,
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
   const imperial = isImperial(f.presentation)
-  const valuesC = d.route.map(pickCelsius).filter((value): value is number => value != null)
+  const points = activityThermalTracePoints(d)
+  const valuesC = points.map(pickCelsius).filter((value): value is number => value != null)
   if (valuesC.length < 2) return null
   const displayValues = valuesC.map(value => temperatureValue(f.presentation, value))
   const fallbackResolution = imperial ? (fallbackResolutionC * 9) / 5 : fallbackResolutionC
@@ -2313,9 +2365,10 @@ const thermalTemperatureTrace = <N>(
   const max = Math.max(...displayValues) + resolution
   const averageC = valuesC.reduce((total, value) => total + value, 0) / valuesC.length
   const digits = resolution < 0.1 ? 2 : 1
-  return buildTrace(
+  return buildTraceSeries(
     f,
     d,
+    points,
     point => {
       const celsius = pickCelsius(point)
       return celsius == null ? null : temperatureValue(f.presentation, celsius)
@@ -2329,13 +2382,14 @@ const thermalTemperatureTrace = <N>(
   )
 }
 
-const buildHeatStrainTrace = <N>(
+export const buildHeatStrainTrace = <N>(
   f: TriNodeFactory<N>,
   d: StravaActivityDetail,
   selection?: ActivityAnalysisRange | null,
   graphDomain?: ActivityGraphDomain | null,
 ): N | null => {
-  const values = d.route
+  const points = activityThermalTracePoints(d)
+  const values = points
     .map(point => point.heatStrainIndex)
     .filter((value): value is number => value != null)
   if (values.length < 2) return null
@@ -2343,9 +2397,10 @@ const buildHeatStrainTrace = <N>(
   const min = Math.max(0, Math.min(...values) - resolution)
   const max = Math.max(...values) + resolution
   const average = values.reduce((total, value) => total + value, 0) / values.length
-  return buildTrace(
+  return buildTraceSeries(
     f,
     d,
+    points,
     point => point.heatStrainIndex,
     'heat strain index',
     () => `${average.toFixed(1)} avg`,
@@ -2356,6 +2411,38 @@ const buildHeatStrainTrace = <N>(
     'dotted',
   )
 }
+
+export const buildCoreTemperatureTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null =>
+  thermalTemperatureTrace(
+    f,
+    d,
+    point => point.coreTemperatureC,
+    'CORE temperature',
+    0.01,
+    selection,
+    graphDomain,
+  )
+
+export const buildSkinTemperatureTrace = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  selection?: ActivityAnalysisRange | null,
+  graphDomain?: ActivityGraphDomain | null,
+): N | null =>
+  thermalTemperatureTrace(
+    f,
+    d,
+    point => point.skinTemperatureC,
+    'skin temperature',
+    0.05,
+    selection,
+    graphDomain,
+  )
 
 export const buildRespirationTrace = <N>(
   f: TriNodeFactory<N>,
@@ -2893,20 +2980,34 @@ const swimTrendDisplayValue = (kind: SwimChartMetric, value: number): string =>
     ? `${clock(value)} /100m`
     : kind === 'cadence'
       ? `${swimTrendNumber(value)} str/length`
-      : `${Math.round(value)} SWOLF`
+      : kind === 'rate'
+        ? `${swimTrendNumber(value)} spm`
+        : `${Math.round(value)} SWOLF`
 
 const swimTrendHeaderValue = (kind: SwimChartMetric, value: number): string =>
   kind === 'pace'
     ? clock(value)
-    : kind === 'cadence'
+    : kind === 'cadence' || kind === 'rate'
       ? swimTrendNumber(value)
       : Math.round(value).toLocaleString('en-US')
 
 const swimTrendTitle = (kind: SwimChartMetric): string =>
-  kind === 'pace' ? 'pace /100m' : kind === 'cadence' ? 'cadence str/length' : 'SWOLF'
+  kind === 'pace'
+    ? 'pace /100m'
+    : kind === 'cadence'
+      ? 'cadence str/length'
+      : kind === 'rate'
+        ? 'stroke rate spm'
+        : 'SWOLF'
 
 const swimTrendLabel = (kind: SwimChartMetric): string =>
-  kind === 'pace' ? 'pace' : kind === 'cadence' ? 'cadence' : 'SWOLF'
+  kind === 'pace'
+    ? 'pace'
+    : kind === 'cadence'
+      ? 'cadence'
+      : kind === 'rate'
+        ? 'stroke rate'
+        : 'SWOLF'
 
 const swimDistanceLabel = (distanceM: number): string =>
   `${Math.round(distanceM).toLocaleString('en-US')} m`
@@ -2935,6 +3036,8 @@ export const swimTrendAriaValue = (
   if (kind === 'pace') return `${position}, swim pace ${clock(point.value)} per 100 metres`
   if (kind === 'cadence')
     return `${position}, swim cadence ${swimTrendNumber(point.value)} strokes per length`
+  if (kind === 'rate')
+    return `${position}, stroke rate ${swimTrendNumber(point.value)} strokes per minute`
   return `${position}, SWOLF score ${Math.round(point.value)}`
 }
 
@@ -3219,12 +3322,15 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
     pick: (observation: SwimActivityObservation) => number | null,
   ): boolean => source.filter(observation => positiveMetric(pick(observation))).length >= 2
   const paceVisible = hasSeries(observations, observation => observation.interval.paceSPer100m)
+  const rateVisible = hasSeries(observations, observation => observation.interval.strokeRateSpm)
   const cadenceVisible = hasSeries(observations, observation => observation.strokesPerLength)
   const swolfVisible = hasSeries(observations, observation => observation.swolf)
   const canToggle =
     hundredMetreObservations.length >= 2 &&
     (!paceVisible ||
       hasSeries(hundredMetreObservations, observation => observation.interval.paceSPer100m)) &&
+    (!rateVisible ||
+      hasSeries(hundredMetreObservations, observation => observation.interval.strokeRateSpm)) &&
     (!cadenceVisible ||
       hasSeries(hundredMetreObservations, observation => observation.strokesPerLength)) &&
     (!swolfVisible || hasSeries(hundredMetreObservations, observation => observation.swolf))
@@ -3242,6 +3348,16 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
     observation => observation.interval.paceSPer100m,
     paceVisible ? modeToggle : undefined,
   )
+  const rate = buildSwimTrendChart(
+    f,
+    observations,
+    normalizedObservations,
+    totalDistanceM,
+    'rate',
+    positiveMetric(d.strokeRateSpm) ? d.strokeRateSpm : null,
+    observation => observation.interval.strokeRateSpm,
+    !paceVisible && rateVisible ? modeToggle : undefined,
+  )
   const cadence = buildSwimTrendChart(
     f,
     observations,
@@ -3250,7 +3366,7 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
     'cadence',
     lengthAverages?.strokesPerLength ?? null,
     observation => observation.strokesPerLength,
-    !paceVisible && cadenceVisible ? modeToggle : undefined,
+    !paceVisible && !rateVisible && cadenceVisible ? modeToggle : undefined,
   )
   const swolf = buildSwimTrendChart(
     f,
@@ -3260,11 +3376,11 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
     'swolf',
     lengthAverages?.swolf ?? null,
     observation => observation.swolf,
-    !paceVisible && !cadenceVisible && swolfVisible ? modeToggle : undefined,
+    !paceVisible && !rateVisible && !cadenceVisible && swolfVisible ? modeToggle : undefined,
   )
   const trends = f.el('div', 'tri-swim-chart-grid')
   let chartCount = 0
-  for (const chart of [pace, cadence, swolf])
+  for (const chart of [pace, rate, cadence, swolf])
     if (chart) {
       f.add(trends, chart)
       chartCount++
@@ -4717,8 +4833,12 @@ export const activityStatRows = (
     rows.push(...activityTrainingRows(presentation, d))
     return rows
   }
-  if (d.sport === 'treatment' || d.sport === 'yoga')
-    return [['time', dur(d.movingTimeS)], ...activityTrainingRows(presentation, d)]
+  if (d.sport === 'treatment' || d.sport === 'yoga') {
+    const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
+    if (d.avgHr) rows.push(['avg hr', `${d.avgHr} bpm`])
+    rows.push(...activityTrainingRows(presentation, d))
+    return rows
+  }
   const activityRate =
     d.sport === 'swim' && positiveMetric(d.swimPaceSPer100m)
       ? `${clock(d.swimPaceSPer100m)} /100m`
@@ -4917,25 +5037,11 @@ export const buildActivity = <N>(
       if (heatStrain) f.add(more, heatStrain)
     }
     if (flags.coreTemperature) {
-      const coreTemperature = thermalTemperatureTrace(
-        f,
-        d,
-        point => point.coreTemperatureC,
-        'CORE temperature',
-        0.01,
-        analysisSelection,
-      )
+      const coreTemperature = buildCoreTemperatureTrace(f, d, analysisSelection)
       if (coreTemperature) f.add(more, coreTemperature)
     }
     if (flags.skinTemperature) {
-      const skinTemperature = thermalTemperatureTrace(
-        f,
-        d,
-        point => point.skinTemperatureC,
-        'skin temperature',
-        0.05,
-        analysisSelection,
-      )
+      const skinTemperature = buildSkinTemperatureTrace(f, d, analysisSelection)
       if (skinTemperature) f.add(more, skinTemperature)
     }
     if (swimTrends) f.add(more, swimTrends)
@@ -6814,6 +6920,753 @@ export const recentLocation = (payload: DayCardPayload): string | undefined =>
     .sort((a, b) => b.date.localeCompare(a.date))
     .find(d => d.location)?.location ?? undefined
 
+type DayAnalyticsMetric = { label: string; value: string; detail?: string }
+
+const dayAnalyticsNumber = (
+  presentation: TriathlonPresentation,
+  value: number,
+  digits = 0,
+): string =>
+  value.toLocaleString(presentation.locale === 'fr' ? 'fr-CA' : 'en-US', {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  })
+
+const dayAnalyticsSigned = (
+  presentation: TriathlonPresentation,
+  value: number,
+  digits = 1,
+): string =>
+  `${value > 0 ? '+' : ''}${dayAnalyticsNumber(presentation, value === 0 ? 0 : value, digits)}`
+
+const dayAnalyticsDuration = (seconds: number): string => {
+  const total = Math.max(0, Math.round(seconds))
+  const hours = Math.floor(total / 3600)
+  const minutes = Math.floor((total % 3600) / 60)
+  const remaining = total % 60
+  const parts: string[] = []
+  if (hours > 0) parts.push(`${hours}h`)
+  if (minutes > 0 || hours > 0) parts.push(`${minutes}m`)
+  if (remaining > 0 || parts.length === 0) parts.push(`${remaining}s`)
+  return parts.join(' ')
+}
+
+const dayAnalyticsClock = (presentation: TriathlonPresentation, value: string): string => {
+  const match = /T(\d{2}):(\d{2})/.exec(value)
+  if (!match) return value
+  const hour = Number(match[1])
+  const minute = match[2]
+  if (presentation.locale === 'fr') return `${hour.toString().padStart(2, '0')}:${minute}`
+  const suffix = hour < 12 ? 'am' : 'pm'
+  const displayHour = hour % 12 || 12
+  return `${displayHour}:${minute} ${suffix}`
+}
+
+const dayAnalyticsMass = (presentation: TriathlonPresentation, kilograms: number): string => {
+  const imperial = isImperial(presentation)
+  const value = imperial ? kilograms / LB_TO_KG : kilograms
+  return `${dayAnalyticsNumber(presentation, value, 1)} ${imperial ? 'lb' : 'kg'}`
+}
+
+const dayAnalyticsTemperature = (
+  presentation: TriathlonPresentation,
+  celsius: number,
+  signed = false,
+): string => {
+  const value = isImperial(presentation) ? (celsius * 9) / 5 + (signed ? 0 : 32) : celsius
+  return `${signed && value > 0 ? '+' : ''}${dayAnalyticsNumber(presentation, value, 1)}${isImperial(presentation) ? '°F' : '°C'}`
+}
+
+const dayAnalyticsList = <N>(
+  f: TriNodeFactory<N>,
+  date: string,
+  key: string,
+  metrics: DayAnalyticsMetric[],
+  className = 'tri-day-analytics-list',
+): N => {
+  const list = f.el('dl', className)
+  for (const [index, metric] of metrics.entries()) {
+    const detailId = `tri-day-${date}-${key}-detail-${index}`
+    const rowAttrs: Record<string, string> = { 'data-metric': metric.label }
+    if (metric.detail) {
+      rowAttrs.tabindex = '0'
+      rowAttrs['aria-describedby'] = detailId
+    }
+    const row = f.el('div', 'tri-day-analytics-metric', undefined, rowAttrs)
+    const value = f.el('dd', 'tri-day-analytics-value', metric.value)
+    if (metric.detail)
+      f.add(
+        value,
+        f.el('span', 'tri-day-analytics-detail', metric.detail, { id: detailId, role: 'tooltip' }),
+      )
+    f.add(
+      row,
+      f.el('dt', 'tri-day-analytics-label', triText(f.presentation.locale, metric.label), {
+        'data-i18n': metric.label,
+      }),
+      value,
+    )
+    f.add(list, row)
+  }
+  return list
+}
+
+const dayAnalyticsGroup = <N>(
+  f: TriNodeFactory<N>,
+  date: string,
+  key: string,
+  label: string,
+  metrics: DayAnalyticsMetric[],
+): N | null => {
+  if (metrics.length === 0) return null
+  const titleId = `tri-day-${date}-${key}`
+  const group = f.el(
+    'section',
+    `tri-day-analytics-group tri-day-analytics-group--${key}`,
+    undefined,
+    { 'aria-labelledby': titleId },
+  )
+  f.add(
+    group,
+    f.el(
+      'h3',
+      'tri-ana-block-title tri-day-analytics-group-title',
+      triText(f.presentation.locale, label),
+      { id: titleId, 'data-i18n': label },
+    ),
+    dayAnalyticsList(f, date, key, metrics),
+  )
+  return group
+}
+
+const dayAnalyticsBodyMetrics = (
+  presentation: TriathlonPresentation,
+  summary: TriathlonDayAnalytics,
+): DayAnalyticsMetric[] => {
+  const body = summary.body
+  if (!body) return []
+  const metrics: DayAnalyticsMetric[] = []
+  if (body.kg != null)
+    metrics.push({ label: 'body weight', value: dayAnalyticsMass(presentation, body.kg) })
+  if (body.ffmi != null)
+    metrics.push({ label: 'FFMI', value: dayAnalyticsNumber(presentation, body.ffmi, 2) })
+  if (body.bmi != null)
+    metrics.push({ label: 'bmi', value: dayAnalyticsNumber(presentation, body.bmi, 1) })
+  if (body.bodyFatPct != null)
+    metrics.push({
+      label: 'body fat',
+      value: `${dayAnalyticsNumber(presentation, body.bodyFatPct, 1)}%`,
+    })
+  if (body.bodyWaterPct != null)
+    metrics.push({
+      label: 'body water',
+      value: `${dayAnalyticsNumber(presentation, body.bodyWaterPct, 1)}%`,
+    })
+  if (body.muscleMassKg != null)
+    metrics.push({ label: 'muscle', value: dayAnalyticsMass(presentation, body.muscleMassKg) })
+  if (body.boneMassKg != null)
+    metrics.push({ label: 'bone', value: dayAnalyticsMass(presentation, body.boneMassKg) })
+  return metrics
+}
+
+const dayAnalyticsRecoveryMetrics = (
+  presentation: TriathlonPresentation,
+  summary: TriathlonDayAnalytics,
+): DayAnalyticsMetric[] => {
+  const recovery = summary.recovery
+  if (!recovery) return []
+  const metrics: DayAnalyticsMetric[] = []
+  if (recovery.readiness != null)
+    metrics.push({
+      label: 'readiness',
+      value: dayAnalyticsNumber(presentation, recovery.readiness),
+      ...(recovery.readinessBaseline != null
+        ? {
+            detail: `${triText(presentation.locale, 'baseline')} ${dayAnalyticsNumber(presentation, recovery.readinessBaseline)}`,
+          }
+        : {}),
+    })
+  if (recovery.hrv != null)
+    metrics.push({
+      label: 'hrv',
+      value: `${dayAnalyticsNumber(presentation, recovery.hrv)} ms`,
+      detail: [
+        recovery.hrvBaseline == null
+          ? null
+          : `${triText(presentation.locale, 'baseline')} ${dayAnalyticsNumber(presentation, recovery.hrvBaseline, 1)}`,
+        recovery.hrvZ == null ? null : `z ${dayAnalyticsSigned(presentation, recovery.hrvZ, 2)}σ`,
+      ]
+        .filter(value => value != null)
+        .join(' · '),
+    })
+  if (recovery.rhr != null)
+    metrics.push({
+      label: 'resting hr',
+      value: `${dayAnalyticsNumber(presentation, recovery.rhr)} bpm`,
+      detail: [
+        recovery.rhrBaseline == null
+          ? null
+          : `${triText(presentation.locale, 'baseline')} ${dayAnalyticsNumber(presentation, recovery.rhrBaseline, 1)}`,
+        recovery.rhrZ == null ? null : `z ${dayAnalyticsSigned(presentation, recovery.rhrZ, 2)}σ`,
+      ]
+        .filter(value => value != null)
+        .join(' · '),
+    })
+  if (recovery.temperatureDeviationC != null)
+    metrics.push({
+      label: 'temperature deviation',
+      value: dayAnalyticsTemperature(presentation, recovery.temperatureDeviationC, true),
+    })
+  return metrics
+}
+
+const dayAnalyticsSleepMetrics = (
+  presentation: TriathlonPresentation,
+  summary: TriathlonDayAnalytics,
+): DayAnalyticsMetric[] => {
+  const sleep = summary.sleep
+  const recovery = summary.recovery
+  if (!sleep && !recovery) return []
+  const metrics: DayAnalyticsMetric[] = []
+  const score = sleep?.sleepScore ?? null
+  if (score != null)
+    metrics.push({ label: 'sleep score', value: dayAnalyticsNumber(presentation, score) })
+  if (sleep?.readinessScore != null)
+    metrics.push({
+      label: 'readiness',
+      value: dayAnalyticsNumber(presentation, sleep.readinessScore),
+    })
+  if (sleep?.bedtimeStart)
+    metrics.push({ label: 'bedtime', value: dayAnalyticsClock(presentation, sleep.bedtimeStart) })
+  if (sleep?.bedtimeEnd)
+    metrics.push({ label: 'wake-up', value: dayAnalyticsClock(presentation, sleep.bedtimeEnd) })
+  if (sleep?.timeInBedS != null)
+    metrics.push({ label: 'time in bed', value: dayAnalyticsDuration(sleep.timeInBedS) })
+  const totalSleep = sleep?.totalSleepS ?? recovery?.sleepDurationS
+  if (totalSleep != null)
+    metrics.push({ label: 'total sleep', value: dayAnalyticsDuration(totalSleep) })
+  if (sleep?.efficiency != null)
+    metrics.push({
+      label: 'efficiency',
+      value: `${dayAnalyticsNumber(presentation, sleep.efficiency)}%`,
+    })
+  if (sleep?.latencyS != null)
+    metrics.push({ label: 'latency', value: dayAnalyticsDuration(sleep.latencyS) })
+  if (sleep?.averageHeartRate != null)
+    metrics.push({
+      label: 'average hr',
+      value: `${dayAnalyticsNumber(presentation, sleep.averageHeartRate, 1)} bpm`,
+    })
+  if (sleep?.lowestHeartRate != null)
+    metrics.push({
+      label: 'lowest hr',
+      value: `${dayAnalyticsNumber(presentation, sleep.lowestHeartRate)} bpm`,
+    })
+  if (sleep?.averageHrv != null)
+    metrics.push({
+      label: 'average hrv',
+      value: `${dayAnalyticsNumber(presentation, sleep.averageHrv)} ms`,
+    })
+  if (sleep?.averageBreathsPerMinute != null)
+    metrics.push({
+      label: 'breath',
+      value: `${dayAnalyticsNumber(presentation, sleep.averageBreathsPerMinute, 1)} brpm`,
+    })
+  if (sleep?.restlessPeriods != null)
+    metrics.push({
+      label: 'restless periods',
+      value: dayAnalyticsNumber(presentation, sleep.restlessPeriods),
+    })
+  if (recovery?.sleepDebtS != null)
+    metrics.push({ label: 'sleep debt', value: dayAnalyticsDuration(recovery.sleepDebtS) })
+  if (recovery?.sleepBaselineS != null)
+    metrics.push({ label: 'sleep baseline', value: dayAnalyticsDuration(recovery.sleepBaselineS) })
+  if (recovery?.sleepTargetS != null)
+    metrics.push({ label: 'sleep target', value: dayAnalyticsDuration(recovery.sleepTargetS) })
+  return metrics
+}
+
+const DAY_ANALYTICS_SLEEP_WIDTH = 100
+const DAY_ANALYTICS_SLEEP_HEIGHT = 24
+
+const dayAnalyticsWallMinute = (iso: string): number | null => {
+  const match = /T(\d{2}):(\d{2})/.exec(iso)
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
+
+const dayAnalyticsWallClock = (minutes: number): string => {
+  const value = ((Math.round(minutes) % 1440) + 1440) % 1440
+  return `${Math.floor(value / 60)
+    .toString()
+    .padStart(2, '0')}:${(value % 60).toString().padStart(2, '0')}`
+}
+
+const dayAnalyticsHourTicks = (
+  startIso: string,
+  intervalS: number,
+  count: number,
+  denominator: number,
+): AxisXTick[] => {
+  const startMinute = dayAnalyticsWallMinute(startIso)
+  if (startMinute == null || count < 2 || denominator <= 0) return []
+  const ticks: AxisXTick[] = []
+  const startS = startMinute * 60
+  let bucket = Math.floor(startS / 7200)
+  for (let index = 1; index < count; index++) {
+    const nextBucket = Math.floor((startS + index * intervalS) / 7200)
+    if (nextBucket === bucket) continue
+    bucket = nextBucket
+    ticks.push({
+      label: dayAnalyticsWallClock((nextBucket * 7200) / 60),
+      pct: (index / denominator) * 100,
+    })
+  }
+  return ticks
+}
+
+const dayAnalyticsContributionGroup = <N>(
+  f: TriNodeFactory<N>,
+  title: string,
+  contributions: Record<string, number | null> | null,
+): N | null => {
+  if (!contributions) return null
+  const rows = Object.entries(contributions).filter(
+    (entry): entry is [string, number] => entry[1] != null,
+  )
+  if (rows.length === 0) return null
+  const group = f.el('section', 'tri-sleep-contrib')
+  f.add(
+    group,
+    f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, title), {
+      'data-i18n': title,
+    }),
+  )
+  for (const [key, value] of rows) {
+    const row = f.el('div', 'tri-sleep-contrib-row')
+    const bar = f.el('div', 'tri-sleep-contrib-bar', undefined, { 'aria-hidden': 'true' })
+    f.add(
+      bar,
+      f.el(
+        'div',
+        value >= 70
+          ? 'tri-sleep-contrib-fill'
+          : 'tri-sleep-contrib-fill tri-sleep-contrib-fill--low',
+        undefined,
+        { style: `width:${Math.max(0, Math.min(100, value))}%` },
+      ),
+    )
+    const label = key.replaceAll('_', ' ')
+    f.add(
+      row,
+      f.el('span', 'tri-sleep-contrib-label', triText(f.presentation.locale, label), {
+        'data-i18n': label,
+      }),
+      bar,
+      f.el('span', 'tri-sleep-contrib-val', dayAnalyticsNumber(f.presentation, value)),
+    )
+    f.add(group, row)
+  }
+  return group
+}
+
+const DAY_ANALYTICS_SLEEP_STAGES: Record<string, { key: string; lane: number }> = {
+  '4': { key: 'awake', lane: 0 },
+  '3': { key: 'rem', lane: 1 },
+  '2': { key: 'light', lane: 2 },
+  '1': { key: 'deep', lane: 3 },
+}
+
+const dayAnalyticsSleepStages = <N>(
+  f: TriNodeFactory<N>,
+  sleep: NonNullable<TriathlonDayAnalytics['sleep']>,
+): N | null => {
+  const durations = [
+    ['deep', sleep.deepS],
+    ['light', sleep.lightS],
+    ['rem', sleep.remS],
+    ['awake', sleep.awakeS],
+  ] as const
+  if (!sleep.phase5Min && durations.every(([, seconds]) => seconds == null)) return null
+  const chart = f.el('section', 'tri-day-sleep-chart tri-day-sleep-stages')
+  f.add(
+    chart,
+    f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, 'sleep stages'), {
+      'data-i18n': 'sleep stages',
+    }),
+  )
+  const phase = sleep.phase5Min
+  if (phase && sleep.bedtimeStart) {
+    const height = 16
+    const svg = f.svg('svg', {
+      class: 'tri-ana-svg tri-day-sleep-stage-svg',
+      viewBox: `0 0 ${phase.length} ${height}`,
+      preserveAspectRatio: 'none',
+      role: 'img',
+      'aria-label': triText(f.presentation.locale, 'sleep stages'),
+    })
+    let start = 0
+    while (start < phase.length) {
+      const code = phase[start]
+      let end = start + 1
+      while (end < phase.length && phase[end] === code) end++
+      const stage = DAY_ANALYTICS_SLEEP_STAGES[code]
+      if (stage)
+        f.add(
+          svg,
+          f.svg('rect', {
+            x: start,
+            y: stage.lane * 4 + 0.3,
+            width: end - start,
+            height: 3.4,
+            class: `tri-hyp--${stage.key}`,
+          }),
+        )
+      start = end
+    }
+    f.add(
+      chart,
+      axisFrame(
+        f,
+        svg,
+        [
+          { label: triText(f.presentation.locale, 'awake'), vbY: 2 },
+          { label: triText(f.presentation.locale, 'rem'), vbY: 6 },
+          { label: triText(f.presentation.locale, 'light'), vbY: 10 },
+          { label: triText(f.presentation.locale, 'deep'), vbY: 14 },
+        ],
+        height,
+        dayAnalyticsHourTicks(sleep.bedtimeStart, 300, phase.length, phase.length),
+        false,
+      ),
+    )
+  }
+  const summary = f.el('div', 'tri-day-sleep-stage-summary')
+  for (const [label, seconds] of durations)
+    if (seconds != null)
+      f.add(
+        summary,
+        f.el(
+          'span',
+          'tri-ana-k',
+          `${triText(f.presentation.locale, label)} ${dayAnalyticsDuration(seconds)}`,
+        ),
+      )
+  f.add(chart, summary)
+  return chart
+}
+
+const dayAnalyticsSeriesPaths = (
+  items: readonly (number | null)[],
+  x: (index: number) => number,
+  y: (value: number) => number,
+): string[] => {
+  const paths: string[] = []
+  let path = ''
+  let points = 0
+  const flush = (): void => {
+    if (points >= 2) paths.push(path)
+    path = ''
+    points = 0
+  }
+  for (const [index, value] of items.entries()) {
+    if (value == null) {
+      flush()
+      continue
+    }
+    const point = `${x(index).toFixed(3)} ${y(value).toFixed(3)}`
+    path += `${points === 0 ? 'M' : 'L'}${point}`
+    points++
+  }
+  flush()
+  return paths
+}
+
+const dayAnalyticsSleepSeries = <N>(
+  f: TriNodeFactory<N>,
+  date: string,
+  key: 'hrv' | 'heart-rate',
+  title: string,
+  series: NonNullable<TriathlonDayAnalytics['sleep']>['hrv'],
+): N | null => {
+  if (!series || series.items.length < 2) return null
+  const values = series.items.filter((value): value is number => value != null)
+  if (values.length < 2) return null
+  const low = Math.min(...values)
+  const high = Math.max(...values)
+  const padding = Math.max((high - low) * 0.1, 1)
+  const minimum = low - padding
+  const maximum = high + padding
+  const x = (index: number): number =>
+    (index / Math.max(1, series.items.length - 1)) * DAY_ANALYTICS_SLEEP_WIDTH
+  const y = (value: number): number =>
+    DAY_ANALYTICS_SLEEP_HEIGHT -
+    2 -
+    ((value - minimum) / Math.max(1, maximum - minimum)) * (DAY_ANALYTICS_SLEEP_HEIGHT - 4)
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length
+  const unit = key === 'hrv' ? 'ms' : 'bpm'
+  const readoutId = `tri-day-${date}-sleep-${key}-readout`
+  const initialIndex = series.items.findLastIndex(value => value != null)
+  const startMinute = dayAnalyticsWallMinute(series.startTs) ?? 0
+  const initialTime = dayAnalyticsWallClock(
+    startMinute + (Math.max(0, initialIndex) * series.intervalS) / 60,
+  )
+  const initialValue = initialIndex >= 0 ? series.items[initialIndex] : null
+  const initialReadout = `${initialTime} · ${initialValue == null ? '—' : Math.round(initialValue)} ${unit}`
+  const chart = f.el(
+    'section',
+    `tri-day-sleep-chart tri-day-sleep-series tri-day-sleep-series--${key}`,
+    undefined,
+    {
+      'data-day-sleep-series': key,
+      'data-day-sleep-values': series.items.map(value => value ?? '').join(','),
+      'data-day-sleep-start': series.startTs,
+      'data-day-sleep-interval': series.intervalS.toString(),
+      'data-day-sleep-unit': unit,
+      'data-day-sleep-width': DAY_ANALYTICS_SLEEP_WIDTH.toString(),
+    },
+  )
+  f.add(
+    chart,
+    f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, title), {
+      'data-i18n': title,
+    }),
+  )
+  const svg = f.svg('svg', {
+    class: 'tri-ana-svg tri-day-sleep-line-svg',
+    viewBox: `0 0 ${DAY_ANALYTICS_SLEEP_WIDTH} ${DAY_ANALYTICS_SLEEP_HEIGHT}`,
+    preserveAspectRatio: 'none',
+    role: 'slider',
+    tabindex: 0,
+    'aria-label': triText(f.presentation.locale, title),
+    'aria-valuemin': 0,
+    'aria-valuemax': series.items.length - 1,
+    'aria-valuenow': Math.max(0, initialIndex),
+    'aria-valuetext': initialReadout,
+    'aria-describedby': readoutId,
+  })
+  f.add(
+    svg,
+    f.svg('line', {
+      x1: 0,
+      y1: y(average),
+      x2: DAY_ANALYTICS_SLEEP_WIDTH,
+      y2: y(average),
+      class: 'tri-rec-target',
+    }),
+  )
+  for (const path of dayAnalyticsSeriesPaths(series.items, x, y))
+    f.add(svg, f.svg('path', { d: path, class: `tri-day-sleep-line tri-day-sleep-line--${key}` }))
+  f.add(
+    svg,
+    f.svg('line', {
+      x1: x(Math.max(0, initialIndex)),
+      y1: 0,
+      x2: x(Math.max(0, initialIndex)),
+      y2: DAY_ANALYTICS_SLEEP_HEIGHT,
+      class: 'tri-ana-cursor',
+    }),
+  )
+  f.add(
+    chart,
+    axisFrame(
+      f,
+      svg,
+      [
+        { label: dayAnalyticsNumber(f.presentation, high), vbY: y(high) },
+        { label: dayAnalyticsNumber(f.presentation, low), vbY: y(low) },
+      ],
+      DAY_ANALYTICS_SLEEP_HEIGHT,
+      dayAnalyticsHourTicks(
+        series.startTs,
+        series.intervalS,
+        series.items.length,
+        series.items.length - 1,
+      ),
+    ),
+    f.el('div', 'tri-chart-readout', initialReadout, { id: readoutId }),
+  )
+  return chart
+}
+
+const buildDaySleepAnalytics = <N>(
+  f: TriNodeFactory<N>,
+  summary: TriathlonDayAnalytics,
+): N | null => {
+  const sleep = summary.sleep
+  const metrics = dayAnalyticsSleepMetrics(f.presentation, summary)
+  if (!sleep && metrics.length === 0) return null
+  const titleId = `tri-day-${summary.date}-sleep`
+  const group = f.el(
+    'section',
+    'tri-day-analytics-group tri-day-analytics-group--sleep',
+    undefined,
+    { 'aria-labelledby': titleId },
+  )
+  f.add(
+    group,
+    f.el(
+      'h3',
+      'tri-ana-block-title tri-day-analytics-group-title',
+      triText(f.presentation.locale, 'sleep details'),
+      { id: titleId, 'data-i18n': 'sleep details' },
+    ),
+  )
+  if (metrics.length > 0)
+    f.add(
+      group,
+      dayAnalyticsList(
+        f,
+        summary.date,
+        'sleep',
+        metrics,
+        'tri-day-analytics-list tri-day-sleep-summary',
+      ),
+    )
+  if (sleep) {
+    const sleepContrib = dayAnalyticsContributionGroup(f, 'sleep score', sleep.sleepContrib)
+    const readinessContrib = dayAnalyticsContributionGroup(f, 'readiness', sleep.readinessContrib)
+    if (sleepContrib || readinessContrib) {
+      const contributions = f.el('div', 'tri-day-sleep-contributions')
+      if (sleepContrib) f.add(contributions, sleepContrib)
+      if (readinessContrib) f.add(contributions, readinessContrib)
+      f.add(group, contributions)
+    }
+    const stages = dayAnalyticsSleepStages(f, sleep)
+    const hrv = dayAnalyticsSleepSeries(f, summary.date, 'hrv', 'hrv', sleep.hrv)
+    const heartRate = dayAnalyticsSleepSeries(
+      f,
+      summary.date,
+      'heart-rate',
+      'resting heart rate',
+      sleep.heartRate,
+    )
+    if (stages) f.add(group, stages)
+    if (hrv) f.add(group, hrv)
+    if (heartRate) f.add(group, heartRate)
+  }
+  return group
+}
+
+const dayAnalyticsTrainingMetrics = (
+  presentation: TriathlonPresentation,
+  summary: TriathlonDayAnalytics,
+): DayAnalyticsMetric[] => {
+  const training = summary.training
+  if (!training) return []
+  const metrics: DayAnalyticsMetric[] = []
+  if (training.vo2max)
+    metrics.push({
+      label: 'VO2max',
+      value: `${dayAnalyticsNumber(presentation, training.vo2max.value, 1)} ml/kg/min`,
+      detail:
+        training.vo2max.method === 'garmin'
+          ? 'Garmin'
+          : training.vo2max.method === 'apple'
+            ? 'Apple'
+            : triText(presentation.locale, training.vo2max.method),
+    })
+  if (training.ctl != null)
+    metrics.push({
+      label: 'fitness · CTL',
+      value: dayAnalyticsNumber(presentation, training.ctl, 1),
+    })
+  if (training.atl != null)
+    metrics.push({
+      label: 'fatigue · ATL',
+      value: dayAnalyticsNumber(presentation, training.atl, 1),
+    })
+  if (training.tsb != null)
+    metrics.push({ label: 'form · TSB', value: dayAnalyticsSigned(presentation, training.tsb, 1) })
+  if (training.load != null)
+    metrics.push({
+      label: 'today load · TSS',
+      value: dayAnalyticsNumber(presentation, training.load, 1),
+      detail: triText(presentation.locale, 'site'),
+    })
+  if (training.garminTss != null)
+    metrics.push({
+      label: 'Garmin TSS',
+      value: dayAnalyticsNumber(presentation, training.garminTss, 1),
+    })
+  if (training.exerciseLoad != null)
+    metrics.push({
+      label: 'exercise load',
+      value: dayAnalyticsNumber(presentation, training.exerciseLoad, 1),
+      detail:
+        training.exerciseLoadSource === 'garmin'
+          ? 'Garmin'
+          : triText(presentation.locale, training.exerciseLoadSource ?? 'calculated'),
+    })
+  if (training.relativeEffort != null)
+    metrics.push({
+      label: 'relative effort',
+      value: dayAnalyticsNumber(presentation, training.relativeEffort),
+      detail: 'Strava',
+    })
+  return metrics
+}
+
+const dayAnalyticsHeatMetrics = (
+  presentation: TriathlonPresentation,
+  summary: TriathlonDayAnalytics,
+): DayAnalyticsMetric[] => {
+  const heat = summary.heat
+  if (!heat) return []
+  const metrics: DayAnalyticsMetric[] = []
+  if (heat.heatStrainIndex != null)
+    metrics.push({ label: 'HSI', value: dayAnalyticsNumber(presentation, heat.heatStrainIndex, 1) })
+  if (heat.temperatureC != null)
+    metrics.push({
+      label: heat.source === 'core' ? 'CORE temperature' : 'ambient temperature',
+      value: dayAnalyticsTemperature(presentation, heat.temperatureC),
+    })
+  metrics.push(
+    { label: 'observed', value: `${dayAnalyticsNumber(presentation, heat.observedMinutes)} min` },
+    { label: 'hot min', value: dayAnalyticsNumber(presentation, heat.hotMinutes) },
+    {
+      label: 'acclimatisation',
+      value: `${dayAnalyticsNumber(presentation, heat.acclimatisationPct)}%`,
+    },
+  )
+  if (heat.dose > 0)
+    metrics.push({ label: 'heat dose', value: dayAnalyticsNumber(presentation, heat.dose, 1) })
+  return metrics
+}
+
+export const buildDayAnalytics = <N>(f: TriNodeFactory<N>, summary: TriathlonDayAnalytics): N => {
+  const section = f.el('section', 'tri-day-analytics', undefined, {
+    'aria-label': triText(f.presentation.locale, 'daily analytics'),
+    'data-analytics-date': summary.date,
+    'data-i18n-aria-label': 'daily analytics',
+  })
+  const groups = f.el('div', 'tri-day-analytics-grid')
+  for (const group of [
+    dayAnalyticsGroup(f, summary.date, 'body-recovery', 'body · recovery', [
+      ...dayAnalyticsBodyMetrics(f.presentation, summary),
+      ...dayAnalyticsRecoveryMetrics(f.presentation, summary),
+    ]),
+    buildDaySleepAnalytics(f, summary),
+    dayAnalyticsGroup(
+      f,
+      summary.date,
+      'state-load',
+      'state · load',
+      dayAnalyticsTrainingMetrics(f.presentation, summary),
+    ),
+    dayAnalyticsGroup(
+      f,
+      summary.date,
+      'thermal',
+      'thermal',
+      dayAnalyticsHeatMetrics(f.presentation, summary),
+    ),
+  ])
+    if (group) f.add(groups, group)
+  f.add(section, groups)
+  return section
+}
+
 export const buildDayCard = <N>(
   f: TriNodeFactory<N>,
   dateIso: string,
@@ -6882,6 +7735,20 @@ export const buildDayCard = <N>(
     f.add(head, track)
   }
   f.add(card, head)
+  const dailyAnalytics = extras.analytics ? payload?.dailyAnalytics?.[dateIso] : undefined
+  if (dailyAnalytics) {
+    f.add(card, buildDayAnalytics(f, dailyAnalytics))
+    if (day.length > 0)
+      f.add(
+        card,
+        f.el(
+          'h2',
+          'tri-ana-block-title tri-day-activities-title',
+          triText(f.presentation.locale, 'activities'),
+          { 'data-i18n': 'activities' },
+        ),
+      )
+  }
   if (!payload) {
     f.add(card, f.el('div', 'tri-pop-rest', '·'))
   } else if (day.length === 0) {
@@ -6895,7 +7762,7 @@ export const buildDayCard = <N>(
   } else {
     for (const d of day) f.add(card, render(d))
   }
-  if (!extras.sport && !extras.activityId) {
+  if (!extras.sport && !extras.activityId && !extras.analytics) {
     const dh = payload?.health[dateIso]
     if (dh) {
       const rec = buildRecovery(f, dh)

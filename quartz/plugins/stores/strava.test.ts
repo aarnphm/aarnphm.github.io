@@ -128,10 +128,42 @@ test('projects a distance-aligned heart rate trace for route-less pool swims', (
 
   assert.deepEqual(activity.route, [])
   assert.deepEqual(activity.heartRateTrace, [
-    { distanceKm: 0, elapsedS: 0, heartRate: 90 },
-    { distanceKm: 0.025, elapsedS: 30, heartRate: 110 },
-    { distanceKm: 0.05, elapsedS: 60, heartRate: null },
-    { distanceKm: 0.075, elapsedS: 90, heartRate: 130 },
+    {
+      distanceKm: 0,
+      elapsedS: 0,
+      heartRate: 90,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0.025,
+      elapsedS: 30,
+      heartRate: 110,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0.05,
+      elapsedS: 60,
+      heartRate: null,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0.075,
+      elapsedS: 90,
+      heartRate: 130,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
   ])
 })
 
@@ -166,11 +198,88 @@ test('projects a time-aligned heart rate trace for route-less strength training'
 
   assert.deepEqual(activity.route, [])
   assert.deepEqual(activity.heartRateTrace, [
-    { distanceKm: 0, elapsedS: 0, heartRate: 90 },
-    { distanceKm: 0, elapsedS: 30, heartRate: 110 },
-    { distanceKm: 0, elapsedS: 60, heartRate: null },
-    { distanceKm: 0, elapsedS: 90, heartRate: 130 },
+    {
+      distanceKm: 0,
+      elapsedS: 0,
+      heartRate: 90,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0,
+      elapsedS: 30,
+      heartRate: 110,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0,
+      elapsedS: 60,
+      heartRate: null,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
+    {
+      distanceKm: 0,
+      elapsedS: 90,
+      heartRate: 130,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    },
   ])
+})
+
+test('projects a time-aligned heart rate trace for route-less yoga', () => {
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Yoga Session',
+        sportType: 'Yoga',
+        distance: 0,
+        movingTime: 90,
+        elapsedTime: 90,
+      }),
+    },
+    streams: {
+      101: {
+        time: [0, 30, 60, 90],
+        latlng: [],
+        altitude: [],
+        distance: [],
+        heartrate: [90, 110, 0, 130],
+      },
+    },
+  }
+
+  const activity = buildPayload(cache, null, null, '2026-06-01').details['101']
+
+  assert.deepEqual(activity.route, [])
+  assert.deepEqual(
+    activity.heartRateTrace.map(point => ({
+      elapsedS: point.elapsedS,
+      heartRate: point.heartRate,
+      coreTemperatureSource: point.coreTemperatureSource,
+    })),
+    [
+      { elapsedS: 0, heartRate: 90, coreTemperatureSource: null },
+      { elapsedS: 30, heartRate: 110, coreTemperatureSource: null },
+      { elapsedS: 60, heartRate: null, coreTemperatureSource: null },
+      { elapsedS: 90, heartRate: 130, coreTemperatureSource: null },
+    ],
+  )
 })
 
 test('preserves the recorded peak when sampling route-less heart rate', () => {
@@ -1044,6 +1153,7 @@ test('merges WeatherKit wind into activity detail and day health', () => {
   const weather: WeatherCache = {
     version: 2,
     lastSync: cache.lastSync,
+    current: null,
     activities: { 101: activity },
     days: summarizeWeatherDays({ 101: activity }),
   }
@@ -1108,6 +1218,7 @@ test('uses nearest same-day weather for route-less swim and strength activities'
   const weather: WeatherCache = {
     version: 2,
     lastSync: cache.lastSync,
+    current: null,
     activities: { 101: activity },
     days: summarizeWeatherDays({ 101: activity }),
   }

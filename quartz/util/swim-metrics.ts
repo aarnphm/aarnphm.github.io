@@ -3,7 +3,7 @@ export const SWIM_PACE_MAX_S_PER_100M = 360
 export const SWIM_STROKE_RATE_MIN_SPM = 5
 export const SWIM_STROKE_RATE_MAX_SPM = 100
 
-export type SwimChartMetric = 'pace' | 'cadence' | 'swolf'
+export type SwimChartMetric = 'pace' | 'cadence' | 'swolf' | 'rate'
 
 export interface SwimLengthInput {
   durationS: number
@@ -33,7 +33,7 @@ export const swimStrokeRate = (strokeCount: number, strokeTimeS: number): number
 }
 
 export const swimChartMetric = (value: string | undefined): SwimChartMetric => {
-  if (value === 'cadence' || value === 'swolf') return value
+  if (value === 'cadence' || value === 'swolf' || value === 'rate') return value
   return 'pace'
 }
 

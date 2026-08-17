@@ -1,4 +1,5 @@
 import type { Analytics } from '../../../plugins/stores/analytics'
+import type { PowerRankInterval } from '../../../plugins/stores/power-rank'
 import type { PowerCurvePoint } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
 import type { WkKind } from './panels/performance'
@@ -19,6 +20,11 @@ import { wkTrendRows } from './panels/performance'
 import { bestPowerSeries } from './panels/power'
 import { bestPowerSeriesLabel } from './panels/power'
 import { criticalPowerForSeries } from './panels/power'
+import { powerRankEffortLabel } from './panels/power'
+import { powerRankRangeRows } from './panels/power'
+import { powerRankProgressLabel } from './panels/power'
+import { powerRankProgressNextLabel } from './panels/power'
+import { powerSkillAtSeconds } from './panels/power'
 import { scrubBind } from './scrub-primitives'
 import { ANA_W } from './shared'
 import { clampN } from './shared'
@@ -39,6 +45,56 @@ export type PrimaryScrubPanel =
   | 'weekly'
   | 'effort'
   | 'heat'
+
+const powerRangeTipContent = (
+  interval: PowerRankInterval,
+  key: BestPowerSeriesKey,
+): HTMLElement[] => {
+  const effort = interval.efforts[key]
+  const head = el('div', 'tri-power-range-tip-head')
+  head.append(
+    el('strong', 'tri-power-range-tip-title', `${zoneClock(interval.durationS)} power`),
+    el(
+      'span',
+      'tri-power-range-tip-best',
+      effort == null
+        ? 'no data'
+        : `${effort.watts.toLocaleString()} W · ${effort.wattsPerKg.toFixed(2)} W/kg`,
+    ),
+  )
+  const table = el('table', 'tri-power-range-table')
+  const tableHead = el('thead')
+  const headerRow = el('tr')
+  for (const label of ['levels', '%', 'power', 'your best'])
+    headerRow.appendChild(el('th', undefined, label, { scope: 'col' }))
+  tableHead.appendChild(headerRow)
+  const tableBody = el('tbody')
+  for (const row of powerRankRangeRows(interval, key)) {
+    const tableRow = el(
+      'tr',
+      row.current ? 'tri-power-range-row tri-power-range-row--current' : 'tri-power-range-row',
+      undefined,
+      row.current ? { 'aria-current': 'true' } : undefined,
+    )
+    tableRow.append(
+      el('th', 'tri-power-range-level', `${row.level} ${row.label}`, { scope: 'row' }),
+      el('td', undefined, `${row.percentile}%`),
+      el('td', undefined, `${row.thresholdWatts.toLocaleString()} W`),
+      el(
+        'td',
+        'tri-power-range-result',
+        row.bestWatts != null
+          ? `${row.bestWatts.toLocaleString()} W`
+          : row.gapWatts != null
+            ? `+${row.gapWatts.toLocaleString()} W`
+            : '',
+      ),
+    )
+    tableBody.appendChild(tableRow)
+  }
+  table.append(tableHead, tableBody)
+  return [head, table]
+}
 
 export const mountPrimaryPanel = (
   kind: PrimaryScrubPanel,
@@ -99,19 +155,116 @@ export const mountPrimaryPanel = (
   if (powerBlock && powerSvg && activePowerSeries.size > 0) {
     const cursor = powerSvg.querySelector<SVGLineElement>('.tri-best-power-cursor')
     const duration = powerBlock.querySelector<HTMLElement>('.tri-best-power-duration')
+    const rankBlock = powerBlock.querySelector<HTMLElement>('.tri-power-radar')
+    const rankSvg = rankBlock?.querySelector<SVGSVGElement>('.tri-power-radar-svg')
+    const rankIntervals = power.ranking.intervals
+    const rankDuration = rankBlock?.querySelector<HTMLElement>('.tri-power-radar-duration')
+    const rankLabels = rankBlock
+      ? Array.from(rankBlock.querySelectorAll<SVGElement>('.tri-power-radar-label'))
+      : []
     const axisTicks = Array.from(
       powerBlock.querySelectorAll<HTMLButtonElement>('.tri-best-power-tick'),
     )
+    const progressTrack = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-track]')
+    const progressFill = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-fill]')
     const minSeconds = Number(powerSvg.getAttribute('aria-valuemin'))
     const maxSeconds = Number(powerSvg.getAttribute('aria-valuemax'))
     const domainMax = Number(powerSvg.dataset.powerDomainMax)
     const height = powerSvg.viewBox.baseVal.height
+    document.body.querySelector('.tri-power-range-tip')?.remove()
+    const powerRangeTip =
+      rankIntervals.length === 0
+        ? null
+        : el('div', 'tri-gloss tri-power-range-tip', undefined, {
+            role: 'tooltip',
+            'aria-hidden': 'true',
+          })
+    if (powerRangeTip) document.body.appendChild(powerRangeTip)
     let selectedSeconds = Number(powerSvg.dataset.powerSelectedSeconds)
     const curveFor = (key: BestPowerSeriesKey): PowerCurvePoint[] =>
       key === 'six-weeks' ? power.sixWeeks : power.year
     const activeAnchor = (): PowerCurvePoint[] => {
       const key = activePowerSeries.has('six-weeks') ? 'six-weeks' : 'year'
       return curveFor(key)
+    }
+    const rankIndexAtSeconds = (seconds: number): number =>
+      rankIntervals.reduce(
+        (best, interval, index) =>
+          Math.abs(Math.log(interval.durationS) - Math.log(seconds)) <
+          Math.abs(Math.log(rankIntervals[best].durationS) - Math.log(seconds))
+            ? index
+            : best,
+        0,
+      )
+    const syncPowerRank = (seconds: number): void => {
+      if (!rankSvg || rankIntervals.length === 0) return
+      const index = rankIndexAtSeconds(seconds)
+      const interval = rankIntervals[index]
+      rankSvg.dataset.powerRankIndex = String(index)
+      rankSvg.setAttribute('aria-valuenow', String(interval.durationS))
+      for (const label of rankLabels)
+        label.classList.toggle(
+          'tri-power-radar-label--active',
+          Number(label.dataset.powerRankIndex) === index,
+        )
+      if (rankDuration)
+        rankDuration.textContent = `${zoneClock(interval.durationS)} · ${interval.skill}`
+      const valueText: string[] = []
+      for (const { key } of powerSeries) {
+        const row = rankBlock?.querySelector<HTMLElement>(
+          `.tri-power-radar-readout-row[data-power-rank-series="${key}"]`,
+        )
+        const effort = activePowerSeries.has(key) ? interval.efforts[key] : null
+        if (row) {
+          row.hidden = !activePowerSeries.has(key)
+          const value = row.querySelector<HTMLElement>('.tri-power-radar-readout-value')
+          if (value) value.textContent = powerRankEffortLabel(effort)
+          const swatch = row.querySelector<HTMLElement>('.tri-best-power-swatch')
+          if (swatch) swatch.dataset.powerSkill = interval.skill
+        }
+        if (effort)
+          valueText.push(
+            `${bestPowerSeriesLabel(context.formatter, power, key)} ${powerRankEffortLabel(effort)}`,
+          )
+      }
+      const primaryKey: BestPowerSeriesKey = activePowerSeries.has('six-weeks')
+        ? 'six-weeks'
+        : 'year'
+      const primaryEffort = interval.efforts[primaryKey]
+      const progressLabel = powerBlock.querySelector<HTMLElement>(
+        '[data-power-rank-progress-label]',
+      )
+      const progressNext = powerBlock.querySelector<HTMLElement>('[data-power-rank-progress-next]')
+      if (progressTrack) progressTrack.dataset.powerSkill = interval.skill
+      if (progressFill) {
+        progressFill.style.setProperty(
+          '--tri-power-rank-progress',
+          `${primaryEffort?.percentile ?? 0}%`,
+        )
+        progressFill.setAttribute('aria-valuenow', String(primaryEffort?.percentile ?? 0))
+        progressFill.setAttribute('aria-valuetext', powerRankProgressLabel(primaryEffort))
+        progressFill.setAttribute(
+          'aria-label',
+          `${bestPowerSeriesLabel(context.formatter, power, primaryKey)} power rank`,
+        )
+      }
+      if (progressLabel) progressLabel.textContent = powerRankProgressLabel(primaryEffort)
+      if (progressNext) progressNext.textContent = powerRankProgressNextLabel(primaryEffort)
+      if (powerRangeTip) {
+        powerRangeTip.dataset.powerSkill = interval.skill
+        if (
+          powerRangeTip.dataset.powerRankIndex !== String(index) ||
+          powerRangeTip.dataset.powerSeries !== primaryKey
+        ) {
+          powerRangeTip.dataset.powerRankIndex = String(index)
+          powerRangeTip.dataset.powerSeries = primaryKey
+          powerRangeTip.replaceChildren(...powerRangeTipContent(interval, primaryKey))
+        }
+      }
+      rankSvg.setAttribute(
+        'aria-valuetext',
+        `${zoneClock(interval.durationS)} ${interval.skill}; ${valueText.join('; ')}`,
+      )
     }
     const syncPowerCaption = (): void => {
       const captions = Array.from(
@@ -125,14 +278,14 @@ export const mountPrimaryPanel = (
       for (const caption of captions)
         caption.toggleAttribute('hidden', caption.dataset.powerCapSeries !== selected)
     }
-    const showSeconds = (requestedSeconds: number, commit: boolean): void => {
+    const showSeconds = (requestedSeconds: number, commit: boolean): number | null => {
       const anchor = activeAnchor()
       const selected = powerCurveHoverAt(
         anchor,
         [],
         powerCurveFraction(requestedSeconds, anchor[0].s, anchor[anchor.length - 1].s),
       )
-      if (!selected) return
+      if (!selected) return null
       const seconds = selected.durationS
       if (commit) {
         selectedSeconds = seconds
@@ -144,6 +297,7 @@ export const mountPrimaryPanel = (
           )
       }
       const xPct = powerCurveFraction(seconds, minSeconds, maxSeconds) * 100
+      const powerSkill = powerSkillAtSeconds(seconds)
       cursor?.setAttribute('x1', xPct.toFixed(2))
       cursor?.setAttribute('x2', xPct.toFixed(2))
       if (duration) duration.textContent = zoneClock(seconds)
@@ -160,6 +314,7 @@ export const mountPrimaryPanel = (
         )
         if (point) {
           point.hidden = watts == null
+          point.dataset.powerSkill = powerSkill
           if (watts != null && domainMax > 0 && height > 0) {
             const y = height - (Math.min(domainMax, Math.max(0, watts)) / domainMax) * (height - 1)
             point.style.left = `${xPct.toFixed(2)}%`
@@ -171,6 +326,8 @@ export const mountPrimaryPanel = (
           syncPowerCurveActivityLink(row, selectedPoint)
           const value = row.querySelector<HTMLElement>('.tri-best-power-value')
           if (value) value.textContent = watts == null ? '—' : `${watts.toLocaleString()} W`
+          const swatch = row.querySelector<HTMLElement>('.tri-best-power-swatch')
+          if (swatch) swatch.dataset.powerSkill = powerSkill
         }
         if (watts != null)
           valueText.push(
@@ -197,18 +354,45 @@ export const mountPrimaryPanel = (
       }
       powerSvg.setAttribute('aria-valuenow', String(seconds))
       powerSvg.setAttribute('aria-valuetext', `${zoneClock(seconds)}; ${valueText.join('; ')}`)
+      syncPowerRank(seconds)
+      return seconds
     }
-    const showFraction = (fraction: number, commit: boolean): void => {
+    const showFraction = (fraction: number, commit: boolean): number | null => {
       const seconds = Math.exp(
         Math.log(minSeconds) +
           clampN(fraction, 0, 1) * (Math.log(maxSeconds) - Math.log(minSeconds)),
       )
-      showSeconds(seconds, commit)
+      return showSeconds(seconds, commit)
+    }
+    const hidePowerRangeTip = (): void => {
+      powerRangeTip?.classList.remove('tri-gloss--on')
+      powerRangeTip?.setAttribute('aria-hidden', 'true')
+    }
+    const placePowerRangeTip = (clientX: number, clientY: number): void => {
+      if (!powerRangeTip) return
+      const rect = powerRangeTip.getBoundingClientRect()
+      const gap = 14
+      const margin = 8
+      const preferredLeft = clientX + gap
+      const left =
+        preferredLeft + rect.width <= window.innerWidth - margin
+          ? preferredLeft
+          : clientX - gap - rect.width
+      const maxTop = Math.max(margin, window.innerHeight - rect.height - margin)
+      const top = clampN(clientY - rect.height / 2, margin, maxTop)
+      powerRangeTip.style.left = `${Math.max(margin, left).toFixed(0)}px`
+      powerRangeTip.style.top = `${top.toFixed(0)}px`
     }
     const onPowerMove = (event: PointerEvent): void => {
       const rect = powerSvg.getBoundingClientRect()
       if (rect.width <= 0) return
       showFraction((event.clientX - rect.left) / rect.width, false)
+    }
+    const showPowerRangeTip = (clientX: number, clientY: number): void => {
+      if (!powerRangeTip) return
+      powerRangeTip.classList.add('tri-gloss--on')
+      powerRangeTip.setAttribute('aria-hidden', 'false')
+      placePowerRangeTip(clientX, clientY)
     }
     const onPowerDown = (event: PointerEvent): void => {
       const rect = powerSvg.getBoundingClientRect()
@@ -216,7 +400,9 @@ export const mountPrimaryPanel = (
       showFraction((event.clientX - rect.left) / rect.width, true)
       powerSvg.focus({ preventScroll: true })
     }
-    const onPowerLeave = (): void => showSeconds(selectedSeconds, false)
+    const onPowerLeave = (): void => {
+      showSeconds(selectedSeconds, false)
+    }
     const onPowerKey = (event: KeyboardEvent): void => {
       const anchor = activeAnchor()
       const selected = powerCurveHoverAt(
@@ -269,12 +455,16 @@ export const mountPrimaryPanel = (
       if (enabled) activePowerSeries.delete(key)
       else activePowerSeries.add(key)
       button.setAttribute('aria-pressed', String(!enabled))
-      const line = powerSvg.querySelector<SVGElement>(
+      const lines = powerSvg.querySelectorAll<SVGElement>(
         `.tri-best-power-line[data-power-series="${key}"]`,
       )
-      line?.toggleAttribute('hidden', enabled)
+      for (const line of lines) line.toggleAttribute('hidden', enabled)
       for (const element of powerBlock.querySelectorAll<HTMLElement | SVGElement>(
         `[data-power-model-series="${key}"]`,
+      ))
+        element.toggleAttribute('hidden', enabled)
+      for (const element of powerBlock.querySelectorAll<HTMLElement | SVGElement>(
+        `[data-power-radar-series="${key}"]`,
       ))
         element.toggleAttribute('hidden', enabled)
       syncPowerCaption()
@@ -286,6 +476,62 @@ export const mountPrimaryPanel = (
     powerSvg.addEventListener('pointercancel', onPowerLeave)
     powerSvg.addEventListener('keydown', onPowerKey)
     powerBlock.addEventListener('click', onPowerClick)
+    let onRankMove: ((event: MouseEvent) => void) | null = null
+    let onRankLeave: (() => void) | null = null
+    let onRankDown: ((event: PointerEvent) => void) | null = null
+    let onRankKey: ((event: KeyboardEvent) => void) | null = null
+    if (rankSvg && rankIntervals.length > 0) {
+      const indexAt = (clientX: number, clientY: number): number => {
+        const rect = rankSvg.getBoundingClientRect()
+        const angle =
+          (Math.atan2(
+            clientY - (rect.top + rect.height / 2),
+            clientX - (rect.left + rect.width / 2),
+          ) *
+            180) /
+          Math.PI
+        return (
+          ((Math.round(((angle + 90) / 360) * rankIntervals.length) % rankIntervals.length) +
+            rankIntervals.length) %
+          rankIntervals.length
+        )
+      }
+      onRankMove = event => {
+        const index = indexAt(event.clientX, event.clientY)
+        const interval = rankIntervals[index]
+        showSeconds(interval.durationS, false)
+        showPowerRangeTip(event.clientX, event.clientY)
+      }
+      onRankLeave = () => {
+        hidePowerRangeTip()
+        showSeconds(selectedSeconds, false)
+      }
+      onRankDown = event => {
+        const index = indexAt(event.clientX, event.clientY)
+        showSeconds(rankIntervals[index].durationS, true)
+      }
+      onRankKey = event => {
+        let index = Number(rankSvg.dataset.powerRankIndex)
+        if (!Number.isInteger(index)) index = 0
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') index--
+        else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') index++
+        else if (event.key === 'Home') index = 0
+        else if (event.key === 'End') index = rankIntervals.length - 1
+        else if (event.key === 'Escape') {
+          event.preventDefault()
+          event.stopPropagation()
+          rankSvg.blur()
+          return
+        } else return
+        event.preventDefault()
+        event.stopPropagation()
+        showSeconds(rankIntervals[clampN(index, 0, rankIntervals.length - 1)].durationS, true)
+      }
+      rankSvg.addEventListener('mousemove', onRankMove)
+      rankSvg.addEventListener('mouseleave', onRankLeave)
+      rankSvg.addEventListener('pointerdown', onRankDown)
+      rankSvg.addEventListener('keydown', onRankKey)
+    }
     syncPowerCaption()
     showSeconds(selectedSeconds, true)
     cleanups.push(() => {
@@ -295,6 +541,11 @@ export const mountPrimaryPanel = (
       powerSvg.removeEventListener('pointercancel', onPowerLeave)
       powerSvg.removeEventListener('keydown', onPowerKey)
       powerBlock.removeEventListener('click', onPowerClick)
+      if (rankSvg && onRankMove) rankSvg.removeEventListener('mousemove', onRankMove)
+      if (rankSvg && onRankLeave) rankSvg.removeEventListener('mouseleave', onRankLeave)
+      if (rankSvg && onRankDown) rankSvg.removeEventListener('pointerdown', onRankDown)
+      if (rankSvg && onRankKey) rankSvg.removeEventListener('keydown', onRankKey)
+      powerRangeTip?.remove()
     })
   }
 

@@ -7,14 +7,27 @@ import type { ActivityRangeChange } from './analysis'
 import type { ScrubSurface } from './analysis'
 import type { DetailPayload } from './data'
 import { activityStatRows } from '../../../util/triathlon-card'
+import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
+import { activityThermalTracePoints } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
+import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
 import { buildCyclingBestEfforts as buildCyclingBestEffortsNode } from '../../../util/triathlon-card'
+import { buildHeatStrainTrace as buildHeatStrainTraceNode } from '../../../util/triathlon-card'
+import { buildPedalSmoothnessChart as buildPedalSmoothnessChartNode } from '../../../util/triathlon-card'
+import { buildPowerBalanceChart as buildPowerBalanceChartNode } from '../../../util/triathlon-card'
+import { buildPowerPhaseChart as buildPowerPhaseChartNode } from '../../../util/triathlon-card'
 import { buildRespirationTrace as buildRespirationTraceNode } from '../../../util/triathlon-card'
+import { buildRiderPositionChart as buildRiderPositionChartNode } from '../../../util/triathlon-card'
 import { buildRunGroundContactTrace as buildRunGroundContactTraceNode } from '../../../util/triathlon-card'
 import { buildRunLapSplits as buildRunLapSplitsNode } from '../../../util/triathlon-card'
 import { buildRunStrideTrace as buildRunStrideTraceNode } from '../../../util/triathlon-card'
 import { buildRunVerticalOscillationTrace as buildRunVerticalOscillationTraceNode } from '../../../util/triathlon-card'
+import { buildShiftingChart as buildShiftingChartNode } from '../../../util/triathlon-card'
+import { buildSkinTemperatureTrace as buildSkinTemperatureTraceNode } from '../../../util/triathlon-card'
+import { buildStaminaChart as buildStaminaChartNode } from '../../../util/triathlon-card'
+import { buildTemperatureTrace as buildTemperatureTraceNode } from '../../../util/triathlon-card'
+import { buildTorqueEffectivenessChart as buildTorqueEffectivenessChartNode } from '../../../util/triathlon-card'
 import { buildTrainingEffectDetails as buildTrainingEffectDetailsNode } from '../../../util/triathlon-card'
 import { clock } from '../../../util/triathlon-card'
 import { cyclingDynamicsIndexAtDistance } from '../../../util/triathlon-card'
@@ -35,6 +48,7 @@ import { positiveMetricDomain } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { powerBalanceText } from '../../../util/triathlon-card'
 import { runGroundContactTimeMs } from '../../../util/triathlon-card'
+import { routeStreamFlags } from '../../../util/triathlon-card'
 import { runStrideLengthLabel } from '../../../util/triathlon-card'
 import { runStrideLengthValue } from '../../../util/triathlon-card'
 import { runVerticalOscillationCm } from '../../../util/triathlon-card'
@@ -61,6 +75,7 @@ import {
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
+import { nextMapMetricShortcutIndex } from '../shell/command-palette'
 import { analysisRate } from './analysis'
 import { linkScrub } from './analysis'
 import { detailContextFromPayload } from './data'
@@ -139,6 +154,72 @@ export const buildHeatLegend = (
   return wrap
 }
 
+const cyclingDynamicsPairAtDistance = (
+  d: StravaActivityDetail,
+  point: StravaActivityDetail['route'][number],
+  left: readonly (number | null)[],
+  right: readonly (number | null)[],
+  suffix: string,
+): string => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics) return '—'
+  const index = cyclingDynamicsIndexAtDistance(dynamics, point.d)
+  if (index < 0) return '—'
+  const format = (value: number | null | undefined): string =>
+    value == null || !Number.isFinite(value) ? '—' : `${value.toFixed(1)}${suffix}`
+  return `L ${format(left[index])} · R ${format(right[index])}`
+}
+
+const powerPhaseAtDistance = (
+  d: StravaActivityDetail,
+  point: StravaActivityDetail['route'][number],
+): string => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics) return '—'
+  const index = cyclingDynamicsIndexAtDistance(dynamics, point.d)
+  if (index < 0) return '—'
+  const phase = (start: number | null | undefined, end: number | null | undefined): string =>
+    start == null || end == null ? '—' : `${Math.round(start)}°→${Math.round(end)}°`
+  return `L ${phase(dynamics.leftPowerPhaseStart[index], dynamics.leftPowerPhaseEnd[index])} · R ${phase(dynamics.rightPowerPhaseStart[index], dynamics.rightPowerPhaseEnd[index])}`
+}
+
+const riderPositionAtPoint = (
+  presentation: TriathlonPresentation,
+  d: StravaActivityDetail,
+  point: StravaActivityDetail['route'][number],
+): string => {
+  const dynamics = d.cyclingDynamics
+  if (!dynamics) return '—'
+  const position = riderPositionAtDistance(dynamics, point.d)
+  return position == null ? '—' : triText(presentation.locale, position)
+}
+
+const gearAtPoint = (
+  d: StravaActivityDetail,
+  point: StravaActivityDetail['route'][number],
+): ReturnType<typeof gearShiftAtFraction> => {
+  const maxDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
+  return gearShiftAtFraction(d.gearShifts, maxDistanceKm, point.d / maxDistanceKm)
+}
+
+const staminaAtPoint = (
+  presentation: TriathlonPresentation,
+  point: StravaActivityDetail['route'][number],
+): string =>
+  `${triText(presentation.locale, 'current')} ${point.stamina == null ? '—' : `${Math.round(point.stamina)}%`} · ${triText(presentation.locale, 'potential')} ${point.potentialStamina == null ? '—' : `${Math.round(point.potentialStamina)}%`}`
+
+const requiredMapProfile = (profile: Element | null, label: string): HTMLElement => {
+  if (!(profile instanceof HTMLElement)) throw new Error(`Missing ${label} map profile`)
+  return profile
+}
+
+type ThermalMetric = 'temperature' | 'heat-strain' | 'core-temperature' | 'skin-temperature'
+
+type MapTraceSurface = {
+  wrap: HTMLElement
+  fmt: (point: StravaActivityDetail['route'][number], index: number) => string
+}
+
 export interface MapMetric {
   label: string
   shortLabel: string
@@ -148,6 +229,7 @@ export interface MapMetric {
   fmt: (v: number) => string
   profile: (graphDomain?: ActivityAnalysisRange | null) => HTMLElement
   readout: (p: StravaActivityDetail['route'][number], i: number) => string
+  traces?: (graphDomain?: ActivityAnalysisRange | null) => MapTraceSurface[]
   extra?: () => (HTMLElement | null)[]
 }
 
@@ -177,6 +259,36 @@ export const metricSpecs = (
     d.sport === 'run' && route.filter(p => runVerticalOscillationCm(p) != null).length >= 2
   const hasResp = route.some(p => p.resp != null && p.resp > 0)
   const hasElev = d.maxAlt > d.minAlt
+  const flags = routeStreamFlags(d)
+  const maxDistanceKm = Math.max(route.at(-1)?.d ?? d.distanceKm, 0.001)
+  const hasRiderPosition =
+    d.sport === 'bike' &&
+    d.cyclingDynamics?.positionChanges.some(
+      change => change.distanceKm >= 0 && change.distanceKm <= maxDistanceKm,
+    ) === true
+  const hasShifting = d.sport === 'bike' && d.gearShifts.length > 0
+  const thermalMetrics: ThermalMetric[] = []
+  if (flags.temp) thermalMetrics.push('temperature')
+  if (flags.heatStrain) thermalMetrics.push('heat-strain')
+  if (flags.coreTemperature) thermalMetrics.push('core-temperature')
+  if (flags.skinTemperature) thermalMetrics.push('skin-temperature')
+  const hasThermal = thermalMetrics.length > 0
+  const primaryThermal = thermalMetrics[0] ?? 'temperature'
+  const thermalValue = (
+    point: StravaActivityDetail['route'][number],
+    metric: ThermalMetric,
+  ): number | null => {
+    if (metric === 'temperature') return point.tempC
+    if (metric === 'heat-strain') return point.heatStrainIndex
+    if (metric === 'core-temperature') return point.coreTemperatureC
+    return point.skinTemperatureC
+  }
+  const primaryThermalValues = route
+    .map(point => thermalValue(point, primaryThermal))
+    .filter((value): value is number => value != null)
+  const primaryThermalAverage =
+    primaryThermalValues.reduce((total, value) => total + value, 0) /
+    Math.max(1, primaryThermalValues.length)
   const cadUnit = d.sport === 'run' ? 'spm' : 'rpm'
   const paceFmt = (kmh: number): string => {
     return analysisRate(presentation, d.sport, kmh)
@@ -231,6 +343,32 @@ export const metricSpecs = (
       ),
     readout: (p, i) =>
       `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues[i] ?? p.w)} W`,
+    traces: graphDomain => {
+      const traces: MapTraceSurface[] = []
+      const add = (wrap: Element | null, fmt: MapTraceSurface['fmt']): void => {
+        if (wrap instanceof HTMLElement) traces.push({ wrap, fmt })
+      }
+      add(
+        buildPowerBalanceChartNode(domF, d, null, false, graphDomain),
+        p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${p.rightPowerPct == null || p.w <= 0 ? '—' : powerBalanceText(p.rightPowerPct)}`,
+      )
+      add(
+        buildTorqueEffectivenessChartNode(domF, d, null, false, graphDomain),
+        p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPairAtDistance(d, p, d.cyclingDynamics?.leftTorqueEffectiveness ?? [], d.cyclingDynamics?.rightTorqueEffectiveness ?? [], '%')}`,
+      )
+      add(
+        buildPedalSmoothnessChartNode(domF, d, null, false, graphDomain),
+        p =>
+          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPairAtDistance(d, p, d.cyclingDynamics?.leftPedalSmoothness ?? [], d.cyclingDynamics?.rightPedalSmoothness ?? [], '%')}`,
+      )
+      add(
+        buildPowerPhaseChartNode(domF, d, null, graphDomain),
+        p => `${scrubDist(presentation, p.d, d.sport)} · ${powerPhaseAtDistance(d, p)}`,
+      )
+      return traces
+    },
     extra: () => [
       zoneDuo(
         presentation,
@@ -330,6 +468,112 @@ export const metricSpecs = (
     readout: p =>
       `${scrubDist(presentation, p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
   }
+  const riderPositionSpec: MapMetric = {
+    label: 'rider position',
+    shortLabel: 'RP',
+    ramp: STRIDE_RAMP,
+    zeroGap: true,
+    pick: p => {
+      const dynamics = d.cyclingDynamics
+      if (!dynamics) return 0
+      const position = riderPositionAtDistance(dynamics, p.d)
+      return position === 'standing' ? 2 : position === 'seated' ? 1 : 0
+    },
+    fmt: value => triText(presentation.locale, value >= 1.5 ? 'standing' : 'seated'),
+    profile: graphDomain =>
+      requiredMapProfile(buildRiderPositionChartNode(domF, d, null, graphDomain), 'rider position'),
+    readout: p =>
+      `${scrubDist(presentation, p.d, d.sport)} · ${riderPositionAtPoint(presentation, d, p)}`,
+  }
+  const staminaSpec: MapMetric = {
+    label: 'stamina',
+    shortLabel: 'STA',
+    ramp: HEAT_RAMP,
+    zeroGap: true,
+    pick: p => p.stamina ?? 0,
+    fmt: value => `${Math.round(value)}%`,
+    profile: graphDomain =>
+      requiredMapProfile(buildStaminaChartNode(domF, d, null, graphDomain), 'stamina'),
+    readout: p => `${scrubDist(presentation, p.d, d.sport)} · ${staminaAtPoint(presentation, p)}`,
+  }
+  const shiftingSpec: MapMetric = {
+    label: 'electronic shifting',
+    shortLabel: 'ES',
+    ramp: CAD_RAMP,
+    pick: p => {
+      const shift = gearAtPoint(d, p)
+      return shift ? shift.frontTeeth / shift.rearTeeth : 0
+    },
+    fmt: value => `${value.toFixed(2)}×`,
+    profile: graphDomain =>
+      requiredMapProfile(buildShiftingChartNode(domF, d, null, graphDomain), 'electronic shifting'),
+    readout: p => {
+      const shift = gearAtPoint(d, p)
+      return `${zoneClock(p.elapsedS)} · ${scrubDist(presentation, p.d, d.sport)}${shift ? ` · ${shift.frontTeeth}×${shift.rearTeeth}` : ''}`
+    },
+  }
+  const thermalProfile = (
+    metric: ThermalMetric,
+    graphDomain?: ActivityAnalysisRange | null,
+  ): Element | null => {
+    if (metric === 'temperature') return buildTemperatureTraceNode(domF, d, null, graphDomain)
+    if (metric === 'heat-strain') return buildHeatStrainTraceNode(domF, d, null, graphDomain)
+    if (metric === 'core-temperature')
+      return buildCoreTemperatureTraceNode(domF, d, null, graphDomain)
+    return buildSkinTemperatureTraceNode(domF, d, null, graphDomain)
+  }
+  const thermalReadout = (
+    metric: ThermalMetric,
+    point: StravaActivityDetail['route'][number],
+  ): string => {
+    const value = thermalValue(point, metric)
+    if (value == null) return '—'
+    if (metric === 'temperature') return formatTemperature(presentation, value)
+    if (metric === 'heat-strain') return value.toFixed(1)
+    return formatThermalTemperature(presentation, value)
+  }
+  const temperatureSpec: MapMetric = {
+    label: 'temperature',
+    shortLabel: 'T',
+    ramp: HR_RAMP,
+    pick: p => thermalValue(p, primaryThermal) ?? primaryThermalAverage,
+    fmt: value => {
+      if (primaryThermal === 'temperature') return formatTemperature(presentation, value)
+      if (primaryThermal === 'heat-strain') return value.toFixed(1)
+      return formatThermalTemperature(presentation, value)
+    },
+    profile: graphDomain =>
+      requiredMapProfile(thermalProfile(primaryThermal, graphDomain), 'temperature'),
+    readout: p => {
+      const values = thermalMetrics.flatMap(metric => {
+        const value = thermalValue(p, metric)
+        if (value == null) return []
+        const label =
+          metric === 'temperature'
+            ? 'temperature'
+            : metric === 'heat-strain'
+              ? 'heat strain index'
+              : metric === 'core-temperature'
+                ? 'CORE temperature'
+                : 'skin temperature'
+        return [`${triText(presentation.locale, label)} ${thermalReadout(metric, p)}`]
+      })
+      return `${scrubDist(presentation, p.d, d.sport)}${values.length > 0 ? ` · ${values.join(' · ')}` : ' · —'}`
+    },
+    traces: graphDomain => {
+      const traces: MapTraceSurface[] = []
+      for (const metric of thermalMetrics) {
+        if (metric === primaryThermal) continue
+        const wrap = thermalProfile(metric, graphDomain)
+        if (wrap instanceof HTMLElement)
+          traces.push({
+            wrap,
+            fmt: p => `${scrubDist(presentation, p.d, d.sport)} · ${thermalReadout(metric, p)}`,
+          })
+      }
+      return traces
+    },
+  }
   const elevSpec: MapMetric = {
     label: 'elevation',
     shortLabel: 'E',
@@ -350,6 +594,10 @@ export const metricSpecs = (
     if (hasResp) specs.push(respirationSpec)
     specs.push(paceSpec)
     if (hasElev) specs.push(elevSpec)
+    if (hasRiderPosition) specs.push(riderPositionSpec)
+    if (flags.stamina) specs.push(staminaSpec)
+    if (hasShifting) specs.push(shiftingSpec)
+    if (hasThermal) specs.push(temperatureSpec)
   } else if (d.sport === 'run') {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
@@ -360,10 +608,12 @@ export const metricSpecs = (
     if (hasResp) specs.push(respirationSpec)
     if (hasElev) specs.push(elevSpec)
     if (hasPower) specs.push(powerSpec)
+    if (hasThermal) specs.push(temperatureSpec)
   } else {
     specs.push(paceSpec)
     if (hasHr) specs.push(hrSpec)
     if (hasResp) specs.push(respirationSpec)
+    if (hasThermal) specs.push(temperatureSpec)
   }
   return specs
 }
@@ -457,9 +707,11 @@ export const renderMapDetail = (
   wrap.appendChild(zoneBox)
 
   let active = Math.min(specs.length - 1, Math.max(0, opts?.initialMetric ?? 0))
+  const routeSamples = d.route
   let graphDomain: ActivityAnalysisRange | null = null
   let routeMarker: SVGElement | null = null
   let analysisController: ActivityAnalysisController | null = null
+  let linkedSurfaces: ScrubSurface[] = []
   let mounted = false
   const sameGraphDomain = (
     left: ActivityAnalysisRange | null,
@@ -475,24 +727,28 @@ export const renderMapDetail = (
     analysisController = null
     const spec = specs[active]
     const profile = spec.profile(graphDomain)
+    const traces = spec.traces?.(graphDomain) ?? []
     profileBox.replaceChildren(profile)
-    if (mounted) mountProfile(profile)
+    zoneBox.replaceChildren(...traces.map(trace => trace.wrap))
+    if (spec.extra) for (const node of spec.extra()) if (node) zoneBox.appendChild(node)
+    if (bestEfforts) zoneBox.appendChild(bestEfforts)
+    linkedSurfaces = [{ wrap: profile, fmt: spec.readout }, ...traces].map(surface => ({
+      wrap: surface.wrap,
+      samples: routeSamples,
+      fmt: index => {
+        const point = d.route[index]
+        opts?.onHover?.(point, index)
+        return surface.fmt(point, index)
+      },
+    }))
+    if (mounted) mountProfile()
   }
-  const mountProfile = (profile: HTMLElement): void => {
-    const spec = specs[active]
+  const mountProfile = (): void => {
     analysisController = linkScrub(
       presentation,
       wrap,
       routeMarker,
-      [
-        {
-          wrap: profile,
-          fmt: (p, i) => {
-            opts?.onHover?.(p, i)
-            return spec.readout(p, i)
-          },
-        },
-      ],
+      linkedSurfaces,
       d.route,
       d,
       opts?.analysis,
@@ -525,9 +781,6 @@ export const renderMapDetail = (
       routeMarker = heat.querySelector<SVGElement>('.tri-route-cursor')
     }
     renderProfile()
-    zoneBox.replaceChildren()
-    if (spec.extra) for (const z of spec.extra()) if (z) zoneBox.appendChild(z)
-    if (bestEfforts) zoneBox.appendChild(bestEfforts)
     const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.tri-map-tab'))
     if (mounted && !animateTabs) tablist.dataset.motion = 'instant'
     tabs.forEach((tab, i) => {
@@ -577,10 +830,12 @@ export const renderMapDetail = (
     else if (event.key === 'ArrowRight') next = (active + 1) % tabs.length
     else if (event.key === 'Home') next = 0
     else if (event.key === 'End') next = tabs.length - 1
-    else {
-      const key = event.key.toLowerCase()
-      next = tabs.findIndex(tab => tab.dataset.shortcut === key)
-    }
+    else
+      next = nextMapMetricShortcutIndex(
+        tabs.map(tab => tab.dataset.shortcut),
+        active,
+        event.key,
+      )
     if (next < 0) return
     event.preventDefault()
     event.stopPropagation()
@@ -595,8 +850,7 @@ export const renderMapDetail = (
     element: wrap,
     mount: () => {
       mounted = true
-      const profile = profileBox.firstElementChild
-      if (profile instanceof HTMLElement) mountProfile(profile)
+      mountProfile()
       tablist.addEventListener('click', onTabClick)
       tablist.addEventListener('keydown', onTabKeydown)
       return () => {
@@ -685,17 +939,18 @@ export const renderDetail = (
     const more = wrap.querySelector<HTMLElement>(':scope > .tri-act-more')
     if (matchedGroup && more && triathlonTraceEnabled(traceSettings, 'matched-rides'))
       more.insertBefore(
-        buildMatchedRideGroup(
-          presentation,
-          matchedGroup,
-          d.id,
-          dayRouteHref,
-          detailContext.criticalPower,
-        ),
+        buildMatchedRideGroup(presentation, matchedGroup, d.id, dayRouteHref),
         more.querySelector(':scope > .tri-efforts'),
       )
   }
   const surfaces: ScrubSurface[] = []
+  const routeSamples = d.route
+  const heartRatePoints = activityHeartRateTracePoints(d)
+  const thermalPoints = activityThermalTracePoints(d)
+  const tracePosition = (point: { d: number; elapsedS: number }): string =>
+    d.route.length < 2 && d.sport !== 'swim'
+      ? zoneClock(point.elapsedS)
+      : scrubDist(presentation, point.d, d.sport)
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
     const name = trace.dataset.triTrace
     if (!name || !triathlonTraceEnabled(traceSettings, name)) trace.remove()
@@ -706,7 +961,9 @@ export const renderDetail = (
   if (elev) {
     surfaces.push({
       wrap: elev,
-      fmt: (p, i) => {
+      samples: routeSamples,
+      fmt: i => {
+        const p = d.route[i]
         const g = Math.round(gradeAt(d.route, i) * 10) / 10
         return (
           `${scrubDist(presentation, p.d, d.sport)} · ${formatAltitude(presentation, p.alt)} · ${g >= 0 ? '+' : ''}${g.toFixed(1)}%` +
@@ -720,99 +977,97 @@ export const renderDetail = (
   const cadenceValues = normalizeBikeMetrics
     ? interpolatePositiveMetricSeries(d.route, point => point.cad * cadenceScale)
     : null
-  const shiftingDistanceKm = Math.max(d.route.at(-1)?.d ?? d.distanceKm, 0.001)
-  const cyclingDynamicsPair = (
-    p: StravaActivityDetail['route'][number],
-    left: readonly (number | null)[],
-    right: readonly (number | null)[],
-    suffix: string,
-  ): string => {
-    const dynamics = d.cyclingDynamics
-    if (!dynamics) return '—'
-    const index = cyclingDynamicsIndexAtDistance(dynamics, p.d)
-    if (index < 0) return '—'
-    const format = (value: number | null | undefined): string =>
-      value == null || !Number.isFinite(value) ? '—' : `${value.toFixed(1)}${suffix}`
-    return `L ${format(left[index])} · R ${format(right[index])}`
-  }
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {
     if (trace.dataset.triTrace === 'hr')
       surfaces.push({
         wrap: trace,
-        fmt: p => `${scrubDist(presentation, p.d, d.sport)} · ${p.hr} bpm`,
+        samples: heartRatePoints,
+        fmt: i => {
+          const point = heartRatePoints[i]
+          return `${tracePosition(point)} · ${point.heartRate == null ? '—' : `${Math.round(point.heartRate)} bpm`}`
+        },
       })
     else if (trace.dataset.triTrace === 'power')
       surfaces.push({
         wrap: trace,
-        fmt: (p, i) =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(powerValues?.[i] ?? p.w)} W`
+        },
       })
     else if (trace.dataset.triTrace === 'power-balance')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.rightPowerPct == null || p.w <= 0 ? '—' : powerBalanceText(p.rightPowerPct)}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${p.rightPowerPct == null || p.w <= 0 ? '—' : powerBalanceText(p.rightPowerPct)}`
+        },
       })
     else if (trace.dataset.triTrace === 'torque-effectiveness' && d.cyclingDynamics)
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPair(p, d.cyclingDynamics?.leftTorqueEffectiveness ?? [], d.cyclingDynamics?.rightTorqueEffectiveness ?? [], '%')}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPairAtDistance(d, p, d.cyclingDynamics?.leftTorqueEffectiveness ?? [], d.cyclingDynamics?.rightTorqueEffectiveness ?? [], '%')}`
+        },
       })
     else if (trace.dataset.triTrace === 'pedal-smoothness' && d.cyclingDynamics)
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPair(p, d.cyclingDynamics?.leftPedalSmoothness ?? [], d.cyclingDynamics?.rightPedalSmoothness ?? [], '%')}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${cyclingDynamicsPairAtDistance(d, p, d.cyclingDynamics?.leftPedalSmoothness ?? [], d.cyclingDynamics?.rightPedalSmoothness ?? [], '%')}`
+        },
       })
     else if (trace.dataset.triTrace === 'power-phase' && d.cyclingDynamics)
       surfaces.push({
         wrap: trace,
-        fmt: p => {
-          const dynamics = d.cyclingDynamics
-          if (!dynamics) return `${scrubDist(presentation, p.d, d.sport)} · —`
-          const index = cyclingDynamicsIndexAtDistance(dynamics, p.d)
-          const phase = (
-            start: number | null | undefined,
-            end: number | null | undefined,
-          ): string =>
-            start == null || end == null ? '—' : `${Math.round(start)}°→${Math.round(end)}°`
-          return `${scrubDist(presentation, p.d, d.sport)} · L ${phase(dynamics.leftPowerPhaseStart[index], dynamics.leftPowerPhaseEnd[index])} · R ${phase(dynamics.rightPowerPhaseStart[index], dynamics.rightPowerPhaseEnd[index])}`
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${powerPhaseAtDistance(d, p)}`
         },
       })
     else if (trace.dataset.triTrace === 'rider-position' && d.cyclingDynamics)
       surfaces.push({
         wrap: trace,
-        fmt: p => {
-          const dynamics = d.cyclingDynamics
-          if (!dynamics) return `${scrubDist(presentation, p.d, d.sport)} · —`
-          const position = riderPositionAtDistance(dynamics, p.d)
-          return `${scrubDist(presentation, p.d, d.sport)} · ${position == null ? '—' : triText(presentation.locale, position)}`
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${riderPositionAtPoint(presentation, d, p)}`
         },
       })
     else if (trace.dataset.triTrace === 'electronic-shifting')
       surfaces.push({
         wrap: trace,
-        fmt: p => {
-          const shift = gearShiftAtFraction(
-            d.gearShifts,
-            shiftingDistanceKm,
-            p.d / shiftingDistanceKm,
-          )
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          const shift = gearAtPoint(d, p)
           return `${zoneClock(p.elapsedS)} · ${scrubDist(presentation, p.d, d.sport)}${shift ? ` · ${shift.frontTeeth}×${shift.rearTeeth}` : ''}`
         },
       })
     else if (trace.dataset.triTrace === 'stamina')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${triText(presentation.locale, 'current')} ${p.stamina == null ? '—' : `${Math.round(p.stamina)}%`} · ${triText(presentation.locale, 'potential')} ${p.potentialStamina == null ? '—' : `${Math.round(p.potentialStamina)}%`}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${staminaAtPoint(presentation, p)}`
+        },
       })
     else if (trace.dataset.triTrace === 'cadence')
       surfaces.push({
         wrap: trace,
-        fmt: (p, i) =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${Math.round(cadenceValues?.[i] ?? p.cad * cadenceScale)} ${cadenceUnit}`
+        },
       })
     else if (
       trace.dataset.triTrace === 'stride-length' ||
@@ -820,7 +1075,9 @@ export const renderDetail = (
     )
       surfaces.push({
         wrap: trace,
-        fmt: p => {
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
           const stride = runStrideLengthValue(d, p)
           return `${scrubDist(presentation, p.d, d.sport)} · ${stride == null ? '—' : formatStrideLength(presentation, stride)}`
         },
@@ -828,7 +1085,9 @@ export const renderDetail = (
     else if (trace.dataset.triTrace === 'ground-contact-time')
       surfaces.push({
         wrap: trace,
-        fmt: p => {
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
           const groundContact = runGroundContactTimeMs(p)
           return `${scrubDist(presentation, p.d, d.sport)} · ${groundContact == null ? '—' : formatGroundContactTime(groundContact)}`
         },
@@ -836,7 +1095,9 @@ export const renderDetail = (
     else if (trace.dataset.triTrace === 'vertical-oscillation')
       surfaces.push({
         wrap: trace,
-        fmt: p => {
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
           const verticalOscillation = runVerticalOscillationCm(p)
           return `${scrubDist(presentation, p.d, d.sport)} · ${verticalOscillation == null ? '—' : formatVerticalOscillation(presentation, verticalOscillation)}`
         },
@@ -844,36 +1105,52 @@ export const renderDetail = (
     else if (trace.dataset.triTrace === 'respiration')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${p.resp == null ? '—' : formatRespirationRate(p.resp)}`
+        },
       })
     else if (trace.dataset.triTrace === 'temperature')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(presentation, p.tempC)}`,
+        samples: routeSamples,
+        fmt: i => {
+          const p = d.route[i]
+          return `${scrubDist(presentation, p.d, d.sport)} · ${p.tempC == null ? '—' : formatTemperature(presentation, p.tempC)}`
+        },
       })
     else if (trace.dataset.triTrace === 'heat-strain-index')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.heatStrainIndex == null ? '—' : p.heatStrainIndex.toFixed(1)}`,
+        samples: thermalPoints,
+        fmt: i => {
+          const p = thermalPoints[i]
+          return `${tracePosition(p)} · ${p.heatStrainIndex == null ? '—' : p.heatStrainIndex.toFixed(1)}`
+        },
       })
     else if (trace.dataset.triTrace === 'core-temperature')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.coreTemperatureC == null ? '—' : formatThermalTemperature(presentation, p.coreTemperatureC)}`,
+        samples: thermalPoints,
+        fmt: i => {
+          const p = thermalPoints[i]
+          return `${tracePosition(p)} · ${p.coreTemperatureC == null ? '—' : formatThermalTemperature(presentation, p.coreTemperatureC)}`
+        },
       })
     else if (trace.dataset.triTrace === 'skin-temperature')
       surfaces.push({
         wrap: trace,
-        fmt: p =>
-          `${scrubDist(presentation, p.d, d.sport)} · ${p.skinTemperatureC == null ? '—' : formatThermalTemperature(presentation, p.skinTemperatureC)}`,
+        samples: thermalPoints,
+        fmt: i => {
+          const p = thermalPoints[i]
+          return `${tracePosition(p)} · ${p.skinTemperatureC == null ? '—' : formatThermalTemperature(presentation, p.skinTemperatureC)}`
+        },
       })
   }
   const interactive =
-    (surfaces.length > 0 || wrap.querySelector('[data-tri-analysis]')) && d.route.length >= 2
+    surfaces.some(surface => surface.samples.length >= 2) ||
+    (wrap.querySelector('[data-tri-analysis]') != null && d.route.length >= 2)
   return {
     element: wrap,
     mount: () => {

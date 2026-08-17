@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  distributionMetricForSport,
+  distributionMetrics,
   initialDistributionModel,
   telemetryTrend,
   telemetryWeightedAverage,
@@ -14,26 +16,52 @@ test('distribution reducer owns sport, range, custom date, and restored selectio
     sports: ['swim', 'bike', 'run'] as const,
   }
   const initial = initialDistributionModel(bounds)
-  assert.deepEqual(initial, { sport: 'bike', range: '30', startDate: '2026-03-02' })
-
-  const week = updateDistributions(initial, { type: 'select-range', range: '7' }, bounds)
-  assert.deepEqual(week, { sport: 'bike', range: '7', startDate: '2026-03-25' })
-
-  const custom = updateDistributions(week, { type: 'select-date', date: '2025-12-01' }, bounds)
-  assert.deepEqual(custom, { sport: 'bike', range: 'custom', startDate: '2026-01-01' })
-
-  const restored = updateDistributions(
-    custom,
-    { type: 'restore', model: { sport: 'run', range: '60', startDate: '2026-02-20' } },
-    bounds,
-  )
-  assert.deepEqual(restored, { sport: 'run', range: '60', startDate: '2026-01-31' })
-
-  assert.deepEqual(updateDistributions(restored, { type: 'clear-date' }, bounds), {
-    sport: 'run',
+  assert.deepEqual(initial, {
+    sport: 'bike',
+    metric: 'power',
     range: '30',
     startDate: '2026-03-02',
   })
+
+  const week = updateDistributions(initial, { type: 'select-range', range: '7' }, bounds)
+  assert.deepEqual(week, { sport: 'bike', metric: 'power', range: '7', startDate: '2026-03-25' })
+
+  const custom = updateDistributions(week, { type: 'select-date', date: '2025-12-01' }, bounds)
+  assert.deepEqual(custom, {
+    sport: 'bike',
+    metric: 'power',
+    range: 'custom',
+    startDate: '2026-01-01',
+  })
+
+  const restored = updateDistributions(
+    custom,
+    {
+      type: 'restore',
+      model: { sport: 'run', metric: 'pace', range: '60', startDate: '2026-02-20' },
+    },
+    bounds,
+  )
+  assert.deepEqual(restored, { sport: 'run', metric: 'pace', range: '60', startDate: '2026-01-31' })
+
+  assert.deepEqual(updateDistributions(restored, { type: 'clear-date' }, bounds), {
+    sport: 'run',
+    metric: 'pace',
+    range: '30',
+    startDate: '2026-03-02',
+  })
+})
+
+test('distribution metrics follow each sport and preserve heart rate across sport changes', () => {
+  assert.deepEqual(distributionMetrics('bike'), ['heart-rate', 'power'])
+  assert.deepEqual(distributionMetrics('run'), ['heart-rate', 'pace'])
+  assert.deepEqual(distributionMetrics('swim'), ['heart-rate'])
+  assert.equal(distributionMetricForSport('bike'), 'power')
+  assert.equal(distributionMetricForSport('run'), 'pace')
+  assert.equal(distributionMetricForSport('swim'), 'heart-rate')
+  assert.equal(distributionMetricForSport('run', 'heart-rate'), 'heart-rate')
+  assert.equal(distributionMetricForSport('run', 'power'), 'pace')
+  assert.equal(distributionMetricForSport('swim', 'pace'), 'heart-rate')
 })
 
 test('telemetry trend compares the latest two observed activities', () => {

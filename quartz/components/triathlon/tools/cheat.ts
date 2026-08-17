@@ -1,10 +1,7 @@
 import type { RoughAnnotation } from 'rough-notation/lib/model'
 import { annotate } from 'rough-notation'
-import type { ActivityKind } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
-import { dist } from '../../../util/triathlon-card'
-import { distCombined } from '../../../util/triathlon-card'
-import { KM_TO_MI } from '../../../util/triathlon-card'
+import { raceDistanceValue } from '../../../util/triathlon-card'
 import { toggleTriUnit } from '../runtime/preferences'
 
 export const setupCheat = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
@@ -29,26 +26,11 @@ export const setupCheat = (root: HTMLElement, context: TriathlonContext): (() =>
     showTimer = window.setTimeout(() => a.show(), 200)
   }
 
-  const dists = root.querySelectorAll<HTMLElement>('.tri-dist[data-km]')
   const sync = () => {
     const mi = context.presentation.distance === 'imperial'
     unit.textContent = mi ? 'mi' : 'km'
-    for (const c of cells) {
-      if (!mi) {
-        c.textContent = c.dataset.km ?? ''
-      } else {
-        const v = Number(c.dataset.km) * KM_TO_MI
-        c.textContent = v < 10 ? v.toFixed(2) : v.toFixed(1)
-      }
-    }
-    for (const d of dists) {
-      const km = Number(d.dataset.km)
-      const kind = d.dataset.kind ?? 'combined'
-      d.textContent =
-        kind === 'combined'
-          ? distCombined(context.presentation, km)
-          : dist(context.presentation, km, kind as ActivityKind)
-    }
+    for (const c of cells)
+      c.textContent = raceDistanceValue(context.presentation, Number(c.dataset.km))
   }
   const onClick = () => toggleTriUnit(context.preferences)
   unit.addEventListener('click', onClick)

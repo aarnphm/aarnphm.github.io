@@ -454,11 +454,7 @@ export const buildLactateThresholdPanel = (
   wrap.appendChild(cap)
   const note = el('div', 'tri-trend-note')
   note.append(
-    el(
-      'span',
-      'tri-ana-k',
-      context.formatter.text('training-derived LT2 proxy, not a blood lactate measurement'),
-    ),
+    el('span', 'tri-ana-k', context.formatter.text('training-derived LT2 proxy')),
     buildMethod(context.formatter, projection.method, projection.sampleSize),
   )
   wrap.appendChild(note)

@@ -7,6 +7,7 @@ test('restores activity selection, exclusions, and trace settings from the embed
     triathlonActivityId: '19731411847',
     triathlonFilter: '19471122670&19476629599',
     triathlonSettings: 'matched-rides:false&power-balance:true',
+    triathlonAnalytics: '1',
     triathlonEmbedded: '1',
   }
 
@@ -17,6 +18,7 @@ test('restores activity selection, exclusions, and trace settings from the embed
     activityId: '19731411847',
     excludedActivityIds: ['19471122670', '19476629599'],
     settings: { 'matched-rides': false, 'power-balance': true },
+    analytics: true,
     expanded: false,
     embedded: true,
     dateHref: undefined,

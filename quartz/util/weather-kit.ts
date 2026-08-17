@@ -64,6 +64,9 @@ export function parseWeatherKitHours(raw: unknown): WeatherHour[] {
       windDirection: readNumber(item, 'windDirection') ?? null,
       windGust: readNumber(item, 'windGust') ?? null,
       temperature: readNumber(item, 'temperature') ?? null,
+      conditionCode: readString(item, 'conditionCode') ?? null,
+      precipitationChance: readNumber(item, 'precipitationChance') ?? null,
+      precipitationType: readString(item, 'precipitationType') ?? null,
     })
   }
   return out.sort((a, b) => a.forecastStart.localeCompare(b.forecastStart))

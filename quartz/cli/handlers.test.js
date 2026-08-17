@@ -38,8 +38,24 @@ test('source watcher includes top-level Quartz source inputs', () => {
   assert.equal(sourceWatchRoots.includes('.claude/skills'), false)
 })
 
-test('source watcher ignores cli test files', () => {
-  assert.equal(isTestSourcePath('quartz/cli/handlers.test.js'), true)
+test('source watcher ignores test files across repository conventions', () => {
+  for (const fp of [
+    'quartz/cli/handlers.test.js',
+    'quartz/components/PageTitle.spec.tsx',
+    'quartz/runtime/native/worker.test.mjs',
+    'quartz/scripts/test_sync.py',
+    'quartz/scripts/sync_test.py',
+    'quartz/components/__tests__/PageTitle.tsx',
+    'quartz/components/tests/fixtures.ts',
+    'quartz/components/spec/render.ts',
+    'quartz/components/page_spec.rb',
+    'quartz/components/test.ts',
+  ]) {
+    assert.equal(isTestSourcePath(fp), true, fp)
+    assert.equal(isSourceWatchPath(fp), false, fp)
+  }
+
+  assert.equal(isTestSourcePath('quartz/components/Latest.tsx'), false)
 })
 
 test('source watcher accepts newly added Quartz source files', () => {

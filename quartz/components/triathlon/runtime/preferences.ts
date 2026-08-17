@@ -1,6 +1,10 @@
-import type { TriathlonPresentation } from '../../../util/triathlon-presentation'
 import type { TriathlonEventBus } from './events'
 import { detectLocale } from '../../../util/triathlon-i18n'
+import {
+  DEFAULT_TRIATHLON_PRESENTATION,
+  distanceSystemFromStoredUnit,
+  type TriathlonPresentation,
+} from '../../../util/triathlon-presentation'
 import { createTriathlonFormatter, type TriathlonFormatter } from './formatter'
 
 export const TRI_UNIT_KEY = 'tri-dist-unit'
@@ -44,12 +48,12 @@ const readPresentation = (): TriathlonPresentation => {
     const locale = localStorage.getItem(TRI_LOCALE_KEY)
     return {
       locale: locale === 'en' || locale === 'fr' ? locale : detectLocale(),
-      distance: localStorage.getItem(TRI_UNIT_KEY) === 'mi' ? 'imperial' : 'metric',
+      distance: distanceSystemFromStoredUnit(localStorage.getItem(TRI_UNIT_KEY)),
       powerSamples:
         localStorage.getItem(TRI_POWER_FILTER_KEY) === 'exclude' ? 'exclude-zero' : 'recorded',
     }
   } catch {
-    return { locale: 'en', distance: 'metric', powerSamples: 'recorded' }
+    return DEFAULT_TRIATHLON_PRESENTATION
   }
 }
 

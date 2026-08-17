@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { AppleCache, AppleSwim, AppleWorkout } from '../plugins/stores/apple'
+import type {
+  AppleCache,
+  AppleSwim,
+  AppleSwimInterval,
+  AppleWorkout,
+} from '../plugins/stores/apple'
 import type { CoreBodyTemperatureCache } from '../plugins/stores/core-body-temperature'
 import {
   emptyPayload,
@@ -71,6 +76,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   strokeCount: null,
   strokeRateSpm: null,
   swimPaceSPer100m: null,
+  swimPaceSource: null,
   swimDurationS: null,
   swimIntervals: [],
   swimLocation: null,
@@ -271,6 +277,65 @@ test('CORE app samples override FIT thermal values only near onboard timestamps'
   )
 })
 
+test('enriches route-less yoga timelines with nearby CORE app samples', () => {
+  const start = '2026-07-29T19:00:00.000Z'
+  const yoga = detail({
+    sport: 'yoga',
+    start,
+    movingTimeS: 300,
+    route: [],
+    heartRateTrace: [0, 60, 120, 300].map(elapsedS => ({
+      distanceKm: 0,
+      elapsedS,
+      heartRate: 90,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    })),
+  })
+  const payload = payloadWith(yoga)
+  const core: CoreBodyTemperatureCache = {
+    version: 1,
+    lastSync: 1,
+    samples: [
+      {
+        time: start,
+        coreTemperatureC: 37.5,
+        skinTemperatureC: 32,
+        heatStrainIndex: 2,
+        quality: 4,
+        heartRate: 90,
+      },
+      {
+        time: '2026-07-29T19:02:00.000Z',
+        coreTemperatureC: 37.7,
+        skinTemperatureC: 33,
+        heatStrainIndex: 3,
+        quality: 4,
+        heartRate: 95,
+      },
+    ],
+  }
+
+  enrichCoreBodyTemperature(payload, core)
+
+  assert.deepEqual(
+    yoga.heartRateTrace.map(point => ({
+      coreTemperatureC: point.coreTemperatureC,
+      skinTemperatureC: point.skinTemperatureC,
+      heatStrainIndex: point.heatStrainIndex,
+      source: point.coreTemperatureSource,
+    })),
+    [
+      { coreTemperatureC: 37.5, skinTemperatureC: 32, heatStrainIndex: 2, source: 'core-app' },
+      { coreTemperatureC: 37.6, skinTemperatureC: 32.5, heatStrainIndex: 2.5, source: 'core-app' },
+      { coreTemperatureC: 37.7, skinTemperatureC: 33, heatStrainIndex: 3, source: 'core-app' },
+      { coreTemperatureC: null, skinTemperatureC: null, heatStrainIndex: null, source: null },
+    ],
+  )
+})
+
 test('enriches swim detail and trend with Apple count, rate, and active-time pace', () => {
   const payload = payloadWith(detail())
   const swim = appleSwim({
@@ -342,6 +407,7 @@ test('enriches swim detail and trend with Apple count, rate, and active-time pac
       date: '2026-07-09',
       start: '2026-07-09T20:13:31Z',
       paceSPer100m: 160,
+      paceSource: 'active',
       strokeRateSpm: 28,
     },
   ])
@@ -632,6 +698,7 @@ test('keeps two same-date swim activities as separate trend observations', () =>
       date: '2026-07-09',
       start: '2026-07-09T10:01:00Z',
       paceSPer100m: 120,
+      paceSource: 'active',
       strokeRateSpm: 30,
     },
     {
@@ -639,6 +706,7 @@ test('keeps two same-date swim activities as separate trend observations', () =>
       date: '2026-07-09',
       start: '2026-07-09T18:02:00Z',
       paceSPer100m: 150,
+      paceSource: 'active',
       strokeRateSpm: 28,
     },
   ])
@@ -694,6 +762,7 @@ test('keeps valid Strava pace history and drops an implausible GPS swim', () => 
       date: '2026-07-08',
       start: '2026-07-08T20:00:00Z',
       paceSPer100m: 159,
+      paceSource: 'moving',
       strokeRateSpm: null,
     },
   ])
@@ -720,7 +789,63 @@ test('keeps a valid stroke-rate observation when pace is unavailable', () => {
       date: '2026-07-09',
       start: '2026-07-09T20:13:31Z',
       paceSPer100m: null,
+      paceSource: null,
       strokeRateSpm: 28,
     },
   ])
+})
+
+const lapInterval = (index: number, durationS: number): AppleSwimInterval => ({
+  start: new Date(Date.parse('2026-07-09T20:13:30Z') + index * 40_000).toISOString(),
+  end: new Date(
+    Date.parse('2026-07-09T20:13:30Z') + index * 40_000 + durationS * 1_000,
+  ).toISOString(),
+  distanceM: 25,
+  startElapsedS: index * 40,
+  endElapsedS: index * 40 + durationS,
+  durationS,
+  strokeCount: 12,
+  strokeTimeS: durationS,
+  stroke: 'freestyle',
+})
+
+test('paces a swim by stroke time when lap distance overshoots the reported total', () => {
+  const payload = payloadWith(detail({ distanceKm: 0.19, movingTimeS: 320 }))
+  const swim = appleSwim({
+    totalM: 190,
+    laps: 8,
+    activeTimeS: 320,
+    intervals: Array.from({ length: 8 }, (_, index) => lapInterval(index, 30)),
+  })
+
+  enrichSwimMetrics(payload, {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    swims: { [swim.id ?? swim.date]: swim },
+    workouts: {},
+  })
+
+  assert.equal(payload.details['1'].swimPaceSPer100m, 120)
+  assert.equal(payload.details['1'].swimPaceSource, 'stroke')
+})
+
+test('falls back to active time when intervals cover a fraction of the swim', () => {
+  const payload = payloadWith(detail({ movingTimeS: 1_600 }))
+  const swim = appleSwim({
+    totalM: 1_000,
+    activeTimeS: 1_600,
+    intervals: Array.from({ length: 4 }, (_, index) => lapInterval(index, 30)),
+  })
+
+  enrichSwimMetrics(payload, {
+    version: 4,
+    lastSync: 1,
+    days: {},
+    swims: { [swim.id ?? swim.date]: swim },
+    workouts: {},
+  })
+
+  assert.equal(payload.details['1'].swimPaceSPer100m, 160)
+  assert.equal(payload.details['1'].swimPaceSource, 'active')
 })

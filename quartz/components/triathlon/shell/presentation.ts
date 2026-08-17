@@ -1,6 +1,31 @@
 import type { TriathlonContext } from '../runtime/context'
+import { isActivityKind } from '../../../plugins/stores/strava'
+import { dist, distCombined } from '../../../util/triathlon-card'
 import { applyI18n } from '../runtime/dom'
 import { toggleTriUnit } from '../runtime/preferences'
+
+export const setupDistanceUnits = (
+  root: HTMLElement,
+  context: TriathlonContext,
+): (() => void) | null => {
+  const values = root.querySelectorAll<HTMLElement>('.tri-unit-distance[data-km]')
+  if (values.length === 0) return null
+  const sync = (): void => {
+    for (const value of values) {
+      const kilometres = Number(value.dataset.km)
+      const kind = value.dataset.kind ?? 'combined'
+      value.textContent =
+        kind === 'combined'
+          ? distCombined(context.presentation, kilometres)
+          : isActivityKind(kind)
+            ? dist(context.presentation, kilometres, kind)
+            : value.textContent
+    }
+  }
+  sync()
+  window.addEventListener('tri:unit', sync)
+  return () => window.removeEventListener('tri:unit', sync)
+}
 
 export const setupPaceUnit = (
   root: HTMLElement,

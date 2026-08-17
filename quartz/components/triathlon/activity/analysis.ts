@@ -16,7 +16,44 @@ import { el } from '../runtime/dom'
 
 export type ScrubSurface = {
   wrap: HTMLElement
-  fmt: (p: StravaActivityDetail['route'][number], i: number) => string
+  samples: readonly ActivityScrubSample[]
+  fmt: (index: number) => string
+}
+
+export type ActivityScrubSample = { d: number; elapsedS: number }
+
+export const activityScrubIndexAt = (
+  samples: readonly ActivityScrubSample[],
+  target: number,
+): number => {
+  if (samples.length === 0) return -1
+  let low = 0
+  let high = samples.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (samples[middle].d < target) low = middle + 1
+    else high = middle
+  }
+  if (low === 0) return 0
+  if (low >= samples.length) return samples.length - 1
+  return target - samples[low - 1].d <= samples[low].d - target ? low - 1 : low
+}
+
+export const activityScrubElapsedIndexAt = (
+  samples: readonly ActivityScrubSample[],
+  elapsedS: number,
+): number => {
+  if (samples.length === 0) return -1
+  let low = 0
+  let high = samples.length
+  while (low < high) {
+    const middle = low + Math.floor((high - low) / 2)
+    if (samples[middle].elapsedS < elapsedS) low = middle + 1
+    else high = middle
+  }
+  if (low === 0) return 0
+  if (low >= samples.length) return samples.length - 1
+  return elapsedS - samples[low - 1].elapsedS <= samples[low].elapsedS - elapsedS ? low - 1 : low
 }
 
 export type ActivityAnalysisRange = ActivitySelectionSummary & {
@@ -407,7 +444,6 @@ export const linkScrub = (
   const rangeController = detail
     ? linkActivityAnalysis(presentation, act, analysis, detail, onRange)
     : null
-  const maxD = route[route.length - 1].d || 1
   const pad = 6
   const span = 88
   const resolved: {
@@ -415,28 +451,39 @@ export const linkScrub = (
     svgEl: SVGElement
     cursor: SVGElement
     readout: HTMLElement
+    samples: readonly ActivityScrubSample[]
     fmt: ScrubSurface['fmt']
   }[] = []
   for (const s of surfaces) {
+    if (s.samples.length < 2) continue
     const svgEl = s.wrap.querySelector<SVGElement>('.tri-elev')
     const cursor = svgEl?.querySelector<SVGElement>('.tri-elev-cursor')
     if (!svgEl || !cursor) continue
     const readout = el('div', 'tri-fig-readout')
-    s.wrap.appendChild(readout)
-    resolved.push({ wrap: s.wrap, svgEl, cursor, readout, fmt: s.fmt })
+    const readoutHost =
+      (s.wrap.dataset.triTrace
+        ? s.wrap.querySelector<HTMLElement>(':scope > .tri-elev-cap')
+        : null) ?? s.wrap
+    readoutHost.appendChild(readout)
+    resolved.push({ wrap: s.wrap, svgEl, cursor, readout, samples: s.samples, fmt: s.fmt })
   }
   if (resolved.length === 0) return rangeController
   const listeners = new AbortController()
   const frameCleanups: (() => void)[] = []
-  const indexAt = (clientX: number, svgEl: SVGElement): number => {
+  const indexAt = (clientX: number, surface: (typeof resolved)[number]): number => {
+    const { svgEl, samples } = surface
     const r = svgEl.getBoundingClientRect()
     const fraction = Math.min(1, Math.max(0, (clientX - r.left) / r.width))
-    const domainStartDistanceKm = analysisFinite(svgEl.dataset.domainStartDistanceKm) ?? 0
-    const domainEndDistanceKm = analysisFinite(svgEl.dataset.domainEndDistanceKm) ?? maxD
-    return analysisRouteIndex(
-      route,
-      domainStartDistanceKm + fraction * (domainEndDistanceKm - domainStartDistanceKm),
-    )
+    const domainStart =
+      analysisFinite(svgEl.dataset.domainStartElapsedS) ??
+      analysisFinite(svgEl.dataset.domainStartDistanceKm) ??
+      samples[0].d
+    const domainEnd =
+      analysisFinite(svgEl.dataset.domainEndElapsedS) ??
+      analysisFinite(svgEl.dataset.domainEndDistanceKm) ??
+      samples.at(-1)?.d ??
+      domainStart
+    return activityScrubIndexAt(samples, domainStart + fraction * (domainEnd - domainStart))
   }
   for (const surf of resolved) {
     let pendingX: number | null = null
@@ -452,12 +499,14 @@ export const linkScrub = (
       range: ActivityAnalysisRange | null
     } | null = null
     const show = (clientX: number) => {
-      const i = indexAt(clientX, surf.svgEl)
-      const p = route[i]
-      if (drag) {
+      const sampleIndex = indexAt(clientX, surf)
+      const sample = surf.samples[sampleIndex]
+      const routeIndex = route.length > 0 ? activityScrubElapsedIndexAt(route, sample.elapsedS) : -1
+      const routePoint = route[routeIndex]
+      if (drag && routePoint) {
         const nextRange =
           Math.abs(clientX - drag.startClientX) >= 3
-            ? activitySelectionSummary(route, drag.anchorIndex, i)
+            ? activitySelectionSummary(route, drag.anchorIndex, routeIndex)
             : null
         drag.range = nextRange
           ? {
@@ -472,22 +521,24 @@ export const linkScrub = (
         if (drag.range) rangeController?.preview(drag.range)
         else rangeController?.restore()
       }
-      const x = ((p.d / maxD) * 100).toFixed(2)
-      for (const r of resolved) {
-        r.cursor.setAttribute('x1', x)
-        r.cursor.setAttribute('x2', x)
+      for (const linked of resolved) {
+        const linkedIndex = activityScrubElapsedIndexAt(linked.samples, sample.elapsedS)
+        const linkedSample = linked.samples[linkedIndex]
+        const linkedMax = linked.samples.at(-1)?.d || 1
+        const x = ((linkedSample.d / linkedMax) * 100).toFixed(2)
+        linked.cursor.setAttribute('x1', x)
+        linked.cursor.setAttribute('x2', x)
+        if (rangeController?.hasLocked() || drag?.range || linked === surf)
+          linked.readout.textContent = linked.fmt(linkedIndex)
       }
-      if (marker) {
-        marker.setAttribute('cx', (pad + p.x * span).toFixed(2))
-        marker.setAttribute('cy', (pad + (1 - p.y) * span).toFixed(2))
+      if (marker && routePoint) {
+        marker.setAttribute('cx', (pad + routePoint.x * span).toFixed(2))
+        marker.setAttribute('cy', (pad + (1 - routePoint.y) * span).toFixed(2))
       }
       const linkedReadouts = Boolean(rangeController?.hasLocked() || drag?.range)
-      for (const r of resolved) {
-        if (linkedReadouts || r === surf) r.readout.textContent = r.fmt(p, i)
-      }
       act.classList.add('tri-act--scrub')
-      for (const r of resolved)
-        r.wrap.classList.toggle('tri-elev-wrap--read', linkedReadouts || r === surf)
+      for (const linked of resolved)
+        linked.wrap.classList.toggle('tri-elev-wrap--read', linkedReadouts || linked === surf)
     }
     const onMove = (event: PointerEvent) => {
       if (drag && event.pointerId !== drag.pointerId) return
@@ -508,12 +559,13 @@ export const linkScrub = (
       pendingX = null
     }
     const onDown = (event: PointerEvent): void => {
-      if (!event.isPrimary || event.button !== 0 || drag) return
+      if (!event.isPrimary || event.button !== 0 || drag || route.length < 2) return
+      const sample = surf.samples[indexAt(event.clientX, surf)]
       pendingX = event.clientX
       drag = {
         pointerId: event.pointerId,
         startClientX: event.clientX,
-        anchorIndex: indexAt(event.clientX, surf.svgEl),
+        anchorIndex: activityScrubElapsedIndexAt(route, sample.elapsedS),
         range: null,
       }
       surf.svgEl.setPointerCapture(event.pointerId)

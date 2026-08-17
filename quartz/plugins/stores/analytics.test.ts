@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { AppleCache } from './apple'
 import type { CoreBodyTemperatureCache } from './core-body-temperature'
-import type { GarminCache } from './garmin'
+import type { GarminCache, GarminCyclingDynamics } from './garmin'
 import type { OuraCache, OuraDaily } from './oura'
 import type { TrackEntry } from './tracking'
 import type { WeatherCache } from './weather'
@@ -13,6 +13,7 @@ import {
   WEEK_FIELDS,
   buildAnalytics,
   buildDataFeed,
+  buildFtpPedalingEvidence,
   computeFtpHypothesisFromVo2,
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
@@ -134,6 +135,7 @@ function fixtures(): {
   const weather: WeatherCache = {
     version: 1,
     lastSync: cache.lastSync,
+    current: null,
     activities: {
       '1': {
         activityId: 1,
@@ -171,6 +173,34 @@ test('distributions use payload heart-rate zones and canonical cadence and power
   const run = cache.activities['2']
   cache.activities['1'] = { ...cache.activities['1'], averageTemp: 42 }
   cache.activities['2'] = { ...run, averageWatts: 240, deviceWatts: false }
+  cache.activityDetails = {
+    '2': {
+      calories: null,
+      laps: [],
+      segmentEfforts: [],
+      splitsMetric: [
+        {
+          split: 1,
+          distance: 1_000,
+          elapsedTime: 410,
+          movingTime: 400,
+          averageSpeed: 2.5,
+          elevationDifference: 0,
+          paceZone: 2,
+        },
+        {
+          split: 2,
+          distance: 1_000,
+          elapsedTime: 310,
+          movingTime: 300,
+          averageSpeed: 10 / 3,
+          elevationDifference: 0,
+          paceZone: 3,
+        },
+      ],
+      splitsStandard: [],
+    },
+  }
   const heartRateZoneBounds = [130, 145, 160, 175]
   const payload = buildPayload(
     cache,
@@ -211,6 +241,7 @@ test('distributions use payload heart-rate zones and canonical cadence and power
   }).distributions
 
   assert.deepEqual(distributions.heartRateZoneBounds, heartRateZoneBounds)
+  assert.deepEqual(distributions.powerZoneBounds, payload.zones.power)
   assert.equal(distributions.activities.length, 3)
   for (const point of distributions.activities) {
     assert.equal(point.heartRateZoneSeconds?.length, heartRateZoneBounds.length + 1)
@@ -224,6 +255,12 @@ test('distributions use payload heart-rate zones and canonical cadence and power
   const swim = distributions.activities.find(point => point.sport === 'swim')
   assert.equal(bike?.averagePowerWatts, 200)
   assert.equal(bike?.powerSource, 'device')
+  assert.equal(bike?.powerZoneSeconds?.length, payload.zones.power.length + 1)
+  assert.equal(
+    bike?.powerZoneSeconds?.reduce((total, seconds) => total + seconds, 0),
+    bike?.movingTimeS,
+  )
+  assert.equal(bike?.paceZoneSeconds, null)
   assert.equal(bike?.cadence, 85)
   assert.equal(bike?.cadenceUnit, 'rpm')
   assert.equal(bike?.skinTemperatureC, null)
@@ -232,6 +269,16 @@ test('distributions use payload heart-rate zones and canonical cadence and power
   assert.equal(bike?.heatStrainThermalSource, null)
   assert.equal(runPoint?.averagePowerWatts, 240)
   assert.equal(runPoint?.powerSource, 'estimated')
+  assert.equal(runPoint?.powerZoneSeconds, null)
+  assert.deepEqual(runPoint?.paceZoneSeconds, [0, 400, 300, 0, 0, 0])
+  assert.deepEqual(runPoint?.paceZoneRanges, [
+    null,
+    { fastestSPerKm: 400, slowestSPerKm: 400 },
+    { fastestSPerKm: 300, slowestSPerKm: 300 },
+    null,
+    null,
+    null,
+  ])
   assert.equal(runPoint?.cadence, 176)
   assert.equal(runPoint?.cadenceUnit, 'spm')
   assert.equal(swim?.averagePowerWatts, null)
@@ -241,7 +288,11 @@ test('distributions use payload heart-rate zones and canonical cadence and power
 })
 
 test('empty analytics include an empty distributions block', () => {
-  assert.deepEqual(buildAnalytics(null).distributions, { heartRateZoneBounds: [], activities: [] })
+  assert.deepEqual(buildAnalytics(null).distributions, {
+    heartRateZoneBounds: [],
+    powerZoneBounds: [],
+    activities: [],
+  })
 })
 
 test('activity summaries expose normalized pace intensity for run and swim', () => {
@@ -278,16 +329,16 @@ test('recovery block computes baselines, series, and flags from oura-merged dail
   assert.equal(day?.tempDevC, 0.1)
 })
 
-test('carries build-time power curve periods and references into analytics', () => {
-  const { cache } = fixtures()
+test('carries build-time power curves and ranks exact durations at the latest measured mass', () => {
+  const { cache, weights } = fixtures()
   const powerCurve = {
     sixWeeks: [
-      { s: 1, w: 1_050 },
-      { s: 300, w: 274 },
+      { s: 15, w: 838 },
+      { s: 300, w: 366 },
     ],
     year: [
-      { s: 1, w: 1_108 },
-      { s: 300, w: 274 },
+      { s: 15, w: 945 },
+      { s: 300, w: 419 },
     ],
     yearLabel: 2026,
     criticalPower: null,
@@ -296,7 +347,28 @@ test('carries build-time power curve periods and references into analytics', () 
     goalFtp: 350,
   }
 
-  assert.deepEqual(buildAnalytics(cache, { powerCurve }).powerCurve, powerCurve)
+  const ranked = buildAnalytics(cache, { powerCurve, weights, since: '2026-05-12' }).powerCurve
+  assert.deepEqual(
+    {
+      sixWeeks: ranked.sixWeeks,
+      year: ranked.year,
+      yearLabel: ranked.yearLabel,
+      criticalPower: ranked.criticalPower,
+      criticalPowerYear: ranked.criticalPowerYear,
+      ftp: ranked.ftp,
+      goalFtp: ranked.goalFtp,
+    },
+    powerCurve,
+  )
+  assert.equal(ranked.ranking.massKg, 88.5)
+  assert.equal(ranked.ranking.massDate, iso(15))
+  assert.equal(ranked.ranking.massSource, 'tracking')
+  assert.equal(ranked.ranking.intervals.length, 12)
+  assert.equal(
+    ranked.ranking.intervals.find(interval => interval.durationS === 15)?.efforts['six-weeks']
+      ?.level,
+    4,
+  )
   assert.deepEqual(buildAnalytics(null).powerCurve, {
     sixWeeks: [],
     year: [],
@@ -305,7 +377,44 @@ test('carries build-time power curve periods and references into analytics', () 
     criticalPowerYear: null,
     ftp: null,
     goalFtp: null,
+    ranking: {
+      massKg: null,
+      massDate: null,
+      massSource: null,
+      cohortEligible: false,
+      reference: {
+        source: 'strava-profile-snapshot',
+        capturedDate: '2026-08-16',
+        sex: 'M',
+        ageMin: 24,
+        ageMax: 29,
+        massKg: 84.36818082,
+      },
+      intervals: [],
+    },
   })
+})
+
+test('keeps Apple-only ranking mass and measurement provenance together', () => {
+  const { cache } = fixtures()
+  const date = iso(27)
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {
+      [date]: {
+        date,
+        burnKcal: null,
+        activeKcal: null,
+        intakeKcal: null,
+        weightKg: 84.4,
+        vo2max: null,
+      },
+    },
+  }
+  const ranking = buildAnalytics(cache, { apple, since: '2026-05-12' }).powerCurve.ranking
+  assert.equal(ranking.massKg, 84.4)
+  assert.equal(ranking.massDate, date)
+  assert.equal(ranking.massSource, 'apple')
 })
 
 test('volume improvement actions include CTL units', () => {
@@ -328,7 +437,13 @@ test('heat block combines WeatherKit and Strava exposure, excludes swims, and de
     activities: {},
     streams: streamCache,
   }
-  const weather: WeatherCache = { version: 1, lastSync: cache.lastSync, activities: {}, days: {} }
+  const weather: WeatherCache = {
+    version: 1,
+    lastSync: cache.lastSync,
+    current: null,
+    activities: {},
+    days: {},
+  }
 
   for (let offset = 0; offset < 14; offset++) {
     const id = 100 + offset
@@ -433,6 +548,7 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
   const weather: WeatherCache = {
     version: 1,
     lastSync: cache.lastSync,
+    current: null,
     activities: {
       201: {
         activityId: 201,
@@ -514,6 +630,9 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
     name: 'Ride 201',
     movingTimeS: 3600,
     heartRateZoneSeconds: null,
+    powerZoneSeconds: null,
+    paceZoneSeconds: null,
+    paceZoneRanges: null,
     averagePowerWatts: null,
     powerSource: null,
     cadence: 85,
@@ -839,7 +958,7 @@ test('engine derives ftp from 20-min power only when strava declares none', () =
 test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => {
   const h = computeFtpHypothesisFromVo2('2026-06-25', 47.8, 88.9)
   assert.ok(h)
-  assert.equal(h.absoluteRunningVo2, 4.25)
+  assert.equal(h.absoluteVo2, 4.25)
   assert.equal(h.cyclingVo2max, 3.91)
   assert.equal(h.thresholdVo2, 3.32)
   assert.equal(h.efficiencyFtp, 243)
@@ -853,7 +972,87 @@ test('vo2 lab ftp hypothesis keeps the treadmill-to-bike estimate broad', () => 
   assert.equal(h.massSource, 'lab')
   assert.equal(h.vo2maxDate, '2026-06-25')
   assert.equal(h.vo2maxSource, 'lab')
-  assert.equal(h.defaultRunningVo2max, 47.8)
+  assert.equal(h.vo2maxSport, 'running')
+  assert.equal(h.defaultVo2max, 47.8)
+  assert.equal(h.efficiency.source, 'literature-prior')
+  assert.equal(h.efficiency.conf, 'prior')
+})
+
+test('pedaling evidence aggregates ride medians after per-side coverage checks', () => {
+  const dynamics = (
+    leftSmoothness: (number | null)[],
+    rightSmoothness: (number | null)[],
+    leftTorque: (number | null)[],
+    rightTorque: (number | null)[],
+  ): GarminCyclingDynamics => ({
+    time: [0, 1, 2, 3, 4],
+    distance: [0, 8, 16, 24, 32],
+    leftPedalSmoothness: leftSmoothness,
+    rightPedalSmoothness: rightSmoothness,
+    leftTorqueEffectiveness: leftTorque,
+    rightTorqueEffectiveness: rightTorque,
+    leftPowerPhaseStart: [],
+    leftPowerPhaseEnd: [],
+    rightPowerPhaseStart: [],
+    rightPowerPhaseEnd: [],
+    positionChanges: [],
+    seatedTimeS: null,
+    standingTimeS: null,
+  })
+  const bike = (id: string, date: string): GarminCache['activities'][string] => ({
+    id,
+    name: `Ride ${id}`,
+    sport: 'bike',
+    startDate: `${date}T12:00:00Z`,
+    startDateLocal: `${date}T08:00:00Z`,
+    distanceM: 40_000,
+    movingTimeS: 3600,
+    elapsedTimeS: 3660,
+    sourceDevice: 'Edge 1050',
+    sourceFile: `${id}.fit`,
+    metrics: emptyGarminMetrics(),
+    fueling: emptyGarminFueling('Edge 1050'),
+  })
+  const garmin: GarminCache = {
+    lastSync: Date.parse(`${iso(30)}T12:00:00Z`),
+    activities: {
+      one: bike('one', iso(20)),
+      two: bike('two', iso(25)),
+      sparse: bike('sparse', iso(27)),
+    },
+    cyclingDynamics: {
+      one: dynamics(
+        [20, 20, 20, 20, 20],
+        [18, 18, 18, 18, 18],
+        [80, 80, 80, 80, 80],
+        [78, 78, 78, 78, 78],
+      ),
+      two: dynamics(
+        [24, 24, 24, 24, 24],
+        [22, 22, 22, 22, 22],
+        [84, 84, 84, 84, 84],
+        [82, 82, 82, 82, 82],
+      ),
+      sparse: dynamics(
+        [30, 30, 30, 30, 30],
+        [30, 30, 30, 30, 30],
+        [90, 90, 90, 90, 90],
+        [90, 90, null, null, null],
+      ),
+    },
+  }
+  const evidence = buildFtpPedalingEvidence(garmin, iso(30))
+  assert.deepEqual(evidence, {
+    windowFrom: iso(20),
+    windowTo: iso(25),
+    activityCount: 2,
+    sampleCount: 10,
+    coveragePct: 100,
+    leftPedalSmoothnessPct: 22,
+    rightPedalSmoothnessPct: 20,
+    leftTorqueEffectivenessPct: 82,
+    rightTorqueEffectivenessPct: 80,
+  })
 })
 
 test('vo2 lab profile samples survive analytics parsing', () => {
@@ -1023,7 +1222,7 @@ test('vo2 headline follows the latest garmin mark after an older lab test', () =
   assert.equal(a.engine.vo2max.bikeSource, null)
 })
 
-test('ftp hypothesis follows daily weight and newest Garmin running vo2 with the athlete default as fallback', () => {
+test('ftp hypothesis preserves unknown Garmin provenance and removes the discount for cycling-only VO2max', () => {
   const { cache, oura, weights } = fixtures()
   const garmin: GarminCache = {
     lastSync: cache.lastSync,
@@ -1053,11 +1252,30 @@ test('ftp hypothesis follows daily weight and newest Garmin running vo2 with the
   assert.equal(live.massKg, 86.8)
   assert.equal(live.massDate, iso(28))
   assert.equal(live.massSource, 'daily')
-  assert.equal(live.runningVo2max, 50.5)
+  assert.equal(live.vo2max, 50.5)
   assert.equal(live.vo2maxDate, iso(29))
   assert.equal(live.vo2maxSource, 'garmin')
-  assert.equal(live.defaultRunningVo2max, ATHLETE.vo2max)
+  assert.equal(live.vo2maxSport, 'unknown')
+  assert.equal(live.defaultVo2max, ATHLETE.vo2max)
+  assert.equal(live.crossModalDiscountPct, 8)
   assert.equal(live.ftp, 240)
+
+  const cyclingGarmin: GarminCache = {
+    ...garmin,
+    vo2max: { [iso(29)]: { date: iso(29), generic: null, cycling: 49.2 } },
+  }
+  const cycling = buildAnalytics(cache, {
+    oura,
+    garmin: cyclingGarmin,
+    weights,
+    since: '2026-05-12',
+    vo2labs: [{ date: iso(23), value: 47.8, massKg: 88.9 }],
+  }).engine.ftpHypothesis
+  assert.ok(cycling)
+  assert.equal(cycling.vo2max, 49.2)
+  assert.equal(cycling.vo2maxSport, 'cycling')
+  assert.equal(cycling.crossModalDiscountPct, 0)
+  assert.ok(cycling.ftp > live.ftp)
 
   const fallback = buildAnalytics(cache, { oura, weights, since: '2026-05-12' }).engine
     .ftpHypothesis
@@ -1065,8 +1283,9 @@ test('ftp hypothesis follows daily weight and newest Garmin running vo2 with the
   assert.equal(fallback.massKg, 88.5)
   assert.equal(fallback.massDate, iso(15))
   assert.equal(fallback.massSource, 'daily')
-  assert.equal(fallback.runningVo2max, ATHLETE.vo2max)
+  assert.equal(fallback.vo2max, ATHLETE.vo2max)
   assert.equal(fallback.vo2maxSource, 'default')
+  assert.equal(fallback.vo2maxSport, 'running')
 })
 
 test('calibration tracks newest pace and volume deltas against the prior window', () => {

@@ -74,6 +74,9 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
     )
   }
   Page.css = style
+  if (view === 'analytics') {
+    Page.beforeDOMLoaded = "document.documentElement.classList.add('tri-analytics-booting')"
+  }
   Page.afterDOMLoaded = script
   return Page
 }

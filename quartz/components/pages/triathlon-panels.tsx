@@ -6,7 +6,7 @@ import type { TriathlonRenderData } from '../triathlon/render-data'
 import { ROUTE_SPORTS, SPORT_ICON } from '../../plugins/stores/strava'
 import { InlineMath } from '../../util/math-text'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
-import { KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
+import { distCombined, KM_TO_MI, LAYERS_ICON } from '../../util/triathlon-card'
 import {
   CERAMICSPEED_CROSS_CHAIN_RESEARCH,
   CERAMICSPEED_TEST_CADENCE_RPM,
@@ -18,9 +18,11 @@ import {
   gearRatioMatrix,
   type GearCassettePreset,
 } from '../../util/triathlon-gear-ratio'
+import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import { AnalyticsServerPanel } from '../triathlon/analytics/render'
 import { Maintenance } from '../triathlon/tools/Maintenance'
+import { TirePressure } from '../triathlon/tools/TirePressure'
 import { deriveTrainingDocument, type TrainingTreeNode } from '../triathlon/training/tree'
 
 export const DISPATCH_ICON =
@@ -97,9 +99,9 @@ export const GEAR: [string, string[]][] = [
       'Cervélo Aero Thru Axle Front, M12x1.5mm, 127mm length',
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
       'Front Wheel: Reserve 42TA, DT Swiss 350, 12x100mm, 24H, centerlock, tubeless compatible',
-      'Rear Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
-      'Front Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
+      'Front Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
+      'Rear Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
       'Tube: Pirelli P Zero TPU',
       'Tires: Pirelli P Zero Race SL-R 700x28c',
       'Tires: Pirelli P Zero Race TLR SL-R 700x28c',
@@ -272,8 +274,6 @@ export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
   </section>
 )
 
-const treeKm = (km: number): string => `${km >= 100 ? Math.round(km) : Number(km.toFixed(1))} km`
-
 const treeDur = (timeS: number): string => {
   const minutes = Math.round(timeS / 60)
   const h = Math.floor(minutes / 60)
@@ -283,7 +283,9 @@ const treeDur = (timeS: number): string => {
 const TreeSum = ({ count, km, timeS }: { count: number; km: number; timeS: number }) => (
   <span class="tri-tree-sum">
     <span class="tri-tree-c tri-tree-c--n">{count}</span>
-    <span class="tri-tree-c tri-tree-c--km">{treeKm(km)}</span>
+    <span class="tri-tree-c tri-tree-c--km tri-unit-distance" data-km={km} data-kind="combined">
+      {distCombined(DEFAULT_TRIATHLON_PRESENTATION, km)}
+    </span>
     <span class="tri-tree-c tri-tree-c--t">{treeDur(timeS)}</span>
   </span>
 )
@@ -992,9 +994,11 @@ const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly
 export const GearPanel = ({
   page,
   maintenance = null,
+  renderData,
 }: {
   page?: boolean
   maintenance?: TriathlonMaintenance | null
+  renderData?: TriathlonRenderData
 }) => (
   <div class="tri-gear-wrap">
     {!page && (
@@ -1016,6 +1020,10 @@ export const GearPanel = ({
       <div class="tri-gear-scroll">
         <GearRatioCalculator />
         <GearRows groups={GEAR.slice(0, BIKE_GEAR_GROUP_COUNT)} />
+        <TirePressure
+          composition={renderData?.analytics.body.composition}
+          weather={renderData?.weather}
+        />
         <Maintenance maintenance={maintenance} />
         <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} />
       </div>
@@ -1048,7 +1056,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
         <span>/mi</span>
         <span>/km</span>
         <button class="tri-pace-unit" type="button">
-          km/h
+          mph
         </button>
       </div>
       {PACE_MI.map(mi => {
@@ -1058,7 +1066,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
             <span class="tri-pace-mi">{mi}</span>
             <span class="tri-pace-km">{paceKm(mi)}</span>
             <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
-              {k}
+              {kmhToMph(Number(k))}
             </span>
           </div>
         )
@@ -1070,7 +1078,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
         <span>/100m</span>
         <span>/mi</span>
         <button class="tri-pace-unit" type="button">
-          km/h
+          mph
         </button>
       </div>
       {SWIM_100.map(p => {
@@ -1080,7 +1088,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
             <span class="tri-pace-mi">{p}</span>
             <span class="tri-pace-km">{swimMi(p)}</span>
             <span class="tri-pace-spd" data-kph={k} data-mph={kmhToMph(Number(k))}>
-              {k}
+              {kmhToMph(Number(k))}
             </span>
           </div>
         )
@@ -1092,7 +1100,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
         <span>/mi</span>
         <span>/km</span>
         <button class="tri-pace-unit" type="button">
-          km/h
+          mph
         </button>
       </div>
       {BIKE_SPEEDS.map(({ kmh, reference }) => (
@@ -1101,7 +1109,7 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
           <span class="tri-pace-km">{bikePaceKm(kmh)}</span>
           <span class="tri-pace-spd">
             <span data-kph={bikeKmh(kmh)} data-mph={kmhToMph(kmh)}>
-              {bikeKmh(kmh)}
+              {kmhToMph(kmh)}
             </span>
             {reference && (
               <abbr class="tri-pace-ref" title="2026 Tour de France winner average">
@@ -1362,13 +1370,19 @@ export const CalcPanel = ({
   )
 }
 
-export const ToolsPanel = ({ maintenance }: { maintenance?: TriathlonMaintenance | null }) => (
+export const ToolsPanel = ({
+  maintenance,
+  renderData,
+}: {
+  maintenance?: TriathlonMaintenance | null
+  renderData?: TriathlonRenderData
+}) => (
   <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
         gear
       </h2>
-      <GearPanel page maintenance={maintenance} />
+      <GearPanel page maintenance={maintenance} renderData={renderData} />
     </section>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="pace">

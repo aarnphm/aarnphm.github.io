@@ -4,6 +4,7 @@ import type { Sport } from '../../../plugins/stores/strava'
 import type { TriathlonContext } from '../runtime/context'
 import type { AbilityAxis } from './panels/abilities'
 import type { SportAbility } from './panels/abilities'
+import { calculateFtpHypothesis } from '../../../util/ftp-hypothesis'
 import { clock } from '../../../util/triathlon-card'
 import { formatStrideLength } from '../../../util/triathlon-card'
 import { formatVerticalOscillation } from '../../../util/triathlon-card'
@@ -497,20 +498,12 @@ export const mountSecondaryPanel = (
       const discountPct = num('discount')
       const thresholdPct = num('threshold')
       const efficiencyPct = num('efficiency')
-      const discount = discountPct / 100
-      const threshold = thresholdPct / 100
-      const efficiency = efficiencyPct / 100
-      const absRun = (vo2 * mass) / 1000
-      const absCyc = absRun * (1 - discount)
-      const thr = absCyc * threshold
-      const met = (thr * 20.9 * 1000) / 60
-      const ftpEff = met * efficiency
-      const map = (Math.max(0, vo2 * (1 - discount) - 7) * mass) / 1.8 / 6.12
-      const ftpAcsm = map * 0.75
-      const ftp = (ftpEff + ftpAcsm) / 2
-      const ftpShown = Math.round(ftp / 10) * 10
-      const low = Math.round((ftp - 25) / 5) * 5
-      const high = Math.round((ftp + 25) / 5) * 5
+      const calculation = calculateFtpHypothesis(vo2, mass, {
+        crossModalDiscountPct: discountPct,
+        thresholdPct,
+        grossEfficiencyPct: efficiencyPct,
+      })
+      if (!calculation) return
       const writeVal = (key: string, value: string): void => {
         const node = valOut(key)
         if (node) node.textContent = value
@@ -520,18 +513,18 @@ export const mountSecondaryPanel = (
       writeVal('discount', `${discountPct}%`)
       writeVal('threshold', `${thresholdPct}%`)
       writeVal('efficiency', `${efficiencyPct}%`)
-      setText('headline', String(ftpShown))
-      setText('band', `${low}-${high} W`)
-      setText('wkg', `${(ftpShown / mass).toFixed(2)} W/kg`)
-      setText('efficiencyFtp', `${Math.round(ftpEff)} W`)
-      setText('acsmFtp', `${Math.round(ftpAcsm)} W`)
-      setText('absoluteRunningVo2', `${absRun.toFixed(2)} L/min`)
-      setText('cyclingVo2max', `${absCyc.toFixed(2)} L/min`)
-      setText('thresholdVo2', `${thr.toFixed(2)} L/min`)
-      setText('metabolicWatts', `${Math.round(met)} W`)
-      setText('acsmMapWatts', `${Math.round(map)} W`)
-      setBar('efficiencyFtp', ftpEff)
-      setBar('acsmFtp', ftpAcsm)
+      setText('headline', String(calculation.ftp))
+      setText('band', `${calculation.low}-${calculation.high} W`)
+      setText('wkg', `${calculation.wattsPerKg.toFixed(2)} W/kg`)
+      setText('efficiencyFtp', `${Math.round(calculation.efficiencyFtp)} W`)
+      setText('acsmFtp', `${Math.round(calculation.acsmFtp)} W`)
+      setText('absoluteVo2', `${calculation.absoluteVo2.toFixed(2)} L/min`)
+      setText('cyclingVo2max', `${calculation.cyclingVo2max.toFixed(2)} L/min`)
+      setText('thresholdVo2', `${calculation.thresholdVo2.toFixed(2)} L/min`)
+      setText('metabolicWatts', `${Math.round(calculation.metabolicWatts)} W`)
+      setText('acsmMapWatts', `${Math.round(calculation.acsmMapWatts)} W`)
+      setBar('efficiencyFtp', calculation.efficiencyFtp)
+      setBar('acsmFtp', calculation.acsmFtp)
     }
     const onInput = () => renderFtp()
     for (const input of inputs) input.addEventListener('input', onInput)

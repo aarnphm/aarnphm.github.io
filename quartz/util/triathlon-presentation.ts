@@ -12,6 +12,9 @@ export interface TriathlonPresentation {
 
 export const DEFAULT_TRIATHLON_PRESENTATION: TriathlonPresentation = Object.freeze({
   locale: 'en',
-  distance: 'metric',
+  distance: 'imperial',
   powerSamples: 'recorded',
 })
+
+export const distanceSystemFromStoredUnit = (unit: string | null): DistanceSystem =>
+  unit === 'km' ? 'metric' : 'imperial'

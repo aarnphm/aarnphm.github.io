@@ -410,6 +410,10 @@ export interface ActivityHeartRateTracePoint {
   distanceKm: number
   elapsedS: number
   heartRate: number | null
+  heatStrainIndex: number | null
+  coreTemperatureC: number | null
+  skinTemperatureC: number | null
+  coreTemperatureSource: 'core-app' | 'core-fit' | null
 }
 
 export interface ActivityFueling extends GarminFueling {
@@ -499,11 +503,14 @@ export interface StravaActivityDetail {
   strokeCount: number | null
   strokeRateSpm: number | null
   swimPaceSPer100m: number | null
+  swimPaceSource: SwimPaceSource | null
   swimDurationS: number | null
   swimIntervals: SwimActivityInterval[]
   swimLocation: SwimLocation | null
   waterTemperatureC: number | null
 }
+
+export type SwimPaceSource = 'stroke' | 'active' | 'moving'
 
 export interface SwimActivityInterval {
   startElapsedS: number
@@ -523,6 +530,7 @@ export interface SwimTrendPoint {
   date: string
   start: string
   paceSPer100m: number | null
+  paceSource: SwimPaceSource | null
   strokeRateSpm: number | null
 }
 
@@ -1652,7 +1660,7 @@ function projectRouteLessHeartRateTrace(
   streams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
 ): ActivityHeartRateTracePoint[] {
-  if (sport !== 'swim' && sport !== 'strength') return []
+  if (sport !== 'swim' && sport !== 'strength' && sport !== 'yoga') return []
   const time = streams?.time
   const values = heartRate.stream
   if (!time || time.length < 2 || time.length !== values.length) return []
@@ -1677,6 +1685,10 @@ function projectRouteLessHeartRateTrace(
     distanceKm: swimAlignment ? round(swimAlignment.distance[index] / 1_000, 3) : 0,
     elapsedS: round(time[index], 3),
     heartRate: available[index] ? Math.round(values[index]) : null,
+    heatStrainIndex: null,
+    coreTemperatureC: null,
+    skinTemperatureC: null,
+    coreTemperatureSource: null,
   }))
 }
 
@@ -2264,6 +2276,7 @@ function projectDetail(
     strokeCount: null,
     strokeRateSpm: null,
     swimPaceSPer100m: null,
+    swimPaceSource: null,
     swimDurationS: null,
     swimIntervals: [],
     swimLocation: null,

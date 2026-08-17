@@ -3,6 +3,10 @@ import { h } from 'hastscript'
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
+  serializeTriathlonTraceSettings,
+  TRIATHLON_TRACE_DISPLAY_SETTINGS,
+} from '../util/triathlon-trace-settings'
+import {
   filterTriathlonTraceElements,
   resolveTriathlonEmbedDate,
   triathlonDayProps,
@@ -11,6 +15,10 @@ import {
   triathlonEmbedAnchorFromSource,
   triathlonEmbedDayHref,
 } from './triathlon-day-card'
+
+const SIMPLIFIED_SETTINGS_VALUE = serializeTriathlonTraceSettings(
+  TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
+)
 
 test('parses triathlon embed sport and activity exclusions', () => {
   assert.deepEqual(
@@ -38,6 +46,39 @@ test('parses ampersand-separated triathlon trace settings', () => {
   )
 })
 
+test('parses dated analytics embeds with settings and activity filters', () => {
+  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics"]'), {
+    date: '2026-08-16',
+    analytics: true,
+  })
+  assert.deepEqual(
+    triathlonEmbedAnchorFromSource(
+      '["2026-08-16","analytics"]',
+      '![[triathlon#2026-08-16#analytics]]',
+    ),
+    { date: '2026-08-16', analytics: true },
+  )
+  assert.deepEqual(
+    triathlonEmbedAnchor('["2026-08-16","analytics","settings=display:simplified"]'),
+    { date: '2026-08-16', settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, analytics: true },
+  )
+  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","settings=display:detailed"]'), {
+    date: '2026-08-16',
+    settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed,
+    analytics: true,
+  })
+  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","cycling"]'), {
+    date: '2026-08-16',
+    sport: 'bike',
+    analytics: true,
+  })
+  assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","filter=19771722076"]'), {
+    date: '2026-08-16',
+    excludedActivityIds: ['19771722076'],
+    analytics: true,
+  })
+})
+
 test('rejects malformed triathlon embed options', () => {
   assert.equal(triathlonEmbedAnchor('["2026-02-29","cycling"]'), null)
   assert.equal(triathlonEmbedAnchor('["2026-07-26","filter=19471122670&&19476629599"]'), null)
@@ -49,6 +90,8 @@ test('rejects malformed triathlon embed options', () => {
     null,
   )
   assert.equal(triathlonEmbedAnchor('["2026-07-26","unknown"]'), null)
+  assert.equal(triathlonEmbedAnchor('["2026-07-26","analytics","analytics"]'), null)
+  assert.equal(triathlonEmbedAnchor('["2026-07-26","analytics","cycling","bike"]'), null)
   assert.equal(triathlonEmbedAnchor('["19731411847","cycling"]'), null)
 })
 
@@ -134,6 +177,34 @@ test('carries trace settings into hydrated day-card props', () => {
       'data-triathlon-settings': 'matched-rides:false&power-balance:true',
       'data-triathlon-embedded': '1',
     },
+  )
+})
+
+test('carries analytics mode, cycling, and settings into hydrated day-card props', () => {
+  assert.deepEqual(
+    triathlonDayProps(
+      {
+        sport: 'bike',
+        settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
+        analytics: true,
+        embedded: true,
+      },
+      '2026-08-16',
+    ),
+    {
+      'data-triathlon-date': '2026-08-16',
+      'data-triathlon-sport': 'bike',
+      'data-triathlon-settings': SIMPLIFIED_SETTINGS_VALUE,
+      'data-triathlon-analytics': '1',
+      'data-triathlon-embedded': '1',
+    },
+  )
+  assert.deepEqual(
+    triathlonDayProps(
+      { settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed, embedded: true },
+      '2026-08-16',
+    ),
+    { 'data-triathlon-date': '2026-08-16', 'data-triathlon-embedded': '1' },
   )
 })
 

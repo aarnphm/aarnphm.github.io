@@ -54,6 +54,7 @@ export interface WeatherDay {
 export interface WeatherCache {
   version?: number
   lastSync: number
+  current: WeatherSnapshot | null
   activities: Record<string, WeatherActivity>
   days: Record<string, WeatherDay>
 }
@@ -64,6 +65,20 @@ export interface WeatherHour {
   windDirection: number | null
   windGust: number | null
   temperature: number | null
+  conditionCode: string | null
+  precipitationChance: number | null
+  precipitationType: string | null
+}
+
+export interface WeatherSnapshot {
+  forecastStart: string
+  latitude: number
+  longitude: number
+  temperatureC: number | null
+  conditionCode: string | null
+  precipitationChance: number | null
+  precipitationType: string | null
+  source: 'weatherkit'
 }
 
 export interface WeatherActivityCandidate {
@@ -85,6 +100,32 @@ export function compassFromDegrees(degrees: number | null): string | null {
 function round(value: number, dp = 0): number {
   const f = 10 ** dp
   return Math.round(value * f) / f
+}
+
+export function weatherSnapshotFromHours(
+  location: { latitude: number; longitude: number },
+  hours: readonly WeatherHour[],
+  atMs: number,
+): WeatherSnapshot | null {
+  if (!Number.isFinite(atMs)) return null
+  const nearest = hours
+    .map(hour => ({ hour, distance: Math.abs(Date.parse(hour.forecastStart) - atMs) }))
+    .filter(candidate => Number.isFinite(candidate.distance))
+    .sort((left, right) => left.distance - right.distance)[0]?.hour
+  if (!nearest) return null
+  return {
+    forecastStart: nearest.forecastStart,
+    latitude: round(location.latitude, 5),
+    longitude: round(location.longitude, 5),
+    temperatureC: nearest.temperature == null ? null : round(nearest.temperature, 1),
+    conditionCode: nearest.conditionCode,
+    precipitationChance:
+      nearest.precipitationChance == null
+        ? null
+        : round(Math.min(1, Math.max(0, nearest.precipitationChance)), 2),
+    precipitationType: nearest.precipitationType,
+    source: 'weatherkit',
+  }
 }
 
 function circularMeanDeg(values: { degrees: number; weight: number }[]): number | null {
@@ -267,6 +308,26 @@ function readWeatherActivity(value: unknown): WeatherActivity | null {
   }
 }
 
+function readWeatherSnapshot(value: unknown): WeatherSnapshot | null {
+  if (!isRecord(value)) return null
+  const forecastStart = readString(value, 'forecastStart')
+  const latitude = readNumber(value, 'latitude')
+  const longitude = readNumber(value, 'longitude')
+  if (!forecastStart || latitude == null || longitude == null) return null
+  const precipitationChance = readNumber(value, 'precipitationChance')
+  return {
+    forecastStart,
+    latitude,
+    longitude,
+    temperatureC: readNumber(value, 'temperatureC') ?? null,
+    conditionCode: readString(value, 'conditionCode') ?? null,
+    precipitationChance:
+      precipitationChance == null ? null : Math.min(1, Math.max(0, precipitationChance)),
+    precipitationType: readString(value, 'precipitationType') ?? null,
+    source: 'weatherkit',
+  }
+}
+
 export function parseWeatherCache(raw: unknown): WeatherCache | null {
   if (!isRecord(raw) || !isRecord(raw.activities)) return null
   const activities: Record<string, WeatherActivity> = {}
@@ -277,6 +338,7 @@ export function parseWeatherCache(raw: unknown): WeatherCache | null {
   return {
     version: readNumber(raw, 'version'),
     lastSync: readNumber(raw, 'lastSync') ?? 0,
+    current: readWeatherSnapshot(raw.current),
     activities,
     days: summarizeWeatherDays(activities),
   }

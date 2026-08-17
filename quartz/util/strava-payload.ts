@@ -4,7 +4,12 @@ import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { ManualFuelingEntry, ManualStrengthEntry } from '../plugins/stores/tracking'
 import type { WeatherCache } from '../plugins/stores/weather'
-import { ATHLETE, buildAnalytics, type ActivitySummary } from '../plugins/stores/analytics'
+import {
+  ATHLETE,
+  buildAnalytics,
+  type ActivitySummary,
+  type AnalyticsInputs,
+} from '../plugins/stores/analytics'
 import {
   coreBodyTemperatureSamplesForWindow,
   isUsableCoreTemperatureSample,
@@ -28,6 +33,10 @@ import { matchAppleRun } from './apple-run-match'
 import { matchAppleSwims, matchAppleSwimTelemetry } from './apple-swim-match'
 import { joinSegments, QUARTZ } from './path'
 import { swimPaceSeconds, swimStrokeRate } from './swim-metrics'
+import {
+  buildTriathlonDailyAnalytics,
+  type TriathlonDailyAnalytics,
+} from './triathlon-day-analytics'
 
 export const stravaCachePath = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
 export const ouraCachePath = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
@@ -180,21 +189,19 @@ export function swimActivityIntervals(swim: AppleSwim): {
   return { durationS, intervals }
 }
 
-const completeSwimIntervalPace = (
-  swim: AppleSwim,
-  intervals: SwimActivityInterval[],
-): number | null => {
+const SWIM_INTERVAL_COVERAGE_MIN = 0.9
+
+const strokeTimeSwimPace = (swim: AppleSwim, intervals: SwimActivityInterval[]): number | null => {
   if (!Number.isFinite(swim.totalM) || swim.totalM <= 0) return null
   let distanceM = 0
-  let activeTimeS = 0
+  let strokeTimeS = 0
   for (const interval of intervals) {
     if (interval.paceSPer100m == null) continue
     distanceM += interval.distanceM
-    activeTimeS += interval.durationS
+    strokeTimeS += interval.durationS
   }
-  const toleranceM = Math.max(1, swim.totalM * 0.001)
-  if (Math.abs(distanceM - swim.totalM) > toleranceM) return null
-  return swimPaceSeconds(distanceM, activeTimeS)
+  if (distanceM / swim.totalM < SWIM_INTERVAL_COVERAGE_MIN) return null
+  return swimPaceSeconds(distanceM, strokeTimeS)
 }
 
 export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | null): void {
@@ -220,12 +227,18 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
     )
     if (strokeDistribution) detail.strokes = strokeDistribution.strokes
     const activity = swim ? swimActivityIntervals(swim) : null
-    const applePace = swim
-      ? (completeSwimIntervalPace(swim, activity?.intervals ?? []) ??
-        swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0))
-      : null
-    detail.swimPaceSPer100m =
-      applePace ?? swimPaceSeconds(detail.distanceKm * 1_000, detail.movingTimeS)
+    const strokePace = swim ? strokeTimeSwimPace(swim, activity?.intervals ?? []) : null
+    const activePace = swim ? swimPaceSeconds(swim.totalM, swim.activeTimeS ?? 0) : null
+    const movingPace = swimPaceSeconds(detail.distanceKm * 1_000, detail.movingTimeS)
+    detail.swimPaceSPer100m = strokePace ?? activePace ?? movingPace
+    detail.swimPaceSource =
+      strokePace != null
+        ? 'stroke'
+        : activePace != null
+          ? 'active'
+          : movingPace != null
+            ? 'moving'
+            : null
     const matchedStrokeRate = swim
       ? swimStrokeRate(swim.strokeCount ?? 0, swim.strokeTimeS ?? 0)
       : null
@@ -252,6 +265,7 @@ export function enrichSwimMetrics(payload: StravaPayload, apple: AppleCache | nu
       date: detail.date,
       start: detail.start,
       paceSPer100m: detail.swimPaceSPer100m,
+      paceSource: detail.swimPaceSource,
       strokeRateSpm: detail.strokeRateSpm,
     })
   }
@@ -366,14 +380,15 @@ export function enrichCoreBodyTemperature(
 ): void {
   if (!core) return
   for (const detail of Object.values(payload.details)) {
-    if (!detail || (detail.sport !== 'bike' && detail.sport !== 'run') || detail.route.length < 2)
-      continue
-    const durationS = detail.route.at(-1)?.elapsedS ?? detail.movingTimeS
+    if (!detail) continue
+    const points = detail.route.length >= 2 ? detail.route : detail.heartRateTrace
+    if (points.length < 2) continue
+    const durationS = Math.max(detail.movingTimeS, points.at(-1)?.elapsedS ?? 0)
     const samples = coreBodyTemperatureSamplesForWindow(detail.start, durationS, core).filter(
       sample => isUsableCoreTemperatureSample(sample),
     )
     if (samples.length === 0) continue
-    for (const point of detail.route) {
+    for (const point of points) {
       const coreTemperatureC = coreMetricAt(samples, point.elapsedS, 'coreTemperatureC')
       const skinTemperatureC = coreMetricAt(samples, point.elapsedS, 'skinTemperatureC')
       const heatStrainIndex = coreMetricAt(samples, point.elapsedS, 'heatStrainIndex')
@@ -388,14 +403,26 @@ export function enrichCoreBodyTemperature(
   }
 }
 
-let memo: { key: string; payload: StravaPayload } | null = null
+export type LoadedStravaPayload = StravaPayload & { dailyAnalytics: TriathlonDailyAnalytics }
+
+export type StravaPayloadAnalyticsInputs = Pick<
+  AnalyticsInputs,
+  'weights' | 'events' | 'dexa' | 'vo2labs'
+>
+
+let memo: { key: string; payload: LoadedStravaPayload } | null = null
 
 export function loadStravaPayloadSync(
   since?: string,
   manualFueling: readonly ManualFuelingEntry[] = [],
   manualStrength: readonly ManualStrengthEntry[] = [],
-): StravaPayload {
-  const manualKey = JSON.stringify({ fueling: manualFueling, strength: manualStrength })
+  analyticsInputs: StravaPayloadAnalyticsInputs = {},
+): LoadedStravaPayload {
+  const manualKey = JSON.stringify({
+    fueling: manualFueling,
+    strength: manualStrength,
+    analytics: analyticsInputs,
+  })
   const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
   if (memo?.key !== key) {
     const strava = readJson<StravaRawCache>(stravaCachePath)
@@ -410,11 +437,38 @@ export function loadStravaPayloadSync(
     enrichSwimMetrics(payload, apple)
     enrichRunDynamics(payload, apple)
     enrichCoreBodyTemperature(payload, core)
-    const analytics = buildAnalytics(strava, { oura, apple, core, garmin, weather, since })
+    const analytics = buildAnalytics(strava, {
+      ...analyticsInputs,
+      oura,
+      apple,
+      core,
+      garmin,
+      weather,
+      ftp: ATHLETE.ftp,
+      powerCurve: {
+        sixWeeks: payload.powerCurveRef,
+        year: payload.powerCurveYearRef,
+        yearLabel: payload.powerCurveYear,
+        criticalPower: payload.criticalPower,
+        criticalPowerYear: payload.criticalPowerYear,
+        ftp: ATHLETE.ftp,
+        goalFtp: ATHLETE.goalFTP,
+      },
+      zones: payload.zones,
+      activityDetails: payload.details,
+      since,
+    })
     enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
     enrichCalculatedExerciseLoads(payload)
     enrichCalculatedTrainingEffects(payload)
-    memo = { key, payload }
+    const ouraDetails = oura?.details ?? {}
+    memo = {
+      key,
+      payload: {
+        ...payload,
+        dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
+      },
+    }
   }
   return memo.payload
 }

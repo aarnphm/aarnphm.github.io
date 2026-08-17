@@ -14,6 +14,8 @@ import { WebSocket, WebSocketServer } from 'ws'
 import { version, fp, cacheFile } from './constants.js'
 
 const inlineScriptFilter = /\.inline\.(ts|js)$/
+const testSourcePattern =
+  /(?:^|\/)(?:__(?:tests|specs)__|tests?|specs?)(?:\/|$)|(?:^|\/)(?:tests?|specs?|(?:test|spec)_[^/]+|[^/]+_(?:test|spec)|[^/]+\.(?:test|spec))\.[^/]+$/i
 const sourceWatchWriteStabilityMs = 250
 export const sourceWatchRoots = ['quartz.config.ts', 'quartz.layout.ts', 'quartz', 'package.json']
 export const sourceWatchPatterns = [
@@ -34,12 +36,7 @@ const normalizeWatchedPath = fp => {
   const relativePath = path.isAbsolute(rawPath) ? path.relative(process.cwd(), rawPath) : rawPath
   return relativePath.split(path.sep).join('/')
 }
-export const isTestSourcePath = fp => {
-  const normalized = normalizeWatchedPath(fp)
-  return ['.test.ts', '.test.tsx', '.test.js', '.test.jsx'].some(suffix =>
-    normalized.endsWith(suffix),
-  )
-}
+export const isTestSourcePath = fp => testSourcePattern.test(normalizeWatchedPath(fp))
 
 export const isSourceWatchPath = fp => {
   const normalized = normalizeWatchedPath(fp)
