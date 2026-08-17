@@ -8,8 +8,7 @@ import {
   isTirePressureSurfaceId,
   isTirePressureTireId,
   isTirePressureWheelId,
-  tirePressureTire,
-  tirePressureWheel,
+  tirePressureSurface,
   TRI_TIRE_PRESSURE_CHANGE_EVENT,
   TRI_TIRE_PRESSURE_OPEN_EVENT,
   type TirePressureChange,
@@ -21,6 +20,14 @@ const TIRE_PRESSURE_WHEEL_KEY = 'triathlon-tire-pressure-wheel'
 const TIRE_PRESSURE_TIRE_KEY = 'triathlon-tire-pressure-tire'
 const TIRE_PRESSURE_SURFACE_KEY = 'triathlon-tire-pressure-surface'
 const TIRE_PRESSURE_SPEED_KEY = 'triathlon-tire-pressure-speed'
+
+const renderSurfaceTip = (calculator: HTMLElement, surfaceId: TirePressureSelection['surface']) => {
+  const surface = tirePressureSurface(surfaceId)
+  const coefficient = calculator.querySelector<HTMLElement>('[data-pressure-surface-coefficient]')
+  const note = calculator.querySelector<HTMLElement>('[data-pressure-surface-note]')
+  if (coefficient) coefficient.textContent = String(surface.coefficient)
+  if (note) note.textContent = surface.note
+}
 
 export const readTirePressureSelection = (): TirePressureSelection => {
   const storedBike = localStorage.getItem(TIRE_PRESSURE_BIKE_KEY)
@@ -76,14 +83,13 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
   let selection = readTirePressureSelection()
 
   const render = (): void => {
-    const wheel = tirePressureWheel(selection.wheel)
-    const tire = tirePressureTire(selection.tire)
     for (const calculator of calculators) {
       calculator.dataset.bike = selection.bike
       calculator.dataset.wheel = selection.wheel
       calculator.dataset.tire = selection.tire
       calculator.dataset.surface = selection.surface
       calculator.dataset.speedMph = String(selection.speedMph)
+      renderSurfaceTip(calculator, selection.surface)
       for (const input of calculator.querySelectorAll<HTMLInputElement>(
         'input[data-pressure-field]',
       )) {
@@ -101,9 +107,6 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
       const front = calculator.querySelector<HTMLOutputElement>('[data-pressure-output="front"]')
       const rear = calculator.querySelector<HTMLOutputElement>('[data-pressure-output="rear"]')
       const system = calculator.querySelector<HTMLElement>('[data-pressure-system]')
-      const diameter = calculator.querySelector<HTMLElement>('[data-pressure-diameter]')
-      const rim = calculator.querySelector<HTMLElement>('[data-pressure-rim]')
-      const tireSpec = calculator.querySelector<HTMLElement>('[data-pressure-tire]')
       const warning = calculator.querySelector<HTMLElement>('[data-pressure-warning]')
       if (front)
         front.textContent = recommendation ? formatTirePressurePsi(recommendation.frontPsi) : '—'
@@ -113,13 +116,6 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
         system.textContent = recommendation
           ? `${recommendation.riderKg.toFixed(1)} + ${recommendation.bikeKg.toFixed(1)} = ${recommendation.systemKg.toFixed(1)} kg system`
           : 'add a morning body-composition measurement'
-      if (diameter) diameter.textContent = String(wheel.diameterMm)
-      if (rim)
-        rim.textContent =
-          wheel.frontInnerWidthMm === wheel.rearInnerWidthMm
-            ? `${wheel.frontInnerWidthMm} mm internal`
-            : `${wheel.frontInnerWidthMm}/${wheel.rearInnerWidthMm} mm internal · front/rear`
-      if (tireSpec) tireSpec.textContent = `Pirelli ${tire.label} · ${tire.detail}`
       if (warning) warning.hidden = !recommendation?.wheelCompatibilityWarning
       calculator.dataset.frontPsi = recommendation ? String(recommendation.frontPsi) : ''
       calculator.dataset.rearPsi = recommendation ? String(recommendation.rearPsi) : ''
@@ -167,7 +163,21 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
 
   const onFocusIn = (event: FocusEvent): void => {
     if (!(event.target instanceof HTMLInputElement)) return
-    if (event.target.dataset.pressureField === 'speed') event.target.select()
+    const field = event.target.dataset.pressureField
+    if (field === 'speed') event.target.select()
+    else if (field === 'surface' && isTirePressureSurfaceId(event.target.value)) {
+      const calculator = event.target.closest<HTMLElement>('.tri-pressure')
+      if (calculator) renderSurfaceTip(calculator, event.target.value)
+    }
+  }
+
+  const onPointerOver = (event: PointerEvent): void => {
+    if (!(event.target instanceof Element)) return
+    const option = event.target.closest<HTMLElement>('[data-pressure-surface-option]')
+    const surfaceId = option?.dataset.pressureSurfaceOption
+    if (!option || !surfaceId || !isTirePressureSurfaceId(surfaceId)) return
+    const calculator = option.closest<HTMLElement>('.tri-pressure')
+    if (calculator) renderSurfaceTip(calculator, surfaceId)
   }
 
   const onKeyDown = (event: KeyboardEvent): void => {
@@ -192,6 +202,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
   root.addEventListener('change', onChange)
   root.addEventListener('input', onInput)
   root.addEventListener('focusin', onFocusIn)
+  root.addEventListener('pointerover', onPointerOver)
   root.addEventListener('keydown', onKeyDown)
   root.addEventListener(TRI_TIRE_PRESSURE_CHANGE_EVENT, onExternalChange)
   root.addEventListener(TRI_TIRE_PRESSURE_OPEN_EVENT, onOpen)
@@ -200,6 +211,7 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
     root.removeEventListener('change', onChange)
     root.removeEventListener('input', onInput)
     root.removeEventListener('focusin', onFocusIn)
+    root.removeEventListener('pointerover', onPointerOver)
     root.removeEventListener('keydown', onKeyDown)
     root.removeEventListener(TRI_TIRE_PRESSURE_CHANGE_EVENT, onExternalChange)
     root.removeEventListener(TRI_TIRE_PRESSURE_OPEN_EVENT, onOpen)

@@ -18,6 +18,7 @@ import { polyD } from '../shared'
 import { missingBridges } from './body'
 import { segRuns } from './body'
 import {
+  completeDistributionPaceRanges,
   DISTRIBUTION_RANGES,
   distributionMetricForSport,
   distributionMetrics,
@@ -28,6 +29,7 @@ import {
   type DistributionRange,
   type DistributionMetric,
   type DistributionSport,
+  type CompletedDistributionPaceRange,
 } from './distributions-model'
 
 export type ActivityDistributionPoint = Analytics['distributions']['activities'][number]
@@ -56,14 +58,23 @@ export const distributionPowerZoneRange = (bounds: readonly number[], index: num
 
 const distributionPaceZoneRange = (
   context: TriathlonContext,
-  range: NonNullable<ActivityDistributionPoint['paceZoneRanges']>[number],
+  range: CompletedDistributionPaceRange | null,
 ): string => {
   if (!range) return '—'
   const imperial = context.presentation.distance === 'imperial'
   const scale = imperial ? KM_TO_MI : 1
-  const fastest = clock(range.fastestSPerKm / scale)
-  const slowest = clock(range.slowestSPerKm / scale)
   const unit = imperial ? '/mi' : '/km'
+  if (range.fastestSPerKm == null)
+    return range.slowestSPerKm == null ? '—' : `<${clock(range.slowestSPerKm / scale)}${unit}`
+  if (range.slowestSPerKm == null) return `>${clock(range.fastestSPerKm / scale)}${unit}`
+  let fastestSeconds = range.fastestSPerKm / scale
+  let slowestSeconds = range.slowestSPerKm / scale
+  if (range.fillGap && slowestSeconds - fastestSeconds >= 2) {
+    fastestSeconds += 1
+    slowestSeconds -= 1
+  }
+  const fastest = clock(fastestSeconds)
+  const slowest = clock(slowestSeconds)
   return fastest === slowest ? `${fastest}${unit}` : `${fastest}–${slowest}${unit}`
 }
 
@@ -72,6 +83,29 @@ interface DistributionZoneSeries {
   seconds: number[]
   ranges: string[]
   observedActivities: number
+}
+
+const buildZoneMetricIcon = (metric: DistributionMetric): SVGElement => {
+  const icon = svg('svg', {
+    class: 'tri-zone-metric-icon',
+    viewBox: '0 0 24 24',
+    'aria-hidden': 'true',
+    focusable: 'false',
+  })
+  icon.appendChild(
+    svg('path', {
+      d:
+        metric === 'heart-rate'
+          ? 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78Z'
+          : 'M13 2 4 14h8l-1 8 9-12h-8l1-8Z',
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 1.8,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+    }),
+  )
+  return icon
 }
 
 const sumDistributionZones = (
@@ -239,7 +273,7 @@ export const buildDistributions = (
     }
     const count = 6
     const totals = sumDistributionZones(points, count, point => point.paceZoneSeconds)
-    const ranges = Array.from({ length: count }, (_, index) => {
+    const observedRanges = Array.from({ length: count }, (_, index) => {
       let fastestSPerKm = Infinity
       let slowestSPerKm = -Infinity
       for (const point of points) {
@@ -248,13 +282,13 @@ export const buildDistributions = (
         fastestSPerKm = Math.min(fastestSPerKm, range.fastestSPerKm)
         slowestSPerKm = Math.max(slowestSPerKm, range.slowestSPerKm)
       }
-      return distributionPaceZoneRange(
-        context,
-        Number.isFinite(fastestSPerKm) && Number.isFinite(slowestSPerKm)
-          ? { fastestSPerKm, slowestSPerKm }
-          : null,
-      )
+      return Number.isFinite(fastestSPerKm) && Number.isFinite(slowestSPerKm)
+        ? { fastestSPerKm, slowestSPerKm }
+        : null
     })
+    const ranges = completeDistributionPaceRanges(observedRanges).map(range =>
+      distributionPaceZoneRange(context, range),
+    )
     return { metric: selectedMetric, ...totals, ranges }
   }
 
@@ -345,15 +379,11 @@ export const buildDistributions = (
     return view
   }
 
-  const applyZoneMetric = (animate: boolean): void => {
+  const applyZoneMetric = (): void => {
     const tabs = Array.from(
       metricControls.querySelectorAll<HTMLButtonElement>('.tri-zone-metric-tab'),
     )
     const views = Array.from(zonePanel.querySelectorAll<HTMLElement>('.tri-training-zone-view'))
-    const stage = zonePanel.querySelector<HTMLElement>('.tri-training-zone-stage')
-    if (!animate) {
-      if (stage) stage.dataset.motion = 'instant'
-    }
     for (const tab of tabs) {
       const selected = tab.dataset.metric === metric
       tab.setAttribute('aria-selected', String(selected))
@@ -362,35 +392,32 @@ export const buildDistributions = (
     for (const view of views) {
       const selected = view.dataset.metric === metric
       view.dataset.active = String(selected)
+      view.hidden = !selected
       view.setAttribute('aria-hidden', String(!selected))
       view.inert = !selected
-    }
-    if (!animate) {
-      stage?.getBoundingClientRect()
-      if (stage) delete stage.dataset.motion
     }
   }
 
   const renderZones = (points: ActivityDistributionPoint[]): void => {
     metricControls.replaceChildren()
     const stage = el('div', 'tri-training-zone-stage')
-    for (const option of distributionMetrics(sport)) {
+    const options = distributionMetrics(sport)
+    for (const option of options) {
       const label = zoneMetricLabel(option)
-      const shortcut = option === 'heart-rate' ? 'HR' : 'P'
       const tab = el('button', 'tri-map-tab tri-zone-metric-tab', undefined, {
         type: 'button',
         role: 'tab',
         'aria-controls': `tri-training-zones-${option}`,
         'aria-label': label,
+        title: label,
         'data-metric': option,
-        'data-shortcut': shortcut.toLowerCase(),
       }) as HTMLButtonElement
-      tab.textContent = shortcut
+      tab.appendChild(buildZoneMetricIcon(option))
       metricControls.appendChild(tab)
       stage.appendChild(buildZoneView(points, zoneSeries(points, option)))
     }
     zonePanel.replaceChildren(stage)
-    applyZoneMetric(false)
+    applyZoneMetric()
   }
 
   interface TelemetryMetric {
@@ -835,19 +862,19 @@ export const buildDistributions = (
     if (range === 'custom') queueMicrotask(() => startPicker.trigger.click())
   }
 
-  const selectZoneMetric = (selected: string | undefined, animate: boolean): void => {
+  const selectZoneMetric = (selected: string | undefined): void => {
     if (selected !== 'heart-rate' && selected !== 'power' && selected !== 'pace') return
     if (!distributionMetrics(sport).includes(selected)) return
     applyModel(updateDistributions(model, { type: 'select-metric', metric: selected }, bounds))
     persist()
-    applyZoneMetric(animate)
+    applyZoneMetric()
   }
   const onZoneMetricClick = (event: MouseEvent): void => {
     const target = event.target
     if (!(target instanceof Element)) return
     const tab = target.closest<HTMLButtonElement>('.tri-zone-metric-tab[data-metric]')
     if (!tab || !metricControls.contains(tab)) return
-    selectZoneMetric(tab.dataset.metric, event.detail > 0)
+    selectZoneMetric(tab.dataset.metric)
   }
   const onZoneMetricKeydown = (event: KeyboardEvent): void => {
     if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing || event.repeat) return
@@ -871,7 +898,7 @@ export const buildDistributions = (
     if (next < 0) return
     event.preventDefault()
     event.stopPropagation()
-    selectZoneMetric(tabs[next]?.dataset.metric, false)
+    selectZoneMetric(tabs[next]?.dataset.metric)
     tabs[next]?.focus()
   }
 

@@ -18,6 +18,7 @@ import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentatio
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
 import style from '../styles/triathlon.scss'
+import { TRI_ANALYTICS_BOOT_SCRIPT } from '../triathlon/analytics/boot'
 import {
   AnalyticsPanel,
   CalcPanel,
@@ -303,6 +304,7 @@ export default (() => {
   }
 
   TriathlonPage.css = style
+  TriathlonPage.beforeDOMLoaded = TRI_ANALYTICS_BOOT_SCRIPT
   TriathlonPage.afterDOMLoaded = script
 
   return TriathlonPage

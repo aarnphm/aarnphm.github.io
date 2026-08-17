@@ -28,6 +28,7 @@ import { el } from '../runtime/dom'
 import { svg } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 import { wireEmbedCopy } from '../shell/timeline'
+import { TRI_ANALYTICS_BOOT_CLASS } from './boot'
 import { analyticsPanelDefinition } from './catalog'
 import { initialAnalyticsModel, updateAnalytics } from './model'
 import { activityCommandHints } from './search'
@@ -70,7 +71,7 @@ export const setupAnalytics = (
   let comparisonScrollTop = 0
 
   const finishPageBoot = (): void => {
-    if (pageMode) document.documentElement.classList.remove('tri-analytics-booting')
+    if (pageMode) document.documentElement.classList.remove(TRI_ANALYTICS_BOOT_CLASS)
   }
 
   const inCompareMode = (): boolean => program.retrieve().mode === 'compare'
