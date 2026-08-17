@@ -13,7 +13,7 @@ title: to chi
 
 ![[posts/images/658ADAE0-2B38-417A-93F7-FE642CD6EEEF_1_105_c.webp|from Peanuts]]
 
-Strange how things work. You're there in Columbus, or Indiana (depending if you have already left the farm), probably enjoying your time, while I'm here looking at this Snoopy cartoon about a tree too big for his house. Made me laugh. Made me think of you.
+Strange how things work. You're there in Columbus, or Indiana (depending on whether you have already left the farm), probably enjoying your time, while I'm here looking at this Snoopy cartoon about a tree too big for his house. Made me laugh. Made me think of you.
 
 ![[posts/images/meet-friendship-wrong-to-write.webp|by Olivia de Recat]]
 
@@ -24,7 +24,7 @@ I remember typing back "same." We never used to talk like this before. Now here 
 every small disaster, every tiny victory. The kind of stuff that seems meaningless but isn't.
 
 Maybe one day we'll be old, sitting on a ranch somewhere, telling our kids stories about this year. About how we found each other again through the dumbest things - Formula 1, social media, late-night texts.
-Like Simone Weil once said: "attention is the rarest form of generosity". That's what we did, I guess. Paid attention. :smile:
+Simone Weil once wrote, "Attention is the rarest and purest form of generosity." That's what we did, I guess. Paid attention. :smile:
 
 Not exactly the way we planned it, but here we are. Still standing. Still watching those cars go in circles. Still sending each other stupid memes. Maybe that's what matters in the end.
 
@@ -34,6 +34,6 @@ It's about what you give to someone else. It's about the space you make for them
 It's that [[thoughts/Agency|agency]], that choice. We may have had an emotional roller coaster this year, but I'm glad we're riding it together—reminding each other that the ups and downs matter
 less when you have someone standing by, watching the track with you, ready to hold on.
 
-May the holiday season finds you well. And see you in the new year!
+May the holiday season find you well. And see you in the new year!
 
 [^sign]

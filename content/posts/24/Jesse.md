@@ -15,9 +15,9 @@ title: to jesse
 
 What an "uneventful" year it has been. Surely we haven't gone through any major development arc for any given time period at all.
 
-All jokes aside, I'm glad that we connected and have been growing a lot closer this year. I felt like I have truly know you better as a person, and more importantly, as a friend.
+All jokes aside, I'm glad we connected and got closer this year. I feel like I know you better as a person and as a friend.
 
-I enjoyed our late night chat, endless riff on what it meant to be a "man" in this day and ages. To quote Marcus Aurelius (your favorite author):
+I enjoyed our late-night chats, the endless riff on what it meant to be a "man" in this day and age. To quote Marcus Aurelius (your favorite author):
 
 > Let men see, let them know, a real man, who lives as he was meant to live
 

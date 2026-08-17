@@ -6,6 +6,8 @@ import { buildDayCard } from '../activity/embeds'
 import { el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
+const OPEN_PANEL_SELECTOR = '.tri-calc-open, .tri-map-open, .tri-training-open, .tri-analytics-open'
+
 export const setup = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
   const pop = root.querySelector<HTMLElement>('.tri-pop')
@@ -16,18 +18,34 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const bars = Array.from(root.querySelectorAll<HTMLElement>('.tri-bar'))
   if (!barsEl || !pop || bars.length === 0) return null
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const location = root.dataset.location ?? 'Toronto'
   let active: HTMLElement | null = null
-  let activeIdx = -1
   let payload: DetailPayload | null = null
   let pinned = false
   let locked = false
   let hideTimer = 0
   let timelineFrame = 0
+  let hoverFrame = 0
+  let pendingClientX: number | null = null
+  let geometryDirty = true
+  let barsLeft = 0
+  let barCenters: number[] = []
+  let repositionActive: (() => void) | null = null
 
   const updateTimeline = () => {
-    if (!timeline || !timelineShell) return
+    const barsRect = barsEl.getBoundingClientRect()
+    barsLeft = barsRect.left
+    if (geometryDirty) {
+      barCenters = bars.map(bar => {
+        const rect = bar.getBoundingClientRect()
+        return rect.left - barsRect.left + rect.width / 2
+      })
+      geometryDirty = false
+    }
+    if (!timeline || !timelineShell) {
+      repositionActive?.()
+      return
+    }
     const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
     const scrollable = maxScroll > 1
     timelineShell.dataset.scrollable = String(scrollable)
@@ -40,6 +58,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     for (const year of timelineYears) year.dataset.current = String(year === activeYear)
     if (timelinePinnedYear && activeYear)
       timelinePinnedYear.textContent = activeYear.dataset.year ?? activeYear.textContent
+    repositionActive?.()
   }
   const scheduleTimelineUpdate = () => {
     if (timelineFrame !== 0) return
@@ -48,7 +67,10 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       updateTimeline()
     })
   }
-  const timelineResize = new ResizeObserver(scheduleTimelineUpdate)
+  const timelineResize = new ResizeObserver(() => {
+    geometryDirty = true
+    scheduleTimelineUpdate()
+  })
   if (timeline) {
     timeline.addEventListener('scroll', scheduleTimelineUpdate, { passive: true })
     timelineResize.observe(timeline)
@@ -69,6 +91,11 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const setLocked = (on: boolean) => {
     locked = on
     barsEl.classList.toggle('tri-bars--locked', on)
+    if (on && hoverFrame !== 0) {
+      window.cancelAnimationFrame(hoverFrame)
+      hoverFrame = 0
+      pendingClientX = null
+    }
   }
 
   let audio: AudioContext | null = null
@@ -110,62 +137,70 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       event: bar.dataset.event,
     })
   let cardCleanup: (() => void) | null = null
-  const replaceCard = (bar: HTMLElement): HTMLElement => {
+  const replaceCard = (bar: HTMLElement): void => {
     cardCleanup?.()
     const view = buildCard(bar)
     scroller.replaceChildren(view.element)
     cardCleanup = view.mount()
-    return view.element
   }
 
-  const place = (cx: number, cy: number) => {
+  const place = (bar: HTMLElement) => {
+    const barRect = bar.getBoundingClientRect()
+    const timelineRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
     const r = pop.getBoundingClientRect()
-    const gap = 18
-    let left = cx + gap
-    if (left + r.width > window.innerWidth - 8) left = cx - gap - r.width
-    left = Math.max(8, left)
-    let top = cy - r.height / 2
-    top = Math.max(8, Math.min(top, window.innerHeight - r.height - 8))
+    const gap = 20
+    const inset = 8
+    const cx = barRect.left + barRect.width / 2
+    const left = Math.max(inset, Math.min(cx - r.width / 2, window.innerWidth - r.width - inset))
+    const below = timelineRect.bottom + gap
+    const above = timelineRect.top - gap - r.height
+    const top = below + r.height <= window.innerHeight - inset ? below : Math.max(inset, above)
     pop.style.left = `${left}px`
     pop.style.top = `${top}px`
   }
-
-  const nearest = (clientX: number): number => {
-    let best = Infinity
-    let found = -1
-    bars.forEach((bar, i) => {
-      const r = bar.getBoundingClientRect()
-      const d = Math.abs(r.left + r.width / 2 - clientX)
-      if (d < best) {
-        best = d
-        found = i
-      }
-    })
-    return found
+  repositionActive = () => {
+    if (active && (locked || pinned)) place(active)
+  }
+  const onViewportResize = () => {
+    geometryDirty = true
+    scheduleTimelineUpdate()
+    repositionActive?.()
+  }
+  const onViewportScroll = () => {
+    scheduleTimelineUpdate()
+    repositionActive?.()
   }
 
-  const showFor = (idx: number, cx: number, cy: number) => {
+  const nearest = (clientX: number): number => {
+    if (geometryDirty || barCenters.length !== bars.length) updateTimeline()
+    if (barCenters.length === 0) return -1
+    const contentX = clientX - barsLeft
+    let low = 0
+    let high = barCenters.length - 1
+    while (low < high) {
+      const mid = Math.floor((low + high) / 2)
+      if (barCenters[mid] < contentX) low = mid + 1
+      else high = mid
+    }
+    const right = low
+    const left = Math.max(0, right - 1)
+    return Math.abs(barCenters[left] - contentX) <= Math.abs(barCenters[right] - contentX)
+      ? left
+      : right
+  }
+
+  const showFor = (idx: number) => {
     const bar = bars[idx]
     if (bar !== active) {
-      const dir = activeIdx === -1 ? 0 : Math.sign(idx - activeIdx)
       if (active) active.classList.remove('tri-bar--active')
       active = bar
-      activeIdx = idx
       bar.classList.add('tri-bar--active')
       raindrop(idx)
-      const card = replaceCard(bar)
+      replaceCard(bar)
       scroller.scrollTop = 0
       updateOverflow()
-      if (!reduce)
-        card.animate(
-          [
-            { opacity: 0, transform: `translateX(${dir * 12}px)` },
-            { opacity: 1, transform: 'none' },
-          ],
-          { duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' },
-        )
     }
-    place(cx, cy)
+    place(bar)
     root.classList.add('tri-hovering')
   }
 
@@ -177,22 +212,43 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
     active = null
-    activeIdx = -1
     pinned = false
     setLocked(false)
     root.classList.remove('tri-hovering')
   }
 
-  const onMove = (event: MouseEvent) => {
-    if (pinned || locked) return
+  const panelOpen = () => root.matches(OPEN_PANEL_SELECTOR)
+  const stopHover = () => {
     window.clearTimeout(hideTimer)
-    const idx = nearest(event.clientX)
-    if (idx >= 0) showFor(idx, event.clientX, event.clientY)
+    if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
+    hoverFrame = 0
+    pendingClientX = null
+    setExpanded(false)
+    hide()
+  }
+
+  const flushHover = () => {
+    hoverFrame = 0
+    const clientX = pendingClientX
+    pendingClientX = null
+    if (clientX === null || pinned || locked || panelOpen()) return
+    window.clearTimeout(hideTimer)
+    const idx = nearest(clientX)
+    if (idx >= 0) showFor(idx)
+  }
+  const onMove = (event: MouseEvent) => {
+    if (pinned || locked || panelOpen()) return
+    pendingClientX = event.clientX
+    if (hoverFrame === 0) hoverFrame = window.requestAnimationFrame(flushHover)
   }
   const onBarsLeave = () => {
+    if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
+    hoverFrame = 0
+    pendingClientX = null
     if (!pinned && !locked) hideTimer = window.setTimeout(hide, 140)
   }
   const onPopEnter = () => {
+    if (panelOpen()) return
     window.clearTimeout(hideTimer)
     pinned = true
   }
@@ -201,15 +257,20 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     if (!locked) hideTimer = window.setTimeout(hide, 140)
   }
   const onBarsClick = (event: MouseEvent) => {
+    if (panelOpen()) return
+    if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
+    hoverFrame = 0
+    pendingClientX = null
     const idx = nearest(event.clientX)
     if (idx < 0) return
     if (locked && bars[idx] === active) {
       setLocked(false)
       setExpanded(false)
     } else {
-      showFor(idx, event.clientX, event.clientY)
+      showFor(idx)
       setLocked(true)
       setExpanded(true)
+      if (active) place(active)
     }
   }
   const dismiss = () => {
@@ -240,15 +301,16 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     })
 
   const onFocusDay = (event: Event) => {
+    if (panelOpen()) return
     const date = (event as CustomEvent<{ date?: string }>).detail?.date
     if (!date) return
     const idx = bars.findIndex(b => b.dataset.dateIso === date)
     if (idx < 0) return
     bars[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-    const r = bars[idx].getBoundingClientRect()
-    showFor(idx, r.left + r.width / 2, r.top + r.height / 2)
+    showFor(idx)
     setLocked(true)
     setExpanded(true)
+    if (active) place(active)
   }
 
   const onUnit = () => {
@@ -257,6 +319,15 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     if (locked) setExpanded(true)
     updateOverflow()
   }
+
+  let wasPanelOpen = panelOpen()
+  const panelObserver = new MutationObserver(() => {
+    const open = panelOpen()
+    if (open === wasPanelOpen) return
+    wasPanelOpen = open
+    if (open) stopHover()
+  })
+  panelObserver.observe(root, { attributes: true, attributeFilter: ['class'] })
 
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
@@ -269,13 +340,17 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   window.addEventListener('tri:focus-day', onFocusDay)
   window.addEventListener('tri:unit', onUnit)
   window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
+  window.addEventListener('resize', onViewportResize)
+  window.addEventListener('scroll', onViewportScroll, { passive: true })
 
   return () => {
     live = false
     window.clearTimeout(hideTimer)
     window.cancelAnimationFrame(timelineFrame)
+    window.cancelAnimationFrame(hoverFrame)
     timeline?.removeEventListener('scroll', scheduleTimelineUpdate)
     timelineResize.disconnect()
+    panelObserver.disconnect()
     for (const year of timelineYears) delete year.dataset.current
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
@@ -290,6 +365,9 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     window.removeEventListener('tri:focus-day', onFocusDay)
     window.removeEventListener('tri:unit', onUnit)
     window.removeEventListener(TRI_POWER_FILTER_EVENT, onUnit)
+    window.removeEventListener('resize', onViewportResize)
+    window.removeEventListener('scroll', onViewportScroll)
+    repositionActive = null
     cardCleanup?.()
     void audio?.close()
   }

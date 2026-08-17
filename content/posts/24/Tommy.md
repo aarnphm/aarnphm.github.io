@@ -29,8 +29,8 @@ it’s easier for me to do the same. When we laugh together, we bridge the space
 
 I want you to know how much that means to me. In these small acts—laughing at spills, cheering from the front row, sending DMs—you've given me a sense of belonging. It's love, I think, in its most natural form. And for that, I thank you.
 
-We don't know everything, but all we can ask each others is to do our best and try to elevate others. Everyone is your biggest fan, I'm one of them. If there are none, I'm still, _your biggest fan_.
+We don't know everything, but all we can ask of each other is to do our best and make life easier for the people around us. Everyone is your biggest fan. I'm one of them. If there are none, I'm still _your biggest fan_.
 
-I hope you have a well-deserved rest, and looking forward for bangers in 2025!
+I hope you have a well-deserved rest. I'm looking forward to bangers in 2025!
 
 [^sign]
