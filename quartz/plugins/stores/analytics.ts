@@ -1,8 +1,17 @@
-import type { CriticalPowerEstimate } from './critical-power'
-import type { GarminCache, GarminStreams, GarminWeightSample } from './garmin'
+import type {
+  GarminCache,
+  GarminCyclingDynamics,
+  GarminStreams,
+  GarminWeightSample,
+} from './garmin'
 import type { WeatherCache } from './weather'
 import { matchAppleRun } from '../../util/apple-run-match'
 import { matchAppleSwims } from '../../util/apple-swim-match'
+import {
+  calculateFtpHypothesis,
+  FTP_HYPOTHESIS_DEFAULTS,
+  type FtpHypothesisParams,
+} from '../../util/ftp-hypothesis'
 import { localIsoDay } from '../../util/local-date'
 import {
   SWIM_PACE_MAX_S_PER_100M,
@@ -17,8 +26,15 @@ import {
   matchCoreBodyTemperatureActivity,
   type CoreBodyTemperatureCache,
 } from './core-body-temperature'
+import { criticalPowerAtDuration, type CriticalPowerEstimate } from './critical-power'
 import { matchGarminActivity, matchGarminHeartRateActivity } from './garmin'
 import { OuraCache } from './oura'
+import {
+  buildPowerRank,
+  emptyPowerRank,
+  type PowerRankBlock,
+  type PowerRankMass,
+} from './power-rank'
 import {
   type Sport,
   type ActivityKind,
@@ -192,7 +208,7 @@ export interface AnalyticsInputs {
   dexa?: unknown
   vo2labs?: unknown
   ftp?: number | null
-  powerCurve?: PowerCurveBlock
+  powerCurve?: PowerCurveInput
   zones?: StravaZones | null
   activityDetails?: Readonly<Record<string, StravaActivityDetail>>
   since?: string
@@ -207,7 +223,10 @@ export interface PowerCurveBlock {
   criticalPowerYear: CriticalPowerEstimate | null
   ftp: number | null
   goalFtp: number | null
+  ranking: PowerRankBlock
 }
+
+export type PowerCurveInput = Omit<PowerCurveBlock, 'ranking'>
 
 export type Conf = 'firm' | 'low' | 'prior' | 'stale'
 export type TsbZone = 'fresh' | 'neutral' | 'fatigued' | 'deep'
@@ -458,14 +477,21 @@ export interface RecoveryThresholds {
 
 export interface RecoveryDay {
   date: string
+  status: RecoveryStatus
+  baselineDays: number
   hrv: number | null
+  hrvBaseline: number | null
   hrvZ: number | null
   rhr: number | null
+  rhrBaseline: number | null
   rhrZ: number | null
   sleepS: number | null
+  sleepBaselineS: number | null
+  sleepTargetS: number
   sleepScore: number | null
   sleepDebtS: number | null
   readiness: number | null
+  readinessBaseline: number | null
   tempDevC: number | null
   warmup: boolean
 }
@@ -639,21 +665,47 @@ export interface CardioBlock {
   decouplingSeries: { date: string; pct: number }[]
 }
 
-export interface FtpHypothesisParams {
-  crossModalDiscountPct: number
-  thresholdPct: number
-  grossEfficiencyPct: number
-}
-
 export type FtpHypothesisMassSource = 'daily' | 'lab'
 export type FtpHypothesisVo2maxSource = 'garmin' | 'lab' | 'default'
+export type FtpHypothesisVo2maxSport = 'running' | 'cycling' | 'unknown'
+export type FtpHypothesisEfficiencySource = 'literature-prior' | 'measured-metabolic'
+
+export interface FtpHypothesisEfficiencyEvidence {
+  valuePct: number
+  source: FtpHypothesisEfficiencySource
+  conf: Conf
+}
+
+export interface FtpHypothesisPedalingEvidence {
+  windowFrom: string
+  windowTo: string
+  activityCount: number
+  sampleCount: number
+  coveragePct: number
+  leftPedalSmoothnessPct: number
+  rightPedalSmoothnessPct: number
+  leftTorqueEffectivenessPct: number
+  rightTorqueEffectivenessPct: number
+}
+
+export interface FtpHypothesisPowerEvidence {
+  criticalPowerWatts: number | null
+  modeled60MinuteWatts: number | null
+  confidence: CriticalPowerEstimate['confidence'] | null
+  independentEffortCount: number
+  declaredFtpWatts: number | null
+}
 
 export interface FtpHypothesisSources {
   massDate: string
   massSource: FtpHypothesisMassSource
   vo2maxDate: string
   vo2maxSource: FtpHypothesisVo2maxSource
-  defaultRunningVo2max: number | null
+  vo2maxSport: FtpHypothesisVo2maxSport
+  defaultVo2max: number | null
+  efficiency: FtpHypothesisEfficiencyEvidence
+  pedaling: FtpHypothesisPedalingEvidence | null
+  power: FtpHypothesisPowerEvidence
 }
 
 export interface FtpHypothesis {
@@ -662,14 +714,15 @@ export interface FtpHypothesis {
   massKg: number
   massDate: string
   massSource: FtpHypothesisMassSource
-  runningVo2max: number
+  vo2max: number
   vo2maxDate: string
   vo2maxSource: FtpHypothesisVo2maxSource
-  defaultRunningVo2max: number | null
+  vo2maxSport: FtpHypothesisVo2maxSport
+  defaultVo2max: number | null
   crossModalDiscountPct: number
   thresholdPct: number
   grossEfficiencyPct: number
-  absoluteRunningVo2: number
+  absoluteVo2: number
   cyclingVo2max: number
   thresholdVo2: number
   metabolicWatts: number
@@ -680,6 +733,9 @@ export interface FtpHypothesis {
   low: number
   high: number
   wattsPerKg: number
+  efficiency: FtpHypothesisEfficiencyEvidence
+  pedaling: FtpHypothesisPedalingEvidence | null
+  power: FtpHypothesisPowerEvidence
   note: string
 }
 
@@ -748,6 +804,11 @@ export type DistributionPowerSource = 'device' | 'estimated'
 export type DistributionCadenceUnit = 'rpm' | 'spm' | 'str/min'
 export type DistributionThermalSource = 'core-app' | 'core-fit'
 
+export interface DistributionPaceRange {
+  fastestSPerKm: number
+  slowestSPerKm: number
+}
+
 export interface ActivityDistributionPoint {
   id: number
   date: string
@@ -756,6 +817,9 @@ export interface ActivityDistributionPoint {
   name: string
   movingTimeS: number
   heartRateZoneSeconds: number[] | null
+  powerZoneSeconds: number[] | null
+  paceZoneSeconds: number[] | null
+  paceZoneRanges: (DistributionPaceRange | null)[] | null
   averagePowerWatts: number | null
   powerSource: DistributionPowerSource | null
   cadence: number | null
@@ -770,6 +834,7 @@ export interface ActivityDistributionPoint {
 
 export interface DistributionsBlock {
   heartRateZoneBounds: number[]
+  powerZoneBounds: number[]
   activities: ActivityDistributionPoint[]
 }
 
@@ -823,9 +888,14 @@ const emptyPowerCurve = (): PowerCurveBlock => ({
   criticalPowerYear: null,
   ftp: null,
   goalFtp: null,
+  ranking: emptyPowerRank(),
 })
 
-const emptyDistributions = (): DistributionsBlock => ({ heartRateZoneBounds: [], activities: [] })
+const emptyDistributions = (): DistributionsBlock => ({
+  heartRateZoneBounds: [],
+  powerZoneBounds: [],
+  activities: [],
+})
 
 interface Act {
   a: RawStravaActivity
@@ -1397,8 +1467,34 @@ function buildDistributions(
   garmin: GarminCache | null | undefined,
 ): DistributionsBlock {
   const heartRateZoneBounds = [...(zones?.hr ?? [])]
+  const powerZoneBounds = [...(zones?.power ?? [])]
   const activities = acts.map(({ a, sport, day }): ActivityDistributionPoint => {
     const detail = activityDetails?.[String(a.id)]
+    const paceZoneSeconds = Array.from({ length: 6 }, () => 0)
+    const paceZoneRanges: (DistributionPaceRange | null)[] = Array.from({ length: 6 }, () => null)
+    if (sport === 'run')
+      for (const split of detail?.runSplitsMetric ?? []) {
+        if (
+          split.paceZone == null ||
+          !Number.isInteger(split.paceZone) ||
+          split.paceZone < 1 ||
+          split.paceZone > paceZoneSeconds.length ||
+          !(split.movingTimeS > 0) ||
+          !(split.averageSpeedKph > 0)
+        )
+          continue
+        const index = split.paceZone - 1
+        const paceSPerKm = 3600 / split.averageSpeedKph
+        paceZoneSeconds[index] += split.movingTimeS
+        const range = paceZoneRanges[index]
+        paceZoneRanges[index] = range
+          ? {
+              fastestSPerKm: Math.min(range.fastestSPerKm, paceSPerKm),
+              slowestSPerKm: Math.max(range.slowestSPerKm, paceSPerKm),
+            }
+          : { fastestSPerKm: paceSPerKm, slowestSPerKm: paceSPerKm }
+      }
+    const hasPaceZones = paceZoneSeconds.some(seconds => seconds > 0)
     const averagePower = detail?.avgWatts ?? a.averageWatts ?? null
     const averagePowerWatts =
       averagePower != null && Number.isFinite(averagePower) && averagePower > 0
@@ -1420,6 +1516,18 @@ function buildDistributions(
       name: a.name,
       movingTimeS: a.movingTime,
       heartRateZoneSeconds: detail?.hrZones ? [...detail.hrZones] : null,
+      powerZoneSeconds: sport === 'bike' && detail?.powerZones ? [...detail.powerZones] : null,
+      paceZoneSeconds: hasPaceZones ? paceZoneSeconds.map(seconds => Math.round(seconds)) : null,
+      paceZoneRanges: hasPaceZones
+        ? paceZoneRanges.map(range =>
+            range
+              ? {
+                  fastestSPerKm: round(range.fastestSPerKm, 1),
+                  slowestSPerKm: round(range.slowestSPerKm, 1),
+                }
+              : null,
+          )
+        : null,
       averagePowerWatts,
       powerSource:
         averagePowerWatts == null
@@ -1438,7 +1546,7 @@ function buildDistributions(
       heatStrainObservedSeconds: Math.round(thermal?.heatStrainObservedS ?? 0),
     }
   })
-  return { heartRateZoneBounds, activities }
+  return { heartRateZoneBounds, powerZoneBounds, activities }
 }
 
 function buildHeat(
@@ -2728,6 +2836,10 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
   const hrvZArr: (number | null)[] = []
   const hrvBaseArr: (number | null)[] = []
   const rhrZArr: (number | null)[] = []
+  const rhrBaseArr: (number | null)[] = []
+  const readinessBaseArr: (number | null)[] = []
+  const sleepBaseArr: (number | null)[] = []
+  const baselineDaysArr: number[] = []
   const debtArr: (number | null)[] = []
   for (let i = 0; i < daily.length; i++) {
     const hb = winStats(lnHrv, i, HRV_BASE_SPAN, HRV_BASE_MIN)
@@ -2737,6 +2849,11 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
     const rb = winStats(rhrArr, i, HRV_BASE_SPAN, HRV_BASE_MIN)
     const ra = winStats(rhrArr, i, ACUTE_SPAN, ACUTE_MIN)
     rhrZArr.push(rb && ra && rb.sd > 0 ? round((ra.mean - rb.mean) / rb.sd, 2) : null)
+    rhrBaseArr.push(rb ? round(rb.mean, 1) : null)
+    const readinessBase = winStats(rdyArr, i, HRV_BASE_SPAN, 7)
+    readinessBaseArr.push(readinessBase ? round(readinessBase.mean, 0) : null)
+    sleepBaseArr.push(winMedian(slpArr, i, HRV_BASE_SPAN, 7))
+    baselineDaysArr.push(winStats(lnHrv, i, HRV_BASE_SPAN, 1)?.n ?? 0)
     const nights = winValues(slpArr, i, SLEEP_DEBT_SPAN)
     debtArr.push(
       nights.length
@@ -2762,34 +2879,40 @@ function buildRecovery(daily: DailyPoint[], risk: RiskBlock): RecoveryBlock {
   const hrvCv = acuteLn && acuteLn.mean !== 0 ? round((100 * acuteLn.sd) / acuteLn.mean, 2) : null
   const rhrLatest = rl >= 0 ? rhrArr[rl] : null
   const rhrZ = ri >= 0 ? rhrZArr[ri] : null
-  const rhrBaseStats = ri >= 0 ? winStats(rhrArr, ri, HRV_BASE_SPAN, HRV_BASE_MIN) : null
-  const rhrBaseline = rhrBaseStats ? round(rhrBaseStats.mean, 1) : null
+  const rhrBaseline = ri >= 0 ? rhrBaseArr[ri] : null
   const readinessLatest = yl >= 0 ? rdyArr[yl] : null
-  const rdyBase = yl >= 0 ? winStats(rdyArr, yl, HRV_BASE_SPAN, 7) : null
-  const readinessBaseline = rdyBase ? round(rdyBase.mean, 0) : null
+  const readinessBaseline = yl >= 0 ? readinessBaseArr[yl] : null
   const tempDevLatest = tl >= 0 ? tmpArr[tl] : null
   const sleepLatestS = sl >= 0 ? slpArr[sl] : null
-  const sleepBaselineS = sl >= 0 ? winMedian(slpArr, sl, HRV_BASE_SPAN, 7) : null
+  const sleepBaselineS = sl >= 0 ? sleepBaseArr[sl] : null
   const sleepDebtS = dl >= 0 ? (debtArr[dl] ?? 0) : 0
   const shortSleepStreak = sl >= 0 ? streakBack(slpArr, sl, v => v < t.sleepFloorS) : 0
   const lowReadinessStreak = yl >= 0 ? streakBack(rdyArr, yl, v => v < t.readinessFloor) : 0
 
-  const baselineDays = winStats(lnHrv, last, HRV_BASE_SPAN, 1)?.n ?? 0
+  const baselineDays = baselineDaysArr[last]
   const status: RecoveryStatus =
     baselineDays >= 14 ? 'firm' : baselineDays >= 7 ? 'low' : 'building'
 
   const series: RecoveryDay[] = daily.slice(firstSignal).map((d, k) => {
     const i = firstSignal + k
+    const dayBaselineDays = baselineDaysArr[i]
     return {
       date: d.date,
+      status: dayBaselineDays >= 14 ? 'firm' : dayBaselineDays >= 7 ? 'low' : 'building',
+      baselineDays: dayBaselineDays,
       hrv: d.hrv,
+      hrvBaseline: hrvBaseArr[i],
       hrvZ: hrvZArr[i],
       rhr: d.rhr,
+      rhrBaseline: rhrBaseArr[i],
       rhrZ: rhrZArr[i],
       sleepS: d.sleepDurationS,
+      sleepBaselineS: sleepBaseArr[i],
+      sleepTargetS: t.sleepTargetS,
       sleepScore: d.sleepScore,
       sleepDebtS: debtArr[i],
       readiness: d.readiness,
+      readinessBaseline: readinessBaseArr[i],
       tempDevC: d.tempDevC,
       warmup: d.warmup,
     }
@@ -3264,15 +3387,6 @@ const ACSM_WATT_K = 10.8
 const ACSM_BASE = 7
 const FTP_FROM_P20 = 0.95
 const MAP_FTP_RATIO = 0.75
-const FTP_VO2_KJ_PER_L = 20.9
-const FTP_ACSM_KGM_PER_WATT = 6.12
-const FTP_ACSM_VO2_PER_KGM = 1.8
-export const FTP_HYPOTHESIS_DEFAULTS: FtpHypothesisParams = {
-  crossModalDiscountPct: 8,
-  thresholdPct: 85,
-  grossEfficiencyPct: 21,
-}
-const FTP_HYPOTHESIS_ERROR_W = 25
 const DANIELS_A = -4.6
 const DANIELS_B = 0.182258
 const DANIELS_C = 0.000104
@@ -3347,12 +3461,110 @@ const personalMetricScore = (
   const normalized = norm01(value, bounds[0], bounds[1])
   return Math.round((lowerIsHigher ? 1 - normalized : normalized) * 100)
 }
-const round5 = (v: number): number => Math.round(v / 5) * 5
-const round10 = (v: number): number => Math.round(v / 10) * 10
+const median = (values: readonly number[]): number => {
+  const sorted = [...values].sort((left, right) => left - right)
+  const middle = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle]
+}
+
+const pedalingMetric = (values: readonly (number | null)[], sampleCount: number): number[] =>
+  values
+    .slice(0, sampleCount)
+    .filter((value): value is number => value != null && value >= 0 && value <= 100)
+
+const pedalingActivityEvidence = (
+  dynamics: GarminCyclingDynamics,
+): {
+  sampleCount: number
+  validCount: number
+  leftPedalSmoothnessPct: number
+  rightPedalSmoothnessPct: number
+  leftTorqueEffectivenessPct: number
+  rightTorqueEffectivenessPct: number
+} | null => {
+  const sampleCount = dynamics.time.length
+  if (sampleCount === 0) return null
+  const leftPedalSmoothness = pedalingMetric(dynamics.leftPedalSmoothness, sampleCount)
+  const rightPedalSmoothness = pedalingMetric(dynamics.rightPedalSmoothness, sampleCount)
+  const leftTorqueEffectiveness = pedalingMetric(dynamics.leftTorqueEffectiveness, sampleCount)
+  const rightTorqueEffectiveness = pedalingMetric(dynamics.rightTorqueEffectiveness, sampleCount)
+  const metrics = [
+    leftPedalSmoothness,
+    rightPedalSmoothness,
+    leftTorqueEffectiveness,
+    rightTorqueEffectiveness,
+  ]
+  if (metrics.some(values => values.length / sampleCount < 0.8)) return null
+  return {
+    sampleCount,
+    validCount: metrics.reduce((sum, values) => sum + values.length, 0),
+    leftPedalSmoothnessPct: median(leftPedalSmoothness),
+    rightPedalSmoothnessPct: median(rightPedalSmoothness),
+    leftTorqueEffectivenessPct: median(leftTorqueEffectiveness),
+    rightTorqueEffectivenessPct: median(rightTorqueEffectiveness),
+  }
+}
+
+export const buildFtpPedalingEvidence = (
+  garmin: GarminCache | null | undefined,
+  today: string,
+): FtpHypothesisPedalingEvidence | null => {
+  if (!garmin?.cyclingDynamics) return null
+  const cutoff = dayMs(today) - 42 * DAY_MS
+  const activities: {
+    date: string
+    evidence: NonNullable<ReturnType<typeof pedalingActivityEvidence>>
+  }[] = []
+  for (const [activityId, dynamics] of Object.entries(garmin.cyclingDynamics)) {
+    const activity = garmin.activities[activityId]
+    const date = activity?.startDateLocal.slice(0, 10)
+    if (!activity || activity.sport !== 'bike' || !date || dayMs(date) < cutoff) continue
+    const evidence = pedalingActivityEvidence(dynamics)
+    if (evidence) activities.push({ date, evidence })
+  }
+  if (activities.length === 0) return null
+  activities.sort((left, right) => left.date.localeCompare(right.date))
+  const sampleCount = activities.reduce((sum, activity) => sum + activity.evidence.sampleCount, 0)
+  const validCount = activities.reduce((sum, activity) => sum + activity.evidence.validCount, 0)
+  return {
+    windowFrom: activities[0].date,
+    windowTo: activities.at(-1)?.date ?? activities[0].date,
+    activityCount: activities.length,
+    sampleCount,
+    coveragePct: round((validCount / (sampleCount * 4)) * 100, 1),
+    leftPedalSmoothnessPct: round(
+      median(activities.map(activity => activity.evidence.leftPedalSmoothnessPct)),
+      1,
+    ),
+    rightPedalSmoothnessPct: round(
+      median(activities.map(activity => activity.evidence.rightPedalSmoothnessPct)),
+      1,
+    ),
+    leftTorqueEffectivenessPct: round(
+      median(activities.map(activity => activity.evidence.leftTorqueEffectivenessPct)),
+      1,
+    ),
+    rightTorqueEffectivenessPct: round(
+      median(activities.map(activity => activity.evidence.rightTorqueEffectivenessPct)),
+      1,
+    ),
+  }
+}
+
+const ftpPowerEvidence = (powerCurve: PowerCurveBlock): FtpHypothesisPowerEvidence => {
+  const estimate = powerCurve.criticalPower
+  return {
+    criticalPowerWatts: estimate ? Math.round(estimate.criticalPowerWatts) : null,
+    modeled60MinuteWatts: estimate ? Math.round(criticalPowerAtDuration(estimate, 60 * 60)) : null,
+    confidence: estimate?.confidence ?? null,
+    independentEffortCount: estimate?.independentEffortCount ?? 0,
+    declaredFtpWatts: powerCurve.ftp,
+  }
+}
 
 export function computeFtpHypothesisFromVo2(
   date: string,
-  runningVo2max: number,
+  vo2max: number,
   massKg: number,
   params: FtpHypothesisParams = FTP_HYPOTHESIS_DEFAULTS,
   sources: FtpHypothesisSources = {
@@ -3360,50 +3572,40 @@ export function computeFtpHypothesisFromVo2(
     massSource: 'lab',
     vo2maxDate: date,
     vo2maxSource: 'lab',
-    defaultRunningVo2max: runningVo2max,
+    vo2maxSport: 'running',
+    defaultVo2max: vo2max,
+    efficiency: { valuePct: params.grossEfficiencyPct, source: 'literature-prior', conf: 'prior' },
+    pedaling: null,
+    power: {
+      criticalPowerWatts: null,
+      modeled60MinuteWatts: null,
+      confidence: null,
+      independentEffortCount: 0,
+      declaredFtpWatts: null,
+    },
   },
 ): FtpHypothesis | null {
-  if (!(runningVo2max > 0) || !(massKg > 0)) return null
-  const discount = params.crossModalDiscountPct / 100
-  const threshold = params.thresholdPct / 100
-  const efficiency = params.grossEfficiencyPct / 100
-  const absoluteRunningVo2 = (runningVo2max * massKg) / 1000
-  const cyclingVo2max = absoluteRunningVo2 * (1 - discount)
-  const thresholdVo2 = cyclingVo2max * threshold
-  const metabolicWatts = (thresholdVo2 * FTP_VO2_KJ_PER_L * 1000) / 60
-  const efficiencyFtp = metabolicWatts * efficiency
-  const cyclingVo2Rel = runningVo2max * (1 - discount)
-  const acsmMapWatts =
-    (Math.max(0, cyclingVo2Rel - ACSM_BASE) * massKg) / FTP_ACSM_VO2_PER_KGM / FTP_ACSM_KGM_PER_WATT
-  const acsmFtp = acsmMapWatts * MAP_FTP_RATIO
-  const ftpMean = (efficiencyFtp + acsmFtp) / 2
-  const ftp = round10(ftpMean)
+  const calculation = calculateFtpHypothesis(vo2max, massKg, params)
+  if (!calculation) return null
   return {
     date,
     conf: 'low',
-    massKg: round(massKg, 1),
     massDate: sources.massDate,
     massSource: sources.massSource,
-    runningVo2max: round(runningVo2max, 1),
     vo2maxDate: sources.vo2maxDate,
     vo2maxSource: sources.vo2maxSource,
-    defaultRunningVo2max:
-      sources.defaultRunningVo2max == null ? null : round(sources.defaultRunningVo2max, 1),
-    crossModalDiscountPct: params.crossModalDiscountPct,
-    thresholdPct: params.thresholdPct,
-    grossEfficiencyPct: params.grossEfficiencyPct,
-    absoluteRunningVo2: round(absoluteRunningVo2, 2),
-    cyclingVo2max: round(cyclingVo2max, 2),
-    thresholdVo2: round(thresholdVo2, 2),
-    metabolicWatts: round(metabolicWatts, 0),
-    efficiencyFtp: round(efficiencyFtp, 0),
-    acsmMapWatts: round(acsmMapWatts, 0),
-    acsmFtp: round(acsmFtp, 0),
-    ftp,
-    low: round5(ftpMean - FTP_HYPOTHESIS_ERROR_W),
-    high: round5(ftpMean + FTP_HYPOTHESIS_ERROR_W),
-    wattsPerKg: round(ftp / massKg, 2),
-    note: 'This estimate comes from running VO2max.',
+    vo2maxSport: sources.vo2maxSport,
+    defaultVo2max: sources.defaultVo2max == null ? null : round(sources.defaultVo2max, 1),
+    ...calculation,
+    efficiency: { ...sources.efficiency, valuePct: calculation.grossEfficiencyPct },
+    pedaling: sources.pedaling,
+    power: sources.power,
+    note:
+      sources.vo2maxSport === 'cycling'
+        ? 'This estimate comes from cycling VO2max.'
+        : sources.vo2maxSport === 'running'
+          ? 'This estimate comes from running VO2max.'
+          : 'This estimate comes from VO2max with unknown sport provenance.',
   }
 }
 
@@ -3649,6 +3851,7 @@ interface GarminVo2Point {
   date: string
   v: number
   generic: number | null
+  cycling: number | null
 }
 
 const VO2_TREND_DAYS = 84
@@ -3727,6 +3930,8 @@ function buildEngine(
   runningDynamics: ReadonlyMap<number, RunningDynamicsMetrics>,
   vo2Lab: Vo2LabRecord | null,
   ftpOverride: number | null,
+  garmin: GarminCache | null | undefined,
+  powerCurve: PowerCurveBlock,
 ): EngineBlock {
   const age = ageOn(today)
   const { hrMax, source: hrMaxSource } = hrMaxOf(acts, cache, age, heartRateById)
@@ -3886,30 +4091,55 @@ function buildEngine(
   const fitnessAge = vo2 != null ? Math.round(clamp(invLerp(FRIEND_MED_M, vo2), 20, 80)) : null
   const ageDeltaYears = fitnessAge != null ? fitnessAge - age : null
   const percentileForAge = vo2 != null ? pctForAge(vo2, age) : null
-  let latestGarminRunningVo2: { date: string; v: number } | null = null
-  for (const point of garminVo2)
-    if (point.generic != null) latestGarminRunningVo2 = { date: point.date, v: point.generic }
+  let latestGarminVo2: GarminVo2Point | null = null
+  for (const point of garminVo2) latestGarminVo2 = point
   const useLabVo2 =
-    vo2Lab != null && (latestGarminRunningVo2 == null || vo2Lab.date >= latestGarminRunningVo2.date)
-  const runningVo2max = useLabVo2 ? vo2Lab.value : (latestGarminRunningVo2?.v ?? ATHLETE.vo2max)
-  const vo2maxDate = useLabVo2 ? vo2Lab.date : (latestGarminRunningVo2?.date ?? today)
+    vo2Lab != null && (latestGarminVo2 == null || vo2Lab.date >= latestGarminVo2.date)
+  const vo2max = useLabVo2 ? vo2Lab.value : (latestGarminVo2?.v ?? ATHLETE.vo2max)
+  const vo2maxDate = useLabVo2 ? vo2Lab.date : (latestGarminVo2?.date ?? today)
   const vo2maxSource: FtpHypothesisVo2maxSource = useLabVo2
     ? 'lab'
-    : latestGarminRunningVo2
+    : latestGarminVo2
       ? 'garmin'
       : 'default'
+  const vo2maxSport: FtpHypothesisVo2maxSport = useLabVo2
+    ? 'running'
+    : latestGarminVo2
+      ? latestGarminVo2.generic == null && latestGarminVo2.cycling != null
+        ? 'cycling'
+        : 'unknown'
+      : 'running'
   const massKg = body.latestKg ?? vo2Lab?.massKg ?? null
   const massDate =
     body.latestKg != null ? (body.series.at(-1)?.date ?? today) : (vo2Lab?.date ?? today)
   const massSource: FtpHypothesisMassSource = body.latestKg != null ? 'daily' : 'lab'
+  const ftpParams: FtpHypothesisParams = {
+    ...FTP_HYPOTHESIS_DEFAULTS,
+    crossModalDiscountPct:
+      vo2maxSport === 'cycling' ? 0 : FTP_HYPOTHESIS_DEFAULTS.crossModalDiscountPct,
+  }
   const ftpHypothesis =
-    runningVo2max != null && massKg != null
+    vo2max != null && massKg != null
       ? computeFtpHypothesisFromVo2(
           massDate > vo2maxDate ? massDate : vo2maxDate,
-          runningVo2max,
+          vo2max,
           massKg,
-          FTP_HYPOTHESIS_DEFAULTS,
-          { massDate, massSource, vo2maxDate, vo2maxSource, defaultRunningVo2max: ATHLETE.vo2max },
+          ftpParams,
+          {
+            massDate,
+            massSource,
+            vo2maxDate,
+            vo2maxSource,
+            vo2maxSport,
+            defaultVo2max: ATHLETE.vo2max,
+            efficiency: {
+              valuePct: ftpParams.grossEfficiencyPct,
+              source: 'literature-prior',
+              conf: 'prior',
+            },
+            pedaling: buildFtpPedalingEvidence(garmin, today),
+            power: ftpPowerEvidence(powerCurve),
+          },
         )
       : null
   const bikeSource: Vo2BikeSource | null =
@@ -4618,10 +4848,15 @@ export function buildAnalytics(
   const appleDays = inputs.apple?.days ?? {}
   const garminWeightRaw = inputs.garmin?.weight
   const garminSamples = Array.isArray(garminWeightRaw) ? garminWeightRaw : []
-  const weightByDate = new Map<string, number>()
-  for (const w of inputs.weights ?? []) if (w.weightKg != null) weightByDate.set(w.date, w.weightKg)
-  for (const s of garminSamples) if (s.weightKg != null) weightByDate.set(s.date, s.weightKg)
-  let carryKg: number | null = null
+  const weightByDate = new Map<string, PowerRankMass>()
+  for (const w of inputs.weights ?? [])
+    if (w.weightKg != null)
+      weightByDate.set(w.date, { kg: w.weightKg, date: w.date, source: 'tracking' })
+  for (const s of garminSamples)
+    if (s.weightKg != null)
+      weightByDate.set(s.date, { kg: s.weightKg, date: s.date, source: 'garmin' })
+  let carriedWeight: PowerRankMass | null = null
+  let latestWeight: PowerRankMass | null = null
   for (const d of daily) {
     const o = ouraDays[d.date]
     if (o) {
@@ -4634,19 +4869,22 @@ export function buildAnalytics(
       d.totalCalories = o.totalCalories
     }
     const w = weightByDate.get(d.date)
-    if (w != null) carryKg = w
-    d.weightKg = carryKg
+    if (w != null) carriedWeight = w
+    d.weightKg = carriedWeight?.kg ?? null
     const ap = appleDays[d.date]
     if (ap) {
       if (d.totalCalories == null && ap.burnKcal != null) d.totalCalories = ap.burnKcal
       d.intakeKcal = ap.intakeKcal
-      if (ap.weightKg != null && d.weightKg == null) d.weightKg = ap.weightKg
+      if (ap.weightKg != null && d.weightKg == null) {
+        d.weightKg = ap.weightKg
+        latestWeight = { kg: ap.weightKg, date: d.date, source: 'apple' }
+      }
     }
+    if (carriedWeight != null) latestWeight = carriedWeight
   }
-  const weighedDaily = daily.filter(d => d.weightKg != null)
-  const latestKg = weighedDaily.length ? weighedDaily[weighedDaily.length - 1].weightKg : null
+  const latestKg = latestWeight?.kg ?? null
   const dailySeries = [...weightByDate.entries()]
-    .map(([date, kg]) => ({ date, kg }))
+    .map(([date, measurement]) => ({ date, kg: measurement.kg }))
     .sort((p, q) => p.date.localeCompare(q.date))
   const trendKgPerWeek = weightTrendPerWeek(dailySeries)
   const garminDates = new Set(garminSamples.map(s => s.date))
@@ -4740,6 +4978,14 @@ export function buildAnalytics(
     body.ffmi = latestDexa.ffmi
     body.boneMassKg = round(latestDexa.bmcLbs * KG_PER_LB, 2)
   }
+  const sourcePowerCurve = inputs.powerCurve ?? emptyPowerCurve()
+  const powerCurve: PowerCurveBlock = {
+    ...sourcePowerCurve,
+    ranking: buildPowerRank(sourcePowerCurve.sixWeeks, sourcePowerCurve.year, latestWeight, {
+      sex: ATHLETE.sex,
+      age: ageOn(today),
+    }),
+  }
   const weekly = buildWeekly(acts, loadById, effortByDay, windowFrom, windowTo)
   const trends = SPORT_ORDER.map(sport => buildTrend(acts, thresholds.get(sport)!, sport, todayMs))
   const trendMap = new Map<Sport, SportTrend>(trends.map(t => [t.sport, t]))
@@ -4769,7 +5015,7 @@ export function buildAnalytics(
   const garminVo2: GarminVo2Point[] = []
   for (const d of Object.values(inputs.garmin?.vo2max ?? {})) {
     const v = d.generic ?? d.cycling
-    if (v != null) garminVo2.push({ date: d.date, v, generic: d.generic })
+    if (v != null) garminVo2.push({ date: d.date, v, generic: d.generic, cycling: d.cycling })
   }
   garminVo2.sort((p, q) => p.date.localeCompare(q.date))
   const engine = buildEngine(
@@ -4787,6 +5033,8 @@ export function buildAnalytics(
     runningDynamics,
     latestVo2Lab,
     inputs.ftp ?? null,
+    inputs.garmin,
+    powerCurve,
   )
 
   const walkSummaries: ActivitySummary[] = Object.values(cache.activities)
@@ -4916,7 +5164,7 @@ export function buildAnalytics(
     loadShare,
     body,
     recovery,
-    powerCurve: inputs.powerCurve ?? emptyPowerCurve(),
+    powerCurve,
     heat,
     distributions,
     engine,

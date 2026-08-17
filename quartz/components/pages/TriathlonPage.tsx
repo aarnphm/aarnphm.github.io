@@ -13,7 +13,7 @@ import {
 import { classNames } from '../../util/lang'
 import { joinSegments, pathToRoot } from '../../util/path'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
-import { dist, distCombined, dur } from '../../util/triathlon-card'
+import { dist, distCombined, dur, raceDistanceValue } from '../../util/triathlon-card'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
@@ -97,7 +97,7 @@ export default (() => {
           </button>
           <a class="tri-total" href={profile} target="_blank" rel="noopener noreferrer">
             <span
-              class="tri-dist"
+              class="tri-dist tri-unit-distance"
               data-km={payload.totalKm}
               data-kind="combined"
               data-gloss="herodist"
@@ -190,7 +190,7 @@ export default (() => {
                 <span class="tri-leg-body">
                   <span data-i18n={SPORT_LABEL[sport]}>{SPORT_LABEL[sport]}</span> ·{' '}
                   <span
-                    class="tri-dist"
+                    class="tri-dist tri-unit-distance"
                     data-km={t?.distanceKm ?? 0}
                     data-kind={sport}
                     data-gloss="legdist"
@@ -235,7 +235,7 @@ export default (() => {
               <tr>
                 <th>
                   <button class="tri-cheat-unit" type="button">
-                    km
+                    mi
                   </button>
                 </th>
                 <th data-i18n="swim">swim</th>
@@ -258,15 +258,18 @@ export default (() => {
                       label
                     )}
                   </th>
-                  <td data-km={s}>{s}</td>
-                  <td data-km={b}>{b}</td>
-                  <td data-km={r}>{r}</td>
+                  <td data-km={s}>{raceDistanceValue(DEFAULT_TRIATHLON_PRESENTATION, s)}</td>
+                  <td data-km={b}>{raceDistanceValue(DEFAULT_TRIATHLON_PRESENTATION, b)}</td>
+                  <td data-km={r}>{raceDistanceValue(DEFAULT_TRIATHLON_PRESENTATION, r)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div class="tri-note-foot">
-            <GearPanel maintenance={fileData.triathlonMaintenance} />
+            <GearPanel
+              maintenance={fileData.triathlonMaintenance}
+              renderData={fileData.triathlonRenderData}
+            />
             <PacePanel />
             <button class="tri-analytics-btn" type="button" data-i18n="analytics">
               analytics

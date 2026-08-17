@@ -8,10 +8,12 @@ import {
   parseWeatherCache,
   summarizeWeatherDays,
   weatherActivityFromHours,
+  weatherSnapshotFromHours,
   type WeatherActivity,
   type WeatherActivityCandidate,
   type WeatherCache,
   type WeatherHour,
+  type WeatherSnapshot,
 } from '../plugins/stores/weather'
 import { localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
@@ -23,7 +25,7 @@ import {
   type WeatherKitConfig,
 } from '../util/weather-kit'
 
-const CACHE_VERSION = 2
+const CACHE_VERSION = 3
 const HOUR_MS = 3_600_000
 const TRIATHLON_PAGE = joinSegments(QUARTZ, '..', 'content', 'triathlon.md')
 const stravaCacheFile = joinSegments(QUARTZ, '.quartz-cache', 'strava.json')
@@ -363,6 +365,33 @@ async function main(): Promise<void> {
     if (delayMs > 0) await sleep(delayMs)
   }
 
+  let current: WeatherSnapshot | null = null
+  const latestLocation = Object.values(activities)
+    .sort((a, b) => a.start.localeCompare(b.start))
+    .at(-1)
+  if (latestLocation) {
+    const nowMs = Date.now()
+    try {
+      const hours = await fetchWeatherKitHours(config, {
+        latitude: latestLocation.latitude,
+        longitude: latestLocation.longitude,
+        hourlyStart: floorHour(nowMs - HOUR_MS),
+        hourlyEnd: ceilHour(nowMs + HOUR_MS),
+        timezone,
+        language,
+      })
+      current = weatherSnapshotFromHours(latestLocation, hours, nowMs)
+      if (current)
+        console.log(
+          `[weather] current ${current.forecastStart}: ${current.temperatureC ?? 'n/a'} C, ${current.precipitationChance == null ? 'n/a' : `${Math.round(current.precipitationChance * 100)}%`} precipitation`,
+        )
+    } catch (err) {
+      if (err instanceof WeatherKitRequestError && (err.status === 401 || err.status === 403))
+        throw err
+      console.warn(`[weather] current: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
   const sortedActivities: Record<string, WeatherActivity> = {}
   for (const activity of Object.values(activities).sort((a, b) => a.start.localeCompare(b.start)))
     sortedActivities[String(activity.activityId)] = activity
@@ -370,6 +399,7 @@ async function main(): Promise<void> {
   const cache: WeatherCache = {
     version: CACHE_VERSION,
     lastSync: Date.now(),
+    current,
     activities: sortedActivities,
     days: summarizeWeatherDays(sortedActivities),
   }

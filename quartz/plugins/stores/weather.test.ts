@@ -5,6 +5,7 @@ import {
   parseWeatherCache,
   summarizeWeatherDays,
   weatherActivityFromHours,
+  weatherSnapshotFromHours,
   type WeatherActivity,
   type WeatherActivityCandidate,
   type WeatherHour,
@@ -30,6 +31,9 @@ function hour(values: Partial<WeatherHour>): WeatherHour {
     windDirection: null,
     windGust: null,
     temperature: null,
+    conditionCode: null,
+    precipitationChance: null,
+    precipitationType: null,
     ...values,
   }
 }
@@ -103,6 +107,35 @@ test('summarizeWeatherDays folds activity weather into duration-weighted day win
   assert.equal(days['2026-06-11'].activityCount, 2)
 })
 
+test('weatherSnapshotFromHours selects the nearest forecast and clamps precipitation chance', () => {
+  assert.deepEqual(
+    weatherSnapshotFromHours(
+      { latitude: 43.641234, longitude: -79.412345 },
+      [
+        hour({
+          forecastStart: '2026-06-11T13:00:00.000Z',
+          temperature: 21.44,
+          conditionCode: 'MostlyCloudy',
+          precipitationChance: 1.2,
+          precipitationType: 'rain',
+        }),
+        hour({ forecastStart: '2026-06-11T15:00:00.000Z', temperature: 24 }),
+      ],
+      Date.parse('2026-06-11T13:20:00.000Z'),
+    ),
+    {
+      forecastStart: '2026-06-11T13:00:00.000Z',
+      latitude: 43.64123,
+      longitude: -79.41234,
+      temperatureC: 21.4,
+      conditionCode: 'MostlyCloudy',
+      precipitationChance: 1,
+      precipitationType: 'rain',
+      source: 'weatherkit',
+    },
+  )
+})
+
 test('parseWeatherCache keeps valid activities and recomputes day summaries', () => {
   const cache = parseWeatherCache({
     version: 1,
@@ -131,10 +164,39 @@ test('parseWeatherCache keeps valid activities and recomputes day summaries', ()
   })
 
   assert.equal(cache?.lastSync, 100)
+  assert.equal(cache?.current, null)
   assert.equal(Object.keys(cache?.activities ?? {}).length, 1)
   assert.equal(cache?.days['2026-06-11'].windKph, 18)
   assert.deepEqual(cache?.activities.good.temperatureSeries, [
     { elapsedS: 0, temperatureC: 23 },
     { elapsedS: 3600, temperatureC: 24 },
   ])
+})
+
+test('parseWeatherCache retains a valid current WeatherKit snapshot', () => {
+  const cache = parseWeatherCache({
+    version: 3,
+    lastSync: 100,
+    current: {
+      forecastStart: '2026-08-17T13:00:00.000Z',
+      latitude: 43.64,
+      longitude: -79.4,
+      temperatureC: 19.5,
+      conditionCode: 'Rain',
+      precipitationChance: 0.72,
+      precipitationType: 'rain',
+    },
+    activities: {},
+  })
+
+  assert.deepEqual(cache?.current, {
+    forecastStart: '2026-08-17T13:00:00.000Z',
+    latitude: 43.64,
+    longitude: -79.4,
+    temperatureC: 19.5,
+    conditionCode: 'Rain',
+    precipitationChance: 0.72,
+    precipitationType: 'rain',
+    source: 'weatherkit',
+  })
 })

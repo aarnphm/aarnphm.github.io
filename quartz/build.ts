@@ -35,9 +35,13 @@ import { trace } from './util/trace'
 sourceMapSupport.install(options)
 
 const markdownExtensions = new Set(['.md', '.base', '.canvas'])
+const testPathPattern =
+  /(?:^|\/)(?:__(?:tests|specs)__|tests?|specs?)(?:\/|$)|(?:^|\/)(?:tests?|specs?|(?:test|spec)_[^/]+|[^/]+_(?:test|spec)|[^/]+\.(?:test|spec))\.[^/]+$/i
 
 const isMarkdownPath = (fp: string): boolean =>
   markdownExtensions.has(path.extname(fp)) || isFlashcardPath(fp)
+
+const isTestPath = (fp: string): boolean => testPathPattern.test(toPosixPath(fp))
 
 const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   ctx.allFiles = allFiles
@@ -303,7 +307,7 @@ async function createIgnoredFilter(ctx: BuildCtx): Promise<GlobbyFilterFunction>
       path.isAbsolute(rawPath) ? path.relative(argv.directory, rawPath) : rawPath,
     )
     if (pathStr.startsWith('.git/')) return true
-    if (pathStr.endsWith('.test.ts')) return true
+    if (isTestPath(pathStr)) return true
     if (gitIgnoredMatcher(pathStr)) return true
     for (const pattern of cfg.configuration.ignorePatterns) {
       if (minimatch(pathStr, pattern)) {

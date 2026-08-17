@@ -1,5 +1,6 @@
 import { decodeCalcShare } from '../../../util/triathlon-calculator'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
+import { TRI_TIRE_PRESSURE_OPEN_EVENT } from '../../../util/triathlon-tire-pressure'
 import { setupActivityComparisonEmbeds } from '../activity/embeds'
 import { setupDayEmbeds } from '../activity/embeds'
 import { setupMatchedActivities } from '../activity/matched'
@@ -13,14 +14,14 @@ import { setupCommandPalette } from '../shell/command-palette'
 import { setupDropdown } from '../shell/dropdown'
 import { setupFeed } from '../shell/feed'
 import { setupGloss } from '../shell/glossary'
-import { setupI18n } from '../shell/presentation'
-import { setupPaceUnit } from '../shell/presentation'
+import { setupDistanceUnits, setupI18n, setupPaceUnit } from '../shell/presentation'
 import { setupShortcuts } from '../shell/shortcuts'
 import { setup } from '../shell/timeline'
 import { setupCalc } from '../tools/calculator-controller'
 import { setupCheat } from '../tools/cheat'
 import { setupGearRatios } from '../tools/gear-ratios'
 import { setupPaceForecast } from '../tools/pace-forecast'
+import { setupTirePressure } from '../tools/tire-pressure'
 import { setupTraining } from '../training/controller'
 import { createTriathlonContext } from './context'
 import { readTriPanelsFullscreen } from './preferences'
@@ -50,6 +51,8 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
   addCleanup(setupGloss(document.body, () => context.presentation.locale))
   if (root) {
     addCleanup(setupI18n(root, context))
+    addCleanup(setupDistanceUnits(root, context))
+    addCleanup(setupTirePressure(root))
     addCleanup(setupCommandPalette(root, context))
     addCleanup(setup(root, context))
     addCleanup(setupCalc(root, context))
@@ -76,6 +79,8 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
       window.dispatchEvent(
         new CustomEvent('tri:comparison-fill', { detail: { anchor: window.location.hash } }),
       )
+    if (window.location.hash === '#tire-pressure')
+      root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_OPEN_EVENT))
   }
   let active = true
   const cleanup = (): void => {

@@ -7,6 +7,7 @@ import {
   type StravaDetailPayload,
   type StravaDetailShard,
 } from '../../../util/strava-detail'
+import { isTriathlonDailyAnalytics } from '../../../util/triathlon-day-analytics'
 import { isRecord } from '../../../util/type-guards'
 
 export type DetailPayload = StravaDetailPayload
@@ -16,7 +17,8 @@ const isDetailIndex = (value: unknown): value is StravaDetailIndex =>
   value.kind === STRAVA_DETAIL_INDEX_KIND &&
   Array.isArray(value.shards) &&
   value.shards.every(isStravaDetailShardPath) &&
-  isRecord(value.health)
+  isRecord(value.health) &&
+  (value.dailyAnalytics === undefined || isTriathlonDailyAnalytics(value.dailyAnalytics))
 
 const isActivityDetail = (value: unknown): value is StravaActivityDetail =>
   isRecord(value) &&
@@ -56,6 +58,7 @@ export async function readDetailPayload(
     details,
     swimTrend: value.swimTrend,
     health: value.health,
+    dailyAnalytics: value.dailyAnalytics,
     zones: value.zones,
     powerCurveRef: value.powerCurveRef,
     powerCurveYearRef: value.powerCurveYearRef,

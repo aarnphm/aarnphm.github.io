@@ -163,15 +163,23 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
       ? `${text('latest daily weight')} · ${context.formatter.longDate(h.massDate)}`
       : `${text('value from vo2 report')} · ${context.formatter.longDate(h.massDate)}`
   const vo2Fallback =
-    h.vo2maxSource === 'garmin' && h.defaultRunningVo2max != null
-      ? ` · ${text('fallback')} ${h.defaultRunningVo2max.toFixed(1)}`
+    h.vo2maxSource === 'garmin' && h.defaultVo2max != null
+      ? ` · ${text('fallback')} ${h.defaultVo2max.toFixed(1)}`
       : ''
   const vo2Note =
     h.vo2maxSource === 'garmin'
-      ? `Garmin · ${context.formatter.longDate(h.vo2maxDate)}${vo2Fallback}`
+      ? `Garmin · ${context.formatter.longDate(h.vo2maxDate)} · ${text(
+          h.vo2maxSport === 'cycling' ? 'cycling-specific source' : 'unknown sport provenance',
+        )}${vo2Fallback}`
       : h.vo2maxSource === 'lab'
         ? `${text('measured during treadmill test')} · ${context.formatter.longDate(h.vo2maxDate)}`
-        : `${text('athlete default')} · ${h.runningVo2max.toFixed(1)}`
+        : `${text('athlete default')} · ${h.vo2max.toFixed(1)}`
+  const vo2Label =
+    h.vo2maxSport === 'cycling'
+      ? 'cycling vo2max'
+      : h.vo2maxSport === 'running'
+        ? 'running vo2max'
+        : 'vo2max'
 
   const head = el('div', 'tri-ftp-head')
   const headline = el('div', 'tri-ftp-main')
@@ -218,17 +226,53 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
     return row
   }
   chain.append(
-    chainRow(
-      'total running vo2max',
-      'absoluteRunningVo2',
-      `${h.absoluteRunningVo2.toFixed(2)} L/min`,
-    ),
+    chainRow('total vo2max', 'absoluteVo2', `${h.absoluteVo2.toFixed(2)} L/min`),
     chainRow('estimated cycling vo2max', 'cyclingVo2max', `${h.cyclingVo2max.toFixed(2)} L/min`),
     chainRow('vo2 used at threshold', 'thresholdVo2', `${h.thresholdVo2.toFixed(2)} L/min`),
     chainRow('energy used per second', 'metabolicWatts', `${Math.round(h.metabolicWatts)} W`),
     chainRow('maximum aerobic power', 'acsmMapWatts', `${Math.round(h.acsmMapWatts)} W`),
   )
   block.appendChild(chain)
+
+  const evidence = el('div', 'tri-ftp-chain')
+  const evidenceValue = (value: number | null): string =>
+    value == null ? '—' : `${Math.round(value)} W`
+  evidence.append(
+    chainRow(
+      'estimated critical power',
+      'criticalPower',
+      evidenceValue(h.power.criticalPowerWatts),
+    ),
+    chainRow(
+      'modeled 60-minute power',
+      'modeled60MinutePower',
+      evidenceValue(h.power.modeled60MinuteWatts),
+    ),
+    chainRow('declared ftp', 'declaredFtp', evidenceValue(h.power.declaredFtpWatts)),
+    chainRow(
+      'independent efforts',
+      'independentEfforts',
+      `${h.power.independentEffortCount} · ${text(h.power.confidence ?? 'no model')}`,
+    ),
+  )
+  if (h.pedaling) {
+    evidence.append(
+      chainRow(
+        'pedal smoothness',
+        'pedalSmoothness',
+        `${text('left')} ${h.pedaling.leftPedalSmoothnessPct.toFixed(1)}% · ${text('right')} ${h.pedaling.rightPedalSmoothnessPct.toFixed(1)}%`,
+      ),
+      chainRow(
+        'torque effectiveness',
+        'torqueEffectiveness',
+        `${text('left')} ${h.pedaling.leftTorqueEffectivenessPct.toFixed(1)}% · ${text('right')} ${h.pedaling.rightTorqueEffectivenessPct.toFixed(1)}%`,
+      ),
+      chainRow('activities', 'pedalingActivities', String(h.pedaling.activityCount)),
+      chainRow('samples', 'pedalingSamples', String(h.pedaling.sampleCount)),
+      chainRow('coverage', 'pedalingCoverage', `${h.pedaling.coveragePct.toFixed(1)}%`),
+    )
+  }
+  block.appendChild(evidence)
 
   const controls = el('div', 'tri-ftp-controls')
   const control = (
@@ -288,27 +332,20 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
       true,
       wNum(context.formatter, h.massKg, 1, 0),
     ),
-    control(
-      'vo2',
-      'running vo2max',
-      30,
-      70,
-      0.1,
-      h.runningVo2max,
-      '',
-      vo2Note,
-      true,
-      h.runningVo2max.toFixed(1),
-    ),
+    control('vo2', vo2Label, 30, 70, 0.1, h.vo2max, '', vo2Note, true, h.vo2max.toFixed(1)),
     control(
       'discount',
-      'running to cycling adjustment',
+      'cross-modal adjustment',
       0,
       15,
       0.5,
       h.crossModalDiscountPct,
       '%',
-      'reduces running vo2max for cycling',
+      h.vo2maxSport === 'cycling'
+        ? 'cycling-specific vo2max needs no adjustment'
+        : h.vo2maxSport === 'running'
+          ? 'reduces running vo2max for cycling'
+          : 'conservative adjustment for unknown sport provenance',
     ),
     control(
       'threshold',
@@ -322,13 +359,17 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
     ),
     control(
       'efficiency',
-      'cycling efficiency',
+      'gross metabolic efficiency',
       18,
       25,
       0.5,
       h.grossEfficiencyPct,
       '%',
-      'share of energy turned into bike power',
+      `${h.efficiency.valuePct}% · ${text(
+        h.efficiency.source === 'literature-prior'
+          ? 'literature prior'
+          : 'measured metabolic efficiency',
+      )}`,
     ),
   )
   block.appendChild(controls)

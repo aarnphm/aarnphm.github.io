@@ -21,6 +21,7 @@ import { onCardToggle } from './comparison'
 import { setActivityExpanded } from './comparison'
 import { wireActivityComparison } from './comparison'
 import { detailContextFromPayload } from './data'
+import { mountDaySleepCharts } from './day-sleep'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
 
@@ -54,7 +55,7 @@ export const buildDayCard = (
     element: card,
     mount: () => {
       card.addEventListener('click', onCardToggle)
-      const cleanups = activityViews.map(view => view.mount())
+      const cleanups = [mountDaySleepCharts(card), ...activityViews.map(view => view.mount())]
       return () => {
         card.removeEventListener('click', onCardToggle)
         for (const cleanup of cleanups) cleanup()
@@ -73,6 +74,7 @@ export const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
     activityId: data.triathlonActivityId,
     ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
     ...(settings ? { settings } : {}),
+    analytics: data.triathlonAnalytics === '1',
     expanded: data.triathlonExpanded === '1',
     embedded: data.triathlonEmbedded === '1',
     dateHref: data.triathlonDateHref,
@@ -469,9 +471,11 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
       const cleanupStrengthOverflow = setupStrengthExerciseOverflow(ssr)
+      const cleanupDaySleepCharts = mountDaySleepCharts(ssr)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
         cleanupStrengthOverflow()
+        cleanupDaySleepCharts()
       }
       const events = ['pointerdown', 'touchstart'] as const
       for (const ev of events) embed.addEventListener(ev, upgrade, { once: true, passive: true })

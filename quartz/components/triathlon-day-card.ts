@@ -36,6 +36,7 @@ type TriathlonDateEmbedAnchor = {
   sport?: NonNullable<DayCardExtras['sport']>
   excludedActivityIds?: string[]
   settings?: TriathlonTraceSettings
+  analytics?: true
 }
 
 type TriathlonActivityEmbedAnchor = { activityId: string }
@@ -61,6 +62,7 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
   let sport: TriathlonDateEmbedAnchor['sport']
   let excludedActivityIds: string[] | undefined
   let settings: TriathlonTraceSettings | undefined
+  let analytics = false
   for (const option of options) {
     const activityKind = TRIATHLON_SPORT_ANCHOR[option]
     if (activityKind) {
@@ -82,14 +84,19 @@ export const triathlonEmbedAnchor = (value: string | undefined): TriathlonEmbedA
       settings = parsed
       continue
     }
+    if (option === 'analytics') {
+      if (analytics) return null
+      analytics = true
+      continue
+    }
     return null
   }
-
   return {
     date: reference,
     ...(sport ? { sport } : {}),
     ...(excludedActivityIds ? { excludedActivityIds } : {}),
     ...(settings ? { settings } : {}),
+    ...(analytics ? { analytics: true } : {}),
   }
 }
 
@@ -164,8 +171,11 @@ export const triathlonDayProps = (extras: DayCardExtras, date: string): Record<s
   if (extras.activityId) props['data-triathlon-activity-id'] = extras.activityId
   if (extras.excludedActivityIds?.length)
     props['data-triathlon-filter'] = extras.excludedActivityIds.join('&')
-  if (extras.settings)
-    props['data-triathlon-settings'] = serializeTriathlonTraceSettings(extras.settings)
+  if (extras.settings) {
+    const settings = serializeTriathlonTraceSettings(extras.settings)
+    if (settings) props['data-triathlon-settings'] = settings
+  }
+  if (extras.analytics) props['data-triathlon-analytics'] = '1'
   if (extras.expanded) props['data-triathlon-expanded'] = '1'
   if (extras.embedded) props['data-triathlon-embedded'] = '1'
   if (extras.dateHref) props['data-triathlon-date-href'] = extras.dateHref

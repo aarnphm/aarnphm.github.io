@@ -272,13 +272,14 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   power: {
     key: 'power',
     label: 'power curve',
-    search: 'cycling power curve critical power cp w prime ftp watts duration best efforts',
+    search:
+      'cycling power curve critical power cp w prime ftp watts duration best efforts power rank radar sprint attack climb w kg percentile',
     render: (data, context) =>
       withPanelMount(buildBestPowerCurve(data, context), [
         root => mountPrimaryPanel('power', root, data, context),
       ]),
     server: data => ({
-      title: 'cycling · best power curve',
+      title: 'cycling · best power curve · weight-adjusted rank',
       values: [
         { label: 'FTP', value: value(data.powerCurve.ftp, ' W') },
         {
@@ -302,10 +303,26 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
         },
         { label: '6 week points', value: String(data.powerCurve.sixWeeks.length) },
         { label: 'year points', value: String(data.powerCurve.year.length) },
+        { label: 'ranking mass', value: value(data.powerCurve.ranking.massKg, ' kg', 1) },
+        { label: 'ranked intervals', value: String(data.powerCurve.ranking.intervals.length) },
       ],
       series: [
         { label: 'six weeks', values: data.powerCurve.sixWeeks.map(point => point.w) },
         { label: 'year', values: data.powerCurve.year.map(point => point.w) },
+        {
+          label: 'six week rank',
+          values: finite(
+            data.powerCurve.ranking.intervals.map(
+              interval => interval.efforts['six-weeks']?.percentile,
+            ),
+          ),
+        },
+        {
+          label: 'year rank',
+          values: finite(
+            data.powerCurve.ranking.intervals.map(interval => interval.efforts.year?.percentile),
+          ),
+        },
       ],
     }),
   },
@@ -335,10 +352,11 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   distributions: {
     key: 'distributions',
     label: 'distributions',
-    search: 'heart rate zones power cadence skin temperature heat strain distributions',
+    search:
+      'training zones heart rate power pace cadence skin temperature heat strain distributions telemetry',
     render: buildDistributions,
     server: data => ({
-      title: 'activity distributions',
+      title: 'training zone distributions · telemetry',
       values: [
         { label: 'activities', value: String(data.distributions.activities.length) },
         {
@@ -350,8 +368,13 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
         {
           label: 'power samples',
           value: String(
-            data.distributions.activities.filter(activity => activity.averagePowerWatts != null)
-              .length,
+            data.distributions.activities.filter(activity => activity.powerZoneSeconds).length,
+          ),
+        },
+        {
+          label: 'pace samples',
+          value: String(
+            data.distributions.activities.filter(activity => activity.paceZoneSeconds).length,
           ),
         },
       ],
@@ -545,7 +568,8 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   ftp: {
     key: 'ftp',
     label: 'FTP hypothesis',
-    search: 'ftp hypothesis vo2 efficiency cycling watts',
+    search:
+      'ftp hypothesis vo2 gross metabolic efficiency cycling watts critical power pedal smoothness torque effectiveness',
     render: (data, context) =>
       withPanelMount(buildFtpHypothesis(data, context), [
         root => mountSecondaryPanel('ftp', root, data, context),
@@ -560,6 +584,28 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
               value: `${data.engine.ftpHypothesis.low.toFixed(0)}–${data.engine.ftpHypothesis.high.toFixed(0)} W`,
             },
             { label: 'confidence', value: data.engine.ftpHypothesis.conf },
+            {
+              label: 'VO2 source',
+              value: `${data.engine.ftpHypothesis.vo2maxSport} · ${data.engine.ftpHypothesis.vo2maxSource}`,
+            },
+            {
+              label: 'efficiency',
+              value: `${data.engine.ftpHypothesis.efficiency.valuePct.toFixed(1)}% · ${data.engine.ftpHypothesis.efficiency.source}`,
+            },
+            {
+              label: 'eCP',
+              value: value(data.engine.ftpHypothesis.power.criticalPowerWatts, ' W'),
+            },
+            {
+              label: 'modeled 60 min',
+              value: value(data.engine.ftpHypothesis.power.modeled60MinuteWatts, ' W'),
+            },
+            {
+              label: 'pedal evidence',
+              value: data.engine.ftpHypothesis.pedaling
+                ? `${data.engine.ftpHypothesis.pedaling.activityCount} rides · ${data.engine.ftpHypothesis.pedaling.sampleCount} samples`
+                : '—',
+            },
           ]
         : [{ label: 'status', value: 'insufficient data' }],
       series: data.engine.ftpHypothesis

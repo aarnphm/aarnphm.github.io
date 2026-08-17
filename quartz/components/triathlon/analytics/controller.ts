@@ -69,6 +69,10 @@ export const setupAnalytics = (
   let flashTimer: number | null = null
   let comparisonScrollTop = 0
 
+  const finishPageBoot = (): void => {
+    if (pageMode) document.documentElement.classList.remove('tri-analytics-booting')
+  }
+
   const inCompareMode = (): boolean => program.retrieve().mode === 'compare'
   const comparisonIds = (): readonly string[] => program.retrieve().comparisonActivityIds
 
@@ -97,6 +101,7 @@ export const setupAnalytics = (
     document.dispatchEvent(
       new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
     )
+    finishPageBoot()
     if (panel.classList.contains('tri-analytics--searching')) runSearch()
   }
   const load = () => {
@@ -642,6 +647,7 @@ export const setupAnalytics = (
       if (effect.type === 'load-artifact') {
         const path = root.dataset.analyticsPath
         if (!path) {
+          finishPageBoot()
           state.dispatch({ type: 'failed', request: effect.request })
           return
         }
@@ -650,6 +656,7 @@ export const setupAnalytics = (
             data = result.value
             state.dispatch({ type: 'loaded', request: effect.request })
           } else if (result.status === 'error') {
+            finishPageBoot()
             state.dispatch({ type: 'failed', request: effect.request })
           }
         })
@@ -710,6 +717,7 @@ export const setupAnalytics = (
 
   return () => {
     live = false
+    finishPageBoot()
     btn?.removeEventListener('click', open)
     closeBtn?.removeEventListener('click', close)
     title?.removeEventListener('click', toMain)

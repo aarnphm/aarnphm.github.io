@@ -1,4 +1,3 @@
-import type { CriticalPowerEstimate } from '../../../../plugins/stores/critical-power'
 import type { MatchedRidesBlock } from '../../../../plugins/stores/matched-rides'
 import type { MatchedRunsBlock } from '../../../../plugins/stores/matched-runs'
 import type { AxisXTick } from '../../../../util/triathlon-card'
@@ -11,10 +10,6 @@ import { KM_TO_MI } from '../../../../util/triathlon-card'
 import { M_TO_FT } from '../../../../util/triathlon-card'
 import { niceStep } from '../../../../util/triathlon-card'
 import { triathlonDayHrefFromReference } from '../../../../util/triathlon-date-route'
-import {
-  criticalPowerEvidenceText,
-  criticalPowerSummaryText,
-} from '../../../../util/triathlon-i18n'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
@@ -407,7 +402,6 @@ export const buildMatchedRideGroup = (
   group: MatchedRideGroup,
   currentActivityId: number,
   dayRouteHref?: string,
-  criticalPower?: CriticalPowerEstimate | null,
 ): HTMLElement => {
   const formatter = createTriathlonFormatter(presentation)
   const text = (key: string): string => formatter.text(key)
@@ -474,17 +468,6 @@ export const buildMatchedRideGroup = (
     ),
   )
   wrap.appendChild(head)
-  if (criticalPower)
-    wrap.appendChild(
-      markGlossDefinition(
-        el(
-          'p',
-          'tri-matched-critical-power',
-          criticalPowerSummaryText(presentation.locale, criticalPower),
-        ),
-        criticalPowerEvidenceText(presentation.locale, criticalPower),
-      ),
-    )
 
   const chart = el('div', 'tri-matched-chart')
   const graph = svg('svg', {

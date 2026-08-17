@@ -37,6 +37,7 @@ import {
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
 } from '../../util/triathlon-date-route'
+import { buildTriathlonDailyAnalytics } from '../../util/triathlon-day-analytics'
 import {
   parseTriathlonMaintenance,
   type TriathlonMaintenance,
@@ -267,10 +268,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
       enrichCalculatedExerciseLoads(payload)
       enrichCalculatedTrainingEffects(payload)
+      const dailyAnalytics = buildTriathlonDailyAnalytics(analytics, oura?.details, payload.details)
       const detailPayload: StravaDetailPayload = {
         details: payload.details,
         swimTrend: payload.swimTrend,
         health: payload.health,
+        dailyAnalytics,
         zones: payload.zones,
         powerCurveRef: payload.powerCurveRef,
         powerCurveYearRef: payload.powerCurveYearRef,
@@ -329,7 +332,11 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         }),
       )
       const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
-      const triathlonRenderData: TriathlonRenderData = { analytics, plans }
+      const triathlonRenderData: TriathlonRenderData = {
+        analytics,
+        plans,
+        weather: weather?.current ?? null,
+      }
       files.push(
         await write({
           ctx,

@@ -8,6 +8,7 @@ import type {
   StravaZones,
   SwimTrendPoint,
 } from '../plugins/stores/strava'
+import type { TriathlonDailyAnalytics } from './triathlon-day-analytics'
 
 export const STRAVA_DETAIL_INDEX_KIND = 'strava-detail-index-v1'
 export const STRAVA_DETAIL_SHARD_MAX_BYTES = 20 * 1024 * 1024
@@ -22,6 +23,7 @@ export type StravaDetailPayload<TDetail extends { date: string } = StravaActivit
   details: Record<string, TDetail>
   swimTrend?: SwimTrendPoint[]
   health: Record<string, ActivityHealth>
+  dailyAnalytics?: TriathlonDailyAnalytics
   zones?: StravaZones
   powerCurveRef?: PowerCurvePoint[]
   powerCurveYearRef?: PowerCurvePoint[]
@@ -111,6 +113,7 @@ export function serializeStravaDetails<TDetail extends { date: string }>(
     shards: shards.map(shard => shard.path),
     swimTrend: payload.swimTrend,
     health: payload.health,
+    dailyAnalytics: payload.dailyAnalytics,
     zones: payload.zones,
     powerCurveRef: payload.powerCurveRef,
     powerCurveYearRef: payload.powerCurveYearRef,

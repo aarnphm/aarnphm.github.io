@@ -1455,7 +1455,7 @@ export function transcludeFinal(
       let triathlonDate: string | undefined
       let triathlonEmbedExtras: Pick<
         DayCardExtras,
-        'sport' | 'activityId' | 'excludedActivityIds' | 'settings'
+        'sport' | 'activityId' | 'excludedActivityIds' | 'settings' | 'analytics'
       > | null = null
       let triathlonPayload: ReturnType<typeof loadStravaPayloadSync> | null = null
       if (page.frontmatter?.layout === 'triathlon') {
@@ -1468,6 +1468,12 @@ export function transcludeFinal(
             typeof since === 'string' ? since : undefined,
             page.tracking?.fueling,
             page.tracking?.strength,
+            {
+              weights: page.tracking?.days,
+              events: page.tracking?.races,
+              dexa: page.frontmatter?.['dexa'],
+              vo2labs: page.frontmatter?.['vo2max'],
+            },
           )
           triathlonDate = resolveTriathlonEmbedDate(anchor, triathlonPayload) ?? undefined
           triathlonEmbedExtras = 'date' in anchor ? anchor : { activityId: anchor.activityId }
@@ -1494,17 +1500,22 @@ export function transcludeFinal(
               'data-detail-path': joinSegments(pathToRoot(slug), 'static/strava-detail.json'),
             },
             [
-              triathlonDayCard(triathlonDate, payload.totalCount > 0 ? payload : null, extras, {
-                zones: payload.zones,
-                curveRef: payload.powerCurveRef,
-                curveYearRef: payload.powerCurveYearRef,
-                curveYear: payload.powerCurveYear,
-                criticalPower: payload.criticalPower,
-                criticalPowerYear: payload.criticalPowerYear,
-                ftp: ATHLETE.ftp,
-                goalFtp: ATHLETE.goalFTP,
-                vt1: null,
-              } satisfies DetailCtx),
+              triathlonDayCard(
+                triathlonDate,
+                payload.totalCount > 0 || extras.analytics ? payload : null,
+                extras,
+                {
+                  zones: payload.zones,
+                  curveRef: payload.powerCurveRef,
+                  curveYearRef: payload.powerCurveYearRef,
+                  curveYear: payload.powerCurveYear,
+                  criticalPower: payload.criticalPower,
+                  criticalPowerYear: payload.criticalPowerYear,
+                  ftp: ATHLETE.ftp,
+                  goalFtp: ATHLETE.goalFTP,
+                  vt1: null,
+                } satisfies DetailCtx,
+              ),
             ],
           ),
         ]

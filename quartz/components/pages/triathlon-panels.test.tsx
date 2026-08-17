@@ -8,8 +8,17 @@ import type { TrainingPlan } from '../../plugins/stores/training'
 import type { TriathlonMaintenance } from '../../util/triathlon-maintenance'
 import type { TriathlonRenderData } from '../triathlon/render-data'
 import { buildAnalytics } from '../../plugins/stores/analytics'
+import { triathlonDateTree } from '../../util/triathlon-date-route'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
-import { AnalyticsPanel, GearPanel, MapPanel, ToolsPanel, TrainingPanel } from './triathlon-panels'
+import {
+  AnalyticsPanel,
+  GearPanel,
+  MapPanel,
+  OnTreePanel,
+  PacePanel,
+  ToolsPanel,
+  TrainingPanel,
+} from './triathlon-panels'
 
 const plans: TrainingPlan[] = [
   {
@@ -32,7 +41,31 @@ const plans: TrainingPlan[] = [
   },
 ]
 
-const renderData: TriathlonRenderData = { analytics: buildAnalytics(null), plans }
+const analytics = buildAnalytics(null)
+analytics.body.composition.push({
+  date: '2026-08-16',
+  kg: 86.06,
+  bmi: 24.3,
+  ffmi: 19.65,
+  bodyFatPct: 19.3,
+  bodyWaterPct: 58.9,
+  muscleMassKg: 36.51,
+  boneMassKg: 6.05,
+})
+const renderData: TriathlonRenderData = {
+  analytics,
+  plans,
+  weather: {
+    forecastStart: '2026-08-17T13:00:00.000Z',
+    latitude: 43.64,
+    longitude: -79.4,
+    temperatureC: 18.5,
+    conditionCode: 'LightRain',
+    precipitationChance: 0.7,
+    precipitationType: 'rain',
+    source: 'weatherkit',
+  },
+}
 
 const maintenance: TriathlonMaintenance = {
   chains: [
@@ -124,19 +157,34 @@ test('overview training markup keeps its list, tree, and document empty', () => 
   assert.equal(elements(root, element => element.properties?.dataPlan != null).length, 0)
 })
 
-test('gear popover and tools page place shared maintenance after the bike inventory', () => {
-  const popover = renderToString(<GearPanel maintenance={maintenance} />)
-  const tools = renderToString(<ToolsPanel maintenance={maintenance} />)
+test('gear surfaces place daily tire pressure after bike inventory and before maintenance', () => {
+  const popover = renderToString(<GearPanel maintenance={maintenance} renderData={renderData} />)
+  const tools = renderToString(<ToolsPanel maintenance={maintenance} renderData={renderData} />)
 
   for (const html of [popover, tools]) {
     assert.match(html, /class="tri-maintenance"/)
     assert.match(html, /UFO Wax Drip-On/)
     assert.match(html, /2026-08-10/)
+    assert.match(html, /data-rider-kg="86.06"/)
+    assert.match(html, /data-pressure-output="front">78.5</)
+    assert.match(html, /data-pressure-output="rear">80.5</)
+    assert.match(html, /Pirelli P Zero Race SL-R/)
+    assert.match(html, /P Zero Race TLR SL-R/)
+    assert.match(html, /type="text" value="19.5" data-pressure-field="speed"/)
+    assert.match(html, /WeatherKit · 2026-08-17 13:00 UTC/)
+    assert.match(html, /18.5 °C/)
+    assert.match(html, /light rain/)
+    assert.match(html, /70% precipitation/)
+    assert.match(html, /mixed<\/strong><span>−3 PSI/)
+    assert.match(html, /wet<\/strong><span>−8 PSI/)
+    assert.match(html, /most Toronto roads, aged asphalt and seams/)
+    assert.doesNotMatch(html, /tri-pressure-speed-presets/)
 
     const sections = [
       html.indexOf('class="tri-ratio"'),
       html.indexOf('Cervélo Soloist'),
       html.indexOf('Canyon Speedmax CFR Di2 2026'),
+      html.indexOf('class="tri-pressure"'),
       html.indexOf('class="tri-maintenance"'),
       html.indexOf('data-i18n="running"'),
     ]
@@ -146,4 +194,20 @@ test('gear popover and tools page place shared maintenance after the bike invent
       sections.toSorted((left, right) => left - right),
     )
   }
+})
+
+test('server-rendered unit surfaces start in imperial', () => {
+  const pace = renderToString(<PacePanel page />)
+  assert.match(pace, /<button class="tri-pace-unit" type="button">mph<\/button>/)
+  assert.match(pace, /data-kph="16.1" data-mph="10.0">10.0<\/span>/)
+
+  const tree = renderToString(
+    <OnTreePanel
+      root="/triathlon/on"
+      tree={triathlonDateTree({
+        activity: { date: '2026-08-16', sport: 'run', distanceKm: 10, movingTimeS: 3_600 },
+      })}
+    />,
+  )
+  assert.match(tree, /data-km="10" data-kind="combined">6 mi<\/span>/)
 })

@@ -122,7 +122,7 @@ maintenance:
           - start: '2026-07-16'
           - end: null
           - reason: null
-modified: 2026-08-16 00:06:33 GMT-04:00
+modified: 2026-08-16 22:02:06 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1006,6 +1006,24 @@ activity: 19759842400
 fueling: 240
 ```
 
+```tracking
+date: 2026-08-16
+activity: 19772855386
+fueling: 320
+```
+
+```tracking
+date: 2026-08-16
+activity: 19773941080
+fueling: 10
+```
+
+```tracking
+date: 2026-08-16
+activity: 19773849399
+fueling: 10
+```
+
 <!-- training plan start
 meta: equation references
 date: 2026-06-07
@@ -1055,6 +1073,131 @@ $$
 $$
 
 These labels interpret Garmin's score. They do not calculate the underlying aerobic or anaerobic training effect.
+
+### tire pressure
+
+The gear panel takes the latest valid Garmin morning body-mass sample and adds the mass of the selected equipped bike. The Cervélo is $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax is $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$:
+
+$$
+m_{\mathrm{system}}
+=
+m_{\mathrm{rider}}+m_{\mathrm{bike}}.
+$$
+
+The pressure calculation reproduces the public field model used by the [SILCA Professional Tire Pressure Calculator](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1).[^silca-pressure] Let measured tire width be $w$ in millimetres, bead-seat diameter be $d$ in millimetres, average speed be $v$ in miles per hour, and $S$ be the surface coefficient:
+
+| dry surface   |   $S$ |
+| ------------- | ----: |
+| new pavement  |   261 |
+| worn pavement | 246.5 |
+| poor pavement |   225 |
+| cobblestone   |   199 |
+
+The effective stiffness term and unloaded tire radius are
+
+$$
+k
+=
+0.5\left(m_{\mathrm{system}}-50\right)+S,
+\qquad
+r_0
+=
+w+\frac{d}{2}.
+$$
+
+The loaded radius, width polynomial, and centre pressure are
+
+$$
+r_{\mathrm{loaded}}
+=
+r_0-
+\frac{4.905}{k\left(20/w\right)},
+$$
+
+$$
+N(w)
+=
+-226.44
+\left(
+-0.00006w^3
++0.0079w^2
+-0.4102w
++12.725
+\right),
+$$
+
+$$
+p_0
+=
+\frac{N(w)}{r_{\mathrm{loaded}}^2-r_0^2}.
+$$
+
+Speed contributes the linear coefficient
+
+$$
+c_v
+=
+0.97
++
+(v-10)\frac{0.06}{23},
+\qquad
+10\le v\le33.
+$$
+
+For the Cervélo road setup, $(c_f,c_r)=(0.985,1.01)$. For the Speedmax triathlon setup, $(c_f,c_r)=(1,1)$. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
+
+$$
+p_f
+=
+\operatorname{round}_{0.5}
+\left(p_0c_vc_fc_t\right),
+\qquad
+p_r
+=
+\operatorname{round}_{0.5}
+\left(p_0c_vc_rc_t\right).
+$$
+
+Both available wheelsets use a $622\ \mathrm{mm}$ bead-seat diameter. Princeton Mach 7580 uses a $22\ \mathrm{mm}$ internal width; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is a compatibility constraint rather than a second pressure input. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
+
+The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
+
+The displayed front and rear values remain the dry SILCA baseline. Pirelli gives two road-condition offsets for fine tuning:
+
+| riding condition | offset from dry pressure |
+| ---------------- | -----------------------: |
+| mixed            |       $-3\ \mathrm{PSI}$ |
+| wet              |       $-8\ \mathrm{PSI}$ |
+
+The daily gear panel also carries the nearest hourly [WeatherKit forecast](https://developer.apple.com/documentation/weatherkitrestapi/hourweatherconditions) at the centre of the most recently routed activity.[^weatherkit-pressure] It shows forecast temperature, condition, and precipitation chance beside these offsets. Forecast precipitation is context rather than a direct measurement of pavement wetness, so the panel does not silently subtract either offset from the dry result.
+
+Pirelli states that pressure varies by approximately $3\ \mathrm{PSI}$ for each $10\ ^\circ\mathrm{C}$ difference between inflation and riding conditions, and approximately $1.5\ \mathrm{PSI}$ for each $1{,}000\ \mathrm{m}$ of altitude change. Written as magnitudes,
+
+$$
+\left|\Delta p_T\right|
+\approx
+3\ \mathrm{PSI}
+\frac{\left|T_{\mathrm{ride}}-T_{\mathrm{inflation}}\right|}{10\ ^\circ\mathrm{C}},
+$$
+
+$$
+\left|\Delta p_h\right|
+\approx
+1.5\ \mathrm{PSI}
+\frac{\left|h_{\mathrm{ride}}-h_{\mathrm{inflation}}\right|}{1{,}000\ \mathrm{m}}.
+$$
+
+WeatherKit supplies the ride-temperature context. The current cache does not contain inflation temperature or altitude, so the panel presents these as explicit notes instead of manufacturing an adjusted number from missing inputs.
+
+For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $22\ \mathrm{lb}$ Cervélo, Princeton wheels, $28\ \mathrm{mm}$ measured tires, worn pavement, TPU tubes, and $19.5\ \mathrm{mph}$ produce $78.5\ \mathrm{PSI}$ front and $80.5\ \mathrm{PSI}$ rear.
+
+[^silca-pressure]: [SILCA, "Professional Tire Pressure Calculator"](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1). The local implementation copies the calculator's public mass, surface, width, wheel-diameter, speed, and front/rear coefficients, then performs the same half-PSI rounding without making a runtime request.
+
+[^pressure-wheels]: [Princeton CarbonWorks, "Mach 7580 TS"](https://www.princetoncarbon.com/product/mach-7580/) and [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), official wheel dimensions and published tire-width compatibility.
+
+[^pirelli-pressure]: [Pirelli, "Bike Tire Pressure Tool"](https://www.pirelli.com/tires/en-us/bike/pressure-tool), manufacturer guidance for matching tire construction, rim, system mass, use, and pressure limits.
+
+[^weatherkit-pressure]: [Apple, "HourWeatherConditions"](https://developer.apple.com/documentation/weatherkitrestapi/hourweatherconditions), hourly temperature, condition code, precipitation type, and precipitation probability supplied through the WeatherKit REST API.
 
 ### speed, pace, and grade adjustment
 
@@ -2063,16 +2206,18 @@ $$
 
 Only runs with $f_{\mathrm{HRR}}>0.4$ enter that fallback mean.
 
-### FTP hypothesis from running VO2max
+### FTP hypothesis from VO2max
 
-Let running VO2max be $V_r$ in $\mathrm{mL\,kg^{-1}\,min^{-1}}$, body mass be $m$, cross-modal discount be $d=0.08$, threshold fraction be $q=0.85$, and gross efficiency be $\eta=0.21$.
+Let source VO2max be $V$ in $\mathrm{mL\,kg^{-1}\,min^{-1}}$, body mass be $m$, cross-modal discount be $d$, threshold fraction be $q=0.85$, and gross metabolic efficiency be $\eta=0.21$. The efficiency term is a literature prior. Pedal smoothness and torque effectiveness describe force application, so they remain evidence beside the hypothesis rather than inputs to $\eta$.
 
-Absolute running oxygen use is
+An explicitly cycling-specific Garmin VO2max uses $d=0$. A treadmill value uses $d=0.08$. A Garmin generic value also retains $d=0.08$ because the cached field does not establish its source sport.
+
+Absolute oxygen use is
 
 $$
-\dot V_{O_2,r}
+\dot V_{O_2}
 =
-\frac{V_rm}{1000}
+\frac{Vm}{1000}
 \quad
 \left[
 \mathrm{L/min}
@@ -2084,7 +2229,7 @@ The cycling and threshold estimates are
 $$
 \dot V_{O_2,c}
 =
-\dot V_{O_2,r}(1-d),
+\dot V_{O_2}(1-d),
 $$
 
 $$
@@ -2114,7 +2259,7 @@ $$
 \mathrm{MAP}_{\mathrm{ACSM}}
 =
 \frac{
-\max\left(0,V_r(1-d)-7\right)m
+\max\left(0,V(1-d)-7\right)m
 }{
 1.8\times6.12
 },
@@ -2141,7 +2286,7 @@ $$
 \right).
 $$
 
-Its displayed low and high bounds are the unrounded mean minus and plus $25$ W, each rounded to the nearest $5$ W.
+Its displayed low and high bounds are the unrounded mean minus and plus $25$ W, each rounded to the nearest $5$ W. The panel also reports six-week estimated critical power, modeled 60-minute power, declared FTP, independent-effort count, and activity-level median pedal dynamics. A ride enters the pedal summary only when each left and right pedal-smoothness and torque-effectiveness series has at least $80\%$ valid samples.
 
 ### body composition and energy
 

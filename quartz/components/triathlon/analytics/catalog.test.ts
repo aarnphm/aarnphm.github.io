@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { DailyPoint } from '../../../plugins/stores/analytics'
-import { buildAnalytics } from '../../../plugins/stores/analytics'
+import { buildAnalytics, computeFtpHypothesisFromVo2 } from '../../../plugins/stores/analytics'
 import { DEFAULT_TRIATHLON_FORMATTER } from '../runtime/formatter'
 import { analyticsPanelDefinition } from './catalog'
 import { GLOSS_CHART, SEARCH_SECTIONS } from './search'
@@ -68,6 +68,7 @@ test('critical power search and calendar-year SSR resolve to the power curve', (
   assert.equal(GLOSS_CHART.wprime, 'power')
   const section = SEARCH_SECTIONS.find(item => item.chart === 'power')
   assert.ok(section?.hay.includes('critical power'))
+  assert.ok(section?.hay.includes('power rank'))
   const analytics = buildAnalytics(null)
   analytics.powerCurve.criticalPowerYear = {
     criticalPowerWatts: 249,
@@ -89,5 +90,42 @@ test('critical power search and calendar-year SSR resolve to the power curve', (
     { label: 'FTP', value: '—' },
     { label: 'eCP', value: '249 W' },
     { label: 'eW′', value: '10.3 kJ' },
+  ])
+})
+
+test('ftp summary carries provenance and observed cycling evidence', () => {
+  const analytics = buildAnalytics(null)
+  const hypothesis = computeFtpHypothesisFromVo2('2026-08-16', 55.2, 87.4)
+  assert.ok(hypothesis)
+  analytics.engine.ftpHypothesis = {
+    ...hypothesis,
+    power: {
+      criticalPowerWatts: 249,
+      modeled60MinuteWatts: 252,
+      confidence: 'provisional',
+      independentEffortCount: 2,
+      declaredFtpWatts: 260,
+    },
+    pedaling: {
+      windowFrom: '2026-08-14',
+      windowTo: '2026-08-16',
+      activityCount: 4,
+      sampleCount: 3600,
+      coveragePct: 96.9,
+      leftPedalSmoothnessPct: 21.5,
+      rightPedalSmoothnessPct: 24,
+      leftTorqueEffectivenessPct: 69,
+      rightTorqueEffectivenessPct: 68,
+    },
+  }
+  const panel = analyticsPanelDefinition('ftp')
+  assert.ok(panel)
+  const summary = panel.server(analytics, DEFAULT_TRIATHLON_FORMATTER)
+  assert.deepEqual(summary.values.slice(3), [
+    { label: 'VO2 source', value: 'running · lab' },
+    { label: 'efficiency', value: '21.0% · literature-prior' },
+    { label: 'eCP', value: '249 W' },
+    { label: 'modeled 60 min', value: '252 W' },
+    { label: 'pedal evidence', value: '4 rides · 3600 samples' },
   ])
 })

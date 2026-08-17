@@ -142,8 +142,16 @@ export const setupChartScrub = (
   ): string =>
     `${zoneClock(point.s)}, ${text('this ride')} ${point.w.toLocaleString()} watts${referenceWatts == null ? '' : `, ${powerCurveReferenceLabel(presentation().locale, curveReferenceYear(svg))} ${referenceWatts.toLocaleString()} watts`}${modelValues.map(model => `, ${model.label} ${model.watts.toLocaleString()} watts`).join('')}`
   const swimKind = (svg: SVGSVGElement): SwimChartMetric => swimChartMetric(svg.dataset.swimKind)
+  const swimKindLabel = (kind: SwimChartMetric): string =>
+    kind === 'pace'
+      ? 'pace'
+      : kind === 'cadence'
+        ? 'cadence'
+        : kind === 'rate'
+          ? 'stroke rate'
+          : 'SWOLF'
   const swimAriaLabel = (svg: SVGSVGElement): string =>
-    `${text('swim')} ${text(swimKind(svg) === 'pace' ? 'pace' : swimKind(svg) === 'cadence' ? 'cadence' : 'SWOLF')} · ${text(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
+    `${text('swim')} ${text(swimKindLabel(swimKind(svg)))} · ${text(swimMode(svg) === '100m' ? '100 m' : 'lengths')}`
   const swimDisplayValue = (kind: SwimChartMetric, value: number): string =>
     swimActivityDisplayValue(presentation().locale, kind, value, clock(value))
   const swimTextPoint = (point: SwimTrendChartPoint) => ({
