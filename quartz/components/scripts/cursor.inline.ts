@@ -2,6 +2,11 @@ import { beginSitePerformanceSample, endSitePerformanceSample } from './performa
 
 const configuredCursors = new WeakMap<HTMLElement, AbortController>()
 
+const isTriathlonSlug = (): boolean => {
+  const slug = document.body.dataset.slug ?? ''
+  return slug === 'triathlon' || slug.startsWith('triathlon/')
+}
+
 const CLOSE_CURSOR_SELECTOR =
   "[data-site-cursor-close]:not(:disabled), button[aria-label^='close' i]:not(:disabled)"
 const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]:not(:disabled)'
@@ -98,6 +103,9 @@ const createCursorBracket = (): HTMLElement => {
 }
 
 document.addEventListener('nav', () => {
+  document.documentElement.classList.remove('site-cursor-ready')
+  if (!isTriathlonSlug()) return
+
   const cursors = Array.from(document.querySelectorAll<HTMLElement>('.site-cursor'))
   const cursor = cursors[cursors.length - 1] ?? createCursor()
   for (const candidate of cursors) {

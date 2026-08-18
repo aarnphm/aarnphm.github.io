@@ -165,9 +165,9 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
     ...sharedPageComponents,
     ...defaultContentPageLayout,
     ...userOpts,
-    header: [],
+    header: [Cursor()],
     beforeBody: [],
-    afterBody: [Cursor()],
+    afterBody: [],
     sidebar: [],
     pageBody: TriathlonPage(),
   }

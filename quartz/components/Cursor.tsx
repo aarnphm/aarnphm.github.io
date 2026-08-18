@@ -4,14 +4,19 @@ import { QuartzComponent, QuartzComponentConstructor } from '../types/component'
 import script from './scripts/cursor.inline'
 
 export default (() => {
-  const Cursor: QuartzComponent = () => (
-    <span class="site-cursor" data-mode="diamond" data-visible="false" aria-hidden="true">
-      <span class="site-cursor-diamond" />
-      <span class="site-cursor-question">?</span>
-      <span class="site-cursor-crosshair" />
-      <span class="site-cursor-line" />
-    </span>
-  )
+  const Cursor: QuartzComponent = ({ fileData }) => {
+    const slug = fileData.slug ?? ''
+    if (slug !== 'triathlon' && !slug.startsWith('triathlon/')) return null
+
+    return (
+      <span class="site-cursor" data-mode="diamond" data-visible="false" aria-hidden="true">
+        <span class="site-cursor-diamond" />
+        <span class="site-cursor-question">?</span>
+        <span class="site-cursor-crosshair" />
+        <span class="site-cursor-line" />
+      </span>
+    )
+  }
 
   Cursor.css = style
   Cursor.afterDOMLoaded = script
