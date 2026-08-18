@@ -23,7 +23,7 @@ import {
   swimStrokeRate,
   type SwimChartMetric,
 } from './swim-metrics'
-import { triathlonActivityAnchor } from './triathlon-date-route'
+import { triathlonActivityAnchor, triathlonActivityHref } from './triathlon-date-route'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
@@ -6919,6 +6919,52 @@ export const recentLocation = (payload: DayCardPayload): string | undefined =>
   Object.values(payload.details)
     .sort((a, b) => b.date.localeCompare(a.date))
     .find(d => d.location)?.location ?? undefined
+
+const timelineActivityValue = (
+  presentation: TriathlonPresentation,
+  activity: StravaActivityDetail,
+): string =>
+  activity.distanceKm > 0
+    ? dist(presentation, activity.distanceKm, activity.sport)
+    : dur(activity.movingTimeS)
+
+export const buildTimelineDayCard = <N>(
+  f: TriNodeFactory<N>,
+  dateIso: string,
+  payload: DayCardPayload | null,
+  extras: Pick<DayCardExtras, 'dateHref'> = {},
+): N => {
+  const card = f.el('div', 'tri-timeline-card')
+  f.add(
+    card,
+    extras.dateHref
+      ? f.el('a', 'tri-pop-date', prettyDate(dateIso), {
+          href: extras.dateHref,
+          'data-no-popover': 'true',
+        })
+      : f.el('span', 'tri-pop-date', prettyDate(dateIso)),
+  )
+  const day = payload ? dayDetails(payload, dateIso) : []
+  if (day.length === 0) return card
+
+  const list = f.el('ul', 'tri-timeline-list')
+  for (const activity of day) {
+    const value = timelineActivityValue(f.presentation, activity)
+    const href = triathlonActivityHref(dateIso, activity.id, extras.dateHref)
+    const item = f.el('li', 'tri-timeline-item')
+    const link = f.el('a', 'tri-timeline-activity', undefined, {
+      ...(href ? { href } : {}),
+      'aria-label': `${triText(f.presentation.locale, activity.sport)} · ${activity.name} · ${value}`,
+      title: activity.name,
+      'data-no-popover': 'true',
+    })
+    f.add(link, buildIcon(f, activity.sport), f.el('span', 'tri-timeline-value', value))
+    f.add(item, link)
+    f.add(list, item)
+  }
+  f.add(card, list)
+  return card
+}
 
 type DayAnalyticsMetric = { label: string; value: string; detail?: string }
 

@@ -90,7 +90,6 @@ const buildZoneMetricIcon = (metric: DistributionMetric): SVGElement => {
     class: 'tri-zone-metric-icon',
     viewBox: '0 0 24 24',
     'aria-hidden': 'true',
-    'data-site-cursor-icon': '',
     focusable: 'false',
   })
   icon.appendChild(
@@ -188,13 +187,10 @@ export const buildDistributions = (
         'aria-label': text(option),
         'aria-pressed': String(option === sport),
         title: text(option),
-        'data-site-cursor-action': '',
         'data-sport': option,
       },
     ) as HTMLButtonElement
-    const icon = buildIcon(context.presentation, option)
-    icon.setAttribute('data-site-cursor-icon', '')
-    button.appendChild(icon)
+    button.appendChild(buildIcon(context.presentation, option))
     sportButtons.set(option, button)
     sportControls.appendChild(button)
   }
@@ -414,7 +410,6 @@ export const buildDistributions = (
         'aria-controls': `tri-training-zones-${option}`,
         'aria-label': label,
         title: label,
-        'data-site-cursor-action': '',
         'data-metric': option,
       }) as HTMLButtonElement
       tab.appendChild(buildZoneMetricIcon(option))

@@ -105,17 +105,20 @@ test('applies selectable front and rear load distributions', () => {
 })
 
 test('keeps pressure stable across equal measured casing widths and flags Reserve compatibility', () => {
-  const princeton = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
+  const hunt = calculateTirePressure({ ...DEFAULT_TIRE_PRESSURE_SELECTION, riderKg: 86.06 })
   const reserve = calculateTirePressure({
     ...DEFAULT_TIRE_PRESSURE_SELECTION,
     riderKg: 86.06,
     wheel: 'reserve',
   })
 
-  assert.ok(princeton)
+  assert.ok(hunt)
   assert.ok(reserve)
-  assert.equal(reserve.frontPsi, princeton.frontPsi)
-  assert.equal(reserve.rearPsi, princeton.rearPsi)
+  assert.equal(hunt.wheel.label, 'HUNT 54_58 Aerodynamicist UD')
+  assert.equal(hunt.wheel.frontInnerWidthMm, 22)
+  assert.equal(hunt.wheel.rearInnerWidthMm, 22)
+  assert.equal(reserve.frontPsi, hunt.frontPsi)
+  assert.equal(reserve.rearPsi, hunt.rearPsi)
   assert.equal(reserve.wheelCompatibilityWarning, true)
   assert.equal(reserve.wheel.frontInnerWidthMm, 25.4)
   assert.equal(reserve.wheel.rearInnerWidthMm, 24.8)

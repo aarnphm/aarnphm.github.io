@@ -271,10 +271,7 @@ export default (() => {
             </tbody>
           </table>
           <div class="tri-note-foot">
-            <GearPanel
-              maintenance={fileData.triathlonMaintenance}
-              renderData={fileData.triathlonRenderData}
-            />
+            <GearPanel maintenance={fileData.triathlonMaintenance} />
             <PacePanel />
             <button class="tri-analytics-btn" type="button" data-i18n="analytics">
               analytics

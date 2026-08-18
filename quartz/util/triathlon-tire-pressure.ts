@@ -1,5 +1,5 @@
 export type TirePressureBikeId = 'cervelo' | 'speedmax' | 'custom'
-export type TirePressureWheelId = 'princeton' | 'reserve' | 'custom'
+export type TirePressureWheelId = 'hunt' | 'reserve' | 'custom'
 export type TirePressureTireId = 'tpu' | 'tubeless'
 export type TirePressureBalanceId = '50-50' | '48-52' | '45-55' | '40-60'
 export type TirePressureWeightUnit = 'kg' | 'lb'
@@ -113,15 +113,14 @@ export const KG_PER_LB = 0.45359237
 export const TIRE_PRESSURE_MEASURED_WIDTH_MM = 28
 export const TRI_TIRE_PRESSURE_CHANGE_EVENT = 'tri:tire-pressure-change'
 export const TRI_TIRE_PRESSURE_OPEN_EVENT = 'tri:tire-pressure-open'
-export const TIRE_PRESSURE_SOURCE_URL =
-  'https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1'
+export const TIRE_PRESSURE_SOURCE_URL = 'https://silca.cc/en-ca/pages/pro-tire-pressure-calculator'
 export const PIRELLI_PRESSURE_SOURCE_URL = 'https://www.pirelli.com/tires/en-us/bike/pressure-tool'
 export const TIRE_PRESSURE_WEIGHT_UNITS: readonly TirePressureWeightUnit[] = ['kg', 'lb']
 
 export const TIRE_PRESSURE_BIKES: readonly TirePressureBike[] = [
   { id: 'cervelo', label: 'Cervélo Soloist', massLb: 22 },
   { id: 'speedmax', label: 'Canyon Speedmax', massLb: 26 },
-  { id: 'custom', label: 'custom bike', massLb: 20 },
+  { id: 'custom', label: 'Custom', massLb: 20 },
 ]
 
 export const TIRE_PRESSURE_BALANCES: readonly TirePressureBalance[] = [
@@ -133,12 +132,12 @@ export const TIRE_PRESSURE_BALANCES: readonly TirePressureBalance[] = [
 
 export const TIRE_PRESSURE_WHEELS: readonly TirePressureWheel[] = [
   {
-    id: 'princeton',
-    label: 'Princeton Mach 7580',
+    id: 'hunt',
+    label: 'HUNT 54_58 Aerodynamicist UD',
     diameterMm: 622,
     frontInnerWidthMm: 22,
     rearInnerWidthMm: 22,
-    recommendedMinimumTireWidthMm: 28,
+    recommendedMinimumTireWidthMm: 25,
   },
   {
     id: 'reserve',
@@ -150,7 +149,7 @@ export const TIRE_PRESSURE_WHEELS: readonly TirePressureWheel[] = [
   },
   {
     id: 'custom',
-    label: 'custom wheelset',
+    label: 'Custom Wheelset',
     diameterMm: 622,
     frontInnerWidthMm: 23,
     rearInnerWidthMm: 23,
@@ -208,7 +207,7 @@ export const DEFAULT_TIRE_PRESSURE_SELECTION: TirePressureSelection = {
   bike: 'cervelo',
   bikeMassesLb: DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB,
   balance: '48-52',
-  wheel: 'princeton',
+  wheel: 'hunt',
   customWheel: { frontInnerWidthMm: 23, rearInnerWidthMm: 23 },
   tire: 'tpu',
   surface: 'worn-pavement',

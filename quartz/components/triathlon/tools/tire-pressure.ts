@@ -376,9 +376,10 @@ export const setupTirePressure = (root: HTMLElement): (() => void) | null => {
   const onOpen = (): void => {
     const calculator = calculators[0]
     if (!calculator) return
-    const wrap = calculator.closest<HTMLElement>('.tri-gear-wrap')
-    const trigger = wrap?.querySelector<HTMLButtonElement>('.tri-gear-btn')
-    if (trigger && trigger.getAttribute('aria-expanded') !== 'true') trigger.click()
+    calculator
+      .closest<HTMLElement>('.tri-calc')
+      ?.querySelector<HTMLButtonElement>('[data-calc-tab="tire-pressure"]')
+      ?.click()
     requestAnimationFrame(() => {
       calculator.scrollIntoView({ block: 'nearest' })
       calculator.querySelector<HTMLInputElement>('input[data-pressure-field="bike"]')?.focus()

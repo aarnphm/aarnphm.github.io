@@ -100,8 +100,8 @@ export const GEAR: [string, string[]][] = [
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
       'Front Wheel: Reserve 42TA, DT Swiss 350, 12x100mm, 24H, centerlock, tubeless compatible',
       'Rear Wheel: Reserve 49TA, DT Swiss 350, 12x142mm, HG freehub 24H, centerlock, tubeless compatible',
-      'Front Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
-      'Rear Wheel: Princeton Carbonworks Mach 7580 Evolution, DT Swiss 240, Matte/White, Shimano freehub',
+      'Front Wheel: HUNT 54 Aerodynamicist UD Carbon Spoke',
+      'Rear Wheel: HUNT 58 Aerodynamicist UD Carbon Spoke',
       'Tube: Pirelli P Zero TPU',
       'Tires: Pirelli P Zero Race SL-R 700x28c',
       'Tires: Pirelli P Zero Race TLR SL-R 700x28c',
@@ -998,11 +998,9 @@ const GearRows = ({ groups }: { groups: ReadonlyArray<readonly [string, readonly
 export const GearPanel = ({
   page,
   maintenance = null,
-  renderData,
 }: {
   page?: boolean
   maintenance?: TriathlonMaintenance | null
-  renderData?: TriathlonRenderData
 }) => (
   <div class="tri-gear-wrap">
     {!page && (
@@ -1022,12 +1020,7 @@ export const GearPanel = ({
       aria-hidden={page ? 'false' : 'true'}
     >
       <div class="tri-gear-scroll">
-        <GearRatioCalculator />
         <GearRows groups={GEAR.slice(0, BIKE_GEAR_GROUP_COUNT)} />
-        <TirePressure
-          composition={renderData?.analytics.body.composition}
-          weather={renderData?.weather}
-        />
         <Maintenance maintenance={maintenance} />
         <GearRows groups={GEAR.slice(BIKE_GEAR_GROUP_COUNT)} />
       </div>
@@ -1130,9 +1123,11 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
 export const CalcPanel = ({
   page,
   defaultDistance,
+  renderData,
 }: {
   page?: boolean
   defaultDistance?: unknown
+  renderData?: TriathlonRenderData
 }) => {
   const [defaultLabel, defaultSwim, defaultBike, defaultRun] =
     TRI_RACE_DISTANCES.find(([label]) => label === defaultDistance) ?? TRI_RACE_DISTANCES[1]
@@ -1141,8 +1136,8 @@ export const CalcPanel = ({
     <aside
       class={`tri-calc${page ? ' tri-calc--page' : ''}`}
       aria-hidden={page ? 'false' : 'true'}
-      role="dialog"
-      aria-label="triathlon calculator"
+      role={page ? 'region' : 'dialog'}
+      aria-label={page ? 'calculators' : 'triathlon calculator'}
       data-swim={defaultSwim}
       data-bike={defaultBike}
       data-run={defaultRun}
@@ -1151,10 +1146,11 @@ export const CalcPanel = ({
       data-keyboard-scroll
     >
       <div class="tri-calc-bar">
-        <span class="tri-calc-title">triathlon calculator</span>
+        <span class="tri-calc-title">{page ? 'calculators' : 'triathlon calculator'}</span>
         <button
           class="tri-calc-copy"
           type="button"
+          data-calc-tab-control="race"
           data-site-cursor-action
           aria-label="Copy embed link"
           title="Copy embed link"
@@ -1188,7 +1184,52 @@ export const CalcPanel = ({
           </span>
         </button>
       </div>
-      <div class="tri-calc-cell">
+      {page && (
+        <div class="tri-calc-tabs" role="tablist" aria-label="calculators">
+          <button
+            id="tri-calc-tab-race"
+            class="tri-calc-tab tri-calc-tab--on"
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tri-calc-panel-race"
+            data-calc-tab="race"
+          >
+            race
+          </button>
+          <button
+            id="tri-calc-tab-gear-ratios"
+            class="tri-calc-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tri-calc-panel-gear-ratios"
+            data-calc-tab="gear-ratios"
+            tabindex={-1}
+          >
+            gear ratios
+          </button>
+          <button
+            id="tri-calc-tab-tire-pressure"
+            class="tri-calc-tab"
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tri-calc-panel-tire-pressure"
+            data-calc-tab="tire-pressure"
+            tabindex={-1}
+          >
+            tire pressure
+          </button>
+        </div>
+      )}
+      <div
+        id={page ? 'tri-calc-panel-race' : undefined}
+        class="tri-calc-cell tri-calc-panel"
+        role={page ? 'tabpanel' : undefined}
+        aria-labelledby={page ? 'tri-calc-tab-race' : undefined}
+        data-calc-panel="race"
+      >
         <div class="tri-calc-presets">
           {TRI_RACE_DISTANCES.map(([label, s, b, r]) => (
             <button
@@ -1371,27 +1412,48 @@ export const CalcPanel = ({
           </table>
         </div>
       </div>
-      <div class="tri-calc-proj" hidden>
+      <div class="tri-calc-proj" data-calc-tab-control="race" hidden>
         <div class="tri-calc-proj-zones" role="tablist" aria-label="heart rate zone" />
         <div class="tri-calc-proj-out" aria-live="polite" />
       </div>
+      {page && (
+        <div
+          id="tri-calc-panel-gear-ratios"
+          class="tri-calc-panel tri-calc-panel--tool"
+          role="tabpanel"
+          aria-labelledby="tri-calc-tab-gear-ratios"
+          data-calc-panel="gear-ratios"
+          hidden
+        >
+          <GearRatioCalculator />
+        </div>
+      )}
+      {page && (
+        <div
+          id="tri-calc-panel-tire-pressure"
+          class="tri-calc-panel tri-calc-panel--tool"
+          role="tabpanel"
+          aria-labelledby="tri-calc-tab-tire-pressure"
+          data-calc-panel="tire-pressure"
+          hidden
+        >
+          <TirePressure
+            composition={renderData?.analytics.body.composition}
+            weather={renderData?.weather}
+          />
+        </div>
+      )}
     </aside>
   )
 }
 
-export const ToolsPanel = ({
-  maintenance,
-  renderData,
-}: {
-  maintenance?: TriathlonMaintenance | null
-  renderData?: TriathlonRenderData
-}) => (
+export const ToolsPanel = ({ maintenance }: { maintenance?: TriathlonMaintenance | null }) => (
   <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="gear">
         gear
       </h2>
-      <GearPanel page maintenance={maintenance} renderData={renderData} />
+      <GearPanel page maintenance={maintenance} />
     </section>
     <section class="tri-tools-sec">
       <h2 class="tri-tools-h" data-i18n="pace">
