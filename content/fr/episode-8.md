@@ -18,7 +18,17 @@ the hiver bilan runs on the same two devices as [[fr/episode-4]]: `Voyons voir !
 
 ### parler de soi et de sa famille
 
-revoir l'épisode 5, p. 44 ([[fr/episode-5]]). first a listening (CD1, piste 70): place `Maxime`, `André`, `Clara`, `Suzanne`, `Marie-Josée` et `Ovide` on the famille Bérubé sofa portrait, seven labels for six names because `Julien` comes pre-filled, /6 against the corrigé. then production, `Parlez de votre famille. Utilisez mon, ma et mes.`, crossing three prompts (`le nom de`, `l'âge de`, `la profession de`) with three slots (`vos parents`, `vos frères et sœurs`, `vos enfants`), /8.
+revoir l'épisode 5, p. 44 ([[fr/episode-5]]). first a listening (CD1, piste 70): place `Maxime`, `André`, `Clara`, `Suzanne`, `Marie-Josée` et `Ovide` on the famille Bérubé sofa portrait, seven labels for six names because `Julien` comes pre-filled, /6 against the corrigé.
+
+then production, `Parlez de votre famille. Utilisez mon, ma et mes. Indiquez par exemple :`, crossing three prompts against three family groups, but not the full grid:
+
+| indiquez           | vos parents | vos frères et sœurs | vos enfants |
+| ------------------ | :---------: | :-----------------: | :---------: |
+| `le nom de`        |      ✓      |          ✓          |    ~~✗~~    |
+| `l'âge de`         |      ✓      |          ✓          |      ✓      |
+| `la profession de` |      ✓      |          ✓          |    ~~✗~~    |
+
+the corrigé strikes `vos enfants` out from the `nom` and `profession` columns and leaves it standing only under `âge`: you say your children's ages, not their names or jobs, in this drill. seven producible sentences on a 3×3 grid, `mon fils a 6 ans` being the shape the extra `âge` cell buys you; the printed score is nonetheless `/8`, one of this book's holistic production tallies rather than a strict per-cell count.[^grille]
 
 évaluez-vous:
 
@@ -163,3 +173,5 @@ related: [[fr/episode-5]], [[fr/episode-6]], [[fr/episode-7]], [[fr/les-nombres]
 [^reponses]: the games print empty checkboxes and dashed blanks, no inline answers. the `réponse`, `correction` and `préposition` columns here are worked out from the kinship arithmetic, the avoir/être rule, the letter counts and the photos.
 
 [^imparfait]: `n'avait pas` in the same message is the imparfait of `avoir`, the course's first past tense in the wild, dropped without a gloss. the messages also run ahead of the syllabus with `en` and `les siens`: comprehension texts are allowed to outrun production.
+
+[^grille]: the crossed cells are the corrigé's own red strikethrough, not an inference; the reasoning is not printed, but stating a child's age is the natural family-talk fact, while a young child's profession rarely applies and their name was already drilled in the épisode 5 listening above.

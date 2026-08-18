@@ -7,6 +7,7 @@ import {
   latestMorningBodyWeight,
   PIRELLI_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_BIKES,
+  TIRE_PRESSURE_BALANCES,
   TIRE_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_SURFACES,
   TIRE_PRESSURE_TIRES,
@@ -42,6 +43,10 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
       data-rider-kg={morningWeight?.kg}
       data-weight-date={morningWeight?.date}
       data-bike={DEFAULT_TIRE_PRESSURE_SELECTION.bike}
+      data-bike-mass-lb={
+        DEFAULT_TIRE_PRESSURE_SELECTION.bikeMassesLb[DEFAULT_TIRE_PRESSURE_SELECTION.bike]
+      }
+      data-balance={DEFAULT_TIRE_PRESSURE_SELECTION.balance}
       data-wheel={DEFAULT_TIRE_PRESSURE_SELECTION.wheel}
       data-tire={DEFAULT_TIRE_PRESSURE_SELECTION.tire}
       data-surface={DEFAULT_TIRE_PRESSURE_SELECTION.surface}
@@ -97,17 +102,29 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
           <legend data-i18n="bike">bike</legend>
           <div class="tri-pressure-options">
             {TIRE_PRESSURE_BIKES.map(bike => (
-              <label class="tri-pressure-option">
-                <input
-                  type="radio"
-                  name="tri-pressure-bike"
-                  value={bike.id}
-                  data-pressure-field="bike"
-                  checked={bike.id === DEFAULT_TIRE_PRESSURE_SELECTION.bike}
-                />
-                <span>{bike.label}</span>
-                <small>{bike.massLb} lb</small>
-              </label>
+              <div class="tri-pressure-option tri-pressure-bike-option">
+                <label class="tri-pressure-bike-choice">
+                  <input
+                    type="radio"
+                    name="tri-pressure-bike"
+                    value={bike.id}
+                    data-pressure-field="bike"
+                    checked={bike.id === DEFAULT_TIRE_PRESSURE_SELECTION.bike}
+                  />
+                  <span>{bike.label}</span>
+                </label>
+                <span class="tri-pressure-bike-mass">
+                  <input
+                    type="text"
+                    value={DEFAULT_TIRE_PRESSURE_SELECTION.bikeMassesLb[bike.id]}
+                    data-pressure-field="bikeMass"
+                    data-pressure-bike={bike.id}
+                    inputMode="decimal"
+                    aria-label={`${bike.label} weight in pounds`}
+                  />
+                  <span>lb</span>
+                </span>
+              </div>
             ))}
           </div>
         </fieldset>
@@ -169,6 +186,23 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
                 />
                 <span>{tire.label}</span>
                 <small>{tire.detail}</small>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset class="tri-pressure-field" data-pressure-group="balance">
+          <legend data-i18n="balance">balance</legend>
+          <div class="tri-pressure-options tri-pressure-options--balance">
+            {TIRE_PRESSURE_BALANCES.map(balance => (
+              <label class="tri-pressure-option">
+                <input
+                  type="radio"
+                  name="tri-pressure-balance"
+                  value={balance.id}
+                  data-pressure-field="balance"
+                  checked={balance.id === DEFAULT_TIRE_PRESSURE_SELECTION.balance}
+                />
+                <span>{balance.label}</span>
               </label>
             ))}
           </div>

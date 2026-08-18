@@ -1092,7 +1092,7 @@ These labels interpret Garmin's score. They do not calculate the underlying aero
 
 ### tire pressure
 
-The gear panel takes the latest valid Garmin morning body-mass sample and adds the mass of the selected equipped bike. The Cervélo is $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax is $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$:
+The gear panel takes the latest valid Garmin morning body-mass sample and adds the mass of the selected equipped bike. The Cervélo defaults to $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax defaults to $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$. Each bike row exposes an editable pound value, persisted locally for that bike. A custom-bike row defaults to $20\ \mathrm{lb}$ and accepts the same $10$–$80\ \mathrm{lb}$ range. The command-palette flow accepts the same decimal mass after bike selection:
 
 $$
 m_{\mathrm{system}}
@@ -1160,7 +1160,15 @@ c_v
 10\le v\le33.
 $$
 
-For the Cervélo road setup, $(c_f,c_r)=(0.985,1.01)$. For the Speedmax triathlon setup, $(c_f,c_r)=(1,1)$. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
+Front/rear load balance is selected independently of the bike. If the chosen split is $b_f/b_r$ percent, its pressure coefficients are
+
+$$
+c_f=\frac{b_f}{50},
+\qquad
+c_r=\frac{b_r}{50}.
+$$
+
+The available splits are $50/50$, $48/52$, $45/55$, and $40/60$, with $48/52$ as the default. Both the P Zero Race SL-R with a P Zero TPU tube and the P Zero Race TLR SL-R tubeless setup use the high-performance casing coefficient $c_t=1.00$. The axle recommendations are rounded to the nearest $0.5\ \mathrm{PSI}$:
 
 $$
 p_f
