@@ -4,6 +4,7 @@ import {
   calculateTirePressure,
   DEFAULT_TIRE_PRESSURE_SELECTION,
   formatTirePressurePsi,
+  formatTirePressureWeight,
   latestMorningBodyWeight,
   PIRELLI_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_BIKES,
@@ -11,6 +12,7 @@ import {
   TIRE_PRESSURE_SOURCE_URL,
   TIRE_PRESSURE_SURFACES,
   TIRE_PRESSURE_TIRES,
+  TIRE_PRESSURE_WEIGHT_UNITS,
   TIRE_PRESSURE_WHEELS,
   tirePressureSurface,
 } from '../../../util/triathlon-tire-pressure'
@@ -31,10 +33,12 @@ const weatherCondition = (weather: WeatherSnapshot): string => {
 
 export const TirePressure = ({ composition = [], weather = null }: TirePressureProps) => {
   const morningWeight = latestMorningBodyWeight(composition)
+  const defaultSelection = {
+    ...DEFAULT_TIRE_PRESSURE_SELECTION,
+    riderKg: morningWeight?.kg ?? null,
+  }
   const defaultSurface = tirePressureSurface(DEFAULT_TIRE_PRESSURE_SELECTION.surface)
-  const recommendation = morningWeight
-    ? calculateTirePressure(morningWeight.kg, DEFAULT_TIRE_PRESSURE_SELECTION)
-    : null
+  const recommendation = calculateTirePressure(defaultSelection)
   return (
     <section
       id="tire-pressure"
@@ -42,31 +46,26 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
       aria-label="tire pressure calculator"
       data-rider-kg={morningWeight?.kg}
       data-weight-date={morningWeight?.date}
+      data-weight-unit={defaultSelection.weightUnit}
       data-bike={DEFAULT_TIRE_PRESSURE_SELECTION.bike}
       data-bike-mass-lb={
         DEFAULT_TIRE_PRESSURE_SELECTION.bikeMassesLb[DEFAULT_TIRE_PRESSURE_SELECTION.bike]
       }
       data-balance={DEFAULT_TIRE_PRESSURE_SELECTION.balance}
       data-wheel={DEFAULT_TIRE_PRESSURE_SELECTION.wheel}
+      data-custom-wheel-front-mm={defaultSelection.customWheel.frontInnerWidthMm}
+      data-custom-wheel-rear-mm={defaultSelection.customWheel.rearInnerWidthMm}
       data-tire={DEFAULT_TIRE_PRESSURE_SELECTION.tire}
       data-surface={DEFAULT_TIRE_PRESSURE_SELECTION.surface}
       data-speed-mph={DEFAULT_TIRE_PRESSURE_SELECTION.speedMph}
     >
       <div class="tri-pressure-head">
         <span data-i18n="tire pressure">tire pressure</span>
-        <span class="tri-pressure-date">
-          {morningWeight ? (
-            <>
-              <time datetime={morningWeight.date}>{morningWeight.date}</time>
-              <span aria-hidden="true"> · </span>
-              <span>{morningWeight.kg.toFixed(2)} kg</span>
-              <span aria-hidden="true"> · </span>
-              <span data-i18n="Garmin morning">Garmin morning</span>
-            </>
-          ) : (
-            <span data-i18n="morning weight unavailable">morning weight unavailable</span>
-          )}
-        </span>
+        {morningWeight && (
+          <time class="tri-pressure-date" datetime={morningWeight.date}>
+            {morningWeight.date}
+          </time>
+        )}
       </div>
       <div class="tri-pressure-result" aria-live="polite">
         <div class="tri-pressure-axle">
@@ -131,23 +130,57 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
         <fieldset class="tri-pressure-field" data-pressure-group="wheel">
           <legend data-i18n="wheelset">wheelset</legend>
           <div class="tri-pressure-options">
-            {TIRE_PRESSURE_WHEELS.map(wheel => (
-              <label class="tri-pressure-option">
-                <input
-                  type="radio"
-                  name="tri-pressure-wheel"
-                  value={wheel.id}
-                  data-pressure-field="wheel"
-                  checked={wheel.id === DEFAULT_TIRE_PRESSURE_SELECTION.wheel}
-                />
-                <span>{wheel.label}</span>
-                <small>
-                  {wheel.frontInnerWidthMm === wheel.rearInnerWidthMm
-                    ? `${wheel.frontInnerWidthMm} mm internal`
-                    : `${wheel.frontInnerWidthMm}/${wheel.rearInnerWidthMm} mm internal`}
-                </small>
-              </label>
-            ))}
+            {TIRE_PRESSURE_WHEELS.map(wheel =>
+              wheel.id === 'custom' ? (
+                <div class="tri-pressure-option tri-pressure-wheel-option">
+                  <label class="tri-pressure-wheel-choice">
+                    <input
+                      type="radio"
+                      name="tri-pressure-wheel"
+                      value={wheel.id}
+                      data-pressure-field="wheel"
+                    />
+                    <span>{wheel.label}</span>
+                  </label>
+                  <span class="tri-pressure-wheel-width">
+                    <input
+                      type="text"
+                      value={defaultSelection.customWheel.frontInnerWidthMm}
+                      data-pressure-field="customWheelWidth"
+                      data-pressure-axle="front"
+                      inputMode="decimal"
+                      aria-label="front internal rim width in millimetres"
+                    />
+                    <span>/</span>
+                    <input
+                      type="text"
+                      value={defaultSelection.customWheel.rearInnerWidthMm}
+                      data-pressure-field="customWheelWidth"
+                      data-pressure-axle="rear"
+                      inputMode="decimal"
+                      aria-label="rear internal rim width in millimetres"
+                    />
+                    <span>mm</span>
+                  </span>
+                </div>
+              ) : (
+                <label class="tri-pressure-option">
+                  <input
+                    type="radio"
+                    name="tri-pressure-wheel"
+                    value={wheel.id}
+                    data-pressure-field="wheel"
+                    checked={wheel.id === DEFAULT_TIRE_PRESSURE_SELECTION.wheel}
+                  />
+                  <span>{wheel.label}</span>
+                  <small>
+                    {wheel.frontInnerWidthMm === wheel.rearInnerWidthMm
+                      ? `${wheel.frontInnerWidthMm} mm internal`
+                      : `${wheel.frontInnerWidthMm}/${wheel.rearInnerWidthMm} mm internal`}
+                  </small>
+                </label>
+              ),
+            )}
           </div>
         </fieldset>
         <fieldset class="tri-pressure-field" data-pressure-group="surface">
@@ -207,6 +240,36 @@ export const TirePressure = ({ composition = [], weather = null }: TirePressureP
             ))}
           </div>
         </fieldset>
+        <div class="tri-pressure-weight">
+          <span data-i18n="rider weight">rider weight</span>
+          <span class="tri-pressure-weight-controls">
+            <input
+              type="text"
+              value={
+                morningWeight
+                  ? formatTirePressureWeight(morningWeight.kg, defaultSelection.weightUnit)
+                  : ''
+              }
+              data-pressure-field="riderMass"
+              inputMode="decimal"
+              aria-label="rider weight"
+            />
+            <span class="tri-pressure-weight-units" role="group" aria-label="weight unit">
+              {TIRE_PRESSURE_WEIGHT_UNITS.map(unit => (
+                <label>
+                  <input
+                    type="radio"
+                    name="tri-pressure-weight-unit"
+                    value={unit}
+                    data-pressure-field="weightUnit"
+                    checked={unit === defaultSelection.weightUnit}
+                  />
+                  <span>{unit}</span>
+                </label>
+              ))}
+            </span>
+          </span>
+        </div>
         <label class="tri-pressure-speed">
           <span data-i18n="average speed">average speed</span>
           <span class="tri-pressure-speed-input">

@@ -1,7 +1,9 @@
 export type TirePressureBikeId = 'cervelo' | 'speedmax' | 'custom'
-export type TirePressureWheelId = 'princeton' | 'reserve'
+export type TirePressureWheelId = 'princeton' | 'reserve' | 'custom'
 export type TirePressureTireId = 'tpu' | 'tubeless'
 export type TirePressureBalanceId = '50-50' | '48-52' | '45-55' | '40-60'
+export type TirePressureWeightUnit = 'kg' | 'lb'
+export type TirePressureWheelAxle = 'front' | 'rear'
 export type TirePressureSurfaceId =
   | 'new-pavement'
   | 'worn-pavement'
@@ -27,7 +29,12 @@ export interface TirePressureWheel {
   diameterMm: number
   frontInnerWidthMm: number
   rearInnerWidthMm: number
-  recommendedMinimumTireWidthMm: number
+  recommendedMinimumTireWidthMm: number | null
+}
+
+export interface TirePressureCustomWheel {
+  frontInnerWidthMm: number
+  rearInnerWidthMm: number
 }
 
 export interface TirePressureSurface {
@@ -50,20 +57,26 @@ export interface TirePressureSpeed {
 }
 
 export interface TirePressureSelection {
+  riderKg: number | null
+  weightUnit: TirePressureWeightUnit
   bike: TirePressureBikeId
   bikeMassesLb: Readonly<Record<TirePressureBikeId, number>>
   balance: TirePressureBalanceId
   wheel: TirePressureWheelId
+  customWheel: TirePressureCustomWheel
   tire: TirePressureTireId
   surface: TirePressureSurfaceId
   speedMph: number
 }
 
 export type TirePressureChange =
+  | { field: 'riderMass'; valueKg: number }
+  | { field: 'weightUnit'; value: TirePressureWeightUnit }
   | { field: 'bike'; value: TirePressureBikeId }
   | { field: 'bikeMass'; bike: TirePressureBikeId; value: number }
   | { field: 'balance'; value: TirePressureBalanceId }
   | { field: 'wheel'; value: TirePressureWheelId }
+  | { field: 'customWheelWidth'; axle: TirePressureWheelAxle; value: number }
   | { field: 'tire'; value: TirePressureTireId }
   | { field: 'surface'; value: TirePressureSurfaceId }
   | { field: 'speed'; value: number }
@@ -103,6 +116,7 @@ export const TRI_TIRE_PRESSURE_OPEN_EVENT = 'tri:tire-pressure-open'
 export const TIRE_PRESSURE_SOURCE_URL =
   'https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1'
 export const PIRELLI_PRESSURE_SOURCE_URL = 'https://www.pirelli.com/tires/en-us/bike/pressure-tool'
+export const TIRE_PRESSURE_WEIGHT_UNITS: readonly TirePressureWeightUnit[] = ['kg', 'lb']
 
 export const TIRE_PRESSURE_BIKES: readonly TirePressureBike[] = [
   { id: 'cervelo', label: 'Cervélo Soloist', massLb: 22 },
@@ -133,6 +147,14 @@ export const TIRE_PRESSURE_WHEELS: readonly TirePressureWheel[] = [
     frontInnerWidthMm: 25.4,
     rearInnerWidthMm: 24.8,
     recommendedMinimumTireWidthMm: 29,
+  },
+  {
+    id: 'custom',
+    label: 'custom wheelset',
+    diameterMm: 622,
+    frontInnerWidthMm: 23,
+    rearInnerWidthMm: 23,
+    recommendedMinimumTireWidthMm: null,
   },
 ]
 
@@ -181,10 +203,13 @@ export const DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB: Readonly<Record<TirePressureB
 }
 
 export const DEFAULT_TIRE_PRESSURE_SELECTION: TirePressureSelection = {
+  riderKg: null,
+  weightUnit: 'kg',
   bike: 'cervelo',
   bikeMassesLb: DEFAULT_TIRE_PRESSURE_BIKE_MASSES_LB,
   balance: '48-52',
   wheel: 'princeton',
+  customWheel: { frontInnerWidthMm: 23, rearInnerWidthMm: 23 },
   tire: 'tpu',
   surface: 'worn-pavement',
   speedMph: 19.5,
@@ -205,15 +230,41 @@ export const isTirePressureSurfaceId = (value: string): value is TirePressureSur
 export const isTirePressureBalanceId = (value: string): value is TirePressureBalanceId =>
   TIRE_PRESSURE_BALANCES.some(balance => balance.id === value)
 
+export const isTirePressureWeightUnit = (value: string): value is TirePressureWeightUnit =>
+  value === 'kg' || value === 'lb'
+
 export const isTirePressureSpeed = (value: number): boolean =>
   Number.isFinite(value) && value >= 10 && value <= 33
 
 export const isTirePressureBikeMassLb = (value: number): boolean =>
   Number.isFinite(value) && value >= 10 && value <= 80
 
+export const isTirePressureRiderKg = (value: number): boolean =>
+  Number.isFinite(value) && value >= 25 && value <= 200
+
+export const isTirePressureInnerWidthMm = (value: number): boolean =>
+  Number.isFinite(value) && value >= 13 && value <= 35
+
+export const tirePressureWeightFromKg = (valueKg: number, unit: TirePressureWeightUnit): number =>
+  unit === 'kg' ? valueKg : valueKg / KG_PER_LB
+
+export const tirePressureWeightToKg = (value: number, unit: TirePressureWeightUnit): number =>
+  unit === 'kg' ? value : value * KG_PER_LB
+
+export const formatTirePressureWeight = (valueKg: number, unit: TirePressureWeightUnit): string =>
+  tirePressureWeightFromKg(valueKg, unit).toFixed(unit === 'kg' ? 2 : 1)
+
 export const isTirePressureChange = (value: unknown): value is TirePressureChange => {
-  if (value === null || typeof value !== 'object' || !('field' in value) || !('value' in value))
-    return false
+  if (value === null || typeof value !== 'object' || !('field' in value)) return false
+  if (value.field === 'riderMass')
+    return (
+      'valueKg' in value &&
+      typeof value.valueKg === 'number' &&
+      isTirePressureRiderKg(value.valueKg)
+    )
+  if (!('value' in value)) return false
+  if (value.field === 'weightUnit')
+    return typeof value.value === 'string' && isTirePressureWeightUnit(value.value)
   if (value.field === 'bike')
     return typeof value.value === 'string' && isTirePressureBikeId(value.value)
   if (value.field === 'bikeMass')
@@ -228,6 +279,13 @@ export const isTirePressureChange = (value: unknown): value is TirePressureChang
     return typeof value.value === 'string' && isTirePressureBalanceId(value.value)
   if (value.field === 'wheel')
     return typeof value.value === 'string' && isTirePressureWheelId(value.value)
+  if (value.field === 'customWheelWidth')
+    return (
+      'axle' in value &&
+      (value.axle === 'front' || value.axle === 'rear') &&
+      typeof value.value === 'number' &&
+      isTirePressureInnerWidthMm(value.value)
+    )
   if (value.field === 'tire')
     return typeof value.value === 'string' && isTirePressureTireId(value.value)
   if (value.field === 'surface')
@@ -245,6 +303,11 @@ export const tirePressureBalance = (id: TirePressureBalanceId): TirePressureBala
 
 export const tirePressureWheel = (id: TirePressureWheelId): TirePressureWheel =>
   TIRE_PRESSURE_WHEELS.find(wheel => wheel.id === id) ?? TIRE_PRESSURE_WHEELS[0]
+
+export const selectedTirePressureWheel = (selection: TirePressureSelection): TirePressureWheel => {
+  const wheel = tirePressureWheel(selection.wheel)
+  return wheel.id === 'custom' ? { ...wheel, ...selection.customWheel } : wheel
+}
 
 export const tirePressureTire = (id: TirePressureTireId): TirePressureTire =>
   TIRE_PRESSURE_TIRES.find(tire => tire.id === id) ?? TIRE_PRESSURE_TIRES[0]
@@ -266,19 +329,26 @@ export const latestMorningBodyWeight = (
 const roundHalfPsi = (value: number): number => Math.round(value * 2) / 2
 
 export const calculateTirePressure = (
-  riderKg: number,
   selection: TirePressureSelection,
 ): TirePressureRecommendation | null => {
+  const riderKg = selection.riderKg
+  if (riderKg == null || !isTirePressureRiderKg(riderKg)) return null
+  if (
+    selection.wheel === 'custom' &&
+    (!isTirePressureInnerWidthMm(selection.customWheel.frontInnerWidthMm) ||
+      !isTirePressureInnerWidthMm(selection.customWheel.rearInnerWidthMm))
+  )
+    return null
   const bike = tirePressureBike(selection.bike)
   const balance = tirePressureBalance(selection.balance)
-  const wheel = tirePressureWheel(selection.wheel)
+  const wheel = selectedTirePressureWheel(selection)
   const tire = tirePressureTire(selection.tire)
   const surface = tirePressureSurface(selection.surface)
   const bikeMassLb = selection.bikeMassesLb[selection.bike]
   if (!isTirePressureBikeMassLb(bikeMassLb)) return null
   const bikeKg = bikeMassLb * KG_PER_LB
   const systemKg = riderKg + bikeKg
-  if (!Number.isFinite(riderKg) || systemKg < 34 || systemKg > 205) return null
+  if (systemKg < 34 || systemKg > 205) return null
   if (!isTirePressureSpeed(selection.speedMph)) return null
 
   const width = TIRE_PRESSURE_MEASURED_WIDTH_MM
@@ -314,7 +384,8 @@ export const calculateTirePressure = (
     tire,
     surface,
     speedMph: selection.speedMph,
-    wheelCompatibilityWarning: width < wheel.recommendedMinimumTireWidthMm,
+    wheelCompatibilityWarning:
+      wheel.recommendedMinimumTireWidthMm != null && width < wheel.recommendedMinimumTireWidthMm,
   }
 }
 
