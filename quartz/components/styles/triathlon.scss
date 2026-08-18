@@ -2142,7 +2142,7 @@
   grid-template-areas:
     'bike wheel'
     'tire surface'
-    'speed speed';
+    'balance speed';
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.6rem;
 }
@@ -2161,6 +2161,10 @@
 
 .tri-pressure-field[data-pressure-group='surface'] {
   grid-area: surface;
+}
+
+.tri-pressure-field[data-pressure-group='balance'] {
+  grid-area: balance;
 }
 
 .tri-pressure-field {
@@ -2191,6 +2195,10 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.tri-pressure-options--balance {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .tri-pressure-option {
   position: relative;
   display: grid;
@@ -2204,7 +2212,7 @@
   background: var(--light);
   cursor: pointer;
 
-  input {
+  input[type='radio'] {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -2213,7 +2221,7 @@
     pointer-events: none;
   }
 
-  > span:not(.tri-pressure-surface-tip) {
+  > span:not(.tri-pressure-surface-tip, .tri-pressure-bike-mass) {
     min-width: 0;
     overflow: hidden;
     font-size: var(--tri-pressure-option-size);
@@ -2237,7 +2245,24 @@
   }
 }
 
+.tri-pressure-bike-choice {
+  min-width: 0;
+  cursor: pointer;
+
+  > span {
+    display: block;
+    overflow: hidden;
+    font-size: var(--tri-pressure-option-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 .tri-pressure-options--surface .tri-pressure-option {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.tri-pressure-options--balance .tri-pressure-option {
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -2287,7 +2312,8 @@
   text-transform: uppercase;
 }
 
-.tri-pressure-speed-input {
+.tri-pressure-speed-input,
+.tri-pressure-bike-mass {
   display: inline-flex;
   align-items: baseline;
   gap: 0.22rem;
@@ -2317,6 +2343,10 @@
       text-decoration: underline solid var(--tri-accent);
     }
   }
+}
+
+.tri-pressure-bike-mass input {
+  width: 2.2rem;
 }
 
 .tri-pressure-weather {
@@ -2434,6 +2464,7 @@
       'wheel'
       'tire'
       'surface'
+      'balance'
       'speed';
     grid-template-columns: minmax(0, 1fr);
   }
