@@ -55,7 +55,7 @@ export const setupCalc = (root: HTMLElement, context: TriathlonContext): (() => 
   const btn = root.querySelector<HTMLElement>('.tri-calc-btn')
   const calc = root.querySelector<HTMLElement>('.tri-calc')
   const closeBtn = root.querySelector<HTMLElement>('.tri-calc-close')
-  const pageMode = root.dataset.triView === 'tools' || root.dataset.triView === 'calc'
+  const pageMode = root.dataset.triView === 'calc'
   if (!calc || (!btn && !pageMode)) return null
 
   let live = true
@@ -424,10 +424,10 @@ export const setupCalc = (root: HTMLElement, context: TriathlonContext): (() => 
   }
   const onInput = (event: Event) => {
     const target = event.target
+    if (!(target instanceof HTMLInputElement) || !target.classList.contains('tri-calc-in')) return
     if (
-      target instanceof HTMLInputElement &&
-      (target.classList.contains('tri-calc-target') ||
-        target.classList.contains('tri-calc-legtime'))
+      target.classList.contains('tri-calc-target') ||
+      target.classList.contains('tri-calc-legtime')
     )
       return
     compute(false, true)
@@ -457,7 +457,7 @@ export const setupCalc = (root: HTMLElement, context: TriathlonContext): (() => 
     }
   }
   const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') close()
+    if (!pageMode && event.key === 'Escape') close()
   }
 
   const program = start<CalculatorModel, CalculatorMessage, CalculatorEffect>({

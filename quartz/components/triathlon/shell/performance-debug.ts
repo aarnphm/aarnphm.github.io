@@ -5,9 +5,18 @@ import {
 } from '../../scripts/performance-sample'
 
 const FRAME_BUDGET_MS = 1000 / 60
-const FRAME_CAPACITY = 240
+const REFRESH_PERIODS = [1000 / 120, 1000 / 90, 1000 / 60, 1000 / 30]
+const FRAME_CAPACITY = 480
 const SAMPLE_CAPACITY = 120
-const PAINT_INTERVAL_MS = 250
+const BUCKET_MS = 100
+const BUCKET_CAPACITY = 64
+const CHART_INTERVAL_MS = 100
+const METRIC_INTERVAL_MS = 500
+const CHART_FLOOR_MS = 4
+const CHART_CEIL_MS = 250
+const IDLE_GAP_MS = 1000
+const SMOOTHING_PASSES = 2
+const EVENT_THRESHOLD_MS = 16
 const DEBUG_QUERY = 'tri-debug'
 const DEBUG_VALUE = 'performance'
 
@@ -17,10 +26,35 @@ interface RingBuffer {
   values: Float32Array
 }
 
+interface BucketSeries {
+  count: number
+  cursor: number
+  jank: Uint8Array
+  max: Float32Array
+  mean: Float32Array
+  min: Float32Array
+}
+
+interface OpenBucket {
+  count: number
+  jank: boolean
+  max: number
+  min: number
+  start: number
+  sum: number
+}
+
 export interface FrameSummary {
   fps: number
   p95: number
   slowRatio: number
+}
+
+export interface ChartSeries {
+  jank: readonly boolean[]
+  max: readonly number[]
+  mean: readonly number[]
+  min: readonly number[]
 }
 
 interface ChartGeometry {
@@ -28,8 +62,34 @@ interface ChartGeometry {
   font: string
   gray: string
   height: number
-  lightgray: string
+  salmon: string
+  surface: string
   width: number
+}
+
+interface LongAnimationFrameScript {
+  duration: number
+  invoker: string
+  sourceFunctionName: string
+  sourceURL: string
+}
+
+interface LongAnimationFrameEntry extends PerformanceEntry {
+  blockingDuration: number
+  scripts: readonly LongAnimationFrameScript[]
+}
+
+interface LayoutShiftEntry extends PerformanceEntry {
+  hadRecentInput: boolean
+  value: number
+}
+
+interface HeapMemory {
+  usedJSHeapSize: number
+}
+
+interface EventObserverInit extends PerformanceObserverInit {
+  durationThreshold: number
 }
 
 const createRing = (capacity: number): RingBuffer => ({
@@ -58,6 +118,51 @@ const ringValues = (ring: RingBuffer): number[] => {
   return values
 }
 
+const createSeries = (capacity: number): BucketSeries => ({
+  count: 0,
+  cursor: 0,
+  jank: new Uint8Array(capacity),
+  max: new Float32Array(capacity),
+  mean: new Float32Array(capacity),
+  min: new Float32Array(capacity),
+})
+
+const pushSeries = (series: BucketSeries, bucket: OpenBucket): void => {
+  const slot = series.cursor
+  series.mean[slot] = bucket.sum / bucket.count
+  series.min[slot] = bucket.min
+  series.max[slot] = bucket.max
+  series.jank[slot] = bucket.jank ? 1 : 0
+  series.cursor = (series.cursor + 1) % series.mean.length
+  series.count = Math.min(series.count + 1, series.mean.length)
+}
+
+const clearSeries = (series: BucketSeries): void => {
+  series.count = 0
+  series.cursor = 0
+  series.jank.fill(0)
+  series.max.fill(0)
+  series.mean.fill(0)
+  series.min.fill(0)
+}
+
+const seriesWindow = (series: BucketSeries): ChartSeries => {
+  const capacity = series.mean.length
+  const start = series.count === capacity ? series.cursor : 0
+  const jank: boolean[] = []
+  const max: number[] = []
+  const mean: number[] = []
+  const min: number[] = []
+  for (let index = 0; index < series.count; index += 1) {
+    const slot = (start + index) % capacity
+    jank.push(series.jank[slot] === 1)
+    max.push(series.max[slot])
+    mean.push(series.mean[slot])
+    min.push(series.min[slot])
+  }
+  return { jank, max, mean, min }
+}
+
 export const summarizeFrameDurations = (
   values: readonly number[],
   frameBudget = FRAME_BUDGET_MS,
@@ -74,8 +179,75 @@ export const summarizeFrameDurations = (
   }
 }
 
-const formatDuration = (duration: number): string =>
-  duration >= 10 ? `${duration.toFixed(1)} ms` : `${duration.toFixed(2)} ms`
+export const estimateFrameBudget = (values: readonly number[]): number => {
+  if (values.length < 12) return FRAME_BUDGET_MS
+  const sorted = [...values].sort((left, right) => left - right)
+  const fastest = sorted[Math.floor(sorted.length * 0.1)]
+  let budget = FRAME_BUDGET_MS
+  let closest = Number.POSITIVE_INFINITY
+  for (const period of REFRESH_PERIODS) {
+    const distance = Math.abs(period - fastest)
+    if (distance >= closest) continue
+    closest = distance
+    budget = period
+  }
+  return budget
+}
+
+export const smoothWindow = (values: readonly number[], passes = SMOOTHING_PASSES): number[] => {
+  let current = [...values]
+  if (current.length < 3) return current
+  for (let pass = 0; pass < passes; pass += 1) {
+    const source = current
+    current = source.map((value, index) => {
+      const before = source[Math.max(0, index - 1)]
+      const after = source[Math.min(source.length - 1, index + 1)]
+      return (before + 2 * value + after) / 4
+    })
+  }
+  return current
+}
+
+export const monotoneSlopes = (values: readonly number[]): number[] => {
+  const length = values.length
+  const slopes = Array.from<number>({ length }).fill(0)
+  if (length < 2) return slopes
+  const deltas = Array.from({ length: length - 1 }, (_, index) => values[index + 1] - values[index])
+  slopes[0] = deltas[0]
+  slopes[length - 1] = deltas[length - 2]
+  for (let index = 1; index < length - 1; index += 1)
+    slopes[index] =
+      deltas[index - 1] * deltas[index] <= 0 ? 0 : (deltas[index - 1] + deltas[index]) / 2
+  for (let index = 0; index < length - 1; index += 1) {
+    if (deltas[index] === 0) {
+      slopes[index] = 0
+      slopes[index + 1] = 0
+      continue
+    }
+    const alpha = slopes[index] / deltas[index]
+    const beta = slopes[index + 1] / deltas[index]
+    const magnitude = Math.hypot(alpha, beta)
+    if (magnitude <= 3) continue
+    const scale = 3 / magnitude
+    slopes[index] = scale * alpha * deltas[index]
+    slopes[index + 1] = scale * beta * deltas[index]
+  }
+  return slopes
+}
+
+export const frameChartRatio = (duration: number): number => {
+  const floor = Math.log(CHART_FLOOR_MS)
+  const span = Math.log(CHART_CEIL_MS) - floor
+  const clamped = Math.min(CHART_CEIL_MS, Math.max(CHART_FLOOR_MS, duration))
+  return (Math.log(clamped) - floor) / span
+}
+
+const formatDuration = (duration: number): string => {
+  if (duration >= 1000) return `${(duration / 1000).toFixed(1)} s`
+  return duration >= 10 ? `${duration.toFixed(1)} ms` : `${duration.toFixed(2)} ms`
+}
+
+const formatHeap = (bytes: number): string => `${(bytes / 1048576).toFixed(1)} MB`
 
 const percentile95 = (ring: RingBuffer): number => {
   const values = ringValues(ring)
@@ -93,23 +265,48 @@ const createElement = <Tag extends keyof HTMLElementTagNameMap>(
   return element
 }
 
-const createMetric = (label: string): { element: HTMLElement; value: HTMLElement } => {
+const createMetric = (
+  label: string,
+): { element: HTMLElement; name: HTMLElement; value: HTMLElement } => {
   const element = createElement('div', 'tri-perf-metric')
   const name = createElement('span', 'tri-perf-metric-label')
   const value = createElement('span', 'tri-perf-metric-value')
   name.textContent = label
   value.textContent = '—'
   element.append(name, value)
-  return { element, value }
+  return { element, name, value }
+}
+
+const traceCurve = (
+  context: CanvasRenderingContext2D,
+  xs: readonly number[],
+  ys: readonly number[],
+  connect: boolean,
+): void => {
+  const slopes = monotoneSlopes(ys)
+  if (connect) context.lineTo(xs[0], ys[0])
+  else context.moveTo(xs[0], ys[0])
+  for (let index = 0; index < ys.length - 1; index += 1) {
+    const step = xs[index + 1] - xs[index]
+    context.bezierCurveTo(
+      xs[index] + step / 3,
+      ys[index] + slopes[index] / 3,
+      xs[index + 1] - step / 3,
+      ys[index + 1] - slopes[index + 1] / 3,
+      xs[index + 1],
+      ys[index + 1],
+    )
+  }
 }
 
 const drawChart = (
   canvas: HTMLCanvasElement,
-  frameDurations: readonly number[],
+  series: ChartSeries,
   geometry: ChartGeometry,
+  budget: number,
 ): void => {
   const context = canvas.getContext('2d')
-  const { accent, font, gray, height, lightgray, width } = geometry
+  const { accent, font, gray, height, salmon, surface, width } = geometry
   if (!context || width <= 0 || height <= 0) return
   const pixelRatio = Math.min(window.devicePixelRatio, 2)
   const targetWidth = Math.round(width * pixelRatio)
@@ -120,37 +317,80 @@ const drawChart = (
   }
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
   context.clearRect(0, 0, width, height)
-  const maxFps = 120
-  const budgetY = height - (60 / maxFps) * height
-  context.strokeStyle = lightgray
-  context.lineWidth = 1
-  context.setLineDash([2, 3])
+  const guideY = (duration: number): number =>
+    Math.round(height - frameChartRatio(duration) * height) + 0.5
+  context.font = font
+  context.textAlign = 'left'
+  context.textBaseline = 'alphabetic'
+  for (const multiple of [1, 2, 4]) {
+    const duration = budget * multiple
+    const y = guideY(duration)
+    context.globalAlpha = 0.45
+    context.strokeStyle = gray
+    context.lineWidth = 1
+    context.setLineDash([2, 3])
+    context.beginPath()
+    context.moveTo(0, y)
+    context.lineTo(width, y)
+    context.stroke()
+    context.setLineDash([])
+    const label = String(Math.round(1000 / duration))
+    const baseline = Math.max(8, y - 3)
+    context.globalAlpha = 1
+    context.fillStyle = surface
+    context.fillRect(2, baseline - 7, context.measureText(label).width + 3, 8)
+    context.globalAlpha = 0.75
+    context.fillStyle = gray
+    context.fillText(label, 3, baseline)
+    context.globalAlpha = 1
+  }
+  if (series.mean.length < 2) return
+  const mean = smoothWindow(series.mean)
+  const upper = smoothWindow(series.max)
+  const lower = smoothWindow(series.min)
+  const step = width / (BUCKET_CAPACITY - 1)
+  const offset = width - (mean.length - 1) * step
+  const xs = mean.map((_, index) => offset + index * step)
+  const toY = (duration: number): number => height - frameChartRatio(duration) * height
+  const upperY = upper.map(toY)
+  const lowerY = lower.map(toY)
+  const meanY = mean.map(toY)
+  const reversedXs = [...xs].reverse()
+  context.globalAlpha = 0.18
+  context.fillStyle = accent
   context.beginPath()
-  context.moveTo(0, budgetY + 0.5)
-  context.lineTo(width, budgetY + 0.5)
-  context.stroke()
-  context.setLineDash([])
-  if (frameDurations.length < 2) return
+  traceCurve(context, xs, upperY, false)
+  traceCurve(context, reversedXs, [...lowerY].reverse(), true)
+  context.closePath()
+  context.fill()
+  context.globalAlpha = 1
   context.strokeStyle = accent
   context.lineWidth = 1.25
   context.lineJoin = 'round'
+  context.lineCap = 'round'
   context.beginPath()
-  for (let index = 0; index < frameDurations.length; index += 1) {
-    const fps = Math.min(maxFps, 1000 / Math.max(frameDurations[index], 0.01))
-    const x = (index / (frameDurations.length - 1)) * width
-    const y = height - (fps / maxFps) * height
-    if (index === 0) context.moveTo(x, y)
-    else context.lineTo(x, y)
-  }
+  traceCurve(context, xs, meanY, false)
   context.stroke()
-  context.fillStyle = gray
-  context.font = font
-  context.textAlign = 'left'
-  context.fillText('60', 3, Math.max(8, budgetY - 3))
+  context.fillStyle = accent
+  context.beginPath()
+  context.arc(xs[xs.length - 1], meanY[meanY.length - 1], 1.6, 0, Math.PI * 2)
+  context.fill()
+  const rug = Math.max(3, height * 0.16)
+  context.fillStyle = salmon
+  for (let index = 0; index < series.jank.length; index += 1) {
+    if (!series.jank[index]) continue
+    context.fillRect(xs[index] - 0.75, height - rug, 1.5, rug)
+  }
 }
 
 const debugEnabledByQuery = (): boolean =>
   new URLSearchParams(window.location.search).get(DEBUG_QUERY) === DEBUG_VALUE
+
+const scriptLabel = (script: LongAnimationFrameScript): string => {
+  const name = script.sourceFunctionName || script.invoker || 'anonymous'
+  const file = script.sourceURL.split('?')[0].split('/').pop()
+  return file ? `${name} · ${file}` : name
+}
 
 export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null => {
   const timeline = root.querySelector<HTMLElement>('.tri-scroll')
@@ -180,32 +420,50 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
   primary.append(fps, state)
 
   const canvas = createElement('canvas', 'tri-perf-chart')
-  canvas.setAttribute('aria-label', 'recent frames per second')
+  canvas.setAttribute('aria-label', 'frame duration over the last six seconds')
   canvas.setAttribute('role', 'img')
 
   const metrics = createElement('div', 'tri-perf-metrics')
   const frameMetric = createMetric('frame p95')
-  const slowMetric = createMetric('over 16.7 ms')
+  const slowMetric = createMetric('over budget')
   const longFrameMetric = createMetric('long frames')
   const worstMetric = createMetric('worst frame')
+  const blockedMetric = createMetric('blocked')
+  const shiftMetric = createMetric('shift')
   const cursorMetric = createMetric('cursor p95')
   const timelineMetric = createMetric('timeline p95')
   const popoverMetric = createMetric('popover p95')
-  const scrollMetric = createMetric('scroll events')
+  const scrollMetric = createMetric('scroll')
+  const heapMetric = createMetric('heap')
+  const nodeMetric = createMetric('dom nodes')
   metrics.append(
     frameMetric.element,
     slowMetric.element,
     longFrameMetric.element,
     worstMetric.element,
+    blockedMetric.element,
+    shiftMetric.element,
     cursorMetric.element,
     timelineMetric.element,
     popoverMetric.element,
     scrollMetric.element,
+    heapMetric.element,
+    nodeMetric.element,
   )
-  panel.append(header, primary, canvas, metrics)
+
+  const attribution = createElement('div', 'tri-perf-attribution')
+  const scriptRow = createMetric('worst script')
+  scriptRow.element.className = 'tri-perf-attribution-row'
+  const eventRow = createMetric('worst event')
+  eventRow.element.className = 'tri-perf-attribution-row'
+  attribution.append(scriptRow.element, eventRow.element)
+
+  panel.append(header, primary, canvas, metrics, attribution)
   document.body.appendChild(panel)
 
   const frames = createRing(FRAME_CAPACITY)
+  const series = createSeries(BUCKET_CAPACITY)
+  const bucket: OpenBucket = { count: 0, jank: false, max: 0, min: 0, start: 0, sum: 0 }
   const samples: Record<SitePerformanceSource, RingBuffer> = {
     cursor: createRing(SAMPLE_CAPACITY),
     popover: createRing(SAMPLE_CAPACITY),
@@ -214,19 +472,30 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
   let animationFrame = 0
   let active = false
   let lastFrame = 0
-  let lastPaint = 0
+  let lastChart = 0
+  let lastMetrics = 0
   let scrollEvents = 0
   let previousScrollEvents = 0
   let previousScrollPaint = 0
   let longFrames = 0
   let worstFrame = 0
-  let observer: PerformanceObserver | null = null
+  let blockedTotal = 0
+  let worstScript = ''
+  let worstScriptDuration = 0
+  let worstInteraction = 0
+  let worstInteractionName = ''
+  let layoutShift = 0
+  let frameBudget = FRAME_BUDGET_MS
+  let frameObserver: PerformanceObserver | null = null
+  let eventObserver: PerformanceObserver | null = null
+  let shiftObserver: PerformanceObserver | null = null
   let chartGeometry: ChartGeometry = {
     accent: '#fc4c02',
     font: '8px monospace',
     gray: '#8b8b8b',
     height: 0,
-    lightgray: '#d8d8d8',
+    salmon: '#fdb2a2',
+    surface: '#fffcf0',
     width: 0,
   }
 
@@ -237,12 +506,52 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
       font: `8px ${style.fontFamily}`,
       gray: style.getPropertyValue('--gray').trim() || '#8b8b8b',
       height: canvas.clientHeight,
-      lightgray: style.getPropertyValue('--lightgray').trim() || '#d8d8d8',
+      salmon: style.getPropertyValue('--fig-salmon').trim() || '#fdb2a2',
+      surface: style.backgroundColor,
       width: canvas.clientWidth,
     }
   }
   const chartResize = new ResizeObserver(updateChartGeometry)
   chartResize.observe(canvas)
+
+  const resetBucket = (start: number): void => {
+    bucket.count = 0
+    bucket.jank = false
+    bucket.max = 0
+    bucket.min = 0
+    bucket.start = start
+    bucket.sum = 0
+  }
+
+  const advanceBuckets = (timestamp: number, duration: number): void => {
+    if (timestamp - bucket.start > BUCKET_MS * BUCKET_CAPACITY)
+      bucket.start = timestamp - BUCKET_MS * BUCKET_CAPACITY
+    while (timestamp - bucket.start >= BUCKET_MS) {
+      if (bucket.count === 0) {
+        bucket.count = 1
+        bucket.max = duration
+        bucket.min = duration
+        bucket.sum = duration
+      }
+      pushSeries(series, bucket)
+      resetBucket(bucket.start + BUCKET_MS)
+    }
+  }
+
+  const record = (timestamp: number, duration: number): void => {
+    pushRing(frames, duration)
+    if (bucket.count === 0) {
+      bucket.max = duration
+      bucket.min = duration
+    } else {
+      bucket.max = Math.max(bucket.max, duration)
+      bucket.min = Math.min(bucket.min, duration)
+    }
+    bucket.count += 1
+    bucket.sum += duration
+    if (duration > frameBudget * 3) bucket.jank = true
+    advanceBuckets(timestamp, duration)
+  }
 
   const updateState = (): void => {
     const cursor = document.querySelector<HTMLElement>('.site-cursor')
@@ -250,14 +559,18 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     state.textContent = openPanel ?? cursor?.dataset.mode ?? 'idle'
   }
 
-  const updatePanel = (timestamp: number): void => {
+  const updateMetrics = (timestamp: number): void => {
     const frameValues = ringValues(frames)
-    const summary = summarizeFrameDurations(frameValues)
+    frameBudget = estimateFrameBudget(frameValues)
+    const summary = summarizeFrameDurations(frameValues, frameBudget)
     fps.textContent = `${Math.round(summary.fps)} fps`
+    slowMetric.name.textContent = `over ${frameBudget.toFixed(1)} ms`
     frameMetric.value.textContent = formatDuration(summary.p95)
     slowMetric.value.textContent = `${Math.round(summary.slowRatio * 100)}%`
     longFrameMetric.value.textContent = String(longFrames)
     worstMetric.value.textContent = formatDuration(worstFrame)
+    blockedMetric.value.textContent = formatDuration(blockedTotal)
+    shiftMetric.value.textContent = layoutShift.toFixed(3)
     cursorMetric.value.textContent = formatDuration(percentile95(samples.cursor))
     timelineMetric.value.textContent = formatDuration(percentile95(samples.timeline))
     popoverMetric.value.textContent = formatDuration(percentile95(samples.popover))
@@ -266,20 +579,33 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     scrollMetric.value.textContent = `${scrollEvents} · ${scrollRate.toFixed(0)} /s`
     previousScrollEvents = scrollEvents
     previousScrollPaint = timestamp
+    const heap = (performance as Performance & { memory?: HeapMemory }).memory
+    heapMetric.value.textContent = heap ? formatHeap(heap.usedJSHeapSize) : '—'
+    nodeMetric.value.textContent = String(document.getElementsByTagName('*').length)
+    scriptRow.value.textContent = worstScript
+      ? `${worstScript} · ${formatDuration(worstScriptDuration)}`
+      : '—'
+    eventRow.value.textContent = worstInteractionName
+      ? `${worstInteractionName} · ${formatDuration(worstInteraction)}`
+      : '—'
     updateState()
-    drawChart(canvas, frameValues, chartGeometry)
   }
 
   const tick = (timestamp: number): void => {
     if (!active) return
     if (lastFrame > 0) {
       const duration = timestamp - lastFrame
-      if (duration < 250) pushRing(frames, duration)
+      if (duration <= IDLE_GAP_MS) record(timestamp, duration)
+      else resetBucket(timestamp)
     }
     lastFrame = timestamp
-    if (timestamp - lastPaint >= PAINT_INTERVAL_MS) {
-      lastPaint = timestamp
-      updatePanel(timestamp)
+    if (timestamp - lastChart >= CHART_INTERVAL_MS) {
+      lastChart = timestamp
+      drawChart(canvas, seriesWindow(series), chartGeometry, frameBudget)
+    }
+    if (timestamp - lastMetrics >= METRIC_INTERVAL_MS) {
+      lastMetrics = timestamp
+      updateMetrics(timestamp)
     }
     animationFrame = window.requestAnimationFrame(tick)
   }
@@ -293,23 +619,58 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     clearRing(samples.cursor)
     clearRing(samples.timeline)
     clearRing(samples.popover)
+    clearSeries(series)
+    resetBucket(performance.now())
     scrollEvents = 0
     previousScrollEvents = 0
     longFrames = 0
     worstFrame = 0
+    blockedTotal = 0
+    worstScript = ''
+    worstScriptDuration = 0
+    worstInteraction = 0
+    worstInteractionName = ''
+    layoutShift = 0
+    frameBudget = FRAME_BUDGET_MS
     updateChartGeometry()
     lastFrame = 0
-    lastPaint = 0
+    lastChart = 0
+    lastMetrics = 0
     previousScrollPaint = performance.now()
     animationFrame = window.requestAnimationFrame(tick)
     if (PerformanceObserver.supportedEntryTypes.includes('long-animation-frame')) {
-      observer = new PerformanceObserver(entries => {
-        for (const entry of entries.getEntries()) {
+      frameObserver = new PerformanceObserver(entries => {
+        for (const entry of entries.getEntries() as LongAnimationFrameEntry[]) {
           longFrames += 1
           worstFrame = Math.max(worstFrame, entry.duration)
+          blockedTotal += entry.blockingDuration
+          bucket.jank = true
+          for (const script of entry.scripts ?? []) {
+            if (script.duration <= worstScriptDuration) continue
+            worstScriptDuration = script.duration
+            worstScript = scriptLabel(script)
+          }
         }
       })
-      observer.observe({ type: 'long-animation-frame' })
+      frameObserver.observe({ type: 'long-animation-frame' })
+    }
+    if (PerformanceObserver.supportedEntryTypes.includes('event')) {
+      eventObserver = new PerformanceObserver(entries => {
+        for (const entry of entries.getEntries()) {
+          if (entry.duration <= worstInteraction) continue
+          worstInteraction = entry.duration
+          worstInteractionName = entry.name
+        }
+      })
+      const eventInit: EventObserverInit = { durationThreshold: EVENT_THRESHOLD_MS, type: 'event' }
+      eventObserver.observe(eventInit)
+    }
+    if (PerformanceObserver.supportedEntryTypes.includes('layout-shift')) {
+      shiftObserver = new PerformanceObserver(entries => {
+        for (const entry of entries.getEntries() as LayoutShiftEntry[])
+          if (!entry.hadRecentInput) layoutShift += entry.value
+      })
+      shiftObserver.observe({ type: 'layout-shift' })
     }
   }
 
@@ -319,8 +680,12 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     panel.hidden = true
     window.cancelAnimationFrame(animationFrame)
     animationFrame = 0
-    observer?.disconnect()
-    observer = null
+    frameObserver?.disconnect()
+    frameObserver = null
+    eventObserver?.disconnect()
+    eventObserver = null
+    shiftObserver?.disconnect()
+    shiftObserver = null
     delete document.documentElement.dataset.sitePerformanceDebug
   }
 
@@ -340,9 +705,15 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
   const onScroll = (): void => {
     scrollEvents += 1
   }
+  const onVisibility = (): void => {
+    if (document.visibilityState !== 'visible') return
+    lastFrame = 0
+    resetBucket(performance.now())
+  }
 
   close.addEventListener('click', stop)
   document.addEventListener('keydown', onKey)
+  document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
   window.addEventListener('scroll', onScroll, { capture: true, passive: true })
   if (debugEnabledByQuery()) start()
@@ -351,6 +722,7 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     stop()
     close.removeEventListener('click', stop)
     document.removeEventListener('keydown', onKey)
+    document.removeEventListener('visibilitychange', onVisibility)
     window.removeEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
     window.removeEventListener('scroll', onScroll, true)
     chartResize.disconnect()

@@ -44,7 +44,7 @@ import { readTirePressureSelection, storeTirePressureSelection } from '../tools/
 export const TRI_PAGES: { path: string; label: string; hint: string }[] = [
   { path: '/triathlon', label: 'triathlon', hint: 'overview' },
   { path: '/triathlon/tools', label: 'tools', hint: 'gears' },
-  { path: '/triathlon/calc', label: 'calculator', hint: 'race calc' },
+  { path: '/triathlon/calc', label: 'calculator', hint: 'race · gears · PSI' },
   { path: '/triathlon/analytics', label: 'analytics', hint: 'charts' },
   { path: '/triathlon/maps', label: 'maps', hint: 'routes' },
   { path: '/triathlon/training', label: 'training', hint: 'plans' },
@@ -366,9 +366,21 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       run: navTo(p.path),
     })),
     {
+      label: () => 'gear ratios',
+      hint: 'chainring × cassette',
+      keys: 'gear ratio gearing chainring cassette drivetrain teeth',
+      run: () => {
+        const tab = root.querySelector<HTMLButtonElement>('[data-calc-tab="gear-ratios"]')
+        if (tab) {
+          close()
+          tab.click()
+        } else navTo('/triathlon/calc#gear-ratios')()
+      },
+    },
+    {
       label: () => 'tire pressure',
       hint: tirePressureHint,
-      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax princeton reserve custom wheel bike rider weight kg lb tubeless tpu tube',
+      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax hunt aerodynamicist reserve custom wheel bike rider weight kg lb tubeless tpu tube',
       run: () => setPressureMode('weightUnit'),
     },
     {
@@ -576,7 +588,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
             if (root.querySelector('.tri-pressure')) {
               close()
               root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_OPEN_EVENT))
-            } else navTo('/triathlon/tools#tire-pressure')()
+            } else navTo('/triathlon/calc#tire-pressure')()
           },
         },
         {

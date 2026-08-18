@@ -1,13 +1,12 @@
 import type { DetailPayload } from '../activity/data'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
+import { buildTimelineDayCard } from '../../../util/triathlon-card'
 import {
   beginSitePerformanceSample,
   endSitePerformanceSample,
 } from '../../scripts/performance-sample'
-import { setActivityExpanded } from '../activity/comparison'
-import { buildDayCard } from '../activity/embeds'
-import { el } from '../runtime/dom'
+import { createDomFactory, el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
 const OPEN_PANEL_SELECTOR = '.tri-calc-open, .tri-map-open, .tri-training-open, .tri-analytics-open'
@@ -23,7 +22,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const bars = Array.from(root.querySelectorAll<HTMLElement>('.tri-bar'))
   if (!barsEl || !pop || bars.length === 0) return null
 
-  const location = root.dataset.location ?? 'Toronto'
   let active: HTMLElement | null = null
   let payload: DetailPayload | null = null
   let pinned = false
@@ -152,33 +150,41 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   window.addEventListener('pointerdown', armAudio)
   window.addEventListener('keydown', armAudio)
 
+  const domF = createDomFactory(context.presentation)
   const buildCard = (bar: HTMLElement) =>
-    buildDayCard(context.presentation, bar.dataset.dateIso ?? '', payload, {
-      location,
-      event: bar.dataset.event,
+    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', payload, {
+      dateHref: bar.getAttribute('href') ?? undefined,
     })
-  let cardCleanup: (() => void) | null = null
   const replaceCard = (bar: HTMLElement): void => {
-    cardCleanup?.()
-    const view = buildCard(bar)
-    scroller.replaceChildren(view.element)
-    cardCleanup = view.mount()
+    scroller.replaceChildren(buildCard(bar))
     popScrollTone = currentPopScrollTone()
   }
 
   const place = (bar: HTMLElement) => {
     const barRect = bar.getBoundingClientRect()
     const timelineRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
-    const r = pop.getBoundingClientRect()
-    const gap = 20
+    const gap = 10
     const inset = 8
+    const frameHeight = Math.max(0, pop.offsetHeight - scroller.clientHeight)
+    const naturalHeight = scroller.scrollHeight + frameHeight
+    const below = timelineRect.bottom + gap
+    const availableBelow = Math.max(0, window.innerHeight - inset - below)
+    const availableAbove = Math.max(0, timelineRect.top - gap - inset)
+    const placeBelow =
+      naturalHeight > availableAbove &&
+      (naturalHeight <= availableBelow || availableBelow >= availableAbove)
+    const availableHeight = placeBelow ? availableBelow : availableAbove
+    const maxContentHeight = Math.max(0, Math.floor(availableHeight - frameHeight))
+    const maxHeight = `${maxContentHeight}px`
+    if (scroller.style.maxHeight !== maxHeight) scroller.style.maxHeight = maxHeight
+    const r = pop.getBoundingClientRect()
     const cx = barRect.left + barRect.width / 2
     const left = Math.max(inset, Math.min(cx - r.width / 2, window.innerWidth - r.width - inset))
-    const below = timelineRect.bottom + gap
-    const above = timelineRect.top - gap - r.height
-    const top = below + r.height <= window.innerHeight - inset ? below : Math.max(inset, above)
+    const top = placeBelow ? below : Math.max(inset, timelineRect.top - gap - r.height)
     pop.style.left = `${left}px`
     pop.style.top = `${top}px`
+    pop.dataset.placement = placeBelow ? 'below' : 'above'
+    updateOverflow()
   }
   repositionActive = () => {
     if (active && (locked || pinned)) place(active)
@@ -226,13 +232,8 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     }
     place(bar)
     root.classList.add('tri-hovering')
+    pop.setAttribute('aria-hidden', 'false')
     endSitePerformanceSample('popover', startedAt)
-  }
-
-  const setExpanded = (on: boolean) => {
-    for (const activity of pop.querySelectorAll<HTMLElement>('.tri-act'))
-      setActivityExpanded(activity, on)
-    updateOverflow()
   }
   const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
@@ -240,6 +241,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     pinned = false
     setLocked(false)
     root.classList.remove('tri-hovering')
+    pop.setAttribute('aria-hidden', 'true')
   }
 
   const panelOpen = () => root.matches(OPEN_PANEL_SELECTOR)
@@ -248,7 +250,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
     hoverFrame = 0
     pendingClientX = null
-    setExpanded(false)
     hide()
   }
 
@@ -281,10 +282,25 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     pinned = false
     if (!locked) hideTimer = window.setTimeout(hide, 140)
   }
+  const onBarsClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0) return
+    if (event.target instanceof Element && event.target.closest('.tri-bar')) return
+    const idx = nearest(event.clientX)
+    const bar = bars[idx]
+    if (!bar?.hasAttribute('href')) return
+    event.preventDefault()
+    bar.click()
+  }
+  const onPopClick = (event: MouseEvent) => {
+    if (event.defaultPrevented || event.button !== 0) return
+    if (event.target instanceof Element && event.target.closest('a')) return
+    if (!active?.hasAttribute('href')) return
+    event.preventDefault()
+    active.click()
+  }
   const dismiss = () => {
     if (!locked) return
     setLocked(false)
-    setExpanded(false)
     hide()
   }
   const onDocClick = (event: MouseEvent) => {
@@ -303,8 +319,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       payload = result.value
       if (active) {
         replaceCard(active)
-        if (locked) setExpanded(true)
-        updateOverflow()
+        place(active)
       }
     })
 
@@ -317,14 +332,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     bars[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
     showFor(idx)
     setLocked(true)
-    setExpanded(true)
     if (active) place(active)
   }
 
   const onUnit = () => {
     if (!active) return
     replaceCard(active)
-    if (locked) setExpanded(true)
     updateOverflow()
   }
 
@@ -339,8 +352,10 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
+  barsEl.addEventListener('click', onBarsClick)
   pop.addEventListener('mouseenter', onPopEnter)
   pop.addEventListener('mouseleave', onPopLeave)
+  pop.addEventListener('click', onPopClick)
   scroller.addEventListener('scroll', onPopScroll, { passive: true })
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
@@ -361,8 +376,10 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     for (const year of timelineYears) delete year.dataset.current
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
+    barsEl.removeEventListener('click', onBarsClick)
     pop.removeEventListener('mouseenter', onPopEnter)
     pop.removeEventListener('mouseleave', onPopLeave)
+    pop.removeEventListener('click', onPopClick)
     scroller.removeEventListener('scroll', onPopScroll)
     document.removeEventListener('click', onDocClick)
     document.removeEventListener('keydown', onKey)
@@ -374,7 +391,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     window.removeEventListener('resize', onViewportResize)
     window.removeEventListener('scroll', onViewportScroll)
     repositionActive = null
-    cardCleanup?.()
     void audio?.close()
   }
 }

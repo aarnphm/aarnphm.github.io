@@ -40,6 +40,7 @@ import {
   buildShiftingChart,
   buildStaminaChart,
   buildTrainingEffectDetails,
+  buildTimelineDayCard,
   cyclingDynamicsIndexAtDistance,
   dominantTrainingEffectGroup,
   buildRoute,
@@ -3295,6 +3296,40 @@ test('day-card date renders as a month link only when extras provide an href', (
   assert.equal(anchor.properties.href, '../../../triathlon/on/2026/07')
   const plain = buildDayCard(factory, '2026-07-09', payload)
   assert.equal(byClass(plain, 'tri-pop-date')[0].tagName, 'span')
+})
+
+test('timeline day cards render only the date and linked activity measurements', () => {
+  const ride = detail({ id: 1, date: '2026-07-09', name: 'Lunch ride', distanceKm: 30 })
+  const strength = detail({
+    id: 2,
+    date: '2026-07-09',
+    sport: 'strength',
+    name: 'Upper body',
+    distanceKm: 0,
+    movingTimeS: 2_700,
+  })
+  const card = buildTimelineDayCard(
+    factory,
+    '2026-07-09',
+    { details: { 1: ride, 2: strength }, health: {} },
+    { dateHref: '/triathlon/on/2026/07/09' },
+  )
+
+  const links = byClass(card, 'tri-timeline-activity')
+  assert.equal(byClass(card, 'tri-act').length, 0)
+  assert.equal(byClass(card, 'tri-timeline-name').length, 0)
+  assert.equal(byClass(card, 'tri-pop-loc').length, 0)
+  assert.deepEqual(
+    links.map(link => link.properties.href),
+    ['/triathlon/on/2026/07/09#tri-activity-1', '/triathlon/on/2026/07/09#tri-activity-2'],
+  )
+  assert.deepEqual(byClass(card, 'tri-timeline-value').map(text), ['30.0 km', "45'"])
+  assert.equal(byClass(card, 'tri-pop-date')[0].properties.href, '/triathlon/on/2026/07/09')
+
+  const rest = buildTimelineDayCard(factory, '2026-07-10', { details: {}, health: {} })
+  assert.equal(byClass(rest, 'tri-pop-date').length, 1)
+  assert.equal(byClass(rest, 'tri-timeline-activity').length, 0)
+  assert.equal(byClass(rest, 'tri-battery').length, 0)
 })
 
 test('embedded day cards align activity summaries to their largest row count', () => {

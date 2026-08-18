@@ -181,49 +181,24 @@ test('overview training markup keeps its list, tree, and document empty', () => 
   assert.equal(elements(root, element => element.properties?.dataPlan != null).length, 0)
 })
 
-test('gear surfaces place daily tire pressure after bike inventory and before maintenance', () => {
-  const popover = renderToString(<GearPanel maintenance={maintenance} renderData={renderData} />)
-  const tools = renderToString(<ToolsPanel maintenance={maintenance} renderData={renderData} />)
+test('gear surfaces keep inventory and maintenance without calculators', () => {
+  const popover = renderToString(<GearPanel maintenance={maintenance} />)
+  const tools = renderToString(<ToolsPanel maintenance={maintenance} />)
 
   for (const html of [popover, tools]) {
     assert.match(html, /class="tri-maintenance"/)
     assert.match(html, /UFO Wax Drip-On/)
     assert.match(html, /2026-08-10/)
-    assert.match(html, /data-rider-kg="86.06"/)
-    assert.match(html, /data-pressure-output="front">76.5</)
-    assert.match(html, /data-pressure-output="rear">83</)
     assert.match(html, /Pirelli P Zero Race SL-R/)
     assert.match(html, /P Zero Race TLR SL-R/)
-    assert.match(html, /custom bike/)
-    assert.match(html, /custom wheelset/)
-    assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 3)
-    assert.equal(html.match(/data-pressure-field="balance"/g)?.length, 4)
-    assert.equal(html.match(/data-pressure-field="customWheelWidth"/g)?.length, 2)
-    assert.equal(html.match(/data-pressure-field="weightUnit"/g)?.length, 2)
-    assert.match(html, /data-weight-unit="kg"/)
-    assert.match(html, /<time class="tri-pressure-date" datetime="2026-08-16">2026-08-16<\/time>/)
-    assert.doesNotMatch(html, /Garmin morning/)
-    assert.match(html, /value="86.06" data-pressure-field="riderMass"/)
-    assert.match(html, /data-pressure-bike="cervelo" inputmode="decimal"/)
-    assert.match(html, /data-pressure-bike="custom" inputmode="decimal"/)
-    assert.match(html, /type="text" value="19.5" data-pressure-field="speed"/)
-    assert.match(html, /WeatherKit · 2026-08-17 13:00 UTC/)
-    assert.match(html, /18.5 °C/)
-    assert.match(html, /light rain/)
-    assert.match(html, /70% precipitation/)
-    assert.match(html, /mixed<\/strong><span>−3 PSI/)
-    assert.match(html, /wet<\/strong><span>−8 PSI/)
-    assert.match(html, /most Toronto roads, aged asphalt and seams/)
-    assert.equal(html.match(/data-pressure-surface-tip/g)?.length, 1)
-    assert.equal(html.match(/data-pressure-surface-option/g)?.length, 4)
-    assert.doesNotMatch(html, /tri-pressure-spec/)
-    assert.doesNotMatch(html, /tri-pressure-speed-presets/)
+    assert.match(html, /HUNT 54 Aerodynamicist UD Carbon Spoke/)
+    assert.match(html, /HUNT 58 Aerodynamicist UD Carbon Spoke/)
+    assert.doesNotMatch(html, /class="tri-ratio"/)
+    assert.doesNotMatch(html, /class="tri-pressure"/)
 
     const sections = [
-      html.indexOf('class="tri-ratio"'),
       html.indexOf('Cervélo Soloist'),
       html.indexOf('Canyon Speedmax CFR Di2 2026'),
-      html.indexOf('class="tri-pressure"'),
       html.indexOf('class="tri-maintenance"'),
       html.indexOf('data-i18n="running"'),
     ]
@@ -233,6 +208,45 @@ test('gear surfaces place daily tire pressure after bike inventory and before ma
       sections.toSorted((left, right) => left - right),
     )
   }
+})
+
+test('calculator page tabs own race, gear ratio, and daily tire pressure calculators', () => {
+  const html = renderToString(<CalcPanel page renderData={renderData} />)
+
+  assert.equal(html.match(/data-calc-tab=/g)?.length, 3)
+  assert.equal(html.match(/role="tabpanel"/g)?.length, 3)
+  assert.match(html, /data-calc-tab="race"/)
+  assert.match(html, /data-calc-tab="gear-ratios"/)
+  assert.match(html, /data-calc-tab="tire-pressure"/)
+  assert.match(html, /class="tri-ratio"/)
+  assert.match(html, /data-rider-kg="86.06"/)
+  assert.match(html, /data-pressure-output="front">76.5</)
+  assert.match(html, /data-pressure-output="rear">83</)
+  assert.match(html, />Custom<\/span>/)
+  assert.match(html, /HUNT 54_58 Aerodynamicist UD/)
+  assert.match(html, />Custom Wheelset<\/span>/)
+  assert.equal(html.match(/data-pressure-field="bikeMass"/g)?.length, 3)
+  assert.equal(html.match(/data-pressure-field="balance"/g)?.length, 4)
+  assert.equal(html.match(/data-pressure-field="customWheelWidth"/g)?.length, 2)
+  assert.equal(html.match(/data-pressure-field="weightUnit"/g)?.length, 2)
+  assert.match(html, /data-weight-unit="kg"/)
+  assert.match(html, /<time class="tri-pressure-date" datetime="2026-08-16">2026-08-16<\/time>/)
+  assert.doesNotMatch(html, /Garmin morning/)
+  assert.match(html, /value="86.06" data-pressure-field="riderMass"/)
+  assert.match(html, /data-pressure-bike="cervelo" inputmode="decimal"/)
+  assert.match(html, /data-pressure-bike="custom" inputmode="decimal"/)
+  assert.match(html, /type="text" value="19.5" data-pressure-field="speed"/)
+  assert.match(html, /WeatherKit · 2026-08-17 13:00 UTC/)
+  assert.match(html, /18.5 °C/)
+  assert.match(html, /light rain/)
+  assert.match(html, /70% precipitation/)
+  assert.match(html, /mixed<\/strong><span>−3 PSI/)
+  assert.match(html, /wet<\/strong><span>−8 PSI/)
+  assert.match(html, /most Toronto roads, aged asphalt and seams/)
+  assert.equal(html.match(/data-pressure-surface-tip/g)?.length, 1)
+  assert.equal(html.match(/data-pressure-surface-option/g)?.length, 4)
+  assert.doesNotMatch(html, /tri-pressure-spec/)
+  assert.doesNotMatch(html, /tri-pressure-speed-presets/)
 })
 
 test('server-rendered unit surfaces start in imperial', () => {

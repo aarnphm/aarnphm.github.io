@@ -19,6 +19,7 @@ import { setupDistanceUnits, setupI18n, setupPaceUnit } from '../shell/presentat
 import { setupShortcuts } from '../shell/shortcuts'
 import { setup } from '../shell/timeline'
 import { setupCalc } from '../tools/calculator-controller'
+import { setupCalculatorTabs } from '../tools/calculator-tabs'
 import { setupCheat } from '../tools/cheat'
 import { setupGearRatios } from '../tools/gear-ratios'
 import { setupPaceForecast } from '../tools/pace-forecast'
@@ -58,6 +59,7 @@ export const mountTriathlon = (signal: AbortSignal): MountedTriathlon => {
     addCleanup(setup(root, context))
     addCleanup(setupPerformanceDebug(root))
     addCleanup(setupCalc(root, context))
+    addCleanup(setupCalculatorTabs(root))
     addCleanup(setupPaceForecast(root, context))
     addCleanup(setupGearRatios(root, context))
     addCleanup(setupDropdown(root, '.tri-gear-wrap', '.tri-gear-btn', '.tri-gear', 'tri-gear-open'))

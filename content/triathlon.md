@@ -1182,7 +1182,7 @@ p_r
 \left(p_0c_vc_rc_t\right).
 $$
 
-All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. Princeton Mach 7580 uses a $22\ \mathrm{mm}$ internal width; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is compatibility metadata rather than a second SILCA pressure input, so choosing a custom internal width does not invent a casing-width adjustment. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
+All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. The HUNT 54_58 Aerodynamicist UD Carbon Spoke wheelset uses a $54.5\ \mathrm{mm}$ front depth, $58\ \mathrm{mm}$ rear depth, and hooked $22\ \mathrm{mm}$ internal width on both rims; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is compatibility metadata rather than a second SILCA pressure input, so choosing a custom internal width does not invent a casing-width adjustment. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
 
 The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
 
@@ -1213,11 +1213,11 @@ $$
 
 WeatherKit supplies the ride-temperature context. The current cache does not contain inflation temperature or altitude, so the panel presents these as explicit notes instead of manufacturing an adjusted number from missing inputs.
 
-For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $22\ \mathrm{lb}$ Cervélo, Princeton wheels, $28\ \mathrm{mm}$ measured tires, worn pavement, TPU tubes, and $19.5\ \mathrm{mph}$ produce $78.5\ \mathrm{PSI}$ front and $80.5\ \mathrm{PSI}$ rear.
+For example, the 2026-08-16 morning mass of $86.06\ \mathrm{kg}$, the $22\ \mathrm{lb}$ Cervélo, HUNT wheels, $28\ \mathrm{mm}$ measured tires, worn pavement, TPU tubes, and $19.5\ \mathrm{mph}$ produce $78.5\ \mathrm{PSI}$ front and $80.5\ \mathrm{PSI}$ rear.
 
 [^silca-pressure]: [SILCA, "Professional Tire Pressure Calculator"](https://silca.cc/en-ca/pages/pro-tire-pressure-calculator?_eab=1). The local implementation copies the calculator's public mass, surface, width, wheel-diameter, speed, and front/rear coefficients, then performs the same half-PSI rounding without making a runtime request.
 
-[^pressure-wheels]: [Princeton CarbonWorks, "Mach 7580 TS"](https://www.princetoncarbon.com/product/mach-7580/) and [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), official wheel dimensions and published tire-width compatibility.
+[^pressure-wheels]: [HUNT, "54_58 Aerodynamicist UD Carbon Spoke Disc Wheelset"](https://us.huntbikewheels.com/products/hunt-54_58-aerodynamicist-ud-carbon-spoke-disc-wheelset) and [Reserve, "42|49 TA"](https://reservewheels.com/products/reserve-42-49), official wheel dimensions and published tire-width compatibility.
 
 [^pirelli-pressure]: [Pirelli, "Bike Tire Pressure Tool"](https://www.pirelli.com/tires/en-us/bike/pressure-tool), manufacturer guidance for matching tire construction, rim, system mass, use, and pressure limits.
 
