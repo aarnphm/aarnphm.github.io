@@ -270,6 +270,11 @@ export const buildFtpHypothesis = (data: Analytics, context: TriathlonContext): 
       chainRow('activities', 'pedalingActivities', String(h.pedaling.activityCount)),
       chainRow('samples', 'pedalingSamples', String(h.pedaling.sampleCount)),
       chainRow('coverage', 'pedalingCoverage', `${h.pedaling.coveragePct.toFixed(1)}%`),
+      chainRow(
+        'observation window',
+        'pedalingWindow',
+        `${context.formatter.shortDate(h.pedaling.windowFrom)}–${context.formatter.shortDate(h.pedaling.windowTo)}`,
+      ),
     )
   }
   block.appendChild(evidence)

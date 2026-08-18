@@ -11,6 +11,7 @@ import { el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
 
 const OPEN_PANEL_SELECTOR = '.tri-calc-open, .tri-map-open, .tri-training-open, .tri-analytics-open'
+const DROP_TONE_COUNT = 8
 
 export const setup = (root: HTMLElement, context: TriathlonContext): (() => void) | null => {
   const barsEl = root.querySelector<HTMLElement>('.tri-bars')
@@ -95,9 +96,13 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 4,
     )
   }
+  let popScrollTone = 0
+  const currentPopScrollTone = () =>
+    Math.floor((scroller.scrollTop * DROP_TONE_COUNT) / Math.max(scroller.clientHeight, 1))
   const setLocked = (on: boolean) => {
     locked = on
     barsEl.classList.toggle('tri-bars--locked', on)
+    if (on) popScrollTone = currentPopScrollTone()
     if (on && hoverFrame !== 0) {
       window.cancelAnimationFrame(hoverFrame)
       hoverFrame = 0
@@ -121,7 +126,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     const t = audio.currentTime
     if (t - lastDrop < 0.05) return
     lastDrop = t
-    const base = 560 + (idx % 8) * 28
+    const base = 560 + (idx % DROP_TONE_COUNT) * 28
     const osc = audio.createOscillator()
     const gain = audio.createGain()
     osc.type = 'sine'
@@ -134,6 +139,15 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     gain.connect(audio.destination)
     osc.start(t)
     osc.stop(t + 0.15)
+  }
+  const onPopScroll = () => {
+    updateOverflow()
+    if (!locked || !active) return
+    const nextTone = currentPopScrollTone()
+    if (nextTone === popScrollTone) return
+    popScrollTone = nextTone
+    const idx = bars.indexOf(active)
+    if (idx >= 0) raindrop(idx + nextTone)
   }
   window.addEventListener('pointerdown', armAudio)
   window.addEventListener('keydown', armAudio)
@@ -149,6 +163,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     const view = buildCard(bar)
     scroller.replaceChildren(view.element)
     cardCleanup = view.mount()
+    popScrollTone = currentPopScrollTone()
   }
 
   const place = (bar: HTMLElement) => {
@@ -205,6 +220,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       bar.classList.add('tri-bar--active')
       raindrop(idx)
       replaceCard(bar)
+      popScrollTone = 0
       scroller.scrollTop = 0
       updateOverflow()
     }
@@ -265,23 +281,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     pinned = false
     if (!locked) hideTimer = window.setTimeout(hide, 140)
   }
-  const onBarsClick = (event: MouseEvent) => {
-    if (panelOpen()) return
-    if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
-    hoverFrame = 0
-    pendingClientX = null
-    const idx = nearest(event.clientX)
-    if (idx < 0) return
-    if (locked && bars[idx] === active) {
-      setLocked(false)
-      setExpanded(false)
-    } else {
-      showFor(idx)
-      setLocked(true)
-      setExpanded(true)
-      if (active) place(active)
-    }
-  }
   const dismiss = () => {
     if (!locked) return
     setLocked(false)
@@ -340,10 +339,9 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
-  barsEl.addEventListener('click', onBarsClick)
   pop.addEventListener('mouseenter', onPopEnter)
   pop.addEventListener('mouseleave', onPopLeave)
-  scroller.addEventListener('scroll', updateOverflow, { passive: true })
+  scroller.addEventListener('scroll', onPopScroll, { passive: true })
   document.addEventListener('click', onDocClick)
   document.addEventListener('keydown', onKey)
   window.addEventListener('tri:focus-day', onFocusDay)
@@ -363,10 +361,9 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     for (const year of timelineYears) delete year.dataset.current
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
-    barsEl.removeEventListener('click', onBarsClick)
     pop.removeEventListener('mouseenter', onPopEnter)
     pop.removeEventListener('mouseleave', onPopLeave)
-    scroller.removeEventListener('scroll', updateOverflow)
+    scroller.removeEventListener('scroll', onPopScroll)
     document.removeEventListener('click', onDocClick)
     document.removeEventListener('keydown', onKey)
     window.removeEventListener('pointerdown', armAudio)

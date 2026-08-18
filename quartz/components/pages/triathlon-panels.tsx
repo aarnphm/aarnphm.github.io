@@ -1155,6 +1155,7 @@ export const CalcPanel = ({
         <button
           class="tri-calc-copy"
           type="button"
+          data-site-cursor-action
           aria-label="Copy embed link"
           title="Copy embed link"
         >
@@ -1165,6 +1166,7 @@ export const CalcPanel = ({
             viewBox="-4 -4 24 24"
             fill="currentColor"
             aria-hidden="true"
+            data-site-cursor-icon
           >
             <use href="#github-copy" />
           </svg>
@@ -1175,6 +1177,7 @@ export const CalcPanel = ({
             viewBox="-4 -4 24 24"
             fill="currentColor"
             aria-hidden="true"
+            data-site-cursor-icon
           >
             <use href="#github-check" />
           </svg>
