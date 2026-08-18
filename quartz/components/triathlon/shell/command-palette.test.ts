@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { TirePressureSelection } from '../../../util/triathlon-tire-pressure'
+import {
+  DEFAULT_TIRE_PRESSURE_SELECTION,
+  type TirePressureSelection,
+} from '../../../util/triathlon-tire-pressure'
 import {
   nextMapMetricShortcutIndex,
   nextTirePressurePaletteStep,
@@ -28,6 +31,8 @@ test('map metric shortcuts reject non-character keys and missing initials', () =
 })
 
 test('tire pressure palette advances through every physical selection', () => {
+  assert.equal(nextTirePressurePaletteStep('weightUnit'), 'riderMass')
+  assert.equal(nextTirePressurePaletteStep('riderMass'), 'bike')
   assert.equal(nextTirePressurePaletteStep('bike'), 'bikeMass')
   assert.equal(nextTirePressurePaletteStep('bikeMass'), 'balance')
   assert.equal(nextTirePressurePaletteStep('balance'), 'wheel')
@@ -35,6 +40,11 @@ test('tire pressure palette advances through every physical selection', () => {
   assert.equal(nextTirePressurePaletteStep('tire'), 'surface')
   assert.equal(nextTirePressurePaletteStep('surface'), 'speed')
   assert.equal(nextTirePressurePaletteStep('speed'), 'result')
+
+  const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
+  assert.equal(nextTirePressurePaletteStep('wheel', customWheel), 'customWheelFront')
+  assert.equal(nextTirePressurePaletteStep('customWheelFront', customWheel), 'customWheelRear')
+  assert.equal(nextTirePressurePaletteStep('customWheelRear', customWheel), 'tire')
 })
 
 test('tire pressure palette backtracks without skipping selection state', () => {
@@ -45,20 +55,32 @@ test('tire pressure palette backtracks without skipping selection state', () => 
   assert.equal(previousTirePressurePaletteStep('wheel'), 'balance')
   assert.equal(previousTirePressurePaletteStep('balance'), 'bikeMass')
   assert.equal(previousTirePressurePaletteStep('bikeMass'), 'bike')
-  assert.equal(previousTirePressurePaletteStep('bike'), 'commands')
+  assert.equal(previousTirePressurePaletteStep('bike'), 'riderMass')
+  assert.equal(previousTirePressurePaletteStep('riderMass'), 'weightUnit')
+  assert.equal(previousTirePressurePaletteStep('weightUnit'), 'commands')
+
+  const customWheel: TirePressureSelection = { ...DEFAULT_TIRE_PRESSURE_SELECTION, wheel: 'custom' }
+  assert.equal(previousTirePressurePaletteStep('tire', customWheel), 'customWheelRear')
+  assert.equal(previousTirePressurePaletteStep('customWheelRear', customWheel), 'customWheelFront')
+  assert.equal(previousTirePressurePaletteStep('customWheelFront', customWheel), 'wheel')
 })
 
 test('tire pressure palette highlights the persisted choice at every step', () => {
   const selection: TirePressureSelection = {
+    riderKg: 86.2,
+    weightUnit: 'lb',
     bike: 'speedmax',
     bikeMassesLb: { cervelo: 22.4, speedmax: 26.8, custom: 19.5 },
     balance: '45-55',
     wheel: 'reserve',
+    customWheel: { frontInnerWidthMm: 21.5, rearInnerWidthMm: 24 },
     tire: 'tubeless',
     surface: 'worn-pavement',
     speedMph: 23,
   }
 
+  assert.equal(tirePressurePaletteSelectionIndex('weightUnit', selection), 1)
+  assert.equal(tirePressurePaletteSelectionIndex('riderMass', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('bike', selection), 1)
   assert.equal(tirePressurePaletteSelectionIndex('bikeMass', selection), 0)
   assert.equal(tirePressurePaletteSelectionIndex('balance', selection), 2)

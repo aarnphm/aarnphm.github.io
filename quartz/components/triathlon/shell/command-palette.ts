@@ -1,20 +1,26 @@
 import type { TriathlonContext } from '../runtime/context'
 import {
   calculateTirePressure,
+  DEFAULT_TIRE_PRESSURE_SELECTION,
   formatTirePressurePsi,
+  formatTirePressureWeight,
   isTirePressureBalanceId,
   isTirePressureBikeId,
   isTirePressureBikeMassLb,
+  isTirePressureInnerWidthMm,
+  isTirePressureRiderKg,
   isTirePressureSpeed,
   isTirePressureSurfaceId,
   isTirePressureTireId,
   isTirePressureWheelId,
+  isTirePressureWeightUnit,
   latestMorningBodyWeight,
+  selectedTirePressureWheel,
   tirePressureBalance,
   tirePressureBike,
   tirePressureSurface,
   tirePressureTire,
-  tirePressureWheel,
+  tirePressureWeightToKg,
   TIRE_PRESSURE_BIKES,
   TIRE_PRESSURE_BALANCES,
   TRI_TIRE_PRESSURE_CHANGE_EVENT,
@@ -23,6 +29,7 @@ import {
   TIRE_PRESSURE_SURFACES,
   TIRE_PRESSURE_TIRES,
   TIRE_PRESSURE_WHEELS,
+  TIRE_PRESSURE_WEIGHT_UNITS,
   type TirePressureChange,
   type TirePressureSelection,
 } from '../../../util/triathlon-tire-pressure'
@@ -136,10 +143,14 @@ export const mapDetailMetricTabForKey = (
 }
 
 export type TirePressurePaletteStep =
+  | 'weightUnit'
+  | 'riderMass'
   | 'bike'
   | 'bikeMass'
   | 'balance'
   | 'wheel'
+  | 'customWheelFront'
+  | 'customWheelRear'
   | 'tire'
   | 'surface'
   | 'speed'
@@ -147,11 +158,16 @@ export type TirePressurePaletteStep =
 
 export const nextTirePressurePaletteStep = (
   step: Exclude<TirePressurePaletteStep, 'result'>,
+  selection: TirePressureSelection = DEFAULT_TIRE_PRESSURE_SELECTION,
 ): TirePressurePaletteStep => {
+  if (step === 'weightUnit') return 'riderMass'
+  if (step === 'riderMass') return 'bike'
   if (step === 'bike') return 'bikeMass'
   if (step === 'bikeMass') return 'balance'
   if (step === 'balance') return 'wheel'
-  if (step === 'wheel') return 'tire'
+  if (step === 'wheel') return selection.wheel === 'custom' ? 'customWheelFront' : 'tire'
+  if (step === 'customWheelFront') return 'customWheelRear'
+  if (step === 'customWheelRear') return 'tire'
   if (step === 'tire') return 'surface'
   if (step === 'surface') return 'speed'
   return 'result'
@@ -159,14 +175,19 @@ export const nextTirePressurePaletteStep = (
 
 export const previousTirePressurePaletteStep = (
   step: TirePressurePaletteStep,
+  selection: TirePressureSelection = DEFAULT_TIRE_PRESSURE_SELECTION,
 ): TirePressurePaletteStep | 'commands' => {
   if (step === 'result') return 'speed'
   if (step === 'speed') return 'surface'
   if (step === 'surface') return 'tire'
-  if (step === 'tire') return 'wheel'
+  if (step === 'tire') return selection.wheel === 'custom' ? 'customWheelRear' : 'wheel'
+  if (step === 'customWheelRear') return 'customWheelFront'
+  if (step === 'customWheelFront') return 'wheel'
   if (step === 'wheel') return 'balance'
   if (step === 'balance') return 'bikeMass'
   if (step === 'bikeMass') return 'bike'
+  if (step === 'bike') return 'riderMass'
+  if (step === 'riderMass') return 'weightUnit'
   return 'commands'
 }
 
@@ -174,6 +195,8 @@ export const tirePressurePaletteSelectionIndex = (
   step: TirePressurePaletteStep,
   selection: TirePressureSelection,
 ): number => {
+  if (step === 'weightUnit')
+    return Math.max(0, TIRE_PRESSURE_WEIGHT_UNITS.indexOf(selection.weightUnit))
   if (step === 'bike')
     return Math.max(
       0,
@@ -209,22 +232,39 @@ export const tirePressurePaletteSelectionIndex = (
 
 const tirePressureSelectionFromRoot = (root: HTMLElement): TirePressureSelection => {
   const calculator = root.querySelector<HTMLElement>('.tri-pressure')
-  const stored = readTirePressureSelection()
+  const rootRiderKg = Number(calculator?.dataset.riderKg)
+  const stored = readTirePressureSelection(
+    isTirePressureRiderKg(rootRiderKg) ? rootRiderKg : null,
+    calculator?.dataset.weightDate,
+  )
+  const weightUnit = calculator?.dataset.weightUnit
   const bike = calculator?.dataset.bike
   const bikeMassLb = Number(calculator?.dataset.bikeMassLb)
   const balance = calculator?.dataset.balance
   const wheel = calculator?.dataset.wheel
+  const customWheelFrontMm = Number(calculator?.dataset.customWheelFrontMm)
+  const customWheelRearMm = Number(calculator?.dataset.customWheelRearMm)
   const tire = calculator?.dataset.tire
   const surface = calculator?.dataset.surface
   const speedMph = Number(calculator?.dataset.speedMph)
   const selectedBike = bike && isTirePressureBikeId(bike) ? bike : stored.bike
   return {
+    riderKg: isTirePressureRiderKg(rootRiderKg) ? rootRiderKg : stored.riderKg,
+    weightUnit: weightUnit && isTirePressureWeightUnit(weightUnit) ? weightUnit : stored.weightUnit,
     bike: selectedBike,
     bikeMassesLb: isTirePressureBikeMassLb(bikeMassLb)
       ? { ...stored.bikeMassesLb, [selectedBike]: bikeMassLb }
       : stored.bikeMassesLb,
     balance: balance && isTirePressureBalanceId(balance) ? balance : stored.balance,
     wheel: wheel && isTirePressureWheelId(wheel) ? wheel : stored.wheel,
+    customWheel: {
+      frontInnerWidthMm: isTirePressureInnerWidthMm(customWheelFrontMm)
+        ? customWheelFrontMm
+        : stored.customWheel.frontInnerWidthMm,
+      rearInnerWidthMm: isTirePressureInnerWidthMm(customWheelRearMm)
+        ? customWheelRearMm
+        : stored.customWheel.rearInnerWidthMm,
+    },
     tire: tire && isTirePressureTireId(tire) ? tire : stored.tire,
     surface: surface && isTirePressureSurfaceId(surface) ? surface : stored.surface,
     speedMph: isTirePressureSpeed(speedMph) ? speedMph : stored.speedMph,
@@ -262,7 +302,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   type PaletteMode = 'commands' | TirePressurePaletteStep
   let mode: PaletteMode = 'commands'
   let pressureSelection = tirePressureSelectionFromRoot(root)
-  let pressureRiderKg = Number(root.querySelector<HTMLElement>('.tri-pressure')?.dataset.riderKg)
+  const pressureWeightDate = root.querySelector<HTMLElement>('.tri-pressure')?.dataset.weightDate
 
   const commandHint = (command: Cmd): string =>
     typeof command.hint === 'function' ? command.hint() : command.hint
@@ -275,7 +315,12 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   }
 
   const updatePressureSelection = (change: TirePressureChange): void => {
-    if (change.field === 'bike') pressureSelection = { ...pressureSelection, bike: change.value }
+    if (change.field === 'riderMass')
+      pressureSelection = { ...pressureSelection, riderKg: change.valueKg }
+    else if (change.field === 'weightUnit')
+      pressureSelection = { ...pressureSelection, weightUnit: change.value }
+    else if (change.field === 'bike')
+      pressureSelection = { ...pressureSelection, bike: change.value }
     else if (change.field === 'bikeMass')
       pressureSelection = {
         ...pressureSelection,
@@ -286,18 +331,25 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       pressureSelection = { ...pressureSelection, balance: change.value }
     else if (change.field === 'wheel')
       pressureSelection = { ...pressureSelection, wheel: change.value }
+    else if (change.field === 'customWheelWidth')
+      pressureSelection = {
+        ...pressureSelection,
+        wheel: 'custom',
+        customWheel: {
+          ...pressureSelection.customWheel,
+          [change.axle === 'front' ? 'frontInnerWidthMm' : 'rearInnerWidthMm']: change.value,
+        },
+      }
     else if (change.field === 'tire')
       pressureSelection = { ...pressureSelection, tire: change.value }
     else if (change.field === 'surface')
       pressureSelection = { ...pressureSelection, surface: change.value }
     else pressureSelection = { ...pressureSelection, speedMph: change.value }
-    storeTirePressureSelection(pressureSelection)
+    storeTirePressureSelection(pressureSelection, pressureWeightDate)
     root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_CHANGE_EVENT, { detail: change }))
   }
 
-  const pressureRecommendation = () => {
-    return calculateTirePressure(pressureRiderKg, pressureSelection)
-  }
+  const pressureRecommendation = () => calculateTirePressure(pressureSelection)
 
   const tirePressureHint = (): string => {
     const recommendation = pressureRecommendation()
@@ -316,8 +368,8 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     {
       label: () => 'tire pressure',
       hint: tirePressureHint,
-      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax princeton reserve wheel bike tubeless tpu tube',
-      run: () => setPressureMode('bike'),
+      keys: 'tire tyre pressure psi front rear pirelli silca cervelo speedmax princeton reserve custom wheel bike rider weight kg lb tubeless tpu tube',
+      run: () => setPressureMode('weightUnit'),
     },
     {
       label: () =>
@@ -385,15 +437,37 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   let sel = 0
   let isOpen = false
 
-  const selectPressure = (
-    change: TirePressureChange,
-    step: Exclude<TirePressurePaletteStep, 'bike'>,
-  ): void => {
+  const selectPressure = (change: TirePressureChange, step: TirePressurePaletteStep): void => {
     updatePressureSelection(change)
     setPressureMode(step)
   }
 
   const pressureCommands = (): Cmd[] => {
+    if (mode === 'weightUnit')
+      return TIRE_PRESSURE_WEIGHT_UNITS.map(unit => ({
+        label: () => `${unit === pressureSelection.weightUnit ? '✓ ' : ''}${unit}`,
+        hint: unit === 'kg' ? 'kilograms' : 'pounds',
+        keys: `${unit} kilograms pounds lbs rider weight mass`,
+        run: () => selectPressure({ field: 'weightUnit', value: unit }, 'riderMass'),
+      }))
+    if (mode === 'riderMass') {
+      const value = Number(input.value)
+      const riderKg = tirePressureWeightToKg(value, pressureSelection.weightUnit)
+      const valid = isTirePressureRiderKg(riderKg)
+      return [
+        {
+          label: () =>
+            valid
+              ? `rider weight · ${input.value} ${pressureSelection.weightUnit}`
+              : `enter ${pressureSelection.weightUnit === 'kg' ? '25–200 kg' : '55.1–440.9 lb'}`,
+          hint: valid ? 'use current weight' : 'valid weight required',
+          keys: 'rider body weight mass kilograms kg pounds lb custom',
+          run: () => {
+            if (valid) selectPressure({ field: 'riderMass', valueKg: riderKg }, 'bike')
+          },
+        },
+      ]
+    }
     if (mode === 'bike')
       return TIRE_PRESSURE_BIKES.map(bike => ({
         label: () => `${bike.id === pressureSelection.bike ? '✓ ' : ''}${bike.label}`,
@@ -426,13 +500,40 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     if (mode === 'wheel')
       return TIRE_PRESSURE_WHEELS.map(wheel => ({
         label: () => `${wheel.id === pressureSelection.wheel ? '✓ ' : ''}${wheel.label}`,
-        hint:
-          wheel.frontInnerWidthMm === wheel.rearInnerWidthMm
-            ? `${wheel.frontInnerWidthMm} mm internal`
-            : `${wheel.frontInnerWidthMm}/${wheel.rearInnerWidthMm} mm internal`,
+        hint: (() => {
+          const selectedWheel =
+            wheel.id === 'custom' ? { ...wheel, ...pressureSelection.customWheel } : wheel
+          return selectedWheel.frontInnerWidthMm === selectedWheel.rearInnerWidthMm
+            ? `${selectedWheel.frontInnerWidthMm} mm internal`
+            : `${selectedWheel.frontInnerWidthMm}/${selectedWheel.rearInnerWidthMm} mm internal`
+        })(),
         keys: `${wheel.id} ${wheel.label}`,
-        run: () => selectPressure({ field: 'wheel', value: wheel.id }, 'tire'),
+        run: () =>
+          selectPressure(
+            { field: 'wheel', value: wheel.id },
+            wheel.id === 'custom' ? 'customWheelFront' : 'tire',
+          ),
       }))
+    if (mode === 'customWheelFront' || mode === 'customWheelRear') {
+      const axle = mode === 'customWheelFront' ? 'front' : 'rear'
+      const width = Number(input.value)
+      const valid = isTirePressureInnerWidthMm(width)
+      return [
+        {
+          label: () =>
+            valid ? `${axle} internal width · ${width} mm` : `${axle} width · enter 13–35 mm`,
+          hint: valid ? 'use measured width' : 'valid width required',
+          keys: `${axle} wheel rim internal width millimetres mm custom`,
+          run: () => {
+            if (valid)
+              selectPressure(
+                { field: 'customWheelWidth', axle, value: width },
+                mode === 'customWheelFront' ? 'customWheelRear' : 'tire',
+              )
+          },
+        },
+      ]
+    }
     if (mode === 'tire')
       return TIRE_PRESSURE_TIRES.map(tire => ({
         label: () => `${tire.id === pressureSelection.tire ? '✓ ' : ''}${tire.label}`,
@@ -458,7 +559,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
       const recommendation = pressureRecommendation()
       const bike = tirePressureBike(pressureSelection.bike)
       const balance = tirePressureBalance(pressureSelection.balance)
-      const wheel = tirePressureWheel(pressureSelection.wheel)
+      const wheel = selectedTirePressureWheel(pressureSelection)
       const tire = tirePressureTire(pressureSelection.tire)
       const surface = tirePressureSurface(pressureSelection.surface)
       return [
@@ -468,7 +569,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
               ? `front ${formatTirePressurePsi(recommendation.frontPsi)} PSI · rear ${formatTirePressurePsi(recommendation.rearPsi)} PSI`
               : 'morning weight unavailable',
           hint: recommendation
-            ? `${recommendation.systemKg.toFixed(1)} kg · open calculator`
+            ? `${formatTirePressureWeight(recommendation.systemKg, pressureSelection.weightUnit)} ${pressureSelection.weightUnit} · open calculator`
             : 'open calculator',
           keys: 'result pressure front rear open',
           run: () => {
@@ -477,6 +578,21 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
               root.dispatchEvent(new CustomEvent(TRI_TIRE_PRESSURE_OPEN_EVENT))
             } else navTo('/triathlon/tools#tire-pressure')()
           },
+        },
+        {
+          label: () =>
+            pressureSelection.riderKg == null
+              ? 'rider weight · unavailable'
+              : `rider weight · ${formatTirePressureWeight(pressureSelection.riderKg, pressureSelection.weightUnit)} ${pressureSelection.weightUnit}`,
+          hint: 'change',
+          keys: 'rider body weight mass kilograms kg pounds lb change',
+          run: () => setPressureMode('riderMass'),
+        },
+        {
+          label: () => `weight unit · ${pressureSelection.weightUnit}`,
+          hint: 'change',
+          keys: 'weight unit kilograms kg pounds lb change',
+          run: () => setPressureMode('weightUnit'),
         },
         {
           label: () => `bike · ${bike.label}`,
@@ -502,6 +618,17 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
           keys: 'wheel change',
           run: () => setPressureMode('wheel'),
         },
+        ...(wheel.id === 'custom'
+          ? [
+              {
+                label: () =>
+                  `internal width · ${wheel.frontInnerWidthMm}/${wheel.rearInnerWidthMm} mm`,
+                hint: 'front / rear',
+                keys: 'custom wheel rim internal width front rear change',
+                run: () => setPressureMode('customWheelFront'),
+              },
+            ]
+          : []),
         {
           label: () => `tire · ${tire.label}`,
           hint: tire.detail,
@@ -528,24 +655,43 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   function setPressureMode(next: PaletteMode): void {
     mode = next
     sel = mode === 'commands' ? 0 : tirePressurePaletteSelectionIndex(mode, pressureSelection)
-    input.readOnly = mode !== 'commands' && mode !== 'bikeMass'
-    input.inputMode = mode === 'bikeMass' ? 'decimal' : 'search'
+    const editable =
+      mode === 'riderMass' ||
+      mode === 'bikeMass' ||
+      mode === 'customWheelFront' ||
+      mode === 'customWheelRear'
+    input.readOnly = mode !== 'commands' && !editable
+    input.inputMode = editable ? 'decimal' : 'search'
     input.value =
       mode === 'commands'
         ? ''
-        : mode === 'bikeMass'
-          ? String(pressureSelection.bikeMassesLb[pressureSelection.bike])
-          : `tire pressure / ${mode}`
+        : mode === 'riderMass'
+          ? pressureSelection.riderKg == null
+            ? ''
+            : formatTirePressureWeight(pressureSelection.riderKg, pressureSelection.weightUnit)
+          : mode === 'bikeMass'
+            ? String(pressureSelection.bikeMassesLb[pressureSelection.bike])
+            : mode === 'customWheelFront'
+              ? String(pressureSelection.customWheel.frontInnerWidthMm)
+              : mode === 'customWheelRear'
+                ? String(pressureSelection.customWheel.rearInnerWidthMm)
+                : `tire pressure / ${mode}`
     input.setAttribute(
       'aria-label',
       mode === 'commands'
         ? 'command'
-        : mode === 'bikeMass'
-          ? `${tirePressureBike(pressureSelection.bike).label} weight in pounds`
-          : `tire pressure ${mode}`,
+        : mode === 'riderMass'
+          ? `rider weight in ${pressureSelection.weightUnit}`
+          : mode === 'bikeMass'
+            ? `${tirePressureBike(pressureSelection.bike).label} weight in pounds`
+            : mode === 'customWheelFront'
+              ? 'front internal rim width in millimetres'
+              : mode === 'customWheelRear'
+                ? 'rear internal rim width in millimetres'
+                : `tire pressure ${mode}`,
     )
     render(true)
-    if (mode === 'bikeMass') input.select()
+    if (editable) input.select()
   }
 
   const paint = (): void => {
@@ -601,6 +747,7 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     mode = 'commands'
     pressureSelection = tirePressureSelectionFromRoot(root)
     input.readOnly = false
+    input.inputMode = 'search'
     input.setAttribute('aria-label', 'command')
     input.value = ''
     sel = 0
@@ -625,7 +772,14 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   }
 
   const onInput = (): void => {
-    if (mode !== 'commands' && mode !== 'bikeMass') return
+    if (
+      mode !== 'commands' &&
+      mode !== 'riderMass' &&
+      mode !== 'bikeMass' &&
+      mode !== 'customWheelFront' &&
+      mode !== 'customWheelRear'
+    )
+      return
     sel = 0
     render()
   }
@@ -633,16 +787,26 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
     if (e.key === 'Escape') {
       e.preventDefault()
       close()
-    } else if (mode === 'bikeMass' && e.key === 'Backspace' && input.value === '') {
+    } else if (
+      (mode === 'riderMass' ||
+        mode === 'bikeMass' ||
+        mode === 'customWheelFront' ||
+        mode === 'customWheelRear') &&
+      e.key === 'Backspace' &&
+      input.value === ''
+    ) {
       e.preventDefault()
-      setPressureMode(previousTirePressurePaletteStep(mode))
+      setPressureMode(previousTirePressurePaletteStep(mode, pressureSelection))
     } else if (
       mode !== 'commands' &&
+      mode !== 'riderMass' &&
       mode !== 'bikeMass' &&
+      mode !== 'customWheelFront' &&
+      mode !== 'customWheelRear' &&
       (e.key === 'ArrowLeft' || e.key === 'Backspace')
     ) {
       e.preventDefault()
-      setPressureMode(previousTirePressurePaletteStep(mode))
+      setPressureMode(previousTirePressurePaletteStep(mode, pressureSelection))
     } else if (e.key === 'Enter') {
       e.preventDefault()
       items[sel]?.run()
@@ -675,12 +839,12 @@ export const setupCommandPalette = (root: HTMLElement, context: TriathlonContext
   trigger?.addEventListener('click', togglePalette)
   document.addEventListener('keydown', onDocKey, true)
   const analyticsPath = root.dataset.analyticsPath
-  if ((!Number.isFinite(pressureRiderKg) || pressureRiderKg <= 0) && analyticsPath)
+  if (pressureSelection.riderKg == null && analyticsPath)
     void context.resources.analytics.load(analyticsPath).then(result => {
       if (result.status !== 'ready') return
       const weight = latestMorningBodyWeight(result.value.body.composition)
       if (!weight) return
-      pressureRiderKg = weight.kg
+      pressureSelection = { ...pressureSelection, riderKg: weight.kg }
       if (isOpen) render()
     })
   return () => {

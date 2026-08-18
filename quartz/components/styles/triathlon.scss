@@ -2142,6 +2142,7 @@
   grid-template-areas:
     'bike wheel'
     'tire surface'
+    'balance weight'
     'balance speed';
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.6rem;
@@ -2165,6 +2166,10 @@
 
 .tri-pressure-field[data-pressure-group='balance'] {
   grid-area: balance;
+}
+
+.tri-pressure-weight {
+  grid-area: weight;
 }
 
 .tri-pressure-field {
@@ -2221,7 +2226,7 @@
     pointer-events: none;
   }
 
-  > span:not(.tri-pressure-surface-tip, .tri-pressure-bike-mass) {
+  > span:not(.tri-pressure-surface-tip, .tri-pressure-bike-mass, .tri-pressure-wheel-width) {
     min-width: 0;
     overflow: hidden;
     font-size: var(--tri-pressure-option-size);
@@ -2245,7 +2250,8 @@
   }
 }
 
-.tri-pressure-bike-choice {
+.tri-pressure-bike-choice,
+.tri-pressure-wheel-choice {
   min-width: 0;
   cursor: pointer;
 
@@ -2299,6 +2305,10 @@
 
 .tri-pressure-speed {
   grid-area: speed;
+}
+
+.tri-pressure-speed,
+.tri-pressure-weight {
   align-self: end;
   display: flex;
   align-items: center;
@@ -2313,7 +2323,9 @@
 }
 
 .tri-pressure-speed-input,
-.tri-pressure-bike-mass {
+.tri-pressure-bike-mass,
+.tri-pressure-wheel-width,
+.tri-pressure-weight-controls {
   display: inline-flex;
   align-items: baseline;
   gap: 0.22rem;
@@ -2321,7 +2333,7 @@
   font-size: var(--tri-pressure-meta-size);
   text-transform: none;
 
-  input {
+  > input {
     width: 2.8rem;
     padding: 0;
     color: var(--dark);
@@ -2347,6 +2359,64 @@
 
 .tri-pressure-bike-mass input {
   width: 2.2rem;
+}
+
+.tri-pressure-wheel-width {
+  gap: 0.12rem;
+}
+
+.tri-pressure-wheel-width input {
+  width: 1.8rem;
+}
+
+.tri-pressure-weight-controls {
+  align-items: center;
+  gap: 0.35rem;
+
+  > input {
+    width: 3.4rem;
+  }
+}
+
+.tri-pressure-weight-units {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 1px;
+  padding: 1px;
+  background: color-mix(in srgb, var(--gray) 24%, transparent);
+
+  label {
+    position: relative;
+    cursor: pointer;
+
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    span {
+      display: block;
+      padding: 0.08rem 0.22rem;
+      color: var(--gray);
+      background: var(--light);
+      font-size: var(--tri-pressure-meta-size);
+      line-height: 1.1;
+    }
+
+    &:has(input:checked) span {
+      color: var(--dark);
+      background: color-mix(in srgb, var(--tri-bike) 13%, var(--light));
+    }
+
+    &:has(input:focus-visible) {
+      outline: 1px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+      outline-offset: 1px;
+    }
+  }
 }
 
 .tri-pressure-weather {
@@ -2465,6 +2535,7 @@
       'tire'
       'surface'
       'balance'
+      'weight'
       'speed';
     grid-template-columns: minmax(0, 1fr);
   }

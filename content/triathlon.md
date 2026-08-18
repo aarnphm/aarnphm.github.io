@@ -1092,7 +1092,7 @@ These labels interpret Garmin's score. They do not calculate the underlying aero
 
 ### tire pressure
 
-The gear panel takes the latest valid Garmin morning body-mass sample and adds the mass of the selected equipped bike. The Cervélo defaults to $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax defaults to $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$. Each bike row exposes an editable pound value, persisted locally for that bike. A custom-bike row defaults to $20\ \mathrm{lb}$ and accepts the same $10$–$80\ \mathrm{lb}$ range. The command-palette flow accepts the same decimal mass after bike selection:
+The gear panel starts with the latest valid Garmin morning body-mass sample. The rider-weight input accepts $25$–$200\ \mathrm{kg}$ and can display or accept either kilograms or pounds while retaining kilograms as the calculation value. A manual override is stored against the current Garmin measurement date, so a newer morning measurement becomes the next default. The Cervélo defaults to $22\ \mathrm{lb}=9.979\ \mathrm{kg}$ and the Speedmax defaults to $26\ \mathrm{lb}=11.793\ \mathrm{kg}$, using $1\ \mathrm{lb}=0.45359237\ \mathrm{kg}$. Each bike row exposes an editable pound value, persisted locally for that bike. A custom-bike row defaults to $20\ \mathrm{lb}$ and accepts the same $10$–$80\ \mathrm{lb}$ range. The command-palette flow accepts the rider unit, rider mass, and bike mass before calculating system mass:
 
 $$
 m_{\mathrm{system}}
@@ -1182,7 +1182,7 @@ p_r
 \left(p_0c_vc_rc_t\right).
 $$
 
-Both available wheelsets use a $622\ \mathrm{mm}$ bead-seat diameter. Princeton Mach 7580 uses a $22\ \mathrm{mm}$ internal width; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is a compatibility constraint rather than a second pressure input. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
+All wheelset choices use a $622\ \mathrm{mm}$ bead-seat diameter. Princeton Mach 7580 uses a $22\ \mathrm{mm}$ internal width; Reserve 42|49 TA uses $25.4\ \mathrm{mm}$ front and $24.8\ \mathrm{mm}$ rear.[^pressure-wheels] The custom wheelset accepts independent $13$–$35\ \mathrm{mm}$ front and rear internal widths. Once the actual mounted width $w=28\ \mathrm{mm}$ is supplied, internal rim width is compatibility metadata rather than a second SILCA pressure input, so choosing a custom internal width does not invent a casing-width adjustment. Reserve publishes $29\ \mathrm{mm}$ as the minimum recommended tire width, so the calculator shows a warning for the selected $28\ \mathrm{mm}$ setup.
 
 The [Pirelli tire-pressure tool](https://www.pirelli.com/tires/en-us/bike/pressure-tool) remains the manufacturer check for the selected Pirelli casing, tube or tubeless construction, rim, and lower pressure limit.[^pirelli-pressure] Since both local casing coefficients are $1.00$, switching between TPU and tubeless changes the documented setup without changing PSI when measured width and every other input remain fixed.
 
