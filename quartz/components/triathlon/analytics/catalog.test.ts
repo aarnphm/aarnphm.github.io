@@ -127,5 +127,6 @@ test('ftp summary carries provenance and observed cycling evidence', () => {
     { label: 'eCP', value: '249 W' },
     { label: 'modeled 60 min', value: '252 W' },
     { label: 'pedal evidence', value: '4 rides · 3600 samples' },
+    { label: 'observation window', value: 'Aug 14–Aug 16' },
   ])
 })

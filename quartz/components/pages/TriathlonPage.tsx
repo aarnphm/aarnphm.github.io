@@ -11,9 +11,10 @@ import {
   type Sport,
 } from '../../plugins/stores/strava'
 import { classNames } from '../../util/lang'
-import { joinSegments, pathToRoot } from '../../util/path'
+import { joinSegments, pathToRoot, resolveRelative } from '../../util/path'
 import { TRI_RACE_DISTANCES } from '../../util/triathlon-calculator'
 import { dist, distCombined, dur, raceDistanceValue } from '../../util/triathlon-card'
+import { triathlonDaySlug } from '../../util/triathlon-date-route'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../../util/triathlon-presentation'
 // @ts-ignore
 import script from '../scripts/triathlon.inline'
@@ -117,14 +118,14 @@ export default (() => {
             <div class="tri-scroll-viewport">
               <div class="tri-scroll" id="tri-activity-timeline">
                 <div class="tri-track">
-                  <div
+                  <nav
                     class="tri-bars"
-                    role="img"
                     aria-label={`${payload.totalCount} sessions, bar height by duration with cycling and running normalized`}
                   >
                     {payload.days.map(d => {
                       const rest = d.items.length === 0
                       const track = trackByDate.get(d.date)
+                      const daySlug = triathlonDaySlug(d.date)
                       const restKind = (s: string): boolean => s === 'treatment' || s === 'yoga'
                       const segRaw = d.items.map(it =>
                         restKind(it.sport)
@@ -138,8 +139,11 @@ export default (() => {
                       const gaps = Math.max(0, d.items.length - 1) * GAP_PX
                       const scale = scalable + gaps > MAX_BAR ? (MAX_BAR - gaps) / scalable : 1
                       return (
-                        <span
+                        <a
                           class={`tri-bar${rest ? '' : ' tri-bar--day'}${raceDates.has(d.date) ? ' tri-bar--race' : ''}`}
+                          href={daySlug ? resolveRelative(fileData.slug!, daySlug) : undefined}
+                          aria-label={d.date}
+                          data-no-popover
                           data-ids={rest ? undefined : d.items.map(i => i.id).join(',')}
                           data-date-iso={d.date}
                           data-event={track?.event ?? (track?.race ? 'race' : undefined)}
@@ -154,10 +158,10 @@ export default (() => {
                               />
                             ))
                           )}
-                        </span>
+                        </a>
                       )
                     })}
-                  </div>
+                  </nav>
                   <div class="tri-axis">
                     {yearStarts.map(({ year, index }) => (
                       <span

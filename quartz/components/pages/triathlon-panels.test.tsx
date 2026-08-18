@@ -12,12 +12,14 @@ import { triathlonDateTree } from '../../util/triathlon-date-route'
 import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import {
   AnalyticsPanel,
+  CalcPanel,
   GearPanel,
   MapPanel,
   OnTreePanel,
   PacePanel,
   ToolsPanel,
   TrainingPanel,
+  TriathlonSubnav,
 } from './triathlon-panels'
 
 const plans: TrainingPlan[] = [
@@ -122,6 +124,28 @@ test('overview analytics markup retains empty lazy placeholders', () => {
     elements(root, element => classes(element).includes('tri-ana-block')).length,
     ANALYTICS_CATALOG.length,
   )
+})
+
+test('subpage navigation links remain native pointer targets for the shared bracket cursor', () => {
+  const root = rendered(<TriathlonSubnav active="analytics" root="" />)
+  const links = elements(root, element => classes(element).includes('tri-subnav-link'))
+  assert.equal(links.length, 7)
+  assert.ok(links.every(link => link.tagName === 'a' && typeof link.properties?.href === 'string'))
+  assert.ok(links.every(link => !('dataSiteCursorAction' in (link.properties ?? {}))))
+  assert.equal(links.filter(link => link.properties?.ariaCurrent === 'page').length, 1)
+})
+
+test('calculator copy control exposes its SVG states as one magnetic cursor action', () => {
+  const root = rendered(<CalcPanel />)
+  const buttons = elements(root, element => classes(element).includes('tri-calc-copy'))
+  assert.equal(buttons.length, 1)
+  assert.ok('dataSiteCursorAction' in (buttons[0].properties ?? {}))
+  const icons = elements(
+    { type: 'root', children: buttons[0].children },
+    element => element.tagName === 'svg',
+  )
+  assert.equal(icons.length, 2)
+  assert.ok(icons.every(icon => 'dataSiteCursorIcon' in (icon.properties ?? {})))
 })
 
 test('map controls expose an SVG 3D terrain and buildings toggle', () => {

@@ -408,10 +408,16 @@ export const detailHead = (
   const head = el('div', 'tri-pop-head tri-pop-head--detail')
   const row = el('div', 'tri-pop-head-row')
   const actions = el('div', 'tri-pop-head-actions')
-  const back = el('button', 'tri-ana-back tri-ana-back--ico')
-  back.setAttribute('type', 'button')
-  back.setAttribute('aria-label', backLabel)
-  const ico = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true' })
+  const back = el('button', 'tri-ana-back tri-ana-back--ico', undefined, {
+    type: 'button',
+    'data-site-cursor-action': '',
+    'aria-label': backLabel,
+  })
+  const ico = svg('svg', {
+    viewBox: '0 0 24 24',
+    'aria-hidden': 'true',
+    'data-site-cursor-icon': '',
+  })
   ico.appendChild(svg('path', { d: 'M19 12H5M11 6l-6 6 6 6' }))
   back.appendChild(ico)
   actions.appendChild(back)

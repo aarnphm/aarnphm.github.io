@@ -9,7 +9,8 @@ body {
     default;
 }
 
-.site-cursor {
+.site-cursor,
+.site-cursor-bracket {
   display: none;
 }
 
@@ -40,6 +41,50 @@ body {
     opacity: 1;
   }
 
+  html.site-cursor-ready .site-cursor-bracket {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: var(--z-tooltip);
+    display: block;
+    color: var(--dark);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(-52px, -52px, 0);
+    transition: opacity 90ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  html.site-cursor-ready .site-cursor-bracket[data-visible='true'] {
+    opacity: 0.82;
+  }
+
+  .site-cursor-bracket::before,
+  .site-cursor-bracket::after {
+    position: absolute;
+    top: 50%;
+    width: 0.3rem;
+    height: calc(100% + 0.32rem);
+    pointer-events: none;
+    content: '';
+    transform: translateY(-50%);
+  }
+
+  .site-cursor-bracket::before {
+    right: calc(100% + 0.12rem);
+    background:
+      linear-gradient(currentColor, currentColor) left center / 1px 100% no-repeat,
+      linear-gradient(currentColor, currentColor) left top / 100% 1px no-repeat,
+      linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+  }
+
+  .site-cursor-bracket::after {
+    left: calc(100% + 0.12rem);
+    background:
+      linear-gradient(currentColor, currentColor) right center / 1px 100% no-repeat,
+      linear-gradient(currentColor, currentColor) right top / 100% 1px no-repeat,
+      linear-gradient(currentColor, currentColor) right bottom / 100% 1px no-repeat;
+  }
+
   html.site-cursor-ready .site-cursor[data-magnetic] {
     transition:
       opacity 90ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -51,7 +96,6 @@ body {
   }
 
   .site-cursor-diamond,
-  .site-cursor-dot,
   .site-cursor-question,
   .site-cursor-crosshair,
   .site-cursor-line {
@@ -80,15 +124,6 @@ body {
     line-height: 1;
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.4);
-  }
-
-  .site-cursor-dot {
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.25);
   }
 
   .site-cursor-crosshair {
@@ -146,9 +181,9 @@ body {
     opacity: 1;
   }
 
-  .site-cursor[data-mode='pointer'] .site-cursor-dot {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+  .site-cursor[data-mode='bracket'] .site-cursor-diamond {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.65);
   }
 
   .site-cursor[data-mode='action'] .site-cursor-diamond {
@@ -198,11 +233,11 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   html.site-cursor-ready .site-cursor[data-magnetic],
+  .site-cursor-bracket,
   :is([data-site-cursor-action], [data-site-cursor-close], button[aria-label^='close' i])
     :is([data-site-cursor-icon], svg),
   .site-cursor,
   .site-cursor-diamond,
-  .site-cursor-dot,
   .site-cursor-question,
   .site-cursor-crosshair,
   .site-cursor-line {

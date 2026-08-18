@@ -575,7 +575,7 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
       withPanelMount(buildFtpHypothesis(data, context), [
         root => mountSecondaryPanel('ftp', root, data, context),
       ]),
-    server: data => ({
+    server: (data, formatter) => ({
       title: 'FTP hypothesis',
       values: data.engine.ftpHypothesis
         ? [
@@ -605,6 +605,12 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
               label: 'pedal evidence',
               value: data.engine.ftpHypothesis.pedaling
                 ? `${data.engine.ftpHypothesis.pedaling.activityCount} rides · ${data.engine.ftpHypothesis.pedaling.sampleCount} samples`
+                : '—',
+            },
+            {
+              label: 'observation window',
+              value: data.engine.ftpHypothesis.pedaling
+                ? `${formatter.shortDate(data.engine.ftpHypothesis.pedaling.windowFrom)}–${formatter.shortDate(data.engine.ftpHypothesis.pedaling.windowTo)}`
                 : '—',
             },
           ]

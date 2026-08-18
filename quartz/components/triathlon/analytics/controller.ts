@@ -238,6 +238,7 @@ export const setupAnalytics = (
     )
     const copy = el('button', 'tri-compare-copy', undefined, {
       type: 'button',
+      'data-site-cursor-action': '',
       'aria-label': context.formatter.text('Copy embed link'),
       title: context.formatter.text('Copy embed link'),
     })
@@ -248,6 +249,7 @@ export const setupAnalytics = (
       viewBox: '-4 -4 24 24',
       fill: 'currentColor',
       'aria-hidden': 'true',
+      'data-site-cursor-icon': '',
     })
     copyIcon.appendChild(svg('use', { href: '#github-copy' }))
     const checkIcon = svg('svg', {
@@ -257,6 +259,7 @@ export const setupAnalytics = (
       viewBox: '-4 -4 24 24',
       fill: 'currentColor',
       'aria-hidden': 'true',
+      'data-site-cursor-icon': '',
     })
     checkIcon.appendChild(svg('use', { href: '#github-check' }))
     copy.append(copyIcon, checkIcon)
@@ -320,6 +323,7 @@ export const setupAnalytics = (
     const clear = el('button', 'tri-compare-picker-clear', undefined, {
       type: 'button',
       'data-compare-clear': '',
+      'data-site-cursor-close': '',
       'aria-label': context.formatter.text('clear selection'),
       'data-i18n-aria-label': 'clear selection',
       title: context.formatter.text('clear selection'),
@@ -329,6 +333,7 @@ export const setupAnalytics = (
       viewBox: '0 0 24 24',
       fill: 'none',
       'aria-hidden': 'true',
+      'data-site-cursor-icon': '',
     })
     clearIcon.appendChild(svg('path', { d: 'M6 6l12 12M18 6 6 18' }))
     clear.appendChild(clearIcon)
@@ -336,36 +341,43 @@ export const setupAnalytics = (
     const submit = el('button', 'tri-compare-picker-submit', undefined, {
       type: 'button',
       'data-compare-submit': '',
+      'data-site-cursor-action': '',
       'aria-label': context.formatter.text('compare selected'),
       'data-i18n-aria-label': 'compare selected',
       'aria-describedby': 'tri-compare-picker-submit-help',
+      'aria-keyshortcuts': 'Shift+Enter',
     })
     const submitIcon = svg('svg', {
       class: 'tri-compare-picker-icon',
       viewBox: '0 0 24 24',
       fill: 'none',
       'aria-hidden': 'true',
+      'data-site-cursor-icon': '',
     })
     submitIcon.appendChild(svg('path', { d: 'M12 4.5 19.5 12 12 19.5 4.5 12Z' }))
     submit.appendChild(submitIcon)
     submit.toggleAttribute('disabled', comparisonIds().length < 2)
     const submitWrap = el('span', 'tri-compare-picker-submit-wrap')
-    const submitHelp = el(
-      'span',
-      'tri-compare-picker-tooltip',
-      context.formatter.text('compare activities'),
-      { id: 'tri-compare-picker-submit-help', role: 'tooltip', 'data-i18n': 'compare activities' },
+    const submitHelp = el('span', 'tri-compare-picker-tooltip', undefined, {
+      id: 'tri-compare-picker-submit-help',
+      role: 'tooltip',
+    })
+    submitHelp.append(
+      el('span', undefined, context.formatter.text('compare activities'), {
+        'data-i18n': 'compare activities',
+      }),
+      el('kbd', undefined, '⇧↵', { 'aria-hidden': 'true' }),
     )
     submitWrap.append(submit, submitHelp)
-    actions.append(clear, submitWrap)
+    actions.append(submitWrap, clear)
     top.append(
-      actions,
       el(
         'span',
         'tri-compare-picker-instruction',
         context.formatter.text('choose 2 or more activities from one sport'),
         { 'data-i18n': 'choose 2 or more activities from one sport' },
       ),
+      actions,
     )
     picker.appendChild(top)
     return picker
@@ -519,7 +531,21 @@ export const setupAnalytics = (
   }
   const onSearchKey = (event: KeyboardEvent) => {
     if (!panel.classList.contains('tri-analytics--searching')) return
-    if (event.key === 'ArrowDown' || (event.ctrlKey && (event.key === 'n' || event.key === 'N'))) {
+    if (
+      event.key === 'Enter' &&
+      event.shiftKey &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey &&
+      !event.isComposing &&
+      inCompareMode()
+    ) {
+      event.preventDefault()
+      program.dispatch({ type: 'submit-comparison' })
+    } else if (
+      event.key === 'ArrowDown' ||
+      (event.ctrlKey && (event.key === 'n' || event.key === 'N'))
+    ) {
       event.preventDefault()
       setSel(program.retrieve().selectedResult + 1)
     } else if (

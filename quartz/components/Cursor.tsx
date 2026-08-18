@@ -7,7 +7,6 @@ export default (() => {
   const Cursor: QuartzComponent = () => (
     <span class="site-cursor" data-mode="diamond" data-visible="false" aria-hidden="true">
       <span class="site-cursor-diamond" />
-      <span class="site-cursor-dot" />
       <span class="site-cursor-question">?</span>
       <span class="site-cursor-crosshair" />
       <span class="site-cursor-line" />

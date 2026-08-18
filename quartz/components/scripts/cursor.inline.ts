@@ -2,8 +2,9 @@ import { beginSitePerformanceSample, endSitePerformanceSample } from './performa
 
 const configuredCursors = new WeakMap<HTMLElement, AbortController>()
 
-const CLOSE_CURSOR_SELECTOR = "[data-site-cursor-close], button[aria-label^='close' i]"
-const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]'
+const CLOSE_CURSOR_SELECTOR =
+  "[data-site-cursor-close]:not(:disabled), button[aria-label^='close' i]:not(:disabled)"
+const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]:not(:disabled)'
 const MAGNETIC_ICON_SELECTOR = '[data-site-cursor-icon], svg'
 
 const HELP_CURSOR_SELECTOR = [
@@ -81,12 +82,19 @@ const createCursor = (): HTMLElement => {
   cursor.setAttribute('aria-hidden', 'true')
   cursor.append(
     cursorPart('site-cursor-diamond'),
-    cursorPart('site-cursor-dot'),
     cursorPart('site-cursor-question', '?'),
     cursorPart('site-cursor-crosshair'),
     cursorPart('site-cursor-line'),
   )
   return cursor
+}
+
+const createCursorBracket = (): HTMLElement => {
+  const bracket = document.createElement('span')
+  bracket.className = 'site-cursor-bracket'
+  bracket.dataset.visible = 'false'
+  bracket.setAttribute('aria-hidden', 'true')
+  return bracket
 }
 
 document.addEventListener('nav', () => {
@@ -95,7 +103,13 @@ document.addEventListener('nav', () => {
   for (const candidate of cursors) {
     if (candidate !== cursor) candidate.remove()
   }
+  const brackets = Array.from(document.querySelectorAll<HTMLElement>('.site-cursor-bracket'))
+  const bracket = brackets[brackets.length - 1] ?? createCursorBracket()
+  for (const candidate of brackets) {
+    if (candidate !== bracket) candidate.remove()
+  }
   document.body.appendChild(cursor)
+  document.body.appendChild(bracket)
   const line = cursor.querySelector<HTMLElement>('.site-cursor-line')
   if (!line) return
   configuredCursors.get(cursor)?.abort()
@@ -108,16 +122,17 @@ document.addEventListener('nav', () => {
   let y = -40
   let mode:
     | 'action'
+    | 'bracket'
     | 'close'
     | 'crosshair'
     | 'diamond'
     | 'help'
-    | 'pointer'
     | 'text'
     | 'timeline' = 'diamond'
   let visible = false
   let lineScale = 1
   let pointerTarget: Element | null = null
+  let bracketTarget: HTMLElement | null = null
   let magneticTarget: HTMLElement | null = null
   let magneticTimer = 0
   let measuredMagnetic: HTMLElement | null = null
@@ -125,7 +140,26 @@ document.addEventListener('nav', () => {
   let measuredBars: HTMLElement | null = null
   let measuredBarsRect: DOMRect | null = null
   let measuredTimelineRect: DOMRect | null = null
+  let measuredBracketRect: DOMRect | null = null
   let geometryDirty = true
+
+  const setBracketTarget = (target: HTMLElement | null): void => {
+    const targetChanged = target !== bracketTarget
+    if (targetChanged) {
+      bracketTarget = target
+      measuredBracketRect = null
+      if (target) bracket.style.color = window.getComputedStyle(target).color
+    }
+    const nextVisible = String(target !== null)
+    if (bracket.dataset.visible !== nextVisible) bracket.dataset.visible = nextVisible
+    if (!target) return
+    if (!targetChanged && !geometryDirty && measuredBracketRect) return
+    measuredBracketRect = target.getBoundingClientRect()
+    const rect = measuredBracketRect
+    bracket.style.width = `${rect.width}px`
+    bracket.style.height = `${rect.height}px`
+    bracket.style.transform = `translate3d(${rect.left}px, ${rect.top}px, 0)`
+  }
 
   const setMagneticTarget = (target: HTMLElement | null): void => {
     if (target === magneticTarget) return
@@ -155,6 +189,7 @@ document.addEventListener('nav', () => {
     const magnetic = close ?? action
     const bars = pointerTarget?.closest<HTMLElement>('.tri-bars') ?? null
     if (magnetic) {
+      setBracketTarget(null)
       const anchor = magnetic.querySelector<HTMLElement>(MAGNETIC_ICON_SELECTOR) ?? magnetic
       if (geometryDirty || magnetic !== measuredMagnetic || !measuredMagneticRect) {
         measuredMagnetic = magnetic
@@ -168,6 +203,7 @@ document.addEventListener('nav', () => {
       mode = close ? 'close' : 'action'
       visible = true
     } else if (bars) {
+      setBracketTarget(null)
       setMagneticTarget(null)
       if (geometryDirty || bars !== measuredBars || !measuredBarsRect) {
         measuredBars = bars
@@ -191,19 +227,24 @@ document.addEventListener('nav', () => {
       const crosshair = pointerTarget?.closest<HTMLElement>(CROSSHAIR_CURSOR_SELECTOR) ?? null
       lineScale = 1
       if (help) {
+        setBracketTarget(null)
         mode = 'help'
         visible = true
       } else if (pointer) {
-        mode = 'pointer'
+        setBracketTarget(pointer)
+        mode = 'bracket'
         visible = true
       } else if (text) {
+        setBracketTarget(null)
         lineScale = 2 / 3
         mode = 'text'
         visible = true
       } else if (crosshair) {
+        setBracketTarget(null)
         mode = 'crosshair'
         visible = true
       } else {
+        setBracketTarget(null)
         mode = 'diamond'
         visible = pointerTarget != null
       }
@@ -249,6 +290,7 @@ document.addEventListener('nav', () => {
 
   const hide = (): void => {
     pointerTarget = null
+    setBracketTarget(null)
     mode = 'diamond'
     visible = false
     schedule()
@@ -270,6 +312,7 @@ document.addEventListener('nav', () => {
     controller.abort()
     if (frame !== 0) window.cancelAnimationFrame(frame)
     window.clearTimeout(magneticTimer)
+    bracket.dataset.visible = 'false'
     magneticTarget?.removeAttribute('data-site-cursor-active')
     frame = 0
     delete cursor.dataset.magnetic

@@ -4159,6 +4159,7 @@
 }
 
 .tri-subnav-link {
+  position: relative;
   color: var(--gray);
 }
 
@@ -5521,7 +5522,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  flex-direction: row;
   gap: 0.65rem;
 }
 
@@ -5536,8 +5536,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   display: flex;
   flex: none;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.35rem;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  margin-left: auto;
 }
 
 .tri-compare-picker-submit-wrap {
@@ -5548,8 +5549,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-compare-picker-tooltip {
   position: absolute;
   top: calc(100% + 0.35rem);
-  left: 0;
+  right: 0;
   z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   width: max-content;
   max-width: min(12rem, calc(100vw - 2rem));
   padding: 0.24rem 0.34rem;
@@ -5562,6 +5566,14 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
+  transition: opacity 125ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  kbd {
+    padding: 0;
+    border: 0;
+    line-height: inherit;
+    color: color-mix(in srgb, var(--light) 72%, transparent);
+  }
 }
 
 .tri-compare-picker-submit:hover + .tri-compare-picker-tooltip,
@@ -5598,20 +5610,16 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   justify-content: center;
   width: 1.65rem;
   padding: 0;
-}
-
-.tri-compare-picker-clear {
   color: var(--gray);
   background: none;
-  border: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  border: 0;
+  transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
 
-  &:hover:not(:disabled) {
-    color: var(--dark);
-    border-color: color-mix(in srgb, var(--dark) 48%, transparent);
+  &:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }
 
-.tri-compare-picker-submit,
 .tri-compare-load-retry {
   color: var(--light);
   background: var(--dark);
@@ -5622,14 +5630,21 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .tri-compare-picker-clear:hover:not(:disabled),
+  .tri-compare-picker-submit:hover:not(:disabled) {
+    color: var(--dark);
+  }
+}
+
 .tri-compare-load-retry {
   padding: 0.26rem 0.45rem;
 }
 
 .tri-compare-picker-icon {
   flex: none;
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 0.95rem;
+  height: 0.95rem;
 
   path {
     fill: none;
@@ -7808,6 +7823,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   background: var(--tri-pred-surface);
 }
 
+.tri-dist-sports:has(.tri-dist-sport[data-site-cursor-active='true']) {
+  border-color: color-mix(in srgb, var(--dark) 48%, var(--lightgray));
+}
+
 .tri-dist-sport {
   position: static;
   flex: none;
@@ -7911,6 +7930,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   color: var(--light);
   background: var(--tri-zone-metric-color);
   border-color: var(--tri-zone-metric-color);
+}
+
+.tri-zone-metric-tabs .tri-zone-metric-tab[data-site-cursor-active='true'] {
+  border-color: color-mix(in srgb, var(--tri-zone-metric-color) 68%, var(--dark));
 }
 
 .tri-training-zone-stage {
