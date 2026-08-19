@@ -33,7 +33,15 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   let geometryDirty = true
   let barsLeft = 0
   let barCenters: number[] = []
+  let yearOffsets: number[] = []
   let repositionActive: (() => void) | null = null
+
+  const setData = (element: HTMLElement, key: string, value: string) => {
+    if (element.dataset[key] !== value) element.dataset[key] = value
+  }
+  const setStyle = (element: HTMLElement, key: 'left' | 'maxHeight' | 'top', value: string) => {
+    if (element.style[key] !== value) element.style[key] = value
+  }
 
   const updateTimeline = () => {
     const startedAt = beginSitePerformanceSample()
@@ -44,6 +52,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
         const rect = bar.getBoundingClientRect()
         return rect.left - barsRect.left + rect.width / 2
       })
+      yearOffsets = timelineYears.map(year => year.offsetLeft)
       geometryDirty = false
     }
     if (!timeline || !timelineShell) {
@@ -51,18 +60,23 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       endSitePerformanceSample('timeline', startedAt)
       return
     }
+    const scrollLeft = timeline.scrollLeft
     const maxScroll = Math.max(0, timeline.scrollWidth - timeline.clientWidth)
     const scrollable = maxScroll > 1
-    timelineShell.dataset.scrollable = String(scrollable)
-    timelineShell.dataset.scrollEnd = String(!scrollable || timeline.scrollLeft >= maxScroll - 1)
-    let activeYear = timelineYears[0]
-    for (const year of timelineYears) {
-      if (year.offsetLeft > timeline.scrollLeft + 1) break
-      activeYear = year
+    let activeIndex = 0
+    for (let index = 0; index < yearOffsets.length; index += 1) {
+      if (yearOffsets[index] > scrollLeft + 1) break
+      activeIndex = index
     }
-    for (const year of timelineYears) year.dataset.current = String(year === activeYear)
-    if (timelinePinnedYear && activeYear)
-      timelinePinnedYear.textContent = activeYear.dataset.year ?? activeYear.textContent
+    setData(timelineShell, 'scrollable', String(scrollable))
+    setData(timelineShell, 'scrollEnd', String(!scrollable || scrollLeft >= maxScroll - 1))
+    for (let index = 0; index < timelineYears.length; index += 1)
+      setData(timelineYears[index], 'current', String(index === activeIndex))
+    const activeYear = timelineYears[activeIndex]
+    if (timelinePinnedYear && activeYear) {
+      const label = activeYear.dataset.year ?? activeYear.textContent ?? ''
+      if (timelinePinnedYear.textContent !== label) timelinePinnedYear.textContent = label
+    }
     repositionActive?.()
     endSitePerformanceSample('timeline', startedAt)
   }
@@ -87,13 +101,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   const scroller = el('div', 'tri-pop-scroll')
   pop.appendChild(scroller)
-  const updateOverflow = () => {
-    pop.classList.toggle('tri-pop--top', scroller.scrollTop > 4)
-    pop.classList.toggle(
-      'tri-pop--more',
-      scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop > 4,
-    )
+  const applyOverflow = (scrollTop: number, contentHeight: number, viewHeight: number) => {
+    pop.classList.toggle('tri-pop--top', scrollTop > 4)
+    pop.classList.toggle('tri-pop--more', contentHeight - viewHeight - scrollTop > 4)
   }
+  const updateOverflow = () =>
+    applyOverflow(scroller.scrollTop, scroller.scrollHeight, scroller.clientHeight)
   let popScrollTone = 0
   const currentPopScrollTone = () =>
     Math.floor((scroller.scrollTop * DROP_TONE_COUNT) / Math.max(scroller.clientHeight, 1))
@@ -157,16 +170,19 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     })
   const replaceCard = (bar: HTMLElement): void => {
     scroller.replaceChildren(buildCard(bar))
-    popScrollTone = currentPopScrollTone()
   }
 
   const place = (bar: HTMLElement) => {
-    const barRect = bar.getBoundingClientRect()
-    const timelineRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
     const gap = 10
     const inset = 8
-    const frameHeight = Math.max(0, pop.offsetHeight - scroller.clientHeight)
-    const naturalHeight = scroller.scrollHeight + frameHeight
+    const barRect = bar.getBoundingClientRect()
+    const timelineRect = timeline?.getBoundingClientRect() ?? barsEl.getBoundingClientRect()
+    const popRect = pop.getBoundingClientRect()
+    const viewHeight = scroller.clientHeight
+    const contentHeight = scroller.scrollHeight
+    const scrollTop = scroller.scrollTop
+    const frameHeight = Math.max(0, pop.offsetHeight - viewHeight)
+    const naturalHeight = contentHeight + frameHeight
     const below = timelineRect.bottom + gap
     const availableBelow = Math.max(0, window.innerHeight - inset - below)
     const availableAbove = Math.max(0, timelineRect.top - gap - inset)
@@ -175,16 +191,18 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       (naturalHeight <= availableBelow || availableBelow >= availableAbove)
     const availableHeight = placeBelow ? availableBelow : availableAbove
     const maxContentHeight = Math.max(0, Math.floor(availableHeight - frameHeight))
-    const maxHeight = `${maxContentHeight}px`
-    if (scroller.style.maxHeight !== maxHeight) scroller.style.maxHeight = maxHeight
-    const r = pop.getBoundingClientRect()
+    const height = Math.min(naturalHeight, maxContentHeight + frameHeight)
     const cx = barRect.left + barRect.width / 2
-    const left = Math.max(inset, Math.min(cx - r.width / 2, window.innerWidth - r.width - inset))
-    const top = placeBelow ? below : Math.max(inset, timelineRect.top - gap - r.height)
-    pop.style.left = `${left}px`
-    pop.style.top = `${top}px`
-    pop.dataset.placement = placeBelow ? 'below' : 'above'
-    updateOverflow()
+    const left = Math.max(
+      inset,
+      Math.min(cx - popRect.width / 2, window.innerWidth - popRect.width - inset),
+    )
+    const top = placeBelow ? below : Math.max(inset, timelineRect.top - gap - height)
+    setStyle(scroller, 'maxHeight', `${maxContentHeight}px`)
+    setStyle(pop, 'left', `${left}px`)
+    setStyle(pop, 'top', `${top}px`)
+    setData(pop, 'placement', placeBelow ? 'below' : 'above')
+    applyOverflow(scrollTop, contentHeight, Math.min(contentHeight, maxContentHeight))
   }
   repositionActive = () => {
     if (active && (locked || pinned)) place(active)
@@ -228,7 +246,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       replaceCard(bar)
       popScrollTone = 0
       scroller.scrollTop = 0
-      updateOverflow()
     }
     place(bar)
     root.classList.add('tri-hovering')
@@ -319,6 +336,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       payload = result.value
       if (active) {
         replaceCard(active)
+        popScrollTone = currentPopScrollTone()
         place(active)
       }
     })
@@ -338,6 +356,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const onUnit = () => {
     if (!active) return
     replaceCard(active)
+    popScrollTone = currentPopScrollTone()
     updateOverflow()
   }
 
