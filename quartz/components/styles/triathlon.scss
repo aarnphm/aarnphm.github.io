@@ -522,6 +522,10 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .tri-timeline-activity:hover {
+    background: transparent;
+  }
+
   .tri-timeline-activity:hover .tri-timeline-value {
     color: var(--tri-accent);
   }
@@ -14182,6 +14186,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 a.tri-pop-date:hover {
+  background: transparent;
   color: var(--tri-accent);
 }
 

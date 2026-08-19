@@ -138,7 +138,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-17 17:46:54 GMT-04:00
+modified: 2026-08-18 21:47:53 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1038,6 +1038,12 @@ fueling: 10
 date: 2026-08-16
 activity: 19773849399
 fueling: 10
+```
+
+```tracking
+date: 2026-08-18
+activity: 19802043819
+fueling: 300
 ```
 
 <!-- training plan start
