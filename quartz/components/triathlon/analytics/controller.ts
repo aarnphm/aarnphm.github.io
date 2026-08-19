@@ -42,6 +42,8 @@ import { SEARCH_SECTIONS } from './search'
 import { setActivityResultSelection } from './search'
 import { sortActivitiesBy } from './search'
 
+const RENDER_SLICE_MS = 8
+
 export const setupAnalytics = (
   root: HTMLElement,
   context: TriathlonContext,
@@ -69,6 +71,7 @@ export const setupAnalytics = (
   let detailGeneration = 0
   let flashTimer: number | null = null
   let comparisonScrollTop = 0
+  let renderFrame = 0
 
   const finishPageBoot = (): void => {
     if (pageMode) document.documentElement.classList.remove(TRI_ANALYTICS_BOOT_CLASS)
@@ -82,28 +85,46 @@ export const setupAnalytics = (
   ): { element: HTMLElement; mount?: () => () => void } =>
     rendered instanceof HTMLElement ? { element: rendered } : rendered
 
+  const renderBlock = (block: HTMLElement, d: Analytics) => {
+    const definition = analyticsPanelDefinition(block.dataset.chart ?? '')
+    if (!definition) return
+    panelCleanups.get(block)?.()
+    panelCleanups.delete(block)
+    try {
+      const view = panelView(definition.render(d, context))
+      block.replaceChildren(view.element)
+      const cleanup = view.mount?.()
+      if (cleanup) panelCleanups.set(block, cleanup)
+      block.dataset.triHydrated = 'true'
+    } catch {
+      block.dataset.triHydrated = 'failed'
+    }
+  }
   const render = (d: Analytics) => {
     data = d
-    for (const block of Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))) {
-      const definition = analyticsPanelDefinition(block.dataset.chart ?? '')
-      if (!definition) continue
-      panelCleanups.get(block)?.()
-      panelCleanups.delete(block)
-      try {
-        const view = panelView(definition.render(d, context))
-        block.replaceChildren(view.element)
-        const cleanup = view.mount?.()
-        if (cleanup) panelCleanups.set(block, cleanup)
-        block.dataset.triHydrated = 'true'
-      } catch {
-        block.dataset.triHydrated = 'failed'
-      }
+    if (renderFrame !== 0) {
+      window.cancelAnimationFrame(renderFrame)
+      renderFrame = 0
     }
-    document.dispatchEvent(
-      new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
-    )
-    finishPageBoot()
-    if (panel.classList.contains('tri-analytics--searching')) runSearch()
+    const pending = Array.from(panel.querySelectorAll<HTMLElement>('.tri-ana-block'))
+    const step = () => {
+      renderFrame = 0
+      const deadline = performance.now() + RENDER_SLICE_MS
+      while (pending.length > 0) {
+        renderBlock(pending.shift() as HTMLElement, d)
+        if (performance.now() >= deadline) break
+      }
+      if (pending.length > 0 && live) {
+        renderFrame = window.requestAnimationFrame(step)
+        return
+      }
+      document.dispatchEvent(
+        new CustomEvent('contentdecrypted', { detail: { article: panel, content: panel } }),
+      )
+      finishPageBoot()
+      if (panel.classList.contains('tri-analytics--searching')) runSearch()
+    }
+    step()
   }
   const load = () => {
     const status = program.retrieve().status
@@ -765,6 +786,7 @@ export const setupAnalytics = (
     for (const cleanup of panelCleanups.values()) cleanup()
     panelCleanups.clear()
     program.stop()
+    if (renderFrame !== 0) window.cancelAnimationFrame(renderFrame)
     if (flashTimer != null) window.clearTimeout(flashTimer)
   }
 }

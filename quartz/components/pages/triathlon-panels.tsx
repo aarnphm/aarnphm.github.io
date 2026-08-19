@@ -1146,7 +1146,7 @@ export const CalcPanel = ({
       data-keyboard-scroll
     >
       <div class="tri-calc-bar">
-        <span class="tri-calc-title">{page ? 'calculators' : 'triathlon calculator'}</span>
+        <span class="tri-calc-title">{page ? 'calculators' : 'race pace'}</span>
         <button
           class="tri-calc-copy"
           type="button"

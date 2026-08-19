@@ -4183,11 +4183,14 @@
   border-radius: var(--radius-none);
   opacity: 0;
   visibility: hidden;
+  content-visibility: hidden;
   transform: translate(-50%, var(--tri-modal-y)) scale(0.97);
+  transition-behavior: allow-discrete;
   transition:
     opacity 0.15s ease,
     transform 0.15s ease,
-    visibility 0s linear 0.15s;
+    visibility 0s linear 0.15s,
+    content-visibility 0s linear 0.15s;
 }
 
 .tri-analytics-open .tri-analytics,
@@ -4195,11 +4198,13 @@
 .tri-training-open .tri-training {
   opacity: 1;
   visibility: visible;
+  content-visibility: visible;
   transform: translate(-50%, var(--tri-modal-y)) scale(1);
   transition:
     opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 0s;
+    visibility 0s,
+    content-visibility 0s;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4209,7 +4214,8 @@
     transform: translate(-50%, var(--tri-modal-y));
     transition:
       opacity 0.15s ease,
-      visibility 0s linear 0.15s;
+      visibility 0s linear 0.15s,
+      content-visibility 0s linear 0.15s;
   }
 
   .tri-analytics-open .tri-analytics,
@@ -4218,7 +4224,8 @@
     transform: translate(-50%, var(--tri-modal-y));
     transition:
       opacity 0.15s ease,
-      visibility 0s;
+      visibility 0s,
+      content-visibility 0s;
   }
 }
 
@@ -4314,6 +4321,7 @@
   height: calc(100dvh - 7rem);
   opacity: 1;
   visibility: visible;
+  content-visibility: visible;
   transform: none;
 }
 
@@ -4752,6 +4760,12 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   overscroll-behavior-y: contain;
   @include thin-scrollbar;
   padding: 1.1rem 1.2rem 2rem;
+}
+
+.tri-ana-block {
+  flex: 0 0 auto;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
 }
 
 .tri-ana-block:empty {
@@ -13127,6 +13141,11 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   font-family: var(--codeFont);
   font-size: 0.68rem;
   color: var(--dark);
+}
+
+.tri-training-render > * {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 160px;
 }
 
 .tri-training-render {
