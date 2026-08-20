@@ -67,6 +67,14 @@ test('parses dated analytics embeds with settings and activity filters', () => {
     settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed,
     analytics: true,
   })
+  assert.deepEqual(
+    triathlonEmbedAnchor('["2026-08-18","analytics","settings=display:simplified&expanded:true"]'),
+    {
+      date: '2026-08-18',
+      settings: { ...TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, expanded: true },
+      analytics: true,
+    },
+  )
   assert.deepEqual(triathlonEmbedAnchor('["2026-08-16","analytics","cycling"]'), {
     date: '2026-08-16',
     sport: 'bike',
@@ -185,7 +193,7 @@ test('carries analytics mode, cycling, and settings into hydrated day-card props
     triathlonDayProps(
       {
         sport: 'bike',
-        settings: TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
+        settings: { ...TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified, expanded: true },
         analytics: true,
         embedded: true,
       },
@@ -194,7 +202,7 @@ test('carries analytics mode, cycling, and settings into hydrated day-card props
     {
       'data-triathlon-date': '2026-08-16',
       'data-triathlon-sport': 'bike',
-      'data-triathlon-settings': SIMPLIFIED_SETTINGS_VALUE,
+      'data-triathlon-settings': `${SIMPLIFIED_SETTINGS_VALUE}&expanded:true`,
       'data-triathlon-analytics': '1',
       'data-triathlon-embedded': '1',
     },

@@ -1,11 +1,17 @@
+import type { Locale } from '../../../util/triathlon-presentation'
+import { daySleepStageLabel } from '../../../util/triathlon-card'
 import { wallClock, wallMin } from '../analytics/panels/recovery'
+
+export type DaySleepValueLabel = (value: number | null) => string
+
+type DaySleepGeometry = { x: (index: number) => number; indexAt: (fraction: number) => number }
 
 type DaySleepSeries = {
   values: readonly (number | null)[]
   startMinute: number
   intervalSeconds: number
-  unit: 'ms' | 'bpm'
-  width: number
+  label: DaySleepValueLabel
+  geometry: DaySleepGeometry
 }
 
 const finitePositive = (value: string | undefined): number | null => {
@@ -25,37 +31,55 @@ export const decodeDaySleepValues = (encoded: string): (number | null)[] | null 
     : null
 }
 
+export const daySleepUnitLabel =
+  (unit: 'ms' | 'bpm'): DaySleepValueLabel =>
+  value =>
+    `${value == null ? '—' : Math.round(value)} ${unit}`
+
 export const daySleepReadout = (
   startMinute: number,
   intervalSeconds: number,
   values: readonly (number | null)[],
   index: number,
-  unit: 'ms' | 'bpm',
+  label: DaySleepValueLabel,
 ): string => {
   const boundedIndex = Math.min(Math.max(Math.round(index), 0), values.length - 1)
   const time = wallClock(startMinute + (boundedIndex * intervalSeconds) / 60)
-  const value = values[boundedIndex]
-  return `${time} · ${value == null ? '—' : Math.round(value)} ${unit}`
+  return `${time} · ${label(values[boundedIndex])}`
 }
 
-const seriesFromElement = (wrap: HTMLElement): DaySleepSeries | null => {
+const pointGeometry = (count: number, width: number): DaySleepGeometry => ({
+  x: index => (index / (count - 1)) * width,
+  indexAt: fraction => Math.round(fraction * (count - 1)),
+})
+
+const bandGeometry = (count: number, width: number): DaySleepGeometry => ({
+  x: index => ((index + 0.5) / count) * width,
+  indexAt: fraction => Math.min(count - 1, Math.floor(fraction * count)),
+})
+
+const seriesFromElement = (wrap: HTMLElement, locale: () => Locale): DaySleepSeries | null => {
   const values = wrap.dataset.daySleepValues
     ? decodeDaySleepValues(wrap.dataset.daySleepValues)
     : null
   const startTs = wrap.dataset.daySleepStart
   const intervalSeconds = finitePositive(wrap.dataset.daySleepInterval)
   const width = finitePositive(wrap.dataset.daySleepWidth)
-  const unit = wrap.dataset.daySleepUnit
   const startMinute = startTs ? wallMin(startTs) : Number.NaN
-  if (
-    !values ||
-    !Number.isFinite(startMinute) ||
-    intervalSeconds == null ||
-    width == null ||
-    (unit !== 'ms' && unit !== 'bpm')
-  )
+  if (!values || !Number.isFinite(startMinute) || intervalSeconds == null || width == null)
     return null
-  return { values, startMinute, intervalSeconds, unit, width }
+  const unit = wrap.dataset.daySleepUnit
+  const stages = wrap.dataset.daySleepSeries === 'stages'
+  if (!stages && unit !== 'ms' && unit !== 'bpm') return null
+  return {
+    values,
+    startMinute,
+    intervalSeconds,
+    label: stages
+      ? value => daySleepStageLabel(locale(), value)
+      : daySleepUnitLabel(unit === 'ms' ? 'ms' : 'bpm'),
+    geometry: stages ? bandGeometry(values.length, width) : pointGeometry(values.length, width),
+  }
 }
 
 const latestMeasuredIndex = (values: readonly (number | null)[]): number => {
@@ -64,9 +88,9 @@ const latestMeasuredIndex = (values: readonly (number | null)[]): number => {
   return values.length - 1
 }
 
-const mountDaySleepChart = (wrap: HTMLElement): (() => void) => {
-  const series = seriesFromElement(wrap)
-  const svg = wrap.querySelector<SVGSVGElement>('.tri-day-sleep-line-svg')
+const mountDaySleepChart = (wrap: HTMLElement, locale: () => Locale): (() => void) => {
+  const series = seriesFromElement(wrap, locale)
+  const svg = wrap.querySelector<SVGSVGElement>('.tri-ana-svg')
   const cursor = wrap.querySelector<SVGLineElement>('.tri-ana-cursor')
   const readout = wrap.querySelector<HTMLElement>('.tri-chart-readout')
   if (!series || !svg || !cursor || !readout) return () => {}
@@ -74,13 +98,13 @@ const mountDaySleepChart = (wrap: HTMLElement): (() => void) => {
   let currentIndex = latestMeasuredIndex(series.values)
   const reveal = (index: number, input: 'pointer' | 'keyboard'): void => {
     currentIndex = Math.min(Math.max(Math.round(index), 0), series.values.length - 1)
-    const x = (currentIndex / (series.values.length - 1)) * series.width
+    const x = series.geometry.x(currentIndex)
     const text = daySleepReadout(
       series.startMinute,
       series.intervalSeconds,
       series.values,
       currentIndex,
-      series.unit,
+      series.label,
     )
     cursor.setAttribute('x1', x.toFixed(2))
     cursor.setAttribute('x2', x.toFixed(2))
@@ -99,7 +123,7 @@ const mountDaySleepChart = (wrap: HTMLElement): (() => void) => {
     const bounds = svg.getBoundingClientRect()
     if (bounds.width <= 0) return
     const fraction = Math.min(Math.max((event.clientX - bounds.left) / bounds.width, 0), 1)
-    reveal(fraction * (series.values.length - 1), 'pointer')
+    reveal(series.geometry.indexAt(fraction), 'pointer')
   }
   const onPointerLeave = (): void => {
     if (document.activeElement !== svg) hide()
@@ -131,10 +155,10 @@ const mountDaySleepChart = (wrap: HTMLElement): (() => void) => {
   }
 }
 
-export const mountDaySleepCharts = (scope: ParentNode): (() => void) => {
+export const mountDaySleepCharts = (scope: ParentNode, locale: () => Locale): (() => void) => {
   const cleanups = Array.from(
     scope.querySelectorAll<HTMLElement>('[data-day-sleep-series]'),
-    mountDaySleepChart,
+    wrap => mountDaySleepChart(wrap, locale),
   )
   return () => {
     for (const cleanup of cleanups) cleanup()

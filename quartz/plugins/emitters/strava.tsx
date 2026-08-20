@@ -416,7 +416,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             description,
             socialDescription: description,
             generatedSocialImage: true,
-            pageLayout: 'default',
+            pageLayout: 'triathlon',
             tags: [],
           },
         })
@@ -518,7 +518,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
                   description,
                   socialDescription: description,
                   generatedSocialImage: true,
-                  pageLayout: 'default',
+                  pageLayout: 'triathlon',
                   tags: [],
                   ...(typeof location === 'string' ? { location } : {}),
                 },

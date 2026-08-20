@@ -56,7 +56,6 @@ interface MapboxLibrary {
     center: [number, number]
     zoom: number
     attributionControl: boolean
-    antialias: boolean
     pitch: number
   }) => TriathlonMapboxMap
 }
@@ -74,7 +73,6 @@ export const createMapboxMap = async (
     center: [-79.4, 43.7],
     zoom: 9,
     attributionControl: false,
-    antialias: true,
     pitch: threeDimensional ? 55 : 0,
   })
 }

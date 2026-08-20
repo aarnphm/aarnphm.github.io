@@ -88,6 +88,7 @@ const _mapping: Map<string, MapAction> = new Map()
 _mapping.set('\\', '/')
 _mapping.set('j', '/curius')
 _mapping.set('g', '/triathlon')
+_mapping.set('h', '/stream')
 
 const aliases: Record<string, { mac: string; def: string }> = {
   recherche: { mac: '/', def: 'k' },

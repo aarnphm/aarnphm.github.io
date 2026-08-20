@@ -125,7 +125,7 @@
   z-index: calc(var(--z-tooltip) - 1);
   contain: layout paint style;
   box-sizing: border-box;
-  width: min(18rem, calc(100vw - 1.5rem));
+  width: min(22rem, calc(100vw - 1.5rem));
   padding: 0.7rem 0.75rem 0.6rem;
   color: var(--dark);
   background: var(--light);
@@ -134,6 +134,7 @@
   font-family: var(--codeFont);
   font-size: 0.62rem;
   font-variant-numeric: tabular-nums;
+  will-change: transform;
 }
 
 :root[saved-theme='dark'] .tri-perf-debug {
@@ -307,15 +308,8 @@
   align-items: flex-end;
   gap: var(--tri-day-gap);
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='25'%3E%3Cpath d='M6.5 1 V24' fill='none' stroke='%23999' stroke-width='1.4'/%3E%3C/svg%3E")
-      6 12,
-    crosshair;
-}
-
-.tri-bars.tri-bars--locked {
-  cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='25'%3E%3Cpath d='M6.5 1 V24' fill='none' stroke='%23fc4c02' stroke-width='1.7'/%3E%3C/svg%3E")
-      6 12,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17' height='49'%3E%3Cpath d='M8.5 1 V48' fill='none' stroke='%23999' stroke-width='2'/%3E%3C/svg%3E")
+      8 24,
     crosshair;
 }
 
@@ -447,12 +441,9 @@
   width: max-content;
   max-width: calc(100vw - 1rem);
   overflow: visible;
-  cursor: pointer;
+  pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.1s ease,
-    visibility 0.1s;
 }
 
 .tri-pop-scroll {
@@ -480,10 +471,6 @@
   font-family: var(--codeFont);
 }
 
-.tri-timeline-card > .tri-pop-date {
-  text-decoration: none;
-}
-
 .tri-timeline-list {
   display: flex;
   flex-direction: column;
@@ -493,23 +480,17 @@
   list-style: none;
 }
 
-.tri-timeline-activity {
+.tri-timeline-row {
   display: grid;
   grid-template-columns: 0.85rem auto;
   gap: 0.35rem;
   align-items: center;
   min-height: 0.9rem;
   color: var(--darkgray);
-  text-decoration: none;
 
   > .tri-ico {
     width: 0.75rem;
     height: 0.75rem;
-  }
-
-  &:focus-visible {
-    outline: 1px solid var(--tri-accent);
-    outline-offset: 2px;
   }
 }
 
@@ -519,25 +500,6 @@
   color: var(--darkgray);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .tri-timeline-activity:hover {
-    background: transparent;
-  }
-
-  .tri-timeline-activity:hover .tri-timeline-value {
-    color: var(--tri-accent);
-  }
-
-  .tri-timeline-activity:hover > .tri-ico path {
-    stroke: var(--tri-accent);
-  }
-
-  .tri-timeline-activity:hover > .tri-ico--solid path {
-    fill: var(--tri-accent);
-    stroke: none;
-  }
 }
 
 .tri-pop-card {
@@ -3529,8 +3491,7 @@
 
   &:focus-visible {
     color: var(--dark);
-    outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
-    outline-offset: -2px;
+    outline: 0;
   }
 }
 
@@ -3660,23 +3621,35 @@
 }
 
 .tri-calc-source {
+  --tri-src-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   position: relative;
   z-index: 1;
   grid-column: 2;
   grid-row: 1;
+  display: flex;
+  align-items: stretch;
   margin-bottom: -1px;
 }
 
 .tri-calc-srcs {
-  --tri-src-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   display: inline-flex;
   align-items: stretch;
   overflow: hidden;
-  border: 1px solid var(--lightgray);
-  border-bottom: 0;
+  border-color: var(--lightgray);
+  border-style: solid;
+  border-width: 1px 0 0 1px;
   border-radius: var(--radius-none);
   background: var(--tri-src-surface);
   isolation: isolate;
+}
+
+.tri-calc-source > .tri-calc-copy {
+  justify-content: center;
+  min-width: 2rem;
+  background: var(--tri-src-surface);
+  border-color: var(--lightgray);
+  border-style: solid;
+  border-width: 1px 1px 0 0;
 }
 
 .tri-calc-src {
@@ -4368,15 +4341,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-}
-
-.tri-tools-h {
-  margin: 0;
-  font-size: 0.62rem;
-  font-weight: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--gray);
 }
 
 .tri-tools .tri-gear-btn,
@@ -10410,6 +10374,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-engine-age[data-gloss],
 .tri-engine-row-k[data-gloss],
 .tri-elev-d[data-gloss],
+.tri-swim-trend-title[data-gloss],
 .tri-foot [data-gloss] {
   text-decoration-line: underline;
   text-decoration-style: dotted;
@@ -12712,6 +12677,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-map-pane {
   position: relative;
+  contain: layout paint style;
   flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
@@ -12977,11 +12943,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-map-sidebar {
   box-sizing: border-box;
+  contain: layout paint style;
   flex: 0 0 min(34%, 460px);
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   @include thin-scrollbar;
   padding: 1rem 1.1rem;
 }
@@ -13775,6 +13743,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-day-sleep-stage-svg {
   height: 64px;
+  cursor: crosshair;
 }
 
 .tri-day-sleep-stage-summary {
@@ -13794,16 +13763,18 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   cursor: crosshair;
 }
 
+.tri-day-sleep-stage-svg:focus,
 .tri-day-sleep-line-svg:focus {
   outline: none;
 }
 
+.tri-day-sleep-stage-svg:focus-visible,
 .tri-day-sleep-line-svg:focus-visible {
   outline: 1px solid color-mix(in srgb, var(--tri-accent) 68%, transparent);
   outline-offset: 2px;
 }
 
-.tri-day-sleep-series[data-sleep-input='keyboard'] .tri-chart-readout {
+.tri-day-sleep-chart[data-sleep-input='keyboard'] .tri-chart-readout {
   transition: none;
 }
 

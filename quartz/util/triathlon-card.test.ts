@@ -99,6 +99,7 @@ import {
   DEFAULT_TRIATHLON_PRESENTATION,
   type TriathlonPresentation,
 } from './triathlon-presentation'
+import { TRIATHLON_TRACE_DISPLAY_SETTINGS } from './triathlon-trace-settings'
 
 const METRIC_TRIATHLON_PRESENTATION: TriathlonPresentation = Object.freeze({
   ...DEFAULT_TRIATHLON_PRESENTATION,
@@ -2254,6 +2255,31 @@ test('labels the activity disclosure and exposes its expanded state and controll
   assert.equal(expandedToggle.properties.ariaExpanded, 'true')
 })
 
+test('uses an explicit embed setting to choose the activity disclosure state', () => {
+  const payload = {
+    details: { 42: detail({ id: 42, date: '2026-08-18', sport: 'bike' }) },
+    health: {},
+  }
+  const expanded = buildDayCard(factory, '2026-08-18', payload, {
+    embedded: true,
+    settings: { expanded: true },
+  })
+  const expandedActivity = byClass(expanded, 'tri-act')[0]
+  const expandedToggle = byClass(expanded, 'tri-act-toggle')[0]
+  assert.ok(classNames(expandedActivity).includes('tri-act--expanded'))
+  assert.equal(expandedToggle.properties.ariaExpanded, 'true')
+
+  const collapsed = buildDayCard(factory, '2026-08-18', payload, {
+    embedded: true,
+    sport: 'bike',
+    settings: { expanded: false },
+  })
+  const collapsedActivity = byClass(collapsed, 'tri-act')[0]
+  const collapsedToggle = byClass(collapsed, 'tri-act-toggle')[0]
+  assert.equal(classNames(collapsedActivity).includes('tri-act--expanded'), false)
+  assert.equal(collapsedToggle.properties.ariaExpanded, 'false')
+})
+
 test('marks every routed sport for the shared desktop figure split', () => {
   const routedSports: StravaActivityDetail['sport'][] = ['bike', 'run', 'walk']
   for (const sport of routedSports) {
@@ -2752,6 +2778,10 @@ test('renders aligned swim trends with the selected activity average', () => {
   assert.ok(rendered)
   assert.equal(rendered.tagName, 'section')
   assert.equal(rendered.properties.ariaLabel, 'Swim activity analysis')
+  assert.deepEqual(
+    byClass(rendered, 'tri-swim-trend').map(chart => chart.properties.dataTriTrace),
+    ['pace', 'stroke-rate', 'cadence', 'swolf'],
+  )
   assert.deepEqual(byClass(rendered, 'tri-swim-trend-title').map(text), [
     'pace /100m',
     'stroke rate spm',
@@ -2967,6 +2997,32 @@ test('plots only the selected swim intervals even when history contains same-dat
     '100 m · 2:24 elapsed',
     '100 m · 2:24 elapsed',
   ])
+})
+
+test('filters swim traces before assigning the shared aggregation toggle', () => {
+  const rendered = buildSwimTrends(factory, swimToggleDetail(), {
+    pace: false,
+    'stroke-rate': false,
+  })
+
+  assert.ok(rendered)
+  assert.deepEqual(
+    byClass(rendered, 'tri-swim-trend').map(chart => chart.properties.dataTriTrace),
+    ['cadence', 'swolf'],
+  )
+  const cadence = byClass(rendered, 'tri-swim-trend--cadence')[0]
+  assert.ok(cadence)
+  assert.equal(byClass(cadence, 'tri-swim-mode-toggle').length, 1)
+  assert.equal(byClass(cadence, 'tri-swim-trend-title').length, 0)
+  assert.equal(
+    buildSwimTrends(factory, swimToggleDetail(), {
+      pace: false,
+      'stroke-rate': false,
+      cadence: false,
+      swolf: false,
+    }),
+    null,
+  )
 })
 
 test('keeps missing length metrics as graph gaps and renders pace alone when needed', () => {
@@ -3262,8 +3318,13 @@ test('renders exact-date analytics before activities without the legacy recovery
         String(chart.properties.ariaDescribedBy).includes('tri-day-2026-08-16-sleep'),
     ),
   )
-  assert.equal(byClass(rendered, 'tri-ana-cursor').length, 2)
-  assert.equal(byClass(rendered, 'tri-chart-readout').length, 2)
+  assert.equal(byClass(rendered, 'tri-ana-cursor').length, 3)
+  assert.equal(byClass(rendered, 'tri-chart-readout').length, 3)
+  const stageChart = byClass(rendered, 'tri-day-sleep-stages')[0]
+  assert.equal(stageChart.properties.dataDaySleepSeries, 'stages')
+  assert.equal(stageChart.properties.dataDaySleepInterval, '300')
+  assert.match(String(stageChart.properties.dataDaySleepValues), /^[0-3,]+$/)
+  assert.equal(byClass(rendered, 'tri-day-sleep-stage-svg')[0].properties.role, 'slider')
   assert.match(
     String(byClass(rendered, 'tri-day-sleep-series--hrv')[0].properties.dataDaySleepValues),
     /54/,
@@ -3298,7 +3359,7 @@ test('day-card date renders as a month link only when extras provide an href', (
   assert.equal(byClass(plain, 'tri-pop-date')[0].tagName, 'span')
 })
 
-test('timeline day cards render only the date and linked activity measurements', () => {
+test('timeline day cards keep activity measurements and the date inert', () => {
   const ride = detail({ id: 1, date: '2026-07-09', name: 'Lunch ride', distanceKm: 30 })
   const strength = detail({
     id: 2,
@@ -3308,28 +3369,39 @@ test('timeline day cards render only the date and linked activity measurements',
     distanceKm: 0,
     movingTimeS: 2_700,
   })
-  const card = buildTimelineDayCard(
-    factory,
-    '2026-07-09',
-    { details: { 1: ride, 2: strength }, health: {} },
-    { dateHref: '/triathlon/on/2026/07/09' },
-  )
+  const card = buildTimelineDayCard(factory, '2026-07-09', {
+    details: { 1: ride, 2: strength },
+    health: {},
+  })
 
-  const links = byClass(card, 'tri-timeline-activity')
+  const entries = byClass(card, 'tri-timeline-activity')
   assert.equal(byClass(card, 'tri-act').length, 0)
   assert.equal(byClass(card, 'tri-timeline-name').length, 0)
   assert.equal(byClass(card, 'tri-pop-loc').length, 0)
   assert.deepEqual(
-    links.map(link => link.properties.href),
-    ['/triathlon/on/2026/07/09#tri-activity-1', '/triathlon/on/2026/07/09#tri-activity-2'],
+    entries.map(entry => entry.tagName),
+    ['span', 'span'],
   )
+  assert.ok(entries.every(entry => entry.properties.href === undefined))
+  assert.ok(entries.every(entry => entry.properties.role === 'group'))
+  assert.equal(byClass(card, 'tri-timeline-row').length, 2)
+  assert.equal(byTag(card, 'a').length, 0)
   assert.deepEqual(byClass(card, 'tri-timeline-value').map(text), ['30.0 km', "45'"])
-  assert.equal(byClass(card, 'tri-pop-date')[0].properties.href, '/triathlon/on/2026/07/09')
+  assert.equal(byClass(card, 'tri-pop-date')[0].tagName, 'span')
+  assert.equal(byClass(card, 'tri-pop-date')[0].properties.href, undefined)
 
   const rest = buildTimelineDayCard(factory, '2026-07-10', { details: {}, health: {} })
   assert.equal(byClass(rest, 'tri-pop-date').length, 1)
   assert.equal(byClass(rest, 'tri-timeline-activity').length, 0)
-  assert.equal(byClass(rest, 'tri-battery').length, 0)
+  assert.equal(byClass(rest, 'tri-timeline-row').length, 1)
+  assert.equal(byClass(rest, 'tri-timeline-rest').length, 1)
+  assert.equal(byClass(rest, 'tri-pop-rest').length, 0)
+  assert.equal(byClass(rest, 'tri-battery').length, 1)
+  assert.equal(text(byClass(rest, 'tri-timeline-value')[0]), 'rest')
+
+  const loading = buildTimelineDayCard(factory, '2026-07-10', null)
+  assert.equal(byClass(loading, 'tri-battery').length, 0)
+  assert.equal(text(byClass(loading, 'tri-pop-rest')[0]), '·')
 })
 
 test('embedded day cards align activity summaries to their largest row count', () => {
@@ -3567,6 +3639,84 @@ const cyclingDynamicsDetail = (): StravaActivityDetail =>
       standingTimeS: 1_200,
     },
   })
+
+test('emits kebab-case trace names across bike, run, and swim charts', () => {
+  const bike = cyclingDynamicsDetail()
+  bike.gearShifts = shiftedDetail().gearShifts
+  bike.route = bike.route.map((point, index) => ({
+    ...point,
+    stamina: [100, 76, 54, 32][index],
+    potentialStamina: [100, 88, 67, 40][index],
+    heatStrainIndex: [0, 1.4, 3, 3.1][index],
+    coreTemperatureC: [37.16, 37.17, 37.19, 37.18][index],
+    skinTemperatureC: [33.4, 33.45, 33.5, 33.55][index],
+  }))
+  const run = detail({
+    sport: 'run',
+    deviceWatts: false,
+    route: detail().route.map((point, index) => ({
+      ...point,
+      speedKph: 10 + index,
+      cad: 80,
+      strideLengthM: index === 1 ? null : 1.1 + index * 0.05,
+      groundContactTimeMs: index === 1 ? null : 245 - index * 3,
+      verticalOscillationCm: index === 1 ? null : 9.8 - index * 0.1,
+    })),
+  })
+  const estimatedStride = buildRunStrideTrace(
+    factory,
+    detail({
+      sport: 'run',
+      deviceWatts: false,
+      route: detail().route.map((point, index) => ({
+        ...point,
+        cad: 80 + index * 5,
+        speedKph: 10 + index,
+      })),
+    }),
+    null,
+  )
+  const swim = buildSwimTrends(factory, swimToggleDetail())
+  assert.ok(estimatedStride)
+  assert.ok(swim)
+
+  const traceNames = [
+    buildActivity(factory, bike, true),
+    buildActivity(factory, run, true),
+    estimatedStride,
+    swim,
+  ]
+    .flatMap(root =>
+      descendants(root, element => typeof element.properties.dataTriTrace === 'string'),
+    )
+    .map(element => String(element.properties.dataTriTrace))
+
+  assert.deepEqual([...new Set(traceNames)].sort(), [
+    'cadence',
+    'core-temperature',
+    'electronic-shifting',
+    'estimated-stride-length',
+    'ground-contact-time',
+    'heat-strain-index',
+    'hr',
+    'pace',
+    'pedal-smoothness',
+    'power',
+    'power-balance',
+    'power-phase',
+    'respiration',
+    'rider-position',
+    'skin-temperature',
+    'stamina',
+    'stride-length',
+    'stroke-rate',
+    'swolf',
+    'temperature',
+    'torque-effectiveness',
+    'vertical-oscillation',
+  ])
+  assert.ok(traceNames.every(name => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)))
+})
 
 const ctx = (overrides: Partial<DetailCtx> = {}): DetailCtx => ({
   zones: { hr: [120, 140, 160, 180], power: [150, 200, 250, 300, 350, 400], ftp: 260 },
@@ -3995,6 +4145,14 @@ test('pairs hr/power zones and curve/hist into duos with aligned captions', () =
   const rendered = buildActivity(factory, zonedDetail(), true, ctx())
   const duos = byClass(rendered, 'tri-zone-duo')
   assert.equal(duos.length, 2)
+  assert.deepEqual(
+    duos.flatMap(duo =>
+      duo.children
+        .filter((child): child is Element => child.type === 'element')
+        .map(child => child.properties.dataTriTrace),
+    ),
+    ['heart-rate-zones', 'power-zones', 'power-curve', '25w-power-distribution'],
+  )
   assert.deepEqual(byClass(duos[0], 'tri-zone-title').map(text), [
     'heart rate zones',
     'power zones',
@@ -4009,7 +4167,27 @@ test('pairs hr/power zones and curve/hist into duos with aligned captions', () =
   ])
 })
 
-test('places swim charts before heart rate zones in expanded details', () => {
+test('removes zone duos from simplified activity details', () => {
+  const rendered = buildActivity(
+    factory,
+    zonedDetail(),
+    true,
+    ctx(),
+    false,
+    true,
+    TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
+  )
+
+  assert.equal(byClass(rendered, 'tri-zone-duo').length, 0)
+  for (const trace of ['heart-rate-zones', 'power-zones', 'power-curve', '25w-power-distribution'])
+    assert.equal(
+      descendants(rendered, element => element.properties.dataTriTrace === trace).length,
+      0,
+      `${trace} should be hidden`,
+    )
+})
+
+test('places the pool overview and swim charts before heart rate zones in expanded details', () => {
   const rendered = buildActivity(
     factory,
     swimTrendDetail({ hrZones: [20, 40, 30, 10, 0] }),
@@ -4019,13 +4197,59 @@ test('places swim charts before heart rate zones in expanded details', () => {
   const more = byClass(rendered, 'tri-act-more')[0]
   assert.ok(more)
   const children = more.children.filter((child): child is Element => child.type === 'element')
+  const overviewIndex = children.findIndex(child => classNames(child).includes('tri-pool'))
   const swimIndex = children.findIndex(child => classNames(child).includes('tri-swim-trends'))
   const zonesIndex = children.findIndex(child =>
     byClass(child, 'tri-zone-title').some(title => text(title) === 'heart rate zones'),
   )
 
-  assert.equal(swimIndex, 0)
+  assert.ok(overviewIndex >= 0)
+  assert.equal(swimIndex, overviewIndex + 1)
   assert.ok(zonesIndex > swimIndex)
+})
+
+test('glosses the swim rate, cadence, and SWOLF titles', () => {
+  const rendered = buildActivity(factory, swimTrendDetail(), true, ctx())
+  const glossed = new Map(
+    byClass(rendered, 'tri-swim-trend-title').map(title => [
+      text(title),
+      title.properties.dataGloss,
+    ]),
+  )
+  assert.equal(glossed.get('stroke rate spm'), 'strokerate')
+  assert.equal(glossed.get('cadence str/length'), 'swimcadence')
+  assert.equal(glossed.get('SWOLF'), 'swolf')
+  assert.equal(glossed.get('pace /100m'), undefined)
+  for (const key of ['strokerate', 'swimcadence', 'swolf']) {
+    assert.ok(glossFor('en', key)?.def)
+    assert.ok(glossFor('fr', key)?.def)
+  }
+})
+
+test('places the pool overview immediately before non-embedded swim trends', () => {
+  const activity = { ...swimToggleDetail(), strokes: { freestyle: 75, breaststroke: 25 } }
+  const rendered = buildActivity(factory, activity, true)
+  const summary = byClass(rendered, 'tri-act-figs--pool')[0]
+  const more = byClass(rendered, 'tri-act-more')[0]
+  assert.ok(summary)
+  assert.ok(more)
+  assert.equal(byClass(summary, 'tri-pool').length, 0)
+  assert.equal(byClass(summary, 'tri-pool-cap').length, 1)
+  assert.equal(byClass(summary, 'tri-pool-strokes').length, 1)
+
+  const children = more.children.filter((child): child is Element => child.type === 'element')
+  const overviewIndex = children.findIndex(child => classNames(child).includes('tri-pool'))
+  const trendsIndex = children.findIndex(child => classNames(child).includes('tri-swim-trends'))
+  assert.ok(overviewIndex >= 0)
+  assert.equal(trendsIndex, overviewIndex + 1)
+
+  const embedded = buildActivity(factory, activity, true, undefined, false, true)
+  const embeddedSummary = byClass(embedded, 'tri-act-figs--pool')[0]
+  const embeddedMore = byClass(embedded, 'tri-act-more')[0]
+  assert.ok(embeddedSummary)
+  assert.ok(embeddedMore)
+  assert.equal(byClass(embeddedSummary, 'tri-pool').length, 1)
+  assert.equal(byClass(embeddedMore, 'tri-pool').length, 0)
 })
 
 test('places cycling efforts after the expanded charts', () => {

@@ -58,7 +58,6 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
         {view === 'on' ? (
           <OnTreePanel
             root={root}
-            title={feedScope?.title === 'feed' ? 'on' : feedScope?.title}
             tree={triathlonDateTree(fileData.stravaPayload?.details ?? {}, feedScope?.prefix)}
           />
         ) : view === 'feed' ? (

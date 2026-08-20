@@ -252,13 +252,13 @@ describe('remarkWikilink integration', () => {
     test('preserves analytics settings and sport filters in nested transclude anchors', () => {
       const html = processToHTML(
         [
-          '![[triathlon#2026-08-16#analytics#settings=display:simplified]]',
+          '![[triathlon#2026-08-18#analytics#settings=display:simplified&expanded:true]]',
           '![[triathlon#2026-08-16#analytics#cycling]]',
         ].join('\n'),
       )
       assert(
         html.includes(
-          'data-anchor-path="[&#x22;2026-08-16&#x22;,&#x22;analytics&#x22;,&#x22;settings=display:simplified&#x22;]"',
+          'data-anchor-path="[&#x22;2026-08-18&#x22;,&#x22;analytics&#x22;,&#x22;settings=display:simplified&#x26;expanded:true&#x22;]"',
         ),
       )
       assert(

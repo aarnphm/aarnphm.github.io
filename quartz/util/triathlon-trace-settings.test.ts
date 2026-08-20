@@ -33,6 +33,12 @@ test('expands simplified display settings and treats detailed display as the def
     'rider-position': false,
     stamina: false,
     'electronic-shifting': false,
+    'stroke-rate': false,
+    'matched-rides': false,
+    '25w-power-distribution': false,
+    'power-curve': false,
+    'power-zones': false,
+    'heart-rate-zones': false,
     'heat-strain-index': false,
     'core-temperature': false,
     'skin-temperature': false,
@@ -46,6 +52,13 @@ test('expands simplified display settings and treats detailed display as the def
     parseTriathlonTraceSettings('settings=display:detailed'),
     TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed,
   )
+  assert.deepEqual(parseTriathlonTraceSettings('settings=display:simplified&expanded:true'), {
+    ...TRIATHLON_TRACE_DISPLAY_SETTINGS.simplified,
+    expanded: true,
+  })
+  assert.deepEqual(parseTriathlonTraceSettings('settings=expanded:false&display:detailed'), {
+    expanded: false,
+  })
   assert.equal(serializeTriathlonTraceSettings(TRIATHLON_TRACE_DISPLAY_SETTINGS.detailed), '')
 })
 
@@ -58,6 +71,8 @@ test('rejects malformed, duplicate, and non-kebab trace settings', () => {
   assert.equal(parseTriathlonTraceSettings('matched-rides:false&matched-rides:true'), null)
   assert.equal(parseTriathlonTraceSettings('display:unknown'), null)
   assert.equal(parseTriathlonTraceSettings('display:simplified&matched-rides:false'), null)
+  assert.equal(parseTriathlonTraceSettings('display:simplified&expanded:0'), null)
+  assert.equal(parseTriathlonTraceSettings('display:simplified&display:detailed'), null)
 })
 
 test('normalizes rendered trace labels and disables only explicit false settings', () => {
