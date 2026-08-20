@@ -64,6 +64,7 @@ interface ChartGeometry {
   height: number
   salmon: string
   surface: string
+  text: string
   width: number
 }
 
@@ -306,7 +307,7 @@ const drawChart = (
   budget: number,
 ): void => {
   const context = canvas.getContext('2d')
-  const { accent, font, gray, height, salmon, surface, width } = geometry
+  const { accent, font, gray, height, salmon, surface, text, width } = geometry
   if (!context || width <= 0 || height <= 0) return
   const pixelRatio = Math.min(window.devicePixelRatio, 2)
   const targetWidth = Math.round(width * pixelRatio)
@@ -339,8 +340,8 @@ const drawChart = (
     context.globalAlpha = 1
     context.fillStyle = surface
     context.fillRect(2, baseline - 7, context.measureText(label).width + 3, 8)
-    context.globalAlpha = 0.75
-    context.fillStyle = gray
+    context.globalAlpha = 0.72
+    context.fillStyle = text
     context.fillText(label, 3, baseline)
     context.globalAlpha = 1
   }
@@ -496,6 +497,7 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     height: 0,
     salmon: '#fdb2a2',
     surface: '#fffcf0',
+    text: '#100f0f',
     width: 0,
   }
 
@@ -508,8 +510,13 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
       height: canvas.clientHeight,
       salmon: style.getPropertyValue('--fig-salmon').trim() || '#fdb2a2',
       surface: style.backgroundColor,
+      text: style.color,
       width: canvas.clientWidth,
     }
+  }
+  const onThemeChange = (): void => {
+    updateChartGeometry()
+    if (active) drawChart(canvas, seriesWindow(series), chartGeometry, frameBudget)
   }
   const chartResize = new ResizeObserver(updateChartGeometry)
   chartResize.observe(canvas)
@@ -713,6 +720,7 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
 
   close.addEventListener('click', stop)
   document.addEventListener('keydown', onKey)
+  document.addEventListener('themechange', onThemeChange)
   document.addEventListener('visibilitychange', onVisibility)
   window.addEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
   window.addEventListener('scroll', onScroll, { capture: true, passive: true })
@@ -722,6 +730,7 @@ export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null =>
     stop()
     close.removeEventListener('click', stop)
     document.removeEventListener('keydown', onKey)
+    document.removeEventListener('themechange', onThemeChange)
     document.removeEventListener('visibilitychange', onVisibility)
     window.removeEventListener(SITE_PERFORMANCE_SAMPLE_EVENT, onSample)
     window.removeEventListener('scroll', onScroll, true)

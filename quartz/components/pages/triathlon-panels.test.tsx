@@ -13,6 +13,7 @@ import { ANALYTICS_CATALOG } from '../triathlon/analytics/catalog'
 import {
   AnalyticsPanel,
   CalcPanel,
+  FeedPanel,
   GearPanel,
   MapPanel,
   OnTreePanel,
@@ -136,16 +137,45 @@ test('subpage navigation links remain native pointer targets for the shared brac
 })
 
 test('calculator copy control exposes its SVG states as one magnetic cursor action', () => {
-  const root = rendered(<CalcPanel />)
+  const root = rendered(<CalcPanel page />)
   const buttons = elements(root, element => classes(element).includes('tri-calc-copy'))
   assert.equal(buttons.length, 1)
   assert.ok('dataSiteCursorAction' in (buttons[0].properties ?? {}))
+  const sources = elements(root, element => classes(element).includes('tri-calc-source'))
+  assert.equal(sources.length, 1)
+  const sourceControls = elements(
+    { type: 'root', children: sources[0].children },
+    element => element.tagName === 'button',
+  )
+  assert.equal(sourceControls.length, 4)
+  assert.ok(classes(sourceControls[3]).includes('tri-calc-copy'))
+  const tablists = elements(
+    { type: 'root', children: sources[0].children },
+    element => element.properties?.role === 'tablist',
+  )
+  assert.equal(tablists.length, 1)
+  assert.equal(
+    elements({ type: 'root', children: tablists[0].children }, element =>
+      classes(element).includes('tri-calc-copy'),
+    ).length,
+    0,
+  )
   const icons = elements(
     { type: 'root', children: buttons[0].children },
     element => element.tagName === 'svg',
   )
   assert.equal(icons.length, 2)
   assert.ok(icons.every(icon => 'dataSiteCursorIcon' in (icon.properties ?? {})))
+
+  const modal = rendered(<CalcPanel />)
+  const modalSources = elements(modal, element => classes(element).includes('tri-calc-source'))
+  assert.equal(modalSources.length, 1)
+  assert.equal(
+    elements({ type: 'root', children: modalSources[0].children }, element =>
+      classes(element).includes('tri-calc-copy'),
+    ).length,
+    1,
+  )
 })
 
 test('map controls expose an SVG 3D terrain and buildings toggle', () => {
@@ -210,10 +240,57 @@ test('gear surfaces keep inventory and maintenance without calculators', () => {
   }
 })
 
+test('dedicated subpages omit route titles while modal panels retain them', () => {
+  const pagePanels = [
+    <ToolsPanel maintenance={maintenance} />,
+    <CalcPanel page renderData={renderData} />,
+    <AnalyticsPanel page renderData={renderData} />,
+    <MapPanel page />,
+    <TrainingPanel page renderData={renderData} />,
+    <FeedPanel />,
+    <OnTreePanel root="/triathlon/on" tree={[]} />,
+  ]
+
+  for (const panel of pagePanels) {
+    const root = rendered(panel)
+    assert.equal(
+      elements(root, element =>
+        classes(element).some(className =>
+          ['tri-tools-h', 'tri-calc-title', 'tri-ana-title'].includes(className),
+        ),
+      ).length,
+      0,
+    )
+  }
+
+  const modalPanels = [
+    <CalcPanel renderData={renderData} />,
+    <AnalyticsPanel renderData={renderData} />,
+    <MapPanel />,
+    <TrainingPanel renderData={renderData} />,
+  ]
+
+  for (const panel of modalPanels) {
+    const root = rendered(panel)
+    assert.equal(
+      elements(root, element =>
+        classes(element).some(className => ['tri-calc-title', 'tri-ana-title'].includes(className)),
+      ).length,
+      1,
+    )
+  }
+})
+
 test('calculator page tabs own race, gear ratio, and daily tire pressure calculators', () => {
-  const html = renderToString(<CalcPanel page renderData={renderData} />)
+  const panel = <CalcPanel page renderData={renderData} />
+  const html = renderToString(panel)
+  const shortcuts = elements(
+    rendered(panel),
+    element => typeof element.properties?.dataCalcTab === 'string',
+  ).map(element => element.properties?.ariaKeyShortcuts)
 
   assert.equal(html.match(/data-calc-tab=/g)?.length, 3)
+  assert.deepEqual(shortcuts, ['r', 'g', 't'])
   assert.equal(html.match(/role="tabpanel"/g)?.length, 3)
   assert.match(html, /data-calc-tab="race"/)
   assert.match(html, /data-calc-tab="gear-ratios"/)

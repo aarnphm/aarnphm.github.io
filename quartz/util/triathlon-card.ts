@@ -1,5 +1,5 @@
 import type { TriathlonDailyAnalytics, TriathlonDayAnalytics } from './triathlon-day-analytics'
-import type { TriathlonPresentation } from './triathlon-presentation'
+import type { Locale, TriathlonPresentation } from './triathlon-presentation'
 import { STROKE_LABEL, SWIM_STROKES, type SwimStroke } from '../plugins/stores/apple'
 import { criticalPowerCurve, type CriticalPowerEstimate } from '../plugins/stores/critical-power'
 import {
@@ -23,7 +23,7 @@ import {
   swimStrokeRate,
   type SwimChartMetric,
 } from './swim-metrics'
-import { triathlonActivityAnchor, triathlonActivityHref } from './triathlon-date-route'
+import { triathlonActivityAnchor } from './triathlon-date-route'
 import {
   criticalPowerEvidenceText,
   criticalPowerSummaryText,
@@ -31,7 +31,11 @@ import {
   triText,
 } from './triathlon-i18n'
 import { powerCurveActivityLinkAttributes } from './triathlon-power-activity'
-import { triathlonTraceName, type TriathlonTraceSettings } from './triathlon-trace-settings'
+import {
+  triathlonTraceEnabled,
+  triathlonTraceName,
+  type TriathlonTraceSettings,
+} from './triathlon-trace-settings'
 
 export interface TriNodeFactory<N> {
   presentation: TriathlonPresentation
@@ -62,7 +66,7 @@ export type DayCardPayload = {
 }
 
 export const dayCardActivitiesExpanded = (extras: DayCardExtras): boolean =>
-  Boolean(extras.sport || extras.activityId || extras.expanded)
+  extras.settings?.expanded ?? Boolean(extras.sport || extras.activityId || extras.expanded)
 
 export type ActivityFueling = NonNullable<StravaActivityDetail['fueling']>
 export type ActivityStrength = NonNullable<StravaActivityDetail['strength']>
@@ -671,6 +675,18 @@ export const buildBattery = <N>(f: TriNodeFactory<N>): N => {
   const icon = f.svg('svg', { class: 'tri-ico tri-battery', viewBox: '0 0 24 24', fill: 'none' })
   for (const d of BATTERY) f.add(icon, f.svg('path', { d }))
   return icon
+}
+
+const buildRestStatus = <N>(f: TriNodeFactory<N>): N => {
+  const rest = f.el('div', 'tri-pop-rest')
+  f.add(
+    rest,
+    buildBattery(f),
+    f.el('span', 'tri-pop-rest-label', triText(f.presentation.locale, 'rest'), {
+      'data-i18n': 'rest',
+    }),
+  )
+  return rest
 }
 
 export const LAYERS_ICON = [
@@ -1360,7 +1376,7 @@ export const buildPowerBalanceChart = <N>(
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-power-balance-chart', undefined, {
-    'data-tri-trace': 'power-balance',
+    'data-tri-trace': triathlonTraceName('power balance'),
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-power-balance-summary')
@@ -1635,7 +1651,7 @@ const buildCyclingDynamicsPercentChart = <N>(
     'div',
     `tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-${className}-chart`,
     undefined,
-    { 'data-tri-trace': className },
+    { 'data-tri-trace': triathlonTraceName(title) },
   )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-cycling-dynamics-summary')
@@ -1747,7 +1763,7 @@ export const buildPowerPhaseChart = <N>(
     'div',
     'tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-power-phase-chart',
     undefined,
-    { 'data-tri-trace': 'power-phase' },
+    { 'data-tri-trace': triathlonTraceName('power phase') },
   )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-cycling-dynamics-summary tri-power-phase-summary')
@@ -1839,7 +1855,7 @@ export const buildRiderPositionChart = <N>(
     'div',
     'tri-zone tri-elev-wrap tri-cycling-dynamics-chart tri-rider-position-chart',
     undefined,
-    { 'data-tri-trace': 'rider-position' },
+    { 'data-tri-trace': triathlonTraceName('rider position') },
   )
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const standing = dynamics.standingTimeS
@@ -1977,7 +1993,7 @@ export const buildStaminaChart = <N>(
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-stamina-chart', undefined, {
-    'data-tri-trace': 'stamina',
+    'data-tri-trace': triathlonTraceName('stamina'),
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   f.add(cap, f.el('span', 'tri-elev-d', triText(f.presentation.locale, 'stamina')))
@@ -2158,7 +2174,7 @@ export const buildShiftingChart = <N>(
     f.svg('line', { class: 'tri-elev-cursor', x1: 0, y1: 0, x2: 0, y2: height }),
   )
   const wrap = f.el('div', 'tri-zone tri-elev-wrap tri-shift-chart', undefined, {
-    'data-tri-trace': 'electronic-shifting',
+    'data-tri-trace': triathlonTraceName('electronic shifting'),
   })
   const cap = f.el('div', 'tri-elev-cap tri-elev-cap--summary')
   const summary = f.el('span', 'tri-shift-summary')
@@ -2810,6 +2826,13 @@ export const buildSwimStrokes = <N>(f: TriNodeFactory<N>, d: StravaActivityDetai
 export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N => {
   const lengths = Math.max(1, Math.round((d.distanceKm * 1000) / 25))
   const wrap = f.el('div', 'tri-pool-wrap')
+  f.add(wrap, f.el('span', 'tri-pool-cap', `${lengths} × 25m`))
+  const strokes = buildSwimStrokes(f, d)
+  if (strokes) f.add(wrap, strokes)
+  return wrap
+}
+
+const buildPoolOverview = <N>(f: TriNodeFactory<N>): N => {
   const fig = f.svg('svg', {
     class: 'tri-route tri-pool',
     viewBox: '0 0 100 56',
@@ -2820,10 +2843,7 @@ export const buildPool = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N =
     f.svg('rect', { x: 6, y: 12, width: 88, height: 32, rx: 16, ry: 16, class: 'tri-pool-lane' }),
   )
   f.add(fig, f.svg('line', { x1: 22, y1: 28, x2: 78, y2: 28, class: 'tri-pool-mid' }))
-  f.add(wrap, fig, f.el('span', 'tri-pool-cap', `${lengths} × 25m`))
-  const strokes = buildSwimStrokes(f, d)
-  if (strokes) f.add(wrap, strokes)
-  return wrap
+  return fig
 }
 
 type SwimActivityObservation = {
@@ -3000,6 +3020,12 @@ const swimTrendTitle = (kind: SwimChartMetric): string =>
         ? 'stroke rate spm'
         : 'SWOLF'
 
+const SWIM_TREND_GLOSS: Partial<Record<SwimChartMetric, string>> = {
+  rate: 'strokerate',
+  cadence: 'swimcadence',
+  swolf: 'swolf',
+}
+
 const swimTrendLabel = (kind: SwimChartMetric): string =>
   kind === 'pace'
     ? 'pace'
@@ -3115,13 +3141,22 @@ const buildSwimTrendChart = <N>(
     : series.reduce((sum, metric) => sum + metric.value, 0) / series.length
   const title = swimTrendTitle(kind)
   const value = swimTrendHeaderValue(kind, activityAverage)
-  const wrap = f.el('article', `tri-zone tri-swim-trend tri-swim-trend--${kind}`)
+  const wrap = f.el('article', `tri-zone tri-swim-trend tri-swim-trend--${kind}`, undefined, {
+    'data-tri-trace': triathlonTraceName(swimTrendLabel(kind)),
+  })
   const head = f.el(
     'div',
     `tri-swim-trend-head${modeToggle === undefined ? '' : ' tri-swim-trend-head--with-mode'}`,
   )
+  const glossKey = SWIM_TREND_GLOSS[kind]
   if (modeToggle === undefined)
-    f.add(head, f.el('span', 'tri-swim-trend-title', title, { 'data-i18n': title }))
+    f.add(
+      head,
+      f.el('span', 'tri-swim-trend-title', title, {
+        'data-i18n': title,
+        ...(glossKey ? { 'data-gloss': glossKey, tabindex: '0' } : {}),
+      }),
+    )
   else f.add(head, modeToggle)
   f.add(
     head,
@@ -3292,7 +3327,11 @@ const buildSwimTrendChart = <N>(
   return wrap
 }
 
-export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
+export const buildSwimTrends = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  traceSettings?: TriathlonTraceSettings,
+): N | null => {
   if (d.sport !== 'swim') return null
   const observations = d.swimIntervals
     .filter(
@@ -3321,10 +3360,18 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
     source: SwimActivityObservation[],
     pick: (observation: SwimActivityObservation) => number | null,
   ): boolean => source.filter(observation => positiveMetric(pick(observation))).length >= 2
-  const paceVisible = hasSeries(observations, observation => observation.interval.paceSPer100m)
-  const rateVisible = hasSeries(observations, observation => observation.interval.strokeRateSpm)
-  const cadenceVisible = hasSeries(observations, observation => observation.strokesPerLength)
-  const swolfVisible = hasSeries(observations, observation => observation.swolf)
+  const paceVisible =
+    triathlonTraceEnabled(traceSettings, 'pace') &&
+    hasSeries(observations, observation => observation.interval.paceSPer100m)
+  const rateVisible =
+    triathlonTraceEnabled(traceSettings, 'stroke-rate') &&
+    hasSeries(observations, observation => observation.interval.strokeRateSpm)
+  const cadenceVisible =
+    triathlonTraceEnabled(traceSettings, 'cadence') &&
+    hasSeries(observations, observation => observation.strokesPerLength)
+  const swolfVisible =
+    triathlonTraceEnabled(traceSettings, 'swolf') &&
+    hasSeries(observations, observation => observation.swolf)
   const canToggle =
     hundredMetreObservations.length >= 2 &&
     (!paceVisible ||
@@ -3338,46 +3385,54 @@ export const buildSwimTrends = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail
   const modeToggle = canToggle ? buildSwimModeToggle(f) : undefined
   const paceAverage = positiveMetric(d.swimPaceSPer100m) ? d.swimPaceSPer100m : null
   const lengthAverages = d.swimLocation === 'pool' ? swimLengthAverages(d.swimIntervals) : null
-  const pace = buildSwimTrendChart(
-    f,
-    observations,
-    normalizedObservations,
-    totalDistanceM,
-    'pace',
-    paceAverage,
-    observation => observation.interval.paceSPer100m,
-    paceVisible ? modeToggle : undefined,
-  )
-  const rate = buildSwimTrendChart(
-    f,
-    observations,
-    normalizedObservations,
-    totalDistanceM,
-    'rate',
-    positiveMetric(d.strokeRateSpm) ? d.strokeRateSpm : null,
-    observation => observation.interval.strokeRateSpm,
-    !paceVisible && rateVisible ? modeToggle : undefined,
-  )
-  const cadence = buildSwimTrendChart(
-    f,
-    observations,
-    normalizedObservations,
-    totalDistanceM,
-    'cadence',
-    lengthAverages?.strokesPerLength ?? null,
-    observation => observation.strokesPerLength,
-    !paceVisible && !rateVisible && cadenceVisible ? modeToggle : undefined,
-  )
-  const swolf = buildSwimTrendChart(
-    f,
-    observations,
-    normalizedObservations,
-    totalDistanceM,
-    'swolf',
-    lengthAverages?.swolf ?? null,
-    observation => observation.swolf,
-    !paceVisible && !rateVisible && !cadenceVisible && swolfVisible ? modeToggle : undefined,
-  )
+  const pace = paceVisible
+    ? buildSwimTrendChart(
+        f,
+        observations,
+        normalizedObservations,
+        totalDistanceM,
+        'pace',
+        paceAverage,
+        observation => observation.interval.paceSPer100m,
+        modeToggle,
+      )
+    : null
+  const rate = rateVisible
+    ? buildSwimTrendChart(
+        f,
+        observations,
+        normalizedObservations,
+        totalDistanceM,
+        'rate',
+        positiveMetric(d.strokeRateSpm) ? d.strokeRateSpm : null,
+        observation => observation.interval.strokeRateSpm,
+        paceVisible ? undefined : modeToggle,
+      )
+    : null
+  const cadence = cadenceVisible
+    ? buildSwimTrendChart(
+        f,
+        observations,
+        normalizedObservations,
+        totalDistanceM,
+        'cadence',
+        lengthAverages?.strokesPerLength ?? null,
+        observation => observation.strokesPerLength,
+        paceVisible || rateVisible ? undefined : modeToggle,
+      )
+    : null
+  const swolf = swolfVisible
+    ? buildSwimTrendChart(
+        f,
+        observations,
+        normalizedObservations,
+        totalDistanceM,
+        'swolf',
+        lengthAverages?.swolf ?? null,
+        observation => observation.swolf,
+        paceVisible || rateVisible || cadenceVisible ? undefined : modeToggle,
+      )
+    : null
   const trends = f.el('div', 'tri-swim-chart-grid')
   let chartCount = 0
   for (const chart of [pace, rate, cadence, swolf])
@@ -3957,7 +4012,7 @@ const zoneTable = <N>(
   unit: string,
   caption: string,
 ): N => {
-  const wrap = f.el('div', 'tri-zone')
+  const wrap = f.el('div', 'tri-zone', undefined, { 'data-tri-trace': triathlonTraceName(title) })
   f.add(wrap, f.el('div', 'tri-zone-title', title, { 'data-i18n': title }))
   const total = times.reduce((s, x) => s + x, 0) || 1
   let mx = 1
@@ -4028,7 +4083,9 @@ export const buildPowerZones = <N>(
 export const buildPowerHist = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const hist = d.powerHist
   if (!hist || hist.length < 2) return null
-  const wrap = f.el('div', 'tri-zone')
+  const wrap = f.el('div', 'tri-zone', undefined, {
+    'data-tri-trace': triathlonTraceName('25W power distribution'),
+  })
   f.add(
     wrap,
     f.el('div', 'tri-zone-title', '25W power distribution', {
@@ -4260,7 +4317,9 @@ export const buildPowerCurve = <N>(
       : []
   const ftpRef = isBike ? ctx.ftp : null
   const goalRef = isBike ? ctx.goalFtp : null
-  const wrap = f.el('div', 'tri-zone tri-curve-chart')
+  const wrap = f.el('div', 'tri-zone tri-curve-chart', undefined, {
+    'data-tri-trace': triathlonTraceName('power curve'),
+  })
   const W = 100
   const H = 34
   const secs = curve.map(c => c.s)
@@ -4895,6 +4954,7 @@ export const buildActivity = <N>(
   ctx?: DetailCtx,
   fillMissingRunPower = false,
   embedded = false,
+  traceSettings?: TriathlonTraceSettings,
 ): N => {
   const normalizeBikeMetrics = excludesZeroPower(f.presentation) && d.sport === 'bike'
   const normalizedPower = normalizeBikeMetrics
@@ -4952,11 +5012,15 @@ export const buildActivity = <N>(
     f.add(wrap, figs)
   } else if (d.sport === 'swim') {
     const figs = f.el('div', 'tri-act-figs tri-act-figs--pool')
-    f.add(figs, buildPool(f, d))
+    const pool = buildPool(f, d)
+    if (embedded) f.add(pool, buildPoolOverview(f))
+    f.add(figs, pool)
     f.add(wrap, figs)
   }
-  const swimTrends = buildSwimTrends(f, d)
-  if (hasMoreSection(d) || swimTrends) {
+  const poolOverview =
+    d.sport === 'swim' && d.route.length < 2 && !embedded ? buildPoolOverview(f) : null
+  const swimTrends = buildSwimTrends(f, d, traceSettings)
+  if (hasMoreSection(d) || poolOverview || swimTrends) {
     const moreId = `tri-act-more-${d.id}`
     const more = f.el('div', 'tri-act-more', undefined, { id: moreId })
     const flags = routeStreamFlags(d)
@@ -5044,13 +5108,26 @@ export const buildActivity = <N>(
       const skinTemperature = buildSkinTemperatureTrace(f, d, analysisSelection)
       if (skinTemperature) f.add(more, skinTemperature)
     }
+    if (poolOverview) f.add(more, poolOverview)
     if (swimTrends) f.add(more, swimTrends)
     const trainingEffect = buildTrainingEffectDetails(f, d)
     if (trainingEffect) f.add(more, trainingEffect)
     if (ctx) {
-      const zones = zoneDuo(f, buildHrZones(f, d, ctx), buildPowerZones(f, d, ctx))
+      const zones = zoneDuo(
+        f,
+        triathlonTraceEnabled(traceSettings, 'heart-rate-zones') ? buildHrZones(f, d, ctx) : null,
+        triathlonTraceEnabled(traceSettings, 'power-zones') ? buildPowerZones(f, d, ctx) : null,
+      )
       if (zones) f.add(more, zones)
-      const charts = zoneDuo(f, buildPowerCurve(f, d, ctx, embedded), buildPowerHist(f, d))
+      const charts = zoneDuo(
+        f,
+        triathlonTraceEnabled(traceSettings, 'power-curve')
+          ? buildPowerCurve(f, d, ctx, embedded)
+          : null,
+        triathlonTraceEnabled(traceSettings, '25w-power-distribution')
+          ? buildPowerHist(f, d)
+          : null,
+      )
       if (charts) f.add(more, charts)
     }
     const bestEfforts = buildCyclingBestEfforts(f, d)
@@ -6932,34 +7009,36 @@ export const buildTimelineDayCard = <N>(
   f: TriNodeFactory<N>,
   dateIso: string,
   payload: DayCardPayload | null,
-  extras: Pick<DayCardExtras, 'dateHref'> = {},
 ): N => {
   const card = f.el('div', 'tri-timeline-card')
-  f.add(
-    card,
-    extras.dateHref
-      ? f.el('a', 'tri-pop-date', prettyDate(dateIso), {
-          href: extras.dateHref,
-          'data-no-popover': 'true',
-        })
-      : f.el('span', 'tri-pop-date', prettyDate(dateIso)),
-  )
-  const day = payload ? dayDetails(payload, dateIso) : []
-  if (day.length === 0) return card
+  f.add(card, f.el('span', 'tri-pop-date', prettyDate(dateIso)))
+  if (!payload) {
+    f.add(card, f.el('div', 'tri-pop-rest', '·'))
+    return card
+  }
+  const day = dayDetails(payload, dateIso)
+  if (day.length === 0) {
+    const label = triText(f.presentation.locale, 'rest')
+    const rest = f.el('span', 'tri-timeline-row tri-timeline-rest', undefined, {
+      role: 'group',
+      'aria-label': label,
+    })
+    f.add(rest, buildBattery(f), f.el('span', 'tri-timeline-value', label, { 'data-i18n': 'rest' }))
+    f.add(card, rest)
+    return card
+  }
 
   const list = f.el('ul', 'tri-timeline-list')
   for (const activity of day) {
     const value = timelineActivityValue(f.presentation, activity)
-    const href = triathlonActivityHref(dateIso, activity.id, extras.dateHref)
     const item = f.el('li', 'tri-timeline-item')
-    const link = f.el('a', 'tri-timeline-activity', undefined, {
-      ...(href ? { href } : {}),
+    const entry = f.el('span', 'tri-timeline-row tri-timeline-activity', undefined, {
+      role: 'group',
       'aria-label': `${triText(f.presentation.locale, activity.sport)} · ${activity.name} · ${value}`,
       title: activity.name,
-      'data-no-popover': 'true',
     })
-    f.add(link, buildIcon(f, activity.sport), f.el('span', 'tri-timeline-value', value))
-    f.add(item, link)
+    f.add(entry, buildIcon(f, activity.sport), f.el('span', 'tri-timeline-value', value))
+    f.add(item, entry)
     f.add(list, item)
   }
   f.add(card, list)
@@ -7316,15 +7395,20 @@ const dayAnalyticsContributionGroup = <N>(
   return group
 }
 
-const DAY_ANALYTICS_SLEEP_STAGES: Record<string, { key: string; lane: number }> = {
-  '4': { key: 'awake', lane: 0 },
-  '3': { key: 'rem', lane: 1 },
-  '2': { key: 'light', lane: 2 },
-  '1': { key: 'deep', lane: 3 },
-}
+const DAY_ANALYTICS_SLEEP_LANES = ['awake', 'rem', 'light', 'deep'] as const
+
+const DAY_ANALYTICS_SLEEP_LANE_BY_CODE: Record<string, number> = { '4': 0, '3': 1, '2': 2, '1': 3 }
+
+const DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S = 300
+
+export const daySleepStageLabel = (locale: Locale, lane: number | null): string =>
+  lane == null || DAY_ANALYTICS_SLEEP_LANES[lane] == null
+    ? '—'
+    : triText(locale, DAY_ANALYTICS_SLEEP_LANES[lane])
 
 const dayAnalyticsSleepStages = <N>(
   f: TriNodeFactory<N>,
+  date: string,
   sleep: NonNullable<TriathlonDayAnalytics['sleep']>,
 ): N | null => {
   const durations = [
@@ -7333,58 +7417,105 @@ const dayAnalyticsSleepStages = <N>(
     ['rem', sleep.remS],
     ['awake', sleep.awakeS],
   ] as const
-  if (!sleep.phase5Min && durations.every(([, seconds]) => seconds == null)) return null
-  const chart = f.el('section', 'tri-day-sleep-chart tri-day-sleep-stages')
+  const phase = sleep.phase5Min
+  if (!phase && durations.every(([, seconds]) => seconds == null)) return null
+  const bedtimeStart = sleep.bedtimeStart
+  const startMinute = bedtimeStart ? dayAnalyticsWallMinute(bedtimeStart) : null
+  const hypnogram =
+    phase && phase.length >= 2 && bedtimeStart && startMinute != null
+      ? {
+          bedtimeStart,
+          startMinute,
+          lanes: Array.from(phase, code => DAY_ANALYTICS_SLEEP_LANE_BY_CODE[code] ?? null),
+        }
+      : null
+  const readoutId = `tri-day-${date}-sleep-stages-readout`
+  const chart = f.el(
+    'section',
+    'tri-day-sleep-chart tri-day-sleep-stages',
+    undefined,
+    hypnogram
+      ? {
+          'data-day-sleep-series': 'stages',
+          'data-day-sleep-values': hypnogram.lanes.map(lane => lane ?? '').join(','),
+          'data-day-sleep-start': hypnogram.bedtimeStart,
+          'data-day-sleep-interval': DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S.toString(),
+          'data-day-sleep-width': hypnogram.lanes.length.toString(),
+        }
+      : undefined,
+  )
   f.add(
     chart,
     f.el('h4', 'tri-ana-block-title', triText(f.presentation.locale, 'sleep stages'), {
       'data-i18n': 'sleep stages',
     }),
   )
-  const phase = sleep.phase5Min
-  if (phase && sleep.bedtimeStart) {
+  if (hypnogram) {
+    const { lanes, startMinute: bedMinute } = hypnogram
     const height = 16
+    const measured = lanes.findLastIndex(lane => lane != null)
+    const cursorIndex = Math.max(0, measured)
+    const readout = `${dayAnalyticsWallClock(bedMinute + (cursorIndex * DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S) / 60)} · ${daySleepStageLabel(f.presentation.locale, measured >= 0 ? lanes[measured] : null)}`
     const svg = f.svg('svg', {
       class: 'tri-ana-svg tri-day-sleep-stage-svg',
-      viewBox: `0 0 ${phase.length} ${height}`,
+      viewBox: `0 0 ${lanes.length} ${height}`,
       preserveAspectRatio: 'none',
-      role: 'img',
+      role: 'slider',
+      tabindex: 0,
       'aria-label': triText(f.presentation.locale, 'sleep stages'),
+      'aria-valuemin': 0,
+      'aria-valuemax': lanes.length - 1,
+      'aria-valuenow': cursorIndex,
+      'aria-valuetext': readout,
+      'aria-describedby': readoutId,
     })
     let start = 0
-    while (start < phase.length) {
-      const code = phase[start]
+    while (start < lanes.length) {
+      const lane = lanes[start]
       let end = start + 1
-      while (end < phase.length && phase[end] === code) end++
-      const stage = DAY_ANALYTICS_SLEEP_STAGES[code]
-      if (stage)
+      while (end < lanes.length && lanes[end] === lane) end++
+      if (lane != null)
         f.add(
           svg,
           f.svg('rect', {
             x: start,
-            y: stage.lane * 4 + 0.3,
+            y: lane * 4 + 0.3,
             width: end - start,
             height: 3.4,
-            class: `tri-hyp--${stage.key}`,
+            class: `tri-hyp--${DAY_ANALYTICS_SLEEP_LANES[lane]}`,
           }),
         )
       start = end
     }
     f.add(
+      svg,
+      f.svg('line', {
+        x1: cursorIndex + 0.5,
+        y1: 0,
+        x2: cursorIndex + 0.5,
+        y2: height,
+        class: 'tri-ana-cursor',
+      }),
+    )
+    f.add(
       chart,
       axisFrame(
         f,
         svg,
-        [
-          { label: triText(f.presentation.locale, 'awake'), vbY: 2 },
-          { label: triText(f.presentation.locale, 'rem'), vbY: 6 },
-          { label: triText(f.presentation.locale, 'light'), vbY: 10 },
-          { label: triText(f.presentation.locale, 'deep'), vbY: 14 },
-        ],
+        DAY_ANALYTICS_SLEEP_LANES.map((lane, index) => ({
+          label: triText(f.presentation.locale, lane),
+          vbY: index * 4 + 2,
+        })),
         height,
-        dayAnalyticsHourTicks(sleep.bedtimeStart, 300, phase.length, phase.length),
+        dayAnalyticsHourTicks(
+          hypnogram.bedtimeStart,
+          DAY_ANALYTICS_SLEEP_STAGE_INTERVAL_S,
+          lanes.length,
+          lanes.length,
+        ),
         false,
       ),
+      f.el('div', 'tri-chart-readout', readout, { id: readoutId }),
     )
   }
   const summary = f.el('div', 'tri-day-sleep-stage-summary')
@@ -7578,7 +7709,7 @@ const buildDaySleepAnalytics = <N>(
       if (readinessContrib) f.add(contributions, readinessContrib)
       f.add(group, contributions)
     }
-    const stages = dayAnalyticsSleepStages(f, sleep)
+    const stages = dayAnalyticsSleepStages(f, summary.date, sleep)
     const hrv = dayAnalyticsSleepSeries(f, summary.date, 'hrv', 'hrv', sleep.hrv)
     const heartRate = dayAnalyticsSleepSeries(
       f,
@@ -7731,6 +7862,7 @@ export const buildDayCard = <N>(
         ctx,
         extras.event != null,
         extras.embedded === true,
+        extras.settings,
       ))
   const allDay = payload ? dayDetails(payload, dateIso) : []
   const selectedDay = extras.activityId
@@ -7798,13 +7930,13 @@ export const buildDayCard = <N>(
   if (!payload) {
     f.add(card, f.el('div', 'tri-pop-rest', '·'))
   } else if (day.length === 0) {
-    const rest = f.el('div', 'tri-pop-rest')
     if (extras.sport) {
+      const rest = f.el('div', 'tri-pop-rest')
       f.add(rest, f.el('span', 'tri-pop-rest-label', `no ${extras.sport}`))
+      f.add(card, rest)
     } else {
-      f.add(rest, buildBattery(f), f.el('span', 'tri-pop-rest-label', 'rest'))
+      f.add(card, buildRestStatus(f))
     }
-    f.add(card, rest)
   } else {
     for (const d of day) f.add(card, render(d))
   }

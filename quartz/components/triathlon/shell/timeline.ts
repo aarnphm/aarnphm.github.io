@@ -24,9 +24,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   let active: HTMLElement | null = null
   let payload: DetailPayload | null = null
-  let pinned = false
-  let locked = false
-  let hideTimer = 0
   let timelineFrame = 0
   let hoverFrame = 0
   let pendingClientX: number | null = null
@@ -105,21 +102,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     pop.classList.toggle('tri-pop--top', scrollTop > 4)
     pop.classList.toggle('tri-pop--more', contentHeight - viewHeight - scrollTop > 4)
   }
-  const updateOverflow = () =>
-    applyOverflow(scroller.scrollTop, scroller.scrollHeight, scroller.clientHeight)
-  let popScrollTone = 0
-  const currentPopScrollTone = () =>
-    Math.floor((scroller.scrollTop * DROP_TONE_COUNT) / Math.max(scroller.clientHeight, 1))
-  const setLocked = (on: boolean) => {
-    locked = on
-    barsEl.classList.toggle('tri-bars--locked', on)
-    if (on) popScrollTone = currentPopScrollTone()
-    if (on && hoverFrame !== 0) {
-      window.cancelAnimationFrame(hoverFrame)
-      hoverFrame = 0
-      pendingClientX = null
-    }
-  }
 
   let audio: AudioContext | null = null
   let lastDrop = 0
@@ -151,23 +133,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     osc.start(t)
     osc.stop(t + 0.15)
   }
-  const onPopScroll = () => {
-    updateOverflow()
-    if (!locked || !active) return
-    const nextTone = currentPopScrollTone()
-    if (nextTone === popScrollTone) return
-    popScrollTone = nextTone
-    const idx = bars.indexOf(active)
-    if (idx >= 0) raindrop(idx + nextTone)
-  }
   window.addEventListener('pointerdown', armAudio)
   window.addEventListener('keydown', armAudio)
 
   const domF = createDomFactory(context.presentation)
   const buildCard = (bar: HTMLElement) =>
-    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', payload, {
-      dateHref: bar.getAttribute('href') ?? undefined,
-    })
+    buildTimelineDayCard(domF, bar.dataset.dateIso ?? '', payload)
   const replaceCard = (bar: HTMLElement): void => {
     scroller.replaceChildren(buildCard(bar))
   }
@@ -205,7 +176,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     applyOverflow(scrollTop, contentHeight, Math.min(contentHeight, maxContentHeight))
   }
   repositionActive = () => {
-    if (active && (locked || pinned)) place(active)
+    if (active) place(active)
   }
   const onViewportResize = () => {
     geometryDirty = true
@@ -244,7 +215,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       bar.classList.add('tri-bar--active')
       raindrop(idx)
       replaceCard(bar)
-      popScrollTone = 0
       scroller.scrollTop = 0
     }
     place(bar)
@@ -255,15 +225,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   const hide = () => {
     if (active) active.classList.remove('tri-bar--active')
     active = null
-    pinned = false
-    setLocked(false)
     root.classList.remove('tri-hovering')
     pop.setAttribute('aria-hidden', 'true')
   }
 
   const panelOpen = () => root.matches(OPEN_PANEL_SELECTOR)
   const stopHover = () => {
-    window.clearTimeout(hideTimer)
     if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
     hoverFrame = 0
     pendingClientX = null
@@ -274,13 +241,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     hoverFrame = 0
     const clientX = pendingClientX
     pendingClientX = null
-    if (clientX === null || pinned || locked || panelOpen()) return
-    window.clearTimeout(hideTimer)
+    if (clientX === null || panelOpen()) return
     const idx = nearest(clientX)
     if (idx >= 0) showFor(idx)
   }
   const onMove = (event: MouseEvent) => {
-    if (pinned || locked || panelOpen()) return
+    if (panelOpen()) return
     pendingClientX = event.clientX
     if (hoverFrame === 0) hoverFrame = window.requestAnimationFrame(flushHover)
   }
@@ -288,16 +254,7 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     if (hoverFrame !== 0) window.cancelAnimationFrame(hoverFrame)
     hoverFrame = 0
     pendingClientX = null
-    if (!pinned && !locked) hideTimer = window.setTimeout(hide, 140)
-  }
-  const onPopEnter = () => {
-    if (panelOpen()) return
-    window.clearTimeout(hideTimer)
-    pinned = true
-  }
-  const onPopLeave = () => {
-    pinned = false
-    if (!locked) hideTimer = window.setTimeout(hide, 140)
+    hide()
   }
   const onBarsClick = (event: MouseEvent) => {
     if (event.defaultPrevented || event.button !== 0) return
@@ -308,26 +265,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     event.preventDefault()
     bar.click()
   }
-  const onPopClick = (event: MouseEvent) => {
-    if (event.defaultPrevented || event.button !== 0) return
-    if (event.target instanceof Element && event.target.closest('a')) return
-    if (!active?.hasAttribute('href')) return
-    event.preventDefault()
-    active.click()
-  }
-  const dismiss = () => {
-    if (!locked) return
-    setLocked(false)
-    hide()
-  }
-  const onDocClick = (event: MouseEvent) => {
-    const t = event.target as Node
-    if (locked && !barsEl.contains(t) && !pop.contains(t)) dismiss()
-  }
-  const onKey = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') dismiss()
-  }
-
   const path = root.dataset.detailPath
   let live = true
   if (path)
@@ -336,7 +273,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
       payload = result.value
       if (active) {
         replaceCard(active)
-        popScrollTone = currentPopScrollTone()
         place(active)
       }
     })
@@ -348,16 +284,12 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     const idx = bars.findIndex(b => b.dataset.dateIso === date)
     if (idx < 0) return
     bars[idx].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-    showFor(idx)
-    setLocked(true)
-    if (active) place(active)
   }
 
   const onUnit = () => {
     if (!active) return
     replaceCard(active)
-    popScrollTone = currentPopScrollTone()
-    updateOverflow()
+    place(active)
   }
 
   let wasPanelOpen = panelOpen()
@@ -372,12 +304,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
   barsEl.addEventListener('mousemove', onMove)
   barsEl.addEventListener('mouseleave', onBarsLeave)
   barsEl.addEventListener('click', onBarsClick)
-  pop.addEventListener('mouseenter', onPopEnter)
-  pop.addEventListener('mouseleave', onPopLeave)
-  pop.addEventListener('click', onPopClick)
-  scroller.addEventListener('scroll', onPopScroll, { passive: true })
-  document.addEventListener('click', onDocClick)
-  document.addEventListener('keydown', onKey)
   window.addEventListener('tri:focus-day', onFocusDay)
   window.addEventListener('tri:unit', onUnit)
   window.addEventListener(TRI_POWER_FILTER_EVENT, onUnit)
@@ -386,7 +312,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
 
   return () => {
     live = false
-    window.clearTimeout(hideTimer)
     window.cancelAnimationFrame(timelineFrame)
     window.cancelAnimationFrame(hoverFrame)
     timeline?.removeEventListener('scroll', scheduleTimelineUpdate)
@@ -396,12 +321,6 @@ export const setup = (root: HTMLElement, context: TriathlonContext): (() => void
     barsEl.removeEventListener('mousemove', onMove)
     barsEl.removeEventListener('mouseleave', onBarsLeave)
     barsEl.removeEventListener('click', onBarsClick)
-    pop.removeEventListener('mouseenter', onPopEnter)
-    pop.removeEventListener('mouseleave', onPopLeave)
-    pop.removeEventListener('click', onPopClick)
-    scroller.removeEventListener('scroll', onPopScroll)
-    document.removeEventListener('click', onDocClick)
-    document.removeEventListener('keydown', onKey)
     window.removeEventListener('pointerdown', armAudio)
     window.removeEventListener('keydown', armAudio)
     window.removeEventListener('tri:focus-day', onFocusDay)

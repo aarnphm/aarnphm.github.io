@@ -848,6 +848,18 @@ const en: TriDict = {
       term: 'sleep debt',
       def: 'Sleep debt adds up the time you slept below 7 hours during the past 14 nights. This chart uses 7 hours as its target. Athletes often need 8 to 10 hours.',
     },
+    strokerate: {
+      term: 'stroke rate',
+      def: 'Stroke rate counts arm strokes per minute while you are swimming. Swim speed is stroke rate multiplied by the distance you cover per stroke, so a higher rate only helps when your distance per stroke holds. This chart averages the rate over each length or each 100 m block.',
+    },
+    swimcadence: {
+      term: 'swim cadence',
+      def: 'Swim cadence counts the strokes it takes to cover one pool length. A lower count means you cover more distance with each stroke. Read it next to stroke rate and pace: fewer strokes per length with pace holding is a real efficiency gain, while fewer strokes with pace slipping usually means you are gliding. Only pool swims report it, and the count depends on the pool length.',
+    },
+    swolf: {
+      term: 'SWOLF',
+      def: 'SWOLF is swim golf. It adds the seconds a length took to the strokes that length used, so a lower score is better. Speed and efficiency both move it, which is why it drops when either improves. Compare it only within the same pool length, since a 25 m score and a 50 m score are not on the same scale.',
+    },
     overreaching: {
       term: 'overreaching',
       def: 'Overreaching is flagged when HRV is low while training load rises quickly. Here, low HRV means at least one standard deviation below your baseline. A fast load increase means a high ACWR or a weekly ramp above 10%.',
@@ -1660,6 +1672,18 @@ const fr: TriDict = {
     sleepdebt: {
       term: 'dette de sommeil',
       def: 'La dette de sommeil additionne le temps dormi sous 7 heures pendant les 14 dernières nuits. Ce graphique utilise une cible de 7 heures. Les athlètes ont souvent besoin de 8 à 10 heures.',
+    },
+    strokerate: {
+      term: 'fréquence de nage',
+      def: 'La fréquence de nage compte les coups de bras par minute pendant que tu nages. La vitesse en natation est la fréquence multipliée par la distance parcourue à chaque coup, donc une fréquence plus élevée ne sert que si la distance par coup tient. Ce graphique fait la moyenne sur chaque longueur ou chaque bloc de 100 m.',
+    },
+    swimcadence: {
+      term: 'cadence de nage',
+      def: "La cadence de nage compte les coups nécessaires pour couvrir une longueur de bassin. Moins de coups veut dire plus de distance parcourue à chaque coup. Lis-la avec la fréquence et l'allure : moins de coups par longueur en gardant l'allure est un vrai gain d'efficacité, alors que moins de coups en perdant de l'allure veut souvent dire que tu glisses. Seules les séances en bassin la rapportent, et le compte dépend de la longueur du bassin.",
+    },
+    swolf: {
+      term: 'SWOLF',
+      def: "SWOLF veut dire swim golf. Il additionne les secondes mises pour une longueur et les coups utilisés pour cette longueur, donc un score plus bas est meilleur. La vitesse et l'efficacité le font bouger toutes les deux, et il baisse dès que l'une des deux progresse. Compare-le seulement à longueur de bassin égale, car un score en 25 m et un score en 50 m ne sont pas sur la même échelle.",
     },
     overreaching: {
       term: 'surmenage',

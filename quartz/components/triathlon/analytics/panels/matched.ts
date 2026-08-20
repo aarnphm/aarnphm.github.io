@@ -10,6 +10,7 @@ import { KM_TO_MI } from '../../../../util/triathlon-card'
 import { M_TO_FT } from '../../../../util/triathlon-card'
 import { niceStep } from '../../../../util/triathlon-card'
 import { triathlonDayHrefFromReference } from '../../../../util/triathlon-date-route'
+import { triathlonTraceName } from '../../../../util/triathlon-trace-settings'
 import { createDomFactory } from '../../runtime/dom'
 import { el } from '../../runtime/dom'
 import { svg } from '../../runtime/dom'
@@ -131,7 +132,7 @@ export const buildMatchedRunGroup = (
   const text = (key: string): string => formatter.text(key)
   const wrap = el('section', 'tri-matched tri-matched-group', undefined, {
     'data-matched-group': group.id,
-    'data-tri-trace': 'matched-runs',
+    'data-tri-trace': triathlonTraceName('matched runs'),
   })
   const efforts = group.efforts
   const fastestIndex = efforts.reduce(
@@ -407,7 +408,7 @@ export const buildMatchedRideGroup = (
   const text = (key: string): string => formatter.text(key)
   const wrap = el('section', 'tri-matched tri-matched-group tri-matched--ride', undefined, {
     'data-matched-group': group.id,
-    'data-tri-trace': 'matched-rides',
+    'data-tri-trace': triathlonTraceName('matched rides'),
   })
   const efforts = group.efforts
   const powers = efforts.map(effort => matchedRidePower(effort, group.powerMetric))

@@ -923,6 +923,7 @@ export const renderDetail = (
     detailContext,
     fillMissingRunPower,
     embedded,
+    traceSettings,
   ) as HTMLElement
   if (d.sport === 'run') {
     const matchedGroup = payload?.matchedRuns?.groups.find(group =>

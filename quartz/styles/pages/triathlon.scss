@@ -12,7 +12,7 @@ body[data-layout='triathlon'] {
   & section[class~='header'],
   & .page-footer,
   & #stacked-notes-container {
-    display: none;
+    display: none !important;
   }
 
   & .collapse-rail {

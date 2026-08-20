@@ -603,7 +603,16 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     if (status === 'idle' || status === 'failed') program.dispatch({ type: 'load' })
   }
   let detailCleanup: (() => void) | null = null
+  let detailLayoutFrame = 0
+  let detailSelectionFrame = 0
+  const cancelDetailFrames = () => {
+    window.cancelAnimationFrame(detailLayoutFrame)
+    window.cancelAnimationFrame(detailSelectionFrame)
+    detailLayoutFrame = 0
+    detailSelectionFrame = 0
+  }
   const finishCloseDetail = () => {
+    cancelDetailFrames()
     detailCleanup?.()
     detailCleanup = null
     panel.classList.remove('tri-map--detail')
@@ -639,6 +648,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     if (!detail) return
     const d = detailData?.details?.[id]
     if (!d) return
+    cancelDetailFrames()
     detailTransition.cancel()
     detailCleanup?.()
     detailCleanup = null
@@ -686,18 +696,17 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     panel.classList.remove('tri-map--searching')
     results?.setAttribute('aria-hidden', 'true')
     back.addEventListener('click', () => closeDetail(true), { once: true })
-    if (mapMode && selectMap) {
-      requestAnimationFrame(() => {
-        if (analysis && program.retrieve().selectedRouteId === id)
-          selectionOverlay?.setAttribute('aria-hidden', 'false')
+    if (mapMode) {
+      detailLayoutFrame = window.requestAnimationFrame(() => {
+        detailLayoutFrame = 0
+        if (program.retrieve().selectedRouteId !== id) return
+        if (analysis) selectionOverlay?.setAttribute('aria-hidden', 'false')
         mapCtl.resize()
-        mapCtl.select(d, initialMetric)
-      })
-    } else if (mapMode) {
-      requestAnimationFrame(() => {
-        if (analysis && program.retrieve().selectedRouteId === id)
-          selectionOverlay?.setAttribute('aria-hidden', 'false')
-        mapCtl.resize()
+        if (!selectMap) return
+        detailSelectionFrame = window.requestAnimationFrame(() => {
+          detailSelectionFrame = 0
+          if (program.retrieve().selectedRouteId === id) mapCtl.select(d, initialMetric)
+        })
       })
     } else {
       body?.scrollTo({ top: 0 })
@@ -902,6 +911,7 @@ export const setupMap = (root: HTMLElement, context: TriathlonContext): (() => v
     program.stop()
     mapCtl.dispose()
     detailTransition.cancel()
+    cancelDetailFrames()
     detailCleanup?.()
     detailCleanup = null
   }

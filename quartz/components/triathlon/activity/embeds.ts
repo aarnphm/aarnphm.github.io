@@ -7,10 +7,8 @@ import { swimChartMetric, type SwimChartMetric } from '../../../util/swim-metric
 import { buildActivityComparison } from '../../../util/triathlon-card'
 import { buildDayCard as buildDayCardNode } from '../../../util/triathlon-card'
 import { dayCardActivitiesExpanded } from '../../../util/triathlon-card'
-import { parseExcludedActivityIds } from '../../../util/triathlon-card'
 import { powerViewActivity } from '../../../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../../../util/triathlon-comparison'
-import { parseTriathlonTraceSettings } from '../../../util/triathlon-trace-settings'
 import { rootNavSignal } from '../../scripts/root-lifecycle'
 import { applyI18n } from '../runtime/dom'
 import { createDomFactory } from '../runtime/dom'
@@ -22,6 +20,7 @@ import { setActivityExpanded } from './comparison'
 import { wireActivityComparison } from './comparison'
 import { detailContextFromPayload } from './data'
 import { mountDaySleepCharts } from './day-sleep'
+import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
 
@@ -55,29 +54,15 @@ export const buildDayCard = (
     element: card,
     mount: () => {
       card.addEventListener('click', onCardToggle)
-      const cleanups = [mountDaySleepCharts(card), ...activityViews.map(view => view.mount())]
+      const cleanups = [
+        mountDaySleepCharts(card, () => presentation.locale),
+        ...activityViews.map(view => view.mount()),
+      ]
       return () => {
         card.removeEventListener('click', onCardToggle)
         for (const cleanup of cleanups) cleanup()
       }
     },
-  }
-}
-
-export const dayExtrasFromDataset = (data: DOMStringMap): DayCardExtras => {
-  const excludedActivityIds = parseExcludedActivityIds(data.triathlonFilter)
-  const settings = parseTriathlonTraceSettings(data.triathlonSettings)
-  return {
-    location: data.triathlonLoc,
-    event: data.triathlonEvent,
-    sport: data.triathlonSport as DayCardExtras['sport'],
-    activityId: data.triathlonActivityId,
-    ...(excludedActivityIds.length > 0 ? { excludedActivityIds } : {}),
-    ...(settings ? { settings } : {}),
-    analytics: data.triathlonAnalytics === '1',
-    expanded: data.triathlonExpanded === '1',
-    embedded: data.triathlonEmbedded === '1',
-    dateHref: data.triathlonDateHref,
   }
 }
 
@@ -471,7 +456,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
     if (ssr) {
       ssr.addEventListener('click', onCardToggle)
       const cleanupStrengthOverflow = setupStrengthExerciseOverflow(ssr)
-      const cleanupDaySleepCharts = mountDaySleepCharts(ssr)
+      const cleanupDaySleepCharts = mountDaySleepCharts(ssr, () => context.presentation.locale)
       cardCleanup = () => {
         ssr.removeEventListener('click', onCardToggle)
         cleanupStrengthOverflow()
@@ -498,7 +483,7 @@ export const setupDayEmbeds = (context: TriathlonContext): (() => void) | null =
         embed.removeEventListener('focusin', onKeyboardFocus)
         embed.removeEventListener('pointermove', onChartMove)
       })
-      if (extras.expanded) upgrade()
+      if (dayCardActivitiesExpanded(extras)) upgrade()
     } else {
       const initial = buildDayCard(context.presentation, date, null, extras)
       embed.replaceChildren(initial.element)

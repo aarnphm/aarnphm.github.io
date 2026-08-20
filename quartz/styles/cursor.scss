@@ -99,7 +99,8 @@
     pointer-events: none;
     transition:
       opacity 120ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform 120ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 120ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .site-cursor-diamond {
@@ -161,8 +162,10 @@
   }
 
   .site-cursor[data-mode='timeline'] .site-cursor-line {
+    width: 2px;
     background: #fc4c02;
     opacity: 1;
+    transition: opacity 120ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .site-cursor[data-mode='text'] .site-cursor-diamond {
@@ -226,6 +229,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   html.site-cursor-ready .site-cursor[data-magnetic],
+  .site-cursor[data-mode='timeline'] .site-cursor-line,
   .site-cursor-bracket,
   :is([data-site-cursor-action], [data-site-cursor-close], button[aria-label^='close' i])
     :is([data-site-cursor-icon], svg),

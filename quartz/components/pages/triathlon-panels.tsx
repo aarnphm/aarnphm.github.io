@@ -135,8 +135,8 @@ export const GEAR: [string, string[]][] = [
       'Seatpost: Canyon Splitter Plate Pro, carbon',
       'Saddle: Fizik Transiro Aeris LD R1 Adaptive',
       'Bottom Bracket: Shimano Pressfit BB92',
-      'Front Wheel: Zipp 858 NSW',
-      'Rear Wheel: Zipp Super-9',
+      'Front Wheel: DT Swiss ARC 1100 85 mm',
+      'Rear Wheel: DT Swiss ARC 1100 Disc',
       'Front Tire: Continental Aero 111, 700x26c',
       'Rear Tire: Continental GP5000 TT TR, 700x28c',
       'Shifters: Shimano Dura-Ace Di2 R9160 Remote TT',
@@ -151,7 +151,7 @@ export const GEAR: [string, string[]][] = [
       'Powermeter: Shimano Dura-Ace R9200, dual-sided',
       'Bottle: Canyon FUEL Aero Bottle',
       'Bottle Cage: XLAB Gorilla XT Carbon',
-      'Pedals: LOOK',
+      'Pedals: Assioma PRO RL-2',
       'Bike Computer: Wahoo ELEMNT BOLT',
       "Shoes: Fi'zi:k Transiro Hydra Aeroweave Carbone",
       'Helmet: MET Drone Wide Body III',
@@ -250,12 +250,9 @@ export const TriathlonSubnav = ({ active, root }: { active?: TriView; root: stri
   </nav>
 )
 
-export const FeedPanel = ({ title = 'feed' }: { title?: string }) => (
+export const FeedPanel = () => (
   <section class="tri-feed" aria-label="activity feed" tabindex={-1} data-keyboard-scroll-scope>
     <div class="tri-ana-bar tri-feed-bar">
-      <span class="tri-ana-title" data-i18n={title === 'feed' ? 'feed' : undefined}>
-        {title}
-      </span>
       <div class="tri-feed-search-wrap">
         <input
           class="tri-ana-search tri-feed-search"
@@ -290,15 +287,7 @@ const TreeSum = ({ count, km, timeS }: { count: number; km: number; timeS: numbe
   </span>
 )
 
-export const OnTreePanel = ({
-  tree,
-  title = 'on',
-  root,
-}: {
-  tree: TriathlonTreeYear[]
-  title?: string
-  root: string
-}) => (
+export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: string }) => (
   <section
     class="tri-feed tri-tree"
     aria-label="training log by date"
@@ -306,9 +295,6 @@ export const OnTreePanel = ({
     data-keyboard-scroll-scope
   >
     <div class="tri-ana-bar tri-feed-bar">
-      <span class="tri-ana-title" data-i18n={title === 'on' ? 'on' : undefined}>
-        {title}
-      </span>
       <span class="tri-feed-count">{tree.reduce((total, year) => total + year.count, 0)}</span>
     </div>
     <div class="tri-tree-list" data-keyboard-scroll>
@@ -380,9 +366,11 @@ const TriPanelShell = ({
         data-keyboard-scroll-scope
       >
         <div class={`tri-ana-bar${barClass ? ` ${barClass}` : ''}`}>
-          <span class={`tri-ana-title${titleClass ? ` ${titleClass}` : ''}`} data-i18n={title}>
-            {title}
-          </span>
+          {!page && (
+            <span class={`tri-ana-title${titleClass ? ` ${titleClass}` : ''}`} data-i18n={title}>
+              {title}
+            </span>
+          )}
           {search}
           <button
             class={`tri-ana-close${kind === 'analytics' ? '' : ` tri-${kind}-close`}`}
@@ -1120,6 +1108,40 @@ export const PacePanel = ({ page }: { page?: boolean }) => (
   </div>
 )
 
+const CalcCopyButton = () => (
+  <button
+    class="tri-calc-copy"
+    type="button"
+    data-calc-tab-control="race"
+    data-site-cursor-action
+    aria-label="Copy embed link"
+    title="Copy embed link"
+  >
+    <svg
+      class="copy-icon"
+      width="16"
+      height="16"
+      viewBox="-4 -4 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      data-site-cursor-icon
+    >
+      <use href="#github-copy" />
+    </svg>
+    <svg
+      class="check-icon"
+      width="16"
+      height="16"
+      viewBox="-4 -4 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      data-site-cursor-icon
+    >
+      <use href="#github-check" />
+    </svg>
+  </button>
+)
+
 export const CalcPanel = ({
   page,
   defaultDistance,
@@ -1145,45 +1167,16 @@ export const CalcPanel = ({
       data-keyboard-scroll-scope
       data-keyboard-scroll
     >
-      <div class="tri-calc-bar">
-        <span class="tri-calc-title">{page ? 'calculators' : 'race pace'}</span>
-        <button
-          class="tri-calc-copy"
-          type="button"
-          data-calc-tab-control="race"
-          data-site-cursor-action
-          aria-label="Copy embed link"
-          title="Copy embed link"
-        >
-          <svg
-            class="copy-icon"
-            width="16"
-            height="16"
-            viewBox="-4 -4 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-            data-site-cursor-icon
-          >
-            <use href="#github-copy" />
-          </svg>
-          <svg
-            class="check-icon"
-            width="16"
-            height="16"
-            viewBox="-4 -4 24 24"
-            fill="currentColor"
-            aria-hidden="true"
-            data-site-cursor-icon
-          >
-            <use href="#github-check" />
-          </svg>
-        </button>
-        <button class="tri-calc-close" type="button" aria-label="Close" data-site-cursor-close>
-          <span aria-hidden="true" data-site-cursor-icon>
-            ×
-          </span>
-        </button>
-      </div>
+      {!page && (
+        <div class="tri-calc-bar">
+          <span class="tri-calc-title">race pace</span>
+          <button class="tri-calc-close" type="button" aria-label="Close" data-site-cursor-close>
+            <span aria-hidden="true" data-site-cursor-icon>
+              ×
+            </span>
+          </button>
+        </div>
+      )}
       {page && (
         <div class="tri-calc-tabs" role="tablist" aria-label="calculators">
           <button
@@ -1193,6 +1186,7 @@ export const CalcPanel = ({
             role="tab"
             aria-selected="true"
             aria-controls="tri-calc-panel-race"
+            aria-keyshortcuts="r"
             data-calc-tab="race"
           >
             race
@@ -1204,6 +1198,7 @@ export const CalcPanel = ({
             role="tab"
             aria-selected="false"
             aria-controls="tri-calc-panel-gear-ratios"
+            aria-keyshortcuts="g"
             data-calc-tab="gear-ratios"
             tabindex={-1}
           >
@@ -1216,6 +1211,7 @@ export const CalcPanel = ({
             role="tab"
             aria-selected="false"
             aria-controls="tri-calc-panel-tire-pressure"
+            aria-keyshortcuts="t"
             data-calc-tab="tire-pressure"
             tabindex={-1}
           >
@@ -1275,6 +1271,7 @@ export const CalcPanel = ({
               projection
             </button>
           </div>
+          <CalcCopyButton />
         </div>
         <div class="tri-calc-box">
           <table class="tri-calc-io">
@@ -1450,15 +1447,9 @@ export const CalcPanel = ({
 export const ToolsPanel = ({ maintenance }: { maintenance?: TriathlonMaintenance | null }) => (
   <div class="tri-tools" data-keyboard-scroll>
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h" data-i18n="gear">
-        gear
-      </h2>
       <GearPanel page maintenance={maintenance} />
     </section>
     <section class="tri-tools-sec">
-      <h2 class="tri-tools-h" data-i18n="pace">
-        pace
-      </h2>
       <PacePanel page />
     </section>
   </div>

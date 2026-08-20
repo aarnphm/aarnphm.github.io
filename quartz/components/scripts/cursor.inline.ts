@@ -40,6 +40,7 @@ const CROSSHAIR_CURSOR_SELECTOR = [
   '.tri-dist-plots',
   '.tri-engine-spark',
   '.tri-day-sleep-line-svg',
+  '.tri-day-sleep-stage-svg',
 ].join(',')
 
 const POINTER_CURSOR_SELECTOR = [
@@ -138,7 +139,6 @@ document.addEventListener('nav', () => {
     | 'text'
     | 'timeline' = 'diamond'
   let visible = false
-  let lineScale = 1
   let pointerTarget: Element | null = null
   let bracketTarget: HTMLElement | null = null
   let magneticTarget: HTMLElement | null = null
@@ -192,6 +192,8 @@ document.addEventListener('nav', () => {
     frame = 0
     let renderX = x
     let renderY = y
+    let lineScale: number | null = null
+    let lineOffset = 0
     const close = pointerTarget?.closest<HTMLElement>(CLOSE_CURSOR_SELECTOR) ?? null
     const action = pointerTarget?.closest<HTMLElement>(ACTION_CURSOR_SELECTOR) ?? null
     const magnetic = close ?? action
@@ -207,7 +209,6 @@ document.addEventListener('nav', () => {
       setMagneticTarget(magnetic)
       renderX = rect.left + rect.width / 2
       renderY = rect.top + rect.height / 2
-      lineScale = 1
       mode = close ? 'close' : 'action'
       visible = true
     } else if (bars) {
@@ -223,7 +224,7 @@ document.addEventListener('nav', () => {
       const timelineRect = measuredTimelineRect
       const lineBottom = Math.max(barsRect.bottom, timelineRect?.bottom ?? barsRect.bottom)
       const lineHeight = lineBottom - barsRect.top
-      renderY = barsRect.top + lineHeight / 2
+      lineOffset = barsRect.top + lineHeight / 2 - renderY
       lineScale = Math.max(1, lineHeight / 24)
       mode = 'timeline'
       visible = true
@@ -233,7 +234,6 @@ document.addEventListener('nav', () => {
       const pointer = pointerTarget?.closest<HTMLElement>(POINTER_CURSOR_SELECTOR) ?? null
       const text = pointerTarget?.closest<HTMLElement>(TEXT_CURSOR_SELECTOR) ?? null
       const crosshair = pointerTarget?.closest<HTMLElement>(CROSSHAIR_CURSOR_SELECTOR) ?? null
-      lineScale = 1
       if (help) {
         setBracketTarget(null)
         mode = 'help'
@@ -258,7 +258,10 @@ document.addEventListener('nav', () => {
       }
     }
     cursor.style.transform = `translate3d(${renderX - 12}px, ${renderY - 12}px, 0)`
-    line.style.transform = `translate(-50%, -50%) scaleY(${lineScale.toFixed(3)})`
+    line.style.transform =
+      lineScale === null
+        ? ''
+        : `translate(-50%, calc(-50% + ${lineOffset.toFixed(1)}px)) scaleY(${lineScale.toFixed(3)})`
     if (cursor.dataset.mode !== mode) cursor.dataset.mode = mode
     const nextVisible = String(visible)
     if (cursor.dataset.visible !== nextVisible) cursor.dataset.visible = nextVisible
@@ -306,7 +309,7 @@ document.addEventListener('nav', () => {
 
   const invalidateGeometry = (): void => {
     geometryDirty = true
-    if (pointerTarget) schedule()
+    if (magneticTarget || bracketTarget || mode === 'timeline') schedule()
   }
 
   document.documentElement.classList.add('site-cursor-ready')

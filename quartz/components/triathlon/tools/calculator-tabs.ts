@@ -1,6 +1,11 @@
 export type CalculatorTab = 'race' | 'gear-ratios' | 'tire-pressure'
 
 const CALCULATOR_TABS: readonly CalculatorTab[] = ['race', 'gear-ratios', 'tire-pressure']
+const CALCULATOR_TAB_SHORTCUTS: Readonly<Record<string, CalculatorTab>> = {
+  r: 'race',
+  g: 'gear-ratios',
+  t: 'tire-pressure',
+}
 
 const isCalculatorTab = (value: string | undefined): value is CalculatorTab =>
   CALCULATOR_TABS.some(tab => tab === value)
@@ -9,6 +14,9 @@ export const calculatorTabFromHash = (hash: string): CalculatorTab => {
   const value = hash.startsWith('#') ? hash.slice(1) : hash
   return isCalculatorTab(value) ? value : 'race'
 }
+
+export const calculatorTabFromShortcut = (key: string): CalculatorTab | null =>
+  CALCULATOR_TAB_SHORTCUTS[key] ?? null
 
 export const setupCalculatorTabs = (root: HTMLElement): (() => void) | null => {
   const tablist = root.querySelector<HTMLElement>('.tri-calc-tabs')

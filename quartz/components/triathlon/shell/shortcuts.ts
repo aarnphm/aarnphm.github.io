@@ -1,3 +1,4 @@
+import { calculatorTabFromShortcut } from '../tools/calculator-tabs'
 import { blurFocusedPanelSearch } from './command-palette'
 import { isEditable } from './command-palette'
 import { mapDetailMetricTabForKey } from './command-palette'
@@ -30,6 +31,23 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
     f: '/triathlon/feed',
     o: '/triathlon/on',
     h: '/triathlon',
+  }
+  const selectCalculatorTab = (key: string): boolean => {
+    if (subView !== 'calc') return false
+    const selected = calculatorTabFromShortcut(key)
+    if (!selected) return false
+    const tab = root.querySelector<HTMLButtonElement>(`[data-calc-tab="${selected}"]`)
+    if (!tab) return false
+    tab.click()
+    tab.focus({ preventScroll: true })
+    return true
+  }
+  const waitForG = (): void => {
+    waitingForG = true
+    gTimeout = window.setTimeout(() => {
+      waitingForG = false
+      gTimeout = null
+    }, 1000)
   }
 
   if (subView) {
@@ -199,18 +217,22 @@ export const setupShortcuts = (root: HTMLElement): (() => void) => {
       return
     }
 
+    const calculatorKey = e.isComposing || e.repeat ? null : e.key
     if (waitingForG) {
-      if (runChord(e.key.toLowerCase())) {
+      if (
+        runChord(e.key.toLowerCase()) ||
+        (calculatorKey !== null && selectCalculatorTab(calculatorKey))
+      ) {
         e.preventDefault()
         e.stopImmediatePropagation()
       }
       clearG()
+    } else if (calculatorKey !== null && selectCalculatorTab(calculatorKey)) {
+      if (e.key === 'g') waitForG()
+      e.preventDefault()
+      e.stopImmediatePropagation()
     } else if (e.key.toLowerCase() === 'g') {
-      waitingForG = true
-      gTimeout = window.setTimeout(() => {
-        waitingForG = false
-        gTimeout = null
-      }, 1000)
+      waitForG()
     }
   }
 
