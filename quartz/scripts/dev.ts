@@ -58,6 +58,12 @@ const WRANGLER_DEV_NAME = process.env.WRANGLER_DEV_NAME ?? 'portfolio-dev'
 const ANSI_ESCAPE_PATTERN = new RegExp(String.raw`\u001b\[[0-9;]*m`, 'g')
 const modelArchiveRoot = path.join(gitRoot, '.models-archive')
 const publicRoot = path.join(gitRoot, 'public')
+const crashReportDir = path.join(gitRoot, '.quartz-cache', 'crash-reports')
+const quartzChildNodeOptions = [
+  '--max-old-space-size=8192',
+  '--report-on-fatalerror',
+  `--report-directory=${crashReportDir}`,
+].join(' ')
 
 const runtimeConfig = resolveRuntimeConfig(process.argv.slice(2))
 const totalPnpmDevAttempts = runtimeConfig.pnpmDevRetryLimit + 1
@@ -616,6 +622,13 @@ function startProcess(args: string[], label: Label, message?: string): ManagedCh
     env: {
       ...process.env,
       ...(label === 'wrangler' ? { PUBLIC_BASE_URL: runtimeConfig.publicBaseUrl } : {}),
+      ...(label === 'quartz'
+        ? {
+            NODE_OPTIONS: [process.env.NODE_OPTIONS, quartzChildNodeOptions]
+              .filter(Boolean)
+              .join(' '),
+          }
+        : {}),
     },
     detached: true,
     stdio: ['ignore', 'pipe', 'pipe'],

@@ -180,9 +180,9 @@ export const VO2P_W = 800
 
 export const VO2P_H = 430
 
-export const VO2P_L = 82
+export const VO2P_L = 38
 
-export const VO2P_R = 690
+export const VO2P_R = 720
 
 export const VO2P_T = 48
 

@@ -128,8 +128,11 @@ export const buildDexaDetail = (formatter: TriathlonFormatter, d: DexaRecord): H
   const text = (key: string): string => formatter.text(key)
   const detail = el('div', 'tri-dexa-detail-inner')
   const head = el('div', 'tri-dexa-head')
-  const bf = el('div', 'tri-dexa-bf', formatter.number(d.bodyFat, 1, 1))
-  bf.appendChild(el('span', 'tri-dexa-unit', text('% fat')))
+  const bf = el('div', 'tri-dexa-bf')
+  bf.append(
+    el('span', 'tri-dexa-number', formatter.number(d.bodyFat, 1, 1)),
+    el('span', 'tri-dexa-unit', text('% fat')),
+  )
   head.append(bf, el('span', 'tri-dexa-cat', `ACE ${text(aceBand(d.bodyFat))}`))
   detail.appendChild(head)
 

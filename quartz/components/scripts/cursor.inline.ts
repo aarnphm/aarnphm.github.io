@@ -11,6 +11,7 @@ const CLOSE_CURSOR_SELECTOR =
   "[data-site-cursor-close]:not(:disabled), button[aria-label^='close' i]:not(:disabled)"
 const ACTION_CURSOR_SELECTOR = '[data-site-cursor-action]:not(:disabled)'
 const MAGNETIC_ICON_SELECTOR = '[data-site-cursor-icon], svg'
+const BRACKET_ANCHOR_SELECTOR = '[data-site-cursor-bracket]'
 
 const HELP_CURSOR_SELECTOR = [
   '[data-gloss]',
@@ -31,7 +32,6 @@ const CROSSHAIR_CURSOR_SELECTOR = [
   '.tri-best-power-svg',
   '.tri-best-power .tri-cax-xax',
   '.tri-curve-chart .tri-cax-xax',
-  '.tri-compare-map',
   ".tri-compare-chart[data-compare-chart='power-curve'] .tri-cax-xax",
   ".tri-compare-chart:not([data-available='0']) .tri-compare-graph",
   '.tri-pmc-svg',
@@ -149,6 +149,8 @@ document.addEventListener('nav', () => {
   let measuredBarsRect: DOMRect | null = null
   let measuredTimelineRect: DOMRect | null = null
   let measuredBracketRect: DOMRect | null = null
+  let measuredPointer: HTMLElement | null = null
+  let measuredPointerAnchor: HTMLElement | null = null
   let geometryDirty = true
 
   const setBracketTarget = (target: HTMLElement | null): void => {
@@ -239,7 +241,11 @@ document.addEventListener('nav', () => {
         mode = 'help'
         visible = true
       } else if (pointer) {
-        setBracketTarget(pointer)
+        if (pointer !== measuredPointer) {
+          measuredPointer = pointer
+          measuredPointerAnchor = pointer.querySelector<HTMLElement>(BRACKET_ANCHOR_SELECTOR)
+        }
+        setBracketTarget(measuredPointerAnchor ?? pointer)
         mode = 'bracket'
         visible = true
       } else if (text) {
@@ -309,7 +315,9 @@ document.addEventListener('nav', () => {
 
   const invalidateGeometry = (): void => {
     geometryDirty = true
-    if (magneticTarget || bracketTarget || mode === 'timeline') schedule()
+    pointerTarget = document.elementFromPoint(x, y)
+    if (pointerTarget || visible || magneticTarget || bracketTarget || mode === 'timeline')
+      schedule()
   }
 
   document.documentElement.classList.add('site-cursor-ready')

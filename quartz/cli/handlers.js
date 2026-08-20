@@ -426,10 +426,24 @@ export async function handleBuild(argv) {
   }
 
   if (argv.watch) {
+    const sourceRebuildQueue = { running: false, requested: false }
+    const requestSourceRebuild = async () => {
+      sourceRebuildQueue.requested = true
+      if (sourceRebuildQueue.running) return
+      sourceRebuildQueue.running = true
+      try {
+        while (sourceRebuildQueue.requested) {
+          sourceRebuildQueue.requested = false
+          await build(clientRefresh)
+        }
+      } finally {
+        sourceRebuildQueue.running = false
+      }
+    }
     const sourceChanged = (type, fp) => {
       if (isTestSourcePath(fp)) return
       console.log(styleText('yellow', `Detected source ${type}: ${normalizeWatchedPath(fp)}`))
-      return build(clientRefresh)
+      void requestSourceRebuild()
     }
     chokidar
       .watch(sourceWatchRoots, {

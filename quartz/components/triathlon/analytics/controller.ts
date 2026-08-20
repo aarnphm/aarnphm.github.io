@@ -387,7 +387,6 @@ export const setupAnalytics = (
       el('span', undefined, context.formatter.text('compare activities'), {
         'data-i18n': 'compare activities',
       }),
-      el('kbd', undefined, '⇧↵', { 'aria-hidden': 'true' }),
     )
     submitWrap.append(submit, submitHelp)
     actions.append(submitWrap, clear)
@@ -441,7 +440,9 @@ export const setupAnalytics = (
     panel.classList.add('tri-analytics--searching')
     results.setAttribute('aria-hidden', 'false')
     if (inCompareMode()) results.appendChild(comparePicker())
-    const resultList = inCompareMode() ? el('div', 'tri-compare-activity-list') : results
+    const resultList = inCompareMode()
+      ? el('div', 'tri-compare-activity-list', undefined, { 'data-keyboard-scroll': '' })
+      : results
     if (inCompareMode()) results.appendChild(resultList)
     const rawTokens = q ? q.split(/\s+/) : []
     const { filterSport, filterDate, sortKey, tokens } = parseActivityQuery(rawTokens)
