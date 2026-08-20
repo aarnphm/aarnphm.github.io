@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-07 09:02:46 GMT-04:00
+modified: 2026-08-20 02:30:24 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,21 @@ title: are.na
 
 ## discourse
 
+- https://reflectivedisequilibrium.blogspot.com/2020/05/what-would-civilization-immune-to.html -- Envisioning a world immune to global catastrophic biological risks
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [biosecurity, civilization]
+    - later: true
+- https://80000hours.org/podcast/episodes/2026-agi-timelines/ -- What the hell happened with AGI timelines in 2026?
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [agi, timelines]
+    - later: true
+- https://www.lesswrong.com/posts/vjAM7F8vMZS7oRrrh/how-do-we-more-safely-defer-to-ais -- How do we more safely defer to AIs?
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai, deference]
+    - later: true
 - https://www.youtube.com/watch?v=FplYsFIlVC4 -- AI's Reluctant Believer: Preparing for AGI and Finding Meaning on the Other Side
   - [meta]:
     - date: 08/07/2026
@@ -543,6 +558,26 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/__alpoge__/status/2087504785952182273 -- levent on X
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [x]
+    - later: true
+- https://x.com/benjitaylor/status/2087603294722269439 -- Benji Taylor on X settings design
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [settings, design]
+    - later: true
+- https://x.com/PrimeIntellect/status/2087969614156247504 -- Prime Intellect on Flash MoE kernels
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [moe, cuda]
+    - later: true
+- https://x.com/noampomsky/status/2087989492670198081 -- Ava on close friends and honest judgment
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [friendship, judgment]
+    - later: true
 - https://x.com/mpopv/status/2083234034646405513 -- Matt Popovich on alpha from X
   - [meta]:
     - date: 07/31/2026
@@ -1981,6 +2016,81 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.designers-machines.com/ -- Designers and Machines
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [design, technology]
+    - later: true
+- https://www.deck.gallery/ -- Deck.gallery
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [decks, curation]
+    - later: true
+- https://www.evebouffard.com/home -- Eve Bouffard
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [personal site]
+    - later: true
+- https://givemeanode.com/ -- givemeanode
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [personal site, technology]
+    - later: true
+- https://nataliealmosa.ca/ -- Natalie Almosa
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [product design, personal site]
+    - later: true
+- https://www.monsieurcailloux.com/ -- Monsieur Cailloux
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ceramics, personal site]
+    - later: true
+- https://khushimittal.com/ -- Khushi Mittal
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [personal site]
+    - later: true
+- https://unruffled.nl/ -- Unruffled
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [personal site]
+    - later: true
+- https://berd.xyz/ -- Berd
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [building, personal site]
+    - later: true
+- https://panbreak-production.up.railway.app/ -- panbreak
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [web app]
+    - later: true
+- https://www.cliamp.stream/ -- CLIAMP
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [terminal, music]
+    - later: true
+- https://dominionlist.com/ -- The Dominion List
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [lists, personal site]
+    - later: true
+- https://www.historicaltechtree.com/ -- Historical Tech Tree
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [technology, history]
+    - later: true
+- https://michaelnielsenupdates.substack.com/ -- Michael Nielsen
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [newsletter]
+    - later: true
+- https://mazebench.com/blog -- Maze Bench
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai, benchmarks]
+    - later: true
 - https://nyanthropic.com/ -- The New York Anthropic Fan Club
   - [meta]:
     - date: 07/31/2026
@@ -2722,6 +2832,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://letters.stevejobsarchive.com/jony-ive -- Jony Ive
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [designer, letter]
+    - later: true
+- https://letters.stevejobsarchive.com/ben-okri -- Ben Okri
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [writer, letter]
+    - later: true
 - https://ashe.ai/frontier-tech-series/ -- Ashe Magalhaes
   - [meta]:
     - date: 07/31/2026
@@ -3790,6 +3910,11 @@ title: are.na
 
 ## places
 
+- https://www.atlasobscura.com/places/bristol-basin -- Bristol Basin
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [bristol, waterfront]
+    - later: true
 - https://maps.app.goo.gl/D8ekLSaxuA25ofGSA -- Gloria In The Great Hall
   - [meta]:
     - date: 07/30/2026
@@ -4081,6 +4206,141 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://patrickcollison.com/fast -- Fast
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [speed, progress]
+    - later: true
+- https://1a3orn.com/sub/essays-why-bad.html -- Simulated Users and Sad LLMs
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [llms, critique]
+    - later: true
+- https://kennethnym.com/blog/conviction/ -- conviction
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [conviction, writing]
+    - later: true
+- https://static1.squarespace.com/static/5c40a2e2a2772cfd05978d92/t/5c53184a2b6a2803e8c8ca32/1548949579744/The+Essay+as+Form+%281958%29+-+Theodor+W.+Adorno.pdf -- The Essay as Form
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [adorno, essay]
+    - later: true
+- https://www.worksinprogress.news/p/future-of-medicine -- Cure all diseases
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [medicine, progress]
+    - later: true
+- https://www.theguardian.com/books/2025/feb/01/rejection-by-tony-tulathimutte-review-like-being-inside-the-internet -- Rejection by Tony Tulathimutte review
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [books, criticism]
+    - later: true
+- https://ekswhyzee.com/2026/01/20/shenzhen.html -- Visiting Shenzhen
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [shenzhen, travel]
+    - later: true
+- https://www.wsj.com/tech/steve-jobs-apple-next-cia-161b65f9 -- Steve Jobs, Apple, NeXT, and the CIA
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [steve jobs, apple]
+    - later: true
+- https://www.noahpinion.blog/p/what-will-more-intelligence-actually -- What will more intelligence actually do for us?
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [intelligence, economics]
+    - later: true
+- https://gruhn.me/blog/2026-08-03/ -- Don't be a meat proxy
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai, work]
+    - later: true
+- https://www.themolehill.net/p/they-dont-dress-witches-like-they -- they don't dress witches like they used to
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [fashion, culture]
+    - later: true
+- https://www.theredhandfiles.com/communication-dream-feeling/ -- Communication, dream, feeling
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [grief, dreams]
+    - later: true
+- https://mihai.page/six-months-at-openai/ -- Six months at OpenAI
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [openai, work]
+    - later: true
+- https://www.seangoedecke.com/llms-reward-expertise/ -- LLMs reward expertise
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [llms, expertise]
+    - later: true
+- https://www.newyorker.com/magazine/2018/12/10/the-friendship-that-made-google-huge -- The Friendship That Made Google Huge
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [google, friendship]
+    - later: true
+- https://yalereview.org/article/daniel-lefferts-terms-and-conditions -- Terms and Conditions
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [literature, essay]
+    - later: true
+- https://www.construction-physics.com/p/the-fall-and-rise-of-screwworm -- The Fall and Rise of Screwworm
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [public health, history]
+    - later: true
+- https://thepointmag.com/criticism/student-of-desire/ -- Student of Desire
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [criticism, desire]
+    - later: true
+- https://moalquraishi.wordpress.com/2026/08/10/a-workaphiles-apology/ -- A Workaphile's Apology
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [work, life]
+    - later: true
+- https://www.erichgrunewald.com/posts/why-i-think-you-should-almost-never-use-ai-to-write-anything-substantive/ -- Why You Should Almost Never Use AI to Write Anything Substantive
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai, writing]
+    - later: true
+- https://kottke.org/plus/misc/google-playboy.html -- Playboy Interview: Google Guys
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [google, interview]
+    - later: true
+- https://paulbuchheit.blogspot.com/2008/02/most-import-thing-to-understand-about.html -- The most important thing to understand about new products and startups
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [startups, products]
+    - later: true
+- https://finance.yahoo.com/blogs/daniel-gross/steve-jobs-earned-place-american-business-pantheon-001840746.html -- Steve Jobs Earned His Place in the American Business Pantheon
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [steve jobs, apple]
+    - later: true
+- https://blog.senko.net/code-was-never-the-hard-part-is-an-insult-to-all-programmers -- Code was never the hard part is an insult to all programmers
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [programming, ai]
+    - later: true
+- https://www.stevanpopovic.com/daniel-gross/ -- Ideas From Daniel Gross
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ideas, startups]
+    - later: true
+- https://sashachapin.substack.com/p/if-you-have-writers-block-maybe-you -- If You Have Writer's Block, Maybe You Should Stop Lying
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [writing, honesty]
+    - later: true
+- https://www.alexirpan.com/2026/08/18/eleven-years.html -- Eleven Years Later
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [reflection, time]
+    - later: true
 - https://ruixu.us/posts/six-things-robotics-startup -- Six Things I Learned Watching a Robotics Startup Die from the Inside
   - [meta]:
     - date: 07/31/2026
@@ -6895,6 +7155,26 @@ title: are.na
   - view: list
   - json: true
 
+- https://rlhfbook.com/course -- Post-Training Course
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [rlhf, post-training]
+    - later: true
+- https://eyes.training/ -- eyes.training
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [visual design, course]
+    - later: true
+- https://drawabox.com/lesson/1/2 -- Drawabox
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [drawing, course]
+    - later: true
+- https://cs229.stanford.edu/main_notes.pdf -- CS229 Lecture Notes
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [machine learning, course]
+    - later: true
 - https://courses.ics.hawaii.edu/ReviewICS312/morea/BitOperations/ics312_bitmasks.pdf -- ICS 312 Bit Operations and Bitmasks
   - [meta]:
     - date: 07/31/2026
@@ -6988,6 +7268,111 @@ title: are.na
   - view: list
   - json: true
 
+- https://sustcsonglin.github.io/blog/2024/deltanet-1/ -- DeltaNet Explained (Part I)
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [deltanet, sequence models]
+    - later: true
+- https://sustcsonglin.github.io/blog/2024/deltanet-2/ -- DeltaNet Explained (Part II)
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [deltanet, chunkwise algorithm]
+    - later: true
+- https://www.zhihu.com/question/2016993095078684011/answer/2017381145474508331 -- Zhihu discussion on mixture-of-experts
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [moe, discussion]
+    - later: true
+- https://zhuanlan.zhihu.com/p/2017528295286133070 -- Zhihu article on mixture-of-experts
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [moe, article]
+    - later: true
+- https://kexue.fm/tag/moe/1/ -- Mixture-of-experts posts
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [moe, language models]
+    - later: true
+- https://blog.tilderesearch.com/blog/online-kl-shampoo -- Online KL Shampoo
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [optimization, training]
+    - later: true
+- https://hazyresearch.stanford.edu/blog/2026-08-05-retire-the-abstractions -- Retire the Abstractions
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [deep learning, systems]
+    - later: true
+- https://earendil.com/posts/pi-autoresearch-and-databricks/ -- Pi, Minimal and Performant
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [autoresearch, agents]
+    - later: true
+- https://www.aisi.gov.uk/blog/incident-report-unsanctioned-agent-behaviour-during-cyber-testing -- Incident Report: unsanctioned agent behaviour during cyber testing
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [agents, cyber]
+    - later: true
+- https://transluce.org/user-awareness -- User awareness in frontier models
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [alignment, user awareness]
+    - later: true
+- https://www.anthropic.com/engineering/building-effective-agents -- Building Effective AI Agents
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [agents, engineering]
+    - later: true
+- https://www.primeintellect.ai/blog/prime-agent -- Prime Agent: A self-improving RLM agent
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [agents, reinforcement learning]
+    - later: true
+- https://www.appliedcompute.com/platform/bring-your-own-harness-to-ac2 -- Bring Your Own Harness to AC2
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [evaluation, agents]
+    - later: true
+- https://alperenkeles.com/posts/verifiability-is-the-limit/ -- Verifiability is the Limit
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [verifiability, agents]
+    - later: true
+- https://riyabisht.com/blog/reason_about_a_problem_in_the_age_of_llm/ -- Reason About A Problem In The Age Of LLMs and Automation
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [llms, reasoning]
+    - later: true
+- https://www.anthropic.com/research/riemann-zeta -- Learning more about Claude's mathematical capabilities
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [claude, mathematics]
+    - later: true
+- https://blog.doubleword.ai/when-to-disaggregate -- The case for disaggregated LLM serving
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [inference, disaggregation]
+    - later: true
+- https://gau-nernst.github.io/fa-5090/ -- Writing Speed-of-Light Flash Attention for 5090 in CUDA C++
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [flash attention, cuda]
+    - later: true
+- https://huggingface.co/LargeWorldModel -- LargeWorldModel
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [world models, models]
+    - later: true
+- https://openai.com/index/pacing-model-development-cyber-capabilities/ -- Pacing model development for cyber capabilities
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [cyber, model development]
+    - later: true
+- https://generalistai.com/blog/gen-1.5 -- GEN-1.5: Embodied Foundation Models are One-Shot Learners
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [embodied ai, foundation models]
+    - later: true
 - https://github.com/MoonshotAI/FlashKDA/blob/master/docs/20260420-flashkda-v1-deep-dive.md -- FlashKDA v1: A Deep Dive
   - [meta]:
     - date: 08/06/2026
@@ -9718,6 +10103,21 @@ title: are.na
 
 ## opinions
 
+- https://fas.org/publication/tracking-hyperscale/ -- Tracking Hyperscale AI Data Center Growth with Satellite Imagery
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai infrastructure, data centers]
+    - later: true
+- https://www.reddit.com/r/desloppification/ -- r/desloppification
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai, community]
+    - later: true
+- https://substack.com/home/post/p-147138670?selection=51f82d25-d633-48b3-a053-f939291afdd2 -- REVIEW: Sick Societies, by Robert B. Edgerton
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [review, society]
+    - later: true
 - https://newsletter.semianalysis.com/p/the-future-of-meta-superintelligence -- The Future of Meta Superintelligence: A 1 Year Progress Update
   - [meta]:
     - date: 07/31/2026
@@ -10283,6 +10683,61 @@ title: are.na
 
 ## life is literature
 
+- https://substack.com/inbox/post/209670682 -- no two things the same
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [writing, identity]
+    - later: true
+- https://thoughtcoded.substack.com/p/give-your-mom-some-grace -- Give your mom some grace
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [family, grace]
+    - later: true
+- https://www.clubreticent.com/p/meet-me-at-the-intersection-of-tech -- Meet me at the intersection of tech and womanhood
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [tech, womanhood]
+    - later: true
+- https://writings.stephenwolfram.com/2026/08/in-memory-of-my-wife-elise-cawley-1961-2026-with-thanks-for-36-wonderful-years/ -- In memory of my wife Elise Cawley
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [grief, remembrance]
+    - later: true
+- https://news.spencer.place/p/making-the-internet-a-living-game -- making the internet a living game
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [internet, play]
+    - later: true
+- https://www.noemamag.com/why-is-everyone-in-tech-so-sad/ -- Why Is Everyone In Tech So Sad?
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [tech, sadness]
+    - later: true
+- https://www.clubreticent.com/p/tech-is-dying-to-be-a-girls-girl -- Tech is dying to be a girl's girl
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [tech, womanhood]
+    - later: true
+- https://www.jenn.site/rich-friend-poor-friend/ -- Rich Friend, Poor Friend
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [friendship, class]
+    - later: true
+- https://www.hardtowrite.com/against-maximum-stimulation-egg-freezing-ivf-and-the-case-for-gentler-fertility-medicine/ -- Against Maximum Stimulation
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [fertility, medicine]
+    - later: true
+- https://zephyyr.substack.com/p/a-moveable-feast -- A moveable feast
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [writing, life]
+    - later: true
+- https://maxlangenkamp.substack.com/p/i-am-blessed-by-you -- I am blessed by you
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [gratitude, life]
+    - later: true
 - https://bonsaigarden.substack.com/p/intimacy-is-both-taking-and-being -- intimacy is both taking and being taken for granted
   - [meta]:
     - date: 08/06/2026
@@ -11002,6 +11457,41 @@ title: are.na
   - view: list
   - json: true
 
+- https://blog.rust-lang.org/inside-rust/2026/08/05/rust-langrust-is-adopting-an-llm-policy/ -- rust-lang/rust is adopting an LLM policy
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [rust, llms]
+    - later: true
+- https://blog.rust-lang.org/2026/08/04/enabling-polonius-alpha-on-nightly/ -- Enabling the next iteration of the borrow checker on nightly
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [rust, borrow checker]
+    - later: true
+- https://docs.pytorch.org/docs/2.13/generated/torch.Tensor.shape.html -- torch.Tensor.shape
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [pytorch, tensors]
+    - later: true
+- https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html -- A Note About Git Commit Messages
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [git, commits]
+    - later: true
+- https://blog.sturdystatistics.com/posts/api_keys/ -- Why We Don't Trust the Database With Authentication
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [authentication, api keys]
+    - later: true
+- https://zed.dev/blog/introducing-delta -- Introducing Delta
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [zed, collaboration]
+    - later: true
+- https://linear.app/now/rebuilding-delta-sync-read-path -- Rebuilding Linear's delta sync read path
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [sync, databases]
+    - later: true
 - https://github.com/ghostty-org/ghostty/blob/d7e9773329ae86e6117c9ab5b6531367ac8c530a/src/terminal/stream.zig#L2705-L2759 -- Ghostty terminal stream parser warning suppression
   - [meta]:
     - date: 08/06/2026
@@ -11583,6 +12073,16 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://liminalthinking.com/ -- Liminal Thinking
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [change, thinking]
+    - later: true
+- https://parentingthrough.substack.com/p/there-are-no-sane-policy-solutions -- There are no sane policy solutions to population collapse
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [population, policy]
+    - later: true
 - https://thesephist.com/posts/epistemic-calibration/ -- Epistemic calibration and searching the space of truth
   - [meta]:
     - date: 07/31/2026
@@ -13102,6 +13602,31 @@ title: are.na
 
 ## finances
 
+- https://www.marketsentiment.co/p/is-the-capex-sustainable -- Is the capex sustainable?
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [capex, markets]
+    - later: true
+- https://erebor.bank/ -- Erebor
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [banking, startups]
+    - later: true
+- https://colossus.com/article/beyond-the-sky-jeffrey-yan-hyperliquid/ -- Hyperliquid: In Singapore With Jeffrey Yan
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [hyperliquid, crypto]
+    - later: true
+- https://www.bogleheads.org/wiki/Three-fund_portfolio -- Three-fund portfolio
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [investing, index funds]
+    - later: true
+- https://stripe.com/en-ca/newsroom/news/stripe-agrees-to-acquire-openrouter -- Stripe agrees to acquire OpenRouter
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [stripe, openrouter]
+    - later: true
 - https://www.citriniresearch.com/p/free-strait-of-hormuz-a-citrini-field -- FREE: Strait of Hormuz: A Citrini Field Trip
   - [meta]:
     - date: 07/06/2026
@@ -13270,6 +13795,21 @@ title: are.na
 
 ## design
 
+- https://oliveateliers.com/en-ca/collections/the-sentimentalist -- The Sentimentalist
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [furniture, interiors]
+    - later: true
+- https://repetto.com/en -- Repetto Paris
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [fashion, dance]
+    - later: true
+- https://stephango.com/moats -- Many ways to win
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [design, strategy]
+    - later: true
 - https://avely.me/work_louder -- work louder
   - [meta]:
     - date: 07/31/2026
@@ -13688,6 +14228,11 @@ title: are.na
 
 ## cooking
 
+- https://www.laowainoodles.com/ -- laowai popup
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [noodles, popup]
+    - later: true
 - https://ambrook.com/offrange/perspective/heart-of-the-tomato -- Heart of the Tomato
   - [meta]:
     - date: 06/28/2026
@@ -14417,6 +14962,31 @@ title: are.na
 
 ## tools
 
+- https://angleref.com/ -- Angle Ref. Search
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [reference, search]
+    - later: true
+- https://joshuahhh.com/about-scrollscape/ -- Scrollscape
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [live programming, web]
+    - later: true
+- https://joshuahhh.com/scrollscape/ -- Composable Live Programming with Engraft
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [live programming, engraft]
+    - later: true
+- https://cuelume-site.pages.dev/ -- Cuelume
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [interaction sounds, web]
+    - later: true
+- https://developer.apple.com/videos/play/wwdc2025/308/ -- Optimize CPU performance with Instruments
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [instruments, performance]
+    - later: true
 - https://www.cyclist.co.uk/in-depth/lactate-gels -- Lactate gels
   - [meta]:
     - date: 07/31/2026
@@ -14512,6 +15082,21 @@ title: are.na
 
 ## arts
 
+- https://alum.mit.edu/slice/art-and-algorithms-sothebys -- Art and Algorithms at Sotheby's
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [art, algorithms]
+    - later: true
+- https://artblart.com/2013/09/10/exhibition-sensuous-steel-art-deco-automobiles-at-the-frist-center-for-the-visual-arts-nashville-tn/ -- Sensuous Steel: Art Deco Automobiles
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [art deco, automobiles]
+    - later: true
+- https://en.wikipedia.org/wiki/Biomorphism -- Biomorphism
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [art, biomorphism]
+    - later: true
 - https://www.youtube.com/watch?v=_ngs24AMCo8 -- The weird thing every Robert Pattinson movie has in common
   - [meta]:
     - date: 08/07/2026
@@ -14772,6 +15357,46 @@ title: are.na
 
 ## resources
 
+- https://bytedance.larkoffice.com/docx/A88jd0B47oAd8zxWp5ycZFMfnxh -- ByteDance Lark document
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [bytedance, document]
+    - later: true
+- https://buildinpublic.com/gadgets -- Gadgets
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [gadgets, recommendations]
+    - later: true
+- https://www.google.com/search?q=intralymphatic+immunotherapy -- intralymphatic immunotherapy
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [immunotherapy, search]
+    - later: true
+- https://archive.ph/LNvtB -- The Oracle of Public Radio
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [archive, media]
+    - later: true
+- https://designbooks.org/ -- Design Books
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [design, books]
+    - later: true
+- https://leconjugueur.lefigaro.fr/php5/index.php?verbe=boire -- boire conjugation
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [french, language]
+    - later: true
+- https://docs.google.com/presentation/d/1oIDirp28BaoT3uAUUNlBOild-gslObmf/edit?slide=id.p1 -- securing ai agents
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai agents, security]
+    - later: true
+- https://my.clevelandclinic.org/health/body/24052-adipose-tissue-body-fat -- Adipose Tissue (Body Fat): Anatomy and Function
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [health, anatomy]
+    - later: true
 - https://github.com/boldsoftware/meat -- meat
   - [meta]:
     - date: 08/06/2026
@@ -15240,6 +15865,16 @@ title: are.na
 
 ## interfaces
 
+- https://dynamicland.org/ -- Dynamicland
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [dynamic media, interfaces]
+    - later: true
+- https://www.are.na/justin-liang/desktop-app-traffic-lights-and-navigation-buttons -- Desktop app traffic lights and navigation buttons
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [desktop, navigation]
+    - later: true
 - https://worrydream.com/refs/Kay_1968_-_FLEX,_A_Flexible_Extendable_Language.pdf -- FLEX-A FLEXIBLE EXTENDABLE LANGUAGE
   - [meta]:
     - date: 02/23/2026
@@ -15263,6 +15898,16 @@ title: are.na
 
 ## typography
 
+- https://ott-foundry.com/ -- Ornamental and Title Type
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [typefoundry, display type]
+    - later: true
+- https://aresluna.org/the-hardest-working-font-in-manhattan/ -- The hardest working font in Manhattan
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [typography, manhattan]
+    - later: true
 - https://tex.stackexchange.com/questions/1319/showcase-of-beautiful-typography-done-in-tex-friends -- Showcase of beautiful typography done in TeX and friends
   - [meta]:
     - date: 07/31/2026
@@ -15460,6 +16105,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/Alain00/blobatar -- blobatar
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [avatar, web]
+    - later: true
+- https://github.com/danyuchn/asd-ste100-skill -- ASD-STE100 skill
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [writing, claude code]
+    - later: true
 - https://github.com/firecracker-microvm/firecracker/blob/main/docs/design.md -- Firecracker Design
   - [meta]:
     - date: 08/06/2026
@@ -16736,6 +17391,46 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.aerospacemanufacturinganddesign.com/news/airbus-a320-design-digitalization-underway-032117/ -- Airbus A320 design digitalization underway
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [airbus, manufacturing]
+    - later: true
+- https://soft-machine.io/landing -- Soft-Machine
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [cloud development, ai]
+    - later: true
+- https://www.interior.dev/docs/swipe-deck -- Swipe Deck
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [developer tools, presentation]
+    - later: true
+- https://blog.moontower.ai/the-sound-of-inevitabli/ -- the sound of inevitability
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [engineering, writing]
+    - later: true
+- https://www.discoveryloop.com/ -- Discovery Loop
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [research, exploration]
+    - later: true
+- https://getenergy.com/ -- Energy
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [work, software]
+    - later: true
+- https://yannglt.com/writing/the-rosetta-stone-of-design-engineering -- The Rosetta Stone of Design Engineering
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [design engineering, interface]
+    - later: true
+- https://developers.google.com/style -- Google developer documentation style guide
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [documentation, style guide]
+    - later: true
 - https://x.com/mitchellh/status/2078175337922621693 -- Mitchell Hashimoto on Ghostty IO logging overhead
   - [meta]:
     - date: 07/17/2026
@@ -17715,6 +18410,11 @@ title: are.na
 
 ## organizations
 
+- https://generalcontrol.inc/ -- General Control Biotechnologies
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [biotechnology, company]
+    - later: true
 - https://x.com/jeffdean/status/2085034604172603724 -- Jeff Dean announces Discovery Loop
   - [meta]:
     - date: 08/05/2026
@@ -17937,6 +18637,16 @@ title: are.na
   - view: list
   - json: true
 
+- https://lionellevine.github.io/math-for-AI-safety__lionel-levine__cornell-oliver-club-talk__2024-08-29.pdf -- Math for AI safety
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [ai safety, mathematics]
+    - later: true
+- https://epoch.ai/frontiermath/open-problems/hadamard -- Hadamard Matrix of Order 668
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [hadamard matrices, open problems]
+    - later: true
 - https://en.wikipedia.org/wiki/Jacobian_conjecture -- Jacobian conjecture
   - [meta]:
     - date: 07/31/2026
@@ -18739,6 +19449,31 @@ title: are.na
   - view: list
   - json: true
 
+- https://library.sparai.org/attachments/reports/rechWg1TuUP4o1vsT/know-thyself-evaluating-self-prediction-capabilities-in-lm-agents-4o1vst.pdf -- Know Thyself: Evaluating Self-prediction Capabilities in LM Agents
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [agents, self-prediction]
+    - later: true
+- https://ckrybus.com/static/papers/Bainbridge_1983_Automatica.pdf -- Ironies of Automation
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [automation, human factors]
+    - later: true
+- https://madrona-engine.github.io/shacklett_siggraph23.pdf -- An Extensible, Data-Oriented Architecture for High-Performance, Many-World Simulation
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [simulation, reinforcement learning]
+    - later: true
+- https://www-cdn.anthropic.com/564f962e60643842f5fcb4a17c9dbc8f608f1c37.pdf -- More Than Two Thirds of the Zeros of the Riemann Zeta Function Lie on the Critical Line
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [riemann zeta, mathematics]
+    - later: true
+- https://www-cdn.anthropic.com/23455459f8832d06bb175cc0f88d019aed962ef8.pdf -- 67% of the zeroes are on the line
+  - [meta]:
+    - date: 08/20/2026
+    - tags: [riemann zeta, mathematics]
+    - later: true
 - https://arxiv.org/abs/2511.13940 -- ParallelKittens: Systematic and Practical Simplification of Multi-GPU AI Kernels
   - [meta]:
     - date: 08/06/2026

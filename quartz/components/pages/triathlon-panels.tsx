@@ -175,6 +175,7 @@ export const GEAR: [string, string[]][] = [
     'swim',
     [
       'Suit: 2XU Trisuit',
+      'Suit: 2XU Wetsuit',
       'Goggles: Decathlon Anti-fog Swimming Goggles',
       'Goggles: Speedo Unisex Adult Swim Goggles Hydrospex Classic',
       'Cap: Speedo Unisex Adult Swim Cap Silicone',

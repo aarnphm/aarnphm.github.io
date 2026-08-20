@@ -5,14 +5,12 @@ import type { TriathlonPresentation } from '../../../util/triathlon-presentation
 import type { ActivityComparisonDragSelection } from './comparison-graph'
 import type { ActivityComparisonScrubState } from './comparison-graph'
 import type { ActivityComparisonSelectionRange } from './comparison-graph'
+import type { ActivityComparisonMapController } from './comparison-map'
 import { activityComparisonDisplayValueAtDistance } from '../../../util/triathlon-card'
-import { activityComparisonFractionForKey } from '../../../util/triathlon-card'
-import { activityComparisonMapPointAtDistance } from '../../../util/triathlon-card'
 import { activityComparisonMetricsForSport } from '../../../util/triathlon-card'
 import { activityGearRatioDistribution } from '../../../util/triathlon-card'
 import { activityPowerDistributionPercentages } from '../../../util/triathlon-card'
 import { activityZonePercentages } from '../../../util/triathlon-card'
-import { buildActivityComparisonProjection } from '../../../util/triathlon-card'
 import { decodePowerCurve } from '../../../util/triathlon-card'
 import { dlabel } from '../../../util/triathlon-card'
 import { nearestPowerCurveValue } from '../../../util/triathlon-card'
@@ -25,6 +23,7 @@ import { activityComparisonMetric } from './comparison-graph'
 import { activityComparisonMetricLabel } from './comparison-graph'
 import { bindActivityComparisonGraph } from './comparison-graph'
 import { positionActivityComparisonCursor } from './comparison-graph'
+import { mountActivityComparisonMap } from './comparison-map'
 
 export const wireActivityComparison = (
   presentation: TriathlonPresentation,
@@ -33,52 +32,23 @@ export const wireActivityComparison = (
 ): (() => void) => {
   const text = (key: string): string => triText(presentation.locale, key)
   const cleanups: (() => void)[] = []
-  const projection = buildActivityComparisonProjection(activities)
   const charts = Array.from(
     comparison.querySelectorAll<HTMLElement>('.tri-compare-chart[data-compare-chart]'),
   )
-  const chartScroller = comparison.querySelector<HTMLElement>('.tri-compare-charts')
-  let chartOverflowFrame = 0
-  const updateChartOverflow = () => {
-    if (!chartScroller) return
-    comparison.classList.toggle('tri-compare--top', chartScroller.scrollTop > 4)
-    comparison.classList.toggle(
-      'tri-compare--more',
-      chartScroller.scrollHeight - chartScroller.clientHeight - chartScroller.scrollTop > 4,
-    )
-  }
-  const scheduleChartOverflowUpdate = () => {
-    if (chartOverflowFrame !== 0) return
-    chartOverflowFrame = window.requestAnimationFrame(() => {
-      chartOverflowFrame = 0
-      updateChartOverflow()
-    })
-  }
-  const chartResize = new ResizeObserver(scheduleChartOverflowUpdate)
-  if (chartScroller) {
-    chartScroller.addEventListener('scroll', scheduleChartOverflowUpdate, { passive: true })
-    chartResize.observe(chartScroller)
-    for (const chart of charts) chartResize.observe(chart)
-    scheduleChartOverflowUpdate()
-    cleanups.push(() => {
-      chartScroller.removeEventListener('scroll', scheduleChartOverflowUpdate)
-      chartResize.disconnect()
-      if (chartOverflowFrame) window.cancelAnimationFrame(chartOverflowFrame)
-      comparison.classList.remove('tri-compare--top', 'tri-compare--more')
-    })
-  }
   const distanceCharts = charts.flatMap(chart => {
     const metric = activityComparisonMetric(chart.dataset.compareChart)
     const graph = chart.querySelector<SVGElement>('.tri-compare-graph')
     return metric && graph && Number(chart.dataset.available) > 0 ? [{ chart, graph, metric }] : []
   })
-  const map = comparison.querySelector<SVGSVGElement>('.tri-compare-map')
+  const map = comparison.querySelector<HTMLElement>('.tri-compare-map')
   const readout = comparison.querySelector<HTMLElement>('[data-compare-readout]')
   const maxDistanceKm = Number(
     map?.dataset.domainXMax ?? distanceCharts[0]?.graph.dataset.domainXMax ?? 0,
   )
-  const activeSources = new Map<SVGElement, () => void>()
-  let activeSource: SVGElement | null = null
+  const activeSources = new Map<Element, () => void>()
+  let activeSource: Element | null = null
+  let mapController: ActivityComparisonMapController | null = null
+  const hiddenActivities = new Set<string>()
 
   const setReadout = (
     mode:
@@ -110,22 +80,19 @@ export const wireActivityComparison = (
   const hide = () => {
     showChartCursors([])
     if (readout) readout.dataset.visible = 'false'
-    for (const cursor of comparison.querySelectorAll<SVGElement>(
-      '.tri-compare-route-cursor[data-activity-id]',
-    ))
-      cursor.setAttribute('data-visible', 'false')
+    mapController?.hideCursors()
   }
 
-  const activate = (source: SVGElement, restore: () => void) => {
+  const activate = (source: Element, restore: () => void) => {
     activeSources.set(source, restore)
   }
-  const render = (source: SVGElement, restore: () => void) => {
+  const render = (source: Element, restore: () => void) => {
     activeSources.delete(source)
     activeSources.set(source, restore)
     activeSource = source
     restore()
   }
-  const deactivate = (source: SVGElement) => {
+  const deactivate = (source: Element) => {
     activeSources.delete(source)
     if (activeSource !== source) return
     const previous = Array.from(activeSources.entries()).at(-1)
@@ -237,19 +204,7 @@ export const wireActivityComparison = (
         })
         .join('; ')}`,
     )
-    for (const route of projection.routes) {
-      const cursor = comparison.querySelector<SVGElement>(
-        `.tri-compare-route-cursor[data-activity-id="${route.activityId}"]`,
-      )
-      const point = activityComparisonMapPointAtDistance(route.pointSegments, distanceKm)
-      if (!cursor || !point) {
-        cursor?.setAttribute('data-visible', 'false')
-        continue
-      }
-      cursor.setAttribute('cx', point.x.toFixed(2))
-      cursor.setAttribute('cy', point.y.toFixed(2))
-      cursor.setAttribute('data-visible', 'true')
-    }
+    mapController?.showCursors(distanceKm)
   }
 
   for (const { graph } of distanceCharts)
@@ -269,91 +224,39 @@ export const wireActivityComparison = (
       ),
     )
 
-  if (map && Number(map.dataset.available) > 0) {
-    let frame = 0
-    let pending: PointerEvent | null = null
-    let pointerActive = false
-    let focused = false
+  if (map && Number(map.dataset.available) > 0 && maxDistanceKm > 0) {
     const restore = () => showDistance(distanceState.fraction)
-    const release = () => {
-      if (pointerActive || focused) return
-      pending = null
-      if (frame) {
-        window.cancelAnimationFrame(frame)
-        frame = 0
-      }
-      deactivate(map)
-    }
-    const onMapMove = (event: PointerEvent) => {
-      if (!pointerActive) {
-        pointerActive = true
-        activate(map, restore)
-      }
-      pending = event
-      if (frame) return
-      frame = window.requestAnimationFrame(() => {
-        frame = 0
-        if (!pending) return
-        const matrix = map.getScreenCTM()
-        if (!matrix) return
-        const pointer = new DOMPoint(pending.clientX, pending.clientY).matrixTransform(
-          matrix.inverse(),
-        )
-        if (!Number.isFinite(pointer.x) || !Number.isFinite(pointer.y)) return
-        let nearestDistanceKm: number | null = null
-        let nearestSquared = Infinity
-        for (const route of projection.routes)
-          for (const segment of route.pointSegments)
-            for (const point of segment) {
-              const squared = (point.x - pointer.x) ** 2 + (point.y - pointer.y) ** 2
-              if (squared >= nearestSquared) continue
-              nearestSquared = squared
-              nearestDistanceKm = point.distanceKm
-            }
-        if (nearestDistanceKm != null && maxDistanceKm > 0) {
-          distanceState.fraction = nearestDistanceKm / maxDistanceKm
-          render(map, restore)
-        }
-        pending = null
-      })
-    }
-    const onMapLeave = () => {
-      pointerActive = false
-      release()
-    }
-    const onMapFocus = () => {
-      focused = true
-      activate(map, restore)
-      render(map, restore)
-    }
-    const onMapBlur = () => {
-      focused = false
-      release()
-    }
-    const onMapKeyDown = (event: KeyboardEvent) => {
-      const next = activityComparisonFractionForKey(event.key, distanceState.fraction, 0.01)
-      if (next == null) return
-      event.preventDefault()
-      distanceState.fraction = Math.min(1, Math.max(0, next))
-      render(map, restore)
-    }
-    map.addEventListener('pointermove', onMapMove)
-    map.addEventListener('pointerleave', onMapLeave)
-    map.addEventListener('pointercancel', onMapLeave)
-    map.addEventListener('focus', onMapFocus)
-    map.addEventListener('blur', onMapBlur)
-    map.addEventListener('keydown', onMapKeyDown)
+    mapController = mountActivityComparisonMap(map, activities, {
+      unavailableText: text('map unavailable'),
+      onScrub: distanceKm => {
+        distanceState.fraction = Math.min(1, Math.max(0, distanceKm / maxDistanceKm))
+        render(map, restore)
+      },
+      onLeave: () => deactivate(map),
+    })
     cleanups.push(() => {
-      map.removeEventListener('pointermove', onMapMove)
-      map.removeEventListener('pointerleave', onMapLeave)
-      map.removeEventListener('pointercancel', onMapLeave)
-      map.removeEventListener('focus', onMapFocus)
-      map.removeEventListener('blur', onMapBlur)
-      map.removeEventListener('keydown', onMapKeyDown)
-      if (frame) window.cancelAnimationFrame(frame)
-      deactivate(map)
+      mapController?.destroy()
+      mapController = null
     })
   }
+
+  const onLegendToggle = (event: Event) => {
+    if (!(event.target instanceof Element)) return
+    const button = event.target.closest<HTMLButtonElement>('[data-compare-activity-toggle]')
+    const activityId = button?.dataset.compareActivityToggle
+    if (!button || !activityId) return
+    const visible = hiddenActivities.has(activityId)
+    if (visible) hiddenActivities.delete(activityId)
+    else hiddenActivities.add(activityId)
+    button.setAttribute('aria-pressed', String(visible))
+    for (const node of comparison.querySelectorAll<HTMLElement | SVGElement>(
+      `[data-activity-id="${activityId}"]`,
+    ))
+      node.setAttribute('data-compare-hidden', String(!visible))
+    mapController?.setVisible(activityId, visible)
+  }
+  comparison.addEventListener('click', onLegendToggle)
+  cleanups.push(() => comparison.removeEventListener('click', onLegendToggle))
 
   const curveChart = charts.find(chart => chart.dataset.compareChart === 'power-curve')
   const curveGraph = curveChart?.querySelector<SVGElement>('.tri-compare-graph')

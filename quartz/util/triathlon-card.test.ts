@@ -18,7 +18,6 @@ import {
   activityComparisonDisplayValueAtDistance as displayValueAtDistance,
   activityComparisonEligible,
   activityComparisonFractionForKey,
-  activityComparisonMapPointAtDistance,
   activityComparisonMetricAtDistance as metricAtDistance,
   activityComparisonMetricsForSport,
   activityGearRatioDistribution,
@@ -29,7 +28,6 @@ import {
   axisFrame,
   buildActivity,
   buildActivityComparison,
-  buildActivityComparisonProjection,
   buildCyclingBestEfforts,
   buildDayCard,
   buildElevation,
@@ -4788,7 +4786,7 @@ const comparisonChart = (root: Element, kind: string): Element => {
   return chart
 }
 
-test('projects offset activity routes through one geographic frame and preserves breaks', () => {
+test('counts route coverage for the comparison map from gapped map routes', () => {
   const first = comparisonActivity(201, {
     route: detail().route.map((point, index) => ({
       ...point,
@@ -4812,53 +4810,19 @@ test('projects offset activity routes through one geographic frame and preserves
       lat: 43.8 + index / 300,
       lng: -79.2 + index / 300,
     })),
-    mapRoute: [
-      [
-        { lat: 43.8, lng: -79.2, d: 0 },
-        { lat: 43.81, lng: -79.19, d: 30 },
-      ],
-    ],
+    mapRoute: [],
   })
-  const projection = buildActivityComparisonProjection([first, second])
+  const rendered = buildActivityComparison(factory, [first, second])
+  const map = byClass(rendered, 'tri-compare-map')[0]
 
-  assert.equal(projection.routes[0].paths.length, 2)
-  assert.equal(projection.routes[1].paths.length, 1)
-  assert.notEqual(projection.routes[0].paths[0], projection.routes[1].paths[0])
-  assert.notDeepEqual(
-    projection.routes[0].pointSegments[0][0],
-    projection.routes[1].pointSegments[0][0],
-  )
-  assert.equal(activityComparisonMapPointAtDistance(projection.routes[0].pointSegments, 15), null)
-  assert.ok(activityComparisonMapPointAtDistance(projection.routes[0].pointSegments, 5))
-  for (const route of projection.routes)
-    for (const point of route.pointSegments.flat()) {
-      assert.ok(point.x >= 0 && point.x <= projection.width)
-      assert.ok(point.y >= 0 && point.y <= projection.height)
-    }
+  assert.ok(map)
+  assert.equal(map.properties.dataAvailable, '2')
+  assert.equal(map.properties.dataDomainXMax, '30')
+  assert.equal(activityComparisonEligible(first), true)
+  assert.equal(activityComparisonEligible(second), true)
 
-  const fallback = { ...second, id: 203, mapRoute: [] }
-  const fallbackProjection = buildActivityComparisonProjection([fallback])
-  assert.equal(fallbackProjection.routes[0].paths.length, 1)
-  assert.equal(fallbackProjection.routes[0].pointSegments[0].length, fallback.route.length)
-
-  const telemetryOutlier = comparisonActivity(204, {
-    route: detail().route.map((point, index) => ({
-      ...point,
-      lat: index === 2 ? 44.2 : 43.6 + index * 0.01,
-      lng: index === 2 ? -78.2 : -79.4 + index * 0.01,
-    })),
-    mapRoute: [
-      [
-        { lat: 43.6, lng: -79.4, d: 0 },
-        { lat: 43.63, lng: -79.37, d: 30 },
-      ],
-    ],
-  })
-  const outlierProjection = buildActivityComparisonProjection([telemetryOutlier])
-  for (const point of outlierProjection.routes[0].pointSegments.flat()) {
-    assert.ok(point.x >= 0 && point.x <= outlierProjection.width)
-    assert.ok(point.y >= 0 && point.y <= outlierProjection.height)
-  }
+  const routeless = { ...second, id: 203, route: [], mapRoute: [] }
+  assert.equal(activityComparisonEligible(routeless), false)
 })
 
 test('formats only the active comparison metric and clamps keyboard navigation', () => {
@@ -5062,15 +5026,10 @@ test('renders every comparison graph with stable selectors, cursors, and readout
   assert.ok(mapPanel)
   assert.ok(mapStage)
   assert.ok(readout)
-  assert.equal(map.properties.ariaLabel, 'route overlay')
-  assert.equal(map.properties.dataI18nAriaLabel, 'route overlay')
-  assert.equal(map.properties.role, 'slider')
-  assert.equal(map.properties.tabIndex, 0)
-  assert.equal(map.properties.ariaOrientation, 'horizontal')
-  assert.equal(map.properties.ariaValueMin, 0)
-  assert.equal(map.properties.ariaValueMax, map.properties.dataDomainXMax)
-  assert.equal(map.properties.ariaValueNow, 0)
-  assert.equal(typeof map.properties.ariaValueText, 'string')
+  assert.equal(mapPanel.properties.ariaLabel, 'route overlay')
+  assert.equal(mapPanel.properties.dataI18nAriaLabel, 'route overlay')
+  assert.equal(map.properties.dataCompareMap, '')
+  assert.equal(map.properties.dataAvailable, '2')
   assert.equal(mapPanel.children.includes(mapStage), true)
   assert.equal(mapStage.children.includes(map), true)
   assert.equal(mapStage.children.includes(readout), true)
@@ -5105,15 +5064,9 @@ test('renders every comparison graph with stable selectors, cursors, and readout
     assert.equal(value.properties.dataCompareReadoutValue, '')
     assert.equal(text(row), '')
   }
-  assert.equal(byClass(rendered, 'tri-compare-route-line').length, 2)
-  assert.equal(byClass(rendered, 'tri-compare-route-cursor').length, 2)
-  for (const cursor of byClass(rendered, 'tri-compare-route-cursor')) {
-    assert.equal(cursor.properties.r, 0.55)
-  }
   for (const line of [
     ...byClass(rendered, 'tri-compare-line'),
     ...byClass(rendered, 'tri-compare-selection-line'),
-    ...byClass(rendered, 'tri-compare-route-line'),
   ]) {
     assert.notEqual(line.properties.dataActivityIndex, undefined)
     assert.equal(line.properties.strokeDasharray, undefined)
@@ -5217,7 +5170,6 @@ test('compares route-less pool swims on interval distance, pace, and stroke rate
     hrZones: [10, 30, 40, 20, 0],
   })
   const rendered = buildActivityComparison(factory, [first, second])
-  const projection = buildActivityComparisonProjection([first, second])
 
   assert.equal(activityComparisonEligible(first), true)
   assert.deepEqual(activityComparisonMetricsForSport('swim'), ['swim-pace', 'stroke-rate'])
@@ -5226,18 +5178,7 @@ test('compares route-less pool swims on interval distance, pace, and stroke rate
     byClass(rendered, 'tri-compare-chart').map(chart => chart.properties.dataCompareChart),
     ['swim-pace', 'stroke-rate', 'hr-zones'],
   )
-  assert.deepEqual(
-    projection.routes.map(route => [route.paths.length, route.pointSegments.length]),
-    [
-      [1, 1],
-      [1, 1],
-    ],
-  )
-  const map = byClass(rendered, 'tri-compare-map')[0]
-  assert.ok(map)
-  assert.equal(map.properties.dataAvailable, 2)
-  assert.equal(map.properties.dataDomainXMax, 0.1)
-  assert.equal(map.properties.role, 'slider')
+  assert.equal(byClass(rendered, 'tri-compare-map').length, 0)
   for (const kind of ['swim-pace', 'stroke-rate']) {
     const chart = comparisonChart(rendered, kind)
     assert.equal(chart.properties.dataAvailable, '2')
@@ -5282,7 +5223,7 @@ test('uses one absolute-distance and y domain for every activity line', () => {
     assert.equal(distanceGraph.properties.dataDomainXMin, 0)
     assert.equal(distanceGraph.properties.dataDomainXMax, 30)
   }
-  assert.equal(byClass(rendered, 'tri-compare-map')[0].properties.dataDomainXMax, 30)
+  assert.equal(byClass(rendered, 'tri-compare-map')[0].properties.dataDomainXMax, '30')
 })
 
 test('bounds dense comparison power curves on one logarithmic duration domain', () => {

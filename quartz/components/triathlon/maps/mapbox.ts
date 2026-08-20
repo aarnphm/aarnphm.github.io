@@ -9,6 +9,11 @@ export interface MapboxLayerEvent {
   point: { x: number; y: number }
 }
 
+export interface MapboxPointerEvent {
+  lngLat: { lng: number; lat: number }
+  point: { x: number; y: number }
+}
+
 export interface MapboxLayer {
   id: string
   type: string
@@ -38,6 +43,8 @@ export interface TriathlonMapboxMap {
   on(type: 'mousemove' | 'click', layer: string, listener: (event: MapboxLayerEvent) => void): void
   on(type: 'mouseleave', layer: string, listener: () => void): void
   on(type: 'moveend', listener: () => void): void
+  on(type: 'mousemove' | 'mouseout', listener: (event: MapboxPointerEvent) => void): void
+  setLayoutProperty(layer: string, property: string, value: unknown): void
   once(type: 'idle' | 'load' | 'style.load', listener: () => void): void
   queryRenderedFeatures(options: { layers: string[] }): MapboxFeature[]
   removeLayer(id: string): void

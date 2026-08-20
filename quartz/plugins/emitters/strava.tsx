@@ -13,6 +13,12 @@ import { TriathlonSubPage } from '../../components/pages/TriathlonSubPage'
 import { pageResources, renderPage } from '../../components/renderPage'
 import { QuartzComponentProps } from '../../types/component'
 import { QuartzEmitterPlugin } from '../../types/plugin'
+import {
+  defaultEmitterConcurrency,
+  defaultIoConcurrency,
+  mapConcurrent,
+} from '../../util/async-pool'
+import { hashContent } from '../../util/content-hash'
 import { BuildCtx, contentDataFor } from '../../util/ctx'
 import { FilePath, FullSlug, joinSegments, pathToRoot, QUARTZ } from '../../util/path'
 import { StaticResources } from '../../util/resources'
@@ -177,19 +183,19 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
   const Header = HeaderConstructor()
   const DayPage = TriathlonDayPage()
   let emittedTemporalSlugs = new Set<FullSlug>()
+  const dayRenderCache = new Map<FullSlug, string>()
 
-  async function emitAll(
+  async function* emitAll(
     ctx: BuildCtx,
     content: ProcessedContent[],
     resources: StaticResources,
-  ): Promise<FilePath[]> {
+  ): AsyncGenerator<FilePath> {
     const cache = await readCache()
     const oura = await readOura()
     const garmin = await readGarmin()
     const apple = await readApple()
     const core = await readCoreBodyTemperature()
     const weather = await readWeather()
-    const files: FilePath[] = []
     const nextTemporalSlugs = new Set<FullSlug>()
     const generateOgImage =
       ctx.argv.watch && !ctx.argv.force ? null : await createOgImageGenerator(ctx)
@@ -289,64 +295,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         matchedRides,
       }
       const detailArtifacts = serializeStravaDetails(detailPayload)
-      files.push(
-        ...(await Promise.all(
-          detailArtifacts.shards.map(shard =>
-            write({
-              ctx,
-              slug: `static/strava-detail/${shard.name}`,
-              ext: '.json',
-              content: shard.content,
-            }),
-          ),
-        )),
-      )
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/strava-detail' as FullSlug,
-          ext: '.json',
-          content: detailArtifacts.manifest,
-        }),
-      )
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/strava-activity-index' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify(buildStravaActivityIndex(payload.details)),
-        }),
-      )
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/analytics' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify(analytics),
-        }),
-      )
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/oura-detail' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify(oura?.details ?? {}),
-        }),
-      )
       const plans = parseTrainingPlans(tree as unknown as HtmlRoot)
       const triathlonRenderData: TriathlonRenderData = {
         analytics,
         plans,
         weather: weather?.current ?? null,
       }
-      files.push(
-        await write({
-          ctx,
-          slug: 'static/training' as FullSlug,
-          ext: '.json',
-          content: JSON.stringify({ plans }),
-        }),
-      )
       const dataFeed = buildDataFeed(cache, analytics, {
         oura,
         apple,
@@ -357,14 +311,47 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         zones: payload.zones,
       })
       await cacheDataFeed(dataFeed)
-      files.push(
-        await write({
+      yield* await Promise.all([
+        ...detailArtifacts.shards.map(shard =>
+          write({
+            ctx,
+            slug: `static/strava-detail/${shard.name}`,
+            ext: '.json',
+            content: shard.content,
+          }),
+        ),
+        write({
           ctx,
-          slug: 'static/triathlon/data' as FullSlug,
-          ext: '.jsonl',
-          content: dataFeed,
+          slug: 'static/strava-detail' as FullSlug,
+          ext: '.json',
+          content: detailArtifacts.manifest,
         }),
-      )
+        write({
+          ctx,
+          slug: 'static/strava-activity-index' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(buildStravaActivityIndex(payload.details)),
+        }),
+        write({
+          ctx,
+          slug: 'static/analytics' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(analytics),
+        }),
+        write({
+          ctx,
+          slug: 'static/oura-detail' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify(oura?.details ?? {}),
+        }),
+        write({
+          ctx,
+          slug: 'static/training' as FullSlug,
+          ext: '.json',
+          content: JSON.stringify({ plans }),
+        }),
+        write({ ctx, slug: 'static/triathlon/data' as FullSlug, ext: '.jsonl', content: dataFeed }),
+      ])
       const slug = file.data.slug!
       const externalResources = pageResources(pathToRoot(slug), resources, ctx)
       const componentData: QuartzComponentProps = {
@@ -382,7 +369,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         allFiles,
       }
       const html = renderPage(ctx, slug, componentData, opts, externalResources, false)
-      files.push(await write({ ctx, content: html, slug, ext: '.html' }))
+      yield await write({ ctx, content: html, slug, ext: '.html' })
 
       const renderSubPage = async (
         subSlug: FullSlug,
@@ -452,32 +439,19 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         ])
         return outputs
       }
-      files.push(
-        ...(
-          await Promise.all(
-            TRI_SUBVIEWS.map(view =>
-              renderSubPage(`triathlon/${view}` as FullSlug, view, `triathlon · ${view}`),
-            ),
-          )
-        ).flat(),
-      )
+      yield* (
+        await mapConcurrent(TRI_SUBVIEWS, defaultIoConcurrency, view =>
+          renderSubPage(`triathlon/${view}` as FullSlug, view, `triathlon · ${view}`),
+        )
+      ).flat()
 
       const feedRoutes = triathlonActivityFeedRoutes(payload.details)
       for (const { slug: feedSlug } of feedRoutes) nextTemporalSlugs.add(feedSlug)
-      files.push(
-        ...(
-          await Promise.all(
-            feedRoutes.map(({ slug: feedSlug, title }) =>
-              renderSubPage(
-                feedSlug,
-                'on',
-                title,
-                triathlonFeedScopeFromSlug(feedSlug)?.prefix ?? '',
-              ),
-            ),
-          )
-        ).flat(),
-      )
+      yield* (
+        await mapConcurrent(feedRoutes, defaultIoConcurrency, ({ slug: feedSlug, title }) =>
+          renderSubPage(feedSlug, 'on', title, triathlonFeedScopeFromSlug(feedSlug)?.prefix ?? ''),
+        )
+      ).flat()
 
       const dayRoutes = triathlonActivityDates(payload.details).flatMap(date => {
         const slug = triathlonDaySlug(date)
@@ -485,73 +459,88 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       })
       for (const { slug: daySlug } of dayRoutes) nextTemporalSlugs.add(daySlug)
       const location = file.data.frontmatter?.['location']
-      files.push(
-        ...(
-          await Promise.all(
-            dayRoutes.map(async ({ date, slug: daySlug }) => {
-              const title = `triathlon · ${date}`
-              const description = triathlonDescription(
-                'day',
-                payload.totalCount,
-                plans.length,
-                date,
-              )
-              const markdown = buildTriathlonMarkdown({
-                view: 'day',
-                slug: daySlug,
+      const dayRenderCacheEligible = ctx.argv.watch
+      const globalDayKey = dayRenderCacheEligible
+        ? hashContent({
+            payload: { ...payload, details: undefined, health: undefined },
+            maintenance,
+            location,
+            today: new Date().toISOString().slice(0, 10),
+          })
+        : ''
+      yield* (
+        await mapConcurrent(
+          dayRoutes,
+          defaultEmitterConcurrency,
+          async ({ date, slug: daySlug }) => {
+            if (dayRenderCacheEligible) {
+              const dayKey = hashContent({
+                activities: Object.entries(payload.details).filter(([, d]) => d.date === date),
+                health: payload.health[date] ?? null,
+                dailyAnalytics: dailyAnalytics[date] ?? null,
+                tracking: tracking?.days?.find(t => t.date === date) ?? null,
+                global: globalDayKey,
+              })
+              if (dayRenderCache.get(daySlug) === dayKey) return []
+              dayRenderCache.set(daySlug, dayKey)
+            }
+            const title = `triathlon · ${date}`
+            const description = triathlonDescription('day', payload.totalCount, plans.length, date)
+            const markdown = buildTriathlonMarkdown({
+              view: 'day',
+              slug: daySlug,
+              title,
+              description,
+              baseUrl: ctx.cfg.configuration.baseUrl,
+              scopePrefix: date,
+              dataFeed,
+              analytics,
+              payload,
+              plans,
+              tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
+            })
+            const [dayTree, dayFile] = defaultProcessedContent({
+              slug: daySlug,
+              filePath: file.data.filePath,
+              tracking: file.data.tracking,
+              text: description,
+              rawDescription: description,
+              frontmatter: {
                 title,
                 description,
-                baseUrl: ctx.cfg.configuration.baseUrl,
-                scopePrefix: date,
-                dataFeed,
-                analytics,
-                payload,
-                plans,
-                tools: { conversions: CONVERSIONS, gear: GEAR, maintenance },
-              })
-              const [dayTree, dayFile] = defaultProcessedContent({
-                slug: daySlug,
-                filePath: file.data.filePath,
-                tracking: file.data.tracking,
-                text: description,
-                rawDescription: description,
-                frontmatter: {
-                  title,
-                  description,
-                  socialDescription: description,
-                  generatedSocialImage: true,
-                  pageLayout: 'triathlon',
-                  tags: [],
-                  ...(typeof location === 'string' ? { location } : {}),
-                },
-              })
-              const dayResources = pageResources(pathToRoot(daySlug), resources, ctx)
-              const dayData: QuartzComponentProps = {
-                ctx,
-                fileData: { ...dayFile.data, stravaPayload: payload },
-                externalResources: dayResources,
-                cfg: ctx.cfg.configuration,
-                children: [],
-                tree: dayTree as Node,
-                allFiles,
-              }
-              const dayHtml = renderPage(
-                ctx,
-                daySlug,
-                dayData,
-                { ...opts, pageBody: DayPage },
-                dayResources,
-                true,
-              )
-              return Promise.all([
-                write({ ctx, content: dayHtml, slug: daySlug, ext: '.html' }),
-                write({ ctx, content: markdown, slug: daySlug, ext: '.md' }),
-                ...(queueOgImage ? [queueOgImage(dayFile.data)] : []),
-              ])
-            }),
-          )
-        ).flat(),
-      )
+                socialDescription: description,
+                generatedSocialImage: true,
+                pageLayout: 'triathlon',
+                tags: [],
+                ...(typeof location === 'string' ? { location } : {}),
+              },
+            })
+            const dayResources = pageResources(pathToRoot(daySlug), resources, ctx)
+            const dayData: QuartzComponentProps = {
+              ctx,
+              fileData: { ...dayFile.data, stravaPayload: payload },
+              externalResources: dayResources,
+              cfg: ctx.cfg.configuration,
+              children: [],
+              tree: dayTree as Node,
+              allFiles,
+            }
+            const dayHtml = renderPage(
+              ctx,
+              daySlug,
+              dayData,
+              { ...opts, pageBody: DayPage },
+              dayResources,
+              true,
+            )
+            return Promise.all([
+              write({ ctx, content: dayHtml, slug: daySlug, ext: '.html' }),
+              write({ ctx, content: markdown, slug: daySlug, ext: '.md' }),
+              ...(queueOgImage ? [queueOgImage(dayFile.data)] : []),
+            ])
+          },
+        )
+      ).flat()
     }
     await Promise.all(
       [...emittedTemporalSlugs]
@@ -563,7 +552,6 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         ]),
     )
     emittedTemporalSlugs = nextTemporalSlugs
-    return files
   }
 
   return {
@@ -582,12 +570,12 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       ]
     },
     async *emit(ctx, content, resources) {
-      yield* await emitAll(ctx, content, resources)
+      yield* emitAll(ctx, content, resources)
     },
     async *partialEmit(ctx, content, resources, changeEvents) {
       const touched = changeEvents.some(event => event.file && isTriathlon(event.file.data))
       if (!touched) return
-      yield* await emitAll(ctx, content, resources)
+      yield* emitAll(ctx, content, resources)
     },
   }
 }
