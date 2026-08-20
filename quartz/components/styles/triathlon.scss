@@ -2659,7 +2659,8 @@
 
 .tri-maintenance-entry-label {
   color: var(--gray);
-  white-space: nowrap;
+  text-wrap: balance;
+  white-space: normal;
 }
 
 .tri-maintenance-entry-name {

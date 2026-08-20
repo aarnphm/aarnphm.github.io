@@ -9,6 +9,7 @@ import type { DetailPayload } from './data'
 import { activityStatRows } from '../../../util/triathlon-card'
 import { activityHeartRateTracePoints } from '../../../util/triathlon-card'
 import { activityThermalTracePoints } from '../../../util/triathlon-card'
+import { activityTraceUsesElapsedAxis } from '../../../util/triathlon-card'
 import { activityTrainingEffectLabel } from '../../../util/triathlon-card'
 import { buildActivity as buildActivityNode } from '../../../util/triathlon-card'
 import { buildCoreTemperatureTrace as buildCoreTemperatureTraceNode } from '../../../util/triathlon-card'
@@ -949,7 +950,7 @@ export const renderDetail = (
   const heartRatePoints = activityHeartRateTracePoints(d)
   const thermalPoints = activityThermalTracePoints(d)
   const tracePosition = (point: { d: number; elapsedS: number }): string =>
-    d.route.length < 2 && d.sport !== 'swim'
+    activityTraceUsesElapsedAxis(d)
       ? zoneClock(point.elapsedS)
       : scrubDist(presentation, point.d, d.sport)
   for (const trace of wrap.querySelectorAll<HTMLElement>('[data-tri-trace]')) {

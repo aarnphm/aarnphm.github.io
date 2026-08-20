@@ -586,6 +586,9 @@ export function normalizeKind(sportType: string): ActivityKind | null {
     case 'Yoga':
     case 'Pilates':
       return 'yoga'
+    case 'PhysicalTherapy':
+    case 'Physiotherapy':
+      return 'treatment'
     default:
       return normalizeSport(sportType)
   }
@@ -1660,7 +1663,6 @@ function projectRouteLessHeartRateTrace(
   streams: StravaStreams | GarminStreams | undefined,
   heartRate: ActivityHeartRate,
 ): ActivityHeartRateTracePoint[] {
-  if (sport !== 'swim' && sport !== 'strength' && sport !== 'yoga') return []
   const time = streams?.time
   const values = heartRate.stream
   if (!time || time.length < 2 || time.length !== values.length) return []

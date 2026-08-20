@@ -71,6 +71,8 @@ const renderData: TriathlonRenderData = {
 }
 
 const maintenance: TriathlonMaintenance = {
+  services: [],
+  components: [],
   chains: [
     { id: '3', distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
   ],

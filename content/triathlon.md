@@ -54,6 +54,25 @@ events:
 id: triathlon
 layout: triathlon
 maintenance:
+  OSPW:
+    - - type: Ultegra R8100 Pulley Wheel
+      - distance: 1335.0 mile
+      - range:
+          - end: '2026-08-10'
+            start: '2026-05-16'
+      - reason: upgrades to CeramicSpeed OSPW
+    - - type: CeramicSpeed OSPW RS 5 Spoke
+      - distance: null
+      - range:
+          - end: null
+            start: '2026-08-10'
+  bottom bracket:
+    - - type: FSA, T47 BBright for 24mm spindle
+      - distance: 1721.5 mile
+      - range:
+          - end: '2026-08-20'
+            start: '2026-05-16'
+      - reason: upgrades to CeramicSpeed
   chain:
     '1':
       distance: 621 mile
@@ -70,6 +89,12 @@ maintenance:
       lubricant: UFO Wax Drip-On
       since: '2026-08-10'
       waxed: true
+  service:
+    soloist:
+      - date: '2026-08-20'
+        distance: 1721.5 mile
+        place: Racer Sportif
+    speedmax: null
   tires:
     front:
       tires:
@@ -138,7 +163,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-18 21:47:53 GMT-04:00
+modified: 2026-08-20 01:00:28 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1044,6 +1069,12 @@ fueling: 10
 date: 2026-08-18
 activity: 19802043819
 fueling: 300
+```
+
+```tracking
+date: 2026-08-19
+activity: 19817157027
+fueling: 150
 ```
 
 <!-- training plan start

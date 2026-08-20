@@ -24,6 +24,7 @@ import {
   enrichCalculatedIntensityFactors,
   enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
+  enrichRouteLessHeartRate,
   enrichRunDynamics,
   enrichSwimMetrics,
   garminCachePath,
@@ -228,6 +229,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         }
       enrichSwimMetrics(payload, apple)
       enrichRunDynamics(payload, apple)
+      enrichRouteLessHeartRate(payload, apple)
       enrichCoreBodyTemperature(payload, core)
       const detailActivityIds = new Set(Object.keys(payload.details))
       const matchedActivities = cache

@@ -97,6 +97,25 @@ const options = (
       conversions: [['pace', '/100m x 16.09 -> /mi']],
       gear: [['bike', ['Cervelo Soloist']]],
       maintenance: {
+        services: [
+          { bike: 'soloist', date: '2026-08-20', distance: '1721.5 mile', place: 'Racer Sportif' },
+        ],
+        components: [
+          {
+            component: 'OSPW',
+            type: 'CeramicSpeed OSPW RS 5 Spoke',
+            distance: null,
+            ranges: [{ start: '2026-08-10', end: null }],
+            reason: null,
+          },
+          {
+            component: 'bottom bracket',
+            type: 'FSA T47 BBright',
+            distance: '1721.5 mile',
+            ranges: [{ start: '2026-05-16', end: '2026-08-20' }],
+            reason: 'upgraded to CeramicSpeed',
+          },
+        ],
         chains: [
           {
             id: '3',
@@ -148,6 +167,15 @@ test('turns generated training HTML and tool constants into markdown', () => {
   assert.match(training, /\| Monday \| Swim<br>easy \|/)
   assert.match(tools, /\| distance \| swim km \| bike km \| run km \|/)
   assert.match(tools, /## maintenance/)
+  assert.match(tools, /### service\n\n- soloist: 2026-08-20; Racer Sportif; 1721.5 mile/)
+  assert.match(
+    tools,
+    /### components\n\n- OSPW: CeramicSpeed OSPW RS 5 Spoke; 2026-08-10 to current/,
+  )
+  assert.match(
+    tools,
+    /- bottom bracket: FSA T47 BBright; 2026-05-16 to 2026-08-20; 1721.5 mile; reason: upgraded to CeramicSpeed/,
+  )
   assert.match(tools, /chain 3: UFO Wax Drip-On; since 2026-08-10; waxed yes/)
   assert.match(
     tools,

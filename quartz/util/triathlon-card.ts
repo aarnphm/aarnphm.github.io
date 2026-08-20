@@ -353,7 +353,11 @@ export type ActivityThermalTracePoint = {
 const routeLessTraceDistance = (
   d: StravaActivityDetail,
   point: StravaActivityDetail['heartRateTrace'][number],
-): number => (d.sport === 'swim' ? point.distanceKm : point.elapsedS)
+): number => (activityTraceUsesElapsedAxis(d) ? point.elapsedS : point.distanceKm)
+
+export const activityTraceUsesElapsedAxis = (d: StravaActivityDetail): boolean =>
+  d.route.length < 2 &&
+  (d.sport !== 'swim' || !d.heartRateTrace.some(point => point.distanceKm > 0))
 
 export const activityThermalTracePoints = (d: StravaActivityDetail): ActivityThermalTracePoint[] =>
   d.route.length >= 2
@@ -1077,7 +1081,7 @@ const buildTraceSeries = <N, P extends { d: number; elapsedS: number }>(
     vbY: py(value),
   }))
   const view = graphViewForDistance(maxD, graphDomain)
-  const usesElapsedAxis = d.route.length < 2 && d.sport !== 'swim'
+  const usesElapsedAxis = activityTraceUsesElapsedAxis(d)
   const s = f.svg('svg', {
     class: 'tri-elev',
     viewBox: `${view.start.toFixed(4)} 0 ${view.width.toFixed(4)} ${h}`,
@@ -1198,10 +1202,9 @@ export const buildHeartRateTrace = <N>(
   graphDomain?: ActivityGraphDomain | null,
 ): N => {
   const points = activityHeartRateTracePoints(d)
-  const maximum = Math.max(
-    HEART_RATE_TRACE_MIN_BPM + 20,
-    ...points.flatMap(point => (point.heartRate == null ? [] : [point.heartRate])),
-  )
+  const heartRates = points.flatMap(point => (point.heartRate == null ? [] : [point.heartRate]))
+  const minimum = Math.min(HEART_RATE_TRACE_MIN_BPM, Math.floor(Math.min(...heartRates) / 10) * 10)
+  const maximum = Math.max(minimum + 20, ...heartRates)
   return buildTraceSeries(
     f,
     d,
@@ -1210,7 +1213,7 @@ export const buildHeartRateTrace = <N>(
     'hr',
     peak => `${peak} bpm peak`,
     value => `${Math.round(value)}bpm`,
-    { min: HEART_RATE_TRACE_MIN_BPM, max: maximum, intervals: 4 },
+    { min: minimum, max: maximum, intervals: 4 },
     selection,
     graphDomain,
   )

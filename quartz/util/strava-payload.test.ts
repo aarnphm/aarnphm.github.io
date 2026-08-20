@@ -17,6 +17,7 @@ import {
   enrichCalculatedIntensityFactors,
   enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
+  enrichRouteLessHeartRate,
   enrichRunDynamics,
   enrichSwimMetrics,
   swimActivityIntervals,
@@ -204,6 +205,60 @@ test('aligns native Apple running dynamics to the matching run route', () => {
       { strideLengthM: 1.18, groundContactTimeMs: 241, verticalOscillationCm: 9.8 },
       { strideLengthM: 1.21, groundContactTimeMs: 238, verticalOscillationCm: 9.6 },
       { strideLengthM: null, groundContactTimeMs: null, verticalOscillationCm: null },
+    ],
+  )
+})
+
+test('enriches a route-less treatment with sparse Apple heart rate samples', () => {
+  const start = '2026-07-27T20:15:24Z'
+  const treatment = detail({
+    sport: 'treatment',
+    name: 'Post race full body physio',
+    start,
+    movingTimeS: 1_291,
+    avgHr: null,
+    maxHr: null,
+    route: [],
+    heartRateTrace: [],
+  })
+  const workout: AppleWorkout = {
+    id: 'apple-physio',
+    activity: 'other',
+    start,
+    end: '2026-07-27T20:36:55Z',
+    durationS: 1_291,
+    averageHeartRateBpm: 63,
+    source: 'Strava',
+    heartRate: [
+      { time: '2026-07-27T20:18:55.096Z', bpm: 60 },
+      { time: '2026-07-27T20:22:37Z', bpm: 62 },
+      { time: '2026-07-27T20:22:55Z', bpm: 67 },
+      { time: '2026-07-27T20:23:01Z', bpm: 64 },
+    ],
+  }
+  const payload = payloadWith(treatment)
+
+  enrichRouteLessHeartRate(payload, {
+    version: 9,
+    lastSync: 1,
+    days: {},
+    workouts: { [workout.id]: workout },
+  })
+
+  assert.equal(treatment.avgHr, 63)
+  assert.equal(treatment.maxHr, 67)
+  assert.deepEqual(
+    treatment.heartRateTrace.map(point => ({
+      elapsedS: point.elapsedS,
+      heartRate: point.heartRate,
+    })),
+    [
+      { elapsedS: 0, heartRate: null },
+      { elapsedS: 211.1, heartRate: 60 },
+      { elapsedS: 433, heartRate: 62 },
+      { elapsedS: 451, heartRate: 67 },
+      { elapsedS: 457, heartRate: 64 },
+      { elapsedS: 1_291, heartRate: null },
     ],
   )
 })

@@ -1,5 +1,10 @@
 import { readFileSync, statSync } from 'node:fs'
-import type { AppleCache, AppleRunningDynamicsSample, AppleSwim } from '../plugins/stores/apple'
+import type {
+  AppleCache,
+  AppleRunningDynamicsSample,
+  AppleSwim,
+  AppleWorkout,
+} from '../plugins/stores/apple'
 import type { GarminCache } from '../plugins/stores/garmin'
 import type { OuraCache } from '../plugins/stores/oura'
 import type { ManualFuelingEntry, ManualStrengthEntry } from '../plugins/stores/tracking'
@@ -330,6 +335,136 @@ export function enrichRunDynamics(payload: StravaPayload, apple: AppleCache | nu
   }
 }
 
+const APPLE_WORKOUT_START_TOLERANCE_MS = 5 * 60 * 1_000
+const APPLE_HEART_RATE_TRACE_LIMIT = 140
+
+type TimedAppleHeartRate = { elapsedS: number; heartRate: number }
+
+function appleHeartRateSamples(
+  detail: StravaActivityDetail,
+  workout: AppleWorkout,
+): TimedAppleHeartRate[] {
+  const startMs = Date.parse(detail.start)
+  if (!Number.isFinite(startMs) || detail.movingTimeS <= 0) return []
+  const endMs = startMs + detail.movingTimeS * 1_000
+  const samples = new Map<number, number>()
+  for (const sample of workout.heartRate) {
+    const timeMs = Date.parse(sample.time)
+    if (
+      !Number.isFinite(timeMs) ||
+      timeMs < startMs ||
+      timeMs > endMs ||
+      !Number.isFinite(sample.bpm) ||
+      sample.bpm <= 0
+    )
+      continue
+    samples.set(Math.round((timeMs - startMs) / 100) / 10, Math.round(sample.bpm))
+  }
+  return [...samples]
+    .map(([elapsedS, heartRate]) => ({ elapsedS, heartRate }))
+    .sort((left, right) => left.elapsedS - right.elapsedS)
+}
+
+function sampleAppleHeartRate(samples: TimedAppleHeartRate[]): TimedAppleHeartRate[] {
+  if (samples.length <= APPLE_HEART_RATE_TRACE_LIMIT) return samples
+  const stride = Math.ceil(samples.length / APPLE_HEART_RATE_TRACE_LIMIT)
+  let peakIndex = 0
+  for (let index = 1; index < samples.length; index++)
+    if (samples[index].heartRate > samples[peakIndex].heartRate) peakIndex = index
+  const indices = new Set<number>([0, samples.length - 1, peakIndex])
+  for (let index = 0; index < samples.length; index += stride) indices.add(index)
+  return [...indices].sort((left, right) => left - right).map(index => samples[index])
+}
+
+function matchingAppleHeartRate(
+  detail: StravaActivityDetail,
+  workouts: readonly AppleWorkout[],
+): { workout: AppleWorkout; samples: TimedAppleHeartRate[] } | null {
+  const startMs = Date.parse(detail.start)
+  if (!Number.isFinite(startMs)) return null
+  const candidates = workouts
+    .map(workout => ({
+      workout,
+      startDiffMs: Math.abs(Date.parse(workout.start) - startMs),
+      samples: appleHeartRateSamples(detail, workout),
+    }))
+    .filter(
+      candidate =>
+        Number.isFinite(candidate.startDiffMs) &&
+        candidate.startDiffMs <= APPLE_WORKOUT_START_TOLERANCE_MS &&
+        candidate.samples.length >= 2,
+    )
+    .sort(
+      (left, right) =>
+        left.startDiffMs - right.startDiffMs ||
+        right.samples.length - left.samples.length ||
+        left.workout.id.localeCompare(right.workout.id),
+    )
+  return candidates[0] ?? null
+}
+
+export function enrichRouteLessHeartRate(payload: StravaPayload, apple: AppleCache | null): void {
+  const workouts = Object.values(apple?.workouts ?? {})
+  if (workouts.length === 0) return
+  for (const detail of Object.values(payload.details)) {
+    if (
+      !detail ||
+      detail.route.length >= 2 ||
+      detail.heartRateTrace.filter(point => point.heartRate != null).length >= 2
+    )
+      continue
+    const match = matchingAppleHeartRate(detail, workouts)
+    if (!match) continue
+    const samples = sampleAppleHeartRate(match.samples)
+    detail.heartRateTrace = [
+      ...(samples[0].elapsedS > 0
+        ? [
+            {
+              distanceKm: 0,
+              elapsedS: 0,
+              heartRate: null,
+              heatStrainIndex: null,
+              coreTemperatureC: null,
+              skinTemperatureC: null,
+              coreTemperatureSource: null,
+            },
+          ]
+        : []),
+      ...samples.map(sample => ({
+        distanceKm: 0,
+        elapsedS: sample.elapsedS,
+        heartRate: sample.heartRate,
+        heatStrainIndex: null,
+        coreTemperatureC: null,
+        skinTemperatureC: null,
+        coreTemperatureSource: null,
+      })),
+      ...(samples.at(-1)?.elapsedS !== detail.movingTimeS
+        ? [
+            {
+              distanceKm: 0,
+              elapsedS: detail.movingTimeS,
+              heartRate: null,
+              heatStrainIndex: null,
+              coreTemperatureC: null,
+              skinTemperatureC: null,
+              coreTemperatureSource: null,
+            },
+          ]
+        : []),
+    ]
+    detail.avgHr ??=
+      match.workout.averageHeartRateBpm != null &&
+      Number.isFinite(match.workout.averageHeartRateBpm) &&
+      match.workout.averageHeartRateBpm > 0
+        ? Math.round(match.workout.averageHeartRateBpm)
+        : Math.round(
+            samples.reduce((total, sample) => total + sample.heartRate, 0) / samples.length,
+          )
+    detail.maxHr ??= Math.max(...samples.map(sample => sample.heartRate))
+  }
+}
+
 const CORE_SAMPLE_MAX_DISTANCE_S = 90
 
 type CoreMetric = 'coreTemperatureC' | 'skinTemperatureC' | 'heatStrainIndex'
@@ -436,6 +571,7 @@ export function loadStravaPayloadSync(
     applyManualStrength(payload, manualStrength)
     enrichSwimMetrics(payload, apple)
     enrichRunDynamics(payload, apple)
+    enrichRouteLessHeartRate(payload, apple)
     enrichCoreBodyTemperature(payload, core)
     const analytics = buildAnalytics(strava, {
       ...analyticsInputs,
