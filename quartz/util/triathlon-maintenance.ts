@@ -16,6 +16,21 @@ export interface TriathlonMaintenanceRange {
   end: string | null
 }
 
+export interface TriathlonComponentMaintenance {
+  component: string
+  type: string
+  distance: string | null
+  ranges: TriathlonMaintenanceRange[]
+  reason: string | null
+}
+
+export interface TriathlonServiceMaintenance {
+  bike: string
+  date: string
+  distance: string | null
+  place: string
+}
+
 export interface TriathlonWheelMaintenance {
   position: TriathlonMaintenancePosition
   part: TriathlonMaintenancePart
@@ -27,6 +42,8 @@ export interface TriathlonWheelMaintenance {
 }
 
 export interface TriathlonMaintenance {
+  services: TriathlonServiceMaintenance[]
+  components: TriathlonComponentMaintenance[]
   chains: TriathlonChainMaintenance[]
   wheels: TriathlonWheelMaintenance[]
 }
@@ -86,6 +103,77 @@ const parseRanges = (record: UnknownRecord): TriathlonMaintenanceRange[] | null 
 
   const range = parseRange(record)
   return range ? [range] : null
+}
+
+const sortByCurrentUse = <T extends { ranges: TriathlonMaintenanceRange[] }>(entries: T[]): T[] =>
+  entries.sort((left, right) => {
+    const leftCurrent = left.ranges.some(range => range.end === null)
+    const rightCurrent = right.ranges.some(range => range.end === null)
+    if (leftCurrent && !rightCurrent) return -1
+    if (!leftCurrent && rightCurrent) return 1
+    const leftLatest = left.ranges[left.ranges.length - 1]
+    const rightLatest = right.ranges[right.ranges.length - 1]
+    return rightLatest.start.localeCompare(leftLatest.start)
+  })
+
+const parseComponentEntry = (
+  component: string,
+  value: unknown,
+): TriathlonComponentMaintenance | null => {
+  const record = mergeMaintenanceFields(value)
+  if (!record) return null
+  const type = record.type
+  const distance = nullableString(record, 'distance')
+  const ranges = parseRanges(record)
+  const reason = record.reason
+  if (
+    typeof type !== 'string' ||
+    distance === undefined ||
+    !ranges ||
+    (reason !== undefined && reason !== null && typeof reason !== 'string')
+  ) {
+    return null
+  }
+  return { component, type, distance, ranges, reason: typeof reason === 'string' ? reason : null }
+}
+
+const isReservedMaintenanceSection = (section: string): boolean =>
+  section === 'chain' || section === 'service' || section === 'tires'
+
+const parseComponents = (value: UnknownRecord): TriathlonComponentMaintenance[] => {
+  const components: TriathlonComponentMaintenance[] = []
+  for (const [component, records] of Object.entries(value)) {
+    if (isReservedMaintenanceSection(component) || !Array.isArray(records)) continue
+    const entries: TriathlonComponentMaintenance[] = []
+    for (const raw of records) {
+      const entry = parseComponentEntry(component, raw)
+      if (entry) entries.push(entry)
+    }
+    components.push(...sortByCurrentUse(entries))
+  }
+  return components
+}
+
+const parseServiceEntry = (bike: string, value: unknown): TriathlonServiceMaintenance | null => {
+  if (!isRecord(value)) return null
+  const date = value.date
+  const distance = nullableString(value, 'distance')
+  const place = value.place
+  if (typeof date !== 'string' || distance === undefined || typeof place !== 'string') return null
+  return { bike, date, distance, place }
+}
+
+const parseServices = (value: unknown): TriathlonServiceMaintenance[] => {
+  if (!isRecord(value)) return []
+  const services: TriathlonServiceMaintenance[] = []
+  for (const [bike, records] of Object.entries(value)) {
+    if (!Array.isArray(records)) continue
+    for (const raw of records) {
+      const service = parseServiceEntry(bike, raw)
+      if (service) services.push(service)
+    }
+  }
+  return services.sort((left, right) => right.date.localeCompare(left.date))
 }
 
 const parseWheelEntry = (
@@ -151,20 +239,16 @@ const parseWheels = (value: unknown): TriathlonWheelMaintenance[] => {
       }
     }
   }
-  return entries.sort((left, right) => {
-    const leftCurrent = left.ranges.some(range => range.end === null)
-    const rightCurrent = right.ranges.some(range => range.end === null)
-    if (leftCurrent && !rightCurrent) return -1
-    if (!leftCurrent && rightCurrent) return 1
-    const leftLatest = left.ranges[left.ranges.length - 1]
-    const rightLatest = right.ranges[right.ranges.length - 1]
-    return rightLatest.start.localeCompare(leftLatest.start)
-  })
+  return sortByCurrentUse(entries)
 }
 
 export const parseTriathlonMaintenance = (value: unknown): TriathlonMaintenance | null => {
   if (!isRecord(value)) return null
+  const services = parseServices(value.service)
+  const components = parseComponents(value)
   const chains = parseChains(value.chain)
   const wheels = parseWheels(value.tires)
-  return chains.length > 0 || wheels.length > 0 ? { chains, wheels } : null
+  return services.length > 0 || components.length > 0 || chains.length > 0 || wheels.length > 0
+    ? { services, components, chains, wheels }
+    : null
 }

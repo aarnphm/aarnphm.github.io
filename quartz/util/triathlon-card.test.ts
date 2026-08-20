@@ -1332,6 +1332,46 @@ test('renders route-less strength heart rate against elapsed time', () => {
   assert.equal(graph?.properties.dataDomainStartDistanceKm, undefined)
 })
 
+test('renders route-less treatment heart rate when samples are available', () => {
+  const rendered = buildActivity(
+    factory,
+    detail({
+      sport: 'treatment',
+      distanceKm: 0,
+      movingTimeS: 1_291,
+      route: [],
+      heartRateTrace: [
+        heartRateTracePoint(0, 0, null),
+        heartRateTracePoint(0, 211, 60),
+        heartRateTracePoint(0, 433, 62),
+        heartRateTracePoint(0, 451, 67),
+        heartRateTracePoint(0, 457, 64),
+        heartRateTracePoint(0, 1_291, null),
+      ],
+      bestEfforts: null,
+    }),
+    true,
+  )
+  const trace = byClass(rendered, 'tri-elev-wrap').find(
+    element => element.properties.dataTriTrace === 'hr',
+  )
+
+  assert.ok(trace)
+  assert.deepEqual(byClass(trace, 'tri-cax-yt').map(text), [
+    '60bpm',
+    '65bpm',
+    '70bpm',
+    '75bpm',
+    '80bpm',
+  ])
+  assert.deepEqual(byClass(trace, 'tri-cax-xt').map(text), ['0s', '10:46', '21:31'])
+  assert.match(String(byClass(trace, 'tri-elev-line')[0]?.properties.d), / 27\.10 /)
+  assert.match(String(byClass(trace, 'tri-elev-line')[0]?.properties.d), / 19\.85 /)
+  const graph = byTag(trace, 'svg')[0]
+  assert.equal(graph?.properties.dataDomainStartElapsedS, 0)
+  assert.equal(graph?.properties.dataDomainEndElapsedS, 1_291)
+})
+
 test('renders route-less yoga heart rate and CORE thermal traces against elapsed time', () => {
   const yoga = detail({
     sport: 'yoga',

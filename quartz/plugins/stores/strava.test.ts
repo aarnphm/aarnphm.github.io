@@ -282,6 +282,50 @@ test('projects a time-aligned heart rate trace for route-less yoga', () => {
   )
 })
 
+test('projects a time-aligned heart rate trace for route-less treatment', () => {
+  const cache: StravaRawCache = {
+    version: 2,
+    athleteId: 1,
+    auth: { refreshToken: '', obtainedAt: Date.now() },
+    lastSync: Date.parse('2026-06-08T00:00:00Z'),
+    lastActivityStart: Math.floor(Date.parse('2026-06-07T11:29:55Z') / 1000),
+    activities: {
+      101: ride({
+        name: 'Post-race physio',
+        sportType: 'PhysicalTherapy',
+        distance: 0,
+        movingTime: 90,
+        elapsedTime: 90,
+      }),
+    },
+    streams: {
+      101: {
+        time: [0, 30, 60, 90],
+        latlng: [],
+        altitude: [],
+        distance: [],
+        heartrate: [90, 110, 0, 130],
+      },
+    },
+  }
+
+  const activity = buildPayload(cache, null, null, '2026-06-01').details['101']
+
+  assert.equal(activity.sport, 'treatment')
+  assert.deepEqual(
+    activity.heartRateTrace.map(point => ({
+      elapsedS: point.elapsedS,
+      heartRate: point.heartRate,
+    })),
+    [
+      { elapsedS: 0, heartRate: 90 },
+      { elapsedS: 30, heartRate: 110 },
+      { elapsedS: 60, heartRate: null },
+      { elapsedS: 90, heartRate: 130 },
+    ],
+  )
+})
+
 test('preserves the recorded peak when sampling route-less heart rate', () => {
   const sampleCount = 294
   const heartrate = Array.from({ length: sampleCount }, () => 100)
