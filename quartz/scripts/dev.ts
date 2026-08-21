@@ -60,7 +60,7 @@ const modelArchiveRoot = path.join(gitRoot, '.models-archive')
 const publicRoot = path.join(gitRoot, 'public')
 const crashReportDir = path.join(gitRoot, '.quartz-cache', 'crash-reports')
 const quartzChildNodeOptions = [
-  '--max-old-space-size=8192',
+  '--max-old-space-size=16384',
   '--report-on-fatalerror',
   `--report-directory=${crashReportDir}`,
 ].join(' ')
