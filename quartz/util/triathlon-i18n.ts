@@ -1784,12 +1784,10 @@ export const vo2SourceText = (
 ): string => {
   if (method === 'garmin')
     return target === 'fr'
-      ? "Cette valeur vient de Garmin Connect ou d'une saisie manuelle."
-      : 'This value comes from Garmin Connect or a manual entry.'
+      ? "Garmin Connect ou d'une saisie manuelle."
+      : 'Garmin Connect or manual entry.'
   if (method === 'apple')
-    return target === 'fr'
-      ? "Cette mesure vient de l'Apple Watch."
-      : 'This is an Apple Watch measurement.'
+    return target === 'fr' ? "Cette mesure vient de l'Apple Watch." : 'Apple Watch measurement.'
   if (method === 'run')
     return target === 'fr'
       ? 'Cette estimation utilise la vitesse de course et la fréquence cardiaque.'
