@@ -327,6 +327,7 @@ export interface ActivityAnalysisRange {
   startDistanceKm: number
   endDistanceKm: number
   durationS: number
+  movingTimeS?: number
   distanceKm: number
   elevationGainM: number | null
   averageSpeedKph: number | null
@@ -1884,6 +1885,7 @@ function projectStravaAnalysisRange(
     startDistanceKm: round(alignment.distance[startIndex] / 1000, 3),
     endDistanceKm: round(alignment.distance[endIndex] / 1000, 3),
     durationS: raw.elapsedTime,
+    movingTimeS: raw.movingTime,
     distanceKm: round(raw.distance / 1000, 3),
     elevationGainM: nullableRound(raw.totalElevationGain),
     averageSpeedKph: nullableRound(raw.averageSpeed == null ? null : raw.averageSpeed * 3.6, 2),

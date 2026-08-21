@@ -1375,7 +1375,7 @@ export const CalcPanel = ({
                     class="tri-calc-in"
                     data-k="t1"
                     type="text"
-                    value="2:00"
+                    value="5:00"
                     aria-label="T1 time"
                     inputMode="numeric"
                   />
@@ -1419,7 +1419,7 @@ export const CalcPanel = ({
                     class="tri-calc-in"
                     data-k="t2"
                     type="text"
-                    value="1:30"
+                    value="5:00"
                     aria-label="T2 time"
                     inputMode="numeric"
                   />

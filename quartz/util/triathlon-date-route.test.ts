@@ -135,7 +135,10 @@ test('includes rest-day records when building the on-page date tree', () => {
     },
   })
   assert.equal(tree[0].year, '2026')
-  assert.deepEqual(tree[0].months.map(month => month.month), ['08'])
+  assert.deepEqual(
+    tree[0].months.map(month => month.month),
+    ['08'],
+  )
   assert.equal(tree[0].months[0].days.length, 2)
   assert.deepEqual(tree[0].months[0].days[0], {
     date: '2026-08-21',
@@ -190,11 +193,7 @@ test('builds one year and month feed route for each represented period', () => {
 test('builds routes for day maps containing rest-only dates', () => {
   assert.deepEqual(
     triathlonActivityFeedRoutes({
-      first: {
-        date: '2026-08-21',
-        durationS: 0,
-        items: [],
-      },
+      first: { date: '2026-08-21', durationS: 0, items: [] },
       second: {
         date: '2026-08-20',
         durationS: 3600,

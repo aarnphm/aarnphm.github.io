@@ -186,6 +186,21 @@ test('calculator copy control exposes its SVG states as one magnetic cursor acti
   )
 })
 
+test('calculator defaults both transition times to five minutes', () => {
+  const root = rendered(<CalcPanel page />)
+  const transitions = elements(root, element =>
+    ['t1', 't2'].includes(String(element.properties?.dataK)),
+  )
+
+  assert.deepEqual(
+    transitions.map(element => [element.properties?.dataK, element.properties?.value]),
+    [
+      ['t1', '5:00'],
+      ['t2', '5:00'],
+    ],
+  )
+})
+
 test('map controls expose an SVG 3D terrain and buildings toggle', () => {
   const root = rendered(<MapPanel />)
   const buttons = elements(root, element => classes(element).includes('tri-map-3d'))

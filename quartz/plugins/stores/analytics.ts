@@ -19,6 +19,7 @@ import {
   swimPaceSeconds,
   swimStrokeRate,
 } from '../../util/swim-metrics'
+import { parseClockSeconds } from '../../util/triathlon-calculator'
 import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
@@ -804,11 +805,6 @@ export type DistributionPowerSource = 'device' | 'estimated'
 export type DistributionCadenceUnit = 'rpm' | 'spm' | 'str/min'
 export type DistributionThermalSource = 'core-app' | 'core-fit'
 
-export interface DistributionPaceRange {
-  fastestSPerKm: number
-  slowestSPerKm: number
-}
-
 export interface ActivityDistributionPoint {
   id: number
   date: string
@@ -819,7 +815,6 @@ export interface ActivityDistributionPoint {
   heartRateZoneSeconds: number[] | null
   powerZoneSeconds: number[] | null
   paceZoneSeconds: number[] | null
-  paceZoneRanges: (DistributionPaceRange | null)[] | null
   averagePowerWatts: number | null
   powerSource: DistributionPowerSource | null
   cadence: number | null
@@ -835,6 +830,8 @@ export interface ActivityDistributionPoint {
 export interface DistributionsBlock {
   heartRateZoneBounds: number[]
   powerZoneBounds: number[]
+  paceZoneBoundsSPerKm: number[]
+  tenKmRaceTimeS: number | null
   activities: ActivityDistributionPoint[]
 }
 
@@ -894,6 +891,7 @@ const emptyPowerCurve = (): PowerCurveBlock => ({
 const emptyDistributions = (): DistributionsBlock => ({
   heartRateZoneBounds: [],
   powerZoneBounds: [],
+  ...runPaceZoneReference(),
   activities: [],
 })
 
@@ -1458,43 +1456,98 @@ function coreThermalObservation(
   }
 }
 
+const TEN_KM_PACE_ZONE_REFERENCE_TIME_S = 50 * 60
+const TEN_KM_PACE_ZONE_REFERENCE_BOUNDS_S_PER_MILE = [623, 537, 482, 451, 424] as const
+const KILOMETRES_PER_MILE = 1.609344
+const RUN_PACE_ZONE_WINDOW_S = 3
+const RUN_MOVING_MIN_MPS = 1609.344 / (30 * 60)
+
+function runPaceZoneReference(): { paceZoneBoundsSPerKm: number[]; tenKmRaceTimeS: number | null } {
+  const tenKmRaceTimeS = parseClockSeconds(ATHLETE.tenKmRaceTime)
+  if (!(tenKmRaceTimeS > 0)) return { paceZoneBoundsSPerKm: [], tenKmRaceTimeS: null }
+  const scale = tenKmRaceTimeS / TEN_KM_PACE_ZONE_REFERENCE_TIME_S
+  return {
+    paceZoneBoundsSPerKm: TEN_KM_PACE_ZONE_REFERENCE_BOUNDS_S_PER_MILE.map(seconds =>
+      round((seconds / KILOMETRES_PER_MILE) * scale, 3),
+    ),
+    tenKmRaceTimeS,
+  }
+}
+
+function runPaceStreamTime(stream: StravaStreams, movingTimeS: number): number[] | null {
+  if (stream.time?.length === stream.distance.length) {
+    let previous = -Infinity
+    for (const elapsedS of stream.time) {
+      if (!Number.isFinite(elapsedS) || elapsedS < previous) return null
+      previous = elapsedS
+    }
+    return stream.time
+  }
+  return oneHz(stream.distance.length, movingTimeS)
+    ? stream.distance.map((_, index) => index)
+    : null
+}
+
+function runPaceZoneSeconds(
+  stream: StravaStreams | undefined,
+  movingTimeS: number,
+  paceZoneBoundsSPerKm: readonly number[],
+): number[] | null {
+  if (!stream || paceZoneBoundsSPerKm.length !== 5 || stream.distance.length < 2) return null
+  const time = runPaceStreamTime(stream, movingTimeS)
+  if (!time) return null
+  const distance: number[] = []
+  let previousDistance = 0
+  for (const value of stream.distance) {
+    if (!Number.isFinite(value)) return null
+    previousDistance = Math.max(previousDistance, value)
+    distance.push(previousDistance)
+  }
+  const hasAltitude = stream.altitude.length === distance.length
+  const seconds = Array.from({ length: paceZoneBoundsSPerKm.length + 1 }, () => 0)
+  let windowStart = 0
+  for (let index = 1; index < time.length; index++) {
+    while (windowStart + 1 < index && time[index] - time[windowStart] > RUN_PACE_ZONE_WINDOW_S)
+      windowStart++
+    const intervalS = time[index] - time[index - 1]
+    const elapsedS = time[index] - time[windowStart]
+    const distanceM = distance[index] - distance[windowStart]
+    if (!(intervalS > 0) || !(elapsedS > 0) || !(distanceM > 0)) continue
+    const speedMps = distanceM / elapsedS
+    const grade = hasAltitude
+      ? clamp((stream.altitude[index] - stream.altitude[windowStart]) / distanceM, -0.3, 0.3)
+      : 0
+    const gapSpeedMps = speedMps * gradeFactorRun(grade)
+    if (!(gapSpeedMps >= RUN_MOVING_MIN_MPS) || gapSpeedMps > SPRINT_CAP_MS.run) continue
+    const paceSPerKm = 1000 / gapSpeedMps
+    const zone = paceZoneBoundsSPerKm.findIndex(boundary => paceSPerKm > boundary)
+    seconds[zone < 0 ? seconds.length - 1 : zone] += Math.min(intervalS, 1)
+  }
+  return seconds.some(value => value > 0) ? seconds.map(value => Math.round(value)) : null
+}
+
 function buildDistributions(
   acts: readonly Act[],
   zones: StravaZones | null | undefined,
   activityDetails: Readonly<Record<string, StravaActivityDetail>> | undefined,
+  streams: Readonly<Record<string, StravaStreams>> | undefined,
   swimMetrics: ReadonlyMap<number, SwimActivityMetrics>,
   core: CoreBodyTemperatureCache | null | undefined,
   garmin: GarminCache | null | undefined,
 ): DistributionsBlock {
   const heartRateZoneBounds = [...(zones?.hr ?? [])]
   const powerZoneBounds = [...(zones?.power ?? [])]
+  const paceReference = runPaceZoneReference()
   const activities = acts.map(({ a, sport, day }): ActivityDistributionPoint => {
     const detail = activityDetails?.[String(a.id)]
-    const paceZoneSeconds = Array.from({ length: 6 }, () => 0)
-    const paceZoneRanges: (DistributionPaceRange | null)[] = Array.from({ length: 6 }, () => null)
-    if (sport === 'run')
-      for (const split of detail?.runSplitsMetric ?? []) {
-        if (
-          split.paceZone == null ||
-          !Number.isInteger(split.paceZone) ||
-          split.paceZone < 1 ||
-          split.paceZone > paceZoneSeconds.length ||
-          !(split.movingTimeS > 0) ||
-          !(split.averageSpeedKph > 0)
-        )
-          continue
-        const index = split.paceZone - 1
-        const paceSPerKm = 3600 / split.averageSpeedKph
-        paceZoneSeconds[index] += split.movingTimeS
-        const range = paceZoneRanges[index]
-        paceZoneRanges[index] = range
-          ? {
-              fastestSPerKm: Math.min(range.fastestSPerKm, paceSPerKm),
-              slowestSPerKm: Math.max(range.slowestSPerKm, paceSPerKm),
-            }
-          : { fastestSPerKm: paceSPerKm, slowestSPerKm: paceSPerKm }
-      }
-    const hasPaceZones = paceZoneSeconds.some(seconds => seconds > 0)
+    const paceZoneSeconds =
+      sport === 'run'
+        ? runPaceZoneSeconds(
+            streams?.[String(a.id)],
+            a.movingTime,
+            paceReference.paceZoneBoundsSPerKm,
+          )
+        : null
     const averagePower = detail?.avgWatts ?? a.averageWatts ?? null
     const averagePowerWatts =
       averagePower != null && Number.isFinite(averagePower) && averagePower > 0
@@ -1517,17 +1570,7 @@ function buildDistributions(
       movingTimeS: a.movingTime,
       heartRateZoneSeconds: detail?.hrZones ? [...detail.hrZones] : null,
       powerZoneSeconds: sport === 'bike' && detail?.powerZones ? [...detail.powerZones] : null,
-      paceZoneSeconds: hasPaceZones ? paceZoneSeconds.map(seconds => Math.round(seconds)) : null,
-      paceZoneRanges: hasPaceZones
-        ? paceZoneRanges.map(range =>
-            range
-              ? {
-                  fastestSPerKm: round(range.fastestSPerKm, 1),
-                  slowestSPerKm: round(range.slowestSPerKm, 1),
-                }
-              : null,
-          )
-        : null,
+      paceZoneSeconds,
       averagePowerWatts,
       powerSource:
         averagePowerWatts == null
@@ -1546,7 +1589,7 @@ function buildDistributions(
       heatStrainObservedSeconds: Math.round(thermal?.heatStrainObservedS ?? 0),
     }
   })
-  return { heartRateZoneBounds, powerZoneBounds, activities }
+  return { heartRateZoneBounds, powerZoneBounds, ...paceReference, activities }
 }
 
 function buildHeat(
@@ -3091,6 +3134,7 @@ export const ATHLETE = {
   goalWeightLb: 170 as number | null,
   goalFTP: 350 as number | null,
   heightCm: 188,
+  tenKmRaceTime: '00:50:00',
 }
 
 const goalWeightKg = ATHLETE.goalWeightLb != null ? ATHLETE.goalWeightLb * KG_PER_LB : null
@@ -4814,6 +4858,7 @@ export function buildAnalytics(
     acts,
     inputs.zones,
     inputs.activityDetails,
+    cache.streams,
     swimMetrics,
     inputs.core,
     inputs.garmin,

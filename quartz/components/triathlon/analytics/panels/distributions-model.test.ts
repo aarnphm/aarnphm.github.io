@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  completeDistributionPaceRanges,
   distributionMetricForSport,
   distributionMetrics,
   initialDistributionModel,
@@ -9,48 +8,6 @@ import {
   telemetryWeightedAverage,
   updateDistributions,
 } from './distributions-model'
-
-test('pace ranges complete open outer zones and single missing interior zones', () => {
-  assert.deepEqual(
-    completeDistributionPaceRanges([
-      { fastestSPerKm: 406.3, slowestSPerKm: 1074.6 },
-      { fastestSPerKm: 333.3, slowestSPerKm: 381.8 },
-      { fastestSPerKm: 308.7, slowestSPerKm: 350.9 },
-      null,
-      { fastestSPerKm: 268.9, slowestSPerKm: 270.3 },
-      null,
-    ]),
-    [
-      { fastestSPerKm: 406.3, slowestSPerKm: null, fillGap: false },
-      { fastestSPerKm: 333.3, slowestSPerKm: 381.8, fillGap: false },
-      { fastestSPerKm: 308.7, slowestSPerKm: 350.9, fillGap: false },
-      { fastestSPerKm: 270.3, slowestSPerKm: 308.7, fillGap: true },
-      { fastestSPerKm: 268.9, slowestSPerKm: 270.3, fillGap: false },
-      { fastestSPerKm: null, slowestSPerKm: 268.9, fillGap: false },
-    ],
-  )
-})
-
-test('pace range completion does not fabricate boundaries across multiple missing zones', () => {
-  assert.deepEqual(
-    completeDistributionPaceRanges([
-      null,
-      { fastestSPerKm: 330, slowestSPerKm: 390 },
-      null,
-      null,
-      { fastestSPerKm: 270, slowestSPerKm: 280 },
-      null,
-    ]),
-    [
-      { fastestSPerKm: 390, slowestSPerKm: null, fillGap: false },
-      { fastestSPerKm: 330, slowestSPerKm: 390, fillGap: false },
-      null,
-      null,
-      { fastestSPerKm: 270, slowestSPerKm: 280, fillGap: false },
-      { fastestSPerKm: null, slowestSPerKm: 270, fillGap: false },
-    ],
-  )
-})
 
 test('distribution reducer owns sport, range, custom date, and restored selection', () => {
   const bounds = {
