@@ -14,6 +14,7 @@
   --tri-power-attack: #67a82f;
   --tri-power-climb: #f27440;
   --tri-power-model: #8b7ec8;
+  --tri-activity-graph-row-height: calc(var(--tri-activity-chart-height, 104px) + 2.45rem + 0.66lh);
 }
 
 @mixin thin-scrollbar {
@@ -770,6 +771,11 @@
     font-weight: inherit;
     vertical-align: baseline;
   }
+
+  tr {
+    display: grid;
+    grid-template: minmax(0, 1fr) max-content;
+  }
 }
 
 .tri-act-strength {
@@ -1497,6 +1503,10 @@
   color: var(--tri-accent);
 }
 
+.tri-act-fueling--empty {
+  visibility: hidden;
+}
+
 .tri-act-garmin .tri-act-health-h {
   color: var(--secondary);
 }
@@ -1506,6 +1516,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
+}
+
+.tri-act-figs--empty {
+  display: none;
 }
 
 .tri-route-cursor {
@@ -1771,7 +1785,7 @@
   min-height: 1.122rem;
   font-family: var(--codeFont);
   font-variant-numeric: tabular-nums;
-  margin-top: 0.32rem;
+  margin-top: 1rem;
 }
 
 .tri-swim-trend-head--with-mode {
@@ -8099,7 +8113,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 .tri-training-zone-view {
   display: grid;
   grid-area: 1 / 1;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 0.58rem;
   min-width: 0;
   visibility: hidden;
@@ -12098,7 +12112,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 
 .tri-zone-grid {
   display: grid;
-  grid-template-columns: max-content max-content max-content max-content 1fr;
+  grid-template-columns: max-content minmax(0, max-content) max-content max-content max-content 1fr;
   gap: 0.18rem 0.5rem;
 }
 
@@ -12113,33 +12127,15 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 }
 
 .tri-zone-z {
-  position: relative;
   color: var(--gray);
-  cursor: pointer;
 }
 
-.tri-zone-z::after {
-  content: attr(data-name);
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 3px);
-  z-index: 6;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.56rem;
+.tri-zone-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--darkgray);
+  text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--dark);
-  background: color-mix(in srgb, var(--light) 94%, transparent);
-  backdrop-filter: blur(4px);
-  border: 1px solid color-mix(in srgb, var(--gray) 32%, transparent);
-  border-radius: var(--radius-none);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.1s ease;
-}
-
-.tri-zone-z:hover::after,
-.tri-zone-z:focus-visible::after {
-  opacity: 1;
 }
 
 .tri-zone-range {
@@ -13624,14 +13620,6 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
       border-top: 0;
     }
   }
-
-  .tri-zone-grid {
-    grid-template-columns: max-content max-content max-content 1fr;
-  }
-
-  .tri-zone-range {
-    display: none;
-  }
 }
 
 .tri-day-embed[data-triathlon-embedded='1'] > .tri-pop-card {
@@ -13978,17 +13966,19 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
 @container tri-day-card (min-width: 26rem) {
   .tri-day-embed[data-triathlon-embedded='1'] .tri-pop-card:has(> .tri-act + .tri-act) {
     --tri-embedded-stat-row-height: 1.94rem;
-    --tri-embedded-graph-row-height: calc(var(--tri-activity-chart-height, 104px) + 2.9rem);
+    --tri-embedded-graph-row-height: var(--tri-activity-graph-row-height);
     --tri-embedded-secondary-height: 14.8rem;
     --tri-embedded-visual-height: calc(
       var(--tri-embedded-graph-row-height) + var(--tri-embedded-graph-row-height) +
-        var(--tri-embedded-graph-row-height) + 1.4rem
+        var(--tri-embedded-graph-row-height) + 2.08rem
     );
     --tri-embedded-primary-height: calc(
       var(--tri-embedded-visual-height) - var(--tri-embedded-secondary-height) - 0.6rem
     );
 
     > .tri-act {
+      align-self: stretch;
+
       > .tri-act-stats tbody,
       > .table-container > .tri-act-stats tbody {
         display: grid;
@@ -14003,6 +13993,33 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         display: grid;
         grid-template-columns: minmax(0, 1fr) max-content;
         align-items: baseline;
+      }
+
+      > .tri-act-fueling > .tri-act-stats tbody,
+      > .tri-act-fueling > .table-container > .tri-act-stats tbody {
+        display: grid;
+        grid-template-rows: repeat(
+          var(--tri-embedded-fueling-rows),
+          var(--tri-embedded-stat-row-height)
+        );
+      }
+
+      > .tri-act-fueling {
+        margin-top: 0;
+      }
+
+      &.tri-act--expanded > .tri-act-more {
+        flex: 1 1 auto;
+      }
+
+      > .tri-act-more > .tri-run-analysis {
+        height: calc(
+          var(--tri-embedded-graph-row-height) + var(--tri-embedded-graph-row-height) + 0.7rem
+        );
+      }
+
+      > .tri-act-more > .tri-training-effect {
+        margin-top: var(--tri-training-effect-margin, auto);
       }
 
       > .tri-act-strength {
@@ -14033,8 +14050,19 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
         }
       }
 
-      > .tri-act-figs--route > .tri-route {
-        height: var(--tri-embedded-primary-height);
+      > .tri-act-figs--route {
+        height: var(--tri-embedded-visual-height);
+
+        > .tri-route {
+          flex: 1 1 0;
+          min-height: 0;
+          height: auto;
+        }
+      }
+
+      > .tri-act-figs--empty {
+        display: block;
+        height: var(--tri-embedded-visual-height);
       }
 
       .tri-strength-exercises {
@@ -14307,6 +14335,253 @@ a.tri-pop-date:hover {
   min-width: 0;
 }
 
+.tri-run-analysis {
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.45rem;
+  min-width: 0;
+  height: 13rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-run-analysis-tabs {
+  flex: none;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.tri-run-analysis-stage {
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tri-run-analysis-panel {
+  grid-area: 1 / 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.tri-run-analysis-panel[hidden] {
+  display: none;
+}
+
+.tri-run-analysis :is(.tri-run-workout, .tri-run-splits) {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.tri-run-analysis .tri-run-workout {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.tri-run-analysis .tri-run-workout-chart {
+  min-height: 0;
+  height: auto;
+}
+
+.tri-run-analysis .tri-run-workout-stats,
+.tri-run-analysis .tri-run-splits-average {
+  margin-left: auto;
+}
+
+.tri-run-analysis .tri-run-splits {
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.tri-run-analysis .tri-run-splits-list {
+  align-content: start;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  @include thin-scrollbar;
+}
+
+.tri-run-workout {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.6rem 0.6rem;
+  background: color-mix(in srgb, var(--lightgray) 34%, transparent);
+  font-family: var(--codeFont);
+  font-variant-numeric: tabular-nums;
+}
+
+.tri-run-workout-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+}
+
+.tri-run-workout-title {
+  color: var(--dark);
+  font-size: 0.62rem;
+}
+
+.tri-run-workout-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--gray);
+  font-size: 0.52rem;
+}
+
+.tri-run-workout-chart {
+  display: grid;
+  grid-template-columns: 2.8rem minmax(0, 1fr);
+  gap: 0.5rem;
+  min-width: 0;
+  height: 10.5rem;
+}
+
+.tri-run-workout-y-axis {
+  position: relative;
+  align-self: start;
+  height: calc(100% - 1.2rem);
+  color: var(--gray);
+  font-size: 0.48rem;
+}
+
+.tri-run-workout-y-tick {
+  position: absolute;
+  right: 0;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.tri-run-workout-viewport {
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  @include thin-scrollbar;
+}
+
+.tri-run-workout-plot {
+  position: relative;
+  min-width: max(100%, calc(var(--tri-run-workout-laps) * 2rem));
+  height: 100%;
+}
+
+.tri-run-workout-grid {
+  position: absolute;
+  inset: 0 0 1.2rem;
+  pointer-events: none;
+}
+
+.tri-run-workout-gridline {
+  position: absolute;
+  right: 0;
+  left: 0;
+  border-top: 1px solid color-mix(in srgb, var(--gray) 14%, transparent);
+}
+
+.tri-run-workout-bars {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--tri-run-workout-laps), minmax(1.6rem, 1fr));
+  gap: 0.18rem;
+}
+
+.tri-run-workout-lap {
+  appearance: none;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) 1.2rem;
+  align-items: end;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0.08rem;
+  border: 0;
+  border-radius: var(--radius-none);
+  color: var(--gray);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.tri-run-workout-column {
+  position: relative;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.tri-run-workout-bar {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  min-height: 1px;
+  height: var(--tri-run-workout-height);
+  background: var(--tri-run);
+  opacity: var(--tri-run-workout-opacity);
+}
+
+.tri-run-workout-pace {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: clamp(0.15rem, calc(var(--tri-run-workout-height) - 0.9rem), calc(100% - 1rem));
+  padding: 0.12rem 0.28rem;
+  visibility: hidden;
+  color: var(--dark);
+  background: var(--light);
+  border: 1px solid var(--lightgray);
+  font-size: 0.5rem;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.tri-run-workout-lap:first-child .tri-run-workout-pace {
+  left: 0;
+  transform: none;
+}
+
+.tri-run-workout-lap:last-child .tri-run-workout-pace {
+  right: 0;
+  left: auto;
+  transform: none;
+}
+
+.tri-run-workout-label {
+  align-self: center;
+  justify-self: center;
+  font-size: 0.48rem;
+}
+
+.tri-run-workout-lap:focus-visible {
+  outline: 0;
+}
+
+.tri-run-workout-lap:focus-visible .tri-run-workout-bar,
+.tri-run-workout-lap[aria-pressed='true'] .tri-run-workout-bar {
+  outline: 2px solid var(--tri-accent);
+  outline-offset: 1px;
+  opacity: 1;
+}
+
+.tri-run-workout-lap:focus-visible .tri-run-workout-pace {
+  visibility: visible;
+  opacity: 1;
+}
+
 .tri-run-splits {
   grid-column: 1 / -1;
   display: grid;
@@ -14572,6 +14847,15 @@ a.tri-pop-date:hover {
   .tri-run-split:not([aria-pressed='true']):hover .tri-run-split-fill {
     background: color-mix(in srgb, var(--tri-run) 72%, var(--light));
   }
+
+  .tri-run-workout-lap:not([aria-pressed='true']):hover .tri-run-workout-bar {
+    opacity: 1;
+  }
+
+  .tri-run-workout-lap:hover .tri-run-workout-pace {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 @container tri-activity (max-width: 30rem) {
@@ -14596,6 +14880,28 @@ a.tri-pop-date:hover {
     padding-inline: 0.45rem;
   }
 
+  .tri-run-workout {
+    padding-inline: 0.45rem;
+  }
+
+  .tri-run-analysis {
+    padding-inline: 0.45rem;
+  }
+
+  .tri-run-analysis :is(.tri-run-workout, .tri-run-splits) {
+    padding-inline: 0;
+  }
+
+  .tri-run-workout-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tri-run-workout-chart {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
   .tri-run-splits-columns,
   .tri-run-split {
     grid-template-columns: 1.25rem 2.8rem minmax(6.25rem, 1fr) 2.8rem;
@@ -14613,6 +14919,12 @@ a.tri-pop-date:hover {
   .tri-run-splits {
     height: calc(
       var(--tri-activity-chart-height, 104px) + var(--tri-activity-chart-height, 104px) + 6.5rem
+    );
+  }
+
+  .tri-run-analysis {
+    height: calc(
+      var(--tri-activity-graph-row-height) + var(--tri-activity-graph-row-height) + 0.7rem
     );
   }
 
@@ -14636,7 +14948,13 @@ a.tri-pop-date:hover {
 
   .tri-zone-grid {
     grid-auto-rows: minmax(0, 1fr);
+    grid-template-columns: max-content max-content max-content 1fr;
     height: var(--tri-activity-chart-height, 104px);
+  }
+
+  .tri-zone-name,
+  .tri-zone-range {
+    display: none;
   }
 
   .tri-zone-row {
@@ -14648,6 +14966,14 @@ a.tri-pop-date:hover {
     box-sizing: border-box;
     grid-template-rows: auto auto minmax(0, 1fr);
     margin-bottom: 0;
+  }
+
+  .tri-run-analysis {
+    margin-bottom: 0;
+  }
+
+  .tri-run-analysis .tri-run-splits {
+    height: 100%;
   }
 
   .tri-run-splits-list {

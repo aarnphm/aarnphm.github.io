@@ -6,13 +6,11 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
   detailed: Object.freeze({}),
   simplified: Object.freeze({
     'power-balance': false,
-    'torque-effectiveness': false,
     'pedal-smoothness': false,
     'power-phase': false,
     'rider-position': false,
     stamina: false,
     'electronic-shifting': false,
-    'stroke-rate': false,
     'matched-rides': false,
     '25w-power-distribution': false,
     'power-curve': false,
@@ -21,6 +19,9 @@ export const TRIATHLON_TRACE_DISPLAY_SETTINGS = Object.freeze({
     'heat-strain-index': false,
     'core-temperature': false,
     'skin-temperature': false,
+    'stride-length': false,
+    'ground-contact-time': false,
+    'vertical-oscillation': false,
     temperature: false,
   }),
 })

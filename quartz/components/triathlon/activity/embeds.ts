@@ -14,6 +14,7 @@ import { applyI18n } from '../runtime/dom'
 import { createDomFactory } from '../runtime/dom'
 import { el } from '../runtime/dom'
 import { TRI_POWER_FILTER_EVENT } from '../runtime/preferences'
+import { alignedTrainingEffectMargins } from './activity-layout'
 import { analysisFinite } from './analysis'
 import { onCardToggle } from './comparison'
 import { setActivityExpanded } from './comparison'
@@ -24,6 +25,66 @@ import { dayExtrasFromDataset } from './embed-settings'
 import { renderDetail } from './render'
 import { setupStrengthExerciseOverflow } from './render'
 
+const TRAINING_EFFECT_MARGIN = '--tri-training-effect-margin'
+
+const mountTrainingEffectAlignment = (card: HTMLElement): (() => void) => {
+  if (card.querySelectorAll(':scope > .tri-act').length < 2) return () => {}
+  let frame = 0
+  const align = (): void => {
+    frame = 0
+    const effects = Array.from(
+      card.querySelectorAll<HTMLElement>(
+        ':scope > .tri-act > .tri-act-more > .tri-training-effect',
+      ),
+    )
+    const targets: {
+      effect: HTMLElement
+      activityTop: number
+      effectTop: number
+      marginTop: number
+    }[] = []
+    for (const effect of effects) {
+      const activity = effect.closest<HTMLElement>('.tri-act')
+      if (!activity || effect.getClientRects().length === 0) {
+        effect.style.removeProperty(TRAINING_EFFECT_MARGIN)
+        continue
+      }
+      const marginTop = Number.parseFloat(window.getComputedStyle(effect).marginTop)
+      targets.push({
+        effect,
+        activityTop: activity.getBoundingClientRect().top,
+        effectTop: effect.getBoundingClientRect().top,
+        marginTop: Number.isFinite(marginTop) ? marginTop : 0,
+      })
+    }
+    const margins = alignedTrainingEffectMargins(targets)
+    for (const [index, target] of targets.entries()) {
+      const margin = margins[index]
+      const current = Number.parseFloat(
+        target.effect.style.getPropertyValue(TRAINING_EFFECT_MARGIN),
+      )
+      if (!Number.isFinite(current) || Math.abs(current - margin) >= 0.1)
+        target.effect.style.setProperty(TRAINING_EFFECT_MARGIN, `${margin}px`)
+    }
+  }
+  const schedule = (): void => {
+    if (frame !== 0) window.cancelAnimationFrame(frame)
+    frame = window.requestAnimationFrame(align)
+  }
+  const resize = new ResizeObserver(schedule)
+  resize.observe(card)
+  card.addEventListener('click', schedule)
+  schedule()
+  return () => {
+    if (frame !== 0) window.cancelAnimationFrame(frame)
+    resize.disconnect()
+    card.removeEventListener('click', schedule)
+    card
+      .querySelectorAll<HTMLElement>(':scope > .tri-act > .tri-act-more > .tri-training-effect')
+      .forEach(effect => effect.style.removeProperty(TRAINING_EFFECT_MARGIN))
+  }
+}
+
 export const buildDayCard = (
   presentation: TriathlonPresentation,
   dateIso: string,
@@ -32,7 +93,7 @@ export const buildDayCard = (
 ): { element: HTMLElement; mount: () => () => void } => {
   const domF = createDomFactory(presentation)
   const activityViews: ReturnType<typeof renderDetail>[] = []
-  const card = buildDayCardNode(domF, dateIso, payload, extras, detail => {
+  const card = buildDayCardNode(domF, dateIso, payload, extras, (detail, reserveFueling) => {
     const view = renderDetail(
       presentation,
       detail,
@@ -41,6 +102,7 @@ export const buildDayCard = (
       extras.embedded === true,
       extras.dayRouteHref,
       extras.settings,
+      reserveFueling,
     )
     activityViews.push(view)
     return view.element
@@ -55,6 +117,7 @@ export const buildDayCard = (
     mount: () => {
       card.addEventListener('click', onCardToggle)
       const cleanups = [
+        mountTrainingEffectAlignment(card),
         mountDaySleepCharts(card, () => presentation.locale),
         ...activityViews.map(view => view.mount()),
       ]

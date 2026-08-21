@@ -298,7 +298,9 @@ export const setupFeed = (root: HTMLElement, context: TriathlonContext): (() => 
   void context.resources.analytics.load(analyticsPath).then(result => {
     if (!live) return
     if (result.status === 'ready') {
-      acts = (result.value.activities ?? []).filter(activity => activity.date.startsWith(datePrefix))
+      acts = (result.value.activities ?? []).filter(activity =>
+        activity.date.startsWith(datePrefix),
+      )
       renderList()
     } else if (result.status === 'error') {
       list.setAttribute('aria-busy', 'false')

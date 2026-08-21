@@ -61,7 +61,7 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
             tree={triathlonDateTree(
               fileData.stravaPayload?.days
                 ? Object.fromEntries(fileData.stravaPayload.days.map(day => [day.date, day]))
-                : fileData.stravaPayload?.details ?? {},
+                : (fileData.stravaPayload?.details ?? {}),
               feedScope?.prefix,
             )}
           />

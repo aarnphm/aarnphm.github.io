@@ -18,7 +18,6 @@ import { polyD } from '../shared'
 import { missingBridges } from './body'
 import { segRuns } from './body'
 import {
-  completeDistributionPaceRanges,
   DISTRIBUTION_RANGES,
   distributionMetricForSport,
   distributionMetrics,
@@ -29,7 +28,6 @@ import {
   type DistributionRange,
   type DistributionMetric,
   type DistributionSport,
-  type CompletedDistributionPaceRange,
 } from './distributions-model'
 
 export type ActivityDistributionPoint = Analytics['distributions']['activities'][number]
@@ -58,24 +56,16 @@ export const distributionPowerZoneRange = (bounds: readonly number[], index: num
 
 const distributionPaceZoneRange = (
   context: TriathlonContext,
-  range: CompletedDistributionPaceRange | null,
+  bounds: readonly number[],
+  index: number,
 ): string => {
-  if (!range) return '—'
+  if (bounds.length === 0) return '—'
   const imperial = context.presentation.distance === 'imperial'
   const scale = imperial ? KM_TO_MI : 1
   const unit = imperial ? '/mi' : '/km'
-  if (range.fastestSPerKm == null)
-    return range.slowestSPerKm == null ? '—' : `<${clock(range.slowestSPerKm / scale)}${unit}`
-  if (range.slowestSPerKm == null) return `>${clock(range.fastestSPerKm / scale)}${unit}`
-  let fastestSeconds = range.fastestSPerKm / scale
-  let slowestSeconds = range.slowestSPerKm / scale
-  if (range.fillGap && slowestSeconds - fastestSeconds >= 2) {
-    fastestSeconds += 1
-    slowestSeconds -= 1
-  }
-  const fastest = clock(fastestSeconds)
-  const slowest = clock(slowestSeconds)
-  return fastest === slowest ? `${fastest}${unit}` : `${fastest}–${slowest}${unit}`
+  if (index === 0) return `>${clock(bounds[0] / scale)}${unit}`
+  if (index >= bounds.length) return `<${clock(bounds[bounds.length - 1] / scale)}${unit}`
+  return `${clock(bounds[index] / scale)}–${clock(bounds[index - 1] / scale)}${unit}`
 }
 
 interface DistributionZoneSeries {
@@ -97,7 +87,9 @@ const buildZoneMetricIcon = (metric: DistributionMetric): SVGElement => {
       d:
         metric === 'heart-rate'
           ? 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78Z'
-          : 'M13 2 4 14h8l-1 8 9-12h-8l1-8Z',
+          : metric === 'power'
+            ? 'M13 2 4 14h8l-1 8 9-12h-8l1-8Z'
+            : 'M9 2h6M12 5a8 8 0 1 0 8 8M12 9v4l3 2',
       fill: 'none',
       stroke: 'currentColor',
       'stroke-width': 1.8,
@@ -132,7 +124,8 @@ export const buildDistributions = (
 ): { element: HTMLElement; mount?: () => () => void } => {
   const text = (key: string): string => context.formatter.text(key)
   const block = el('div', 'tri-training-distribution')
-  const { activities, heartRateZoneBounds, powerZoneBounds } = data.distributions
+  const { activities, heartRateZoneBounds, powerZoneBounds, paceZoneBoundsSPerKm, tenKmRaceTimeS } =
+    data.distributions
   if (activities.length === 0) {
     block.append(anaTitle(context.formatter, 'training zone distributions', 'hrzones'))
     block.appendChild(el('div', 'tri-ana-empty', text('no activity distribution data')))
@@ -271,23 +264,10 @@ export const buildDistributions = (
         ),
       }
     }
-    const count = 6
+    const count = paceZoneBoundsSPerKm.length > 0 ? paceZoneBoundsSPerKm.length + 1 : 6
     const totals = sumDistributionZones(points, count, point => point.paceZoneSeconds)
-    const observedRanges = Array.from({ length: count }, (_, index) => {
-      let fastestSPerKm = Infinity
-      let slowestSPerKm = -Infinity
-      for (const point of points) {
-        const range = point.paceZoneRanges?.[index]
-        if (!range) continue
-        fastestSPerKm = Math.min(fastestSPerKm, range.fastestSPerKm)
-        slowestSPerKm = Math.max(slowestSPerKm, range.slowestSPerKm)
-      }
-      return Number.isFinite(fastestSPerKm) && Number.isFinite(slowestSPerKm)
-        ? { fastestSPerKm, slowestSPerKm }
-        : null
-    })
-    const ranges = completeDistributionPaceRanges(observedRanges).map(range =>
-      distributionPaceZoneRange(context, range),
+    const ranges = Array.from({ length: count }, (_, index) =>
+      distributionPaceZoneRange(context, paceZoneBoundsSPerKm, index),
     )
     return { metric: selectedMetric, ...totals, ranges }
   }
@@ -375,7 +355,16 @@ export const buildDistributions = (
       'tri-dist-cap',
       `${series.observedActivities}/${points.length} ${text('activities')} · ${zoneClock(total)} ${text('training time')} · ${context.formatter.longDate(startDate)}–${context.formatter.longDate(maximumDate)}`,
     )
-    view.append(summary, grid, coverage)
+    view.append(summary, grid)
+    if (series.metric === 'pace' && tenKmRaceTimeS != null)
+      view.appendChild(
+        el(
+          'div',
+          'tri-dist-cap tri-training-zone-source',
+          `${text('based on 10 km race time')} ${clock(tenKmRaceTimeS)}`,
+        ),
+      )
+    view.appendChild(coverage)
     return view
   }
 

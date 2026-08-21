@@ -1983,7 +1983,8 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       endElapsedS: 1_600,
       startDistanceKm: 0,
       endDistanceKm: 10,
-      durationS: 300,
+      durationS: 330,
+      movingTimeS: 300,
       distanceKm: 1,
       elevationGainM: 4,
       averageSpeedKph: 12,
@@ -2029,10 +2030,88 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   const rendered = buildActivity(factory, run, true)
   const analysis = byClass(rendered, 'tri-analysis')[0]
   const more = byClass(rendered, 'tri-act-more')[0]
+  const runAnalysis = byClass(more, 'tri-run-analysis')[0]
+  const workout = byClass(more, 'tri-run-workout')[0]
   const splits = byClass(more, 'tri-run-splits')[0]
+  assert.ok(runAnalysis)
+  assert.equal(runAnalysis.properties.ariaLabel, 'Run analysis')
+  assert.equal(runAnalysis.properties.dataRunAnalysisView, 'workout')
+  const tabs = byClass(runAnalysis, 'tri-run-analysis-tab')
+  assert.deepEqual(tabs.map(text), ['workout analysis', 'lap splits'])
+  assert.deepEqual(
+    tabs.map(tab => [tab.properties.role, tab.properties.ariaSelected, tab.properties.tabIndex]),
+    [
+      ['tab', 'true', 0],
+      ['tab', 'false', -1],
+    ],
+  )
+  const panels = byClass(runAnalysis, 'tri-run-analysis-panel')
+  assert.deepEqual(
+    panels.map(panel => [
+      panel.properties.role,
+      panel.properties.dataRunAnalysisPanel,
+      panel.properties.hidden,
+      panel.properties.ariaHidden,
+    ]),
+    [
+      ['tabpanel', 'workout', undefined, 'false'],
+      ['tabpanel', 'laps', true, 'true'],
+    ],
+  )
+  assert.deepEqual(
+    tabs.map(tab => tab.properties.ariaControls),
+    panels.map(panel => [panel.properties.id]),
+  )
+  assert.ok(workout)
+  assert.equal(workout.tagName, 'section')
+  assert.equal(workout.properties.ariaLabel, 'Run workout analysis')
+  assert.equal(byClass(workout, 'tri-run-workout-title').length, 0)
+  assert.deepEqual(
+    byClass(workout, 'tri-run-workout-stats')
+      .flatMap(stat => byTag(stat, 'span'))
+      .map(text),
+    ['fastest 4:00 /km', 'avg 5:00 /km', 'slowest 6:00 /km'],
+  )
+  assert.deepEqual(byClass(workout, 'tri-run-workout-y-tick').map(text), [
+    '4:00',
+    '4:30',
+    '5:00',
+    '5:30',
+    '6:00',
+  ])
+  assert.deepEqual(byClass(workout, 'tri-run-workout-label').map(text), ['1', '2', '3'])
+  assert.deepEqual(byClass(workout, 'tri-run-workout-pace').map(text), [
+    '5:00 /km',
+    '6:00 /km',
+    '4:00 /km',
+  ])
+  assert.equal(byClass(workout, 'tri-run-workout-column').length, 3)
+  assert.ok(
+    byClass(workout, 'tri-run-workout-pace').every(pace => pace.properties.ariaHidden === 'true'),
+  )
+  const workoutLaps = byClass(workout, 'tri-run-workout-lap')
+  assert.deepEqual(
+    workoutLaps.map(lap => [lap.properties.dataRangeKind, lap.properties.dataRangeId]),
+    [
+      ['lap', 'lap-1'],
+      ['lap', 'lap-2'],
+      ['lap', 'lap-3'],
+    ],
+  )
+  assert.match(
+    String(workoutLaps[0].properties.style),
+    /--tri-run-workout-height:50\.000%;--tri-run-workout-opacity:0\.620/,
+  )
+  assert.match(String(workoutLaps[1].properties.style), /--tri-run-workout-height:3\.000%/)
+  assert.match(String(workoutLaps[2].properties.style), /--tri-run-workout-height:100\.000%/)
+  assert.equal(workoutLaps[0].properties.ariaPressed, 'false')
+  assert.match(String(workoutLaps[0].properties.ariaLabel), /^Lap 1, 1\.00 km, \+4 m, 5:00/)
+  assert.equal(workoutLaps[0].properties.dataDurationS, '300')
+  assert.match(String(workoutLaps[1].properties.ariaLabel), /^Lap 2, 1\.00 km, \+5 m, 6:00/)
   assert.ok(splits)
   assert.equal(splits.tagName, 'section')
   assert.equal(splits.properties.ariaLabel, 'Run lap splits')
+  assert.equal(byClass(splits, 'tri-run-splits-title').length, 0)
   assert.deepEqual(byClass(splits, 'tri-run-splits-average').map(text), ['avg 5:00 /km'])
   assert.deepEqual(
     byClass(splits, 'tri-run-splits-columns')[0]
@@ -2079,7 +2158,7 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       .filter((child): child is Element => child.type === 'element')
       .slice(0, 2)
       .map(child => classNames(child)),
-    [['tri-run-splits'], ['tri-elev-wrap']],
+    [['tri-run-analysis'], ['tri-elev-wrap']],
   )
 })
 
@@ -2563,7 +2642,7 @@ test('adds max speed directly below the bike speed row', () => {
   )
 })
 
-test('places one combined stats table above route figures without a rows-only disclosure', () => {
+test('places one combined stats table above route figures with a disclosure for every activity', () => {
   const rendered = buildActivity(factory, detail(), true)
   const children = rendered.children.filter((child): child is Element => child.type === 'element')
   const statsIndex = children.findIndex(child => classNames(child).includes('tri-act-stats'))
@@ -2583,8 +2662,8 @@ test('places one combined stats table above route figures without a rows-only di
   assert.ok(
     bodyRows(byClass(rowsOnly, 'tri-act-stats')[0]).some(([label]) => label === 'est power'),
   )
-  assert.equal(byClass(rowsOnly, 'tri-act-toggle').length, 0)
-  assert.equal(byClass(rowsOnly, 'tri-act-more').length, 0)
+  assert.equal(byClass(rowsOnly, 'tri-act-toggle').length, 1)
+  assert.equal(byClass(rowsOnly, 'tri-act-more').length, 1)
 })
 
 test('projects each sub-marathon run to the next standard race distance', () => {
@@ -3460,7 +3539,23 @@ test('timeline day cards keep activity measurements and the date inert', () => {
 })
 
 test('embedded day cards align activity summaries to their largest row count', () => {
-  const ride = detail({ id: 1, date: '2026-07-09', windKph: 10, windDir: 'NW', windGustKph: 21 })
+  const ride = detail({
+    id: 1,
+    date: '2026-07-09',
+    windKph: 10,
+    windDir: 'NW',
+    windGustKph: 21,
+    fueling: {
+      caloriesConsumed: 200,
+      carbsConsumedG: null,
+      fluidMl: null,
+      carbsRecommendedG: null,
+      fluidRecommendedMl: null,
+      sweatLossMl: null,
+      sourceDevice: 'Edge 1050',
+      source: 'garmin',
+    },
+  })
   const run = detail({
     id: 2,
     date: '2026-07-09',
@@ -3477,9 +3572,32 @@ test('embedded day cards align activity summaries to their largest row count', (
     activity => byTag(byClass(activity, 'tri-act-stats')[0], 'tr').length,
   )
 
-  assert.equal(embedded.properties.style, `--tri-embedded-summary-rows:${Math.max(...rowCounts)}`)
+  assert.equal(
+    embedded.properties.style,
+    `--tri-embedded-summary-rows:${Math.max(...rowCounts)};--tri-embedded-fueling-rows:2`,
+  )
   const wind = byTag(embedded, 'tr').find(row => text(byClass(row, 'tri-act-stat-k')[0]) === 'wind')
   assert.equal(wind?.properties.dataStatKey, 'wind')
+  const emptyFueling = byClass(embedded, 'tri-act-fueling--empty')[0]
+  assert.ok(emptyFueling)
+  assert.equal(emptyFueling.properties.ariaHidden, 'true')
+  assert.equal(byTag(byClass(emptyFueling, 'tri-act-stats')[0], 'tr').length, 0)
+
+  const hydratedReservations: boolean[] = []
+  buildDayCard(factory, '2026-07-09', payload, { embedded: true }, (activity, reserveFueling) => {
+    hydratedReservations.push(reserveFueling)
+    return buildActivity(
+      factory,
+      activity,
+      false,
+      undefined,
+      false,
+      true,
+      undefined,
+      reserveFueling,
+    )
+  })
+  assert.deepEqual(hydratedReservations, [true, true])
 
   const stacked = buildDayCard(factory, '2026-07-09', payload)
   const single = buildDayCard(
@@ -3490,6 +3608,37 @@ test('embedded day cards align activity summaries to their largest row count', (
   )
   assert.equal(stacked.properties.style, undefined)
   assert.equal(single.properties.style, undefined)
+})
+
+test('embedded graphless activities reserve the shared visual slot before their disclosure', () => {
+  const graphless = detail({
+    id: 2,
+    date: '2026-07-09',
+    sport: 'yoga',
+    route: [],
+    heartRateTrace: [],
+    analysisRanges: [],
+    bestEfforts: null,
+  })
+  const embedded = buildDayCard(
+    factory,
+    '2026-07-09',
+    { details: { 1: detail({ id: 1, date: '2026-07-09' }), 2: graphless }, health: {} },
+    { embedded: true, expanded: true },
+  )
+  const graphlessActivity = byClass(embedded, 'tri-act').find(
+    activity => activity.properties.dataActivityId === '2',
+  )
+  assert.ok(graphlessActivity)
+  const emptyVisual = byClass(graphlessActivity, 'tri-act-figs--empty')[0]
+  assert.ok(emptyVisual)
+  assert.equal(emptyVisual.properties.ariaHidden, 'true')
+  assert.equal(text(byClass(graphlessActivity, 'tri-act-toggle')[0]), '− see less')
+  assert.equal(byClass(graphlessActivity, 'tri-act-more').length, 1)
+
+  const standalone = buildActivity(factory, graphless, true)
+  assert.equal(byClass(standalone, 'tri-act-figs--empty').length, 0)
+  assert.equal(text(byClass(standalone, 'tri-act-toggle')[0]), '− see less')
 })
 
 test('expanded day-card extras render every activity pre-expanded', () => {
@@ -4220,6 +4369,28 @@ test('pairs hr/power zones and curve/hist into duos with aligned captions', () =
     'based on vt1 150 bpm',
     'based on FTP 260 W',
   ])
+  const zoneTables = byClass(duos[0], 'tri-zone')
+  assert.deepEqual(byClass(zoneTables[0], 'tri-zone-name').map(text), [
+    'anaerobic',
+    'threshold',
+    'tempo',
+    'endurance',
+    'recovery',
+  ])
+  assert.deepEqual(byClass(zoneTables[1], 'tri-zone-name').map(text), [
+    'neuromuscular',
+    'anaerobic',
+    'VO2max',
+    'threshold',
+    'tempo',
+    'endurance',
+    'recovery',
+  ])
+  assert.equal(byClass(zoneTables[0], 'tri-zone-grid')[0].properties.role, 'list')
+  const zoneRows = byClass(zoneTables[1], 'tri-zone-row')
+  assert.equal(zoneRows[0].properties.role, 'listitem')
+  assert.match(String(zoneRows[0].properties.ariaLabel), /^Z7, neuromuscular, > 400w, 40s, /)
+  assert.equal(byClass(zoneTables[1], 'tri-zone-z')[0].properties.tabIndex, undefined)
 })
 
 test('removes zone duos from simplified activity details', () => {

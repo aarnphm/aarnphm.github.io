@@ -21,17 +21,6 @@ export interface DistributionBounds {
   sports: readonly DistributionSport[]
 }
 
-export interface DistributionPaceRange {
-  fastestSPerKm: number
-  slowestSPerKm: number
-}
-
-export interface CompletedDistributionPaceRange {
-  fastestSPerKm: number | null
-  slowestSPerKm: number | null
-  fillGap: boolean
-}
-
 export type DistributionMessage =
   | { type: 'restore'; model: DistributionModel }
   | { type: 'select-sport'; sport: DistributionSport }
@@ -99,48 +88,6 @@ export const telemetryWeightedAverage = (
     observedSeconds += observation.observedSeconds
   }
   return observedSeconds > 0 ? valueSeconds / observedSeconds : null
-}
-
-const validPaceRange = (range: DistributionPaceRange | null): range is DistributionPaceRange =>
-  range != null &&
-  Number.isFinite(range.fastestSPerKm) &&
-  Number.isFinite(range.slowestSPerKm) &&
-  range.fastestSPerKm > 0 &&
-  range.slowestSPerKm >= range.fastestSPerKm
-
-export const completeDistributionPaceRanges = (
-  ranges: readonly (DistributionPaceRange | null)[],
-): (CompletedDistributionPaceRange | null)[] => {
-  const observed = ranges.map(range => (validPaceRange(range) ? range : null))
-  const last = observed.length - 1
-  return observed.map((range, index) => {
-    if (index === 0) {
-      const boundary = range?.fastestSPerKm ?? observed[1]?.slowestSPerKm ?? null
-      return boundary == null
-        ? null
-        : { fastestSPerKm: boundary, slowestSPerKm: null, fillGap: false }
-    }
-    if (index === last) {
-      const boundary = range?.slowestSPerKm ?? observed[index - 1]?.fastestSPerKm ?? null
-      return boundary == null
-        ? null
-        : { fastestSPerKm: null, slowestSPerKm: boundary, fillGap: false }
-    }
-    if (range)
-      return {
-        fastestSPerKm: range.fastestSPerKm,
-        slowestSPerKm: range.slowestSPerKm,
-        fillGap: false,
-      }
-    const slower = observed[index - 1]
-    const faster = observed[index + 1]
-    if (!slower || !faster) return null
-    return {
-      fastestSPerKm: faster.slowestSPerKm,
-      slowestSPerKm: slower.fastestSPerKm,
-      fillGap: true,
-    }
-  })
 }
 
 const clampDate = (date: string, bounds: DistributionBounds): string =>

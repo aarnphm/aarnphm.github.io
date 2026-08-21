@@ -1,7 +1,20 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { dayCardActivitiesExpanded } from '../../../util/triathlon-card'
+import { alignedTrainingEffectMargins } from './activity-layout'
 import { dayExtrasFromDataset } from './embed-settings'
+
+test('aligns training effects by their natural top within each activity row', () => {
+  assert.deepEqual(
+    alignedTrainingEffectMargins([
+      { activityTop: 100, effectTop: 2_963.734375, marginTop: 0 },
+      { activityTop: 100.0078125, effectTop: 2_963.734375, marginTop: 0 },
+      { activityTop: 100, effectTop: 3_651.2109375, marginTop: 2_410.875 },
+      { activityTop: 4_000, effectTop: 4_500, marginTop: 0 },
+    ]),
+    [0, 0, 1_723.3984375, 0],
+  )
+})
 
 test('restores activity selection, exclusions, and trace settings from the embed dataset', () => {
   const dataset: DOMStringMap = {

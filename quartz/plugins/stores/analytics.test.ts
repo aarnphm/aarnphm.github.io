@@ -242,6 +242,11 @@ test('distributions use payload heart-rate zones and canonical cadence and power
 
   assert.deepEqual(distributions.heartRateZoneBounds, heartRateZoneBounds)
   assert.deepEqual(distributions.powerZoneBounds, payload.zones.power)
+  assert.equal(distributions.tenKmRaceTimeS, 50 * 60)
+  assert.deepEqual(
+    distributions.paceZoneBoundsSPerKm.map(value => Math.round(value)),
+    [387, 334, 300, 280, 263],
+  )
   assert.equal(distributions.activities.length, 3)
   for (const point of distributions.activities) {
     assert.equal(point.heartRateZoneSeconds?.length, heartRateZoneBounds.length + 1)
@@ -270,15 +275,7 @@ test('distributions use payload heart-rate zones and canonical cadence and power
   assert.equal(runPoint?.averagePowerWatts, 240)
   assert.equal(runPoint?.powerSource, 'estimated')
   assert.equal(runPoint?.powerZoneSeconds, null)
-  assert.deepEqual(runPoint?.paceZoneSeconds, [0, 400, 300, 0, 0, 0])
-  assert.deepEqual(runPoint?.paceZoneRanges, [
-    null,
-    { fastestSPerKm: 400, slowestSPerKm: 400 },
-    { fastestSPerKm: 300, slowestSPerKm: 300 },
-    null,
-    null,
-    null,
-  ])
+  assert.deepEqual(runPoint?.paceZoneSeconds, [0, 0, 1599, 0, 0, 0])
   assert.equal(runPoint?.cadence, 176)
   assert.equal(runPoint?.cadenceUnit, 'spm')
   assert.equal(swim?.averagePowerWatts, null)
@@ -288,11 +285,18 @@ test('distributions use payload heart-rate zones and canonical cadence and power
 })
 
 test('empty analytics include an empty distributions block', () => {
-  assert.deepEqual(buildAnalytics(null).distributions, {
+  const distributions = buildAnalytics(null).distributions
+  assert.deepEqual(distributions, {
     heartRateZoneBounds: [],
     powerZoneBounds: [],
+    paceZoneBoundsSPerKm: distributions.paceZoneBoundsSPerKm,
+    tenKmRaceTimeS: 50 * 60,
     activities: [],
   })
+  assert.deepEqual(
+    distributions.paceZoneBoundsSPerKm.map(value => Math.round(value)),
+    [387, 334, 300, 280, 263],
+  )
 })
 
 test('activity summaries expose normalized pace intensity for run and swim', () => {
@@ -632,7 +636,6 @@ test('heat block uses CORE heat strain before WeatherKit ambient temperature', (
     heartRateZoneSeconds: null,
     powerZoneSeconds: null,
     paceZoneSeconds: null,
-    paceZoneRanges: null,
     averagePowerWatts: null,
     powerSource: null,
     cadence: 85,

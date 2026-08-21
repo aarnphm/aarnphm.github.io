@@ -251,6 +251,7 @@ const en: TriDict = {
     'date range': 'date range',
     'range start': 'range start',
     'training time': 'training time',
+    'based on 10 km race time': 'based on 10 km race time',
     'no activity distribution data': 'no activity distribution data',
     'no zone data': 'no zone data',
     'no telemetry data': 'no telemetry data',
@@ -898,7 +899,7 @@ const en: TriDict = {
     },
     hrzones: {
       term: 'training zone distributions',
-      def: 'This panel adds recorded time in each training zone across the selected sport and date range. Cycling switches between heart rate and seven FTP-based power zones. Running switches between heart rate and six Strava pace zones. Swimming uses heart rate. Run pace ranges show the observed split paces assigned to each zone.',
+      def: 'This panel adds recorded time in each training zone across the selected sport and date range. Cycling switches between heart rate and seven FTP-based power zones. Running switches between heart rate and six fixed pace zones derived from the 10 km race time in ATHLETE. Smoothed running stream samples are adjusted for grade before they are assigned to a zone. Swimming uses heart rate.',
     },
     activitytelemetry: {
       term: 'activity telemetry',
@@ -1077,6 +1078,7 @@ const fr: TriDict = {
     'date range': 'période',
     'range start': 'début de la période',
     'training time': "temps d'entraînement",
+    'based on 10 km race time': 'basé sur le temps de course sur 10 km',
     'no activity distribution data': 'aucune donnée de répartition',
     'no zone data': 'aucune donnée de zone',
     'no telemetry data': 'aucune donnée de télémétrie',
@@ -1731,7 +1733,7 @@ const fr: TriDict = {
     },
     hrzones: {
       term: "répartition des zones d'entraînement",
-      def: "Ce panneau additionne le temps enregistré dans chaque zone pour la discipline et la période choisies. Le vélo alterne entre la fréquence cardiaque et sept zones de puissance basées sur la FTP. La course alterne entre la fréquence cardiaque et six zones d'allure Strava. La natation utilise la fréquence cardiaque. Les plages d'allure montrent les allures observées des tours affectés à chaque zone.",
+      def: "Ce panneau additionne le temps enregistré dans chaque zone pour la discipline et la période choisies. Le vélo alterne entre la fréquence cardiaque et sept zones de puissance basées sur la FTP. La course alterne entre la fréquence cardiaque et six zones d'allure fixes dérivées du temps sur 10 km dans ATHLETE. Les échantillons lissés sont ajustés selon la pente avant leur attribution à une zone. La natation utilise la fréquence cardiaque.",
     },
     activitytelemetry: {
       term: 'télémétrie des activités',

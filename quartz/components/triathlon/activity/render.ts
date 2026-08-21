@@ -909,6 +909,7 @@ export const renderDetail = (
   embedded = false,
   dayRouteHref?: string,
   traceSettings?: TriathlonTraceSettings,
+  reserveFueling = false,
 ): ActivityView => {
   const domF = createDomFactory(presentation)
   const d = powerViewActivity(presentation, source)
@@ -925,6 +926,7 @@ export const renderDetail = (
     fillMissingRunPower,
     embedded,
     traceSettings,
+    reserveFueling,
   ) as HTMLElement
   if (d.sport === 'run') {
     const matchedGroup = payload?.matchedRuns?.groups.find(group =>
