@@ -2,12 +2,10 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { BuildCtx } from './ctx'
 import {
-  assetReferenceForContent,
   assetManifestRecord,
   assetPath,
   assetSlugForContent,
   contentHashSlug,
-  hashAssetContent,
   resolveAsset,
 } from './asset-manifest'
 
@@ -58,19 +56,14 @@ test('keeps logical names during watch and serve builds', () => {
   assert.equal(resolveAsset(serveCtx, assetPath('postscript', '.js')), 'postscript.js')
 })
 
-test('versions stable watch asset paths by content', () => {
+test('keeps watch asset paths stable across content changes', () => {
   const watchCtx = testCtx({ watch: true })
   const productionCtx = testCtx()
-  const watchAsset = assetReferenceForContent(watchCtx, 'static/component', '.css', 'body{}')
-  const productionAsset = assetReferenceForContent(
-    productionCtx,
-    'static/component',
-    '.css',
-    'body{}',
-  )
+  const watchSlug = assetSlugForContent(watchCtx, 'static/component', '.css', 'body{}')
+  const changedWatchSlug = assetSlugForContent(watchCtx, 'static/component', '.css', 'a{color:red}')
+  const productionSlug = assetSlugForContent(productionCtx, 'static/component', '.css', 'body{}')
 
-  assert.equal(watchAsset.slug, 'static/component')
-  assert.equal(watchAsset.path, `static/component.css?v=${hashAssetContent('body{}')}`)
-  assert.match(productionAsset.slug, /^static\/component-[0-9a-f]{8}$/)
-  assert.equal(productionAsset.path, `${productionAsset.slug}.css`)
+  assert.equal(watchSlug, 'static/component')
+  assert.equal(changedWatchSlug, 'static/component')
+  assert.match(productionSlug, /^static\/component-[0-9a-f]{8}$/)
 })

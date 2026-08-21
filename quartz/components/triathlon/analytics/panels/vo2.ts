@@ -451,7 +451,7 @@ export const vo2ProfileBaseSvg = (
   const s = svg('svg', {
     class: 'tri-vo2p-svg',
     viewBox: `0 0 ${VO2P_W} ${VO2P_H}`,
-    preserveAspectRatio: 'xMidYMid meet',
+    preserveAspectRatio: 'none',
   })
   s.appendChild(svg('rect', { x: 0, y: 0, width: VO2P_W, height: VO2P_H, class: 'tri-vo2p-bg' }))
   vo2ProfilePhase(s, profile)

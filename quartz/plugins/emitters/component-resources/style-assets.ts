@@ -7,7 +7,6 @@ import type { StaticResources } from '../../../util/resources'
 import type { ComponentResourceSet } from './resource-set'
 import collapseHeaderStyle from '../../../components/styles/collapseHeader.inline.scss'
 import {
-  assetReferenceForContent,
   assetPath,
   contentHashSlug,
   ensureExtractedStaticResources,
@@ -132,9 +131,9 @@ export async function* writeComponentStyles(
 
   const stylesheet = resources.componentCss.join('\n')
   const content = minifyStylesheet('component.css', `@layer quartz-base {\n${stylesheet}\n}`)
-  const asset = assetReferenceForContent(ctx, componentCssBundleSlug, '.css', content)
-  registerExtractedStaticResource(ctx, componentCssBundleKey, asset.path)
-  yield write({ ctx, slug: asset.slug, ext: '.css', content })
+  const slug = assetSlugForContent(ctx, componentCssBundleSlug, '.css', content)
+  registerExtractedStaticResource(ctx, componentCssBundleKey, assetPath(slug, '.css'))
+  yield write({ ctx, slug, ext: '.css', content })
 }
 
 async function indexStylesheetContent(

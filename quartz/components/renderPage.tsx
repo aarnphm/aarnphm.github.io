@@ -2250,6 +2250,7 @@ export function renderPage(
   // NOTE: set componentData.tree to the edited html that has transclusions rendered
 
   let tree = transcludeFinal(root, componentData, { visited })
+  logBuildSpan(ctx.argv, 'render:transclude', slug, renderPerf.elapsedMs())
   renderBaseEmbeds(tree, componentData)
 
   if (componentData.fileData.frontmatter?.pageLayout === 'technical-tractatus') {

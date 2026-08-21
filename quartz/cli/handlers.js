@@ -222,20 +222,22 @@ export async function handleBuild(argv) {
   }
 
   const rebuildQuartzBundle = async () => {
-    const result = await ctx.rebuild().catch(err => {
-      console.error(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
-      console.error(`Reason: ${styleText('gray', formatErrorReason(err))}`)
-      process.exit(1)
-    })
-
-    if (argv.bundleInfo) {
-      await printBundleInfo(result.metafile)
+    try {
+      const result = await ctx.rebuild()
+      if (argv.bundleInfo) {
+        await printBundleInfo(result.metafile)
+      }
+      return await import(`../../${cacheFile}?update=${randomUUID()}`)
+    } catch (err) {
+      console.log(`${styleText('red', "Couldn't parse Quartz configuration:")} ${fp}`)
+      console.log(`Reason: ${styleText('gray', formatErrorReason(err))}`)
+      if (!argv.watch) process.exit(1)
+      console.log(styleText('yellow', 'Waiting for the next source change...'))
+      return null
     }
-
-    return import(`../../${cacheFile}?update=${randomUUID()}`)
   }
 
-  const build = async clientRefresh => {
+  const build = async (clientRefresh, changedPaths = []) => {
     const buildStart = new Date().getTime()
     lastBuildMs = buildStart
     const release = await buildMutex.acquire()
@@ -245,15 +247,26 @@ export async function handleBuild(argv) {
     }
 
     const buildReason = activeBuild ? 'source' : 'initial'
+    const bundle = await rebuildQuartzBundle()
+    if (!bundle) {
+      release()
+      return
+    }
+
+    if (activeBuild && bundle.isStyleOnlySourceChange(changedPaths)) {
+      release()
+      await bundle.buildStyles(argv, buildMutex, changedPaths)
+      clientRefresh()
+      return
+    }
+
     if (activeBuild) {
       console.log(styleText('yellow', 'Detected a source code change, doing a hard rebuild...'))
       await disposeActiveBuild()
     }
-
-    const { default: buildQuartz } = await rebuildQuartzBundle()
     release()
 
-    activeBuild = await buildQuartz(argv, buildMutex, clientRefresh, buildReason)
+    activeBuild = await bundle.default(argv, buildMutex, clientRefresh, buildReason)
     clientRefresh()
   }
 
@@ -426,7 +439,7 @@ export async function handleBuild(argv) {
   }
 
   if (argv.watch) {
-    const sourceRebuildQueue = { running: false, requested: false }
+    const sourceRebuildQueue = { running: false, requested: false, pending: new Set() }
     const requestSourceRebuild = async () => {
       sourceRebuildQueue.requested = true
       if (sourceRebuildQueue.running) return
@@ -434,7 +447,9 @@ export async function handleBuild(argv) {
       try {
         while (sourceRebuildQueue.requested) {
           sourceRebuildQueue.requested = false
-          await build(clientRefresh)
+          const changedPaths = [...sourceRebuildQueue.pending]
+          sourceRebuildQueue.pending.clear()
+          await build(clientRefresh, changedPaths)
         }
       } finally {
         sourceRebuildQueue.running = false
@@ -442,7 +457,9 @@ export async function handleBuild(argv) {
     }
     const sourceChanged = (type, fp) => {
       if (isTestSourcePath(fp)) return
-      console.log(styleText('yellow', `Detected source ${type}: ${normalizeWatchedPath(fp)}`))
+      const normalized = normalizeWatchedPath(fp)
+      console.log(styleText('yellow', `Detected source ${type}: ${normalized}`))
+      sourceRebuildQueue.pending.add(normalized)
       void requestSourceRebuild()
     }
     chokidar

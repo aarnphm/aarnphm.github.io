@@ -545,7 +545,8 @@ export type StravaPayloadAnalyticsInputs = Pick<
   'weights' | 'events' | 'dexa' | 'vo2labs'
 >
 
-let memo: { key: string; payload: LoadedStravaPayload } | null = null
+const payloadMemo = new Map<string, LoadedStravaPayload>()
+let payloadMemoStamps = ''
 
 export function loadStravaPayloadSync(
   since?: string,
@@ -558,53 +559,56 @@ export function loadStravaPayloadSync(
     strength: manualStrength,
     analytics: analyticsInputs,
   })
-  const key = `${since ?? ''}:${manualKey}:${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
-  if (memo?.key !== key) {
-    const strava = readJson<StravaRawCache>(stravaCachePath)
-    const oura = readJson<OuraCache>(ouraCachePath)
-    const garmin = readJson<GarminCache>(garminCachePath)
-    const apple = readJson<AppleCache>(appleCachePath)
-    const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
-    const weather = readJson<WeatherCache>(weatherCachePath)
-    const payload = buildPayload(strava, oura, garmin, since, weather, ATHLETE.ftp)
-    applyManualFueling(payload, manualFueling)
-    applyManualStrength(payload, manualStrength)
-    enrichSwimMetrics(payload, apple)
-    enrichRunDynamics(payload, apple)
-    enrichRouteLessHeartRate(payload, apple)
-    enrichCoreBodyTemperature(payload, core)
-    const analytics = buildAnalytics(strava, {
-      ...analyticsInputs,
-      oura,
-      apple,
-      core,
-      garmin,
-      weather,
-      ftp: ATHLETE.ftp,
-      powerCurve: {
-        sixWeeks: payload.powerCurveRef,
-        year: payload.powerCurveYearRef,
-        yearLabel: payload.powerCurveYear,
-        criticalPower: payload.criticalPower,
-        criticalPowerYear: payload.criticalPowerYear,
-        ftp: ATHLETE.ftp,
-        goalFtp: ATHLETE.goalFTP,
-      },
-      zones: payload.zones,
-      activityDetails: payload.details,
-      since,
-    })
-    enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
-    enrichCalculatedExerciseLoads(payload)
-    enrichCalculatedTrainingEffects(payload)
-    const ouraDetails = oura?.details ?? {}
-    memo = {
-      key,
-      payload: {
-        ...payload,
-        dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
-      },
-    }
+  const stamps = `${stamp(stravaCachePath)}:${stamp(ouraCachePath)}:${stamp(garminCachePath)}:${stamp(weatherCachePath)}:${stamp(appleCachePath)}:${stamp(coreBodyTemperatureCachePath)}`
+  if (payloadMemoStamps !== stamps) {
+    payloadMemo.clear()
+    payloadMemoStamps = stamps
   }
-  return memo.payload
+  const key = `${since ?? ''}:${manualKey}`
+  const cached = payloadMemo.get(key)
+  if (cached) return cached
+  const strava = readJson<StravaRawCache>(stravaCachePath)
+  const oura = readJson<OuraCache>(ouraCachePath)
+  const garmin = readJson<GarminCache>(garminCachePath)
+  const apple = readJson<AppleCache>(appleCachePath)
+  const core = parseCoreBodyTemperatureCache(readJson<unknown>(coreBodyTemperatureCachePath))
+  const weather = readJson<WeatherCache>(weatherCachePath)
+  const payload = buildPayload(strava, oura, garmin, since, weather, ATHLETE.ftp)
+  applyManualFueling(payload, manualFueling)
+  applyManualStrength(payload, manualStrength)
+  enrichSwimMetrics(payload, apple)
+  enrichRunDynamics(payload, apple)
+  enrichRouteLessHeartRate(payload, apple)
+  enrichCoreBodyTemperature(payload, core)
+  const analytics = buildAnalytics(strava, {
+    ...analyticsInputs,
+    oura,
+    apple,
+    core,
+    garmin,
+    weather,
+    ftp: ATHLETE.ftp,
+    powerCurve: {
+      sixWeeks: payload.powerCurveRef,
+      year: payload.powerCurveYearRef,
+      yearLabel: payload.powerCurveYear,
+      criticalPower: payload.criticalPower,
+      criticalPowerYear: payload.criticalPowerYear,
+      ftp: ATHLETE.ftp,
+      goalFtp: ATHLETE.goalFTP,
+    },
+    zones: payload.zones,
+    activityDetails: payload.details,
+    since,
+  })
+  enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
+  enrichCalculatedExerciseLoads(payload)
+  enrichCalculatedTrainingEffects(payload)
+  const ouraDetails = oura?.details ?? {}
+  const loaded: LoadedStravaPayload = {
+    ...payload,
+    dailyAnalytics: buildTriathlonDailyAnalytics(analytics, ouraDetails, payload.details),
+  }
+  payloadMemo.set(key, loaded)
+  return loaded
 }

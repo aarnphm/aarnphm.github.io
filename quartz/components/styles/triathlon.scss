@@ -11087,7 +11087,7 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   display: block;
   width: 100%;
   height: auto;
-  min-height: 280px;
+  aspect-ratio: 1200 / 430;
   font-family: var(--codeFont);
   overflow: visible;
 }
@@ -11192,6 +11192,9 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   fill: var(--tri-vo2p-axis);
   font-size: clamp(0.49rem, 0.75cqi, 0.72rem);
   font-variant-numeric: tabular-nums;
+  transform: scaleX(0.6666666667);
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .tri-vo2p-blue {
@@ -11224,6 +11227,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   fill: var(--tri-vo2p-frame);
 }
 
+@container (min-width: 64rem) {
+  .tri-vo2p-xtext,
+  .tri-vo2p-ytext {
+    font-size: 0.35rem;
+  }
+}
+
 @media (max-width: 720px) {
   .tri-vo2p-panel {
     gap: 0.2rem;
@@ -11253,7 +11263,13 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
   }
 
   .tri-vo2p-svg {
-    min-height: 240px;
+    aspect-ratio: 800 / 430;
+  }
+
+  .tri-vo2p-xtext,
+  .tri-vo2p-ytext {
+    font-size: 1rem;
+    transform: none;
   }
 }
 
