@@ -1,4 +1,4 @@
-import type { StravaActivityDetail } from '../plugins/stores/strava'
+import type { StravaActivityDetail, StravaDay } from '../plugins/stores/strava'
 import type { FullSlug } from './path'
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/
@@ -166,23 +166,49 @@ const sortSports = (sports: Iterable<string>): string[] =>
     return left.localeCompare(right)
   })
 
+type TriathlonDateTreeDetail = Pick<
+  StravaActivityDetail,
+  'date' | 'sport' | 'distanceKm' | 'movingTimeS'
+>
+type TriathlonDateTreeDay = Pick<StravaDay, 'date' | 'durationS' | 'items'>
+
+type TriathlonDateTreeInput = TriathlonDateTreeDetail | TriathlonDateTreeDay
+
+const isDay = (row: TriathlonDateTreeInput): row is TriathlonDateTreeDay =>
+  'items' in row && Array.isArray(row.items)
+
+interface TriathlonDateAccumulator {
+  count: number
+  sports: Set<string>
+  km: number
+  timeS: number
+}
+
 export const triathlonDateTree = (
-  details: Readonly<
-    Record<string, Pick<StravaActivityDetail, 'date' | 'sport' | 'distanceKm' | 'movingTimeS'>>
-  >,
+  details: Readonly<Record<string, TriathlonDateTreeInput>>,
   prefix = '',
 ): TriathlonTreeYear[] => {
-  const byDate = new Map<
-    string,
-    { count: number; sports: Set<string>; km: number; timeS: number }
-  >()
+  const byDate = new Map<string, TriathlonDateAccumulator>()
   for (const detail of Object.values(details)) {
     if (!detail.date.startsWith(prefix) || triathlonDaySlug(detail.date) === null) continue
     const entry = byDate.get(detail.date) ?? { count: 0, sports: new Set(), km: 0, timeS: 0 }
-    entry.count += 1
-    entry.sports.add(detail.sport)
-    entry.km += detail.distanceKm
-    entry.timeS += detail.movingTimeS
+    if (isDay(detail)) {
+      if (detail.items.length === 0) {
+        entry.timeS += detail.durationS
+      } else {
+        for (const item of detail.items) {
+          entry.count += 1
+          entry.sports.add(item.sport)
+          entry.km += item.distanceKm
+          entry.timeS += item.durationS
+        }
+      }
+    } else {
+      entry.count += 1
+      entry.sports.add(detail.sport)
+      entry.km += detail.distanceKm
+      entry.timeS += detail.movingTimeS
+    }
     byDate.set(detail.date, entry)
   }
 
@@ -228,14 +254,14 @@ export const triathlonDateTree = (
 }
 
 export const triathlonActivityDates = (
-  details: Readonly<Record<string, Pick<StravaActivityDetail, 'date'>>>,
+  details: Readonly<Record<string, { date: string }>>,
 ): string[] =>
   [...new Set(Object.values(details).map(detail => detail.date))]
     .filter(date => triathlonDaySlug(date) !== null)
     .sort()
 
 export const triathlonActivityFeedRoutes = (
-  details: Readonly<Record<string, Pick<StravaActivityDetail, 'date'>>>,
+  details: Readonly<Record<string, { date: string }>>,
 ): TriathlonFeedRoute[] => {
   const routes = new Map<FullSlug, string>()
   for (const date of triathlonActivityDates(details)) {

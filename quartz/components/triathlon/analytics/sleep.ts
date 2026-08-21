@@ -140,6 +140,7 @@ export const mountSleepPanel = (
 
   chart.addEventListener('click', onChartClick)
   block.addEventListener('click', onBlockClick)
+  open(data.meta.today)
   return () => {
     live = false
     chart.removeEventListener('click', onChartClick)

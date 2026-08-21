@@ -7560,6 +7560,23 @@ const buildDaySleepAnalytics = <N>(
   return group
 }
 
+const buildRestDaySleepAnalytics = <N>(
+  f: TriNodeFactory<N>,
+  summary: TriathlonDayAnalytics,
+): N | null => {
+  const sleep = buildDaySleepAnalytics(f, summary)
+  if (!sleep) return null
+  const section = f.el('section', 'tri-day-analytics tri-day-rest-analytics', undefined, {
+    'aria-label': triText(f.presentation.locale, 'sleep details'),
+    'data-analytics-date': summary.date,
+    'data-i18n-aria-label': 'sleep details',
+  })
+  const groups = f.el('div', 'tri-day-analytics-grid')
+  f.add(groups, sleep)
+  f.add(section, groups)
+  return section
+}
+
 const dayAnalyticsTrainingMetrics = (
   presentation: TriathlonPresentation,
   summary: TriathlonDayAnalytics,
@@ -7748,8 +7765,8 @@ export const buildDayCard = <N>(
     f.add(head, track)
   }
   f.add(card, head)
-  const dailyAnalytics = extras.analytics ? payload?.dailyAnalytics?.[dateIso] : undefined
-  if (dailyAnalytics) {
+  const dailyAnalytics = payload?.dailyAnalytics?.[dateIso]
+  if (extras.analytics && dailyAnalytics) {
     f.add(card, buildDayAnalytics(f, dailyAnalytics))
     if (day.length > 0)
       f.add(
@@ -7774,6 +7791,16 @@ export const buildDayCard = <N>(
     }
   } else {
     for (const d of day) f.add(card, render(d))
+  }
+  if (
+    !extras.analytics &&
+    !extras.sport &&
+    !extras.activityId &&
+    allDay.length === 0 &&
+    dailyAnalytics
+  ) {
+    const sleep = buildRestDaySleepAnalytics(f, dailyAnalytics)
+    if (sleep) f.add(card, sleep)
   }
   if (!extras.sport && !extras.activityId && !extras.analytics) {
     const dh = payload?.health[dateIso]

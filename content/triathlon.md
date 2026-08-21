@@ -70,14 +70,14 @@ maintenance:
     - - type: FSA, T47 BBright for 24mm spindle
       - distance: 1727.25
       - range:
-          - end: '2026-08-21'
+          - end: '2026-08-22'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
     - - type: CeramicSpeed T47 BBright for Shimano
       - distance: null
       - range:
           - end: null
-            start: '2026-08-21'
+            start: '2026-08-22'
       - reason: null
   chain:
     '1':
@@ -112,7 +112,7 @@ maintenance:
     - - type: Ultegra FC-R8100 52-36T
       - distance: 1727.25
       - range:
-          - end: '2026-08-21'
+          - end: '2026-08-22'
             start: '2026-05-16'
       - reason: upgrades to CarbonTi
     - - type: CarbonTi 54-40T
@@ -195,14 +195,12 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-20 12:59:38 GMT-04:00
+modified: 2026-08-21 12:24:42 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
 strava: '2026-05-15'
 tags:
-  - life
-  - self
   - evergreen
 title: triathlon
 triathlon: '70.3'
@@ -1117,6 +1115,73 @@ date: 2026-06-07
 ## equation reference
 
 This is the current calculation sheet for the triathlon activity cards and analytics. It describes what the site computes, rather than every value a provider may send. Unless a formula says otherwise, distance is in metres, time is in seconds, speed is in metres per second, heart rate is in beats per minute, and grade is a decimal rather than a percentage.
+
+### route, document, and interaction reference
+
+The `/triathlon` route family is generated from the same enriched activity, health, analytics, maintenance, and training-plan snapshot. The browser pages expose these views:
+
+| route                            | behaviour                                                                                                                                                         | data shown                                                                                                                                                                                                                   |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/triathlon`                     | scrollable day timeline, day selection, activity expansion, and the shared gear, pace, calculator, analytics, map, and training controls                          | daily activity cards, recovery state, activity telemetry, weather, training state, gear, and maintenance                                                                                                                     |
+| `/triathlon/tools`               | scrollable equipment and conversion reference                                                                                                                     | bike and training gear, component and service history, run/swim/bike pace and speed conversions                                                                                                                              |
+| `/triathlon/calc`                | race, gear-ratio, and tire-pressure tabs; editable legs and finish target; shareable race inputs                                                                  | race-distance presets, current thresholds and calibration, projected paces, drivetrain ratios and losses, rider/bike mass, weather, and pressure inputs                                                                      |
+| `/triathlon/analytics`           | searchable analytics catalog, activity lookup, two-activity comparison, chart scrubbing, and linked activity detail                                               | body composition, training load, recovery, sleep, VO2max, lactate threshold, power, abilities, distributions, cardiovascular trends, weekly load and effort, heat, readiness, pace trend, training actions, and FTP evidence |
+| `/triathlon/maps`                | searchable route map with sport filters, heat/power/heart-rate/cadence/speed overlays, terrain, satellite style, route selection, and an activity-detail scroller | routed activity geometry, streams, summary metrics, weather, health, zones, and power references                                                                                                                             |
+| `/triathlon/training`            | searchable plan selector, section tree, and scrollable plan document                                                                                              | parsed training-plan metadata and complete plan content                                                                                                                                                                      |
+| `/triathlon/feed`                | newest-first activity search; free-text terms; `filter:<sport-or-date>`; `sort:distance`, `sort:cadence`, or `sort:pace`; expandable activity detail              | activity summaries plus lazily loaded telemetry and same-day recovery                                                                                                                                                        |
+| `/triathlon/on`                  | newest-first year, month, and day tree with activity count, distance, duration, sport labels, and rest days                                                       | the complete generated date index                                                                                                                                                                                            |
+| `/triathlon/on/<YYYY>`           | year-scoped version of the date tree and feed document                                                                                                            | days and activities whose local date starts with the selected year                                                                                                                                                           |
+| `/triathlon/on/<YYYY>/<MM>`      | month-scoped version of the date tree and feed document                                                                                                           | days and activities whose local date starts with the selected month                                                                                                                                                          |
+| `/triathlon/on/<YYYY>/<MM>/<DD>` | expanded canonical day card with anchors for individual activities                                                                                                | that local day's activities, streams, recovery, health, weather, tracking overrides, and daily analytics; rest-only dates still receive a page                                                                               |
+
+<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> opens the triathlon command palette. <kbd>/</kbd> focuses or blurs the active search on analytics, maps, training, and feed. The <kbd>g</kbd> prefix navigates among the subpages, <kbd>j</kbd>/<kbd>k</kbd> moves through feed and date-tree rows, and the calculator uses <kbd>r</kbd>, <kbd>c</kbd>, and <kbd>t</kbd> for race, gear ratios, and tire pressure. `?tri-debug=performance` opens the performance panel on every fixed, archive, and day page; <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> toggles it. The panel reports FPS, frame p95, over-budget and long-frame counts, blocked time, layout shift, cursor/timeline/popover samples, scroll rate, heap, DOM size, and worst script/event attribution.
+
+Every document route has a Markdown sibling. `/triathlon.md` is this source note. The generated fixed, year/month archive, and day pages use the same pathname with `.md` appended. A `GET` or `HEAD` request from a recognized agent user agent, or one accepting `text/markdown` with positive quality, receives the Markdown sibling automatically. Ordinary browser requests receive HTML. Explicit `.md` requests stay explicit. Generated Markdown is route-specific:
+
+- `tools.md` contains conversions, race distances, maintenance, and gear.
+- `calc.md` contains presets, calibration, thresholds, race readiness, events, FTP evidence, and zones.
+- `analytics.md` contains the complete analytics object and related data URLs.
+- `maps.md` contains compact per-activity route summaries and points to the full activity payload.
+- `training.md` contains complete plan prose and tables.
+- `feed.md` contains the complete generated activity feed, summary, active-day rows, and weekly rows.
+- `on.md`, year/month archive Markdown, and day Markdown are date-scoped. Day Markdown includes the complete matching activity-detail objects.
+
+The shortcut host `t.aarnphm.xyz` issues permanent redirects into this route family. `/`, `/tools`, `/calc`, `/analytics`, `/maps`, `/training`, `/feed`, and `/on` map to their `/triathlon` equivalents. `/<YYYY>`, `/<YYYY>/<MM>`, and `/<YYYY>/<MM>/<DD>` map into `/triathlon/on`; `/activities/<Strava ID>` resolves the activity's local date through the generated activity index and redirects to its day page.
+
+### machine-readable data and model access
+
+`/triathlon/data` is the stable machine-readable feed route. A non-agent browser request that accepts `text/html` receives an expandable HTML inspector. Agent requests and other accepted media types receive `application/x-ndjson`. The response permits cross-origin reads, varies on `Accept` and `User-Agent`, and uses a five-minute shared-cache lifetime with 59 seconds of stale revalidation. `/static/triathlon/data.jsonl` is the raw asset behind both representations.
+
+The NDJSON stream is chronological within each record group and contains one JSON object per line:
+
+- `meta` declares schema version, generation time, athlete and observation window, zones, thresholds, critical-power estimates, and record counts.
+- `day` records sessions, distance, duration, load, CTL, ATL, TSB, sport-specific CTL, readiness, sleep, HRV, resting heart rate, calories, body composition, weather, and next-day recovery context.
+- `activity` records swim, bike, and run identity, local date, distance, times, elevation, heart rate, power, cadence or strokes, calories, weather, training exclusion, grade-adjusted speed, intensity, load, peak power and speed, efficiency factor, and decoupling.
+- `week` records volume, time, load, relative effort, target ranges, ramp, monotony, and strain.
+
+The browser pages load these public data assets as needed:
+
+| path                                       | contract                                                                                                                                                          |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/static/strava-detail.json`               | activity-detail manifest with monthly shard paths, health and daily analytics, zones, power curves, critical power, thresholds, and matched Garmin/Strava efforts |
+| `/static/strava-detail/<YYYY-MM[-N]>.json` | exact activity summaries, streams, routes, laps, zones, weather, and provider-derived detail for one bounded shard                                                |
+| `/static/analytics.json`                   | complete generated analytics object used by analytics, feed, maps, command search, and calculator projection                                                      |
+| `/static/oura-detail.json`                 | date-keyed detailed Oura sleep and recovery records used by the sleep surface                                                                                     |
+| `/static/training.json`                    | parsed training-plan documents                                                                                                                                    |
+| `/static/strava-activity-index.json`       | Strava activity ID to local-date map used by `t.aarnphm.xyz/activities/<ID>`                                                                                      |
+| `/static/triathlon/data.jsonl`             | raw `meta`, `day`, `activity`, and `week` NDJSON used by the feed documents and pace forecaster                                                                   |
+
+The published model families are `pace` and `hr`. Their public objects are:
+
+| path                                            | data                                                                                                                     |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `/models/<family>/latest.json`                  | mutable pointer containing the current version, manifest and weight keys, SHA-256, dataset hash, and validation metadata |
+| `/models/<family>/v<version>/manifest.json`     | immutable typed feature, normalization, output, validation, and golden-parity contract                                   |
+| `/models/<family>/v<version>/model.safetensors` | immutable model weights                                                                                                  |
+
+The models endpoint accepts `GET` and `HEAD`; other methods return `405`. Production reads objects from R2, forwards object HTTP metadata and ETag, enables cross-origin access, caches `latest.json` for 60 seconds with mandatory revalidation, and caches versioned manifests and weights for one year as immutable objects. Missing keys return `404`. Local requests read the generated static model tree, enable cross-origin access, and use `no-store`; the development watcher atomically exposes the latest archive under `/models/<family>/local-v<version>/` and writes a local `latest.json` pointer.
+
+The in-browser pace forecaster first reads `/static/triathlon/data.jsonl`, then gets `/models/pace/latest.json`, its manifest, and its weights. It verifies the weights against the advertised SHA-256, loads WebGPU when available with WASM as the runtime fallback, runs the manifest's golden-parity check, and only then exposes predictions.
 
 ### source precedence
 

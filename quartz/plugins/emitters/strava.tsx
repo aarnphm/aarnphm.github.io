@@ -34,12 +34,12 @@ import {
   enrichRunDynamics,
   enrichSwimMetrics,
   garminCachePath,
+  type LoadedStravaPayload,
   ouraCachePath,
   stravaCachePath,
   weatherCachePath,
 } from '../../util/strava-payload'
 import {
-  triathlonActivityDates,
   triathlonActivityFeedRoutes,
   triathlonDaySlug,
   triathlonFeedScopeFromSlug,
@@ -71,7 +71,6 @@ import {
   applyManualStrength,
   buildPayload,
   emptyHealth,
-  StravaPayload,
   StravaRawCache,
 } from '../stores/strava'
 import { parseTrainingPlans } from '../stores/training'
@@ -277,6 +276,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
       enrichCalculatedExerciseLoads(payload)
       enrichCalculatedTrainingEffects(payload)
       const dailyAnalytics = buildTriathlonDailyAnalytics(analytics, oura?.details, payload.details)
+      const renderPayload: LoadedStravaPayload = { ...payload, dailyAnalytics }
       const detailPayload: StravaDetailPayload = {
         details: payload.details,
         swimTrend: payload.swimTrend,
@@ -358,7 +358,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         ctx,
         fileData: {
           ...file.data,
-          stravaPayload: payload,
+          stravaPayload: renderPayload,
           triathlonMaintenance: maintenance,
           triathlonRenderData,
         },
@@ -414,7 +414,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
           ctx,
           fileData: {
             ...subFile.data,
-            stravaPayload: payload,
+            stravaPayload: renderPayload,
             triathlonMaintenance: maintenance,
             triathlonRenderData,
           },
@@ -445,7 +445,9 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         )
       ).flat()
 
-      const feedRoutes = triathlonActivityFeedRoutes(payload.details)
+      const feedRoutes = triathlonActivityFeedRoutes(
+        Object.fromEntries(payload.days.map(day => [day.date, { date: day.date }])),
+      )
       for (const { slug: feedSlug } of feedRoutes) nextTemporalSlugs.add(feedSlug)
       yield* (
         await mapConcurrent(feedRoutes, defaultIoConcurrency, ({ slug: feedSlug, title }) =>
@@ -453,9 +455,9 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         )
       ).flat()
 
-      const dayRoutes = triathlonActivityDates(payload.details).flatMap(date => {
-        const slug = triathlonDaySlug(date)
-        return slug ? [{ date, slug }] : []
+      const dayRoutes = payload.days.flatMap(day => {
+        const slug = triathlonDaySlug(day.date)
+        return slug ? [{ date: day.date, slug }] : []
       })
       for (const { slug: daySlug } of dayRoutes) nextTemporalSlugs.add(daySlug)
       const location = file.data.frontmatter?.['location']
@@ -518,7 +520,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
             const dayResources = pageResources(pathToRoot(daySlug), resources, ctx)
             const dayData: QuartzComponentProps = {
               ctx,
-              fileData: { ...dayFile.data, stravaPayload: payload },
+              fileData: { ...dayFile.data, stravaPayload: renderPayload },
               externalResources: dayResources,
               cfg: ctx.cfg.configuration,
               children: [],
@@ -582,7 +584,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
 
 declare module 'vfile' {
   interface DataMap {
-    stravaPayload: StravaPayload
+    stravaPayload: LoadedStravaPayload
     triathlonMaintenance: TriathlonMaintenance | null
     triathlonRenderData: TriathlonRenderData
   }

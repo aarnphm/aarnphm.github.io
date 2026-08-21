@@ -125,6 +125,30 @@ test('groups details into a newest-first year/month/day tree with rollups', () =
   ])
 })
 
+test('includes rest-day records when building the on-page date tree', () => {
+  const tree = triathlonDateTree({
+    rest: { date: '2026-08-21', durationS: 0, items: [] },
+    active: {
+      date: '2026-08-20',
+      durationS: 3600,
+      items: [{ id: 1, sport: 'run', distanceKm: 8, durationS: 3600 }],
+    },
+  })
+  assert.equal(tree[0].year, '2026')
+  assert.deepEqual(tree[0].months.map(month => month.month), ['08'])
+  assert.equal(tree[0].months[0].days.length, 2)
+  assert.deepEqual(tree[0].months[0].days[0], {
+    date: '2026-08-21',
+    day: '21',
+    slug: 'triathlon/on/2026/08/21',
+    count: 0,
+    sports: [],
+    km: 0,
+    timeS: 0,
+  })
+  assert.equal(tree[0].months[0].days[1].day, '20')
+})
+
 test('scopes the tree by year and month prefixes', () => {
   const details: Parameters<typeof triathlonDateTree>[0] = {
     a: { date: '2026-07-09', sport: 'bike', distanceKm: 40, movingTimeS: 5400 },
@@ -159,6 +183,27 @@ test('builds one year and month feed route for each represented period', () => {
       { slug: 'triathlon/on/2026', title: 'triathlon · 2026' },
       { slug: 'triathlon/on/2026/06', title: 'triathlon · 2026 / 06' },
       { slug: 'triathlon/on/2026/07', title: 'triathlon · 2026 / 07' },
+    ],
+  )
+})
+
+test('builds routes for day maps containing rest-only dates', () => {
+  assert.deepEqual(
+    triathlonActivityFeedRoutes({
+      first: {
+        date: '2026-08-21',
+        durationS: 0,
+        items: [],
+      },
+      second: {
+        date: '2026-08-20',
+        durationS: 3600,
+        items: [{ id: 1, sport: 'run', distanceKm: 8, durationS: 3600 }],
+      },
+    }),
+    [
+      { slug: 'triathlon/on/2026', title: 'triathlon · 2026' },
+      { slug: 'triathlon/on/2026/08', title: 'triathlon · 2026 / 08' },
     ],
   )
 })
