@@ -56,7 +56,7 @@ layout: triathlon
 maintenance:
   OSPW:
     - - type: Ultegra R8100 Pulley Wheel
-      - distance: 1335.0 mile
+      - distance: 1335
       - range:
           - end: '2026-08-10'
             start: '2026-05-16'
@@ -68,44 +68,76 @@ maintenance:
             start: '2026-08-10'
   bottom bracket:
     - - type: FSA, T47 BBright for 24mm spindle
-      - distance: 1721.5 mile
+      - distance: 1727.25
       - range:
-          - end: '2026-08-20'
+          - end: '2026-08-21'
             start: '2026-05-16'
       - reason: upgrades to CeramicSpeed
+    - - type: CeramicSpeed T47 BBright for Shimano
+      - distance: null
+      - range:
+          - end: null
+            start: '2026-08-21'
+      - reason: null
   chain:
     '1':
-      distance: 621 mile
+      chainring: ultegra
+      distance: 621
       lubricant: Muc-Off Dry Lube
+      ospw: ultegra
       since: '2026-05-16'
       waxed: false
     '2':
-      distance: 419.42 mile
+      chainring: ultegra
+      distance: 419.42
       lubricant: Muc-Off Dry Lube
+      ospw: ultegra
       since: '2026-07-16'
       waxed: false
     '3':
-      distance: null
+      chainring: ultegra
+      distance: 408.65
       lubricant: UFO Wax Drip-On
+      ospw: ceramicspeed
       since: '2026-08-10'
       waxed: true
+    '4':
+      chainring: carbonti
+      distance: null
+      lubricant: UFO Wax Drip-On
+      ospw: ceramicspeed
+      since: '2026-08-22'
+      waxed: true
+  chainrings:
+    - - type: Ultegra FC-R8100 52-36T
+      - distance: 1727.25
+      - range:
+          - end: '2026-08-21'
+            start: '2026-05-16'
+      - reason: upgrades to CarbonTi
+    - - type: CarbonTi 54-40T
+      - distance: null
+      - range:
+          - end: null
+            start: '2026-08-22'
+      - reason: null
   service:
     soloist:
-      - date: '2026-08-20'
-        distance: 1721.5 mile
+      - date: '2026-08-21'
+        distance: 1727.25
         place: Racer Sportif
     speedmax: null
   tires:
     front:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-          - distance: 751.81 mile
+          - distance: 751.81
           - range:
               - end: '2026-07-16'
                 start: '2026-05-16'
           - reason: training to race tires
         - - type: Pirelli P Zero Race TLR SL-R 700x28c
-          - distance: 619.84 mile
+          - distance: 619.84
           - range:
               - end: '2026-08-10'
                 start: '2026-07-16'
@@ -118,7 +150,7 @@ maintenance:
           - reason: null
       tube:
         - - type: Pirelli P Zero TPU
-          - distance: 619.84 mile
+          - distance: 619.84
           - range:
               - end: '2026-08-10'
                 start: '2026-07-16'
@@ -132,7 +164,7 @@ maintenance:
     rear:
       tires:
         - - type: Vittoria Corsa N.EXT TLR G2.0 700x29c
-          - distance: 751.81 mile
+          - distance: 751.81
           - start: '2026-05-16'
           - end: '2026-07-16'
           - reason: training to race tires
@@ -145,14 +177,14 @@ maintenance:
                 start: '2026-08-18'
           - reason: punctures and big ruptures, but fixed
         - - type: Pirelli P Zero Race SL-R 700x28c
-          - distance: 258.65 mile
+          - distance: 258.65
           - range:
               - end: '2026-08-17'
                 start: '2026-08-12'
           - reason: big punctures cut
       tube:
         - - type: Pirelli P Zero TPU
-          - distance: 878.49 mile
+          - distance: 878.49
           - start: '2026-07-16'
           - end: '2026-08-17'
           - reason: big punctures
@@ -163,7 +195,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-20 01:00:28 GMT-04:00
+modified: 2026-08-20 12:59:38 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'

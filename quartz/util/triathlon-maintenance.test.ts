@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { parseTriathlonMaintenance } from './triathlon-maintenance'
+import {
+  formatTriathlonMaintenanceDistance,
+  parseTriathlonMaintenance,
+} from './triathlon-maintenance'
 
 const maintenance = {
   OSPW: [
@@ -19,17 +22,17 @@ const maintenance = {
   'bottom bracket': [
     [
       { type: 'FSA T47 BBright' },
-      { distance: '1721.5 mile' },
+      { distance: 1721.5 },
       { range: [{ start: '2026-05-16', end: '2026-08-20' }] },
       { reason: 'upgraded to CeramicSpeed' },
     ],
   ],
   chain: {
-    '1': { distance: '621 mile', lubricant: 'Muc-Off Dry Lube', since: '2026-05-16', waxed: false },
+    '1': { distance: 621, lubricant: 'Muc-Off Dry Lube', since: '2026-05-16', waxed: false },
     '3': { distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
   },
   service: {
-    soloist: [{ date: '2026-08-20', distance: '1721.5 mile', place: 'Racer Sportif' }],
+    soloist: [{ date: '2026-08-20', distance: 1721.5, place: 'Racer Sportif' }],
     speedmax: null,
   },
   tires: {
@@ -37,7 +40,7 @@ const maintenance = {
       tires: [
         [
           { type: 'Vittoria Corsa N.EXT' },
-          { distance: '751.81 mile' },
+          { distance: 751.81 },
           { start: '2026-05-16' },
           { end: '2026-07-16' },
           { reason: 'training to race tires' },
@@ -71,36 +74,42 @@ const maintenance = {
 test('normalizes service, component, chain, and wheel maintenance records from frontmatter', () => {
   const parsed = parseTriathlonMaintenance(maintenance)
   assert.deepEqual(parsed?.services, [
-    { bike: 'soloist', date: '2026-08-20', distance: '1721.5 mile', place: 'Racer Sportif' },
+    { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
   ])
   assert.deepEqual(parsed?.components, [
     {
       component: 'OSPW',
       type: 'CeramicSpeed OSPW RS 5 Spoke',
-      distance: null,
+      distanceMiles: null,
       ranges: [{ start: '2026-08-10', end: null }],
       reason: null,
     },
     {
       component: 'OSPW',
       type: 'Ultegra R8100 Pulley Wheel',
-      distance: null,
+      distanceMiles: null,
       ranges: [{ start: '2026-05-16', end: '2026-08-10' }],
       reason: 'upgraded to CeramicSpeed OSPW',
     },
     {
       component: 'bottom bracket',
       type: 'FSA T47 BBright',
-      distance: '1721.5 mile',
+      distanceMiles: 1721.5,
       ranges: [{ start: '2026-05-16', end: '2026-08-20' }],
       reason: 'upgraded to CeramicSpeed',
     },
   ])
   assert.deepEqual(parsed?.chains, [
-    { id: '3', distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
+    {
+      id: '3',
+      distanceMiles: null,
+      lubricant: 'UFO Wax Drip-On',
+      since: '2026-08-10',
+      waxed: true,
+    },
     {
       id: '1',
-      distance: '621 mile',
+      distanceMiles: 621,
       lubricant: 'Muc-Off Dry Lube',
       since: '2026-05-16',
       waxed: false,
@@ -129,6 +138,11 @@ test('normalizes service, component, chain, and wheel maintenance records from f
       ['front', 'tire', 'Vittoria Corsa N.EXT', [{ start: '2026-05-16', end: '2026-07-16' }], null],
     ],
   )
+})
+
+test('formats mile source values in the selected distance system', () => {
+  assert.equal(formatTriathlonMaintenanceDistance(1721.5, 'imperial'), '1,721.5 mi')
+  assert.equal(formatTriathlonMaintenanceDistance(1721.5, 'metric'), '2,770.49 km')
 })
 
 test('drops malformed records and rejects empty maintenance data', () => {
@@ -175,6 +189,19 @@ test('drops malformed records and rejects empty maintenance data', () => {
   assert.equal(
     parseTriathlonMaintenance({
       OSPW: [[{ type: 'CeramicSpeed OSPW' }, { distance: null }, { range: [] }]],
+    }),
+    null,
+  )
+  assert.equal(
+    parseTriathlonMaintenance({
+      chain: {
+        '1': {
+          distance: '621 mile',
+          lubricant: 'Muc-Off Dry Lube',
+          since: '2026-05-16',
+          waxed: false,
+        },
+      },
     }),
     null,
   )

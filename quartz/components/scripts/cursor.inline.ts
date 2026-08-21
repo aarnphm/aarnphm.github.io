@@ -320,13 +320,23 @@ document.addEventListener('nav', () => {
       schedule()
   }
 
+  const invalidateScrollGeometry = (): void => {
+    geometryDirty = true
+    if (pointerTarget || visible || magneticTarget || bracketTarget || mode === 'timeline')
+      schedule()
+  }
+
   document.documentElement.classList.add('site-cursor-ready')
   document.addEventListener('pointermove', onMove, { signal })
   document.addEventListener('click', onClick, { signal })
   document.addEventListener('pointerleave', hide, { signal })
   window.addEventListener('blur', hide, { signal })
   window.addEventListener('resize', invalidateGeometry, { signal })
-  window.addEventListener('scroll', invalidateGeometry, { capture: true, passive: true, signal })
+  window.addEventListener('scroll', invalidateScrollGeometry, {
+    capture: true,
+    passive: true,
+    signal,
+  })
   window.addCleanup(() => {
     controller.abort()
     if (frame !== 0) window.cancelAnimationFrame(frame)

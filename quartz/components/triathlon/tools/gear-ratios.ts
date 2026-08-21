@@ -9,6 +9,7 @@ import { CERAMICSPEED_TEST_CHAINSTAY_MM } from '../../../util/triathlon-gear-rat
 import { CERAMICSPEED_TEST_OUTPUT_WATTS } from '../../../util/triathlon-gear-ratio'
 import { formatGearEfficiencyDeltaPercent } from '../../../util/triathlon-gear-ratio'
 import { gearCassettePreset } from '../../../util/triathlon-gear-ratio'
+import { gearChainringPreset } from '../../../util/triathlon-gear-ratio'
 import { gearRatioMatrix } from '../../../util/triathlon-gear-ratio'
 import { el } from '../runtime/dom'
 import { mathFrag } from '../runtime/dom'
@@ -159,6 +160,21 @@ export const setupGearRatios = (
   const cassetteOptions = Array.from(
     calculator?.querySelectorAll<HTMLButtonElement>('.tri-ratio-cassette-option') ?? [],
   )
+  const chainringPresetPicker = calculator?.querySelector<HTMLElement>(
+    '.tri-ratio-chainring-preset-picker',
+  )
+  const chainringPresetTrigger = calculator?.querySelector<HTMLButtonElement>(
+    '.tri-ratio-chainring-preset-trigger',
+  )
+  const chainringPresetMenu = calculator?.querySelector<HTMLElement>(
+    '.tri-ratio-chainring-preset-menu',
+  )
+  const chainringPresetValue = calculator?.querySelector<HTMLElement>(
+    '.tri-ratio-chainring-preset-value',
+  )
+  const chainringPresetOptions = Array.from(
+    calculator?.querySelectorAll<HTMLButtonElement>('.tri-ratio-chainring-preset-option') ?? [],
+  )
   const ringInputs = calculator?.querySelectorAll<HTMLInputElement>('.tri-ratio-ring-input')
   const secondRing = calculator?.querySelector<HTMLElement>('[data-ratio-ring="2"]')
   const layoutButtons = calculator?.querySelectorAll<HTMLButtonElement>('.tri-ratio-layout-btn')
@@ -167,6 +183,9 @@ export const setupGearRatios = (
   const initialCassetteId = cassetteOptions.find(
     option => option.getAttribute('aria-selected') === 'true',
   )?.dataset.cassetteId
+  const initialChainringPresetId = chainringPresetOptions.find(
+    option => option.getAttribute('aria-selected') === 'true',
+  )?.dataset.chainringPresetId
   if (
     !calculator ||
     !chart ||
@@ -177,6 +196,12 @@ export const setupGearRatios = (
     !cassetteValue ||
     !cassetteOptions.length ||
     !initialCassetteId ||
+    !chainringPresetPicker ||
+    !chainringPresetTrigger ||
+    !chainringPresetMenu ||
+    !chainringPresetValue ||
+    !chainringPresetOptions.length ||
+    !initialChainringPresetId ||
     !firstInput ||
     !secondInput ||
     !secondRing ||
@@ -364,6 +389,16 @@ export const setupGearRatios = (
     cassetteValue.textContent = preset.label
     for (const candidate of cassetteOptions)
       candidate.setAttribute('aria-selected', String(candidate.dataset.cassetteId === preset.id))
+    const chainringPreset =
+      model.chainringPresetId == null ? null : gearChainringPreset(model.chainringPresetId)
+    chainringPresetValue.textContent = chainringPreset?.label ?? context.formatter.text('custom')
+    for (const candidate of chainringPresetOptions)
+      candidate.setAttribute(
+        'aria-selected',
+        String(candidate.dataset.chainringPresetId === model.chainringPresetId),
+      )
+    firstInput.value = String(model.chainrings[0])
+    secondInput.value = String(model.chainrings[1])
     secondRing.classList.toggle('tri-ratio-ring--inactive', model.layout === 1)
     secondRing.setAttribute('aria-disabled', String(model.layout === 1))
     secondInput.disabled = model.layout === 1
@@ -406,6 +441,79 @@ export const setupGearRatios = (
     })
   }
 
+  const closeChainringPresetMenu = (restoreFocus = false): void => {
+    chainringPresetMenu.hidden = true
+    chainringPresetTrigger.setAttribute('aria-expanded', 'false')
+    if (restoreFocus) chainringPresetTrigger.focus()
+  }
+  const openChainringPresetMenu = (): void => {
+    if (!chainringPresetMenu.hidden) return
+    chainringPresetMenu.hidden = false
+    chainringPresetTrigger.setAttribute('aria-expanded', 'true')
+    const selected = chainringPresetOptions.find(
+      option => option.dataset.chainringPresetId === program.retrieve().chainringPresetId,
+    )
+    const initialOption = selected ?? chainringPresetOptions[0]
+    initialOption?.focus()
+  }
+  const selectChainringPreset = (option: HTMLButtonElement): void => {
+    const nextId = option.dataset.chainringPresetId
+    if (!nextId) return
+    const preset = gearChainringPreset(nextId)
+    if (!preset) return
+    program.dispatch({
+      type: 'set-chainring-preset',
+      presetId: preset.id,
+      chainrings: preset.chainrings,
+    })
+  }
+  const onChainringPresetTriggerClick = (): void => {
+    if (chainringPresetMenu.hidden) {
+      closeCassetteMenu()
+      openChainringPresetMenu()
+    } else closeChainringPresetMenu()
+  }
+  const onChainringPresetTriggerKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
+    event.preventDefault()
+    closeCassetteMenu()
+    openChainringPresetMenu()
+  }
+  const onChainringPresetOptionClick = (event: Event): void => {
+    if (!(event.currentTarget instanceof HTMLButtonElement)) return
+    selectChainringPreset(event.currentTarget)
+    closeChainringPresetMenu(true)
+  }
+  const onChainringPresetMenuKeydown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+      closeChainringPresetMenu(true)
+      return
+    }
+    const activeIndex = chainringPresetOptions.findIndex(
+      option => option === document.activeElement,
+    )
+    const targetIndex =
+      event.key === 'Home'
+        ? 0
+        : event.key === 'End'
+          ? chainringPresetOptions.length - 1
+          : event.key === 'ArrowDown'
+            ? Math.min(chainringPresetOptions.length - 1, activeIndex + 1)
+            : event.key === 'ArrowUp'
+              ? Math.max(0, activeIndex - 1)
+              : -1
+    if (targetIndex < 0) return
+    event.preventDefault()
+    chainringPresetOptions[targetIndex]?.focus()
+  }
+  const onChainringPresetFocusout = (event: FocusEvent): void => {
+    if (event.relatedTarget instanceof Node && chainringPresetPicker.contains(event.relatedTarget))
+      return
+    closeChainringPresetMenu()
+  }
+
   const closeCassetteMenu = (restoreFocus = false): void => {
     cassetteMenu.hidden = true
     cassetteTrigger.setAttribute('aria-expanded', 'false')
@@ -431,12 +539,15 @@ export const setupGearRatios = (
     })
   }
   const onCassetteTriggerClick = (): void => {
-    if (cassetteMenu.hidden) openCassetteMenu()
-    else closeCassetteMenu()
+    if (cassetteMenu.hidden) {
+      closeChainringPresetMenu()
+      openCassetteMenu()
+    } else closeCassetteMenu()
   }
   const onCassetteTriggerKeydown = (event: KeyboardEvent): void => {
     if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
     event.preventDefault()
+    closeChainringPresetMenu()
     openCassetteMenu()
   }
   const onCassetteOptionClick = (event: Event): void => {
@@ -471,8 +582,13 @@ export const setupGearRatios = (
     closeCassetteMenu()
   }
   const onCassetteOutsidePointerdown = (event: PointerEvent): void => {
-    if (event.composedPath().includes(cassettePicker)) return
+    if (
+      event.composedPath().includes(cassettePicker) ||
+      event.composedPath().includes(chainringPresetPicker)
+    )
+      return
     closeCassetteMenu()
+    closeChainringPresetMenu()
   }
   const onLocale = (): void => {
     render()
@@ -482,6 +598,7 @@ export const setupGearRatios = (
     init: () => ({
       model: initialGearRatioModel(
         initialCassetteId,
+        initialChainringPresetId,
         firstInput.valueAsNumber,
         secondInput.valueAsNumber,
       ),
@@ -494,8 +611,14 @@ export const setupGearRatios = (
 
   for (const button of layoutButtons) button.addEventListener('click', onLayout)
   for (const option of cassetteOptions) option.addEventListener('click', onCassetteOptionClick)
+  for (const option of chainringPresetOptions)
+    option.addEventListener('click', onChainringPresetOptionClick)
   firstInput.addEventListener('input', onInput)
   secondInput.addEventListener('input', onInput)
+  chainringPresetTrigger.addEventListener('click', onChainringPresetTriggerClick)
+  chainringPresetTrigger.addEventListener('keydown', onChainringPresetTriggerKeydown)
+  chainringPresetMenu.addEventListener('keydown', onChainringPresetMenuKeydown)
+  chainringPresetPicker.addEventListener('focusout', onChainringPresetFocusout)
   cassetteTrigger.addEventListener('click', onCassetteTriggerClick)
   cassetteTrigger.addEventListener('keydown', onCassetteTriggerKeydown)
   cassetteMenu.addEventListener('keydown', onCassetteMenuKeydown)
@@ -512,8 +635,14 @@ export const setupGearRatios = (
   return () => {
     for (const button of layoutButtons) button.removeEventListener('click', onLayout)
     for (const option of cassetteOptions) option.removeEventListener('click', onCassetteOptionClick)
+    for (const option of chainringPresetOptions)
+      option.removeEventListener('click', onChainringPresetOptionClick)
     firstInput.removeEventListener('input', onInput)
     secondInput.removeEventListener('input', onInput)
+    chainringPresetTrigger.removeEventListener('click', onChainringPresetTriggerClick)
+    chainringPresetTrigger.removeEventListener('keydown', onChainringPresetTriggerKeydown)
+    chainringPresetMenu.removeEventListener('keydown', onChainringPresetMenuKeydown)
+    chainringPresetPicker.removeEventListener('focusout', onChainringPresetFocusout)
     cassetteTrigger.removeEventListener('click', onCassetteTriggerClick)
     cassetteTrigger.removeEventListener('keydown', onCassetteTriggerKeydown)
     cassetteMenu.removeEventListener('keydown', onCassetteMenuKeydown)

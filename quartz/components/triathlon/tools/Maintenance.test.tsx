@@ -8,40 +8,46 @@ import { Maintenance } from './Maintenance'
 
 const maintenance: TriathlonMaintenance = {
   services: [
-    { bike: 'soloist', date: '2026-08-20', distance: '1721.5 mile', place: 'Racer Sportif' },
+    { bike: 'soloist', date: '2026-08-20', distanceMiles: 1721.5, place: 'Racer Sportif' },
   ],
   components: [
     {
       component: 'OSPW',
       type: 'CeramicSpeed OSPW RS 5 Spoke',
-      distance: null,
+      distanceMiles: null,
       ranges: [{ start: '2026-08-10', end: null }],
       reason: null,
     },
     {
       component: 'OSPW',
       type: 'Ultegra R8100 Pulley Wheel',
-      distance: null,
+      distanceMiles: null,
       ranges: [{ start: '2026-05-16', end: '2026-08-10' }],
       reason: 'upgraded to CeramicSpeed OSPW',
     },
     {
       component: 'bottom bracket',
       type: 'FSA T47 BBright',
-      distance: '1721.5 mile',
+      distanceMiles: 1721.5,
       ranges: [{ start: '2026-05-16', end: '2026-08-20' }],
       reason: 'upgraded to CeramicSpeed',
     },
   ],
   chains: [
-    { id: '3', distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
+    {
+      id: '3',
+      distanceMiles: null,
+      lubricant: 'UFO Wax Drip-On',
+      since: '2026-08-10',
+      waxed: true,
+    },
   ],
   wheels: [
     {
       position: 'front',
       part: 'tire',
       type: 'Pirelli P Zero Race SL-R 700x28c',
-      distance: null,
+      distanceMiles: null,
       ranges: [
         { start: '2026-07-16', end: '2026-08-10' },
         { start: '2026-08-18', end: null },
@@ -53,7 +59,7 @@ const maintenance: TriathlonMaintenance = {
       position: 'rear',
       part: 'tire',
       type: 'Pirelli P Zero Race TLR SL-R 700x28c',
-      distance: '619.84 mile',
+      distanceMiles: 619.84,
       ranges: [{ start: '2026-07-16', end: '2026-08-10' }],
       reason: 'punctures and big ruptures',
       repaired: false,
@@ -96,6 +102,11 @@ test('renders service, component, chain, and wheel maintenance records', () => {
   assert.match(html, /data-i18n="yes">yes/)
   assert.match(html, /data-i18n="no">no/)
   assert.match(html, /punctures and big ruptures/)
+  assert.match(
+    html,
+    /class="tri-unit-distance" data-kind="maintenance" data-mi="1721.5">1,721.5 mi/,
+  )
+  assert.match(html, /class="tri-unit-distance" data-kind="maintenance" data-mi="619.84">619.84 mi/)
 })
 
 test('renders no maintenance section without records', () => {

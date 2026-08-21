@@ -2,15 +2,23 @@ import type {
   TriathlonMaintenance,
   TriathlonMaintenanceRange,
 } from '../../../util/triathlon-maintenance'
+import { formatTriathlonMaintenanceDistance } from '../../../util/triathlon-maintenance'
+
+const MaintenanceDistance = ({ distanceMiles }: { distanceMiles: number | null }) =>
+  distanceMiles === null ? null : (
+    <span class="tri-unit-distance" data-kind="maintenance" data-mi={distanceMiles}>
+      {formatTriathlonMaintenanceDistance(distanceMiles, 'imperial')}
+    </span>
+  )
 
 const UsageMeta = ({
   ranges,
-  distance,
+  distanceMiles,
   reason,
   repaired = null,
 }: {
   ranges: TriathlonMaintenanceRange[]
-  distance: string | null
+  distanceMiles: number | null
   reason: string | null
   repaired?: boolean | null
 }) => (
@@ -20,7 +28,7 @@ const UsageMeta = ({
         {range.start} → {range.end ?? <span data-i18n="current">current</span>}
       </span>
     ))}
-    {distance && <span>{distance}</span>}
+    <MaintenanceDistance distanceMiles={distanceMiles} />
     {repaired !== null && (
       <span>
         <span data-i18n="repaired">repaired</span>{' '}
@@ -53,7 +61,7 @@ const ServiceRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) 
             </div>
             <span class="tri-maintenance-meta">
               <span>{entry.date}</span>
-              {entry.distance && <span>{entry.distance}</span>}
+              <MaintenanceDistance distanceMiles={entry.distanceMiles} />
             </span>
           </li>
         ))}
@@ -78,7 +86,11 @@ const ComponentRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }
               </span>
               <span class="tri-maintenance-entry-name">{entry.type}</span>
             </div>
-            <UsageMeta ranges={entry.ranges} distance={entry.distance} reason={entry.reason} />
+            <UsageMeta
+              ranges={entry.ranges}
+              distanceMiles={entry.distanceMiles}
+              reason={entry.reason}
+            />
           </li>
         ))}
       </ol>
@@ -106,7 +118,7 @@ const ChainRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) =>
               <span>
                 <span data-i18n="since">since</span> {entry.since}
               </span>
-              {entry.distance && <span>{entry.distance}</span>}
+              <MaintenanceDistance distanceMiles={entry.distanceMiles} />
               <span>
                 <span data-i18n="waxed">waxed</span>{' '}
                 <span data-i18n={entry.waxed ? 'yes' : 'no'}>{entry.waxed ? 'yes' : 'no'}</span>
@@ -138,7 +150,7 @@ const WheelRecords = ({ maintenance }: { maintenance: TriathlonMaintenance }) =>
             </div>
             <UsageMeta
               ranges={entry.ranges}
-              distance={entry.distance}
+              distanceMiles={entry.distanceMiles}
               reason={entry.reason}
               repaired={entry.repaired}
             />

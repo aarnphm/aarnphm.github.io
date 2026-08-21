@@ -1,3 +1,5 @@
+import type { DistanceSystem } from './triathlon-presentation'
+import { KM_TO_MI } from './triathlon-card'
 import { isRecord, type UnknownRecord } from './type-guards'
 
 export type TriathlonMaintenancePosition = 'front' | 'rear'
@@ -5,7 +7,7 @@ export type TriathlonMaintenancePart = 'tire' | 'tube'
 
 export interface TriathlonChainMaintenance {
   id: string
-  distance: string | null
+  distanceMiles: number | null
   lubricant: string
   since: string
   waxed: boolean
@@ -19,7 +21,7 @@ export interface TriathlonMaintenanceRange {
 export interface TriathlonComponentMaintenance {
   component: string
   type: string
-  distance: string | null
+  distanceMiles: number | null
   ranges: TriathlonMaintenanceRange[]
   reason: string | null
 }
@@ -27,7 +29,7 @@ export interface TriathlonComponentMaintenance {
 export interface TriathlonServiceMaintenance {
   bike: string
   date: string
-  distance: string | null
+  distanceMiles: number | null
   place: string
 }
 
@@ -35,7 +37,7 @@ export interface TriathlonWheelMaintenance {
   position: TriathlonMaintenancePosition
   part: TriathlonMaintenancePart
   type: string
-  distance: string | null
+  distanceMiles: number | null
   ranges: TriathlonMaintenanceRange[]
   reason: string | null
   repaired: boolean | null
@@ -54,21 +56,35 @@ const nullableString = (record: UnknownRecord, key: string): string | null | und
   return typeof value === 'string' ? value : undefined
 }
 
+const nullableDistanceMiles = (record: UnknownRecord): number | null | undefined => {
+  const value = record.distance
+  if (value === null) return null
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : undefined
+}
+
+export const formatTriathlonMaintenanceDistance = (
+  distanceMiles: number,
+  system: DistanceSystem,
+): string => {
+  const value = system === 'imperial' ? distanceMiles : distanceMiles / KM_TO_MI
+  return `${value.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${system === 'imperial' ? 'mi' : 'km'}`
+}
+
 const parseChain = (id: string, value: unknown): TriathlonChainMaintenance | null => {
   if (!isRecord(value)) return null
-  const distance = nullableString(value, 'distance')
+  const distanceMiles = nullableDistanceMiles(value)
   const lubricant = value.lubricant
   const since = value.since
   const waxed = value.waxed
   if (
-    distance === undefined ||
+    distanceMiles === undefined ||
     typeof lubricant !== 'string' ||
     typeof since !== 'string' ||
     typeof waxed !== 'boolean'
   ) {
     return null
   }
-  return { id, distance, lubricant, since, waxed }
+  return { id, distanceMiles, lubricant, since, waxed }
 }
 
 const mergeMaintenanceFields = (value: unknown): UnknownRecord | null => {
@@ -123,18 +139,24 @@ const parseComponentEntry = (
   const record = mergeMaintenanceFields(value)
   if (!record) return null
   const type = record.type
-  const distance = nullableString(record, 'distance')
+  const distanceMiles = nullableDistanceMiles(record)
   const ranges = parseRanges(record)
   const reason = record.reason
   if (
     typeof type !== 'string' ||
-    distance === undefined ||
+    distanceMiles === undefined ||
     !ranges ||
     (reason !== undefined && reason !== null && typeof reason !== 'string')
   ) {
     return null
   }
-  return { component, type, distance, ranges, reason: typeof reason === 'string' ? reason : null }
+  return {
+    component,
+    type,
+    distanceMiles,
+    ranges,
+    reason: typeof reason === 'string' ? reason : null,
+  }
 }
 
 const isReservedMaintenanceSection = (section: string): boolean =>
@@ -157,10 +179,11 @@ const parseComponents = (value: UnknownRecord): TriathlonComponentMaintenance[] 
 const parseServiceEntry = (bike: string, value: unknown): TriathlonServiceMaintenance | null => {
   if (!isRecord(value)) return null
   const date = value.date
-  const distance = nullableString(value, 'distance')
+  const distanceMiles = nullableDistanceMiles(value)
   const place = value.place
-  if (typeof date !== 'string' || distance === undefined || typeof place !== 'string') return null
-  return { bike, date, distance, place }
+  if (typeof date !== 'string' || distanceMiles === undefined || typeof place !== 'string')
+    return null
+  return { bike, date, distanceMiles, place }
 }
 
 const parseServices = (value: unknown): TriathlonServiceMaintenance[] => {
@@ -184,13 +207,13 @@ const parseWheelEntry = (
   const record = mergeMaintenanceFields(value)
   if (!record) return null
   const type = record.type
-  const distance = nullableString(record, 'distance')
+  const distanceMiles = nullableDistanceMiles(record)
   const ranges = parseRanges(record)
   const reason = nullableString(record, 'reason')
   const repaired = record.repaired
   if (
     typeof type !== 'string' ||
-    distance === undefined ||
+    distanceMiles === undefined ||
     !ranges ||
     reason === undefined ||
     (repaired !== undefined && repaired !== null && typeof repaired !== 'boolean')
@@ -201,7 +224,7 @@ const parseWheelEntry = (
     position,
     part,
     type,
-    distance,
+    distanceMiles,
     ranges,
     reason,
     repaired: typeof repaired === 'boolean' ? repaired : null,

@@ -13,7 +13,9 @@ import {
   CERAMICSPEED_TEST_CHAINSTAY_MM,
   CERAMICSPEED_TEST_OUTPUT_WATTS,
   DEFAULT_GEAR_CASSETTE,
+  DEFAULT_GEAR_CHAINRING_PRESET,
   GEAR_CASSETTE_PRESET_GROUPS,
+  GEAR_CHAINRING_PRESETS,
   formatGearEfficiencyDeltaPercent,
   gearRatioMatrix,
   type GearCassettePreset,
@@ -90,11 +92,13 @@ export const GEAR: [string, string[]][] = [
       'Fork: Cervélo All-Carbon, Tapered Soloist',
       'Handlebar: Cervélo HB13 Carbon, 31.8mm clamp',
       'Handlebar Sizing: Size 56 - 40cm',
+      'Handlebar: Enve SES AR In-Route One-Piece Handlebar',
       'Stem: Cervélo ST36 Alloy',
       'Stem Sizing: Size 56 - 100mm',
       'Seatpost: Cervélo SP27 Carbon',
       'Saddle: Prologo Nago R4 PAS Tirox Lightweight',
       'Bottom Bracket: FSA, T47 BBright for 24mm spindle',
+      'Bottom Bracket: CeramicSpeed T47 BBRight for Shimano',
       'Headset: FSA IS2 1-1/4, 45° x 45° / 1-1/2, 36° x 45°',
       'Cervélo Aero Thru Axle Front, M12x1.5mm, 127mm length',
       'Cervélo Aero Thru Axle Rear, M12x1.5mm, 170.5mm length',
@@ -109,6 +113,7 @@ export const GEAR: [string, string[]][] = [
       'Shifter/Break: Shimano Ultegra, R8170',
       'Crankset: Shimano Ultegra, R8100, 52/36T',
       'Chain: Shimano M8100',
+      'Chainring: Carbon-Ti 2x, 54-40T',
       'Pulley Wheel: CeramicSpeed OSPW RS 5 Spoke',
       'Cassette: Shimano Ultegra, R8100, 11-34T, 12-Speed',
       'Front/Rear Derailleur: Shimano Ultegra, R8150',
@@ -727,7 +732,7 @@ export const TrainingPanel = ({
   </TriPanelShell>
 )
 
-const DEFAULT_GEAR_CHAINRINGS: readonly number[] = [52, 36]
+const DEFAULT_GEAR_CHAINRINGS = DEFAULT_GEAR_CHAINRING_PRESET.chainrings
 
 const gearEfficiencyLevel = (crossChainLossWatts: number): string =>
   `${(8 + Math.min(crossChainLossWatts / 2.5, 1) * 32).toFixed(1)}%`
@@ -856,6 +861,62 @@ const GearRatioCalculator = () => {
         </output>
       </div>
       <div class="tri-ratio-controls">
+        <div class="tri-ratio-chainring-presets">
+          <span id="tri-ratio-chainring-preset-label" data-i18n="presets">
+            presets
+          </span>
+          <div class="tri-ratio-chainring-preset-picker">
+            <button
+              class="tri-ratio-chainring-preset-trigger"
+              type="button"
+              aria-labelledby="tri-ratio-chainring-preset-label tri-ratio-chainring-preset-value"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-controls="tri-ratio-chainring-preset-menu"
+            >
+              <span id="tri-ratio-chainring-preset-value" class="tri-ratio-chainring-preset-value">
+                {DEFAULT_GEAR_CHAINRING_PRESET.label}
+              </span>
+              <svg
+                class="tri-ratio-chainring-preset-chevron"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path
+                  d="m4 6 4 4 4-4"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <div
+              id="tri-ratio-chainring-preset-menu"
+              class="tri-ratio-chainring-preset-menu"
+              role="listbox"
+              aria-labelledby="tri-ratio-chainring-preset-label"
+              hidden
+            >
+              {GEAR_CHAINRING_PRESETS.map(preset => (
+                <button
+                  class="tri-ratio-chainring-preset-option"
+                  type="button"
+                  role="option"
+                  aria-selected={preset.id === DEFAULT_GEAR_CHAINRING_PRESET.id}
+                  data-chainring-preset-id={preset.id}
+                >
+                  <span class="tri-ratio-chainring-preset-check" aria-hidden="true">
+                    ✓
+                  </span>
+                  <span class="tri-ratio-chainring-preset-option-value">{preset.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
         <fieldset class="tri-ratio-rings">
           <legend data-i18n="chainrings">chainrings</legend>
           <div class="tri-ratio-ring-inputs">
@@ -1199,7 +1260,7 @@ export const CalcPanel = ({
             role="tab"
             aria-selected="false"
             aria-controls="tri-calc-panel-gear-ratios"
-            aria-keyshortcuts="g"
+            aria-keyshortcuts="c"
             data-calc-tab="gear-ratios"
             tabindex={-1}
           >

@@ -3,9 +3,13 @@ import type { Analytics } from '../plugins/stores/analytics'
 import type { StravaActivityDetail, StravaPayload } from '../plugins/stores/strava'
 import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
-import type { TriathlonMaintenance, TriathlonMaintenanceRange } from './triathlon-maintenance'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import { buildFeedMarkdown } from './triathlon-feed'
+import {
+  formatTriathlonMaintenanceDistance,
+  type TriathlonMaintenance,
+  type TriathlonMaintenanceRange,
+} from './triathlon-maintenance'
 
 export type TriathlonMarkdownView =
   | 'tools'
@@ -201,6 +205,9 @@ const maintenanceRangeText = (ranges: TriathlonMaintenanceRange[]): string =>
 const maintenanceSection = (title: string, entries: string[]): string[] =>
   entries.length > 0 ? [`### ${title}`, '', ...entries, ''] : []
 
+const maintenanceDistanceText = (distanceMiles: number | null): string =>
+  distanceMiles === null ? '' : `; ${formatTriathlonMaintenanceDistance(distanceMiles, 'imperial')}`
+
 const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
   const conversions = [
     '| kind | conversion |',
@@ -226,21 +233,21 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
           'service',
           maintenanceData.services.map(
             entry =>
-              `- ${entry.bike}: ${entry.date}; ${entry.place}${entry.distance ? `; ${entry.distance}` : ''}`,
+              `- ${entry.bike}: ${entry.date}; ${entry.place}${maintenanceDistanceText(entry.distanceMiles)}`,
           ),
         ),
         ...maintenanceSection(
           'components',
           maintenanceData.components.map(
             entry =>
-              `- ${entry.component}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${entry.distance ? `; ${entry.distance}` : ''}${entry.reason ? `; reason: ${entry.reason}` : ''}`,
+              `- ${entry.component}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${maintenanceDistanceText(entry.distanceMiles)}${entry.reason ? `; reason: ${entry.reason}` : ''}`,
           ),
         ),
         ...maintenanceSection(
           'chains',
           maintenanceData.chains.map(
             entry =>
-              `- chain ${entry.id}: ${entry.lubricant}; since ${entry.since}${entry.distance ? `; ${entry.distance}` : ''}; waxed ${entry.waxed ? 'yes' : 'no'}`,
+              `- chain ${entry.id}: ${entry.lubricant}; since ${entry.since}${maintenanceDistanceText(entry.distanceMiles)}; waxed ${entry.waxed ? 'yes' : 'no'}`,
           ),
         ),
         ...maintenanceSection(
@@ -248,7 +255,7 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
           maintenanceData.wheels.map(entry => {
             const repaired =
               entry.repaired === null ? '' : `; repaired ${entry.repaired ? 'yes' : 'no'}`
-            return `- ${entry.position} ${entry.part}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${entry.distance ? `; ${entry.distance}` : ''}${repaired}${entry.reason ? `; reason: ${entry.reason}` : ''}`
+            return `- ${entry.position} ${entry.part}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${maintenanceDistanceText(entry.distanceMiles)}${repaired}${entry.reason ? `; reason: ${entry.reason}` : ''}`
           }),
         ),
       ]
@@ -269,6 +276,7 @@ const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
       '',
       gear,
     ].join('\n'),
+    'race distance km, maintenance distance mi',
   )
 }
 
