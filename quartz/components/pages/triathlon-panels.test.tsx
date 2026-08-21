@@ -358,8 +358,10 @@ test('server-rendered unit surfaces start in imperial', () => {
       root="/triathlon/on"
       tree={triathlonDateTree({
         activity: { date: '2026-08-16', sport: 'run', distanceKm: 10, movingTimeS: 3_600 },
+        rest: { date: '2026-08-17', durationS: 0, items: [] },
       })}
     />,
   )
   assert.match(tree, /data-km="10" data-kind="combined">6 mi<\/span>/)
+  assert.match(tree, /class="tri-tree-day-sports" data-i18n="rest">rest<\/span>/)
 })

@@ -3227,7 +3227,7 @@ test('renders only the selected activity and expands it', () => {
   assert.equal(byClass(rendered, 'tri-act-health').length, 0)
 })
 
-test('renders exact-date analytics before activities without the legacy recovery footer', () => {
+test('renders exact-date analytics and limits automatic rest-day analytics to sleep', () => {
   const date = '2026-08-16'
   const ride = detail({ id: 19771722076, date, name: 'Recovery Crit' })
   const run = detail({ id: 19771722077, date, name: 'Evening run', sport: 'run' })
@@ -3382,6 +3382,23 @@ test('renders exact-date analytics before activities without the legacy recovery
   assert.match(text(byClass(rendered, 'tri-day-analytics')[0]), /relative effort12Strava/)
   assert.match(text(byClass(rendered, 'tri-day-analytics')[0]), /HSI0\.9/)
   assert.doesNotMatch(text(byClass(rendered, 'tri-day-analytics')[0]), /CORE app/)
+
+  const rest = buildDayCard(factory, date, {
+    details: {},
+    health: { [date]: { ...emptyHealth(), readiness: 75 } },
+    dailyAnalytics: { [date]: summary },
+  })
+  assert.equal(text(byClass(rest, 'tri-pop-rest-label')[0]), 'rest')
+  assert.equal(byClass(rest, 'tri-day-analytics').length, 1)
+  assert.equal(byClass(rest, 'tri-day-rest-analytics').length, 1)
+  assert.equal(byClass(rest, 'tri-day-analytics-group').length, 1)
+  assert.equal(byClass(rest, 'tri-day-analytics-group--sleep').length, 1)
+  assert.equal(byClass(rest, 'tri-day-analytics-group--body-recovery').length, 0)
+  assert.equal(byClass(rest, 'tri-day-analytics-group--state-load').length, 0)
+  assert.equal(byClass(rest, 'tri-day-analytics-group--thermal').length, 0)
+  assert.equal(byClass(rest, 'tri-day-sleep-stages').length, 1)
+  assert.equal(byClass(rest, 'tri-day-sleep-series--hrv').length, 1)
+  assert.equal(byClass(rest, 'tri-day-sleep-series--heart-rate').length, 1)
 })
 
 test('day-card date renders as a month link only when extras provide an href', () => {

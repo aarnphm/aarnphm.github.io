@@ -6,6 +6,7 @@ import {
   type FeedDayRow,
   type FeedWeekRow,
 } from '../plugins/stores/analytics'
+import { escapeMarkdownHeading, renderTitledSections } from './triathlon-markdown-data'
 
 const pad = (n: number): string => String(n).padStart(2, '0')
 
@@ -38,9 +39,6 @@ const ageOn = (iso: string): number =>
       (365.25 * 86400000),
   )
 
-const block = (label: string, value: unknown): string =>
-  `## ${label}\n\n\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``
-
 export interface FeedMarkdownOpts {
   details?: Record<string, StravaActivityDetail>
   baseUrl?: string
@@ -49,6 +47,7 @@ export interface FeedMarkdownOpts {
   sourcePath?: string
   scopePrefix?: string
   includeActivityDetails?: boolean
+  includeRestDays?: boolean
 }
 
 export function buildFeedMarkdown(
@@ -67,6 +66,7 @@ export function buildFeedMarkdown(
     .reverse()
   const days = (rows.filter(r => r.kind === 'day') as unknown as FeedDayRow[])
     .filter(row => row.date.startsWith(scopePrefix))
+    .filter(row => opts.includeRestDays !== false || row.sessions > 0)
     .slice()
     .reverse()
   const weeks = (rows.filter(r => r.kind === 'week') as unknown as FeedWeekRow[])
@@ -132,14 +132,14 @@ export function buildFeedMarkdown(
     `permalink: ${baseUrl}${sourcePath}.md`,
     `generated: ${opts.generatedAt ?? m.today}`,
     'units: distance km (swim m), pace min/km, swim min/100m, speed km/h, time h:mm, weight kg, hr bpm, power w',
-    `description: Generated triathlon training data for ${scopePrefix || 'the full activity window'}, with exact measured values in JSON.`,
+    `description: Generated triathlon training data for ${scopePrefix || 'the full activity window'}, with exact measured values in hierarchical GFM tables.`,
     '---',
     '',
     `# ${title}`,
     '',
-    `Training log for ${ATHLETE.sex === 'M' ? 'a male' : 'a'} athlete (age ${ageOn(m.today)}), ${activities.length} activities from ${dates[0] ?? m.windowFrom} to ${dates[dates.length - 1] ?? m.windowTo}. Each activity below carries a JSON block of its measured numbers; the summary holds season totals, current form, thresholds, lab tests, and bests. All distances are kilometres, paces minutes per kilometre (swim per 100 m), speeds km/h, unless noted.`,
+    `Training log for ${ATHLETE.sex === 'M' ? 'a male' : 'a'} athlete (age ${ageOn(m.today)}), ${activities.length} activities from ${dates[0] ?? m.windowFrom} to ${dates[dates.length - 1] ?? m.windowTo}. Each activity below carries hierarchical GFM tables of its measured numbers; the summary holds season totals, current form, thresholds, lab tests, and bests. All distances are kilometres, paces minutes per kilometre (swim per 100 m), speeds km/h, unless noted.`,
     '',
-    block('summary', summary),
+    renderTitledSections(summary, { title: 'summary' }),
     '',
     '## activities',
     '',
@@ -167,9 +167,20 @@ export function buildFeedMarkdown(
       ]
         .filter(Boolean)
         .join(' · ')
-      return `### ${a.date} · ${a.sport} · ${a.name || a.sport}\n\n${gloss}\n\n\`\`\`json\n${JSON.stringify(full, null, 2)}\n\`\`\``
+      const title = `${a.date} · ${a.sport} · ${a.id}`
+      const data = renderTitledSections(full, { title: `activities.${a.id}`, headingDepth: 4 })
+      return `### ${escapeMarkdownHeading(title)}\n\n${gloss}\n\n${data}`
     })
     .join('\n\n')
 
-  return [header, '', acts, '', block('daily', days), '', block('weekly', weeks), ''].join('\n')
+  return [
+    header,
+    '',
+    acts,
+    '',
+    renderTitledSections(days, { title: 'daily' }),
+    '',
+    renderTitledSections(weeks, { title: 'weekly' }),
+    '',
+  ].join('\n')
 }

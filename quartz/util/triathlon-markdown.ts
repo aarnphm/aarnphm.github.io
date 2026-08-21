@@ -5,11 +5,12 @@ import type { TrainingPlan } from '../plugins/stores/training'
 import type { FullSlug } from './path'
 import { TRI_RACE_DISTANCES } from './triathlon-calculator'
 import { buildFeedMarkdown } from './triathlon-feed'
+import { type TriathlonMaintenance, type TriathlonMaintenanceRange } from './triathlon-maintenance'
 import {
-  formatTriathlonMaintenanceDistance,
-  type TriathlonMaintenance,
-  type TriathlonMaintenanceRange,
-} from './triathlon-maintenance'
+  escapeMarkdownHeading,
+  renderGfmTable,
+  renderTitledSections,
+} from './triathlon-markdown-data'
 
 export type TriathlonMarkdownView =
   | 'tools'
@@ -70,9 +71,6 @@ turndown.addRule('table', {
   },
 })
 
-const jsonBlock = (value: unknown): string =>
-  `\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``
-
 const generatedAt = (payload: StravaPayload): string => new Date(payload.generatedAt).toISOString()
 
 const origin = (baseUrl?: string): string => (baseUrl ? `https://${baseUrl}` : '')
@@ -110,14 +108,9 @@ const analyticsMarkdown = (opts: TriathlonMarkdownOptions): string => {
   return document(
     opts,
     [
-      '## related data',
-      '',
-      jsonBlock(related),
-      '',
-      '## analytics',
-      '',
-      jsonBlock(opts.analytics),
-    ].join('\n'),
+      renderTitledSections(related, { title: 'relatedData' }),
+      renderTitledSections(opts.analytics, { title: 'analytics' }),
+    ].join('\n\n'),
   )
 }
 
@@ -178,22 +171,28 @@ const mapsMarkdown = (opts: TriathlonMarkdownOptions): string => {
     fullActivityData: `${origin(opts.baseUrl)}/static/strava-detail.json`,
     activities,
   }
-  return document(opts, ['## mapped activities', '', jsonBlock(data)].join('\n'))
+  return document(opts, renderTitledSections(data, { title: 'mappedActivities' }))
 }
 
 const trainingMarkdown = (opts: TriathlonMarkdownOptions): string => {
   const plans = opts.plans
     .map(plan => {
-      const metadata = [
-        `- id: ${plan.id}`,
-        `- distance: ${plan.distance || 'unspecified'}`,
-        `- date: ${plan.date || 'unspecified'}`,
-        `- target: ${plan.target || 'unspecified'}`,
-        `- author: ${plan.author || 'unspecified'}`,
+      const metadata = renderGfmTable([
+        {
+          id: plan.id,
+          distance: plan.distance || 'unspecified',
+          date: plan.date || 'unspecified',
+          target: plan.target || 'unspecified',
+          author: plan.author || 'unspecified',
+        },
+      ])
+      return [
+        `## ${escapeMarkdownHeading(plan.meta || plan.id)}`,
+        '',
+        metadata,
+        '',
+        turndown.turndown(plan.html),
       ].join('\n')
-      return [`## ${plan.meta || plan.id}`, '', metadata, '', turndown.turndown(plan.html)].join(
-        '\n',
-      )
     })
     .join('\n\n')
   return document(opts, plans || 'No generated training plans are available.')
@@ -202,80 +201,79 @@ const trainingMarkdown = (opts: TriathlonMarkdownOptions): string => {
 const maintenanceRangeText = (ranges: TriathlonMaintenanceRange[]): string =>
   ranges.map(range => `${range.start} to ${range.end ?? 'current'}`).join(', ')
 
-const maintenanceSection = (title: string, entries: string[]): string[] =>
-  entries.length > 0 ? [`### ${title}`, '', ...entries, ''] : []
-
-const maintenanceDistanceText = (distanceMiles: number | null): string =>
-  distanceMiles === null ? '' : `; ${formatTriathlonMaintenanceDistance(distanceMiles, 'imperial')}`
-
 const toolsMarkdown = (opts: TriathlonMarkdownOptions): string => {
-  const conversions = [
-    '| kind | conversion |',
-    '| --- | --- |',
-    ...opts.tools.conversions.map(([kind, conversion]) => `| ${kind} | ${conversion} |`),
-  ].join('\n')
-  const distances = [
-    '| distance | swim km | bike km | run km |',
-    '| --- | ---: | ---: | ---: |',
-    ...TRI_RACE_DISTANCES.map(
-      ([label, swim, bike, run]) => `| ${label} | ${swim} | ${bike} | ${run} |`,
-    ),
-  ].join('\n')
-  const gear = opts.tools.gear
-    .map(([label, items]) => [`### ${label}`, '', ...items.map(item => `- ${item}`)].join('\n'))
-    .join('\n\n')
+  const conversions = renderTitledSections(
+    opts.tools.conversions.map(([kind, conversion]) => ({ kind, conversion })),
+    { title: 'conversions' },
+  )
+  const distances = renderTitledSections(
+    TRI_RACE_DISTANCES.map(([distance, swimKm, bikeKm, runKm]) => ({
+      distance,
+      swimKm,
+      bikeKm,
+      runKm,
+    })),
+    { title: 'raceDistances' },
+  )
+  const gear = renderTitledSections(
+    opts.tools.gear.flatMap(([category, items]) => items.map(item => ({ category, item }))),
+    { title: 'gearAndFuel' },
+  )
   const maintenanceData = opts.tools.maintenance
   const maintenance = maintenanceData
     ? [
         '## maintenance',
         '',
-        ...maintenanceSection(
-          'service',
-          maintenanceData.services.map(
-            entry =>
-              `- ${entry.bike}: ${entry.date}; ${entry.place}${maintenanceDistanceText(entry.distanceMiles)}`,
-          ),
+        renderTitledSections(
+          maintenanceData.services.map(entry => ({
+            bike: entry.bike,
+            date: entry.date,
+            place: entry.place,
+            distanceMiles: entry.distanceMiles,
+          })),
+          { title: 'maintenance.services', headingDepth: 3 },
         ),
-        ...maintenanceSection(
-          'components',
-          maintenanceData.components.map(
-            entry =>
-              `- ${entry.component}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${maintenanceDistanceText(entry.distanceMiles)}${entry.reason ? `; reason: ${entry.reason}` : ''}`,
-          ),
+        '',
+        renderTitledSections(
+          maintenanceData.components.map(entry => ({
+            component: entry.component,
+            type: entry.type,
+            ranges: maintenanceRangeText(entry.ranges),
+            distanceMiles: entry.distanceMiles,
+            reason: entry.reason,
+          })),
+          { title: 'maintenance.components', headingDepth: 3 },
         ),
-        ...maintenanceSection(
-          'chains',
-          maintenanceData.chains.map(
-            entry =>
-              `- chain ${entry.id}: ${entry.lubricant}; since ${entry.since}${maintenanceDistanceText(entry.distanceMiles)}; waxed ${entry.waxed ? 'yes' : 'no'}`,
-          ),
+        '',
+        renderTitledSections(
+          maintenanceData.chains.map(entry => ({
+            id: entry.id,
+            lubricant: entry.lubricant,
+            since: entry.since,
+            distanceMiles: entry.distanceMiles,
+            waxed: entry.waxed,
+          })),
+          { title: 'maintenance.chains', headingDepth: 3 },
         ),
-        ...maintenanceSection(
-          'tires',
-          maintenanceData.wheels.map(entry => {
-            const repaired =
-              entry.repaired === null ? '' : `; repaired ${entry.repaired ? 'yes' : 'no'}`
-            return `- ${entry.position} ${entry.part}: ${entry.type}; ${maintenanceRangeText(entry.ranges)}${maintenanceDistanceText(entry.distanceMiles)}${repaired}${entry.reason ? `; reason: ${entry.reason}` : ''}`
-          }),
+        '',
+        renderTitledSections(
+          maintenanceData.wheels.map(entry => ({
+            position: entry.position,
+            part: entry.part,
+            type: entry.type,
+            ranges: maintenanceRangeText(entry.ranges),
+            distanceMiles: entry.distanceMiles,
+            repaired: entry.repaired,
+            reason: entry.reason,
+          })),
+          { title: 'maintenance.tires', headingDepth: 3 },
         ),
+        '',
       ]
     : []
   return document(
     opts,
-    [
-      '## conversions',
-      '',
-      conversions,
-      '',
-      '## race distances',
-      '',
-      distances,
-      '',
-      ...maintenance,
-      '## gear and fuel',
-      '',
-      gear,
-    ].join('\n'),
+    [conversions, '', distances, '', ...maintenance, gear].join('\n'),
     'race distance km, maintenance distance mi',
   )
 }
@@ -295,7 +293,7 @@ const calculatorMarkdown = (opts: TriathlonMarkdownOptions): string => {
     ftpHypothesis: opts.analytics.engine.ftpHypothesis,
     zones: opts.payload.zones,
   }
-  return document(opts, ['## calculator inputs', '', jsonBlock(data)].join('\n'))
+  return document(opts, renderTitledSections(data, { title: 'calculatorInputs' }))
 }
 
 const activityMarkdown = (opts: TriathlonMarkdownOptions): string =>
@@ -307,6 +305,7 @@ const activityMarkdown = (opts: TriathlonMarkdownOptions): string =>
     sourcePath: `/${opts.slug}`,
     scopePrefix: opts.scopePrefix,
     includeActivityDetails: opts.view === 'day',
+    includeRestDays: opts.view !== 'feed',
   })
 
 export function buildTriathlonMarkdown(opts: TriathlonMarkdownOptions): string {

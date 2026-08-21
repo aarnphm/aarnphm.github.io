@@ -131,7 +131,7 @@ export const GEAR: [string, string[]][] = [
   [
     'Canyon Speedmax CFR Di2 2026',
     [
-      'Size: M, Pro Black, 9.3 kg',
+      'Size: M, Pro White, 9.3 kg',
       'Frame: Canyon Speedmax CFR, CFR carbon, 12x142mm',
       'Fork: Canyon Speedmax, CF carbon, 12x100mm',
       'Cockpit: Canyon AeroShield Pro (forearm length > 395mm, shell size 215mm)',
@@ -320,7 +320,12 @@ export const OnTreePanel = ({ tree, root }: { tree: TriathlonTreeYear[]; root: s
                 {month.days.map(day => (
                   <a class="tri-tree-day" role="listitem" href={`${root}/${day.slug}`}>
                     <span class="tri-tree-day-d">{day.day}</span>
-                    <span class="tri-tree-day-sports">{day.sports.join(' · ')}</span>
+                    <span
+                      class="tri-tree-day-sports"
+                      data-i18n={day.sports.length === 0 ? 'rest' : undefined}
+                    >
+                      {day.sports.length === 0 ? 'rest' : day.sports.join(' · ')}
+                    </span>
                     <TreeSum count={day.count} km={day.km} timeS={day.timeS} />
                   </a>
                 ))}

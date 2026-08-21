@@ -393,10 +393,7 @@ const scriptLabel = (script: LongAnimationFrameScript): string => {
   return file ? `${name} · ${file}` : name
 }
 
-export const setupPerformanceDebug = (root: HTMLElement): (() => void) | null => {
-  const timeline = root.querySelector<HTMLElement>('.tri-scroll')
-  if (!timeline) return null
-
+export const setupPerformanceDebug = (root: HTMLElement): (() => void) => {
   const panel = createElement('aside', 'tri-perf-debug')
   panel.hidden = true
   panel.setAttribute('aria-label', 'triathlon performance debug')

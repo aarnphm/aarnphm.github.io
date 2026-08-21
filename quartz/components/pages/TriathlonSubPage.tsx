@@ -58,7 +58,12 @@ export const TriathlonSubPage = (view: TriView, defaultDistance?: unknown): Quar
         {view === 'on' ? (
           <OnTreePanel
             root={root}
-            tree={triathlonDateTree(fileData.stravaPayload?.details ?? {}, feedScope?.prefix)}
+            tree={triathlonDateTree(
+              fileData.stravaPayload?.days
+                ? Object.fromEntries(fileData.stravaPayload.days.map(day => [day.date, day]))
+                : fileData.stravaPayload?.details ?? {},
+              feedScope?.prefix,
+            )}
           />
         ) : view === 'feed' ? (
           <FeedPanel />
