@@ -74,7 +74,13 @@ const maintenance: TriathlonMaintenance = {
   services: [],
   components: [],
   chains: [
-    { id: '3', distance: null, lubricant: 'UFO Wax Drip-On', since: '2026-08-10', waxed: true },
+    {
+      id: '3',
+      distanceMiles: null,
+      lubricant: 'UFO Wax Drip-On',
+      since: '2026-08-10',
+      waxed: true,
+    },
   ],
   wheels: [],
 }
@@ -292,12 +298,26 @@ test('calculator page tabs own race, gear ratio, and daily tire pressure calcula
   ).map(element => element.properties?.ariaKeyShortcuts)
 
   assert.equal(html.match(/data-calc-tab=/g)?.length, 3)
-  assert.deepEqual(shortcuts, ['r', 'g', 't'])
+  assert.deepEqual(shortcuts, ['r', 'c', 't'])
   assert.equal(html.match(/role="tabpanel"/g)?.length, 3)
   assert.match(html, /data-calc-tab="race"/)
   assert.match(html, /data-calc-tab="gear-ratios"/)
   assert.match(html, /data-calc-tab="tire-pressure"/)
   assert.match(html, /class="tri-ratio"/)
+  assert.match(html, /id="tri-ratio-chainring-preset-menu"/)
+  assert.equal(html.match(/data-chainring-preset-id/g)?.length, 3)
+  assert.match(html, /data-chainring-preset-id="54-40"/)
+  assert.match(html, /data-chainring-preset-id="53-39"/)
+  assert.match(html, /data-chainring-preset-id="52-36"/)
+  assert.match(
+    html,
+    /value="54" min="24" max="64" step="1" inputmode="numeric" aria-label="chainring 1 teeth"/,
+  )
+  assert.match(
+    html,
+    /value="40" min="24" max="64" step="1" inputmode="numeric" aria-label="chainring 2 teeth"/,
+  )
+  assert.match(html, /<output class="tri-ratio-range" aria-live="polite">1\.18–4\.91<\/output>/)
   assert.match(html, /data-rider-kg="86.06"/)
   assert.match(html, /data-pressure-output="front">76.5</)
   assert.match(html, /data-pressure-output="rear">83</)

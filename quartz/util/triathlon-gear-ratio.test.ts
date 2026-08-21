@@ -5,7 +5,9 @@ import {
   CERAMICSPEED_TEST_OUTPUT_WATTS,
   DEFAULT_GEAR_CASSETTE,
   GEAR_CASSETTE_PRESET_GROUPS,
+  GEAR_CHAINRING_PRESETS,
   formatGearEfficiencyDeltaPercent,
+  gearChainringPreset,
   gearEfficiencyDeltaPercent,
   gearCassettePreset,
   gearRatioMatrix,
@@ -14,6 +16,19 @@ import {
 test('the declared bike drivetrain is the default preset', () => {
   assert.equal(DEFAULT_GEAR_CASSETTE.id, 'shimano-ultegra-r8100-11-34')
   assert.deepEqual(DEFAULT_GEAR_CASSETTE.cogs, [11, 12, 13, 14, 15, 17, 19, 21, 24, 27, 30, 34])
+})
+
+test('chainring presets retain the three distinct tooth pairs', () => {
+  assert.deepEqual(
+    GEAR_CHAINRING_PRESETS.map(preset => [preset.id, preset.label, preset.chainrings]),
+    [
+      ['54-40', '54–40', [54, 40]],
+      ['53-39', '53–39', [53, 39]],
+      ['52-36', '52–36', [52, 36]],
+    ],
+  )
+  assert.equal(gearChainringPreset('54-40'), GEAR_CHAINRING_PRESETS[0])
+  assert.equal(gearChainringPreset('missing'), null)
 })
 
 test('cassette presets have unique ids and ordered sprocket counts', () => {

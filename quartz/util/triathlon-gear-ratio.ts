@@ -11,6 +11,12 @@ export interface GearCassettePresetGroup {
   presets: readonly GearCassettePreset[]
 }
 
+export interface GearChainringPreset {
+  id: string
+  label: string
+  chainrings: readonly [number, number]
+}
+
 export interface GearRatioCell {
   cog: number
   ratio: number
@@ -156,6 +162,26 @@ export const DEFAULT_GEAR_CASSETTE: GearCassettePreset = cassette(
   12,
   [11, 12, 13, 14, 15, 17, 19, 21, 24, 27, 30, 34],
 )
+
+const chainrings = (
+  id: string,
+  label: string,
+  first: number,
+  second: number,
+): GearChainringPreset => ({ id, label, chainrings: [first, second] })
+
+export const DEFAULT_GEAR_CHAINRING_PRESET: GearChainringPreset = chainrings(
+  '54-40',
+  '54–40',
+  54,
+  40,
+)
+
+export const GEAR_CHAINRING_PRESETS: readonly GearChainringPreset[] = [
+  DEFAULT_GEAR_CHAINRING_PRESET,
+  chainrings('53-39', '53–39', 53, 39),
+  chainrings('52-36', '52–36', 52, 36),
+]
 
 export const GEAR_CASSETTE_PRESET_GROUPS: readonly GearCassettePresetGroup[] = [
   {
@@ -493,6 +519,10 @@ export const gearCassettePreset = (id: string): GearCassettePreset | null => {
   for (const group of GEAR_CASSETTE_PRESET_GROUPS)
     for (const preset of group.presets) if (preset.id === id) return preset
   return null
+}
+
+export const gearChainringPreset = (id: string): GearChainringPreset | null => {
+  return GEAR_CHAINRING_PRESETS.find(preset => preset.id === id) ?? null
 }
 
 const validTeeth = (teeth: readonly number[]): boolean =>

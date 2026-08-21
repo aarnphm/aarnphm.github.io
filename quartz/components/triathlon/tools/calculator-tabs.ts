@@ -3,7 +3,7 @@ export type CalculatorTab = 'race' | 'gear-ratios' | 'tire-pressure'
 const CALCULATOR_TABS: readonly CalculatorTab[] = ['race', 'gear-ratios', 'tire-pressure']
 const CALCULATOR_TAB_SHORTCUTS: Readonly<Record<string, CalculatorTab>> = {
   r: 'race',
-  g: 'gear-ratios',
+  c: 'gear-ratios',
   t: 'tire-pressure',
 }
 

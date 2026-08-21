@@ -1,6 +1,7 @@
 import type { TriathlonContext } from '../runtime/context'
 import { isActivityKind } from '../../../plugins/stores/strava'
 import { dist, distCombined } from '../../../util/triathlon-card'
+import { formatTriathlonMaintenanceDistance } from '../../../util/triathlon-maintenance'
 import { applyI18n } from '../runtime/dom'
 import { toggleTriUnit } from '../runtime/preferences'
 
@@ -8,12 +9,23 @@ export const setupDistanceUnits = (
   root: HTMLElement,
   context: TriathlonContext,
 ): (() => void) | null => {
-  const values = root.querySelectorAll<HTMLElement>('.tri-unit-distance[data-km]')
+  const values = root.querySelectorAll<HTMLElement>(
+    '.tri-unit-distance[data-km], .tri-unit-distance[data-mi]',
+  )
   if (values.length === 0) return null
   const sync = (): void => {
     for (const value of values) {
-      const kilometres = Number(value.dataset.km)
       const kind = value.dataset.kind ?? 'combined'
+      if (kind === 'maintenance') {
+        const miles = Number(value.dataset.mi)
+        if (Number.isFinite(miles))
+          value.textContent = formatTriathlonMaintenanceDistance(
+            miles,
+            context.presentation.distance,
+          )
+        continue
+      }
+      const kilometres = Number(value.dataset.km)
       value.textContent =
         kind === 'combined'
           ? distCombined(context.presentation, kilometres)

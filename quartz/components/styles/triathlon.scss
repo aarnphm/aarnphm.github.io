@@ -2735,8 +2735,8 @@
 
 .tri-ratio-controls {
   display: grid;
-  grid-template-columns: max-content minmax(16rem, 28rem) max-content;
-  justify-content: center;
+  grid-template-columns: max-content max-content minmax(16rem, 28rem) max-content;
+  justify-content: stretch;
   gap: 0.8rem;
   align-items: end;
 }
@@ -2866,6 +2866,7 @@
   font-size: 0.52rem;
 }
 
+.tri-ratio-chainring-presets,
 .tri-ratio-cassette {
   min-width: 0;
   display: flex;
@@ -2875,12 +2876,18 @@
   color: var(--gray);
 }
 
+.tri-ratio-chainring-presets {
+  inline-size: 5rem;
+}
+
+.tri-ratio-chainring-preset-picker,
 .tri-ratio-cassette-picker {
   position: relative;
   z-index: 2;
   min-width: 0;
 }
 
+.tri-ratio-chainring-preset-trigger,
 .tri-ratio-cassette-trigger {
   appearance: none;
   box-sizing: border-box;
@@ -2909,12 +2916,14 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .tri-ratio-chainring-preset-trigger:hover,
   .tri-ratio-cassette-trigger:hover {
     background: color-mix(in srgb, var(--tri-accent) 5%, var(--light));
     border-color: color-mix(in srgb, var(--gray) 58%, transparent);
   }
 }
 
+.tri-ratio-chainring-preset-value,
 .tri-ratio-cassette-value {
   min-width: 0;
   overflow: hidden;
@@ -2922,6 +2931,7 @@
   white-space: nowrap;
 }
 
+.tri-ratio-chainring-preset-chevron,
 .tri-ratio-cassette-chevron {
   flex: none;
   width: 0.72rem;
@@ -2929,10 +2939,12 @@
   color: color-mix(in srgb, var(--gray) 78%, var(--dark));
 }
 
+.tri-ratio-chainring-preset-trigger[aria-expanded='true'] .tri-ratio-chainring-preset-chevron,
 .tri-ratio-cassette-trigger[aria-expanded='true'] .tri-ratio-cassette-chevron {
   transform: rotate(180deg);
 }
 
+.tri-ratio-chainring-preset-menu,
 .tri-ratio-cassette-menu {
   position: absolute;
   inset: calc(100% + 0.2rem) 0 auto;
@@ -2959,6 +2971,7 @@
   }
 }
 
+.tri-gear .tri-ratio-chainring-preset-menu,
 .tri-gear .tri-ratio-cassette-menu {
   max-height: min(22rem, calc(50vh - 9.25rem));
 }
@@ -2985,6 +2998,7 @@
   white-space: nowrap;
 }
 
+.tri-ratio-chainring-preset-option,
 .tri-ratio-cassette-option {
   display: grid;
   grid-template-columns: 0.75rem minmax(0, 1fr);
@@ -3010,21 +3024,25 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .tri-ratio-chainring-preset-option:hover,
   .tri-ratio-cassette-option:hover {
     color: var(--dark);
     background: color-mix(in srgb, var(--tri-accent) 10%, var(--light));
   }
 }
 
+.tri-ratio-chainring-preset-check,
 .tri-ratio-cassette-check {
   color: var(--tri-accent);
   opacity: 0;
 }
 
+.tri-ratio-chainring-preset-option[aria-selected='true'] .tri-ratio-chainring-preset-check,
 .tri-ratio-cassette-option[aria-selected='true'] .tri-ratio-cassette-check {
   opacity: 1;
 }
 
+.tri-ratio-chainring-preset-option-value,
 .tri-ratio-cassette-option-value {
   min-width: 0;
   overflow: hidden;
@@ -3456,35 +3474,51 @@
 }
 
 .tri-calc-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-bottom: 1px solid color-mix(in srgb, var(--gray) 28%, transparent);
+  --tri-calc-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
+
+  display: inline-flex;
+  align-items: stretch;
+  align-self: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  background: var(--tri-calc-tab-surface);
+  border: 1px solid var(--lightgray);
+  border-radius: var(--radius-none);
+  isolation: isolate;
 }
 
 .tri-calc-tab {
-  margin: 0 0 -1px;
-  padding: 0.4rem 0.55rem;
+  appearance: none;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.22rem 0.7rem;
   color: var(--gray);
   background: transparent;
   border: 0;
-  border-bottom: 1px solid transparent;
+  border-radius: var(--radius-none);
   font-family: var(--codeFont);
-  font-size: 0.62rem;
+  font-size: 0.66rem;
+  line-height: 1.3;
+  white-space: nowrap;
   cursor: pointer;
 
-  &:hover {
-    color: var(--dark);
-  }
-
   &:focus-visible {
+    z-index: 1;
+    outline: 2px solid color-mix(in srgb, var(--tri-accent) 72%, transparent);
+    outline-offset: -2px;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tri-calc-tab:not(.tri-calc-tab--on):hover {
     color: var(--dark);
-    outline: 0;
   }
 }
 
 .tri-calc-tab--on {
   color: var(--dark);
-  border-bottom-color: var(--tri-accent);
+  background: color-mix(in srgb, var(--tri-accent) 18%, var(--tri-calc-tab-surface));
 }
 
 .tri-calc-panel {
@@ -3560,16 +3594,15 @@
 
 .tri-calc-cell {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto auto;
-  align-items: start;
+  align-items: end;
   column-gap: 0.9rem;
   row-gap: 0;
 }
 
 .tri-calc-presets {
-  grid-column: 1;
-  grid-row: 2;
+  grid-area: 2/2;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -3578,8 +3611,7 @@
 }
 
 .tri-calc-box {
-  grid-column: 2;
-  grid-row: 2;
+  grid-area: 2/1;
   padding: 0.35rem 0.75rem;
   border: 1px solid var(--lightgray);
   border-radius: var(--radius-none);
@@ -3611,8 +3643,7 @@
   --tri-src-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
   position: relative;
   z-index: 1;
-  grid-column: 2;
-  grid-row: 1;
+  grid-area: 1/1;
   display: flex;
   align-items: stretch;
   margin-bottom: -1px;
