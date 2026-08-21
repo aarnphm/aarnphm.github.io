@@ -462,6 +462,43 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
   }
 }
 
+export { isStyleOnlySourceChange } from './plugins/emitters/component-resources/change-classifier'
+
+export async function buildStyles(argv: Argv, mut: Mutex, changedPaths: FilePath[]) {
+  const ctx: BuildCtx = {
+    buildId: randomIdNonSecure(),
+    argv,
+    cfg,
+    allSlugs: [],
+    allFiles: [],
+    incremental: true,
+  }
+  const perf = new PerfTimer()
+  const release = await mut.acquire()
+  try {
+    emitQuartzDevEvent({ type: 'build:start', epoch: ctx.buildId, reason: 'source' })
+    syncCtxFiles(ctx, await glob('**', argv.directory, cfg.configuration.ignorePatterns))
+    const changeEvents: ChangeEvent[] = changedPaths.map(fp => ({ type: 'change', path: fp }))
+    await emitPartialEmitter(ctx, [], changeEvents, 'ComponentResources')
+    console.log(styleText('green', `Restyled in ${perf.timeSince()}`))
+    emitQuartzDevEvent({
+      type: 'build:ready',
+      epoch: ctx.buildId,
+      files: 0,
+      elapsedMs: perf.elapsedMs(),
+    })
+  } catch (err) {
+    emitQuartzDevEvent({
+      type: 'build:error',
+      epoch: ctx.buildId,
+      message: describeBuildError(err),
+    })
+    trace('Failed to rebuild Quartz styles', err as Error)
+  } finally {
+    release()
+  }
+}
+
 export default async (argv: Argv, mut: Mutex, clientRefresh: () => void, reason?: BuildReason) => {
   try {
     return await buildQuartz(argv, mut, clientRefresh, reason)

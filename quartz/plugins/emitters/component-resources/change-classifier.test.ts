@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import type { ChangeEvent } from '../../../types/plugin'
-import { classifyResourceChanges, hasComponentResourceChanges } from './change-classifier'
+import {
+  classifyResourceChanges,
+  hasComponentResourceChanges,
+  isStyleOnlySourceChange,
+} from './change-classifier'
 
 function change(path: string, type: ChangeEvent['type'] = 'change'): ChangeEvent {
   return { path, type } as ChangeEvent
@@ -107,4 +111,25 @@ test('detects when component resources can skip content-only partial emits', () 
 
   assert.equal(hasComponentResourceChanges(contentChanges), false)
   assert.equal(hasComponentResourceChanges(scriptChanges), true)
+})
+
+test('gates the style-only rebuild path to component stylesheet changes', () => {
+  assert.equal(isStyleOnlySourceChange(['quartz/components/styles/triathlon.scss']), true)
+  assert.equal(
+    isStyleOnlySourceChange([
+      'quartz/components/styles/triathlon.scss',
+      'quartz/components/styles/stream.scss',
+    ]),
+    true,
+  )
+  assert.equal(isStyleOnlySourceChange([]), false)
+  assert.equal(isStyleOnlySourceChange(['quartz/styles/custom.scss']), false)
+  assert.equal(isStyleOnlySourceChange(['quartz/components/styles/protected.scss']), false)
+  assert.equal(
+    isStyleOnlySourceChange([
+      'quartz/components/styles/triathlon.scss',
+      'quartz/util/triathlon-card.ts',
+    ]),
+    false,
+  )
 })

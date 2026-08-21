@@ -145,6 +145,10 @@ export function classifyResourceChanges(
   }
 }
 
+export function isStyleOnlySourceChange(changedPaths: readonly string[]): boolean {
+  return changedPaths.length > 0 && changedPaths.every(isComponentStylesheetChange)
+}
+
 export function hasComponentResourceChanges(changes: ComponentResourceChanges): boolean {
   return (
     changes.componentStyles ||
