@@ -12,6 +12,7 @@ import type { WeatherCache } from '../plugins/stores/weather'
 import {
   ATHLETE,
   buildAnalytics,
+  type ActivityDistributionPoint,
   type ActivitySummary,
   type AnalyticsInputs,
 } from '../plugins/stores/analytics'
@@ -74,6 +75,40 @@ export function enrichCalculatedIntensityFactors(
       ftp,
       lactateThresholdHr,
     )
+}
+
+export function enrichRunPaceZones(
+  payload: StravaPayload,
+  distributions: {
+    activities: readonly Pick<ActivityDistributionPoint, 'id' | 'paceZoneSeconds'>[]
+    paceZoneBoundsSPerKm: readonly number[]
+    tenKmRaceTimeS: number | null
+  },
+): void {
+  const boundsSPerKm = distributions.paceZoneBoundsSPerKm
+  const tenKmRaceTimeS = distributions.tenKmRaceTimeS
+  const validReference =
+    boundsSPerKm.length === 5 &&
+    boundsSPerKm.every(value => Number.isFinite(value) && value > 0) &&
+    tenKmRaceTimeS != null &&
+    Number.isFinite(tenKmRaceTimeS) &&
+    tenKmRaceTimeS > 0
+  const zonesByActivity = new Map(
+    distributions.activities.flatMap(activity =>
+      activity.paceZoneSeconds == null ? [] : [[activity.id, activity.paceZoneSeconds] as const],
+    ),
+  )
+  for (const detail of Object.values(payload.details)) {
+    const zoneSeconds = zonesByActivity.get(detail.id)
+    detail.runPaceZones =
+      detail.sport === 'run' &&
+      validReference &&
+      zoneSeconds?.length === boundsSPerKm.length + 1 &&
+      zoneSeconds.every(value => Number.isFinite(value) && value >= 0) &&
+      zoneSeconds.some(value => value > 0)
+        ? { zoneSeconds: [...zoneSeconds], boundsSPerKm: [...boundsSPerKm], tenKmRaceTimeS }
+        : null
+  }
 }
 
 export function enrichCalculatedExerciseLoads(payload: StravaPayload): void {
@@ -601,6 +636,7 @@ export function loadStravaPayloadSync(
     activityDetails: payload.details,
     since,
   })
+  enrichRunPaceZones(payload, analytics.distributions)
   enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
   enrichCalculatedExerciseLoads(payload)
   enrichCalculatedTrainingEffects(payload)

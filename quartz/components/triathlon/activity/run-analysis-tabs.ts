@@ -1,6 +1,6 @@
-export type RunAnalysisView = 'workout' | 'laps'
+export type RunAnalysisView = 'workout' | 'laps' | 'pace'
 
-const RUN_ANALYSIS_VIEWS: readonly RunAnalysisView[] = ['workout', 'laps']
+const RUN_ANALYSIS_VIEWS: readonly RunAnalysisView[] = ['workout', 'laps', 'pace']
 
 const isRunAnalysisView = (value: string | undefined): value is RunAnalysisView =>
   RUN_ANALYSIS_VIEWS.some(view => view === value)
@@ -8,19 +8,21 @@ const isRunAnalysisView = (value: string | undefined): value is RunAnalysisView 
 export const runAnalysisViewFromKey = (
   selected: RunAnalysisView,
   key: string,
+  views: readonly RunAnalysisView[] = RUN_ANALYSIS_VIEWS,
 ): RunAnalysisView | null => {
-  const current = RUN_ANALYSIS_VIEWS.indexOf(selected)
+  const current = views.indexOf(selected)
+  if (current < 0 || views.length === 0) return null
   const next =
     key === 'Home'
       ? 0
       : key === 'End'
-        ? RUN_ANALYSIS_VIEWS.length - 1
+        ? views.length - 1
         : key === 'ArrowLeft'
-          ? (current - 1 + RUN_ANALYSIS_VIEWS.length) % RUN_ANALYSIS_VIEWS.length
+          ? (current - 1 + views.length) % views.length
           : key === 'ArrowRight'
-            ? (current + 1) % RUN_ANALYSIS_VIEWS.length
+            ? (current + 1) % views.length
             : -1
-  return RUN_ANALYSIS_VIEWS[next] ?? null
+  return views[next] ?? null
 }
 
 const selectRunAnalysisView = (
@@ -38,7 +40,17 @@ const selectRunAnalysisView = (
       ':scope > .tri-run-analysis-stage > [data-run-analysis-panel]',
     ),
   )
-  if (tabs.length !== RUN_ANALYSIS_VIEWS.length || panels.length !== RUN_ANALYSIS_VIEWS.length)
+  const views = tabs.flatMap(tab => {
+    const view = tab.dataset.runAnalysisTab
+    return isRunAnalysisView(view) ? [view] : []
+  })
+  if (
+    tabs.length === 0 ||
+    tabs.length !== panels.length ||
+    views.length !== tabs.length ||
+    !views.includes(selected) ||
+    panels.some(panel => !isRunAnalysisView(panel.dataset.runAnalysisPanel))
+  )
     return
   analysis.dataset.runAnalysisView = selected
   for (const tab of tabs) {
@@ -83,7 +95,15 @@ export const setupRunAnalysisTabs = (root: HTMLElement): (() => void) => {
     const analysis = analysisFromTab(event.target)
     const selected = event.target.dataset.runAnalysisTab
     if (!analysis || !root.contains(analysis) || !isRunAnalysisView(selected)) return
-    const next = runAnalysisViewFromKey(selected, event.key)
+    const views = Array.from(
+      analysis.querySelectorAll<HTMLElement>(
+        ':scope > .tri-run-analysis-tabs [data-run-analysis-tab]',
+      ),
+    ).flatMap(tab => {
+      const view = tab.dataset.runAnalysisTab
+      return isRunAnalysisView(view) ? [view] : []
+    })
+    const next = runAnalysisViewFromKey(selected, event.key, views)
     if (!next) return
     event.preventDefault()
     event.stopPropagation()

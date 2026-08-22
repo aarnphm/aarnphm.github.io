@@ -3,6 +3,8 @@ import type { Sport } from '../plugins/stores/strava'
 import { KM_TO_MI, clock, type TriNodeFactory } from './triathlon-card'
 import { triText } from './triathlon-i18n'
 
+export { parseClockSeconds } from './duration'
+
 export const TRI_RACE_DISTANCES: [string, number, number, number][] = [
   ['sprint', 0.75, 20, 5],
   ['olympic', 1.5, 40, 10],
@@ -185,20 +187,6 @@ export type TriathlonCalcTimes = {
 }
 
 export type TriathlonCalcPaces = { swimPaceSec: number; bikeMph: number; runPaceSec: number }
-
-export function parseClockSeconds(value: string): number {
-  const trimmed = value.trim()
-  if (!trimmed) return 0
-  const rawParts = trimmed.split(':')
-  if (rawParts.length === 2 || rawParts.length === 3) {
-    const parts = rawParts.map(part => Number(part))
-    if (parts.some(part => !Number.isFinite(part))) return 0
-    if (parts.length === 3) return (parts[0] || 0) * 3600 + (parts[1] || 0) * 60 + (parts[2] || 0)
-    return (parts[0] || 0) * 60 + (parts[1] || 0)
-  }
-  const seconds = Number(trimmed)
-  return Number.isFinite(seconds) ? seconds : 0
-}
 
 export function formatDurationClock(sec: number): string {
   const t = Math.max(0, Math.round(sec))

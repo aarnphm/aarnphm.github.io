@@ -18,6 +18,7 @@ import {
   enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
   enrichRouteLessHeartRate,
+  enrichRunPaceZones,
   enrichRunDynamics,
   enrichSwimMetrics,
   swimActivityIntervals,
@@ -63,6 +64,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   analysisRanges: [],
   runSplitsMetric: [],
   runSplitsStandard: [],
+  runPaceZones: null,
   minAlt: 0,
   maxAlt: 0,
   descentM: 0,
@@ -83,6 +85,25 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   swimLocation: null,
   waterTemperatureC: null,
   ...values,
+})
+
+test('copies the shared analytics pace distribution into run activity details', () => {
+  const payload = emptyPayload()
+  payload.details = { '1': detail({ id: 1, sport: 'run' }), '2': detail({ id: 2, sport: 'bike' }) }
+  enrichRunPaceZones(payload, {
+    activities: [
+      { id: 1, paceZoneSeconds: [120, 240, 360, 480, 600, 720] },
+      { id: 2, paceZoneSeconds: null },
+    ],
+    paceZoneBoundsSPerKm: [387.114, 333.676, 299.501, 280.238, 263.461],
+    tenKmRaceTimeS: 3_000,
+  })
+  assert.deepEqual(payload.details['1'].runPaceZones, {
+    zoneSeconds: [120, 240, 360, 480, 600, 720],
+    boundsSPerKm: [387.114, 333.676, 299.501, 280.238, 263.461],
+    tenKmRaceTimeS: 3_000,
+  })
+  assert.equal(payload.details['2'].runPaceZones, null)
 })
 
 const appleSwim = (values: Partial<AppleSwim> = {}): AppleSwim => ({

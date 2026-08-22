@@ -848,6 +848,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   analysisRanges: [],
   runSplitsMetric: [],
   runSplitsStandard: [],
+  runPaceZones: null,
   minAlt: 75,
   maxAlt: 110,
   descentM: 20,
@@ -1974,6 +1975,11 @@ test('renders compact positional analysis bars beneath the existing activity fig
 test('renders run laps as selectable pace splits against the lap-weighted average', () => {
   const run = analysisDetail()
   run.sport = 'run'
+  run.runPaceZones = {
+    zoneSeconds: [354, 416, 397, 62, 227, 329],
+    boundsSPerKm: [387.114, 333.676, 299.501, 280.238, 263.461],
+    tenKmRaceTimeS: 3_000,
+  }
   run.analysisRanges = [
     {
       kind: 'lap',
@@ -2037,11 +2043,12 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   assert.equal(runAnalysis.properties.ariaLabel, 'Run analysis')
   assert.equal(runAnalysis.properties.dataRunAnalysisView, 'workout')
   const tabs = byClass(runAnalysis, 'tri-run-analysis-tab')
-  assert.deepEqual(tabs.map(text), ['workout analysis', 'lap splits'])
+  assert.deepEqual(tabs.map(text), ['workout analysis', 'lap splits', 'pace distribution'])
   assert.deepEqual(
     tabs.map(tab => [tab.properties.role, tab.properties.ariaSelected, tab.properties.tabIndex]),
     [
       ['tab', 'true', 0],
+      ['tab', 'false', -1],
       ['tab', 'false', -1],
     ],
   )
@@ -2056,6 +2063,7 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
     [
       ['tabpanel', 'workout', undefined, 'false'],
       ['tabpanel', 'laps', true, 'true'],
+      ['tabpanel', 'pace', true, 'true'],
     ],
   )
   assert.deepEqual(
@@ -2147,6 +2155,32 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
   assert.equal(rows[0].properties.ariaPressed, 'false')
   assert.match(String(rows[1].properties.ariaLabel), /−1:00 versus previous lap$/)
 
+  const pace = byClass(runAnalysis, 'tri-run-pace-distribution')[0]
+  assert.ok(pace)
+  assert.equal(pace.properties.ariaLabel, 'Run pace distribution')
+  assert.deepEqual(byClass(pace, 'tri-training-zone-summary-value').map(text), ['23% in zone 2'])
+  assert.deepEqual(byClass(pace, 'tri-training-zone-summary-time').map(text), ['29:45'])
+  assert.deepEqual(byClass(pace, 'tri-training-zone-name').map(text), [
+    'Z6',
+    'Z5',
+    'Z4',
+    'Z3',
+    'Z2',
+    'Z1',
+  ])
+  assert.deepEqual(byClass(pace, 'tri-training-zone-range').map(text), [
+    '<4:23/km',
+    '4:23–4:40/km',
+    '4:40–5:00/km',
+    '5:00–5:34/km',
+    '5:34–6:27/km',
+    '>6:27/km',
+  ])
+  assert.deepEqual(byClass(pace, 'tri-training-zone-source').map(text), [
+    'based on 10 km race time 50:00',
+  ])
+  assert.equal(byClass(pace, 'tri-training-zone-row').length, 6)
+
   const bands = byClass(analysis, 'tri-analysis-band')
   assert.deepEqual(
     bands.map(band => band.properties.dataAnalysisKind),
@@ -2160,6 +2194,35 @@ test('renders run laps as selectable pace splits against the lap-weighted averag
       .map(child => classNames(child)),
     [['tri-run-analysis'], ['tri-elev-wrap']],
   )
+})
+
+test('keeps the available run-analysis tabs when pace telemetry is missing', () => {
+  const run = analysisDetail()
+  run.sport = 'run'
+  const rendered = buildActivity(factory, run, true)
+  assert.deepEqual(byClass(rendered, 'tri-run-analysis-tab').map(text), [
+    'workout analysis',
+    'lap splits',
+  ])
+})
+
+test('renders the configured 50 minute 10 km pace bands in imperial units', () => {
+  const run = analysisDetail()
+  run.sport = 'run'
+  run.runPaceZones = {
+    zoneSeconds: [354, 416, 397, 62, 227, 329],
+    boundsSPerKm: [387.114, 333.676, 299.501, 280.238, 263.461],
+    tenKmRaceTimeS: 3_000,
+  }
+  const rendered = buildActivity(factoryFor(imperialPresentation), run, true)
+  assert.deepEqual(byClass(rendered, 'tri-training-zone-range').map(text), [
+    '<7:04/mi',
+    '7:04–7:31/mi',
+    '7:31–8:02/mi',
+    '8:02–8:57/mi',
+    '8:57–10:23/mi',
+    '>10:23/mi',
+  ])
 })
 
 test('selects Strava metric or standard run splits from the active distance unit', () => {

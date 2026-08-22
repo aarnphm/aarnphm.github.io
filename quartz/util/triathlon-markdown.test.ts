@@ -98,6 +98,7 @@ const activityDetail = (): StravaActivityDetail => ({
   analysisRanges: [],
   runSplitsMetric: [],
   runSplitsStandard: [],
+  runPaceZones: null,
   minAlt: 70,
   maxAlt: 100,
   descentM: 60,

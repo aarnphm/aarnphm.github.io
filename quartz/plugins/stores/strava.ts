@@ -1,3 +1,4 @@
+import type { RunPaceZoneDistribution } from '../../util/run-pace-zones'
 import type { SwimLocation, SwimStroke } from './apple'
 import type {
   GarminActivityMatch,
@@ -490,6 +491,7 @@ export interface StravaActivityDetail {
   analysisRanges: ActivityAnalysisRange[]
   runSplitsMetric: ActivityRunSplit[]
   runSplitsStandard: ActivityRunSplit[]
+  runPaceZones: RunPaceZoneDistribution | null
   minAlt: number
   maxAlt: number
   descentM: number
@@ -2252,6 +2254,7 @@ function projectDetail(
     analysisRanges: analysis.ranges,
     runSplitsMetric: sport === 'run' ? projectRunSplits(rawDetail?.splitsMetric) : [],
     runSplitsStandard: sport === 'run' ? projectRunSplits(rawDetail?.splitsStandard) : [],
+    runPaceZones: null,
     minAlt,
     maxAlt,
     descentM,
