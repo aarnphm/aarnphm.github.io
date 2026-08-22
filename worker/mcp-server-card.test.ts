@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { MCP_SERVER_CARD_PATH, mcpServerCard, mcpServerCardResponse } from './mcp-server-card'
+import {
+  MCP_SERVER_CARD_CONTENT_TYPE,
+  MCP_SERVER_CARD_PATH,
+  mcpServerCard,
+  mcpServerCardResponse,
+} from './mcp-server-card'
 
 test('describes the public Streamable HTTP MCP server and its implemented capabilities', () => {
   assert.equal(MCP_SERVER_CARD_PATH, '/.well-known/mcp/server-card.json')
@@ -17,7 +22,7 @@ test('serves a cacheable, cross-origin JSON card for GET and an empty card for H
     'https://aarnphm.xyz',
   )
   assert.equal(getResponse.status, 200)
-  assert.equal(getResponse.headers.get('Content-Type'), 'application/json; charset=utf-8')
+  assert.equal(getResponse.headers.get('Content-Type'), MCP_SERVER_CARD_CONTENT_TYPE)
   assert.equal(getResponse.headers.get('Access-Control-Allow-Origin'), '*')
   assert.deepEqual(await getResponse.json(), mcpServerCard('https://aarnphm.xyz'))
 

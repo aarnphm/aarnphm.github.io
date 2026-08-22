@@ -743,8 +743,44 @@ vo2max:
 ---
 
 ```tracking
+date: 2026-05-16
+activity: 18535837017
+skipTraining: true
+```
+
+```tracking
+date: 2026-05-17
+activity: 18550492344
+skipTraining: true
+```
+
+```tracking
 date: 2026-05-20
 weight: 206
+```
+
+```tracking
+date: 2026-05-22
+activity: 18630166585
+skipTraining: true
+```
+
+```tracking
+date: 2026-05-24
+activity: 18643344976
+skipTraining: true
+```
+
+```tracking
+date: 2026-05-25
+activity: 18653375245
+skipTraining: true
+```
+
+```tracking
+date: 2026-05-25
+activity: 18653375282
+skipTraining: true
 ```
 
 ```tracking race=true event="B4BH 2026"
@@ -810,6 +846,12 @@ exercise: Side Plank | 40s | 40s
 ```
 
 ```tracking
+date: 2026-06-13
+activity: 18910459832
+skipTraining: true
+```
+
+```tracking
 date: 2026-06-14
 activity: 18922702826
 strengthVolume: 2475 lb
@@ -825,6 +867,12 @@ exercise: Front Leg Raised Lunge | 8 reps | 8 reps
 exercise: Lunge Hold Calf Raise | 8 reps | 8 reps
 exercise: Figure Of 8s | 10 reps | 10 reps
 exercise: DI Skipping | 40s | 40s
+```
+
+```tracking
+date: 2026-06-17
+activity: 18964432403
+skipTraining: true
 ```
 
 ```tracking
@@ -880,6 +928,12 @@ fueling: 30
 date: 2026-06-30
 activity: 19129540172
 fueling: 120
+```
+
+```tracking
+date: 2026-07-16
+activity: 19344175715
+skipTraining: true
 ```
 
 ```tracking
@@ -983,6 +1037,12 @@ exercise: KB Straight Leg Deadlift | 10 reps @ 50 lb | 10 reps @ 50 lb
 exercise: Pogo Jumps | 1 set / 10 reps
 exercise: Plank | 1 set / 30s
 exercise: Plank Hold | 1 set / 30s
+```
+
+```tracking
+date: 2026-08-06
+activity: 19630939107
+skipTraining: true
 ```
 
 ```tracking
@@ -1119,6 +1179,12 @@ activity: 19841035812
 fueling: 300
 ```
 
+```tracking
+date: 2026-08-21
+activity: 19843944064
+skipTraining: true
+```
+
 <!-- training plan start
 meta: equation references
 date: 2026-06-07
@@ -1146,7 +1212,11 @@ The `/triathlon` route family is generated from the same enriched activity, heal
 | `/triathlon/on/<YYYY>/<MM>`      | month-scoped version of the date tree and feed document                                                                                                           | days and activities whose local date starts with the selected month                                                                                                                                                          |
 | `/triathlon/on/<YYYY>/<MM>/<DD>` | expanded canonical day card with anchors for individual activities                                                                                                | that local day's activities, streams, recovery, health, weather, tracking overrides, and daily analytics; rest-only dates still receive a page                                                                               |
 
-<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> opens the triathlon command palette. <kbd>/</kbd> focuses or blurs the active search on analytics, maps, training, and feed. The <kbd>g</kbd> prefix navigates among the subpages, <kbd>j</kbd>/<kbd>k</kbd> moves through feed and date-tree rows, and the calculator uses <kbd>r</kbd>, <kbd>c</kbd>, and <kbd>t</kbd> for race, gear ratios, and tire pressure. `?tri-debug=performance` opens the performance panel on every fixed, archive, and day page; <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> toggles it. The panel reports FPS, frame p95, over-budget and long-frame counts, blocked time, layout shift, cursor/timeline/popover samples, scroll rate, heap, DOM size, and worst script/event attribution.
+#### agent navigation
+
+Agents should use `/triathlon.md` as the route-family index and select the narrowest document that answers the task. Request a canonical route with `Accept: text/markdown` or append `.md`, then follow the route-local data pointers. Use a fixed document for one domain, `/triathlon/feed.md` for the complete activity history, `/triathlon/on/<YYYY>/<MM>/<DD>.md` for a known local date, `/triathlon/data` for chronological cross-route analysis, and `/static/strava-detail.json` to locate the bounded shard containing complete activity payloads. Open the canonical HTML route when the task requires rendered-state or interaction evidence because the Markdown sibling describes the contract without reproducing hydrated browser state.
+
+<kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>K</kbd> opens the triathlon command palette. <kbd>/</kbd> focuses or blurs the active search on analytics, maps, training, and feed. On a fixed subpage, <kbd>g</kbd> followed within one second by <kbd>g</kbd>, <kbd>c</kbd>, <kbd>a</kbd>, <kbd>m</kbd>, <kbd>t</kbd>/<kbd>r</kbd>, <kbd>f</kbd>, <kbd>o</kbd>, or <kbd>h</kbd> navigates to tools, calculator, analytics, maps, training, feed, the date index, or `/triathlon`, respectively. On `/triathlon`, <kbd>g</kbd> followed by <kbd>a</kbd>, <kbd>c</kbd>, <kbd>m</kbd>, <kbd>t</kbd>, <kbd>g</kbd>, <kbd>p</kbd>, or <kbd>s</kbd> opens analytics, calculator, maps, training, gear, pace, or the summary. <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> opens tools anywhere in the route family, while <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>\</kbd> returns a fixed subpage to `/triathlon` and `/triathlon` to the site root. <kbd>j</kbd>/<kbd>k</kbd> moves through feed and date-tree rows, and the calculator uses <kbd>r</kbd>, <kbd>c</kbd>, and <kbd>t</kbd> for race, gear ratios, and tire pressure. `?tri-debug=performance` opens the performance panel on every fixed, archive, and day page; <kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> toggles it. The panel reports FPS, frame p95, over-budget and long-frame counts, blocked time, layout shift, cursor/timeline/popover samples, scroll rate, heap, DOM size, and worst script/event attribution.
 
 Every document route has a Markdown sibling. `/triathlon.md` is this source note. The generated fixed, year/month archive, and day pages use the same pathname with `.md` appended. A `GET` or `HEAD` request from a recognized agent user agent, or one accepting `text/markdown` with positive quality, receives the Markdown sibling automatically. Ordinary browser requests receive HTML. Explicit `.md` requests stay explicit. Generated Markdown is route-specific:
 

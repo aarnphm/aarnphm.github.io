@@ -4,6 +4,7 @@ import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
 import { BuildCtx } from '../../util/ctx'
 import { FilePath, FullSlug, isRelativeURL, resolveRelative, simplifySlug } from '../../util/path'
+import { ProcessedContent } from '../vfile'
 import { write, removeWritten } from './helpers'
 
 function aliasTargetSlug(file: VFile, aliasTarget: string): FullSlug | undefined {
@@ -50,6 +51,51 @@ async function processFile(ctx: BuildCtx, file: VFile): Promise<FilePath[]> {
   return files.filter(file => file !== undefined)
 }
 
+function publicPath(slug: FullSlug): string {
+  const simplified = simplifySlug(slug)
+  return simplified === '/' ? '/' : `/${simplified}`
+}
+
+function canonicalMarkdownPath(file: VFile): string {
+  return file.data.slug === 'index' ? '/llms.txt' : `/${file.data.slug}.md`
+}
+
+export function aliasRedirectRules(content: ProcessedContent[]): string {
+  const rules = new Map<string, string>()
+  const addRule = (source: string, destination: string) => {
+    const existing = rules.get(source)
+    if (existing && existing !== destination) {
+      throw new Error(`conflicting alias redirect for ${source}`)
+    }
+    rules.set(source, destination)
+  }
+
+  for (const [_tree, file] of content) {
+    const canonicalHtml = publicPath(file.data.slug!)
+    const canonicalMarkdown = canonicalMarkdownPath(file)
+    for (const aliasTarget of file.data.aliases ?? []) {
+      const aliasSlug = aliasTargetSlug(file, aliasTarget)
+      if (!aliasSlug) continue
+      const aliasHtml = publicPath(aliasSlug)
+      addRule(aliasHtml, canonicalHtml)
+      addRule(`${aliasHtml}.md`, canonicalMarkdown)
+    }
+  }
+
+  if (rules.size > 2000) {
+    throw new Error(`static alias redirects exceed the 2,000 rule limit: ${rules.size}`)
+  }
+
+  return [...rules]
+    .sort(([sourceA], [sourceB]) => sourceA.localeCompare(sourceB))
+    .map(([source, destination]) => `${source} ${destination} 308`)
+    .join('\n')
+}
+
+function writeRedirectRules(ctx: BuildCtx, content: ProcessedContent[]): Promise<FilePath> {
+  return write({ ctx, content: aliasRedirectRules(content), slug: '_redirects', ext: '' })
+}
+
 async function deleteAliases(ctx: BuildCtx, file: VFile): Promise<void> {
   for (const aliasTarget of file.data.aliases ?? []) {
     const aliasSlug = aliasTargetSlug(file, aliasTarget)
@@ -72,12 +118,15 @@ export const AliasRedirects: QuartzEmitterPlugin = () => ({
     for (const file of files.flat()) {
       yield file
     }
+    yield writeRedirectRules(ctx, content)
   },
-  async *partialEmit(ctx, _content, _resources, changeEvents) {
+  async *partialEmit(ctx, content, _resources, changeEvents) {
+    let redirectsChanged = false
     for (const changeEvent of changeEvents) {
       if (!changeEvent.file) continue
       if (changeEvent.type === 'delete') {
         await deleteAliases(ctx, changeEvent.file)
+        redirectsChanged ||= (changeEvent.file.data.aliases?.length ?? 0) > 0
         continue
       }
       if (
@@ -91,7 +140,11 @@ export const AliasRedirects: QuartzEmitterPlugin = () => ({
       }
       if (changeEvent.type === 'add' || changeEvent.type === 'change') {
         yield* await processFile(ctx, changeEvent.file)
+        redirectsChanged ||=
+          (changeEvent.file.data.aliases?.length ?? 0) > 0 ||
+          (changeEvent.previousFile?.data.aliases?.length ?? 0) > 0
       }
     }
+    if (redirectsChanged) yield writeRedirectRules(ctx, content)
   },
 })

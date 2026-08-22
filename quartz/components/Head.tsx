@@ -10,6 +10,7 @@ import { unescapeHTML } from '../util/escape'
 import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } from '../util/path'
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from '../util/resources'
 import { googleFontHref, googleFontSubsetHref } from '../util/theme'
+import { PersonStructuredData } from './AgentIdentity'
 export default (() => {
   const Head: QuartzComponent = ({
     cfg,
@@ -99,6 +100,9 @@ export default (() => {
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
         {noindex && <meta name="robots" content="noindex, nofollow" />}
+        {fileData.slug === 'index' && (
+          <PersonStructuredData baseUrl={cfg.baseUrl ?? 'example.com'} />
+        )}
 
         {css.map(resource => CSSResourceToStyleElement(resource, true))}
         {js

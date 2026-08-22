@@ -3,6 +3,7 @@ import { Mutex } from 'async-mutex'
 import chokidar from 'chokidar'
 import { GlobbyFilterFunction, isGitIgnored } from 'globby'
 import { minimatch } from 'minimatch'
+import { stat } from 'node:fs/promises'
 import path from 'path'
 import sourceMapSupport from 'source-map-support'
 import { styleText } from 'util'
@@ -14,7 +15,7 @@ import { resetStaticFileCache, staticAssetClaims } from './plugins/emitters/stat
 import { ProcessedContent } from './plugins/vfile'
 import { emitContent, emitPartialEmitter } from './processors/emit'
 import { filterContentResult } from './processors/filter'
-import { parseMarkdown, resetProcessedContentCache } from './processors/parse'
+import { parseMarkdown } from './processors/parse'
 import { ChangeEvent } from './types/plugin'
 import { Argv, BuildCtx } from './util/ctx'
 import { emitQuartzDevEvent } from './util/dev-events'
@@ -202,9 +203,6 @@ async function buildQuartz(
 
     const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
-    if (reason === 'source') {
-      resetProcessedContentCache()
-    }
     await cleanOutputForBuild(ctx, perf, true)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)
@@ -266,15 +264,32 @@ async function startWatching(
   })
 
   const queue: RebuildQueue = { running: false, requested: false }
-  const enqueue = (fp: string, type: ChangeEvent['type']) => {
+  const watchedSignatures = new Map<FilePath, string>()
+  const watchedSignature = async (fp: FilePath): Promise<string> => {
+    try {
+      const info = await stat(path.join(argv.directory, fp))
+      return `${info.mtimeMs}:${info.size}`
+    } catch {
+      return 'missing'
+    }
+  }
+  const enqueue = async (fp: string, type: ChangeEvent['type']) => {
     if (buildData.ignored(fp)) return
-    buildData.pending.set(toPosixPath(fp) as FilePath, type)
+    const normalized = toPosixPath(fp) as FilePath
+    if (type === 'delete') {
+      watchedSignatures.delete(normalized)
+    } else {
+      const signature = await watchedSignature(normalized)
+      if (watchedSignatures.get(normalized) === signature) return
+      watchedSignatures.set(normalized, signature)
+    }
+    buildData.pending.set(normalized, type)
     void requestRebuild(queue, clientRefresh, buildData)
   }
   watcher
-    .on('add', fp => enqueue(fp, 'add'))
-    .on('change', fp => enqueue(fp, 'change'))
-    .on('unlink', fp => enqueue(fp, 'delete'))
+    .on('add', fp => void enqueue(fp, 'add'))
+    .on('change', fp => void enqueue(fp, 'change'))
+    .on('unlink', fp => void enqueue(fp, 'delete'))
 
   const agentSkillsWatcher = chokidar.watch(path.resolve(AGENT_SKILLS_SOURCE_DIRECTORY), {
     awaitWriteFinish: { stabilityThreshold: 250 },
@@ -418,7 +433,13 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     console.log(styleText('yellow', 'Detected change, rebuilding...'))
 
     perf.addEvent('glob')
-    const allFiles = await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns)
+    const fileSetIsStable =
+      pending.size > 0 &&
+      ctx.allFiles.length > 0 &&
+      [...pending.values()].every(type => type === 'change')
+    const allFiles = fileSetIsStable
+      ? ctx.allFiles
+      : await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns)
     const markdownPaths = allFiles.filter(isMarkdownPath).sort()
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,

@@ -2,7 +2,6 @@ import type { Element, ElementContent, Root as HtmlRoot } from 'hast'
 import type { Parents as MdastParents, PhrasingContent, Root as MdRoot } from 'mdast'
 import type { Handler, Options as ToHastOptions, State } from 'mdast-util-to-hast'
 import esbuild from 'esbuild'
-import { globby } from 'globby'
 import matter from 'gray-matter'
 import yaml from 'js-yaml'
 import { toHast } from 'mdast-util-to-hast'
@@ -294,6 +293,7 @@ type ProcessedContentCacheState = {
 const processorCache = new WeakMap<BuildCtx, ProcessorCache>()
 declare global {
   var __quartzProcessedContentCache: ProcessedContentCacheState | undefined
+  var __quartzParseSourceInputs: string[] | undefined
 }
 
 const processedContentCache = (globalThis.__quartzProcessedContentCache ??= {
@@ -305,21 +305,6 @@ export function resetProcessedContentCache(): void {
   processedContentCache.sourceSalt = undefined
   processedContentCache.content.clear()
 }
-
-const processedContentCacheSourcePatterns = [
-  'quartz.config.ts',
-  'quartz/processors/parse.ts',
-  'quartz/extensions/**/*.{ts,js}',
-  'quartz/plugins/transformers/**/*.{ts,tsx,js}',
-  'quartz/components/mdx/**/*.{ts,tsx}',
-]
-const processedContentCacheSourceIgnores = [
-  '**/*.test.ts',
-  '**/*.test.tsx',
-  '**/.quartz-cache/**',
-  'node_modules/**',
-  'public/**',
-]
 
 export function transformMarkdownSource(ctx: BuildCtx, value: string): string {
   let source = value.trim()
@@ -519,11 +504,9 @@ async function sourceFileSignature(fp: string): Promise<string> {
 }
 
 async function processedContentCacheSourceSalt(): Promise<string> {
-  const fps = await globby(processedContentCacheSourcePatterns, {
-    gitignore: true,
-    ignore: processedContentCacheSourceIgnores,
-  })
-  const signatures = await Promise.all(fps.sort().map(sourceFileSignature))
+  const signatures = await Promise.all(
+    (globalThis.__quartzParseSourceInputs ?? []).map(sourceFileSignature),
+  )
   return signatures.join('|')
 }
 

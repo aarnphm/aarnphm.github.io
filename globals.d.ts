@@ -29,6 +29,10 @@ export declare global {
     dispatchEvent<K extends keyof CustomEventMap>(ev: CustomEventMap[K] | UIEvent): boolean
   }
 
+  interface Navigator {
+    readonly modelContext?: WebMcpModelContext
+  }
+
   interface Window {
     spaNavigate(url: URL, isBack?: boolean): Promise<boolean | void>
     notifyNav(url: FullSlug)

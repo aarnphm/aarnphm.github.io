@@ -8,6 +8,40 @@ import { write } from './helpers'
 
 const name = 'LLMText'
 
+export function llmsIndex(baseUrl: string, content: string = ''): string {
+  const origin = baseUrl.startsWith('http') ? baseUrl.replace(/\/$/, '') : `https://${baseUrl}`
+  return `# aarnphm.xyz
+
+> Aaron Pham's public digital garden, with source-backed notes on software, machine learning, systems, mathematics, and training.
+
+${content ? `${content}\n` : ''}---
+
+Use this site when a task needs Aaron's published notes, an exact Markdown page, or source-backed search across the garden. Use the MCP server for semantic search and retrieval. Use the Markdown alternate for one known page. Cite the canonical HTML URL when presenting material to a reader.
+
+## When to use this site
+
+- [Search and retrieve garden notes](${origin}/api/docs): Use the read-only MCP tools when a task needs relevant notes or full Markdown without knowing a page URL.
+- [Read the homepage as Markdown](${origin}/llms.txt): Send \`Accept: text/markdown\` to a canonical page URL when a task already knows which page it needs.
+- [Enumerate public pages](${origin}/sitemap.xml): Use the XML sitemap when a task needs crawlable canonical URLs and last-modified dates.
+
+## Agent interfaces
+
+- [MCP API guide](${origin}/api/docs): Authentication, onboarding, tools, transport, errors, and rate limits.
+- [OpenAPI description](${origin}/openapi.json): Typed HTTP operations and response schemas for function calling.
+- [API catalog](${origin}/.well-known/api-catalog): RFC 9727 API discovery document.
+- [AI capability catalog](${origin}/.well-known/ai-catalog.json): Machine-readable capability records for the MCP server, OpenAPI description, and agent skills.
+- [MCP server card](${origin}/.well-known/mcp/server-card.json): MCP server identity, capabilities, and authorization metadata.
+- [Full garden corpus](${origin}/llms-full.txt): All public notes serialized as delimited Markdown documents.
+
+## Trust and policies
+
+- [About Aaron and the garden](${origin}/about.md): Site identity, scope, authorship, and editorial context.
+- [Contact Aaron](${origin}/contact.md): Contact routes and the information needed for useful requests.
+- [Privacy policy](${origin}/privacy-policy.md): Data collection, storage, retention, deletion, and privacy contact details.
+- [Security policy](${origin}/security-policy.md): Vulnerability reporting scope and responsible disclosure process.
+`
+}
+
 async function llmText(ctx: BuildCtx, fileData: QuartzPluginData, reconstructed: string[]) {
   const slug = fileData.slug!
   const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
@@ -38,7 +72,12 @@ ${content}
 </document>`)
 
   if (slug === 'index') {
-    return write({ ctx, content, slug: 'llms' as FullSlug, ext: '.txt' })
+    return write({
+      ctx,
+      content: llmsIndex(baseUrl, content),
+      slug: 'llms' as FullSlug,
+      ext: '.txt',
+    })
   }
 
   const mdFrontmatter = {
@@ -64,9 +103,11 @@ export const LLMText: QuartzEmitterPlugin = () => {
   return {
     name,
     async *emit(ctx, content, _resources) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
-
       const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
+      if (ctx.argv.watch && !ctx.argv.force) {
+        yield write({ ctx, content: llmsIndex(baseUrl), slug: 'llms' as FullSlug, ext: '.txt' })
+        return
+      }
 
       const reconstructed: string[] = []
       for (const [, file] of content) {

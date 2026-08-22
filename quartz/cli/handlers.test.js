@@ -6,6 +6,7 @@ import {
   formatBundleInfoTable,
   isSourceWatchPath,
   isTestSourcePath,
+  parseSourceInputs,
   resolveBundleInfoFormat,
   sourceWatchPatterns,
   sourceWatchRoots,
@@ -94,4 +95,44 @@ test('bundle info format resolves json flag first', () => {
   assert.equal(resolveBundleInfoFormat({ format: 'table', json: false }), 'table')
   assert.equal(resolveBundleInfoFormat({ format: 'json', json: false }), 'json')
   assert.equal(resolveBundleInfoFormat({ format: 'table', json: true }), 'json')
+})
+
+const parseGraphMetafile = {
+  inputs: {
+    'quartz.config.ts': { bytes: 1, imports: [{ path: 'quartz/plugins/emitters/assets.ts' }] },
+    'quartz/processors/parse.ts': { bytes: 1, imports: [{ path: 'quartz/util/path.ts' }] },
+    'quartz/plugins/transformers/ofm.ts': {
+      bytes: 1,
+      imports: [
+        { path: 'quartz/util/wikilinks.ts' },
+        { path: 'remark-parse', external: true },
+        { path: 'quartz/util/absent.ts' },
+      ],
+    },
+    'quartz/util/wikilinks.ts': { bytes: 1, imports: [{ path: 'quartz/util/path.ts' }] },
+    'quartz/util/path.ts': { bytes: 1, imports: [] },
+    'quartz/plugins/emitters/assets.ts': { bytes: 1, imports: [] },
+    'quartz/components/Head.tsx': { bytes: 1, imports: [] },
+  },
+  outputs: {},
+}
+
+test('parse source closure follows transformer imports transitively', () => {
+  const closure = parseSourceInputs(parseGraphMetafile)
+  assert.equal(closure.includes('quartz/util/wikilinks.ts'), true)
+  assert.equal(closure.includes('quartz/util/path.ts'), true)
+})
+
+test('parse source closure excludes emit-only and unresolved imports', () => {
+  const closure = parseSourceInputs(parseGraphMetafile)
+  assert.equal(closure.includes('quartz/components/Head.tsx'), false)
+  assert.equal(closure.includes('quartz/plugins/emitters/assets.ts'), false)
+  assert.equal(closure.includes('remark-parse'), false)
+  assert.equal(closure.includes('quartz/util/absent.ts'), false)
+})
+
+test('parse source closure treats the config as a leaf', () => {
+  const closure = parseSourceInputs(parseGraphMetafile)
+  assert.equal(closure.includes('quartz.config.ts'), true)
+  assert.equal(closure.includes('quartz/plugins/emitters/assets.ts'), false)
 })

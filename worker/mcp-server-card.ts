@@ -1,4 +1,5 @@
 export const MCP_SERVER_CARD_PATH = '/.well-known/mcp/server-card.json'
+export const MCP_SERVER_CARD_CONTENT_TYPE = 'application/mcp-server-card+json; charset=utf-8'
 export const MCP_SERVER_INFO = { name: 'aarnphm.xyz', version: '1.0.0' }
 
 export function mcpServerCard(baseUrl: string) {
@@ -22,7 +23,7 @@ export function mcpServerCardResponse(request: Request, baseUrl: string): Respon
     return new Response('method not allowed', { status: 405, headers })
   }
 
-  headers.set('Content-Type', 'application/json; charset=utf-8')
+  headers.set('Content-Type', MCP_SERVER_CARD_CONTENT_TYPE)
   const body = request.method === 'HEAD' ? null : JSON.stringify(mcpServerCard(baseUrl))
   return new Response(body, { headers })
 }
