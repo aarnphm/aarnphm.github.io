@@ -1,5 +1,6 @@
 import type { Analytics } from '../../../../plugins/stores/analytics'
 import type { TriathlonContext } from '../../runtime/context'
+import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from '../../../../util/run-pace-zones'
 import { clock } from '../../../../util/triathlon-card'
 import { formatThermalTemperature } from '../../../../util/triathlon-card'
 import { KM_TO_MI } from '../../../../util/triathlon-card'
@@ -37,7 +38,7 @@ export const TRI_DISTRIBUTION_SELECTION_KEY = 'tri-distribution-selection'
 export const DISTRIBUTION_ZONE_NAMES: Record<DistributionMetric, readonly string[]> = {
   'heart-rate': ['endurance', 'moderate', 'tempo', 'threshold', 'anaerobic'],
   power: ['recovery', 'moderate', 'tempo', 'threshold', 'VO2max', 'anaerobic', 'neuromuscular'],
-  pace: ['recovery', 'endurance', 'tempo', 'threshold', 'VO2max', 'anaerobic'],
+  pace: RUN_PACE_ZONE_NAMES,
 }
 
 export const distributionZoneRange = (bounds: readonly number[], index: number): string => {
@@ -59,13 +60,15 @@ const distributionPaceZoneRange = (
   bounds: readonly number[],
   index: number,
 ): string => {
-  if (bounds.length === 0) return '—'
+  const range = runPaceZoneRange(bounds, index)
+  if (!range) return '—'
   const imperial = context.presentation.distance === 'imperial'
   const scale = imperial ? KM_TO_MI : 1
   const unit = imperial ? '/mi' : '/km'
-  if (index === 0) return `>${clock(bounds[0] / scale)}${unit}`
-  if (index >= bounds.length) return `<${clock(bounds[bounds.length - 1] / scale)}${unit}`
-  return `${clock(bounds[index] / scale)}–${clock(bounds[index - 1] / scale)}${unit}`
+  if (range.fastestSPerKm == null)
+    return range.slowestSPerKm == null ? '—' : `<${clock(range.slowestSPerKm / scale)}${unit}`
+  if (range.slowestSPerKm == null) return `>${clock(range.fastestSPerKm / scale)}${unit}`
+  return `${clock(range.fastestSPerKm / scale)}–${clock(range.slowestSPerKm / scale)}${unit}`
 }
 
 interface DistributionZoneSeries {
@@ -82,19 +85,27 @@ const buildZoneMetricIcon = (metric: DistributionMetric): SVGElement => {
     'aria-hidden': 'true',
     focusable: 'false',
   })
+  const stroke = {
+    fill: 'none',
+    stroke: 'currentColor',
+    'stroke-width': 1.8,
+    'stroke-linecap': 'round',
+    'stroke-linejoin': 'round',
+  }
+  if (metric === 'pace') {
+    icon.append(
+      svg('circle', { ...stroke, cx: 12, cy: 13, r: 8 }),
+      svg('path', { ...stroke, d: 'M9 2h6M12 2v3M12 9v4l3 2' }),
+    )
+    return icon
+  }
   icon.appendChild(
     svg('path', {
+      ...stroke,
       d:
         metric === 'heart-rate'
           ? 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78a5.5 5.5 0 0 0 0-7.78Z'
-          : metric === 'power'
-            ? 'M13 2 4 14h8l-1 8 9-12h-8l1-8Z'
-            : 'M9 2h6M12 5a8 8 0 1 0 8 8M12 9v4l3 2',
-      fill: 'none',
-      stroke: 'currentColor',
-      'stroke-width': 1.8,
-      'stroke-linecap': 'round',
-      'stroke-linejoin': 'round',
+          : 'M13 2 4 14h8l-1 8 9-12h-8l1-8Z',
     }),
   )
   return icon

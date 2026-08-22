@@ -186,13 +186,14 @@ export const LLM: QuartzTransformerPlugin = () => {
   return {
     name: 'LLM',
     markdownPlugins({ argv }) {
-      if (argv.watch && !argv.force) return []
+      const watch = argv.watch && !argv.force
 
       return [
         () => {
           return (tree: MdRoot, file) => {
             const fileData = file.data as QuartzPluginData
             if (!fileData.slug) return
+            if (watch && fileData.slug !== 'triathlon') return
 
             const cloned = clone(tree) as MdRoot
             const slug = fileData.slug as FullSlug

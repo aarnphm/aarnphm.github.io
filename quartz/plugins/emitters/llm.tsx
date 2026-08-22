@@ -7,6 +7,15 @@ import { QuartzPluginData } from '../vfile'
 import { write } from './helpers'
 
 const name = 'LLMText'
+const watchMarkdownSlugs = new Set(['triathlon'])
+
+function canEmitMarkdown(fileData: QuartzPluginData): boolean {
+  return !fileData.flashcards && fileData.frontmatter?.protected !== true
+}
+
+function canEmitWatchMarkdown(fileData: QuartzPluginData): boolean {
+  return watchMarkdownSlugs.has(fileData.slug ?? '')
+}
 
 export function llmsIndex(baseUrl: string, content: string = ''): string {
   const origin = baseUrl.startsWith('http') ? baseUrl.replace(/\/$/, '') : `https://${baseUrl}`
@@ -104,18 +113,19 @@ export const LLMText: QuartzEmitterPlugin = () => {
     name,
     async *emit(ctx, content, _resources) {
       const baseUrl = ctx.cfg.configuration.baseUrl ?? 'https://example.com'
-      if (ctx.argv.watch && !ctx.argv.force) {
+      const watch = ctx.argv.watch && !ctx.argv.force
+      if (watch) {
         yield write({ ctx, content: llmsIndex(baseUrl), slug: 'llms' as FullSlug, ext: '.txt' })
-        return
       }
 
       const reconstructed: string[] = []
       for (const [, file] of content) {
-        if (file.data.flashcards) continue
-        // Skip protected notes
-        if (file.data.frontmatter?.protected === true) continue
+        if (!canEmitMarkdown(file.data)) continue
+        if (watch && !canEmitWatchMarkdown(file.data)) continue
         yield llmText(ctx, file.data, reconstructed)
       }
+
+      if (watch) return
 
       yield write({
         ctx,
@@ -132,7 +142,7 @@ ${reconstructed.join('\n')}`,
       })
     },
     async *partialEmit(ctx, content, _resources, changeEvents) {
-      if (ctx.argv.watch && !ctx.argv.force) return []
+      const watch = ctx.argv.watch && !ctx.argv.force
 
       // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
@@ -159,9 +169,8 @@ ${reconstructed.join('\n')}`,
       for (const [, file] of content) {
         const slug = file.data.slug!
         if (!changedSlugs.has(slug)) continue
-        if (file.data.flashcards) continue
-        // Skip protected notes
-        if (file.data.frontmatter?.protected === true) continue
+        if (!canEmitMarkdown(file.data)) continue
+        if (watch && !canEmitWatchMarkdown(file.data)) continue
 
         yield llmText(ctx, file.data, [])
       }

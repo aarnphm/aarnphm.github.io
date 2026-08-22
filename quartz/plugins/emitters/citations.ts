@@ -165,10 +165,13 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
 
   const existingArxivIds = new Set<string>()
   const existingKeys = new Set<string>()
+  const itemByArxivId = new Map<string, any>()
   for (const item of libItems) {
     existingKeys.add(item.id)
     const arxivId = extractArxivIdFromCitationEntry(item)
-    if (arxivId) existingArxivIds.add(arxivId)
+    if (!arxivId) continue
+    existingArxivIds.add(arxivId)
+    if (!itemByArxivId.has(arxivId)) itemByArxivId.set(arxivId, item)
   }
 
   for (const id of normalizedIds) {
@@ -213,7 +216,7 @@ export async function ensureBibEntries(ids: Iterable<string>, bibliography: stri
     if (!cachedEntry) continue
 
     if (existingArxivIds.has(id)) {
-      const existingItem = libItems.find(item => extractArxivIdFromCitationEntry(item) === id)
+      const existingItem = itemByArxivId.get(id)
       const existingKey = existingItem?.id
       const keyChanged = Boolean(existingKey && existingKey !== cachedEntry.bibkey)
       if (!cachedEntry.inBibFile || keyChanged) {

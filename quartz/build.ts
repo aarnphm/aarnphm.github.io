@@ -44,6 +44,16 @@ const isMarkdownPath = (fp: string): boolean =>
 
 const isTestPath = (fp: string): boolean => testPathPattern.test(toPosixPath(fp))
 
+let derivedPaths: { source: FilePath[]; markdown: FilePath[]; files: FilePath[] } | undefined
+
+const derivePaths = (argv: Argv, allFiles: FilePath[]) => {
+  if (derivedPaths?.source === allFiles) return derivedPaths
+  const markdown = allFiles.filter(isMarkdownPath).sort()
+  const files = markdown.map(fp => joinSegments(argv.directory, fp) as FilePath)
+  derivedPaths = { source: allFiles, markdown, files }
+  return derivedPaths
+}
+
 const syncCtxFiles = (ctx: BuildCtx, allFiles: FilePath[]) => {
   ctx.allFiles = allFiles
   ctx.allSlugs = allFiles.filter(fp => !isFlashcardPath(fp)).map(fp => slugifyFilePath(fp))
@@ -440,12 +450,11 @@ async function rebuild(clientRefresh: () => void, buildData: BuildData, pending:
     const allFiles = fileSetIsStable
       ? ctx.allFiles
       : await glob('**', argv.directory, ctx.cfg.configuration.ignorePatterns)
-    const markdownPaths = allFiles.filter(isMarkdownPath).sort()
+    const { markdown: markdownPaths, files: filePaths } = derivePaths(argv, allFiles)
     console.log(
       `Found ${markdownPaths.length} input files from \`${argv.directory}\` in ${perf.timeSince('glob')}`,
     )
 
-    const filePaths = markdownPaths.map(fp => joinSegments(argv.directory, fp) as FilePath)
     syncCtxFiles(ctx, allFiles)
 
     const parsedFiles = await parseMarkdown(ctx, filePaths)

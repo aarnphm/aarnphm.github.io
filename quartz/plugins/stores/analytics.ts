@@ -13,13 +13,13 @@ import {
   type FtpHypothesisParams,
 } from '../../util/ftp-hypothesis'
 import { localIsoDay } from '../../util/local-date'
+import { runPaceZoneReference } from '../../util/run-pace-zones'
 import {
   SWIM_PACE_MAX_S_PER_100M,
   SWIM_PACE_MIN_S_PER_100M,
   swimPaceSeconds,
   swimStrokeRate,
 } from '../../util/swim-metrics'
-import { parseClockSeconds } from '../../util/triathlon-calculator'
 import { isRecord, numberValue } from '../../util/type-guards'
 import { type WeeklyTargetRange, weeklyTargetRanges } from '../../util/weekly-target-range'
 import { AppleCache } from './apple'
@@ -891,7 +891,7 @@ const emptyPowerCurve = (): PowerCurveBlock => ({
 const emptyDistributions = (): DistributionsBlock => ({
   heartRateZoneBounds: [],
   powerZoneBounds: [],
-  ...runPaceZoneReference(),
+  ...runPaceZoneReference(ATHLETE.tenKmRaceTime),
   activities: [],
 })
 
@@ -1456,23 +1456,8 @@ function coreThermalObservation(
   }
 }
 
-const TEN_KM_PACE_ZONE_REFERENCE_TIME_S = 50 * 60
-const TEN_KM_PACE_ZONE_REFERENCE_BOUNDS_S_PER_MILE = [623, 537, 482, 451, 424] as const
-const KILOMETRES_PER_MILE = 1.609344
 const RUN_PACE_ZONE_WINDOW_S = 3
 const RUN_MOVING_MIN_MPS = 1609.344 / (30 * 60)
-
-function runPaceZoneReference(): { paceZoneBoundsSPerKm: number[]; tenKmRaceTimeS: number | null } {
-  const tenKmRaceTimeS = parseClockSeconds(ATHLETE.tenKmRaceTime)
-  if (!(tenKmRaceTimeS > 0)) return { paceZoneBoundsSPerKm: [], tenKmRaceTimeS: null }
-  const scale = tenKmRaceTimeS / TEN_KM_PACE_ZONE_REFERENCE_TIME_S
-  return {
-    paceZoneBoundsSPerKm: TEN_KM_PACE_ZONE_REFERENCE_BOUNDS_S_PER_MILE.map(seconds =>
-      round((seconds / KILOMETRES_PER_MILE) * scale, 3),
-    ),
-    tenKmRaceTimeS,
-  }
-}
 
 function runPaceStreamTime(stream: StravaStreams, movingTimeS: number): number[] | null {
   if (stream.time?.length === stream.distance.length) {
@@ -1537,7 +1522,7 @@ function buildDistributions(
 ): DistributionsBlock {
   const heartRateZoneBounds = [...(zones?.hr ?? [])]
   const powerZoneBounds = [...(zones?.power ?? [])]
-  const paceReference = runPaceZoneReference()
+  const paceReference = runPaceZoneReference(ATHLETE.tenKmRaceTime)
   const activities = acts.map(({ a, sport, day }): ActivityDistributionPoint => {
     const detail = activityDetails?.[String(a.id)]
     const paceZoneSeconds =

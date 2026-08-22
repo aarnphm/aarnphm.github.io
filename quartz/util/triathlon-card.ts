@@ -16,6 +16,7 @@ import {
   type SwimActivityInterval,
   type SwimTrendPoint,
 } from '../plugins/stores/strava'
+import { RUN_PACE_ZONE_NAMES, runPaceZoneRange } from './run-pace-zones'
 import {
   swimLengthAverages,
   swimLengthMetrics,
@@ -2823,61 +2824,171 @@ export const buildRunLapSplits = <N>(
   return wrap
 }
 
+const runPaceZoneRangeText = (
+  presentation: TriathlonPresentation,
+  boundsSPerKm: readonly number[],
+  index: number,
+): string => {
+  const range = runPaceZoneRange(boundsSPerKm, index)
+  if (!range) return '—'
+  const imperial = isImperial(presentation)
+  const scale = imperial ? KM_TO_MI : 1
+  const unit = imperial ? '/mi' : '/km'
+  if (range.fastestSPerKm == null)
+    return range.slowestSPerKm == null ? '—' : `<${clock(range.slowestSPerKm / scale)}${unit}`
+  if (range.slowestSPerKm == null) return `>${clock(range.fastestSPerKm / scale)}${unit}`
+  return `${clock(range.fastestSPerKm / scale)}–${clock(range.slowestSPerKm / scale)}${unit}`
+}
+
+export const buildRunPaceDistribution = <N>(
+  f: TriNodeFactory<N>,
+  d: StravaActivityDetail,
+  showTitle = true,
+): N | null => {
+  const distribution = d.runPaceZones
+  if (
+    d.sport !== 'run' ||
+    !distribution ||
+    distribution.boundsSPerKm.length !== 5 ||
+    distribution.zoneSeconds.length !== 6 ||
+    distribution.tenKmRaceTimeS <= 0 ||
+    distribution.boundsSPerKm.some(value => !Number.isFinite(value) || value <= 0) ||
+    distribution.zoneSeconds.some(value => !Number.isFinite(value) || value < 0)
+  )
+    return null
+  const total = distribution.zoneSeconds.reduce((sum, seconds) => sum + seconds, 0)
+  if (!(total > 0)) return null
+  let majority = 0
+  for (let index = 1; index < distribution.zoneSeconds.length; index++)
+    if (distribution.zoneSeconds[index] > distribution.zoneSeconds[majority]) majority = index
+  const maximum = Math.max(...distribution.zoneSeconds, 1)
+  const wrap = f.el('section', 'tri-run-pace-distribution', undefined, {
+    'aria-label': 'Run pace distribution',
+  })
+  const head = f.el('div', 'tri-run-pace-distribution-head')
+  if (showTitle) f.add(head, f.el('span', 'tri-run-pace-distribution-title', 'pace distribution'))
+  const summary = f.el('div', 'tri-training-zone-summary', undefined, { 'aria-live': 'polite' })
+  f.add(
+    summary,
+    f.el(
+      'strong',
+      'tri-training-zone-summary-value',
+      `${Math.round((distribution.zoneSeconds[majority] / total) * 100)}% in zone ${majority + 1}`,
+    ),
+    f.el('span', 'tri-training-zone-summary-time', zoneClock(total)),
+  )
+  f.add(head, summary)
+  const grid = f.el('div', 'tri-training-zone-grid tri-training-zone-grid--pace', undefined, {
+    role: 'list',
+    'aria-label': 'pace zone distribution',
+    style: `--tri-zone-count:${distribution.zoneSeconds.length}`,
+  })
+  for (let index = distribution.zoneSeconds.length - 1; index >= 0; index--) {
+    const seconds = distribution.zoneSeconds[index]
+    const percentage = (seconds / total) * 100
+    const range = runPaceZoneRangeText(f.presentation, distribution.boundsSPerKm, index)
+    const name = RUN_PACE_ZONE_NAMES[index] ?? `zone ${index + 1}`
+    const row = f.el(
+      'div',
+      `tri-training-zone-row${index === majority ? ' tri-training-zone-row--majority' : ''}`,
+      undefined,
+      {
+        role: 'listitem',
+        tabindex: '0',
+        'aria-label': `Z${index + 1} ${name}, ${zoneClock(seconds)}, ${percentage.toFixed(1)}%, ${range}`,
+      },
+    )
+    const bar = f.el('span', 'tri-training-zone-bar', undefined, { 'aria-hidden': 'true' })
+    f.add(
+      bar,
+      f.el(
+        'span',
+        `tri-training-zone-fill tri-training-zone-fill--pace tri-training-zone-fill--${index + 1}`,
+        undefined,
+        { style: `--tri-zone-share:${(seconds / maximum) * 100}%` },
+      ),
+    )
+    const visual = f.el('span', 'tri-training-zone-visual')
+    f.add(
+      visual,
+      bar,
+      f.el('span', 'tri-training-zone-pct', `${percentage.toFixed(1)}%`, { 'aria-hidden': 'true' }),
+    )
+    f.add(
+      row,
+      f.el('span', 'tri-training-zone-name', `Z${index + 1}`, { 'aria-hidden': 'true' }),
+      visual,
+      f.el('span', 'tri-training-zone-range', range, { 'aria-hidden': 'true' }),
+    )
+    f.add(grid, row)
+  }
+  f.add(
+    wrap,
+    head,
+    grid,
+    f.el(
+      'div',
+      'tri-dist-cap tri-training-zone-source',
+      `based on 10 km race time ${clock(distribution.tenKmRaceTimeS)}`,
+    ),
+  )
+  return wrap
+}
+
 export const buildRunAnalysis = <N>(f: TriNodeFactory<N>, d: StravaActivityDetail): N | null => {
   const workout = buildRunWorkoutAnalysis(f, d, false)
-  if (!workout) return buildRunLapSplits(f, d)
   const splits = buildRunLapSplits(f, d, false)
-  if (!splits) return workout
+  const pace = buildRunPaceDistribution(f, d, false)
+  const views = [
+    { key: 'workout', label: 'workout analysis', content: workout },
+    { key: 'laps', label: 'lap splits', content: splits },
+    { key: 'pace', label: 'pace distribution', content: pace },
+  ].filter((view): view is { key: string; label: string; content: N } => view.content != null)
+  if (views.length === 0) return null
+  if (views.length === 1)
+    return views[0].key === 'workout'
+      ? buildRunWorkoutAnalysis(f, d)
+      : views[0].key === 'laps'
+        ? buildRunLapSplits(f, d)
+        : buildRunPaceDistribution(f, d)
 
   const id = `tri-run-analysis-${d.id}`
+  const selected = views[0].key
   const wrap = f.el('section', 'tri-run-analysis', undefined, {
     'aria-label': 'Run analysis',
     'data-run-analysis': '',
-    'data-run-analysis-view': 'workout',
+    'data-run-analysis-view': selected,
   })
   const tabs = f.el('div', 'tri-map-tablist tri-run-analysis-tabs', undefined, {
     role: 'tablist',
     'aria-label': 'Run analysis view',
   })
-  const workoutTab = f.el('button', 'tri-map-tab tri-run-analysis-tab', 'workout analysis', {
-    id: `${id}-workout-tab`,
-    type: 'button',
-    role: 'tab',
-    tabindex: '0',
-    'aria-controls': `${id}-workout-panel`,
-    'aria-selected': 'true',
-    'data-run-analysis-tab': 'workout',
-  })
-  const lapsTab = f.el('button', 'tri-map-tab tri-run-analysis-tab', 'lap splits', {
-    id: `${id}-laps-tab`,
-    type: 'button',
-    role: 'tab',
-    tabindex: '-1',
-    'aria-controls': `${id}-laps-panel`,
-    'aria-selected': 'false',
-    'data-run-analysis-tab': 'laps',
-  })
-  f.add(tabs, workoutTab, lapsTab)
-
   const stage = f.el('div', 'tri-run-analysis-stage')
-  const workoutPanel = f.el('div', 'tri-run-analysis-panel', undefined, {
-    id: `${id}-workout-panel`,
-    role: 'tabpanel',
-    'aria-hidden': 'false',
-    'aria-labelledby': `${id}-workout-tab`,
-    'data-run-analysis-panel': 'workout',
-  })
-  const lapsPanel = f.el('div', 'tri-run-analysis-panel', undefined, {
-    id: `${id}-laps-panel`,
-    role: 'tabpanel',
-    hidden: '',
-    'aria-hidden': 'true',
-    'aria-labelledby': `${id}-laps-tab`,
-    'data-run-analysis-panel': 'laps',
-  })
-  f.add(workoutPanel, workout)
-  f.add(lapsPanel, splits)
-  f.add(stage, workoutPanel, lapsPanel)
+  for (const view of views) {
+    const active = view.key === selected
+    f.add(
+      tabs,
+      f.el('button', 'tri-map-tab tri-run-analysis-tab', view.label, {
+        id: `${id}-${view.key}-tab`,
+        type: 'button',
+        role: 'tab',
+        tabindex: active ? '0' : '-1',
+        'aria-controls': `${id}-${view.key}-panel`,
+        'aria-selected': String(active),
+        'data-run-analysis-tab': view.key,
+      }),
+    )
+    const panel = f.el('div', 'tri-run-analysis-panel', undefined, {
+      id: `${id}-${view.key}-panel`,
+      role: 'tabpanel',
+      ...(active ? {} : { hidden: '' }),
+      'aria-hidden': String(!active),
+      'aria-labelledby': `${id}-${view.key}-tab`,
+      'data-run-analysis-panel': view.key,
+    })
+    f.add(panel, view.content)
+    f.add(stage, panel)
+  }
   f.add(wrap, tabs, stage)
   return wrap
 }

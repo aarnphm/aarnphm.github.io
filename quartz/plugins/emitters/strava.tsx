@@ -31,6 +31,7 @@ import {
   enrichCalculatedTrainingEffects,
   enrichCoreBodyTemperature,
   enrichRouteLessHeartRate,
+  enrichRunPaceZones,
   enrichRunDynamics,
   enrichSwimMetrics,
   garminCachePath,
@@ -272,6 +273,7 @@ export const Strava: QuartzEmitterPlugin<Partial<FullPageLayout>> = userOpts => 
         activityDetails: payload.details,
         since: typeof since === 'string' ? since : undefined,
       })
+      enrichRunPaceZones(payload, analytics.distributions)
       enrichCalculatedIntensityFactors(payload, analytics.activities, ATHLETE.ftp, ATHLETE.lt)
       enrichCalculatedExerciseLoads(payload)
       enrichCalculatedTrainingEffects(payload)
