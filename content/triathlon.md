@@ -195,7 +195,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-21 19:06:15 GMT-04:00
+modified: 2026-08-22 16:38:28 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1183,6 +1183,26 @@ fueling: 300
 date: 2026-08-21
 activity: 19843944064
 skipTraining: true
+```
+
+```tracking
+date: 2026-08-22
+activity: 19855929079
+strengthVolume: 2110 lb
+strengthSets: 30
+strengthReps: 150
+exercise: Mountain Climber | 20s | 20s | 20s
+exercise: Press Up | 20s | 20s | 20s
+exercise: Travelling Press Up Walk Out | 20s | 20s | 20s
+exercise: Press Up Position Walk Out | 20s | 20s | 20s
+exercise: Dumbbell Chest Fly | 10 reps @ 6.8 kg | 12 reps @ 9.1 kg
+exercise: Floor Seated Single Arm Shoulder Press | 10 reps @ 6.8 kg | 10 reps @ 9.1 kg
+exercise: Banded Face Pulls | 10 reps @ 32 kg | 10 reps @ 32 kg
+exercise: Figure Of 8s | 10 reps | 10 reps
+exercise: Single Arm Row | 10 reps @ 13.6 kg | 10 reps @ 15.9 kg
+exercise: Thruster | 8 reps @ 18.1 kg | 10 reps @ 18.1 kg
+exercise: Hip Drop | 10 reps | 10 reps | 10 reps
+exercise: Side Plank | 60s | 60s | 60s
 ```
 
 <!-- training plan start
