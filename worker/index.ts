@@ -18,11 +18,13 @@ import {
 } from '../quartz/util/triathlon-shortcut'
 import LFS_CONFIG from './.lfsconfig.txt'
 import {
+  AI_CATALOG_PATH,
   API_CATALOG_LINK,
   API_CATALOG_PATH,
   API_DOCUMENTATION_PATH,
   API_HEALTH_PATH,
   OPENAPI_PATH,
+  aiCatalogResponse,
   apiCatalogResponse,
   apiDocumentationResponse,
   apiHealthResponse,
@@ -55,11 +57,15 @@ import Garden from './mcp'
 import { MCP_SERVER_CARD_PATH, mcpServerCardResponse } from './mcp-server-card'
 import { handleMentions } from './mentions'
 import { CommentsGitHubHandler, GitHubHandler } from './oauth'
+import { problemResponse } from './problem-details'
+import { mcpRateLimitExceededResponse, mcpRateLimitKey, withMcpRateLimitPolicy } from './rate-limit'
 import {
+  documentDiscoveryLink,
   isAgentUserAgent,
   isLocalRequest,
   markdownPathname,
   resolveBaseUrl,
+  shouldRejectDocumentResponse,
   shouldRewriteMarkdown,
   shouldTreatAsDocument,
 } from './request-utils'
@@ -196,7 +202,7 @@ function withTriathlonMarkdownHeaders(response: Response): Response {
     'Cache-Control': 's-maxage=300, stale-while-revalidate=59',
     'Access-Control-Allow-Origin': '*',
     'X-Content-Type-Options': 'nosniff',
-    Vary: mergeVary(response, 'Accept', 'User-Agent'),
+    Vary: mergeVary(response, 'Accept', 'Accept-Encoding', 'User-Agent'),
   })
 }
 
@@ -373,6 +379,7 @@ type Env = {
   PUBLIC_BASE_URL?: string
   LEAN_VERIFY_ORIGIN?: string
   LEAN_VERIFY_TOKEN?: string
+  MCP_RATE_LIMITER: RateLimit
 } & Cloudflare.Env
 
 async function htmlAssetResponse(request: Request, env: Env): Promise<Response> {
@@ -492,6 +499,11 @@ export default {
     const authMarkdownResponse = handleAuthMarkdown(request, baseUrl)
     if (authMarkdownResponse) return authMarkdownResponse
 
+    if (url.pathname === '/mcp') {
+      const outcome = await env.MCP_RATE_LIMITER.limit({ key: mcpRateLimitKey(request) })
+      if (!outcome.success) return mcpRateLimitExceededResponse(request)
+    }
+
     const providerResp = await provider.fetch(request, env, ctx)
     if (
       request.method === 'GET' &&
@@ -500,7 +512,9 @@ export default {
     ) {
       return withAgentAuthMetadata(providerResp, baseUrl)
     }
-    if (providerResp.status !== 404) return providerResp
+    if (providerResp.status !== 404) {
+      return url.pathname === '/mcp' ? withMcpRateLimitPolicy(providerResp) : providerResp
+    }
 
     const commentsResp = await CommentsGitHubHandler.fetch(request, env, ctx)
     if (commentsResp.status !== 404) return commentsResp
@@ -720,6 +734,17 @@ export default {
       return getModelObject(ctx, env.LFS_BUCKET, url.pathname.slice(1), request, cacheControl)
     }
 
+    if (shouldRejectDocumentResponse(request, url)) {
+      return problemResponse(request, {
+        status: 406,
+        title: 'Document representation not acceptable',
+        detail: 'This document is available as text/html or text/markdown.',
+        code: 'document_representation_not_acceptable',
+        resolution: 'Send Accept: text/html or Accept: text/markdown.',
+        headers: { Vary: 'Accept, Accept-Encoding, User-Agent' },
+      })
+    }
+
     if (shouldRewriteMarkdown(request, url)) {
       const markdownUrl = new URL(url.toString())
       markdownUrl.pathname = markdownPathname(url.pathname)
@@ -730,7 +755,7 @@ export default {
       }
       return withHeaders(markdownResp, {
         'Content-Type': 'text/markdown; charset=utf-8',
-        Vary: mergeVary(markdownResp, 'Accept', 'User-Agent'),
+        Vary: mergeVary(markdownResp, 'Accept', 'Accept-Encoding', 'User-Agent'),
       })
     }
 
@@ -761,6 +786,8 @@ export default {
         return new Response(null, { status: 404 })
       case API_CATALOG_PATH:
         return apiCatalogResponse(request, baseUrl, apiHeaders)
+      case AI_CATALOG_PATH:
+        return aiCatalogResponse(request, baseUrl, apiHeaders)
       case OPENAPI_PATH:
         return openApiResponse(request, baseUrl, apiHeaders)
       case API_DOCUMENTATION_PATH:
@@ -1176,6 +1203,17 @@ export default {
       })
     }
 
+    if (url.pathname.startsWith('/api/')) {
+      return problemResponse(request, {
+        status: 404,
+        title: 'API resource not found',
+        detail: 'No API resource is published at this path.',
+        code: 'api_resource_not_found',
+        resolution: 'Read /openapi.json for the published API paths.',
+        headers: buildCorsHeaders(env, request),
+      })
+    }
+
     if (request.method !== 'GET' && request.method !== 'HEAD')
       return new Response(null, {
         status: request.method === 'OPTIONS' ? 200 : 405,
@@ -1262,7 +1300,10 @@ export default {
           : {}),
         'X-Frame-Options': null,
         'Content-Security-Policy': "frame-ancestors 'self' *",
-        ...(isHomepagePathname(url.pathname) ? { Link: API_CATALOG_LINK } : {}),
+        Vary: mergeVary(resp, 'Accept', 'Accept-Encoding', 'User-Agent'),
+        Link: isHomepagePathname(url.pathname)
+          ? `${API_CATALOG_LINK}, ${documentDiscoveryLink(url.pathname)}`
+          : documentDiscoveryLink(url.pathname),
       })
     }
     return withHeaders(resp, staticAssetHeaders)

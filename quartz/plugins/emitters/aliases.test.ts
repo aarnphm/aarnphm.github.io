@@ -6,7 +6,7 @@ import test from 'node:test'
 import type { BuildCtx } from '../../util/ctx'
 import type { FilePath, FullSlug } from '../../util/path'
 import { defaultProcessedContent } from '../vfile'
-import { AliasRedirects } from './aliases'
+import { AliasRedirects, aliasRedirectRules } from './aliases'
 
 function testCtx(root: string): BuildCtx {
   return {
@@ -55,6 +55,84 @@ async function collectEmitted(
   }
   return files
 }
+
+test('emits HTML and Markdown redirects for aliases and permalinks', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'quartz-aliases-markdown-'))
+  try {
+    const ctx = testCtx(root)
+    const index = defaultProcessedContent({
+      slug: 'index' as FullSlug,
+      filePath: path.join(ctx.argv.directory, 'index.md') as FilePath,
+      relativePath: 'index.md' as FilePath,
+      frontmatter: { title: 'home', pageLayout: 'default', tags: [], permalinks: ['/about'] },
+      text: '',
+      links: [],
+      aliases: ['about' as FullSlug],
+    })
+    const privacy = defaultProcessedContent({
+      slug: 'privacy-policy' as FullSlug,
+      filePath: path.join(ctx.argv.directory, 'privacy policy.md') as FilePath,
+      relativePath: 'privacy policy.md' as FilePath,
+      frontmatter: {
+        title: 'privacy policy',
+        pageLayout: 'default',
+        tags: [],
+        permalinks: ['/privacy'],
+      },
+      text: '',
+      links: [],
+      aliases: ['privacy' as FullSlug],
+    })
+    const content = [index, privacy]
+
+    assert.equal(
+      aliasRedirectRules(content),
+      [
+        '/about / 308',
+        '/about.md /llms.txt 308',
+        '/privacy /privacy-policy 308',
+        '/privacy.md /privacy-policy.md 308',
+      ].join('\n'),
+    )
+
+    const emitted = await collectEmitted(
+      AliasRedirects().emit(ctx, content, { css: [], js: [], additionalHead: [] }),
+    )
+    assert.ok(emitted.some(file => file.endsWith('/_redirects')))
+    assert.ok(emitted.some(file => file.endsWith('/about.html')))
+    assert.ok(emitted.some(file => file.endsWith('/privacy.html')))
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('rejects aliases that point to different canonical notes', () => {
+  const first = defaultProcessedContent({
+    slug: 'first' as FullSlug,
+    aliases: ['shared' as FullSlug],
+  })
+  const second = defaultProcessedContent({
+    slug: 'second' as FullSlug,
+    aliases: ['shared' as FullSlug],
+  })
+
+  assert.throws(
+    () => aliasRedirectRules([first, second]),
+    /conflicting alias redirect for \/shared/,
+  )
+})
+
+test('enforces Cloudflare static redirect limits', () => {
+  const content = defaultProcessedContent({
+    slug: 'canonical' as FullSlug,
+    aliases: Array.from({ length: 1001 }, (_, index) => `alias-${index}` as FullSlug),
+  })
+
+  assert.throws(
+    () => aliasRedirectRules([content]),
+    /static alias redirects exceed the 2,000 rule limit: 2002/,
+  )
+})
 
 test('alias redirects skip body-only changes with unchanged aliases', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'quartz-aliases-unchanged-'))

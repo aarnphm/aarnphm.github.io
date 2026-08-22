@@ -7,6 +7,18 @@ body[data-slug='index'] {
     position: relative;
   }
 
+  .agent-identity-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .content-container {
     text-transform: lowercase;
     font-size: 1em;

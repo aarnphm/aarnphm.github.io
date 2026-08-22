@@ -9,7 +9,7 @@ import type { StaticResources } from '../../util/resources'
 import { componentCssBundleKey } from '../../util/resource-bundles'
 import { defaultProcessedContent } from '../vfile'
 import { xsltPolyfillPath } from './component-resources/asset-paths'
-import { ContentIndex } from './contentIndex'
+import { ContentIndex, generateSiteMap, robotsTxt } from './contentIndex'
 
 function testCtx(root: string): BuildCtx {
   const contentDir = path.join(root, 'content')
@@ -51,6 +51,88 @@ function testCtx(root: string): BuildCtx {
 }
 
 const resources: StaticResources = { css: [], js: [], additionalHead: [] }
+
+test('allows supported agents while retaining the explicit Perplexity exclusion', () => {
+  const content = robotsTxt('aarnphm.xyz')
+
+  assert.match(
+    content,
+    /User-Agent: \*\nContent-signal: search=yes,ai-train=yes,ai-input=yes\nAllow: \//,
+  )
+  assert.match(content, /User-agent: PerplexityBot\nDisallow: \//)
+  assert.match(content, /User-agent: Perplexity-User\nDisallow: \//)
+  assert.match(content, /Sitemap: https:\/\/aarnphm\.xyz\/sitemap\.xml/)
+  for (const supportedAgent of [
+    'GPTBot',
+    'ChatGPT-User',
+    'ClaudeBot',
+    'Google-Extended',
+    'Applebot-Extended',
+    'DeepSeekBot',
+    'ora-agent',
+  ]) {
+    assert.equal(content.includes(`User-agent: ${supportedAgent}`), false)
+  }
+})
+
+test('emits valid sitemap entries and omits unknown last-modified values', () => {
+  const configuration = testCtx('/tmp/content-index-sitemap').cfg.configuration
+  const dated = defaultProcessedContent({
+    slug: 'dated' as FullSlug,
+    filePath: 'dated.md' as FilePath,
+    relativePath: 'dated.md' as FilePath,
+    frontmatter: { title: 'dated', pageLayout: 'default', tags: [] },
+    text: '',
+    links: [],
+  })[1]
+  const undated = defaultProcessedContent({
+    slug: 'undated' as FullSlug,
+    filePath: 'undated.md' as FilePath,
+    relativePath: 'undated.md' as FilePath,
+    frontmatter: { title: 'undated', pageLayout: 'default', tags: [] },
+    text: '',
+    links: [],
+  })[1]
+  const sitemap = generateSiteMap(
+    configuration,
+    new Map([
+      [
+        'dated' as FullSlug,
+        {
+          slug: 'dated',
+          title: 'dated',
+          filePath: 'dated.md' as FilePath,
+          links: [],
+          aliases: [],
+          tags: [],
+          layout: 'default',
+          fileName: 'dated.md' as FilePath,
+          fileData: dated.data,
+          date: new Date('2026-08-21T00:00:00.000Z'),
+        },
+      ],
+      [
+        'undated' as FullSlug,
+        {
+          slug: 'undated',
+          title: 'undated',
+          filePath: 'undated.md' as FilePath,
+          links: [],
+          aliases: [],
+          tags: [],
+          layout: 'default',
+          fileName: 'undated.md' as FilePath,
+          fileData: undated.data,
+        },
+      ],
+    ]),
+  )
+
+  assert.match(sitemap, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/)
+  assert.match(sitemap, /<loc>https:\/\/example\.com\/dated<\/loc>/)
+  assert.match(sitemap, /<lastmod>2026-08-21T00:00:00\.000Z<\/lastmod>/)
+  assert.equal(sitemap.includes('<lastmod>undefined</lastmod>'), false)
+})
 
 async function collectEmitted(
   emitted: Promise<FilePath[]> | AsyncGenerator<FilePath> | null,

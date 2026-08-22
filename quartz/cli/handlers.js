@@ -143,6 +143,31 @@ const createBuildConfig = () => ({
   ],
 })
 
+const parseSourceSeedPrefixes = [
+  'quartz/processors/parse.ts',
+  'quartz/extensions/',
+  'quartz/plugins/transformers/',
+  'quartz/components/mdx/',
+]
+
+export const parseSourceInputs = metafile => {
+  const inputs = metafile.inputs ?? {}
+  const closure = new Set(['quartz.config.ts'])
+  const queue = Object.keys(inputs).filter(fp =>
+    parseSourceSeedPrefixes.some(prefix => fp === prefix || fp.startsWith(prefix)),
+  )
+  while (queue.length > 0) {
+    const fp = queue.pop()
+    if (closure.has(fp)) continue
+    closure.add(fp)
+    for (const imported of inputs[fp]?.imports ?? []) {
+      if (imported.external || !inputs[imported.path]) continue
+      queue.push(imported.path)
+    }
+  }
+  return [...closure].sort()
+}
+
 const bundleInfoOutputFile = () => cacheFile.replace(/^\.\//, '')
 
 export const bundleInfoSummary = metafile => {
@@ -224,6 +249,7 @@ export async function handleBuild(argv) {
   const rebuildQuartzBundle = async () => {
     try {
       const result = await ctx.rebuild()
+      globalThis.__quartzParseSourceInputs = parseSourceInputs(result.metafile)
       if (argv.bundleInfo) {
         await printBundleInfo(result.metafile)
       }

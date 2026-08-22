@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises'
+import { readFile, stat } from 'node:fs/promises'
 import path from 'path'
 import { QuartzEmitterPlugin } from '../../types/plugin'
 import { defaultIoConcurrency, mapConcurrent } from '../../util/async-pool'
@@ -24,7 +24,36 @@ function pdfTargetKey(target: string): string | undefined {
   return slugifyFilePath(pathOnly as FilePath)
 }
 
-async function referencedPdfFiles(ctx: BuildCtx, files: FilePath[]): Promise<Set<FilePath>> {
+const pdfReferenceCache = new Map<FilePath, { signature: string; keys: string[] }>()
+let copiedReferencedPdfs: ReadonlySet<FilePath> = new Set()
+
+async function pdfReferenceKeys(ctx: BuildCtx, fp: FilePath): Promise<string[]> {
+  const source = joinSegments(ctx.argv.directory, fp) as FilePath
+  const signature = await stat(source).then(
+    info => `${info.mtimeMs}:${info.size}`,
+    () => 'missing',
+  )
+  const cached = pdfReferenceCache.get(fp)
+  if (cached?.signature === signature) return cached.keys
+
+  const keys: string[] = []
+  if (signature !== 'missing') {
+    const body = await readFile(source, 'utf8')
+    for (const match of body.matchAll(pdfEmbedPattern)) {
+      const rawTarget = match[1]?.split('|', 1)[0]
+      const key = rawTarget ? pdfTargetKey(rawTarget) : undefined
+      if (key) keys.push(key)
+    }
+  }
+  pdfReferenceCache.set(fp, { signature, keys })
+  return keys
+}
+
+async function referencedPdfFiles(
+  ctx: BuildCtx,
+  files: FilePath[],
+  rescan?: readonly FilePath[],
+): Promise<Set<FilePath>> {
   if (!ctx.argv.watch || process.env.CF_PAGES === '1') return new Set()
 
   const pdfBySlug = new Map<string, FilePath>()
@@ -34,18 +63,19 @@ async function referencedPdfFiles(ctx: BuildCtx, files: FilePath[]): Promise<Set
     }
   }
 
-  const referenced = new Set<FilePath>()
+  const perf = new PerfTimer()
   const sources = files.filter(isMarkdownReferenceSource)
-  await mapConcurrent(sources, defaultIoConcurrency, async fp => {
-    const source = joinSegments(ctx.argv.directory, fp)
-    const body = await readFile(source, 'utf8')
-    for (const match of body.matchAll(pdfEmbedPattern)) {
-      const rawTarget = match[1]?.split('|', 1)[0]
-      const key = rawTarget ? pdfTargetKey(rawTarget) : undefined
-      const pdf = key ? pdfBySlug.get(key) : undefined
+  const stale = rescan ?? sources
+  await mapConcurrent(stale, defaultIoConcurrency, fp => pdfReferenceKeys(ctx, fp))
+
+  const referenced = new Set<FilePath>()
+  for (const fp of sources) {
+    for (const key of pdfReferenceCache.get(fp)?.keys ?? []) {
+      const pdf = pdfBySlug.get(key)
       if (pdf) referenced.add(pdf)
     }
-  })
+  }
+  logBuildSpan(ctx.argv, 'assets:pdfrefs', `${stale.length} rescanned`, perf.elapsedMs())
   return referenced
 }
 
@@ -115,17 +145,23 @@ export const Assets: QuartzEmitterPlugin = () => {
         emitOutputAsset(ctx, contentAssetClaim(argv, fp)),
       )
       logBuildSpan(argv, 'assets:copy', `${fps.length} files`, perf.elapsedMs())
+      copiedReferencedPdfs = await referencedPdfFiles(ctx, ctx.allFiles)
       for (const file of files) {
         yield file
       }
     },
     async *partialEmit(ctx, _content, _resources, changeEvents) {
-      const referencedPdfs = await referencedPdfFiles(ctx, ctx.allFiles)
-      const refreshReferencedPdfs = changeEvents.some(
-        changeEvent =>
-          isMarkdownReferenceSource(changeEvent.path) ||
-          path.extname(changeEvent.path).toLowerCase() === '.pdf',
-      )
+      const changedSources = changeEvents
+        .filter(changeEvent => isMarkdownReferenceSource(changeEvent.path))
+        .map(changeEvent => changeEvent.path)
+      const refreshReferencedPdfs =
+        changedSources.length > 0 ||
+        changeEvents.some(changeEvent => path.extname(changeEvent.path).toLowerCase() === '.pdf')
+      const referencedPdfs = refreshReferencedPdfs
+        ? await referencedPdfFiles(ctx, ctx.allFiles, changedSources)
+        : copiedReferencedPdfs
+      const newlyReferencedPdfs = [...referencedPdfs].filter(fp => !copiedReferencedPdfs.has(fp))
+      copiedReferencedPdfs = referencedPdfs
       const emitted = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (shouldIgnoreAssetFile(ctx.argv, changeEvent.path, referencedPdfs)) continue
@@ -139,12 +175,10 @@ export const Assets: QuartzEmitterPlugin = () => {
           await removeOutputAsset(ctx, claim.output)
         }
       }
-      if (refreshReferencedPdfs) {
-        for (const fp of referencedPdfs) {
-          const claim = contentAssetClaim(ctx.argv, fp)
-          if (emitted.has(claim.output)) continue
-          yield emitOutputAsset(ctx, claim)
-        }
+      for (const fp of newlyReferencedPdfs) {
+        const claim = contentAssetClaim(ctx.argv, fp)
+        if (emitted.has(claim.output)) continue
+        yield emitOutputAsset(ctx, claim)
       }
     },
   }

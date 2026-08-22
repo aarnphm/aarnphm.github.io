@@ -2,9 +2,11 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   acceptsMarkdown,
+  documentDiscoveryLink,
   isAgentUserAgent,
   markdownPathname,
   resolveBaseUrl,
+  shouldRejectDocumentResponse,
   shouldRewriteMarkdown,
   shouldTreatAsDocument,
 } from './request-utils'
@@ -24,7 +26,10 @@ test('recognizes agent user agents that should receive markdown', () => {
     'Claude-User',
     'OAI-SearchBot/1.0',
     'Codex/1.0',
-    'PerplexityBot/1.0',
+    'DeepSeekBot/1.0',
+    'Google-Extended',
+    'Applebot-Extended',
+    'ora-agent/1.0',
   ]) {
     assert.equal(
       isAgentUserAgent(
@@ -44,6 +49,15 @@ test('recognizes agent user agents that should receive markdown', () => {
     ),
     false,
   )
+
+  assert.equal(
+    isAgentUserAgent(
+      new Request('https://aarnphm.xyz/triathlon/analytics', {
+        headers: { 'User-Agent': 'PerplexityBot/1.0' },
+      }),
+    ),
+    false,
+  )
 })
 
 test('rewrites document requests for agents and markdown clients', () => {
@@ -51,6 +65,13 @@ test('rewrites document requests for agents and markdown clients', () => {
   assert.equal(
     shouldRewriteMarkdown(
       new Request(url, { headers: { 'User-Agent': 'Codex/1.0', Accept: 'text/html' } }),
+      url,
+    ),
+    false,
+  )
+  assert.equal(
+    shouldRewriteMarkdown(
+      new Request(url, { headers: { 'User-Agent': 'Codex/1.0', Accept: '*/*' } }),
       url,
     ),
     true,
@@ -100,6 +121,42 @@ test('honors explicit markdown accept values with positive quality', () => {
   )
 })
 
+test('honors media quality and returns 406 only when no document representation is accepted', () => {
+  const url = new URL('https://aarnphm.xyz/thoughts')
+  assert.equal(
+    shouldRewriteMarkdown(
+      new Request(url, { headers: { Accept: 'text/html;q=0.5, text/markdown;q=1' } }),
+      url,
+    ),
+    true,
+  )
+  assert.equal(
+    shouldRewriteMarkdown(
+      new Request(url, { headers: { Accept: 'text/html;q=1, text/markdown;q=0.5' } }),
+      url,
+    ),
+    false,
+  )
+  assert.equal(
+    shouldRejectDocumentResponse(
+      new Request(url, { headers: { Accept: 'application/json' } }),
+      url,
+    ),
+    true,
+  )
+  assert.equal(
+    shouldRejectDocumentResponse(
+      new Request(url, { headers: { Accept: 'text/markdown;q=0, text/html;q=0' } }),
+      url,
+    ),
+    true,
+  )
+  assert.equal(
+    shouldRejectDocumentResponse(new Request(url, { headers: { Accept: 'text/html' } }), url),
+    false,
+  )
+})
+
 test('maps document paths to sibling markdown assets', () => {
   assert.equal(markdownPathname('/'), '/llms.txt')
   assert.equal(markdownPathname('/triathlon/analytics'), '/triathlon/analytics.md')
@@ -107,4 +164,19 @@ test('maps document paths to sibling markdown assets', () => {
   assert.equal(shouldTreatAsDocument('/triathlon/analytics'), true)
   assert.equal(shouldTreatAsDocument('/triathlon/analytics.html'), true)
   assert.equal(shouldTreatAsDocument('/triathlon/analytics.md'), false)
+})
+
+test('publishes markdown alternates and the llms.txt description in document links', () => {
+  assert.equal(
+    documentDiscoveryLink('/'),
+    '</llms.txt>; rel="alternate describedby"; type="text/markdown"',
+  )
+  assert.equal(
+    documentDiscoveryLink('/thoughts'),
+    '</thoughts.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown"',
+  )
+  assert.equal(
+    documentDiscoveryLink('/thoughts.html'),
+    '</thoughts.md>; rel="alternate"; type="text/markdown", </llms.txt>; rel="describedby"; type="text/markdown"',
+  )
 })

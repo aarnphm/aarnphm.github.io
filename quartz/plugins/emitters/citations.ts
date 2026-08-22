@@ -136,20 +136,32 @@ function replaceBibtexKey(bibtex: string, key: string): string {
   return bibtex.replace(/^@(\w+)\{[^,]*,/, `@$1{${key},`)
 }
 
+let bibLibraryCache: { signature: string; content: string; items: any[] } | undefined
+
+async function bibLibrary(bibliography: string) {
+  const signature = await fs.stat(bibliography).then(
+    info => `${info.mtimeMs}:${info.size}`,
+    () => 'missing',
+  )
+  if (bibLibraryCache?.signature === signature) return bibLibraryCache
+
+  let content = ''
+  try {
+    content = await fs.readFile(bibliography, 'utf8')
+  } catch {
+    content = ''
+  }
+  const items = content.trim() ? (new Cite(content, { generateGraph: false }).data as any[]) : []
+  bibLibraryCache = { signature, content, items }
+  return bibLibraryCache
+}
+
 export async function ensureBibEntries(ids: Iterable<string>, bibliography: string) {
   const now = Date.now()
   const normalizedIds = Array.from(
     new Set(Array.from(ids, id => normalizeArxivId(id)).filter(Boolean)),
   ).sort((a, b) => a.localeCompare(b))
-  let fileContent = ''
-  try {
-    fileContent = await fs.readFile(bibliography, 'utf8')
-  } catch {
-    fileContent = ''
-  }
-  const libItems = fileContent.trim()
-    ? (new Cite(fileContent, { generateGraph: false }).data as any[])
-    : []
+  const { content: fileContent, items: libItems } = await bibLibrary(bibliography)
 
   const existingArxivIds = new Set<string>()
   const existingKeys = new Set<string>()

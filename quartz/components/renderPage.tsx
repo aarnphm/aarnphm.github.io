@@ -75,6 +75,7 @@ import {
 } from '../util/triathlon-card'
 import { decodeActivityComparisonAnchor } from '../util/triathlon-comparison'
 import { DEFAULT_TRIATHLON_PRESENTATION } from '../util/triathlon-presentation'
+import { HomepageIdentityHeading } from './AgentIdentity'
 import BaseViewSelector from './BaseViewSelector'
 import CodeCopy from './CodeCopy'
 import Darkmode from './Darkmode'
@@ -2066,7 +2067,7 @@ const ElementComponent = ((enableRecents: boolean = false) => {
               url="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en"
             />
             <AliasLink isInternal enablePopover={false} name="colophon" url="/colophon" />
-            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy-policy" />
+            <AliasLink isInternal enablePopover={false} name="privacy" url="/privacy" />
             <AliasLink
               isInternal
               enablePopover={false}
@@ -2417,6 +2418,7 @@ export function renderPage(
 
         return (
           <div class={classNames(displayClass, 'landing')}>
+            <HomepageIdentityHeading />
             <LandingPetSticker />
             <Element {...props} />
           </div>

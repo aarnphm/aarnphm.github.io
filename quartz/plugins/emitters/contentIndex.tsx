@@ -122,16 +122,20 @@ function sanitizeNullable(input?: string | null): string | undefined {
   return sanitized
 }
 
-function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string {
+export function generateSiteMap(cfg: GlobalConfiguration, idx: ContentIndexMap): string {
   const base = cfg.baseUrl ?? ''
   const createURLEntry = (slug: SimpleSlug, content: ContentDetails): string => {
     let modifiedDate = content.date
     if (!modifiedDate && content.fileData!.frontmatter?.modified) {
       modifiedDate = new Date(content.fileData!.frontmatter.modified)
     }
+    const lastModified =
+      modifiedDate && Number.isFinite(modifiedDate.getTime())
+        ? `<lastmod>${modifiedDate.toISOString()}</lastmod>`
+        : ''
     return `<url>
     <loc>https://${joinSegments(base, encodeURI(slug))}</loc>
-    <lastmod>${modifiedDate?.toISOString()}</lastmod>
+    ${lastModified}
   </url>`
   }
 
@@ -1441,25 +1445,8 @@ function planPartialContentIndex(changeEvents: readonly ChangeEvent[]): ContentI
   }
 }
 
-export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
-  const opts: Options = { ...defaultOptions, ...userOpts }
-  const folderFeedSlugs = new Set<string>()
-  let cachedLinkIndex: ContentIndexMap | undefined
-  let cachedContentIndexJson: SerializedIndexCache | undefined
-  let cachedRootAtomFeed: AtomFeedCache | undefined
-  let cachedSearchIndexJson: SerializedIndexCache | undefined
-
-  return {
-    name: 'ContentIndex',
-    async *emit(ctx, content, _resources) {
-      const cfg = ctx.cfg.configuration
-      const writesAtom = opts.enableAtom && !ctx.argv.watch
-      const linkIndex = buildLinkIndex(ctx, content, opts)
-      cachedLinkIndex = new Map(linkIndex)
-
-      yield write({
-        ctx,
-        content: `# As a condition of accessing this website, you agree to abide by the following
+export function robotsTxt(baseUrl: string): string {
+  return `# As a condition of accessing this website, you agree to abide by the following
 # content signals:
 
 # (a)  If a content-signal = yes, you may collect content for the corresponding
@@ -1488,26 +1475,35 @@ User-Agent: *
 Content-signal: search=yes,ai-train=yes,ai-input=yes
 Allow: /
 
-User-agent: Amazonbot
-Disallow: /
-
-User-agent: Applebot-Extended
-Disallow: /
-
-User-agent: Bytespider
-Disallow: /
-
-User-agent: meta-externalagent
-Disallow: /
-
 User-agent: PerplexityBot
 Disallow: /
 
 User-agent: Perplexity-User
 Disallow: /
 
-Sitemap: https://${joinSegments(cfg.baseUrl ?? 'https://example.com', 'sitemap.xml')}
-`,
+Sitemap: https://${joinSegments(baseUrl, 'sitemap.xml')}
+`
+}
+
+export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = userOpts => {
+  const opts: Options = { ...defaultOptions, ...userOpts }
+  const folderFeedSlugs = new Set<string>()
+  let cachedLinkIndex: ContentIndexMap | undefined
+  let cachedContentIndexJson: SerializedIndexCache | undefined
+  let cachedRootAtomFeed: AtomFeedCache | undefined
+  let cachedSearchIndexJson: SerializedIndexCache | undefined
+
+  return {
+    name: 'ContentIndex',
+    async *emit(ctx, content, _resources) {
+      const cfg = ctx.cfg.configuration
+      const writesAtom = opts.enableAtom && !ctx.argv.watch
+      const linkIndex = buildLinkIndex(ctx, content, opts)
+      cachedLinkIndex = new Map(linkIndex)
+
+      yield write({
+        ctx,
+        content: robotsTxt(cfg.baseUrl ?? 'example.com'),
         slug: 'robots' as FullSlug,
         ext: '.txt',
       })
