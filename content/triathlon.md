@@ -1295,7 +1295,7 @@ The activity-card values use these ordered sources:
 4. Missing exercise load is calculated from Garmin IF when Garmin supplied IF, otherwise from the locally calculated IF.
 5. Garmin aerobic and anaerobic training effect scores, messages, and labels stay provider-native. There is no local EPOC or training-effect reconstruction.
 
-The analytics load that drives CTL, ATL, TSB, ACWR, weekly load, and calibration is a separate, internally consistent pace-duration load. It uses grade-adjusted speed for every sport, including cycling. This keeps the longitudinal model on one scale, so it can differ from the exercise-load number shown on an activity card.
+The analytics load that drives CTL, ATL, TSB, ACWR, and weekly load is separate from the exercise-load number shown on an activity card. Swim, bike, and run use grade-adjusted pace and duration. Strength and yoga use threshold-normalized heart-rate TRIMP when average exercise heart rate and resting, threshold, and maximum heart rate are available. A strength or yoga activity without valid heart-rate inputs contributes zero load. Pace and volume calibration remains scoped to swim, bike, and run.
 
 Training-effect scores are only clamped for display:
 
@@ -1643,10 +1643,10 @@ $$
 
 The site generalizes the final form to pace-derived and heart-rate-derived IF, then caps IF at $1.15$ to stop short anomalous efforts from dominating load.
 
-The load used by the longitudinal analytics is always
+For swim, bike, and run, the longitudinal pace load is
 
 $$
-L_{\mathrm{PMC},i}
+L_{\mathrm{pace},i}
 =
 \operatorname{round}_{0.1}
 \left[
@@ -1659,6 +1659,59 @@ L_{\mathrm{PMC},i}
 \right].
 $$
 
+For strength and yoga, define average and lactate-threshold heart-rate reserve ratios
+
+$$
+r_i
+=
+\frac{\mathrm{HR}_{\mathrm{avg},i}-\mathrm{HR}_{\mathrm{rest},i}}
+{\mathrm{HR}_{\max}-\mathrm{HR}_{\mathrm{rest},i}},
+\qquad
+r_{\mathrm{LT},i}
+=
+\frac{\mathrm{LTHR}-\mathrm{HR}_{\mathrm{rest},i}}
+{\mathrm{HR}_{\max}-\mathrm{HR}_{\mathrm{rest},i}}.
+$$
+
+The normalized sex-specific Banister impulse function is
+
+$$
+B_s(r)=r e^{b_s r},
+\qquad
+b_s=
+\begin{cases}
+1.92, & s=\mathrm{M},\\
+1.67, & s=\mathrm{F}.
+\end{cases}
+$$
+
+The normalized heart-rate load is
+
+$$
+L_{\mathrm{HR},i}
+=
+\operatorname{round}_{0.1}
+\left[
+100
+\frac{t_i}{3600}
+\frac{B_s(r_i)}{B_s(r_{\mathrm{LT},i})}
+\right].
+$$
+
+Normalization against the same athlete's threshold reserve makes one hour at lactate-threshold heart rate equal to $100$ load. The calculation uses same-day Oura resting heart rate when it exists, then the median of valid resting-heart-rate observations from the preceding 28-day window. It rejects missing or physiologically inconsistent inputs.[^heart-rate-tss]
+
+The load entering the performance management chart is
+
+$$
+L_{\mathrm{PMC},i}
+=
+\begin{cases}
+L_{\mathrm{pace},i}, & s(i)\in\{\mathrm{swim},\mathrm{bike},\mathrm{run}\},\\
+L_{\mathrm{HR},i}, & s(i)\in\{\mathrm{strength},\mathrm{yoga}\}\text{ with valid HR},\\
+0, & \text{otherwise}.
+\end{cases}
+$$
+
 Daily load is the sum of activity loads:
 
 $$
@@ -1666,6 +1719,12 @@ L_d = \sum_{i\in d} L_{\mathrm{PMC},i}.
 $$
 
 Garmin exercise load is a provider fact. The local fallback is a TSS-like estimate and does not claim to reproduce Garmin's EPOC model.
+
+Absolute strength volume remains activity evidence and does not modify $L_{\mathrm{HR}}$. The existing records mix external weights, bodyweight movements, timed holds, plyometrics, bilateral and unilateral work, and exercises with different ranges of motion. A sum such as sets times reps times weight therefore lacks relative intensity, velocity, time under tension, rest, and proximity to failure. Current resistance-training research treats those omissions as material and supports session RPE as an additional internal-load measure.[^strength-tss] A future strength-load model needs a consistently recorded session RPE or reps-in-reserve field before the weight data can calibrate neuromuscular stress. Heart-rate load currently measures the systemic cardiovascular part of the session, so it can understate hard lifting performed at a modest average heart rate.
+
+[^heart-rate-tss]: [TrainingPeaks, "Training Stress Scores Explained"](https://help.trainingpeaks.com/hc/en-us/articles/204071944-Training-Stress-Scores-TSS-Explained) defines $100$ TSS as one hour at threshold and limits heart-rate TSS accuracy when intensity fluctuates. The reserve-weighted exponential follows Banister TRIMP as restated by [Ulmer et al., "Test-retest reliability of TRIMP in collegiate ice hockey players"](https://pmc.ncbi.nlm.nih.gov/articles/PMC6561225/), then the site normalizes it against the athlete's threshold reserve.
+
+[^strength-tss]: [Imbach et al., "A Muscle Physiology-Based Framework for Quantifying Training Load in Resistance Exercises"](https://pmc.ncbi.nlm.nih.gov/articles/PMC11768794/) reviews the limits of sets, repetitions, volume load, time under tension, velocity, and effort-based indexes. [Day et al., "Monitoring exercise intensity during resistance training using the session RPE scale"](https://pubmed.ncbi.nlm.nih.gov/15142026/) found session RPE reliable across resistance intensities.
 
 ### performance management chart
 

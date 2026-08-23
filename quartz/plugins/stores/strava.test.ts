@@ -8,6 +8,7 @@ import {
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
   calculateExerciseLoad,
+  calculateHeartRateTss,
   hasFetchedActivityDetail,
   type RawStravaActivity,
   type RawStravaAnalysisRange,
@@ -61,6 +62,15 @@ test('calculates exercise load from capped intensity and moving duration', () =>
   assert.equal(calculateExerciseLoad(2, 3_600), 132.3)
   assert.equal(calculateExerciseLoad(0, 3_600), null)
   assert.equal(calculateExerciseLoad(0.8, 0), null)
+})
+
+test('normalizes heart-rate TRIMP to 100 TSS for one hour at threshold', () => {
+  assert.equal(calculateHeartRateTss(173, 3_600, 50, 173, 196, 'M'), 100)
+  assert.equal(calculateHeartRateTss(83, 1_500, 50, 173, 196, 'M'), 3.4)
+  assert.equal(calculateHeartRateTss(120.5, 1_200, 50, 173, 196, 'M'), 9.6)
+  assert.equal(calculateHeartRateTss(50, 1_200, 50, 173, 196, 'M'), null)
+  assert.equal(calculateHeartRateTss(120, 0, 50, 173, 196, 'M'), null)
+  assert.equal(calculateHeartRateTss(120, 1_200, 50, 196, 196, 'M'), null)
 })
 
 test('calculates missing run training effect from relative effort and upper-zone time', () => {

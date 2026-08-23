@@ -2,13 +2,23 @@ import type { Analytics } from '../../../plugins/stores/analytics'
 import type { AnalyticsPanelDefinition } from './catalog'
 import { DEFAULT_TRIATHLON_FORMATTER, type TriathlonFormatter } from '../runtime/formatter'
 
-const chartPath = (values: readonly number[]): string => {
+export interface AnalyticsChartDomain {
+  minimum: number
+  maximum: number
+}
+
+export const analyticsChartPath = (
+  values: readonly number[],
+  domain?: AnalyticsChartDomain,
+): string => {
   if (values.length === 0) return ''
-  let minimum = Infinity
-  let maximum = -Infinity
-  for (const value of values) {
-    if (value < minimum) minimum = value
-    if (value > maximum) maximum = value
+  let minimum = domain?.minimum ?? Infinity
+  let maximum = domain?.maximum ?? -Infinity
+  if (domain == null) {
+    for (const value of values) {
+      if (value < minimum) minimum = value
+      if (value > maximum) maximum = value
+    }
   }
   const span = Math.max(maximum - minimum, Math.abs(maximum) * 0.01, 1)
   return values
@@ -31,6 +41,10 @@ export const AnalyticsServerPanel = ({
 }) => {
   const content = definition.server(data, formatter)
   const series = (content.series ?? []).filter(item => item.values.length > 0)
+  const sharedDomain: AnalyticsChartDomain | undefined =
+    content.seriesDomain === 'shared-zero'
+      ? { minimum: 0, maximum: Math.max(1, ...series.flatMap(item => item.values)) }
+      : undefined
   return (
     <section
       class="tri-ana-ssr"
@@ -38,6 +52,7 @@ export const AnalyticsServerPanel = ({
       data-tri-ssr="true"
       data-tri-server-panel={definition.key}
       data-tri-series-count={series.length}
+      data-tri-series-domain={content.seriesDomain ?? 'independent'}
     >
       <h2 class="tri-ana-block-title">{content.title}</h2>
       <dl class="tri-ana-ssr-values">
@@ -64,7 +79,7 @@ export const AnalyticsServerPanel = ({
             {series.map((item, index) => (
               <path
                 class={`tri-ana-ssr-line tri-ana-ssr-line--${index % 4}`}
-                d={chartPath(item.values)}
+                d={analyticsChartPath(item.values, sharedDomain)}
                 vector-effect="non-scaling-stroke"
                 data-series={item.label}
               />

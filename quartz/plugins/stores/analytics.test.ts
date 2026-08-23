@@ -10,16 +10,19 @@ import {
   ACTIVITY_FIELDS,
   ATHLETE,
   DAY_FIELDS,
+  POWER_TO_WEIGHT_DURATIONS,
   WEEK_FIELDS,
   buildAnalytics,
   buildDataFeed,
   buildFtpPedalingEvidence,
   computeFtpHypothesisFromVo2,
+  type PowerToWeightDurationS,
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
 import {
   buildPayload,
   type RawStravaActivity,
+  type StravaActivityDetail,
   type StravaRawCache,
   type StravaStreams,
 } from './strava'
@@ -166,6 +169,86 @@ function fixtures(): {
     },
   }
   return { cache, oura, weights, weather }
+}
+
+interface PowerActivitySpec {
+  id: number
+  date: string
+}
+
+interface PowerDetailOptions {
+  deviceWatts?: boolean
+  sport?: StravaActivityDetail['sport']
+  bestWatts?: Partial<Record<PowerToWeightDurationS, number>>
+  curveWatts?: Partial<Record<PowerToWeightDurationS, number>>
+  massKg?: number | null
+  massDate?: string | null
+}
+
+function powerActivityCache(specs: readonly PowerActivitySpec[], today: string): StravaRawCache {
+  const activities: Record<string, RawStravaActivity> = {}
+  for (const spec of specs)
+    activities[String(spec.id)] = activity(spec.id, 'Ride', spec.date, 1500, 12000, {
+      deviceWatts: true,
+      averageWatts: 250,
+      weightedAverageWatts: 260,
+      maxWatts: 900,
+    })
+  return {
+    athleteId: 123,
+    auth: { refreshToken: 'power-to-weight-test', obtainedAt: 0 },
+    lastSync: Date.parse(`${today}T12:00:00Z`),
+    lastActivityStart: 0,
+    activities,
+  }
+}
+
+function trackingWeight(date: string, weightKg: number): TrackEntry {
+  return {
+    date,
+    weightKg,
+    weightLbs: weightKg / 0.45359237,
+    windKph: null,
+    windDir: null,
+    race: false,
+    event: null,
+  }
+}
+
+function powerDetail(
+  id: number,
+  date: string,
+  options: PowerDetailOptions = {},
+): StravaActivityDetail {
+  const { cache } = fixtures()
+  const generated = buildPayload(cache, null, null, '2026-05-12', null, ATHLETE.ftp).details['1']
+  assert.ok(generated)
+  const power = POWER_TO_WEIGHT_DURATIONS.flatMap(durationS => {
+    const averageWatts = options.bestWatts?.[durationS]
+    return averageWatts == null
+      ? []
+      : [{ durationS, averageWatts, wattsPerKg: null, averageHeartRate: null, elevationDeltaM: 0 }]
+  })
+  const powerCurve = POWER_TO_WEIGHT_DURATIONS.flatMap(durationS => {
+    const watts = options.curveWatts?.[durationS]
+    return watts == null ? [] : [{ s: durationS, w: watts }]
+  })
+  return {
+    ...generated,
+    id,
+    date,
+    start: `${date}T12:00:00Z`,
+    sport: options.sport ?? 'bike',
+    deviceWatts: options.deviceWatts ?? true,
+    powerCurve: powerCurve.length > 0 ? powerCurve : null,
+    bestEfforts: {
+      weightKg: options.massKg ?? null,
+      weightDate: options.massDate ?? null,
+      distance: [],
+      power,
+      climbs: [],
+    },
+  }
 }
 
 test('distributions use payload heart-rate zones and canonical cadence and power units', () => {
@@ -396,6 +479,21 @@ test('carries build-time power curves and ranks exact durations at the latest me
       },
       intervals: [],
     },
+    powerToWeight: {
+      windowDays: 42,
+      sex: 'M',
+      age: 0,
+      ageGroup: null,
+      references: [],
+      source: {
+        url: 'https://www.youtube.com/watch?v=nwT8UtsaHds',
+        label: 'GCN × Zwift data',
+        population: 'Zwift riders',
+        selectionBias:
+          'Zwift riders are a self-selected cycling population, so these percentiles do not represent the general population.',
+      },
+      points: [],
+    },
   })
 })
 
@@ -419,6 +517,210 @@ test('keeps Apple-only ranking mass and measurement provenance together', () => 
   assert.equal(ranking.massKg, 84.4)
   assert.equal(ranking.massDate, date)
   assert.equal(ranking.massSource, 'apple')
+})
+
+test('power-to-weight extracts the four exact durations and current Zwift references', () => {
+  const date = iso(20)
+  const cache = powerActivityCache([{ id: 11, date }], date)
+  const activityDetails = {
+    '11': powerDetail(11, date, {
+      bestWatts: { 5: 800, 60: 400 },
+      curveWatts: { 300: 320, 1200: 280 },
+    }),
+  }
+  const trend = buildAnalytics(cache, {
+    activityDetails,
+    weights: [trackingWeight(iso(15), 80)],
+    since: date,
+  }).powerCurve.powerToWeight
+  const point = trend.points[0]
+
+  assert.deepEqual(
+    POWER_TO_WEIGHT_DURATIONS.map(durationS => ({
+      durationS,
+      watts: point.efforts[durationS]?.watts,
+      wattsPerKg: point.efforts[durationS]?.wattsPerKg,
+    })),
+    [
+      { durationS: 5, watts: 800, wattsPerKg: 10 },
+      { durationS: 60, watts: 400, wattsPerKg: 5 },
+      { durationS: 300, watts: 320, wattsPerKg: 4 },
+      { durationS: 1200, watts: 280, wattsPerKg: 3.5 },
+    ],
+  )
+  assert.equal(trend.windowDays, 42)
+  assert.equal(trend.sex, 'M')
+  assert.equal(trend.age, 25)
+  assert.equal(trend.ageGroup, '20–29')
+  assert.deepEqual(trend.references, [
+    { durationS: 5, p10: 4.16, average: 8.75, p90: 14.06 },
+    { durationS: 60, p10: 2.88, average: 4.75, p90: 6.82 },
+    { durationS: 300, p10: 2.27, average: 3.63, p90: 5.1 },
+    { durationS: 1200, p10: 1.95, average: 3.09, p90: 4.32 },
+  ])
+  assert.equal(trend.source.url, 'https://www.youtube.com/watch?v=nwT8UtsaHds')
+  assert.equal(trend.source.label, 'GCN × Zwift data')
+  assert.equal(trend.source.population, 'Zwift riders')
+  assert.match(trend.source.selectionBias, /self-selected/)
+})
+
+test('power-to-weight rejects estimated power and non-bike details', () => {
+  const date = iso(20)
+  const cache = powerActivityCache(
+    [
+      { id: 21, date },
+      { id: 22, date },
+      { id: 23, date },
+    ],
+    date,
+  )
+  const trend = buildAnalytics(cache, {
+    activityDetails: {
+      '21': powerDetail(21, date, { bestWatts: { 5: 400 } }),
+      '22': powerDetail(22, date, { deviceWatts: false, bestWatts: { 5: 1_200 } }),
+      '23': powerDetail(23, date, { sport: 'run', bestWatts: { 5: 1_300 } }),
+    },
+    weights: [trackingWeight(date, 80)],
+    since: date,
+  }).powerCurve.powerToWeight
+
+  assert.equal(trend.points[0].efforts[5]?.activityId, 21)
+  assert.equal(trend.points[0].efforts[5]?.watts, 400)
+})
+
+test('power-to-weight preserves Garmin, tracking, and Apple mass provenance', () => {
+  const firstDate = iso(20)
+  const secondDate = iso(22)
+  const cache = powerActivityCache(
+    [
+      { id: 31, date: firstDate },
+      { id: 32, date: secondDate },
+    ],
+    secondDate,
+  )
+  const trend = buildAnalytics(cache, {
+    activityDetails: {
+      '31': powerDetail(31, firstDate, { bestWatts: { 5: 400 }, massKg: 80, massDate: firstDate }),
+      '32': powerDetail(32, secondDate, { bestWatts: { 60: 450 }, massKg: 70, massDate: iso(23) }),
+    },
+    weights: [trackingWeight(iso(15), 90)],
+    since: iso(15),
+  }).powerCurve.powerToWeight
+  const latest = trend.points[trend.points.length - 1]
+
+  assert.deepEqual(
+    {
+      kg: latest.efforts[5]?.massKg,
+      date: latest.efforts[5]?.massDate,
+      source: latest.efforts[5]?.massSource,
+    },
+    { kg: 80, date: firstDate, source: 'garmin' },
+  )
+  assert.deepEqual(
+    {
+      kg: latest.efforts[60]?.massKg,
+      date: latest.efforts[60]?.massDate,
+      source: latest.efforts[60]?.massSource,
+    },
+    { kg: 90, date: iso(15), source: 'tracking' },
+  )
+
+  const apple: AppleCache = {
+    lastSync: cache.lastSync,
+    days: {
+      [iso(15)]: {
+        date: iso(15),
+        burnKcal: null,
+        activeKcal: null,
+        intakeKcal: null,
+        weightKg: 84,
+        vo2max: null,
+      },
+    },
+  }
+  const appleTrend = buildAnalytics(powerActivityCache([{ id: 33, date: firstDate }], firstDate), {
+    activityDetails: { '33': powerDetail(33, firstDate, { bestWatts: { 300: 336 } }) },
+    apple,
+    since: iso(15),
+  }).powerCurve.powerToWeight
+  assert.deepEqual(
+    {
+      kg: appleTrend.points[appleTrend.points.length - 1].efforts[300]?.massKg,
+      date: appleTrend.points[appleTrend.points.length - 1].efforts[300]?.massDate,
+      source: appleTrend.points[appleTrend.points.length - 1].efforts[300]?.massSource,
+    },
+    { kg: 84, date: iso(15), source: 'apple' },
+  )
+})
+
+test('power-to-weight never uses a future mass measurement', () => {
+  const date = iso(20)
+  const trend = buildAnalytics(powerActivityCache([{ id: 41, date }], iso(22)), {
+    activityDetails: { '41': powerDetail(41, date, { bestWatts: { 5: 500 } }) },
+    weights: [trackingWeight(iso(21), 75)],
+    since: date,
+  }).powerCurve.powerToWeight
+
+  assert.deepEqual(trend.points, [])
+})
+
+test('power-to-weight selects same-day and per-duration winners independently', () => {
+  const date = iso(20)
+  const cache = powerActivityCache(
+    [
+      { id: 51, date },
+      { id: 52, date },
+    ],
+    date,
+  )
+  const trend = buildAnalytics(cache, {
+    activityDetails: {
+      '51': powerDetail(51, date, { bestWatts: { 5: 800, 60: 400, 300: 300 } }),
+      '52': powerDetail(52, date, { bestWatts: { 5: 700, 60: 480, 300: 320 } }),
+    },
+    weights: [trackingWeight(date, 80)],
+    since: date,
+  }).powerCurve.powerToWeight
+  const efforts = trend.points[0].efforts
+
+  assert.equal(efforts[5]?.activityId, 51)
+  assert.equal(efforts[60]?.activityId, 52)
+  assert.equal(efforts[300]?.activityId, 52)
+  assert.equal(efforts[1200], null)
+})
+
+test('power-to-weight carries winners for 42 days and expires them on day 43', () => {
+  const activityDate = iso(0)
+  const day43 = iso(42)
+  const trend = buildAnalytics(powerActivityCache([{ id: 61, date: activityDate }], day43), {
+    activityDetails: { '61': powerDetail(61, activityDate, { bestWatts: { 5: 400 } }) },
+    weights: [trackingWeight(activityDate, 80)],
+    since: activityDate,
+  }).powerCurve.powerToWeight
+
+  assert.equal(trend.points.length, 43)
+  assert.equal(trend.points[41].date, iso(41))
+  assert.equal(trend.points[41].efforts[5]?.activityId, 61)
+  assert.equal(trend.points[42].date, day43)
+  assert.equal(trend.points[42].efforts[5], null)
+})
+
+test('empty power-to-weight state has no modelled values or cohort', () => {
+  assert.deepEqual(buildAnalytics(null).powerCurve.powerToWeight, {
+    windowDays: 42,
+    sex: 'M',
+    age: 0,
+    ageGroup: null,
+    references: [],
+    source: {
+      url: 'https://www.youtube.com/watch?v=nwT8UtsaHds',
+      label: 'GCN × Zwift data',
+      population: 'Zwift riders',
+      selectionBias:
+        'Zwift riders are a self-selected cycling population, so these percentiles do not represent the general population.',
+    },
+    points: [],
+  })
 })
 
 test('volume improvement actions include CTL units', () => {
@@ -1414,6 +1716,59 @@ test('suffer score flows into daily effort, activity summaries, and weekly total
   )
 })
 
+test('strength and yoga heart-rate load contributes to daily and weekly TSS', () => {
+  const { cache, oura, weights } = fixtures()
+  const strengthDay = iso(25)
+  const yogaDay = iso(26)
+  const missingHeartRateDay = iso(27)
+  cache.activities['4'] = activity(4, 'WeightTraining', strengthDay, 1_200, 0, {
+    averageHeartrate: undefined,
+    maxHeartrate: undefined,
+  })
+  cache.activities['5'] = activity(5, 'Yoga', yogaDay, 1_500, 0, {
+    averageHeartrate: undefined,
+    maxHeartrate: undefined,
+  })
+  cache.activities['6'] = activity(6, 'WeightTraining', missingHeartRateDay, 1_800, 0, {
+    averageHeartrate: undefined,
+    maxHeartrate: undefined,
+  })
+  delete oura.days[strengthDay]
+  const activityDetails = buildPayload(cache, null, null, '2026-05-12').details
+  const withoutHeartRate = buildAnalytics(cache, {
+    oura,
+    weights,
+    activityDetails,
+    since: '2026-05-12',
+  })
+  const strengthDetail = activityDetails['4']
+  assert.ok(strengthDetail)
+  activityDetails['4'] = { ...strengthDetail, avgHr: 120.5, maxHr: 141 }
+  cache.activities['5'].averageHeartrate = 83
+  cache.activities['5'].maxHeartrate = 113
+
+  const analytics = buildAnalytics(cache, { oura, weights, activityDetails, since: '2026-05-12' })
+
+  assert.equal(analytics.activities.find(item => item.id === 4)?.load, 9.6)
+  assert.equal(analytics.activities.find(item => item.id === 5)?.load, 3.4)
+  assert.equal(analytics.activities.find(item => item.id === 6)?.load, 0)
+  assert.equal(analytics.daily.find(day => day.date === strengthDay)?.load, 9.6)
+  assert.equal(analytics.daily.find(day => day.date === yogaDay)?.load, 3.4)
+  assert.equal(analytics.daily.find(day => day.date === missingHeartRateDay)?.load, 0)
+  assert.equal(
+    Math.round(analytics.weekly.reduce((total, week) => total + week.load, 0) * 10),
+    Math.round(analytics.daily.reduce((total, day) => total + day.load, 0) * 10),
+  )
+  const withoutHeartRateState = withoutHeartRate.daily.at(-1)
+  const state = analytics.daily.at(-1)
+  assert.ok(withoutHeartRateState)
+  assert.ok(state)
+  assert.notDeepEqual(
+    [state.ctl, state.atl, state.tsb],
+    [withoutHeartRateState.ctl, withoutHeartRateState.atl, withoutHeartRateState.tsb],
+  )
+})
+
 test('analytics emits scored non-tri weeks and calendar gaps', () => {
   const { cache } = fixtures()
   cache.lastSync = Date.parse('2026-06-11T10:00:00Z')
@@ -1428,10 +1783,10 @@ test('analytics emits scored non-tri weeks and calendar gaps', () => {
   assert.deepEqual(
     a.weekly.map(w => [w.weekStart, w.complete, w.sessions, w.load, w.effort]),
     [
-      ['2026-05-11', false, 0, 0, 30],
+      ['2026-05-11', false, 1, 0, 30],
       ['2026-05-18', true, 0, 0, 0],
       ['2026-05-25', true, 0, 0, 0],
-      ['2026-06-01', true, 0, 0, 60],
+      ['2026-06-01', true, 1, 0, 60],
       ['2026-06-08', false, 0, 0, 0],
     ],
   )

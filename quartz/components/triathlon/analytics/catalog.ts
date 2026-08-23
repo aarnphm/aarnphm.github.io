@@ -1,6 +1,10 @@
-import type { Analytics } from '../../../plugins/stores/analytics'
 import type { TriathlonContext } from '../runtime/context'
 import type { TriathlonFormatter } from '../runtime/formatter'
+import {
+  POWER_TO_WEIGHT_DURATIONS,
+  type Analytics,
+  type PowerToWeightDurationS,
+} from '../../../plugins/stores/analytics'
 import { mountPrimaryPanel } from './panel-mounts-primary'
 import { mountSecondaryPanel } from './panel-mounts-secondary'
 import { buildAbilities } from './panels/abilities'
@@ -11,6 +15,7 @@ import { buildDistributions } from './panels/distributions'
 import { buildFtpHypothesis } from './panels/ftp'
 import { buildPmc, buildWeekly } from './panels/performance'
 import { buildBestPowerCurve } from './panels/power'
+import { buildPowerToWeightTrend, powerToWeightDurationLabel } from './panels/power-to-weight'
 import { buildRecoveryChart, buildSleep } from './panels/recovery'
 import {
   buildActions,
@@ -61,6 +66,7 @@ export interface AnalyticsPanelContent {
   title: string
   values: readonly AnalyticsSummaryValue[]
   series?: readonly AnalyticsPanelSeries[]
+  seriesDomain?: 'independent' | 'shared-zero'
 }
 
 export interface AnalyticsPanelView {
@@ -114,6 +120,12 @@ const finite = (values: readonly (number | null | undefined)[]): number[] => {
   for (const item of values) if (item != null && Number.isFinite(item)) result.push(item)
   return result
 }
+
+const powerToWeightValues = (data: Analytics, durationS: PowerToWeightDurationS): number[] =>
+  finite(data.powerCurve.powerToWeight.points.map(point => point.efforts[durationS]?.wattsPerKg))
+
+const latestPowerToWeight = (data: Analytics, durationS: PowerToWeightDurationS): number | null =>
+  data.powerCurve.powerToWeight.points.at(-1)?.efforts[durationS]?.wattsPerKg ?? null
 
 const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
   body: {
@@ -275,12 +287,16 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
     label: 'power curve',
     search:
       'cycling power curve critical power cp w prime ftp watts duration best efforts power rank radar sprint attack climb w kg percentile',
-    render: (data, context) =>
-      withPanelMount(buildBestPowerCurve(data, context), [
+    render: (data, context) => {
+      const element = buildBestPowerCurve(data, context)
+      const powerToWeight = buildPowerToWeightTrend(data, context)
+      element.appendChild(powerToWeight.element)
+      return withPanelMount({ element, mount: powerToWeight.mount }, [
         root => mountPrimaryPanel('power', root, data, context),
-      ]),
+      ])
+    },
     server: data => ({
-      title: 'cycling · best power curve · weight-adjusted rank',
+      title: 'cycling · power · power-to-weight trend',
       values: [
         { label: 'FTP', value: value(data.powerCurve.ftp, ' W') },
         {
@@ -302,29 +318,16 @@ const definitions: Record<AnalyticsPanelKey, AnalyticsPanelDefinition> = {
             1,
           ),
         },
-        { label: '6 week points', value: String(data.powerCurve.sixWeeks.length) },
-        { label: 'year points', value: String(data.powerCurve.year.length) },
-        { label: 'ranking mass', value: value(data.powerCurve.ranking.massKg, ' kg', 1) },
-        { label: 'ranked intervals', value: String(data.powerCurve.ranking.intervals.length) },
+        ...POWER_TO_WEIGHT_DURATIONS.map(durationS => ({
+          label: powerToWeightDurationLabel(durationS),
+          value: value(latestPowerToWeight(data, durationS), ' W/kg', 2),
+        })),
       ],
-      series: [
-        { label: 'six weeks', values: data.powerCurve.sixWeeks.map(point => point.w) },
-        { label: 'year', values: data.powerCurve.year.map(point => point.w) },
-        {
-          label: 'six week rank',
-          values: finite(
-            data.powerCurve.ranking.intervals.map(
-              interval => interval.efforts['six-weeks']?.percentile,
-            ),
-          ),
-        },
-        {
-          label: 'year rank',
-          values: finite(
-            data.powerCurve.ranking.intervals.map(interval => interval.efforts.year?.percentile),
-          ),
-        },
-      ],
+      series: POWER_TO_WEIGHT_DURATIONS.map(durationS => ({
+        label: powerToWeightDurationLabel(durationS),
+        values: powerToWeightValues(data, durationS),
+      })),
+      seriesDomain: 'shared-zero',
     }),
   },
   abilities: {
