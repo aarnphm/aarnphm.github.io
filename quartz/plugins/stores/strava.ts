@@ -643,6 +643,38 @@ export const calculateActivityIntensityFactor = (
 
 export const ACTIVITY_LOAD_INTENSITY_FACTOR_CAP = 1.15
 
+export const calculateHeartRateTss = (
+  averageHeartRate: number,
+  movingTimeS: number,
+  restingHeartRate: number,
+  thresholdHeartRate: number,
+  maximumHeartRate: number,
+  sex: 'M' | 'F',
+): number | null => {
+  if (
+    !Number.isFinite(averageHeartRate) ||
+    !Number.isFinite(movingTimeS) ||
+    !Number.isFinite(restingHeartRate) ||
+    !Number.isFinite(thresholdHeartRate) ||
+    !Number.isFinite(maximumHeartRate) ||
+    movingTimeS <= 0 ||
+    restingHeartRate <= 0 ||
+    averageHeartRate <= restingHeartRate ||
+    thresholdHeartRate <= restingHeartRate ||
+    maximumHeartRate <= thresholdHeartRate ||
+    averageHeartRate > maximumHeartRate
+  )
+    return null
+  const reserve = maximumHeartRate - restingHeartRate
+  const averageReserve = (averageHeartRate - restingHeartRate) / reserve
+  const thresholdReserve = (thresholdHeartRate - restingHeartRate) / reserve
+  const exponent = sex === 'M' ? 1.92 : 1.67
+  const impulse = (heartRateReserve: number): number =>
+    heartRateReserve * Math.exp(exponent * heartRateReserve)
+  const load = 100 * (movingTimeS / 3600) * (impulse(averageReserve) / impulse(thresholdReserve))
+  return round(load + Number.EPSILON * load, 1)
+}
+
 export const calculateExerciseLoad = (
   intensityFactor: number,
   movingTimeS: number,
