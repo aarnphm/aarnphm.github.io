@@ -3,12 +3,14 @@ import test from 'node:test'
 import { emptyGarminFueling, emptyGarminMetrics, type GarminCache } from './garmin'
 import {
   applyManualFueling,
+  applyManualSauna,
   applyManualStrength,
   buildPayload,
   calculateActivityIntensityFactor,
   calculateActivityTrainingEffect,
   calculateExerciseLoad,
   calculateHeartRateTss,
+  emptyPayload,
   hasFetchedActivityDetail,
   type RawStravaActivity,
   type RawStravaAnalysisRange,
@@ -585,6 +587,65 @@ test('manual strength attaches only to the matching strength activity and date',
     exercises: entry.exercises,
     source: 'manual',
   })
+})
+
+test('projects a manual sauna session with interval-matched Oura heart rate', () => {
+  const payload = emptyPayload(1)
+  applyManualSauna(
+    payload,
+    [
+      {
+        id: 8_202_608_231_830,
+        title: 'Untangle',
+        date: '2026-08-23',
+        time: '18:30',
+        durationS: 4_500,
+        temperatureC: 91.111,
+        humidityPct: 11,
+        cooldown: 'cold plunge',
+        heatTrainingLoad: 7.7,
+      },
+    ],
+    [
+      { timestamp: '2026-08-23T22:25:00Z', bpm: 80, source: 'awake' },
+      { timestamp: '2026-08-23T22:35:00Z', bpm: 110, source: 'awake' },
+      { timestamp: '2026-08-23T23:30:00Z', bpm: 130, source: 'awake' },
+      { timestamp: '2026-08-23T23:46:00Z', bpm: 100, source: 'rest' },
+    ],
+    'America/Toronto',
+  )
+
+  const detail = payload.details['8202608231830']
+  assert.equal(detail.name, 'Untangle')
+  assert.equal(detail.start, '2026-08-23T22:30:00.000Z')
+  assert.equal(detail.avgHr, 120)
+  assert.equal(detail.maxHr, 130)
+  assert.deepEqual(
+    detail.heartRateTrace.map(point => [point.elapsedS, point.heartRate]),
+    [
+      [300, 110],
+      [3_600, 130],
+    ],
+  )
+  assert.deepEqual(detail.sauna, {
+    time: '18:30',
+    temperatureC: 91.111,
+    humidityPct: 11,
+    cooldown: 'cold plunge',
+    heatTrainingLoad: 7.7,
+    heartRateSource: 'oura',
+    source: 'manual',
+  })
+  assert.deepEqual(payload.days, [
+    {
+      date: '2026-08-23',
+      durationS: 4_500,
+      items: [{ id: 8_202_608_231_830, sport: 'sauna', distanceKm: 0, durationS: 4_500 }],
+      dominant: 'sauna',
+    },
+  ])
+  assert.equal(payload.totalCount, 1)
+  assert.equal(payload.totalTimeS, 4_500)
 })
 
 test('emits geometry-preserved map data separately from compact telemetry route', () => {

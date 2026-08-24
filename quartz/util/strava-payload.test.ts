@@ -52,6 +52,7 @@ const detail = (values: Partial<StravaActivityDetail> = {}): StravaActivityDetai
   location: null,
   fueling: null,
   strength: null,
+  sauna: null,
   garmin: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
@@ -282,6 +283,53 @@ test('enriches a route-less treatment with sparse Apple heart rate samples', () 
       { elapsedS: 1_291, heartRate: null },
     ],
   )
+})
+
+test('keeps manual sauna heart rate Oura-only', () => {
+  const start = '2026-08-23T22:30:00Z'
+  const sauna = detail({
+    sport: 'sauna',
+    name: 'sauna',
+    start,
+    movingTimeS: 4_500,
+    avgHr: null,
+    maxHr: null,
+    route: [],
+    heartRateTrace: [],
+    sauna: {
+      time: '18:30',
+      temperatureC: 91.111,
+      humidityPct: 11,
+      cooldown: 'cold plunge',
+      heatTrainingLoad: 7.7,
+      heartRateSource: null,
+      source: 'manual',
+    },
+  })
+  const workout: AppleWorkout = {
+    id: 'apple-sauna',
+    activity: 'other',
+    start,
+    end: '2026-08-23T23:45:00Z',
+    durationS: 4_500,
+    averageHeartRateBpm: 120,
+    source: 'Apple Watch',
+    heartRate: [
+      { time: '2026-08-23T22:35:00Z', bpm: 110 },
+      { time: '2026-08-23T23:30:00Z', bpm: 130 },
+    ],
+  }
+
+  enrichRouteLessHeartRate(payloadWith(sauna), {
+    version: 9,
+    lastSync: 1,
+    days: {},
+    workouts: { [workout.id]: workout },
+  })
+
+  assert.equal(sauna.avgHr, null)
+  assert.equal(sauna.maxHr, null)
+  assert.deepEqual(sauna.heartRateTrace, [])
 })
 
 test('CORE app samples override FIT thermal values only near onboard timestamps', () => {

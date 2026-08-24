@@ -4975,7 +4975,9 @@ export const formatTrainingEffectLabel = (value: string | null): string | null =
 
 export const activityTrainingEffectLabel = (d: StravaActivityDetail): string =>
   formatTrainingEffectLabel(d.garmin?.trainingEffectLabel ?? null) ??
-  (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' ? 'recovery' : 'base')
+  (d.sport === 'strength' || d.sport === 'yoga' || d.sport === 'treatment' || d.sport === 'sauna'
+    ? 'recovery'
+    : 'base')
 
 export const formatTrainingEffectNote = (value: string | null): string | null => {
   const key = value?.trim()
@@ -5176,6 +5178,30 @@ export const activityStatRows = (
   presentation: TriathlonPresentation,
   d: StravaActivityDetail,
 ): [string, string][] => {
+  if (d.sport === 'sauna' && d.sauna) {
+    const rows: [string, string][] = [
+      ['time', d.sauna.time],
+      ['duration', dur(d.movingTimeS)],
+      ['temperature', formatTemperature(presentation, d.sauna.temperatureC)],
+      [
+        'humidity',
+        `${d.sauna.humidityPct.toLocaleString(presentation.locale === 'fr' ? 'fr-CA' : 'en-US', {
+          maximumFractionDigits: 1,
+        })}%`,
+      ],
+      ['cooldown', d.sauna.cooldown],
+    ]
+    if (d.sauna.heatTrainingLoad != null)
+      rows.push([
+        'HTL',
+        d.sauna.heatTrainingLoad.toLocaleString(presentation.locale === 'fr' ? 'fr-CA' : 'en-US', {
+          maximumFractionDigits: 1,
+        }),
+      ])
+    if (d.avgHr)
+      rows.push(['avg hr', `${d.avgHr} bpm${d.sauna.heartRateSource === 'oura' ? ' · Oura' : ''}`])
+    return rows
+  }
   if (d.sport === 'strength') {
     const rows: [string, string][] = [['time', dur(d.movingTimeS)]]
     if (d.strength?.volumeKg != null)

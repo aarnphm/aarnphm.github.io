@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
   DEFAULT_LOCAL_TIME_ZONE,
+  localDateTimeUtcMs,
   localDayEndUtcMs,
   localDayStartUtcMs,
   localIsoDay,
@@ -61,6 +62,17 @@ test('computes UTC bounds for a local day across daylight saving time', () => {
   assert.equal(
     new Date(localDayEndUtcMs('2026-12-30', TORONTO)).toISOString(),
     '2026-12-31T04:59:59.999Z',
+  )
+})
+
+test('maps a local clock time to its zoned UTC instant', () => {
+  assert.equal(
+    new Date(localDateTimeUtcMs('2026-08-23', '18:30', TORONTO)).toISOString(),
+    '2026-08-23T22:30:00.000Z',
+  )
+  assert.equal(
+    new Date(localDateTimeUtcMs('2026-01-23', '18:30', TORONTO)).toISOString(),
+    '2026-01-23T23:30:00.000Z',
   )
 })
 

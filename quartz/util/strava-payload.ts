@@ -444,6 +444,7 @@ export function enrichRouteLessHeartRate(payload: StravaPayload, apple: AppleCac
   for (const detail of Object.values(payload.details)) {
     if (
       !detail ||
+      detail.sport === 'sauna' ||
       detail.route.length >= 2 ||
       detail.heartRateTrace.filter(point => point.heartRate != null).length >= 2
     )

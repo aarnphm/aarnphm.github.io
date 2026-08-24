@@ -47,11 +47,26 @@ export interface TrainingExclusion {
   activityId: number
 }
 
+export type SaunaCooldown = 'natural' | 'cold plunge'
+
+export interface ManualSaunaEntry {
+  id: number
+  title: string | null
+  date: string
+  time: string
+  durationS: number
+  temperatureC: number
+  humidityPct: number
+  cooldown: SaunaCooldown
+  heatTrainingLoad: number | null
+}
+
 export interface TrackingData {
   days: TrackEntry[]
   races: RaceEvent[]
   fueling: ManualFuelingEntry[]
   strength: ManualStrengthEntry[]
+  sauna: ManualSaunaEntry[]
   trainingExclusions: TrainingExclusion[]
 }
 
@@ -59,10 +74,12 @@ export interface ParsedTrackingBlock {
   day: TrackEntry
   fueling: ManualFuelingEntry | null
   strength: ManualStrengthEntry | null
+  sauna: ManualSaunaEntry | null
   trainingExclusion: TrainingExclusion | null
 }
 
 const LB_TO_KG = 0.45359237
+const MANUAL_ACTIVITY_ID_OFFSET = 8_000_000_000_000
 
 const massKg = (value: number, unit: string): number =>
   Math.round(value * (unit.toLowerCase().startsWith('lb') ? LB_TO_KG : 1) * 1_000) / 1_000
@@ -116,6 +133,63 @@ const parseStrengthExercise = (value: string): StrengthExercise | null => {
     repetitions: parsedSets.some(set => set.repetitions != null) ? repetitions : null,
     durationS: parsedSets.some(set => set.durationS != null) ? durationS : null,
     sets: parsedSets,
+  }
+}
+
+const parseSaunaDuration = (value: string): number | null => {
+  const match = /^(\d+(?:\.\d+)?)\s*(?:m|min|mins|minute|minutes)$/i.exec(value.trim())
+  if (!match) return null
+  const seconds = Number(match[1]) * 60
+  return Number.isSafeInteger(seconds) && seconds > 0 ? seconds : null
+}
+
+const parseSaunaTemperatureC = (value: string): number | null => {
+  const match = /^(-?\d+(?:\.\d+)?)\s*°?\s*([fc])$/i.exec(value.trim())
+  if (!match) return null
+  const temperature = Number(match[1])
+  if (!Number.isFinite(temperature)) return null
+  const celsius = match[2].toLowerCase() === 'f' ? ((temperature - 32) * 5) / 9 : temperature
+  return Math.round(celsius * 1_000) / 1_000
+}
+
+export const manualSaunaActivityId = (date: string, time: string): number =>
+  MANUAL_ACTIVITY_ID_OFFSET + Number(`${date.replaceAll('-', '')}${time.replace(':', '')}`)
+
+const parseManualSauna = (body: Readonly<Record<string, string>>): ManualSaunaEntry | null => {
+  if (body.activity?.toLowerCase() !== 'sauna') return null
+  const title = body.title?.trim() || null
+  const date = body.date?.slice(0, 10)
+  const time = body.time
+  const durationS = parseSaunaDuration(body.duration ?? '')
+  const temperatureC = parseSaunaTemperatureC(body.temperature ?? '')
+  const humidity = /^(\d+(?:\.\d+)?)\s*%$/.exec(body.humidity ?? '')
+  const humidityPct = humidity ? Number(humidity[1]) : NaN
+  const cooldown = body.cooldown?.toLowerCase()
+  const heatTrainingLoad = body.htl == null || body.htl === '' ? null : Number(body.htl)
+  if (
+    !date ||
+    !/^\d{2}:\d{2}$/.test(time ?? '') ||
+    Number(time.slice(0, 2)) > 23 ||
+    Number(time.slice(3, 5)) > 59 ||
+    durationS == null ||
+    temperatureC == null ||
+    !Number.isFinite(humidityPct) ||
+    humidityPct < 0 ||
+    humidityPct > 100 ||
+    (cooldown !== 'natural' && cooldown !== 'cold plunge') ||
+    (heatTrainingLoad != null && (!Number.isFinite(heatTrainingLoad) || heatTrainingLoad < 0))
+  )
+    return null
+  return {
+    id: manualSaunaActivityId(date, time),
+    title,
+    date,
+    time,
+    durationS,
+    temperatureC,
+    humidityPct,
+    cooldown,
+    heatTrainingLoad,
   }
 }
 
@@ -202,5 +276,6 @@ export function parseTrackingBlock(
     skipTraining && Number.isSafeInteger(activityId) && activityId > 0
       ? { date: day.date, activityId }
       : null
-  return { day, fueling, strength, trainingExclusion }
+  const sauna = parseManualSauna(body)
+  return { day, fueling, strength, sauna, trainingExclusion }
 }

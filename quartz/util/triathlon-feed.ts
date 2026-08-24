@@ -131,7 +131,7 @@ export function buildFeedMarkdown(
     `source: ${baseUrl}${sourcePath}`,
     `permalink: ${baseUrl}${sourcePath}.md`,
     `generated: ${opts.generatedAt ?? m.today}`,
-    'units: distance km (swim m), pace min/km, swim min/100m, speed km/h, time h:mm, weight kg, hr bpm, power w',
+    'units: distance km (swim m), pace min/km, swim min/100m, speed km/h, time h:mm, weight kg, hr bpm, power w, sauna temperature °C, humidity %, HTL heat-training load',
     `description: Generated triathlon training data for ${scopePrefix || 'the full activity window'}, with exact measured values in hierarchical GFM tables.`,
     '---',
     '',
@@ -157,14 +157,26 @@ export function buildFeedMarkdown(
             powerZones: det?.powerZones ?? null,
             strokes: det?.strokes ?? null,
           }
-      const gloss = [
-        distGloss(a.sport, a.distanceKm),
-        hms(a.movingTimeS),
-        paceGloss(a.sport, a.distanceKm, a.movingTimeS),
-        a.avgHr != null ? `hr ${a.avgHr}` : null,
-        a.avgWatts != null ? `${a.avgWatts}w` : null,
-        `load ${a.load}`,
-      ]
+      const sauna = a.sport === 'sauna' ? a.sauna : null
+      const gloss = (
+        sauna
+          ? [
+              hms(a.movingTimeS),
+              `${Math.round(sauna.temperatureC)} °C`,
+              `${sauna.humidityPct}% RH`,
+              sauna.cooldown,
+              sauna.heatTrainingLoad != null ? `HTL ${sauna.heatTrainingLoad}` : null,
+              a.avgHr != null ? `hr ${a.avgHr}` : null,
+            ]
+          : [
+              distGloss(a.sport, a.distanceKm),
+              hms(a.movingTimeS),
+              paceGloss(a.sport, a.distanceKm, a.movingTimeS),
+              a.avgHr != null ? `hr ${a.avgHr}` : null,
+              a.avgWatts != null ? `${a.avgWatts}w` : null,
+              `load ${a.load}`,
+            ]
+      )
         .filter(Boolean)
         .join(' · ')
       const title = `${a.date} · ${a.sport} · ${a.id}`

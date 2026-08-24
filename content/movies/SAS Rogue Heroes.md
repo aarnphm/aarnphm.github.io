@@ -4,7 +4,7 @@ category:
   - history
   - drama
 date: '2026-08-21'
-description: a botched training jump earns david stirling a hearing, and the hearing earns him a commando unit dropped behind rommel's lines. knight writes the founding of the sas as a discipline problem and scores it like a bar fight.
+description: a failed training exercise puts david stirling in a cairo hospital. he pushes for a small raiding unit that can operate behind enemy lines, and steven knight adapts ben macintyre's account of the sas founding.
 director:
   - Tom Shankland
   - Stephen Woolfenden
@@ -18,7 +18,7 @@ tags:
   - shows
   - history
   - war
-title: 'SAS: Rogue Heroes'
+title: SAS Rogue Heroes
 watched: '2026-08-21'
 year: 2022
 ---

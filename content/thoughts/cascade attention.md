@@ -21,15 +21,6 @@ idea: when a whole batch shares a prefix (a system prompt, a few-shot preamble, 
 
 The merge is the same $(m,\ell)$ summary [[thoughts/flash attention|FlashAttention]] uses to tile softmax, read here as an attention state $(\mathbf{v}, s)$: the normalised partial output $\mathbf{v}(I)=\sum_{j\in I}\operatorname{softmax}(s_j)\,V_j$ over key set $I$, and its log-sum-exp $s(I)=\log\sum_{j\in I}e^{s_j}$. Two disjoint states combine as
 
-```jsx imports={Zoomable,CascadeFilter}
-<Zoomable label="cascade filter pipeline">
-  <CascadeFilter
-    caption="drag the threshold $\tau$: only blocks scoring $s_j \ge \tau$ join the survivor set $\mathcal{S}$ and reach exact softmax, so a spiky score distribution buys a large $n/k$ speedup at near-full recall."
-    tiles={16}
-  />
-</Zoomable>
-```
-
 $$
 \begin{aligned}
 s(I\cup J) &= \log\big(e^{s(I)} + e^{s(J)}\big),\\
@@ -45,7 +36,7 @@ $$
 O_i = \underbrace{(\mathbf{v}(P_i), s(P_i))}_{\text{shared, batched once}} \;\oplus\; \underbrace{(\mathbf{v}(S_{r,i}), s(S_{r,i}))}_{\text{per request}}.
 $$
 
-The win is in where the prefix KV lives. The prefix pass is a multi-query attention: every query in the batch reads the _same_ $K_P, V_P$, so the kernel stages that block once into SMEM and serves the whole thread block from there, at roughly $10\times$ the bandwidth of streaming it from global memory per request. The suffix pass stays an ordinary batched decode against each request's own slice. FlashInfer reports up to $31\times$ over a uniform decode kernel when the shared prompt is long and the batch is wide.
+The win is in where the prefix KV lives. In the prefix pass, every query in the batch reads the same $K_P, V_P$. The kernel loads each prefix tile into SMEM once and serves the whole thread block from there, at roughly $10\times$ the bandwidth of streaming it from global memory per request. The suffix pass stays an ordinary batched decode against each request's own slice. FlashInfer reports up to $31\times$ over a uniform decode kernel when the shared prompt is long and the batch is wide.
 
 > [!math] when cascade pays
 > Let the prefix be a fraction $\rho = |P| / (|P| + |S_r|)$ of each request's context, batch size $b$. A monolithic decode re-reads the prefix once per request: $b\,|P|$ KV loads from global memory. The cascade reads it once into SMEM and amortises across the batch, so prefix IO drops by $b{:}1$ while the suffix IO is unchanged. The speedup tracks $\rho$ and $b$ together: shared system prompts ($\rho \to 1$) on large batches are where the $31\times$ shows up, and a batch of distinct prompts ($\rho \to 0$) collapses cascade back to plain decode with no penalty.

@@ -20,6 +20,7 @@ test('parses manual fueling against a Strava activity ID', () => {
       },
       fueling: { date: '2026-07-19', activityId: 19382727312, caloriesConsumed: 140 },
       strength: null,
+      sauna: null,
       trainingExclusion: null,
     },
   )
@@ -106,6 +107,81 @@ test('requires a Strava activity ID before emitting strength metadata', () => {
       null,
       ['date: 2026-08-06', 'strengthVolume: 1800.1 lb', 'exercise: Plank | 30s'].join('\n'),
     )?.strength,
+    null,
+  )
+})
+
+test('parses a manual sauna session without treating its activity kind as a Strava ID', () => {
+  const parsed = parseTrackingBlock(
+    null,
+    [
+      'title: Untangle',
+      'date: 2026-08-23',
+      'time: 18:30',
+      'duration: 75 mins',
+      'activity: sauna',
+      'temperature: 196F',
+      'humidity: 11%',
+      'cooldown: cold plunge',
+      'htl: 7.7',
+    ].join('\n'),
+  )
+
+  assert.deepEqual(parsed?.sauna, {
+    id: 8_202_608_231_830,
+    title: 'Untangle',
+    date: '2026-08-23',
+    time: '18:30',
+    durationS: 4_500,
+    temperatureC: 91.111,
+    humidityPct: 11,
+    cooldown: 'cold plunge',
+    heatTrainingLoad: 7.7,
+  })
+  assert.equal(parsed?.fueling, null)
+  assert.equal(parsed?.strength, null)
+  assert.equal(parsed?.trainingExclusion, null)
+})
+
+test('allows an omitted heat load and rejects incomplete sauna metadata', () => {
+  assert.deepEqual(
+    parseTrackingBlock(
+      null,
+      [
+        'date: 2026-08-20',
+        'time: 15:30',
+        'duration: 65 min',
+        'activity: sauna',
+        'temperature: 185F',
+        'humidity: 11%',
+        'cooldown: natural',
+      ].join('\n'),
+    )?.sauna,
+    {
+      id: 8_202_608_201_530,
+      title: null,
+      date: '2026-08-20',
+      time: '15:30',
+      durationS: 3_900,
+      temperatureC: 85,
+      humidityPct: 11,
+      cooldown: 'natural',
+      heatTrainingLoad: null,
+    },
+  )
+  assert.equal(
+    parseTrackingBlock(
+      null,
+      [
+        'date: 2026-08-20',
+        'time: 15:30',
+        'duration: 65 min',
+        'activity: sauna',
+        'temperature: 185F',
+        'humidity: 101%',
+        'cooldown: natural',
+      ].join('\n'),
+    )?.sauna,
     null,
   )
 })

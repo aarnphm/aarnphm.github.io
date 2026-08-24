@@ -3,7 +3,7 @@ category:
   - p/fiction
   - thriller
 date: '2026-08-21'
-description: a meteorologist and a cybersecurity analyst chase proof of extraterrestrial life while a government contractor works to bury it. spielberg back on first contact, forty years on.
+description: a kansas city meteorologist starts speaking in an alien language on air, and a cybersecurity expert can read the signal. spielberg directs from a david koepp script based on his story.
 director:
   - Steven Spielberg
 id: Disclosure Day

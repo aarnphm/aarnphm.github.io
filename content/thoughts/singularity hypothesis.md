@@ -9,10 +9,12 @@ tags:
 title: singularity hypothesis
 ---
 
-> The phenomenon is driven by the emergence of [[thoughts/AGI|AI]] that surpass human cognitive capabilities and can autonomously enhance itself.
+The singularity hypothesis says forecasts become unreliable after superhuman [[thoughts/AGI|AI]] appears. Vinge's version is an event horizon: once humans create minds smarter than humans, we may lose the ability to predict the world those minds build. Good supplies the recursive mechanism. An ultraintelligent machine designs a better machine, and the next step starts from there.
 
-"[[thoughts/papers/turing1950.pdf|Computing Machinery and Intelligence]]" introduces the idea of a machine's ability to exhibit intelligent behaviour equivalent to/or indistinguishable from that of a human.
+"[[thoughts/papers/turing1950.pdf|Computing Machinery and Intelligence]]" matters for a different reason. Turing replaced "Can machines think?" with the imitation game, a behavioural test over written conversation. Passing that test would be evidence about human-like performance. It would not prove recursive self-improvement, takeoff speed, or longtermist stakes.
 
-This is also known for his Turing Test, which suggests that if a machine can converse with a human without the human realising they are interacting with a machine, then it could be considered [[thoughts/intelligence|intelligence]]. For LLMs:
+For LLMs, the question is concrete: can the system run the loop that improves it? The loop spends compute, collects data, runs experiments, edits code, and evaluates a successor. The hypothesis gets stronger as each step needs less human time.
 
 ![[thoughts/LLMs#^emergent]]
+
+re [Vinge 1993](https://edoras.sdsu.edu/~vinge/misc/singularity.html), [Good 1965](https://incompleteideas.net/papers/Good65ultraintelligent.pdf), and [Turing 1950](https://www.hec.edu/sites/default/files/documents/Computing%20Machinery%20and%20Intelligence%20by%20Alan%20Turing.pdf)
