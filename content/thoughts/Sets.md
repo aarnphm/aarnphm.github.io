@@ -21,7 +21,7 @@ Set theory studies which axiom systems make this idea behave; the working axiom 
 
 The field began with Cantor's work on infinite cardinalities.
 
-[[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]] is the canonical obstruction you hit when first studying naive set theory: the set $R = \{x \mid x \notin x\}$ both contains and excludes itself.
+[[thoughts/Wittgenstein#Russell's paradox and the vicious circle principle|Russell's paradox]] is the canonical obstruction you hit when first studying naive set theory: the set $R = \{x \mid x \notin x\}$ would satisfy $R \in R \iff R \notin R$.
 
 [[#Zermelo-Fraenkel set theory|ZFC]] addresses this via comprehension, where the axiom of separation only lets you carve a subset $\{x \in A \mid \dots\}$ out of an existing set $A$, so the unrestricted $R$ is never {{sidenotes[formed.]: The axiom of foundation additionally forbids $x \in x$ chains.}}
 
@@ -59,7 +59,7 @@ $$
 
 > naive form $\{x \mid P(x)\}$ _assumes that every predicate determines a set, where Russell's paradox would then choose_ $P(x)$ _to be_ $x \notin x$
 
-ZFC addresses this via separations:
+ZFC addresses this via separation:
 
 $$
 \forall\;A\;\exists\;B\;\forall x\;(x \in B \iff x \in A \land P(x))
@@ -73,7 +73,7 @@ $$
 > \forall\;A\;\forall\;B\;(\forall x\;(x \in A \iff x \in B) \implies A = B)
 > $$
 >
-> Order and repetition ::does not matter:: when we consider members of {{sidenotes[a set.]: We will consider surjective, bijective, and [injective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Injection) properties of sets [[#surjection, bijection, injection|below]].}}
+> Order and repetition ::do not matter:: when we consider members of {{sidenotes[a set.]: We will consider surjective, bijective, and [injective](https://en.wikipedia.org/wiki/Bijection,_injection_and_surjection#Injection) properties of sets [[#surjection, bijection, injection|below]].}}
 >
 > $$
 > \{1,2,3\} = \{3,2,1,1\}\;\; \text{ (axiom of extensionality)}
@@ -233,7 +233,17 @@ $$A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$$
 
 > [!note] order of operations
 >
-> neither commutative nor associative
+> Union and intersection are each commutative and associative. This example mixes the two operations, so the parentheses change the result. In general,
+>
+> $$
+> A \cup (B \cap C) \neq (A \cup B) \cap C.
+> $$
+>
+> The distributive law is
+>
+> $$
+> A \cup (B \cap C) = (A \cup B) \cap (A \cup C).
+> $$
 >
 > $A \cup (B \cap C)$ and $(A \cup B) \cap C$:
 >
@@ -372,7 +382,7 @@ For a fixed universe $X$, we write $A^c = X \setminus A$.
 | associative     | $(A \cup B) \cup C = A \cup (B \cup C)$ | $(A \cap B) \cap C = A \cap (B \cap C)$ |
 | absorption      | $A \cup (A \cap B) = A$                 | $A \cap (A \cup B) = A$                 |
 | complement      | $A \cup A^c = X$                        | $A \cap A^c = \emptyset$                |
-| double negative | $(A^c)^c = A$                           | $(X \setminus A)^c = A$                 |
+| double complement | $(A^c)^c = A$                         | $(X \setminus A)^c = A$                 |
 
 Set difference is intersection with a complement:
 
@@ -426,7 +436,7 @@ $$
 >
 > If $A$ is the set $\{a, b, c\}$ then
 >
-> $a \in A,\;\;\;\;\{a\} \subset A,\;\;\;\; \{a\} \in \mathcal{P}(A)$
+> $a \in A,\;\;\;\;\{a\} \subseteq A,\;\;\;\; \{a\} \in \mathcal{P}(A)$
 
 The clean model is a subset as its characteristic function:
 
@@ -456,7 +466,11 @@ If $A$ has $n$ elements, then each subset of $A$ is one binary string in $\{0,1\
 >
 > Proof:
 >
-> assume a surjection $f$ exists, and form the diagonal set $$D = \{a \in A \mid a \notin f(a)\}$$
+> Assume a surjection $f$ exists, and form the diagonal set
+>
+> $$
+> D = \{a \in A \mid a \notin f(a)\}.
+> $$
 >
 > Since $f$ is surjective, $D = f(d)$ for some $d \in A$. Then $d \in D \iff d \notin f(d) \iff d \notin D$, contradiction.
 >
@@ -511,11 +525,7 @@ $$
 A \times B = \{(a,b) \mid\;a \in A \text{ and } b \in B\}
 $$
 
-> This assumes that the concept of "ordered pair" is given. as in $(a,b) = \{\{a\}, \{a,b\}\}$ defines the ::ordered pair:: $(a,b)$ as a {{sidenotes[collection of sets]: if $a \neq\; b$ then $(a,b)$ is a collection containing two sets, one of which is a one-element set and the other a two-element set.<br/><br/>if $a = b$ then $(a,b)$ is a collection containing only one set $\{a\}$ since $\{a,b\} =\{a,a\}=\{a\}$ in this case.}}.
->
-> The _first coordinate_ of the ordered pair is defined to be the ==element belonging to both sets==
->
-> The _second coordinate_ is the element belonging to only **one of the sets**
+> Kuratowski defines $(a,b)$ as $\{\{a\}, \{a,b\}\}$. The singleton marks the first coordinate. If $a=b$, the pair collapses to $\{\{a\}\}$, which still recovers $(a,a)$.
 
 ## relations
 
@@ -547,15 +557,15 @@ A _total order_ is a partial order where any two elements are comparable.
 
 > [!math] rule of assignment
 >
-> a subset $r$ of the [[#Cartesian products|cartesian product]] $C\;\times\;D$ of two sets, having the property that _each element of_ $C$ appears as the first coordinate of **at most one** ordered pair belonging to $r$
+> A relation $r \subseteq C \times D$ is a partial function from $C$ to $D$ when each $c \in C$ is paired with at most one $d \in D$:
 >
 > $$
-> [(c,d) \in r \text{ and } (c, d^{'}) \in r] \implies [d = d^{'}]
+> \forall c \in C\;\forall d,d' \in D,\quad ((c,d) \in r \land (c,d') \in r) \implies d=d'.
 > $$
 >
-> for $r$ is assignment, to element $c \in C, d \in D$ for which $(c,d) \in r$
+> It is total when every $c \in C$ is paired with exactly one $d \in D$.
 
-A function $f: A \to B$ is a relation $f \subseteq A \times B$ such that every $a \in A$ appears exactly once as a first coordinate.
+A function $f: A \to B$ is a total relation $f \subseteq A \times B$:
 
 $$
 \forall a \in A\;\exists! b \in B\;(a,b) \in f

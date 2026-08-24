@@ -3,7 +3,7 @@ category:
   - horror
   - thriller
 date: '2026-08-21'
-description: a hopeless romantic snaps the one wish willow to win his crush, gets the wish granted exactly as asked, and pays for the precision. barker's first feature after years of short horror made for youtube.
+description: a hopeless romantic breaks the one wish willow to make his crush love him, and gets what he asked for at a dark price. curry barker made obsession as his first studio feature after milk and serial and years of diy horror shorts.
 director:
   - Curry Barker
 id: Obsession

@@ -9,13 +9,12 @@ tags:
 title: Skepticism
 ---
 
-The idea of philosophical skepticism can also be investigated from {{sidenotes[ordinary skepticism]: for example, we aren't sure how many stars there are in the Milky Way. In a sense, this kind of skepticism claims that we do not know propositions which we ordinary think we do know.}}
+Philosophical skepticism targets knowledge claims that ordinary life takes for granted. The skeptical move is stronger than "I am unsure how many stars are in the Milky Way." It asks whether I know claims that I normally treat as settled, e.g. "I have hands."
 
-From this example two points:
+The Cartesian argument uses closure. If $S$ knows $p$, knows that $p \to q$, and competently infers $q$, then $S$ knows $q$. If I know that I have hands, and I know that having hands rules out being a brain in a vat, closure seems to give me knowledge that I am not a brain in a vat. The skeptic flips it around: I do not know that I am not a brain in a vat, so I do not know that I have hands.
 
-- most of us don't believe in such proposition, therefore knowledge requires {{sidenotes[beliefs]: beliefs and disbeliefs are called [[thoughts/doxastic attitude]] that we can adopt towards a proposition.}}
-- even those believe do not know it, because they aren't ::justified:: in believing in it, therefore knowledge requires _justification_.
+Knowledge also needs the right [[thoughts/doxastic attitude]]. The coarse attitudes are belief, disbelief, and suspension of judgment. I can fail to know $p$ because I do not believe $p$, or because I believe $p$ without justification.
 
-The recommendation is that we can either adopt the doxastic attitude towards the proposition, but philosophers would hold a _third_ attitude (i.e bona fide doxastic attitude) towards a proposition: _we can suspend judgment (or withhold assent) with respect to it._
+Nozick's sensitivity condition says that $S$ knows $p$ only if $S$ would not believe $p$ in the nearest worlds where $p$ is false. This lets ordinary hand knowledge pass while denying knowledge of the anti-skeptical claim. If I were a brain in a vat, I would still believe I was not one.
 
-There is a sensitivity arguments when targeting knowledge, where it is a ::condition:: on knowledge.
+re [skepticism](https://plato.stanford.edu/entries/skepticism/) and [epistemic closure](https://plato.stanford.edu/entries/closure-epistemic/)

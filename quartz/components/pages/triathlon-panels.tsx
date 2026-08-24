@@ -264,7 +264,7 @@ export const FeedPanel = () => (
         <input
           class="tri-ana-search tri-feed-search"
           type="search"
-          placeholder="search (filter:bike|run|swim|walk|strength|yoga, sort:distance|cadence|pace)"
+          placeholder="search (filter:bike|run|swim|walk|strength|yoga|sauna, sort:distance|cadence|pace)"
           aria-label="search activities"
           aria-controls="tri-feed-results"
           aria-expanded="false"

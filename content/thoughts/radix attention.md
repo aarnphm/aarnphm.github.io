@@ -15,15 +15,17 @@ tags:
 title: Radix Attention
 ---
 
-RadixAttention [@zheng2024sglangefficientexecutionstructured] maintains an LRU eviction policy to keep relevant [[thoughts/KV compression|KV cache]] entries for all requests within a [[thoughts/Radix tree|radix tree]], implemented in https://github.com/sgl-project/sglang.
+RadixAttention [@zheng2024sglangefficientexecutionstructured] keeps relevant [[thoughts/KV compression|KV cache]] entries for all requests in a [[thoughts/Radix tree|radix tree]], with LRU eviction for cold leaves. SGLang implements it in [sgl-project/sglang](https://github.com/sgl-project/sglang).
 
-Every request inserts its prefix tokens $\pi = (t_1,\ldots,t_m)$ along the tree; each node stores a pointer to the KV page that realises that prefix. During decoding the runtime walks the tree to find the deepest cached prefix shared with the new suffix $\sigma$ and reuses the cached $K,V$ tensors before appending freshly computed blocks:
+Every request has tokens $t_{1:m}$. Let $h$ be the length of the deepest cached prefix. During decoding, the runtime reuses that prefix and computes only the missing tail:
 
 $$
-\text{reuse}(\pi, \sigma) = \bigoplus_{j=1}^{m} \text{KV}(t_{1:j}) \;\Vert\; \bigoplus_{k=1}^{|\sigma|} \text{attend}(t_{1:m+k}).
+\operatorname{KV}(t_{1:m}) =
+\operatorname{KV}_{\mathrm{cache}}(t_{1:h}) \;\Vert\;
+\operatorname{KV}_{\mathrm{new}}(t_{h+1:m}).
 $$
 
-The LRU policy keeps the union of active prefixes resident on GPU while evicting the coldest leaf pages; evicted prefixes spill to host memory so they can be faulted back in if a later request revisits them.
+The LRU policy keeps active prefixes resident on the GPU and frees the coldest leaf pages. Host or file backing belongs to SGLang's optional HiCache layer, not to the base RadixAttention algorithm.
 
 > [!example] request routing pseudo-code
 >
@@ -39,7 +41,7 @@ The LRU policy keeps the union of active prefixes resident on GPU while evicting
 >     radix.insert(prefix+suffix, kv_pages)
 > ```
 >
-> Each insert/touch updates the LRU ordering so hot conversations stay resident while rarely used prefixes migrate to CPU or disk.
+> Each insert or touch updates the LRU ordering so hot conversations stay resident while cold leaf pages are freed.
 
 ```jsx imports={Zoomable,RadixPrefixTree}
 <Zoomable label="radix prefix tree">
@@ -60,7 +62,7 @@ $$
 \end{aligned}
 $$
 
-_in batch settings: sort requests by matching prefix length and prioritise one with longer matched prefixes instead of FIFO schedule._
+_in batch settings: sort requests by matching prefix length and prioritise requests with longer matched prefixes instead of FIFO._
 
 ```pseudo lineNumber=false
 \begin{algorithm}
@@ -110,19 +112,17 @@ _in batch settings: sort requests by matching prefix length and prioritise one w
 \end{algorithm}
 ```
 
-We got lower bound:
+The lower bound for prefill compute is the number of unique token edges in the radix tree:
 
 $$
-C \ge \sum_{e \in \text{edges}(T)} \mid e \mid
+C \ge \sum_{e \in \operatorname{edges}(T)} |e|.
 $$
 
-Consider we visit radix tree $T$ in DFS order. For each edge $e$ of $T$, the first time we compute KV cache associated with $e$, then we will compute the whole subtree of $e$.
-
-During computation of $e$ subtree, then edge $e$ will be continuously hit, thus no additional computation will happen.
+A DFS schedule reaches this bound when the cache can hold the longest request path. Once an edge $e$ has been computed, every request in the subtree under $e$ can reuse that prefix while the schedule stays inside the subtree. Descendant edges still need their own first computation; no edge is recomputed.
 
 > [!important] cache hit
 >
-> with cache size $\ge$ maximum request length (which will equals to longest path in radix tree), edge $e$ **WILL NOT** be evicted during computation of its subtree
+> with cache size $\ge$ the maximum request length, equal to the longest path in the radix tree, edge $e$ **WILL NOT** be evicted during computation of its subtree
 > since the common prefix including $e$ of the subtree will be continuously hit.
 
 We can show that longest-shared-prefix-first order is equivalent to DFS order by induction [^proof]

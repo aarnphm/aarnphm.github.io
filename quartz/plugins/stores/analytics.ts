@@ -967,6 +967,7 @@ export interface DataFeedInputs {
   weights?: TrackEntry[]
   trainingExclusions?: TrainingExclusion[]
   zones?: StravaZones | null
+  activityDetails?: Readonly<Record<string, StravaActivityDetail>>
 }
 
 export interface Analytics {
@@ -5512,6 +5513,24 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(a.id)]?.windGustKph ?? null,
     }))
+  const saunaSummaries: ActivitySummary[] = Object.values(inputs.activityDetails ?? {})
+    .filter(detail => detail.sport === 'sauna' && detail.sauna != null)
+    .map(detail => ({
+      id: detail.id,
+      date: detail.date,
+      sport: 'sauna',
+      name: detail.name,
+      distanceKm: 0,
+      movingTimeS: detail.movingTimeS,
+      load: 0,
+      paceIntensityFactor: null,
+      effort: null,
+      cadence: null,
+      strokes: null,
+      windKph: null,
+      windDir: null,
+      windGustKph: null,
+    }))
   const activities: ActivitySummary[] = acts
     .map(act => ({
       id: act.a.id,
@@ -5529,7 +5548,7 @@ export function buildAnalytics(
       windDir: inputs.weather?.activities[String(act.a.id)]?.windDir ?? null,
       windGustKph: inputs.weather?.activities[String(act.a.id)]?.windGustKph ?? null,
     }))
-    .concat(walkSummaries, strengthSummaries, treatmentSummaries, yogaSummaries)
+    .concat(walkSummaries, strengthSummaries, treatmentSummaries, yogaSummaries, saunaSummaries)
     .sort((p, q) => q.date.localeCompare(p.date))
 
   const { weakest, actions } = buildActions(thresholds, bests, daily, loadShare)
@@ -5540,7 +5559,7 @@ export function buildAnalytics(
       today,
       windowFrom: firstDay,
       windowTo: lastActDay,
-      activityCount: acts.length + supplementalLoadActivities.length,
+      activityCount: acts.length + supplementalLoadActivities.length + saunaSummaries.length,
       method: {
         ctlTau: 42,
         atlTau: 7,
@@ -5639,6 +5658,7 @@ export const ACTIVITY_FIELDS = [
   'windKph',
   'windDir',
   'windGustKph',
+  'sauna',
   'skipTraining',
   'vGap',
   'intensity',
@@ -5722,7 +5742,7 @@ export interface FeedActivityRow {
   kind: 'activity'
   id: number
   date: string
-  sport: Sport
+  sport: ActivityKind
   name: string
   distanceKm: number
   movingTimeS: number
@@ -5741,6 +5761,7 @@ export interface FeedActivityRow {
   windKph: number | null
   windDir: string | null
   windGustKph: number | null
+  sauna: StravaActivityDetail['sauna']
   skipTraining: boolean
   vGap: number
   intensity: number | null
@@ -5805,9 +5826,10 @@ export function buildDataFeed(
   const byDay = new Map<string, { sessions: number; meters: number; seconds: number }>()
   for (const s of sorted) {
     const raw = cache?.activities[String(s.id)]
+    const detail = inputs.activityDetails?.[String(s.id)]
     const b = byDay.get(s.date) ?? { sessions: 0, meters: 0, seconds: 0 }
     b.sessions += 1
-    b.meters += raw?.distance ?? 0
+    b.meters += raw?.distance ?? (detail?.distanceKm ?? 0) * 1_000
     b.seconds += s.movingTimeS
     byDay.set(s.date, b)
   }
@@ -5883,6 +5905,54 @@ export function buildDataFeed(
   const activityLines: string[] = []
   for (const s of sorted) {
     const raw = cache?.activities[String(s.id)]
+    const detail = inputs.activityDetails?.[String(s.id)]
+    if (s.sport === 'sauna' && detail?.sauna) {
+      activityLines.push(
+        pickLine(
+          {
+            kind: 'activity',
+            id: s.id,
+            date: s.date,
+            sport: s.sport,
+            name: s.name,
+            distanceKm: 0,
+            movingTimeS: detail.movingTimeS,
+            elapsedTimeS: detail.movingTimeS,
+            elevationM: 0,
+            avgHr: detail.avgHr,
+            maxHr: detail.maxHr,
+            avgWatts: null,
+            weightedWatts: null,
+            deviceWatts: false,
+            cadence: null,
+            strokes: null,
+            calories: null,
+            sufferScore: null,
+            avgTemp: null,
+            windKph: null,
+            windDir: null,
+            windGustKph: null,
+            sauna: detail.sauna,
+            skipTraining: true,
+            vGap: 0,
+            intensity: null,
+            load: 0,
+            pp30: null,
+            pp60: null,
+            pp300: null,
+            pp1200: null,
+            ps30: null,
+            ps60: null,
+            ps300: null,
+            ps1200: null,
+            ef: null,
+            decoupling: null,
+          },
+          ACTIVITY_FIELDS,
+        ),
+      )
+      continue
+    }
     if (!raw) continue
     if (s.sport !== 'swim' && s.sport !== 'bike' && s.sport !== 'run') continue
     const stream = cache?.streams?.[String(s.id)]
@@ -5930,6 +6000,7 @@ export function buildDataFeed(
           windKph: s.windKph,
           windDir: s.windDir,
           windGustKph: s.windGustKph,
+          sauna: null,
           skipTraining: skipTrainingActivityIds.has(s.id),
           vGap: round(vGap, 3),
           intensity: vThr > 0 ? round(vGap / vThr, 3) : null,
@@ -5953,7 +6024,7 @@ export function buildDataFeed(
       : null
   const meta = {
     kind: 'meta',
-    v: 4,
+    v: 5,
     generatedAt: cache?.lastSync ?? 0,
     athleteId: analytics.meta.athleteId,
     today: analytics.meta.today,

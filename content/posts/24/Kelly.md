@@ -13,21 +13,18 @@ title: to kelly
 
 ![[posts/images/135551D3-A55F-4EBA-AB54-BF42BC6974EA.webp]]
 
-There's something about our friendship that reminds me of the word "eudaimonia" - not just happiness, but flourishing.
-We met through the strange alchemy of social media at HTN 2021, and like Montaigne wrote of his dear friend, "we sought one another long before we met."
-Our conversations pick up as if they never paused, flowing across time zones and platforms, perhaps because we both inhabit this digital world with a certain earnestness.
+Eudaimonia is the word I keep reaching for when I think about our friendship. It means flourishing. The word fits better than plain happiness.
+We met through social media at HTN 2021, and Montaigne's line about friendship fits here: "we sought one another long before we met."
+Our conversations pick up as if they never paused across cities and apps.
 
-What strikes me most is how our relationship embodies what Adrienne Maree Brown described - like a spiderweb, both delicate and resilient. "A web allows things to fall through, like a sieve," she said. "Some things are not meant to be caught."
-Yet what our web catches feels essential: those moments of genuine connection, the shared appreciation for craft and dedication, the quiet pride in watching each other grow from afar.
+Adrienne Maree Brown's web image fits too. "A web allows things to fall through, like a sieve," she said. "Some things are not meant to be caught."
+What our web catches is the part I want to keep: the conversations, the care for craft, and the quiet pride in watching each other grow from afar.
 
-I love seeing you find your rhythm in Toronto, the way the city has wrapped itself around you like a
-second skin. Even though we didn't win at [[posts/new|New]], it revealed something I've always known about you - this
-remarkable ability to pour yourself into creating something meaningful.
+I love seeing you find your rhythm in Toronto. Even though we didn't win at [[posts/new|New]], it showed me again how much of yourself you put into building something.
 
-Modern life fragments us, scatters us across cities and different events/timezones :smile:.
-Yet somehow, every time we reconnect, there's this sense of immediacy, of presence. Similar to what Ava wrote about - that minimum viable friendship that actually sustains itself through time,
-that doesn't require grand gestures but thrives on authentic moments of connection.
+We live in different cities and move through different events/timezones :smile:.
+Yet every time we reconnect, the friendship is still immediate. Ava's minimum viable friendship has been useful to me here. We do not need a grand gesture for the friendship to stay alive. We need enough honest moments to keep the thread warm.
 
-Here's to another year of our web-like friendship, catching what matters, letting go of what doesn't. May 2025 find you not just well, but truly flourishing.
+Here is to another year of catching what is worth keeping. May 2025 find you well and still flourishing.
 
 [^sign]

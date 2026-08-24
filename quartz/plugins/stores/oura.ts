@@ -16,6 +16,14 @@ export interface OuraSeries {
   items: (number | null)[]
 }
 
+export type OuraHeartRateSource = 'awake' | 'workout' | 'rest' | 'sleep' | 'live' | 'session'
+
+export interface OuraHeartRateSample {
+  timestamp: string
+  bpm: number
+  source: OuraHeartRateSource
+}
+
 export interface OuraDayDetail {
   date: string
   bedtimeStart: string | null
@@ -59,6 +67,7 @@ export interface OuraCache {
   lastSync: number
   days: Record<string, OuraDaily>
   details?: Record<string, OuraDayDetail>
+  heartRate?: OuraHeartRateSample[]
 }
 
 export interface OuraSleepDateFields {

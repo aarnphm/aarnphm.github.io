@@ -13,20 +13,19 @@ title: to simone
 
 ![[posts/images/5D8F9FB5-8F82-423F-BB67-7B5CFBD9F7F2.webp|eigenvalued by mr. oppenheimer]]
 
-I'm glad that we talked more this year. Given that we are both super busy and seemingly never figured out a time to hang out together,
-it has been great getting to know you a lot more.
+I'm glad that we talked more this year. We were both busy and never quite found time to hang out together, so I am glad I got to know you more.
 
 I love that we got to see each other once in a blue moon, just to catch up.
 
-I love that you called me whenever you need someone to talk to.
+I love that you called me whenever you needed someone to talk to.
 
 I know life is throwing a lot at you right now. You'll get it done, especially the big gurl corporate job this year :smiley:
 
-I hope you find moments of peace during the holiday season. May the new year bring you closer to your goals, but more importantly, closer to your own truth.
+I hope the break gives you some quiet. May the new year bring you closer to your goals and to the life you want.
 
-I believe whole-heartedly that you can do it. I know family is hard, but sometimes it is good to find a middle ground with your parents, through whatever ways possible.
+I believe wholeheartedly that you can do it. I know family is hard. Sometimes it helps to find a middle ground with your parents, in whatever way is possible.
 
-Here's some reading for the break season I think you might like:
+Here is some reading for the break that I think you might like:
 
 - [in a thousand year](https://substack.com/home/post/p-153398563)
 - Bill Watterson’s (author of Calvin & Hobbes) [commencement speech](https://web.mit.edu/jmorzins/www/C-H-speech.html?curius=1573) at Kenyon College

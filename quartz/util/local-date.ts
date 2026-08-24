@@ -106,6 +106,20 @@ export function localDayStartUtcMs(day: string, timeZone = resolveLocalTimeZone(
   )
 }
 
+export function localDateTimeUtcMs(
+  day: string,
+  time: string,
+  timeZone = resolveLocalTimeZone(),
+): number {
+  const parts = isoDayParts(day)
+  const match = /^(\d{2}):(\d{2})$/.exec(time)
+  if (!match) throw new Error(`${time} is not HH:MM`)
+  const hour = Number(match[1])
+  const minute = Number(match[2])
+  if (hour > 23 || minute > 59) throw new Error(`${time} is not a valid local time`)
+  return localWallTimeUtcMs({ ...parts, hour, minute, second: 0 }, timeZone)
+}
+
 export function localDayEndUtcMs(day: string, timeZone = resolveLocalTimeZone()): number {
   return localDayStartUtcMs(shiftIsoDay(day, 1), timeZone) - 1
 }

@@ -195,7 +195,7 @@ maintenance:
           - end: null
           - reason: null
           - repaired: null
-modified: 2026-08-22 16:38:28 GMT-04:00
+modified: 2026-08-23 22:15:33 GMT-04:00
 seealso:
   - '[[thoughts/pdfs/supertri.pdf|SuperTri fuel plan]]'
   - '[[thoughts/pdfs/703NYC.pdf|IRONMAN 70.3 NYC fuel plan]]'
@@ -1168,6 +1168,18 @@ fueling: 150
 ```
 
 ```tracking
+title: Free Flow
+date: 2026-08-20
+time: 15:30
+duration: 65 mins
+activity: sauna
+temperature: 185F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.7
+```
+
+```tracking
 date: 2026-08-21
 activity: 19841848874
 fueling: 220
@@ -1203,6 +1215,18 @@ exercise: Single Arm Row | 10 reps @ 13.6 kg | 10 reps @ 15.9 kg
 exercise: Thruster | 8 reps @ 18.1 kg | 10 reps @ 18.1 kg
 exercise: Hip Drop | 10 reps | 10 reps | 10 reps
 exercise: Side Plank | 60s | 60s | 60s
+```
+
+```tracking
+title: Untangled, Wind Down
+date: 2026-08-23
+time: 18:30
+duration: 75 mins
+activity: sauna
+temperature: 196F
+humidity: 11%
+cooldown: cold plunge
+htl: 7.7
 ```
 
 <!-- training plan start

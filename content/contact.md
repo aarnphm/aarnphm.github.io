@@ -12,7 +12,7 @@ transclude:
   title: false
 ---
 
-Email is the way to contact me (avec `contact@aarnphm.xyz`). _varies in response time though, but if the request is time-sensitive then feel free to say so._
+Email me avec [contact@aarnphm.xyz](mailto:contact@aarnphm.xyz). _Response time varies. If the request is time-sensitive, say so._
 
 ## useful requests
 
@@ -28,4 +28,4 @@ Privacy requests should identify the relevant comment, GitHub login, email, or o
 
 Security vulnerabilities should go to `security@aarnphm.xyz` with the subject `SECURITY`. Include reproduction steps, the affected URL or component, likely impact, and any known mitigation. Do not place an undisclosed vulnerability in a public issue. The [[security policy|security policy]] defines scope, response targets, safe harbor, and coordinated disclosure.
 
-Automated agents can use this same public contact information for attribution or clarification. Agents should use the [MCP API guide](/api/docs) for technical onboarding and should avoid sending routine access requests that the published documentation already answers.
+Automated agents can use this page for attribution or clarification. Use the [MCP API guide](/api/docs) before emailing about routine access.

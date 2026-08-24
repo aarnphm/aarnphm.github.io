@@ -12,4 +12,10 @@ tags:
 title: pre-training
 ---
 
-Ontologically this should be applicable to most domains with deep learning, however, pre-training is often referred to pre-training [[thoughts/LLMs|large language models]]
+Pre-training optimizes a model on a broad objective before adapting it to a narrower task. In this garden, the term usually means autoregressive [[thoughts/LLMs|language-model]] training: given tokens $x_1,\ldots,x_T$, minimize the next-token loss
+
+$$
+\mathcal{L}(\theta) = -\sum_{t=1}^{T}\log p_\theta(x_t \mid x_{<t}).
+$$
+
+The objective teaches the model to predict text from its context. Instruction tuning and preference optimization happen later and teach different behaviour. When another domain uses the same sequence, the note should name its pre-training objective instead of assuming next-token prediction.

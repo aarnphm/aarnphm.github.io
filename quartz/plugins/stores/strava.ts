@@ -9,10 +9,15 @@ import type {
   GarminRiderPosition,
   GarminStreams,
 } from './garmin'
-import type { OuraCache, OuraDaily } from './oura'
-import type { ManualFuelingEntry, ManualStrengthEntry, StrengthExercise } from './tracking'
+import type { OuraCache, OuraDaily, OuraHeartRateSample } from './oura'
+import type {
+  ManualFuelingEntry,
+  ManualSaunaEntry,
+  ManualStrengthEntry,
+  StrengthExercise,
+} from './tracking'
 import type { WeatherActivity, WeatherCache, WeatherTemperatureSample } from './weather'
-import { localIsoDay } from '../../util/local-date'
+import { localDateTimeUtcMs, localIsoDay } from '../../util/local-date'
 import { rawMapRouteSegments, type MapRoutePoint } from '../../util/triathlon-map-route'
 import {
   CRITICAL_POWER_DURATIONS_S,
@@ -30,7 +35,7 @@ import {
 
 export type Sport = 'swim' | 'bike' | 'run'
 
-export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment'
+export type ActivityKind = Sport | 'strength' | 'walk' | 'yoga' | 'treatment' | 'sauna'
 
 export const ACTIVITY_KINDS: readonly ActivityKind[] = [
   'swim',
@@ -40,6 +45,7 @@ export const ACTIVITY_KINDS: readonly ActivityKind[] = [
   'walk',
   'yoga',
   'treatment',
+  'sauna',
 ]
 export const SPORT_ORDER: readonly Sport[] = ['swim', 'bike', 'run']
 export const ROUTE_SPORTS: readonly ActivityKind[] = ['bike', 'run', 'swim', 'walk']
@@ -83,6 +89,12 @@ export const SPORT_ICON: Record<ActivityKind, string[]> = {
   ],
   treatment: [
     'M12.5 0a3.5 3.5 0 012.51 5.936c.654 2.723.711 5.556.162 8.303l-.019.091 4.48 1.493A2 2 0 0121 17.721V24h-2v-6.28l-6.153-2.05.364-1.823a17.335 17.335 0 00-.026-6.915 3.513 3.513 0 01-1.665-.073 39.226 39.226 0 01-1.949 14.588l-.394 1.186A2 2 0 017.279 24H1v-2h6.28l.395-1.186a37.226 37.226 0 001.903-12.46L5.71 11.032 8.6 13.2l-1.2 1.6-2.89-2.167a2 2 0 01.061-3.245l5.25-3.635A3.5 3.5 0 0112.5 0zm0 2a1.5 1.5 0 100 3 1.5 1.5 0 000-3z',
+  ],
+  sauna: [
+    'M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0Z',
+    'M12 9v7',
+    'M18 6c1 1 1 2 0 3s-1 2 0 3',
+    'M21 4c1 1 1 2 0 3s-1 2 0 3',
   ],
 }
 
@@ -430,6 +442,16 @@ export interface ActivityStrength {
   source: 'manual' | 'strava'
 }
 
+export interface ActivitySauna {
+  time: string
+  temperatureC: number
+  humidityPct: number
+  cooldown: ManualSaunaEntry['cooldown']
+  heatTrainingLoad: number | null
+  heartRateSource: 'oura' | null
+  source: 'manual'
+}
+
 export interface ActivityPowerWithoutZeros {
   avgWatts: number | null
   powerZones: number[] | null
@@ -479,6 +501,7 @@ export interface StravaActivityDetail {
   location: string | null
   fueling: ActivityFueling | null
   strength: ActivityStrength | null
+  sauna: ActivitySauna | null
   garmin: GarminVerification | null
   calculatedIntensityFactor: CalculatedIntensityFactor | null
   calculatedExerciseLoad: CalculatedExerciseLoad | null
@@ -615,7 +638,12 @@ export const calculateActivityIntensityFactor = (
   ftp: number | null,
   lactateThresholdHr: number | null,
 ): CalculatedIntensityFactor | null => {
-  if (activity.garmin?.intensityFactor != null || activity.sport === 'treatment') return null
+  if (
+    activity.garmin?.intensityFactor != null ||
+    activity.sport === 'treatment' ||
+    activity.sport === 'sauna'
+  )
+    return null
   if (
     activity.sport === 'bike' &&
     activity.deviceWatts &&
@@ -2273,6 +2301,7 @@ function projectDetail(
     location: geo ?? null,
     fueling,
     strength: null,
+    sauna: null,
     garmin,
     calculatedIntensityFactor: null,
     calculatedExerciseLoad: null,
@@ -2375,6 +2404,139 @@ export function applyManualStrength(
       source: 'manual',
     }
   }
+}
+
+const saunaHeartRate = (
+  entry: ManualSaunaEntry,
+  samples: readonly OuraHeartRateSample[],
+  timeZone?: string,
+): { avgHr: number | null; maxHr: number | null; trace: ActivityHeartRateTracePoint[] } => {
+  const startMs = localDateTimeUtcMs(entry.date, entry.time, timeZone)
+  const endMs = startMs + entry.durationS * 1_000
+  const matched = samples
+    .flatMap(sample => {
+      const timestampMs = Date.parse(sample.timestamp)
+      return Number.isFinite(timestampMs) && timestampMs >= startMs && timestampMs < endMs
+        ? [{ timestampMs, bpm: sample.bpm }]
+        : []
+    })
+    .sort((left, right) => left.timestampMs - right.timestampMs)
+  const values = matched.map(sample => sample.bpm)
+  return {
+    avgHr: values.length
+      ? Math.round(values.reduce((total, value) => total + value, 0) / values.length)
+      : null,
+    maxHr: values.length ? Math.max(...values) : null,
+    trace: matched.map(sample => ({
+      distanceKm: 0,
+      elapsedS: Math.round((sample.timestampMs - startMs) / 1_000),
+      heartRate: sample.bpm,
+      heatStrainIndex: null,
+      coreTemperatureC: null,
+      skinTemperatureC: null,
+      coreTemperatureSource: null,
+    })),
+  }
+}
+
+export function applyManualSauna(
+  payload: StravaPayload,
+  entries: readonly ManualSaunaEntry[],
+  heartRateSamples: readonly OuraHeartRateSample[],
+  timeZone?: string,
+): void {
+  for (const entry of entries) {
+    const id = String(entry.id)
+    if (payload.details[id]) continue
+    const startMs = localDateTimeUtcMs(entry.date, entry.time, timeZone)
+    const heartRate = saunaHeartRate(entry, heartRateSamples, timeZone)
+    payload.details[id] = {
+      id: entry.id,
+      sport: 'sauna',
+      name: entry.title ?? 'sauna',
+      date: entry.date,
+      start: new Date(startMs).toISOString(),
+      distanceKm: 0,
+      movingTimeS: entry.durationS,
+      maxSpeedKph: null,
+      elevationM: 0,
+      avgHr: heartRate.avgHr,
+      maxHr: heartRate.maxHr,
+      avgWatts: null,
+      npWatts: null,
+      maxWatts: null,
+      kilojoules: null,
+      deviceWatts: false,
+      avgCadence: null,
+      sufferScore: null,
+      calories: null,
+      avgTemp: null,
+      windKph: null,
+      windDir: null,
+      windDirDeg: null,
+      windGustKph: null,
+      location: null,
+      fueling: null,
+      strength: null,
+      sauna: {
+        time: entry.time,
+        temperatureC: entry.temperatureC,
+        humidityPct: entry.humidityPct,
+        cooldown: entry.cooldown,
+        heatTrainingLoad: entry.heatTrainingLoad,
+        heartRateSource: heartRate.trace.length > 0 ? 'oura' : null,
+        source: 'manual',
+      },
+      garmin: null,
+      calculatedIntensityFactor: null,
+      calculatedExerciseLoad: null,
+      calculatedTrainingEffect: null,
+      gearShifts: [],
+      cyclingDynamics: null,
+      route: [],
+      heartRateTrace: heartRate.trace,
+      mapRoute: [],
+      analysisRanges: [],
+      runSplitsMetric: [],
+      runSplitsStandard: [],
+      runPaceZones: null,
+      minAlt: 0,
+      maxAlt: 0,
+      descentM: 0,
+      hrZones: null,
+      powerZones: null,
+      powerHist: null,
+      powerWithoutZeros: null,
+      powerCurve: null,
+      activityCriticalPower: null,
+      bestEfforts: null,
+      strokeCount: null,
+      strokeRateSpm: null,
+      swimPaceSPer100m: null,
+      swimPaceSource: null,
+      swimDurationS: null,
+      swimIntervals: [],
+      swimLocation: null,
+      waterTemperatureC: null,
+    }
+    const day = payload.days.find(candidate => candidate.date === entry.date) ?? {
+      date: entry.date,
+      durationS: 0,
+      items: [],
+      dominant: null,
+    }
+    if (!payload.days.includes(day)) payload.days.push(day)
+    day.items.push({ id: entry.id, sport: 'sauna', distanceKm: 0, durationS: entry.durationS })
+    day.durationS = day.items.reduce((total, item) => total + item.durationS, 0)
+    day.dominant =
+      day.items.reduce<StravaDayItem | null>(
+        (best, item) => (item.distanceKm > (best?.distanceKm ?? -1) ? item : best),
+        null,
+      )?.sport ?? null
+    payload.totalCount += 1
+    payload.totalTimeS += entry.durationS
+  }
+  payload.days.sort((left, right) => left.date.localeCompare(right.date))
 }
 
 function nearestSameDayWeather(

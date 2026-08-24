@@ -15,8 +15,10 @@ tags:
 title: Situated cognition
 ---
 
-all knowledge is _situated_ in activity bound to social, cultural and physical contexts.
+Situated cognition says knowing happens inside activity. Brown, Collins, and Duguid's 1989 target is school knowledge taught away from the practices that make it usable. Their claim is cultural and pedagogical first: concepts acquire meaning through use in the activity.
 
-a model of knowledge and learning that requires thinking on the fly rather than the storage and retrieval of _conceptual_ knowledge, i.e cognition cannot be separated from context.
+Situated cognition leaves truth alone and changes the unit of analysis. A proof, a bike fit, and a checklist all use explicit concepts. Competence still depends on what the setting lets the person notice and do.
 
-This is somewhat aligned with Heidegger's [[library/Being and Time|dasein]] (being-in-the-world) that rejects the notion of ::truly objective knowledge:: and Kantian empiricism
+Heidegger is useful as background because [[library/Being and Time|Dasein]] starts from being-in-the-world. Kant is a separate project. Situated cognition does not provide an argument against objective knowledge.
+
+re Brown, Collins, and Duguid, ["Situated Cognition and the Culture of Learning"](https://www.johnseelybrown.com/Situated%20Cognition%20and%20the%20culture%20of%20learning.pdf)

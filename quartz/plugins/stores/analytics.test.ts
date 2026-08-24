@@ -20,6 +20,7 @@ import {
 } from './analytics'
 import { emptyGarminFueling, emptyGarminMetrics } from './garmin'
 import {
+  applyManualSauna,
   buildPayload,
   type RawStravaActivity,
   type StravaActivityDetail,
@@ -2114,7 +2115,7 @@ test('data feed emits meta, ordered kinds, fixed fields, and explicit nulls', ()
   const lines = feed.trimEnd().split('\n')
   const rows = lines.map(l => JSON.parse(l))
   assert.equal(rows[0].kind, 'meta')
-  assert.equal(rows[0].v, 4)
+  assert.equal(rows[0].v, 5)
   assert.equal(rows[0].criticalPower, null)
   assert.equal(rows[0].criticalPowerYear, null)
   assert.deepEqual(rows[0].fields.day, [...DAY_FIELDS])
@@ -2263,6 +2264,69 @@ test('data feed derives stream features on 1hz activities and nulls them on swim
   assert.equal(swim.pp30, null)
   assert.equal(swim.ps30, null)
   assert.equal(swim.decoupling, null)
+})
+
+test('manual sauna sessions appear in analytics and the data feed without entering sport load', () => {
+  const { cache, oura } = fixtures()
+  const date = iso(25)
+  const payload = buildPayload(cache, oura, null, '2026-05-12')
+  applyManualSauna(
+    payload,
+    [
+      {
+        id: 8_202_606_061_830,
+        title: 'Untangle',
+        date,
+        time: '18:30',
+        durationS: 4_500,
+        temperatureC: 91.111,
+        humidityPct: 11,
+        cooldown: 'cold plunge',
+        heatTrainingLoad: 7.7,
+      },
+    ],
+    [],
+    'America/Toronto',
+  )
+  const analytics = buildAnalytics(cache, {
+    oura,
+    activityDetails: payload.details,
+    since: '2026-05-12',
+  })
+  const summary = analytics.activities.find(activity => activity.sport === 'sauna')
+  assert.deepEqual(summary, {
+    id: 8_202_606_061_830,
+    date,
+    sport: 'sauna',
+    name: 'Untangle',
+    distanceKm: 0,
+    movingTimeS: 4_500,
+    load: 0,
+    paceIntensityFactor: null,
+    effort: null,
+    cadence: null,
+    strokes: null,
+    windKph: null,
+    windDir: null,
+    windGustKph: null,
+  })
+
+  const feed = buildDataFeed(cache, analytics, {
+    oura,
+    zones: cache.zones,
+    activityDetails: payload.details,
+  })
+  const rows = feed
+    .trimEnd()
+    .split('\n')
+    .map(line => JSON.parse(line))
+  const activity = rows.find(row => row.kind === 'activity' && row.sport === 'sauna')
+  assert.equal(activity?.name, 'Untangle')
+  assert.equal(activity?.skipTraining, true)
+  assert.equal(activity?.load, 0)
+  assert.deepEqual(activity?.sauna, payload.details[String(activity.id)].sauna)
+  assert.equal(rows.find(row => row.kind === 'day' && row.date === date)?.sessions, 1)
+  assert.equal(rows.find(row => row.kind === 'meta')?.v, 5)
 })
 
 test('data feed never leaks coordinates or secrets', () => {

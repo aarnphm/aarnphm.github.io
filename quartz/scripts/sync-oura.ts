@@ -5,18 +5,20 @@ import {
   OuraCache,
   OuraDaily,
   OuraDayDetail,
+  OuraHeartRateSample,
+  OuraHeartRateSource,
   OuraSeries,
   ouraSleepCalendarDay,
   OuraUser,
 } from '../plugins/stores/oura'
-import { localIsoDayOffset } from '../util/local-date'
+import { localDayStartUtcMs, localIsoDayOffset } from '../util/local-date'
 import { joinSegments, QUARTZ } from '../util/path'
 import { refreshTriathlonRouteSource } from '../util/triathlon-cache'
 import { isRecord } from '../util/type-guards'
 
 const API = 'https://api.ouraring.com/v2/usercollection'
 const TOKEN_URL = 'https://api.ouraring.com/oauth/token'
-const CACHE_VERSION = 3
+const CACHE_VERSION = 4
 const LOOKBACK_DAYS = 365
 const REFRESH_DAYS = 30
 const cacheFile = joinSegments(QUARTZ, '.quartz-cache', 'oura.json')
@@ -103,9 +105,36 @@ async function fetchRange(
     if (nextToken) q.set('next_token', nextToken)
     const res = await fetchWithRetry(`${API}/${endpoint}?${q}`, { headers }, limiter)
     if (!res) throw new Error(`oura ${endpoint} fetch failed`)
-    const json = (await res.json()) as { data?: Row[]; next_token?: string | null }
-    if (Array.isArray(json.data)) rows.push(...json.data)
-    if (!json.next_token) break
+    const json: unknown = await res.json()
+    if (!isRecord(json)) throw new Error(`oura ${endpoint} returned an invalid response`)
+    if (Array.isArray(json.data)) rows.push(...json.data.filter(isRecord))
+    if (typeof json.next_token !== 'string' || !json.next_token) break
+    nextToken = json.next_token
+  }
+  return rows
+}
+
+async function fetchDateTimeRange(
+  token: string,
+  endpoint: string,
+  startMs: number,
+  endMs: number,
+): Promise<Row[]> {
+  const headers = { Authorization: `Bearer ${token}` }
+  const rows: Row[] = []
+  let nextToken = ''
+  for (;;) {
+    const q = new URLSearchParams({
+      start_datetime: new Date(startMs).toISOString(),
+      end_datetime: new Date(endMs).toISOString(),
+    })
+    if (nextToken) q.set('next_token', nextToken)
+    const res = await fetchWithRetry(`${API}/${endpoint}?${q}`, { headers }, limiter)
+    if (!res) throw new Error(`oura ${endpoint} fetch failed`)
+    const json: unknown = await res.json()
+    if (!isRecord(json)) throw new Error(`oura ${endpoint} returned an invalid response`)
+    if (Array.isArray(json.data)) rows.push(...json.data.filter(isRecord))
+    if (typeof json.next_token !== 'string' || !json.next_token) break
     nextToken = json.next_token
   }
   return rows
@@ -113,6 +142,34 @@ async function fetchRange(
 
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null)
 const str = (v: unknown): string | null => (typeof v === 'string' ? v : null)
+
+const HEART_RATE_SOURCES: readonly OuraHeartRateSource[] = [
+  'awake',
+  'workout',
+  'rest',
+  'sleep',
+  'live',
+  'session',
+]
+
+const isHeartRateSource = (value: string): value is OuraHeartRateSource =>
+  HEART_RATE_SOURCES.some(source => source === value)
+
+function heartRateSample(value: Row): OuraHeartRateSample | null {
+  const timestamp = str(value.timestamp)
+  const bpm = num(value.bpm)
+  const source = str(value.source)
+  if (
+    !timestamp ||
+    !Number.isFinite(Date.parse(timestamp)) ||
+    bpm == null ||
+    bpm <= 0 ||
+    !source ||
+    !isHeartRateSource(source)
+  )
+    return null
+  return { timestamp, bpm, source }
+}
 
 function sampleSeries(v: unknown): OuraSeries | null {
   if (!isRecord(v)) return null
@@ -182,6 +239,7 @@ async function main(): Promise<void> {
   const start = localIsoDayOffset(stale ? -LOOKBACK_DAYS : -REFRESH_DAYS, now)
   const end = localIsoDayOffset(0, now)
   const endExclusive = localIsoDayOffset(1, now)
+  const heartRateStart = localIsoDayOffset(-(REFRESH_DAYS - 1), now)
 
   const days: Record<string, OuraDaily> = {}
   if (prev?.days) for (const [k, v] of Object.entries(prev.days)) days[k] = { ...v }
@@ -189,15 +247,19 @@ async function main(): Promise<void> {
   const details: Record<string, OuraDayDetail> = {}
   if (prev?.details) for (const [k, v] of Object.entries(prev.details)) details[k] = { ...v }
   const ensureDetail = (day: string): OuraDayDetail => (details[day] ??= emptyDetail(day))
+  let heartRate = prev?.heartRate?.slice() ?? []
   let user: OuraUser = prev?.user ?? { id: null, email: null }
+  let cacheVersion = prev?.version
+  let lastSync = prev?.lastSync ?? 0
   const writeCache = async (): Promise<void> => {
     const cache: OuraCache = {
-      version: CACHE_VERSION,
+      version: cacheVersion,
       auth: { refreshToken, obtainedAt: now },
       user,
-      lastSync: now,
+      lastSync,
       days,
       details,
+      heartRate,
     }
     await fs.mkdir(joinSegments(QUARTZ, '.quartz-cache'), { recursive: true })
     await fs.writeFile(cacheFile, JSON.stringify(cache, null, 2))
@@ -221,6 +283,22 @@ async function main(): Promise<void> {
   const dailySleep = await fetchRange(access, 'daily_sleep', start, end)
   const sleep = await fetchRange(access, 'sleep', start, endExclusive)
   const activity = await fetchRange(access, 'daily_activity', start, endExclusive)
+  const heartRateStartMs = localDayStartUtcMs(heartRateStart)
+  const heartRateEndMs = now
+  const refreshedHeartRate = (
+    await fetchDateTimeRange(access, 'heartrate', heartRateStartMs, heartRateEndMs)
+  )
+    .map(heartRateSample)
+    .filter((sample): sample is OuraHeartRateSample => sample != null)
+  const heartRateByTimestamp = new Map(
+    heartRate
+      .filter(sample => Date.parse(sample.timestamp) < heartRateStartMs)
+      .map(sample => [sample.timestamp, sample]),
+  )
+  for (const sample of refreshedHeartRate) heartRateByTimestamp.set(sample.timestamp, sample)
+  heartRate = [...heartRateByTimestamp.values()].sort((left, right) =>
+    left.timestamp.localeCompare(right.timestamp),
+  )
 
   for (const r of readiness) {
     const day = str(r.day)
@@ -284,11 +362,13 @@ async function main(): Promise<void> {
 
   for (const [day, dd] of Object.entries(details)) if (detailEmpty(dd)) delete details[day]
 
+  cacheVersion = CACHE_VERSION
+  lastSync = now
   await writeCache()
   await refreshTriathlonRouteSource()
   const withReadiness = Object.values(days).filter(d => d.readiness != null).length
   console.log(
-    `[oura] wrote ${Object.keys(days).length} days (${start} → ${end}), ${withReadiness} with readiness → ${cacheFile}`,
+    `[oura] wrote ${Object.keys(days).length} days (${start} → ${end}), ${withReadiness} with readiness, ${heartRate.length} heart-rate samples → ${cacheFile}`,
   )
 }
 

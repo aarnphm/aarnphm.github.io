@@ -22,7 +22,7 @@ $$
 q^{\top} k = (W_{Q,i}\, x_q)^{\top}(W_{K,i}\, x_k) = x_q^{\top}\, C_i\, x_k, \qquad C_i = W_{Q,i}^{\top} W_{K,i},\; \operatorname{rank}(C_i) \le d_h
 $$
 
-so the full attention map $A = \sum_i Q_i K_i^{\top}$ is already a sum of low-rank bases $U_i V_i^{\top}$. MHA pays for $n_h$ such bases in both parameters and KV cache; MFA shares one low-rank factorisation of the QK circuit across heads, so adding heads (more bases, wider $r$) costs parameters rather than cache.
+so the full pre-softmax score matrix $S = \sum_i Q_i K_i^{\top}$ is already a sum of low-rank bases $U_i V_i^{\top}$. MHA pays for $n_h$ such bases in both parameters and KV cache; MFA shares one low-rank factorisation of the QK circuit across heads. Adding heads increases parameters and compute while leaving the per-token KV cache nearly fixed.
 
 - the cache holds a single shared key/value latent, the way [[thoughts/GQA|MQA]] does; the factorised $Q,K$ recover the head diversity a single shared head throws away
 - MFA-KR (key reuse) re-parameterises the value projection to read the key cache directly as value, trimming the cache a further ~50%

@@ -751,6 +751,7 @@ const detail = (overrides: Partial<StravaActivityDetail> = {}): StravaActivityDe
   location: 'Toronto',
   fueling: null,
   strength: null,
+  sauna: null,
   garmin: null,
   calculatedIntensityFactor: null,
   calculatedExerciseLoad: null,
@@ -1329,6 +1330,56 @@ test('renders route-less strength heart rate against elapsed time', () => {
   assert.equal(graph?.properties.dataDomainStartElapsedS, 0)
   assert.equal(graph?.properties.dataDomainEndElapsedS, 1_560)
   assert.equal(graph?.properties.dataDomainStartDistanceKm, undefined)
+})
+
+test('renders manual sauna conditions and Oura heart rate without distance metrics', () => {
+  const sauna = detail({
+    sport: 'sauna',
+    name: 'Untangle',
+    distanceKm: 0,
+    movingTimeS: 4_500,
+    avgHr: 120,
+    maxHr: 130,
+    avgWatts: null,
+    npWatts: null,
+    maxWatts: null,
+    kilojoules: null,
+    deviceWatts: false,
+    avgCadence: null,
+    calories: null,
+    avgTemp: null,
+    strength: null,
+    sauna: {
+      time: '18:30',
+      temperatureC: 91.111,
+      humidityPct: 11,
+      cooldown: 'cold plunge',
+      heatTrainingLoad: 7.7,
+      heartRateSource: 'oura',
+      source: 'manual',
+    },
+    route: [],
+    heartRateTrace: [heartRateTracePoint(0, 300, 110), heartRateTracePoint(0, 3_600, 130)],
+    bestEfforts: null,
+  })
+
+  assert.deepEqual(activityStatRows(imperialPresentation, sauna), [
+    ['time', '18:30'],
+    ['duration', "1h15'"],
+    ['temperature', '196°F'],
+    ['humidity', '11%'],
+    ['cooldown', 'cold plunge'],
+    ['HTL', '7.7'],
+    ['avg hr', '120 bpm · Oura'],
+  ])
+  assert.deepEqual(moreStatRows(imperialPresentation, sauna), [['max hr', '130 bpm']])
+  const rendered = buildActivity(factoryFor(imperialPresentation), sauna, true)
+  assert.equal(rendered.properties.dataActivityTitle, 'Untangle')
+  assert.equal(
+    byClass(rendered, 'tri-elev-wrap').find(element => element.properties.dataTriTrace === 'hr')
+      ?.properties.dataTriTrace,
+    'hr',
+  )
 })
 
 test('renders route-less treatment heart rate when samples are available', () => {
