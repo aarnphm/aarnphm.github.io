@@ -14654,6 +14654,10 @@ html.tri-analytics-booting .triathlon[data-tri-view='analytics'] .tri-ana-body {
       align-items: baseline;
       justify-content: space-between;
     }
+
+    .tri-act-stats tr[data-stat-key='active burn'] {
+      border-bottom: 1px solid var(--lightgray);
+    }
   }
 }
 
