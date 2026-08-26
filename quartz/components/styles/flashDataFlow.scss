@@ -6,8 +6,10 @@
   @include figure-frame('fdf-figure', 24rem, $zoom: false);
 
   --fdf-note-fg: color-mix(in srgb, var(--darkgray) 78%, var(--dark) 22%);
-  --fdf-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --fdf-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --fdf-cell-fg: var(--fdf-note-fg);
+  --fdf-tiny-fg: var(--gray);
+  --fdf-tab-surface: var(--fig-tab-surface);
+  --fdf-tab-border: var(--fig-tab-border);
   --fdf-tab-active: color-mix(in srgb, var(--fig-salmon) 24%, var(--fdf-tab-surface));
   --fdf-load: var(--fig-sage);
   --fdf-store: var(--fig-salmon);
@@ -27,19 +29,17 @@
 }
 
 :root[saved-theme='dark'] .flash-data-flow {
-  --fdf-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
-  --fdf-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
-  --fdf-tab-active: color-mix(in srgb, var(--fig-salmon) 26%, var(--fdf-tab-surface));
-  --fdf-hbm: color-mix(in srgb, var(--fig-sage) 18%, var(--lightgray));
-  --fdf-chip-bg: color-mix(in srgb, var(--fig-salmon) 10%, var(--lightgray));
-  --fdf-cell: color-mix(in srgb, var(--fig-sage) 30%, var(--lightgray));
-  --fdf-mma: color-mix(in srgb, var(--fig-salmon) 34%, var(--lightgray));
-  --fdf-sm: color-mix(in srgb, var(--fig-sage) 32%, var(--lightgray));
-  --fdf-stat: color-mix(in srgb, var(--lightgray) 40%, var(--dark));
-  --fdf-sched: color-mix(in srgb, var(--lightgray) 24%, var(--dark));
-  --fdf-ring: color-mix(in srgb, var(--fig-sage) 14%, var(--lightgray));
-  --fdf-tmem: color-mix(in srgb, var(--fig-salmon) 26%, var(--lightgray));
-  --fdf-poly: color-mix(in srgb, var(--fig-salmon) 32%, var(--lightgray));
+  --fdf-cell-fg: var(--dark);
+  --fdf-tiny-fg: var(--dark);
+  --fdf-tab-active: color-mix(in srgb, var(--fig-salmon) 18%, var(--fdf-tab-surface));
+  --fdf-hbm: color-mix(in srgb, var(--fig-sage) 14%, var(--lightgray));
+  --fdf-chip-bg: color-mix(in srgb, var(--fig-salmon) 8%, var(--lightgray));
+  --fdf-cell: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  --fdf-mma: color-mix(in srgb, var(--fig-salmon) 20%, var(--lightgray));
+  --fdf-sm: color-mix(in srgb, var(--fig-sage) 22%, var(--lightgray));
+  --fdf-ring: color-mix(in srgb, var(--fig-sage) 10%, var(--lightgray));
+  --fdf-tmem: color-mix(in srgb, var(--fig-salmon) 18%, var(--lightgray));
+  --fdf-poly: color-mix(in srgb, var(--fig-salmon) 20%, var(--lightgray));
   --fdf-prod: color-mix(in srgb, var(--fig-sage) 70%, var(--light));
 }
 
@@ -71,7 +71,7 @@
   border: 0;
   border-radius: 0;
   background: var(--fdf-tab-surface);
-  color: var(--gray);
+  color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;
@@ -241,7 +241,7 @@
   }
   .fdf-fo--cell {
     font-size: 12.5px;
-    color: var(--fdf-note-fg);
+    color: var(--fdf-cell-fg);
   }
   .fdf-fo--chip {
     font-size: 12px;
@@ -252,7 +252,7 @@
   }
   .fdf-fo--tiny {
     font-size: 9px;
-    color: var(--gray);
+    color: var(--fdf-tiny-fg);
   }
   .fdf-fo--flow {
     font-size: 10.5px;

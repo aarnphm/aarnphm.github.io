@@ -12,19 +12,16 @@
   --swm-global-bg: color-mix(in srgb, #cdd597 78%, var(--light));
   --swm-masked-bg: color-mix(in srgb, var(--lightgray) 65%, var(--light));
   --swm-grid: color-mix(in srgb, var(--gray) 24%, transparent);
-  --swm-tab-surface: color-mix(in srgb, var(--light) 86%, var(--lightgray));
-  --swm-tab-border: color-mix(in srgb, var(--lightgray) 78%, transparent);
+  --swm-tab-surface: var(--fig-tab-surface);
+  --swm-tab-border: var(--fig-tab-border);
   --swm-tab-active: color-mix(in srgb, var(--swm-window) 24%, var(--swm-tab-surface));
 }
 
 :root[saved-theme='dark'] .sliding-window-mask {
   --swm-window-bg: color-mix(in srgb, #fdb2a2 45%, var(--lightgray));
   --swm-global-bg: color-mix(in srgb, #cdd597 45%, var(--lightgray));
-  --swm-masked-bg: color-mix(in srgb, var(--lightgray) 38%, var(--dark));
   --swm-grid: color-mix(in srgb, var(--gray) 18%, transparent);
-  --swm-tab-surface: color-mix(in srgb, var(--lightgray) 18%, var(--dark));
-  --swm-tab-border: color-mix(in srgb, var(--lightgray) 30%, transparent);
-  --swm-tab-active: color-mix(in srgb, var(--swm-window) 26%, var(--swm-tab-surface));
+  --swm-tab-active: color-mix(in srgb, var(--swm-window) 18%, var(--swm-tab-surface));
 }
 
 .sliding-window-mask .katex {
@@ -267,7 +264,7 @@
   border: 0;
   border-radius: 0;
   background: var(--swm-tab-surface);
-  color: var(--gray);
+  color: var(--fig-tab-fg);
   cursor: pointer;
   font-family: var(--codeFont);
   font-size: 0.72rem;

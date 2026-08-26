@@ -15,6 +15,7 @@
 
 :root[saved-theme='dark'] .tree-reduction {
   --tr-fill-active-soft: color-mix(in srgb, #cdd597 18%, var(--lightgray));
+  --tr-fill-pulse: color-mix(in srgb, #fdb2a2 20%, var(--lightgray));
 }
 
 .tr-toolbar {
