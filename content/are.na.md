@@ -65,7 +65,7 @@ metadata:
     letter         = "a".."z" ;
     digit          = "0".."9" ;
     character      = ? any printable ascii except newline ? ;
-modified: 2026-08-25 00:00:00 GMT-04:00
+modified: 2026-08-26 00:00:00 GMT-04:00
 permalinks:
   - /website
   - /tweets
@@ -82,6 +82,71 @@ title: are.na
 
 ## discourse
 
+- https://www.lesswrong.com/posts/NG2AigxmBKLu9oCZE/arguments-for-p -- Arguments for P
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [ai, satire]
+    - later: true
+- https://www.lesswrong.com/posts/iQzxxgJXXaAQjq7Jz/faq-isn-t-agi-coming-too-soon-for-reprogenetics-to-help -- FAQ: Isn't AGI coming too soon for reprogenetics to help?
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [agi, reprogenetics]
+    - later: true
+- https://www.lesswrong.com/posts/9RL9MuGZjzm4q3gKG/what-just-happened-a-retrospective-of-ai-alignment -- What just happened? A retrospective of AI alignment
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [ai alignment, history]
+    - later: true
+- https://thezvi.substack.com/p/what-happened-openai-and-huggingface -- What Happened: OpenAI and HuggingFace
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [openai, huggingface]
+    - later: true
+- https://charlesyang.substack.com/p/its-time-to-build-new-universities -- It's Time to Build: New Universities
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [education, institutions]
+    - later: true
+- https://blueprintforagoldenage.substack.com/p/if-you-teach-a-child-to-just-power -- If you teach a child to just power through unpleasant tasks, she'll lack self-discipline
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [education, montessori]
+    - later: true
+- https://abio.substack.com/p/a-pro-poor-rideshare-debate-would -- A Pro-Poor Rideshare Debate Would Be About Prices
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [rideshare, prices]
+    - later: true
+- https://torontosociety.substack.com/p/sherry-ning-at-the-viaduct-you-are -- Sherry Ning at The Viaduct: You Are What You Practice
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [attention, practice]
+    - later: true
+- https://scottaaronson.blog/?p=6823 -- My AI Safety Lecture for UT Effective Altruism
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [ai safety, lecture]
+    - later: true
+- https://kokiriforest.substack.com/p/social-advice-from-a-budding-socialite -- Social advice from a budding socialite
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [social life, advice]
+    - later: true
+- https://andrewwu.substack.com/p/against-telepathyor-conduit-should -- Against telepathy, or Conduit should engage with authoritarianism concerns
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [technology, authoritarianism]
+    - later: true
+- https://x.com/hecubian_devil/status/2075263179664269608 -- Cassie Pritchard on liberalism and democracy
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [liberalism, democracy]
+    - later: true
+- https://www.astralcodexten.com/p/re-re-re-pritchard-on-liberal-happiness -- Re: Re: Re: Pritchard On Liberal Happiness
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [liberalism, happiness]
+    - later: true
 - https://reflectivedisequilibrium.blogspot.com/2020/05/what-would-civilization-immune-to.html -- Envisioning a world immune to global catastrophic biological risks
   - [meta]:
     - date: 08/20/2026
@@ -558,6 +623,21 @@ title: are.na
 - [meta]:
   - view: list
 
+- https://x.com/gradypb/status/1985788553587277978 -- Pat Grady on Sequoia's next generation
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [sequoia, investing]
+    - later: true
+- https://x.com/bernhardsson/status/2085648456182284767 -- Erik Bernhardsson on verifiable rewards and short feedback loops
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [feedback loops, rewards]
+    - later: true
+- https://x.com/jeffdean/status/2085615103202976121 -- Jeff Dean turns in his Google badge and laptop
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [google, jeff dean]
+    - later: true
 - https://x.com/__alpoge__/status/2087504785952182273 -- levent on X
   - [meta]:
     - date: 08/20/2026
@@ -2912,6 +2992,11 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://x.com/waitbutwhy -- Wait But Why
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [writing, blog]
+    - later: true
 - https://letters.stevejobsarchive.com/jony-ive -- Jony Ive
   - [meta]:
     - date: 08/20/2026
@@ -7468,6 +7553,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://www.lesswrong.com/posts/dsou8dxCf9BubQ5NJ/some-reasons-alignment-doesn-t-generalise-well-1 -- Some reasons alignment doesn't generalise well
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [alignment, generalization]
+    - later: true
+- https://newsletter.squishy.computer/p/llms-for-theory-building -- LLMs for theory-building
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [language models, theory]
+    - later: true
+- https://x.com/tenobrus/status/2089080656026566806 -- Tenobrus on Anthropic watermarking
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [watermarking, language models]
+    - later: true
 - https://huggingface.co/facebook/opt-66b -- facebook/opt-66b
   - [meta]:
     - date: 08/25/2026
@@ -11153,6 +11253,36 @@ title: are.na
 
 ## life is literature
 
+- https://www.startingfromnix.com/p/if-experience-is-the-goal-then-you -- if experience is the goal, then you always win
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [experience, reinvention]
+    - later: true
+- https://gracebyron.substack.com/p/i-wanted-to-become-a-novice -- I wanted to become a novice
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [novice, journal]
+    - later: true
+- https://www.henrikkarlsson.xyz/p/travel-by-foot -- The world reveals itself to those who travel by foot
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [travel, walking]
+    - later: true
+- https://hormeze.substack.com/p/and-now-she-turns-again -- And Now She Turns Again
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [soul, writing]
+    - later: true
+- https://www.sherryning.com/p/till-death -- Till Death
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [love, time]
+    - later: true
+- https://kokiriforest.substack.com/p/my-first-boyfriend -- My first boyfriend
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [relationships, memoir]
+    - later: true
 - https://substack.com/inbox/post/209670682 -- no two things the same
   - [meta]:
     - date: 08/20/2026
@@ -11927,6 +12057,21 @@ title: are.na
   - view: list
   - json: true
 
+- https://x.com/difficultyang/status/2085049604685598998 -- difficultyang on optimized transformer-block Perfetto traces
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [transformers, performance]
+    - later: true
+- https://x.com/mitsuhiko/status/2068657029443363136 -- Armin Ronacher on looping agents for review and research
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [agents, research]
+    - later: true
+- https://x.com/mitchellh/status/2060088112257372610 -- Mitchell Hashimoto on agent optimization and renderer metrics
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [agents, optimization]
+    - later: true
 - https://en.wikipedia.org/wiki/Advanced_Vector_Extensions -- Advanced Vector Extensions
   - [meta]:
     - date: 08/25/2026
@@ -12698,6 +12843,31 @@ title: are.na
 - [meta]:
   - json: true
 
+- https://www.lesswrong.com/posts/s22XzjQsrh6JXhXGH/big-world-intuitions -- Big-World Intuitions
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [intuition, rationality]
+    - later: true
+- https://en.wikipedia.org/wiki/Hylozoism -- Hylozoism
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [metaphysics, life]
+    - later: true
+- https://en.wikipedia.org/wiki/Mereological_nihilism -- Mereological nihilism
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [metaphysics, mereology]
+    - later: true
+- https://en.wikipedia.org/wiki/Pygmalion_effect -- Pygmalion effect
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [psychology, expectations]
+    - later: true
+- https://en.wikipedia.org/wiki/Medium_theory -- Medium theory
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [media, theory]
+    - later: true
 - https://philosophy.stackexchange.com/questions/73326/why-did-nietzsche-dislike-kant-and-his-epistemology-so-much -- Why Did Nietzsche Dislike Kant and His Epistemology So Much?
   - [meta]:
     - date: 08/25/2026
@@ -15912,6 +16082,21 @@ title: are.na
 
 ## arts
 
+- https://linch.substack.com/p/ted-chiang-review -- Ted Chiang: The Secret Third Thing
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [ted chiang, review]
+    - later: true
+- https://gracebyron.substack.com/p/like-a-pop-song -- Like a Pop Song
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [music, interview]
+    - later: true
+- https://en.wikipedia.org/wiki/The_Unlikely_Pilgrimage_of_Harold_Fry_(film) -- The Unlikely Pilgrimage of Harold Fry
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [film, drama]
+    - later: true
 - https://en.m.wikipedia.org/wiki/The_Comedians_(novel) -- The Comedians (novel) - Wikipedia
   - [meta]:
     - date: 08/25/2026
@@ -16222,6 +16407,16 @@ title: are.na
 
 ## resources
 
+- https://en.wikipedia.org/wiki/Battarrea -- Battarrea
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [mycology, fungi]
+    - later: true
+- https://en.wikipedia.org/wiki/R/K_selection_theory -- R/K selection theory
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [biology, evolution]
+    - later: true
 - https://www.google.com/search?q=xkcd+meme+infrastructure+pibrary -- xkcd meme infrastructure pibrary - Google Search
   - [meta]:
     - date: 08/25/2026
@@ -17890,6 +18085,36 @@ title: are.na
   - view: list
   - json: true
 
+- https://github.com/get-bb/bb -- GitHub - get-bb/bb: The agent IDE that builds itself
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, agents]
+    - later: true
+- https://github.com/PrimeIntellect-ai/prime-agent -- GitHub - PrimeIntellect-ai/prime-agent: A self-improving RLM agent for coding workflows and long-running autonomous tasks
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, agents]
+    - later: true
+- https://github.com/anthropics/zeta-23-lean -- GitHub - anthropics/zeta-23-lean
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, lean]
+    - later: true
+- https://github.com/lyramakesmusic/neuralese-leaker -- GitHub - lyramakesmusic/neuralese-leaker: web app for chatting with LLMs on OpenRouter with leaked unabridged reasoning
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, language models]
+    - later: true
+- https://github.com/agda/cubical/blob/master/Cubical/Cohomology/Base.agda -- Cubical/Cohomology/Base.agda at master agda/cubical
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, cubical agda]
+    - later: true
+- https://github.com/HazyResearch/ThunderKittens -- GitHub - HazyResearch/ThunderKittens: Tile primitives for speedy kernels
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [repository, gpu]
+    - later: true
 - https://github.com/yoheinakajima/babyagi -- GitHub - yoheinakajima/babyagi
   - [meta]:
     - date: 08/25/2026
@@ -20537,6 +20762,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://en.wikipedia.org/wiki/Barnsley_fern -- Barnsley fern
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [fractals, iterated function systems]
+    - later: true
 - https://arxiv.org/abs/2311.03658 -- The Linear Representation Hypothesis and the Geometry of Large Language Models
   - [meta]:
     - date: 08/25/2026
@@ -21404,6 +21634,11 @@ title: are.na
   - view: list
   - json: true
 
+- https://alphaxiv.org/abs/2608.20319 -- Inducing Task Models from Computer-Use Traces
+  - [meta]:
+    - date: 08/26/2026
+    - tags: [paper, computer use]
+    - later: true
 - https://arxiv.org/abs/2507.02754 -- Fast and Simplex: 2-Simplicial Attention in Triton
   - [meta]:
     - date: 08/25/2026
